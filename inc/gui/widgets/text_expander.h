@@ -32,8 +32,7 @@
 #include <gtk/gtk.h>
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored \
-  "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <gtksourceview/gtksource.h>
 #pragma GCC diagnostic pop
 
@@ -92,8 +91,7 @@ typedef struct _TextExpanderWidget
  * Refreshes the text.
  */
 void
-text_expander_widget_refresh (
-  TextExpanderWidget * self);
+text_expander_widget_refresh (TextExpanderWidget * self);
 
 /**
  * Sets up the TextExpanderWidget.

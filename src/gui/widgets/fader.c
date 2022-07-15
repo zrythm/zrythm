@@ -23,22 +23,15 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  FaderWidget,
-  fader_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (FaderWidget, fader_widget, GTK_TYPE_WIDGET)
 
 static void
-fader_snapshot (
-  GtkWidget *   widget,
-  GtkSnapshot * snapshot)
+fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   FaderWidget * self = Z_FADER_WIDGET (widget);
 
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_allocated_width (widget);
+  int height = gtk_widget_get_allocated_height (widget);
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
@@ -46,8 +39,7 @@ fader_snapshot (
   gtk_snapshot_render_background (
     snapshot, context, 0, 0, width, height);
 
-  float fader_val =
-    self->fader ? self->fader->fader_val : 1.f;
+  float fader_val = self->fader ? self->fader->fader_val : 1.f;
   float value_px = height * fader_val;
 
   const float fill_radius = 2.f;
@@ -55,11 +47,9 @@ fader_snapshot (
   /* draw background bar */
   GskRoundedRect rounded_rect;
   gsk_rounded_rect_init_from_rect (
-    &rounded_rect,
-    &GRAPHENE_RECT_INIT (0, 0, width, height),
+    &rounded_rect, &GRAPHENE_RECT_INIT (0, 0, width, height),
     fill_radius);
-  gtk_snapshot_push_rounded_clip (
-    snapshot, &rounded_rect);
+  gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
   gtk_snapshot_append_color (
     snapshot,
     &Z_GDK_RGBA_INIT (
@@ -95,24 +85,18 @@ fader_snapshot (
   const float inner_line_width = 2.f;
 
   const int       border_width = 3.f;
-  graphene_rect_t value_graphene_rect =
-    GRAPHENE_RECT_INIT (
-      border_width, border_width,
-      width - border_width * 2,
-      height - border_width * 2);
+  graphene_rect_t value_graphene_rect = GRAPHENE_RECT_INIT (
+    border_width, border_width, width - border_width * 2,
+    height - border_width * 2);
   gsk_rounded_rect_init_from_rect (
-    &rounded_rect, &value_graphene_rect,
-    fill_radius);
-  gtk_snapshot_push_rounded_clip (
-    snapshot, &rounded_rect);
+    &rounded_rect, &value_graphene_rect, fill_radius);
+  gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
   gtk_snapshot_append_color (
     snapshot,
     &Z_GDK_RGBA_INIT (
       (float) r, (float) g, (float) b, (float) a),
     &GRAPHENE_RECT_INIT (
-      0,
-      (float) (height - value_px)
-        + inner_line_width * 2,
+      0, (float) (height - value_px) + inner_line_width * 2,
       width, value_px));
   gtk_snapshot_pop (snapshot);
 
@@ -221,10 +205,9 @@ drag_update (
 
   /*double multiplier = 0.005;*/
   double diff =
-    use_y ? offset_y - self->last_y
-          : offset_x - self->last_x;
-  double height = gtk_widget_get_allocated_height (
-    GTK_WIDGET (self));
+    use_y ? offset_y - self->last_y : offset_x - self->last_x;
+  double height =
+    gtk_widget_get_allocated_height (GTK_WIDGET (self));
   double adjusted_diff = diff / height;
 
   /* lower sensitivity if shift held */
@@ -236,10 +219,8 @@ drag_update (
     }
 
   double new_fader_val = CLAMP (
-    (double) self->fader->fader_val + adjusted_diff,
-    0.0, 1.0);
-  fader_set_fader_val (
-    self->fader, (float) new_fader_val);
+    (double) self->fader->fader_val + adjusted_diff, 0.0, 1.0);
+  fader_set_fader_val (self->fader, (float) new_fader_val);
   self->last_x = offset_x;
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -277,22 +258,17 @@ drag_end (
 }
 
 static void
-show_context_menu (
-  FaderWidget * self,
-  double        x,
-  double        y)
+show_context_menu (FaderWidget * self, double x, double y)
 {
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   char tmp[600];
   sprintf (tmp, "app.reset-fader::%p", self->fader);
-  menuitem = z_gtk_create_menu_item (
-    _ ("Reset"), NULL, tmp);
+  menuitem = z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
-  sprintf (
-    tmp, "app.bind-midi-cc::%p", self->fader->amp);
+  sprintf (tmp, "app.bind-midi-cc::%p", self->fader->amp);
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
@@ -323,9 +299,8 @@ on_scroll (
 {
   FaderWidget * self = Z_FADER_WIDGET (user_data);
 
-  GdkEvent * event =
-    gtk_event_controller_get_current_event (
-      GTK_EVENT_CONTROLLER (scroll_controller));
+  GdkEvent * event = gtk_event_controller_get_current_event (
+    GTK_EVENT_CONTROLLER (scroll_controller));
   GdkScrollDirection direction =
     gdk_scroll_event_get_direction (event);
   double abs_x, abs_y;
@@ -348,16 +323,12 @@ on_scroll (
       ? 1
       : -1;
   float add_val = (float) up_down * inc;
-  float current_val =
-    fader_get_fader_val (self->fader);
-  float new_val =
-    CLAMP (current_val + add_val, 0.0f, 1.0f);
+  float current_val = fader_get_fader_val (self->fader);
+  float new_val = CLAMP (current_val + add_val, 0.0f, 1.0f);
   fader_set_fader_val (self->fader, new_val);
 
-  Channel * channel =
-    fader_get_channel (self->fader);
-  EVENTS_PUSH (
-    ET_CHANNEL_FADER_VAL_CHANGED, channel);
+  Channel * channel = fader_get_channel (self->fader);
+  EVENTS_PUSH (ET_CHANNEL_FADER_VAL_CHANGED, channel);
 
   return true;
 }
@@ -401,8 +372,7 @@ fader_widget_setup (
 static void
 dispose (FaderWidget * self)
 {
-  gtk_widget_unparent (
-    GTK_WIDGET (self->popover_menu));
+  gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
   G_OBJECT_CLASS (fader_widget_parent_class)
     ->dispose (G_OBJECT (self));
@@ -414,20 +384,16 @@ fader_widget_init (FaderWidget * self)
   self->start_color = UI_COLORS->fader_fill_start;
   self->end_color = UI_COLORS->fader_fill_end;
 
-  gtk_widget_set_focusable (
-    GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
-  self->popover_menu = GTK_POPOVER_MENU (
-    gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
   gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu),
-    GTK_WIDGET (self));
+    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self), _ ("Fader"));
+  gtk_widget_set_tooltip_text (GTK_WIDGET (self), _ ("Fader"));
 
-  self->drag =
-    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
     G_OBJECT (self->drag), "drag-begin",
     G_CALLBACK (drag_begin), self);
@@ -435,11 +401,10 @@ fader_widget_init (FaderWidget * self)
     G_OBJECT (self->drag), "drag-update",
     G_CALLBACK (drag_update), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-end",
-    G_CALLBACK (drag_end), self);
+    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end),
+    self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->drag));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
 #if 0
   self->tooltip_win =
@@ -460,14 +425,12 @@ fader_widget_init (FaderWidget * self)
   GtkGestureClick * right_click =
     GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (right_click),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (right_click), GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (right_click), "pressed",
     G_CALLBACK (on_right_click), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (right_click));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (right_click));
 
   GtkEventControllerMotion * motion_controller =
     GTK_EVENT_CONTROLLER_MOTION (
@@ -500,8 +463,7 @@ fader_widget_init (FaderWidget * self)
 static void
 fader_widget_class_init (FaderWidgetClass * klass)
 {
-  GtkWidgetClass * wklass =
-    GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = fader_snapshot;
   gtk_widget_class_set_css_name (wklass, "fader");
 

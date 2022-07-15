@@ -21,11 +21,9 @@
 #include "utils/objects.h"
 
 void
-plugin_preset_identifier_init (
-  PluginPresetIdentifier * id)
+plugin_preset_identifier_init (PluginPresetIdentifier * id)
 {
-  id->schema_version =
-    PLUGIN_PRESET_IDENTIFIER_SCHEMA_VERSION;
+  id->schema_version = PLUGIN_PRESET_IDENTIFIER_SCHEMA_VERSION;
 }
 
 PluginBank *

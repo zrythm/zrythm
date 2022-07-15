@@ -50,15 +50,13 @@ ProjectProgressDialogWidget *
 project_progress_dialog_widget_new (
   ProjectSaveData * project_save_data)
 {
-  g_type_ensure (
-    GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
+  g_type_ensure (GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
 
-  ProjectProgressDialogWidget * self = g_object_new (
-    PROJECT_PROGRESS_DIALOG_WIDGET_TYPE, NULL);
+  ProjectProgressDialogWidget * self =
+    g_object_new (PROJECT_PROGRESS_DIALOG_WIDGET_TYPE, NULL);
 
-  GenericProgressDialogWidget *
-    generic_progress_dialog =
-      Z_GENERIC_PROGRESS_DIALOG_WIDGET (self);
+  GenericProgressDialogWidget * generic_progress_dialog =
+    Z_GENERIC_PROGRESS_DIALOG_WIDGET (self);
 
   strcpy (
     project_save_data->progress_info.label_str,
@@ -69,8 +67,8 @@ project_progress_dialog_widget_new (
 
   generic_progress_dialog_widget_setup (
     generic_progress_dialog, _ ("Project Progress"),
-    &project_save_data->progress_info,
-    F_AUTO_CLOSE, F_NOT_CANCELABLE);
+    &project_save_data->progress_info, F_AUTO_CLOSE,
+    F_NOT_CANCELABLE);
 
   return self;
 }
@@ -85,6 +83,5 @@ static void
 project_progress_dialog_widget_init (
   ProjectProgressDialogWidget * self)
 {
-  g_type_ensure (
-    GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
+  g_type_ensure (GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
 }

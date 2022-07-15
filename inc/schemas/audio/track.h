@@ -61,70 +61,67 @@ static const cyaml_strval_t track_type_strings_v1[] = {
 
 typedef struct Track_v1
 {
-  int               schema_version;
-  int               pos;
-  TrackType_v1      type;
-  char *            name;
-  char *            icon_name;
-  bool              automation_visible;
-  bool              lanes_visible;
-  bool              visible;
-  double            main_height;
-  Port_v1 *         recording;
-  bool              active;
-  GdkRGBA           color;
-  TrackLane_v1 **   lanes;
-  int               num_lanes;
-  size_t            lanes_size;
-  uint8_t           midi_ch;
-  int               passthrough_midi_input;
-  ZRegion_v1 *      recording_region;
-  bool              recording_start_sent;
-  bool              recording_stop_sent;
-  bool              recording_paused;
-  int               last_lane_idx;
-  ZRegion_v1 **     chord_regions;
-  int               num_chord_regions;
-  size_t            chord_regions_size;
-  ScaleObject_v1 ** scales;
-  int               num_scales;
-  size_t            scales_size;
-  Marker_v1 **      markers;
-  int               num_markers;
-  size_t            markers_size;
-  Port_v1 *         bpm_port;
-  Port_v1 *         time_sig_port;
-  Plugin_v1 **      modulators;
-  int               num_modulators;
-  size_t            modulators_size;
+  int                          schema_version;
+  int                          pos;
+  TrackType_v1                 type;
+  char *                       name;
+  char *                       icon_name;
+  bool                         automation_visible;
+  bool                         lanes_visible;
+  bool                         visible;
+  double                       main_height;
+  Port_v1 *                    recording;
+  bool                         active;
+  GdkRGBA                      color;
+  TrackLane_v1 **              lanes;
+  int                          num_lanes;
+  size_t                       lanes_size;
+  uint8_t                      midi_ch;
+  int                          passthrough_midi_input;
+  ZRegion_v1 *                 recording_region;
+  bool                         recording_start_sent;
+  bool                         recording_stop_sent;
+  bool                         recording_paused;
+  int                          last_lane_idx;
+  ZRegion_v1 **                chord_regions;
+  int                          num_chord_regions;
+  size_t                       chord_regions_size;
+  ScaleObject_v1 **            scales;
+  int                          num_scales;
+  size_t                       scales_size;
+  Marker_v1 **                 markers;
+  int                          num_markers;
+  size_t                       markers_size;
+  Port_v1 *                    bpm_port;
+  Port_v1 *                    time_sig_port;
+  Plugin_v1 **                 modulators;
+  int                          num_modulators;
+  size_t                       modulators_size;
   ModulatorMacroProcessor_v1 * modulator_macros[128];
-  int                 num_modulator_macros;
-  int                 num_visible_modulator_macros;
-  Channel_v1 *        channel;
-  TrackProcessor_v1 * processor;
-  AutomationTracklist_v1 automation_tracklist;
-  bool                   trigger_midi_activity;
-  PortType_v1            in_signal_type;
-  PortType_v1            out_signal_type;
-  char *                 comment;
-  bool                   bounce;
-  int *                  children;
-  int                    num_children;
-  size_t                 children_size;
-  bool                   frozen;
-  int                    pool_id;
-  int                    magic;
-  bool                   is_project;
+  int                          num_modulator_macros;
+  int                          num_visible_modulator_macros;
+  Channel_v1 *                 channel;
+  TrackProcessor_v1 *          processor;
+  AutomationTracklist_v1       automation_tracklist;
+  bool                         trigger_midi_activity;
+  PortType_v1                  in_signal_type;
+  PortType_v1                  out_signal_type;
+  char *                       comment;
+  bool                         bounce;
+  int *                        children;
+  int                          num_children;
+  size_t                       children_size;
+  bool                         frozen;
+  int                          pool_id;
+  int                          magic;
+  bool                         is_project;
 } Track_v1;
 
 static const cyaml_schema_field_t track_fields_schema_v1[] = {
   YAML_FIELD_INT (Track_v1, schema_version),
   YAML_FIELD_STRING_PTR (Track_v1, name),
   YAML_FIELD_STRING_PTR (Track_v1, icon_name),
-  YAML_FIELD_ENUM (
-    Track_v1,
-    type,
-    track_type_strings_v1),
+  YAML_FIELD_ENUM (Track_v1, type, track_type_strings_v1),
   YAML_FIELD_INT (Track_v1, pos),
   YAML_FIELD_INT (Track_v1, lanes_visible),
   YAML_FIELD_INT (Track_v1, automation_visible),
@@ -176,9 +173,7 @@ static const cyaml_schema_field_t track_fields_schema_v1[] = {
     Track_v1,
     modulator_macros,
     modulator_macro_processor_schema_v1),
-  YAML_FIELD_INT (
-    Track_v1,
-    num_visible_modulator_macros),
+  YAML_FIELD_INT (Track_v1, num_visible_modulator_macros),
   YAML_FIELD_MAPPING_PTR (
     Track_v1,
     processor,

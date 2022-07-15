@@ -32,15 +32,13 @@ slider_bar_draw_cb (
   int              height,
   gpointer         user_data)
 {
-  SliderBarWidget * self =
-    Z_SLIDER_BAR_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (self);
+  SliderBarWidget * self = Z_SLIDER_BAR_WIDGET (user_data);
+  GtkWidget *       widget = GTK_WIDGET (self);
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
+  gtk_render_background (context, cr, 0, 0, width, height);
 
   cairo_set_source_rgba (cr, 1.0, 0.3, 0.3, 1.0);
   cairo_rectangle (cr, 0, 0, width, height);
@@ -86,8 +84,7 @@ _slider_bar_widget_new (
     GTK_WIDGET (self), width, height);
 
   gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self), slider_bar_draw_cb,
-    self, NULL);
+    GTK_DRAWING_AREA (self), slider_bar_draw_cb, self, NULL);
 
   return self;
 }
@@ -95,19 +92,14 @@ _slider_bar_widget_new (
 static void
 slider_bar_widget_init (SliderBarWidget * self)
 {
-  self->drag =
-    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->drag));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 }
 
 static void
-slider_bar_widget_class_init (
-  SliderBarWidgetClass * _klass)
+slider_bar_widget_class_init (SliderBarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "slider-bar");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass, "slider-bar");
 }

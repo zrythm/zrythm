@@ -76,33 +76,29 @@ typedef struct MidiMapping
   WrappedObjectWithChangeSignal * gobj;
 } MidiMapping;
 
-static const cyaml_schema_field_t
-  midi_mapping_fields_schema[] = {
-    YAML_FIELD_INT (MidiMapping, schema_version),
-    YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-      MidiMapping,
-      key,
-      uint8_t_schema,
-      3),
-    YAML_FIELD_MAPPING_PTR_OPTIONAL (
-      MidiMapping,
-      device_port,
-      ext_port_fields_schema),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      MidiMapping,
-      dest_id,
-      port_identifier_fields_schema),
-    YAML_FIELD_INT (MidiMapping, enabled),
+static const cyaml_schema_field_t midi_mapping_fields_schema[] = {
+  YAML_FIELD_INT (MidiMapping, schema_version),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
+    MidiMapping,
+    key,
+    uint8_t_schema,
+    3),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    MidiMapping,
+    device_port,
+    ext_port_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    MidiMapping,
+    dest_id,
+    port_identifier_fields_schema),
+  YAML_FIELD_INT (MidiMapping, enabled),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  midi_mapping_schema = {
-    YAML_VALUE_PTR (
-      MidiMapping,
-      midi_mapping_fields_schema),
-  };
+static const cyaml_schema_value_t midi_mapping_schema = {
+  YAML_VALUE_PTR (MidiMapping, midi_mapping_fields_schema),
+};
 
 #if 0
 static const cyaml_schema_value_t
@@ -125,23 +121,19 @@ typedef struct MidiMappings
   int            num_mappings;
 } MidiMappings;
 
-static const cyaml_schema_field_t
-  midi_mappings_fields_schema[] = {
-    YAML_FIELD_INT (MidiMappings, schema_version),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      MidiMappings,
-      mappings,
-      midi_mapping_schema),
+static const cyaml_schema_field_t midi_mappings_fields_schema[] = {
+  YAML_FIELD_INT (MidiMappings, schema_version),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    MidiMappings,
+    mappings,
+    midi_mapping_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  midi_mappings_schema = {
-    YAML_VALUE_PTR (
-      MidiMappings,
-      midi_mappings_fields_schema),
-  };
+static const cyaml_schema_value_t midi_mappings_schema = {
+  YAML_VALUE_PTR (MidiMappings, midi_mappings_fields_schema),
+};
 
 /**
  * Initializes the MidiMappings after a Project
@@ -159,14 +151,14 @@ midi_mappings_new (void);
 #define midi_mappings_bind_device( \
   self, buf, dev_port, dest_port, fire_events) \
   midi_mappings_bind_at ( \
-    self, buf, dev_port, dest_port, \
-    (self)->num_mappings, fire_events)
+    self, buf, dev_port, dest_port, (self)->num_mappings, \
+    fire_events)
 
 #define midi_mappings_bind_track( \
   self, buf, dest_port, fire_events) \
   midi_mappings_bind_at ( \
-    self, buf, NULL, dest_port, \
-    (self)->num_mappings, fire_events)
+    self, buf, NULL, dest_port, (self)->num_mappings, \
+    fire_events)
 
 /**
  * Binds the CC represented by the given raw buffer
@@ -202,9 +194,7 @@ MidiMapping *
 midi_mapping_new (void);
 
 void
-midi_mapping_set_enabled (
-  MidiMapping * self,
-  bool          enabled);
+midi_mapping_set_enabled (MidiMapping * self, bool enabled);
 
 int
 midi_mapping_get_index (
@@ -236,9 +226,7 @@ midi_mappings_apply_from_cc_events (
  * Applies the given buffer to the matching ports.
  */
 void
-midi_mappings_apply (
-  MidiMappings * self,
-  midi_byte_t *  buf);
+midi_mappings_apply (MidiMappings * self, midi_byte_t * buf);
 
 /**
  * Get MIDI mappings for the given port.

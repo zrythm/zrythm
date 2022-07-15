@@ -43,15 +43,13 @@ on_highlighting_changed (
 static void
 setup_funcs_btn (AdwSplitButton * split_btn)
 {
-  adw_split_button_set_icon_name (
-    split_btn, "code-context");
+  adw_split_button_set_icon_name (split_btn, "code-context");
   gtk_actionable_set_detailed_action_name (
     GTK_ACTIONABLE (split_btn),
     "app.editor-function::current");
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (split_btn), _ ("Apply function"));
-  gtk_widget_add_css_class (
-    GTK_WIDGET (split_btn), "raised");
+  gtk_widget_add_css_class (GTK_WIDGET (split_btn), "raised");
 }
 
 /**
@@ -60,8 +58,7 @@ setup_funcs_btn (AdwSplitButton * split_btn)
 static void
 update_audio_funcs_menu (EditorToolbarWidget * self)
 {
-  self->audio_functions_menu =
-    G_MENU_MODEL (g_menu_new ());
+  self->audio_functions_menu = G_MENU_MODEL (g_menu_new ());
   for (int i = AUDIO_FUNCTION_INVERT;
        i < AUDIO_FUNCTION_CUSTOM_PLUGIN; i++)
     {
@@ -75,14 +72,12 @@ update_audio_funcs_menu (EditorToolbarWidget * self)
         audio_function_get_detailed_action_for_type (
           i, "editor-toolbar.editor-function");
       GMenuItem * item = g_menu_item_new (
-        audio_function_type_to_string (i),
-        detailed_action);
+        audio_function_type_to_string (i), detailed_action);
       g_free (detailed_action);
       const char * icon_name =
         audio_function_get_icon_name_for_type (i);
       g_menu_item_set_attribute (
-        item, G_MENU_ATTRIBUTE_ICON, "s",
-        icon_name, NULL);
+        item, G_MENU_ATTRIBUTE_ICON, "s", icon_name, NULL);
       g_menu_append_item (
         G_MENU (self->audio_functions_menu), item);
     }
@@ -135,25 +130,21 @@ update_audio_funcs_menu (EditorToolbarWidget * self)
     _("Plugin Effect"), G_MENU_MODEL (plugins_menu));
 #endif
 
-  g_menu_freeze (
-    G_MENU (self->audio_functions_menu));
+  g_menu_freeze (G_MENU (self->audio_functions_menu));
 
   adw_split_button_set_menu_model (
-    self->audio_functions_btn,
-    self->audio_functions_menu);
+    self->audio_functions_btn, self->audio_functions_menu);
 }
 
 static void
 update_midi_funcs_menu (EditorToolbarWidget * self)
 {
   adw_split_button_set_menu_model (
-    self->midi_functions_btn,
-    self->midi_functions_menu);
+    self->midi_functions_btn, self->midi_functions_menu);
 }
 
 static void
-update_automation_funcs_menu (
-  EditorToolbarWidget * self)
+update_automation_funcs_menu (EditorToolbarWidget * self)
 {
   adw_split_button_set_menu_model (
     self->automation_functions_btn,
@@ -164,11 +155,9 @@ update_automation_funcs_menu (
  * Refreshes relevant widgets.
  */
 void
-editor_toolbar_widget_refresh (
-  EditorToolbarWidget * self)
+editor_toolbar_widget_refresh (EditorToolbarWidget * self)
 {
-  ZRegion * region =
-    clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
   if (!region)
     {
       return;
@@ -178,8 +167,7 @@ editor_toolbar_widget_refresh (
   gtk_widget_set_visible (
     GTK_WIDGET (self->chord_highlight_box), false);
   gtk_widget_set_visible (
-    GTK_WIDGET (self->sep_after_chord_highlight),
-    false);
+    GTK_WIDGET (self->sep_after_chord_highlight), false);
 
   switch (region->id.type)
     {
@@ -187,8 +175,8 @@ editor_toolbar_widget_refresh (
       {
         gtk_stack_set_visible_child_name (
           self->functions_btn_stack, "midi-page");
-        MidiFunctionType type = g_settings_get_int (
-          S_UI, "midi-function");
+        MidiFunctionType type =
+          g_settings_get_int (S_UI, "midi-function");
         char * str = g_strdup_printf (
           _ ("Apply %s"),
           _ (midi_function_type_to_string (type)));
@@ -198,42 +186,33 @@ editor_toolbar_widget_refresh (
         adw_split_button_set_label (
           self->midi_functions_btn, str);
         gtk_widget_set_tooltip_text (
-          GTK_WIDGET (self->midi_functions_btn),
-          tooltip_str);
+          GTK_WIDGET (self->midi_functions_btn), tooltip_str);
         g_free (str);
         g_free (tooltip_str);
 
         /* set visibility of each tool item */
         gtk_widget_set_visible (
-          GTK_WIDGET (self->chord_highlight_box),
-          true);
+          GTK_WIDGET (self->chord_highlight_box), true);
         gtk_widget_set_visible (
-          GTK_WIDGET (
-            self->sep_after_chord_highlight),
-          true);
+          GTK_WIDGET (self->sep_after_chord_highlight), true);
       }
       break;
     case REGION_TYPE_AUTOMATION:
       {
         gtk_stack_set_visible_child_name (
-          self->functions_btn_stack,
-          "automation-page");
+          self->functions_btn_stack, "automation-page");
         AutomationFunctionType type =
-          g_settings_get_int (
-            S_UI, "automation-function");
+          g_settings_get_int (S_UI, "automation-function");
         char * str = g_strdup_printf (
           _ ("Apply %s"),
-          _ (automation_function_type_to_string (
-            type)));
+          _ (automation_function_type_to_string (type)));
         char * tooltip_str = g_strdup_printf (
           _ ("Apply %s with previous settings"),
-          _ (automation_function_type_to_string (
-            type)));
+          _ (automation_function_type_to_string (type)));
         adw_split_button_set_label (
           self->automation_functions_btn, str);
         gtk_widget_set_tooltip_text (
-          GTK_WIDGET (
-            self->automation_functions_btn),
+          GTK_WIDGET (self->automation_functions_btn),
           tooltip_str);
         g_free (str);
         g_free (tooltip_str);
@@ -243,8 +222,8 @@ editor_toolbar_widget_refresh (
       {
         gtk_stack_set_visible_child_name (
           self->functions_btn_stack, "audio-page");
-        AudioFunctionType type = g_settings_get_int (
-          S_UI, "audio-function");
+        AudioFunctionType type =
+          g_settings_get_int (S_UI, "audio-function");
         char * str = g_strdup_printf (
           _ ("Apply %s"),
           _ (audio_function_type_to_string (type)));
@@ -254,8 +233,7 @@ editor_toolbar_widget_refresh (
         adw_split_button_set_label (
           self->audio_functions_btn, str);
         gtk_widget_set_tooltip_text (
-          GTK_WIDGET (self->audio_functions_btn),
-          tooltip_str);
+          GTK_WIDGET (self->audio_functions_btn), tooltip_str);
         g_free (str);
         g_free (tooltip_str);
       }
@@ -276,12 +254,10 @@ typedef enum HighlightColumns
 } HighlightColumns;
 
 void
-editor_toolbar_widget_setup (
-  EditorToolbarWidget * self)
+editor_toolbar_widget_setup (EditorToolbarWidget * self)
 {
   /* setup bot toolbar */
-  snap_box_widget_setup (
-    self->snap_box, SNAP_GRID_EDITOR);
+  snap_box_widget_setup (self->snap_box, SNAP_GRID_EDITOR);
   quantize_box_widget_setup (
     self->quantize_box, QUANTIZE_OPTIONS_EDITOR);
 
@@ -307,23 +283,19 @@ editor_toolbar_widget_setup (
     _ ("Highlight Both"), 2, "both", -1);
   GtkComboBox * combo =
     GTK_COMBO_BOX (self->chord_highlighting);
-  gtk_combo_box_set_model (
-    combo, GTK_TREE_MODEL (list_store));
-  gtk_combo_box_set_active (
-    combo, PIANO_ROLL->highlighting);
-  GtkCellRenderer * cell =
-    gtk_cell_renderer_pixbuf_new ();
+  gtk_combo_box_set_model (combo, GTK_TREE_MODEL (list_store));
+  gtk_combo_box_set_active (combo, PIANO_ROLL->highlighting);
+  GtkCellRenderer * cell = gtk_cell_renderer_pixbuf_new ();
   gtk_cell_layout_pack_start (
     GTK_CELL_LAYOUT (combo), cell, TRUE);
   gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (combo), cell, "icon-name",
-    ICON_NAME_COL, NULL);
+    GTK_CELL_LAYOUT (combo), cell, "icon-name", ICON_NAME_COL,
+    NULL);
   cell = gtk_cell_renderer_text_new ();
   gtk_cell_layout_pack_start (
     GTK_CELL_LAYOUT (combo), cell, TRUE);
   gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (combo), cell, "text",
-    LABEL_COL, NULL);
+    GTK_CELL_LAYOUT (combo), cell, "text", LABEL_COL, NULL);
 
   /* setup signals */
   g_signal_connect (
@@ -338,17 +310,14 @@ dispose (EditorToolbarWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->scroll));
 
-  G_OBJECT_CLASS (
-    editor_toolbar_widget_parent_class)
+  G_OBJECT_CLASS (editor_toolbar_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
 
 static void
-editor_toolbar_widget_init (
-  EditorToolbarWidget * self)
+editor_toolbar_widget_init (EditorToolbarWidget * self)
 {
-  g_type_ensure (
-    PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE);
+  g_type_ensure (PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE);
   g_type_ensure (SNAP_BOX_WIDGET_TYPE);
   g_type_ensure (VELOCITY_SETTINGS_WIDGET_TYPE);
   g_type_ensure (ZOOM_BUTTONS_WIDGET_TYPE);
@@ -363,8 +332,7 @@ editor_toolbar_widget_init (
   GSimpleActionGroup * action_group =
     g_simple_action_group_new ();
   const GActionEntry entries[] = {
-    {"editor-function",
-     activate_app_action_wrapper, "s"},
+    {"editor-function", activate_app_action_wrapper, "s"},
   };
   g_action_map_add_action_entries (
     G_ACTION_MAP (action_group), entries,
@@ -374,8 +342,7 @@ editor_toolbar_widget_init (
     G_ACTION_GROUP (action_group));
 
   gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (
-      self->playhead_scroll->scroll_edges),
+    GTK_ACTIONABLE (self->playhead_scroll->scroll_edges),
     "app.editor-playhead-scroll-edges");
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->playhead_scroll->follow),
@@ -399,21 +366,17 @@ editor_toolbar_widget_init (
   gtk_menu_button_set_use_popover (menu_btn, false);
 #endif
 
-  zoom_buttons_widget_setup (
-    self->zoom_buttons, false);
+  zoom_buttons_widget_setup (self->zoom_buttons, false);
 }
 
 static void
 editor_toolbar_widget_class_init (
   EditorToolbarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "editor_toolbar.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "editor_toolbar.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "editor-toolbar");
+  gtk_widget_class_set_css_name (klass, "editor-toolbar");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

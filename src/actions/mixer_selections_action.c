@@ -29,7 +29,8 @@ typedef enum
 GQuark
 z_actions_mixer_selections_error_quark (void);
 G_DEFINE_QUARK (
-  z-actions-mixer-selections-error-quark, z_actions_mixer_selections_error)
+  z - actions - mixer - selections - error - quark,
+  z_actions_mixer_selections_error)
 
 void
 mixer_selections_action_init_loaded (
@@ -37,19 +38,16 @@ mixer_selections_action_init_loaded (
 {
   if (self->ms_before)
     {
-      mixer_selections_init_loaded (
-        self->ms_before, false);
+      mixer_selections_init_loaded (self->ms_before, false);
     }
   if (self->deleted_ms)
     {
-      mixer_selections_init_loaded (
-        self->deleted_ms, false);
+      mixer_selections_init_loaded (self->deleted_ms, false);
     }
 
   for (int i = 0; i < self->num_ats; i++)
     {
-      automation_track_init_loaded (
-        self->ats[i], NULL);
+      automation_track_init_loaded (self->ats[i], NULL);
     }
   for (int i = 0; i < self->num_deleted_ats; i++)
     {
@@ -75,8 +73,7 @@ clone_ats (
   Track * track = tracklist_find_track_by_name_hash (
     TRACKLIST, ms->track_name_hash);
   g_message (
-    "cloning automation tracks for track %s",
-    track->name);
+    "cloning automation tracks for track %s", track->name);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   int count = 0;
@@ -88,17 +85,14 @@ clone_ats (
         {
           AutomationTrack * at = atl->ats[i];
           if (
-            at->port_id.owner_type
-              != PORT_OWNER_TYPE_PLUGIN
+            at->port_id.owner_type != PORT_OWNER_TYPE_PLUGIN
             || at->port_id.plugin_id.slot != slot
-            || at->port_id.plugin_id.slot_type
-                 != ms->type)
+            || at->port_id.plugin_id.slot_type != ms->type)
             continue;
 
           if (deleted)
             {
-              self->deleted_ats
-                [self->num_deleted_ats++] =
+              self->deleted_ats[self->num_deleted_ats++] =
                 automation_track_clone (at);
             }
           else
@@ -136,11 +130,11 @@ mixer_selections_action_new (
   const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType      type,
   PluginSlotType                 slot_type,
-  unsigned int    to_track_name_hash,
-  int             to_slot,
-  PluginSetting * setting,
-  int             num_plugins,
-  GError **       error)
+  unsigned int                   to_track_name_hash,
+  int                            to_slot,
+  PluginSetting *                setting,
+  int                            num_plugins,
+  GError **                      error)
 {
   MixerSelectionsAction * self =
     object_new (MixerSelectionsAction);
@@ -157,15 +151,14 @@ mixer_selections_action_new (
     }
   if (setting)
     {
-      self->setting =
-        plugin_setting_clone (setting, true);
+      self->setting = plugin_setting_clone (setting, true);
     }
   self->num_plugins = num_plugins;
 
   if (ms)
     {
-      self->ms_before = mixer_selections_clone (
-        ms, ms == MIXER_SELECTIONS);
+      self->ms_before =
+        mixer_selections_clone (ms, ms == MIXER_SELECTIONS);
       if (!self->ms_before)
         {
           g_set_error_literal (
@@ -183,8 +176,7 @@ mixer_selections_action_new (
 
   if (connections_mgr)
     self->connections_mgr_before =
-      port_connections_manager_clone (
-        connections_mgr);
+      port_connections_manager_clone (connections_mgr);
 
   return ua;
 }
@@ -200,31 +192,28 @@ mixer_selections_action_clone (
   self->type = src->type;
   self->slot_type = src->slot_type;
   self->to_slot = src->to_slot;
-  self->to_track_name_hash =
-    src->to_track_name_hash;
+  self->to_track_name_hash = src->to_track_name_hash;
   self->new_channel = src->new_channel;
   self->num_plugins = src->num_plugins;
   if (src->setting)
-    self->setting =
-      plugin_setting_clone (src->setting, false);
+    self->setting = plugin_setting_clone (src->setting, false);
   if (src->ms_before)
-    self->ms_before = mixer_selections_clone (
-      src->ms_before, F_NOT_PROJECT);
+    self->ms_before =
+      mixer_selections_clone (src->ms_before, F_NOT_PROJECT);
   if (src->deleted_ms)
-    self->deleted_ms = mixer_selections_clone (
-      src->deleted_ms, F_NOT_PROJECT);
+    self->deleted_ms =
+      mixer_selections_clone (src->deleted_ms, F_NOT_PROJECT);
 
   for (int i = 0; i < src->num_ats; i++)
     {
-      self->ats[i] =
-        automation_track_clone (src->ats[i]);
+      self->ats[i] = automation_track_clone (src->ats[i]);
     }
   self->num_ats = src->num_ats;
 
   for (int i = 0; i < src->num_deleted_ats; i++)
     {
-      self->deleted_ats[i] = automation_track_clone (
-        src->deleted_ats[i]);
+      self->deleted_ats[i] =
+        automation_track_clone (src->deleted_ats[i]);
     }
   self->num_deleted_ats = src->num_deleted_ats;
 
@@ -246,38 +235,32 @@ mixer_selections_action_perform (
   const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType      type,
   PluginSlotType                 slot_type,
-  unsigned int    to_track_name_hash,
-  int             to_slot,
-  PluginSetting * setting,
-  int             num_plugins,
-  GError **       error)
+  unsigned int                   to_track_name_hash,
+  int                            to_slot,
+  PluginSetting *                setting,
+  int                            num_plugins,
+  GError **                      error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    mixer_selections_action_new, error, ms,
-    connections_mgr, type, slot_type,
-    to_track_name_hash, to_slot, setting,
+    mixer_selections_action_new, error, ms, connections_mgr,
+    type, slot_type, to_track_name_hash, to_slot, setting,
     num_plugins, error);
 }
 
 static void
-copy_at_regions (
-  AutomationTrack * dest,
-  AutomationTrack * src)
+copy_at_regions (AutomationTrack * dest, AutomationTrack * src)
 {
   dest->regions_size = (size_t) src->num_regions;
   dest->num_regions = src->num_regions;
   dest->regions = g_realloc (
-    dest->regions,
-    dest->regions_size * sizeof (ZRegion *));
+    dest->regions, dest->regions_size * sizeof (ZRegion *));
 
   for (int j = 0; j < src->num_regions; j++)
     {
       ZRegion * src_region = src->regions[j];
-      dest->regions[j] =
-        (ZRegion *) arranger_object_clone (
-          (ArrangerObject *) src_region);
-      region_set_automation_track (
-        dest->regions[j], dest);
+      dest->regions[j] = (ZRegion *) arranger_object_clone (
+        (ArrangerObject *) src_region);
+      region_set_automation_track (dest->regions[j], dest);
     }
 
   if (dest->num_regions > 0)
@@ -304,8 +287,7 @@ revert_automation (
   bool                    deleted)
 {
   g_message (
-    "reverting automation for %s#%d", track->name,
-    slot);
+    "reverting automation for %s#%d", track->name, slot);
 
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
@@ -321,8 +303,7 @@ revert_automation (
 
       if (
         cloned_at->port_id.plugin_id.slot != slot
-        || cloned_at->port_id.plugin_id.slot_type
-             != ms->type)
+        || cloned_at->port_id.plugin_id.slot_type != ms->type)
         {
           continue;
         }
@@ -332,13 +313,11 @@ revert_automation (
        * regions */
       AutomationTrack * actual_at =
         automation_tracklist_get_plugin_at (
-          atl, ms->type, slot,
-          cloned_at->port_id.port_index,
+          atl, ms->type, slot, cloned_at->port_id.port_index,
           cloned_at->port_id.sym);
 
       copy_at_regions (actual_at, cloned_at);
-      num_reverted_regions +=
-        actual_at->num_regions;
+      num_reverted_regions += actual_at->num_regions;
       num_reverted_ats++;
     }
 
@@ -348,21 +327,17 @@ revert_automation (
 }
 
 static void
-reset_port_connections (
-  MixerSelectionsAction * self,
-  bool                    _do)
+reset_port_connections (MixerSelectionsAction * self, bool _do)
 {
   if (_do && self->connections_mgr_after)
     {
       port_connections_manager_reset (
-        PORT_CONNECTIONS_MGR,
-        self->connections_mgr_after);
+        PORT_CONNECTIONS_MGR, self->connections_mgr_after);
     }
   else if (!_do && self->connections_mgr_before)
     {
       port_connections_manager_reset (
-        PORT_CONNECTIONS_MGR,
-        self->connections_mgr_before);
+        PORT_CONNECTIONS_MGR, self->connections_mgr_before);
     }
 }
 
@@ -381,27 +356,22 @@ save_existing_plugin (
   PluginSlotType          to_slot_type,
   int                     to_slot)
 {
-  Plugin * existing_pl = track_get_plugin_at_slot (
-    to_tr, to_slot_type, to_slot);
+  Plugin * existing_pl =
+    track_get_plugin_at_slot (to_tr, to_slot_type, to_slot);
   g_debug (
     "existing plugin at (%s:%s:%d => %s:%s:%d): %s",
     from_tr ? from_tr->name : "(none)",
-    plugin_slot_type_to_string (from_slot_type),
-    from_slot, to_tr ? to_tr->name : "(none)",
-    plugin_slot_type_to_string (to_slot_type),
-    to_slot,
-    existing_pl
-      ? existing_pl->setting->descr->name
-      : "(none)");
+    plugin_slot_type_to_string (from_slot_type), from_slot,
+    to_tr ? to_tr->name : "(none)",
+    plugin_slot_type_to_string (to_slot_type), to_slot,
+    existing_pl ? existing_pl->setting->descr->name : "(none)");
   if (
     existing_pl
     && (from_tr != to_tr || from_slot_type != to_slot_type || from_slot != to_slot))
     {
       mixer_selections_add_slot (
-        tmp_ms, to_tr, to_slot_type, to_slot,
-        F_CLONE);
-      clone_ats (
-        self, tmp_ms, true, tmp_ms->num_slots - 1);
+        tmp_ms, to_tr, to_slot_type, to_slot, F_CLONE);
+      clone_ats (self, tmp_ms, true, tmp_ms->num_slots - 1);
     }
   else
     {
@@ -424,14 +394,13 @@ revert_deleted_plugin (
   if (!self->deleted_ms)
     {
       g_debug (
-        "No deleted plugin to revert at %s#%d",
-        to_tr->name, to_slot);
+        "No deleted plugin to revert at %s#%d", to_tr->name,
+        to_slot);
       return 0;
     }
 
   g_message (
-    "reverting deleted plugin at %s#%d",
-    to_tr->name, to_slot);
+    "reverting deleted plugin at %s#%d", to_tr->name, to_slot);
 
   if (self->deleted_ms->type == PLUGIN_SLOT_MODULATOR)
     {
@@ -439,60 +408,49 @@ revert_deleted_plugin (
       return 0;
     }
 
-  for (int j = 0; j < self->deleted_ms->num_slots;
-       j++)
+  for (int j = 0; j < self->deleted_ms->num_slots; j++)
     {
-      int slot_to_revert =
-        self->deleted_ms->slots[j];
+      int slot_to_revert = self->deleted_ms->slots[j];
       if (slot_to_revert != to_slot)
         {
           continue;
         }
 
-      Plugin * deleted_pl =
-        self->deleted_ms->plugins[j];
+      Plugin * deleted_pl = self->deleted_ms->plugins[j];
       g_message (
         "reverting plugin %s in slot %d",
-        deleted_pl->setting->descr->name,
-        slot_to_revert);
+        deleted_pl->setting->descr->name, slot_to_revert);
 
       /* note: this also instantiates the
        * plugin */
       GError * err = NULL;
-      Plugin * new_pl =
-        plugin_clone (deleted_pl, &err);
+      Plugin * new_pl = plugin_clone (deleted_pl, &err);
       if (!new_pl)
         {
           PROPAGATE_PREFIXED_ERROR (
-            error, err, "%s",
-            _ ("Failed to clone plugin"));
+            error, err, "%s", _ ("Failed to clone plugin"));
           return -1;
         }
 
       /* add to channel */
       track_insert_plugin (
-        to_tr, new_pl, self->deleted_ms->type,
-        slot_to_revert, Z_F_INSTANTIATE,
-        F_REPLACING, F_NOT_MOVING_PLUGIN,
-        F_NO_CONFIRM, F_GEN_AUTOMATABLES,
-        F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
+        to_tr, new_pl, self->deleted_ms->type, slot_to_revert,
+        Z_F_INSTANTIATE, F_REPLACING, F_NOT_MOVING_PLUGIN,
+        F_NO_CONFIRM, F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
+        F_NO_PUBLISH_EVENTS);
 
       /* bring back automation */
       revert_automation (
-        self, to_tr, self->deleted_ms,
-        slot_to_revert, true);
+        self, to_tr, self->deleted_ms, slot_to_revert, true);
 
       /* activate and set visibility */
       plugin_activate (new_pl, F_ACTIVATE);
 
       /* show if was visible before */
-      if (
-        ZRYTHM_HAVE_UI
-        && self->deleted_ms->plugins[j]->visible)
+      if (ZRYTHM_HAVE_UI && self->deleted_ms->plugins[j]->visible)
         {
           new_pl->visible = true;
-          EVENTS_PUSH (
-            ET_PLUGIN_VISIBILITY_CHANGED, new_pl);
+          EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED, new_pl);
         }
     }
 
@@ -529,11 +487,9 @@ do_or_undo_create_or_delete (
   if ((create && _do) || (delete &&!_do))
     {
       /* clear deleted caches */
-      for (int j = self->num_deleted_ats - 1;
-           j >= 0; j--)
+      for (int j = self->num_deleted_ats - 1; j >= 0; j--)
         {
-          AutomationTrack * at =
-            self->deleted_ats[j];
+          AutomationTrack * at = self->deleted_ats[j];
           object_free_w_func_and_null (
             automation_track_free, at);
           self->num_deleted_ats--;
@@ -554,32 +510,26 @@ do_or_undo_create_or_delete (
           if (create)
             {
               GError * err = NULL;
-              if (
-                self->type
-                == MIXER_SELECTIONS_ACTION_PASTE)
+              if (self->type == MIXER_SELECTIONS_ACTION_PASTE)
                 {
-                  pl = plugin_clone (
-                    own_ms->plugins[i], &err);
+                  pl = plugin_clone (own_ms->plugins[i], &err);
                 }
               else
                 {
                   pl = plugin_new_from_setting (
-                    self->setting,
-                    self->to_track_name_hash,
+                    self->setting, self->to_track_name_hash,
                     slot_type, slot, &err);
                 }
               if (!IS_PLUGIN_AND_NONNULL (pl))
                 {
                   HANDLE_ERROR (
-                    err, "%s",
-                    _ ("Could not create plugin"));
+                    err, "%s", _ ("Could not create plugin"));
                   return -1;
                 }
 
               /* instantiate so that ports are
                * created */
-              int ret = plugin_instantiate (
-                pl, NULL, &err);
+              int ret = plugin_instantiate (pl, NULL, &err);
               if (ret != 0)
                 {
                   HANDLE_ERROR (
@@ -594,8 +544,7 @@ do_or_undo_create_or_delete (
               /* note: this also instantiates the
                * plugin */
               GError * err = NULL;
-              pl = plugin_clone (
-                own_ms->plugins[i], &err);
+              pl = plugin_clone (own_ms->plugins[i], &err);
               if (!IS_PLUGIN_AND_NONNULL (pl))
                 {
                   if (err)
@@ -625,8 +574,7 @@ do_or_undo_create_or_delete (
 
           /* save any plugin about to be deleted */
           save_existing_plugin (
-            self, self->deleted_ms, NULL,
-            slot_type, -1,
+            self, self->deleted_ms, NULL, slot_type, -1,
             slot_type == PLUGIN_SLOT_MODULATOR
               ? P_MODULATOR_TRACK
               : track,
@@ -634,16 +582,15 @@ do_or_undo_create_or_delete (
 
           /* add to destination */
           track_insert_plugin (
-            track, pl, slot_type, slot,
-            Z_F_INSTANTIATE, F_NOT_REPLACING,
-            F_NOT_MOVING_PLUGIN, F_NO_CONFIRM,
-            F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
-            F_NO_PUBLISH_EVENTS);
+            track, pl, slot_type, slot, Z_F_INSTANTIATE,
+            F_NOT_REPLACING, F_NOT_MOVING_PLUGIN,
+            F_NO_CONFIRM, F_GEN_AUTOMATABLES,
+            F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
           /* select the plugin */
           mixer_selections_add_slot (
-            MIXER_SELECTIONS, track, slot_type,
-            pl->id.slot, F_NO_CLONE);
+            MIXER_SELECTIONS, track, slot_type, pl->id.slot,
+            F_NO_CLONE);
 
           /* set visibility */
           if (create)
@@ -652,23 +599,19 @@ do_or_undo_create_or_delete (
               pl->visible =
                 ZRYTHM_HAVE_UI
                 && g_settings_get_boolean (
-                  S_P_PLUGINS_UIS,
-                  "open-on-instantiate");
+                  S_P_PLUGINS_UIS, "open-on-instantiate");
             }
           else if (delete)
             {
               /* set visible if plugin was visible
                * before deletion */
               pl->visible =
-                ZRYTHM_HAVE_UI
-                && own_ms->plugins[i]->visible;
+                ZRYTHM_HAVE_UI && own_ms->plugins[i]->visible;
             }
-          EVENTS_PUSH (
-            ET_PLUGIN_VISIBILITY_CHANGED, pl);
+          EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED, pl);
 
           /* activate */
-          int ret =
-            plugin_activate (pl, F_ACTIVATE);
+          int ret = plugin_activate (pl, F_ACTIVATE);
           g_return_val_if_fail (!ret, -1);
         }
 
@@ -683,16 +626,13 @@ do_or_undo_create_or_delete (
                 "restoring custom connections "
                 "for plugin '%s'",
                 pl->setting->descr->name);
-              GPtrArray * ports =
-                g_ptr_array_new ();
+              GPtrArray * ports = g_ptr_array_new ();
               plugin_append_ports (pl, ports);
               for (size_t j = 0; j < ports->len; j++)
                 {
-                  Port * port =
-                    g_ptr_array_index (ports, j);
+                  Port * port = g_ptr_array_index (ports, j);
                   Port * prj_port =
-                    port_find_from_identifier (
-                      &port->id);
+                    port_find_from_identifier (&port->id);
                   port_restore_from_non_project (
                     prj_port, port);
                 }
@@ -727,44 +667,36 @@ do_or_undo_create_or_delete (
           if (_do)
             {
               Plugin * own_pl = own_ms->plugins[i];
-              Plugin * prj_pl =
-                track_get_plugin_at_slot (
-                  track, slot_type, slot);
+              Plugin * prj_pl = track_get_plugin_at_slot (
+                track, slot_type, slot);
 
               /* remember any custom connections */
               g_message (
                 "remembering custom connections "
                 "for plugin '%s'",
                 own_pl->setting->descr->name);
-              GPtrArray * ports =
-                g_ptr_array_new ();
+              GPtrArray * ports = g_ptr_array_new ();
               plugin_append_ports (prj_pl, ports);
-              GPtrArray * own_ports =
-                g_ptr_array_new ();
-              plugin_append_ports (
-                own_pl, own_ports);
+              GPtrArray * own_ports = g_ptr_array_new ();
+              plugin_append_ports (own_pl, own_ports);
               for (size_t j = 0; j < ports->len; j++)
                 {
                   Port * prj_port =
                     g_ptr_array_index (ports, j);
 
                   Port * own_port = NULL;
-                  for (size_t k = 0;
-                       k < own_ports->len; k++)
+                  for (size_t k = 0; k < own_ports->len; k++)
                     {
                       Port * cur_own_port =
-                        g_ptr_array_index (
-                          own_ports, k);
+                        g_ptr_array_index (own_ports, k);
                       if (port_identifier_is_equal (
-                            &cur_own_port->id,
-                            &prj_port->id))
+                            &cur_own_port->id, &prj_port->id))
                         {
                           own_port = cur_own_port;
                           break;
                         }
                     }
-                  g_return_val_if_fail (
-                    own_port, -1);
+                  g_return_val_if_fail (own_port, -1);
 
                   port_copy_metadata_from_project (
                     own_port, prj_port);
@@ -777,16 +709,15 @@ do_or_undo_create_or_delete (
 
           /* remove the plugin at given slot */
           track_remove_plugin (
-            track, slot_type, slot,
-            F_NOT_REPLACING, F_NOT_MOVING_PLUGIN,
-            F_DELETING_PLUGIN, F_NOT_DELETING_TRACK,
-            F_NO_RECALC_GRAPH);
+            track, slot_type, slot, F_NOT_REPLACING,
+            F_NOT_MOVING_PLUGIN, F_DELETING_PLUGIN,
+            F_NOT_DELETING_TRACK, F_NO_RECALC_GRAPH);
 
           /* if there was a plugin at the slot
            * before, bring it back */
           GError * err = NULL;
-          int      ret = revert_deleted_plugin (
-                 self, track, slot, &err);
+          int      ret =
+            revert_deleted_plugin (self, track, slot, &err);
           if (ret != 0)
             {
               PROPAGATE_PREFIXED_ERROR (
@@ -829,11 +760,9 @@ copy_automation_from_track1_to_track2 (
       AutomationTrack * prev_at = prev_atl->ats[j];
       if (
         prev_at->num_regions == 0
-        || prev_at->port_id.owner_type
-             != PORT_OWNER_TYPE_PLUGIN
+        || prev_at->port_id.owner_type != PORT_OWNER_TYPE_PLUGIN
         || prev_at->port_id.plugin_id.slot != from_slot
-        || prev_at->port_id.plugin_id.slot_type
-             != slot_type)
+        || prev_at->port_id.plugin_id.slot_type != slot_type)
         {
           continue;
         }
@@ -847,11 +776,9 @@ copy_automation_from_track1_to_track2 (
           AutomationTrack * at = atl->ats[k];
 
           if (
-            at->port_id.owner_type
-              != PORT_OWNER_TYPE_PLUGIN
+            at->port_id.owner_type != PORT_OWNER_TYPE_PLUGIN
             || at->port_id.plugin_id.slot != to_slot
-            || at->port_id.plugin_id.slot_type
-                 != slot_type
+            || at->port_id.plugin_id.slot_type != slot_type
             || at->port_id.port_index
                  != prev_at->port_id.port_index)
             {
@@ -859,11 +786,9 @@ copy_automation_from_track1_to_track2 (
             }
 
           /* copy the automation regions */
-          for (int l = 0; l < prev_at->num_regions;
-               l++)
+          for (int l = 0; l < prev_at->num_regions; l++)
             {
-              ZRegion * prev_region =
-                prev_at->regions[l];
+              ZRegion * prev_region = prev_at->regions[l];
               ZRegion * new_region =
                 (ZRegion *) arranger_object_clone (
                   (ArrangerObject *) prev_region);
@@ -885,8 +810,7 @@ do_or_undo_move_or_copy (
   MixerSelections * own_ms = self->ms_before;
   PluginSlotType    from_slot_type = own_ms->type;
   PluginSlotType    to_slot_type = self->slot_type;
-  Track *           from_tr =
-    mixer_selections_get_track (own_ms);
+  Track * from_tr = mixer_selections_get_track (own_ms);
   g_return_val_if_fail (from_tr, -1);
   bool move = !copy;
 
@@ -901,11 +825,9 @@ do_or_undo_move_or_copy (
 
           /* add the plugin to a new track */
           char * str = g_strdup_printf (
-            "%s (Copy)",
-            own_pl->setting->descr->name);
+            "%s (Copy)", own_pl->setting->descr->name);
           to_tr = track_new (
-            TRACK_TYPE_AUDIO_BUS,
-            TRACKLIST->num_tracks, str,
+            TRACK_TYPE_AUDIO_BUS, TRACKLIST->num_tracks, str,
             F_WITH_LANE);
           g_free (str);
           g_return_val_if_fail (to_tr, -1);
@@ -937,25 +859,20 @@ do_or_undo_move_or_copy (
 
       bool move_downwards_same_track =
         to_tr == from_tr && own_ms->num_slots > 0
-        && self->to_slot
-             > own_ms->plugins[0]->id.slot;
+        && self->to_slot > own_ms->plugins[0]->id.slot;
 #define FOREACH_SLOT \
   for ( \
     int i = \
-      move_downwards_same_track \
-        ? own_ms->num_slots - 1 \
-        : 0; \
+      move_downwards_same_track ? own_ms->num_slots - 1 : 0; \
     move_downwards_same_track \
       ? (i >= 0) \
       : (i < own_ms->num_slots); \
     move_downwards_same_track ? i-- : i++)
 
       /* clear deleted caches */
-      for (int j = self->num_deleted_ats - 1;
-           j >= 0; j--)
+      for (int j = self->num_deleted_ats - 1; j >= 0; j--)
         {
-          AutomationTrack * at =
-            self->deleted_ats[j];
+          AutomationTrack * at = self->deleted_ats[j];
           object_free_w_func_and_null (
             automation_track_free, at);
           self->num_deleted_ats--;
@@ -967,7 +884,7 @@ do_or_undo_move_or_copy (
       FOREACH_SLOT
       {
         /* get/create the actual plugin */
-        int from_slot = own_ms->plugins[i]->id.slot;
+        int      from_slot = own_ms->plugins[i]->id.slot;
         Plugin * pl = NULL;
         if (move)
           {
@@ -982,8 +899,7 @@ do_or_undo_move_or_copy (
         else
           {
             GError * err = NULL;
-            pl = plugin_clone (
-              own_ms->plugins[i], &err);
+            pl = plugin_clone (own_ms->plugins[i], &err);
             if (!IS_PLUGIN_AND_NONNULL (pl))
               {
                 if (err)
@@ -1002,9 +918,8 @@ do_or_undo_move_or_copy (
 
         /* save any plugin about to be deleted */
         save_existing_plugin (
-          self, self->deleted_ms, from_tr,
-          from_slot_type, from_slot, to_tr,
-          to_slot_type, to_slot);
+          self, self->deleted_ms, from_tr, from_slot_type,
+          from_slot, to_tr, to_slot_type, to_slot);
 
         /* move or copy the plugin */
         if (move)
@@ -1013,16 +928,13 @@ do_or_undo_move_or_copy (
               "%s: moving plugin from "
               "%s:%s:%d to %s:%s:%d",
               __func__, from_tr->name,
-              plugin_slot_type_strings[from_slot_type]
-                .str,
+              plugin_slot_type_strings[from_slot_type].str,
               from_slot, to_tr->name,
-              plugin_slot_type_strings[to_slot_type]
-                .str,
+              plugin_slot_type_strings[to_slot_type].str,
               to_slot);
 
             if (
-              from_tr != to_tr
-              || from_slot_type != to_slot_type
+              from_tr != to_tr || from_slot_type != to_slot_type
               || from_slot != to_slot)
               {
                 plugin_move (
@@ -1036,11 +948,9 @@ do_or_undo_move_or_copy (
               "%s: copying plugin from "
               "%s:%s:%d to %s:%s:%d",
               __func__, from_tr->name,
-              plugin_slot_type_strings[from_slot_type]
-                .str,
+              plugin_slot_type_strings[from_slot_type].str,
               from_slot, to_tr->name,
-              plugin_slot_type_strings[to_slot_type]
-                .str,
+              plugin_slot_type_strings[to_slot_type].str,
               to_slot);
 
             track_insert_plugin (
@@ -1061,31 +971,27 @@ do_or_undo_move_or_copy (
         if (copy)
           {
             copy_automation_from_track1_to_track2 (
-              from_tr, to_tr, to_slot_type,
-              own_ms->slots[i], to_slot);
+              from_tr, to_tr, to_slot_type, own_ms->slots[i],
+              to_slot);
           }
 
         /* select it */
         mixer_selections_add_slot (
-          MIXER_SELECTIONS, to_tr, to_slot_type,
-          to_slot, F_NO_CLONE);
+          MIXER_SELECTIONS, to_tr, to_slot_type, to_slot,
+          F_NO_CLONE);
 
         /* if new plugin (copy), instantiate it,
            * activate it and set visibility */
         if (copy)
           {
             g_return_val_if_fail (
-              plugin_activate (pl, F_ACTIVATE) == 0,
-              -1);
+              plugin_activate (pl, F_ACTIVATE) == 0, -1);
 
             /* show if was visible before */
-            if (
-              ZRYTHM_HAVE_UI
-              && own_ms->plugins[i]->visible)
+            if (ZRYTHM_HAVE_UI && own_ms->plugins[i]->visible)
               {
                 pl->visible = true;
-                EVENTS_PUSH (
-                  ET_PLUGIN_VISIBILITY_CHANGED, pl);
+                EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED, pl);
               }
           }
       }
@@ -1104,9 +1010,8 @@ do_or_undo_move_or_copy (
   /* else if undoing (deleting/moving plugins back) */
   else
     {
-      Track * to_tr =
-        tracklist_find_track_by_name_hash (
-          TRACKLIST, self->to_track_name_hash);
+      Track * to_tr = tracklist_find_track_by_name_hash (
+        TRACKLIST, self->to_track_name_hash);
       Channel * to_ch = to_tr->channel;
       g_return_val_if_fail (IS_TRACK (to_tr), -1);
 
@@ -1120,13 +1025,10 @@ do_or_undo_move_or_copy (
 
       bool move_downwards_same_track =
         to_tr == from_tr && own_ms->num_slots > 0
-        && self->to_slot
-             < own_ms->plugins[0]->id.slot;
+        && self->to_slot < own_ms->plugins[0]->id.slot;
       for (
         int i =
-          move_downwards_same_track
-            ? own_ms->num_slots - 1
-            : 0;
+          move_downwards_same_track ? own_ms->num_slots - 1 : 0;
         move_downwards_same_track
           ? (i >= 0)
           : (i < own_ms->num_slots);
@@ -1139,8 +1041,7 @@ do_or_undo_move_or_copy (
           g_return_val_if_fail (IS_PLUGIN (pl), -1);
 
           /* original slot */
-          int from_slot =
-            own_ms->plugins[i]->id.slot;
+          int from_slot = own_ms->plugins[i]->id.slot;
 
           /* if moving plugins back */
           if (move)
@@ -1151,11 +1052,9 @@ do_or_undo_move_or_copy (
                 "%s: moving plugin back from "
                 "%s:%s:%d to %s:%s:%d",
                 __func__, to_tr->name,
-                plugin_slot_type_strings[to_slot_type]
-                  .str,
+                plugin_slot_type_strings[to_slot_type].str,
                 to_slot, from_tr->name,
-                plugin_slot_type_strings[from_slot_type]
-                  .str,
+                plugin_slot_type_strings[from_slot_type].str,
                 from_slot);
 
               if (
@@ -1165,23 +1064,19 @@ do_or_undo_move_or_copy (
                 {
                   Plugin * existing_pl =
                     track_get_plugin_at_slot (
-                      from_tr, from_slot_type,
-                      from_slot);
+                      from_tr, from_slot_type, from_slot);
                   g_warn_if_fail (!existing_pl);
                   plugin_move (
-                    pl, from_tr, from_slot_type,
-                    from_slot, F_NO_PUBLISH_EVENTS);
+                    pl, from_tr, from_slot_type, from_slot,
+                    F_NO_PUBLISH_EVENTS);
                 }
             }
           else if (copy)
             {
               track_remove_plugin (
-                to_tr, to_slot_type, to_slot,
-                F_NOT_REPLACING,
-                F_NOT_MOVING_PLUGIN,
-                F_DELETING_PLUGIN,
-                F_NOT_DELETING_TRACK,
-                F_NO_RECALC_GRAPH);
+                to_tr, to_slot_type, to_slot, F_NOT_REPLACING,
+                F_NOT_MOVING_PLUGIN, F_DELETING_PLUGIN,
+                F_NOT_DELETING_TRACK, F_NO_RECALC_GRAPH);
               pl = NULL;
             }
 
@@ -1206,11 +1101,10 @@ do_or_undo_move_or_copy (
             }
 
           /* add orig plugin to mixer selections */
-          g_warn_if_fail (
-            IS_PLUGIN_AND_NONNULL (pl));
+          g_warn_if_fail (IS_PLUGIN_AND_NONNULL (pl));
           mixer_selections_add_slot (
-            MIXER_SELECTIONS, from_tr,
-            from_slot_type, from_slot, F_NO_CLONE);
+            MIXER_SELECTIONS, from_tr, from_slot_type,
+            from_slot, F_NO_CLONE);
         }
 
       /* if a new track was created delete it */
@@ -1249,12 +1143,10 @@ do_or_undo (
       return do_or_undo_create_or_delete (
         self, _do, false, error);
     case MIXER_SELECTIONS_ACTION_MOVE:
-      return do_or_undo_move_or_copy (
-        self, _do, false, error);
+      return do_or_undo_move_or_copy (self, _do, false, error);
       break;
     case MIXER_SELECTIONS_ACTION_COPY:
-      return do_or_undo_move_or_copy (
-        self, _do, true, error);
+      return do_or_undo_move_or_copy (self, _do, true, error);
       break;
     case MIXER_SELECTIONS_ACTION_PASTE:
       return do_or_undo_create_or_delete (
@@ -1270,8 +1162,7 @@ do_or_undo (
     _do && self->connections_mgr_before
     && !self->connections_mgr_after)
     self->connections_mgr_after =
-      port_connections_manager_clone (
-        PORT_CONNECTIONS_MGR);
+      port_connections_manager_clone (PORT_CONNECTIONS_MGR);
 
   return -1;
 }
@@ -1302,8 +1193,7 @@ mixer_selections_action_stringize (
       if (self->num_plugins == 1)
         {
           return g_strdup_printf (
-            _ ("Create %s"),
-            self->setting->descr->name);
+            _ ("Create %s"), self->setting->descr->name);
         }
       else
         {
@@ -1314,8 +1204,7 @@ mixer_selections_action_stringize (
     case MIXER_SELECTIONS_ACTION_DELETE:
       if (self->ms_before->num_slots == 1)
         {
-          return g_strdup_printf (
-            _ ("Delete Plugin"));
+          return g_strdup_printf (_ ("Delete Plugin"));
         }
       else
         {
@@ -1328,36 +1217,31 @@ mixer_selections_action_stringize (
         {
           return g_strdup_printf (
             _ ("Move %s"),
-            self->ms_before->plugins[0]
-              ->setting->descr->name);
+            self->ms_before->plugins[0]->setting->descr->name);
         }
       else
         {
           return g_strdup_printf (
-            _ ("Move %d Plugins"),
-            self->ms_before->num_slots);
+            _ ("Move %d Plugins"), self->ms_before->num_slots);
         }
     case MIXER_SELECTIONS_ACTION_COPY:
       if (self->ms_before->num_slots == 1)
         {
           return g_strdup_printf (
             _ ("Copy %s"),
-            self->ms_before->plugins[0]
-              ->setting->descr->name);
+            self->ms_before->plugins[0]->setting->descr->name);
         }
       else
         {
           return g_strdup_printf (
-            _ ("Copy %d Plugins"),
-            self->ms_before->num_slots);
+            _ ("Copy %d Plugins"), self->ms_before->num_slots);
         }
     case MIXER_SELECTIONS_ACTION_PASTE:
       if (self->ms_before->num_slots == 1)
         {
           return g_strdup_printf (
             _ ("Paste %s"),
-            self->ms_before->plugins[0]
-              ->setting->descr->name);
+            self->ms_before->plugins[0]->setting->descr->name);
         }
       else
         {
@@ -1373,8 +1257,7 @@ mixer_selections_action_stringize (
 }
 
 void
-mixer_selections_action_free (
-  MixerSelectionsAction * self)
+mixer_selections_action_free (MixerSelectionsAction * self)
 {
   object_free_w_func_and_null (
     mixer_selections_free, self->ms_before);
@@ -1382,14 +1265,12 @@ mixer_selections_action_free (
   for (int j = 0; j < self->num_ats; j++)
     {
       AutomationTrack * at = self->ats[j];
-      object_free_w_func_and_null (
-        automation_track_free, at);
+      object_free_w_func_and_null (automation_track_free, at);
     }
   for (int j = 0; j < self->num_deleted_ats; j++)
     {
       AutomationTrack * at = self->deleted_ats[j];
-      object_free_w_func_and_null (
-        automation_track_free, at);
+      object_free_w_func_and_null (automation_track_free, at);
     }
 
   object_free_w_func_and_null (

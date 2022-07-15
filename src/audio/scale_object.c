@@ -37,8 +37,7 @@ scale_object_new (MusicalScale * descr)
   ScaleObject * self = object_new (ScaleObject);
 
   self->magic = SCALE_OBJECT_MAGIC;
-  self->schema_version =
-    SCALE_OBJECT_SCHEMA_VERSION;
+  self->schema_version = SCALE_OBJECT_SCHEMA_VERSION;
 
   ArrangerObject * obj = (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_SCALE_OBJECT;
@@ -57,15 +56,11 @@ scale_object_set_index (ScaleObject * self, int index)
 }
 
 int
-scale_object_is_equal (
-  ScaleObject * a,
-  ScaleObject * b)
+scale_object_is_equal (ScaleObject * a, ScaleObject * b)
 {
   ArrangerObject * obj_a = (ArrangerObject *) a;
   ArrangerObject * obj_b = (ArrangerObject *) b;
-  return position_is_equal_ticks (
-           &obj_a->pos, &obj_b->pos)
+  return position_is_equal_ticks (&obj_a->pos, &obj_b->pos)
          && a->index == b->index
-         && musical_scale_is_equal (
-           a->scale, b->scale);
+         && musical_scale_is_equal (a->scale, b->scale);
 }

@@ -94,8 +94,7 @@
  * Returns the audio backend as a string.
  */
 const char *
-engine_audio_backend_to_string (
-  AudioBackend backend)
+engine_audio_backend_to_string (AudioBackend backend)
 {
   return audio_backend_str[backend];
 }
@@ -109,16 +108,13 @@ engine_audio_backend_to_string (
  * @seealso jack_set_buffer_size().
  */
 void
-engine_set_buffer_size (
-  AudioEngine * self,
-  uint32_t      buf_size)
+engine_set_buffer_size (AudioEngine * self, uint32_t buf_size)
 {
   g_return_if_fail (
     g_thread_self () == zrythm_app->gtk_thread);
 
   g_message (
-    "request to set engine buffer size to %u",
-    buf_size);
+    "request to set engine buffer size to %u", buf_size);
 
 #ifdef HAVE_JACK
   if (self->audio_backend == AUDIO_BACKEND_JACK)
@@ -160,14 +156,12 @@ engine_update_frames_per_tick (
     }
   else if (thread_check)
     {
-      g_critical (
-        "Called %s from non-GTK thread", __func__);
+      g_critical ("Called %s from non-GTK thread", __func__);
       return;
     }
 
   /* process all recording events */
-  recording_manager_process_events (
-    RECORDING_MANAGER);
+  recording_manager_process_events (RECORDING_MANAGER);
 
   g_return_if_fail (
     beats_per_bar > 0 && bpm > 0 && sample_rate > 0
@@ -179,11 +173,9 @@ engine_update_frames_per_tick (
     self->frames_per_tick, self->ticks_per_frame);
 
   self->frames_per_tick =
-    (((double) sample_rate * 60.0
-      * (double) beats_per_bar)
+    (((double) sample_rate * 60.0 * (double) beats_per_bar)
      / ((double) bpm * (double) self->transport->ticks_per_bar));
-  self->ticks_per_frame =
-    1.0 / self->frames_per_tick;
+  self->ticks_per_frame = 1.0 / self->frames_per_tick;
 
   g_message (
     "frames per tick after: %f | "
@@ -197,8 +189,7 @@ engine_update_frames_per_tick (
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track_update_positions (
-        TRACKLIST->tracks[i], update_from_ticks,
-        bpm_change);
+        TRACKLIST->tracks[i], update_from_ticks, bpm_change);
     }
 }
 
@@ -240,8 +231,7 @@ clean_duplicates_and_copy (
         }
       else
         {
-          array_append (
-            events, (*num_events), event);
+          array_append (events, (*num_events), event);
         }
     }
 }
@@ -263,16 +253,14 @@ engine_process_events (AudioEngine * self)
       return G_SOURCE_CONTINUE;
     }
 
-  self->last_events_process_started =
-    g_get_monotonic_time ();
+  self->last_events_process_started = g_get_monotonic_time ();
 
   /*g_debug ("PROCESS EVENTS");*/
 
   AudioEngineEvent * events[100];
   AudioEngineEvent * ev;
   int                num_events = 0, i;
-  clean_duplicates_and_copy (
-    self, events, &num_events);
+  clean_duplicates_and_copy (self, events, &num_events);
 
   /*g_debug ("%d EVENTS, waiting for pause", num_events);*/
 
@@ -281,8 +269,7 @@ engine_process_events (AudioEngine * self)
   if (self->activated && num_events > 0)
     {
       /* pause engine */
-      engine_wait_for_pause (
-        self, &state, Z_F_FORCE);
+      engine_wait_for_pause (self, &state, Z_F_FORCE);
       need_resume = true;
     }
 
@@ -293,8 +280,7 @@ engine_process_events (AudioEngine * self)
     {
       if (i > 30)
         {
-          g_message (
-            "more than 30 engine events processed!");
+          g_message ("more than 30 engine events processed!");
         }
       g_message ("processing engine event %d", i);
 
@@ -312,8 +298,7 @@ engine_process_events (AudioEngine * self)
                 self, ev->uint_arg);
             }
 #endif
-          EVENTS_PUSH (
-            ET_ENGINE_BUFFER_SIZE_CHANGED, NULL);
+          EVENTS_PUSH (ET_ENGINE_BUFFER_SIZE_CHANGED, NULL);
           break;
         case AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE:
 #ifdef HAVE_JACK
@@ -323,13 +308,10 @@ engine_process_events (AudioEngine * self)
                 self, ev->uint_arg);
             }
 #endif
-          EVENTS_PUSH (
-            ET_ENGINE_SAMPLE_RATE_CHANGED, NULL);
+          EVENTS_PUSH (ET_ENGINE_SAMPLE_RATE_CHANGED, NULL);
           break;
         default:
-          g_warning (
-            "event %d not implemented yet",
-            ev->type);
+          g_warning ("event %d not implemented yet", ev->type);
           break;
         }
 
@@ -352,8 +334,7 @@ engine_process_events (AudioEngine * self)
       engine_resume (self, &state);
     }
 
-  self->last_events_processed =
-    g_get_monotonic_time ();
+  self->last_events_processed = g_get_monotonic_time ();
 
   /*g_debug ("END PROCESS EVENTS");*/
 
@@ -361,9 +342,7 @@ engine_process_events (AudioEngine * self)
 }
 
 void
-engine_append_ports (
-  AudioEngine * self,
-  GPtrArray *   ports)
+engine_append_ports (AudioEngine * self, GPtrArray * ports)
 {
 #define _ADD(port) \
   g_return_if_fail (port); \
@@ -375,18 +354,11 @@ engine_append_ports (
   _ADD (self->control_room->monitor_fader->solo);
   _ADD (self->control_room->monitor_fader->listen);
   _ADD (
-    self->control_room->monitor_fader
-      ->mono_compat_enabled);
-  _ADD (
-    self->control_room->monitor_fader->stereo_in->l);
-  _ADD (
-    self->control_room->monitor_fader->stereo_in->r);
-  _ADD (
-    self->control_room->monitor_fader->stereo_out
-      ->l);
-  _ADD (
-    self->control_room->monitor_fader->stereo_out
-      ->r);
+    self->control_room->monitor_fader->mono_compat_enabled);
+  _ADD (self->control_room->monitor_fader->stereo_in->l);
+  _ADD (self->control_room->monitor_fader->stereo_in->r);
+  _ADD (self->control_room->monitor_fader->stereo_out->l);
+  _ADD (self->control_room->monitor_fader->stereo_out->r);
 
   _ADD (self->monitor_out->l);
   _ADD (self->monitor_out->r);
@@ -394,26 +366,18 @@ engine_append_ports (
   _ADD (self->midi_in);
 
   /* add fader ports */
-  _ADD (
-    self->sample_processor->fader->stereo_in->l);
-  _ADD (
-    self->sample_processor->fader->stereo_in->r);
-  _ADD (
-    self->sample_processor->fader->stereo_out->l);
-  _ADD (
-    self->sample_processor->fader->stereo_out->r);
+  _ADD (self->sample_processor->fader->stereo_in->l);
+  _ADD (self->sample_processor->fader->stereo_in->r);
+  _ADD (self->sample_processor->fader->stereo_out->l);
+  _ADD (self->sample_processor->fader->stereo_out->r);
 
-  for (
-    int i = 0;
-    i
-    < self->sample_processor->tracklist->num_tracks;
-    i++)
+  for (int i = 0;
+       i < self->sample_processor->tracklist->num_tracks; i++)
     {
       Track * tr =
         self->sample_processor->tracklist->tracks[i];
       g_warn_if_fail (track_is_auditioner (tr));
-      track_append_ports (
-        tr, ports, F_INCLUDE_PLUGINS);
+      track_append_ports (tr, ports, F_INCLUDE_PLUGINS);
     }
 
   _ADD (self->transport->roll);
@@ -423,27 +387,23 @@ engine_append_ports (
   _ADD (self->transport->loop_toggle);
   _ADD (self->transport->rec_toggle);
 
-  for (int i = 0;
-       i < self->hw_in_processor->num_audio_ports;
+  for (int i = 0; i < self->hw_in_processor->num_audio_ports;
        i++)
     {
       _ADD (self->hw_in_processor->audio_ports[i]);
     }
-  for (int i = 0;
-       i < self->hw_in_processor->num_midi_ports;
+  for (int i = 0; i < self->hw_in_processor->num_midi_ports;
        i++)
     {
       _ADD (self->hw_in_processor->midi_ports[i]);
     }
 
-  for (int i = 0;
-       i < self->hw_out_processor->num_audio_ports;
+  for (int i = 0; i < self->hw_out_processor->num_audio_ports;
        i++)
     {
       _ADD (self->hw_out_processor->audio_ports[i]);
     }
-  for (int i = 0;
-       i < self->hw_out_processor->num_midi_ports;
+  for (int i = 0; i < self->hw_out_processor->num_midi_ports;
        i++)
     {
       _ADD (self->hw_out_processor->midi_ports[i]);
@@ -465,17 +425,14 @@ engine_pre_setup (AudioEngine * self)
   /* start events */
   if (self->process_source_id)
     {
-      g_message (
-        "engine already processing events");
+      g_message ("engine already processing events");
       return;
     }
-  g_message (
-    "%s: starting event timeout", __func__);
+  g_message ("%s: starting event timeout", __func__);
   self->process_source_id = g_timeout_add (
     12, (GSourceFunc) engine_process_events, self);
 
-  g_return_if_fail (
-    self && !self->setup && !self->pre_setup);
+  g_return_if_fail (self && !self->setup && !self->pre_setup);
 
 #ifdef TRIAL_VER
   self->zrythm_start_time = g_get_monotonic_time ();
@@ -534,15 +491,12 @@ engine_pre_setup (AudioEngine * self)
       if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
         {
           ui_show_message_printf (
-            MAIN_WINDOW
-              ? GTK_WINDOW (MAIN_WINDOW)
-              : NULL,
+            MAIN_WINDOW ? GTK_WINDOW (MAIN_WINDOW) : NULL,
             GTK_MESSAGE_WARNING, true,
-            _ (
-              "Failed to initialize the %s audio "
-              "backend. Will use the dummy backend "
-              "instead. Please check your backend "
-              "settings in the Preferences."),
+            _ ("Failed to initialize the %s audio "
+               "backend. Will use the dummy backend "
+               "instead. Please check your backend "
+               "settings in the Preferences."),
             engine_audio_backend_to_string (
               self->audio_backend));
         }
@@ -580,12 +534,11 @@ setup_dummy_midi:
         {
           ui_show_message_printf (
             NULL, GTK_MESSAGE_ERROR, true,
-            _ (
-              "The JACK MIDI backend can only be "
-              "used with the JACK audio backend "
-              "(your current audio backend is %s). "
-              "Will use the dummy MIDI backend "
-              "instead."),
+            _ ("The JACK MIDI backend can only be "
+               "used with the JACK audio backend "
+               "(your current audio backend is %s). "
+               "Will use the dummy MIDI backend "
+               "instead."),
             engine_audio_backend_to_string (
               self->audio_backend));
           self->midi_backend = MIDI_BACKEND_DUMMY;
@@ -615,15 +568,13 @@ setup_dummy_midi:
       if (!ZRYTHM_TESTING)
         {
           ui_show_message_printf (
-            GTK_WINDOW (MAIN_WINDOW),
-            GTK_MESSAGE_WARNING, true,
-            _ (
-              "Failed to initialize the %s MIDI "
-              "backend. Will use the dummy backend "
-              "instead. Please check your backend "
-              "settings in the Preferences."),
-            engine_midi_backend_to_string (
-              self->midi_backend));
+            GTK_WINDOW (MAIN_WINDOW), GTK_MESSAGE_WARNING,
+            true,
+            _ ("Failed to initialize the %s MIDI "
+               "backend. Will use the dummy backend "
+               "instead. Please check your backend "
+               "settings in the Preferences."),
+            engine_midi_backend_to_string (self->midi_backend));
         }
 
       self->midi_backend = MIDI_BACKEND_DUMMY;
@@ -631,8 +582,7 @@ setup_dummy_midi:
     }
 
   /* process any events now */
-  g_message (
-    "%s: processing engine events", __func__);
+  g_message ("%s: processing engine events", __func__);
   engine_process_events (self);
 
   self->pre_setup = true;
@@ -648,8 +598,7 @@ engine_setup (AudioEngine * self)
   g_message ("Setting up...");
 
   /* process any events now  */
-  g_message (
-    "%s: processing engine events", __func__);
+  g_message ("%s: processing engine events", __func__);
   engine_process_events (self);
 
   hardware_processor_setup (self->hw_in_processor);
@@ -661,8 +610,8 @@ engine_setup (AudioEngine * self)
     || (self->audio_backend != AUDIO_BACKEND_JACK && self->midi_backend == MIDI_BACKEND_JACK))
     {
       ui_show_message_printf (
-        GTK_WINDOW (MAIN_WINDOW),
-        GTK_MESSAGE_WARNING, true, "%s",
+        GTK_WINDOW (MAIN_WINDOW), GTK_MESSAGE_WARNING, true,
+        "%s",
         _ ("Your selected combination of backends "
            "may not work properly. If you want to "
            "use JACK, please select JACK as both "
@@ -675,8 +624,7 @@ engine_setup (AudioEngine * self)
    * output */
   stereo_ports_connect (
     self->sample_processor->fader->stereo_out,
-    self->control_room->monitor_fader->stereo_in,
-    true);
+    self->control_room->monitor_fader->stereo_in, true);
 
   /* connect fader to monitor out */
   stereo_ports_connect (
@@ -687,10 +635,8 @@ engine_setup (AudioEngine * self)
 
   /* Expose ports */
   port_set_expose_to_backend (self->midi_in, true);
-  port_set_expose_to_backend (
-    self->monitor_out->l, true);
-  port_set_expose_to_backend (
-    self->monitor_out->r, true);
+  port_set_expose_to_backend (self->monitor_out->l, true);
+  port_set_expose_to_backend (self->monitor_out->r, true);
 
   /* process any events now */
   g_message ("processing engine events");
@@ -702,8 +648,7 @@ engine_setup (AudioEngine * self)
 static AudioEngineEvent *
 engine_event_new (void)
 {
-  AudioEngineEvent * self =
-    object_new (AudioEngineEvent);
+  AudioEngineEvent * self = object_new (AudioEngineEvent);
 
   return self;
 }
@@ -718,8 +663,7 @@ engine_event_free (AudioEngineEvent * ev)
 static void
 init_common (AudioEngine * self)
 {
-  self->schema_version =
-    AUDIO_ENGINE_SCHEMA_VERSION;
+  self->schema_version = AUDIO_ENGINE_SCHEMA_VERSION;
   self->metronome = metronome_new ();
   self->router = router_new ();
 
@@ -763,14 +707,12 @@ init_common (AudioEngine * self)
 #endif
 #ifdef HAVE_PULSEAUDIO
     case AUDIO_BACKEND_PULSEAUDIO:
-      self->audio_backend =
-        AUDIO_BACKEND_PULSEAUDIO;
+      self->audio_backend = AUDIO_BACKEND_PULSEAUDIO;
       break;
 #endif
 #ifdef HAVE_PORT_AUDIO
     case AUDIO_BACKEND_PORT_AUDIO:
-      self->audio_backend =
-        AUDIO_BACKEND_PORT_AUDIO;
+      self->audio_backend = AUDIO_BACKEND_PORT_AUDIO;
       break;
 #endif
 #ifdef HAVE_SDL
@@ -862,8 +804,7 @@ init_common (AudioEngine * self)
   if (backend_reset_to_dummy && !ZRYTHM_TESTING)
     {
       ui_show_message_printf (
-        GTK_WINDOW (MAIN_WINDOW),
-        GTK_MESSAGE_WARNING, true,
+        GTK_WINDOW (MAIN_WINDOW), GTK_MESSAGE_WARNING, true,
         _ (
           "The selected MIDI/audio backend was not "
           "found in the version of %s you have "
@@ -877,8 +818,7 @@ init_common (AudioEngine * self)
   self->pan_law =
     ZRYTHM_TESTING
       ? PAN_LAW_MINUS_3DB
-      : (PanLaw) g_settings_get_enum (
-        S_P_DSP_PAN, "pan-law");
+      : (PanLaw) g_settings_get_enum (S_P_DSP_PAN, "pan-law");
   self->pan_algo =
     ZRYTHM_TESTING
       ? PAN_ALGORITHM_SINE_LAW
@@ -897,19 +837,15 @@ init_common (AudioEngine * self)
 
   self->ev_pool = object_pool_new (
     (ObjectCreatorFunc) engine_event_new,
-    (ObjectFreeFunc) engine_event_free,
-    ENGINE_MAX_EVENTS);
+    (ObjectFreeFunc) engine_event_free, ENGINE_MAX_EVENTS);
   self->ev_queue = mpmc_queue_new ();
   mpmc_queue_reserve (
     self->ev_queue,
-    (size_t) ENGINE_MAX_EVENTS
-      * sizeof (AudioEngineEvent *));
+    (size_t) ENGINE_MAX_EVENTS * sizeof (AudioEngineEvent *));
 }
 
 void
-engine_init_loaded (
-  AudioEngine * self,
-  Project *     project)
+engine_init_loaded (AudioEngine * self, Project * project)
 {
   g_message ("Initializing...");
 
@@ -927,15 +863,11 @@ engine_init_loaded (
           project->tracklist, TRACK_TYPE_TEMPO);
       g_return_if_fail (tempo_track);
     }
-  transport_init_loaded (
-    self->transport, self, tempo_track);
+  transport_init_loaded (self->transport, self, tempo_track);
 
-  control_room_init_loaded (
-    self->control_room, self);
-  sample_processor_init_loaded (
-    self->sample_processor, self);
-  hardware_processor_init_loaded (
-    self->hw_in_processor, self);
+  control_room_init_loaded (self->control_room, self);
+  sample_processor_init_loaded (self->sample_processor, self);
+  hardware_processor_init_loaded (self->hw_in_processor, self);
   hardware_processor_init_loaded (
     self->hw_out_processor, self);
 
@@ -945,31 +877,25 @@ engine_init_loaded (
   engine_append_ports (self, ports);
   for (size_t i = 0; i < ports->len; i++)
     {
-      Port * port = g_ptr_array_index (ports, i);
+      Port *           port = g_ptr_array_index (ports, i);
       PortIdentifier * id = &port->id;
       if (id->owner_type == PORT_OWNER_TYPE_AUDIO_ENGINE)
         port_init_loaded (port, self);
       else if (id->owner_type == PORT_OWNER_TYPE_HW)
         {
           if (id->flow == FLOW_OUTPUT)
-            port_init_loaded (
-              port, self->hw_in_processor);
+            port_init_loaded (port, self->hw_in_processor);
           else if (id->flow == FLOW_INPUT)
-            port_init_loaded (
-              port, self->hw_out_processor);
+            port_init_loaded (port, self->hw_out_processor);
         }
       else if (id->owner_type == PORT_OWNER_TYPE_FADER)
         {
-          if (
-            id->flags2
-            & PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
+          if (id->flags2 & PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
             port_init_loaded (
               port, self->sample_processor->fader);
-          else if (
-            id->flags2 & PORT_FLAG2_MONITOR_FADER)
+          else if (id->flags2 & PORT_FLAG2_MONITOR_FADER)
             port_init_loaded (
-              port,
-              self->control_room->monitor_fader);
+              port, self->control_room->monitor_fader);
         }
     }
 
@@ -989,8 +915,7 @@ engine_new (Project * project)
 
   AudioEngine * self = object_new (AudioEngine);
   self->project = project;
-  self->schema_version =
-    AUDIO_ENGINE_SCHEMA_VERSION;
+  self->schema_version = AUDIO_ENGINE_SCHEMA_VERSION;
 
   if (project)
     {
@@ -1001,22 +926,19 @@ engine_new (Project * project)
   self->transport = transport_new (self);
   self->pool = audio_pool_new ();
   self->control_room = control_room_new (self);
-  self->sample_processor =
-    sample_processor_new (self);
+  self->sample_processor = sample_processor_new (self);
 
   /* init midi editor manual press */
-  self
-    ->midi_editor_manual_press = port_new_with_type (
-    TYPE_EVENT, FLOW_INPUT,
-    "MIDI Editor Manual Press");
+  self->midi_editor_manual_press = port_new_with_type (
+    TYPE_EVENT, FLOW_INPUT, "MIDI Editor Manual Press");
   self->midi_editor_manual_press->id.sym =
     g_strdup ("midi_editor_manual_press");
   self->midi_editor_manual_press->id.flags |=
     PORT_FLAG_MANUAL_PRESS;
 
   /* init midi in */
-  self->midi_in = port_new_with_type (
-    TYPE_EVENT, FLOW_INPUT, "MIDI in");
+  self->midi_in =
+    port_new_with_type (TYPE_EVENT, FLOW_INPUT, "MIDI in");
   self->midi_in->id.sym = g_strdup ("midi_in");
 
   /* init MIDI queues */
@@ -1028,21 +950,16 @@ engine_new (Project * project)
   Port *monitor_out_l, *monitor_out_r;
   monitor_out_l = port_new_with_type (
     TYPE_AUDIO, FLOW_OUTPUT, "Monitor Out L");
-  monitor_out_l->id.sym =
-    g_strdup ("monitor_out_l");
+  monitor_out_l->id.sym = g_strdup ("monitor_out_l");
   monitor_out_r = port_new_with_type (
     TYPE_AUDIO, FLOW_OUTPUT, "Monitor Out R");
-  monitor_out_r->id.sym =
-    g_strdup ("monitor_out_r");
-  self->monitor_out =
-    stereo_ports_new_from_existing (
-      monitor_out_l, monitor_out_r);
+  monitor_out_r->id.sym = g_strdup ("monitor_out_r");
+  self->monitor_out = stereo_ports_new_from_existing (
+    monitor_out_l, monitor_out_r);
   stereo_ports_set_owner (
-    self->monitor_out,
-    PORT_OWNER_TYPE_AUDIO_ENGINE, self);
+    self->monitor_out, PORT_OWNER_TYPE_AUDIO_ENGINE, self);
 
-  self->hw_in_processor =
-    hardware_processor_new (true, self);
+  self->hw_in_processor = hardware_processor_new (true, self);
   self->hw_out_processor =
     hardware_processor_new (false, self);
 
@@ -1080,8 +997,7 @@ engine_wait_for_pause (
       else
         {
           while (
-            TRANSPORT->play_state
-              == PLAYSTATE_PAUSE_REQUESTED
+            TRANSPORT->play_state == PLAYSTATE_PAUSE_REQUESTED
             && !self->stop_dummy_audio_thread)
             {
               g_usleep (100);
@@ -1117,8 +1033,7 @@ engine_wait_for_pause (
        * messages */
       engine_process_prepare (self, 1);
       EngineProcessTimeInfo time_nfo = {
-        .g_start_frame =
-          (unsigned_frame_t) PLAYHEAD->frames,
+        .g_start_frame = (unsigned_frame_t) PLAYHEAD->frames,
         .local_offset = 0,
         .nframes = 1,
       };
@@ -1128,9 +1043,7 @@ engine_wait_for_pause (
 }
 
 void
-engine_resume (
-  AudioEngine * self,
-  EngineState * state)
+engine_resume (AudioEngine * self, EngineState * state)
 {
   g_message ("resuming engine...");
 
@@ -1142,9 +1055,8 @@ engine_resume (
       position_update_frames_from_ticks (
         &xport->playhead_before_pause);
       transport_move_playhead (
-        xport, &xport->playhead_before_pause,
-        F_NO_PANIC, F_NO_SET_CUE_POINT,
-        F_NO_PUBLISH_EVENTS);
+        xport, &xport->playhead_before_pause, F_NO_PANIC,
+        F_NO_SET_CUE_POINT, F_NO_PUBLISH_EVENTS);
       transport_request_roll (xport, true);
     }
   else
@@ -1152,8 +1064,7 @@ engine_resume (
       transport_request_pause (xport, true);
     }
 
-  g_atomic_int_set (
-    &self->run, (guint) state->running);
+  g_atomic_int_set (&self->run, (guint) state->running);
 }
 
 /**
@@ -1199,12 +1110,10 @@ engine_activate (AudioEngine * self, bool activate)
         }
 
       /* process any events now  */
-      g_message (
-        "%s: processing engine events", __func__);
+      g_message ("%s: processing engine events", __func__);
       engine_process_events (self);
 
-      engine_realloc_port_buffers (
-        self, self->block_length);
+      engine_realloc_port_buffers (self, self->block_length);
     }
   else
     {
@@ -1223,8 +1132,7 @@ engine_activate (AudioEngine * self, bool activate)
 
   if (!activate)
     {
-      hardware_processor_activate (
-        HW_IN_PROCESSOR, false);
+      hardware_processor_activate (HW_IN_PROCESSOR, false);
     }
 
 #ifdef HAVE_JACK
@@ -1268,8 +1176,7 @@ engine_activate (AudioEngine * self, bool activate)
 
   if (activate)
     {
-      hardware_processor_activate (
-        HW_IN_PROCESSOR, true);
+      hardware_processor_activate (HW_IN_PROCESSOR, true);
     }
 
   /* process any events now */
@@ -1280,8 +1187,7 @@ engine_activate (AudioEngine * self, bool activate)
 
   if (ZRYTHM_HAVE_UI && PROJECT->loaded)
     {
-      EVENTS_PUSH (
-        ET_ENGINE_ACTIVATE_CHANGED, NULL);
+      EVENTS_PUSH (ET_ENGINE_ACTIVATE_CHANGED, NULL);
     }
 
   g_message ("done");
@@ -1347,12 +1253,9 @@ engine_realloc_port_buffers (
                   carla_native_plugin_update_buffer_size_and_sample_rate (
                     pl->carla);
                 }
-              else if (
-                pl->setting->descr->protocol
-                == PROT_LV2)
+              else if (pl->setting->descr->protocol == PROT_LV2)
                 {
-                  lv2_plugin_allocate_port_buffers (
-                    pl->lv2);
+                  lv2_plugin_allocate_port_buffers (pl->lv2);
                 }
             }
         }
@@ -1370,9 +1273,7 @@ engine_realloc_port_buffers (
  * Used when returning early.
  */
 static void
-clear_output_buffers (
-  AudioEngine * self,
-  nframes_t     nframes)
+clear_output_buffers (AudioEngine * self, nframes_t nframes)
 {
   /* clear the monitor output (used by rtaudio) */
   port_clear_buffer (self->monitor_out->l);
@@ -1386,8 +1287,7 @@ clear_output_buffers (
     /* clear outputs exposed to jack */
 #ifdef HAVE_JACK
   for (size_t i = 0;
-       i < ROUTER->graph->external_out_ports->len;
-       i++)
+       i < ROUTER->graph->external_out_ports->len; i++)
     {
       Port * port = g_ptr_array_index (
         ROUTER->graph->external_out_ports, i);
@@ -1397,23 +1297,18 @@ clear_output_buffers (
         && port->id.type == TYPE_AUDIO
         && self->audio_backend == AUDIO_BACKEND_JACK)
         {
-          jack_port_t * jport =
-            JACK_PORT_T (port->data);
-          float * out = (float *)
-            jack_port_get_buffer (jport, nframes);
-          dsp_fill (
-            &out[0], DENORMAL_PREVENTION_VAL,
-            nframes);
+          jack_port_t * jport = JACK_PORT_T (port->data);
+          float *       out =
+            (float *) jack_port_get_buffer (jport, nframes);
+          dsp_fill (&out[0], DENORMAL_PREVENTION_VAL, nframes);
         }
       else if (
         port->internal_type == INTERNAL_JACK_PORT
         && port->id.type == TYPE_EVENT
         && self->midi_backend == MIDI_BACKEND_JACK)
         {
-          jack_port_t * jport =
-            JACK_PORT_T (port->data);
-          void * buf =
-            jack_port_get_buffer (jport, nframes);
+          jack_port_t * jport = JACK_PORT_T (port->data);
+          void * buf = jack_port_get_buffer (jport, nframes);
           jack_midi_clear_buffer (buf);
         }
     }
@@ -1429,12 +1324,9 @@ clear_output_buffers (
  * @return Whether the cycle should be skipped.
  */
 bool
-engine_process_prepare (
-  AudioEngine * self,
-  nframes_t     nframes)
+engine_process_prepare (AudioEngine * self, nframes_t nframes)
 {
-  g_atomic_int_set (
-    &self->preparing_for_process, 1);
+  g_atomic_int_set (&self->preparing_for_process, 1);
 
   if (self->denormal_prevention_val_positive)
     {
@@ -1450,14 +1342,11 @@ engine_process_prepare (
   self->last_time_taken = g_get_monotonic_time ();
   self->nframes = nframes;
 
-  if (
-    self->transport->play_state
-    == PLAYSTATE_PAUSE_REQUESTED)
+  if (self->transport->play_state == PLAYSTATE_PAUSE_REQUESTED)
     {
       if (ZRYTHM_TESTING)
         g_message ("pause requested handled");
-      self->transport->play_state =
-        PLAYSTATE_PAUSED;
+      self->transport->play_state = PLAYSTATE_PAUSED;
       /*zix_sem_post (&TRANSPORT->paused);*/
 #ifdef HAVE_JACK
       if (self->audio_backend == AUDIO_BACKEND_JACK)
@@ -1467,15 +1356,12 @@ engine_process_prepare (
 #endif
     }
   else if (
-    self->transport->play_state
-      == PLAYSTATE_ROLL_REQUESTED
+    self->transport->play_state == PLAYSTATE_ROLL_REQUESTED
     && self->transport->countin_frames_remaining == 0)
     {
-      self->transport->play_state =
-        PLAYSTATE_ROLLING;
+      self->transport->play_state = PLAYSTATE_ROLLING;
       self->remaining_latency_preroll =
-        router_get_max_route_playback_latency (
-          self->router);
+        router_get_max_route_playback_latency (self->router);
 #if 0
       g_message (
         "starting playback, remaining latency "
@@ -1528,8 +1414,7 @@ engine_process_prepare (
   /* reset all buffers */
   fader_clear_buffers (MONITOR_FADER);
   port_clear_buffer (self->midi_in);
-  port_clear_buffer (
-    self->midi_editor_manual_press);
+  port_clear_buffer (self->midi_editor_manual_press);
 
   sample_processor_prepare_process (
     self->sample_processor, nframes);
@@ -1546,8 +1431,7 @@ engine_process_prepare (
 
   self->filled_stereo_out_bufs = 0;
 
-  g_atomic_int_set (
-    &self->preparing_for_process, 0);
+  g_atomic_int_set (&self->preparing_for_process, 0);
 
   return false;
 }
@@ -1595,8 +1479,7 @@ engine_process (
       /*"process: %u", total_frames_to_process);*/
     }
 
-  g_return_val_if_fail (
-    total_frames_to_process > 0, -1);
+  g_return_val_if_fail (total_frames_to_process > 0, -1);
 
   /*g_message ("processing...");*/
   g_atomic_int_set (&self->cycle_running, 1);
@@ -1606,15 +1489,13 @@ engine_process (
   self->timestamp_start = g_get_monotonic_time ();
   self->timestamp_end =
     self->timestamp_start
-    + (total_frames_to_process * 1000000)
-        / self->sample_rate;
+    + (total_frames_to_process * 1000000) / self->sample_rate;
 
   if (G_UNLIKELY (!engine_get_run (self)))
     {
       /*g_message ("ENGINE NOT RUNNING");*/
       /*g_message ("skipping processing...");*/
-      clear_output_buffers (
-        self, total_frames_to_process);
+      clear_output_buffers (self, total_frames_to_process);
       g_atomic_int_set (&self->cycle_running, 0);
       return 0;
     }
@@ -1623,34 +1504,30 @@ engine_process (
   /*self->cycle = count;*/
 
   /* run pre-process code */
-  bool skip_cycle = engine_process_prepare (
-    self, total_frames_to_process);
+  bool skip_cycle =
+    engine_process_prepare (self, total_frames_to_process);
 
   if (G_UNLIKELY (skip_cycle))
     {
-      clear_output_buffers (
-        self, total_frames_to_process);
+      clear_output_buffers (self, total_frames_to_process);
       g_atomic_int_set (&self->cycle_running, 0);
       return 0;
     }
 
   /* puts MIDI in events in the MIDI in port */
-  receive_midi_events (
-    self, total_frames_to_process, 1);
+  receive_midi_events (self, total_frames_to_process, 1);
 
   /* process HW processor to get audio/MIDI data
    * from hardware */
   hardware_processor_process (
     HW_IN_PROCESSOR, total_frames_to_process);
 
-  nframes_t total_frames_remaining =
-    total_frames_to_process;
+  nframes_t total_frames_remaining = total_frames_to_process;
 
   /* --- handle preroll --- */
 
   EngineProcessTimeInfo split_time_nfo = {
-    .g_start_frame =
-      (unsigned_frame_t) PLAYHEAD->frames,
+    .g_start_frame = (unsigned_frame_t) PLAYHEAD->frames,
     .local_offset = 0,
     .nframes = 0,
   };
@@ -1672,15 +1549,12 @@ engine_process (
 
       /* loop through each route */
       for (size_t i = 0;
-           i < self->router->graph->n_init_triggers;
-           i++)
+           i < self->router->graph->n_init_triggers; i++)
         {
           GraphNode * start_node =
-            self->router->graph
-              ->init_trigger_list[i];
+            self->router->graph->init_trigger_list[i];
 
-#define route_latency \
-  (start_node->route_playback_latency)
+#define route_latency (start_node->route_playback_latency)
 
           if (
             self->remaining_latency_preroll
@@ -1689,9 +1563,7 @@ engine_process (
               /* this route will no-roll for the
                * complete pre-roll cycle */
             }
-          else if (
-            self->remaining_latency_preroll
-            > route_latency)
+          else if (self->remaining_latency_preroll > route_latency)
             {
               /* route may need partial no-roll
                * and partial roll from
@@ -1721,19 +1593,15 @@ engine_process (
       /* offset to start processing at in this
        * cycle */
       nframes_t preroll_offset =
-        total_frames_to_process
-        - total_frames_remaining;
+        total_frames_to_process - total_frames_remaining;
       g_warn_if_fail (
-        preroll_offset + num_preroll_frames
-        <= self->nframes);
+        preroll_offset + num_preroll_frames <= self->nframes);
 
       split_time_nfo.local_offset = preroll_offset;
       split_time_nfo.nframes = num_preroll_frames;
-      router_start_cycle (
-        self->router, split_time_nfo);
+      router_start_cycle (self->router, split_time_nfo);
 
-      self->remaining_latency_preroll -=
-        num_preroll_frames;
+      self->remaining_latency_preroll -= num_preroll_frames;
       total_frames_remaining -= num_preroll_frames;
 
       if (total_frames_remaining == 0)
@@ -1747,8 +1615,7 @@ engine_process (
   if (total_frames_remaining > 0)
     {
       nframes_t cur_offset =
-        total_frames_to_process
-        - total_frames_remaining;
+        total_frames_to_process - total_frames_remaining;
 
       /* queue metronome if met within this cycle */
       if (
@@ -1756,8 +1623,7 @@ engine_process (
         && TRANSPORT_IS_ROLLING)
         {
           metronome_queue_events (
-            self, cur_offset,
-            total_frames_remaining);
+            self, cur_offset, total_frames_remaining);
         }
 
       /* split at countin */
@@ -1765,14 +1631,12 @@ engine_process (
         {
           nframes_t countin_frames = MIN (
             total_frames_remaining,
-            self->transport
-              ->countin_frames_remaining);
+            self->transport->countin_frames_remaining);
 
           /* process for countin frames */
           split_time_nfo.local_offset = cur_offset;
           split_time_nfo.nframes = countin_frames;
-          router_start_cycle (
-            self->router, split_time_nfo);
+          router_start_cycle (self->router, split_time_nfo);
           self->transport->countin_frames_remaining -=
             countin_frames;
 
@@ -1786,21 +1650,17 @@ engine_process (
 
       /* split at preroll */
       if (
-        self->transport->countin_frames_remaining
-          == 0
-        && self->transport->preroll_frames_remaining
-             > 0)
+        self->transport->countin_frames_remaining == 0
+        && self->transport->preroll_frames_remaining > 0)
         {
           nframes_t preroll_frames = MIN (
             total_frames_remaining,
-            self->transport
-              ->preroll_frames_remaining);
+            self->transport->preroll_frames_remaining);
 
           /* process for preroll frames */
           split_time_nfo.local_offset = cur_offset;
           split_time_nfo.nframes = preroll_frames;
-          router_start_cycle (
-            self->router, split_time_nfo);
+          router_start_cycle (self->router, split_time_nfo);
           self->transport->preroll_frames_remaining -=
             preroll_frames;
 
@@ -1810,10 +1670,8 @@ engine_process (
             total_frames_remaining - preroll_frames;
           if (remaining_frames > 0)
             {
-              split_time_nfo.local_offset =
-                cur_offset;
-              split_time_nfo.nframes =
-                remaining_frames;
+              split_time_nfo.local_offset = cur_offset;
+              split_time_nfo.nframes = remaining_frames;
               router_start_cycle (
                 self->router, split_time_nfo);
             }
@@ -1824,10 +1682,8 @@ engine_process (
            * frames - this will also play the
            * queued metronome events (if any) */
           split_time_nfo.local_offset = cur_offset;
-          split_time_nfo.nframes =
-            total_frames_remaining;
-          router_start_cycle (
-            self->router, split_time_nfo);
+          split_time_nfo.nframes = total_frames_remaining;
+          router_start_cycle (self->router, split_time_nfo);
         }
     }
 
@@ -1836,8 +1692,7 @@ finalize_processing:
   /* run post-process code for the number of frames
    * remaining after handling preroll (if any) */
   engine_post_process (
-    self, total_frames_remaining,
-    total_frames_to_process);
+    self, total_frames_remaining, total_frames_to_process);
 
   self->cycle++;
 
@@ -1848,10 +1703,8 @@ finalize_processing:
       /*g_debug ("engine process ended...");*/
     }
 
-  self->last_timestamp_start =
-    self->timestamp_start;
-  self->last_timestamp_end =
-    g_get_monotonic_time ();
+  self->last_timestamp_start = self->timestamp_start;
+  self->last_timestamp_end = g_get_monotonic_time ();
 
   /*
    * processing finished, return 0 (OK)
@@ -1887,9 +1740,7 @@ engine_post_process (
 
   /* move the playhead if rolling and not
    * pre-rolling */
-  if (
-    TRANSPORT_IS_ROLLING
-    && self->remaining_latency_preroll == 0)
+  if (TRANSPORT_IS_ROLLING && self->remaining_latency_preroll == 0)
     {
       transport_add_to_playhead (
         self->transport, roll_nframes);
@@ -1904,11 +1755,8 @@ engine_post_process (
   /* update max time taken (for calculating DSP
    * %) */
   AUDIO_ENGINE->last_time_taken =
-    g_get_monotonic_time ()
-    - AUDIO_ENGINE->last_time_taken;
-  if (
-    AUDIO_ENGINE->max_time_taken
-    < AUDIO_ENGINE->last_time_taken)
+    g_get_monotonic_time () - AUDIO_ENGINE->last_time_taken;
+  if (AUDIO_ENGINE->max_time_taken < AUDIO_ENGINE->last_time_taken)
     AUDIO_ENGINE->max_time_taken =
       AUDIO_ENGINE->last_time_taken;
 
@@ -2028,8 +1876,7 @@ engine_audio_backend_from_string (char * str)
 {
   for (int i = 0; i < NUM_AUDIO_BACKENDS; i++)
     {
-      if (string_is_equal (
-            audio_backend_str[i], str))
+      if (string_is_equal (audio_backend_str[i], str))
         {
           return (AudioBackend) i;
         }
@@ -2093,8 +1940,7 @@ engine_reset_bounce_mode (AudioEngine * self)
 {
   self->bounce_mode = BOUNCE_OFF;
 
-  tracklist_mark_all_tracks_for_bounce (
-    TRACKLIST, false);
+  tracklist_mark_all_tracks_for_bounce (TRACKLIST, false);
 }
 
 /**
@@ -2129,8 +1975,7 @@ engine_set_default_backends (bool reset_to_dummy)
         S_P_GENERAL_ENGINE, "audio-backend",
         AUDIO_BACKEND_JACK);
       g_settings_set_enum (
-        S_P_GENERAL_ENGINE, "midi-backend",
-        MIDI_BACKEND_JACK);
+        S_P_GENERAL_ENGINE, "midi-backend", MIDI_BACKEND_JACK);
       audio_set = true;
       midi_set = true;
     }
@@ -2188,8 +2033,7 @@ engine_stop_events (AudioEngine * self)
   if (self->process_source_id)
     {
       /* remove the source func */
-      g_source_remove_and_zero (
-        self->process_source_id);
+      g_source_remove_and_zero (self->process_source_id);
     }
 
   /* process any remaining events - clear the
@@ -2206,28 +2050,24 @@ AudioEngine *
 engine_clone (const AudioEngine * src)
 {
   AudioEngine * self = object_new (AudioEngine);
-  self->schema_version =
-    AUDIO_ENGINE_SCHEMA_VERSION;
+  self->schema_version = AUDIO_ENGINE_SCHEMA_VERSION;
 
   self->transport_type = src->transport_type;
   self->sample_rate = src->sample_rate;
   self->frames_per_tick = src->frames_per_tick;
-  self->monitor_out =
-    stereo_ports_clone (src->monitor_out);
+  self->monitor_out = stereo_ports_clone (src->monitor_out);
   self->midi_editor_manual_press =
     port_clone (src->midi_editor_manual_press);
   self->midi_in = port_clone (src->midi_in);
-  self->transport =
-    transport_clone (src->transport);
+  self->transport = transport_clone (src->transport);
   self->pool = audio_pool_clone (src->pool);
-  self->control_room =
-    control_room_clone (src->control_room);
+  self->control_room = control_room_clone (src->control_room);
   self->sample_processor =
     sample_processor_clone (src->sample_processor);
   self->hw_in_processor =
     hardware_processor_clone (src->hw_in_processor);
-  self->hw_out_processor = hardware_processor_clone (
-    src->hw_out_processor);
+  self->hw_out_processor =
+    hardware_processor_clone (src->hw_out_processor);
 
   return self;
 }
@@ -2251,8 +2091,7 @@ engine_free (AudioEngine * self)
       engine_activate (self, false);
     }
 
-  object_free_w_func_and_null (
-    router_free, self->router);
+  object_free_w_func_and_null (router_free, self->router);
 
   switch (self->audio_backend)
     {
@@ -2290,11 +2129,9 @@ engine_free (AudioEngine * self)
 
   if (self == AUDIO_ENGINE)
     port_disconnect_all (self->midi_in);
-  object_free_w_func_and_null (
-    port_free, self->midi_in);
+  object_free_w_func_and_null (port_free, self->midi_in);
   if (self == AUDIO_ENGINE)
-    port_disconnect_all (
-      self->midi_editor_manual_press);
+    port_disconnect_all (self->midi_editor_manual_press);
   object_free_w_func_and_null (
     port_free, self->midi_editor_manual_press);
 
@@ -2302,8 +2139,7 @@ engine_free (AudioEngine * self)
     sample_processor_free, self->sample_processor);
   object_free_w_func_and_null (
     metronome_free, self->metronome);
-  object_free_w_func_and_null (
-    audio_pool_free, self->pool);
+  object_free_w_func_and_null (audio_pool_free, self->pool);
   object_free_w_func_and_null (
     control_room_free, self->control_room);
   object_free_w_func_and_null (
@@ -2317,8 +2153,7 @@ engine_free (AudioEngine * self)
   object_free_w_func_and_null (
     hardware_processor_free, self->hw_in_processor);
   object_free_w_func_and_null (
-    hardware_processor_free,
-    self->hw_out_processor);
+    hardware_processor_free, self->hw_out_processor);
 
   object_zero_and_free (self);
 

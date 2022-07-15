@@ -21,8 +21,7 @@
 
 #define TYPEDEF_STRUCT(s) typedef struct s s;
 
-#define TYPEDEF_STRUCT_UNDERSCORED(s) \
-  typedef struct _##s s;
+#define TYPEDEF_STRUCT_UNDERSCORED(s) typedef struct _##s s;
 
 #define TYPEDEF_ENUM(s) typedef enum s s;
 
@@ -73,29 +72,25 @@ typedef float (*GenericFloatGetter) (void * object);
 /**
  * Setter prototype for float values.
  */
-typedef void (
-  *GenericFloatSetter) (void * object, float val);
+typedef void (*GenericFloatSetter) (void * object, float val);
 
 /**
  * Getter prototype for strings.
  */
-typedef const char * (*GenericStringGetter) (
-  void * object);
+typedef const char * (*GenericStringGetter) (void * object);
 
 /**
  * Getter prototype for strings to be saved in the
  * given buffer.
  */
-typedef void (*GenericStringCopyGetter) (
-  void * object,
-  char * buf);
+typedef void (
+  *GenericStringCopyGetter) (void * object, char * buf);
 
 /**
  * Setter prototype for float values.
  */
-typedef void (*GenericStringSetter) (
-  void *       object,
-  const char * val);
+typedef void (
+  *GenericStringSetter) (void * object, const char * val);
 
 /**
  * Generic callback.
@@ -105,8 +100,7 @@ typedef void (*GenericCallback) (void * object);
 /**
  * Generic comparator.
  */
-typedef int (
-  *GenericCmpFunc) (const void * a, const void * b);
+typedef int (*GenericCmpFunc) (const void * a, const void * b);
 
 /**
  * Predicate function prototype.

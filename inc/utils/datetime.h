@@ -43,9 +43,7 @@ char *
 datetime_get_current_as_string (void);
 
 char *
-datetime_epoch_to_str (
-  gint64       epoch,
-  const char * format);
+datetime_epoch_to_str (gint64 epoch, const char * format);
 
 /**
  * Get the current datetime to be used in filenames,

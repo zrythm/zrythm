@@ -46,11 +46,10 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  editor_settings_schema_v1 = {
-    YAML_VALUE_PTR (
-      EditorSettings_v1,
-      editor_settings_fields_schema_v1),
-  };
+static const cyaml_schema_value_t editor_settings_schema_v1 = {
+  YAML_VALUE_PTR (
+    EditorSettings_v1,
+    editor_settings_fields_schema_v1),
+};
 
 #endif

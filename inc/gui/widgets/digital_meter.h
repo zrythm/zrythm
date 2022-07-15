@@ -138,9 +138,9 @@ typedef struct _DigitalMeterWidget
   NoteLength * note_length;
   NoteType *   note_type;
   int update_note_length; ///< flag to update note length
-  int start_note_length; ///< start note length
-  int update_note_type; ///< flag to update note type
-  int start_note_type; ///< start note type
+  int start_note_length;  ///< start note length
+  int update_note_type;   ///< flag to update note type
+  int start_note_type;    ///< start note type
 
   /* for time sig */
   int update_timesig_top;
@@ -196,8 +196,7 @@ digital_meter_widget_new (
   const char *     caption);
 
 #define digital_meter_widget_new_for_position( \
-  obj, drag_begin, getter, setter, drag_end, \
-  caption) \
+  obj, drag_begin, getter, setter, drag_end, caption) \
   _digital_meter_widget_new_for_position ( \
     (void *) obj, (void (*) (void *)) drag_begin, \
     (void (*) (void *, Position *)) getter, \

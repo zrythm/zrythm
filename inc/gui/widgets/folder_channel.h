@@ -21,14 +21,11 @@ G_DECLARE_FINAL_TYPE (
   FOLDER_CHANNEL_WIDGET,
   GtkWidget)
 
-typedef struct _ColorAreaWidget ColorAreaWidget;
-typedef struct Track            Track;
-typedef struct _FolderChannelSlotWidget
-  FolderChannelSlotWidget;
-typedef struct _EditableLabelWidget
-  EditableLabelWidget;
-typedef struct _FaderButtonsWidget
-  FaderButtonsWidget;
+typedef struct _ColorAreaWidget         ColorAreaWidget;
+typedef struct Track                    Track;
+typedef struct _FolderChannelSlotWidget FolderChannelSlotWidget;
+typedef struct _EditableLabelWidget     EditableLabelWidget;
+typedef struct _FaderButtonsWidget      FaderButtonsWidget;
 
 /**
  * @addtogroup widgets
@@ -97,8 +94,7 @@ FolderChannelWidget *
 folder_channel_widget_new (Track * track);
 
 void
-folder_channel_widget_tear_down (
-  FolderChannelWidget * self);
+folder_channel_widget_tear_down (FolderChannelWidget * self);
 
 /**
  * Updates everything on the widget.
@@ -107,15 +103,13 @@ folder_channel_widget_tear_down (
  * fix if it causes lags.
  */
 void
-folder_channel_widget_refresh (
-  FolderChannelWidget * self);
+folder_channel_widget_refresh (FolderChannelWidget * self);
 
 /**
  * Displays the widget.
  */
 void
-folder_channel_widget_show (
-  FolderChannelWidget * self);
+folder_channel_widget_show (FolderChannelWidget * self);
 
 /**
  * @}

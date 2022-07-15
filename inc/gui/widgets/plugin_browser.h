@@ -34,8 +34,7 @@ TYPEDEF_STRUCT (ItemFactory);
  * @{
  */
 
-#define MW_PLUGIN_BROWSER \
-  MW_RIGHT_DOCK_EDGE->plugin_browser
+#define MW_PLUGIN_BROWSER MW_RIGHT_DOCK_EDGE->plugin_browser
 
 typedef enum
 {

@@ -32,11 +32,7 @@ SCM_DEFINE (
   5,
   0,
   0,
-  (SCM bars,
-   SCM beats,
-   SCM sixteenths,
-   SCM ticks,
-   SCM sub_tick),
+  (SCM bars, SCM beats, SCM sixteenths, SCM ticks, SCM sub_tick),
   "Return a newly-created position as @var{bars}.\
 @var{beats}.@var{sixteenths}.@var{ticks}.\
 @var{sub_tick}.")
@@ -53,12 +49,9 @@ SCM_DEFINE (
   position_init (pos);
   position_add_bars (pos, scm_to_int (bars) - 1);
   position_add_beats (pos, scm_to_int (beats) - 1);
-  position_add_sixteenths (
-    pos, scm_to_int (sixteenths) - 1);
-  position_add_ticks (
-    pos, (double) scm_to_int (ticks));
-  position_add_ticks (
-    pos, scm_to_double (sub_tick));
+  position_add_sixteenths (pos, scm_to_int (sixteenths) - 1);
+  position_add_ticks (pos, (double) scm_to_int (ticks));
+  position_add_ticks (pos, scm_to_double (sub_tick));
   position_update_frames_from_ticks (pos);
 
   /* wrap the Position * in a new foreign object
@@ -84,8 +77,7 @@ ticks.sub_tick`.")
   position_to_string (refpos, buf);
 
   SCM out_port = scm_current_output_port ();
-  scm_display (
-    scm_from_utf8_string (buf), out_port);
+  scm_display (scm_from_utf8_string (buf), out_port);
 
   return SCM_UNSPECIFIED;
 }
@@ -98,13 +90,11 @@ init_module (void * data)
 #  include "audio_position.x"
 #endif
 
-  scm_c_export (
-    "position-new", "position-print", NULL);
+  scm_c_export ("position-new", "position-print", NULL);
 }
 
 void
 guile_audio_position_define_module (void)
 {
-  scm_c_define_module (
-    "audio position", init_module, NULL);
+  scm_c_define_module ("audio position", init_module, NULL);
 }

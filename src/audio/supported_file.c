@@ -22,8 +22,7 @@ supported_file_new_from_path (const char * path)
 {
   SupportedFile * self = object_new (SupportedFile);
 
-  g_debug (
-    "creating new SupportedFile for %s", path);
+  g_debug ("creating new SupportedFile for %s", path);
   self->abs_path = g_strdup (path);
   self->type = supported_file_get_type (path);
   self->label = g_path_get_basename (path);
@@ -39,18 +38,16 @@ SupportedFile *
 supported_file_new_from_uri (const char * uri)
 {
   GError * err = NULL;
-  char *   path =
-    g_filename_from_uri (uri, NULL, &err);
+  char *   path = g_filename_from_uri (uri, NULL, &err);
   if (!path)
     {
       g_critical (
-        "Error getting file path from URI <%s>: %s",
-        uri, err->message);
+        "Error getting file path from URI <%s>: %s", uri,
+        err->message);
       return NULL;
     }
 
-  SupportedFile * self =
-    supported_file_new_from_path (path);
+  SupportedFile * self = supported_file_new_from_path (path);
   g_free (path);
 
   return self;
@@ -65,10 +62,8 @@ supported_file_type_is_supported (ZFileType type)
   if (supported_file_type_is_audio (type))
     {
       if (
-        type == FILE_TYPE_FLAC
-        || type == FILE_TYPE_OGG
-        || type == FILE_TYPE_WAV
-        || type == FILE_TYPE_MP3)
+        type == FILE_TYPE_FLAC || type == FILE_TYPE_OGG
+        || type == FILE_TYPE_WAV || type == FILE_TYPE_MP3)
         return 1;
     }
   if (supported_file_type_is_midi (type))
@@ -84,8 +79,7 @@ int
 supported_file_type_is_audio (ZFileType type)
 {
   return type == FILE_TYPE_MP3 || type == FILE_TYPE_FLAC
-         || type == FILE_TYPE_OGG
-         || type == FILE_TYPE_WAV;
+         || type == FILE_TYPE_OGG || type == FILE_TYPE_WAV;
 }
 
 /**
@@ -228,8 +222,7 @@ supported_file_type_get_ext (ZFileType type)
  * (shorter than 1 min).
  */
 bool
-supported_file_should_autoplay (
-  const SupportedFile * self)
+supported_file_should_autoplay (const SupportedFile * self)
 {
   bool autoplay = true;
 
@@ -273,8 +266,7 @@ supported_file_get_info_text_for_label (
       if (!enc)
         {
           g_free (file_type_label);
-          return g_strdup (
-            _ ("Failed opening file"));
+          return g_strdup (_ ("Failed opening file"));
         }
 
       label = g_markup_printf_escaped (
@@ -286,12 +278,10 @@ supported_file_get_info_text_for_label (
           "Channel(s): %u | Bitrate: %'d.%d kb/s\n"
           "Bit depth: %d bits"),
         self->label, enc->nfo.sample_rate,
-        enc->nfo.length / 1000,
-        enc->nfo.length % 1000,
+        enc->nfo.length / 1000, enc->nfo.length % 1000,
         (double) enc->nfo.bpm, enc->nfo.channels,
         enc->nfo.bit_rate / 1000,
-        (enc->nfo.bit_rate % 1000) / 100,
-        enc->nfo.bit_depth);
+        (enc->nfo.bit_rate % 1000) / 100, enc->nfo.bit_depth);
       audio_encoder_free (enc);
     }
   else
@@ -310,8 +300,7 @@ supported_file_get_info_text_for_label (
  * SupportedFile's type.
  */
 const char *
-supported_file_get_icon_name (
-  const SupportedFile * const self)
+supported_file_get_icon_name (const SupportedFile * const self)
 {
   switch (self->type)
     {

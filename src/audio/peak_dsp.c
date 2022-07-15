@@ -50,12 +50,10 @@ peak_dsp_process (PeakDsp * self, float * p, int n)
       /*const float fall = 15.f;*/
       const float fall = 5.f;
       const float tme =
-        (float) n
-        / self->fsamp; // period time in seconds
+        (float) n / self->fsamp; // period time in seconds
       self->fall = powf (
         10.f,
-        -0.05f * fall
-          * tme); // per period fallback multiplier
+        -0.05f * fall * tme); // per period fallback multiplier
       self->fpp = n;
     }
 
@@ -113,21 +111,16 @@ float
 peak_dsp_read_f (PeakDsp * self)
 {
   float rv = self->rms;
-  self->flag =
-    true; // Resets _rms in next process().
+  self->flag = true; // Resets _rms in next process().
   return rv;
 }
 
 void
-peak_dsp_read (
-  PeakDsp * self,
-  float *   rms,
-  float *   peak)
+peak_dsp_read (PeakDsp * self, float * rms, float * peak)
 {
   *rms = self->rms;
   *peak = self->peak;
-  self->flag =
-    true; // Resets _rms in next process().
+  self->flag = true; // Resets _rms in next process().
 }
 
 void

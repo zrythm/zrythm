@@ -50,8 +50,7 @@ void
 wrapped_object_with_change_signal_fire (
   WrappedObjectWithChangeSignal * self)
 {
-  g_signal_emit (
-    self, obj_signals[SIGNAL_CHANGED], 0);
+  g_signal_emit (self, obj_signals[SIGNAL_CHANGED], 0);
 }
 
 /**
@@ -66,8 +65,7 @@ wrapped_object_with_change_signal_get_display_name (
   void * data)
 {
   g_return_val_if_fail (
-    Z_IS_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data),
-    NULL);
+    Z_IS_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data), NULL);
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
 
@@ -100,9 +98,8 @@ wrapped_object_with_change_signal_new (
   void *            obj,
   WrappedObjectType type)
 {
-  WrappedObjectWithChangeSignal * self =
-    g_object_new (
-      WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, NULL);
+  WrappedObjectWithChangeSignal * self = g_object_new (
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, NULL);
 
   self->type = type;
   self->obj = obj;
@@ -121,13 +118,11 @@ wrapped_object_with_change_signal_class_init (
 
   obj_signals[SIGNAL_CHANGED] = g_signal_newv (
     "changed", G_TYPE_FROM_CLASS (oklass),
-    G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE
-      | G_SIGNAL_NO_HOOKS,
+    G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
     NULL /* closure */, NULL /* accumulator */,
-    NULL /* accumulator data */,
-    NULL /* C marshaller */,
-    G_TYPE_NONE /* return_type */,
-    0 /* n_params */, NULL /* param_types */);
+    NULL /* accumulator data */, NULL /* C marshaller */,
+    G_TYPE_NONE /* return_type */, 0 /* n_params */,
+    NULL /* param_types */);
 }
 
 static void

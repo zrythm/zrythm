@@ -85,9 +85,7 @@ plugin_gtk_create_window (Plugin * plugin);
  * called.
  */
 void
-plugin_gtk_open_generic_ui (
-  Plugin * plugin,
-  bool     fire_events);
+plugin_gtk_open_generic_ui (Plugin * plugin, bool fire_events);
 
 /**
  * Called on each GUI frame to update the GTK UI.

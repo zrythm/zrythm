@@ -36,18 +36,14 @@ G_DECLARE_FINAL_TYPE (
   CLIP_EDITOR_WIDGET,
   GtkBox)
 
-#define MW_CLIP_EDITOR \
-  MW_BOT_DOCK_EDGE->clip_editor
+#define MW_CLIP_EDITOR MW_BOT_DOCK_EDGE->clip_editor
 
-typedef struct _ClipEditorInnerWidget
-  ClipEditorInnerWidget;
+typedef struct _ClipEditorInnerWidget ClipEditorInnerWidget;
 typedef struct _EditorSelectionInfoWidget
-  EditorSelectionInfoWidget;
-typedef struct _EditorToolbarWidget
-  EditorToolbarWidget;
-typedef struct _AudioClipEditorWidget
-                          AudioClipEditorWidget;
-typedef struct ClipEditor ClipEditor;
+                                    EditorSelectionInfoWidget;
+typedef struct _EditorToolbarWidget EditorToolbarWidget;
+typedef struct _AudioClipEditorWidget AudioClipEditorWidget;
+typedef struct ClipEditor             ClipEditor;
 
 /**
  * The ClipEditorWidget shows in the Clip Editor /
@@ -77,8 +73,7 @@ clip_editor_widget_setup (ClipEditorWidget * self);
  * To be called when the region changes.
  */
 void
-clip_editor_widget_on_region_changed (
-  ClipEditorWidget * self);
+clip_editor_widget_on_region_changed (ClipEditorWidget * self);
 
 ClipEditorWidget *
 clip_editor_widget_new (void);

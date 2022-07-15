@@ -41,8 +41,7 @@ on_adjust_end_toggled (
   GtkToggleButton *      toggle,
   QuantizeDialogWidget * self)
 {
-  self->opts->adj_end =
-    gtk_toggle_button_get_active (toggle);
+  self->opts->adj_end = gtk_toggle_button_get_active (toggle);
 }
 
 static void
@@ -55,9 +54,7 @@ on_adjust_start_toggled (
 }
 
 static void
-on_cancel_clicked (
-  GtkButton *            btn,
-  QuantizeDialogWidget * self)
+on_cancel_clicked (GtkButton * btn, QuantizeDialogWidget * self)
 {
   gtk_window_close (GTK_WINDOW (self));
 }
@@ -70,14 +67,12 @@ on_quantize_clicked (
   if (QUANTIZE_OPTIONS_IS_EDITOR (self->opts))
     {
       ArrangerSelections * sel =
-        clip_editor_get_arranger_selections (
-          CLIP_EDITOR);
+        clip_editor_get_arranger_selections (CLIP_EDITOR);
       g_return_if_fail (sel);
 
       GError * err = NULL;
-      bool     ret =
-        arranger_selections_action_perform_quantize (
-          sel, self->opts, &err);
+      bool ret = arranger_selections_action_perform_quantize (
+        sel, self->opts, &err);
       if (!ret)
         {
           HANDLE_ERROR (
@@ -89,10 +84,9 @@ on_quantize_clicked (
   else if (QUANTIZE_OPTIONS_IS_TIMELINE (self->opts))
     {
       GError * err = NULL;
-      bool     ret =
-        arranger_selections_action_perform_quantize (
-          (ArrangerSelections *) TL_SELECTIONS,
-          self->opts, &err);
+      bool ret = arranger_selections_action_perform_quantize (
+        (ArrangerSelections *) TL_SELECTIONS, self->opts,
+        &err);
       if (!ret)
         {
           HANDLE_ERROR (
@@ -109,8 +103,8 @@ on_quantize_clicked (
 QuantizeDialogWidget *
 quantize_dialog_widget_new (QuantizeOptions * opts)
 {
-  QuantizeDialogWidget * self = g_object_new (
-    QUANTIZE_DIALOG_WIDGET_TYPE, NULL);
+  QuantizeDialogWidget * self =
+    g_object_new (QUANTIZE_DIALOG_WIDGET_TYPE, NULL);
 
   self->opts = opts;
 
@@ -127,40 +121,33 @@ quantize_dialog_widget_new (QuantizeOptions * opts)
     G_CALLBACK (on_adjust_end_toggled), self);
 
   self->note_length = digital_meter_widget_new (
-    DIGITAL_METER_TYPE_NOTE_LENGTH,
-    &opts->note_length, &opts->note_type,
-    _ ("note length"));
+    DIGITAL_METER_TYPE_NOTE_LENGTH, &opts->note_length,
+    &opts->note_type, _ ("note length"));
   gtk_box_append (
     GTK_BOX (self->note_length_box),
     GTK_WIDGET (self->note_length));
   self->note_type = digital_meter_widget_new (
-    DIGITAL_METER_TYPE_NOTE_TYPE,
-    &opts->note_length, &opts->note_type,
-    _ ("note type"));
+    DIGITAL_METER_TYPE_NOTE_TYPE, &opts->note_length,
+    &opts->note_type, _ ("note type"));
   gtk_box_append (
     GTK_BOX (self->note_type_box),
     GTK_WIDGET (self->note_type));
 
   int w = 100, h = -1;
   self->amount = bar_slider_widget_new (
-    quantize_options_get_amount,
-    quantize_options_set_amount, opts, 0, 100, w,
-    h, 0, 0, UI_DRAG_MODE_CURSOR, "%");
+    quantize_options_get_amount, quantize_options_set_amount,
+    opts, 0, 100, w, h, 0, 0, UI_DRAG_MODE_CURSOR, "%");
   gtk_box_append (
-    GTK_BOX (self->amount_box),
-    GTK_WIDGET (self->amount));
+    GTK_BOX (self->amount_box), GTK_WIDGET (self->amount));
   self->swing = bar_slider_widget_new (
-    quantize_options_get_swing,
-    quantize_options_set_swing, opts, 0, 100, w, h,
-    0, 0, UI_DRAG_MODE_CURSOR, "%");
+    quantize_options_get_swing, quantize_options_set_swing,
+    opts, 0, 100, w, h, 0, 0, UI_DRAG_MODE_CURSOR, "%");
   gtk_box_append (
-    GTK_BOX (self->swing_box),
-    GTK_WIDGET (self->swing));
+    GTK_BOX (self->swing_box), GTK_WIDGET (self->swing));
   self->randomization = bar_slider_widget_new (
     quantize_options_get_randomization,
-    quantize_options_set_randomization, opts, 0.f,
-    100.f, w, h, 0, 0, UI_DRAG_MODE_CURSOR,
-    " ticks");
+    quantize_options_set_randomization, opts, 0.f, 100.f, w,
+    h, 0, 0, UI_DRAG_MODE_CURSOR, " ticks");
   gtk_box_append (
     GTK_BOX (self->randomization_box),
     GTK_WIDGET (self->randomization));
@@ -172,10 +159,8 @@ static void
 quantize_dialog_widget_class_init (
   QuantizeDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "quantize_dialog.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "quantize_dialog.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
@@ -198,8 +183,7 @@ quantize_dialog_widget_class_init (
 }
 
 static void
-quantize_dialog_widget_init (
-  QuantizeDialogWidget * self)
+quantize_dialog_widget_init (QuantizeDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }

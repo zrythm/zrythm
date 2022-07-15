@@ -41,39 +41,31 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 void
-timeline_toolbar_widget_refresh (
-  TimelineToolbarWidget * self)
+timeline_toolbar_widget_refresh (TimelineToolbarWidget * self)
 {
   /* enable/disable merge button */
-  bool sensitive =
-    arranger_selections_can_be_merged (
-      (ArrangerSelections *) TL_SELECTIONS);
-  g_debug (
-    "settings merge button sensitivity %d",
-    sensitive);
+  bool sensitive = arranger_selections_can_be_merged (
+    (ArrangerSelections *) TL_SELECTIONS);
+  g_debug ("settings merge button sensitivity %d", sensitive);
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->merge_btn), sensitive);
 }
 
 void
-timeline_toolbar_widget_setup (
-  TimelineToolbarWidget * self)
+timeline_toolbar_widget_setup (TimelineToolbarWidget * self)
 {
-  snap_box_widget_setup (
-    self->snap_box, SNAP_GRID_TIMELINE);
+  snap_box_widget_setup (self->snap_box, SNAP_GRID_TIMELINE);
   quantize_box_widget_setup (
     self->quantize_box, QUANTIZE_OPTIONS_TIMELINE);
 }
 
 static void
-timeline_toolbar_widget_init (
-  TimelineToolbarWidget * self)
+timeline_toolbar_widget_init (TimelineToolbarWidget * self)
 {
   g_type_ensure (QUANTIZE_BOX_WIDGET_TYPE);
   g_type_ensure (RANGE_ACTION_BUTTONS_WIDGET_TYPE);
   g_type_ensure (SNAP_BOX_WIDGET_TYPE);
-  g_type_ensure (
-    PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE);
+  g_type_ensure (PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE);
   g_type_ensure (ZOOM_BUTTONS_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
@@ -81,8 +73,7 @@ timeline_toolbar_widget_init (
 #define SET_TOOLTIP(x) \
   z_gtk_set_tooltip_for_actionable ( \
     GTK_ACTIONABLE (self->x), \
-    gtk_widget_get_tooltip_text ( \
-      GTK_WIDGET (self->x)))
+    gtk_widget_get_tooltip_text (GTK_WIDGET (self->x)))
 
   SET_TOOLTIP (event_viewer_toggle);
   SET_TOOLTIP (musical_mode_toggle);
@@ -90,18 +81,15 @@ timeline_toolbar_widget_init (
 
 #undef SET_TOOLTIP
 
-  zoom_buttons_widget_setup (
-    self->zoom_buttons, true);
+  zoom_buttons_widget_setup (self->zoom_buttons, true);
 }
 
 static void
 timeline_toolbar_widget_class_init (
   TimelineToolbarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "timeline_toolbar.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "timeline_toolbar.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

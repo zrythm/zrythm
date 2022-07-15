@@ -45,9 +45,7 @@ typedef struct QuantizeOptions_v1
 
 static const cyaml_schema_field_t
   quantize_options_fields_schema_v1[] = {
-    YAML_FIELD_INT (
-      QuantizeOptions_v1,
-      schema_version),
+    YAML_FIELD_INT (QuantizeOptions_v1, schema_version),
     YAML_FIELD_ENUM (
       QuantizeOptions_v1,
       note_length,
@@ -65,11 +63,10 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  quantize_options_schema_v1 = {
-    YAML_VALUE_PTR (
-      QuantizeOptions_v1,
-      quantize_options_fields_schema_v1),
-  };
+static const cyaml_schema_value_t quantize_options_schema_v1 = {
+  YAML_VALUE_PTR (
+    QuantizeOptions_v1,
+    quantize_options_fields_schema_v1),
+};
 
 #endif

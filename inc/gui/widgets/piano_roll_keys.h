@@ -108,8 +108,7 @@ piano_roll_keys_widget_get_font_size (
   PianoRollKeysWidget * self);
 
 void
-piano_roll_keys_widget_refresh (
-  PianoRollKeysWidget * self);
+piano_roll_keys_widget_refresh (PianoRollKeysWidget * self);
 
 void
 piano_roll_keys_widget_redraw_note (
@@ -121,8 +120,7 @@ piano_roll_keys_widget_redraw_full (
   PianoRollKeysWidget * self);
 
 void
-piano_roll_keys_widget_setup (
-  PianoRollKeysWidget * self);
+piano_roll_keys_widget_setup (PianoRollKeysWidget * self);
 
 int
 piano_roll_keys_widget_get_key_from_y (

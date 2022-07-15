@@ -36,12 +36,10 @@ SCM_DEFINE (
   "the tracklist.")
 #define FUNC_NAME s_
 {
-  Tracklist * tl =
-    (Tracklist *) scm_to_pointer (tracklist);
+  Tracklist * tl = (Tracklist *) scm_to_pointer (tracklist);
 
   tracklist_insert_track (
-    tl, scm_to_pointer (track), scm_to_int (idx),
-    true, true);
+    tl, scm_to_pointer (track), scm_to_int (idx), true, true);
 
   return SCM_BOOL_T;
 }
@@ -57,11 +55,9 @@ SCM_DEFINE (
   "Returns the track at @var{pos} in the tracklist.")
 #define FUNC_NAME s_
 {
-  Tracklist * tl =
-    (Tracklist *) scm_to_pointer (tracklist);
+  Tracklist * tl = (Tracklist *) scm_to_pointer (tracklist);
 
-  return scm_from_pointer (
-    tl->tracks[scm_to_int (pos)], NULL);
+  return scm_from_pointer (tl->tracks[scm_to_int (pos)], NULL);
 }
 #undef FUNC_NAME
 
@@ -75,8 +71,7 @@ SCM_DEFINE (
   "Returns the number of tracks in the tracklist.")
 #define FUNC_NAME s_
 {
-  Tracklist * tl =
-    (Tracklist *) scm_to_pointer (tracklist);
+  Tracklist * tl = (Tracklist *) scm_to_pointer (tracklist);
 
   return scm_from_int (tl->num_tracks);
 }
@@ -89,14 +84,12 @@ init_module (void * data)
 #  include "audio_tracklist.x"
 #endif
   scm_c_export (
-    "tracklist-insert-track",
-    "tracklist-get-track-at-pos",
+    "tracklist-insert-track", "tracklist-get-track-at-pos",
     "tracklist-get-num-tracks", NULL);
 }
 
 void
 guile_audio_tracklist_define_module (void)
 {
-  scm_c_define_module (
-    "audio tracklist", init_module, NULL);
+  scm_c_define_module ("audio tracklist", init_module, NULL);
 }

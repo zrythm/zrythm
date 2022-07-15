@@ -45,8 +45,7 @@ typedef struct _VelocityWidget VelocityWidget;
 #define VELOCITY_SCHEMA_VERSION 1
 
 #define velocity_is_selected(r) \
-  arranger_object_is_selected ( \
-    (ArrangerObject *) r)
+  arranger_object_is_selected ((ArrangerObject *) r)
 
 /**
  * Default velocity.
@@ -74,15 +73,14 @@ typedef struct Velocity
   MidiNote * midi_note;
 } Velocity;
 
-static const cyaml_schema_field_t
-  velocity_fields_schema[] = {
-    YAML_FIELD_MAPPING_EMBEDDED (
-      Velocity,
-      base,
-      arranger_object_fields_schema),
-    YAML_FIELD_INT (Velocity, schema_version),
-    YAML_FIELD_UINT (Velocity, vel), CYAML_FIELD_END
-  };
+static const cyaml_schema_field_t velocity_fields_schema[] = {
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Velocity,
+    base,
+    arranger_object_fields_schema),
+  YAML_FIELD_INT (Velocity, schema_version),
+  YAML_FIELD_UINT (Velocity, vel), CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t velocity_schema = {
   YAML_VALUE_PTR (Velocity, velocity_fields_schema),
@@ -92,9 +90,7 @@ static const cyaml_schema_value_t velocity_schema = {
  * Creates a new Velocity with the given value.
  */
 Velocity *
-velocity_new (
-  MidiNote *    midi_note,
-  const uint8_t vel);
+velocity_new (MidiNote * midi_note, const uint8_t vel);
 
 /**
  * Sets the MidiNote the Velocity belongs to.
@@ -130,8 +126,7 @@ velocity_set_val (Velocity * self, const int val);
  * Returns the owner MidiNote.
  */
 MidiNote *
-velocity_get_midi_note (
-  const Velocity * const self);
+velocity_get_midi_note (const Velocity * const self);
 
 const char *
 velocity_setting_enum_to_str (guint index);

@@ -55,9 +55,7 @@ typedef struct RegionLinkGroupManager
 
 static const cyaml_schema_field_t
   region_link_group_manager_fields_schema[] = {
-    YAML_FIELD_INT (
-      RegionLinkGroupManager,
-      schema_version),
+    YAML_FIELD_INT (RegionLinkGroupManager, schema_version),
     YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
       RegionLinkGroupManager,
       groups,
@@ -112,13 +110,11 @@ region_link_group_manager_print (
 
 NONNULL
 RegionLinkGroupManager *
-region_link_group_manager_clone (
-  RegionLinkGroupManager * src);
+region_link_group_manager_clone (RegionLinkGroupManager * src);
 
 NONNULL
 void
-region_link_group_manager_free (
-  RegionLinkGroupManager * self);
+region_link_group_manager_free (RegionLinkGroupManager * self);
 
 /**
  * @}

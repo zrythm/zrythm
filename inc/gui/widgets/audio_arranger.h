@@ -33,8 +33,7 @@
  * @{
  */
 
-#define MW_AUDIO_ARRANGER \
-  MW_AUDIO_EDITOR_SPACE->arranger
+#define MW_AUDIO_ARRANGER MW_AUDIO_EDITOR_SPACE->arranger
 
 void
 audio_arranger_widget_snap_range_r (

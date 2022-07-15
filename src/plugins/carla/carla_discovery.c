@@ -21,8 +21,7 @@
 #  include <lv2/instance-access/instance-access.h>
 
 static ZPluginCategory
-get_category_from_carla_category (
-  const char * category)
+get_category_from_carla_category (const char * category)
 {
 #  define EQUALS(x) string_is_equal (category, x)
 
@@ -49,8 +48,7 @@ get_category_from_carla_category (
 }
 
 static ZPluginCategory
-carla_category_to_zrythm_category (
-  PluginCategory carla_cat)
+carla_category_to_zrythm_category (PluginCategory carla_cat)
 {
   switch (carla_cat)
     {
@@ -83,8 +81,7 @@ carla_category_to_zrythm_category (
  * as a newly allocated string.
  */
 char *
-z_carla_discovery_get_discovery_path (
-  PluginArchitecture arch)
+z_carla_discovery_get_discovery_path (PluginArchitecture arch)
 {
   char carla_discovery_filename[60];
   strcpy (
@@ -98,16 +95,13 @@ z_carla_discovery_get_discovery_path (
 #  endif
   );
   strcat (carla_discovery_filename, BIN_SUFFIX);
-  char * zrythm_libdir = zrythm_get_dir (
-    ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
-  g_debug (
-    "using zrythm_libdir: %s", zrythm_libdir);
+  char * zrythm_libdir =
+    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_ZRYTHM_LIBDIR);
+  g_debug ("using zrythm_libdir: %s", zrythm_libdir);
   char * carla_discovery = g_build_filename (
-    zrythm_libdir, "carla",
-    carla_discovery_filename, NULL);
+    zrythm_libdir, "carla", carla_discovery_filename, NULL);
   g_free (zrythm_libdir);
-  g_return_val_if_fail (
-    file_exists (carla_discovery), NULL);
+  g_return_val_if_fail (file_exists (carla_discovery), NULL);
 
   return carla_discovery;
 }
@@ -127,8 +121,7 @@ z_carla_discovery_parse_plugin_info (
   const char * plugin_path,
   char *       results)
 {
-  g_return_val_if_fail (
-    plugin_path && results, NULL);
+  g_return_val_if_fail (plugin_path && results, NULL);
 
   PluginDescriptor ** descriptors =
     object_new (PluginDescriptor *);
@@ -145,21 +138,18 @@ z_carla_discovery_parse_plugin_info (
 #    define LINE_SEP "\\n"
 #  endif
   char * error = string_get_regex_group (
-    results,
-    "carla-discovery::error::(.*)" LINE_SEP, 1);
+    results, "carla-discovery::error::(.*)" LINE_SEP, 1);
   char * offset_str;
   if (error)
     {
       g_free (error);
       g_message (
-        "error found for %s: %s", plugin_path,
-        results);
+        "error found for %s: %s", plugin_path, results);
       goto free_descriptors_and_return_null;
     }
   else if (string_is_equal ("", results))
     {
-      g_message (
-        "No results returned for %s", plugin_path);
+      g_message ("No results returned for %s", plugin_path);
       goto free_descriptors_and_return_null;
     }
 
@@ -167,15 +157,13 @@ z_carla_discovery_parse_plugin_info (
   while (offset_str)
     {
       /* get info for this plugin */
-      char * plugin_info =
-        string_get_substr_before_suffix (
-          offset_str, discovery_end_txt);
+      char * plugin_info = string_get_substr_before_suffix (
+        offset_str, discovery_end_txt);
 
-      PluginDescriptor * descr =
-        plugin_descriptor_new ();
+      PluginDescriptor * descr = plugin_descriptor_new ();
       descr->name = string_get_regex_group (
-        plugin_info,
-        "carla-discovery::name::(.*)" LINE_SEP, 1);
+        plugin_info, "carla-discovery::name::(.*)" LINE_SEP,
+        1);
       if (!descr->name)
         {
           g_warning (
@@ -185,61 +173,46 @@ z_carla_discovery_parse_plugin_info (
           goto free_descriptors_and_return_null;
         }
       descr->author = string_get_regex_group (
+        plugin_info, "carla-discovery::maker::(.*)" LINE_SEP,
+        1);
+      descr->unique_id = string_get_regex_group_as_int (
         plugin_info,
-        "carla-discovery::maker::(.*)" LINE_SEP, 1);
-      descr
-        ->unique_id = string_get_regex_group_as_int (
+        "carla-discovery::uniqueId::(.*)" LINE_SEP, 1, 0);
+      descr->num_audio_ins = string_get_regex_group_as_int (
         plugin_info,
-        "carla-discovery::uniqueId::(.*)" LINE_SEP,
-        1, 0);
-      descr->num_audio_ins =
-        string_get_regex_group_as_int (
-          plugin_info,
-          "carla-discovery::audio.ins::(.*)" LINE_SEP,
-          1, 0);
-      descr->num_audio_outs =
-        string_get_regex_group_as_int (
-          plugin_info,
-          "carla-discovery::audio.outs::(.*)" LINE_SEP,
-          1, 0);
-      descr->num_ctrl_ins =
-        string_get_regex_group_as_int (
-          plugin_info,
-          "carla-discovery::parameters.ins::(.*)" LINE_SEP,
-          1, 0);
-      descr->num_midi_ins =
-        string_get_regex_group_as_int (
-          plugin_info,
-          "carla-discovery::midi.ins::(.*)" LINE_SEP,
-          1, 0);
-      descr->num_midi_outs =
-        string_get_regex_group_as_int (
-          plugin_info,
-          "carla-discovery::midi.ins::(.*)" LINE_SEP,
-          1, 0);
+        "carla-discovery::audio.ins::(.*)" LINE_SEP, 1, 0);
+      descr->num_audio_outs = string_get_regex_group_as_int (
+        plugin_info,
+        "carla-discovery::audio.outs::(.*)" LINE_SEP, 1, 0);
+      descr->num_ctrl_ins = string_get_regex_group_as_int (
+        plugin_info,
+        "carla-discovery::parameters.ins::(.*)" LINE_SEP, 1,
+        0);
+      descr->num_midi_ins = string_get_regex_group_as_int (
+        plugin_info,
+        "carla-discovery::midi.ins::(.*)" LINE_SEP, 1, 0);
+      descr->num_midi_outs = string_get_regex_group_as_int (
+        plugin_info,
+        "carla-discovery::midi.ins::(.*)" LINE_SEP, 1, 0);
 
       /* get label for AU */
       descr->uri = string_get_regex_group (
-        plugin_info,
-        "carla-discovery::label::(.*)" LINE_SEP, 1);
+        plugin_info, "carla-discovery::label::(.*)" LINE_SEP,
+        1);
 
       /* get has custom UI */
-      descr->has_custom_ui =
-        string_get_regex_group_as_int (
-          plugin_info,
-          "carla-discovery::hints::(.*)" LINE_SEP,
-          1, 0);
+      descr->has_custom_ui = string_get_regex_group_as_int (
+        plugin_info, "carla-discovery::hints::(.*)" LINE_SEP,
+        1, 0);
 
       /* get category */
       char * carla_category = string_get_regex_group (
         plugin_info,
-        "carla-discovery::category::(.*)" LINE_SEP,
-        1);
+        "carla-discovery::category::(.*)" LINE_SEP, 1);
       if (carla_category)
         {
           descr->category =
-            get_category_from_carla_category (
-              carla_category);
+            get_category_from_carla_category (carla_category);
           ;
           descr->category_str =
             plugin_descriptor_category_to_string (
@@ -249,8 +222,7 @@ z_carla_discovery_parse_plugin_info (
         {
           int hints = string_get_regex_group_as_int (
             plugin_info,
-            "carla-discovery::hints::(.*)" LINE_SEP,
-            1, 0);
+            "carla-discovery::hints::(.*)" LINE_SEP, 1, 0);
           if ((unsigned int) hints & PLUGIN_IS_SYNTH)
             {
               descr->category = PC_INSTRUMENT;
@@ -260,8 +232,7 @@ z_carla_discovery_parse_plugin_info (
             }
           else
             {
-              descr->category =
-                ZPLUGIN_CATEGORY_NONE;
+              descr->category = ZPLUGIN_CATEGORY_NONE;
               descr->category_str =
                 plugin_descriptor_category_to_string (
                   descr->category);
@@ -277,8 +248,7 @@ z_carla_discovery_parse_plugin_info (
 
       g_free (plugin_info);
 
-      offset_str = strstr (
-        &offset_str[1], discovery_init_txt);
+      offset_str = strstr (&offset_str[1], discovery_init_txt);
     }
 
   g_message (
@@ -339,24 +309,20 @@ z_carla_discovery_create_descriptors_from_file (
     }
   g_return_val_if_fail (type, NULL);
 
-  char * results =
-    z_carla_discovery_run (arch, type, path);
+  char * results = z_carla_discovery_run (arch, type, path);
   if (!results)
     {
-      g_warning (
-        "Failed to get results for %s", path);
+      g_warning ("Failed to get results for %s", path);
       return NULL;
     }
   g_message ("results: [[[\n%s\n]]]", results);
 
   PluginDescriptor ** descriptors =
-    z_carla_discovery_parse_plugin_info (
-      path, results);
+    z_carla_discovery_parse_plugin_info (path, results);
   g_free (results);
   if (!descriptors)
     {
-      g_debug (
-        "No plugin info was parsed from %s", path);
+      g_debug ("No plugin info was parsed from %s", path);
       return NULL;
     }
 
@@ -367,13 +333,11 @@ z_carla_discovery_create_descriptors_from_file (
       descr->protocol = protocol;
       descr->arch = arch;
       descr->path = g_strdup (path);
-      GFile * file =
-        g_file_new_for_path (descr->path);
+      GFile * file = g_file_new_for_path (descr->path);
       descr->ghash = g_file_hash (file);
       g_object_unref (file);
       descr->min_bridge_mode =
-        plugin_descriptor_get_min_bridge_mode (
-          descr);
+        plugin_descriptor_get_min_bridge_mode (descr);
     }
 
   return descriptors;
@@ -394,20 +358,18 @@ z_carla_discovery_run (
     z_carla_discovery_get_discovery_path (arch);
   g_return_val_if_fail (carla_discovery, NULL);
   char cmd[4000];
-  sprintf (
-    cmd, "%s %s %s", carla_discovery, arg1, arg2);
+  sprintf (cmd, "%s %s %s", carla_discovery, arg1, arg2);
   g_message ("cmd: [[[\n%s\n]]]", cmd);
   const char * argv[] = {
-    carla_discovery, (char *) arg1, (char *) arg2,
-    NULL
+    carla_discovery, (char *) arg1, (char *) arg2, NULL
   };
 #  if 0
   char * results =
     system_get_cmd_output (argv, 1200, true);
 #  endif
   char * res;
-  int    ret = system_run_cmd_w_args (
-       argv, 8000, &res, NULL, true);
+  int    ret =
+    system_run_cmd_w_args (argv, 8000, &res, NULL, true);
   if (ret == 0)
     {
       return res;
@@ -431,8 +393,7 @@ z_carla_discovery_create_au_descriptor_from_info (
   if (!info || !info->valid)
     return NULL;
 
-  PluginDescriptor * descr =
-    plugin_descriptor_new ();
+  PluginDescriptor * descr = plugin_descriptor_new ();
   descr->name = g_strdup (info->name);
   g_return_val_if_fail (descr->name, NULL);
   descr->author = g_strdup (info->maker);
@@ -453,20 +414,17 @@ z_carla_discovery_create_au_descriptor_from_info (
   else
     {
       descr->category =
-        carla_category_to_zrythm_category (
-          info->category);
+        carla_category_to_zrythm_category (info->category);
     }
   descr->category_str =
-    plugin_descriptor_category_to_string (
-      descr->category);
+    plugin_descriptor_category_to_string (descr->category);
 
   descr->protocol = PROT_AU;
   descr->arch = ARCH_64;
   descr->path = NULL;
   descr->min_bridge_mode =
     plugin_descriptor_get_min_bridge_mode (descr);
-  descr->has_custom_ui =
-    info->hints & PLUGIN_HAS_CUSTOM_UI;
+  descr->has_custom_ui = info->hints & PLUGIN_HAS_CUSTOM_UI;
 
   return descr;
 }
@@ -489,24 +447,21 @@ z_carla_discovery_create_au_descriptor_from_string (
   /* replace cur_str with the following parts */
   for (int i = 0; i < idx; i++)
     {
-      char * next_val =
-        string_remove_until_after_first_match (
-          cur_str, discovery_end_txt);
+      char * next_val = string_remove_until_after_first_match (
+        cur_str, discovery_end_txt);
       g_free (cur_str);
       cur_str = next_val;
     }
 
-  char * plugin_info =
-    string_get_substr_before_suffix (
-      cur_str, discovery_end_txt);
+  char * plugin_info = string_get_substr_before_suffix (
+    cur_str, discovery_end_txt);
   g_free (cur_str);
   g_return_val_if_fail (plugin_info, NULL);
 
   char id[50];
   sprintf (id, "%d", idx);
   PluginDescriptor ** descriptors =
-    z_carla_discovery_parse_plugin_info (
-      id, plugin_info);
+    z_carla_discovery_parse_plugin_info (id, plugin_info);
   g_free (plugin_info);
   if (!descriptors || !descriptors[0])
     {

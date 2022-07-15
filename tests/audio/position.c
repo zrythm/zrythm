@@ -123,14 +123,12 @@ test_set_to (void)
 
   position_set_to_bar (&pos, 4);
   position_to_string (&pos, res);
-  g_assert_true (
-    string_contains_substr (res, expect));
+  g_assert_true (string_contains_substr (res, expect));
 
   expect = "1.1.1.0";
   position_set_to_bar (&pos, 1);
   position_to_string (&pos, res);
-  g_assert_true (
-    string_contains_substr (res, expect));
+  g_assert_true (string_contains_substr (res, expect));
 
   test_helper_zrythm_cleanup ();
 }
@@ -177,8 +175,7 @@ test_position_from_ticks (void)
     position_get_bars (&pos, true), ==,
     math_round_double_to_signed_32 (
       ticks / TRANSPORT->ticks_per_bar + 1));
-  g_assert_cmpint (
-    position_get_bars (&pos, true), >, 0);
+  g_assert_cmpint (position_get_bars (&pos, true), >, 0);
 
   test_helper_zrythm_cleanup ();
 }
@@ -213,22 +210,17 @@ test_get_total_beats (void)
   Position end_pos = {
     .ticks = 4800.0290249433119, .frames = 69632
   };
-  position_from_ticks (
-    &start_pos, 4782.3818594104323);
+  position_from_ticks (&start_pos, 4782.3818594104323);
   position_from_ticks (&end_pos, 4800);
 
   int beats = 0;
-  beats =
-    position_get_total_beats (&start_pos, false);
+  beats = position_get_total_beats (&start_pos, false);
   g_assert_cmpint (beats, ==, 4);
-  beats =
-    position_get_total_beats (&end_pos, false);
+  beats = position_get_total_beats (&end_pos, false);
   g_assert_cmpint (beats, ==, 4);
 
-  position_from_ticks (
-    &end_pos, 4800.0290249433119);
-  beats =
-    position_get_total_beats (&end_pos, false);
+  position_from_ticks (&end_pos, 4800.0290249433119);
+  beats = position_get_total_beats (&end_pos, false);
   g_assert_cmpint (beats, ==, 5);
 
   test_helper_zrythm_cleanup ();
@@ -268,8 +260,7 @@ test_snap (void)
   test_helper_zrythm_init ();
 
   g_assert_cmpint (
-    SNAP_GRID_TIMELINE->snap_note_length, ==,
-    NOTE_LENGTH_BAR);
+    SNAP_GRID_TIMELINE->snap_note_length, ==, NOTE_LENGTH_BAR);
 
   /* test without keep offset */
   Position start_pos;
@@ -281,8 +272,7 @@ test_snap (void)
   Position test_pos;
   position_set_to_bar (&test_pos, 5);
   position_snap (
-    &start_pos, &cur_pos, NULL, NULL,
-    SNAP_GRID_TIMELINE);
+    &start_pos, &cur_pos, NULL, NULL, SNAP_GRID_TIMELINE);
   g_assert_cmppos (&cur_pos, &test_pos);
 
   position_set_to_bar (&cur_pos, 4);
@@ -290,24 +280,20 @@ test_snap (void)
   position_add_ticks (
     &cur_pos, 2 * TICKS_PER_QUARTER_NOTE - 10);
   position_snap (
-    &start_pos, &cur_pos, NULL, NULL,
-    SNAP_GRID_TIMELINE);
+    &start_pos, &cur_pos, NULL, NULL, SNAP_GRID_TIMELINE);
   g_assert_cmppos (&cur_pos, &test_pos);
 
   g_message ("-----");
 
   /* test keep offset */
-  SNAP_GRID_TIMELINE->snap_to_grid_keep_offset =
-    true;
+  SNAP_GRID_TIMELINE->snap_to_grid_keep_offset = true;
   position_set_to_bar (&start_pos, 4);
-  position_add_ticks (
-    &start_pos, 2 * TICKS_PER_QUARTER_NOTE);
+  position_add_ticks (&start_pos, 2 * TICKS_PER_QUARTER_NOTE);
   position_set_to_pos (&cur_pos, &start_pos);
   position_add_ticks (&cur_pos, 10);
   position_set_to_pos (&test_pos, &start_pos);
   position_snap (
-    &start_pos, &cur_pos, NULL, NULL,
-    SNAP_GRID_TIMELINE);
+    &start_pos, &cur_pos, NULL, NULL, SNAP_GRID_TIMELINE);
   char buf1[100];
   char buf2[100];
   position_to_string (&cur_pos, buf1);
@@ -316,14 +302,12 @@ test_snap (void)
   g_assert_cmppos (&cur_pos, &test_pos);
 
   position_set_to_bar (&start_pos, 4);
-  position_add_ticks (
-    &start_pos, 2 * TICKS_PER_QUARTER_NOTE);
+  position_add_ticks (&start_pos, 2 * TICKS_PER_QUARTER_NOTE);
   position_set_to_pos (&cur_pos, &start_pos);
   position_add_ticks (&cur_pos, -10);
   position_set_to_pos (&test_pos, &start_pos);
   position_snap (
-    &start_pos, &cur_pos, NULL, NULL,
-    SNAP_GRID_TIMELINE);
+    &start_pos, &cur_pos, NULL, NULL, SNAP_GRID_TIMELINE);
   position_to_string (&cur_pos, buf1);
   position_to_string (&test_pos, buf2);
   g_message ("cur pos %s test pos %s", buf1, buf2);
@@ -351,8 +335,7 @@ main (int argc, char * argv[])
     TEST_PREFIX "test get totals",
     (GTestFunc) test_get_totals);
   g_test_add_func (
-    TEST_PREFIX "test set to",
-    (GTestFunc) test_set_to);
+    TEST_PREFIX "test set to", (GTestFunc) test_set_to);
   g_test_add_func (
     TEST_PREFIX "test position from ticks",
     (GTestFunc) test_position_from_ticks);

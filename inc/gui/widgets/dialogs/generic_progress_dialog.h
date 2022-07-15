@@ -39,8 +39,7 @@ G_DECLARE_DERIVABLE_TYPE (
   GENERIC_PROGRESS_DIALOG_WIDGET,
   GtkDialog)
 
-typedef struct GenericProgressInfo
-  GenericProgressInfo;
+typedef struct GenericProgressInfo GenericProgressInfo;
 
 /**
  * @addtogroup widgets

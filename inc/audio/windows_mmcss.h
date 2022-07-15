@@ -74,9 +74,7 @@ int
 windows_mmcss_revert_thread_characteristics (
   HANDLE task_handle);
 
-int windows_mmcss_set_thread_priority (
-  HANDLE,
-  AVRT_PRIORITY);
+int windows_mmcss_set_thread_priority (HANDLE, AVRT_PRIORITY);
 
 #  endif // __AUDIO_WINDOWS_MMCSS_H__
 #endif   // _WOE32

@@ -45,8 +45,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (
 
 #define GET_PRIVATE(x) \
   GenericProgressDialogWidgetPrivate * prv = \
-    generic_progress_dialog_widget_get_instance_private ( \
-      x)
+    generic_progress_dialog_widget_get_instance_private (x)
 
 static void
 on_closed (
@@ -92,17 +91,14 @@ tick_cb (
     {
       if (prv->autoclose || info->cancelled)
         {
-          gtk_dialog_response (
-            GTK_DIALOG (self), 0);
+          gtk_dialog_response (GTK_DIALOG (self), 0);
         }
       else
         {
-          gtk_widget_set_visible (
-            GTK_WIDGET (prv->ok), true);
+          gtk_widget_set_visible (GTK_WIDGET (prv->ok), true);
           gtk_widget_set_visible (
             GTK_WIDGET (prv->cancel), false);
-          for (size_t i = 0;
-               i < prv->num_extra_buttons; i++)
+          for (size_t i = 0; i < prv->num_extra_buttons; i++)
             {
               GenericProgressDialogButton * btn =
                 &prv->extra_buttons[i];
@@ -119,11 +115,9 @@ tick_cb (
       if (info->has_error)
         {
           GtkWindow * transient_parent =
-            gtk_window_get_transient_for (
-              GTK_WINDOW (self));
+            gtk_window_get_transient_for (GTK_WINDOW (self));
           ui_show_error_message (
-            transient_parent, true,
-            info->error_str);
+            transient_parent, true, info->error_str);
         }
       return G_SOURCE_REMOVE;
     }
@@ -158,18 +152,15 @@ generic_progress_dialog_add_button (
   if (start)
     {
       gtk_box_append (
-        GTK_BOX (prv->action_btn_box),
-        GTK_WIDGET (btn));
+        GTK_BOX (prv->action_btn_box), GTK_WIDGET (btn));
     }
   else
     {
       gtk_box_append (
-        GTK_BOX (prv->action_btn_box),
-        GTK_WIDGET (btn));
+        GTK_BOX (prv->action_btn_box), GTK_WIDGET (btn));
     }
 
-  gtk_widget_set_visible (
-    GTK_WIDGET (btn), !only_on_finish);
+  gtk_widget_set_visible (GTK_WIDGET (btn), !only_on_finish);
 
   extra_btn->btn = btn;
   extra_btn->only_on_finish = only_on_finish;
@@ -199,30 +190,26 @@ generic_progress_dialog_widget_setup (
   prv->progress_info = progress_info;
   prv->autoclose = autoclose;
 
-  gtk_label_set_text (
-    prv->label, progress_info->label_str);
+  gtk_label_set_text (prv->label, progress_info->label_str);
 
   if (cancelable)
     {
-      gtk_widget_set_visible (
-        GTK_WIDGET (prv->cancel), true);
+      gtk_widget_set_visible (GTK_WIDGET (prv->cancel), true);
     }
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (prv->progress_bar),
-    (GtkTickCallback) tick_cb, self, NULL);
+    GTK_WIDGET (prv->progress_bar), (GtkTickCallback) tick_cb,
+    self, NULL);
 
   g_signal_connect (
-    G_OBJECT (self), "close",
-    G_CALLBACK (on_closed), self);
+    G_OBJECT (self), "close", G_CALLBACK (on_closed), self);
 }
 
 static void
 generic_progress_dialog_widget_class_init (
   GenericProgressDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "generic_progress_dialog.ui");
 

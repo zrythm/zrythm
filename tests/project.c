@@ -46,8 +46,7 @@ test_empty_save_load (void)
 
   /* resave it */
   ret = project_save (
-    PROJECT, PROJECT->dir, F_NOT_BACKUP, 0,
-    F_NO_ASYNC);
+    PROJECT, PROJECT->dir, F_NOT_BACKUP, 0, F_NO_ASYNC);
   g_assert_cmpint (ret, ==, 0);
 
   test_helper_zrythm_cleanup ();
@@ -66,16 +65,14 @@ test_save_load_with_data (void)
   test_project_rebootstrap_timeline (&p1, &p2);
 
   /* save the project */
-  ret = project_save (
-    PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
+  ret = project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
   g_assert_cmpint (ret, ==, 0);
-  char * prj_file = g_build_filename (
-    PROJECT->dir, PROJECT_FILE, NULL);
+  char * prj_file =
+    g_build_filename (PROJECT->dir, PROJECT_FILE, NULL);
 
   /* stop the engine */
   EngineState state;
-  engine_wait_for_pause (
-    PROJECT->audio_engine, &state, true);
+  engine_wait_for_pause (PROJECT->audio_engine, &state, true);
 
   /* remove objects */
   chord_track_clear (P_CHORD_TRACK);
@@ -85,8 +82,7 @@ test_save_load_with_data (void)
        i > P_MASTER_TRACK->pos; i--)
     {
       Track * track = TRACKLIST->tracks[i];
-      tracklist_remove_track (
-        TRACKLIST, track, 1, 1, 0, 0);
+      tracklist_remove_track (TRACKLIST, track, 1, 1, 0, 0);
     }
   track_clear (P_MASTER_TRACK);
 
@@ -98,8 +94,7 @@ test_save_load_with_data (void)
   engine_resume (PROJECT->audio_engine, &state);
 
   /* verify that the data is correct */
-  test_project_check_vs_original_state (
-    &p1, &p2, 0);
+  test_project_check_vs_original_state (&p1, &p2, 0);
 
   test_helper_zrythm_cleanup ();
 }
@@ -125,11 +120,11 @@ test_new_from_template (void)
    * template */
   char * orig_dir = g_strdup (PROJECT->dir);
   g_assert_nonnull (orig_dir);
-  char * filepath = g_build_filename (
-    orig_dir, "project.zpj", NULL);
+  char * filepath =
+    g_build_filename (orig_dir, "project.zpj", NULL);
   g_free_and_null (ZRYTHM->create_project_path);
-  ZRYTHM->create_project_path = g_dir_make_tmp (
-    "zrythm_test_project_XXXXXX", NULL);
+  ZRYTHM->create_project_path =
+    g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
   project_load (filepath, true);
 
   io_rmdir (orig_dir, true);
@@ -148,19 +143,18 @@ test_save_as_load_w_pool (void)
   /* save the project elsewhere */
   char * orig_dir = g_strdup (PROJECT->dir);
   g_assert_nonnull (orig_dir);
-  char * new_dir = g_dir_make_tmp (
-    "zrythm_test_project_XXXXXX", NULL);
-  int ret = project_save (
-    PROJECT, new_dir, false, false, F_NO_ASYNC);
+  char * new_dir =
+    g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
+  int ret =
+    project_save (PROJECT, new_dir, false, false, F_NO_ASYNC);
   g_assert_cmpint (ret, ==, 0);
 
   /* free the project */
-  object_free_w_func_and_null (
-    project_free, PROJECT);
+  object_free_w_func_and_null (project_free, PROJECT);
 
   /* load the new one */
-  char * filepath = g_build_filename (
-    new_dir, "project.zpj", NULL);
+  char * filepath =
+    g_build_filename (new_dir, "project.zpj", NULL);
   ret = project_load (filepath, 0);
   g_assert_cmpint (ret, ==, 0);
 
@@ -178,14 +172,12 @@ test_save_backup_w_pool_and_plugins (void)
   test_project_rebootstrap_timeline (&p1, &p2);
 
   /* add a plugin and create a duplicate track */
-  int track_pos =
-    test_plugin_manager_create_tracks_from_plugin (
-      TEST_INSTRUMENT_BUNDLE_URI,
-      TEST_INSTRUMENT_URI, true, true, 1);
+  int track_pos = test_plugin_manager_create_tracks_from_plugin (
+    TEST_INSTRUMENT_BUNDLE_URI, TEST_INSTRUMENT_URI, true,
+    true, 1);
   Track * track = TRACKLIST->tracks[track_pos];
   track_select (
-    track, F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+    track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_copy (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
     TRACKLIST->num_tracks, NULL);
@@ -194,20 +186,17 @@ test_save_backup_w_pool_and_plugins (void)
 
   /* save a project backup */
   int ret = project_save (
-    PROJECT, PROJECT->dir, F_BACKUP, false,
-    F_NO_ASYNC);
+    PROJECT, PROJECT->dir, F_BACKUP, false, F_NO_ASYNC);
   g_assert_cmpint (ret, ==, 0);
   g_assert_nonnull (PROJECT->backup_dir);
-  char * backup_dir =
-    g_strdup (PROJECT->backup_dir);
+  char * backup_dir = g_strdup (PROJECT->backup_dir);
 
   /* free the project */
-  object_free_w_func_and_null (
-    project_free, PROJECT);
+  object_free_w_func_and_null (project_free, PROJECT);
 
   /* load the backup directly */
-  char * filepath = g_build_filename (
-    backup_dir, PROJECT_FILE, NULL);
+  char * filepath =
+    g_build_filename (backup_dir, PROJECT_FILE, NULL);
   ret = project_load (filepath, false);
   g_free (filepath);
   g_assert_cmpint (ret, ==, 0);
@@ -217,14 +206,12 @@ test_save_backup_w_pool_and_plugins (void)
   undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* free the project */
-  object_free_w_func_and_null (
-    project_free, PROJECT);
+  object_free_w_func_and_null (project_free, PROJECT);
 
   /* attempt to open the latest backup (mimic
    * behavior from UI) */
   ZRYTHM->open_newer_backup = true;
-  filepath =
-    g_build_filename (dir, "project.zpj", NULL);
+  filepath = g_build_filename (dir, "project.zpj", NULL);
   ret = project_load (filepath, false);
   g_free (filepath);
   g_assert_cmpint (ret, ==, 0);
@@ -243,8 +230,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/project/"
 
   g_test_add_func (
-    TEST_PREFIX
-    "test save backup w pool and plugins",
+    TEST_PREFIX "test save backup w pool and plugins",
     (GTestFunc) test_save_backup_w_pool_and_plugins);
   g_test_add_func (
     TEST_PREFIX "test new from template",

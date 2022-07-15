@@ -36,8 +36,7 @@
  * @{
  */
 
-#define CHORD_PAD_WIDGET_TYPE \
-  (chord_pad_widget_get_type ())
+#define CHORD_PAD_WIDGET_TYPE (chord_pad_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ChordPadWidget,
   chord_pad_widget,
@@ -85,9 +84,7 @@ chord_pad_widget_new (void);
  * Sets the chord index on the chord widget.
  */
 void
-chord_pad_widget_refresh (
-  ChordPadWidget * self,
-  int              idx);
+chord_pad_widget_refresh (ChordPadWidget * self, int idx);
 
 /**
  * @}

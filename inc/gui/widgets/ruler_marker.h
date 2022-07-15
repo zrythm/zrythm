@@ -53,16 +53,14 @@ typedef struct _RulerWidget RulerWidget;
  */
 
 #    define TL_RULER_PLAYHEAD \
-      (ruler_widget_get_private ( \
-         Z_RULER_WIDGET (MW_RULER)) \
+      (ruler_widget_get_private (Z_RULER_WIDGET (MW_RULER)) \
          ->playhead)
 #    define EDITOR_RULER_PLAYHEAD \
       (ruler_widget_get_private ( \
          Z_RULER_WIDGET (EDITOR_RULER)) \
          ->playhead)
 #    define AUDIO_RULER_PLAYHEAD \
-      (ruler_widget_get_private ( \
-         Z_RULER_WIDGET (AUDIO_RULER)) \
+      (ruler_widget_get_private (Z_RULER_WIDGET (AUDIO_RULER)) \
          ->playhead)
 
 typedef enum RulerMarkerType

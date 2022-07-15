@@ -49,8 +49,7 @@ engine_rtmidi_setup (AudioEngine * self)
 unsigned int
 engine_rtmidi_get_num_in_ports (AudioEngine * self)
 {
-  RtMidiDevice * dev =
-    rtmidi_device_new (1, NULL, 0, NULL);
+  RtMidiDevice * dev = rtmidi_device_new (1, NULL, 0, NULL);
   if (!dev)
     return 0;
   unsigned int num_ports =
@@ -82,9 +81,7 @@ engine_rtmidi_tear_down (AudioEngine * self)
 }
 
 int
-engine_rtmidi_activate (
-  AudioEngine * self,
-  bool          activate)
+engine_rtmidi_activate (AudioEngine * self, bool activate)
 {
   return 0;
 }

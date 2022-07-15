@@ -127,9 +127,7 @@ unsigned int
 stretcher_get_latency (Stretcher * self);
 
 void
-stretcher_set_time_ratio (
-  Stretcher * self,
-  double      ratio);
+stretcher_set_time_ratio (Stretcher * self, double ratio);
 
 /**
  * Perform stretching.

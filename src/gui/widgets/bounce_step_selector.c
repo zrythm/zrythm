@@ -22,9 +22,7 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 static void
-block_all_handlers (
-  BounceStepSelectorWidget * self,
-  bool                       block)
+block_all_handlers (BounceStepSelectorWidget * self, bool block)
 {
   if (block)
     {
@@ -32,11 +30,9 @@ block_all_handlers (
         self->before_inserts_toggle,
         self->before_inserts_toggle_id);
       g_signal_handler_block (
-        self->pre_fader_toggle,
-        self->pre_fader_toggle_id);
+        self->pre_fader_toggle, self->pre_fader_toggle_id);
       g_signal_handler_block (
-        self->post_fader_toggle,
-        self->post_fader_toggle_id);
+        self->post_fader_toggle, self->post_fader_toggle_id);
     }
   else
     {
@@ -44,11 +40,9 @@ block_all_handlers (
         self->before_inserts_toggle,
         self->before_inserts_toggle_id);
       g_signal_handler_unblock (
-        self->pre_fader_toggle,
-        self->pre_fader_toggle_id);
+        self->pre_fader_toggle, self->pre_fader_toggle_id);
       g_signal_handler_unblock (
-        self->post_fader_toggle,
-        self->post_fader_toggle_id);
+        self->post_fader_toggle, self->post_fader_toggle_id);
     }
 }
 
@@ -58,14 +52,12 @@ on_before_inserts_toggled (
   BounceStepSelectorWidget * self)
 {
   g_settings_set_enum (
-    S_UI, "bounce-step",
-    BOUNCE_STEP_BEFORE_INSERTS);
+    S_UI, "bounce-step", BOUNCE_STEP_BEFORE_INSERTS);
 
   block_all_handlers (self, true);
   gtk_toggle_button_set_active (
     self->before_inserts_toggle, true);
-  gtk_toggle_button_set_active (
-    self->pre_fader_toggle, false);
+  gtk_toggle_button_set_active (self->pre_fader_toggle, false);
   gtk_toggle_button_set_active (
     self->post_fader_toggle, false);
   block_all_handlers (self, false);
@@ -82,8 +74,7 @@ on_pre_fader_toggled (
   block_all_handlers (self, true);
   gtk_toggle_button_set_active (
     self->before_inserts_toggle, true);
-  gtk_toggle_button_set_active (
-    self->pre_fader_toggle, true);
+  gtk_toggle_button_set_active (self->pre_fader_toggle, true);
   gtk_toggle_button_set_active (
     self->post_fader_toggle, false);
   block_all_handlers (self, false);
@@ -100,10 +91,8 @@ on_post_fader_toggled (
   block_all_handlers (self, true);
   gtk_toggle_button_set_active (
     self->before_inserts_toggle, true);
-  gtk_toggle_button_set_active (
-    self->pre_fader_toggle, true);
-  gtk_toggle_button_set_active (
-    self->post_fader_toggle, true);
+  gtk_toggle_button_set_active (self->pre_fader_toggle, true);
+  gtk_toggle_button_set_active (self->post_fader_toggle, true);
   block_all_handlers (self, false);
 }
 
@@ -114,8 +103,8 @@ BounceStepSelectorWidget *
 bounce_step_selector_widget_new (void)
 {
   BounceStepSelectorWidget * self = g_object_new (
-    BOUNCE_STEP_SELECTOR_WIDGET_TYPE,
-    "orientation", GTK_ORIENTATION_VERTICAL, NULL);
+    BOUNCE_STEP_SELECTOR_WIDGET_TYPE, "orientation",
+    GTK_ORIENTATION_VERTICAL, NULL);
 
   gtk_widget_set_visible (GTK_WIDGET (self), true);
 
@@ -125,8 +114,7 @@ bounce_step_selector_widget_new (void)
       icon, _ (bounce_step_str[n]), false, \
       GTK_ORIENTATION_HORIZONTAL, 4); \
   gtk_box_append ( \
-    GTK_BOX (self), \
-    GTK_WIDGET (self->x##_toggle)); \
+    GTK_BOX (self), GTK_WIDGET (self->x##_toggle)); \
   self->x##_toggle_id = g_signal_connect ( \
     G_OBJECT (self->x##_toggle), "toggled", \
     G_CALLBACK (on_##x##_toggled), self)
@@ -135,8 +123,8 @@ bounce_step_selector_widget_new (void)
   CREATE (pre_fader, 1, "effect");
   CREATE (post_fader, 2, "fader");
 
-  BounceStep step = (BounceStep)
-    g_settings_get_enum (S_UI, "bounce-step");
+  BounceStep step =
+    (BounceStep) g_settings_get_enum (S_UI, "bounce-step");
   switch (step)
     {
     case BOUNCE_STEP_BEFORE_INSERTS:
@@ -160,8 +148,7 @@ static void
 bounce_step_selector_widget_init (
   BounceStepSelectorWidget * self)
 {
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self), "linked");
+  gtk_widget_add_css_class (GTK_WIDGET (self), "linked");
   gtk_widget_add_css_class (
     GTK_WIDGET (self), "bounce-step-selector");
 #if 0

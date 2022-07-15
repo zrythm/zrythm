@@ -9,16 +9,14 @@ extension_data (const char * uri)
 
 #define M_DESCRIPTOR(ID) \
   static const LV2_Descriptor descriptor_##ID = { \
-    PLB_URI #ID, m_instantiate, m_connect_port, \
-    NULL,        m_run,         NULL, \
-    m_cleanup,   extension_data \
+    PLB_URI #ID, m_instantiate, m_connect_port, NULL, \
+    m_run,       NULL,          m_cleanup,      extension_data \
   };
 
 #define A_DESCRIPTOR(ID) \
   static const LV2_Descriptor descriptor_##ID = { \
-    PLB_URI #ID, a_instantiate, a_connect_port, \
-    NULL,        a_run,         NULL, \
-    a_cleanup,   extension_data \
+    PLB_URI #ID, a_instantiate, a_connect_port, NULL, \
+    a_run,       NULL,          a_cleanup,      extension_data \
   };
 
 M_DESCRIPTOR (eat1)

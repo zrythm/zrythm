@@ -28,8 +28,7 @@
 
 #include <gtk/gtk.h>
 
-#define COLOR_AREA_WIDGET_TYPE \
-  (color_area_widget_get_type ())
+#define COLOR_AREA_WIDGET_TYPE (color_area_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ColorAreaWidget,
   color_area_widget,

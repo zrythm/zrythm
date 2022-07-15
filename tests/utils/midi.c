@@ -38,11 +38,8 @@ test_msb_lsb_conversions (void)
   g_assert_cmpint (lsb, ==, 120);
   g_assert_cmpint (msb, ==, 95);
 
-  midi_byte_t buf[] = {
-    MIDI_CH1_PITCH_WHEEL_RANGE, 120, 95
-  };
-  g_assert_cmpuint (
-    midi_get_14_bit_value (buf), ==, 12280);
+  midi_byte_t buf[] = { MIDI_CH1_PITCH_WHEEL_RANGE, 120, 95 };
+  g_assert_cmpuint (midi_get_14_bit_value (buf), ==, 12280);
 }
 
 int

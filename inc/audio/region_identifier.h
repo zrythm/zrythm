@@ -98,9 +98,7 @@ static const cyaml_schema_field_t
       type,
       region_type_bitvals),
     YAML_FIELD_INT (RegionIdentifier, link_group),
-    YAML_FIELD_UINT (
-      RegionIdentifier,
-      track_name_hash),
+    YAML_FIELD_UINT (RegionIdentifier, track_name_hash),
     YAML_FIELD_INT (RegionIdentifier, lane_pos),
     YAML_FIELD_INT (RegionIdentifier, at_idx),
     YAML_FIELD_INT (RegionIdentifier, idx),
@@ -108,12 +106,11 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  region_identifier_schema = {
-    YAML_VALUE_PTR (
-      RegionIdentifier,
-      region_identifier_fields_schema),
-  };
+static const cyaml_schema_value_t region_identifier_schema = {
+  YAML_VALUE_PTR (
+    RegionIdentifier,
+    region_identifier_fields_schema),
+};
 
 static const cyaml_schema_value_t
   region_identifier_schema_default = {
@@ -132,10 +129,8 @@ region_identifier_is_equal (
 {
   return a->idx == b->idx
          && a->track_name_hash == b->track_name_hash
-         && a->lane_pos == b->lane_pos
-         && a->at_idx == b->at_idx
-         && a->link_group == b->link_group
-         && a->type == b->type;
+         && a->lane_pos == b->lane_pos && a->at_idx == b->at_idx
+         && a->link_group == b->link_group && a->type == b->type;
 }
 
 NONNULL
@@ -154,16 +149,13 @@ region_identifier_copy (
 }
 
 bool
-region_identifier_validate (
-  RegionIdentifier * self);
+region_identifier_validate (RegionIdentifier * self);
 
 static inline const char *
-region_identifier_get_region_type_name (
-  RegionType type)
+region_identifier_get_region_type_name (RegionType type)
 {
   g_return_val_if_fail (
-    type >= REGION_TYPE_MIDI
-      && type <= REGION_TYPE_CHORD,
+    type >= REGION_TYPE_MIDI && type <= REGION_TYPE_CHORD,
     NULL);
 
   return region_type_bitvals
@@ -172,17 +164,15 @@ region_identifier_get_region_type_name (
 }
 
 static inline void
-region_identifier_print (
-  const RegionIdentifier * self)
+region_identifier_print (const RegionIdentifier * self)
 {
   g_message (
     "Region identifier: "
     "type: %s, track name hash %u, lane pos %d, "
     "at index %d, index %d, link_group: %d",
-    region_identifier_get_region_type_name (
-      self->type),
-    self->track_name_hash, self->lane_pos,
-    self->at_idx, self->idx, self->link_group);
+    region_identifier_get_region_type_name (self->type),
+    self->track_name_hash, self->lane_pos, self->at_idx,
+    self->idx, self->link_group);
 }
 
 void

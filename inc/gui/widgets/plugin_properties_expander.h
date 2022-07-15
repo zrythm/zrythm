@@ -31,8 +31,7 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _EditableLabelWidget
-  EditableLabelWidget;
+typedef struct _EditableLabelWidget EditableLabelWidget;
 typedef struct _PluginPresetSelectorWidget
                       PluginPresetSelectorWidget;
 typedef struct Track  Track;

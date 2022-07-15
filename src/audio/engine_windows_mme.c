@@ -66,22 +66,20 @@ engine_windows_mme_get_error (
   char *   buf,
   int      buf_size)
 {
-  g_return_val_if_fail (
-    error_code != MMSYSERR_NOERROR, -1);
+  g_return_val_if_fail (error_code != MMSYSERR_NOERROR, -1);
 
   MMRESULT result;
   if (input)
     {
-      result = midiInGetErrorText (
-        error_code, buf, (UINT) buf_size);
+      result =
+        midiInGetErrorText (error_code, buf, (UINT) buf_size);
     }
   else
     {
       result = midiOutGetErrorText (
         error_code, buf, (UINT) buf_size);
     }
-  g_return_val_if_fail (
-    result == MMSYSERR_NOERROR, -1);
+  g_return_val_if_fail (result == MMSYSERR_NOERROR, -1);
 
   return 0;
 }
@@ -90,9 +88,7 @@ engine_windows_mme_get_error (
  * Prints the error in the log.
  */
 void
-engine_windows_mme_print_error (
-  MMRESULT error_code,
-  int      input)
+engine_windows_mme_print_error (MMRESULT error_code, int input)
 {
   g_return_if_fail (error_code != MMSYSERR_NOERROR);
 
@@ -109,9 +105,7 @@ engine_windows_mme_print_error (
  * Starts all previously scanned devices.
  */
 int
-engine_windows_mme_activate (
-  AudioEngine * self,
-  bool          activate)
+engine_windows_mme_activate (AudioEngine * self, bool activate)
 {
   if (activate)
     {
@@ -129,8 +123,7 @@ engine_windows_mme_activate (
       if (activate)
         {
           g_return_val_if_fail (
-            dev->opened == 1 && dev->started == 0,
-            -1);
+            dev->opened == 1 && dev->started == 0, -1);
           int ret = windows_mme_device_start (dev);
           g_return_val_if_fail (ret == 0, -1);
         }
@@ -143,13 +136,11 @@ engine_windows_mme_activate (
     {
       /* skip for now */
       break;
-      WindowsMmeDevice * dev =
-        self->mme_out_devs[i];
+      WindowsMmeDevice * dev = self->mme_out_devs[i];
       if (activate)
         {
           g_return_val_if_fail (
-            dev->opened == 1 && dev->started == 0,
-            -1);
+            dev->opened == 1 && dev->started == 0, -1);
           int ret = windows_mme_device_start (dev);
           g_return_val_if_fail (ret == 0, -1);
         }
@@ -172,9 +163,7 @@ engine_windows_mme_activate (
  *   on the devices or not.
  */
 int
-engine_windows_mme_rescan_devices (
-  AudioEngine * self,
-  int           start)
+engine_windows_mme_rescan_devices (AudioEngine * self, int start)
 {
   for (int i = 0; i < self->num_mme_in_devs; i++)
     {
@@ -188,8 +177,7 @@ engine_windows_mme_rescan_devices (
     }
   for (int i = 0; i < self->num_mme_out_devs; i++)
     {
-      WindowsMmeDevice * dev =
-        self->mme_out_devs[i];
+      WindowsMmeDevice * dev = self->mme_out_devs[i];
 
       if (dev->started)
         windows_mme_device_stop (dev);
@@ -204,14 +192,12 @@ engine_windows_mme_rescan_devices (
     WINDOWS_MME_DEVICE_FLOW_INPUT);
   for (int i = 0; i < num_devs; i++)
     {
-      WindowsMmeDevice * dev =
-        windows_mme_device_new (
-          WINDOWS_MME_DEVICE_FLOW_INPUT, i);
+      WindowsMmeDevice * dev = windows_mme_device_new (
+        WINDOWS_MME_DEVICE_FLOW_INPUT, i);
       g_return_val_if_fail (dev, -1);
       int ret = windows_mme_device_open (dev, 0);
       g_return_val_if_fail (ret == 0, -1);
-      self->mme_in_devs[self->num_mme_in_devs++] =
-        dev;
+      self->mme_in_devs[self->num_mme_in_devs++] = dev;
     }
 
   num_devs = engine_windows_mme_get_num_devices (
@@ -219,16 +205,13 @@ engine_windows_mme_rescan_devices (
 
   for (int i = 0; i < num_devs; i++)
     {
-      WindowsMmeDevice * dev =
-        windows_mme_device_new (
-          WINDOWS_MME_DEVICE_FLOW_OUTPUT, i);
+      WindowsMmeDevice * dev = windows_mme_device_new (
+        WINDOWS_MME_DEVICE_FLOW_OUTPUT, i);
       g_return_val_if_fail (dev, -1);
-      g_message (
-        "found midi output device %s", dev->name);
+      g_message ("found midi output device %s", dev->name);
       int ret = windows_mme_device_open (dev, 0);
       g_return_val_if_fail (ret == 0, -1);
-      self->mme_out_devs[self->num_mme_out_devs++] =
-        dev;
+      self->mme_out_devs[self->num_mme_out_devs++] = dev;
     }
 
   if (start)

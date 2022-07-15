@@ -114,8 +114,8 @@ init_module (void * data)
 #endif
   scm_c_export (
     "zrythm-get-ver", "zrythm-get-plugin-manager",
-    "zrythm-get-project", "zrythm-message",
-    "zrythm-null", NULL);
+    "zrythm-get-project", "zrythm-message", "zrythm-null",
+    NULL);
 }
 
 void

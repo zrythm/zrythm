@@ -139,8 +139,7 @@ io_file_strip_ext (const char * filename)
     }
 
   long   size = (dot - filename) - 1;
-  char * new_str =
-    g_strndup (filename, (gsize) size);
+  char * new_str = g_strndup (filename, (gsize) size);
 
   return new_str;
 }
@@ -151,8 +150,7 @@ io_file_strip_ext (const char * filename)
  * MUST be freed.
  */
 char *
-io_path_get_basename_without_ext (
-  const char * filename)
+io_path_get_basename_without_ext (const char * filename)
 {
   char * basename = g_path_get_basename (filename);
   char * no_ext = io_file_strip_ext (basename);
@@ -172,10 +170,8 @@ io_path_get_parent_dir (const char * path)
 #  define ROOT_REGEX "/"
 #endif
   char regex[] =
-    "(" ROOT_REGEX ".*)" PATH_SEP "[^" PATH_SEP
-    "]+";
-  char * parent =
-    string_get_regex_group (path, regex, 1);
+    "(" ROOT_REGEX ".*)" PATH_SEP "[^" PATH_SEP "]+";
+  char * parent = string_get_regex_group (path, regex, 1);
 #if 0
   g_message ("[%s]\npath: %s\nregex: %s\nparent: %s",
     __func__, path, regex, parent);
@@ -183,10 +179,8 @@ io_path_get_parent_dir (const char * path)
 
   if (!parent)
     {
-      strcpy (
-        regex, "(" ROOT_REGEX ")[^" PATH_SEP "]*");
-      parent =
-        string_get_regex_group (path, regex, 1);
+      strcpy (regex, "(" ROOT_REGEX ")[^" PATH_SEP "]*");
+      parent = string_get_regex_group (path, regex, 1);
 #if 0
       g_message ("path: %s\nregex: %s\nparent: %s",
         path, regex, parent);
@@ -200,8 +194,7 @@ io_path_get_parent_dir (const char * path)
 }
 
 char *
-io_file_get_creation_datetime (
-  const char * filename)
+io_file_get_creation_datetime (const char * filename)
 {
   /* TODO */
   return NULL;
@@ -212,16 +205,14 @@ io_file_get_creation_datetime (
  * -1 if failed.
  */
 gint64
-io_file_get_last_modified_datetime (
-  const char * filename)
+io_file_get_last_modified_datetime (const char * filename)
 {
   struct stat result;
   if (stat (filename, &result) == 0)
     {
       return result.st_mtime;
     }
-  g_message (
-    "Failed to get last modified for %s", filename);
+  g_message ("Failed to get last modified for %s", filename);
   return -1;
 }
 
@@ -229,13 +220,11 @@ char *
 io_file_get_last_modified_datetime_as_str (
   const char * filename)
 {
-  gint64 secs =
-    io_file_get_last_modified_datetime (filename);
+  gint64 secs = io_file_get_last_modified_datetime (filename);
   if (secs == -1)
     return NULL;
 
-  return datetime_epoch_to_str (
-    secs, "%Y-%m-%d %H:%M:%S");
+  return datetime_epoch_to_str (secs, "%Y-%m-%d %H:%M:%S");
 }
 
 /**
@@ -279,11 +268,8 @@ io_rmdir (const char * path, bool force)
   if (force)
     {
       g_return_val_if_fail (
-        g_path_is_absolute (path)
-          && strlen (path) > 20,
-        -1);
-      nftw (
-        path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
+        g_path_is_absolute (path) && strlen (path) > 20, -1);
+      nftw (path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
     }
 
   g_message ("Removing %s", path);
@@ -322,22 +308,18 @@ append_files_from_dir_ending_in (
       else
         {
           g_warning (
-            "Failed opening directory %s: %s",
-            _dir, error->message);
+            "Failed opening directory %s: %s", _dir,
+            error->message);
         }
       return;
     }
 
   while ((filename = g_dir_read_name (dir)))
     {
-      full_path =
-        g_build_filename (_dir, filename, NULL);
+      full_path = g_build_filename (_dir, filename, NULL);
 
       /* recurse if necessary */
-      if (
-        recursive
-        && g_file_test (
-          full_path, G_FILE_TEST_IS_DIR))
+      if (recursive && g_file_test (full_path, G_FILE_TEST_IS_DIR))
         {
           append_files_from_dir_ending_in (
             files, num_files, recursive, full_path,
@@ -350,10 +332,8 @@ append_files_from_dir_ending_in (
         {
           *files = realloc (
             *files,
-            sizeof (char *)
-              * (size_t) (*num_files + 2));
-          (*files)[(*num_files)] =
-            g_strdup (full_path);
+            sizeof (char *) * (size_t) (*num_files + 2));
+          (*files)[(*num_files)] = g_strdup (full_path);
           (*num_files)++;
         }
 
@@ -394,8 +374,8 @@ io_copy_dir (
       else
         {
           g_warning (
-            "Failed opening directory %s: %s",
-            srcdir_str, error->message);
+            "Failed opening directory %s: %s", srcdir_str,
+            error->message);
         }
       return;
     }
@@ -404,20 +384,20 @@ io_copy_dir (
 
   while ((filename = g_dir_read_name (srcdir)))
     {
-      char * src_full_path = g_build_filename (
-        srcdir_str, filename, NULL);
-      char * dest_full_path = g_build_filename (
-        destdir_str, filename, NULL);
+      char * src_full_path =
+        g_build_filename (srcdir_str, filename, NULL);
+      char * dest_full_path =
+        g_build_filename (destdir_str, filename, NULL);
 
-      bool is_dir = g_file_test (
-        src_full_path, G_FILE_TEST_IS_DIR);
+      bool is_dir =
+        g_file_test (src_full_path, G_FILE_TEST_IS_DIR);
 
       /* recurse if necessary */
       if (recursive && is_dir)
         {
           io_copy_dir (
-            dest_full_path, src_full_path,
-            follow_symlinks, recursive);
+            dest_full_path, src_full_path, follow_symlinks,
+            recursive);
         }
       /* otherwise if not dir, copy file */
       else if (!is_dir)
@@ -428,22 +408,19 @@ io_copy_dir (
             g_file_new_for_path (dest_full_path);
           g_return_if_fail (src_file && dest_file);
           error = NULL;
-          GFileCopyFlags flags =
-            G_FILE_COPY_OVERWRITE;
+          GFileCopyFlags flags = G_FILE_COPY_OVERWRITE;
           if (!follow_symlinks)
             {
-              flags |=
-                G_FILE_COPY_NOFOLLOW_SYMLINKS;
+              flags |= G_FILE_COPY_NOFOLLOW_SYMLINKS;
             }
           bool ret = g_file_copy (
-            src_file, dest_file, flags, NULL, NULL,
-            NULL, &error);
+            src_file, dest_file, flags, NULL, NULL, NULL,
+            &error);
           if (!ret)
             {
               g_warning (
                 "Failed copying file %s to %s: %s",
-                src_full_path, dest_full_path,
-                error->message);
+                src_full_path, dest_full_path, error->message);
               return;
             }
 
@@ -469,8 +446,7 @@ io_get_files_in_dir_as_basenames (
       return NULL;
     }
 
-  char ** files =
-    io_get_files_in_dir (dir, allow_empty);
+  char ** files = io_get_files_in_dir (dir, allow_empty);
   if (!files)
     return NULL;
 
@@ -531,29 +507,25 @@ io_get_files_in_dir_ending_in (
  * Example: "myfile" -> "myfile (1)"
  */
 char *
-io_get_next_available_filepath (
-  const char * filepath)
+io_get_next_available_filepath (const char * filepath)
 {
   int    i = 1;
-  char * file_without_ext =
-    io_file_strip_ext (filepath);
-  const char * file_ext =
-    io_file_get_ext (filepath);
-  char * new_path = g_strdup (filepath);
+  char * file_without_ext = io_file_strip_ext (filepath);
+  const char * file_ext = io_file_get_ext (filepath);
+  char *       new_path = g_strdup (filepath);
   while (file_exists (new_path))
     {
       if (g_file_test (new_path, G_FILE_TEST_IS_DIR))
         {
           g_free (new_path);
-          new_path = g_strdup_printf (
-            "%s (%d)", filepath, i++);
+          new_path =
+            g_strdup_printf ("%s (%d)", filepath, i++);
         }
       else
         {
           g_free (new_path);
           new_path = g_strdup_printf (
-            "%s (%d).%s", file_without_ext, i++,
-            file_ext);
+            "%s (%d).%s", file_without_ext, i++, file_ext);
         }
     }
   g_free (file_without_ext);
@@ -568,18 +540,15 @@ io_get_next_available_filepath (
 void
 io_open_directory (const char * path)
 {
-  g_return_if_fail (
-    g_file_test (path, G_FILE_TEST_IS_DIR));
+  g_return_if_fail (g_file_test (path, G_FILE_TEST_IS_DIR));
 
   char command[800];
 #ifdef _WOE32
-  char * canonical_path =
-    g_canonicalize_filename (path, NULL);
+  char * canonical_path = g_canonicalize_filename (path, NULL);
   char * new_path =
     string_replace (canonical_path, "\\", "\\\\");
   g_free (canonical_path);
-  sprintf (
-    command, OPEN_DIR_CMD " \"%s\"", new_path);
+  sprintf (command, OPEN_DIR_CMD " \"%s\"", new_path);
   g_free (new_path);
 #else
   sprintf (command, OPEN_DIR_CMD " \"%s\"", path);
@@ -600,11 +569,10 @@ io_escape_dir_name (char * dest, const char * dir)
   for (int i = len - 1; i >= 0; i--)
     {
       if (
-        dest[i] == '/' || dest[i] == '>'
-        || dest[i] == '<' || dest[i] == '|'
-        || dest[i] == ':' || dest[i] == '&'
-        || dest[i] == '(' || dest[i] == ')'
-        || dest[i] == ';' || dest[i] == '\\')
+        dest[i] == '/' || dest[i] == '>' || dest[i] == '<'
+        || dest[i] == '|' || dest[i] == ':' || dest[i] == '&'
+        || dest[i] == '(' || dest[i] == ')' || dest[i] == ';'
+        || dest[i] == '\\')
         {
           for (int j = i; j < len; j++)
             {
@@ -622,11 +590,11 @@ io_get_registry_string_val (const char * path)
   DWORD BufferSize = 8192;
   char  prefix[500];
   sprintf (
-    prefix, "Software\\%s\\%s\\Settings",
-    PROGRAM_NAME, PROGRAM_NAME);
+    prefix, "Software\\%s\\%s\\Settings", PROGRAM_NAME,
+    PROGRAM_NAME);
   RegGetValue (
-    HKEY_LOCAL_MACHINE, prefix, path, RRF_RT_ANY,
-    NULL, (PVOID) &value, &BufferSize);
+    HKEY_LOCAL_MACHINE, prefix, path, RRF_RT_ANY, NULL,
+    (PVOID) &value, &BufferSize);
   g_message ("reg value: %s", value);
   return g_strdup (value);
 }
@@ -642,11 +610,9 @@ int
 io_get_bundle_path (char * bundle_path)
 {
   CFBundleRef bundle = CFBundleGetMainBundle ();
-  CFURLRef    bundleURL =
-    CFBundleCopyBundleURL (bundle);
-  Boolean success = CFURLGetFileSystemRepresentation (
-    bundleURL, TRUE, (UInt8 *) bundle_path,
-    PATH_MAX);
+  CFURLRef    bundleURL = CFBundleCopyBundleURL (bundle);
+  Boolean     success = CFURLGetFileSystemRepresentation (
+        bundleURL, TRUE, (UInt8 *) bundle_path, PATH_MAX);
   g_return_val_if_fail (success, -1);
   CFRelease (bundleURL);
   g_message ("bundle path: %s", bundle_path);

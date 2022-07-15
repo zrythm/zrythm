@@ -20,15 +20,14 @@ test_queue_file (void)
 {
   test_helper_zrythm_init ();
 
-  char * filepath = g_build_filename (
-    TESTS_SRCDIR, "test.wav", NULL);
+  char * filepath =
+    g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
   g_free (filepath);
   for (int i = 0; i < 5; i++)
     {
-      sample_processor_queue_file (
-        SAMPLE_PROCESSOR, file);
+      sample_processor_queue_file (SAMPLE_PROCESSOR, file);
     }
 
   supported_file_free (file);
@@ -58,27 +57,20 @@ test_queue_midi_and_roll_transport (void)
 
   transport_request_roll (TRANSPORT, true);
 
-  g_message (
-    "=============== queueing file =============");
+  g_message ("=============== queueing file =============");
 
-  sample_processor_queue_file (
-    SAMPLE_PROCESSOR, file);
+  sample_processor_queue_file (SAMPLE_PROCESSOR, file);
   g_assert_cmpint (
     SAMPLE_PROCESSOR->tracklist->num_tracks, ==, 3);
 
-  g_message (
-    "============= starting process ===========");
+  g_message ("============= starting process ===========");
 
   /* process a few times */
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
 
-  g_message (
-    "============= done process ===========");
+  g_message ("============= done process ===========");
 
   supported_file_free (file);
 
@@ -94,8 +86,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/sample_processor/"
 
   g_test_add_func (
-    TEST_PREFIX
-    "test queue midi and roll transport",
+    TEST_PREFIX "test queue midi and roll transport",
     (GTestFunc) test_queue_midi_and_roll_transport);
   g_test_add_func (
     TEST_PREFIX "test queue file",

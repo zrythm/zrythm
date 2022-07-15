@@ -41,8 +41,7 @@ help_toolbar_widget_init (HelpToolbarWidget * self)
   SET_TOOLTIP (manual, _ ("Manual"));
   SET_TOOLTIP (shortcuts, _ ("Keyboard Shortcuts"));
   SET_TOOLTIP (donate_btn, _ ("Donate"));
-  SET_TOOLTIP (
-    report_a_bug_btn, _ ("Report a Bug"));
+  SET_TOOLTIP (report_a_bug_btn, _ ("Report a Bug"));
 #undef SET_TOOLTIP
 
   /* TODO port */
@@ -59,13 +58,10 @@ static void
 help_toolbar_widget_class_init (
   HelpToolbarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "help_toolbar.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "help_toolbar.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "help-toolbar");
+  gtk_widget_class_set_css_name (klass, "help-toolbar");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

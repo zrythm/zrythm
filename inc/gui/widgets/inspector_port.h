@@ -115,8 +115,7 @@ typedef struct _InspectorPortWidget
 } InspectorPortWidget;
 
 void
-inspector_port_widget_refresh (
-  InspectorPortWidget * self);
+inspector_port_widget_refresh (InspectorPortWidget * self);
 
 /**
  * Creates a new widget.

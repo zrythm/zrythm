@@ -28,8 +28,7 @@
 #include "lv2/lv2plug.in/ns/ext/atom/forge.h"
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 
-#define PLB_URI \
-  "http://gareus.org/oss/lv2/plumbing#"
+#define PLB_URI "http://gareus.org/oss/lv2/plumbing#"
 #define MAX_CHANNELS 8
 
 typedef struct
@@ -56,8 +55,8 @@ m_instantiate (
   const char *                bundle_path,
   const LV2_Feature * const * features)
 {
-  LVMidiPlumbing * self = (LVMidiPlumbing *)
-    calloc (1, sizeof (LVMidiPlumbing));
+  LVMidiPlumbing * self =
+    (LVMidiPlumbing *) calloc (1, sizeof (LVMidiPlumbing));
   if (!self)
     return NULL;
 
@@ -114,15 +113,13 @@ m_instantiate (
     {
       if (!strcmp (features[i]->URI, LV2_URID__map))
         {
-          self->map =
-            (LV2_URID_Map *) features[i]->data;
+          self->map = (LV2_URID_Map *) features[i]->data;
         }
     }
 
   if (!self->map)
     {
-      fprintf (
-        stderr, "Host does not support urid:map\n");
+      fprintf (stderr, "Host does not support urid:map\n");
       free (self);
       return NULL;
     }
@@ -133,25 +130,19 @@ m_instantiate (
 }
 
 static void
-m_connect_port (
-  LV2_Handle instance,
-  uint32_t   port,
-  void *     data)
+m_connect_port (LV2_Handle instance, uint32_t port, void * data)
 {
-  LVMidiPlumbing * self =
-    (LVMidiPlumbing *) instance;
+  LVMidiPlumbing * self = (LVMidiPlumbing *) instance;
 
   if (self->midieat)
     {
       if (port == 0)
         {
-          self->midiin =
-            (const LV2_Atom_Sequence *) data;
+          self->midiin = (const LV2_Atom_Sequence *) data;
         }
       else if (port == 1)
         {
-          self->midiout =
-            (LV2_Atom_Sequence *) data;
+          self->midiout = (LV2_Atom_Sequence *) data;
         }
       else
         {
@@ -172,13 +163,11 @@ m_connect_port (
         {
           if (self->midieat)
             {
-              self->midiin =
-                (const LV2_Atom_Sequence *) data;
+              self->midiin = (const LV2_Atom_Sequence *) data;
             }
           else
             {
-              self->midiout =
-                (LV2_Atom_Sequence *) data;
+              self->midiout = (LV2_Atom_Sequence *) data;
             }
         }
       else
@@ -199,15 +188,12 @@ m_connect_port (
 static void
 m_run (LV2_Handle instance, uint32_t n_samples)
 {
-  LVMidiPlumbing * self =
-    (LVMidiPlumbing *) instance;
+  LVMidiPlumbing * self = (LVMidiPlumbing *) instance;
   if (self->midiout)
     {
-      const uint32_t capacity =
-        self->midiout->atom.size;
+      const uint32_t capacity = self->midiout->atom.size;
       lv2_atom_forge_set_buffer (
-        &self->forge, (uint8_t *) self->midiout,
-        capacity);
+        &self->forge, (uint8_t *) self->midiout, capacity);
       lv2_atom_forge_sequence_head (
         &self->forge, &self->frame, 0);
     }

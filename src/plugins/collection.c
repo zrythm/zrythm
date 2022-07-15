@@ -23,13 +23,11 @@
 #include "utils/objects.h"
 
 void
-plugin_collection_init_loaded (
-  PluginCollection * self)
+plugin_collection_init_loaded (PluginCollection * self)
 {
   g_return_if_fail (self);
 
-  self->descriptors_size =
-    (size_t) self->num_descriptors;
+  self->descriptors_size = (size_t) self->num_descriptors;
   if (self->descriptors_size == 0)
     {
       self->descriptors_size = 1;
@@ -38,9 +36,9 @@ plugin_collection_init_loaded (
     }
   for (int i = 0; i < self->num_descriptors; i++)
     {
-      self->descriptors[i]->category =
-        plugin_descriptor_string_to_category (
-          self->descriptors[i]->category_str);
+      self->descriptors[i]
+        ->category = plugin_descriptor_string_to_category (
+        self->descriptors[i]->category_str);
     }
 }
 
@@ -50,15 +48,13 @@ plugin_collection_init_loaded (
 PluginCollection *
 plugin_collection_new (void)
 {
-  PluginCollection * self =
-    object_new (PluginCollection);
+  PluginCollection * self = object_new (PluginCollection);
 
-  self->schema_version =
-    PLUGIN_COLLECTION_SCHEMA_VERSION;
+  self->schema_version = PLUGIN_COLLECTION_SCHEMA_VERSION;
   self->name = g_strdup ("");
   self->descriptors_size = 1;
-  self->descriptors = object_new_n (
-    self->descriptors_size, PluginDescriptor *);
+  self->descriptors =
+    object_new_n (self->descriptors_size, PluginDescriptor *);
 
   return self;
 }
@@ -67,24 +63,20 @@ plugin_collection_new (void)
  * Clones a plugin collection.
  */
 PluginCollection *
-plugin_collection_clone (
-  const PluginCollection * self)
+plugin_collection_clone (const PluginCollection * self)
 {
-  PluginCollection * clone =
-    plugin_collection_new ();
+  PluginCollection * clone = plugin_collection_new ();
 
   for (int i = 0; i < self->num_descriptors; i++)
     {
       clone->descriptors[clone->num_descriptors++] =
-        plugin_descriptor_clone (
-          self->descriptors[i]);
+        plugin_descriptor_clone (self->descriptors[i]);
     }
 
   clone->name = g_strdup (self->name);
   if (self->description)
     {
-      clone->description =
-        g_strdup (self->description);
+      clone->description = g_strdup (self->description);
     }
 
   return clone;
@@ -149,16 +141,14 @@ plugin_collection_add_descriptor (
     plugin_descriptor_clone (descr);
   if (descr->path)
     {
-      GFile * file =
-        g_file_new_for_path (descr->path);
+      GFile * file = g_file_new_for_path (descr->path);
       new_descr->ghash = g_file_hash (file);
       g_object_unref (file);
     }
   array_double_size_if_full (
     self->descriptors, self->num_descriptors,
     self->descriptors_size, PluginDescriptor *);
-  self->descriptors[self->num_descriptors++] =
-    new_descr;
+  self->descriptors[self->num_descriptors++] = new_descr;
 }
 
 /**
@@ -173,16 +163,12 @@ plugin_collection_remove_descriptor (
   bool found = false;
   for (int i = 0; i < self->num_descriptors; i++)
     {
-      PluginDescriptor * descr =
-        self->descriptors[i];
-      if (plugin_descriptor_is_same_plugin (
-            _descr, descr))
+      PluginDescriptor * descr = self->descriptors[i];
+      if (plugin_descriptor_is_same_plugin (_descr, descr))
         {
-          for (int j = i;
-               j < self->num_descriptors - 1; j++)
+          for (int j = i; j < self->num_descriptors - 1; j++)
             {
-              self->descriptors[j] =
-                self->descriptors[j + 1];
+              self->descriptors[j] = self->descriptors[j + 1];
             }
           self->num_descriptors--;
           found = true;
@@ -212,8 +198,7 @@ plugin_collection_free (PluginCollection * self)
   for (int i = 0; i < self->num_descriptors; i++)
     {
       object_free_w_func_and_null (
-        plugin_descriptor_free,
-        self->descriptors[i]);
+        plugin_descriptor_free, self->descriptors[i]);
     }
   object_zero_and_free (self->descriptors);
 

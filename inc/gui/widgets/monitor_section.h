@@ -43,16 +43,13 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MW_MONITOR_SECTION \
-  MW_RIGHT_DOCK_EDGE->monitor_section
+#define MW_MONITOR_SECTION MW_RIGHT_DOCK_EDGE->monitor_section
 
-typedef struct _KnobWithNameWidget
-                                KnobWithNameWidget;
-typedef struct ControlRoom      ControlRoom;
-typedef struct _SliderBarWidget SliderBarWidget;
-typedef struct _MeterWidget     MeterWidget;
-typedef struct _ActiveHardwareMbWidget
-  ActiveHardwareMbWidget;
+typedef struct _KnobWithNameWidget     KnobWithNameWidget;
+typedef struct ControlRoom             ControlRoom;
+typedef struct _SliderBarWidget        SliderBarWidget;
+typedef struct _MeterWidget            MeterWidget;
+typedef struct _ActiveHardwareMbWidget ActiveHardwareMbWidget;
 
 typedef struct _MonitorSectionWidget
 {
@@ -96,8 +93,7 @@ typedef struct _MonitorSectionWidget
 } MonitorSectionWidget;
 
 void
-monitor_section_widget_refresh (
-  MonitorSectionWidget * self);
+monitor_section_widget_refresh (MonitorSectionWidget * self);
 
 void
 monitor_section_widget_setup (

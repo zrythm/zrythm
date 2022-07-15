@@ -38,15 +38,11 @@
 
 #define SNAP_GRID_SCHEMA_VERSION 1
 
-#define SNAP_GRID_TIMELINE \
-  (PROJECT->snap_grid_timeline)
-#define SNAP_GRID_EDITOR \
-  (PROJECT->snap_grid_editor)
+#define SNAP_GRID_TIMELINE (PROJECT->snap_grid_timeline)
+#define SNAP_GRID_EDITOR (PROJECT->snap_grid_editor)
 
-#define SNAP_GRID_IS_EDITOR(sg) \
-  (SNAP_GRID_EDITOR == sg)
-#define SNAP_GRID_IS_TIMELINE(sg) \
-  (SNAP_GRID_TIMELINE == sg)
+#define SNAP_GRID_IS_EDITOR(sg) (SNAP_GRID_EDITOR == sg)
+#define SNAP_GRID_IS_TIMELINE(sg) (SNAP_GRID_TIMELINE == sg)
 /* if any snapping is enabled */
 #define SNAP_GRID_ANY_SNAP(sg) \
   (sg->snap_to_grid || sg->snap_to_events)
@@ -151,10 +147,9 @@ typedef struct SnapGrid
   NoteLengthType length_type;
 } SnapGrid;
 
-static const cyaml_strval_t
-  snap_grid_type_strings[] = {
-    {"timeline", SNAP_GRID_TYPE_TIMELINE},
-    { "editor",  SNAP_GRID_TYPE_EDITOR  },
+static const cyaml_strval_t snap_grid_type_strings[] = {
+  {"timeline", SNAP_GRID_TYPE_TIMELINE},
+  { "editor",  SNAP_GRID_TYPE_EDITOR  },
 };
 
 static const cyaml_strval_t note_length_strings[] = {
@@ -177,38 +172,30 @@ static const cyaml_strval_t note_type_strings[] = {
   { "triplet", NOTE_TYPE_TRIPLET},
 };
 
-static const cyaml_strval_t
-  note_length_type_strings[] = {
-    {"custom",       NOTE_LENGTH_CUSTOM     },
-    { "link",        NOTE_LENGTH_LINK       },
-    { "last object", NOTE_LENGTH_LAST_OBJECT},
+static const cyaml_strval_t note_length_type_strings[] = {
+  {"custom",       NOTE_LENGTH_CUSTOM     },
+  { "link",        NOTE_LENGTH_LINK       },
+  { "last object", NOTE_LENGTH_LAST_OBJECT},
 };
 
 /**
  * These are not meant to be serialized, they are
  * only used for convenience.
  */
-static const cyaml_strval_t
-  note_type_short_strings[] = {
-    {"",   NOTE_TYPE_NORMAL },
-    { ".", NOTE_TYPE_DOTTED },
-    { "t", NOTE_TYPE_TRIPLET},
+static const cyaml_strval_t note_type_short_strings[] = {
+  {"",   NOTE_TYPE_NORMAL },
+  { ".", NOTE_TYPE_DOTTED },
+  { "t", NOTE_TYPE_TRIPLET},
 };
 
 static const cyaml_schema_field_t snap_grid_fields_schema[] = {
   YAML_FIELD_INT (SnapGrid, schema_version),
-  YAML_FIELD_ENUM (
-    SnapGrid,
-    type,
-    snap_grid_type_strings),
+  YAML_FIELD_ENUM (SnapGrid, type, snap_grid_type_strings),
   YAML_FIELD_ENUM (
     SnapGrid,
     snap_note_length,
     note_length_strings),
-  YAML_FIELD_ENUM (
-    SnapGrid,
-    snap_note_type,
-    note_type_strings),
+  YAML_FIELD_ENUM (SnapGrid, snap_note_type, note_type_strings),
   YAML_FIELD_INT (SnapGrid, snap_adaptive),
   YAML_FIELD_ENUM (
     SnapGrid,

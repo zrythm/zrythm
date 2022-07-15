@@ -39,11 +39,10 @@
 
 #include "ext/zix/zix/sem.h"
 
-typedef struct Timeline  Timeline;
-typedef struct Transport Transport;
-typedef struct Tracklist Tracklist;
-typedef struct TracklistSelections
-  TracklistSelections;
+typedef struct Timeline            Timeline;
+typedef struct Transport           Transport;
+typedef struct Tracklist           Tracklist;
+typedef struct TracklistSelections TracklistSelections;
 
 /**
  * @addtogroup project Project
@@ -59,10 +58,8 @@ typedef struct TracklistSelections
 #define PROJECT_BACKUPS_DIR "backups"
 #define PROJECT_PLUGINS_DIR "plugins"
 #define PROJECT_PLUGIN_STATES_DIR "states"
-#define PROJECT_PLUGIN_EXT_COPIES_DIR \
-  "ext_file_copies"
-#define PROJECT_PLUGIN_EXT_LINKS_DIR \
-  "ext_file_links"
+#define PROJECT_PLUGIN_EXT_COPIES_DIR "ext_file_copies"
+#define PROJECT_PLUGIN_EXT_LINKS_DIR "ext_file_links"
 #define PROJECT_EXPORTS_DIR "exports"
 #define PROJECT_STEMS_DIR "stems"
 #define PROJECT_POOL_DIR "pool"
@@ -143,10 +140,8 @@ typedef enum ProjectCompressionFlag
   PROJECT_COMPRESS_DATA,
 } ProjectCompressionFlag;
 
-#define PROJECT_DECOMPRESS_FILE \
-  PROJECT_COMPRESS_FILE
-#define PROJECT_DECOMPRESS_DATA \
-  PROJECT_COMPRESS_DATA
+#define PROJECT_DECOMPRESS_FILE PROJECT_COMPRESS_FILE
+#define PROJECT_DECOMPRESS_DATA PROJECT_COMPRESS_DATA
 
 /**
  * Contains all of the info that will be serialized
@@ -452,9 +447,7 @@ project_create_default (
  * @return 0 if successful, non-zero otherwise.
  */
 COLD int
-project_load (
-  const char * filename,
-  const bool   is_template);
+project_load (const char * filename, const bool is_template);
 
 /**
  * Saves the project to a project file in the
@@ -499,10 +492,7 @@ project_autosave_cb (void * data);
 MALLOC
 NONNULL
 char *
-project_get_path (
-  Project *   self,
-  ProjectPath path,
-  bool        backup);
+project_get_path (Project * self, ProjectPath path, bool backup);
 
 /**
  * Initializes the selections in the project.
@@ -544,10 +534,8 @@ _project_compress (
 #define project_compress(a, b, c, d, e, f, error) \
   _project_compress (true, a, b, c, d, e, f, error)
 
-#define project_decompress( \
-  a, b, c, d, e, f, error) \
-  _project_compress ( \
-    false, a, b, c, d, e, f, error)
+#define project_decompress(a, b, c, d, e, f, error) \
+  _project_compress (false, a, b, c, d, e, f, error)
 
 /**
  * Returns the YAML representation of the saved
@@ -559,9 +547,7 @@ _project_compress (
  *   from the most recent backup.
  */
 char *
-project_get_existing_yaml (
-  Project * self,
-  bool      backup);
+project_get_existing_yaml (Project * self, bool backup);
 
 /**
  * Deep-clones the given project.

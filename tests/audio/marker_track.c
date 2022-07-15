@@ -28,18 +28,16 @@ test_add_marker (void)
       test_project_save_and_reload ();
 
       track = P_MARKER_TRACK;
-      Marker * marker = marker_new ("start");
-      ArrangerObject * m_obj =
-        (ArrangerObject *) marker;
-      Position pos;
+      Marker *         marker = marker_new ("start");
+      ArrangerObject * m_obj = (ArrangerObject *) marker;
+      Position         pos;
       position_set_to_bar (&pos, 1);
       arranger_object_pos_setter (m_obj, &pos);
       marker->type = MARKER_TYPE_START;
 
       marker_track_add_marker (track, marker);
 
-      g_assert_true (
-        marker == track->markers[i + 2]);
+      g_assert_true (marker == track->markers[i + 2]);
 
       for (int j = 0; j < i + 2; j++)
         {

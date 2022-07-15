@@ -76,20 +76,19 @@ port_allocate_bufs (Port * self)
       self->midi_events = midi_events_new ();
       object_free_w_func_and_null (
         zix_ring_free, self->midi_ring);
-      self->midi_ring = zix_ring_new (
-        sizeof (MidiEvent) * (size_t) 11);
+      self->midi_ring =
+        zix_ring_new (sizeof (MidiEvent) * (size_t) 11);
       break;
     case TYPE_AUDIO:
     case TYPE_CV:
       {
         object_free_w_func_and_null (
           zix_ring_free, self->audio_ring);
-        self->audio_ring = zix_ring_new (
-          sizeof (float) * AUDIO_RING_SIZE);
+        self->audio_ring =
+          zix_ring_new (sizeof (float) * AUDIO_RING_SIZE);
         object_zero_and_free (self->buf);
         size_t max = MAX (
-          AUDIO_ENGINE->block_length,
-          self->min_buf_size);
+          AUDIO_ENGINE->block_length, self->min_buf_size);
         max = MAX (max, 1);
         self->buf = object_new_n (max, float);
         self->last_buf_sz = max;
@@ -110,8 +109,7 @@ port_free_bufs (Port * self)
 {
   object_free_w_func_and_null (
     midi_events_free, self->midi_events);
-  object_free_w_func_and_null (
-    zix_ring_free, self->midi_ring);
+  object_free_w_func_and_null (zix_ring_free, self->midi_ring);
   object_free_w_func_and_null (
     zix_ring_free, self->audio_ring);
   object_zero_and_free (self->buf);
@@ -155,8 +153,7 @@ port_init_loaded (Port * self, void * owner)
  *   searching.
  */
 Port *
-port_find_from_identifier (
-  const PortIdentifier * const id)
+port_find_from_identifier (const PortIdentifier * const id)
 {
   Track *    tr = NULL;
   Channel *  ch = NULL;
@@ -176,8 +173,7 @@ port_find_from_identifier (
           else if (id->flow == FLOW_INPUT)
             {
               if (flags & PORT_FLAG_MANUAL_PRESS)
-                return AUDIO_ENGINE
-                  ->midi_editor_manual_press;
+                return AUDIO_ENGINE->midi_editor_manual_press;
             }
           break;
         case TYPE_AUDIO:
@@ -202,16 +198,13 @@ port_find_from_identifier (
         TRACKLIST, id->track_name_hash);
       if (!tr)
         tr = tracklist_find_track_by_name_hash (
-          SAMPLE_PROCESSOR->tracklist,
-          id->track_name_hash);
-      g_return_val_if_fail (
-        IS_TRACK_AND_NONNULL (tr), NULL);
+          SAMPLE_PROCESSOR->tracklist, id->track_name_hash);
+      g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr), NULL);
       switch (id->plugin_id.slot_type)
         {
         case PLUGIN_SLOT_MIDI_FX:
           g_return_val_if_fail (tr->channel, NULL);
-          pl =
-            tr->channel->midi_fx[id->plugin_id.slot];
+          pl = tr->channel->midi_fx[id->plugin_id.slot];
           break;
         case PLUGIN_SLOT_INSTRUMENT:
           g_return_val_if_fail (tr->channel, NULL);
@@ -219,12 +212,10 @@ port_find_from_identifier (
           break;
         case PLUGIN_SLOT_INSERT:
           g_return_val_if_fail (tr->channel, NULL);
-          pl =
-            tr->channel->inserts[id->plugin_id.slot];
+          pl = tr->channel->inserts[id->plugin_id.slot];
           break;
         case PLUGIN_SLOT_MODULATOR:
-          g_return_val_if_fail (
-            tr->modulators, NULL);
+          g_return_val_if_fail (tr->modulators, NULL);
           pl = tr->modulators[id->plugin_id.slot];
           break;
         default:
@@ -258,10 +249,8 @@ port_find_from_identifier (
         TRACKLIST, id->track_name_hash);
       if (!tr)
         tr = tracklist_find_track_by_name_hash (
-          SAMPLE_PROCESSOR->tracklist,
-          id->track_name_hash);
-      g_return_val_if_fail (
-        IS_TRACK_AND_NONNULL (tr), NULL);
+          SAMPLE_PROCESSOR->tracklist, id->track_name_hash);
+      g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr), NULL);
       switch (id->type)
         {
         case TYPE_EVENT:
@@ -319,26 +308,19 @@ port_find_from_identifier (
                   return tr->processor
                     ->pitch_bend[id->port_index];
                 }
-              else if (
-                flags2
-                & PORT_FLAG2_MIDI_POLY_KEY_PRESSURE)
+              else if (flags2 & PORT_FLAG2_MIDI_POLY_KEY_PRESSURE)
                 {
                   return tr->processor
-                    ->poly_key_pressure
-                      [id->port_index];
+                    ->poly_key_pressure[id->port_index];
                 }
-              else if (
-                flags2
-                & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
+              else if (flags2 & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
                 {
                   return tr->processor
-                    ->channel_pressure
-                      [id->port_index];
+                    ->channel_pressure[id->port_index];
                 }
               else
                 {
-                  return tr->processor
-                    ->midi_cc[id->port_index];
+                  return tr->processor->midi_cc[id->port_index];
                 }
             }
           break;
@@ -351,8 +333,7 @@ port_find_from_identifier (
         TRACKLIST, id->track_name_hash);
       if (!tr)
         tr = tracklist_find_track_by_name_hash (
-          SAMPLE_PROCESSOR->tracklist,
-          id->track_name_hash);
+          SAMPLE_PROCESSOR->tracklist, id->track_name_hash);
       g_return_val_if_fail (tr, NULL);
       if (flags & PORT_FLAG_BPM)
         {
@@ -396,16 +377,14 @@ port_find_from_identifier (
             {
               if (flags & PORT_FLAG_STEREO_L && fader)
                 return fader->stereo_out->l;
-              else if (
-                flags & PORT_FLAG_STEREO_R && fader)
+              else if (flags & PORT_FLAG_STEREO_R && fader)
                 return fader->stereo_out->r;
             }
           else if (id->flow == FLOW_INPUT)
             {
               if (flags & PORT_FLAG_STEREO_L && fader)
                 return fader->stereo_in->l;
-              else if (
-                flags & PORT_FLAG_STEREO_R && fader)
+              else if (flags & PORT_FLAG_STEREO_R && fader)
                 return fader->stereo_in->r;
             }
           break;
@@ -414,25 +393,16 @@ port_find_from_identifier (
             {
               if (flags & PORT_FLAG_AMPLITUDE && fader)
                 return fader->amp;
-              else if (
-                flags & PORT_FLAG_STEREO_BALANCE
-                && fader)
+              else if (flags & PORT_FLAG_STEREO_BALANCE && fader)
                 return fader->balance;
-              else if (
-                flags & PORT_FLAG_FADER_MUTE
-                && fader)
+              else if (flags & PORT_FLAG_FADER_MUTE && fader)
                 return fader->mute;
-              else if (
-                flags2 & PORT_FLAG2_FADER_SOLO
-                && fader)
+              else if (flags2 & PORT_FLAG2_FADER_SOLO && fader)
                 return fader->solo;
-              else if (
-                flags2 & PORT_FLAG2_FADER_LISTEN
-                && fader)
+              else if (flags2 & PORT_FLAG2_FADER_LISTEN && fader)
                 return fader->listen;
               else if (
-                flags2 & PORT_FLAG2_FADER_MONO_COMPAT
-                && fader)
+                flags2 & PORT_FLAG2_FADER_MONO_COMPAT && fader)
                 return fader->mono_compat_enabled;
             }
           break;
@@ -446,8 +416,7 @@ port_find_from_identifier (
         TRACKLIST, id->track_name_hash);
       if (!tr)
         tr = tracklist_find_track_by_name_hash (
-          SAMPLE_PROCESSOR->tracklist,
-          id->track_name_hash);
+          SAMPLE_PROCESSOR->tracklist, id->track_name_hash);
       g_return_val_if_fail (tr, NULL);
       ch = tr->channel;
       g_return_val_if_fail (ch, NULL);
@@ -455,8 +424,7 @@ port_find_from_identifier (
         {
           return ch->sends[id->port_index]->enabled;
         }
-      else if (
-        id->flags2 & PORT_FLAG2_CHANNEL_SEND_AMOUNT)
+      else if (id->flags2 & PORT_FLAG2_CHANNEL_SEND_AMOUNT)
         {
           return ch->sends[id->port_index]->amount;
         }
@@ -477,8 +445,7 @@ port_find_from_identifier (
             }
           else if (id->type == TYPE_EVENT)
             {
-              return ch->sends[id->port_index]
-                ->midi_in;
+              return ch->sends[id->port_index]->midi_in;
             }
         }
       else if (id->flow == FLOW_OUTPUT)
@@ -498,8 +465,7 @@ port_find_from_identifier (
             }
           else if (id->type == TYPE_EVENT)
             {
-              return ch->sends[id->port_index]
-                ->midi_out;
+              return ch->sends[id->port_index]->midi_out;
             }
         }
       else
@@ -544,13 +510,9 @@ port_find_from_identifier (
                 return TRANSPORT->backward;
               if (flags2 & PORT_FLAG2_TRANSPORT_FORWARD)
                 return TRANSPORT->forward;
-              if (
-                flags2
-                & PORT_FLAG2_TRANSPORT_LOOP_TOGGLE)
+              if (flags2 & PORT_FLAG2_TRANSPORT_LOOP_TOGGLE)
                 return TRANSPORT->loop_toggle;
-              if (
-                flags2
-                & PORT_FLAG2_TRANSPORT_REC_TOGGLE)
+              if (flags2 & PORT_FLAG2_TRANSPORT_REC_TOGGLE)
                 return TRANSPORT->rec_toggle;
             }
           break;
@@ -589,8 +551,7 @@ port_find_from_identifier (
         TRACKLIST, id->track_name_hash);
       if (!tr)
         tr = tracklist_find_track_by_name_hash (
-          SAMPLE_PROCESSOR->tracklist,
-          id->track_name_hash);
+          SAMPLE_PROCESSOR->tracklist, id->track_name_hash);
       g_return_val_if_fail (tr, NULL);
       ch = tr->channel;
       g_return_val_if_fail (ch, NULL);
@@ -663,12 +624,9 @@ port_new_with_type (
     case TYPE_EVENT:
       self->maxf = 1.f;
 #ifdef _WOE32
-      if (
-        AUDIO_ENGINE->midi_backend
-        == MIDI_BACKEND_WINDOWS_MME)
+      if (AUDIO_ENGINE->midi_backend == MIDI_BACKEND_WINDOWS_MME)
         {
-          zix_sem_init (
-            &self->mme_connections_sem, 1);
+          zix_sem_init (&self->mme_connections_sem, 1);
         }
 #endif
       break;
@@ -692,8 +650,7 @@ port_new_with_type (
 
   g_return_val_if_fail (IS_PORT (self), NULL);
 
-  g_return_val_if_fail (
-    self->magic == PORT_MAGIC, NULL);
+  g_return_val_if_fail (self->magic == PORT_MAGIC, NULL);
 
   return self;
 }
@@ -706,8 +663,7 @@ port_new_with_type_and_owner (
   PortOwnerType owner_type,
   void *        owner)
 {
-  Port * self =
-    port_new_with_type (type, flow, label);
+  Port * self = port_new_with_type (type, flow, label);
   port_set_owner (self, owner_type, owner);
 
   return self;
@@ -769,10 +725,9 @@ port_receive_midi_events_from_jack (
     || self->id.type != TYPE_EVENT)
     return;
 
-  void * port_buf = jack_port_get_buffer (
-    JACK_PORT_T (self->data), nframes);
-  uint32_t num_events =
-    jack_midi_get_event_count (port_buf);
+  void * port_buf =
+    jack_port_get_buffer (JACK_PORT_T (self->data), nframes);
+  uint32_t num_events = jack_midi_get_event_count (port_buf);
 
   jack_midi_event_t jack_ev;
   for (unsigned i = 0; i < num_events; i++)
@@ -783,9 +738,8 @@ port_receive_midi_events_from_jack (
         jack_ev.time >= start_frame
         && jack_ev.time < start_frame + nframes)
         {
-          midi_byte_t channel =
-            jack_ev.buffer[0] & 0xf;
-          Track * track = port_get_track (self, 0);
+          midi_byte_t channel = jack_ev.buffer[0] & 0xf;
+          Track *     track = port_get_track (self, 0);
           if (
             self->id.owner_type
               == PORT_OWNER_TYPE_TRACK_PROCESSOR
@@ -794,16 +748,12 @@ port_receive_midi_events_from_jack (
               g_return_if_reached ();
             }
 
-          if (self->id.owner_type ==
-                PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-              (track->type ==
-                   TRACK_TYPE_MIDI ||
-                 track->type ==
-                   TRACK_TYPE_INSTRUMENT) &&
-                !track->channel->
-                  all_midi_channels &&
-                !track->channel->
-                  midi_channels[channel])
+          if (
+            self->id.owner_type
+              == PORT_OWNER_TYPE_TRACK_PROCESSOR
+            && (track->type == TRACK_TYPE_MIDI || track->type == TRACK_TYPE_INSTRUMENT)
+            && !track->channel->all_midi_channels
+            && !track->channel->midi_channels[channel])
             {
               /* different channel */
             }
@@ -848,12 +798,10 @@ port_receive_audio_data_from_jack (
 
   float * in;
   in = (float *) jack_port_get_buffer (
-    JACK_PORT_T (self->data),
-    AUDIO_ENGINE->nframes);
+    JACK_PORT_T (self->data), AUDIO_ENGINE->nframes);
 
   dsp_add2 (
-    &self->buf[start_frames], &in[start_frames],
-    nframes);
+    &self->buf[start_frames], &in[start_frames], nframes);
 }
 
 static void
@@ -874,8 +822,8 @@ send_midi_events_to_jack (
       return;
     }
 
-  void * buf = jack_port_get_buffer (
-    jport, AUDIO_ENGINE->nframes);
+  void * buf =
+    jack_port_get_buffer (jport, AUDIO_ENGINE->nframes);
   midi_events_copy_to_jack (port->midi_events, buf);
 }
 
@@ -909,8 +857,7 @@ send_audio_data_to_jack (
     {
 #  endif
       dsp_copy (
-        &out[start_frames],
-        &port->buf[start_frames], nframes);
+        &out[start_frames], &port->buf[start_frames], nframes);
 #  ifdef TRIAL_VER
     }
 #  endif
@@ -927,8 +874,7 @@ sum_data_from_jack (
   const nframes_t nframes)
 {
   if (
-    self->id.owner_type
-      == PORT_OWNER_TYPE_AUDIO_ENGINE
+    self->id.owner_type == PORT_OWNER_TYPE_AUDIO_ENGINE
     || self->internal_type != INTERNAL_JACK_PORT
     || self->id.flow != FLOW_INPUT)
     return;
@@ -966,15 +912,13 @@ send_data_to_jack (
   /* send midi events */
   if (AUDIO_ENGINE->midi_backend == MIDI_BACKEND_JACK)
     {
-      send_midi_events_to_jack (
-        self, start_frame, nframes);
+      send_midi_events_to_jack (self, start_frame, nframes);
     }
 
   /* send audio data */
   if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
     {
-      send_audio_data_to_jack (
-        self, start_frame, nframes);
+      send_audio_data_to_jack (self, start_frame, nframes);
     }
 }
 
@@ -1023,30 +967,26 @@ expose_to_jack (Port * self, bool expose)
       if (!self->data)
         {
           self->data = (void *) jack_port_register (
-            AUDIO_ENGINE->client, label, type,
-            flags, 0);
+            AUDIO_ENGINE->client, label, type, flags, 0);
         }
       g_return_if_fail (self->data);
       self->internal_type = INTERNAL_JACK_PORT;
     }
   else
     {
-      g_message (
-        "unexposing port %s from JACK", label);
+      g_message ("unexposing port %s from JACK", label);
       if (AUDIO_ENGINE->client)
         {
           g_warn_if_fail (self->data);
           int ret = jack_port_unregister (
-            AUDIO_ENGINE->client,
-            JACK_PORT_T (self->data));
+            AUDIO_ENGINE->client, JACK_PORT_T (self->data));
           if (ret)
             {
               char jack_error[600];
               engine_jack_get_error_message (
                 (jack_status_t) ret, jack_error);
               g_warning (
-                "JACK port unregister error: %s",
-                jack_error);
+                "JACK port unregister error: %s", jack_error);
             }
         }
       self->internal_type = INTERNAL_NONE;
@@ -1068,13 +1008,11 @@ sum_data_from_dummy (
   const nframes_t nframes)
 {
   if (
-    self->id.owner_type
-      == PORT_OWNER_TYPE_AUDIO_ENGINE
+    self->id.owner_type == PORT_OWNER_TYPE_AUDIO_ENGINE
     || self->id.flow != FLOW_INPUT
     || self->id.type != TYPE_AUDIO
     || AUDIO_ENGINE->audio_backend != AUDIO_BACKEND_DUMMY
-    || AUDIO_ENGINE->midi_backend
-         != MIDI_BACKEND_DUMMY)
+    || AUDIO_ENGINE->midi_backend != MIDI_BACKEND_DUMMY)
     return;
 
   if (AUDIO_ENGINE->dummy_input)
@@ -1092,8 +1030,8 @@ sum_data_from_dummy (
       if (port)
         {
           dsp_add2 (
-            &self->buf[start_frame],
-            &port->buf[start_frame], nframes);
+            &self->buf[start_frame], &port->buf[start_frame],
+            nframes);
         }
     }
 }
@@ -1125,13 +1063,12 @@ get_num_unlocked (const Port * self, bool sources)
   GPtrArray * conns = g_ptr_array_new ();
   int         num_conns =
     port_connections_manager_get_sources_or_dests (
-      PORT_CONNECTIONS_MGR, conns, &self->id,
-      sources);
+      PORT_CONNECTIONS_MGR, conns, &self->id, sources);
   int ret = 0;
   for (int i = 0; i < num_conns; i++)
     {
-      PortConnection * conn = (PortConnection *)
-        g_ptr_array_index (conns, i);
+      PortConnection * conn =
+        (PortConnection *) g_ptr_array_index (conns, i);
       if (!conn->locked)
         ret++;
     }
@@ -1176,8 +1113,7 @@ port_get_all (GPtrArray * ports)
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * tr = TRACKLIST->tracks[i];
-      track_append_ports (
-        tr, ports, F_INCLUDE_PLUGINS);
+      track_append_ports (tr, ports, F_INCLUDE_PLUGINS);
     }
 
 #undef _ADD
@@ -1190,15 +1126,13 @@ NONNULL
 static void
 set_owner_plugin (Port * port, Plugin * pl)
 {
-  plugin_identifier_copy (
-    &port->id.plugin_id, &pl->id);
+  plugin_identifier_copy (&port->id.plugin_id, &pl->id);
   port->id.track_name_hash = pl->id.track_name_hash;
   port->id.owner_type = PORT_OWNER_TYPE_PLUGIN;
 
   if (port->at)
     {
-      port_identifier_copy (
-        &port->at->port_id, &port->id);
+      port_identifier_copy (&port->at->port_id, &port->id);
     }
 }
 
@@ -1213,10 +1147,8 @@ set_owner_track_processor (
 {
   Track * track = track_processor->track;
   g_return_if_fail (track && track->name);
-  port->id.track_name_hash =
-    track_get_name_hash (track);
-  port->id.owner_type =
-    PORT_OWNER_TYPE_TRACK_PROCESSOR;
+  port->id.track_name_hash = track_get_name_hash (track);
+  port->id.owner_type = PORT_OWNER_TYPE_TRACK_PROCESSOR;
 }
 
 /**
@@ -1235,8 +1167,7 @@ set_owner_fader (Port * self, Fader * fader)
     {
       Track * track = fader->track;
       g_return_if_fail (track && track->name);
-      self->id.track_name_hash =
-        track_get_name_hash (track);
+      self->id.track_name_hash = track_get_name_hash (track);
       if (fader->passthrough)
         {
           id->flags2 |= PORT_FLAG2_PREFADER;
@@ -1248,8 +1179,7 @@ set_owner_fader (Port * self, Fader * fader)
     }
   else if (fader->type == FADER_TYPE_SAMPLE_PROCESSOR)
     {
-      id->flags2 |=
-        PORT_FLAG2_SAMPLE_PROCESSOR_FADER;
+      id->flags2 |= PORT_FLAG2_SAMPLE_PROCESSOR_FADER;
     }
   else
     {
@@ -1278,8 +1208,7 @@ static void
 set_owner_track (Port * port, Track * track)
 {
   g_return_if_fail (track->name);
-  port->id.track_name_hash =
-    track_get_name_hash (track);
+  port->id.track_name_hash = track_get_name_hash (track);
   port->id.owner_type = PORT_OWNER_TYPE_TRACK;
 }
 
@@ -1288,14 +1217,11 @@ set_owner_track (Port * port, Track * track)
  */
 NONNULL
 static void
-set_owner_channel_send (
-  Port *        self,
-  ChannelSend * send)
+set_owner_channel_send (Port * self, ChannelSend * send)
 {
   self->id.track_name_hash = send->track_name_hash;
   self->id.port_index = send->slot;
-  self->id.owner_type =
-    PORT_OWNER_TYPE_CHANNEL_SEND;
+  self->id.owner_type = PORT_OWNER_TYPE_CHANNEL_SEND;
   self->channel_send = send;
 
   if (self->id.flags2 & PORT_FLAG2_CHANNEL_SEND_ENABLED)
@@ -1304,9 +1230,7 @@ set_owner_channel_send (
       self->maxf = 1.f;
       self->zerof = 0.0f;
     }
-  else if (
-    self->id.flags2
-    & PORT_FLAG2_CHANNEL_SEND_AMOUNT)
+  else if (self->id.flags2 & PORT_FLAG2_CHANNEL_SEND_AMOUNT)
     {
       self->minf = 0.f;
       self->maxf = 2.f;
@@ -1320,16 +1244,13 @@ set_owner_channel (Port * port, Channel * ch)
 {
   Track * track = ch->track;
   g_return_if_fail (track && track->name);
-  port->id.track_name_hash =
-    track_get_name_hash (track);
+  port->id.track_name_hash = track_get_name_hash (track);
   port->id.owner_type = PORT_OWNER_TYPE_CHANNEL;
 }
 
 NONNULL
 static void
-set_owner_transport (
-  Port *      self,
-  Transport * transport)
+set_owner_transport (Port * self, Transport * transport)
 {
   self->transport = transport;
   self->id.owner_type = PORT_OWNER_TYPE_TRANSPORT;
@@ -1344,22 +1265,17 @@ set_owner_modulator_macro_processor (
   self->modulator_macro_processor = mmp;
   self->id.owner_type =
     PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR;
-  g_return_if_fail (
-    IS_TRACK_AND_NONNULL (mmp->track));
-  self->id.track_name_hash =
-    track_get_name_hash (mmp->track);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (mmp->track));
+  self->id.track_name_hash = track_get_name_hash (mmp->track);
   self->track = mmp->track;
 }
 
 NONNULL
 static void
-set_owner_audio_engine (
-  Port *        self,
-  AudioEngine * engine)
+set_owner_audio_engine (Port * self, AudioEngine * engine)
 {
   self->engine = engine;
-  self->id.owner_type =
-    PORT_OWNER_TYPE_AUDIO_ENGINE;
+  self->id.owner_type = PORT_OWNER_TYPE_AUDIO_ENGINE;
 }
 
 NONNULL
@@ -1380,8 +1296,7 @@ port_set_owner (
   switch (owner_type)
     {
     case PORT_OWNER_TYPE_CHANNEL_SEND:
-      set_owner_channel_send (
-        self, (ChannelSend *) owner);
+      set_owner_channel_send (self, (ChannelSend *) owner);
       break;
     case PORT_OWNER_TYPE_FADER:
       set_owner_fader (self, (Fader *) owner);
@@ -1400,16 +1315,14 @@ port_set_owner (
       set_owner_plugin (self, (Plugin *) owner);
       break;
     case PORT_OWNER_TYPE_TRANSPORT:
-      set_owner_transport (
-        self, (Transport *) owner);
+      set_owner_transport (self, (Transport *) owner);
       break;
     case PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR:
       set_owner_modulator_macro_processor (
         self, (ModulatorMacroProcessor *) owner);
       break;
     case PORT_OWNER_TYPE_AUDIO_ENGINE:
-      set_owner_audio_engine (
-        self, (AudioEngine *) owner);
+      set_owner_audio_engine (self, (AudioEngine *) owner);
       break;
     case PORT_OWNER_TYPE_HW:
       set_owner_ext_port (self, (ExtPort *) owner);
@@ -1425,13 +1338,11 @@ port_set_owner (
  * acyclicity of the graph).
  */
 bool
-ports_can_be_connected (
-  const Port * src,
-  const Port * dest)
+ports_can_be_connected (const Port * src, const Port * dest)
 {
   Graph * graph = graph_new (ROUTER);
-  bool    valid = graph_validate_with_connection (
-       graph, src, dest);
+  bool    valid =
+    graph_validate_with_connection (graph, src, dest);
   graph_free (graph);
 
   return valid;
@@ -1441,10 +1352,7 @@ ports_can_be_connected (
  * Disconnects all the given ports.
  */
 void
-ports_disconnect (
-  Port ** ports,
-  int     num_ports,
-  int     deleting)
+ports_disconnect (Port ** ports, int num_ports, int deleting)
 {
   if (!PORT_CONNECTIONS_MGR)
     return;
@@ -1492,16 +1400,14 @@ port_disconnect_all (Port * self)
     }
 
   GPtrArray * srcs = g_ptr_array_new ();
-  int         num_srcs =
-    port_connections_manager_get_sources_or_dests (
-      PORT_CONNECTIONS_MGR, srcs, &self->id, true);
+  int num_srcs = port_connections_manager_get_sources_or_dests (
+    PORT_CONNECTIONS_MGR, srcs, &self->id, true);
   for (int i = 0; i < num_srcs; i++)
     {
-      PortConnection * conn = (PortConnection *)
-        g_ptr_array_index (srcs, i);
+      PortConnection * conn =
+        (PortConnection *) g_ptr_array_index (srcs, i);
       port_connections_manager_ensure_disconnect (
-        PORT_CONNECTIONS_MGR, conn->src_id,
-        conn->dest_id);
+        PORT_CONNECTIONS_MGR, conn->src_id, conn->dest_id);
     }
   g_ptr_array_unref (srcs);
 
@@ -1511,11 +1417,10 @@ port_disconnect_all (Port * self)
       PORT_CONNECTIONS_MGR, dests, &self->id, false);
   for (int i = 0; i < num_dests; i++)
     {
-      PortConnection * conn = (PortConnection *)
-        g_ptr_array_index (dests, i);
+      PortConnection * conn =
+        (PortConnection *) g_ptr_array_index (dests, i);
       port_connections_manager_ensure_disconnect (
-        PORT_CONNECTIONS_MGR, conn->src_id,
-        conn->dest_id);
+        PORT_CONNECTIONS_MGR, conn->src_id, conn->dest_id);
     }
   g_ptr_array_unref (dests);
 
@@ -1569,13 +1474,12 @@ port_update_identifier (
           PORT_CONNECTIONS_MGR, srcs, prev_id, true);
       for (int i = 0; i < num_srcs; i++)
         {
-          PortConnection * conn = (PortConnection *)
-            g_ptr_array_index (srcs, i);
+          PortConnection * conn =
+            (PortConnection *) g_ptr_array_index (srcs, i);
           if (!port_identifier_is_equal (
                 conn->dest_id, &self->id))
             {
-              port_identifier_copy (
-                conn->dest_id, &self->id);
+              port_identifier_copy (conn->dest_id, &self->id);
               port_connections_manager_regenerate_hashtables (
                 PORT_CONNECTIONS_MGR);
             }
@@ -1586,17 +1490,15 @@ port_update_identifier (
       GPtrArray * dests = g_ptr_array_new ();
       int         num_dests =
         port_connections_manager_get_sources_or_dests (
-          PORT_CONNECTIONS_MGR, dests, prev_id,
-          false);
+          PORT_CONNECTIONS_MGR, dests, prev_id, false);
       for (int i = 0; i < num_dests; i++)
         {
-          PortConnection * conn = (PortConnection *)
-            g_ptr_array_index (dests, i);
+          PortConnection * conn =
+            (PortConnection *) g_ptr_array_index (dests, i);
           if (!port_identifier_is_equal (
                 conn->src_id, &self->id))
             {
-              port_identifier_copy (
-                conn->src_id, &self->id);
+              port_identifier_copy (conn->src_id, &self->id);
               port_connections_manager_regenerate_hashtables (
                 PORT_CONNECTIONS_MGR);
             }
@@ -1604,18 +1506,15 @@ port_update_identifier (
       g_ptr_array_unref (dests);
 
       if (
-        update_automation_track
-        && self->id.track_name_hash
+        update_automation_track && self->id.track_name_hash
         && self->id.flags & PORT_FLAG_AUTOMATABLE)
         {
           /* update automation track's port id */
-          self->at =
-            automation_track_find_from_port (
-              self, track, true);
+          self->at = automation_track_find_from_port (
+            self, track, true);
           AutomationTrack * at = self->at;
           g_return_if_fail (at);
-          port_identifier_copy (
-            &at->port_id, &self->id);
+          port_identifier_copy (&at->port_id, &self->id);
         }
     }
 
@@ -1642,8 +1541,7 @@ port_update_track_name_hash (
   Track *      track,
   unsigned int new_hash)
 {
-  PortIdentifier * copy =
-    port_identifier_clone (&self->id);
+  PortIdentifier * copy = port_identifier_clone (&self->id);
 
   self->id.track_name_hash = new_hash;
   if (self->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
@@ -1652,8 +1550,7 @@ port_update_track_name_hash (
     }
   port_update_identifier (
     self, copy, track, F_UPDATE_AUTOMATION_TRACK);
-  object_free_w_func_and_null (
-    port_identifier_free, copy);
+  object_free_w_func_and_null (port_identifier_free, copy);
 }
 
 #ifdef HAVE_ALSA
@@ -1804,15 +1701,13 @@ port_sum_data_from_rtmidi (
 {
   g_return_if_fail (
     /*self->id.flow == FLOW_INPUT &&*/
-    midi_backend_is_rtmidi (
-      AUDIO_ENGINE->midi_backend));
+    midi_backend_is_rtmidi (AUDIO_ENGINE->midi_backend));
 
   for (int i = 0; i < self->num_rtmidi_ins; i++)
     {
       RtMidiDevice * dev = self->rtmidi_ins[i];
       MidiEvent *    ev;
-      for (int j = 0; j < dev->events->num_events;
-           j++)
+      for (int j = 0; j < dev->events->num_events; j++)
         {
           ev = &dev->events->events[j];
 
@@ -1820,10 +1715,8 @@ port_sum_data_from_rtmidi (
             ev->time >= start_frame
             && ev->time < start_frame + nframes)
             {
-              midi_byte_t channel =
-                ev->raw_buffer[0] & 0xf;
-              Track * track =
-                port_get_track (self, 0);
+              midi_byte_t channel = ev->raw_buffer[0] & 0xf;
+              Track *     track = port_get_track (self, 0);
               if (
                 self->id.owner_type
                   == PORT_OWNER_TYPE_TRACK_PROCESSOR
@@ -1832,16 +1725,12 @@ port_sum_data_from_rtmidi (
                   g_return_if_reached ();
                 }
 
-              if (self->id.owner_type ==
-                    PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-                  (track->type ==
-                       TRACK_TYPE_MIDI ||
-                     track->type ==
-                       TRACK_TYPE_INSTRUMENT) &&
-                    !track->channel->
-                      all_midi_channels &&
-                    !track->channel->
-                      midi_channels[channel])
+              if (
+                self->id.owner_type
+                  == PORT_OWNER_TYPE_TRACK_PROCESSOR
+                && (track->type == TRACK_TYPE_MIDI || track->type == TRACK_TYPE_INSTRUMENT)
+                && !track->channel->all_midi_channels
+                && !track->channel->midi_channels[channel])
                 {
                   /* different channel */
                 }
@@ -1849,8 +1738,7 @@ port_sum_data_from_rtmidi (
                 {
                   midi_events_add_event_from_buf (
                     self->midi_events, ev->time,
-                    ev->raw_buffer, 3,
-                    F_NOT_QUEUED);
+                    ev->raw_buffer, 3, F_NOT_QUEUED);
                 }
             }
         }
@@ -1884,8 +1772,7 @@ port_prepare_rtmidi_events (Port * self)
 {
   g_return_if_fail (
     /*self->id.flow == FLOW_INPUT &&*/
-    midi_backend_is_rtmidi (
-      AUDIO_ENGINE->midi_backend));
+    midi_backend_is_rtmidi (AUDIO_ENGINE->midi_backend));
 
   gint64 cur_time = g_get_monotonic_time ();
   for (int i = 0; i < self->num_rtmidi_ins; i++)
@@ -1899,8 +1786,7 @@ port_prepare_rtmidi_events (Port * self)
       zix_sem_wait (&dev->midi_ring_sem);
       do
         {
-          read_space =
-            zix_ring_read_space (dev->midi_ring);
+          read_space = zix_ring_read_space (dev->midi_ring);
           if (read_space <= sizeof (MidiEventHeader))
             {
               /* no more events */
@@ -1910,22 +1796,18 @@ port_prepare_rtmidi_events (Port * self)
           /* peek the next event header to check
            * the time */
           MidiEventHeader h = { 0, 0 };
-          zix_ring_peek (
-            dev->midi_ring, &h, sizeof (h));
+          zix_ring_peek (dev->midi_ring, &h, sizeof (h));
           g_return_if_fail (h.size > 0);
 
           /* read event header */
-          zix_ring_read (
-            dev->midi_ring, &h, sizeof (h));
+          zix_ring_read (dev->midi_ring, &h, sizeof (h));
 
           /* read event body */
           midi_byte_t raw[h.size];
-          zix_ring_read (
-            dev->midi_ring, raw, sizeof (raw));
+          zix_ring_read (dev->midi_ring, raw, sizeof (raw));
 
           /* calculate event timestamp */
-          gint64 length =
-            cur_time - self->last_midi_dequeue;
+          gint64 length = cur_time - self->last_midi_dequeue;
           midi_time_t ev_time =
             (midi_time_t)
             (((double) h.time / (double) length) *
@@ -1939,16 +1821,15 @@ port_prepare_rtmidi_events (Port * self)
                 "is %" PRIu32
                 ". setting it to "
                 "%u...",
-                ev_time,
-                AUDIO_ENGINE->block_length - 1,
+                ev_time, AUDIO_ENGINE->block_length - 1,
                 AUDIO_ENGINE->block_length - 1);
               ev_time =
                 (midi_byte_t) (AUDIO_ENGINE->block_length - 1);
             }
 
           midi_events_add_event_from_buf (
-            dev->events, ev_time, raw,
-            (int) h.size, F_NOT_QUEUED);
+            dev->events, ev_time, raw, (int) h.size,
+            F_NOT_QUEUED);
         }
       while (read_space > sizeof (MidiEventHeader));
       zix_sem_post (&dev->midi_ring_sem);
@@ -1977,54 +1858,50 @@ expose_to_rtaudio (Port * self, int expose)
         {
           if (self->id.flags & PORT_FLAG_STEREO_L)
             {
-              if (ch->all_stereo_l_ins) { }
+              if (ch->all_stereo_l_ins)
+                {
+                }
               else
                 {
                   for (int i = 0;
-                       i < ch->num_ext_stereo_l_ins;
-                       i++)
+                       i < ch->num_ext_stereo_l_ins; i++)
                     {
-                      int idx =
-                        self->num_rtaudio_ins;
+                      int       idx = self->num_rtaudio_ins;
                       ExtPort * ext_port =
                         ch->ext_stereo_l_ins[i];
                       ext_port_print (ext_port);
                       self->rtaudio_ins
                         [idx] = rtaudio_device_new (
-                        ext_port->rtaudio_is_input,
-                        NULL, ext_port->rtaudio_id,
-                        ext_port->rtaudio_channel_idx,
-                        self);
+                        ext_port->rtaudio_is_input, NULL,
+                        ext_port->rtaudio_id,
+                        ext_port->rtaudio_channel_idx, self);
                       rtaudio_device_open (
-                        self->rtaudio_ins[idx],
-                        true);
+                        self->rtaudio_ins[idx], true);
                       self->num_rtaudio_ins++;
                     }
                 }
             }
           else if (self->id.flags & PORT_FLAG_STEREO_R)
             {
-              if (ch->all_stereo_r_ins) { }
+              if (ch->all_stereo_r_ins)
+                {
+                }
               else
                 {
                   for (int i = 0;
-                       i < ch->num_ext_stereo_r_ins;
-                       i++)
+                       i < ch->num_ext_stereo_r_ins; i++)
                     {
-                      int idx =
-                        self->num_rtaudio_ins;
+                      int       idx = self->num_rtaudio_ins;
                       ExtPort * ext_port =
                         ch->ext_stereo_r_ins[i];
                       ext_port_print (ext_port);
                       self->rtaudio_ins
                         [idx] = rtaudio_device_new (
-                        ext_port->rtaudio_is_input,
-                        NULL, ext_port->rtaudio_id,
-                        ext_port->rtaudio_channel_idx,
-                        self);
+                        ext_port->rtaudio_is_input, NULL,
+                        ext_port->rtaudio_id,
+                        ext_port->rtaudio_channel_idx, self);
                       rtaudio_device_open (
-                        self->rtaudio_ins[idx],
-                        true);
+                        self->rtaudio_ins[idx], true);
                       self->num_rtaudio_ins++;
                     }
                 }
@@ -2036,8 +1913,7 @@ expose_to_rtaudio (Port * self, int expose)
     {
       if (self->id.flow == FLOW_INPUT)
         {
-          for (int i = 0;
-               i < self->num_rtaudio_ins; i++)
+          for (int i = 0; i < self->num_rtaudio_ins; i++)
             {
               rtaudio_device_close (
                 self->rtaudio_ins[i], true);
@@ -2058,8 +1934,7 @@ port_prepare_rtaudio_data (Port * self)
 {
   g_return_if_fail (
     /*self->id.flow == FLOW_INPUT &&*/
-    audio_backend_is_rtaudio (
-      AUDIO_ENGINE->audio_backend));
+    audio_backend_is_rtaudio (AUDIO_ENGINE->audio_backend));
 
   for (int i = 0; i < self->num_rtaudio_ins; i++)
     {
@@ -2076,9 +1951,7 @@ port_prepare_rtaudio_data (Port * self)
         zix_ring_read_space (dev->audio_ring);
 
       /* only process if data exists */
-      if (
-        read_space
-        >= AUDIO_ENGINE->nframes * sizeof (float))
+      if (read_space >= AUDIO_ENGINE->nframes * sizeof (float))
         {
           /* read the buffer */
           zix_ring_read (
@@ -2102,16 +1975,15 @@ port_sum_data_from_rtaudio (
 {
   g_return_if_fail (
     /*self->id.flow == FLOW_INPUT &&*/
-    audio_backend_is_rtaudio (
-      AUDIO_ENGINE->audio_backend));
+    audio_backend_is_rtaudio (AUDIO_ENGINE->audio_backend));
 
   for (int i = 0; i < self->num_rtaudio_ins; i++)
     {
       RtAudioDevice * dev = self->rtaudio_ins[i];
 
       dsp_add2 (
-        &self->buf[start_frame],
-        &dev->buf[start_frame], nframes);
+        &self->buf[start_frame], &dev->buf[start_frame],
+        nframes);
     }
 }
 #endif // HAVE_RTAUDIO
@@ -2129,19 +2001,15 @@ sum_data_from_windows_mme (
 {
   g_return_if_fail (
     self->id.flow == FLOW_INPUT
-    && AUDIO_ENGINE->midi_backend
-         == MIDI_BACKEND_WINDOWS_MME);
+    && AUDIO_ENGINE->midi_backend == MIDI_BACKEND_WINDOWS_MME);
 
-  if (
-    self->id.owner_type
-    == PORT_OWNER_TYPE_AUDIO_ENGINE)
+  if (self->id.owner_type == PORT_OWNER_TYPE_AUDIO_ENGINE)
     return;
 
   /* append events from Windows MME if any */
   for (int i = 0; i < self->num_mme_connections; i++)
     {
-      WindowsMmeDevice * dev =
-        self->mme_connections[i];
+      WindowsMmeDevice * dev = self->mme_connections[i];
       if (!dev)
         {
           g_warn_if_reached ();
@@ -2150,18 +2018,15 @@ sum_data_from_windows_mme (
 
       MidiEvent ev;
       gint64    cur_time = g_get_monotonic_time ();
-      while (
-        windows_mme_device_dequeue_midi_event_struct (
-          dev, self->last_midi_dequeue, cur_time,
-          &ev))
+      while (windows_mme_device_dequeue_midi_event_struct (
+        dev, self->last_midi_dequeue, cur_time, &ev))
         {
           int is_valid =
             ev.time >= start_frame
             && ev.time < start_frame + nframes;
           if (!is_valid)
             {
-              g_warning (
-                "Invalid event time %u", ev.time);
+              g_warning ("Invalid event time %u", ev.time);
               continue;
             }
 
@@ -2169,28 +2034,22 @@ sum_data_from_windows_mme (
             ev.time >= start_frame
             && ev.time < start_frame + nframes)
             {
-              midi_byte_t channel =
-                ev.raw_buffer[0] & 0xf;
-              Track * track =
-                port_get_track (self, 0);
-              if (self->id.owner_type ==
-                    PORT_OWNER_TYPE_TRACK_PROCESSOR &&
-                  (track->type ==
-                     TRACK_TYPE_MIDI ||
-                   track->type ==
-                     TRACK_TYPE_INSTRUMENT) &&
-                  !track->channel->
-                    all_midi_channels &&
-                  !track->channel->
-                    midi_channels[channel])
+              midi_byte_t channel = ev.raw_buffer[0] & 0xf;
+              Track *     track = port_get_track (self, 0);
+              if (
+                self->id.owner_type
+                  == PORT_OWNER_TYPE_TRACK_PROCESSOR
+                && (track->type == TRACK_TYPE_MIDI || track->type == TRACK_TYPE_INSTRUMENT)
+                && !track->channel->all_midi_channels
+                && !track->channel->midi_channels[channel])
                 {
                   /* different channel */
                 }
               else
                 {
                   midi_events_add_event_from_buf (
-                    self->midi_events, ev.time,
-                    ev.raw_buffer, 3, 0);
+                    self->midi_events, ev.time, ev.raw_buffer,
+                    3, 0);
                 }
             }
         }
@@ -2228,8 +2087,7 @@ send_data_to_windows_mme (
 {
   g_return_if_fail (
     self->id.flow == FLOW_OUTPUT
-    && AUDIO_ENGINE->midi_backend
-         == MIDI_BACKEND_WINDOWS_MME);
+    && AUDIO_ENGINE->midi_backend == MIDI_BACKEND_WINDOWS_MME);
 
   /* TODO send midi events */
 }
@@ -2246,13 +2104,11 @@ port_forward_control_change_event (Port * self)
   if (self->value_type > 0)
     {
       Plugin * pl = port_get_plugin (self, 1);
-      g_return_if_fail (
-        IS_PLUGIN_AND_NONNULL (pl) && pl->lv2);
+      g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl) && pl->lv2);
       lv2_ui_send_control_val_event_from_plugin_to_ui (
         pl->lv2, self);
     }
-  else if (
-    self->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
+  else if (self->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
     {
       Plugin * pl = port_get_plugin (self, 1);
       if (pl)
@@ -2264,16 +2120,13 @@ port_forward_control_change_event (Port * self)
             {
               g_return_if_fail (pl->carla);
               carla_native_plugin_set_param_value (
-                pl->carla,
-                (uint32_t) self->carla_param_id,
+                pl->carla, (uint32_t) self->carla_param_id,
                 self->control);
             }
 #endif
-          if (!g_atomic_int_get (
-                &pl->state_changed_event_sent))
+          if (!g_atomic_int_get (&pl->state_changed_event_sent))
             {
-              EVENTS_PUSH (
-                ET_PLUGIN_STATE_CHANGED, pl);
+              EVENTS_PUSH (ET_PLUGIN_STATE_CHANGED, pl);
               g_atomic_int_set (
                 &pl->state_changed_event_sent, 1);
             }
@@ -2288,31 +2141,24 @@ port_forward_control_change_event (Port * self)
         self->id.flags & PORT_FLAG_FADER_MUTE
         || self->id.flags2 & PORT_FLAG2_FADER_SOLO
         || self->id.flags2 & PORT_FLAG2_FADER_LISTEN
-        || self->id.flags2
-             & PORT_FLAG2_FADER_MONO_COMPAT)
+        || self->id.flags2 & PORT_FLAG2_FADER_MONO_COMPAT)
         {
-          EVENTS_PUSH (
-            ET_TRACK_FADER_BUTTON_CHANGED, track);
+          EVENTS_PUSH (ET_TRACK_FADER_BUTTON_CHANGED, track);
         }
       else if (self->id.flags & PORT_FLAG_AMPLITUDE)
         {
           if (ZRYTHM_HAVE_UI)
-            g_return_if_fail (
-              track->channel->widget);
+            g_return_if_fail (track->channel->widget);
           fader_update_volume_and_fader_val (
             track->channel->fader);
           EVENTS_PUSH (
-            ET_CHANNEL_FADER_VAL_CHANGED,
-            track->channel);
+            ET_CHANNEL_FADER_VAL_CHANGED, track->channel);
         }
     }
-  else if (
-    self->id.owner_type
-    == PORT_OWNER_TYPE_CHANNEL_SEND)
+  else if (self->id.owner_type == PORT_OWNER_TYPE_CHANNEL_SEND)
     {
       Track * track = port_get_track (self, 1);
-      g_return_if_fail (
-        IS_TRACK_AND_NONNULL (track));
+      g_return_if_fail (IS_TRACK_AND_NONNULL (track));
       ChannelSend * send =
         track->channel->sends[self->id.port_index];
       EVENTS_PUSH (ET_CHANNEL_SEND_CHANGED, send);
@@ -2363,12 +2209,10 @@ port_set_control_value (
     }
 
   self->unsnapped_control = self->base_value;
-  self->base_value =
-    control_port_get_snapped_val_from_val (
-      self, self->unsnapped_control);
+  self->base_value = control_port_get_snapped_val_from_val (
+    self, self->unsnapped_control);
 
-  if (!math_floats_equal (
-        self->control, self->base_value))
+  if (!math_floats_equal (self->control, self->base_value))
     {
       self->control = self->base_value;
 
@@ -2384,17 +2228,13 @@ port_set_control_value (
            * engine is stopped */
           g_return_if_fail (
             !engine_get_run (AUDIO_ENGINE)
-            || router_is_processing_kickoff_thread (
-              ROUTER));
+            || router_is_processing_kickoff_thread (ROUTER));
 
           int beats_per_bar =
-            tempo_track_get_beats_per_bar (
-              P_TEMPO_TRACK);
+            tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
           engine_update_frames_per_tick (
-            AUDIO_ENGINE, beats_per_bar,
-            self->control,
-            AUDIO_ENGINE->sample_rate, false, true,
-            true);
+            AUDIO_ENGINE, beats_per_bar, self->control,
+            AUDIO_ENGINE->sample_rate, false, true, true);
           EVENTS_PUSH (ET_BPM_CHANGED, NULL);
         }
 
@@ -2409,16 +2249,14 @@ port_set_control_value (
            * engine is stopped */
           g_return_if_fail (
             !engine_get_run (AUDIO_ENGINE)
-            || router_is_processing_kickoff_thread (
-              ROUTER));
+            || router_is_processing_kickoff_thread (ROUTER));
 
           int beats_per_bar =
-            tempo_track_get_beats_per_bar (
-              P_TEMPO_TRACK);
-          int beat_unit = tempo_track_get_beat_unit (
-            P_TEMPO_TRACK);
-          bpm_t bpm = tempo_track_get_current_bpm (
-            P_TEMPO_TRACK);
+            tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+          int beat_unit =
+            tempo_track_get_beat_unit (P_TEMPO_TRACK);
+          bpm_t bpm =
+            tempo_track_get_current_bpm (P_TEMPO_TRACK);
           transport_update_caches (
             TRANSPORT, beats_per_bar, beat_unit);
           bool update_from_ticks =
@@ -2427,8 +2265,7 @@ port_set_control_value (
             AUDIO_ENGINE, beats_per_bar, bpm,
             AUDIO_ENGINE->sample_rate, false,
             update_from_ticks, false);
-          EVENTS_PUSH (
-            ET_TIME_SIGNATURE_CHANGED, NULL);
+          EVENTS_PUSH (ET_TIME_SIGNATURE_CHANGED, NULL);
         }
 
       /* if plugin enabled port, also set
@@ -2441,29 +2278,24 @@ port_set_control_value (
           Plugin * pl = port_get_plugin (self, 1);
           g_return_if_fail (pl);
 
-          if (
-            self->id.flags
-            & PORT_FLAG_GENERIC_PLUGIN_PORT)
+          if (self->id.flags & PORT_FLAG_GENERIC_PLUGIN_PORT)
             {
               if (
                 pl->own_enabled_port
                 && !math_floats_equal (
-                  pl->own_enabled_port->control,
-                  self->control))
+                  pl->own_enabled_port->control, self->control))
                 {
                   g_debug (
                     "generic enabled "
                     "changed - changing "
                     "plugin's own enabled");
                   port_set_control_value (
-                    pl->own_enabled_port,
-                    self->control, false,
-                    F_PUBLISH_EVENTS);
+                    pl->own_enabled_port, self->control,
+                    false, F_PUBLISH_EVENTS);
                 }
             }
-          else if (
-            !math_floats_equal (
-              pl->enabled->control, self->control))
+          else if (!math_floats_equal (
+                     pl->enabled->control, self->control))
             {
               g_debug (
                 "plugin's own enabled "
@@ -2490,22 +2322,17 @@ port_set_control_value (
  *   normalized or not.
  */
 float
-port_get_control_value (
-  Port *     self,
-  const bool normalize)
+port_get_control_value (Port * self, const bool normalize)
 {
-  g_return_val_if_fail (
-    self->id.type == TYPE_CONTROL, 0.f);
+  g_return_val_if_fail (self->id.type == TYPE_CONTROL, 0.f);
 
   /* verify that plugin exists if plugin control */
   if (
-    ZRYTHM_TESTING
-    && port_is_in_active_project (self)
+    ZRYTHM_TESTING && port_is_in_active_project (self)
     && self->id.flags & PORT_FLAG_PLUGIN_CONTROL)
     {
       Plugin * pl = port_get_plugin (self, 1);
-      g_return_val_if_fail (
-        IS_PLUGIN_AND_NONNULL (pl), 0.f);
+      g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), 0.f);
     }
 
   if (normalize)
@@ -2520,24 +2347,17 @@ port_get_control_value (
 }
 
 int
-port_scale_point_cmp (
-  const void * _a,
-  const void * _b)
+port_scale_point_cmp (const void * _a, const void * _b)
 {
-  const PortScalePoint * a =
-    *(PortScalePoint const **) _a;
-  const PortScalePoint * b =
-    *(PortScalePoint const **) _b;
+  const PortScalePoint * a = *(PortScalePoint const **) _a;
+  const PortScalePoint * b = *(PortScalePoint const **) _b;
   return a->val - b->val > 0.f;
 }
 
 PortScalePoint *
-port_scale_point_new (
-  const float  val,
-  const char * label)
+port_scale_point_new (const float val, const char * label)
 {
-  PortScalePoint * self =
-    object_new (PortScalePoint);
+  PortScalePoint * self = object_new (PortScalePoint);
 
   self->val = val;
   self->label = g_strdup (label);
@@ -2593,9 +2413,7 @@ port_copy_values (Port * self, const Port * other)
  * @param non_project Non-project port.
  */
 void
-port_restore_from_non_project (
-  Port * self,
-  Port * non_project)
+port_restore_from_non_project (Port * self, Port * non_project)
 {
   Port * prj_port = self;
 
@@ -2603,11 +2421,9 @@ port_restore_from_non_project (
   prj_port->control = non_project->control;
 
   g_return_if_fail (
-    non_project->num_srcs
-    <= (int) non_project->srcs_size);
+    non_project->num_srcs <= (int) non_project->srcs_size);
   g_return_if_fail (
-    non_project->num_dests
-    <= (int) non_project->dests_size);
+    non_project->num_dests <= (int) non_project->dests_size);
 }
 
 /**
@@ -2634,14 +2450,11 @@ stereo_ports_new_generic (
   Port * r = port_new_with_type (
     TYPE_AUDIO, in ? FLOW_INPUT : FLOW_OUTPUT, plr);
   g_return_val_if_fail (r, NULL);
-  StereoPorts * ports =
-    stereo_ports_new_from_existing (l, r);
+  StereoPorts * ports = stereo_ports_new_from_existing (l, r);
   ports->l->id.flags |= PORT_FLAG_STEREO_L;
-  ports->l->id.sym =
-    g_strdup_printf ("%s_l", symbol);
+  ports->l->id.sym = g_strdup_printf ("%s_l", symbol);
   ports->r->id.flags |= PORT_FLAG_STEREO_R;
-  ports->r->id.sym =
-    g_strdup_printf ("%s_r", symbol);
+  ports->r->id.sym = g_strdup_printf ("%s_r", symbol);
 
   port_set_owner (ports->l, owner_type, owner);
   port_set_owner (ports->r, owner_type, owner);
@@ -2695,8 +2508,7 @@ port_process (
         track = port_get_track (port, true);
       else
         track = port->track;
-      g_return_if_fail (
-        IS_TRACK_AND_NONNULL (track));
+      g_return_if_fail (IS_TRACK_AND_NONNULL (track));
     }
 
   bool is_stereo_port =
@@ -2710,8 +2522,7 @@ port_process (
         break;
 
       if (G_UNLIKELY (
-            id->owner_type
-              == PORT_OWNER_TYPE_TRACK_PROCESSOR
+            id->owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR
             && !track))
         {
           g_return_if_reached ();
@@ -2720,36 +2531,29 @@ port_process (
       /* if piano roll keys, add the notes to the
        * piano roll "current notes" (to show
        * pressed keys in the UI) */
-      if (
-        G_UNLIKELY (
-          id->owner_type
-            == PORT_OWNER_TYPE_TRACK_PROCESSOR
-          && track
-          && port == track->processor->midi_out
-          && port->midi_events->num_events > 0
-          && CLIP_EDITOR->has_region
-          && CLIP_EDITOR->region_id.track_name_hash
-               == track_get_name_hash (track)))
+      if (G_UNLIKELY (
+            id->owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR
+            && track && port == track->processor->midi_out
+            && port->midi_events->num_events > 0
+            && CLIP_EDITOR->has_region
+            && CLIP_EDITOR->region_id.track_name_hash
+                 == track_get_name_hash (track)))
         {
           MidiEvents * events = port->midi_events;
           bool         events_processed = false;
-          for (int i = 0; i < events->num_events;
-               i++)
+          for (int i = 0; i < events->num_events; i++)
             {
-              midi_byte_t * buf =
-                events->events[i].raw_buffer;
+              midi_byte_t * buf = events->events[i].raw_buffer;
               if (midi_is_note_on (buf))
                 {
                   piano_roll_add_current_note (
-                    PIANO_ROLL,
-                    midi_get_note_number (buf));
+                    PIANO_ROLL, midi_get_note_number (buf));
                   events_processed = true;
                 }
               else if (midi_is_note_off (buf))
                 {
                   piano_roll_remove_current_note (
-                    PIANO_ROLL,
-                    midi_get_note_number (buf));
+                    PIANO_ROLL, midi_get_note_number (buf));
                   events_processed = true;
                 }
               else if (midi_is_all_notes_off (buf))
@@ -2760,8 +2564,7 @@ port_process (
             }
           if (events_processed)
             {
-              EVENTS_PUSH (
-                ET_PIANO_ROLL_KEY_ON_OFF, NULL);
+              EVENTS_PUSH (ET_PIANO_ROLL_KEY_ON_OFF, NULL);
             }
         }
 
@@ -2782,8 +2585,7 @@ port_process (
             {
 #ifdef HAVE_JACK
             case MIDI_BACKEND_JACK:
-              sum_data_from_jack (
-                port, local_offset, nframes);
+              sum_data_from_jack (port, local_offset, nframes);
               break;
 #endif
 #ifdef _WOE32
@@ -2812,20 +2614,16 @@ port_process (
           MidiEvents * events = port->midi_events;
           if (events->num_events > 0)
             {
-              AUDIO_ENGINE->trigger_midi_activity =
-                1;
+              AUDIO_ENGINE->trigger_midi_activity = 1;
 
               /* queue playback if recording and
                * we should record on MIDI input */
               if (
-                TRANSPORT_IS_RECORDING
-                && TRANSPORT_IS_PAUSED
-                && TRANSPORT
-                     ->start_playback_on_midi_input)
+                TRANSPORT_IS_RECORDING && TRANSPORT_IS_PAUSED
+                && TRANSPORT->start_playback_on_midi_input)
                 {
                   EVENTS_PUSH (
-                    ET_TRANSPORT_ROLL_REQUIRED,
-                    NULL);
+                    ET_TRANSPORT_ROLL_REQUIRED, NULL);
                 }
 
               /* capture cc if capturing */
@@ -2833,18 +2631,15 @@ port_process (
                 {
                   memcpy (
                     AUDIO_ENGINE->last_cc,
-                    events
-                      ->events[events->num_events - 1]
+                    events->events[events->num_events - 1]
                       .raw_buffer,
                     sizeof (midi_byte_t) * 3);
                 }
 
               /* send cc to mapped ports */
-              for (int i = 0;
-                   i < events->num_events; i++)
+              for (int i = 0; i < events->num_events; i++)
                 {
-                  MidiEvent * ev =
-                    &events->events[i];
+                  MidiEvent * ev = &events->events[i];
                   midi_mappings_apply (
                     MIDI_MAPPINGS, ev->raw_buffer);
                 }
@@ -2853,24 +2648,21 @@ port_process (
 
       for (int k = 0; k < port->num_srcs; k++)
         {
-          Port * src_port = port->srcs[k];
+          Port *                 src_port = port->srcs[k];
           const PortConnection * conn =
             port->src_connections[k];
           if (!conn->enabled)
             continue;
 
-          g_return_if_fail (
-            src_port->id.type == TYPE_EVENT);
+          g_return_if_fail (src_port->id.type == TYPE_EVENT);
 
           /* if hardware device connected to
            * track processor input, only allow
            * signal to pass if armed and
            * MIDI channel is valid */
           if (
-            src_port->id.owner_type
-              == PORT_OWNER_TYPE_HW
-            && id->owner_type
-                 == PORT_OWNER_TYPE_TRACK_PROCESSOR)
+            src_port->id.owner_type == PORT_OWNER_TYPE_HW
+            && id->owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR)
             {
               g_return_if_fail (track);
 
@@ -2882,16 +2674,13 @@ port_process (
                * filter-append */
               if (
                 (track->type == TRACK_TYPE_MIDI
-                 || track->type
-                      == TRACK_TYPE_INSTRUMENT)
+                 || track->type == TRACK_TYPE_INSTRUMENT)
                 && !track->channel->all_midi_channels)
                 {
                   midi_events_append_w_filter (
-                    port->midi_events,
-                    src_port->midi_events,
+                    port->midi_events, src_port->midi_events,
                     track->channel->midi_channels,
-                    local_offset, nframes,
-                    F_NOT_QUEUED);
+                    local_offset, nframes, F_NOT_QUEUED);
                   continue;
                 }
 
@@ -2899,9 +2688,8 @@ port_process (
             }
 
           midi_events_append (
-            port->midi_events,
-            src_port->midi_events, local_offset,
-            nframes, F_NOT_QUEUED);
+            port->midi_events, src_port->midi_events,
+            local_offset, nframes, F_NOT_QUEUED);
         } /* foreach source */
 
       if (id->flow == FLOW_OUTPUT)
@@ -2910,8 +2698,7 @@ port_process (
             {
 #ifdef HAVE_JACK
             case MIDI_BACKEND_JACK:
-              send_data_to_jack (
-                port, local_offset, nframes);
+              send_data_to_jack (port, local_offset, nframes);
               break;
 #endif
 #ifdef _WOE32
@@ -2935,44 +2722,33 @@ port_process (
             port->midi_events->num_events);
 #endif
 
-          if (
-            id->owner_type
-            == PORT_OWNER_TYPE_TRACK_PROCESSOR)
+          if (id->owner_type == PORT_OWNER_TYPE_TRACK_PROCESSOR)
             {
-              g_return_if_fail (
-                IS_TRACK_AND_NONNULL (track));
+              g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
               track->trigger_midi_activity = 1;
             }
         }
 
-      if (
-        local_offset + nframes
-        == AUDIO_ENGINE->block_length)
+      if (local_offset + nframes == AUDIO_ENGINE->block_length)
         {
           MidiEvents * events = port->midi_events;
           if (port->write_ring_buffers)
             {
-              for (int i = events->num_events - 1;
-                   i >= 0; i--)
+              for (int i = events->num_events - 1; i >= 0; i--)
                 {
                   if (
-                    zix_ring_write_space (
-                      port->midi_ring)
+                    zix_ring_write_space (port->midi_ring)
                     < sizeof (MidiEvent))
                     {
                       zix_ring_skip (
-                        port->midi_ring,
-                        sizeof (MidiEvent));
+                        port->midi_ring, sizeof (MidiEvent));
                     }
 
-                  MidiEvent * ev =
-                    &events->events[i];
-                  ev->systime =
-                    g_get_monotonic_time ();
+                  MidiEvent * ev = &events->events[i];
+                  ev->systime = g_get_monotonic_time ();
                   zix_ring_write (
-                    port->midi_ring, ev,
-                    sizeof (MidiEvent));
+                    port->midi_ring, ev, sizeof (MidiEvent));
                 }
             }
           else
@@ -2981,8 +2757,7 @@ port_process (
                 {
                   port->last_midi_event_time =
                     g_get_monotonic_time ();
-                  g_atomic_int_set (
-                    &port->has_midi_events, 1);
+                  g_atomic_int_set (&port->has_midi_events, 1);
                 }
             }
         }
@@ -2992,14 +2767,13 @@ port_process (
       if (noroll)
         {
           dsp_fill (
-            &port->buf[local_offset],
-            DENORMAL_PREVENTION_VAL, nframes);
+            &port->buf[local_offset], DENORMAL_PREVENTION_VAL,
+            nframes);
           break;
         }
 
       g_return_if_fail (
-        id->owner_type
-          != PORT_OWNER_TYPE_TRACK_PROCESSOR
+        id->owner_type != PORT_OWNER_TYPE_TRACK_PROCESSOR
         || IS_TRACK_AND_NONNULL (track));
 
       /* only consider incoming external data if
@@ -3018,8 +2792,7 @@ port_process (
             {
 #ifdef HAVE_JACK
             case AUDIO_BACKEND_JACK:
-              sum_data_from_jack (
-                port, local_offset, nframes);
+              sum_data_from_jack (port, local_offset, nframes);
               break;
 #endif
             case AUDIO_BACKEND_DUMMY:
@@ -3033,14 +2806,13 @@ port_process (
 
       for (int k = 0; k < port->num_srcs; k++)
         {
-          Port * src_port = port->srcs[k];
+          Port *                 src_port = port->srcs[k];
           const PortConnection * conn =
             port->src_connections[k];
           if (!conn->enabled)
             continue;
 
-          float minf = 0.f, maxf = 0.f,
-                depth_range, multiplier;
+          float minf = 0.f, maxf = 0.f, depth_range, multiplier;
           if (G_LIKELY (id->type == TYPE_AUDIO))
             {
               minf = -2.f;
@@ -3056,8 +2828,7 @@ port_process (
               /* (maxf - minf) / 2 */
               depth_range = (maxf - minf) * 0.5f;
 
-              multiplier =
-                depth_range * conn->multiplier;
+              multiplier = depth_range * conn->multiplier;
             }
           else
             g_return_if_reached ();
@@ -3068,21 +2839,19 @@ port_process (
             {
               dsp_add2 (
                 &port->buf[local_offset],
-                &src_port->buf[local_offset],
-                nframes);
+                &src_port->buf[local_offset], nframes);
             }
           else
             {
               dsp_mix2 (
                 &port->buf[local_offset],
-                &src_port->buf[local_offset], 1.f,
-                multiplier, nframes);
+                &src_port->buf[local_offset], 1.f, multiplier,
+                nframes);
             }
 
           if (
             G_UNLIKELY (id->type == TYPE_CV)
-            || id->owner_type
-                 == PORT_OWNER_TYPE_FADER)
+            || id->owner_type == PORT_OWNER_TYPE_FADER)
             {
               float abs_peak = dsp_abs_max (
                 &port->buf[local_offset], nframes);
@@ -3093,8 +2862,8 @@ port_process (
                    * do it on CV connections and
                    * faders if they exceed maxf */
                   dsp_limit1 (
-                    &port->buf[local_offset], minf,
-                    maxf, nframes);
+                    &port->buf[local_offset], minf, maxf,
+                    nframes);
                 }
             }
         } /* foreach source */
@@ -3105,8 +2874,7 @@ port_process (
             {
 #ifdef HAVE_JACK
             case AUDIO_BACKEND_JACK:
-              send_data_to_jack (
-                port, local_offset, nframes);
+              send_data_to_jack (port, local_offset, nframes);
               break;
 #endif
             default:
@@ -3114,9 +2882,7 @@ port_process (
             }
         }
 
-      if (
-        local_offset + nframes
-        == AUDIO_ENGINE->block_length)
+      if (local_offset + nframes == AUDIO_ENGINE->block_length)
         {
           size_t size =
             sizeof (float)
@@ -3128,8 +2894,7 @@ port_process (
            * space if no space avail to write */
           if (write_space_avail / size < 1)
             {
-              zix_ring_skip (
-                port->audio_ring, size * 8);
+              zix_ring_skip (port->audio_ring, size * 8);
             }
 
           zix_ring_write (
@@ -3139,11 +2904,9 @@ port_process (
       /* if track output (to be shown on mixer) */
       if (
         id->owner_type == PORT_OWNER_TYPE_CHANNEL
-        && is_stereo_port
-        && id->flow == FLOW_OUTPUT)
+        && is_stereo_port && id->flow == FLOW_OUTPUT)
         {
-          g_return_if_fail (
-            IS_TRACK_AND_NONNULL (track));
+          g_return_if_fail (IS_TRACK_AND_NONNULL (track));
           Channel * ch = track->channel;
           g_return_if_fail (ch);
 
@@ -3153,17 +2916,15 @@ port_process (
             || port == ch->stereo_out->r)
             {
               /* reset peak if needed */
-              gint64 time_now =
-                g_get_monotonic_time ();
+              gint64 time_now = g_get_monotonic_time ();
               if (
                 time_now - port->peak_timestamp
                 > TIME_TO_RESET_PEAK)
                 port->peak = -1.f;
 
-              bool changed =
-                dsp_abs_max_with_existing_peak (
-                  &port->buf[local_offset],
-                  &port->peak, nframes);
+              bool changed = dsp_abs_max_with_existing_peak (
+                &port->buf[local_offset], &port->peak,
+                nframes);
               if (changed)
                 {
                   port->peak_timestamp =
@@ -3190,8 +2951,7 @@ port_process (
         {
           dsp_fill (
             &port->buf[local_offset],
-            AUDIO_ENGINE->denormal_prevention_val,
-            nframes);
+            AUDIO_ENGINE->denormal_prevention_val, nframes);
         }
 
       /* if bouncing track directly to
@@ -3236,17 +2996,11 @@ port_process (
               g_return_if_fail (tp);
               if (track->type == TRACK_TYPE_INSTRUMENT)
                 {
-                  if (
-                    port
-                    == track->channel->instrument
-                         ->l_out)
+                  if (port == track->channel->instrument->l_out)
                     {
                       _ADD (l);
                     }
-                  if (
-                    port
-                    == track->channel->instrument
-                         ->r_out)
+                  if (port == track->channel->instrument->r_out)
                     {
                       _ADD (r);
                     }
@@ -3308,8 +3062,7 @@ port_process (
           }
 
         /* calculate value from automation track */
-        g_return_if_fail (
-          id->flags & PORT_FLAG_AUTOMATABLE);
+        g_return_if_fail (id->flags & PORT_FLAG_AUTOMATABLE);
         AutomationTrack * at = port->at;
         if (G_UNLIKELY (!at))
           {
@@ -3333,9 +3086,7 @@ port_process (
           {
             Position pos;
             position_from_frames (
-              &pos,
-              (signed_frame_t)
-                time_nfo.g_start_frame);
+              &pos, (signed_frame_t) time_nfo.g_start_frame);
 
             /* if playhead pos changed manually
              * recently or transport is rolling,
@@ -3354,18 +3105,15 @@ port_process (
              * and flag */
             AutomationPoint * ap =
               automation_track_get_ap_before_pos (
-                at, &pos,
-                !can_read_previous_automation);
+                at, &pos, !can_read_previous_automation);
             if (ap)
               {
-                float val =
-                  automation_track_get_val_at_pos (
-                    at, &pos, true,
-                    !can_read_previous_automation);
+                float val = automation_track_get_val_at_pos (
+                  at, &pos, true,
+                  !can_read_previous_automation);
                 control_port_set_val_from_normalized (
                   port, val, true);
-                port->value_changed_from_reading =
-                  true;
+                port->value_changed_from_reading = true;
               }
           }
 
@@ -3375,7 +3123,7 @@ port_process (
         bool first_cv = true;
         for (int k = 0; k < port->num_srcs; k++)
           {
-            Port * src_port = port->srcs[k];
+            Port *                 src_port = port->srcs[k];
             const PortConnection * conn =
               port->src_connections[k];
             if (!conn->enabled)
@@ -3411,8 +3159,7 @@ port_process (
                         * conn->multiplier,
                   minf, maxf);
                 port->control = result;
-                port_forward_control_change_event (
-                  port);
+                port_forward_control_change_event (port);
               }
           }
       }
@@ -3432,17 +3179,15 @@ void
 port_disconnect_hw_inputs (Port * self)
 {
   GPtrArray * srcs = g_ptr_array_new ();
-  int         num_srcs =
-    port_connections_manager_get_sources_or_dests (
-      PORT_CONNECTIONS_MGR, srcs, &self->id, true);
+  int num_srcs = port_connections_manager_get_sources_or_dests (
+    PORT_CONNECTIONS_MGR, srcs, &self->id, true);
   for (int i = 0; i < num_srcs; i++)
     {
-      PortConnection * conn = (PortConnection *)
-        g_ptr_array_index (srcs, i);
+      PortConnection * conn =
+        (PortConnection *) g_ptr_array_index (srcs, i);
       if (conn->src_id->owner_type == PORT_OWNER_TYPE_HW)
         port_connections_manager_ensure_disconnect (
-          PORT_CONNECTIONS_MGR, conn->src_id,
-          &self->id);
+          PORT_CONNECTIONS_MGR, conn->src_id, &self->id);
     }
   g_ptr_array_unref (srcs);
 }
@@ -3531,8 +3276,7 @@ port_is_exposed_to_backend (const Port * self)
 {
   return self->internal_type == INTERNAL_JACK_PORT
          || self->internal_type == INTERNAL_ALSA_SEQ_PORT
-         || self->id.owner_type
-              == PORT_OWNER_TYPE_AUDIO_ENGINE
+         || self->id.owner_type == PORT_OWNER_TYPE_AUDIO_ENGINE
          || self->exposed_to_backend;
 }
 
@@ -3553,8 +3297,8 @@ port_rename_backend (Port * self)
         char str[600];
         port_get_full_designation (self, str);
         jack_port_rename (
-          AUDIO_ENGINE->client,
-          (jack_port_t *) self->data, str);
+          AUDIO_ENGINE->client, (jack_port_t *) self->data,
+          str);
       }
       break;
 #endif
@@ -3577,8 +3321,7 @@ port_has_sound (Port * self)
     {
     case TYPE_AUDIO:
       g_return_val_if_fail (self->buf, false);
-      for (nframes_t i = 0;
-           i < AUDIO_ENGINE->block_length; i++)
+      for (nframes_t i = 0; i < AUDIO_ENGINE->block_length; i++)
         {
           if (fabsf (self->buf[i]) > 0.0000001f)
             {
@@ -3602,9 +3345,7 @@ port_has_sound (Port * self)
  * \p buf.
  */
 void
-port_get_full_designation (
-  Port * const self,
-  char *       buf)
+port_get_full_designation (Port * const self, char * buf)
 {
   const PortIdentifier * id = &self->id;
 
@@ -3630,8 +3371,7 @@ port_get_full_designation (
     case PORT_OWNER_TYPE_CHANNEL_SEND:
       {
         Track * tr = port_get_track (self, 1);
-        g_return_if_fail (
-          IS_TRACK_AND_NONNULL (tr));
+        g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
         sprintf (buf, "%s/%s", tr->name, id->label);
       }
       return;
@@ -3641,10 +3381,8 @@ port_get_full_designation (
         || id->flags2 & PORT_FLAG2_POSTFADER)
         {
           Track * tr = port_get_track (self, 1);
-          g_return_if_fail (
-            IS_TRACK_AND_NONNULL (tr));
-          sprintf (
-            buf, "%s/%s", tr->name, id->label);
+          g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
+          sprintf (buf, "%s/%s", tr->name, id->label);
           return;
         }
       else if (id->flags2 & PORT_FLAG2_MONITOR_FADER)
@@ -3653,9 +3391,7 @@ port_get_full_designation (
           sprintf (buf, "Engine/%s", id->label);
           return;
         }
-      else if (
-        id->flags2
-        & PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
+      else if (id->flags2 & PORT_FLAG2_SAMPLE_PROCESSOR_FADER)
         {
           strcpy (buf, id->label);
           return;
@@ -3668,9 +3404,7 @@ port_get_full_designation (
       sprintf (buf, "Transport/%s", id->label);
       return;
     case PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR:
-      sprintf (
-        buf, "Modulator Macro Processor/%s",
-        id->label);
+      sprintf (buf, "Modulator Macro Processor/%s", id->label);
       return;
     default:
       break;
@@ -3729,28 +3463,23 @@ port_clear_buffer (Port * port)
 }
 
 Track *
-port_get_track (
-  const Port * const self,
-  int                warn_if_fail)
+port_get_track (const Port * const self, int warn_if_fail)
 {
   g_return_val_if_fail (IS_PORT (self), NULL);
 
   /* return the pointer if dsp thread */
   if (G_LIKELY (
-        self->track && PROJECT && PROJECT->loaded
-        && ROUTER
+        self->track && PROJECT && PROJECT->loaded && ROUTER
         && router_is_processing_thread (ROUTER)))
     {
-      g_return_val_if_fail (
-        IS_TRACK (self->track), NULL);
+      g_return_val_if_fail (IS_TRACK (self->track), NULL);
       return self->track;
     }
 
   Track * track = NULL;
   if (self->id.track_name_hash != 0)
     {
-      g_return_val_if_fail (
-        ZRYTHM && TRACKLIST, NULL);
+      g_return_val_if_fail (ZRYTHM && TRACKLIST, NULL);
 
       track = tracklist_find_track_by_name_hash (
         TRACKLIST, self->id.track_name_hash);
@@ -3772,20 +3501,16 @@ port_get_track (
 }
 
 Plugin *
-port_get_plugin (
-  Port * const self,
-  const bool   warn_if_fail)
+port_get_plugin (Port * const self, const bool warn_if_fail)
 {
   g_return_val_if_fail (IS_PORT (self), NULL);
 
   /* if DSP thread, return the pointer */
   if (G_LIKELY (
-        self->plugin && PROJECT && PROJECT->loaded
-        && ROUTER
+        self->plugin && PROJECT && PROJECT->loaded && ROUTER
         && router_is_processing_thread (ROUTER)))
     {
-      g_return_val_if_fail (
-        IS_PLUGIN (self->plugin), NULL);
+      g_return_val_if_fail (IS_PLUGIN (self->plugin), NULL);
       return self->plugin;
     }
 
@@ -3794,9 +3519,9 @@ port_get_plugin (
     {
       return self->tmp_plugin;
     }
-  if (!track ||
-      (track->type != TRACK_TYPE_MODULATOR &&
-         !track->channel))
+  if (
+    !track
+    || (track->type != TRACK_TYPE_MODULATOR && !track->channel))
     {
       if (warn_if_fail)
         {
@@ -3806,8 +3531,7 @@ port_get_plugin (
     }
 
   Plugin *                       pl = NULL;
-  const PluginIdentifier * const pl_id =
-    &self->id.plugin_id;
+  const PluginIdentifier * const pl_id = &self->id.plugin_id;
   switch (pl_id->slot_type)
     {
     case PLUGIN_SLOT_MIDI_FX:
@@ -3834,8 +3558,7 @@ port_get_plugin (
       g_critical (
         "plugin at slot type %s (slot %d) not "
         "found for port %s",
-        plugin_slot_type_to_string (
-          pl_id->slot_type),
+        plugin_slot_type_to_string (pl_id->slot_type),
         pl_id->slot, self->id.label);
       return NULL;
     }
@@ -3904,20 +3627,17 @@ port_apply_pan (
   const nframes_t nframes)
 {
   float calc_r, calc_l;
-  pan_get_calc_lr (
-    pan_law, pan_algo, pan, &calc_l, &calc_r);
+  pan_get_calc_lr (pan_law, pan_algo, pan, &calc_l, &calc_r);
 
   /* if stereo R */
   if (port->id.flags & PORT_FLAG_STEREO_R)
     {
-      dsp_mul_k2 (
-        &port->buf[start_frame], calc_r, nframes);
+      dsp_mul_k2 (&port->buf[start_frame], calc_r, nframes);
     }
   /* else if stereo L */
   else
     {
-      dsp_mul_k2 (
-        &port->buf[start_frame], calc_l, nframes);
+      dsp_mul_k2 (&port->buf[start_frame], calc_l, nframes);
     }
 }
 
@@ -3984,13 +3704,11 @@ port_free (Port * self)
   for (int i = 0; i < self->num_scale_points; i++)
     {
       object_free_w_func_and_null (
-        port_scale_point_free,
-        self->scale_points[i]);
+        port_scale_point_free, self->scale_points[i]);
     }
   object_zero_and_free (self->scale_points);
 
-  object_free_w_func_and_null (
-    lv2_evbuf_free, self->evbuf);
+  object_free_w_func_and_null (lv2_evbuf_free, self->evbuf);
 
   port_identifier_free_members (&self->id);
 

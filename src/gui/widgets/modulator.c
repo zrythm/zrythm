@@ -48,8 +48,7 @@ modulator_widget_refresh (ModulatorWidget * self)
 ModulatorWidget *
 modulator_widget_new (Plugin * modulator)
 {
-  g_return_val_if_fail (
-    IS_PLUGIN (modulator), NULL);
+  g_return_val_if_fail (IS_PLUGIN (modulator), NULL);
 
   ModulatorWidget * self =
     g_object_new (MODULATOR_WIDGET_TYPE, NULL);
@@ -68,8 +67,8 @@ modulator_widget_new (Plugin * modulator)
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
     GTK_WIDGET (self->inner));
   two_col_expander_box_widget_set_scroll_policy (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    GTK_POLICY_NEVER, GTK_POLICY_NEVER);
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_POLICY_NEVER,
+    GTK_POLICY_NEVER);
 
   /* TODO */
 #if 0
@@ -94,8 +93,7 @@ finalize (ModulatorWidget * self)
 }
 
 static void
-modulator_widget_class_init (
-  ModulatorWidgetClass * _klass)
+modulator_widget_class_init (ModulatorWidgetClass * _klass)
 {
   GObjectClass * klass = G_OBJECT_CLASS (_klass);
 
@@ -106,6 +104,5 @@ static void
 modulator_widget_init (ModulatorWidget * self)
 {
   expander_box_widget_set_orientation (
-    Z_EXPANDER_BOX_WIDGET (self),
-    GTK_ORIENTATION_HORIZONTAL);
+    Z_EXPANDER_BOX_WIDGET (self), GTK_ORIENTATION_HORIZONTAL);
 }

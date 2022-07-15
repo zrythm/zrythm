@@ -50,17 +50,16 @@ draw_lines (
   nframes_t            lstart_index,
   nframes_t            rstart_index)
 {
-  gint width = gtk_widget_get_allocated_width (
-    GTK_WIDGET (self));
-  gint height = gtk_widget_get_allocated_height (
-    GTK_WIDGET (self));
+  gint width =
+    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  gint height =
+    gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
   /* draw */
-  gdk_cairo_set_source_rgba (
-    cr, &self->color_green);
-  float    half_height = (float) height / 2.0f;
-  uint32_t nframes = AUDIO_ENGINE->block_length;
-  float    val;
+  gdk_cairo_set_source_rgba (cr, &self->color_green);
+  float        half_height = (float) height / 2.0f;
+  uint32_t     nframes = AUDIO_ENGINE->block_length;
+  float        val;
   unsigned int step =
     MAX (1, (nframes / (unsigned int) width));
 
@@ -69,8 +68,7 @@ draw_lines (
       if (rbuf)
         {
           val = MAX (
-            lbuf[lstart_index + i],
-            rbuf[rstart_index + i]);
+            lbuf[lstart_index + i], rbuf[rstart_index + i]);
         }
       else
         {
@@ -112,30 +110,26 @@ live_waveform_draw_cb (
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
+  gtk_render_background (context, cr, 0, 0, width, height);
 
   /* draw border */
   if (self->draw_border)
     {
       self->color_white.alpha = 0.2f;
-      gdk_cairo_set_source_rgba (
-        cr, &self->color_white);
+      gdk_cairo_set_source_rgba (cr, &self->color_white);
       z_cairo_rounded_rectangle (
         cr, 0, 0, width, height, 1.0, 4.0);
       cairo_stroke (cr);
     }
 
   size_t block_size_in_bytes =
-    sizeof (float)
-    * (size_t) AUDIO_ENGINE->block_length;
+    sizeof (float) * (size_t) AUDIO_ENGINE->block_length;
 
   Port * port = NULL;
   switch (self->type)
     {
     case LIVE_WAVEFORM_ENGINE:
-      g_return_if_fail (
-        IS_TRACK_AND_NONNULL (P_MASTER_TRACK));
+      g_return_if_fail (IS_TRACK_AND_NONNULL (P_MASTER_TRACK));
       if (!P_MASTER_TRACK->channel->stereo_out->l
              ->write_ring_buffers)
         {
@@ -177,12 +171,11 @@ live_waveform_draw_cb (
   while (read_space_avail > self->buf_sz[0])
     {
       array_double_size_if_full (
-        self->bufs[0], self->buf_sz[0],
-        self->buf_sz[0], float);
+        self->bufs[0], self->buf_sz[0], self->buf_sz[0],
+        float);
     }
   size_t lblocks_read = zix_ring_peek (
-    port->audio_ring, &(self->bufs[0][0]),
-    read_space_avail);
+    port->audio_ring, &(self->bufs[0][0]), read_space_avail);
   lblocks_read /= block_size_in_bytes;
   size_t lstart_index =
     (lblocks_read - 1) * AUDIO_ENGINE->block_length;
@@ -198,8 +191,7 @@ live_waveform_draw_cb (
       port = P_MASTER_TRACK->channel->stereo_out->r;
       read_space_avail =
         zix_ring_read_space (port->audio_ring);
-      blocks_to_read =
-        read_space_avail / block_size_in_bytes;
+      blocks_to_read = read_space_avail / block_size_in_bytes;
 
       /* if buffer is not filled do not draw */
       if (blocks_to_read <= 0)
@@ -208,16 +200,15 @@ live_waveform_draw_cb (
       while (read_space_avail > self->buf_sz[1])
         {
           array_double_size_if_full (
-            self->bufs[1], self->buf_sz[1],
-            self->buf_sz[1], float);
+            self->bufs[1], self->buf_sz[1], self->buf_sz[1],
+            float);
         }
       size_t rblocks_read = zix_ring_peek (
         port->audio_ring, &(self->bufs[1][0]),
         read_space_avail);
       rblocks_read /= block_size_in_bytes;
       size_t rstart_index =
-        (rblocks_read - 1)
-        * AUDIO_ENGINE->block_length;
+        (rblocks_read - 1) * AUDIO_ENGINE->block_length;
       if (rblocks_read == 0)
         {
           return;
@@ -225,14 +216,13 @@ live_waveform_draw_cb (
         }
 
       draw_lines (
-        self, cr, self->bufs[0], self->bufs[1],
-        lstart_index, rstart_index);
+        self, cr, self->bufs[0], self->bufs[1], lstart_index,
+        rstart_index);
     }
   else
     {
       draw_lines (
-        self, cr, self->bufs[0], NULL,
-        lstart_index, 0);
+        self, cr, self->bufs[0], NULL, lstart_index, 0);
     }
 }
 
@@ -258,12 +248,12 @@ init_common (LiveWaveformWidget * self)
   self->buf_sz[1] = BUF_SIZE;
 
   gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self), live_waveform_draw_cb,
-    self, NULL);
+    GTK_DRAWING_AREA (self), live_waveform_draw_cb, self,
+    NULL);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self),
-    (GtkTickCallback) update_activity, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) update_activity,
+    self, NULL);
 }
 
 /**
@@ -271,8 +261,7 @@ init_common (LiveWaveformWidget * self)
  * AudioEngine.
  */
 void
-live_waveform_widget_setup_engine (
-  LiveWaveformWidget * self)
+live_waveform_widget_setup_engine (LiveWaveformWidget * self)
 {
   init_common (self);
   self->type = LIVE_WAVEFORM_ENGINE;
@@ -306,12 +295,10 @@ finalize (LiveWaveformWidget * self)
 }
 
 static void
-live_waveform_widget_init (
-  LiveWaveformWidget * self)
+live_waveform_widget_init (LiveWaveformWidget * self)
 {
   gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self),
-    _ ("Live waveform indicator"));
+    GTK_WIDGET (self), _ ("Live waveform indicator"));
   gdk_rgba_parse (&self->color_white, "white");
   gdk_rgba_parse (&self->color_green, "#11FF44");
 }
@@ -320,10 +307,8 @@ static void
 live_waveform_widget_class_init (
   LiveWaveformWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "live-waveform");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass, "live-waveform");
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;

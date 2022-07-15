@@ -60,12 +60,12 @@ typedef enum
   Z_PLUGINS_PLUGIN_ERROR_INSTANTIATION_FAILED,
 } ZPluginsPluginError;
 
-#define Z_PLUGINS_PLUGIN_ERROR \
-  z_plugins_plugin_error_quark ()
+#define Z_PLUGINS_PLUGIN_ERROR z_plugins_plugin_error_quark ()
 GQuark
 z_plugins_plugin_error_quark (void);
 G_DEFINE_QUARK (
-  z-plugins-plugin-error-quark, z_plugins_plugin_error)
+  z - plugins - plugin - error - quark,
+  z_plugins_plugin_error)
 
 /**
  * To be called when struct is deserialized or
@@ -77,22 +77,17 @@ init_port_arrays (Plugin * self)
 {
   /* create cache arrays */
   const size_t def_sz = 20;
-  self->ctrl_in_ports =
-    g_ptr_array_new_full (def_sz, NULL);
-  self->audio_in_ports =
-    g_ptr_array_new_full (def_sz, NULL);
-  self->cv_in_ports =
-    g_ptr_array_new_full (def_sz, NULL);
-  self->midi_in_ports =
-    g_ptr_array_new_full (def_sz, NULL);
+  self->ctrl_in_ports = g_ptr_array_new_full (def_sz, NULL);
+  self->audio_in_ports = g_ptr_array_new_full (def_sz, NULL);
+  self->cv_in_ports = g_ptr_array_new_full (def_sz, NULL);
+  self->midi_in_ports = g_ptr_array_new_full (def_sz, NULL);
 }
 
 NONNULL
 static void
 set_stereo_outs_and_midi_in (Plugin * pl)
 {
-  g_return_if_fail (
-    pl->setting && pl->setting->descr);
+  g_return_if_fail (pl->setting && pl->setting->descr);
 
   /* set the L/R outputs */
   int num_audio_outs = 0;
@@ -103,14 +98,12 @@ set_stereo_outs_and_midi_in (Plugin * pl)
         {
           if (num_audio_outs == 0)
             {
-              out_port->id.flags |=
-                PORT_FLAG_STEREO_L;
+              out_port->id.flags |= PORT_FLAG_STEREO_L;
               pl->l_out = out_port;
             }
           else if (num_audio_outs == 1)
             {
-              out_port->id.flags |=
-                PORT_FLAG_STEREO_R;
+              out_port->id.flags |= PORT_FLAG_STEREO_R;
               pl->r_out = out_port;
             }
           num_audio_outs++;
@@ -144,8 +137,7 @@ set_stereo_outs_and_midi_in (Plugin * pl)
           break;
         }
     }
-  if (plugin_descriptor_is_instrument (
-        pl->setting->descr))
+  if (plugin_descriptor_is_instrument (pl->setting->descr))
     {
       g_return_if_fail (pl->midi_in_port);
     }
@@ -159,8 +151,7 @@ set_enabled_and_gain (Plugin * self)
     {
       Port * port = self->in_ports[i];
       if (!(port->id.type == TYPE_CONTROL
-            && port->id.flags
-                 & PORT_FLAG_GENERIC_PLUGIN_PORT))
+            && port->id.flags & PORT_FLAG_GENERIC_PLUGIN_PORT))
         continue;
 
       if (port->id.flags & PORT_FLAG_PLUGIN_ENABLED)
@@ -195,8 +186,7 @@ plugin_init_loaded (
       port->magic = PORT_MAGIC;
       port->plugin = self;
     }
-  object_free_w_func_and_null (
-    g_ptr_array_unref, ports);
+  object_free_w_func_and_null (g_ptr_array_unref, ports);
 
   set_enabled_and_gain (self);
 
@@ -227,11 +217,9 @@ plugin_init_loaded (
 
   if (plugin_is_in_active_project (self))
     {
-      bool was_enabled =
-        plugin_is_enabled (self, false);
+      bool     was_enabled = plugin_is_enabled (self, false);
       GError * err = NULL;
-      int      ret =
-        plugin_instantiate (self, NULL, &err);
+      int      ret = plugin_instantiate (self, NULL, &err);
       if (ret == 0)
         {
           plugin_activate (self, true);
@@ -263,11 +251,10 @@ plugin_init (
   int            slot)
 {
   g_message (
-    "%s: %s (%s) track name hash %u slot %d",
-    __func__, plugin->setting->descr->name,
-    plugin_protocol_strings
-      [plugin->setting->descr->protocol]
-        .str,
+    "%s: %s (%s) track name hash %u slot %d", __func__,
+    plugin->setting->descr->name,
+    plugin_protocol_strings[plugin->setting->descr->protocol]
+      .str,
     track_name_hash, slot);
 
   g_return_if_fail (
@@ -276,8 +263,7 @@ plugin_init (
 
   plugin->in_ports_size = 1;
   plugin->out_ports_size = 1;
-  plugin->id.schema_version =
-    PLUGIN_IDENTIFIER_SCHEMA_VERSION;
+  plugin->id.schema_version = PLUGIN_IDENTIFIER_SCHEMA_VERSION;
   plugin->id.track_name_hash = track_name_hash;
   plugin->id.slot_type = slot_type;
   plugin->id.slot = slot;
@@ -290,8 +276,8 @@ plugin_init (
   Port * port = port_new_with_type (
     TYPE_CONTROL, FLOW_INPUT, _ ("Enabled"));
   port->id.sym = g_strdup ("enabled");
-  port->id.comment = g_strdup (
-    _ ("Enables or disables the plugin"));
+  port->id.comment =
+    g_strdup (_ ("Enables or disables the plugin"));
   port->id.port_group = g_strdup ("[Zrythm]");
   plugin_add_in_port (plugin, port);
   port->id.flags |= PORT_FLAG_PLUGIN_ENABLED;
@@ -308,8 +294,8 @@ plugin_init (
   plugin->enabled = port;
 
   /* add gain port */
-  port = port_new_with_type (
-    TYPE_CONTROL, FLOW_INPUT, _ ("Gain"));
+  port =
+    port_new_with_type (TYPE_CONTROL, FLOW_INPUT, _ ("Gain"));
   port->id.sym = g_strdup ("gain");
   port->id.comment = g_strdup (_ ("Plugin gain"));
   plugin_add_in_port (plugin, port);
@@ -322,8 +308,7 @@ plugin_init (
   port->zerof = 0.f;
   port->deff = 1.f;
   port_set_control_value (
-    port, 1.f, F_NOT_NORMALIZED,
-    F_NO_PUBLISH_EVENTS);
+    port, 1.f, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
   port->carla_param_id = -1;
   plugin->gain = port;
 
@@ -331,8 +316,7 @@ plugin_init (
     PLUGIN_BANK_SCHEMA_VERSION;
   plugin->selected_bank.bank_idx = -1;
   plugin->selected_bank.idx = -1;
-  plugin_preset_identifier_init (
-    &plugin->selected_preset);
+  plugin_preset_identifier_init (&plugin->selected_preset);
   plugin->selected_preset.bank_idx = -1;
   plugin->selected_preset.idx = -1;
 
@@ -368,8 +352,7 @@ plugin_add_bank_if_not_exists (
 
   bank->id.idx = -1;
   bank->id.bank_idx = self->num_banks;
-  plugin_identifier_copy (
-    &bank->id.plugin_id, &self->id);
+  plugin_identifier_copy (&bank->id.plugin_id, &self->id);
   bank->name = g_strdup (name);
   if (uri)
     bank->uri = g_strdup (uri);
@@ -394,10 +377,9 @@ plugin_add_preset_to_bank (
     &preset->id.plugin_id, &bank->id.plugin_id);
 
   array_double_size_if_full (
-    bank->presets, bank->num_presets,
-    bank->presets_size, PluginPreset *);
-  array_append (
-    bank->presets, bank->num_presets, preset);
+    bank->presets, bank->num_presets, bank->presets_size,
+    PluginPreset *);
+  array_append (bank->presets, bank->num_presets, preset);
 }
 
 static void
@@ -408,8 +390,7 @@ populate_banks (Plugin * self)
 #ifdef HAVE_CARLA
   if (self->setting->open_with_carla)
     {
-      carla_native_plugin_populate_banks (
-        self->carla);
+      carla_native_plugin_populate_banks (self->carla);
     }
   else
     {
@@ -428,9 +409,7 @@ populate_banks (Plugin * self)
 }
 
 void
-plugin_set_selected_bank_from_index (
-  Plugin * self,
-  int      idx)
+plugin_set_selected_bank_from_index (Plugin * self, int idx)
 {
   self->selected_bank.bank_idx = idx;
   self->selected_preset.bank_idx = idx;
@@ -438,9 +417,7 @@ plugin_set_selected_bank_from_index (
 }
 
 void
-plugin_set_selected_preset_from_index (
-  Plugin * self,
-  int      idx)
+plugin_set_selected_preset_from_index (Plugin * self, int idx)
 {
   g_return_if_fail (self->instantiated);
 
@@ -458,23 +435,20 @@ plugin_set_selected_preset_from_index (
       /* if init preset */
       if (self->selected_bank.bank_idx == 0 && idx == 0)
         {
-          carla_reset_parameters (
-            self->carla->host_handle, 0);
+          carla_reset_parameters (self->carla->host_handle, 0);
           applied = true;
           g_message ("applied default preset");
         }
       else
         {
           PluginPreset * pset =
-            self
-              ->banks[self->selected_bank.bank_idx]
+            self->banks[self->selected_bank.bank_idx]
               ->presets[idx];
           carla_set_program (
             self->carla->host_handle, 0,
             (uint32_t) pset->carla_program);
           applied = true;
-          g_message (
-            "applied preset '%s'", pset->name);
+          g_message ("applied preset '%s'", pset->name);
         }
 #endif
     }
@@ -490,8 +464,7 @@ plugin_set_selected_preset_from_index (
         {
           LilvNode * pset_uri = lilv_new_uri (
             LILV_WORLD,
-            self
-              ->banks[self->selected_bank.bank_idx]
+            self->banks[self->selected_bank.bank_idx]
               ->presets[idx]
               ->uri);
           applied = lv2_state_apply_preset (
@@ -502,8 +475,7 @@ plugin_set_selected_preset_from_index (
 
   if (!applied)
     {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to apply preset"));
+      HANDLE_ERROR (err, "%s", _ ("Failed to apply preset"));
     }
 }
 
@@ -521,8 +493,7 @@ plugin_set_selected_preset_by_name (
       PluginPreset * pset = bank->presets[i];
       if (string_is_equal (pset->name, name))
         {
-          plugin_set_selected_preset_from_index (
-            self, i);
+          plugin_set_selected_preset_from_index (self, i);
           return;
         }
     }
@@ -553,28 +524,22 @@ plugin_new_from_setting (
 
   init_port_arrays (self);
 
-  self->setting =
-    plugin_setting_clone (setting, F_VALIDATE);
+  self->setting = plugin_setting_clone (setting, F_VALIDATE);
   setting = self->setting;
-  const PluginDescriptor * descr =
-    self->setting->descr;
+  const PluginDescriptor * descr = self->setting->descr;
 
   g_message (
     "%s: %s (%s) slot %d", __func__, descr->name,
-    plugin_protocol_strings[descr->protocol].str,
-    slot);
+    plugin_protocol_strings[descr->protocol].str, slot);
 
-  plugin_init (
-    self, track_name_hash, slot_type, slot);
-  g_return_val_if_fail (
-    self->gain && self->enabled, NULL);
+  plugin_init (self, track_name_hash, slot_type, slot);
+  g_return_val_if_fail (self->gain && self->enabled, NULL);
 
 #ifdef HAVE_CARLA
   if (setting->open_with_carla)
     {
       GError * err = NULL;
-      carla_native_plugin_new_from_setting (
-        self, &err);
+      carla_native_plugin_new_from_setting (self, &err);
       if (!self->carla)
         {
           PROPAGATE_PREFIXED_ERROR (
@@ -589,8 +554,7 @@ plugin_new_from_setting (
       if (descr->protocol == PROT_LV2)
         {
           GError * err = NULL;
-          lv2_plugin_new_from_uri (
-            self, descr->uri, &err);
+          lv2_plugin_new_from_uri (self, descr->uri, &err);
           if (!self->lv2)
             {
               PROPAGATE_PREFIXED_ERROR (
@@ -629,8 +593,7 @@ plugin_new_from_setting (
       /* save the new setting (may have changed
        * during instantiation) */
       plugin_settings_set (
-        S_PLUGIN_SETTINGS, self->setting,
-        F_SERIALIZE);
+        S_PLUGIN_SETTINGS, self->setting, F_SERIALIZE);
     }
 
   return self;
@@ -648,21 +611,17 @@ plugin_new_dummy (
   Plugin * self = object_new (Plugin);
   self->schema_version = PLUGIN_SCHEMA_VERSION;
 
-  PluginDescriptor * descr =
-    object_new (PluginDescriptor);
+  PluginDescriptor * descr = object_new (PluginDescriptor);
   descr->author = g_strdup ("Hoge");
   descr->name = g_strdup ("Dummy Plugin");
   descr->category = cat;
-  descr->category_str =
-    g_strdup ("Dummy Plugin Category");
+  descr->category_str = g_strdup ("Dummy Plugin Category");
 
-  self->setting =
-    plugin_setting_new_default (descr);
+  self->setting = plugin_setting_new_default (descr);
   plugin_descriptor_free (descr);
 
   plugin_init (
-    self, track_name_hash, PLUGIN_SLOT_INSERT,
-    slot);
+    self, track_name_hash, PLUGIN_SLOT_INSERT, slot);
 
   return self;
 }
@@ -703,17 +662,15 @@ plugin_remove_ats_from_automation_tracklist (
   bool     free_ats,
   bool     fire_events)
 {
-  Track * track = plugin_get_track (pl);
+  Track *               track = plugin_get_track (pl);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   for (int i = atl->num_ats - 1; i >= 0; i--)
     {
       AutomationTrack * at = atl->ats[i];
       if (
-        at->port_id.owner_type
-          == PORT_OWNER_TYPE_PLUGIN
-        || at->port_id.flags
-             & PORT_FLAG_PLUGIN_CONTROL)
+        at->port_id.owner_type == PORT_OWNER_TYPE_PLUGIN
+        || at->port_id.flags & PORT_FLAG_PLUGIN_CONTROL)
         {
           if (
             at->port_id.plugin_id.slot == pl->id.slot
@@ -764,8 +721,8 @@ plugin_move (
   bool           fire_events)
 {
   /* confirm if another plugin exists */
-  Plugin * existing_pl = track_get_plugin_at_slot (
-    track, slot_type, slot);
+  Plugin * existing_pl =
+    track_get_plugin_at_slot (track, slot_type, slot);
   /* TODO move confirmation to widget */
 #if 0
   if (existing_pl && ZRYTHM_HAVE_UI)
@@ -787,20 +744,18 @@ plugin_move (
 
   int            prev_slot = pl->id.slot;
   PluginSlotType prev_slot_type = pl->id.slot_type;
-  Track * prev_track = plugin_get_track (pl);
-  g_return_if_fail (
-    IS_TRACK_AND_NONNULL (prev_track));
+  Track *        prev_track = plugin_get_track (pl);
+  g_return_if_fail (IS_TRACK_AND_NONNULL (prev_track));
   Channel * prev_ch = plugin_get_channel (pl);
-  g_return_if_fail (
-    IS_CHANNEL_AND_NONNULL (prev_ch));
+  g_return_if_fail (IS_CHANNEL_AND_NONNULL (prev_ch));
 
   /* if existing plugin exists, delete it */
   if (existing_pl)
     {
       channel_remove_plugin (
-        track->channel, slot_type, slot,
-        F_NOT_MOVING_PLUGIN, F_DELETING_PLUGIN,
-        F_NOT_DELETING_CHANNEL, F_NO_RECALC_GRAPH);
+        track->channel, slot_type, slot, F_NOT_MOVING_PLUGIN,
+        F_DELETING_PLUGIN, F_NOT_DELETING_CHANNEL,
+        F_NO_RECALC_GRAPH);
     }
 
   /* move plugin's automation from src to
@@ -810,23 +765,20 @@ plugin_move (
 
   /* remove plugin from its channel */
   channel_remove_plugin (
-    prev_ch, prev_slot_type, prev_slot,
-    F_MOVING_PLUGIN, F_NOT_DELETING_PLUGIN,
-    F_NOT_DELETING_CHANNEL, F_NO_RECALC_GRAPH);
+    prev_ch, prev_slot_type, prev_slot, F_MOVING_PLUGIN,
+    F_NOT_DELETING_PLUGIN, F_NOT_DELETING_CHANNEL,
+    F_NO_RECALC_GRAPH);
 
   /* add plugin to its new channel */
   channel_add_plugin (
-    track->channel, slot_type, slot, pl,
-    F_NO_CONFIRM, F_MOVING_PLUGIN,
-    F_NO_GEN_AUTOMATABLES, F_RECALC_GRAPH,
+    track->channel, slot_type, slot, pl, F_NO_CONFIRM,
+    F_MOVING_PLUGIN, F_NO_GEN_AUTOMATABLES, F_RECALC_GRAPH,
     F_PUBLISH_EVENTS);
 
   if (fire_events)
     {
-      EVENTS_PUSH (
-        ET_CHANNEL_SLOTS_CHANGED, prev_ch);
-      EVENTS_PUSH (
-        ET_CHANNEL_SLOTS_CHANGED, track->channel);
+      EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, prev_ch);
+      EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, track->channel);
     }
 }
 
@@ -854,8 +806,7 @@ plugin_set_track_and_slot (
       Port *           port = pl->in_ports[i];
       PortIdentifier * copy_id =
         port_identifier_clone (&port->id);
-      port_set_owner (
-        port, PORT_OWNER_TYPE_PLUGIN, pl);
+      port_set_owner (port, PORT_OWNER_TYPE_PLUGIN, pl);
       if (plugin_is_in_active_project (pl))
         {
           Track * track = plugin_get_track (pl);
@@ -871,8 +822,7 @@ plugin_set_track_and_slot (
       Port *           port = pl->out_ports[i];
       PortIdentifier * copy_id =
         port_identifier_clone (&port->id);
-      port_set_owner (
-        port, PORT_OWNER_TYPE_PLUGIN, pl);
+      port_set_owner (port, PORT_OWNER_TYPE_PLUGIN, pl);
       if (plugin_is_in_active_project (pl))
         {
           Track * track = plugin_get_track (pl);
@@ -923,8 +873,7 @@ plugin_find (PluginIdentifier * id)
 
   Track * track = tracklist_find_track_by_name_hash (
     TRACKLIST, plugin.id.track_name_hash);
-  g_return_val_if_fail (
-    IS_TRACK_AND_NONNULL (track), NULL);
+  g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), NULL);
 
   Channel * ch = NULL;
   if (
@@ -940,18 +889,15 @@ plugin_find (PluginIdentifier * id)
   switch (id->slot_type)
     {
     case PLUGIN_SLOT_MIDI_FX:
-      g_return_val_if_fail (
-        IS_CHANNEL_AND_NONNULL (ch), NULL);
+      g_return_val_if_fail (IS_CHANNEL_AND_NONNULL (ch), NULL);
       ret = ch->midi_fx[id->slot];
       break;
     case PLUGIN_SLOT_INSTRUMENT:
-      g_return_val_if_fail (
-        IS_CHANNEL_AND_NONNULL (ch), NULL);
+      g_return_val_if_fail (IS_CHANNEL_AND_NONNULL (ch), NULL);
       ret = ch->instrument;
       break;
     case PLUGIN_SLOT_INSERT:
-      g_return_val_if_fail (
-        IS_CHANNEL_AND_NONNULL (ch), NULL);
+      g_return_val_if_fail (IS_CHANNEL_AND_NONNULL (ch), NULL);
       ret = ch->inserts[id->slot];
       break;
     case PLUGIN_SLOT_MODULATOR:
@@ -977,8 +923,8 @@ plugin_get_full_port_group_designation (
   Track * track = plugin_get_track (self);
   g_return_if_fail (track);
   sprintf (
-    buf, "%s/%s/%s", track->name,
-    self->setting->descr->name, port_group);
+    buf, "%s/%s/%s", track->name, self->setting->descr->name,
+    port_group);
 }
 
 Port *
@@ -991,8 +937,7 @@ plugin_get_port_in_group (
     {
       Port * port = self->in_ports[i];
       if (
-        string_is_equal (
-          port->id.port_group, port_group)
+        string_is_equal (port->id.port_group, port_group)
         && port->id.flags
              & (left ? PORT_FLAG_STEREO_L : PORT_FLAG_STEREO_R))
         {
@@ -1003,8 +948,7 @@ plugin_get_port_in_group (
     {
       Port * port = self->out_ports[i];
       if (
-        string_is_equal (
-          port->id.port_group, port_group)
+        string_is_equal (port->id.port_group, port_group)
         && port->id.flags
              & (left ? PORT_FLAG_STEREO_L : PORT_FLAG_STEREO_R))
         {
@@ -1021,15 +965,11 @@ plugin_get_port_in_group (
  * versa).
  */
 Port *
-plugin_get_port_in_same_group (
-  Plugin * self,
-  Port *   port)
+plugin_get_port_in_same_group (Plugin * self, Port * port)
 {
   if (!port->id.port_group)
     {
-      g_message (
-        "port %s has no port group",
-        port->id.label);
+      g_message ("port %s has no port group", port->id.label);
       return NULL;
     }
 
@@ -1083,11 +1023,9 @@ plugin_generate_window_title (Plugin * self)
 
   const PluginSetting * setting = self->setting;
 
-  const char * track_name =
-    track ? track->name : "";
+  const char * track_name = track ? track->name : "";
   const char * plugin_name = setting->descr->name;
-  g_return_val_if_fail (
-    track_name && plugin_name, NULL);
+  g_return_val_if_fail (track_name && plugin_name, NULL);
 
   char bridge_mode[100];
   strcpy (bridge_mode, "");
@@ -1095,8 +1033,7 @@ plugin_generate_window_title (Plugin * self)
     {
       sprintf (
         bridge_mode, _ (" - bridge: %s"),
-        carla_bridge_mode_strings[setting->bridge_mode]
-          .str);
+        carla_bridge_mode_strings[setting->bridge_mode].str);
     }
 
   char slot[100];
@@ -1108,8 +1045,7 @@ plugin_generate_window_title (Plugin * self)
 
   char title[500];
   sprintf (
-    title, "%s (%s %s%s%s)", plugin_name,
-    track_name, slot,
+    title, "%s (%s %s%s%s)", plugin_name, track_name, slot,
     /* assume all plugins use carla for now */
     "",
     /*setting->open_with_carla ? " carla" : "",*/
@@ -1118,17 +1054,14 @@ plugin_generate_window_title (Plugin * self)
   switch (self->setting->descr->protocol)
     {
     case PROT_LV2:
-      if (
-        !self->setting->open_with_carla
-        && self->lv2->preset)
+      if (!self->setting->open_with_carla && self->lv2->preset)
         {
           Lv2Plugin *  lv2 = self->lv2;
           const char * preset_label =
             lilv_state_get_label (lv2->preset);
           g_return_val_if_fail (preset_label, NULL);
           char preset_part[500];
-          sprintf (
-            preset_part, " - %s", preset_label);
+          sprintf (preset_part, " - %s", preset_label);
           strcat (title, preset_part);
         }
       break;
@@ -1150,9 +1083,7 @@ plugin_activate (Plugin * pl, bool activate)
 {
   g_return_val_if_fail (IS_PLUGIN (pl), -1);
 
-  if (
-    (pl->activated && activate)
-    || (!pl->activated && !activate))
+  if ((pl->activated && activate) || (!pl->activated && !activate))
     {
       /* nothing to do */
       g_message ("%s: nothing to do", __func__);
@@ -1175,8 +1106,8 @@ plugin_activate (Plugin * pl, bool activate)
   if (pl->setting->open_with_carla)
     {
 #ifdef HAVE_CARLA
-      int ret = carla_native_plugin_activate (
-        pl->carla, activate);
+      int ret =
+        carla_native_plugin_activate (pl->carla, activate);
       g_return_val_if_fail (ret == 0, ret);
 #endif
     }
@@ -1186,8 +1117,7 @@ plugin_activate (Plugin * pl, bool activate)
         {
         case PROT_LV2:
           {
-            int ret = lv2_plugin_activate (
-              pl->lv2, activate);
+            int ret = lv2_plugin_activate (pl->lv2, activate);
             g_return_val_if_fail (ret == 0, ret);
           }
           break;
@@ -1210,9 +1140,7 @@ plugin_activate (Plugin * pl, bool activate)
 int
 plugin_cleanup (Plugin * self)
 {
-  g_message (
-    "Cleaning up %s...",
-    self->setting->descr->name);
+  g_message ("Cleaning up %s...", self->setting->descr->name);
 
   if (!self->activated && self->instantiated)
     {
@@ -1231,10 +1159,8 @@ plugin_cleanup (Plugin * self)
             {
             case PROT_LV2:
               {
-                int ret =
-                  lv2_plugin_cleanup (self->lv2);
-                g_return_val_if_fail (
-                  ret == 0, ret);
+                int ret = lv2_plugin_cleanup (self->lv2);
+                g_return_val_if_fail (ret == 0, ret);
               }
               break;
             default:
@@ -1273,13 +1199,12 @@ plugin_update_latency (Plugin * pl)
 #endif
       pl->setting->descr->protocol == PROT_LV2)
     {
-      pl->latency =
-        lv2_plugin_get_latency (pl->lv2);
+      pl->latency = lv2_plugin_get_latency (pl->lv2);
     }
 
   g_message (
-    "%s latency: %d samples",
-    pl->setting->descr->name, pl->latency);
+    "%s latency: %d samples", pl->setting->descr->name,
+    pl->latency);
 }
 
 /**
@@ -1287,8 +1212,7 @@ plugin_update_latency (Plugin * pl)
  */
 #define ADD_PORT(type) \
   while ( \
-    pl->num_##type##_ports \
-    >= (int) pl->type##_ports_size) \
+    pl->num_##type##_ports >= (int) pl->type##_ports_size) \
     { \
       if (pl->type##_ports_size == 0) \
         pl->type##_ports_size = 1; \
@@ -1299,11 +1223,9 @@ plugin_update_latency (Plugin * pl)
         sizeof (Port *) * pl->type##_ports_size); \
     } \
   port->id.port_index = pl->num_##type##_ports; \
-  port_set_owner ( \
-    port, PORT_OWNER_TYPE_PLUGIN, pl); \
+  port_set_owner (port, PORT_OWNER_TYPE_PLUGIN, pl); \
   array_append ( \
-    pl->type##_ports, pl->num_##type##_ports, \
-    port)
+    pl->type##_ports, pl->num_##type##_ports, port)
 
 /**
  * Adds an in port to the plugin's list.
@@ -1349,30 +1271,25 @@ plugin_move_automation (
   g_message (
     "moving plugin '%s' automation from "
     "%s to %s -> %s:%d",
-    pl->setting->descr->name, prev_track->name,
-    track->name,
-    plugin_slot_type_strings[new_slot_type].str,
-    new_slot);
+    pl->setting->descr->name, prev_track->name, track->name,
+    plugin_slot_type_strings[new_slot_type].str, new_slot);
 
   AutomationTracklist * prev_atl =
     track_get_automation_tracklist (prev_track);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
 
-  unsigned int name_hash =
-    track_get_name_hash (track);
+  unsigned int name_hash = track_get_name_hash (track);
   for (int i = prev_atl->num_ats - 1; i >= 0; i--)
     {
       AutomationTrack * at = prev_atl->ats[i];
-      Port *            port =
-        port_find_from_identifier (&at->port_id);
+      Port * port = port_find_from_identifier (&at->port_id);
       g_return_if_fail (IS_PORT (port));
       if (!port)
         continue;
       if (port->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
         {
-          Plugin * port_pl =
-            port_get_plugin (port, 1);
+          Plugin * port_pl = port_get_plugin (port, 1);
           if (port_pl != pl)
             continue;
         }
@@ -1384,8 +1301,7 @@ plugin_move_automation (
       /* delete from prev channel */
       int num_regions_before = at->num_regions;
       automation_tracklist_remove_at (
-        prev_atl, at, F_NO_FREE,
-        F_NO_PUBLISH_EVENTS);
+        prev_atl, at, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
       /* add to new channel */
       automation_tracklist_add_at (atl, at);
@@ -1396,14 +1312,11 @@ plugin_move_automation (
       /* update the automation track port
        * identifier */
       at->port_id.plugin_id.slot = new_slot;
-      at->port_id.plugin_id.slot_type =
-        new_slot_type;
-      at->port_id.plugin_id.track_name_hash =
-        name_hash;
+      at->port_id.plugin_id.slot_type = new_slot_type;
+      at->port_id.plugin_id.track_name_hash = name_hash;
 
       g_warn_if_fail (
-        at->port_id.port_index
-        == port->id.port_index);
+        at->port_id.port_index == port->id.port_index);
     }
 }
 
@@ -1424,18 +1337,16 @@ plugin_set_ui_refresh_rate (Plugin * self)
 
   /* if no preferred refresh rate is set,
    * use the monitor's refresh rate */
-  if (g_settings_get_int (
-        S_P_PLUGINS_UIS, "refresh-rate"))
+  if (g_settings_get_int (S_P_PLUGINS_UIS, "refresh-rate"))
     {
       /* Use user-specified UI update rate. */
-      self->ui_update_hz =
-        (float) g_settings_get_int (
-          S_P_PLUGINS_UIS, "refresh-rate");
+      self->ui_update_hz = (float) g_settings_get_int (
+        S_P_PLUGINS_UIS, "refresh-rate");
     }
   else
     {
-      self->ui_update_hz = (float)
-        z_gtk_get_primary_monitor_refresh_rate ();
+      self->ui_update_hz =
+        (float) z_gtk_get_primary_monitor_refresh_rate ();
       g_message (
         "refresh rate returned by GDK: %.01f",
         (double) self->ui_update_hz);
@@ -1443,9 +1354,8 @@ plugin_set_ui_refresh_rate (Plugin * self)
 
   /* if no preferred scale factor is set,
    * use the monitor's scale factor */
-  float scale_factor_setting =
-    (float) g_settings_get_double (
-      S_P_PLUGINS_UIS, "scale-factor");
+  float scale_factor_setting = (float) g_settings_get_double (
+    S_P_PLUGINS_UIS, "scale-factor");
   if (scale_factor_setting >= 0.5f)
     {
       /* use user-specified scale factor */
@@ -1454,8 +1364,8 @@ plugin_set_ui_refresh_rate (Plugin * self)
   else
     {
       /* set the scale factor */
-      self->ui_scale_factor = (float)
-        z_gtk_get_primary_monitor_scale_factor ();
+      self->ui_scale_factor =
+        (float) z_gtk_get_primary_monitor_scale_factor ();
       g_message (
         "scale factor returned by GDK: %.01f",
         (double) self->ui_scale_factor);
@@ -1478,25 +1388,21 @@ plugin_set_ui_refresh_rate (Plugin * self)
   /* clamp the scale factor to sensible limits */
   if (
     self->ui_scale_factor < PLUGIN_MIN_SCALE_FACTOR
-    || self->ui_scale_factor
-         > PLUGIN_MAX_SCALE_FACTOR)
+    || self->ui_scale_factor > PLUGIN_MAX_SCALE_FACTOR)
     {
       g_warning (
         "Invalid scale factor of %.01f received, "
         "clamping to reasonable bounds",
         (double) self->ui_scale_factor);
       self->ui_scale_factor = CLAMP (
-        self->ui_scale_factor,
-        PLUGIN_MIN_SCALE_FACTOR,
+        self->ui_scale_factor, PLUGIN_MIN_SCALE_FACTOR,
         PLUGIN_MAX_SCALE_FACTOR);
     }
 
   g_message (
-    "refresh rate set to %f",
-    (double) self->ui_update_hz);
+    "refresh rate set to %f", (double) self->ui_update_hz);
   g_message (
-    "scale factor set to %f",
-    (double) self->ui_scale_factor);
+    "scale factor set to %f", (double) self->ui_scale_factor);
 }
 
 /**
@@ -1505,8 +1411,7 @@ plugin_set_ui_refresh_rate (Plugin * self)
 char *
 plugin_get_escaped_name (Plugin * pl)
 {
-  const PluginDescriptor * descr =
-    pl->setting->descr;
+  const PluginDescriptor * descr = pl->setting->descr;
   g_return_val_if_fail (descr, NULL);
 
   char tmp[strlen (descr->name) + 200];
@@ -1525,9 +1430,7 @@ plugin_get_escaped_name (Plugin * pl)
  *   through indices.
  */
 void
-plugin_generate_automation_tracks (
-  Plugin * self,
-  Track *  track)
+plugin_generate_automation_tracks (Plugin * self, Track * track)
 {
   g_message (
     "generating automation tracks for %s...",
@@ -1543,8 +1446,7 @@ plugin_generate_automation_tracks (
         || !(port->id.flags & PORT_FLAG_AUTOMATABLE))
         continue;
 
-      AutomationTrack * at =
-        automation_track_new (port);
+      AutomationTrack * at = automation_track_new (port);
       automation_tracklist_add_at (atl, at);
     }
 }
@@ -1560,8 +1462,7 @@ plugin_get_enabled_port (Plugin * self)
       Port * port = self->in_ports[i];
       if (
         port->id.flags & PORT_FLAG_PLUGIN_ENABLED
-        && port->id.flags
-             & PORT_FLAG_GENERIC_PLUGIN_PORT)
+        && port->id.flags & PORT_FLAG_GENERIC_PLUGIN_PORT)
         {
           return port;
         }
@@ -1584,16 +1485,14 @@ plugin_update_identifier (Plugin * self)
     {
       Port * port = self->in_ports[i];
       port_update_track_name_hash (
-        port, self->track,
-        self->id.track_name_hash);
+        port, self->track, self->id.track_name_hash);
       port->id.plugin_id = self->id;
     }
   for (int i = 0; i < self->num_out_ports; i++)
     {
       Port * port = self->out_ports[i];
       port_update_track_name_hash (
-        port, self->track,
-        self->id.track_name_hash);
+        port, self->track, self->id.track_name_hash);
       port->id.plugin_id = self->id;
     }
 }
@@ -1622,13 +1521,12 @@ plugin_instantiate (
   GError **   error)
 {
   g_return_val_if_fail (self->setting, -1);
-  const PluginDescriptor * descr =
-    self->setting->descr;
+  const PluginDescriptor * descr = self->setting->descr;
   g_return_val_if_fail (descr, -1);
 
   g_message (
-    "Instantiating plugin '%s' | state %p...",
-    descr->name, state);
+    "Instantiating plugin '%s' | state %p...", descr->name,
+    state);
 
   set_enabled_and_gain (self);
 
@@ -1644,8 +1542,8 @@ plugin_instantiate (
     {
 #ifdef HAVE_CARLA
       GError * err = NULL;
-      int ret = carla_native_plugin_instantiate (
-        self->carla, !PROJECT->loaded,
+      int      ret = carla_native_plugin_instantiate (
+             self->carla, !PROJECT->loaded,
         self->state_dir ? true : false, &err);
       if (ret != 0)
         {
@@ -1671,8 +1569,7 @@ plugin_instantiate (
             self->lv2->plugin = self;
             GError * err = NULL;
             int      ret = lv2_plugin_instantiate (
-                   self->lv2,
-              self->state_dir ? true : false, NULL,
+                   self->lv2, self->state_dir ? true : false, NULL,
                    state, &err);
             if (ret != 0)
               {
@@ -1686,8 +1583,7 @@ plugin_instantiate (
               {
                 self->instantiated = true;
               }
-            g_return_val_if_fail (
-              self->lv2->instance, -1);
+            g_return_val_if_fail (self->lv2->instance, -1);
 
             if (!self->state_dir)
               {
@@ -1697,9 +1593,8 @@ plugin_instantiate (
                   "LV2 plugin %s, creating "
                   "state...",
                   descr->name);
-                LilvState * tmp_state =
-                  lv2_state_save_to_file (
-                    self->lv2, F_NOT_BACKUP);
+                LilvState * tmp_state = lv2_state_save_to_file (
+                  self->lv2, F_NOT_BACKUP);
                 lilv_state_free (tmp_state);
               }
           }
@@ -1712,8 +1607,7 @@ plugin_instantiate (
     }
   g_return_val_if_fail (
     IS_PORT_AND_NONNULL (self->enabled), -1);
-  control_port_set_val_from_normalized (
-    self->enabled, 1.f, 0);
+  control_port_set_val_from_normalized (self->enabled, 1.f, 0);
 
   /* set the L/R outputs */
   set_stereo_outs_and_midi_in (self);
@@ -1732,24 +1626,20 @@ plugin_instantiate (
 void
 plugin_prepare_process (Plugin * self)
 {
-  for (size_t i = 0; i < self->audio_in_ports->len;
-       i++)
+  for (size_t i = 0; i < self->audio_in_ports->len; i++)
     {
-      Port * port = g_ptr_array_index (
-        self->audio_in_ports, i);
+      Port * port =
+        g_ptr_array_index (self->audio_in_ports, i);
       port_clear_audio_cv_buffer (port);
     }
   for (size_t i = 0; i < self->cv_in_ports->len; i++)
     {
-      Port * port =
-        g_ptr_array_index (self->cv_in_ports, i);
+      Port * port = g_ptr_array_index (self->cv_in_ports, i);
       port_clear_audio_cv_buffer (port);
     }
-  for (size_t i = 0; i < self->midi_in_ports->len;
-       i++)
+  for (size_t i = 0; i < self->midi_in_ports->len; i++)
     {
-      Port * port =
-        g_ptr_array_index (self->midi_in_ports, i);
+      Port * port = g_ptr_array_index (self->midi_in_ports, i);
       port_clear_midi_buffer (port);
     }
 
@@ -1794,8 +1684,7 @@ plugin_process (
 #ifdef HAVE_CARLA
   if (plugin->setting->open_with_carla)
     {
-      carla_native_plugin_process (
-        plugin->carla, time_nfo);
+      carla_native_plugin_process (plugin->carla, time_nfo);
     }
   else
     {
@@ -1803,8 +1692,7 @@ plugin_process (
       switch (plugin->setting->descr->protocol)
         {
         case PROT_LV2:
-          lv2_plugin_process (
-            plugin->lv2, time_nfo);
+          lv2_plugin_process (plugin->lv2, time_nfo);
           break;
         default:
           break;
@@ -1814,11 +1702,10 @@ plugin_process (
 #endif
 
   /* turn off any trigger input controls */
-  for (size_t i = 0;
-       i < plugin->ctrl_in_ports->len; i++)
+  for (size_t i = 0; i < plugin->ctrl_in_ports->len; i++)
     {
-      Port * port = g_ptr_array_index (
-        plugin->ctrl_in_ports, i);
+      Port * port =
+        g_ptr_array_index (plugin->ctrl_in_ports, i);
       if (
         port->id.flags & PORT_FLAG_TRIGGER
         && !math_floats_equal (port->control, 0.f))
@@ -1840,21 +1727,18 @@ plugin_process (
           /* if close to 0 set it to the denormal
            * prevention val */
           if (math_floats_equal_epsilon (
-                plugin->gain->control, 0.f,
-                0.00001f))
+                plugin->gain->control, 0.f, 0.00001f))
             {
               dsp_fill (
                 &port->buf[time_nfo->local_offset],
-                DENORMAL_PREVENTION_VAL,
-                time_nfo->nframes);
+                DENORMAL_PREVENTION_VAL, time_nfo->nframes);
             }
           /* otherwise just apply gain */
           else
             {
               dsp_mul_k2 (
                 &port->buf[time_nfo->local_offset],
-                plugin->gain->control,
-                time_nfo->nframes);
+                plugin->gain->control, time_nfo->nframes);
             }
         }
     }
@@ -1870,15 +1754,12 @@ plugin_print (Plugin * self, char * buf, size_t buf_sz)
   if (buf)
     {
       Track * track =
-        plugin_is_in_active_project (self)
-          ? self->track
-          : NULL;
+        plugin_is_in_active_project (self) ? self->track : NULL;
       snprintf (
         buf, buf_sz, "%s (%d):%s:%d - %s",
         track ? track->name : "<no track>",
         track ? track->pos : -1,
-        plugin_slot_type_strings[self->id.slot_type]
-          .str,
+        plugin_slot_type_strings[self->id.slot_type].str,
         self->id.slot, self->setting->descr->name);
     }
 }
@@ -1906,19 +1787,16 @@ plugin_set_caches (Plugin * self)
       switch (port->id.type)
         {
         case TYPE_CONTROL:
-          g_ptr_array_add (
-            self->ctrl_in_ports, port);
+          g_ptr_array_add (self->ctrl_in_ports, port);
           break;
         case TYPE_AUDIO:
-          g_ptr_array_add (
-            self->audio_in_ports, port);
+          g_ptr_array_add (self->audio_in_ports, port);
           break;
         case TYPE_CV:
           g_ptr_array_add (self->cv_in_ports, port);
           break;
         case TYPE_EVENT:
-          g_ptr_array_add (
-            self->midi_in_ports, port);
+          g_ptr_array_add (self->midi_in_ports, port);
           break;
         default:
           break;
@@ -1934,8 +1812,7 @@ plugin_open_ui (Plugin * self)
 {
   g_return_if_fail (IS_PLUGIN (self));
   g_return_if_fail (self->setting->descr);
-  g_return_if_fail (
-    plugin_is_in_active_project (self));
+  g_return_if_fail (plugin_is_in_active_project (self));
 
   char pl_str[700];
   plugin_print (self, pl_str, 700);
@@ -1974,8 +1851,7 @@ plugin_open_ui (Plugin * self)
               "author:\n  %s <%s>"),
             descr->name, descr->uri, deprecated_uri,
             descr->author, descr->website);
-          ui_show_error_message (
-            MAIN_WINDOW, true, msg);
+          ui_show_error_message (MAIN_WINDOW, true, msg);
           g_free (deprecated_uri);
         }
     }
@@ -1988,8 +1864,7 @@ plugin_open_ui (Plugin * self)
       g_debug (
         "presenting plugin [%s] window %p", pl_str,
         self->window);
-      gtk_window_present (
-        GTK_WINDOW (self->window));
+      gtk_window_present (GTK_WINDOW (self->window));
     }
   else
     {
@@ -1999,17 +1874,14 @@ plugin_open_ui (Plugin * self)
        * then LV2 custom */
       if (generic_ui)
         {
-          g_debug (
-            "creating and opening generic UI");
+          g_debug ("creating and opening generic UI");
           plugin_gtk_create_window (self);
-          plugin_gtk_open_generic_ui (
-            self, F_PUBLISH_EVENTS);
+          plugin_gtk_open_generic_ui (self, F_PUBLISH_EVENTS);
         }
       else if (setting->open_with_carla)
         {
 #ifdef HAVE_CARLA
-          carla_native_plugin_open_ui (
-            self->carla, 1);
+          carla_native_plugin_open_ui (self->carla, 1);
 #endif
         }
       else if (descr->protocol == PROT_LV2)
@@ -2042,15 +1914,11 @@ plugin_is_selected (Plugin * pl)
  *   selected plugin or add it to the selections.
  */
 void
-plugin_select (
-  Plugin * self,
-  bool     select,
-  bool     exclusive)
+plugin_select (Plugin * self, bool select, bool exclusive)
 {
   g_return_if_fail (IS_PLUGIN (self));
   g_return_if_fail (self->setting->descr);
-  g_return_if_fail (
-    plugin_is_in_active_project (self));
+  g_return_if_fail (plugin_is_in_active_project (self));
 
   if (exclusive)
     {
@@ -2070,8 +1938,8 @@ plugin_select (
   else
     {
       mixer_selections_remove_slot (
-        MIXER_SELECTIONS, self->id.slot,
-        self->id.slot_type, F_PUBLISH_EVENTS);
+        MIXER_SELECTIONS, self->id.slot, self->id.slot_type,
+        F_PUBLISH_EVENTS);
     }
 }
 
@@ -2102,8 +1970,7 @@ plugin_copy_state_dir (
     }
   else
     {
-      dir_to_use =
-        plugin_get_abs_state_dir (self, is_backup);
+      dir_to_use = plugin_get_abs_state_dir (self, is_backup);
     }
   char ** files_in_dir =
     io_get_files_in_dir (dir_to_use, false);
@@ -2128,16 +1995,14 @@ plugin_copy_state_dir (
  * Returns the state dir as an absolute path.
  */
 char *
-plugin_get_abs_state_dir (
-  Plugin * self,
-  bool     is_backup)
+plugin_get_abs_state_dir (Plugin * self, bool is_backup)
 {
   plugin_ensure_state_dir (self, is_backup);
 
   char * parent_dir = project_get_path (
     PROJECT, PROJECT_PATH_PLUGIN_STATES, is_backup);
-  char * full_path = g_build_filename (
-    parent_dir, self->state_dir, NULL);
+  char * full_path =
+    g_build_filename (parent_dir, self->state_dir, NULL);
 
   g_free (parent_dir);
 
@@ -2148,31 +2013,26 @@ plugin_get_abs_state_dir (
  * Ensures the state dir exists or creates it.
  */
 void
-plugin_ensure_state_dir (
-  Plugin * self,
-  bool     is_backup)
+plugin_ensure_state_dir (Plugin * self, bool is_backup)
 {
   if (self->state_dir)
     {
       char * parent_dir = project_get_path (
-        PROJECT, PROJECT_PATH_PLUGIN_STATES,
-        is_backup);
-      char * abs_state_dir = g_build_filename (
-        parent_dir, self->state_dir, NULL);
+        PROJECT, PROJECT_PATH_PLUGIN_STATES, is_backup);
+      char * abs_state_dir =
+        g_build_filename (parent_dir, self->state_dir, NULL);
       io_mkdir (abs_state_dir);
       g_free (parent_dir);
       g_free (abs_state_dir);
       return;
     }
 
-  char * escaped_name =
-    plugin_get_escaped_name (self);
+  char * escaped_name = plugin_get_escaped_name (self);
   g_return_if_fail (escaped_name);
   char * parent_dir = project_get_path (
     PROJECT, PROJECT_PATH_PLUGIN_STATES, is_backup);
   g_return_if_fail (parent_dir);
-  char * tmp =
-    g_strdup_printf ("%s_XXXXXX", escaped_name);
+  char * tmp = g_strdup_printf ("%s_XXXXXX", escaped_name);
   char * abs_state_dir_template =
     g_build_filename (parent_dir, tmp, NULL);
   if (!abs_state_dir_template)
@@ -2183,8 +2043,7 @@ plugin_ensure_state_dir (
     }
   int ret = io_mkdir (parent_dir);
   g_return_if_fail (ret == 0);
-  char * abs_state_dir =
-    g_mkdtemp (abs_state_dir_template);
+  char * abs_state_dir = g_mkdtemp (abs_state_dir_template);
   if (!abs_state_dir)
     {
       g_critical (
@@ -2192,10 +2051,8 @@ plugin_ensure_state_dir (
         "%s: %s",
         abs_state_dir_template, strerror (errno));
     }
-  self->state_dir =
-    g_path_get_basename (abs_state_dir);
-  g_debug (
-    "set plugin state dir to %s", self->state_dir);
+  self->state_dir = g_path_get_basename (abs_state_dir);
+  g_debug ("set plugin state dir to %s", self->state_dir);
   g_free (escaped_name);
   g_free (parent_dir);
   g_free (tmp);
@@ -2211,8 +2068,7 @@ plugin_get_all (
   GPtrArray * arr,
   bool        check_undo_manager)
 {
-  for (int i = 0; i < prj->tracklist->num_tracks;
-       i++)
+  for (int i = 0; i < prj->tracklist->num_tracks; i++)
     {
       Track * track = prj->tracklist->tracks[i];
       track_get_plugins (track, arr);
@@ -2220,8 +2076,7 @@ plugin_get_all (
 
   if (check_undo_manager)
     {
-      undo_manager_get_plugins (
-        prj->undo_manager, arr);
+      undo_manager_get_plugins (prj->undo_manager, arr);
     }
 }
 
@@ -2263,13 +2118,11 @@ plugin_clone (Plugin * src, GError ** error)
       else
         {
           LilvState * state =
-            lv2_state_save_to_file (
-              src->lv2, F_NOT_BACKUP);
+            lv2_state_save_to_file (src->lv2, F_NOT_BACKUP);
           lilv_state_free (state);
         }
       g_message (
-        "saved source plugin state to %s",
-        src->state_dir);
+        "saved source plugin state to %s", src->state_dir);
     }
 
   /* create a new plugin with same descriptor */
@@ -2278,20 +2131,18 @@ plugin_clone (Plugin * src, GError ** error)
     "setting");
   GError * err = NULL;
   self = plugin_new_from_setting (
-    src->setting, src->id.track_name_hash,
-    src->id.slot_type, src->id.slot, &err);
+    src->setting, src->id.track_name_hash, src->id.slot_type,
+    src->id.slot, &err);
   if (!self || (!self->carla && !self->lv2))
     {
       PROPAGATE_PREFIXED_ERROR (
         error, err,
-        _ ("Failed to create plugin clone for %s"),
-        buf);
+        _ ("Failed to create plugin clone for %s"), buf);
       return NULL;
     }
 
   /* copy ports */
-  g_message (
-    "[3/5] copying ports from source plugin");
+  g_message ("[3/5] copying ports from source plugin");
   self->enabled = NULL;
   self->gain = NULL;
   for (int i = 0; i < self->num_in_ports; i++)
@@ -2312,19 +2163,15 @@ plugin_clone (Plugin * src, GError ** error)
     sizeof (Port *));
   for (int i = 0; i < src->num_in_ports; i++)
     {
-      self->in_ports[i] =
-        port_clone (src->in_ports[i]);
+      self->in_ports[i] = port_clone (src->in_ports[i]);
       port_set_owner (
-        self->in_ports[i], PORT_OWNER_TYPE_PLUGIN,
-        self);
+        self->in_ports[i], PORT_OWNER_TYPE_PLUGIN, self);
     }
   for (int i = 0; i < src->num_out_ports; i++)
     {
-      self->out_ports[i] =
-        port_clone (src->out_ports[i]);
+      self->out_ports[i] = port_clone (src->out_ports[i]);
       port_set_owner (
-        self->out_ports[i], PORT_OWNER_TYPE_PLUGIN,
-        self);
+        self->out_ports[i], PORT_OWNER_TYPE_PLUGIN, self);
     }
   self->num_in_ports = src->num_in_ports;
   self->num_out_ports = src->num_out_ports;
@@ -2333,8 +2180,7 @@ plugin_clone (Plugin * src, GError ** error)
   g_message (
     "[4/5] copying state directory from source "
     "plugin");
-  plugin_copy_state_dir (
-    self, src, F_NOT_BACKUP, NULL);
+  plugin_copy_state_dir (self, src, F_NOT_BACKUP, NULL);
 
   g_message ("[5/5] done");
 
@@ -2350,8 +2196,7 @@ plugin_clone (Plugin * src, GError ** error)
   g_return_val_if_fail (
     src->num_in_ports == self->num_in_ports, NULL);
   g_return_val_if_fail (
-    src->num_out_ports == self->num_out_ports,
-    NULL);
+    src->num_out_ports == self->num_out_ports, NULL);
 
   return self;
 }
@@ -2381,16 +2226,12 @@ plugin_is_enabled (Plugin * self, bool check_track)
 }
 
 void
-plugin_set_enabled (
-  Plugin * self,
-  bool     enabled,
-  bool     fire_events)
+plugin_set_enabled (Plugin * self, bool enabled, bool fire_events)
 {
   g_return_if_fail (self->instantiated);
 
   port_set_control_value (
-    self->enabled, enabled ? 1.f : 0.f, false,
-    fire_events);
+    self->enabled, enabled ? 1.f : 0.f, false, fire_events);
 
   if (fire_events)
     {
@@ -2426,10 +2267,8 @@ plugin_process_passthrough (
                 {
                   /* copy */
                   dsp_copy (
-                    &out_port->buf
-                       [time_nfo->local_offset],
-                    &in_port->buf
-                       [time_nfo->local_offset],
+                    &out_port->buf[time_nfo->local_offset],
+                    &in_port->buf[time_nfo->local_offset],
                     time_nfo->nframes);
 
                   last_audio_idx = j + 1;
@@ -2441,8 +2280,8 @@ plugin_process_passthrough (
             }
           break;
         case TYPE_EVENT:
-          for (int j = last_midi_idx;
-               j < self->num_out_ports; j++)
+          for (int j = last_midi_idx; j < self->num_out_ports;
+               j++)
             {
               Port * out_port = self->out_ports[j];
               if (
@@ -2454,8 +2293,8 @@ plugin_process_passthrough (
                   midi_events_append (
                     out_port->midi_events,
                     in_port->midi_events,
-                    time_nfo->local_offset,
-                    time_nfo->nframes, false);
+                    time_nfo->local_offset, time_nfo->nframes,
+                    false);
 
                   last_midi_idx = j + 1;
                   goto_next = true;
@@ -2478,8 +2317,7 @@ void
 plugin_close_ui (Plugin * self)
 {
   g_return_if_fail (ZRYTHM_HAVE_UI);
-  g_return_if_fail (
-    plugin_is_in_active_project (self));
+  g_return_if_fail (plugin_is_in_active_project (self));
 
   if (self->instantiation_failed)
     {
@@ -2499,8 +2337,7 @@ plugin_close_ui (Plugin * self)
   if (!generic_ui && self->setting->open_with_carla)
     {
       g_message ("closing carla plugin UI");
-      carla_native_plugin_open_ui (
-        self->carla, false);
+      carla_native_plugin_open_ui (self->carla, false);
     }
 #endif
 
@@ -2586,9 +2423,7 @@ plugin_connect_to_plugin (Plugin * src, Plugin * dest)
         num_dest_audio_ins++;
     }
 
-  if (
-    num_src_audio_outs == 1
-    && num_dest_audio_ins == 1)
+  if (num_src_audio_outs == 1 && num_dest_audio_ins == 1)
     {
       last_index = 0;
       for (i = 0; i < src->num_out_ports; i++)
@@ -2597,15 +2432,13 @@ plugin_connect_to_plugin (Plugin * src, Plugin * dest)
 
           if (out_port->id.type == TYPE_AUDIO)
             {
-              for (j = 0; j < dest->num_in_ports;
-                   j++)
+              for (j = 0; j < dest->num_in_ports; j++)
                 {
                   in_port = dest->in_ports[j];
 
                   if (in_port->id.type == TYPE_AUDIO)
                     {
-                      port_connect (
-                        out_port, in_port, 1);
+                      port_connect (out_port, in_port, 1);
                       goto done1;
                     }
                 }
@@ -2613,9 +2446,7 @@ plugin_connect_to_plugin (Plugin * src, Plugin * dest)
         }
 done1:;
     }
-  else if (
-    num_src_audio_outs == 1
-    && num_dest_audio_ins > 1)
+  else if (num_src_audio_outs == 1 && num_dest_audio_ins > 1)
     {
       /* plugin is mono and next plugin is
        * not mono, so connect the mono out to
@@ -2626,24 +2457,20 @@ done1:;
 
           if (out_port->id.type == TYPE_AUDIO)
             {
-              for (j = 0; j < dest->num_in_ports;
-                   j++)
+              for (j = 0; j < dest->num_in_ports; j++)
                 {
                   in_port = dest->in_ports[j];
 
                   if (in_port->id.type == TYPE_AUDIO)
                     {
-                      port_connect (
-                        out_port, in_port, 1);
+                      port_connect (out_port, in_port, 1);
                     }
                 }
               break;
             }
         }
     }
-  else if (
-    num_src_audio_outs > 1
-    && num_dest_audio_ins == 1)
+  else if (num_src_audio_outs > 1 && num_dest_audio_ins == 1)
     {
       /* connect multi-output channel into mono by
        * only connecting to the first input channel
@@ -2654,15 +2481,13 @@ done1:;
 
           if (in_port->id.type == TYPE_AUDIO)
             {
-              for (j = 0; j < src->num_out_ports;
-                   j++)
+              for (j = 0; j < src->num_out_ports; j++)
                 {
                   out_port = src->out_ports[j];
 
                   if (out_port->id.type == TYPE_AUDIO)
                     {
-                      port_connect (
-                        out_port, in_port, 1);
+                      port_connect (out_port, in_port, 1);
                       goto done2;
                     }
                 }
@@ -2671,15 +2496,13 @@ done1:;
         }
 done2:;
     }
-  else if (
-    num_src_audio_outs > 1
-    && num_dest_audio_ins > 1)
+  else if (num_src_audio_outs > 1 && num_dest_audio_ins > 1)
     {
       /* connect to as many audio outs this
        * plugin has, or until we can't connect
        * anymore */
-      num_ports_to_connect = MIN (
-        num_src_audio_outs, num_dest_audio_ins);
+      num_ports_to_connect =
+        MIN (num_src_audio_outs, num_dest_audio_ins);
       last_index = 0;
       int ports_connected = 0;
       for (i = 0; i < src->num_out_ports; i++)
@@ -2691,20 +2514,16 @@ done2:;
               for (; last_index < dest->num_in_ports;
                    last_index++)
                 {
-                  in_port =
-                    dest->in_ports[last_index];
+                  in_port = dest->in_ports[last_index];
                   if (in_port->id.type == TYPE_AUDIO)
                     {
-                      port_connect (
-                        out_port, in_port, 1);
+                      port_connect (out_port, in_port, 1);
                       last_index++;
                       ports_connected++;
                       break;
                     }
                 }
-              if (
-                ports_connected
-                == num_ports_to_connect)
+              if (ports_connected == num_ports_to_connect)
                 break;
             }
         }
@@ -2719,8 +2538,7 @@ done2:;
 
       if (
         out_port->id.type == TYPE_EVENT
-        && out_port->id.flags2
-             & PORT_FLAG2_SUPPORTS_MIDI)
+        && out_port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI)
         {
           for (j = 0; j < dest->num_in_ports; j++)
             {
@@ -2728,11 +2546,9 @@ done2:;
 
               if (
                 in_port->id.type == TYPE_EVENT
-                && in_port->id.flags2
-                     & PORT_FLAG2_SUPPORTS_MIDI)
+                && in_port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI)
                 {
-                  port_connect (
-                    out_port, in_port, 1);
+                  port_connect (out_port, in_port, 1);
                 }
             }
           break;
@@ -2762,12 +2578,10 @@ plugin_connect_to_prefader (Plugin * pl, Channel * ch)
           Port * out_port = pl->out_ports[i];
           if (
             out_port->id.type == TYPE_EVENT
-            && out_port->id.flags2
-                 & PORT_FLAG2_SUPPORTS_MIDI
+            && out_port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI
             && out_port->id.flow == FLOW_OUTPUT)
             {
-              port_connect (
-                out_port, ch->midi_out, 1);
+              port_connect (out_port, ch->midi_out, 1);
             }
         }
     }
@@ -2776,11 +2590,9 @@ plugin_connect_to_prefader (Plugin * pl, Channel * ch)
       if (pl->l_out && pl->r_out)
         {
           port_connect (
-            pl->l_out, ch->prefader->stereo_in->l,
-            true);
+            pl->l_out, ch->prefader->stereo_in->l, true);
           port_connect (
-            pl->r_out, ch->prefader->stereo_in->r,
-            true);
+            pl->r_out, ch->prefader->stereo_in->r, true);
         }
     }
 }
@@ -2791,9 +2603,7 @@ plugin_connect_to_prefader (Plugin * pl, Channel * ch)
  * Plugin).
  */
 void
-plugin_disconnect_from_prefader (
-  Plugin *  pl,
-  Channel * ch)
+plugin_disconnect_from_prefader (Plugin * pl, Channel * ch)
 {
   int      i;
   Port *   out_port;
@@ -2803,31 +2613,23 @@ plugin_disconnect_from_prefader (
   for (i = 0; i < pl->num_out_ports; i++)
     {
       out_port = pl->out_ports[i];
-      if (
-        type == TYPE_AUDIO
-        && out_port->id.type == TYPE_AUDIO)
+      if (type == TYPE_AUDIO && out_port->id.type == TYPE_AUDIO)
         {
           if (ports_connected (
-                out_port,
-                ch->prefader->stereo_in->l))
+                out_port, ch->prefader->stereo_in->l))
             port_disconnect (
               out_port, ch->prefader->stereo_in->l);
           if (ports_connected (
-                out_port,
-                ch->prefader->stereo_in->r))
+                out_port, ch->prefader->stereo_in->r))
             port_disconnect (
               out_port, ch->prefader->stereo_in->r);
         }
       else if (
-        type == TYPE_EVENT
-        && out_port->id.type == TYPE_EVENT
-        && out_port->id.flags2
-             & PORT_FLAG2_SUPPORTS_MIDI)
+        type == TYPE_EVENT && out_port->id.type == TYPE_EVENT
+        && out_port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI)
         {
-          if (ports_connected (
-                out_port, ch->prefader->midi_in))
-            port_disconnect (
-              out_port, ch->prefader->midi_in);
+          if (ports_connected (out_port, ch->prefader->midi_in))
+            port_disconnect (out_port, ch->prefader->midi_in);
         }
     }
 }
@@ -2838,9 +2640,7 @@ plugin_disconnect_from_prefader (
  * Plugin.
  */
 void
-plugin_disconnect_from_plugin (
-  Plugin * src,
-  Plugin * dest)
+plugin_disconnect_from_plugin (Plugin * src, Plugin * dest)
 {
   int   i, j, last_index, num_ports_to_connect;
   Port *in_port, *out_port;
@@ -2862,9 +2662,7 @@ plugin_disconnect_from_plugin (
         num_dest_audio_ins++;
     }
 
-  if (
-    num_src_audio_outs == 1
-    && num_dest_audio_ins == 1)
+  if (num_src_audio_outs == 1 && num_dest_audio_ins == 1)
     {
       last_index = 0;
       for (i = 0; i < src->num_out_ports; i++)
@@ -2873,15 +2671,13 @@ plugin_disconnect_from_plugin (
 
           if (out_port->id.type == TYPE_AUDIO)
             {
-              for (j = 0; j < dest->num_in_ports;
-                   j++)
+              for (j = 0; j < dest->num_in_ports; j++)
                 {
                   in_port = dest->in_ports[j];
 
                   if (in_port->id.type == TYPE_AUDIO)
                     {
-                      port_disconnect (
-                        out_port, in_port);
+                      port_disconnect (out_port, in_port);
                       goto done1;
                     }
                 }
@@ -2889,9 +2685,7 @@ plugin_disconnect_from_plugin (
         }
 done1:;
     }
-  else if (
-    num_src_audio_outs == 1
-    && num_dest_audio_ins > 1)
+  else if (num_src_audio_outs == 1 && num_dest_audio_ins > 1)
     {
       /* plugin is mono and next plugin is
        * not mono, so disconnect the mono out from
@@ -2902,24 +2696,20 @@ done1:;
 
           if (out_port->id.type == TYPE_AUDIO)
             {
-              for (j = 0; j < dest->num_in_ports;
-                   j++)
+              for (j = 0; j < dest->num_in_ports; j++)
                 {
                   in_port = dest->in_ports[j];
 
                   if (in_port->id.type == TYPE_AUDIO)
                     {
-                      port_disconnect (
-                        out_port, in_port);
+                      port_disconnect (out_port, in_port);
                     }
                 }
               break;
             }
         }
     }
-  else if (
-    num_src_audio_outs > 1
-    && num_dest_audio_ins == 1)
+  else if (num_src_audio_outs > 1 && num_dest_audio_ins == 1)
     {
       /* disconnect multi-output channel from mono
        * by disconnecting to the first input channel
@@ -2930,15 +2720,13 @@ done1:;
 
           if (in_port->id.type == TYPE_AUDIO)
             {
-              for (j = 0; j < src->num_out_ports;
-                   j++)
+              for (j = 0; j < src->num_out_ports; j++)
                 {
                   out_port = src->out_ports[j];
 
                   if (out_port->id.type == TYPE_AUDIO)
                     {
-                      port_disconnect (
-                        out_port, in_port);
+                      port_disconnect (out_port, in_port);
                       goto done2;
                     }
                 }
@@ -2947,15 +2735,13 @@ done1:;
         }
 done2:;
     }
-  else if (
-    num_src_audio_outs > 1
-    && num_dest_audio_ins > 1)
+  else if (num_src_audio_outs > 1 && num_dest_audio_ins > 1)
     {
       /* connect to as many audio outs this
        * plugin has, or until we can't connect
        * anymore */
-      num_ports_to_connect = MIN (
-        num_src_audio_outs, num_dest_audio_ins);
+      num_ports_to_connect =
+        MIN (num_src_audio_outs, num_dest_audio_ins);
       last_index = 0;
       int ports_disconnected = 0;
       for (i = 0; i < src->num_out_ports; i++)
@@ -2967,20 +2753,16 @@ done2:;
               for (; last_index < dest->num_in_ports;
                    last_index++)
                 {
-                  in_port =
-                    dest->in_ports[last_index];
+                  in_port = dest->in_ports[last_index];
                   if (in_port->id.type == TYPE_AUDIO)
                     {
-                      port_disconnect (
-                        out_port, in_port);
+                      port_disconnect (out_port, in_port);
                       last_index++;
                       ports_disconnected++;
                       break;
                     }
                 }
-              if (
-                ports_disconnected
-                == num_ports_to_connect)
+              if (ports_disconnected == num_ports_to_connect)
                 break;
             }
         }
@@ -2993,8 +2775,7 @@ done2:;
 
       if (
         out_port->id.type == TYPE_EVENT
-        && out_port->id.flags2
-             & PORT_FLAG2_SUPPORTS_MIDI)
+        && out_port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI)
         {
           for (j = 0; j < dest->num_in_ports; j++)
             {
@@ -3002,11 +2783,9 @@ done2:;
 
               if (
                 in_port->id.type == TYPE_EVENT
-                && in_port->id.flags2
-                     & PORT_FLAG2_SUPPORTS_MIDI)
+                && in_port->id.flags2 & PORT_FLAG2_SUPPORTS_MIDI)
                 {
-                  port_disconnect (
-                    out_port, in_port);
+                  port_disconnect (out_port, in_port);
                 }
             }
         }
@@ -3024,8 +2803,7 @@ void
 plugin_disconnect (Plugin * self)
 {
   g_message (
-    "disconnecting plugin %s...",
-    self->setting->descr->name);
+    "disconnecting plugin %s...", self->setting->descr->name);
 
   self->deleting = 1;
 
@@ -3040,9 +2818,9 @@ plugin_disconnect (Plugin * self)
       ports_disconnect (
         self->out_ports, self->num_out_ports, true);
       g_message (
-        "%s: DISCONNECTED ALL PORTS OF %s %d %d",
-        __func__, self->setting->descr->name,
-        self->num_in_ports, self->num_out_ports);
+        "%s: DISCONNECTED ALL PORTS OF %s %d %d", __func__,
+        self->setting->descr->name, self->num_in_ports,
+        self->num_out_ports);
 
 #ifdef HAVE_CARLA
       if (self->setting->open_with_carla)
@@ -3081,8 +2859,7 @@ plugin_delete_state_files (Plugin * self)
     "deleting state files for plugin %s (%s)",
     self->setting->descr->name, self->state_dir);
 
-  g_return_if_fail (
-    g_path_is_absolute (self->state_dir));
+  g_return_if_fail (g_path_is_absolute (self->state_dir));
 
   io_rmdir (self->state_dir, true);
 }
@@ -3107,17 +2884,14 @@ plugin_expose_ports (
         {
           Port * port = pl->in_ports[i];
 
-          bool is_exposed =
-            port_is_exposed_to_backend (port);
+          bool is_exposed = port_is_exposed_to_backend (port);
           if (expose && !is_exposed)
             {
-              port_set_expose_to_backend (
-                port, true);
+              port_set_expose_to_backend (port, true);
             }
           else if (!expose && is_exposed)
             {
-              port_set_expose_to_backend (
-                port, false);
+              port_set_expose_to_backend (port, false);
             }
         }
     }
@@ -3127,17 +2901,14 @@ plugin_expose_ports (
         {
           Port * port = pl->out_ports[i];
 
-          bool is_exposed =
-            port_is_exposed_to_backend (port);
+          bool is_exposed = port_is_exposed_to_backend (port);
           if (expose && !is_exposed)
             {
-              port_set_expose_to_backend (
-                port, true);
+              port_set_expose_to_backend (port, true);
             }
           else if (!expose && is_exposed)
             {
-              port_set_expose_to_backend (
-                port, false);
+              port_set_expose_to_backend (port, false);
             }
         }
     }
@@ -3149,20 +2920,16 @@ plugin_expose_ports (
  * Only works for LV2 plugins.
  */
 Port *
-plugin_get_port_by_symbol (
-  Plugin *     pl,
-  const char * sym)
+plugin_get_port_by_symbol (Plugin * pl, const char * sym)
 {
   g_return_val_if_fail (
-    IS_PLUGIN (pl)
-      && pl->setting->descr->protocol == PROT_LV2,
+    IS_PLUGIN (pl) && pl->setting->descr->protocol == PROT_LV2,
     NULL);
 
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       Port * port = pl->in_ports[i];
-      g_return_val_if_fail (
-        IS_PORT_AND_NONNULL (port), NULL);
+      g_return_val_if_fail (IS_PORT_AND_NONNULL (port), NULL);
 
       if (string_is_equal (port->id.sym, sym))
         {
@@ -3172,8 +2939,7 @@ plugin_get_port_by_symbol (
   for (int i = 0; i < pl->num_out_ports; i++)
     {
       Port * port = pl->out_ports[i];
-      g_return_val_if_fail (
-        IS_PORT_AND_NONNULL (port), NULL);
+      g_return_val_if_fail (IS_PORT_AND_NONNULL (port), NULL);
 
       if (string_is_equal (port->id.sym, sym))
         {
@@ -3181,19 +2947,15 @@ plugin_get_port_by_symbol (
         }
     }
 
-  g_warning (
-    "failed to find port with symbol %s", sym);
+  g_warning ("failed to find port with symbol %s", sym);
   return NULL;
 }
 
 Port *
-plugin_get_port_by_param_uri (
-  Plugin *     pl,
-  const char * uri)
+plugin_get_port_by_param_uri (Plugin * pl, const char * uri)
 {
   g_return_val_if_fail (
-    IS_PLUGIN (pl)
-      && pl->setting->descr->protocol == PROT_LV2
+    IS_PLUGIN (pl) && pl->setting->descr->protocol == PROT_LV2
       && !pl->setting->open_with_carla,
     NULL);
 
@@ -3210,8 +2972,7 @@ plugin_get_port_by_param_uri (
     }
 
   g_critical (
-    "failed to find port with parameter URI <%s>",
-    uri);
+    "failed to find port with parameter URI <%s>", uri);
   return NULL;
 }
 
@@ -3226,12 +2987,9 @@ plugin_free (Plugin * self)
 
   g_return_if_fail (!self->visible);
 
-  g_debug (
-    "freeing plugin %s",
-    self->setting->descr->name);
+  g_debug ("freeing plugin %s", self->setting->descr->name);
 
-  object_free_w_func_and_null (
-    lv2_plugin_free, self->lv2);
+  object_free_w_func_and_null (lv2_plugin_free, self->lv2);
 #ifdef HAVE_CARLA
   object_free_w_func_and_null (
     carla_native_plugin_free, self->carla);

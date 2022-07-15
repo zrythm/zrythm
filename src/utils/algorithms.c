@@ -42,10 +42,10 @@ algorithms_binary_search_nearby (
   bool           include_equal)
 {
   /* init values */
-  size_t first = 0;
-  size_t last = nmemb;
-  size_t middle = (first + last) / 2;
-  bool   pivot_is_before, pivot_succ_is_before;
+  size_t       first = 0;
+  size_t       last = nmemb;
+  size_t       middle = (first + last) / 2;
+  bool         pivot_is_before, pivot_succ_is_before;
   const void * pivot;
   const void * pivot_succ;
 

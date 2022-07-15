@@ -40,10 +40,9 @@
 #define AMPLITUDE (1.0 * 0x7F000000)
 
 static const char * pretty_formats[] = {
-  "AIFF",       "AU",          "CAF",
-  "FLAC",       "MP3",         "OGG (Vorbis)",
-  "OGG (OPUS)", "RAW",         "WAV",
-  "W64",        "MIDI Type 0", "MIDI Type 1",
+  "AIFF", "AU",           "CAF",         "FLAC",
+  "MP3",  "OGG (Vorbis)", "OGG (OPUS)",  "RAW",
+  "WAV",  "W64",          "MIDI Type 0", "MIDI Type 1",
 };
 
 static const char * format_exts[] = {
@@ -70,14 +69,11 @@ export_format_to_ext (ExportFormat format)
 }
 
 ExportFormat
-export_format_from_pretty_str (
-  const char * pretty_str)
+export_format_from_pretty_str (const char * pretty_str)
 {
-  for (ExportFormat i = 0; i < NUM_EXPORT_FORMATS;
-       i++)
+  for (ExportFormat i = 0; i < NUM_EXPORT_FORMATS; i++)
     {
-      if (string_is_equal (
-            pretty_str, pretty_formats[i]))
+      if (string_is_equal (pretty_str, pretty_formats[i]))
         return i;
     }
 
@@ -128,10 +124,8 @@ export_audio (ExportSettings * info)
         info->progress_info.has_error = true;
         sprintf (
           info->progress_info.error_str,
-          _ ("Format %s not supported yet"),
-          format);
-        g_warning (
-          "%s", info->progress_info.error_str);
+          _ ("Format %s not supported yet"), format);
+        g_warning ("%s", info->progress_info.error_str);
 
         return -1;
       }
@@ -140,32 +134,27 @@ export_audio (ExportSettings * info)
 
   if (info->format == EXPORT_FORMAT_OGG_VORBIS)
     {
-      sfinfo.format =
-        sfinfo.format | SF_FORMAT_VORBIS;
+      sfinfo.format = sfinfo.format | SF_FORMAT_VORBIS;
     }
 #ifdef HAVE_OPUS
   else if (info->format == EXPORT_FORMAT_OGG_OPUS)
     {
-      sfinfo.format =
-        sfinfo.format | SF_FORMAT_OPUS;
+      sfinfo.format = sfinfo.format | SF_FORMAT_OPUS;
     }
 #endif
   else if (info->depth == BIT_DEPTH_16)
     {
-      sfinfo.format =
-        sfinfo.format | SF_FORMAT_PCM_16;
+      sfinfo.format = sfinfo.format | SF_FORMAT_PCM_16;
       g_message ("PCM 16");
     }
   else if (info->depth == BIT_DEPTH_24)
     {
-      sfinfo.format =
-        sfinfo.format | SF_FORMAT_PCM_24;
+      sfinfo.format = sfinfo.format | SF_FORMAT_PCM_24;
       g_message ("PCM 24");
     }
   else if (info->depth == BIT_DEPTH_32)
     {
-      sfinfo.format =
-        sfinfo.format | SF_FORMAT_PCM_32;
+      sfinfo.format = sfinfo.format | SF_FORMAT_PCM_32;
       g_message ("PCM 32");
     }
 
@@ -174,11 +163,9 @@ export_audio (ExportSettings * info)
     case TIME_RANGE_SONG:
       {
         ArrangerObject * start = (ArrangerObject *)
-          marker_track_get_start_marker (
-            P_MARKER_TRACK);
+          marker_track_get_start_marker (P_MARKER_TRACK);
         ArrangerObject * end = (ArrangerObject *)
-          marker_track_get_end_marker (
-            P_MARKER_TRACK);
+          marker_track_get_end_marker (P_MARKER_TRACK);
         sfinfo.frames =
           position_to_frames (&end->pos)
           - position_to_frames (&start->pos);
@@ -187,8 +174,7 @@ export_audio (ExportSettings * info)
     case TIME_RANGE_LOOP:
       sfinfo.frames =
         position_to_frames (&TRANSPORT->loop_end_pos)
-        - position_to_frames (
-          &TRANSPORT->loop_start_pos);
+        - position_to_frames (&TRANSPORT->loop_start_pos);
       break;
     case TIME_RANGE_CUSTOM:
       sfinfo.frames =
@@ -207,8 +193,7 @@ export_audio (ExportSettings * info)
     }
   else
     {
-      sfinfo.samplerate =
-        (int) AUDIO_ENGINE->sample_rate;
+      sfinfo.samplerate = (int) AUDIO_ENGINE->sample_rate;
     }
 
   sfinfo.channels = EXPORT_CHANNELS;
@@ -217,10 +202,8 @@ export_audio (ExportSettings * info)
     {
       info->progress_info.has_error = true;
       strcpy (
-        info->progress_info.error_str,
-        _ ("SF INFO invalid"));
-      g_warning (
-        "%s", info->progress_info.error_str);
+        info->progress_info.error_str, _ ("SF INFO invalid"));
+      g_warning ("%s", info->progress_info.error_str);
 
       return -1;
     }
@@ -234,30 +217,23 @@ export_audio (ExportSettings * info)
   if (!sndfile)
     {
       int          error = sf_error (NULL);
-      const char * error_str =
-        sf_error_number (error);
+      const char * error_str = sf_error_number (error);
 
       info->progress_info.has_error = true;
       sprintf (
         info->progress_info.error_str,
         _ ("Couldn't open SNDFILE %s:\n%d: %s"),
         info->file_uri, error, error_str);
-      g_warning (
-        "%s", info->progress_info.error_str);
+      g_warning ("%s", info->progress_info.error_str);
 
       return -1;
     }
 
-  sf_set_string (
-    sndfile, SF_STR_TITLE, PROJECT->title);
-  sf_set_string (
-    sndfile, SF_STR_SOFTWARE, PROGRAM_NAME);
-  sf_set_string (
-    sndfile, SF_STR_ARTIST, info->artist);
-  sf_set_string (
-    sndfile, SF_STR_TITLE, info->title);
-  sf_set_string (
-    sndfile, SF_STR_GENRE, info->genre);
+  sf_set_string (sndfile, SF_STR_TITLE, PROJECT->title);
+  sf_set_string (sndfile, SF_STR_SOFTWARE, PROGRAM_NAME);
+  sf_set_string (sndfile, SF_STR_ARTIST, info->artist);
+  sf_set_string (sndfile, SF_STR_TITLE, info->title);
+  sf_set_string (sndfile, SF_STR_GENRE, info->genre);
 
   Position prev_playhead_pos;
   /* position to start at */
@@ -271,24 +247,20 @@ export_audio (ExportSettings * info)
     case TIME_RANGE_SONG:
       {
         ArrangerObject * start = (ArrangerObject *)
-          marker_track_get_start_marker (
-            P_MARKER_TRACK);
+          marker_track_get_start_marker (P_MARKER_TRACK);
         ArrangerObject * end = (ArrangerObject *)
-          marker_track_get_end_marker (
-            P_MARKER_TRACK);
+          marker_track_get_end_marker (P_MARKER_TRACK);
         transport_move_playhead (
-          TRANSPORT, &start->pos, F_PANIC,
-          F_NO_SET_CUE_POINT, F_NO_PUBLISH_EVENTS);
-        position_set_to_pos (
-          &start_pos, &start->pos);
+          TRANSPORT, &start->pos, F_PANIC, F_NO_SET_CUE_POINT,
+          F_NO_PUBLISH_EVENTS);
+        position_set_to_pos (&start_pos, &start->pos);
         position_set_to_pos (&stop_pos, &end->pos);
       }
       break;
     case TIME_RANGE_LOOP:
       transport_move_playhead (
-        TRANSPORT, &TRANSPORT->loop_start_pos,
-        F_PANIC, F_NO_SET_CUE_POINT,
-        F_NO_PUBLISH_EVENTS);
+        TRANSPORT, &TRANSPORT->loop_start_pos, F_PANIC,
+        F_NO_SET_CUE_POINT, F_NO_PUBLISH_EVENTS);
       position_set_to_pos (
         &start_pos, &TRANSPORT->loop_start_pos);
       position_set_to_pos (
@@ -298,16 +270,12 @@ export_audio (ExportSettings * info)
       transport_move_playhead (
         TRANSPORT, &info->custom_start, F_PANIC,
         F_NO_SET_CUE_POINT, F_NO_PUBLISH_EVENTS);
-      position_set_to_pos (
-        &start_pos, &info->custom_start);
-      position_set_to_pos (
-        &stop_pos, &info->custom_end);
+      position_set_to_pos (&start_pos, &info->custom_start);
+      position_set_to_pos (&stop_pos, &info->custom_end);
       break;
     }
   AUDIO_ENGINE->bounce_mode =
-    info->mode == EXPORT_MODE_FULL
-      ? BOUNCE_OFF
-      : BOUNCE_ON;
+    info->mode == EXPORT_MODE_FULL ? BOUNCE_OFF : BOUNCE_ON;
   AUDIO_ENGINE->bounce_step = info->bounce_step;
   AUDIO_ENGINE->bounce_with_parents =
     info->bounce_with_parents;
@@ -320,8 +288,7 @@ export_audio (ExportSettings * info)
   if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
     {
       engine_jack_set_transport_type (
-        AUDIO_ENGINE,
-        AUDIO_ENGINE_NO_JACK_TRANSPORT);
+        AUDIO_ENGINE, AUDIO_ENGINE_NO_JACK_TRANSPORT);
 
       /* FIXME this is not how freewheeling should
        * work. see https://todo.sr.ht/~alextee/zrythm-feature/371 */
@@ -342,14 +309,12 @@ export_audio (ExportSettings * info)
         "dither %d bits",
         audio_bit_depth_enum_to_int (info->depth));
       ditherer_reset (
-        &ditherer,
-        audio_bit_depth_enum_to_int (info->depth));
+        &ditherer, audio_bit_depth_enum_to_int (info->depth));
     }
 
   nframes_t nframes;
   g_return_val_if_fail (
-    stop_pos.frames >= 1 || start_pos.frames >= 0,
-    -1);
+    stop_pos.frames >= 1 || start_pos.frames >= 0, -1);
   /*const unsigned long total_frames =*/
   /*(unsigned long)*/
   /*((stop_pos.frames - 1) -*/
@@ -359,33 +324,27 @@ export_audio (ExportSettings * info)
   sf_count_t covered_frames = 0;
   double     covered_ticks = 0;
   /*sf_count_t last_playhead_frames = start_pos.frames;*/
-  float out_ptr
-    [AUDIO_ENGINE->block_length * EXPORT_CHANNELS];
+  float out_ptr[AUDIO_ENGINE->block_length * EXPORT_CHANNELS];
   do
     {
       /* calculate number of frames to process
        * this time */
       double nticks =
-        stop_pos.ticks
-        - TRANSPORT->playhead_pos.ticks;
+        stop_pos.ticks - TRANSPORT->playhead_pos.ticks;
       nframes = (nframes_t) MIN (
-        (long) ceil (
-          AUDIO_ENGINE->frames_per_tick * nticks),
+        (long) ceil (AUDIO_ENGINE->frames_per_tick * nticks),
         (long) AUDIO_ENGINE->block_length);
       g_return_val_if_fail (nframes > 0, -1);
 
       /* run process code */
-      engine_process_prepare (
-        AUDIO_ENGINE, nframes);
+      engine_process_prepare (AUDIO_ENGINE, nframes);
       EngineProcessTimeInfo time_nfo = {
-        .g_start_frame =
-          (unsigned_frame_t) PLAYHEAD->frames,
+        .g_start_frame = (unsigned_frame_t) PLAYHEAD->frames,
         .local_offset = 0,
         .nframes = nframes,
       };
       router_start_cycle (ROUTER, time_nfo);
-      engine_post_process (
-        AUDIO_ENGINE, nframes, nframes);
+      engine_post_process (AUDIO_ENGINE, nframes, nframes);
 
       /* by this time, the Master channel should
        * have its Stereo Out ports filled.
@@ -393,26 +352,22 @@ export_audio (ExportSettings * info)
       for (nframes_t i = 0; i < nframes; i++)
         {
           out_ptr[i * 2] =
-            P_MASTER_TRACK->channel->stereo_out->l
-              ->buf[i];
+            P_MASTER_TRACK->channel->stereo_out->l->buf[i];
           out_ptr[i * 2 + 1] =
-            P_MASTER_TRACK->channel->stereo_out->r
-              ->buf[i];
+            P_MASTER_TRACK->channel->stereo_out->r->buf[i];
         }
 
       /* apply dither */
       if (info->dither)
         {
-          ditherer_process (
-            &ditherer, out_ptr, nframes, 2);
+          ditherer_process (&ditherer, out_ptr, nframes, 2);
         }
 
       /* seek to the write position in the file */
       if (covered_frames != 0)
         {
           sf_count_t seek_cnt = sf_seek (
-            sndfile, covered_frames,
-            SEEK_SET | SFM_WRITE);
+            sndfile, covered_frames, SEEK_SET | SFM_WRITE);
 
           /* wav is weird for some reason */
           if (
@@ -422,25 +377,21 @@ export_audio (ExportSettings * info)
               if (seek_cnt < 0)
                 {
                   char err[256];
-                  sf_error_str (
-                    0, err, sizeof (err) - 1);
-                  g_message (
-                    "Error seeking file: %s", err);
+                  sf_error_str (0, err, sizeof (err) - 1);
+                  g_message ("Error seeking file: %s", err);
                 }
-              g_warn_if_fail (
-                seek_cnt == covered_frames);
+              g_warn_if_fail (seek_cnt == covered_frames);
             }
         }
 
       /* write the frames for the current
        * cycle */
-      sf_count_t written_frames = sf_writef_float (
-        sndfile, out_ptr, nframes);
+      sf_count_t written_frames =
+        sf_writef_float (sndfile, out_ptr, nframes);
       g_warn_if_fail (written_frames == nframes);
 
       covered_frames += nframes;
-      covered_ticks +=
-        AUDIO_ENGINE->ticks_per_frame * nframes;
+      covered_ticks += AUDIO_ENGINE->ticks_per_frame * nframes;
 #if 0
       long expected_nframes =
         TRANSPORT->playhead_pos.frames -
@@ -459,8 +410,7 @@ export_audio (ExportSettings * info)
 #endif
 
       info->progress_info.progress =
-        (TRANSPORT->playhead_pos.ticks
-         - start_pos.ticks)
+        (TRANSPORT->playhead_pos.ticks - start_pos.ticks)
         / total_ticks;
     }
   while (
@@ -510,14 +460,12 @@ export_audio (ExportSettings * info)
   /* if cancelled, delete */
   if (info->progress_info.cancelled)
     {
-      g_message (
-        "cancelled export to %s", info->file_uri);
+      g_message ("cancelled export to %s", info->file_uri);
     }
   else
     {
       g_message (
-        "successfully exported to %s",
-        info->file_uri);
+        "successfully exported to %s", info->file_uri);
     }
 
   return 0;
@@ -533,21 +481,18 @@ export_midi (ExportSettings * info)
       /* Write tempo information out to track 1 */
       midiSongAddTempo (
         mf, 1,
-        (int) tempo_track_get_current_bpm (
-          P_TEMPO_TRACK));
+        (int) tempo_track_get_current_bpm (P_TEMPO_TRACK));
 
       midiFileSetPPQN (mf, TICKS_PER_QUARTER_NOTE);
 
       int midi_version =
         info->format == EXPORT_FORMAT_MIDI0 ? 0 : 1;
-      g_debug (
-        "setting MIDI version to %d", midi_version);
+      g_debug ("setting MIDI version to %d", midi_version);
       midiFileSetVersion (mf, midi_version);
 
       /* common time: 4 crochet beats, per bar */
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (
-          P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
       midiSongAddSimpleTimeSig (
         mf, 1, beats_per_bar,
         math_round_double_to_signed_32 (
@@ -556,16 +501,14 @@ export_midi (ExportSettings * info)
       /* add generic export name if version 0 */
       if (midi_version == 0)
         {
-          midiTrackAddText (
-            mf, 1, textTrackName, info->title);
+          midiTrackAddText (mf, 1, textTrackName, info->title);
         }
 
       for (int i = 0; i < TRACKLIST->num_tracks; i++)
         {
           Track * track = TRACKLIST->tracks[i];
 
-          if (track_type_has_piano_roll (
-                track->type))
+          if (track_type_has_piano_roll (track->type))
             {
               MidiEvents * events = NULL;
               if (midi_version == 0)
@@ -575,11 +518,8 @@ export_midi (ExportSettings * info)
 
               /* write track to midi file */
               track_write_to_midi_file (
-                track, mf,
-                midi_version == 0 ? events : NULL,
-                midi_version == 0
-                  ? false
-                  : info->lanes_as_tracks,
+                track, mf, midi_version == 0 ? events : NULL,
+                midi_version == 0 ? false : info->lanes_as_tracks,
                 midi_version == 0 ? false : true);
 
               if (events)
@@ -591,8 +531,7 @@ export_midi (ExportSettings * info)
                 }
             }
           info->progress_info.progress =
-            (double) i
-            / (double) TRACKLIST->num_tracks;
+            (double) i / (double) TRACKLIST->num_tracks;
         }
 
       midiFileClose (mf);
@@ -610,8 +549,7 @@ export_midi (ExportSettings * info)
 ExportSettings *
 export_settings_default ()
 {
-  ExportSettings * self =
-    calloc (1, sizeof (ExportSettings));
+  ExportSettings * self = calloc (1, sizeof (ExportSettings));
 
   /* TODO */
 
@@ -664,15 +602,11 @@ export_settings_set_bounce_defaults (
     case EXPORT_MODE_FULL:
       {
         ArrangerObject * start = (ArrangerObject *)
-          marker_track_get_start_marker (
-            P_MARKER_TRACK);
+          marker_track_get_start_marker (P_MARKER_TRACK);
         ArrangerObject * end = (ArrangerObject *)
-          marker_track_get_end_marker (
-            P_MARKER_TRACK);
-        position_set_to_pos (
-          &self->custom_start, &start->pos);
-        position_set_to_pos (
-          &self->custom_end, &end->pos);
+          marker_track_get_end_marker (P_MARKER_TRACK);
+        position_set_to_pos (&self->custom_start, &start->pos);
+        position_set_to_pos (&self->custom_end, &end->pos);
       }
       break;
     }
@@ -689,8 +623,7 @@ export_settings_set_bounce_defaults (
   self->bounce_with_parents =
     ZRYTHM_TESTING
       ? true
-      : g_settings_get_boolean (
-        S_UI, "bounce-with-parents");
+      : g_settings_get_boolean (S_UI, "bounce-with-parents");
 
   if (filepath)
     {
@@ -699,11 +632,10 @@ export_settings_set_bounce_defaults (
     }
   else
     {
-      char * tmp_dir = g_dir_make_tmp (
-        "zrythm_bounce_XXXXXX", NULL);
-      const char * ext =
-        export_format_to_ext (self->format);
-      char filename[800];
+      char * tmp_dir =
+        g_dir_make_tmp ("zrythm_bounce_XXXXXX", NULL);
+      const char * ext = export_format_to_ext (self->format);
+      char         filename[800];
       sprintf (filename, "%s.%s", bounce_name, ext);
       self->file_uri =
         g_build_filename (tmp_dir, filename, NULL);
@@ -725,8 +657,7 @@ exporter_prepare_tracks_for_export (
     return NULL;
 
   EngineState state;
-  engine_wait_for_pause (
-    AUDIO_ENGINE, &state, Z_F_NO_FORCE);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE);
 
   /* disconnect all track faders from
    * their channel outputs so that
@@ -751,8 +682,7 @@ exporter_prepare_tracks_for_export (
         port_connections_manager_find_connection (
           PORT_CONNECTIONS_MGR, l_src_id, l_dest_id);
       g_return_val_if_fail (l_conn, NULL);
-      g_ptr_array_add (
-        conns, port_connection_clone (l_conn));
+      g_ptr_array_add (conns, port_connection_clone (l_conn));
       port_connections_manager_ensure_disconnect (
         PORT_CONNECTIONS_MGR, l_src_id, l_dest_id);
 
@@ -764,8 +694,7 @@ exporter_prepare_tracks_for_export (
         port_connections_manager_find_connection (
           PORT_CONNECTIONS_MGR, r_src_id, r_dest_id);
       g_return_val_if_fail (r_conn, NULL);
-      g_ptr_array_add (
-        conns, port_connection_clone (r_conn));
+      g_ptr_array_add (conns, port_connection_clone (r_conn));
       port_connections_manager_ensure_disconnect (
         PORT_CONNECTIONS_MGR, r_src_id, r_dest_id);
     }
@@ -775,8 +704,7 @@ exporter_prepare_tracks_for_export (
   router_recalc_graph (ROUTER, F_NOT_SOFT);
 
   /* remark all tracks for bounce */
-  tracklist_mark_all_tracks_for_bounce (
-    TRACKLIST, true);
+  tracklist_mark_all_tracks_for_bounce (TRACKLIST, true);
 
   engine_resume (AUDIO_ENGINE, &state);
 
@@ -804,8 +732,7 @@ exporter_return_connections_post_export (
   g_return_if_fail (connections);
 
   EngineState state;
-  engine_wait_for_pause (
-    AUDIO_ENGINE, &state, Z_F_NO_FORCE);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE);
 
   /* re-connect disconnected connections */
   for (size_t j = 0; j < connections->len; j++)
@@ -868,14 +795,13 @@ export_settings_print (const ExportSettings * self)
     "dither: %d\n"
     "file: %s\n"
     "num files: %d\n",
-    export_format_to_pretty_str (self->format),
-    self->artist, self->title, self->genre,
-    audio_bit_depth_enum_to_int (self->depth),
-    "TODO", export_mode_to_str (self->mode),
-    self->disable_after_bounce,
-    self->bounce_with_parents,
-    bounce_step_to_str (self->bounce_step),
-    self->dither, self->file_uri, self->num_files);
+    export_format_to_pretty_str (self->format), self->artist,
+    self->title, self->genre,
+    audio_bit_depth_enum_to_int (self->depth), "TODO",
+    export_mode_to_str (self->mode),
+    self->disable_after_bounce, self->bounce_with_parents,
+    bounce_step_to_str (self->bounce_step), self->dither,
+    self->file_uri, self->num_files);
 }
 
 void
@@ -903,8 +829,7 @@ exporter_create_audio_track_after_bounce (
   g_return_if_fail (!AUDIO_ENGINE->exporting);
 
   SupportedFile * descr =
-    supported_file_new_from_path (
-      settings->file_uri);
+    supported_file_new_from_path (settings->file_uri);
 
   /* find next track */
   Track * last_track = NULL;
@@ -913,13 +838,11 @@ exporter_create_audio_track_after_bounce (
     {
     case EXPORT_MODE_REGIONS:
       last_track =
-        timeline_selections_get_last_track (
-          TL_SELECTIONS);
+        timeline_selections_get_last_track (TL_SELECTIONS);
       break;
     case EXPORT_MODE_TRACKS:
-      last_track =
-        tracklist_selections_get_lowest_track (
-          TRACKLIST_SELECTIONS);
+      last_track = tracklist_selections_get_lowest_track (
+        TRACKLIST_SELECTIONS);
       if (settings->disable_after_bounce)
         {
           track_to_disable = last_track;
@@ -931,33 +854,27 @@ exporter_create_audio_track_after_bounce (
 
   g_return_if_fail (last_track);
   GError *         err = NULL;
-  UndoableAction * ua =
-    tracklist_selections_action_new_create (
-      TRACK_TYPE_AUDIO, NULL, descr,
-      last_track->pos + 1, pos, 1,
-      track_to_disable ? track_to_disable->pos : -1,
-      &err);
+  UndoableAction * ua = tracklist_selections_action_new_create (
+    TRACK_TYPE_AUDIO, NULL, descr, last_track->pos + 1, pos,
+    1, track_to_disable ? track_to_disable->pos : -1, &err);
   if (ua)
     {
       Position tmp;
       position_set_to_pos (&tmp, PLAYHEAD);
       transport_set_playhead_pos (
         TRANSPORT, &settings->custom_start);
-      int ret = undo_manager_perform (
-        UNDO_MANAGER, ua, &err);
+      int ret = undo_manager_perform (UNDO_MANAGER, ua, &err);
       if (ret != 0)
         {
           HANDLE_ERROR (
-            err, "%s",
-            _ ("Failed to create audio track"));
+            err, "%s", _ ("Failed to create audio track"));
         }
       transport_set_playhead_pos (TRANSPORT, &tmp);
     }
   else
     {
       HANDLE_ERROR (
-        err, "%s",
-        _ ("Failed to create audio track"));
+        err, "%s", _ ("Failed to create audio track"));
     }
 }
 
@@ -978,8 +895,7 @@ exporter_export (ExportSettings * info)
 
   /* pause engine */
   EngineState state;
-  engine_wait_for_pause (
-    AUDIO_ENGINE, &state, Z_F_NO_FORCE);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE);
 
   g_message ("engine paused");
 
@@ -988,8 +904,7 @@ exporter_export (ExportSettings * info)
   AUDIO_ENGINE->exporting = true;
   TRANSPORT->loop = false;
 
-  g_message (
-    "deactivating and reactivating plugins");
+  g_message ("deactivating and reactivating plugins");
 
   /* deactivate and activate all plugins to make
    * them reset their states */

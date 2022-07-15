@@ -50,32 +50,29 @@
 #  include <rtaudio_c.h>
 #endif
 
-typedef struct Plugin           Plugin;
-typedef struct MidiEvents       MidiEvents;
-typedef struct Fader            Fader;
-typedef struct ZixRingImpl      ZixRing;
-typedef struct WindowsMmeDevice WindowsMmeDevice;
-typedef struct Channel          Channel;
-typedef struct AudioEngine      AudioEngine;
-typedef struct Track            Track;
-typedef struct PortConnection   PortConnection;
-typedef struct TrackProcessor   TrackProcessor;
-typedef struct ModulatorMacroProcessor
-  ModulatorMacroProcessor;
-typedef struct RtMidiDevice    RtMidiDevice;
-typedef struct RtAudioDevice   RtAudioDevice;
-typedef struct AutomationTrack AutomationTrack;
-typedef struct TruePeakDsp     TruePeakDsp;
-typedef struct ExtPort         ExtPort;
-typedef struct AudioClip       AudioClip;
-typedef struct ChannelSend     ChannelSend;
-typedef struct Transport       Transport;
-typedef struct PluginGtkController
-  PluginGtkController;
-typedef struct EngineProcessTimeInfo
-                          EngineProcessTimeInfo;
-typedef enum PanAlgorithm PanAlgorithm;
-typedef enum PanLaw       PanLaw;
+typedef struct Plugin                  Plugin;
+typedef struct MidiEvents              MidiEvents;
+typedef struct Fader                   Fader;
+typedef struct ZixRingImpl             ZixRing;
+typedef struct WindowsMmeDevice        WindowsMmeDevice;
+typedef struct Channel                 Channel;
+typedef struct AudioEngine             AudioEngine;
+typedef struct Track                   Track;
+typedef struct PortConnection          PortConnection;
+typedef struct TrackProcessor          TrackProcessor;
+typedef struct ModulatorMacroProcessor ModulatorMacroProcessor;
+typedef struct RtMidiDevice            RtMidiDevice;
+typedef struct RtAudioDevice           RtAudioDevice;
+typedef struct AutomationTrack         AutomationTrack;
+typedef struct TruePeakDsp             TruePeakDsp;
+typedef struct ExtPort                 ExtPort;
+typedef struct AudioClip               AudioClip;
+typedef struct ChannelSend             ChannelSend;
+typedef struct Transport               Transport;
+typedef struct PluginGtkController     PluginGtkController;
+typedef struct EngineProcessTimeInfo   EngineProcessTimeInfo;
+typedef enum PanAlgorithm              PanAlgorithm;
+typedef enum PanLaw                    PanLaw;
 
 /**
  * @addtogroup audio
@@ -87,8 +84,7 @@ typedef enum PanLaw       PanLaw;
 #define STEREO_PORTS_SCHEMA_VERSION 1
 
 #define PORT_MAGIC 456861194
-#define IS_PORT(_p) \
-  (((Port *) (_p))->magic == PORT_MAGIC)
+#define IS_PORT(_p) (((Port *) (_p))->magic == PORT_MAGIC)
 #define IS_PORT_AND_NONNULL(x) ((x) && IS_PORT (x))
 
 #define TIME_TO_RESET_PEAK 4800000
@@ -99,8 +95,7 @@ typedef enum PanLaw       PanLaw;
  */
 #define PORT_NOT_OWNED -1
 
-#define port_is_owner_active( \
-  self, _owner_type, owner) \
+#define port_is_owner_active(self, _owner_type, owner) \
   ((self->id.owner_type == _owner_type) \
    && (self->owner != NULL) \
    && owner##_is_in_active_project (self->owner))
@@ -117,13 +112,11 @@ typedef enum PanLaw       PanLaw;
    || port_is_owner_active ( \
      self, PORT_OWNER_TYPE_FADER, fader) \
    || port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_CHANNEL_SEND, \
-     channel_send) \
+     self, PORT_OWNER_TYPE_CHANNEL_SEND, channel_send) \
    || port_is_owner_active ( \
      self, PORT_OWNER_TYPE_TRACK_PROCESSOR, track) \
    || port_is_owner_active ( \
-     self, \
-     PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, \
+     self, PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, \
      modulator_macro_processor) \
    || port_is_owner_active ( \
      self, PORT_OWNER_TYPE_HW, ext_port))
@@ -158,15 +151,11 @@ typedef struct PortScalePoint
 } PortScalePoint;
 
 PURE int
-port_scale_point_cmp (
-  const void * _a,
-  const void * _b);
+port_scale_point_cmp (const void * _a, const void * _b);
 
 NONNULL
 PortScalePoint *
-port_scale_point_new (
-  const float  val,
-  const char * label);
+port_scale_point_new (const float val, const char * label);
 
 NONNULL
 void
@@ -384,8 +373,7 @@ typedef struct Port
 
   /** Pointer to owner modulator macro processor,
    * if any. */
-  ModulatorMacroProcessor *
-    modulator_macro_processor;
+  ModulatorMacroProcessor * modulator_macro_processor;
 
   /* ====== flags to indicate port owner ====== */
 
@@ -607,27 +595,17 @@ typedef struct StereoPorts
   Port * r;
 } StereoPorts;
 
-static const cyaml_schema_field_t
-  stereo_ports_fields_schema[] = {
-    YAML_FIELD_INT (StereoPorts, schema_version),
-    YAML_FIELD_MAPPING_PTR (
-      StereoPorts,
-      l,
-      port_fields_schema),
-    YAML_FIELD_MAPPING_PTR (
-      StereoPorts,
-      r,
-      port_fields_schema),
+static const cyaml_schema_field_t stereo_ports_fields_schema[] = {
+  YAML_FIELD_INT (StereoPorts, schema_version),
+  YAML_FIELD_MAPPING_PTR (StereoPorts, l, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (StereoPorts, r, port_fields_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  stereo_ports_schema = {
-    YAML_VALUE_PTR (
-      StereoPorts,
-      stereo_ports_fields_schema),
-  };
+static const cyaml_schema_value_t stereo_ports_schema = {
+  YAML_VALUE_PTR (StereoPorts, stereo_ports_fields_schema),
+};
 
 /**
  * This function finds the Ports corresponding to
@@ -648,14 +626,11 @@ port_set_owner (
 
 NONNULL
 Port *
-port_find_from_identifier (
-  const PortIdentifier * const id);
+port_find_from_identifier (const PortIdentifier * const id);
 
 NONNULL
 static inline void
-stereo_ports_init_loaded (
-  StereoPorts * sp,
-  void *        owner)
+stereo_ports_init_loaded (StereoPorts * sp, void * owner)
 {
   port_init_loaded (sp->l, owner);
   port_init_loaded (sp->r, owner);
@@ -816,9 +791,7 @@ port_has_sound (Port * self);
  */
 NONNULL
 void
-port_get_full_designation (
-  Port * const self,
-  char *       buf);
+port_get_full_designation (Port * const self, char * buf);
 
 NONNULL
 void
@@ -833,15 +806,11 @@ port_get_all (GPtrArray * ports);
 
 NONNULL
 Track *
-port_get_track (
-  const Port * const self,
-  int                warn_if_fail);
+port_get_track (const Port * const self, int warn_if_fail);
 
 NONNULL
 Plugin *
-port_get_plugin (
-  Port * const self,
-  const bool   warn_if_fail);
+port_get_plugin (Port * const self, const bool warn_if_fail);
 
 /**
  * To be called when the port's identifier changes
@@ -980,9 +949,7 @@ port_set_control_value (
  */
 NONNULL
 HOT float
-port_get_control_value (
-  Port *     self,
-  const bool normalize);
+port_get_control_value (Port * self, const bool normalize);
 
 /**
  * Connects @ref a and @ref b with default
@@ -992,8 +959,8 @@ port_get_control_value (
  */
 #define port_connect(a, b, locked) \
   port_connections_manager_ensure_connect ( \
-    PORT_CONNECTIONS_MGR, &((a)->id), &((b)->id), \
-    1.f, locked, true)
+    PORT_CONNECTIONS_MGR, &((a)->id), &((b)->id), 1.f, \
+    locked, true)
 
 /**
  * Removes the connection between the given ports.
@@ -1078,19 +1045,14 @@ port_process (
  */
 NONNULL
 bool
-ports_can_be_connected (
-  const Port * src,
-  const Port * dest);
+ports_can_be_connected (const Port * src, const Port * dest);
 
 /**
  * Disconnects all the given ports.
  */
 NONNULL
 void
-ports_disconnect (
-  Port ** ports,
-  int     num_ports,
-  int     deleting);
+ports_disconnect (Port ** ports, int num_ports, int deleting);
 
 /**
  * Copies the metadata from a project port to
@@ -1128,9 +1090,7 @@ port_copy_values (Port * self, const Port * other);
  */
 NONNULL
 void
-port_restore_from_non_project (
-  Port * self,
-  Port * non_project);
+port_restore_from_non_project (Port * self, Port * non_project);
 
 /**
  * Clears the audio/cv port buffer.

@@ -21,12 +21,10 @@ file_browser_window_widget_new ()
     _ ("File Browser"), NULL);
 
   self->file_browser = file_browser_widget_new ();
-  GtkBox * box = GTK_BOX (
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_box_append (
-    box, GTK_WIDGET (self->file_browser));
-  gtk_window_set_child (
-    GTK_WINDOW (self), GTK_WIDGET (box));
+  GtkBox * box =
+    GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  gtk_box_append (box, GTK_WIDGET (self->file_browser));
+  gtk_window_set_child (GTK_WINDOW (self), GTK_WIDGET (box));
 
   return self;
 }

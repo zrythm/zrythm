@@ -55,19 +55,17 @@
 #include "zix/sem.h"
 #include <pthread.h>
 
-typedef struct GraphNode GraphNode;
-typedef struct Graph     Graph;
-typedef struct PassthroughProcessor
-                         PassthroughProcessor;
-typedef struct MPMCQueue MPMCQueue;
-typedef struct Port      Port;
-typedef struct Fader     Fader;
-typedef struct Track     Track;
-typedef struct Plugin    Plugin;
-typedef struct Position  Position;
-typedef struct ControlPortChange ControlPortChange;
-typedef struct EngineProcessTimeInfo
-  EngineProcessTimeInfo;
+typedef struct GraphNode             GraphNode;
+typedef struct Graph                 Graph;
+typedef struct PassthroughProcessor  PassthroughProcessor;
+typedef struct MPMCQueue             MPMCQueue;
+typedef struct Port                  Port;
+typedef struct Fader                 Fader;
+typedef struct Track                 Track;
+typedef struct Plugin                Plugin;
+typedef struct Position              Position;
+typedef struct ControlPortChange     ControlPortChange;
+typedef struct EngineProcessTimeInfo EngineProcessTimeInfo;
 
 #ifdef HAVE_JACK
 #  include "weak_libjack.h"
@@ -134,8 +132,7 @@ router_start_cycle (
  * nodes.
  */
 nframes_t
-router_get_max_route_playback_latency (
-  Router * router);
+router_get_max_route_playback_latency (Router * router);
 
 /**
  * Returns if the current thread is a

@@ -33,8 +33,7 @@
 
 #include <gtk/gtk.h>
 
-#define ARRANGER_WIDGET_TYPE \
-  (arranger_widget_get_type ())
+#define ARRANGER_WIDGET_TYPE (arranger_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ArrangerWidget,
   arranger_widget,
@@ -48,14 +47,14 @@ typedef struct SnapGrid          SnapGrid;
 typedef struct AutomationPoint   AutomationPoint;
 
 typedef struct _GtkEventControllerMotion
-  GtkEventControllerMotion;
+                                  GtkEventControllerMotion;
 typedef struct ArrangerObject     ArrangerObject;
 typedef struct ArrangerSelections ArrangerSelections;
 typedef struct EditorSettings     EditorSettings;
 typedef struct ObjectPool         ObjectPool;
 typedef struct _RulerWidget       RulerWidget;
-typedef enum ArrangerObjectType ArrangerObjectType;
-typedef enum TransportDisplay   TransportDisplay;
+typedef enum ArrangerObjectType   ArrangerObjectType;
+typedef enum TransportDisplay     TransportDisplay;
 
 /**
  * @addtogroup widgets
@@ -465,8 +464,7 @@ typedef struct _ArrangerWidget
 } ArrangerWidget;
 
 PURE const char *
-arranger_widget_get_type_str (
-  ArrangerWidgetType type);
+arranger_widget_get_type_str (ArrangerWidgetType type);
 
 /**
  * Creates a timeline widget using the given
@@ -509,16 +507,14 @@ arranger_widget_get_cursor (ArrangerWidget * self);
  * on the current state and then sets it.
  */
 void
-arranger_widget_refresh_cursor (
-  ArrangerWidget * self);
+arranger_widget_refresh_cursor (ArrangerWidget * self);
 
 /**
  * Gets the corresponding scrolled window.
  */
 NONNULL
 GtkScrolledWindow *
-arranger_widget_get_scrolled_window (
-  ArrangerWidget * self);
+arranger_widget_get_scrolled_window (ArrangerWidget * self);
 
 /**
  * Get all objects currently present in the
@@ -615,8 +611,7 @@ arranger_widget_select_all (
  */
 NONNULL
 PURE bool
-arranger_widget_is_in_moving_operation (
-  ArrangerWidget * self);
+arranger_widget_is_in_moving_operation (ArrangerWidget * self);
 
 /**
  * Returns the ArrangerSelections for this
@@ -624,19 +619,16 @@ arranger_widget_is_in_moving_operation (
  */
 RETURNS_NONNULL
 ArrangerSelections *
-arranger_widget_get_selections (
-  ArrangerWidget * self);
+arranger_widget_get_selections (ArrangerWidget * self);
 
 /**
  * Only redraws the playhead part.
  */
 void
-arranger_widget_redraw_playhead (
-  ArrangerWidget * self);
+arranger_widget_redraw_playhead (ArrangerWidget * self);
 
 SnapGrid *
-arranger_widget_get_snap_grid (
-  ArrangerWidget * self);
+arranger_widget_get_snap_grid (ArrangerWidget * self);
 
 /**
  * Called from MainWindowWidget because some
@@ -712,12 +704,10 @@ arranger_widget_set_highlight_rect (
  * the given arranger.
  */
 EditorSettings *
-arranger_widget_get_editor_settings (
-  ArrangerWidget * self);
+arranger_widget_get_editor_settings (ArrangerWidget * self);
 
 bool
-arranger_widget_is_playhead_visible (
-  ArrangerWidget * self);
+arranger_widget_is_playhead_visible (ArrangerWidget * self);
 
 NONNULL
 void
@@ -733,8 +723,7 @@ typedef void (*ArrangerWidgetForeachFunc) (
  */
 NONNULL
 void
-arranger_widget_foreach (
-  ArrangerWidgetForeachFunc func);
+arranger_widget_foreach (ArrangerWidgetForeachFunc func);
 
 NONNULL
 PURE RulerWidget *
@@ -752,21 +741,17 @@ arranger_widget_any_doing_action (void);
  * coordinates.
  */
 int
-arranger_widget_get_playhead_px (
-  ArrangerWidget * self);
+arranger_widget_get_playhead_px (ArrangerWidget * self);
 
 #define arranger_widget_print_action(self) \
-  g_debug ( \
-    "action: %s", \
-    ui_overlay_strings[self->action])
+  g_debug ("action: %s", ui_overlay_strings[self->action])
 
 /**
  * Returns true if MIDI arranger and track mode
  * is enabled.
  */
 bool
-arranger_widget_get_drum_mode_enabled (
-  ArrangerWidget * self);
+arranger_widget_get_drum_mode_enabled (ArrangerWidget * self);
 
 /**
  * @}

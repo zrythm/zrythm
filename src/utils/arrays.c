@@ -40,10 +40,7 @@
  * The element exists if the pointers are equal.
  */
 int
-_array_contains (
-  void ** array,
-  int     size,
-  void *  element)
+_array_contains (void ** array, int size, void * element)
 {
   for (int i = 0; i < size; i++)
     {
@@ -94,10 +91,7 @@ _array_contains_cmp (
  * -1 if not.
  */
 int
-_array_index_of (
-  void ** array,
-  int     size,
-  void *  element)
+_array_index_of (void ** array, int size, void * element)
 {
   for (int i = 0; i < size; i++)
     {
@@ -145,26 +139,22 @@ _array_dynamic_swap (
     }
 
   /* resize the small array */
-  *small_arr = realloc (
-    *small_arr, *large_sz * sizeof (void *));
+  *small_arr =
+    realloc (*small_arr, *large_sz * sizeof (void *));
 
   /* copy the elements of the small array in tmp */
   void * tmp[*small_sz > 0 ? *small_sz : 1];
-  memcpy (
-    tmp, *small_arr, sizeof (void *) * *small_sz);
+  memcpy (tmp, *small_arr, sizeof (void *) * *small_sz);
 
   /* copy elements from large array to small */
-  memcpy (
-    *small_arr, *large_arr,
-    sizeof (void *) * *large_sz);
+  memcpy (*small_arr, *large_arr, sizeof (void *) * *large_sz);
 
   /* resize large array */
-  *large_arr = realloc (
-    *large_arr, *small_sz * sizeof (void *));
+  *large_arr =
+    realloc (*large_arr, *small_sz * sizeof (void *));
 
   /* copy the elements from temp to large array */
-  memcpy (
-    *large_arr, tmp, sizeof (void *) * *small_sz);
+  memcpy (*large_arr, tmp, sizeof (void *) * *small_sz);
 
   /* update the sizes */
   size_t orig_large_sz = *large_sz;
@@ -211,8 +201,8 @@ _array_double_size_if_full (
   if (G_UNLIKELY (count > *max_sz && *max_sz != 0))
     {
       g_critical (
-        "invalid count (%zu) and max sz (%zu)",
-        count, *max_sz);
+        "invalid count (%zu) and max sz (%zu)", count,
+        *max_sz);
       return;
     }
 
@@ -220,21 +210,17 @@ _array_double_size_if_full (
   if (count == 0)
     {
       new_sz = 1;
-      *arr_ptr =
-        object_new_n_sizeof (new_sz, el_size);
+      *arr_ptr = object_new_n_sizeof (new_sz, el_size);
     }
   if (*max_sz == 0)
     {
-      g_message (
-        "FIXME: current size of array given is 0.");
-      *arr_ptr =
-        g_realloc_n (*arr_ptr, new_sz, el_size);
+      g_message ("FIXME: current size of array given is 0.");
+      *arr_ptr = g_realloc_n (*arr_ptr, new_sz, el_size);
     }
   else
     {
       *arr_ptr = object_realloc_n_sizeof (
-        *arr_ptr, *max_sz * el_size,
-        new_sz * el_size);
+        *arr_ptr, *max_sz * el_size, new_sz * el_size);
     }
   *max_sz = new_sz;
 }
@@ -249,8 +235,7 @@ alphaBetize (const void * a, const void * b)
     return r;
   /* if equal ignoring case, use opposite of strcmp()
    * result to get lower before upper */
-  return -strcmp (
-    aa, bb); /* aka: return strcmp(b, a); */
+  return -strcmp (aa, bb); /* aka: return strcmp(b, a); */
 }
 
 void
@@ -260,9 +245,7 @@ array_sort_alphabetically (
   int     case_sensitive)
 {
   if (!case_sensitive)
-    qsort (
-      array, (size_t) size, sizeof (char *),
-      alphaBetize);
+    qsort (array, (size_t) size, sizeof (char *), alphaBetize);
 }
 
 /**
@@ -286,13 +269,10 @@ array_shuffle (void * array, size_t n, size_t size)
         {
           size_t rnd =
             (size_t) ((double) pcg_rand_uf (ZRYTHM->rand) * (double) RAND_MAX);
-          size_t j =
-            i + rnd / (RAND_MAX / (n - i) + 1);
+          size_t j = i + rnd / (RAND_MAX / (n - i) + 1);
 
           memcpy (tmp, arr + j * stride, size);
-          memcpy (
-            arr + j * stride, arr + i * stride,
-            size);
+          memcpy (arr + j * stride, arr + i * stride, size);
           memcpy (arr + i * stride, tmp, size);
         }
     }
@@ -307,9 +287,7 @@ cmp_float_func (const void * a, const void * b)
 void
 array_sort_float (float * array, int size)
 {
-  qsort (
-    array, (size_t) size, sizeof (long),
-    cmp_float_func);
+  qsort (array, (size_t) size, sizeof (long), cmp_float_func);
 }
 
 static int
@@ -321,9 +299,7 @@ cmp_long_func (const void * a, const void * b)
 void
 array_sort_long (long * array, int size)
 {
-  qsort (
-    array, (size_t) size, sizeof (long),
-    cmp_long_func);
+  qsort (array, (size_t) size, sizeof (long), cmp_long_func);
 }
 
 /**

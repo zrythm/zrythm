@@ -39,8 +39,7 @@ typedef struct AudioEngine        AudioEngine;
 #define TRANSPORT_IS_PAUSED \
   (TRANSPORT->play_state == PLAYSTATE_PAUSED)
 #define TRANSPORT_IS_LOOPING (TRANSPORT->loop)
-#define TRANSPORT_IS_RECORDING \
-  (TRANSPORT->recording)
+#define TRANSPORT_IS_RECORDING (TRANSPORT->recording)
 
 typedef enum PrerollCountBars
 {
@@ -58,8 +57,7 @@ static const char * preroll_count_bars_str[] = {
 };
 
 static inline const char *
-transport_preroll_count_to_str (
-  PrerollCountBars bars)
+transport_preroll_count_to_str (PrerollCountBars bars)
 {
   return preroll_count_bars_str[bars];
 }
@@ -502,9 +500,7 @@ transport_add_to_playhead (
  * @param with_wait Wait for lock before requesting.
  */
 void
-transport_request_pause (
-  Transport * self,
-  bool        with_wait);
+transport_request_pause (Transport * self, bool with_wait);
 
 /**
  * Request playback.
@@ -515,46 +511,34 @@ transport_request_pause (
  * @param with_wait Wait for lock before requesting.
  */
 void
-transport_request_roll (
-  Transport * self,
-  bool        with_wait);
+transport_request_roll (Transport * self, bool with_wait);
 
 /**
  * Setter for playhead Position.
  */
 void
-transport_set_playhead_pos (
-  Transport * self,
-  Position *  pos);
+transport_set_playhead_pos (Transport * self, Position * pos);
 
 void
-transport_set_playhead_to_bar (
-  Transport * self,
-  int         bar);
+transport_set_playhead_to_bar (Transport * self, int bar);
 
 /**
  * Getter for playhead Position.
  */
 void
-transport_get_playhead_pos (
-  Transport * self,
-  Position *  pos);
+transport_get_playhead_pos (Transport * self, Position * pos);
 
 /**
  * Move to the previous snap point on the timeline.
  */
 void
-transport_move_backward (
-  Transport * self,
-  bool        with_wait);
+transport_move_backward (Transport * self, bool with_wait);
 
 /**
  * Move to the next snap point on the timeline.
  */
 void
-transport_move_forward (
-  Transport * self,
-  bool        with_wait);
+transport_move_forward (Transport * self, bool with_wait);
 
 /**
  * Moves playhead to given pos.
@@ -654,9 +638,7 @@ transport_get_range_pos (
  * Sets if the project has range and updates UI.
  */
 void
-transport_set_has_range (
-  Transport * self,
-  bool        has_range);
+transport_set_has_range (Transport * self, bool has_range);
 
 /**
  * Set the range1 or range2 position.

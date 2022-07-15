@@ -30,8 +30,7 @@
 
 #include <gtk/gtk.h>
 
-#define TRACK_WIDGET_TYPE \
-  (track_widget_get_type ())
+#define TRACK_WIDGET_TYPE (track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TrackWidget,
   track_widget,
@@ -39,13 +38,12 @@ G_DECLARE_FINAL_TYPE (
   TRACK_WIDGET,
   GtkWidget)
 
-typedef struct _ArrangerWidget ArrangerWidget;
-typedef struct AutomationModeWidget
-  AutomationModeWidget;
-typedef struct CustomButtonWidget CustomButtonWidget;
-typedef struct _MeterWidget       MeterWidget;
-typedef struct Track              Track;
-typedef struct _TrackCanvasWidget TrackCanvasWidget;
+typedef struct _ArrangerWidget      ArrangerWidget;
+typedef struct AutomationModeWidget AutomationModeWidget;
+typedef struct CustomButtonWidget   CustomButtonWidget;
+typedef struct _MeterWidget         MeterWidget;
+typedef struct Track                Track;
+typedef struct _TrackCanvasWidget   TrackCanvasWidget;
 
 /**
  * @addtogroup widgets
@@ -62,12 +60,9 @@ typedef struct _TrackCanvasWidget TrackCanvasWidget;
  * buttons */
 #define TRACK_BUTTON_PADDING_FROM_EDGE 3
 
-#define TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE( \
-  height) \
+#define TRACK_BOT_BUTTONS_SHOULD_BE_VISIBLE(height) \
   (height \
-   >= (TRACK_BUTTON_SIZE \
-       + TRACK_BUTTON_PADDING_FROM_EDGE) \
-          * 2 \
+   >= (TRACK_BUTTON_SIZE + TRACK_BUTTON_PADDING_FROM_EDGE) * 2 \
         + TRACK_BUTTON_PADDING)
 
 #define TRACK_COLOR_AREA_WIDTH 18
@@ -78,24 +73,19 @@ typedef struct _TrackCanvasWidget TrackCanvasWidget;
 #define TRACK_ICON_NAME_MUTE "mute"
 #define TRACK_ICON_NAME_LISTEN "listen"
 #define TRACK_ICON_NAME_SHOW_UI "jam-icons-screen"
-#define TRACK_ICON_NAME_SHOW_AUTOMATION_LANES \
-  "node-type-cusp"
-#define TRACK_ICON_NAME_SHOW_TRACK_LANES \
-  "format-justify-fill"
+#define TRACK_ICON_NAME_SHOW_AUTOMATION_LANES "node-type-cusp"
+#define TRACK_ICON_NAME_SHOW_TRACK_LANES "format-justify-fill"
 #define TRACK_ICON_NAME_LOCK "document-decrypt"
-#define TRACK_ICON_NAME_FREEZE \
-  "fork-awesome-snowflake-o"
+#define TRACK_ICON_NAME_FREEZE "fork-awesome-snowflake-o"
 #define TRACK_ICON_NAME_PLUS "add"
 #define TRACK_ICON_NAME_MINUS "remove"
 #define TRACK_ICON_NAME_BUS "effect"
 #define TRACK_ICON_NAME_CHORDS "minuet-chords"
-#define TRACK_ICON_NAME_SHOW_MARKERS \
-  "kdenlive-show-markers"
+#define TRACK_ICON_NAME_SHOW_MARKERS "kdenlive-show-markers"
 #define TRACK_ICON_NAME_MIDI "instrument"
 #define TRACK_ICON_NAME_TEMPO "filename-bpm-amarok"
 #define TRACK_ICON_NAME_MODULATOR "modulator"
-#define TRACK_ICON_NAME_FOLD \
-  "fluentui-folder-regular"
+#define TRACK_ICON_NAME_FOLD "fluentui-folder-regular"
 #define TRACK_ICON_NAME_FOLD_OPEN \
   "fluentui-folder-open-regular"
 #define TRACK_ICON_NAME_MONITOR_AUDIO "audition"
@@ -292,8 +282,7 @@ typedef struct _TrackWidget
 } TrackWidget;
 
 const char *
-track_widget_highlight_to_str (
-  TrackWidgetHighlight highlight);
+track_widget_highlight_to_str (TrackWidgetHighlight highlight);
 
 /**
  * Sets up the track widget.
@@ -307,23 +296,19 @@ track_widget_new (Track * track);
  * Sets the Track name on the TrackWidget.
  */
 void
-track_widget_set_name (
-  TrackWidget * self,
-  const char *  name);
+track_widget_set_name (TrackWidget * self, const char * name);
 
 /**
  * Callback when automation button is toggled.
  */
 void
-track_widget_on_show_automation_toggled (
-  TrackWidget * self);
+track_widget_on_show_automation_toggled (TrackWidget * self);
 
 /**
  * Callback when automation button is toggled.
  */
 void
-track_widget_on_show_lanes_toggled (
-  TrackWidget * self);
+track_widget_on_show_lanes_toggled (TrackWidget * self);
 
 /**
  * Callback when record button is toggled.
@@ -360,9 +345,7 @@ track_widget_update_size (TrackWidget * self);
  * relative to @ref self.
  */
 TrackWidgetHighlight
-track_widget_get_highlight_location (
-  TrackWidget * self,
-  int           y);
+track_widget_get_highlight_location (TrackWidget * self, int y);
 
 /**
  * Highlights/unhighlights the Tracks
@@ -398,8 +381,7 @@ track_widget_redraw_meters (TrackWidget * self);
  * Re-fills TrackWidget.group_colors_box.
  */
 void
-track_widget_recreate_group_colors (
-  TrackWidget * self);
+track_widget_recreate_group_colors (TrackWidget * self);
 
 CustomButtonWidget *
 track_widget_get_hovered_button (

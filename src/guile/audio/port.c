@@ -69,13 +69,11 @@ init_module (void * data)
 #  include "audio_port.x"
 #endif
   scm_c_export (
-    "port-get-identifier", "stereo-ports-get-port",
-    NULL);
+    "port-get-identifier", "stereo-ports-get-port", NULL);
 }
 
 void
 guile_audio_port_define_module (void)
 {
-  scm_c_define_module (
-    "audio port", init_module, NULL);
+  scm_c_define_module ("audio port", init_module, NULL);
 }

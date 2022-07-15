@@ -17,11 +17,10 @@
 #include "audio/region_identifier.h"
 #include "utils/yaml.h"
 
-typedef struct ArrangerObject     ArrangerObject;
-typedef struct ArrangerSelections ArrangerSelections;
-typedef struct _ArrangerWidget    ArrangerWidget;
-typedef struct _ArrangerObjectWidget
-  ArrangerObjectWidget;
+typedef struct ArrangerObject        ArrangerObject;
+typedef struct ArrangerSelections    ArrangerSelections;
+typedef struct _ArrangerWidget       ArrangerWidget;
+typedef struct _ArrangerObjectWidget ArrangerObjectWidget;
 typedef enum ArrangerSelectionsActionEditType
   ArrangerSelectionsActionEditType;
 
@@ -35,8 +34,7 @@ typedef enum ArrangerSelectionsActionEditType
 
 #define ARRANGER_OBJECT_MAGIC 347616554
 #define IS_ARRANGER_OBJECT(tr) \
-  (((ArrangerObject *) tr)->magic \
-     == ARRANGER_OBJECT_MAGIC \
+  (((ArrangerObject *) tr)->magic == ARRANGER_OBJECT_MAGIC \
    && ((ArrangerObject *) tr)->type \
         >= ARRANGER_OBJECT_TYPE_REGION \
    && ((ArrangerObject *) tr)->type \
@@ -81,22 +79,17 @@ typedef enum ArrangerObjectType
   ARRANGER_OBJECT_TYPE_VELOCITY,
 } ArrangerObjectType;
 
-static const cyaml_strval_t
-  arranger_object_type_strings[] = {
-    {__ ("None"),              ARRANGER_OBJECT_TYPE_NONE  },
-    { __ ("All"),              ARRANGER_OBJECT_TYPE_ALL   },
-    { __ ("Region"),           ARRANGER_OBJECT_TYPE_REGION},
-    { __ ("Midi Note"),
-     ARRANGER_OBJECT_TYPE_MIDI_NOTE                       },
-    { __ ("Chord Object"),
-     ARRANGER_OBJECT_TYPE_CHORD_OBJECT                    },
-    { __ ("Scale Object"),
-     ARRANGER_OBJECT_TYPE_SCALE_OBJECT                    },
-    { __ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER},
-    { __ ("Automation Point"),
-     ARRANGER_OBJECT_TYPE_AUTOMATION_POINT                },
-    { __ ("Velocity"),
-     ARRANGER_OBJECT_TYPE_VELOCITY                        },
+static const cyaml_strval_t arranger_object_type_strings[] = {
+  {__ ("None"),              ARRANGER_OBJECT_TYPE_NONE        },
+  { __ ("All"),              ARRANGER_OBJECT_TYPE_ALL         },
+  { __ ("Region"),           ARRANGER_OBJECT_TYPE_REGION      },
+  { __ ("Midi Note"),        ARRANGER_OBJECT_TYPE_MIDI_NOTE   },
+  { __ ("Chord Object"),     ARRANGER_OBJECT_TYPE_CHORD_OBJECT},
+  { __ ("Scale Object"),     ARRANGER_OBJECT_TYPE_SCALE_OBJECT},
+  { __ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER      },
+  { __ ("Automation Point"),
+   ARRANGER_OBJECT_TYPE_AUTOMATION_POINT                      },
+  { __ ("Velocity"),         ARRANGER_OBJECT_TYPE_VELOCITY    },
 };
 
 /**
@@ -111,9 +104,8 @@ typedef enum ArrangerObjectFlags
 
 } ArrangerObjectFlags;
 
-static const cyaml_bitdef_t
-  arranger_object_flags_bitvals[] = {
-    {.name = "non_project", .offset = 0, .bits = 1},
+static const cyaml_bitdef_t arranger_object_flags_bitvals[] = {
+  {.name = "non_project", .offset = 0, .bits = 1},
 };
 
 typedef enum ArrangerObjectPositionType
@@ -367,13 +359,12 @@ static const cyaml_schema_field_t arranger_object_fields_schema[] = {
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-  arranger_object_schema = {
-    CYAML_VALUE_MAPPING (
-      CYAML_FLAG_POINTER,
-      ArrangerObject,
-      arranger_object_fields_schema),
-  };
+static const cyaml_schema_value_t arranger_object_schema = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    ArrangerObject,
+    arranger_object_fields_schema),
+};
 
 /**
  * Returns if the object type has a length.
@@ -399,8 +390,7 @@ static const cyaml_schema_value_t
  */
 #define arranger_object_can_have_lanes(_obj) \
   ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION \
-   && region_type_has_lane ( \
-     ((ZRegion *) _obj)->id.type))
+   && region_type_has_lane (((ZRegion *) _obj)->id.type))
 
 /** Returns if the object can loop. */
 #define arranger_object_type_can_loop(type) \
@@ -408,27 +398,22 @@ static const cyaml_schema_value_t
 
 #define arranger_object_can_fade(_obj) \
   ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION \
-   && region_type_can_fade ( \
-     ((ZRegion *) _obj)->id.type))
+   && region_type_can_fade (((ZRegion *) _obj)->id.type))
 
 #define arranger_object_can_mute(_obj) \
   ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION \
-   || (_obj)->type \
-        == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+   || (_obj)->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
 
 #define arranger_object_owned_by_region(_obj) \
   ((_obj)->type == ARRANGER_OBJECT_TYPE_VELOCITY \
    || (_obj)->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE \
-   || (_obj)->type \
-        == ARRANGER_OBJECT_TYPE_CHORD_OBJECT \
-   || (_obj)->type \
-        == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
+   || (_obj)->type == ARRANGER_OBJECT_TYPE_CHORD_OBJECT \
+   || (_obj)->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
 
 /** Whether or not this object supports cached
  * drawing.
  * FIXME off for now. */
-#define arranger_object_can_cache_drawing(_obj) \
-  (false)
+#define arranger_object_can_cache_drawing(_obj) (false)
 
 #if 0
   ((_obj)->type == ARRANGER_OBJECT_TYPE_REGION && \
@@ -440,8 +425,7 @@ static const cyaml_schema_value_t
  * Gets the arranger for this arranger object.
  */
 ArrangerWidget *
-arranger_object_get_arranger (
-  const ArrangerObject * self);
+arranger_object_get_arranger (const ArrangerObject * self);
 
 /**
  * Sets the magic on the arranger object.
@@ -454,16 +438,14 @@ arranger_object_set_magic (ArrangerObject * self);
  * otherwise returns NULL.
  */
 HOT ZRegion *
-arranger_object_get_region (
-  const ArrangerObject * const self);
+arranger_object_get_region (const ArrangerObject * const self);
 
 /**
  * Returns a pointer to the name of the object,
  * if the object can have names.
  */
 const char *
-arranger_object_get_name (
-  const ArrangerObject * self);
+arranger_object_get_name (const ArrangerObject * self);
 
 /**
  * Generates a human readable name for the object.
@@ -483,8 +465,7 @@ arranger_object_gen_human_readable_name (
  * where applicable.
  */
 void
-arranger_object_gen_escaped_name (
-  const ArrangerObject * self);
+arranger_object_gen_escaped_name (const ArrangerObject * self);
 
 /**
  * Sets the dest object's values to the main
@@ -667,8 +648,7 @@ arranger_object_get_position_from_type (
  * arranger.
  */
 void
-arranger_object_edit_begin (
-  const ArrangerObject * self);
+arranger_object_edit_begin (const ArrangerObject * self);
 
 /**
  * Callback when finishing editing the object.
@@ -771,8 +751,7 @@ arranger_object_set_position (
  * Returns the type as a string.
  */
 const char *
-arranger_object_stringize_type (
-  ArrangerObjectType type);
+arranger_object_stringize_type (ArrangerObjectType type);
 
 /**
  * Copies the identifier from src to dest.
@@ -814,8 +793,7 @@ arranger_object_get_length_in_ticks (
   const ArrangerObject * const self)
 {
   g_return_val_if_fail (
-    arranger_object_type_has_length (self->type),
-    0);
+    arranger_object_type_has_length (self->type), 0);
 
   return self->end_pos.ticks - self->pos.ticks;
 }
@@ -833,8 +811,7 @@ arranger_object_get_length_in_frames (
   const ArrangerObject * const self)
 {
   g_return_val_if_fail (
-    arranger_object_type_has_length (self->type),
-    0);
+    arranger_object_type_has_length (self->type), 0);
 
   return self->end_pos.frames - self->pos.frames;
 }
@@ -848,11 +825,9 @@ arranger_object_get_loop_length_in_ticks (
   const ArrangerObject * const self)
 {
   g_return_val_if_fail (
-    arranger_object_type_has_length (self->type),
-    0);
+    arranger_object_type_has_length (self->type), 0);
 
-  return self->loop_end_pos.ticks
-         - self->loop_start_pos.ticks;
+  return self->loop_end_pos.ticks - self->loop_start_pos.ticks;
 }
 
 /**
@@ -864,11 +839,9 @@ arranger_object_get_loop_length_in_frames (
   const ArrangerObject * const self)
 {
   g_return_val_if_fail (
-    arranger_object_type_has_length (self->type),
-    0);
+    arranger_object_type_has_length (self->type), 0);
 
-  return self->loop_end_pos.frames
-         - self->loop_start_pos.frames;
+  return self->loop_end_pos.frames - self->loop_start_pos.frames;
 }
 
 /**
@@ -952,19 +925,16 @@ arranger_object_add_ticks_to_children (
  * Returns the Track this ArrangerObject is in.
  */
 HOT Track *
-arranger_object_get_track (
-  const ArrangerObject * const self);
+arranger_object_get_track (const ArrangerObject * const self);
 
 static inline const char *
-arranger_object_get_type_as_string (
-  ArrangerObjectType type)
+arranger_object_get_type_as_string (ArrangerObjectType type)
 {
   return arranger_object_type_strings[type].str;
 }
 
 void
-arranger_object_post_deserialize (
-  ArrangerObject * self);
+arranger_object_post_deserialize (ArrangerObject * self);
 
 /**
  * Validates the arranger object.
@@ -972,8 +942,7 @@ arranger_object_post_deserialize (
  * @return True if valid.
  */
 bool
-arranger_object_validate (
-  const ArrangerObject * const self);
+arranger_object_validate (const ArrangerObject * const self);
 
 /**
  * Validates the given name.
@@ -1109,16 +1078,14 @@ arranger_object_add_to_project (
  * This is mostly used when undoing.
  */
 void
-arranger_object_insert_to_project (
-  ArrangerObject * obj);
+arranger_object_insert_to_project (ArrangerObject * obj);
 
 /**
  * Removes the object from its parent in the
  * project.
  */
 void
-arranger_object_remove_from_project (
-  ArrangerObject * obj);
+arranger_object_remove_from_project (ArrangerObject * obj);
 
 /**
  * Returns whether the arranger object is part of

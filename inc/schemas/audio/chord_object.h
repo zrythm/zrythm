@@ -42,24 +42,20 @@ typedef struct ChordObject_v1
   void *            layout;
 } ChordObject_v1;
 
-static const cyaml_schema_field_t
-  chord_object_fields_schema_v1[] = {
-    YAML_FIELD_MAPPING_EMBEDDED (
-      ChordObject_v1,
-      base,
-      arranger_object_fields_schema_v1),
-    YAML_FIELD_INT (ChordObject_v1, schema_version),
-    YAML_FIELD_INT (ChordObject_v1, index),
-    YAML_FIELD_INT (ChordObject_v1, chord_index),
+static const cyaml_schema_field_t chord_object_fields_schema_v1[] = {
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ChordObject_v1,
+    base,
+    arranger_object_fields_schema_v1),
+  YAML_FIELD_INT (ChordObject_v1, schema_version),
+  YAML_FIELD_INT (ChordObject_v1, index),
+  YAML_FIELD_INT (ChordObject_v1, chord_index),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  chord_object_schema_v1 = {
-    YAML_VALUE_PTR (
-      ChordObject_v1,
-      chord_object_fields_schema_v1),
-  };
+static const cyaml_schema_value_t chord_object_schema_v1 = {
+  YAML_VALUE_PTR (ChordObject_v1, chord_object_fields_schema_v1),
+};
 
 #endif

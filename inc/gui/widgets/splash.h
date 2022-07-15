@@ -58,8 +58,7 @@ SplashWindowWidget *
 splash_window_widget_new (ZrythmApp * app);
 
 void
-splash_window_widget_close (
-  SplashWindowWidget * self);
+splash_window_widget_close (SplashWindowWidget * self);
 
 /**
  * @}

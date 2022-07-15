@@ -58,8 +58,7 @@ marker_track_default (int track_pos)
   Marker * marker;
   Position pos;
   marker = marker_new (_ ("start"));
-  ArrangerObject * m_obj =
-    (ArrangerObject *) marker;
+  ArrangerObject * m_obj = (ArrangerObject *) marker;
   position_set_to_bar (&pos, 1);
   arranger_object_pos_setter (m_obj, &pos);
   marker->type = MARKER_TYPE_START;
@@ -88,8 +87,7 @@ marker_track_default (int track_pos)
 Marker *
 marker_track_get_start_marker (const Track * self)
 {
-  g_return_val_if_fail (
-    self->type == TRACK_TYPE_MARKER, NULL);
+  g_return_val_if_fail (self->type == TRACK_TYPE_MARKER, NULL);
 
   Marker * marker;
   for (int i = 0; i < self->num_markers; i++)
@@ -111,8 +109,7 @@ marker_track_get_start_marker (const Track * self)
 Marker *
 marker_track_get_end_marker (const Track * self)
 {
-  g_return_val_if_fail (
-    self->type == TRACK_TYPE_MARKER, NULL);
+  g_return_val_if_fail (self->type == TRACK_TYPE_MARKER, NULL);
 
   Marker * marker;
   for (int i = 0; i < self->num_markers; i++)
@@ -137,16 +134,14 @@ marker_track_insert_marker (
   Marker *      marker,
   int           pos)
 {
-  g_return_if_fail (
-    self->type == TRACK_TYPE_MARKER && marker);
+  g_return_if_fail (self->type == TRACK_TYPE_MARKER && marker);
 
   marker_set_track_name_hash (
     marker, track_get_name_hash (self));
   array_double_size_if_full (
-    self->markers, self->num_markers,
-    self->markers_size, Marker *);
-  array_insert (
-    self->markers, self->num_markers, pos, marker);
+    self->markers, self->num_markers, self->markers_size,
+    Marker *);
+  array_insert (self->markers, self->num_markers, pos, marker);
 
   for (int i = pos; i < self->num_markers; i++)
     {
@@ -163,12 +158,9 @@ marker_track_insert_marker (
  * Adds a marker to the track.
  */
 void
-marker_track_add_marker (
-  MarkerTrack * self,
-  Marker *      marker)
+marker_track_add_marker (MarkerTrack * self, Marker * marker)
 {
-  marker_track_insert_marker (
-    self, marker, self->num_markers);
+  marker_track_insert_marker (self, marker, self->num_markers);
 }
 
 /**
@@ -230,6 +222,5 @@ marker_track_remove_marker (
     free_later (marker, arranger_object_free);
 
   EVENTS_PUSH (
-    ET_ARRANGER_OBJECT_REMOVED,
-    ARRANGER_OBJECT_TYPE_MARKER);
+    ET_ARRANGER_OBJECT_REMOVED, ARRANGER_OBJECT_TYPE_MARKER);
 }

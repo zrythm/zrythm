@@ -68,10 +68,9 @@ typedef struct CarlaPatchbayPortInfo
 typedef struct CarlaNativePlugin
 {
 #  ifdef HAVE_CARLA
-  NativePluginHandle   native_plugin_handle;
-  NativeHostDescriptor native_host_descriptor;
-  const NativePluginDescriptor *
-    native_plugin_descriptor;
+  NativePluginHandle             native_plugin_handle;
+  NativeHostDescriptor           native_host_descriptor;
+  const NativePluginDescriptor * native_plugin_descriptor;
 
   CarlaHostHandle host_handle;
 
@@ -143,8 +142,7 @@ typedef struct CarlaNativePlugin
 
 NONNULL
 void
-carla_native_plugin_init_loaded (
-  CarlaNativePlugin * self);
+carla_native_plugin_init_loaded (CarlaNativePlugin * self);
 
 /**
  * Creates an instance of a CarlaNativePlugin inside
@@ -203,8 +201,7 @@ carla_native_plugin_load_state (
 
 NONNULL
 void
-carla_native_plugin_populate_banks (
-  CarlaNativePlugin * self);
+carla_native_plugin_populate_banks (CarlaNativePlugin * self);
 
 NONNULL
 void
@@ -298,8 +295,7 @@ carla_native_plugin_activate (
 
 NONNULL
 void
-carla_native_plugin_close (
-  CarlaNativePlugin * self);
+carla_native_plugin_close (CarlaNativePlugin * self);
 
 bool
 carla_native_plugin_has_custom_ui (
@@ -310,8 +306,7 @@ carla_native_plugin_has_custom_ui (
  */
 NONNULL
 nframes_t
-carla_native_plugin_get_latency (
-  CarlaNativePlugin * self);
+carla_native_plugin_get_latency (CarlaNativePlugin * self);
 
 /**
  * Deactivates, cleanups and frees the instance.

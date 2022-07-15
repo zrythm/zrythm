@@ -28,10 +28,7 @@
 #include "project.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (
-  SnapBoxWidget,
-  snap_box_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (SnapBoxWidget, snap_box_widget, GTK_TYPE_BOX)
 
 /**
  * Sets the snap_box toggled states after
@@ -49,25 +46,21 @@ snap_box_widget_refresh (SnapBoxWidget * self)
     self->snap_grid->snap_grid->snap_to_grid);
   gtk_toggle_button_set_active (
     self->snap_to_grid_keep_offset,
-    self->snap_grid->snap_grid
-      ->snap_to_grid_keep_offset);
+    self->snap_grid->snap_grid->snap_to_grid_keep_offset);
   gtk_toggle_button_set_active (
     self->snap_to_events,
     self->snap_grid->snap_grid->snap_to_events);
 }
 
 void
-snap_box_widget_setup (
-  SnapBoxWidget * self,
-  SnapGrid *      sg)
+snap_box_widget_setup (SnapBoxWidget * self, SnapGrid * sg)
 {
   snap_grid_widget_setup (self->snap_grid, sg);
 
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->snap_to_grid), NULL);
   gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (self->snap_to_grid_keep_offset),
-    NULL);
+    GTK_ACTIONABLE (self->snap_to_grid_keep_offset), NULL);
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->snap_to_events), NULL);
 
@@ -86,24 +79,20 @@ snap_box_widget_setup (
   snap_box_widget_refresh (self);
 
   gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (self->snap_to_grid),
-    "app.snap-to-grid");
+    GTK_ACTIONABLE (self->snap_to_grid), "app.snap-to-grid");
   gtk_actionable_set_action_name (
     GTK_ACTIONABLE (self->snap_to_grid_keep_offset),
     "app.snap-keep-offset");
   gtk_actionable_set_action_name (
-    GTK_ACTIONABLE (self->snap_to_events),
-    "app.snap-events");
+    GTK_ACTIONABLE (self->snap_to_events), "app.snap-events");
 
   if (sg == SNAP_GRID_TIMELINE)
     {
       gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (self->snap_to_grid), "s",
-        "timeline");
+        GTK_ACTIONABLE (self->snap_to_grid), "s", "timeline");
       gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (
-          self->snap_to_grid_keep_offset),
-        "s", "timeline");
+        GTK_ACTIONABLE (self->snap_to_grid_keep_offset), "s",
+        "timeline");
       gtk_actionable_set_action_target (
         GTK_ACTIONABLE (self->snap_to_events), "s",
         "timeline");
@@ -111,28 +100,22 @@ snap_box_widget_setup (
   else if (sg == SNAP_GRID_EDITOR)
     {
       gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (self->snap_to_grid), "s",
+        GTK_ACTIONABLE (self->snap_to_grid), "s", "editor");
+      gtk_actionable_set_action_target (
+        GTK_ACTIONABLE (self->snap_to_grid_keep_offset), "s",
         "editor");
       gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (
-          self->snap_to_grid_keep_offset),
-        "s", "editor");
-      gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (self->snap_to_events), "s",
-        "editor");
+        GTK_ACTIONABLE (self->snap_to_events), "s", "editor");
     }
 
   snap_box_widget_refresh (self);
 }
 
 static void
-snap_box_widget_class_init (
-  SnapBoxWidgetClass * _klass)
+snap_box_widget_class_init (SnapBoxWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "snap_box.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "snap_box.ui");
   gtk_widget_class_set_css_name (klass, "snap-box");
 
 #define BIND_CHILD(x) \

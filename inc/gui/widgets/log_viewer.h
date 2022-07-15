@@ -31,13 +31,11 @@
 #include <gtk/gtk.h>
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored \
-  "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <gtksourceview/gtksource.h>
 #pragma GCC diagnostic pop
 
-#define LOG_VIEWER_WIDGET_TYPE \
-  (log_viewer_widget_get_type ())
+#define LOG_VIEWER_WIDGET_TYPE (log_viewer_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   LogViewerWidget,
   log_viewer_widget,

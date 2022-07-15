@@ -43,16 +43,14 @@ typedef enum GuileScriptLanguage
 } GuileScriptLanguage;
 
 const char *
-guile_get_script_language_str (
-  GuileScriptLanguage lang);
+guile_get_script_language_str (GuileScriptLanguage lang);
 
 const char *
 guile_get_script_language_canonical_str (
   GuileScriptLanguage lang);
 
 GuileScriptLanguage
-guile_get_script_language_from_str (
-  const char * str);
+guile_get_script_language_from_str (const char * str);
 
 /**
  * Inits the guile subsystem.

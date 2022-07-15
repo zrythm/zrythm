@@ -31,8 +31,7 @@ channel_sends_expander_widget_refresh (
 {
   for (int i = 0; i < STRIP_SIZE; i++)
     {
-      gtk_widget_queue_draw (
-        GTK_WIDGET (self->slots[i]));
+      gtk_widget_queue_draw (GTK_WIDGET (self->slots[i]));
     }
 }
 
@@ -71,13 +70,11 @@ channel_sends_expander_widget_setup (
         {
         case TYPE_AUDIO:
           expander_box_widget_set_icon_name (
-            Z_EXPANDER_BOX_WIDGET (self),
-            "audio-send");
+            Z_EXPANDER_BOX_WIDGET (self), "audio-send");
           break;
         case TYPE_EVENT:
           expander_box_widget_set_icon_name (
-            Z_EXPANDER_BOX_WIDGET (self),
-            "midi-send");
+            Z_EXPANDER_BOX_WIDGET (self), "midi-send");
           break;
         default:
           break;
@@ -96,8 +93,8 @@ channel_sends_expander_widget_setup (
       g_return_if_fail (ch);
       for (int i = 0; i < STRIP_SIZE; i++)
         {
-          GtkBox * strip_box = GTK_BOX (gtk_box_new (
-            GTK_ORIENTATION_HORIZONTAL, 0));
+          GtkBox * strip_box = GTK_BOX (
+            gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
           gtk_widget_set_name (
             GTK_WIDGET (strip_box),
             "channel-sends-expander-strip-box");
@@ -105,11 +102,9 @@ channel_sends_expander_widget_setup (
           ChannelSendWidget * csw =
             channel_send_widget_new (ch->sends[i]);
           self->slots[i] = csw;
-          gtk_box_append (
-            strip_box, GTK_WIDGET (csw));
+          gtk_box_append (strip_box, GTK_WIDGET (csw));
 
-          gtk_box_append (
-            self->box, GTK_WIDGET (strip_box));
+          gtk_box_append (self->box, GTK_WIDGET (strip_box));
         }
     }
 
@@ -127,8 +122,7 @@ channel_sends_expander_widget_setup (
         GTK_WIDGET (self->scroll), -1, 68);
       expander_box_widget_set_reveal_callback (
         Z_EXPANDER_BOX_WIDGET (self),
-        (ExpanderBoxRevealFunc) on_reveal_changed,
-        self);
+        (ExpanderBoxRevealFunc) on_reveal_changed, self);
       break;
     }
 
@@ -145,18 +139,16 @@ static void
 channel_sends_expander_widget_init (
   ChannelSendsExpanderWidget * self)
 {
-  self->scroll = GTK_SCROLLED_WINDOW (
-    gtk_scrolled_window_new ());
+  self->scroll =
+    GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
   gtk_widget_set_name (
     GTK_WIDGET (self->scroll),
     "channel-sends-expander-scroll");
-  gtk_widget_set_vexpand (
-    GTK_WIDGET (self->scroll), true);
+  gtk_widget_set_vexpand (GTK_WIDGET (self->scroll), true);
 
   self->viewport =
     GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
-  gtk_viewport_set_scroll_to_focus (
-    self->viewport, false);
+  gtk_viewport_set_scroll_to_focus (self->viewport, false);
   gtk_widget_set_name (
     GTK_WIDGET (self->viewport),
     "channel-sends-expander-viewport");
@@ -164,16 +156,13 @@ channel_sends_expander_widget_init (
     GTK_SCROLLED_WINDOW (self->scroll),
     GTK_WIDGET (self->viewport));
 
-  self->box = GTK_BOX (
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->box =
+    GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_widget_set_name (
-    GTK_WIDGET (self->box),
-    "channel-sends-expander-box");
+    GTK_WIDGET (self->box), "channel-sends-expander-box");
   gtk_viewport_set_child (
-    GTK_VIEWPORT (self->viewport),
-    GTK_WIDGET (self->box));
+    GTK_VIEWPORT (self->viewport), GTK_WIDGET (self->box));
 
   expander_box_widget_add_content (
-    Z_EXPANDER_BOX_WIDGET (self),
-    GTK_WIDGET (self->scroll));
+    Z_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (self->scroll));
 }

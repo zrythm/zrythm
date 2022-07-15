@@ -39,10 +39,8 @@ typedef struct Track Track;
 
 #define MODULATOR_MACRO_PROCESSOR_SCHEMA_VERSION 1
 
-#define modulator_macro_processor_is_in_active_project( \
-  self) \
-  (self->track \
-   && track_is_in_active_project (self->track))
+#define modulator_macro_processor_is_in_active_project(self) \
+  (self->track && track_is_in_active_project (self->track))
 
 /**
  * Modulator macro button processor.
@@ -85,12 +83,8 @@ typedef struct ModulatorMacroProcessor
 
 static const cyaml_schema_field_t
   modulator_macro_processor_fields_schema[] = {
-    YAML_FIELD_INT (
-      ModulatorMacroProcessor,
-      schema_version),
-    YAML_FIELD_STRING_PTR (
-      ModulatorMacroProcessor,
-      name),
+    YAML_FIELD_INT (ModulatorMacroProcessor, schema_version),
+    YAML_FIELD_STRING_PTR (ModulatorMacroProcessor, name),
     YAML_FIELD_MAPPING_PTR (
       ModulatorMacroProcessor,
       cv_in,
@@ -144,9 +138,7 @@ modulator_macro_processor_process (
   const EngineProcessTimeInfo * const time_nfo);
 
 ModulatorMacroProcessor *
-modulator_macro_processor_new (
-  Track * track,
-  int     idx);
+modulator_macro_processor_new (Track * track, int idx);
 
 void
 modulator_macro_processor_free (

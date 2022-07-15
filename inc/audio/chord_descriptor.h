@@ -188,45 +188,37 @@ typedef struct ChordDescriptor
   int inversion;
 } ChordDescriptor;
 
-static const cyaml_schema_field_t
-  chord_descriptor_fields_schema[] = {
-    YAML_FIELD_INT (ChordDescriptor, schema_version),
-    YAML_FIELD_INT (ChordDescriptor, has_bass),
-    YAML_FIELD_ENUM (
-      ChordDescriptor,
-      root_note,
-      musical_note_strings),
-    YAML_FIELD_ENUM (
-      ChordDescriptor,
-      bass_note,
-      musical_note_strings),
-    YAML_FIELD_ENUM (
-      ChordDescriptor,
-      type,
-      chord_type_strings),
-    YAML_FIELD_ENUM (
-      ChordDescriptor,
-      accent,
-      chord_accent_strings),
-    CYAML_FIELD_SEQUENCE_FIXED (
-      "notes",
-      CYAML_FLAG_OPTIONAL,
-      ChordDescriptor,
-      notes,
-      &int_schema,
-      36),
-    YAML_FIELD_INT (ChordDescriptor, inversion),
+static const cyaml_schema_field_t chord_descriptor_fields_schema[] = {
+  YAML_FIELD_INT (ChordDescriptor, schema_version),
+  YAML_FIELD_INT (ChordDescriptor, has_bass),
+  YAML_FIELD_ENUM (
+    ChordDescriptor,
+    root_note,
+    musical_note_strings),
+  YAML_FIELD_ENUM (
+    ChordDescriptor,
+    bass_note,
+    musical_note_strings),
+  YAML_FIELD_ENUM (ChordDescriptor, type, chord_type_strings),
+  YAML_FIELD_ENUM (ChordDescriptor, accent, chord_accent_strings),
+  CYAML_FIELD_SEQUENCE_FIXED (
+    "notes",
+    CYAML_FLAG_OPTIONAL,
+    ChordDescriptor,
+    notes,
+    &int_schema,
+    36),
+  YAML_FIELD_INT (ChordDescriptor, inversion),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  chord_descriptor_schema = {
-    CYAML_VALUE_MAPPING (
-      CYAML_FLAG_POINTER,
-      ChordDescriptor,
-      chord_descriptor_fields_schema),
-  };
+static const cyaml_schema_value_t chord_descriptor_schema = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    ChordDescriptor,
+    chord_descriptor_fields_schema),
+};
 
 /**
  * Creates a ChordDescriptor.
@@ -277,9 +269,7 @@ chord_descriptor_get_min_inversion (
 }
 
 static inline int
-chord_descriptor_are_notes_equal (
-  int * notes_a,
-  int * notes_b)
+chord_descriptor_are_notes_equal (int * notes_a, int * notes_b)
 {
   /* 36 notes in Chord */
   for (int i = 0; i < 36; i++)
@@ -295,12 +285,9 @@ chord_descriptor_is_equal (
   ChordDescriptor * a,
   ChordDescriptor * b)
 {
-  return a->has_bass == b->has_bass
-         && a->root_note == b->root_note
-         && a->bass_note == b->bass_note
-         && a->type == b->type
-         && chord_descriptor_are_notes_equal (
-           a->notes, b->notes)
+  return a->has_bass == b->has_bass && a->root_note == b->root_note
+         && a->bass_note == b->bass_note && a->type == b->type
+         && chord_descriptor_are_notes_equal (a->notes, b->notes)
          && a->inversion == b->inversion;
 }
 
@@ -330,8 +317,7 @@ chord_descriptor_is_key_bass (
  * Clones the given ChordDescriptor.
  */
 ChordDescriptor *
-chord_descriptor_clone (
-  const ChordDescriptor * src);
+chord_descriptor_clone (const ChordDescriptor * src);
 
 void
 chord_descriptor_copy (
@@ -342,15 +328,13 @@ chord_descriptor_copy (
  * Returns the chord type as a string (eg. "aug").
  */
 const char *
-chord_descriptor_chord_type_to_string (
-  ChordType type);
+chord_descriptor_chord_type_to_string (ChordType type);
 
 /**
  * Returns the chord accent as a string (eg. "j7").
  */
 const char *
-chord_descriptor_chord_accent_to_string (
-  ChordAccent accent);
+chord_descriptor_chord_accent_to_string (ChordAccent accent);
 
 /**
  * Returns the musical note as a string (eg. "C3").
@@ -364,8 +348,7 @@ chord_descriptor_note_to_string (MusicalNote note);
  * MUST be free'd by caller.
  */
 char *
-chord_descriptor_to_new_string (
-  const ChordDescriptor * chord);
+chord_descriptor_to_new_string (const ChordDescriptor * chord);
 
 /**
  * Returns the chord in human readable string.
@@ -382,8 +365,7 @@ chord_descriptor_to_string (
  */
 NONNULL
 void
-chord_descriptor_update_notes (
-  ChordDescriptor * self);
+chord_descriptor_update_notes (ChordDescriptor * self);
 
 /**
  * Frees the ChordDescriptor.

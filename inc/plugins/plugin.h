@@ -57,10 +57,8 @@ typedef struct _WrappedObjectWithChangeSignal
 #define PLUGIN_SCHEMA_VERSION 1
 
 #define PLUGIN_MAGIC 43198683
-#define IS_PLUGIN(x) \
-  (((Plugin *) x)->magic == PLUGIN_MAGIC)
-#define IS_PLUGIN_AND_NONNULL(x) \
-  (x && IS_PLUGIN (x))
+#define IS_PLUGIN(x) (((Plugin *) x)->magic == PLUGIN_MAGIC)
+#define IS_PLUGIN_AND_NONNULL(x) (x && IS_PLUGIN (x))
 
 /**
  * Plugin UI refresh rate limits.
@@ -75,14 +73,12 @@ typedef struct _WrappedObjectWithChangeSignal
 #define PLUGIN_MAX_SCALE_FACTOR 4.f
 
 #define plugin_is_in_active_project(self) \
-  (self->track \
-   && track_is_in_active_project (self->track))
+  (self->track && track_is_in_active_project (self->track))
 
 /** Whether the plugin is used for MIDI
  * auditioning in SampleProcessor. */
 #define plugin_is_auditioner(self) \
-  (self->track \
-   && track_is_auditioner (self->track))
+  (self->track && track_is_auditioner (self->track))
 
 /**
  * The base plugin
@@ -428,10 +424,7 @@ plugin_validate (Plugin * self);
  * the log.
  */
 void
-plugin_print (
-  Plugin * self,
-  char *   buf,
-  size_t   buf_sz);
+plugin_print (Plugin * self, char * buf, size_t buf_sz);
 
 /**
  * Removes the automation tracks associated with
@@ -481,9 +474,7 @@ plugin_get_port_in_group (
  */
 NONNULL
 Port *
-plugin_get_port_in_same_group (
-  Plugin * self,
-  Port *   port);
+plugin_get_port_in_same_group (Plugin * self, Port * port);
 
 /**
  * Activates or deactivates the plugin.
@@ -538,9 +529,7 @@ plugin_move_automation (
 
 NONNULL
 void
-plugin_append_ports (
-  Plugin *    self,
-  GPtrArray * ports);
+plugin_append_ports (Plugin * self, GPtrArray * ports);
 
 /**
  * Exposes or unexposes plugin ports to the backend.
@@ -564,9 +553,7 @@ plugin_expose_ports (
  */
 NONNULL
 Port *
-plugin_get_port_by_symbol (
-  Plugin *     pl,
-  const char * sym);
+plugin_get_port_by_symbol (Plugin * pl, const char * sym);
 
 /**
  * Gets a port by its param URI.
@@ -575,9 +562,7 @@ plugin_get_port_by_symbol (
  */
 NONNULL
 Port *
-plugin_get_port_by_param_uri (
-  Plugin *     pl,
-  const char * uri);
+plugin_get_port_by_param_uri (Plugin * pl, const char * uri);
 
 /**
  * Returns the escaped name of the plugin.
@@ -613,18 +598,14 @@ plugin_copy_state_dir (
 NONNULL
 MALLOC
 char *
-plugin_get_abs_state_dir (
-  Plugin * self,
-  bool     is_backup);
+plugin_get_abs_state_dir (Plugin * self, bool is_backup);
 
 /**
  * Ensures the state dir exists or creates it.
  */
 NONNULL
 void
-plugin_ensure_state_dir (
-  Plugin * self,
-  bool     is_backup);
+plugin_ensure_state_dir (Plugin * self, bool is_backup);
 
 /**
  * Returns all plugins in the current project.
@@ -743,10 +724,7 @@ plugin_is_selected (Plugin * pl);
  */
 NONNULL
 void
-plugin_select (
-  Plugin * self,
-  bool     select,
-  bool     exclusive);
+plugin_select (Plugin * self, bool select, bool exclusive);
 
 /**
  * Returns whether the plugin is enabled.
@@ -786,10 +764,7 @@ plugin_process_passthrough (
  */
 NONNULL
 int
-plugin_get_event_ports (
-  Plugin * pl,
-  Port **  ports,
-  int      input);
+plugin_get_event_ports (Plugin * pl, Port ** ports, int input);
 
 /**
  * Process hide ui
@@ -820,15 +795,11 @@ plugin_add_preset_to_bank (
 
 NONNULL
 void
-plugin_set_selected_bank_from_index (
-  Plugin * self,
-  int      idx);
+plugin_set_selected_bank_from_index (Plugin * self, int idx);
 
 NONNULL
 void
-plugin_set_selected_preset_from_index (
-  Plugin * self,
-  int      idx);
+plugin_set_selected_preset_from_index (Plugin * self, int idx);
 
 NONNULL
 void
@@ -853,9 +824,7 @@ plugin_set_caches (Plugin * self);
  */
 NONNULL
 void
-plugin_connect_to_plugin (
-  Plugin * src,
-  Plugin * dest);
+plugin_connect_to_plugin (Plugin * src, Plugin * dest);
 
 /**
  * Disconnect the automatic connections from the
@@ -864,9 +833,7 @@ plugin_connect_to_plugin (
  */
 NONNULL
 void
-plugin_disconnect_from_plugin (
-  Plugin * src,
-  Plugin * dest);
+plugin_disconnect_from_plugin (Plugin * src, Plugin * dest);
 
 /**
  * Connects the Plugin's output Port's to the
@@ -876,9 +843,7 @@ plugin_disconnect_from_plugin (
  */
 NONNULL
 void
-plugin_connect_to_prefader (
-  Plugin *  pl,
-  Channel * ch);
+plugin_connect_to_prefader (Plugin * pl, Channel * ch);
 
 /**
  * Disconnect the automatic connections from the
@@ -887,9 +852,7 @@ plugin_connect_to_prefader (
  */
 NONNULL
 void
-plugin_disconnect_from_prefader (
-  Plugin *  pl,
-  Channel * ch);
+plugin_disconnect_from_prefader (Plugin * pl, Channel * ch);
 
 /**
  * To be called immediately when a channel or plugin

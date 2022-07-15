@@ -62,33 +62,24 @@ on_motion (
         self->type == RULER_MARKER_TYPE_LOOP_START
         || self->type == RULER_MARKER_TYPE_CLIP_START)
         {
-          self->cursor_state =
-            UI_CURSOR_STATE_RESIZE_L;
-          ui_set_cursor_from_name (
-            widget, "w-resize");
+          self->cursor_state = UI_CURSOR_STATE_RESIZE_L;
+          ui_set_cursor_from_name (widget, "w-resize");
         }
       else if (self->type == RULER_MARKER_TYPE_LOOP_END)
         {
-          self->cursor_state =
-            UI_CURSOR_STATE_RESIZE_R;
-          ui_set_cursor_from_name (
-            widget, "e-resize");
+          self->cursor_state = UI_CURSOR_STATE_RESIZE_R;
+          ui_set_cursor_from_name (widget, "e-resize");
         }
       else
         {
-          self->cursor_state =
-            UI_CURSOR_STATE_DEFAULT;
+          self->cursor_state = UI_CURSOR_STATE_DEFAULT;
           if (
             rw_prv->action != UI_OVERLAY_ACTION_MOVING
-            && rw_prv->action
-                 != UI_OVERLAY_ACTION_STARTING_MOVING
-            && rw_prv->action
-                 != UI_OVERLAY_ACTION_RESIZING_L
-            && rw_prv->action
-                 != UI_OVERLAY_ACTION_RESIZING_R)
+            && rw_prv->action != UI_OVERLAY_ACTION_STARTING_MOVING
+            && rw_prv->action != UI_OVERLAY_ACTION_RESIZING_L
+            && rw_prv->action != UI_OVERLAY_ACTION_RESIZING_R)
             {
-              ui_set_cursor_from_name (
-                widget, "default");
+              ui_set_cursor_from_name (widget, "default");
             }
         }
       switch (self->type)
@@ -111,11 +102,9 @@ on_motion (
       if (
         rw_prv->action != UI_OVERLAY_ACTION_MOVING
         && rw_prv->action != UI_OVERLAY_ACTION_RESIZING_L
-        && rw_prv->action
-             != UI_OVERLAY_ACTION_RESIZING_R)
+        && rw_prv->action != UI_OVERLAY_ACTION_RESIZING_R)
         {
-          ui_set_cursor_from_name (
-            widget, "default");
+          ui_set_cursor_from_name (widget, "default");
         }
     }
 }
@@ -145,14 +134,12 @@ ruler_marker_widget_update_tooltip (
 
       if (set)
         {
-          gtk_label_set_text (
-            self->tooltip_label, tooltip);
+          gtk_label_set_text (self->tooltip_label, tooltip);
           gtk_window_present (self->tooltip_win);
         }
     }
   else
-    gtk_widget_hide (
-      GTK_WIDGET (self->tooltip_win));
+    gtk_widget_hide (GTK_WIDGET (self->tooltip_win));
 }
 
 RulerMarkerWidget *
@@ -192,12 +179,9 @@ ruler_marker_widget_init (RulerMarkerWidget * self)
   self->tooltip_win =
     GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));
   gtk_window_set_type_hint (
-    self->tooltip_win,
-    GDK_WINDOW_TYPE_HINT_TOOLTIP);
-  self->tooltip_label =
-    GTK_LABEL (gtk_label_new ("label"));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->tooltip_label), 1);
+    self->tooltip_win, GDK_WINDOW_TYPE_HINT_TOOLTIP);
+  self->tooltip_label = GTK_LABEL (gtk_label_new ("label"));
+  gtk_widget_set_visible (GTK_WIDGET (self->tooltip_label), 1);
   gtk_container_add (
     GTK_CONTAINER (self->tooltip_win),
     GTK_WIDGET (self->tooltip_label));
@@ -223,10 +207,8 @@ static void
 ruler_marker_widget_class_init (
   RulerMarkerWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "ruler-marker");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass, "ruler-marker");
 }
 
 /**

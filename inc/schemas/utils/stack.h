@@ -38,13 +38,12 @@ typedef struct Stack_v1
   volatile gint top;
 } Stack_v1_v1;
 
-static const cyaml_schema_field_t
-  stack_fields_schema_v1[] = {
-    YAML_FIELD_INT (Stack_v1, schema_version),
-    YAML_FIELD_INT (Stack_v1, max_length),
+static const cyaml_schema_field_t stack_fields_schema_v1[] = {
+  YAML_FIELD_INT (Stack_v1, schema_version),
+  YAML_FIELD_INT (Stack_v1, max_length),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t stack_schema = {
   YAML_VALUE_PTR (Stack_v1, stack_fields_schema_v1),

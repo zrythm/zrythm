@@ -48,19 +48,15 @@ typedef enum
   Z_UTILS_CURL_ERROR_NON_2XX_RESPONSE,
 } ZUtilsCurlError;
 
-#define Z_UTILS_CURL_ERROR \
-  z_utils_curl_error_quark ()
+#define Z_UTILS_CURL_ERROR z_utils_curl_error_quark ()
 GQuark
 z_utils_curl_error_quark (void);
 G_DEFINE_QUARK (
-  z-utils-curl-error-quark, z_utils_curl_error)
+  z - utils - curl - error - quark,
+  z_utils_curl_error)
 
 static size_t
-curl_to_string (
-  void * ptr,
-  size_t size,
-  size_t nmemb,
-  void * data)
+curl_to_string (void * ptr, size_t size, size_t nmemb, void * data)
 {
   if (size * nmemb == 0)
     return 0;
@@ -82,9 +78,7 @@ curl_to_string (
  * @return Newly allocated string or NULL if fail.
  */
 char *
-z_curl_get_page_contents (
-  const char * url,
-  int          timeout)
+z_curl_get_page_contents (const char * url, int timeout)
 {
   g_debug ("getting page contents for %s...", url);
 
@@ -99,12 +93,10 @@ z_curl_get_page_contents (
     "https://www.zrythm.org/releases/?C=M;O=D");
   curl_easy_setopt (
     curl, CURLOPT_WRITEFUNCTION, curl_to_string);
-  curl_easy_setopt (
-    curl, CURLOPT_WRITEDATA, page_str);
+  curl_easy_setopt (curl, CURLOPT_WRITEDATA, page_str);
   curl_easy_setopt (curl, CURLOPT_TIMEOUT, timeout);
   curl_easy_setopt (
-    curl, CURLOPT_USERAGENT,
-    "zrythm-daw/" PACKAGE_VERSION);
+    curl, CURLOPT_USERAGENT, "zrythm-daw/" PACKAGE_VERSION);
 
   char * page = NULL;
   res = curl_easy_perform (curl);
@@ -128,8 +120,7 @@ z_curl_get_page_contents (
       g_warning ("failed getting page contents");
     }
 
-  g_debug (
-    "done getting page contents for %s", url);
+  g_debug ("done getting page contents for %s", url);
 
   return page;
 }
@@ -166,9 +157,8 @@ read_callback (
   size_t nmemb,
   void * userp)
 {
-  struct WriteThis * wt =
-    (struct WriteThis *) userp;
-  size_t buffer_size = size * nmemb;
+  struct WriteThis * wt = (struct WriteThis *) userp;
+  size_t             buffer_size = size * nmemb;
 
   if (wt->sizeleft)
     {
@@ -219,8 +209,7 @@ z_curl_post_json_no_auth (
     {
       g_set_error_literal (
         error, Z_UTILS_CURL_ERROR,
-        Z_UTILS_CURL_ERROR_CANNOT_INIT,
-        "Failed to init curl");
+        Z_UTILS_CURL_ERROR_CANNOT_INIT, "Failed to init curl");
       return -1;
     }
 
@@ -234,8 +223,8 @@ z_curl_post_json_no_auth (
 #endif
 
   struct curl_slist * headers = NULL;
-  headers = curl_slist_append (
-    headers, "Accept: application/json");
+  headers =
+    curl_slist_append (headers, "Accept: application/json");
   headers = curl_slist_append (
     headers, "Content-Type: multipart/form-data");
 #if 0
@@ -251,8 +240,7 @@ z_curl_post_json_no_auth (
   CURLcode res;
   curl_easy_setopt (curl, CURLOPT_URL, url);
   curl_easy_setopt (curl, CURLOPT_POST, 1L);
-  curl_easy_setopt (
-    curl, CURLOPT_HTTPHEADER, headers);
+  curl_easy_setopt (curl, CURLOPT_HTTPHEADER, headers);
   (void) read_callback;
 #if 0
   curl_easy_setopt (
@@ -262,12 +250,10 @@ z_curl_post_json_no_auth (
 #endif
   curl_easy_setopt (
     curl, CURLOPT_WRITEFUNCTION, curl_to_string);
-  curl_easy_setopt (
-    curl, CURLOPT_WRITEDATA, response);
+  curl_easy_setopt (curl, CURLOPT_WRITEDATA, response);
   curl_easy_setopt (curl, CURLOPT_TIMEOUT, timeout);
   curl_easy_setopt (
-    curl, CURLOPT_USERAGENT,
-    "zrythm-daw/" PACKAGE_VERSION);
+    curl, CURLOPT_USERAGENT, "zrythm-daw/" PACKAGE_VERSION);
 #if 0
   curl_easy_setopt (curl, CURLOPT_VERBOSE, 1L);
 #endif
@@ -276,30 +262,24 @@ z_curl_post_json_no_auth (
   curl_mime * mime = curl_mime_init (curl);
 
   /* add json */
-  curl_mimepart * json_part =
-    curl_mime_addpart (mime);
+  curl_mimepart * json_part = curl_mime_addpart (mime);
   curl_mime_name (json_part, "data");
   curl_mime_type (json_part, "application/json");
-  curl_mime_data (
-    json_part, data, CURL_ZERO_TERMINATED);
+  curl_mime_data (json_part, data, CURL_ZERO_TERMINATED);
 
   /* add files */
   va_list args;
   va_start (args, error);
   while (true)
     {
-      const char * mime_name =
-        va_arg (args, const char *);
+      const char * mime_name = va_arg (args, const char *);
       if (!mime_name)
         break;
-      const char * filepath =
-        va_arg (args, const char *);
-      const char * mimetype =
-        va_arg (args, const char *);
+      const char * filepath = va_arg (args, const char *);
+      const char * mimetype = va_arg (args, const char *);
 
       /* Fill in the file upload field */
-      curl_mimepart * part =
-        curl_mime_addpart (mime);
+      curl_mimepart * part = curl_mime_addpart (mime);
       curl_mime_name (part, mime_name);
       curl_mime_type (part, mimetype);
       curl_mime_filedata (part, filepath);
@@ -326,11 +306,9 @@ z_curl_post_json_no_auth (
       return -1;
     }
 
-  char * response_str =
-    g_string_free (response, false);
-  long http_code = 0;
-  curl_easy_getinfo (
-    curl, CURLINFO_RESPONSE_CODE, &http_code);
+  char * response_str = g_string_free (response, false);
+  long   http_code = 0;
+  curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &http_code);
 #if 0
   g_debug (
     "[%ld]: %s", http_code, response_str);
@@ -344,8 +322,7 @@ z_curl_post_json_no_auth (
       g_set_error (
         error, Z_UTILS_CURL_ERROR,
         Z_UTILS_CURL_ERROR_NON_2XX_RESPONSE,
-        "POST failed: [%ld] %s", http_code,
-        response_str);
+        "POST failed: [%ld] %s", http_code, response_str);
 
       g_free (response_str);
       curl_easy_cleanup (curl);

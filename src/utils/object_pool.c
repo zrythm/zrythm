@@ -79,9 +79,7 @@ object_pool_get (ObjectPool * self)
   zix_sem_wait (&self->access_sem);
   if (self->num_obj_available > 0)
     {
-      ret =
-        self->obj_available
-          [--self->num_obj_available];
+      ret = self->obj_available[--self->num_obj_available];
     }
   zix_sem_post (&self->access_sem);
 
@@ -101,8 +99,7 @@ object_pool_return (ObjectPool * self, void * obj)
     fail = 1;
   else
     {
-      self->obj_available
-        [self->num_obj_available++] = obj;
+      self->obj_available[self->num_obj_available++] = obj;
     }
   zix_sem_post (&self->access_sem);
   g_return_if_fail (fail == 0);
@@ -120,8 +117,7 @@ object_pool_free (ObjectPool * self)
       g_critical (
         "%s: Cannot free: "
         "There are %d objects in use.",
-        __func__,
-        self->max_objects - self->num_obj_available);
+        __func__, self->max_objects - self->num_obj_available);
       zix_sem_post (&self->access_sem);
       return;
     }

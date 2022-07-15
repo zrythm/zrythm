@@ -42,8 +42,7 @@ fader_controls_expander_widget_setup (
 
   self->track = track;
 
-  fader_controls_grid_widget_setup (
-    self->grid, track);
+  fader_controls_grid_widget_setup (self->grid, track);
 
   fader_controls_expander_widget_refresh (self);
 }
@@ -69,12 +68,10 @@ fader_controls_expander_widget_init (
   FaderControlsExpanderWidget * self)
 {
   self->grid = fader_controls_grid_widget_new ();
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->grid), 1);
+  gtk_widget_set_visible (GTK_WIDGET (self->grid), 1);
 
   expander_box_widget_add_content (
-    Z_EXPANDER_BOX_WIDGET (self),
-    GTK_WIDGET (self->grid));
+    Z_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (self->grid));
 
   expander_box_widget_set_icon_name (
     Z_EXPANDER_BOX_WIDGET (self), "fader");

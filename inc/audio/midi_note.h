@@ -54,8 +54,7 @@ typedef struct Velocity        Velocity;
    && ((MidiNote *) tr)->magic == MIDI_NOTE_MAGIC)
 
 #define midi_note_is_selected(r) \
-  arranger_object_is_selected ( \
-    (ArrangerObject *) r)
+  arranger_object_is_selected ((ArrangerObject *) r)
 
 /**
  * A MIDI note inside a ZRegion shown in the
@@ -97,22 +96,18 @@ typedef struct MidiNote
   PangoLayout * layout;
 } MidiNote;
 
-static const cyaml_schema_field_t
-  midi_note_fields_schema[] = {
-    YAML_FIELD_MAPPING_EMBEDDED (
-      MidiNote,
-      base,
-      arranger_object_fields_schema),
-    YAML_FIELD_INT (MidiNote, schema_version),
-    YAML_FIELD_MAPPING_PTR (
-      MidiNote,
-      vel,
-      velocity_fields_schema),
-    YAML_FIELD_UINT (MidiNote, val),
-    YAML_FIELD_INT (MidiNote, muted),
-    YAML_FIELD_INT (MidiNote, pos),
-    CYAML_FIELD_END
-  };
+static const cyaml_schema_field_t midi_note_fields_schema[] = {
+  YAML_FIELD_MAPPING_EMBEDDED (
+    MidiNote,
+    base,
+    arranger_object_fields_schema),
+  YAML_FIELD_INT (MidiNote, schema_version),
+  YAML_FIELD_MAPPING_PTR (MidiNote, vel, velocity_fields_schema),
+  YAML_FIELD_UINT (MidiNote, val),
+  YAML_FIELD_INT (MidiNote, muted),
+  YAML_FIELD_INT (MidiNote, pos),
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t midi_note_schema = {
   /* allow nullable for mn_r1 in
@@ -155,9 +150,7 @@ midi_note_set_region_and_index (
   int        idx);
 
 void
-midi_note_set_cache_val (
-  MidiNote *    self,
-  const uint8_t val);
+midi_note_set_cache_val (MidiNote * self, const uint8_t val);
 
 /**
  * Returns 1 if the MidiNotes match, 0 if not.
@@ -200,18 +193,14 @@ midi_note_listen (MidiNote * mn, bool listen);
  * @param delta Y (0-127)
  */
 void
-midi_note_shift_pitch (
-  MidiNote * self,
-  const int  delta);
+midi_note_shift_pitch (MidiNote * self, const int delta);
 
 /**
  * Returns if the MIDI note is hit at given pos (in
  * the timeline).
  */
 int
-midi_note_hit (
-  MidiNote *           self,
-  const signed_frame_t gframes);
+midi_note_hit (MidiNote * self, const signed_frame_t gframes);
 
 /**
  * Converts an array of MIDI notes to MidiEvents.
@@ -233,9 +222,7 @@ midi_note_notes_to_events (
  * the pitch of the MidiNote.
  */
 void
-midi_note_set_val (
-  MidiNote *    midi_note,
-  const uint8_t val);
+midi_note_set_val (MidiNote * midi_note, const uint8_t val);
 
 ZRegion *
 midi_note_get_region (MidiNote * self);

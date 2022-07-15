@@ -40,8 +40,7 @@ typedef struct MPMCQueue      MPMCQueue;
  * @{
  */
 
-#define RECORDING_MANAGER \
-  (ZRYTHM->recording_manager)
+#define RECORDING_MANAGER (ZRYTHM->recording_manager)
 
 typedef struct RecordingManager
 {
@@ -97,8 +96,8 @@ typedef struct RecordingManager
 REALTIME
 void
 recording_manager_handle_recording (
-  RecordingManager *     self,
-  const TrackProcessor * track_processor,
+  RecordingManager *                  self,
+  const TrackProcessor *              track_processor,
   const EngineProcessTimeInfo * const time_nfo);
 
 /**
@@ -111,8 +110,7 @@ recording_manager_handle_recording (
  * GTK thread.
  */
 int
-recording_manager_process_events (
-  RecordingManager * self);
+recording_manager_process_events (RecordingManager * self);
 
 /**
  * Creates the event queue and starts the event loop.

@@ -64,19 +64,13 @@ typedef struct KMeterDsp
  * @param n Number of samples.
  */
 void
-kmeter_dsp_process (
-  KMeterDsp * self,
-  float *     p,
-  int         n);
+kmeter_dsp_process (KMeterDsp * self, float * p, int n);
 
 float
 kmeter_dsp_read_f (KMeterDsp * self);
 
 void
-kmeter_dsp_read (
-  KMeterDsp * self,
-  float *     rms,
-  float *     peak);
+kmeter_dsp_read (KMeterDsp * self, float * rms, float * peak);
 
 void
 kmeter_dsp_reset (KMeterDsp * self);

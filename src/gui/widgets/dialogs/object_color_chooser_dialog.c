@@ -51,8 +51,8 @@ object_color_chooser_dialog_widget_run (
   GtkColorChooserDialog * dialog = NULL;
   if (track)
     {
-      char * str = g_strdup_printf (
-        _ ("%s color"), track->name);
+      char * str =
+        g_strdup_printf (_ ("%s color"), track->name);
       dialog = GTK_COLOR_CHOOSER_DIALOG (
         gtk_color_chooser_dialog_new (str, parent));
       gtk_color_chooser_set_rgba (
@@ -63,16 +63,15 @@ object_color_chooser_dialog_widget_run (
     }
   else if (region)
     {
-      char * str = g_strdup_printf (
-        _ ("%s color"), region->name);
+      char * str =
+        g_strdup_printf (_ ("%s color"), region->name);
       dialog = GTK_COLOR_CHOOSER_DIALOG (
         gtk_color_chooser_dialog_new (str, parent));
     }
   else if (sel)
     {
       Track * tr = sel->tracks[0];
-      g_return_val_if_fail (
-        IS_TRACK_AND_NONNULL (tr), false);
+      g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr), false);
 
       dialog = GTK_COLOR_CHOOSER_DIALOG (
         gtk_color_chooser_dialog_new (
@@ -86,11 +85,9 @@ object_color_chooser_dialog_widget_run (
   g_return_val_if_fail (dialog != NULL, false);
 
   gtk_widget_add_css_class (
-    GTK_WIDGET (dialog),
-    "object-color-chooser-dialog");
+    GTK_WIDGET (dialog), "object-color-chooser-dialog");
 
-  int res =
-    z_gtk_dialog_run (GTK_DIALOG (dialog), false);
+  int  res = z_gtk_dialog_run (GTK_DIALOG (dialog), false);
   bool color_set = false;
   switch (res)
     {
@@ -114,8 +111,7 @@ object_color_chooser_dialog_widget_run (
           GdkRGBA cur_color = track->color;
 
           /* if changed, apply the change */
-          if (!color_is_same (
-                &sel_color, &cur_color))
+          if (!color_is_same (&sel_color, &cur_color))
             {
               track_set_color (
                 track, &sel_color, F_UNDOABLE,
@@ -131,8 +127,7 @@ object_color_chooser_dialog_widget_run (
           if (!ret)
             {
               HANDLE_ERROR (
-                err, "%s",
-                _ ("Failed to change color"));
+                err, "%s", _ ("Failed to change color"));
             }
         }
     }

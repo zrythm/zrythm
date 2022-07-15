@@ -48,8 +48,8 @@ bool
 track_icon_chooser_dialog_widget_run (
   TrackIconChooserDialogWidget * self)
 {
-  int res = z_gtk_dialog_run (
-    GTK_DIALOG (self->dialog), false);
+  int res =
+    z_gtk_dialog_run (GTK_DIALOG (self->dialog), false);
   bool icon_set = false;
   switch (res)
     {
@@ -64,12 +64,11 @@ track_icon_chooser_dialog_widget_run (
     {
       /* if changed, apply the change */
       if (!string_is_equal (
-            self->selected_icon,
-            self->track->icon_name))
+            self->selected_icon, self->track->icon_name))
         {
           track_set_icon (
-            self->track, self->selected_icon,
-            F_UNDOABLE, F_PUBLISH_EVENTS);
+            self->track, self->selected_icon, F_UNDOABLE,
+            F_PUBLISH_EVENTS);
         }
     }
   gtk_window_destroy (GTK_WINDOW (self->dialog));
@@ -92,18 +91,17 @@ on_item_activated (
     }
 
   GtkTreeIter iter;
-  gtk_tree_model_get_iter (
-    self->icon_model, &iter, path);
+  gtk_tree_model_get_iter (self->icon_model, &iter, path);
   gtk_tree_model_get (
-    GTK_TREE_MODEL (self->icon_model), &iter,
-    COL_LABEL, &self->selected_icon, -1);
+    GTK_TREE_MODEL (self->icon_model), &iter, COL_LABEL,
+    &self->selected_icon, -1);
 }
 
 static GtkListStore *
 create_list_store (void)
 {
-  GtkListStore * store = gtk_list_store_new (
-    2, G_TYPE_STRING, GDK_TYPE_PIXBUF);
+  GtkListStore * store =
+    gtk_list_store_new (2, G_TYPE_STRING, GDK_TYPE_PIXBUF);
 
   /* TODO */
 #if 0
@@ -151,31 +149,24 @@ track_icon_chooser_dialog_widget_new (Track * track)
 {
   g_return_val_if_fail (IS_TRACK (track), NULL);
 
-  char * str =
-    g_strdup_printf (_ ("%s icon"), track->name);
+  char * str = g_strdup_printf (_ ("%s icon"), track->name);
   TrackIconChooserDialogWidget * self =
     object_new (TrackIconChooserDialogWidget);
-  self->dialog =
-    GTK_DIALOG (gtk_dialog_new_with_buttons (
-      str, GTK_WINDOW (MAIN_WINDOW),
-      GTK_DIALOG_MODAL
-        | GTK_DIALOG_DESTROY_WITH_PARENT,
-      _ ("_Cancel"), GTK_RESPONSE_REJECT,
-      _ ("_Select"), GTK_RESPONSE_ACCEPT, NULL));
+  self->dialog = GTK_DIALOG (gtk_dialog_new_with_buttons (
+    str, GTK_WINDOW (MAIN_WINDOW),
+    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+    _ ("_Cancel"), GTK_RESPONSE_REJECT, _ ("_Select"),
+    GTK_RESPONSE_ACCEPT, NULL));
   g_free (str);
   gtk_widget_add_css_class (
-    GTK_WIDGET (self->dialog),
-    "track-icon-chooser-dialog");
+    GTK_WIDGET (self->dialog), "track-icon-chooser-dialog");
 
   /* add icon view */
-  self->icon_model =
-    GTK_TREE_MODEL (create_list_store ());
+  self->icon_model = GTK_TREE_MODEL (create_list_store ());
   self->icon_view = GTK_ICON_VIEW (
     gtk_icon_view_new_with_model (self->icon_model));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->icon_view), true);
-  gtk_icon_view_set_text_column (
-    self->icon_view, COL_LABEL);
+  gtk_widget_set_visible (GTK_WIDGET (self->icon_view), true);
+  gtk_icon_view_set_text_column (self->icon_view, COL_LABEL);
   gtk_icon_view_set_pixbuf_column (
     self->icon_view, COL_PIXBUF);
   gtk_icon_view_set_activate_on_single_click (
@@ -183,22 +174,17 @@ track_icon_chooser_dialog_widget_new (Track * track)
   g_signal_connect (
     self->icon_view, "item-activated",
     G_CALLBACK (on_item_activated), self);
-  GtkBox * content_area =
-    GTK_BOX (gtk_dialog_get_content_area (
-      GTK_DIALOG (self->dialog)));
-  GtkScrolledWindow * scroll = GTK_SCROLLED_WINDOW (
-    gtk_scrolled_window_new ());
-  gtk_scrolled_window_set_min_content_width (
-    scroll, 480);
-  gtk_scrolled_window_set_min_content_height (
-    scroll, 360);
-  gtk_widget_set_visible (
-    GTK_WIDGET (scroll), true);
+  GtkBox * content_area = GTK_BOX (
+    gtk_dialog_get_content_area (GTK_DIALOG (self->dialog)));
+  GtkScrolledWindow * scroll =
+    GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
+  gtk_scrolled_window_set_min_content_width (scroll, 480);
+  gtk_scrolled_window_set_min_content_height (scroll, 360);
+  gtk_widget_set_visible (GTK_WIDGET (scroll), true);
   gtk_scrolled_window_set_child (
     GTK_SCROLLED_WINDOW (scroll),
     GTK_WIDGET (self->icon_view));
-  gtk_box_append (
-    content_area, GTK_WIDGET (scroll));
+  gtk_box_append (content_area, GTK_WIDGET (scroll));
 
   self->track = track;
 

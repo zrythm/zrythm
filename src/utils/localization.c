@@ -37,8 +37,7 @@
  * "Ελληνικά").
  */
 const char *
-localization_get_localized_name (
-  LocalizationLanguage lang)
+localization_get_localized_name (LocalizationLanguage lang)
 {
   g_return_val_if_fail (
     lang >= 0 && lang < NUM_LL_LANGUAGES, NULL);
@@ -51,8 +50,7 @@ localization_get_localized_name (
  * language (e.g. "fr").
  */
 const char *
-localization_get_string_code (
-  LocalizationLanguage lang)
+localization_get_string_code (LocalizationLanguage lang)
 {
   g_return_val_if_fail (
     lang >= 0 && lang < NUM_LL_LANGUAGES, NULL);
@@ -65,8 +63,7 @@ localization_get_string_code (
  * code (e.g. "Ελληνικά [el]").
  */
 const char *
-localization_get_string_w_code (
-  LocalizationLanguage lang)
+localization_get_string_w_code (LocalizationLanguage lang)
 {
   g_return_val_if_fail (
     lang >= 0 && lang < NUM_LL_LANGUAGES, NULL);
@@ -101,29 +98,24 @@ get_match (
 {
   GString * codeset_gstring;
   codeset_gstring = g_string_new (codeset);
-  char * upper = g_string_free (
-    g_string_ascii_up (codeset_gstring), 0);
+  char * upper =
+    g_string_free (g_string_ascii_up (codeset_gstring), 0);
   codeset_gstring = g_string_new (codeset);
-  char * lower = g_string_free (
-    g_string_ascii_down (codeset_gstring), 0);
+  char * lower =
+    g_string_free (g_string_ascii_down (codeset_gstring), 0);
   char * first_upper = g_strdup (lower);
   first_upper[0] = g_ascii_toupper (lower[0]);
 
   char * ret = NULL;
   for (int i = 0; i < num_installed_locales; i++)
     {
-      char * installed_locale =
-        installed_locales[i];
-      if (g_str_has_prefix (
-            installed_locale, prefix))
+      char * installed_locale = installed_locales[i];
+      if (g_str_has_prefix (installed_locale, prefix))
         {
           if (
-            g_str_has_suffix (
-              installed_locale, upper)
-            || g_str_has_suffix (
-              installed_locale, lower)
-            || g_str_has_suffix (
-              installed_locale, first_upper))
+            g_str_has_suffix (installed_locale, upper)
+            || g_str_has_suffix (installed_locale, lower)
+            || g_str_has_suffix (installed_locale, first_upper))
             {
               ret = installed_locales[i];
               break;
@@ -145,12 +137,10 @@ get_match (
  * Must be free'd with g_free().
  */
 char *
-localization_locale_exists (
-  LocalizationLanguage lang)
+localization_locale_exists (LocalizationLanguage lang)
 {
 #ifdef _WOE32
-  const char * _code =
-    localization_get_string_code (lang);
+  const char * _code = localization_get_string_code (lang);
   return g_strdup (_code);
 #endif
 
@@ -169,8 +159,7 @@ localization_locale_exists (
     }
 
   /* Read the output a line at a time - output it. */
-  while (
-    fgets (path, sizeof (path) - 1, fp) != NULL)
+  while (fgets (path, sizeof (path) - 1, fp) != NULL)
     {
       installed_locales[num_installed_locales++] =
         g_strdup_printf ("%s", g_strchomp (path));
@@ -182,13 +171,12 @@ localization_locale_exists (
 #define IS_MATCH(caps, code) \
   case LL_##caps: \
     match = get_match ( \
-      installed_locales, num_installed_locales, \
-      code, CODESET); \
+      installed_locales, num_installed_locales, code, \
+      CODESET); \
     if (!match) \
       { \
         match = get_match ( \
-          installed_locales, \
-          num_installed_locales, code, \
+          installed_locales, num_installed_locales, code, \
           ALT_CODESET); \
       } \
     break
@@ -281,26 +269,22 @@ localization_init (
     {
       /* get selected locale */
       GSettings * prefs = g_settings_new (
-        GSETTINGS_ZRYTHM_PREFIX
-        ".preferences.ui.general");
-      lang =
-        g_settings_get_enum (prefs, "language");
+        GSETTINGS_ZRYTHM_PREFIX ".preferences.ui.general");
+      lang = g_settings_get_enum (prefs, "language");
       g_object_unref (G_OBJECT (prefs));
 
       if (print_debug_messages)
         {
           g_message (
             "preferred lang: '%s' (%s)",
-            language_strings[lang],
-            language_codes[lang]);
+            language_strings[lang], language_codes[lang]);
         }
 
       if (lang == LL_EN)
         {
           if (print_debug_messages)
             {
-              g_message (
-                "setting locale to default");
+              g_message ("setting locale to default");
             }
           setlocale (LC_ALL, "C");
           return 1;
@@ -317,8 +301,7 @@ localization_init (
       if (print_debug_messages)
         {
           g_message (
-            "setting locale to %s (found %s)",
-            code, match);
+            "setting locale to %s (found %s)", code, match);
         }
 #if defined(_WOE32) || defined(__APPLE__)
       char buf[120];
@@ -338,8 +321,7 @@ localization_init (
           if (queue_error_if_not_installed)
             {
               zrythm_app->startup_errors
-                [zrythm_app->num_startup_errors++] =
-                msg;
+                [zrythm_app->num_startup_errors++] = msg;
             }
           g_warning ("%s", msg);
         }
@@ -349,8 +331,7 @@ localization_init (
     /* bind text domain */
 #if defined(_WOE32) && defined(INSTALLER_VER)
   const char * windows_localedir = "share/locale";
-  bindtextdomain (
-    GETTEXT_PACKAGE, windows_localedir);
+  bindtextdomain (GETTEXT_PACKAGE, windows_localedir);
   bindtextdomain ("libadwaita", windows_localedir);
 #else
   char * localedir =
@@ -358,14 +339,12 @@ localization_init (
   bindtextdomain (GETTEXT_PACKAGE, localedir);
   bindtextdomain ("libadwaita", localedir);
   g_debug (
-    "setting textdomain: %s, %s", GETTEXT_PACKAGE,
-    localedir);
+    "setting textdomain: %s, %s", GETTEXT_PACKAGE, localedir);
   g_free (localedir);
 #endif
 
   /* set domain codeset */
-  bind_textdomain_codeset (
-    GETTEXT_PACKAGE, CODESET);
+  bind_textdomain_codeset (GETTEXT_PACKAGE, CODESET);
 
   /* set current domain */
   textdomain (GETTEXT_PACKAGE);

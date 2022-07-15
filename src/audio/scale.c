@@ -37,9 +37,7 @@
  * Creates new scale using type and root note.
  */
 MusicalScale *
-musical_scale_new (
-  MusicalScaleType type,
-  MusicalNote      root)
+musical_scale_new (MusicalScaleType type, MusicalNote root)
 {
   MusicalScale * self = object_new (MusicalScale);
 
@@ -67,69 +65,55 @@ musical_scale_get_triad_types (
   bool             ascending)
 {
 #define SET_TRIADS( \
-  n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, \
-  n12) \
+  n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12) \
   { \
     static const ChordType chord_types[] = { \
-      CHORD_TYPE_##n1,  CHORD_TYPE_##n2, \
-      CHORD_TYPE_##n3,  CHORD_TYPE_##n4, \
-      CHORD_TYPE_##n5,  CHORD_TYPE_##n6, \
-      CHORD_TYPE_##n7,  CHORD_TYPE_##n8, \
-      CHORD_TYPE_##n9,  CHORD_TYPE_##n10, \
-      CHORD_TYPE_##n11, CHORD_TYPE_##n12 \
+      CHORD_TYPE_##n1,  CHORD_TYPE_##n2,  CHORD_TYPE_##n3, \
+      CHORD_TYPE_##n4,  CHORD_TYPE_##n5,  CHORD_TYPE_##n6, \
+      CHORD_TYPE_##n7,  CHORD_TYPE_##n8,  CHORD_TYPE_##n9, \
+      CHORD_TYPE_##n10, CHORD_TYPE_##n11, CHORD_TYPE_##n12 \
     }; \
     return chord_types; \
   }
 
 #define SET_7_TRIADS(n1, n2, n3, n4, n5, n6, n7) \
   SET_TRIADS ( \
-    n1, n2, n3, n4, n5, n6, n7, NONE, NONE, NONE, \
-    NONE, NONE)
+    n1, n2, n3, n4, n5, n6, n7, NONE, NONE, NONE, NONE, NONE)
 
   /* get the notes starting at C */
   switch (scale_type)
     {
     case SCALE_CHROMATIC:
-      SET_7_TRIADS (
-        NONE, NONE, NONE, NONE, NONE, NONE, NONE);
+      SET_7_TRIADS (NONE, NONE, NONE, NONE, NONE, NONE, NONE);
       break;
     case SCALE_MAJOR:
     case SCALE_IONIAN:
-      SET_7_TRIADS (
-        MAJ, MIN, MIN, MAJ, MAJ, MIN, DIM);
+      SET_7_TRIADS (MAJ, MIN, MIN, MAJ, MAJ, MIN, DIM);
       break;
     case SCALE_DORIAN:
-      SET_7_TRIADS (
-        MIN, MIN, MAJ, MAJ, MIN, DIM, MAJ);
+      SET_7_TRIADS (MIN, MIN, MAJ, MAJ, MIN, DIM, MAJ);
       break;
     case SCALE_PHRYGIAN:
-      SET_7_TRIADS (
-        MIN, MAJ, MAJ, MIN, DIM, MAJ, MIN);
+      SET_7_TRIADS (MIN, MAJ, MAJ, MIN, DIM, MAJ, MIN);
       break;
     case SCALE_LYDIAN:
-      SET_7_TRIADS (
-        MAJ, MAJ, MIN, DIM, MAJ, MIN, MIN);
+      SET_7_TRIADS (MAJ, MAJ, MIN, DIM, MAJ, MIN, MIN);
       break;
     case SCALE_MIXOLYDIAN:
-      SET_7_TRIADS (
-        MAJ, MIN, DIM, MAJ, MIN, MIN, MAJ);
+      SET_7_TRIADS (MAJ, MIN, DIM, MAJ, MIN, MIN, MAJ);
       break;
     case SCALE_MINOR:
     case SCALE_AEOLIAN:
-      SET_7_TRIADS (
-        MIN, DIM, MAJ, MIN, MIN, MAJ, MAJ);
+      SET_7_TRIADS (MIN, DIM, MAJ, MIN, MIN, MAJ, MAJ);
       break;
     case SCALE_LOCRIAN:
-      SET_7_TRIADS (
-        DIM, MAJ, MIN, MIN, MAJ, MAJ, MIN);
+      SET_7_TRIADS (DIM, MAJ, MIN, MIN, MAJ, MAJ, MIN);
       break;
     case SCALE_MELODIC_MINOR:
-      SET_7_TRIADS (
-        MIN, MIN, AUG, MAJ, MAJ, DIM, DIM);
+      SET_7_TRIADS (MIN, MIN, AUG, MAJ, MAJ, DIM, DIM);
       break;
     case SCALE_HARMONIC_MINOR:
-      SET_7_TRIADS (
-        MIN, DIM, AUG, MIN, MAJ, MAJ, DIM);
+      SET_7_TRIADS (MIN, DIM, AUG, MIN, MAJ, MAJ, DIM);
       break;
     /* below need double check */
     case SCALE_HARMONIC_MAJOR:
@@ -195,8 +179,7 @@ musical_scale_get_triad_types (
     }
 
   /* return no triads for unimplemented scales */
-  SET_7_TRIADS (
-    NONE, NONE, NONE, NONE, NONE, NONE, NONE);
+  SET_7_TRIADS (NONE, NONE, NONE, NONE, NONE, NONE, NONE);
 
 #undef SET_TRIADS
 #undef SET_7_TRIADS
@@ -217,12 +200,10 @@ musical_scale_get_notes (
   bool             ascending)
 {
 #define SET_NOTES( \
-  n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, \
-  n12) \
+  n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12) \
   { \
     static const bool notes[] = { \
-      n1, n2, n3, n4,  n5,  n6, \
-      n7, n8, n9, n10, n11, n12 \
+      n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12 \
     }; \
     return notes; \
   }
@@ -231,243 +212,184 @@ musical_scale_get_notes (
   switch (scale_type)
     {
     case SCALE_CHROMATIC:
-      SET_NOTES (
-        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+      SET_NOTES (1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
       break;
     case SCALE_MAJOR:
     case SCALE_IONIAN:
-      SET_NOTES (
-        1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1);
+      SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1);
       break;
     case SCALE_DORIAN:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0);
+      SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0);
       break;
     case SCALE_PHRYGIAN:
-      SET_NOTES (
-        1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0);
+      SET_NOTES (1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0);
       break;
     case SCALE_LYDIAN:
-      SET_NOTES (
-        1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1);
+      SET_NOTES (1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1);
       break;
     case SCALE_MIXOLYDIAN:
-      SET_NOTES (
-        1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0);
+      SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0);
       break;
     case SCALE_MINOR:
     case SCALE_AEOLIAN:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0);
+      SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0);
       break;
     case SCALE_LOCRIAN:
-      SET_NOTES (
-        1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0);
+      SET_NOTES (1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0);
       break;
     case SCALE_MELODIC_MINOR:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1);
+      SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1);
       break;
     case SCALE_HARMONIC_MINOR:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1);
+      SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1);
       break;
     /* below need double check */
     case SCALE_HARMONIC_MAJOR:
-      SET_NOTES (
-        1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1);
+      SET_NOTES (1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1);
       break;
     case SCALE_MAJOR_PENTATONIC:
-      SET_NOTES (
-        1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0);
+      SET_NOTES (1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0);
       break;
     case SCALE_MINOR_PENTATONIC:
-      SET_NOTES (
-        1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0);
+      SET_NOTES (1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0);
       break;
     case SCALE_PHRYGIAN_DOMINANT:
-      SET_NOTES (
-        1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0);
+      SET_NOTES (1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 1, 0);
       break;
     case SCALE_MAJOR_LOCRIAN:
-      SET_NOTES (
-        1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0);
+      SET_NOTES (1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0);
       break;
     case SCALE_ACOUSTIC:
-      SET_NOTES (
-        1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0);
+      SET_NOTES (1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0);
       break;
     case SCALE_ALTERED:
-      SET_NOTES (
-        1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0);
+      SET_NOTES (1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0);
       break;
     case SCALE_ALGERIAN:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1);
+      SET_NOTES (1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1);
       break;
     case SCALE_AUGMENTED:
-      SET_NOTES (
-        1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1);
+      SET_NOTES (1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1);
       break;
     case SCALE_DOUBLE_HARMONIC:
-      SET_NOTES (
-        1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1);
+      SET_NOTES (1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1);
       break;
     case SCALE_CHINESE:
-      SET_NOTES (
-        1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1);
+      SET_NOTES (1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 1);
       break;
     case SCALE_DIMINISHED:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1);
+      SET_NOTES (1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1);
       break;
     case SCALE_DOMINANT_DIMINISHED:
-      SET_NOTES (
-        1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0);
+      SET_NOTES (1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0);
       break;
     case SCALE_EGYPTIAN:
-      SET_NOTES (
-        1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0);
+      SET_NOTES (1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0);
       break;
     case SCALE_EIGHT_TONE_SPANISH:
-      SET_NOTES (
-        1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0);
+      SET_NOTES (1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0);
       break;
     case SCALE_ENIGMATIC:
-      SET_NOTES (
-        1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1);
+      SET_NOTES (1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1, 1);
       break;
     case SCALE_GEEZ:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0);
+      SET_NOTES (1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0);
       break;
     case SCALE_HINDU:
-      SET_NOTES (
-        1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0);
+      SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0);
       break;
     case SCALE_HIRAJOSHI:
-      SET_NOTES (
-        1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0);
+      SET_NOTES (1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0);
       break;
     case SCALE_HUNGARIAN_GYPSY:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1);
+      SET_NOTES (1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1);
       break;
     case SCALE_INSEN:
-      SET_NOTES (
-        1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0);
+      SET_NOTES (1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0);
       break;
     case SCALE_NEAPOLITAN_MAJOR:
-      SET_NOTES (
-        1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1);
+      SET_NOTES (1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1);
       break;
     case SCALE_NEAPOLITAN_MINOR:
-      SET_NOTES (
-        1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1);
+      SET_NOTES (1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 0, 1);
       break;
     case SCALE_OCTATONIC_HALF_WHOLE:
-      SET_NOTES (
-        1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0);
+      SET_NOTES (1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0);
       break;
     case SCALE_OCTATONIC_WHOLE_HALF:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1);
+      SET_NOTES (1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1);
       break;
     case SCALE_ORIENTAL:
-      SET_NOTES (
-        1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0);
+      SET_NOTES (1, 1, 0, 0, 1, 1, 1, 0, 0, 1, 1, 0);
       break;
     case SCALE_WHOLE_TONE:
-      SET_NOTES (
-        1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0);
+      SET_NOTES (1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0);
       break;
     case SCALE_ROMANIAN_MINOR:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0);
+      SET_NOTES (1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0);
       break;
     case SCALE_MAQAM:
-      SET_NOTES (
-        1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1);
+      SET_NOTES (1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1);
       break;
     case SCALE_YO:
-      SET_NOTES (
-        1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0);
+      SET_NOTES (1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0);
       break;
     case SCALE_BEBOP_LOCRIAN:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1);
+      SET_NOTES (1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1);
       break;
     case SCALE_BEBOP_DOMINANT:
-      SET_NOTES (
-        1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1);
+      SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1);
       break;
     case SCALE_BEBOP_MAJOR:
-      SET_NOTES (
-        1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1);
+      SET_NOTES (1, 0, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1);
       break;
     case SCALE_SUPER_LOCRIAN:
-      SET_NOTES (
-        1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0);
+      SET_NOTES (1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0);
       break;
     case SCALE_ENIGMATIC_MINOR:
-      SET_NOTES (
-        1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1);
+      SET_NOTES (1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1);
       break;
     case SCALE_COMPOSITE:
-      SET_NOTES (
-        1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1);
+      SET_NOTES (1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1);
       break;
     case SCALE_BHAIRAV:
-      SET_NOTES (
-        1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1);
+      SET_NOTES (1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 1);
       break;
     case SCALE_HUNGARIAN_MINOR:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1);
+      SET_NOTES (1, 0, 1, 1, 0, 0, 1, 1, 1, 0, 0, 1);
       break;
     case SCALE_PERSIAN:
-      SET_NOTES (
-        1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1);
+      SET_NOTES (1, 1, 0, 0, 1, 1, 1, 0, 1, 0, 0, 1);
       break;
     case SCALE_IWATO:
-      SET_NOTES (
-        1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0);
+      SET_NOTES (1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0);
       break;
     case SCALE_KUMOI:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0);
+      SET_NOTES (1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0);
       break;
     case SCALE_PELOG:
-      SET_NOTES (
-        1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0);
+      SET_NOTES (1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0);
       break;
     case SCALE_PROMETHEUS:
-      SET_NOTES (
-        1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0);
+      SET_NOTES (1, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0);
       break;
     case SCALE_PROMETHEUS_NEAPOLITAN:
-      SET_NOTES (
-        1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0);
+      SET_NOTES (1, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0);
       break;
     case SCALE_PROMETHEUS_LISZT:
-      SET_NOTES (
-        1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0);
+      SET_NOTES (1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0);
       break;
     case SCALE_BALINESE:
-      SET_NOTES (
-        1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0);
+      SET_NOTES (1, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0);
       break;
     case SCALE_RAGATODI:
-      SET_NOTES (
-        1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0);
+      SET_NOTES (1, 1, 0, 1, 0, 0, 1, 1, 1, 0, 1, 0);
       break;
     case SCALE_JAPANESE1:
-      SET_NOTES (
-        1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0);
+      SET_NOTES (1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0);
       break;
     case SCALE_JAPANESE2:
-      SET_NOTES (
-        1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0);
+      SET_NOTES (1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 0, 0);
       break;
     default:
       break;
@@ -485,8 +407,7 @@ MusicalScale *
 musical_scale_clone (MusicalScale * src)
 {
   /* TODO */
-  return musical_scale_new (
-    src->type, src->root_key);
+  return musical_scale_new (src->type, src->root_key);
 }
 
 /**
@@ -506,8 +427,7 @@ musical_scale_contains_note (
   const bool * notes =
     musical_scale_get_notes (scale->type, false);
 
-  return notes
-    [((int) note - (int) scale->root_key + 12) % 12];
+  return notes[((int) note - (int) scale->root_key + 12) % 12];
 }
 
 /**
@@ -523,8 +443,7 @@ musical_scale_contains_chord (
     {
       if (
         chord->notes[i]
-        && !musical_scale_contains_note (
-          scale, i % 12))
+        && !musical_scale_contains_note (scale, i % 12))
         return 0;
     }
   return 1;
@@ -540,8 +459,7 @@ musical_scale_is_accent_in_scale (
   ChordType      type,
   ChordAccent    chord_accent)
 {
-  if (!musical_scale_contains_note (
-        scale, chord_root))
+  if (!musical_scale_contains_note (scale, chord_root))
     return 0;
 
   unsigned int min_seventh_sems =
@@ -560,8 +478,7 @@ musical_scale_is_accent_in_scale (
       return 1;
     case CHORD_ACC_7:
       return musical_scale_contains_note (
-        scale,
-        (chord_root + min_seventh_sems) % 12);
+        scale, (chord_root + min_seventh_sems) % 12);
     case CHORD_ACC_j7:
       return musical_scale_contains_note (
         scale, (chord_root + 11) % 12);
@@ -598,8 +515,7 @@ musical_scale_is_accent_in_scale (
 }
 
 const char *
-musical_scale_type_to_string (
-  const MusicalScaleType type)
+musical_scale_type_to_string (const MusicalScaleType type)
 {
   return _ (musical_scale_type_strings[type].str);
 }
@@ -610,12 +526,10 @@ musical_scale_type_to_string (
  * MUST be free'd.
  */
 char *
-musical_scale_to_string (
-  const MusicalScale * const self)
+musical_scale_to_string (const MusicalScale * const self)
 {
   return g_strdup_printf (
-    "%s %s",
-    chord_descriptor_note_to_string (self->root_key),
+    "%s %s", chord_descriptor_note_to_string (self->root_key),
     musical_scale_type_to_string (self->type));
 }
 
@@ -624,16 +538,13 @@ musical_scale_to_string (
  * allocating.
  */
 void
-musical_scale_strcpy (
-  MusicalScale * scale,
-  char *         buf)
+musical_scale_strcpy (MusicalScale * scale, char * buf)
 {
 #define SET_SCALE_STR(uppercase, str) \
   case SCALE_##uppercase: \
     sprintf ( \
       buf, "%s %s", \
-      chord_descriptor_note_to_string ( \
-        scale->root_key), \
+      chord_descriptor_note_to_string (scale->root_key), \
       _ (str)); \
     return;
 
@@ -641,10 +552,8 @@ musical_scale_strcpy (
     {
       SET_SCALE_STR (CHROMATIC, "Chromatic");
       SET_SCALE_STR (IONIAN, "Ionian (Major)");
-      SET_SCALE_STR (
-        AEOLIAN, "Aeolian (Natural Minor)");
-      SET_SCALE_STR (
-        HARMONIC_MINOR, "Harmonic Minor");
+      SET_SCALE_STR (AEOLIAN, "Aeolian (Natural Minor)");
+      SET_SCALE_STR (HARMONIC_MINOR, "Harmonic Minor");
     default:
       /* TODO */
       strcpy (buf, _ ("Unimplemented"));

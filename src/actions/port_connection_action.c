@@ -52,16 +52,14 @@ port_connection_action_new (
 }
 
 PortConnectionAction *
-port_connection_action_clone (
-  const PortConnectionAction * src)
+port_connection_action_clone (const PortConnectionAction * src)
 {
   PortConnectionAction * self =
     object_new (PortConnectionAction);
   self->parent_instance = src->parent_instance;
 
   self->type = src->type;
-  self->connection =
-    port_connection_clone (src->connection);
+  self->connection = port_connection_clone (src->connection);
   self->val = src->val;
 
   return self;
@@ -76,8 +74,8 @@ port_connection_action_perform (
   GError **                error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    port_connection_action_new, error, type,
-    src_id, dest_id, new_val, error);
+    port_connection_action_new, error, type, src_id, dest_id,
+    new_val, error);
 }
 
 static int
@@ -86,10 +84,10 @@ port_connection_action_do_or_undo (
   bool                   _do,
   GError **              error)
 {
-  Port * src = port_find_from_identifier (
-    self->connection->src_id);
-  Port * dest = port_find_from_identifier (
-    self->connection->dest_id);
+  Port * src =
+    port_find_from_identifier (self->connection->src_id);
+  Port * dest =
+    port_find_from_identifier (self->connection->dest_id);
   g_return_val_if_fail (src && dest, -1);
   PortConnection * prj_connection =
     port_connections_manager_find_connection (
@@ -101,19 +99,17 @@ port_connection_action_do_or_undo (
     case PORT_CONNECTION_CONNECT:
     case PORT_CONNECTION_DISCONNECT:
       if (
-        (self->type == PORT_CONNECTION_CONNECT
-         && _do)
+        (self->type == PORT_CONNECTION_CONNECT && _do)
         || (self->type == PORT_CONNECTION_DISCONNECT && !_do))
         {
           if (!ports_can_be_connected (src, dest))
             {
-              g_warning (
-                "ports cannot be connected");
+              g_warning ("ports cannot be connected");
               return -1;
             }
           port_connections_manager_ensure_connect (
-            PORT_CONNECTIONS_MGR, &src->id,
-            &dest->id, 1.f, F_NOT_LOCKED, F_ENABLE);
+            PORT_CONNECTIONS_MGR, &src->id, &dest->id, 1.f,
+            F_NOT_LOCKED, F_ENABLE);
 
           /* set base value if cv -> control */
           if (
@@ -124,8 +120,7 @@ port_connection_action_do_or_undo (
       else
         {
           port_connections_manager_ensure_disconnect (
-            PORT_CONNECTIONS_MGR, &src->id,
-            &dest->id);
+            PORT_CONNECTIONS_MGR, &src->id, &dest->id);
         }
       router_recalc_graph (ROUTER, F_NOT_SOFT);
       break;
@@ -137,8 +132,7 @@ port_connection_action_do_or_undo (
       break;
     case PORT_CONNECTION_CHANGE_MULTIPLIER:
       {
-        float val_before =
-          prj_connection->multiplier;
+        float val_before = prj_connection->multiplier;
         prj_connection->multiplier = self->val;
         self->val = val_before;
       }
@@ -157,8 +151,7 @@ port_connection_action_do (
   PortConnectionAction * self,
   GError **              error)
 {
-  return port_connection_action_do_or_undo (
-    self, true, error);
+  return port_connection_action_do_or_undo (self, true, error);
 }
 
 int
@@ -171,8 +164,7 @@ port_connection_action_undo (
 }
 
 char *
-port_connection_action_stringize (
-  PortConnectionAction * self)
+port_connection_action_stringize (PortConnectionAction * self)
 {
   switch (self->type)
     {
@@ -183,16 +175,13 @@ port_connection_action_stringize (
       return g_strdup (_ ("Disconnect ports"));
       break;
     case PORT_CONNECTION_ENABLE:
-      return g_strdup (
-        _ ("Enable port connection"));
+      return g_strdup (_ ("Enable port connection"));
       break;
     case PORT_CONNECTION_DISABLE:
-      return g_strdup (
-        _ ("Disable port connection"));
+      return g_strdup (_ ("Disable port connection"));
       break;
     case PORT_CONNECTION_CHANGE_MULTIPLIER:
-      return g_strdup (
-        _ ("Change port connection"));
+      return g_strdup (_ ("Change port connection"));
       break;
     default:
       g_warn_if_reached ();
@@ -201,8 +190,7 @@ port_connection_action_stringize (
 }
 
 void
-port_connection_action_free (
-  PortConnectionAction * self)
+port_connection_action_free (PortConnectionAction * self)
 {
   object_free_w_func_and_null (
     port_connection_free, self->connection);

@@ -40,16 +40,12 @@ clipboard_new_for_arranger_selections (
   switch (sel->type)
     {
     case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-      self->automation_sel =
-        (AutomationSelections *) sel;
-      self->type =
-        CLIPBOARD_TYPE_AUTOMATION_SELECTIONS;
+      self->automation_sel = (AutomationSelections *) sel;
+      self->type = CLIPBOARD_TYPE_AUTOMATION_SELECTIONS;
       break;
     case ARRANGER_SELECTIONS_TYPE_TIMELINE:
-      self->timeline_sel =
-        (TimelineSelections *) sel;
-      self->type =
-        CLIPBOARD_TYPE_TIMELINE_SELECTIONS;
+      self->timeline_sel = (TimelineSelections *) sel;
+      self->type = CLIPBOARD_TYPE_TIMELINE_SELECTIONS;
       break;
     case ARRANGER_SELECTIONS_TYPE_MIDI:
       self->ma_sel = (MidiArrangerSelections *) sel;
@@ -123,8 +119,7 @@ clipboard_get_selections (Clipboard * self)
 #define RETURN_IF_EXISTS(selections) \
   if (self->selections) \
     { \
-      return (ArrangerSelections *) \
-        self->selections; \
+      return (ArrangerSelections *) self->selections; \
     }
 
   RETURN_IF_EXISTS (ma_sel);
@@ -160,8 +155,7 @@ clipboard_free (Clipboard * self)
       mixer_selections_free (self->mixer_sel);
       break;
     case CLIPBOARD_TYPE_TRACKLIST_SELECTIONS:
-      tracklist_selections_free (
-        self->tracklist_sel);
+      tracklist_selections_free (self->tracklist_sel);
       break;
     }
 

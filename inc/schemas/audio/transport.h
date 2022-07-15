@@ -54,12 +54,11 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  time_signature_schema_v1 = {
-    YAML_VALUE_PTR (
-      TimeSignature_v1,
-      time_signature_fields_schema_v1),
-  };
+static const cyaml_schema_value_t time_signature_schema_v1 = {
+  YAML_VALUE_PTR (
+    TimeSignature_v1,
+    time_signature_fields_schema_v1),
+};
 
 typedef struct Transport_v1
 {
@@ -174,11 +173,8 @@ static const cyaml_schema_field_t transport_fields_schema_v1[] = {
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-  transport_schema_v1 = {
-    YAML_VALUE_PTR (
-      Transport_v1,
-      transport_fields_schema_v1),
-  };
+static const cyaml_schema_value_t transport_schema_v1 = {
+  YAML_VALUE_PTR (Transport_v1, transport_fields_schema_v1),
+};
 
 #endif

@@ -28,15 +28,12 @@ test_midi_mappping (void)
   midi_byte_t buf[3] = { 0xB0, 0x07, 121 };
   midi_mappings_bind_device (
     MIDI_MAPPINGS, buf, ext_port,
-    P_MASTER_TRACK->channel->fader->amp,
-    F_NO_PUBLISH_EVENTS);
-  g_assert_cmpint (
-    MIDI_MAPPINGS->num_mappings, ==, 1);
+    P_MASTER_TRACK->channel->fader->amp, F_NO_PUBLISH_EVENTS);
+  g_assert_cmpint (MIDI_MAPPINGS->num_mappings, ==, 1);
 
   int size = 0;
   midi_mappings_get_for_port (
-    MIDI_MAPPINGS,
-    P_MASTER_TRACK->channel->fader->amp, &size);
+    MIDI_MAPPINGS, P_MASTER_TRACK->channel->fader->amp, &size);
   g_assert_cmpint (size, ==, 1);
 
   midi_mappings_apply (MIDI_MAPPINGS, buf);

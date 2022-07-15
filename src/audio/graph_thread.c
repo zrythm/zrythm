@@ -96,8 +96,8 @@ worker_thread (void * arg)
   g_thread_self ();
 
   g_message (
-    "WORKER THREAD %d created (num threads %d)",
-    thread->id, graph->num_threads);
+    "WORKER THREAD %d created (num threads %d)", thread->id,
+    graph->num_threads);
 
   /* wait for all threads to get created */
   if (thread->id < graph->num_threads - 1)
@@ -125,8 +125,7 @@ worker_thread (void * arg)
           else
             {
               g_message (
-                "[%d]: terminating thread",
-                thread->id);
+                "[%d]: terminating thread", thread->id);
             }
           goto terminate_thread;
         }
@@ -137,10 +136,8 @@ worker_thread (void * arg)
           g_warn_if_fail (to_run);
 #ifdef DEBUG_THREADS
           g_message (
-            "[%d]: dequeued node (nodes left %d)",
-            thread->id,
-            g_atomic_int_get (
-              &graph->trigger_queue_size));
+            "[%d]: dequeued node (nodes left %d)", thread->id,
+            g_atomic_int_get (&graph->trigger_queue_size));
           graph_node_print (to_run);
 #endif
           /* Wake up idle threads, but at most as
@@ -151,16 +148,13 @@ worker_thread (void * arg)
            * _trigger_queue_size. */
           guint idle_cnt = (guint) g_atomic_int_get (
             &graph->idle_thread_cnt);
-          guint work_avail =
-            (guint) g_atomic_int_get (
-              &graph->trigger_queue_size);
-          guint wakeup =
-            MIN (idle_cnt + 1, work_avail);
+          guint work_avail = (guint) g_atomic_int_get (
+            &graph->trigger_queue_size);
+          guint wakeup = MIN (idle_cnt + 1, work_avail);
 #ifdef DEBUG_THREADS
           g_message (
             "[%d]: Waking up %u idle threads (idle count %u), work available -> %u",
-            thread->id, wakeup - 1, idle_cnt,
-            work_avail);
+            thread->id, wakeup - 1, idle_cnt, work_avail);
 #endif
 
           for (guint i = 1; i < wakeup; ++i)
@@ -172,10 +166,9 @@ worker_thread (void * arg)
       while (!to_run)
         {
           /* wait for work, fall asleep */
-          g_atomic_int_inc (
-            &graph->idle_thread_cnt);
-          int idle_thread_cnt = g_atomic_int_get (
-            &graph->idle_thread_cnt);
+          g_atomic_int_inc (&graph->idle_thread_cnt);
+          int idle_thread_cnt =
+            g_atomic_int_get (&graph->idle_thread_cnt);
 #ifdef DEBUG_THREADS
           g_message (
             "[%d]: no node to run. just increased "
@@ -201,16 +194,14 @@ worker_thread (void * arg)
               goto terminate_thread;
             }
 
-          g_atomic_int_dec_and_test (
-            &graph->idle_thread_cnt);
+          g_atomic_int_dec_and_test (&graph->idle_thread_cnt);
 #ifdef DEBUG_THREADS
           g_message (
             "[%d]: work found, decremented idle "
             "thread count (current count %d) and "
             "dequeuing node to process",
             thread->id,
-            g_atomic_int_get (
-              &graph->idle_thread_cnt));
+            g_atomic_int_get (&graph->idle_thread_cnt));
 #endif
 
           /* try to find some work to do */
@@ -219,13 +210,11 @@ worker_thread (void * arg)
         }
 
       /* process graph-node */
-      g_atomic_int_dec_and_test (
-        &graph->trigger_queue_size);
+      g_atomic_int_dec_and_test (&graph->trigger_queue_size);
 #ifdef DEBUG_THREADS
       g_message ("[%d]: running node", thread->id);
 #endif
-      graph_node_process (
-        to_run, graph->router->time_nfo);
+      graph_node_process (to_run, graph->router->time_nfo);
     }
 
 terminate_thread:
@@ -277,8 +266,7 @@ main_thread (void * arg)
       g_atomic_int_inc (&self->trigger_queue_size);
       /*g_message ("[main] pushing back node %d during bootstrap", i);*/
       mpmc_queue_push_back_node (
-        self->trigger_queue,
-        self->init_trigger_list[i]);
+        self->trigger_queue, self->init_trigger_list[i]);
     }
 
   /* after setup, the main-thread just becomes
@@ -335,13 +323,12 @@ get_absolute_rt_priority (int priority)
 {
   /* POSIX requires a spread of at least 32 steps
    * between min..max */
-  const int p_min = sched_get_priority_min (
-    SCHED_FIFO); // Linux: 1
-  const int p_max = sched_get_priority_max (
-    SCHED_FIFO); // Linux: 99
+  const int p_min =
+    sched_get_priority_min (SCHED_FIFO); // Linux: 1
+  const int p_max =
+    sched_get_priority_max (SCHED_FIFO); // Linux: 99
   g_debug (
-    "min %d max %d requested %d", p_min, p_max,
-    priority);
+    "min %d max %d requested %d", p_min, p_max, priority);
 
   if (priority == 0)
     {
@@ -375,8 +362,7 @@ get_absolute_rt_priority (int priority)
   struct rlimit rl;
   if (getrlimit (RLIMIT_RTPRIO, &rl) == 0)
     {
-      g_debug (
-        "current rtprio limit: %lu", rl.rlim_cur);
+      g_debug ("current rtprio limit: %lu", rl.rlim_cur);
       int cur_limit = (int) rl.rlim_cur;
       if (priority > cur_limit)
         {
@@ -398,10 +384,7 @@ get_absolute_rt_priority (int priority)
  * @param is_main 1 if main thread.
  */
 GraphThread *
-graph_thread_new (
-  const int  id,
-  const bool is_main,
-  Graph *    graph)
+graph_thread_new (const int id, const bool is_main, Graph * graph)
 {
   g_return_val_if_fail (graph, NULL);
 
@@ -425,8 +408,8 @@ graph_thread_new (
       return NULL;
     }
 
-  res = pthread_attr_setscope (
-    &attributes, PTHREAD_SCOPE_SYSTEM);
+  res =
+    pthread_attr_setscope (&attributes, PTHREAD_SCOPE_SYSTEM);
   if (res)
     {
       g_critical (
@@ -445,13 +428,10 @@ graph_thread_new (
 #ifdef HAVE_JACK
   if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
     {
-      realtime =
-        jack_is_realtime (AUDIO_ENGINE->client);
+      realtime = jack_is_realtime (AUDIO_ENGINE->client);
       int jack_priority =
-        jack_client_real_time_priority (
-          AUDIO_ENGINE->client);
-      g_debug (
-        "JACK thread priority: %d", jack_priority);
+        jack_client_real_time_priority (AUDIO_ENGINE->client);
+      g_debug ("JACK thread priority: %d", jack_priority);
       priority = jack_priority - 2;
       (void) priority;
     }
@@ -472,8 +452,7 @@ graph_thread_new (
   if (realtime)
     {
       g_debug ("creating RT thread");
-      priority =
-        get_absolute_rt_priority (priority);
+      priority = get_absolute_rt_priority (priority);
 
       if (priority > 0)
         {
@@ -523,11 +502,9 @@ graph_thread_new (
             zrythm_app_ui_message_new (
               GTK_MESSAGE_WARNING, str);
           g_async_queue_push (
-            zrythm_app->project_load_message_queue,
-            ui_msg);
+            zrythm_app->project_load_message_queue, ui_msg);
           g_free (str);
-          zrythm_app->rt_priority_message_shown =
-            true;
+          zrythm_app->rt_priority_message_shown = true;
         }
     }
 #endif /* __linux__ */
@@ -539,13 +516,12 @@ graph_thread_new (
 #endif
 
   res = pthread_attr_setstacksize (
-    &attributes,
-    THREAD_STACK_SIZE + get_stack_size ());
+    &attributes, THREAD_STACK_SIZE + get_stack_size ());
   if (res)
     {
       g_critical (
-        "Cannot set thread stack size res = %d (%s)",
-        res, strerror (res));
+        "Cannot set thread stack size res = %d (%s)", res,
+        strerror (res));
       return NULL;
     }
 

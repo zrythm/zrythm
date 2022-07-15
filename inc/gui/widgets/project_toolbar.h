@@ -35,8 +35,7 @@ G_DECLARE_FINAL_TYPE (
  * \file
  */
 
-#define MW_PROJECT_TOOLBAR \
-  MW_HEADER_NOTEBOOK->project_toolbar
+#define MW_PROJECT_TOOLBAR MW_HEADER_NOTEBOOK->project_toolbar
 
 typedef struct _ProjectToolbarWidget
 {

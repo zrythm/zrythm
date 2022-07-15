@@ -99,9 +99,7 @@ typedef struct AutomationTracklist
 
 static const cyaml_schema_field_t
   automation_tracklist_fields_schema[] = {
-    YAML_FIELD_INT (
-      AutomationTracklist,
-      schema_version),
+    YAML_FIELD_INT (AutomationTracklist, schema_version),
     YAML_FIELD_DYN_ARRAY_VAR_COUNT (
       AutomationTracklist,
       ats,
@@ -110,12 +108,11 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  automation_tracklist_schema = {
-    YAML_VALUE_PTR (
-      AutomationTracklist,
-      automation_tracklist_fields_schema),
-  };
+static const cyaml_schema_value_t automation_tracklist_schema = {
+  YAML_VALUE_PTR (
+    AutomationTracklist,
+    automation_tracklist_fields_schema),
+};
 
 void
 automation_tracklist_init (
@@ -130,8 +127,7 @@ COLD NONNULL_ARGS (1) void automation_tracklist_init_loaded (
   Track *               track);
 
 Track *
-automation_tracklist_get_track (
-  AutomationTracklist * self);
+automation_tracklist_get_track (AutomationTracklist * self);
 
 void
 automation_tracklist_add_at (
@@ -144,8 +140,7 @@ automation_tracklist_add_at (
  * Used for debugging.
  */
 void
-automation_tracklist_print_ats (
-  AutomationTracklist * self);
+automation_tracklist_print_ats (AutomationTracklist * self);
 
 /**
  * Updates the frames of each position in each child
@@ -226,15 +221,13 @@ automation_tracklist_get_at_from_port (
  * Unselects all arranger objects.
  */
 void
-automation_tracklist_unselect_all (
-  AutomationTracklist * self);
+automation_tracklist_unselect_all (AutomationTracklist * self);
 
 /**
  * Removes all objects recursively.
  */
 void
-automation_tracklist_clear (
-  AutomationTracklist * self);
+automation_tracklist_clear (AutomationTracklist * self);
 
 /**
  * Sets the index of the AutomationTrack and swaps
@@ -293,8 +286,7 @@ automation_tracklist_get_num_visible (
  */
 NONNULL
 bool
-automation_tracklist_validate (
-  AutomationTracklist * self);
+automation_tracklist_validate (AutomationTracklist * self);
 
 /**
  * Counts the total number of regions in the
@@ -313,13 +305,11 @@ automation_tracklist_print_regions (
 
 NONNULL
 void
-automation_tracklist_set_caches (
-  AutomationTracklist * self);
+automation_tracklist_set_caches (AutomationTracklist * self);
 
 NONNULL
 void
-automation_tracklist_free_members (
-  AutomationTracklist * self);
+automation_tracklist_free_members (AutomationTracklist * self);
 
 /**
  * @}

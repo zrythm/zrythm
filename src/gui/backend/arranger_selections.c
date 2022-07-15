@@ -79,8 +79,7 @@ arranger_selections_init_loaded (
             } \
           arranger_object_update_positions ( \
             obj, true, false); \
-          sel->sc##s[i] = \
-            (cc *) arranger_object_find (obj); \
+          sel->sc##s[i] = (cc *) arranger_object_find (obj); \
         } \
       else \
         { \
@@ -104,28 +103,25 @@ arranger_selections_init_loaded (
       for (i = 0; i < mas->num_midi_notes; i++)
         {
           MidiNote *       mn = mas->midi_notes[i];
-          ArrangerObject * mn_obj =
-            (ArrangerObject *) mn;
+          ArrangerObject * mn_obj = (ArrangerObject *) mn;
           arranger_object_update_positions (
             mn_obj, true, false);
           if (project)
             {
-              mas->midi_notes[i] = (MidiNote *)
-                arranger_object_find (mn_obj);
+              mas->midi_notes[i] =
+                (MidiNote *) arranger_object_find (mn_obj);
             }
           else
             {
               arranger_object_init_loaded (
-                (ArrangerObject *)
-                  mas->midi_notes[i]);
+                (ArrangerObject *) mas->midi_notes[i]);
             }
           g_warn_if_fail (mas->midi_notes[i]);
         }
       break;
     case TYPE (AUTOMATION):
       as = (AutomationSelections *) self;
-      SET_OBJ (
-        as, AutomationPoint, automation_point);
+      SET_OBJ (as, AutomationPoint, automation_point);
       break;
     case TYPE (CHORD):
       cs = (ChordSelections *) self;
@@ -150,8 +146,7 @@ arranger_selections_init (
 {
   self->type = type;
   self->magic = ARRANGER_SELECTIONS_MAGIC;
-  self->schema_version =
-    ARRANGER_SELECTIONS_SCHEMA_VERSION;
+  self->schema_version = ARRANGER_SELECTIONS_SCHEMA_VERSION;
 
   TimelineSelections *     ts;
   ChordSelections *        cs;
@@ -166,37 +161,31 @@ arranger_selections_init (
     {
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
-      ts->schema_version =
-        TL_SELECTIONS_SCHEMA_VERSION;
+      ts->schema_version = TL_SELECTIONS_SCHEMA_VERSION;
       SET_OBJ (ts, ZRegion, region);
       SET_OBJ (ts, ScaleObject, scale_object);
       SET_OBJ (ts, Marker, marker);
       break;
     case TYPE (MIDI):
       mas = (MidiArrangerSelections *) self;
-      mas->schema_version =
-        MA_SELECTIONS_SCHEMA_VERSION;
+      mas->schema_version = MA_SELECTIONS_SCHEMA_VERSION;
       SET_OBJ (mas, MidiNote, midi_note);
       break;
     case TYPE (AUTOMATION):
       as = (AutomationSelections *) self;
       as->schema_version =
         AUTOMATION_SELECTIONS_SCHEMA_VERSION;
-      SET_OBJ (
-        as, AutomationPoint, automation_point);
+      SET_OBJ (as, AutomationPoint, automation_point);
       break;
     case TYPE (CHORD):
       cs = (ChordSelections *) self;
-      cs->schema_version =
-        CHORD_SELECTIONS_SCHEMA_VERSION;
+      cs->schema_version = CHORD_SELECTIONS_SCHEMA_VERSION;
       SET_OBJ (cs, ChordObject, chord_object);
       break;
     case TYPE (AUDIO):
       {
-        AudioSelections * sel =
-          (AudioSelections *) self;
-        sel->schema_version =
-          AUDIO_SELECTIONS_SCHEMA_VERSION;
+        AudioSelections * sel = (AudioSelections *) self;
+        sel->schema_version = AUDIO_SELECTIONS_SCHEMA_VERSION;
         position_init (&sel->sel_start);
         position_init (&sel->sel_end);
         region_identifier_init (&sel->region_id);
@@ -214,8 +203,7 @@ arranger_selections_init (
  * Creates new arranger selections.
  */
 ArrangerSelections *
-arranger_selections_new (
-  ArrangerSelectionsType type)
+arranger_selections_new (ArrangerSelectionsType type)
 {
   ArrangerSelections * self = NULL;
 
@@ -234,12 +222,12 @@ arranger_selections_new (
         AutomationSelections);
       break;
     case TYPE (CHORD):
-      self = (ArrangerSelections *) object_new (
-        ChordSelections);
+      self =
+        (ArrangerSelections *) object_new (ChordSelections);
       break;
     case TYPE (AUDIO):
-      self = (ArrangerSelections *) object_new (
-        AudioSelections);
+      self =
+        (ArrangerSelections *) object_new (AudioSelections);
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -254,20 +242,17 @@ arranger_selections_new (
  * Verify that the objects are not invalid.
  */
 bool
-arranger_selections_verify (
-  ArrangerSelections * self)
+arranger_selections_verify (ArrangerSelections * self)
 {
   /* verify that all objects are arranger
    * objects */
   GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (
-    self, objs_arr);
+  arranger_selections_get_all_objects (self, objs_arr);
   for (size_t i = 0; i < objs_arr->len; i++)
     {
-      ArrangerObject * obj = (ArrangerObject *)
-        g_ptr_array_index (objs_arr, i);
-      g_return_val_if_fail (
-        IS_ARRANGER_OBJECT (obj), false);
+      ArrangerObject * obj =
+        (ArrangerObject *) g_ptr_array_index (objs_arr, i);
+      g_return_val_if_fail (IS_ARRANGER_OBJECT (obj), false);
     }
   g_ptr_array_unref (objs_arr);
 
@@ -283,16 +268,14 @@ arranger_selections_add_object (
   ArrangerObject *     obj)
 {
   g_return_if_fail (
-    IS_ARRANGER_SELECTIONS (self)
-    && IS_ARRANGER_OBJECT (obj));
+    IS_ARRANGER_SELECTIONS (self) && IS_ARRANGER_OBJECT (obj));
 
   /* check if object is allowed */
   switch (self->type)
     {
     case TYPE (CHORD):
       g_return_if_fail (
-        obj->type
-        == ARRANGER_OBJECT_TYPE_CHORD_OBJECT);
+        obj->type == ARRANGER_OBJECT_TYPE_CHORD_OBJECT);
       break;
     case TYPE (TIMELINE):
       g_return_if_fail (
@@ -303,13 +286,11 @@ arranger_selections_add_object (
     case TYPE (MIDI):
       g_return_if_fail (
         obj->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE
-        || obj->type
-             == ARRANGER_OBJECT_TYPE_VELOCITY);
+        || obj->type == ARRANGER_OBJECT_TYPE_VELOCITY);
       break;
     case TYPE (AUTOMATION):
       g_return_if_fail (
-        obj->type
-        == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT);
+        obj->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT);
       break;
     default:
       g_return_if_reached ();
@@ -319,14 +300,12 @@ arranger_selections_add_object (
   if (obj->type == ARRANGER_OBJECT_TYPE_##caps) \
     { \
       cc * sc = (cc *) obj; \
-      if (!array_contains ( \
-            sel->sc##s, sel->num_##sc##s, sc)) \
+      if (!array_contains (sel->sc##s, sel->num_##sc##s, sc)) \
         { \
           array_double_size_if_full ( \
-            sel->sc##s, sel->num_##sc##s, \
-            sel->sc##s_size, cc *); \
-          array_append ( \
-            sel->sc##s, sel->num_##sc##s, sc); \
+            sel->sc##s, sel->num_##sc##s, sel->sc##s_size, \
+            cc *); \
+          array_append (sel->sc##s, sel->num_##sc##s, sc); \
         } \
     }
 
@@ -335,21 +314,15 @@ arranger_selections_add_object (
     {
     case TYPE (CHORD):
       {
-        ChordSelections * sel =
-          (ChordSelections *) self;
-        ADD_OBJ (
-          sel, CHORD_OBJECT, ChordObject,
-          chord_object);
+        ChordSelections * sel = (ChordSelections *) self;
+        ADD_OBJ (sel, CHORD_OBJECT, ChordObject, chord_object);
       }
       break;
     case TYPE (TIMELINE):
       {
-        TimelineSelections * sel =
-          (TimelineSelections *) self;
+        TimelineSelections * sel = (TimelineSelections *) self;
         ADD_OBJ (sel, REGION, ZRegion, region);
-        ADD_OBJ (
-          sel, SCALE_OBJECT, ScaleObject,
-          scale_object);
+        ADD_OBJ (sel, SCALE_OBJECT, ScaleObject, scale_object);
         ADD_OBJ (sel, MARKER, Marker, marker);
       }
       break;
@@ -360,11 +333,10 @@ arranger_selections_add_object (
         if (obj->type == ARRANGER_OBJECT_TYPE_VELOCITY)
           {
             Velocity * vel = (Velocity *) obj;
-            obj = (ArrangerObject *)
-              velocity_get_midi_note (vel);
+            obj =
+              (ArrangerObject *) velocity_get_midi_note (vel);
           }
-        ADD_OBJ (
-          sel, MIDI_NOTE, MidiNote, midi_note);
+        ADD_OBJ (sel, MIDI_NOTE, MidiNote, midi_note);
       }
       break;
     case TYPE (AUTOMATION):
@@ -407,8 +379,7 @@ arranger_selections_set_from_selections (
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) dest;
       RESET_COUNTERPART (ts, ZRegion, region);
-      RESET_COUNTERPART (
-        ts, ScaleObject, scale_object);
+      RESET_COUNTERPART (ts, ScaleObject, scale_object);
       RESET_COUNTERPART (ts, Marker, marker);
       break;
     case TYPE (MIDI):
@@ -422,8 +393,7 @@ arranger_selections_set_from_selections (
       break;
     case TYPE (CHORD):
       cs = (ChordSelections *) dest;
-      RESET_COUNTERPART (
-        cs, ChordObject, chord_object);
+      RESET_COUNTERPART (cs, ChordObject, chord_object);
       break;
     default:
       g_return_if_reached ();
@@ -436,27 +406,23 @@ arranger_selections_set_from_selections (
  * Clone the struct for copying, undoing, etc.
  */
 ArrangerSelections *
-arranger_selections_clone (
-  const ArrangerSelections * self)
+arranger_selections_clone (const ArrangerSelections * self)
 {
-  g_return_val_if_fail (
-    IS_ARRANGER_SELECTIONS (self), NULL);
+  g_return_val_if_fail (IS_ARRANGER_SELECTIONS (self), NULL);
 
 #define CLONE_OBJS(src_sel, new_sel, cc, sc) \
   cc *sc, *new_##sc; \
   for (int i = 0; i < src_sel->num_##sc##s; i++) \
     { \
       sc = src_sel->sc##s[i]; \
-      ArrangerObject * sc_obj = \
-        (ArrangerObject *) sc; \
+      ArrangerObject * sc_obj = (ArrangerObject *) sc; \
       new_##sc = (cc *) arranger_object_clone ( \
         (ArrangerObject *) sc); \
       ArrangerObject * new_sc_obj = \
         (ArrangerObject *) new_##sc; \
       sc_obj->transient = new_sc_obj; \
       arranger_selections_add_object ( \
-        (ArrangerSelections *) new_sel, \
-        new_sc_obj); \
+        (ArrangerSelections *) new_sel, new_sc_obj); \
     }
 
   switch (self->type)
@@ -471,11 +437,8 @@ arranger_selections_clone (
         arranger_selections_init (
           (ArrangerSelections *) new_ts,
           ARRANGER_SELECTIONS_TYPE_TIMELINE);
-        CLONE_OBJS (
-          src_ts, new_ts, ZRegion, region);
-        CLONE_OBJS (
-          src_ts, new_ts, ScaleObject,
-          scale_object);
+        CLONE_OBJS (src_ts, new_ts, ZRegion, region);
+        CLONE_OBJS (src_ts, new_ts, ScaleObject, scale_object);
         CLONE_OBJS (src_ts, new_ts, Marker, marker);
         return ((ArrangerSelections *) new_ts);
       }
@@ -490,8 +453,7 @@ arranger_selections_clone (
           (ArrangerSelections *) new_mas,
           ARRANGER_SELECTIONS_TYPE_MIDI);
         new_mas->base = src_mas->base;
-        CLONE_OBJS (
-          src_mas, new_mas, MidiNote, midi_note);
+        CLONE_OBJS (src_mas, new_mas, MidiNote, midi_note);
         return ((ArrangerSelections *) new_mas);
       }
       break;
@@ -506,8 +468,7 @@ arranger_selections_clone (
           ARRANGER_SELECTIONS_TYPE_AUTOMATION);
         new_as->base = src_as->base;
         CLONE_OBJS (
-          src_as, new_as, AutomationPoint,
-          automation_point);
+          src_as, new_as, AutomationPoint, automation_point);
         return ((ArrangerSelections *) new_as);
       }
       break;
@@ -521,9 +482,7 @@ arranger_selections_clone (
           (ArrangerSelections *) new_cs,
           ARRANGER_SELECTIONS_TYPE_CHORD);
         new_cs->base = src_cs->base;
-        CLONE_OBJS (
-          src_cs, new_cs, ChordObject,
-          chord_object);
+        CLONE_OBJS (src_cs, new_cs, ChordObject, chord_object);
         return ((ArrangerSelections *) new_cs);
       }
       break;
@@ -539,8 +498,7 @@ arranger_selections_clone (
         new_aus->base = src_aus->base;
         new_aus->sel_start = src_aus->sel_start;
         new_aus->sel_end = src_aus->sel_end;
-        new_aus->has_selection =
-          src_aus->has_selection;
+        new_aus->has_selection = src_aus->has_selection;
         new_aus->pool_id = src_aus->pool_id;
         new_aus->region_id = src_aus->region_id;
         return ((ArrangerSelections *) new_aus);
@@ -556,9 +514,7 @@ arranger_selections_clone (
 }
 
 static int
-sort_midi_notes_func (
-  const void * _a,
-  const void * _b)
+sort_midi_notes_func (const void * _a, const void * _b)
 {
   MidiNote * a = *(MidiNote * const *) _a;
   MidiNote * b = *(MidiNote * const *) _b;
@@ -576,10 +532,8 @@ sort_midi_notes_desc (const void * a, const void * b)
 static int
 sort_aps (const void * _a, const void * _b)
 {
-  AutomationPoint * a =
-    *(AutomationPoint * const *) _a;
-  AutomationPoint * b =
-    *(AutomationPoint * const *) _b;
+  AutomationPoint * a = *(AutomationPoint * const *) _a;
+  AutomationPoint * b = *(AutomationPoint * const *) _b;
 
   return a->index - b->index;
 }
@@ -613,12 +567,10 @@ sort_regions_func (const void * _a, const void * _b)
 
   Track * at = tracklist_find_track_by_name_hash (
     TRACKLIST, a->id.track_name_hash);
-  g_return_val_if_fail (
-    IS_TRACK_AND_NONNULL (at), -1);
+  g_return_val_if_fail (IS_TRACK_AND_NONNULL (at), -1);
   Track * bt = tracklist_find_track_by_name_hash (
     TRACKLIST, b->id.track_name_hash);
-  g_return_val_if_fail (
-    IS_TRACK_AND_NONNULL (bt), -1);
+  g_return_val_if_fail (IS_TRACK_AND_NONNULL (bt), -1);
   if (at->pos < bt->pos)
     return -1;
   else if (at->pos > bt->pos)
@@ -718,8 +670,7 @@ arranger_selections_sort_by_indices (
         sizeof (ZRegion *),
         desc ? sort_regions_desc : sort_regions_func);
       qsort (
-        ts->scale_objects,
-        (size_t) ts->num_scale_objects,
+        ts->scale_objects, (size_t) ts->num_scale_objects,
         sizeof (ScaleObject *),
         desc ? sort_scales_desc : sort_scales_func);
       qsort (
@@ -730,11 +681,9 @@ arranger_selections_sort_by_indices (
     case TYPE (MIDI):
       mas = (MidiArrangerSelections *) self;
       qsort (
-        mas->midi_notes,
-        (size_t) mas->num_midi_notes,
+        mas->midi_notes, (size_t) mas->num_midi_notes,
         sizeof (MidiNote *),
-        desc ? sort_midi_notes_desc
-             : sort_midi_notes_func);
+        desc ? sort_midi_notes_desc : sort_midi_notes_func);
       break;
     case TYPE (AUTOMATION):
       as = (AutomationSelections *) self;
@@ -747,8 +696,7 @@ arranger_selections_sort_by_indices (
     case TYPE (CHORD):
       cs = (ChordSelections *) self;
       qsort (
-        cs->chord_objects,
-        (size_t) cs->num_chord_objects,
+        cs->chord_objects, (size_t) cs->num_chord_objects,
         sizeof (ChordObject *),
         desc ? sort_chords_desc : sort_chords);
       break;
@@ -762,8 +710,7 @@ arranger_selections_sort_by_indices (
  * Returns if there are any selections.
  */
 bool
-arranger_selections_has_any (
-  ArrangerSelections * self)
+arranger_selections_has_any (ArrangerSelections * self)
 {
   TimelineSelections *     ts;
   ChordSelections *        cs;
@@ -774,8 +721,7 @@ arranger_selections_has_any (
     {
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
-      return ts->num_regions > 0
-             || ts->num_scale_objects > 0
+      return ts->num_regions > 0 || ts->num_scale_objects > 0
              || ts->num_markers > 0;
     case TYPE (MIDI):
       mas = (MidiArrangerSelections *) self;
@@ -788,8 +734,7 @@ arranger_selections_has_any (
       return cs->num_chord_objects > 0;
     case TYPE (AUDIO):
       {
-        AudioSelections * sel =
-          (AudioSelections *) self;
+        AudioSelections * sel = (AudioSelections *) self;
         return sel->has_selection;
       }
     default:
@@ -813,16 +758,15 @@ add_region_ticks (
     {
       const AudioSelections * as =
         (const AudioSelections *) self;
-      region = (ArrangerObject *) region_find (
-        &as->region_id);
+      region = (ArrangerObject *) region_find (&as->region_id);
     }
   else
     {
       ArrangerObject * obj =
         arranger_selections_get_first_object (self);
       g_return_if_fail (obj);
-      region = (ArrangerObject *)
-        arranger_object_get_region (obj);
+      region =
+        (ArrangerObject *) arranger_object_get_region (obj);
     }
   g_return_if_fail (region);
   position_add_ticks (pos, region->pos.ticks);
@@ -850,8 +794,7 @@ arranger_selections_get_start_pos (
   for (int i = 0; i < (sel)->num_##sc##s; i++) \
     { \
       cc *             sc = (sel)->sc##s[i]; \
-      ArrangerObject * obj = \
-        (ArrangerObject *) sc; \
+      ArrangerObject * obj = (ArrangerObject *) sc; \
       g_warn_if_fail (obj); \
       if (position_is_before (&obj->pos, pos)) \
         { \
@@ -866,8 +809,7 @@ arranger_selections_get_start_pos (
         const TimelineSelections * ts =
           (const TimelineSelections *) self;
         GET_START_POS (ts, ZRegion, region);
-        GET_START_POS (
-          ts, ScaleObject, scale_object);
+        GET_START_POS (ts, ScaleObject, scale_object);
         GET_START_POS (ts, Marker, marker);
       }
       break;
@@ -886,8 +828,7 @@ arranger_selections_get_start_pos (
       {
         const AutomationSelections * as =
           (const AutomationSelections *) self;
-        GET_START_POS (
-          as, AutomationPoint, automation_point);
+        GET_START_POS (as, AutomationPoint, automation_point);
         if (global)
           {
             add_region_ticks (self, pos);
@@ -896,10 +837,8 @@ arranger_selections_get_start_pos (
       break;
     case TYPE (CHORD):
       {
-        const ChordSelections * cs =
-          (ChordSelections *) self;
-        GET_START_POS (
-          cs, ChordObject, chord_object);
+        const ChordSelections * cs = (ChordSelections *) self;
+        GET_START_POS (cs, ChordObject, chord_object);
         if (global)
           {
             add_region_ticks (self, pos);
@@ -908,8 +847,7 @@ arranger_selections_get_start_pos (
       break;
     case TYPE (AUDIO):
       {
-        const AudioSelections * as =
-          (AudioSelections *) self;
+        const AudioSelections * as = (AudioSelections *) self;
         position_set_to_pos (pos, &as->sel_start);
         if (global)
           {
@@ -944,25 +882,20 @@ arranger_selections_get_end_pos (
   for (int i = 0; i < (sel)->num_##sc##s; i++) \
     { \
       cc *             sc = (sel)->sc##s[i]; \
-      ArrangerObject * obj = \
-        (ArrangerObject *) sc; \
+      ArrangerObject * obj = (ArrangerObject *) sc; \
       g_warn_if_fail (obj); \
-      if (arranger_object_type_has_length ( \
-            obj->type)) \
+      if (arranger_object_type_has_length (obj->type)) \
         { \
-          if (position_is_after ( \
-                &obj->end_pos, pos)) \
+          if (position_is_after (&obj->end_pos, pos)) \
             { \
-              position_set_to_pos ( \
-                pos, &obj->end_pos); \
+              position_set_to_pos (pos, &obj->end_pos); \
             } \
         } \
       else \
         { \
           if (position_is_after (&obj->pos, pos)) \
             { \
-              position_set_to_pos ( \
-                pos, &obj->pos); \
+              position_set_to_pos (pos, &obj->pos); \
             } \
         } \
     }
@@ -993,8 +926,7 @@ arranger_selections_get_end_pos (
       {
         const AutomationSelections * as =
           (const AutomationSelections *) self;
-        GET_END_POS (
-          as, AutomationPoint, automation_point);
+        GET_END_POS (as, AutomationPoint, automation_point);
         if (global)
           {
             add_region_ticks (self, pos);
@@ -1058,12 +990,10 @@ arranger_selections_add_to_region (
       {
         AutomationSelections * as =
           (AutomationSelections *) self;
-        for (int i = 0;
-             i < as->num_automation_points; i++)
+        for (int i = 0; i < as->num_automation_points; i++)
           {
             ArrangerObject * obj =
-              (ArrangerObject *)
-                as->automation_points[i];
+              (ArrangerObject *) as->automation_points[i];
             region_add_arranger_object (
               region, obj, F_NO_PUBLISH_EVENTS);
           }
@@ -1071,14 +1001,11 @@ arranger_selections_add_to_region (
       break;
     case TYPE (CHORD):
       {
-        ChordSelections * cs =
-          (ChordSelections *) self;
-        for (int i = 0; i < cs->num_chord_objects;
-             i++)
+        ChordSelections * cs = (ChordSelections *) self;
+        for (int i = 0; i < cs->num_chord_objects; i++)
           {
             ArrangerObject * obj =
-              (ArrangerObject *)
-                cs->chord_objects[i];
+              (ArrangerObject *) cs->chord_objects[i];
             region_add_arranger_object (
               region, obj, F_NO_PUBLISH_EVENTS);
           }
@@ -1106,8 +1033,7 @@ arranger_selections_get_first_object (
   for (i = 0; i < (sel)->num_##sc##s; i++) \
     { \
       cc *             sc = (sel)->sc##s[i]; \
-      ArrangerObject * obj = \
-        (ArrangerObject *) sc; \
+      ArrangerObject * obj = (ArrangerObject *) sc; \
       g_warn_if_fail (obj); \
       g_debug ("checking obj %p", obj); \
       position_print (&obj->pos); \
@@ -1131,8 +1057,7 @@ arranger_selections_get_first_object (
         const TimelineSelections * ts =
           (const TimelineSelections *) self;
         GET_FIRST_OBJ (ts, ZRegion, region);
-        GET_FIRST_OBJ (
-          ts, ScaleObject, scale_object);
+        GET_FIRST_OBJ (ts, ScaleObject, scale_object);
         GET_FIRST_OBJ (ts, Marker, marker);
       }
       break;
@@ -1147,16 +1072,14 @@ arranger_selections_get_first_object (
       {
         const AutomationSelections * as =
           (const AutomationSelections *) self;
-        GET_FIRST_OBJ (
-          as, AutomationPoint, automation_point);
+        GET_FIRST_OBJ (as, AutomationPoint, automation_point);
       }
       break;
     case TYPE (CHORD):
       {
         const ChordSelections * cs =
           (const ChordSelections *) self;
-        GET_FIRST_OBJ (
-          cs, ChordObject, chord_object);
+        GET_FIRST_OBJ (cs, ChordObject, chord_object);
       }
       break;
     default:
@@ -1185,17 +1108,13 @@ arranger_selections_get_last_object (
   for (i = 0; i < (sel)->num_##sc##s; i++) \
     { \
       cc *             sc = (sel)->sc##s[i]; \
-      ArrangerObject * obj = \
-        (ArrangerObject *) sc; \
+      ArrangerObject * obj = (ArrangerObject *) sc; \
       g_warn_if_fail (obj); \
-      if (arranger_object_type_has_length ( \
-            obj->type)) \
+      if (arranger_object_type_has_length (obj->type)) \
         { \
-          if (position_is_after ( \
-                &obj->end_pos, &pos)) \
+          if (position_is_after (&obj->end_pos, &pos)) \
             { \
-              position_set_to_pos ( \
-                &pos, &obj->end_pos); \
+              position_set_to_pos (&pos, &obj->end_pos); \
               ret_obj = obj; \
             } \
         } \
@@ -1203,8 +1122,7 @@ arranger_selections_get_last_object (
         { \
           if (position_is_after (&obj->pos, &pos)) \
             { \
-              position_set_to_pos ( \
-                &pos, &obj->pos); \
+              position_set_to_pos (&pos, &obj->pos); \
               ret_obj = obj; \
             } \
         } \
@@ -1217,8 +1135,7 @@ arranger_selections_get_last_object (
         const TimelineSelections * ts =
           (const TimelineSelections *) self;
         GET_LAST_OBJ (ts, ZRegion, region);
-        GET_LAST_OBJ (
-          ts, ScaleObject, scale_object);
+        GET_LAST_OBJ (ts, ScaleObject, scale_object);
         GET_LAST_OBJ (ts, Marker, marker);
       }
       break;
@@ -1233,16 +1150,14 @@ arranger_selections_get_last_object (
       {
         const AutomationSelections * as =
           (const AutomationSelections *) self;
-        GET_LAST_OBJ (
-          as, AutomationPoint, automation_point);
+        GET_LAST_OBJ (as, AutomationPoint, automation_point);
       }
       break;
     case TYPE (CHORD):
       {
         const ChordSelections * cs =
           (const ChordSelections *) self;
-        GET_LAST_OBJ (
-          cs, ChordObject, chord_object);
+        GET_LAST_OBJ (cs, ChordObject, chord_object);
       }
       break;
     default:
@@ -1274,8 +1189,7 @@ arranger_selections_add_ticks (
 #define ADD_TICKS(sel, sc) \
   for (i = 0; i < sel->num_##sc##s; i++) \
     { \
-      ArrangerObject * sc = \
-        (ArrangerObject *) sel->sc##s[i]; \
+      ArrangerObject * sc = (ArrangerObject *) sel->sc##s[i]; \
       arranger_object_move (sc, ticks); \
     }
 
@@ -1317,8 +1231,7 @@ arranger_selections_select_all (
   arranger_selections_clear (
     self, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
-  ZRegion * r =
-    clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
 
   ArrangerObject * obj = NULL;
   switch (self->type)
@@ -1331,12 +1244,9 @@ arranger_selections_select_all (
           for (int j = 0; j < track->num_lanes; j++)
             {
               TrackLane * lane = track->lanes[j];
-              for (int k = 0;
-                   k < lane->num_regions; k++)
+              for (int k = 0; k < lane->num_regions; k++)
                 {
-                  obj =
-                    (ArrangerObject *)
-                      lane->regions[k];
+                  obj = (ArrangerObject *) lane->regions[k];
                   arranger_object_select (
                     obj, F_SELECT, F_APPEND,
                     F_NO_PUBLISH_EVENTS);
@@ -1350,18 +1260,14 @@ arranger_selections_select_all (
             {
               for (int j = 0; j < atl->num_ats; j++)
                 {
-                  AutomationTrack * at =
-                    atl->ats[j];
+                  AutomationTrack * at = atl->ats[j];
 
                   if (!at->visible)
                     continue;
 
-                  for (int k = 0;
-                       k < at->num_regions; k++)
+                  for (int k = 0; k < at->num_regions; k++)
                     {
-                      obj =
-                        (ArrangerObject *)
-                          at->regions[k];
+                      obj = (ArrangerObject *) at->regions[k];
                       arranger_object_select (
                         obj, F_SELECT, F_APPEND,
                         F_NO_PUBLISH_EVENTS);
@@ -1371,39 +1277,29 @@ arranger_selections_select_all (
         }
 
       /* chord regions */
-      for (int j = 0;
-           j < P_CHORD_TRACK->num_chord_regions; j++)
+      for (int j = 0; j < P_CHORD_TRACK->num_chord_regions; j++)
         {
-          ZRegion * cr =
-            P_CHORD_TRACK->chord_regions[j];
+          ZRegion * cr = P_CHORD_TRACK->chord_regions[j];
           obj = (ArrangerObject *) cr;
           arranger_object_select (
-            obj, F_SELECT, F_APPEND,
-            F_NO_PUBLISH_EVENTS);
+            obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
         }
 
       /* scales */
-      for (int i = 0;
-           i < P_CHORD_TRACK->num_scales; i++)
+      for (int i = 0; i < P_CHORD_TRACK->num_scales; i++)
         {
-          obj =
-            (ArrangerObject *)
-              P_CHORD_TRACK->scales[i];
+          obj = (ArrangerObject *) P_CHORD_TRACK->scales[i];
           arranger_object_select (
-            obj, F_SELECT, F_APPEND,
-            F_NO_PUBLISH_EVENTS);
+            obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
         }
 
       /* markers */
-      for (int j = 0;
-           j < P_MARKER_TRACK->num_markers; j++)
+      for (int j = 0; j < P_MARKER_TRACK->num_markers; j++)
         {
-          Marker * marker =
-            P_MARKER_TRACK->markers[j];
+          Marker * marker = P_MARKER_TRACK->markers[j];
           obj = (ArrangerObject *) marker;
           arranger_object_select (
-            obj, F_SELECT, F_APPEND,
-            F_NO_PUBLISH_EVENTS);
+            obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
         }
       break;
     case ARRANGER_SELECTIONS_TYPE_CHORD:
@@ -1415,11 +1311,9 @@ arranger_selections_select_all (
           ChordObject * co = r->chord_objects[i];
           obj = (ArrangerObject *) co;
           g_return_if_fail (
-            co->chord_index
-            < CHORD_EDITOR->num_chords);
+            co->chord_index < CHORD_EDITOR->num_chords);
           arranger_object_select (
-            obj, F_SELECT, F_APPEND,
-            F_NO_PUBLISH_EVENTS);
+            obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
         }
       break;
     case ARRANGER_SELECTIONS_TYPE_MIDI:
@@ -1431,8 +1325,7 @@ arranger_selections_select_all (
           MidiNote * mn = r->midi_notes[i];
           obj = (ArrangerObject *) mn;
           arranger_object_select (
-            obj, F_SELECT, F_APPEND,
-            F_NO_PUBLISH_EVENTS);
+            obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
         }
       break;
       break;
@@ -1448,8 +1341,7 @@ arranger_selections_select_all (
           AutomationPoint * ap = r->aps[i];
           obj = (ArrangerObject *) ap;
           arranger_object_select (
-            obj, F_SELECT, F_APPEND,
-            F_NO_PUBLISH_EVENTS);
+            obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
         }
       break;
     default:
@@ -1459,8 +1351,7 @@ arranger_selections_select_all (
 
   if (fire_events)
     {
-      EVENTS_PUSH (
-        ET_ARRANGER_SELECTIONS_CHANGED, self);
+      EVENTS_PUSH (ET_ARRANGER_SELECTIONS_CHANGED, self);
     }
 }
 
@@ -1481,28 +1372,24 @@ arranger_selections_clear (
 /* use caches because ts->* will be operated on. */
 #define REMOVE_OBJS(sel, sc) \
   { \
-    g_message ( \
-      "%s", "clearing " #sc " selections"); \
-    int num_##sc##s = sel->num_##sc##s; \
+    g_message ("%s", "clearing " #sc " selections"); \
+    int              num_##sc##s = sel->num_##sc##s; \
     ArrangerObject * sc##s[num_##sc##s]; \
     for (int i = 0; i < num_##sc##s; i++) \
       { \
-        sc##s[i] = \
-          (ArrangerObject *) sel->sc##s[i]; \
+        sc##s[i] = (ArrangerObject *) sel->sc##s[i]; \
       } \
     for (int i = 0; i < num_##sc##s; i++) \
       { \
         ArrangerObject * sc = sc##s[i]; \
-        arranger_selections_remove_object ( \
-          self, sc); \
+        arranger_selections_remove_object (self, sc); \
         if (_free) \
           { \
             arranger_object_free (sc); \
           } \
         else if (fire_events) \
           { \
-            EVENTS_PUSH ( \
-              ET_ARRANGER_OBJECT_CHANGED, sc); \
+            EVENTS_PUSH (ET_ARRANGER_OBJECT_CHANGED, sc); \
           } \
       } \
   }
@@ -1511,8 +1398,7 @@ arranger_selections_clear (
     {
     case TYPE (TIMELINE):
       {
-        TimelineSelections * ts =
-          (TimelineSelections *) self;
+        TimelineSelections * ts = (TimelineSelections *) self;
         REMOVE_OBJS (ts, region);
         REMOVE_OBJS (ts, scale_object);
         REMOVE_OBJS (ts, marker);
@@ -1534,15 +1420,13 @@ arranger_selections_clear (
       break;
     case TYPE (CHORD):
       {
-        ChordSelections * cs =
-          (ChordSelections *) self;
+        ChordSelections * cs = (ChordSelections *) self;
         REMOVE_OBJS (cs, chord_object);
       }
       break;
     case TYPE (AUDIO):
       {
-        AudioSelections * aus =
-          (AudioSelections *) self;
+        AudioSelections * aus = (AudioSelections *) self;
         aus->has_selection = false;
       }
       break;
@@ -1652,8 +1536,7 @@ arranger_selections_post_deserialize (
 }
 
 bool
-arranger_selections_validate (
-  ArrangerSelections * self)
+arranger_selections_validate (ArrangerSelections * self)
 {
   TimelineSelections *     ts;
   ChordSelections *        cs;
@@ -1686,8 +1569,7 @@ arranger_selections_validate (
         g_return_val_if_fail (
           IS_REGION_AND_NONNULL (r), false);
         if (
-          position_is_before (
-            &aus->sel_start, &r->base.pos)
+          position_is_before (&aus->sel_start, &r->base.pos)
           || position_is_after_or_equal (
             &aus->sel_end, &r->base.end_pos))
           return false;
@@ -1705,8 +1587,7 @@ arranger_selections_validate (
  * but not the objects or @ref self itself.
  */
 void
-arranger_selections_free_members (
-  ArrangerSelections * self)
+arranger_selections_free_members (ArrangerSelections * self)
 {
   TimelineSelections *     ts;
   ChordSelections *        cs;
@@ -1758,13 +1639,11 @@ arranger_selections_free (ArrangerSelections * self)
  * all clones.
  */
 void
-arranger_selections_free_full (
-  ArrangerSelections * self)
+arranger_selections_free_full (ArrangerSelections * self)
 {
   g_return_if_fail (IS_ARRANGER_SELECTIONS (self));
 
-  g_debug (
-    "freeing arranger selections %p...", self);
+  g_debug ("freeing arranger selections %p...", self);
 
   int                      i;
   TimelineSelections *     ts;
@@ -1832,8 +1711,7 @@ arranger_selections_contains_object (
   MidiArrangerSelections * mas;
   AutomationSelections *   as;
 
-  g_return_val_if_fail (
-    IS_ARRANGER_SELECTIONS (self), 0);
+  g_return_val_if_fail (IS_ARRANGER_SELECTIONS (self), 0);
 
   switch (self->type)
     {
@@ -1847,8 +1725,7 @@ arranger_selections_contains_object (
           break;
         case ARRANGER_OBJECT_TYPE_SCALE_OBJECT:
           return array_contains (
-            ts->scale_objects,
-            ts->num_scale_objects, obj);
+            ts->scale_objects, ts->num_scale_objects, obj);
           break;
         case ARRANGER_OBJECT_TYPE_MARKER:
           return array_contains (
@@ -1866,18 +1743,15 @@ arranger_selections_contains_object (
           case ARRANGER_OBJECT_TYPE_VELOCITY:
             {
               Velocity * vel = (Velocity *) obj;
-              MidiNote * mn =
-                velocity_get_midi_note (vel);
+              MidiNote * mn = velocity_get_midi_note (vel);
               return array_contains (
-                mas->midi_notes,
-                mas->num_midi_notes, mn);
+                mas->midi_notes, mas->num_midi_notes, mn);
             }
             break;
           case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
             {
               return array_contains (
-                mas->midi_notes,
-                mas->num_midi_notes, obj);
+                mas->midi_notes, mas->num_midi_notes, obj);
             }
             break;
           default:
@@ -1905,8 +1779,7 @@ arranger_selections_contains_object (
       if (obj->type == ARRANGER_OBJECT_TYPE_CHORD_OBJECT)
         {
           return array_contains (
-            cs->chord_objects,
-            cs->num_chord_objects, obj);
+            cs->chord_objects, cs->num_chord_objects, obj);
         }
       break;
     default:
@@ -1962,8 +1835,7 @@ arranger_selections_contains_object_with_property (
   bool                       value)
 {
   GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (
-    self, objs_arr);
+  arranger_selections_get_all_objects (self, objs_arr);
 
 #define CHECK_PROP(x) \
   (property == ARRANGER_SELECTIONS_PROPERTY_##x)
@@ -1971,13 +1843,12 @@ arranger_selections_contains_object_with_property (
   bool ret = false;
   for (size_t i = 0; i < objs_arr->len; i++)
     {
-      ArrangerObject * cur_obj = (ArrangerObject *)
-        g_ptr_array_index (objs_arr, i);
+      ArrangerObject * cur_obj =
+        (ArrangerObject *) g_ptr_array_index (objs_arr, i);
 
       if (
         CHECK_PROP (HAS_LENGTH)
-        && arranger_object_type_has_length (
-             cur_obj->type)
+        && arranger_object_type_has_length (cur_obj->type)
              == value)
         {
           ret = true;
@@ -1987,10 +1858,8 @@ arranger_selections_contains_object_with_property (
       if (CHECK_PROP (HAS_LOOPED))
         {
           int num_loops =
-            arranger_object_type_can_loop (
-              cur_obj->type)
-              ? arranger_object_get_num_loops (
-                cur_obj, false)
+            arranger_object_type_can_loop (cur_obj->type)
+              ? arranger_object_get_num_loops (cur_obj, false)
               : 0;
           if ((num_loops > 0) == value)
             {
@@ -2001,8 +1870,7 @@ arranger_selections_contains_object_with_property (
 
       if (
         CHECK_PROP (CAN_LOOP)
-        && arranger_object_type_can_loop (
-             cur_obj->type)
+        && arranger_object_type_can_loop (cur_obj->type)
              == value)
         {
           ret = true;
@@ -2011,8 +1879,7 @@ arranger_selections_contains_object_with_property (
 
       if (
         CHECK_PROP (CAN_FADE)
-        && arranger_object_can_fade (cur_obj)
-             == value)
+        && arranger_object_can_fade (cur_obj) == value)
         {
           ret = true;
           break;
@@ -2035,8 +1902,7 @@ arranger_selections_remove_object (
   ArrangerObject *     obj)
 {
   g_return_if_fail (
-    IS_ARRANGER_SELECTIONS (self)
-    && IS_ARRANGER_OBJECT (obj));
+    IS_ARRANGER_SELECTIONS (self) && IS_ARRANGER_OBJECT (obj));
 
   TimelineSelections *     ts;
   ChordSelections *        cs;
@@ -2046,11 +1912,9 @@ arranger_selections_remove_object (
 #define REMOVE_OBJ(sel, caps, sc) \
   if ( \
     obj->type == ARRANGER_OBJECT_TYPE_##caps \
-    && array_contains ( \
-      sel->sc##s, sel->num_##sc##s, obj)) \
+    && array_contains (sel->sc##s, sel->num_##sc##s, obj)) \
     { \
-      array_delete ( \
-        sel->sc##s, sel->num_##sc##s, obj); \
+      array_delete (sel->sc##s, sel->num_##sc##s, obj); \
     }
 
   switch (self->type)
@@ -2066,15 +1930,14 @@ arranger_selections_remove_object (
       if (obj->type == ARRANGER_OBJECT_TYPE_VELOCITY)
         {
           Velocity * vel = (Velocity *) obj;
-          obj = (ArrangerObject *)
-            velocity_get_midi_note (vel);
+          obj =
+            (ArrangerObject *) velocity_get_midi_note (vel);
         }
       REMOVE_OBJ (mas, MIDI_NOTE, midi_note);
       break;
     case TYPE (AUTOMATION):
       as = (AutomationSelections *) self;
-      REMOVE_OBJ (
-        as, AUTOMATION_POINT, automation_point);
+      REMOVE_OBJ (as, AUTOMATION_POINT, automation_point);
       break;
     case TYPE (CHORD):
       cs = (ChordSelections *) self;
@@ -2090,14 +1953,11 @@ double
 arranger_selections_get_length_in_ticks (
   ArrangerSelections * self)
 {
-  g_return_val_if_fail (
-    IS_ARRANGER_SELECTIONS (self), 0);
+  g_return_val_if_fail (IS_ARRANGER_SELECTIONS (self), 0);
 
   Position p1, p2;
-  arranger_selections_get_start_pos (
-    self, &p1, F_GLOBAL);
-  arranger_selections_get_end_pos (
-    self, &p2, F_GLOBAL);
+  arranger_selections_get_start_pos (self, &p1, F_GLOBAL);
+  arranger_selections_get_end_pos (self, &p2, F_GLOBAL);
 
   return p2.ticks - p1.ticks;
 }
@@ -2112,8 +1972,7 @@ arranger_selections_all_on_same_lane (
 {
   bool        ret = true;
   GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (
-    self, objs_arr);
+  arranger_selections_get_all_objects (self, objs_arr);
 
   /* return if not all regions on the same lane or
    * automation track */
@@ -2122,8 +1981,8 @@ arranger_selections_all_on_same_lane (
   id.type = -1;
   for (size_t i = 0; i < objs_arr->len; i++)
     {
-      ArrangerObject * obj = (ArrangerObject *)
-        g_ptr_array_index (objs_arr, i);
+      ArrangerObject * obj =
+        (ArrangerObject *) g_ptr_array_index (objs_arr, i);
       if (obj->type != ARRANGER_OBJECT_TYPE_REGION)
         {
           ret = false;
@@ -2151,8 +2010,7 @@ arranger_selections_all_on_same_lane (
         case REGION_TYPE_MIDI:
         case REGION_TYPE_AUDIO:
           if (
-            r->id.track_name_hash
-              != id.track_name_hash
+            r->id.track_name_hash != id.track_name_hash
             || r->id.lane_pos != id.lane_pos)
             {
               ret = false;
@@ -2163,8 +2021,7 @@ arranger_selections_all_on_same_lane (
           break;
         case REGION_TYPE_AUTOMATION:
           if (
-            r->id.track_name_hash
-              != id.track_name_hash
+            r->id.track_name_hash != id.track_name_hash
             || r->id.at_idx != id.at_idx)
             {
               ret = false;
@@ -2186,13 +2043,11 @@ free_objs_and_return:
  * @note All selections must be on the same lane.
  */
 void
-arranger_selections_merge (
-  ArrangerSelections * self)
+arranger_selections_merge (ArrangerSelections * self)
 {
   /* return if not all regions on the same lane or
    * automation track */
-  bool same_lane =
-    arranger_selections_all_on_same_lane (self);
+  bool same_lane = arranger_selections_all_on_same_lane (self);
   if (!same_lane)
     {
       g_warning ("selections not on same lane");
@@ -2200,27 +2055,21 @@ arranger_selections_merge (
     }
 
   GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_selections_get_all_objects (
-    self, objs_arr);
+  arranger_selections_get_all_objects (self, objs_arr);
 
   double ticks_length =
     arranger_selections_get_length_in_ticks (self);
-  unsigned_frame_t num_frames =
-    (unsigned_frame_t) ceil (
-      (double) AUDIO_ENGINE->frames_per_tick
-      * ticks_length);
+  unsigned_frame_t num_frames = (unsigned_frame_t) ceil (
+    (double) AUDIO_ENGINE->frames_per_tick * ticks_length);
   Position pos, end_pos;
-  arranger_selections_get_start_pos (
-    self, &pos, F_GLOBAL);
-  position_from_ticks (
-    &end_pos, pos.ticks + ticks_length);
+  arranger_selections_get_start_pos (self, &pos, F_GLOBAL);
+  position_from_ticks (&end_pos, pos.ticks + ticks_length);
 
   ArrangerObject * first_obj =
     arranger_selections_get_first_object (self);
   g_return_if_fail (
     IS_ARRANGER_OBJECT_AND_NONNULL (first_obj)
-    && first_obj->type
-         == ARRANGER_OBJECT_TYPE_REGION);
+    && first_obj->type == ARRANGER_OBJECT_TYPE_REGION);
   ZRegion * first_r = (ZRegion *) first_obj;
 
   ZRegion * new_r = NULL;
@@ -2241,16 +2090,13 @@ arranger_selections_merge (
           /* copy all midi notes */
           for (int j = 0; j < r->num_midi_notes; j++)
             {
-              MidiNote * mn = r->midi_notes[j];
+              MidiNote *       mn = r->midi_notes[j];
               ArrangerObject * new_obj =
-                arranger_object_clone (
-                  (ArrangerObject *) mn);
-              MidiNote * new_mn =
-                (MidiNote *) new_obj;
+                arranger_object_clone ((ArrangerObject *) mn);
+              MidiNote * new_mn = (MidiNote *) new_obj;
 
               /* move by diff from first object */
-              arranger_object_move (
-                new_obj, ticks_diff);
+              arranger_object_move (new_obj, ticks_diff);
 
               midi_region_add_midi_note (
                 new_r, new_mn, F_NO_PUBLISH_EVENTS);
@@ -2266,28 +2112,22 @@ arranger_selections_merge (
         dsp_fill (rframes, 0, (size_t) num_frames);
         AudioClip * first_r_clip =
           audio_region_get_clip (first_r);
-        BitDepth max_depth =
-          first_r_clip->bit_depth;
+        BitDepth max_depth = first_r_clip->bit_depth;
         g_warn_if_fail (first_r_clip->name);
         for (size_t i = 0; i < objs_arr->len; i++)
           {
-            ArrangerObject * r_obj =
-              (ArrangerObject *)
-                g_ptr_array_index (objs_arr, i);
+            ArrangerObject * r_obj = (ArrangerObject *)
+              g_ptr_array_index (objs_arr, i);
             ZRegion * r = (ZRegion *) r_obj;
             long      frames_diff =
-              r_obj->pos.frames
-              - first_obj->pos.frames;
+              r_obj->pos.frames - first_obj->pos.frames;
             long r_frames_length =
-              arranger_object_get_length_in_frames (
-                r_obj);
+              arranger_object_get_length_in_frames (r_obj);
 
             /* add all audio data */
-            AudioClip * clip =
-              audio_region_get_clip (r);
+            AudioClip * clip = audio_region_get_clip (r);
             dsp_add2 (
-              &lframes[frames_diff],
-              clip->ch_frames[0],
+              &lframes[frames_diff], clip->ch_frames[0],
               (size_t) r_frames_length);
 
             if (clip->bit_depth > max_depth)
@@ -2297,8 +2137,7 @@ arranger_selections_merge (
           }
 
         /* interleave */
-        for (unsigned_frame_t i = 0;
-             i < num_frames; i++)
+        for (unsigned_frame_t i = 0; i < num_frames; i++)
           {
             frames[i * 2] = lframes[i];
             frames[i * 2 + 1] = rframes[i];
@@ -2308,13 +2147,13 @@ arranger_selections_merge (
         new_r = audio_region_new (
           -1, NULL, true, frames, num_frames,
           first_r_clip->name, 2, max_depth, &pos,
-          first_r->id.track_name_hash,
-          first_r->id.lane_pos, first_r->id.idx);
+          first_r->id.track_name_hash, first_r->id.lane_pos,
+          first_r->id.idx);
       }
       break;
     case REGION_TYPE_CHORD:
-      new_r = chord_region_new (
-        &pos, &end_pos, first_r->id.idx);
+      new_r =
+        chord_region_new (&pos, &end_pos, first_r->id.idx);
       for (size_t i = 0; i < objs_arr->len; i++)
         {
           ArrangerObject * r_obj = (ArrangerObject *)
@@ -2324,20 +2163,15 @@ arranger_selections_merge (
             r_obj->pos.ticks - first_obj->pos.ticks;
 
           /* copy all chord objects */
-          for (int j = 0; j < r->num_chord_objects;
-               j++)
+          for (int j = 0; j < r->num_chord_objects; j++)
             {
-              ChordObject * co =
-                r->chord_objects[j];
+              ChordObject *    co = r->chord_objects[j];
               ArrangerObject * new_obj =
-                arranger_object_clone (
-                  (ArrangerObject *) co);
-              ChordObject * new_co =
-                (ChordObject *) new_obj;
+                arranger_object_clone ((ArrangerObject *) co);
+              ChordObject * new_co = (ChordObject *) new_obj;
 
               /* move by diff from first object */
-              arranger_object_move (
-                new_obj, ticks_diff);
+              arranger_object_move (new_obj, ticks_diff);
 
               chord_region_add_chord_object (
                 new_r, new_co, F_NO_PUBLISH_EVENTS);
@@ -2361,14 +2195,12 @@ arranger_selections_merge (
             {
               AutomationPoint * ap = r->aps[j];
               ArrangerObject *  new_obj =
-                arranger_object_clone (
-                  (ArrangerObject *) ap);
+                arranger_object_clone ((ArrangerObject *) ap);
               AutomationPoint * new_ap =
                 (AutomationPoint *) new_obj;
 
               /* move by diff from first object */
-              arranger_object_move (
-                new_obj, ticks_diff);
+              arranger_object_move (new_obj, ticks_diff);
 
               automation_region_add_ap (
                 new_r, new_ap, F_NO_PUBLISH_EVENTS);
@@ -2377,8 +2209,7 @@ arranger_selections_merge (
       break;
     }
 
-  region_gen_name (
-    new_r, first_r->name, NULL, NULL);
+  region_gen_name (new_r, first_r->name, NULL, NULL);
 
   /* clear/free previous selections and add the
    * new region */
@@ -2391,14 +2222,12 @@ arranger_selections_merge (
 }
 
 bool
-arranger_selections_contains_looped (
-  ArrangerSelections * self)
+arranger_selections_contains_looped (ArrangerSelections * self)
 {
   if (self->type != ARRANGER_SELECTIONS_TYPE_TIMELINE)
     return false;
 
-  TimelineSelections * tl =
-    (TimelineSelections *) self;
+  TimelineSelections * tl = (TimelineSelections *) self;
   for (int i = 0; i < tl->num_regions; i++)
     {
       ZRegion * r = tl->regions[i];
@@ -2410,30 +2239,25 @@ arranger_selections_contains_looped (
 }
 
 bool
-arranger_selections_can_be_merged (
-  ArrangerSelections * self)
+arranger_selections_can_be_merged (ArrangerSelections * self)
 {
   if (self->type != ARRANGER_SELECTIONS_TYPE_TIMELINE)
     return false;
 
-  TimelineSelections * tl =
-    (TimelineSelections *) self;
+  TimelineSelections * tl = (TimelineSelections *) self;
 
   return tl->num_regions > 1
          && arranger_selections_all_on_same_lane (self)
-         && !arranger_selections_contains_looped (
-           self);
+         && !arranger_selections_contains_looped (self);
 }
 
 /**
  * Returns if the selections can be pasted.
  */
 bool
-arranger_selections_can_be_pasted (
-  ArrangerSelections * self)
+arranger_selections_can_be_pasted (ArrangerSelections * self)
 {
-  ZRegion * r =
-    clip_editor_get_region (CLIP_EDITOR);
+  ZRegion *  r = clip_editor_get_region (CLIP_EDITOR);
   Position * pos = PLAYHEAD;
 
   switch (self->type)
@@ -2495,12 +2319,10 @@ arranger_selections_paste_to_pos (
     {
       TimelineSelections * ts =
         (TimelineSelections *) clone_sel;
-      Track * track =
-        TRACKLIST_SELECTIONS->tracks[0];
+      Track * track = TRACKLIST_SELECTIONS->tracks[0];
 
       arranger_selections_add_ticks (
-        clone_sel,
-        pos->ticks - first_obj_pos.ticks);
+        clone_sel, pos->ticks - first_obj_pos.ticks);
 
       /* add selections to track */
       for (int i = 0; i < ts->num_regions; i++)
@@ -2530,46 +2352,37 @@ arranger_selections_paste_to_pos (
 
       for (int i = 0; i < ts->num_scale_objects; i++)
         {
-          ScaleObject * scale =
-            ts->scale_objects[i];
-          chord_track_add_scale (
-            P_CHORD_TRACK, scale);
+          ScaleObject * scale = ts->scale_objects[i];
+          chord_track_add_scale (P_CHORD_TRACK, scale);
         }
       for (int i = 0; i < ts->num_markers; i++)
         {
           Marker * m = ts->markers[i];
-          marker_track_add_marker (
-            P_MARKER_TRACK, m);
+          marker_track_add_marker (P_MARKER_TRACK, m);
         }
     }
   /* else if selections inside region */
   else
     {
-      ZRegion * region =
-        clip_editor_get_region (CLIP_EDITOR);
-      ArrangerObject * r_obj =
-        (ArrangerObject *) region;
+      ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+      ArrangerObject * r_obj = (ArrangerObject *) region;
 
       /* add selections to region */
-      arranger_selections_add_to_region (
-        clone_sel, region);
+      arranger_selections_add_to_region (clone_sel, region);
       arranger_selections_add_ticks (
         clone_sel,
-        (pos->ticks - r_obj->pos.ticks)
-          - first_obj_pos.ticks);
+        (pos->ticks - r_obj->pos.ticks) - first_obj_pos.ticks);
     }
 
   if (undoable)
     {
       GError * err = NULL;
-      bool     ret =
-        arranger_selections_action_perform_create (
-          clone_sel, &err);
+      bool ret = arranger_selections_action_perform_create (
+        clone_sel, &err);
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s",
-            _ ("Failed to paste selections"));
+            err, "%s", _ ("Failed to paste selections"));
         }
     }
 }
@@ -2630,8 +2443,7 @@ arranger_selections_get_all_objects (
 }
 
 ArrangerSelections *
-arranger_selections_get_for_type (
-  ArrangerSelectionsType type)
+arranger_selections_get_for_type (ArrangerSelectionsType type)
 {
   switch (type)
     {
@@ -2640,11 +2452,9 @@ arranger_selections_get_for_type (
     case ARRANGER_SELECTIONS_TYPE_MIDI:
       return (ArrangerSelections *) MA_SELECTIONS;
     case ARRANGER_SELECTIONS_TYPE_CHORD:
-      return (
-        ArrangerSelections *) CHORD_SELECTIONS;
+      return (ArrangerSelections *) CHORD_SELECTIONS;
     case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
-      return (ArrangerSelections *)
-        AUTOMATION_SELECTIONS;
+      return (ArrangerSelections *) AUTOMATION_SELECTIONS;
     default:
       g_return_val_if_reached (NULL);
     }
@@ -2658,8 +2468,7 @@ arranger_selections_contains_clip (
 {
   if (self->type == ARRANGER_SELECTIONS_TYPE_TIMELINE)
     {
-      TimelineSelections * sel =
-        (TimelineSelections *) self;
+      TimelineSelections * sel = (TimelineSelections *) self;
       for (int i = 0; i < sel->num_regions; i++)
         {
           ZRegion * r = sel->regions[i];
@@ -2673,8 +2482,7 @@ arranger_selections_contains_clip (
     }
   else if (self->type == ARRANGER_SELECTIONS_TYPE_AUDIO)
     {
-      AudioSelections * sel =
-        (AudioSelections *) self;
+      AudioSelections * sel = (AudioSelections *) self;
       if (sel->pool_id == clip->pool_id)
         {
           return true;
@@ -2689,8 +2497,7 @@ arranger_selections_can_split_at_pos (
   const ArrangerSelections * self,
   const Position *           pos)
 {
-  int num_objs =
-    arranger_selections_get_num_objects (self);
+  int num_objs = arranger_selections_get_num_objects (self);
   TimelineSelections *     ts;
   MidiArrangerSelections * mas;
   bool                     can_split = true;
@@ -2706,13 +2513,11 @@ arranger_selections_can_split_at_pos (
       for (int i = 0; i < ts->num_regions; i++)
         {
           ZRegion *        r = ts->regions[i];
-          ArrangerObject * r_obj =
-            (ArrangerObject *) r;
+          ArrangerObject * r_obj = (ArrangerObject *) r;
 
           /* don't allow splitting at edges */
           if (
-            position_is_before_or_equal (
-              pos, &r_obj->pos)
+            position_is_before_or_equal (pos, &r_obj->pos)
             || position_is_after_or_equal (
               pos, &r_obj->end_pos))
             {
@@ -2726,13 +2531,11 @@ arranger_selections_can_split_at_pos (
       for (int i = 0; i < mas->num_midi_notes; i++)
         {
           MidiNote *       mn = mas->midi_notes[i];
-          ArrangerObject * mn_obj =
-            (ArrangerObject *) mn;
+          ArrangerObject * mn_obj = (ArrangerObject *) mn;
 
           /* don't allow splitting at edges */
           if (
-            position_is_before_or_equal (
-              pos, &mn_obj->pos)
+            position_is_before_or_equal (pos, &mn_obj->pos)
             || position_is_after_or_equal (
               pos, &mn_obj->end_pos))
             {
@@ -2753,8 +2556,7 @@ return_can_split:
       position_to_string (pos, pos_str);
       g_message (
         "cannot split %s selections at %s",
-        arranger_selections_type_strings[self->type]
-          .str,
+        arranger_selections_type_strings[self->type].str,
         pos_str);
     }
 

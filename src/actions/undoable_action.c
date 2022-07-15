@@ -29,19 +29,15 @@ undoable_action_init_loaded (UndoableAction * self)
       INIT_LOADED (
         TRACKLIST_SELECTIONS, tracklist_selections,
         TracklistSelections);
+      INIT_LOADED (CHANNEL_SEND, channel_send, ChannelSend);
       INIT_LOADED (
-        CHANNEL_SEND, channel_send, ChannelSend);
-      INIT_LOADED (
-        MIXER_SELECTIONS, mixer_selections,
-        MixerSelections);
+        MIXER_SELECTIONS, mixer_selections, MixerSelections);
       INIT_LOADED (
         ARRANGER_SELECTIONS, arranger_selections,
         ArrangerSelections);
+      INIT_LOADED (MIDI_MAPPING, midi_mapping, MidiMapping);
       INIT_LOADED (
-        MIDI_MAPPING, midi_mapping, MidiMapping);
-      INIT_LOADED (
-        PORT_CONNECTION, port_connection,
-        PortConnection);
+        PORT_CONNECTION, port_connection, PortConnection);
       INIT_LOADED (PORT, port, Port);
       INIT_LOADED (RANGE, range, Range);
       INIT_LOADED (TRANSPORT, transport, Transport);
@@ -61,8 +57,7 @@ undoable_action_init (
   UndoableAction *   self,
   UndoableActionType type)
 {
-  self->schema_version =
-    UNDOABLE_ACTION_SCHEMA_VERSION;
+  self->schema_version = UNDOABLE_ACTION_SCHEMA_VERSION;
   self->type = type;
   self->num_actions = 1;
 }
@@ -76,9 +71,7 @@ undoable_action_init (
  *   calculations.
  */
 static bool
-need_transport_total_bar_update (
-  UndoableAction * self,
-  bool             _do)
+need_transport_total_bar_update (UndoableAction * self, bool _do)
 {
   switch (self->type)
     {
@@ -100,21 +93,14 @@ need_transport_total_bar_update (
       {
         TracklistSelectionsAction * action =
           (TracklistSelectionsAction *) self;
-        if (
-          action->type
-          == TRACKLIST_SELECTIONS_ACTION_EDIT)
+        if (action->type == TRACKLIST_SELECTIONS_ACTION_EDIT)
           {
             if (
-              action->edit_type
-                == EDIT_TRACK_ACTION_TYPE_MUTE
-              || action->edit_type
-                   == EDIT_TRACK_ACTION_TYPE_SOLO
-              || action->edit_type
-                   == EDIT_TRACK_ACTION_TYPE_LISTEN
-              || action->edit_type
-                   == EDIT_TRACK_ACTION_TYPE_VOLUME
-              || action->edit_type
-                   == EDIT_TRACK_ACTION_TYPE_PAN)
+              action->edit_type == EDIT_TRACK_ACTION_TYPE_MUTE
+              || action->edit_type == EDIT_TRACK_ACTION_TYPE_SOLO
+              || action->edit_type == EDIT_TRACK_ACTION_TYPE_LISTEN
+              || action->edit_type == EDIT_TRACK_ACTION_TYPE_VOLUME
+              || action->edit_type == EDIT_TRACK_ACTION_TYPE_PAN)
               {
                 return false;
               }
@@ -156,21 +142,14 @@ undoable_action_needs_pause (UndoableAction * self)
       {
         TracklistSelectionsAction * action =
           (TracklistSelectionsAction *) self;
-        if (
-          action->type
-          == TRACKLIST_SELECTIONS_ACTION_EDIT)
+        if (action->type == TRACKLIST_SELECTIONS_ACTION_EDIT)
           {
             if (
-              action->edit_type
-                == EDIT_TRACK_ACTION_TYPE_MUTE
-              || action->edit_type
-                   == EDIT_TRACK_ACTION_TYPE_SOLO
-              || action->edit_type
-                   == EDIT_TRACK_ACTION_TYPE_LISTEN
-              || action->edit_type
-                   == EDIT_TRACK_ACTION_TYPE_VOLUME
-              || action->edit_type
-                   == EDIT_TRACK_ACTION_TYPE_PAN)
+              action->edit_type == EDIT_TRACK_ACTION_TYPE_MUTE
+              || action->edit_type == EDIT_TRACK_ACTION_TYPE_SOLO
+              || action->edit_type == EDIT_TRACK_ACTION_TYPE_LISTEN
+              || action->edit_type == EDIT_TRACK_ACTION_TYPE_VOLUME
+              || action->edit_type == EDIT_TRACK_ACTION_TYPE_PAN)
               {
                 return false;
               }
@@ -193,8 +172,7 @@ undoable_action_needs_pause (UndoableAction * self)
  * clips.
  */
 bool
-undoable_action_can_contain_clip (
-  UndoableAction * self)
+undoable_action_can_contain_clip (UndoableAction * self)
 {
   switch (self->type)
     {
@@ -224,9 +202,7 @@ undoable_action_can_contain_clip (
  * @return Non-zero if errors occurred.
  */
 int
-undoable_action_do (
-  UndoableAction * self,
-  GError **        error)
+undoable_action_do (UndoableAction * self, GError ** error)
 {
 #if 0
   g_debug ("waiting for port operation lock...");
@@ -249,20 +225,16 @@ undoable_action_do (
 #define DO_ACTION(uc, sc, cc) \
   case UA_##uc: \
     { \
-      char * str = \
-        undoable_action_to_string (self); \
-      g_message ( \
-        "[DOING ACTION]: " #uc " (%s)", str); \
-      ret = sc##_action_do ( \
-        (cc##Action *) self, error); \
+      char * str = undoable_action_to_string (self); \
+      g_message ("[DOING ACTION]: " #uc " (%s)", str); \
+      ret = sc##_action_do ((cc##Action *) self, error); \
       if (ret == 0) \
         { \
           g_message ("[DONE]: " #uc " (%s)", str); \
         } \
       else \
         { \
-          g_warning ( \
-            "[FAILED]: " #uc " (%s)", str); \
+          g_warning ("[FAILED]: " #uc " (%s)", str); \
         } \
       g_free (str); \
     } \
@@ -273,23 +245,19 @@ undoable_action_do (
       DO_ACTION (
         TRACKLIST_SELECTIONS, tracklist_selections,
         TracklistSelections);
+      DO_ACTION (CHANNEL_SEND, channel_send, ChannelSend);
       DO_ACTION (
-        CHANNEL_SEND, channel_send, ChannelSend);
-      DO_ACTION (
-        MIXER_SELECTIONS, mixer_selections,
-        MixerSelections);
+        MIXER_SELECTIONS, mixer_selections, MixerSelections);
       DO_ACTION (
         ARRANGER_SELECTIONS, arranger_selections,
         ArrangerSelections);
       DO_ACTION (CHORD, chord, Chord);
       DO_ACTION (RANGE, range, Range);
       DO_ACTION (
-        PORT_CONNECTION, port_connection,
-        PortConnection);
+        PORT_CONNECTION, port_connection, PortConnection);
       DO_ACTION (PORT, port, Port);
       DO_ACTION (TRANSPORT, transport, Transport);
-      DO_ACTION (
-        MIDI_MAPPING, midi_mapping, MidiMapping);
+      DO_ACTION (MIDI_MAPPING, midi_mapping, MidiMapping);
     default:
       g_warn_if_reached ();
       ret = -1;
@@ -306,8 +274,7 @@ undoable_action_do (
   if (need_transport_total_bar_update (self, true))
     {
       /* recalculate transport bars */
-      transport_recalculate_total_bars (
-        TRANSPORT, NULL);
+      transport_recalculate_total_bars (TRANSPORT, NULL);
     }
 
   if (undoable_action_needs_pause (self))
@@ -325,9 +292,7 @@ undoable_action_do (
  * @return Non-zero if errors occurred.
  */
 int
-undoable_action_undo (
-  UndoableAction * self,
-  GError **        error)
+undoable_action_undo (UndoableAction * self, GError ** error)
 {
   /*zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);*/
 
@@ -346,21 +311,16 @@ undoable_action_undo (
 #define UNDO_ACTION(uc, sc, cc) \
   case UA_##uc: \
     { \
-      char * str = \
-        undoable_action_to_string (self); \
-      g_message ( \
-        "[UNDOING ACTION]: " #uc " (%s)", str); \
-      ret = sc##_action_undo ( \
-        (cc##Action *) self, error); \
+      char * str = undoable_action_to_string (self); \
+      g_message ("[UNDOING ACTION]: " #uc " (%s)", str); \
+      ret = sc##_action_undo ((cc##Action *) self, error); \
       if (ret == 0) \
         { \
-          g_message ( \
-            "[UNDONE]: " #uc " (%s)", str); \
+          g_message ("[UNDONE]: " #uc " (%s)", str); \
         } \
       else \
         { \
-          g_warning ( \
-            "[FAILED]: " #uc " (%s)", str); \
+          g_warning ("[FAILED]: " #uc " (%s)", str); \
         } \
       g_free (str); \
     } \
@@ -371,19 +331,15 @@ undoable_action_undo (
       UNDO_ACTION (
         TRACKLIST_SELECTIONS, tracklist_selections,
         TracklistSelections);
+      UNDO_ACTION (CHANNEL_SEND, channel_send, ChannelSend);
       UNDO_ACTION (
-        CHANNEL_SEND, channel_send, ChannelSend);
-      UNDO_ACTION (
-        MIXER_SELECTIONS, mixer_selections,
-        MixerSelections);
+        MIXER_SELECTIONS, mixer_selections, MixerSelections);
       UNDO_ACTION (
         ARRANGER_SELECTIONS, arranger_selections,
         ArrangerSelections);
+      UNDO_ACTION (MIDI_MAPPING, midi_mapping, MidiMapping);
       UNDO_ACTION (
-        MIDI_MAPPING, midi_mapping, MidiMapping);
-      UNDO_ACTION (
-        PORT_CONNECTION, port_connection,
-        PortConnection);
+        PORT_CONNECTION, port_connection, PortConnection);
       UNDO_ACTION (PORT, port, Port);
       UNDO_ACTION (RANGE, range, Range);
       UNDO_ACTION (TRANSPORT, transport, Transport);
@@ -400,8 +356,7 @@ undoable_action_undo (
   if (need_transport_total_bar_update (self, false))
     {
       /* recalculate transport bars */
-      transport_recalculate_total_bars (
-        TRANSPORT, NULL);
+      transport_recalculate_total_bars (TRANSPORT, NULL);
     }
 
   if (undoable_action_needs_pause (self))
@@ -437,9 +392,8 @@ undoable_action_contains_clip (
       {
         ArrangerSelectionsAction * action =
           (ArrangerSelectionsAction *) self;
-        ret =
-          arranger_selections_action_contains_clip (
-            action, clip);
+        ret = arranger_selections_action_contains_clip (
+          action, clip);
       }
       break;
     case UA_RANGE:
@@ -533,8 +487,7 @@ undoable_action_set_num_actions (
   int              num_actions)
 {
   g_return_if_fail (
-    num_actions > 0
-    && num_actions < ZRYTHM->undo_stack_len);
+    num_actions > 0 && num_actions < ZRYTHM->undo_stack_len);
   self->num_actions = num_actions;
 }
 
@@ -561,8 +514,8 @@ undoable_action_save_or_load_port_connections (
       g_debug (
         "updating and caching port connections "
         "after doing action");
-      *after = port_connections_manager_clone (
-        PORT_CONNECTIONS_MGR);
+      *after =
+        port_connections_manager_clone (PORT_CONNECTIONS_MGR);
     }
   else if (_do && *after != NULL)
     {
@@ -602,31 +555,25 @@ undoable_action_to_string (UndoableAction * ua)
 {
 #define STRINGIZE_UA(caps, cc, sc) \
   case UA_##caps: \
-    return sc##_action_stringize ( \
-      (cc##Action *) ua);
+    return sc##_action_stringize ((cc##Action *) ua);
 
   switch (ua->type)
     {
       STRINGIZE_UA (
         TRACKLIST_SELECTIONS, TracklistSelections,
         tracklist_selections);
+      STRINGIZE_UA (CHANNEL_SEND, ChannelSend, channel_send);
       STRINGIZE_UA (
-        CHANNEL_SEND, ChannelSend, channel_send);
-      STRINGIZE_UA (
-        MIXER_SELECTIONS, MixerSelections,
-        mixer_selections);
+        MIXER_SELECTIONS, MixerSelections, mixer_selections);
       STRINGIZE_UA (
         ARRANGER_SELECTIONS, ArrangerSelections,
         arranger_selections);
+      STRINGIZE_UA (MIDI_MAPPING, MidiMapping, midi_mapping);
       STRINGIZE_UA (
-        MIDI_MAPPING, MidiMapping, midi_mapping);
-      STRINGIZE_UA (
-        PORT_CONNECTION, PortConnection,
-        port_connection);
+        PORT_CONNECTION, PortConnection, port_connection);
       STRINGIZE_UA (PORT, Port, port);
       STRINGIZE_UA (RANGE, Range, range);
-      STRINGIZE_UA (
-        TRANSPORT, Transport, transport);
+      STRINGIZE_UA (TRANSPORT, Transport, transport);
       STRINGIZE_UA (CHORD, Chord, chord);
     default:
       g_return_val_if_reached (g_strdup (""));
@@ -649,19 +596,15 @@ undoable_action_free (UndoableAction * self)
       FREE_ACTION (
         TRACKLIST_SELECTIONS, tracklist_selections,
         TracklistSelections);
+      FREE_ACTION (CHANNEL_SEND, channel_send, ChannelSend);
       FREE_ACTION (
-        CHANNEL_SEND, channel_send, ChannelSend);
-      FREE_ACTION (
-        MIXER_SELECTIONS, mixer_selections,
-        MixerSelections);
+        MIXER_SELECTIONS, mixer_selections, MixerSelections);
       FREE_ACTION (
         ARRANGER_SELECTIONS, arranger_selections,
         ArrangerSelections);
+      FREE_ACTION (MIDI_MAPPING, midi_mapping, MidiMapping);
       FREE_ACTION (
-        MIDI_MAPPING, midi_mapping, MidiMapping);
-      FREE_ACTION (
-        PORT_CONNECTION, port_connection,
-        PortConnection);
+        PORT_CONNECTION, port_connection, PortConnection);
       FREE_ACTION (PORT, port, Port);
       FREE_ACTION (RANGE, range, Range);
       FREE_ACTION (TRANSPORT, transport, Transport);

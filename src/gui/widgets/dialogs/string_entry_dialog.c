@@ -49,8 +49,8 @@ on_response (
 {
   if (response == GTK_RESPONSE_ACCEPT)
     {
-      const char * text = gtk_editable_get_text (
-        GTK_EDITABLE (self->entry));
+      const char * text =
+        gtk_editable_get_text (GTK_EDITABLE (self->entry));
 
       self->setter (self->obj, text);
     }
@@ -63,8 +63,7 @@ on_entry_activate (
   GtkEntry *                btn,
   StringEntryDialogWidget * self)
 {
-  gtk_dialog_response (
-    GTK_DIALOG (self), GTK_RESPONSE_ACCEPT);
+  gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_ACCEPT);
 }
 
 /**
@@ -78,9 +77,8 @@ string_entry_dialog_widget_new (
   GenericStringSetter setter)
 {
   StringEntryDialogWidget * self = g_object_new (
-    STRING_ENTRY_DIALOG_WIDGET_TYPE, "icon-name",
-    "zrythm", "title", _ ("Please enter a value"),
-    NULL);
+    STRING_ENTRY_DIALOG_WIDGET_TYPE, "icon-name", "zrythm",
+    "title", _ ("Please enter a value"), NULL);
 
   self->obj = obj;
   self->getter = getter;
@@ -147,8 +145,7 @@ static void
 string_entry_dialog_widget_class_init (
   StringEntryDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "string_entry_dialog.ui");
 
@@ -174,6 +171,6 @@ string_entry_dialog_widget_init (
     G_OBJECT (self->entry), "activate",
     G_CALLBACK (on_entry_activate), self);
   g_signal_connect (
-    G_OBJECT (self), "response",
-    G_CALLBACK (on_response), self);
+    G_OBJECT (self), "response", G_CALLBACK (on_response),
+    self);
 }

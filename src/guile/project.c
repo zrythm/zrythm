@@ -37,8 +37,7 @@ SCM_DEFINE (
   "Return the project's title.")
 #define FUNC_NAME s_
 {
-  Project * prj =
-    (Project *) scm_to_pointer (project);
+  Project * prj = (Project *) scm_to_pointer (project);
 
   return scm_from_stringn (
     prj->title, strlen (prj->title), "UTF8",
@@ -56,8 +55,7 @@ SCM_DEFINE (
   "Returns the tracklist for the project.")
 #define FUNC_NAME s_
 {
-  Project * prj =
-    (Project *) scm_to_pointer (project);
+  Project * prj = (Project *) scm_to_pointer (project);
 
   return scm_from_pointer (prj->tracklist, NULL);
 }
@@ -73,8 +71,7 @@ SCM_DEFINE (
   "Returns the undo manager for the project.")
 #define FUNC_NAME s_
 {
-  Project * prj =
-    (Project *) scm_to_pointer (project);
+  Project * prj = (Project *) scm_to_pointer (project);
 
   return scm_from_pointer (prj->undo_manager, NULL);
 }
@@ -94,6 +91,5 @@ init_module (void * data)
 void
 guile_project_define_module (void)
 {
-  scm_c_define_module (
-    "project", init_module, NULL);
+  scm_c_define_module ("project", init_module, NULL);
 }

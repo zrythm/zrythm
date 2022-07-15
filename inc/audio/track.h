@@ -27,31 +27,27 @@
 
 #define MAX_REGIONS 300
 
-typedef struct AutomationTracklist
-                            AutomationTracklist;
-typedef struct ZRegion      ZRegion;
-typedef struct Position     Position;
-typedef struct _TrackWidget TrackWidget;
-typedef struct _FolderChannelWidget
-                               FolderChannelWidget;
-typedef struct Channel         Channel;
-typedef struct MidiEvents      MidiEvents;
-typedef struct AutomationTrack AutomationTrack;
-typedef struct Automatable     Automatable;
-typedef struct AutomationPoint AutomationPoint;
-typedef struct ChordObject     ChordObject;
-typedef struct MusicalScale    MusicalScale;
-typedef struct Modulator       Modulator;
-typedef struct Marker          Marker;
-typedef struct PluginDescriptor PluginDescriptor;
-typedef struct Tracklist        Tracklist;
-typedef struct SupportedFile    SupportedFile;
-typedef struct TracklistSelections
-  TracklistSelections;
-typedef enum PassthroughProcessorType
-                       PassthroughProcessorType;
-typedef enum FaderType FaderType;
-typedef void           MIDI_FILE;
+typedef struct AutomationTracklist    AutomationTracklist;
+typedef struct ZRegion                ZRegion;
+typedef struct Position               Position;
+typedef struct _TrackWidget           TrackWidget;
+typedef struct _FolderChannelWidget   FolderChannelWidget;
+typedef struct Channel                Channel;
+typedef struct MidiEvents             MidiEvents;
+typedef struct AutomationTrack        AutomationTrack;
+typedef struct Automatable            Automatable;
+typedef struct AutomationPoint        AutomationPoint;
+typedef struct ChordObject            ChordObject;
+typedef struct MusicalScale           MusicalScale;
+typedef struct Modulator              Modulator;
+typedef struct Marker                 Marker;
+typedef struct PluginDescriptor       PluginDescriptor;
+typedef struct Tracklist              Tracklist;
+typedef struct SupportedFile          SupportedFile;
+typedef struct TracklistSelections    TracklistSelections;
+typedef enum PassthroughProcessorType PassthroughProcessorType;
+typedef enum FaderType                FaderType;
+typedef void                          MIDI_FILE;
 typedef struct _WrappedObjectWithChangeSignal
   WrappedObjectWithChangeSignal;
 
@@ -67,17 +63,14 @@ typedef struct _WrappedObjectWithChangeSignal
 #define TRACK_DEF_HEIGHT 48
 
 #define TRACK_MAGIC 21890135
-#define IS_TRACK(x) \
-  (((Track *) x)->magic == TRACK_MAGIC)
+#define IS_TRACK(x) (((Track *) x)->magic == TRACK_MAGIC)
 #define IS_TRACK_AND_NONNULL(x) (x && IS_TRACK (x))
 
-#define TRACK_DND_PREFIX \
-  Z_DND_STRING_PREFIX "Track::"
+#define TRACK_DND_PREFIX Z_DND_STRING_PREFIX "Track::"
 
 #define track_is_in_active_project(self) \
   (self->tracklist \
-   && tracklist_is_in_active_project ( \
-     self->tracklist))
+   && tracklist_is_in_active_project (self->tracklist))
 
 /** Whether this track is part of the
  * SampleProcessor auditioner tracklist. */
@@ -422,7 +415,7 @@ typedef struct Track
   /** Modulator macros. */
   ModulatorMacroProcessor * modulator_macros[128];
   int                       num_modulator_macros;
-  int num_visible_modulator_macros;
+  int                       num_visible_modulator_macros;
 
   /* ==== MODULATOR TRACK END ==== */
 
@@ -575,9 +568,7 @@ static const cyaml_schema_field_t track_fields_schema[] = {
     Track,
     modulator_macros,
     modulator_macro_processor_schema),
-  YAML_FIELD_INT (
-    Track,
-    num_visible_modulator_macros),
+  YAML_FIELD_INT (Track, num_visible_modulator_macros),
   YAML_FIELD_MAPPING_PTR (
     Track,
     processor,
@@ -586,14 +577,8 @@ static const cyaml_schema_field_t track_fields_schema[] = {
     Track,
     automation_tracklist,
     automation_tracklist_fields_schema),
-  YAML_FIELD_ENUM (
-    Track,
-    in_signal_type,
-    port_type_strings),
-  YAML_FIELD_ENUM (
-    Track,
-    out_signal_type,
-    port_type_strings),
+  YAML_FIELD_ENUM (Track, in_signal_type, port_type_strings),
+  YAML_FIELD_ENUM (Track, out_signal_type, port_type_strings),
   YAML_FIELD_UINT (Track, midi_ch),
   YAML_FIELD_STRING_PTR (Track, comment),
   YAML_FIELD_DYN_ARRAY_VAR_COUNT_PRIMITIVES (
@@ -687,18 +672,15 @@ track_type_can_have_region_type (
 static inline bool
 track_type_is_foldable (TrackType type)
 {
-  return type == TRACK_TYPE_FOLDER
-         || type == TRACK_TYPE_MIDI_GROUP
+  return type == TRACK_TYPE_FOLDER || type == TRACK_TYPE_MIDI_GROUP
          || type == TRACK_TYPE_AUDIO_GROUP;
 }
 
 static inline bool
 track_type_is_copyable (TrackType type)
 {
-  return type != TRACK_TYPE_MASTER
-         && type != TRACK_TYPE_TEMPO
-         && type != TRACK_TYPE_CHORD
-         && type != TRACK_TYPE_MODULATOR
+  return type != TRACK_TYPE_MASTER && type != TRACK_TYPE_TEMPO
+         && type != TRACK_TYPE_CHORD && type != TRACK_TYPE_MODULATOR
          && type != TRACK_TYPE_MARKER;
 }
 
@@ -1037,7 +1019,7 @@ track_fill_events (
   const Track *                       self,
   const EngineProcessTimeInfo * const time_nfo,
   MidiEvents *                        midi_events,
-  StereoPorts * stereo_ports);
+  StereoPorts *                       stereo_ports);
 
 /**
  * Verifies the identifiers on a live Track
@@ -1099,9 +1081,7 @@ track_get_last_region (Track * track);
  * Set track lanes visible and fire events.
  */
 void
-track_set_lanes_visible (
-  Track *   track,
-  const int visible);
+track_set_lanes_visible (Track * track, const int visible);
 
 /**
  * Set automation visible and fire events.
@@ -1121,11 +1101,9 @@ track_type_can_host_region_type (
   const RegionType rt);
 
 static inline bool
-track_type_has_mono_compat_switch (
-  const TrackType tt)
+track_type_has_mono_compat_switch (const TrackType tt)
 {
-  return tt == TRACK_TYPE_AUDIO_GROUP
-         || tt == TRACK_TYPE_MASTER;
+  return tt == TRACK_TYPE_AUDIO_GROUP || tt == TRACK_TYPE_MASTER;
 }
 
 #define track_type_is_audio_group \
@@ -1144,8 +1122,7 @@ track_type_is_fx (const TrackType type)
 static inline int
 track_type_can_record (const TrackType type)
 {
-  return type == TRACK_TYPE_AUDIO
-         || type == TRACK_TYPE_MIDI
+  return type == TRACK_TYPE_AUDIO || type == TRACK_TYPE_MIDI
          || type == TRACK_TYPE_CHORD
          || type == TRACK_TYPE_INSTRUMENT;
 }
@@ -1171,8 +1148,7 @@ track_setup (Track * track);
  * or NULL if it doesn't (like chord tracks).
  */
 AutomationTracklist *
-track_get_automation_tracklist (
-  Track * const track);
+track_get_automation_tracklist (Track * const track);
 
 /**
  * Returns the channel of the track, if the track
@@ -1272,9 +1248,7 @@ track_set_name_with_action_full (
  * undoable action.
  */
 void
-track_set_name_with_action (
-  Track *      track,
-  const char * name);
+track_set_name_with_action (Track * track, const char * name);
 
 /**
  * Setter for the track name.
@@ -1366,9 +1340,7 @@ track_type_get_prefader_type (TrackType type);
  * Creates missing TrackLane's until pos.
  */
 void
-track_create_missing_lanes (
-  Track *   track,
-  const int pos);
+track_create_missing_lanes (Track * track, const int pos);
 
 /**
  * Removes the empty last lanes of the Track
@@ -1397,14 +1369,10 @@ track_get_regions_in_range (
  * plugins.
  */
 int
-track_get_plugins (
-  const Track * const self,
-  GPtrArray *         arr);
+track_get_plugins (const Track * const self, GPtrArray * arr);
 
 void
-track_activate_all_plugins (
-  Track * track,
-  bool    activate);
+track_activate_all_plugins (Track * track, bool activate);
 
 /**
  * Comment setter.
@@ -1412,9 +1380,7 @@ track_activate_all_plugins (
  * @note This creates an undoable action.
  */
 void
-track_comment_setter (
-  void *       track,
-  const char * comment);
+track_comment_setter (void * track, const char * comment);
 
 /**
  * @param undoable Create an undable action.
@@ -1582,9 +1548,7 @@ TrackType
 track_type_get_from_string (const char * str);
 
 void
-track_get_total_bars (
-  Track * self,
-  int *   total_bars);
+track_get_total_bars (Track * self, int * total_bars);
 
 void
 track_set_caches (Track * self);
@@ -1616,8 +1580,7 @@ track_create_with_action (
  * Creates a new empty track at the end of the
  * tracklist.
  */
-#define track_create_empty_with_action( \
-  type, error) \
+#define track_create_empty_with_action(type, error) \
   track_create_empty_at_idx_with_action ( \
     type, TRACKLIST->num_tracks, error)
 

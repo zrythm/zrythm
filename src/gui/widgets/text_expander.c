@@ -61,13 +61,12 @@ on_focus_leave (
     {
       GtkTextIter start_iter, end_iter;
       gtk_text_buffer_get_start_iter (
-        GTK_TEXT_BUFFER (self->buffer),
-        &start_iter);
+        GTK_TEXT_BUFFER (self->buffer), &start_iter);
       gtk_text_buffer_get_end_iter (
         GTK_TEXT_BUFFER (self->buffer), &end_iter);
       char * content = gtk_text_buffer_get_text (
-        GTK_TEXT_BUFFER (self->buffer),
-        &start_iter, &end_iter, false);
+        GTK_TEXT_BUFFER (self->buffer), &start_iter,
+        &end_iter, false);
       self->setter (self->obj, content);
       text_expander_widget_refresh (self);
     }
@@ -77,8 +76,7 @@ on_focus_leave (
  * Refreshes the text.
  */
 void
-text_expander_widget_refresh (
-  TextExpanderWidget * self)
+text_expander_widget_refresh (TextExpanderWidget * self)
 {
   if (self->getter && self->obj)
     {
@@ -121,42 +119,32 @@ text_expander_widget_class_init (
 }
 
 static void
-text_expander_widget_init (
-  TextExpanderWidget * self)
+text_expander_widget_init (TextExpanderWidget * self)
 {
-  GtkWidget * box =
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+  GtkWidget * box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 
-  self->scroll = GTK_SCROLLED_WINDOW (
-    gtk_scrolled_window_new ());
-  gtk_widget_set_vexpand (
-    GTK_WIDGET (self->scroll), 1);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->scroll), 1);
+  self->scroll =
+    GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
+  gtk_widget_set_vexpand (GTK_WIDGET (self->scroll), 1);
+  gtk_widget_set_visible (GTK_WIDGET (self->scroll), 1);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->scroll), -1, 124);
-  gtk_box_append (
-    GTK_BOX (box), GTK_WIDGET (self->scroll));
+  gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->scroll));
 
   self->viewport =
     GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->viewport), 1);
+  gtk_widget_set_visible (GTK_WIDGET (self->viewport), 1);
   gtk_scrolled_window_set_child (
     self->scroll, GTK_WIDGET (self->viewport));
 
   self->label = GTK_LABEL (gtk_label_new (""));
   gtk_viewport_set_child (
     self->viewport, GTK_WIDGET (self->label));
-  gtk_widget_set_vexpand (
-    GTK_WIDGET (self->label), true);
+  gtk_widget_set_vexpand (GTK_WIDGET (self->label), true);
 
-  self->edit_btn =
-    GTK_MENU_BUTTON (gtk_menu_button_new ());
-  gtk_box_append (
-    GTK_BOX (box), GTK_WIDGET (self->edit_btn));
-  gtk_menu_button_set_icon_name (
-    self->edit_btn, "edit");
+  self->edit_btn = GTK_MENU_BUTTON (gtk_menu_button_new ());
+  gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->edit_btn));
+  gtk_menu_button_set_icon_name (self->edit_btn, "edit");
 
   self->popover = GTK_POPOVER (gtk_popover_new ());
   gtk_menu_button_set_popover (
@@ -170,35 +158,29 @@ text_expander_widget_init (
     gtk_source_language_manager_get_language (
       manager, "markdown");
   g_return_if_fail (lang);
-  self->buffer =
-    gtk_source_buffer_new_with_language (lang);
+  self->buffer = gtk_source_buffer_new_with_language (lang);
   g_return_if_fail (self->buffer);
   self->editor = GTK_SOURCE_VIEW (
     gtk_source_view_new_with_buffer (self->buffer));
   gtk_popover_set_child (
     self->popover, GTK_WIDGET (self->editor));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->editor), true);
+  gtk_widget_set_visible (GTK_WIDGET (self->editor), true);
   gtk_source_view_set_tab_width (self->editor, 2);
-  gtk_source_view_set_indent_width (
-    self->editor, 2);
+  gtk_source_view_set_indent_width (self->editor, 2);
   gtk_source_view_set_insert_spaces_instead_of_tabs (
     self->editor, true);
-  gtk_source_view_set_smart_backspace (
-    self->editor, true);
+  gtk_source_view_set_smart_backspace (self->editor, true);
 
   /* set style */
   GtkSourceStyleSchemeManager * style_mgr =
     gtk_source_style_scheme_manager_get_default ();
   gtk_source_style_scheme_manager_prepend_search_path (
     style_mgr, CONFIGURE_SOURCEVIEW_STYLES_DIR);
-  gtk_source_style_scheme_manager_force_rescan (
-    style_mgr);
+  gtk_source_style_scheme_manager_force_rescan (style_mgr);
   GtkSourceStyleScheme * scheme =
     gtk_source_style_scheme_manager_get_scheme (
       style_mgr, "monokai-extended-zrythm");
-  gtk_source_buffer_set_style_scheme (
-    self->buffer, scheme);
+  gtk_source_buffer_set_style_scheme (self->buffer, scheme);
 
   expander_box_widget_add_content (
     Z_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (box));

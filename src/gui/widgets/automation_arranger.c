@@ -83,35 +83,28 @@ automation_arranger_widget_create_ap (
   ZRegion *        region,
   bool             autofilling)
 {
-  AutomationTrack * at =
-    region_get_automation_track (region);
+  AutomationTrack * at = region_get_automation_track (region);
   g_return_if_fail (at);
-  Port * port =
-    port_find_from_identifier (&at->port_id);
+  Port * port = port_find_from_identifier (&at->port_id);
   g_return_if_fail (port);
 
   if (!autofilling)
     {
-      self->action =
-        UI_OVERLAY_ACTION_CREATING_MOVING;
+      self->action = UI_OVERLAY_ACTION_CREATING_MOVING;
     }
 
-  ArrangerObject * region_obj =
-    (ArrangerObject *) region;
+  ArrangerObject * region_obj = (ArrangerObject *) region;
 
   /* get local pos */
   Position local_pos;
   position_from_ticks (
     &local_pos, pos->ticks - region_obj->pos.ticks);
 
-  int height = gtk_widget_get_allocated_height (
-    GTK_WIDGET (self));
+  int height =
+    gtk_widget_get_allocated_height (GTK_WIDGET (self));
   /* do height - because it's uside down */
-  float normalized_val =
-    (float) ((height - start_y) / height);
-  g_message (
-    "normalized val is %f",
-    (double) normalized_val);
+  float normalized_val = (float) ((height - start_y) / height);
+  g_message ("normalized val is %f", (double) normalized_val);
 
   /* clamp the value because the cursor might be
    * outside the widget */
@@ -129,19 +122,16 @@ automation_arranger_widget_create_ap (
   self->start_object = ap_obj;
 
   /* add it to automation track */
-  automation_region_add_ap (
-    region, ap, F_PUBLISH_EVENTS);
+  automation_region_add_ap (region, ap, F_PUBLISH_EVENTS);
 
   /* set position to all counterparts */
   arranger_object_set_position (
-    ap_obj, &local_pos,
-    ARRANGER_OBJECT_POSITION_TYPE_START,
+    ap_obj, &local_pos, ARRANGER_OBJECT_POSITION_TYPE_START,
     F_NO_VALIDATE);
 
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, ap);
   arranger_object_select (
-    ap_obj, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    ap_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 }
 
 /**
@@ -155,23 +145,18 @@ automation_arranger_widget_resize_curves (
   double diff = offset_y - self->last_offset_y;
   diff = -diff;
   diff = diff / 120.0;
-  for (
-    int i = 0;
-    i
-    < AUTOMATION_SELECTIONS->num_automation_points;
-    i++)
+  for (int i = 0;
+       i < AUTOMATION_SELECTIONS->num_automation_points; i++)
     {
       AutomationPoint * ap =
         AUTOMATION_SELECTIONS->automation_points[i];
-      double new_curve_val = CLAMP (
-        ap->curve_opts.curviness + diff, -1.0, 1.0);
-      automation_point_set_curviness (
-        ap, new_curve_val);
+      double new_curve_val =
+        CLAMP (ap->curve_opts.curviness + diff, -1.0, 1.0);
+      automation_point_set_curviness (ap, new_curve_val);
     }
 
   EVENTS_PUSH (
-    ET_ARRANGER_SELECTIONS_CHANGED,
-    AUTOMATION_SELECTIONS);
+    ET_ARRANGER_SELECTIONS_CHANGED, AUTOMATION_SELECTIONS);
 }
 
 /** Used for passing a curve algorithm to some
@@ -203,8 +188,7 @@ automation_arranger_widget_show_context_menu (
   if (ap)
     {
       /* add curve algorithm selection */
-      GMenu * curve_algorithm_submenu =
-        g_menu_new ();
+      GMenu * curve_algorithm_submenu = g_menu_new ();
       for (int i = 0; i < NUM_CURVE_ALGORITHMS; i++)
         {
           char name[100];
@@ -214,8 +198,7 @@ automation_arranger_widget_show_context_menu (
           /* TODO change action state so that
            * selected algorithm shows as selected */
           sprintf (tmp, "app.set-curve-algorithm");
-          menuitem = z_gtk_create_menu_item (
-            name, NULL, tmp);
+          menuitem = z_gtk_create_menu_item (name, NULL, tmp);
           g_menu_item_set_action_and_target_value (
             menuitem, tmp, g_variant_new_int32 (i));
           g_menu_append_item (
@@ -242,40 +225,33 @@ automation_arranger_move_hit_aps (
   double           x,
   double           y)
 {
-  int height = gtk_widget_get_allocated_height (
-    GTK_WIDGET (self));
+  int height =
+    gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
   /* get snapped x */
   Position pos;
   arranger_widget_px_to_pos (self, x, &pos, true);
-  if (
-    !self->shift_held
-    && SNAP_GRID_ANY_SNAP (self->snap_grid))
+  if (!self->shift_held && SNAP_GRID_ANY_SNAP (self->snap_grid))
     {
       position_snap (
-        &self->earliest_obj_start_pos, &pos, NULL,
-        NULL, self->snap_grid);
-      x = arranger_widget_pos_to_px (
-        self, &pos, true);
+        &self->earliest_obj_start_pos, &pos, NULL, NULL,
+        self->snap_grid);
+      x = arranger_widget_pos_to_px (self, &pos, true);
     }
 
   /* move any hit automation points */
   ArrangerObject * obj =
     arranger_widget_get_hit_arranger_object (
-      self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT,
-      x, -1);
+      self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT, x, -1);
   if (obj)
     {
-      AutomationPoint * ap =
-        (AutomationPoint *) obj;
+      AutomationPoint * ap = (AutomationPoint *) obj;
       if (automation_point_is_point_hit (ap, x, -1))
         {
           arranger_object_select (
-            obj, F_SELECT, F_APPEND,
-            F_NO_PUBLISH_EVENTS);
+            obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
 
-          Port * port =
-            automation_point_get_port (ap);
+          Port * port = automation_point_get_port (ap);
           g_return_val_if_fail (port, false);
 
           /* move it to the y value */
@@ -285,14 +261,11 @@ automation_arranger_move_hit_aps (
 
           /* clamp the value because the cursor might
            * be outside the widget */
-          normalized_val =
-            CLAMP (normalized_val, 0.f, 1.f);
-          float value =
-            control_port_normalized_val_to_real (
-              port, normalized_val);
+          normalized_val = CLAMP (normalized_val, 0.f, 1.f);
+          float value = control_port_normalized_val_to_real (
+            port, normalized_val);
           automation_point_set_fvalue (
-            ap, value, F_NOT_NORMALIZED,
-            F_PUBLISH_EVENTS);
+            ap, value, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
 
           return true;
         }

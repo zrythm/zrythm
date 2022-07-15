@@ -76,8 +76,7 @@ typedef struct SamplePlayback
  * play back.
  */
 #define sample_playback_init( \
-  self, _buf, _buf_size, _channels, _vol, \
-  _start_offset) \
+  self, _buf, _buf_size, _channels, _vol, _start_offset) \
   if (_channels <= 0) \
     { \
       g_critical ("channels: %u", _channels); \

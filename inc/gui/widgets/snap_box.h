@@ -32,8 +32,7 @@
  * @{
  */
 
-#define SNAP_BOX_WIDGET_TYPE \
-  (snap_box_widget_get_type ())
+#define SNAP_BOX_WIDGET_TYPE (snap_box_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   SnapBoxWidget,
   snap_box_widget,
@@ -59,9 +58,7 @@ void
 snap_box_widget_refresh (SnapBoxWidget * self);
 
 void
-snap_box_widget_setup (
-  SnapBoxWidget * self,
-  SnapGrid *      sg);
+snap_box_widget_setup (SnapBoxWidget * self, SnapGrid * sg);
 
 /**
  * @}

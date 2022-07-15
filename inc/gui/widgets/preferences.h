@@ -37,9 +37,8 @@ G_DECLARE_FINAL_TYPE (
   PREFERENCES_WIDGET,
   AdwPreferencesWindow)
 
-typedef struct Preferences Preferences;
-typedef struct _MidiControllerMbWidget
-  MidiControllerMbWidget;
+typedef struct Preferences             Preferences;
+typedef struct _MidiControllerMbWidget MidiControllerMbWidget;
 
 /**
  * @addtogroup widgets

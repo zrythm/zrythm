@@ -69,20 +69,16 @@ arranger_object_is_fade (
 #define arranger_object_is_fade_in( \
   self, x, y, only_handle, only_outer) \
   arranger_object_is_fade ( \
-    self, true, x, y, only_handle, only_outer, \
-    true) \
+    self, true, x, y, only_handle, only_outer, true) \
     || arranger_object_is_fade ( \
-      self, true, x, y, only_handle, only_outer, \
-      false)
+      self, true, x, y, only_handle, only_outer, false)
 
 #define arranger_object_is_fade_out( \
   self, x, y, only_handle, only_outer) \
   arranger_object_is_fade ( \
-    self, false, x, y, only_handle, only_outer, \
-    true) \
+    self, false, x, y, only_handle, only_outer, true) \
     || arranger_object_is_fade ( \
-      self, false, x, y, only_handle, only_outer, \
-      false)
+      self, false, x, y, only_handle, only_outer, false)
 
 /**
  * Returns if the current position is for resizing

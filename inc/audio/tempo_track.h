@@ -91,9 +91,7 @@ tempo_track_clear (Track * self);
  * Returns the BPM at the given pos.
  */
 bpm_t
-tempo_track_get_bpm_at_pos (
-  Track *    track,
-  Position * pos);
+tempo_track_get_bpm_at_pos (Track * track, Position * pos);
 
 /**
  * Returns the current BPM.
@@ -124,13 +122,10 @@ tempo_track_set_bpm (
   bool    fire_events);
 
 void
-tempo_track_set_bpm_from_str (
-  void *       _self,
-  const char * str);
+tempo_track_set_bpm_from_str (void * _self, const char * str);
 
 int
-tempo_track_beat_unit_enum_to_int (
-  BeatUnit ebeat_unit);
+tempo_track_beat_unit_enum_to_int (BeatUnit ebeat_unit);
 
 void
 tempo_track_set_beat_unit_from_enum (
@@ -144,17 +139,13 @@ BeatUnit
 tempo_track_beat_unit_to_enum (int beat_unit);
 
 void
-tempo_track_set_beat_unit (
-  Track * self,
-  int     beat_unit);
+tempo_track_set_beat_unit (Track * self, int beat_unit);
 
 /**
  * Updates beat unit and anything depending on it.
  */
 void
-tempo_track_set_beats_per_bar (
-  Track * self,
-  int     beats_per_bar);
+tempo_track_set_beats_per_bar (Track * self, int beats_per_bar);
 
 int
 tempo_track_get_beats_per_bar (Track * self);

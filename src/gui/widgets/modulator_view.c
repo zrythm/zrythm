@@ -25,16 +25,13 @@ modulator_view_widget_refresh (
   Track *               track)
 {
   self->track = track;
-  gtk_label_set_markup (
-    self->track_name_lbl, track->name);
-  color_area_widget_set_color (
-    self->color, &track->color);
+  gtk_label_set_markup (self->track_name_lbl, track->name);
+  color_area_widget_set_color (self->color, &track->color);
 
   z_gtk_widget_remove_all_children (
     GTK_WIDGET (self->modulators_box));
 
-  for (int i = 0; i < self->track->num_modulators;
-       i++)
+  for (int i = 0; i < self->track->num_modulators; i++)
     {
       Plugin * modulator = track->modulators[i];
       if (!modulator->modulator_widget)
@@ -47,13 +44,11 @@ modulator_view_widget_refresh (
         GTK_WIDGET (modulator->modulator_widget));
     }
 
-  DragDestBoxWidget * drag_dest =
-    drag_dest_box_widget_new (
-      GTK_ORIENTATION_HORIZONTAL, 0,
-      DRAG_DEST_BOX_TYPE_MODULATORS);
+  DragDestBoxWidget * drag_dest = drag_dest_box_widget_new (
+    GTK_ORIENTATION_HORIZONTAL, 0,
+    DRAG_DEST_BOX_TYPE_MODULATORS);
   gtk_box_append (
-    GTK_BOX (self->modulators_box),
-    GTK_WIDGET (drag_dest));
+    GTK_BOX (self->modulators_box), GTK_WIDGET (drag_dest));
 
   gtk_widget_set_visible (
     GTK_WIDGET (self->no_modulators_status_page),
@@ -63,15 +58,14 @@ modulator_view_widget_refresh (
 ModulatorViewWidget *
 modulator_view_widget_new (void)
 {
-  ModulatorViewWidget * self = g_object_new (
-    MODULATOR_VIEW_WIDGET_TYPE, NULL);
+  ModulatorViewWidget * self =
+    g_object_new (MODULATOR_VIEW_WIDGET_TYPE, NULL);
 
   return self;
 }
 
 static void
-modulator_view_widget_init (
-  ModulatorViewWidget * self)
+modulator_view_widget_init (ModulatorViewWidget * self)
 {
   g_type_ensure (GTK_TYPE_FLIPPER);
 
@@ -81,18 +75,15 @@ modulator_view_widget_init (
   gdk_rgba_parse (&color, "gray");
   color_area_widget_set_color (self->color, &color);
 
-  DragDestBoxWidget * drag_dest =
-    drag_dest_box_widget_new (
-      GTK_ORIENTATION_HORIZONTAL, 0,
-      DRAG_DEST_BOX_TYPE_MODULATORS);
+  DragDestBoxWidget * drag_dest = drag_dest_box_widget_new (
+    GTK_ORIENTATION_HORIZONTAL, 0,
+    DRAG_DEST_BOX_TYPE_MODULATORS);
   gtk_box_append (
-    GTK_BOX (self->modulators_box),
-    GTK_WIDGET (drag_dest));
+    GTK_BOX (self->modulators_box), GTK_WIDGET (drag_dest));
 
   for (int i = 0; i < 8; i++)
     {
-      self->macros[i] =
-        modulator_macro_widget_new (i);
+      self->macros[i] = modulator_macro_widget_new (i);
       gtk_widget_set_visible (
         GTK_WIDGET (self->macros[i]), true);
       gtk_box_append (
@@ -105,13 +96,10 @@ static void
 modulator_view_widget_class_init (
   ModulatorViewWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "modulator_view.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "modulator_view.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "modulator-view");
+  gtk_widget_class_set_css_name (klass, "modulator-view");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

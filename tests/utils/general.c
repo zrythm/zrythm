@@ -31,16 +31,13 @@ test_uint_from_bitfield (void)
 {
   g_assert_cmpuint (
     0, ==,
-    utils_get_uint_from_bitfield_val (
-      PORT_FLAG_STEREO_L));
+    utils_get_uint_from_bitfield_val (PORT_FLAG_STEREO_L));
   g_assert_cmpuint (
     14, ==,
-    utils_get_uint_from_bitfield_val (
-      PORT_FLAG_NOT_ON_GUI));
+    utils_get_uint_from_bitfield_val (PORT_FLAG_NOT_ON_GUI));
   g_assert_cmpuint (
     18, ==,
-    utils_get_uint_from_bitfield_val (
-      PORT_FLAG_CHANNEL_FADER));
+    utils_get_uint_from_bitfield_val (PORT_FLAG_CHANNEL_FADER));
 }
 
 int

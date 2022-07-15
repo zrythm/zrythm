@@ -148,8 +148,7 @@ typedef struct _ChordSelectorWindowWidget
  * Creates the popover.
  */
 ChordSelectorWindowWidget *
-chord_selector_window_widget_new (
-  const int chord_idx);
+chord_selector_window_widget_new (const int chord_idx);
 
 /**
  * @}

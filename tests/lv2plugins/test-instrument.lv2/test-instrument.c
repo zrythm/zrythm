@@ -47,17 +47,13 @@ typedef struct
 } Fifths;
 
 static void
-connect_port (
-  LV2_Handle instance,
-  uint32_t   port,
-  void *     data)
+connect_port (LV2_Handle instance, uint32_t port, void * data)
 {
   Fifths * self = (Fifths *) instance;
   switch (port)
     {
     case FIFTHS_IN:
-      self->in_port =
-        (const LV2_Atom_Sequence *) data;
+      self->in_port = (const LV2_Atom_Sequence *) data;
       break;
     case FIFTHS_OUT:
       self->out_port = (float *) data;
@@ -75,8 +71,7 @@ instantiate (
   const LV2_Feature * const * features)
 {
   // Allocate and initialise instance structure.
-  Fifths * self =
-    (Fifths *) calloc (1, sizeof (Fifths));
+  Fifths * self = (Fifths *) calloc (1, sizeof (Fifths));
   if (!self)
     {
       return NULL;
@@ -84,14 +79,13 @@ instantiate (
 
   // Scan host features for URID map
   const char * missing = lv2_features_query (
-    features, LV2_LOG__log, &self->logger.log,
-    false, LV2_URID__map, &self->map, true, NULL);
+    features, LV2_LOG__log, &self->logger.log, false,
+    LV2_URID__map, &self->map, true, NULL);
   lv2_log_logger_set_map (&self->logger, self->map);
   if (missing)
     {
       lv2_log_error (
-        &self->logger, "Missing feature <%s>\n",
-        missing);
+        &self->logger, "Missing feature <%s>\n", missing);
       free (self);
       return NULL;
     }
@@ -144,8 +138,7 @@ run (LV2_Handle instance, uint32_t sample_count)
   {
     if (ev->body.type == self->uris.midi_Event)
       {
-        const uint8_t * const msg =
-          (const uint8_t *) (ev + 1);
+        const uint8_t * const msg = (const uint8_t *) (ev + 1);
         switch (lv2_midi_message_type (msg))
           {
           case LV2_MIDI_MSG_NOTE_ON:

@@ -37,8 +37,7 @@ G_DECLARE_FINAL_TYPE (
   TIMELINE_BOT_BOX_WIDGET,
   GtkBox)
 
-typedef struct _TimelineMinimapWidget
-  TimelineMinimapWidget;
+typedef struct _TimelineMinimapWidget TimelineMinimapWidget;
 
 /**
  * @addtogroup widgets
@@ -46,8 +45,7 @@ typedef struct _TimelineMinimapWidget
  * @{
  */
 
-#define MW_TIMELINE_BOT_BOX \
-  MW_TIMELINE_PANEL->bot_box
+#define MW_TIMELINE_BOT_BOX MW_TIMELINE_PANEL->bot_box
 
 typedef struct _TimelineBotBoxWidget
 {

@@ -100,8 +100,7 @@ midi_region_new_from_chord_descr (
   region, midi_note, pub_events) \
   midi_region_insert_midi_note ( \
     region, midi_note, \
-    ((ZRegion *) (region))->num_midi_notes, \
-    pub_events)
+    ((ZRegion *) (region))->num_midi_notes, pub_events)
 
 /**
  * Inserts the MidiNote to the given ZRegion.
@@ -143,9 +142,7 @@ midi_region_start_unended_note (
  *   point is met and we want to end them all.
  */
 MidiNote *
-midi_region_pop_unended_note (
-  ZRegion * self,
-  int       pitch);
+midi_region_pop_unended_note (ZRegion * self, int pitch);
 
 /**
  * Fills MIDI event queue from the region.
@@ -170,8 +167,8 @@ void
 midi_region_fill_midi_events (
   ZRegion *                           self,
   const EngineProcessTimeInfo * const time_nfo,
-  bool         note_off_at_end,
-  MidiEvents * midi_events);
+  bool                                note_off_at_end,
+  MidiEvents *                        midi_events);
 
 /**
  * Prints the MidiNotes in the Region.
@@ -197,8 +194,7 @@ midi_region_get_last_midi_note (ZRegion * region);
  * Gets highest midi note
  */
 MidiNote *
-midi_region_get_highest_midi_note (
-  ZRegion * region);
+midi_region_get_highest_midi_note (ZRegion * region);
 
 /**
  * Gets lowest midi note
@@ -224,8 +220,7 @@ midi_region_remove_midi_note (
  * completely.
  */
 void
-midi_region_remove_all_midi_notes (
-  ZRegion * region);
+midi_region_remove_all_midi_notes (ZRegion * region);
 
 /**
  * Returns the midi note at given position with the given

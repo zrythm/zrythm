@@ -197,16 +197,14 @@ dsp_mix_add2 (
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      lsp_dsp_mix_add2 (
-        dest, src1, src2, k1, k2, size);
+      lsp_dsp_mix_add2 (dest, src1, src2, k1, k2, size);
     }
   else
     {
 #endif
       for (size_t i = 0; i < size; i++)
         {
-          dest[i] =
-            dest[i] + src1[i] * k1 + src2[i] * k2;
+          dest[i] = dest[i] + src1[i] * k1 + src2[i] * k2;
         }
 #ifdef HAVE_LSP_DSP
     }
@@ -257,11 +255,7 @@ dsp_linear_fade_out (float * dest, size_t size)
  * (L+R) /2 (-6.02dB)
  */
 void
-dsp_make_mono (
-  float * l,
-  float * r,
-  size_t  size,
-  bool    equal_power)
+dsp_make_mono (float * l, float * r, size_t size, bool equal_power)
 {
   float multiple = equal_power ? 0.7079f : 0.5f;
   dsp_mix2 (l, r, multiple, multiple, size);

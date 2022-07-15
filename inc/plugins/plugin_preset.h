@@ -59,9 +59,7 @@ typedef struct PluginPresetIdentifier
 
 static const cyaml_schema_field_t
   plugin_preset_identifier_fields_schema[] = {
-    YAML_FIELD_INT (
-      PluginPresetIdentifier,
-      schema_version),
+    YAML_FIELD_INT (PluginPresetIdentifier, schema_version),
     YAML_FIELD_INT (PluginPresetIdentifier, idx),
     YAML_FIELD_INT (PluginPresetIdentifier, bank_idx),
     YAML_FIELD_MAPPING_EMBEDDED (
@@ -98,26 +96,22 @@ typedef struct PluginPreset
   PluginPresetIdentifier id;
 } PluginPreset;
 
-static const cyaml_schema_field_t
-  plugin_preset_fields_schema[] = {
-    YAML_FIELD_INT (PluginPreset, schema_version),
-    YAML_FIELD_STRING_PTR (PluginPreset, name),
-    YAML_FIELD_STRING_PTR_OPTIONAL (PluginPreset, uri),
-    YAML_FIELD_INT (PluginPreset, carla_program),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      PluginPreset,
-      id,
-      plugin_preset_identifier_fields_schema),
+static const cyaml_schema_field_t plugin_preset_fields_schema[] = {
+  YAML_FIELD_INT (PluginPreset, schema_version),
+  YAML_FIELD_STRING_PTR (PluginPreset, name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginPreset, uri),
+  YAML_FIELD_INT (PluginPreset, carla_program),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    PluginPreset,
+    id,
+    plugin_preset_identifier_fields_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  plugin_preset_schema = {
-    YAML_VALUE_PTR (
-      PluginPreset,
-      plugin_preset_fields_schema),
-  };
+static const cyaml_schema_value_t plugin_preset_schema = {
+  YAML_VALUE_PTR (PluginPreset, plugin_preset_fields_schema),
+};
 
 /**
  * A plugin bank containing presets.
@@ -143,27 +137,24 @@ typedef struct PluginBank
   PluginPresetIdentifier id;
 } PluginBank;
 
-static const cyaml_schema_field_t
-  plugin_bank_fields_schema[] = {
-    YAML_FIELD_INT (PluginBank, schema_version),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      PluginBank,
-      presets,
-      plugin_preset_schema),
-    YAML_FIELD_STRING_PTR (PluginBank, name),
-    YAML_FIELD_STRING_PTR_OPTIONAL (PluginBank, uri),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      PluginBank,
-      id,
-      plugin_preset_identifier_fields_schema),
+static const cyaml_schema_field_t plugin_bank_fields_schema[] = {
+  YAML_FIELD_INT (PluginBank, schema_version),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    PluginBank,
+    presets,
+    plugin_preset_schema),
+  YAML_FIELD_STRING_PTR (PluginBank, name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginBank, uri),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    PluginBank,
+    id,
+    plugin_preset_identifier_fields_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t plugin_bank_schema = {
-  YAML_VALUE_PTR (
-    PluginBank,
-    plugin_bank_fields_schema),
+  YAML_VALUE_PTR (PluginBank, plugin_bank_fields_schema),
 };
 
 PluginBank *
@@ -174,8 +165,7 @@ plugin_preset_new (void);
 
 NONNULL
 void
-plugin_preset_identifier_init (
-  PluginPresetIdentifier * id);
+plugin_preset_identifier_init (PluginPresetIdentifier * id);
 
 /**
  * @}

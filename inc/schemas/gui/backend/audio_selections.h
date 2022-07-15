@@ -43,38 +43,34 @@ typedef struct AudioSelections_v1
   RegionIdentifier_v1   region_id;
 } AudioSelections_v1;
 
-static const cyaml_schema_field_t
-  audio_selections_fields_schema_v1[] = {
-    YAML_FIELD_MAPPING_EMBEDDED (
-      AudioSelections_v1,
-      base,
-      arranger_selections_fields_schema_v1),
-    YAML_FIELD_INT (
-      AudioSelections_v1,
-      schema_version),
-    YAML_FIELD_INT (AudioSelections_v1, has_selection),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      AudioSelections_v1,
-      sel_start,
-      position_fields_schema_v1),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      AudioSelections,
-      sel_end,
-      position_fields_schema_v1),
-    YAML_FIELD_INT (AudioSelections_v1, pool_id),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      AudioSelections_v1,
-      region_id,
-      region_identifier_fields_schema_v1),
+static const cyaml_schema_field_t audio_selections_fields_schema_v1[] = {
+  YAML_FIELD_MAPPING_EMBEDDED (
+    AudioSelections_v1,
+    base,
+    arranger_selections_fields_schema_v1),
+  YAML_FIELD_INT (AudioSelections_v1, schema_version),
+  YAML_FIELD_INT (AudioSelections_v1, has_selection),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    AudioSelections_v1,
+    sel_start,
+    position_fields_schema_v1),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    AudioSelections,
+    sel_end,
+    position_fields_schema_v1),
+  YAML_FIELD_INT (AudioSelections_v1, pool_id),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    AudioSelections_v1,
+    region_id,
+    region_identifier_fields_schema_v1),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  audio_selections_schema_v1 = {
-    YAML_VALUE_PTR (
-      AudioSelections_v1,
-      audio_selections_fields_schema_v1),
-  };
+static const cyaml_schema_value_t audio_selections_schema_v1 = {
+  YAML_VALUE_PTR (
+    AudioSelections_v1,
+    audio_selections_fields_schema_v1),
+};
 
 #endif

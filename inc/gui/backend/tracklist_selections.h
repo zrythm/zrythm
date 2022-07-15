@@ -31,8 +31,7 @@
 
 typedef enum TracklistSelectionsActionType
   TracklistSelectionsActionType;
-typedef enum EditTracksActionType
-  EditTracksActionType;
+typedef enum EditTracksActionType EditTracksActionType;
 
 /**
  * @addtogroup gui_backend
@@ -42,8 +41,7 @@ typedef enum EditTracksActionType
 
 #define TRACKLIST_SELECTIONS_SCHEMA_VERSION 1
 
-#define TRACKLIST_SELECTIONS \
-  (PROJECT->tracklist_selections)
+#define TRACKLIST_SELECTIONS (PROJECT->tracklist_selections)
 
 /**
  * Selections to be used for the tracklist's current
@@ -74,9 +72,7 @@ typedef struct TracklistSelections
 
 static const cyaml_schema_field_t
   tracklist_selections_fields_schema[] = {
-    YAML_FIELD_INT (
-      TracklistSelections,
-      schema_version),
+    YAML_FIELD_INT (TracklistSelections, schema_version),
     YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
       TracklistSelections,
       tracks,
@@ -86,16 +82,14 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  tracklist_selections_schema = {
-    YAML_VALUE_PTR (
-      TracklistSelections,
-      tracklist_selections_fields_schema),
-  };
+static const cyaml_schema_value_t tracklist_selections_schema = {
+  YAML_VALUE_PTR (
+    TracklistSelections,
+    tracklist_selections_fields_schema),
+};
 
 void
-tracklist_selections_init_loaded (
-  TracklistSelections * ts);
+tracklist_selections_init_loaded (TracklistSelections * ts);
 
 /**
  * @param is_project Whether these selections are
@@ -150,8 +144,7 @@ tracklist_selections_add_tracks_in_range (
  * Clears the selections.
  */
 void
-tracklist_selections_clear (
-  TracklistSelections * self);
+tracklist_selections_clear (TracklistSelections * self);
 
 /**
  * Make sure all children of foldable tracks in
@@ -285,15 +278,13 @@ tracklist_selections_toggle_visibility (
  * Toggle pin/unpin of the selected tracks.
  */
 void
-tracklist_selections_toggle_pinned (
-  TracklistSelections * ts);
+tracklist_selections_toggle_pinned (TracklistSelections * ts);
 
 /**
  * For debugging.
  */
 void
-tracklist_selections_print (
-  TracklistSelections * self);
+tracklist_selections_print (TracklistSelections * self);
 
 /**
  * To be called after receiving tracklist selections
@@ -340,8 +331,7 @@ tracklist_selections_mark_for_bounce (
   bool                  mark_master);
 
 void
-tracklist_selections_free (
-  TracklistSelections * self);
+tracklist_selections_free (TracklistSelections * self);
 
 /**
  * @}

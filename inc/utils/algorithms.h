@@ -32,9 +32,7 @@
 #include "utils/types.h"
 
 static inline int
-algorithm_sort_int_cmpfunc (
-  const void * a,
-  const void * b)
+algorithm_sort_int_cmpfunc (const void * a, const void * b)
 {
   return (*(int *) a - *(int *) b);
 }

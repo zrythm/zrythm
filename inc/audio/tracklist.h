@@ -30,12 +30,11 @@
 #include "audio/track.h"
 #include "gui/widgets/track.h"
 
-typedef struct Track            Track;
-typedef struct _TracklistWidget TracklistWidget;
-typedef struct _PinnedTracklistWidget
-                             PinnedTracklistWidget;
-typedef struct Track         ChordTrack;
-typedef struct SupportedFile SupportedFile;
+typedef struct Track                  Track;
+typedef struct _TracklistWidget       TracklistWidget;
+typedef struct _PinnedTracklistWidget PinnedTracklistWidget;
+typedef struct Track                  ChordTrack;
+typedef struct SupportedFile          SupportedFile;
 
 /**
  * @addtogroup audio
@@ -148,17 +147,16 @@ typedef struct Tracklist
   Project * project;
 } Tracklist;
 
-static const cyaml_schema_field_t
-  tracklist_fields_schema[] = {
-    YAML_FIELD_INT (Tracklist, schema_version),
-    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-      Tracklist,
-      tracks,
-      track_schema),
-    YAML_FIELD_INT (Tracklist, pinned_tracks_cutoff),
+static const cyaml_schema_field_t tracklist_fields_schema[] = {
+  YAML_FIELD_INT (Tracklist, schema_version),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    Tracklist,
+    tracks,
+    track_schema),
+  YAML_FIELD_INT (Tracklist, pinned_tracks_cutoff),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t tracklist_schema = {
   YAML_VALUE_PTR (Tracklist, tracklist_fields_schema),
@@ -336,18 +334,14 @@ tracklist_get_track (Tracklist * self, int idx);
  * Returns the index of the given Track.
  */
 int
-tracklist_get_track_pos (
-  Tracklist * self,
-  Track *     track);
+tracklist_get_track_pos (Tracklist * self, Track * track);
 
 /**
  * Returns the first track found with the given
  * type.
  */
 Track *
-tracklist_get_track_by_type (
-  Tracklist * self,
-  TrackType   type);
+tracklist_get_track_by_type (Tracklist * self, TrackType type);
 
 ChordTrack *
 tracklist_get_chord_track (const Tracklist * self);
@@ -515,18 +509,15 @@ tracklist_has_listened (const Tracklist * self);
 
 NONNULL
 int
-tracklist_get_num_muted_tracks (
-  const Tracklist * self);
+tracklist_get_num_muted_tracks (const Tracklist * self);
 
 NONNULL
 int
-tracklist_get_num_soloed_tracks (
-  const Tracklist * self);
+tracklist_get_num_soloed_tracks (const Tracklist * self);
 
 NONNULL
 int
-tracklist_get_num_listened_tracks (
-  const Tracklist * self);
+tracklist_get_num_listened_tracks (const Tracklist * self);
 
 /**
  * @param visible 1 for visible, 0 for invisible.
@@ -565,8 +556,7 @@ tracklist_activate_all_plugins (
  * engine.
  */
 void
-tracklist_expose_ports_to_backend (
-  Tracklist * self);
+tracklist_expose_ports_to_backend (Tracklist * self);
 
 /**
  * Marks or unmarks all tracks for bounce.
@@ -577,9 +567,7 @@ tracklist_mark_all_tracks_for_bounce (
   bool        bounce);
 
 void
-tracklist_get_total_bars (
-  Tracklist * self,
-  int *       total_bars);
+tracklist_get_total_bars (Tracklist * self, int * total_bars);
 
 NONNULL
 void

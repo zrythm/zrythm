@@ -47,28 +47,22 @@ block_all_handlers (
       g_signal_handler_block (
         self->none_toggle, self->none_toggle_id);
       g_signal_handler_block (
-        self->one_bar_toggle,
-        self->one_bar_toggle_id);
+        self->one_bar_toggle, self->one_bar_toggle_id);
       g_signal_handler_block (
-        self->two_bars_toggle,
-        self->two_bars_toggle_id);
+        self->two_bars_toggle, self->two_bars_toggle_id);
       g_signal_handler_block (
-        self->four_bars_toggle,
-        self->four_bars_toggle_id);
+        self->four_bars_toggle, self->four_bars_toggle_id);
     }
   else
     {
       g_signal_handler_unblock (
         self->none_toggle, self->none_toggle_id);
       g_signal_handler_unblock (
-        self->one_bar_toggle,
-        self->one_bar_toggle_id);
+        self->one_bar_toggle, self->one_bar_toggle_id);
       g_signal_handler_unblock (
-        self->two_bars_toggle,
-        self->two_bars_toggle_id);
+        self->two_bars_toggle, self->two_bars_toggle_id);
       g_signal_handler_unblock (
-        self->four_bars_toggle,
-        self->four_bars_toggle_id);
+        self->four_bars_toggle, self->four_bars_toggle_id);
     }
 }
 
@@ -78,21 +72,15 @@ on_btn_toggled (
   PrerollCountSelectorWidget * self)
 {
   block_all_handlers (self, true);
-  gtk_toggle_button_set_active (
-    self->none_toggle, false);
-  gtk_toggle_button_set_active (
-    self->one_bar_toggle, false);
-  gtk_toggle_button_set_active (
-    self->two_bars_toggle, false);
-  gtk_toggle_button_set_active (
-    self->four_bars_toggle, false);
+  gtk_toggle_button_set_active (self->none_toggle, false);
+  gtk_toggle_button_set_active (self->one_bar_toggle, false);
+  gtk_toggle_button_set_active (self->two_bars_toggle, false);
+  gtk_toggle_button_set_active (self->four_bars_toggle, false);
 
-  PrerollCountBars new_bars =
-    PREROLL_COUNT_BARS_NONE;
+  PrerollCountBars new_bars = PREROLL_COUNT_BARS_NONE;
   if (btn == self->none_toggle)
     {
-      gtk_toggle_button_set_active (
-        self->none_toggle, true);
+      gtk_toggle_button_set_active (self->none_toggle, true);
       new_bars = PREROLL_COUNT_BARS_NONE;
     }
   else if (btn == self->one_bar_toggle)
@@ -114,16 +102,12 @@ on_btn_toggled (
       new_bars = PREROLL_COUNT_BARS_FOUR;
     }
 
-  if (
-    self->type
-    == PREROLL_COUNT_SELECTOR_METRONOME_COUNTIN)
+  if (self->type == PREROLL_COUNT_SELECTOR_METRONOME_COUNTIN)
     {
       g_settings_set_enum (
         S_TRANSPORT, "metronome-countin", new_bars);
     }
-  else if (
-    self->type
-    == PREROLL_COUNT_SELECTOR_RECORD_PREROLL)
+  else if (self->type == PREROLL_COUNT_SELECTOR_RECORD_PREROLL)
     {
       g_settings_set_enum (
         S_TRANSPORT, "recording-preroll", new_bars);
@@ -139,9 +123,8 @@ preroll_count_selector_widget_new (
   PrerollCountSelectorType type)
 {
   PrerollCountSelectorWidget * self = g_object_new (
-    PREROLL_COUNT_SELECTOR_WIDGET_TYPE,
-    "orientation", GTK_ORIENTATION_HORIZONTAL,
-    "visible", true, NULL);
+    PREROLL_COUNT_SELECTOR_WIDGET_TYPE, "orientation",
+    GTK_ORIENTATION_HORIZONTAL, "visible", true, NULL);
 
   self->type = type;
 
@@ -151,8 +134,7 @@ preroll_count_selector_widget_new (
   gtk_widget_set_visible ( \
     GTK_WIDGET (self->x##_toggle), true); \
   gtk_box_append ( \
-    GTK_BOX (self), \
-    GTK_WIDGET (self->x##_toggle)); \
+    GTK_BOX (self), GTK_WIDGET (self->x##_toggle)); \
   self->x##_toggle_id = g_signal_connect ( \
     G_OBJECT (self->x##_toggle), "toggled", \
     G_CALLBACK (on_btn_toggled), self)
@@ -162,8 +144,7 @@ preroll_count_selector_widget_new (
   CREATE (two_bars, _ (preroll_count_bars_str[2]));
   CREATE (four_bars, _ (preroll_count_bars_str[3]));
 
-  PrerollCountBars preroll_type =
-    PREROLL_COUNT_BARS_NONE;
+  PrerollCountBars preroll_type = PREROLL_COUNT_BARS_NONE;
   switch (type)
     {
     case PREROLL_COUNT_SELECTOR_METRONOME_COUNTIN:
@@ -179,8 +160,7 @@ preroll_count_selector_widget_new (
   switch (preroll_type)
     {
     case 0:
-      gtk_toggle_button_set_active (
-        self->none_toggle, true);
+      gtk_toggle_button_set_active (self->none_toggle, true);
       break;
     case 1:
       gtk_toggle_button_set_active (
@@ -205,8 +185,7 @@ static void
 preroll_count_selector_widget_init (
   PrerollCountSelectorWidget * self)
 {
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self), "linked");
+  gtk_widget_add_css_class (GTK_WIDGET (self), "linked");
   gtk_widget_add_css_class (
     GTK_WIDGET (self), "bounce-step-selector");
 }

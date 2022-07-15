@@ -66,27 +66,21 @@ button_with_menu_widget_setup (
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (btn));
 
   /* add arrow */
-  self->menu_btn =
-    GTK_MENU_BUTTON (gtk_menu_button_new ());
+  self->menu_btn = GTK_MENU_BUTTON (gtk_menu_button_new ());
   gtk_menu_button_set_icon_name (
     GTK_MENU_BUTTON (self->menu_btn),
-    downward_arrow
-      ? "arrow-down-small"
-      : "arrow-up-small");
-  gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->menu_btn));
+    downward_arrow ? "arrow-down-small" : "arrow-up-small");
+  gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->menu_btn));
   /* TODO write CSS rule to set image size to 6 */
   gtk_widget_add_css_class (
     GTK_WIDGET (self->menu_btn), "arrow-button");
 
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self), "linked");
+  gtk_widget_add_css_class (GTK_WIDGET (self), "linked");
   gtk_widget_add_css_class (
     GTK_WIDGET (self), "button-with-menu");
 
   int width;
-  gtk_widget_get_size_request (
-    GTK_WIDGET (btn), &width, NULL);
+  gtk_widget_get_size_request (GTK_WIDGET (btn), &width, NULL);
   gtk_widget_set_size_request (
     GTK_WIDGET (btn), width, height);
   gtk_widget_set_size_request (
@@ -107,24 +101,20 @@ button_with_menu_widget_setup (
 ButtonWithMenuWidget *
 button_with_menu_widget_new (void)
 {
-  return g_object_new (
-    BUTTON_WITH_MENU_WIDGET_TYPE, NULL);
+  return g_object_new (BUTTON_WITH_MENU_WIDGET_TYPE, NULL);
 }
 
 static void
 finalize (ButtonWithMenuWidget * self)
 {
-  G_OBJECT_CLASS (
-    button_with_menu_widget_parent_class)
+  G_OBJECT_CLASS (button_with_menu_widget_parent_class)
     ->finalize (G_OBJECT (self));
 }
 
 static void
-button_with_menu_widget_init (
-  ButtonWithMenuWidget * self)
+button_with_menu_widget_init (ButtonWithMenuWidget * self)
 {
-  gtk_widget_set_focusable (
-    GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (GTK_WIDGET (self), true);
 }
 
 static void

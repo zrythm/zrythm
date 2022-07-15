@@ -74,7 +74,8 @@ typedef enum
 GQuark
 z_plugins_lv2_lv2_state_error_quark (void);
 G_DEFINE_QUARK (
-  z-plugins-lv2-lv2-state-error-quark, z_plugins_lv2_lv2_state_error)
+  z - plugins - lv2 - lv2 - state - error - quark,
+  z_plugins_lv2_lv2_state_error)
 
 /* not used - lilv handles these */
 #if 0
@@ -209,18 +210,15 @@ lv2_state_make_path_temp (
   if (!pl->temp_dir)
     {
       GError * err = NULL;
-      pl->temp_dir =
-        g_dir_make_tmp ("XXXXXX", &err);
+      pl->temp_dir = g_dir_make_tmp ("XXXXXX", &err);
       if (err)
         {
-          g_critical (
-            "An error occurred making a temp dir");
+          g_critical ("An error occurred making a temp dir");
           return NULL;
         }
     }
 
-  return g_build_filename (
-    pl->temp_dir, path, NULL);
+  return g_build_filename (pl->temp_dir, path, NULL);
 }
 
 /**
@@ -228,26 +226,23 @@ lv2_state_make_path_temp (
  * returns the state.
  */
 LilvState *
-lv2_state_save_to_file (
-  Lv2Plugin * pl,
-  bool        is_backup)
+lv2_state_save_to_file (Lv2Plugin * pl, bool is_backup)
 {
   g_return_val_if_fail (
     pl->plugin->instantiated && pl->instance, NULL);
 
-  char * abs_state_dir = plugin_get_abs_state_dir (
-    pl->plugin, is_backup);
+  char * abs_state_dir =
+    plugin_get_abs_state_dir (pl->plugin, is_backup);
   char * copy_dir = project_get_path (
     PROJECT, PROJECT_PATH_PLUGIN_EXT_COPIES, false);
   char * link_dir = project_get_path (
     PROJECT, PROJECT_PATH_PLUGIN_EXT_LINKS, false);
 
-  LilvState * const state =
-    lilv_state_new_from_instance (
-      pl->lilv_plugin, pl->instance, &pl->map,
-      pl->temp_dir, copy_dir, link_dir,
-      abs_state_dir, lv2_plugin_get_port_value, pl,
-      LV2_STATE_IS_PORTABLE, pl->state_features);
+  LilvState * const state = lilv_state_new_from_instance (
+    pl->lilv_plugin, pl->instance, &pl->map, pl->temp_dir,
+    copy_dir, link_dir, abs_state_dir,
+    lv2_plugin_get_port_value, pl, LV2_STATE_IS_PORTABLE,
+    pl->state_features);
   g_return_val_if_fail (state, NULL);
 
   int rc = lilv_state_save (
@@ -259,9 +254,7 @@ lv2_state_save_to_file (
       return NULL;
     }
 
-  g_message (
-    "Lilv state saved to %s",
-    pl->plugin->state_dir);
+  g_message ("Lilv state saved to %s", pl->plugin->state_dir);
 
   return state;
 }
@@ -277,9 +270,9 @@ LilvState *
 lv2_state_save_to_memory (Lv2Plugin * plugin)
 {
   LilvState * state = lilv_state_new_from_instance (
-    plugin->lilv_plugin, plugin->instance,
-    &plugin->map, plugin->temp_dir, NULL, NULL,
-    NULL, lv2_plugin_get_port_value, plugin,
+    plugin->lilv_plugin, plugin->instance, &plugin->map,
+    plugin->temp_dir, NULL, NULL, NULL,
+    lv2_plugin_get_port_value, plugin,
     LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE,
     plugin->state_features);
 
@@ -303,13 +296,11 @@ set_port_value (
   char        pl_str[800];
   plugin_print (plugin->plugin, pl_str, 800);
 
-  Port * port =
-    plugin_get_port_by_symbol (pl, port_symbol);
+  Port * port = plugin_get_port_by_symbol (pl, port_symbol);
   if (!port)
     {
       g_warning (
-        "[%s] Preset port %s is missing", pl_str,
-        port_symbol);
+        "[%s] Preset port %s is missing", pl_str, port_symbol);
       return;
     }
 
@@ -327,10 +318,9 @@ set_port_value (
   else
     {
       g_warning (
-        "[%s] Preset `%s' value has bad type <%s>",
-        pl_str, port_symbol,
-        plugin->unmap.unmap (
-          plugin->unmap.handle, type));
+        "[%s] Preset `%s' value has bad type <%s>", pl_str,
+        port_symbol,
+        plugin->unmap.unmap (plugin->unmap.handle, type));
       return;
     }
   g_debug (
@@ -346,32 +336,26 @@ set_port_value (
     {
       /* Send value to running plugin */
       lv2_ui_send_event_from_ui_to_plugin (
-        plugin, port->lilv_port_index,
-        sizeof (fvalue), 0, &fvalue);
+        plugin, port->lilv_port_index, sizeof (fvalue), 0,
+        &fvalue);
     }
 
   if (pl->visible)
     {
       /* update UI */
-      char buf
-        [sizeof (Lv2ControlChange)
-         + sizeof (fvalue)];
-      Lv2ControlChange * ev =
-        (Lv2ControlChange *) buf;
+      char buf[sizeof (Lv2ControlChange) + sizeof (fvalue)];
+      Lv2ControlChange * ev = (Lv2ControlChange *) buf;
       ev->index = port->lilv_port_index;
       ev->protocol = 0;
       ev->size = sizeof (fvalue);
       *(float *) ev->body = fvalue;
       zix_ring_write (
-        plugin->plugin_to_ui_events, buf,
-        sizeof (buf));
+        plugin->plugin_to_ui_events, buf, sizeof (buf));
     }
 }
 
 void
-lv2_state_apply_state (
-  Lv2Plugin * plugin,
-  LilvState * state)
+lv2_state_apply_state (Lv2Plugin * plugin, LilvState * state)
 {
   char pl_str[800];
   plugin_print (plugin->plugin, pl_str, 800);
@@ -392,14 +376,11 @@ lv2_state_apply_state (
       engine_paused = true;
     }
 
-  g_message (
-    "applying state for LV2 plugin '%s'...",
-    pl_str);
+  g_message ("applying state for LV2 plugin '%s'...", pl_str);
   lilv_state_restore (
-    state, plugin->instance, set_port_value,
-    plugin, 0, plugin->state_features);
-  g_message (
-    "LV2 state applied for plugin '%s'", pl_str);
+    state, plugin->instance, set_port_value, plugin, 0,
+    plugin->state_features);
+  g_message ("LV2 state applied for plugin '%s'", pl_str);
 
   if (engine_paused)
     {
@@ -459,12 +440,10 @@ lv2_state_save_preset (
   const char * label,
   const char * filename)
 {
-  LilvState * const state =
-    lilv_state_new_from_instance (
-      plugin->lilv_plugin, plugin->instance,
-      &plugin->map, plugin->temp_dir, dir, dir,
-      dir, lv2_plugin_get_port_value, plugin,
-      LV2_STATE_IS_PORTABLE, NULL);
+  LilvState * const state = lilv_state_new_from_instance (
+    plugin->lilv_plugin, plugin->instance, &plugin->map,
+    plugin->temp_dir, dir, dir, dir, lv2_plugin_get_port_value,
+    plugin, LV2_STATE_IS_PORTABLE, NULL);
 
   if (label)
     {
@@ -472,8 +451,8 @@ lv2_state_save_preset (
     }
 
   int ret = lilv_state_save (
-    LILV_WORLD, &plugin->map, &plugin->unmap,
-    state, uri, dir, filename);
+    LILV_WORLD, &plugin->map, &plugin->unmap, state, uri, dir,
+    filename);
 
   lilv_state_free (plugin->preset);
   plugin->preset = state;
@@ -493,8 +472,7 @@ lv2_state_delete_current_preset (Lv2Plugin * plugin)
     }
 
   lilv_world_unload_resource (
-    LILV_WORLD,
-    lilv_state_get_uri (plugin->preset));
+    LILV_WORLD, lilv_state_get_uri (plugin->preset));
   lilv_state_delete (LILV_WORLD, plugin->preset);
   lilv_state_free (plugin->preset);
   plugin->preset = NULL;
@@ -508,12 +486,10 @@ lv2_state_load_presets (
   void *      data)
 {
   LilvNodes * presets = lilv_plugin_get_related (
-    plugin->lilv_plugin,
-    PM_GET_NODE (LV2_PRESETS__Preset));
+    plugin->lilv_plugin, PM_GET_NODE (LV2_PRESETS__Preset));
   LILV_FOREACH (nodes, i, presets)
     {
-      const LilvNode * preset =
-        lilv_nodes_get (presets, i);
+      const LilvNode * preset = lilv_nodes_get (presets, i);
       lilv_world_load_resource (LILV_WORLD, preset);
       if (!sink)
         {
@@ -546,14 +522,11 @@ int
 lv2_state_unload_presets (Lv2Plugin * plugin)
 {
   LilvNodes * presets = lilv_plugin_get_related (
-    plugin->lilv_plugin,
-    PM_GET_NODE (LV2_PRESETS__Preset));
+    plugin->lilv_plugin, PM_GET_NODE (LV2_PRESETS__Preset));
   LILV_FOREACH (nodes, i, presets)
     {
-      const LilvNode * preset =
-        lilv_nodes_get (presets, i);
-      lilv_world_unload_resource (
-        LILV_WORLD, preset);
+      const LilvNode * preset = lilv_nodes_get (presets, i);
+      lilv_world_unload_resource (LILV_WORLD, preset);
     }
   lilv_nodes_free (presets);
 

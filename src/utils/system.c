@@ -79,8 +79,7 @@ system_run_cmd_w_args (
       *out_stderr = NULL;
       stderr_sink = reproc_sink_string (out_stderr);
     }
-  int r = reproc_run_ex (
-    args, opts, stdout_sink, stderr_sink);
+  int r = reproc_run_ex (args, opts, stdout_sink, stderr_sink);
 
   if (out_stdout)
     {
@@ -125,12 +124,11 @@ system_run_cmd (const char * cmd, long ms_timer)
   ZeroMemory (&pi, sizeof (pi));
   g_message ("attempting to run process %s", cmd);
   BOOL b = CreateProcess (
-    NULL, cmd, NULL, NULL, TRUE, DETACHED_PROCESS,
-    NULL, NULL, &si, &pi);
+    NULL, cmd, NULL, NULL, TRUE, DETACHED_PROCESS, NULL, NULL,
+    &si, &pi);
   if (!b)
     {
-      g_critical (
-        "create process failed for %s", cmd);
+      g_critical ("create process failed for %s", cmd);
       return -1;
     }
   /* wait for process to end */
@@ -143,8 +141,7 @@ system_run_cmd (const char * cmd, long ms_timer)
   CloseHandle (pi.hProcess);
   CloseHandle (pi.hThread);
   g_message (
-    "windows process exit code: %d",
-    (int) dwExitCode);
+    "windows process exit code: %d", (int) dwExitCode);
   return (int) dwExitCode;
 #else
   char timed_cmd[8000];
@@ -197,13 +194,12 @@ system_get_cmd_output (
   int      out, err;
   GError * g_err = NULL;
   bool     ret = g_spawn_async_with_pipes (
-        NULL, argv, NULL, G_SPAWN_DEFAULT, NULL, NULL,
-        &pid, NULL, &out, &err, &g_err);
+        NULL, argv, NULL, G_SPAWN_DEFAULT, NULL, NULL, &pid, NULL,
+        &out, &err, &g_err);
   if (!ret)
     {
       g_warning (
-        "(%s) spawn failed: %s", __func__,
-        g_err->message);
+        "(%s) spawn failed: %s", __func__, g_err->message);
       return NULL;
     }
 
@@ -227,16 +223,13 @@ system_get_cmd_output (
        * input is received */
       ChildWatchData data = { false };
       g_io_add_watch (
-        out_ch, G_IO_IN, (GIOFunc) watch_out_cb,
-        &data);
+        out_ch, G_IO_IN, (GIOFunc) watch_out_cb, &data);
 
-      gint64 time_at_start =
-        g_get_monotonic_time ();
+      gint64 time_at_start = g_get_monotonic_time ();
       gint64 cur_time = time_at_start;
       while (
         !data.exited
-        && (cur_time - time_at_start)
-             < (1000 * ms_timer))
+        && (cur_time - time_at_start) < (1000 * ms_timer))
         {
           g_usleep (10000);
           cur_time = g_get_monotonic_time ();
@@ -248,8 +241,8 @@ system_get_cmd_output (
 
   char *    str;
   gsize     size;
-  GIOStatus gio_status = g_io_channel_read_to_end (
-    out_ch, &str, &size, NULL);
+  GIOStatus gio_status =
+    g_io_channel_read_to_end (out_ch, &str, &size, NULL);
   g_io_channel_unref (out_ch);
 
   if (gio_status == G_IO_STATUS_NORMAL)

@@ -26,9 +26,8 @@ test_exporter_export_audio (
   ExportMode      mode)
 {
   g_assert_false (TRANSPORT_IS_ROLLING);
-  g_assert_cmpint (
-    TRANSPORT->playhead_pos.frames, ==, 0);
-  char * filename = g_strdup ("test_export.wav");
+  g_assert_cmpint (TRANSPORT->playhead_pos.frames, ==, 0);
+  char *         filename = g_strdup ("test_export.wav");
   ExportSettings settings;
   memset (&settings, 0, sizeof (settings));
   settings.progress_info.has_error = false;
@@ -53,8 +52,8 @@ test_exporter_export_audio (
         TRACKLIST, F_BOUNCE);
       settings.bounce_with_parents = true;
     }
-  char * exports_dir = project_get_path (
-    PROJECT, PROJECT_PATH_EXPORTS, false);
+  char * exports_dir =
+    project_get_path (PROJECT, PROJECT_PATH_EXPORTS, false);
   settings.file_uri =
     g_build_filename (exports_dir, filename, NULL);
   int ret = exporter_export (&settings);

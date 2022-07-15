@@ -79,38 +79,35 @@ typedef struct ClipEditor
   Track * track;
 } ClipEditor;
 
-static const cyaml_schema_field_t
-  clip_editor_fields_schema[] = {
-    YAML_FIELD_INT (ClipEditor, schema_version),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      ClipEditor,
-      region_id,
-      region_identifier_fields_schema),
-    YAML_FIELD_INT (ClipEditor, has_region),
-    YAML_FIELD_MAPPING_PTR (
-      ClipEditor,
-      piano_roll,
-      piano_roll_fields_schema),
-    YAML_FIELD_MAPPING_PTR (
-      ClipEditor,
-      automation_editor,
-      automation_editor_fields_schema),
-    YAML_FIELD_MAPPING_PTR (
-      ClipEditor,
-      chord_editor,
-      chord_editor_fields_schema),
-    YAML_FIELD_MAPPING_PTR (
-      ClipEditor,
-      audio_clip_editor,
-      audio_clip_editor_fields_schema),
+static const cyaml_schema_field_t clip_editor_fields_schema[] = {
+  YAML_FIELD_INT (ClipEditor, schema_version),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ClipEditor,
+    region_id,
+    region_identifier_fields_schema),
+  YAML_FIELD_INT (ClipEditor, has_region),
+  YAML_FIELD_MAPPING_PTR (
+    ClipEditor,
+    piano_roll,
+    piano_roll_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    ClipEditor,
+    automation_editor,
+    automation_editor_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    ClipEditor,
+    chord_editor,
+    chord_editor_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    ClipEditor,
+    audio_clip_editor,
+    audio_clip_editor_fields_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t clip_editor_schema = {
-  YAML_VALUE_PTR (
-    ClipEditor,
-    clip_editor_fields_schema),
+  YAML_VALUE_PTR (ClipEditor, clip_editor_fields_schema),
 };
 
 /**
@@ -147,8 +144,7 @@ ZRegion *
 clip_editor_get_region (ClipEditor * self);
 
 ArrangerSelections *
-clip_editor_get_arranger_selections (
-  ClipEditor * self);
+clip_editor_get_arranger_selections (ClipEditor * self);
 
 #if 0
 /**

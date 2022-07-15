@@ -19,10 +19,7 @@
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
-G_DEFINE_TYPE (
-  ChordPadWidget,
-  chord_pad_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (ChordPadWidget, chord_pad_widget, GTK_TYPE_WIDGET)
 
 static ChordDescriptor *
 get_chord_descriptor (ChordPadWidget * self)
@@ -41,8 +38,7 @@ send_note_offs (ChordPadWidget * self)
 
   if (track && track->in_signal_type == TYPE_EVENT)
     {
-      ChordDescriptor * descr =
-        get_chord_descriptor (self);
+      ChordDescriptor * descr = get_chord_descriptor (self);
 
       /* send note offs at time 1 */
       Port * port = track->processor->midi_in;
@@ -61,21 +57,19 @@ on_chord_click_pressed (
 {
   g_debug ("pressed");
 
-  ChordPadWidget * self =
-    Z_CHORD_PAD_WIDGET (user_data);
+  ChordPadWidget * self = Z_CHORD_PAD_WIDGET (user_data);
 
   Track * track = TRACKLIST_SELECTIONS->tracks[0];
 
   if (track && track->in_signal_type == TYPE_EVENT)
     {
-      ChordDescriptor * descr =
-        get_chord_descriptor (self);
+      ChordDescriptor * descr = get_chord_descriptor (self);
 
       /* send note ons at time 0 */
       Port * port = track->processor->midi_in;
       midi_events_add_note_ons_from_chord_descr (
-        port->midi_events, descr, 1,
-        VELOCITY_DEFAULT, 0, F_QUEUED);
+        port->midi_events, descr, 1, VELOCITY_DEFAULT, 0,
+        F_QUEUED);
     }
 }
 
@@ -89,23 +83,18 @@ on_chord_click_released (
 {
   g_debug ("released");
 
-  ChordPadWidget * self =
-    Z_CHORD_PAD_WIDGET (user_data);
+  ChordPadWidget * self = Z_CHORD_PAD_WIDGET (user_data);
 
   send_note_offs (self);
 }
 
 static void
-on_edit_chord_pressed (
-  GtkButton * btn,
-  gpointer    user_data)
+on_edit_chord_pressed (GtkButton * btn, gpointer user_data)
 {
-  ChordPadWidget * self =
-    Z_CHORD_PAD_WIDGET (user_data);
+  ChordPadWidget * self = Z_CHORD_PAD_WIDGET (user_data);
 
   ChordSelectorWindowWidget * chord_selector =
-    chord_selector_window_widget_new (
-      self->chord_idx);
+    chord_selector_window_widget_new (self->chord_idx);
 
   g_debug ("presenting chord selector window");
   gtk_window_present (GTK_WINDOW (chord_selector));
@@ -132,35 +121,30 @@ on_drag_update (
 
       send_note_offs (self);
 
-      ChordDescriptor * descr =
-        get_chord_descriptor (self);
+      ChordDescriptor * descr = get_chord_descriptor (self);
       WrappedObjectWithChangeSignal * wrapped_obj =
         wrapped_object_with_change_signal_new (
           descr, WRAPPED_OBJECT_TYPE_CHORD_DESCR);
       GdkContentProvider * content_providers[] = {
         gdk_content_provider_new_typed (
-          WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
-          wrapped_obj),
+          WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, wrapped_obj),
       };
       GdkContentProvider * provider =
         gdk_content_provider_new_union (
-          content_providers,
-          G_N_ELEMENTS (content_providers));
+          content_providers, G_N_ELEMENTS (content_providers));
 
-      GtkNative * native = gtk_widget_get_native (
-        GTK_WIDGET (self->btn));
+      GtkNative * native =
+        gtk_widget_get_native (GTK_WIDGET (self->btn));
       g_return_if_fail (native);
-      GdkSurface * surface =
-        gtk_native_get_surface (native);
+      GdkSurface * surface = gtk_native_get_surface (native);
 
-      GdkDevice * device = gtk_gesture_get_device (
-        GTK_GESTURE (gesture));
+      GdkDevice * device =
+        gtk_gesture_get_device (GTK_GESTURE (gesture));
 
       /* begin drag */
       gdk_drag_begin (
         surface, device, provider,
-        GDK_ACTION_MOVE | GDK_ACTION_COPY,
-        offset_x, offset_y);
+        GDK_ACTION_MOVE | GDK_ACTION_COPY, offset_x, offset_y);
     }
 }
 
@@ -213,12 +197,9 @@ on_dnd_begin (
 #endif
 
 static void
-on_invert_btn_clicked (
-  GtkButton *      btn,
-  ChordPadWidget * self)
+on_invert_btn_clicked (GtkButton * btn, ChordPadWidget * self)
 {
-  const ChordDescriptor * descr =
-    get_chord_descriptor (self);
+  const ChordDescriptor * descr = get_chord_descriptor (self);
   g_return_if_fail (descr);
   ChordDescriptor * descr_clone =
     chord_descriptor_clone (descr);
@@ -231,8 +212,8 @@ on_invert_btn_clicked (
         {
           descr_clone->inversion--;
           chord_editor_apply_single_chord (
-            CHORD_EDITOR, descr_clone,
-            self->chord_idx, F_UNDOABLE);
+            CHORD_EDITOR, descr_clone, self->chord_idx,
+            F_UNDOABLE);
         }
     }
   else if (btn == self->invert_next_btn)
@@ -243,8 +224,8 @@ on_invert_btn_clicked (
         {
           descr_clone->inversion++;
           chord_editor_apply_single_chord (
-            CHORD_EDITOR, descr_clone,
-            self->chord_idx, F_UNDOABLE);
+            CHORD_EDITOR, descr_clone, self->chord_idx,
+            F_UNDOABLE);
         }
     }
 }
@@ -253,18 +234,14 @@ on_invert_btn_clicked (
  * Sets the chord index on the chord widget.
  */
 void
-chord_pad_widget_refresh (
-  ChordPadWidget * self,
-  int              idx)
+chord_pad_widget_refresh (ChordPadWidget * self, int idx)
 {
   self->chord_idx = idx;
 
-  ChordDescriptor * descr =
-    get_chord_descriptor (self);
+  ChordDescriptor * descr = get_chord_descriptor (self);
   g_return_if_fail (descr);
 
-  char * lbl =
-    chord_descriptor_to_new_string (descr);
+  char * lbl = chord_descriptor_to_new_string (descr);
   gtk_button_set_label (self->btn, lbl);
   g_free (lbl);
 }
@@ -304,10 +281,8 @@ chord_pad_widget_init (ChordPadWidget * self)
     GTK_WIDGET (self->overlay), "chord-overlay");
 
   /* add main button */
-  self->btn =
-    GTK_BUTTON (gtk_button_new_with_label (""));
-  gtk_widget_set_name (
-    GTK_WIDGET (self->btn), "chord-btn");
+  self->btn = GTK_BUTTON (gtk_button_new_with_label (""));
+  gtk_widget_set_name (GTK_WIDGET (self->btn), "chord-btn");
   gtk_overlay_set_child (
     self->overlay, GTK_WIDGET (self->btn));
 
@@ -323,23 +298,22 @@ chord_pad_widget_init (ChordPadWidget * self)
     GTK_WIDGET (self->btn),
     GTK_EVENT_CONTROLLER (click_gesture));
 
-  self->btn_drag =
-    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  self->btn_drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
-    self->btn_drag, "drag-begin",
-    G_CALLBACK (on_drag_begin), self);
+    self->btn_drag, "drag-begin", G_CALLBACK (on_drag_begin),
+    self);
   g_signal_connect (
     self->btn_drag, "drag-update",
     G_CALLBACK (on_drag_update), self);
   g_signal_connect (
-    self->btn_drag, "drag-end",
-    G_CALLBACK (on_drag_end), self);
+    self->btn_drag, "drag-end", G_CALLBACK (on_drag_end),
+    self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->btn),
     GTK_EVENT_CONTROLLER (self->btn_drag));
 
-  self->btn_box = GTK_BOX (
-    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  self->btn_box =
+    GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
   gtk_widget_set_halign (
     GTK_WIDGET (self->btn_box), GTK_ALIGN_END);
   gtk_widget_set_valign (
@@ -353,8 +327,7 @@ chord_pad_widget_init (ChordPadWidget * self)
   gtk_widget_set_name (
     GTK_WIDGET (self->edit_chord_btn), "chord-btn");
   gtk_box_append (
-    self->btn_box,
-    GTK_WIDGET (self->edit_chord_btn));
+    self->btn_box, GTK_WIDGET (self->edit_chord_btn));
   g_signal_connect (
     self->edit_chord_btn, "clicked",
     G_CALLBACK (on_edit_chord_pressed), self);
@@ -363,28 +336,24 @@ chord_pad_widget_init (ChordPadWidget * self)
   self->invert_prev_btn = GTK_BUTTON (
     gtk_button_new_from_icon_name ("go-previous"));
   gtk_box_append (
-    self->btn_box,
-    GTK_WIDGET (self->invert_prev_btn));
+    self->btn_box, GTK_WIDGET (self->invert_prev_btn));
   g_signal_connect (
     self->invert_prev_btn, "clicked",
     G_CALLBACK (on_invert_btn_clicked), self);
 
-  self->invert_next_btn = GTK_BUTTON (
-    gtk_button_new_from_icon_name ("go-next"));
+  self->invert_next_btn =
+    GTK_BUTTON (gtk_button_new_from_icon_name ("go-next"));
   gtk_box_append (
-    self->btn_box,
-    GTK_WIDGET (self->invert_next_btn));
+    self->btn_box, GTK_WIDGET (self->invert_next_btn));
   g_signal_connect (
     self->invert_next_btn, "clicked",
     G_CALLBACK (on_invert_btn_clicked), self);
 }
 
 static void
-chord_pad_widget_class_init (
-  ChordPadWidgetClass * _klass)
+chord_pad_widget_class_init (ChordPadWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (klass, "chord");
   gtk_widget_class_set_layout_manager_type (
     klass, GTK_TYPE_BIN_LAYOUT);

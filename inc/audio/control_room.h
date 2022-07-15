@@ -41,8 +41,7 @@ typedef struct AudioEngine AudioEngine;
 
 #define control_room_is_in_active_project(self) \
   (self->audio_engine \
-   && engine_is_in_active_project ( \
-     self->audio_engine))
+   && engine_is_in_active_project (self->audio_engine))
 
 /**
  * The control room allows to specify how Listen will
@@ -97,23 +96,19 @@ typedef struct ControlRoom
   AudioEngine * audio_engine;
 } ControlRoom;
 
-static const cyaml_schema_field_t
-  control_room_fields_schema[] = {
-    YAML_FIELD_INT (ControlRoom, schema_version),
-    YAML_FIELD_MAPPING_PTR (
-      ControlRoom,
-      monitor_fader,
-      fader_fields_schema),
+static const cyaml_schema_field_t control_room_fields_schema[] = {
+  YAML_FIELD_INT (ControlRoom, schema_version),
+  YAML_FIELD_MAPPING_PTR (
+    ControlRoom,
+    monitor_fader,
+    fader_fields_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  control_room_schema = {
-    YAML_VALUE_PTR (
-      ControlRoom,
-      control_room_fields_schema),
-  };
+static const cyaml_schema_value_t control_room_schema = {
+  YAML_VALUE_PTR (ControlRoom, control_room_fields_schema),
+};
 
 /**
  * Inits the control room from a project.

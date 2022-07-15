@@ -89,12 +89,10 @@ typedef struct AutomationModeWidget
   double corner_radius;
 
   /** Used to update caches if state changed. */
-  CustomButtonWidgetState
-    last_states[NUM_AUTOMATION_MODES];
+  CustomButtonWidgetState last_states[NUM_AUTOMATION_MODES];
 
   /** Used during drawing. */
-  CustomButtonWidgetState
-    current_states[NUM_AUTOMATION_MODES];
+  CustomButtonWidgetState current_states[NUM_AUTOMATION_MODES];
 
   /** Used during transitions. */
   GdkRGBA last_colors[NUM_AUTOMATION_MODES];
@@ -120,8 +118,7 @@ automation_mode_widget_new (
   AutomationTrack * owner);
 
 void
-automation_mode_widget_init (
-  AutomationModeWidget * self);
+automation_mode_widget_init (AutomationModeWidget * self);
 
 void
 automation_mode_widget_draw (
@@ -133,8 +130,7 @@ automation_mode_widget_draw (
   CustomButtonWidgetState state);
 
 void
-automation_mode_widget_free (
-  AutomationModeWidget * self);
+automation_mode_widget_free (AutomationModeWidget * self);
 
 /**
  * @}

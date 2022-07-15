@@ -35,24 +35,19 @@ G_DEFINE_TYPE (CpuWidget, cpu_widget, GTK_TYPE_WIDGET)
 #define ICON_SIZE BAR_HEIGHT
 #define TOTAL_H (PADDING * 3 + BAR_HEIGHT * 2)
 #define TOTAL_W \
-  (ICON_SIZE + PADDING * 3 \
-   + NUM_BARS * PADDING * 2)
+  (ICON_SIZE + PADDING * 3 + NUM_BARS * PADDING * 2)
 
 /**
  * Taken from
  * http://zetcode.com/gui/gtk2/customwidget/
  */
 static void
-cpu_snapshot (
-  GtkWidget *   widget,
-  GtkSnapshot * snapshot)
+cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   CpuWidget * self = Z_CPU_WIDGET (widget);
 
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_allocated_width (widget);
+  int height = gtk_widget_get_allocated_height (widget);
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
@@ -76,8 +71,7 @@ cpu_snapshot (
       color.alpha });
   graphene_vec4_t color_offset;
   graphene_vec4_init (
-    &color_offset, color.red, color.green,
-    color.blue, 0);
+    &color_offset, color.red, color.green, color.blue, 0);
 
   gtk_snapshot_push_color_matrix (
     snapshot, &color_matrix, &color_offset);
@@ -90,8 +84,7 @@ cpu_snapshot (
   gtk_snapshot_append_texture (
     snapshot, self->dsp_texture,
     &GRAPHENE_RECT_INIT (
-      PADDING, PADDING * 2 + ICON_SIZE, ICON_SIZE,
-      ICON_SIZE));
+      PADDING, PADDING * 2 + ICON_SIZE, ICON_SIZE, ICON_SIZE));
 
   gtk_snapshot_pop (snapshot);
 
@@ -110,8 +103,8 @@ cpu_snapshot (
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          ICON_SIZE + PADDING + i * PADDING * 2,
-          PADDING, BAR_WIDTH, BAR_HEIGHT));
+          ICON_SIZE + PADDING + i * PADDING * 2, PADDING,
+          BAR_WIDTH, BAR_HEIGHT));
     }
 
   /* DSP */
@@ -128,8 +121,7 @@ cpu_snapshot (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
           ICON_SIZE + PADDING + i * PADDING * 2,
-          PADDING * 2 + BAR_HEIGHT, BAR_WIDTH,
-          BAR_HEIGHT));
+          PADDING * 2 + BAR_HEIGHT, BAR_WIDTH, BAR_HEIGHT));
     }
 }
 
@@ -166,8 +158,7 @@ refresh_dsp_load (CpuWidget * self)
 }
 
 #if defined(__linux__)
-static long double a[4],
-  b[4] = { 0, 0, 0, 0 }, loadavg;
+static long double a[4], b[4] = { 0, 0, 0, 0 }, loadavg;
 #endif
 
 #ifdef __APPLE__
@@ -205,15 +196,13 @@ refresh_cpu_load (CpuWidget * self)
 
   fp = fopen ("/proc/stat", "r");
   fscanf (
-    fp, "%*s %Lf %Lf %Lf %Lf", &a[0], &a[1], &a[2],
-    &a[3]);
+    fp, "%*s %Lf %Lf %Lf %Lf", &a[0], &a[1], &a[2], &a[3]);
   fclose (fp);
 
   loadavg =
     ((a[0] + a[1] + a[2]) - (b[0] + b[1] + b[2]))
     / ((a[0] + a[1] + a[2] + a[3]) - (b[0] + b[1] + b[2] + b[3]));
-  self->cpu =
-    (int) ((double) loadavg * (double) 100);
+  self->cpu = (int) ((double) loadavg * (double) 100);
 
   b[0] = a[0];
   b[1] = a[1];
@@ -228,8 +217,7 @@ refresh_cpu_load (CpuWidget * self)
 #elif defined(__APPLE__)
 
   host_cpu_load_info_data_t cpuinfo;
-  mach_msg_type_number_t    count =
-    HOST_CPU_LOAD_INFO_COUNT;
+  mach_msg_type_number_t    count = HOST_CPU_LOAD_INFO_COUNT;
   if (
     host_statistics (
       mach_host_self (), HOST_CPU_LOAD_INFO,
@@ -251,9 +239,7 @@ refresh_cpu_load (CpuWidget * self)
 #endif
 
   char ttip[100];
-  sprintf (
-    ttip, "CPU: %d%%\nDSP: %d%%", self->cpu,
-    self->dsp);
+  sprintf (ttip, "CPU: %d%%\nDSP: %d%%", self->cpu, self->dsp);
   /* FIXME reenable after GTK #4451 is fixed */
   /*gtk_widget_set_tooltip_text (*/
   /*(GtkWidget *) self, ttip);*/
@@ -319,14 +305,10 @@ cpu_widget_init (CpuWidget * self)
   self->cpu = 0;
   self->dsp = 0;
 
-  self->cpu_texture =
-    z_gdk_texture_new_from_icon_name (
-      "ext-iconfinder_cpu_2561419", ICON_SIZE,
-      ICON_SIZE, 1);
-  self->dsp_texture =
-    z_gdk_texture_new_from_icon_name (
-      "font-awesome-wave-square-solid", ICON_SIZE,
-      ICON_SIZE, 1);
+  self->cpu_texture = z_gdk_texture_new_from_icon_name (
+    "ext-iconfinder_cpu_2561419", ICON_SIZE, ICON_SIZE, 1);
+  self->dsp_texture = z_gdk_texture_new_from_icon_name (
+    "font-awesome-wave-square-solid", ICON_SIZE, ICON_SIZE, 1);
 
   gtk_widget_set_size_request (
     GTK_WIDGET (self), TOTAL_W, TOTAL_H);
@@ -347,8 +329,7 @@ cpu_widget_init (CpuWidget * self)
 static void
 cpu_widget_class_init (CpuWidgetClass * klass)
 {
-  GtkWidgetClass * wklass =
-    GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = cpu_snapshot;
   gtk_widget_class_set_css_name (wklass, "cpu");
 

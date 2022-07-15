@@ -63,8 +63,7 @@ benchmark_find (const char * func_name)
   for (int i = 0; i < num_benchmarks; i++)
     {
       DspBenchmark * benchmark = &benchmarks[i];
-      if (string_is_equal (
-            benchmark->func_name, func_name))
+      if (string_is_equal (benchmark->func_name, func_name))
         {
           return benchmark;
         }
@@ -85,11 +84,9 @@ _test_dsp_fill (bool optimized, bool large_buff)
     }
 
   gint64  start, end;
-  float * buf =
-    object_new_n (LARGE_BUFFER_SIZE, float);
-  float * src =
-    object_new_n (LARGE_BUFFER_SIZE, float);
-  float val = 0.3f;
+  float * buf = object_new_n (LARGE_BUFFER_SIZE, float);
+  float * src = object_new_n (LARGE_BUFFER_SIZE, float);
+  float   val = 0.3f;
 
   size_t buf_size =
     large_buff ? LARGE_BUFFER_SIZE : BUFFER_SIZE;
@@ -158,8 +155,7 @@ _test_dsp_fill (bool optimized, bool large_buff)
   LOOP_END ("mix2", optimized);
 
   LOOP_START
-  dsp_mix_add2 (
-    buf, src, src, 0.1f, 0.2f, buf_size);
+  dsp_mix_add2 (buf, src, src, 0.1f, 0.2f, buf_size);
   LOOP_END ("mix_add2", optimized);
 
   free (buf);
@@ -203,8 +199,8 @@ _test_run_engine (bool optimized)
     /* create a few tracks with plugins */
 #ifdef HAVE_LSP_COMPRESSOR
   test_plugin_manager_create_tracks_from_plugin (
-    LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
-    false, false, NUM_TRACKS);
+    LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, false,
+    NUM_TRACKS);
 #endif
 
   DspBenchmark * benchmark;
@@ -218,8 +214,8 @@ _test_run_engine (bool optimized)
       LOOP_END ("engine cycles", optimized);
 
       g_message (
-        "%soptimized time: %ld",
-        optimized ? "" : "un", end - start);
+        "%soptimized time: %ld", optimized ? "" : "un",
+        end - start);
       /*g_warn_if_reached ();*/
 
 #ifdef HAVE_LSP_DSP
@@ -267,8 +263,7 @@ _test_run_engine (bool optimized)
 #define TEST_PREFIX "/benchmarks/dsp/"
 
     g_test_add_func (
-      TEST_PREFIX "test dsp fill",
-      (GTestFunc) test_dsp_fill);
+      TEST_PREFIX "test dsp fill", (GTestFunc) test_dsp_fill);
     g_test_add_func (
       TEST_PREFIX "test run engine",
       (GTestFunc) test_run_engine);

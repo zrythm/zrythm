@@ -112,14 +112,13 @@ char *
 test_project_save (void)
 {
   /* save the project */
-  int ret = project_save (
-    PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
+  int ret =
+    project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
   g_assert_cmpint (ret, ==, 0);
-  char * prj_file = g_build_filename (
-    PROJECT->dir, PROJECT_FILE, NULL);
+  char * prj_file =
+    g_build_filename (PROJECT->dir, PROJECT_FILE, NULL);
 
-  object_free_w_func_and_null (
-    project_free, PROJECT);
+  object_free_w_func_and_null (project_free, PROJECT);
 
   return prj_file;
 }
@@ -141,10 +140,8 @@ test_project_save_and_reload (void)
   /* recreate the recording manager to drop any
    * events */
   object_free_w_func_and_null (
-    recording_manager_free,
-    ZRYTHM->recording_manager);
-  ZRYTHM->recording_manager =
-    recording_manager_new ();
+    recording_manager_free, ZRYTHM->recording_manager);
+  ZRYTHM->recording_manager = recording_manager_new ();
 
   /* reload it */
   test_project_reload (prj_file);
@@ -169,20 +166,17 @@ check_vs_orig_state:
 
   if (check_selections)
     {
-      g_assert_cmpint (
-        TL_SELECTIONS->num_regions, ==, 4);
-      g_assert_cmpint (
-        TL_SELECTIONS->num_markers, ==, 1);
+      g_assert_cmpint (TL_SELECTIONS->num_regions, ==, 4);
+      g_assert_cmpint (TL_SELECTIONS->num_markers, ==, 1);
       g_assert_cmpint (
         TL_SELECTIONS->num_scale_objects, ==, 1);
     }
 
-  Track * midi_track = tracklist_find_track_by_name (
-    TRACKLIST, MIDI_TRACK_NAME);
+  Track * midi_track =
+    tracklist_find_track_by_name (TRACKLIST, MIDI_TRACK_NAME);
   g_assert_nonnull (midi_track);
-  Track * audio_track =
-    tracklist_find_track_by_name (
-      TRACKLIST, AUDIO_TRACK_NAME);
+  Track * audio_track = tracklist_find_track_by_name (
+    TRACKLIST, AUDIO_TRACK_NAME);
   g_assert_nonnull (audio_track);
 
   Position p1_before_move, p2_before_move;
@@ -193,11 +187,9 @@ check_vs_orig_state:
 
   /* check midi region */
   g_assert_cmpint (
-    midi_track->lanes[MIDI_REGION_LANE]->num_regions,
-    ==, 1);
+    midi_track->lanes[MIDI_REGION_LANE]->num_regions, ==, 1);
   ArrangerObject * obj =
-    (ArrangerObject *) midi_track
-      ->lanes[MIDI_REGION_LANE]
+    (ArrangerObject *) midi_track->lanes[MIDI_REGION_LANE]
       ->regions[0];
   g_assert_cmppos (&obj->pos, p1);
   g_assert_cmppos (&obj->end_pos, p2);
@@ -209,17 +201,14 @@ check_vs_orig_state:
   g_assert_cmpuint (mn->vel->vel, ==, MN_VEL);
   g_assert_cmppos (&obj->pos, p1);
   g_assert_cmppos (&obj->end_pos, p2);
-  g_assert_true (region_identifier_is_equal (
-    &obj->region_id, &r->id));
+  g_assert_true (
+    region_identifier_is_equal (&obj->region_id, &r->id));
 
   /* check audio region */
   g_assert_cmpint (
-    audio_track->lanes[AUDIO_REGION_LANE]
-      ->num_regions,
-    ==, 1);
+    audio_track->lanes[AUDIO_REGION_LANE]->num_regions, ==, 1);
   obj =
-    (ArrangerObject *) audio_track
-      ->lanes[AUDIO_REGION_LANE]
+    (ArrangerObject *) audio_track->lanes[AUDIO_REGION_LANE]
       ->regions[0];
   g_assert_cmppos (&obj->pos, p1);
 
@@ -227,10 +216,8 @@ check_vs_orig_state:
   AutomationTracklist * atl =
     track_get_automation_tracklist (P_MASTER_TRACK);
   g_assert_nonnull (atl);
-  AutomationTrack * at =
-    channel_get_automation_track (
-      P_MASTER_TRACK->channel,
-      PORT_FLAG_STEREO_BALANCE);
+  AutomationTrack * at = channel_get_automation_track (
+    P_MASTER_TRACK->channel, PORT_FLAG_STEREO_BALANCE);
   g_assert_nonnull (at);
   g_assert_cmpint (at->num_regions, ==, 1);
   obj = (ArrangerObject *) at->regions[0];
@@ -251,29 +238,23 @@ check_vs_orig_state:
 
   /* check marker */
   Marker * m;
-  g_assert_cmpint (
-    P_MARKER_TRACK->num_markers, ==, 3);
-  obj =
-    (ArrangerObject *) P_MARKER_TRACK->markers[0];
+  g_assert_cmpint (P_MARKER_TRACK->num_markers, ==, 3);
+  obj = (ArrangerObject *) P_MARKER_TRACK->markers[0];
   m = (Marker *) obj;
   g_assert_true (m);
   g_assert_cmpstr (m->name, ==, "start");
-  obj =
-    (ArrangerObject *) P_MARKER_TRACK->markers[2];
+  obj = (ArrangerObject *) P_MARKER_TRACK->markers[2];
   m = (Marker *) obj;
   g_assert_cmppos (&obj->pos, p1);
   g_assert_cmpstr (m->name, ==, MARKER_NAME);
 
   /* check scale object */
-  g_assert_cmpint (
-    P_CHORD_TRACK->num_scales, ==, 1);
+  g_assert_cmpint (P_CHORD_TRACK->num_scales, ==, 1);
   obj = (ArrangerObject *) P_CHORD_TRACK->scales[0];
   ScaleObject * s = (ScaleObject *) obj;
   g_assert_cmppos (&obj->pos, p1);
-  g_assert_cmpint (
-    s->scale->type, ==, MUSICAL_SCALE_TYPE);
-  g_assert_cmpint (
-    s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
+  g_assert_cmpint (s->scale->type, ==, MUSICAL_SCALE_TYPE);
+  g_assert_cmpint (s->scale->root_key, ==, MUSICAL_SCALE_ROOT);
 
   /* save the project and reopen it. some callers
    * undo after this step so this checks if the undo
@@ -290,16 +271,13 @@ check_vs_orig_state:
  * Bootstraps the test with test data.
  */
 void
-test_project_rebootstrap_timeline (
-  Position * p1,
-  Position * p2)
+test_project_rebootstrap_timeline (Position * p1, Position * p2)
 {
   test_helper_zrythm_init ();
 
   /* pause engine */
   EngineState state;
-  engine_wait_for_pause (
-    AUDIO_ENGINE, &state, false);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, false);
 
   /* remove any previous work */
   chord_track_clear (P_CHORD_TRACK);
@@ -320,27 +298,21 @@ test_project_rebootstrap_timeline (
   position_set_to_bar (p1, 2);
   position_set_to_bar (p2, 4);
   Track * track = track_new (
-    TRACK_TYPE_MIDI, TRACKLIST->num_tracks,
-    MIDI_TRACK_NAME, F_WITH_LANE);
+    TRACK_TYPE_MIDI, TRACKLIST->num_tracks, MIDI_TRACK_NAME,
+    F_WITH_LANE);
   tracklist_append_track (
-    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
-    F_NO_RECALC_GRAPH);
-  unsigned int track_name_hash =
-    track_get_name_hash (track);
-  ZRegion * r = midi_region_new (
-    p1, p2, track_get_name_hash (track),
-    MIDI_REGION_LANE, 0);
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+  unsigned int track_name_hash = track_get_name_hash (track);
+  ZRegion *    r = midi_region_new (
+       p1, p2, track_get_name_hash (track), MIDI_REGION_LANE, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
-  track_add_region (
-    track, r, NULL, MIDI_REGION_LANE, 1, 0);
+  track_add_region (track, r, NULL, MIDI_REGION_LANE, 1, 0);
   arranger_object_set_name (
     r_obj, MIDI_REGION_NAME, F_NO_PUBLISH_EVENTS);
   g_assert_cmpuint (
     r->id.track_name_hash, ==, track_name_hash);
-  g_assert_cmpint (
-    r->id.lane_pos, ==, MIDI_REGION_LANE);
-  g_assert_cmpint (
-    r->id.type, ==, REGION_TYPE_MIDI);
+  g_assert_cmpint (r->id.lane_pos, ==, MIDI_REGION_LANE);
+  g_assert_cmpint (r->id.type, ==, REGION_TYPE_MIDI);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
@@ -350,45 +322,37 @@ test_project_rebootstrap_timeline (
     midi_note_new (&r->id, p1, p2, MN_VAL, MN_VEL);
   midi_region_add_midi_note (r, mn, 0);
   ArrangerObject * mn_obj = (ArrangerObject *) mn;
-  g_assert_true (region_identifier_is_equal (
-    &mn_obj->region_id, &r->id));
+  g_assert_true (
+    region_identifier_is_equal (&mn_obj->region_id, &r->id));
   arranger_selections_add_object (
     (ArrangerSelections *) MA_SELECTIONS,
     (ArrangerObject *) mn);
 
   /* Create and add an automation region with
    * 2 AutomationPoint's */
-  AutomationTrack * at =
-    channel_get_automation_track (
-      P_MASTER_TRACK->channel,
-      PORT_FLAG_STEREO_BALANCE);
-  track_name_hash =
-    track_get_name_hash (P_MASTER_TRACK);
+  AutomationTrack * at = channel_get_automation_track (
+    P_MASTER_TRACK->channel, PORT_FLAG_STEREO_BALANCE);
+  track_name_hash = track_get_name_hash (P_MASTER_TRACK);
   r = automation_region_new (
     p1, p2, track_name_hash, at->index, 0);
-  track_add_region (
-    P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0);
+  track_add_region (P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0);
   g_assert_cmpuint (
     r->id.track_name_hash, ==, track_name_hash);
   g_assert_cmpint (r->id.at_idx, ==, at->index);
-  g_assert_cmpint (
-    r->id.type, ==, REGION_TYPE_AUTOMATION);
+  g_assert_cmpint (r->id.type, ==, REGION_TYPE_AUTOMATION);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
 
   /* add 2 automation points to the region */
-  AutomationPoint * ap = automation_point_new_float (
-    AP_VAL1, AP_VAL1, p1);
-  automation_region_add_ap (
-    r, ap, F_NO_PUBLISH_EVENTS);
+  AutomationPoint * ap =
+    automation_point_new_float (AP_VAL1, AP_VAL1, p1);
+  automation_region_add_ap (r, ap, F_NO_PUBLISH_EVENTS);
   arranger_selections_add_object (
     (ArrangerSelections *) AUTOMATION_SELECTIONS,
     (ArrangerObject *) ap);
-  ap = automation_point_new_float (
-    AP_VAL2, AP_VAL1, p2);
-  automation_region_add_ap (
-    r, ap, F_NO_PUBLISH_EVENTS);
+  ap = automation_point_new_float (AP_VAL2, AP_VAL1, p2);
+  automation_region_add_ap (r, ap, F_NO_PUBLISH_EVENTS);
   arranger_selections_add_object (
     (ArrangerSelections *) AUTOMATION_SELECTIONS,
     (ArrangerObject *) ap);
@@ -405,18 +369,14 @@ test_project_rebootstrap_timeline (
 
   /* add 2 chords to the region */
   ChordObject * c = chord_object_new (&r->id, 0, 1);
-  chord_region_add_chord_object (
-    r, c, F_NO_PUBLISH_EVENTS);
-  arranger_object_pos_setter (
-    (ArrangerObject *) c, p1);
+  chord_region_add_chord_object (r, c, F_NO_PUBLISH_EVENTS);
+  arranger_object_pos_setter ((ArrangerObject *) c, p1);
   arranger_selections_add_object (
     (ArrangerSelections *) CHORD_SELECTIONS,
     (ArrangerObject *) c);
   c = chord_object_new (&r->id, 0, 1);
-  chord_region_add_chord_object (
-    r, c, F_NO_PUBLISH_EVENTS);
-  arranger_object_pos_setter (
-    (ArrangerObject *) c, p2);
+  chord_region_add_chord_object (r, c, F_NO_PUBLISH_EVENTS);
+  arranger_object_pos_setter ((ArrangerObject *) c, p2);
   arranger_selections_add_object (
     (ArrangerSelections *) CHORD_SELECTIONS,
     (ArrangerObject *) c);
@@ -428,8 +388,7 @@ test_project_rebootstrap_timeline (
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) m);
-  arranger_object_pos_setter (
-    (ArrangerObject *) m, p1);
+  arranger_object_pos_setter ((ArrangerObject *) m, p1);
 
   /* create and add a ScaleObject */
   MusicalScale * ms = musical_scale_new (
@@ -439,39 +398,34 @@ test_project_rebootstrap_timeline (
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) s);
-  arranger_object_pos_setter (
-    (ArrangerObject *) s, p1);
+  arranger_object_pos_setter ((ArrangerObject *) s, p1);
 
   /* Create and add an audio region */
   position_set_to_bar (p1, 2);
   track = track_new (
-    TRACK_TYPE_AUDIO, TRACKLIST->num_tracks,
-    AUDIO_TRACK_NAME, F_WITH_LANE);
+    TRACK_TYPE_AUDIO, TRACKLIST->num_tracks, AUDIO_TRACK_NAME,
+    F_WITH_LANE);
   tracklist_append_track (
-    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
-    F_NO_RECALC_GRAPH);
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   char audio_file_path[2000];
   sprintf (
     audio_file_path, "%s%s%s", TESTS_SRCDIR,
     G_DIR_SEPARATOR_S, "test.wav");
   track_name_hash = track_get_name_hash (track);
   r = audio_region_new (
-    -1, audio_file_path, true, NULL, 0, NULL, 0, 0,
-    p1, track_name_hash, AUDIO_REGION_LANE, 0);
+    -1, audio_file_path, true, NULL, 0, NULL, 0, 0, p1,
+    track_name_hash, AUDIO_REGION_LANE, 0);
   AudioClip * clip = audio_region_get_clip (r);
   g_assert_cmpuint (clip->num_frames, >, 151000);
   g_assert_cmpuint (clip->num_frames, <, 152000);
-  track_add_region (
-    track, r, NULL, AUDIO_REGION_LANE, 1, 0);
+  track_add_region (track, r, NULL, AUDIO_REGION_LANE, 1, 0);
   r_obj = (ArrangerObject *) r;
   arranger_object_set_name (
     r_obj, AUDIO_REGION_NAME, F_NO_PUBLISH_EVENTS);
   g_assert_cmpuint (
     r->id.track_name_hash, ==, track_name_hash);
-  g_assert_cmpint (
-    r->id.lane_pos, ==, AUDIO_REGION_LANE);
-  g_assert_cmpint (
-    r->id.type, ==, REGION_TYPE_AUDIO);
+  g_assert_cmpint (r->id.lane_pos, ==, AUDIO_REGION_LANE);
+  g_assert_cmpint (r->id.type, ==, REGION_TYPE_AUDIO);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
@@ -481,19 +435,16 @@ test_project_rebootstrap_timeline (
     TRACK_TYPE_MIDI, TRACKLIST->num_tracks,
     TARGET_MIDI_TRACK_NAME, F_WITH_LANE);
   tracklist_append_track (
-    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
-    F_NO_RECALC_GRAPH);
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   track = track_new (
     TRACK_TYPE_AUDIO, TRACKLIST->num_tracks,
     TARGET_AUDIO_TRACK_NAME, F_WITH_LANE);
   tracklist_append_track (
-    TRACKLIST, track, F_NO_PUBLISH_EVENTS,
-    F_NO_RECALC_GRAPH);
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 
   int beats_per_bar =
     tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
-  bpm_t bpm =
-    tempo_track_get_current_bpm (P_TEMPO_TRACK);
+  bpm_t bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
   engine_update_frames_per_tick (
     AUDIO_ENGINE, beats_per_bar, bpm,
     AUDIO_ENGINE->sample_rate, true, true, false);

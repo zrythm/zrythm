@@ -31,8 +31,7 @@ G_DECLARE_FINAL_TYPE (
   ACTIVE_HARDWARE_POPOVER_WIDGET,
   GtkPopover)
 
-typedef struct _ActiveHardwareMbWidget
-  ActiveHardwareMbWidget;
+typedef struct _ActiveHardwareMbWidget ActiveHardwareMbWidget;
 
 typedef struct _ActiveHardwarePopoverWidget
 {

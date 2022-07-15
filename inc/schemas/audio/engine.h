@@ -45,14 +45,10 @@ typedef enum AudioEngineJackTransportType_v1
   AUDIO_ENGINE_NO_JACK_TRANSPORT_v1,
 } AudioEngineJackTransportType_v1;
 
-static const cyaml_strval_t
-  jack_transport_type_strings_v1[] = {
-    {"Timebase master",
-     AUDIO_ENGINE_JACK_TIMEBASE_MASTER_v1 },
-    { "Transport client",
-     AUDIO_ENGINE_JACK_TRANSPORT_CLIENT_v1},
-    { "No JACK transport",
-     AUDIO_ENGINE_NO_JACK_TRANSPORT_v1    },
+static const cyaml_strval_t jack_transport_type_strings_v1[] = {
+  {"Timebase master",    AUDIO_ENGINE_JACK_TIMEBASE_MASTER_v1 },
+  { "Transport client",  AUDIO_ENGINE_JACK_TRANSPORT_CLIENT_v1},
+  { "No JACK transport", AUDIO_ENGINE_NO_JACK_TRANSPORT_v1    },
 };
 
 typedef struct AudioEngine_v1
@@ -119,22 +115,22 @@ typedef struct AudioEngine_v1
   int                    capture_cc;
   midi_byte_t            last_cc[3];
   gint64                 last_xrun_notification;
-  bool          denormal_prevention_val_positive;
-  float         denormal_prevention_val;
-  gint64        zrythm_start_time;
-  int           limit_reached;
-  YamlDummyEnum bounce_mode;
-  void *        metronome;
-  void *        ev_queue;
-  void *        ev_pool;
-  guint         process_source_id;
-  int           processing_events;
-  gint64        last_events_process_started;
-  gint64        last_events_processed;
-  volatile gint cycle_running;
-  bool          pre_setup;
-  bool          setup;
-  bool          activated;
+  bool                   denormal_prevention_val_positive;
+  float                  denormal_prevention_val;
+  gint64                 zrythm_start_time;
+  int                    limit_reached;
+  YamlDummyEnum          bounce_mode;
+  void *                 metronome;
+  void *                 ev_queue;
+  void *                 ev_pool;
+  guint                  process_source_id;
+  int                    processing_events;
+  gint64                 last_events_process_started;
+  gint64                 last_events_processed;
+  volatile gint          cycle_running;
+  bool                   pre_setup;
+  bool                   setup;
+  bool                   activated;
 } AudioEngine_v1;
 
 static const cyaml_schema_field_t engine_fields_schema_v1[] = {
@@ -182,9 +178,7 @@ static const cyaml_schema_field_t engine_fields_schema_v1[] = {
 };
 
 static const cyaml_schema_value_t engine_schema_v1 = {
-  YAML_VALUE_PTR (
-    AudioEngine_v1,
-    engine_fields_schema_v1),
+  YAML_VALUE_PTR (AudioEngine_v1, engine_fields_schema_v1),
 };
 
 #endif

@@ -90,8 +90,7 @@ typedef struct _ScaleSelectorWindowWidget
  * Creates the popover.
  */
 ScaleSelectorWindowWidget *
-scale_selector_window_widget_new (
-  ScaleObject * owner);
+scale_selector_window_widget_new (ScaleObject * owner);
 
 /**
  * @}

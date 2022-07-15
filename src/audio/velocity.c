@@ -53,9 +53,7 @@ velocity_new (MidiNote * midi_note, const uint8_t vel)
  * Sets the MidiNote the Velocity belongs to.
  */
 void
-velocity_set_midi_note (
-  Velocity * self,
-  MidiNote * midi_note)
+velocity_set_midi_note (Velocity * self, MidiNote * midi_note)
 {
   self->midi_note = midi_note;
 }
@@ -73,8 +71,7 @@ velocity_is_equal (Velocity * src, Velocity * dest)
   return src->vel == dest->vel
          && src->midi_note->pos == dest->midi_note->pos
          && region_identifier_is_equal (
-           &src_mn_obj->region_id,
-           &dest_mn_obj->region_id);
+           &src_mn_obj->region_id, &dest_mn_obj->region_id);
 }
 
 /**
@@ -104,8 +101,7 @@ velocity_set_val (Velocity * self, const int val)
 void
 velocity_shift (Velocity * self, const int delta)
 {
-  self->vel =
-    (midi_byte_t) ((int) self->vel + delta);
+  self->vel = (midi_byte_t) ((int) self->vel + delta);
 }
 
 /**
@@ -114,8 +110,7 @@ velocity_shift (Velocity * self, const int delta)
 MidiNote *
 velocity_get_midi_note (const Velocity * const self)
 {
-  g_return_val_if_fail (
-    IS_MIDI_NOTE (self->midi_note), NULL);
+  g_return_val_if_fail (IS_MIDI_NOTE (self->midi_note), NULL);
 
   return self->midi_note;
 

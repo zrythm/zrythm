@@ -58,15 +58,13 @@ add_tracks_to_group_dialog_widget_get_track (
       if (!track_type_has_channel (cur_track->type))
         {
           g_message (
-            "track %s has no channel",
-            cur_track->name);
+            "track %s has no channel", cur_track->name);
           return NULL;
         }
 
       if (i == 0)
         signal_type = cur_track->out_signal_type;
-      else if (
-        cur_track->out_signal_type != signal_type)
+      else if (cur_track->out_signal_type != signal_type)
         {
           g_message ("mismatching signal type");
           return NULL;
@@ -79,37 +77,31 @@ add_tracks_to_group_dialog_widget_get_track (
 
   Track *                        track = NULL;
   AddTracksToGroupDialogWidget * self = g_object_new (
-    ADD_TRACKS_TO_GROUP_DIALOG_WIDGET_TYPE, "modal",
-    true, "title", _ ("Enter group name"), NULL);
+    ADD_TRACKS_TO_GROUP_DIALOG_WIDGET_TYPE, "modal", true,
+    "title", _ ("Enter group name"), NULL);
 
   gtk_dialog_add_button (
     GTK_DIALOG (self), _ ("OK"), GTK_RESPONSE_OK);
   GtkWidget * contents =
     gtk_dialog_get_content_area (GTK_DIALOG (self));
   GtkWidget * grid = gtk_grid_new ();
-  GtkWidget * group_label =
-    gtk_label_new (_ ("Group name"));
+  GtkWidget * group_label = gtk_label_new (_ ("Group name"));
   GtkWidget * group_entry = gtk_entry_new ();
   char *      track_name =
     track_get_unique_name (NULL, _ ("New Group"));
   gtk_editable_set_text (
     GTK_EDITABLE (group_entry), track_name);
   g_free (track_name);
-  GtkWidget * checkbox =
-    gtk_check_button_new_with_label (
-      _ ("Move tracks under group"));
-  gtk_grid_attach (
-    GTK_GRID (grid), group_label, 0, 0, 1, 1);
-  gtk_grid_attach (
-    GTK_GRID (grid), group_entry, 1, 0, 1, 1);
-  gtk_grid_attach (
-    GTK_GRID (grid), checkbox, 0, 1, 2, 1);
+  GtkWidget * checkbox = gtk_check_button_new_with_label (
+    _ ("Move tracks under group"));
+  gtk_grid_attach (GTK_GRID (grid), group_label, 0, 0, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid), group_entry, 1, 0, 1, 1);
+  gtk_grid_attach (GTK_GRID (grid), checkbox, 0, 1, 2, 1);
   gtk_box_append (GTK_BOX (contents), grid);
 
-  int result =
-    z_gtk_dialog_run (GTK_DIALOG (self), false);
-  track_name = g_strdup (gtk_editable_get_text (
-    GTK_EDITABLE (group_entry)));
+  int result = z_gtk_dialog_run (GTK_DIALOG (self), false);
+  track_name = g_strdup (
+    gtk_editable_get_text (GTK_EDITABLE (group_entry)));
   gtk_window_destroy (GTK_WINDOW (self));
   switch (result)
     {
@@ -117,10 +109,9 @@ add_tracks_to_group_dialog_widget_get_track (
       if (signal_type == TYPE_AUDIO)
         {
           GError * err = NULL;
-          bool     ret =
-            track_create_empty_at_idx_with_action (
-              TRACK_TYPE_AUDIO_GROUP,
-              lowest_track->pos + 1, &err);
+          bool ret = track_create_empty_at_idx_with_action (
+            TRACK_TYPE_AUDIO_GROUP, lowest_track->pos + 1,
+            &err);
           if (!ret)
             {
               HANDLE_ERROR (
@@ -132,10 +123,9 @@ add_tracks_to_group_dialog_widget_get_track (
       else if (signal_type == TYPE_EVENT)
         {
           GError * err = NULL;
-          bool     ret =
-            track_create_empty_at_idx_with_action (
-              TRACK_TYPE_MIDI_GROUP,
-              lowest_track->pos + 1, &err);
+          bool ret = track_create_empty_at_idx_with_action (
+            TRACK_TYPE_MIDI_GROUP, lowest_track->pos + 1,
+            &err);
           if (!ret)
             {
               HANDLE_ERROR (
@@ -163,8 +153,8 @@ add_tracks_to_group_dialog_widget_get_track (
       || track->type == TRACK_TYPE_MIDI_GROUP,
     NULL);
 
-  bool ret = track_set_name_with_action_full (
-    track, track_name);
+  bool ret =
+    track_set_name_with_action_full (track, track_name);
   if (ret)
     {
       UndoableAction * ua =

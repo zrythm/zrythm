@@ -37,8 +37,7 @@
  * @{
  */
 
-#define P_MODULATOR_TRACK \
-  (TRACKLIST->modulator_track)
+#define P_MODULATOR_TRACK (TRACKLIST->modulator_track)
 
 /**
  * Inserts and connects a Modulator to the Track.

@@ -38,15 +38,13 @@ SCM_DEFINE (
 #define FUNC_NAME s_
 {
   GError * err = NULL;
-  bool     ret =
-    channel_send_action_perform_connect_audio (
-      scm_to_pointer (send),
-      scm_to_pointer (stereo_ports), &err);
+  bool     ret = channel_send_action_perform_connect_audio (
+        scm_to_pointer (send), scm_to_pointer (stereo_ports),
+        &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s",
-        _ ("Failed to create audio send"));
+        err, "%s", _ ("Failed to create audio send"));
     }
 
   return scm_from_bool (ret);
@@ -61,15 +59,12 @@ init_module (void * data)
 #endif
 
   scm_c_export (
-    "channel-send-action-perform-connect-audio",
-    NULL);
+    "channel-send-action-perform-connect-audio", NULL);
 }
 
 void
-guile_actions_channel_send_action_define_module (
-  void)
+guile_actions_channel_send_action_define_module (void)
 {
   scm_c_define_module (
-    "actions channel-send-action", init_module,
-    NULL);
+    "actions channel-send-action", init_module, NULL);
 }

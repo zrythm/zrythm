@@ -35,11 +35,9 @@ test_get_parent_dir (void)
   char * parent;
 
 #ifdef _WOE32
-  parent =
-    io_path_get_parent_dir ("C:\\ab\\cd\\ef\\gh");
+  parent = io_path_get_parent_dir ("C:\\ab\\cd\\ef\\gh");
   g_assert_cmpstr (parent, ==, "C:\\ab\\cd\\ef");
-  parent = io_path_get_parent_dir (
-    "C:\\ab\\cd\\ef\\gh\\");
+  parent = io_path_get_parent_dir ("C:\\ab\\cd\\ef\\gh\\");
   g_assert_cmpstr (parent, ==, "C:\\ab\\cd\\ef");
   parent = io_path_get_parent_dir ("C:\\ab");
   g_assert_cmpstr (parent, ==, "C:\\");
@@ -137,14 +135,12 @@ main (int argc, char * argv[])
     TEST_PREFIX "test get parent dir",
     (GTestFunc) test_get_parent_dir);
   g_test_add_func (
-    TEST_PREFIX "test get ext",
-    (GTestFunc) test_get_ext);
+    TEST_PREFIX "test get ext", (GTestFunc) test_get_ext);
   g_test_add_func (
     TEST_PREFIX "test get files in dir",
     (GTestFunc) test_get_files_in_dir);
   g_test_add_func (
-    TEST_PREFIX "test strip ext",
-    (GTestFunc) test_strip_ext);
+    TEST_PREFIX "test strip ext", (GTestFunc) test_strip_ext);
 
   return g_test_run ();
 }

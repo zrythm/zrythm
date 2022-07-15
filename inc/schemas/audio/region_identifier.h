@@ -57,9 +57,7 @@ typedef struct RegionIdentifier_v1
 
 static const cyaml_schema_field_t
   region_identifier_fields_schema_v1[] = {
-    YAML_FIELD_INT (
-      RegionIdentifier_v1,
-      schema_version),
+    YAML_FIELD_INT (RegionIdentifier_v1, schema_version),
     YAML_FIELD_BITFIELD (
       RegionIdentifier_v1,
       type,
@@ -73,12 +71,11 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  region_identifier_schema_v1 = {
-    YAML_VALUE_PTR (
-      RegionIdentifier_v1,
-      region_identifier_fields_schema_v1),
-  };
+static const cyaml_schema_value_t region_identifier_schema_v1 = {
+  YAML_VALUE_PTR (
+    RegionIdentifier_v1,
+    region_identifier_fields_schema_v1),
+};
 
 static const cyaml_schema_value_t
   region_identifier_schema_default_v1 = {

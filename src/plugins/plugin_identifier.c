@@ -23,18 +23,15 @@ void
 plugin_identifier_init (PluginIdentifier * self)
 {
   memset (self, 0, sizeof (PluginIdentifier));
-  self->schema_version =
-    PLUGIN_IDENTIFIER_SCHEMA_VERSION;
+  self->schema_version = PLUGIN_IDENTIFIER_SCHEMA_VERSION;
   self->slot = -1;
 }
 
 bool
-plugin_identifier_validate (
-  const PluginIdentifier * self)
+plugin_identifier_validate (const PluginIdentifier * self)
 {
   g_return_val_if_fail (
-    self->schema_version
-      == PLUGIN_IDENTIFIER_SCHEMA_VERSION,
+    self->schema_version == PLUGIN_IDENTIFIER_SCHEMA_VERSION,
     false);
   g_return_val_if_fail (
     plugin_identifier_validate_slot_type_slot_combo (
@@ -52,8 +49,7 @@ plugin_identifier_validate_slot_type_slot_combo (
   PluginSlotType slot_type,
   int            slot)
 {
-  return (slot_type == PLUGIN_SLOT_INSTRUMENT
-          && slot == -1)
+  return (slot_type == PLUGIN_SLOT_INSTRUMENT && slot == -1)
          || (slot_type == PLUGIN_SLOT_INVALID && slot == -1)
          || (slot_type != PLUGIN_SLOT_INSTRUMENT && slot >= 0);
 }
@@ -63,8 +59,7 @@ plugin_identifier_copy (
   PluginIdentifier *       dest,
   const PluginIdentifier * src)
 {
-  g_return_if_fail (
-    plugin_identifier_validate (src));
+  g_return_if_fail (plugin_identifier_validate (src));
 
   dest->schema_version = src->schema_version;
   dest->slot_type = src->slot_type;

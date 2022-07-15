@@ -41,11 +41,10 @@ typedef enum CarlaBridgeMode_v1
   CARLA_BRIDGE_FULL_v1,
 } CarlaBridgeMode_v1;
 
-static const cyaml_strval_t
-  carla_bridge_mode_strings_v1[] = {
-    {"None",  CARLA_BRIDGE_NONE_v1},
-    { "UI",   CARLA_BRIDGE_UI_v1  },
-    { "Full", CARLA_BRIDGE_FULL_v1},
+static const cyaml_strval_t carla_bridge_mode_strings_v1[] = {
+  {"None",  CARLA_BRIDGE_NONE_v1},
+  { "UI",   CARLA_BRIDGE_UI_v1  },
+  { "Full", CARLA_BRIDGE_FULL_v1},
 };
 
 typedef struct PluginSetting_v1
@@ -73,26 +72,21 @@ static const cyaml_schema_field_t
       descr,
       plugin_descriptor_fields_schema_v1),
     YAML_FIELD_INT (PluginSetting_v1, open_with_carla),
-    YAML_FIELD_INT (
-      PluginSetting_v1,
-      force_generic_ui),
+    YAML_FIELD_INT (PluginSetting_v1, force_generic_ui),
     YAML_FIELD_ENUM (
       PluginSetting_v1,
       bridge_mode,
       carla_bridge_mode_strings_v1),
-    YAML_FIELD_STRING_PTR_OPTIONAL (
-      PluginSetting_v1,
-      ui_uri),
+    YAML_FIELD_STRING_PTR_OPTIONAL (PluginSetting_v1, ui_uri),
 
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  plugin_setting_schema_v1 = {
-    YAML_VALUE_PTR (
-      PluginSetting_v1,
-      plugin_setting_fields_schema_v1),
-  };
+static const cyaml_schema_value_t plugin_setting_schema_v1 = {
+  YAML_VALUE_PTR (
+    PluginSetting_v1,
+    plugin_setting_fields_schema_v1),
+};
 
 static const cyaml_schema_field_t
   plugin_settings_fields_schema_v3[] = {
@@ -105,11 +99,10 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  plugin_settings_schema_v3 = {
-    YAML_VALUE_PTR (
-      PluginSettings_v3,
-      plugin_settings_fields_schema_v3),
-  };
+static const cyaml_schema_value_t plugin_settings_schema_v3 = {
+  YAML_VALUE_PTR (
+    PluginSettings_v3,
+    plugin_settings_fields_schema_v3),
+};
 
 #endif

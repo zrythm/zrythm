@@ -76,12 +76,11 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  region_link_group_schema = {
-    YAML_VALUE_PTR (
-      RegionLinkGroup,
-      region_link_group_fields_schema),
-  };
+static const cyaml_schema_value_t region_link_group_schema = {
+  YAML_VALUE_PTR (
+    RegionLinkGroup,
+    region_link_group_fields_schema),
+};
 
 static const cyaml_schema_value_t
   region_link_group_schema_default = {
@@ -92,8 +91,7 @@ static const cyaml_schema_value_t
 
 NONNULL
 void
-region_link_group_init_loaded (
-  RegionLinkGroup * self);
+region_link_group_init_loaded (RegionLinkGroup * self);
 
 RegionLinkGroup *
 region_link_group_new (int idx);
@@ -116,8 +114,8 @@ void
 region_link_group_remove_region (
   RegionLinkGroup * self,
   ZRegion *         region,
-  bool autoremove_last_region_and_group,
-  bool update_identifier);
+  bool              autoremove_last_region_and_group,
+  bool              update_identifier);
 
 NONNULL
 bool
@@ -146,8 +144,7 @@ bool
 region_link_group_validate (RegionLinkGroup * self);
 
 RegionLinkGroup *
-region_link_group_clone (
-  const RegionLinkGroup * src);
+region_link_group_clone (const RegionLinkGroup * src);
 
 void
 region_link_group_free (RegionLinkGroup * self);

@@ -46,11 +46,8 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  control_room_schema_v1 = {
-    YAML_VALUE_PTR (
-      ControlRoom_v1,
-      control_room_fields_schema_v1),
-  };
+static const cyaml_schema_value_t control_room_schema_v1 = {
+  YAML_VALUE_PTR (ControlRoom_v1, control_room_fields_schema_v1),
+};
 
 #endif

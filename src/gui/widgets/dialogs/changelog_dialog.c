@@ -37,13 +37,10 @@
 void
 changelog_dialog_widget_run (GtkWindow * parent)
 {
-  GtkWidget * dialog =
-    gtk_message_dialog_new_with_markup (
-      parent, GTK_DIALOG_DESTROY_WITH_PARENT,
-      GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE,
-      _ ("Running %s version <b>%s</b>%s%s"),
-      PROGRAM_NAME, PACKAGE_VERSION, "\n\n",
-      CHANGELOG_TXT);
+  GtkWidget * dialog = gtk_message_dialog_new_with_markup (
+    parent, GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_INFO,
+    GTK_BUTTONS_CLOSE, _ ("Running %s version <b>%s</b>%s%s"),
+    PROGRAM_NAME, PACKAGE_VERSION, "\n\n", CHANGELOG_TXT);
 
   z_gtk_dialog_run (GTK_DIALOG (dialog), true);
 }

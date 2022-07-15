@@ -62,7 +62,7 @@ BreakConstructorInitializersBeforeComma: false
 BreakConstructorInitializers: BeforeColon
 BreakStringLiterals: false
 ContinuationIndentWidth: 2
-ColumnLimit: 51
+ColumnLimit: 62
 CommentPragmas: '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: false

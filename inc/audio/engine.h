@@ -88,18 +88,15 @@ typedef struct MPMCQueue         MPMCQueue;
 
 #define AUDIO_ENGINE_SCHEMA_VERSION 1
 
-#define BLOCK_LENGTH \
-  4096 // should be set by backend
-#define MIDI_BUF_SIZE \
-  1024 // should be set by backend
+#define BLOCK_LENGTH 4096  // should be set by backend
+#define MIDI_BUF_SIZE 1024 // should be set by backend
 
 #define MIDI_IN_NUM_EVENTS \
   AUDIO_ENGINE->midi_in->midi_events->num_events
 
 #define AUDIO_ENGINE (PROJECT->audio_engine)
 #define MANUAL_PRESS_EVENTS \
-  (AUDIO_ENGINE->midi_editor_manual_press \
-     ->midi_events)
+  (AUDIO_ENGINE->midi_editor_manual_press->midi_events)
 
 #define DENORMAL_PREVENTION_VAL \
   (AUDIO_ENGINE->denormal_prevention_val)
@@ -125,8 +122,7 @@ typedef struct MPMCQueue         MPMCQueue;
 /**
  * Push events.
  */
-#define ENGINE_EVENTS_PUSH( \
-  et, _arg, _uint_arg, _float_arg) \
+#define ENGINE_EVENTS_PUSH(et, _arg, _uint_arg, _float_arg) \
   if (true) \
     { \
       AudioEngineEvent * _ev = (AudioEngineEvent *) \
@@ -140,11 +136,9 @@ typedef struct MPMCQueue         MPMCQueue;
       _ev->float_arg = _float_arg; \
       if (zrythm_app->gtk_thread == g_thread_self ()) \
         { \
-          _ev->backtrace = \
-            backtrace_get ("", 40, false); \
+          _ev->backtrace = backtrace_get ("", 40, false); \
           g_debug ( \
-            "pushing engine event " #et \
-            " (%s:%d)", \
+            "pushing engine event " #et " (%s:%d)", \
             __func__, __LINE__); \
         } \
       engine_queue_push_back_event ( \
@@ -193,14 +187,12 @@ typedef enum AudioEngineBufferSize
 } AudioEngineBufferSize;
 
 static const char * buffer_size_str[] = {
-  "16",         "32",         "64",
-  "128",        "256",        "512",
-  __ ("1,024"), __ ("2,048"), __ ("4,096"),
+  "16",  "32",         "64",         "128",        "256",
+  "512", __ ("1,024"), __ ("2,048"), __ ("4,096"),
 };
 
 static inline const char *
-engine_buffer_size_to_string (
-  AudioEngineBufferSize buf_size)
+engine_buffer_size_to_string (AudioEngineBufferSize buf_size)
 {
   return buffer_size_str[buf_size];
 }
@@ -221,9 +213,8 @@ typedef enum AudioEngineSamplerate
 } AudioEngineSamplerate;
 
 static const char * sample_rate_str[] = {
-  __ ("22,050"),  __ ("32,000"), __ ("44,100"),
-  __ ("48,000"),  __ ("88,200"), __ ("96,000"),
-  __ ("192,000"),
+  __ ("22,050"), __ ("32,000"), __ ("44,100"),  __ ("48,000"),
+  __ ("88,200"), __ ("96,000"), __ ("192,000"),
 };
 
 static inline const char *
@@ -275,22 +266,14 @@ audio_backend_is_rtaudio (AudioBackend backend)
 __attribute__ ((
   unused)) static const char * audio_backend_str[] = {
   /* TRANSLATORS: Dummy backend */
-  __ ("Dummy"),
-  __ ("Dummy (libsoundio)"),
-  "ALSA (not working)",
-  "ALSA (libsoundio)",
-  "ALSA (rtaudio)",
-  "JACK",
-  "JACK (libsoundio)",
-  "JACK (rtaudio)",
-  "PulseAudio",
-  "PulseAudio (libsoundio)",
-  "PulseAudio (rtaudio)",
-  "CoreAudio (libsoundio)",
-  "CoreAudio (rtaudio)",
-  "SDL",
-  "WASAPI (libsoundio)",
-  "WASAPI (rtaudio)",
+  __ ("Dummy"),           __ ("Dummy (libsoundio)"),
+  "ALSA (not working)",   "ALSA (libsoundio)",
+  "ALSA (rtaudio)",       "JACK",
+  "JACK (libsoundio)",    "JACK (rtaudio)",
+  "PulseAudio",           "PulseAudio (libsoundio)",
+  "PulseAudio (rtaudio)", "CoreAudio (libsoundio)",
+  "CoreAudio (rtaudio)",  "SDL",
+  "WASAPI (libsoundio)",  "WASAPI (rtaudio)",
   "ASIO (rtaudio)",
 };
 
@@ -356,14 +339,10 @@ typedef enum AudioEngineJackTransportType
   AUDIO_ENGINE_NO_JACK_TRANSPORT,
 } AudioEngineJackTransportType;
 
-static const cyaml_strval_t
-  jack_transport_type_strings[] = {
-    {"Timebase master",
-     AUDIO_ENGINE_JACK_TIMEBASE_MASTER },
-    { "Transport client",
-     AUDIO_ENGINE_JACK_TRANSPORT_CLIENT},
-    { "No JACK transport",
-     AUDIO_ENGINE_NO_JACK_TRANSPORT    },
+static const cyaml_strval_t jack_transport_type_strings[] = {
+  {"Timebase master",    AUDIO_ENGINE_JACK_TIMEBASE_MASTER },
+  { "Transport client",  AUDIO_ENGINE_JACK_TRANSPORT_CLIENT},
+  { "No JACK transport", AUDIO_ENGINE_NO_JACK_TRANSPORT    },
 };
 
 /**
@@ -889,9 +868,7 @@ engine_wait_for_pause (
   bool          force_pause);
 
 void
-engine_resume (
-  AudioEngine * self,
-  EngineState * state);
+engine_resume (AudioEngine * self, EngineState * state);
 
 /**
  * Waits for n processing cycles to finish.
@@ -902,9 +879,7 @@ void
 engine_wait_n_cycles (AudioEngine * self, int n);
 
 void
-engine_append_ports (
-  AudioEngine * self,
-  GPtrArray *   ports);
+engine_append_ports (AudioEngine * self, GPtrArray * ports);
 
 /**
  * Sets up the audio engine before the project is
@@ -968,9 +943,7 @@ engine_process_events (AudioEngine * self);
  */
 NONNULL
 HOT bool
-engine_process_prepare (
-  AudioEngine * self,
-  nframes_t     nframes);
+engine_process_prepare (AudioEngine * self, nframes_t nframes);
 
 /**
  * Processes current cycle.
@@ -1034,9 +1007,7 @@ engine_samplerate_enum_to_int (
  * @seealso jack_set_buffer_size().
  */
 void
-engine_set_buffer_size (
-  AudioEngine * self,
-  uint32_t      buf_size);
+engine_set_buffer_size (AudioEngine * self, uint32_t buf_size);
 
 /**
  * Returns 1 if the port is an engine port or
@@ -1052,8 +1023,7 @@ engine_set_buffer_size (
  * Returns the audio backend as a string.
  */
 const char *
-engine_audio_backend_to_string (
-  AudioBackend backend);
+engine_audio_backend_to_string (AudioBackend backend);
 
 AudioBackend
 engine_audio_backend_from_string (char * str);

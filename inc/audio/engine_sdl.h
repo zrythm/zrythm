@@ -63,9 +63,7 @@ int
 engine_sdl_test (GtkWindow * win);
 
 void
-engine_sdl_activate (
-  AudioEngine * self,
-  bool          activate);
+engine_sdl_activate (AudioEngine * self, bool activate);
 
 /**
  * Closes Port Audio.

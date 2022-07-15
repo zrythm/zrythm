@@ -61,12 +61,11 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  plugin_collections_schema = {
-    YAML_VALUE_PTR (
-      PluginCollections,
-      plugin_collections_fields_schema),
-  };
+static const cyaml_schema_value_t plugin_collections_schema = {
+  YAML_VALUE_PTR (
+    PluginCollections,
+    plugin_collections_fields_schema),
+};
 
 /**
  * Reads the file and fills up the object.

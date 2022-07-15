@@ -37,8 +37,7 @@
 
 #define AUDIO_CLIP_EDITOR_SCHEMA_VERSION 1
 
-#define AUDIO_CLIP_EDITOR \
-  (CLIP_EDITOR->audio_clip_editor)
+#define AUDIO_CLIP_EDITOR (CLIP_EDITOR->audio_clip_editor)
 
 /**
  * Audio clip editor serializable backend.
@@ -63,12 +62,11 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  audio_clip_editor_schema = {
-    YAML_VALUE_PTR (
-      AudioClipEditor,
-      audio_clip_editor_fields_schema),
-  };
+static const cyaml_schema_value_t audio_clip_editor_schema = {
+  YAML_VALUE_PTR (
+    AudioClipEditor,
+    audio_clip_editor_fields_schema),
+};
 
 void
 audio_clip_editor_init (AudioClipEditor * self);

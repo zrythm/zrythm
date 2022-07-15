@@ -38,8 +38,7 @@ chord_action_new (
   UndoableAction * ua = (UndoableAction *) self;
   undoable_action_init (ua, UA_CHORD);
 
-  g_return_val_if_fail (
-    !chord || !chords_before, NULL);
+  g_return_val_if_fail (!chord || !chords_before, NULL);
 
   if (chord)
     {
@@ -47,8 +46,7 @@ chord_action_new (
 
       self->chord_before = chord_descriptor_clone (
         CHORD_EDITOR->chords[chord_idx]);
-      self->chord_after =
-        chord_descriptor_clone (chord);
+      self->chord_after = chord_descriptor_clone (chord);
       self->chord_idx = chord_idx;
     }
   else
@@ -60,12 +58,10 @@ chord_action_new (
       self->chords_after = object_new_n (
         CHORD_EDITOR_NUM_CHORDS, ChordDescriptor *);
 
-      for (size_t i = 0;
-           i < CHORD_EDITOR_NUM_CHORDS; i++)
+      for (size_t i = 0; i < CHORD_EDITOR_NUM_CHORDS; i++)
         {
           self->chords_before[i] =
-            chord_descriptor_clone (
-              chords_before[i]);
+            chord_descriptor_clone (chords_before[i]);
           self->chords_after[i] =
             chord_descriptor_clone (chords_after[i]);
         }
@@ -90,15 +86,12 @@ chord_action_clone (const ChordAction * src)
         CHORD_EDITOR_NUM_CHORDS, ChordDescriptor *);
       self->chords_after = object_new_n (
         CHORD_EDITOR_NUM_CHORDS, ChordDescriptor *);
-      for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS;
-           i++)
+      for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS; i++)
         {
           self->chords_before[i] =
-            chord_descriptor_clone (
-              src->chords_before[i]);
+            chord_descriptor_clone (src->chords_before[i]);
           self->chords_after[i] =
-            chord_descriptor_clone (
-              src->chords_after[i]);
+            chord_descriptor_clone (src->chords_after[i]);
         }
       break;
     case CHORD_ACTION_SINGLE:
@@ -124,15 +117,12 @@ chord_action_perform (
   GError **                error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    chord_action_new, error, chords_before,
-    chords_after, chord, chord_idx, error);
+    chord_action_new, error, chords_before, chords_after,
+    chord, chord_idx, error);
 }
 
 static int
-do_or_undo (
-  ChordAction * self,
-  bool          _do,
-  GError **     error)
+do_or_undo (ChordAction * self, bool _do, GError ** error)
 {
   switch (self->type)
     {
@@ -147,8 +137,7 @@ do_or_undo (
     case CHORD_ACTION_SINGLE:
       chord_editor_apply_single_chord (
         CHORD_EDITOR,
-        (_do ? self->chord_after
-             : self->chord_before),
+        (_do ? self->chord_after : self->chord_before),
         self->chord_idx, false);
       EVENTS_PUSH (
         ET_CHORD_KEY_CHANGED,
@@ -166,9 +155,7 @@ chord_action_do (ChordAction * self, GError ** error)
 }
 
 int
-chord_action_undo (
-  ChordAction * self,
-  GError **     error)
+chord_action_undo (ChordAction * self, GError ** error)
 {
   return do_or_undo (self, false, error);
 }
@@ -184,15 +171,12 @@ chord_action_free (ChordAction * self)
 {
   if (self->type == CHORD_ACTION_ALL)
     {
-      for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS;
-           i++)
+      for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS; i++)
         {
           object_free_w_func_and_null (
-            chord_descriptor_free,
-            self->chords_before[i]);
+            chord_descriptor_free, self->chords_before[i]);
           object_free_w_func_and_null (
-            chord_descriptor_free,
-            self->chords_after[i]);
+            chord_descriptor_free, self->chords_after[i]);
         }
       object_zero_and_free (self->chords_before);
       object_zero_and_free (self->chords_after);

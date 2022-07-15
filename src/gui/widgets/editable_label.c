@@ -9,9 +9,7 @@ G_DEFINE_TYPE (
   GTK_TYPE_WIDGET)
 
 static void
-on_entry_activated (
-  GtkEntry *            entry,
-  EditableLabelWidget * self)
+on_entry_activated (GtkEntry * entry, EditableLabelWidget * self)
 {
   (*self->setter) (
     self->object,
@@ -38,8 +36,7 @@ on_popover_closed (
 static gboolean
 select_region (gpointer user_data)
 {
-  gtk_editable_select_region (
-    GTK_EDITABLE (user_data), 0, -1);
+  gtk_editable_select_region (GTK_EDITABLE (user_data), 0, -1);
 
   return G_SOURCE_REMOVE;
 }
@@ -48,8 +45,7 @@ select_region (gpointer user_data)
  * Shows the popover.
  */
 void
-editable_label_widget_show_popover (
-  EditableLabelWidget * self)
+editable_label_widget_show_popover (EditableLabelWidget * self)
 {
   gtk_popover_popup (self->popover);
   gtk_editable_set_text (
@@ -79,8 +75,8 @@ editable_label_widget_show_popover_for_widget (
   g_return_if_fail (GTK_IS_WIDGET (parent));
   g_return_if_fail (GTK_IS_POPOVER (popover));
 
-  EditableLabelWidget * self = g_object_new (
-    EDITABLE_LABEL_WIDGET_TYPE, NULL);
+  EditableLabelWidget * self =
+    g_object_new (EDITABLE_LABEL_WIDGET_TYPE, NULL);
 
   self->object = object;
   self->getter = getter;
@@ -93,8 +89,7 @@ editable_label_widget_show_popover_for_widget (
   GtkEntry * entry = GTK_ENTRY (gtk_entry_new ());
   self->entry = entry;
 
-  gtk_popover_set_child (
-    popover, GTK_WIDGET (entry));
+  gtk_popover_set_child (popover, GTK_WIDGET (entry));
 
   g_signal_connect (
     G_OBJECT (self->entry), "activate",
@@ -152,8 +147,7 @@ editable_label_widget_setup (
   if (self->getter)
     {
       gtk_label_set_text (
-        self->label,
-        (*self->getter) (self->object));
+        self->label, (*self->getter) (self->object));
     }
 }
 
@@ -172,11 +166,10 @@ editable_label_widget_new (
   GenericStringSetter setter,
   int                 width)
 {
-  EditableLabelWidget * self = g_object_new (
-    EDITABLE_LABEL_WIDGET_TYPE, NULL);
+  EditableLabelWidget * self =
+    g_object_new (EDITABLE_LABEL_WIDGET_TYPE, NULL);
 
-  editable_label_widget_setup (
-    self, object, getter, setter);
+  editable_label_widget_setup (self, object, getter, setter);
 
   gtk_label_set_width_chars (self->label, 11);
   gtk_label_set_max_width_chars (self->label, 11);
@@ -190,8 +183,7 @@ dispose (EditableLabelWidget * self)
   gtk_widget_unparent (GTK_WIDGET (self->popover));
   gtk_widget_unparent (GTK_WIDGET (self->label));
 
-  G_OBJECT_CLASS (
-    editable_label_widget_parent_class)
+  G_OBJECT_CLASS (editable_label_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
 
@@ -199,10 +191,8 @@ static void
 editable_label_widget_class_init (
   EditableLabelWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "editable-label");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass, "editable-label");
 
   gtk_widget_class_set_layout_manager_type (
     klass, GTK_TYPE_BOX_LAYOUT);
@@ -212,23 +202,20 @@ editable_label_widget_class_init (
 }
 
 static void
-editable_label_widget_init (
-  EditableLabelWidget * self)
+editable_label_widget_init (EditableLabelWidget * self)
 {
   GtkWidget * label = gtk_label_new ("");
   gtk_widget_set_parent (
     GTK_WIDGET (label), GTK_WIDGET (self));
   self->label = GTK_LABEL (label);
-  gtk_label_set_ellipsize (
-    self->label, PANGO_ELLIPSIZE_END);
+  gtk_label_set_ellipsize (self->label, PANGO_ELLIPSIZE_END);
 
   self->popover = GTK_POPOVER (gtk_popover_new ());
   gtk_widget_set_parent (
     GTK_WIDGET (self->popover), GTK_WIDGET (self));
   GtkEntry * entry = GTK_ENTRY (gtk_entry_new ());
   self->entry = entry;
-  gtk_popover_set_child (
-    self->popover, GTK_WIDGET (entry));
+  gtk_popover_set_child (self->popover, GTK_WIDGET (entry));
 
   g_signal_connect (
     G_OBJECT (self->entry), "activate",
@@ -237,13 +224,10 @@ editable_label_widget_init (
     G_OBJECT (self->popover), "closed",
     G_CALLBACK (on_popover_closed), self);
 
-  self->mp =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  self->mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (
     G_OBJECT (self->mp), "pressed",
-    G_CALLBACK (editable_label_widget_on_mp_press),
-    self);
+    G_CALLBACK (editable_label_widget_on_mp_press), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->mp));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->mp));
 }

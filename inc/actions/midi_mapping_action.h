@@ -40,12 +40,11 @@ typedef enum MidiMappingActionType
   MIDI_MAPPING_ACTION_DISABLE,
 } MidiMappingActionType;
 
-static const cyaml_strval_t
-  midi_mapping_action_type_strings[] = {
-    {"Bind",     MIDI_MAPPING_ACTION_BIND   },
-    { "Unbind",  MIDI_MAPPING_ACTION_UNBIND },
-    { "Enable",  MIDI_MAPPING_ACTION_ENABLE },
-    { "Disable", MIDI_MAPPING_ACTION_DISABLE},
+static const cyaml_strval_t midi_mapping_action_type_strings[] = {
+  {"Bind",     MIDI_MAPPING_ACTION_BIND   },
+  { "Unbind",  MIDI_MAPPING_ACTION_UNBIND },
+  { "Enable",  MIDI_MAPPING_ACTION_ENABLE },
+  { "Disable", MIDI_MAPPING_ACTION_DISABLE},
 };
 
 /**
@@ -93,17 +92,15 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  midi_mapping_action_schema = {
-    CYAML_VALUE_MAPPING (
-      CYAML_FLAG_POINTER,
-      MidiMappingAction,
-      midi_mapping_action_fields_schema),
-  };
+static const cyaml_schema_value_t midi_mapping_action_schema = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    MidiMappingAction,
+    midi_mapping_action_fields_schema),
+};
 
 void
-midi_mapping_action_init_loaded (
-  MidiMappingAction * self);
+midi_mapping_action_init_loaded (MidiMappingAction * self);
 
 /**
  * Creates a new action.
@@ -131,14 +128,11 @@ midi_mapping_action_new_bind (
  */
 WARN_UNUSED_RESULT
 UndoableAction *
-midi_mapping_action_new_unbind (
-  int       idx,
-  GError ** error);
+midi_mapping_action_new_unbind (int idx, GError ** error);
 
 NONNULL
 MidiMappingAction *
-midi_mapping_action_clone (
-  const MidiMappingAction * src);
+midi_mapping_action_clone (const MidiMappingAction * src);
 
 /**
  * Wrapper of midi_mapping_action_new_enable().
@@ -163,9 +157,7 @@ midi_mapping_action_perform_bind (
  * Wrapper of midi_mapping_action_new_unbind().
  */
 bool
-midi_mapping_action_perform_unbind (
-  int       idx,
-  GError ** error);
+midi_mapping_action_perform_unbind (int idx, GError ** error);
 
 int
 midi_mapping_action_do (
@@ -178,8 +170,7 @@ midi_mapping_action_undo (
   GError **           error);
 
 char *
-midi_mapping_action_stringize (
-  MidiMappingAction * self);
+midi_mapping_action_stringize (MidiMappingAction * self);
 
 void
 midi_mapping_action_free (MidiMappingAction * self);

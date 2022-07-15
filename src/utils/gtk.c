@@ -101,12 +101,10 @@ z_gtk_get_primary_monitor_scale_factor (void)
       g_message ("no primary monitor");
       goto return_default_scale_factor;
     }
-  scale_factor =
-    gdk_monitor_get_scale_factor (monitor);
+  scale_factor = gdk_monitor_get_scale_factor (monitor);
   if (scale_factor < 1)
     {
-      g_message (
-        "invalid scale factor: %d", scale_factor);
+      g_message ("invalid scale factor: %d", scale_factor);
       goto return_default_scale_factor;
     }
 
@@ -145,8 +143,7 @@ z_gtk_get_primary_monitor_refresh_rate (void)
     gdk_monitor_get_refresh_rate (monitor) / 1000;
   if (refresh_rate == 0)
     {
-      g_warning (
-        "invalid refresh rate: %d", refresh_rate);
+      g_warning ("invalid refresh rate: %d", refresh_rate);
       goto return_default_refresh_rate;
     }
 
@@ -186,13 +183,11 @@ z_gtk_is_wayland (void)
 }
 
 void
-z_gtk_widget_remove_all_children (
-  GtkWidget * widget)
+z_gtk_widget_remove_all_children (GtkWidget * widget)
 {
   if (GTK_IS_BUTTON (widget))
     {
-      gtk_button_set_child (
-        GTK_BUTTON (widget), NULL);
+      gtk_button_set_child (GTK_BUTTON (widget), NULL);
       return;
     }
   if (GTK_IS_MENU_BUTTON (widget))
@@ -217,26 +212,22 @@ z_gtk_message_dialog_get_label (
   GtkMessageDialog * self,
   const int          secondary)
 {
-  GtkWidget * box =
-    gtk_message_dialog_get_message_area (self);
+  GtkWidget * box = gtk_message_dialog_get_message_area (self);
 
   GtkLabel * label = NULL;
-  for (GtkWidget * child =
-         gtk_widget_get_first_child (box);
+  for (GtkWidget * child = gtk_widget_get_first_child (box);
        child != NULL;
        child = gtk_widget_get_next_sibling (child))
     {
       label = GTK_LABEL (child);
-      const char * name =
-        gtk_widget_class_get_css_name (
-          GTK_WIDGET_GET_CLASS (label));
+      const char * name = gtk_widget_class_get_css_name (
+        GTK_WIDGET_GET_CLASS (label));
       if (string_is_equal (name, "label") && !secondary)
         {
           break;
         }
       else if (
-        string_is_equal (name, "secondary_label")
-        && secondary)
+        string_is_equal (name, "secondary_label") && secondary)
         {
           break;
         }
@@ -250,11 +241,10 @@ z_gtk_overlay_add_if_not_exists (
   GtkOverlay * overlay,
   GtkWidget *  widget)
 {
-  for (
-    GtkWidget * child = gtk_widget_get_first_child (
-      GTK_WIDGET (overlay));
-    child != NULL;
-    child = gtk_widget_get_next_sibling (child))
+  for (GtkWidget * child =
+         gtk_widget_get_first_child (GTK_WIDGET (overlay));
+       child != NULL;
+       child = gtk_widget_get_next_sibling (child))
     {
       if (child == widget)
         {
@@ -268,8 +258,7 @@ z_gtk_overlay_add_if_not_exists (
 }
 
 void
-z_gtk_widget_destroy_all_children (
-  GtkWidget * widget)
+z_gtk_widget_destroy_all_children (GtkWidget * widget)
 {
   /* children are destroyed if there is no extra
    * reference when they are removed from their
@@ -282,8 +271,7 @@ z_gtk_widget_remove_children_of_type (
   GtkWidget * widget,
   GType       type)
 {
-  for (GtkWidget * child =
-         gtk_widget_get_last_child (widget);
+  for (GtkWidget * child = gtk_widget_get_last_child (widget);
        child != NULL;)
     {
       GtkWidget * next_child =
@@ -295,10 +283,8 @@ z_gtk_widget_remove_children_of_type (
               g_debug (
                 "removing %s (%p) from box %s (%p)",
                 gtk_widget_get_name (child), child,
-                gtk_widget_get_name (widget),
-                widget);
-              gtk_box_remove (
-                GTK_BOX (widget), child);
+                gtk_widget_get_name (widget), widget);
+              gtk_box_remove (GTK_BOX (widget), child);
             }
           else
             {
@@ -306,8 +292,7 @@ z_gtk_widget_remove_children_of_type (
                 "unparenting %s (%p) from "
                 "parent %s (%p)",
                 gtk_widget_get_name (child), child,
-                gtk_widget_get_name (widget),
-                widget);
+                gtk_widget_get_name (widget), widget);
               gtk_widget_unparent (child);
             }
         }
@@ -316,21 +301,17 @@ z_gtk_widget_remove_children_of_type (
 }
 
 void
-z_gtk_tree_view_remove_all_columns (
-  GtkTreeView * treeview)
+z_gtk_tree_view_remove_all_columns (GtkTreeView * treeview)
 {
-  g_return_if_fail (
-    treeview && GTK_IS_TREE_VIEW (treeview));
+  g_return_if_fail (treeview && GTK_IS_TREE_VIEW (treeview));
 
   GtkTreeViewColumn * column;
   GList *             list, *iter;
   list = gtk_tree_view_get_columns (treeview);
-  for (iter = list; iter != NULL;
-       iter = g_list_next (iter))
+  for (iter = list; iter != NULL; iter = g_list_next (iter))
     {
       column = GTK_TREE_VIEW_COLUMN (iter->data);
-      gtk_tree_view_remove_column (
-        treeview, column);
+      gtk_tree_view_remove_column (treeview, column);
     }
   g_list_free (list);
 }
@@ -340,24 +321,20 @@ z_gtk_column_view_remove_all_columnes (
   GtkColumnView * column_view)
 {
   g_return_if_fail (
-    column_view
-    && GTK_IS_COLUMN_VIEW (column_view));
+    column_view && GTK_IS_COLUMN_VIEW (column_view));
 
   GListModel * list =
     gtk_column_view_get_columns (column_view);
   gpointer ptr;
   while ((ptr = g_list_model_get_item (list, 0)))
     {
-      GtkColumnViewColumn * col =
-        GTK_COLUMN_VIEW_COLUMN (ptr);
-      gtk_column_view_remove_column (
-        column_view, col);
+      GtkColumnViewColumn * col = GTK_COLUMN_VIEW_COLUMN (ptr);
+      gtk_column_view_remove_column (column_view, col);
     }
 }
 
 GListStore *
-z_gtk_column_view_get_list_store (
-  GtkColumnView * column_view)
+z_gtk_column_view_get_list_store (GtkColumnView * column_view)
 {
   GtkSelectionModel * sel_model =
     gtk_column_view_get_model (column_view);
@@ -390,11 +367,9 @@ z_gtk_list_store_splice (
   GPtrArray *  ptr_array)
 {
   size_t     num_objs;
-  gpointer * objs =
-    g_ptr_array_steal (ptr_array, &num_objs);
+  gpointer * objs = g_ptr_array_steal (ptr_array, &num_objs);
   g_list_store_splice (
-    store, 0,
-    g_list_model_get_n_items (G_LIST_MODEL (store)),
+    store, 0, g_list_model_get_n_items (G_LIST_MODEL (store)),
     objs, num_objs);
   g_free (objs);
 }
@@ -423,8 +398,7 @@ z_gtk_configure_simple_combo_box (
   gtk_cell_layout_pack_start (
     GTK_CELL_LAYOUT (cb), renderer, TRUE);
   gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (cb), renderer, "text",
-    TEXT_COL, NULL);
+    GTK_CELL_LAYOUT (cb), renderer, "text", TEXT_COL, NULL);
 }
 
 /**
@@ -439,12 +413,9 @@ z_gtk_button_set_icon_name_and_text (
   GtkOrientation orientation,
   int            spacing)
 {
-  GtkWidget * img =
-    gtk_image_new_from_icon_name (name);
-  z_gtk_widget_remove_all_children (
-    GTK_WIDGET (btn));
-  GtkWidget * box =
-    gtk_box_new (orientation, spacing);
+  GtkWidget * img = gtk_image_new_from_icon_name (name);
+  z_gtk_widget_remove_all_children (GTK_WIDGET (btn));
+  GtkWidget * box = gtk_box_new (orientation, spacing);
   GtkWidget * label = gtk_label_new (text);
   if (orientation == GTK_ORIENTATION_HORIZONTAL)
     {
@@ -587,8 +558,7 @@ z_gtk_button_set_emblem (
  * Creates a toggle button with the given icon name.
  */
 GtkToggleButton *
-z_gtk_toggle_button_new_with_icon (
-  const char * name)
+z_gtk_toggle_button_new_with_icon (const char * name)
 {
   GtkToggleButton * btn =
     GTK_TOGGLE_BUTTON (gtk_toggle_button_new ());
@@ -610,8 +580,8 @@ z_gtk_toggle_button_new_with_icon_and_text (
   GtkToggleButton * btn =
     GTK_TOGGLE_BUTTON (gtk_toggle_button_new ());
   z_gtk_button_set_icon_name_and_text (
-    GTK_BUTTON (btn), name, text, icon_first,
-    orientation, spacing);
+    GTK_BUTTON (btn), name, text, icon_first, orientation,
+    spacing);
 
   return btn;
 }
@@ -630,8 +600,8 @@ z_gtk_button_new_with_icon_and_text (
 {
   GtkButton * btn = GTK_BUTTON (gtk_button_new ());
   z_gtk_button_set_icon_name_and_text (
-    GTK_BUTTON (btn), name, text, icon_first,
-    orientation, spacing);
+    GTK_BUTTON (btn), name, text, icon_first, orientation,
+    spacing);
   gtk_widget_set_visible (GTK_WIDGET (btn), true);
 
   return btn;
@@ -646,8 +616,7 @@ z_gtk_button_new_with_resource (
   const char * name)
 {
   GtkButton * btn = GTK_BUTTON (gtk_button_new ());
-  resources_add_icon_to_button (
-    btn, icon_type, name);
+  resources_add_icon_to_button (btn, icon_type, name);
   gtk_widget_set_visible (GTK_WIDGET (btn), 1);
   return btn;
 }
@@ -703,31 +672,22 @@ z_gtk_create_menu_item_full (
  * Returns a pointer stored at the given selection.
  */
 void *
-z_gtk_get_single_selection_pointer (
-  GtkTreeView * tv,
-  int           column)
+z_gtk_get_single_selection_pointer (GtkTreeView * tv, int column)
 {
-  g_return_val_if_fail (
-    GTK_IS_TREE_VIEW (tv), NULL);
-  GtkTreeSelection * ts =
-    gtk_tree_view_get_selection (tv);
-  g_return_val_if_fail (
-    GTK_IS_TREE_SELECTION (ts), NULL);
-  GtkTreeModel * model =
-    gtk_tree_view_get_model (tv);
-  g_return_val_if_fail (
-    GTK_IS_TREE_MODEL (model), NULL);
+  g_return_val_if_fail (GTK_IS_TREE_VIEW (tv), NULL);
+  GtkTreeSelection * ts = gtk_tree_view_get_selection (tv);
+  g_return_val_if_fail (GTK_IS_TREE_SELECTION (ts), NULL);
+  GtkTreeModel * model = gtk_tree_view_get_model (tv);
+  g_return_val_if_fail (GTK_IS_TREE_MODEL (model), NULL);
   GList * selected_rows =
     gtk_tree_selection_get_selected_rows (ts, NULL);
   GtkTreePath * tp =
-    (GtkTreePath *) g_list_first (selected_rows)
-      ->data;
+    (GtkTreePath *) g_list_first (selected_rows)->data;
   g_return_val_if_fail (tp, NULL);
   GtkTreeIter iter;
   gtk_tree_model_get_iter (model, &iter, tp);
   GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (
-    model, &iter, column, &value);
+  gtk_tree_model_get_value (model, &iter, column, &value);
   return g_value_get_pointer (&value);
 }
 
@@ -799,8 +759,8 @@ z_gtk_get_tooltip_for_action (
   const char * detailed_action,
   const char * tooltip)
 {
-  char * tmp = accel_get_primary_accel_for_action (
-    detailed_action);
+  char * tmp =
+    accel_get_primary_accel_for_action (detailed_action);
   if (tmp)
     {
       char * accel = g_markup_escape_text (tmp, -1);
@@ -837,10 +797,8 @@ z_gtk_widget_set_tooltip_for_action (
   const char * tooltip)
 {
   char * edited_tooltip =
-    z_gtk_get_tooltip_for_action (
-      detailed_action, tooltip);
-  gtk_widget_set_tooltip_markup (
-    widget, edited_tooltip);
+    z_gtk_get_tooltip_for_action (detailed_action, tooltip);
+  gtk_widget_set_tooltip_markup (widget, edited_tooltip);
   g_free (edited_tooltip);
 }
 
@@ -855,20 +813,17 @@ z_gtk_set_tooltip_for_actionable (
 {
   const char * action_name =
     gtk_actionable_get_action_name (actionable);
-  char * detailed_action = g_strdup (action_name);
+  char *     detailed_action = g_strdup (action_name);
   GVariant * target_value =
-    gtk_actionable_get_action_target_value (
-      actionable);
+    gtk_actionable_get_action_target_value (actionable);
   if (target_value)
     {
       g_free (detailed_action);
-      detailed_action =
-        g_action_print_detailed_name (
-          action_name, target_value);
+      detailed_action = g_action_print_detailed_name (
+        action_name, target_value);
     }
   z_gtk_widget_set_tooltip_for_action (
-    GTK_WIDGET (actionable), detailed_action,
-    tooltip);
+    GTK_WIDGET (actionable), detailed_action, tooltip);
   g_free (detailed_action);
 }
 
@@ -913,16 +868,14 @@ z_gtk_combo_box_set_ellipsize_mode (
   PangoEllipsizeMode ellipsize)
 {
   GList *children, *iter;
-  children = gtk_cell_layout_get_cells (
-    GTK_CELL_LAYOUT (self));
-  for (iter = children; iter != NULL;
-       iter = g_list_next (iter))
+  children =
+    gtk_cell_layout_get_cells (GTK_CELL_LAYOUT (self));
+  for (iter = children; iter != NULL; iter = g_list_next (iter))
     {
       if (!GTK_IS_CELL_RENDERER_TEXT (iter->data))
         continue;
 
-      g_object_set (
-        iter->data, "ellipsize", ellipsize, NULL);
+      g_object_set (iter->data, "ellipsize", ellipsize, NULL);
     }
   g_list_free (children);
 }
@@ -939,21 +892,17 @@ z_gtk_widget_remove_style_class (
   g_return_if_fail (class_name != NULL);
 
   gtk_style_context_remove_class (
-    gtk_widget_get_style_context (widget),
-    class_name);
+    gtk_widget_get_style_context (widget), class_name);
 }
 
 /**
  * Returns the nth child of a container.
  */
 GtkWidget *
-z_gtk_widget_get_nth_child (
-  GtkWidget * widget,
-  int         index)
+z_gtk_widget_get_nth_child (GtkWidget * widget, int index)
 {
   int i = 0;
-  for (GtkWidget * child =
-         gtk_widget_get_first_child (widget);
+  for (GtkWidget * child = gtk_widget_get_first_child (widget);
        child != NULL;
        child = gtk_widget_get_next_sibling (child))
     {
@@ -972,9 +921,7 @@ z_gtk_widget_get_nth_child (
  * Sets the margin on all 4 sides on the widget.
  */
 void
-z_gtk_widget_set_margin (
-  GtkWidget * widget,
-  int         margin)
+z_gtk_widget_set_margin (GtkWidget * widget, int margin)
 {
   gtk_widget_set_margin_start (widget, margin);
   gtk_widget_set_margin_end (widget, margin);
@@ -983,11 +930,9 @@ z_gtk_widget_set_margin (
 }
 
 GtkFlowBoxChild *
-z_gtk_flow_box_get_selected_child (
-  GtkFlowBox * self)
+z_gtk_flow_box_get_selected_child (GtkFlowBox * self)
 {
-  GList * list =
-    gtk_flow_box_get_selected_children (self);
+  GList * list = gtk_flow_box_get_selected_children (self);
   GtkFlowBoxChild * sel_child = NULL;
   for (GList * l = list; l != NULL; l = l->next)
     {
@@ -1028,22 +973,17 @@ z_gtk_source_language_manager_get (void)
 
   /* get the default search paths */
   const char * const * before_paths =
-    gtk_source_language_manager_get_search_path (
-      manager);
+    gtk_source_language_manager_get_search_path (manager);
 
   /* build the new paths */
-  StrvBuilder * after_paths_builder =
-    strv_builder_new ();
-  StrvBuilder * after_paths_builder_tmp =
-    strv_builder_new ();
-  int i = 0;
+  StrvBuilder * after_paths_builder = strv_builder_new ();
+  StrvBuilder * after_paths_builder_tmp = strv_builder_new ();
+  int           i = 0;
   while (before_paths[i])
     {
       g_debug (
-        "language specs dir %d: %s", i,
-        before_paths[i]);
-      strv_builder_add (
-        after_paths_builder, before_paths[i]);
+        "language specs dir %d: %s", i, before_paths[i]);
+      strv_builder_add (after_paths_builder, before_paths[i]);
       strv_builder_add (
         after_paths_builder_tmp, before_paths[i]);
       i++;
@@ -1056,8 +996,7 @@ z_gtk_source_language_manager_get (void)
   char ** tmp_dirs =
     strv_builder_end (after_paths_builder_tmp);
   if (!g_strv_contains (
-        (const char * const *) tmp_dirs,
-        language_specs_dir))
+        (const char * const *) tmp_dirs, language_specs_dir))
     {
       strv_builder_add (
         after_paths_builder, language_specs_dir);
@@ -1068,12 +1007,10 @@ z_gtk_source_language_manager_get (void)
   /* add bundled dir for GNU/Linux packages */
   language_specs_dir = zrythm_get_dir (
     ZRYTHM_DIR_SYSTEM_BUNDLED_SOURCEVIEW_LANGUAGE_SPECS_DIR);
-  strv_builder_add (
-    after_paths_builder, language_specs_dir);
+  strv_builder_add (after_paths_builder, language_specs_dir);
   g_free (language_specs_dir);
 
-  char ** dirs =
-    strv_builder_end (after_paths_builder);
+  char ** dirs = strv_builder_end (after_paths_builder);
 
   i = 0;
   while (dirs[i])
@@ -1152,33 +1089,30 @@ on_new_window_destroyed (
   DetachableNotebookData * data)
 {
   guint idx;
-  bool  found = g_ptr_array_find (
-     data->new_windows, widget, &idx);
+  bool  found =
+    g_ptr_array_find (data->new_windows, widget, &idx);
   g_return_if_fail (found);
 
   GtkNotebook * new_notebook =
     g_ptr_array_index (data->new_notebooks, idx);
-  const char * name = gtk_widget_get_name (
-    GTK_WIDGET (new_notebook));
+  const char * name =
+    gtk_widget_get_name (GTK_WIDGET (new_notebook));
   g_debug ("widget %s (%p)", name, new_notebook);
   g_return_if_fail (GTK_IS_NOTEBOOK (new_notebook));
   g_ptr_array_remove_index (data->new_windows, idx);
-  g_ptr_array_remove_index (
-    data->new_notebooks, idx);
+  g_ptr_array_remove_index (data->new_notebooks, idx);
 
   /* if the sub window gets destroyed, push pages
    * back to the main window */
   /* detach the notebook pages in reverse sequence
    * to avoid index errors */
-  int n_pages =
-    gtk_notebook_get_n_pages (new_notebook);
+  int n_pages = gtk_notebook_get_n_pages (new_notebook);
   for (int i = n_pages - 1; i >= 0; i--)
     {
       GtkWidget * page =
         gtk_notebook_get_nth_page (new_notebook, i);
       GtkWidget * tab_label =
-        gtk_notebook_get_tab_label (
-          new_notebook, page);
+        gtk_notebook_get_tab_label (new_notebook, page);
       g_object_ref (page);
       g_object_ref (tab_label);
       gtk_notebook_detach_tab (new_notebook, page);
@@ -1207,8 +1141,8 @@ on_new_window_close_request (
 {
   GtkWidget * page = delete_data->page;
 
-  char * val = g_hash_table_lookup (
-    delete_data->data->ht, page);
+  char * val =
+    g_hash_table_lookup (delete_data->data->ht, page);
   g_return_val_if_fail (val, false);
   char key_detached[600];
   sprintf (key_detached, "%s-detached", val);
@@ -1216,12 +1150,9 @@ on_new_window_close_request (
   sprintf (key_size, "%s-size", val);
 
   int w, h;
-  gtk_window_get_default_size (
-    GTK_WINDOW (widget), &w, &h);
-  g_settings_set_boolean (
-    S_UI_PANELS, key_detached, false);
-  g_settings_set (
-    S_UI_PANELS, key_size, "(ii)", w, h);
+  gtk_window_get_default_size (GTK_WINDOW (widget), &w, &h);
+  g_settings_set_boolean (S_UI_PANELS, key_detached, false);
+  g_settings_set (S_UI_PANELS, key_size, "(ii)", w, h);
   g_debug ("saving %s size %d %d", val, w, w);
 
   return false;
@@ -1243,14 +1174,12 @@ on_create_window (
 {
   g_return_val_if_fail (data, NULL);
 
-  GtkWindow * new_window =
-    GTK_WINDOW (gtk_window_new ());
+  GtkWindow *   new_window = GTK_WINDOW (gtk_window_new ());
   GtkNotebook * new_notebook =
     GTK_NOTEBOOK (gtk_notebook_new ());
   g_object_ref_sink (new_notebook);
   gtk_window_set_child (
-    GTK_WINDOW (new_window),
-    GTK_WIDGET (new_notebook));
+    GTK_WINDOW (new_window), GTK_WIDGET (new_notebook));
 
   const char * title = "Zrythm";
   /*const char * role = "zrythm-panel";*/
@@ -1265,20 +1194,18 @@ on_create_window (
    * tab labels instead of repeating the names
    * here */
   SET_TITLE_AND_ROLE (
-    MW_BOT_DOCK_EDGE->mixer_box, _ ("Mixer"),
-    "mixer");
+    MW_BOT_DOCK_EDGE->mixer_box, _ ("Mixer"), "mixer");
   SET_TITLE_AND_ROLE (
-    MW_BOT_DOCK_EDGE->modulator_view_box,
-    _ ("Modulators"), "modulators");
+    MW_BOT_DOCK_EDGE->modulator_view_box, _ ("Modulators"),
+    "modulators");
   SET_TITLE_AND_ROLE (
-    MW_BOT_DOCK_EDGE->chord_pad_panel_box,
-    _ ("Chord Pad"), "chord-pad");
+    MW_BOT_DOCK_EDGE->chord_pad_panel_box, _ ("Chord Pad"),
+    "chord-pad");
   SET_TITLE_AND_ROLE (
-    MW_BOT_DOCK_EDGE->clip_editor_box,
-    _ ("Editor"), "editor");
+    MW_BOT_DOCK_EDGE->clip_editor_box, _ ("Editor"), "editor");
   SET_TITLE_AND_ROLE (
-    MW_LEFT_DOCK_EDGE->visibility_box,
-    _ ("Visibility"), "track-visibility");
+    MW_LEFT_DOCK_EDGE->visibility_box, _ ("Visibility"),
+    "track-visibility");
   SET_TITLE_AND_ROLE (
     MW_LEFT_DOCK_EDGE->track_inspector_scroll,
     _ ("Track Inspector"), "track-inspector");
@@ -1289,28 +1216,25 @@ on_create_window (
     MW_RIGHT_DOCK_EDGE->plugin_browser_box,
     _ ("Plugin Browser"), "plugin-browser");
   SET_TITLE_AND_ROLE (
-    MW_RIGHT_DOCK_EDGE->file_browser_box,
-    _ ("File Browser"), "file-browser");
+    MW_RIGHT_DOCK_EDGE->file_browser_box, _ ("File Browser"),
+    "file-browser");
   SET_TITLE_AND_ROLE (
     MW_RIGHT_DOCK_EDGE->chord_pack_browser_box,
-    _ ("Chord Preset Browser"),
-    "chord-pack-browser");
+    _ ("Chord Preset Browser"), "chord-pack-browser");
   SET_TITLE_AND_ROLE (
-    MW_RIGHT_DOCK_EDGE->monitor_section_box,
-    _ ("Monitor"), "monitor");
+    MW_RIGHT_DOCK_EDGE->monitor_section_box, _ ("Monitor"),
+    "monitor");
   SET_TITLE_AND_ROLE (
-    MW_MAIN_NOTEBOOK
-      ->timeline_plus_event_viewer_paned,
+    MW_MAIN_NOTEBOOK->timeline_plus_event_viewer_paned,
     _ ("Timeline"), "timeline");
   SET_TITLE_AND_ROLE (
-    MW_MAIN_NOTEBOOK->cc_bindings_box,
-    _ ("MIDI CC Bindings"), "midi-cc-bindings");
+    MW_MAIN_NOTEBOOK->cc_bindings_box, _ ("MIDI CC Bindings"),
+    "midi-cc-bindings");
   SET_TITLE_AND_ROLE (
     MW_MAIN_NOTEBOOK->port_connections_box,
     _ ("Port Connections"), "port-connections");
   SET_TITLE_AND_ROLE (
-    MW_MAIN_NOTEBOOK->scenes_box, _ ("Scenes"),
-    "scenes");
+    MW_MAIN_NOTEBOOK->scenes_box, _ ("Scenes"), "scenes");
 
 #undef SET_TITLE_AND_ROLE
 
@@ -1324,8 +1248,7 @@ on_create_window (
 
   g_signal_connect (
     G_OBJECT (new_notebook), "page-removed",
-    G_CALLBACK (on_new_notebook_page_removed),
-    new_window);
+    G_CALLBACK (on_new_notebook_page_removed), new_window);
   g_signal_connect (
     G_OBJECT (new_window), "destroy",
     G_CALLBACK (on_new_window_destroyed), data);
@@ -1336,29 +1259,23 @@ on_create_window (
   delete_data->page = page;
   g_signal_connect_data (
     G_OBJECT (new_window), "close-request",
-    G_CALLBACK (on_new_window_close_request),
-    delete_data, (GClosureNotify) free_delete_data,
-    0);
-  gtk_window_set_icon_name (
-    GTK_WINDOW (new_window), "zrythm");
+    G_CALLBACK (on_new_window_close_request), delete_data,
+    (GClosureNotify) free_delete_data, 0);
+  gtk_window_set_icon_name (GTK_WINDOW (new_window), "zrythm");
   gtk_window_set_transient_for (
-    GTK_WINDOW (new_window),
-    GTK_WINDOW (data->parent_window));
-  gtk_window_set_destroy_with_parent (
-    new_window, true);
+    GTK_WINDOW (new_window), GTK_WINDOW (data->parent_window));
+  gtk_window_set_destroy_with_parent (new_window, true);
 
   /* set application so that actions are connected
    * properly */
   gtk_window_set_application (
-    GTK_WINDOW (new_window),
-    GTK_APPLICATION (zrythm_app));
+    GTK_WINDOW (new_window), GTK_APPLICATION (zrythm_app));
 
   gtk_window_present (GTK_WINDOW (new_window));
   gtk_widget_set_visible (page, true);
 
   g_ptr_array_add (data->new_windows, new_window);
-  g_ptr_array_add (
-    data->new_notebooks, new_notebook);
+  g_ptr_array_add (data->new_notebooks, new_notebook);
 
   char * val = g_hash_table_lookup (data->ht, page);
   g_return_val_if_fail (val, NULL);
@@ -1368,16 +1285,14 @@ on_create_window (
   sprintf (key_size, "%s-size", val);
 
   /* save/load settings */
-  g_settings_set_boolean (
-    S_UI_PANELS, key_detached, true);
+  g_settings_set_boolean (S_UI_PANELS, key_detached, true);
   GVariant * size_val =
     g_settings_get_value (S_UI_PANELS, key_size);
   int width = (int) g_variant_get_int32 (
     g_variant_get_child_value (size_val, 0));
   int height = (int) g_variant_get_int32 (
     g_variant_get_child_value (size_val, 1));
-  g_debug (
-    "loading %s size %d %d", val, width, height);
+  g_debug ("loading %s size %d %d", val, width, height);
   gtk_window_set_default_size (
     GTK_WINDOW (new_window), width, height);
   g_variant_unref (size_val);
@@ -1411,33 +1326,28 @@ detach_pages_programmatically (
   DetachableNotebookData * data)
 {
   g_return_if_fail (GTK_IS_NOTEBOOK (old_notebook));
-  int n_pages =
-    gtk_notebook_get_n_pages (old_notebook);
+  int n_pages = gtk_notebook_get_n_pages (old_notebook);
   for (int i = n_pages - 1; i >= 0; i--)
     {
       GtkWidget * page =
         gtk_notebook_get_nth_page (old_notebook, i);
       GtkWidget * tab_label =
-        gtk_notebook_get_tab_label (
-          old_notebook, page);
+        gtk_notebook_get_tab_label (old_notebook, page);
 
-      char * val =
-        g_hash_table_lookup (data->ht, page);
+      char * val = g_hash_table_lookup (data->ht, page);
       g_return_if_fail (val);
       char key_detached[600];
       sprintf (key_detached, "%s-detached", val);
-      bool needs_detach = g_settings_get_boolean (
-        S_UI_PANELS, key_detached);
+      bool needs_detach =
+        g_settings_get_boolean (S_UI_PANELS, key_detached);
 
       if (needs_detach)
         {
           g_object_ref (page);
           g_object_ref (tab_label);
           GtkNotebook * new_notebook =
-            on_create_window (
-              old_notebook, page, data);
-          gtk_notebook_detach_tab (
-            old_notebook, page);
+            on_create_window (old_notebook, page, data);
+          gtk_notebook_detach_tab (old_notebook, page);
           gtk_notebook_append_page (
             new_notebook, page, tab_label);
           gtk_notebook_set_tab_detachable (
@@ -1473,11 +1383,9 @@ z_gtk_notebook_make_detachable (
   g_return_if_fail (w); \
   g_hash_table_insert (data->ht, w, g_strdup (key))
 
-  data->ht = g_hash_table_new_full (
-    NULL, NULL, NULL, g_free);
+  data->ht = g_hash_table_new_full (NULL, NULL, NULL, g_free);
   ADD_PAIR (
-    "track-visibility",
-    MW_LEFT_DOCK_EDGE->visibility_box);
+    "track-visibility", MW_LEFT_DOCK_EDGE->visibility_box);
   ADD_PAIR (
     "track-inspector",
     MW_LEFT_DOCK_EDGE->track_inspector_scroll);
@@ -1485,11 +1393,9 @@ z_gtk_notebook_make_detachable (
     "plugin-inspector",
     MW_LEFT_DOCK_EDGE->plugin_inspector_scroll);
   ADD_PAIR (
-    "plugin-browser",
-    MW_RIGHT_DOCK_EDGE->plugin_browser_box);
+    "plugin-browser", MW_RIGHT_DOCK_EDGE->plugin_browser_box);
   ADD_PAIR (
-    "file-browser",
-    MW_RIGHT_DOCK_EDGE->file_browser_box);
+    "file-browser", MW_RIGHT_DOCK_EDGE->file_browser_box);
   ADD_PAIR (
     "monitor-section",
     MW_RIGHT_DOCK_EDGE->monitor_section_box);
@@ -1497,22 +1403,15 @@ z_gtk_notebook_make_detachable (
     "chord-pack-browser",
     MW_RIGHT_DOCK_EDGE->chord_pack_browser_box);
   ADD_PAIR (
-    "modulator-view",
-    MW_BOT_DOCK_EDGE->modulator_view_box);
+    "modulator-view", MW_BOT_DOCK_EDGE->modulator_view_box);
   ADD_PAIR ("mixer", MW_BOT_DOCK_EDGE->mixer_box);
+  ADD_PAIR ("clip-editor", MW_BOT_DOCK_EDGE->clip_editor_box);
   ADD_PAIR (
-    "clip-editor",
-    MW_BOT_DOCK_EDGE->clip_editor_box);
-  ADD_PAIR (
-    "chord-pad",
-    MW_BOT_DOCK_EDGE->chord_pad_panel_box);
+    "chord-pad", MW_BOT_DOCK_EDGE->chord_pad_panel_box);
   ADD_PAIR (
     "timeline",
-    MW_MAIN_NOTEBOOK
-      ->timeline_plus_event_viewer_paned);
-  ADD_PAIR (
-    "cc-bindings",
-    MW_MAIN_NOTEBOOK->cc_bindings_box);
+    MW_MAIN_NOTEBOOK->timeline_plus_event_viewer_paned);
+  ADD_PAIR ("cc-bindings", MW_MAIN_NOTEBOOK->cc_bindings_box);
   ADD_PAIR (
     "port-connections",
     MW_MAIN_NOTEBOOK->port_connections_box);
@@ -1525,8 +1424,7 @@ z_gtk_notebook_make_detachable (
     G_CALLBACK (on_create_window), data);
   g_signal_connect_after (
     G_OBJECT (notebook), "destroy",
-    G_CALLBACK (on_detachable_notebook_destroyed),
-    data);
+    G_CALLBACK (on_detachable_notebook_destroyed), data);
 
   detach_pages_programmatically (notebook, data);
 }
@@ -1540,23 +1438,18 @@ z_gtk_message_dialog_wrap_message_area_in_scroll (
   int                min_width,
   int                min_height)
 {
-  GtkBox * box =
-    GTK_BOX (gtk_message_dialog_get_message_area (
-      GTK_MESSAGE_DIALOG (dialog)));
+  GtkBox * box = GTK_BOX (gtk_message_dialog_get_message_area (
+    GTK_MESSAGE_DIALOG (dialog)));
   GtkWidget * secondary_area =
     z_gtk_widget_get_nth_child (GTK_WIDGET (box), 1);
   gtk_box_remove (GTK_BOX (box), secondary_area);
-  GtkWidget * scrolled_window =
-    gtk_scrolled_window_new ();
+  GtkWidget * scrolled_window = gtk_scrolled_window_new ();
   gtk_scrolled_window_set_min_content_width (
-    GTK_SCROLLED_WINDOW (scrolled_window),
-    min_width);
+    GTK_SCROLLED_WINDOW (scrolled_window), min_width);
   gtk_scrolled_window_set_min_content_height (
-    GTK_SCROLLED_WINDOW (scrolled_window),
-    min_height);
+    GTK_SCROLLED_WINDOW (scrolled_window), min_height);
   gtk_scrolled_window_set_child (
-    GTK_SCROLLED_WINDOW (scrolled_window),
-    secondary_area);
+    GTK_SCROLLED_WINDOW (scrolled_window), secondary_area);
   gtk_box_append (GTK_BOX (box), scrolled_window);
 }
 
@@ -1567,16 +1460,13 @@ z_gtk_message_dialog_wrap_message_area_in_scroll (
  * Must be free'd using g_free().
  */
 char *
-z_gtk_text_buffer_get_full_text (
-  GtkTextBuffer * buffer)
+z_gtk_text_buffer_get_full_text (GtkTextBuffer * buffer)
 {
   GtkTextIter start_iter, end_iter;
-  gtk_text_buffer_get_start_iter (
-    buffer, &start_iter);
+  gtk_text_buffer_get_start_iter (buffer, &start_iter);
   gtk_text_buffer_get_end_iter (buffer, &end_iter);
   return gtk_text_buffer_get_text (
-    GTK_TEXT_BUFFER (buffer), &start_iter,
-    &end_iter, false);
+    GTK_TEXT_BUFFER (buffer), &start_iter, &end_iter, false);
 }
 
 /**
@@ -1602,47 +1492,36 @@ z_gtk_generate_screenshot_image (
   char **      ret_path,
   bool         accept_fallback)
 {
-  g_return_if_fail (
-    *ret_dir == NULL && *ret_path == NULL);
+  g_return_if_fail (*ret_dir == NULL && *ret_path == NULL);
 
-  GdkPaintable * paintable =
-    gtk_widget_paintable_new (widget);
-  GtkSnapshot * snapshot = gtk_snapshot_new ();
+  GdkPaintable * paintable = gtk_widget_paintable_new (widget);
+  GtkSnapshot *  snapshot = gtk_snapshot_new ();
   gdk_paintable_snapshot (
     paintable, GDK_SNAPSHOT (snapshot),
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (widget)),
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (widget)));
-  GskRenderNode * node =
-    gtk_snapshot_free_to_node (snapshot);
-  GskRenderer * renderer =
-    gsk_renderer_new_for_surface (
-      z_gtk_widget_get_surface (
-        GTK_WIDGET (MAIN_WINDOW)));
+    gtk_widget_get_allocated_width (GTK_WIDGET (widget)),
+    gtk_widget_get_allocated_height (GTK_WIDGET (widget)));
+  GskRenderNode * node = gtk_snapshot_free_to_node (snapshot);
+  GskRenderer *   renderer = gsk_renderer_new_for_surface (
+      z_gtk_widget_get_surface (GTK_WIDGET (MAIN_WINDOW)));
   g_return_if_fail (renderer);
   GdkTexture * texture =
-    gsk_renderer_render_texture (
-      renderer, node, NULL);
+    gsk_renderer_render_texture (renderer, node, NULL);
 
   GError * err = NULL;
-  *ret_dir =
-    g_dir_make_tmp ("zrythm-widget-XXXXXX", &err);
+  *ret_dir = g_dir_make_tmp ("zrythm-widget-XXXXXX", &err);
   if (*ret_dir == NULL)
     {
       g_warning (
-        "failed creating temporary dir: %s",
-        err->message);
+        "failed creating temporary dir: %s", err->message);
       return;
     }
-  char * abs_path = g_build_filename (
-    *ret_dir, "screenshot.png", NULL);
+  char * abs_path =
+    g_build_filename (*ret_dir, "screenshot.png", NULL);
 
   /* note: can also use
    * gdk_pixbuf_get_from_texture() for other
    * formats */
-  bool ret =
-    gdk_texture_save_to_png (texture, abs_path);
+  bool ret = gdk_texture_save_to_png (texture, abs_path);
 
   g_object_unref (texture);
   gsk_render_node_unref (node);
@@ -1659,8 +1538,7 @@ z_gtk_generate_screenshot_image (
     }
 
   *ret_path = abs_path;
-  g_message (
-    "saved widget screenshot to %s", *ret_path);
+  g_message ("saved widget screenshot to %s", *ret_path);
 }
 
 /**
@@ -1678,8 +1556,7 @@ z_gtk_actionable_set_action_from_setting (
 {
   GSimpleActionGroup * action_group =
     g_simple_action_group_new ();
-  GAction * action =
-    g_settings_create_action (settings, key);
+  GAction * action = g_settings_create_action (settings, key);
   g_action_map_add_action (
     G_ACTION_MAP (action_group), action);
   char * group_prefix =
@@ -1689,8 +1566,7 @@ z_gtk_actionable_set_action_from_setting (
     G_ACTION_GROUP (action_group));
   char * action_name =
     g_strdup_printf ("%s.%s", group_prefix, key);
-  gtk_actionable_set_action_name (
-    actionable, action_name);
+  gtk_actionable_set_action_name (actionable, action_name);
   g_free (group_prefix);
   g_free (action_name);
 }
@@ -1700,15 +1576,13 @@ z_gtk_actionable_set_action_from_setting (
  * error.
  */
 int
-z_gtk_tree_view_column_get_column_id (
-  GtkTreeViewColumn * col)
+z_gtk_tree_view_column_get_column_id (GtkTreeViewColumn * col)
 {
-  GtkTreeView * tree_view = GTK_TREE_VIEW (
-    gtk_tree_view_column_get_tree_view (col));
+  GtkTreeView * tree_view =
+    GTK_TREE_VIEW (gtk_tree_view_column_get_tree_view (col));
   g_return_val_if_fail (tree_view != NULL, -1);
 
-  GList * cols =
-    gtk_tree_view_get_columns (tree_view);
+  GList * cols = gtk_tree_view_get_columns (tree_view);
 
   int num = g_list_index (cols, (gpointer) col);
 
@@ -1723,8 +1597,7 @@ z_gtk_is_event_button (GdkEvent * ev)
   g_return_val_if_fail (ev != NULL, false);
 
   return GDK_IS_EVENT_TYPE (ev, GDK_BUTTON_PRESS)
-         || GDK_IS_EVENT_TYPE (
-           ev, GDK_BUTTON_RELEASE);
+         || GDK_IS_EVENT_TYPE (ev, GDK_BUTTON_RELEASE);
 }
 
 /**
@@ -1740,10 +1613,8 @@ z_gtk_scrolled_window_get_visible_rect (
     gtk_scrolled_window_get_hadjustment (scroll);
   GtkAdjustment * vadj =
     gtk_scrolled_window_get_vadjustment (scroll);
-  rect->origin.x =
-    (float) gtk_adjustment_get_value (hadj);
-  rect->origin.y =
-    (float) gtk_adjustment_get_value (vadj);
+  rect->origin.x = (float) gtk_adjustment_get_value (hadj);
+  rect->origin.y = (float) gtk_adjustment_get_value (vadj);
   rect->size.width =
     (float) gtk_adjustment_get_page_size (hadj);
   rect->size.height =
@@ -1810,9 +1681,7 @@ run_delete_handler (GtkDialog * dialog, gpointer data)
 }
 
 static void
-run_destroy_handler (
-  GtkDialog * dialog,
-  gpointer    data)
+run_destroy_handler (GtkDialog * dialog, gpointer data)
 {
   RunInfo * ri = data;
 
@@ -1839,13 +1708,9 @@ dialog_response_cb (
  * @return The response ID.
  */
 int
-z_gtk_dialog_run (
-  GtkDialog * dialog,
-  bool        destroy_on_close)
+z_gtk_dialog_run (GtkDialog * dialog, bool destroy_on_close)
 {
-  RunInfo ri = {
-    NULL, GTK_RESPONSE_NONE, NULL, FALSE
-  };
+  RunInfo  ri = { NULL, GTK_RESPONSE_NONE, NULL, FALSE };
   gboolean was_modal;
   gulong   response_handler;
   gulong   unmap_handler;
@@ -1856,30 +1721,26 @@ z_gtk_dialog_run (
 
   g_object_ref (dialog);
 
-  was_modal =
-    gtk_window_get_modal (GTK_WINDOW (dialog));
+  was_modal = gtk_window_get_modal (GTK_WINDOW (dialog));
   if (!was_modal)
-    gtk_window_set_modal (
-      GTK_WINDOW (dialog), TRUE);
+    gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
 
   if (!gtk_widget_get_visible (GTK_WIDGET (dialog)))
     gtk_widget_show (GTK_WIDGET (dialog));
 
   response_handler = g_signal_connect (
-    dialog, "response",
-    G_CALLBACK (run_response_handler), &ri);
+    dialog, "response", G_CALLBACK (run_response_handler),
+    &ri);
 
   unmap_handler = g_signal_connect (
-    dialog, "unmap",
-    G_CALLBACK (run_unmap_handler), &ri);
+    dialog, "unmap", G_CALLBACK (run_unmap_handler), &ri);
 
   delete_handler = g_signal_connect (
-    dialog, "close-request",
-    G_CALLBACK (run_delete_handler), &ri);
+    dialog, "close-request", G_CALLBACK (run_delete_handler),
+    &ri);
 
   destroy_handler = g_signal_connect (
-    dialog, "destroy",
-    G_CALLBACK (run_destroy_handler), &ri);
+    dialog, "destroy", G_CALLBACK (run_destroy_handler), &ri);
 
   ri.loop = g_main_loop_new (NULL, FALSE);
 
@@ -1894,17 +1755,12 @@ z_gtk_dialog_run (
   if (!ri.destroyed)
     {
       if (!was_modal)
-        gtk_window_set_modal (
-          GTK_WINDOW (dialog), FALSE);
+        gtk_window_set_modal (GTK_WINDOW (dialog), FALSE);
 
-      g_signal_handler_disconnect (
-        dialog, response_handler);
-      g_signal_handler_disconnect (
-        dialog, unmap_handler);
-      g_signal_handler_disconnect (
-        dialog, delete_handler);
-      g_signal_handler_disconnect (
-        dialog, destroy_handler);
+      g_signal_handler_disconnect (dialog, response_handler);
+      g_signal_handler_disconnect (dialog, unmap_handler);
+      g_signal_handler_disconnect (dialog, delete_handler);
+      g_signal_handler_disconnect (dialog, destroy_handler);
     }
 
   g_object_unref (dialog);
@@ -1928,8 +1784,7 @@ z_gtk_show_context_menu_from_g_menu (
   double           y,
   GMenu *          menu)
 {
-  g_return_if_fail (
-    GTK_IS_POPOVER_MENU (popover_menu));
+  g_return_if_fail (GTK_IS_POPOVER_MENU (popover_menu));
   gtk_popover_menu_set_menu_model (
     popover_menu, G_MENU_MODEL (menu));
   gtk_popover_set_pointing_to (
@@ -1957,8 +1812,7 @@ z_gtk_drop_target_get_selected_action (
   if (!drag)
     return GDK_ACTION_COPY;
 
-  GdkDragAction action =
-    gdk_drag_get_selected_action (drag);
+  GdkDragAction action = gdk_drag_get_selected_action (drag);
 
   return action;
 }
@@ -1966,18 +1820,16 @@ z_gtk_drop_target_get_selected_action (
 GtkIconTheme *
 z_gtk_icon_theme_get_default (void)
 {
-  GdkDisplay * display = gdk_display_get_default ();
+  GdkDisplay *   display = gdk_display_get_default ();
   GtkIconTheme * icon_theme =
     gtk_icon_theme_get_for_display (display);
   return icon_theme;
 }
 
 char *
-z_gtk_file_chooser_get_filename (
-  GtkFileChooser * file_chooser)
+z_gtk_file_chooser_get_filename (GtkFileChooser * file_chooser)
 {
-  GFile * file =
-    gtk_file_chooser_get_file (file_chooser);
+  GFile * file = gtk_file_chooser_get_file (file_chooser);
   if (!file)
     {
       g_debug ("file is NULL");
@@ -1997,8 +1849,7 @@ z_gtk_file_chooser_set_file_from_path (
 {
   GFile * file = g_file_new_for_path (filename);
   g_return_if_fail (file);
-  gtk_file_chooser_set_file (
-    file_chooser, file, NULL);
+  gtk_file_chooser_set_file (file_chooser, file, NULL);
   g_object_unref (file);
 }
 
@@ -2022,15 +1873,13 @@ z_gdk_clipboard_get_text (GdkClipboard * clipboard)
    * process or clipboard is empty, return NULL */
   if (!provider)
     {
-      g_debug (
-        "clipboard content provider is NULL");
+      g_debug ("clipboard content provider is NULL");
       return NULL;
     }
 
   /* if the content provider does not contain text,
    * we are not interested */
-  if (!gdk_content_provider_get_value (
-        provider, &value, NULL))
+  if (!gdk_content_provider_get_value (provider, &value, NULL))
     {
       g_debug (
         "clipboard content provider does not "
@@ -2038,8 +1887,7 @@ z_gdk_clipboard_get_text (GdkClipboard * clipboard)
       return NULL;
     }
 
-  char * str =
-    g_strdup (g_value_get_string (&value));
+  char * str = g_strdup (g_value_get_string (&value));
 
   g_value_unset (&value);
 
@@ -2058,9 +1906,8 @@ z_gtk_window_get_x11_xid (GtkWindow * window)
 #  endif
 
   GtkNative *  native = GTK_NATIVE (window);
-  GdkSurface * surface =
-    gtk_native_get_surface (native);
-  Window xid = gdk_x11_surface_get_xid (surface);
+  GdkSurface * surface = gtk_native_get_surface (native);
+  Window       xid = gdk_x11_surface_get_xid (surface);
   return xid;
 }
 #endif
@@ -2070,9 +1917,8 @@ HWND
 z_gtk_window_get_windows_hwnd (GtkWindow * window)
 {
   GtkNative *  native = GTK_NATIVE (window);
-  GdkSurface * surface =
-    gtk_native_get_surface (native);
-  HWND hwnd = GDK_SURFACE_HWND (surface);
+  GdkSurface * surface = gtk_native_get_surface (native);
+  HWND         hwnd = GDK_SURFACE_HWND (surface);
   g_return_val_if_fail (hwnd, NULL);
   return hwnd;
 }
@@ -2083,9 +1929,8 @@ void *
 z_gtk_window_get_nsview (GtkWindow * window)
 {
   GtkNative *  native = GTK_NATIVE (window);
-  GdkSurface * surface =
-    gtk_native_get_surface (native);
-  void * nsview = NULL;
+  GdkSurface * surface = gtk_native_get_surface (native);
+  void *       nsview = NULL;
   /* FIXME enable when patch is merged */
 #  if 0
     gdk_macos_surface_get_view (surface);
@@ -2109,14 +1954,11 @@ z_gdk_pixbuf_new_from_icon_name (
   int          height,
   int          scale)
 {
-  GtkIconTheme * icon_theme =
-    z_gtk_icon_theme_get_default ();
-  GtkIconPaintable * paintable =
-    gtk_icon_theme_lookup_icon (
-      icon_theme, icon_name, NULL, width, scale,
-      GTK_TEXT_DIR_NONE, GTK_ICON_LOOKUP_PRELOAD);
-  GFile * file =
-    gtk_icon_paintable_get_file (paintable);
+  GtkIconTheme * icon_theme = z_gtk_icon_theme_get_default ();
+  GtkIconPaintable * paintable = gtk_icon_theme_lookup_icon (
+    icon_theme, icon_name, NULL, width, scale,
+    GTK_TEXT_DIR_NONE, GTK_ICON_LOOKUP_PRELOAD);
+  GFile *     file = gtk_icon_paintable_get_file (paintable);
   char *      path = g_file_get_path (file);
   GdkPixbuf * pixbuf = NULL;
   GError *    err = NULL;
@@ -2142,8 +1984,7 @@ z_gdk_pixbuf_new_from_icon_name (
   if (!pixbuf)
     {
       g_critical (
-        "failed to load pixbuf for icon %s",
-        icon_name);
+        "failed to load pixbuf for icon %s", icon_name);
       return NULL;
     }
 
@@ -2164,9 +2005,8 @@ z_gdk_texture_new_from_icon_name (
   int          height,
   int          scale)
 {
-  GdkPixbuf * pixbuf =
-    z_gdk_pixbuf_new_from_icon_name (
-      icon_name, width, height, scale);
+  GdkPixbuf * pixbuf = z_gdk_pixbuf_new_from_icon_name (
+    icon_name, width, height, scale);
   g_return_val_if_fail (pixbuf, NULL);
 
   return gdk_texture_new_for_pixbuf (pixbuf);
@@ -2176,9 +2016,8 @@ void
 z_gtk_print_graphene_rect (graphene_rect_t * rect)
 {
   g_message (
-    "x: %f | y: %f | width: %f | height: %f",
-    rect->origin.x, rect->origin.y,
-    rect->size.width, rect->size.height);
+    "x: %f | y: %f | width: %f | height: %f", rect->origin.x,
+    rect->origin.y, rect->size.width, rect->size.height);
 }
 
 /**
@@ -2197,8 +2036,7 @@ z_gtk_widget_print_hierarchy (GtkWidget * widget)
   const int spaces_per_child = 2;
   int       cur_spaces = 0;
   GString * gstr = g_string_new (NULL);
-  while ((
-    parent = (GtkWidget *) g_queue_pop_tail (queue)))
+  while ((parent = (GtkWidget *) g_queue_pop_tail (queue)))
     {
       /* TODO print parent class in () */
       g_string_append_printf (
@@ -2210,8 +2048,7 @@ z_gtk_widget_print_hierarchy (GtkWidget * widget)
         }
     }
 
-  g_string_append (
-    gstr, gtk_widget_get_name (widget));
+  g_string_append (gstr, gtk_widget_get_name (widget));
   char * str = g_string_free (gstr, false);
   g_message ("%s", str);
   g_queue_free (queue);
@@ -2224,20 +2061,17 @@ z_gtk_get_gsk_renderer_type (void)
   if (renderer_type)
     return renderer_type;
 
-  GdkSurface * surface = gdk_surface_new_toplevel (
-    gdk_display_get_default ());
+  GdkSurface * surface =
+    gdk_surface_new_toplevel (gdk_display_get_default ());
   GskRenderer * renderer =
     gsk_renderer_new_for_surface (surface);
   if (string_is_equal (
-        G_OBJECT_TYPE_NAME (renderer),
-        "GskGLRenderer"))
+        G_OBJECT_TYPE_NAME (renderer), "GskGLRenderer"))
     {
       renderer_type = "GL";
     }
-  else if (
-    string_is_equal (
-      G_OBJECT_TYPE_NAME (renderer),
-      "GskCairoRenderer"))
+  else if (string_is_equal (
+             G_OBJECT_TYPE_NAME (renderer), "GskCairoRenderer"))
     {
       renderer_type = "Cairo";
     }
@@ -2269,15 +2103,14 @@ z_gtk_simple_action_shortcut_func (
   gsize        size;
   const char * action_name =
     g_variant_get_string (args, &size);
-  char ** strs = g_strsplit (action_name, "::", -1);
-  char *  param = strs[1];
+  char **    strs = g_strsplit (action_name, "::", -1);
+  char *     param = strs[1];
   GVariant * variant = NULL;
   if (param)
     variant = g_variant_new_string (param);
   g_action_group_activate_action (
     G_ACTION_GROUP (zrythm_app), strs[0], variant);
-  g_message (
-    "activating %s::%s", action_name, param);
+  g_message ("activating %s::%s", action_name, param);
   g_strfreev (strs);
 
   return true;
@@ -2288,12 +2121,9 @@ z_gtk_simple_action_shortcut_func (
  * for a child of type \ref type.
  */
 GtkWidget *
-z_gtk_widget_find_child_of_type (
-  GtkWidget * widget,
-  GType       type)
+z_gtk_widget_find_child_of_type (GtkWidget * widget, GType type)
 {
-  for (GtkWidget * child =
-         gtk_widget_get_first_child (widget);
+  for (GtkWidget * child = gtk_widget_get_first_child (widget);
        child != NULL;
        child = gtk_widget_get_next_sibling (child))
     {
@@ -2304,8 +2134,7 @@ z_gtk_widget_find_child_of_type (
       else
         {
           GtkWidget * inner_match =
-            z_gtk_widget_find_child_of_type (
-              child, type);
+            z_gtk_widget_find_child_of_type (child, type);
           if (inner_match)
             return inner_match;
         }
@@ -2315,16 +2144,13 @@ z_gtk_widget_find_child_of_type (
 }
 
 void
-z_gtk_list_box_remove_all_children (
-  GtkListBox * list_box)
+z_gtk_list_box_remove_all_children (GtkListBox * list_box)
 {
   GtkListBoxRow * row = NULL;
   while (
-    (row =
-       gtk_list_box_get_row_at_index (list_box, 0))
+    (row = gtk_list_box_get_row_at_index (list_box, 0))
     != NULL)
     {
-      gtk_list_box_remove (
-        list_box, GTK_WIDGET (row));
+      gtk_list_box_remove (list_box, GTK_WIDGET (row));
     }
 }

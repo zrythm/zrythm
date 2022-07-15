@@ -69,9 +69,7 @@ marker_track_insert_marker (
  * Adds a marker to the track.
  */
 void
-marker_track_add_marker (
-  MarkerTrack * self,
-  Marker *      marker);
+marker_track_add_marker (MarkerTrack * self, Marker * marker);
 
 /**
  * Removes all objects from the marker track.

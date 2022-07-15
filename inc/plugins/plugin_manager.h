@@ -33,9 +33,8 @@
 #include "zix/sem.h"
 #include <lilv/lilv.h>
 
-typedef struct CachedPluginDescriptors
-  CachedPluginDescriptors;
-typedef struct PluginCollections PluginCollections;
+typedef struct CachedPluginDescriptors CachedPluginDescriptors;
+typedef struct PluginCollections       PluginCollections;
 
 /**
  * @addtogroup plugins
@@ -85,8 +84,7 @@ typedef struct PluginManager
   size_t      nodes_size;
 
   /** Cached VST descriptors */
-  CachedPluginDescriptors *
-    cached_plugin_descriptors;
+  CachedPluginDescriptors * cached_plugin_descriptors;
 
   /** Plugin collections. */
   PluginCollections * collections;
@@ -173,8 +171,7 @@ plugin_manager_supports_protocol (
  * Returns an instrument plugin, if any.
  */
 PluginDescriptor *
-plugin_manager_pick_instrument (
-  PluginManager * self);
+plugin_manager_pick_instrument (PluginManager * self);
 
 void
 plugin_manager_clear_plugins (PluginManager * self);

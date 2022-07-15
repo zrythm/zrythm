@@ -55,8 +55,7 @@ typedef struct ChromaprintFingerprint
 } ChromaprintFingerprint;
 
 void
-z_chromaprint_fingerprint_free (
-  ChromaprintFingerprint * self);
+z_chromaprint_fingerprint_free (ChromaprintFingerprint * self);
 
 ChromaprintFingerprint *
 z_chromaprint_get_fingerprint (

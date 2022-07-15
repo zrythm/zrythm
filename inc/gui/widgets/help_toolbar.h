@@ -35,8 +35,7 @@ G_DECLARE_FINAL_TYPE (
  * \file
  */
 
-#define MW_HELP_TOOLBAR \
-  MW_HEADER_NOTEBOOK->help_toolbar
+#define MW_HELP_TOOLBAR MW_HEADER_NOTEBOOK->help_toolbar
 
 typedef struct _HelpToolbarWidget
 {

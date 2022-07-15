@@ -189,20 +189,13 @@ typedef struct ExtPort
 static const cyaml_schema_field_t ext_port_fields_schema[] = {
   YAML_FIELD_INT (ExtPort, schema_version),
   YAML_FIELD_STRING_PTR (ExtPort, full_name),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    ExtPort,
-    short_name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (ExtPort, short_name),
   YAML_FIELD_STRING_PTR_OPTIONAL (ExtPort, alias1),
   YAML_FIELD_STRING_PTR_OPTIONAL (ExtPort, alias2),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    ExtPort,
-    rtaudio_dev_name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (ExtPort, rtaudio_dev_name),
   YAML_FIELD_INT (ExtPort, num_aliases),
   YAML_FIELD_INT (ExtPort, is_midi),
-  YAML_FIELD_ENUM (
-    ExtPort,
-    type,
-    ext_port_type_strings),
+  YAML_FIELD_ENUM (ExtPort, type, ext_port_type_strings),
   YAML_FIELD_UINT (ExtPort, rtaudio_channel_idx),
 
   CYAML_FIELD_END
@@ -245,17 +238,13 @@ ext_port_get_id (ExtPort * ext_port);
  * Returns the buffer of the external port.
  */
 float *
-ext_port_get_buffer (
-  ExtPort * ext_port,
-  nframes_t nframes);
+ext_port_get_buffer (ExtPort * ext_port, nframes_t nframes);
 
 /**
  * Clears the buffer of the external port.
  */
 void
-ext_port_clear_buffer (
-  ExtPort * ext_port,
-  nframes_t nframes);
+ext_port_clear_buffer (ExtPort * ext_port, nframes_t nframes);
 
 #if 0
 /**
@@ -288,10 +277,7 @@ ext_port_new_from_jack_port (jack_port_t * jport);
  *   is the destination.
  */
 void
-ext_port_disconnect (
-  ExtPort * ext_port,
-  Port *    port,
-  int       src);
+ext_port_disconnect (ExtPort * ext_port, Port * port, int src);
 
 /**
  * Activates the port (starts receiving data) or
@@ -302,10 +288,7 @@ ext_port_disconnect (
  * @return Non-zero if fail.
  */
 int
-ext_port_activate (
-  ExtPort * self,
-  Port *    port,
-  bool      activate);
+ext_port_activate (ExtPort * self, Port * port, bool activate);
 
 /**
  * Checks in the GSettings whether this port is

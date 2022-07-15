@@ -31,14 +31,12 @@ static void
 test_get_from_file (void)
 {
   char * filepath = g_build_filename (
-    TESTS_SRCDIR, "test_start_with_signal.mp3",
-    NULL);
+    TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
 
   g_message ("start");
-  char * hash = hash_get_from_file (
-    filepath, HASH_ALGORITHM_XXH32);
-  uint32_t hash_simple =
-    hash_get_from_file_simple (filepath);
+  char * hash =
+    hash_get_from_file (filepath, HASH_ALGORITHM_XXH32);
+  uint32_t hash_simple = hash_get_from_file_simple (filepath);
   g_message ("end");
   g_assert_cmpstr (hash, ==, "ca5b86cb");
   g_assert_cmpuint (hash_simple, ==, 3394995915);
@@ -46,8 +44,7 @@ test_get_from_file (void)
 
 #if XXH_VERSION_NUMBER >= 800
   g_message ("start");
-  hash = hash_get_from_file (
-    filepath, HASH_ALGORITHM_XXH3_64);
+  hash = hash_get_from_file (filepath, HASH_ALGORITHM_XXH3_64);
   g_message ("end");
   g_assert_cmpstr (hash, ==, "e9cd4b9c1e12785e");
   g_free (hash);

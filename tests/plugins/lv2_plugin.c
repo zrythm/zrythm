@@ -44,14 +44,12 @@ test_lilv_instance_activation (void)
         HELM_BUNDLE, HELM_URI, true, false, 1);
 
       Plugin * pl =
-        TRACKLIST
-          ->tracks[TRACKLIST->num_tracks - 1]
+        TRACKLIST->tracks[TRACKLIST->num_tracks - 1]
           ->channel->instrument;
       g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
       EngineState state;
-      engine_wait_for_pause (
-        AUDIO_ENGINE, &state, false);
+      engine_wait_for_pause (AUDIO_ENGINE, &state, false);
 
       lilv_instance_deactivate (pl->lv2->instance);
       lilv_instance_activate (pl->lv2->instance);
@@ -59,8 +57,7 @@ test_lilv_instance_activation (void)
       lilv_instance_activate (pl->lv2->instance);
       if (i % 2)
         {
-          lilv_instance_deactivate (
-            pl->lv2->instance);
+          lilv_instance_deactivate (pl->lv2->instance);
         }
 
       test_helper_zrythm_cleanup ();
@@ -71,22 +68,18 @@ test_lilv_instance_activation (void)
 static void
 check_state_contains_wav (void)
 {
-  Track * track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->instrument;
-  char *   state_dir =
-    plugin_get_abs_state_dir (pl, false);
-  char * state_file = g_build_filename (
-    state_dir, "state.ttl", NULL);
+  char *   state_dir = plugin_get_abs_state_dir (pl, false);
+  char *   state_file =
+    g_build_filename (state_dir, "state.ttl", NULL);
   GError * err = NULL;
   char *   content = NULL;
-  g_file_get_contents (
-    state_file, &content, NULL, &err);
+  g_file_get_contents (state_file, &content, NULL, &err);
   g_assert_null (err);
 
   g_message ("state file: '%s'", state_file);
-  g_assert_true (
-    string_contains_substr (content, "test.wav"));
+  g_assert_true (string_contains_substr (content, "test.wav"));
 
   g_free (content);
   g_free (state_file);
@@ -100,39 +93,32 @@ test_save_state_w_files (void)
   test_helper_zrythm_init ();
 
   test_plugin_manager_create_tracks_from_plugin (
-    LSP_MULTISAMPLER_24_DO_BUNDLE,
-    LSP_MULTISAMPLER_24_DO_URI, true, false, 1);
+    LSP_MULTISAMPLER_24_DO_BUNDLE, LSP_MULTISAMPLER_24_DO_URI,
+    true, false, 1);
 
-  Track * track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->instrument;
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
   char * pset_bundle_path = g_build_filename (
     TESTS_SRCDIR, "presets",
-    "LSP_Multi_Sampler_x24_DirectOut_test.preset.lv2",
-    NULL);
-  char * pset_bundle_path_uri = g_strdup_printf (
-    "file://%s/", pset_bundle_path);
-  LilvNode * pset_path_uri_node = lilv_new_uri (
-    LILV_WORLD, pset_bundle_path_uri);
-  lilv_world_load_bundle (
-    LILV_WORLD, pset_path_uri_node);
+    "LSP_Multi_Sampler_x24_DirectOut_test.preset.lv2", NULL);
+  char * pset_bundle_path_uri =
+    g_strdup_printf ("file://%s/", pset_bundle_path);
+  LilvNode * pset_path_uri_node =
+    lilv_new_uri (LILV_WORLD, pset_bundle_path_uri);
+  lilv_world_load_bundle (LILV_WORLD, pset_path_uri_node);
   lilv_node_free (pset_path_uri_node);
   lv2_state_load_presets (pl->lv2, NULL, NULL);
 
   LilvNodes * presets = lilv_plugin_get_related (
-    pl->lv2->lilv_plugin,
-    PM_GET_NODE (LV2_PRESETS__Preset));
+    pl->lv2->lilv_plugin, PM_GET_NODE (LV2_PRESETS__Preset));
   LILV_FOREACH (nodes, i, presets)
     {
-      const LilvNode * preset =
-        lilv_nodes_get (presets, i);
+      const LilvNode * preset = lilv_nodes_get (presets, i);
       lilv_world_load_resource (LILV_WORLD, preset);
 
-      g_message (
-        "Preset <%s>",
-        lilv_node_as_string (preset));
+      g_message ("Preset <%s>", lilv_node_as_string (preset));
 
       LilvNodes * labels = lilv_world_find_nodes (
         LILV_WORLD, preset,
@@ -141,9 +127,7 @@ test_save_state_w_files (void)
         {
           const LilvNode * label =
             lilv_nodes_get_first (labels);
-          g_message (
-            "label: %s",
-            lilv_node_as_string (label));
+          g_message ("label: %s", lilv_node_as_string (label));
           lilv_nodes_free (labels);
         }
       else
@@ -170,15 +154,12 @@ test_save_state_w_files (void)
   position_init (&pos);
   position_set_to_bar (&end_pos, 3);
   ZRegion * r = midi_region_new (
-    &pos, &end_pos, track_get_name_hash (track), 0,
-    0);
+    &pos, &end_pos, track_get_name_hash (track), 0, 0);
   track_add_region (
-    track, r, NULL, 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
-  MidiNote * mn = midi_note_new (
-    &r->id, &pos, &end_pos, 57, 120);
-  midi_region_add_midi_note (
-    r, mn, F_NO_PUBLISH_EVENTS);
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  MidiNote * mn =
+    midi_note_new (&r->id, &pos, &end_pos, 57, 120);
+  midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
 
   /* stop dummy audio engine processing so we can
    * process manually */
@@ -187,39 +168,30 @@ test_save_state_w_files (void)
 
   /* test that plugin makes sound */
   transport_request_roll (TRANSPORT, true);
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
 
   /* FIXME fails */
   /*g_assert_true (*/
   /*port_has_sound (track->channel->stereo_out->l));*/
 
-  LilvState * state =
-    lv2_state_save_to_file (pl->lv2, false);
+  LilvState * state = lv2_state_save_to_file (pl->lv2, false);
   lilv_state_free (state);
   check_state_contains_wav ();
 
   project_save (
-    PROJECT, PROJECT->dir, false, false,
-    F_NO_ASYNC);
+    PROJECT, PROJECT->dir, false, false, F_NO_ASYNC);
   check_state_contains_wav ();
 
   test_project_save_and_reload ();
   check_state_contains_wav ();
 
-  track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   transport_request_roll (TRANSPORT, true);
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
 
   /* FIXME fails */
   /*g_assert_true (*/
@@ -242,8 +214,7 @@ test_reloading_project_with_instrument (
   test_plugin_manager_create_tracks_from_plugin (
     pl_bundle, pl_uri, true, true, 1);
 
-  Track * track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->instrument;
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
@@ -256,12 +227,9 @@ test_reloading_project_with_instrument (
 
   /* test that plugin makes sound */
   transport_request_roll (TRANSPORT, true);
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-  engine_process (
-    AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+  engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
 
   test_project_save_and_reload ();
 
@@ -303,11 +271,9 @@ test_process (void)
   test_helper_zrythm_init ();
 
   test_plugin_manager_create_tracks_from_plugin (
-    TEST_SIGNAL_BUNDLE, TEST_SIGNAL_URI, false,
-    false, 1);
+    TEST_SIGNAL_BUNDLE, TEST_SIGNAL_URI, false, false, 1);
 
-  Track * track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->inserts[0];
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
@@ -320,9 +286,7 @@ test_process (void)
   Port *                out = pl->out_ports[0];
   nframes_t             local_offset = 60;
   EngineProcessTimeInfo time_nfo = {
-    .g_start_frame = 0,
-    .local_offset = 0,
-    .nframes = local_offset
+    .g_start_frame = 0, .local_offset = 0, .nframes = local_offset
   };
   lv2_plugin_process (pl->lv2, &time_nfo);
   for (nframes_t i = 1; i < local_offset; i++)
@@ -331,8 +295,7 @@ test_process (void)
     }
   time_nfo.g_start_frame = local_offset;
   time_nfo.local_offset = local_offset;
-  time_nfo.nframes =
-    AUDIO_ENGINE->block_length - local_offset;
+  time_nfo.nframes = AUDIO_ENGINE->block_length - local_offset;
   lv2_plugin_process (pl->lv2, &time_nfo);
   for (nframes_t i = local_offset;
        i < AUDIO_ENGINE->block_length; i++)

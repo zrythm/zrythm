@@ -33,8 +33,8 @@ void
 group_target_track_init (Track * self)
 {
   self->children_size = 1;
-  self->children = object_new_n (
-    (size_t) self->children_size, unsigned int);
+  self->children =
+    object_new_n ((size_t) self->children_size, unsigned int);
 }
 
 /**
@@ -60,16 +60,13 @@ update_child_output (
         {
         case TYPE_AUDIO:
           port_disconnect (
-            ch->stereo_out->l,
-            track->processor->stereo_in->l);
+            ch->stereo_out->l, track->processor->stereo_in->l);
           port_disconnect (
-            ch->stereo_out->r,
-            track->processor->stereo_in->r);
+            ch->stereo_out->r, track->processor->stereo_in->r);
           break;
         case TYPE_EVENT:
           port_disconnect (
-            ch->midi_out,
-            track->processor->midi_in);
+            ch->midi_out, track->processor->midi_in);
           break;
         default:
           break;
@@ -85,24 +82,21 @@ update_child_output (
         case TYPE_AUDIO:
           port_connect (
             ch->stereo_out->l,
-            output->processor->stereo_in->l,
-            F_LOCKED);
+            output->processor->stereo_in->l, F_LOCKED);
           port_connect (
             ch->stereo_out->r,
-            output->processor->stereo_in->r,
-            F_LOCKED);
+            output->processor->stereo_in->r, F_LOCKED);
           break;
         case TYPE_EVENT:
           port_connect (
-            ch->midi_out,
-            output->processor->midi_in, F_LOCKED);
+            ch->midi_out, output->processor->midi_in,
+            F_LOCKED);
           break;
         default:
           break;
         }
       ch->has_output = true;
-      ch->output_name_hash =
-        track_get_name_hash (output);
+      ch->output_name_hash = track_get_name_hash (output);
     }
   else
     {
@@ -122,9 +116,7 @@ update_child_output (
 }
 
 static bool
-contains_child (
-  Track *      self,
-  unsigned int child_name_hash)
+contains_child (Track * self, unsigned int child_name_hash)
 {
   for (int i = 0; i < self->num_children; i++)
     {
@@ -150,28 +142,24 @@ group_target_track_remove_child (
 {
   g_return_if_fail (
     child_name_hash != track_get_name_hash (self));
-  g_return_if_fail (
-    contains_child (self, child_name_hash));
+  g_return_if_fail (contains_child (self, child_name_hash));
 
-  Tracklist * tracklist =
-    track_get_tracklist (self);
+  Tracklist * tracklist = track_get_tracklist (self);
 
   Track * child = tracklist_find_track_by_name_hash (
     tracklist, child_name_hash);
   g_return_if_fail (IS_TRACK_AND_NONNULL (child));
   g_message (
-    "removing '%s' from '%s' - disconnect? %d",
-    child->name, self->name, disconnect);
+    "removing '%s' from '%s' - disconnect? %d", child->name,
+    self->name, disconnect);
 
   if (disconnect)
     {
       update_child_output (
-        child->channel, NULL, recalc_graph,
-        pub_events);
+        child->channel, NULL, recalc_graph, pub_events);
     }
   array_delete_primitive (
-    self->children, self->num_children,
-    child_name_hash);
+    self->children, self->num_children, child_name_hash);
 
   g_message (
     "removed '%s' from direct out '%s' - "
@@ -194,8 +182,8 @@ group_target_track_remove_all_children (
   for (int i = self->num_children - 1; i >= 0; i--)
     {
       group_target_track_remove_child (
-        self, self->children[i], disconnect,
-        recalc_graph, pub_events);
+        self, self->children[i], disconnect, recalc_graph,
+        pub_events);
     }
 }
 
@@ -204,15 +192,13 @@ group_target_track_validate (Track * self)
 {
   for (int i = 0; i < self->num_children; i++)
     {
-      Track * track =
-        tracklist_find_track_by_name_hash (
-          TRACKLIST, self->children[i]);
+      Track * track = tracklist_find_track_by_name_hash (
+        TRACKLIST, self->children[i]);
       g_return_val_if_fail (
         IS_TRACK_AND_NONNULL (track), false);
       Track * out_track =
         channel_get_output_track (track->channel);
-      g_return_val_if_fail (
-        self == out_track, false);
+      g_return_val_if_fail (self == out_track, false);
     }
 
   return true;
@@ -231,8 +217,7 @@ group_target_track_add_child (
   bool         recalc_graph,
   bool         pub_events)
 {
-  g_return_if_fail (
-    IS_TRACK (self) && self->children);
+  g_return_if_fail (IS_TRACK (self) && self->children);
 
   g_debug (
     "adding child track with name hash %u to "
@@ -241,25 +226,21 @@ group_target_track_add_child (
 
   if (connect)
     {
-      Tracklist * tracklist =
-        track_get_tracklist (self);
-      Track * out_track =
-        tracklist_find_track_by_name_hash (
-          tracklist, child_name_hash);
+      Tracklist * tracklist = track_get_tracklist (self);
+      Track * out_track = tracklist_find_track_by_name_hash (
+        tracklist, child_name_hash);
       g_return_if_fail (
         IS_TRACK_AND_NONNULL (out_track)
         && out_track->channel);
       update_child_output (
-        out_track->channel, self, recalc_graph,
-        pub_events);
+        out_track->channel, self, recalc_graph, pub_events);
     }
 
   array_double_size_if_full (
-    self->children, self->num_children,
-    self->children_size, unsigned int);
+    self->children, self->num_children, self->children_size,
+    unsigned int);
   array_append (
-    self->children, self->num_children,
-    child_name_hash);
+    self->children, self->num_children, child_name_hash);
 }
 
 void
@@ -274,8 +255,7 @@ group_target_track_add_children (
   for (int i = 0; i < num_children; i++)
     {
       group_target_track_add_child (
-        self, children[i], connect, recalc_graph,
-        pub_events);
+        self, children[i], connect, recalc_graph, pub_events);
     }
 }
 

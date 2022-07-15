@@ -38,8 +38,7 @@
 
 #define MA_SELECTIONS_SCHEMA_VERSION 1
 
-#define MA_SELECTIONS \
-  (PROJECT->midi_arranger_selections)
+#define MA_SELECTIONS (PROJECT->midi_arranger_selections)
 
 /**
  * Selections to be used for the midi_arranger's
@@ -65,9 +64,7 @@ static const cyaml_schema_field_t
       MidiArrangerSelections,
       base,
       arranger_selections_fields_schema),
-    YAML_FIELD_INT (
-      MidiArrangerSelections,
-      schema_version),
+    YAML_FIELD_INT (MidiArrangerSelections, schema_version),
     YAML_FIELD_DYN_ARRAY_VAR_COUNT (
       MidiArrangerSelections,
       midi_notes,

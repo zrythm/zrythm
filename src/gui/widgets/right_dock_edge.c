@@ -40,8 +40,7 @@ on_notebook_switch_page (
 #endif
 
 void
-right_dock_edge_widget_setup (
-  RightDockEdgeWidget * self)
+right_dock_edge_widget_setup (RightDockEdgeWidget * self)
 {
   monitor_section_widget_setup (
     self->monitor_section, CONTROL_ROOM);
@@ -65,17 +64,14 @@ right_dock_edge_widget_setup (
 static void
 dispose (RightDockEdgeWidget * self)
 {
-  gtk_widget_unparent (
-    GTK_WIDGET (self->panel_frame));
+  gtk_widget_unparent (GTK_WIDGET (self->panel_frame));
 
-  G_OBJECT_CLASS (
-    right_dock_edge_widget_parent_class)
+  G_OBJECT_CLASS (right_dock_edge_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
 
 static void
-right_dock_edge_widget_init (
-  RightDockEdgeWidget * self)
+right_dock_edge_widget_init (RightDockEdgeWidget * self)
 {
   g_type_ensure (MONITOR_SECTION_WIDGET_TYPE);
 
@@ -89,60 +85,43 @@ right_dock_edge_widget_init (
       PANEL_WIDGET (panel_widget_new ()); \
     panel_widget_set_child ( \
       panel_widget, GTK_WIDGET (widget)); \
-    panel_widget_set_icon_name ( \
-      panel_widget, icon); \
+    panel_widget_set_icon_name (panel_widget, icon); \
     panel_widget_set_title (panel_widget, title); \
-    panel_frame_add ( \
-      self->panel_frame, panel_widget); \
+    panel_frame_add (self->panel_frame, panel_widget); \
   }
 
   /* add plugin browser */
-  self->plugin_browser =
-    plugin_browser_widget_new ();
-  box = GTK_BOX (
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->plugin_browser = plugin_browser_widget_new ();
+  box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->plugin_browser_box = box;
   gtk_box_append (
-    GTK_BOX (box),
-    GTK_WIDGET (self->plugin_browser));
+    GTK_BOX (box), GTK_WIDGET (self->plugin_browser));
   ADD_TAB (
-    GTK_WIDGET (box), "plugin-solid",
-    _ ("Plugin Browser"));
+    GTK_WIDGET (box), "plugin-solid", _ ("Plugin Browser"));
 
   /* add file browser */
-  self->file_browser =
-    panel_file_browser_widget_new ();
-  box = GTK_BOX (
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->file_browser = panel_file_browser_widget_new ();
+  box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->file_browser_box = box;
   gtk_box_append (
     GTK_BOX (box), GTK_WIDGET (self->file_browser));
   ADD_TAB (
-    GTK_WIDGET (box), "folder-music-line",
-    _ ("File Browser"));
+    GTK_WIDGET (box), "folder-music-line", _ ("File Browser"));
 
   /* add control room */
-  self->monitor_section =
-    monitor_section_widget_new ();
-  box = GTK_BOX (
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->monitor_section = monitor_section_widget_new ();
+  box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->monitor_section_box = box;
   gtk_box_append (
-    GTK_BOX (box),
-    GTK_WIDGET (self->monitor_section));
-  ADD_TAB (
-    GTK_WIDGET (box), "speaker",
-    _ ("Monitor Section"));
+    GTK_BOX (box), GTK_WIDGET (self->monitor_section));
+  ADD_TAB (GTK_WIDGET (box), "speaker", _ ("Monitor Section"));
 
   /* add chord preset browser */
-  self->chord_pack_browser =
-    chord_pack_browser_widget_new ();
-  box = GTK_BOX (
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->chord_pack_browser = chord_pack_browser_widget_new ();
+  box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->chord_pack_browser_box = box;
   gtk_box_append (
-    GTK_BOX (box),
-    GTK_WIDGET (self->chord_pack_browser));
+    GTK_BOX (box), GTK_WIDGET (self->chord_pack_browser));
   ADD_TAB (
     GTK_WIDGET (box), "minuet-chords",
     _ ("Chord Preset Browser"));
@@ -168,13 +147,10 @@ static void
 right_dock_edge_widget_class_init (
   RightDockEdgeWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "right_dock_edge.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "right_dock_edge.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "right-dock-edge");
+  gtk_widget_class_set_css_name (klass, "right-dock-edge");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

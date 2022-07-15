@@ -55,16 +55,13 @@ typedef struct AudioClip        AudioClip;
 #define REGION_SCHEMA_VERSION 1
 
 #define REGION_MAGIC 93075327
-#define IS_REGION(x) \
-  (((ZRegion *) x)->magic == REGION_MAGIC)
-#define IS_REGION_AND_NONNULL(x) \
-  (x && IS_REGION (x))
+#define IS_REGION(x) (((ZRegion *) x)->magic == REGION_MAGIC)
+#define IS_REGION_AND_NONNULL(x) (x && IS_REGION (x))
 
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
 
 #define region_is_selected(r) \
-  arranger_object_is_selected ( \
-    (ArrangerObject *) r)
+  arranger_object_is_selected ((ArrangerObject *) r)
 
 /**
  * Musical mode setting for audio regions.
@@ -81,11 +78,10 @@ typedef enum RegionMusicalMode
   REGION_MUSICAL_MODE_ON,
 } RegionMusicalMode;
 
-static const cyaml_strval_t
-  region_musical_mode_strings[] = {
-    {__ ("Inherit"), REGION_MUSICAL_MODE_INHERIT},
-    { __ ("Off"),    REGION_MUSICAL_MODE_OFF    },
-    { __ ("On"),     REGION_MUSICAL_MODE_ON     },
+static const cyaml_strval_t region_musical_mode_strings[] = {
+  {__ ("Inherit"), REGION_MUSICAL_MODE_INHERIT},
+  { __ ("Off"),    REGION_MUSICAL_MODE_OFF    },
+  { __ ("On"),     REGION_MUSICAL_MODE_ON     },
 };
 
 /**
@@ -346,9 +342,7 @@ static const cyaml_schema_field_t region_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t region_schema = {
-  YAML_VALUE_PTR_NULLABLE (
-    ZRegion,
-    region_fields_schema),
+  YAML_VALUE_PTR_NULLABLE (ZRegion, region_fields_schema),
 };
 
 /**
@@ -479,9 +473,7 @@ region_get_frames_till_next_loop_or_end (
  */
 NONNULL
 void
-region_set_lane (
-  ZRegion *               self,
-  const TrackLane * const lane);
+region_set_lane (ZRegion * self, const TrackLane * const lane);
 
 /**
  * Generates a name for the ZRegion, either using
@@ -570,8 +562,7 @@ CONST
 static inline int
 region_type_has_lane (const RegionType type)
 {
-  return type == REGION_TYPE_MIDI
-         || type == REGION_TYPE_AUDIO;
+  return type == REGION_TYPE_MIDI || type == REGION_TYPE_AUDIO;
 }
 
 /**
@@ -586,8 +577,7 @@ region_set_automation_track (
  * Gets the AutomationTrack using the saved index.
  */
 AutomationTrack *
-region_get_automation_track (
-  const ZRegion * const region);
+region_get_automation_track (const ZRegion * const region);
 
 /**
  * Copies the data from src to dest.
@@ -653,9 +643,7 @@ char *
 region_generate_filename (ZRegion * region);
 
 void
-region_get_type_as_string (
-  RegionType type,
-  char *     buf);
+region_get_type_as_string (RegionType type, char * buf);
 
 /**
  * Returns if this region is currently being

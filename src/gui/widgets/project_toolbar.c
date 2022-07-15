@@ -29,8 +29,7 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 static void
-project_toolbar_widget_init (
-  ProjectToolbarWidget * self)
+project_toolbar_widget_init (ProjectToolbarWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -50,13 +49,10 @@ static void
 project_toolbar_widget_class_init (
   ProjectToolbarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "project_toolbar.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "project_toolbar.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "project-toolbar");
+  gtk_widget_class_set_css_name (klass, "project-toolbar");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

@@ -19,13 +19,12 @@ test_svg_export (void)
 #ifdef HAVE_CGRAPH
   test_helper_zrythm_init ();
 
-  char * tmp_dir = g_dir_make_tmp (
-    "zrythm_graph_export_XXXXXX", NULL);
+  char * tmp_dir =
+    g_dir_make_tmp ("zrythm_graph_export_XXXXXX", NULL);
   char * filepath =
     g_build_filename (tmp_dir, "test.svg", NULL);
 
-  graph_export_as_simple (
-    GRAPH_EXPORT_SVG, filepath);
+  graph_export_as_simple (GRAPH_EXPORT_SVG, filepath);
 
   io_remove (filepath);
   io_rmdir (tmp_dir, false);

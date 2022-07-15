@@ -34,15 +34,10 @@
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-G_DEFINE_TYPE (
-  ToolboxWidget,
-  toolbox_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (ToolboxWidget, toolbox_widget, GTK_TYPE_BOX)
 
 static void
-on_toggled (
-  GtkToggleButton * tb,
-  ToolboxWidget *   self)
+on_toggled (GtkToggleButton * tb, ToolboxWidget * self)
 {
   g_message ("toggling");
   if (tb == self->select_mode)
@@ -75,8 +70,7 @@ toolbox_widget_refresh (ToolboxWidget * self)
 {
 #define BLOCK_SIGNAL_HANDLER(lowercase) \
   g_signal_handler_block ( \
-    self->lowercase##_mode, \
-    self->lowercase##_handler_id)
+    self->lowercase##_mode, self->lowercase##_handler_id)
 
   /* block signal handlers */
   BLOCK_SIGNAL_HANDLER (select);
@@ -89,15 +83,12 @@ toolbox_widget_refresh (ToolboxWidget * self)
 #undef BLOCK_SIGNAL_HANDLER
 
   /* set all inactive */
-  gtk_toggle_button_set_active (
-    self->select_mode, 0);
+  gtk_toggle_button_set_active (self->select_mode, 0);
   gtk_toggle_button_set_active (self->edit_mode, 0);
   gtk_toggle_button_set_active (self->cut_mode, 0);
-  gtk_toggle_button_set_active (
-    self->erase_mode, 0);
+  gtk_toggle_button_set_active (self->erase_mode, 0);
   gtk_toggle_button_set_active (self->ramp_mode, 0);
-  gtk_toggle_button_set_active (
-    self->audition_mode, 0);
+  gtk_toggle_button_set_active (self->audition_mode, 0);
 
   /* set select mode img */
   gtk_image_set_from_icon_name (
@@ -111,35 +102,28 @@ toolbox_widget_refresh (ToolboxWidget * self)
     {
     case TOOL_SELECT_NORMAL:
     case TOOL_SELECT_STRETCH:
-      gtk_toggle_button_set_active (
-        self->select_mode, true);
+      gtk_toggle_button_set_active (self->select_mode, true);
       break;
     case TOOL_EDIT:
-      gtk_toggle_button_set_active (
-        self->edit_mode, 1);
+      gtk_toggle_button_set_active (self->edit_mode, 1);
       break;
     case TOOL_CUT:
-      gtk_toggle_button_set_active (
-        self->cut_mode, 1);
+      gtk_toggle_button_set_active (self->cut_mode, 1);
       break;
     case TOOL_ERASER:
-      gtk_toggle_button_set_active (
-        self->erase_mode, 1);
+      gtk_toggle_button_set_active (self->erase_mode, 1);
       break;
     case TOOL_RAMP:
-      gtk_toggle_button_set_active (
-        self->ramp_mode, 1);
+      gtk_toggle_button_set_active (self->ramp_mode, 1);
       break;
     case TOOL_AUDITION:
-      gtk_toggle_button_set_active (
-        self->audition_mode, 1);
+      gtk_toggle_button_set_active (self->audition_mode, 1);
       break;
     }
 
 #define UNBLOCK_SIGNAL_HANDLER(lowercase) \
   g_signal_handler_unblock ( \
-    self->lowercase##_mode, \
-    self->lowercase##_handler_id);
+    self->lowercase##_mode, self->lowercase##_handler_id);
 
   /* unblock signal handlers */
   UNBLOCK_SIGNAL_HANDLER (select);
@@ -153,13 +137,10 @@ toolbox_widget_refresh (ToolboxWidget * self)
 }
 
 static void
-toolbox_widget_class_init (
-  ToolboxWidgetClass * _klass)
+toolbox_widget_class_init (ToolboxWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "toolbox.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "toolbox.ui");
   gtk_widget_class_set_css_name (klass, "toolbox");
 
 #define BIND_CHILD(x) \
@@ -178,9 +159,7 @@ toolbox_widget_class_init (
 }
 
 static void
-connect_notify_signals (
-  ToolboxWidget * self,
-  GtkWidget *     child)
+connect_notify_signals (ToolboxWidget * self, GtkWidget * child)
 {
 #if 0
   GtkEventControllerMotion * motion_controller;
@@ -236,8 +215,7 @@ toolbox_widget_init (ToolboxWidget * self)
   tooltip_text = gtk_widget_get_tooltip_text ( \
     GTK_WIDGET (self->x##_mode)); \
   z_gtk_widget_set_tooltip_for_action ( \
-    GTK_WIDGET (self->x##_mode), action, \
-    tooltip_text);
+    GTK_WIDGET (self->x##_mode), action, tooltip_text);
 
   SET_TOOLTIP (select, "app.select-mode");
   SET_TOOLTIP (edit, "app.edit-mode");

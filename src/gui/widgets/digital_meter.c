@@ -52,8 +52,7 @@ G_DEFINE_TYPE (
 
 #define DISPLAY_TIME \
   (self->is_transport \
-   && g_settings_get_enum ( \
-        S_UI, "transport-display") \
+   && g_settings_get_enum (S_UI, "transport-display") \
         == TRANSPORT_DISPLAY_TIME)
 
 #define SET_POS ((*self->setter) (self->obj, &pos))
@@ -69,18 +68,13 @@ recreate_pango_layouts (DigitalMeterWidget * self)
   if (PANGO_IS_LAYOUT (self->normal_layout))
     g_object_unref (self->normal_layout);
 
-  self->caption_layout =
-    z_cairo_create_pango_layout_from_string (
-      GTK_WIDGET (self), CAPTION_FONT,
-      PANGO_ELLIPSIZE_NONE, -1);
-  self->seg7_layout =
-    z_cairo_create_pango_layout_from_string (
-      GTK_WIDGET (self), SEG7_FONT,
-      PANGO_ELLIPSIZE_NONE, -1);
-  self->normal_layout =
-    z_cairo_create_pango_layout_from_string (
-      GTK_WIDGET (self), NORMAL_FONT,
-      PANGO_ELLIPSIZE_NONE, -1);
+  self
+    ->caption_layout = z_cairo_create_pango_layout_from_string (
+    GTK_WIDGET (self), CAPTION_FONT, PANGO_ELLIPSIZE_NONE, -1);
+  self->seg7_layout = z_cairo_create_pango_layout_from_string (
+    GTK_WIDGET (self), SEG7_FONT, PANGO_ELLIPSIZE_NONE, -1);
+  self->normal_layout = z_cairo_create_pango_layout_from_string (
+    GTK_WIDGET (self), NORMAL_FONT, PANGO_ELLIPSIZE_NONE, -1);
 }
 
 static void
@@ -92,8 +86,8 @@ init_dm (DigitalMeterWidget * self)
 
   int caption_textw, caption_texth;
   z_cairo_get_text_extents_for_widget (
-    self, self->caption_layout, self->caption,
-    &caption_textw, &caption_texth);
+    self, self->caption_layout, self->caption, &caption_textw,
+    &caption_texth);
   int textw, texth;
   switch (self->type)
     {
@@ -102,40 +96,35 @@ init_dm (DigitalMeterWidget * self)
         gtk_widget_set_tooltip_text (
           (GtkWidget *) self, _ ("Tempo/BPM"));
         z_cairo_get_text_extents_for_widget (
-          self, self->seg7_layout, "888888",
-          &textw, &texth);
+          self, self->seg7_layout, "888888", &textw, &texth);
         /* caption + padding between caption and
          * BPM + padding top/bottom */
         gtk_widget_set_size_request (
           GTK_WIDGET (self), textw + PADDING_W * 2,
-          caption_texth + HALF_SPACE_BETWEEN
-            + texth + PADDING_TOP * 2);
+          caption_texth + HALF_SPACE_BETWEEN + texth
+            + PADDING_TOP * 2);
       }
       break;
     case DIGITAL_METER_TYPE_POSITION:
       gtk_widget_set_tooltip_text (
         (GtkWidget *) self, _ ("Position"));
       z_cairo_get_text_extents_for_widget (
-        self, self->seg7_layout, "-888888888",
-        &textw, &texth);
+        self, self->seg7_layout, "-888888888", &textw, &texth);
       /* caption + padding between caption and
        * BPM + padding top/bottom */
       gtk_widget_set_size_request (
         GTK_WIDGET (self),
-        textw + PADDING_W * 2
-          + HALF_SPACE_BETWEEN * 3,
+        textw + PADDING_W * 2 + HALF_SPACE_BETWEEN * 3,
         caption_texth + HALF_SPACE_BETWEEN + texth
           + PADDING_TOP * 2);
 
       break;
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self), -1, 30);
+      gtk_widget_set_size_request (GTK_WIDGET (self), -1, 30);
       break;
 
     case DIGITAL_METER_TYPE_NOTE_TYPE:
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self), -1, 30);
+      gtk_widget_set_size_request (GTK_WIDGET (self), -1, 30);
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
       {
@@ -144,14 +133,13 @@ init_dm (DigitalMeterWidget * self)
           _ ("Time Signature - Beats per bar / "
              "Beat unit"));
         z_cairo_get_text_extents_for_widget (
-          self, self->seg7_layout, "16/16", &textw,
-          &texth);
+          self, self->seg7_layout, "16/16", &textw, &texth);
         /* caption + padding between caption and
          * BPM + padding top/bottom */
         gtk_widget_set_size_request (
           GTK_WIDGET (self), textw + PADDING_W * 2,
-          caption_texth + HALF_SPACE_BETWEEN
-            + texth + PADDING_TOP * 2);
+          caption_texth + HALF_SPACE_BETWEEN + texth
+            + PADDING_TOP * 2);
       }
       break;
     }
@@ -164,13 +152,10 @@ digital_meter_snapshot (
   GtkWidget *   widget,
   GtkSnapshot * snapshot)
 {
-  DigitalMeterWidget * self =
-    Z_DIGITAL_METER_WIDGET (widget);
+  DigitalMeterWidget * self = Z_DIGITAL_METER_WIDGET (widget);
 
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_allocated_width (widget);
+  int height = gtk_widget_get_allocated_height (widget);
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
@@ -196,16 +181,15 @@ digital_meter_snapshot (
       color = Z_GDK_RGBA_INIT (0.6f, 0.6f, 0.6f, 1);
     }
   z_cairo_get_text_extents_for_widget (
-    self, self->caption_layout, self->caption,
-    &caption_textw, &caption_texth);
+    self, self->caption_layout, self->caption, &caption_textw,
+    &caption_texth);
   pango_layout_set_markup (
     self->caption_layout, self->caption, -1);
   gtk_snapshot_save (snapshot);
   gtk_snapshot_translate (
     snapshot,
     &GRAPHENE_POINT_INIT (
-      width / 2.f - caption_textw / 2.f,
-      PADDING_TOP));
+      width / 2.f - caption_textw / 2.f, PADDING_TOP));
   gtk_snapshot_append_layout (
     snapshot, self->caption_layout, &color);
   gtk_snapshot_restore (snapshot);
@@ -228,62 +212,52 @@ digital_meter_snapshot (
     }
   else
     {
-      color =
-        Z_GDK_RGBA_INIT (0.f, 0.6f, 0.06f, 1.f);
+      color = Z_GDK_RGBA_INIT (0.f, 0.6f, 0.06f, 1.f);
     }
-  char   text[20];
-  char * heap_text = NULL;
-  int num_part, dec_part, bars, beats, sixteenths,
-    ticks;
+  char     text[20];
+  char *   heap_text = NULL;
+  int      num_part, dec_part, bars, beats, sixteenths, ticks;
   int      textw, texth;
   Position pos;
   switch (self->type)
     {
     case DIGITAL_METER_TYPE_BPM:
 
-      num_part = (int) tempo_track_get_current_bpm (
-        P_TEMPO_TRACK);
+      num_part =
+        (int) tempo_track_get_current_bpm (P_TEMPO_TRACK);
       dec_part =
         (int) (tempo_track_get_current_bpm (P_TEMPO_TRACK) * 100)
         % 100;
 
       z_cairo_get_text_extents_for_widget (
-        widget, self->seg7_layout, "88888", &textw,
-        &texth);
+        widget, self->seg7_layout, "88888", &textw, &texth);
       self->num_part_start_pos =
-        ((width / 2) - textw / 2)
-        - HALF_SPACE_BETWEEN;
+        ((width / 2) - textw / 2) - HALF_SPACE_BETWEEN;
       z_cairo_get_text_extents_for_widget (
-        widget, self->seg7_layout, "888", &textw,
-        &texth);
+        widget, self->seg7_layout, "888", &textw, &texth);
       self->num_part_end_pos =
         self->num_part_start_pos + textw;
       self->dec_part_start_pos =
         self->num_part_end_pos + SPACE_BETWEEN;
       z_cairo_get_text_extents_for_widget (
-        widget, self->seg7_layout, "88", &textw,
-        &texth);
+        widget, self->seg7_layout, "88", &textw, &texth);
       self->dec_part_end_pos =
         self->dec_part_start_pos + textw;
       self->height_start_pos =
-        PADDING_TOP + caption_texth
-        + HALF_SPACE_BETWEEN;
-      self->height_end_pos =
-        self->height_start_pos + texth;
+        PADDING_TOP + caption_texth + HALF_SPACE_BETWEEN;
+      self->height_end_pos = self->height_start_pos + texth;
 
       /* draw integer part */
       if (num_part < 100)
         sprintf (text, "!%d.", num_part);
       else
         sprintf (text, "%d.", num_part);
-      pango_layout_set_markup (
-        self->seg7_layout, text, -1);
+      pango_layout_set_markup (self->seg7_layout, text, -1);
       gtk_snapshot_save (snapshot);
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          self->num_part_start_pos,
-          self->height_start_pos));
+          self->num_part_start_pos, self->height_start_pos));
       gtk_snapshot_append_layout (
         snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
@@ -293,14 +267,12 @@ digital_meter_snapshot (
         sprintf (text, "0%d", dec_part);
       else
         sprintf (text, "%d", dec_part);
-      pango_layout_set_markup (
-        self->seg7_layout, text, -1);
+      pango_layout_set_markup (self->seg7_layout, text, -1);
       gtk_snapshot_save (snapshot);
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          self->dec_part_start_pos,
-          self->height_start_pos));
+          self->dec_part_start_pos, self->height_start_pos));
       gtk_snapshot_append_layout (
         snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
@@ -322,31 +294,25 @@ digital_meter_snapshot (
             /* MM:SS:ms 1 for each digit */
             "888888888", &textw, &texth);
           self->minutes_start_pos =
-            ((width / 2) - textw / 2)
-            - HALF_SPACE_BETWEEN * 3;
+            ((width / 2) - textw / 2) - HALF_SPACE_BETWEEN * 3;
           z_cairo_get_text_extents_for_widget (
-            widget, self->seg7_layout, "88",
-            &textw, &texth);
+            widget, self->seg7_layout, "88", &textw, &texth);
           self->minutes_end_pos =
             self->minutes_start_pos + textw;
           self->seconds_start_pos =
             self->minutes_end_pos + SPACE_BETWEEN;
           z_cairo_get_text_extents_for_widget (
-            widget, self->seg7_layout, "88",
-            &textw, &texth);
+            widget, self->seg7_layout, "88", &textw, &texth);
           self->seconds_end_pos =
             self->seconds_start_pos + textw;
           self->ms_start_pos =
             self->seconds_end_pos + SPACE_BETWEEN;
           z_cairo_get_text_extents_for_widget (
-            widget, self->seg7_layout, "888",
-            &textw, &texth);
-          self->ms_end_pos =
-            self->ms_start_pos + textw;
+            widget, self->seg7_layout, "888", &textw, &texth);
+          self->ms_end_pos = self->ms_start_pos + textw;
 
           self->height_start_pos =
-            PADDING_TOP + caption_texth
-            + HALF_SPACE_BETWEEN;
+            PADDING_TOP + caption_texth + HALF_SPACE_BETWEEN;
           self->height_end_pos =
             self->height_start_pos + texth;
 
@@ -361,8 +327,7 @@ digital_meter_snapshot (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              self->minutes_start_pos,
-              self->height_start_pos));
+              self->minutes_start_pos, self->height_start_pos));
           gtk_snapshot_append_layout (
             snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
@@ -378,8 +343,7 @@ digital_meter_snapshot (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              self->seconds_start_pos,
-              self->height_start_pos));
+              self->seconds_start_pos, self->height_start_pos));
           gtk_snapshot_append_layout (
             snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
@@ -397,8 +361,7 @@ digital_meter_snapshot (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              self->ms_start_pos,
-              self->height_start_pos));
+              self->ms_start_pos, self->height_start_pos));
           gtk_snapshot_append_layout (
             snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
@@ -407,44 +370,33 @@ digital_meter_snapshot (
         {
           bars = position_get_bars (&pos, true);
           beats = position_get_beats (&pos, true);
-          sixteenths =
-            position_get_sixteenths (&pos, true);
-          ticks = (int) floor (
-            position_get_ticks (&pos));
+          sixteenths = position_get_sixteenths (&pos, true);
+          ticks = (int) floor (position_get_ticks (&pos));
 
           z_cairo_get_text_extents_for_widget (
-            widget, self->seg7_layout,
-            "-8888888888", &textw, &texth);
+            widget, self->seg7_layout, "-8888888888", &textw,
+            &texth);
           self->bars_start_pos =
-            ((width / 2) - textw / 2)
-            - HALF_SPACE_BETWEEN * 3;
+            ((width / 2) - textw / 2) - HALF_SPACE_BETWEEN * 3;
           z_cairo_get_text_extents_for_widget (
-            widget, self->seg7_layout, "-888",
-            &textw, &texth);
-          self->bars_end_pos =
-            self->bars_start_pos + textw;
+            widget, self->seg7_layout, "-888", &textw, &texth);
+          self->bars_end_pos = self->bars_start_pos + textw;
           self->beats_start_pos =
             self->bars_end_pos + SPACE_BETWEEN;
           z_cairo_get_text_extents_for_widget (
-            widget, self->seg7_layout, "8", &textw,
-            &texth);
-          self->beats_end_pos =
-            self->beats_start_pos + textw;
+            widget, self->seg7_layout, "8", &textw, &texth);
+          self->beats_end_pos = self->beats_start_pos + textw;
           self->sixteenths_start_pos =
             self->beats_end_pos + SPACE_BETWEEN;
           self->sixteenths_end_pos =
             self->sixteenths_start_pos + textw;
           self->ticks_start_pos =
-            self->sixteenths_end_pos
-            + SPACE_BETWEEN;
+            self->sixteenths_end_pos + SPACE_BETWEEN;
           z_cairo_get_text_extents_for_widget (
-            widget, self->seg7_layout, "888",
-            &textw, &texth);
-          self->ticks_end_pos =
-            self->ticks_start_pos + textw;
+            widget, self->seg7_layout, "888", &textw, &texth);
+          self->ticks_end_pos = self->ticks_start_pos + textw;
           self->height_start_pos =
-            PADDING_TOP + caption_texth
-            + HALF_SPACE_BETWEEN;
+            PADDING_TOP + caption_texth + HALF_SPACE_BETWEEN;
           self->height_end_pos =
             self->height_start_pos + texth;
 
@@ -467,8 +419,7 @@ digital_meter_snapshot (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              self->bars_start_pos,
-              self->height_start_pos));
+              self->bars_start_pos, self->height_start_pos));
           gtk_snapshot_append_layout (
             snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
@@ -480,8 +431,7 @@ digital_meter_snapshot (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              self->beats_start_pos,
-              self->height_start_pos));
+              self->beats_start_pos, self->height_start_pos));
           gtk_snapshot_append_layout (
             snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
@@ -511,33 +461,27 @@ digital_meter_snapshot (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              self->ticks_start_pos,
-              self->height_start_pos));
+              self->ticks_start_pos, self->height_start_pos));
           gtk_snapshot_append_layout (
             snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
         }
       break;
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
-      heap_text =
-        snap_grid_stringize_length_and_type (
-          *self->note_length, *self->note_type);
+      heap_text = snap_grid_stringize_length_and_type (
+        *self->note_length, *self->note_type);
       z_cairo_get_text_extents_for_widget (
-        widget, self->seg7_layout, heap_text,
-        &textw, &texth);
+        widget, self->seg7_layout, heap_text, &textw, &texth);
       self->height_start_pos =
-        PADDING_TOP + caption_texth
-        + HALF_SPACE_BETWEEN;
-      self->height_end_pos =
-        self->height_start_pos + texth;
+        PADDING_TOP + caption_texth + HALF_SPACE_BETWEEN;
+      self->height_end_pos = self->height_start_pos + texth;
       pango_layout_set_markup (
         self->seg7_layout, heap_text, -1);
       gtk_snapshot_save (snapshot);
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          width / 2 - textw / 2,
-          self->height_start_pos));
+          width / 2 - textw / 2, self->height_start_pos));
       gtk_snapshot_append_layout (
         snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
@@ -558,21 +502,17 @@ digital_meter_snapshot (
           break;
         }
       z_cairo_get_text_extents_for_widget (
-        widget, self->seg7_layout, heap_text,
-        &textw, &texth);
+        widget, self->seg7_layout, heap_text, &textw, &texth);
       self->height_start_pos =
-        PADDING_TOP + caption_texth
-        + HALF_SPACE_BETWEEN;
-      self->height_end_pos =
-        self->height_start_pos + texth;
+        PADDING_TOP + caption_texth + HALF_SPACE_BETWEEN;
+      self->height_end_pos = self->height_start_pos + texth;
       pango_layout_set_markup (
         self->seg7_layout, heap_text, -1);
       gtk_snapshot_save (snapshot);
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          width / 2 - textw / 2,
-          self->height_start_pos));
+          width / 2 - textw / 2, self->height_start_pos));
       gtk_snapshot_append_layout (
         snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
@@ -581,21 +521,16 @@ digital_meter_snapshot (
     case DIGITAL_METER_TYPE_TIMESIG:
 
       z_cairo_get_text_extents_for_widget (
-        widget, self->seg7_layout, "16/16", &textw,
-        &texth);
+        widget, self->seg7_layout, "16/16", &textw, &texth);
       self->height_start_pos =
-        PADDING_TOP + caption_texth
-        + HALF_SPACE_BETWEEN;
-      self->height_end_pos =
-        self->height_start_pos + texth;
+        PADDING_TOP + caption_texth + HALF_SPACE_BETWEEN;
+      self->height_end_pos = self->height_start_pos + texth;
 
-      BeatUnit bu = tempo_track_get_beat_unit_enum (
-        P_TEMPO_TRACK);
-      const char * beat_unit =
-        beat_unit_strings[bu].str;
-      int beats_per_bar =
-        tempo_track_get_beats_per_bar (
-          P_TEMPO_TRACK);
+      BeatUnit bu =
+        tempo_track_get_beat_unit_enum (P_TEMPO_TRACK);
+      const char * beat_unit = beat_unit_strings[bu].str;
+      int          beats_per_bar =
+        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
       if (beats_per_bar < 10)
         {
           text[0] = ' ';
@@ -603,22 +538,18 @@ digital_meter_snapshot (
         }
       else
         {
-          text[0] =
-            (char) ((beats_per_bar / 10) + '0');
-          text[1] =
-            (char) ((beats_per_bar % 10) + '0');
+          text[0] = (char) ((beats_per_bar / 10) + '0');
+          text[1] = (char) ((beats_per_bar % 10) + '0');
         }
       text[2] = '\0';
-      heap_text =
-        g_strdup_printf ("%s/%s", text, beat_unit);
+      heap_text = g_strdup_printf ("%s/%s", text, beat_unit);
       pango_layout_set_markup (
         self->seg7_layout, heap_text, -1);
       gtk_snapshot_save (snapshot);
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          width / 2 - textw / 2,
-          self->height_start_pos));
+          width / 2 - textw / 2, self->height_start_pos));
       gtk_snapshot_append_layout (
         snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
@@ -633,19 +564,14 @@ digital_meter_snapshot (
  * scrolling/dragging.
  */
 static void
-update_flags (
-  DigitalMeterWidget * self,
-  double               x,
-  double               y)
+update_flags (DigitalMeterWidget * self, double x, double y)
 {
-  int width = gtk_widget_get_allocated_width (
-    GTK_WIDGET (self));
+  int width =
+    gtk_widget_get_allocated_width (GTK_WIDGET (self));
   switch (self->type)
     {
     case DIGITAL_METER_TYPE_BPM:
-      if (
-        y >= self->height_start_pos
-        && y <= self->height_end_pos)
+      if (y >= self->height_start_pos && y <= self->height_end_pos)
         {
           if (
             x >= self->num_part_start_pos
@@ -663,9 +589,7 @@ update_flags (
       break;
 
     case DIGITAL_METER_TYPE_POSITION:
-      if (
-        y >= self->height_start_pos
-        && y <= self->height_end_pos)
+      if (y >= self->height_start_pos && y <= self->height_end_pos)
         {
           if (DISPLAY_TIME)
             {
@@ -751,13 +675,11 @@ on_change_started (DigitalMeterWidget * self)
         (NoteLength) *self->note_length;
       break;
     case DIGITAL_METER_TYPE_NOTE_TYPE:
-      self->start_note_type =
-        (NoteType) *self->note_type;
+      self->start_note_type = (NoteType) *self->note_type;
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
       self->beats_per_bar_at_start =
-        tempo_track_get_beats_per_bar (
-          P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
       self->beat_unit_at_start =
         tempo_track_get_beat_unit (P_TEMPO_TRACK);
       break;
@@ -816,9 +738,8 @@ on_change_finished (DigitalMeterWidget * self)
       break;
     case DIGITAL_METER_TYPE_BPM:
       tempo_track_set_bpm (
-        P_TEMPO_TRACK, self->last_set_bpm,
-        self->bpm_at_start, Z_F_NOT_TEMPORARY,
-        F_PUBLISH_EVENTS);
+        P_TEMPO_TRACK, self->last_set_bpm, self->bpm_at_start,
+        Z_F_NOT_TEMPORARY, F_PUBLISH_EVENTS);
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
       {
@@ -829,21 +750,16 @@ on_change_finished (DigitalMeterWidget * self)
           }
 
         int beats_per_bar =
-          tempo_track_get_beats_per_bar (
-            P_TEMPO_TRACK);
-        int beat_unit = tempo_track_get_beat_unit (
-          P_TEMPO_TRACK);
-        if (
-          self->beats_per_bar_at_start
-          != beats_per_bar)
+          tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+        int beat_unit =
+          tempo_track_get_beat_unit (P_TEMPO_TRACK);
+        if (self->beats_per_bar_at_start != beats_per_bar)
           {
             GError * err = NULL;
-            bool     ret =
-              transport_action_perform_time_sig_change (
-                TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE,
-                self->beats_per_bar_at_start,
-                beats_per_bar, F_ALREADY_EDITED,
-                &err);
+            bool ret = transport_action_perform_time_sig_change (
+              TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE,
+              self->beats_per_bar_at_start, beats_per_bar,
+              F_ALREADY_EDITED, &err);
             if (!ret)
               {
                 HANDLE_ERROR (
@@ -855,11 +771,10 @@ on_change_finished (DigitalMeterWidget * self)
         else if (self->beat_unit_at_start != beat_unit)
           {
             GError * err = NULL;
-            bool     ret =
-              transport_action_perform_time_sig_change (
-                TRANSPORT_ACTION_BEAT_UNIT_CHANGE,
-                self->beat_unit_at_start,
-                beat_unit, F_ALREADY_EDITED, &err);
+            bool ret = transport_action_perform_time_sig_change (
+              TRANSPORT_ACTION_BEAT_UNIT_CHANGE,
+              self->beat_unit_at_start, beat_unit,
+              F_ALREADY_EDITED, &err);
             if (!ret)
               {
                 HANDLE_ERROR (
@@ -891,9 +806,7 @@ digital_meter_show_context_menu (
 {
   z_gtk_show_context_menu_from_g_menu (
     self->popover_menu,
-    gtk_widget_get_allocated_width (
-      GTK_WIDGET (self))
-      / 2.0,
+    gtk_widget_get_allocated_width (GTK_WIDGET (self)) / 2.0,
     0.0, menu);
 }
 
@@ -924,9 +837,8 @@ on_scroll (
   DigitalMeterWidget * self =
     Z_DIGITAL_METER_WIDGET (user_data);
 
-  GdkEvent * event =
-    gtk_event_controller_get_current_event (
-      GTK_EVENT_CONTROLLER (scroll_controller));
+  GdkEvent * event = gtk_event_controller_get_current_event (
+    GTK_EVENT_CONTROLLER (scroll_controller));
   GdkScrollDirection direction =
     gdk_scroll_event_get_direction (event);
 
@@ -947,20 +859,16 @@ on_scroll (
       change.flag1 = PORT_FLAG_BPM;
       if (self->update_num)
         {
-          change.real_val =
-            self->last_set_bpm + (bpm_t) num;
+          change.real_val = self->last_set_bpm + (bpm_t) num;
           self->last_set_bpm = change.real_val;
-          router_queue_control_port_change (
-            ROUTER, &change);
+          router_queue_control_port_change (ROUTER, &change);
         }
       else if (self->update_dec)
         {
           change.real_val =
-            self->last_set_bpm
-            + (bpm_t) num / 100.f;
+            self->last_set_bpm + (bpm_t) num / 100.f;
           self->last_set_bpm = change.real_val;
-          router_queue_control_port_change (
-            ROUTER, &change);
+          router_queue_control_port_change (ROUTER, &change);
         }
 
       break;
@@ -1039,8 +947,7 @@ on_scroll (
           change.flag2 = PORT_FLAG2_BEATS_PER_BAR;
           if (num < TEMPO_TRACK_MIN_BEATS_PER_BAR)
             {
-              change.ival =
-                TEMPO_TRACK_MIN_BEATS_PER_BAR;
+              change.ival = TEMPO_TRACK_MIN_BEATS_PER_BAR;
             }
           else
             {
@@ -1049,14 +956,12 @@ on_scroll (
                   ? TEMPO_TRACK_MAX_BEATS_PER_BAR
                   : num;
             }
-          router_queue_control_port_change (
-            ROUTER, &change);
+          router_queue_control_port_change (ROUTER, &change);
         }
       else if (self->update_timesig_bot)
         {
-          num +=
-            (int) tempo_track_beat_unit_to_enum (
-              self->beat_unit_at_start);
+          num += (int) tempo_track_beat_unit_to_enum (
+            self->beat_unit_at_start);
           change.flag2 = PORT_FLAG2_BEAT_UNIT;
           if (num < 0)
             {
@@ -1069,15 +974,11 @@ on_scroll (
                   ? BEAT_UNIT_16
                   : (BeatUnit) num;
             }
-          router_queue_control_port_change (
-            ROUTER, &change);
+          router_queue_control_port_change (ROUTER, &change);
         }
-      if (
-        self->update_timesig_top
-        || self->update_timesig_bot)
+      if (self->update_timesig_top || self->update_timesig_bot)
         {
-          EVENTS_PUSH (
-            ET_TIME_SIGNATURE_CHANGED, NULL);
+          EVENTS_PUSH (ET_TIME_SIGNATURE_CHANGED, NULL);
         }
       break;
     }
@@ -1107,8 +1008,7 @@ drag_update (
   offset_y = -offset_y;
   int    use_x = fabs (offset_x) > fabs (offset_y);
   double diff =
-    use_x ? offset_x - self->last_x
-          : offset_y - self->last_y;
+    use_x ? offset_x - self->last_x : offset_y - self->last_y;
   int      num;
   float    dec;
   Position pos;
@@ -1219,8 +1119,7 @@ drag_update (
               num = (int) diff / 4;
               if (abs (num) > 0)
                 {
-                  position_add_sixteenths (
-                    &pos, num);
+                  position_add_sixteenths (&pos, num);
                   self->last_y = offset_y;
                   self->last_x = offset_x;
                 }
@@ -1241,9 +1140,7 @@ drag_update (
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
       if (self->update_note_length)
         {
-          num =
-            self->start_note_length
-            + (int) offset_y / 24;
+          num = self->start_note_length + (int) offset_y / 24;
           if (num < 0)
             *self->note_length = 0;
           else
@@ -1254,9 +1151,7 @@ drag_update (
     case DIGITAL_METER_TYPE_NOTE_TYPE:
       if (self->update_note_type)
         {
-          num =
-            self->start_note_type
-            + (int) offset_y / 24;
+          num = self->start_note_type + (int) offset_y / 24;
           if (num < 0)
             *self->note_type = 0;
           else
@@ -1274,15 +1169,12 @@ drag_update (
         }
       if (self->update_timesig_top)
         {
-          num =
-            self->beats_per_bar_at_start
-            + (int) diff / 24;
+          num = self->beats_per_bar_at_start + (int) diff / 24;
           ControlPortChange change = { 0 };
           change.flag2 = PORT_FLAG2_BEATS_PER_BAR;
           if (num < TEMPO_TRACK_MIN_BEATS_PER_BAR)
             {
-              change.ival =
-                TEMPO_TRACK_MIN_BEATS_PER_BAR;
+              change.ival = TEMPO_TRACK_MIN_BEATS_PER_BAR;
             }
           else
             {
@@ -1291,8 +1183,7 @@ drag_update (
                   ? TEMPO_TRACK_MAX_BEATS_PER_BAR
                   : num;
             }
-          router_queue_control_port_change (
-            ROUTER, &change);
+          router_queue_control_port_change (ROUTER, &change);
         }
       else if (self->update_timesig_bot)
         {
@@ -1313,15 +1204,11 @@ drag_update (
                   ? BEAT_UNIT_16
                   : (BeatUnit) num;
             }
-          router_queue_control_port_change (
-            ROUTER, &change);
+          router_queue_control_port_change (ROUTER, &change);
         }
-      if (
-        self->update_timesig_top
-        || self->update_timesig_bot)
+      if (self->update_timesig_top || self->update_timesig_bot)
         {
-          EVENTS_PUSH (
-            ET_TIME_SIGNATURE_CHANGED, NULL);
+          EVENTS_PUSH (ET_TIME_SIGNATURE_CHANGED, NULL);
         }
       break;
     }
@@ -1408,8 +1295,7 @@ _digital_meter_widget_new_for_position (
 static void
 dispose (DigitalMeterWidget * self)
 {
-  gtk_widget_unparent (
-    GTK_WIDGET (self->popover_menu));
+  gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
   G_OBJECT_CLASS (digital_meter_widget_parent_class)
     ->dispose (G_OBJECT (self));
@@ -1435,11 +1321,9 @@ static void
 digital_meter_widget_class_init (
   DigitalMeterWidgetClass * klass)
 {
-  GtkWidgetClass * wklass =
-    GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = digital_meter_snapshot;
-  gtk_widget_class_set_css_name (
-    wklass, "digital-meter");
+  gtk_widget_class_set_css_name (wklass, "digital-meter");
 
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BIN_LAYOUT);
@@ -1450,14 +1334,11 @@ digital_meter_widget_class_init (
 }
 
 static void
-digital_meter_widget_init (
-  DigitalMeterWidget * self)
+digital_meter_widget_init (DigitalMeterWidget * self)
 {
-  g_return_if_fail (
-    Z_IS_DIGITAL_METER_WIDGET (self));
+  g_return_if_fail (Z_IS_DIGITAL_METER_WIDGET (self));
 
-  self->drag =
-    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
     G_OBJECT (self->drag), "drag-begin",
     G_CALLBACK (drag_begin), self);
@@ -1465,21 +1346,18 @@ digital_meter_widget_init (
     G_OBJECT (self->drag), "drag-update",
     G_CALLBACK (drag_update), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-end",
-    G_CALLBACK (drag_end), self);
+    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end),
+    self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->drag));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
   GtkEventControllerMotion * motion =
     GTK_EVENT_CONTROLLER_MOTION (
       gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT (motion), "motion",
-    G_CALLBACK (on_motion), self);
+    G_OBJECT (motion), "motion", G_CALLBACK (on_motion), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (motion));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (motion));
 
   GtkEventControllerScroll * scroll_controller =
     GTK_EVENT_CONTROLLER_SCROLL (
@@ -1498,12 +1376,10 @@ digital_meter_widget_init (
     G_OBJECT (click_gesture), "pressed",
     G_CALLBACK (button_press_cb), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (click_gesture));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (click_gesture));
 
-  self->popover_menu = GTK_POPOVER_MENU (
-    gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
   gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu),
-    GTK_WIDGET (self));
+    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 }

@@ -20,11 +20,9 @@ create_midi_mapping (void)
 {
   MidiMapping * self = object_new (MidiMapping);
 
-  self->schema_version =
-    MIDI_MAPPING_SCHEMA_VERSION;
-  self->gobj =
-    wrapped_object_with_change_signal_new (
-      self, WRAPPED_OBJECT_TYPE_MIDI_MAPPING);
+  self->schema_version = MIDI_MAPPING_SCHEMA_VERSION;
+  self->gobj = wrapped_object_with_change_signal_new (
+    self, WRAPPED_OBJECT_TYPE_MIDI_MAPPING);
 
   return self;
 }
@@ -41,11 +39,10 @@ midi_mappings_init_loaded (MidiMappings * self)
   for (int i = 0; i < self->num_mappings; i++)
     {
       MidiMapping * mapping = self->mappings[i];
-      mapping->gobj =
-        wrapped_object_with_change_signal_new (
-          mapping, WRAPPED_OBJECT_TYPE_MIDI_MAPPING);
-      mapping->dest = port_find_from_identifier (
-        &mapping->dest_id);
+      mapping->gobj = wrapped_object_with_change_signal_new (
+        mapping, WRAPPED_OBJECT_TYPE_MIDI_MAPPING);
+      mapping->dest =
+        port_find_from_identifier (&mapping->dest_id);
     }
 }
 
@@ -70,8 +67,8 @@ midi_mappings_bind_at (
   g_return_if_fail (self && buf && dest_port);
 
   array_double_size_if_full (
-    self->mappings, self->num_mappings,
-    self->mappings_size, MidiMapping);
+    self->mappings, self->num_mappings, self->mappings_size,
+    MidiMapping);
 
   /* if inserting, move later mappings further */
   for (int i = self->num_mappings; i > idx; i--)
@@ -83,24 +80,19 @@ midi_mappings_bind_at (
   MidiMapping * mapping = midi_mapping_new ();
   self->mappings[idx] = mapping;
 
-  memcpy (
-    mapping->key, buf, sizeof (midi_byte_t) * 3);
+  memcpy (mapping->key, buf, sizeof (midi_byte_t) * 3);
   if (device_port)
     {
-      mapping->device_port =
-        ext_port_clone (device_port);
+      mapping->device_port = ext_port_clone (device_port);
     }
   mapping->dest_id = dest_port->id;
   mapping->dest = dest_port;
-  g_atomic_int_set (
-    &mapping->enabled, (guint) true);
+  g_atomic_int_set (&mapping->enabled, (guint) true);
 
   char str[100];
-  midi_ctrl_change_get_ch_and_description (
-    buf, str);
+  midi_ctrl_change_get_ch_and_description (buf, str);
 
-  if (!(dest_port->id.flags
-        & PORT_FLAG_MIDI_AUTOMATABLE))
+  if (!(dest_port->id.flags & PORT_FLAG_MIDI_AUTOMATABLE))
     {
       g_message (
         "bounded MIDI mapping from %s to %s", str,
@@ -127,8 +119,7 @@ midi_mappings_unbind (
 {
   g_return_if_fail (self && idx >= 0);
 
-  MidiMapping * mapping_before =
-    self->mappings[idx];
+  MidiMapping * mapping_before = self->mappings[idx];
 
   for (int i = self->num_mappings - 2; i >= idx; i--)
     {
@@ -146,12 +137,9 @@ midi_mappings_unbind (
 }
 
 void
-midi_mapping_set_enabled (
-  MidiMapping * self,
-  bool          enabled)
+midi_mapping_set_enabled (MidiMapping * self, bool enabled)
 {
-  g_atomic_int_set (
-    &self->enabled, (guint) enabled);
+  g_atomic_int_set (&self->enabled, (guint) enabled);
 }
 
 int
@@ -181,16 +169,12 @@ midi_mapping_clone (const MidiMapping * src)
   MidiMapping * self = create_midi_mapping ();
 
   memcpy (
-    &self->key[0], &src->key[0],
-    3 * sizeof (midi_byte_t));
+    &self->key[0], &src->key[0], 3 * sizeof (midi_byte_t));
   if (src->device_port)
-    self->device_port =
-      ext_port_clone (src->device_port);
-  port_identifier_copy (
-    &self->dest_id, &src->dest_id);
+    self->device_port = ext_port_clone (src->device_port);
+  port_identifier_copy (&self->dest_id, &src->dest_id);
   g_atomic_int_set (
-    &self->enabled,
-    (guint) g_atomic_int_get (&src->enabled));
+    &self->enabled, (guint) g_atomic_int_get (&src->enabled));
 
   return self;
 }
@@ -207,9 +191,7 @@ midi_mapping_free (MidiMapping * self)
 }
 
 static void
-apply_mapping (
-  MidiMapping * mapping,
-  midi_byte_t * buf)
+apply_mapping (MidiMapping * mapping, midi_byte_t * buf)
 {
   g_return_if_fail (mapping->dest);
 
@@ -227,8 +209,7 @@ apply_mapping (
        * value received */
       else
         {
-          float normalized_val =
-            (float) buf[2] / 127.f;
+          float normalized_val = (float) buf[2] / 127.f;
           port_set_control_value (
             dest, normalized_val, F_NORMALIZED,
             F_PUBLISH_EVENTS);
@@ -241,46 +222,31 @@ apply_mapping (
        * instead */
       if (dest->id.flags2 & PORT_FLAG2_TRANSPORT_ROLL)
         {
-          EVENTS_PUSH (
-            ET_TRANSPORT_ROLL_REQUIRED, NULL);
+          EVENTS_PUSH (ET_TRANSPORT_ROLL_REQUIRED, NULL);
         }
-      else if (
-        dest->id.flags2 & PORT_FLAG2_TRANSPORT_STOP)
+      else if (dest->id.flags2 & PORT_FLAG2_TRANSPORT_STOP)
+        {
+          EVENTS_PUSH (ET_TRANSPORT_PAUSE_REQUIRED, NULL);
+        }
+      else if (dest->id.flags2 & PORT_FLAG2_TRANSPORT_BACKWARD)
         {
           EVENTS_PUSH (
-            ET_TRANSPORT_PAUSE_REQUIRED, NULL);
+            ET_TRANSPORT_MOVE_BACKWARD_REQUIRED, NULL);
         }
-      else if (
-        dest->id.flags2
-        & PORT_FLAG2_TRANSPORT_BACKWARD)
+      else if (dest->id.flags2 & PORT_FLAG2_TRANSPORT_FORWARD)
         {
           EVENTS_PUSH (
-            ET_TRANSPORT_MOVE_BACKWARD_REQUIRED,
-            NULL);
+            ET_TRANSPORT_MOVE_FORWARD_REQUIRED, NULL);
         }
-      else if (
-        dest->id.flags2
-        & PORT_FLAG2_TRANSPORT_FORWARD)
+      else if (dest->id.flags2 & PORT_FLAG2_TRANSPORT_LOOP_TOGGLE)
         {
           EVENTS_PUSH (
-            ET_TRANSPORT_MOVE_FORWARD_REQUIRED,
-            NULL);
+            ET_TRANSPORT_TOGGLE_LOOP_REQUIRED, NULL);
         }
-      else if (
-        dest->id.flags2
-        & PORT_FLAG2_TRANSPORT_LOOP_TOGGLE)
+      else if (dest->id.flags2 & PORT_FLAG2_TRANSPORT_REC_TOGGLE)
         {
           EVENTS_PUSH (
-            ET_TRANSPORT_TOGGLE_LOOP_REQUIRED,
-            NULL);
-        }
-      else if (
-        dest->id.flags2
-        & PORT_FLAG2_TRANSPORT_REC_TOGGLE)
-        {
-          EVENTS_PUSH (
-            ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED,
-            NULL);
+            ET_TRANSPORT_TOGGLE_RECORDING_REQUIRED, NULL);
         }
     }
 }
@@ -306,18 +272,15 @@ midi_mappings_apply_from_cc_events (
     {
       MidiEvent * ev = &events->events[i];
       if (
-        ev->raw_buffer[0]
-          >= (midi_byte_t) MIDI_CH1_CTRL_CHANGE
+        ev->raw_buffer[0] >= (midi_byte_t) MIDI_CH1_CTRL_CHANGE
         && ev->raw_buffer[0]
              <= (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | 15))
         {
           midi_byte_t channel =
             (midi_byte_t) ((ev->raw_buffer[0] & 0xf) + 1);
-          midi_byte_t controller =
-            ev->raw_buffer[1];
+          midi_byte_t   controller = ev->raw_buffer[1];
           MidiMapping * mapping =
-            self->mappings
-              [(channel - 1) * 128 + controller];
+            self->mappings[(channel - 1) * 128 + controller];
           apply_mapping (mapping, ev->raw_buffer);
         }
     }
@@ -327,9 +290,7 @@ midi_mappings_apply_from_cc_events (
  * Applies the given buffer to the matching ports.
  */
 void
-midi_mappings_apply (
-  MidiMappings * self,
-  midi_byte_t *  buf)
+midi_mappings_apply (MidiMappings * self, midi_byte_t * buf)
 {
   for (int i = 0; i < self->num_mappings; i++)
     {
@@ -352,12 +313,11 @@ MidiMappings *
 midi_mappings_new ()
 {
   MidiMappings * self = object_new (MidiMappings);
-  self->schema_version =
-    MIDI_MAPPINGS_SCHEMA_VERSION;
+  self->schema_version = MIDI_MAPPINGS_SCHEMA_VERSION;
 
   self->mappings_size = 4;
-  self->mappings = object_new_n (
-    self->mappings_size, MidiMapping);
+  self->mappings =
+    object_new_n (self->mappings_size, MidiMapping);
 
   return self;
 }
@@ -387,8 +347,7 @@ midi_mappings_get_for_port (
         {
           arr = g_realloc (
             arr,
-            (size_t) (*count + 1)
-              * sizeof (MidiMapping *));
+            (size_t) (*count + 1) * sizeof (MidiMapping *));
           array_append (arr, *count, mapping);
         }
     }
@@ -399,11 +358,10 @@ MidiMappings *
 midi_mappings_clone (const MidiMappings * src)
 {
   MidiMappings * self = object_new (MidiMappings);
-  self->schema_version =
-    MIDI_MAPPINGS_SCHEMA_VERSION;
+  self->schema_version = MIDI_MAPPINGS_SCHEMA_VERSION;
 
-  self->mappings = object_new_n (
-    (size_t) src->num_mappings, MidiMapping);
+  self->mappings =
+    object_new_n ((size_t) src->num_mappings, MidiMapping);
   for (int i = 0; i < src->num_mappings; i++)
     {
       self->mappings[i] =

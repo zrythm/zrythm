@@ -40,8 +40,7 @@ ChordTrack *
 chord_track_new (int track_pos)
 {
   ChordTrack * self = track_new (
-    TRACK_TYPE_CHORD, track_pos, _ ("Chords"),
-    F_WITHOUT_LANE);
+    TRACK_TYPE_CHORD, track_pos, _ ("Chords"), F_WITHOUT_LANE);
 
   return self;
 }
@@ -62,11 +61,9 @@ chord_track_insert_chord_region (
     self->chord_regions_size, ZRegion *);
   for (int i = self->num_chord_regions; i > idx; i--)
     {
-      self->chord_regions[i] =
-        self->chord_regions[i - 1];
+      self->chord_regions[i] = self->chord_regions[i - 1];
       self->chord_regions[i]->id.idx = i;
-      region_update_identifier (
-        self->chord_regions[i]);
+      region_update_identifier (self->chord_regions[i]);
     }
   self->num_chord_regions++;
   self->chord_regions[idx] = region;
@@ -83,14 +80,12 @@ chord_track_insert_scale (
   ScaleObject * scale,
   int           pos)
 {
-  g_warn_if_fail (
-    self->type == TRACK_TYPE_CHORD && scale);
+  g_warn_if_fail (self->type == TRACK_TYPE_CHORD && scale);
 
   array_double_size_if_full (
-    self->scales, self->num_scales,
-    self->scales_size, ScaleObject *);
-  array_insert (
-    self->scales, self->num_scales, pos, scale);
+    self->scales, self->num_scales, self->scales_size,
+    ScaleObject *);
+  array_insert (self->scales, self->num_scales, pos, scale);
 
   for (int i = pos; i < self->num_scales; i++)
     {
@@ -105,12 +100,9 @@ chord_track_insert_scale (
  * Adds a scale to the track.
  */
 void
-chord_track_add_scale (
-  ChordTrack *  self,
-  ScaleObject * scale)
+chord_track_add_scale (ChordTrack * self, ScaleObject * scale)
 {
-  chord_track_insert_scale (
-    self, scale, self->num_scales);
+  chord_track_insert_scale (self, scale, self->num_scales);
 }
 
 /**
@@ -128,8 +120,7 @@ chord_track_get_scale_at_pos (
     {
       scale = ct->scales[i];
       s_obj = (ArrangerObject *) scale;
-      if (position_is_before_or_equal (
-            &s_obj->pos, pos))
+      if (position_is_before_or_equal (&s_obj->pos, pos))
         return scale;
     }
   return NULL;
@@ -144,23 +135,21 @@ chord_track_get_chord_at_pos (
   const Track *    ct,
   const Position * pos)
 {
-  ZRegion * region =
-    track_get_region_at_pos (ct, pos, false);
+  ZRegion * region = track_get_region_at_pos (ct, pos, false);
 
   if (!region)
     {
       return NULL;
     }
 
-  signed_frame_t local_frames = (signed_frame_t)
-    region_timeline_frames_to_local (
+  signed_frame_t local_frames =
+    (signed_frame_t) region_timeline_frames_to_local (
       region, pos->frames, F_NORMALIZE);
 
   ChordObject *    chord = NULL;
   ArrangerObject * c_obj;
   int              i;
-  for (i = region->num_chord_objects - 1; i >= 0;
-       i--)
+  for (i = region->num_chord_objects - 1; i >= 0; i--)
     {
       chord = region->chord_objects[i];
       c_obj = (ArrangerObject *) chord;
@@ -179,8 +168,7 @@ void
 chord_track_clear (ChordTrack * self)
 {
   g_return_if_fail (
-    IS_TRACK (self)
-    && self->type == TRACK_TYPE_CHORD);
+    IS_TRACK (self) && self->type == TRACK_TYPE_CHORD);
 
   for (int i = 0; i < self->num_scales; i++)
     {
@@ -206,10 +194,8 @@ chord_track_validate (Track * self)
   for (int i = 0; i < self->num_chord_regions; i++)
     {
       ZRegion * r = self->chord_regions[i];
-      g_return_val_if_fail (
-        IS_REGION_AND_NONNULL (r), false);
-      g_return_val_if_fail (
-        chord_region_validate (r), false);
+      g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
+      g_return_val_if_fail (chord_region_validate (r), false);
     }
 
   return true;
@@ -229,8 +215,8 @@ chord_track_remove_scale (
 
   /* deselect */
   arranger_object_select (
-    (ArrangerObject *) scale, F_NO_SELECT,
-    F_APPEND, F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) scale, F_NO_SELECT, F_APPEND,
+    F_NO_PUBLISH_EVENTS);
 
   int pos = -1;
   array_delete_return_pos (
@@ -259,19 +245,14 @@ chord_track_remove_scale (
  * Removes a region from the chord track.
  */
 void
-chord_track_remove_region (
-  ChordTrack * self,
-  ZRegion *    region)
+chord_track_remove_region (ChordTrack * self, ZRegion * region)
 {
-  g_return_if_fail (
-    IS_TRACK (self) && IS_REGION (region));
+  g_return_if_fail (IS_TRACK (self) && IS_REGION (region));
 
   array_delete (
-    self->chord_regions, self->num_chord_regions,
-    region);
+    self->chord_regions, self->num_chord_regions, region);
 
-  for (int i = region->id.idx;
-       i < self->num_chord_regions; i++)
+  for (int i = region->id.idx; i < self->num_chord_regions; i++)
     {
       ZRegion * r = self->chord_regions[i];
       r->id.idx = i;

@@ -57,8 +57,7 @@ typedef struct TrackIconChooserDialogWidget
  * Creates a new dialog.
  */
 TrackIconChooserDialogWidget *
-track_icon_chooser_dialog_widget_new (
-  Track * track);
+track_icon_chooser_dialog_widget_new (Track * track);
 
 /**
  * Runs the widget and processes the result, then

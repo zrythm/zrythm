@@ -63,8 +63,7 @@ z_cairo_draw_horizontal_line (
   double    alpha)
 {
   cairo_set_source_rgba (cr, 0.7, 0.7, 0.7, alpha);
-  cairo_rectangle (
-    cr, from_x, y, to_x - from_x, line_width);
+  cairo_rectangle (cr, from_x, y, to_x - from_x, line_width);
   cairo_fill (cr);
 }
 
@@ -76,8 +75,7 @@ z_cairo_draw_vertical_line (
   double    to_y,
   double    line_width)
 {
-  cairo_rectangle (
-    cr, x, from_y, line_width, to_y - from_y);
+  cairo_rectangle (cr, x, from_y, line_width, to_y - from_y);
   cairo_fill (cr);
 }
 
@@ -85,15 +83,13 @@ z_cairo_draw_vertical_line (
  * Creates a PangoLayout with default settings.
  */
 PangoLayout *
-z_cairo_create_default_pango_layout (
-  GtkWidget * widget)
+z_cairo_create_default_pango_layout (GtkWidget * widget)
 {
   PangoLayout * layout =
     gtk_widget_create_pango_layout (widget, NULL);
 
   PangoFontDescription * desc =
-    pango_font_description_from_string (
-      Z_CAIRO_FONT);
+    pango_font_description_from_string (Z_CAIRO_FONT);
   pango_layout_set_font_description (layout, desc);
   pango_font_description_free (desc);
 
@@ -112,8 +108,7 @@ z_cairo_create_pango_layout_from_description (
   int                    ellipsize_padding)
 {
   PangoLayout * layout =
-    z_pango_create_layout_from_description (
-      widget, descr);
+    z_pango_create_layout_from_description (widget, descr);
 
   if (ellipsize_mode > PANGO_ELLIPSIZE_NONE)
     {
@@ -123,8 +118,7 @@ z_cairo_create_pango_layout_from_description (
           gtk_widget_get_allocated_width (widget)
             - ellipsize_padding * 2,
           1)));
-      pango_layout_set_ellipsize (
-        layout, ellipsize_mode);
+      pango_layout_set_ellipsize (layout, ellipsize_mode);
     }
 
   return layout;
@@ -145,8 +139,7 @@ z_cairo_create_pango_layout_from_string (
     pango_font_description_from_string (font);
   PangoLayout * layout =
     z_cairo_create_pango_layout_from_description (
-      widget, desc, ellipsize_mode,
-      ellipsize_padding);
+      widget, desc, ellipsize_mode, ellipsize_padding);
   pango_font_description_free (desc);
 
   return layout;
@@ -175,8 +168,7 @@ _z_cairo_get_text_extents_for_widget (
 {
   g_return_if_fail (layout && widget && text);
   pango_layout_set_markup (layout, text, -1);
-  pango_layout_get_pixel_size (
-    layout, width, height);
+  pango_layout_get_pixel_size (layout, width, height);
 }
 
 /**
@@ -216,18 +208,15 @@ z_cairo_get_surface_from_icon_name (
     cairo_surface_t);
   if (!surface)
     {
-      GdkTexture * texture =
-        z_gdk_texture_new_from_icon_name (
-          icon_name, size, size, scale);
+      GdkTexture * texture = z_gdk_texture_new_from_icon_name (
+        icon_name, size, size, scale);
       if (!texture)
         {
           g_message (
-            "failed to load texture from icon %s",
-            icon_name);
+            "failed to load texture from icon %s", icon_name);
 
           /* return a warning icon if not found */
-          if (string_is_equal (
-                icon_name, "data-warning"))
+          if (string_is_equal (icon_name, "data-warning"))
             {
               return NULL;
             }
@@ -239,21 +228,17 @@ z_cairo_get_surface_from_icon_name (
         }
 
       surface = cairo_image_surface_create (
-        CAIRO_FORMAT_ARGB32,
-        gdk_texture_get_width (texture),
+        CAIRO_FORMAT_ARGB32, gdk_texture_get_width (texture),
         gdk_texture_get_height (texture));
       gdk_texture_download (
-        texture,
-        cairo_image_surface_get_data (surface),
-        (gsize) cairo_image_surface_get_stride (
-          surface));
+        texture, cairo_image_surface_get_data (surface),
+        (gsize) cairo_image_surface_get_stride (surface));
       cairo_surface_mark_dirty (surface);
 
       g_object_unref (texture);
 
       dictionary_add (
-        CAIRO_CACHES->icon_surface_dict, icon_name,
-        surface);
+        CAIRO_CACHES->icon_surface_dict, icon_name, surface);
     }
 
   return surface;
@@ -290,8 +275,8 @@ z_cairo_reset_caches (
     }
 
   *surface_cache = cairo_surface_create_similar (
-    cairo_get_target (new_cr),
-    CAIRO_CONTENT_COLOR_ALPHA, width, height);
+    cairo_get_target (new_cr), CAIRO_CONTENT_COLOR_ALPHA,
+    width, height);
   *cr_cache = cairo_create (*surface_cache);
 }
 

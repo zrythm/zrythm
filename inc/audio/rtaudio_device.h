@@ -107,9 +107,7 @@ rtaudio_device_new (
  * @return Non-zero if error.
  */
 int
-rtaudio_device_open (
-  RtAudioDevice * self,
-  int             start);
+rtaudio_device_open (RtAudioDevice * self, int start);
 
 /**
  * Close the RtAudioDevice.
@@ -117,9 +115,7 @@ rtaudio_device_open (
  * @param free Also free the memory.
  */
 int
-rtaudio_device_close (
-  RtAudioDevice * self,
-  int             free);
+rtaudio_device_close (RtAudioDevice * self, int free);
 
 int
 rtaudio_device_start (RtAudioDevice * self);

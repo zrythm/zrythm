@@ -30,8 +30,7 @@ G_DEFINE_TYPE (
   GTK_TYPE_WIDGET)
 
 #define GET_VAL ((*self->getter) (self->object))
-#define SET_VAL(real) \
-  ((*self->setter) (self->object, real))
+#define SET_VAL(real) ((*self->setter) (self->object, real))
 
 #define TEXT_FONT "Bold 8"
 #define TEXT_PADDING 3.0
@@ -45,10 +44,8 @@ balance_control_snapshot (
   BalanceControlWidget * self =
     Z_BALANCE_CONTROL_WIDGET (widget);
 
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_allocated_width (widget);
+  int height = gtk_widget_get_allocated_height (widget);
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
@@ -75,16 +72,14 @@ balance_control_snapshot (
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          value_px, 0, half_width - value_px,
-          height));
+          value_px, 0, half_width - value_px, height));
     }
   else
     {
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          half_width, 0, value_px - half_width,
-          height));
+          half_width, 0, value_px - half_width, height));
     }
 
   /* draw vertical line at current val */
@@ -96,33 +91,27 @@ balance_control_snapshot (
   const int line_width = 2;
   gtk_snapshot_append_color (
     snapshot, &color,
-    &GRAPHENE_RECT_INIT (
-      value_px, 0, line_width, height));
+    &GRAPHENE_RECT_INIT (value_px, 0, line_width, height));
 
   /* draw text */
   PangoLayout *  layout = self->layout;
   PangoRectangle pangorect;
   color = Z_GDK_RGBA_INIT (
-    UI_COLORS->bright_text.red,
-    UI_COLORS->bright_text.green,
+    UI_COLORS->bright_text.red, UI_COLORS->bright_text.green,
     UI_COLORS->bright_text.blue, color.alpha);
   pango_layout_set_text (layout, "L", -1);
-  pango_layout_get_pixel_extents (
-    layout, NULL, &pangorect);
+  pango_layout_get_pixel_extents (layout, NULL, &pangorect);
 
   gtk_snapshot_save (snapshot);
   gtk_snapshot_translate (
     snapshot,
     &GRAPHENE_POINT_INIT (
-      TEXT_PADDING,
-      height / 2.f - pangorect.height / 2.f));
-  gtk_snapshot_append_layout (
-    snapshot, layout, &color);
+      TEXT_PADDING, height / 2.f - pangorect.height / 2.f));
+  gtk_snapshot_append_layout (snapshot, layout, &color);
   gtk_snapshot_restore (snapshot);
 
   pango_layout_set_text (layout, "R", -1);
-  pango_layout_get_pixel_extents (
-    layout, NULL, &pangorect);
+  pango_layout_get_pixel_extents (layout, NULL, &pangorect);
 
   gtk_snapshot_save (snapshot);
   gtk_snapshot_translate (
@@ -130,8 +119,7 @@ balance_control_snapshot (
     &GRAPHENE_POINT_INIT (
       (float) (width - (TEXT_PADDING + pangorect.width)),
       height / 2.f - pangorect.height / 2.f));
-  gtk_snapshot_append_layout (
-    snapshot, layout, &color);
+  gtk_snapshot_append_layout (snapshot, layout, &color);
   gtk_snapshot_restore (snapshot);
 }
 
@@ -150,8 +138,7 @@ get_pan_string (BalanceControlWidget * self)
   pan_val = (fabsf (pan_val) / 0.5f) * 100.f;
 
   return g_strdup_printf (
-    "%s%.0f%%", GET_VAL < 0.5f ? "-" : "",
-    (double) pan_val);
+    "%s%.0f%%", GET_VAL < 0.5f ? "-" : "", (double) pan_val);
 }
 
 static void
@@ -208,13 +195,10 @@ on_drag_update (
     fabs (offset_y - self->last_y)
     > fabs (offset_x - self->last_x);
   double diff =
-    sensitivity *
-    (use_y ?
-       offset_y - self->last_y :
-       offset_x - self->last_x);
+    sensitivity
+    * (use_y ? offset_y - self->last_y : offset_x - self->last_x);
 
-  float new_val =
-    CLAMP (GET_VAL + (float) diff, 0.0f, 1.0f);
+  float new_val = CLAMP (GET_VAL + (float) diff, 0.0f, 1.0f);
 
   SET_VAL (new_val);
   self->last_x = offset_x;
@@ -224,8 +208,7 @@ on_drag_update (
   char * str = get_pan_string (self);
   /*gtk_label_set_text (*/
   /*self->tooltip_label, str);*/
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self), str);
+  gtk_widget_set_tooltip_text (GTK_WIDGET (self), str);
   g_free (str);
   /*gtk_window_present (self->tooltip_win);*/
 
@@ -249,19 +232,17 @@ on_drag_end (
     && !math_floats_equal_epsilon (
       self->balance_at_start, GET_VAL, 0.0001f))
     {
-      Track * track = channel_get_track (
-        (Channel *) self->object);
+      Track * track =
+        channel_get_track ((Channel *) self->object);
       GError * err = NULL;
       bool     ret =
         tracklist_selections_action_perform_edit_single_float (
           EDIT_TRACK_ACTION_TYPE_PAN, track,
-          self->balance_at_start, GET_VAL, true,
-          &err);
+          self->balance_at_start, GET_VAL, true, &err);
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s",
-            _ ("Failed to change balance"));
+            err, "%s", _ ("Failed to change balance"));
         }
     }
 }
@@ -278,11 +259,8 @@ show_context_menu (
   GMenuItem * menuitem;
 
   char tmp[600];
-  sprintf (
-    tmp, "app.reset-stereo-balance::%p",
-    self->port);
-  menuitem = z_gtk_create_menu_item (
-    _ ("Reset"), NULL, tmp);
+  sprintf (tmp, "app.reset-stereo-balance::%p", self->port);
+  menuitem = z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
   sprintf (tmp, "app.bind-midi-cc::%p", self->port);
@@ -350,11 +328,9 @@ balance_control_widget_new (
   GtkGestureClick * right_mouse_mp =
     GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (right_mouse_mp));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (right_mouse_mp));
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (right_mouse_mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (right_mouse_mp), GDK_BUTTON_SECONDARY);
 
   GtkEventController * motion_controller =
     gtk_event_controller_motion_new ();
@@ -367,8 +343,7 @@ balance_control_widget_new (
   gtk_widget_add_controller (
     GTK_WIDGET (self), motion_controller);
 
-  self->drag =
-    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
     G_OBJECT (self->drag), "drag-begin",
     G_CALLBACK (on_drag_begin), self);
@@ -379,8 +354,7 @@ balance_control_widget_new (
     G_OBJECT (self->drag), "drag-end",
     G_CALLBACK (on_drag_end), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->drag));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
   g_signal_connect (
     G_OBJECT (right_mouse_mp), "pressed",
@@ -390,45 +364,35 @@ balance_control_widget_new (
 }
 
 static void
-balance_control_finalize (
-  BalanceControlWidget * self)
+balance_control_finalize (BalanceControlWidget * self)
 {
-  G_OBJECT_CLASS (
-    balance_control_widget_parent_class)
+  G_OBJECT_CLASS (balance_control_widget_parent_class)
     ->finalize (G_OBJECT (self));
 }
 
 static void
 dispose (BalanceControlWidget * self)
 {
-  gtk_widget_unparent (
-    GTK_WIDGET (self->popover_menu));
+  gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
-  G_OBJECT_CLASS (
-    balance_control_widget_parent_class)
+  G_OBJECT_CLASS (balance_control_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
 
 static void
-balance_control_widget_init (
-  BalanceControlWidget * self)
+balance_control_widget_init (BalanceControlWidget * self)
 {
-  gtk_widget_set_focusable (
-    GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
-  gdk_rgba_parse (
-    &self->start_color, "rgba(0%,100%,0%,1.0)");
-  gdk_rgba_parse (
-    &self->end_color, "rgba(0%,50%,50%,1.0)");
+  gdk_rgba_parse (&self->start_color, "rgba(0%,100%,0%,1.0)");
+  gdk_rgba_parse (&self->end_color, "rgba(0%,50%,50%,1.0)");
 
-  self->popover_menu = GTK_POPOVER_MENU (
-    gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
   gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu),
-    GTK_WIDGET (self));
+    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
-  gtk_widget_set_margin_start (
-    GTK_WIDGET (self), 2);
+  gtk_widget_set_margin_start (GTK_WIDGET (self), 2);
   gtk_widget_set_margin_end (GTK_WIDGET (self), 2);
 
   /* TODO port to gtk_tooltip_set_custom() */
@@ -449,35 +413,28 @@ balance_control_widget_init (
     self->tooltip_win, GTK_WIN_POS_MOUSE);
 #endif
 
-  self->drag =
-    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->drag));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
   PangoFontDescription * desc;
-  self->layout = gtk_widget_create_pango_layout (
-    GTK_WIDGET (self), NULL);
-  desc =
-    pango_font_description_from_string (TEXT_FONT);
-  pango_layout_set_font_description (
-    self->layout, desc);
+  self->layout =
+    gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+  desc = pango_font_description_from_string (TEXT_FONT);
+  pango_layout_set_font_description (self->layout, desc);
   pango_font_description_free (desc);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), balance_control_tick_cb,
-    self, NULL);
+    GTK_WIDGET (self), balance_control_tick_cb, self, NULL);
 }
 
 static void
 balance_control_widget_class_init (
   BalanceControlWidgetClass * klass)
 {
-  GtkWidgetClass * wklass =
-    GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = balance_control_snapshot;
-  gtk_widget_class_set_css_name (
-    wklass, "balance-control");
+  gtk_widget_class_set_css_name (wklass, "balance-control");
 
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BIN_LAYOUT);

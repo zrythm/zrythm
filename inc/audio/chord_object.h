@@ -44,16 +44,14 @@
 
 #define CHORD_OBJECT_MAGIC 4181694
 #define IS_CHORD_OBJECT(x) \
-  (((ChordObject *) x)->magic \
-   == CHORD_OBJECT_MAGIC)
+  (((ChordObject *) x)->magic == CHORD_OBJECT_MAGIC)
 #define IS_CHORD_OBJECT_AND_NONNULL(x) \
   (x && IS_CHORD_OBJECT (x))
 
 #define CHORD_OBJECT_WIDGET_TRIANGLE_W 10
 
 #define chord_object_is_selected(r) \
-  arranger_object_is_selected ( \
-    (ArrangerObject *) r)
+  arranger_object_is_selected ((ArrangerObject *) r)
 
 typedef struct ChordDescriptor ChordDescriptor;
 
@@ -81,25 +79,21 @@ typedef struct ChordObject
   PangoLayout * layout;
 } ChordObject;
 
-static const cyaml_schema_field_t
-  chord_object_fields_schema[] = {
-    YAML_FIELD_MAPPING_EMBEDDED (
-      ChordObject,
-      base,
-      arranger_object_fields_schema),
-    YAML_FIELD_INT (ChordObject, schema_version),
-    YAML_FIELD_INT (ChordObject, index),
-    YAML_FIELD_INT (ChordObject, chord_index),
+static const cyaml_schema_field_t chord_object_fields_schema[] = {
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ChordObject,
+    base,
+    arranger_object_fields_schema),
+  YAML_FIELD_INT (ChordObject, schema_version),
+  YAML_FIELD_INT (ChordObject, index),
+  YAML_FIELD_INT (ChordObject, chord_index),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  chord_object_schema = {
-    YAML_VALUE_PTR (
-      ChordObject,
-      chord_object_fields_schema),
-  };
+static const cyaml_schema_value_t chord_object_schema = {
+  YAML_VALUE_PTR (ChordObject, chord_object_fields_schema),
+};
 
 /**
  * Creates a ChordObject.
@@ -111,9 +105,7 @@ chord_object_new (
   int                index);
 
 int
-chord_object_is_equal (
-  ChordObject * a,
-  ChordObject * b);
+chord_object_is_equal (ChordObject * a, ChordObject * b);
 
 /**
  * Sets the region and index of the chord.
@@ -129,8 +121,7 @@ chord_object_set_region_and_index (
  * ChordObject.
  */
 ChordDescriptor *
-chord_object_get_chord_descriptor (
-  const ChordObject * self);
+chord_object_get_chord_descriptor (const ChordObject * self);
 
 /**
  * Finds the ChordObject in the project

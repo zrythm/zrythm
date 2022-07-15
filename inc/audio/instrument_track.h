@@ -69,8 +69,7 @@ instrument_track_is_plugin_visible (Track * self);
  * instrument Track is visible.
  */
 void
-instrument_track_toggle_plugin_visible (
-  Track * self);
+instrument_track_toggle_plugin_visible (Track * self);
 
 /**
  * @}

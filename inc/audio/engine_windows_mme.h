@@ -45,9 +45,7 @@ engine_windows_mme_get_error (
  * Prints the error in the log.
  */
 void
-engine_windows_mme_print_error (
-  MMRESULT error_code,
-  int      input);
+engine_windows_mme_print_error (MMRESULT error_code, int input);
 
 /**
  * Initialize Port MIDI.
@@ -59,9 +57,7 @@ engine_windows_mme_setup (AudioEngine * self);
  * Starts all previously scanned devices.
  */
 int
-engine_windows_mme_activate (
-  AudioEngine * self,
-  bool          activate);
+engine_windows_mme_activate (AudioEngine * self, bool activate);
 
 /**
  * Rescans for MIDI devices, opens them and keeps

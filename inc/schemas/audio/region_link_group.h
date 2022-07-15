@@ -44,9 +44,7 @@ typedef struct RegionLinkGroup_v1
 
 static const cyaml_schema_field_t
   region_link_group_fields_schema_v1[] = {
-    YAML_FIELD_INT (
-      RegionLinkGroup_v1,
-      schema_version),
+    YAML_FIELD_INT (RegionLinkGroup_v1, schema_version),
     YAML_FIELD_DYN_ARRAY_VAR_COUNT (
       RegionLinkGroup_v1,
       ids,
@@ -56,12 +54,11 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  region_link_group_schema_v1 = {
-    YAML_VALUE_PTR (
-      RegionLinkGroup_v1,
-      region_link_group_fields_schema_v1),
-  };
+static const cyaml_schema_value_t region_link_group_schema_v1 = {
+  YAML_VALUE_PTR (
+    RegionLinkGroup_v1,
+    region_link_group_fields_schema_v1),
+};
 
 static const cyaml_schema_value_t
   region_link_group_schema_default = {

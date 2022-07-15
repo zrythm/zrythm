@@ -89,32 +89,27 @@ typedef struct QuantizeOptions
   int      num_q_points;
 } QuantizeOptions;
 
-static const cyaml_schema_field_t
-  quantize_options_fields_schema[] = {
-    YAML_FIELD_INT (QuantizeOptions, schema_version),
-    YAML_FIELD_ENUM (
-      QuantizeOptions,
-      note_length,
-      note_length_strings),
-    YAML_FIELD_ENUM (
-      QuantizeOptions,
-      note_type,
-      note_type_strings),
-    YAML_FIELD_FLOAT (QuantizeOptions, amount),
-    YAML_FIELD_INT (QuantizeOptions, adj_start),
-    YAML_FIELD_INT (QuantizeOptions, adj_end),
-    YAML_FIELD_FLOAT (QuantizeOptions, swing),
-    YAML_FIELD_FLOAT (QuantizeOptions, rand_ticks),
+static const cyaml_schema_field_t quantize_options_fields_schema[] = {
+  YAML_FIELD_INT (QuantizeOptions, schema_version),
+  YAML_FIELD_ENUM (
+    QuantizeOptions,
+    note_length,
+    note_length_strings),
+  YAML_FIELD_ENUM (QuantizeOptions, note_type, note_type_strings),
+  YAML_FIELD_FLOAT (QuantizeOptions, amount),
+  YAML_FIELD_INT (QuantizeOptions, adj_start),
+  YAML_FIELD_INT (QuantizeOptions, adj_end),
+  YAML_FIELD_FLOAT (QuantizeOptions, swing),
+  YAML_FIELD_FLOAT (QuantizeOptions, rand_ticks),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  quantize_options_schema = {
-    YAML_VALUE_PTR (
-      QuantizeOptions,
-      quantize_options_fields_schema),
-  };
+static const cyaml_schema_value_t quantize_options_schema = {
+  YAML_VALUE_PTR (
+    QuantizeOptions,
+    quantize_options_fields_schema),
+};
 
 void
 quantize_options_init (
@@ -132,12 +127,10 @@ float
 quantize_options_get_swing (QuantizeOptions * self);
 
 float
-quantize_options_get_amount (
-  QuantizeOptions * self);
+quantize_options_get_amount (QuantizeOptions * self);
 
 float
-quantize_options_get_randomization (
-  QuantizeOptions * self);
+quantize_options_get_randomization (QuantizeOptions * self);
 
 void
 quantize_options_set_swing (
@@ -184,8 +177,7 @@ quantize_options_quantize_position (
  * Clones the QuantizeOptions.
  */
 QuantizeOptions *
-quantize_options_clone (
-  const QuantizeOptions * src);
+quantize_options_clone (const QuantizeOptions * src);
 
 QuantizeOptions *
 quantize_options_new (void);

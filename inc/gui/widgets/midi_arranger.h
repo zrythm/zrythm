@@ -24,8 +24,7 @@ typedef struct Channel         Channel;
  * @{
  */
 
-#define MW_MIDI_ARRANGER \
-  (MW_MIDI_EDITOR_SPACE->arranger)
+#define MW_MIDI_ARRANGER (MW_MIDI_EDITOR_SPACE->arranger)
 
 /**
  * Returns the note value (0-127) at y.
@@ -98,8 +97,7 @@ midi_arranger_widget_set_hovered_note (
  * arranger.
  */
 void
-midi_arranger_widget_reset_transients (
-  ArrangerWidget * self);
+midi_arranger_widget_reset_transients (ArrangerWidget * self);
 
 /**
  * Called on move items_y setup.
@@ -107,8 +105,7 @@ midi_arranger_widget_reset_transients (
  * calculates the max possible y movement
  */
 int
-midi_arranger_calc_deltamax_for_note_movement (
-  int y_delta);
+midi_arranger_calc_deltamax_for_note_movement (int y_delta);
 
 /**
  * Listen to the currently selected notes.
@@ -121,9 +118,7 @@ midi_arranger_calc_deltamax_for_note_movement (
  *   off if 0.
  */
 void
-midi_arranger_listen_notes (
-  ArrangerWidget * self,
-  bool             listen);
+midi_arranger_listen_notes (ArrangerWidget * self, bool listen);
 
 void
 midi_arranger_show_context_menu (

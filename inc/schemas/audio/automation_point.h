@@ -45,13 +45,9 @@ static const cyaml_schema_field_t
       AutomationPoint_v1,
       base,
       arranger_object_fields_schema_v1),
-    YAML_FIELD_INT (
-      AutomationPoint_v1,
-      schema_version),
+    YAML_FIELD_INT (AutomationPoint_v1, schema_version),
     YAML_FIELD_FLOAT (AutomationPoint_v1, fvalue),
-    YAML_FIELD_FLOAT (
-      AutomationPoint_v1,
-      normalized_val),
+    YAML_FIELD_FLOAT (AutomationPoint_v1, normalized_val),
     YAML_FIELD_INT (AutomationPoint_v1, index),
     YAML_FIELD_MAPPING_EMBEDDED (
       AutomationPoint_v1,
@@ -61,11 +57,10 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  automation_point_schema_v1 = {
-    YAML_VALUE_PTR (
-      AutomationPoint_v1,
-      automation_point_fields_schema_v1),
-  };
+static const cyaml_schema_value_t automation_point_schema_v1 = {
+  YAML_VALUE_PTR (
+    AutomationPoint_v1,
+    automation_point_fields_schema_v1),
+};
 
 #endif

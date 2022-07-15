@@ -37,12 +37,10 @@ on_record_toggled (
       if (!track_is_selected (track))
         {
           track_select (
-            track, F_SELECT, F_EXCLUSIVE,
-            F_PUBLISH_EVENTS);
+            track, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
         }
       track_set_recording (
-        track, gtk_toggle_button_get_active (btn),
-        1);
+        track, gtk_toggle_button_get_active (btn), 1);
     }
 }
 
@@ -55,10 +53,8 @@ on_solo_toggled (
   if (track)
     {
       track_set_soloed (
-        self->track,
-        gtk_toggle_button_get_active (btn),
-        F_TRIGGER_UNDO, F_AUTO_SELECT,
-        F_PUBLISH_EVENTS);
+        self->track, gtk_toggle_button_get_active (btn),
+        F_TRIGGER_UNDO, F_AUTO_SELECT, F_PUBLISH_EVENTS);
     }
 }
 
@@ -71,10 +67,8 @@ on_mute_toggled (
   if (track)
     {
       track_set_muted (
-        self->track,
-        gtk_toggle_button_get_active (btn),
-        F_TRIGGER_UNDO, F_AUTO_SELECT,
-        F_PUBLISH_EVENTS);
+        self->track, gtk_toggle_button_get_active (btn),
+        F_TRIGGER_UNDO, F_AUTO_SELECT, F_PUBLISH_EVENTS);
     }
 }
 
@@ -87,10 +81,8 @@ on_listen_toggled (
   if (track)
     {
       track_set_listened (
-        self->track,
-        gtk_toggle_button_get_active (btn),
-        F_TRIGGER_UNDO, F_AUTO_SELECT,
-        F_PUBLISH_EVENTS);
+        self->track, gtk_toggle_button_get_active (btn),
+        F_TRIGGER_UNDO, F_AUTO_SELECT, F_PUBLISH_EVENTS);
     }
 }
 
@@ -105,12 +97,10 @@ on_mono_compat_toggled (
       if (!track_is_selected (track))
         {
           track_select (
-            track, F_SELECT, F_EXCLUSIVE,
-            F_PUBLISH_EVENTS);
+            track, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
         }
       channel_set_mono_compat_enabled (
-        track->channel,
-        gtk_toggle_button_get_active (btn),
+        track->channel, gtk_toggle_button_get_active (btn),
         F_PUBLISH_EVENTS);
     }
 }
@@ -126,8 +116,7 @@ fader_buttons_widget_block_signal_handlers (
 #endif
 
   g_signal_handler_block (
-    self->mono_compat,
-    self->mono_compat_toggled_handler_id);
+    self->mono_compat, self->mono_compat_toggled_handler_id);
   g_signal_handler_block (
     self->solo, self->solo_toggled_handler_id);
   g_signal_handler_block (
@@ -149,8 +138,7 @@ fader_buttons_widget_unblock_signal_handlers (
 #endif
 
   g_signal_handler_unblock (
-    self->mono_compat,
-    self->mono_compat_toggled_handler_id);
+    self->mono_compat, self->mono_compat_toggled_handler_id);
   g_signal_handler_unblock (
     self->solo, self->solo_toggled_handler_id);
   g_signal_handler_unblock (
@@ -170,15 +158,12 @@ fader_buttons_widget_refresh (
 
   if (track)
     {
-      fader_buttons_widget_block_signal_handlers (
-        self);
-      if (track_type_has_mono_compat_switch (
-            track->type))
+      fader_buttons_widget_block_signal_handlers (self);
+      if (track_type_has_mono_compat_switch (track->type))
         {
           gtk_toggle_button_set_active (
             self->mono_compat,
-            channel_get_mono_compat_enabled (
-              track->channel));
+            channel_get_mono_compat_enabled (track->channel));
           gtk_widget_set_visible (
             GTK_WIDGET (self->mono_compat), true);
         }
@@ -194,8 +179,7 @@ fader_buttons_widget_refresh (
           gtk_widget_set_visible (
             GTK_WIDGET (self->record), true);
           gtk_toggle_button_set_active (
-            self->record,
-            track_get_recording (track));
+            self->record, track_get_recording (track));
         }
       else
         {
@@ -206,8 +190,7 @@ fader_buttons_widget_refresh (
         self->solo, track_get_soloed (track));
       gtk_toggle_button_set_active (
         self->listen, track_get_listened (track));
-      fader_buttons_widget_unblock_signal_handlers (
-        self);
+      fader_buttons_widget_unblock_signal_handlers (self);
     }
 }
 
@@ -219,12 +202,10 @@ on_btn_right_click (
   gdouble              y_dbl,
   FaderButtonsWidget * self)
 {
-  GtkWidget * widget =
-    gtk_event_controller_get_widget (
-      GTK_EVENT_CONTROLLER (gesture));
+  GtkWidget * widget = gtk_event_controller_get_widget (
+    GTK_EVENT_CONTROLLER (gesture));
 
-  Fader * fader =
-    track_get_fader (self->track, true);
+  Fader * fader = track_get_fader (self->track, true);
 
   Port * port = NULL;
   if (widget == GTK_WIDGET (self->mute))
@@ -272,32 +253,26 @@ fader_buttons_finalize (FaderButtonsWidget * self)
 }
 
 static void
-fader_buttons_widget_init (
-  FaderButtonsWidget * self)
+fader_buttons_widget_init (FaderButtonsWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->popover_menu = GTK_POPOVER_MENU (
-    gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
 
   /* add css classes */
   GtkStyleContext * context =
-    gtk_widget_get_style_context (
-      GTK_WIDGET (self->record));
-  gtk_style_context_add_class (
-    context, "record-button");
-  context = gtk_widget_get_style_context (
-    GTK_WIDGET (self->solo));
-  gtk_style_context_add_class (
-    context, "solo-button");
+    gtk_widget_get_style_context (GTK_WIDGET (self->record));
+  gtk_style_context_add_class (context, "record-button");
+  context =
+    gtk_widget_get_style_context (GTK_WIDGET (self->solo));
+  gtk_style_context_add_class (context, "solo-button");
 
-  self->mono_compat_toggled_handler_id =
-    g_signal_connect (
-      G_OBJECT (self->mono_compat), "toggled",
-      G_CALLBACK (on_mono_compat_toggled), self);
+  self->mono_compat_toggled_handler_id = g_signal_connect (
+    G_OBJECT (self->mono_compat), "toggled",
+    G_CALLBACK (on_mono_compat_toggled), self);
   self->solo_toggled_handler_id = g_signal_connect (
     G_OBJECT (self->solo), "toggled",
     G_CALLBACK (on_solo_toggled), self);
@@ -315,17 +290,14 @@ fader_buttons_widget_init (
   GtkGestureClick * mp;
 
 #define ADD_RIGHT_CLICK_CB(widget) \
-  mp = \
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ()); \
+  mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ()); \
   gtk_gesture_single_set_button ( \
-    GTK_GESTURE_SINGLE (mp), \
-    GDK_BUTTON_SECONDARY); \
+    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY); \
   g_signal_connect ( \
     G_OBJECT (mp), "pressed", \
     G_CALLBACK (on_btn_right_click), self); \
   gtk_widget_add_controller ( \
-    GTK_WIDGET (widget), \
-    GTK_EVENT_CONTROLLER (mp))
+    GTK_WIDGET (widget), GTK_EVENT_CONTROLLER (mp))
 
   ADD_RIGHT_CLICK_CB (self->mute);
   ADD_RIGHT_CLICK_CB (self->solo);
@@ -340,10 +312,8 @@ static void
 fader_buttons_widget_class_init (
   FaderButtonsWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "fader_buttons.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "fader_buttons.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

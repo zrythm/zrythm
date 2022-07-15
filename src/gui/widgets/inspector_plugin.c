@@ -23,20 +23,16 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 static void
-setup_color (
-  InspectorPluginWidget * self,
-  Track *                 track)
+setup_color (InspectorPluginWidget * self, Track * track)
 {
   if (track)
     {
-      color_area_widget_setup_track (
-        self->color, track);
+      color_area_widget_setup_track (self->color, track);
     }
   else
     {
       GdkRGBA color = { 1, 1, 1, 1 };
-      color_area_widget_set_color (
-        self->color, &color);
+      color_area_widget_set_color (self->color, &color);
     }
 }
 
@@ -107,8 +103,8 @@ inspector_plugin_widget_show (
 InspectorPluginWidget *
 inspector_plugin_widget_new (void)
 {
-  InspectorPluginWidget * self = g_object_new (
-    INSPECTOR_PLUGIN_WIDGET_TYPE, NULL);
+  InspectorPluginWidget * self =
+    g_object_new (INSPECTOR_PLUGIN_WIDGET_TYPE, NULL);
 
   plugin_properties_expander_widget_setup (
     self->properties, NULL);
@@ -120,15 +116,12 @@ static void
 inspector_plugin_widget_class_init (
   InspectorPluginWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "inspector_plugin.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "inspector_plugin.ui");
 
 #define BIND_CHILD(child) \
   gtk_widget_class_bind_template_child ( \
-    GTK_WIDGET_CLASS (klass), \
-    InspectorPluginWidget, child);
+    GTK_WIDGET_CLASS (klass), InspectorPluginWidget, child);
 
   BIND_CHILD (color);
   BIND_CHILD (properties);
@@ -145,15 +138,12 @@ inspector_plugin_widget_class_init (
 }
 
 static void
-inspector_plugin_widget_init (
-  InspectorPluginWidget * self)
+inspector_plugin_widget_init (InspectorPluginWidget * self)
 {
-  g_type_ensure (
-    PLUGIN_PROPERTIES_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (PLUGIN_PROPERTIES_EXPANDER_WIDGET_TYPE);
   g_type_ensure (PORTS_EXPANDER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self), "inspector");
+  gtk_widget_add_css_class (GTK_WIDGET (self), "inspector");
 }

@@ -26,9 +26,7 @@
 #include "zix/sem.h"
 
 LV2_URID
-lv2_urid_map_uri (
-  LV2_URID_Map_Handle handle,
-  const char *        uri)
+lv2_urid_map_uri (LV2_URID_Map_Handle handle, const char * uri)
 {
   zix_sem_wait (&PM_SYMAP_LOCK);
   const LV2_URID id = symap_map (PM_SYMAP, uri);
@@ -37,9 +35,7 @@ lv2_urid_map_uri (
 }
 
 const char *
-lv2_urid_unmap_uri (
-  LV2_URID_Unmap_Handle handle,
-  LV2_URID              urid)
+lv2_urid_unmap_uri (LV2_URID_Unmap_Handle handle, LV2_URID urid)
 {
   zix_sem_wait (&PM_SYMAP_LOCK);
   const char * uri = symap_unmap (PM_SYMAP, urid);

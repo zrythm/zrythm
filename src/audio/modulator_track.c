@@ -59,8 +59,8 @@ Track *
 modulator_track_default (int track_pos)
 {
   Track * self = track_new (
-    TRACK_TYPE_MODULATOR, track_pos,
-    _ ("Modulators"), F_WITHOUT_LANE);
+    TRACK_TYPE_MODULATOR, track_pos, _ ("Modulators"),
+    F_WITHOUT_LANE);
 
   return self;
 }
@@ -103,8 +103,7 @@ modulator_track_insert_modulator (
               GtkDialog * dialog =
                 dialogs_get_overwrite_plugin_dialog (
                   GTK_WINDOW (MAIN_WINDOW));
-              int result =
-                z_gtk_dialog_run (dialog, true);
+              int result = z_gtk_dialog_run (dialog, true);
 
               /* do nothing if not accepted */
               if (result != GTK_RESPONSE_ACCEPT)
@@ -117,17 +116,14 @@ modulator_track_insert_modulator (
           if (existing_pl)
             {
               modulator_track_remove_modulator (
-                self, slot, F_REPLACING,
-                F_DELETING_PLUGIN,
-                F_NOT_DELETING_TRACK,
-                F_NO_RECALC_GRAPH);
+                self, slot, F_REPLACING, F_DELETING_PLUGIN,
+                F_NOT_DELETING_TRACK, F_NO_RECALC_GRAPH);
             }
         }
 
       g_message (
         "Inserting modulator %s at %s:%d",
-        modulator->setting->descr->name,
-        self->name, slot);
+        modulator->setting->descr->name, self->name, slot);
       if (slot == self->num_modulators)
         {
           array_double_size_if_full (
@@ -145,19 +141,16 @@ modulator_track_insert_modulator (
       /* push other modulators forward (make
        * space for new modulator) */
       self->num_modulators++;
-      for (int i = self->num_modulators - 1;
-           i > slot; i--)
+      for (int i = self->num_modulators - 1; i > slot; i--)
         {
-          self->modulators[i] =
-            self->modulators[i - 1];
+          self->modulators[i] = self->modulators[i - 1];
           g_message (
             "setting modulator %s from slot %d "
             "to slot %d",
-            self->modulators[i]->setting->descr->name,
-            i - 1, i);
+            self->modulators[i]->setting->descr->name, i - 1,
+            i);
           plugin_set_track_and_slot (
-            self->modulators[i],
-            track_get_name_hash (self),
+            self->modulators[i], track_get_name_hash (self),
             PLUGIN_SLOT_MODULATOR, i);
         }
     }
@@ -174,8 +167,7 @@ modulator_track_insert_modulator (
 
   if (gen_automatables)
     {
-      plugin_generate_automation_tracks (
-        modulator, self);
+      plugin_generate_automation_tracks (modulator, self);
     }
 
   if (pub_events)
@@ -213,20 +205,18 @@ modulator_track_remove_modulator (
   Plugin * plugin = self->modulators[slot];
   g_return_if_fail (IS_PLUGIN (plugin));
   g_return_if_fail (
-    plugin->id.track_name_hash
-    == track_get_name_hash (self));
+    plugin->id.track_name_hash == track_get_name_hash (self));
 
   plugin_remove_ats_from_automation_tracklist (
     plugin, deleting_modulator,
     !deleting_track && !deleting_modulator);
 
   g_message (
-    "Removing %s from %s:%d",
-    plugin->setting->descr->name, self->name, slot);
+    "Removing %s from %s:%d", plugin->setting->descr->name,
+    self->name, slot);
 
   /* unexpose all JACK ports */
-  plugin_expose_ports (
-    plugin, F_NOT_EXPOSE, true, true);
+  plugin_expose_ports (plugin, F_NOT_EXPOSE, true, true);
 
   /* if deleting plugin disconnect the plugin
    * entirely */
@@ -236,25 +226,20 @@ modulator_track_remove_modulator (
         {
           mixer_selections_remove_slot (
             MIXER_SELECTIONS, plugin->id.slot,
-            PLUGIN_SLOT_MODULATOR,
-            F_PUBLISH_EVENTS);
+            PLUGIN_SLOT_MODULATOR, F_PUBLISH_EVENTS);
         }
 
       plugin_disconnect (plugin);
-      object_free_w_func_and_null (
-        plugin_free, plugin);
+      object_free_w_func_and_null (plugin_free, plugin);
     }
 
   if (!replacing)
     {
-      for (int i = slot;
-           i < self->num_modulators - 1; i++)
+      for (int i = slot; i < self->num_modulators - 1; i++)
         {
-          self->modulators[i] =
-            self->modulators[i + 1];
+          self->modulators[i] = self->modulators[i + 1];
           plugin_set_track_and_slot (
-            self->modulators[i],
-            track_get_name_hash (self),
+            self->modulators[i], track_get_name_hash (self),
             PLUGIN_SLOT_MODULATOR, i);
         }
       self->num_modulators--;

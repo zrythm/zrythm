@@ -40,8 +40,7 @@
 #  endif
 
 #  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored \
-    "-Wdeprecated-declarations"
+#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #  include <gtksourceview/gtksource.h>
 #  pragma GCC diagnostic pop
 
@@ -52,20 +51,17 @@
  */
 
 #  define DEFAULT_CLIPBOARD \
-    gdk_display_get_clipboard ( \
-      gdk_display_get_default ())
+    gdk_display_get_clipboard (gdk_display_get_default ())
 
 #  define CREATE_MIDI_LEARN_MENU_ITEM(action) \
     z_gtk_create_menu_item ( \
       _ ("MIDI learn"), "signal-midi", action)
 
 #  define CREATE_CUT_MENU_ITEM(action) \
-    z_gtk_create_menu_item ( \
-      _ ("Cu_t"), "edit-cut", action)
+    z_gtk_create_menu_item (_ ("Cu_t"), "edit-cut", action)
 
 #  define CREATE_COPY_MENU_ITEM(action) \
-    z_gtk_create_menu_item ( \
-      _ ("_Copy"), "edit-copy", action)
+    z_gtk_create_menu_item (_ ("_Copy"), "edit-copy", action)
 
 #  define CREATE_PASTE_MENU_ITEM(action) \
     z_gtk_create_menu_item ( \
@@ -82,20 +78,17 @@
 
 #  define CREATE_SELECT_ALL_MENU_ITEM(action) \
     z_gtk_create_menu_item ( \
-      _ ("Select A_ll"), "edit-select-all", \
-      action)
+      _ ("Select A_ll"), "edit-select-all", action)
 
 #  define CREATE_DUPLICATE_MENU_ITEM(action) \
     z_gtk_create_menu_item ( \
       _ ("Duplicate"), "edit-duplicate", action)
 
 #  define CREATE_MUTE_MENU_ITEM(action) \
-    z_gtk_create_menu_item ( \
-      _ ("Mute"), "mute", action)
+    z_gtk_create_menu_item (_ ("Mute"), "mute", action)
 
 #  define CREATE_UNMUTE_MENU_ITEM(action) \
-    z_gtk_create_menu_item ( \
-      _ ("Unmute"), NULL, action)
+    z_gtk_create_menu_item (_ ("Unmute"), NULL, action)
 
 #  define z_gtk_assistant_set_current_page_complete( \
     assistant, complete) \
@@ -154,12 +147,10 @@ enum ZGtkShrink
 };
 
 static inline GtkWidget *
-z_gtk_notebook_get_current_page_widget (
-  GtkNotebook * notebook)
+z_gtk_notebook_get_current_page_widget (GtkNotebook * notebook)
 {
   return gtk_notebook_get_nth_page (
-    notebook,
-    gtk_notebook_get_current_page (notebook));
+    notebook, gtk_notebook_get_current_page (notebook));
 }
 
 static inline GtkWidget *
@@ -168,8 +159,7 @@ z_gtk_notebook_get_current_tab_label_widget (
 {
   return gtk_notebook_get_tab_label (
     notebook,
-    z_gtk_notebook_get_current_page_widget (
-      notebook));
+    z_gtk_notebook_get_current_page_widget (notebook));
 }
 
 GdkMonitor *
@@ -185,16 +175,14 @@ bool
 z_gtk_is_wayland (void);
 
 void
-z_gtk_tree_view_remove_all_columns (
-  GtkTreeView * treeview);
+z_gtk_tree_view_remove_all_columns (GtkTreeView * treeview);
 
 void
 z_gtk_column_view_remove_all_columnes (
   GtkColumnView * column_view);
 
 GListStore *
-z_gtk_column_view_get_list_store (
-  GtkColumnView * column_view);
+z_gtk_column_view_get_list_store (GtkColumnView * column_view);
 
 /**
  * Removes all items and re-populates the list
@@ -206,12 +194,10 @@ z_gtk_list_store_splice (
   GPtrArray *  ptr_array);
 
 void
-z_gtk_widget_remove_all_children (
-  GtkWidget * widget);
+z_gtk_widget_remove_all_children (GtkWidget * widget);
 
 void
-z_gtk_widget_destroy_all_children (
-  GtkWidget * widget);
+z_gtk_widget_destroy_all_children (GtkWidget * widget);
 
 void
 z_gtk_widget_remove_children_of_type (
@@ -259,8 +245,7 @@ z_gtk_button_set_icon_name_and_text (
  * Creates a toggle button with the given icon name.
  */
 GtkToggleButton *
-z_gtk_toggle_button_new_with_icon (
-  const char * name);
+z_gtk_toggle_button_new_with_icon (const char * name);
 
 /**
  * Creates a toggle button with the given icon name.
@@ -397,9 +382,8 @@ z_gtk_widget_remove_style_class (
 static inline GdkDevice *
 z_gtk_widget_get_device (GtkWidget * widget)
 {
-  return (gdk_seat_get_pointer (
-    gdk_display_get_default_seat (
-      gtk_widget_get_display (widget))));
+  return (gdk_seat_get_pointer (gdk_display_get_default_seat (
+    gtk_widget_get_display (widget))));
 }
 
 #  if 0
@@ -461,8 +445,7 @@ z_gtk_warp_cursor_to (
 static inline GdkSurface *
 z_gtk_widget_get_surface (GtkWidget * widget)
 {
-  GtkNative * native =
-    gtk_widget_get_native (widget);
+  GtkNative * native = gtk_widget_get_native (widget);
   return gtk_native_get_surface (native);
 }
 
@@ -479,8 +462,7 @@ z_gtk_widget_get_mask (
 {
   gdk_surface_get_device_position (
     z_gtk_widget_get_surface (widget),
-    z_gtk_widget_get_device (widget), NULL, NULL,
-    mask);
+    z_gtk_widget_get_device (widget), NULL, NULL, mask);
 }
 
 /**
@@ -489,10 +471,8 @@ z_gtk_widget_get_mask (
 static inline int
 z_gtk_keyval_is_alt (const guint keyval)
 {
-  return keyval == GDK_KEY_Alt_L
-         || keyval == GDK_KEY_Alt_R
-         || keyval == GDK_KEY_Meta_L
-         || keyval == GDK_KEY_Meta_R;
+  return keyval == GDK_KEY_Alt_L || keyval == GDK_KEY_Alt_R
+         || keyval == GDK_KEY_Meta_L || keyval == GDK_KEY_Meta_R;
 }
 
 /**
@@ -511,10 +491,8 @@ z_gtk_keyval_is_ctrl (const guint keyval)
 static inline int
 z_gtk_keyval_is_arrow (const guint keyval)
 {
-  return keyval == GDK_KEY_Left
-         || keyval == GDK_KEY_Right
-         || keyval == GDK_KEY_Down
-         || keyval == GDK_KEY_Up;
+  return keyval == GDK_KEY_Left || keyval == GDK_KEY_Right
+         || keyval == GDK_KEY_Down || keyval == GDK_KEY_Up;
 }
 
 /**
@@ -523,17 +501,14 @@ z_gtk_keyval_is_arrow (const guint keyval)
 static inline int
 z_gtk_keyval_is_shift (const guint keyval)
 {
-  return keyval == GDK_KEY_Shift_L
-         || keyval == GDK_KEY_Shift_R;
+  return keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R;
 }
 
 /**
  * Returns the nth child of a container.
  */
 GtkWidget *
-z_gtk_widget_get_nth_child (
-  GtkWidget * widget,
-  int         index);
+z_gtk_widget_get_nth_child (GtkWidget * widget, int index);
 
 /**
  * Sets the ellipsize mode of each text cell
@@ -560,20 +535,16 @@ z_gtk_button_set_emblem (
  * in GtkBox's.
  */
 void
-z_gtk_setup_foldable_notebook (
-  GtkNotebook * notebook);
+z_gtk_setup_foldable_notebook (GtkNotebook * notebook);
 
 /**
  * Sets the margin on all 4 sides on the widget.
  */
 void
-z_gtk_widget_set_margin (
-  GtkWidget * widget,
-  int         margin);
+z_gtk_widget_set_margin (GtkWidget * widget, int margin);
 
 GtkFlowBoxChild *
-z_gtk_flow_box_get_selected_child (
-  GtkFlowBox * self);
+z_gtk_flow_box_get_selected_child (GtkFlowBox * self);
 
 /**
  * Callback to use for simple directory links.
@@ -612,8 +583,7 @@ z_gtk_message_dialog_wrap_message_area_in_scroll (
  * Must be free'd using g_free().
  */
 char *
-z_gtk_text_buffer_get_full_text (
-  GtkTextBuffer * buffer);
+z_gtk_text_buffer_get_full_text (GtkTextBuffer * buffer);
 
 /**
  * Generates a screenshot image for the given
@@ -656,8 +626,7 @@ z_gtk_actionable_set_action_from_setting (
  * error.
  */
 int
-z_gtk_tree_view_column_get_column_id (
-  GtkTreeViewColumn * col);
+z_gtk_tree_view_column_get_column_id (GtkTreeViewColumn * col);
 
 bool
 z_gtk_is_event_button (GdkEvent * ev);
@@ -682,9 +651,7 @@ z_gtk_graphene_rect_t_to_gdk_rectangle (
  * @return The response ID.
  */
 int
-z_gtk_dialog_run (
-  GtkDialog * dialog,
-  bool        destroy_on_close);
+z_gtk_dialog_run (GtkDialog * dialog, bool destroy_on_close);
 
 /**
  * The popover must already exist as a children
@@ -803,8 +770,7 @@ z_gtk_widget_find_child_of_type (
   GType       type);
 
 void
-z_gtk_list_box_remove_all_children (
-  GtkListBox * list_box);
+z_gtk_list_box_remove_all_children (GtkListBox * list_box);
 
 /**
  * @}

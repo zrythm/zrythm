@@ -24,8 +24,7 @@ foldable_track_init (Track * self)
     {
       /* GTK color picker color */
       gdk_rgba_parse (&self->color, "#865E3C");
-      self->icon_name =
-        g_strdup ("fluentui-folder-regular");
+      self->icon_name = g_strdup ("fluentui-folder-regular");
     }
 }
 
@@ -81,9 +80,7 @@ foldable_track_is_status (
  * @p self.
  */
 bool
-foldable_track_is_direct_child (
-  Track * self,
-  Track * child)
+foldable_track_is_direct_child (Track * self, Track * child)
 {
   GPtrArray * parents = g_ptr_array_new ();
   track_add_folder_parents (child, parents, true);
@@ -91,8 +88,7 @@ foldable_track_is_direct_child (
   bool match = parents->len > 0;
   if (match)
     {
-      Track * parent =
-        g_ptr_array_index (parents, 0);
+      Track * parent = g_ptr_array_index (parents, 0);
       if (parent != self)
         {
           match = false;
@@ -116,8 +112,7 @@ foldable_track_is_child (Track * self, Track * child)
   bool match = false;
   for (size_t i = 0; i < parents->len; i++)
     {
-      Track * parent =
-        g_ptr_array_index (parents, i);
+      Track * parent = g_ptr_array_index (parents, i);
       if (parent == self)
         {
           match = true;
@@ -143,12 +138,11 @@ foldable_track_add_to_size (Track * self, int delta)
 
   self->size += delta;
   g_debug (
-    "new %s size: %d (added %d)", self->name,
-    self->size, delta);
+    "new %s size: %d (added %d)", self->name, self->size,
+    delta);
   for (size_t i = 0; i < parents->len; i++)
     {
-      Track * parent =
-        g_ptr_array_index (parents, i);
+      Track * parent = g_ptr_array_index (parents, i);
       parent->size += delta;
       g_debug (
         "new %s size: %d (added %d)", parent->name,

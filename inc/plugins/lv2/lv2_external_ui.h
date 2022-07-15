@@ -22,11 +22,9 @@
 
 #define LV2_EXTERNAL_UI_URI \
   "http://kxstudio.sf.net/ns/lv2ext/external-ui"
-#define LV2_EXTERNAL_UI_PREFIX \
-  LV2_EXTERNAL_UI_URI "#"
+#define LV2_EXTERNAL_UI_PREFIX LV2_EXTERNAL_UI_URI "#"
 
-#define LV2_EXTERNAL_UI__Host \
-  LV2_EXTERNAL_UI_PREFIX "Host"
+#define LV2_EXTERNAL_UI__Host LV2_EXTERNAL_UI_PREFIX "Host"
 #define LV2_EXTERNAL_UI__Widget \
   LV2_EXTERNAL_UI_PREFIX "Widget"
 
@@ -51,24 +49,21 @@ typedef struct _LV2_External_UI_Widget
    *
    * @param _this_ the UI context
    */
-  void (*run) (
-    struct _LV2_External_UI_Widget * _this_);
+  void (*run) (struct _LV2_External_UI_Widget * _this_);
 
   /**
    * Host calls this function to make the plugin UI visible.
    *
    * @param _this_ the UI context
    */
-  void (*show) (
-    struct _LV2_External_UI_Widget * _this_);
+  void (*show) (struct _LV2_External_UI_Widget * _this_);
 
   /**
    * Host calls this function to make the plugin UI invisible again.
    *
    * @param _this_ the UI context
    */
-  void (*hide) (
-    struct _LV2_External_UI_Widget * _this_);
+  void (*hide) (struct _LV2_External_UI_Widget * _this_);
 
 } LV2_External_UI_Widget;
 

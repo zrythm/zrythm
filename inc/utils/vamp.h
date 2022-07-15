@@ -278,13 +278,10 @@ void
 vamp_print_all (void);
 
 const VampPluginDescriptor *
-vamp_get_simple_fixed_tempo_estimator_descriptor (
-  void);
+vamp_get_simple_fixed_tempo_estimator_descriptor (void);
 
 ZVampPlugin *
-vamp_get_plugin (
-  ZVampPluginType type,
-  float           samplerate);
+vamp_get_plugin (ZVampPluginType type, float samplerate);
 
 void
 vamp_plugin_initialize (
@@ -308,16 +305,13 @@ vamp_plugin_get_remaining_features (
   unsigned int  samplerate);
 
 size_t
-vamp_plugin_get_preferred_step_size (
-  ZVampPlugin * plugin);
+vamp_plugin_get_preferred_step_size (ZVampPlugin * plugin);
 
 size_t
-vamp_plugin_get_preferred_block_size (
-  ZVampPlugin * plugin);
+vamp_plugin_get_preferred_block_size (ZVampPlugin * plugin);
 
 ZVampOutputList *
-vamp_plugin_get_output_descriptors (
-  ZVampPlugin * plugin);
+vamp_plugin_get_output_descriptors (ZVampPlugin * plugin);
 
 ZVampOutputDescriptor *
 vamp_output_descriptor_new (
@@ -349,23 +343,19 @@ vamp_feature_set_get_list_for_output (
   int               output_idx);
 
 void
-vamp_feature_list_print (
-  const ZVampFeatureList * self);
+vamp_feature_list_print (const ZVampFeatureList * self);
 
 void
-vamp_feature_set_print (
-  const ZVampFeatureSet * self);
+vamp_feature_set_print (const ZVampFeatureSet * self);
 
 void
 vamp_feature_print (ZVampFeature * self);
 
 void
-vamp_plugin_output_print (
-  ZVampOutputDescriptor * self);
+vamp_plugin_output_print (ZVampOutputDescriptor * self);
 
 void
-vamp_plugin_output_list_print (
-  ZVampOutputList * self);
+vamp_plugin_output_list_print (ZVampOutputList * self);
 
 void
 vamp_feature_free (void * self);
@@ -380,8 +370,7 @@ void
 vamp_feature_set_free (ZVampFeatureSet * self);
 
 void
-vamp_plugin_output_list_free (
-  ZVampOutputList * self);
+vamp_plugin_output_list_free (ZVampOutputList * self);
 
 /**
  * @}

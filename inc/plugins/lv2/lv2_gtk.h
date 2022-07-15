@@ -41,11 +41,10 @@
 #ifndef __PLUGINS_LV2_GTK_H__
 #define __PLUGINS_LV2_GTK_H__
 
-typedef struct Lv2Plugin  Lv2Plugin;
-typedef struct Lv2Control Lv2Control;
-typedef struct PluginGtkPresetMenu
-                    PluginGtkPresetMenu;
-typedef struct Port Port;
+typedef struct Lv2Plugin           Lv2Plugin;
+typedef struct Lv2Control          Lv2Control;
+typedef struct PluginGtkPresetMenu PluginGtkPresetMenu;
+typedef struct Port                Port;
 
 #include <stdint.h>
 

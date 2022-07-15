@@ -37,18 +37,17 @@ SCM_DEFINE (
   "Connects 2 ports as an undoable action.")
 #define FUNC_NAME s_
 {
-  PortIdentifier * src_id = (PortIdentifier *)
-    scm_to_pointer (src_port_id);
-  PortIdentifier * dest_id = (PortIdentifier *)
-    scm_to_pointer (dest_port_id);
+  PortIdentifier * src_id =
+    (PortIdentifier *) scm_to_pointer (src_port_id);
+  PortIdentifier * dest_id =
+    (PortIdentifier *) scm_to_pointer (dest_port_id);
 
   GError * err = NULL;
-  bool ret = port_connection_action_perform_connect (
-    src_id, dest_id, &err);
+  bool     ret = port_connection_action_perform_connect (
+        src_id, dest_id, &err);
   if (!ret)
     {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to connect ports"));
+      HANDLE_ERROR (err, "%s", _ ("Failed to connect ports"));
     }
 
   return scm_from_bool (ret);
@@ -66,10 +65,8 @@ init_module (void * data)
 }
 
 void
-guile_actions_port_connection_action_define_module (
-  void)
+guile_actions_port_connection_action_define_module (void)
 {
   scm_c_define_module (
-    "actions port-connection-action", init_module,
-    NULL);
+    "actions port-connection-action", init_module, NULL);
 }

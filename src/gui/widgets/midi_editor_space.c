@@ -71,8 +71,7 @@ link_scrolls (MidiEditorSpaceWidget * self)
       gtk_scrolled_window_set_vadjustment (
         self->piano_roll_keys_scroll,
         gtk_scrolled_window_get_vadjustment (
-          GTK_SCROLLED_WINDOW (
-            self->arranger_scroll)));
+          GTK_SCROLLED_WINDOW (self->arranger_scroll)));
     }
 
   /* link ruler h scroll to arranger h scroll */
@@ -137,9 +136,8 @@ midi_editor_space_tick_cb (
 {
   MidiEditorSpaceWidget * self =
     Z_MIDI_EDITOR_SPACE_WIDGET (user_data);
-  GtkAdjustment * adj =
-    gtk_scrolled_window_get_vadjustment (
-      self->arranger_scroll);
+  GtkAdjustment * adj = gtk_scrolled_window_get_vadjustment (
+    self->arranger_scroll);
   double lower = gtk_adjustment_get_lower (adj);
   double upper = gtk_adjustment_get_upper (adj);
 
@@ -157,11 +155,9 @@ midi_editor_space_tick_cb (
 }
 
 void
-midi_editor_space_widget_refresh (
-  MidiEditorSpaceWidget * self)
+midi_editor_space_widget_refresh (MidiEditorSpaceWidget * self)
 {
-  piano_roll_keys_widget_refresh (
-    self->piano_roll_keys);
+  piano_roll_keys_widget_refresh (self->piano_roll_keys);
 
   /* relink scrolls (why?) */
   link_scrolls (self);
@@ -179,34 +175,29 @@ midi_editor_space_widget_update_size_group (
 {
   clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
     MW_CLIP_EDITOR_INNER,
-    GTK_WIDGET (self->midi_vel_chooser_box),
-    visible);
+    GTK_WIDGET (self->midi_vel_chooser_box), visible);
   clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
-    MW_CLIP_EDITOR_INNER,
-    GTK_WIDGET (self->midi_notes_box), visible);
+    MW_CLIP_EDITOR_INNER, GTK_WIDGET (self->midi_notes_box),
+    visible);
 }
 
 void
-midi_editor_space_widget_setup (
-  MidiEditorSpaceWidget * self)
+midi_editor_space_widget_setup (MidiEditorSpaceWidget * self)
 {
   if (self->arranger)
     {
       arranger_widget_setup (
         Z_ARRANGER_WIDGET (self->arranger),
-        ARRANGER_WIDGET_TYPE_MIDI,
-        SNAP_GRID_EDITOR);
+        ARRANGER_WIDGET_TYPE_MIDI, SNAP_GRID_EDITOR);
     }
   if (self->modifier_arranger)
     {
       arranger_widget_setup (
         Z_ARRANGER_WIDGET (self->modifier_arranger),
-        ARRANGER_WIDGET_TYPE_MIDI_MODIFIER,
-        SNAP_GRID_EDITOR);
+        ARRANGER_WIDGET_TYPE_MIDI_MODIFIER, SNAP_GRID_EDITOR);
     }
 
-  piano_roll_keys_widget_setup (
-    self->piano_roll_keys);
+  piano_roll_keys_widget_setup (self->piano_roll_keys);
 
   midi_editor_space_widget_refresh (self);
 }
@@ -214,17 +205,15 @@ midi_editor_space_widget_setup (
 static void
 dispose (MidiEditorSpaceWidget * self)
 {
-  gtk_widget_unparent (GTK_WIDGET (
-    self->midi_arranger_velocity_paned));
+  gtk_widget_unparent (
+    GTK_WIDGET (self->midi_arranger_velocity_paned));
 
-  G_OBJECT_CLASS (
-    midi_editor_space_widget_parent_class)
+  G_OBJECT_CLASS (midi_editor_space_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
 
 static void
-midi_editor_space_widget_init (
-  MidiEditorSpaceWidget * self)
+midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
 {
   g_type_ensure (PIANO_ROLL_KEYS_WIDGET_TYPE);
 
@@ -259,8 +248,7 @@ midi_editor_space_widget_init (
 
   /* setup signals */
   g_signal_connect (
-    G_OBJECT (self->midi_modifier_chooser),
-    "changed",
+    G_OBJECT (self->midi_modifier_chooser), "changed",
     G_CALLBACK (on_midi_modifier_changed), self);
   /*g_signal_connect (*/
   /*G_OBJECT (self->piano_roll_keys_box),*/
@@ -279,18 +267,15 @@ midi_editor_space_widget_init (
     GTK_EVENT_CONTROLLER (scroll_controller));
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), midi_editor_space_tick_cb,
-    self, NULL);
+    GTK_WIDGET (self), midi_editor_space_tick_cb, self, NULL);
 }
 
 static void
 midi_editor_space_widget_class_init (
   MidiEditorSpaceWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "midi_editor_space.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "midi_editor_space.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

@@ -36,8 +36,7 @@ TYPEDEF_STRUCT_UNDERSCORED (PortConnectionsWidget);
  * @{
  */
 
-#define MW_MAIN_NOTEBOOK \
-  MW_CENTER_DOCK->main_notebook
+#define MW_MAIN_NOTEBOOK MW_CENTER_DOCK->main_notebook
 
 typedef struct _MainNotebookWidget
 {
@@ -46,7 +45,7 @@ typedef struct _MainNotebookWidget
   PanelFrame * panel_frame;
 
   /** Event viewr + timeline panel. */
-  GtkPaned * timeline_plus_event_viewer_paned;
+  GtkPaned *            timeline_plus_event_viewer_paned;
   TimelinePanelWidget * timeline_panel;
   EventViewerWidget *   event_viewer;
 
@@ -60,19 +59,16 @@ typedef struct _MainNotebookWidget
 } MainNotebookWidget;
 
 void
-main_notebook_widget_setup (
-  MainNotebookWidget * self);
+main_notebook_widget_setup (MainNotebookWidget * self);
 
 void
-main_notebook_widget_refresh (
-  MainNotebookWidget * self);
+main_notebook_widget_refresh (MainNotebookWidget * self);
 
 /**
  * Prepare for finalization.
  */
 void
-main_notebook_widget_tear_down (
-  MainNotebookWidget * self);
+main_notebook_widget_tear_down (MainNotebookWidget * self);
 
 /**
  * @}

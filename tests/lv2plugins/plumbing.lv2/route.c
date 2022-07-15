@@ -8,8 +8,7 @@
 
 #include "lv2/lv2plug.in/ns/lv2core/lv2.h"
 
-#define PLB_URI \
-  "http://gareus.org/oss/lv2/plumbing#"
+#define PLB_URI "http://gareus.org/oss/lv2/plumbing#"
 #define MAX_CHANNELS 8
 
 typedef struct
@@ -30,8 +29,8 @@ a_instantiate (
   const char *                bundle_path,
   const LV2_Feature * const * features)
 {
-  LVAudioPlumbing * self = (LVAudioPlumbing *)
-    calloc (1, sizeof (LVAudioPlumbing));
+  LVAudioPlumbing * self =
+    (LVAudioPlumbing *) calloc (1, sizeof (LVAudioPlumbing));
   if (!self)
     return NULL;
 
@@ -41,89 +40,75 @@ a_instantiate (
       self->n_in = 1;
       self->n_out = 2;
     }
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_1_3"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_1_3"))
     {
       self->n_in = 1;
       self->n_out = 3;
     }
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_1_4"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_1_4"))
     {
       self->n_in = 1;
       self->n_out = 4;
     }
 
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_2_1"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_2_1"))
     {
       self->n_in = 2;
       self->n_out = 1;
     }
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_2_2"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_2_2"))
     {
       self->n_in = 2;
       self->n_out = 2;
     }
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_2_3"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_2_3"))
     {
       self->n_in = 2;
       self->n_out = 3;
     }
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_2_4"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_2_4"))
     {
       self->n_in = 2;
       self->n_out = 4;
     }
 
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_3_1"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_3_1"))
     {
       self->n_in = 3;
       self->n_out = 1;
     }
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_3_2"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_3_2"))
     {
       self->n_in = 3;
       self->n_out = 2;
     }
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_3_3"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_3_3"))
     {
       self->n_in = 3;
       self->n_out = 3;
     }
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_3_4"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_3_4"))
     {
       self->n_in = 3;
       self->n_out = 4;
     }
 
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_4_1"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_4_1"))
     {
       self->n_in = 4;
       self->n_out = 1;
     }
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_4_2"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_4_2"))
     {
       self->n_in = 4;
       self->n_out = 2;
     }
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_4_3"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_4_3"))
     {
       self->n_in = 4;
       self->n_out = 3;
     }
-  else if (!strcmp (
-             descriptor->URI, PLB_URI "route_4_4"))
+  else if (!strcmp (descriptor->URI, PLB_URI "route_4_4"))
     {
       self->n_in = 4;
       self->n_out = 4;
@@ -138,13 +123,9 @@ a_instantiate (
 }
 
 static void
-a_connect_port (
-  LV2_Handle instance,
-  uint32_t   port,
-  void *     data)
+a_connect_port (LV2_Handle instance, uint32_t port, void * data)
 {
-  LVAudioPlumbing * self =
-    (LVAudioPlumbing *) instance;
+  LVAudioPlumbing * self = (LVAudioPlumbing *) instance;
 
   if (port < self->n_out)
     {
@@ -154,11 +135,9 @@ a_connect_port (
     {
       self->input[port - self->n_out] = data;
     }
-  else if (
-    port < self->n_out + self->n_in + self->n_out)
+  else if (port < self->n_out + self->n_in + self->n_out)
     {
-      self->output[port - self->n_in - self->n_out] =
-        data;
+      self->output[port - self->n_in - self->n_out] = data;
     }
   else
     {
@@ -169,9 +148,8 @@ a_connect_port (
 static void
 a_run (LV2_Handle instance, uint32_t n_samples)
 {
-  LVAudioPlumbing * self =
-    (LVAudioPlumbing *) instance;
-  uint32_t map[MAX_CHANNELS];
+  LVAudioPlumbing * self = (LVAudioPlumbing *) instance;
+  uint32_t          map[MAX_CHANNELS];
   for (uint32_t c = 0; c < self->n_out; ++c)
     {
       map[c] = *(self->chnmap[c]);
@@ -188,8 +166,7 @@ a_run (LV2_Handle instance, uint32_t n_samples)
         && self->input[map[c] - 1] != self->output[c])
         {
           memcpy (
-            self->output[c],
-            self->input[map[c] - 1],
+            self->output[c], self->input[map[c] - 1],
             sizeof (float) * n_samples);
         }
     }
@@ -199,8 +176,7 @@ a_run (LV2_Handle instance, uint32_t n_samples)
       if (map[c] == 0)
         {
           memset (
-            self->output[c], 0,
-            sizeof (float) * n_samples);
+            self->output[c], 0, sizeof (float) * n_samples);
         }
     }
 }

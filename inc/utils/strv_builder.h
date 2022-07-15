@@ -41,14 +41,10 @@ StrvBuilder *
 strv_builder_ref (StrvBuilder * builder);
 
 void
-strv_builder_add (
-  StrvBuilder * builder,
-  const char *  value);
+strv_builder_add (StrvBuilder * builder, const char * value);
 
 void
-strv_builder_addv (
-  StrvBuilder * builder,
-  const char ** value);
+strv_builder_addv (StrvBuilder * builder, const char ** value);
 
 void
 strv_builder_add_many (StrvBuilder * builder, ...)

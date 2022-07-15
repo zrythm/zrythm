@@ -32,8 +32,8 @@ suil_host_new (
   SuilPortSubscribeFunc   subscribe_func,
   SuilPortUnsubscribeFunc unsubscribe_func)
 {
-  SuilHost * host = (SuilHost *) calloc (
-    1, sizeof (struct SuilHostImpl));
+  SuilHost * host =
+    (SuilHost *) calloc (1, sizeof (struct SuilHostImpl));
   host->write_func = write_func;
   host->index_func = index_func;
   host->subscribe_func = subscribe_func;

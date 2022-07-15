@@ -48,8 +48,7 @@ lv2_worker_respond (
 {
   Lv2Worker * worker = (Lv2Worker *) handle;
   zix_ring_write (
-    worker->responses, (const char *) &size,
-    sizeof (size));
+    worker->responses, (const char *) &size, sizeof (size));
   zix_ring_write (
     worker->responses, (const char *) data, size);
   return LV2_WORKER_SUCCESS;
@@ -75,8 +74,7 @@ worker_func (void * data)
 
       uint32_t size = 0;
       zix_ring_read (
-        worker->requests, (char *) &size,
-        sizeof (size));
+        worker->requests, (char *) &size, sizeof (size));
 
       if (!(buf = realloc (buf, size)))
         {
@@ -85,8 +83,7 @@ worker_func (void * data)
           return NULL;
         }
 
-      zix_ring_read (
-        worker->requests, (char *) buf, size);
+      zix_ring_read (worker->requests, (char *) buf, size);
 
       zix_sem_wait (&plugin->work_lock);
       char pl_str[700];
@@ -94,12 +91,11 @@ worker_func (void * data)
       if (DEBUGGING)
         {
           g_debug (
-            "running work (threaded) for plugin %s",
-            pl_str);
+            "running work (threaded) for plugin %s", pl_str);
         }
       worker->iface->work (
-        plugin->instance->lv2_handle,
-        lv2_worker_respond, worker, size, buf);
+        plugin->instance->lv2_handle, lv2_worker_respond,
+        worker, size, buf);
       zix_sem_post (&plugin->work_lock);
     }
 
@@ -173,8 +169,7 @@ lv2_worker_schedule (
       if (!worker->iface)
         {
           g_warning (
-            "Worker interface for %s is NULL",
-            pl_str);
+            "Worker interface for %s is NULL", pl_str);
           return LV2_WORKER_ERR_UNKNOWN;
         }
       g_debug (
@@ -182,8 +177,8 @@ lv2_worker_schedule (
         "for plugin %s",
         worker->threaded, pl_str);
       worker->iface->work (
-        plugin->instance->lv2_handle,
-        lv2_worker_respond, worker, size, data);
+        plugin->instance->lv2_handle, lv2_worker_respond,
+        worker, size, data);
       zix_sem_post (&plugin->work_lock);
     }
   else
@@ -191,11 +186,9 @@ lv2_worker_schedule (
       /* Schedule a request to be executed by the
        * worker thread */
       zix_ring_write (
-        worker->requests, (const char *) &size,
-        sizeof (size));
+        worker->requests, (const char *) &size, sizeof (size));
       zix_ring_write (
-        worker->requests, (const char *) data,
-        size);
+        worker->requests, (const char *) data, size);
       zix_sem_post (&worker->sem);
     }
   return LV2_WORKER_SUCCESS;
@@ -220,16 +213,14 @@ lv2_worker_emit_responses (
         {
           uint32_t size = 0;
           zix_ring_read (
-            worker->responses, (char *) &size,
-            sizeof (size));
+            worker->responses, (char *) &size, sizeof (size));
 
           zix_ring_read (
-            worker->responses,
-            (char *) worker->response, size);
+            worker->responses, (char *) worker->response,
+            size);
 
           worker->iface->work_response (
-            instance->lv2_handle, size,
-            worker->response);
+            instance->lv2_handle, size, worker->response);
 
           read_space -= sizeof (size) + size;
         }

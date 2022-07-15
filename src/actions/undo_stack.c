@@ -12,19 +12,15 @@
 
 NONNULL
 size_t
-undo_stack_get_total_cached_actions (
-  UndoStack * self)
+undo_stack_get_total_cached_actions (UndoStack * self)
 {
   size_t total =
-    self->num_as_actions
-    + self->num_mixer_selections_actions
+    self->num_as_actions + self->num_mixer_selections_actions
     + self->num_tracklist_selections_actions
     + self->num_channel_send_actions
-    + self->num_midi_mapping_actions
-    + self->num_port_actions
+    + self->num_midi_mapping_actions + self->num_port_actions
     + self->num_port_connection_actions
-    + self->num_range_actions
-    + self->num_transport_actions
+    + self->num_range_actions + self->num_transport_actions
     + self->num_chord_actions;
 
   if ((int) total > self->stack->max_length)
@@ -66,8 +62,7 @@ undo_stack_init_loaded (UndoStack * self)
   /* if there are still actions of this type */ \
   if (sc##_actions_idx < self->num_##sc##_actions) \
     { \
-      cc##Action * a = \
-        self->sc##_actions[sc##_actions_idx]; \
+      cc##Action * a = self->sc##_actions[sc##_actions_idx]; \
       UndoableAction * ua = (UndoableAction *) a; \
       undoable_action_init_loaded (ua); \
       if (self->stack->top + 1 == ua->stack_idx) \
@@ -80,8 +75,7 @@ undo_stack_init_loaded (UndoStack * self)
   for (size_t i = 0; i < total_actions; i++)
     {
       DO_SIMPLE (ArrangerSelections, as)
-      DO_SIMPLE (
-        TracklistSelections, tracklist_selections)
+      DO_SIMPLE (TracklistSelections, tracklist_selections)
       DO_SIMPLE (ChannelSend, channel_send)
       DO_SIMPLE (MixerSelections, mixer_selections)
       DO_SIMPLE (PortConnection, port_connection)
@@ -94,8 +88,7 @@ undo_stack_init_loaded (UndoStack * self)
 
   g_return_if_fail (
     self->stack->top + 1
-    == (int) undo_stack_get_total_cached_actions (
-      self));
+    == (int) undo_stack_get_total_cached_actions (self));
 }
 
 UndoStack *
@@ -133,8 +126,7 @@ undo_stack_clone (const UndoStack * src)
 
   /* clone all actions */
 #define CLONE_ACTIONS(arr, fn, type) \
-  self->arr = \
-    object_new_n (src->num_##arr, type *); \
+  self->arr = object_new_n (src->num_##arr, type *); \
   for (size_t i = 0; i < src->num_##arr; i++) \
     { \
       self->arr[i] = fn##_clone (src->arr[i]); \
@@ -146,38 +138,32 @@ undo_stack_clone (const UndoStack * src)
     as_actions, arranger_selections_action,
     ArrangerSelectionsAction);
   CLONE_ACTIONS (
-    mixer_selections_actions,
-    mixer_selections_action, MixerSelectionsAction);
+    mixer_selections_actions, mixer_selections_action,
+    MixerSelectionsAction);
   CLONE_ACTIONS (
-    tracklist_selections_actions,
-    tracklist_selections_action,
+    tracklist_selections_actions, tracklist_selections_action,
     TracklistSelectionsAction);
   CLONE_ACTIONS (
     channel_send_actions, channel_send_action,
     ChannelSendAction);
   CLONE_ACTIONS (
-    port_connection_actions,
-    port_connection_action, PortConnectionAction);
-  CLONE_ACTIONS (
-    port_actions, port_action, PortAction);
+    port_connection_actions, port_connection_action,
+    PortConnectionAction);
+  CLONE_ACTIONS (port_actions, port_action, PortAction);
   CLONE_ACTIONS (
     midi_mapping_actions, midi_mapping_action,
     MidiMappingAction);
+  CLONE_ACTIONS (range_actions, range_action, RangeAction);
   CLONE_ACTIONS (
-    range_actions, range_action, RangeAction);
-  CLONE_ACTIONS (
-    transport_actions, transport_action,
-    TransportAction);
-  CLONE_ACTIONS (
-    chord_actions, chord_action, ChordAction);
+    transport_actions, transport_action, TransportAction);
+  CLONE_ACTIONS (chord_actions, chord_action, ChordAction);
 
 #undef CLONE_ACTIONS
 
   /* init loaded to load the actions on the stack */
   undo_stack_init_loaded (self);
 
-  g_return_val_if_fail (
-    top_before == self->stack->top, NULL);
+  g_return_val_if_fail (top_before == self->stack->top, NULL);
 
   return self;
 }
@@ -196,11 +182,9 @@ undo_stack_get_as_string (UndoStack * self, int limit)
       UndoableAction * action =
         (UndoableAction *) stack->elements[i];
 
-      char * action_str =
-        undoable_action_to_string (action);
+      char * action_str = undoable_action_to_string (action);
       g_string_append_printf (
-        g_str, "[%d] %s\n", stack->top - i,
-        action_str);
+        g_str, "[%d] %s\n", stack->top - i, action_str);
       g_free (action_str);
 
       if (stack->top - i == limit)
@@ -211,9 +195,7 @@ undo_stack_get_as_string (UndoStack * self, int limit)
 }
 
 void
-undo_stack_push (
-  UndoStack *      self,
-  UndoableAction * action)
+undo_stack_push (UndoStack * self, UndoableAction * action)
 {
   g_message ("pushed to undo/redo stack");
 
@@ -226,12 +208,10 @@ undo_stack_push (
 #define APPEND_ELEMENT(caps, cc, sc) \
   case UA_##caps: \
     array_double_size_if_full ( \
-      self->sc##_actions, \
-      self->num_##sc##_actions, \
+      self->sc##_actions, self->num_##sc##_actions, \
       self->sc##_actions_size, cc##Action *); \
     array_append ( \
-      self->sc##_actions, \
-      self->num_##sc##_actions, \
+      self->sc##_actions, self->num_##sc##_actions, \
       (cc##Action *) action); \
     break
 
@@ -240,38 +220,29 @@ undo_stack_push (
       APPEND_ELEMENT (
         TRACKLIST_SELECTIONS, TracklistSelections,
         tracklist_selections);
+      APPEND_ELEMENT (CHANNEL_SEND, ChannelSend, channel_send);
       APPEND_ELEMENT (
-        CHANNEL_SEND, ChannelSend, channel_send);
+        MIXER_SELECTIONS, MixerSelections, mixer_selections);
       APPEND_ELEMENT (
-        MIXER_SELECTIONS, MixerSelections,
-        mixer_selections);
-      APPEND_ELEMENT (
-        PORT_CONNECTION, PortConnection,
-        port_connection);
+        PORT_CONNECTION, PortConnection, port_connection);
       APPEND_ELEMENT (PORT, Port, port);
-      APPEND_ELEMENT (
-        MIDI_MAPPING, MidiMapping, midi_mapping);
+      APPEND_ELEMENT (MIDI_MAPPING, MidiMapping, midi_mapping);
       APPEND_ELEMENT (RANGE, Range, range);
-      APPEND_ELEMENT (
-        TRANSPORT, Transport, transport);
+      APPEND_ELEMENT (TRANSPORT, Transport, transport);
       APPEND_ELEMENT (CHORD, Chord, chord);
       APPEND_ELEMENT (
-        ARRANGER_SELECTIONS, ArrangerSelections,
-        as);
+        ARRANGER_SELECTIONS, ArrangerSelections, as);
     }
 }
 
 static bool
-remove_action (
-  UndoStack *      self,
-  UndoableAction * action)
+remove_action (UndoStack * self, UndoableAction * action)
 {
   /* CAPS, CamelCase, snake_case */
 #define REMOVE_ELEMENT(caps, cc, sc) \
   case UA_##caps: \
     array_delete_confirm ( \
-      self->sc##_actions, \
-      self->num_##sc##_actions, \
+      self->sc##_actions, self->num_##sc##_actions, \
       (cc##Action *) action, removed); \
     g_return_val_if_fail (removed, removed); \
     if ( \
@@ -283,8 +254,7 @@ remove_action (
           " actions (%zu) is greater " \
           "than current stack top (%d)", \
           self->num_##sc##_actions, \
-          g_atomic_int_get (&self->stack->top) \
-            + 1); \
+          g_atomic_int_get (&self->stack->top) + 1); \
         return removed; \
       } \
     break
@@ -295,26 +265,20 @@ remove_action (
       REMOVE_ELEMENT (
         TRACKLIST_SELECTIONS, TracklistSelections,
         tracklist_selections);
+      REMOVE_ELEMENT (CHANNEL_SEND, ChannelSend, channel_send);
       REMOVE_ELEMENT (
-        CHANNEL_SEND, ChannelSend, channel_send);
+        MIXER_SELECTIONS, MixerSelections, mixer_selections);
       REMOVE_ELEMENT (
-        MIXER_SELECTIONS, MixerSelections,
-        mixer_selections);
-      REMOVE_ELEMENT (
-        PORT_CONNECTION, PortConnection,
-        port_connection);
+        PORT_CONNECTION, PortConnection, port_connection);
       REMOVE_ELEMENT (PORT, Port, port);
-      REMOVE_ELEMENT (
-        MIDI_MAPPING, MidiMapping, midi_mapping);
+      REMOVE_ELEMENT (MIDI_MAPPING, MidiMapping, midi_mapping);
       REMOVE_ELEMENT (RANGE, Range, range);
-      REMOVE_ELEMENT (
-        TRANSPORT, Transport, transport);
+      REMOVE_ELEMENT (TRANSPORT, Transport, transport);
       REMOVE_ELEMENT (CHORD, Chord, chord);
     case UA_ARRANGER_SELECTIONS:
       array_delete_confirm (
         self->as_actions, self->num_as_actions,
-        (ArrangerSelectionsAction *) action,
-        removed);
+        (ArrangerSelectionsAction *) action, removed);
       g_return_val_if_fail (
         (int) self->num_as_actions
           <= g_atomic_int_get (&self->stack->top) + 1,
@@ -323,8 +287,7 @@ remove_action (
     }
 
   /* re-set the indices */
-  for (int i = 0;
-       i <= g_atomic_int_get (&self->stack->top);
+  for (int i = 0; i <= g_atomic_int_get (&self->stack->top);
        i++)
     {
       UndoableAction * ua =
@@ -361,8 +324,8 @@ undo_stack_pop_last (UndoStack * self)
     g_atomic_int_get (&self->stack->top));
 
   /* pop from stack */
-  UndoableAction * action = (UndoableAction *)
-    stack_pop_last (self->stack);
+  UndoableAction * action =
+    (UndoableAction *) stack_pop_last (self->stack);
 
   /* remove the action */
   bool removed = remove_action (self, action);
@@ -373,9 +336,7 @@ undo_stack_pop_last (UndoStack * self)
 }
 
 bool
-undo_stack_contains_clip (
-  UndoStack * self,
-  AudioClip * clip)
+undo_stack_contains_clip (UndoStack * self, AudioClip * clip)
 {
   for (int i = 0; i <= self->stack->top; i++)
     {
@@ -413,9 +374,7 @@ undo_stack_contains_action (
  * Returns the plugins referred to in the undo stack.
  */
 void
-undo_stack_get_plugins (
-  UndoStack * self,
-  GPtrArray * arr)
+undo_stack_get_plugins (UndoStack * self, GPtrArray * arr)
 {
   for (int i = 0; i <= self->stack->top; i++)
     {
@@ -451,10 +410,8 @@ undo_stack_free (UndoStack * self)
   while (!undo_stack_is_empty (self))
     {
       UndoableAction * ua = undo_stack_pop (self);
-      char *           type_str =
-        undoable_action_to_string (ua);
-      g_debug (
-        "%s: freeing %s", __func__, type_str);
+      char * type_str = undoable_action_to_string (ua);
+      g_debug ("%s: freeing %s", __func__, type_str);
       g_free (type_str);
       undoable_action_free (ua);
     }

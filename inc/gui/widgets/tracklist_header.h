@@ -60,8 +60,7 @@ tracklist_header_widget_refresh_track_count (
   TracklistHeaderWidget * self);
 
 void
-tracklist_header_widget_setup (
-  TracklistHeaderWidget * self);
+tracklist_header_widget_setup (TracklistHeaderWidget * self);
 
 /**
  * @}

@@ -39,8 +39,7 @@ G_DEFINE_TYPE (
  * Refreshes each field.
  */
 void
-ports_expander_widget_refresh (
-  PortsExpanderWidget * self)
+ports_expander_widget_refresh (PortsExpanderWidget * self)
 {
   /* set visibility */
   /* FIXME the port counts used don't take into
@@ -54,8 +53,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin
-                  && self->plugin->setting->descr
-                         ->num_ctrl_ins
+                  && self->plugin->setting->descr->num_ctrl_ins
                        > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
@@ -63,8 +61,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin
-                  && self->plugin->setting->descr
-                         ->num_ctrl_outs
+                  && self->plugin->setting->descr->num_ctrl_outs
                        > 0);
             }
         }
@@ -75,8 +72,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin
-                  && self->plugin->setting->descr
-                         ->num_audio_ins
+                  && self->plugin->setting->descr->num_audio_ins
                        > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
@@ -84,8 +80,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin
-                  && self->plugin->setting->descr
-                         ->num_audio_outs
+                  && self->plugin->setting->descr->num_audio_outs
                        > 0);
             }
         }
@@ -96,8 +91,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin
-                  && self->plugin->setting->descr
-                         ->num_midi_ins
+                  && self->plugin->setting->descr->num_midi_ins
                        > 0);
             }
           else if (self->flow == FLOW_OUTPUT)
@@ -105,8 +99,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin
-                  && self->plugin->setting->descr
-                         ->num_midi_outs
+                  && self->plugin->setting->descr->num_midi_outs
                        > 0);
             }
         }
@@ -125,8 +118,7 @@ ports_expander_widget_refresh (
               gtk_widget_set_visible (
                 GTK_WIDGET (self),
                 self->plugin
-                  && self->plugin->setting->descr
-                         ->num_cv_outs
+                  && self->plugin->setting->descr->num_cv_outs
                        > 0);
             }
         }
@@ -204,20 +196,17 @@ ports_expander_widget_setup_plugin (
 
   /* set scrollbar options */
   two_col_expander_box_widget_set_scroll_policy (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_POLICY_NEVER,
+    GTK_POLICY_AUTOMATIC);
   two_col_expander_box_widget_set_min_max_size (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), -1, -1,
-    -1, 120);
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), -1, -1, -1, 120);
 
   TwoColExpanderBoxWidgetPrivate * prv =
     two_col_expander_box_widget_get_private (
       Z_TWO_COL_EXPANDER_BOX_WIDGET (self));
-  gtk_widget_set_vexpand_set (
-    GTK_WIDGET (prv->content), 1);
+  gtk_widget_set_vexpand_set (GTK_WIDGET (prv->content), 1);
 
-  GArray * ports =
-    g_array_new (false, true, sizeof (Port *));
+  GArray * ports = g_array_new (false, true, sizeof (Port *));
 
   InspectorPortWidget * ip;
   Port *                port;
@@ -236,9 +225,7 @@ ports_expander_widget_setup_plugin (
           g_array_append_val (ports, port);
         }
     }
-  else if (
-    pl && type == TYPE_CONTROL
-    && flow == FLOW_OUTPUT)
+  else if (pl && type == TYPE_CONTROL && flow == FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
@@ -280,8 +267,7 @@ ports_expander_widget_setup_plugin (
           g_array_append_val (ports, port);
         }
     }
-  else if (
-    pl && type == TYPE_AUDIO && flow == FLOW_INPUT)
+  else if (pl && type == TYPE_AUDIO && flow == FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
@@ -295,8 +281,7 @@ ports_expander_widget_setup_plugin (
           g_array_append_val (ports, port);
         }
     }
-  else if (
-    pl && type == TYPE_AUDIO && flow == FLOW_OUTPUT)
+  else if (pl && type == TYPE_AUDIO && flow == FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
@@ -310,8 +295,7 @@ ports_expander_widget_setup_plugin (
           g_array_append_val (ports, port);
         }
     }
-  else if (
-    pl && type == TYPE_EVENT && flow == FLOW_INPUT)
+  else if (pl && type == TYPE_EVENT && flow == FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
         {
@@ -325,8 +309,7 @@ ports_expander_widget_setup_plugin (
           g_array_append_val (ports, port);
         }
     }
-  else if (
-    pl && type == TYPE_EVENT && flow == FLOW_OUTPUT)
+  else if (pl && type == TYPE_EVENT && flow == FLOW_OUTPUT)
     {
       for (int i = 0; i < pl->num_out_ports; i++)
         {
@@ -340,16 +323,14 @@ ports_expander_widget_setup_plugin (
           g_array_append_val (ports, port);
         }
     }
-  g_array_sort (
-    ports, port_identifier_port_group_cmp);
+  g_array_sort (ports, port_identifier_port_group_cmp);
 
   g_debug ("adding ports...");
 
 #define ADD_SINGLE(x) \
   ip = inspector_port_widget_new (x); \
   two_col_expander_box_widget_add_single ( \
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), \
-    GTK_WIDGET (ip))
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (ip))
 
   /* Add ports in group order */
   const char * last_group = NULL;
@@ -365,21 +346,16 @@ ports_expander_widget_setup_plugin (
         {
           const char * group_name =
             group ? group : _ ("Ungrouped");
-          GtkWidget * group_label =
-            gtk_label_new (group_name);
+          GtkWidget * group_label = gtk_label_new (group_name);
           gtk_widget_set_name (
             GTK_WIDGET (group_label),
             "ports-expander-inspector-port-group-label");
-          gtk_label_set_xalign (
-            GTK_LABEL (group_label), 0.f);
+          gtk_label_set_xalign (GTK_LABEL (group_label), 0.f);
           gtk_widget_add_css_class (
             group_label, "port-group-lbl");
-          gtk_widget_set_visible (
-            group_label, true);
-          gtk_widget_set_margin_top (
-            group_label, 3);
-          gtk_widget_set_margin_bottom (
-            group_label, 3);
+          gtk_widget_set_visible (group_label, true);
+          gtk_widget_set_margin_top (group_label, 3);
+          gtk_widget_set_margin_bottom (group_label, 3);
           two_col_expander_box_widget_add_single (
             Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
             GTK_WIDGET (group_label));
@@ -425,8 +401,7 @@ ports_expander_widget_setup_track (
     {
     case PE_TRACK_PORT_TYPE_CONTROLS:
       expander_box_widget_set_label (
-        Z_EXPANDER_BOX_WIDGET (self),
-        _ ("Controls"));
+        Z_EXPANDER_BOX_WIDGET (self), _ ("Controls"));
       self->flow = FLOW_INPUT;
       self->type = TYPE_CONTROL;
       break;
@@ -438,23 +413,20 @@ ports_expander_widget_setup_track (
       break;
     case PE_TRACK_PORT_TYPE_STEREO_IN:
       expander_box_widget_set_label (
-        Z_EXPANDER_BOX_WIDGET (self),
-        _ ("Stereo In"));
+        Z_EXPANDER_BOX_WIDGET (self), _ ("Stereo In"));
       self->flow = FLOW_INPUT;
       self->owner_type = PORT_OWNER_TYPE_TRACK;
       break;
     case PE_TRACK_PORT_TYPE_MIDI_IN:
       expander_box_widget_set_label (
-        Z_EXPANDER_BOX_WIDGET (self),
-        _ ("MIDI In"));
+        Z_EXPANDER_BOX_WIDGET (self), _ ("MIDI In"));
       self->owner_type = PORT_OWNER_TYPE_TRACK;
       self->flow = FLOW_INPUT;
       self->type = TYPE_EVENT;
       break;
     case PE_TRACK_PORT_TYPE_MIDI_OUT:
       expander_box_widget_set_label (
-        Z_EXPANDER_BOX_WIDGET (self),
-        _ ("MIDI Out"));
+        Z_EXPANDER_BOX_WIDGET (self), _ ("MIDI Out"));
       self->owner_type = PORT_OWNER_TYPE_TRACK;
       self->flow = FLOW_OUTPUT;
       self->type = TYPE_EVENT;
@@ -470,14 +442,12 @@ ports_expander_widget_setup_track (
   TwoColExpanderBoxWidgetPrivate * prv =
     two_col_expander_box_widget_get_private (
       Z_TWO_COL_EXPANDER_BOX_WIDGET (self));
-  gtk_widget_set_vexpand_set (
-    GTK_WIDGET (prv->content), 1);
+  gtk_widget_set_vexpand_set (GTK_WIDGET (prv->content), 1);
 
 #define ADD_SINGLE(x) \
   ip = inspector_port_widget_new (x); \
   two_col_expander_box_widget_add_single ( \
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), \
-    GTK_WIDGET (ip))
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (ip))
 
   if (tr)
     {
@@ -493,22 +463,16 @@ ports_expander_widget_setup_track (
           if (out_type == TYPE_AUDIO)
             {
               ADD_SINGLE (
-                tr->channel->prefader->stereo_out
-                  ->l);
+                tr->channel->prefader->stereo_out->l);
               ADD_SINGLE (
-                tr->channel->prefader->stereo_out
-                  ->r);
-              ADD_SINGLE (
-                tr->channel->fader->stereo_out->l);
-              ADD_SINGLE (
-                tr->channel->fader->stereo_out->r);
+                tr->channel->prefader->stereo_out->r);
+              ADD_SINGLE (tr->channel->fader->stereo_out->l);
+              ADD_SINGLE (tr->channel->fader->stereo_out->r);
             }
           else if (out_type == TYPE_EVENT)
             {
-              ADD_SINGLE (
-                tr->channel->prefader->midi_out);
-              ADD_SINGLE (
-                tr->channel->fader->midi_out);
+              ADD_SINGLE (tr->channel->prefader->midi_out);
+              ADD_SINGLE (tr->channel->fader->midi_out);
             }
           break;
           break;
@@ -535,8 +499,7 @@ ports_expander_widget_class_init (
 }
 
 static void
-ports_expander_widget_init (
-  PortsExpanderWidget * self)
+ports_expander_widget_init (PortsExpanderWidget * self)
 {
   /*two_col_expander_box_widget_add_single (*/
   /*Z_TWO_COL_EXPANDER_BOX_WIDGET (self),*/

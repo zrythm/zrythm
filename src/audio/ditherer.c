@@ -29,8 +29,7 @@ ditherer_reset (Ditherer * self, int num_bits)
   self->s1 = 0;
   self->s2 = 0;
 
-  float wordLen =
-    powf (2.0f, (float) (num_bits - 1));
+  float wordLen = powf (2.0f, (float) (num_bits - 1));
   float invWordLen = 1.0f / wordLen;
   self->amp = invWordLen / (float) RAND_MAX;
   self->offset = invWordLen * 0.5f;
@@ -59,23 +58,16 @@ ditherer_process (
           self->random2 = self->random1;
           self->random1 = rand ();
 
-          float * in_ptr =
-            &frames[channels * j + i];
-          float in = *in_ptr;
+          float * in_ptr = &frames[channels * j + i];
+          float   in = *in_ptr;
 
           // check for dodgy numbers coming in..
           if (in < -0.000001f || in > 0.000001f)
             {
-              in +=
-                0.5f
-                * (self->s1 + self->s1 - self->s2);
+              in += 0.5f * (self->s1 + self->s1 - self->s2);
               float out =
                 in + self->offset
-                +
-                (self->amp
-                 *
-                 (float)
-                 (self->random1 - self->random2));
+                + (self->amp * (float) (self->random1 - self->random2));
               *in_ptr = out;
               self->s2 = self->s1;
               self->s1 = in - out;
@@ -83,15 +75,10 @@ ditherer_process (
           else
             {
               *in_ptr = in;
-              in +=
-                0.5f
-                * (self->s1 + self->s1 - self->s2);
+              in += 0.5f * (self->s1 + self->s1 - self->s2);
               float out =
-                in + self->offset +
-                (self->amp
-                 *
-                 (float)
-                 (self->random1 - self->random2));
+                in + self->offset
+                + (self->amp * (float) (self->random1 - self->random2));
               self->s2 = self->s1;
               self->s1 = in - out;
             }

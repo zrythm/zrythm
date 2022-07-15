@@ -41,10 +41,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  RulerWidget,
-  ruler_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (RulerWidget, ruler_widget, GTK_TYPE_WIDGET)
 
 #define Y_SPACING 5
 
@@ -56,16 +53,14 @@ G_DEFINE_TYPE (
 
 #define TYPE(x) RULER_WIDGET_TYPE_##x
 
-#define ACTION_IS(x) \
-  (self->action == UI_OVERLAY_ACTION_##x)
+#define ACTION_IS(x) (self->action == UI_OVERLAY_ACTION_##x)
 
 double
 ruler_widget_get_zoom_level (RulerWidget * self)
 {
   if (self->type == RULER_WIDGET_TYPE_TIMELINE)
     {
-      return PRJ_TIMELINE->editor_settings
-        .hzoom_level;
+      return PRJ_TIMELINE->editor_settings.hzoom_level;
     }
   else if (self->type == RULER_WIDGET_TYPE_EDITOR)
     {
@@ -104,9 +99,8 @@ ruler_widget_get_beat_interval (RulerWidget * self)
     }
 
   /* decide the raw interval to keep between beats */
-  int _beat_interval = MAX (
-    (int) (RW_PX_TO_HIDE_BEATS / self->px_per_beat),
-    1);
+  int _beat_interval =
+    MAX ((int) (RW_PX_TO_HIDE_BEATS / self->px_per_beat), 1);
 
   /* round the interval to the divisors */
   int beat_interval = -1;
@@ -128,15 +122,13 @@ ruler_widget_get_beat_interval (RulerWidget * self)
  * vertical lines.
  */
 int
-ruler_widget_get_sixteenth_interval (
-  RulerWidget * self)
+ruler_widget_get_sixteenth_interval (RulerWidget * self)
 {
   int i;
 
   /* gather divisors of the number of sixteenths per
    * beat */
-#define sixteenths_per_beat \
-  TRANSPORT->sixteenths_per_beat
+#define sixteenths_per_beat TRANSPORT->sixteenths_per_beat
   int divisors[16];
   int num_divisors = 0;
   for (i = 1; i <= sixteenths_per_beat; i++)
@@ -147,8 +139,7 @@ ruler_widget_get_sixteenth_interval (
 
   /* decide the raw interval to keep between sixteenths */
   int _sixteenth_interval = MAX (
-    (int) (RW_PX_TO_HIDE_BEATS / self->px_per_sixteenth),
-    1);
+    (int) (RW_PX_TO_HIDE_BEATS / self->px_per_sixteenth), 1);
 
   /* round the interval to the divisors */
   int sixteenth_interval = -1;
@@ -181,15 +172,13 @@ ruler_widget_get_10sec_interval (RulerWidget * self)
   for (i = 1; i <= ten_secs_per_min; i++)
     {
       if (ten_secs_per_min % i == 0)
-        ten_sec_divisors[num_ten_sec_divisors++] =
-          i;
+        ten_sec_divisors[num_ten_sec_divisors++] = i;
     }
 
   /* decide the raw interval to keep between
    * 10 secs */
-  int _10sec_interval = MAX (
-    (int) (RW_PX_TO_HIDE_BEATS / self->px_per_10sec),
-    1);
+  int _10sec_interval =
+    MAX ((int) (RW_PX_TO_HIDE_BEATS / self->px_per_10sec), 1);
 
   /* round the interval to the divisors */
   int ten_sec_interval = -1;
@@ -226,9 +215,8 @@ ruler_widget_get_sec_interval (RulerWidget * self)
     }
 
   /* decide the raw interval to keep between secs */
-  int _sec_interval = MAX (
-    (int) (RW_PX_TO_HIDE_BEATS / self->px_per_sec),
-    1);
+  int _sec_interval =
+    MAX ((int) (RW_PX_TO_HIDE_BEATS / self->px_per_sec), 1);
 
   /* round the interval to the divisors */
   int sec_interval = -1;
@@ -257,20 +245,17 @@ draw_other_region (
   /*g_debug (
    * "drawing other region %s", region->name);*/
 
-  int height = gtk_widget_get_allocated_height (
-    GTK_WIDGET (self));
+  int height =
+    gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
-  ArrangerObject * r_obj =
-    (ArrangerObject *) region;
-  Track * track = arranger_object_get_track (r_obj);
-  GdkRGBA color = track->color;
+  ArrangerObject * r_obj = (ArrangerObject *) region;
+  Track *          track = arranger_object_get_track (r_obj);
+  GdkRGBA          color = track->color;
   color.alpha = 0.5;
 
   int px_start, px_end;
-  px_start =
-    ui_pos_to_px_editor (&r_obj->pos, true);
-  px_end =
-    ui_pos_to_px_editor (&r_obj->end_pos, true);
+  px_start = ui_pos_to_px_editor (&r_obj->pos, true);
+  px_end = ui_pos_to_px_editor (&r_obj->end_pos, true);
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
@@ -286,61 +271,50 @@ draw_regions (
   GtkSnapshot *  snapshot,
   GdkRectangle * rect)
 {
-  int height = gtk_widget_get_allocated_height (
-    GTK_WIDGET (self));
+  int height =
+    gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
   /* get a visible region - the clip editor
    * region is removed temporarily while moving
    * regions so this could be NULL */
-  ZRegion * region =
-    clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
   if (!region)
     return;
 
-  ArrangerObject * region_obj =
-    (ArrangerObject *) region;
+  ArrangerObject * region_obj = (ArrangerObject *) region;
 
-  Track * track =
-    arranger_object_get_track (region_obj);
+  Track * track = arranger_object_get_track (region_obj);
 
   int px_start, px_end;
 
   /* draw the main region */
   GdkRGBA color = track->color;
   ui_get_arranger_object_color (
-    &color,
-    MW_TIMELINE->hovered_object == region_obj,
+    &color, MW_TIMELINE->hovered_object == region_obj,
     region_is_selected (region), false,
     arranger_object_get_muted (region_obj, true));
-  px_start =
-    ui_pos_to_px_editor (&region_obj->pos, 1);
-  px_end =
-    ui_pos_to_px_editor (&region_obj->end_pos, 1);
+  px_start = ui_pos_to_px_editor (&region_obj->pos, 1);
+  px_end = ui_pos_to_px_editor (&region_obj->end_pos, 1);
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
       px_start, 0, px_end - px_start, height / 4.f));
 
   /* draw its transient if copy-moving TODO */
-  if (arranger_object_should_orig_be_visible (
-        region_obj, NULL))
+  if (arranger_object_should_orig_be_visible (region_obj, NULL))
     {
-      px_start =
-        ui_pos_to_px_editor (&region_obj->pos, 1);
-      px_end = ui_pos_to_px_editor (
-        &region_obj->end_pos, 1);
+      px_start = ui_pos_to_px_editor (&region_obj->pos, 1);
+      px_end = ui_pos_to_px_editor (&region_obj->end_pos, 1);
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          px_start, 0, px_end - px_start,
-          height / 4.f));
+          px_start, 0, px_end - px_start, height / 4.f));
     }
 
   /* draw the other regions */
   ZRegion * other_regions[1000];
-  int       num_other_regions =
-    track_get_regions_in_range (
-      track, NULL, NULL, other_regions);
+  int       num_other_regions = track_get_regions_in_range (
+          track, NULL, NULL, other_regions);
   for (int i = 0; i < num_other_regions; i++)
     {
       ZRegion * other_region = other_regions[i];
@@ -352,21 +326,17 @@ draw_regions (
           continue;
         }
 
-      draw_other_region (
-        self, snapshot, other_region);
+      draw_other_region (self, snapshot, other_region);
     }
 }
 
 static void
-get_loop_start_rect (
-  RulerWidget *  self,
-  GdkRectangle * rect)
+get_loop_start_rect (RulerWidget * self, GdkRectangle * rect)
 {
   rect->x = 0;
   if (self->type == TYPE (EDITOR))
     {
-      ZRegion * region =
-        clip_editor_get_region (CLIP_EDITOR);
+      ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
       if (region)
         {
           ArrangerObject * region_obj =
@@ -374,12 +344,10 @@ get_loop_start_rect (
           double start_ticks =
             position_to_ticks (&region_obj->pos);
           double loop_start_ticks =
-            position_to_ticks (
-              &region_obj->loop_start_pos)
+            position_to_ticks (&region_obj->loop_start_pos)
             + start_ticks;
           Position tmp;
-          position_from_ticks (
-            &tmp, loop_start_ticks);
+          position_from_ticks (&tmp, loop_start_ticks);
           rect->x = ui_pos_to_px_editor (&tmp, 1);
         }
       else
@@ -389,8 +357,8 @@ get_loop_start_rect (
     }
   else if (self->type == TYPE (TIMELINE))
     {
-      rect->x = ui_pos_to_px_timeline (
-        &TRANSPORT->loop_start_pos, 1);
+      rect->x =
+        ui_pos_to_px_timeline (&TRANSPORT->loop_start_pos, 1);
     }
   rect->y = 0;
   rect->width = RW_RULER_MARKER_SIZE;
@@ -409,12 +377,9 @@ draw_loop_start (
 
   cairo_t * cr = gtk_snapshot_append_cairo (
     snapshot,
-    &GRAPHENE_RECT_INIT (
-      dr.x, dr.y, dr.width, dr.height));
+    &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
 
-  if (
-    dr.x >= rect->x - dr.width
-    && dr.x <= rect->x + rect->width)
+  if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
       cairo_set_source_rgb (cr, 0, 0.9, 0.7);
       cairo_set_line_width (cr, 2);
@@ -428,15 +393,12 @@ draw_loop_start (
 }
 
 static void
-get_loop_end_rect (
-  RulerWidget *  self,
-  GdkRectangle * rect)
+get_loop_end_rect (RulerWidget * self, GdkRectangle * rect)
 {
   rect->x = 0;
   if (self->type == TYPE (EDITOR))
     {
-      ZRegion * region =
-        clip_editor_get_region (CLIP_EDITOR);
+      ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
       if (region)
         {
           ArrangerObject * region_obj =
@@ -444,12 +406,10 @@ get_loop_end_rect (
           double start_ticks =
             position_to_ticks (&region_obj->pos);
           double loop_end_ticks =
-            position_to_ticks (
-              &region_obj->loop_end_pos)
+            position_to_ticks (&region_obj->loop_end_pos)
             + start_ticks;
           Position tmp;
-          position_from_ticks (
-            &tmp, loop_end_ticks);
+          position_from_ticks (&tmp, loop_end_ticks);
           rect->x =
             ui_pos_to_px_editor (&tmp, 1)
             - RW_RULER_MARKER_SIZE;
@@ -462,8 +422,7 @@ get_loop_end_rect (
   else if (self->type == TYPE (TIMELINE))
     {
       rect->x =
-        ui_pos_to_px_timeline (
-          &TRANSPORT->loop_end_pos, 1)
+        ui_pos_to_px_timeline (&TRANSPORT->loop_end_pos, 1)
         - RW_RULER_MARKER_SIZE;
     }
   rect->y = 0;
@@ -483,19 +442,15 @@ draw_loop_end (
 
   cairo_t * cr = gtk_snapshot_append_cairo (
     snapshot,
-    &GRAPHENE_RECT_INIT (
-      dr.x, dr.y, dr.width, dr.height));
+    &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
 
-  if (
-    dr.x >= rect->x - dr.width
-    && dr.x <= rect->x + rect->width)
+  if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
       cairo_set_source_rgb (cr, 0, 0.9, 0.7);
       cairo_set_line_width (cr, 2);
       cairo_move_to (cr, dr.x, dr.y);
       cairo_line_to (cr, (dr.x + dr.width), dr.y);
-      cairo_line_to (
-        cr, (dr.x + dr.width), dr.y + dr.height);
+      cairo_line_to (cr, (dr.x + dr.width), dr.y + dr.height);
       cairo_fill (cr);
     }
 
@@ -503,12 +458,10 @@ draw_loop_end (
 }
 
 static void
-get_punch_in_rect (
-  RulerWidget *  self,
-  GdkRectangle * rect)
+get_punch_in_rect (RulerWidget * self, GdkRectangle * rect)
 {
-  rect->x = ui_pos_to_px_timeline (
-    &TRANSPORT->punch_in_pos, 1);
+  rect->x =
+    ui_pos_to_px_timeline (&TRANSPORT->punch_in_pos, 1);
   rect->y = RW_RULER_MARKER_SIZE;
   rect->width = RW_RULER_MARKER_SIZE;
   rect->height = RW_RULER_MARKER_SIZE;
@@ -526,12 +479,9 @@ draw_punch_in (
 
   cairo_t * cr = gtk_snapshot_append_cairo (
     snapshot,
-    &GRAPHENE_RECT_INIT (
-      dr.x, dr.y, dr.width, dr.height));
+    &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
 
-  if (
-    dr.x >= rect->x - dr.width
-    && dr.x <= rect->x + rect->width)
+  if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
       cairo_set_source_rgb (cr, 0.9, 0.1, 0.1);
       cairo_set_line_width (cr, 2);
@@ -545,13 +495,10 @@ draw_punch_in (
 }
 
 static void
-get_punch_out_rect (
-  RulerWidget *  self,
-  GdkRectangle * rect)
+get_punch_out_rect (RulerWidget * self, GdkRectangle * rect)
 {
   rect->x =
-    ui_pos_to_px_timeline (
-      &TRANSPORT->punch_out_pos, 1)
+    ui_pos_to_px_timeline (&TRANSPORT->punch_out_pos, 1)
     - RW_RULER_MARKER_SIZE;
   rect->y = RW_RULER_MARKER_SIZE;
   rect->width = RW_RULER_MARKER_SIZE;
@@ -570,19 +517,15 @@ draw_punch_out (
 
   cairo_t * cr = gtk_snapshot_append_cairo (
     snapshot,
-    &GRAPHENE_RECT_INIT (
-      dr.x, dr.y, dr.width, dr.height));
+    &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
 
-  if (
-    dr.x >= rect->x - dr.width
-    && dr.x <= rect->x + rect->width)
+  if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
       cairo_set_source_rgb (cr, 0.9, 0.1, 0.1);
       cairo_set_line_width (cr, 2);
       cairo_move_to (cr, dr.x, dr.y);
       cairo_line_to (cr, (dr.x + dr.width), dr.y);
-      cairo_line_to (
-        cr, (dr.x + dr.width), dr.y + dr.height);
+      cairo_line_to (cr, (dr.x + dr.width), dr.y + dr.height);
       cairo_fill (cr);
     }
 
@@ -590,9 +533,7 @@ draw_punch_out (
 }
 
 static void
-get_clip_start_rect (
-  RulerWidget *  self,
-  GdkRectangle * rect)
+get_clip_start_rect (RulerWidget * self, GdkRectangle * rect)
 {
   /* TODO these were added to fix unused
    * warnings - check again if valid */
@@ -601,8 +542,7 @@ get_clip_start_rect (
 
   if (self->type == TYPE (EDITOR))
     {
-      ZRegion * region =
-        clip_editor_get_region (CLIP_EDITOR);
+      ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
       if (region)
         {
           ArrangerObject * region_obj =
@@ -610,12 +550,10 @@ get_clip_start_rect (
           double start_ticks =
             position_to_ticks (&region_obj->pos);
           double clip_start_ticks =
-            position_to_ticks (
-              &region_obj->clip_start_pos)
+            position_to_ticks (&region_obj->clip_start_pos)
             + start_ticks;
           Position tmp;
-          position_from_ticks (
-            &tmp, clip_start_ticks);
+          position_from_ticks (&tmp, clip_start_ticks);
           rect->x = ui_pos_to_px_editor (&tmp, 1);
         }
       else
@@ -623,8 +561,7 @@ get_clip_start_rect (
           rect->x = 0;
         }
       rect->y =
-        ((gtk_widget_get_allocated_height (
-            GTK_WIDGET (self))
+        ((gtk_widget_get_allocated_height (GTK_WIDGET (self))
           - RW_RULER_MARKER_SIZE)
          - RW_CUE_MARKER_HEIGHT)
         - 1;
@@ -649,19 +586,15 @@ draw_cue_point (
 
   cairo_t * cr = gtk_snapshot_append_cairo (
     snapshot,
-    &GRAPHENE_RECT_INIT (
-      dr.x, dr.y, dr.width, dr.height));
+    &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
 
   if (self->type == TYPE (TIMELINE))
     {
-      dr.x = ui_pos_to_px_timeline (
-        &TRANSPORT->cue_pos, 1);
+      dr.x = ui_pos_to_px_timeline (&TRANSPORT->cue_pos, 1);
       dr.y = RW_RULER_MARKER_SIZE;
     }
 
-  if (
-    dr.x >= rect->x - dr.width
-    && dr.x <= rect->x + rect->width)
+  if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
       if (self->type == TYPE (EDITOR))
         {
@@ -674,8 +607,7 @@ draw_cue_point (
       cairo_set_line_width (cr, 2);
       cairo_move_to (cr, dr.x, dr.y);
       cairo_line_to (
-        cr, (dr.x + dr.width),
-        dr.y + dr.height / 2);
+        cr, (dr.x + dr.width), dr.y + dr.height / 2);
       cairo_line_to (cr, dr.x, dr.y + dr.height);
       cairo_fill (cr);
     }
@@ -720,23 +652,20 @@ draw_playhead (
       GdkRectangle dr = { 0, 0, 0, 0 };
       dr.x = px - (RW_PLAYHEAD_TRIANGLE_WIDTH / 2);
       dr.y =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (self))
+        gtk_widget_get_allocated_height (GTK_WIDGET (self))
         - RW_PLAYHEAD_TRIANGLE_HEIGHT;
       dr.width = RW_PLAYHEAD_TRIANGLE_WIDTH;
       dr.height = RW_PLAYHEAD_TRIANGLE_HEIGHT;
 
       cairo_t * cr = gtk_snapshot_append_cairo (
         snapshot,
-        &GRAPHENE_RECT_INIT (
-          dr.x, dr.y, dr.width, dr.height));
+        &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
 
       cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
       cairo_set_line_width (cr, 2);
       cairo_move_to (cr, dr.x, dr.y);
       cairo_line_to (
-        cr, (dr.x + dr.width / 2),
-        dr.y + dr.height);
+        cr, (dr.x + dr.width / 2), dr.y + dr.height);
       cairo_line_to (cr, (dr.x + dr.width), dr.y);
       cairo_fill (cr);
 
@@ -763,22 +692,15 @@ draw_lines_and_labels (
 
   int beats_per_bar =
     tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
-  int height = gtk_widget_get_allocated_height (
-    GTK_WIDGET (self));
+  int height =
+    gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
   GdkRGBA main_color = { 1, 1, 1, 1 };
-  GdkRGBA secondary_color = {
-    0.7f, 0.7f, 0.7f, 0.4f
-  };
-  GdkRGBA tertiary_color = {
-    0.5f, 0.5f, 0.5f, 0.3f
-  };
+  GdkRGBA secondary_color = { 0.7f, 0.7f, 0.7f, 0.4f };
+  GdkRGBA tertiary_color = { 0.5f, 0.5f, 0.5f, 0.3f };
   GdkRGBA main_text_color = { 0.8f, 0.8f, 0.8f, 1 };
-  GdkRGBA secondary_text_color = {
-    0.5f, 0.5f, 0.5f, 1
-  };
-  GdkRGBA tertiary_text_color =
-    secondary_text_color;
+  GdkRGBA secondary_text_color = { 0.5f, 0.5f, 0.5f, 1 };
+  GdkRGBA tertiary_text_color = secondary_text_color;
 
   /* if time display */
   if (
@@ -786,8 +708,7 @@ draw_lines_and_labels (
     == TRANSPORT_DISPLAY_TIME)
     {
       /* get sec interval */
-      int sec_interval =
-        ruler_widget_get_sec_interval (self);
+      int sec_interval = ruler_widget_get_sec_interval (self);
 
       /* get 10 sec interval */
       int ten_sec_interval =
@@ -795,8 +716,7 @@ draw_lines_and_labels (
 
       /* get the interval for mins */
       int min_interval = (int) MAX (
-        (RW_PX_TO_HIDE_BEATS)
-          / (double) self->px_per_min,
+        (RW_PX_TO_HIDE_BEATS) / (double) self->px_per_min,
         1.0);
 
       /* draw mins */
@@ -827,8 +747,7 @@ draw_lines_and_labels (
               (float) curr_px + 1 - textw / 2.f,
               height / 3.f + 2));
           gtk_snapshot_append_layout (
-            snapshot, self->layout_normal,
-            &main_text_color);
+            snapshot, self->layout_normal, &main_text_color);
           gtk_snapshot_restore (snapshot);
         }
       /* draw 10secs */
@@ -837,8 +756,7 @@ draw_lines_and_labels (
         {
           while (
             (curr_px =
-               self->px_per_10sec
-                 * (i += ten_sec_interval)
+               self->px_per_10sec * (i += ten_sec_interval)
                + SPACE_BEFORE_START)
             < rect->x + rect->width)
             {
@@ -848,29 +766,24 @@ draw_lines_and_labels (
               gtk_snapshot_append_color (
                 snapshot, &secondary_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, 1,
-                  height / 4.f));
+                  (float) curr_px, 0, 1, height / 4.f));
 
               if (
-                (self->px_per_10sec
-                 > RW_PX_TO_HIDE_BEATS * 2)
+                (self->px_per_10sec > RW_PX_TO_HIDE_BEATS * 2)
                 && i % ten_secs_per_min != 0)
                 {
                   sprintf (
-                    text, "%d:%02d",
-                    i / ten_secs_per_min,
+                    text, "%d:%02d", i / ten_secs_per_min,
                     (i % ten_secs_per_min) * 10);
                   pango_layout_set_text (
                     self->layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    self->layout_small, &textw,
-                    &texth);
+                    self->layout_small, &textw, &texth);
                   gtk_snapshot_save (snapshot);
                   gtk_snapshot_translate (
                     snapshot,
                     &GRAPHENE_POINT_INIT (
-                      (float) curr_px + 1
-                        - textw / 2.f,
+                      (float) curr_px + 1 - textw / 2.f,
                       height / 4.f + 2));
                   gtk_snapshot_append_layout (
                     snapshot, self->layout_small,
@@ -895,33 +808,27 @@ draw_lines_and_labels (
               gtk_snapshot_append_color (
                 snapshot, &tertiary_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, 1,
-                  height / 6.f));
+                  (float) curr_px, 0, 1, height / 6.f));
 
               if (
-                (self->px_per_sec
-                 > RW_PX_TO_HIDE_BEATS * 2)
+                (self->px_per_sec > RW_PX_TO_HIDE_BEATS * 2)
                 && i % secs_per_10_sec != 0)
                 {
                   int secs_per_min = 60;
                   sprintf (
-                    text, "%d:%02d",
-                    i / secs_per_min,
-                    ((i / secs_per_10_sec)
-                     % ten_secs_per_min)
+                    text, "%d:%02d", i / secs_per_min,
+                    ((i / secs_per_10_sec) % ten_secs_per_min)
                         * 10
                       + i % secs_per_10_sec);
                   pango_layout_set_text (
                     self->layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    self->layout_small, &textw,
-                    &texth);
+                    self->layout_small, &textw, &texth);
                   gtk_snapshot_save (snapshot);
                   gtk_snapshot_translate (
                     snapshot,
                     &GRAPHENE_POINT_INIT (
-                      (float) curr_px + 1
-                        - textw / 2.f,
+                      (float) curr_px + 1 - textw / 2.f,
                       height / 4.f + 2));
                   gtk_snapshot_append_layout (
                     snapshot, self->layout_small,
@@ -943,8 +850,7 @@ draw_lines_and_labels (
 
       /* get the interval for bars */
       int bar_interval = (int) MAX (
-        (RW_PX_TO_HIDE_BEATS)
-          / (double) self->px_per_bar,
+        (RW_PX_TO_HIDE_BEATS) / (double) self->px_per_bar,
         1.0);
 
       /* draw bars */
@@ -975,8 +881,7 @@ draw_lines_and_labels (
               (float) curr_px + 1 - textw / 2.f,
               height / 3.f + 2));
           gtk_snapshot_append_layout (
-            snapshot, self->layout_normal,
-            &main_text_color);
+            snapshot, self->layout_normal, &main_text_color);
           gtk_snapshot_restore (snapshot);
         }
       /* draw beats */
@@ -985,8 +890,7 @@ draw_lines_and_labels (
         {
           while (
             (curr_px =
-               self->px_per_beat
-                 * (i += beat_interval)
+               self->px_per_beat * (i += beat_interval)
                + SPACE_BEFORE_START)
             < rect->x + rect->width)
             {
@@ -996,29 +900,24 @@ draw_lines_and_labels (
               gtk_snapshot_append_color (
                 snapshot, &secondary_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, 1,
-                  height / 4.f));
+                  (float) curr_px, 0, 1, height / 4.f));
 
               if (
-                (self->px_per_beat
-                 > RW_PX_TO_HIDE_BEATS * 2)
+                (self->px_per_beat > RW_PX_TO_HIDE_BEATS * 2)
                 && i % beats_per_bar != 0)
                 {
                   sprintf (
-                    text, "%d.%d",
-                    i / beats_per_bar + 1,
+                    text, "%d.%d", i / beats_per_bar + 1,
                     i % beats_per_bar + 1);
                   pango_layout_set_text (
                     self->layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    self->layout_small, &textw,
-                    &texth);
+                    self->layout_small, &textw, &texth);
                   gtk_snapshot_save (snapshot);
                   gtk_snapshot_translate (
                     snapshot,
                     &GRAPHENE_POINT_INIT (
-                      (float) curr_px + 1
-                        - textw / 2.f,
+                      (float) curr_px + 1 - textw / 2.f,
                       height / 4.f + 2));
                   gtk_snapshot_append_layout (
                     snapshot, self->layout_small,
@@ -1033,8 +932,7 @@ draw_lines_and_labels (
         {
           while (
             (curr_px =
-               self->px_per_sixteenth
-                 * (i += sixteenth_interval)
+               self->px_per_sixteenth * (i += sixteenth_interval)
                + SPACE_BEFORE_START)
             < rect->x + rect->width)
             {
@@ -1044,8 +942,7 @@ draw_lines_and_labels (
               gtk_snapshot_append_color (
                 snapshot, &tertiary_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, 1,
-                  height / 6.f));
+                  (float) curr_px, 0, 1, height / 6.f));
 
               if (
                 (self->px_per_sixteenth
@@ -1054,23 +951,19 @@ draw_lines_and_labels (
                 {
                   sprintf (
                     text, "%d.%d.%d",
-                    i / TRANSPORT->sixteenths_per_bar
-                      + 1,
-                    ((i / sixteenths_per_beat)
-                     % beats_per_bar)
+                    i / TRANSPORT->sixteenths_per_bar + 1,
+                    ((i / sixteenths_per_beat) % beats_per_bar)
                       + 1,
                     i % sixteenths_per_beat + 1);
                   pango_layout_set_text (
                     self->layout_small, text, -1);
                   pango_layout_get_pixel_size (
-                    self->layout_small, &textw,
-                    &texth);
+                    self->layout_small, &textw, &texth);
                   gtk_snapshot_save (snapshot);
                   gtk_snapshot_translate (
                     snapshot,
                     &GRAPHENE_POINT_INIT (
-                      (float) curr_px + 1
-                        - textw / 2.f,
+                      (float) curr_px + 1 - textw / 2.f,
                       height / 4.f + 2));
                   gtk_snapshot_append_layout (
                     snapshot, self->layout_small,
@@ -1097,14 +990,11 @@ get_scrolled_window (RulerWidget * self)
 }
 
 static void
-ruler_snapshot (
-  GtkWidget *   widget,
-  GtkSnapshot * snapshot)
+ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
-  RulerWidget * self = Z_RULER_WIDGET (widget);
-  GtkScrolledWindow * scroll =
-    get_scrolled_window (self);
-  graphene_rect_t visible_rect;
+  RulerWidget *       self = Z_RULER_WIDGET (widget);
+  GtkScrolledWindow * scroll = get_scrolled_window (self);
+  graphene_rect_t     visible_rect;
   z_gtk_scrolled_window_get_visible_rect (
     scroll, &visible_rect);
   GdkRectangle visible_rect_gdk;
@@ -1133,25 +1023,25 @@ ruler_snapshot (
 
   /* ----- ruler background ------- */
 
-  int height = gtk_widget_get_allocated_height (
-    GTK_WIDGET (self));
+  int height =
+    gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
   /* if timeline, draw loop background */
   /* FIXME use rect */
   double start_px = 0, end_px = 0;
   if (self->type == TYPE (TIMELINE))
     {
-      start_px = ui_pos_to_px_timeline (
-        &TRANSPORT->loop_start_pos, 1);
-      end_px = ui_pos_to_px_timeline (
-        &TRANSPORT->loop_end_pos, 1);
+      start_px =
+        ui_pos_to_px_timeline (&TRANSPORT->loop_start_pos, 1);
+      end_px =
+        ui_pos_to_px_timeline (&TRANSPORT->loop_end_pos, 1);
     }
   else if (self->type == TYPE (EDITOR))
     {
-      start_px = ui_pos_to_px_editor (
-        &TRANSPORT->loop_start_pos, 1);
-      end_px = ui_pos_to_px_editor (
-        &TRANSPORT->loop_end_pos, 1);
+      start_px =
+        ui_pos_to_px_editor (&TRANSPORT->loop_start_pos, 1);
+      end_px =
+        ui_pos_to_px_editor (&TRANSPORT->loop_end_pos, 1);
     }
 
   GdkRGBA color;
@@ -1175,8 +1065,7 @@ ruler_snapshot (
    * screen */
   if (
     start_px + 2.0 > visible_rect_gdk.x
-    && start_px
-         <= visible_rect_gdk.x + visible_rect_gdk.width)
+    && start_px <= visible_rect_gdk.x + visible_rect_gdk.width)
     {
       /* draw the loop start line */
       gtk_snapshot_append_color (
@@ -1189,8 +1078,7 @@ ruler_snapshot (
    * screen */
   if (
     end_px + 2.0 > visible_rect_gdk.x
-    && end_px <= visible_rect_gdk.x
-                   + visible_rect_gdk.width)
+    && end_px <= visible_rect_gdk.x + visible_rect_gdk.width)
     {
       /* draw the loop end line */
       gtk_snapshot_append_color (
@@ -1233,15 +1121,12 @@ ruler_snapshot (
   gtk_snapshot_append_linear_gradient (
     snapshot,
     &GRAPHENE_RECT_INIT (
-      (float) start_px, 0,
-      (float) (end_px - start_px), height),
+      (float) start_px, 0, (float) (end_px - start_px), height),
     &GRAPHENE_POINT_INIT (0, 0),
-    &GRAPHENE_POINT_INIT (
-      0, (float) (height * 3) / 4),
-    stops, G_N_ELEMENTS (stops));
+    &GRAPHENE_POINT_INIT (0, (float) (height * 3) / 4), stops,
+    G_N_ELEMENTS (stops));
 
-  draw_lines_and_labels (
-    self, snapshot, &visible_rect_gdk);
+  draw_lines_and_labels (self, snapshot, &visible_rect_gdk);
 
   /* ----- draw range --------- */
 
@@ -1253,70 +1138,57 @@ ruler_snapshot (
       GdkRectangle dr;
       if (range1_first)
         {
-          dr.x = ui_pos_to_px_timeline (
-            &TRANSPORT->range_1, true);
+          dr.x =
+            ui_pos_to_px_timeline (&TRANSPORT->range_1, true);
           dr.width =
-            ui_pos_to_px_timeline (
-              &TRANSPORT->range_2, true)
+            ui_pos_to_px_timeline (&TRANSPORT->range_2, true)
             - dr.x;
         }
       else
         {
-          dr.x = ui_pos_to_px_timeline (
-            &TRANSPORT->range_2, true);
+          dr.x =
+            ui_pos_to_px_timeline (&TRANSPORT->range_2, true);
           dr.width =
-            ui_pos_to_px_timeline (
-              &TRANSPORT->range_1, true)
+            ui_pos_to_px_timeline (&TRANSPORT->range_1, true)
             - dr.x;
         }
       dr.y = 0;
       dr.height =
-        gtk_widget_get_allocated_height (
-          GTK_WIDGET (self))
+        gtk_widget_get_allocated_height (GTK_WIDGET (self))
         / RW_RANGE_HEIGHT_DIVISOR;
 
       /* fill */
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.27f),
-        &GRAPHENE_RECT_INIT (
-          dr.x, dr.y, dr.width, dr.height));
+        &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
 
       /* draw edges */
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.7f),
-        &GRAPHENE_RECT_INIT (
-          dr.x, dr.y, 2, dr.height));
+        &GRAPHENE_RECT_INIT (dr.x, dr.y, 2, dr.height));
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.7f),
         &GRAPHENE_RECT_INIT (
-          dr.x + dr.width, dr.y, 2,
-          dr.height - dr.y));
+          dr.x + dr.width, dr.y, 2, dr.height - dr.y));
     }
 
   /* ----- draw regions --------- */
 
   if (self->type == TYPE (EDITOR))
     {
-      draw_regions (
-        self, snapshot, &visible_rect_gdk);
+      draw_regions (self, snapshot, &visible_rect_gdk);
     }
 
   /* ------ draw markers ------- */
 
-  draw_cue_point (
-    self, snapshot, &visible_rect_gdk);
-  draw_loop_start (
-    self, snapshot, &visible_rect_gdk);
+  draw_cue_point (self, snapshot, &visible_rect_gdk);
+  draw_loop_start (self, snapshot, &visible_rect_gdk);
   draw_loop_end (self, snapshot, &visible_rect_gdk);
 
-  if (
-    self->type == TYPE (TIMELINE)
-    && TRANSPORT->punch_mode)
+  if (self->type == TYPE (TIMELINE) && TRANSPORT->punch_mode)
     {
-      draw_punch_in (
-        self, snapshot, &visible_rect_gdk);
-      draw_punch_out (
-        self, snapshot, &visible_rect_gdk);
+      draw_punch_in (self, snapshot, &visible_rect_gdk);
+      draw_punch_out (self, snapshot, &visible_rect_gdk);
     }
 
   /* --------- draw playhead ---------- */
@@ -1328,10 +1200,7 @@ ruler_snapshot (
 #undef sixteenths_per_beat
 
 static int
-is_loop_start_hit (
-  RulerWidget * self,
-  double        x,
-  double        y)
+is_loop_start_hit (RulerWidget * self, double x, double y)
 {
   GdkRectangle rect;
   get_loop_start_rect (self, &rect);
@@ -1341,10 +1210,7 @@ is_loop_start_hit (
 }
 
 static int
-is_loop_end_hit (
-  RulerWidget * self,
-  double        x,
-  double        y)
+is_loop_end_hit (RulerWidget * self, double x, double y)
 {
   GdkRectangle rect;
   get_loop_end_rect (self, &rect);
@@ -1354,10 +1220,7 @@ is_loop_end_hit (
 }
 
 static int
-is_punch_in_hit (
-  RulerWidget * self,
-  double        x,
-  double        y)
+is_punch_in_hit (RulerWidget * self, double x, double y)
 {
   GdkRectangle rect;
   get_punch_in_rect (self, &rect);
@@ -1367,10 +1230,7 @@ is_punch_in_hit (
 }
 
 static int
-is_punch_out_hit (
-  RulerWidget * self,
-  double        x,
-  double        y)
+is_punch_out_hit (RulerWidget * self, double x, double y)
 {
   GdkRectangle rect;
   get_punch_out_rect (self, &rect);
@@ -1380,10 +1240,7 @@ is_punch_out_hit (
 }
 
 static bool
-is_clip_start_hit (
-  RulerWidget * self,
-  double        x,
-  double        y)
+is_clip_start_hit (RulerWidget * self, double x, double y)
 {
   if (self->type == TYPE (EDITOR))
     {
@@ -1391,8 +1248,7 @@ is_clip_start_hit (
       get_clip_start_rect (self, &rect);
 
       return x >= rect.x && x <= rect.x + rect.width
-             && y >= rect.y
-             && y <= rect.y + rect.height;
+             && y >= rect.y && y <= rect.y + rect.height;
     }
   else
     return false;
@@ -1408,8 +1264,7 @@ get_range_rect (
 
   Position tmp;
   transport_get_range_pos (
-    TRANSPORT, type == RW_RANGE_END ? false : true,
-    &tmp);
+    TRANSPORT, type == RW_RANGE_END ? false : true, &tmp);
   rect->x = ui_pos_to_px_timeline (&tmp, true);
   if (type == RW_RANGE_END)
     {
@@ -1418,10 +1273,8 @@ get_range_rect (
   rect->y = 0;
   if (type == RW_RANGE_FULL)
     {
-      transport_get_range_pos (
-        TRANSPORT, false, &tmp);
-      double px =
-        ui_pos_to_px_timeline (&tmp, true);
+      transport_get_range_pos (TRANSPORT, false, &tmp);
+      double px = ui_pos_to_px_timeline (&tmp, true);
       rect->width = (int) px;
     }
   else
@@ -1429,8 +1282,7 @@ get_range_rect (
       rect->width = RW_CUE_MARKER_WIDTH;
     }
   rect->height =
-    gtk_widget_get_allocated_height (
-      GTK_WIDGET (self))
+    gtk_widget_get_allocated_height (GTK_WIDGET (self))
     / RW_RANGE_HEIGHT_DIVISOR;
 }
 
@@ -1441,17 +1293,14 @@ ruler_widget_is_range_hit (
   double               x,
   double               y)
 {
-  if (
-    self->type == TYPE (TIMELINE)
-    && TRANSPORT->has_range)
+  if (self->type == TYPE (TIMELINE) && TRANSPORT->has_range)
     {
       GdkRectangle rect;
       memset (&rect, 0, sizeof (GdkRectangle));
       get_range_rect (self, type, &rect);
 
       return x >= rect.x && x <= rect.x + rect.width
-             && y >= rect.y
-             && y <= rect.y + rect.height;
+             && y >= rect.y && y <= rect.y + rect.height;
     }
   else
     {
@@ -1481,17 +1330,16 @@ on_click_pressed (
           ui_px_to_pos_timeline (x, &pos, 1);
           if (
             !self->shift_held
-            && SNAP_GRID_ANY_SNAP (
-              SNAP_GRID_TIMELINE))
+            && SNAP_GRID_ANY_SNAP (SNAP_GRID_TIMELINE))
             {
               position_snap (
-                &pos, &pos, NULL, NULL,
-                SNAP_GRID_TIMELINE);
+                &pos, &pos, NULL, NULL, SNAP_GRID_TIMELINE);
             }
-          position_set_to_pos (
-            &TRANSPORT->cue_pos, &pos);
+          position_set_to_pos (&TRANSPORT->cue_pos, &pos);
         }
-      if (self->type == TYPE (EDITOR)) { }
+      if (self->type == TYPE (EDITOR))
+        {
+        }
     }
 
   return FALSE;
@@ -1539,12 +1387,10 @@ on_right_click_pressed (
       GSimpleActionGroup * action_group =
         g_simple_action_group_new ();
       GAction * display_action =
-        g_settings_create_action (
-          S_UI, "ruler-display");
+        g_settings_create_action (S_UI, "ruler-display");
 
       g_action_map_add_action (
-        G_ACTION_MAP (action_group),
-        display_action);
+        G_ACTION_MAP (action_group), display_action);
       gtk_widget_insert_action_group (
         GTK_WIDGET (self), "ruler",
         G_ACTION_GROUP (action_group));
@@ -1573,87 +1419,72 @@ drag_begin (
 
   if (self->type == TYPE (TIMELINE))
     {
-      self->range1_first =
-        position_is_before_or_equal (
-          &TRANSPORT->range_1, &TRANSPORT->range_2);
+      self->range1_first = position_is_before_or_equal (
+        &TRANSPORT->range_1, &TRANSPORT->range_2);
     }
 
-  int height = gtk_widget_get_allocated_height (
-    GTK_WIDGET (self));
+  int height =
+    gtk_widget_get_allocated_height (GTK_WIDGET (self));
 
-  int punch_in_hit =
-    is_punch_in_hit (self, start_x, start_y);
+  int punch_in_hit = is_punch_in_hit (self, start_x, start_y);
   int punch_out_hit =
     is_punch_out_hit (self, start_x, start_y);
   int loop_start_hit =
     is_loop_start_hit (self, start_x, start_y);
-  int loop_end_hit =
-    is_loop_end_hit (self, start_x, start_y);
+  int loop_end_hit = is_loop_end_hit (self, start_x, start_y);
   int clip_start_hit =
     is_clip_start_hit (self, start_x, start_y);
 
-  ZRegion * region =
-    clip_editor_get_region (CLIP_EDITOR);
-  ArrangerObject * r_obj =
-    (ArrangerObject *) region;
+  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
+  ArrangerObject * r_obj = (ArrangerObject *) region;
 
   /* if one of the markers hit */
   if (punch_in_hit)
     {
-      self->action =
-        UI_OVERLAY_ACTION_STARTING_MOVING;
+      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target = RW_TARGET_PUNCH_IN;
     }
   else if (punch_out_hit)
     {
-      self->action =
-        UI_OVERLAY_ACTION_STARTING_MOVING;
+      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target = RW_TARGET_PUNCH_OUT;
     }
   else if (loop_start_hit)
     {
-      self->action =
-        UI_OVERLAY_ACTION_STARTING_MOVING;
+      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target = RW_TARGET_LOOP_START;
       if (self->type == TYPE (EDITOR))
         {
           g_return_if_fail (region);
-          self->drag_start_pos =
-            r_obj->loop_start_pos;
+          self->drag_start_pos = r_obj->loop_start_pos;
         }
       else
         {
-          self->drag_start_pos =
-            TRANSPORT->loop_start_pos;
+          self->drag_start_pos = TRANSPORT->loop_start_pos;
         }
     }
   else if (loop_end_hit)
     {
-      self->action =
-        UI_OVERLAY_ACTION_STARTING_MOVING;
+      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target = RW_TARGET_LOOP_END;
       if (self->type == TYPE (EDITOR))
         {
           g_return_if_fail (region);
-          self->drag_start_pos =
-            r_obj->loop_end_pos;
+          self->drag_start_pos = r_obj->loop_end_pos;
         }
       else
         {
-          self->drag_start_pos =
-            TRANSPORT->loop_end_pos;
+          self->drag_start_pos = TRANSPORT->loop_end_pos;
         }
     }
   else if (clip_start_hit)
     {
-      self->action =
-        UI_OVERLAY_ACTION_STARTING_MOVING;
+      self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target = RW_TARGET_CLIP_START;
       if (self->type == TYPE (EDITOR))
         {
           g_return_if_fail (region);
-          self->drag_start_pos =
-            r_obj->clip_start_pos;
+          self->drag_start_pos = r_obj->clip_start_pos;
         }
     }
   else
@@ -1701,11 +1532,9 @@ on_motion (
   gdouble                    y,
   RulerWidget *              self)
 {
-  GdkEvent * event =
-    gtk_event_controller_get_current_event (
-      GTK_EVENT_CONTROLLER (motion_controller));
-  GdkEventType event_type =
-    gdk_event_get_event_type (event);
+  GdkEvent * event = gtk_event_controller_get_current_event (
+    GTK_EVENT_CONTROLLER (motion_controller));
+  GdkEventType event_type = gdk_event_get_event_type (event);
   GdkModifierType state =
     gtk_event_controller_get_current_event_state (
       GTK_EVENT_CONTROLLER (motion_controller));
@@ -1727,14 +1556,12 @@ on_motion (
       if (self->type == TYPE (TIMELINE))
         {
           timeline_ruler_on_drag_update (
-            self, x - self->start_x,
-            y - self->start_y);
+            self, x - self->start_x, y - self->start_y);
         }
       else if (self->type == TYPE (EDITOR))
         {
           editor_ruler_on_drag_update (
-            self, x - self->start_x,
-            y - self->start_y);
+            self, x - self->start_x, y - self->start_y);
         }
 
       self->last_offset_x = x - self->start_x;
@@ -1742,37 +1569,28 @@ on_motion (
       return;
     }
 
-  int height = gtk_widget_get_allocated_height (
-    GTK_WIDGET (self));
+  int height =
+    gtk_widget_get_allocated_height (GTK_WIDGET (self));
   if (event_type == GDK_MOTION_NOTIFY)
     {
-      bool punch_in_hit =
-        is_punch_in_hit (self, x, y);
-      bool punch_out_hit =
-        is_punch_out_hit (self, x, y);
-      bool loop_start_hit =
-        is_loop_start_hit (self, x, y);
-      bool loop_end_hit =
-        is_loop_end_hit (self, x, y);
-      bool clip_start_hit =
-        is_clip_start_hit (self, x, y);
-      bool range_start_hit =
-        ruler_widget_is_range_hit (
-          self, RW_RANGE_START, x, y);
+      bool punch_in_hit = is_punch_in_hit (self, x, y);
+      bool punch_out_hit = is_punch_out_hit (self, x, y);
+      bool loop_start_hit = is_loop_start_hit (self, x, y);
+      bool loop_end_hit = is_loop_end_hit (self, x, y);
+      bool clip_start_hit = is_clip_start_hit (self, x, y);
+      bool range_start_hit = ruler_widget_is_range_hit (
+        self, RW_RANGE_START, x, y);
       bool range_end_hit =
-        ruler_widget_is_range_hit (
-          self, RW_RANGE_END, x, y);
+        ruler_widget_is_range_hit (self, RW_RANGE_END, x, y);
 
       if (
-        punch_in_hit || loop_start_hit
-        || clip_start_hit || range_start_hit)
+        punch_in_hit || loop_start_hit || clip_start_hit
+        || range_start_hit)
         {
           ui_set_cursor_from_name (
             GTK_WIDGET (self), "w-resize");
         }
-      else if (
-        punch_out_hit || loop_end_hit
-        || range_end_hit)
+      else if (punch_out_hit || loop_end_hit || range_end_hit)
         {
           ui_set_cursor_from_name (
             GTK_WIDGET (self), "e-resize");
@@ -1807,8 +1625,7 @@ on_leave (
   GtkEventControllerMotion * motion_controller,
   RulerWidget *              self)
 {
-  ui_set_cursor_from_name (
-    GTK_WIDGET (self), "default");
+  ui_set_cursor_from_name (GTK_WIDGET (self), "default");
 }
 
 void
@@ -1816,33 +1633,26 @@ ruler_widget_refresh (RulerWidget * self)
 {
   /*adjust for zoom level*/
   self->px_per_tick =
-    DEFAULT_PX_PER_TICK
-    * ruler_widget_get_zoom_level (self);
+    DEFAULT_PX_PER_TICK * ruler_widget_get_zoom_level (self);
   self->px_per_sixteenth =
     self->px_per_tick * TICKS_PER_SIXTEENTH_NOTE;
   self->px_per_beat =
     self->px_per_tick * TRANSPORT->ticks_per_beat;
   int beats_per_bar =
     tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
-  self->px_per_bar =
-    self->px_per_beat * beats_per_bar;
+  self->px_per_bar = self->px_per_beat * beats_per_bar;
 
   Position pos;
   position_from_seconds (&pos, 1.0);
-  self->px_per_min =
-    60.0 * pos.ticks * self->px_per_tick;
-  self->px_per_10sec =
-    10.0 * pos.ticks * self->px_per_tick;
+  self->px_per_min = 60.0 * pos.ticks * self->px_per_tick;
+  self->px_per_10sec = 10.0 * pos.ticks * self->px_per_tick;
   self->px_per_sec = pos.ticks * self->px_per_tick;
-  self->px_per_100ms =
-    0.1 * pos.ticks * self->px_per_tick;
+  self->px_per_100ms = 0.1 * pos.ticks * self->px_per_tick;
 
-  position_set_to_bar (
-    &pos, TRANSPORT->total_bars + 1);
+  position_set_to_bar (&pos, TRANSPORT->total_bars + 1);
   double prev_total_px = self->total_px;
   self->total_px =
-    self->px_per_tick
-    * (double) position_to_ticks (&pos);
+    self->px_per_tick * (double) position_to_ticks (&pos);
 
   /* if size changed */
   if (!math_doubles_equal_epsilon (
@@ -1880,23 +1690,19 @@ ruler_widget_set_zoom_level (
 {
   if (zoom_level > MAX_ZOOM_LEVEL)
     {
-      actions_set_app_action_enabled (
-        "zoom-in", false);
+      actions_set_app_action_enabled ("zoom-in", false);
     }
   else
     {
-      actions_set_app_action_enabled (
-        "zoom-in", true);
+      actions_set_app_action_enabled ("zoom-in", true);
     }
   if (zoom_level < MIN_ZOOM_LEVEL)
     {
-      actions_set_app_action_enabled (
-        "zoom-out", false);
+      actions_set_app_action_enabled ("zoom-out", false);
     }
   else
     {
-      actions_set_app_action_enabled (
-        "zoom-out", true);
+      actions_set_app_action_enabled ("zoom-out", true);
     }
 
   int update =
@@ -1907,8 +1713,8 @@ ruler_widget_set_zoom_level (
     {
       if (self->type == RULER_WIDGET_TYPE_TIMELINE)
         {
-          PRJ_TIMELINE->editor_settings
-            .hzoom_level = zoom_level;
+          PRJ_TIMELINE->editor_settings.hzoom_level =
+            zoom_level;
         }
       else if (self->type == RULER_WIDGET_TYPE_EDITOR)
         {
@@ -1916,8 +1722,7 @@ ruler_widget_set_zoom_level (
             clip_editor_inner_widget_get_visible_arranger (
               MW_CLIP_EDITOR_INNER);
           EditorSettings * settings =
-            arranger_widget_get_editor_settings (
-              arr);
+            arranger_widget_get_editor_settings (arr);
           g_return_val_if_fail (settings, false);
           settings->hzoom_level = zoom_level;
         }
@@ -1945,8 +1750,7 @@ ruler_tick_cb (
 static void
 dispose (RulerWidget * self)
 {
-  gtk_widget_unparent (
-    GTK_WIDGET (self->popover_menu));
+  gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
   G_OBJECT_CLASS (ruler_widget_parent_class)
     ->dispose (G_OBJECT (self));
@@ -1955,44 +1759,37 @@ dispose (RulerWidget * self)
 static void
 ruler_widget_init (RulerWidget * self)
 {
-  self->popover_menu = GTK_POPOVER_MENU (
-    gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
   gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu),
-    GTK_WIDGET (self));
+    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
-  self->drag =
-    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
     G_OBJECT (self->drag), "drag-begin",
     G_CALLBACK (drag_begin), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-end",
-    G_CALLBACK (drag_end), self);
+    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end),
+    self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->drag));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
-  self->click =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  self->click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (
     G_OBJECT (self->click), "pressed",
     G_CALLBACK (on_click_pressed), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->click));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->click));
 
   GtkGestureClick * right_mp =
     GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (right_mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (right_mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (right_mp), "pressed",
     G_CALLBACK (on_right_click_pressed), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (right_mp));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (right_mp));
 
   GtkEventControllerMotion * motion_controller =
     GTK_EVENT_CONTROLLER_MOTION (
@@ -2008,33 +1805,27 @@ ruler_widget_init (RulerWidget * self)
     GTK_EVENT_CONTROLLER (motion_controller));
 
   self->layout_normal =
-    gtk_widget_create_pango_layout (
-      GTK_WIDGET (self), NULL);
+    gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
   PangoFontDescription * desc =
-    pango_font_description_from_string (
-      "Monospace 11");
+    pango_font_description_from_string ("Monospace 11");
   pango_layout_set_font_description (
     self->layout_normal, desc);
   pango_font_description_free (desc);
   self->layout_small =
-    gtk_widget_create_pango_layout (
-      GTK_WIDGET (self), NULL);
-  desc = pango_font_description_from_string (
-    "Monospace 6");
-  pango_layout_set_font_description (
-    self->layout_small, desc);
+    gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+  desc = pango_font_description_from_string ("Monospace 6");
+  pango_layout_set_font_description (self->layout_small, desc);
   pango_font_description_free (desc);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self),
-    (GtkTickCallback) ruler_tick_cb, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) ruler_tick_cb, self,
+    NULL);
 }
 
 static void
 ruler_widget_class_init (RulerWidgetClass * klass)
 {
-  GtkWidgetClass * wklass =
-    GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = ruler_snapshot;
   gtk_widget_class_set_css_name (wklass, "ruler");
 

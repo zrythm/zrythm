@@ -20,10 +20,7 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  HeaderWidget,
-  header_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (HeaderWidget, header_widget, GTK_TYPE_WIDGET)
 
 void
 header_widget_refresh (HeaderWidget * self)
@@ -43,9 +40,7 @@ header_widget_refresh (HeaderWidget * self)
 }
 
 void
-header_widget_setup (
-  HeaderWidget * self,
-  const char *   title)
+header_widget_setup (HeaderWidget * self, const char * title)
 {
   home_toolbar_widget_setup (self->home_toolbar);
 }
@@ -80,29 +75,23 @@ header_widget_init (HeaderWidget * self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
   GtkStyleContext * context;
-  context = gtk_widget_get_style_context (
-    GTK_WIDGET (self));
+  context = gtk_widget_get_style_context (GTK_WIDGET (self));
   gtk_style_context_add_class (context, "header");
 
-  live_waveform_widget_setup_engine (
-    self->live_waveform);
-  midi_activity_bar_widget_setup_engine (
-    self->midi_activity);
+  live_waveform_widget_setup_engine (self->live_waveform);
+  midi_activity_bar_widget_setup_engine (self->midi_activity);
   midi_activity_bar_widget_set_animation (
     self->midi_activity, MAB_ANIMATION_FLASH);
 
   /* set tooltips */
   char about_tooltip[500];
-  sprintf (
-    about_tooltip, _ ("About %s"), PROGRAM_NAME);
+  sprintf (about_tooltip, _ ("About %s"), PROGRAM_NAME);
 }
 
 static void
-header_widget_class_init (
-  HeaderWidgetClass * _klass)
+header_widget_class_init (HeaderWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
 
   resources_set_class_template (klass, "header.ui");
 

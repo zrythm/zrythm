@@ -36,12 +36,10 @@ user_shortcut_free (UserShortcut * shortcut)
 static char *
 get_user_shortcuts_file_path (void)
 {
-  char * zrythm_dir =
-    zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
+  char * zrythm_dir = zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
   g_return_val_if_fail (zrythm_dir, NULL);
 
-  return g_build_filename (
-    zrythm_dir, "shortcuts.yaml", NULL);
+  return g_build_filename (zrythm_dir, "shortcuts.yaml", NULL);
 }
 
 static bool
@@ -52,15 +50,13 @@ is_yaml_our_version (const char * yaml)
   sprintf (
     version_str, "schema_version: %d\n",
     USER_SHORTCUTS_SCHEMA_VERSION);
-  same_version =
-    g_str_has_prefix (yaml, version_str);
+  same_version = g_str_has_prefix (yaml, version_str);
   if (!same_version)
     {
       sprintf (
         version_str, "---\nschema_version: %d\n",
         USER_SHORTCUTS_SCHEMA_VERSION);
-      same_version =
-        g_str_has_prefix (yaml, version_str);
+      same_version = g_str_has_prefix (yaml, version_str);
     }
 
   return same_version;
@@ -77,14 +73,11 @@ user_shortcuts_new (void)
   if (!file_exists (path))
     {
       g_message (
-        "User shortcuts file at %s does not exist",
-        path);
+        "User shortcuts file at %s does not exist", path);
 return_new_instance:
       g_free (path);
-      UserShortcuts * self =
-        object_new (UserShortcuts);
-      self->schema_version =
-        USER_SHORTCUTS_SCHEMA_VERSION;
+      UserShortcuts * self = object_new (UserShortcuts);
+      self->schema_version = USER_SHORTCUTS_SCHEMA_VERSION;
       return self;
     }
   char * yaml = NULL;
@@ -111,8 +104,8 @@ return_new_instance:
       goto return_new_instance;
     }
 
-  UserShortcuts * self = (UserShortcuts *)
-    yaml_deserialize (yaml, &user_shortcuts_schema);
+  UserShortcuts * self = (UserShortcuts *) yaml_deserialize (
+    yaml, &user_shortcuts_schema);
   if (!self)
     {
       g_warning (
@@ -144,10 +137,8 @@ user_shortcuts_get (
 {
   for (int i = 0; i < self->num_shortcuts; i++)
     {
-      UserShortcut * cur_shortcut =
-        self->shortcuts[i];
-      if (string_is_equal (
-            cur_shortcut->action, action))
+      UserShortcut * cur_shortcut = self->shortcuts[i];
+      if (string_is_equal (cur_shortcut->action, action))
         {
           if (primary)
             return cur_shortcut->primary;

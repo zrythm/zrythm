@@ -26,16 +26,14 @@
  * @{
  */
 
-#define z_return_val_if_fail_cmp( \
-  a, comparator, b, val) \
+#define z_return_val_if_fail_cmp(a, comparator, b, val) \
   if (!(G_LIKELY (a comparator b))) \
     { \
       g_critical ( \
         "Assertion failed: %s (%" G_GINT64_FORMAT \
         ") " \
         "%s %s (%" G_GINT64_FORMAT ")", \
-        #a, (gint64) a, #comparator, #b, \
-        (gint64) b); \
+        #a, (gint64) a, #comparator, #b, (gint64) b); \
       return val; \
     }
 
@@ -49,8 +47,7 @@
         "Assertion failed: %s (%" G_GINT64_FORMAT \
         ") " \
         "%s %s (%" G_GINT64_FORMAT ")", \
-        #a, (gint64) a, #comparator, #b, \
-        (gint64) b); \
+        #a, (gint64) a, #comparator, #b, (gint64) b); \
     }
 
 /**

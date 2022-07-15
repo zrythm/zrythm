@@ -67,8 +67,7 @@ typedef struct _ChannelSendSelectorWidget
 } ChannelSendSelectorWidget;
 
 ChannelSendSelectorWidget *
-channel_send_selector_widget_new (
-  ChannelSendWidget * send);
+channel_send_selector_widget_new (ChannelSendWidget * send);
 
 void
 channel_send_selector_widget_setup (

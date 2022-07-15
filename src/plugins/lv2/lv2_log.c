@@ -47,8 +47,7 @@ lv2_log_vprintf (
   if (type == PM_URIDS.log_Trace)
     level = G_LOG_LEVEL_DEBUG;
   else if (
-    type == PM_URIDS.log_Error
-    || type == PM_URIDS.log_Warning)
+    type == PM_URIDS.log_Error || type == PM_URIDS.log_Warning)
     level = G_LOG_LEVEL_WARNING;
   else
     level = G_LOG_LEVEL_MESSAGE;
@@ -60,8 +59,7 @@ lv2_log_vprintf (
     fmt[strlen (fmt) - 1] = '\0';
 
   g_logv (
-    plugin->plugin->setting->descr->name, level,
-    fmt, ap);
+    plugin->plugin->setting->descr->name, level, fmt, ap);
 
   return 0;
 }
@@ -75,8 +73,7 @@ lv2_log_printf (
 {
   va_list args;
   va_start (args, fmt);
-  const int ret =
-    lv2_log_vprintf (handle, type, fmt, args);
+  const int ret = lv2_log_vprintf (handle, type, fmt, args);
   va_end (args);
 
   return ret;

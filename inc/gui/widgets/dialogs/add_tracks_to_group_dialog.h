@@ -39,8 +39,7 @@ G_DECLARE_FINAL_TYPE (
   ADD_TRACKS_TO_GROUP_DIALOG_WIDGET,
   GtkDialog)
 
-typedef struct TracklistSelections
-  TracklistSelections;
+typedef struct TracklistSelections TracklistSelections;
 
 /**
  * @addtogroup widgets

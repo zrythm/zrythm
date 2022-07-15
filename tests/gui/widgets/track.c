@@ -35,12 +35,11 @@ typedef struct
 GtkWidget *
 fishbowl_creation_func ()
 {
-  Track * track = track_new (
-    TRACK_TYPE_INSTRUMENT, "track-label", 1);
+  Track * track =
+    track_new (TRACK_TYPE_INSTRUMENT, "track-label", 1);
   g_return_val_if_fail (track, NULL);
   TrackWidget * itw = track_widget_new (track);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (itw), 300, 120);
+  gtk_widget_set_size_request (GTK_WIDGET (itw), 300, 120);
   track_widget_force_redraw (Z_TRACK_WIDGET (itw));
 
   return GTK_WIDGET (itw);

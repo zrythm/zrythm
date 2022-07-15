@@ -31,8 +31,7 @@ region_link_group_manager_init_loaded (
   self->groups_size = (size_t) self->num_groups;
   for (int i = 0; i < self->num_groups; i++)
     {
-      RegionLinkGroup * link_group =
-        self->groups[i];
+      RegionLinkGroup * link_group = self->groups[i];
       region_link_group_init_loaded (link_group);
     }
 }
@@ -43,8 +42,7 @@ region_link_group_manager_validate (
 {
   for (int i = 0; i < self->num_groups; i++)
     {
-      RegionLinkGroup * link_group =
-        self->groups[i];
+      RegionLinkGroup * link_group = self->groups[i];
       if (!region_link_group_validate (link_group))
         {
           g_return_val_if_reached (false);
@@ -64,8 +62,8 @@ region_link_group_manager_add_group (
   g_warn_if_fail (self->num_groups >= 0);
 
   array_double_size_if_full (
-    self->groups, self->num_groups,
-    self->groups_size, RegionLinkGroup *);
+    self->groups, self->num_groups, self->groups_size,
+    RegionLinkGroup *);
   self->groups[self->num_groups] =
     region_link_group_new (self->num_groups);
   self->num_groups++;
@@ -79,8 +77,7 @@ region_link_group_manager_get_group (
   int                      group_id)
 {
   g_return_val_if_fail (
-    self->num_groups >= 0
-      && group_id < self->num_groups,
+    self->num_groups >= 0 && group_id < self->num_groups,
     NULL);
 
   RegionLinkGroup * group = self->groups[group_id];
@@ -104,12 +101,10 @@ region_link_group_manager_remove_group (
 
   /* only allow removing empty groups */
   RegionLinkGroup * group =
-    region_link_group_manager_get_group (
-      self, group_id);
+    region_link_group_manager_get_group (self, group_id);
   g_return_if_fail (group && group->num_ids == 0);
 
-  for (int j = self->num_groups - 2; j >= group_id;
-       j--)
+  for (int j = self->num_groups - 2; j >= group_id; j--)
     {
       /* move the next group to the current group
        * slot */
@@ -118,18 +113,16 @@ region_link_group_manager_remove_group (
     }
   self->num_groups--;
 
-  object_free_w_func_and_null (
-    region_link_group_free, group);
+  object_free_w_func_and_null (region_link_group_free, group);
 
   g_return_if_fail (self->num_groups >= 0);
 }
 
 void
-region_link_group_manager_print (
-  RegionLinkGroupManager * self)
+region_link_group_manager_print (RegionLinkGroupManager * self)
 {
-  char * str = yaml_serialize (
-    self, &region_link_group_manager_schema);
+  char * str =
+    yaml_serialize (self, &region_link_group_manager_schema);
   g_message ("%s", str);
   g_free (str);
 }
@@ -146,16 +139,15 @@ region_link_group_manager_new (void)
 }
 
 RegionLinkGroupManager *
-region_link_group_manager_clone (
-  RegionLinkGroupManager * src)
+region_link_group_manager_clone (RegionLinkGroupManager * src)
 {
   RegionLinkGroupManager * self =
     object_new (RegionLinkGroupManager);
   self->schema_version =
     REGION_LINK_GROUP_MANAGER_SCHEMA_VERSION;
 
-  self->groups = object_new_n (
-    (size_t) src->num_groups, RegionIdentifier);
+  self->groups =
+    object_new_n ((size_t) src->num_groups, RegionIdentifier);
   for (int i = 0; i < src->num_groups; i++)
     {
       self->groups[i] =
@@ -167,8 +159,7 @@ region_link_group_manager_clone (
 }
 
 void
-region_link_group_manager_free (
-  RegionLinkGroupManager * self)
+region_link_group_manager_free (RegionLinkGroupManager * self)
 {
   for (int i = 0; i < self->num_groups; i++)
     {

@@ -46,19 +46,15 @@ test_region_length_in_ticks (
     &p1, &p2, track_get_name_hash (track), 0, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   track_add_region (
-    track, r, NULL, 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
 
   arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
-  double length =
-    arranger_selections_get_length_in_ticks (
-      (ArrangerSelections *) TL_SELECTIONS);
+  double length = arranger_selections_get_length_in_ticks (
+    (ArrangerSelections *) TL_SELECTIONS);
   g_assert_cmpfloat_with_epsilon (
-    length,
-    TRANSPORT->ticks_per_bar * (bar_end - bar_start),
+    length, TRANSPORT->ticks_per_bar * (bar_end - bar_start),
     0.00001);
 }
 
@@ -67,8 +63,8 @@ test_get_length_in_ticks (void)
 {
   test_helper_zrythm_init ();
 
-  Track * track = track_create_empty_with_action (
-    TRACK_TYPE_MIDI, NULL);
+  Track * track =
+    track_create_empty_with_action (TRACK_TYPE_MIDI, NULL);
 
   test_region_length_in_ticks (track, 3, 4);
   test_region_length_in_ticks (track, 100, 102);
@@ -82,8 +78,8 @@ test_get_last_object (void)
 {
   test_helper_zrythm_init ();
 
-  Track * track = track_create_empty_with_action (
-    TRACK_TYPE_MIDI, NULL);
+  Track * track =
+    track_create_empty_with_action (TRACK_TYPE_MIDI, NULL);
 
   Position p1, p2;
   position_set_to_bar (&p1, 3);
@@ -91,20 +87,16 @@ test_get_last_object (void)
   ZRegion * r = midi_region_new (
     &p1, &p2, track_get_name_hash (track), 0, 0);
   track_add_region (
-    track, r, NULL, 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
 
   position_from_frames (&p1, -40000);
   position_from_frames (&p2, -4000);
-  MidiNote * mn =
-    midi_note_new (&r->id, &p1, &p2, 60, 60);
+  MidiNote * mn = midi_note_new (&r->id, &p1, &p2, 60, 60);
   ArrangerObject * mn_obj = (ArrangerObject *) mn;
-  midi_region_add_midi_note (
-    r, mn, F_NO_PUBLISH_EVENTS);
+  midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
 
   arranger_object_select (
-    mn_obj, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    mn_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
   ArrangerObject * last_obj =
     arranger_selections_get_last_object (
@@ -120,8 +112,8 @@ test_contains_object_with_property (void)
 {
   test_helper_zrythm_init ();
 
-  Track * track = track_create_empty_with_action (
-    TRACK_TYPE_MIDI, NULL);
+  Track * track =
+    track_create_empty_with_action (TRACK_TYPE_MIDI, NULL);
 
   Position p1, p2;
   position_set_to_bar (&p1, 3);
@@ -129,25 +121,20 @@ test_contains_object_with_property (void)
   ZRegion * r = midi_region_new (
     &p1, &p2, track_get_name_hash (track), 0, 0);
   track_add_region (
-    track, r, NULL, 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
 
   position_from_frames (&p1, -40000);
   position_from_frames (&p2, -4000);
-  MidiNote * mn =
-    midi_note_new (&r->id, &p1, &p2, 60, 60);
+  MidiNote * mn = midi_note_new (&r->id, &p1, &p2, 60, 60);
   ArrangerObject * mn_obj = (ArrangerObject *) mn;
-  midi_region_add_midi_note (
-    r, mn, F_NO_PUBLISH_EVENTS);
+  midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
 
   arranger_object_select (
-    mn_obj, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    mn_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
-  bool ret =
-    arranger_selections_contains_object_with_property (
-      (ArrangerSelections *) MA_SELECTIONS,
-      ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH, true);
+  bool ret = arranger_selections_contains_object_with_property (
+    (ArrangerSelections *) MA_SELECTIONS,
+    ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH, true);
   g_assert_true (ret);
   ret = arranger_selections_contains_object_with_property (
     (ArrangerSelections *) MA_SELECTIONS,
@@ -162,12 +149,10 @@ main (int argc, char * argv[])
 {
   g_test_init (&argc, &argv, NULL);
 
-#define TEST_PREFIX \
-  "/gui/backend/arranger selections/"
+#define TEST_PREFIX "/gui/backend/arranger selections/"
 
   g_test_add_func (
-    TEST_PREFIX
-    "test contains object with property",
+    TEST_PREFIX "test contains object with property",
     (GTestFunc) test_contains_object_with_property);
   g_test_add_func (
     TEST_PREFIX "test get last object",

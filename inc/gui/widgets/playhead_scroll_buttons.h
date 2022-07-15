@@ -41,8 +41,7 @@ G_DECLARE_FINAL_TYPE (
   PLAYHEAD_SCROLL_BUTTONS_WIDGET,
   GtkWidget)
 
-#define MW_PLAYHEAD_SCROLL_BUTTONS \
-  MW_HOME_TOOLBAR->snap_box
+#define MW_PLAYHEAD_SCROLL_BUTTONS MW_HOME_TOOLBAR->snap_box
 
 typedef struct _PlayheadScrollButtonsWidget
 {

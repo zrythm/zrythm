@@ -52,23 +52,19 @@ left_dock_edge_widget_refresh_with_page (
   LeftDockEdgeWidget * self,
   LeftDockEdgeTab      page)
 {
-  g_settings_set_int (
-    S_UI, "left-panel-tab", (int) page);
+  g_settings_set_int (S_UI, "left-panel-tab", (int) page);
   left_dock_edge_widget_refresh (self);
 }
 
 void
-left_dock_edge_widget_refresh (
-  LeftDockEdgeWidget * self)
+left_dock_edge_widget_refresh (LeftDockEdgeWidget * self)
 {
   g_debug ("refreshing left dock edge...");
 
   inspector_track_widget_show_tracks (
-    self->track_inspector, TRACKLIST_SELECTIONS,
-    false);
+    self->track_inspector, TRACKLIST_SELECTIONS, false);
   inspector_plugin_widget_show (
-    self->plugin_inspector, MIXER_SELECTIONS,
-    false);
+    self->plugin_inspector, MIXER_SELECTIONS, false);
 
   /* TODO load from workspaces */
 #if 0
@@ -83,8 +79,7 @@ left_dock_edge_widget_refresh (
 }
 
 void
-left_dock_edge_widget_setup (
-  LeftDockEdgeWidget * self)
+left_dock_edge_widget_setup (LeftDockEdgeWidget * self)
 {
   inspector_track_widget_setup (
     self->track_inspector, TRACKLIST_SELECTIONS);
@@ -99,19 +94,15 @@ wrap_inspector_in_scrolled_window (
 {
   GtkScrolledWindow * scroll;
   GtkViewport *       viewport;
-  scroll = GTK_SCROLLED_WINDOW (
-    gtk_scrolled_window_new ());
+  scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
   /*gtk_scrolled_window_set_overlay_scrolling (*/
   /*scroll, false);*/
   gtk_scrolled_window_set_policy (
     scroll, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-  viewport =
-    GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
-  gtk_viewport_set_child (
-    GTK_VIEWPORT (viewport), widget);
+  viewport = GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
+  gtk_viewport_set_child (GTK_VIEWPORT (viewport), widget);
   gtk_scrolled_window_set_child (
-    GTK_SCROLLED_WINDOW (scroll),
-    GTK_WIDGET (viewport));
+    GTK_SCROLLED_WINDOW (scroll), GTK_WIDGET (viewport));
 
   return scroll;
 }
@@ -120,15 +111,13 @@ wrap_inspector_in_scrolled_window (
  * Prepare for finalization.
  */
 void
-left_dock_edge_widget_tear_down (
-  LeftDockEdgeWidget * self)
+left_dock_edge_widget_tear_down (LeftDockEdgeWidget * self)
 {
   g_message ("tearing down %p...", self);
 
   if (self->track_inspector)
     {
-      inspector_track_widget_tear_down (
-        self->track_inspector);
+      inspector_track_widget_tear_down (self->track_inspector);
     }
 
   g_message ("done");
@@ -137,28 +126,23 @@ left_dock_edge_widget_tear_down (
 static void
 dispose (LeftDockEdgeWidget * self)
 {
-  gtk_widget_unparent (
-    GTK_WIDGET (self->panel_frame));
+  gtk_widget_unparent (GTK_WIDGET (self->panel_frame));
 
-  G_OBJECT_CLASS (
-    left_dock_edge_widget_parent_class)
+  G_OBJECT_CLASS (left_dock_edge_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
 
 static void
-left_dock_edge_widget_init (
-  LeftDockEdgeWidget * self)
+left_dock_edge_widget_init (LeftDockEdgeWidget * self)
 {
   g_type_ensure (FOLDABLE_NOTEBOOK_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  GtkBoxLayout * box_layout =
-    GTK_BOX_LAYOUT (gtk_widget_get_layout_manager (
-      GTK_WIDGET (self)));
+  GtkBoxLayout * box_layout = GTK_BOX_LAYOUT (
+    gtk_widget_get_layout_manager (GTK_WIDGET (self)));
   gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (box_layout),
-    GTK_ORIENTATION_VERTICAL);
+    GTK_ORIENTABLE (box_layout), GTK_ORIENTATION_VERTICAL);
 
   const int           min_width = 160;
   GtkBox *            inspector_wrap;
@@ -170,42 +154,33 @@ left_dock_edge_widget_init (
       PANEL_WIDGET (panel_widget_new ()); \
     panel_widget_set_child ( \
       panel_widget, GTK_WIDGET (widget)); \
-    panel_widget_set_icon_name ( \
-      panel_widget, icon); \
+    panel_widget_set_icon_name (panel_widget, icon); \
     panel_widget_set_title (panel_widget, title); \
-    panel_frame_add ( \
-      self->panel_frame, panel_widget); \
+    panel_frame_add (self->panel_frame, panel_widget); \
   }
 
   /* setup track inspector */
-  self->track_inspector =
-    inspector_track_widget_new ();
+  self->track_inspector = inspector_track_widget_new ();
   gtk_widget_set_size_request (
-    GTK_WIDGET (self->track_inspector), min_width,
-    -1);
-  inspector_wrap = GTK_BOX (
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+    GTK_WIDGET (self->track_inspector), min_width, -1);
+  inspector_wrap =
+    GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_box_append (
     GTK_BOX (inspector_wrap),
     GTK_WIDGET (self->track_inspector));
   scroll = wrap_inspector_in_scrolled_window (
     self, GTK_WIDGET (inspector_wrap));
   self->track_inspector_scroll = scroll;
-  ADD_TAB (
-    scroll, "track-inspector",
-    _ ("Track Inspector"));
+  ADD_TAB (scroll, "track-inspector", _ ("Track Inspector"));
 
   /* setup plugin inspector */
-  self->plugin_inspector =
-    inspector_plugin_widget_new ();
+  self->plugin_inspector = inspector_plugin_widget_new ();
   gtk_widget_set_size_request (
-    GTK_WIDGET (self->plugin_inspector), min_width,
-    -1);
-  inspector_wrap = GTK_BOX (
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+    GTK_WIDGET (self->plugin_inspector), min_width, -1);
+  inspector_wrap =
+    GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_box_append (
-    inspector_wrap,
-    GTK_WIDGET (self->plugin_inspector));
+    inspector_wrap, GTK_WIDGET (self->plugin_inspector));
   scroll = wrap_inspector_in_scrolled_window (
     self, GTK_WIDGET (inspector_wrap));
   self->plugin_inspector_scroll = scroll;
@@ -215,11 +190,10 @@ left_dock_edge_widget_init (
   self->visibility = visibility_widget_new ();
   gtk_widget_set_size_request (
     GTK_WIDGET (self->visibility), min_width, -1);
-  self->visibility_box = GTK_BOX (
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->visibility_box =
+    GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_box_append (
-    self->visibility_box,
-    GTK_WIDGET (self->visibility));
+    self->visibility_box, GTK_WIDGET (self->visibility));
   ADD_TAB (
     self->visibility_box, "view-visible",
     _ ("Track Visibility"));
@@ -231,13 +205,10 @@ static void
 left_dock_edge_widget_class_init (
   LeftDockEdgeWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "left_dock_edge.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "left_dock_edge.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "left-dock-edge");
+  gtk_widget_class_set_css_name (klass, "left-dock-edge");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

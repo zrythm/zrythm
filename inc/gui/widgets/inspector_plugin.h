@@ -46,8 +46,7 @@ G_DECLARE_FINAL_TYPE (
 #define MW_PLUGIN_INSPECTOR \
   MW_LEFT_DOCK_EDGE->plugin_inspector
 
-typedef struct _PortsExpanderWidget
-  PortsExpanderWidget;
+typedef struct _PortsExpanderWidget PortsExpanderWidget;
 typedef struct _PluginPropertiesExpanderWidget
   PluginPropertiesExpanderWidget;
 typedef struct _ColorAreaWidget ColorAreaWidget;

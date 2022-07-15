@@ -22,16 +22,12 @@
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-G_DEFINE_TYPE (
-  ClipEditorWidget,
-  clip_editor_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (ClipEditorWidget, clip_editor_widget, GTK_TYPE_BOX)
 
 void
 clip_editor_widget_setup (ClipEditorWidget * self)
 {
-  clip_editor_inner_widget_setup (
-    self->clip_editor_inner);
+  clip_editor_inner_widget_setup (self->clip_editor_inner);
 
   gtk_stack_set_visible_child (
     GTK_STACK (self->stack),
@@ -53,8 +49,7 @@ refresh_editor_ruler_and_arranger (void * user_data)
 
   /* ruler must be refreshed first to get the
    * correct px when calling ui_* functions */
-  ruler_widget_refresh (
-    (RulerWidget *) EDITOR_RULER);
+  ruler_widget_refresh ((RulerWidget *) EDITOR_RULER);
 
   CLIP_EDITOR->region_changed = 0;
 
@@ -65,27 +60,21 @@ refresh_editor_ruler_and_arranger (void * user_data)
  * To be called when the region changes.
  */
 void
-clip_editor_widget_on_region_changed (
-  ClipEditorWidget * self)
+clip_editor_widget_on_region_changed (ClipEditorWidget * self)
 {
-  ZRegion * r =
-    clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
 
   if (r)
     {
       gtk_stack_set_visible_child (
-        GTK_STACK (self->stack),
-        GTK_WIDGET (self->main_box));
+        GTK_STACK (self->stack), GTK_WIDGET (self->main_box));
 
-      clip_editor_inner_widget_refresh (
-        MW_CLIP_EDITOR_INNER);
+      clip_editor_inner_widget_refresh (MW_CLIP_EDITOR_INNER);
 
-      g_idle_add (
-        refresh_editor_ruler_and_arranger, NULL);
+      g_idle_add (refresh_editor_ruler_and_arranger, NULL);
 
       /* update the toolbar */
-      editor_toolbar_widget_refresh (
-        self->editor_toolbar);
+      editor_toolbar_widget_refresh (self->editor_toolbar);
     }
   else
     {
@@ -115,16 +104,12 @@ clip_editor_widget_init (ClipEditorWidget * self)
 }
 
 static void
-clip_editor_widget_class_init (
-  ClipEditorWidgetClass * _klass)
+clip_editor_widget_class_init (ClipEditorWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "clip_editor.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "clip_editor.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "clip-editor");
+  gtk_widget_class_set_css_name (klass, "clip-editor");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

@@ -24,10 +24,7 @@
 #include "gui/widgets/volume.h"
 #include "utils/ui.h"
 
-G_DEFINE_TYPE (
-  VolumeWidget,
-  volume_widget,
-  GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (VolumeWidget, volume_widget, GTK_TYPE_DRAWING_AREA)
 
 #define PADDING 6
 
@@ -48,15 +45,13 @@ volume_draw_cb (
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
-  gtk_render_background (
-    context, cr, 0, 0, width, height);
+  gtk_render_background (context, cr, 0, 0, width, height);
 
   double density = 0.85;
   if (self->hover)
     density = 1;
 
-  cairo_set_source_rgba (
-    cr, density, density, density, 1);
+  cairo_set_source_rgba (cr, density, density, density, 1);
   cairo_set_line_width (cr, 2);
 
   /* draw outline */
@@ -85,8 +80,7 @@ on_leave (
   GtkEventControllerMotion * motion_controller,
   VolumeWidget *             self)
 {
-  if (!gtk_gesture_drag_get_offset (
-        self->drag, NULL, NULL))
+  if (!gtk_gesture_drag_get_offset (self->drag, NULL, NULL))
     self->hover = 0;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -119,8 +113,8 @@ drag_update (
     use_y ? (float) (offset_y - self->last_y)
           : (float) (offset_x - self->last_x);
   const float multiplier = 0.012f;
-  const float new_norm_val = CLAMP (
-    cur_norm_val + multiplier * delta, 0.f, 1.f);
+  const float new_norm_val =
+    CLAMP (cur_norm_val + multiplier * delta, 0.f, 1.f);
   control_port_set_val_from_normalized (
     self->port, new_norm_val, false);
 
@@ -145,8 +139,7 @@ drag_end (
   if (state & GDK_CONTROL_MASK)
     {
       float def_val = self->port->deff;
-      control_port_set_real_val (
-        self->port, def_val);
+      control_port_set_real_val (self->port, def_val);
     }
 
   self->last_x = 0;
@@ -158,17 +151,15 @@ volume_widget_setup (VolumeWidget * self, Port * port)
 {
   self->port = port;
 
-  self->drag =
-    GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
     G_OBJECT (self->drag), "drag-update",
     G_CALLBACK (drag_update), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-end",
-    G_CALLBACK (drag_end), self);
+    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end),
+    self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->drag));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
   GtkEventControllerMotion * motion_controller =
     GTK_EVENT_CONTROLLER_MOTION (
@@ -184,8 +175,7 @@ volume_widget_setup (VolumeWidget * self, Port * port)
     GTK_EVENT_CONTROLLER (motion_controller));
 
   gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self), volume_draw_cb, self,
-    NULL);
+    GTK_DRAWING_AREA (self), volume_draw_cb, self, NULL);
 }
 
 VolumeWidget *
@@ -200,11 +190,9 @@ volume_widget_new (Port * port)
 }
 
 static void
-volume_widget_class_init (
-  VolumeWidgetClass * _klass)
+volume_widget_class_init (VolumeWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
 
   gtk_widget_class_set_css_name (klass, "volume");
 }
@@ -212,15 +200,10 @@ volume_widget_class_init (
 static void
 volume_widget_init (VolumeWidget * self)
 {
-  gtk_widget_set_margin_start (
-    GTK_WIDGET (self), PADDING);
-  gtk_widget_set_margin_end (
-    GTK_WIDGET (self), PADDING);
-  gtk_widget_set_margin_bottom (
-    GTK_WIDGET (self), PADDING);
-  gtk_widget_set_margin_top (
-    GTK_WIDGET (self), PADDING);
+  gtk_widget_set_margin_start (GTK_WIDGET (self), PADDING);
+  gtk_widget_set_margin_end (GTK_WIDGET (self), PADDING);
+  gtk_widget_set_margin_bottom (GTK_WIDGET (self), PADDING);
+  gtk_widget_set_margin_top (GTK_WIDGET (self), PADDING);
 
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self), 20, -1);
+  gtk_widget_set_size_request (GTK_WIDGET (self), 20, -1);
 }

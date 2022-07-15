@@ -37,13 +37,11 @@ G_DECLARE_FINAL_TYPE (
   FADER_CONTROLS_GRID_WIDGET,
   GtkGrid)
 
-typedef struct Track        Track;
-typedef struct _FaderWidget FaderWidget;
-typedef struct _MeterWidget MeterWidget;
-typedef struct _BalanceControlWidget
-  BalanceControlWidget;
-typedef struct _FaderButtonsWidget
-  FaderButtonsWidget;
+typedef struct Track                 Track;
+typedef struct _FaderWidget          FaderWidget;
+typedef struct _MeterWidget          MeterWidget;
+typedef struct _BalanceControlWidget BalanceControlWidget;
+typedef struct _FaderButtonsWidget   FaderButtonsWidget;
 
 /**
  * @addtogroup widgets

@@ -30,29 +30,24 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 static void
-timeline_bot_box_widget_init (
-  TimelineBotBoxWidget * self)
+timeline_bot_box_widget_init (TimelineBotBoxWidget * self)
 {
   g_type_ensure (TIMELINE_MINIMAP_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
   // set icons
-  gtk_button_set_icon_name (
-    self->instrument_add, "add");
+  gtk_button_set_icon_name (self->instrument_add, "add");
 }
 
 static void
 timeline_bot_box_widget_class_init (
   TimelineBotBoxWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "timeline_bot_box.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "timeline_bot_box.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "center-dock-bot-box");
+  gtk_widget_class_set_css_name (klass, "center-dock-bot-box");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

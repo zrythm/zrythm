@@ -80,21 +80,16 @@ clip_editor_inner_widget_get_visible_arranger (
     {
       return MW_MIDI_ARRANGER;
     }
-  else if (
-    visible_w
-    == GTK_WIDGET (self->audio_editor_space))
+  else if (visible_w == GTK_WIDGET (self->audio_editor_space))
     {
       return MW_AUDIO_ARRANGER;
     }
-  else if (
-    visible_w
-    == GTK_WIDGET (self->chord_editor_space))
+  else if (visible_w == GTK_WIDGET (self->chord_editor_space))
     {
       return MW_CHORD_ARRANGER;
     }
   else if (
-    visible_w
-    == GTK_WIDGET (self->automation_editor_space))
+    visible_w == GTK_WIDGET (self->automation_editor_space))
     {
       return MW_AUTOMATION_ARRANGER;
     }
@@ -105,13 +100,11 @@ clip_editor_inner_widget_get_visible_arranger (
 }
 
 void
-clip_editor_inner_widget_refresh (
-  ClipEditorInnerWidget * self)
+clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self)
 {
   g_message ("refreshing...");
 
-  ZRegion * r =
-    clip_editor_get_region (CLIP_EDITOR);
+  ZRegion *        r = clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   Track *          track = NULL;
 
@@ -121,38 +114,29 @@ clip_editor_inner_widget_refresh (
 
       color_area_widget_set_color (
         self->color_bar, &track->color);
-      gtk_label_set_markup (
-        self->track_name_lbl, r->name);
+      gtk_label_set_markup (self->track_name_lbl, r->name);
 
       /* remove all from the size group */
       GtkWidget * visible_w =
-        gtk_stack_get_visible_child (
-          self->editor_stack);
-      if (
-        visible_w
-        == GTK_WIDGET (self->midi_editor_space))
+        gtk_stack_get_visible_child (self->editor_stack);
+      if (visible_w == GTK_WIDGET (self->midi_editor_space))
         {
           midi_editor_space_widget_update_size_group (
             self->midi_editor_space, false);
         }
-      else if (
-        visible_w
-        == GTK_WIDGET (self->audio_editor_space))
+      else if (visible_w == GTK_WIDGET (self->audio_editor_space))
         {
           audio_editor_space_widget_update_size_group (
             self->audio_editor_space, false);
         }
-      else if (
-        visible_w
-        == GTK_WIDGET (self->chord_editor_space))
+      else if (visible_w == GTK_WIDGET (self->chord_editor_space))
         {
           chord_editor_space_widget_update_size_group (
             self->chord_editor_space, false);
         }
       else if (
         visible_w
-        == GTK_WIDGET (
-          self->automation_editor_space))
+        == GTK_WIDGET (self->automation_editor_space))
         {
           automation_editor_space_widget_update_size_group (
             self->automation_editor_space, false);
@@ -166,11 +150,9 @@ clip_editor_inner_widget_refresh (
       gtk_widget_set_visible (
         GTK_WIDGET (self->toggle_notation), false);
       gtk_widget_set_visible (
-        GTK_WIDGET (self->toggle_listen_notes),
-        false);
+        GTK_WIDGET (self->toggle_listen_notes), false);
       gtk_widget_set_visible (
-        GTK_WIDGET (self->show_automation_values),
-        false);
+        GTK_WIDGET (self->show_automation_values), false);
 
       /* add one to the size group */
       switch (r->id.type)
@@ -184,20 +166,16 @@ clip_editor_inner_widget_refresh (
           midi_editor_space_widget_refresh (
             self->midi_editor_space);
           gtk_widget_set_visible (
-            GTK_WIDGET (self->toggle_notation),
-            true);
+            GTK_WIDGET (self->toggle_notation), true);
           gtk_actionable_set_action_name (
-            GTK_ACTIONABLE (self->toggle_notation),
-            NULL);
+            GTK_ACTIONABLE (self->toggle_notation), NULL);
           gtk_toggle_button_set_active (
-            self->toggle_notation,
-            track->drum_mode);
+            self->toggle_notation, track->drum_mode);
           gtk_actionable_set_action_name (
             GTK_ACTIONABLE (self->toggle_notation),
             "app.toggle-drum-mode");
           gtk_widget_set_visible (
-            GTK_WIDGET (self->toggle_listen_notes),
-            true);
+            GTK_WIDGET (self->toggle_listen_notes), true);
           break;
         case REGION_TYPE_AUDIO:
           gtk_stack_set_visible_child (
@@ -226,9 +204,7 @@ clip_editor_inner_widget_refresh (
           automation_editor_space_widget_refresh (
             self->automation_editor_space);
           gtk_widget_set_visible (
-            GTK_WIDGET (
-              self->show_automation_values),
-            true);
+            GTK_WIDGET (self->show_automation_values), true);
           break;
         }
     }
@@ -237,15 +213,11 @@ clip_editor_inner_widget_refresh (
 }
 
 void
-clip_editor_inner_widget_setup (
-  ClipEditorInnerWidget * self)
+clip_editor_inner_widget_setup (ClipEditorInnerWidget * self)
 {
-  audio_editor_space_widget_setup (
-    self->audio_editor_space);
-  midi_editor_space_widget_setup (
-    self->midi_editor_space);
-  chord_editor_space_widget_setup (
-    self->chord_editor_space);
+  audio_editor_space_widget_setup (self->audio_editor_space);
+  midi_editor_space_widget_setup (self->midi_editor_space);
+  chord_editor_space_widget_setup (self->chord_editor_space);
   automation_editor_space_widget_setup (
     self->automation_editor_space);
 
@@ -258,22 +230,19 @@ finalize (ClipEditorInnerWidget * self)
   if (self->left_of_ruler_size_group)
     g_object_unref (self->left_of_ruler_size_group);
 
-  G_OBJECT_CLASS (
-    clip_editor_inner_widget_parent_class)
+  G_OBJECT_CLASS (clip_editor_inner_widget_parent_class)
     ->finalize (G_OBJECT (self));
 }
 
 static void
-clip_editor_inner_widget_init (
-  ClipEditorInnerWidget * self)
+clip_editor_inner_widget_init (ClipEditorInnerWidget * self)
 {
   g_type_ensure (COLOR_AREA_WIDGET_TYPE);
   g_type_ensure (RULER_WIDGET_TYPE);
   g_type_ensure (AUDIO_EDITOR_SPACE_WIDGET_TYPE);
   g_type_ensure (MIDI_EDITOR_SPACE_WIDGET_TYPE);
   g_type_ensure (CHORD_EDITOR_SPACE_WIDGET_TYPE);
-  g_type_ensure (
-    AUTOMATION_EDITOR_SPACE_WIDGET_TYPE);
+  g_type_ensure (AUTOMATION_EDITOR_SPACE_WIDGET_TYPE);
   g_type_ensure (GTK_TYPE_FLIPPER);
 
   self->ruler_arranger_hsize_group =
@@ -292,8 +261,7 @@ clip_editor_inner_widget_init (
     GTK_WIDGET (self->midi_editor_space->arranger));
   gtk_size_group_add_widget (
     self->ruler_arranger_hsize_group,
-    GTK_WIDGET (
-      self->midi_editor_space->modifier_arranger));
+    GTK_WIDGET (self->midi_editor_space->modifier_arranger));
   gtk_size_group_add_widget (
     self->ruler_arranger_hsize_group,
     GTK_WIDGET (self->audio_editor_space->arranger));
@@ -302,8 +270,7 @@ clip_editor_inner_widget_init (
     GTK_WIDGET (self->chord_editor_space->arranger));
   gtk_size_group_add_widget (
     self->ruler_arranger_hsize_group,
-    GTK_WIDGET (
-      self->automation_editor_space->arranger));
+    GTK_WIDGET (self->automation_editor_space->arranger));
 
   self->left_of_ruler_size_group =
     gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
@@ -316,18 +283,15 @@ clip_editor_inner_widget_init (
 
   GdkRGBA color;
   gdk_rgba_parse (&color, "gray");
-  color_area_widget_set_color (
-    self->color_bar, &color);
+  color_area_widget_set_color (self->color_bar, &color);
 }
 
 static void
 clip_editor_inner_widget_class_init (
   ClipEditorInnerWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "clip_editor_inner.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "clip_editor_inner.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

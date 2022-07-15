@@ -51,14 +51,12 @@ snap_grid_get_ticks_from_length_and_type (
     {
     case NOTE_LENGTH_BAR:
       g_return_val_if_fail (
-        TRANSPORT && TRANSPORT->ticks_per_bar > 0,
-        -1);
+        TRANSPORT && TRANSPORT->ticks_per_bar > 0, -1);
       ticks = TRANSPORT->ticks_per_bar;
       break;
     case NOTE_LENGTH_BEAT:
       g_return_val_if_fail (
-        TRANSPORT && TRANSPORT->ticks_per_beat > 0,
-        -1);
+        TRANSPORT && TRANSPORT->ticks_per_beat > 0, -1);
       ticks = TRANSPORT->ticks_per_beat;
       break;
     case NOTE_LENGTH_2_1:
@@ -141,8 +139,7 @@ snap_grid_get_snap_ticks (const SnapGrid * self)
       int beat_interval =
         ruler_widget_get_beat_interval (ruler);
       int bar_interval = (int) MAX (
-        (RW_PX_TO_HIDE_BEATS)
-          / (double) ruler->px_per_bar,
+        (RW_PX_TO_HIDE_BEATS) / (double) ruler->px_per_bar,
         1.0);
 
       /* attempt to snap at smallest interval */
@@ -150,29 +147,25 @@ snap_grid_get_snap_ticks (const SnapGrid * self)
         {
           return sixteenth_interval
                  * snap_grid_get_ticks_from_length_and_type (
-                   NOTE_LENGTH_1_16,
-                   self->snap_note_type);
+                   NOTE_LENGTH_1_16, self->snap_note_type);
         }
       else if (beat_interval > 0)
         {
           return beat_interval
                  * snap_grid_get_ticks_from_length_and_type (
-                   NOTE_LENGTH_BEAT,
-                   self->snap_note_type);
+                   NOTE_LENGTH_BEAT, self->snap_note_type);
         }
       else
         {
           return bar_interval
                  * snap_grid_get_ticks_from_length_and_type (
-                   NOTE_LENGTH_BAR,
-                   self->snap_note_type);
+                   NOTE_LENGTH_BAR, self->snap_note_type);
         }
     }
   else
     {
       return snap_grid_get_ticks_from_length_and_type (
-        self->snap_note_length,
-        self->snap_note_type);
+        self->snap_note_length, self->snap_note_type);
     }
 }
 
@@ -180,8 +173,7 @@ double
 snap_grid_get_snap_frames (const SnapGrid * self)
 {
   int snap_ticks = snap_grid_get_snap_ticks (self);
-  return AUDIO_ENGINE->frames_per_tick
-         * (double) snap_ticks;
+  return AUDIO_ENGINE->frames_per_tick * (double) snap_ticks;
 }
 
 /**
@@ -212,8 +204,7 @@ snap_grid_get_default_ticks (SnapGrid * self)
   else
     {
       return snap_grid_get_ticks_from_length_and_type (
-        self->default_note_length,
-        self->default_note_type);
+        self->default_note_length, self->default_note_type);
     }
 }
 
@@ -259,8 +250,7 @@ snap_grid_stringize_length_and_type (
   NoteType   note_type)
 {
   const char * c = get_note_type_str (note_type);
-  const char * first_part =
-    get_note_length_str (note_length);
+  const char * first_part = get_note_length_str (note_length);
 
   return g_strdup_printf ("%s%s", first_part, c);
 }
@@ -281,8 +271,7 @@ snap_grid_stringize (SnapGrid * self)
   else
     {
       return snap_grid_stringize_length_and_type (
-        self->snap_note_length,
-        self->snap_note_type);
+        self->snap_note_length, self->snap_note_type);
     }
 }
 
@@ -305,19 +294,15 @@ snap_grid_get_nearby_snap_point (
     pos->frames >= 0 && pos->ticks >= 0, false);
 
   position_set_to_pos (ret_pos, pos);
-  double snap_ticks =
-    snap_grid_get_snap_ticks (self);
-  double ticks_from_prev =
-    fmod (pos->ticks, snap_ticks);
+  double snap_ticks = snap_grid_get_snap_ticks (self);
+  double ticks_from_prev = fmod (pos->ticks, snap_ticks);
   if (return_prev)
     {
-      position_add_ticks (
-        ret_pos, -ticks_from_prev);
+      position_add_ticks (ret_pos, -ticks_from_prev);
     }
   else
     {
-      double ticks_to_next =
-        snap_ticks - ticks_from_prev;
+      double ticks_to_next = snap_ticks - ticks_from_prev;
       position_add_ticks (ret_pos, ticks_to_next);
     }
 
@@ -334,8 +319,7 @@ snap_grid_clone (SnapGrid * src)
   self->snap_note_length = src->snap_note_length;
   self->snap_note_type = src->snap_note_type;
   self->snap_adaptive = src->snap_adaptive;
-  self->default_note_length =
-    src->default_note_length;
+  self->default_note_length = src->default_note_length;
   self->default_note_type = src->default_note_type;
   self->default_adaptive = src->default_adaptive;
   self->length_type = src->length_type;

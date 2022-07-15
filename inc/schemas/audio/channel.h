@@ -125,17 +125,13 @@ static const cyaml_schema_field_t channel_fields_schema_v1[] = {
     ext_port_schema_v1),
   YAML_FIELD_INT (Channel_v1, all_stereo_r_ins),
   YAML_FIELD_INT (Channel_v1, all_midi_channels),
-  YAML_FIELD_INT (
-    Channel_v1,
-    record_set_automatically),
+  YAML_FIELD_INT (Channel_v1, record_set_automatically),
 
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t channel_schema_v1 = {
-  YAML_VALUE_PTR (
-    Channel_v1,
-    channel_fields_schema_v1),
+  YAML_VALUE_PTR (Channel_v1, channel_fields_schema_v1),
 };
 
 #endif

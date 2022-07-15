@@ -9,8 +9,7 @@
 #include <adwaita.h>
 #include <gtk/gtk.h>
 
-#define HEADER_WIDGET_TYPE \
-  (header_widget_get_type ())
+#define HEADER_WIDGET_TYPE (header_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   HeaderWidget,
   header_widget,
@@ -26,15 +25,12 @@ G_DECLARE_FINAL_TYPE (
 
 #define MW_HEADER MAIN_WINDOW->header
 
-typedef struct _HomeToolbarWidget HomeToolbarWidget;
-typedef struct _ProjectToolbarWidget
-  ProjectToolbarWidget;
-typedef struct _ViewToolbarWidget ViewToolbarWidget;
-typedef struct _HelpToolbarWidget HelpToolbarWidget;
-typedef struct _MidiActivityBarWidget
-  MidiActivityBarWidget;
-typedef struct _LiveWaveformWidget
-  LiveWaveformWidget;
+typedef struct _HomeToolbarWidget     HomeToolbarWidget;
+typedef struct _ProjectToolbarWidget  ProjectToolbarWidget;
+typedef struct _ViewToolbarWidget     ViewToolbarWidget;
+typedef struct _HelpToolbarWidget     HelpToolbarWidget;
+typedef struct _MidiActivityBarWidget MidiActivityBarWidget;
+typedef struct _LiveWaveformWidget    LiveWaveformWidget;
 
 /**
  * Header notebook to be used at the very top of the
@@ -62,9 +58,7 @@ void
 header_widget_refresh (HeaderWidget * self);
 
 void
-header_widget_setup (
-  HeaderWidget * self,
-  const char *   title);
+header_widget_setup (HeaderWidget * self, const char * title);
 
 void
 header_widget_set_subtitle (

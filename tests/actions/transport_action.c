@@ -37,68 +37,57 @@ test_change_bpm_and_time_sig (void)
   supported_file_free (file_descr);
 
   /* loop the region */
-  ZRegion * r = audio_track->lanes[0]->regions[0];
+  ZRegion *        r = audio_track->lanes[0]->regions[0];
   ArrangerObject * r_obj = (ArrangerObject *) r;
   arranger_object_resize (
-    r_obj, false, ARRANGER_OBJECT_RESIZE_LOOP,
-    40000, false);
+    r_obj, false, ARRANGER_OBJECT_RESIZE_LOOP, 40000, false);
 
   /* print region before the change */
   g_assert_true (IS_REGION_AND_NONNULL (r));
   arranger_object_print (r_obj);
 
   g_assert_cmpint (
-    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
-    4);
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==, 4);
 
   /* change time sig to 4/16 */
   {
     ControlPortChange change = { 0 };
     change.flag2 = PORT_FLAG2_BEAT_UNIT;
     change.beat_unit = BEAT_UNIT_16;
-    router_queue_control_port_change (
-      ROUTER, &change);
+    router_queue_control_port_change (ROUTER, &change);
   }
 
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
 
   g_assert_cmpint (
-    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
-    16);
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==, 16);
 
   /* perform the change */
   transport_action_perform_time_sig_change (
-    TRANSPORT_ACTION_BEAT_UNIT_CHANGE, 4, 16, true,
-    NULL);
+    TRANSPORT_ACTION_BEAT_UNIT_CHANGE, 4, 16, true, NULL);
   g_assert_cmpint (
-    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
-    16);
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==, 16);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
   g_assert_cmpint (
-    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
-    16);
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==, 16);
 
   test_project_save_and_reload ();
 
   /* undo */
   undo_manager_undo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
-    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
-    4);
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==, 4);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
   g_assert_cmpint (
-    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
-    4);
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==, 4);
 
   /* redo */
   undo_manager_redo (UNDO_MANAGER, NULL);
   g_assert_cmpint (
-    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
-    16);
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==, 16);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
   g_assert_cmpint (
-    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==,
-    16);
+    tempo_track_get_beat_unit (P_TEMPO_TRACK), ==, 16);
 
   /* print region */
   g_message ("-- before BPM change");
@@ -115,14 +104,13 @@ test_change_bpm_and_time_sig (void)
     ControlPortChange change = { 0 };
     change.flag1 = PORT_FLAG_BPM;
     change.real_val = 145.f;
-    router_queue_control_port_change (
-      ROUTER, &change);
+    router_queue_control_port_change (ROUTER, &change);
   }
 
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
   g_assert_cmpfloat_with_epsilon (
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    145.f, 0.001f);
+    tempo_track_get_current_bpm (P_TEMPO_TRACK), 145.f,
+    0.001f);
 
   /* print region */
   g_message ("-- after first BPM change");
@@ -136,12 +124,12 @@ test_change_bpm_and_time_sig (void)
   transport_action_perform_bpm_change (
     bpm_before, 150.f, false, NULL);
   g_assert_cmpfloat_with_epsilon (
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    150.f, 0.001f);
+    tempo_track_get_current_bpm (P_TEMPO_TRACK), 150.f,
+    0.001f);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
   g_assert_cmpfloat_with_epsilon (
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    150.f, 0.001f);
+    tempo_track_get_current_bpm (P_TEMPO_TRACK), 150.f,
+    0.001f);
 
   /* print region */
   g_message ("-- after BPM change action");
@@ -155,20 +143,18 @@ test_change_bpm_and_time_sig (void)
   undo_manager_redo (UNDO_MANAGER, NULL);
 
   /* change bpm to 130 */
-  bpm_before =
-    tempo_track_get_current_bpm (P_TEMPO_TRACK);
+  bpm_before = tempo_track_get_current_bpm (P_TEMPO_TRACK);
   {
     ControlPortChange change = { 0 };
     change.flag1 = PORT_FLAG_BPM;
     change.real_val = 130.f;
-    router_queue_control_port_change (
-      ROUTER, &change);
+    router_queue_control_port_change (ROUTER, &change);
   }
 
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
   g_assert_cmpfloat_with_epsilon (
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    130.f, 0.001f);
+    tempo_track_get_current_bpm (P_TEMPO_TRACK), 130.f,
+    0.001f);
 
   /* validate */
   g_assert_true (arranger_object_validate (r_obj));
@@ -177,12 +163,12 @@ test_change_bpm_and_time_sig (void)
   transport_action_perform_bpm_change (
     bpm_before, 130.f, false, NULL);
   g_assert_cmpfloat_with_epsilon (
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    130.f, 0.001f);
+    tempo_track_get_current_bpm (P_TEMPO_TRACK), 130.f,
+    0.001f);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
   g_assert_cmpfloat_with_epsilon (
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    130.f, 0.001f);
+    tempo_track_get_current_bpm (P_TEMPO_TRACK), 130.f,
+    0.001f);
 
   /* print region */
   g_message ("-- after BPM change action (13)");
@@ -220,11 +206,10 @@ test_change_bpm_twice_during_playback (void)
   supported_file_free (file_descr);
 
   /* loop the region */
-  ZRegion * r = audio_track->lanes[0]->regions[0];
+  ZRegion *        r = audio_track->lanes[0]->regions[0];
   ArrangerObject * r_obj = (ArrangerObject *) r;
   arranger_object_resize (
-    r_obj, false, ARRANGER_OBJECT_RESIZE_LOOP,
-    40000, false);
+    r_obj, false, ARRANGER_OBJECT_RESIZE_LOOP, 40000, false);
   g_assert_true (arranger_object_validate (r_obj));
 
   /* start playback */
@@ -238,12 +223,10 @@ test_change_bpm_twice_during_playback (void)
   transport_action_perform_bpm_change (
     bpm_before, 40.f, false, NULL);
   g_assert_cmpfloat_with_epsilon (
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    40.f, 0.001f);
+    tempo_track_get_current_bpm (P_TEMPO_TRACK), 40.f, 0.001f);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
   g_assert_cmpfloat_with_epsilon (
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    40.f, 0.001f);
+    tempo_track_get_current_bpm (P_TEMPO_TRACK), 40.f, 0.001f);
 
   transport_request_roll (TRANSPORT, true);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
@@ -252,12 +235,12 @@ test_change_bpm_twice_during_playback (void)
   transport_action_perform_bpm_change (
     bpm_before, 140.f, false, NULL);
   g_assert_cmpfloat_with_epsilon (
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    140.f, 0.001f);
+    tempo_track_get_current_bpm (P_TEMPO_TRACK), 140.f,
+    0.001f);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
   g_assert_cmpfloat_with_epsilon (
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    140.f, 0.001f);
+    tempo_track_get_current_bpm (P_TEMPO_TRACK), 140.f,
+    0.001f);
 
   transport_request_roll (TRANSPORT, true);
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
@@ -276,10 +259,8 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/transport/"
 
   g_test_add_func (
-    TEST_PREFIX
-    "test change BPM twice during playback",
-    (GTestFunc)
-      test_change_bpm_twice_during_playback);
+    TEST_PREFIX "test change BPM twice during playback",
+    (GTestFunc) test_change_bpm_twice_during_playback);
   g_test_add_func (
     TEST_PREFIX "test change BPM and time sig",
     (GTestFunc) test_change_bpm_and_time_sig);

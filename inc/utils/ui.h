@@ -60,9 +60,7 @@ typedef struct Port     Port;
 
 #define UI_DELETE_ICON_NAME "z-edit-delete"
 
-static const GdkRGBA UI_COLOR_BLACK = {
-  0, 0, 0, 1
-};
+static const GdkRGBA UI_COLOR_BLACK = { 0, 0, 0, 1 };
 
 typedef enum UiDetail
 {
@@ -166,8 +164,7 @@ typedef struct UiCaches
 #define TARGET_ENTRY_PLUGIN_DESCR "PLUGIN_DESCR"
 
 /** For SupportedFile pointers. */
-#define TARGET_ENTRY_SUPPORTED_FILE \
-  "SUPPORTED_FILE"
+#define TARGET_ENTRY_SUPPORTED_FILE "SUPPORTED_FILE"
 
 /** Plugin ID, used to move/copy plugins. */
 #define TARGET_ENTRY_PLUGIN "PLUGIN"
@@ -197,19 +194,16 @@ typedef struct UiCaches
 #define GET_ATOM(x) gdk_atom_intern (x, 1)
 
 #define ui_add_widget_tooltip(widget, txt) \
-  gtk_widget_set_tooltip_text ( \
-    GTK_WIDGET (widget), txt)
+  gtk_widget_set_tooltip_text (GTK_WIDGET (widget), txt)
 
 #define ui_set_hover_status_bar_signals(w, t) \
   g_signal_connect ( \
     G_OBJECT (w), "enter-notify-event", \
-    G_CALLBACK ( \
-      ui_on_motion_set_status_bar_text_cb), \
+    G_CALLBACK (ui_on_motion_set_status_bar_text_cb), \
     g_strdup (t)); \
   g_signal_connect ( \
     G_OBJECT (w), "leave-notify-event", \
-    G_CALLBACK ( \
-      ui_on_motion_set_status_bar_text_cb), \
+    G_CALLBACK (ui_on_motion_set_status_bar_text_cb), \
     g_strdup (t));
 
 /**
@@ -219,8 +213,7 @@ typedef struct UiCaches
  * GTK main thread.
  */
 #define ui_show_notification_idle_printf(fmt, ...) \
-  char * text = \
-    g_strdup_printf (fmt, __VA_ARGS__); \
+  char * text = g_strdup_printf (fmt, __VA_ARGS__); \
   g_idle_add ( \
     (GSourceFunc) ui_show_notification_idle_func, \
     (void *) text)
@@ -229,12 +222,8 @@ typedef struct UiCaches
   ui_show_notification_idle_printf ("%s", msg)
 
 #define ui_is_widget_revealed(widget) \
-  (gtk_widget_get_allocated_height ( \
-     GTK_WIDGET (widget)) \
-     > 1 \
-   || gtk_widget_get_allocated_width ( \
-        GTK_WIDGET (widget)) \
-        > 1)
+  (gtk_widget_get_allocated_height (GTK_WIDGET (widget)) > 1 \
+   || gtk_widget_get_allocated_width (GTK_WIDGET (widget)) > 1)
 
 /**
  * Various cursor states to be shared.
@@ -360,8 +349,7 @@ static const char * ui_overlay_strings[] = {
 };
 
 static inline const char *
-ui_get_overlay_action_string (
-  UiOverlayAction action)
+ui_get_overlay_action_string (UiOverlayAction action)
 {
   return ui_overlay_strings[action];
 }
@@ -407,43 +395,35 @@ ui_set_pointer_cursor (GtkWidget * widget);
 
 #define ui_set_speaker_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "audio-volume-high", 3, \
-    6);
+    GTK_WIDGET (widget), "audio-volume-high", 3, 6);
 
 #define ui_set_hand_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "transform-move", 10, \
-    10);
+    GTK_WIDGET (widget), "transform-move", 10, 10);
 
 #define ui_set_left_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "object-resize-left", 0, \
-    10);
+    GTK_WIDGET (widget), "object-resize-left", 0, 10);
 
 #define ui_set_left_stretch_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "object-stretch-left", \
-    0, 10);
+    GTK_WIDGET (widget), "object-stretch-left", 0, 10);
 
 #define ui_set_left_resize_loop_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "object-resize-loop-left", 0, 10);
+    GTK_WIDGET (widget), "object-resize-loop-left", 0, 10);
 
 #define ui_set_right_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "object-resize-right", \
-    15, 10);
+    GTK_WIDGET (widget), "object-resize-right", 15, 10);
 
 #define ui_set_right_stretch_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "object-stretch-right", \
-    15, 10);
+    GTK_WIDGET (widget), "object-stretch-right", 15, 10);
 
 #define ui_set_right_resize_loop_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), \
-    "object-resize-loop-right", 15, 10);
+    GTK_WIDGET (widget), "object-resize-loop-right", 15, 10);
 
 #define ui_set_fade_in_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
@@ -467,9 +447,7 @@ ui_set_cursor_from_icon_name (
  * Sets cursor from standard cursor name.
  */
 void
-ui_set_cursor_from_name (
-  GtkWidget *  widget,
-  const char * name);
+ui_set_cursor_from_name (GtkWidget * widget, const char * name);
 
 gboolean
 ui_on_motion_set_status_bar_text_cb (
@@ -495,17 +473,16 @@ ui_show_message_full (
  */
 #define ui_show_error_message(win, block, msg) \
   ui_show_message_full ( \
-    win ? GTK_WINDOW (win) : NULL, \
-    GTK_MESSAGE_ERROR, block, "%s", msg);
+    win ? GTK_WINDOW (win) : NULL, GTK_MESSAGE_ERROR, block, \
+    "%s", msg);
 
 /**
  * Type can be GTK_MESSAGE_ERROR, etc.
  */
-#define ui_show_message_printf( \
-  win, type, block, fmt, ...) \
+#define ui_show_message_printf(win, type, block, fmt, ...) \
   ui_show_message_full ( \
-    win ? GTK_WINDOW (win) : NULL, type, block, \
-    fmt, __VA_ARGS__)
+    win ? GTK_WINDOW (win) : NULL, type, block, fmt, \
+    __VA_ARGS__)
 
 /**
  * Returns if \ref rect is hit or not by the
@@ -607,9 +584,7 @@ ui_px_to_pos_timeline (
  *   padding.
  */
 signed_frame_t
-ui_px_to_frames_timeline (
-  double px,
-  int    has_padding);
+ui_px_to_frames_timeline (double px, int has_padding);
 
 /**
  * Converts from pixels to frames.
@@ -628,9 +603,7 @@ ui_px_to_frames_editor (double px, int has_padding);
  */
 NONNULL
 int
-ui_pos_to_px_timeline (
-  Position * pos,
-  int        use_padding);
+ui_pos_to_px_timeline (Position * pos, int use_padding);
 
 /**
  * Converts position to px, optionally adding the ruler
@@ -638,9 +611,7 @@ ui_pos_to_px_timeline (
  */
 NONNULL
 int
-ui_pos_to_px_editor (
-  Position * pos,
-  bool       use_padding);
+ui_pos_to_px_editor (Position * pos, bool use_padding);
 
 /**
  * Converts from pixels to position.
@@ -664,11 +635,7 @@ ui_px_to_pos_editor (
  * Converts RGB to hex string.
  */
 void
-ui_rgb_to_hex (
-  double red,
-  double green,
-  double blue,
-  char * buf);
+ui_rgb_to_hex (double red, double green, double blue, char * buf);
 
 void
 ui_gdk_rgba_to_hex (GdkRGBA * color, char * buf);
@@ -699,8 +666,7 @@ ui_setup_language_dropdown (GtkDropDown * dropdown);
  * Sets up an audio backends combo box.
  */
 void
-ui_setup_audio_backends_combo_box (
-  GtkComboBox * cb);
+ui_setup_audio_backends_combo_box (GtkComboBox * cb);
 
 /**
  * Sets up a MIDI backends combo box.
@@ -736,8 +702,7 @@ ui_setup_samplerate_combo_box (GtkComboBox * cb);
  * Sets up a pan law combo box.
  */
 void
-ui_setup_device_name_combo_box (
-  GtkComboBoxText * cb);
+ui_setup_device_name_combo_box (GtkComboBoxText * cb);
 
 /**
  * Sets up the VST paths entry.
@@ -759,8 +724,7 @@ ui_update_vst_paths_from_entry (GtkEntry * entry);
  * Must be free'd by caller.
  */
 char *
-ui_get_locale_not_available_string (
-  LocalizationLanguage lang);
+ui_get_locale_not_available_string (LocalizationLanguage lang);
 
 /**
  * Returns the contrasting color (variation of
@@ -771,9 +735,7 @@ ui_get_locale_not_available_string (
  * @param dest The destination color to write to.
  */
 void
-ui_get_contrast_color (
-  GdkRGBA * src,
-  GdkRGBA * dest);
+ui_get_contrast_color (GdkRGBA * src, GdkRGBA * dest);
 
 /**
  * Returns the color in-between two colors.

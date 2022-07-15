@@ -61,8 +61,7 @@ typedef struct _CcBindingsTreeWidget
  * Refreshes the tree model.
  */
 void
-cc_bindings_tree_widget_refresh (
-  CcBindingsTreeWidget * self);
+cc_bindings_tree_widget_refresh (CcBindingsTreeWidget * self);
 
 /**
  * Instantiates a new CcBindingsTreeWidget.

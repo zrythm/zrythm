@@ -40,8 +40,7 @@ test_midi_file_playback (void)
   MidiEvents * events = midi_events_new ();
 
   char ** midi_files = io_get_files_in_dir_ending_in (
-    MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE,
-    ".MID", false);
+    MIDILIB_TEST_MIDI_FILES_PATH, F_RECURSIVE, ".MID", false);
   g_assert_nonnull (midi_files);
 
   /* shuffle array */
@@ -51,8 +50,7 @@ test_midi_file_playback (void)
     ;
   srandom ((unsigned int) time (NULL));
   array_shuffle (
-    midi_files, (size_t) (count - 1),
-    sizeof (char *));
+    midi_files, (size_t) (count - 1), sizeof (char *));
 
   int      iter = 0;
   Position init_pos;
@@ -74,19 +72,16 @@ test_midi_file_playback (void)
       Track * track = tracklist_get_last_track (
         TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, true);
 
-      ZRegion * region =
-        track->lanes[0]->regions[0];
+      ZRegion * region = track->lanes[0]->regions[0];
 
       /* set start pos to a bit before the first
        * note, send end pos a few cycles later */
       Position start_pos, stop_pos;
       position_set_to_pos (
         &start_pos,
-        &((ArrangerObject *) region->midi_notes[0])
-           ->pos);
+        &((ArrangerObject *) region->midi_notes[0])->pos);
       position_set_to_pos (&stop_pos, &start_pos);
-      position_add_frames (
-        &start_pos, -BUFFER_SIZE * 2);
+      position_add_frames (&start_pos, -BUFFER_SIZE * 2);
       position_add_frames (
         /* run 80 cycles */
         &stop_pos, BUFFER_SIZE * 80);
@@ -109,8 +104,7 @@ test_midi_file_playback (void)
           for (int j = 0; j < BUFFER_SIZE; j++)
             {
               EngineProcessTimeInfo time_nfo = {
-                .g_start_frame =
-                  (unsigned_frame_t) i,
+                .g_start_frame = (unsigned_frame_t) i,
                 .local_offset = (nframes_t) j,
                 .nframes = BUFFER_SIZE,
               };

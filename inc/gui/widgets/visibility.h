@@ -28,8 +28,7 @@
  * @{
  */
 
-#define VISIBILITY_WIDGET_TYPE \
-  (visibility_widget_get_type ())
+#define VISIBILITY_WIDGET_TYPE (visibility_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   VisibilityWidget,
   visibility_widget,

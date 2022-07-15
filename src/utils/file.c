@@ -52,9 +52,7 @@
 #include <glib/gstdio.h>
 
 char *
-file_path_relative_to (
-  const char * path,
-  const char * base)
+file_path_relative_to (const char * path, const char * base)
 {
   const size_t path_len = strlen (path);
   const size_t base_len = strlen (base);
@@ -63,8 +61,7 @@ file_path_relative_to (
 
   // Find the last separator common to both paths
   size_t last_shared_sep = 0;
-  for (size_t i = 0;
-       i < min_len && path[i] == base[i]; ++i)
+  for (size_t i = 0; i < min_len && path[i] == base[i]; ++i)
     {
       if (path[i] == G_DIR_SEPARATOR)
         {
@@ -80,8 +77,7 @@ file_path_relative_to (
 
   // Find the number of up references ("..") required
   size_t up = 0;
-  for (size_t i = last_shared_sep + 1;
-       i < base_len; ++i)
+  for (size_t i = last_shared_sep + 1; i < base_len; ++i)
     {
       if (base[i] == G_DIR_SEPARATOR)
         {
@@ -96,10 +92,8 @@ file_path_relative_to (
 #endif
 
   // Write up references
-  const size_t suffix_len =
-    path_len - last_shared_sep;
-  char * rel =
-    g_malloc0_n (1, suffix_len + (up * 3) + 1);
+  const size_t suffix_len = path_len - last_shared_sep;
+  char * rel = g_malloc0_n (1, suffix_len + (up * 3) + 1);
   for (size_t i = 0; i < up; ++i)
     {
       if (use_slash)
@@ -114,22 +108,18 @@ file_path_relative_to (
 
   // Write suffix
   memcpy (
-    rel + (up * 3), path + last_shared_sep + 1,
-    suffix_len);
+    rel + (up * 3), path + last_shared_sep + 1, suffix_len);
   return rel;
 }
 
 int
-file_symlink (
-  const char * old_path,
-  const char * new_path)
+file_symlink (const char * old_path, const char * new_path)
 {
   int ret = 0;
 #ifdef _WOE32
   ret = !CreateHardLink (new_path, old_path, 0);
 #else
-  char *            target =
-    file_path_relative_to (old_path, new_path);
+  char * target = file_path_relative_to (old_path, new_path);
   ret = symlink (target, new_path);
   g_free (target);
 #endif
@@ -149,8 +139,7 @@ file_reflink (const char * dest, const char * src)
   int src_fd = g_open (src, O_RDONLY);
   if (src_fd)
     return src_fd;
-  int dest_fd =
-    g_open (dest, O_RDWR | O_CREAT, 0644);
+  int dest_fd = g_open (dest, O_RDWR | O_CREAT, 0644);
   if (dest_fd)
     return src_fd;
   return ioctl (dest_fd, FICLONE, src_fd);

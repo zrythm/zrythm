@@ -98,29 +98,21 @@ typedef struct AudioClip
   gint64 last_write;
 } AudioClip;
 
-static const cyaml_schema_field_t
-  audio_clip_fields_schema[] = {
-    YAML_FIELD_INT (AudioClip, schema_version),
-    YAML_FIELD_STRING_PTR (AudioClip, name),
-    YAML_FIELD_STRING_PTR_OPTIONAL (
-      AudioClip,
-      file_hash),
-    YAML_FIELD_FLOAT (AudioClip, bpm),
-    YAML_FIELD_ENUM (
-      AudioClip,
-      bit_depth,
-      bit_depth_strings),
-    YAML_FIELD_INT (AudioClip, use_flac),
-    YAML_FIELD_INT (AudioClip, samplerate),
-    YAML_FIELD_INT (AudioClip, pool_id),
+static const cyaml_schema_field_t audio_clip_fields_schema[] = {
+  YAML_FIELD_INT (AudioClip, schema_version),
+  YAML_FIELD_STRING_PTR (AudioClip, name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (AudioClip, file_hash),
+  YAML_FIELD_FLOAT (AudioClip, bpm),
+  YAML_FIELD_ENUM (AudioClip, bit_depth, bit_depth_strings),
+  YAML_FIELD_INT (AudioClip, use_flac),
+  YAML_FIELD_INT (AudioClip, samplerate),
+  YAML_FIELD_INT (AudioClip, pool_id),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t audio_clip_schema = {
-  YAML_VALUE_PTR_NULLABLE (
-    AudioClip,
-    audio_clip_fields_schema),
+  YAML_VALUE_PTR_NULLABLE (AudioClip, audio_clip_fields_schema),
 };
 
 /**
@@ -254,9 +246,7 @@ audio_clip_get_path_in_pool_from_name (
  */
 NONNULL
 char *
-audio_clip_get_path_in_pool (
-  AudioClip * self,
-  bool        is_backup);
+audio_clip_get_path_in_pool (AudioClip * self, bool is_backup);
 
 /**
  * Returns whether the clip is used inside the
@@ -268,9 +258,7 @@ audio_clip_get_path_in_pool (
  */
 NONNULL
 bool
-audio_clip_is_in_use (
-  AudioClip * self,
-  bool        check_undo_stack);
+audio_clip_is_in_use (AudioClip * self, bool check_undo_stack);
 
 /**
  * To be called by audio_pool_remove_clip().
@@ -283,9 +271,7 @@ audio_clip_is_in_use (
  */
 NONNULL
 void
-audio_clip_remove_and_free (
-  AudioClip * self,
-  bool        backup);
+audio_clip_remove_and_free (AudioClip * self, bool backup);
 
 NONNULL
 AudioClip *

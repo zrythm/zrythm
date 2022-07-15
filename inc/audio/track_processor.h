@@ -31,12 +31,11 @@
 #include "utils/types.h"
 #include "utils/yaml.h"
 
-typedef struct StereoPorts  StereoPorts;
-typedef struct Port         Port;
-typedef struct Track        Track;
-typedef struct MidiMappings MidiMappings;
-typedef struct EngineProcessTimeInfo
-  EngineProcessTimeInfo;
+typedef struct StereoPorts           StereoPorts;
+typedef struct Port                  Port;
+typedef struct Track                 Track;
+typedef struct MidiMappings          MidiMappings;
+typedef struct EngineProcessTimeInfo EngineProcessTimeInfo;
 
 /**
  * @addtogroup audio
@@ -51,8 +50,7 @@ typedef struct EngineProcessTimeInfo
   ((tr) && (tr)->magic == TRACK_PROCESSOR_MAGIC)
 
 #define track_processor_is_in_active_project(self) \
-  (self->track \
-   && track_is_in_active_project (self->track))
+  (self->track && track_is_in_active_project (self->track))
 
 /**
  * A TrackProcessor is a processor that is used as
@@ -234,12 +232,9 @@ static const cyaml_schema_field_t track_processor_fields_schema[] = {
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-  track_processor_schema = {
-    YAML_VALUE_PTR (
-      TrackProcessor,
-      track_processor_fields_schema),
-  };
+static const cyaml_schema_value_t track_processor_schema = {
+  YAML_VALUE_PTR (TrackProcessor, track_processor_fields_schema),
+};
 
 /**
  * Inits a TrackProcessor after a project is loaded.
@@ -274,20 +269,17 @@ track_processor_copy_values (
  * Clears all buffers.
  */
 void
-track_processor_clear_buffers (
-  TrackProcessor * self);
+track_processor_clear_buffers (TrackProcessor * self);
 
 /**
  * Disconnects all ports connected to the
  * TrackProcessor.
  */
 void
-track_processor_disconnect_all (
-  TrackProcessor * self);
+track_processor_disconnect_all (TrackProcessor * self);
 
 Track *
-track_processor_get_track (
-  const TrackProcessor * self);
+track_processor_get_track (const TrackProcessor * self);
 
 /**
  * Process the TrackProcessor.
@@ -331,8 +323,7 @@ track_processor_disconnect_from_prefader (
  * Used when deleting the only plugin left.
  */
 void
-track_processor_connect_to_prefader (
-  TrackProcessor * self);
+track_processor_connect_to_prefader (TrackProcessor * self);
 
 /**
  * Disconnect the TrackProcessor's out ports

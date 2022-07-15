@@ -27,8 +27,7 @@
 
 #include <gtk/gtk.h>
 
-#define METER_WIDGET_TYPE \
-  (meter_widget_get_type ())
+#define METER_WIDGET_TYPE (meter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   MeterWidget,
   meter_widget,
@@ -74,9 +73,6 @@ typedef struct _MeterWidget
  * @param port Port this meter is for.
  */
 void
-meter_widget_setup (
-  MeterWidget * self,
-  Port *        port,
-  int           width);
+meter_widget_setup (MeterWidget * self, Port * port, int width);
 
 #endif

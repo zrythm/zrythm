@@ -20,15 +20,13 @@ G_DECLARE_FINAL_TYPE (
   EDITOR_TOOLBAR_WIDGET,
   GtkWidget)
 
-#define MW_EDITOR_TOOLBAR \
-  MW_CLIP_EDITOR->editor_toolbar
+#define MW_EDITOR_TOOLBAR MW_CLIP_EDITOR->editor_toolbar
 
 TYPEDEF_STRUCT_UNDERSCORED (ToolboxWidget);
 TYPEDEF_STRUCT_UNDERSCORED (QuantizeMbWidget);
 TYPEDEF_STRUCT_UNDERSCORED (QuantizeBoxWidget);
 TYPEDEF_STRUCT_UNDERSCORED (SnapBoxWidget);
-TYPEDEF_STRUCT_UNDERSCORED (
-  PlayheadScrollButtonsWidget);
+TYPEDEF_STRUCT_UNDERSCORED (PlayheadScrollButtonsWidget);
 TYPEDEF_STRUCT_UNDERSCORED (VelocitySettingsWidget);
 TYPEDEF_STRUCT_UNDERSCORED (ZoomButtonsWidget);
 
@@ -54,7 +52,7 @@ typedef struct _EditorToolbarWidget
   GtkBox *       chord_highlight_box;
 
   VelocitySettingsWidget * velocity_settings;
-  GtkSeparator * sep_after_velocity_settings;
+  GtkSeparator *           sep_after_velocity_settings;
 
   PlayheadScrollButtonsWidget * playhead_scroll;
   ZoomButtonsWidget *           zoom_buttons;
@@ -68,11 +66,9 @@ typedef struct _EditorToolbarWidget
  * Refreshes relevant widgets.
  */
 void
-editor_toolbar_widget_refresh (
-  EditorToolbarWidget * self);
+editor_toolbar_widget_refresh (EditorToolbarWidget * self);
 
 void
-editor_toolbar_widget_setup (
-  EditorToolbarWidget * self);
+editor_toolbar_widget_setup (EditorToolbarWidget * self);
 
 #endif

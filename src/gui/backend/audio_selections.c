@@ -48,8 +48,7 @@ audio_selections_set_has_range (
 {
   self->has_selection = true;
 
-  EVENTS_PUSH (
-    ET_AUDIO_SELECTIONS_RANGE_CHANGED, NULL);
+  EVENTS_PUSH (ET_AUDIO_SELECTIONS_RANGE_CHANGED, NULL);
 }
 
 /**

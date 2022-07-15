@@ -37,13 +37,12 @@ link_scrolls (AudioEditorSpaceWidget * self)
   /* link ruler h scroll to arranger h scroll */
   if (MW_CLIP_EDITOR_INNER->ruler_scroll)
     {
-      g_return_if_fail (GTK_IS_WIDGET (
-        MW_CLIP_EDITOR_INNER->ruler_scroll));
+      g_return_if_fail (
+        GTK_IS_WIDGET (MW_CLIP_EDITOR_INNER->ruler_scroll));
       gtk_scrolled_window_set_hadjustment (
         MW_CLIP_EDITOR_INNER->ruler_scroll,
         gtk_scrolled_window_get_hadjustment (
-          GTK_SCROLLED_WINDOW (
-            self->arranger_scroll)));
+          GTK_SCROLLED_WINDOW (self->arranger_scroll)));
     }
 }
 
@@ -56,8 +55,8 @@ audio_editor_space_widget_update_size_group (
   int                      visible)
 {
   clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
-    MW_CLIP_EDITOR_INNER,
-    GTK_WIDGET (self->left_box), visible);
+    MW_CLIP_EDITOR_INNER, GTK_WIDGET (self->left_box),
+    visible);
 }
 
 void
@@ -68,23 +67,20 @@ audio_editor_space_widget_refresh (
 }
 
 void
-audio_editor_space_widget_setup (
-  AudioEditorSpaceWidget * self)
+audio_editor_space_widget_setup (AudioEditorSpaceWidget * self)
 {
   if (self->arranger)
     {
       arranger_widget_setup (
         Z_ARRANGER_WIDGET (self->arranger),
-        ARRANGER_WIDGET_TYPE_AUDIO,
-        SNAP_GRID_EDITOR);
+        ARRANGER_WIDGET_TYPE_AUDIO, SNAP_GRID_EDITOR);
     }
 
   audio_editor_space_widget_refresh (self);
 }
 
 static void
-audio_editor_space_widget_init (
-  AudioEditorSpaceWidget * self)
+audio_editor_space_widget_init (AudioEditorSpaceWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -95,8 +91,7 @@ static void
 audio_editor_space_widget_class_init (
   AudioEditorSpaceWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "audio_editor_space.ui");
 

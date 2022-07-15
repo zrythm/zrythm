@@ -34,8 +34,7 @@
  * @{
  */
 
-#define CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES \
-  9
+#define CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES 9
 
 typedef enum CustomButtonWidgetState
 {
@@ -156,9 +155,7 @@ typedef struct CustomButtonWidget
  * Creates a new track widget from the given track.
  */
 CustomButtonWidget *
-custom_button_widget_new (
-  const char * icon_name,
-  int          size);
+custom_button_widget_new (const char * icon_name, int size);
 
 void
 custom_button_widget_draw (
@@ -194,8 +191,7 @@ custom_button_widget_set_text (
   const char *         font_descr);
 
 void
-custom_button_widget_free (
-  CustomButtonWidget * self);
+custom_button_widget_free (CustomButtonWidget * self);
 
 /**
  * @}

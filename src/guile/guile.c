@@ -24,8 +24,7 @@ SCM tracklist_type;
 #define SUCCESS_TEXT_TRANSLATED \
   _ ("Script execution successful")
 
-#define FAILURE_TEXT_TRANSLATED \
-  _ ("Script execution failed")
+#define FAILURE_TEXT_TRANSLATED _ ("Script execution failed")
 
 typedef struct ExecutionInfo
 {
@@ -46,8 +45,7 @@ static const char * guile_lang_canonical_strings[] = {
 };
 
 const char *
-guile_get_script_language_str (
-  GuileScriptLanguage lang)
+guile_get_script_language_str (GuileScriptLanguage lang)
 {
   g_return_val_if_fail (
     lang < NUM_GUILE_SCRIPT_LANGUAGES, NULL);
@@ -64,19 +62,15 @@ guile_get_script_language_canonical_str (
 }
 
 GuileScriptLanguage
-guile_get_script_language_from_str (
-  const char * str)
+guile_get_script_language_from_str (const char * str)
 {
-  for (int i = 0; i < NUM_GUILE_SCRIPT_LANGUAGES;
-       i++)
+  for (int i = 0; i < NUM_GUILE_SCRIPT_LANGUAGES; i++)
     {
-      if (string_is_equal (
-            guile_lang_strings[i], str))
+      if (string_is_equal (guile_lang_strings[i], str))
         return (GuileScriptLanguage) i;
     }
 
-  g_return_val_if_reached (
-    GUILE_SCRIPT_LANGUAGE_SCHEME);
+  g_return_val_if_reached (GUILE_SCRIPT_LANGUAGE_SCHEME);
 }
 
 /**
@@ -126,17 +120,14 @@ call_proc (void * data)
 {
   ExecutionInfo * nfo = (ExecutionInfo *) data;
 
-  SCM eval_string_proc =
-    scm_variable_ref (scm_c_public_lookup (
-      "ice-9 eval-string", "eval-string"));
-  SCM code = scm_from_utf8_string (nfo->script);
+  SCM eval_string_proc = scm_variable_ref (
+    scm_c_public_lookup ("ice-9 eval-string", "eval-string"));
+  SCM          code = scm_from_utf8_string (nfo->script);
   const char * lang_str =
-    guile_get_script_language_canonical_str (
-      nfo->lang);
+    guile_get_script_language_canonical_str (nfo->lang);
   SCM s_from_lang = scm_from_utf8_symbol (lang_str);
   SCM kwd_lang = scm_from_utf8_keyword ("lang");
-  scm_call_3 (
-    eval_string_proc, code, kwd_lang, s_from_lang);
+  scm_call_3 (eval_string_proc, code, kwd_lang, s_from_lang);
 
   return SCM_BOOL_T;
 }
@@ -149,8 +140,7 @@ eval_handler (void * handler_data, SCM key, SCM args)
   /* Put the code which you want to handle an error
    * after the stack has been unwound here. */
 
-  scm_print_exception (
-    error_out_port, SCM_BOOL_F, key, args);
+  scm_print_exception (error_out_port, SCM_BOOL_F, key, args);
   scm_display_backtrace (
     stack, error_out_port, SCM_BOOL_F, SCM_BOOL_F);
 
@@ -158,14 +148,10 @@ eval_handler (void * handler_data, SCM key, SCM args)
 }
 
 static SCM
-preunwind_proc (
-  void * handler_data,
-  SCM    key,
-  SCM    parameters)
+preunwind_proc (void * handler_data, SCM key, SCM parameters)
 {
   /* Capture the stack here: */
-  *(SCM *) handler_data =
-    scm_make_stack (SCM_BOOL_T, SCM_EOL);
+  *(SCM *) handler_data = scm_make_stack (SCM_BOOL_T, SCM_EOL);
 
   return SCM_BOOL_T;
 }
@@ -188,10 +174,9 @@ guile_mode_func (void * data)
 
   SCM ret = scm_c_catch (
     SCM_BOOL_T, call_proc, data, eval_handler,
-    &captured_stack, preunwind_proc,
-    &captured_stack);
+    &captured_stack, preunwind_proc, &captured_stack);
 
-  SCM str_scm = scm_get_output_string (out_port);
+  SCM    str_scm = scm_get_output_string (out_port);
   char * str = scm_to_locale_string (str_scm);
   str_scm = scm_get_output_string (error_out_port);
   char * err_str = scm_to_locale_string (str_scm);
@@ -222,21 +207,16 @@ guile_mode_func (void * data)
  * @param lang The language of the script.
  */
 char *
-guile_run_script (
-  const char *        script,
-  GuileScriptLanguage lang)
+guile_run_script (const char * script, GuileScriptLanguage lang)
 {
   /* pause engine */
   EngineState state;
-  engine_wait_for_pause (
-    AUDIO_ENGINE, &state, Z_F_NO_FORCE);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE);
 
-  ExecutionInfo nfo = {
-    .script = script, .lang = lang
-  };
+  ExecutionInfo nfo = { .script = script, .lang = lang };
 
-  char * ret = scm_with_guile (
-    &guile_mode_func, (void *) &nfo);
+  char * ret =
+    scm_with_guile (&guile_mode_func, (void *) &nfo);
 
   /* restart engine */
   engine_resume (AUDIO_ENGINE, &state);

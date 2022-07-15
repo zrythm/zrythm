@@ -43,8 +43,7 @@ typedef struct _RulerMarkerWidget RulerMarkerWidget;
 #define MW_RULER MW_TIMELINE_PANEL->ruler
 
 void
-timeline_ruler_widget_draw_markers (
-  RulerWidget * self);
+timeline_ruler_widget_draw_markers (RulerWidget * self);
 
 /**
  * Called from ruler drag begin.

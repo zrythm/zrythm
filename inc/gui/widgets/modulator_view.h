@@ -33,8 +33,7 @@ TYPEDEF_STRUCT (Track);
  * @{
  */
 
-#define MW_MODULATOR_VIEW \
-  MW_BOT_DOCK_EDGE->modulator_view
+#define MW_MODULATOR_VIEW MW_BOT_DOCK_EDGE->modulator_view
 
 /**
  * Brings up the ModulatorViewWidget in the notebook.

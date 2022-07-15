@@ -13,10 +13,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  CcBindingsWidget,
-  cc_bindings_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (CcBindingsWidget, cc_bindings_widget, GTK_TYPE_BOX)
 
 /**
  * Refreshes the cc_bindings widget.
@@ -24,8 +21,7 @@ G_DEFINE_TYPE (
 void
 cc_bindings_widget_refresh (CcBindingsWidget * self)
 {
-  cc_bindings_tree_widget_refresh (
-    self->bindings_tree);
+  cc_bindings_tree_widget_refresh (self->bindings_tree);
 }
 
 CcBindingsWidget *
@@ -34,25 +30,19 @@ cc_bindings_widget_new ()
   CcBindingsWidget * self =
     g_object_new (CC_BINDINGS_WIDGET_TYPE, NULL);
 
-  self->bindings_tree =
-    cc_bindings_tree_widget_new ();
+  self->bindings_tree = cc_bindings_tree_widget_new ();
   gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->bindings_tree));
-  gtk_widget_set_vexpand (
-    GTK_WIDGET (self->bindings_tree), 1);
+    GTK_BOX (self), GTK_WIDGET (self->bindings_tree));
+  gtk_widget_set_vexpand (GTK_WIDGET (self->bindings_tree), 1);
 
   return self;
 }
 
 static void
-cc_bindings_widget_class_init (
-  CcBindingsWidgetClass * _klass)
+cc_bindings_widget_class_init (CcBindingsWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "cc-bindings");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass, "cc-bindings");
 }
 
 static void

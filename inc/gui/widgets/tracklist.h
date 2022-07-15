@@ -8,8 +8,7 @@
 
 #define USE_WIDE_HANDLE 1
 
-#define TRACKLIST_WIDGET_TYPE \
-  (tracklist_widget_get_type ())
+#define TRACKLIST_WIDGET_TYPE (tracklist_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TracklistWidget,
   tracklist_widget,
@@ -130,15 +129,13 @@ tracklist_widget_handle_vertical_zoom_scroll (
  * Refreshes each track without recreating it.
  */
 void
-tracklist_widget_soft_refresh (
-  TracklistWidget * self);
+tracklist_widget_soft_refresh (TracklistWidget * self);
 
 /**
  * Deletes all tracks and re-adds them.
  */
 void
-tracklist_widget_hard_refresh (
-  TracklistWidget * self);
+tracklist_widget_hard_refresh (TracklistWidget * self);
 
 /**
  * @}

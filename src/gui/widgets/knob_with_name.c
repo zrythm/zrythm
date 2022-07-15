@@ -45,26 +45,21 @@ knob_with_name_widget_new (
   int                 spacing)
 {
   KnobWithNameWidget * self = g_object_new (
-    KNOB_WITH_NAME_WIDGET_TYPE, "orientation",
-    orientation, "spacing", 2, NULL);
+    KNOB_WITH_NAME_WIDGET_TYPE, "orientation", orientation,
+    "spacing", 2, NULL);
 
-  EditableLabelWidget * label =
-    editable_label_widget_new (
-      obj, name_getter, name_setter, -1);
+  EditableLabelWidget * label = editable_label_widget_new (
+    obj, name_getter, name_setter, -1);
 
   if (label_before)
     {
-      gtk_box_append (
-        GTK_BOX (self), GTK_WIDGET (label));
-      gtk_box_append (
-        GTK_BOX (self), GTK_WIDGET (knob));
+      gtk_box_append (GTK_BOX (self), GTK_WIDGET (label));
+      gtk_box_append (GTK_BOX (self), GTK_WIDGET (knob));
     }
   else
     {
-      gtk_box_append (
-        GTK_BOX (self), GTK_WIDGET (knob));
-      gtk_box_append (
-        GTK_BOX (self), GTK_WIDGET (label));
+      gtk_box_append (GTK_BOX (self), GTK_WIDGET (knob));
+      gtk_box_append (GTK_BOX (self), GTK_WIDGET (label));
     }
 
   return self;
@@ -77,7 +72,6 @@ knob_with_name_widget_class_init (
 }
 
 static void
-knob_with_name_widget_init (
-  KnobWithNameWidget * self)
+knob_with_name_widget_init (KnobWithNameWidget * self)
 {
 }

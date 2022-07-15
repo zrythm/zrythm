@@ -36,38 +36,30 @@ G_DEFINE_TYPE (
   GTK_TYPE_DIALOG)
 
 static void
-on_ok_clicked (
-  GtkButton *          btn,
-  BindCcDialogWidget * self)
+on_ok_clicked (GtkButton * btn, BindCcDialogWidget * self)
 {
   if (self->perform_action)
     {
       if (self->cc[0])
         {
           GError * err = NULL;
-          bool     ret =
-            midi_mapping_action_perform_bind (
-              self->cc, NULL, self->port, &err);
+          bool     ret = midi_mapping_action_perform_bind (
+                self->cc, NULL, self->port, &err);
           if (!ret)
             {
               HANDLE_ERROR (
-                err, "%s",
-                _ ("Failed to bind mapping"));
+                err, "%s", _ ("Failed to bind mapping"));
             }
         }
     }
 
-  gtk_dialog_response (
-    GTK_DIALOG (self), GTK_RESPONSE_ACCEPT);
+  gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_ACCEPT);
 }
 
 static void
-on_cancel_clicked (
-  GtkButton *          btn,
-  BindCcDialogWidget * self)
+on_cancel_clicked (GtkButton * btn, BindCcDialogWidget * self)
 {
-  gtk_dialog_response (
-    GTK_DIALOG (self), GTK_RESPONSE_CANCEL);
+  gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_CANCEL);
 }
 
 static gboolean
@@ -87,8 +79,7 @@ tick_cb (
           AUDIO_ENGINE->last_cc, ctrl_change);
 
       bool port_is_toggle =
-        self->port
-        && self->port->id.flags & PORT_FLAG_TOGGLE;
+        self->port && self->port->id.flags & PORT_FLAG_TOGGLE;
 
       gtk_widget_set_sensitive (
         GTK_WIDGET (self->ok_btn), true);
@@ -97,24 +88,23 @@ tick_cb (
         {
           char str[100];
           sprintf (
-            str, "<b>Ch%d - %s</b>",
-            ctrl_change_ch, ctrl_change);
+            str, "<b>Ch%d - %s</b>", ctrl_change_ch,
+            ctrl_change);
           gtk_label_set_markup (self->lbl, str);
         }
       else if (port_is_toggle)
         {
           char str[100];
           sprintf (
-            str, "<b>%02X %02X %02X</b>",
-            self->cc[0], self->cc[1], self->cc[2]);
+            str, "<b>%02X %02X %02X</b>", self->cc[0],
+            self->cc[1], self->cc[2]);
           gtk_label_set_markup (self->lbl, str);
         }
       else
         {
           char str[100];
           sprintf (
-            str,
-            "<b><span foreground='red'>%s</span></b>",
+            str, "<b><span foreground='red'>%s</span></b>",
             _ ("Not a control change event"));
           gtk_label_set_markup (self->lbl, str);
 
@@ -130,12 +120,10 @@ tick_cb (
  * Creates a new bind_cc dialog.
  */
 BindCcDialogWidget *
-bind_cc_dialog_widget_new (
-  Port * port,
-  bool   perform_action)
+bind_cc_dialog_widget_new (Port * port, bool perform_action)
 {
-  BindCcDialogWidget * self = g_object_new (
-    BIND_CC_DIALOG_WIDGET_TYPE, NULL);
+  BindCcDialogWidget * self =
+    g_object_new (BIND_CC_DIALOG_WIDGET_TYPE, NULL);
 
   self->port = port;
   self->perform_action = perform_action;
@@ -148,8 +136,7 @@ finalize (BindCcDialogWidget * self)
 {
   AUDIO_ENGINE->capture_cc = 0;
 
-  G_OBJECT_CLASS (
-    bind_cc_dialog_widget_parent_class)
+  G_OBJECT_CLASS (bind_cc_dialog_widget_parent_class)
     ->finalize (G_OBJECT (self));
 }
 
@@ -157,10 +144,8 @@ static void
 bind_cc_dialog_widget_class_init (
   BindCcDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "bind_cc_dialog.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "bind_cc_dialog.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
@@ -175,8 +160,7 @@ bind_cc_dialog_widget_class_init (
 }
 
 static void
-bind_cc_dialog_widget_init (
-  BindCcDialogWidget * self)
+bind_cc_dialog_widget_init (BindCcDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -186,8 +170,7 @@ bind_cc_dialog_widget_init (
   AUDIO_ENGINE->last_cc[2] = 0;
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) tick_cb,
-    self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
 
   g_signal_connect (
     G_OBJECT (self->ok_btn), "clicked",

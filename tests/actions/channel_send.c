@@ -38,8 +38,7 @@ test_route_master_send_to_fx (void)
 
   /* expect messages */
   LOG->use_structured_for_console = false;
-  LOG->min_log_level_for_test_console =
-    G_LOG_LEVEL_WARNING;
+  LOG->min_log_level_for_test_console = G_LOG_LEVEL_WARNING;
   g_test_expect_message (
     G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*FAILED*");
   g_test_expect_message (
@@ -48,10 +47,9 @@ test_route_master_send_to_fx (void)
 
   /* route master to it */
   GError * err = NULL;
-  bool     ret =
-    channel_send_action_perform_connect_audio (
-      P_MASTER_TRACK->channel->sends[0],
-      audio_fx->processor->stereo_in, &err);
+  bool     ret = channel_send_action_perform_connect_audio (
+        P_MASTER_TRACK->channel->sends[0],
+        audio_fx->processor->stereo_in, &err);
 
   /* let engine run for a few cycles */
   engine_wait_n_cycles (AUDIO_ENGINE, 3);

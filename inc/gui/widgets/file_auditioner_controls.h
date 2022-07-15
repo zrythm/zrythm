@@ -90,8 +90,8 @@ file_auditioner_controls_widget_setup (
   FileAuditionerControlsWidget * self,
   GtkWidget *                    owner,
   bool                           for_files,
-  SelectedFileGetter selected_file_getter,
-  GenericCallback    refilter_files_cb);
+  SelectedFileGetter             selected_file_getter,
+  GenericCallback                refilter_files_cb);
 
 /**
  * @}

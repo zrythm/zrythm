@@ -42,14 +42,12 @@ quantize_options_update_quantize_points (
 {
   Position tmp, end_pos;
   position_init (&tmp);
-  position_set_to_bar (
-    &end_pos, TRANSPORT->total_bars + 1);
+  position_set_to_bar (&end_pos, TRANSPORT->total_bars + 1);
   self->num_q_points = 0;
   position_set_to_pos (
     &self->q_points[self->num_q_points++], &tmp);
-  long ticks =
-    snap_grid_get_ticks_from_length_and_type (
-      self->note_length, self->note_type);
+  long ticks = snap_grid_get_ticks_from_length_and_type (
+    self->note_length, self->note_type);
   long swing_offset =
     (long) (((float) self->swing / 100.f) * (float) ticks / 2.f);
   while (position_is_before (&tmp, &end_pos))
@@ -63,8 +61,7 @@ quantize_options_update_quantize_points (
         }
 
       position_set_to_pos (
-        &self->q_points[self->num_q_points++],
-        &tmp);
+        &self->q_points[self->num_q_points++], &tmp);
     }
 }
 
@@ -73,8 +70,7 @@ quantize_options_init (
   QuantizeOptions * self,
   NoteLength        note_length)
 {
-  self->schema_version =
-    QUANTIZE_OPTIONS_SCHEMA_VERSION;
+  self->schema_version = QUANTIZE_OPTIONS_SCHEMA_VERSION;
   self->note_length = note_length;
   self->num_q_points = 0;
   self->note_type = NOTE_TYPE_NORMAL;
@@ -98,16 +94,13 @@ quantize_options_get_amount (QuantizeOptions * self)
 }
 
 float
-quantize_options_get_randomization (
-  QuantizeOptions * self)
+quantize_options_get_randomization (QuantizeOptions * self)
 {
   return (float) self->rand_ticks;
 }
 
 void
-quantize_options_set_swing (
-  QuantizeOptions * self,
-  float             swing)
+quantize_options_set_swing (QuantizeOptions * self, float swing)
 {
   self->swing = swing;
 }
@@ -125,8 +118,7 @@ quantize_options_set_randomization (
   QuantizeOptions * self,
   float             randomization)
 {
-  self->rand_ticks =
-    (unsigned int) round (randomization);
+  self->rand_ticks = (unsigned int) round (randomization);
 }
 
 /**
@@ -145,35 +137,29 @@ quantize_options_stringize (
 }
 
 static Position *
-get_prev_point (
-  QuantizeOptions * self,
-  Position *        pos)
+get_prev_point (QuantizeOptions * self, Position * pos)
 {
   g_return_val_if_fail (
     pos->frames >= 0 && pos->ticks >= 0, NULL);
 
   Position * prev_point =
     (Position *) algorithms_binary_search_nearby (
-      pos, self->q_points,
-      (size_t) self->num_q_points, sizeof (Position),
-      position_cmp_func, true, true);
+      pos, self->q_points, (size_t) self->num_q_points,
+      sizeof (Position), position_cmp_func, true, true);
 
   return prev_point;
 }
 
 static Position *
-get_next_point (
-  QuantizeOptions * self,
-  Position *        pos)
+get_next_point (QuantizeOptions * self, Position * pos)
 {
   g_return_val_if_fail (
     pos->frames >= 0 && pos->ticks >= 0, NULL);
 
   Position * next_point =
     (Position *) algorithms_binary_search_nearby (
-      pos, self->q_points,
-      (size_t) self->num_q_points, sizeof (Position),
-      position_cmp_func, false, true);
+      pos, self->q_points, (size_t) self->num_q_points,
+      sizeof (Position), position_cmp_func, false, true);
 
   return next_point;
 }
@@ -194,20 +180,15 @@ quantize_options_quantize_position (
   QuantizeOptions * self,
   Position *        pos)
 {
-  Position * prev_point =
-    get_prev_point (self, pos);
-  Position * next_point =
-    get_next_point (self, pos);
-  g_return_val_if_fail (
-    prev_point && next_point, 0);
+  Position * prev_point = get_prev_point (self, pos);
+  Position * next_point = get_next_point (self, pos);
+  g_return_val_if_fail (prev_point && next_point, 0);
 
   const double upper = self->rand_ticks;
   const double lower = -self->rand_ticks;
-  double       rand_double =
-    (double) pcg_rand_u32 (ZRYTHM->rand);
+  double rand_double = (double) pcg_rand_u32 (ZRYTHM->rand);
   double rand_ticks =
-    fmod (rand_double, (upper - lower + 1.0))
-    + lower;
+    fmod (rand_double, (upper - lower + 1.0)) + lower;
 
   /* if previous point is closer */
   double diff;
@@ -241,10 +222,8 @@ quantize_options_quantize_position (
 QuantizeOptions *
 quantize_options_clone (const QuantizeOptions * src)
 {
-  QuantizeOptions * opts =
-    object_new (QuantizeOptions);
-  opts->schema_version =
-    QUANTIZE_OPTIONS_SCHEMA_VERSION;
+  QuantizeOptions * opts = object_new (QuantizeOptions);
+  opts->schema_version = QUANTIZE_OPTIONS_SCHEMA_VERSION;
 
   opts->note_length = src->note_length;
   opts->note_type = src->note_type;
@@ -262,10 +241,8 @@ quantize_options_clone (const QuantizeOptions * src)
 QuantizeOptions *
 quantize_options_new (void)
 {
-  QuantizeOptions * opts =
-    object_new (QuantizeOptions);
-  opts->schema_version =
-    QUANTIZE_OPTIONS_SCHEMA_VERSION;
+  QuantizeOptions * opts = object_new (QuantizeOptions);
+  opts->schema_version = QUANTIZE_OPTIONS_SCHEMA_VERSION;
 
   return opts;
 }

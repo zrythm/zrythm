@@ -40,9 +40,7 @@ get_xxh32_hash (FILE * stream, char ** hash_str)
   XXH32_reset (state, 0);
   size_t        amt;
   unsigned char buf[BUF_SIZE];
-  while (
-    (amt = fread (buf, 1, sizeof (buf), stream))
-    != 0)
+  while ((amt = fread (buf, 1, sizeof (buf), stream)) != 0)
     {
       /* hash the file in chunks */
       XXH32_update (state, buf, amt);
@@ -60,9 +58,8 @@ get_xxh32_hash (FILE * stream, char ** hash_str)
   if (hash_str)
     {
       *hash_str = g_strdup_printf (
-        "%x%x%x%x", canonical.digest[0],
-        canonical.digest[1], canonical.digest[2],
-        canonical.digest[3]);
+        "%x%x%x%x", canonical.digest[0], canonical.digest[1],
+        canonical.digest[2], canonical.digest[3]);
     }
 
   return hash;
@@ -80,9 +77,7 @@ get_xxh3_64_hash (FILE * stream, char ** hash_str)
   XXH3_64bits_reset (state);
   size_t        amt;
   unsigned char buf[BUF_SIZE];
-  while (
-    (amt = fread (buf, 1, sizeof (buf), stream))
-    != 0)
+  while ((amt = fread (buf, 1, sizeof (buf), stream)) != 0)
     {
       /* hash the file in chunks */
       XXH3_64bits_update (state, buf, amt);
@@ -112,9 +107,7 @@ get_xxh3_64_hash (FILE * stream, char ** hash_str)
 #endif
 
 char *
-hash_get_from_file (
-  const char *  filepath,
-  HashAlgorithm algo)
+hash_get_from_file (const char * filepath, HashAlgorithm algo)
 {
   g_debug ("calculating hash for %s...", filepath);
 
@@ -176,15 +169,12 @@ hash_create_state (void)
 void
 hash_free_state (void * in_state)
 {
-  XXH32_state_t * state =
-    (XXH32_state_t *) in_state;
+  XXH32_state_t * state = (XXH32_state_t *) in_state;
   XXH32_freeState (state);
 }
 
 uint32_t
-hash_get_for_struct (
-  const void * const obj,
-  size_t             size)
+hash_get_for_struct (const void * const obj, size_t size)
 {
   /* create a state */
   XXH32_state_t * state = XXH32_createState ();

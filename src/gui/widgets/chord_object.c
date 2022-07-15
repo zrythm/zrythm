@@ -21,8 +21,7 @@
  * @param width Full width of the marker.
  */
 void
-chord_object_recreate_pango_layouts (
-  ChordObject * self)
+chord_object_recreate_pango_layouts (ChordObject * self)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
@@ -30,13 +29,10 @@ chord_object_recreate_pango_layouts (
     {
       PangoFontDescription * desc;
       self->layout = gtk_widget_create_pango_layout (
-        GTK_WIDGET (
-          arranger_object_get_arranger (obj)),
-        NULL);
+        GTK_WIDGET (arranger_object_get_arranger (obj)), NULL);
       desc = pango_font_description_from_string (
         CHORD_OBJECT_NAME_FONT);
-      pango_layout_set_font_description (
-        self->layout, desc);
+      pango_layout_set_font_description (self->layout, desc);
       pango_font_description_free (desc);
     }
   pango_layout_get_pixel_size (
@@ -47,9 +43,7 @@ chord_object_recreate_pango_layouts (
  * Draws the given chord object.
  */
 void
-chord_object_draw (
-  ChordObject * self,
-  GtkSnapshot * snapshot)
+chord_object_draw (ChordObject * self, GtkSnapshot * snapshot)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   ArrangerWidget * arranger =
@@ -64,28 +58,24 @@ chord_object_draw (
     chord_object_get_chord_descriptor (self);
 
   /* create clip */
-  GskRoundedRect rounded_rect;
+  GskRoundedRect  rounded_rect;
   graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
-    obj->full_rect.x, obj->full_rect.y,
-    obj->full_rect.width, obj->full_rect.height);
+    obj->full_rect.x, obj->full_rect.y, obj->full_rect.width,
+    obj->full_rect.height);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect,
     obj->full_rect.height / 6.0f);
-  gtk_snapshot_push_rounded_clip (
-    snapshot, &rounded_rect);
+  gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
 
   /* fill */
-  gtk_snapshot_append_color (
-    snapshot, &color, &graphene_rect);
+  gtk_snapshot_append_color (snapshot, &color, &graphene_rect);
 
   char str[100];
   chord_descriptor_to_string (descr, str);
   char display_str[200];
   if (DEBUGGING)
     {
-      sprintf (
-        display_str, "%d %s", self->chord_index,
-        str);
+      sprintf (display_str, "%d %s", self->chord_index, str);
     }
   else
     {
@@ -101,10 +91,8 @@ chord_object_draw (
     &GRAPHENE_POINT_INIT (
       obj->full_rect.x + CHORD_OBJECT_NAME_PADDING,
       obj->full_rect.y + CHORD_OBJECT_NAME_PADDING));
-  pango_layout_set_text (
-    self->layout, display_str, -1);
-  gtk_snapshot_append_layout (
-    snapshot, self->layout, &c2);
+  pango_layout_set_text (self->layout, display_str, -1);
+  gtk_snapshot_append_layout (snapshot, self->layout, &c2);
   gtk_snapshot_restore (snapshot);
 
   /* pop clip */

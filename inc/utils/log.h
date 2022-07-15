@@ -135,9 +135,7 @@ log_generate_compressed_file (
  *   will be created.
  */
 void
-log_init_with_file (
-  Log *        self,
-  const char * filepath);
+log_init_with_file (Log * self, const char * filepath);
 
 /**
  * Returns a pointer to the global zlog.

@@ -68,25 +68,23 @@ on_enabled_toggled (
   gboolean enabled;
   Port *   src_port = NULL, *dest_port = NULL;
   gtk_tree_model_get (
-    model, &iter, COL_ENABLED, &enabled,
-    COL_SRC_PORT, &src_port, COL_DEST_PORT,
-    &dest_port, -1);
+    model, &iter, COL_ENABLED, &enabled, COL_SRC_PORT,
+    &src_port, COL_DEST_PORT, &dest_port, -1);
 
   /* get new value */
   enabled ^= 1;
 
   /* set new value on widget */
   gtk_list_store_set (
-    GTK_LIST_STORE (model), &iter, COL_ENABLED,
-    enabled, -1);
+    GTK_LIST_STORE (model), &iter, COL_ENABLED, enabled, -1);
 
   /* clean up */
   gtk_tree_path_free (path);
 
   /* perform an undoable action */
   GError * err = NULL;
-  bool ret = port_connection_action_perform_enable (
-    &src_port->id, &dest_port->id, enabled, &err);
+  bool     ret = port_connection_action_perform_enable (
+        &src_port->id, &dest_port->id, enabled, &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -105,13 +103,11 @@ create_model (void)
 
   /* create list store */
   store = gtk_list_store_new (
-    NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING,
-    G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER,
-    G_TYPE_POINTER);
+    NUM_COLS, G_TYPE_BOOLEAN, G_TYPE_STRING, G_TYPE_STRING,
+    G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_POINTER);
 
   /* add data to the list store */
-  for (int i = 0;
-       i < PORT_CONNECTIONS_MGR->num_connections;
+  for (int i = 0; i < PORT_CONNECTIONS_MGR->num_connections;
        i++)
     {
       PortConnection * conn =
@@ -131,25 +127,20 @@ create_model (void)
         NULL);
 
       char src_path[600];
-      port_get_full_designation (
-        src_port, src_path);
+      port_get_full_designation (src_port, src_path);
       char dest_path[600];
-      port_get_full_designation (
-        dest_port, dest_path);
+      port_get_full_designation (dest_port, dest_path);
 
       /* get multiplier */
       char mult_str[40];
-      sprintf (
-        mult_str, "%.4f",
-        (double) conn->multiplier);
+      sprintf (mult_str, "%.4f", (double) conn->multiplier);
 
       gtk_list_store_append (store, &iter);
       gtk_list_store_set (
         store, &iter, COL_ENABLED, conn->enabled,
-        COL_SRC_PATH, src_path, COL_DEST_PATH,
-        dest_path, COL_MULTIPLIER, mult_str,
-        COL_SRC_PORT, src_port, COL_DEST_PORT,
-        dest_port, -1);
+        COL_SRC_PATH, src_path, COL_DEST_PATH, dest_path,
+        COL_MULTIPLIER, mult_str, COL_SRC_PORT, src_port,
+        COL_DEST_PORT, dest_port, -1);
     }
 
   return GTK_TREE_MODEL (store);
@@ -165,8 +156,7 @@ show_context_menu (
   GMenuItem * menuitem;
 
   menuitem = z_gtk_create_menu_item (
-    _ ("Delete"), NULL,
-    "app.port-connection-remove");
+    _ ("Delete"), NULL, "app.port-connection-remove");
   g_menu_append_item (menu, menuitem);
 
   z_gtk_show_context_menu_from_g_menu (
@@ -196,8 +186,8 @@ on_right_click (
   GtkTreeSelection * selection =
     gtk_tree_view_get_selection (self->tree);
   if (!gtk_tree_view_get_path_at_pos (
-        GTK_TREE_VIEW (self->tree), x, y, &path,
-        &column, NULL, NULL))
+        GTK_TREE_VIEW (self->tree), x, y, &path, &column,
+        NULL, NULL))
     {
       g_message ("no path at position %d %d", x, y);
       return;
@@ -211,13 +201,13 @@ on_right_click (
   GValue init_value = G_VALUE_INIT;
   GValue value = init_value;
   gtk_tree_model_get_value (
-    GTK_TREE_MODEL (self->tree_model), &iter,
-    COL_SRC_PORT, &value);
+    GTK_TREE_MODEL (self->tree_model), &iter, COL_SRC_PORT,
+    &value);
   self->src_port = g_value_get_pointer (&value);
   value = init_value;
   gtk_tree_model_get_value (
-    GTK_TREE_MODEL (self->tree_model), &iter,
-    COL_DEST_PORT, &value);
+    GTK_TREE_MODEL (self->tree_model), &iter, COL_DEST_PORT,
+    &value);
   self->dest_port = g_value_get_pointer (&value);
 
   gtk_tree_path_free (path);
@@ -237,24 +227,21 @@ tree_view_setup (
   /* column for checkbox */
   renderer = gtk_cell_renderer_toggle_new ();
   column = gtk_tree_view_column_new_with_attributes (
-    _ ("On"), renderer, "active", COL_ENABLED,
-    NULL);
+    _ ("On"), renderer, "active", COL_ENABLED, NULL);
   gtk_tree_view_append_column (
     GTK_TREE_VIEW (tree_view), column);
   g_signal_connect (
-    renderer, "toggled",
-    G_CALLBACK (on_enabled_toggled), self);
+    renderer, "toggled", G_CALLBACK (on_enabled_toggled),
+    self);
 
   /* column for src path */
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes (
-    _ ("Source"), renderer, "text", COL_SRC_PATH,
-    NULL);
+    _ ("Source"), renderer, "text", COL_SRC_PATH, NULL);
   gtk_tree_view_append_column (
     GTK_TREE_VIEW (tree_view), column);
   g_object_set (
-    renderer, "ellipsize", PANGO_ELLIPSIZE_END,
-    NULL);
+    renderer, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
   gtk_tree_view_column_set_resizable (
     GTK_TREE_VIEW_COLUMN (column), true);
   gtk_tree_view_column_set_min_width (
@@ -265,13 +252,11 @@ tree_view_setup (
   /* column for src path */
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes (
-    _ ("Destination"), renderer, "text",
-    COL_DEST_PATH, NULL);
+    _ ("Destination"), renderer, "text", COL_DEST_PATH, NULL);
   gtk_tree_view_append_column (
     GTK_TREE_VIEW (tree_view), column);
   g_object_set (
-    renderer, "ellipsize", PANGO_ELLIPSIZE_END,
-    NULL);
+    renderer, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
   gtk_tree_view_column_set_resizable (
     GTK_TREE_VIEW_COLUMN (column), true);
   gtk_tree_view_column_set_min_width (
@@ -282,8 +267,7 @@ tree_view_setup (
   /* column for multiplier */
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes (
-    _ ("Multiplier"), renderer, "text",
-    COL_MULTIPLIER, NULL);
+    _ ("Multiplier"), renderer, "text", COL_MULTIPLIER, NULL);
   gtk_tree_view_append_column (
     GTK_TREE_VIEW (tree_view), column);
 
@@ -293,11 +277,10 @@ tree_view_setup (
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    G_OBJECT (mp), "pressed",
-    G_CALLBACK (on_right_click), self);
+    G_OBJECT (mp), "pressed", G_CALLBACK (on_right_click),
+    self);
   gtk_widget_add_controller (
-    GTK_WIDGET (tree_view),
-    GTK_EVENT_CONTROLLER (mp));
+    GTK_WIDGET (tree_view), GTK_EVENT_CONTROLLER (mp));
 }
 
 /**
@@ -309,8 +292,7 @@ port_connections_tree_widget_refresh (
 {
   GtkTreeModel * model = self->tree_model;
   self->tree_model = create_model ();
-  gtk_tree_view_set_model (
-    self->tree, self->tree_model);
+  gtk_tree_view_set_model (self->tree, self->tree_model);
 
   if (model)
     {
@@ -321,8 +303,8 @@ port_connections_tree_widget_refresh (
 PortConnectionsTreeWidget *
 port_connections_tree_widget_new ()
 {
-  PortConnectionsTreeWidget * self = g_object_new (
-    PORT_CONNECTIONS_TREE_WIDGET_TYPE, NULL);
+  PortConnectionsTreeWidget * self =
+    g_object_new (PORT_CONNECTIONS_TREE_WIDGET_TYPE, NULL);
 
   /* setup tree */
   tree_view_setup (self, self->tree);
@@ -340,20 +322,17 @@ static void
 port_connections_tree_widget_init (
   PortConnectionsTreeWidget * self)
 {
-  self->scroll = GTK_SCROLLED_WINDOW (
-    gtk_scrolled_window_new ());
-  gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->scroll));
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (self->scroll), true);
+  self->scroll =
+    GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
+  gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->scroll));
+  gtk_widget_set_hexpand (GTK_WIDGET (self->scroll), true);
 
   self->tree = GTK_TREE_VIEW (gtk_tree_view_new ());
   gtk_scrolled_window_set_child (
     self->scroll, GTK_WIDGET (self->tree));
 
-  self->popover_menu = GTK_POPOVER_MENU (
-    gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
 }

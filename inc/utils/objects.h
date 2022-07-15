@@ -20,8 +20,7 @@
 /**
  * Calloc equivalent.
  */
-#define object_new_n_sizeof(n, sz) \
-  g_malloc0_n (n, sz)
+#define object_new_n_sizeof(n, sz) g_malloc0_n (n, sz)
 
 /**
  * Calloc \ref n blocks for type \ref type.
@@ -40,8 +39,7 @@
  */
 #define object_realloc_n(obj, prev_n, n, type) \
   object_realloc_n_sizeof ( \
-    obj, prev_n * sizeof (type), \
-    n * sizeof (type))
+    obj, prev_n * sizeof (type), n * sizeof (type))
 
 /**
  * Zero's out the struct pointed to by \ref ptr.
@@ -60,8 +58,7 @@ _object_zero_and_free (void ** ptr, size_t sz);
  * frees the object.
  */
 #define object_zero_and_free(ptr) \
-  _object_zero_and_free ( \
-    (void **) &(ptr), sizeof (*(ptr)))
+  _object_zero_and_free ((void **) &(ptr), sizeof (*(ptr)))
 
 /**
  * Call the function \ref _func to free \ref _obj
@@ -75,8 +72,7 @@ _object_zero_and_free (void ** ptr, size_t sz);
     }
 
 #define object_zero_and_free_if_nonnull(ptr) \
-  object_free_w_func_and_null ( \
-    object_zero_and_free, ptr)
+  object_free_w_func_and_null (object_zero_and_free, ptr)
 
 /** Convenience wrapper. */
 #define g_object_unref_and_null(ptr) \
@@ -91,8 +87,7 @@ _object_zero_and_free (void ** ptr, size_t sz);
   object_free_w_func_and_null (g_error_free, ptr)
 
 /** Convenience wrapper. */
-#define object_free_w_func_and_null_cast( \
-  _func, _cast, _obj) \
+#define object_free_w_func_and_null_cast(_func, _cast, _obj) \
   if (_obj) \
     { \
       _func ((_cast) _obj); \

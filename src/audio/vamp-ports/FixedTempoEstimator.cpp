@@ -53,18 +53,12 @@ public:
   D (float inputSampleRate);
   ~D ();
 
-  size_t getPreferredStepSize () const
-  {
-    return 64;
-  }
-  size_t getPreferredBlockSize () const
-  {
-    return 256;
-  }
+  size_t getPreferredStepSize () const { return 64; }
+  size_t getPreferredBlockSize () const { return 256; }
 
   ParameterList getParameterDescriptors () const;
   float         getParameter (string id) const;
-  void setParameter (string id, float value);
+  void          setParameter (string id, float value);
 
   OutputList getOutputDescriptors () const;
 
@@ -72,9 +66,8 @@ public:
     size_t channels,
     size_t stepSize,
     size_t blockSize);
-  void reset ();
-  FeatureSet
-  process (const float * const *, RealTime);
+  void       reset ();
+  FeatureSet process (const float * const *, RealTime);
   FeatureSet getRemainingFeatures ();
 
 private:
@@ -106,11 +99,10 @@ private:
 };
 
 FixedTempoEstimator::D::D (float inputSampleRate)
-    : m_inputSampleRate (inputSampleRate),
-      m_stepSize (0), m_blockSize (0),
-      m_minbpm (50), m_maxbpm (190),
-      m_maxdflen (10), m_priorMagnitudes (0),
-      m_df (0), m_r (0), m_fr (0), m_t (0), m_n (0)
+    : m_inputSampleRate (inputSampleRate), m_stepSize (0),
+      m_blockSize (0), m_minbpm (50), m_maxbpm (190),
+      m_maxdflen (10), m_priorMagnitudes (0), m_df (0),
+      m_r (0), m_fr (0), m_t (0), m_n (0)
 {
 }
 
@@ -124,8 +116,7 @@ FixedTempoEstimator::D::~D ()
 }
 
 FixedTempoEstimator::ParameterList
-FixedTempoEstimator::D::getParameterDescriptors ()
-  const
+FixedTempoEstimator::D::getParameterDescriptors () const
 {
   ParameterList list;
 
@@ -162,8 +153,7 @@ FixedTempoEstimator::D::getParameterDescriptors ()
 }
 
 float
-FixedTempoEstimator::D::getParameter (
-  string id) const
+FixedTempoEstimator::D::getParameter (string id) const
 {
   if (id == "minbpm")
     {
@@ -181,9 +171,7 @@ FixedTempoEstimator::D::getParameter (
 }
 
 void
-FixedTempoEstimator::D::setParameter (
-  string id,
-  float  value)
+FixedTempoEstimator::D::setParameter (string id, float value)
 {
   if (id == "minbpm")
     {
@@ -219,8 +207,7 @@ FixedTempoEstimator::D::getOutputDescriptors () const
   d.binCount = 1;
   d.hasKnownExtents = false;
   d.isQuantized = false;
-  d.sampleType =
-    OutputDescriptor::VariableSampleRate;
+  d.sampleType = OutputDescriptor::VariableSampleRate;
   d.sampleRate = m_inputSampleRate;
   d.hasDuration =
     true; // our returned tempo spans a certain range
@@ -253,8 +240,7 @@ FixedTempoEstimator::D::getOutputDescriptors () const
   else
     {
       d.sampleRate =
-        m_inputSampleRate
-        / (getPreferredBlockSize () / 2);
+        m_inputSampleRate / (getPreferredBlockSize () / 2);
     }
   d.hasDuration = false;
   list.push_back (d);
@@ -278,17 +264,14 @@ FixedTempoEstimator::D::getOutputDescriptors () const
 }
 
 bool
-FixedTempoEstimator::D::initialise (
-  size_t,
-  size_t stepSize,
-  size_t blockSize)
+FixedTempoEstimator::D::
+  initialise (size_t, size_t stepSize, size_t blockSize)
 {
   m_stepSize = stepSize;
   m_blockSize = blockSize;
 
   float dfLengthSecs = m_maxdflen;
-  m_dfsize =
-    (dfLengthSecs * m_inputSampleRate) / m_stepSize;
+  m_dfsize = (dfLengthSecs * m_inputSampleRate) / m_stepSize;
 
   m_priorMagnitudes = new float[m_blockSize / 2];
   m_df = new float[m_dfsize];
@@ -383,8 +366,7 @@ FixedTempoEstimator::D::process (
       float imag = inputBuffers[0][i * 2 + 1];
 
       float sqrmag = real * real + imag * imag;
-      value +=
-        fabsf (sqrmag - m_priorMagnitudes[i]);
+      value += fabsf (sqrmag - m_priorMagnitudes[i]);
 
       m_priorMagnitudes[i] = sqrmag;
     }
@@ -410,15 +392,13 @@ FixedTempoEstimator::D::getRemainingFeatures ()
 float
 FixedTempoEstimator::D::lag2tempo (int lag)
 {
-  return 60.f
-         / ((lag * m_stepSize) / m_inputSampleRate);
+  return 60.f / ((lag * m_stepSize) / m_inputSampleRate);
 }
 
 int
 FixedTempoEstimator::D::tempo2lag (float tempo)
 {
-  return ((60.f / tempo) * m_inputSampleRate)
-         / m_stepSize;
+  return ((60.f / tempo) * m_inputSampleRate) / m_stepSize;
 }
 
 void
@@ -450,9 +430,8 @@ FixedTempoEstimator::D::calculate ()
   int n =
     m_n; // length of actual df array (m_dfsize is the theoretical max)
 
-  m_r = new float[n / 2]; // raw autocorrelation
-  m_fr =
-    new float[n / 2]; // filtered autocorrelation
+  m_r = new float[n / 2];  // raw autocorrelation
+  m_fr = new float[n / 2]; // filtered autocorrelation
   m_t = new float
     [n / 2]; // averaged tempo estimate for each lag value
 
@@ -487,11 +466,9 @@ FixedTempoEstimator::D::calculate ()
 
       int div = 1;
 
-      for (
-        int j = 0;
-        j < int (
-          sizeof (related) / sizeof (related[0]));
-        ++j)
+      for (int j = 0;
+           j < int (sizeof (related) / sizeof (related[0]));
+           ++j)
         {
 
           // Check for an obvious peak at each metrically related lag
@@ -530,8 +507,7 @@ FixedTempoEstimator::D::calculate ()
               m_fr[i] += m_r[kmax] / 5;
 
               if (
-                (kmax == 0
-                 || m_r[kmax] > m_r[kmax - 1])
+                (kmax == 0 || m_r[kmax] > m_r[kmax - 1])
                 && (kmax == n / 2 - 1 || m_r[kmax] > m_r[kmax + 1])
                 && kvmax > kvmin * 1.05)
                 {
@@ -541,8 +517,7 @@ FixedTempoEstimator::D::calculate ()
                   // improve our tempo estimate for the original lag
 
                   m_t[i] =
-                    m_t[i]
-                    + lag2tempo (kmax) * related[j];
+                    m_t[i] + lag2tempo (kmax) * related[j];
                   ++div;
                 }
             }
@@ -628,9 +603,7 @@ FixedTempoEstimator::D::assembleFeatures ()
       if (i < 1)
         continue;
 
-      if (
-        m_fr[i] > m_fr[i - 1]
-        && m_fr[i] > m_fr[i + 1])
+      if (m_fr[i] > m_fr[i - 1] && m_fr[i] > m_fr[i + 1])
         {
 
           // This is a peak in the filtered autocorrelation: stick
@@ -670,8 +643,7 @@ FixedTempoEstimator::D::assembleFeatures ()
   // The map contains only peaks and is sorted by filtered acf
   // value, so the final element in it is our "best" tempo guess
 
-  std::map<float, int>::const_iterator ci =
-    candidates.end ();
+  std::map<float, int>::const_iterator ci = candidates.end ();
   --ci;
   int maxpi = ci->second;
 
@@ -690,8 +662,8 @@ FixedTempoEstimator::D::assembleFeatures ()
       // not a peak!
 
       feature.values[0] = lag2tempo (maxpi);
-      cerr << "WARNING: No stored tempo for index "
-           << maxpi << endl;
+      cerr << "WARNING: No stored tempo for index " << maxpi
+           << endl;
     }
 
   sprintf (buffer, "%.1f bpm", feature.values[0]);
@@ -711,13 +683,11 @@ FixedTempoEstimator::D::assembleFeatures ()
     {
       if (m_t[ci->second] > 0)
         {
-          feature.values.push_back (
-            m_t[ci->second]);
+          feature.values.push_back (m_t[ci->second]);
         }
       else
         {
-          feature.values.push_back (
-            lag2tempo (ci->second));
+          feature.values.push_back (lag2tempo (ci->second));
         }
       if (ci == candidates.begin ())
         break;
@@ -731,8 +701,7 @@ FixedTempoEstimator::D::assembleFeatures ()
 
 FixedTempoEstimator::FixedTempoEstimator (
   float inputSampleRate)
-    : Plugin (inputSampleRate),
-      m_d (new D (inputSampleRate))
+    : Plugin (inputSampleRate), m_d (new D (inputSampleRate))
 {
 }
 
@@ -800,8 +769,7 @@ FixedTempoEstimator::initialise (
     || channels > getMaxChannelCount ())
     return false;
 
-  return m_d->initialise (
-    channels, stepSize, blockSize);
+  return m_d->initialise (channels, stepSize, blockSize);
 }
 
 void
@@ -817,16 +785,13 @@ FixedTempoEstimator::getParameterDescriptors () const
 }
 
 float
-FixedTempoEstimator::getParameter (
-  std::string id) const
+FixedTempoEstimator::getParameter (std::string id) const
 {
   return m_d->getParameter (id);
 }
 
 void
-FixedTempoEstimator::setParameter (
-  std::string id,
-  float       value)
+FixedTempoEstimator::setParameter (std::string id, float value)
 {
   m_d->setParameter (id, value);
 }

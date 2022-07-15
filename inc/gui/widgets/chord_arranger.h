@@ -27,8 +27,7 @@
 
 #include <gtk/gtk.h>
 
-#define MW_CHORD_ARRANGER \
-  MW_CHORD_EDITOR_SPACE->arranger
+#define MW_CHORD_ARRANGER MW_CHORD_EDITOR_SPACE->arranger
 
 typedef struct ChordObject        ChordObject;
 typedef struct _ChordObjectWidget ChordObjectWidget;

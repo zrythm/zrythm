@@ -41,9 +41,7 @@ lilv_get_float_from_node_with_fallback (
   LilvNode * node,
   float      fallback)
 {
-  if (
-    lilv_node_is_float (node)
-    || lilv_node_is_int (node))
+  if (lilv_node_is_float (node) || lilv_node_is_int (node))
     return lilv_node_as_float (node);
 
   return fallback;

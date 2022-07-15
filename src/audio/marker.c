@@ -26,8 +26,7 @@ marker_new (const char * name)
 
   arranger_object_init (obj);
 
-  arranger_object_gen_escaped_name (
-    (ArrangerObject *) self);
+  arranger_object_gen_escaped_name ((ArrangerObject *) self);
 
   return self;
 }
@@ -52,8 +51,7 @@ marker_set_track_name_hash (
 Marker *
 marker_find_by_name (const char * name)
 {
-  for (int i = 0; i < P_MARKER_TRACK->num_markers;
-       i++)
+  for (int i = 0; i < P_MARKER_TRACK->num_markers; i++)
     {
       Marker * marker = P_MARKER_TRACK->markers[i];
       if (string_is_equal (name, marker->name))

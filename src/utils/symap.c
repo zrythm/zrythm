@@ -63,8 +63,7 @@
 Symap *
 symap_new (void)
 {
-  Symap * map =
-    (Symap *) calloc (1, sizeof (Symap));
+  Symap * map = (Symap *) calloc (1, sizeof (Symap));
   return map;
 }
 
@@ -73,8 +72,7 @@ symap_free (Symap * map)
 {
   for (uint32_t i = 0; i < map->size; ++i)
     {
-      object_zero_and_free_if_nonnull (
-        map->symbols[i]);
+      object_zero_and_free_if_nonnull (map->symbols[i]);
     }
 
   free (map->symbols);
@@ -96,10 +94,7 @@ symap_strdup (const char * str)
    or the index where a new entry for `sym` should be inserted.
 */
 static uint32_t
-symap_search (
-  const Symap * map,
-  const char *  sym,
-  bool *        exact)
+symap_search (const Symap * map, const char * sym, bool * exact)
 {
   *exact = false;
   if (G_UNLIKELY (map->size == 0))
@@ -107,13 +102,10 @@ symap_search (
       return 0; // Empty map, insert at 0
     }
   else if (
-    strcmp (
-      map->symbols[map->index[map->size - 1] - 1],
-      sym)
+    strcmp (map->symbols[map->index[map->size - 1] - 1], sym)
     < 0)
     {
-      return map
-        ->size; // Greater than last element, append
+      return map->size; // Greater than last element, append
     }
 
   uint32_t lower = 0;
@@ -124,8 +116,7 @@ symap_search (
   while (upper >= lower)
     {
       i = lower + ((upper - lower) / 2);
-      cmp = strcmp (
-        map->symbols[map->index[i] - 1], sym);
+      cmp = strcmp (map->symbols[map->index[i] - 1], sym);
 
       if (cmp == 0)
         {
@@ -148,8 +139,7 @@ symap_search (
 
   assert (
     !*exact
-    || strcmp (map->symbols[map->index[i] - 1], sym)
-         > 0);
+    || strcmp (map->symbols[map->index[i] - 1], sym) > 0);
   return i;
 }
 
@@ -157,12 +147,10 @@ uint32_t
 symap_try_map (Symap * map, const char * sym)
 {
   bool           exact;
-  const uint32_t index =
-    symap_search (map, sym, &exact);
+  const uint32_t index = symap_search (map, sym, &exact);
   if (exact)
     {
-      assert (!strcmp (
-        map->symbols[map->index[index]], sym));
+      assert (!strcmp (map->symbols[map->index[index]], sym));
       return map->index[index];
     }
 
@@ -173,12 +161,11 @@ uint32_t
 symap_map (Symap * map, const char * sym)
 {
   bool           exact;
-  const uint32_t index =
-    symap_search (map, sym, &exact);
+  const uint32_t index = symap_search (map, sym, &exact);
   if (exact)
     {
-      assert (!strcmp (
-        map->symbols[map->index[index] - 1], sym));
+      assert (
+        !strcmp (map->symbols[map->index[index] - 1], sym));
       return map->index[index];
     }
 
@@ -249,8 +236,7 @@ main ()
     {
       if (symap_try_map (map, syms[i]))
         {
-          g_error (
-            "error: Symbol already mapped\n");
+          g_error ("error: Symbol already mapped\n");
           return 1;
         }
 

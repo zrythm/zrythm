@@ -34,25 +34,19 @@ typedef struct Tracklist_v1
   int        pinned_tracks_cutoff;
 } Tracklist_v1;
 
-static const cyaml_schema_field_t
-  tracklist_fields_schema_v1[] = {
-    YAML_FIELD_INT (Tracklist_v1, schema_version),
-    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-      Tracklist_v1,
-      tracks,
-      track_schema_v1),
-    YAML_FIELD_INT (
-      Tracklist_v1,
-      pinned_tracks_cutoff),
+static const cyaml_schema_field_t tracklist_fields_schema_v1[] = {
+  YAML_FIELD_INT (Tracklist_v1, schema_version),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    Tracklist_v1,
+    tracks,
+    track_schema_v1),
+  YAML_FIELD_INT (Tracklist_v1, pinned_tracks_cutoff),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  tracklist_schema_v1 = {
-    YAML_VALUE_PTR (
-      Tracklist_v1,
-      tracklist_fields_schema_v1),
-  };
+static const cyaml_schema_value_t tracklist_schema_v1 = {
+  YAML_VALUE_PTR (Tracklist_v1, tracklist_fields_schema_v1),
+};
 
 #endif

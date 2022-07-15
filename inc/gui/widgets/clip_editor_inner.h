@@ -21,16 +21,13 @@ G_DECLARE_FINAL_TYPE (
   CLIP_EDITOR_INNER_WIDGET,
   GtkWidget)
 
-typedef struct _RulerWidget     RulerWidget;
-typedef struct _ColorAreaWidget ColorAreaWidget;
-typedef struct _MidiEditorSpaceWidget
-  MidiEditorSpaceWidget;
-typedef struct _AudioEditorSpaceWidget
-  AudioEditorSpaceWidget;
-typedef struct _ChordEditorSpaceWidget
-  ChordEditorSpaceWidget;
+typedef struct _RulerWidget            RulerWidget;
+typedef struct _ColorAreaWidget        ColorAreaWidget;
+typedef struct _MidiEditorSpaceWidget  MidiEditorSpaceWidget;
+typedef struct _AudioEditorSpaceWidget AudioEditorSpaceWidget;
+typedef struct _ChordEditorSpaceWidget ChordEditorSpaceWidget;
 typedef struct _AutomationEditorSpaceWidget
-  AutomationEditorSpaceWidget;
+                               AutomationEditorSpaceWidget;
 typedef struct _ArrangerWidget ArrangerWidget;
 
 /**
@@ -39,8 +36,7 @@ typedef struct _ArrangerWidget ArrangerWidget;
  * @{
  */
 
-#define MW_CLIP_EDITOR_INNER \
-  MW_CLIP_EDITOR->clip_editor_inner
+#define MW_CLIP_EDITOR_INNER MW_CLIP_EDITOR->clip_editor_inner
 
 /**
  * Adds or remove the widget from the
@@ -83,8 +79,7 @@ typedef struct _ClipEditorInnerWidget
 
   /* ==== Automation Editor ==== */
 
-  AutomationEditorSpaceWidget *
-    automation_editor_space;
+  AutomationEditorSpaceWidget * automation_editor_space;
 
   /* ==== End Automation Editor ==== */
 
@@ -107,8 +102,7 @@ typedef struct _ClipEditorInnerWidget
 } ClipEditorInnerWidget;
 
 void
-clip_editor_inner_widget_setup (
-  ClipEditorInnerWidget * self);
+clip_editor_inner_widget_setup (ClipEditorInnerWidget * self);
 
 void
 clip_editor_inner_widget_refresh (

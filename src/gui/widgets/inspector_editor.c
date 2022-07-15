@@ -29,8 +29,7 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 void
-inspector_editor_widget_show (
-  InspectorEditorWidget * self)
+inspector_editor_widget_show (InspectorEditorWidget * self)
 {
 }
 
@@ -38,15 +37,12 @@ static void
 inspector_editor_widget_class_init (
   InspectorEditorWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "inspector_editor.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "inspector_editor.ui");
 }
 
 static void
-inspector_editor_widget_init (
-  InspectorEditorWidget * self)
+inspector_editor_widget_init (InspectorEditorWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }

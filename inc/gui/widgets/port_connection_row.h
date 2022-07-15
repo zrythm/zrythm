@@ -34,7 +34,7 @@ G_DECLARE_FINAL_TYPE (
 typedef struct _KnobWidget      KnobWidget;
 typedef struct _BarSliderWidget BarSliderWidget;
 typedef struct _PortConnectionsPopoverWidget
-  PortConnectionsPopoverWidget;
+                              PortConnectionsPopoverWidget;
 typedef struct PortConnection PortConnection;
 
 typedef struct _PortConnectionRowWidget

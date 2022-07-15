@@ -46,16 +46,13 @@
  * @param width Full width of the marker.
  */
 void
-scale_object_recreate_pango_layouts (
-  ScaleObject * self);
+scale_object_recreate_pango_layouts (ScaleObject * self);
 
 /**
  * Draws the given scale object.
  */
 void
-scale_object_draw (
-  ScaleObject * self,
-  GtkSnapshot * snapshot);
+scale_object_draw (ScaleObject * self, GtkSnapshot * snapshot);
 
 /**
  * @}

@@ -56,22 +56,18 @@ typedef struct Marker_v1
   void *            layout;
 } Marker;
 
-static const cyaml_schema_field_t
-  marker_fields_schema_v1[] = {
-    YAML_FIELD_MAPPING_EMBEDDED (
-      Marker_v1,
-      base,
-      arranger_object_fields_schema_v1),
-    YAML_FIELD_MAPPING_STRING_PTR (Marker_v1, name),
-    YAML_FIELD_INT (Marker_v1, track_pos),
-    YAML_FIELD_INT (Marker_v1, index),
-    YAML_FIELD_ENUM (
-      Marker_v1,
-      type,
-      marker_type_strings_v1),
+static const cyaml_schema_field_t marker_fields_schema_v1[] = {
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Marker_v1,
+    base,
+    arranger_object_fields_schema_v1),
+  YAML_FIELD_MAPPING_STRING_PTR (Marker_v1, name),
+  YAML_FIELD_INT (Marker_v1, track_pos),
+  YAML_FIELD_INT (Marker_v1, index),
+  YAML_FIELD_ENUM (Marker_v1, type, marker_type_strings_v1),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t marker_schema_v1 = {
   YAML_VALUE_PTR (Marker_v1, marker_fields_schema_v1),

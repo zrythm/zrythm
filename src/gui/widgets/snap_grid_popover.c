@@ -31,9 +31,7 @@ G_DEFINE_TYPE (
   GTK_TYPE_POPOVER)
 
 static void
-on_closed (
-  SnapGridPopoverWidget * self,
-  gpointer                user_data)
+on_closed (SnapGridPopoverWidget * self, gpointer user_data)
 {
   snap_grid_widget_refresh (self->owner);
 }
@@ -52,8 +50,7 @@ block_or_unblock_all_handlers (
         self->snap_dotted_toggle,
         self->snap_dotted_toggle_handler);
       g_signal_handler_block (
-        self->snap_adaptive,
-        self->snap_adaptive_handler);
+        self->snap_adaptive, self->snap_adaptive_handler);
       g_signal_handler_block (
         self->default_triplet_toggle,
         self->default_triplet_toggle_handler);
@@ -66,8 +63,7 @@ block_or_unblock_all_handlers (
       g_signal_handler_block (
         self->link_toggle, self->link_handler);
       g_signal_handler_block (
-        self->last_object_toggle,
-        self->last_object_handler);
+        self->last_object_toggle, self->last_object_handler);
     }
   else
     {
@@ -78,8 +74,7 @@ block_or_unblock_all_handlers (
         self->snap_dotted_toggle,
         self->snap_dotted_toggle_handler);
       g_signal_handler_unblock (
-        self->snap_adaptive,
-        self->snap_adaptive_handler);
+        self->snap_adaptive, self->snap_adaptive_handler);
       g_signal_handler_unblock (
         self->default_triplet_toggle,
         self->default_triplet_toggle_handler);
@@ -92,25 +87,21 @@ block_or_unblock_all_handlers (
       g_signal_handler_unblock (
         self->link_toggle, self->link_handler);
       g_signal_handler_unblock (
-        self->last_object_toggle,
-        self->last_object_handler);
+        self->last_object_toggle, self->last_object_handler);
     }
 }
 
 static void
-refresh_link_and_last_object (
-  SnapGridPopoverWidget * self)
+refresh_link_and_last_object (SnapGridPopoverWidget * self)
 {
   block_or_unblock_all_handlers (self, true);
 
   /* whether default controls should be visible */
   bool visible =
-    self->owner->snap_grid->length_type
-    == NOTE_LENGTH_CUSTOM;
+    self->owner->snap_grid->length_type == NOTE_LENGTH_CUSTOM;
   gtk_toggle_button_set_active (
     self->link_toggle,
-    self->owner->snap_grid->length_type
-      == NOTE_LENGTH_LINK);
+    self->owner->snap_grid->length_type == NOTE_LENGTH_LINK);
   gtk_toggle_button_set_active (
     self->last_object_toggle,
     self->owner->snap_grid->length_type
@@ -118,11 +109,9 @@ refresh_link_and_last_object (
   gtk_widget_set_visible (
     GTK_WIDGET (self->default_length_box), visible);
   gtk_widget_set_visible (
-    GTK_WIDGET (self->default_triplet_toggle),
-    visible);
+    GTK_WIDGET (self->default_triplet_toggle), visible);
   gtk_widget_set_visible (
-    GTK_WIDGET (self->default_dotted_toggle),
-    visible);
+    GTK_WIDGET (self->default_dotted_toggle), visible);
   gtk_widget_set_visible (
     GTK_WIDGET (self->default_adaptive), visible);
 
@@ -137,13 +126,11 @@ on_linked_toggled (
   bool link = gtk_toggle_button_get_active (btn);
   if (link)
     {
-      self->owner->snap_grid->length_type =
-        NOTE_LENGTH_LINK;
+      self->owner->snap_grid->length_type = NOTE_LENGTH_LINK;
     }
   else
     {
-      self->owner->snap_grid->length_type =
-        NOTE_LENGTH_CUSTOM;
+      self->owner->snap_grid->length_type = NOTE_LENGTH_CUSTOM;
     }
 
   refresh_link_and_last_object (self);
@@ -154,8 +141,7 @@ on_last_object_toggled (
   GtkToggleButton *       btn,
   SnapGridPopoverWidget * self)
 {
-  bool last_object =
-    gtk_toggle_button_get_active (btn);
+  bool last_object = gtk_toggle_button_get_active (btn);
   if (last_object)
     {
       self->owner->snap_grid->length_type =
@@ -163,28 +149,25 @@ on_last_object_toggled (
     }
   else
     {
-      self->owner->snap_grid->length_type =
-        NOTE_LENGTH_CUSTOM;
+      self->owner->snap_grid->length_type = NOTE_LENGTH_CUSTOM;
     }
 
   refresh_link_and_last_object (self);
 }
 
 static void
-on_type_toggled (
-  GtkWidget *             btn,
-  SnapGridPopoverWidget * self)
+on_type_toggled (GtkWidget * btn, SnapGridPopoverWidget * self)
 {
   block_or_unblock_all_handlers (self, true);
 
   SnapGrid * sg = self->owner->snap_grid;
   bool       active = false;
   if (GTK_IS_TOGGLE_BUTTON (btn))
-    active = gtk_toggle_button_get_active (
-      GTK_TOGGLE_BUTTON (btn));
+    active =
+      gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (btn));
   else if (GTK_IS_CHECK_BUTTON (btn))
-    active = gtk_check_button_get_active (
-      GTK_CHECK_BUTTON (btn));
+    active =
+      gtk_check_button_get_active (GTK_CHECK_BUTTON (btn));
 
   if (btn == GTK_WIDGET (self->snap_triplet_toggle))
     {
@@ -199,8 +182,7 @@ on_type_toggled (
           sg->snap_note_type = NOTE_TYPE_NORMAL;
         }
     }
-  else if (
-    btn == GTK_WIDGET (self->snap_dotted_toggle))
+  else if (btn == GTK_WIDGET (self->snap_dotted_toggle))
     {
       if (active)
         {
@@ -213,9 +195,7 @@ on_type_toggled (
           sg->snap_note_type = NOTE_TYPE_NORMAL;
         }
     }
-  else if (
-    btn
-    == GTK_WIDGET (self->default_triplet_toggle))
+  else if (btn == GTK_WIDGET (self->default_triplet_toggle))
     {
       if (active)
         {
@@ -228,8 +208,7 @@ on_type_toggled (
           sg->default_note_type = NOTE_TYPE_NORMAL;
         }
     }
-  else if (
-    btn == GTK_WIDGET (self->default_dotted_toggle))
+  else if (btn == GTK_WIDGET (self->default_dotted_toggle))
     {
       if (active)
         {
@@ -252,8 +231,7 @@ on_type_toggled (
     {
       sg->default_adaptive = active;
       gtk_widget_set_sensitive (
-        GTK_WIDGET (self->default_length_dm),
-        !active);
+        GTK_WIDGET (self->default_length_dm), !active);
     }
 
   block_or_unblock_all_handlers (self, false);
@@ -263,11 +241,10 @@ on_type_toggled (
  * Creates a digital meter with the given type (bpm or position).
  */
 SnapGridPopoverWidget *
-snap_grid_popover_widget_new (
-  SnapGridWidget * owner)
+snap_grid_popover_widget_new (SnapGridWidget * owner)
 {
-  SnapGridPopoverWidget * self = g_object_new (
-    SNAP_GRID_POPOVER_WIDGET_TYPE, NULL);
+  SnapGridPopoverWidget * self =
+    g_object_new (SNAP_GRID_POPOVER_WIDGET_TYPE, NULL);
 
   self->owner = owner;
 
@@ -275,8 +252,7 @@ snap_grid_popover_widget_new (
   self->snap_length_dm = digital_meter_widget_new (
     DIGITAL_METER_TYPE_NOTE_LENGTH,
     &owner->snap_grid->snap_note_length,
-    &owner->snap_grid->snap_note_type,
-    "note length");
+    &owner->snap_grid->snap_note_type, "note length");
   gtk_box_append (
     GTK_BOX (self->snap_length_box),
     GTK_WIDGET (self->snap_length_dm));
@@ -296,8 +272,7 @@ snap_grid_popover_widget_new (
   self->default_length_dm = digital_meter_widget_new (
     DIGITAL_METER_TYPE_NOTE_LENGTH,
     &owner->snap_grid->default_note_length,
-    &owner->snap_grid->default_note_type,
-    "note length");
+    &owner->snap_grid->default_note_type, "note length");
   gtk_box_append (
     GTK_BOX (self->default_length_box),
     GTK_WIDGET (self->default_length_dm));
@@ -313,25 +288,21 @@ snap_grid_popover_widget_new (
     GTK_WIDGET (self->default_type_dm));
 #endif
 
-  self
-    ->snap_triplet_toggle_handler = g_signal_connect (
-    GTK_WIDGET (self->snap_triplet_toggle),
-    "toggled", G_CALLBACK (on_type_toggled), self);
-  self
-    ->snap_dotted_toggle_handler = g_signal_connect (
-    GTK_WIDGET (self->snap_dotted_toggle),
-    "toggled", G_CALLBACK (on_type_toggled), self);
+  self->snap_triplet_toggle_handler = g_signal_connect (
+    GTK_WIDGET (self->snap_triplet_toggle), "toggled",
+    G_CALLBACK (on_type_toggled), self);
+  self->snap_dotted_toggle_handler = g_signal_connect (
+    GTK_WIDGET (self->snap_dotted_toggle), "toggled",
+    G_CALLBACK (on_type_toggled), self);
   self->snap_adaptive_handler = g_signal_connect (
     GTK_WIDGET (self->snap_adaptive), "toggled",
     G_CALLBACK (on_type_toggled), self);
-  self->default_triplet_toggle_handler =
-    g_signal_connect (
-      GTK_WIDGET (self->default_triplet_toggle),
-      "toggled", G_CALLBACK (on_type_toggled), self);
-  self->default_dotted_toggle_handler =
-    g_signal_connect (
-      GTK_WIDGET (self->default_dotted_toggle),
-      "toggled", G_CALLBACK (on_type_toggled), self);
+  self->default_triplet_toggle_handler = g_signal_connect (
+    GTK_WIDGET (self->default_triplet_toggle), "toggled",
+    G_CALLBACK (on_type_toggled), self);
+  self->default_dotted_toggle_handler = g_signal_connect (
+    GTK_WIDGET (self->default_dotted_toggle), "toggled",
+    G_CALLBACK (on_type_toggled), self);
   self->default_adaptive_handler = g_signal_connect (
     GTK_WIDGET (self->default_adaptive), "toggled",
     G_CALLBACK (on_type_toggled), self);
@@ -339,9 +310,8 @@ snap_grid_popover_widget_new (
     GTK_WIDGET (self->link_toggle), "toggled",
     G_CALLBACK (on_linked_toggled), self);
   self->last_object_handler = g_signal_connect (
-    GTK_WIDGET (self->last_object_toggle),
-    "toggled", G_CALLBACK (on_last_object_toggled),
-    self);
+    GTK_WIDGET (self->last_object_toggle), "toggled",
+    G_CALLBACK (on_last_object_toggled), self);
 
   refresh_link_and_last_object (self);
 
@@ -352,10 +322,8 @@ static void
 snap_grid_popover_widget_class_init (
   SnapGridPopoverWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "snap_grid_popover.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "snap_grid_popover.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
@@ -376,13 +344,11 @@ snap_grid_popover_widget_class_init (
 
 #undef BIND_CHILD
 
-  gtk_widget_class_bind_template_callback (
-    klass, on_closed);
+  gtk_widget_class_bind_template_callback (klass, on_closed);
 }
 
 static void
-snap_grid_popover_widget_init (
-  SnapGridPopoverWidget * self)
+snap_grid_popover_widget_init (SnapGridPopoverWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }

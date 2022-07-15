@@ -74,11 +74,9 @@ timeline_bg_widget_draw (
   TrackWidget * tw;
   int           line_y, i, j;
   int           is_unpinned_timeline =
-    prv->arranger
-    == (ArrangerWidget *) (MW_TIMELINE);
+    prv->arranger == (ArrangerWidget *) (MW_TIMELINE);
   int is_pinned_timeline =
-    prv->arranger
-    == (ArrangerWidget *) (MW_PINNED_TIMELINE);
+    prv->arranger == (ArrangerWidget *) (MW_PINNED_TIMELINE);
   for (i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
@@ -108,16 +106,12 @@ timeline_bg_widget_draw (
             : MW_TRACKLIST->unpinned_box),
         0, 0, NULL, &track_start_offset);
 
-      line_y =
-        track_start_offset + full_track_height;
+      line_y = track_start_offset + full_track_height;
 
-      if (
-        line_y >= rect->y
-        && line_y < rect->y + rect->height)
+      if (line_y >= rect->y && line_y < rect->y + rect->height)
         {
           z_cairo_draw_horizontal_line (
-            cr, line_y - rect->y, 0, rect->width,
-            1.0);
+            cr, line_y - rect->y, 0, rect->width, 1.0);
         }
 
       int total_height = track->main_height;
@@ -140,10 +134,8 @@ timeline_bg_widget_draw (
                      < rect->y + rect->height)
                 {
                   z_cairo_draw_horizontal_line (
-                    cr,
-                    OFFSET_PLUS_TOTAL_HEIGHT
-                      - rect->y,
-                    0, rect->width, 0.4);
+                    cr, OFFSET_PLUS_TOTAL_HEIGHT - rect->y, 0,
+                    rect->width, 0.4);
                 }
 
               total_height += lane->height;
@@ -176,10 +168,8 @@ timeline_bg_widget_draw (
                      < rect->y + rect->height)
                 {
                   z_cairo_draw_horizontal_line (
-                    cr,
-                    OFFSET_PLUS_TOTAL_HEIGHT
-                      - rect->y,
-                    0, rect->width, 0.2);
+                    cr, OFFSET_PLUS_TOTAL_HEIGHT - rect->y, 0,
+                    rect->width, 0.2);
                 }
 
               float normalized_val =
@@ -189,8 +179,7 @@ timeline_bg_widget_draw (
                 normalized_val =
                   automatable_real_val_to_normalized (
                     at->automatable,
-                    automatable_get_val (
-                      at->automatable));
+                    automatable_get_val (at->automatable));
 
               int y_px =
                 automation_track_get_y_px_from_normalized_val (
@@ -198,18 +187,15 @@ timeline_bg_widget_draw (
 
               /* line at current val */
               cairo_set_source_rgba (
-                cr, track->color.red,
-                track->color.green,
+                cr, track->color.red, track->color.green,
                 track->color.blue, 0.3);
               cairo_set_line_width (cr, 1);
               cairo_move_to (
                 cr, 0,
-                (OFFSET_PLUS_TOTAL_HEIGHT + y_px)
-                  - rect->y);
+                (OFFSET_PLUS_TOTAL_HEIGHT + y_px) - rect->y);
               cairo_line_to (
                 cr, rect->width,
-                (OFFSET_PLUS_TOTAL_HEIGHT + y_px)
-                  - rect->y);
+                (OFFSET_PLUS_TOTAL_HEIGHT + y_px) - rect->y);
               cairo_stroke (cr);
 
               /* show shade under the line */
@@ -257,8 +243,7 @@ timeline_bg_widget_new (
 }
 
 static void
-timeline_bg_widget_class_init (
-  TimelineBgWidgetClass * _klass)
+timeline_bg_widget_class_init (TimelineBgWidgetClass * _klass)
 {
 }
 

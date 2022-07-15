@@ -28,20 +28,14 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MW_RIGHT_DOCK_EDGE \
-  MW_CENTER_DOCK->right_dock_edge
+#define MW_RIGHT_DOCK_EDGE MW_CENTER_DOCK->right_dock_edge
 
-typedef struct _PluginBrowserWidget
-  PluginBrowserWidget;
-typedef struct _FileBrowserWidget FileBrowserWidget;
-typedef struct _MonitorSectionWidget
-  MonitorSectionWidget;
-typedef struct _FoldableNotebookWidget
-  FoldableNotebookWidget;
-typedef struct _PanelFileBrowserWidget
-  PanelFileBrowserWidget;
-typedef struct _ChordPackBrowserWidget
-  ChordPackBrowserWidget;
+typedef struct _PluginBrowserWidget    PluginBrowserWidget;
+typedef struct _FileBrowserWidget      FileBrowserWidget;
+typedef struct _MonitorSectionWidget   MonitorSectionWidget;
+typedef struct _FoldableNotebookWidget FoldableNotebookWidget;
+typedef struct _PanelFileBrowserWidget PanelFileBrowserWidget;
+typedef struct _ChordPackBrowserWidget ChordPackBrowserWidget;
 
 typedef struct _RightDockEdgeWidget
 {
@@ -65,8 +59,7 @@ typedef struct _RightDockEdgeWidget
  * Sets up the widget.
  */
 void
-right_dock_edge_widget_setup (
-  RightDockEdgeWidget * self);
+right_dock_edge_widget_setup (RightDockEdgeWidget * self);
 
 /**
  * @}

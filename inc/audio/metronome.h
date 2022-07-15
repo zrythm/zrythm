@@ -89,9 +89,7 @@ metronome_new (void);
 
 NONNULL
 void
-metronome_set_volume (
-  Metronome * self,
-  float       volume);
+metronome_set_volume (Metronome * self, float volume);
 
 /**
  * Queues metronome events (if any) within the

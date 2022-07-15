@@ -156,10 +156,10 @@ test_get_hash (void)
 {
   test_helper_zrythm_init ();
 
-  Port * port1 = port_new_with_type (
-    TYPE_AUDIO, FLOW_OUTPUT, "test-port");
-  Port * port2 = port_new_with_type (
-    TYPE_AUDIO, FLOW_OUTPUT, "test-port");
+  Port * port1 =
+    port_new_with_type (TYPE_AUDIO, FLOW_OUTPUT, "test-port");
+  Port * port2 =
+    port_new_with_type (TYPE_AUDIO, FLOW_OUTPUT, "test-port");
   Port * port3 = port_new_with_type (
     TYPE_AUDIO, FLOW_OUTPUT, "test-port3");
 
@@ -192,8 +192,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/port/"
 
   g_test_add_func (
-    TEST_PREFIX "test get hash",
-    (GTestFunc) test_get_hash);
+    TEST_PREFIX "test get hash", (GTestFunc) test_get_hash);
 #if 0
   g_test_add_func (
     TEST_PREFIX "test port disconnect",

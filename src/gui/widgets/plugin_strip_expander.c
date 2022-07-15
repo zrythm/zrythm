@@ -34,8 +34,7 @@ plugin_strip_expander_widget_redraw_slot (
     {
     case PLUGIN_SLOT_INSERT:
     case PLUGIN_SLOT_MIDI_FX:
-      gtk_widget_queue_draw (
-        GTK_WIDGET (self->slots[slot]));
+      gtk_widget_queue_draw (GTK_WIDGET (self->slots[slot]));
       break;
     default:
       break;
@@ -93,8 +92,7 @@ plugin_strip_expander_widget_refresh (
         {
         case PLUGIN_SLOT_INSERT:
           {
-            Channel * ch =
-              track_get_channel (self->track);
+            Channel * ch = track_get_channel (self->track);
             g_return_if_fail (ch);
             Plugin * pl = ch->inserts[i];
             plugin_strip_expander_widget_set_state_flags (
@@ -106,8 +104,7 @@ plugin_strip_expander_widget_refresh (
           break;
         case PLUGIN_SLOT_MIDI_FX:
           {
-            Channel * ch =
-              track_get_channel (self->track);
+            Channel * ch = track_get_channel (self->track);
             g_return_if_fail (ch);
             Plugin * pl = ch->midi_fx[i];
             plugin_strip_expander_widget_set_state_flags (
@@ -131,25 +128,20 @@ on_reveal_changed (
 {
   if (self->position == PSE_POSITION_CHANNEL)
     {
-      Channel * ch =
-        track_get_channel (self->track);
+      Channel * ch = track_get_channel (self->track);
       if (self->slot_type == PLUGIN_SLOT_INSERT)
         {
           g_settings_set_boolean (
-            S_UI_MIXER, "inserts-expanded",
-            revealed);
+            S_UI_MIXER, "inserts-expanded", revealed);
           EVENTS_PUSH (
-            ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED,
-            ch);
+            ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED, ch);
         }
       else if (self->slot_type == PLUGIN_SLOT_MIDI_FX)
         {
           g_settings_set_boolean (
-            S_UI_MIXER, "midi-fx-expanded",
-            revealed);
+            S_UI_MIXER, "midi-fx-expanded", revealed);
           EVENTS_PUSH (
-            ET_MIXER_CHANNEL_MIDI_FX_EXPANDED_CHANGED,
-            ch);
+            ET_MIXER_CHANNEL_MIDI_FX_EXPANDED_CHANGED, ch);
         }
     }
 }
@@ -173,9 +165,7 @@ plugin_strip_expander_widget_setup (
     {
     case PLUGIN_SLOT_INSERT:
       strcpy (fullstr, _ ("Inserts"));
-      is_midi =
-        track
-        && track->out_signal_type == TYPE_EVENT;
+      is_midi = track && track->out_signal_type == TYPE_EVENT;
       break;
     case PLUGIN_SLOT_MIDI_FX:
       strcpy (fullstr, "MIDI FX");
@@ -191,19 +181,16 @@ plugin_strip_expander_widget_setup (
   if (is_midi)
     {
       expander_box_widget_set_icon_name (
-        Z_EXPANDER_BOX_WIDGET (self),
-        "midi-insert");
+        Z_EXPANDER_BOX_WIDGET (self), "midi-insert");
     }
   else
     {
       expander_box_widget_set_icon_name (
-        Z_EXPANDER_BOX_WIDGET (self),
-        "audio-insert");
+        Z_EXPANDER_BOX_WIDGET (self), "audio-insert");
     }
 
   if (
-    track != self->track
-    || slot_type != self->slot_type
+    track != self->track || slot_type != self->slot_type
     || position != self->position)
     {
       /* remove children */
@@ -214,8 +201,8 @@ plugin_strip_expander_widget_setup (
       g_return_if_fail (ch);
       for (int i = 0; i < STRIP_SIZE; i++)
         {
-          GtkBox * strip_box = GTK_BOX (gtk_box_new (
-            GTK_ORIENTATION_HORIZONTAL, 0));
+          GtkBox * strip_box = GTK_BOX (
+            gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
           gtk_widget_set_name (
             GTK_WIDGET (strip_box),
             "plugin-strip-expander-strip-box");
@@ -229,11 +216,9 @@ plugin_strip_expander_widget_setup (
                 ChannelSlotWidget * csw =
                   channel_slot_widget_new (
                     i, track, slot_type,
-                    position
-                      == PSE_POSITION_CHANNEL);
+                    position == PSE_POSITION_CHANNEL);
                 self->slots[i] = csw;
-                gtk_box_append (
-                  strip_box, GTK_WIDGET (csw));
+                gtk_box_append (strip_box, GTK_WIDGET (csw));
               }
               break;
             default:
@@ -241,8 +226,7 @@ plugin_strip_expander_widget_setup (
               break;
             }
 
-          gtk_box_append (
-            self->box, GTK_WIDGET (strip_box));
+          gtk_box_append (self->box, GTK_WIDGET (strip_box));
         }
     }
 
@@ -265,9 +249,7 @@ plugin_strip_expander_widget_setup (
         {
           expander_box_widget_set_reveal_callback (
             Z_EXPANDER_BOX_WIDGET (self),
-            (ExpanderBoxRevealFunc)
-              on_reveal_changed,
-            self);
+            (ExpanderBoxRevealFunc) on_reveal_changed, self);
         }
       break;
     }
@@ -285,20 +267,17 @@ static void
 plugin_strip_expander_widget_init (
   PluginStripExpanderWidget * self)
 {
-  self->scroll = GTK_SCROLLED_WINDOW (
-    gtk_scrolled_window_new ());
+  self->scroll =
+    GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
   gtk_widget_set_name (
-    GTK_WIDGET (self->scroll),
-    "plugin-strip-expander-scroll");
-  gtk_widget_set_vexpand (
-    GTK_WIDGET (self->scroll), 1);
+    GTK_WIDGET (self->scroll), "plugin-strip-expander-scroll");
+  gtk_widget_set_vexpand (GTK_WIDGET (self->scroll), 1);
   /*gtk_scrolled_window_set_shadow_type (*/
   /*self->scroll, GTK_SHADOW_ETCHED_IN);*/
 
   self->viewport =
     GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
-  gtk_viewport_set_scroll_to_focus (
-    self->viewport, false);
+  gtk_viewport_set_scroll_to_focus (self->viewport, false);
   gtk_widget_set_name (
     GTK_WIDGET (self->viewport),
     "plugin-strip-expander-viewport");
@@ -306,16 +285,13 @@ plugin_strip_expander_widget_init (
     GTK_SCROLLED_WINDOW (self->scroll),
     GTK_WIDGET (self->viewport));
 
-  self->box = GTK_BOX (
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->box =
+    GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_widget_set_name (
-    GTK_WIDGET (self->box),
-    "plugin-strip-expander-box");
+    GTK_WIDGET (self->box), "plugin-strip-expander-box");
   gtk_viewport_set_child (
-    GTK_VIEWPORT (self->viewport),
-    GTK_WIDGET (self->box));
+    GTK_VIEWPORT (self->viewport), GTK_WIDGET (self->box));
 
   expander_box_widget_add_content (
-    Z_EXPANDER_BOX_WIDGET (self),
-    GTK_WIDGET (self->scroll));
+    Z_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (self->scroll));
 }

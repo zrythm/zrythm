@@ -49,22 +49,20 @@ file_manager_new (void)
     (GDestroyNotify) file_browser_location_free);
 
   /* add standard locations */
-  FileBrowserLocation * fl =
-    file_browser_location_new ();
+  FileBrowserLocation * fl = file_browser_location_new ();
   /* TRANSLATORS: Home directory */
   fl->label = g_strdup (_ ("Home"));
   fl->path = g_strdup (g_get_home_dir ());
   fl->special_location = FILE_MANAGER_HOME;
   g_ptr_array_add (self->locations, fl);
 
-  file_manager_set_selection (
-    self, fl, false, false);
+  file_manager_set_selection (self, fl, false, false);
 
   fl = file_browser_location_new ();
   /* TRANSLATORS: Desktop directory */
   fl->label = g_strdup (_ ("Desktop"));
-  fl->path = g_strdup (g_get_user_special_dir (
-    G_USER_DIRECTORY_DESKTOP));
+  fl->path = g_strdup (
+    g_get_user_special_dir (G_USER_DIRECTORY_DESKTOP));
   fl->special_location = FILE_MANAGER_DESKTOP;
   g_ptr_array_add (self->locations, fl);
 
@@ -72,14 +70,12 @@ file_manager_new (void)
     {
       /* add bookmarks */
       char ** bookmarks = g_settings_get_strv (
-        S_UI_FILE_BROWSER,
-        "file-browser-bookmarks");
+        S_UI_FILE_BROWSER, "file-browser-bookmarks");
       for (size_t i = 0; bookmarks[i] != NULL; i++)
         {
           char * bookmark = bookmarks[i];
           fl = file_browser_location_new ();
-          fl->label =
-            g_path_get_basename (bookmark);
+          fl->label = g_path_get_basename (bookmark);
           fl->path = g_strdup (bookmark);
           fl->special_location = FILE_MANAGER_NONE;
           g_ptr_array_add (self->locations, fl);
@@ -87,17 +83,14 @@ file_manager_new (void)
       g_strfreev (bookmarks);
 
       /* set remembered location */
-      FileBrowserLocation * loc =
-        file_browser_location_new ();
+      FileBrowserLocation * loc = file_browser_location_new ();
       loc->path = g_settings_get_string (
         S_UI_FILE_BROWSER, "last-location");
       if (
         strlen (loc->path) > 0
-        && g_file_test (
-          loc->path, G_FILE_TEST_IS_DIR))
+        && g_file_test (loc->path, G_FILE_TEST_IS_DIR))
         {
-          file_manager_set_selection (
-            self, loc, true, false);
+          file_manager_set_selection (self, loc, true, false);
         }
       file_browser_location_free (loc);
     }
@@ -110,14 +103,13 @@ alphaBetize (const void * _a, const void * _b)
 {
   SupportedFile * a = *(SupportedFile * const *) _a;
   SupportedFile * b = *(SupportedFile * const *) _b;
-  int r = strcasecmp (a->label, b->label);
+  int             r = strcasecmp (a->label, b->label);
   if (r)
     return r;
   /* if equal ignoring case, use opposite of strcmp()
    * result to get lower before upper */
   return -strcmp (
-    a->label,
-    b->label); /* aka: return strcmp(b, a); */
+    a->label, b->label); /* aka: return strcmp(b, a); */
 }
 
 static void
@@ -128,14 +120,12 @@ load_files_from_location (
   const gchar *   file;
   SupportedFile * fd;
 
-  g_ptr_array_remove_range (
-    self->files, 0, self->files->len);
+  g_ptr_array_remove_range (self->files, 0, self->files->len);
 
   GDir * dir = g_dir_open (location->path, 0, NULL);
   if (!dir)
     {
-      g_warning (
-        "Could not open dir %s", location->path);
+      g_warning ("Could not open dir %s", location->path);
       return;
     }
 
@@ -143,8 +133,7 @@ load_files_from_location (
   fd = object_new (SupportedFile);
   /*g_message ("pre path %s",*/
   /*location->path);*/
-  fd->abs_path =
-    io_path_get_parent_dir (location->path);
+  fd->abs_path = io_path_get_parent_dir (location->path);
   /*g_message ("after path %s",*/
   /*fd->abs_path);*/
   fd->type = FILE_TYPE_PARENT_DIR;
@@ -168,36 +157,30 @@ load_files_from_location (
       /* set absolute path & label */
       char * absolute_path = g_strdup_printf (
         "%s%s%s",
-        strlen (location->path) == 1
-          ? ""
-          : location->path,
+        strlen (location->path) == 1 ? "" : location->path,
         G_DIR_SEPARATOR_S, file);
       fd->abs_path = absolute_path;
       fd->label = g_strdup (file);
 
-      GError * err = NULL;
-      GFile *  gfile =
-        g_file_new_for_path (absolute_path);
+      GError *    err = NULL;
+      GFile *     gfile = g_file_new_for_path (absolute_path);
       GFileInfo * info = g_file_query_info (
         gfile, G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN,
         G_FILE_QUERY_INFO_NONE, NULL, &err);
       if (err)
         {
           g_warning (
-            "failed to query file info for %s",
-            absolute_path);
+            "failed to query file info for %s", absolute_path);
         }
       else
         {
-          fd->hidden =
-            g_file_info_get_is_hidden (info);
+          fd->hidden = g_file_info_get_is_hidden (info);
           g_object_unref (info);
         }
       g_object_unref (gfile);
 
       /* set type */
-      if (g_file_test (
-            absolute_path, G_FILE_TEST_IS_DIR))
+      if (g_file_test (absolute_path, G_FILE_TEST_IS_DIR))
         {
           fd->type = FILE_TYPE_DIR;
         }
@@ -218,8 +201,7 @@ load_files_from_location (
     }
   g_dir_close (dir);
 
-  g_ptr_array_sort (
-    self->files, (GCompareFunc) alphaBetize);
+  g_ptr_array_sort (self->files, (GCompareFunc) alphaBetize);
   g_message ("Total files: %d", self->files->len);
 }
 
@@ -232,8 +214,7 @@ file_manager_load_files (FileManager * self)
   if (self->selection)
     {
       load_files_from_location (
-        self,
-        (FileBrowserLocation *) self->selection);
+        self, (FileBrowserLocation *) self->selection);
     }
   else
     {
@@ -258,8 +239,7 @@ file_manager_set_selection (
   if (self->selection)
     file_browser_location_free (self->selection);
 
-  self->selection =
-    file_browser_location_clone (sel);
+  self->selection = file_browser_location_clone (sel);
   if (load_files)
     {
       file_manager_load_files (self);
@@ -285,11 +265,10 @@ static void
 save_locations (FileManager * self)
 {
   StrvBuilder * strv_builder = strv_builder_new ();
-  for (guint i = 0;
-       i < FILE_MANAGER->locations->len; i++)
+  for (guint i = 0; i < FILE_MANAGER->locations->len; i++)
     {
-      FileBrowserLocation * loc = g_ptr_array_index (
-        FILE_MANAGER->locations, i);
+      FileBrowserLocation * loc =
+        g_ptr_array_index (FILE_MANAGER->locations, i);
       if (loc->special_location > FILE_MANAGER_NONE)
         continue;
 
@@ -311,8 +290,7 @@ file_manager_add_location_and_save (
   FileManager * self,
   const char *  abs_path)
 {
-  FileBrowserLocation * loc =
-    file_browser_location_new ();
+  FileBrowserLocation * loc = file_browser_location_new ();
   loc->path = g_strdup (abs_path);
   loc->label = g_path_get_basename (loc->path);
 
@@ -334,26 +312,22 @@ file_manager_remove_location_and_save (
   const char *  location,
   bool          skip_if_standard)
 {
-  FileBrowserLocation * loc =
-    file_browser_location_new ();
+  FileBrowserLocation * loc = file_browser_location_new ();
   loc->path = g_strdup (location);
 
   unsigned int idx;
-  bool ret = g_ptr_array_find_with_equal_func (
-    self->locations, loc,
-    (GEqualFunc) file_browser_location_equal_func,
-    &idx);
+  bool         ret = g_ptr_array_find_with_equal_func (
+            self->locations, loc,
+            (GEqualFunc) file_browser_location_equal_func, &idx);
   if (ret)
     {
       FileBrowserLocation * existing_loc =
         g_ptr_array_index (self->locations, idx);
       if (
         !skip_if_standard
-        || existing_loc->special_location
-             == FILE_MANAGER_NONE)
+        || existing_loc->special_location == FILE_MANAGER_NONE)
         {
-          g_ptr_array_remove_index (
-            self->locations, idx);
+          g_ptr_array_remove_index (self->locations, idx);
         }
     }
   else
@@ -385,11 +359,9 @@ file_browser_location_new (void)
 }
 
 FileBrowserLocation *
-file_browser_location_clone (
-  FileBrowserLocation * loc)
+file_browser_location_clone (FileBrowserLocation * loc)
 {
-  FileBrowserLocation * self =
-    file_browser_location_new ();
+  FileBrowserLocation * self = file_browser_location_new ();
   self->path = g_strdup (loc->path);
   self->label = g_strdup (loc->label);
 
@@ -397,8 +369,7 @@ file_browser_location_clone (
 }
 
 void
-file_browser_location_free (
-  FileBrowserLocation * loc)
+file_browser_location_free (FileBrowserLocation * loc)
 {
   g_free_and_null (loc->label);
   g_free_and_null (loc->path);

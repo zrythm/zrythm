@@ -64,23 +64,17 @@ export_progress_dialog_widget_new (
   bool             show_open_dir_btn,
   bool             cancelable)
 {
-  g_type_ensure (
-    GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
+  g_type_ensure (GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
 
-  ExportProgressDialogWidget * self = g_object_new (
-    EXPORT_PROGRESS_DIALOG_WIDGET_TYPE, NULL);
+  ExportProgressDialogWidget * self =
+    g_object_new (EXPORT_PROGRESS_DIALOG_WIDGET_TYPE, NULL);
 
-  GenericProgressDialogWidget *
-    generic_progress_dialog =
-      Z_GENERIC_PROGRESS_DIALOG_WIDGET (self);
+  GenericProgressDialogWidget * generic_progress_dialog =
+    Z_GENERIC_PROGRESS_DIALOG_WIDGET (self);
 
   self->info = info;
-  strcpy (
-    info->progress_info.label_str,
-    _ ("Exporting..."));
-  strcpy (
-    info->progress_info.label_done_str,
-    _ ("Exported"));
+  strcpy (info->progress_info.label_str, _ ("Exporting..."));
+  strcpy (info->progress_info.label_done_str, _ ("Exported"));
 
   generic_progress_dialog_widget_setup (
     generic_progress_dialog, _ ("Export Progress"),
@@ -90,20 +84,18 @@ export_progress_dialog_widget_new (
 
   if (show_open_dir_btn)
     {
-      self->open_directory =
-        GTK_BUTTON (gtk_button_new_with_label (
-          _ ("Open Directory")));
+      self->open_directory = GTK_BUTTON (
+        gtk_button_new_with_label (_ ("Open Directory")));
       gtk_widget_set_tooltip_text (
         GTK_WIDGET (self->open_directory),
         _ ("Opens the containing directory"));
       g_signal_connect (
         G_OBJECT (self->open_directory), "clicked",
-        G_CALLBACK (on_open_directory_clicked),
-        self);
+        G_CALLBACK (on_open_directory_clicked), self);
 
       generic_progress_dialog_add_button (
-        generic_progress_dialog,
-        self->open_directory, true, true);
+        generic_progress_dialog, self->open_directory, true,
+        true);
     }
 
   return self;
@@ -119,6 +111,5 @@ static void
 export_progress_dialog_widget_init (
   ExportProgressDialogWidget * self)
 {
-  g_type_ensure (
-    GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
+  g_type_ensure (GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
 }

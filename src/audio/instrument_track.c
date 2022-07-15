@@ -64,8 +64,7 @@ instrument_track_get_instrument (Track * self)
 int
 instrument_track_is_plugin_visible (Track * self)
 {
-  Plugin * plugin =
-    instrument_track_get_instrument (self);
+  Plugin * plugin = instrument_track_get_instrument (self);
   g_return_val_if_fail (plugin, 0);
 
   return plugin->visible;
@@ -76,15 +75,12 @@ instrument_track_is_plugin_visible (Track * self)
  * instrument Track is visible.
  */
 void
-instrument_track_toggle_plugin_visible (
-  Track * self)
+instrument_track_toggle_plugin_visible (Track * self)
 {
-  Plugin * plugin =
-    instrument_track_get_instrument (self);
+  Plugin * plugin = instrument_track_get_instrument (self);
   g_return_if_fail (plugin);
 
   plugin->visible = !plugin->visible;
 
-  EVENTS_PUSH (
-    ET_PLUGIN_VISIBILITY_CHANGED, plugin);
+  EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED, plugin);
 }

@@ -88,19 +88,16 @@ typedef struct _PianoKeyboardWidget
  * Creates a piano keyboard widget.
  */
 PianoKeyboardWidget *
-piano_keyboard_widget_new (
-  GtkOrientation orientation);
+piano_keyboard_widget_new (GtkOrientation orientation);
 
 void
-piano_keyboard_widget_refresh (
-  PianoKeyboardWidget * self);
+piano_keyboard_widget_refresh (PianoKeyboardWidget * self);
 
 /**
  * Creates a piano keyboard widget.
  */
 PianoKeyboardWidget *
-piano_keyboard_widget_new_for_chord_key (
-  const int chord_idx);
+piano_keyboard_widget_new_for_chord_key (const int chord_idx);
 
 /**
  * @}

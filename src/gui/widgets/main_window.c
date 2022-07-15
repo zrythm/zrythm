@@ -90,8 +90,7 @@ on_main_window_destroy (
     {
       event_manager_stop_events (EVENT_MANAGER);
 
-      object_free_w_func_and_null (
-        project_free, PROJECT);
+      object_free_w_func_and_null (project_free, PROJECT);
 
 #if 0
       /* stop engine */
@@ -104,8 +103,7 @@ on_main_window_destroy (
       /* close any plugin windows */
 #endif
 
-      g_application_quit (
-        G_APPLICATION (zrythm_app));
+      g_application_quit (G_APPLICATION (zrythm_app));
     }
 
   g_message ("main window destroy called");
@@ -116,13 +114,9 @@ on_main_window_destroy (
  * and can be intercepted.
  */
 static bool
-on_close_request (
-  GtkWindow *        window,
-  MainWindowWidget * self)
+on_close_request (GtkWindow * window, MainWindowWidget * self)
 {
-  g_debug (
-    "%s: main window delete event called",
-    __func__);
+  g_debug ("%s: main window delete event called", __func__);
 
   /* check if we have unsaved changes - simply
    * check if the last performed action matches
@@ -133,36 +127,29 @@ on_close_request (
 
   /* ask for save if project has unsaved changes */
   bool ret = false;
-  if (
-    last_performed_action
-    != PROJECT->last_saved_action)
+  if (last_performed_action != PROJECT->last_saved_action)
     {
       GtkWidget * dialog = gtk_dialog_new_with_buttons (
-        _ ("Unsaved changes"),
-        GTK_WINDOW (MAIN_WINDOW),
-        GTK_DIALOG_MODAL
-          | GTK_DIALOG_DESTROY_WITH_PARENT,
+        _ ("Unsaved changes"), GTK_WINDOW (MAIN_WINDOW),
+        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
         _ ("_Save & Quit"), GTK_RESPONSE_ACCEPT,
-        _ ("_Quit without saving"),
-        GTK_RESPONSE_REJECT, _ ("_Cancel"),
-        GTK_RESPONSE_CANCEL, NULL);
+        _ ("_Quit without saving"), GTK_RESPONSE_REJECT,
+        _ ("_Cancel"), GTK_RESPONSE_CANCEL, NULL);
       gtk_dialog_set_default_response (
         GTK_DIALOG (dialog), GTK_RESPONSE_CANCEL);
       const char * label_question = _ (
         "The project contains unsaved changes.\n"
         "If you quit without saving, unsaved "
         "changes will be lost.");
-      GtkWidget * label =
-        gtk_label_new (label_question);
+      GtkWidget * label = gtk_label_new (label_question);
       gtk_widget_set_margin_top (label, 4);
       gtk_widget_set_margin_bottom (label, 4);
       gtk_widget_set_visible (label, true);
       GtkWidget * content =
-        gtk_dialog_get_content_area (
-          GTK_DIALOG (dialog));
+        gtk_dialog_get_content_area (GTK_DIALOG (dialog));
       gtk_box_append (GTK_BOX (content), label);
-      int dialog_res = z_gtk_dialog_run (
-        GTK_DIALOG (dialog), true);
+      int dialog_res =
+        z_gtk_dialog_run (GTK_DIALOG (dialog), true);
       switch (dialog_res)
         {
         case GTK_RESPONSE_ACCEPT:
@@ -190,8 +177,8 @@ on_close_request (
     } /* endif project has unsaved changes */
 
   g_debug (
-    "%s: main window delete event returning %d",
-    __func__, ret);
+    "%s: main window delete event returning %d", __func__,
+    ret);
 
   return ret;
 }
@@ -201,8 +188,7 @@ main_window_widget_new (ZrythmApp * _app)
 {
   MainWindowWidget * self = g_object_new (
     MAIN_WINDOW_WIDGET_TYPE, "application",
-    G_APPLICATION (_app), "title", PROGRAM_NAME,
-    NULL);
+    G_APPLICATION (_app), "title", PROGRAM_NAME, NULL);
 
   return self;
 }
@@ -246,8 +232,7 @@ static bool
 show_startup_errors (MainWindowWidget * self)
 {
   /* show any startup errors */
-  for (int k = 0;
-       k < zrythm_app->num_startup_errors; k++)
+  for (int k = 0; k < zrythm_app->num_startup_errors; k++)
     {
       char * msg = zrythm_app->startup_errors[k];
       ui_show_error_message (self, true, msg);
@@ -271,8 +256,7 @@ main_window_widget_setup (MainWindowWidget * self)
       return;
     }
 
-  header_widget_setup (
-    self->header, PROJECT->title);
+  header_widget_setup (self->header, PROJECT->title);
 
   /* setup center dock */
   center_dock_widget_setup (self->center_dock);
@@ -294,27 +278,22 @@ main_window_widget_setup (MainWindowWidget * self)
   bot_bar_widget_setup (self->bot_bar);
 
   /* setup mixer */
-  g_warn_if_fail (
-    P_MASTER_TRACK && P_MASTER_TRACK->channel);
-  mixer_widget_setup (
-    MW_MIXER, P_MASTER_TRACK->channel);
+  g_warn_if_fail (P_MASTER_TRACK && P_MASTER_TRACK->channel);
+  mixer_widget_setup (MW_MIXER, P_MASTER_TRACK->channel);
 
   gtk_window_maximize (GTK_WINDOW (self));
 
   /* show track selection info */
   g_warn_if_fail (TRACKLIST_SELECTIONS->tracks[0]);
   EVENTS_PUSH (
-    ET_TRACK_CHANGED,
-    TRACKLIST_SELECTIONS->tracks[0]);
-  EVENTS_PUSH (
-    ET_ARRANGER_SELECTIONS_CHANGED, TL_SELECTIONS);
+    ET_TRACK_CHANGED, TRACKLIST_SELECTIONS->tracks[0]);
+  EVENTS_PUSH (ET_ARRANGER_SELECTIONS_CHANGED, TL_SELECTIONS);
   event_viewer_widget_refresh (
     MW_TIMELINE_EVENT_VIEWER, false);
 
   EVENTS_PUSH (ET_MAIN_WINDOW_LOADED, NULL);
 
-  g_idle_add (
-    (GSourceFunc) show_startup_errors, self);
+  g_idle_add ((GSourceFunc) show_startup_errors, self);
 
   gtk_window_present (GTK_WINDOW (self));
 
@@ -330,32 +309,26 @@ main_window_widget_set_project_title (
   MainWindowWidget * self,
   Project *          prj)
 {
-  adw_window_title_set_title (
-    self->window_title, prj->title);
-  adw_window_title_set_subtitle (
-    self->window_title, prj->dir);
+  adw_window_title_set_title (self->window_title, prj->title);
+  adw_window_title_set_subtitle (self->window_title, prj->dir);
 }
 
 /**
  * Prepare for finalization.
  */
 void
-main_window_widget_tear_down (
-  MainWindowWidget * self)
+main_window_widget_tear_down (MainWindowWidget * self)
 {
-  g_message (
-    "tearing down main window %p...", self);
+  g_message ("tearing down main window %p...", self);
 
   self->setup = false;
 
   if (self->center_dock)
     {
-      center_dock_widget_tear_down (
-        self->center_dock);
+      center_dock_widget_tear_down (self->center_dock);
     }
 
-  gtk_window_set_application (
-    GTK_WINDOW (self), NULL);
+  gtk_window_set_application (GTK_WINDOW (self), NULL);
 
   g_message ("done tearing down main window");
 }
@@ -372,15 +345,11 @@ main_window_finalize (MainWindowWidget * self)
 }
 
 static void
-main_window_widget_class_init (
-  MainWindowWidgetClass * klass)
+main_window_widget_class_init (MainWindowWidgetClass * klass)
 {
-  GtkWidgetClass * wklass =
-    GTK_WIDGET_CLASS (klass);
-  resources_set_class_template (
-    wklass, "main_window.ui");
-  gtk_widget_class_set_css_name (
-    wklass, "main-window");
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  resources_set_class_template (wklass, "main_window.ui");
+  gtk_widget_class_set_css_name (wklass, "main-window");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
@@ -442,20 +411,14 @@ main_window_widget_init (MainWindowWidget * self)
     { "select-all",                                    activate_select_all },
  /* selection submenu */
     { "loop-selection",                                     activate_loop_selection },
-    { "mute-selection",                               activate_mute_selection,
-     "s" },
+    { "mute-selection",                               activate_mute_selection, "s" },
 
  /* view menu */
-    { "toggle-left-panel",
-     activate_toggle_left_panel },
-    { "toggle-right-panel",
-     activate_toggle_right_panel },
-    { "toggle-bot-panel",
-     activate_toggle_bot_panel },
-    { "toggle-top-panel",
-     activate_toggle_top_panel },
-    { "toggle-status-bar",
-     activate_toggle_status_bar },
+    { "toggle-left-panel",                                    activate_toggle_left_panel },
+    { "toggle-right-panel",activate_toggle_right_panel },
+    { "toggle-bot-panel",                             activate_toggle_bot_panel },
+    { "toggle-top-panel",                                    activate_toggle_top_panel },
+    { "toggle-status-bar",activate_toggle_status_bar },
     { "zoom-in",                    activate_zoom_in, "s" },
     { "zoom-out",                                    activate_zoom_out, "s" },
     { "original-size",activate_original_size, "s" },
@@ -463,17 +426,14 @@ main_window_widget_init (MainWindowWidget * self)
 
  /* snapping, quantize */
     { "snap-to-grid",                                    activate_snap_to_grid, "s" },
-    { "snap-keep-offset",
-     activate_snap_keep_offset, "s" },
+    { "snap-keep-offset",activate_snap_keep_offset, "s" },
     { "snap-events",                                    activate_snap_events, "s" },
-    { "quick-quantize",            activate_quick_quantize,
-     "s" },
-    { "quantize-options",
-     activate_quantize_options, "s" },
+    { "quick-quantize",activate_quick_quantize, "s" },
+    { "quantize-options",                 activate_quantize_options, "s" },
 
  /* range actions */
     { "insert-silence",                                    activate_insert_silence },
-    { "remove-range",             activate_remove_range },
+    { "remove-range",activate_remove_range },
 
  /* playhead actions */
     { "timeline-playhead-scroll-edges",                   NULL, NULL,
@@ -483,20 +443,18 @@ main_window_widget_init (MainWindowWidget * self)
         : "false",
      change_state_timeline_playhead_scroll_edges },
     { "timeline-playhead-follow",                                    NULL, NULL,
-     g_settings_get_boolean (
-        S_UI, "timeline-playhead-follow")
+     g_settings_get_boolean (S_UI, "timeline-playhead-follow")
         ? "true"
         : "false",
      change_state_timeline_playhead_follow },
-    { "editor-playhead-scroll-edges",            NULL, NULL,
+    { "editor-playhead-scroll-edges",                            NULL, NULL,
      g_settings_get_boolean (
         S_UI, "editor-playhead-scroll-edges")
         ? "true"
         : "false",
      change_state_editor_playhead_scroll_edges },
     { "editor-playhead-follow",                            NULL, NULL,
-     g_settings_get_boolean (
-        S_UI, "editor-playhead-follow")
+     g_settings_get_boolean (S_UI, "editor-playhead-follow")
         ? "true"
         : "false",
      change_state_editor_playhead_follow },
@@ -512,20 +470,16 @@ main_window_widget_init (MainWindowWidget * self)
      change_state_musical_mode },
 
  /* track actions */
-    { "create-audio-track",
-     activate_create_audio_track },
+    { "create-audio-track",                                  activate_create_audio_track },
     { "create-audio-bus-track",
      activate_create_audio_bus_track },
-    { "create-midi-bus-track",
-     activate_create_midi_bus_track },
-    { "create-midi-track",
-     activate_create_midi_track },
+    { "create-midi-bus-track",                                  activate_create_midi_bus_track },
+    { "create-midi-track",                           activate_create_midi_track },
     { "create-audio-group-track",
      activate_create_audio_group_track },
     { "create-midi-group-track",
      activate_create_midi_group_track },
-    { "create-folder-track",
-     activate_create_folder_track },
+    { "create-folder-track",                                  activate_create_folder_track },
     { "add-region",                   activate_add_region },
 
  /* modes */
@@ -533,13 +487,12 @@ main_window_widget_init (MainWindowWidget * self)
     { "edit-mode",                        activate_edit_mode },
     { "cut-mode",                                  activate_cut_mode },
     { "eraser-mode",                     activate_eraser_mode },
-    { "ramp-mode",                                   activate_ramp_mode },
+    { "ramp-mode",                                  activate_ramp_mode },
     { "audition-mode",                   activate_audition_mode },
 
  /* transport */
     { "toggle-metronome",                                  NULL, NULL,
-     g_settings_get_boolean (
-        S_TRANSPORT, "metronome-enabled")
+     g_settings_get_boolean (S_TRANSPORT, "metronome-enabled")
         ? "true"
         : "false",
      change_state_metronome },
@@ -548,10 +501,8 @@ main_window_widget_init (MainWindowWidget * self)
         ? "true"
         : "false",
      change_state_loop },
-    { "goto-prev-marker",
-     activate_goto_prev_marker },
-    { "goto-next-marker",
-     activate_goto_next_marker },
+    { "goto-prev-marker",                                    activate_goto_prev_marker },
+    { "goto-next-marker",                                 activate_goto_next_marker },
     { "play-pause",     activate_play_pause },
     { "record-play",                                 activate_record_play },
     { "go-to-start",                     activate_go_to_start },
@@ -559,28 +510,21 @@ main_window_widget_init (MainWindowWidget * self)
     { "tap-bpm",activate_tap_bpm },
 
  /* transport - jack */
-    { "set-timebase-master",
-     activate_set_timebase_master },
-    { "set-transport-client",
-     activate_set_transport_client },
-    { "unlink-jack-transport",
-     activate_unlink_jack_transport },
+    { "set-timebase-master",          activate_set_timebase_master },
+    { "set-transport-client", activate_set_transport_client },
+    { "unlink-jack-transport",       activate_unlink_jack_transport },
 
  /* tracks */
     { "delete-selected-tracks",
      activate_delete_selected_tracks },
     { "duplicate-selected-tracks",
      activate_duplicate_selected_tracks },
-    { "hide-selected-tracks",
-     activate_hide_selected_tracks },
-    { "pin-selected-tracks",
-     activate_pin_selected_tracks },
-    { "solo-selected-tracks",
-     activate_solo_selected_tracks },
+    { "hide-selected-tracks",                                    activate_hide_selected_tracks },
+    { "pin-selected-tracks",      activate_pin_selected_tracks },
+    { "solo-selected-tracks",          activate_solo_selected_tracks },
     { "unsolo-selected-tracks",
      activate_unsolo_selected_tracks },
-    { "mute-selected-tracks",
-     activate_mute_selected_tracks },
+    { "mute-selected-tracks",                    activate_mute_selected_tracks },
     { "unmute-selected-tracks",
      activate_unmute_selected_tracks },
     { "listen-selected-tracks",
@@ -591,8 +535,7 @@ main_window_widget_init (MainWindowWidget * self)
      activate_enable_selected_tracks },
     { "disable-selected-tracks",
      activate_disable_selected_tracks },
-    { "change-track-color",
-     activate_change_track_color },
+    { "change-track-color",                                    activate_change_track_color },
     { "track-set-midi-channel",
      activate_track_set_midi_channel, "s" },
     { "quick-bounce-selected-tracks",
@@ -609,8 +552,7 @@ main_window_widget_init (MainWindowWidget * self)
      },
 
  /* piano roll */
-    { "toggle-drum-mode",
-     activate_toggle_drum_mode },
+    { "toggle-drum-mode",      activate_toggle_drum_mode },
     { "toggle-listen-notes",                NULL, NULL,
      g_settings_get_boolean (S_UI, "listen-notes")
         ? "true"
@@ -621,8 +563,7 @@ main_window_widget_init (MainWindowWidget * self)
 
  /* automation */
     { "show-automation-values",NULL, NULL,
-     g_settings_get_boolean (
-        S_UI, "show-automation-values")
+     g_settings_get_boolean (S_UI, "show-automation-values")
         ? "true"
         : "false",
      change_state_show_automation_values },
@@ -632,8 +573,7 @@ main_window_widget_init (MainWindowWidget * self)
      change_state_dim_output },
 
  /* file browser */
-    { "show-file-browser",
-     activate_show_file_browser },
+    { "show-file-browser",                                    activate_show_file_browser },
 
  /* show/hide event viewers */
     { "toggle-timeline-event-viewer",
@@ -642,10 +582,9 @@ main_window_widget_init (MainWindowWidget * self)
      activate_toggle_editor_event_viewer },
 
  /* editor functions */
-    { "editor-function",                                    activate_editor_function,
+    { "editor-function",                                    activate_editor_function, "s" },
+    { "editor-function-lv2",activate_editor_function_lv2,
      "s" },
-    { "editor-function-lv2",
-     activate_editor_function_lv2, "s" },
 
  /* rename track/region */
     { "rename-track",                          activate_rename_track },
@@ -653,15 +592,12 @@ main_window_widget_init (MainWindowWidget * self)
      activate_rename_arranger_object },
 
  /* arranger selections */
-    { "nudge-selection",activate_nudge_selection,
-     "s" },
+    { "nudge-selection",activate_nudge_selection, "s" },
     { "detect-bpm",                   activate_detect_bpm, "s" },
-    { "timeline-function",
-     activate_timeline_function, "i" },
+    { "timeline-function",                                 activate_timeline_function, "i" },
     { "quick-bounce-selections",
      activate_quick_bounce_selections },
-    { "bounce-selections",
-     activate_bounce_selections },
+    { "bounce-selections",                                    activate_bounce_selections },
     {
      "set-curve-algorithm",             activate_set_curve_algorithm,
      "i", },
@@ -673,19 +609,17 @@ main_window_widget_init (MainWindowWidget * self)
      "s", },
     { "arranger-object-view-info",
      activate_arranger_object_view_info, "s" },
-    { "export-midi-regions",
-     activate_export_midi_regions },
+    { "export-midi-regions",                                    activate_export_midi_regions },
 
  /* chord presets */
     {
-     "save-chord-preset",             activate_save_chord_preset,
+     "save-chord-preset",activate_save_chord_preset,
      },
-    { "load-chord-preset",
-     activate_load_chord_preset, "s" },
+    { "load-chord-preset",                         activate_load_chord_preset, "s" },
     { "load-chord-preset-from-scale",
      activate_load_chord_preset_from_scale, "s" },
-    { "transpose-chord-pad",
-     activate_transpose_chord_pad, "s" },
+    { "transpose-chord-pad",activate_transpose_chord_pad,
+     "s" },
     {
      "add-chord-preset-pack",                        activate_add_chord_preset_pack,
      },
@@ -693,29 +627,27 @@ main_window_widget_init (MainWindowWidget * self)
      activate_delete_chord_preset_pack, "s" },
     { "rename-chord-preset-pack",
      activate_rename_chord_preset_pack, "s" },
-    { "delete-chord-preset",
-     activate_delete_chord_preset, "s" },
-    { "rename-chord-preset",
-     activate_rename_chord_preset, "s" },
+    { "delete-chord-preset",                            activate_delete_chord_preset,
+     "s" },
+    { "rename-chord-preset",                                    activate_rename_chord_preset,
+     "s" },
 
  /* cc bindings */
-    { "bind-midi-cc",          activate_bind_midi_cc, "s" },
-    { "delete-cc-binding",
-     activate_delete_cc_binding, "i" },
+    { "bind-midi-cc",activate_bind_midi_cc, "s" },
+    { "delete-cc-binding",               activate_delete_cc_binding, "i" },
 
  /* port actions */
-    { "reset-stereo-balance",
-     activate_reset_stereo_balance, "s" },
-    { "reset-fader",        activate_reset_fader, "s" },
-    { "reset-control",             activate_reset_control, "s" },
-    { "port-view-info",                                    activate_port_view_info,
+    { "reset-stereo-balance",                                    activate_reset_stereo_balance,
      "s" },
+    { "reset-fader", activate_reset_fader, "s" },
+    { "reset-control",             activate_reset_control, "s" },
+    { "port-view-info",                                    activate_port_view_info, "s" },
     { "port-connection-remove",
      activate_port_connection_remove },
 
  /* plugin actions */
-    { "plugin-toggle-enabled",
-     activate_plugin_toggle_enabled, "s" },
+    { "plugin-toggle-enabled",               activate_plugin_toggle_enabled,
+     "s" },
     { "plugin-inspect",                                    activate_plugin_inspect },
     { "mixer-selections-delete",
      activate_mixer_selections_delete },
@@ -732,21 +664,17 @@ main_window_widget_init (MainWindowWidget * self)
     { "plugin-browser-add-to-project-carla",
      activate_plugin_browser_add_to_project_carla, "s" },
     { "plugin-browser-add-to-project-bridged-ui",
-     activate_plugin_browser_add_to_project_bridged_ui,
-     "s" },
+     activate_plugin_browser_add_to_project_bridged_ui, "s" },
     { "plugin-browser-add-to-project-bridged-full",
-     activate_plugin_browser_add_to_project_bridged_full,
-     "s" },
-    { "plugin-browser-toggle-generic-ui",             NULL,
-     NULL, "false",
+     activate_plugin_browser_add_to_project_bridged_full, "s" },
+    { "plugin-browser-toggle-generic-ui",             NULL, NULL, "false",
      change_state_plugin_browser_toggle_generic_ui },
     { "plugin-browser-add-to-collection",
      activate_plugin_browser_add_to_collection, "s" },
     { "plugin-browser-remove-from-collection",
-     activate_plugin_browser_remove_from_collection,
+     activate_plugin_browser_remove_from_collection, "s" },
+    { "plugin-browser-reset",             activate_plugin_browser_reset,
      "s" },
-    { "plugin-browser-reset",
-     activate_plugin_browser_reset, "s" },
     {
      "plugin-collection-add",                                    activate_plugin_collection_add,
      },
@@ -777,15 +705,13 @@ main_window_widget_init (MainWindowWidget * self)
 
 #define SET_DOCK(child) \
   g_object_set ( \
-    G_OBJECT (child), "dock", \
-    self->center_dock->dock, NULL)
+    G_OBJECT (child), "dock", self->center_dock->dock, NULL)
 
   SET_DOCK (self->start_dock_switcher);
   SET_DOCK (self->end_dock_switcher);
   SET_DOCK (self->bot_bar->bot_dock_switcher);
   SET_DOCK (self->header->view_toolbar->left_panel);
-  SET_DOCK (
-    self->header->view_toolbar->right_panel);
+  SET_DOCK (self->header->view_toolbar->right_panel);
   SET_DOCK (self->header->view_toolbar->bot_panel);
   SET_DOCK (self->header->view_toolbar->top_panel);
 
@@ -796,15 +722,13 @@ main_window_widget_init (MainWindowWidget * self)
     GTK_ACTIONABLE (self->x), tooltip)
   SET_TOOLTIP (preferences, _ ("Preferences"));
   SET_TOOLTIP (log_viewer, _ ("Log viewer"));
-  SET_TOOLTIP (
-    scripting_interface, _ ("Scripting interface"));
+  SET_TOOLTIP (scripting_interface, _ ("Scripting interface"));
 #undef SET_TOOLTIP
 
   adw_view_switcher_set_stack (
     self->view_switcher, self->header->stack);
   adw_view_switcher_set_policy (
-    self->view_switcher,
-    ADW_VIEW_SWITCHER_POLICY_WIDE);
+    self->view_switcher, ADW_VIEW_SWITCHER_POLICY_WIDE);
 
   /* make sure the header bar includes the app
    * icon (if not, add it at the start) */
@@ -823,14 +747,12 @@ main_window_widget_init (MainWindowWidget * self)
   g_free (strval);
 
   GtkEventControllerKey * key_controller =
-    GTK_EVENT_CONTROLLER_KEY (
-      gtk_event_controller_key_new ());
+    GTK_EVENT_CONTROLLER_KEY (gtk_event_controller_key_new ());
   g_signal_connect (
     G_OBJECT (key_controller), "key-pressed",
     G_CALLBACK (on_key_pressed), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (key_controller));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (key_controller));
 
   g_signal_connect (
     G_OBJECT (self), "close-request",

@@ -36,19 +36,18 @@
 #include "zix/sem.h"
 #include <pthread.h>
 
-typedef struct GraphNode       GraphNode;
-typedef struct Graph           Graph;
-typedef struct MPMCQueue       MPMCQueue;
-typedef struct Port            Port;
-typedef struct Fader           Fader;
-typedef struct Track           Track;
-typedef struct SampleProcessor SampleProcessor;
-typedef struct Plugin          Plugin;
-typedef struct Position        Position;
-typedef struct GraphThread     GraphThread;
-typedef struct Router          Router;
-typedef struct ModulatorMacroProcessor
-  ModulatorMacroProcessor;
+typedef struct GraphNode               GraphNode;
+typedef struct Graph                   Graph;
+typedef struct MPMCQueue               MPMCQueue;
+typedef struct Port                    Port;
+typedef struct Fader                   Fader;
+typedef struct Track                   Track;
+typedef struct SampleProcessor         SampleProcessor;
+typedef struct Plugin                  Plugin;
+typedef struct Position                Position;
+typedef struct GraphThread             GraphThread;
+typedef struct Router                  Router;
+typedef struct ModulatorMacroProcessor ModulatorMacroProcessor;
 
 /**
  * @addtogroup audio
@@ -210,8 +209,7 @@ graph_find_node_from_channel_send (
   const ChannelSend * send);
 
 GraphNode *
-graph_find_initial_processor_node (
-  const Graph * self);
+graph_find_initial_processor_node (const Graph * self);
 
 GraphNode *
 graph_find_hw_processor_node (
@@ -250,9 +248,7 @@ HOT void
 graph_on_reached_terminal_node (Graph * self);
 
 void
-graph_update_latencies (
-  Graph * self,
-  bool    use_setup_nodes);
+graph_update_latencies (Graph * self, bool use_setup_nodes);
 
 /*
  * Adds the graph nodes and connections, then

@@ -34,15 +34,14 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _ArrangerWidget ArrangerWidget;
-typedef struct MidiNote        MidiNote;
-typedef struct SnapGrid        SnapGrid;
-typedef struct AutomationPoint AutomationPoint;
-typedef struct _AutomationPointWidget
-  AutomationPointWidget;
-typedef struct AutomationCurve AutomationCurve;
-typedef struct ChordObject     ChordObject;
-typedef struct ScaleObject     ScaleObject;
+typedef struct _ArrangerWidget        ArrangerWidget;
+typedef struct MidiNote               MidiNote;
+typedef struct SnapGrid               SnapGrid;
+typedef struct AutomationPoint        AutomationPoint;
+typedef struct _AutomationPointWidget AutomationPointWidget;
+typedef struct AutomationCurve        AutomationCurve;
+typedef struct ChordObject            ChordObject;
+typedef struct ScaleObject            ScaleObject;
 
 /**
  * @addtogroup widgets
@@ -259,8 +258,7 @@ timeline_arranger_widget_fade_up (
  * Sets up the timeline arranger as a drag dest.
  */
 void
-timeline_arranger_setup_drag_dest (
-  ArrangerWidget * self);
+timeline_arranger_setup_drag_dest (ArrangerWidget * self);
 
 /**
  * @}

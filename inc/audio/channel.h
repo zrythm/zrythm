@@ -60,18 +60,15 @@ typedef struct ExtPort         ExtPort;
 #define CHANNEL_MAGIC 8431676
 #define IS_CHANNEL(x) \
   (((Channel *) x)->magic == CHANNEL_MAGIC)
-#define IS_CHANNEL_AND_NONNULL(x) \
-  (x && IS_CHANNEL (x))
+#define IS_CHANNEL_AND_NONNULL(x) (x && IS_CHANNEL (x))
 
-#define FOREACH_STRIP \
-  for (int i = 0; i < STRIP_SIZE; i++)
+#define FOREACH_STRIP for (int i = 0; i < STRIP_SIZE; i++)
 #define FOREACH_AUTOMATABLE(ch) \
   for (int i = 0; i < ch->num_automatables; i++)
 #define MAX_FADER_AMP 1.42f
 
 #define channel_is_in_active_project(self) \
-  (self->track \
-   && track_is_in_active_project (self->track))
+  (self->track && track_is_in_active_project (self->track))
 
 /**
  * A Channel is part of a Track (excluding Tracks that
@@ -247,14 +244,8 @@ static const cyaml_schema_field_t channel_fields_schema[] = {
     Channel,
     instrument,
     plugin_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Channel,
-    prefader,
-    fader_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Channel,
-    fader,
-    fader_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Channel, prefader, fader_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Channel, fader, fader_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Channel,
     midi_out,
@@ -298,9 +289,7 @@ static const cyaml_schema_value_t channel_schema = {
 
 NONNULL
 void
-channel_init_loaded (
-  Channel * channel,
-  Track *   track);
+channel_init_loaded (Channel * channel, Track * track);
 
 /**
  * Handles the recording logic inside the process
@@ -358,18 +347,14 @@ channel_get_phase (void * channel);
 
 NONNULL
 void
-channel_set_balance_control (
-  void * _channel,
-  float  pan);
+channel_set_balance_control (void * _channel, float pan);
 
 /**
  * Adds to (or subtracts from) the pan.
  */
 NONNULL
 void
-channel_add_balance_control (
-  void * _channel,
-  float  pan);
+channel_add_balance_control (void * _channel, float pan);
 
 NONNULL
 float
@@ -380,9 +365,7 @@ channel_get_balance_control (void * _channel);
  */
 NONNULL
 void
-channel_reset_fader (
-  Channel * self,
-  bool      fire_events);
+channel_reset_fader (Channel * self, bool fire_events);
 
 /**
  * Prepares the channel for processing.
@@ -564,10 +547,7 @@ channel_set_caches (Channel * self);
  */
 NONNULL_ARGS (1, 2)
 Channel *
-channel_clone (
-  Channel * ch,
-  Track *   track,
-  GError ** error);
+channel_clone (Channel * ch, Track * track, GError ** error);
 
 /**
  * Disconnects the channel from the processing
@@ -584,17 +564,14 @@ channel_clone (
  */
 NONNULL
 void
-channel_disconnect (
-  Channel * channel,
-  bool      remove_pl);
+channel_disconnect (Channel * channel, bool remove_pl);
 
 /**
  * Generates a context menu for either ChannelWidget
  * or FolderChannelWidget.
  */
 GMenu *
-channel_widget_generate_context_menu_for_track (
-  Track * track);
+channel_widget_generate_context_menu_for_track (Track * track);
 
 /**
  * Frees the channel.

@@ -16,19 +16,16 @@
 static void
 flip (AutomationSelections * sel, bool vertical)
 {
-  for (int i = 0; i < sel->num_automation_points;
-       i++)
+  for (int i = 0; i < sel->num_automation_points; i++)
     {
-      AutomationPoint * ap =
-        sel->automation_points[i];
+      AutomationPoint * ap = sel->automation_points[i];
 
       if (vertical)
         {
           automation_point_set_fvalue (
-            ap, 1.f - ap->normalized_val,
-            F_NORMALIZED, F_NO_PUBLISH_EVENTS);
-          ap->curve_opts.curviness =
-            -ap->curve_opts.curviness;
+            ap, 1.f - ap->normalized_val, F_NORMALIZED,
+            F_NO_PUBLISH_EVENTS);
+          ap->curve_opts.curviness = -ap->curve_opts.curviness;
         }
       else
         {
@@ -64,8 +61,7 @@ automation_function_apply (
     }
 
   /* set last action */
-  g_settings_set_int (
-    S_UI, "automation-function", type);
+  g_settings_set_int (S_UI, "automation-function", type);
 
   EVENTS_PUSH (ET_EDITOR_FUNCTION_APPLIED, NULL);
 

@@ -43,8 +43,7 @@ link_scrolls (ChordEditorSpaceWidget * self)
       gtk_scrolled_window_set_vadjustment (
         self->chord_keys_scroll,
         gtk_scrolled_window_get_vadjustment (
-          GTK_SCROLLED_WINDOW (
-            self->arranger_scroll)));
+          GTK_SCROLLED_WINDOW (self->arranger_scroll)));
     }
 
   /* link ruler h scroll to arranger h scroll */
@@ -66,14 +65,12 @@ chord_editor_space_widget_update_size_group (
   int                      visible)
 {
   clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
-    MW_CLIP_EDITOR_INNER,
-    GTK_WIDGET (self->left_box), visible);
+    MW_CLIP_EDITOR_INNER, GTK_WIDGET (self->left_box),
+    visible);
 }
 
 static void
-on_realize (
-  GtkWidget *              widget,
-  ChordEditorSpaceWidget * self)
+on_realize (GtkWidget * widget, ChordEditorSpaceWidget * self)
 {
 }
 
@@ -107,35 +104,28 @@ chord_editor_space_widget_refresh_chords (
 {
   for (int j = 0; j < CHORD_EDITOR->num_chords; j++)
     {
-      chord_key_widget_refresh (
-        self->chord_keys[j]);
+      chord_key_widget_refresh (self->chord_keys[j]);
     }
 }
 
 void
-chord_editor_space_widget_setup (
-  ChordEditorSpaceWidget * self)
+chord_editor_space_widget_setup (ChordEditorSpaceWidget * self)
 {
   if (self->arranger)
     {
       arranger_widget_setup (
         Z_ARRANGER_WIDGET (self->arranger),
-        ARRANGER_WIDGET_TYPE_CHORD,
-        SNAP_GRID_EDITOR);
+        ARRANGER_WIDGET_TYPE_CHORD, SNAP_GRID_EDITOR);
     }
 
   for (int i = 0; i < CHORD_EDITOR->num_chords; i++)
     {
-      self->chord_keys[i] =
-        chord_key_widget_new (i);
-      GtkBox * box = GTK_BOX (gtk_box_new (
-        GTK_ORIENTATION_HORIZONTAL, 0));
-      gtk_box_append (
-        box, GTK_WIDGET (self->chord_keys[i]));
-      gtk_widget_add_css_class (
-        GTK_WIDGET (box), "chord_key");
-      gtk_box_append (
-        self->chord_keys_box, GTK_WIDGET (box));
+      self->chord_keys[i] = chord_key_widget_new (i);
+      GtkBox * box =
+        GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+      gtk_box_append (box, GTK_WIDGET (self->chord_keys[i]));
+      gtk_widget_add_css_class (GTK_WIDGET (box), "chord_key");
+      gtk_box_append (self->chord_keys_box, GTK_WIDGET (box));
       self->chord_key_boxes[i] = box;
     }
 
@@ -143,8 +133,7 @@ chord_editor_space_widget_setup (
 }
 
 static void
-chord_editor_space_widget_init (
-  ChordEditorSpaceWidget * self)
+chord_editor_space_widget_init (ChordEditorSpaceWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -160,16 +149,14 @@ chord_editor_space_widget_init (
     GTK_WIDGET (self->chord_keys_box));
 
   g_signal_connect (
-    G_OBJECT (self), "realize",
-    G_CALLBACK (on_realize), self);
+    G_OBJECT (self), "realize", G_CALLBACK (on_realize), self);
 }
 
 static void
 chord_editor_space_widget_class_init (
   ChordEditorSpaceWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "chord_editor_space.ui");
 

@@ -33,12 +33,10 @@ on_dispose (GObject * object)
   PlayheadScrollButtonsWidget * self =
     Z_PLAYHEAD_SCROLL_BUTTONS_WIDGET (object);
 
-  gtk_widget_unparent (
-    GTK_WIDGET (self->scroll_edges));
+  gtk_widget_unparent (GTK_WIDGET (self->scroll_edges));
   gtk_widget_unparent (GTK_WIDGET (self->follow));
 
-  G_OBJECT_CLASS (
-    playhead_scroll_buttons_widget_parent_class)
+  G_OBJECT_CLASS (playhead_scroll_buttons_widget_parent_class)
     ->dispose (object);
 }
 
@@ -46,8 +44,7 @@ static void
 playhead_scroll_buttons_widget_class_init (
   PlayheadScrollButtonsWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "playhead_scroll_buttons.ui");
   gtk_widget_class_set_css_name (
@@ -76,6 +73,5 @@ playhead_scroll_buttons_widget_init (
     gtk_box_layout_new (GTK_ORIENTATION_HORIZONTAL));
   gtk_box_layout_set_spacing (box_layout, 1);
   gtk_widget_set_layout_manager (
-    GTK_WIDGET (self),
-    GTK_LAYOUT_MANAGER (box_layout));
+    GTK_WIDGET (self), GTK_LAYOUT_MANAGER (box_layout));
 }

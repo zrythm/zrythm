@@ -12,8 +12,7 @@
 #include "zrythm_app.h"
 
 void
-automation_mode_widget_init (
-  AutomationModeWidget * self)
+automation_mode_widget_init (AutomationModeWidget * self)
 {
 #if 0
   gdk_rgba_parse (
@@ -22,17 +21,14 @@ automation_mode_widget_init (
     &self->hovered_color, UI_COLOR_BUTTON_HOVER);
 #endif
   self->def_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.1f);
-  self->hovered_color =
-    Z_GDK_RGBA_INIT (1, 1, 1, 0.2f);
+  self->hovered_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.2f);
   self->toggled_colors[0] = UI_COLORS->solo_checked;
   self->held_colors[0] = UI_COLORS->solo_active;
   gdk_rgba_parse (
-    &self->toggled_colors[1],
-    UI_COLOR_RECORD_CHECKED);
+    &self->toggled_colors[1], UI_COLOR_RECORD_CHECKED);
   gdk_rgba_parse (
     &self->held_colors[1], UI_COLOR_RECORD_ACTIVE);
-  gdk_rgba_parse (
-    &self->toggled_colors[2], "#444444");
+  gdk_rgba_parse (&self->toggled_colors[2], "#444444");
   gdk_rgba_parse (&self->held_colors[2], "#888888");
   self->aspect = 1.0;
   self->corner_radius = 8.0;
@@ -54,12 +50,9 @@ automation_mode_widget_init (
         AUTOMATION_MODE_##caps, txt); \
     } \
   pango_layout_set_text (layout, txt, -1); \
-  pango_layout_get_pixel_size ( \
-    layout, &x_px, &y_px); \
-  self->text_widths[AUTOMATION_MODE_##caps] = \
-    x_px; \
-  self->text_heights[AUTOMATION_MODE_##caps] = \
-    y_px; \
+  pango_layout_get_pixel_size (layout, &x_px, &y_px); \
+  self->text_widths[AUTOMATION_MODE_##caps] = x_px; \
+  self->text_heights[AUTOMATION_MODE_##caps] = y_px; \
   if (y_px > self->max_text_height) \
     self->max_text_height = y_px; \
   total_width += x_px
@@ -90,8 +83,7 @@ automation_mode_widget_new (
   self->layout = pango_layout_copy (layout);
   PangoFontDescription * desc =
     pango_font_description_from_string ("7");
-  pango_layout_set_font_description (
-    self->layout, desc);
+  pango_layout_set_font_description (self->layout, desc);
   pango_font_description_free (desc);
   automation_mode_widget_init (self);
 
@@ -108,8 +100,7 @@ get_hit_mode (AutomationModeWidget * self, double x)
         {
           total_widths += self->text_widths[j];
         }
-      total_widths +=
-        2 * AUTOMATION_MODE_HPADDING * (i + 1);
+      total_widths += 2 * AUTOMATION_MODE_HPADDING * (i + 1);
       double next_start = self->x + total_widths;
       /*g_message ("[%d] x: %f next start: %f",*/
       /*i, x, next_start);*/
@@ -167,32 +158,27 @@ draw_bg (
   int                    draw_frame,
   bool                   keep_clip)
 {
-  GskRoundedRect rounded_rect;
+  GskRoundedRect  rounded_rect;
   graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
     (float) x, (float) y, (float) self->width,
     (float) self->height);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect,
     (float) self->corner_radius);
-  gtk_snapshot_push_rounded_clip (
-    snapshot, &rounded_rect);
+  gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
 
   if (draw_frame)
     {
       const float border_width = 1.f;
-      GdkRGBA     border_color =
-        Z_GDK_RGBA_INIT (1, 1, 1, 0.3f);
-      float border_widths[] = {
-        border_width, border_width, border_width,
-        border_width
+      GdkRGBA border_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.3f);
+      float   border_widths[] = {
+          border_width, border_width, border_width, border_width
       };
       GdkRGBA border_colors[] = {
-        border_color, border_color, border_color,
-        border_color
+        border_color, border_color, border_color, border_color
       };
       gtk_snapshot_append_border (
-        snapshot, &rounded_rect, border_widths,
-        border_colors);
+        snapshot, &rounded_rect, border_widths, border_colors);
     }
 
   /* draw bg with fade from last state */
@@ -200,8 +186,7 @@ draw_bg (
     AUTOMATION_MODE_READ, AUTOMATION_MODE_OFF,
     AUTOMATION_MODE_RECORD
   };
-  for (int idx = 0; idx < NUM_AUTOMATION_MODES;
-       idx++)
+  for (int idx = 0; idx < NUM_AUTOMATION_MODES; idx++)
     {
       int i = draw_order[idx];
 
@@ -243,8 +228,7 @@ draw_bg (
           break;
         case AUTOMATION_MODE_RECORD:
           new_x =
-            x
-            + self->text_widths[AUTOMATION_MODE_READ]
+            x + self->text_widths[AUTOMATION_MODE_READ]
             + 2 * AUTOMATION_MODE_HPADDING;
           new_width =
             self->text_widths[AUTOMATION_MODE_RECORD]
@@ -252,21 +236,18 @@ draw_bg (
           break;
         case AUTOMATION_MODE_OFF:
           new_x =
-            x
-            + self->text_widths[AUTOMATION_MODE_READ]
+            x + self->text_widths[AUTOMATION_MODE_READ]
             + 4 * AUTOMATION_MODE_HPADDING
-            + self->text_widths
-                [AUTOMATION_MODE_RECORD];
-          new_width =
-            ((int) x + self->width) - (int) new_x;
+            + self->text_widths[AUTOMATION_MODE_RECORD];
+          new_width = ((int) x + self->width) - (int) new_x;
           break;
         }
 
       gtk_snapshot_append_color (
         snapshot, &c,
         &GRAPHENE_RECT_INIT (
-          (float) new_x, (float) y,
-          (float) new_width, (float) self->height));
+          (float) new_x, (float) y, (float) new_width,
+          (float) self->height));
     }
 
   if (!keep_clip)
@@ -289,17 +270,14 @@ automation_mode_widget_draw (
     || state == CUSTOM_BUTTON_WIDGET_STATE_ACTIVE)
     {
       self->has_hit_mode = 1;
-      self->hit_mode =
-        get_hit_mode (self, x_cursor);
+      self->hit_mode = get_hit_mode (self, x_cursor);
       /*g_message ("hit mode %d", self->hit_mode);*/
     }
 
   /* get current states */
-  for (unsigned int i = 0;
-       i < NUM_AUTOMATION_MODES; i++)
+  for (unsigned int i = 0; i < NUM_AUTOMATION_MODES; i++)
     {
-      AutomationMode prev_am =
-        self->owner->automation_mode;
+      AutomationMode prev_am = self->owner->automation_mode;
       if (self->has_hit_mode && i == self->hit_mode)
         {
           if (
@@ -341,25 +319,21 @@ automation_mode_widget_draw (
         {
           automation_record_mode_get_localized (
             self->owner->record_mode, mode_str);
-          pango_layout_set_text (
-            layout, mode_str, -1);
+          pango_layout_set_text (layout, mode_str, -1);
         }
       else
         {
           automation_mode_get_localized (
             (AutomationMode) i, mode_str);
-          pango_layout_set_text (
-            layout, mode_str, -1);
+          pango_layout_set_text (layout, mode_str, -1);
         }
       gtk_snapshot_append_layout (
-        snapshot, layout,
-        &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+        snapshot, layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
       gtk_snapshot_restore (snapshot);
 
       total_text_widths += self->text_widths[i];
 
-      self->last_states[i] =
-        self->current_states[i];
+      self->last_states[i] = self->current_states[i];
     }
 
   /* pop clip from draw_bg */
@@ -367,8 +341,7 @@ automation_mode_widget_draw (
 }
 
 void
-automation_mode_widget_free (
-  AutomationModeWidget * self)
+automation_mode_widget_free (AutomationModeWidget * self)
 {
   free (self);
 }

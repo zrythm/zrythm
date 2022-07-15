@@ -27,18 +27,13 @@
 #include "zrythm_app.h"
 
 int
-automation_region_sort_func (
-  const void * _a,
-  const void * _b)
+automation_region_sort_func (const void * _a, const void * _b)
 {
-  AutomationPoint * a =
-    *(AutomationPoint * const *) _a;
-  AutomationPoint * b =
-    *(AutomationPoint * const *) _b;
-  ArrangerObject * a_obj = (ArrangerObject *) a;
-  ArrangerObject * b_obj = (ArrangerObject *) b;
-  long             ret =
-    position_compare (&a_obj->pos, &b_obj->pos);
+  AutomationPoint * a = *(AutomationPoint * const *) _a;
+  AutomationPoint * b = *(AutomationPoint * const *) _b;
+  ArrangerObject *  a_obj = (ArrangerObject *) a;
+  ArrangerObject *  b_obj = (ArrangerObject *) b;
+  long ret = position_compare (&a_obj->pos, &b_obj->pos);
   if (ret == 0 && a->index < b->index)
     {
       return -1;
@@ -60,12 +55,11 @@ automation_region_new (
   self->id.type = REGION_TYPE_AUTOMATION;
 
   self->aps_size = 2;
-  self->aps =
-    object_new_n (self->aps_size, AutomationPoint);
+  self->aps = object_new_n (self->aps_size, AutomationPoint);
 
   region_init (
-    self, start_pos, end_pos, track_name_hash,
-    at_idx, idx_inside_at);
+    self, start_pos, end_pos, track_name_hash, at_idx,
+    idx_inside_at);
 
   return self;
 }
@@ -96,8 +90,7 @@ automation_region_force_sort (ZRegion * self)
   /* sort by position */
   qsort (
     self->aps, (size_t) self->num_aps,
-    sizeof (AutomationPoint *),
-    automation_region_sort_func);
+    sizeof (AutomationPoint *), automation_region_sort_func);
 
   /* refresh indices */
   for (int i = 0; i < self->num_aps; i++)
@@ -176,25 +169,22 @@ automation_region_get_next_ap (
         ZRYTHM_HAVE_UI && MW_AUTOMATION_ARRANGER
         && MW_AUTOMATION_ARRANGER->action
              == UI_OVERLAY_ACTION_MOVING_COPY;
-      ArrangerObject * obj = (ArrangerObject *) ap;
+      ArrangerObject *  obj = (ArrangerObject *) ap;
       AutomationPoint * next_ap = NULL;
       ArrangerObject *  next_obj = NULL;
       for (int i = 0; i < self->num_aps; i++)
         {
-          for (int j = 0;
-               j < (check_transients ? 2 : 1); j++)
+          for (int j = 0; j < (check_transients ? 2 : 1); j++)
             {
-              AutomationPoint * cur_ap =
-                self->aps[i];
-              ArrangerObject * cur_obj =
+              AutomationPoint * cur_ap = self->aps[i];
+              ArrangerObject *  cur_obj =
                 (ArrangerObject *) cur_ap;
               if (j == 1)
                 {
                   if (cur_obj->transient)
                     {
                       cur_obj = cur_obj->transient;
-                      cur_ap = (AutomationPoint *)
-                        cur_obj;
+                      cur_ap = (AutomationPoint *) cur_obj;
                     }
                   else
                     continue;
@@ -298,14 +288,12 @@ automation_region_get_aps_since_last_recorded (
   for (int i = 0; i < self->num_aps; i++)
     {
       AutomationPoint * ap = self->aps[i];
-      ArrangerObject *  ap_obj =
-        (ArrangerObject *) ap;
+      ArrangerObject *  ap_obj = (ArrangerObject *) ap;
 
       if (
         position_is_after (
           &ap_obj->pos, &last_recorded_obj->pos)
-        && position_is_before_or_equal (
-          &ap_obj->pos, pos))
+        && position_is_before_or_equal (&ap_obj->pos, pos))
         {
           g_ptr_array_add (aps, ap);
         }
@@ -328,30 +316,23 @@ automation_region_get_ap_around (
 {
   Position pos;
   position_set_to_pos (&pos, _pos);
-  AutomationTrack * at =
-    region_get_automation_track (self);
+  AutomationTrack * at = region_get_automation_track (self);
   /* FIXME only check aps in this region */
   AutomationPoint * ap =
-    automation_track_get_ap_before_pos (
-      at, &pos, true);
+    automation_track_get_ap_before_pos (at, &pos, true);
   ArrangerObject * ap_obj = (ArrangerObject *) ap;
-  if (
-    ap
-    && pos.ticks - ap_obj->pos.ticks
-         <= (double) delta_ticks)
+  if (ap && pos.ticks - ap_obj->pos.ticks <= (double) delta_ticks)
     {
       return ap;
     }
   else if (!before_only)
     {
       position_add_ticks (&pos, delta_ticks);
-      ap = automation_track_get_ap_before_pos (
-        at, &pos, true);
+      ap = automation_track_get_ap_before_pos (at, &pos, true);
       ap_obj = (ArrangerObject *) ap;
       if (ap)
         {
-          double diff =
-            ap_obj->pos.ticks - _pos->ticks;
+          double diff = ap_obj->pos.ticks - _pos->ticks;
           if (diff >= 0.0)
             return ap;
         }

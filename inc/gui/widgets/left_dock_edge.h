@@ -13,14 +13,11 @@
 #include <gtk/gtk.h>
 #include <libpanel.h>
 
-typedef struct _InspectorWidget  InspectorWidget;
-typedef struct _VisibilityWidget VisibilityWidget;
-typedef struct _FoldableNotebookWidget
-  FoldableNotebookWidget;
-typedef struct _InspectorTrackWidget
-  InspectorTrackWidget;
-typedef struct _InspectorPluginWidget
-  InspectorPluginWidget;
+typedef struct _InspectorWidget        InspectorWidget;
+typedef struct _VisibilityWidget       VisibilityWidget;
+typedef struct _FoldableNotebookWidget FoldableNotebookWidget;
+typedef struct _InspectorTrackWidget   InspectorTrackWidget;
+typedef struct _InspectorPluginWidget  InspectorPluginWidget;
 
 /**
  * @addtogroup widgets
@@ -37,8 +34,7 @@ G_DECLARE_FINAL_TYPE (
   LEFT_DOCK_EDGE_WIDGET,
   GtkWidget)
 
-#define MW_LEFT_DOCK_EDGE \
-  MW_CENTER_DOCK->left_dock_edge
+#define MW_LEFT_DOCK_EDGE MW_CENTER_DOCK->left_dock_edge
 
 /**
  * Left panel tabs.
@@ -77,8 +73,7 @@ typedef struct _LeftDockEdgeWidget
 } LeftDockEdgeWidget;
 
 void
-left_dock_edge_widget_refresh (
-  LeftDockEdgeWidget * self);
+left_dock_edge_widget_refresh (LeftDockEdgeWidget * self);
 
 /**
  * Refreshes the widget and switches to the given
@@ -90,15 +85,13 @@ left_dock_edge_widget_refresh_with_page (
   LeftDockEdgeTab      page);
 
 void
-left_dock_edge_widget_setup (
-  LeftDockEdgeWidget * self);
+left_dock_edge_widget_setup (LeftDockEdgeWidget * self);
 
 /**
  * Prepare for finalization.
  */
 void
-left_dock_edge_widget_tear_down (
-  LeftDockEdgeWidget * self);
+left_dock_edge_widget_tear_down (LeftDockEdgeWidget * self);
 
 /**
  * @}

@@ -38,12 +38,11 @@ typedef enum AutomationMode_v1
   NUM_AUTOMATION_MODES_v1,
 } AutomationMode_v1;
 
-static const cyaml_strval_t
-  automation_mode_strings_v1[] = {
-    {"Read",       AUTOMATION_MODE_READ_v1  },
-    { "Rec",       AUTOMATION_MODE_RECORD_v1},
-    { "Off",       AUTOMATION_MODE_OFF_v1   },
-    { "<invalid>", NUM_AUTOMATION_MODES_v1  },
+static const cyaml_strval_t automation_mode_strings_v1[] = {
+  {"Read",       AUTOMATION_MODE_READ_v1  },
+  { "Rec",       AUTOMATION_MODE_RECORD_v1},
+  { "Off",       AUTOMATION_MODE_OFF_v1   },
+  { "<invalid>", NUM_AUTOMATION_MODES_v1  },
 };
 
 typedef enum AutomationRecordMode_v1
@@ -53,11 +52,10 @@ typedef enum AutomationRecordMode_v1
   NUM_AUTOMATION_RECORD_MODES_v1,
 } AutomationRecordMode_v1;
 
-static const cyaml_strval_t
-  automation_record_mode_strings_v1[] = {
-    {"Touch",      AUTOMATION_RECORD_MODE_TOUCH_v1},
-    { "Latch",     AUTOMATION_RECORD_MODE_LATCH_v1},
-    { "<invalid>", NUM_AUTOMATION_RECORD_MODES_v1 },
+static const cyaml_strval_t automation_record_mode_strings_v1[] = {
+  {"Touch",      AUTOMATION_RECORD_MODE_TOUCH_v1},
+  { "Latch",     AUTOMATION_RECORD_MODE_LATCH_v1},
+  { "<invalid>", NUM_AUTOMATION_RECORD_MODES_v1 },
 };
 
 typedef struct AutomationTrack_v1
@@ -92,9 +90,7 @@ typedef struct AutomationTrack_v1
 
 static const cyaml_schema_field_t
   automation_track_fields_schema_v1[] = {
-    YAML_FIELD_INT (
-      AutomationTrack_v1,
-      schema_version),
+    YAML_FIELD_INT (AutomationTrack_v1, schema_version),
     YAML_FIELD_INT (AutomationTrack_v1, index),
     YAML_FIELD_MAPPING_EMBEDDED (
       AutomationTrack_v1,
@@ -115,11 +111,10 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  automation_track_schema_v1 = {
-    YAML_VALUE_PTR (
-      AutomationTrack_v1,
-      automation_track_fields_schema_v1),
-  };
+static const cyaml_schema_value_t automation_track_schema_v1 = {
+  YAML_VALUE_PTR (
+    AutomationTrack_v1,
+    automation_track_fields_schema_v1),
+};
 
 #endif

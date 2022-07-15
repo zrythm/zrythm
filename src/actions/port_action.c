@@ -39,11 +39,9 @@ port_action_new (
   self->type = type;
   if (is_normalized)
     {
-      Port * port =
-        port_find_from_identifier (port_id);
+      Port * port = port_find_from_identifier (port_id);
       self->val =
-        control_port_normalized_val_to_real (
-          port, val);
+        control_port_normalized_val_to_real (port, val);
     }
   else
     {
@@ -64,8 +62,8 @@ port_action_new_reset_control (
   Port * port = port_find_from_identifier (port_id);
 
   return port_action_new (
-    PORT_ACTION_SET_CONTROL_VAL, port_id,
-    port->deff, F_NOT_NORMALIZED, error);
+    PORT_ACTION_SET_CONTROL_VAL, port_id, port->deff,
+    F_NOT_NORMALIZED, error);
 }
 
 PortAction *
@@ -75,8 +73,7 @@ port_action_clone (const PortAction * src)
   self->parent_instance = src->parent_instance;
 
   self->type = src->type;
-  port_identifier_copy (
-    &self->port_id, &src->port_id);
+  port_identifier_copy (&self->port_id, &src->port_id);
   self->val = src->val;
 
   return self;
@@ -91,8 +88,8 @@ port_action_perform (
   GError **        error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    port_action_new, error, type, port_id, val,
-    is_normalized, error);
+    port_action_new, error, type, port_id, val, is_normalized,
+    error);
 }
 
 bool
@@ -101,25 +98,21 @@ port_action_perform_reset_control (
   GError **        error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    port_action_new_reset_control, error, port_id,
-    error);
+    port_action_new_reset_control, error, port_id, error);
 }
 
 static int
 port_action_do_or_undo (PortAction * self, bool _do)
 {
-  Port * port =
-    port_find_from_identifier (&self->port_id);
+  Port * port = port_find_from_identifier (&self->port_id);
 
   switch (self->type)
     {
     case PORT_ACTION_SET_CONTROL_VAL:
       {
-        float val_before =
-          control_port_get_val (port);
+        float val_before = control_port_get_val (port);
         port_set_control_value (
-          port, self->val, F_NOT_NORMALIZED,
-          F_PUBLISH_EVENTS);
+          port, self->val, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
         self->val = val_before;
       }
       break;

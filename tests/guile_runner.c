@@ -44,8 +44,7 @@ call_proc (void * data)
    *     (display "script called") (newline)))
    */
   scm_c_primitive_load (full_path);
-  SCM func = scm_variable_ref (
-    scm_c_lookup ("zrythm-test"));
+  SCM func = scm_variable_ref (scm_c_lookup ("zrythm-test"));
   scm_call_0 (func);
 
   return SCM_BOOL_T;
@@ -59,8 +58,7 @@ eval_handler (void * handler_data, SCM key, SCM args)
   /* Put the code which you want to handle an error
    * after the stack has been unwound here. */
 
-  scm_print_exception (
-    error_out_port, SCM_BOOL_F, key, args);
+  scm_print_exception (error_out_port, SCM_BOOL_F, key, args);
   scm_display_backtrace (
     stack, error_out_port, SCM_BOOL_F, SCM_BOOL_F);
 
@@ -68,14 +66,10 @@ eval_handler (void * handler_data, SCM key, SCM args)
 }
 
 static SCM
-preunwind_proc (
-  void * handler_data,
-  SCM    key,
-  SCM    parameters)
+preunwind_proc (void * handler_data, SCM key, SCM parameters)
 {
   /* Capture the stack here: */
-  *(SCM *) handler_data =
-    scm_make_stack (SCM_BOOL_T, SCM_EOL);
+  *(SCM *) handler_data = scm_make_stack (SCM_BOOL_T, SCM_EOL);
 
   return SCM_BOOL_T;
 }
@@ -100,9 +94,8 @@ guile_mode_func (void * data)
   SCM captured_stack = SCM_BOOL_F;
 
   SCM ret = scm_c_catch (
-    SCM_BOOL_T, call_proc, script_path,
-    eval_handler, &captured_stack, preunwind_proc,
-    &captured_stack);
+    SCM_BOOL_T, call_proc, script_path, eval_handler,
+    &captured_stack, preunwind_proc, &captured_stack);
   g_free (script_path);
 
   SCM str_scm = scm_get_output_string (out_port);
@@ -128,9 +121,7 @@ main (int argc, char ** argv)
       g_error ("Script path is required");
     }
 
-  if (
-    scm_with_guile (&guile_mode_func, argv[1])
-    == SCM_BOOL_T)
+  if (scm_with_guile (&guile_mode_func, argv[1]) == SCM_BOOL_T)
     {
       return 0;
     }

@@ -45,9 +45,7 @@ int
 engine_pulse_setup (AudioEngine * self);
 
 void
-engine_pulse_activate (
-  AudioEngine * self,
-  gboolean      activate);
+engine_pulse_activate (AudioEngine * self, gboolean activate);
 
 /**
  * Tests if PulseAudio is working properly.

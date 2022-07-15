@@ -78,13 +78,11 @@
  * nodes.
  */
 nframes_t
-router_get_max_route_playback_latency (
-  Router * router)
+router_get_max_route_playback_latency (Router * router)
 {
   g_return_val_if_fail (router && router->graph, 0);
   router->max_route_playback_latency =
-    graph_get_max_route_playback_latency (
-      router->graph, false);
+    graph_get_max_route_playback_latency (router->graph, false);
 
   return router->max_route_playback_latency;
 }
@@ -111,8 +109,7 @@ router_start_cycle (
 
   if (!zix_sem_try_wait (&self->graph_access))
     {
-      g_message (
-        "graph access is busy, returning...");
+      g_message ("graph access is busy, returning...");
       return;
     }
 
@@ -125,8 +122,7 @@ router_start_cycle (
 
   /* read control port change events */
   while (
-    zix_ring_read_space (
-      self->ctrl_port_change_queue)
+    zix_ring_read_space (self->ctrl_port_change_queue)
     >= sizeof (ControlPortChange))
     {
       ControlPortChange change = { 0 };
@@ -136,8 +132,8 @@ router_start_cycle (
       if (change.flag1 & PORT_FLAG_BPM)
         {
           tempo_track_set_bpm (
-            P_TEMPO_TRACK, change.real_val, 0.f,
-            true, F_PUBLISH_EVENTS);
+            P_TEMPO_TRACK, change.real_val, 0.f, true,
+            F_PUBLISH_EVENTS);
         }
       else if (change.flag2 & PORT_FLAG2_BEATS_PER_BAR)
         {
@@ -154,8 +150,7 @@ router_start_cycle (
   /* process tempo track ports first */
   if (self->graph->bpm_node)
     {
-      graph_node_process (
-        self->graph->bpm_node, time_nfo);
+      graph_node_process (self->graph->bpm_node, time_nfo);
     }
   if (self->graph->beats_per_bar_node)
     {
@@ -184,8 +179,7 @@ router_start_cycle (
 void
 router_recalc_graph (Router * self, bool soft)
 {
-  g_message (
-    "Recalculating%s...", soft ? " (soft)" : "");
+  g_message ("Recalculating%s...", soft ? " (soft)" : "");
 
   g_return_if_fail (self);
 
@@ -205,17 +199,14 @@ router_recalc_graph (Router * self, bool soft)
     }
   else
     {
-      int running =
-        g_atomic_int_get (&AUDIO_ENGINE->run);
+      int running = g_atomic_int_get (&AUDIO_ENGINE->run);
       g_atomic_int_set (&AUDIO_ENGINE->run, 0);
-      while (g_atomic_int_get (
-        &AUDIO_ENGINE->cycle_running))
+      while (g_atomic_int_get (&AUDIO_ENGINE->cycle_running))
         {
           g_usleep (100);
         }
       graph_setup (self->graph, 1, 1);
-      g_atomic_int_set (
-        &AUDIO_ENGINE->run, (guint) running);
+      g_atomic_int_set (&AUDIO_ENGINE->run, (guint) running);
     }
 
   g_message ("done");
@@ -234,8 +225,7 @@ router_queue_control_port_change (
   const ControlPortChange * change)
 {
   if (
-    zix_ring_write_space (
-      self->ctrl_port_change_queue)
+    zix_ring_write_space (self->ctrl_port_change_queue)
     < sizeof (ControlPortChange))
     {
       zix_ring_skip (
@@ -262,8 +252,8 @@ router_new (void)
 
   zix_sem_init (&self->graph_access, 1);
 
-  self->ctrl_port_change_queue = zix_ring_new (
-    sizeof (ControlPortChange) * (size_t) 24);
+  self->ctrl_port_change_queue =
+    zix_ring_new (sizeof (ControlPortChange) * (size_t) 24);
 
   g_message ("done");
 
@@ -276,11 +266,9 @@ router_new (void)
  * router_start_cycle()).
  */
 bool
-router_is_processing_kickoff_thread (
-  const Router * const self)
+router_is_processing_kickoff_thread (const Router * const self)
 {
-  return g_thread_self ()
-         == self->process_kickoff_thread;
+  return g_thread_self () == self->process_kickoff_thread;
 }
 
 /**
@@ -288,8 +276,7 @@ router_is_processing_kickoff_thread (
  * processing thread.
  */
 bool
-router_is_processing_thread (
-  const Router * const self)
+router_is_processing_thread (const Router * const self)
 {
   if (!self->graph)
     return false;
@@ -297,16 +284,14 @@ router_is_processing_thread (
   for (int j = 0; j < self->graph->num_threads; j++)
     {
       if (pthread_equal (
-            pthread_self (),
-            self->graph->threads[j]->pthread))
+            pthread_self (), self->graph->threads[j]->pthread))
         return true;
     }
 
   if (
     self->graph->main_thread
     && pthread_equal (
-      pthread_self (),
-      self->graph->main_thread->pthread))
+      pthread_self (), self->graph->main_thread->pthread))
     return true;
 
   return false;

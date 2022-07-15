@@ -55,9 +55,7 @@ typedef struct HardwareProcessor_v1
 
 static const cyaml_schema_field_t
   hardware_processor_fields_schema_v1[] = {
-    YAML_FIELD_INT (
-      HardwareProcessor_v1,
-      schema_version),
+    YAML_FIELD_INT (HardwareProcessor_v1, schema_version),
     YAML_FIELD_INT (HardwareProcessor_v1, is_input),
     YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
       HardwareProcessor_v1,
@@ -79,11 +77,10 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  hardware_processor_schema_v1 = {
-    YAML_VALUE_PTR (
-      HardwareProcessor_v1,
-      hardware_processor_fields_schema_v1),
-  };
+static const cyaml_schema_value_t hardware_processor_schema_v1 = {
+  YAML_VALUE_PTR (
+    HardwareProcessor_v1,
+    hardware_processor_fields_schema_v1),
+};
 
 #endif

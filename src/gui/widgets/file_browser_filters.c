@@ -40,16 +40,14 @@ toggles_changed (
       g_signal_handlers_block_by_func (
         self->toggle_midi, toggles_changed, self);
       g_signal_handlers_block_by_func (
-        self->toggle_presets, toggles_changed,
-        self);
+        self->toggle_presets, toggles_changed, self);
 
       if (btn == self->toggle_audio)
         {
           S_SET_ENUM (
             S_UI_FILE_BROWSER, "filter",
             FILE_BROWSER_FILTER_AUDIO);
-          gtk_toggle_button_set_active (
-            self->toggle_midi, 0);
+          gtk_toggle_button_set_active (self->toggle_midi, 0);
           gtk_toggle_button_set_active (
             self->toggle_presets, 0);
         }
@@ -58,8 +56,7 @@ toggles_changed (
           S_SET_ENUM (
             S_UI_FILE_BROWSER, "filter",
             FILE_BROWSER_FILTER_MIDI);
-          gtk_toggle_button_set_active (
-            self->toggle_audio, 0);
+          gtk_toggle_button_set_active (self->toggle_audio, 0);
           gtk_toggle_button_set_active (
             self->toggle_presets, 0);
         }
@@ -79,14 +76,12 @@ toggles_changed (
       g_signal_handlers_unblock_by_func (
         self->toggle_midi, toggles_changed, self);
       g_signal_handlers_unblock_by_func (
-        self->toggle_presets, toggles_changed,
-        self);
+        self->toggle_presets, toggles_changed, self);
     }
   else
     {
       S_SET_ENUM (
-        S_UI_FILE_BROWSER, "filter",
-        FILE_BROWSER_FILTER_NONE);
+        S_UI_FILE_BROWSER, "filter", FILE_BROWSER_FILTER_NONE);
     }
 
   self->refilter_files (self->owner);
@@ -109,8 +104,7 @@ static void
 file_browser_filters_widget_class_init (
   FileBrowserFiltersWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "file_browser_filters.ui");
 
@@ -125,8 +119,7 @@ file_browser_filters_widget_class_init (
 #undef BIND_CHILD
 
 #define BIND_SIGNAL(sig) \
-  gtk_widget_class_bind_template_callback ( \
-    klass, sig)
+  gtk_widget_class_bind_template_callback (klass, sig)
 
   BIND_SIGNAL (toggles_changed);
 

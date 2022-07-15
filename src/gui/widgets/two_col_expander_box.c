@@ -62,8 +62,7 @@ two_col_expander_box_widget_set_scroll_policy (
     two_col_expander_box_widget_get_private (self);
 
   gtk_scrolled_window_set_policy (
-    prv->scroll, hscrollbar_policy,
-    vscrollbar_policy);
+    prv->scroll, hscrollbar_policy, vscrollbar_policy);
 }
 
 /**
@@ -119,8 +118,7 @@ two_col_expander_box_widget_add_pair (
     two_col_expander_box_widget_get_private (self);
 
   GtkWidget * box = gtk_box_new (
-    GTK_ORIENTATION_HORIZONTAL,
-    prv->horizontal_spacing);
+    GTK_ORIENTATION_HORIZONTAL, prv->horizontal_spacing);
   gtk_widget_set_visible (box, 1);
 
   /* pack the widgets */
@@ -165,8 +163,7 @@ static void
 two_col_expander_box_widget_class_init (
   TwoColExpanderBoxWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (
     klass, "two-col-expander-box");
 }
@@ -187,20 +184,16 @@ two_col_expander_box_widget_init (
 
   /* create content box and add it to the original
    * box */
-  prv->scroll = GTK_SCROLLED_WINDOW (
-    gtk_scrolled_window_new ());
+  prv->scroll =
+    GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
   gtk_scrolled_window_set_policy (
-    prv->scroll, GTK_POLICY_NEVER,
-    GTK_POLICY_NEVER);
+    prv->scroll, GTK_POLICY_NEVER, GTK_POLICY_NEVER);
   prv->content = GTK_BOX (gtk_box_new (
-    GTK_ORIENTATION_VERTICAL,
-    prv->vertical_spacing));
+    GTK_ORIENTATION_VERTICAL, prv->vertical_spacing));
   GtkViewport * viewport =
     GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
-  gtk_viewport_set_scroll_to_focus (
-    viewport, false);
-  gtk_viewport_set_child (
-    viewport, GTK_WIDGET (prv->content));
+  gtk_viewport_set_scroll_to_focus (viewport, false);
+  gtk_viewport_set_child (viewport, GTK_WIDGET (prv->content));
   gtk_scrolled_window_set_child (
     prv->scroll, GTK_WIDGET (viewport));
 
@@ -208,8 +201,7 @@ two_col_expander_box_widget_init (
     expander_box_widget_get_private (
       Z_EXPANDER_BOX_WIDGET (self));
   gtk_box_append (
-    GTK_BOX (prv_exp_box->content),
-    GTK_WIDGET (prv->scroll));
+    GTK_BOX (prv_exp_box->content), GTK_WIDGET (prv->scroll));
   /*gtk_box_set_child_packing (*/
   /*GTK_BOX (prv_exp_box->content),*/
   /*GTK_WIDGET (prv->scroll), F_EXPAND, F_FILL,*/

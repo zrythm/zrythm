@@ -73,9 +73,7 @@ void
 engine_rtmidi_tear_down (AudioEngine * self);
 
 int
-engine_rtmidi_activate (
-  AudioEngine * self,
-  bool          activate);
+engine_rtmidi_activate (AudioEngine * self, bool activate);
 
 #endif /* HAVE_RTMIDI */
 #endif

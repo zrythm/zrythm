@@ -34,13 +34,11 @@
 
 #  include <gtk/gtk.h>
 
-typedef HANDLE (
-  WINAPI * AvSetMmThreadCharacteristicsA_t) (
+typedef HANDLE (WINAPI * AvSetMmThreadCharacteristicsA_t) (
   LPCSTR  TaskName,
   LPDWORD TaskIndex);
 
-typedef BOOL (
-  WINAPI * AvRevertMmThreadCharacteristics_t) (
+typedef BOOL (WINAPI * AvRevertMmThreadCharacteristics_t) (
   HANDLE AvrtHandle);
 
 typedef BOOL (WINAPI * AvSetMmThreadPriority_t) (
@@ -53,8 +51,7 @@ static AvSetMmThreadCharacteristicsA_t
   AvSetMmThreadCharacteristicsA = NULL;
 static AvRevertMmThreadCharacteristics_t
   AvRevertMmThreadCharacteristics = NULL;
-static AvSetMmThreadPriority_t
-  AvSetMmThreadPriority = NULL;
+static AvSetMmThreadPriority_t AvSetMmThreadPriority = NULL;
 
 int
 windows_mmcss_initialize ()
@@ -95,14 +92,12 @@ windows_mmcss_initialize ()
       unload_dll = 1;
     }
 
-  AvSetMmThreadPriority =
-    (AvSetMmThreadPriority_t) GetProcAddress (
-      avrt_dll, "AvSetMmThreadPriority");
+  AvSetMmThreadPriority = (AvSetMmThreadPriority_t)
+    GetProcAddress (avrt_dll, "AvSetMmThreadPriority");
 
   if (AvSetMmThreadPriority == NULL)
     {
-      g_critical (
-        "Unable to resolve AvSetMmThreadPriority");
+      g_critical ("Unable to resolve AvSetMmThreadPriority");
       unload_dll = 1;
     }
 
@@ -180,8 +175,7 @@ windows_mmcss_set_thread_characteristics (
     }
 
   g_message (
-    "MMCSS: Set thread characteristics to %s",
-    task_name);
+    "MMCSS: Set thread characteristics to %s", task_name);
 
   return 0;
 }
@@ -193,9 +187,7 @@ windows_mmcss_revert_thread_characteristics (
   if (AvRevertMmThreadCharacteristics == NULL)
     return -1;
 
-  if (
-    AvRevertMmThreadCharacteristics (task_handle)
-    == 0)
+  if (AvRevertMmThreadCharacteristics (task_handle) == 0)
     {
       g_critical (
         "MMCSS: Failed to set revert thread "
@@ -203,8 +195,7 @@ windows_mmcss_revert_thread_characteristics (
       return -1;
     }
 
-  g_message (
-    "MMCSS: Reverted thread characteristics");
+  g_message ("MMCSS: Reverted thread characteristics");
 
   return 0;
 }
@@ -217,13 +208,10 @@ windows_mmcss_set_thread_priority (
   if (AvSetMmThreadPriority == NULL)
     return -1;
 
-  if (
-    AvSetMmThreadPriority (task_handle, priority)
-    == 0)
+  if (AvSetMmThreadPriority (task_handle, priority) == 0)
     {
       g_critical (
-        "Failed to set thread priority %i",
-        priority);
+        "Failed to set thread priority %i", priority);
       return -1;
     }
 

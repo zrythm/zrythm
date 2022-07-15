@@ -41,12 +41,9 @@ typedef struct _RulerWidget     RulerWidget;
 typedef struct _TracklistWidget TracklistWidget;
 typedef struct _TimelinePanelBotBoxWidget
   TimelinePanelBotBoxWidget;
-typedef struct _TracklistHeaderWidget
-  TracklistHeaderWidget;
-typedef struct _TimelineToolbarWidget
-  TimelineToolbarWidget;
-typedef struct _TimelineBotBoxWidget
-  TimelineBotBoxWidget;
+typedef struct _TracklistHeaderWidget TracklistHeaderWidget;
+typedef struct _TimelineToolbarWidget TimelineToolbarWidget;
+typedef struct _TimelineBotBoxWidget  TimelineBotBoxWidget;
 
 /**
  * @addtogroup widgets
@@ -54,8 +51,7 @@ typedef struct _TimelineBotBoxWidget
  * @{
  */
 
-#define MW_TIMELINE_PANEL \
-  (MW_MAIN_NOTEBOOK->timeline_panel)
+#define MW_TIMELINE_PANEL (MW_MAIN_NOTEBOOK->timeline_panel)
 
 #define MW_TRACKLIST_SCROLL \
   (MW_TIMELINE_PANEL->tracklist_scroll)
@@ -107,8 +103,7 @@ typedef struct _TimelinePanelWidget
 } TimelinePanelWidget;
 
 void
-timeline_panel_widget_setup (
-  TimelinePanelWidget * self);
+timeline_panel_widget_setup (TimelinePanelWidget * self);
 
 TimelinePanelWidget *
 timeline_panel_widget_new (void);
@@ -117,8 +112,7 @@ timeline_panel_widget_new (void);
  * Prepare for finalization.
  */
 void
-timeline_panel_widget_tear_down (
-  TimelinePanelWidget * self);
+timeline_panel_widget_tear_down (TimelinePanelWidget * self);
 
 /**
  * @}

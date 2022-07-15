@@ -37,8 +37,7 @@ fishbowl_creation_func ()
   POSITION_INIT_ON_STACK (start_pos);
   POSITION_INIT_ON_STACK (end_pos);
   position_set_to_bar (&end_pos, 4);
-  MidiRegion * r =
-    midi_region_new (&start_pos, &end_pos, 1);
+  MidiRegion * r = midi_region_new (&start_pos, &end_pos, 1);
   g_return_val_if_fail (r, NULL);
 
   region_gen_name (r, "Test Region", NULL, NULL);

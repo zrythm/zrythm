@@ -55,11 +55,9 @@ test_run_cmd_w_args (void)
     args_instant, 100, NULL, NULL, false);
   g_assert_cmpint (ret, ==, 0);
 
-  ret = system_run_cmd_w_args (
-    args, 1, &output, NULL, false);
+  ret = system_run_cmd_w_args (args, 1, &output, NULL, false);
   g_assert_cmpint (ret, !=, 0);
-  ret = system_run_cmd_w_args (
-    args, 1, NULL, &output, false);
+  ret = system_run_cmd_w_args (args, 1, NULL, &output, false);
   g_assert_cmpint (ret, !=, 0);
   ret = system_run_cmd_w_args (
     args_stderr, 1, &output, NULL, false);
@@ -68,11 +66,11 @@ test_run_cmd_w_args (void)
     args_stderr, 1, NULL, &output, false);
   g_assert_cmpint (ret, !=, 0);
 
-  ret = system_run_cmd_w_args (
-    args, 2000, &output, NULL, false);
+  ret =
+    system_run_cmd_w_args (args, 2000, &output, NULL, false);
   g_assert_cmpint (ret, !=, 0);
-  ret = system_run_cmd_w_args (
-    args, 2000, NULL, &output, false);
+  ret =
+    system_run_cmd_w_args (args, 2000, NULL, &output, false);
   g_assert_cmpint (ret, !=, 0);
   ret = system_run_cmd_w_args (
     args_stderr, 2000, &output, NULL, false);
@@ -81,8 +79,8 @@ test_run_cmd_w_args (void)
     args_stderr, 2000, NULL, &output, false);
   g_assert_cmpint (ret, !=, 0);
 
-  ret = system_run_cmd_w_args (
-    args, 8000, &output, NULL, false);
+  ret =
+    system_run_cmd_w_args (args, 8000, &output, NULL, false);
   g_assert_cmpint (ret, ==, 0);
   g_assert_cmpstr (output, ==, "hello\n");
   output[0] = '\0';

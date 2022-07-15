@@ -63,8 +63,7 @@ PortConnectionsWidget *
 port_connections_widget_new (void);
 
 void
-port_connections_widget_refresh (
-  PortConnectionsWidget * self);
+port_connections_widget_refresh (PortConnectionsWidget * self);
 
 /**
  * @}

@@ -41,9 +41,7 @@ typedef struct AutomationSelections_v1
 
 static const cyaml_schema_field_t
   automation_selections_fields_schema_v1[] = {
-    YAML_FIELD_INT (
-      AutomationSelections_v1,
-      schema_version),
+    YAML_FIELD_INT (AutomationSelections_v1, schema_version),
     YAML_FIELD_MAPPING_EMBEDDED (
       AutomationSelections_v1,
       base,

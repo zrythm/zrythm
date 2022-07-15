@@ -42,36 +42,34 @@ settings_new (void)
       return self;
     }
 
-  self->general = g_settings_new (
-    GSETTINGS_ZRYTHM_PREFIX ".general");
-  self->export_audio = g_settings_new (
-    GSETTINGS_ZRYTHM_PREFIX ".export.audio");
-  self->export_midi = g_settings_new (
-    GSETTINGS_ZRYTHM_PREFIX ".export.midi");
-  self->monitor = g_settings_new (
-    GSETTINGS_ZRYTHM_PREFIX ".monitor");
-  self->ui =
-    g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui");
-  self->ui_inspector = g_settings_new (
-    GSETTINGS_ZRYTHM_PREFIX ".ui.inspector");
-  self->ui_mixer = g_settings_new (
-    GSETTINGS_ZRYTHM_PREFIX ".ui.mixer");
+  self->general =
+    g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".general");
+  self->export_audio =
+    g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".export.audio");
+  self->export_midi =
+    g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".export.midi");
+  self->monitor =
+    g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".monitor");
+  self->ui = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui");
+  self->ui_inspector =
+    g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui.inspector");
+  self->ui_mixer =
+    g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui.mixer");
   self->ui_plugin_browser = g_settings_new (
     GSETTINGS_ZRYTHM_PREFIX ".ui.plugin-browser");
-  self->ui_panels = g_settings_new (
-    GSETTINGS_ZRYTHM_PREFIX ".ui.panels");
+  self->ui_panels =
+    g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".ui.panels");
   self->ui_file_browser = g_settings_new (
     GSETTINGS_ZRYTHM_PREFIX ".ui.file-browser");
-  self->transport = g_settings_new (
-    GSETTINGS_ZRYTHM_PREFIX ".transport");
+  self->transport =
+    g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".transport");
 
 #define PREFERENCES_PREFIX \
   GSETTINGS_ZRYTHM_PREFIX ".preferences."
 #define NEW_PREFERENCES_SETTINGS(a, b) \
-  self->preferences_##a##_##b = g_settings_new ( \
-    PREFERENCES_PREFIX #a "." #b); \
-  g_return_val_if_fail ( \
-    self->preferences_##a##_##b, NULL)
+  self->preferences_##a##_##b = \
+    g_settings_new (PREFERENCES_PREFIX #a "." #b); \
+  g_return_val_if_fail (self->preferences_##a##_##b, NULL)
 
   NEW_PREFERENCES_SETTINGS (dsp, pan);
   NEW_PREFERENCES_SETTINGS (editing, audio);
@@ -109,8 +107,7 @@ settings_new (void)
 #endif
 
   self->plugin_settings = plugin_settings_new ();
-  g_return_val_if_fail (
-    self->plugin_settings, NULL);
+  g_return_val_if_fail (self->plugin_settings, NULL);
 
   self->user_shortcuts = user_shortcuts_new ();
   if (!self->user_shortcuts)
@@ -128,28 +125,22 @@ print_or_reset_schema (
   int               print_only,
   int               pretty_print)
 {
-  GSettings * settings =
-    g_settings_new (schema_str);
-  char ** keys =
-    g_settings_schema_list_keys (schema);
+  GSettings * settings = g_settings_new (schema_str);
+  char **     keys = g_settings_schema_list_keys (schema);
 
   char tmp[8000];
   if (print_only)
     {
       sprintf (
         tmp, _ ("Schema %s%s%s"),
-        pretty_print ? TERMINAL_BOLD : "",
-        schema_str,
+        pretty_print ? TERMINAL_BOLD : "", schema_str,
         pretty_print ? TERMINAL_RESET : "");
       printf (
-        "%s%s\n",
-        pretty_print ? TERMINAL_UNDERLINE : "",
-        tmp);
+        "%s%s\n", pretty_print ? TERMINAL_UNDERLINE : "", tmp);
     }
   else
     {
-      printf (
-        _ ("Resetting schema %s...\n"), schema_str);
+      printf (_ ("Resetting schema %s...\n"), schema_str);
     }
 
   int    i = 0;
@@ -171,8 +162,7 @@ print_or_reset_schema (
               : "",
             key, pretty_print ? TERMINAL_RESET : "",
             pretty_print ? TERMINAL_COLOR_YELLOW : "",
-            var_str,
-            pretty_print ? TERMINAL_RESET : "");
+            var_str, pretty_print ? TERMINAL_RESET : "");
           if (pretty_print)
             {
               const char * description =
@@ -196,11 +186,9 @@ print_or_reset_schema (
           g_return_val_if_fail (val, -1);
           char * var_str = g_variant_print (val, 0);
           sprintf (
-            tmp, _ ("resetting %s to %s"), key,
-            var_str);
+            tmp, _ ("resetting %s to %s"), key, var_str);
           printf ("  %s\n", tmp);
-          int ret = g_settings_set_value (
-            settings, key, val);
+          int ret = g_settings_set_value (settings, key, val);
           if (!ret)
             {
               g_warning ("Failed to set value");
@@ -249,21 +237,18 @@ print_or_reset (
                 return -1;
             }
           if (print_or_reset_schema (
-                schema, schema_str, print_only,
-                pretty_print))
+                schema, schema_str, print_only, pretty_print))
             {
               if (print_only)
                 {
                   fprintf (
-                    stderr,
-                    _ ("Failed to view schema %s"),
+                    stderr, _ ("Failed to view schema %s"),
                     schema_str);
                 }
               else
                 {
                   fprintf (
-                    stderr,
-                    _ ("Failed to reset schema %s"),
+                    stderr, _ ("Failed to reset schema %s"),
                     schema_str);
                 }
               if (exit_on_finish)
@@ -303,13 +288,12 @@ settings_reset_to_factory (
     {
       if (window)
         {
-          GtkDialog * dialog = GTK_DIALOG (
-            gtk_message_dialog_new_with_markup (
+          GtkDialog * dialog =
+            GTK_DIALOG (gtk_message_dialog_new_with_markup (
               window,
-              GTK_DIALOG_DESTROY_WITH_PARENT
-                | GTK_DIALOG_MODAL,
-              GTK_MESSAGE_WARNING,
-              GTK_BUTTONS_OK_CANCEL, NULL));
+              GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,
+              GTK_MESSAGE_WARNING, GTK_BUTTONS_OK_CANCEL,
+              NULL));
           gtk_message_dialog_set_markup (
             GTK_MESSAGE_DIALOG (dialog),
             _ ("This will reset Zrythm to "
@@ -320,8 +304,7 @@ settings_reset_to_factory (
             GTK_WINDOW (dialog),
             _ ("Reset to Factory Settings"));
 
-          int response =
-            z_gtk_dialog_run (dialog, true);
+          int response = z_gtk_dialog_run (dialog, true);
 
           if (response != GTK_RESPONSE_OK)
             return false;
@@ -348,8 +331,7 @@ settings_reset_to_factory (
 
   print_or_reset (0, 0, exit_on_finish);
 
-  printf (
-    _ ("Reset to factory settings successful\n"));
+  printf (_ ("Reset to factory settings successful\n"));
 
   return true;
 }
@@ -364,18 +346,14 @@ settings_print (int pretty_print)
 }
 
 GVariant *
-settings_get_range (
-  const char * schema,
-  const char * key)
+settings_get_range (const char * schema, const char * key)
 {
   GSettingsSchemaSource * source =
     g_settings_schema_source_get_default ();
   GSettingsSchema * g_settings_schema =
-    g_settings_schema_source_lookup (
-      source, schema, 1);
+    g_settings_schema_source_lookup (source, schema, 1);
   GSettingsSchemaKey * schema_key =
-    g_settings_schema_get_key (
-      g_settings_schema, key);
+    g_settings_schema_get_key (g_settings_schema, key);
   GVariant * range =
     g_settings_schema_key_get_range (schema_key);
 
@@ -393,14 +371,11 @@ settings_get_default_value (
   GSettingsSchemaSource * source =
     g_settings_schema_source_get_default ();
   GSettingsSchema * g_settings_schema =
-    g_settings_schema_source_lookup (
-      source, schema, 1);
+    g_settings_schema_source_lookup (source, schema, 1);
   GSettingsSchemaKey * schema_key =
-    g_settings_schema_get_key (
-      g_settings_schema, key);
+    g_settings_schema_get_key (g_settings_schema, key);
   GVariant * def_val =
-    g_settings_schema_key_get_default_value (
-      schema_key);
+    g_settings_schema_key_get_default_value (schema_key);
 
   g_settings_schema_key_unref (schema_key);
   g_settings_schema_unref (g_settings_schema);
@@ -430,13 +405,10 @@ settings_get_range_double (
   double *     lower,
   double *     upper)
 {
-  GVariant * range =
-    settings_get_range (schema, key);
+  GVariant * range = settings_get_range (schema, key);
 
-  GVariant * range_vals =
-    g_variant_get_child_value (range, 1);
-  range_vals =
-    g_variant_get_child_value (range_vals, 0);
+  GVariant * range_vals = g_variant_get_child_value (range, 1);
+  range_vals = g_variant_get_child_value (range_vals, 0);
   GVariant * lower_var =
     g_variant_get_child_value (range_vals, 0);
   GVariant * upper_var =
@@ -455,18 +427,15 @@ settings_get_range_double (
  * allocated string.
  */
 char *
-settings_get_summary (
-  GSettings *  settings,
-  const char * key)
+settings_get_summary (GSettings * settings, const char * key)
 {
   GSettingsSchema * settings_schema;
   g_object_get (
-    settings, "settings-schema", &settings_schema,
-    NULL);
+    settings, "settings-schema", &settings_schema, NULL);
   GSettingsSchemaKey * schema_key =
     g_settings_schema_get_key (settings_schema, key);
-  char * descr = g_strdup (
-    g_settings_schema_key_get_summary (schema_key));
+  char * descr =
+    g_strdup (g_settings_schema_key_get_summary (schema_key));
   g_settings_schema_key_unref (schema_key);
   g_settings_schema_unref (settings_schema);
 
@@ -478,19 +447,15 @@ settings_get_summary (
  * allocated string.
  */
 char *
-settings_get_description (
-  GSettings *  settings,
-  const char * key)
+settings_get_description (GSettings * settings, const char * key)
 {
   GSettingsSchema * settings_schema;
   g_object_get (
-    settings, "settings-schema", &settings_schema,
-    NULL);
+    settings, "settings-schema", &settings_schema, NULL);
   GSettingsSchemaKey * schema_key =
     g_settings_schema_get_key (settings_schema, key);
   char * descr = g_strdup (
-    g_settings_schema_key_get_description (
-      schema_key));
+    g_settings_schema_key_get_description (schema_key));
   g_settings_schema_key_unref (schema_key);
   g_settings_schema_unref (settings_schema);
 
@@ -507,8 +472,7 @@ settings_strv_contains_str (
   const char * key,
   const char * val)
 {
-  char ** strv =
-    g_settings_get_strv (settings, key);
+  char ** strv = g_settings_get_strv (settings, key);
 
   for (int i = 0;; i++)
     {
@@ -540,24 +504,20 @@ settings_append_to_strv (
 {
   if (
     ignore_if_duplicate && !ZRYTHM_TESTING
-    && settings_strv_contains_str (
-      settings, key, val))
+    && settings_strv_contains_str (settings, key, val))
     {
       return;
     }
 
   g_debug (
-    "%s: key %s val %s ignore if duplicate %d",
-    __func__, key, val, ignore_if_duplicate);
+    "%s: key %s val %s ignore if duplicate %d", __func__, key,
+    val, ignore_if_duplicate);
 
   StrvBuilder * builder = strv_builder_new ();
   char **       strv =
-    ZRYTHM_TESTING
-            ? NULL
-            : g_settings_get_strv (settings, key);
+    ZRYTHM_TESTING ? NULL : g_settings_get_strv (settings, key);
   if (strv)
-    strv_builder_addv (
-      builder, (const char **) strv);
+    strv_builder_addv (builder, (const char **) strv);
   strv_builder_add (builder, val);
 
   char ** new_strv = strv_builder_end (builder);
@@ -573,8 +533,7 @@ settings_append_to_strv (
   else
     {
       g_settings_set_strv (
-        settings, key,
-        (const char * const *) new_strv);
+        settings, key, (const char * const *) new_strv);
     }
 
   g_strfreev (strv);
@@ -587,8 +546,7 @@ settings_append_to_strv (
 void
 settings_free (Settings * self)
 {
-#define FREE_SETTING(x) \
-  g_object_unref_and_null (self->x)
+#define FREE_SETTING(x) g_object_unref_and_null (self->x)
 
   FREE_SETTING (general);
   FREE_SETTING (preferences_dsp_pan);

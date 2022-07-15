@@ -21,8 +21,7 @@ G_DECLARE_FINAL_TYPE (
   TRANSPORT_CONTROLS_WIDGET,
   GtkBox)
 
-typedef struct _ButtonWithMenuWidget
-  ButtonWithMenuWidget;
+typedef struct _ButtonWithMenuWidget ButtonWithMenuWidget;
 
 /**
  * @addtogroup widgets
@@ -30,8 +29,7 @@ typedef struct _ButtonWithMenuWidget
  * @{
  */
 
-#define MW_TRANSPORT_CONTROLS \
-  MW_BOT_BAR->transport_controls
+#define MW_TRANSPORT_CONTROLS MW_BOT_BAR->transport_controls
 
 /**
  * Transport controls.

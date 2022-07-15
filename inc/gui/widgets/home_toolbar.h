@@ -22,9 +22,8 @@ G_DECLARE_FINAL_TYPE (
   HOME_TOOLBAR_WIDGET,
   GtkBox)
 
-typedef struct _ToolboxWidget ToolboxWidget;
-typedef struct _ButtonWithMenuWidget
-  ButtonWithMenuWidget;
+typedef struct _ToolboxWidget        ToolboxWidget;
+typedef struct _ButtonWithMenuWidget ButtonWithMenuWidget;
 
 /**
  * @addtogroup widgets
@@ -60,8 +59,7 @@ home_toolbar_widget_refresh_undo_redo_buttons (
   HomeToolbarWidget * self);
 
 void
-home_toolbar_widget_setup (
-  HomeToolbarWidget * self);
+home_toolbar_widget_setup (HomeToolbarWidget * self);
 
 /**
  * @}

@@ -21,13 +21,11 @@
 #include <sndfile.h>
 
 static void
-print_progress_and_sleep (
-  const GenericProgressInfo * info)
+print_progress_and_sleep (const GenericProgressInfo * info)
 {
   while (info->progress < 1.0)
     {
-      g_message (
-        "progress: %f.1", info->progress * 100.0);
+      g_message ("progress: %f.1", info->progress * 100.0);
       g_usleep (1000);
     }
 }
@@ -39,8 +37,8 @@ test_export_wav (void)
 
   int ret;
 
-  char * filepath = g_build_filename (
-    TESTS_SRCDIR, "test.wav", NULL);
+  char * filepath =
+    g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
   track_create_with_action (
@@ -49,8 +47,7 @@ test_export_wav (void)
 
   char * tmp_dir =
     g_dir_make_tmp ("test_wav_prj_XXXXXX", NULL);
-  ret = project_save (
-    PROJECT, tmp_dir, 0, 0, F_NO_ASYNC);
+  ret = project_save (PROJECT, tmp_dir, 0, 0, F_NO_ASYNC);
   g_free (tmp_dir);
   g_assert_cmpint (ret, ==, 0);
 
@@ -69,8 +66,7 @@ test_export_wav (void)
           settings.progress_info.has_error = false;
           settings.progress_info.cancelled = false;
           settings.format = EXPORT_FORMAT_WAV;
-          settings.artist =
-            g_strdup ("Test Artist");
+          settings.artist = g_strdup ("Test Artist");
           settings.title = g_strdup ("Test Title");
           settings.genre = g_strdup ("Test Genre");
           settings.depth = BIT_DEPTH_16;
@@ -91,8 +87,8 @@ test_export_wav (void)
             }
           char * exports_dir = project_get_path (
             PROJECT, PROJECT_PATH_EXPORTS, false);
-          settings.file_uri = g_build_filename (
-            exports_dir, filename, NULL);
+          settings.file_uri =
+            g_build_filename (exports_dir, filename, NULL);
           ret = exporter_export (&settings);
           g_assert_false (AUDIO_ENGINE->exporting);
           g_assert_cmpint (ret, ==, 0);
@@ -128,37 +124,28 @@ bounce_region (bool with_bpm_automation)
   if (with_bpm_automation)
     {
       /* create bpm automation */
-      AutomationTrack * at =
-        automation_track_find_from_port (
-          P_TEMPO_TRACK->bpm_port, P_TEMPO_TRACK,
-          false);
+      AutomationTrack * at = automation_track_find_from_port (
+        P_TEMPO_TRACK->bpm_port, P_TEMPO_TRACK, false);
       ZRegion * r = automation_region_new (
-        &pos, &end_pos,
-        track_get_name_hash (P_TEMPO_TRACK),
+        &pos, &end_pos, track_get_name_hash (P_TEMPO_TRACK),
         at->index, 0);
-      track_add_region (
-        P_TEMPO_TRACK, r, at, 0, 1, 0);
+      track_add_region (P_TEMPO_TRACK, r, at, 0, 1, 0);
       position_set_to_bar (&pos, 1);
-      AutomationPoint * ap =
-        automation_point_new_float (
-          168.434006f, 0.361445993f, &pos);
-      automation_region_add_ap (
-        r, ap, F_NO_PUBLISH_EVENTS);
+      AutomationPoint * ap = automation_point_new_float (
+        168.434006f, 0.361445993f, &pos);
+      automation_region_add_ap (r, ap, F_NO_PUBLISH_EVENTS);
       position_set_to_bar (&pos, 2);
       ap = automation_point_new_float (
         297.348999f, 0.791164994f, &pos);
-      automation_region_add_ap (
-        r, ap, F_NO_PUBLISH_EVENTS);
+      automation_region_add_ap (r, ap, F_NO_PUBLISH_EVENTS);
     }
 
   /* create the plugin track */
   test_plugin_manager_create_tracks_from_plugin (
     GEONKICK_BUNDLE, GEONKICK_URI, true, false, 1);
-  Track * track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
-    track, F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+    track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* create midi region */
   char * midi_file = g_build_filename (
@@ -166,14 +153,14 @@ bounce_region (bool with_bpm_automation)
   int       lane_pos = 0;
   int       idx_in_lane = 0;
   ZRegion * region = midi_region_new_from_midi_file (
-    &pos, midi_file, track_get_name_hash (track),
-    lane_pos, idx_in_lane, 0);
+    &pos, midi_file, track_get_name_hash (track), lane_pos,
+    idx_in_lane, 0);
   track_add_region (
     track, region, NULL, lane_pos, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) region, F_SELECT,
-    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) region, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
     TL_SELECTIONS, NULL);
 
@@ -182,8 +169,7 @@ bounce_region (bool with_bpm_automation)
   memset (&settings, 0, sizeof (ExportSettings));
   settings.mode = EXPORT_MODE_REGIONS;
   export_settings_set_bounce_defaults (
-    &settings, EXPORT_FORMAT_WAV, NULL,
-    region->name);
+    &settings, EXPORT_FORMAT_WAV, NULL, region->name);
   timeline_selections_mark_for_bounce (
     TL_SELECTIONS, settings.bounce_with_parents);
   position_add_ms (&settings.custom_end, 4000);
@@ -194,16 +180,13 @@ bounce_region (bool with_bpm_automation)
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
     "bounce_thread",
-    (GThreadFunc) exporter_generic_export_thread,
-    &settings);
+    (GThreadFunc) exporter_generic_export_thread, &settings);
 
-  print_progress_and_sleep (
-    &settings.progress_info);
+  print_progress_and_sleep (&settings.progress_info);
 
   g_thread_join (thread);
 
-  exporter_return_connections_post_export (
-    &settings, conns);
+  exporter_return_connections_post_export (&settings, conns);
 
   if (!with_bpm_automation)
     {
@@ -248,8 +231,7 @@ test_mixdown_midi_routed_to_instrument_track (void)
   Track * ins_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
-    ins_track, F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+    ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   char * midi_file = g_build_filename (
     MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", NULL);
@@ -261,13 +243,12 @@ test_mixdown_midi_routed_to_instrument_track (void)
     TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
     TRACKLIST->num_tracks, 1, NULL);
   track_select (
-    midi_track, F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+    midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* route the MIDI track to the instrument track */
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
-    ins_track, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, ins_track,
+    NULL);
 
   /* bounce it */
   ExportSettings settings;
@@ -283,21 +264,17 @@ test_mixdown_midi_routed_to_instrument_track (void)
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
     "bounce_thread",
-    (GThreadFunc) exporter_generic_export_thread,
-    &settings);
+    (GThreadFunc) exporter_generic_export_thread, &settings);
 
-  print_progress_and_sleep (
-    &settings.progress_info);
+  print_progress_and_sleep (&settings.progress_info);
 
   g_thread_join (thread);
 
-  exporter_return_connections_post_export (
-    &settings, conns);
+  exporter_return_connections_post_export (&settings, conns);
 
   char * filepath = g_build_filename (
     TESTS_SRCDIR,
-    "test_mixdown_midi_routed_to_instrument_track.ogg",
-    NULL);
+    "test_mixdown_midi_routed_to_instrument_track.ogg", NULL);
   z_chromaprint_check_fingerprint_similarity (
     filepath, settings.file_uri, 97, 34);
   g_free (filepath);
@@ -319,11 +296,9 @@ test_bounce_region_with_first_note (void)
   /* create the plugin track */
   test_plugin_manager_create_tracks_from_plugin (
     HELM_BUNDLE, HELM_URI, true, false, 1);
-  Track * track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
-    track, F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+    track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* create midi region */
   char * midi_file = g_build_filename (
@@ -331,28 +306,23 @@ test_bounce_region_with_first_note (void)
   int       lane_pos = 0;
   int       idx_in_lane = 0;
   ZRegion * region = midi_region_new_from_midi_file (
-    &pos, midi_file, track_get_name_hash (track),
-    lane_pos, idx_in_lane, 0);
-  ArrangerObject * r_obj =
-    (ArrangerObject *) region;
+    &pos, midi_file, track_get_name_hash (track), lane_pos,
+    idx_in_lane, 0);
+  ArrangerObject * r_obj = (ArrangerObject *) region;
   track_add_region (
     track, region, NULL, lane_pos, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
     TL_SELECTIONS, NULL);
 
   position_init (&pos);
   position_add_beats (&pos, 3);
-  arranger_object_loop_start_pos_setter (
-    r_obj, &pos);
-  arranger_object_clip_start_pos_setter (
-    r_obj, &pos);
+  arranger_object_loop_start_pos_setter (r_obj, &pos);
+  arranger_object_clip_start_pos_setter (r_obj, &pos);
 
-  for (int i = region->num_midi_notes - 1; i >= 1;
-       i--)
+  for (int i = region->num_midi_notes - 1; i >= 1; i--)
     {
       MidiNote * mn = region->midi_notes[i];
       midi_region_remove_midi_note (
@@ -367,8 +337,7 @@ test_bounce_region_with_first_note (void)
   memset (&settings, 0, sizeof (ExportSettings));
   settings.mode = EXPORT_MODE_REGIONS;
   export_settings_set_bounce_defaults (
-    &settings, EXPORT_FORMAT_WAV, NULL,
-    region->name);
+    &settings, EXPORT_FORMAT_WAV, NULL, region->name);
   timeline_selections_mark_for_bounce (
     TL_SELECTIONS, settings.bounce_with_parents);
   position_add_ms (&settings.custom_end, 4000);
@@ -379,23 +348,19 @@ test_bounce_region_with_first_note (void)
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
     "bounce_thread",
-    (GThreadFunc) exporter_generic_export_thread,
-    &settings);
+    (GThreadFunc) exporter_generic_export_thread, &settings);
 
-  print_progress_and_sleep (
-    &settings.progress_info);
+  print_progress_and_sleep (&settings.progress_info);
 
   g_thread_join (thread);
 
-  exporter_return_connections_post_export (
-    &settings, conns);
+  exporter_return_connections_post_export (&settings, conns);
 
   /* assert non silent */
   AudioClip * clip =
     audio_clip_new_from_file (settings.file_uri);
   bool has_audio = false;
-  for (unsigned_frame_t i = 0;
-       i < clip->num_frames; i++)
+  for (unsigned_frame_t i = 0; i < clip->num_frames; i++)
     {
       for (channels_t j = 0; j < clip->channels; j++)
         {
@@ -427,8 +392,7 @@ _test_bounce_midi_track_routed_to_instrument_track (
   Track * ins_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
-    ins_track, F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+    ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   char * midi_file = g_build_filename (
     MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", NULL);
@@ -440,13 +404,12 @@ _test_bounce_midi_track_routed_to_instrument_track (
     TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
     TRACKLIST->num_tracks, 1, NULL);
   track_select (
-    midi_track, F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+    midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* route the MIDI track to the instrument track */
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
-    ins_track, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, ins_track,
+    NULL);
 
   /* bounce it */
   ExportSettings settings;
@@ -460,8 +423,8 @@ _test_bounce_midi_track_routed_to_instrument_track (
 
   /* mark the track for bounce */
   tracklist_selections_mark_for_bounce (
-    TRACKLIST_SELECTIONS,
-    settings.bounce_with_parents, F_NO_MARK_MASTER);
+    TRACKLIST_SELECTIONS, settings.bounce_with_parents,
+    F_NO_MARK_MASTER);
 
   GPtrArray * conns =
     exporter_prepare_tracks_for_export (&settings);
@@ -469,16 +432,13 @@ _test_bounce_midi_track_routed_to_instrument_track (
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
     "bounce_thread",
-    (GThreadFunc) exporter_generic_export_thread,
-    &settings);
+    (GThreadFunc) exporter_generic_export_thread, &settings);
 
-  print_progress_and_sleep (
-    &settings.progress_info);
+  print_progress_and_sleep (&settings.progress_info);
 
   g_thread_join (thread);
 
-  exporter_return_connections_post_export (
-    &settings, conns);
+  exporter_return_connections_post_export (&settings, conns);
 
   if (with_parents)
     {
@@ -493,8 +453,7 @@ _test_bounce_midi_track_routed_to_instrument_track (
   else
     {
       /* assume silence */
-      g_assert_true (
-        audio_file_is_silent (settings.file_uri));
+      g_assert_true (audio_file_is_silent (settings.file_uri));
     }
   io_remove (settings.file_uri);
 
@@ -505,8 +464,7 @@ _test_bounce_midi_track_routed_to_instrument_track (
 }
 
 static void
-test_bounce_midi_track_routed_to_instrument_track (
-  void)
+test_bounce_midi_track_routed_to_instrument_track (void)
 {
   _test_bounce_midi_track_routed_to_instrument_track (
     BOUNCE_STEP_POST_FADER, true);
@@ -528,8 +486,7 @@ _test_bounce_instrument_track (
   Track * ins_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
-    ins_track, F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+    ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* CM Kleer Arp */
   /*plugin_set_selected_preset_by_name (*/
@@ -540,12 +497,11 @@ _test_bounce_instrument_track (
   char * midi_file = g_build_filename (
     MIDILIB_TEST_MIDI_FILES_PATH, "M71.MID", NULL);
   ZRegion * r = midi_region_new_from_midi_file (
-    PLAYHEAD, midi_file,
-    track_get_name_hash (ins_track), 0, 0, 0);
+    PLAYHEAD, midi_file, track_get_name_hash (ins_track), 0,
+    0, 0);
   g_free (midi_file);
   track_add_region (
-    ins_track, r, NULL, 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
@@ -557,16 +513,14 @@ _test_bounce_instrument_track (
     test_plugin_manager_get_plugin_setting (
       MVERB_BUNDLE, MVERB_URI, false);
   mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSERT,
-    track_get_name_hash (ins_track), 0, setting, 1,
-    NULL);
+    PLUGIN_SLOT_INSERT, track_get_name_hash (ins_track), 0,
+    setting, 1, NULL);
 
   /* adjust fader */
   Fader * fader = track_get_fader (ins_track, true);
   Port *  port = fader->amp;
   port_action_perform (
-    PORT_ACTION_SET_CONTROL_VAL, &port->id, 0.5f,
-    false, NULL);
+    PORT_ACTION_SET_CONTROL_VAL, &port->id, 0.5f, false, NULL);
   g_assert_cmpfloat_with_epsilon (
     port->control, 0.5f, 0.00001f);
 
@@ -582,8 +536,8 @@ _test_bounce_instrument_track (
 
   /* mark the track for bounce */
   tracklist_selections_mark_for_bounce (
-    TRACKLIST_SELECTIONS,
-    settings.bounce_with_parents, F_NO_MARK_MASTER);
+    TRACKLIST_SELECTIONS, settings.bounce_with_parents,
+    F_NO_MARK_MASTER);
 
   {
 #  if 0
@@ -593,11 +547,10 @@ _test_bounce_instrument_track (
 
     /* start exporting in a new thread */
     GThread * thread = g_thread_new (
-      "bounce_thread",
-      exporter_generic_export_thread, &settings);
+      "bounce_thread", exporter_generic_export_thread,
+      &settings);
 
-    print_progress_and_sleep (
-      &settings.progress_info);
+    print_progress_and_sleep (&settings.progress_info);
 
     g_thread_join (thread);
 
@@ -607,18 +560,13 @@ _test_bounce_instrument_track (
 #  endif
   }
 
-#  define CHECK_SAME_AS_FILE( \
-    dirname, x, match_rate) \
-    char * filepath = \
-      g_build_filename (dirname, x, NULL); \
+#  define CHECK_SAME_AS_FILE(dirname, x, match_rate) \
+    char * filepath = g_build_filename (dirname, x, NULL); \
     z_chromaprint_check_fingerprint_similarity ( \
-      filepath, settings.file_uri, match_rate, \
-      34); \
+      filepath, settings.file_uri, match_rate, 34); \
     g_free (filepath)
 
-  if (
-    with_parents
-    || bounce_step == BOUNCE_STEP_POST_FADER)
+  if (with_parents || bounce_step == BOUNCE_STEP_POST_FADER)
     {
       CHECK_SAME_AS_FILE (
         TESTS_BUILDDIR,
@@ -652,8 +600,8 @@ _test_bounce_instrument_track (
   Marker * start_marker =
     marker_track_get_start_marker (P_MARKER_TRACK);
   arranger_object_select (
-    (ArrangerObject *) start_marker, F_SELECT,
-    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) start_marker, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_APPEND,
     F_NO_PUBLISH_EVENTS);
@@ -671,8 +619,7 @@ _test_bounce_instrument_track (
     F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_move_timeline (
     TL_SELECTIONS,
-    TRANSPORT->ticks_per_bar * 6
-      - end_marker_obj->pos.ticks,
+    TRANSPORT->ticks_per_bar * 6 - end_marker_obj->pos.ticks,
     0, 0, F_NOT_ALREADY_MOVED, NULL);
 
   /* export again */
@@ -686,8 +633,8 @@ _test_bounce_instrument_track (
 
   /* mark the track for bounce */
   tracklist_selections_mark_for_bounce (
-    TRACKLIST_SELECTIONS,
-    settings.bounce_with_parents, F_NO_MARK_MASTER);
+    TRACKLIST_SELECTIONS, settings.bounce_with_parents,
+    F_NO_MARK_MASTER);
 
   {
     GPtrArray * conns =
@@ -696,16 +643,13 @@ _test_bounce_instrument_track (
     /* start exporting in a new thread */
     GThread * thread = g_thread_new (
       "bounce_thread",
-      (GThreadFunc) exporter_generic_export_thread,
-      &settings);
+      (GThreadFunc) exporter_generic_export_thread, &settings);
 
-    print_progress_and_sleep (
-      &settings.progress_info);
+    print_progress_and_sleep (&settings.progress_info);
 
     g_thread_join (thread);
 
-    exporter_return_connections_post_export (
-      &settings, conns);
+    exporter_return_connections_post_export (&settings, conns);
   }
 
   /* create audio track with bounced material */
@@ -718,12 +662,9 @@ _test_bounce_instrument_track (
    * marker and ends at end marker */
   Track * audio_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
-  ZRegion * bounced_r =
-    audio_track->lanes[0]->regions[0];
-  ArrangerObject * bounce_r_obj =
-    (ArrangerObject *) bounced_r;
-  g_assert_cmppos (
-    &start_marker_obj->pos, &bounce_r_obj->pos);
+  ZRegion * bounced_r = audio_track->lanes[0]->regions[0];
+  ArrangerObject * bounce_r_obj = (ArrangerObject *) bounced_r;
+  g_assert_cmppos (&start_marker_obj->pos, &bounce_r_obj->pos);
   g_assert_cmppos (
     &end_marker_obj->pos, &bounce_r_obj->end_pos);
 
@@ -734,12 +675,10 @@ _test_bounce_instrument_track (
 static void
 test_bounce_instrument_track (void)
 {
-  _test_bounce_instrument_track (
-    BOUNCE_STEP_POST_FADER, true);
+  _test_bounce_instrument_track (BOUNCE_STEP_POST_FADER, true);
   _test_bounce_instrument_track (
     BOUNCE_STEP_BEFORE_INSERTS, false);
-  _test_bounce_instrument_track (
-    BOUNCE_STEP_PRE_FADER, false);
+  _test_bounce_instrument_track (BOUNCE_STEP_PRE_FADER, false);
   _test_bounce_instrument_track (
     BOUNCE_STEP_POST_FADER, false);
 }
@@ -760,67 +699,54 @@ test_chord_routed_to_instrument (void)
   Track * ins_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
-    ins_track, F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+    ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* create the chords */
   Position start_pos, end_pos;
   position_init (&start_pos);
   position_set_to_bar (&end_pos, 3);
   ZRegion * r = chord_region_new (
-    &start_pos, &end_pos,
-    P_CHORD_TRACK->num_chord_regions);
+    &start_pos, &end_pos, P_CHORD_TRACK->num_chord_regions);
   track_add_region (
-    P_CHORD_TRACK, r, NULL, -1, F_GEN_NAME,
-    F_PUBLISH_EVENTS);
-  ChordObject * chord = chord_object_new (
-    &r->id, 0, r->num_chord_objects);
-  ArrangerObject * chord_obj =
-    (ArrangerObject *) chord;
-  chord_region_add_chord_object (
-    r, chord, F_PUBLISH_EVENTS);
+    P_CHORD_TRACK, r, NULL, -1, F_GEN_NAME, F_PUBLISH_EVENTS);
+  ChordObject * chord =
+    chord_object_new (&r->id, 0, r->num_chord_objects);
+  ArrangerObject * chord_obj = (ArrangerObject *) chord;
+  chord_region_add_chord_object (r, chord, F_PUBLISH_EVENTS);
   arranger_object_set_position (
     chord_obj, &start_pos,
-    ARRANGER_OBJECT_POSITION_TYPE_START,
-    F_NO_VALIDATE);
-  chord = chord_object_new (
-    &r->id, 0, r->num_chord_objects);
+    ARRANGER_OBJECT_POSITION_TYPE_START, F_NO_VALIDATE);
+  chord = chord_object_new (&r->id, 0, r->num_chord_objects);
   chord_obj = (ArrangerObject *) chord;
-  chord_region_add_chord_object (
-    r, chord, F_PUBLISH_EVENTS);
+  chord_region_add_chord_object (r, chord, F_PUBLISH_EVENTS);
   position_set_to_bar (&start_pos, 2);
   arranger_object_set_position (
     chord_obj, &start_pos,
-    ARRANGER_OBJECT_POSITION_TYPE_START,
-    F_NO_VALIDATE);
+    ARRANGER_OBJECT_POSITION_TYPE_START, F_NO_VALIDATE);
   track_select (
-    P_CHORD_TRACK, F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+    P_CHORD_TRACK, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   /* route the chord track to the instrument track */
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
-    ins_track, NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, ins_track,
+    NULL);
 
   for (int i = 0; i < 2; i++)
     {
       /* bounce */
       ExportSettings settings;
-      memset (
-        &settings, 0, sizeof (ExportSettings));
+      memset (&settings, 0, sizeof (ExportSettings));
       settings.mode =
         i == 0 ? EXPORT_MODE_FULL : EXPORT_MODE_TRACKS;
       export_settings_set_bounce_defaults (
-        &settings, EXPORT_FORMAT_WAV, NULL,
-        __func__);
+        &settings, EXPORT_FORMAT_WAV, NULL, __func__);
       settings.time_range = TIME_RANGE_LOOP;
 
       if (i == 1)
         {
           tracklist_mark_all_tracks_for_bounce (
             TRACKLIST, false);
-          for (int j = 0;
-               j < TRACKLIST->num_tracks; j++)
+          for (int j = 0; j < TRACKLIST->num_tracks; j++)
             {
               Track * track = TRACKLIST->tracks[j];
               track_mark_for_bounce (
@@ -830,8 +756,7 @@ test_chord_routed_to_instrument (void)
         }
 
       GPtrArray * conns =
-        exporter_prepare_tracks_for_export (
-          &settings);
+        exporter_prepare_tracks_for_export (&settings);
 
       /* start exporting in a new thread */
       GThread * thread = g_thread_new (
@@ -839,8 +764,7 @@ test_chord_routed_to_instrument (void)
         (GThreadFunc) exporter_generic_export_thread,
         &settings);
 
-      print_progress_and_sleep (
-        &settings.progress_info);
+      print_progress_and_sleep (&settings.progress_info);
 
       g_thread_join (thread);
 
@@ -866,8 +790,8 @@ test_export_send (void)
   test_helper_zrythm_init ();
 
   /* create an audio track */
-  char * filepath = g_build_filename (
-    TESTS_SRCDIR, "test.wav", NULL);
+  char * filepath =
+    g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
   Track * audio_track = track_create_with_action (
@@ -899,21 +823,16 @@ test_export_send (void)
               GError * err = NULL;
               bool ret = channel_send_action_perform_connect_audio (
                 audio_track->channel->sends
-                  [j == 0
-                     ? 0
-                     : CHANNEL_SEND_POST_FADER_START_SLOT],
-                audio_fx_track->processor->stereo_in,
-                &err);
+                  [j == 0 ? 0 : CHANNEL_SEND_POST_FADER_START_SLOT],
+                audio_fx_track->processor->stereo_in, &err);
               g_assert_true (ret);
             }
 
           /* bounce */
           ExportSettings settings;
-          memset (
-            &settings, 0, sizeof (ExportSettings));
+          memset (&settings, 0, sizeof (ExportSettings));
           export_settings_set_bounce_defaults (
-            &settings, EXPORT_FORMAT_WAV, NULL,
-            __func__);
+            &settings, EXPORT_FORMAT_WAV, NULL, __func__);
           settings.time_range = TIME_RANGE_LOOP;
           settings.bounce_with_parents = true;
           settings.mode = EXPORT_MODE_TRACKS;
@@ -924,23 +843,19 @@ test_export_send (void)
 
           /* mark only the audio fx track for bounce */
           track_mark_for_bounce (
-            audio_fx_track, F_BOUNCE,
-            F_MARK_REGIONS, F_MARK_CHILDREN,
-            F_MARK_PARENTS);
+            audio_fx_track, F_BOUNCE, F_MARK_REGIONS,
+            F_MARK_CHILDREN, F_MARK_PARENTS);
 
           GPtrArray * conns =
-            exporter_prepare_tracks_for_export (
-              &settings);
+            exporter_prepare_tracks_for_export (&settings);
 
           /* start exporting in a new thread */
           GThread * thread = g_thread_new (
             "bounce_thread",
-            (GThreadFunc)
-              exporter_generic_export_thread,
+            (GThreadFunc) exporter_generic_export_thread,
             &settings);
 
-          print_progress_and_sleep (
-            &settings.progress_info);
+          print_progress_and_sleep (&settings.progress_info);
 
           g_thread_join (thread);
 
@@ -949,13 +864,13 @@ test_export_send (void)
 
           if (i == 0)
             {
-              g_assert_true (audio_file_is_silent (
-                settings.file_uri));
+              g_assert_true (
+                audio_file_is_silent (settings.file_uri));
             }
           else
             {
-              g_assert_false (audio_file_is_silent (
-                settings.file_uri));
+              g_assert_false (
+                audio_file_is_silent (settings.file_uri));
             }
 
           export_settings_free_members (&settings);
@@ -976,51 +891,43 @@ test_mixdown_midi (void)
 
   /* create a MIDI track with 2 adjacent regions
    * with 1 MIDI note each */
-  Track * track = track_create_empty_with_action (
-    TRACK_TYPE_MIDI, NULL);
+  Track * track =
+    track_create_empty_with_action (TRACK_TYPE_MIDI, NULL);
   track_select (
-    track, F_SELECT, F_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+    track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
   Position start, end;
   position_init (&start);
   position_set_to_bar (&end, 4);
-  ZRegion * r = midi_region_new (
-    &start, &end, track->name_hash, 0, 0);
+  ZRegion * r =
+    midi_region_new (&start, &end, track->name_hash, 0, 0);
   track_add_region (
-    track, r, NULL, 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
 
   /* midi note 1 */
   position_init (&start);
   position_set_to_bar (&end, 2);
-  MidiNote * mn =
-    midi_note_new (&r->id, &start, &end, 70, 70);
-  midi_region_add_midi_note (
-    r, mn, F_NO_PUBLISH_EVENTS);
+  MidiNote * mn = midi_note_new (&r->id, &start, &end, 70, 70);
+  midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
 
   /* midi note 2 */
   position_set_to_bar (&start, 3);
   position_set_to_bar (&end, 4);
   mn = midi_note_new (&r->id, &start, &end, 70, 70);
-  midi_region_add_midi_note (
-    r, mn, F_NO_PUBLISH_EVENTS);
+  midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
 
   /* region 2 */
   position_set_to_bar (&start, 2);
   position_set_to_bar (&end, 3);
-  r = midi_region_new (
-    &start, &end, track->name_hash, 0, 1);
+  r = midi_region_new (&start, &end, track->name_hash, 0, 1);
   track_add_region (
-    track, r, NULL, 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
 
   /* midi note 3 */
   position_init (&start);
   position_set_to_bar (&end, 2);
   mn = midi_note_new (&r->id, &start, &end, 70, 70);
-  midi_region_add_midi_note (
-    r, mn, F_NO_PUBLISH_EVENTS);
+  midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
 
   /* bounce */
   ExportSettings settings;
@@ -1036,16 +943,13 @@ test_mixdown_midi (void)
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
     "bounce_thread",
-    (GThreadFunc) exporter_generic_export_thread,
-    &settings);
+    (GThreadFunc) exporter_generic_export_thread, &settings);
 
-  print_progress_and_sleep (
-    &settings.progress_info);
+  print_progress_and_sleep (&settings.progress_info);
 
   g_thread_join (thread);
 
-  exporter_return_connections_post_export (
-    &settings, conns);
+  exporter_return_connections_post_export (&settings, conns);
 
   /* create a MIDI track from the MIDI file */
   SupportedFile * file =
@@ -1055,8 +959,7 @@ test_mixdown_midi (void)
     TRACKLIST->num_tracks, 1, NULL);
 
   /* verify correct data */
-  g_assert_cmpint (
-    exported_track->num_lanes, ==, 2);
+  g_assert_cmpint (exported_track->num_lanes, ==, 2);
   g_assert_cmpint (
     exported_track->lanes[0]->num_regions, ==, 1);
   g_assert_cmpint (
@@ -1115,8 +1018,7 @@ main (int argc, char * argv[])
     (GTestFunc)
       test_bounce_midi_track_routed_to_instrument_track);
   g_test_add_func (
-    TEST_PREFIX
-    "test bounce region with first note",
+    TEST_PREFIX "test bounce region with first note",
     (GTestFunc) test_bounce_region_with_first_note);
   g_test_add_func (
     TEST_PREFIX "test bounce region",
@@ -1125,10 +1027,8 @@ main (int argc, char * argv[])
     TEST_PREFIX "test bounce with bpm automation",
     (GTestFunc) test_bounce_with_bpm_automation);
   g_test_add_func (
-    TEST_PREFIX
-    "test mixdown midi routed to instrument track",
-    (GTestFunc)
-      test_mixdown_midi_routed_to_instrument_track);
+    TEST_PREFIX "test mixdown midi routed to instrument track",
+    (GTestFunc) test_mixdown_midi_routed_to_instrument_track);
 
   return g_test_run ();
 }

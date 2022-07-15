@@ -41,7 +41,7 @@ typedef struct _QuantizeMbWidget  QuantizeMbWidget;
 typedef struct _QuantizeBoxWidget QuantizeBoxWidget;
 typedef struct _SnapBoxWidget     SnapBoxWidget;
 typedef struct _RangeActionButtonsWidget
-  RangeActionButtonsWidget;
+                                  RangeActionButtonsWidget;
 typedef struct _ZoomButtonsWidget ZoomButtonsWidget;
 
 /**
@@ -69,12 +69,10 @@ typedef struct _TimelineToolbarWidget
 } TimelineToolbarWidget;
 
 void
-timeline_toolbar_widget_refresh (
-  TimelineToolbarWidget * self);
+timeline_toolbar_widget_refresh (TimelineToolbarWidget * self);
 
 void
-timeline_toolbar_widget_setup (
-  TimelineToolbarWidget * self);
+timeline_toolbar_widget_setup (TimelineToolbarWidget * self);
 
 /**
  * @}

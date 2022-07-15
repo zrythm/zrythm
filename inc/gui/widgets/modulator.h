@@ -31,9 +31,8 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _ModulatorInnerWidget
-                         ModulatorInnerWidget;
-typedef struct Modulator Modulator;
+typedef struct _ModulatorInnerWidget ModulatorInnerWidget;
+typedef struct Modulator             Modulator;
 
 /**
  * @addtogroup widgets
@@ -41,8 +40,7 @@ typedef struct Modulator Modulator;
  * @{
  */
 
-#define MODULATOR_WIDGET_TYPE \
-  (modulator_widget_get_type ())
+#define MODULATOR_WIDGET_TYPE (modulator_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ModulatorWidget,
   modulator_widget,

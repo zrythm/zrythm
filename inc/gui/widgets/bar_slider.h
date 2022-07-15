@@ -31,8 +31,7 @@
 
 #include <gtk/gtk.h>
 
-#define BAR_SLIDER_WIDGET_TYPE \
-  (bar_slider_widget_get_type ())
+#define BAR_SLIDER_WIDGET_TYPE (bar_slider_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   BarSliderWidget,
   bar_slider_widget,
@@ -179,22 +178,19 @@ _bar_slider_widget_new (
  * Helper to create a bar slider widget.
  */
 #define bar_slider_widget_new( \
-  getter, setter, obj, min, max, w, h, zero, dec, \
-  mode, suffix) \
+  getter, setter, obj, min, max, w, h, zero, dec, mode, \
+  suffix) \
   _bar_slider_widget_new ( \
-    BAR_SLIDER_TYPE_NORMAL, \
-    (float (*) (void *)) getter, \
-    (void (*) (void *, float)) setter, \
-    (void *) obj, min, max, w, h, zero, 0, dec, \
-    mode, "", suffix)
+    BAR_SLIDER_TYPE_NORMAL, (float (*) (void *)) getter, \
+    (void (*) (void *, float)) setter, (void *) obj, min, \
+    max, w, h, zero, 0, dec, mode, "", suffix)
 
 /**
  * Wrapper.
  *
  * @param conn PortConnection pointer.
  */
-#define bar_slider_widget_new_port_connection( \
-  conn, prefix) \
+#define bar_slider_widget_new_port_connection(conn, prefix) \
   _bar_slider_widget_new ( \
     BAR_SLIDER_TYPE_PORT_MULTIPLIER, NULL, NULL, \
     (void *) conn, 0.f, 1.f, 160, 20, 0.f, 1, 0, \

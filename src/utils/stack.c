@@ -47,8 +47,7 @@ stack_new (int length)
     }
   else
     {
-      self->elements =
-        object_new_n ((size_t) length, void *);
+      self->elements = object_new_n ((size_t) length, void *);
       self->max_length = length;
     }
   self->top = -1;
@@ -88,8 +87,7 @@ stack_push (Stack * s, void * element)
       if (s->max_length == -1)
         {
           s->elements = g_realloc (
-            s->elements,
-            (size_t) (top + 2) * sizeof (void *));
+            s->elements, (size_t) (top + 2) * sizeof (void *));
         }
       s->elements[top + 1] = element;
     }

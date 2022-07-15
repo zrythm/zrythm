@@ -37,10 +37,9 @@ typedef enum PortInternalType_v1
   INTERNAL_ALSA_SEQ_PORT_v1,
 } PortInternalType_v1;
 
-static const cyaml_strval_t
-  port_internal_type_strings_v1[] = {
-    {"LV2 port",   INTERNAL_LV2_PORT_v1 },
-    { "JACK port", INTERNAL_JACK_PORT_v1},
+static const cyaml_strval_t port_internal_type_strings_v1[] = {
+  {"LV2 port",   INTERNAL_LV2_PORT_v1 },
+  { "JACK port", INTERNAL_JACK_PORT_v1},
 };
 
 typedef struct Port_v1
@@ -217,9 +216,7 @@ static const cyaml_schema_field_t port_fields_schema__v1[] = {
 };
 
 static const cyaml_schema_value_t port_schema_v1 = {
-  YAML_VALUE_PTR_NULLABLE (
-    Port_v1,
-    port_fields_schema_v1),
+  YAML_VALUE_PTR_NULLABLE (Port_v1, port_fields_schema_v1),
 };
 
 /**
@@ -234,26 +231,22 @@ typedef struct StereoPorts_v1
   Port_v1 * r;
 } StereoPorts_v1;
 
-static const cyaml_schema_field_t
-  stereo_ports_fields_schema_v1[] = {
-    YAML_FIELD_INT (StereoPorts_v1, schema_version),
-    YAML_FIELD_MAPPING_PTR (
-      StereoPorts_v1,
-      l,
-      port_fields_schema_v1),
-    YAML_FIELD_MAPPING_PTR (
-      StereoPorts_v1,
-      r,
-      port_fields_schema_v1),
+static const cyaml_schema_field_t stereo_ports_fields_schema_v1[] = {
+  YAML_FIELD_INT (StereoPorts_v1, schema_version),
+  YAML_FIELD_MAPPING_PTR (
+    StereoPorts_v1,
+    l,
+    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (
+    StereoPorts_v1,
+    r,
+    port_fields_schema_v1),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  stereo_ports_schema_v1 = {
-    YAML_VALUE_PTR (
-      StereoPorts_v1,
-      stereo_ports_fields_schema_v1),
-  };
+static const cyaml_schema_value_t stereo_ports_schema_v1 = {
+  YAML_VALUE_PTR (StereoPorts_v1, stereo_ports_fields_schema_v1),
+};
 
 #endif

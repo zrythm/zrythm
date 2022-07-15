@@ -19,8 +19,7 @@
 #include <glib/gi18n.h>
 
 void
-transport_action_init_loaded (
-  TransportAction * self)
+transport_action_init_loaded (TransportAction * self)
 {
 }
 
@@ -34,9 +33,8 @@ transport_action_new_bpm_change (
   bool      already_done,
   GError ** error)
 {
-  TransportAction * self =
-    object_new (TransportAction);
-  UndoableAction * ua = (UndoableAction *) self;
+  TransportAction * self = object_new (TransportAction);
+  UndoableAction *  ua = (UndoableAction *) self;
   undoable_action_init (ua, UA_TRANSPORT);
 
   self->type = TRANSPORT_ACTION_BPM_CHANGE;
@@ -47,8 +45,7 @@ transport_action_new_bpm_change (
   self->musical_mode =
     ZRYTHM_TESTING
       ? false
-      : g_settings_get_boolean (
-        S_UI, "musical-mode");
+      : g_settings_get_boolean (S_UI, "musical-mode");
 
   return ua;
 }
@@ -61,9 +58,8 @@ transport_action_new_time_sig_change (
   bool                already_done,
   GError **           error)
 {
-  TransportAction * self =
-    object_new (TransportAction);
-  UndoableAction * ua = (UndoableAction *) self;
+  TransportAction * self = object_new (TransportAction);
+  UndoableAction *  ua = (UndoableAction *) self;
   undoable_action_init (ua, UA_TRANSPORT);
 
   self->type = type;
@@ -74,8 +70,7 @@ transport_action_new_time_sig_change (
   self->musical_mode =
     ZRYTHM_TESTING
       ? false
-      : g_settings_get_boolean (
-        S_UI, "musical-mode");
+      : g_settings_get_boolean (S_UI, "musical-mode");
 
   return ua;
 }
@@ -83,8 +78,7 @@ transport_action_new_time_sig_change (
 TransportAction *
 transport_action_clone (const TransportAction * src)
 {
-  TransportAction * self =
-    object_new (TransportAction);
+  TransportAction * self = object_new (TransportAction);
   self->parent_instance = src->parent_instance;
 
   self->type = src->type;
@@ -105,8 +99,8 @@ transport_action_perform_bpm_change (
   GError ** error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    transport_action_new_bpm_change, error,
-    bpm_before, bpm_after, already_done, error);
+    transport_action_new_bpm_change, error, bpm_before,
+    bpm_after, already_done, error);
 }
 
 bool
@@ -118,13 +112,12 @@ transport_action_perform_time_sig_change (
   GError **           error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    transport_action_new_time_sig_change, error,
-    type, before, after, already_done, error);
+    transport_action_new_time_sig_change, error, type, before,
+    after, already_done, error);
 }
 
 static bool
-need_update_positions_from_ticks (
-  TransportAction * self)
+need_update_positions_from_ticks (TransportAction * self)
 {
   switch (self->type)
     {
@@ -152,27 +145,22 @@ do_or_undo (TransportAction * self, bool _do)
       break;
     case TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE:
       change.flag2 = PORT_FLAG2_BEATS_PER_BAR;
-      change.ival =
-        _do ? self->int_after : self->int_before;
+      change.ival = _do ? self->int_after : self->int_before;
       break;
     case TRANSPORT_ACTION_BEAT_UNIT_CHANGE:
-      change.flag2 = change.flag2 =
-        PORT_FLAG2_BEAT_UNIT;
-      change
-        .beat_unit = tempo_track_beat_unit_to_enum (
+      change.flag2 = change.flag2 = PORT_FLAG2_BEAT_UNIT;
+      change.beat_unit = tempo_track_beat_unit_to_enum (
         _do ? self->int_after : self->int_before);
       break;
     }
 
   /* queue change */
-  router_queue_control_port_change (
-    ROUTER, &change);
+  router_queue_control_port_change (ROUTER, &change);
 
   /* run engine to apply the change */
   engine_process_prepare (AUDIO_ENGINE, 1);
   EngineProcessTimeInfo time_nfo = {
-    .g_start_frame =
-      (unsigned_frame_t) PLAYHEAD->frames,
+    .g_start_frame = (unsigned_frame_t) PLAYHEAD->frames,
     .local_offset = 0,
     .nframes = 1,
   };
@@ -186,8 +174,7 @@ do_or_undo (TransportAction * self, bool _do)
   engine_update_frames_per_tick (
     AUDIO_ENGINE, beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
-    AUDIO_ENGINE->sample_rate, true,
-    update_from_ticks, false);
+    AUDIO_ENGINE->sample_rate, true, update_from_ticks, false);
 
   if (self->type == TRANSPORT_ACTION_BPM_CHANGE)
     {
@@ -195,13 +182,11 @@ do_or_undo (TransportAction * self, bool _do)
       double time_ratio = 0;
       if (_do)
         {
-          time_ratio =
-            self->bpm_after / self->bpm_before;
+          time_ratio = self->bpm_after / self->bpm_before;
         }
       else
         {
-          time_ratio =
-            self->bpm_before / self->bpm_after;
+          time_ratio = self->bpm_before / self->bpm_after;
         }
 
       if (
@@ -210,8 +195,7 @@ do_or_undo (TransportAction * self, bool _do)
         false)
         {
           transport_stretch_regions (
-            TRANSPORT, NULL, true, time_ratio,
-            Z_F_NO_FORCE);
+            TRANSPORT, NULL, true, time_ratio, Z_F_NO_FORCE);
         }
     }
 
@@ -219,26 +203,22 @@ do_or_undo (TransportAction * self, bool _do)
 }
 
 int
-transport_action_do (
-  TransportAction * self,
-  GError **         error)
+transport_action_do (TransportAction * self, GError ** error)
 {
   if (self->already_done)
     {
       self->already_done = false;
 
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (
-          P_TEMPO_TRACK);
-      bpm_t bpm = tempo_track_get_current_bpm (
-        P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+      bpm_t bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
 
       bool update_from_ticks =
         need_update_positions_from_ticks (self);
       engine_update_frames_per_tick (
         AUDIO_ENGINE, beats_per_bar, bpm,
-        AUDIO_ENGINE->sample_rate, true,
-        update_from_ticks, false);
+        AUDIO_ENGINE->sample_rate, true, update_from_ticks,
+        false);
     }
   else
     {
@@ -252,9 +232,7 @@ transport_action_do (
 }
 
 int
-transport_action_undo (
-  TransportAction * self,
-  GError **         error)
+transport_action_undo (TransportAction * self, GError ** error)
 {
   do_or_undo (self, false);
 

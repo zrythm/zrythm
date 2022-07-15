@@ -22,13 +22,10 @@ G_DECLARE_FINAL_TYPE (
   CENTER_DOCK_WIDGET,
   GtkWidget)
 
-typedef struct _LeftDockEdgeWidget
-  LeftDockEdgeWidget;
-typedef struct _RightDockEdgeWidget
-  RightDockEdgeWidget;
-typedef struct _BotDockEdgeWidget BotDockEdgeWidget;
-typedef struct _MainNotebookWidget
-  MainNotebookWidget;
+typedef struct _LeftDockEdgeWidget  LeftDockEdgeWidget;
+typedef struct _RightDockEdgeWidget RightDockEdgeWidget;
+typedef struct _BotDockEdgeWidget   BotDockEdgeWidget;
+typedef struct _MainNotebookWidget  MainNotebookWidget;
 
 /**
  * @addtogroup widgets
@@ -64,8 +61,7 @@ center_dock_widget_setup (CenterDockWidget * self);
  * Prepare for finalization.
  */
 void
-center_dock_widget_tear_down (
-  CenterDockWidget * self);
+center_dock_widget_tear_down (CenterDockWidget * self);
 
 /**
  * @}

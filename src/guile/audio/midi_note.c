@@ -61,6 +61,5 @@ init_module (void * data)
 void
 guile_audio_midi_note_define_module (void)
 {
-  scm_c_define_module (
-    "audio midi-note", init_module, NULL);
+  scm_c_define_module ("audio midi-note", init_module, NULL);
 }

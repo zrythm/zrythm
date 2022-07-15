@@ -56,8 +56,8 @@ struct _StrvBuilder
 StrvBuilder *
 strv_builder_new (void)
 {
-  return (StrvBuilder *)
-    g_ptr_array_new_with_free_func (g_free);
+  return (StrvBuilder *) g_ptr_array_new_with_free_func (
+    g_free);
 }
 
 /**
@@ -91,8 +91,7 @@ strv_builder_unref (StrvBuilder * builder)
 StrvBuilder *
 strv_builder_ref (StrvBuilder * builder)
 {
-  return (StrvBuilder *) g_ptr_array_ref (
-    &builder->array);
+  return (StrvBuilder *) g_ptr_array_ref (&builder->array);
 }
 
 /**
@@ -105,12 +104,9 @@ strv_builder_ref (StrvBuilder * builder)
  * Since 2.68
  */
 void
-strv_builder_add (
-  StrvBuilder * builder,
-  const char *  value)
+strv_builder_add (StrvBuilder * builder, const char * value)
 {
-  g_ptr_array_add (
-    &builder->array, g_strdup (value));
+  g_ptr_array_add (&builder->array, g_strdup (value));
 }
 
 /**
@@ -123,9 +119,7 @@ strv_builder_add (
  * Since 2.70
  */
 void
-strv_builder_addv (
-  StrvBuilder * builder,
-  const char ** value)
+strv_builder_addv (StrvBuilder * builder, const char ** value)
 {
   gsize i = 0;
   g_return_if_fail (builder != NULL);
@@ -172,6 +166,5 @@ strv_builder_end (StrvBuilder * builder)
 {
   /* Add NULL terminator */
   g_ptr_array_add (&builder->array, NULL);
-  return (char **) g_ptr_array_steal (
-    &builder->array, NULL);
+  return (char **) g_ptr_array_steal (&builder->array, NULL);
 }

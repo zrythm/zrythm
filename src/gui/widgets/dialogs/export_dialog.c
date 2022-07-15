@@ -60,8 +60,7 @@ static const char * dummy_text = "";
 
 #define AUDIO_STACK_VISIBLE(self) \
   (string_is_equal ( \
-    adw_view_stack_get_visible_child_name ( \
-      self->stack), \
+    adw_view_stack_get_visible_child_name (self->stack), \
     "audio"))
 
 /**
@@ -90,9 +89,8 @@ add_enabled_recursively (
   size_t *             size,
   int *                count)
 {
-  GtkTreeModelFilter * parent_model =
-    GTK_TREE_MODEL_FILTER (
-      gtk_tree_view_get_model (tree_view));
+  GtkTreeModelFilter * parent_model = GTK_TREE_MODEL_FILTER (
+    gtk_tree_view_get_model (tree_view));
   GtkTreeModel * model =
     gtk_tree_model_filter_get_model (parent_model);
 
@@ -126,8 +124,7 @@ add_enabled_recursively (
 
           /* recurse */
           add_enabled_recursively (
-            self, tree_view, &child_iter, tracks,
-            size, count);
+            self, tree_view, &child_iter, tracks, size, count);
         }
     }
 }
@@ -152,9 +149,8 @@ get_enabled_tracks (
   int      count = 0;
   Track ** tracks = object_new_n (size, Track *);
 
-  GtkTreeModelFilter * parent_model =
-    GTK_TREE_MODEL_FILTER (
-      gtk_tree_view_get_model (tree_view));
+  GtkTreeModelFilter * parent_model = GTK_TREE_MODEL_FILTER (
+    gtk_tree_view_get_model (tree_view));
   GtkTreeModel * model =
     gtk_tree_model_filter_get_model (parent_model);
   GtkTreeIter iter;
@@ -186,35 +182,29 @@ get_mixdown_export_filename (
   if (audio)
     {
       GtkStringObject * so = GTK_STRING_OBJECT (
-        adw_combo_row_get_selected_item (
-          self->audio_format));
-      ExportFormat format =
-        export_format_from_pretty_str (
-          gtk_string_object_get_string (so));
+        adw_combo_row_get_selected_item (self->audio_format));
+      ExportFormat format = export_format_from_pretty_str (
+        gtk_string_object_get_string (so));
       format_ext = export_format_to_ext (format);
     }
   else
     {
-      format_ext =
-        export_format_to_ext (EXPORT_FORMAT_MIDI0);
+      format_ext = export_format_to_ext (EXPORT_FORMAT_MIDI0);
     }
 
   GSettings * s = get_current_settings (self);
   char *      base = NULL;
-  switch (
-    g_settings_get_enum (s, "filename-pattern"))
+  switch (g_settings_get_enum (s, "filename-pattern"))
     {
     case EFP_APPEND_FORMAT:
-      base = g_strdup_printf (
-        "%s.%s", mixdown_str, format_ext);
+      base =
+        g_strdup_printf ("%s.%s", mixdown_str, format_ext);
       break;
     case EFP_PREPEND_DATE_APPEND_FORMAT:
       {
-        char * datetime_str =
-          datetime_get_for_filename ();
+        char * datetime_str = datetime_get_for_filename ();
         base = g_strdup_printf (
-          "%s_%s.%s", datetime_str, mixdown_str,
-          format_ext);
+          "%s_%s.%s", datetime_str, mixdown_str, format_ext);
         g_free (datetime_str);
       }
       break;
@@ -223,12 +213,10 @@ get_mixdown_export_filename (
     }
   g_return_val_if_fail (base, NULL);
 
-  char * exports_dir = project_get_path (
-    PROJECT, PROJECT_PATH_EXPORTS, false);
-  char * tmp =
-    g_build_filename (exports_dir, base, NULL);
-  char * full_path =
-    io_get_next_available_filepath (tmp);
+  char * exports_dir =
+    project_get_path (PROJECT, PROJECT_PATH_EXPORTS, false);
+  char * tmp = g_build_filename (exports_dir, base, NULL);
+  char * full_path = io_get_next_available_filepath (tmp);
   g_free (base);
   g_free (tmp);
   g_free (exports_dir);
@@ -260,8 +248,8 @@ get_stem_export_filenames (
     audio ? self->audio_tracks_treeview
           : self->midi_tracks_treeview;
   int      num_tracks;
-  Track ** tracks = get_enabled_tracks (
-    self, tree_view, &num_tracks);
+  Track ** tracks =
+    get_enabled_tracks (self, tree_view, &num_tracks);
 
   if (!tracks)
     {
@@ -272,20 +260,16 @@ get_stem_export_filenames (
   if (audio)
     {
       GtkStringObject * so = GTK_STRING_OBJECT (
-        adw_combo_row_get_selected_item (
-          self->audio_format));
-      ExportFormat format =
-        export_format_from_pretty_str (
-          gtk_string_object_get_string (so));
+        adw_combo_row_get_selected_item (self->audio_format));
+      ExportFormat format = export_format_from_pretty_str (
+        gtk_string_object_get_string (so));
       format_ext = export_format_to_ext (format);
     }
   else
     {
-      format_ext =
-        export_format_to_ext (EXPORT_FORMAT_MIDI0);
+      format_ext = export_format_to_ext (EXPORT_FORMAT_MIDI0);
     }
-  char * datetime_str =
-    datetime_get_for_filename ();
+  char * datetime_str = datetime_get_for_filename ();
 
   GString * gstr = g_string_new (NULL);
 
@@ -300,11 +284,9 @@ get_stem_export_filenames (
           track = in_track;
         }
 
-      GSettings * s =
-        audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI;
-      char * base = NULL;
-      switch (g_settings_get_enum (
-        s, "filename-pattern"))
+      GSettings * s = audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI;
+      char *      base = NULL;
+      switch (g_settings_get_enum (s, "filename-pattern"))
         {
         case EFP_APPEND_FORMAT:
           base = g_strdup_printf (
@@ -312,8 +294,7 @@ get_stem_export_filenames (
           break;
         case EFP_PREPEND_DATE_APPEND_FORMAT:
           base = g_strdup_printf (
-            "%s_%s.%s", datetime_str, track->name,
-            format_ext);
+            "%s_%s.%s", datetime_str, track->name, format_ext);
           break;
         default:
           g_return_val_if_reached (NULL);
@@ -322,10 +303,8 @@ get_stem_export_filenames (
 
       char * exports_dir = project_get_path (
         PROJECT, PROJECT_PATH_EXPORTS, false);
-      char * tmp =
-        g_build_filename (exports_dir, base, NULL);
-      char * full_path =
-        io_get_next_available_filepath (tmp);
+      char * tmp = g_build_filename (exports_dir, base, NULL);
+      char * full_path = io_get_next_available_filepath (tmp);
       g_free (base);
       g_free (tmp);
       g_free (exports_dir);
@@ -348,13 +327,11 @@ get_stem_export_filenames (
           g_string_append (gstr, "\n");
         }
       else if (
-        i == (new_max_files - 1)
-        && new_max_files < num_tracks)
+        i == (new_max_files - 1) && new_max_files < num_tracks)
         {
           if (num_tracks - new_max_files == 1)
             {
-              g_string_append (
-                gstr, _ ("\n1 more file..."));
+              g_string_append (gstr, _ ("\n1 more file..."));
             }
           else
             {
@@ -399,20 +376,19 @@ get_export_filename (
   Track *              track)
 {
   GSettings * s = get_current_settings (self);
-  bool is_audio = AUDIO_STACK_VISIBLE (self);
-  bool export_stems =
+  bool        is_audio = AUDIO_STACK_VISIBLE (self);
+  bool        export_stems =
     g_settings_get_boolean (s, "export-stems");
   char * filename = NULL;
   if (export_stems)
     {
-      filename = get_stem_export_filenames (
-        self, 4, track, is_audio);
+      filename =
+        get_stem_export_filenames (self, 4, track, is_audio);
       if (absolute)
         {
-          char * exports_dir =
-            get_exports_dir (self);
-          char * abs_path = g_build_filename (
-            exports_dir, filename, NULL);
+          char * exports_dir = get_exports_dir (self);
+          char * abs_path =
+            g_build_filename (exports_dir, filename, NULL);
           g_free (exports_dir);
           g_free (filename);
           return abs_path;
@@ -424,15 +400,13 @@ get_export_filename (
     }
   else
     {
-      filename = get_mixdown_export_filename (
-        self, is_audio);
+      filename = get_mixdown_export_filename (self, is_audio);
 
       if (absolute)
         {
-          char * exports_dir =
-            get_exports_dir (self);
-          char * abs_path = g_build_filename (
-            exports_dir, filename, NULL);
+          char * exports_dir = get_exports_dir (self);
+          char * abs_path =
+            g_build_filename (exports_dir, filename, NULL);
           g_free (exports_dir);
           g_free (filename);
           return abs_path;
@@ -447,8 +421,7 @@ get_export_filename (
 static void
 update_text (ExportDialogWidget * self)
 {
-  char * filename =
-    get_export_filename (self, false, NULL);
+  char * filename = get_export_filename (self, false, NULL);
   g_return_if_fail (filename);
 
   char matcha[10];
@@ -465,14 +438,12 @@ update_text (ExportDialogWidget * self)
     "\n\n"
     "%s\n"
     "<a href=\"%s\">%s</a>",
-    _ ("The following files will be created:"),
-    matcha, filename, _ ("in the directory:"),
-    exports_dir, exports_dir);
+    _ ("The following files will be created:"), matcha,
+    filename, _ ("in the directory:"), exports_dir,
+    exports_dir);
   bool       is_audio = AUDIO_STACK_VISIBLE (self);
   GtkLabel * lbl =
-    is_audio
-      ? self->audio_output_label
-      : self->midi_output_label;
+    is_audio ? self->audio_output_label : self->midi_output_label;
   gtk_label_set_markup (lbl, str);
   g_free (filename);
   g_free (str);
@@ -480,8 +451,7 @@ update_text (ExportDialogWidget * self)
 
   g_signal_connect (
     G_OBJECT (lbl), "activate-link",
-    G_CALLBACK (z_gtk_activate_dir_link_func),
-    self);
+    G_CALLBACK (z_gtk_activate_dir_link_func), self);
 
 #undef ORANGIZE
 }
@@ -489,26 +459,22 @@ update_text (ExportDialogWidget * self)
 static void
 setup_bit_depth_drop_down (AdwComboRow * combo_row)
 {
-  GtkStringList * string_list =
-    gtk_string_list_new (NULL);
+  GtkStringList * string_list = gtk_string_list_new (NULL);
 
-  for (BitDepth i = BIT_DEPTH_16;
-       i <= BIT_DEPTH_32; i++)
+  for (BitDepth i = BIT_DEPTH_16; i <= BIT_DEPTH_32; i++)
     {
-      const char * str =
-        audio_bit_depth_to_pretty_str (i);
+      const char * str = audio_bit_depth_to_pretty_str (i);
       gtk_string_list_append (string_list, str);
     }
 
   adw_combo_row_set_model (
     combo_row, G_LIST_MODEL (string_list));
 
-  int selected_bit_depth = g_settings_get_int (
-    S_EXPORT_AUDIO, "bit-depth");
-  BitDepth depth = audio_bit_depth_int_to_enum (
-    selected_bit_depth);
-  adw_combo_row_set_selected (
-    combo_row, (guint) depth);
+  int selected_bit_depth =
+    g_settings_get_int (S_EXPORT_AUDIO, "bit-depth");
+  BitDepth depth =
+    audio_bit_depth_int_to_enum (selected_bit_depth);
+  adw_combo_row_set_selected (combo_row, (guint) depth);
 }
 
 static void
@@ -527,34 +493,27 @@ on_filename_pattern_changed (
 }
 
 static void
-setup_audio_formats_dropdown (
-  AdwComboRow * combo_row)
+setup_audio_formats_dropdown (AdwComboRow * combo_row)
 {
-  GtkStringList * string_list =
-    gtk_string_list_new (NULL);
+  GtkStringList * string_list = gtk_string_list_new (NULL);
 
-  for (ExportFormat i = 0; i < NUM_EXPORT_FORMATS;
-       i++)
+  for (ExportFormat i = 0; i < NUM_EXPORT_FORMATS; i++)
     {
-      if (
-        i == EXPORT_FORMAT_MIDI0
-        || i == EXPORT_FORMAT_MIDI1)
+      if (i == EXPORT_FORMAT_MIDI0 || i == EXPORT_FORMAT_MIDI1)
         continue;
 
-      const char * str =
-        export_format_to_pretty_str (i);
+      const char * str = export_format_to_pretty_str (i);
       gtk_string_list_append (string_list, str);
     }
 
   adw_combo_row_set_model (
     combo_row, G_LIST_MODEL (string_list));
 
-  const char * selected_str = g_settings_get_string (
-    S_EXPORT_AUDIO, "format");
+  const char * selected_str =
+    g_settings_get_string (S_EXPORT_AUDIO, "format");
   ExportFormat format =
     export_format_from_pretty_str (selected_str);
-  adw_combo_row_set_selected (
-    combo_row, (guint) format);
+  adw_combo_row_set_selected (combo_row, (guint) format);
 }
 
 static void
@@ -585,7 +544,7 @@ init_export_info (
   ExportSettings *     info,
   Track *              track)
 {
-  bool is_audio = AUDIO_STACK_VISIBLE (self);
+  bool        is_audio = AUDIO_STACK_VISIBLE (self);
   GSettings * s = get_current_settings (self);
 
   memset (info, 0, sizeof (ExportSettings));
@@ -593,19 +552,17 @@ init_export_info (
   if (is_audio)
     {
       GtkStringObject * so = GTK_STRING_OBJECT (
-        adw_combo_row_get_selected_item (
-          self->audio_format));
+        adw_combo_row_get_selected_item (self->audio_format));
       const char * pretty_str =
         gtk_string_object_get_string (so);
       info->format =
         export_format_from_pretty_str (pretty_str);
-      g_settings_set_string (
-        s, "format", pretty_str);
+      g_settings_set_string (s, "format", pretty_str);
     }
   else
     {
-      guint idx = adw_combo_row_get_selected (
-        self->midi_format);
+      guint idx =
+        adw_combo_row_get_selected (self->midi_format);
       if (idx == 0)
         info->format = EXPORT_FORMAT_MIDI0;
       else
@@ -615,18 +572,16 @@ init_export_info (
 
   if (is_audio)
     {
-      BitDepth depth =
-        (BitDepth) adw_combo_row_get_selected (
-          self->audio_bit_depth);
+      BitDepth depth = (BitDepth) adw_combo_row_get_selected (
+        self->audio_bit_depth);
       info->depth = depth;
       g_settings_set_int (
         S_EXPORT_AUDIO, "bit-depth",
         audio_bit_depth_enum_to_int (depth));
 
-      info->dither = gtk_switch_get_active (
-        self->audio_dither_switch);
-      g_settings_set_boolean (
-        s, "dither", info->dither);
+      info->dither =
+        gtk_switch_get_active (self->audio_dither_switch);
+      g_settings_set_boolean (s, "dither", info->dither);
     }
 
   if (!is_audio)
@@ -634,8 +589,7 @@ init_export_info (
       info->lanes_as_tracks = gtk_switch_get_active (
         self->midi_export_lanes_as_tracks_switch);
       g_settings_set_boolean (
-        s, "lanes-as-tracks",
-        info->lanes_as_tracks);
+        s, "lanes-as-tracks", info->lanes_as_tracks);
     }
 
   AdwEntryRow * title;
@@ -654,12 +608,12 @@ init_export_info (
       genre = self->midi_genre;
     }
 
-  info->artist = g_strdup (
-    gtk_editable_get_text (GTK_EDITABLE (artist)));
-  info->title = g_strdup (
-    gtk_editable_get_text (GTK_EDITABLE (title)));
-  info->genre = g_strdup (
-    gtk_editable_get_text (GTK_EDITABLE (genre)));
+  info->artist =
+    g_strdup (gtk_editable_get_text (GTK_EDITABLE (artist)));
+  info->title =
+    g_strdup (gtk_editable_get_text (GTK_EDITABLE (title)));
+  info->genre =
+    g_strdup (gtk_editable_get_text (GTK_EDITABLE (genre)));
   g_settings_set_string (s, "artist", info->artist);
   g_settings_set_string (s, "title", info->title);
   g_settings_set_string (s, "genre", info->genre);
@@ -668,14 +622,11 @@ init_export_info (
     is_audio
       ? self->audio_time_range_drop_down
       : self->midi_time_range_drop_down;
-  info->time_range =
-    (ExportTimeRange) gtk_drop_down_get_selected (
-      time_range_drop_down);
-  g_settings_set_enum (
-    s, "time-range", info->time_range);
+  info->time_range = (ExportTimeRange)
+    gtk_drop_down_get_selected (time_range_drop_down);
+  g_settings_set_enum (s, "time-range", info->time_range);
 
-  info->file_uri =
-    get_export_filename (self, true, track);
+  info->file_uri = get_export_filename (self, true, track);
 
   info->bounce_with_parents = true;
 
@@ -694,8 +645,7 @@ init_export_info (
 static void
 on_export (ExportDialogWidget * self, bool audio)
 {
-  GSettings * s =
-    audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI;
+  GSettings *   s = audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI;
   GtkTreeView * tree_view =
     audio ? self->audio_tracks_treeview
           : self->midi_tracks_treeview;
@@ -703,13 +653,12 @@ on_export (ExportDialogWidget * self, bool audio)
     g_settings_get_boolean (s, "export-stems");
 
   int      num_tracks;
-  Track ** tracks = get_enabled_tracks (
-    self, tree_view, &num_tracks);
+  Track ** tracks =
+    get_enabled_tracks (self, tree_view, &num_tracks);
   if (!tracks)
     {
       ui_show_error_message (
-        MAIN_WINDOW, false,
-        _ ("No tracks to export"));
+        MAIN_WINDOW, false, _ ("No tracks to export"));
       return;
     }
 
@@ -724,46 +673,39 @@ on_export (ExportDialogWidget * self, bool audio)
       for (int i = 0; i < num_tracks; i++)
         {
           Track * track = tracks[i];
-          g_debug (
-            "~ bouncing stem for %s ~",
-            track->name);
+          g_debug ("~ bouncing stem for %s ~", track->name);
 
           /* unmark all tracks for bounce */
           tracklist_mark_all_tracks_for_bounce (
             TRACKLIST, false);
 
           track_mark_for_bounce (
-            track, F_BOUNCE, F_MARK_REGIONS,
-            F_MARK_CHILDREN, F_MARK_PARENTS);
+            track, F_BOUNCE, F_MARK_REGIONS, F_MARK_CHILDREN,
+            F_MARK_PARENTS);
 
           ExportSettings info;
           init_export_info (self, &info, track);
 
           GPtrArray * conns =
-            exporter_prepare_tracks_for_export (
-              &info);
+            exporter_prepare_tracks_for_export (&info);
 
           g_message ("exporting %s", info.file_uri);
 
           /* start exporting in a new thread */
           GThread * thread = g_thread_new (
             "export_thread",
-            (GThreadFunc)
-              exporter_generic_export_thread,
+            (GThreadFunc) exporter_generic_export_thread,
             &info);
 
           /* create a progress dialog and block */
-          ExportProgressDialogWidget *
-            progress_dialog =
-              export_progress_dialog_widget_new (
-                &info, true, true, F_CANCELABLE);
+          ExportProgressDialogWidget * progress_dialog =
+            export_progress_dialog_widget_new (
+              &info, true, true, F_CANCELABLE);
           gtk_window_set_transient_for (
-            GTK_WINDOW (progress_dialog),
-            GTK_WINDOW (self));
+            GTK_WINDOW (progress_dialog), GTK_WINDOW (self));
           g_signal_connect (
             G_OBJECT (progress_dialog), "response",
-            G_CALLBACK (on_progress_dialog_closed),
-            self);
+            G_CALLBACK (on_progress_dialog_closed), self);
           z_gtk_dialog_run (
             GTK_DIALOG (progress_dialog), true);
 
@@ -778,8 +720,7 @@ on_export (ExportDialogWidget * self, bool audio)
           track->bounce = false;
 
           g_debug (
-            "~ finished bouncing stem for %s ~",
-            track->name);
+            "~ finished bouncing stem for %s ~", track->name);
         }
     }
   else /* if exporting mixdown */
@@ -790,8 +731,7 @@ on_export (ExportDialogWidget * self, bool audio)
       init_export_info (self, &info, NULL);
 
       /* unmark all tracks for bounce */
-      tracklist_mark_all_tracks_for_bounce (
-        TRACKLIST, false);
+      tracklist_mark_all_tracks_for_bounce (TRACKLIST, false);
 
       /* mark all checked tracks for bounce */
       for (int i = 0; i < num_tracks; i++)
@@ -807,22 +747,18 @@ on_export (ExportDialogWidget * self, bool audio)
       /* start exporting in a new thread */
       GThread * thread = g_thread_new (
         "export_thread",
-        (GThreadFunc) exporter_generic_export_thread,
-        &info);
+        (GThreadFunc) exporter_generic_export_thread, &info);
 
       /* create a progress dialog and block */
       ExportProgressDialogWidget * progress_dialog =
         export_progress_dialog_widget_new (
           &info, true, true, F_CANCELABLE);
       gtk_window_set_transient_for (
-        GTK_WINDOW (progress_dialog),
-        GTK_WINDOW (self));
+        GTK_WINDOW (progress_dialog), GTK_WINDOW (self));
       g_signal_connect (
         G_OBJECT (progress_dialog), "response",
-        G_CALLBACK (on_progress_dialog_closed),
-        self);
-      z_gtk_dialog_run (
-        GTK_DIALOG (progress_dialog), true);
+        G_CALLBACK (on_progress_dialog_closed), self);
+      z_gtk_dialog_run (GTK_DIALOG (progress_dialog), true);
 
       g_thread_join (thread);
 
@@ -877,26 +813,22 @@ add_group_track_children (
 {
   /* add the group */
   GtkTreeIter group_iter;
-  gtk_tree_store_append (
-    tree_store, &group_iter, iter);
+  gtk_tree_store_append (tree_store, &group_iter, iter);
   gtk_tree_store_set (
-    tree_store, &group_iter, TRACK_COLUMN_CHECKBOX,
-    true, TRACK_COLUMN_ICON, track->icon_name,
-    TRACK_COLUMN_BG_RGBA, &track->color,
-    TRACK_COLUMN_DUMMY_TEXT, dummy_text,
-    TRACK_COLUMN_NAME, track->name,
-    TRACK_COLUMN_TRACK, track, -1);
+    tree_store, &group_iter, TRACK_COLUMN_CHECKBOX, true,
+    TRACK_COLUMN_ICON, track->icon_name, TRACK_COLUMN_BG_RGBA,
+    &track->color, TRACK_COLUMN_DUMMY_TEXT, dummy_text,
+    TRACK_COLUMN_NAME, track->name, TRACK_COLUMN_TRACK, track,
+    -1);
 
   g_debug ("%s: track '%s'", __func__, track->name);
 
   /* add the children */
   for (int i = 0; i < track->num_children; i++)
     {
-      Track * child =
-        tracklist_find_track_by_name_hash (
-          TRACKLIST, track->children[i]);
-      g_return_if_fail (
-        IS_TRACK_AND_NONNULL (child));
+      Track * child = tracklist_find_track_by_name_hash (
+        TRACKLIST, track->children[i]);
+      g_return_if_fail (IS_TRACK_AND_NONNULL (child));
 
       g_debug ("child: '%s'", child->name);
 
@@ -911,9 +843,8 @@ add_group_track_children (
           gtk_tree_store_append (
             tree_store, &child_iter, &group_iter);
           gtk_tree_store_set (
-            tree_store, &child_iter,
-            TRACK_COLUMN_CHECKBOX, true,
-            TRACK_COLUMN_ICON, child->icon_name,
+            tree_store, &child_iter, TRACK_COLUMN_CHECKBOX,
+            true, TRACK_COLUMN_ICON, child->icon_name,
             TRACK_COLUMN_BG_RGBA, &child->color,
             TRACK_COLUMN_DUMMY_TEXT, dummy_text,
             TRACK_COLUMN_NAME, child->name,
@@ -938,16 +869,15 @@ set_track_toggle_on_parent_recursively (
       return;
     }
 
-  GtkTreeModelFilter * parent_model =
-    GTK_TREE_MODEL_FILTER (
-      gtk_tree_view_get_model (tree_view));
+  GtkTreeModelFilter * parent_model = GTK_TREE_MODEL_FILTER (
+    gtk_tree_view_get_model (tree_view));
   GtkTreeModel * model =
     gtk_tree_model_filter_get_model (parent_model);
 
   /* enable the parent if toggled */
   GtkTreeIter parent_iter;
-  bool has_parent = gtk_tree_model_iter_parent (
-    model, &parent_iter, iter);
+  bool        has_parent =
+    gtk_tree_model_iter_parent (model, &parent_iter, iter);
   if (has_parent)
     {
       /* set new value on widget */
@@ -967,9 +897,8 @@ set_track_toggle_recursively (
   GtkTreeIter *        iter,
   bool                 toggled)
 {
-  GtkTreeModelFilter * parent_model =
-    GTK_TREE_MODEL_FILTER (
-      gtk_tree_view_get_model (tree_view));
+  GtkTreeModelFilter * parent_model = GTK_TREE_MODEL_FILTER (
+    gtk_tree_view_get_model (tree_view));
   GtkTreeModel * model =
     gtk_tree_model_filter_get_model (parent_model);
 
@@ -1006,16 +935,15 @@ on_track_toggled (
   gchar *                 path_str,
   ExportDialogWidget *    self)
 {
-  bool is_audio = AUDIO_STACK_VISIBLE (self);
+  bool        is_audio = AUDIO_STACK_VISIBLE (self);
   GSettings * s = get_current_settings (self);
 
   GtkTreeView * tree_view =
     is_audio
       ? self->audio_tracks_treeview
       : self->midi_tracks_treeview;
-  GtkTreeModelFilter * parent_model =
-    GTK_TREE_MODEL_FILTER (
-      gtk_tree_view_get_model (tree_view));
+  GtkTreeModelFilter * parent_model = GTK_TREE_MODEL_FILTER (
+    gtk_tree_view_get_model (tree_view));
   GtkTreeModel * model =
     gtk_tree_model_filter_get_model (parent_model);
   g_debug ("path str: %s", path_str);
@@ -1024,8 +952,7 @@ on_track_toggled (
   GtkTreePath * path =
     gtk_tree_path_new_from_string (path_str);
   GtkTreeIter iter;
-  bool        ret =
-    gtk_tree_model_get_iter (model, &iter, path);
+  bool ret = gtk_tree_model_get_iter (model, &iter, path);
   g_return_if_fail (ret);
   g_return_if_fail (gtk_tree_store_iter_is_valid (
     GTK_TREE_STORE (model), &iter));
@@ -1033,8 +960,7 @@ on_track_toggled (
   /* get toggled */
   gboolean toggled;
   gtk_tree_model_get (
-    model, &iter, TRACK_COLUMN_CHECKBOX, &toggled,
-    -1);
+    model, &iter, TRACK_COLUMN_CHECKBOX, &toggled, -1);
   g_return_if_fail (gtk_tree_store_iter_is_valid (
     GTK_TREE_STORE (model), &iter));
 
@@ -1043,8 +969,8 @@ on_track_toggled (
 
   /* set new value on widget */
   gtk_tree_store_set (
-    GTK_TREE_STORE (model), &iter,
-    TRACK_COLUMN_CHECKBOX, toggled, -1);
+    GTK_TREE_STORE (model), &iter, TRACK_COLUMN_CHECKBOX,
+    toggled, -1);
 
   /* if exporting mixdown (single file) */
   if (!g_settings_get_boolean (s, "export-stems"))
@@ -1224,9 +1150,9 @@ create_model_for_tracks (ExportDialogWidget * self)
   /* checkbox, icon, foreground rgba,
    * background rgba, name, track */
   GtkTreeStore * tree_store = gtk_tree_store_new (
-    NUM_TRACK_COLUMNS, G_TYPE_BOOLEAN,
-    G_TYPE_STRING, GDK_TYPE_RGBA, G_TYPE_STRING,
-    G_TYPE_STRING, G_TYPE_POINTER);
+    NUM_TRACK_COLUMNS, G_TYPE_BOOLEAN, G_TYPE_STRING,
+    GDK_TYPE_RGBA, G_TYPE_STRING, G_TYPE_STRING,
+    G_TYPE_POINTER);
 
   /*GtkTreeIter iter;*/
   /*gtk_tree_store_append (tree_store, &iter, NULL);*/
@@ -1245,17 +1171,14 @@ create_model_for_tracks (ExportDialogWidget * self)
 }
 
 static void
-setup_tracks_treeview (
-  ExportDialogWidget * self,
-  bool                 is_audio)
+setup_tracks_treeview (ExportDialogWidget * self, bool is_audio)
 {
   GtkTreeView * tree_view =
     is_audio
       ? self->audio_tracks_treeview
       : self->midi_tracks_treeview;
 
-  GtkTreeModel * model =
-    create_model_for_tracks (self);
+  GtkTreeModel * model = create_model_for_tracks (self);
   gtk_tree_view_set_model (tree_view, model);
 
   /* init tree view */
@@ -1265,33 +1188,28 @@ setup_tracks_treeview (
   /* column for checkbox */
   renderer = gtk_cell_renderer_toggle_new ();
   column = gtk_tree_view_column_new_with_attributes (
-    "icon", renderer, "active",
-    TRACK_COLUMN_CHECKBOX, NULL);
+    "icon", renderer, "active", TRACK_COLUMN_CHECKBOX, NULL);
   gtk_tree_view_append_column (tree_view, column);
   g_signal_connect (
-    renderer, "toggled",
-    G_CALLBACK (on_track_toggled), self);
+    renderer, "toggled", G_CALLBACK (on_track_toggled), self);
 
   /* column for color */
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes (
-    "name", renderer, "text",
-    TRACK_COLUMN_DUMMY_TEXT, "background-rgba",
-    TRACK_COLUMN_BG_RGBA, NULL);
+    "name", renderer, "text", TRACK_COLUMN_DUMMY_TEXT,
+    "background-rgba", TRACK_COLUMN_BG_RGBA, NULL);
   gtk_tree_view_append_column (tree_view, column);
 
   /* column for icon */
   renderer = gtk_cell_renderer_pixbuf_new ();
   column = gtk_tree_view_column_new_with_attributes (
-    "icon", renderer, "icon-name",
-    TRACK_COLUMN_ICON, NULL);
+    "icon", renderer, "icon-name", TRACK_COLUMN_ICON, NULL);
   gtk_tree_view_append_column (tree_view, column);
 
   /* column for name */
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes (
-    "name", renderer, "text", TRACK_COLUMN_NAME,
-    NULL);
+    "name", renderer, "text", TRACK_COLUMN_NAME, NULL);
   gtk_tree_view_append_column (tree_view, column);
 
   /* set search column */
@@ -1315,8 +1233,7 @@ setup_tracks_treeview (
     G_OBJECT (mp), "pressed",
     G_CALLBACK (on_track_right_click), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (tree_view),
-    GTK_EVENT_CONTROLLER (mp));
+    GTK_WIDGET (tree_view), GTK_EVENT_CONTROLLER (mp));
 
 #if 0
   /* set search func */
@@ -1346,18 +1263,15 @@ setup_filename_pattern_combo_row (
     _ ("<date>_<name>.<format>"),
     NULL,
   };
-  GtkStringList * string_list =
-    gtk_string_list_new (strings);
+  GtkStringList * string_list = gtk_string_list_new (strings);
 
   adw_combo_row_set_model (
     combo_row, G_LIST_MODEL (string_list));
 
-  GSettings * s =
-    is_audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI;
+  GSettings * s = is_audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI;
   adw_combo_row_set_selected (
     combo_row,
-    (guint) g_settings_get_enum (
-      s, "filename-pattern"));
+    (guint) g_settings_get_enum (s, "filename-pattern"));
 
   g_signal_connect (
     G_OBJECT (combo_row), "notify::selected-item",
@@ -1384,8 +1298,7 @@ setup_mixdown_or_stems_combo_row (
     _ ("Stems"),
     NULL,
   };
-  GtkStringList * string_list =
-    gtk_string_list_new (strings);
+  GtkStringList * string_list = gtk_string_list_new (strings);
 
   adw_combo_row_set_model (
     combo_row, G_LIST_MODEL (string_list));
@@ -1398,8 +1311,7 @@ setup_mixdown_or_stems_combo_row (
 
   g_signal_connect (
     G_OBJECT (combo_row), "notify::selected-item",
-    G_CALLBACK (on_mixdown_stem_selection_changed),
-    self);
+    G_CALLBACK (on_mixdown_stem_selection_changed), self);
 }
 
 static void
@@ -1414,8 +1326,7 @@ setup_time_range_drop_down (
     C_ ("Export time range", "Custom"),
     NULL,
   };
-  GtkStringList * string_list =
-    gtk_string_list_new (strings);
+  GtkStringList * string_list = gtk_string_list_new (strings);
 
   gtk_drop_down_set_model (
     drop_down, G_LIST_MODEL (string_list));
@@ -1423,8 +1334,7 @@ setup_time_range_drop_down (
   gtk_drop_down_set_selected (
     drop_down,
     (guint) g_settings_get_enum (
-      is_audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI,
-      "time-range"));
+      is_audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI, "time-range"));
 }
 
 static void
@@ -1434,11 +1344,10 @@ setup_dither (
 {
   gtk_switch_set_active (
     dither_switch,
-    g_settings_get_boolean (
-      S_EXPORT_AUDIO, "dither"));
+    g_settings_get_boolean (S_EXPORT_AUDIO, "dither"));
 
-  char * descr = settings_get_description (
-    S_EXPORT_AUDIO, "dither");
+  char * descr =
+    settings_get_description (S_EXPORT_AUDIO, "dither");
   adw_action_row_set_subtitle (dither_row, descr);
   g_free (descr);
 }
@@ -1461,10 +1370,8 @@ static void
 export_dialog_widget_class_init (
   ExportDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "export_dialog.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "export_dialog.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
@@ -1499,17 +1406,14 @@ export_dialog_widget_class_init (
 }
 
 static void
-export_dialog_widget_init (
-  ExportDialogWidget * self)
+export_dialog_widget_init (ExportDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_dialog_add_button (
-    GTK_DIALOG (self), _ ("_Cancel"),
-    GTK_RESPONSE_REJECT);
+    GTK_DIALOG (self), _ ("_Cancel"), GTK_RESPONSE_REJECT);
   gtk_dialog_add_button (
-    GTK_DIALOG (self), _ ("_Export"),
-    GTK_RESPONSE_ACCEPT);
+    GTK_DIALOG (self), _ ("_Export"), GTK_RESPONSE_ACCEPT);
   gtk_dialog_set_default_response (
     GTK_DIALOG (self), GTK_RESPONSE_ACCEPT);
 
@@ -1521,16 +1425,14 @@ export_dialog_widget_init (
     g_settings_get_string (S_EXPORT_AUDIO, "title"));
   gtk_editable_set_text (
     GTK_EDITABLE (self->audio_artist),
-    g_settings_get_string (
-      S_EXPORT_AUDIO, "artist"));
+    g_settings_get_string (S_EXPORT_AUDIO, "artist"));
   gtk_editable_set_text (
     GTK_EDITABLE (self->audio_genre),
     g_settings_get_string (S_EXPORT_AUDIO, "genre"));
 
   /* options */
   setup_audio_formats_dropdown (self->audio_format);
-  setup_dither (
-    self->audio_dither, self->audio_dither_switch);
+  setup_dither (self->audio_dither, self->audio_dither_switch);
   setup_bit_depth_drop_down (self->audio_bit_depth);
   setup_filename_pattern_combo_row (
     self, self->audio_filename_pattern, true);
@@ -1560,12 +1462,10 @@ export_dialog_widget_init (
   /* options */
   adw_combo_row_set_selected (
     self->midi_format,
-    (guint) g_settings_get_int (
-      S_EXPORT_MIDI, "format"));
+    (guint) g_settings_get_int (S_EXPORT_MIDI, "format"));
   gtk_switch_set_active (
     self->midi_export_lanes_as_tracks_switch,
-    g_settings_get_boolean (
-      S_EXPORT_MIDI, "lanes-as-tracks"));
+    g_settings_get_boolean (S_EXPORT_MIDI, "lanes-as-tracks"));
   setup_filename_pattern_combo_row (
     self, self->midi_filename_pattern, false);
   setup_mixdown_or_stems_combo_row (
@@ -1583,6 +1483,6 @@ export_dialog_widget_init (
     G_CALLBACK (on_visible_child_changed), self);
 
   g_signal_connect (
-    G_OBJECT (self), "response",
-    G_CALLBACK (on_response), self);
+    G_OBJECT (self), "response", G_CALLBACK (on_response),
+    self);
 }

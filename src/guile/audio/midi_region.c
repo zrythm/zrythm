@@ -39,8 +39,7 @@ SCM_DEFINE (
 #define FUNC_NAME s_
 {
   ZRegion * region = midi_region_new (
-    scm_to_pointer (start_pos),
-    scm_to_pointer (end_pos),
+    scm_to_pointer (start_pos), scm_to_pointer (end_pos),
     scm_to_int (track_idx), scm_to_int (lane_idx),
     scm_to_int (idx_inside_lane));
 
@@ -59,8 +58,7 @@ SCM_DEFINE (
 #define FUNC_NAME s_
 {
   midi_region_add_midi_note (
-    scm_to_pointer (region),
-    scm_to_pointer (midi_note), true);
+    scm_to_pointer (region), scm_to_pointer (midi_note), true);
 
   return SCM_BOOL_T;
 }
@@ -74,13 +72,11 @@ init_module (void * data)
 #endif
 
   scm_c_export (
-    "midi-region-new", "midi-region-add-midi-note",
-    NULL);
+    "midi-region-new", "midi-region-add-midi-note", NULL);
 }
 
 void
 guile_audio_midi_region_define_module (void)
 {
-  scm_c_define_module (
-    "audio midi-region", init_module, NULL);
+  scm_c_define_module ("audio midi-region", init_module, NULL);
 }

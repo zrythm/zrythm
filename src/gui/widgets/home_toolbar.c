@@ -25,21 +25,17 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 static void
-refresh_undo_or_redo_button (
-  HomeToolbarWidget * self,
-  bool                redo)
+refresh_undo_or_redo_button (HomeToolbarWidget * self, bool redo)
 {
   g_warn_if_fail (UNDO_MANAGER);
 
   AdwSplitButton * split_btn =
     redo ? self->redo_btn : self->undo_btn;
   UndoStack * stack =
-    redo ? UNDO_MANAGER->redo_stack
-         : UNDO_MANAGER->undo_stack;
+    redo ? UNDO_MANAGER->redo_stack : UNDO_MANAGER->undo_stack;
 
   gtk_widget_set_sensitive (
-    GTK_WIDGET (split_btn),
-    !undo_stack_is_empty (stack));
+    GTK_WIDGET (split_btn), !undo_stack_is_empty (stack));
 
 #define SET_TOOLTIP(tooltip) \
   z_gtk_set_tooltip_for_actionable ( \
@@ -58,24 +54,19 @@ refresh_undo_or_redo_button (
       GMenuItem * menuitem;
 
       /* fill 8 actions */
-      int max_actions =
-        MIN (8, stack->stack->top + 1);
+      int max_actions = MIN (8, stack->stack->top + 1);
       for (int i = 0; i < max_actions;)
         {
           UndoableAction * ua =
             stack->stack->elements
-              [g_atomic_int_get (&stack->stack->top)
-               - i];
+              [g_atomic_int_get (&stack->stack->top) - i];
 
-          char * action_str =
-            undoable_action_to_string (ua);
+          char * action_str = undoable_action_to_string (ua);
 
           char tmp[600];
-          sprintf (
-            tmp, "app.%s_n",
-            redo ? "redo" : "undo");
-          menuitem = z_gtk_create_menu_item (
-            action_str, NULL, tmp);
+          sprintf (tmp, "app.%s_n", redo ? "redo" : "undo");
+          menuitem =
+            z_gtk_create_menu_item (action_str, NULL, tmp);
           g_menu_item_set_action_and_target_value (
             menuitem, tmp, g_variant_new_int32 (i));
           g_menu_append_item (menu, menuitem);
@@ -127,8 +118,7 @@ void
 home_toolbar_widget_setup (HomeToolbarWidget * self)
 {
   /* FIXME activate/deactivate actions instead */
-  home_toolbar_widget_refresh_undo_redo_buttons (
-    self);
+  home_toolbar_widget_refresh_undo_redo_buttons (self);
 
   toolbox_widget_refresh (self->toolbox);
 }
@@ -146,11 +136,9 @@ home_toolbar_widget_init (HomeToolbarWidget * self)
   SET_TOOLTIP (paste, _ ("Paste"));
   SET_TOOLTIP (duplicate, _ ("Duplicate"));
   SET_TOOLTIP (delete, _ ("Delete"));
-  SET_TOOLTIP (
-    clear_selection, _ ("Clear selection"));
+  SET_TOOLTIP (clear_selection, _ ("Clear selection"));
   SET_TOOLTIP (select_all, _ ("Select all"));
-  SET_TOOLTIP (
-    loop_selection, _ ("Loop selection"));
+  SET_TOOLTIP (loop_selection, _ ("Loop selection"));
   SET_TOOLTIP (nudge_left, _ ("Nudge left"));
   SET_TOOLTIP (nudge_right, _ ("Nudge right"));
 #undef SET_TOOLTIP
@@ -160,13 +148,10 @@ static void
 home_toolbar_widget_class_init (
   HomeToolbarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "home_toolbar.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "home_toolbar.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "home-toolbar");
+  gtk_widget_class_set_css_name (klass, "home-toolbar");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

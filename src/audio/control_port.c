@@ -64,8 +64,7 @@ control_port_set_real_val (Port * self, float val)
 {
   g_return_if_fail (IS_PORT (self));
   port_set_control_value (
-    self, val, F_NOT_NORMALIZED,
-    F_NO_PUBLISH_EVENTS);
+    self, val, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 }
 
 /**
@@ -73,9 +72,7 @@ control_port_set_real_val (Port * self, float val)
  * sends UI events.
  */
 void
-control_port_set_real_val_w_events (
-  Port * self,
-  float  val)
+control_port_set_real_val_w_events (Port * self, float val)
 {
   g_return_if_fail (IS_PORT (self));
   port_set_control_value (
@@ -100,8 +97,7 @@ control_port_set_toggled (
 int
 control_port_get_int (Port * self)
 {
-  return control_port_get_int_from_val (
-    self->control);
+  return control_port_get_int_from_val (self->control);
 }
 
 /**
@@ -122,8 +118,7 @@ control_port_get_snapped_val (Port * self)
 {
   float val = control_port_get_val (self);
 
-  return control_port_get_snapped_val_from_val (
-    self, val);
+  return control_port_get_snapped_val_from_val (self, val);
 }
 
 /**
@@ -131,21 +126,16 @@ control_port_get_snapped_val (Port * self)
  * returns 0.f or 1.f).
  */
 float
-control_port_get_snapped_val_from_val (
-  Port * self,
-  float  val)
+control_port_get_snapped_val_from_val (Port * self, float val)
 {
   PortFlags flags = self->id.flags;
   if (flags & PORT_FLAG_TOGGLE)
     {
-      return control_port_is_val_toggled (val)
-               ? 1.f
-               : 0.f;
+      return control_port_is_val_toggled (val) ? 1.f : 0.f;
     }
   else if (flags & PORT_FLAG_INTEGER)
     {
-      return (
-        float) control_port_get_int_from_val (val);
+      return (float) control_port_get_int_from_val (val);
     }
 
   return val;
@@ -180,8 +170,7 @@ control_port_normalized_val_to_real (
               : normalized_val;
 
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-          return minf
-                 * powf (maxf / minf, normalized_val);
+          return minf * powf (maxf / minf, normalized_val);
         }
       else if (id->flags & PORT_FLAG_TOGGLE)
         {
@@ -190,8 +179,7 @@ control_port_normalized_val_to_real (
       else
         {
           return self->minf
-                 + normalized_val
-                     * (self->maxf - self->minf);
+                 + normalized_val * (self->maxf - self->minf);
         }
     }
   else if (id->flags & PORT_FLAG_TOGGLE)
@@ -206,8 +194,7 @@ control_port_normalized_val_to_real (
   else
     {
       return self->minf
-             + normalized_val
-                 * (self->maxf - self->minf);
+             + normalized_val * (self->maxf - self->minf);
     }
   g_return_val_if_reached (normalized_val);
 }
@@ -241,13 +228,10 @@ control_port_real_val_to_normalized (
               ? 1e-20f
               : self->maxf;
           real_val =
-            math_floats_equal (real_val, 0.f)
-              ? 1e-20f
-              : real_val;
+            math_floats_equal (real_val, 0.f) ? 1e-20f : real_val;
 
           /* see http://lv2plug.in/ns/ext/port-props/port-props.html#rangeSteps */
-          return logf (real_val / minf)
-                 / logf (maxf / minf);
+          return logf (real_val / minf) / logf (maxf / minf);
         }
       else if (self->id.flags & PORT_FLAG_TOGGLE)
         {
@@ -256,8 +240,7 @@ control_port_real_val_to_normalized (
       else
         {
           float sizef = self->maxf - self->minf;
-          return (sizef - (self->maxf - real_val))
-                 / sizef;
+          return (sizef - (self->maxf - real_val)) / sizef;
         }
     }
   else if (id->flags & PORT_FLAG_TOGGLE)
@@ -266,14 +249,12 @@ control_port_real_val_to_normalized (
     }
   else if (id->flags & PORT_FLAG_CHANNEL_FADER)
     {
-      return (float) math_get_fader_val_from_amp (
-        real_val);
+      return (float) math_get_fader_val_from_amp (real_val);
     }
   else
     {
       float sizef = self->maxf - self->minf;
-      return (sizef - (self->maxf - real_val))
-             / sizef;
+      return (sizef - (self->maxf - real_val)) / sizef;
     }
   g_return_val_if_reached (0.f);
 }
@@ -300,35 +281,26 @@ control_port_set_val_from_normalized (
   if (id->flags & PORT_FLAG_PLUGIN_CONTROL)
     {
       float real_val =
-        control_port_normalized_val_to_real (
-          self, val);
-      if (!math_floats_equal (
-            self->control, real_val))
+        control_port_normalized_val_to_real (self, val);
+      if (!math_floats_equal (self->control, real_val))
         {
-          EVENTS_PUSH (
-            ET_AUTOMATION_VALUE_CHANGED, self);
+          EVENTS_PUSH (ET_AUTOMATION_VALUE_CHANGED, self);
         }
 
       port_set_control_value (
-        self, real_val, F_NOT_NORMALIZED,
-        F_PUBLISH_EVENTS);
+        self, real_val, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
       self->automating = automating;
       self->base_value = real_val;
     }
   else if (id->flags & PORT_FLAG_TOGGLE)
     {
       float real_val =
-        control_port_normalized_val_to_real (
-          self, val);
-      if (!math_floats_equal (
-            self->control, real_val))
+        control_port_normalized_val_to_real (self, val);
+      if (!math_floats_equal (self->control, real_val))
         {
-          EVENTS_PUSH (
-            ET_AUTOMATION_VALUE_CHANGED, self);
+          EVENTS_PUSH (ET_AUTOMATION_VALUE_CHANGED, self);
           self->control =
-            control_port_is_val_toggled (real_val)
-              ? 1.f
-              : 0.f;
+            control_port_is_val_toggled (real_val) ? 1.f : 0.f;
         }
 
       if (id->flags & PORT_FLAG_FADER_MUTE)
@@ -348,61 +320,50 @@ control_port_set_val_from_normalized (
       if (!math_floats_equal (
             fader_get_fader_val (ch->fader), val))
         {
-          EVENTS_PUSH (
-            ET_AUTOMATION_VALUE_CHANGED, self);
+          EVENTS_PUSH (ET_AUTOMATION_VALUE_CHANGED, self);
         }
       fader_set_amp (
-        ch->fader,
-        (float) math_get_amp_val_from_fader (val));
+        ch->fader, (float) math_get_amp_val_from_fader (val));
     }
   else if (id->flags & PORT_FLAG_STEREO_BALANCE)
     {
-      Track * track = port_get_track (self, true);
+      Track *   track = port_get_track (self, true);
       Channel * ch = track_get_channel (track);
       g_return_if_fail (ch);
       if (!math_floats_equal (
             channel_get_balance_control (ch), val))
         {
-          EVENTS_PUSH (
-            ET_AUTOMATION_VALUE_CHANGED, self);
+          EVENTS_PUSH (ET_AUTOMATION_VALUE_CHANGED, self);
         }
       channel_set_balance_control (ch, val);
     }
   else if (id->flags & PORT_FLAG_MIDI_AUTOMATABLE)
     {
       float real_val =
-        self->minf
-        + val * (self->maxf - self->minf);
+        self->minf + val * (self->maxf - self->minf);
       if (!math_floats_equal (val, self->control))
         {
-          EVENTS_PUSH (
-            ET_AUTOMATION_VALUE_CHANGED, self);
+          EVENTS_PUSH (ET_AUTOMATION_VALUE_CHANGED, self);
         }
       port_set_control_value (self, real_val, 0, 0);
     }
   else if (id->flags & PORT_FLAG_AUTOMATABLE)
     {
       float real_val =
-        control_port_normalized_val_to_real (
-          self, val);
-      if (!math_floats_equal (
-            real_val, self->control))
+        control_port_normalized_val_to_real (self, val);
+      if (!math_floats_equal (real_val, self->control))
         {
-          EVENTS_PUSH (
-            ET_AUTOMATION_VALUE_CHANGED, self);
+          EVENTS_PUSH (ET_AUTOMATION_VALUE_CHANGED, self);
         }
       port_set_control_value (
-        self, real_val, F_NOT_NORMALIZED,
-        F_NO_PUBLISH_EVENTS);
+        self, real_val, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
     }
   else if (id->flags & PORT_FLAG_AMPLITUDE)
     {
       float real_val =
-        control_port_normalized_val_to_real (
-          self, val);
+        control_port_normalized_val_to_real (self, val);
       port_set_control_value (
-        self, real_val, F_NOT_NORMALIZED,
-        F_NO_PUBLISH_EVENTS);
+        self, real_val, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
     }
   else
     {

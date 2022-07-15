@@ -56,8 +56,7 @@ SCM_DEFINE (
 {
   Track * reftrack = scm_to_pointer (track);
 
-  return scm_from_utf8_string (
-    track_get_name (reftrack));
+  return scm_from_utf8_string (track_get_name (reftrack));
 }
 #undef FUNC_NAME
 
@@ -73,8 +72,7 @@ SCM_DEFINE (
 {
   Track * reftrack = scm_to_pointer (track);
 
-  return scm_from_pointer (
-    reftrack->processor, NULL);
+  return scm_from_pointer (reftrack->processor, NULL);
 }
 #undef FUNC_NAME
 
@@ -146,8 +144,8 @@ SCM_DEFINE (
 #define FUNC_NAME s_
 {
   track_add_region (
-    scm_to_pointer (track), scm_to_pointer (region),
-    NULL, scm_to_int (lane_pos), true, true);
+    scm_to_pointer (track), scm_to_pointer (region), NULL,
+    scm_to_int (lane_pos), true, true);
 
   return SCM_BOOL_T;
 }
@@ -169,6 +167,5 @@ init_module (void * data)
 void
 guile_audio_track_define_module (void)
 {
-  scm_c_define_module (
-    "audio track", init_module, NULL);
+  scm_c_define_module ("audio track", init_module, NULL);
 }

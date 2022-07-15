@@ -38,10 +38,8 @@
 
 #define HW_PROCESSOR_SCHEMA_VERSION 1
 
-#define HW_IN_PROCESSOR \
-  (AUDIO_ENGINE->hw_in_processor)
-#define HW_OUT_PROCESSOR \
-  (AUDIO_ENGINE->hw_out_processor)
+#define HW_IN_PROCESSOR (AUDIO_ENGINE->hw_in_processor)
+#define HW_OUT_PROCESSOR (AUDIO_ENGINE->hw_out_processor)
 
 #define hw_processor_is_in_active_project(self) \
   (self->engine \
@@ -106,36 +104,34 @@ typedef struct HardwareProcessor
 
 } HardwareProcessor;
 
-static const cyaml_schema_field_t
-  hardware_processor_fields_schema[] = {
-    YAML_FIELD_INT (HardwareProcessor, schema_version),
-    YAML_FIELD_INT (HardwareProcessor, is_input),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      HardwareProcessor,
-      ext_audio_ports,
-      ext_port_schema),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      HardwareProcessor,
-      ext_midi_ports,
-      ext_port_schema),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      HardwareProcessor,
-      audio_ports,
-      port_schema),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      HardwareProcessor,
-      midi_ports,
-      port_schema),
+static const cyaml_schema_field_t hardware_processor_fields_schema[] = {
+  YAML_FIELD_INT (HardwareProcessor, schema_version),
+  YAML_FIELD_INT (HardwareProcessor, is_input),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    HardwareProcessor,
+    ext_audio_ports,
+    ext_port_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    HardwareProcessor,
+    ext_midi_ports,
+    ext_port_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    HardwareProcessor,
+    audio_ports,
+    port_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    HardwareProcessor,
+    midi_ports,
+    port_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  hardware_processor_schema = {
-    YAML_VALUE_PTR (
-      HardwareProcessor,
-      hardware_processor_fields_schema),
-  };
+static const cyaml_schema_value_t hardware_processor_schema = {
+  YAML_VALUE_PTR (
+    HardwareProcessor,
+    hardware_processor_fields_schema),
+};
 
 COLD NONNULL_ARGS (1) void hardware_processor_init_loaded (
   HardwareProcessor * self,
@@ -145,17 +141,14 @@ COLD NONNULL_ARGS (1) void hardware_processor_init_loaded (
  * Returns a new empty instance.
  */
 COLD WARN_UNUSED_RESULT HardwareProcessor *
-hardware_processor_new (
-  bool          input,
-  AudioEngine * engine);
+hardware_processor_new (bool input, AudioEngine * engine);
 
 /**
  * Rescans the hardware ports and appends any missing
  * ones.
  */
 bool
-hardware_processor_rescan_ext_ports (
-  HardwareProcessor * self);
+hardware_processor_rescan_ext_ports (HardwareProcessor * self);
 
 /**
  * Finds an ext port from its ID (type + full name).
@@ -209,8 +202,7 @@ hardware_processor_process (
  * To be used during serialization.
  */
 HardwareProcessor *
-hardware_processor_clone (
-  const HardwareProcessor * src);
+hardware_processor_clone (const HardwareProcessor * src);
 
 void
 hardware_processor_free (HardwareProcessor * self);

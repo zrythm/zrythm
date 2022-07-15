@@ -10,10 +10,9 @@
 
 typedef struct _FileAuditionerControlsWidget
   FileAuditionerControlsWidget;
-typedef struct FileBrowserLocation
-  FileBrowserLocation;
+typedef struct FileBrowserLocation FileBrowserLocation;
 typedef struct _FileBrowserFiltersWidget
-  FileBrowserFiltersWidget;
+                           FileBrowserFiltersWidget;
 typedef struct ItemFactory ItemFactory;
 
 /**
@@ -31,8 +30,7 @@ G_DECLARE_FINAL_TYPE (
   PANEL_FILE_BROWSER_WIDGET,
   GtkWidget)
 
-#define MW_PANEL_FILE_BROWSER \
-  MW_RIGHT_DOCK_EDGE->file_browser
+#define MW_PANEL_FILE_BROWSER MW_RIGHT_DOCK_EDGE->file_browser
 
 typedef struct _PanelFileBrowserWidget
 {

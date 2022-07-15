@@ -71,16 +71,14 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  plugin_collection_schema = {
-    YAML_VALUE_PTR (
-      PluginCollection,
-      plugin_collection_fields_schema),
-  };
+static const cyaml_schema_value_t plugin_collection_schema = {
+  YAML_VALUE_PTR (
+    PluginCollection,
+    plugin_collection_fields_schema),
+};
 
 void
-plugin_collection_init_loaded (
-  PluginCollection * self);
+plugin_collection_init_loaded (PluginCollection * self);
 
 /**
  * Creates a new plugin collection.
@@ -92,12 +90,10 @@ plugin_collection_new (void);
  * Clones a plugin collection.
  */
 PluginCollection *
-plugin_collection_clone (
-  const PluginCollection * self);
+plugin_collection_clone (const PluginCollection * self);
 
 char *
-plugin_collection_get_name (
-  PluginCollection * self);
+plugin_collection_get_name (PluginCollection * self);
 
 void
 plugin_collection_set_name (

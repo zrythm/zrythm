@@ -28,10 +28,8 @@
 
 #include <limits.h>
 
-#define ACTION_IS(x) \
-  (self->action == UI_OVERLAY_ACTION_##x)
-#define TARGET_IS(x) \
-  (self->target == RW_TARGET_##x)
+#define ACTION_IS(x) (self->action == UI_OVERLAY_ACTION_##x)
+#define TARGET_IS(x) (self->target == RW_TARGET_##x)
 
 void
 editor_ruler_on_drag_begin_no_marker_hit (
@@ -41,12 +39,9 @@ editor_ruler_on_drag_begin_no_marker_hit (
 {
   Position pos;
   ui_px_to_pos_editor (start_x, &pos, 1);
-  if (
-    !self->shift_held
-    && SNAP_GRID_ANY_SNAP (SNAP_GRID_EDITOR))
+  if (!self->shift_held && SNAP_GRID_ANY_SNAP (SNAP_GRID_EDITOR))
     {
-      position_snap (
-        &pos, &pos, NULL, NULL, SNAP_GRID_EDITOR);
+      position_snap (&pos, &pos, NULL, NULL, SNAP_GRID_EDITOR);
     }
   transport_move_playhead (
     TRANSPORT, &pos, F_PANIC, F_NO_SET_CUE_POINT,
@@ -69,8 +64,7 @@ editor_ruler_on_drag_update (
     {
       Position  editor_pos;
       Position  region_local_pos;
-      ZRegion * r =
-        clip_editor_get_region (CLIP_EDITOR);
+      ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
       ArrangerObject * r_obj = (ArrangerObject *) r;
 
       /* convert px to position */
@@ -83,8 +77,8 @@ editor_ruler_on_drag_update (
         && SNAP_GRID_ANY_SNAP (SNAP_GRID_EDITOR))
         {
           position_snap (
-            &self->drag_start_pos, &editor_pos,
-            NULL, NULL, SNAP_GRID_EDITOR);
+            &self->drag_start_pos, &editor_pos, NULL, NULL,
+            SNAP_GRID_EDITOR);
         }
 
       position_from_ticks (
@@ -99,16 +93,12 @@ editor_ruler_on_drag_update (
             {
               position_init (&region_local_pos);
             }
-          else if (
-            position_is_after_or_equal (
-              &region_local_pos,
-              &r_obj->loop_end_pos))
+          else if (position_is_after_or_equal (
+                     &region_local_pos, &r_obj->loop_end_pos))
             {
               position_set_to_pos (
-                &region_local_pos,
-                &r_obj->loop_end_pos);
-              position_add_frames (
-                &region_local_pos, -1);
+                &region_local_pos, &r_obj->loop_end_pos);
+              position_add_frames (&region_local_pos, -1);
             }
 
           if (arranger_object_is_position_valid (
@@ -120,28 +110,23 @@ editor_ruler_on_drag_update (
                 r_obj, &region_local_pos,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
                 F_VALIDATE);
-              transport_update_positions (
-                TRANSPORT, true);
-              EVENTS_PUSH (
-                ET_CLIP_MARKER_POS_CHANGED, self);
+              transport_update_positions (TRANSPORT, true);
+              EVENTS_PUSH (ET_CLIP_MARKER_POS_CHANGED, self);
             }
         }
       else if (TARGET_IS (LOOP_END))
         {
           /* move to nearest acceptable position */
           if (position_is_before (
-                &region_local_pos,
-                &r_obj->clip_start_pos))
+                &region_local_pos, &r_obj->clip_start_pos))
             {
               position_set_to_pos (
-                &region_local_pos,
-                &r_obj->clip_start_pos);
+                &region_local_pos, &r_obj->clip_start_pos);
             }
           else if (r->id.type == REGION_TYPE_AUDIO)
             {
-              AudioClip * clip =
-                audio_region_get_clip (r);
-              Position clip_frames;
+              AudioClip * clip = audio_region_get_clip (r);
+              Position    clip_frames;
               position_from_frames (
                 &clip_frames,
                 (signed_frame_t) clip->num_frames);
@@ -149,8 +134,7 @@ editor_ruler_on_drag_update (
                     &region_local_pos, &clip_frames))
                 {
                   position_set_to_pos (
-                    &region_local_pos,
-                    &clip_frames);
+                    &region_local_pos, &clip_frames);
                 }
             }
 
@@ -163,10 +147,8 @@ editor_ruler_on_drag_update (
                 r_obj, &region_local_pos,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
                 F_VALIDATE);
-              transport_update_positions (
-                TRANSPORT, true);
-              EVENTS_PUSH (
-                ET_CLIP_MARKER_POS_CHANGED, self);
+              transport_update_positions (TRANSPORT, true);
+              EVENTS_PUSH (ET_CLIP_MARKER_POS_CHANGED, self);
             }
         }
       else if (TARGET_IS (CLIP_START))
@@ -176,16 +158,12 @@ editor_ruler_on_drag_update (
             {
               position_init (&region_local_pos);
             }
-          else if (
-            position_is_after_or_equal (
-              &region_local_pos,
-              &r_obj->loop_end_pos))
+          else if (position_is_after_or_equal (
+                     &region_local_pos, &r_obj->loop_end_pos))
             {
               position_set_to_pos (
-                &region_local_pos,
-                &r_obj->loop_end_pos);
-              position_add_frames (
-                &region_local_pos, -1);
+                &region_local_pos, &r_obj->loop_end_pos);
+              position_add_frames (&region_local_pos, -1);
             }
 
           /* if position is acceptable */
@@ -198,10 +176,8 @@ editor_ruler_on_drag_update (
                 r_obj, &region_local_pos,
                 ARRANGER_OBJECT_POSITION_TYPE_CLIP_START,
                 F_VALIDATE);
-              transport_update_positions (
-                TRANSPORT, true);
-              EVENTS_PUSH (
-                ET_CLIP_MARKER_POS_CHANGED, self);
+              transport_update_positions (TRANSPORT, true);
+              EVENTS_PUSH (ET_CLIP_MARKER_POS_CHANGED, self);
             }
         }
       else if (TARGET_IS (PLAYHEAD))
@@ -220,8 +196,7 @@ editor_ruler_on_drag_update (
             {
               transport_move_playhead (
                 TRANSPORT, &editor_pos, F_PANIC,
-                F_NO_SET_CUE_POINT,
-                F_PUBLISH_EVENTS);
+                F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
               self->last_set_pos = editor_pos;
             }
 
@@ -235,14 +210,11 @@ void
 editor_ruler_on_drag_end (RulerWidget * self)
 {
   /* prepare selections for edit action */
-  ArrangerSelections * before_sel =
-    arranger_selections_new (
-      ARRANGER_SELECTIONS_TYPE_TIMELINE);
-  ArrangerSelections * after_sel =
-    arranger_selections_new (
-      ARRANGER_SELECTIONS_TYPE_TIMELINE);
-  ZRegion * r =
-    clip_editor_get_region (CLIP_EDITOR);
+  ArrangerSelections * before_sel = arranger_selections_new (
+    ARRANGER_SELECTIONS_TYPE_TIMELINE);
+  ArrangerSelections * after_sel = arranger_selections_new (
+    ARRANGER_SELECTIONS_TYPE_TIMELINE);
+  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (r);
   ArrangerObject * r_clone_obj_before =
     arranger_object_clone ((ArrangerObject *) r);
@@ -254,32 +226,27 @@ editor_ruler_on_drag_end (RulerWidget * self)
     after_sel, r_clone_obj_after);
 
 #define PERFORM_ACTION(pos_member) \
-  r_clone_obj_before->pos_member = \
-    self->drag_start_pos; \
+  r_clone_obj_before->pos_member = self->drag_start_pos; \
   GError * err = NULL; \
-  bool     ret = \
-    arranger_selections_action_perform_edit ( \
-      before_sel, after_sel, \
-      ARRANGER_SELECTIONS_ACTION_EDIT_POS, \
-      F_NOT_ALREADY_EDITED, &err); \
+  bool     ret = arranger_selections_action_perform_edit ( \
+        before_sel, after_sel, \
+        ARRANGER_SELECTIONS_ACTION_EDIT_POS, \
+        F_NOT_ALREADY_EDITED, &err); \
   if (!ret) \
     { \
       HANDLE_ERROR ( \
         err, "%s", _ ("Failed to edit position")); \
     }
 
-  if ((ACTION_IS (MOVING)
-       || ACTION_IS (STARTING_MOVING)))
+  if ((ACTION_IS (MOVING) || ACTION_IS (STARTING_MOVING)))
     {
       if (TARGET_IS (PLAYHEAD))
         {
           /* set cue point */
           position_set_to_pos (
-            &TRANSPORT->cue_pos,
-            &self->last_set_pos);
+            &TRANSPORT->cue_pos, &self->last_set_pos);
 
-          EVENTS_PUSH (
-            ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
+          EVENTS_PUSH (ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
         }
       else if (TARGET_IS (LOOP_START))
         {
@@ -306,10 +273,8 @@ editor_ruler_get_regions_in_range (
   Position p1, p2;
   ui_px_to_pos_editor (x_start, &p1, true);
   ui_px_to_pos_editor (x_end, &p2, true);
-  Track * track =
-    clip_editor_get_track (CLIP_EDITOR);
+  Track * track = clip_editor_get_track (CLIP_EDITOR);
   g_return_val_if_fail (track, 0);
 
-  return track_get_regions_in_range (
-    track, &p1, &p2, regions);
+  return track_get_regions_in_range (track, &p1, &p2, regions);
 }

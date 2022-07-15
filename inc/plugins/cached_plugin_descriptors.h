@@ -57,9 +57,7 @@ typedef struct CachedPluginDescriptors
 
 static const cyaml_schema_field_t
   cached_plugin_descriptors_fields_schema[] = {
-    YAML_FIELD_INT (
-      CachedPluginDescriptors,
-      schema_version),
+    YAML_FIELD_INT (CachedPluginDescriptors, schema_version),
     YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
       CachedPluginDescriptors,
       descriptors,

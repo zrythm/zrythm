@@ -43,8 +43,7 @@ reveal_cb (
   if (expander == Z_EXPANDER_BOX_WIDGET (self->mem)) \
     { \
       g_settings_set_boolean ( \
-        S_UI_INSPECTOR, "track-" key "-expanded", \
-        revealed); \
+        S_UI_INSPECTOR, "track-" key "-expanded", revealed); \
     }
 
   SET_SETTING (track_info, "properties");
@@ -61,20 +60,16 @@ reveal_cb (
 }
 
 static void
-setup_color (
-  InspectorTrackWidget * self,
-  Track *                track)
+setup_color (InspectorTrackWidget * self, Track * track)
 {
   if (track)
     {
-      color_area_widget_setup_track (
-        self->color, track);
+      color_area_widget_setup_track (self->color, track);
     }
   else
     {
       GdkRGBA color = { 1, 1, 1, 1 };
-      color_area_widget_set_color (
-        self->color, &color);
+      color_area_widget_set_color (self->color, &color);
     }
 }
 
@@ -99,8 +94,7 @@ inspector_track_widget_show_tracks (
     {
       PanelWidget * panel_widget =
         PANEL_WIDGET (gtk_widget_get_ancestor (
-          GTK_WIDGET (
-            MW_LEFT_DOCK_EDGE->track_inspector),
+          GTK_WIDGET (MW_LEFT_DOCK_EDGE->track_inspector),
           PANEL_TYPE_WIDGET));
       g_return_if_fail (panel_widget);
       panel_widget_raise (panel_widget);
@@ -119,8 +113,7 @@ inspector_track_widget_show_tracks (
       track_properties_expander_widget_refresh (
         self->track_info, track);
 
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->sends), false);
+      gtk_widget_set_visible (GTK_WIDGET (self->sends), false);
       gtk_widget_set_visible (
         GTK_WIDGET (self->outputs), false);
       gtk_widget_set_visible (
@@ -131,8 +124,7 @@ inspector_track_widget_show_tracks (
         GTK_WIDGET (self->inserts), false);
       gtk_widget_set_visible (
         GTK_WIDGET (self->midi_fx), false);
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->fader), false);
+      gtk_widget_set_visible (GTK_WIDGET (self->fader), false);
       gtk_widget_set_visible (
         GTK_WIDGET (self->comment), true);
 
@@ -140,8 +132,7 @@ inspector_track_widget_show_tracks (
         self->comment, true, track_get_comment,
         track_comment_setter, track);
       expander_box_widget_set_label (
-        Z_EXPANDER_BOX_WIDGET (self->comment),
-        _ ("Comment"));
+        Z_EXPANDER_BOX_WIDGET (self->comment), _ ("Comment"));
 
       if (track_type_has_channel (track->type))
         {
@@ -174,8 +165,7 @@ inspector_track_widget_show_tracks (
           track_input_expander_widget_refresh (
             self->inputs, track);
           ports_expander_widget_setup_track (
-            self->outputs, track,
-            PE_TRACK_PORT_TYPE_SENDS);
+            self->outputs, track, PE_TRACK_PORT_TYPE_SENDS);
           ports_expander_widget_setup_track (
             self->controls, track,
             PE_TRACK_PORT_TYPE_CONTROLS);
@@ -188,8 +178,7 @@ inspector_track_widget_show_tracks (
             self->fader, track);
 
           channel_sends_expander_widget_setup (
-            self->sends, CSE_POSITION_INSPECTOR,
-            track);
+            self->sends, CSE_POSITION_INSPECTOR, track);
         }
     }
   else /* no tracks selected */
@@ -197,11 +186,9 @@ inspector_track_widget_show_tracks (
       track_properties_expander_widget_refresh (
         self->track_info, NULL);
       ports_expander_widget_setup_track (
-        self->outputs, track,
-        PE_TRACK_PORT_TYPE_SENDS);
+        self->outputs, track, PE_TRACK_PORT_TYPE_SENDS);
       ports_expander_widget_setup_track (
-        self->controls, track,
-        PE_TRACK_PORT_TYPE_CONTROLS);
+        self->controls, track, PE_TRACK_PORT_TYPE_CONTROLS);
       text_expander_widget_setup (
         self->comment, false, NULL, NULL, NULL);
 
@@ -237,8 +224,8 @@ inspector_track_widget_setup (
 InspectorTrackWidget *
 inspector_track_widget_new (void)
 {
-  InspectorTrackWidget * self = g_object_new (
-    INSPECTOR_TRACK_WIDGET_TYPE, NULL);
+  InspectorTrackWidget * self =
+    g_object_new (INSPECTOR_TRACK_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -247,15 +234,13 @@ inspector_track_widget_new (void)
  * Prepare for finalization.
  */
 void
-inspector_track_widget_tear_down (
-  InspectorTrackWidget * self)
+inspector_track_widget_tear_down (InspectorTrackWidget * self)
 {
   g_message ("tearing down %p...", self);
 
   if (self->fader)
     {
-      fader_controls_expander_widget_tear_down (
-        self->fader);
+      fader_controls_expander_widget_tear_down (self->fader);
     }
 
   g_message ("done");
@@ -265,15 +250,12 @@ static void
 inspector_track_widget_class_init (
   InspectorTrackWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "inspector_track.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "inspector_track.ui");
 
 #define BIND_CHILD(child) \
   gtk_widget_class_bind_template_child ( \
-    GTK_WIDGET_CLASS (klass), \
-    InspectorTrackWidget, child);
+    GTK_WIDGET_CLASS (klass), InspectorTrackWidget, child);
 
   BIND_CHILD (track_info);
   BIND_CHILD (sends);
@@ -290,25 +272,20 @@ inspector_track_widget_class_init (
 }
 
 static void
-inspector_track_widget_init (
-  InspectorTrackWidget * self)
+inspector_track_widget_init (InspectorTrackWidget * self)
 {
-  g_type_ensure (
-    TRACK_PROPERTIES_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (TRACK_PROPERTIES_EXPANDER_WIDGET_TYPE);
   g_type_ensure (TRACK_INPUT_EXPANDER_WIDGET_TYPE);
   g_type_ensure (PORTS_EXPANDER_WIDGET_TYPE);
   g_type_ensure (PLUGIN_STRIP_EXPANDER_WIDGET_TYPE);
-  g_type_ensure (
-    CHANNEL_SENDS_EXPANDER_WIDGET_TYPE);
-  g_type_ensure (
-    FADER_CONTROLS_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (CHANNEL_SENDS_EXPANDER_WIDGET_TYPE);
+  g_type_ensure (FADER_CONTROLS_EXPANDER_WIDGET_TYPE);
   g_type_ensure (TEXT_EXPANDER_WIDGET_TYPE);
   g_type_ensure (COLOR_AREA_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self), "inspector");
+  gtk_widget_add_css_class (GTK_WIDGET (self), "inspector");
 
   expander_box_widget_set_vexpand (
     Z_EXPANDER_BOX_WIDGET (self->inserts), false);
@@ -324,8 +301,7 @@ inspector_track_widget_init (
     g_settings_get_boolean ( \
       S_UI_INSPECTOR, "track-" key "-expanded")); \
   expander_box_widget_set_reveal_callback ( \
-    Z_EXPANDER_BOX_WIDGET (self->mem), reveal_cb, \
-    self)
+    Z_EXPANDER_BOX_WIDGET (self->mem), reveal_cb, self)
 
   SET_STATE (track_info, "properties");
   SET_STATE (inputs, "inputs");

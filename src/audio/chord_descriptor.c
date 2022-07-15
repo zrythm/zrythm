@@ -53,8 +53,7 @@ invert_chord (int * notes, int inversion)
  * settings.
  */
 void
-chord_descriptor_update_notes (
-  ChordDescriptor * self)
+chord_descriptor_update_notes (ChordDescriptor * self)
 {
   if (self->type == CHORD_TYPE_CUSTOM)
     return;
@@ -117,9 +116,7 @@ chord_descriptor_update_notes (
     case CHORD_ACC_NONE:
       break;
     case CHORD_ACC_7:
-      self->notes
-        [12 + self->root_note + min_seventh_sems] =
-        1;
+      self->notes[12 + self->root_note + min_seventh_sems] = 1;
       break;
     case CHORD_ACC_j7:
       self->notes[12 + self->root_note + 11] = 1;
@@ -158,9 +155,7 @@ chord_descriptor_update_notes (
     self->accent >= CHORD_ACC_b9
     && self->accent <= CHORD_ACC_6_13)
     {
-      self->notes
-        [12 + self->root_note + min_seventh_sems] =
-        1;
+      self->notes[12 + self->root_note + min_seventh_sems] = 1;
     }
 
   invert_chord (&self->notes[12], self->inversion);
@@ -178,11 +173,9 @@ chord_descriptor_new (
   ChordAccent accent,
   int         inversion)
 {
-  ChordDescriptor * self =
-    object_new (ChordDescriptor);
+  ChordDescriptor * self = object_new (ChordDescriptor);
 
-  self->schema_version =
-    CHORD_DESCRIPTOR_SCHEMA_VERSION;
+  self->schema_version = CHORD_DESCRIPTOR_SCHEMA_VERSION;
 
   self->root_note = root;
   self->has_bass = has_bass;
@@ -204,8 +197,8 @@ ChordDescriptor *
 chord_descriptor_clone (const ChordDescriptor * src)
 {
   ChordDescriptor * cd = chord_descriptor_new (
-    src->root_note, src->has_bass, src->bass_note,
-    src->type, src->accent, src->inversion);
+    src->root_note, src->has_bass, src->bass_note, src->type,
+    src->accent, src->inversion);
 
   return cd;
 }
@@ -232,8 +225,7 @@ chord_descriptor_note_to_string (MusicalNote note)
  * Returns the chord type as a string (eg. "aug").
  */
 const char *
-chord_descriptor_chord_type_to_string (
-  ChordType type)
+chord_descriptor_chord_type_to_string (ChordType type)
 {
   return chord_type_strings[type].str;
 }
@@ -242,8 +234,7 @@ chord_descriptor_chord_type_to_string (
  * Returns the chord accent as a string (eg. "j7").
  */
 const char *
-chord_descriptor_chord_accent_to_string (
-  ChordAccent accent)
+chord_descriptor_chord_accent_to_string (ChordAccent accent)
 {
   return chord_accent_strings[accent].str;
 }
@@ -299,8 +290,7 @@ chord_descriptor_is_key_in_chord (
  * MUST be free'd by caller.
  */
 char *
-chord_descriptor_to_new_string (
-  const ChordDescriptor * chord)
+chord_descriptor_to_new_string (const ChordDescriptor * chord)
 {
   char tmp[100];
   chord_descriptor_to_string (chord, tmp);
@@ -317,10 +307,8 @@ chord_descriptor_to_string (
 {
   sprintf (
     str, "%s%s",
-    chord_descriptor_note_to_string (
-      chord->root_note),
-    chord_descriptor_chord_type_to_string (
-      chord->type));
+    chord_descriptor_note_to_string (chord->root_note),
+    chord_descriptor_chord_type_to_string (chord->type));
 
   if (chord->accent > CHORD_ACC_NONE)
     {
@@ -330,15 +318,12 @@ chord_descriptor_to_string (
         chord_descriptor_chord_accent_to_string (
           chord->accent));
     }
-  if (
-    chord->has_bass
-    && (chord->bass_note != chord->root_note))
+  if (chord->has_bass && (chord->bass_note != chord->root_note))
     {
       strcat (str, "/");
       strcat (
         str,
-        chord_descriptor_note_to_string (
-          chord->bass_note));
+        chord_descriptor_note_to_string (chord->bass_note));
     }
 
   if (chord->inversion != 0)

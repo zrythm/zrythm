@@ -23,8 +23,7 @@
 
 G_BEGIN_DECLS
 
-#define GTK_TYPE_FISHBOWL \
-  (gtk_fishbowl_get_type ())
+#define GTK_TYPE_FISHBOWL (gtk_fishbowl_get_type ())
 #define GTK_FISHBOWL(obj) \
   (G_TYPE_CHECK_INSTANCE_CAST ( \
     (obj), GTK_TYPE_FISHBOWL, GtkFishbowl))
@@ -32,11 +31,9 @@ G_BEGIN_DECLS
   (G_TYPE_CHECK_CLASS_CAST ( \
     (klass), GTK_TYPE_FISHBOWL, GtkFishbowlClass))
 #define GTK_IS_FISHBOWL(obj) \
-  (G_TYPE_CHECK_INSTANCE_TYPE ( \
-    (obj), GTK_TYPE_FISHBOWL))
+  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GTK_TYPE_FISHBOWL))
 #define GTK_IS_FISHBOWL_CLASS(klass) \
-  (G_TYPE_CHECK_CLASS_TYPE ( \
-    (klass), GTK_TYPE_FISHBOWL))
+  (G_TYPE_CHECK_CLASS_TYPE ((klass), GTK_TYPE_FISHBOWL))
 #define GTK_FISHBOWL_GET_CLASS(obj) \
   (G_TYPE_INSTANCE_GET_CLASS ( \
     (obj), GTK_TYPE_FISHBOWL, GtkFishbowlClass))
@@ -65,9 +62,7 @@ gtk_fishbowl_new (void);
 guint
 gtk_fishbowl_get_count (GtkFishbowl * fishbowl);
 void
-gtk_fishbowl_set_count (
-  GtkFishbowl * fishbowl,
-  guint         count);
+gtk_fishbowl_set_count (GtkFishbowl * fishbowl, guint count);
 gboolean
 gtk_fishbowl_get_animating (GtkFishbowl * fishbowl);
 void
@@ -83,8 +78,7 @@ gtk_fishbowl_set_benchmark (
 double
 gtk_fishbowl_get_framerate (GtkFishbowl * fishbowl);
 gint64
-gtk_fishbowl_get_update_delay (
-  GtkFishbowl * fishbowl);
+gtk_fishbowl_get_update_delay (GtkFishbowl * fishbowl);
 void
 gtk_fishbowl_set_update_delay (
   GtkFishbowl * fishbowl,
@@ -100,9 +94,8 @@ G_END_DECLS
 
 #include "config.h"
 
-typedef struct _GtkFishbowlPrivate
-  GtkFishbowlPrivate;
-typedef struct _GtkFishbowlChild GtkFishbowlChild;
+typedef struct _GtkFishbowlPrivate GtkFishbowlPrivate;
+typedef struct _GtkFishbowlChild   GtkFishbowlChild;
 
 struct _GtkFishbowlPrivate
 {
@@ -155,8 +148,7 @@ gtk_fishbowl_init (GtkFishbowl * fishbowl)
   GtkFishbowlPrivate * priv =
     gtk_fishbowl_get_instance_private (fishbowl);
 
-  gtk_widget_set_has_window (
-    GTK_WIDGET (fishbowl), FALSE);
+  gtk_widget_set_has_window (GTK_WIDGET (fishbowl), FALSE);
 
   priv->update_delay = G_USEC_PER_SEC;
 }
@@ -180,7 +172,7 @@ gtk_fishbowl_get_preferred_width (
   int *       minimum,
   int *       natural)
 {
-  GtkFishbowl * fishbowl = GTK_FISHBOWL (widget);
+  GtkFishbowl *        fishbowl = GTK_FISHBOWL (widget);
   GtkFishbowlPrivate * priv =
     gtk_fishbowl_get_instance_private (fishbowl);
   GtkFishbowlChild * child;
@@ -212,7 +204,7 @@ gtk_fishbowl_get_preferred_height (
   int *       minimum,
   int *       natural)
 {
-  GtkFishbowl * fishbowl = GTK_FISHBOWL (widget);
+  GtkFishbowl *        fishbowl = GTK_FISHBOWL (widget);
   GtkFishbowlPrivate * priv =
     gtk_fishbowl_get_instance_private (fishbowl);
   GtkFishbowlChild * child;
@@ -235,8 +227,7 @@ gtk_fishbowl_get_preferred_height (
       gtk_widget_get_preferred_width (
         child->widget, &min_width, NULL);
       gtk_widget_get_preferred_height_for_width (
-        child->widget, min_width, &child_min,
-        &child_nat);
+        child->widget, min_width, &child_min, &child_nat);
 
       *minimum = MAX (*minimum, child_min);
       *natural = MAX (*natural, child_nat);
@@ -248,7 +239,7 @@ gtk_fishbowl_size_allocate (
   GtkWidget *     widget,
   GtkAllocation * allocation)
 {
-  GtkFishbowl * fishbowl = GTK_FISHBOWL (widget);
+  GtkFishbowl *        fishbowl = GTK_FISHBOWL (widget);
   GtkFishbowlPrivate * priv =
     gtk_fishbowl_get_instance_private (fishbowl);
   GtkFishbowlChild * child;
@@ -276,10 +267,8 @@ gtk_fishbowl_size_allocate (
         + round (
           child->y
           * (allocation->height - child_requisition.height));
-      child_allocation.width =
-        child_requisition.width;
-      child_allocation.height =
-        child_requisition.height;
+      child_allocation.width = child_requisition.width;
+      child_allocation.height = child_requisition.height;
 
       gtk_widget_size_allocate (
         child->widget, &child_allocation);
@@ -294,11 +283,9 @@ new_speed (void)
 }
 
 static void
-gtk_fishbowl_add (
-  GtkContainer * container,
-  GtkWidget *    widget)
+gtk_fishbowl_add (GtkContainer * container, GtkWidget * widget)
 {
-  GtkFishbowl * fishbowl = GTK_FISHBOWL (container);
+  GtkFishbowl *        fishbowl = GTK_FISHBOWL (container);
   GtkFishbowlPrivate * priv =
     gtk_fishbowl_get_instance_private (fishbowl);
   GtkFishbowlChild * child_info;
@@ -313,11 +300,9 @@ gtk_fishbowl_add (
   child_info->dx = new_speed ();
   child_info->dy = new_speed ();
 
-  gtk_widget_set_parent (
-    widget, GTK_WIDGET (fishbowl));
+  gtk_widget_set_parent (widget, GTK_WIDGET (fishbowl));
 
-  priv->children =
-    g_list_prepend (priv->children, child_info);
+  priv->children = g_list_prepend (priv->children, child_info);
   priv->count++;
   g_object_notify_by_pspec (
     G_OBJECT (fishbowl), props[PROP_COUNT]);
@@ -328,12 +313,12 @@ gtk_fishbowl_remove (
   GtkContainer * container,
   GtkWidget *    widget)
 {
-  GtkFishbowl * fishbowl = GTK_FISHBOWL (container);
+  GtkFishbowl *        fishbowl = GTK_FISHBOWL (container);
   GtkFishbowlPrivate * priv =
     gtk_fishbowl_get_instance_private (fishbowl);
   GtkFishbowlChild * child;
-  GtkWidget * widget_bowl = GTK_WIDGET (fishbowl);
-  GList *     children;
+  GtkWidget *        widget_bowl = GTK_WIDGET (fishbowl);
+  GList *            children;
 
   for (children = priv->children; children;
        children = children->next)
@@ -347,14 +332,12 @@ gtk_fishbowl_remove (
 
           gtk_widget_unparent (widget);
 
-          priv->children = g_list_remove_link (
-            priv->children, children);
+          priv->children =
+            g_list_remove_link (priv->children, children);
           g_list_free (children);
           g_free (child);
 
-          if (
-            was_visible
-            && gtk_widget_get_visible (widget_bowl))
+          if (was_visible && gtk_widget_get_visible (widget_bowl))
             gtk_widget_queue_resize (widget_bowl);
 
           priv->count--;
@@ -372,7 +355,7 @@ gtk_fishbowl_forall (
   GtkCallback    callback,
   gpointer       callback_data)
 {
-  GtkFishbowl * fishbowl = GTK_FISHBOWL (container);
+  GtkFishbowl *        fishbowl = GTK_FISHBOWL (container);
   GtkFishbowlPrivate * priv =
     gtk_fishbowl_get_instance_private (fishbowl);
   GtkFishbowlChild * child;
@@ -399,8 +382,7 @@ gtk_fishbowl_dispose (GObject * object)
   gtk_fishbowl_set_animating (fishbowl, FALSE);
   gtk_fishbowl_set_count (fishbowl, 0);
 
-  G_OBJECT_CLASS (gtk_fishbowl_parent_class)
-    ->dispose (object);
+  G_OBJECT_CLASS (gtk_fishbowl_parent_class)->dispose (object);
 }
 
 static void
@@ -454,14 +436,12 @@ gtk_fishbowl_get_property (
     {
     case PROP_ANIMATING:
       g_value_set_boolean (
-        value,
-        gtk_fishbowl_get_animating (fishbowl));
+        value, gtk_fishbowl_get_animating (fishbowl));
       break;
 
     case PROP_BENCHMARK:
       g_value_set_boolean (
-        value,
-        gtk_fishbowl_get_benchmark (fishbowl));
+        value, gtk_fishbowl_get_benchmark (fishbowl));
       break;
 
     case PROP_COUNT:
@@ -471,14 +451,12 @@ gtk_fishbowl_get_property (
 
     case PROP_FRAMERATE:
       g_value_set_double (
-        value,
-        gtk_fishbowl_get_framerate (fishbowl));
+        value, gtk_fishbowl_get_framerate (fishbowl));
       break;
 
     case PROP_UPDATE_DELAY:
       g_value_set_int64 (
-        value,
-        gtk_fishbowl_get_update_delay (fishbowl));
+        value, gtk_fishbowl_get_update_delay (fishbowl));
       break;
 
     default:
@@ -491,25 +469,20 @@ gtk_fishbowl_get_property (
 static void
 gtk_fishbowl_class_init (GtkFishbowlClass * klass)
 {
-  GObjectClass * object_class =
-    G_OBJECT_CLASS (klass);
-  GtkWidgetClass * widget_class =
-    GTK_WIDGET_CLASS (klass);
+  GObjectClass *      object_class = G_OBJECT_CLASS (klass);
+  GtkWidgetClass *    widget_class = GTK_WIDGET_CLASS (klass);
   GtkContainerClass * container_class =
     GTK_CONTAINER_CLASS (klass);
 
   object_class->dispose = gtk_fishbowl_dispose;
-  object_class->set_property =
-    gtk_fishbowl_set_property;
-  object_class->get_property =
-    gtk_fishbowl_get_property;
+  object_class->set_property = gtk_fishbowl_set_property;
+  object_class->get_property = gtk_fishbowl_get_property;
 
   widget_class->get_preferred_width =
     gtk_fishbowl_get_preferred_width;
   widget_class->get_preferred_height =
     gtk_fishbowl_get_preferred_height;
-  widget_class->size_allocate =
-    gtk_fishbowl_size_allocate;
+  widget_class->size_allocate = gtk_fishbowl_size_allocate;
 
   container_class->add = gtk_fishbowl_add;
   container_class->remove = gtk_fishbowl_remove;
@@ -526,18 +499,18 @@ gtk_fishbowl_class_init (GtkFishbowlClass * klass)
     FALSE, G_PARAM_READWRITE);
 
   props[PROP_COUNT] = g_param_spec_uint (
-    "count", "Count", "Number of widgets", 0,
-    G_MAXUINT, 0, G_PARAM_READWRITE);
+    "count", "Count", "Number of widgets", 0, G_MAXUINT, 0,
+    G_PARAM_READWRITE);
 
   props[PROP_FRAMERATE] = g_param_spec_double (
     "framerate", "Framerate",
-    "Framerate of this widget in frames per second",
-    0, G_MAXDOUBLE, 0, G_PARAM_READABLE);
+    "Framerate of this widget in frames per second", 0,
+    G_MAXDOUBLE, 0, G_PARAM_READABLE);
 
   props[PROP_UPDATE_DELAY] = g_param_spec_int64 (
     "update-delay", "Update delay",
-    "Number of usecs between updates", 0,
-    G_MAXINT64, G_USEC_PER_SEC, G_PARAM_READWRITE);
+    "Number of usecs between updates", 0, G_MAXINT64,
+    G_USEC_PER_SEC, G_PARAM_READWRITE);
 
   g_object_class_install_properties (
     object_class, NUM_PROPERTIES, props);
@@ -553,9 +526,7 @@ gtk_fishbowl_get_count (GtkFishbowl * fishbowl)
 }
 
 void
-gtk_fishbowl_set_count (
-  GtkFishbowl * fishbowl,
-  guint         count)
+gtk_fishbowl_set_count (GtkFishbowl * fishbowl, guint count)
 {
   GtkFishbowlPrivate * priv =
     gtk_fishbowl_get_instance_private (fishbowl);
@@ -569,8 +540,7 @@ gtk_fishbowl_set_count (
     {
       gtk_fishbowl_remove (
         GTK_CONTAINER (fishbowl),
-        ((GtkFishbowlChild *) priv->children->data)
-          ->widget);
+        ((GtkFishbowlChild *) priv->children->data)->widget);
     }
 
   while (priv->count < count)
@@ -581,8 +551,7 @@ gtk_fishbowl_set_count (
 
       gtk_widget_show (new_widget);
 
-      gtk_fishbowl_add (
-        GTK_CONTAINER (fishbowl), new_widget);
+      gtk_fishbowl_add (GTK_CONTAINER (fishbowl), new_widget);
     }
 
   g_object_thaw_notify (G_OBJECT (fishbowl));
@@ -633,25 +602,20 @@ guess_refresh_interval (GdkFrameClock * frame_clock)
 
   interval = G_MAXINT64;
 
-  for (i = gdk_frame_clock_get_history_start (
-         frame_clock);
-       i < gdk_frame_clock_get_frame_counter (
-         frame_clock);
-       i++)
+  for (i = gdk_frame_clock_get_history_start (frame_clock);
+       i < gdk_frame_clock_get_frame_counter (frame_clock); i++)
     {
       GdkFrameTimings *t, *before;
       gint64           ts, before_ts;
 
-      t = gdk_frame_clock_get_timings (
-        frame_clock, i);
-      before = gdk_frame_clock_get_timings (
-        frame_clock, i - 1);
+      t = gdk_frame_clock_get_timings (frame_clock, i);
+      before =
+        gdk_frame_clock_get_timings (frame_clock, i - 1);
       if (t == NULL || before == NULL)
         continue;
 
       ts = gdk_frame_timings_get_frame_time (t);
-      before_ts =
-        gdk_frame_timings_get_frame_time (before);
+      before_ts = gdk_frame_timings_get_frame_time (before);
       if (ts == 0 || before_ts == 0)
         continue;
 
@@ -676,24 +640,24 @@ gtk_fishbowl_do_update (GtkFishbowl * fishbowl)
   gint64           start_timestamp, end_timestamp;
   gint64           interval;
 
-  frame_clock = gtk_widget_get_frame_clock (
-    GTK_WIDGET (fishbowl));
+  frame_clock =
+    gtk_widget_get_frame_clock (GTK_WIDGET (fishbowl));
   if (frame_clock == NULL)
     return;
 
   start_counter =
     gdk_frame_clock_get_history_start (frame_clock);
-  end_counter = gdk_frame_clock_get_frame_counter (
-    frame_clock);
-  start = gdk_frame_clock_get_timings (
-    frame_clock, start_counter);
+  end_counter =
+    gdk_frame_clock_get_frame_counter (frame_clock);
+  start =
+    gdk_frame_clock_get_timings (frame_clock, start_counter);
   for (
-    end = gdk_frame_clock_get_timings (
-      frame_clock, end_counter);
+    end =
+      gdk_frame_clock_get_timings (frame_clock, end_counter);
     end_counter > start_counter && end != NULL
     && !gdk_frame_timings_get_complete (end);
-    end = gdk_frame_clock_get_timings (
-      frame_clock, end_counter))
+    end =
+      gdk_frame_clock_get_timings (frame_clock, end_counter))
     end_counter--;
   if (end_counter - start_counter < 4)
     return;
@@ -706,8 +670,7 @@ gtk_fishbowl_do_update (GtkFishbowl * fishbowl)
     {
       start_timestamp =
         gdk_frame_timings_get_frame_time (start);
-      end_timestamp =
-        gdk_frame_timings_get_frame_time (end);
+      end_timestamp = gdk_frame_timings_get_frame_time (end);
     }
 
   n_frames = end_counter - start_counter;
@@ -720,18 +683,15 @@ gtk_fishbowl_do_update (GtkFishbowl * fishbowl)
   if (!priv->benchmark)
     return;
 
-  interval =
-    gdk_frame_timings_get_refresh_interval (end);
+  interval = gdk_frame_timings_get_refresh_interval (end);
   if (interval == 0)
     {
-      interval =
-        guess_refresh_interval (frame_clock);
+      interval = guess_refresh_interval (frame_clock);
       if (interval == 0)
         return;
     }
   expected_frames = round (
-    (double) (end_timestamp - start_timestamp)
-    / interval);
+    (double) (end_timestamp - start_timestamp) / interval);
 
   if (n_frames >= expected_frames)
     {
@@ -754,9 +714,7 @@ gtk_fishbowl_do_update (GtkFishbowl * fishbowl)
 
   gtk_fishbowl_set_count (
     fishbowl,
-    MAX (
-      1, (int) priv->count
-           + priv->last_benchmark_change));
+    MAX (1, (int) priv->count + priv->last_benchmark_change));
 }
 
 static gboolean
@@ -765,7 +723,7 @@ gtk_fishbowl_tick (
   GdkFrameClock * frame_clock,
   gpointer        unused)
 {
-  GtkFishbowl * fishbowl = GTK_FISHBOWL (widget);
+  GtkFishbowl *        fishbowl = GTK_FISHBOWL (widget);
   GtkFishbowlPrivate * priv =
     gtk_fishbowl_get_instance_private (fishbowl);
   GtkFishbowlChild * child;
@@ -790,11 +748,9 @@ gtk_fishbowl_tick (
       child = l->data;
 
       child->x +=
-        child->dx
-        * ((double) elapsed / G_USEC_PER_SEC);
+        child->dx * ((double) elapsed / G_USEC_PER_SEC);
       child->y +=
-        child->dy
-        * ((double) elapsed / G_USEC_PER_SEC);
+        child->dy * ((double) elapsed / G_USEC_PER_SEC);
 
       if (child->x <= 0)
         {
@@ -841,8 +797,7 @@ gtk_fishbowl_set_animating (
   if (animating)
     {
       priv->tick_id = gtk_widget_add_tick_callback (
-        GTK_WIDGET (fishbowl), gtk_fishbowl_tick,
-        NULL, NULL);
+        GTK_WIDGET (fishbowl), gtk_fishbowl_tick, NULL, NULL);
     }
   else
     {
@@ -869,8 +824,7 @@ gtk_fishbowl_get_framerate (GtkFishbowl * fishbowl)
 }
 
 gint64
-gtk_fishbowl_get_update_delay (
-  GtkFishbowl * fishbowl)
+gtk_fishbowl_get_update_delay (GtkFishbowl * fishbowl)
 {
   GtkFishbowlPrivate * priv =
     gtk_fishbowl_get_instance_private (fishbowl);

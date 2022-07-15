@@ -26,10 +26,7 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  ChordKeyWidget,
-  chord_key_widget,
-  GTK_TYPE_GRID)
+G_DEFINE_TYPE (ChordKeyWidget, chord_key_widget, GTK_TYPE_GRID)
 
 static ChordDescriptor *
 get_chord_descr (ChordKeyWidget * self)
@@ -43,20 +40,16 @@ on_choose_chord_btn_clicked (
   ChordKeyWidget * self)
 {
   ChordSelectorWindowWidget * chord_selector =
-    chord_selector_window_widget_new (
-      self->chord_idx);
+    chord_selector_window_widget_new (self->chord_idx);
 
   gtk_window_present (GTK_WINDOW (chord_selector));
 }
 
 static void
-on_invert_btn_clicked (
-  GtkButton *      btn,
-  ChordKeyWidget * self)
+on_invert_btn_clicked (GtkButton * btn, ChordKeyWidget * self)
 {
-  const ChordDescriptor * descr =
-    get_chord_descr (self);
-  ChordDescriptor * descr_clone =
+  const ChordDescriptor * descr = get_chord_descr (self);
+  ChordDescriptor *       descr_clone =
     chord_descriptor_clone (descr);
 
   if (btn == self->invert_prev_btn)
@@ -67,8 +60,8 @@ on_invert_btn_clicked (
         {
           descr_clone->inversion--;
           chord_editor_apply_single_chord (
-            CHORD_EDITOR, descr_clone,
-            self->chord_idx, F_UNDOABLE);
+            CHORD_EDITOR, descr_clone, self->chord_idx,
+            F_UNDOABLE);
         }
     }
   else if (btn == self->invert_next_btn)
@@ -79,8 +72,8 @@ on_invert_btn_clicked (
         {
           descr_clone->inversion++;
           chord_editor_apply_single_chord (
-            CHORD_EDITOR, descr_clone,
-            self->chord_idx, F_UNDOABLE);
+            CHORD_EDITOR, descr_clone, self->chord_idx,
+            F_UNDOABLE);
         }
     }
 
@@ -111,12 +104,10 @@ chord_key_widget_new (int idx)
   self->chord_idx = idx;
 
   /* add piano widget */
-  self->piano =
-    piano_keyboard_widget_new_for_chord_key (idx);
+  self->piano = piano_keyboard_widget_new_for_chord_key (idx);
   gtk_widget_set_size_request (
     GTK_WIDGET (self->piano), 216, 24);
-  gtk_box_append (
-    self->piano_box, GTK_WIDGET (self->piano));
+  gtk_box_append (self->piano_box, GTK_WIDGET (self->piano));
 
   chord_key_widget_refresh (self);
 
@@ -124,16 +115,12 @@ chord_key_widget_new (int idx)
 }
 
 static void
-chord_key_widget_class_init (
-  ChordKeyWidgetClass * _klass)
+chord_key_widget_class_init (ChordKeyWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "chord-key");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass, "chord-key");
 
-  resources_set_class_template (
-    klass, "chord_key.ui");
+  resources_set_class_template (klass, "chord_key.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

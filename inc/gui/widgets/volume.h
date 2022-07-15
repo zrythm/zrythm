@@ -30,8 +30,7 @@ typedef struct Port Port;
  * @{
  */
 
-#define VOLUME_WIDGET_TYPE \
-  (volume_widget_get_type ())
+#define VOLUME_WIDGET_TYPE (volume_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   VolumeWidget,
   volume_widget,
@@ -55,9 +54,7 @@ typedef struct _VolumeWidget
 } VolumeWidget;
 
 void
-volume_widget_setup (
-  VolumeWidget * self,
-  Port *         port);
+volume_widget_setup (VolumeWidget * self, Port * port);
 
 VolumeWidget *
 volume_widget_new (Port * port);

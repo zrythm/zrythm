@@ -23,8 +23,7 @@
  * From https://graphics.stanford.edu/~seander/bithacks.html#ZerosOnRightLinear.
  */
 unsigned int
-utils_get_uint_from_bitfield_val (
-  unsigned int bitfield)
+utils_get_uint_from_bitfield_val (unsigned int bitfield)
 {
   /* 32-bit word input to count zero bits on
    * right */

@@ -14,9 +14,7 @@
  * has data.
  */
 bool
-midi_file_track_has_data (
-  const char * abs_path,
-  int          track_idx)
+midi_file_track_has_data (const char * abs_path, int track_idx)
 {
   MIDI_FILE * mf = midiFileOpen (abs_path);
   g_return_val_if_fail (mf, false);
@@ -27,8 +25,7 @@ midi_file_track_has_data (
   int ev;
   g_debug ("reading MIDI Track %d", track_idx);
   bool have_data = false;
-  while (
-    midiReadGetNextMessage (mf, track_idx, &msg))
+  while (midiReadGetNextMessage (mf, track_idx, &msg))
     {
       if (msg.bImpliedMsg)
         {

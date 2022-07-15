@@ -35,8 +35,7 @@ SCM_DEFINE (
 #define FUNC_NAME s_
 {
   SupportedFile * file =
-    supported_file_new_from_path (
-      scm_to_pointer (path));
+    supported_file_new_from_path (scm_to_pointer (path));
 
   return scm_from_pointer (file, NULL);
 }
@@ -49,8 +48,7 @@ init_module (void * data)
 #  include "audio_supported_file.x"
 #endif
 
-  scm_c_export (
-    "supported-file-new-from-path", NULL);
+  scm_c_export ("supported-file-new-from-path", NULL);
 }
 
 void

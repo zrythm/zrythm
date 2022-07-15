@@ -45,13 +45,11 @@ on_play_clicked (
     {
     case WRAPPED_OBJECT_TYPE_SUPPORTED_FILE:
       sample_processor_queue_file (
-        SAMPLE_PROCESSOR,
-        (SupportedFile *) wrapped_obj->obj);
+        SAMPLE_PROCESSOR, (SupportedFile *) wrapped_obj->obj);
       break;
     case WRAPPED_OBJECT_TYPE_CHORD_PSET:
       sample_processor_queue_chord_preset (
-        SAMPLE_PROCESSOR,
-        (ChordPreset *) wrapped_obj->obj);
+        SAMPLE_PROCESSOR, (ChordPreset *) wrapped_obj->obj);
       break;
     default:
       break;
@@ -63,8 +61,7 @@ on_stop_clicked (
   GtkButton *                    toolbutton,
   FileAuditionerControlsWidget * self)
 {
-  sample_processor_stop_file_playback (
-    SAMPLE_PROCESSOR);
+  sample_processor_stop_file_playback (SAMPLE_PROCESSOR);
 }
 
 static void
@@ -94,13 +91,11 @@ on_instrument_changed (
   if (
     SAMPLE_PROCESSOR->instrument_setting
     && plugin_descriptor_is_same_plugin (
-      SAMPLE_PROCESSOR->instrument_setting->descr,
-      descr))
+      SAMPLE_PROCESSOR->instrument_setting->descr, descr))
     return;
 
   EngineState state;
-  engine_wait_for_pause (
-    AUDIO_ENGINE, &state, false);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, false);
 
   /* clear previous instrument setting */
   if (SAMPLE_PROCESSOR->instrument_setting)
@@ -116,16 +111,14 @@ on_instrument_changed (
   if (existing_setting)
     {
       SAMPLE_PROCESSOR->instrument_setting =
-        plugin_setting_clone (
-          existing_setting, F_VALIDATE);
+        plugin_setting_clone (existing_setting, F_VALIDATE);
     }
   else
     {
       SAMPLE_PROCESSOR->instrument_setting =
         plugin_setting_new_default (descr);
     }
-  g_return_if_fail (
-    SAMPLE_PROCESSOR->instrument_setting);
+  g_return_if_fail (SAMPLE_PROCESSOR->instrument_setting);
 
   /* save setting */
   char * setting_yaml = yaml_serialize (
@@ -137,23 +130,20 @@ on_instrument_changed (
 
   engine_resume (AUDIO_ENGINE, &state);
 
-  EVENTS_PUSH (
-    ET_FILE_BROWSER_INSTRUMENT_CHANGED, NULL);
+  EVENTS_PUSH (ET_FILE_BROWSER_INSTRUMENT_CHANGED, NULL);
 }
 
 static void
-setup_instrument_dropdown (
-  FileAuditionerControlsWidget * self)
+setup_instrument_dropdown (FileAuditionerControlsWidget * self)
 {
-  GListStore * store = g_list_store_new (
-    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  GListStore * store =
+    g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
   /* populate instruments */
   int selected = -1;
   int num_added = 0;
   for (size_t i = 0;
-       i < PLUGIN_MANAGER->plugin_descriptors->len;
-       i++)
+       i < PLUGIN_MANAGER->plugin_descriptors->len; i++)
     {
       PluginDescriptor * descr = g_ptr_array_index (
         PLUGIN_MANAGER->plugin_descriptors, i);
@@ -161,17 +151,14 @@ setup_instrument_dropdown (
         {
           WrappedObjectWithChangeSignal * wrapped_descr =
             wrapped_object_with_change_signal_new (
-              descr,
-              WRAPPED_OBJECT_TYPE_PLUGIN_DESCR);
-          g_list_store_append (
-            store, wrapped_descr);
+              descr, WRAPPED_OBJECT_TYPE_PLUGIN_DESCR);
+          g_list_store_append (store, wrapped_descr);
 
           /* set selected instrument */
           if (
             SAMPLE_PROCESSOR->instrument_setting
             && plugin_descriptor_is_same_plugin (
-              SAMPLE_PROCESSOR->instrument_setting
-                ->descr,
+              SAMPLE_PROCESSOR->instrument_setting->descr,
               descr))
             {
               selected = num_added;
@@ -182,8 +169,7 @@ setup_instrument_dropdown (
     }
 
   gtk_drop_down_set_model (
-    self->instrument_dropdown,
-    G_LIST_MODEL (store));
+    self->instrument_dropdown, G_LIST_MODEL (store));
 
   GtkExpression * expr = gtk_cclosure_expression_new (
     G_TYPE_STRING, NULL, 0, NULL,
@@ -196,8 +182,7 @@ setup_instrument_dropdown (
   if (selected >= 0)
     {
       gtk_drop_down_set_selected (
-        self->instrument_dropdown,
-        (unsigned int) selected);
+        self->instrument_dropdown, (unsigned int) selected);
     }
 
   /* add instrument signal handler */
@@ -215,8 +200,8 @@ file_auditioner_controls_widget_setup (
   FileAuditionerControlsWidget * self,
   GtkWidget *                    owner,
   bool                           for_files,
-  SelectedFileGetter selected_file_getter,
-  GenericCallback    refilter_files_cb)
+  SelectedFileGetter             selected_file_getter,
+  GenericCallback                refilter_files_cb)
 {
   self->owner = owner;
   self->selected_file_getter = selected_file_getter;
@@ -242,8 +227,7 @@ file_auditioner_controls_widget_setup (
     self->file_settings_btn, G_MENU_MODEL (menu));
   g_signal_connect (
     menu, "items-changed",
-    G_CALLBACK (on_settings_menu_items_changed),
-    self);
+    G_CALLBACK (on_settings_menu_items_changed), self);
 
   setup_instrument_dropdown (self);
 }
@@ -252,8 +236,7 @@ static void
 file_auditioner_controls_widget_class_init (
   FileAuditionerControlsWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "file_auditioner_controls.ui");
 
@@ -270,8 +253,7 @@ file_auditioner_controls_widget_class_init (
 #undef BIND_CHILD
 
 #define BIND_SIGNAL(sig) \
-  gtk_widget_class_bind_template_callback ( \
-    klass, sig)
+  gtk_widget_class_bind_template_callback (klass, sig)
 
   BIND_SIGNAL (on_play_clicked);
   BIND_SIGNAL (on_stop_clicked);
@@ -293,8 +275,8 @@ file_auditioner_controls_widget_init (
   /* set menu */
   GSimpleActionGroup * action_group =
     g_simple_action_group_new ();
-  GAction * action = g_settings_create_action (
-    S_UI_FILE_BROWSER, "autoplay");
+  GAction * action =
+    g_settings_create_action (S_UI_FILE_BROWSER, "autoplay");
   g_action_map_add_action (
     G_ACTION_MAP (action_group), action);
   action = g_settings_create_action (
@@ -306,6 +288,6 @@ file_auditioner_controls_widget_init (
   g_action_map_add_action (
     G_ACTION_MAP (action_group), action);
   gtk_widget_insert_action_group (
-    GTK_WIDGET (self->file_settings_btn),
-    "settings-btn", G_ACTION_GROUP (action_group));
+    GTK_WIDGET (self->file_settings_btn), "settings-btn",
+    G_ACTION_GROUP (action_group));
 }

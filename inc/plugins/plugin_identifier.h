@@ -51,13 +51,12 @@ typedef enum PluginSlotType
   PLUGIN_SLOT_MODULATOR,
 } PluginSlotType;
 
-static const cyaml_strval_t
-  plugin_slot_type_strings[] = {
-    {"Invalid",     PLUGIN_SLOT_INVALID   },
-    { "Insert",     PLUGIN_SLOT_INSERT    },
-    { "MIDI FX",    PLUGIN_SLOT_MIDI_FX   },
-    { "Instrument", PLUGIN_SLOT_INSTRUMENT},
-    { "Modulator",  PLUGIN_SLOT_MODULATOR },
+static const cyaml_strval_t plugin_slot_type_strings[] = {
+  {"Invalid",     PLUGIN_SLOT_INVALID   },
+  { "Insert",     PLUGIN_SLOT_INSERT    },
+  { "MIDI FX",    PLUGIN_SLOT_MIDI_FX   },
+  { "Instrument", PLUGIN_SLOT_INSTRUMENT},
+  { "Modulator",  PLUGIN_SLOT_MODULATOR },
 };
 
 static inline const char *
@@ -95,21 +94,18 @@ static const cyaml_schema_field_t
       PluginIdentifier,
       slot_type,
       plugin_slot_type_strings),
-    YAML_FIELD_UINT (
-      PluginIdentifier,
-      track_name_hash),
+    YAML_FIELD_UINT (PluginIdentifier, track_name_hash),
     YAML_FIELD_INT (PluginIdentifier, slot),
 
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  plugin_identifier_schema = {
-    CYAML_VALUE_MAPPING (
-      CYAML_FLAG_POINTER,
-      PluginIdentifier,
-      plugin_identifier_fields_schema),
-  };
+static const cyaml_schema_value_t plugin_identifier_schema = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    PluginIdentifier,
+    plugin_identifier_fields_schema),
+};
 
 void
 plugin_identifier_init (PluginIdentifier * self);
@@ -131,8 +127,7 @@ plugin_identifier_copy (
 
 NONNULL
 bool
-plugin_identifier_validate (
-  const PluginIdentifier * self);
+plugin_identifier_validate (const PluginIdentifier * self);
 
 /**
  * Verifies that @ref slot_type and @ref slot is
@@ -144,15 +139,11 @@ plugin_identifier_validate_slot_type_slot_combo (
   int            slot);
 
 static inline void
-plugin_identifier_print (
-  PluginIdentifier * self,
-  char *             str)
+plugin_identifier_print (PluginIdentifier * self, char * str)
 {
   sprintf (
-    str,
-    "slot_type: %d, track_name hash: %u, slot: %d",
-    self->slot_type, self->track_name_hash,
-    self->slot);
+    str, "slot_type: %d, track_name hash: %u, slot: %d",
+    self->slot_type, self->track_name_hash, self->slot);
 }
 
 /**

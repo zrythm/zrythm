@@ -28,28 +28,22 @@ typedef struct
 } FifthsURIs;
 
 static inline void
-map_fifths_uris (
-  LV2_URID_Map * map,
-  FifthsURIs *   uris)
+map_fifths_uris (LV2_URID_Map * map, FifthsURIs * uris)
 {
-  uris->atom_Path =
-    map->map (map->handle, LV2_ATOM__Path);
+  uris->atom_Path = map->map (map->handle, LV2_ATOM__Path);
   uris->atom_Resource =
     map->map (map->handle, LV2_ATOM__Resource);
   uris->atom_Sequence =
     map->map (map->handle, LV2_ATOM__Sequence);
-  uris->atom_URID =
-    map->map (map->handle, LV2_ATOM__URID);
-  uris->atom_eventTransfer = map->map (
-    map->handle, LV2_ATOM__eventTransfer);
+  uris->atom_URID = map->map (map->handle, LV2_ATOM__URID);
+  uris->atom_eventTransfer =
+    map->map (map->handle, LV2_ATOM__eventTransfer);
   uris->midi_Event =
     map->map (map->handle, LV2_MIDI__MidiEvent);
-  uris->patch_Set =
-    map->map (map->handle, LV2_PATCH__Set);
+  uris->patch_Set = map->map (map->handle, LV2_PATCH__Set);
   uris->patch_property =
     map->map (map->handle, LV2_PATCH__property);
-  uris->patch_value =
-    map->map (map->handle, LV2_PATCH__value);
+  uris->patch_value = map->map (map->handle, LV2_PATCH__value);
 }
 
 #endif /* TEST_INSTRUMENT_URIS_H */

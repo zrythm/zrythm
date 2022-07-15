@@ -23,8 +23,7 @@ using std::endl;
 using std::string;
 using std::vector;
 
-float BeatTracker::m_stepSecs =
-  0.01161; // 512 samples at 44100
+float BeatTracker::m_stepSecs = 0.01161; // 512 samples at 44100
 
 #define METHOD_OLD 0
 #define METHOD_NEW 1
@@ -32,8 +31,7 @@ float BeatTracker::m_stepSecs =
 class BeatTrackerData
 {
 public:
-  BeatTrackerData (const DFConfig &config)
-      : dfConfig (config)
+  BeatTrackerData (const DFConfig &config) : dfConfig (config)
   {
     df = new DetectionFunction (config);
   }
@@ -135,13 +133,11 @@ BeatTracker::getParameterDescriptors () const
   desc.maxValue = 4;
   desc.defaultValue = 3;
   desc.valueNames.clear ();
-  desc.valueNames.push_back (
-    "High-Frequency Content");
+  desc.valueNames.push_back ("High-Frequency Content");
   desc.valueNames.push_back ("Spectral Difference");
   desc.valueNames.push_back ("Phase Deviation");
   desc.valueNames.push_back ("Complex Domain");
-  desc.valueNames.push_back (
-    "Broadband Energy Rise");
+  desc.valueNames.push_back ("Broadband Energy Rise");
   list.push_back (desc);
 
   desc.identifier = "whiten";
@@ -161,8 +157,7 @@ BeatTracker::getParameterDescriptors () const
   //Alpha Parameter of Beat Tracker
   desc.identifier = "alpha";
   desc.name = "Alpha";
-  desc.description =
-    "Inertia - Flexibility Trade Off";
+  desc.description = "Inertia - Flexibility Trade Off";
   desc.minValue = 0.1;
   desc.maxValue = 0.99;
   desc.defaultValue = 0.90;
@@ -246,9 +241,7 @@ BeatTracker::getParameter (std::string name) const
 }
 
 void
-BeatTracker::setParameter (
-  std::string name,
-  float       value)
+BeatTracker::setParameter (std::string name, float value)
 {
   if (name == "dftype")
     {
@@ -321,8 +314,7 @@ BeatTracker::initialise (
       std::cerr
         << "ERROR: BeatTracker::initialise: Unsupported step size for this sample rate: "
         << stepSize << " (wanted "
-        << (getPreferredStepSize ()) << ")"
-        << std::endl;
+        << (getPreferredStepSize ()) << ")" << std::endl;
       return false;
     }
 
@@ -331,8 +323,7 @@ BeatTracker::initialise (
       std::cerr
         << "WARNING: BeatTracker::initialise: Sub-optimal block size for this sample rate: "
         << blockSize << " (wanted "
-        << getPreferredBlockSize () << ")"
-        << std::endl;
+        << getPreferredBlockSize () << ")" << std::endl;
       //        return false;
     }
 
@@ -359,8 +350,8 @@ BeatTracker::reset ()
 size_t
 BeatTracker::getPreferredStepSize () const
 {
-  size_t step = size_t (
-    m_inputSampleRate * m_stepSecs + 0.0001);
+  size_t step =
+    size_t (m_inputSampleRate * m_stepSecs + 0.0001);
   //    std::cerr << "BeatTracker::getPreferredStepSize: input sample rate is " << m_inputSampleRate << ", step size is " << step << std::endl;
   return step;
 }
@@ -384,13 +375,11 @@ BeatTracker::getOutputDescriptors () const
   OutputDescriptor beat;
   beat.identifier = "beats";
   beat.name = "Beats";
-  beat.description =
-    "Estimated metrical beat locations";
+  beat.description = "Estimated metrical beat locations";
   beat.unit = "";
   beat.hasFixedBinCount = true;
   beat.binCount = 0;
-  beat.sampleType =
-    OutputDescriptor::VariableSampleRate;
+  beat.sampleType = OutputDescriptor::VariableSampleRate;
   beat.sampleRate = 1.0 / m_stepSecs;
 
   OutputDescriptor df;
@@ -403,8 +392,7 @@ BeatTracker::getOutputDescriptors () const
   df.binCount = 1;
   df.hasKnownExtents = false;
   df.isQuantized = false;
-  df.sampleType =
-    OutputDescriptor::OneSamplePerStep;
+  df.sampleType = OutputDescriptor::OneSamplePerStep;
 
   OutputDescriptor tempo;
   tempo.identifier = "tempo";
@@ -415,8 +403,7 @@ BeatTracker::getOutputDescriptors () const
   tempo.binCount = 1;
   tempo.hasKnownExtents = false;
   tempo.isQuantized = false;
-  tempo.sampleType =
-    OutputDescriptor::VariableSampleRate;
+  tempo.sampleType = OutputDescriptor::VariableSampleRate;
   tempo.sampleRate = 1.0 / m_stepSecs;
 
   list.push_back (beat);
@@ -433,10 +420,8 @@ BeatTracker::process (
 {
   if (!m_d)
     {
-      cerr
-        << "ERROR: BeatTracker::process: "
-        << "BeatTracker has not been initialised"
-        << endl;
+      cerr << "ERROR: BeatTracker::process: "
+           << "BeatTracker has not been initialised" << endl;
       return FeatureSet ();
     }
 
@@ -480,10 +465,8 @@ BeatTracker::getRemainingFeatures ()
 {
   if (!m_d)
     {
-      cerr
-        << "ERROR: BeatTracker::getRemainingFeatures: "
-        << "BeatTracker has not been initialised"
-        << endl;
+      cerr << "ERROR: BeatTracker::getRemainingFeatures: "
+           << "BeatTracker has not been initialised" << endl;
       return FeatureSet ();
     }
 
@@ -522,8 +505,7 @@ BeatTracker::beatTrackOld ()
   for (size_t i = 0; i < beats.size (); ++i)
     {
 
-      size_t frame =
-        beats[i] * m_d->dfConfig.stepSize;
+      size_t frame = beats[i] * m_d->dfConfig.stepSize;
 
       Feature feature;
       feature.hasTimestamp = true;
@@ -539,8 +521,7 @@ BeatTracker::beatTrackOld ()
         {
 
           frameIncrement =
-            (beats[i + 1] - beats[i])
-            * m_d->dfConfig.stepSize;
+            (beats[i + 1] - beats[i]) * m_d->dfConfig.stepSize;
 
           // one beat is frameIncrement frames, so there are
           // samplerate/frameIncrement bps, so
@@ -549,8 +530,7 @@ BeatTracker::beatTrackOld ()
           if (frameIncrement > 0)
             {
               bpm =
-                (60.0 * m_inputSampleRate)
-                / frameIncrement;
+                (60.0 * m_inputSampleRate) / frameIncrement;
               bpm = int (bpm * 100.0 + 0.5) / 100.0;
               sprintf (label, "%.2f bpm", bpm);
               feature.label = label;
@@ -567,15 +547,13 @@ BeatTracker::beatTrackOld ()
     {
 
       size_t frame =
-        i * m_d->dfConfig.stepSize
-        * ttParams.lagLength;
+        i * m_d->dfConfig.stepSize * ttParams.lagLength;
 
       //        std::cerr << "unit " << i << ", step size " << m_d->dfConfig.stepSize << ", hop " << ttParams.lagLength << ", frame = " << frame << std::endl;
 
       if (
         tempi[i] > 1
-        && int (tempi[i] * 100)
-             != int (prevTempo * 100))
+        && int (tempi[i] * 100) != int (prevTempo * 100))
         {
           Feature feature;
           feature.hasTimestamp = true;
@@ -622,13 +600,11 @@ BeatTracker::beatTrackNew ()
   if (df.empty ())
     return FeatureSet ();
 
-  TempoTrackV2 tt (
-    m_inputSampleRate, m_d->dfConfig.stepSize);
+  TempoTrackV2 tt (m_inputSampleRate, m_d->dfConfig.stepSize);
 
   // MEPD - note this function is now passed 2 new parameters, m_inputtempo and m_constraintempo
   tt.calculateBeatPeriod (
-    df, beatPeriod, tempi, m_inputtempo,
-    m_constraintempo);
+    df, beatPeriod, tempi, m_inputtempo, m_constraintempo);
 
   vector<double> beats;
 
@@ -643,8 +619,7 @@ BeatTracker::beatTrackNew ()
   for (size_t i = 0; i < beats.size (); ++i)
     {
 
-      size_t frame =
-        beats[i] * m_d->dfConfig.stepSize;
+      size_t frame = beats[i] * m_d->dfConfig.stepSize;
 
       Feature feature;
       feature.hasTimestamp = true;
@@ -660,8 +635,7 @@ BeatTracker::beatTrackNew ()
         {
 
           frameIncrement =
-            (beats[i + 1] - beats[i])
-            * m_d->dfConfig.stepSize;
+            (beats[i + 1] - beats[i]) * m_d->dfConfig.stepSize;
 
           // one beat is frameIncrement frames, so there are
           // samplerate/frameIncrement bps, so
@@ -670,8 +644,7 @@ BeatTracker::beatTrackNew ()
           if (frameIncrement > 0)
             {
               bpm =
-                (60.0 * m_inputSampleRate)
-                / frameIncrement;
+                (60.0 * m_inputSampleRate) / frameIncrement;
               bpm = int (bpm * 100.0 + 0.5) / 100.0;
               sprintf (label, "%.2f bpm", bpm);
               feature.label = label;
@@ -691,8 +664,7 @@ BeatTracker::beatTrackNew ()
 
       if (
         tempi[i] > 1
-        && int (tempi[i] * 100)
-             != int (prevTempo * 100))
+        && int (tempi[i] * 100) != int (prevTempo * 100))
         {
           Feature feature;
           feature.hasTimestamp = true;

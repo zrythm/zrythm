@@ -39,8 +39,7 @@ G_DECLARE_FINAL_TYPE (
   RULER_RANGE_WIDGET,
   GtkDrawingArea)
 #define TIMELINE_RULER_RANGE \
-  (ruler_widget_get_private ( \
-     Z_RULER_WIDGET (MW_RULER)) \
+  (ruler_widget_get_private (Z_RULER_WIDGET (MW_RULER)) \
      ->range)
 
 typedef struct _RulerRangeWidget

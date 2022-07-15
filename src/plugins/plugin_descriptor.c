@@ -24,10 +24,8 @@
 PluginDescriptor *
 plugin_descriptor_new (void)
 {
-  PluginDescriptor * self =
-    object_new (PluginDescriptor);
-  self->schema_version =
-    PLUGIN_DESCRIPTOR_SCHEMA_VERSION;
+  PluginDescriptor * self = object_new (PluginDescriptor);
+  self->schema_version = PLUGIN_DESCRIPTOR_SCHEMA_VERSION;
 
   return self;
 }
@@ -36,12 +34,9 @@ const char *
 plugin_protocol_to_str (PluginProtocol prot)
 {
   for (size_t i = 0;
-       i < G_N_ELEMENTS (plugin_protocol_strings);
-       i++)
+       i < G_N_ELEMENTS (plugin_protocol_strings); i++)
     {
-      if (
-        plugin_protocol_strings[i].val
-        == (int64_t) prot)
+      if (plugin_protocol_strings[i].val == (int64_t) prot)
         {
           return plugin_protocol_strings[i].str;
         }
@@ -85,11 +80,9 @@ plugin_descriptor_copy (
  * Clones the plugin descriptor.
  */
 PluginDescriptor *
-plugin_descriptor_clone (
-  const PluginDescriptor * src)
+plugin_descriptor_clone (const PluginDescriptor * src)
 {
-  PluginDescriptor * self =
-    object_new (PluginDescriptor);
+  PluginDescriptor * self = object_new (PluginDescriptor);
 
   plugin_descriptor_copy (self, src);
 
@@ -105,9 +98,7 @@ bool
 plugin_descriptor_is_instrument (
   const PluginDescriptor * const descr)
 {
-  if (
-    descr->num_midi_ins == 0
-    || descr->num_audio_outs == 0)
+  if (descr->num_midi_ins == 0 || descr->num_audio_outs == 0)
     {
       return false;
     }
@@ -216,8 +207,7 @@ plugin_descriptor_is_midi_modifier (
  * string.
  */
 ZPluginCategory
-plugin_descriptor_string_to_category (
-  const char * str)
+plugin_descriptor_string_to_category (const char * str)
 {
   ZPluginCategory category = ZPLUGIN_CATEGORY_NONE;
 
@@ -274,8 +264,7 @@ plugin_descriptor_string_to_category (
 }
 
 char *
-plugin_descriptor_category_to_string (
-  ZPluginCategory category)
+plugin_descriptor_category_to_string (ZPluginCategory category)
 {
 
 #define RET_STRING(term, cat) \
@@ -356,8 +345,7 @@ plugin_descriptor_is_valid_for_slot_type (
       break;
     case PLUGIN_SLOT_INSTRUMENT:
       return track_type == TRACK_TYPE_INSTRUMENT
-             && plugin_descriptor_is_instrument (
-               self);
+             && plugin_descriptor_is_instrument (self);
     default:
       break;
     }
@@ -377,8 +365,7 @@ plugin_descriptor_is_same_plugin (
   return a->arch == b->arch && a->protocol == b->protocol
          && string_is_equal (a->path, b->path)
          && string_is_equal (a->uri, b->uri)
-         && a->unique_id == b->unique_id
-         && a->ghash == b->ghash;
+         && a->unique_id == b->unique_id && a->ghash == b->ghash;
 }
 
 /**
@@ -386,8 +373,7 @@ plugin_descriptor_is_same_plugin (
  * UI.
  */
 bool
-plugin_descriptor_has_custom_ui (
-  const PluginDescriptor * self)
+plugin_descriptor_has_custom_ui (const PluginDescriptor * self)
 {
   switch (self->protocol)
     {
@@ -401,8 +387,7 @@ plugin_descriptor_has_custom_ui (
     case PROT_VST3:
     case PROT_AU:
 #ifdef HAVE_CARLA
-      return carla_native_plugin_has_custom_ui (
-        self);
+      return carla_native_plugin_has_custom_ui (self);
 #else
       return false;
 #endif
@@ -430,16 +415,14 @@ plugin_descriptor_get_min_bridge_mode (
       LilvNode * lv2_uri =
         lilv_new_uri (LILV_WORLD, self->uri);
       const LilvPlugin * lilv_plugin =
-        lilv_plugins_get_by_uri (
-          LILV_PLUGINS, lv2_uri);
+        lilv_plugins_get_by_uri (LILV_PLUGINS, lv2_uri);
       lilv_node_free (lv2_uri);
-      LilvUIs * uis =
-        lilv_plugin_get_uis (lilv_plugin);
-      const LilvUI *   picked_ui;
+      LilvUIs *      uis = lilv_plugin_get_uis (lilv_plugin);
+      const LilvUI * picked_ui;
       const LilvNode * picked_ui_type;
-      bool needs_bridging = lv2_plugin_pick_ui (
-        uis, LV2_PLUGIN_UI_FOR_BRIDGING,
-        &picked_ui, &picked_ui_type);
+      bool             needs_bridging = lv2_plugin_pick_ui (
+                    uis, LV2_PLUGIN_UI_FOR_BRIDGING, &picked_ui,
+                    &picked_ui_type);
       if (needs_bridging)
         {
           const LilvNode * ui_uri =
@@ -447,9 +430,7 @@ plugin_descriptor_get_min_bridge_mode (
           LilvNodes * ui_required_features =
             lilv_world_find_nodes (
               LILV_WORLD, ui_uri,
-              PM_GET_NODE (
-                LV2_CORE__requiredFeature),
-              NULL);
+              PM_GET_NODE (LV2_CORE__requiredFeature), NULL);
           if (
             lilv_nodes_contains (
               ui_required_features,
@@ -458,17 +439,13 @@ plugin_descriptor_get_min_bridge_mode (
               ui_required_features,
               PM_GET_NODE (LV2_INSTANCE_ACCESS_URI))
             || lilv_node_equals (
-              picked_ui_type,
-              PM_GET_NODE (LV2_UI__Qt4UI))
+              picked_ui_type, PM_GET_NODE (LV2_UI__Qt4UI))
             || lilv_node_equals (
-              picked_ui_type,
-              PM_GET_NODE (LV2_UI__Qt5UI))
+              picked_ui_type, PM_GET_NODE (LV2_UI__Qt5UI))
             || lilv_node_equals (
-              picked_ui_type,
-              PM_GET_NODE (LV2_UI__GtkUI))
+              picked_ui_type, PM_GET_NODE (LV2_UI__GtkUI))
             || lilv_node_equals (
-              picked_ui_type,
-              PM_GET_NODE (LV2_UI__Gtk3UI)))
+              picked_ui_type, PM_GET_NODE (LV2_UI__Gtk3UI)))
             {
               return CARLA_BRIDGE_FULL;
             }
@@ -553,11 +530,9 @@ plugin_descriptor_generate_context_menu (
 
 #ifdef HAVE_CARLA
   sprintf (
-    tmp,
-    "app.plugin-browser-add-to-project-carla::%p",
-    self);
-  menuitem = z_gtk_create_menu_item (
-    _ ("Add to project"), NULL, tmp);
+    tmp, "app.plugin-browser-add-to-project-carla::%p", self);
+  menuitem =
+    z_gtk_create_menu_item (_ ("Add to project"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
   PluginSetting * new_setting =
@@ -573,8 +548,7 @@ plugin_descriptor_generate_context_menu (
         "bridged-ui::%p",
         self);
       menuitem = z_gtk_create_menu_item (
-        _ ("Add to project (bridged UI)"), NULL,
-        tmp);
+        _ ("Add to project (bridged UI)"), NULL, tmp);
       g_menu_append_item (menu, menuitem);
     }
   plugin_setting_free (new_setting);
@@ -606,11 +580,8 @@ plugin_descriptor_generate_context_menu (
   /* add to collection */
   GMenu * add_collections_submenu = g_menu_new ();
   int     num_added = 0;
-  for (
-    int i = 0;
-    i
-    < PLUGIN_MANAGER->collections->num_collections;
-    i++)
+  for (int i = 0;
+       i < PLUGIN_MANAGER->collections->num_collections; i++)
     {
       PluginCollection * coll =
         PLUGIN_MANAGER->collections->collections[i];
@@ -621,13 +592,10 @@ plugin_descriptor_generate_context_menu (
         }
 
       sprintf (
-        tmp,
-        "app.plugin-browser-add-to-collection::%p",
-        coll);
-      menuitem = z_gtk_create_menu_item (
-        coll->name, NULL, tmp);
-      g_menu_append_item (
-        add_collections_submenu, menuitem);
+        tmp, "app.plugin-browser-add-to-collection::%p", coll);
+      menuitem =
+        z_gtk_create_menu_item (coll->name, NULL, tmp);
+      g_menu_append_item (add_collections_submenu, menuitem);
       num_added++;
     }
   if (num_added > 0)
@@ -642,14 +610,10 @@ plugin_descriptor_generate_context_menu (
     }
 
   /* remove from collection */
-  GMenu * remove_collections_submenu =
-    g_menu_new ();
+  GMenu * remove_collections_submenu = g_menu_new ();
   num_added = 0;
-  for (
-    int i = 0;
-    i
-    < PLUGIN_MANAGER->collections->num_collections;
-    i++)
+  for (int i = 0;
+       i < PLUGIN_MANAGER->collections->num_collections; i++)
     {
       PluginCollection * coll =
         PLUGIN_MANAGER->collections->collections[i];
@@ -660,11 +624,10 @@ plugin_descriptor_generate_context_menu (
         }
 
       sprintf (
-        tmp,
-        "app.plugin-browser-remove-from-collection::%p",
+        tmp, "app.plugin-browser-remove-from-collection::%p",
         coll);
-      menuitem = z_gtk_create_menu_item (
-        coll->name, NULL, tmp);
+      menuitem =
+        z_gtk_create_menu_item (coll->name, NULL, tmp);
       g_menu_append_item (
         remove_collections_submenu, menuitem);
       num_added++;

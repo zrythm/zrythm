@@ -55,9 +55,7 @@ string_array_contains_substr (
  * substring.
  */
 bool
-string_contains_substr (
-  const char * str,
-  const char * substr);
+string_contains_substr (const char * str, const char * substr);
 
 bool
 string_contains_substr_case_insensitive (
@@ -87,8 +85,7 @@ string_to_lower (const char * in, char * out);
 /**
  * Returns if the two strings are exactly equal.
  */
-#define string_is_equal(str1, str2) \
-  (!g_strcmp0 (str1, str2))
+#define string_is_equal(str1, str2) (!g_strcmp0 (str1, str2))
 
 /**
  * Returns if the two strings are equal ignoring
@@ -199,8 +196,7 @@ string_get_int_after_last_space (
  *   addresses of the source array.
  */
 char **
-string_array_sort_and_remove_duplicates (
-  char ** str_arr);
+string_array_sort_and_remove_duplicates (char ** str_arr);
 
 /**
  * Copies the string src to the buffer in \ref dest
@@ -211,9 +207,7 @@ string_array_sort_and_remove_duplicates (
  * free'd and the pointer is set to NULL.
  */
 void
-string_copy_w_realloc (
-  char **      dest,
-  const char * src);
+string_copy_w_realloc (char ** dest, const char * src);
 
 /**
  * Returns a new string with only ASCII alphanumeric

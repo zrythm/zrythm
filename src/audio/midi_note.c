@@ -49,8 +49,7 @@ midi_note_new (
   obj->end_pos = *end_pos;
   obj->type = ARRANGER_OBJECT_TYPE_MIDI_NOTE;
 
-  region_identifier_copy (
-    &obj->region_id, region_id);
+  region_identifier_copy (&obj->region_id, region_id);
   self->val = val;
   self->vel = velocity_new (self, vel);
 
@@ -67,8 +66,7 @@ midi_note_set_region_and_index (
   int        idx)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
-  region_identifier_copy (
-    &obj->region_id, &region->id);
+  region_identifier_copy (&obj->region_id, &region->id);
   self->pos = idx;
 }
 
@@ -84,8 +82,8 @@ midi_note_print (MidiNote * mn)
   char end_pos_str[300];
   position_to_string (&obj->end_pos, end_pos_str);
   g_message (
-    "MidiNote: start pos %s - end pos %s",
-    start_pos_str, end_pos_str);
+    "MidiNote: start pos %s - end pos %s", start_pos_str,
+    end_pos_str);
 }
 
 /**
@@ -104,10 +102,8 @@ midi_note_listen (MidiNote * mn, bool listen)
   ArrangerObject * obj = (ArrangerObject *) mn;
 
   Track * track = arranger_object_get_track (obj);
-  g_return_if_fail (
-    track && track->processor->midi_in);
-  MidiEvents * events =
-    track->processor->midi_in->midi_events;
+  g_return_if_fail (track && track->processor->midi_in);
+  MidiEvents * events = track->processor->midi_in->midi_events;
 
   if (listen)
     {
@@ -172,14 +168,11 @@ int
 midi_note_is_equal (MidiNote * src, MidiNote * dest)
 {
   ArrangerObject * src_obj = (ArrangerObject *) src;
-  ArrangerObject * dest_obj =
-    (ArrangerObject *) dest;
-  return position_is_equal_ticks (
-           &src_obj->pos, &dest_obj->pos)
+  ArrangerObject * dest_obj = (ArrangerObject *) dest;
+  return position_is_equal_ticks (&src_obj->pos, &dest_obj->pos)
          && position_is_equal_ticks (
            &src_obj->end_pos, &dest_obj->end_pos)
-         && src->val == dest->val
-         && src->muted == dest->muted
+         && src->val == dest->val && src->muted == dest->muted
          && region_identifier_is_equal (
            &src_obj->region_id, &dest_obj->region_id);
 }
@@ -191,14 +184,11 @@ midi_note_is_equal (MidiNote * src, MidiNote * dest)
  * @param pos Position to fill in.
  */
 void
-midi_note_get_global_start_pos (
-  MidiNote * self,
-  Position * pos)
+midi_note_get_global_start_pos (MidiNote * self, Position * pos)
 {
-  ArrangerObject * self_obj =
-    (ArrangerObject *) self;
-  ArrangerObject * region_obj = (ArrangerObject *)
-    arranger_object_get_region (self_obj);
+  ArrangerObject * self_obj = (ArrangerObject *) self;
+  ArrangerObject * region_obj =
+    (ArrangerObject *) arranger_object_get_region (self_obj);
   position_set_to_pos (pos, &self_obj->pos);
   position_add_ticks (
     pos, position_to_ticks (&region_obj->pos));
@@ -222,8 +212,7 @@ midi_note_get_val_as_string (
   const int note_val = self->val / 12 - 1;
   if (use_markup)
     {
-      sprintf (
-        buf, "%s<sup>%d</sup>", note_str, note_val);
+      sprintf (buf, "%s<sup>%d</sup>", note_str, note_val);
       if (DEBUGGING)
         {
           char tmp[50];
@@ -238,9 +227,7 @@ midi_note_get_val_as_string (
 }
 
 void
-midi_note_set_cache_val (
-  MidiNote *    self,
-  const uint8_t val)
+midi_note_set_cache_val (MidiNote * self, const uint8_t val)
 {
   self->cache_val = val;
 }
@@ -250,9 +237,7 @@ midi_note_set_cache_val (
  * the pitch of the MidiNote.
  */
 void
-midi_note_set_val (
-  MidiNote *    midi_note,
-  const uint8_t val)
+midi_note_set_val (MidiNote * midi_note, const uint8_t val)
 {
   g_return_if_fail (val < 128);
 
@@ -263,22 +248,18 @@ midi_note_set_val (
     {
       ZRegion * region = arranger_object_get_region (
         (ArrangerObject *) midi_note);
-      ArrangerObject * r_obj =
-        (ArrangerObject *) region;
+      ArrangerObject * r_obj = (ArrangerObject *) region;
       g_return_if_fail (r_obj);
-      Track * track =
-        arranger_object_get_track (r_obj);
+      Track * track = arranger_object_get_track (r_obj);
       g_return_if_fail (track);
 
       MidiEvents * midi_events =
         track->processor->piano_roll->midi_events;
 
       zix_sem_wait (&midi_events->access_sem);
-      uint8_t midi_ch =
-        midi_region_get_midi_ch (region);
+      uint8_t midi_ch = midi_region_get_midi_ch (region);
       midi_events_add_note_off (
-        midi_events, midi_ch, midi_note->val, 0,
-        F_QUEUED);
+        midi_events, midi_ch, midi_note->val, 0, F_QUEUED);
       zix_sem_post (&midi_events->access_sem);
     }
 
@@ -291,9 +272,7 @@ midi_note_set_val (
  * @param delta Y (0-127)
  */
 void
-midi_note_shift_pitch (
-  MidiNote * self,
-  const int  delta)
+midi_note_shift_pitch (MidiNote * self, const int delta)
 {
   self->val = (uint8_t) ((int) self->val + delta);
   midi_note_set_val (self, self->val);
@@ -311,19 +290,15 @@ midi_note_get_region (MidiNote * self)
  * the timeline).
  */
 int
-midi_note_hit (
-  MidiNote *           self,
-  const signed_frame_t gframes)
+midi_note_hit (MidiNote * self, const signed_frame_t gframes)
 {
-  ZRegion * region = arranger_object_get_region (
-    (ArrangerObject *) self);
-  ArrangerObject * region_obj =
-    (ArrangerObject *) region;
+  ZRegion * region =
+    arranger_object_get_region ((ArrangerObject *) self);
+  ArrangerObject * region_obj = (ArrangerObject *) region;
 
   /* get local positions */
   signed_frame_t local_pos =
-    region_timeline_frames_to_local (
-      region, gframes, 1);
+    region_timeline_frames_to_local (region, gframes, 1);
 
   /* add clip_start position to start from
    * there */
@@ -334,8 +309,7 @@ midi_note_hit (
   /* check for note on event on the
    * boundary */
   /* FIXME ok? it was < and >= before */
-  ArrangerObject * midi_note_obj =
-    (ArrangerObject *) self;
+  ArrangerObject * midi_note_obj = (ArrangerObject *) self;
   if (
     midi_note_obj->pos.frames <= local_pos
     && midi_note_obj->end_pos.frames > local_pos)

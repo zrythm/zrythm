@@ -31,10 +31,9 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _EditableLabelWidget
-                      EditableLabelWidget;
-typedef struct Track  Track;
-typedef struct Plugin Plugin;
+typedef struct _EditableLabelWidget EditableLabelWidget;
+typedef struct Track                Track;
+typedef struct Plugin               Plugin;
 
 #define PORTS_EXPANDER_WIDGET_TYPE \
   (ports_expander_widget_get_type ())
@@ -86,8 +85,7 @@ typedef struct _PortsExpanderWidget
  * Refreshes each field.
  */
 void
-ports_expander_widget_refresh (
-  PortsExpanderWidget * self);
+ports_expander_widget_refresh (PortsExpanderWidget * self);
 
 /**
  * Sets up the PortsExpanderWidget for a Plugin.

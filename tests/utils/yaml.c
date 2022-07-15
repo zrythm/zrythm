@@ -32,20 +32,18 @@ typedef struct float_struct
   float fval;
 } float_struct;
 
-static const cyaml_schema_field_t
-  float_struct_fields_schema[] = {
-    YAML_FIELD_FLOAT (float_struct, fval),
+static const cyaml_schema_field_t float_struct_fields_schema[] = {
+  YAML_FIELD_FLOAT (float_struct, fval),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  float_struct_schema = {
-    CYAML_VALUE_MAPPING (
-      CYAML_FLAG_POINTER,
-      float_struct,
-      float_struct_fields_schema),
-  };
+static const cyaml_schema_value_t float_struct_schema = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    float_struct,
+    float_struct_fields_schema),
+};
 
 static void
 test_load_precise_float (void)
@@ -54,31 +52,27 @@ test_load_precise_float (void)
 
   float_struct my_struct;
   my_struct.fval = 12;
-  char * ret = yaml_serialize (
-    &my_struct, &float_struct_schema);
+  char * ret =
+    yaml_serialize (&my_struct, &float_struct_schema);
   g_assert_cmpstr (ret, ==, "---\nfval: 12\n...\n");
   g_free (ret);
 
   my_struct.fval = 1.55331e-40f;
   g_message (
-    "my_struct.fval %e %g", my_struct.fval,
-    my_struct.fval);
-  ret = yaml_serialize (
-    &my_struct, &float_struct_schema);
+    "my_struct.fval %e %g", my_struct.fval, my_struct.fval);
+  ret = yaml_serialize (&my_struct, &float_struct_schema);
   g_message ("\n%s", ret);
-  bool eq = string_is_equal (
-    ret, "---\nfval: 1.55331e-40\n...\n");
+  bool eq =
+    string_is_equal (ret, "---\nfval: 1.55331e-40\n...\n");
   if (!eq)
     {
-      eq = string_is_equal (
-        ret, "---\nfval: 0\n...\n");
+      eq = string_is_equal (ret, "---\nfval: 0\n...\n");
     }
   g_assert_true (eq);
 
-  const char * str1 =
-    "---\nfval: 1.55331e-40\n...\n";
-  float_struct * ret2 = (float_struct *)
-    yaml_deserialize (str1, &float_struct_schema);
+  const char *   str1 = "---\nfval: 1.55331e-40\n...\n";
+  float_struct * ret2 = (float_struct *) yaml_deserialize (
+    str1, &float_struct_schema);
   g_message ("loaded val %g", ret2->fval);
 
 #if 0

@@ -40,8 +40,7 @@ set_values (
   self->obj = obj;
 
   char         tmp[600];
-  const char * name =
-    arranger_object_get_name (obj);
+  const char * name = arranger_object_get_name (obj);
   if (name)
     {
       gtk_label_set_text (self->name_lbl, name);
@@ -50,15 +49,13 @@ set_values (
     {
       gtk_label_set_text (self->name_lbl, "");
     }
-  ZRegion * region =
-    arranger_object_get_region (obj);
+  ZRegion * region = arranger_object_get_region (obj);
   if (region)
     {
       sprintf (
-        tmp, "%s [tr %u, ln %d, at %d, idx %d]",
-        region->name, region->id.track_name_hash,
-        region->id.lane_pos, region->id.at_idx,
-        region->id.idx);
+        tmp, "%s [tr %u, ln %d, at %d, idx %d]", region->name,
+        region->id.track_name_hash, region->id.lane_pos,
+        region->id.at_idx, region->id.idx);
       gtk_label_set_text (self->owner_lbl, tmp);
     }
   else
@@ -74,9 +71,8 @@ ArrangerObjectInfoDialogWidget *
 arranger_object_info_dialog_widget_new (
   ArrangerObject * object)
 {
-  ArrangerObjectInfoDialogWidget * self =
-    g_object_new (
-      ARRANGER_OBJECT_INFO_DIALOG_WIDGET_TYPE, NULL);
+  ArrangerObjectInfoDialogWidget * self = g_object_new (
+    ARRANGER_OBJECT_INFO_DIALOG_WIDGET_TYPE, NULL);
 
   set_values (self, object);
 
@@ -87,8 +83,7 @@ static void
 arranger_object_info_dialog_widget_class_init (
   ArrangerObjectInfoDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "arranger_object_info_dialog.ui");
 
@@ -109,6 +104,5 @@ arranger_object_info_dialog_widget_init (
 
   gtk_window_set_title (
     GTK_WINDOW (self), _ ("Arranger object info"));
-  gtk_window_set_icon_name (
-    GTK_WINDOW (self), "zrythm");
+  gtk_window_set_icon_name (GTK_WINDOW (self), "zrythm");
 }

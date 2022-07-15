@@ -156,10 +156,9 @@ typedef enum PluginArchitecture
   ARCH_64
 } PluginArchitecture;
 
-static const cyaml_strval_t
-  plugin_architecture_strings[] = {
-    {"32-bit",  ARCH_32},
-    { "64-bit", ARCH_64},
+static const cyaml_strval_t plugin_architecture_strings[] = {
+  {"32-bit",  ARCH_32},
+  { "64-bit", ARCH_64},
 };
 
 /**
@@ -172,11 +171,10 @@ typedef enum CarlaBridgeMode
   CARLA_BRIDGE_FULL,
 } CarlaBridgeMode;
 
-static const cyaml_strval_t
-  carla_bridge_mode_strings[] = {
-    {"None",  CARLA_BRIDGE_NONE},
-    { "UI",   CARLA_BRIDGE_UI  },
-    { "Full", CARLA_BRIDGE_FULL},
+static const cyaml_strval_t carla_bridge_mode_strings[] = {
+  {"None",  CARLA_BRIDGE_NONE},
+  { "UI",   CARLA_BRIDGE_UI  },
+  { "Full", CARLA_BRIDGE_FULL},
 };
 
 /***
@@ -238,15 +236,9 @@ typedef struct PluginDescriptor
 
 static const cyaml_schema_field_t plugin_descriptor_fields_schema[] = {
   YAML_FIELD_INT (PluginDescriptor, schema_version),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    PluginDescriptor,
-    author),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    PluginDescriptor,
-    name),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    PluginDescriptor,
-    website),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, author),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, website),
   YAML_FIELD_ENUM (
     PluginDescriptor,
     category,
@@ -271,12 +263,8 @@ static const cyaml_schema_field_t plugin_descriptor_fields_schema[] = {
     PluginDescriptor,
     protocol,
     plugin_protocol_strings),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    PluginDescriptor,
-    path),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    PluginDescriptor,
-    uri),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, path),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, uri),
   YAML_FIELD_ENUM (
     PluginDescriptor,
     min_bridge_mode,
@@ -287,12 +275,11 @@ static const cyaml_schema_field_t plugin_descriptor_fields_schema[] = {
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-  plugin_descriptor_schema = {
-    YAML_VALUE_PTR (
-      PluginDescriptor,
-      plugin_descriptor_fields_schema),
-  };
+static const cyaml_schema_value_t plugin_descriptor_schema = {
+  YAML_VALUE_PTR (
+    PluginDescriptor,
+    plugin_descriptor_fields_schema),
+};
 
 PluginDescriptor *
 plugin_descriptor_new (void);
@@ -314,8 +301,7 @@ plugin_descriptor_copy (
  */
 NONNULL
 PluginDescriptor *
-plugin_descriptor_clone (
-  const PluginDescriptor * src);
+plugin_descriptor_clone (const PluginDescriptor * src);
 
 /**
  * Returns if the Plugin is an instrument or not.
@@ -355,8 +341,7 @@ plugin_descriptor_is_midi_modifier (
  */
 NONNULL
 ZPluginCategory
-plugin_descriptor_string_to_category (
-  const char * str);
+plugin_descriptor_string_to_category (const char * str);
 
 char *
 plugin_descriptor_category_to_string (

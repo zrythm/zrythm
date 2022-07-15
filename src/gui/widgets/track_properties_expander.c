@@ -58,17 +58,14 @@ track_properties_expander_widget_refresh (
       editable_label_widget_setup (
         self->name, track,
         (GenericStringGetter) track_get_name,
-        (GenericStringSetter)
-          track_set_name_with_action);
+        (GenericStringSetter) track_set_name_with_action);
 
       bool is_instrument =
         track->type == TRACK_TYPE_INSTRUMENT;
       gtk_widget_set_visible (
-        GTK_WIDGET (self->instrument_slot),
-        is_instrument);
+        GTK_WIDGET (self->instrument_slot), is_instrument);
       gtk_widget_set_visible (
-        GTK_WIDGET (self->instrument_label),
-        is_instrument);
+        GTK_WIDGET (self->instrument_label), is_instrument);
       if (is_instrument)
         {
           channel_slot_widget_set_instrument (
@@ -91,16 +88,14 @@ track_properties_expander_widget_setup (
   GtkWidget * lbl;
 
 #define CREATE_LABEL(x) \
-  lbl = plugin_gtk_new_label ( \
-    x, true, false, 0.f, 0.5f); \
-  gtk_widget_add_css_class ( \
-    lbl, "inspector_label"); \
+  lbl = plugin_gtk_new_label (x, true, false, 0.f, 0.5f); \
+  gtk_widget_add_css_class (lbl, "inspector_label"); \
   gtk_widget_set_margin_start (lbl, 2); \
   gtk_widget_set_visible (lbl, 1)
 
   /* add track name */
-  self->name = editable_label_widget_new (
-    NULL, NULL, NULL, 11);
+  self->name =
+    editable_label_widget_new (NULL, NULL, NULL, 11);
   gtk_label_set_xalign (self->name->label, 0);
   gtk_widget_set_margin_start (
     GTK_WIDGET (self->name->label), 4);
@@ -115,8 +110,7 @@ track_properties_expander_widget_setup (
 
   /* add direct out */
   self->direct_out =
-    route_target_selector_widget_new (
-      track->channel);
+    route_target_selector_widget_new (track->channel);
   CREATE_LABEL (_ ("Direct Out"));
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
@@ -139,16 +133,13 @@ track_properties_expander_widget_setup (
 
   /* set name and icon */
   expander_box_widget_set_label (
-    Z_EXPANDER_BOX_WIDGET (self),
-    _ ("Track Properties"));
+    Z_EXPANDER_BOX_WIDGET (self), _ ("Track Properties"));
   expander_box_widget_set_icon_name (
     Z_EXPANDER_BOX_WIDGET (self), "info");
   expander_box_widget_set_orientation (
-    Z_EXPANDER_BOX_WIDGET (self),
-    GTK_ORIENTATION_VERTICAL);
+    Z_EXPANDER_BOX_WIDGET (self), GTK_ORIENTATION_VERTICAL);
 
-  track_properties_expander_widget_refresh (
-    self, track);
+  track_properties_expander_widget_refresh (self, track);
 }
 
 static void

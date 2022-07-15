@@ -27,9 +27,7 @@ typedef enum HashAlgorithm
 } HashAlgorithm;
 
 char *
-hash_get_from_file (
-  const char *  filepath,
-  HashAlgorithm algo);
+hash_get_from_file (const char * filepath, HashAlgorithm algo);
 
 uint32_t
 hash_get_from_file_simple (const char * filepath);
@@ -47,9 +45,7 @@ hash_get_for_struct_full (
   size_t             size);
 
 uint32_t
-hash_get_for_struct (
-  const void * const obj,
-  size_t             size);
+hash_get_for_struct (const void * const obj, size_t size);
 
 /**
  * @}

@@ -32,9 +32,6 @@
  * Reallocate and zero out newly added memory.
  */
 void *
-realloc_zero (
-  void * pBuffer,
-  size_t oldSize,
-  size_t newSize);
+realloc_zero (void * pBuffer, size_t oldSize, size_t newSize);
 
 #endif

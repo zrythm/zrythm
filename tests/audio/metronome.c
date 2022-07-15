@@ -21,11 +21,9 @@ test_find_and_queue_metronome (void)
   {
     Position play_pos;
     position_set_to_bar (&play_pos, 11);
-    position_add_ticks (
-      &play_pos, 0.26567493534093956);
+    position_add_ticks (&play_pos, 0.26567493534093956);
     position_update_frames_from_ticks (&play_pos);
-    transport_set_playhead_pos (
-      TRANSPORT, &play_pos);
+    transport_set_playhead_pos (TRANSPORT, &play_pos);
     metronome_queue_events (
       AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);
 
@@ -63,11 +61,9 @@ test_find_and_queue_metronome (void)
     position_set_to_bar (&play_pos, 4);
     position_add_beats (&play_pos, 3);
     position_add_sixteenths (&play_pos, 3);
-    position_add_ticks (
-      &play_pos, 226.99682539682544302);
+    position_add_ticks (&play_pos, 226.99682539682544302);
     position_update_frames_from_ticks (&play_pos);
-    transport_set_playhead_pos (
-      TRANSPORT, &play_pos);
+    transport_set_playhead_pos (TRANSPORT, &play_pos);
     metronome_queue_events (
       AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);
 
@@ -90,8 +86,7 @@ test_find_and_queue_metronome (void)
     Position play_pos;
     position_set_to_bar (&play_pos, 16);
     position_add_frames (&play_pos, -4);
-    transport_set_playhead_pos (
-      TRANSPORT, &play_pos);
+    transport_set_playhead_pos (TRANSPORT, &play_pos);
 
     for (nframes_t i = 0; i < 200; i++)
       {
@@ -99,23 +94,21 @@ test_find_and_queue_metronome (void)
         SAMPLE_PROCESSOR->num_current_samples = 0;
         metronome_queue_events (AUDIO_ENGINE, 0, 1);
         g_assert_cmpint (
-          SAMPLE_PROCESSOR->num_current_samples,
-          ==, i == 4);
+          SAMPLE_PROCESSOR->num_current_samples, ==, i == 4);
         transport_add_to_playhead (TRANSPORT, 1);
       }
 
     position_set_to_bar (&play_pos, 16);
     position_add_frames (&play_pos, -4);
-    transport_set_playhead_pos (
-      TRANSPORT, &play_pos);
+    transport_set_playhead_pos (TRANSPORT, &play_pos);
     for (nframes_t i = 0; i < 200; i++)
       {
         g_message ("%u", i);
         SAMPLE_PROCESSOR->num_current_samples = 0;
         metronome_queue_events (AUDIO_ENGINE, 0, 2);
         g_assert_cmpint (
-          SAMPLE_PROCESSOR->num_current_samples,
-          ==, (i >= 3 && i <= 4));
+          SAMPLE_PROCESSOR->num_current_samples, ==,
+          (i >= 3 && i <= 4));
         transport_add_to_playhead (TRANSPORT, 1);
       }
   }
@@ -129,24 +122,19 @@ test_find_and_queue_metronome (void)
       Position play_pos;
       position_set_to_bar (&play_pos, 16);
       position_add_frames (
-        &play_pos,
-        -(long) AUDIO_ENGINE->block_length);
+        &play_pos, -(long) AUDIO_ENGINE->block_length);
       if (i == 1)
         position_add_ticks (&play_pos, -0.01);
-      transport_set_playhead_pos (
-        TRANSPORT, &play_pos);
-      position_set_to_bar (
-        &TRANSPORT->loop_end_pos, 16);
+      transport_set_playhead_pos (TRANSPORT, &play_pos);
+      position_set_to_bar (&TRANSPORT->loop_end_pos, 16);
 
       /* assert no playback from playhead to loop
        * end */
       SAMPLE_PROCESSOR->num_current_samples = 0;
       metronome_queue_events (
-        AUDIO_ENGINE, 0,
-        AUDIO_ENGINE->block_length);
+        AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);
       g_assert_cmpint (
-        SAMPLE_PROCESSOR->num_current_samples, ==,
-        0);
+        SAMPLE_PROCESSOR->num_current_samples, ==, 0);
 
       /* add remaining frames and assert playback
        * at the first sample */
@@ -154,11 +142,9 @@ test_find_and_queue_metronome (void)
         TRANSPORT, AUDIO_ENGINE->block_length);
       SAMPLE_PROCESSOR->num_current_samples = 0;
       metronome_queue_events (
-        AUDIO_ENGINE, 0,
-        AUDIO_ENGINE->block_length);
+        AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);
       g_assert_cmpint (
-        SAMPLE_PROCESSOR->num_current_samples, ==,
-        1);
+        SAMPLE_PROCESSOR->num_current_samples, ==, 1);
       SamplePlayback * sp =
         &SAMPLE_PROCESSOR->current_samples[0];
       g_assert_cmpuint (sp->start_offset, ==, 0);

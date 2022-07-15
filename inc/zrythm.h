@@ -16,19 +16,18 @@
 
 #include "zix/sem.h"
 
-typedef struct Project          Project;
-typedef struct Symap            Symap;
-typedef struct RecordingManager RecordingManager;
-typedef struct EventManager     EventManager;
-typedef struct ObjectUtils      ObjectUtils;
-typedef struct PluginManager    PluginManager;
-typedef struct FileManager      FileManager;
-typedef struct ChordPresetPackManager
-                           ChordPresetPackManager;
-typedef struct Settings    Settings;
-typedef struct Log         Log;
-typedef struct CairoCaches CairoCaches;
-typedef struct PCGRand     PCGRand;
+typedef struct Project                Project;
+typedef struct Symap                  Symap;
+typedef struct RecordingManager       RecordingManager;
+typedef struct EventManager           EventManager;
+typedef struct ObjectUtils            ObjectUtils;
+typedef struct PluginManager          PluginManager;
+typedef struct FileManager            FileManager;
+typedef struct ChordPresetPackManager ChordPresetPackManager;
+typedef struct Settings               Settings;
+typedef struct Log                    Log;
+typedef struct CairoCaches            CairoCaches;
+typedef struct PCGRand                PCGRand;
 
 /**
  * @addtogroup general
@@ -41,12 +40,10 @@ typedef struct PCGRand     PCGRand;
 #define ZRYTHM_PROJECTS_DIR "projects"
 
 #define MAX_RECENT_PROJECTS 20
-#define DEBUGGING \
-  (G_UNLIKELY (ZRYTHM && ZRYTHM->debug))
+#define DEBUGGING (G_UNLIKELY (ZRYTHM && ZRYTHM->debug))
 #define ZRYTHM_TESTING \
   (G_UNLIKELY (ZRYTHM && ZRYTHM->testing))
-#define ZRYTHM_GENERATING_PROJECT \
-  (ZRYTHM->generating_project)
+#define ZRYTHM_GENERATING_PROJECT (ZRYTHM->generating_project)
 #define ZRYTHM_HAVE_UI (ZRYTHM && ZRYTHM->have_ui)
 
 #ifdef HAVE_LSP_DSP

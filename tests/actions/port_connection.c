@@ -45,30 +45,28 @@ test_modulator_connection (
       setting->descr->category = PC_INSTRUMENT;
     }
   g_free (setting->descr->category_str);
-  setting->descr->category_str =
-    plugin_descriptor_category_to_string (
-      setting->descr->category);
+  setting->descr
+    ->category_str = plugin_descriptor_category_to_string (
+    setting->descr->category);
 
   /* create a modulator */
   mixer_selections_action_perform_create (
     PLUGIN_SLOT_MODULATOR,
-    track_get_name_hash (P_MODULATOR_TRACK), 0,
-    setting, 1, NULL);
+    track_get_name_hash (P_MODULATOR_TRACK), 0, setting, 1,
+    NULL);
   plugin_setting_free (setting);
 
   ModulatorMacroProcessor * macro =
     P_MODULATOR_TRACK->modulator_macros[0];
-  Plugin * pl = P_MODULATOR_TRACK->modulators[0];
-  Port *   pl_cv_port = NULL;
-  Port *   pl_control_port = NULL;
+  Plugin *    pl = P_MODULATOR_TRACK->modulators[0];
+  Port *      pl_cv_port = NULL;
+  Port *      pl_control_port = NULL;
   GPtrArray * ports = g_ptr_array_new ();
   plugin_append_ports (pl, ports);
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = g_ptr_array_index (ports, i);
-      if (
-        port->id.type == TYPE_CV
-        && port->id.flow == FLOW_OUTPUT)
+      if (port->id.type == TYPE_CV && port->id.flow == FLOW_OUTPUT)
         {
           pl_cv_port = port;
           if (pl_control_port)
@@ -87,8 +85,7 @@ test_modulator_connection (
             }
         }
     }
-  object_free_w_func_and_null (
-    g_ptr_array_unref, ports);
+  object_free_w_func_and_null (g_ptr_array_unref, ports);
 
   /* connect the plugin's CV out to the macro
    * button */
@@ -97,8 +94,7 @@ test_modulator_connection (
 
   /* expect messages */
   LOG->use_structured_for_console = false;
-  LOG->min_log_level_for_test_console =
-    G_LOG_LEVEL_WARNING;
+  LOG->min_log_level_for_test_console = G_LOG_LEVEL_WARNING;
   g_test_expect_message (
     G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
     "*ports cannot be connected*");
@@ -143,21 +139,20 @@ _test_port_connection (
       setting->descr->category = PC_INSTRUMENT;
     }
   g_free (setting->descr->category_str);
-  setting->descr->category_str =
-    plugin_descriptor_category_to_string (
-      setting->descr->category);
+  setting->descr
+    ->category_str = plugin_descriptor_category_to_string (
+    setting->descr->category);
 
   /* create an extra track */
-  Track * target_track =
-    track_create_empty_with_action (
-      TRACK_TYPE_AUDIO_BUS, NULL);
+  Track * target_track = track_create_empty_with_action (
+    TRACK_TYPE_AUDIO_BUS, NULL);
 
   if (is_instrument)
     {
       /* create an instrument track from helm */
       track_create_for_plugin_at_idx_w_action (
-        TRACK_TYPE_INSTRUMENT, setting,
-        TRACKLIST->num_tracks, NULL);
+        TRACK_TYPE_INSTRUMENT, setting, TRACKLIST->num_tracks,
+        NULL);
     }
   else
     {
@@ -166,12 +161,10 @@ _test_port_connection (
       track_create_empty_with_action (
         TRACK_TYPE_AUDIO_BUS, NULL);
       Track * last_track = tracklist_get_last_track (
-        TRACKLIST, TRACKLIST_PIN_OPTION_BOTH,
-        false);
+        TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
       mixer_selections_action_perform_create (
-        PLUGIN_SLOT_INSERT,
-        track_get_name_hash (last_track), 0,
-        setting, 1, NULL);
+        PLUGIN_SLOT_INSERT, track_get_name_hash (last_track),
+        0, setting, 1, NULL);
     }
 
   plugin_setting_free (setting);
@@ -184,8 +177,7 @@ _test_port_connection (
   Port *      src_port1 = NULL;
   Port *      src_port2 = NULL;
   GPtrArray * ports = g_ptr_array_new ();
-  track_append_ports (
-    src_track, ports, F_INCLUDE_PLUGINS);
+  track_append_ports (src_track, ports, F_INCLUDE_PLUGINS);
   for (size_t i = 0; i < ports->len; i++)
     {
       Port * port = g_ptr_array_index (ports, i);
@@ -211,8 +203,7 @@ _test_port_connection (
   g_ptr_array_remove_range (ports, 0, ports->len);
 
   Port * dest_port = NULL;
-  track_append_ports (
-    target_track, ports, F_INCLUDE_PLUGINS);
+  track_append_ports (target_track, ports, F_INCLUDE_PLUGINS);
   g_assert_nonnull (ports);
   for (size_t i = 0; i < ports->len; i++)
     {
@@ -225,16 +216,12 @@ _test_port_connection (
           break;
         }
     }
-  object_free_w_func_and_null (
-    g_ptr_array_unref, ports);
+  object_free_w_func_and_null (g_ptr_array_unref, ports);
 
   g_assert_nonnull (dest_port);
-  g_assert_true (
-    port_is_in_active_project (src_port1));
-  g_assert_true (
-    port_is_in_active_project (src_port2));
-  g_assert_true (
-    port_is_in_active_project (dest_port));
+  g_assert_true (port_is_in_active_project (src_port1));
+  g_assert_true (port_is_in_active_project (src_port2));
+  g_assert_true (port_is_in_active_project (dest_port));
   g_assert_cmpint (dest_port->num_srcs, ==, 0);
   g_assert_cmpint (src_port1->num_dests, ==, 0);
 
@@ -260,14 +247,10 @@ _test_port_connection (
   g_assert_cmpint (dest_port->num_srcs, ==, 2);
   g_assert_cmpint (src_port1->num_dests, ==, 1);
   g_assert_cmpint (src_port2->num_dests, ==, 1);
-  g_assert_nonnull (
-    port_connections_manager_find_connection (
-      PORT_CONNECTIONS_MGR, &src_port1->id,
-      &dest_port->id));
-  g_assert_nonnull (
-    port_connections_manager_find_connection (
-      PORT_CONNECTIONS_MGR, &src_port2->id,
-      &dest_port->id));
+  g_assert_nonnull (port_connections_manager_find_connection (
+    PORT_CONNECTIONS_MGR, &src_port1->id, &dest_port->id));
+  g_assert_nonnull (port_connections_manager_find_connection (
+    PORT_CONNECTIONS_MGR, &src_port2->id, &dest_port->id));
   g_assert_true (dest_port->srcs[0] == src_port1);
   g_assert_true (dest_port == src_port1->dests[0]);
   g_assert_true (dest_port->srcs[1] == src_port2);

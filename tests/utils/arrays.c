@@ -37,8 +37,7 @@ test_array_dynamic_swap (void)
 
   /* test arr1 allocated and arr2 NULL */
   g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL,
-    "* assertion*failed");
+    G_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL, "* assertion*failed");
   array_dynamic_swap (&arr1, &sz1, &arr2, &sz2);
   g_test_assert_expected_messages ();
 
@@ -46,8 +45,7 @@ test_array_dynamic_swap (void)
   arr2 = arr1;
   arr1 = NULL;
   g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL,
-    "* assertion*failed");
+    G_LOG_DOMAIN, G_LOG_LEVEL_CRITICAL, "* assertion*failed");
   array_dynamic_swap (&arr1, &sz1, &arr2, &sz2);
   g_test_assert_expected_messages ();
 
@@ -111,8 +109,7 @@ test_double_size_if_full (void)
   int num_objs = 3;
 
   size_t orig_sz = size;
-  array_double_size_if_full (
-    arr, num_objs, size, int);
+  array_double_size_if_full (arr, num_objs, size, int);
 
   g_assert_cmpuint (size, ==, orig_sz * 2);
 

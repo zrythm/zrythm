@@ -43,8 +43,7 @@
 #  include <glib.h>
 
 char *
-windows_get_special_path (
-  WindowsSpecialPath path_type)
+windows_get_special_path (WindowsSpecialPath path_type)
 {
   int csidl;
   switch (path_type)
@@ -61,11 +60,10 @@ windows_get_special_path (
 
   WCHAR path[MAX_PATH + 256];
 
-  if (SHGetSpecialFolderPathW (
-        NULL, path, csidl, FALSE))
+  if (SHGetSpecialFolderPathW (NULL, path, csidl, FALSE))
     {
-      char * ret = g_utf16_to_utf8 (
-        path, -1, NULL, NULL, NULL);
+      char * ret =
+        g_utf16_to_utf8 (path, -1, NULL, NULL, NULL);
       g_return_val_if_fail (ret, NULL);
       return ret;
     }

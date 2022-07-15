@@ -41,13 +41,10 @@ G_DECLARE_FINAL_TYPE (
   EDITOR_SELECTION_INFO_WIDGET,
   GtkStack);
 
-#define MW_MAS_INFO \
-  MW_CLIP_EDITOR->editor_selections
+#define MW_MAS_INFO MW_CLIP_EDITOR->editor_selections
 
-typedef struct _SelectionInfoWidget
-  SelectionInfoWidget;
-typedef struct MidiArrangerSelections
-  MidiArrangerSelections;
+typedef struct _SelectionInfoWidget   SelectionInfoWidget;
+typedef struct MidiArrangerSelections MidiArrangerSelections;
 
 /**
  * A widget for showing info about the current

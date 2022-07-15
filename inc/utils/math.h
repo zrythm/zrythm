@@ -83,8 +83,7 @@
 #define math_floats_equal_epsilon(a, b, e) \
   ((a) > (b) ? (a) - (b) < e : (b) - (a) < e)
 
-#define math_doubles_equal_epsilon \
-  math_floats_equal_epsilon
+#define math_doubles_equal_epsilon math_floats_equal_epsilon
 
 /**
  * Checks if 2 doubles are equal.
@@ -103,15 +102,13 @@
  * Rounds a double to a (minimum) signed 32-bit
  * integer.
  */
-#define math_round_double_to_signed_32(x) \
-  (lround (x))
+#define math_round_double_to_signed_32(x) (lround (x))
 
 /**
  * Rounds a double to a (minimum) signed 64-bit
  * integer.
  */
-#define math_round_double_to_signed_64(x) \
-  (llround (x))
+#define math_round_double_to_signed_64(x) (llround (x))
 
 #define math_round_double_to_signed_frame_t(x) \
   math_round_double_to_signed_64 (x)
@@ -120,15 +117,13 @@
  * Rounds a float to a (minimum) signed 32-bit
  * integer.
  */
-#define math_round_float_to_signed_32(x) \
-  (lroundf (x))
+#define math_round_float_to_signed_32(x) (lroundf (x))
 
 /**
  * Rounds a float to a (minimum) signed 64-bit
  * integer.
  */
-#define math_round_float_to_signed_64(x) \
-  (llroundf (x))
+#define math_round_float_to_signed_64(x) (llroundf (x))
 
 #define math_round_float_to_signed_frame_t(x) \
   math_round_float_to_signed_64 (x)
@@ -205,8 +200,7 @@ math_get_fader_val_from_amp (sample_t amp)
           amp = 1.f + 1e-20f;
         }
       sample_t fader =
-        powf (
-          6.f * logf (amp) + fader_coefficient1, 8.f)
+        powf (6.f * logf (amp) + fader_coefficient1, 8.f)
         / fader_coefficient2;
       return (sample_t) fader;
     }
@@ -222,9 +216,7 @@ math_get_amp_val_from_fader (sample_t fader)
 {
   static const float val1 = 1.f / 6.f;
   return powf (
-    2.f,
-    (val1)
-      * (-192.f + 198.f * powf (fader, 1.f / 8.f)));
+    2.f, (val1) * (-192.f + 198.f * powf (fader, 1.f / 8.f)));
 }
 
 /**
@@ -249,9 +241,7 @@ math_calculate_rms_amp (
  * @param nframes Number of samples.
  */
 sample_t
-math_calculate_rms_db (
-  sample_t *      buf,
-  const nframes_t nframes);
+math_calculate_rms_db (sample_t * buf, const nframes_t nframes);
 
 /**
  * Convert form dbFS to amplitude 0.0 to 2.0.
@@ -270,8 +260,7 @@ CONST
 static inline sample_t
 math_dbfs_to_fader_val (sample_t dbfs)
 {
-  return math_get_fader_val_from_amp (
-    math_dbfs_to_amp (dbfs));
+  return math_get_fader_val_from_amp (math_dbfs_to_amp (dbfs));
 }
 
 /**

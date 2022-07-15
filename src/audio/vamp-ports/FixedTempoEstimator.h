@@ -71,8 +71,8 @@ public:
   size_t getPreferredBlockSize () const;
 
   ParameterList getParameterDescriptors () const;
-  float getParameter (std::string id) const;
-  void  setParameter (std::string id, float value);
+  float         getParameter (std::string id) const;
+  void          setParameter (std::string id, float value);
 
   OutputList getOutputDescriptors () const;
 

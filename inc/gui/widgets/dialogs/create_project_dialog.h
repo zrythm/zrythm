@@ -28,8 +28,7 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _FileChooserButtonWidget
-  FileChooserButtonWidget;
+typedef struct _FileChooserButtonWidget FileChooserButtonWidget;
 
 /**
  * @addtogroup widgets

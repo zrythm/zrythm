@@ -38,9 +38,7 @@
  * The arguments must be strings (char *).
  */
 PURE int
-sort_alphabetical_func (
-  const void * a,
-  const void * b);
+sort_alphabetical_func (const void * a, const void * b);
 
 /**
  * @}

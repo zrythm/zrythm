@@ -58,8 +58,7 @@ midi_arranger_widget_create_note (
   int              note,
   ZRegion *        region)
 {
-  ArrangerObject * region_obj =
-    (ArrangerObject *) region;
+  ArrangerObject * region_obj = (ArrangerObject *) region;
 
   /* get local pos */
   Position local_pos;
@@ -76,12 +75,11 @@ midi_arranger_widget_create_note (
       if (drum_mode)
         self->action = UI_OVERLAY_ACTION_MOVING;
       else
-        self->action =
-          UI_OVERLAY_ACTION_CREATING_RESIZING_R;
+        self->action = UI_OVERLAY_ACTION_CREATING_RESIZING_R;
     }
 
-  int default_velocity_type = g_settings_get_enum (
-    S_UI, "piano-roll-default-velocity");
+  int default_velocity_type =
+    g_settings_get_enum (S_UI, "piano-roll-default-velocity");
   midi_byte_t velocity = VELOCITY_DEFAULT;
   switch (default_velocity_type)
     {
@@ -104,8 +102,8 @@ midi_arranger_widget_create_note (
 
   /* create midi note */
   MidiNote * midi_note = midi_note_new (
-    &region->id, &local_pos, &local_pos,
-    (midi_byte_t) note, velocity);
+    &region->id, &local_pos, &local_pos, (midi_byte_t) note,
+    velocity);
   ArrangerObject * midi_note_obj =
     (ArrangerObject *) midi_note;
 
@@ -123,25 +121,21 @@ midi_arranger_widget_create_note (
   position_set_min_size (
     &midi_note_obj->pos, &tmp, self->snap_grid);
   arranger_object_set_position (
-    midi_note_obj, &tmp,
-    ARRANGER_OBJECT_POSITION_TYPE_END,
+    midi_note_obj, &tmp, ARRANGER_OBJECT_POSITION_TYPE_END,
     F_NO_VALIDATE);
   arranger_object_set_position (
-    midi_note_obj, &tmp,
-    ARRANGER_OBJECT_POSITION_TYPE_END,
+    midi_note_obj, &tmp, ARRANGER_OBJECT_POSITION_TYPE_END,
     F_NO_VALIDATE);
 
   /* set as start object */
   self->start_object = midi_note_obj;
 
-  EVENTS_PUSH (
-    ET_ARRANGER_OBJECT_CREATED, midi_note);
+  EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, midi_note);
 
   /* select it */
   arranger_object_select (
     midi_note_obj, F_SELECT,
-    autofilling ? F_APPEND : F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    autofilling ? F_APPEND : F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 }
 
 /**
@@ -163,8 +157,8 @@ midi_arranger_widget_snap_midi_notes_l (
   Position *       pos,
   bool             dry_run)
 {
-  ArrangerObject * r_obj = (ArrangerObject *)
-    clip_editor_get_region (CLIP_EDITOR);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) clip_editor_get_region (CLIP_EDITOR);
 
   /* get delta with first clicked note's start
    * pos */
@@ -173,18 +167,16 @@ midi_arranger_widget_snap_midi_notes_l (
     - (self->start_object->pos.ticks + r_obj->pos.ticks);
   g_debug ("delta %f", delta);
 
-  Position   new_start_pos, new_global_start_pos;
-  MidiNote * midi_note;
+  Position         new_start_pos, new_global_start_pos;
+  MidiNote *       midi_note;
   ArrangerObject * mn_obj;
-  for (int i = 0;
-       i < MA_SELECTIONS->num_midi_notes; i++)
+  for (int i = 0; i < MA_SELECTIONS->num_midi_notes; i++)
     {
       midi_note = MA_SELECTIONS->midi_notes[i];
       mn_obj = (ArrangerObject *) midi_note;
 
       /* calculate new start pos */
-      position_set_to_pos (
-        &new_start_pos, &mn_obj->pos);
+      position_set_to_pos (&new_start_pos, &mn_obj->pos);
       position_add_ticks (&new_start_pos, delta);
 
       /* get the global star pos first to
@@ -200,20 +192,18 @@ midi_arranger_widget_snap_midi_notes_l (
       if (
         SNAP_GRID_ANY_SNAP (self->snap_grid)
         && !self->shift_held
-        && position_is_positive (
-          &new_global_start_pos))
+        && position_is_positive (&new_global_start_pos))
         {
           position_snap (
             &self->earliest_obj_start_pos,
-            &new_global_start_pos, NULL,
-            clip_editor_region, self->snap_grid);
+            &new_global_start_pos, NULL, clip_editor_region,
+            self->snap_grid);
         }
 
       /* convert it back to a local pos */
       position_set_to_pos (
         &new_start_pos, &new_global_start_pos);
-      position_add_ticks (
-        &new_start_pos, -r_obj->pos.ticks);
+      position_add_ticks (&new_start_pos, -r_obj->pos.ticks);
 
       if (
         !position_is_positive (&new_global_start_pos)
@@ -224,13 +214,11 @@ midi_arranger_widget_snap_midi_notes_l (
         }
       else if (!dry_run)
         {
-          arranger_object_pos_setter (
-            mn_obj, &new_start_pos);
+          arranger_object_pos_setter (mn_obj, &new_start_pos);
         }
     }
 
-  EVENTS_PUSH (
-    ET_ARRANGER_SELECTIONS_CHANGED, MA_SELECTIONS);
+  EVENTS_PUSH (ET_ARRANGER_SELECTIONS_CHANGED, MA_SELECTIONS);
 
   return 0;
 }
@@ -249,8 +237,7 @@ midi_arranger_widget_set_hovered_note (
   if (self->hovered_note != pitch)
     {
       GdkRectangle rect;
-      arranger_widget_get_visible_rect (
-        self, &rect);
+      arranger_widget_get_visible_rect (self, &rect);
       double adj_px_per_key =
         MW_PIANO_ROLL_KEYS->px_per_key + 1.0;
       if (self->hovered_note != -1)
@@ -258,10 +245,7 @@ midi_arranger_widget_set_hovered_note (
           /* redraw the previous note area to
            * unhover it */
           rect.y =
-            (int)
-            (adj_px_per_key *
-               (127.0 - (double) self->hovered_note) -
-             1.0);
+            (int) (adj_px_per_key * (127.0 - (double) self->hovered_note) - 1.0);
           rect.height = (int) adj_px_per_key;
         }
       self->hovered_note = pitch;
@@ -295,25 +279,22 @@ midi_arranger_widget_snap_midi_notes_r (
   Position *       pos,
   bool             dry_run)
 {
-  ArrangerObject * r_obj = (ArrangerObject *)
-    clip_editor_get_region (CLIP_EDITOR);
+  ArrangerObject * r_obj =
+    (ArrangerObject *) clip_editor_get_region (CLIP_EDITOR);
 
   /* get delta with first clicked notes's end
    * pos */
   double delta =
-    pos->ticks -
-    (self->start_object->end_pos.ticks +
-      r_obj->pos.ticks);
+    pos->ticks
+    - (self->start_object->end_pos.ticks + r_obj->pos.ticks);
   g_debug ("delta %f", delta);
 
   MidiNote * midi_note;
   Position   new_end_pos, new_global_end_pos;
-  for (int i = 0;
-       i < MA_SELECTIONS->num_midi_notes; i++)
+  for (int i = 0; i < MA_SELECTIONS->num_midi_notes; i++)
     {
       midi_note = MA_SELECTIONS->midi_notes[i];
-      ArrangerObject * mn_obj =
-        (ArrangerObject *) midi_note;
+      ArrangerObject * mn_obj = (ArrangerObject *) midi_note;
 
       /* get new end pos by adding delta
        * to the cached end pos */
@@ -323,8 +304,7 @@ midi_arranger_widget_snap_midi_notes_r (
       position_add_ticks (&new_end_pos, delta);
 
       /* get the global end pos first to snap it */
-      position_set_to_pos (
-        &new_global_end_pos, &new_end_pos);
+      position_set_to_pos (&new_global_end_pos, &new_end_pos);
       position_add_ticks (
         &new_global_end_pos, r_obj->pos.ticks);
 
@@ -332,20 +312,16 @@ midi_arranger_widget_snap_midi_notes_r (
       if (
         SNAP_GRID_ANY_SNAP (self->snap_grid)
         && !self->shift_held
-        && position_is_positive (
-          &new_global_end_pos))
+        && position_is_positive (&new_global_end_pos))
         {
           position_snap (
-            &self->earliest_obj_start_pos,
-            &new_global_end_pos, NULL,
-            (ZRegion *) r_obj, self->snap_grid);
+            &self->earliest_obj_start_pos, &new_global_end_pos,
+            NULL, (ZRegion *) r_obj, self->snap_grid);
         }
 
       /* convert it back to a local pos */
-      position_set_to_pos (
-        &new_end_pos, &new_global_end_pos);
-      position_add_ticks (
-        &new_end_pos, -r_obj->pos.ticks);
+      position_set_to_pos (&new_end_pos, &new_global_end_pos);
+      position_add_ticks (&new_end_pos, -r_obj->pos.ticks);
 
       if (position_is_before_or_equal (
             &new_end_pos, &mn_obj->pos))
@@ -357,8 +333,7 @@ midi_arranger_widget_snap_midi_notes_r (
         }
     }
 
-  EVENTS_PUSH (
-    ET_ARRANGER_SELECTIONS_CHANGED, MA_SELECTIONS);
+  EVENTS_PUSH (ET_ARRANGER_SELECTIONS_CHANGED, MA_SELECTIONS);
 
   return 0;
 }
@@ -369,12 +344,10 @@ midi_arranger_widget_snap_midi_notes_r (
  * calculates the max possible y movement
  */
 int
-midi_arranger_calc_deltamax_for_note_movement (
-  int y_delta)
+midi_arranger_calc_deltamax_for_note_movement (int y_delta)
 {
   MidiNote * midi_note;
-  for (int i = 0;
-       i < MA_SELECTIONS->num_midi_notes; i++)
+  for (int i = 0; i < MA_SELECTIONS->num_midi_notes; i++)
     {
       midi_note = MA_SELECTIONS->midi_notes[i];
       /*g_message ("midi note val %d, y delta %d",*/
@@ -404,9 +377,7 @@ midi_arranger_calc_deltamax_for_note_movement (
  *   off if 0.
  */
 void
-midi_arranger_listen_notes (
-  ArrangerWidget * self,
-  bool             listen)
+midi_arranger_listen_notes (ArrangerWidget * self, bool listen)
 {
   /*g_message ("%s: listen: %d", __func__, listen);*/
 
@@ -421,13 +392,11 @@ midi_arranger_listen_notes (
   arranger_selections_get_start_pos (
     sel, &start_pos, F_NOT_GLOBAL);
   double ticks_cutoff =
-    start_pos.ticks
-    + (double) TRANSPORT->ticks_per_beat;
+    start_pos.ticks + (double) TRANSPORT->ticks_per_beat;
   for (int i = 0; i < mas->num_midi_notes; i++)
     {
       MidiNote *       mn = mas->midi_notes[i];
-      ArrangerObject * mn_obj =
-        (ArrangerObject *) mn;
+      ArrangerObject * mn_obj = (ArrangerObject *) mn;
 
       /* only add notes during the first beat of the
        * selections if listening */
@@ -452,8 +421,7 @@ midi_arranger_show_context_menu (
 
   if (mn)
     {
-      int selected =
-        arranger_object_is_selected (mn_obj);
+      int selected = arranger_object_is_selected (mn_obj);
       if (!selected)
         {
           arranger_object_select (
@@ -465,14 +433,11 @@ midi_arranger_show_context_menu (
       g_menu_append_item (menu, menuitem);
       menuitem = CREATE_COPY_MENU_ITEM ("app.copy");
       g_menu_append_item (menu, menuitem);
-      menuitem =
-        CREATE_PASTE_MENU_ITEM ("app.paste");
+      menuitem = CREATE_PASTE_MENU_ITEM ("app.paste");
       g_menu_append_item (menu, menuitem);
-      menuitem =
-        CREATE_DELETE_MENU_ITEM ("app.delete");
+      menuitem = CREATE_DELETE_MENU_ITEM ("app.delete");
       g_menu_append_item (menu, menuitem);
-      menuitem = CREATE_DUPLICATE_MENU_ITEM (
-        "app.duplicate");
+      menuitem = CREATE_DUPLICATE_MENU_ITEM ("app.duplicate");
       g_menu_append_item (menu, menuitem);
 
       menuitem = z_gtk_create_menu_item (
@@ -485,25 +450,22 @@ midi_arranger_show_context_menu (
         (ArrangerWidget *) self, F_NO_SELECT,
         F_PUBLISH_EVENTS);
       arranger_selections_clear (
-        (ArrangerSelections *) MA_SELECTIONS,
-        F_NO_FREE, F_NO_PUBLISH_EVENTS);
+        (ArrangerSelections *) MA_SELECTIONS, F_NO_FREE,
+        F_NO_PUBLISH_EVENTS);
 
-      menuitem =
-        CREATE_PASTE_MENU_ITEM ("app.paste");
+      menuitem = CREATE_PASTE_MENU_ITEM ("app.paste");
       g_menu_append_item (menu, menuitem);
     }
 
   GMenu * selection_submenu = g_menu_new ();
-  menuitem = CREATE_CLEAR_SELECTION_MENU_ITEM (
-    "app.clear-selection");
-  g_menu_append_item (selection_submenu, menuitem);
   menuitem =
-    CREATE_SELECT_ALL_MENU_ITEM ("app.select-all");
+    CREATE_CLEAR_SELECTION_MENU_ITEM ("app.clear-selection");
+  g_menu_append_item (selection_submenu, menuitem);
+  menuitem = CREATE_SELECT_ALL_MENU_ITEM ("app.select-all");
   g_menu_append_item (selection_submenu, menuitem);
 
   g_menu_append_section (
-    menu, _ ("Selection"),
-    G_MENU_MODEL (selection_submenu));
+    menu, _ ("Selection"), G_MENU_MODEL (selection_submenu));
 
   z_gtk_show_context_menu_from_g_menu (
     self->popover_menu, x, y, menu);
@@ -522,8 +484,7 @@ midi_arranger_handle_vertical_zoom_scroll (
     gtk_event_controller_get_current_event_state (
       GTK_EVENT_CONTROLLER (scroll_controller));
 
-  if (!(state & GDK_CONTROL_MASK
-        && state & GDK_SHIFT_MASK))
+  if (!(state & GDK_CONTROL_MASK && state & GDK_SHIFT_MASK))
     return;
 
   GtkScrolledWindow * scroll =
@@ -537,8 +498,7 @@ midi_arranger_handle_vertical_zoom_scroll (
   GtkAdjustment * adj =
     gtk_scrolled_window_get_vadjustment (scroll);
   double adj_val = gtk_adjustment_get_value (adj);
-  double size_before =
-    gtk_adjustment_get_upper (adj);
+  double size_before = gtk_adjustment_get_upper (adj);
   double adj_perc = y / size_before;
 
   /* get px diff so we can calculate the new
@@ -547,13 +507,13 @@ midi_arranger_handle_vertical_zoom_scroll (
 
   /* scroll down, zoom out */
   double size_after;
-  float notes_zoom_before = PIANO_ROLL->notes_zoom;
+  float  notes_zoom_before = PIANO_ROLL->notes_zoom;
   double _multiplier = 1.16;
   double multiplier =
     delta_y > 0 ? 1 / _multiplier : _multiplier;
   piano_roll_set_notes_zoom (
-    PIANO_ROLL,
-    PIANO_ROLL->notes_zoom * (float) multiplier, 0);
+    PIANO_ROLL, PIANO_ROLL->notes_zoom * (float) multiplier,
+    0);
   size_after = size_before * multiplier;
 
   if (math_floats_equal (
@@ -563,13 +523,10 @@ midi_arranger_handle_vertical_zoom_scroll (
     }
 
   /* refresh relevant widgets */
-  midi_editor_space_widget_refresh (
-    MW_MIDI_EDITOR_SPACE);
+  midi_editor_space_widget_refresh (MW_MIDI_EDITOR_SPACE);
 
   /* get updated adjustment and set its value
    at the same offset as before */
-  adj =
-    gtk_scrolled_window_get_vadjustment (scroll);
-  gtk_adjustment_set_value (
-    adj, adj_perc * size_after - diff);
+  adj = gtk_scrolled_window_get_vadjustment (scroll);
+  gtk_adjustment_set_value (adj, adj_perc * size_after - diff);
 }

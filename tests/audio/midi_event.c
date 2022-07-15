@@ -29,11 +29,9 @@ test_add_note_ons (void)
       MidiEvent * ev = &events->events[i];
 
       g_assert_cmpuint (ev->time, ==, _time);
-      g_assert_true (
-        midi_is_note_on (ev->raw_buffer));
+      g_assert_true (midi_is_note_on (ev->raw_buffer));
       g_assert_cmpuint (
-        midi_get_velocity (ev->raw_buffer), ==,
-        121);
+        midi_get_velocity (ev->raw_buffer), ==, 121);
     }
 
   test_helper_zrythm_cleanup ();

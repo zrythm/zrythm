@@ -75,11 +75,10 @@ typedef enum NoteLengthType_v1
   NOTE_LENGTH_LAST_OBJECT_v1,
 } NoteLengthType_v1;
 
-static const cyaml_strval_t
-  note_length_type_strings_v1[] = {
-    {"custom",       NOTE_LENGTH_CUSTOM_v1     },
-    { "link",        NOTE_LENGTH_LINK_v1       },
-    { "last object", NOTE_LENGTH_LAST_OBJECT_v1},
+static const cyaml_strval_t note_length_type_strings_v1[] = {
+  {"custom",       NOTE_LENGTH_CUSTOM_v1     },
+  { "link",        NOTE_LENGTH_LINK_v1       },
+  { "last object", NOTE_LENGTH_LAST_OBJECT_v1},
 };
 
 typedef enum SnapGridType_v1
@@ -88,10 +87,9 @@ typedef enum SnapGridType_v1
   SNAP_GRID_TYPE_EDITOR_v1,
 } SnapGridType_v1;
 
-static const cyaml_strval_t
-  snap_grid_type_strings[] = {
-    {"timeline", SNAP_GRID_TYPE_TIMELINE_v1},
-    { "editor",  SNAP_GRID_TYPE_EDITOR_v1  },
+static const cyaml_strval_t snap_grid_type_strings[] = {
+  {"timeline", SNAP_GRID_TYPE_TIMELINE_v1},
+  { "editor",  SNAP_GRID_TYPE_EDITOR_v1  },
 };
 
 typedef struct SnapGrid_v1
@@ -114,10 +112,7 @@ typedef struct SnapGrid_v1
 } SnapGrid_v1;
 
 static const cyaml_schema_field_t snap_grid_fields_schema_v1[] = {
-  YAML_FIELD_ENUM (
-    SnapGrid_v1,
-    type,
-    snap_grid_type_strings_v1),
+  YAML_FIELD_ENUM (SnapGrid_v1, type, snap_grid_type_strings_v1),
   YAML_FIELD_ENUM (
     SnapGrid_v1,
     snap_note_length,
@@ -141,18 +136,14 @@ static const cyaml_schema_field_t snap_grid_fields_schema_v1[] = {
     length_type,
     note_length_type_strings_v1),
   YAML_FIELD_INT (SnapGrid_v1, snap_to_grid),
-  YAML_FIELD_INT (
-    SnapGrid_v1,
-    snap_to_grid_keep_offset),
+  YAML_FIELD_INT (SnapGrid_v1, snap_to_grid_keep_offset),
   YAML_FIELD_INT (SnapGrid_v1, snap_to_events),
 
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t snap_grid_schema = {
-  YAML_VALUE_PTR (
-    SnapGrid_v1,
-    snap_grid_fields_schema_v1),
+  YAML_VALUE_PTR (SnapGrid_v1, snap_grid_fields_schema_v1),
 };
 
 #endif

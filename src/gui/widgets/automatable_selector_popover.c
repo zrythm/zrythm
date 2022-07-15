@@ -28,41 +28,34 @@ on_closed (
   gpointer                           user_data)
 {
   /* if the selected automatable changed */
-  Port * at_port = port_find_from_identifier (
-    &self->owner->port_id);
-  if (
-    self->selected_port
-    && at_port != self->selected_port)
+  Port * at_port =
+    port_find_from_identifier (&self->owner->port_id);
+  if (self->selected_port && at_port != self->selected_port)
     {
       /* set the previous automation track
        * invisible */
       self->owner->visible = 0;
 
       g_message (
-        "selected port: %s",
-        self->selected_port->id.label);
+        "selected port: %s", self->selected_port->id.label);
 
       /* swap indices */
       AutomationTracklist * atl =
-        automation_track_get_automation_tracklist (
-          self->owner);
+        automation_track_get_automation_tracklist (self->owner);
       AutomationTrack * selected_at =
         automation_tracklist_get_at_from_port (
           atl, self->selected_port);
       g_return_if_fail (selected_at);
       automation_tracklist_set_at_index (
-        atl, self->owner, selected_at->index,
-        F_NO_PUSH_DOWN);
+        atl, self->owner, selected_at->index, F_NO_PUSH_DOWN);
 
       selected_at->created = true;
       selected_at->visible = true;
-      EVENTS_PUSH (
-        ET_AUTOMATION_TRACK_ADDED, selected_at);
+      EVENTS_PUSH (ET_AUTOMATION_TRACK_ADDED, selected_at);
     }
   else
     {
-      g_message (
-        "same automatable selected, doing nothing");
+      g_message ("same automatable selected, doing nothing");
     }
 
   gtk_widget_unparent (GTK_WIDGET (self));
@@ -73,8 +66,7 @@ on_closed (
  * selected Automatable.
  */
 static int
-update_info_label (
-  AutomatableSelectorPopoverWidget * self)
+update_info_label (AutomatableSelectorPopoverWidget * self)
 {
   if (self->selected_port)
     {
@@ -99,34 +91,30 @@ update_info_label (
  * Selects the selected automatable on the UI.
  */
 static void
-select_automatable (
-  AutomatableSelectorPopoverWidget * self)
+select_automatable (AutomatableSelectorPopoverWidget * self)
 {
   /* select current type */
-  GtkTreeSelection * sel =
-    gtk_tree_view_get_selection (
-      GTK_TREE_VIEW (self->type_treeview));
+  GtkTreeSelection * sel = gtk_tree_view_get_selection (
+    GTK_TREE_VIEW (self->type_treeview));
   GtkTreeIter iter;
-  int valid = gtk_tree_model_get_iter_first (
-    self->type_model, &iter);
+  int         valid =
+    gtk_tree_model_get_iter_first (self->type_model, &iter);
   g_return_if_fail (valid);
   while (valid)
     {
       int type;
       int slot;
       gtk_tree_model_get (
-        self->type_model, &iter, 2, &type, 3,
-        &slot, -1);
+        self->type_model, &iter, 2, &type, 3, &slot, -1);
       if (
-        (AutomatableSelectorType) type
-          == self->selected_type
+        (AutomatableSelectorType) type == self->selected_type
         && slot == self->selected_slot)
         {
           break;
         }
 
-      valid = gtk_tree_model_iter_next (
-        self->type_model, &iter);
+      valid =
+        gtk_tree_model_iter_next (self->type_model, &iter);
     }
   g_return_if_fail (valid);
   gtk_tree_selection_select_iter (sel, &iter);
@@ -148,8 +136,7 @@ select_automatable (
             self->port_model, &iter, 2, &port, -1);
           if (port == self->selected_port)
             {
-              gtk_tree_selection_select_iter (
-                sel, &iter);
+              gtk_tree_selection_select_iter (sel, &iter);
               break;
             }
           valid = gtk_tree_model_iter_next (
@@ -173,11 +160,9 @@ create_model_for_ports (
 
   /* file name, index */
   list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING,
-    G_TYPE_POINTER);
+    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
-  Track * track =
-    automation_track_get_track (self->owner);
+  Track * track = automation_track_get_track (self->owner);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
   for (int i = 0; i < atl->num_ats; i++)
@@ -207,20 +192,16 @@ create_model_for_ports (
         case AS_TYPE_MIDI_CH15:
         case AS_TYPE_MIDI_CH16:
           /* skip non-channel automation tracks */
-          port = port_find_from_identifier (
-            &at->port_id);
-          if (!(port->id.flags
-                & PORT_FLAG_MIDI_AUTOMATABLE))
+          port = port_find_from_identifier (&at->port_id);
+          if (!(port->id.flags & PORT_FLAG_MIDI_AUTOMATABLE))
             continue;
           /*g_message (*/
           /*"port %s is a midi automatable",*/
           /*port->id.label);*/
 
           if (
-            port->id.flags2
-              & PORT_FLAG2_MIDI_PITCH_BEND
-            || port->id.flags2
-                 & PORT_FLAG2_MIDI_POLY_KEY_PRESSURE
+            port->id.flags2 & PORT_FLAG2_MIDI_PITCH_BEND
+            || port->id.flags2 & PORT_FLAG2_MIDI_POLY_KEY_PRESSURE
             || port->id.flags2
                  & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
             {
@@ -241,57 +222,46 @@ create_model_for_ports (
           break;
         case AS_TYPE_MACRO:
           /* skip non-channel automation tracks */
-          port = port_find_from_identifier (
-            &at->port_id);
-          if (!(port->id.flags
-                & PORT_FLAG_MODULATOR_MACRO))
+          port = port_find_from_identifier (&at->port_id);
+          if (!(port->id.flags & PORT_FLAG_MODULATOR_MACRO))
             continue;
 
           strcpy (icon_name, "code-function");
           break;
         case AS_TYPE_CHANNEL:
           /* skip non-channel automation tracks */
-          port = port_find_from_identifier (
-            &at->port_id);
-          if (
-            !(port->id.flags & PORT_FLAG_FADER_MUTE
-              || port->id.flags & PORT_FLAG_CHANNEL_FADER
-              || port->id.flags & PORT_FLAG_STEREO_BALANCE
-              || port->id.flags2
-                   & PORT_FLAG2_CHANNEL_SEND_ENABLED
-              || port->id.flags2
-                   & PORT_FLAG2_CHANNEL_SEND_AMOUNT))
+          port = port_find_from_identifier (&at->port_id);
+          if (!(port->id.flags & PORT_FLAG_FADER_MUTE
+                || port->id.flags & PORT_FLAG_CHANNEL_FADER
+                || port->id.flags & PORT_FLAG_STEREO_BALANCE
+                || port->id.flags2 & PORT_FLAG2_CHANNEL_SEND_ENABLED
+                || port->id.flags2
+                     & PORT_FLAG2_CHANNEL_SEND_AMOUNT))
             continue;
 
           strcpy (icon_name, "node-type-cusp");
           break;
         case AS_TYPE_MIDI_FX:
           plugin =
-            track->channel
-              ->midi_fx[self->selected_slot];
+            track->channel->midi_fx[self->selected_slot];
           break;
         case AS_TYPE_INSERT:
           plugin =
-            track->channel
-              ->inserts[self->selected_slot];
+            track->channel->inserts[self->selected_slot];
           break;
         case AS_TYPE_INSTRUMENT:
           plugin = track->channel->instrument;
           break;
         case AS_TYPE_MODULATOR:
-          plugin =
-            track->modulators[self->selected_slot];
+          plugin = track->modulators[self->selected_slot];
           break;
         case AS_TYPE_TEMPO:
-          port = port_find_from_identifier (
-            &at->port_id);
+          port = port_find_from_identifier (&at->port_id);
 
           /* skip non-tempo automation tracks */
           if (!(port->id.flags & PORT_FLAG_BPM
-                || port->id.flags2
-                     & PORT_FLAG2_BEATS_PER_BAR
-                || port->id.flags2
-                     & PORT_FLAG2_BEAT_UNIT))
+                || port->id.flags2 & PORT_FLAG2_BEATS_PER_BAR
+                || port->id.flags2 & PORT_FLAG2_BEAT_UNIT))
             continue;
           break;
         }
@@ -299,15 +269,11 @@ create_model_for_ports (
       if (plugin)
         {
           /* skip non-plugin automation tracks */
-          port = port_find_from_identifier (
-            &at->port_id);
-          if (
-            port->id.owner_type
-            != PORT_OWNER_TYPE_PLUGIN)
+          port = port_find_from_identifier (&at->port_id);
+          if (port->id.owner_type != PORT_OWNER_TYPE_PLUGIN)
             continue;
 
-          Plugin * port_pl =
-            port_get_plugin (port, true);
+          Plugin * port_pl = port_get_plugin (port, true);
           if (port_pl != plugin)
             continue;
 
@@ -319,9 +285,7 @@ create_model_for_ports (
 
       /* if this automation track is not
        * already in a visible lane */
-      if (
-        !at->created || !at->visible
-        || at == self->owner)
+      if (!at->created || !at->visible || at == self->owner)
         {
           /*g_message ("adding %s", port->id.label);*/
           /* add a new row to the model */
@@ -344,18 +308,16 @@ create_model_for_types (
 
   /* icon, type name, type enum, slot */
   list_store = gtk_list_store_new (
-    4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT,
-    G_TYPE_INT);
+    4, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT);
 
-  Track * track =
-    automation_track_get_track (self->owner);
+  Track * track = automation_track_get_track (self->owner);
 
   if (track->type == TRACK_TYPE_TEMPO)
     {
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
-        list_store, &iter, 0, "filename-bpm-amarok",
-        1, _ ("Tempo"), 2, AS_TYPE_TEMPO, 3, 0, -1);
+        list_store, &iter, 0, "filename-bpm-amarok", 1,
+        _ ("Tempo"), 2, AS_TYPE_TEMPO, 3, 0, -1);
     }
   else if (track->type == TRACK_TYPE_MODULATOR)
     {
@@ -373,9 +335,8 @@ create_model_for_types (
           sprintf (name, _ ("MIDI Ch%d"), i + 1);
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
-            list_store, &iter, 0, "signal-midi", 1,
-            name, 2, AS_TYPE_MIDI_CH1 + i, 3, 0,
-            -1);
+            list_store, &iter, 0, "signal-midi", 1, name, 2,
+            AS_TYPE_MIDI_CH1 + i, 3, 0, -1);
         }
     }
 
@@ -384,39 +345,34 @@ create_model_for_types (
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
         list_store, &iter, 0, "track-inspector", 1,
-        _ ("Channel"), 2, AS_TYPE_CHANNEL, 3, 0,
-        -1);
+        _ ("Channel"), 2, AS_TYPE_CHANNEL, 3, 0, -1);
 
       if (track->channel->instrument)
         {
-          Plugin * plugin =
-            track->channel->instrument;
-          char label[600];
+          Plugin * plugin = track->channel->instrument;
+          char     label[600];
           sprintf (
             label, _ ("[Instrument] %s"),
             plugin->setting->descr->name);
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
-            list_store, &iter, 0, "instrument", 1,
-            label, 2, AS_TYPE_INSTRUMENT, 3, 0, -1);
+            list_store, &iter, 0, "instrument", 1, label, 2,
+            AS_TYPE_INSTRUMENT, 3, 0, -1);
         }
 
       for (int i = 0; i < STRIP_SIZE; i++)
         {
-          Plugin * plugin =
-            track->channel->midi_fx[i];
+          Plugin * plugin = track->channel->midi_fx[i];
           if (plugin)
             {
               char label[600];
               sprintf (
                 label, _ ("[MIDI FX %d] %s"), i + 1,
                 plugin->setting->descr->name);
-              gtk_list_store_append (
-                list_store, &iter);
+              gtk_list_store_append (list_store, &iter);
               gtk_list_store_set (
-                list_store, &iter, 0, "plugins", 1,
-                label, 2, AS_TYPE_MIDI_FX, 3, i,
-                -1);
+                list_store, &iter, 0, "plugins", 1, label, 2,
+                AS_TYPE_MIDI_FX, 3, i, -1);
             }
 
           plugin = track->channel->inserts[i];
@@ -426,11 +382,10 @@ create_model_for_types (
               sprintf (
                 label, _ ("[Insert %d] %s"), i + 1,
                 plugin->setting->descr->name);
-              gtk_list_store_append (
-                list_store, &iter);
+              gtk_list_store_append (list_store, &iter);
               gtk_list_store_set (
-                list_store, &iter, 0, "plugins", 1,
-                label, 2, AS_TYPE_INSERT, 3, i, -1);
+                list_store, &iter, 0, "plugins", 1, label, 2,
+                AS_TYPE_INSERT, 3, i, -1);
             }
         }
     }
@@ -445,8 +400,8 @@ create_model_for_types (
             plugin->setting->descr->name);
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
-            list_store, &iter, 0, "plugins", 1,
-            label, 2, AS_TYPE_MODULATOR, 3, i, -1);
+            list_store, &iter, 0, "plugins", 1, label, 2,
+            AS_TYPE_MODULATOR, 3, i, -1);
         }
     }
 
@@ -469,17 +424,14 @@ on_selection_changed (
       return;
     }
 
-  GtkTreeView * tv =
-    gtk_tree_selection_get_tree_view (ts);
-  GtkTreeModel * model =
-    gtk_tree_view_get_model (tv);
-  GList * selected_rows =
+  GtkTreeView *  tv = gtk_tree_selection_get_tree_view (ts);
+  GtkTreeModel * model = gtk_tree_view_get_model (tv);
+  GList *        selected_rows =
     gtk_tree_selection_get_selected_rows (ts, NULL);
   if (selected_rows)
     {
       GtkTreePath * tp =
-        (GtkTreePath *) g_list_first (selected_rows)
-          ->data;
+        (GtkTreePath *) g_list_first (selected_rows)->data;
       GtkTreeIter iter;
       gtk_tree_model_get_iter (model, &iter, tp);
       GValue value = G_VALUE_INIT;
@@ -487,16 +439,14 @@ on_selection_changed (
       if (model == self->type_model)
         {
           gtk_tree_model_get (
-            model, &iter, 2, &self->selected_type,
-            3, &self->selected_slot, -1);
+            model, &iter, 2, &self->selected_type, 3,
+            &self->selected_slot, -1);
           g_message (
-            "selected type %d slot %d",
-            self->selected_type,
+            "selected type %d slot %d", self->selected_type,
             self->selected_slot);
-          self->port_model =
-            create_model_for_ports (self);
-          self->port_treeview = tree_view_create (
-            self, self->port_model);
+          self->port_model = create_model_for_ports (self);
+          self->port_treeview =
+            tree_view_create (self, self->port_model);
           z_gtk_widget_destroy_all_children (
             GTK_WIDGET (self->port_treeview_box));
           gtk_box_append (
@@ -508,10 +458,8 @@ on_selection_changed (
         }
       else if (model == self->port_model)
         {
-          gtk_tree_model_get_value (
-            model, &iter, 2, &value);
-          Port * port =
-            g_value_get_pointer (&value);
+          gtk_tree_model_get_value (model, &iter, 2, &value);
+          Port * port = g_value_get_pointer (&value);
 
           self->selected_port = port;
           update_info_label (self);
@@ -526,8 +474,7 @@ tree_view_create (
 {
   /* instantiate tree view using model */
   GtkWidget * tree_view =
-    gtk_tree_view_new_with_model (
-      GTK_TREE_MODEL (model));
+    gtk_tree_view_new_with_model (GTK_TREE_MODEL (model));
 
   /* init tree view */
   GtkCellRenderer *   renderer;
@@ -560,8 +507,7 @@ tree_view_create (
   g_signal_connect (
     G_OBJECT (gtk_tree_view_get_selection (
       GTK_TREE_VIEW (tree_view))),
-    "changed", G_CALLBACK (on_selection_changed),
-    self);
+    "changed", G_CALLBACK (on_selection_changed), self);
 
   return GTK_TREE_VIEW (tree_view);
 }
@@ -573,17 +519,15 @@ AutomatableSelectorPopoverWidget *
 automatable_selector_popover_widget_new (
   AutomationTrack * owner)
 {
-  AutomatableSelectorPopoverWidget * self =
-    g_object_new (
-      AUTOMATABLE_SELECTOR_POPOVER_WIDGET_TYPE,
-      NULL);
+  AutomatableSelectorPopoverWidget * self = g_object_new (
+    AUTOMATABLE_SELECTOR_POPOVER_WIDGET_TYPE, NULL);
 
   self->owner = owner;
 
   /* set selected type */
   self->selected_type = AS_TYPE_CHANNEL;
-  Port * port = port_find_from_identifier (
-    &self->owner->port_id);
+  Port * port =
+    port_find_from_identifier (&self->owner->port_id);
   PortIdentifier * id = &port->id;
   if (
     id->flags & PORT_FLAG_BPM
@@ -606,8 +550,7 @@ automatable_selector_popover_widget_new (
       if (
         id->flags2 & PORT_FLAG2_MIDI_PITCH_BEND
         || id->flags2 & PORT_FLAG2_MIDI_POLY_KEY_PRESSURE
-        || id->flags2
-             & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
+        || id->flags2 & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
         {
           self->selected_type =
             (AutomatableSelectorType) (AS_TYPE_MIDI_CH1 + id->port_index);
@@ -658,16 +601,14 @@ automatable_selector_popover_widget_new (
   self->type_treeview =
     tree_view_create (self, self->type_model);
   gtk_box_append (
-    self->type_treeview_box,
-    GTK_WIDGET (self->type_treeview));
+    self->type_treeview_box, GTK_WIDGET (self->type_treeview));
 
   /* create model/treeview for ports */
   self->port_model = create_model_for_ports (self);
   self->port_treeview =
     tree_view_create (self, self->port_model);
   gtk_box_append (
-    self->port_treeview_box,
-    GTK_WIDGET (self->port_treeview));
+    self->port_treeview_box, GTK_WIDGET (self->port_treeview));
 
   /* select the automatable */
   self->selecting_manually = 1;
@@ -680,8 +621,7 @@ static void
 automatable_selector_popover_widget_class_init (
   AutomatableSelectorPopoverWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "automatable_selector.ui");
 
@@ -692,8 +632,7 @@ automatable_selector_popover_widget_class_init (
   BIND_CHILD (type_treeview_box);
   BIND_CHILD (port_treeview_box);
   BIND_CHILD (info);
-  gtk_widget_class_bind_template_callback (
-    klass, on_closed);
+  gtk_widget_class_bind_template_callback (klass, on_closed);
 
 #undef BIND_CHILD
 }

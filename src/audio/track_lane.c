@@ -45,9 +45,7 @@
  * Inits the TrackLane after a project was loaded.
  */
 void
-track_lane_init_loaded (
-  TrackLane * self,
-  Track *     track)
+track_lane_init_loaded (TrackLane * self, Track * track)
 {
   self->track = track;
   self->regions_size = (size_t) self->num_regions;
@@ -57,8 +55,7 @@ track_lane_init_loaded (
     {
       region = self->regions[i];
       region->magic = REGION_MAGIC;
-      ArrangerObject * r_obj =
-        (ArrangerObject *) region;
+      ArrangerObject * r_obj = (ArrangerObject *) region;
       region_set_lane (region, self);
       arranger_object_init_loaded (r_obj);
     }
@@ -80,12 +77,10 @@ track_lane_new (Track * track, int pos)
   self->pos = pos;
   self->track = track;
 
-  self->name =
-    g_strdup_printf (_ ("Lane %d"), pos + 1);
+  self->name = g_strdup_printf (_ ("Lane %d"), pos + 1);
 
   self->regions_size = 1;
-  self->regions =
-    object_new_n (self->regions_size, ZRegion *);
+  self->regions = object_new_n (self->regions_size, ZRegion *);
 
   self->height = TRACK_DEF_HEIGHT;
 
@@ -115,8 +110,7 @@ track_lane_rename (
           HANDLE_ERROR (
             err, "%s", _ ("Failed to rename lane"));
         }
-      EVENTS_PUSH (
-        ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
+      EVENTS_PUSH (ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
     }
   else
     {
@@ -161,24 +155,21 @@ track_lane_set_soloed (
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s",
-            _ ("Cannot set track lane soloed"));
+            err, "%s", _ ("Cannot set track lane soloed"));
           return;
         }
     }
   else
     {
       g_debug (
-        "setting lane '%s' soloed to %d",
-        self->name, solo);
+        "setting lane '%s' soloed to %d", self->name, solo);
       self->solo = solo;
     }
 
   if (fire_events)
     {
       /* TODO use more specific event */
-      EVENTS_PUSH (
-        ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
+      EVENTS_PUSH (ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
     }
 }
 
@@ -212,24 +203,21 @@ track_lane_set_muted (
       if (!ret)
         {
           HANDLE_ERROR (
-            err, "%s",
-            _ ("Cannot set track lane muted"));
+            err, "%s", _ ("Cannot set track lane muted"));
           return;
         }
     }
   else
     {
       g_debug (
-        "setting lane '%s' muted to %d",
-        self->name, mute);
+        "setting lane '%s' muted to %d", self->name, mute);
       self->mute = mute;
     }
 
   if (fire_events)
     {
       /* TODO use more specific event */
-      EVENTS_PUSH (
-        ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
+      EVENTS_PUSH (ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
     }
 }
 
@@ -267,8 +255,7 @@ track_lane_update_positions (
       if (!PROJECT || !AUDIO_ENGINE->pre_setup)
         continue;
 
-      g_return_if_fail (
-        IS_REGION_AND_NONNULL (r_obj));
+      g_return_if_fail (IS_REGION_AND_NONNULL (r_obj));
       arranger_object_update_positions (
         r_obj, from_ticks, bpm_change);
     }
@@ -278,12 +265,9 @@ track_lane_update_positions (
  * Adds a ZRegion to the given TrackLane.
  */
 void
-track_lane_add_region (
-  TrackLane * self,
-  ZRegion *   region)
+track_lane_add_region (TrackLane * self, ZRegion * region)
 {
-  track_lane_insert_region (
-    self, region, self->num_regions);
+  track_lane_insert_region (self, region, self->num_regions);
 }
 
 /**
@@ -297,15 +281,14 @@ track_lane_insert_region (
   int         idx)
 {
   g_return_if_fail (
-    self && IS_REGION (region) && idx >= 0 &&
-    (region->id.type == REGION_TYPE_AUDIO ||
-     region->id.type == REGION_TYPE_MIDI));
+    self && IS_REGION (region) && idx >= 0
+    && (region->id.type == REGION_TYPE_AUDIO || region->id.type == REGION_TYPE_MIDI));
 
   region_set_lane (region, self);
 
   array_double_size_if_full (
-    self->regions, self->num_regions,
-    self->regions_size, ZRegion *);
+    self->regions, self->num_regions, self->regions_size,
+    ZRegion *);
   for (int i = self->num_regions; i > idx; i--)
     {
       self->regions[i] = self->regions[i - 1];
@@ -320,8 +303,7 @@ track_lane_insert_region (
 
   if (region->id.type == REGION_TYPE_AUDIO)
     {
-      AudioClip * clip =
-        audio_region_get_clip (region);
+      AudioClip * clip = audio_region_get_clip (region);
       g_return_if_fail (clip);
     }
 }
@@ -339,8 +321,7 @@ track_lane_update_track_name_hash (TrackLane * self)
   for (int i = 0; i < self->num_regions; i++)
     {
       ZRegion * region = self->regions[i];
-      region->id.track_name_hash =
-        track_get_name_hash (track);
+      region->id.track_name_hash = track_get_name_hash (track);
       region->id.lane_pos = self->pos;
       region_update_identifier (region);
     }
@@ -352,9 +333,7 @@ track_lane_update_track_name_hash (TrackLane * self)
  * @param track New owner track, if any.
  */
 TrackLane *
-track_lane_clone (
-  const TrackLane * src,
-  Track *           track)
+track_lane_clone (const TrackLane * src, Track * track)
 {
   TrackLane * self = object_new (TrackLane);
   self->schema_version = TRACK_LANE_SCHEMA_VERSION;
@@ -362,8 +341,7 @@ track_lane_clone (
 
   self->name = g_strdup (src->name);
   self->regions_size = (size_t) src->num_regions;
-  self->regions =
-    object_new_n (self->regions_size, ZRegion *);
+  self->regions = object_new_n (self->regions_size, ZRegion *);
   self->height = src->height;
   self->pos = src->pos;
   self->mute = src->mute;
@@ -379,15 +357,13 @@ track_lane_clone (
     {
       /* clone region */
       region = src->regions[i];
-      new_region =
-        (ZRegion *) arranger_object_clone (
-          (ArrangerObject *) region);
+      new_region = (ZRegion *) arranger_object_clone (
+        (ArrangerObject *) region);
 
       self->regions[i] = new_region;
       region_set_lane (new_region, self);
 
-      region_gen_name (
-        new_region, region->name, NULL, NULL);
+      region_gen_name (new_region, region->name, NULL, NULL);
     }
 
   return self;
@@ -425,8 +401,7 @@ track_lane_clear (TrackLane * self)
   g_message (
     "clearing track lane %d (%p) for track '%s' | "
     "num regions %d",
-    self->pos, self, track->name,
-    self->num_regions);
+    self->pos, self, track->name, self->num_regions);
 
   for (int i = self->num_regions - 1; i >= 0; i--)
     {
@@ -446,9 +421,7 @@ track_lane_clear (TrackLane * self)
  * Removes but does not free the region.
  */
 void
-track_lane_remove_region (
-  TrackLane * self,
-  ZRegion *   region)
+track_lane_remove_region (TrackLane * self, ZRegion * region)
 {
   g_return_if_fail (IS_REGION (region));
 
@@ -464,8 +437,7 @@ track_lane_remove_region (
         clip_editor_r
         && clip_editor_r->id.track_name_hash
              == region->id.track_name_hash
-        && clip_editor_r->id.lane_pos
-             == region->id.lane_pos
+        && clip_editor_r->id.lane_pos == region->id.lane_pos
         && clip_editor_r->id.idx > region->id.idx)
         {
           CLIP_EDITOR->region_id.idx--;
@@ -474,12 +446,10 @@ track_lane_remove_region (
 
   bool deleted = false;
   array_delete_confirm (
-    self->regions, self->num_regions, region,
-    deleted);
+    self->regions, self->num_regions, region, deleted);
   g_return_if_fail (deleted);
 
-  for (int i = region->id.idx;
-       i < self->num_regions; i++)
+  for (int i = region->id.idx; i < self->num_regions; i++)
     {
       ZRegion * r = self->regions[i];
       r->id.idx = i;
@@ -507,13 +477,11 @@ track_lane_get_track (const TrackLane * self)
  * Calculates a unique index for this lane.
  */
 int
-track_lane_calculate_lane_idx (
-  const TrackLane * self)
+track_lane_calculate_lane_idx (const TrackLane * self)
 {
   Track *     track = track_lane_get_track (self);
-  Tracklist * tracklist =
-    track_lane_get_tracklist (self);
-  int pos = 1;
+  Tracklist * tracklist = track_lane_get_tracklist (self);
+  int         pos = 1;
   for (int i = 0; i < tracklist->num_tracks; i++)
     {
       Track * cur_track = tracklist->tracks[i];
@@ -558,8 +526,7 @@ track_lane_write_to_midi_file (
   if (lanes_as_tracks)
     {
       g_return_if_fail (!events);
-      midi_track_pos =
-        track_lane_calculate_lane_idx (self);
+      midi_track_pos = track_lane_calculate_lane_idx (self);
       events = midi_events_new ();
       own_events = true;
     }
@@ -589,26 +556,22 @@ track_lane_write_to_midi_file (
     {
       char midi_track_name[1000];
       sprintf (
-        midi_track_name, "%s - %s", track->name,
-        self->name);
+        midi_track_name, "%s - %s", track->name, self->name);
       midiTrackAddText (
-        mf, midi_track_pos, textTrackName,
-        midi_track_name);
+        mf, midi_track_pos, textTrackName, midi_track_name);
     }
 
   for (int i = 0; i < self->num_regions; i++)
     {
       const ZRegion * region = self->regions[i];
-      midi_region_add_events (
-        region, events, true, true);
+      midi_region_add_events (region, events, true, true);
     }
 
   if (own_events)
     {
       midi_events_write_to_midi_file (
         events, mf, midi_track_pos);
-      object_free_w_func_and_null (
-        midi_events_free, events);
+      object_free_w_func_and_null (midi_events_free, events);
     }
 }
 
@@ -633,8 +596,7 @@ track_lane_free (TrackLane * self)
   for (int j = 0; j < self->num_buttons; j++)
     {
       if (self->buttons[j])
-        custom_button_widget_free (
-          self->buttons[j]);
+        custom_button_widget_free (self->buttons[j]);
     }
 
   object_zero_and_free (self);

@@ -49,8 +49,7 @@ pinned_tracklist_widget_get_hit_track (
   TrackWidget * tw;
   GtkAllocation allocation;
   gint          wx, wy;
-  for (int i = 0; i < self->tracklist->num_tracks;
-       i++)
+  for (int i = 0; i < self->tracklist->num_tracks; i++)
     {
       track = self->tracklist->tracks[i];
       if (!track->visible || !track->pinned)
@@ -58,17 +57,16 @@ pinned_tracklist_widget_get_hit_track (
 
       tw = track->widget;
 
-      gtk_widget_get_allocation (
-        GTK_WIDGET (tw), &allocation);
+      gtk_widget_get_allocation (GTK_WIDGET (tw), &allocation);
 
       gtk_widget_translate_coordinates (
-        GTK_WIDGET (self), GTK_WIDGET (tw),
-        (int) x, (int) y, &wx, &wy);
+        GTK_WIDGET (self), GTK_WIDGET (tw), (int) x, (int) y,
+        &wx, &wy);
 
       /* if hit */
       if (
-        wx >= 0 && wx <= allocation.width
-        && wy >= 0 && wy <= allocation.height)
+        wx >= 0 && wx <= allocation.width && wy >= 0
+        && wy <= allocation.height)
         {
           return tw;
         }
@@ -84,13 +82,11 @@ pinned_tracklist_widget_hard_refresh (
   PinnedTracklistWidget * self)
 {
   /* remove all tracks */
-  z_gtk_container_remove_all_children (
-    GTK_CONTAINER (self));
+  z_gtk_container_remove_all_children (GTK_CONTAINER (self));
 
   /* add tracks */
   Track * track;
-  for (int i = 0; i < self->tracklist->num_tracks;
-       i++)
+  for (int i = 0; i < self->tracklist->num_tracks; i++)
     {
       track = self->tracklist->tracks[i];
       if (!track->visible || !track->pinned)
@@ -104,8 +100,7 @@ pinned_tracklist_widget_hard_refresh (
 
       /* add to tracklist widget */
       gtk_container_add (
-        GTK_CONTAINER (self),
-        GTK_WIDGET (track->widget));
+        GTK_CONTAINER (self), GTK_WIDGET (track->widget));
     }
   /*GtkWidget * sep =*/
   /*gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);*/
@@ -118,23 +113,20 @@ pinned_tracklist_widget_hard_refresh (
    * this is done because the position resets to
    * -1 every time a child is added or deleted */
   GList *children, *iter;
-  children = gtk_container_get_children (
-    GTK_CONTAINER (self));
-  for (iter = children; iter != NULL;
-       iter = g_list_next (iter))
+  children = gtk_container_get_children (GTK_CONTAINER (self));
+  for (iter = children; iter != NULL; iter = g_list_next (iter))
     {
       if (Z_IS_TRACK_WIDGET (iter->data))
         {
-          TrackWidget * tw =
-            Z_TRACK_WIDGET (iter->data);
+          TrackWidget * tw = Z_TRACK_WIDGET (iter->data);
           TRACK_WIDGET_GET_PRIVATE (tw);
           track = tw_prv->track;
           GValue a = G_VALUE_INIT;
           g_value_init (&a, G_TYPE_INT);
           g_value_set_int (&a, track->handle_pos);
           gtk_container_child_set_property (
-            GTK_CONTAINER (self), GTK_WIDGET (tw),
-            "position", &a);
+            GTK_CONTAINER (self), GTK_WIDGET (tw), "position",
+            &a);
         }
     }
   g_list_free (children);
@@ -177,8 +169,7 @@ pinned_tracklist_widget_setup (
 
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
-    G_CALLBACK (
-      pinned_tracklist_widget_on_size_allocate),
+    G_CALLBACK (pinned_tracklist_widget_on_size_allocate),
     self);
 }
 
@@ -186,19 +177,15 @@ static void
 pinned_tracklist_widget_class_init (
   PinnedTracklistWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
 
-  gtk_widget_class_set_css_name (
-    klass, "ruler-tracklist");
+  gtk_widget_class_set_css_name (klass, "ruler-tracklist");
 }
 
 static void
-pinned_tracklist_widget_init (
-  PinnedTracklistWidget * self)
+pinned_tracklist_widget_init (PinnedTracklistWidget * self)
 {
   gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (self),
-    GTK_ORIENTATION_VERTICAL);
+    GTK_ORIENTABLE (self), GTK_ORIENTATION_VERTICAL);
   gtk_box_set_spacing (GTK_BOX (self), 1);
 }

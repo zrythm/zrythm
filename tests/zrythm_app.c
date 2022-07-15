@@ -37,12 +37,10 @@ on_finished_conversion_from_zpj_to_yaml (void)
 {
   char * exe_path = NULL;
   int    dirname_length, length;
-  length = wai_getExecutablePath (
-    NULL, 0, &dirname_length);
+  length = wai_getExecutablePath (NULL, 0, &dirname_length);
   if (length > 0)
     {
-      exe_path =
-        (char *) malloc ((size_t) length + 1);
+      exe_path = (char *) malloc ((size_t) length + 1);
       wai_getExecutablePath (
         exe_path, length, &dirname_length);
       exe_path[length] = '\0';
@@ -50,14 +48,12 @@ on_finished_conversion_from_zpj_to_yaml (void)
   g_assert_nonnull (exe_path);
 
   char project_zpj[600];
-  sprintf (
-    project_zpj, "%s/project.zpj", PROJECT->dir);
+  sprintf (project_zpj, "%s/project.zpj", PROJECT->dir);
   char arg1[900];
   sprintf (arg1, "--zpj-to-yaml=%s", project_zpj);
 
   char project_yaml[600];
-  sprintf (
-    project_yaml, "%s/project.yaml", PROJECT->dir);
+  sprintf (project_yaml, "%s/project.yaml", PROJECT->dir);
   char arg2[900];
   sprintf (arg2, "--output=%s", project_yaml);
 
@@ -69,10 +65,10 @@ on_finished_conversion_from_zpj_to_yaml (void)
   int    argc = 3;
   char * argv_after[] = { exe_path, arg1, arg2 };
 
-  ZrythmApp * app = zrythm_app_new (
-    argc, (const char **) argv_after);
-  int ret = g_application_run (
-    G_APPLICATION (app), argc, argv_after);
+  ZrythmApp * app =
+    zrythm_app_new (argc, (const char **) argv_after);
+  int ret =
+    g_application_run (G_APPLICATION (app), argc, argv_after);
   g_assert_cmpint (ret, ==, 0);
   g_object_unref (app);
 
@@ -88,12 +84,10 @@ test_project_conversion (void)
 
   char * exe_path = NULL;
   int    dirname_length, length;
-  length = wai_getExecutablePath (
-    NULL, 0, &dirname_length);
+  length = wai_getExecutablePath (NULL, 0, &dirname_length);
   if (length > 0)
     {
-      exe_path =
-        (char *) malloc ((size_t) length + 1);
+      exe_path = (char *) malloc ((size_t) length + 1);
       wai_getExecutablePath (
         exe_path, length, &dirname_length);
       exe_path[length] = '\0';
@@ -101,14 +95,12 @@ test_project_conversion (void)
   g_assert_nonnull (exe_path);
 
   char project_zpj[600];
-  sprintf (
-    project_zpj, "%s/project.zpj", PROJECT->dir);
+  sprintf (project_zpj, "%s/project.zpj", PROJECT->dir);
   char arg1[900];
   sprintf (arg1, "--zpj-to-yaml=%s", project_zpj);
 
   char project_yaml[600];
-  sprintf (
-    project_yaml, "%s/project.yaml", PROJECT->dir);
+  sprintf (project_yaml, "%s/project.yaml", PROJECT->dir);
   char arg2[900];
   sprintf (arg2, "--output=%s", project_yaml);
 
@@ -117,8 +109,8 @@ test_project_conversion (void)
 
   ZrythmApp * app =
     zrythm_app_new (argc, (const char **) argv);
-  int ret = g_application_run (
-    G_APPLICATION (app), argc, argv);
+  int ret =
+    g_application_run (G_APPLICATION (app), argc, argv);
   g_assert_cmpint (ret, ==, 0);
   g_object_unref (app);
 
@@ -130,10 +122,9 @@ test_project_conversion (void)
   argc = 3;
   char * argv_after[] = { exe_path, arg1, arg2 };
 
-  app = zrythm_app_new (
-    argc, (const char **) argv_after);
-  ret = g_application_run (
-    G_APPLICATION (app), argc, argv_after);
+  app = zrythm_app_new (argc, (const char **) argv_after);
+  ret =
+    g_application_run (G_APPLICATION (app), argc, argv_after);
   g_assert_cmpint (ret, ==, 0);
   g_object_unref (app);
 

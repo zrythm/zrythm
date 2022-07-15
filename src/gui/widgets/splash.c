@@ -45,8 +45,7 @@ splash_tick_cb (
   SplashWindowWidget * self)
 {
   zix_sem_wait (&zrythm_app->progress_status_lock);
-  gtk_label_set_text (
-    self->status_label, zrythm_app->status);
+  gtk_label_set_text (self->status_label, zrythm_app->status);
   gtk_progress_bar_set_fraction (
     self->progress_bar, ZRYTHM->progress);
   zix_sem_post (&zrythm_app->progress_status_lock);
@@ -55,8 +54,7 @@ splash_tick_cb (
 }
 
 void
-splash_window_widget_close (
-  SplashWindowWidget * self)
+splash_window_widget_close (SplashWindowWidget * self)
 {
   g_debug ("closing splash window");
 
@@ -87,17 +85,15 @@ splash_window_widget_new (ZrythmApp * app)
 {
   SplashWindowWidget * self = g_object_new (
     SPLASH_WINDOW_WIDGET_TYPE, "application",
-    G_APPLICATION (app), "title", PROGRAM_NAME,
-    NULL);
+    G_APPLICATION (app), "title", PROGRAM_NAME, NULL);
   g_return_val_if_fail (
     Z_IS_SPLASH_WINDOW_WIDGET (self), NULL);
 
-  gtk_progress_bar_set_fraction (
-    self->progress_bar, 0.0);
+  gtk_progress_bar_set_fraction (self->progress_bar, 0.0);
 
   self->tick_cb_id = gtk_widget_add_tick_callback (
-    (GtkWidget *) self,
-    (GtkTickCallback) splash_tick_cb, self, NULL);
+    (GtkWidget *) self, (GtkTickCallback) splash_tick_cb,
+    self, NULL);
 
   return self;
 }
@@ -106,8 +102,7 @@ static void
 splash_window_widget_class_init (
   SplashWindowWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "splash.ui");
 
 #define BIND_CHILD(x) \
@@ -126,8 +121,7 @@ splash_window_widget_class_init (
 }
 
 static void
-splash_window_widget_init (
-  SplashWindowWidget * self)
+splash_window_widget_init (SplashWindowWidget * self)
 {
   g_type_ensure (CUSTOM_IMAGE_WIDGET_TYPE);
 
@@ -137,16 +131,13 @@ splash_window_widget_init (
     gtk_widget_get_style_context (GTK_WIDGET (self));
   gtk_style_context_add_class (context, "splash");
 
-  GdkTexture * texture =
-    z_gdk_texture_new_from_icon_name (
-      "zrythm-splash-png", 580, -1, 1);
-  custom_image_widget_set_texture (
-    self->img, texture);
+  GdkTexture * texture = z_gdk_texture_new_from_icon_name (
+    "zrythm-splash-png", 580, -1, 1);
+  custom_image_widget_set_texture (self->img, texture);
 
   char * ver = zrythm_get_version (true);
   char   ver_str[800];
   sprintf (ver_str, "<small>%s</small>", ver);
   g_free (ver);
-  gtk_label_set_markup (
-    self->version_label, ver_str);
+  gtk_label_set_markup (self->version_label, ver_str);
 }

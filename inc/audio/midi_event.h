@@ -139,9 +139,7 @@ midi_event_copy (MidiEvent * dest, MidiEvent * src)
 
 NONNULL
 void
-midi_event_set_velocity (
-  MidiEvent * ev,
-  midi_byte_t vel);
+midi_event_set_velocity (MidiEvent * ev, midi_byte_t vel);
 
 void
 midi_event_print (const MidiEvent * ev);
@@ -158,9 +156,7 @@ midi_events_are_equal (
 }
 
 void
-midi_events_print (
-  MidiEvents * self,
-  const int    queued);
+midi_events_print (MidiEvents * self, const int queued);
 
 /**
  * Appends the events from src to dest.
@@ -371,9 +367,7 @@ midi_events_write_to_midi_file (
  * @param queued Clear queued events instead.
  */
 void
-midi_events_clear (
-  MidiEvents * midi_events,
-  int          queued);
+midi_events_clear (MidiEvents * midi_events, int queued);
 
 /**
  * Clears duplicates.
@@ -417,18 +411,14 @@ midi_events_delete_note_on (
  * Writes the events to the given JACK buffer.
  */
 void
-midi_events_copy_to_jack (
-  MidiEvents * self,
-  void *       buff);
+midi_events_copy_to_jack (MidiEvents * self, void * buff);
 #endif
 
 /**
  * Sorts the MidiEvents by time.
  */
 void
-midi_events_sort (
-  MidiEvents * self,
-  const bool   queued);
+midi_events_sort (MidiEvents * self, const bool queued);
 
 /**
  * Sets the given MIDI channel on all applicable

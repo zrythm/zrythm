@@ -33,8 +33,7 @@ z_pango_create_layout_from_description (
 {
   PangoLayout * layout = NULL;
 
-  char * str =
-    pango_font_description_to_string (descr);
+  char * str = pango_font_description_to_string (descr);
   g_debug ("font description: %s", str);
 
 #ifdef HAVE_BUNDLED_DSEG
@@ -43,8 +42,8 @@ z_pango_create_layout_from_description (
       FcConfig * fc_config = FcConfigCreate ();
 
       /* add fonts/zrythm dir to find DSEG font */
-      char * fontdir = zrythm_get_dir (
-        ZRYTHM_DIR_SYSTEM_FONTSDIR);
+      char * fontdir =
+        zrythm_get_dir (ZRYTHM_DIR_SYSTEM_FONTSDIR);
       FcConfigAppFontAddDir (
         fc_config, (const unsigned char *) fontdir);
       g_free (fontdir);
@@ -56,29 +55,23 @@ z_pango_create_layout_from_description (
       pango_fc_font_map_set_config (
         PANGO_FC_FONT_MAP (font_map), fc_config);
 
-      PangoContext * context =
-        pango_font_map_create_context (
-          PANGO_FONT_MAP (font_map));
-      PangoLayout * pangoLayout =
-        pango_layout_new (context);
+      PangoContext * context = pango_font_map_create_context (
+        PANGO_FONT_MAP (font_map));
+      PangoLayout * pangoLayout = pango_layout_new (context);
 
       FcPattern *   pattern = FcPatternCreate ();
-      FcObjectSet * os =
-        FcObjectSetBuild (FC_FAMILY, NULL);
-      FcFontSet * fs =
-        FcFontList (fc_config, pattern, os);
+      FcObjectSet * os = FcObjectSetBuild (FC_FAMILY, NULL);
+      FcFontSet *   fs = FcFontList (fc_config, pattern, os);
       FcPatternDestroy (pattern);
       FcObjectSetDestroy (os);
       for (int i = 0; i < fs->nfont; i++)
         {
-          guchar * font_name =
-            FcNameUnparse (fs->fonts[i]);
+          guchar * font_name = FcNameUnparse (fs->fonts[i]);
           PangoFontDescription * desc =
             pango_font_description_from_string (
               (gchar *) font_name);
           pango_font_map_load_font (
-            PANGO_FONT_MAP (font_map), context,
-            desc);
+            PANGO_FONT_MAP (font_map), context, desc);
           pango_font_description_free (desc);
           g_debug ("fontname: %s", font_name);
           g_free (font_name);
@@ -93,8 +86,7 @@ z_pango_create_layout_from_description (
   else
     {
 #endif
-      layout = gtk_widget_create_pango_layout (
-        widget, NULL);
+      layout = gtk_widget_create_pango_layout (widget, NULL);
 #ifdef HAVE_BUNDLED_DSEG
     }
 #endif
@@ -107,8 +99,7 @@ z_pango_create_layout_from_description (
   /* try a small test */
   int test_w, test_h;
   pango_layout_set_markup (layout, "test", -1);
-  pango_layout_get_pixel_size (
-    layout, &test_w, &test_h);
+  pango_layout_get_pixel_size (layout, &test_w, &test_h);
 
   return layout;
 }

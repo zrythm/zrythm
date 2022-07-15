@@ -75,16 +75,14 @@ engine_jack_handle_sample_rate_change (
   if (P_TEMPO_TRACK)
     {
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (
-          P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
       engine_update_frames_per_tick (
         self, beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
         self->sample_rate, true, true, false);
     }
 
-  g_message (
-    "JACK: Sample rate changed to %d", samplerate);
+  g_message ("JACK: Sample rate changed to %d", samplerate);
 }
 
 static void
@@ -127,8 +125,7 @@ sample_rate_cb (uint32_t nframes, AudioEngine * self)
 #  endif
 
   ENGINE_EVENTS_PUSH (
-    AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE, NULL,
-    nframes, 0.f);
+    AUDIO_ENGINE_EVENT_SAMPLE_RATE_CHANGE, NULL, nframes, 0.f);
 
   process_change_request (self);
 
@@ -145,18 +142,15 @@ engine_jack_handle_buf_size_change (
   AudioEngine * self,
   uint32_t      frames)
 {
-  engine_realloc_port_buffers (
-    AUDIO_ENGINE, frames);
+  engine_realloc_port_buffers (AUDIO_ENGINE, frames);
 #  ifdef HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
-  AUDIO_ENGINE->midi_buf_size =
-    jack_port_type_get_buffer_size (
-      AUDIO_ENGINE->client, JACK_DEFAULT_MIDI_TYPE);
+  AUDIO_ENGINE->midi_buf_size = jack_port_type_get_buffer_size (
+    AUDIO_ENGINE->client, JACK_DEFAULT_MIDI_TYPE);
 #  endif
   g_message (
     "JACK: Block length changed to %d, "
     "midi buf size to %zu",
-    AUDIO_ENGINE->block_length,
-    AUDIO_ENGINE->midi_buf_size);
+    AUDIO_ENGINE->block_length, AUDIO_ENGINE->midi_buf_size);
 }
 
 /** Jack buffer size callback. */
@@ -164,8 +158,7 @@ static int
 buffer_size_cb (uint32_t nframes, AudioEngine * self)
 {
   ENGINE_EVENTS_PUSH (
-    AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE, NULL,
-    nframes, 0.f);
+    AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE, NULL, nframes, 0.f);
 
   process_change_request (self);
 
@@ -173,25 +166,19 @@ buffer_size_cb (uint32_t nframes, AudioEngine * self)
 }
 
 void
-engine_jack_handle_position_change (
-  AudioEngine * self)
+engine_jack_handle_position_change (AudioEngine * self)
 {
-  if (
-    self->transport_type
-    == AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
+  if (self->transport_type == AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
     {
       jack_transport_locate (
-        self->client,
-        (jack_nframes_t) PLAYHEAD->frames);
+        self->client, (jack_nframes_t) PLAYHEAD->frames);
     }
 }
 
 void
 engine_jack_handle_start (AudioEngine * self)
 {
-  if (
-    self->transport_type
-    == AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
+  if (self->transport_type == AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
     {
       jack_transport_start (self->client);
     }
@@ -200,9 +187,7 @@ engine_jack_handle_start (AudioEngine * self)
 void
 engine_jack_handle_stop (AudioEngine * self)
 {
-  if (
-    self->transport_type
-    == AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
+  if (self->transport_type == AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
     {
       jack_transport_stop (self->client);
     }
@@ -217,9 +202,7 @@ void
 engine_jack_prepare_process (AudioEngine * self)
 {
   /* if client, get transport position info */
-  if (
-    self->transport_type
-    == AUDIO_ENGINE_JACK_TRANSPORT_CLIENT)
+  if (self->transport_type == AUDIO_ENGINE_JACK_TRANSPORT_CLIENT)
     {
       jack_position_t        pos;
       jack_transport_state_t state =
@@ -245,10 +228,8 @@ engine_jack_prepare_process (AudioEngine * self)
           tempo_track_set_beats_per_bar (
             P_TEMPO_TRACK, (int) pos.beats_per_bar);
           tempo_track_set_bpm (
-            P_TEMPO_TRACK,
-            (float) pos.beats_per_minute,
-            (float) pos.beats_per_minute, true,
-            true);
+            P_TEMPO_TRACK, (float) pos.beats_per_minute,
+            (float) pos.beats_per_minute, true, true);
           tempo_track_set_beat_unit (
             P_TEMPO_TRACK, (int) pos.beat_type);
         }
@@ -327,13 +308,13 @@ timebase_cb (
     &bar_start, position_get_bars (PLAYHEAD, true));
   pos->bar_start_tick =
     (double) (PLAYHEAD->ticks - bar_start.ticks);
-  pos->beats_per_bar = (float)
-    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
-  pos->beat_type = (float)
-    tempo_track_get_beat_unit (P_TEMPO_TRACK);
+  pos->beats_per_bar =
+    (float) tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  pos->beat_type =
+    (float) tempo_track_get_beat_unit (P_TEMPO_TRACK);
   pos->ticks_per_beat = TRANSPORT->ticks_per_beat;
-  pos->beats_per_minute = (double)
-    tempo_track_get_current_bpm (P_TEMPO_TRACK);
+  pos->beats_per_minute =
+    (double) tempo_track_get_current_bpm (P_TEMPO_TRACK);
 }
 
 /**
@@ -349,8 +330,7 @@ shutdown_cb (void * arg)
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
     {
       char * msg = _ ("JACK has shut down");
-      ui_show_error_message (
-        MAIN_WINDOW, false, msg);
+      ui_show_error_message (MAIN_WINDOW, false, msg);
     }
 }
 
@@ -378,8 +358,8 @@ port_registration_cb (
   jack_port_t * jport =
     jack_port_by_id (self->client, port_id);
   g_message (
-    "JACK: port '%s' %sregistered",
-    jack_port_name (jport), registered ? "" : "un");
+    "JACK: port '%s' %sregistered", jack_port_name (jport),
+    registered ? "" : "un");
 }
 
 static void
@@ -391,32 +371,25 @@ port_connect_cb (
 {
   AudioEngine * self = (AudioEngine *) arg;
 
-  jack_port_t * jport_a =
-    jack_port_by_id (self->client, a);
-  jack_port_t * jport_b =
-    jack_port_by_id (self->client, b);
+  jack_port_t * jport_a = jack_port_by_id (self->client, a);
+  jack_port_t * jport_b = jack_port_by_id (self->client, b);
   g_message (
     "JACK: port '%s' %sconnected %s '%s'",
     jack_port_name (jport_a), connect ? "" : "dis",
-    connect ? "to" : "from",
-    jack_port_name (jport_b));
+    connect ? "to" : "from", jack_port_name (jport_b));
 
   /* if port was disconnected from one of Zrythm's
    * tracked hardware ports, set it as deactivated
    * so it can be force-activated next scan */
   if (!connect)
     {
-      ExtPort * tmp =
-        ext_port_new_from_jack_port (jport_a);
+      ExtPort * tmp = ext_port_new_from_jack_port (jport_a);
       char *    id = ext_port_get_id (tmp);
-      ExtPort * ext_port =
-        hardware_processor_find_ext_port (
-          HW_IN_PROCESSOR, id);
+      ExtPort * ext_port = hardware_processor_find_ext_port (
+        HW_IN_PROCESSOR, id);
       if (ext_port)
         {
-          g_message (
-            "setting '%s' to pending reconnect",
-            id);
+          g_message ("setting '%s' to pending reconnect", id);
           ext_port->pending_reconnect = true;
         }
       g_free (id);
@@ -441,9 +414,8 @@ engine_jack_midi_setup (AudioEngine * self)
    * it */
   self->midi_buf_size = 4096;
 #  ifdef HAVE_JACK_PORT_TYPE_GET_BUFFER_SIZE
-  self->midi_buf_size =
-    jack_port_type_get_buffer_size (
-      self->client, JACK_DEFAULT_MIDI_TYPE);
+  self->midi_buf_size = jack_port_type_get_buffer_size (
+    self->client, JACK_DEFAULT_MIDI_TYPE);
 #  endif
 
   return 0;
@@ -459,14 +431,12 @@ engine_jack_set_transport_type (
 {
   if (!ZRYTHM_TESTING)
     {
-      g_settings_set_enum (
-        S_UI, "jack-transport-type", type);
+      g_settings_set_enum (S_UI, "jack-transport-type", type);
     }
 
   /* release timebase master if held */
   if (
-    self->transport_type
-      == AUDIO_ENGINE_JACK_TIMEBASE_MASTER
+    self->transport_type == AUDIO_ENGINE_JACK_TIMEBASE_MASTER
     && type != AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
     {
       g_message ("releasing JACK timebase");
@@ -474,8 +444,7 @@ engine_jack_set_transport_type (
     }
   /* acquire timebase master */
   else if (
-    self->transport_type
-      != AUDIO_ENGINE_JACK_TIMEBASE_MASTER
+    self->transport_type != AUDIO_ENGINE_JACK_TIMEBASE_MASTER
     && type == AUDIO_ENGINE_JACK_TIMEBASE_MASTER)
     {
       g_message ("becoming JACK timebase master");
@@ -522,8 +491,7 @@ engine_jack_test (GtkWindow * win)
       sprintf (full_msg, "JACK Error: %s", msg);
       if (win)
         {
-          ui_show_error_message (
-            win, false, full_msg);
+          ui_show_error_message (win, false, full_msg);
         }
       else
         {
@@ -564,21 +532,18 @@ engine_jack_setup (AudioEngine * self)
     }
 
   /* Set audio engine properties */
-  self->sample_rate =
-    jack_get_sample_rate (self->client);
-  self->block_length =
-    jack_get_buffer_size (self->client);
+  self->sample_rate = jack_get_sample_rate (self->client);
+  self->block_length = jack_get_buffer_size (self->client);
 
   /* set jack callbacks */
   int ret;
-  jack_set_process_callback (
-    self->client, process_cb, self);
+  jack_set_process_callback (self->client, process_cb, self);
   jack_set_buffer_size_callback (
-    self->client,
-    (JackBufferSizeCallback) buffer_size_cb, self);
+    self->client, (JackBufferSizeCallback) buffer_size_cb,
+    self);
   jack_set_sample_rate_callback (
-    self->client,
-    (JackSampleRateCallback) sample_rate_cb, self);
+    self->client, (JackSampleRateCallback) sample_rate_cb,
+    self);
   jack_set_xrun_callback (
     self->client, (JackXRunCallback) xrun_cb, self);
   jack_set_freewheel_callback (
@@ -589,17 +554,14 @@ engine_jack_setup (AudioEngine * self)
   ret = jack_set_port_connect_callback (
     self->client, port_connect_cb, self);
   g_return_val_if_fail (ret == 0, -1);
-  jack_on_shutdown (
-    self->client, shutdown_cb, self);
+  jack_on_shutdown (self->client, shutdown_cb, self);
   /*jack_set_latency_callback(client, &jack_latency_cb, arg);*/
 #  ifdef JALV_JACK_SESSION
   /*jack_set_session_callback(client, &jack_session_cb, arg);*/
 #  endif
 
   engine_jack_set_transport_type (
-    self,
-    g_settings_get_enum (
-      S_UI, "jack-transport-type"));
+    self, g_settings_get_enum (S_UI, "jack-transport-type"));
 
   g_message ("JACK set up");
   return 0;
@@ -610,9 +572,7 @@ engine_jack_setup (AudioEngine * self)
  * status in \p msg.
  */
 void
-engine_jack_get_error_message (
-  jack_status_t status,
-  char *        msg)
+engine_jack_get_error_message (jack_status_t status, char * msg)
 {
   if (status & JackFailure)
     {
@@ -631,46 +591,37 @@ engine_jack_get_error_message (
   else if (status & JackNameNotUnique)
     {
       strcpy (
-        msg,
-        _ ("The desired client name was not unique"));
+        msg, _ ("The desired client name was not unique"));
     }
   else if (status & JackServerFailed)
     {
-      strcpy (
-        msg,
-        _ ("Unable to connect to the JACK server"));
+      strcpy (msg, _ ("Unable to connect to the JACK server"));
     }
   else if (status & JackServerError)
     {
       strcpy (
-        msg,
-        _ ("Communication error with the JACK server"));
+        msg, _ ("Communication error with the JACK server"));
     }
   else if (status & JackNoSuchClient)
     {
-      strcpy (
-        msg, _ ("Requested client does not exist"));
+      strcpy (msg, _ ("Requested client does not exist"));
     }
   else if (status & JackLoadFailure)
     {
-      strcpy (
-        msg, _ ("Unable to load internal client"));
+      strcpy (msg, _ ("Unable to load internal client"));
     }
   else if (status & JackInitFailure)
     {
-      strcpy (
-        msg, _ ("Unable to initialize client"));
+      strcpy (msg, _ ("Unable to initialize client"));
     }
   else if (status & JackShmFailure)
     {
-      strcpy (
-        msg, _ ("Unable to access shared memory"));
+      strcpy (msg, _ ("Unable to access shared memory"));
     }
   else if (status & JackVersionError)
     {
       strcpy (
-        msg,
-        _ ("Client's protocol version does not match"));
+        msg, _ ("Client's protocol version does not match"));
     }
   else if (status & JackBackendError)
     {
@@ -699,16 +650,13 @@ engine_jack_tear_down (AudioEngine * self)
  * port to the selected devices.
  */
 int
-engine_jack_reconnect_monitor (
-  AudioEngine * self,
-  bool          left)
+engine_jack_reconnect_monitor (AudioEngine * self, bool left)
 {
   gchar ** devices = g_settings_get_strv (
     S_MONITOR, left ? "l-devices" : "r-devices");
 
   Port * port =
-    left ? self->monitor_out->l
-         : self->monitor_out->r;
+    left ? self->monitor_out->l : self->monitor_out->r;
 
   /* disconnect port */
   int ret = jack_port_disconnect (
@@ -717,9 +665,7 @@ engine_jack_reconnect_monitor (
     {
       char msg[600];
       engine_jack_get_error_message (ret, msg);
-      g_critical (
-        "failed to disconnect monitor out: %s",
-        msg);
+      g_critical ("failed to disconnect monitor out: %s", msg);
       return ret;
     }
 
@@ -728,25 +674,21 @@ engine_jack_reconnect_monitor (
   while (devices[i])
     {
       char *    device = devices[i++];
-      ExtPort * ext_port =
-        hardware_processor_find_ext_port (
-          self->hw_out_processor, device);
+      ExtPort * ext_port = hardware_processor_find_ext_port (
+        self->hw_out_processor, device);
       if (ext_port)
         {
           /*g_return_val_if_reached (-1);*/
           ret = jack_connect (
             self->client,
-            jack_port_name (
-              JACK_PORT_T (port->data)),
+            jack_port_name (JACK_PORT_T (port->data)),
             ext_port->full_name);
           if (ret)
             {
               char msg[600];
-              engine_jack_get_error_message (
-                ret, msg);
+              engine_jack_get_error_message (ret, msg);
               g_warning (
-                "cannot connect monitor out: %s",
-                msg);
+                "cannot connect monitor out: %s", msg);
             }
           else
             {
@@ -767,12 +709,9 @@ engine_jack_reconnect_monitor (
       const char ** ports = jack_get_ports (
         self->client, NULL, JACK_DEFAULT_AUDIO_TYPE,
         JackPortIsPhysical | JackPortIsInput);
-      if (
-        ports == NULL || ports[0] == NULL
-        || ports[1] == NULL)
+      if (ports == NULL || ports[0] == NULL || ports[1] == NULL)
         {
-          g_critical (
-            "no physical playback ports found");
+          g_critical ("no physical playback ports found");
           return -1;
         }
 
@@ -784,8 +723,7 @@ engine_jack_reconnect_monitor (
         {
           char msg[600];
           engine_jack_get_error_message (ret, msg);
-          g_warning (
-            "cannot connect monitor out: %s", msg);
+          g_warning ("cannot connect monitor out: %s", msg);
         }
       else
         {
@@ -799,9 +737,7 @@ engine_jack_reconnect_monitor (
 }
 
 int
-engine_jack_activate (
-  AudioEngine * self,
-  bool          activate)
+engine_jack_activate (AudioEngine * self, bool activate)
 {
   if (activate)
     {
@@ -833,17 +769,14 @@ engine_jack_activate (
           && self->monitor_out->r->data,
         -1);
 
-      g_message (
-        "connecting to system out ports...");
+      g_message ("connecting to system out ports...");
 
-      int ret =
-        engine_jack_reconnect_monitor (self, true);
+      int ret = engine_jack_reconnect_monitor (self, true);
       if (ret)
         {
           return -1;
         }
-      ret = engine_jack_reconnect_monitor (
-        self, false);
+      ret = engine_jack_reconnect_monitor (self, false);
       if (ret)
         {
           return -1;
@@ -857,8 +790,7 @@ engine_jack_activate (
           char msg[600];
           engine_jack_get_error_message (ret, msg);
           g_critical (
-            "Failed deactivating JACK client: %s",
-            msg);
+            "Failed deactivating JACK client: %s", msg);
         }
     }
 
@@ -894,31 +826,25 @@ engine_jack_is_pipewire (AudioEngine * self)
   return false;
 #  else
   const char * libname = "libjack.so.0";
-  void * lib_handle = dlopen (libname, RTLD_LAZY);
+  void *       lib_handle = dlopen (libname, RTLD_LAZY);
   g_return_val_if_fail (lib_handle, false);
 
-  const char * func_name =
-    "jack_get_version_string";
+  const char * func_name = "jack_get_version_string";
 
   const char * (*jack_get_version_string) (void);
   *(void **) (&jack_get_version_string) =
     dlsym (lib_handle, func_name);
   if (!jack_get_version_string)
     {
-      g_message (
-        "%s () not found in %s", func_name,
-        libname);
+      g_message ("%s () not found in %s", func_name, libname);
       return false;
     }
   else
     {
-      g_message (
-        "%s () found in %s", func_name, libname);
-      const char * ver =
-        (*jack_get_version_string) ();
+      g_message ("%s () found in %s", func_name, libname);
+      const char * ver = (*jack_get_version_string) ();
       g_message ("ver %s", ver);
-      return string_contains_substr (
-        ver, "PipeWire");
+      return string_contains_substr (ver, "PipeWire");
     }
 #  endif
 }

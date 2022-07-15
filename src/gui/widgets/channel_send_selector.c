@@ -58,8 +58,7 @@ get_track_from_target (ChannelSendTarget * target)
 }
 
 static StereoPorts *
-get_sidechain_from_target (
-  ChannelSendTarget * target)
+get_sidechain_from_target (ChannelSendTarget * target)
 {
   if (target->type != TARGET_TYPE_PLUGIN_SIDECHAIN)
     {
@@ -68,10 +67,10 @@ get_sidechain_from_target (
 
   Plugin * pl = plugin_find (&target->pl_id);
   g_return_val_if_fail (pl, NULL);
-  Port * l = plugin_get_port_in_group (
-    pl, target->port_group, true);
-  Port * r = plugin_get_port_in_group (
-    pl, target->port_group, false);
+  Port * l =
+    plugin_get_port_in_group (pl, target->port_group, true);
+  Port * r =
+    plugin_get_port_in_group (pl, target->port_group, false);
   return stereo_ports_new_from_existing (l, r);
 }
 
@@ -96,20 +95,17 @@ on_selection_changed (
     return;
 
   GtkTreePath * tp =
-    (GtkTreePath *) g_list_first (selected_rows)
-      ->data;
+    (GtkTreePath *) g_list_first (selected_rows)->data;
   GtkTreeIter iter;
   gtk_tree_model_get_iter (self->model, &iter, tp);
   GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (
-    self->model, &iter, 2, &value);
-  ChannelSendTarget * target =
-    g_value_get_pointer (&value);
+  gtk_tree_model_get_value (self->model, &iter, 2, &value);
+  ChannelSendTarget * target = g_value_get_pointer (&value);
 
   ChannelSend * send = self->send_widget->send;
-  bool is_empty = channel_send_is_empty (send);
+  bool          is_empty = channel_send_is_empty (send);
 
-  Track * src_track = channel_send_get_track (send);
+  Track *          src_track = channel_send_get_track (send);
   Track *          dest_track = NULL;
   StereoPorts *    dest_sidechain = NULL;
   PortConnection * conn = NULL;
@@ -120,14 +116,12 @@ on_selection_changed (
       if (channel_send_is_enabled (send))
         {
           GError * err = NULL;
-          bool     ret =
-            channel_send_action_perform_disconnect (
-              self->send_widget->send, &err);
+          bool ret = channel_send_action_perform_disconnect (
+            self->send_widget->send, &err);
           if (!ret)
             {
               HANDLE_ERROR (
-                err, "%s",
-                _ ("Failed to disconnect send"));
+                err, "%s", _ ("Failed to disconnect send"));
             }
         }
       break;
@@ -138,14 +132,14 @@ on_selection_changed (
         case TYPE_EVENT:
           if (
             port_connections_manager_get_sources_or_dests (
-              PORT_CONNECTIONS_MGR, NULL,
-              &send->midi_out->id, false)
+              PORT_CONNECTIONS_MGR, NULL, &send->midi_out->id,
+              false)
             == 1)
             {
               conn =
                 port_connections_manager_get_source_or_dest (
-                  PORT_CONNECTIONS_MGR,
-                  &send->midi_out->id, false);
+                  PORT_CONNECTIONS_MGR, &send->midi_out->id,
+                  false);
             }
           if (is_empty
               ||
@@ -159,14 +153,11 @@ on_selection_changed (
               GError * err = NULL;
               bool     ret =
                 channel_send_action_perform_connect_midi (
-                  send,
-                  dest_track->processor->midi_in,
-                  &err);
+                  send, dest_track->processor->midi_in, &err);
               if (!ret)
                 {
                   HANDLE_ERROR (
-                    err, "%s",
-                    _ ("Failed to connect send"));
+                    err, "%s", _ ("Failed to connect send"));
                 }
             }
           break;
@@ -194,14 +185,11 @@ on_selection_changed (
               GError * err = NULL;
               bool     ret =
                 channel_send_action_perform_connect_audio (
-                  send,
-                  dest_track->processor->stereo_in,
-                  &err);
+                  send, dest_track->processor->stereo_in, &err);
               if (!ret)
                 {
                   HANDLE_ERROR (
-                    err, "%s",
-                    _ ("Failed to connect send"));
+                    err, "%s", _ ("Failed to connect send"));
                 }
             }
           break;
@@ -211,18 +199,16 @@ on_selection_changed (
       break;
     case TARGET_TYPE_PLUGIN_SIDECHAIN:
       {
-        dest_sidechain =
-          get_sidechain_from_target (target);
+        dest_sidechain = get_sidechain_from_target (target);
         if (
           port_connections_manager_get_sources_or_dests (
             PORT_CONNECTIONS_MGR, NULL,
             &send->stereo_out->l->id, false)
           == 1)
           {
-            conn =
-              port_connections_manager_get_source_or_dest (
-                PORT_CONNECTIONS_MGR,
-                &send->stereo_out->l->id, false);
+            conn = port_connections_manager_get_source_or_dest (
+              PORT_CONNECTIONS_MGR, &send->stereo_out->l->id,
+              false);
           }
         if (dest_sidechain &&
             (is_empty
@@ -241,8 +227,7 @@ on_selection_changed (
             if (!ret)
               {
                 HANDLE_ERROR (
-                  err, "%s",
-                  _ ("Failed to connect send"));
+                  err, "%s", _ ("Failed to connect send"));
               }
           }
         object_zero_and_free (dest_sidechain);
@@ -250,8 +235,7 @@ on_selection_changed (
       break;
     }
 
-  gtk_widget_queue_draw (
-    GTK_WIDGET (self->send_widget));
+  gtk_widget_queue_draw (GTK_WIDGET (self->send_widget));
 }
 
 static void
@@ -259,27 +243,24 @@ setup_treeview (ChannelSendSelectorWidget * self)
 {
   /* icon, name, pointer to data */
   GtkListStore * list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING,
-    G_TYPE_POINTER);
+    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
-  GtkTreeSelection * sel =
-    gtk_tree_view_get_selection (
-      GTK_TREE_VIEW (self->treeview));
+  GtkTreeSelection * sel = gtk_tree_view_get_selection (
+    GTK_TREE_VIEW (self->treeview));
 
-  ChannelSendTarget * target =
-    object_new (ChannelSendTarget);
+  ChannelSendTarget * target = object_new (ChannelSendTarget);
   target->type = TARGET_TYPE_NONE;
   GtkTreeIter iter;
   gtk_list_store_append (list_store, &iter);
   gtk_list_store_set (
-    list_store, &iter, 0, "edit-none", 1,
-    _ ("None"), 2, target, -1);
+    list_store, &iter, 0, "edit-none", 1, _ ("None"), 2,
+    target, -1);
   int select_idx = 0;
   int count = 1;
 
   /* setup tracks */
   ChannelSend * send = self->send_widget->send;
-  Track * track = channel_send_get_track (send);
+  Track *       track = channel_send_get_track (send);
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       Track * target_track = TRACKLIST->tracks[i];
@@ -289,8 +270,7 @@ setup_treeview (ChannelSendSelectorWidget * self)
       /* skip tracks with non-matching signal types */
       if (
         target_track == track
-        || track->out_signal_type
-             != target_track->in_signal_type
+        || track->out_signal_type != target_track->in_signal_type
         || !track_type_is_fx (target_track->type))
         continue;
       g_message ("adding %s", target_track->name);
@@ -303,14 +283,13 @@ setup_treeview (ChannelSendSelectorWidget * self)
       /* add it to list */
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
-        list_store, &iter, 0, "media-album-track",
-        1, target_track->name, 2, target, -1);
+        list_store, &iter, 0, "media-album-track", 1,
+        target_track->name, 2, target, -1);
 
       if (
         channel_send_is_enabled (send)
         && target_track
-             == channel_send_get_target_track (
-               send, NULL))
+             == channel_send_get_target_track (send, NULL))
         {
           select_idx = count;
         }
@@ -325,8 +304,7 @@ setup_treeview (ChannelSendSelectorWidget * self)
 
       if (
         target_track == track
-        || !track_type_has_channel (
-          target_track->type))
+        || !track_type_has_channel (target_track->type))
         {
           continue;
         }
@@ -334,14 +312,12 @@ setup_treeview (ChannelSendSelectorWidget * self)
       Channel * ch = target_track->channel;
 
       Plugin * plugins[300];
-      int      num_plugins =
-        channel_get_plugins (ch, plugins);
+      int num_plugins = channel_get_plugins (ch, plugins);
 
       for (int j = 0; j < num_plugins; j++)
         {
           Plugin * pl = plugins[j];
-          g_debug (
-            "plugin %s", pl->setting->descr->name);
+          g_debug ("plugin %s", pl->setting->descr->name);
 
           for (int k = 0; k < pl->num_in_ports; k++)
             {
@@ -349,13 +325,10 @@ setup_treeview (ChannelSendSelectorWidget * self)
               g_debug ("port %s", port->id.label);
 
               if (
-                !(port->id.flags
-                  & PORT_FLAG_SIDECHAIN)
+                !(port->id.flags & PORT_FLAG_SIDECHAIN)
                 || port->id.type != TYPE_AUDIO
                 || !port->id.port_group
-                || !(
-                  port->id.flags
-                  & PORT_FLAG_STEREO_L))
+                || !(port->id.flags & PORT_FLAG_STEREO_L))
                 {
                   continue;
                 }
@@ -365,21 +338,18 @@ setup_treeview (ChannelSendSelectorWidget * self)
                * this is left, find right and vice
                * versa) */
               Port * other_channel =
-                plugin_get_port_in_same_group (
-                  pl, port);
+                plugin_get_port_in_same_group (pl, port);
               if (!other_channel)
                 {
                   continue;
                 }
               g_debug (
-                "other channel %s",
-                other_channel->id.label);
+                "other channel %s", other_channel->id.label);
 
               Port *l = NULL, *r = NULL;
               if (
                 port->id.flags & PORT_FLAG_STEREO_L
-                && other_channel->id.flags
-                     & PORT_FLAG_STEREO_R)
+                && other_channel->id.flags & PORT_FLAG_STEREO_R)
                 {
                   l = port;
                   r = other_channel;
@@ -390,34 +360,26 @@ setup_treeview (ChannelSendSelectorWidget * self)
                 }
 
               /* create target */
-              target =
-                object_new (ChannelSendTarget);
-              target->type =
-                TARGET_TYPE_PLUGIN_SIDECHAIN;
+              target = object_new (ChannelSendTarget);
+              target->type = TARGET_TYPE_PLUGIN_SIDECHAIN;
               target->track_pos = target_track->pos;
               target->pl_id = pl->id;
-              target->port_group =
-                g_strdup (l->id.port_group);
+              target->port_group = g_strdup (l->id.port_group);
 
               char designation[1200];
               plugin_get_full_port_group_designation (
-                pl, port->id.port_group,
-                designation);
+                pl, port->id.port_group, designation);
 
               /* add it to list */
-              gtk_list_store_append (
-                list_store, &iter);
+              gtk_list_store_append (list_store, &iter);
               gtk_list_store_set (
-                list_store, &iter, 0,
-                "media-album-track", 1,
+                list_store, &iter, 0, "media-album-track", 1,
                 designation, 2, target, -1);
 
-              if (channel_send_is_target_sidechain (
-                    send))
+              if (channel_send_is_target_sidechain (send))
                 {
                   StereoPorts * sp =
-                    channel_send_get_target_sidechain (
-                      send);
+                    channel_send_get_target_sidechain (send);
                   if (sp->l == l && sp->r == r)
                     {
                       select_idx = count;
@@ -430,8 +392,7 @@ setup_treeview (ChannelSendSelectorWidget * self)
     }
 
   self->model = GTK_TREE_MODEL (list_store);
-  gtk_tree_view_set_model (
-    self->treeview, self->model);
+  gtk_tree_view_set_model (self->treeview, self->model);
 
   GtkTreePath * path =
     gtk_tree_path_new_from_indices (select_idx, -1);
@@ -441,8 +402,7 @@ setup_treeview (ChannelSendSelectorWidget * self)
   g_signal_connect (
     G_OBJECT (gtk_tree_view_get_selection (
       GTK_TREE_VIEW (self->treeview))),
-    "changed", G_CALLBACK (on_selection_changed),
-    self);
+    "changed", G_CALLBACK (on_selection_changed), self);
 }
 
 void
@@ -453,11 +413,10 @@ channel_send_selector_widget_setup (
 }
 
 ChannelSendSelectorWidget *
-channel_send_selector_widget_new (
-  ChannelSendWidget * send)
+channel_send_selector_widget_new (ChannelSendWidget * send)
 {
-  ChannelSendSelectorWidget * self = g_object_new (
-    CHANNEL_SEND_SELECTOR_WIDGET_TYPE, NULL);
+  ChannelSendSelectorWidget * self =
+    g_object_new (CHANNEL_SEND_SELECTOR_WIDGET_TYPE, NULL);
   self->send_widget = send;
 
   return self;
@@ -474,8 +433,8 @@ channel_send_selector_widget_init (
   ChannelSendSelectorWidget * self)
 {
   /* create box */
-  self->vbox = GTK_BOX (
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  self->vbox =
+    GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_popover_set_child (
     GTK_POPOVER (self), GTK_WIDGET (self->vbox));
 
@@ -491,13 +450,10 @@ channel_send_selector_widget_init (
   gtk_box_append (GTK_BOX (self->vbox), scroll);
 
   /* add treeview */
-  self->treeview =
-    GTK_TREE_VIEW (gtk_tree_view_new ());
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->treeview), TRUE);
+  self->treeview = GTK_TREE_VIEW (gtk_tree_view_new ());
+  gtk_widget_set_visible (GTK_WIDGET (self->treeview), TRUE);
   gtk_scrolled_window_set_child (
-    GTK_SCROLLED_WINDOW (scroll),
-    GTK_WIDGET (self->treeview));
+    GTK_SCROLLED_WINDOW (scroll), GTK_WIDGET (self->treeview));
 
 #if 0
   /* add button group */
@@ -527,23 +483,19 @@ channel_send_selector_widget_init (
   renderer = gtk_cell_renderer_pixbuf_new ();
   column = gtk_tree_view_column_new_with_attributes (
     "icon", renderer, "icon-name", 0, NULL);
-  gtk_tree_view_append_column (
-    self->treeview, column);
+  gtk_tree_view_append_column (self->treeview, column);
 
   /* column for name */
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes (
     "name", renderer, "text", 1, NULL);
-  gtk_tree_view_append_column (
-    self->treeview, column);
+  gtk_tree_view_append_column (self->treeview, column);
 
   /* set search column */
-  gtk_tree_view_set_search_column (
-    self->treeview, 1);
+  gtk_tree_view_set_search_column (self->treeview, 1);
 
   /* set headers invisible */
-  gtk_tree_view_set_headers_visible (
-    self->treeview, false);
+  gtk_tree_view_set_headers_visible (self->treeview, false);
 
 #if 0
   g_signal_connect (

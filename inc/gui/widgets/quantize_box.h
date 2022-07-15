@@ -41,8 +41,7 @@ G_DECLARE_FINAL_TYPE (
   QUANTIZE_BOX_WIDGET,
   GtkBox)
 
-#define MW_QUANTIZE_BOX \
-  MW_TIMELINE_TOOLBAR->quantize_box
+#define MW_QUANTIZE_BOX MW_TIMELINE_TOOLBAR->quantize_box
 
 typedef struct _SnapGridWidget SnapGridWidget;
 typedef struct SnapGrid        SnapGrid;

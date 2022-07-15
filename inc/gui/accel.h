@@ -43,8 +43,7 @@ accel_install_action_accelerator (
  * action.
  */
 char *
-accel_get_primary_accel_for_action (
-  const char * action_name);
+accel_get_primary_accel_for_action (const char * action_name);
 
 #if 0
 void

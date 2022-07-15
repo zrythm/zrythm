@@ -43,11 +43,11 @@ test_run_script (void)
 
   g_message ("running <%s>", args[1]);
   char * content = NULL;
-  bool   ret = g_file_get_contents (
-      args[1], &content, NULL, NULL);
+  bool   ret =
+    g_file_get_contents (args[1], &content, NULL, NULL);
   g_assert_true (ret);
-  char * res = guile_run_script (
-    content, GUILE_SCRIPT_LANGUAGE_SCHEME);
+  char * res =
+    guile_run_script (content, GUILE_SCRIPT_LANGUAGE_SCHEME);
   g_message ("%s", res);
   g_assert_true (guile_script_succeeded (res));
 

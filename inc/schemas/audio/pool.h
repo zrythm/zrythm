@@ -38,22 +38,18 @@ typedef struct AudioPool_v1
   size_t          clips_size;
 } AudioPool_v1;
 
-static const cyaml_schema_field_t
-  audio_pool_fields_schema_v1[] = {
-    YAML_FIELD_INT (AudioPool_v1, schema_version),
-    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-      AudioPool_v1,
-      clips,
-      audio_clip_schema_v1),
+static const cyaml_schema_field_t audio_pool_fields_schema_v1[] = {
+  YAML_FIELD_INT (AudioPool_v1, schema_version),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+    AudioPool_v1,
+    clips,
+    audio_clip_schema_v1),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  audio_pool_schema_v1 = {
-    YAML_VALUE_PTR (
-      AudioPool_v1,
-      audio_pool_fields_schema_v1),
-  };
+static const cyaml_schema_value_t audio_pool_schema_v1 = {
+  YAML_VALUE_PTR (AudioPool_v1, audio_pool_fields_schema_v1),
+};
 
 #endif

@@ -31,8 +31,7 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _KnobWithNameWidget
-  KnobWithNameWidget;
+typedef struct _KnobWithNameWidget KnobWithNameWidget;
 typedef struct _PortConnectionsPopoverWidget
   PortConnectionsPopoverWidget;
 
@@ -77,12 +76,10 @@ typedef struct _ModulatorMacroWidget
 } ModulatorMacroWidget;
 
 void
-modulator_macro_widget_refresh (
-  ModulatorMacroWidget * self);
+modulator_macro_widget_refresh (ModulatorMacroWidget * self);
 
 ModulatorMacroWidget *
-modulator_macro_widget_new (
-  int modulator_macro_index);
+modulator_macro_widget_new (int modulator_macro_index);
 
 /**
  * @}

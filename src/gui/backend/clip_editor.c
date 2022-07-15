@@ -39,8 +39,7 @@ clip_editor_init_loaded (ClipEditor * self)
 
   piano_roll_init_loaded (self->piano_roll);
 
-  g_message (
-    "Done initializing clip editor backend");
+  g_message ("Done initializing clip editor backend");
 }
 
 /**
@@ -59,8 +58,7 @@ clip_editor_set_region (
   if (fire_events && !self->has_region && region)
     {
       EVENTS_PUSH (
-        ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED,
-        NULL);
+        ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED, NULL);
     }
 
   /*
@@ -79,10 +77,9 @@ clip_editor_set_region (
   if (region)
     {
       self->has_region = 1;
-      region_identifier_copy (
-        &self->region_id, &region->id);
-      self->track = arranger_object_get_track (
-        (ArrangerObject *) region);
+      region_identifier_copy (&self->region_id, &region->id);
+      self->track =
+        arranger_object_get_track ((ArrangerObject *) region);
 
       /* if audio region, also set it in
        * selections */
@@ -100,16 +97,14 @@ clip_editor_set_region (
   if (ROUTER && engine_get_run (AUDIO_ENGINE))
     {
       zix_sem_post (&ROUTER->graph_access);
-      g_debug (
-        "clip editor region successfully changed");
+      g_debug ("clip editor region successfully changed");
     }
 
   if (
     fire_events && ZRYTHM_HAVE_UI && MAIN_WINDOW
     && MW_CLIP_EDITOR)
     {
-      EVENTS_PUSH (
-        ET_CLIP_EDITOR_REGION_CHANGED, NULL);
+      EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED, NULL);
     }
 }
 
@@ -142,8 +137,8 @@ clip_editor_get_track (ClipEditor * self)
   ZRegion * region = clip_editor_get_region (self);
   g_return_val_if_fail (region, NULL);
 
-  Track * track = arranger_object_get_track (
-    (ArrangerObject *) region);
+  Track * track =
+    arranger_object_get_track ((ArrangerObject *) region);
   g_return_val_if_fail (track, NULL);
 
   return track;
@@ -165,11 +160,9 @@ clip_editor_get_region_for_widgets (
 #endif
 
 ArrangerSelections *
-clip_editor_get_arranger_selections (
-  ClipEditor * self)
+clip_editor_get_arranger_selections (ClipEditor * self)
 {
-  ZRegion * region =
-    clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
   if (!region)
     {
       return NULL;
@@ -190,17 +183,14 @@ clip_editor_clone (const ClipEditor * src)
 {
   ClipEditor * self = object_new (ClipEditor);
 
-  region_identifier_copy (
-    &self->region_id, &src->region_id);
+  region_identifier_copy (&self->region_id, &src->region_id);
   self->has_region = src->has_region;
-  self->piano_roll =
-    piano_roll_clone (src->piano_roll);
-  self->automation_editor = automation_editor_clone (
-    src->automation_editor);
-  self->chord_editor =
-    chord_editor_clone (src->chord_editor);
-  self->audio_clip_editor = audio_clip_editor_clone (
-    src->audio_clip_editor);
+  self->piano_roll = piano_roll_clone (src->piano_roll);
+  self->automation_editor =
+    automation_editor_clone (src->automation_editor);
+  self->chord_editor = chord_editor_clone (src->chord_editor);
+  self->audio_clip_editor =
+    audio_clip_editor_clone (src->audio_clip_editor);
 
   return self;
 }
@@ -233,11 +223,9 @@ clip_editor_new (void)
   self->schema_version = CLIP_EDITOR_SCHEMA_VERSION;
 
   self->piano_roll = piano_roll_new ();
-  self->audio_clip_editor =
-    audio_clip_editor_new ();
+  self->audio_clip_editor = audio_clip_editor_new ();
   self->chord_editor = chord_editor_new ();
-  self->automation_editor =
-    automation_editor_new ();
+  self->automation_editor = automation_editor_new ();
 
   return self;
 }
@@ -262,13 +250,11 @@ clip_editor_free (ClipEditor * self)
   object_free_w_func_and_null (
     piano_roll_free, self->piano_roll);
   object_free_w_func_and_null (
-    audio_clip_editor_free,
-    self->audio_clip_editor);
+    audio_clip_editor_free, self->audio_clip_editor);
   object_free_w_func_and_null (
     chord_editor_free, self->chord_editor);
   object_free_w_func_and_null (
-    automation_editor_free,
-    self->automation_editor);
+    automation_editor_free, self->automation_editor);
 
   object_zero_and_free (self);
 }

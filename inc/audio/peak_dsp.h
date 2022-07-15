@@ -67,10 +67,7 @@ float
 peak_dsp_read_f (PeakDsp * self);
 
 void
-peak_dsp_read (
-  PeakDsp * self,
-  float *   rms,
-  float *   peak);
+peak_dsp_read (PeakDsp * self, float * rms, float * peak);
 
 void
 peak_dsp_reset (PeakDsp * self);

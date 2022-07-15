@@ -25,7 +25,7 @@
 typedef struct ChordPreset     ChordPreset;
 typedef struct ChordPresetPack ChordPresetPack;
 typedef struct _FileAuditionerControlsWidget
-  FileAuditionerControlsWidget;
+                           FileAuditionerControlsWidget;
 typedef struct ItemFactory ItemFactory;
 
 /**

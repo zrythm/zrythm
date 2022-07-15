@@ -35,17 +35,14 @@ meter_get_value (
   /* get amplitude */
   float amp = -1.f;
   float max_amp = -1.f;
-  if (
-    port->id.type == TYPE_AUDIO
-    || port->id.type == TYPE_CV)
+  if (port->id.type == TYPE_AUDIO || port->id.type == TYPE_CV)
     {
       g_return_if_fail (port->audio_ring);
       int    num_cycles = 4;
       size_t read_space_avail =
         zix_ring_read_space (port->audio_ring);
       size_t size =
-        sizeof (float)
-        * (size_t) AUDIO_ENGINE->block_length;
+        sizeof (float) * (size_t) AUDIO_ENGINE->block_length;
       size_t blocks_to_read =
         size == 0 ? 0 : read_space_avail / size;
       /* if no blocks available, skip */
@@ -58,11 +55,9 @@ meter_get_value (
 
       float  buf[read_space_avail];
       size_t blocks_read = zix_ring_peek (
-        port->audio_ring, &buf[0],
-        read_space_avail);
+        port->audio_ring, &buf[0], read_space_avail);
       blocks_read /= size;
-      num_cycles =
-        MIN (num_cycles, (int) blocks_read);
+      num_cycles = MIN (num_cycles, (int) blocks_read);
       size_t start_index =
         (blocks_read - (size_t) num_cycles)
         * AUDIO_ENGINE->block_length;
@@ -70,8 +65,8 @@ meter_get_value (
       if (blocks_read == 0)
         {
           g_message (
-            "%s: blocks read for port %s is 0",
-            __func__, port->id.label);
+            "%s: blocks read for port %s is 0", __func__,
+            port->id.label);
           *val = 1e-20f;
           *max = 1e-20f;
           return;
@@ -84,16 +79,14 @@ meter_get_value (
           g_warn_if_reached ();
           amp = math_calculate_rms_amp (
             &buf[start_index],
-            (size_t) num_cycles
-              * AUDIO_ENGINE->block_length);
+            (size_t) num_cycles * AUDIO_ENGINE->block_length);
           break;
         case METER_ALGORITHM_TRUE_PEAK:
           true_peak_dsp_process (
-            self->true_peak_processor,
-            &port->buf[0],
+            self->true_peak_processor, &port->buf[0],
             (int) AUDIO_ENGINE->block_length);
-          amp = true_peak_dsp_read_f (
-            self->true_peak_processor);
+          amp =
+            true_peak_dsp_read_f (self->true_peak_processor);
           break;
         case METER_ALGORITHM_K:
           kmeter_dsp_process (
@@ -106,8 +99,7 @@ meter_get_value (
           peak_dsp_process (
             self->peak_processor, &port->buf[0],
             (int) AUDIO_ENGINE->block_length);
-          peak_dsp_read (
-            self->peak_processor, &amp, &max_amp);
+          peak_dsp_read (self->peak_processor, &amp, &max_amp);
           break;
         default:
           break;
@@ -121,17 +113,13 @@ meter_get_value (
           MidiEvent event;
           while (
             zix_ring_peek (
-              port->midi_ring, &event,
-              sizeof (MidiEvent))
+              port->midi_ring, &event, sizeof (MidiEvent))
             > 0)
             {
-              if (
-                event.systime
-                > self->last_midi_trigger_time)
+              if (event.systime > self->last_midi_trigger_time)
                 {
                   on = true;
-                  self->last_midi_trigger_time =
-                    event.systime;
+                  self->last_midi_trigger_time = event.systime;
                   break;
                 }
             }
@@ -161,18 +149,14 @@ meter_get_value (
     {
       /* calculate new value after falloff */
       float falloff =
-        ((float) (now - self->last_draw_time)
-         / 1000000.f)
-        *
+        ((float) (now - self->last_draw_time) / 1000000.f) *
         /* rgareus says 13.3 is the standard */
         13.3f;
 
       /* use prev val plus falloff if higher than
        * current val */
-      float prev_val_after_falloff =
-        math_dbfs_to_amp (
-          math_amp_to_dbfs (self->last_amp)
-          - falloff);
+      float prev_val_after_falloff = math_dbfs_to_amp (
+        math_amp_to_dbfs (self->last_amp) - falloff);
       if (prev_val_after_falloff > amp)
         {
           amp = prev_val_after_falloff;
@@ -214,15 +198,12 @@ meter_new_for_port (Port * port)
   self->port = port;
 
   /* master */
-  if (
-    port->id.type == TYPE_AUDIO
-    || port->id.type == TYPE_CV)
+  if (port->id.type == TYPE_AUDIO || port->id.type == TYPE_CV)
     {
       bool is_master_fader = false;
       if (port->id.owner_type == PORT_OWNER_TYPE_TRACK)
         {
-          Track * track =
-            port_get_track (port, true);
+          Track * track = port_get_track (port, true);
           if (track->type == TRACK_TYPE_MASTER)
             {
               is_master_fader = true;
@@ -232,20 +213,16 @@ meter_new_for_port (Port * port)
       if (is_master_fader)
         {
           self->algorithm = METER_ALGORITHM_K;
-          self->kmeter_processor =
-            kmeter_dsp_new ();
+          self->kmeter_processor = kmeter_dsp_new ();
           kmeter_dsp_init (
-            self->kmeter_processor,
-            AUDIO_ENGINE->sample_rate);
+            self->kmeter_processor, AUDIO_ENGINE->sample_rate);
         }
       else
         {
-          self->algorithm =
-            METER_ALGORITHM_DIGITAL_PEAK;
+          self->algorithm = METER_ALGORITHM_DIGITAL_PEAK;
           self->peak_processor = peak_dsp_new ();
           peak_dsp_init (
-            self->peak_processor,
-            AUDIO_ENGINE->sample_rate);
+            self->peak_processor, AUDIO_ENGINE->sample_rate);
         }
     }
   else if (port->id.type == TYPE_EVENT)

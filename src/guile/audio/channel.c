@@ -34,8 +34,7 @@ SCM_DEFINE (
   "Returns the plugin at the given insert slot")
 #define FUNC_NAME s_
 {
-  Channel * ch =
-    (Channel *) scm_to_pointer (channel);
+  Channel * ch = (Channel *) scm_to_pointer (channel);
 
   return scm_from_pointer (
     ch->inserts[scm_to_int (insert_slot)], NULL);
@@ -52,8 +51,7 @@ SCM_DEFINE (
   "Returns the instrument at the given channel")
 #define FUNC_NAME s_
 {
-  Channel * ch =
-    (Channel *) scm_to_pointer (channel);
+  Channel * ch = (Channel *) scm_to_pointer (channel);
 
   return scm_from_pointer (ch->instrument, NULL);
 }
@@ -69,8 +67,7 @@ SCM_DEFINE (
   "Returns the send instance at the given slot")
 #define FUNC_NAME s_
 {
-  Channel * ch =
-    (Channel *) scm_to_pointer (channel);
+  Channel * ch = (Channel *) scm_to_pointer (channel);
 
   return scm_from_pointer (
     &ch->sends[scm_to_int (send_slot)], NULL);
@@ -92,6 +89,5 @@ init_module (void * data)
 void
 guile_audio_channel_define_module (void)
 {
-  scm_c_define_module (
-    "audio channel", init_module, NULL);
+  scm_c_define_module ("audio channel", init_module, NULL);
 }

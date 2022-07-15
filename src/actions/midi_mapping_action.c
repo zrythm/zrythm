@@ -16,8 +16,7 @@
 #include <glib/gi18n.h>
 
 void
-midi_mapping_action_init_loaded (
-  MidiMappingAction * self)
+midi_mapping_action_init_loaded (MidiMappingAction * self)
 {
 }
 
@@ -30,9 +29,8 @@ midi_mapping_action_new_enable (
   bool      enable,
   GError ** error)
 {
-  MidiMappingAction * self =
-    object_new (MidiMappingAction);
-  UndoableAction * ua = (UndoableAction *) self;
+  MidiMappingAction * self = object_new (MidiMappingAction);
+  UndoableAction *    ua = (UndoableAction *) self;
   undoable_action_init (ua, UA_MIDI_MAPPING);
 
   self->type =
@@ -54,9 +52,8 @@ midi_mapping_action_new_bind (
   Port *        dest_port,
   GError **     error)
 {
-  MidiMappingAction * self =
-    object_new (MidiMappingAction);
-  UndoableAction * ua = (UndoableAction *) self;
+  MidiMappingAction * self = object_new (MidiMappingAction);
+  UndoableAction *    ua = (UndoableAction *) self;
   undoable_action_init (ua, UA_MIDI_MAPPING);
 
   self->type = MIDI_MAPPING_ACTION_BIND;
@@ -74,13 +71,10 @@ midi_mapping_action_new_bind (
  * Creates a new action.
  */
 UndoableAction *
-midi_mapping_action_new_unbind (
-  int       idx,
-  GError ** error)
+midi_mapping_action_new_unbind (int idx, GError ** error)
 {
-  MidiMappingAction * self =
-    object_new (MidiMappingAction);
-  UndoableAction * ua = (UndoableAction *) self;
+  MidiMappingAction * self = object_new (MidiMappingAction);
+  UndoableAction *    ua = (UndoableAction *) self;
   undoable_action_init (ua, UA_MIDI_MAPPING);
 
   self->type = MIDI_MAPPING_ACTION_UNBIND;
@@ -90,11 +84,9 @@ midi_mapping_action_new_unbind (
 }
 
 MidiMappingAction *
-midi_mapping_action_clone (
-  const MidiMappingAction * src)
+midi_mapping_action_clone (const MidiMappingAction * src)
 {
-  MidiMappingAction * self =
-    object_new (MidiMappingAction);
+  MidiMappingAction * self = object_new (MidiMappingAction);
   self->parent_instance = src->parent_instance;
 
   self->idx = src->idx;
@@ -102,11 +94,9 @@ midi_mapping_action_clone (
     &self->dest_port_id, &src->dest_port_id);
   if (src->dev_port)
     {
-      self->dev_port =
-        ext_port_clone (src->dev_port);
+      self->dev_port = ext_port_clone (src->dev_port);
     }
-  memcpy (
-    self->buf, src->buf, 3 * sizeof (midi_byte_t));
+  memcpy (self->buf, src->buf, 3 * sizeof (midi_byte_t));
 
   return self;
 }
@@ -121,8 +111,7 @@ midi_mapping_action_perform_enable (
   GError ** error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    midi_mapping_action_new_enable, error, idx,
-    enable, error);
+    midi_mapping_action_new_enable, error, idx, enable, error);
 }
 
 /**
@@ -136,21 +125,18 @@ midi_mapping_action_perform_bind (
   GError **     error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    midi_mapping_action_new_bind, error, buf,
-    device_port, dest_port, error);
+    midi_mapping_action_new_bind, error, buf, device_port,
+    dest_port, error);
 }
 
 /**
  * Wrapper of midi_mapping_action_new_unbind().
  */
 bool
-midi_mapping_action_perform_unbind (
-  int       idx,
-  GError ** error)
+midi_mapping_action_perform_unbind (int idx, GError ** error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    midi_mapping_action_new_unbind, error, idx,
-    error);
+    midi_mapping_action_new_unbind, error, idx, error);
 }
 
 static void
@@ -158,20 +144,19 @@ bind_or_unbind (MidiMappingAction * self, bool bind)
 {
   if (bind)
     {
-      Port * port = port_find_from_identifier (
-        &self->dest_port_id);
+      Port * port =
+        port_find_from_identifier (&self->dest_port_id);
       self->idx = MIDI_MAPPINGS->num_mappings;
       midi_mappings_bind_device (
-        MIDI_MAPPINGS, self->buf, self->dev_port,
-        port, F_NO_PUBLISH_EVENTS);
+        MIDI_MAPPINGS, self->buf, self->dev_port, port,
+        F_NO_PUBLISH_EVENTS);
     }
   else
     {
       MidiMapping * mapping =
         MIDI_MAPPINGS->mappings[self->idx];
       memcpy (
-        self->buf, mapping->key,
-        3 * sizeof (midi_byte_t));
+        self->buf, mapping->key, 3 * sizeof (midi_byte_t));
       if (self->dev_port)
         {
           ext_port_free (self->dev_port);
@@ -183,8 +168,7 @@ bind_or_unbind (MidiMappingAction * self, bool bind)
         }
       self->dest_port_id = mapping->dest_id;
       midi_mappings_unbind (
-        MIDI_MAPPINGS, self->idx,
-        F_NO_PUBLISH_EVENTS);
+        MIDI_MAPPINGS, self->idx, F_NO_PUBLISH_EVENTS);
     }
 }
 
@@ -252,8 +236,7 @@ midi_mapping_action_undo (
 }
 
 char *
-midi_mapping_action_stringize (
-  MidiMappingAction * self)
+midi_mapping_action_stringize (MidiMappingAction * self)
 {
   switch (self->type)
     {
@@ -280,8 +263,7 @@ midi_mapping_action_stringize (
 void
 midi_mapping_action_free (MidiMappingAction * self)
 {
-  object_free_w_func_and_null (
-    ext_port_free, self->dev_port);
+  object_free_w_func_and_null (ext_port_free, self->dev_port);
 
   object_zero_and_free (self);
 }

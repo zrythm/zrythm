@@ -33,11 +33,9 @@ perform_create_region_action (void)
     track_get_automation_tracklist (track);
   AutomationTrack * at = atl->ats[0];
   track_add_region (
-    track, r, at, -1, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    track, r, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
     (ArrangerSelections *) TL_SELECTIONS, NULL);
 }
@@ -47,9 +45,8 @@ test_perform_many_actions (void)
 {
   test_helper_zrythm_init ();
 
-  for (int i = 0; !undo_stack_is_full (
-         UNDO_MANAGER->undo_stack);
-       i++)
+  for (int i = 0;
+       !undo_stack_is_full (UNDO_MANAGER->undo_stack); i++)
     {
       if (i % 2 == 0)
         {
@@ -69,20 +66,16 @@ test_perform_many_actions (void)
           perform_create_region_action ();
         }
     }
-  track_create_empty_with_action (
-    TRACK_TYPE_MIDI, NULL);
+  track_create_empty_with_action (TRACK_TYPE_MIDI, NULL);
   perform_create_region_action ();
   perform_create_region_action ();
 
-  for (
-    int i = 0;
-    !undo_stack_is_full (UNDO_MANAGER->redo_stack)
-    || undo_stack_is_empty (
-      UNDO_MANAGER->redo_stack);
-    i++)
+  for (int i = 0;
+       !undo_stack_is_full (UNDO_MANAGER->redo_stack)
+       || undo_stack_is_empty (UNDO_MANAGER->redo_stack);
+       i++)
     {
-      if (undo_stack_is_empty (
-            UNDO_MANAGER->redo_stack))
+      if (undo_stack_is_empty (UNDO_MANAGER->redo_stack))
         {
           break;
         }
@@ -110,8 +103,7 @@ test_multi_actions (void)
   test_helper_zrythm_init ();
 
   int       max_actions = 3;
-  const int num_tracks_at_start =
-    TRACKLIST->num_tracks;
+  const int num_tracks_at_start = TRACKLIST->num_tracks;
   for (int i = 0; i < max_actions; i++)
     {
       track_create_empty_with_action (
@@ -119,8 +111,7 @@ test_multi_actions (void)
       if (i == 2)
         {
           UndoableAction * ua =
-            undo_manager_get_last_action (
-              UNDO_MANAGER);
+            undo_manager_get_last_action (UNDO_MANAGER);
           ua->num_actions = max_actions;
         }
     }
@@ -129,8 +120,7 @@ test_multi_actions (void)
     TRACKLIST->num_tracks, ==,
     num_tracks_at_start + max_actions);
   g_assert_cmpint (
-    UNDO_MANAGER->undo_stack->stack->top, ==,
-    max_actions - 1);
+    UNDO_MANAGER->undo_stack->stack->top, ==, max_actions - 1);
   g_assert_cmpint (
     UNDO_MANAGER->redo_stack->stack->top, ==, -1);
 
@@ -141,8 +131,7 @@ test_multi_actions (void)
   g_assert_cmpint (
     UNDO_MANAGER->undo_stack->stack->top, ==, -1);
   g_assert_cmpint (
-    UNDO_MANAGER->redo_stack->stack->top, ==,
-    max_actions - 1);
+    UNDO_MANAGER->redo_stack->stack->top, ==, max_actions - 1);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
 
@@ -150,8 +139,7 @@ test_multi_actions (void)
     TRACKLIST->num_tracks, ==,
     num_tracks_at_start + max_actions);
   g_assert_cmpint (
-    UNDO_MANAGER->undo_stack->stack->top, ==,
-    max_actions - 1);
+    UNDO_MANAGER->undo_stack->stack->top, ==, max_actions - 1);
   g_assert_cmpint (
     UNDO_MANAGER->redo_stack->stack->top, ==, -1);
 
@@ -162,8 +150,7 @@ test_multi_actions (void)
   g_assert_cmpint (
     UNDO_MANAGER->undo_stack->stack->top, ==, -1);
   g_assert_cmpint (
-    UNDO_MANAGER->redo_stack->stack->top, ==,
-    max_actions - 1);
+    UNDO_MANAGER->redo_stack->stack->top, ==, max_actions - 1);
 
   test_helper_zrythm_cleanup ();
 }
@@ -173,8 +160,7 @@ test_fill_stack (void)
 {
   test_helper_zrythm_init ();
 
-  int max_len =
-    UNDO_MANAGER->undo_stack->stack->max_length;
+  int max_len = UNDO_MANAGER->undo_stack->stack->max_length;
   for (int i = 0; i < max_len + 8; i++)
     {
       track_create_empty_with_action (

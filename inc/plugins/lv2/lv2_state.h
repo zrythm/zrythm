@@ -89,9 +89,7 @@ lv2_state_make_path_save (
 
 NONNULL
 void
-lv2_state_apply_state (
-  Lv2Plugin * plugin,
-  LilvState * state);
+lv2_state_apply_state (Lv2Plugin * plugin, LilvState * state);
 
 /**
  * Saves the plugin state to the filesystem and
@@ -100,9 +98,7 @@ lv2_state_apply_state (
 WARN_UNUSED_RESULT
 NONNULL
 LilvState *
-lv2_state_save_to_file (
-  Lv2Plugin * pl,
-  bool        is_backup);
+lv2_state_save_to_file (Lv2Plugin * pl, bool is_backup);
 
 /**
  * Saves the plugin state into a new LilvState that
@@ -119,9 +115,7 @@ lv2_state_save_to_memory (Lv2Plugin * plugin);
  * the required files.
  */
 LilvState *
-lv2_state_save_to_string (
-  Lv2Plugin * pl,
-  bool        is_backup);
+lv2_state_save_to_string (Lv2Plugin * pl, bool is_backup);
 
 /**
  * LV2 State makePath feature for temporary files.
@@ -162,8 +156,7 @@ lv2_state_apply_preset (
  * Deletes the current preset.
  */
 int
-lv2_state_delete_current_preset (
-  Lv2Plugin * plugin);
+lv2_state_delete_current_preset (Lv2Plugin * plugin);
 
 int
 lv2_state_load_presets (

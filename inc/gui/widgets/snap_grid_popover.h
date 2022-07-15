@@ -28,9 +28,8 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _DigitalMeterWidget
-                               DigitalMeterWidget;
-typedef struct _SnapGridWidget SnapGridWidget;
+typedef struct _DigitalMeterWidget DigitalMeterWidget;
+typedef struct _SnapGridWidget     SnapGridWidget;
 
 /**
  * @addtogroup widgets
@@ -95,8 +94,7 @@ typedef struct _SnapGridPopoverWidget
  * Creates the popover.
  */
 SnapGridPopoverWidget *
-snap_grid_popover_widget_new (
-  SnapGridWidget * owner);
+snap_grid_popover_widget_new (SnapGridWidget * owner);
 
 /**
  * @}

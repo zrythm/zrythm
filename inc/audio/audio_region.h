@@ -122,9 +122,7 @@ audio_region_get_clip (const ZRegion * self);
  * references.
  */
 void
-audio_region_set_clip_id (
-  ZRegion * self,
-  int       clip_id);
+audio_region_set_clip_id (ZRegion * self, int clip_id);
 
 /**
  * Replaces the region's frames from \ref
@@ -156,12 +154,10 @@ HOT NONNULL void
 audio_region_fill_stereo_ports (
   ZRegion *                           self,
   const EngineProcessTimeInfo * const time_nfo,
-  StereoPorts * stereo_ports);
+  StereoPorts *                       stereo_ports);
 
 float
-audio_region_detect_bpm (
-  ZRegion * self,
-  GArray *  candidates);
+audio_region_detect_bpm (ZRegion * self, GArray * candidates);
 
 bool
 audio_region_validate (ZRegion * self);

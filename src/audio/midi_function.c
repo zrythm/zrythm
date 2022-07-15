@@ -26,8 +26,7 @@ midi_function_apply (
 {
   /* TODO */
   g_message (
-    "applying %s...",
-    midi_function_type_to_string (type));
+    "applying %s...", midi_function_type_to_string (type));
 
   /* set last action */
   g_settings_set_int (S_UI, "midi-function", type);

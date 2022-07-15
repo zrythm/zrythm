@@ -53,11 +53,7 @@ dsp_fill (float * buf, float val, size_t size);
  */
 NONNULL
 HOT static inline void
-dsp_limit1 (
-  float * buf,
-  float   minf,
-  float   maxf,
-  size_t  size)
+dsp_limit1 (float * buf, float minf, float maxf, size_t size)
 {
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
@@ -78,10 +74,7 @@ dsp_limit1 (
 
 NONNULL
 HOT void
-dsp_copy (
-  float *       dest,
-  const float * src,
-  size_t        size);
+dsp_copy (float * dest, const float * src, size_t size);
 
 /**
  * Scale: dst[i] = dst[i] * k.
@@ -154,8 +147,7 @@ dsp_abs_max_with_existing_peak (
     }
 #endif
 
-  bool changed =
-    !math_floats_equal (new_peak, *cur_peak);
+  bool changed = !math_floats_equal (new_peak, *cur_peak);
   *cur_peak = new_peak;
 
   return changed;
@@ -180,10 +172,7 @@ dsp_max (float * buf, size_t size);
  */
 NONNULL
 HOT void
-dsp_add2 (
-  float *       dest,
-  const float * src,
-  size_t        count);
+dsp_add2 (float * dest, const float * src, size_t count);
 
 /**
  * Calculate dest[i] = dest[i] * k1 + src[i] * k2.

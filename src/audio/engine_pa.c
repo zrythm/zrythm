@@ -58,23 +58,18 @@ open_stream (AudioEngine * self)
   int api_count = Pa_GetHostApiCount ();
   for (int i = 0; i < api_count; i++)
     {
-      const PaHostApiInfo * info =
-        Pa_GetHostApiInfo (i);
-      g_message (
-        "host api %s (%d) found", info->name, i);
+      const PaHostApiInfo * info = Pa_GetHostApiInfo (i);
+      g_message ("host api %s (%d) found", info->name, i);
     }
-  int api = Pa_GetDefaultHostApi ();
-  const PaHostApiInfo * api_info =
-    Pa_GetHostApiInfo (api);
+  int                   api = Pa_GetDefaultHostApi ();
+  const PaHostApiInfo * api_info = Pa_GetHostApiInfo (api);
   /*int api = 2;*/
-  g_message (
-    "using api %s (%d)", api_info->name, api);
+  g_message ("using api %s (%d)", api_info->name, api);
 
   int device_count = Pa_GetDeviceCount ();
   for (int i = 0; i < device_count; i++)
     {
-      const PaDeviceInfo * info =
-        Pa_GetDeviceInfo (i);
+      const PaDeviceInfo * info = Pa_GetDeviceInfo (i);
       g_message (
         "device %s (%d) found, "
         "max channels (in %d, out %d)",
@@ -147,15 +142,14 @@ engine_pa_setup (AudioEngine * self)
   self->sample_rate = 44100;
   self->block_length = 256;
 
-  g_warn_if_fail (
-    TRANSPORT && TRANSPORT->beats_per_bar > 1);
+  g_warn_if_fail (TRANSPORT && TRANSPORT->beats_per_bar > 1);
 
   engine_update_frames_per_tick (
     self, TRANSPORT->beats_per_bar, TRANSPORT->bpm,
     self->sample_rate, false);
 
-  self->pa_out_buf = calloc (
-    self->block_length * 2, sizeof (float));
+  self->pa_out_buf =
+    calloc (self->block_length * 2, sizeof (float));
 
   self->pa_stream = open_stream (self);
   g_return_val_if_fail (self->pa_stream, -1);
@@ -184,8 +178,7 @@ engine_pa_fill_out_bufs (
 {
   for (unsigned int i = 0; i < nframes; i++)
     {
-      self->pa_out_buf[i * 2] =
-        self->monitor_out->l->buf[i];
+      self->pa_out_buf[i * 2] = self->monitor_out->l->buf[i];
       /*g_message ("%f",*/
       /*engine->pa_out_buf[i]);*/
       self->pa_out_buf[i * 2 + 1] =
@@ -210,8 +203,7 @@ engine_pa_test (GtkWindow * win)
   if (err != paNoError)
     {
       msg = g_strdup_printf (
-        _ ("PortAudio Error: %s"),
-        Pa_GetErrorText (err));
+        _ ("PortAudio Error: %s"), Pa_GetErrorText (err));
       ui_show_error_message (win, msg);
       g_free (msg);
       return 1;
@@ -219,13 +211,11 @@ engine_pa_test (GtkWindow * win)
 
   PaStream * stream;
   err = Pa_OpenDefaultStream (
-    &stream, 2, 2, paFloat32, 48000, 512, NULL,
-    NULL);
+    &stream, 2, 2, paFloat32, 48000, 512, NULL, NULL);
   if (err != paNoError)
     {
       msg = g_strdup_printf (
-        _ ("PortAudio Error: %s"),
-        Pa_GetErrorText (err));
+        _ ("PortAudio Error: %s"), Pa_GetErrorText (err));
       ui_show_error_message (win, msg);
       g_free (msg);
       return 1;
@@ -233,8 +223,7 @@ engine_pa_test (GtkWindow * win)
   else if ((err = Pa_Terminate ()) != paNoError)
     {
       msg = g_strdup_printf (
-        _ ("PortAudio Error: %s"),
-        Pa_GetErrorText (err));
+        _ ("PortAudio Error: %s"), Pa_GetErrorText (err));
       ui_show_error_message (win, msg);
       g_free (msg);
       return 1;

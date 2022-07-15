@@ -20,17 +20,17 @@ test_load_project_bpm (void)
 
   Position pos;
   position_init (&pos);
-  bpm_t bpm_before = tempo_track_get_bpm_at_pos (
-    P_TEMPO_TRACK, &pos);
+  bpm_t bpm_before =
+    tempo_track_get_bpm_at_pos (P_TEMPO_TRACK, &pos);
   tempo_track_set_bpm (
-    P_TEMPO_TRACK, bpm_before + 20.f, bpm_before,
-    false, F_NO_PUBLISH_EVENTS);
+    P_TEMPO_TRACK, bpm_before + 20.f, bpm_before, false,
+    F_NO_PUBLISH_EVENTS);
 
   /* save and reload the project */
   test_project_save_and_reload ();
 
-  bpm_t bpm_after = tempo_track_get_bpm_at_pos (
-    P_TEMPO_TRACK, &pos);
+  bpm_t bpm_after =
+    tempo_track_get_bpm_at_pos (P_TEMPO_TRACK, &pos);
   g_assert_cmpfloat_with_epsilon (
     bpm_after, bpm_before + 20.f, 0.0001f);
 

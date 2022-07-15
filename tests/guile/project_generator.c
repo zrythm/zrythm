@@ -44,15 +44,13 @@ test_gen_project_from_string ()
   char * script_path = g_build_filename (
     TESTS_SRC_ROOT_DIR, "tests", "scripts",
     "gen-test-project.scm", NULL);
-  int res =
-    guile_project_generator_generate_project_from_file (
-      script_path, tmp_prj_path);
+  int res = guile_project_generator_generate_project_from_file (
+    script_path, tmp_prj_path);
   g_assert_cmpint (res, ==, 0);
 
-  char * prj_file = g_build_filename (
-    tmp_prj_path, PROJECT_FILE, NULL);
-  g_assert_true (
-    g_file_test (prj_file, G_FILE_TEST_EXISTS));
+  char * prj_file =
+    g_build_filename (tmp_prj_path, PROJECT_FILE, NULL);
+  g_assert_true (g_file_test (prj_file, G_FILE_TEST_EXISTS));
   g_free (tmp_prj_path);
   g_free (prj_file);
 }

@@ -81,9 +81,7 @@ yaml_cyaml_log_func (
  * MUST be free'd.
  */
 char *
-yaml_serialize (
-  void *                       data,
-  const cyaml_schema_value_t * schema)
+yaml_serialize (void * data, const cyaml_schema_value_t * schema)
 {
   cyaml_err_t    err;
   cyaml_config_t cyaml_config;
@@ -91,19 +89,16 @@ yaml_serialize (
   char * output;
   size_t output_len;
   err = cyaml_save_data (
-    &output, &output_len, &cyaml_config, schema,
-    data, 0);
+    &output, &output_len, &cyaml_config, schema, data, 0);
   if (err != CYAML_OK)
     {
       g_warning ("error %s", cyaml_strerror (err));
       return NULL;
     }
-  char * new_str =
-    object_new_n (output_len + 1, char);
+  char * new_str = object_new_n (output_len + 1, char);
   memcpy (new_str, output, output_len);
   new_str[output_len] = '\0';
-  cyaml_config.mem_fn (
-    cyaml_config.mem_ctx, output, 0);
+  cyaml_config.mem_fn (cyaml_config.mem_ctx, output, 0);
 
   return new_str;
 }
@@ -118,12 +113,10 @@ yaml_deserialize (
   yaml_get_cyaml_config (&cyaml_config);
   cyaml_err_t err = cyaml_load_data (
     (const unsigned char *) yaml, strlen (yaml),
-    &cyaml_config, schema, (cyaml_data_t **) &obj,
-    NULL);
+    &cyaml_config, schema, (cyaml_data_t **) &obj, NULL);
   if (err != CYAML_OK)
     {
-      g_warning (
-        "cyaml error: %s", cyaml_strerror (err));
+      g_warning ("cyaml error: %s", cyaml_strerror (err));
       return NULL;
     }
 
@@ -131,9 +124,7 @@ yaml_deserialize (
 }
 
 void
-yaml_print (
-  void *                       data,
-  const cyaml_schema_value_t * schema)
+yaml_print (void * data, const cyaml_schema_value_t * schema)
 {
   char * yaml = yaml_serialize (data, schema);
 

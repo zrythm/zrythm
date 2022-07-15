@@ -33,9 +33,8 @@ G_DECLARE_FINAL_TYPE (
   KNOB_WITH_NAME_WIDGET,
   GtkBox)
 
-typedef struct _KnobWidget KnobWidget;
-typedef struct _EditableLabelWidget
-  EditableLabelWidget;
+typedef struct _KnobWidget          KnobWidget;
+typedef struct _EditableLabelWidget EditableLabelWidget;
 
 /**
 * A vertical box with a knob at the top and a name

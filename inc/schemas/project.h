@@ -37,15 +37,14 @@ typedef enum SelectionType_v1
   SELECTION_TYPE_EDITOR_v1,
 } SelectionType_v1;
 
-static const cyaml_strval_t
-  selection_type_strings_v1[] = {
-    {"Tracklist",   SELECTION_TYPE_TRACKLIST_v1 },
-    { "Timeline",   SELECTION_TYPE_TIMELINE_v1  },
-    { "Insert",     SELECTION_TYPE_INSERT_v1    },
-    { "MIDI FX",    SELECTION_TYPE_MIDI_FX_v1   },
-    { "Instrument", SELECTION_TYPE_INSTRUMENT_v1},
-    { "Modulator",  SELECTION_TYPE_MODULATOR_v1 },
-    { "Editor",     SELECTION_TYPE_EDITOR_v1    },
+static const cyaml_strval_t selection_type_strings_v1[] = {
+  {"Tracklist",   SELECTION_TYPE_TRACKLIST_v1 },
+  { "Timeline",   SELECTION_TYPE_TIMELINE_v1  },
+  { "Insert",     SELECTION_TYPE_INSERT_v1    },
+  { "MIDI FX",    SELECTION_TYPE_MIDI_FX_v1   },
+  { "Instrument", SELECTION_TYPE_INSTRUMENT_v1},
+  { "Modulator",  SELECTION_TYPE_MODULATOR_v1 },
+  { "Editor",     SELECTION_TYPE_EDITOR_v1    },
 };
 
 typedef struct Project_v1
@@ -66,13 +65,12 @@ typedef struct Project_v1
   ChordSelections_v1        chord_selections;
   TimelineSelections_v1     timeline_selections;
   MidiArrangerSelections_v1 midi_arranger_selections;
-  TracklistSelections_v1 * tracklist_selections;
-  MixerSelections_v1       mixer_selections;
-  RegionLinkGroupManager_v1
-                    region_link_group_manager;
-  AudioEngine_v1 *  audio_engine;
-  MidiMappings_v1 * midi_mappings;
-  SelectionType_v1  last_selection;
+  TracklistSelections_v1 *  tracklist_selections;
+  MixerSelections_v1        mixer_selections;
+  RegionLinkGroupManager_v1 region_link_group_manager;
+  AudioEngine_v1 *          audio_engine;
+  MidiMappings_v1 *         midi_mappings;
+  SelectionType_v1          last_selection;
 } Project_v1;
 
 static const cyaml_schema_field_t project_fields_schema_v1[] = {
@@ -150,9 +148,7 @@ static const cyaml_schema_field_t project_fields_schema_v1[] = {
     midi_mappings,
     midi_mappings_fields_schema_v1),
   /* ignore undo history */
-  CYAML_FIELD_IGNORE (
-    "undo_manger",
-    CYAML_FLAG_OPTIONAL),
+  CYAML_FIELD_IGNORE ("undo_manger", CYAML_FLAG_OPTIONAL),
   YAML_FIELD_ENUM (
     Project_v1,
     last_selection,
@@ -162,9 +158,7 @@ static const cyaml_schema_field_t project_fields_schema_v1[] = {
 };
 
 static const cyaml_schema_value_t project_schema_v1 = {
-  YAML_VALUE_PTR (
-    Project_v1,
-    project_fields_schema_v1),
+  YAML_VALUE_PTR (Project_v1, project_fields_schema_v1),
 };
 
 Project *

@@ -13,14 +13,11 @@ G_DEFINE_TYPE (
   GTK_TYPE_WIDGET)
 
 static void
-on_create_popover (
-  GtkMenuButton * button,
-  gpointer        user_data)
+on_create_popover (GtkMenuButton * button, gpointer user_data)
 {
   ActiveHardwareMbWidget * self =
     Z_ACTIVE_HARDWARE_MB_WIDGET (user_data);
-  self->popover =
-    active_hardware_popover_widget_new (self);
+  self->popover = active_hardware_popover_widget_new (self);
   gtk_menu_button_set_popover (
     button, GTK_WIDGET (self->popover));
 }
@@ -56,21 +53,19 @@ active_hardware_mb_widget_save_settings (
   char * controllers[40];
   int    num_controllers = 0;
 
-  for (
-    GtkWidget * child = gtk_widget_get_first_child (
-      GTK_WIDGET (self->popover->controllers_box));
-    child != NULL;
-    child = gtk_widget_get_next_sibling (child))
+  for (GtkWidget * child = gtk_widget_get_first_child (
+         GTK_WIDGET (self->popover->controllers_box));
+       child != NULL;
+       child = gtk_widget_get_next_sibling (child))
     {
       if (!GTK_IS_CHECK_BUTTON (child))
         continue;
 
-      GtkCheckButton * chkbtn =
-        GTK_CHECK_BUTTON (child);
+      GtkCheckButton * chkbtn = GTK_CHECK_BUTTON (child);
       if (gtk_check_button_get_active (chkbtn))
         {
-          controllers[num_controllers++] = g_strdup (
-            gtk_check_button_get_label (chkbtn));
+          controllers[num_controllers++] =
+            g_strdup (gtk_check_button_get_label (chkbtn));
         }
     }
   controllers[num_controllers] = NULL;
@@ -104,8 +99,8 @@ active_hardware_mb_widget_setup (
 ActiveHardwareMbWidget *
 active_hardware_mb_widget_new (void)
 {
-  ActiveHardwareMbWidget * self = g_object_new (
-    ACTIVE_HARDWARE_MB_WIDGET_TYPE, NULL);
+  ActiveHardwareMbWidget * self =
+    g_object_new (ACTIVE_HARDWARE_MB_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -121,18 +116,14 @@ active_hardware_mb_widget_class_init (
 }
 
 static void
-active_hardware_mb_widget_init (
-  ActiveHardwareMbWidget * self)
+active_hardware_mb_widget_init (ActiveHardwareMbWidget * self)
 {
-  self->mbutton =
-    GTK_MENU_BUTTON (gtk_menu_button_new ());
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (self->mbutton), true);
+  self->mbutton = GTK_MENU_BUTTON (gtk_menu_button_new ());
+  gtk_widget_set_hexpand (GTK_WIDGET (self->mbutton), true);
   gtk_widget_set_parent (
     GTK_WIDGET (self->mbutton), GTK_WIDGET (self));
 
-  gtk_menu_button_set_label (
-    self->mbutton, _ ("Select..."));
+  gtk_menu_button_set_label (self->mbutton, _ ("Select..."));
 
   gtk_menu_button_set_create_popup_func (
     self->mbutton, on_create_popover, self, NULL);

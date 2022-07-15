@@ -54,11 +54,9 @@ typedef enum MidiFaderMode_v1
   MIDI_FADER_MODE_CC_VOLUME_v1,
 } MidiFaderMode_v1;
 
-static const cyaml_strval_t
-  midi_fader_mode_strings_v1[] = {
-    {"vel_multiplier",
-     MIDI_FADER_MODE_VEL_MULTIPLIER_v1             },
-    { "cc_volume",     MIDI_FADER_MODE_CC_VOLUME_v1},
+static const cyaml_strval_t midi_fader_mode_strings_v1[] = {
+  {"vel_multiplier", MIDI_FADER_MODE_VEL_MULTIPLIER_v1},
+  { "cc_volume",     MIDI_FADER_MODE_CC_VOLUME_v1     },
 };
 
 typedef struct Fader_v1
@@ -89,24 +87,15 @@ typedef struct Fader_v1
 
 static const cyaml_schema_field_t fader_fields_schema_v1[] = {
   YAML_FIELD_INT (Fader_v1, schema_version),
-  YAML_FIELD_ENUM (
-    Fader_v1,
-    type,
-    fader_type_strings_v1),
+  YAML_FIELD_ENUM (Fader_v1, type, fader_type_strings_v1),
   YAML_FIELD_FLOAT (Fader_v1, volume),
-  YAML_FIELD_MAPPING_PTR (
-    Fader_v1,
-    amp,
-    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Fader_v1, amp, port_fields_schema_v1),
   YAML_FIELD_FLOAT (Fader_v1, phase),
   YAML_FIELD_MAPPING_PTR (
     Fader_v1,
     balance,
     port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR (
-    Fader_v1,
-    mute,
-    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Fader_v1, mute, port_fields_schema_v1),
   YAML_FIELD_INT (Fader_v1, solo),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Fader_v1,

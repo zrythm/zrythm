@@ -53,16 +53,15 @@ typedef struct Timeline
   EditorSettings editor_settings;
 } Timeline;
 
-static const cyaml_schema_field_t
-  timeline_fields_schema[] = {
-    YAML_FIELD_INT (Timeline, schema_version),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      Timeline,
-      editor_settings,
-      editor_settings_fields_schema),
+static const cyaml_schema_field_t timeline_fields_schema[] = {
+  YAML_FIELD_INT (Timeline, schema_version),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Timeline,
+    editor_settings,
+    editor_settings_fields_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t timeline_schema = {
   CYAML_VALUE_MAPPING (

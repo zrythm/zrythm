@@ -81,9 +81,7 @@ chord_track_insert_scale (
  * Adds a scale to the track.
  */
 void
-chord_track_add_scale (
-  ChordTrack *  track,
-  ScaleObject * scale);
+chord_track_add_scale (ChordTrack * track, ScaleObject * scale);
 
 /**
  * Removes a scale from the chord Track.
@@ -98,9 +96,7 @@ chord_track_remove_scale (
  * Removes a region from the chord track.
  */
 void
-chord_track_remove_region (
-  ChordTrack * self,
-  ZRegion *    region);
+chord_track_remove_region (ChordTrack * self, ZRegion * region);
 
 bool
 chord_track_validate (Track * self);

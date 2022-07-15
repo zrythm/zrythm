@@ -34,8 +34,7 @@ metronome_new (void)
 
   if (ZRYTHM_TESTING)
     {
-      const char * src_root =
-        getenv ("G_TEST_SRC_ROOT_DIR");
+      const char * src_root = getenv ("G_TEST_SRC_ROOT_DIR");
       g_warn_if_fail (src_root);
       self->emphasis_path = g_build_filename (
         src_root, "data", "samples", "klick",
@@ -46,8 +45,8 @@ metronome_new (void)
     }
   else
     {
-      char * samplesdir = zrythm_get_dir (
-        ZRYTHM_DIR_SYSTEM_SAMPLESDIR);
+      char * samplesdir =
+        zrythm_get_dir (ZRYTHM_DIR_SYSTEM_SAMPLESDIR);
       self->emphasis_path = g_build_filename (
         samplesdir, "square_emphasis.wav", NULL);
       self->normal_path = g_build_filename (
@@ -55,8 +54,8 @@ metronome_new (void)
     }
 
   /* decode */
-  AudioEncoder * enc = audio_encoder_new_from_file (
-    self->emphasis_path);
+  AudioEncoder * enc =
+    audio_encoder_new_from_file (self->emphasis_path);
   if (!enc)
     {
       g_critical (
@@ -67,11 +66,9 @@ metronome_new (void)
       return NULL;
     }
   audio_encoder_decode (
-    enc, (int) AUDIO_ENGINE->sample_rate,
-    F_NO_SHOW_PROGRESS);
+    enc, (int) AUDIO_ENGINE->sample_rate, F_NO_SHOW_PROGRESS);
   self->emphasis = object_new_n (
-    (size_t) (enc->num_out_frames * enc->channels),
-    float);
+    (size_t) (enc->num_out_frames * enc->channels), float);
   self->emphasis_size = enc->num_out_frames;
   self->emphasis_channels = enc->channels;
   if (enc->channels <= 0)
@@ -84,18 +81,14 @@ metronome_new (void)
 
   dsp_copy (
     self->emphasis, enc->out_frames,
-    (size_t) enc->num_out_frames
-      * (size_t) enc->channels);
+    (size_t) enc->num_out_frames * (size_t) enc->channels);
   audio_encoder_free (enc);
 
-  enc = audio_encoder_new_from_file (
-    self->normal_path);
+  enc = audio_encoder_new_from_file (self->normal_path);
   audio_encoder_decode (
-    enc, (int) AUDIO_ENGINE->sample_rate,
-    F_NO_SHOW_PROGRESS);
+    enc, (int) AUDIO_ENGINE->sample_rate, F_NO_SHOW_PROGRESS);
   self->normal = object_new_n (
-    (size_t) (enc->num_out_frames * enc->channels),
-    float);
+    (size_t) (enc->num_out_frames * enc->channels), float);
   self->normal_size = enc->num_out_frames;
   self->normal_channels = enc->channels;
   if (enc->channels <= 0)
@@ -107,8 +100,7 @@ metronome_new (void)
     }
   dsp_copy (
     self->normal, enc->out_frames,
-    (size_t) enc->num_out_frames
-      * (size_t) enc->channels);
+    (size_t) enc->num_out_frames * (size_t) enc->channels);
   audio_encoder_free (enc);
 
   /* set volume */
@@ -163,8 +155,7 @@ find_and_queue_metronome (
   if (start_pos->frames == 0)
     {
       sample_processor_queue_metronome (
-        SAMPLE_PROCESSOR, METRONOME_TYPE_EMPHASIS,
-        loffset);
+        SAMPLE_PROCESSOR, METRONOME_TYPE_EMPHASIS, loffset);
     }
 
   for (int i = 0; i < bars_diff; i++)
@@ -172,8 +163,7 @@ find_and_queue_metronome (
       /* get position of bar */
       Position bar_pos;
       position_init (&bar_pos);
-      position_add_bars (
-        &bar_pos, num_bars_before + i + 1);
+      position_add_bars (&bar_pos, num_bars_before + i + 1);
 
       /* offset of bar pos from start pos */
       signed_frame_t bar_offset_long =
@@ -193,13 +183,11 @@ find_and_queue_metronome (
       /* add local offset */
       signed_frame_t metronome_offset_long =
         bar_offset_long + (signed_frame_t) loffset;
-      z_return_if_fail_cmp (
-        metronome_offset_long, >=, 0);
+      z_return_if_fail_cmp (metronome_offset_long, >=, 0);
       nframes_t metronome_offset =
         (nframes_t) metronome_offset_long;
       z_return_if_fail_cmp (
-        metronome_offset, <,
-        AUDIO_ENGINE->block_length);
+        metronome_offset, <, AUDIO_ENGINE->block_length);
       sample_processor_queue_metronome (
         SAMPLE_PROCESSOR, METRONOME_TYPE_EMPHASIS,
         metronome_offset);
@@ -209,16 +197,14 @@ find_and_queue_metronome (
     position_get_total_beats (start_pos, false);
   int num_beats_after =
     position_get_total_beats (end_pos, false);
-  int beats_diff =
-    num_beats_after - num_beats_before;
+  int beats_diff = num_beats_after - num_beats_before;
 
   for (int i = 0; i < beats_diff; i++)
     {
       /* get position of beat */
       Position beat_pos;
       position_init (&beat_pos);
-      position_add_beats (
-        &beat_pos, num_beats_before + i + 1);
+      position_add_beats (&beat_pos, num_beats_before + i + 1);
 
       /* if not a bar (already handled above) */
       if (position_get_beats (&beat_pos, true) != 1)
@@ -240,16 +226,13 @@ find_and_queue_metronome (
 
           /* add local offset */
           signed_frame_t metronome_offset_long =
-            beat_offset_long
-            + (signed_frame_t) loffset;
-          g_return_if_fail (
-            metronome_offset_long >= 0);
+            beat_offset_long + (signed_frame_t) loffset;
+          g_return_if_fail (metronome_offset_long >= 0);
 
           nframes_t metronome_offset =
             (nframes_t) metronome_offset_long;
           g_return_if_fail (
-            metronome_offset
-            < AUDIO_ENGINE->block_length);
+            metronome_offset < AUDIO_ENGINE->block_length);
           sample_processor_queue_metronome (
             SAMPLE_PROCESSOR, METRONOME_TYPE_NORMAL,
             metronome_offset);
@@ -269,17 +252,14 @@ metronome_queue_events (
   const nframes_t loffset,
   const nframes_t nframes)
 {
-  Position playhead_pos, bar_pos, beat_pos,
-    unlooped_playhead;
+  Position playhead_pos, bar_pos, beat_pos, unlooped_playhead;
   position_init (&bar_pos);
   position_init (&beat_pos);
   position_set_to_pos (&playhead_pos, PLAYHEAD);
-  position_set_to_pos (
-    &unlooped_playhead, PLAYHEAD);
+  position_set_to_pos (&unlooped_playhead, PLAYHEAD);
   transport_position_add_frames (
     self->transport, &playhead_pos, nframes);
-  position_add_frames (
-    &unlooped_playhead, (long) nframes);
+  position_add_frames (&unlooped_playhead, (long) nframes);
   int loop_crossed =
     unlooped_playhead.frames != playhead_pos.frames;
   if (loop_crossed)
@@ -287,8 +267,7 @@ metronome_queue_events (
       /* find each bar / beat change until loop
        * end */
       find_and_queue_metronome (
-        PLAYHEAD, &self->transport->loop_end_pos,
-        loffset);
+        PLAYHEAD, &self->transport->loop_end_pos, loffset);
 
       /* find each bar / beat change after loop
        * start */
@@ -315,8 +294,7 @@ metronome_set_volume (Metronome * self, float volume)
   self->volume = volume;
 
   g_settings_set_double (
-    S_TRANSPORT, "metronome-volume",
-    (double) volume);
+    S_TRANSPORT, "metronome-volume", (double) volume);
 }
 
 void

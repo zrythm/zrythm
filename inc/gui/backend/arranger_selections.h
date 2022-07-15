@@ -51,8 +51,7 @@ typedef enum ArrangerSelectionsActionEditType
    == ARRANGER_SELECTIONS_MAGIC)
 #define IS_ARRANGER_SELECTIONS_AND_NONNULL(x) \
   (x && IS_ARRANGER_SELECTIONS (x))
-#define ARRANGER_SELECTIONS(x) \
-  arranger_selections_cast (x)
+#define ARRANGER_SELECTIONS(x) arranger_selections_cast (x)
 
 #define ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS 0.1
 
@@ -66,15 +65,13 @@ typedef enum ArrangerSelectionsType
   ARRANGER_SELECTIONS_TYPE_AUDIO,
 } ArrangerSelectionsType;
 
-static const cyaml_strval_t
-  arranger_selections_type_strings[] = {
-    {"None",        ARRANGER_SELECTIONS_TYPE_NONE    },
-    { "Chord",      ARRANGER_SELECTIONS_TYPE_CHORD   },
-    { "Timeline",   ARRANGER_SELECTIONS_TYPE_TIMELINE},
-    { "MIDI",       ARRANGER_SELECTIONS_TYPE_MIDI    },
-    { "Automation",
-     ARRANGER_SELECTIONS_TYPE_AUTOMATION             },
-    { "Audio",      ARRANGER_SELECTIONS_TYPE_AUDIO   },
+static const cyaml_strval_t arranger_selections_type_strings[] = {
+  {"None",        ARRANGER_SELECTIONS_TYPE_NONE      },
+  { "Chord",      ARRANGER_SELECTIONS_TYPE_CHORD     },
+  { "Timeline",   ARRANGER_SELECTIONS_TYPE_TIMELINE  },
+  { "MIDI",       ARRANGER_SELECTIONS_TYPE_MIDI      },
+  { "Automation", ARRANGER_SELECTIONS_TYPE_AUTOMATION},
+  { "Audio",      ARRANGER_SELECTIONS_TYPE_AUDIO     },
 };
 
 typedef struct ArrangerSelections
@@ -89,9 +86,7 @@ typedef struct ArrangerSelections
 
 static const cyaml_schema_field_t
   arranger_selections_fields_schema[] = {
-    YAML_FIELD_INT (
-      ArrangerSelections,
-      schema_version),
+    YAML_FIELD_INT (ArrangerSelections, schema_version),
     YAML_FIELD_ENUM (
       ArrangerSelections,
       type,
@@ -100,12 +95,11 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  arranger_selections_schema = {
-    YAML_VALUE_PTR (
-      ArrangerSelections,
-      arranger_selections_fields_schema),
-  };
+static const cyaml_schema_value_t arranger_selections_schema = {
+  YAML_VALUE_PTR (
+    ArrangerSelections,
+    arranger_selections_fields_schema),
+};
 
 typedef enum ArrangerSelectionsProperty
 {
@@ -118,8 +112,7 @@ typedef enum ArrangerSelectionsProperty
 static inline ArrangerSelections *
 arranger_selections_cast (void * sel)
 {
-  if (!IS_ARRANGER_SELECTIONS (
-        (ArrangerSelections *) sel))
+  if (!IS_ARRANGER_SELECTIONS ((ArrangerSelections *) sel))
     {
       g_warning ("%s", __func__);
     }
@@ -151,16 +144,14 @@ arranger_selections_init (
  * Creates new arranger selections.
  */
 ArrangerSelections *
-arranger_selections_new (
-  ArrangerSelectionsType type);
+arranger_selections_new (ArrangerSelectionsType type);
 
 /**
  * Verify that the objects are not invalid.
  */
 NONNULL
 bool
-arranger_selections_verify (
-  ArrangerSelections * self);
+arranger_selections_verify (ArrangerSelections * self);
 
 /**
  * Appends the given object to the selections.
@@ -201,16 +192,14 @@ arranger_selections_sort_by_indices (
  */
 NONNULL
 ArrangerSelections *
-arranger_selections_clone (
-  const ArrangerSelections * self);
+arranger_selections_clone (const ArrangerSelections * self);
 
 /**
  * Returns if there are any selections.
  */
 NONNULL
 bool
-arranger_selections_has_any (
-  ArrangerSelections * self);
+arranger_selections_has_any (ArrangerSelections * self);
 
 /**
  * Returns the position of the leftmost object.
@@ -357,8 +346,7 @@ arranger_selections_post_deserialize (
 
 NONNULL
 bool
-arranger_selections_validate (
-  ArrangerSelections * self);
+arranger_selections_validate (ArrangerSelections * self);
 
 /**
  * Frees anything allocated by the selections
@@ -366,16 +354,14 @@ arranger_selections_validate (
  */
 NONNULL
 void
-arranger_selections_free_members (
-  ArrangerSelections * self);
+arranger_selections_free_members (ArrangerSelections * self);
 
 /**
  * Frees the selections but not the objects.
  */
 NONNULL
 void
-arranger_selections_free (
-  ArrangerSelections * self);
+arranger_selections_free (ArrangerSelections * self);
 
 /**
  * Frees all the objects as well.
@@ -385,8 +371,7 @@ arranger_selections_free (
  */
 NONNULL
 void
-arranger_selections_free_full (
-  ArrangerSelections * self);
+arranger_selections_free_full (ArrangerSelections * self);
 
 /**
  * Returns if the arranger object is in the
@@ -442,16 +427,14 @@ arranger_selections_remove_object (
  */
 NONNULL
 void
-arranger_selections_merge (
-  ArrangerSelections * self);
+arranger_selections_merge (ArrangerSelections * self);
 
 /**
  * Returns if the selections can be pasted.
  */
 NONNULL
 bool
-arranger_selections_can_be_pasted (
-  ArrangerSelections * self);
+arranger_selections_can_be_pasted (ArrangerSelections * self);
 
 NONNULL
 bool
@@ -460,8 +443,7 @@ arranger_selections_contains_looped (
 
 NONNULL
 bool
-arranger_selections_can_be_merged (
-  ArrangerSelections * self);
+arranger_selections_can_be_merged (ArrangerSelections * self);
 
 NONNULL
 double
@@ -482,8 +464,7 @@ arranger_selections_can_split_at_pos (
 
 NONNULL
 ArrangerSelections *
-arranger_selections_get_for_type (
-  ArrangerSelectionsType type);
+arranger_selections_get_for_type (ArrangerSelectionsType type);
 
 /**
 * @}

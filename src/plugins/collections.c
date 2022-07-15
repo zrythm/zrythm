@@ -26,8 +26,7 @@
 static char *
 get_plugin_collections_file_path (void)
 {
-  char * zrythm_dir =
-    zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
+  char * zrythm_dir = zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
   g_return_val_if_fail (zrythm_dir, NULL);
 
   return g_build_filename (
@@ -35,18 +34,16 @@ get_plugin_collections_file_path (void)
 }
 
 void
-plugin_collections_serialize_to_file (
-  PluginCollections * self)
+plugin_collections_serialize_to_file (PluginCollections * self)
 {
   g_message ("Serializing plugin collections...");
-  char * yaml = yaml_serialize (
-    self, &plugin_collections_schema);
+  char * yaml =
+    yaml_serialize (self, &plugin_collections_schema);
   g_return_if_fail (yaml);
   GError * err = NULL;
-  char * path = get_plugin_collections_file_path ();
+  char *   path = get_plugin_collections_file_path ();
   g_return_if_fail (path && strlen (path) > 2);
-  g_message (
-    "Writing plugin collections to %s...", path);
+  g_message ("Writing plugin collections to %s...", path);
   g_file_set_contents (path, yaml, -1, &err);
   if (err != NULL)
     {
@@ -71,15 +68,13 @@ is_yaml_our_version (const char * yaml)
   sprintf (
     version_str, "schema_version: %d\n",
     PLUGIN_COLLECTIONS_SCHEMA_VERSION);
-  same_version =
-    g_str_has_prefix (yaml, version_str);
+  same_version = g_str_has_prefix (yaml, version_str);
   if (!same_version)
     {
       sprintf (
         version_str, "---\nschema_version: %d\n",
         PLUGIN_COLLECTIONS_SCHEMA_VERSION);
-      same_version =
-        g_str_has_prefix (yaml, version_str);
+      same_version = g_str_has_prefix (yaml, version_str);
     }
 
   return same_version;
@@ -92,7 +87,7 @@ PluginCollections *
 plugin_collections_new (void)
 {
   GError * err = NULL;
-  char * path = get_plugin_collections_file_path ();
+  char *   path = get_plugin_collections_file_path ();
   if (!file_exists (path))
     {
       g_message (
@@ -103,8 +98,7 @@ return_new_instance:
       g_free (path);
       PluginCollections * self =
         object_new (PluginCollections);
-      self->schema_version =
-        PLUGIN_COLLECTIONS_SCHEMA_VERSION;
+      self->schema_version = PLUGIN_COLLECTIONS_SCHEMA_VERSION;
       return self;
     }
   char * yaml = NULL;
@@ -129,22 +123,19 @@ return_new_instance:
         "Found old plugin collections file version. "
         "Backing up file and creating a new one.");
       GFile * file = g_file_new_for_path (path);
-      char *  backup_path =
-        g_strdup_printf ("%s.bak", path);
-      GFile * backup_file =
-        g_file_new_for_path (backup_path);
+      char *  backup_path = g_strdup_printf ("%s.bak", path);
+      GFile * backup_file = g_file_new_for_path (backup_path);
       g_file_move (
-        file, backup_file, G_FILE_COPY_OVERWRITE,
-        NULL, NULL, NULL, NULL);
+        file, backup_file, G_FILE_COPY_OVERWRITE, NULL, NULL,
+        NULL, NULL);
       g_object_unref (backup_file);
       g_object_unref (file);
       g_free (backup_path);
       goto return_new_instance;
     }
 
-  PluginCollections * self =
-    (PluginCollections *) yaml_deserialize (
-      yaml, &plugin_collections_schema);
+  PluginCollections * self = (PluginCollections *)
+    yaml_deserialize (yaml, &plugin_collections_schema);
   if (!self)
     {
       g_critical (
@@ -161,8 +152,7 @@ return_new_instance:
 
   for (int i = 0; i < self->num_collections; i++)
     {
-      plugin_collection_init_loaded (
-        self->collections[i]);
+      plugin_collection_init_loaded (self->collections[i]);
     }
 
   return self;
@@ -182,8 +172,7 @@ plugin_collections_add (
 {
   PluginCollection * new_collection =
     plugin_collection_clone (collection);
-  self->collections[self->num_collections++] =
-    new_collection;
+  self->collections[self->num_collections++] = new_collection;
 
   if (serialize)
     {
@@ -204,19 +193,15 @@ plugin_collections_remove (
   bool                serialize)
 {
   bool found = false;
-  for (int i = self->num_collections - 1; i >= 0;
-       i--)
+  for (int i = self->num_collections - 1; i >= 0; i--)
     {
-      PluginCollection * collection =
-        self->collections[i];
+      PluginCollection * collection = self->collections[i];
 
       if (collection == _collection)
         {
-          for (int j = i;
-               j < self->num_collections - 1; j++)
+          for (int j = i; j < self->num_collections - 1; j++)
             {
-              self->collections[j] =
-                self->collections[j + 1];
+              self->collections[j] = self->collections[j + 1];
             }
           self->num_collections--;
           found = true;
@@ -238,8 +223,7 @@ plugin_collections_free (PluginCollections * self)
   for (int i = 0; i < self->num_collections; i++)
     {
       object_free_w_func_and_null (
-        plugin_collection_free,
-        self->collections[i]);
+        plugin_collection_free, self->collections[i]);
     }
 
   object_zero_and_free (self);

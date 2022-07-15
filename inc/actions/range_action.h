@@ -37,10 +37,9 @@ typedef enum RangeActionType
   RANGE_ACTION_REMOVE,
 } RangeActionType;
 
-static const cyaml_strval_t
-  range_action_type_strings[] = {
-    {"Insert silence", RANGE_ACTION_INSERT_SILENCE},
-    { "Remove",        RANGE_ACTION_REMOVE        },
+static const cyaml_strval_t range_action_type_strings[] = {
+  {"Insert silence", RANGE_ACTION_INSERT_SILENCE},
+  { "Remove",        RANGE_ACTION_REMOVE        },
 };
 
 typedef struct RangeAction
@@ -71,48 +70,43 @@ typedef struct RangeAction
 
 } RangeAction;
 
-static const cyaml_schema_field_t
-  range_action_fields_schema[] = {
-    YAML_FIELD_MAPPING_EMBEDDED (
-      RangeAction,
-      parent_instance,
-      undoable_action_fields_schema),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      RangeAction,
-      start_pos,
-      position_fields_schema),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      RangeAction,
-      end_pos,
-      position_fields_schema),
-    YAML_FIELD_ENUM (
-      RangeAction,
-      type,
-      range_action_type_strings),
-    YAML_FIELD_MAPPING_PTR (
-      RangeAction,
-      sel_before,
-      timeline_selections_fields_schema),
-    YAML_FIELD_MAPPING_PTR (
-      RangeAction,
-      sel_after,
-      timeline_selections_fields_schema),
-    YAML_FIELD_INT (RangeAction, first_run),
-    YAML_FIELD_MAPPING_PTR (
-      RangeAction,
-      transport,
-      transport_fields_schema),
+static const cyaml_schema_field_t range_action_fields_schema[] = {
+  YAML_FIELD_MAPPING_EMBEDDED (
+    RangeAction,
+    parent_instance,
+    undoable_action_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    RangeAction,
+    start_pos,
+    position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    RangeAction,
+    end_pos,
+    position_fields_schema),
+  YAML_FIELD_ENUM (RangeAction, type, range_action_type_strings),
+  YAML_FIELD_MAPPING_PTR (
+    RangeAction,
+    sel_before,
+    timeline_selections_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    RangeAction,
+    sel_after,
+    timeline_selections_fields_schema),
+  YAML_FIELD_INT (RangeAction, first_run),
+  YAML_FIELD_MAPPING_PTR (
+    RangeAction,
+    transport,
+    transport_fields_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  range_action_schema = {
-    CYAML_VALUE_MAPPING (
-      CYAML_FLAG_POINTER,
-      RangeAction,
-      range_action_fields_schema),
-  };
+static const cyaml_schema_value_t range_action_schema = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    RangeAction,
+    range_action_fields_schema),
+};
 
 void
 range_action_init_loaded (RangeAction * self);
@@ -131,15 +125,12 @@ range_action_new (
   Position *      end_pos,
   GError **       error);
 
-#define range_action_new_insert_silence( \
-  start, end, error) \
+#define range_action_new_insert_silence(start, end, error) \
   range_action_new ( \
-    RANGE_ACTION_INSERT_SILENCE, start, end, \
-    error)
+    RANGE_ACTION_INSERT_SILENCE, start, end, error)
 
 #define range_action_new_remove(start, end, error) \
-  range_action_new ( \
-    RANGE_ACTION_REMOVE, start, end, error)
+  range_action_new (RANGE_ACTION_REMOVE, start, end, error)
 
 NONNULL
 RangeAction *
@@ -155,23 +146,17 @@ range_action_perform (
 #define range_action_perform_insert_silence( \
   start, end, error) \
   range_action_perform ( \
-    RANGE_ACTION_INSERT_SILENCE, start, end, \
-    error)
+    RANGE_ACTION_INSERT_SILENCE, start, end, error)
 
-#define range_action_perform_remove( \
-  start, end, error) \
+#define range_action_perform_remove(start, end, error) \
   range_action_perform ( \
     RANGE_ACTION_REMOVE, start, end, error)
 
 int
-range_action_do (
-  RangeAction * self,
-  GError **     error);
+range_action_do (RangeAction * self, GError ** error);
 
 int
-range_action_undo (
-  RangeAction * self,
-  GError **     error);
+range_action_undo (RangeAction * self, GError ** error);
 
 char *
 range_action_stringize (RangeAction * self);

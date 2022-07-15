@@ -19,11 +19,11 @@ G_DECLARE_FINAL_TYPE (
   MAIN_WINDOW_WIDGET,
   AdwApplicationWindow)
 
-typedef struct _HeaderWidget     HeaderWidget;
-typedef struct _CenterDockWidget CenterDockWidget;
-typedef struct _BotBarWidget     BotBarWidget;
-typedef struct _TopBarWidget     TopBarWidget;
-typedef struct _ZrythmApp        ZrythmApp;
+typedef struct _HeaderWidget      HeaderWidget;
+typedef struct _CenterDockWidget  CenterDockWidget;
+typedef struct _BotBarWidget      BotBarWidget;
+typedef struct _TopBarWidget      TopBarWidget;
+typedef struct _ZrythmApp         ZrythmApp;
 typedef struct ArrangerSelections ArrangerSelections;
 
 /**
@@ -105,16 +105,13 @@ main_window_widget_set_project_title (
  * Prepare for finalization.
  */
 void
-main_window_widget_tear_down (
-  MainWindowWidget * self);
+main_window_widget_tear_down (MainWindowWidget * self);
 
 /**
  * TODO
  */
 void
-main_window_widget_open (
-  MainWindowWidget * win,
-  GFile *            file);
+main_window_widget_open (MainWindowWidget * win, GFile * file);
 
 void
 main_window_widget_quit (MainWindowWidget * self);

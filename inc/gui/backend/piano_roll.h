@@ -167,8 +167,7 @@ MidiNoteDescriptor *
 midi_note_descriptor_new (void);
 
 void
-midi_note_descriptor_free (
-  MidiNoteDescriptor * self);
+midi_note_descriptor_free (MidiNoteDescriptor * self);
 
 /**
  * Piano roll serializable backend.
@@ -224,26 +223,23 @@ static const cyaml_strval_t midi_modifier_strings[] = {
   { "Aftertouch",  MIDI_MODIFIER_AFTERTOUCH },
 };
 
-static const cyaml_schema_field_t
-  piano_roll_fields_schema[] = {
-    YAML_FIELD_INT (PianoRoll, schema_version),
-    YAML_FIELD_FLOAT (PianoRoll, notes_zoom),
-    YAML_FIELD_ENUM (
-      PianoRoll,
-      midi_modifier,
-      midi_modifier_strings),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      PianoRoll,
-      editor_settings,
-      editor_settings_fields_schema),
+static const cyaml_schema_field_t piano_roll_fields_schema[] = {
+  YAML_FIELD_INT (PianoRoll, schema_version),
+  YAML_FIELD_FLOAT (PianoRoll, notes_zoom),
+  YAML_FIELD_ENUM (
+    PianoRoll,
+    midi_modifier,
+    midi_modifier_strings),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    PianoRoll,
+    editor_settings,
+    editor_settings_fields_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t piano_roll_schema = {
-  YAML_VALUE_PTR (
-    PianoRoll,
-    piano_roll_fields_schema),
+  YAML_VALUE_PTR (PianoRoll, piano_roll_fields_schema),
 };
 
 /**
@@ -262,34 +258,27 @@ piano_roll_is_key_black (int note);
  * Adds the note if it doesn't exist in the array.
  */
 void
-piano_roll_add_current_note (
-  PianoRoll * self,
-  int         note);
+piano_roll_add_current_note (PianoRoll * self, int note);
 
 /**
  * Removes the note if it exists in the array.
  */
 void
-piano_roll_remove_current_note (
-  PianoRoll * self,
-  int         note);
+piano_roll_remove_current_note (PianoRoll * self, int note);
 
 /**
  * Returns 1 if it contains the given note, 0
  * otherwise.
  */
 int
-piano_roll_contains_current_note (
-  PianoRoll * self,
-  int         note);
+piano_roll_contains_current_note (PianoRoll * self, int note);
 
 /**
  * Returns the current track whose regions are
  * being shown in the piano roll.
  */
 Track *
-piano_roll_get_current_track (
-  const PianoRoll * self);
+piano_roll_get_current_track (const PianoRoll * self);
 
 void
 piano_roll_set_notes_zoom (
@@ -368,8 +357,7 @@ piano_roll_get_visible_notes (
           arr[*num].value = descr->value;
           arr[*num].marked = descr->marked;
           arr[*num].visible = descr->visible;
-          arr[*num].custom_name =
-            descr->custom_name;
+          arr[*num].custom_name = descr->custom_name;
           arr[*num].note_name = descr->note_name;
           (*num)++;
         }

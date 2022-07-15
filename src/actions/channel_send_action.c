@@ -17,8 +17,7 @@
 #include <glib/gi18n.h>
 
 void
-channel_send_action_init_loaded (
-  ChannelSendAction * self)
+channel_send_action_init_loaded (ChannelSendAction * self)
 {
 }
 
@@ -40,9 +39,8 @@ channel_send_action_new (
   const PortConnectionsManager * port_connections_mgr,
   GError **                      error)
 {
-  ChannelSendAction * self =
-    object_new (ChannelSendAction);
-  UndoableAction * ua = (UndoableAction *) self;
+  ChannelSendAction * self = object_new (ChannelSendAction);
+  UndoableAction *    ua = (UndoableAction *) self;
   undoable_action_init (ua, UA_CHANNEL_SEND);
 
   self->type = type;
@@ -50,37 +48,30 @@ channel_send_action_new (
   self->amount = amount;
 
   if (port)
-    self->midi_id =
-      port_identifier_clone (&port->id);
+    self->midi_id = port_identifier_clone (&port->id);
 
   if (stereo)
     {
-      self->l_id =
-        port_identifier_clone (&stereo->l->id);
-      self->r_id =
-        port_identifier_clone (&stereo->r->id);
+      self->l_id = port_identifier_clone (&stereo->l->id);
+      self->r_id = port_identifier_clone (&stereo->r->id);
     }
 
   if (port_connections_mgr)
     {
       self->connections_mgr_before =
-        port_connections_manager_clone (
-          port_connections_mgr);
+        port_connections_manager_clone (port_connections_mgr);
     }
 
   return ua;
 }
 
 ChannelSendAction *
-channel_send_action_clone (
-  const ChannelSendAction * src)
+channel_send_action_clone (const ChannelSendAction * src)
 {
-  ChannelSendAction * self =
-    object_new (ChannelSendAction);
+  ChannelSendAction * self = object_new (ChannelSendAction);
   self->parent_instance = src->parent_instance;
 
-  self->send_before =
-    channel_send_clone (src->send_before);
+  self->send_before = channel_send_clone (src->send_before);
   self->type = src->type;
   self->amount = src->amount;
 
@@ -113,9 +104,8 @@ channel_send_action_perform (
   GError **                      error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    channel_send_action_new, error, send, type,
-    port, stereo, amount, port_connections_mgr,
-    error);
+    channel_send_action_new, error, send, type, port, stereo,
+    amount, port_connections_mgr, error);
 }
 
 static bool
@@ -126,8 +116,7 @@ connect_or_disconnect (
   GError **           error)
 {
   /* get the actual channel send from the project */
-  ChannelSend * send =
-    channel_send_find (self->send_before);
+  ChannelSend * send = channel_send_find (self->send_before);
 
   channel_send_disconnect (send, F_NO_RECALC_GRAPH);
 
@@ -135,20 +124,17 @@ connect_or_disconnect (
     {
       if (connect)
         {
-          Track * track =
-            channel_send_get_track (send);
+          Track * track = channel_send_get_track (send);
           switch (track->out_signal_type)
             {
             case TYPE_EVENT:
               {
                 Port * port =
-                  port_find_from_identifier (
-                    self->midi_id);
+                  port_find_from_identifier (self->midi_id);
                 GError * err = NULL;
-                bool     connected =
-                  channel_send_connect_midi (
-                    send, port, F_NO_RECALC_GRAPH,
-                    F_VALIDATE, &err);
+                bool connected = channel_send_connect_midi (
+                  send, port, F_NO_RECALC_GRAPH, F_VALIDATE,
+                  &err);
                 if (!connected)
                   {
                     PROPAGATE_PREFIXED_ERROR (
@@ -162,19 +148,15 @@ connect_or_disconnect (
             case TYPE_AUDIO:
               {
                 Port * l =
-                  port_find_from_identifier (
-                    self->l_id);
+                  port_find_from_identifier (self->l_id);
                 Port * r =
-                  port_find_from_identifier (
-                    self->r_id);
+                  port_find_from_identifier (self->r_id);
                 GError * err = NULL;
-                bool     connected =
-                  channel_send_connect_stereo (
-                    send, NULL, l, r,
-                    self->type
-                      == CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN,
-                    F_NO_RECALC_GRAPH, F_VALIDATE,
-                    &err);
+                bool connected = channel_send_connect_stereo (
+                  send, NULL, l, r,
+                  self->type
+                    == CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN,
+                  F_NO_RECALC_GRAPH, F_VALIDATE, &err);
                 if (!connected)
                   {
                     PROPAGATE_PREFIXED_ERROR (
@@ -196,8 +178,7 @@ connect_or_disconnect (
       /* copy the values - connections will be
        * reverted later when resetting the
        * connections manager */
-      channel_send_copy_values (
-        send, self->send_before);
+      channel_send_copy_values (send, self->send_before);
     }
 
   return true;
@@ -209,8 +190,7 @@ channel_send_action_do (
   GError **           error)
 {
   /* get the actual channel send from the project */
-  ChannelSend * send =
-    channel_send_find (self->send_before);
+  ChannelSend * send = channel_send_find (self->send_before);
 
   bool need_restore_and_recalc = false;
 
@@ -222,13 +202,13 @@ channel_send_action_do (
     case CHANNEL_SEND_ACTION_CONNECT_STEREO:
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
     case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
-      successful = connect_or_disconnect (
-        self, true, true, &err);
+      successful =
+        connect_or_disconnect (self, true, true, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_DISCONNECT:
-      successful = connect_or_disconnect (
-        self, false, true, &err);
+      successful =
+        connect_or_disconnect (self, false, true, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
@@ -274,8 +254,7 @@ channel_send_action_undo (
   GError **           error)
 {
   /* get the actual channel send from the project */
-  ChannelSend * send =
-    channel_send_find (self->send_before);
+  ChannelSend * send = channel_send_find (self->send_before);
 
   bool need_restore_and_recalc = false;
 
@@ -286,14 +265,14 @@ channel_send_action_undo (
     case CHANNEL_SEND_ACTION_CONNECT_MIDI:
     case CHANNEL_SEND_ACTION_CONNECT_STEREO:
     case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
-      successful = connect_or_disconnect (
-        self, false, true, &err);
+      successful =
+        connect_or_disconnect (self, false, true, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
     case CHANNEL_SEND_ACTION_DISCONNECT:
-      successful = connect_or_disconnect (
-        self, true, false, &err);
+      successful =
+        connect_or_disconnect (self, true, false, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
@@ -334,8 +313,7 @@ channel_send_action_undo (
 }
 
 char *
-channel_send_action_stringize (
-  ChannelSendAction * self)
+channel_send_action_stringize (ChannelSendAction * self)
 {
   switch (self->type)
     {

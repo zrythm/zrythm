@@ -28,16 +28,13 @@
 #define TICKS_PER_QUARTER_NOTE_DBL 960.0
 #define TICKS_PER_SIXTEENTH_NOTE_DBL 240.0
 #define position_add_sixteenths(_pos, _s) \
-  position_add_ticks ( \
-    (_pos), (_s) *TICKS_PER_SIXTEENTH_NOTE)
+  position_add_ticks ((_pos), (_s) *TICKS_PER_SIXTEENTH_NOTE)
 #define position_add_beats(_pos, _b) \
   g_warn_if_fail (TRANSPORT->ticks_per_beat > 0); \
-  position_add_ticks ( \
-    (_pos), (_b) *TRANSPORT->ticks_per_beat)
+  position_add_ticks ((_pos), (_b) *TRANSPORT->ticks_per_beat)
 #define position_add_bars(_pos, _b) \
   g_warn_if_fail (TRANSPORT->ticks_per_bar > 0); \
-  position_add_ticks ( \
-    (_pos), (_b) *TRANSPORT->ticks_per_bar)
+  position_add_ticks ((_pos), (_b) *TRANSPORT->ticks_per_bar)
 #define position_snap_simple(pos, sg) \
   position_snap (NULL, pos, NULL, NULL, sg)
 
@@ -57,8 +54,7 @@
  * 0 = equal
  * positive = p2 is earlier
  */
-#define position_compare(p1, p2) \
-  ((p1)->frames - (p2)->frames)
+#define position_compare(p1, p2) ((p1)->frames - (p2)->frames)
 
 /** Checks if _pos is before _cmp. */
 #define position_is_before(_pos, _cmp) \
@@ -94,8 +90,7 @@
   ((p1)->ticks - (p2)->ticks)
 
 #define position_is_equal_ticks(p1, p2) \
-  (fabs (position_compare_ticks (p1, p2)) \
-   <= DBL_EPSILON)
+  (fabs (position_compare_ticks (p1, p2)) <= DBL_EPSILON)
 
 /** Returns if _pos is after or equal to _start and
  * before _end. */
@@ -105,8 +100,7 @@
 
 /** Returns if _pos is after _start and
  * before _end. */
-#define position_is_between_excl_start( \
-  _pos, _start, _end) \
+#define position_is_between_excl_start(_pos, _start, _end) \
   (position_is_after (_pos, _start) \
    && position_is_before (_pos, _end))
 
@@ -127,8 +121,7 @@
  *
  * Assumes the given argument is a Pointer *.
  */
-#define position_init(__pos) \
-  *(__pos) = POSITION_START
+#define position_init(__pos) *(__pos) = POSITION_START
 
 typedef struct SnapGrid SnapGrid;
 typedef struct Track    Track;
@@ -149,14 +142,13 @@ typedef struct Position
   signed_frame_t frames;
 } Position;
 
-static const cyaml_schema_field_t
-  position_fields_schema[] = {
-    YAML_FIELD_INT (Position, schema_version),
-    YAML_FIELD_FLOAT (Position, ticks),
-    YAML_FIELD_INT (Position, frames),
+static const cyaml_schema_field_t position_fields_schema[] = {
+  YAML_FIELD_INT (Position, schema_version),
+  YAML_FIELD_FLOAT (Position, ticks),
+  YAML_FIELD_INT (Position, frames),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t position_schema = {
   YAML_VALUE_PTR (Position, position_fields_schema),
@@ -187,9 +179,7 @@ position_set_to_bar (Position * self, int bar);
  * Sorts an array of Position's.
  */
 void
-position_sort_array (
-  Position *   array,
-  const size_t size);
+position_sort_array (Position * array, const size_t size);
 
 /**
  * Sets position to target position
@@ -218,9 +208,7 @@ position_add_frames (
  * in the given Position.
  */
 void
-position_from_seconds (
-  Position * position,
-  double     secs);
+position_from_seconds (Position * position, double secs);
 
 HOT NONNULL void
 position_from_frames (
@@ -250,9 +238,7 @@ signed_frame_t
 position_ms_to_frames (const signed_ms_t ms);
 
 void
-position_add_ms (
-  Position *        pos,
-  const signed_ms_t ms);
+position_add_ms (Position * pos, const signed_ms_t ms);
 
 void
 position_add_minutes (Position * pos, int mins);
@@ -309,8 +295,7 @@ position_set_min_size (
  * Updates ticks.
  */
 HOT NONNULL void
-position_update_ticks_from_frames (
-  Position * position);
+position_update_ticks_from_frames (Position * position);
 
 /**
  * Converts ticks to frames.
@@ -322,8 +307,7 @@ position_get_frames_from_ticks (double ticks);
  * Updates frames.
  */
 HOT NONNULL void
-position_update_frames_from_ticks (
-  Position * position);
+position_update_frames_from_ticks (Position * position);
 
 /**
  * Updates the position from ticks or frames.
@@ -392,9 +376,7 @@ position_to_string_full (
  */
 NONNULL
 void
-position_to_string (
-  const Position * pos,
-  char *           buf);
+position_to_string (const Position * pos, char * buf);
 
 /**
  * Parses a position from the given string.
@@ -473,9 +455,7 @@ position_change_sign (Position * pos);
  */
 NONNULL
 int
-position_get_bars (
-  const Position * pos,
-  bool             start_at_one);
+position_get_bars (const Position * pos, bool start_at_one);
 
 /**
  * Gets the beats of the position.
@@ -488,9 +468,7 @@ position_get_bars (
  */
 NONNULL
 int
-position_get_beats (
-  const Position * pos,
-  bool             start_at_one);
+position_get_beats (const Position * pos, bool start_at_one);
 
 /**
  * Gets the sixteenths of the position.

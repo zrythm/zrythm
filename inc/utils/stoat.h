@@ -21,8 +21,7 @@
 #define __UTILS_STOAT_H__
 
 #if defined(__clang__)
-#  define REALTIME \
-    __attribute__ ((annotate ("realtime")))
+#  define REALTIME __attribute__ ((annotate ("realtime")))
 #  define NONREALTIME \
     __attribute__ ((annotate ("nonrealtime")))
 #else

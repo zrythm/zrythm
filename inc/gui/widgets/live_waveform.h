@@ -79,8 +79,7 @@ typedef struct _LiveWaveformWidget
  * AudioEngine.
  */
 void
-live_waveform_widget_setup_engine (
-  LiveWaveformWidget * self);
+live_waveform_widget_setup_engine (LiveWaveformWidget * self);
 
 /**
  * Creates a LiveWaveformWidget for a port.

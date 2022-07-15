@@ -46,36 +46,34 @@ typedef struct ChannelSend_v1
   PortIdentifier_v1 dest_midi_id;
 } ChannelSend_v1;
 
-static const cyaml_schema_field_t
-  channel_send_fields_schema_v1[] = {
-    YAML_FIELD_INT (ChannelSend_v1, schema_version),
-    YAML_FIELD_INT (ChannelSend_v1, track_pos),
-    YAML_FIELD_INT (ChannelSend_v1, slot),
-    YAML_FIELD_FLOAT (ChannelSend_v1, amount),
-    YAML_FIELD_INT (ChannelSend_v1, on),
-    YAML_FIELD_INT (ChannelSend_v1, is_empty),
-    YAML_FIELD_INT (ChannelSend_v1, is_sidechain),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      ChannelSend_v1,
-      dest_l_id,
-      port_identifier_fields_schema_v1),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      ChannelSend_v1,
-      dest_r_id,
-      port_identifier_fields_schema_v1),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      ChannelSend_v1,
-      dest_midi_id,
-      port_identifier_fields_schema_v1),
+static const cyaml_schema_field_t channel_send_fields_schema_v1[] = {
+  YAML_FIELD_INT (ChannelSend_v1, schema_version),
+  YAML_FIELD_INT (ChannelSend_v1, track_pos),
+  YAML_FIELD_INT (ChannelSend_v1, slot),
+  YAML_FIELD_FLOAT (ChannelSend_v1, amount),
+  YAML_FIELD_INT (ChannelSend_v1, on),
+  YAML_FIELD_INT (ChannelSend_v1, is_empty),
+  YAML_FIELD_INT (ChannelSend_v1, is_sidechain),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ChannelSend_v1,
+    dest_l_id,
+    port_identifier_fields_schema_v1),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ChannelSend_v1,
+    dest_r_id,
+    port_identifier_fields_schema_v1),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ChannelSend_v1,
+    dest_midi_id,
+    port_identifier_fields_schema_v1),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  channel_send_schema_v1 = {
-    YAML_VALUE_DEFAULT (
-      ChannelSend_v1,
-      channel_send_fields_schema_v1),
-  };
+static const cyaml_schema_value_t channel_send_schema_v1 = {
+  YAML_VALUE_DEFAULT (
+    ChannelSend_v1,
+    channel_send_fields_schema_v1),
+};
 
 #endif

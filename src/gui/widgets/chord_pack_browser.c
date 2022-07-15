@@ -44,12 +44,10 @@ psets_filter_func (GObject * item, gpointer user_data)
     Z_CHORD_PACK_BROWSER_WIDGET (user_data);
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
-  ChordPreset * pset =
-    (ChordPreset *) wrapped_obj->obj;
+  ChordPreset * pset = (ChordPreset *) wrapped_obj->obj;
 
-  GObject * pack_gobj =
-    gtk_single_selection_get_selected_item (
-      self->packs_selection_model);
+  GObject * pack_gobj = gtk_single_selection_get_selected_item (
+    self->packs_selection_model);
   if (!pack_gobj)
     return true;
 
@@ -67,15 +65,13 @@ psets_filter_func (GObject * item, gpointer user_data)
 }
 
 static GListModel *
-create_model_for_packs (
-  ChordPackBrowserWidget * self)
+create_model_for_packs (ChordPackBrowserWidget * self)
 {
-  GListStore * store = g_list_store_new (
-    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  GListStore * store =
+    g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
-  int num_packs =
-    chord_preset_pack_manager_get_num_packs (
-      CHORD_PRESET_PACK_MANAGER);
+  int num_packs = chord_preset_pack_manager_get_num_packs (
+    CHORD_PRESET_PACK_MANAGER);
   for (int i = 0; i < num_packs; i++)
     {
       ChordPresetPack * pack =
@@ -96,16 +92,14 @@ create_model_for_packs (
 }
 
 static GListModel *
-create_model_for_psets (
-  ChordPackBrowserWidget * self)
+create_model_for_psets (ChordPackBrowserWidget * self)
 {
   /* file name, index */
-  GListStore * store = g_list_store_new (
-    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  GListStore * store =
+    g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
-  int num_packs =
-    chord_preset_pack_manager_get_num_packs (
-      CHORD_PRESET_PACK_MANAGER);
+  int num_packs = chord_preset_pack_manager_get_num_packs (
+    CHORD_PRESET_PACK_MANAGER);
   for (int i = 0; i < num_packs; i++)
     {
       const ChordPresetPack * pack =
@@ -125,15 +119,11 @@ create_model_for_psets (
     }
 
   self->psets_filter = gtk_custom_filter_new (
-    (GtkCustomFilterFunc) psets_filter_func, self,
-    NULL);
-  self->psets_filter_model =
-    gtk_filter_list_model_new (
-      G_LIST_MODEL (store),
-      GTK_FILTER (self->psets_filter));
-  self->psets_selection_model =
-    gtk_single_selection_new (
-      G_LIST_MODEL (self->psets_filter_model));
+    (GtkCustomFilterFunc) psets_filter_func, self, NULL);
+  self->psets_filter_model = gtk_filter_list_model_new (
+    G_LIST_MODEL (store), GTK_FILTER (self->psets_filter));
+  self->psets_selection_model = gtk_single_selection_new (
+    G_LIST_MODEL (self->psets_filter_model));
 
   return G_LIST_MODEL (self->psets_selection_model);
 }
@@ -151,12 +141,10 @@ chord_pack_browser_widget_refresh_presets (
   ChordPackBrowserWidget * self)
 {
   self->psets_selection_model =
-    GTK_SINGLE_SELECTION (
-      create_model_for_psets (self));
+    GTK_SINGLE_SELECTION (create_model_for_psets (self));
   gtk_list_view_set_model (
     self->psets_list_view,
-    GTK_SELECTION_MODEL (
-      self->psets_selection_model));
+    GTK_SELECTION_MODEL (self->psets_selection_model));
   refilter_presets (self);
 }
 
@@ -165,12 +153,10 @@ chord_pack_browser_widget_refresh_packs (
   ChordPackBrowserWidget * self)
 {
   self->packs_selection_model =
-    GTK_SINGLE_SELECTION (
-      create_model_for_packs (self));
+    GTK_SINGLE_SELECTION (create_model_for_packs (self));
   gtk_list_view_set_model (
     self->packs_list_view,
-    GTK_SELECTION_MODEL (
-      self->packs_selection_model));
+    GTK_SELECTION_MODEL (self->packs_selection_model));
 }
 
 static int
@@ -179,8 +165,7 @@ update_pset_info_label (
   const char *             label)
 {
   gtk_label_set_markup (
-    self->pset_info,
-    label ? label : _ ("No preset selected"));
+    self->pset_info, label ? label : _ ("No preset selected"));
 
   return G_SOURCE_REMOVE;
 }
@@ -190,9 +175,8 @@ get_selected_preset (GtkWidget * widget)
 {
   ChordPackBrowserWidget * self =
     Z_CHORD_PACK_BROWSER_WIDGET (widget);
-  GObject * gobj =
-    gtk_single_selection_get_selected_item (
-      self->psets_selection_model);
+  GObject * gobj = gtk_single_selection_get_selected_item (
+    self->psets_selection_model);
   if (!gobj)
     return NULL;
 
@@ -213,8 +197,7 @@ on_pack_activated (
     Z_CHORD_PACK_BROWSER_WIDGET (user_data);
 
   GObject * gobj = g_list_model_get_object (
-    G_LIST_MODEL (self->packs_selection_model),
-    position);
+    G_LIST_MODEL (self->packs_selection_model), position);
   if (!gobj)
     return;
 
@@ -238,16 +221,14 @@ on_pset_activated (
     Z_CHORD_PACK_BROWSER_WIDGET (user_data);
 
   GObject * gobj = g_list_model_get_object (
-    G_LIST_MODEL (self->psets_selection_model),
-    position);
+    G_LIST_MODEL (self->psets_selection_model), position);
   if (!gobj)
     return;
 
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  ChordPreset * pset =
-    (ChordPreset *) wrapped_obj->obj;
+  ChordPreset * pset = (ChordPreset *) wrapped_obj->obj;
 
   ChordPresetPack * pack =
     chord_preset_pack_manager_get_pack_for_preset (
@@ -255,17 +236,14 @@ on_pset_activated (
   g_return_if_fail (pack);
 
   /* set preset to chord pads */
-  int pack_idx =
-    chord_preset_pack_manager_get_pack_index (
-      CHORD_PRESET_PACK_MANAGER, pack);
-  int pset_idx =
-    chord_preset_pack_manager_get_pset_index (
-      CHORD_PRESET_PACK_MANAGER, pset);
+  int pack_idx = chord_preset_pack_manager_get_pack_index (
+    CHORD_PRESET_PACK_MANAGER, pack);
+  int pset_idx = chord_preset_pack_manager_get_pset_index (
+    CHORD_PRESET_PACK_MANAGER, pset);
   char params[800];
   sprintf (params, "%d,%d", pack_idx, pset_idx);
   gtk_widget_activate_action (
-    GTK_WIDGET (self), "app.load-chord-preset",
-    "s", params);
+    GTK_WIDGET (self), "app.load-chord-preset", "s", params);
 }
 
 static void
@@ -278,13 +256,10 @@ on_pack_selection_changed (
   ChordPackBrowserWidget * self =
     Z_CHORD_PACK_BROWSER_WIDGET (user_data);
 
-  sample_processor_stop_file_playback (
-    SAMPLE_PROCESSOR);
+  sample_processor_stop_file_playback (SAMPLE_PROCESSOR);
 
-  GObject * gobj =
-    gtk_single_selection_get_selected_item (
-      GTK_SINGLE_SELECTION (
-        self->packs_selection_model));
+  GObject * gobj = gtk_single_selection_get_selected_item (
+    GTK_SINGLE_SELECTION (self->packs_selection_model));
   if (!gobj)
     {
       self->cur_pack = NULL;
@@ -299,8 +274,7 @@ on_pack_selection_changed (
   self->cur_pack = pack;
 
   g_ptr_array_remove_range (
-    self->selected_packs, 0,
-    self->selected_packs->len);
+    self->selected_packs, 0, self->selected_packs->len);
   g_ptr_array_add (self->selected_packs, pack);
 
   refilter_presets (self);
@@ -316,13 +290,10 @@ on_pset_selection_changed (
   ChordPackBrowserWidget * self =
     Z_CHORD_PACK_BROWSER_WIDGET (user_data);
 
-  sample_processor_stop_file_playback (
-    SAMPLE_PROCESSOR);
+  sample_processor_stop_file_playback (SAMPLE_PROCESSOR);
 
-  GObject * gobj =
-    gtk_single_selection_get_selected_item (
-      GTK_SINGLE_SELECTION (
-        self->psets_selection_model));
+  GObject * gobj = gtk_single_selection_get_selected_item (
+    GTK_SINGLE_SELECTION (self->psets_selection_model));
   if (!gobj)
     {
       self->cur_pset = NULL;
@@ -332,21 +303,18 @@ on_pset_selection_changed (
   /* get wrapped object */
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  ChordPreset * pset =
-    (ChordPreset *) wrapped_obj->obj;
+  ChordPreset * pset = (ChordPreset *) wrapped_obj->obj;
   self->cur_pset = pset;
 
   g_ptr_array_remove_range (
-    self->selected_psets, 0,
-    self->selected_psets->len);
+    self->selected_psets, 0, self->selected_psets->len);
   g_ptr_array_add (self->selected_psets, pset);
 
   char * label = chord_preset_get_info_text (pset);
   g_message ("selected preset: %s", pset->name);
   update_pset_info_label (self, label);
 
-  if (g_settings_get_boolean (
-        S_UI_FILE_BROWSER, "autoplay"))
+  if (g_settings_get_boolean (S_UI_FILE_BROWSER, "autoplay"))
     {
       sample_processor_queue_chord_preset (
         SAMPLE_PROCESSOR, pset);
@@ -359,13 +327,11 @@ packs_list_view_setup (
   GtkListView *            list_view,
   GtkSelectionModel *      selection_model)
 {
-  gtk_list_view_set_model (
-    list_view, selection_model);
+  gtk_list_view_set_model (list_view, selection_model);
   self->packs_item_factory = item_factory_new (
     ITEM_FACTORY_ICON_AND_TEXT, false, NULL);
   gtk_list_view_set_factory (
-    list_view,
-    self->packs_item_factory->list_item_factory);
+    list_view, self->packs_item_factory->list_item_factory);
 
   g_signal_connect (
     G_OBJECT (selection_model), "selection-changed",
@@ -378,13 +344,11 @@ psets_list_view_setup (
   GtkListView *            list_view,
   GtkSelectionModel *      selection_model)
 {
-  gtk_list_view_set_model (
-    list_view, selection_model);
+  gtk_list_view_set_model (list_view, selection_model);
   self->psets_item_factory = item_factory_new (
     ITEM_FACTORY_ICON_AND_TEXT, false, NULL);
   gtk_list_view_set_factory (
-    list_view,
-    self->psets_item_factory->list_item_factory);
+    list_view, self->psets_item_factory->list_item_factory);
 
   g_signal_connect (
     G_OBJECT (selection_model), "selection-changed",
@@ -405,39 +369,33 @@ on_pack_right_click (
 ChordPackBrowserWidget *
 chord_pack_browser_widget_new ()
 {
-  ChordPackBrowserWidget * self = g_object_new (
-    CHORD_PACK_BROWSER_WIDGET_TYPE, NULL);
+  ChordPackBrowserWidget * self =
+    g_object_new (CHORD_PACK_BROWSER_WIDGET_TYPE, NULL);
 
-  g_message (
-    "Instantiating chord_pack_browser widget...");
+  g_message ("Instantiating chord_pack_browser widget...");
 
   gtk_label_set_xalign (self->pset_info, 0);
 
   file_auditioner_controls_widget_setup (
-    self->auditioner_controls, GTK_WIDGET (self),
-    false, get_selected_preset,
-    (GenericCallback) refilter_presets);
+    self->auditioner_controls, GTK_WIDGET (self), false,
+    get_selected_preset, (GenericCallback) refilter_presets);
 
   /* populate packs */
   self->packs_selection_model =
-    GTK_SINGLE_SELECTION (
-      create_model_for_packs (self));
+    GTK_SINGLE_SELECTION (create_model_for_packs (self));
   packs_list_view_setup (
     self, self->packs_list_view,
-    GTK_SELECTION_MODEL (
-      self->packs_selection_model));
+    GTK_SELECTION_MODEL (self->packs_selection_model));
   g_signal_connect (
     self->packs_list_view, "activate",
     G_CALLBACK (on_pack_activated), self);
 
   /* populate presets */
   self->psets_selection_model =
-    GTK_SINGLE_SELECTION (
-      create_model_for_psets (self));
+    GTK_SINGLE_SELECTION (create_model_for_psets (self));
   psets_list_view_setup (
     self, self->psets_list_view,
-    GTK_SELECTION_MODEL (
-      self->psets_selection_model));
+    GTK_SELECTION_MODEL (self->psets_selection_model));
   g_signal_connect (
     self->psets_list_view, "activate",
     G_CALLBACK (on_pset_activated), self);
@@ -461,8 +419,7 @@ static void
 chord_pack_browser_widget_class_init (
   ChordPackBrowserWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "chord_pack_browser.ui");
 
@@ -482,22 +439,18 @@ chord_pack_browser_widget_class_init (
 }
 
 static void
-chord_pack_browser_widget_init (
-  ChordPackBrowserWidget * self)
+chord_pack_browser_widget_init (ChordPackBrowserWidget * self)
 {
-  g_type_ensure (
-    FILE_AUDITIONER_CONTROLS_WIDGET_TYPE);
+  g_type_ensure (FILE_AUDITIONER_CONTROLS_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->popover_menu = GTK_POPOVER_MENU (
-    gtk_popover_menu_new_from_model (NULL));
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
   gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->popover_menu));
+    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
 
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (self->paned), true);
+  gtk_widget_set_hexpand (GTK_WIDGET (self->paned), true);
 
   self->selected_packs = g_ptr_array_new ();
   self->selected_psets = g_ptr_array_new ();

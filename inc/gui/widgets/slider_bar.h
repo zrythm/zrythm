@@ -28,8 +28,7 @@
 
 #include <gtk/gtk.h>
 
-#define SLIDER_BAR_WIDGET_TYPE \
-  (slider_bar_widget_get_type ())
+#define SLIDER_BAR_WIDGET_TYPE (slider_bar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   SliderBarWidget,
   slider_bar_widget,
@@ -43,8 +42,7 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MW_SLIDER_BAR \
-  MW_RIGHT_DOCK_EDGE->control_room
+#define MW_SLIDER_BAR MW_RIGHT_DOCK_EDGE->control_room
 
 typedef struct _SliderBarWidget
 {
@@ -102,8 +100,8 @@ _slider_bar_widget_new (
   getter, setter, obj, min, max, w, h, zero, text) \
   _slider_bar_widget_new ( \
     (float (*) (void *)) getter, \
-    (void (*) (void *, float)) setter, \
-    (void *) obj, min, max, w, h, zero, text)
+    (void (*) (void *, float)) setter, (void *) obj, min, \
+    max, w, h, zero, text)
 
 /**
  * @}

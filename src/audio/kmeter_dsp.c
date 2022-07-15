@@ -43,10 +43,7 @@
  * @param n Number of samples.
  */
 void
-kmeter_dsp_process (
-  KMeterDsp * self,
-  float *     p,
-  int         n)
+kmeter_dsp_process (KMeterDsp * self, float * p, int n)
 {
   float s, t, z1, z2;
 
@@ -55,25 +52,17 @@ kmeter_dsp_process (
       /*const float fall = 15.f;*/
       const float fall = 5.f;
       const float tme =
-        (float) n
-        / self->fsamp; // period time in seconds
+        (float) n / self->fsamp; // period time in seconds
       self->fall = powf (
         10.0f,
-        -0.05f * fall
-          * tme); // per period fallback multiplier
+        -0.05f * fall * tme); // per period fallback multiplier
       self->fpp = n;
     }
 
   t = 0;
   // Get filter state.
-  z1 =
-    self->z1 > 50
-      ? 50
-      : (self->z1 < 0 ? 0 : self->z1);
-  z2 =
-    self->z2 > 50
-      ? 50
-      : (self->z2 < 0 ? 0 : self->z2);
+  z1 = self->z1 > 50 ? 50 : (self->z1 < 0 ? 0 : self->z1);
+  z2 = self->z2 > 50 ? 50 : (self->z2 < 0 ? 0 : self->z2);
 
   // Perform filtering. The second filter is evaluated
   // only every 4th sample - this is just an optimisation.
@@ -83,34 +72,25 @@ kmeter_dsp_process (
       s = *p++;
       s *= s;
       if (t < s)
-        t = s; // Update digital peak.
-      z1 +=
-        self->omega
-        * (s - z1); // Update first filter.
+        t = s;                      // Update digital peak.
+      z1 += self->omega * (s - z1); // Update first filter.
       s = *p++;
       s *= s;
       if (t < s)
-        t = s; // Update digital peak.
-      z1 +=
-        self->omega
-        * (s - z1); // Update first filter.
+        t = s;                      // Update digital peak.
+      z1 += self->omega * (s - z1); // Update first filter.
       s = *p++;
       s *= s;
       if (t < s)
-        t = s; // Update digital peak.
-      z1 +=
-        self->omega
-        * (s - z1); // Update first filter.
+        t = s;                      // Update digital peak.
+      z1 += self->omega * (s - z1); // Update first filter.
       s = *p++;
       s *= s;
       if (t < s)
-        t = s; // Update digital peak.
-      z1 +=
-        self->omega
-        * (s - z1); // Update first filter.
+        t = s;                      // Update digital peak.
+      z1 += self->omega * (s - z1); // Update first filter.
       z2 +=
-        4 * self->omega
-        * (z1 - z2); // Update second filter.
+        4 * self->omega * (z1 - z2); // Update second filter.
     }
 
   if (isnan (z1))
@@ -163,28 +143,22 @@ float
 kmeter_dsp_read_f (KMeterDsp * self)
 {
   float rv = self->rms;
-  self->flag =
-    true; // Resets _rms in next process().
+  self->flag = true; // Resets _rms in next process().
   return rv;
 }
 
 void
-kmeter_dsp_read (
-  KMeterDsp * self,
-  float *     rms,
-  float *     peak)
+kmeter_dsp_read (KMeterDsp * self, float * rms, float * peak)
 {
   *rms = self->rms;
   *peak = self->peak;
-  self->flag =
-    true; // Resets _rms in next process().
+  self->flag = true; // Resets _rms in next process().
 }
 
 void
 kmeter_dsp_reset (KMeterDsp * self)
 {
-  self->z1 = self->z2 = self->rms = self->peak =
-    .0f;
+  self->z1 = self->z2 = self->rms = self->peak = .0f;
   self->cnt = 0;
   self->flag = false;
 }
@@ -202,8 +176,7 @@ kmeter_dsp_init (KMeterDsp * self, float samplerate)
   self->hold =
     (int) (hold * samplerate + 0.5f); // number of samples to hold peak
   self->omega =
-    9.72f
-    / samplerate; // ballistic filter coefficient
+    9.72f / samplerate; // ballistic filter coefficient
 }
 
 KMeterDsp *

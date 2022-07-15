@@ -32,8 +32,7 @@ static const char * bit_depth_pretty_strings[] = {
 BitDepth
 audio_bit_depth_from_pretty_str (const char * str)
 {
-  for (BitDepth i = BIT_DEPTH_16;
-       i <= BIT_DEPTH_32; i++)
+  for (BitDepth i = BIT_DEPTH_16; i <= BIT_DEPTH_32; i++)
     {
       if (string_is_equal (
             str, _ (bit_depth_pretty_strings[i])))
@@ -72,8 +71,7 @@ audio_audec_log_func (
   if (ZRYTHM_TESTING)
     {
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored \
-  "-Wformat-nonliteral"
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
       g_message (fmt, args);
 #pragma GCC diagnostic pop
     }
@@ -113,8 +111,8 @@ audio_write_raw_file (
     "writing raw file: already written %ld, "
     "nframes %ld, samplerate %u, channels %u, "
     "filename %s, flac? %d",
-    frames_already_written, nframes, samplerate,
-    channels, filename, flac);
+    frames_already_written, nframes, samplerate, channels,
+    filename, flac);
 
   SF_INFO info;
 
@@ -122,8 +120,7 @@ audio_write_raw_file (
   info.frames = (sf_count_t) nframes;
   info.channels = (int) channels;
   info.samplerate = (int) samplerate;
-  info.format =
-    flac ? SF_FORMAT_FLAC : SF_FORMAT_WAV;
+  info.format = flac ? SF_FORMAT_FLAC : SF_FORMAT_WAV;
   switch (bit_depth)
     {
     case BIT_DEPTH_16:
@@ -142,8 +139,7 @@ audio_write_raw_file (
 
   bool write_chunk =
     (frames_already_written > 0)
-    && g_file_test (
-      filename, G_FILE_TEST_IS_REGULAR);
+    && g_file_test (filename, G_FILE_TEST_IS_REGULAR);
 
   if (flac && write_chunk)
     {
@@ -151,13 +147,12 @@ audio_write_raw_file (
       return -1;
     }
 
-  SNDFILE * sndfile = sf_open (
-    filename, flac ? SFM_WRITE : SFM_RDWR, &info);
+  SNDFILE * sndfile =
+    sf_open (filename, flac ? SFM_WRITE : SFM_RDWR, &info);
   if (!sndfile)
     {
       g_critical (
-        "error opening sndfile: %s",
-        sf_strerror (NULL));
+        "error opening sndfile: %s", sf_strerror (NULL));
       return -1;
     }
 
@@ -167,34 +162,30 @@ audio_write_raw_file (
         write_chunk ? frames_already_written : 0;
       g_debug ("seeking to %zu", seek_to);
       int ret = sf_seek (
-        sndfile, (sf_count_t) seek_to,
-        SEEK_SET | SFM_WRITE);
+        sndfile, (sf_count_t) seek_to, SEEK_SET | SFM_WRITE);
       if (ret == -1 || ret != (int) seek_to)
         {
           g_critical (
-            "seek error %d: %s", ret,
-            sf_strerror (sndfile));
+            "seek error %d: %s", ret, sf_strerror (sndfile));
         }
     }
 
   g_debug ("nframes = %zu", nframes);
-  sf_count_t count = sf_writef_float (
-    sndfile, buff, (sf_count_t) nframes);
+  sf_count_t count =
+    sf_writef_float (sndfile, buff, (sf_count_t) nframes);
   if (count != (sf_count_t) nframes)
     {
       g_critical (
         "mismatch: expected %ld frames, got %ld\n"
         "error: %s",
-        (sf_count_t) nframes, count,
-        sf_strerror (sndfile));
+        (sf_count_t) nframes, count, sf_strerror (sndfile));
     }
 
   sf_write_sync (sndfile);
 
   sf_close (sndfile);
 
-  g_message (
-    "wrote %zu frames to '%s'", count, filename);
+  g_message ("wrote %zu frames to '%s'", count, filename);
 
   return 0;
 }
@@ -209,8 +200,7 @@ audio_get_num_frames (const char * filepath)
   SF_INFO sfinfo;
   memset (&sfinfo, 0, sizeof (sfinfo));
   sfinfo.format = sfinfo.format | SF_FORMAT_PCM_16;
-  SNDFILE * sndfile =
-    sf_open (filepath, SFM_READ, &sfinfo);
+  SNDFILE * sndfile = sf_open (filepath, SFM_READ, &sfinfo);
   if (!sndfile)
     {
       const char * err_str = sf_strerror (sndfile);
@@ -218,8 +208,7 @@ audio_get_num_frames (const char * filepath)
       return 0;
     }
   g_return_val_if_fail (sfinfo.frames > 0, 0);
-  unsigned_frame_t frames =
-    (unsigned_frame_t) sfinfo.frames;
+  unsigned_frame_t frames = (unsigned_frame_t) sfinfo.frames;
 
   int ret = sf_close (sndfile);
   g_return_val_if_fail (ret == 0, 0);
@@ -261,8 +250,7 @@ audio_frames_empty (float * src, size_t num_frames)
     {
       if (!math_floats_equal (src[i], 0.f))
         {
-          g_debug (
-            "[%zu] %f != 0", i, (double) src[i]);
+          g_debug ("[%zu] %f != 0", i, (double) src[i]);
           return false;
         }
     }
@@ -275,25 +263,18 @@ audio_file_is_silent (const char * filepath)
   SF_INFO sfinfo;
   memset (&sfinfo, 0, sizeof (sfinfo));
   sfinfo.format = sfinfo.format | SF_FORMAT_PCM_16;
-  SNDFILE * sndfile =
-    sf_open (filepath, SFM_READ, &sfinfo);
-  g_return_val_if_fail (
-    sndfile && sfinfo.frames > 0, true);
+  SNDFILE * sndfile = sf_open (filepath, SFM_READ, &sfinfo);
+  g_return_val_if_fail (sndfile && sfinfo.frames > 0, true);
 
-  long buf_size = sfinfo.frames * sfinfo.channels;
-  float * data =
-    calloc ((size_t) buf_size, sizeof (float));
+  long    buf_size = sfinfo.frames * sfinfo.channels;
+  float * data = calloc ((size_t) buf_size, sizeof (float));
   sf_count_t frames_read =
     sf_readf_float (sndfile, data, sfinfo.frames);
   g_assert_cmpint (frames_read, ==, sfinfo.frames);
-  g_return_val_if_fail (
-    frames_read == sfinfo.frames, true);
-  g_debug (
-    "read %ld frames for %s", frames_read,
-    filepath);
+  g_return_val_if_fail (frames_read == sfinfo.frames, true);
+  g_debug ("read %ld frames for %s", frames_read, filepath);
 
-  bool is_empty =
-    audio_frames_empty (data, (size_t) buf_size);
+  bool is_empty = audio_frames_empty (data, (size_t) buf_size);
   free (data);
 
   int ret = sf_close (sndfile);
@@ -315,16 +296,14 @@ audio_detect_bpm (
   GArray *     candidates)
 {
   ZVampPlugin * plugin = vamp_get_plugin (
-    Z_VAMP_PLUGIN_FIXED_TEMPO_ESTIMATOR,
-    (float) samplerate);
+    Z_VAMP_PLUGIN_FIXED_TEMPO_ESTIMATOR, (float) samplerate);
   size_t step_sz =
     vamp_plugin_get_preferred_step_size (plugin);
   size_t block_sz =
     vamp_plugin_get_preferred_block_size (plugin);
 
   /* only works with 1 channel */
-  vamp_plugin_initialize (
-    plugin, 1, step_sz, block_sz);
+  vamp_plugin_initialize (plugin, 1, step_sz, block_sz);
 
   ZVampOutputList * outputs =
     vamp_plugin_get_output_descriptors (plugin);
@@ -333,20 +312,16 @@ audio_detect_bpm (
 
   long  cur_timestamp = 0;
   float bpm = 0.f;
-  while (
-    (cur_timestamp + (long) block_sz)
-    < (long) num_frames)
+  while ((cur_timestamp + (long) block_sz) < (long) num_frames)
     {
       float * frames[] = {
         &src[cur_timestamp],
       };
-      ZVampFeatureSet * feature_set =
-        vamp_plugin_process (
-          plugin, (const float * const *) frames,
-          cur_timestamp, samplerate);
+      ZVampFeatureSet * feature_set = vamp_plugin_process (
+        plugin, (const float * const *) frames, cur_timestamp,
+        samplerate);
       const ZVampFeatureList * fl =
-        vamp_feature_set_get_list_for_output (
-          feature_set, 0);
+        vamp_feature_set_get_list_for_output (feature_set, 0);
       if (fl)
         {
           vamp_feature_list_print (fl);
@@ -356,8 +331,7 @@ audio_detect_bpm (
 
           if (candidates)
             {
-              for (size_t i = 0;
-                   i < feature->num_values; i++)
+              for (size_t i = 0; i < feature->num_values; i++)
                 {
                   g_array_append_val (
                     candidates, feature->values[i]);
@@ -370,11 +344,9 @@ audio_detect_bpm (
 
   g_message ("getting remaining features");
   ZVampFeatureSet * feature_set =
-    vamp_plugin_get_remaining_features (
-      plugin, samplerate);
+    vamp_plugin_get_remaining_features (plugin, samplerate);
   const ZVampFeatureList * fl =
-    vamp_feature_set_get_list_for_output (
-      feature_set, 0);
+    vamp_feature_set_get_list_for_output (feature_set, 0);
   if (fl)
     {
       vamp_feature_list_print (fl);
@@ -384,8 +356,7 @@ audio_detect_bpm (
 
       if (candidates)
         {
-          for (size_t i = 0;
-               i < feature->num_values; i++)
+          for (size_t i = 0; i < feature->num_values; i++)
             {
               g_array_append_val (
                 candidates, feature->values[i]);
@@ -436,8 +407,7 @@ audio_get_num_cores ()
     }
 #endif
 
-  g_message (
-    "Number of CPU cores found: %d", num_cores);
+  g_message ("Number of CPU cores found: %d", num_cores);
 
   return num_cores;
 }

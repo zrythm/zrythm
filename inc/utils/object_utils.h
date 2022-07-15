@@ -52,8 +52,8 @@ typedef struct ObjectUtils
  * caller doesn't have to. */
 #define free_later(obj, func) \
   _free_later ( \
-    (void *) obj, (void (*) (void *)) func, \
-    __FILE__, __func__, __LINE__)
+    (void *) obj, (void (*) (void *)) func, __FILE__, \
+    __func__, __LINE__)
 
 /**
  * Frees the object after a while.

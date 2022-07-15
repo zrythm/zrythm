@@ -47,9 +47,7 @@
  * relative coordinates.
  */
 void
-velocity_draw (
-  Velocity *    self,
-  GtkSnapshot * snapshot);
+velocity_draw (Velocity * self, GtkSnapshot * snapshot);
 
 /**
  * @}

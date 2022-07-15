@@ -46,8 +46,8 @@ test_set_at_index (void)
     master, region, first_vis_at, -1, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) region, F_SELECT,
-    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) region, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
     (ArrangerSelections *) TL_SELECTIONS, NULL);
 
@@ -55,8 +55,7 @@ test_set_at_index (void)
     CLIP_EDITOR, region, F_NO_PUBLISH_EVENTS);
 
   AutomationTrack * first_invisible_at =
-    automation_tracklist_get_first_invisible_at (
-      atl);
+    automation_tracklist_get_first_invisible_at (atl);
   automation_tracklist_set_at_index (
     atl, first_invisible_at, first_vis_at->index,
     F_NO_PUSH_DOWN);
@@ -94,8 +93,7 @@ test_region_in_2nd_automation_track_get_muted (void)
 
   /* create a new automation track */
   AutomationTrack * new_at =
-    automation_tracklist_get_first_invisible_at (
-      atl);
+    automation_tracklist_get_first_invisible_at (atl);
   if (!new_at->created)
     new_at->created = 1;
   new_at->visible = true;
@@ -111,14 +109,14 @@ test_region_in_2nd_automation_track_get_muted (void)
   position_set_to_bar (&start, 2);
   position_set_to_bar (&end, 4);
   ZRegion * region = automation_region_new (
-    &start, &end, track_get_name_hash (master),
-    new_at->index, 0);
+    &start, &end, track_get_name_hash (master), new_at->index,
+    0);
   track_add_region (
     master, region, new_at, -1, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) region, F_SELECT,
-    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) region, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
     (ArrangerSelections *) TL_SELECTIONS, NULL);
 
@@ -147,8 +145,7 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX
     "test region in 2nd automation track get muted",
-    (GTestFunc)
-      test_region_in_2nd_automation_track_get_muted);
+    (GTestFunc) test_region_in_2nd_automation_track_get_muted);
 
   return g_test_run ();
 }

@@ -26,16 +26,14 @@ chord_object_new (
 {
   ChordObject * self = object_new (ChordObject);
 
-  self->schema_version =
-    CHORD_OBJECT_SCHEMA_VERSION;
+  self->schema_version = CHORD_OBJECT_SCHEMA_VERSION;
 
   ArrangerObject * obj = (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_CHORD_OBJECT;
 
   self->chord_index = chord_index;
   self->index = index;
-  region_identifier_copy (
-    &obj->region_id, region_id);
+  region_identifier_copy (&obj->region_id, region_id);
   self->magic = CHORD_OBJECT_MAGIC;
 
   arranger_object_init (obj);
@@ -48,22 +46,18 @@ chord_object_new (
  * ChordObject.
  */
 ChordDescriptor *
-chord_object_get_chord_descriptor (
-  const ChordObject * self)
+chord_object_get_chord_descriptor (const ChordObject * self)
 {
   g_return_val_if_fail (CLIP_EDITOR, NULL);
   return CHORD_EDITOR->chords[self->chord_index];
 }
 
 int
-chord_object_is_equal (
-  ChordObject * a,
-  ChordObject * b)
+chord_object_is_equal (ChordObject * a, ChordObject * b)
 {
   ArrangerObject * obj_a = (ArrangerObject *) a;
   ArrangerObject * obj_b = (ArrangerObject *) b;
-  return position_is_equal_ticks (
-           &obj_a->pos, &obj_b->pos)
+  return position_is_equal_ticks (&obj_a->pos, &obj_b->pos)
          && a->chord_index == b->chord_index
          && a->index == b->index;
 }
@@ -77,8 +71,7 @@ chord_object_is_equal (
 ChordObject *
 chord_object_find_by_pos (ChordObject * clone)
 {
-  ArrangerObject * clone_obj =
-    (ArrangerObject *) clone;
+  ArrangerObject * clone_obj = (ArrangerObject *) clone;
 
   /* get actual region - clone's region might be
    * an unused clone */
@@ -91,8 +84,7 @@ chord_object_find_by_pos (ChordObject * clone)
     {
       chord = r->chord_objects[i];
       c_obj = (ArrangerObject *) chord;
-      if (position_is_equal (
-            &c_obj->pos, &clone_obj->pos))
+      if (position_is_equal (&c_obj->pos, &clone_obj->pos))
         return chord;
     }
   return NULL;
@@ -108,8 +100,7 @@ chord_object_set_region_and_index (
   int           idx)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
-  region_identifier_copy (
-    &obj->region_id, &region->id);
+  region_identifier_copy (&obj->region_id, &region->id);
   self->index = idx;
 }
 

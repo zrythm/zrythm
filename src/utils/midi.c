@@ -178,9 +178,8 @@ static const char * midi_cc_names[128] = {
 };
 
 static const char * note_labels[12] = {
-  "C",       "D\u266D", "D",       "E\u266D",
-  "E",       "F",       "F\u266F", "G",
-  "A\u266D", "A",       "B\u266D", "B"
+  "C",       "D\u266D", "D",       "E\u266D", "E",       "F",
+  "F\u266F", "G",       "A\u266D", "A",       "B\u266D", "B"
 };
 
 /**
@@ -218,17 +217,12 @@ midi_ctrl_change_get_ch_and_description (
 
   if (buf)
     {
-      if (
-        ctrl_change[1] >= 0x08
-        && ctrl_change[1] <= 0x1F)
+      if (ctrl_change[1] >= 0x08 && ctrl_change[1] <= 0x1F)
         {
           sprintf (
-            buf, "Continuous controller #%u",
-            ctrl_change[1]);
+            buf, "Continuous controller #%u", ctrl_change[1]);
         }
-      else if (
-        ctrl_change[1] >= 0x28
-        && ctrl_change[1] <= 0x3F)
+      else if (ctrl_change[1] >= 0x28 && ctrl_change[1] <= 0x3F)
         {
           sprintf (
             buf, "Continuous controller #%u",
@@ -240,8 +234,7 @@ midi_ctrl_change_get_ch_and_description (
             {
             case 0x00:
             case 0x20:
-              strcpy (
-                buf, "Continuous controller #0");
+              strcpy (buf, "Continuous controller #0");
               break;
             case 0x01:
             case 0x21:
@@ -253,8 +246,7 @@ midi_ctrl_change_get_ch_and_description (
               break;
             case 0x03:
             case 0x23:
-              strcpy (
-                buf, "Continuous controller #3");
+              strcpy (buf, "Continuous controller #3");
               break;
             case 0x04:
             case 0x24:
@@ -358,15 +350,10 @@ midi_get_note_name_with_octave (
   const midi_byte_t short_msg[3],
   char *            buf)
 {
-  midi_byte_t note =
-    midi_get_note_number (short_msg);
-  midi_byte_t note_idx =
-    midi_get_chromatic_scale_index (note);
-  midi_byte_t octave =
-    midi_get_octave_number (note);
-  sprintf (
-    buf, "%s%u", midi_get_note_name (note_idx),
-    octave);
+  midi_byte_t note = midi_get_note_number (short_msg);
+  midi_byte_t note_idx = midi_get_chromatic_scale_index (note);
+  midi_byte_t octave = midi_get_octave_number (note);
+  sprintf (buf, "%s%u", midi_get_note_name (note_idx), octave);
 }
 
 void
@@ -449,14 +436,12 @@ midi_print_short_msg_to_str (
   const midi_byte_t short_msg[3],
   char *            buf)
 {
-  midi_byte_t channel =
-    midi_get_channel_1_to_16 (short_msg);
+  midi_byte_t channel = midi_get_channel_1_to_16 (short_msg);
 
   if (midi_is_note_on (short_msg))
     {
       char note[40];
-      midi_get_note_name_with_octave (
-        short_msg, note);
+      midi_get_note_name_with_octave (short_msg, note);
       sprintf (
         buf, "Note-On %s: Velocity: %u", note,
         midi_get_velocity (short_msg));
@@ -464,8 +449,7 @@ midi_print_short_msg_to_str (
   else if (midi_is_note_off (short_msg))
     {
       char note[40];
-      midi_get_note_name_with_octave (
-        short_msg, note);
+      midi_get_note_name_with_octave (short_msg, note);
       sprintf (
         buf, "Note-Off %s: Velocity: %u", note,
         midi_get_velocity (short_msg));
@@ -473,8 +457,7 @@ midi_print_short_msg_to_str (
   else if (midi_is_aftertouch (short_msg))
     {
       char note[40];
-      midi_get_note_name_with_octave (
-        short_msg, note);
+      midi_get_note_name_with_octave (short_msg, note);
       sprintf (
         buf, "Aftertouch %s: %u", note,
         midi_get_aftertouch_value (short_msg));
@@ -483,15 +466,13 @@ midi_print_short_msg_to_str (
     {
       sprintf (
         buf, "Pitch Wheel: %u (Ch%u)",
-        midi_get_pitchwheel_value (short_msg),
-        channel);
+        midi_get_pitchwheel_value (short_msg), channel);
     }
   else if (midi_is_channel_pressure (short_msg))
     {
       sprintf (
         buf, "Channel Pressure: %u (Ch%u)",
-        midi_get_channel_pressure_value (short_msg),
-        channel);
+        midi_get_channel_pressure_value (short_msg), channel);
     }
   else if (midi_is_controller (short_msg))
     {
@@ -505,18 +486,15 @@ midi_print_short_msg_to_str (
     {
       sprintf (
         buf, "Program Change: %u (Ch%u)",
-        midi_get_program_change_number (short_msg),
-        channel);
+        midi_get_program_change_number (short_msg), channel);
     }
   else if (midi_is_all_notes_off (short_msg))
     {
-      sprintf (
-        buf, "All Notes Off: (Ch%u)", channel);
+      sprintf (buf, "All Notes Off: (Ch%u)", channel);
     }
   else if (midi_is_all_sound_off (short_msg))
     {
-      sprintf (
-        buf, "All Sound Off: (Ch%u)", channel);
+      sprintf (buf, "All Sound Off: (Ch%u)", channel);
     }
   else if (midi_is_quarter_frame (short_msg))
     {
@@ -548,15 +526,13 @@ midi_print_short_msg_to_str (
     {
       sprintf (
         buf, "Song Position: %u",
-        midi_get_song_position_pointer_value (
-          short_msg));
+        midi_get_song_position_pointer_value (short_msg));
     }
   else
     {
       char hex[3 * 4];
       midi_get_hex_str (short_msg, 3, hex);
-      sprintf (
-        buf, "Unknown MIDI Message: %s", hex);
+      sprintf (buf, "Unknown MIDI Message: %s", hex);
     }
 }
 
@@ -579,8 +555,8 @@ midi_print_to_str (
   else if (midi_is_meta_event (msg, msg_sz))
     {
       const midi_byte_t * data = NULL;
-      size_t data_sz = midi_get_meta_event_data (
-        &data, msg, msg_sz);
+      size_t              data_sz =
+        midi_get_meta_event_data (&data, msg, msg_sz);
       if (data_sz == 0)
         {
           strcpy (buf, "Invalid meta event");
@@ -607,15 +583,13 @@ midi_print_to_str (
       char hex[msg_sz * 4];
       midi_get_hex_str (msg, msg_sz, hex);
       sprintf (
-        buf, "Unknown MIDI event of size %zu: %s",
-        msg_sz, hex);
+        buf, "Unknown MIDI event of size %zu: %s", msg_sz,
+        hex);
     }
 }
 
 void
-midi_print (
-  const midi_byte_t * msg,
-  const size_t        msg_sz)
+midi_print (const midi_byte_t * msg, const size_t msg_sz)
 {
   char str[600];
   midi_print_to_str (msg, msg_sz, str);

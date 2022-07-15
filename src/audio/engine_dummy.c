@@ -24,11 +24,9 @@ process_cb (gpointer data)
     (gulong) (secs_per_block * 1000.0 * 1000);
 
   g_return_val_if_fail (
-    g_thread_self () != zrythm_app->gtk_thread,
-    NULL);
+    g_thread_self () != zrythm_app->gtk_thread, NULL);
 
-  g_message (
-    "Running dummy audio engine for first time");
+  g_message ("Running dummy audio engine for first time");
 
   while (1)
     {
@@ -50,8 +48,7 @@ engine_dummy_setup (AudioEngine * self)
 
   if (ZRYTHM_HAVE_UI && zrythm_app->buf_size > 0)
     {
-      self->block_length =
-        (nframes_t) zrythm_app->buf_size;
+      self->block_length = (nframes_t) zrythm_app->buf_size;
     }
   else
     {
@@ -60,8 +57,7 @@ engine_dummy_setup (AudioEngine * self)
 
   if (zrythm_app->samplerate > 0)
     {
-      self->sample_rate =
-        (nframes_t) zrythm_app->samplerate;
+      self->sample_rate = (nframes_t) zrythm_app->samplerate;
     }
   else
     {
@@ -73,8 +69,7 @@ engine_dummy_setup (AudioEngine * self)
   g_warn_if_fail (beats_per_bar >= 1);
 
   g_message (
-    "Dummy Engine set up [samplerate: %u]",
-    self->sample_rate);
+    "Dummy Engine set up [samplerate: %u]", self->sample_rate);
 
   return 0;
 }
@@ -90,9 +85,7 @@ engine_dummy_midi_setup (AudioEngine * self)
 }
 
 int
-engine_dummy_activate (
-  AudioEngine * self,
-  bool          activate)
+engine_dummy_activate (AudioEngine * self, bool activate)
 {
   if (activate)
     {
@@ -101,15 +94,14 @@ engine_dummy_activate (
       self->stop_dummy_audio_thread = false;
 
       int beats_per_bar =
-        tempo_track_get_beats_per_bar (
-          P_TEMPO_TRACK);
+        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
       engine_update_frames_per_tick (
         self, beats_per_bar,
         tempo_track_get_current_bpm (P_TEMPO_TRACK),
         self->sample_rate, true, true, false);
 
-      self->dummy_audio_thread = g_thread_new (
-        "process_cb", process_cb, self);
+      self->dummy_audio_thread =
+        g_thread_new ("process_cb", process_cb, self);
     }
   else
     {

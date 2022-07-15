@@ -41,12 +41,8 @@ typedef struct ModulatorMacroProcessor_v1
 
 static const cyaml_schema_field_t
   modulator_macro_processor_fields_schema_v1[] = {
-    YAML_FIELD_INT (
-      ModulatorMacroProcessor_v1,
-      schema_version),
-    YAML_FIELD_STRING_PTR (
-      ModulatorMacroProcessor_v1,
-      name),
+    YAML_FIELD_INT (ModulatorMacroProcessor_v1, schema_version),
+    YAML_FIELD_STRING_PTR (ModulatorMacroProcessor_v1, name),
     YAML_FIELD_MAPPING_PTR (
       ModulatorMacroProcessor_v1,
       cv_in,

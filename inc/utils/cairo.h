@@ -100,25 +100,24 @@ z_cairo_rounded_rectangle (
 
   cairo_new_sub_path (cr);
   cairo_arc (
-    cr, x + width - radius, y + radius, radius,
-    -90 * degrees, 0 * degrees);
+    cr, x + width - radius, y + radius, radius, -90 * degrees,
+    0 * degrees);
   cairo_arc (
-    cr, x + width - radius, y + height - radius,
-    radius, 0 * degrees, 90 * degrees);
+    cr, x + width - radius, y + height - radius, radius,
+    0 * degrees, 90 * degrees);
   cairo_arc (
-    cr, x + radius, y + height - radius, radius,
-    90 * degrees, 180 * degrees);
+    cr, x + radius, y + height - radius, radius, 90 * degrees,
+    180 * degrees);
   cairo_arc (
-    cr, x + radius, y + radius, radius,
-    180 * degrees, 270 * degrees);
+    cr, x + radius, y + radius, radius, 180 * degrees,
+    270 * degrees);
   cairo_close_path (cr);
 }
 
 #define z_cairo_get_text_extents_for_widget( \
   _widget, _layout, _text, _width, _height) \
   _z_cairo_get_text_extents_for_widget ( \
-    (GtkWidget *) _widget, _layout, _text, \
-    _width, _height)
+    (GtkWidget *) _widget, _layout, _text, _width, _height)
 
 /**
  * Gets the width of the given text in pixels
@@ -141,11 +140,10 @@ _z_cairo_get_text_extents_for_widget (
 /**
  * Draw text with default padding.
  */
-#define z_cairo_draw_text( \
-  cr, widget, layout, text) \
+#define z_cairo_draw_text(cr, widget, layout, text) \
   z_cairo_draw_text_full ( \
-    cr, widget, layout, text, \
-    Z_CAIRO_TEXT_PADDING, Z_CAIRO_TEXT_PADDING)
+    cr, widget, layout, text, Z_CAIRO_TEXT_PADDING, \
+    Z_CAIRO_TEXT_PADDING)
 
 /**
  * Draws the given text using the given font
@@ -214,8 +212,7 @@ z_cairo_create_pango_layout_from_description (
  * Creates a PangoLayout with default settings.
  */
 PangoLayout *
-z_cairo_create_default_pango_layout (
-  GtkWidget * widget);
+z_cairo_create_default_pango_layout (GtkWidget * widget);
 
 /**
  * Resets a surface and cairo_t with a new surface

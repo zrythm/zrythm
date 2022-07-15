@@ -32,12 +32,11 @@
 #include "audio/port_identifier.h"
 #include "utils/yaml.h"
 
-typedef struct StereoPorts        StereoPorts;
-typedef struct Track              Track;
-typedef struct Port               Port;
-typedef struct _ChannelSendWidget ChannelSendWidget;
-typedef struct PortConnectionsManager
-  PortConnectionsManager;
+typedef struct StereoPorts            StereoPorts;
+typedef struct Track                  Track;
+typedef struct Port                   Port;
+typedef struct _ChannelSendWidget     ChannelSendWidget;
+typedef struct PortConnectionsManager PortConnectionsManager;
 
 /**
  * @addtogroup audio
@@ -57,8 +56,7 @@ typedef struct PortConnectionsManager
   (x->slot < CHANNEL_SEND_POST_FADER_START_SLOT)
 
 #define channel_send_is_in_active_project(self) \
-  (self->track \
-   && track_is_in_active_project (self->track))
+  (self->track && track_is_in_active_project (self->track))
 
 /**
  * Channel send.
@@ -128,52 +126,46 @@ typedef struct ChannelSend
 
 } ChannelSend;
 
-static const cyaml_schema_field_t
-  channel_send_fields_schema[] = {
-    YAML_FIELD_INT (ChannelSend, schema_version),
-    YAML_FIELD_INT (ChannelSend, slot),
-    YAML_FIELD_MAPPING_PTR (
-      ChannelSend,
-      amount,
-      port_fields_schema),
-    YAML_FIELD_MAPPING_PTR (
-      ChannelSend,
-      enabled,
-      port_fields_schema),
-    YAML_FIELD_INT (ChannelSend, is_sidechain),
-    YAML_FIELD_MAPPING_PTR_OPTIONAL (
-      ChannelSend,
-      midi_in,
-      port_fields_schema),
-    YAML_FIELD_MAPPING_PTR_OPTIONAL (
-      ChannelSend,
-      stereo_in,
-      stereo_ports_fields_schema),
-    YAML_FIELD_MAPPING_PTR_OPTIONAL (
-      ChannelSend,
-      midi_out,
-      port_fields_schema),
-    YAML_FIELD_MAPPING_PTR_OPTIONAL (
-      ChannelSend,
-      stereo_out,
-      stereo_ports_fields_schema),
-    YAML_FIELD_UINT (ChannelSend, track_name_hash),
+static const cyaml_schema_field_t channel_send_fields_schema[] = {
+  YAML_FIELD_INT (ChannelSend, schema_version),
+  YAML_FIELD_INT (ChannelSend, slot),
+  YAML_FIELD_MAPPING_PTR (
+    ChannelSend,
+    amount,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (
+    ChannelSend,
+    enabled,
+    port_fields_schema),
+  YAML_FIELD_INT (ChannelSend, is_sidechain),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    ChannelSend,
+    midi_in,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    ChannelSend,
+    stereo_in,
+    stereo_ports_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    ChannelSend,
+    midi_out,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    ChannelSend,
+    stereo_out,
+    stereo_ports_fields_schema),
+  YAML_FIELD_UINT (ChannelSend, track_name_hash),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  channel_send_schema = {
-    YAML_VALUE_PTR (
-      ChannelSend,
-      channel_send_fields_schema),
-  };
+static const cyaml_schema_value_t channel_send_schema = {
+  YAML_VALUE_PTR (ChannelSend, channel_send_fields_schema),
+};
 
 NONNULL_ARGS (1)
 void
-channel_send_init_loaded (
-  ChannelSend * self,
-  Track *       track);
+channel_send_init_loaded (ChannelSend * self, Track * track);
 
 /**
  * Creates a channel send instance.
@@ -204,8 +196,7 @@ channel_send_is_enabled (const ChannelSend * self);
  */
 NONNULL
 bool
-channel_send_is_target_sidechain (
-  ChannelSend * self);
+channel_send_is_target_sidechain (ChannelSend * self);
 
 /**
  * Gets the target track.
@@ -225,16 +216,14 @@ channel_send_get_target_track (
  */
 NONNULL
 StereoPorts *
-channel_send_get_target_sidechain (
-  ChannelSend * self);
+channel_send_get_target_sidechain (ChannelSend * self);
 
 /**
  * Gets the amount to be used in widgets (0.0-1.0).
  */
 NONNULL
 float
-channel_send_get_amount_for_widgets (
-  ChannelSend * self);
+channel_send_get_amount_for_widgets (ChannelSend * self);
 
 /**
  * Sets the amount from a widget amount (0.0-1.0).
@@ -279,15 +268,11 @@ channel_send_connect_midi (
  */
 NONNULL
 void
-channel_send_disconnect (
-  ChannelSend * self,
-  bool          recalc_graph);
+channel_send_disconnect (ChannelSend * self, bool recalc_graph);
 
 NONNULL
 void
-channel_send_set_amount (
-  ChannelSend * self,
-  float         amount);
+channel_send_set_amount (ChannelSend * self, float amount);
 
 /**
  * Get the name of the destination, or a placeholder
@@ -295,9 +280,7 @@ channel_send_set_amount (
  */
 NONNULL
 void
-channel_send_get_dest_name (
-  ChannelSend * self,
-  char *        buf);
+channel_send_get_dest_name (ChannelSend * self, char * buf);
 
 NONNULL
 void

@@ -37,21 +37,18 @@ G_DECLARE_FINAL_TYPE (
   INSPECTOR_TRACK_WIDGET,
   GtkBox)
 
-typedef struct TracklistSelections
-  TracklistSelections;
+typedef struct TracklistSelections TracklistSelections;
 typedef struct _TrackPropertiesExpanderWidget
   TrackPropertiesExpanderWidget;
-typedef struct _PortsExpanderWidget
-  PortsExpanderWidget;
+typedef struct _PortsExpanderWidget PortsExpanderWidget;
 typedef struct _TrackInputExpanderWidget
   TrackInputExpanderWidget;
 typedef struct _PluginStripExpanderWidget
   PluginStripExpanderWidget;
 typedef struct _FaderControlsExpanderWidget
   FaderControlsExpanderWidget;
-typedef struct _TextExpanderWidget
-                                TextExpanderWidget;
-typedef struct _ColorAreaWidget ColorAreaWidget;
+typedef struct _TextExpanderWidget TextExpanderWidget;
+typedef struct _ColorAreaWidget    ColorAreaWidget;
 typedef struct _ChannelSendsExpanderWidget
   ChannelSendsExpanderWidget;
 
@@ -61,8 +58,7 @@ typedef struct _ChannelSendsExpanderWidget
  * @{
  */
 
-#define MW_TRACK_INSPECTOR \
-  MW_LEFT_DOCK_EDGE->track_inspector
+#define MW_TRACK_INSPECTOR MW_LEFT_DOCK_EDGE->track_inspector
 
 /**
  * Inspector section for tracks.
@@ -121,8 +117,7 @@ inspector_track_widget_new (void);
  * Prepare for finalization.
  */
 void
-inspector_track_widget_tear_down (
-  InspectorTrackWidget * self);
+inspector_track_widget_tear_down (InspectorTrackWidget * self);
 
 /**
  * @}

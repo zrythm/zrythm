@@ -86,9 +86,7 @@ typedef struct PortConnectionsManager
 
 static const cyaml_schema_field_t
   port_connections_manager_fields_schema[] = {
-    YAML_FIELD_INT (
-      PortConnectionsManager,
-      schema_version),
+    YAML_FIELD_INT (PortConnectionsManager, schema_version),
     YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
       PortConnectionsManager,
       connections,
@@ -207,8 +205,8 @@ port_connections_manager_ensure_connect (
 #define port_connections_manager_ensure_connect_from_connection( \
   self, conn) \
   port_connections_manager_ensure_connect ( \
-    self, conn->src_id, conn->dest_id, \
-    conn->multiplier, conn->locked, conn->enabled)
+    self, conn->src_id, conn->dest_id, conn->multiplier, \
+    conn->locked, conn->enabled)
 
 /**
  * Removes the connection for the given ports if
@@ -267,8 +265,7 @@ port_connections_manager_clone (
  */
 NONNULL
 void
-port_connections_manager_free (
-  PortConnectionsManager * self);
+port_connections_manager_free (PortConnectionsManager * self);
 
 /**
  * @}

@@ -34,8 +34,8 @@ SCM_DEFINE (
   "Returns the PluginDescriptor matching the given URI.")
 #define FUNC_NAME s_
 {
-  PluginManager * pm = (PluginManager *)
-    scm_to_pointer (plugin_manager);
+  PluginManager * pm =
+    (PluginManager *) scm_to_pointer (plugin_manager);
 
   g_return_val_if_fail (pm, SCM_BOOL_F);
 
@@ -45,8 +45,7 @@ SCM_DEFINE (
 
   if (descr)
     {
-      return scm_from_pointer (
-        (void *) descr, NULL);
+      return scm_from_pointer ((void *) descr, NULL);
     }
   else
     {
@@ -65,8 +64,8 @@ SCM_DEFINE (
   "Scans the system for plugins.")
 #define FUNC_NAME s_
 {
-  PluginManager * pm = (PluginManager *)
-    scm_to_pointer (plugin_manager);
+  PluginManager * pm =
+    (PluginManager *) scm_to_pointer (plugin_manager);
 
   plugin_manager_scan_plugins (pm, 1.0, NULL);
 

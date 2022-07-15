@@ -47,15 +47,13 @@ _test_loading_non_existing_plugin (
   g_assert_nonnull (prj_file);
 
   /* unload bundle so plugin can't be found */
-  LilvNode * path =
-    lilv_new_uri (LILV_WORLD, pl_bundle);
+  LilvNode * path = lilv_new_uri (LILV_WORLD, pl_bundle);
   lilv_world_unload_bundle (LILV_WORLD, path);
   lilv_node_free (path);
 
   /* reload project and expect messages */
   LOG->use_structured_for_console = false;
-  LOG->min_log_level_for_test_console =
-    G_LOG_LEVEL_WARNING;
+  LOG->min_log_level_for_test_console = G_LOG_LEVEL_WARNING;
   g_test_expect_message (
     G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
     "*Instantiation failed for plugin *");
@@ -87,8 +85,7 @@ test_loading_non_existing_plugin (void)
 static Port *
 get_skew_duty_port (void)
 {
-  Track * track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->instrument;
   Port *   port = NULL;
   for (int i = 0; i < pl->num_in_ports; i++)
@@ -118,11 +115,9 @@ test_loading_fully_bridged_plugin (void)
   g_return_if_fail (port);
   float val_before = port->control;
   float val_after = 1.f;
-  g_assert_cmpfloat_with_epsilon (
-    val_before, 0.5f, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (val_before, 0.5f, 0.0001f);
   port_set_control_value (
-    port, val_after, F_NORMALIZED,
-    F_PUBLISH_EVENTS);
+    port, val_after, F_NORMALIZED, F_PUBLISH_EVENTS);
   g_assert_cmpfloat_with_epsilon (
     port->control, val_after, 0.0001f);
 
@@ -149,12 +144,10 @@ test_loading_plugins_needing_bridging (void)
 #  ifdef HAVE_CALF_MONOSYNTH
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
-      CALF_MONOSYNTH_BUNDLE, CALF_MONOSYNTH_URI,
-      false);
+      CALF_MONOSYNTH_BUNDLE, CALF_MONOSYNTH_URI, false);
   g_return_if_fail (setting);
   g_assert_true (setting->open_with_carla);
-  g_assert_true (
-    setting->bridge_mode == CARLA_BRIDGE_FULL);
+  g_assert_true (setting->bridge_mode == CARLA_BRIDGE_FULL);
 
   test_project_save_and_reload ();
 #  endif
@@ -179,8 +172,8 @@ test_bypass_state_after_project_load (void)
     {
       /* create fx track */
       test_plugin_manager_create_tracks_from_plugin (
-        LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
-        false, i == 1, 1);
+        LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false,
+        i == 1, 1);
       Track * track =
         TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
       Plugin * pl = track->channel->inserts[0];
@@ -189,20 +182,17 @@ test_bypass_state_after_project_load (void)
       /* set bypass */
       plugin_set_enabled (
         pl, F_NOT_ENABLED, F_NO_PUBLISH_EVENTS);
-      g_assert_false (
-        plugin_is_enabled (pl, false));
+      g_assert_false (plugin_is_enabled (pl, false));
 
       /* reload project */
       test_project_save_and_reload ();
 
-      track =
-        TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+      track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
       pl = track->channel->inserts[0];
       g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
       /* check bypass */
-      g_assert_false (
-        plugin_is_enabled (pl, false));
+      g_assert_false (plugin_is_enabled (pl, false));
     }
 
   test_helper_zrythm_cleanup ();
@@ -219,10 +209,8 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/plugins/plugin/"
 
   g_test_add_func (
-    TEST_PREFIX
-    "test bypass state after project load",
-    (GTestFunc)
-      test_bypass_state_after_project_load);
+    TEST_PREFIX "test bypass state after project load",
+    (GTestFunc) test_bypass_state_after_project_load);
 #if 0
   /* test does not work with carla */
   g_test_add_func (
@@ -233,10 +221,8 @@ main (int argc, char * argv[])
     TEST_PREFIX "test loading fully bridged plugin",
     (GTestFunc) test_loading_fully_bridged_plugin);
   g_test_add_func (
-    TEST_PREFIX
-    "test loading plugins needing bridging",
-    (GTestFunc)
-      test_loading_plugins_needing_bridging);
+    TEST_PREFIX "test loading plugins needing bridging",
+    (GTestFunc) test_loading_plugins_needing_bridging);
 
   (void) test_loading_non_existing_plugin;
 

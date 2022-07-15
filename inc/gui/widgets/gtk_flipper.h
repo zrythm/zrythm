@@ -41,9 +41,7 @@ gtk_flipper_new (GtkWidget * child);
 GtkWidget *
 gtk_flipper_get_child (GtkFlipper * self);
 void
-gtk_flipper_set_child (
-  GtkFlipper * self,
-  GtkWidget *  child);
+gtk_flipper_set_child (GtkFlipper * self, GtkWidget * child);
 gboolean
 gtk_flipper_get_flip_horizontal (GtkFlipper * self);
 void
@@ -59,9 +57,7 @@ gtk_flipper_set_flip_vertical (
 gboolean
 gtk_flipper_get_rotate (GtkFlipper * self);
 void
-gtk_flipper_set_rotate (
-  GtkFlipper * self,
-  gboolean     rotate);
+gtk_flipper_set_rotate (GtkFlipper * self, gboolean rotate);
 
 G_END_DECLS
 

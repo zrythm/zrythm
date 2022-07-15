@@ -39,16 +39,13 @@
 
 extern "C" {
 
-#  define SUIL_TYPE_WIN_WRAPPER \
-    (suil_win_wrapper_get_type ())
+#  define SUIL_TYPE_WIN_WRAPPER (suil_win_wrapper_get_type ())
 #  define SUIL_WIN_WRAPPER(obj) \
     (G_TYPE_CHECK_INSTANCE_CAST ( \
-      (obj), SUIL_TYPE_WIN_WRAPPER, \
-      SuilWinWrapper))
+      (obj), SUIL_TYPE_WIN_WRAPPER, SuilWinWrapper))
 
-typedef struct _SuilWinWrapper SuilWinWrapper;
-typedef struct _SuilWinWrapperClass
-  SuilWinWrapperClass;
+typedef struct _SuilWinWrapper      SuilWinWrapper;
+typedef struct _SuilWinWrapperClass SuilWinWrapperClass;
 
 struct _SuilWinWrapper
 {
@@ -78,8 +75,7 @@ G_DEFINE_TYPE (
 static void
 suil_win_wrapper_finalize (GObject * gobject)
 {
-  SuilWinWrapper * const self =
-    SUIL_WIN_WRAPPER (gobject);
+  SuilWinWrapper * const self = SUIL_WIN_WRAPPER (gobject);
 
   self->wrapper->impl = NULL;
   self->instance = NULL;
@@ -93,15 +89,13 @@ suil_win_size_allocate (
   GtkWidget *     widget,
   GtkAllocation * allocation)
 {
-  SuilWinWrapper * const self =
-    SUIL_WIN_WRAPPER (widget);
+  SuilWinWrapper * const self = SUIL_WIN_WRAPPER (widget);
   g_return_if_fail (self != NULL);
 
   gtk_widget_set_allocation (widget, allocation);
   if (gtk_widget_get_realized (widget))
     {
-      GdkWindow * gdk_window =
-        gtk_widget_get_window (widget);
+      GdkWindow * gdk_window = gtk_widget_get_window (widget);
       gdk_window_move_resize (
         gdk_window, allocation->x, allocation->y,
         allocation->width, allocation->height);
@@ -110,36 +104,28 @@ suil_win_size_allocate (
         0, 0, (long) allocation->width,
         (long) allocation->height
       };
-      AdjustWindowRectEx (
-        &wr, WS_CHILD, FALSE, WS_EX_TOPMOST);
+      AdjustWindowRectEx (&wr, WS_CHILD, FALSE, WS_EX_TOPMOST);
 
       SetWindowPos (
-        (HWND) self->instance->ui_widget,
-        HWND_NOTOPMOST, 0, 0, wr.right - wr.left,
-        wr.bottom - wr.top,
-        SWP_NOACTIVATE | SWP_NOMOVE
-          | SWP_NOOWNERZORDER | SWP_NOZORDER);
-      UpdateWindow (
-        (HWND) self->instance->ui_widget);
+        (HWND) self->instance->ui_widget, HWND_NOTOPMOST, 0,
+        0, wr.right - wr.left, wr.bottom - wr.top,
+        SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOOWNERZORDER
+          | SWP_NOZORDER);
+      UpdateWindow ((HWND) self->instance->ui_widget);
       PostMessage (
-        (HWND) self->instance->ui_widget, WM_PAINT,
-        0, 0);
+        (HWND) self->instance->ui_widget, WM_PAINT, 0, 0);
     }
 }
 
 static void
-suil_win_wrapper_class_init (
-  SuilWinWrapperClass * klass)
+suil_win_wrapper_class_init (SuilWinWrapperClass * klass)
 {
-  GObjectClass * const gobject_class =
-    G_OBJECT_CLASS (klass);
+  GObjectClass * const gobject_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass * const widget_class =
     (GtkWidgetClass *) (klass);
 
-  widget_class->size_allocate =
-    suil_win_size_allocate;
-  gobject_class->finalize =
-    suil_win_wrapper_finalize;
+  widget_class->size_allocate = suil_win_size_allocate;
+  gobject_class->finalize = suil_win_wrapper_finalize;
 }
 
 static void
@@ -154,8 +140,7 @@ suil_win_wrapper_init (SuilWinWrapper * self)
 static gboolean
 suil_win_wrapper_idle (void * data)
 {
-  SuilWinWrapper * const wrap =
-    SUIL_WIN_WRAPPER (data);
+  SuilWinWrapper * const wrap = SUIL_WIN_WRAPPER (data);
   wrap->idle_iface->idle (wrap->instance->handle);
   return TRUE; // Continue calling
 }
@@ -172,9 +157,7 @@ wrapper_resize (
 }
 
 static int
-wrapper_wrap (
-  SuilWrapper *  wrapper,
-  SuilInstance * instance)
+wrapper_wrap (SuilWrapper * wrapper, SuilInstance * instance)
 {
   SuilWinWrapper * const wrap =
     SUIL_WIN_WRAPPER (wrapper->impl);
@@ -187,8 +170,7 @@ wrapper_wrap (
   if (instance->descriptor->extension_data)
     {
       idle_iface =
-        (const LV2UI_Idle_Interface *) instance
-          ->descriptor
+        (const LV2UI_Idle_Interface *) instance->descriptor
           ->extension_data (LV2_UI__idleInterface);
     }
   if (idle_iface)
@@ -202,21 +184,16 @@ wrapper_wrap (
 }
 
 static GdkFilterReturn
-event_filter (
-  GdkXEvent * xevent,
-  GdkEvent *  event,
-  gpointer    data)
+event_filter (GdkXEvent * xevent, GdkEvent * event, gpointer data)
 {
   SuilWinWrapper * wrap = (SuilWinWrapper *) data;
   MSG *            msg = (MSG *) xevent;
-  if (
-    msg->message == WM_KEYDOWN
-    || msg->message == WM_KEYUP)
+  if (msg->message == WM_KEYDOWN || msg->message == WM_KEYUP)
     {
       // Forward keyboard events to UI window
       PostMessage (
-        (HWND) wrap->instance->ui_widget,
-        msg->message, msg->wParam, msg->lParam);
+        (HWND) wrap->instance->ui_widget, msg->message,
+        msg->wParam, msg->lParam);
       return GDK_FILTER_REMOVE;
     }
   else if (
@@ -224,8 +201,8 @@ event_filter (
     || msg->message == WM_MOUSEHWHEEL)
     {
       PostMessage (
-        (HWND) wrap->instance->ui_widget,
-        msg->message, msg->wParam, msg->lParam);
+        (HWND) wrap->instance->ui_widget, msg->message,
+        msg->wParam, msg->lParam);
       return GDK_FILTER_REMOVE;
     }
   return GDK_FILTER_CONTINUE;
@@ -261,11 +238,9 @@ suil_wrapper_new_woe (
   GtkWidget * parent = NULL;
   for (unsigned i = 0; i < n_features; ++i)
     {
-      if (!strcmp (
-            (*features)[i]->URI, LV2_UI__parent))
+      if (!strcmp ((*features)[i]->URI, LV2_UI__parent))
         {
-          parent =
-            (GtkWidget *) (*features)[i]->data;
+          parent = (GtkWidget *) (*features)[i]->data;
         }
     }
 
@@ -277,8 +252,8 @@ suil_wrapper_new_woe (
       return NULL;
     }
 
-  SuilWrapper * wrapper = (SuilWrapper *) calloc (
-    1, sizeof (SuilWrapper));
+  SuilWrapper * wrapper =
+    (SuilWrapper *) calloc (1, sizeof (SuilWrapper));
   wrapper->wrap = wrapper_wrap;
   wrapper->free = wrapper_free;
 
@@ -293,41 +268,33 @@ suil_wrapper_new_woe (
 
   gtk_container_add (
     GTK_CONTAINER (parent), GTK_WIDGET (wrap));
-  gtk_widget_set_can_focus (
-    GTK_WIDGET (wrap), TRUE);
-  gtk_widget_set_sensitive (
-    GTK_WIDGET (wrap), TRUE);
+  gtk_widget_set_can_focus (GTK_WIDGET (wrap), TRUE);
+  gtk_widget_set_sensitive (GTK_WIDGET (wrap), TRUE);
   gtk_widget_realize (GTK_WIDGET (wrap));
 
   GdkWindow * window =
     gtk_widget_get_window (GTK_WIDGET (wrap));
 
   wrap->flt_win = gtk_widget_get_window (parent);
-  gdk_window_add_filter (
-    wrap->flt_win, event_filter, wrap);
+  gdk_window_add_filter (wrap->flt_win, event_filter, wrap);
 
-  HWND parent_window =
-    (HWND) GDK_WINDOW_HWND (window);
+  HWND parent_window = (HWND) GDK_WINDOW_HWND (window);
   suil_add_feature (
-    features, &n_features, LV2_UI__parent,
-    parent_window);
+    features, &n_features, LV2_UI__parent, parent_window);
   suil_add_feature (
-    features, &n_features, LV2_UI__resize,
-    &wrapper->resize);
+    features, &n_features, LV2_UI__resize, &wrapper->resize);
   suil_add_feature (
-    features, &n_features, LV2_UI__idleInterface,
-    NULL);
+    features, &n_features, LV2_UI__idleInterface, NULL);
 
   // Scan for URID map and options
   LV2_URID_Map *       map = NULL;
   LV2_Options_Option * options = NULL;
-  for (LV2_Feature ** f = *features;
-       *f && (!map || !options); ++f)
+  for (LV2_Feature ** f = *features; *f && (!map || !options);
+       ++f)
     {
       if (!strcmp ((*f)->URI, LV2_OPTIONS__options))
         {
-          options =
-            (LV2_Options_Option *) (*f)->data;
+          options = (LV2_Options_Option *) (*f)->data;
         }
       else if (!strcmp ((*f)->URI, LV2_URID__map))
         {
@@ -340,8 +307,7 @@ suil_wrapper_new_woe (
       // Set UI update rate if given
       LV2_URID ui_updateRate =
         map->map (map->handle, LV2_UI__updateRate);
-      for (LV2_Options_Option * o = options;
-           o->key; ++o)
+      for (LV2_Options_Option * o = options; o->key; ++o)
         {
           if (o->key == ui_updateRate)
             {

@@ -76,13 +76,11 @@ io_file_get_ext (const char * file);
  */
 NONNULL
 char *
-io_path_get_basename_without_ext (
-  const char * filename);
+io_path_get_basename_without_ext (const char * filename);
 
 NONNULL
 char *
-io_file_get_creation_datetime (
-  const char * filename);
+io_file_get_creation_datetime (const char * filename);
 
 /**
  * Returns the number of seconds since the epoch, or
@@ -90,8 +88,7 @@ io_file_get_creation_datetime (
  */
 NONNULL
 gint64
-io_file_get_last_modified_datetime (
-  const char * filename);
+io_file_get_last_modified_datetime (const char * filename);
 
 NONNULL
 char *
@@ -131,8 +128,7 @@ io_get_files_in_dir_as_basenames (
  *   no files were found.
  */
 #define io_get_files_in_dir(dir, allow_empty) \
-  io_get_files_in_dir_ending_in ( \
-    dir, 0, NULL, allow_empty)
+  io_get_files_in_dir_ending_in (dir, 0, NULL, allow_empty)
 
 /**
  * Returns a list of the files in the given
@@ -179,8 +175,7 @@ io_copy_dir (
  */
 NONNULL
 char *
-io_get_next_available_filepath (
-  const char * filepath);
+io_get_next_available_filepath (const char * filepath);
 
 /**
  * Opens the given directory using the default

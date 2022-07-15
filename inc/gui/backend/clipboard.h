@@ -54,18 +54,14 @@ typedef enum ClipboardType
 } ClipboardType;
 
 static const cyaml_strval_t clipboard_type_strings[] = {
-  {"Timeline selections",
-   CLIPBOARD_TYPE_TIMELINE_SELECTIONS  },
-  { "MIDI selections",
-   CLIPBOARD_TYPE_MIDI_SELECTIONS      },
+  {"Timeline selections",    CLIPBOARD_TYPE_TIMELINE_SELECTIONS},
+  { "MIDI selections",       CLIPBOARD_TYPE_MIDI_SELECTIONS    },
   { "Automation selections",
-   CLIPBOARD_TYPE_AUTOMATION_SELECTIONS},
-  { "Chord selections",
-   CLIPBOARD_TYPE_CHORD_SELECTIONS     },
-  { "Mixer selections",
-   CLIPBOARD_TYPE_MIXER_SELECTIONS     },
+   CLIPBOARD_TYPE_AUTOMATION_SELECTIONS                        },
+  { "Chord selections",      CLIPBOARD_TYPE_CHORD_SELECTIONS   },
+  { "Mixer selections",      CLIPBOARD_TYPE_MIXER_SELECTIONS   },
   { "Tracklist selections",
-   CLIPBOARD_TYPE_TRACKLIST_SELECTIONS },
+   CLIPBOARD_TYPE_TRACKLIST_SELECTIONS                         },
 };
 
 /**
@@ -83,10 +79,7 @@ typedef struct Clipboard
 } Clipboard;
 
 static const cyaml_schema_field_t clipboard_fields_schema[] = {
-  YAML_FIELD_ENUM (
-    Clipboard,
-    type,
-    clipboard_type_strings),
+  YAML_FIELD_ENUM (Clipboard, type, clipboard_type_strings),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Clipboard,
     timeline_sel,

@@ -32,10 +32,8 @@
  * Only to be called by HANDLE_ERROR macro.
  */
 void
-error_handle_prv (
-  GError *     err,
-  const char * format,
-  ...) G_GNUC_PRINTF (2, 3);
+error_handle_prv (GError * err, const char * format, ...)
+  G_GNUC_PRINTF (2, 3);
 
 /**
  * Shows a popup (or logs a warning if have no UI)
@@ -56,8 +54,7 @@ error_propagate_prefixed_prv (
   const char * format,
   ...) G_GNUC_PRINTF (3, 4);
 
-#define PROPAGATE_PREFIXED_ERROR( \
-  main_err, err, fmt, ...) \
+#define PROPAGATE_PREFIXED_ERROR(main_err, err, fmt, ...) \
   { \
     error_propagate_prefixed_prv ( \
       main_err, err, fmt, __VA_ARGS__); \

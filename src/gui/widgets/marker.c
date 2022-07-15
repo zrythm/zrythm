@@ -48,13 +48,10 @@ marker_recreate_pango_layouts (Marker * self)
     {
       PangoFontDescription * desc;
       self->layout = gtk_widget_create_pango_layout (
-        GTK_WIDGET (
-          arranger_object_get_arranger (obj)),
-        NULL);
-      desc = pango_font_description_from_string (
-        MARKER_NAME_FONT);
-      pango_layout_set_font_description (
-        self->layout, desc);
+        GTK_WIDGET (arranger_object_get_arranger (obj)), NULL);
+      desc =
+        pango_font_description_from_string (MARKER_NAME_FONT);
+      pango_layout_set_font_description (self->layout, desc);
       pango_font_description_free (desc);
     }
   pango_layout_get_pixel_size (
@@ -78,19 +75,17 @@ marker_draw (Marker * self, GtkSnapshot * snapshot)
     marker_is_selected (self), false, false);
 
   /* create clip */
-  GskRoundedRect rounded_rect;
+  GskRoundedRect  rounded_rect;
   graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
-    obj->full_rect.x, obj->full_rect.y,
-    obj->full_rect.width, obj->full_rect.height);
+    obj->full_rect.x, obj->full_rect.y, obj->full_rect.width,
+    obj->full_rect.height);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect,
     obj->full_rect.height / 6.0f);
-  gtk_snapshot_push_rounded_clip (
-    snapshot, &rounded_rect);
+  gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
 
   /* fill */
-  gtk_snapshot_append_color (
-    snapshot, &color, &graphene_rect);
+  gtk_snapshot_append_color (snapshot, &color, &graphene_rect);
 
   g_return_if_fail (self->escaped_name);
 
@@ -103,10 +98,8 @@ marker_draw (Marker * self, GtkSnapshot * snapshot)
     &GRAPHENE_POINT_INIT (
       obj->full_rect.x + MARKER_NAME_PADDING,
       obj->full_rect.y + MARKER_NAME_PADDING));
-  pango_layout_set_text (
-    self->layout, self->escaped_name, -1);
-  gtk_snapshot_append_layout (
-    snapshot, self->layout, &c2);
+  pango_layout_set_text (self->layout, self->escaped_name, -1);
+  gtk_snapshot_append_layout (snapshot, self->layout, &c2);
   gtk_snapshot_restore (snapshot);
 
   /* pop rounded rect */

@@ -28,16 +28,13 @@
  * Recreates the pango layouts for drawing.
  */
 void
-chord_object_recreate_pango_layouts (
-  ChordObject * self);
+chord_object_recreate_pango_layouts (ChordObject * self);
 
 /**
  * Draws the given chord object.
  */
 void
-chord_object_draw (
-  ChordObject * self,
-  GtkSnapshot * snapshot);
+chord_object_draw (ChordObject * self, GtkSnapshot * snapshot);
 
 /**
  * @}

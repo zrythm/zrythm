@@ -29,9 +29,7 @@
  * The arguments must be strings (char *).
  */
 int
-sort_alphabetical_func (
-  const void * a,
-  const void * b)
+sort_alphabetical_func (const void * a, const void * b)
 {
   char * pa = *(char * const *) a;
   char * pb = *(char * const *) b;
@@ -41,6 +39,5 @@ sort_alphabetical_func (
 
   /* if equal ignoring case, use opposite of strcmp() result to get
    * lower before upper */
-  return -strcmp (
-    pa, pb); /* aka: return strcmp(b, a); */
+  return -strcmp (pa, pb); /* aka: return strcmp(b, a); */
 }

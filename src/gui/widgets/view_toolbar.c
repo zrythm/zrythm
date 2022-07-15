@@ -29,13 +29,10 @@ static void
 view_toolbar_widget_class_init (
   ViewToolbarWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "view_toolbar.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "view_toolbar.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "view-toolbar");
+  gtk_widget_class_set_css_name (klass, "view-toolbar");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

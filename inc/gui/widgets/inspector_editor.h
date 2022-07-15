@@ -42,7 +42,6 @@ typedef struct _InspectorEditorWidget
  * the Audio or MIDI editor are visible.
  */
 void
-inspector_editor_widget_show (
-  InspectorEditorWidget * self);
+inspector_editor_widget_show (InspectorEditorWidget * self);
 
 #endif

@@ -26,8 +26,7 @@
 void
 automation_editor_init (AutomationEditor * self)
 {
-  self->schema_version =
-    AUTOMATION_EDITOR_SCHEMA_VERSION;
+  self->schema_version = AUTOMATION_EDITOR_SCHEMA_VERSION;
 
   editor_settings_init (&self->editor_settings);
 }
@@ -35,10 +34,8 @@ automation_editor_init (AutomationEditor * self)
 AutomationEditor *
 automation_editor_clone (AutomationEditor * src)
 {
-  AutomationEditor * self =
-    object_new (AutomationEditor);
-  self->schema_version =
-    AUTOMATION_EDITOR_SCHEMA_VERSION;
+  AutomationEditor * self = object_new (AutomationEditor);
+  self->schema_version = AUTOMATION_EDITOR_SCHEMA_VERSION;
 
   self->editor_settings = src->editor_settings;
 
@@ -48,10 +45,8 @@ automation_editor_clone (AutomationEditor * src)
 AutomationEditor *
 automation_editor_new (void)
 {
-  AutomationEditor * self =
-    object_new (AutomationEditor);
-  self->schema_version =
-    AUTOMATION_EDITOR_SCHEMA_VERSION;
+  AutomationEditor * self = object_new (AutomationEditor);
+  self->schema_version = AUTOMATION_EDITOR_SCHEMA_VERSION;
 
   return self;
 }

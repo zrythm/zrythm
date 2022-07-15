@@ -52,10 +52,7 @@
  * @param n Number of samples.
  */
 void
-true_peak_dsp_process (
-  TruePeakDsp * self,
-  float *       data,
-  int           n)
+true_peak_dsp_process (TruePeakDsp * self, float * data, int n)
 {
   assert (n > 0);
   assert (n <= 8192);
@@ -69,13 +66,9 @@ true_peak_dsp_process (
   float m = self->res ? 0 : self->m;
   float p = self->res ? 0 : self->p;
   float z1 =
-    self->z1 > 20
-      ? 20
-      : (self->z1 < 0 ? 0 : self->z1);
+    self->z1 > 20 ? 20 : (self->z1 < 0 ? 0 : self->z1);
   float z2 =
-    self->z2 > 20
-      ? 20
-      : (self->z2 < 0 ? 0 : self->z2);
+    self->z2 > 20 ? 20 : (self->z2 < 0 ? 0 : self->z2);
   float * b = self->buf;
 
   while (n--)
@@ -145,10 +138,7 @@ true_peak_dsp_process (
 }
 
 void
-true_peak_dsp_process_max (
-  TruePeakDsp * self,
-  float *       p,
-  int           n)
+true_peak_dsp_process_max (TruePeakDsp * self, float * p, int n)
 {
   assert (n <= 8192);
   self->src->inp_count = (unsigned int) n;
@@ -186,10 +176,7 @@ true_peak_dsp_read_f (TruePeakDsp * self)
 }
 
 void
-true_peak_dsp_read (
-  TruePeakDsp * self,
-  float *       m,
-  float *       p)
+true_peak_dsp_read (TruePeakDsp * self, float * m, float * p)
 {
   self->res = true;
   *m = self->m;
@@ -208,15 +195,12 @@ true_peak_dsp_reset (TruePeakDsp * self)
  * Init with the samplerate.
  */
 void
-true_peak_dsp_init (
-  TruePeakDsp * self,
-  float         samplerate)
+true_peak_dsp_init (TruePeakDsp * self, float samplerate)
 {
   zita_resampler_setup_with_frel (
     self->src, (unsigned int) samplerate,
     (unsigned int) (samplerate * 4.f), 1, 24, 1.0);
-  self->buf =
-    (float *) g_malloc (32768 * sizeof (float));
+  self->buf = (float *) g_malloc (32768 * sizeof (float));
 
   self->z1 = self->z2 = .0f;
   self->w1 = 4000.f / samplerate / 4.f;

@@ -22,8 +22,7 @@
 
 #include <gtk/gtk.h>
 
-#define SNAP_GRID_WIDGET_TYPE \
-  (snap_grid_widget_get_type ())
+#define SNAP_GRID_WIDGET_TYPE (snap_grid_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   SnapGridWidget,
   snap_grid_widget,
@@ -31,9 +30,8 @@ G_DECLARE_FINAL_TYPE (
   SNAP_GRID_WIDGET,
   GtkBox)
 
-typedef struct _SnapGridPopoverWidget
-                        SnapGridPopoverWidget;
-typedef struct SnapGrid SnapGrid;
+typedef struct _SnapGridPopoverWidget SnapGridPopoverWidget;
+typedef struct SnapGrid               SnapGrid;
 
 typedef struct _SnapGridWidget
 {

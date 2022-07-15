@@ -24,17 +24,12 @@ G_DEFINE_TYPE (
  * Draws the color picker.
  */
 static void
-color_area_snapshot (
-  GtkWidget *   widget,
-  GtkSnapshot * snapshot)
+color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
-  ColorAreaWidget * self =
-    Z_COLOR_AREA_WIDGET (widget);
+  ColorAreaWidget * self = Z_COLOR_AREA_WIDGET (widget);
 
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_allocated_width (widget);
+  int height = gtk_widget_get_allocated_height (widget);
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
@@ -84,8 +79,7 @@ color_area_snapshot (
         {
           self->parents = g_ptr_array_sized_new (8);
         }
-      track_add_folder_parents (
-        track, self->parents, false);
+      track_add_folder_parents (track, self->parents, false);
 
       size_t len = self->parents->len + 1;
       for (size_t i = 0; i < self->parents->len; i++)
@@ -94,8 +88,7 @@ color_area_snapshot (
             g_ptr_array_index (self->parents, i);
 
           double start_y =
-            ((double) i / (double) len)
-            * (double) height;
+            ((double) i / (double) len) * (double) height;
           double h = (double) height / (double) len;
 
           color = parent_track->color;
@@ -120,8 +113,7 @@ multipress_pressed (
   if (n_press == 1 && self->track)
     {
       object_color_chooser_dialog_widget_run (
-        GTK_WINDOW (MAIN_WINDOW), self->track,
-        NULL, NULL);
+        GTK_WINDOW (MAIN_WINDOW), self->track, NULL, NULL);
     }
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -133,8 +125,7 @@ on_enter (
   gdouble                    y,
   gpointer                   user_data)
 {
-  ColorAreaWidget * self =
-    Z_COLOR_AREA_WIDGET (user_data);
+  ColorAreaWidget * self = Z_COLOR_AREA_WIDGET (user_data);
   self->hovered = true;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -144,8 +135,7 @@ on_leave (
   GtkEventControllerMotion * motion_controller,
   gpointer                   user_data)
 {
-  ColorAreaWidget * self =
-    Z_COLOR_AREA_WIDGET (user_data);
+  ColorAreaWidget * self = Z_COLOR_AREA_WIDGET (user_data);
   self->hovered = false;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -175,9 +165,7 @@ color_area_widget_setup_track (
   self->track = track;
   self->type = COLOR_AREA_TYPE_TRACK;
 
-  g_message (
-    "setting up track %s for %p", track->name,
-    self);
+  g_message ("setting up track %s for %p", track->name, self);
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
@@ -210,14 +198,13 @@ finalize (ColorAreaWidget * self)
 static void
 color_area_widget_init (ColorAreaWidget * self)
 {
-  gtk_widget_set_focusable (
-    GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
   GtkGestureClick * mp =
     GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (
-    G_OBJECT (mp), "pressed",
-    G_CALLBACK (multipress_pressed), self);
+    G_OBJECT (mp), "pressed", G_CALLBACK (multipress_pressed),
+    self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (mp));
 
@@ -236,14 +223,11 @@ color_area_widget_init (ColorAreaWidget * self)
 }
 
 static void
-color_area_widget_class_init (
-  ColorAreaWidgetClass * klass)
+color_area_widget_class_init (ColorAreaWidgetClass * klass)
 {
-  GtkWidgetClass * wklass =
-    GTK_WIDGET_CLASS (klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = color_area_snapshot;
-  gtk_widget_class_set_css_name (
-    wklass, "color-area");
+  gtk_widget_class_set_css_name (wklass, "color-area");
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;

@@ -40,9 +40,7 @@
  */
 
 void
-arranger_snapshot (
-  GtkWidget *   widget,
-  GtkSnapshot * snapshot);
+arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot);
 
 /**
  * @}

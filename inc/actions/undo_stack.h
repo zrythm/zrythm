@@ -53,11 +53,10 @@ typedef struct UndoStack
   size_t                      as_actions_size;
 
   MixerSelectionsAction ** mixer_selections_actions;
-  size_t num_mixer_selections_actions;
-  size_t mixer_selections_actions_size;
+  size_t                   num_mixer_selections_actions;
+  size_t                   mixer_selections_actions_size;
 
-  TracklistSelectionsAction **
-         tracklist_selections_actions;
+  TracklistSelectionsAction ** tracklist_selections_actions;
   size_t num_tracklist_selections_actions;
   size_t tracklist_selections_actions_size;
 
@@ -66,8 +65,8 @@ typedef struct UndoStack
   size_t               channel_send_actions_size;
 
   PortConnectionAction ** port_connection_actions;
-  size_t num_port_connection_actions;
-  size_t port_connection_actions_size;
+  size_t                  num_port_connection_actions;
+  size_t                  port_connection_actions_size;
 
   PortAction ** port_actions;
   size_t        num_port_actions;
@@ -133,18 +132,13 @@ static const cyaml_schema_field_t undo_stack_fields_schema[] = {
     UndoStack,
     chord_actions,
     chord_action_schema),
-  YAML_FIELD_MAPPING_PTR (
-    UndoStack,
-    stack,
-    stack_fields_schema),
+  YAML_FIELD_MAPPING_PTR (UndoStack, stack, stack_fields_schema),
 
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t undo_stack_schema = {
-  YAML_VALUE_PTR (
-    UndoStack,
-    undo_stack_fields_schema),
+  YAML_VALUE_PTR (UndoStack, undo_stack_fields_schema),
 };
 
 void
@@ -164,9 +158,7 @@ undo_stack_clone (const UndoStack * src);
  * Gets the list of actions as a string.
  */
 char *
-undo_stack_get_as_string (
-  UndoStack * self,
-  int         limit);
+undo_stack_get_as_string (UndoStack * self, int limit);
 
 /**
  * Returns the total cached actions.
@@ -175,19 +167,15 @@ undo_stack_get_as_string (
  */
 NONNULL
 size_t
-undo_stack_get_total_cached_actions (
-  UndoStack * self);
+undo_stack_get_total_cached_actions (UndoStack * self);
 
 /* --- start wrappers --- */
 
-#define undo_stack_size(x) \
-  (stack_size ((x)->stack))
+#define undo_stack_size(x) (stack_size ((x)->stack))
 
-#define undo_stack_is_empty(x) \
-  (stack_is_empty ((x)->stack))
+#define undo_stack_is_empty(x) (stack_is_empty ((x)->stack))
 
-#define undo_stack_is_full(x) \
-  (stack_is_full ((x)->stack))
+#define undo_stack_is_full(x) (stack_is_full ((x)->stack))
 
 #define undo_stack_peek(x) \
   ((UndoableAction *) stack_peek ((x)->stack))
@@ -196,9 +184,7 @@ undo_stack_get_total_cached_actions (
   ((UndoableAction *) stack_peek_last ((x)->stack))
 
 void
-undo_stack_push (
-  UndoStack *      self,
-  UndoableAction * action);
+undo_stack_push (UndoStack * self, UndoableAction * action);
 
 UndoableAction *
 undo_stack_pop (UndoStack * self);
@@ -212,9 +198,7 @@ undo_stack_pop_last (UndoStack * self);
 /* --- end wrappers --- */
 
 bool
-undo_stack_contains_clip (
-  UndoStack * self,
-  AudioClip * clip);
+undo_stack_contains_clip (UndoStack * self, AudioClip * clip);
 
 /**
  * Checks if the undo stack contains the given
@@ -230,9 +214,7 @@ undo_stack_contains_action (
  */
 NONNULL
 void
-undo_stack_get_plugins (
-  UndoStack * self,
-  GPtrArray * arr);
+undo_stack_get_plugins (UndoStack * self, GPtrArray * arr);
 
 /**
  * Clears the stack, optionally freeing all the

@@ -56,9 +56,7 @@ static const cyaml_schema_field_t
       TimelineSelections_v1,
       base,
       arranger_selections_fields_schema_v1),
-    YAML_FIELD_INT (
-      TimelineSelections_v1,
-      schema_version),
+    YAML_FIELD_INT (TimelineSelections_v1, schema_version),
     YAML_FIELD_DYN_ARRAY_VAR_COUNT (
       TimelineSelections_v1,
       regions,
@@ -71,9 +69,7 @@ static const cyaml_schema_field_t
       TimelineSelections_v1,
       markers,
       marker_schema_v1),
-    YAML_FIELD_INT (
-      TimelineSelections_v1,
-      chord_track_vis_index),
+    YAML_FIELD_INT (TimelineSelections_v1, chord_track_vis_index),
     YAML_FIELD_INT (
       TimelineSelections_v1,
       marker_track_vis_index),
@@ -81,9 +77,8 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  timeline_selections_schema_v1 = {
-    YAML_VALUE_PTR (
-      TimelineSelections_v1,
-      timeline_selections_fields_schema_v1),
-  };
+static const cyaml_schema_value_t timeline_selections_schema_v1 = {
+  YAML_VALUE_PTR (
+    TimelineSelections_v1,
+    timeline_selections_fields_schema_v1),
+};

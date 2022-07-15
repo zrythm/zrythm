@@ -31,8 +31,7 @@
 void
 chord_editor_init (ChordEditor * self)
 {
-  self->schema_version =
-    CHORD_EDITOR_SCHEMA_VERSION;
+  self->schema_version = CHORD_EDITOR_SCHEMA_VERSION;
 
   self->num_chords = 0;
   for (int i = 0; i < 12; i++)
@@ -50,8 +49,7 @@ ChordEditor *
 chord_editor_clone (ChordEditor * src)
 {
   ChordEditor * self = object_new (ChordEditor);
-  self->schema_version =
-    CHORD_EDITOR_SCHEMA_VERSION;
+  self->schema_version = CHORD_EDITOR_SCHEMA_VERSION;
 
   for (int i = 0; i < src->num_chords; i++)
     {
@@ -75,16 +73,14 @@ chord_editor_apply_single_chord (
   if (undoable)
     {
       GError * err = NULL;
-      bool     ret = chord_action_perform (
-            NULL, NULL, chord, idx, &err);
+      bool     ret =
+        chord_action_perform (NULL, NULL, chord, idx, &err);
       g_return_if_fail (ret);
     }
   else
     {
-      chord_descriptor_copy (
-        self->chords[idx], chord);
-      chord_descriptor_update_notes (
-        self->chords[idx]);
+      chord_descriptor_copy (self->chords[idx], chord);
+      chord_descriptor_update_notes (self->chords[idx]);
     }
 }
 
@@ -98,14 +94,13 @@ chord_editor_apply_chords (
     {
       GError * err = NULL;
       bool     ret = chord_action_perform (
-            (const ChordDescriptor **) self->chords,
-            chords, NULL, -1, &err);
+            (const ChordDescriptor **) self->chords, chords, NULL,
+            -1, &err);
       g_return_if_fail (ret);
     }
   else
     {
-      for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS;
-           i++)
+      for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS; i++)
         {
           ChordDescriptor * descr = self->chords[i];
           chord_descriptor_copy (descr, chords[i]);
@@ -123,8 +118,7 @@ chord_editor_apply_preset (
   bool          undoable)
 {
   chord_editor_apply_chords (
-    self, (const ChordDescriptor **) pset->descr,
-    undoable);
+    self, (const ChordDescriptor **) pset->descr, undoable);
 }
 
 void
@@ -140,11 +134,9 @@ chord_editor_apply_preset_from_scale (
     chord_descriptor_note_to_string (root_note));
   const ChordType * triads =
     musical_scale_get_triad_types (scale, true);
-  const bool * notes =
-    musical_scale_get_notes (scale, true);
-  int cur_chord = 0;
-  ChordDescriptor *
-    new_chords[CHORD_EDITOR_NUM_CHORDS];
+  const bool * notes = musical_scale_get_notes (scale, true);
+  int          cur_chord = 0;
+  ChordDescriptor * new_chords[CHORD_EDITOR_NUM_CHORDS];
   for (int i = 0; i < 12; i++)
     {
       /* skip notes not in scale */
@@ -166,8 +158,7 @@ chord_editor_apply_preset_from_scale (
     }
 
   chord_editor_apply_chords (
-    self, (const ChordDescriptor **) new_chords,
-    undoable);
+    self, (const ChordDescriptor **) new_chords, undoable);
 
   for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS; i++)
     {
@@ -181,12 +172,10 @@ chord_editor_transpose_chords (
   bool          up,
   bool          undoable)
 {
-  ChordDescriptor *
-    new_chords[CHORD_EDITOR_NUM_CHORDS];
+  ChordDescriptor * new_chords[CHORD_EDITOR_NUM_CHORDS];
   for (int i = 0; i < 12; i++)
     {
-      new_chords[i] =
-        chord_descriptor_clone (self->chords[i]);
+      new_chords[i] = chord_descriptor_clone (self->chords[i]);
       ChordDescriptor * descr = new_chords[i];
 
       int add = (up ? 1 : 11);
@@ -200,8 +189,7 @@ chord_editor_transpose_chords (
     }
 
   chord_editor_apply_chords (
-    self, (const ChordDescriptor **) new_chords,
-    undoable);
+    self, (const ChordDescriptor **) new_chords, undoable);
 
   for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS; i++)
     {
@@ -243,8 +231,7 @@ ChordEditor *
 chord_editor_new (void)
 {
   ChordEditor * self = object_new (ChordEditor);
-  self->schema_version =
-    AUDIO_CLIP_EDITOR_SCHEMA_VERSION;
+  self->schema_version = AUDIO_CLIP_EDITOR_SCHEMA_VERSION;
 
   return self;
 }

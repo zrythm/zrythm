@@ -16,10 +16,9 @@
 #include "gui/backend/arranger_object.h"
 #include "utils/types.h"
 
-typedef struct Port            Port;
-typedef struct AutomationTrack AutomationTrack;
-typedef struct _AutomationPointWidget
-  AutomationPointWidget;
+typedef struct Port                   Port;
+typedef struct AutomationTrack        AutomationTrack;
+typedef struct _AutomationPointWidget AutomationPointWidget;
 
 /**
  * @addtogroup audio
@@ -32,8 +31,7 @@ typedef struct _AutomationPointWidget
 #define AP_WIDGET_POINT_SIZE 6
 
 #define automation_point_is_selected(r) \
-  arranger_object_is_selected ( \
-    (ArrangerObject *) r)
+  arranger_object_is_selected ((ArrangerObject *) r)
 
 /**
  * Used for caching.
@@ -81,30 +79,28 @@ typedef struct AutomationPoint
   GskRenderNode * cairo_node_tl;
 } AutomationPoint;
 
-static const cyaml_schema_field_t
-  automation_point_fields_schema[] = {
-    YAML_FIELD_MAPPING_EMBEDDED (
-      AutomationPoint,
-      base,
-      arranger_object_fields_schema),
-    YAML_FIELD_INT (AutomationPoint, schema_version),
-    YAML_FIELD_FLOAT (AutomationPoint, fvalue),
-    YAML_FIELD_FLOAT (AutomationPoint, normalized_val),
-    YAML_FIELD_INT (AutomationPoint, index),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      AutomationPoint,
-      curve_opts,
-      curve_options_fields_schema),
+static const cyaml_schema_field_t automation_point_fields_schema[] = {
+  YAML_FIELD_MAPPING_EMBEDDED (
+    AutomationPoint,
+    base,
+    arranger_object_fields_schema),
+  YAML_FIELD_INT (AutomationPoint, schema_version),
+  YAML_FIELD_FLOAT (AutomationPoint, fvalue),
+  YAML_FIELD_FLOAT (AutomationPoint, normalized_val),
+  YAML_FIELD_INT (AutomationPoint, index),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    AutomationPoint,
+    curve_opts,
+    curve_options_fields_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  automation_point_schema = {
-    YAML_VALUE_PTR (
-      AutomationPoint,
-      automation_point_fields_schema),
-  };
+static const cyaml_schema_value_t automation_point_schema = {
+  YAML_VALUE_PTR (
+    AutomationPoint,
+    automation_point_fields_schema),
+};
 
 /**
  * Creates an AutomationPoint in the given
@@ -167,8 +163,7 @@ automation_point_set_curviness (
  * that this AutomationPoint is for.
  */
 Port *
-automation_point_get_port (
-  const AutomationPoint * const self);
+automation_point_get_port (const AutomationPoint * const self);
 
 /**
  * Convenience function to return the

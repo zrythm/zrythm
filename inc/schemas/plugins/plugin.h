@@ -113,9 +113,7 @@ static const cyaml_schema_field_t plugin_fields_schema_v1[] = {
     selected_preset,
     plugin_preset_identifier_fields_schema_v1),
   YAML_FIELD_INT (Plugin_v1, visible),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    Plugin_v1,
-    state_dir),
+  YAML_FIELD_STRING_PTR_OPTIONAL (Plugin_v1, state_dir),
 
   CYAML_FIELD_END
 };

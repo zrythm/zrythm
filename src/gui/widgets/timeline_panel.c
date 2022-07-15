@@ -47,9 +47,7 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 static void
-on_hadj_value_changed (
-  GtkAdjustment * adj,
-  gpointer        user_data)
+on_hadj_value_changed (GtkAdjustment * adj, gpointer user_data)
 {
 #if 0
   g_debug (
@@ -60,14 +58,11 @@ on_hadj_value_changed (
 }
 
 void
-timeline_panel_widget_setup (
-  TimelinePanelWidget * self)
+timeline_panel_widget_setup (TimelinePanelWidget * self)
 {
-  g_return_if_fail (
-    Z_IS_TIMELINE_PANEL_WIDGET (self));
+  g_return_if_fail (Z_IS_TIMELINE_PANEL_WIDGET (self));
 
-  tracklist_widget_setup (
-    self->tracklist, TRACKLIST);
+  tracklist_widget_setup (self->tracklist, TRACKLIST);
   /*pinned_tracklist_widget_setup (*/
   /*self->pinned_tracklist,*/
   /*TRACKLIST);*/
@@ -77,10 +72,8 @@ timeline_panel_widget_setup (
   gtk_widget_get_preferred_size (
     GTK_WIDGET (self->ruler_scroll), &req, NULL);
   gtk_widget_set_size_request (
-    GTK_WIDGET (self->tracklist_header), -1,
-    req.height);
-  tracklist_header_widget_setup (
-    self->tracklist_header);
+    GTK_WIDGET (self->tracklist_header), -1, req.height);
+  tracklist_header_widget_setup (self->tracklist_header);
 
   /* setup ruler */
   gtk_scrolled_window_set_hadjustment (
@@ -96,21 +89,18 @@ timeline_panel_widget_setup (
       self->timeline_scroll));
 
   ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
-  ruler_widget_refresh (
-    Z_RULER_WIDGET (EDITOR_RULER));
+  ruler_widget_refresh (Z_RULER_WIDGET (EDITOR_RULER));
 
   /* setup timeline */
   arranger_widget_setup (
     Z_ARRANGER_WIDGET (self->timeline),
-    ARRANGER_WIDGET_TYPE_TIMELINE,
-    SNAP_GRID_TIMELINE);
+    ARRANGER_WIDGET_TYPE_TIMELINE, SNAP_GRID_TIMELINE);
   self->pinned_timeline->is_pinned = 1;
   gtk_widget_add_css_class (
     GTK_WIDGET (self->pinned_timeline), "pinned");
   arranger_widget_setup (
     Z_ARRANGER_WIDGET (self->pinned_timeline),
-    ARRANGER_WIDGET_TYPE_TIMELINE,
-    SNAP_GRID_TIMELINE);
+    ARRANGER_WIDGET_TYPE_TIMELINE, SNAP_GRID_TIMELINE);
 
   /* link vertical scroll of timeline to
    * tracklist */
@@ -119,24 +109,21 @@ timeline_panel_widget_setup (
     gtk_scrolled_window_get_vadjustment (
       self->tracklist->unpinned_scroll));
 
-  GtkAdjustment * adj =
-    gtk_scrollable_get_hadjustment (
-      GTK_SCROLLABLE (self->ruler_viewport));
+  GtkAdjustment * adj = gtk_scrollable_get_hadjustment (
+    GTK_SCROLLABLE (self->ruler_viewport));
 
   g_signal_connect (
     G_OBJECT (adj), "value-changed",
     G_CALLBACK (on_hadj_value_changed), self);
 
-  timeline_toolbar_widget_setup (
-    self->timeline_toolbar);
+  timeline_toolbar_widget_setup (self->timeline_toolbar);
 }
 
 /**
  * Prepare for finalization.
  */
 void
-timeline_panel_widget_tear_down (
-  TimelinePanelWidget * self)
+timeline_panel_widget_tear_down (TimelinePanelWidget * self)
 {
   g_message ("tearing down %p...", self);
 
@@ -148,15 +135,14 @@ timeline_panel_widget_tear_down (
 TimelinePanelWidget *
 timeline_panel_widget_new (void)
 {
-  TimelinePanelWidget * self = g_object_new (
-    TIMELINE_PANEL_WIDGET_TYPE, NULL);
+  TimelinePanelWidget * self =
+    g_object_new (TIMELINE_PANEL_WIDGET_TYPE, NULL);
 
   return self;
 }
 
 static void
-timeline_panel_widget_init (
-  TimelinePanelWidget * self)
+timeline_panel_widget_init (TimelinePanelWidget * self)
 {
   g_type_ensure (TIMELINE_BOT_BOX_WIDGET_TYPE);
   g_type_ensure (TRACKLIST_HEADER_WIDGET_TYPE);
@@ -168,10 +154,8 @@ timeline_panel_widget_init (
   gtk_widget_init_template (GTK_WIDGET (self));
 
   self->ruler->type = RULER_WIDGET_TYPE_TIMELINE;
-  self->timeline->type =
-    ARRANGER_WIDGET_TYPE_TIMELINE;
-  self->pinned_timeline->type =
-    ARRANGER_WIDGET_TYPE_TIMELINE;
+  self->timeline->type = ARRANGER_WIDGET_TYPE_TIMELINE;
+  self->pinned_timeline->type = ARRANGER_WIDGET_TYPE_TIMELINE;
   self->pinned_timeline->is_pinned = 1;
 
   self->timeline_ruler_h_size_group =
@@ -192,11 +176,9 @@ timeline_panel_widget_init (
     self->tracklist_timeline, false);
 
   gtk_widget_set_name (
-    GTK_WIDGET (self->tracklist_top),
-    "tracklist-top-box");
+    GTK_WIDGET (self->tracklist_top), "tracklist-top-box");
   gtk_widget_set_name (
-    GTK_WIDGET (self->ruler_scroll),
-    "ruler-scrolled-window");
+    GTK_WIDGET (self->ruler_scroll), "ruler-scrolled-window");
   gtk_widget_set_name (
     GTK_WIDGET (self->timeline_divider_box),
     "timeline-divider-box");
@@ -206,13 +188,10 @@ static void
 timeline_panel_widget_class_init (
   TimelinePanelWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "timeline_panel.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "timeline_panel.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "timeline-panel");
+  gtk_widget_class_set_css_name (klass, "timeline-panel");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

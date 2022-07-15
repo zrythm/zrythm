@@ -46,14 +46,11 @@ typedef struct ChordPreset   ChordPreset;
 
 #define SAMPLE_PROCESSOR_SCHEMA_VERSION 1
 
-#define SAMPLE_PROCESSOR \
-  (AUDIO_ENGINE->sample_processor)
+#define SAMPLE_PROCESSOR (AUDIO_ENGINE->sample_processor)
 
-#define sample_processor_is_in_active_project( \
-  self) \
+#define sample_processor_is_in_active_project(self) \
   (self->audio_engine \
-   && engine_is_in_active_project ( \
-     self->audio_engine))
+   && engine_is_in_active_project (self->audio_engine))
 
 /**
  * A processor to be used in the routing graph for
@@ -110,12 +107,11 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  sample_processor_schema = {
-    YAML_VALUE_PTR (
-      SampleProcessor,
-      sample_processor_fields_schema),
-  };
+static const cyaml_schema_value_t sample_processor_schema = {
+  YAML_VALUE_PTR (
+    SampleProcessor,
+    sample_processor_fields_schema),
+};
 
 /**
  * Initializes a SamplePlayback with a sample to
@@ -208,19 +204,16 @@ sample_processor_queue_chord_preset (
  * Stops playback of files (auditioning).
  */
 void
-sample_processor_stop_file_playback (
-  SampleProcessor * self);
+sample_processor_stop_file_playback (SampleProcessor * self);
 
 void
-sample_processor_disconnect (
-  SampleProcessor * self);
+sample_processor_disconnect (SampleProcessor * self);
 
 /**
  * To be used for serialization.
  */
 SampleProcessor *
-sample_processor_clone (
-  const SampleProcessor * src);
+sample_processor_clone (const SampleProcessor * src);
 
 void
 sample_processor_free (SampleProcessor * self);

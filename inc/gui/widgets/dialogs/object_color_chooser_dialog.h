@@ -28,10 +28,9 @@
 
 #include <gtk/gtk.h>
 
-typedef struct Track   Track;
-typedef struct ZRegion ZRegion;
-typedef struct TracklistSelections
-  TracklistSelections;
+typedef struct Track               Track;
+typedef struct ZRegion             ZRegion;
+typedef struct TracklistSelections TracklistSelections;
 
 /**
  * @addtogroup widgets

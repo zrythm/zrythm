@@ -76,8 +76,7 @@ typedef struct _PortConnectionsPopoverWidget
  * @param port Owner port.
  */
 PortConnectionsPopoverWidget *
-port_connections_popover_widget_new (
-  GtkWidget * owner);
+port_connections_popover_widget_new (GtkWidget * owner);
 
 /**
  * Refreshes the popover.

@@ -35,8 +35,7 @@ static enum RtMidiApi
 get_api_from_midi_backend (MidiBackend backend)
 {
   enum RtMidiApi apis[20];
-  int            num_apis =
-    (int) rtmidi_get_compiled_api (apis, 20);
+  int num_apis = (int) rtmidi_get_compiled_api (apis, 20);
   if (num_apis < 0)
     {
       g_critical (
@@ -93,16 +92,15 @@ midi_in_cb (
 
   /* generate timestamp */
   gint64 cur_time = g_get_monotonic_time ();
-  gint64 ts =
-    cur_time - self->port->last_midi_dequeue;
+  gint64 ts = cur_time - self->port->last_midi_dequeue;
   g_return_if_fail (ts >= 0);
   char portname[900];
   port_get_full_designation (self->port, portname);
   if (DEBUGGING)
     {
       g_debug (
-        "[%s] message received of size %zu at %ld",
-        portname, message_size, ts);
+        "[%s] message received of size %zu at %ld", portname,
+        message_size, ts);
     }
 
   /* add to ring buffer */
@@ -111,10 +109,8 @@ midi_in_cb (
     .size = message_size,
   };
   zix_ring_write (
-    self->midi_ring, (uint8_t *) &h,
-    sizeof (MidiEventHeader));
-  zix_ring_write (
-    self->midi_ring, message, message_size);
+    self->midi_ring, (uint8_t *) &h, sizeof (MidiEventHeader));
+  zix_ring_write (self->midi_ring, message, message_size);
 
   zix_sem_post (&self->midi_ring_sem);
 }
@@ -122,9 +118,7 @@ midi_in_cb (
 static bool rtmidi_device_first_run = false;
 
 static int
-rtmidi_device_get_id_from_name (
-  bool         is_input,
-  const char * name)
+rtmidi_device_get_id_from_name (bool is_input, const char * name)
 {
   if (is_input)
     {
@@ -153,8 +147,7 @@ rtmidi_device_get_id_from_name (
     }
 
   g_warning (
-    "could not find RtMidi device with name %s",
-    name);
+    "could not find RtMidi device with name %s", name);
 
   return -1;
 }
@@ -173,8 +166,7 @@ rtmidi_device_new (
   RtMidiDevice * self = object_new (RtMidiDevice);
 
   enum RtMidiApi apis[20];
-  int            num_apis =
-    (int) rtmidi_get_compiled_api (apis, 20);
+  int num_apis = (int) rtmidi_get_compiled_api (apis, 20);
   if (num_apis < 0)
     {
       g_warning (
@@ -188,14 +180,13 @@ rtmidi_device_new (
       for (int i = 0; i < num_apis; i++)
         {
           g_message (
-            "RtMidi API found: %s",
-            rtmidi_api_name (apis[i]));
+            "RtMidi API found: %s", rtmidi_api_name (apis[i]));
         }
       rtmidi_device_first_run = false;
     }
 
-  enum RtMidiApi api = get_api_from_midi_backend (
-    AUDIO_ENGINE->midi_backend);
+  enum RtMidiApi api =
+    get_api_from_midi_backend (AUDIO_ENGINE->midi_backend);
   if (api == RTMIDI_API_RTMIDI_DUMMY)
     {
       g_warning (
@@ -208,13 +199,11 @@ rtmidi_device_new (
   if (name)
     {
       int id_from_name =
-        rtmidi_device_get_id_from_name (
-          is_input, name);
+        rtmidi_device_get_id_from_name (is_input, name);
       if (id_from_name < 0)
         {
           g_warning (
-            "Could not find RtMidi Device '%s'",
-            name);
+            "Could not find RtMidi Device '%s'", name);
           object_zero_and_free (self);
           return NULL;
         }
@@ -267,8 +256,7 @@ rtmidi_device_open (RtMidiDevice * self, int start)
 {
   g_message ("opening rtmidi device");
   char designation[800];
-  port_get_full_designation (
-    self->port, designation);
+  port_get_full_designation (self->port, designation);
   char lbl[1200];
   sprintf (lbl, "%s [%u]", designation, self->id);
   rtmidi_close_port (self->in_handle);
@@ -296,9 +284,7 @@ rtmidi_device_open (RtMidiDevice * self, int start)
  * @param free Also free the memory.
  */
 int
-rtmidi_device_close (
-  RtMidiDevice * self,
-  int            free_device)
+rtmidi_device_close (RtMidiDevice * self, int free_device)
 {
   g_message ("closing rtmidi device");
   rtmidi_device_stop (self);
@@ -327,8 +313,7 @@ rtmidi_device_start (RtMidiDevice * self)
   if (self->is_input)
     {
       rtmidi_in_set_callback (
-        self->in_handle,
-        (RtMidiCCallback) midi_in_cb, self);
+        self->in_handle, (RtMidiCCallback) midi_in_cb, self);
       if (!self->in_handle->ok)
         {
           g_warning (

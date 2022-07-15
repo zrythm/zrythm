@@ -45,8 +45,7 @@
  * points.
  */
 void
-editor_ruler_widget_draw_markers (
-  RulerWidget * self);
+editor_ruler_widget_draw_markers (RulerWidget * self);
 
 /**
  * Called from ruler drag begin.

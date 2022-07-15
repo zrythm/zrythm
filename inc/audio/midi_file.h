@@ -41,9 +41,7 @@
  * has data.
  */
 bool
-midi_file_track_has_data (
-  const char * abs_path,
-  int          track_idx);
+midi_file_track_has_data (const char * abs_path, int track_idx);
 
 /**
  * Returns the number of tracks in the MIDI file.

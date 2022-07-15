@@ -52,8 +52,7 @@ typedef struct _WrappedObjectWithChangeSignal
  * @{
  */
 
-#define MW_FILE_BROWSER \
-  MW_RIGHT_DOCK_EDGE->file_browser
+#define MW_FILE_BROWSER MW_RIGHT_DOCK_EDGE->file_browser
 
 /**
  * The file browser for samples, MIDI files, etc.

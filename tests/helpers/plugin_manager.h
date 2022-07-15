@@ -85,16 +85,13 @@ test_plugin_manager_reload_lilv_world_w_path (
 
   lilv_world_load_specifications (world);
   lilv_world_load_plugin_classes (world);
-  LilvNode * lv2_path =
-    lilv_new_string (LILV_WORLD, path);
+  LilvNode * lv2_path = lilv_new_string (LILV_WORLD, path);
   lilv_world_set_option (
     world, LILV_OPTION_LV2_PATH, lv2_path);
   lilv_world_load_all (world);
-  object_free_w_func_and_null (
-    lilv_node_free, lv2_path);
+  object_free_w_func_and_null (lilv_node_free, lv2_path);
   plugin_manager_clear_plugins (PLUGIN_MANAGER);
-  plugin_manager_scan_plugins (
-    PLUGIN_MANAGER, 1.0, NULL);
+  plugin_manager_scan_plugins (PLUGIN_MANAGER, 1.0, NULL);
 }
 
 /**
@@ -107,36 +104,30 @@ test_plugin_manager_get_plugin_setting (
   const char * pl_uri,
   bool         with_carla)
 {
-  LilvNode * path =
-    lilv_new_uri (LILV_WORLD, pl_bundle);
+  LilvNode * path = lilv_new_uri (LILV_WORLD, pl_bundle);
   g_assert_nonnull (path);
   lilv_world_load_bundle (LILV_WORLD, path);
   lilv_node_free (path);
 
   plugin_manager_clear_plugins (PLUGIN_MANAGER);
-  plugin_manager_scan_plugins (
-    PLUGIN_MANAGER, 1.0, NULL);
+  plugin_manager_scan_plugins (PLUGIN_MANAGER, 1.0, NULL);
   g_assert_cmpuint (
     PLUGIN_MANAGER->plugin_descriptors->len, >, 0);
 
   PluginDescriptor * descr = NULL;
   for (size_t i = 0;
-       i < PLUGIN_MANAGER->plugin_descriptors->len;
-       i++)
+       i < PLUGIN_MANAGER->plugin_descriptors->len; i++)
     {
-      PluginDescriptor * cur_descr =
-        g_ptr_array_index (
-          PLUGIN_MANAGER->plugin_descriptors, i);
+      PluginDescriptor * cur_descr = g_ptr_array_index (
+        PLUGIN_MANAGER->plugin_descriptors, i);
       if (string_is_equal (cur_descr->uri, pl_uri))
         {
-          descr =
-            plugin_descriptor_clone (cur_descr);
+          descr = plugin_descriptor_clone (cur_descr);
         }
     }
   g_return_val_if_fail (descr, NULL);
 
-  PluginSetting * setting =
-    plugin_setting_new_default (descr);
+  PluginSetting * setting = plugin_setting_new_default (descr);
 
   /* always open with carla */
   setting->open_with_carla = true;
@@ -191,8 +182,8 @@ test_plugin_manager_create_tracks_from_plugin (
 
   /* create a track from the plugin */
   bool ret = track_create_with_action (
-    track_type, setting, NULL, NULL,
-    TRACKLIST->num_tracks, num_tracks, NULL);
+    track_type, setting, NULL, NULL, TRACKLIST->num_tracks,
+    num_tracks, NULL);
   g_assert_true (ret);
 
   return TRACKLIST->num_tracks - 1;

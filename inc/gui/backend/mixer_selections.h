@@ -42,8 +42,7 @@ typedef struct Plugin Plugin;
 
 #define MIXER_SELECTIONS_SCHEMA_VERSION 1
 
-#define MIXER_SELECTIONS \
-  (PROJECT->mixer_selections)
+#define MIXER_SELECTIONS (PROJECT->mixer_selections)
 
 #define MIXER_SELECTIONS_MAX_SLOTS 60
 
@@ -72,38 +71,36 @@ typedef struct MixerSelections
   int has_any;
 } MixerSelections;
 
-static const cyaml_schema_field_t
-  mixer_selections_fields_schema[] = {
-    YAML_FIELD_INT (MixerSelections, schema_version),
-    YAML_FIELD_ENUM (
-      MixerSelections,
-      type,
-      plugin_slot_type_strings),
-    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-      MixerSelections,
-      slots,
-      int_schema),
-    CYAML_FIELD_SEQUENCE_COUNT (
-      "plugins",
-      CYAML_FLAG_DEFAULT,
-      MixerSelections,
-      plugins,
-      num_slots,
-      &plugin_schema,
-      0,
-      CYAML_UNLIMITED),
-    YAML_FIELD_UINT (MixerSelections, track_name_hash),
-    YAML_FIELD_INT (MixerSelections, has_any),
+static const cyaml_schema_field_t mixer_selections_fields_schema[] = {
+  YAML_FIELD_INT (MixerSelections, schema_version),
+  YAML_FIELD_ENUM (
+    MixerSelections,
+    type,
+    plugin_slot_type_strings),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    MixerSelections,
+    slots,
+    int_schema),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "plugins",
+    CYAML_FLAG_DEFAULT,
+    MixerSelections,
+    plugins,
+    num_slots,
+    &plugin_schema,
+    0,
+    CYAML_UNLIMITED),
+  YAML_FIELD_UINT (MixerSelections, track_name_hash),
+  YAML_FIELD_INT (MixerSelections, has_any),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  mixer_selections_schema = {
-    YAML_VALUE_PTR (
-      MixerSelections,
-      mixer_selections_fields_schema),
-  };
+static const cyaml_schema_value_t mixer_selections_schema = {
+  YAML_VALUE_PTR (
+    MixerSelections,
+    mixer_selections_fields_schema),
+};
 
 void
 mixer_selections_init_loaded (
@@ -137,19 +134,16 @@ mixer_selections_has_any (MixerSelections * ms);
  * Gets highest slot in the selections.
  */
 int
-mixer_selections_get_highest_slot (
-  MixerSelections * ms);
+mixer_selections_get_highest_slot (MixerSelections * ms);
 
 /**
  * Gets lowest slot in the selections.
  */
 int
-mixer_selections_get_lowest_slot (
-  MixerSelections * ms);
+mixer_selections_get_lowest_slot (MixerSelections * ms);
 
 void
-mixer_selections_post_deserialize (
-  MixerSelections * self);
+mixer_selections_post_deserialize (MixerSelections * self);
 
 /**
  * Returns whether the selections can be pasted to
@@ -243,9 +237,7 @@ mixer_selections_remove_slot (
  */
 NONNULL
 void
-mixer_selections_sort (
-  MixerSelections * self,
-  bool              asc);
+mixer_selections_sort (MixerSelections * self, bool asc);
 
 /**
  * Returns the first selected plugin if any is
@@ -253,8 +245,7 @@ mixer_selections_sort (
  */
 NONNULL
 Plugin *
-mixer_selections_get_first_plugin (
-  MixerSelections * self);
+mixer_selections_get_first_plugin (MixerSelections * self);
 
 /**
  * Fills in the array with the plugins in the

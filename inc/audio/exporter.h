@@ -54,8 +54,7 @@ const char *
 export_format_to_ext (ExportFormat format);
 
 ExportFormat
-export_format_from_pretty_str (
-  const char * pretty_str);
+export_format_from_pretty_str (const char * pretty_str);
 
 /**
  * Time range to export.
@@ -209,8 +208,7 @@ void
 export_settings_print (const ExportSettings * self);
 
 void
-export_settings_free_members (
-  ExportSettings * self);
+export_settings_free_members (ExportSettings * self);
 
 void
 export_settings_free (ExportSettings * self);

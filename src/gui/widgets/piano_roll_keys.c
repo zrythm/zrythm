@@ -61,19 +61,15 @@ piano_roll_keys_snapshot (
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
-  int width =
-    gtk_widget_get_allocated_width (widget);
-  int height =
-    gtk_widget_get_allocated_width (widget);
+  int width = gtk_widget_get_allocated_width (widget);
+  int height = gtk_widget_get_allocated_width (widget);
   gtk_snapshot_render_background (
     snapshot, context, 0, 0, width, height);
 
   ChordObject * co =
-    chord_track_get_chord_at_playhead (
-      P_CHORD_TRACK);
+    chord_track_get_chord_at_playhead (P_CHORD_TRACK);
   ScaleObject * so =
-    chord_track_get_scale_at_playhead (
-      P_CHORD_TRACK);
+    chord_track_get_scale_at_playhead (P_CHORD_TRACK);
 
   bool drum_mode = tr->drum_mode;
 
@@ -90,10 +86,11 @@ piano_roll_keys_snapshot (
   for (int i = 0; i < 128; i++)
     {
       /* skip keys outside visible rectangle */
-      if ((float) visible_rect_gdk.y >
-            (float) ((127 - i) + 1) * px_per_key ||
-          (float) (visible_rect_gdk.y + visible_rect_gdk.height) <
-            (float) (127 - i) * px_per_key)
+      if (
+        (float) visible_rect_gdk.y
+          > (float) ((127 - i) + 1) * px_per_key
+        || (float) (visible_rect_gdk.y + visible_rect_gdk.height)
+             < (float) (127 - i) * px_per_key)
         continue;
 
       /* check if in scale and in chord */
@@ -125,9 +122,7 @@ piano_roll_keys_snapshot (
       sprintf (
         note_name, "<span size=\"%d\">%s</span>",
         fontsize * 1000 - 4000,
-        drum_mode
-          ? descr->custom_name
-          : descr->note_name_pango);
+        drum_mode ? descr->custom_name : descr->note_name_pango);
 
       if (drum_mode)
         {
@@ -139,10 +134,8 @@ piano_roll_keys_snapshot (
           bool    has_color = false;
           GdkRGBA color;
           if (
-            (PIANO_ROLL->highlighting
-               == PR_HIGHLIGHT_BOTH
-             || PIANO_ROLL->highlighting
-                  == PR_HIGHLIGHT_CHORD)
+            (PIANO_ROLL->highlighting == PR_HIGHLIGHT_BOTH
+             || PIANO_ROLL->highlighting == PR_HIGHLIGHT_CHORD)
             && is_bass)
             {
               has_color = true;
@@ -151,8 +144,8 @@ piano_roll_keys_snapshot (
               gtk_snapshot_append_color (
                 snapshot, &color,
                 &GRAPHENE_RECT_INIT (
-                  0, (127 - i) * px_per_key,
-                  label_width, px_per_key));
+                  0, (127 - i) * px_per_key, label_width,
+                  px_per_key));
 
               char hex[18];
               ui_gdk_rgba_to_hex (
@@ -163,8 +156,7 @@ piano_roll_keys_snapshot (
                 note_name, hex, _ ("bass"));
             }
           else if (
-            PIANO_ROLL->highlighting
-              == PR_HIGHLIGHT_BOTH
+            PIANO_ROLL->highlighting == PR_HIGHLIGHT_BOTH
             && in_chord && in_scale)
             {
               has_color = true;
@@ -173,8 +165,8 @@ piano_roll_keys_snapshot (
               gtk_snapshot_append_color (
                 snapshot, &color,
                 &GRAPHENE_RECT_INIT (
-                  0, (127 - i) * px_per_key,
-                  label_width, px_per_key));
+                  0, (127 - i) * px_per_key, label_width,
+                  px_per_key));
 
               char hex[18];
               ui_gdk_rgba_to_hex (
@@ -185,10 +177,8 @@ piano_roll_keys_snapshot (
                 note_name, hex, _ ("both"));
             }
           else if (
-            (PIANO_ROLL->highlighting
-               == PR_HIGHLIGHT_SCALE
-             || PIANO_ROLL->highlighting
-                  == PR_HIGHLIGHT_BOTH)
+            (PIANO_ROLL->highlighting == PR_HIGHLIGHT_SCALE
+             || PIANO_ROLL->highlighting == PR_HIGHLIGHT_BOTH)
             && in_scale)
             {
               has_color = true;
@@ -196,18 +186,15 @@ piano_roll_keys_snapshot (
 
               char hex[18];
               ui_gdk_rgba_to_hex (
-                &UI_COLORS->highlight_scale_fg,
-                hex);
+                &UI_COLORS->highlight_scale_fg, hex);
               sprintf (
                 str,
                 "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
                 note_name, hex, _ ("scale"));
             }
           else if (
-            (PIANO_ROLL->highlighting
-               == PR_HIGHLIGHT_CHORD
-             || PIANO_ROLL->highlighting
-                  == PR_HIGHLIGHT_BOTH)
+            (PIANO_ROLL->highlighting == PR_HIGHLIGHT_CHORD
+             || PIANO_ROLL->highlighting == PR_HIGHLIGHT_BOTH)
             && in_chord)
             {
               has_color = true;
@@ -215,8 +202,7 @@ piano_roll_keys_snapshot (
 
               char hex[18];
               ui_gdk_rgba_to_hex (
-                &UI_COLORS->highlight_chord_fg,
-                hex);
+                &UI_COLORS->highlight_chord_fg, hex);
               sprintf (
                 str,
                 "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
@@ -233,8 +219,8 @@ piano_roll_keys_snapshot (
               gtk_snapshot_append_color (
                 snapshot, &color,
                 &GRAPHENE_RECT_INIT (
-                  0, (127 - i) * px_per_key,
-                  label_width, px_per_key));
+                  0, (127 - i) * px_per_key, label_width,
+                  px_per_key));
             }
         }
 
@@ -244,11 +230,9 @@ piano_roll_keys_snapshot (
       if (px_per_key > 16.0)
         {
           g_return_if_fail (self->layout);
-          pango_layout_set_markup (
-            self->layout, str, -1);
+          pango_layout_set_markup (self->layout, str, -1);
           int ww, hh;
-          pango_layout_get_pixel_size (
-            self->layout, &ww, &hh);
+          pango_layout_get_pixel_size (self->layout, &ww, &hh);
           float text_y_start =
             /* y start of the note */
             (127.f - i) * (float) px_per_key +
@@ -257,8 +241,7 @@ piano_roll_keys_snapshot (
             (px_per_key - (float) hh) / 2.f;
           gtk_snapshot_save (snapshot);
           gtk_snapshot_translate (
-            snapshot,
-            &GRAPHENE_POINT_INIT (4, text_y_start));
+            snapshot, &GRAPHENE_POINT_INIT (4, text_y_start));
           gtk_snapshot_append_layout (
             snapshot, self->layout,
             &Z_GDK_RGBA_INIT (1, 1, 1, 1));
@@ -278,16 +261,14 @@ piano_roll_keys_snapshot (
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          label_width, (127 - i) * px_per_key,
-          key_width, px_per_key));
+          label_width, (127 - i) * px_per_key, key_width,
+          px_per_key));
 
       /* add shade if currently pressed note */
-      if (piano_roll_contains_current_note (
-            PIANO_ROLL, i))
+      if (piano_roll_contains_current_note (PIANO_ROLL, i))
         {
           /* orange */
-          color = Z_GDK_RGBA_INIT (
-            1, 0.462745f, 0.101961f, 1);
+          color = Z_GDK_RGBA_INIT (1, 0.462745f, 0.101961f, 1);
 #if 0
           /* sky blue */
           cairo_set_source_rgba (
@@ -296,15 +277,13 @@ piano_roll_keys_snapshot (
           gtk_snapshot_append_color (
             snapshot, &color,
             &GRAPHENE_RECT_INIT (
-              label_width + 4,
-              (127 - i) * px_per_key,
+              label_width + 4, (127 - i) * px_per_key,
               key_width - 4, px_per_key));
         }
 
       /* add border below */
       float y = ((127 - i) + 1) * px_per_key;
-      color =
-        Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.3f);
+      color = Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.3f);
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (0, y, width, 1));
@@ -341,34 +320,26 @@ piano_roll_keys_widget_get_font_size (
 }
 
 static void
-send_note_event (
-  PianoRollKeysWidget * self,
-  int                   note,
-  int                   on)
+send_note_event (PianoRollKeysWidget * self, int note, int on)
 {
-  ZRegion * region =
-    clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
   if (on)
     {
       /* add note on event */
       midi_events_add_note_on (
-        MANUAL_PRESS_EVENTS,
-        midi_region_get_midi_ch (region),
+        MANUAL_PRESS_EVENTS, midi_region_get_midi_ch (region),
         (midi_byte_t) note, 90, 1, 1);
 
-      piano_roll_add_current_note (
-        PIANO_ROLL, note);
+      piano_roll_add_current_note (PIANO_ROLL, note);
     }
   else
     {
       /* add note off event */
       midi_events_add_note_off (
-        MANUAL_PRESS_EVENTS,
-        midi_region_get_midi_ch (region),
+        MANUAL_PRESS_EVENTS, midi_region_get_midi_ch (region),
         (midi_byte_t) note, 1, 1);
 
-      piano_roll_remove_current_note (
-        PIANO_ROLL, note);
+      piano_roll_remove_current_note (PIANO_ROLL, note);
     }
 
   piano_roll_keys_widget_redraw_note (self, note);
@@ -381,8 +352,7 @@ on_motion (
   gdouble                    y,
   PianoRollKeysWidget *      self)
 {
-  int key = piano_roll_keys_widget_get_key_from_y (
-    self, y);
+  int key = piano_roll_keys_widget_get_key_from_y (self, y);
 
   if (self->note_pressed && !self->note_released)
     {
@@ -413,8 +383,7 @@ on_pressed (
   self->note_pressed = 1;
   self->note_released = 0;
 
-  int key = piano_roll_keys_widget_get_key_from_y (
-    self, y);
+  int key = piano_roll_keys_widget_get_key_from_y (self, y);
   self->last_key = key;
   self->start_key = key;
   send_note_event (self, key, 1);
@@ -436,21 +405,17 @@ on_released (
 }
 
 void
-piano_roll_keys_widget_refresh (
-  PianoRollKeysWidget * self)
+piano_roll_keys_widget_refresh (PianoRollKeysWidget * self)
 {
   self->px_per_key =
     (double) DEFAULT_PX_PER_KEY
     * (double) PIANO_ROLL->notes_zoom;
   double key_px_before = self->total_key_px;
-  self->total_key_px =
-    (self->px_per_key + 1.0) * 128.0;
+  self->total_key_px = (self->px_per_key + 1.0) * 128.0;
 
-  if (!math_doubles_equal (
-        key_px_before, self->total_key_px))
+  if (!math_doubles_equal (key_px_before, self->total_key_px))
     {
-      EVENTS_PUSH (
-        ET_PIANO_ROLL_KEY_HEIGHT_CHANGED, NULL);
+      EVENTS_PUSH (ET_PIANO_ROLL_KEY_HEIGHT_CHANGED, NULL);
     }
 }
 
@@ -463,8 +428,7 @@ piano_roll_keys_widget_redraw_note (
 }
 
 void
-piano_roll_keys_widget_redraw_full (
-  PianoRollKeysWidget * self)
+piano_roll_keys_widget_redraw_full (PianoRollKeysWidget * self)
 {
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -482,27 +446,23 @@ piano_roll_keys_tick_cb (
 }
 
 void
-piano_roll_keys_widget_setup (
-  PianoRollKeysWidget * self)
+piano_roll_keys_widget_setup (PianoRollKeysWidget * self)
 {
 }
 
 static void
-piano_roll_keys_widget_init (
-  PianoRollKeysWidget * self)
+piano_roll_keys_widget_init (PianoRollKeysWidget * self)
 {
   self->last_mid_note = 63;
 
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self), -1, 600);
+  gtk_widget_set_size_request (GTK_WIDGET (self), -1, 600);
 
   PangoFontDescription * desc;
-  self->layout = gtk_widget_create_pango_layout (
-    GTK_WIDGET (self), NULL);
-  desc = pango_font_description_from_string (
-    PIANO_ROLL_KEYS_FONT);
-  pango_layout_set_font_description (
-    self->layout, desc);
+  self->layout =
+    gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+  desc =
+    pango_font_description_from_string (PIANO_ROLL_KEYS_FONT);
+  pango_layout_set_font_description (self->layout, desc);
   pango_font_description_free (desc);
 
   GtkEventControllerMotion * motion_controller =
@@ -529,16 +489,14 @@ piano_roll_keys_widget_init (
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),
-    (GtkTickCallback) piano_roll_keys_tick_cb,
-    self, NULL);
+    (GtkTickCallback) piano_roll_keys_tick_cb, self, NULL);
 }
 
 static void
 piano_roll_keys_widget_class_init (
   PianoRollKeysWidgetClass * _klass)
 {
-  GtkWidgetClass * wklass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
   wklass->snapshot = piano_roll_keys_snapshot;
 
   gtk_widget_class_set_layout_manager_type (

@@ -168,8 +168,8 @@ stretcher_new_rubberband (
   rubberband_set_default_debug_level (0);
 
   g_message (
-    "%s: time ratio: %f, latency: %u", __func__,
-    time_ratio, stretcher_get_latency (self));
+    "%s: time ratio: %f, latency: %u", __func__, time_ratio,
+    stretcher_get_latency (self));
 
   return self;
 }
@@ -194,23 +194,19 @@ stretcher_stretch (
   size_t      out_samples_wanted)
 {
   g_message (
-    "%s: in samples size: %zu", __func__,
-    in_samples_size);
+    "%s: in samples size: %zu", __func__, in_samples_size);
   g_return_val_if_fail (in_samples_l, -1);
 
   /*rubberband_reset (self->rubberband_state);*/
 
   /* create the de-interleaved array */
   unsigned int channels = in_samples_r ? 2 : 1;
-  g_return_val_if_fail (
-    self->channels == channels, -1);
+  g_return_val_if_fail (self->channels == channels, -1);
   const float * in_samples[channels];
   in_samples[0] = in_samples_l;
   if (channels == 2)
     in_samples[1] = in_samples_r;
-  float * out_samples[2] = {
-    out_samples_l, out_samples_r
-  };
+  float * out_samples[2] = { out_samples_l, out_samples_r };
 
   if (self->is_realtime)
     {
@@ -225,31 +221,27 @@ stretcher_stretch (
         self->rubberband_state, in_samples_size);
 
       rubberband_study (
-        self->rubberband_state, in_samples,
-        in_samples_size, 1);
+        self->rubberband_state, in_samples, in_samples_size,
+        1);
     }
   unsigned int samples_required =
-    rubberband_get_samples_required (
-      self->rubberband_state);
+    rubberband_get_samples_required (self->rubberband_state);
   g_message (
-    "%s: samples required: %u, latency: %u",
-    __func__, samples_required,
+    "%s: samples required: %u, latency: %u", __func__,
+    samples_required,
     rubberband_get_latency (self->rubberband_state));
   rubberband_process (
-    self->rubberband_state, in_samples,
-    in_samples_size, false);
+    self->rubberband_state, in_samples, in_samples_size,
+    false);
 
   /* get the output data */
-  int avail =
-    rubberband_available (self->rubberband_state);
+  int avail = rubberband_available (self->rubberband_state);
 
   /* if the wanted amount of samples are not ready,
    * fill with silence */
   if (avail < (int) out_samples_wanted)
     {
-      g_message (
-        "%s: not enough samples available",
-        __func__);
+      g_message ("%s: not enough samples available", __func__);
       return (ssize_t) out_samples_wanted;
     }
 
@@ -257,10 +249,8 @@ stretcher_stretch (
     "%s: samples wanted %zu (avail %u)", __func__,
     out_samples_wanted, avail);
   size_t retrieved_out_samples = rubberband_retrieve (
-    self->rubberband_state, out_samples,
-    out_samples_wanted);
-  g_warn_if_fail (
-    retrieved_out_samples == out_samples_wanted);
+    self->rubberband_state, out_samples, out_samples_wanted);
+  g_warn_if_fail (retrieved_out_samples == out_samples_wanted);
 
   g_message (
     "%s: out samples size: %zu", __func__,
@@ -270,12 +260,9 @@ stretcher_stretch (
 }
 
 void
-stretcher_set_time_ratio (
-  Stretcher * self,
-  double      ratio)
+stretcher_set_time_ratio (Stretcher * self, double ratio)
 {
-  rubberband_set_time_ratio (
-    self->rubberband_state, ratio);
+  rubberband_set_time_ratio (self->rubberband_state, ratio);
 }
 
 /**
@@ -284,8 +271,7 @@ stretcher_set_time_ratio (
 unsigned int
 stretcher_get_latency (Stretcher * self)
 {
-  return rubberband_get_latency (
-    self->rubberband_state);
+  return rubberband_get_latency (self->rubberband_state);
 }
 
 /**
@@ -318,12 +304,9 @@ stretcher_stretch_interleaved (
     {
       in_buffers_l[i] = in_samples[i * channels];
       if (channels == 2)
-        in_buffers_r[i] =
-          in_samples[i * channels + 1];
+        in_buffers_r[i] = in_samples[i * channels + 1];
     }
-  const float * in_buffers[2] = {
-    in_buffers_l, in_buffers_r
-  };
+  const float * in_buffers[2] = { in_buffers_l, in_buffers_r };
 
   /* tell rubberband how many input samples it will
    * receive */
@@ -340,8 +323,8 @@ stretcher_stretch_interleaved (
 
       /* read */
       rubberband_study (
-        self->rubberband_state, in_buffers,
-        read_now, read_now == samples_to_read);
+        self->rubberband_state, in_buffers, read_now,
+        read_now == samples_to_read);
 
       /* remaining samples to read */
       samples_to_read -= read_now;
@@ -352,13 +335,11 @@ stretcher_stretch_interleaved (
   float * out_samples[channels];
   size_t  out_samples_size =
     (size_t) math_round_double_to_signed_64 (
-      rubberband_get_time_ratio (
-        self->rubberband_state)
+      rubberband_get_time_ratio (self->rubberband_state)
       * in_samples_size);
   for (unsigned int i = 0; i < channels; i++)
     {
-      out_samples[i] =
-        object_new_n (out_samples_size, float);
+      out_samples[i] = object_new_n (out_samples_size, float);
     }
 
   /* process */
@@ -366,11 +347,9 @@ stretcher_stretch_interleaved (
   size_t total_out_frames = 0;
   while (processed < in_samples_size)
     {
-      size_t in_chunk_size =
-        rubberband_get_samples_required (
-          self->rubberband_state);
-      size_t samples_left =
-        in_samples_size - processed;
+      size_t in_chunk_size = rubberband_get_samples_required (
+        self->rubberband_state);
+      size_t samples_left = in_samples_size - processed;
 
       if (samples_left < in_chunk_size)
         {
@@ -379,14 +358,12 @@ stretcher_stretch_interleaved (
 
       /* move the in buffers */
       const float * tmp_in_arrays[2] = {
-        in_buffers[0] + processed,
-        in_buffers[1] + processed
+        in_buffers[0] + processed, in_buffers[1] + processed
       };
 
       /* process */
       rubberband_process (
-        self->rubberband_state, tmp_in_arrays,
-        in_chunk_size,
+        self->rubberband_state, tmp_in_arrays, in_chunk_size,
         samples_left == in_chunk_size);
 
       processed += in_chunk_size;
@@ -401,12 +378,9 @@ stretcher_stretch_interleaved (
        * arrays */
       float   tmp_out_l[avail];
       float   tmp_out_r[avail];
-      float * tmp_out_arrays[2] = {
-        tmp_out_l, tmp_out_r
-      };
-      size_t out_chunk_size = rubberband_retrieve (
-        self->rubberband_state, tmp_out_arrays,
-        avail);
+      float * tmp_out_arrays[2] = { tmp_out_l, tmp_out_r };
+      size_t  out_chunk_size = rubberband_retrieve (
+         self->rubberband_state, tmp_out_arrays, avail);
 
       /* save the result */
       for (size_t i = 0; i < channels; i++)
@@ -422,8 +396,8 @@ stretcher_stretch_interleaved (
     }
 
   g_message (
-    "retrieved %zu samples (expected %zu)",
-    total_out_frames, out_samples_size);
+    "retrieved %zu samples (expected %zu)", total_out_frames,
+    out_samples_size);
   g_warn_if_fail (
     /* allow 1 sample earlier */
     total_out_frames <= out_samples_size
@@ -432,8 +406,7 @@ stretcher_stretch_interleaved (
   /* store the output data in the given arrays */
   *_out_samples = g_realloc (
     *_out_samples,
-    (size_t) channels * total_out_frames
-      * sizeof (float));
+    (size_t) channels * total_out_frames * sizeof (float));
   for (unsigned int ch = 0; ch < channels; ch++)
     {
       for (size_t i = 0; i < total_out_frames; i++)

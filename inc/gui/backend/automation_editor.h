@@ -37,8 +37,7 @@
 
 #define AUTOMATION_EDITOR_SCHEMA_VERSION 1
 
-#define AUTOMATION_EDITOR \
-  (CLIP_EDITOR->automation_editor)
+#define AUTOMATION_EDITOR (CLIP_EDITOR->automation_editor)
 
 typedef struct ZRegion ZRegion;
 
@@ -62,20 +61,18 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  automation_editor_schema = {
-    YAML_VALUE_PTR (
-      AutomationEditor,
-      automation_editor_fields_schema),
-  };
+static const cyaml_schema_value_t automation_editor_schema = {
+  YAML_VALUE_PTR (
+    AutomationEditor,
+    automation_editor_fields_schema),
+};
 
 /**
  * Inits the AutomationEditor after a Project has been
  * loaded.
  */
 void
-automation_editor_init_loaded (
-  AutomationEditor * self);
+automation_editor_init_loaded (AutomationEditor * self);
 
 /**
  * Initializes the AutomationEditor.

@@ -152,8 +152,7 @@ _knob_widget_new (
   float              zero);
 
 #define knob_widget_new_simple( \
-  getter, default_getter, setter, obj, min, max, \
-  size, zero) \
+  getter, default_getter, setter, obj, min, max, size, zero) \
   _knob_widget_new ( \
     (GenericFloatGetter) getter, \
     (GenericFloatGetter) default_getter, \
@@ -165,9 +164,8 @@ _knob_widget_new (
  */
 #define knob_widget_new_port(conn, size) \
   _knob_widget_new ( \
-    NULL, NULL, (void *) conn, \
-    KNOB_TYPE_PORT_MULTIPLIER, 0.f, 1.f, size, \
-    0.f)
+    NULL, NULL, (void *) conn, KNOB_TYPE_PORT_MULTIPLIER, \
+    0.f, 1.f, size, 0.f)
 
 /**
  * @}

@@ -33,9 +33,7 @@ dictionary_new (void)
 }
 
 static int
-dictionary_find_index (
-  Dictionary * dict,
-  const char * key)
+dictionary_find_index (Dictionary * dict, const char * key)
 {
   for (int i = 0; i < dict->len; i++)
     {
@@ -48,10 +46,7 @@ dictionary_find_index (
 }
 
 void *
-dictionary_find (
-  Dictionary * dict,
-  const char * key,
-  void *       def)
+dictionary_find (Dictionary * dict, const char * key, void * def)
 {
   int idx = dictionary_find_index (dict, key);
   return idx == -1 ? def : dict->entry[idx].val;

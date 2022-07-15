@@ -155,8 +155,7 @@ typedef struct GraphNode
   /** Hardware processor, if hardware processor. */
   HardwareProcessor * hw_processor;
 
-  ModulatorMacroProcessor *
-    modulator_macro_processor;
+  ModulatorMacroProcessor * modulator_macro_processor;
 
   ChannelSend * send;
 
@@ -210,8 +209,7 @@ graph_node_process (
  * otherwise 0.
  */
 nframes_t
-graph_node_get_single_playback_latency (
-  GraphNode * node);
+graph_node_get_single_playback_latency (GraphNode * node);
 
 /**
  * Sets the playback latency of the given node
@@ -245,15 +243,10 @@ graph_node_trigger (GraphNode * self);
 //GraphNode * src);
 
 void
-graph_node_connect (
-  GraphNode * from,
-  GraphNode * to);
+graph_node_connect (GraphNode * from, GraphNode * to);
 
 GraphNode *
-graph_node_new (
-  Graph *       graph,
-  GraphNodeType type,
-  void *        data);
+graph_node_new (Graph * graph, GraphNodeType type, void * data);
 
 void
 graph_node_free (GraphNode * node);

@@ -78,8 +78,8 @@ addr2line (
   return 1;
 #  else
   sprintf (
-    addr2line_cmd, "addr2line -f -e %.256s %p",
-    program_name, addr);
+    addr2line_cmd, "addr2line -f -e %.256s %p", program_name,
+    addr);
 #  endif
 
   /* This will print a nicely formatted string specifying the
@@ -95,14 +95,10 @@ addr2line (
   if (fp == NULL)
     return 1;
 
-  while (
-    fgets (outLine1, sizeof (outLine1) - 1, fp)
-    != NULL)
+  while (fgets (outLine1, sizeof (outLine1) - 1, fp) != NULL)
     {
       //if we have a pair of lines
-      if (
-        fgets (outLine2, sizeof (outLine2) - 1, fp)
-        != NULL)
+      if (fgets (outLine2, sizeof (outLine2) - 1, fp) != NULL)
         {
           //if symbols are readable
           if (outLine2[0] != '?')
@@ -111,9 +107,7 @@ addr2line (
               int i;
               for (i = 0; i < 1035; ++i)
                 {
-                  if (
-                    outLine1[i] == '\r'
-                    || outLine1[i] == '\n')
+                  if (outLine1[i] == '\r' || outLine1[i] == '\n')
                     {
                       outLine1[i] = '\0';
                       break;
@@ -131,9 +125,8 @@ addr2line (
                     lastSlashPos = i + 1;
                 }
               sprintf (
-                buf, "[%i] %p in %s at %s", lineNb,
-                addr, outLine1,
-                outLine2 + lastSlashPos);
+                buf, "[%i] %p in %s at %s", lineNb, addr,
+                outLine1, outLine2 + lastSlashPos);
             }
           else
             {
@@ -189,15 +182,13 @@ syminfo_cb (
   if (base_address != 0 || symval != 0)
     {
       g_string_append_printf (
-        msg_str, " %s from %s(+0x%lx)[0x%lx]",
-        symname, binary_filename,
-        symval - base_address, base_address);
+        msg_str, " %s from %s(+0x%lx)[0x%lx]", symname,
+        binary_filename, symval - base_address, base_address);
     }
   else
 #  endif
     {
-      g_string_append_printf (
-        msg_str, " %s", symname);
+      g_string_append_printf (msg_str, " %s", symname);
     }
 }
 
@@ -218,13 +209,11 @@ full_cb (
 
   if (filename)
     {
-      g_string_append_printf (
-        *msg_str, "%s", filename);
+      g_string_append_printf (*msg_str, "%s", filename);
     }
   else
     {
-      g_string_append_printf (
-        *msg_str, "%s", "???");
+      g_string_append_printf (*msg_str, "%s", "???");
     }
 
   if (function)
@@ -294,22 +283,18 @@ _backtrace_get (
 
       if (write_to_file && ZRYTHM)
         {
-          char * str_datetime =
-            datetime_get_for_filename ();
-          char * user_bt_dir = zrythm_get_dir (
-            ZRYTHM_DIR_USER_BACKTRACE);
-          char * backtrace_filepath =
-            g_strdup_printf (
-              "%s%sbacktrace_%s.txt", user_bt_dir,
-              G_DIR_SEPARATOR_S, str_datetime);
+          char * str_datetime = datetime_get_for_filename ();
+          char * user_bt_dir =
+            zrythm_get_dir (ZRYTHM_DIR_USER_BACKTRACE);
+          char * backtrace_filepath = g_strdup_printf (
+            "%s%sbacktrace_%s.txt", user_bt_dir,
+            G_DIR_SEPARATOR_S, str_datetime);
           io_mkdir (user_bt_dir);
-          FILE * f =
-            fopen (backtrace_filepath, "a");
+          FILE * f = fopen (backtrace_filepath, "a");
           if (!f)
             {
               g_message (
-                "failed to open file %s",
-                backtrace_filepath);
+                "failed to open file %s", backtrace_filepath);
               g_free (str_datetime);
               g_free (user_bt_dir);
               g_free (backtrace_filepath);
@@ -327,19 +312,16 @@ call_backtrace_full:
         {
           g_message ("getting bt");
           int ret = backtrace_full (
-            state, 0, full_cb, bt_error_cb,
-            &msg_str);
+            state, 0, full_cb, bt_error_cb, &msg_str);
           g_message ("ret %d", ret);
 
           if (msg_str)
             {
               /* replace multiple instances of ??? with a single
                * one */
-              char * bt_str =
-                g_string_free (msg_str, false);
+              char * bt_str = g_string_free (msg_str, false);
               string_replace_regex (
-                &bt_str, "(\\?\\?\\?\n)+\\1",
-                "??? ...\n");
+                &bt_str, "(\\?\\?\\?\n)+\\1", "??? ...\n");
 
               return bt_str;
             }
@@ -373,22 +355,19 @@ read_traditional_bt:
 
   SymInitialize (process, NULL, TRUE);
 
-  frames =
-    CaptureStackBackTrace (0, 100, stack, NULL);
+  frames = CaptureStackBackTrace (0, 100, stack, NULL);
   symbol = (SYMBOL_INFO *) calloc (
     sizeof (SYMBOL_INFO) + 256 * sizeof (char), 1);
   symbol->MaxNameLen = 255;
   symbol->SizeOfStruct = sizeof (SYMBOL_INFO);
 
   IMAGEHLP_LINE64 * line = calloc (
-    sizeof (IMAGEHLP_LINE64) + 256 * sizeof (char),
-    1);
+    sizeof (IMAGEHLP_LINE64) + 256 * sizeof (char), 1);
   line->SizeOfStruct = sizeof (IMAGEHLP_LINE64);
 
   for (i = 0; i < frames; i++)
     {
-      SymFromAddr (
-        process, (DWORD64) (stack[i]), 0, symbol);
+      SymFromAddr (process, (DWORD64) (stack[i]), 0, symbol);
 
       bool got_line = false;
       if (with_lines)
@@ -408,16 +387,14 @@ read_traditional_bt:
         {
           sprintf (
             current_line, "%u: %s - 0x%0X %s:%d\n",
-            frames - i - 1, symbol->Name,
-            symbol->Address, line->FileName,
-            line->LineNumber);
+            frames - i - 1, symbol->Name, symbol->Address,
+            line->FileName, line->LineNumber);
         }
       else
         {
           sprintf (
-            current_line, "%u: %s - 0x%0X\n",
-            frames - i - 1, symbol->Name,
-            symbol->Address);
+            current_line, "%u: %s - 0x%0X\n", frames - i - 1,
+            symbol->Name, symbol->Address);
         }
 
       strcat (message, current_line);
@@ -439,12 +416,10 @@ read_traditional_bt:
       if (
         !with_lines
         || addr2line (
-             exe_path, array[i], current_line,
-             size - 2 - i - 1)
+             exe_path, array[i], current_line, size - 2 - i - 1)
              != 0)
         {
-          sprintf (
-            current_line, "%s\n", strings[i]);
+          sprintf (current_line, "%s\n", strings[i]);
         }
       strcat (message, current_line);
     }

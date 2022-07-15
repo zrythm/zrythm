@@ -37,9 +37,8 @@ G_DECLARE_FINAL_TYPE (
   MIDI_EDITOR_SPACE_WIDGET,
   GtkWidget)
 
-typedef struct _ArrangerWidget ArrangerWidget;
-typedef struct _PianoRollKeysWidget
-  PianoRollKeysWidget;
+typedef struct _ArrangerWidget      ArrangerWidget;
+typedef struct _PianoRollKeysWidget PianoRollKeysWidget;
 
 /**
  * @addtogroup widgets
@@ -88,8 +87,7 @@ typedef struct _MidiEditorSpaceWidget
 } MidiEditorSpaceWidget;
 
 void
-midi_editor_space_widget_setup (
-  MidiEditorSpaceWidget * self);
+midi_editor_space_widget_setup (MidiEditorSpaceWidget * self);
 
 /**
  * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.

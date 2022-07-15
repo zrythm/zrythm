@@ -55,17 +55,13 @@ typedef struct
 } Fifths;
 
 static void
-connect_port (
-  LV2_Handle instance,
-  uint32_t   port,
-  void *     data)
+connect_port (LV2_Handle instance, uint32_t port, void * data)
 {
   Fifths * self = (Fifths *) instance;
   switch (port)
     {
     case FIFTHS_IN:
-      self->in_port =
-        (const LV2_Atom_Sequence *) data;
+      self->in_port = (const LV2_Atom_Sequence *) data;
       break;
     case FIFTHS_OUT:
       self->out_port = (LV2_Atom_Sequence *) data;
@@ -83,8 +79,7 @@ instantiate (
   const LV2_Feature * const * features)
 {
   // Allocate and initialise instance structure.
-  Fifths * self =
-    (Fifths *) calloc (1, sizeof (Fifths));
+  Fifths * self = (Fifths *) calloc (1, sizeof (Fifths));
   if (!self)
     {
       return NULL;
@@ -92,14 +87,13 @@ instantiate (
 
   // Scan host features for URID map
   const char * missing = lv2_features_query (
-    features, LV2_LOG__log, &self->logger.log,
-    false, LV2_URID__map, &self->map, true, NULL);
+    features, LV2_LOG__log, &self->logger.log, false,
+    LV2_URID__map, &self->map, true, NULL);
   lv2_log_logger_set_map (&self->logger, self->map);
   if (missing)
     {
       lv2_log_error (
-        &self->logger, "Missing feature <%s>\n",
-        missing);
+        &self->logger, "Missing feature <%s>\n", missing);
       free (self);
       return NULL;
     }
@@ -131,28 +125,23 @@ run (LV2_Handle instance, uint32_t sample_count)
   // Initially self->out_port contains a Chunk with size set to capacity
 
   // Get the capacity
-  const uint32_t out_capacity =
-    self->out_port->atom.size;
+  const uint32_t out_capacity = self->out_port->atom.size;
 
   // Write an empty Sequence header to the output
   lv2_atom_sequence_clear (self->out_port);
-  self->out_port->atom.type =
-    self->in_port->atom.type;
+  self->out_port->atom.type = self->in_port->atom.type;
 
   // Read incoming events
   LV2_ATOM_SEQUENCE_FOREACH (self->in_port, ev)
   {
     if (ev->body.type == uris->midi_Event)
       {
-        const uint8_t * const msg =
-          (const uint8_t *) (ev + 1);
+        const uint8_t * const msg = (const uint8_t *) (ev + 1);
         switch (lv2_midi_message_type (msg))
           {
           case LV2_MIDI_MSG_NOTE_ON:
           case LV2_MIDI_MSG_NOTE_OFF:
-            if (
-              lv2_midi_message_type (msg)
-              == LV2_MIDI_MSG_NOTE_ON)
+            if (lv2_midi_message_type (msg) == LV2_MIDI_MSG_NOTE_ON)
               {
                 printf ("\nNOTE ON %d\n", msg[1]);
               }
@@ -181,14 +170,12 @@ run (LV2_Handle instance, uint32_t sample_count)
 
                 fifth.msg[0] = msg[0]; // Same status
                 fifth.msg[1] =
-                  msg[1] + 7; // Pitch up 7 semitones
-                fifth.msg[2] =
-                  msg[2]; // Same velocity
+                  msg[1] + 7;          // Pitch up 7 semitones
+                fifth.msg[2] = msg[2]; // Same velocity
 
                 // Write 5th event
                 lv2_atom_sequence_append_event (
-                  self->out_port, out_capacity,
-                  &fifth.event);
+                  self->out_port, out_capacity, &fifth.event);
               }
             break;
           default:

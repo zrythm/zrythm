@@ -25,18 +25,14 @@ G_DECLARE_FINAL_TYPE (
   GtkApplication)
 
 #define ZRYTHM_APP_IS_GTK_THREAD \
-  (zrythm_app \
-   && zrythm_app->gtk_thread == g_thread_self ())
+  (zrythm_app && zrythm_app->gtk_thread == g_thread_self ())
 
-typedef struct _MainWindowWidget MainWindowWidget;
-typedef struct _SplashWindowWidget
-  SplashWindowWidget;
-typedef struct _FirstRunAssistantWidget
-  FirstRunAssistantWidget;
-typedef struct _ProjectAssistantWidget
-                        ProjectAssistantWidget;
-typedef struct Zrythm   Zrythm;
-typedef struct UiCaches UiCaches;
+typedef struct _MainWindowWidget        MainWindowWidget;
+typedef struct _SplashWindowWidget      SplashWindowWidget;
+typedef struct _FirstRunAssistantWidget FirstRunAssistantWidget;
+typedef struct _ProjectAssistantWidget ProjectAssistantWidget;
+typedef struct Zrythm                  Zrythm;
+typedef struct UiCaches                UiCaches;
 
 /**
  * @addtogroup general
@@ -59,8 +55,7 @@ zrythm_app_ui_message_new (
   const char *   msg);
 
 void
-zrythm_app_ui_message_free (
-  ZrythmAppUiMessage * self);
+zrythm_app_ui_message_free (ZrythmAppUiMessage * self);
 
 /**
  * The global struct.
@@ -190,9 +185,7 @@ zrythm_app_set_progress_status (
   const double perc);
 
 void
-zrythm_app_set_font_scale (
-  ZrythmApp * self,
-  double      font_scale);
+zrythm_app_set_font_scale (ZrythmApp * self, double font_scale);
 
 /**
  * Handles the logic for checking for updates on
@@ -209,8 +202,7 @@ zrythm_app_check_for_updates (ZrythmApp * self);
  * initialization has finished.
  */
 int
-zrythm_app_prompt_for_project_func (
-  ZrythmApp * self);
+zrythm_app_prompt_for_project_func (ZrythmApp * self);
 
 /**
  * Returns a pointer to the global zrythm_app.

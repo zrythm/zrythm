@@ -117,9 +117,7 @@ windows_mme_device_new (int input, int index);
  * @return Non-zero if error.
  */
 int
-windows_mme_device_open (
-  WindowsMmeDevice * dev,
-  int                start);
+windows_mme_device_open (WindowsMmeDevice * dev, int start);
 
 /**
  * Close the WindowsMmeDevice.
@@ -127,9 +125,7 @@ windows_mme_device_open (
  * @param free Also free the memory.
  */
 int
-windows_mme_device_close (
-  WindowsMmeDevice * self,
-  int                free);
+windows_mme_device_close (WindowsMmeDevice * self, int free);
 
 int
 windows_mme_device_start (WindowsMmeDevice * self);
@@ -202,8 +198,7 @@ windows_mme_device_dequeue_midi_event (
  * (index).
  */
 void
-windows_mme_device_print_info (
-  WindowsMmeDevice * dev);
+windows_mme_device_print_info (WindowsMmeDevice * dev);
 
 void
 windows_mme_device_free (WindowsMmeDevice * dev);

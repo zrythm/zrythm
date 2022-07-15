@@ -30,9 +30,8 @@
 
 #include "utils/yaml.h"
 
-typedef struct AudioClip AudioClip;
-typedef struct PortConnectionsManager
-  PortConnectionsManager;
+typedef struct AudioClip              AudioClip;
+typedef struct PortConnectionsManager PortConnectionsManager;
 
 /**
  * @addtogroup actions
@@ -77,19 +76,17 @@ typedef enum UndoableActionType
 
 } UndoableActionType;
 
-static const cyaml_strval_t
-  undoable_action_type_strings[] = {
-    {"Tracklist selections",
-     UA_TRACKLIST_SELECTIONS                       },
-    { "Channel send",        UA_CHANNEL_SEND       },
-    { "Mixer selections",    UA_MIXER_SELECTIONS   },
-    { "Arranger selections", UA_ARRANGER_SELECTIONS},
-    { "MIDI mapping",        UA_MIDI_MAPPING       },
-    { "Port connection",     UA_PORT_CONNECTION    },
-    { "Port",                UA_PORT               },
-    { "Range",               UA_RANGE              },
-    { "Transport",           UA_TRANSPORT          },
-    { "Chord",               UA_CHORD              },
+static const cyaml_strval_t undoable_action_type_strings[] = {
+  {"Tracklist selections", UA_TRACKLIST_SELECTIONS},
+  { "Channel send",        UA_CHANNEL_SEND        },
+  { "Mixer selections",    UA_MIXER_SELECTIONS    },
+  { "Arranger selections", UA_ARRANGER_SELECTIONS },
+  { "MIDI mapping",        UA_MIDI_MAPPING        },
+  { "Port connection",     UA_PORT_CONNECTION     },
+  { "Port",                UA_PORT                },
+  { "Range",               UA_RANGE               },
+  { "Transport",           UA_TRANSPORT           },
+  { "Chord",               UA_CHORD               },
 };
 
 /**
@@ -122,26 +119,24 @@ typedef struct UndoableAction
   int num_actions;
 } UndoableAction;
 
-static const cyaml_schema_field_t
-  undoable_action_fields_schema[] = {
-    YAML_FIELD_INT (UndoableAction, schema_version),
-    YAML_FIELD_ENUM (
-      UndoableAction,
-      type,
-      undoable_action_type_strings),
-    YAML_FIELD_INT (UndoableAction, stack_idx),
-    YAML_FIELD_INT (UndoableAction, num_actions),
+static const cyaml_schema_field_t undoable_action_fields_schema[] = {
+  YAML_FIELD_INT (UndoableAction, schema_version),
+  YAML_FIELD_ENUM (
+    UndoableAction,
+    type,
+    undoable_action_type_strings),
+  YAML_FIELD_INT (UndoableAction, stack_idx),
+  YAML_FIELD_INT (UndoableAction, num_actions),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  undoable_action_schema = {
-    CYAML_VALUE_MAPPING (
-      CYAML_FLAG_POINTER,
-      UndoableAction,
-      undoable_action_fields_schema),
-  };
+static const cyaml_schema_value_t undoable_action_schema = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    UndoableAction,
+    undoable_action_fields_schema),
+};
 
 NONNULL
 void
@@ -174,8 +169,7 @@ undoable_action_needs_pause (UndoableAction * self);
  */
 NONNULL
 bool
-undoable_action_can_contain_clip (
-  UndoableAction * self);
+undoable_action_can_contain_clip (UndoableAction * self);
 
 /**
  * Checks whether the action actually contains or
@@ -231,9 +225,7 @@ undoable_action_save_or_load_port_connections (
  */
 NONNULL_ARGS (1)
 int
-undoable_action_do (
-  UndoableAction * self,
-  GError **        error);
+undoable_action_do (UndoableAction * self, GError ** error);
 
 /**
  * Undoes the action.
@@ -242,9 +234,7 @@ undoable_action_do (
  */
 NONNULL_ARGS (1)
 int
-undoable_action_undo (
-  UndoableAction * self,
-  GError **        error);
+undoable_action_undo (UndoableAction * self, GError ** error);
 
 void
 undoable_action_free (UndoableAction * self);

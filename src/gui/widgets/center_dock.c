@@ -40,10 +40,8 @@ void
 center_dock_widget_setup (CenterDockWidget * self)
 {
   bot_dock_edge_widget_setup (self->bot_dock_edge);
-  left_dock_edge_widget_setup (
-    self->left_dock_edge);
-  right_dock_edge_widget_setup (
-    self->right_dock_edge);
+  left_dock_edge_widget_setup (self->left_dock_edge);
+  right_dock_edge_widget_setup (self->right_dock_edge);
   main_notebook_widget_setup (self->main_notebook);
 
   g_signal_connect (
@@ -55,18 +53,15 @@ center_dock_widget_setup (CenterDockWidget * self)
  * Prepare for finalization.
  */
 void
-center_dock_widget_tear_down (
-  CenterDockWidget * self)
+center_dock_widget_tear_down (CenterDockWidget * self)
 {
   if (self->left_dock_edge)
     {
-      left_dock_edge_widget_tear_down (
-        self->left_dock_edge);
+      left_dock_edge_widget_tear_down (self->left_dock_edge);
     }
   if (self->main_notebook)
     {
-      main_notebook_widget_tear_down (
-        self->main_notebook);
+      main_notebook_widget_tear_down (self->main_notebook);
     }
 }
 
@@ -94,16 +89,12 @@ center_dock_widget_init (CenterDockWidget * self)
 }
 
 static void
-center_dock_widget_class_init (
-  CenterDockWidgetClass * _klass)
+center_dock_widget_class_init (CenterDockWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "center_dock.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "center_dock.ui");
 
-  gtk_widget_class_set_css_name (
-    klass, "center-dock");
+  gtk_widget_class_set_css_name (klass, "center-dock");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

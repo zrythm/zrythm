@@ -65,32 +65,23 @@ typedef enum AudioFunctionType
 } AudioFunctionType;
 
 static const cyaml_strval_t audio_function_type_strings[] = {
-  {__ ("Invert"),            AUDIO_FUNCTION_INVERT     },
-  { __ ("Normalize peak"),
-   AUDIO_FUNCTION_NORMALIZE_PEAK                       },
-  { __ ("Normalize RMS"),
-   AUDIO_FUNCTION_NORMALIZE_RMS                        },
-  { __ ("Normalize LUFS"),
-   AUDIO_FUNCTION_NORMALIZE_LUFS                       },
-  { __ ("Linear fade in"),
-   AUDIO_FUNCTION_LINEAR_FADE_IN                       },
-  { __ ("Linear fade out"),
-   AUDIO_FUNCTION_LINEAR_FADE_OUT                      },
-  { __ ("Nudge left"),       AUDIO_FUNCTION_NUDGE_LEFT },
-  { __ ("Nudge right"),      AUDIO_FUNCTION_NUDGE_RIGHT},
-  { __ ("Reverse"),          AUDIO_FUNCTION_REVERSE    },
-  { __ ("External program"),
-   AUDIO_FUNCTION_EXT_PROGRAM                          },
-  { __ ("Guile script"),
-   AUDIO_FUNCTION_GUILE_SCRIPT                         },
-  { __ ("Custom plugin"),
-   AUDIO_FUNCTION_CUSTOM_PLUGIN                        },
-  { __ ("Invalid"),          AUDIO_FUNCTION_INVALID    },
+  {__ ("Invert"),            AUDIO_FUNCTION_INVERT         },
+  { __ ("Normalize peak"),   AUDIO_FUNCTION_NORMALIZE_PEAK },
+  { __ ("Normalize RMS"),    AUDIO_FUNCTION_NORMALIZE_RMS  },
+  { __ ("Normalize LUFS"),   AUDIO_FUNCTION_NORMALIZE_LUFS },
+  { __ ("Linear fade in"),   AUDIO_FUNCTION_LINEAR_FADE_IN },
+  { __ ("Linear fade out"),  AUDIO_FUNCTION_LINEAR_FADE_OUT},
+  { __ ("Nudge left"),       AUDIO_FUNCTION_NUDGE_LEFT     },
+  { __ ("Nudge right"),      AUDIO_FUNCTION_NUDGE_RIGHT    },
+  { __ ("Reverse"),          AUDIO_FUNCTION_REVERSE        },
+  { __ ("External program"), AUDIO_FUNCTION_EXT_PROGRAM    },
+  { __ ("Guile script"),     AUDIO_FUNCTION_GUILE_SCRIPT   },
+  { __ ("Custom plugin"),    AUDIO_FUNCTION_CUSTOM_PLUGIN  },
+  { __ ("Invalid"),          AUDIO_FUNCTION_INVALID        },
 };
 
 static inline const char *
-audio_function_type_to_string (
-  AudioFunctionType type)
+audio_function_type_to_string (AudioFunctionType type)
 {
   return audio_function_type_strings[type].str;
 }
@@ -116,16 +107,14 @@ audio_function_get_detailed_action_for_type (
     type, "app.editor-function")
 
 const char *
-audio_function_get_icon_name_for_type (
-  AudioFunctionType type);
+audio_function_get_icon_name_for_type (AudioFunctionType type);
 
 /**
  * Returns the URI of the plugin responsible for
  * handling the type, if any.
  */
 static inline const char *
-audio_function_get_plugin_uri_for_type (
-  AudioFunctionType type)
+audio_function_get_plugin_uri_for_type (AudioFunctionType type)
 {
   switch (type)
     {

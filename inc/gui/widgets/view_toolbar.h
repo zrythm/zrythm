@@ -20,8 +20,7 @@ G_DECLARE_FINAL_TYPE (
   VIEW_TOOLBAR_WIDGET,
   GtkBox)
 
-#define MW_VIEW_TOOLBAR \
-  MW_HEADER_NOTEBOOK->view_toolbar
+#define MW_VIEW_TOOLBAR MW_HEADER_NOTEBOOK->view_toolbar
 
 typedef struct _ViewToolbarWidget
 {

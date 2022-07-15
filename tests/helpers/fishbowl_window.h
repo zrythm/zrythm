@@ -92,14 +92,12 @@ close_window (FishbowlWindowWidget * win)
 }
 
 FishbowlWindowWidget *
-fishbowl_window_widget_new (
-  GtkFishCreationFunc creation_func)
+fishbowl_window_widget_new (GtkFishCreationFunc creation_func)
 {
-  FishbowlWindowWidget * self = g_object_new (
-    FISHBOWL_WINDOW_WIDGET_TYPE, NULL);
+  FishbowlWindowWidget * self =
+    g_object_new (FISHBOWL_WINDOW_WIDGET_TYPE, NULL);
 
-  gtk_fishbowl_set_creation_func (
-    self->bowl, creation_func);
+  gtk_fishbowl_set_creation_func (self->bowl, creation_func);
   gtk_fishbowl_set_update_delay (
     self->bowl, G_USEC_PER_SEC / 3);
 
@@ -115,8 +113,7 @@ fishbowl_window_widget_run (
     fishbowl_window_widget_new (creation_func);
 
   g_timeout_add (
-    secs_to_run * 1000, (GSourceFunc) close_window,
-    self);
+    secs_to_run * 1000, (GSourceFunc) close_window, self);
 
   gtk_widget_show_all (GTK_WIDGET (self));
   gtk_main ();
@@ -142,8 +139,7 @@ fishbowl_window_widget_run_button (int secs_to_run)
 }
 
 static void
-fishbowl_window_widget_init (
-  FishbowlWindowWidget * self)
+fishbowl_window_widget_init (FishbowlWindowWidget * self)
 {
   g_type_ensure (GTK_TYPE_FISHBOWL);
 
@@ -156,8 +152,7 @@ static void
 fishbowl_window_widget_class_init (
   FishbowlWindowWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_template_from_resource (
     GTK_WIDGET_CLASS (klass),
     "/org/zrythm/Zrythm/app/ui/fishbowl_window.ui");

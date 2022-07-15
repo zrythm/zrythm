@@ -41,8 +41,8 @@ on_close_request (
   else
     {
       chord_editor_apply_single_chord (
-        CHORD_EDITOR, self->descr_clone,
-        self->chord_idx, F_UNDOABLE);
+        CHORD_EDITOR, self->descr_clone, self->chord_idx,
+        F_UNDOABLE);
 
       EVENTS_PUSH (
         ET_CHORD_KEY_CHANGED,
@@ -76,12 +76,9 @@ get_type_from_creator_types (
   ChordSelectorWindowWidget * self,
   GtkFlowBoxChild *           child)
 {
-  for (int i = CHORD_TYPE_MAJ; i <= CHORD_TYPE_AUG;
-       i++)
+  for (int i = CHORD_TYPE_MAJ; i <= CHORD_TYPE_AUG; i++)
     {
-      if (
-        self->creator_types[i - CHORD_TYPE_MAJ]
-        == child)
+      if (self->creator_types[i - CHORD_TYPE_MAJ] == child)
         {
           return (ChordType) i;
         }
@@ -94,8 +91,7 @@ get_type_from_creator_types (
  * -1 if no selection.
  */
 static int
-get_selected_root_note (
-  ChordSelectorWindowWidget * self)
+get_selected_root_note (ChordSelectorWindowWidget * self)
 {
   int     note = -1;
   GList * list = gtk_flow_box_get_selected_children (
@@ -104,12 +100,10 @@ get_selected_root_note (
   if (list)
     {
       GtkFlowBoxChild * selected_root_note =
-        GTK_FLOW_BOX_CHILD (
-          g_list_first (list)->data);
+        GTK_FLOW_BOX_CHILD (g_list_first (list)->data);
       if (selected_root_note)
-        note =
-          (int) get_note_from_creator_root_notes (
-            self, selected_root_note);
+        note = (int) get_note_from_creator_root_notes (
+          self, selected_root_note);
       g_list_free (list);
     }
 
@@ -121,8 +115,7 @@ get_selected_root_note (
  * -1 if no selection.
  */
 static int
-get_selected_chord_type (
-  ChordSelectorWindowWidget * self)
+get_selected_chord_type (ChordSelectorWindowWidget * self)
 {
   int type = -1;
 
@@ -131,8 +124,7 @@ get_selected_chord_type (
   if (list)
     {
       GtkFlowBoxChild * selected_type =
-        GTK_FLOW_BOX_CHILD (
-          g_list_first (list)->data);
+        GTK_FLOW_BOX_CHILD (g_list_first (list)->data);
       if (selected_type)
         type = (int) get_type_from_creator_types (
           self, selected_type);
@@ -158,12 +150,9 @@ creator_select_type (
   GtkFlowBoxChild *           child,
   ChordSelectorWindowWidget * self)
 {
-  for (int i = CHORD_TYPE_MAJ; i <= CHORD_TYPE_AUG;
-       i++)
+  for (int i = CHORD_TYPE_MAJ; i <= CHORD_TYPE_AUG; i++)
     {
-      if (
-        self->creator_types[i - CHORD_TYPE_MAJ]
-        != child)
+      if (self->creator_types[i - CHORD_TYPE_MAJ] != child)
         continue;
 
       self->descr_clone->type = (ChordType) i;
@@ -196,16 +185,13 @@ on_creator_root_note_selected_children_changed (
   ChordSelectorWindowWidget * self)
 {
   gtk_flow_box_selected_foreach (
-    flowbox,
-    (GtkFlowBoxForeachFunc) creator_select_root_note,
+    flowbox, (GtkFlowBoxForeachFunc) creator_select_root_note,
     self);
   if (gtk_check_button_get_active (
         self->creator_visibility_in_scale))
     {
-      gtk_flow_box_unselect_all (
-        self->creator_type_flowbox);
-      gtk_flow_box_unselect_all (
-        self->creator_accent_flowbox);
+      gtk_flow_box_unselect_all (self->creator_type_flowbox);
+      gtk_flow_box_unselect_all (self->creator_accent_flowbox);
       gtk_flow_box_unselect_all (
         self->creator_bass_note_flowbox);
       gtk_flow_box_invalidate_filter (
@@ -223,15 +209,13 @@ on_creator_type_selected_children_changed (
   ChordSelectorWindowWidget * self)
 {
   gtk_flow_box_selected_foreach (
-    flowbox,
-    (GtkFlowBoxForeachFunc) creator_select_type,
+    flowbox, (GtkFlowBoxForeachFunc) creator_select_type,
     self);
 
   if (gtk_check_button_get_active (
         self->creator_visibility_in_scale))
     {
-      gtk_flow_box_unselect_all (
-        self->creator_accent_flowbox);
+      gtk_flow_box_unselect_all (self->creator_accent_flowbox);
       gtk_flow_box_invalidate_filter (
         self->creator_accent_flowbox);
     }
@@ -253,10 +237,8 @@ on_creator_accent_child_activated (
       /* if selected, deselect it */
       if (self->descr_clone->accent == accent)
         {
-          gtk_flow_box_unselect_child (
-            flowbox, child);
-          self->descr_clone->accent =
-            CHORD_ACC_NONE;
+          gtk_flow_box_unselect_child (flowbox, child);
+          self->descr_clone->accent = CHORD_ACC_NONE;
         }
       /* else select it */
       else
@@ -271,14 +253,12 @@ on_creator_bass_note_selected_children_changed (
   GtkFlowBox *                flowbox,
   ChordSelectorWindowWidget * self)
 {
-  GList * list =
-    gtk_flow_box_get_selected_children (flowbox);
+  GList * list = gtk_flow_box_get_selected_children (flowbox);
   if (list)
     {
       gtk_flow_box_selected_foreach (
         flowbox,
-        (GtkFlowBoxForeachFunc)
-          creator_select_bass_note,
+        (GtkFlowBoxForeachFunc) creator_select_bass_note,
         self);
       g_list_free (list);
     }
@@ -307,8 +287,7 @@ setup_creator_tab (ChordSelectorWindowWidget * self)
 #define SELECT_CHORD_TYPE(uppercase, lowercase) \
   case CHORD_TYPE_##uppercase: \
     SELECT_CHILD ( \
-      creator_type_flowbox, \
-      creator_type_##lowercase); \
+      creator_type_flowbox, creator_type_##lowercase); \
     break
 
   /* set chord type */
@@ -330,8 +309,7 @@ setup_creator_tab (ChordSelectorWindowWidget * self)
 #define SELECT_CHORD_ACC(uppercase, lowercase) \
   case CHORD_ACC_##uppercase: \
     SELECT_CHILD ( \
-      creator_accent_flowbox, \
-      creator_accent_##lowercase); \
+      creator_accent_flowbox, creator_accent_##lowercase); \
     break
 
   /* set accent */
@@ -373,31 +351,25 @@ setup_creator_tab (ChordSelectorWindowWidget * self)
   g_signal_connect (
     G_OBJECT (self->creator_root_note_flowbox),
     "selected-children-changed",
-    G_CALLBACK (
-      on_creator_root_note_selected_children_changed),
+    G_CALLBACK (on_creator_root_note_selected_children_changed),
     self);
   g_signal_connect (
     G_OBJECT (self->creator_type_flowbox),
     "selected-children-changed",
-    G_CALLBACK (
-      on_creator_type_selected_children_changed),
+    G_CALLBACK (on_creator_type_selected_children_changed),
     self);
   g_signal_connect (
-    G_OBJECT (self->creator_accent_flowbox),
-    "child-activated",
-    G_CALLBACK (on_creator_accent_child_activated),
-    self);
+    G_OBJECT (self->creator_accent_flowbox), "child-activated",
+    G_CALLBACK (on_creator_accent_child_activated), self);
   g_signal_connect (
     G_OBJECT (self->creator_bass_note_flowbox),
     "selected-children-changed",
-    G_CALLBACK (
-      on_creator_bass_note_selected_children_changed),
+    G_CALLBACK (on_creator_bass_note_selected_children_changed),
     self);
 }
 
 static void
-setup_diatonic_tab (
-  ChordSelectorWindowWidget * self)
+setup_diatonic_tab (ChordSelectorWindowWidget * self)
 {
   if (self->scale)
     {
@@ -405,38 +377,26 @@ setup_diatonic_tab (
       /* major */
       if (scale->type == SCALE_IONIAN)
         {
-          gtk_label_set_text (
-            self->diatonic_i_lbl, "I");
-          gtk_label_set_text (
-            self->diatonic_ii_lbl, "ii");
-          gtk_label_set_text (
-            self->diatonic_iii_lbl, "iii");
-          gtk_label_set_text (
-            self->diatonic_iv_lbl, "IV");
-          gtk_label_set_text (
-            self->diatonic_v_lbl, "V");
-          gtk_label_set_text (
-            self->diatonic_vi_lbl, "vi");
+          gtk_label_set_text (self->diatonic_i_lbl, "I");
+          gtk_label_set_text (self->diatonic_ii_lbl, "ii");
+          gtk_label_set_text (self->diatonic_iii_lbl, "iii");
+          gtk_label_set_text (self->diatonic_iv_lbl, "IV");
+          gtk_label_set_text (self->diatonic_v_lbl, "V");
+          gtk_label_set_text (self->diatonic_vi_lbl, "vi");
           gtk_label_set_text (
             self->diatonic_vii_lbl, "vii\u00B0");
         }
       /* minor */
       else if (scale->type == SCALE_AEOLIAN)
         {
-          gtk_label_set_text (
-            self->diatonic_i_lbl, "i");
+          gtk_label_set_text (self->diatonic_i_lbl, "i");
           gtk_label_set_text (
             self->diatonic_ii_lbl, "ii\u00B0");
-          gtk_label_set_text (
-            self->diatonic_iii_lbl, "III");
-          gtk_label_set_text (
-            self->diatonic_iv_lbl, "iv");
-          gtk_label_set_text (
-            self->diatonic_v_lbl, "v");
-          gtk_label_set_text (
-            self->diatonic_vi_lbl, "VI");
-          gtk_label_set_text (
-            self->diatonic_vii_lbl, "VII");
+          gtk_label_set_text (self->diatonic_iii_lbl, "III");
+          gtk_label_set_text (self->diatonic_iv_lbl, "iv");
+          gtk_label_set_text (self->diatonic_v_lbl, "v");
+          gtk_label_set_text (self->diatonic_vi_lbl, "VI");
+          gtk_label_set_text (self->diatonic_vii_lbl, "VII");
         }
     }
   else
@@ -491,10 +451,8 @@ creator_filter (
           if (self->creator_accents[i] != child)
             continue;
 
-          MusicalNote note =
-            get_selected_root_note (self);
-          ChordType type =
-            get_selected_chord_type (self);
+          MusicalNote note = get_selected_root_note (self);
+          ChordType   type = get_selected_chord_type (self);
 
           if ((int) note == -1 || (int) type == -1)
             return 0;
@@ -505,22 +463,17 @@ creator_filter (
         }
 
       /* type */
-      for (int i = CHORD_TYPE_MAJ;
-           i <= CHORD_TYPE_AUG; i++)
+      for (int i = CHORD_TYPE_MAJ; i <= CHORD_TYPE_AUG; i++)
         {
-          if (
-            self->creator_types[i - CHORD_TYPE_MAJ]
-            != child)
+          if (self->creator_types[i - CHORD_TYPE_MAJ] != child)
             continue;
 
-          MusicalNote note =
-            get_selected_root_note (self);
+          MusicalNote note = get_selected_root_note (self);
           if ((int) note == -1)
             return true;
 
-          ChordDescriptor * chord =
-            chord_descriptor_new (
-              note, 0, 0, i, CHORD_ACC_NONE, 0);
+          ChordDescriptor * chord = chord_descriptor_new (
+            note, 0, 0, i, CHORD_ACC_NONE, 0);
 
           int ret = musical_scale_contains_chord (
             self->scale->scale, chord);
@@ -560,18 +513,16 @@ on_group_changed (
  * Creates the popover.
  */
 ChordSelectorWindowWidget *
-chord_selector_window_widget_new (
-  const int chord_idx)
+chord_selector_window_widget_new (const int chord_idx)
 {
   ChordSelectorWindowWidget * self = g_object_new (
-    CHORD_SELECTOR_WINDOW_WIDGET_TYPE, "icon-name",
-    "zrythm", NULL);
+    CHORD_SELECTOR_WINDOW_WIDGET_TYPE, "icon-name", "zrythm",
+    NULL);
 
   self->chord_idx = chord_idx;
   const ChordDescriptor * descr =
     CHORD_EDITOR->chords[chord_idx];
-  self->descr_clone =
-    chord_descriptor_clone (descr);
+  self->descr_clone = chord_descriptor_clone (descr);
 
 #if 0
   ArrangerObject * region_obj =
@@ -584,8 +535,8 @@ chord_selector_window_widget_new (
       P_CHORD_TRACK,
       &region_obj->pos);
 #endif
-  self->scale = chord_track_get_scale_at_pos (
-    P_CHORD_TRACK, PLAYHEAD);
+  self->scale =
+    chord_track_get_scale_at_pos (P_CHORD_TRACK, PLAYHEAD);
 
   gtk_window_set_transient_for (
     GTK_WINDOW (self), GTK_WINDOW (MAIN_WINDOW));
@@ -600,8 +551,7 @@ static void
 chord_selector_window_widget_class_init (
   ChordSelectorWindowWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "chord_selector_window.ui");
 
@@ -686,55 +636,31 @@ chord_selector_window_widget_init (
   gtk_check_button_set_active (
     self->creator_visibility_all, true);
 
-  self->creator_root_notes[0] =
-    self->creator_root_note_c;
-  self->creator_root_notes[1] =
-    self->creator_root_note_cs;
-  self->creator_root_notes[2] =
-    self->creator_root_note_d;
-  self->creator_root_notes[3] =
-    self->creator_root_note_ds;
-  self->creator_root_notes[4] =
-    self->creator_root_note_e;
-  self->creator_root_notes[5] =
-    self->creator_root_note_f;
-  self->creator_root_notes[6] =
-    self->creator_root_note_fs;
-  self->creator_root_notes[7] =
-    self->creator_root_note_g;
-  self->creator_root_notes[8] =
-    self->creator_root_note_gs;
-  self->creator_root_notes[9] =
-    self->creator_root_note_a;
-  self->creator_root_notes[10] =
-    self->creator_root_note_as;
-  self->creator_root_notes[11] =
-    self->creator_root_note_b;
+  self->creator_root_notes[0] = self->creator_root_note_c;
+  self->creator_root_notes[1] = self->creator_root_note_cs;
+  self->creator_root_notes[2] = self->creator_root_note_d;
+  self->creator_root_notes[3] = self->creator_root_note_ds;
+  self->creator_root_notes[4] = self->creator_root_note_e;
+  self->creator_root_notes[5] = self->creator_root_note_f;
+  self->creator_root_notes[6] = self->creator_root_note_fs;
+  self->creator_root_notes[7] = self->creator_root_note_g;
+  self->creator_root_notes[8] = self->creator_root_note_gs;
+  self->creator_root_notes[9] = self->creator_root_note_a;
+  self->creator_root_notes[10] = self->creator_root_note_as;
+  self->creator_root_notes[11] = self->creator_root_note_b;
 
-  self->creator_bass_notes[0] =
-    self->creator_bass_note_c;
-  self->creator_bass_notes[1] =
-    self->creator_bass_note_cs;
-  self->creator_bass_notes[2] =
-    self->creator_bass_note_d;
-  self->creator_bass_notes[3] =
-    self->creator_bass_note_ds;
-  self->creator_bass_notes[4] =
-    self->creator_bass_note_e;
-  self->creator_bass_notes[5] =
-    self->creator_bass_note_f;
-  self->creator_bass_notes[6] =
-    self->creator_bass_note_fs;
-  self->creator_bass_notes[7] =
-    self->creator_bass_note_g;
-  self->creator_bass_notes[8] =
-    self->creator_bass_note_gs;
-  self->creator_bass_notes[9] =
-    self->creator_bass_note_a;
-  self->creator_bass_notes[10] =
-    self->creator_bass_note_as;
-  self->creator_bass_notes[11] =
-    self->creator_bass_note_b;
+  self->creator_bass_notes[0] = self->creator_bass_note_c;
+  self->creator_bass_notes[1] = self->creator_bass_note_cs;
+  self->creator_bass_notes[2] = self->creator_bass_note_d;
+  self->creator_bass_notes[3] = self->creator_bass_note_ds;
+  self->creator_bass_notes[4] = self->creator_bass_note_e;
+  self->creator_bass_notes[5] = self->creator_bass_note_f;
+  self->creator_bass_notes[6] = self->creator_bass_note_fs;
+  self->creator_bass_notes[7] = self->creator_bass_note_g;
+  self->creator_bass_notes[8] = self->creator_bass_note_gs;
+  self->creator_bass_notes[9] = self->creator_bass_note_a;
+  self->creator_bass_notes[10] = self->creator_bass_note_as;
+  self->creator_bass_notes[11] = self->creator_bass_note_b;
 
   self->creator_types[0] = self->creator_type_maj;
   self->creator_types[1] = self->creator_type_min;
@@ -744,21 +670,14 @@ chord_selector_window_widget_init (
   self->creator_types[5] = self->creator_type_aug;
 
   self->creator_accents[0] = self->creator_accent_7;
-  self->creator_accents[1] =
-    self->creator_accent_j7;
-  self->creator_accents[2] =
-    self->creator_accent_b9;
+  self->creator_accents[1] = self->creator_accent_j7;
+  self->creator_accents[2] = self->creator_accent_b9;
   self->creator_accents[3] = self->creator_accent_9;
-  self->creator_accents[4] =
-    self->creator_accent_s9;
-  self->creator_accents[5] =
-    self->creator_accent_11;
-  self->creator_accents[6] =
-    self->creator_accent_b5_s11;
-  self->creator_accents[7] =
-    self->creator_accent_s5_b13;
-  self->creator_accents[8] =
-    self->creator_accent_6_13;
+  self->creator_accents[4] = self->creator_accent_s9;
+  self->creator_accents[5] = self->creator_accent_11;
+  self->creator_accents[6] = self->creator_accent_b5_s11;
+  self->creator_accents[7] = self->creator_accent_s5_b13;
+  self->creator_accents[8] = self->creator_accent_6_13;
 
   gtk_flow_box_set_min_children_per_line (
     self->creator_root_note_flowbox, 12);
@@ -772,28 +691,24 @@ chord_selector_window_widget_init (
   /* set filter functions */
   gtk_flow_box_set_filter_func (
     self->creator_root_note_flowbox,
-    (GtkFlowBoxFilterFunc) creator_filter, self,
-    NULL);
+    (GtkFlowBoxFilterFunc) creator_filter, self, NULL);
   gtk_flow_box_set_filter_func (
     self->creator_type_flowbox,
-    (GtkFlowBoxFilterFunc) creator_filter, self,
-    NULL);
+    (GtkFlowBoxFilterFunc) creator_filter, self, NULL);
   gtk_flow_box_set_filter_func (
     self->creator_accent_flowbox,
-    (GtkFlowBoxFilterFunc) creator_filter, self,
-    NULL);
+    (GtkFlowBoxFilterFunc) creator_filter, self, NULL);
   gtk_flow_box_set_filter_func (
     self->creator_bass_note_flowbox,
-    (GtkFlowBoxFilterFunc) creator_filter, self,
-    NULL);
+    (GtkFlowBoxFilterFunc) creator_filter, self, NULL);
 
   /* set signals */
   g_signal_connect (
-    G_OBJECT (self->creator_visibility_all),
-    "toggled", G_CALLBACK (on_group_changed), self);
+    G_OBJECT (self->creator_visibility_all), "toggled",
+    G_CALLBACK (on_group_changed), self);
   g_signal_connect (
-    G_OBJECT (self->creator_visibility_in_scale),
-    "toggled", G_CALLBACK (on_group_changed), self);
+    G_OBJECT (self->creator_visibility_in_scale), "toggled",
+    G_CALLBACK (on_group_changed), self);
   g_signal_connect (
     G_OBJECT (self), "close-request",
     G_CALLBACK (on_close_request), self);

@@ -33,8 +33,7 @@ chord_preset_new (const char * name)
 {
   ChordPreset * self = object_new (ChordPreset);
 
-  self->schema_version =
-    CHORD_PRESET_SCHEMA_VERSION;
+  self->schema_version = CHORD_PRESET_SCHEMA_VERSION;
   self->name = g_strdup (name);
 
   return self;
@@ -47,8 +46,7 @@ chord_preset_clone (const ChordPreset * src)
 
   for (int i = 0; i < 12; i++)
     {
-      self->descr[i] =
-        chord_descriptor_clone (src->descr[i]);
+      self->descr[i] = chord_descriptor_clone (src->descr[i]);
     }
 
   return self;
@@ -60,8 +58,7 @@ chord_preset_clone (const ChordPreset * src)
  * Must be free'd by caller.
  */
 char *
-chord_preset_get_info_text (
-  const ChordPreset * self)
+chord_preset_get_info_text (const ChordPreset * self)
 {
   GString * gstr = g_string_new (_ ("Chords"));
   g_string_append (gstr, ":\n");
@@ -72,8 +69,7 @@ chord_preset_get_info_text (
       if (descr->type == CHORD_TYPE_NONE)
         break;
 
-      char * lbl =
-        chord_descriptor_to_new_string (descr);
+      char * lbl = chord_descriptor_to_new_string (descr);
       g_string_append (gstr, lbl);
       g_free (lbl);
       g_string_append (gstr, ", ");
@@ -82,8 +78,7 @@ chord_preset_get_info_text (
 
   if (have_any)
     {
-      g_string_erase (
-        gstr, (gssize) gstr->len - 2, 2);
+      g_string_erase (gstr, (gssize) gstr->len - 2, 2);
     }
 
   return g_string_free (gstr, false);
@@ -96,9 +91,7 @@ chord_preset_get_name (const ChordPreset * self)
 }
 
 void
-chord_preset_set_name (
-  ChordPreset * self,
-  const char *  name)
+chord_preset_set_name (ChordPreset * self, const char * name)
 {
   object_free_w_func_and_null (g_free, self->name);
 
@@ -108,8 +101,7 @@ chord_preset_set_name (
 }
 
 GMenuModel *
-chord_preset_generate_context_menu (
-  const ChordPreset * self)
+chord_preset_generate_context_menu (const ChordPreset * self)
 {
   ChordPresetPack * pack =
     chord_preset_pack_manager_get_pack_for_preset (
@@ -123,15 +115,13 @@ chord_preset_generate_context_menu (
   char        action[800];
 
   /* rename */
-  sprintf (
-    action, "app.rename-chord-preset::%p", self);
+  sprintf (action, "app.rename-chord-preset::%p", self);
   menuitem = z_gtk_create_menu_item (
     _ ("_Rename"), "edit-rename", action);
   g_menu_append_item (menu, menuitem);
 
   /* delete */
-  sprintf (
-    action, "app.delete-chord-preset::%p", self);
+  sprintf (action, "app.delete-chord-preset::%p", self);
   menuitem = z_gtk_create_menu_item (
     _ ("_Delete"), "edit-delete", action);
   g_menu_append_item (menu, menuitem);

@@ -48,16 +48,13 @@ welcome_message_dialog_new (GtkWindow * parent)
 
 #if !defined(INSTALLER_VER) || defined(TRIAL_VER)
   char * donations = g_strdup_printf (
-    _ (
-      "%sZrythm relies on donations and purchases "
-      "to sustain development%s. If you enjoy the "
-      "software, please consider %sdonating%s or "
-      "%sbuying an installer%s."),
-    "<b>", "</b>", "<a href=\"" DONATION_URL "\">",
-    "</a>", "<a href=\"" PURCHASE_URL "\">",
-    "</a>");
-  g_string_append_printf (
-    gstr, "%s\n\n", donations);
+    _ ("%sZrythm relies on donations and purchases "
+       "to sustain development%s. If you enjoy the "
+       "software, please consider %sdonating%s or "
+       "%sbuying an installer%s."),
+    "<b>", "</b>", "<a href=\"" DONATION_URL "\">", "</a>",
+    "<a href=\"" PURCHASE_URL "\">", "</a>");
+  g_string_append_printf (gstr, "%s\n\n", donations);
   g_free (donations);
 #endif
 
@@ -73,16 +70,14 @@ welcome_message_dialog_new (GtkWindow * parent)
       "this."));
 
   g_string_append_printf (
-    gstr, "<b>%s</b>: %s\n\n",
-    _ ("Flatpak limitation"),
+    gstr, "<b>%s</b>: %s\n\n", _ ("Flatpak limitation"),
     _ ("Only Flatpak-installed plugins are "
        "supported."));
 #endif
 
   /* copyright line */
   g_string_append_printf (
-    gstr, "%s",
-    "© " COPYRIGHT_YEARS ", " COPYRIGHT_NAME ".");
+    gstr, "%s", "© " COPYRIGHT_YEARS ", " COPYRIGHT_NAME ".");
 
   /* trademark info */
 #if !defined(HAVE_CUSTOM_NAME) \
@@ -92,23 +87,20 @@ welcome_message_dialog_new (GtkWindow * parent)
        "%strademarks of Alexandros Theodotou%s."),
     "<a href=\"https://git.sr.ht/~alextee/zrythm/tree/master/item/TRADEMARKS.md\">",
     "</a>");
-  g_string_append_printf (
-    gstr, "\n\n%s", trademarks);
+  g_string_append_printf (gstr, "\n\n%s", trademarks);
   g_free (trademarks);
 #endif
 
   char * str = g_string_free (gstr, false);
 
-  GtkDialog * dialog = GTK_DIALOG (
-    gtk_message_dialog_new_with_markup (
+  GtkDialog * dialog =
+    GTK_DIALOG (gtk_message_dialog_new_with_markup (
       parent, GTK_DIALOG_DESTROY_WITH_PARENT,
       GTK_MESSAGE_INFO, GTK_BUTTONS_OK, NULL));
   gtk_message_dialog_set_markup (
     GTK_MESSAGE_DIALOG (dialog), str);
-  gtk_window_set_icon_name (
-    GTK_WINDOW (dialog), "zrythm");
-  gtk_window_set_title (
-    GTK_WINDOW (dialog), _ ("Welcome"));
+  gtk_window_set_icon_name (GTK_WINDOW (dialog), "zrythm");
+  gtk_window_set_title (GTK_WINDOW (dialog), _ ("Welcome"));
 
   GtkWidget * message_area =
     gtk_message_dialog_get_message_area (

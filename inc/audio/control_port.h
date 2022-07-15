@@ -106,8 +106,7 @@ control_port_real_val_to_normalized (
 /**
  * Checks if the given value is toggled.
  */
-#define control_port_is_val_toggled(val) \
-  (val > 0.001f)
+#define control_port_is_val_toggled(val) (val > 0.001f)
 
 /**
  * Returns if the control port is toggled.
@@ -139,9 +138,7 @@ control_port_get_snapped_val (Port * self);
  * returns 0.f or 1.f).
  */
 float
-control_port_get_snapped_val_from_val (
-  Port * self,
-  float  val);
+control_port_get_snapped_val_from_val (Port * self, float val);
 
 /**
  * Get the current real value of the control.
@@ -181,9 +178,7 @@ control_port_set_real_val (Port * self, float val);
  * sends UI events.
  */
 void
-control_port_set_real_val_w_events (
-  Port * self,
-  float  val);
+control_port_set_real_val_w_events (Port * self, float val);
 
 /**
  * Wrapper over port_set_control_value() for toggles.

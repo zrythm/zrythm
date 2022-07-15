@@ -24,18 +24,14 @@ G_DECLARE_FINAL_TYPE (
   BOT_DOCK_EDGE_WIDGET,
   GtkWidget)
 
-#define MW_BOT_DOCK_EDGE \
-  MW_CENTER_DOCK->bot_dock_edge
+#define MW_BOT_DOCK_EDGE MW_CENTER_DOCK->bot_dock_edge
 
-typedef struct _MixerWidget      MixerWidget;
-typedef struct _ClipEditorWidget ClipEditorWidget;
-typedef struct _ModulatorViewWidget
-  ModulatorViewWidget;
-typedef struct _FoldableNotebookWidget
-  FoldableNotebookWidget;
-typedef struct _EventViewerWidget EventViewerWidget;
-typedef struct _ChordPadPanelWidget
-  ChordPadPanelWidget;
+typedef struct _MixerWidget            MixerWidget;
+typedef struct _ClipEditorWidget       ClipEditorWidget;
+typedef struct _ModulatorViewWidget    ModulatorViewWidget;
+typedef struct _FoldableNotebookWidget FoldableNotebookWidget;
+typedef struct _EventViewerWidget      EventViewerWidget;
+typedef struct _ChordPadPanelWidget    ChordPadPanelWidget;
 
 /**
  * @addtogroup widgets
@@ -80,8 +76,7 @@ typedef struct _BotDockEdgeWidget
 } BotDockEdgeWidget;
 
 void
-bot_dock_edge_widget_setup (
-  BotDockEdgeWidget * self);
+bot_dock_edge_widget_setup (BotDockEdgeWidget * self);
 
 /**
  * Sets the appropriate stack page.

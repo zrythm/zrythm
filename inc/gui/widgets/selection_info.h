@@ -89,14 +89,12 @@ selection_info_widget_add_info (
  * Destroys all children.
  */
 void
-selection_info_widget_clear (
-  SelectionInfoWidget * self);
+selection_info_widget_clear (SelectionInfoWidget * self);
 
 /**
  * Returns the private.
  */
 SelectionInfoWidgetPrivate *
-selection_info_widget_get_private (
-  SelectionInfoWidget * self);
+selection_info_widget_get_private (SelectionInfoWidget * self);
 
 #endif

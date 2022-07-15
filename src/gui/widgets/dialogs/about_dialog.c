@@ -41,10 +41,8 @@ about_dialog_widget_new (GtkWindow * parent)
     NULL
   };
   const char * authors[] = {
-    "Alexandros Theodotou <alex@zrythm.org>",
-    "Ryan Gonzalez",
-    "Sascha Bast <sash@mischkonsum.org>",
-    "Georg Krause", NULL
+    "Alexandros Theodotou <alex@zrythm.org>", "Ryan Gonzalez",
+    "Sascha Bast <sash@mischkonsum.org>", "Georg Krause", NULL
   };
   const char * documenters[] = {
     "Alexandros Theodotou <alex@zrythm.org>", NULL
@@ -54,8 +52,8 @@ about_dialog_widget_new (GtkWindow * parent)
   char * version = zrythm_get_version (true);
 
   GtkAboutDialog * dialog = g_object_new (
-    GTK_TYPE_ABOUT_DIALOG, "artists", artists,
-    "authors", authors, "copyright",
+    GTK_TYPE_ABOUT_DIALOG, "artists", artists, "authors",
+    authors, "copyright",
     "Copyright © " COPYRIGHT_YEARS " " COPYRIGHT_NAME
 #if !defined(HAVE_CUSTOM_LOGO_AND_SPLASH) \
   || !defined(HAVE_CUSTOM_NAME)
@@ -67,12 +65,10 @@ about_dialog_widget_new (GtkWindow * parent)
     /*"logo", pixbuf,*/
     "program-name", PROGRAM_NAME, "comments",
     _ ("a highly automated and intuitive digital audio workstation"),
-    "license-type", GTK_LICENSE_AGPL_3_0,
-    "translator-credits", translators, "website",
-    "https://www.zrythm.org", "website-label",
-    _ ("Website"), "version", version, NULL);
-  gtk_window_set_transient_for (
-    GTK_WINDOW (dialog), parent);
+    "license-type", GTK_LICENSE_AGPL_3_0, "translator-credits",
+    translators, "website", "https://www.zrythm.org",
+    "website-label", _ ("Website"), "version", version, NULL);
+  gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
 
   g_free (version);
 

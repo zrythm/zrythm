@@ -31,20 +31,16 @@
  * (0-2).
  */
 sample_t
-math_calculate_rms_amp (
-  sample_t *      buf,
-  const nframes_t nframes)
+math_calculate_rms_amp (sample_t * buf, const nframes_t nframes)
 {
   sample_t sum = 0, sample = 0;
-  for (unsigned int i = 0; i < nframes;
-       i += MATH_RMS_FRAMES)
+  for (unsigned int i = 0; i < nframes; i += MATH_RMS_FRAMES)
     {
       sample = buf[i];
       sum += (sample * sample);
     }
   return sqrtf (
-    sum
-    / ((sample_t) nframes / (sample_t) MATH_RMS_FRAMES));
+    sum / ((sample_t) nframes / (sample_t) MATH_RMS_FRAMES));
 }
 
 /**
@@ -54,9 +50,7 @@ math_calculate_rms_amp (
  * @param nframes Number of samples.
  */
 sample_t
-math_calculate_rms_db (
-  sample_t *      buf,
-  const nframes_t nframes)
+math_calculate_rms_db (sample_t * buf, const nframes_t nframes)
 {
   return math_amp_to_dbfs (
     math_calculate_rms_amp (buf, nframes));
@@ -79,9 +73,7 @@ math_assert_nonnann (float x)
       g_free (val);
       return false;
     }
-  if (
-    !isfinite (x)
-    || string_contains_substr (val, "inf"))
+  if (!isfinite (x) || string_contains_substr (val, "inf"))
     {
       g_critical ("inf");
       g_free (val);

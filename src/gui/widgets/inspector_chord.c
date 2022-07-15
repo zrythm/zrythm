@@ -41,12 +41,14 @@ inspector_chord_widget_show_chords (
     }
   else
     {
-      char * string = g_strdup_printf (
-        "Chords (%d)", num_chords);
+      char * string =
+        g_strdup_printf ("Chords (%d)", num_chords);
       gtk_label_set_text (self->header, string);
       g_free (string);
 
-      for (int i = 0; i < num_chords; i++) { }
+      for (int i = 0; i < num_chords; i++)
+        {
+        }
     }
 }
 
@@ -54,10 +56,8 @@ static void
 inspector_chord_widget_class_init (
   InspectorChordWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "inspector_chord.ui");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (klass, "inspector_chord.ui");
 
   /*gtk_widget_class_bind_template_child (*/
   /*klass,*/
@@ -80,8 +80,7 @@ inspector_chord_widget_class_init (
 }
 
 static void
-inspector_chord_widget_init (
-  InspectorChordWidget * self)
+inspector_chord_widget_init (InspectorChordWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }

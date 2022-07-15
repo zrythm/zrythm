@@ -28,10 +28,7 @@
  * Only to be called by HANDLE_ERROR macro.
  */
 void
-error_handle_prv (
-  GError *     err,
-  const char * format,
-  ...)
+error_handle_prv (GError * err, const char * format, ...)
 {
   va_list args;
   va_start (args, format);
@@ -40,12 +37,10 @@ error_handle_prv (
     {
       char * tmp = g_strdup_vprintf (format, args);
       char * str = g_strdup_printf (
-        _ ("%s\n---Backtrace---\n%s"), tmp,
-        err->message);
+        _ ("%s\n---Backtrace---\n%s"), tmp, err->message);
       g_free (tmp);
       ui_show_message_printf (
-        MAIN_WINDOW, GTK_MESSAGE_ERROR, true, "%s",
-        str);
+        MAIN_WINDOW, GTK_MESSAGE_ERROR, true, "%s", str);
       g_free (str);
       g_error_free (err);
     }
@@ -79,8 +74,7 @@ error_propagate_prefixed_prv (
   sprintf (full_str, "%s\n", tmp);
   g_free (tmp);
 
-  g_propagate_prefixed_error (
-    main_err, err, "%s", full_str);
+  g_propagate_prefixed_error (main_err, err, "%s", full_str);
 
   va_end (args);
 }

@@ -39,10 +39,9 @@ G_DECLARE_FINAL_TYPE (
   TIMELINE_MINIMAP_WIDGET,
   GtkWidget)
 
-typedef struct _TimelineMinimapBgWidget
-  TimelineMinimapBgWidget;
+typedef struct _TimelineMinimapBgWidget TimelineMinimapBgWidget;
 typedef struct _TimelineMinimapSelectionWidget
-  TimelineMinimapSelectionWidget;
+                               TimelineMinimapSelectionWidget;
 typedef struct TimelineMinimap TimelineMinimap;
 
 /**
@@ -60,7 +59,7 @@ typedef enum TimelineMinimapAction
   TIMELINE_MINIMAP_ACTION_RESIZING_L,
   TIMELINE_MINIMAP_ACTION_RESIZING_R,
   TIMELINE_MINIMAP_ACTION_STARTING_MOVING, ///< in drag_start
-  TIMELINE_MINIMAP_ACTION_MOVING, ///< in drag start,
+  TIMELINE_MINIMAP_ACTION_MOVING,          ///< in drag start,
     ///< also for dragging up/down bitwig style
 } TimelineMinimapAction;
 
@@ -107,8 +106,7 @@ timeline_minimap_widget_px_to_pos (
  * Causes reallocation.
  */
 void
-timeline_minimap_widget_refresh (
-  TimelineMinimapWidget * self);
+timeline_minimap_widget_refresh (TimelineMinimapWidget * self);
 
 /**
  * @}

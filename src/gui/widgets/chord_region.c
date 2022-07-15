@@ -30,11 +30,8 @@ chord_region_recreate_pango_layouts (ZRegion * self)
   if (!PANGO_IS_LAYOUT (self->chords_layout))
     {
       PangoFontDescription * desc;
-      self->chords_layout =
-        gtk_widget_create_pango_layout (
-          GTK_WIDGET (
-            arranger_object_get_arranger (obj)),
-          NULL);
+      self->chords_layout = gtk_widget_create_pango_layout (
+        GTK_WIDGET (arranger_object_get_arranger (obj)), NULL);
       desc = pango_font_description_from_string (
         REGION_NAME_FONT_NO_SIZE " 6");
       pango_layout_set_font_description (

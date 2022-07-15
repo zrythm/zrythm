@@ -36,11 +36,9 @@
 static AutomationPoint *
 _create_new (const Position * pos)
 {
-  AutomationPoint * self =
-    object_new (AutomationPoint);
+  AutomationPoint * self = object_new (AutomationPoint);
 
-  self->schema_version =
-    AUTOMATION_POINT_SCHEMA_VERSION;
+  self->schema_version = AUTOMATION_POINT_SCHEMA_VERSION;
 
   ArrangerObject * obj = (ArrangerObject *) self;
   arranger_object_init (obj);
@@ -72,16 +70,14 @@ automation_point_set_region_and_index (
 {
   g_return_if_fail (ap && region);
   ArrangerObject * obj = (ArrangerObject *) ap;
-  region_identifier_copy (
-    &obj->region_id, &region->id);
+  region_identifier_copy (&obj->region_id, &region->id);
   ap->index = index;
 
   /* set the info to the transient too */
   if (
-    (ZRYTHM_HAVE_UI || ZRYTHM_TESTING)
-    && PROJECT->loaded && obj->transient
-    && arranger_object_should_orig_be_visible (
-      obj, NULL))
+    (ZRYTHM_HAVE_UI || ZRYTHM_TESTING) && PROJECT->loaded
+    && obj->transient
+    && arranger_object_should_orig_be_visible (obj, NULL))
     {
       ArrangerObject *  trans_obj = obj->transient;
       AutomationPoint * trans_ap =
@@ -99,8 +95,7 @@ automation_point_is_equal (
 {
   ArrangerObject * a_obj = (ArrangerObject *) a;
   ArrangerObject * b_obj = (ArrangerObject *) b;
-  return position_is_equal_ticks (
-           &a_obj->pos, &b_obj->pos)
+  return position_is_equal_ticks (&a_obj->pos, &b_obj->pos)
          && math_floats_equal_epsilon (
            a->fvalue, b->fvalue, 0.001f);
 }
@@ -136,11 +131,10 @@ automation_point_new_float (
 bool
 automation_point_curves_up (AutomationPoint * self)
 {
-  ZRegion * region = arranger_object_get_region (
-    (ArrangerObject *) self);
+  ZRegion * region =
+    arranger_object_get_region ((ArrangerObject *) self);
   AutomationPoint * next_ap =
-    automation_region_get_next_ap (
-      region, self, true, true);
+    automation_region_get_next_ap (region, self, true, true);
 
   if (!next_ap)
     return false;
@@ -179,22 +173,17 @@ automation_point_set_fvalue (
   if (is_normalized)
     {
       g_message (
-        "received normalized val %f",
-        (double) real_val);
+        "received normalized val %f", (double) real_val);
       normalized_val = CLAMP (real_val, 0.f, 1.f);
-      real_val =
-        control_port_normalized_val_to_real (
-          port, normalized_val);
+      real_val = control_port_normalized_val_to_real (
+        port, normalized_val);
     }
   else
     {
-      g_message (
-        "reveived real val %f", (double) real_val);
-      real_val =
-        CLAMP (real_val, port->minf, port->maxf);
+      g_message ("reveived real val %f", (double) real_val);
+      real_val = CLAMP (real_val, port->minf, port->maxf);
       normalized_val =
-        control_port_real_val_to_normalized (
-          port, real_val);
+        control_port_real_val_to_normalized (port, real_val);
     }
   g_message ("setting to %f", (double) real_val);
   self->fvalue = real_val;
@@ -206,8 +195,8 @@ automation_point_set_fvalue (
       math_assert_nonnann (self->normalized_val);
     }
 
-  ZRegion * region = arranger_object_get_region (
-    (ArrangerObject *) self);
+  ZRegion * region =
+    arranger_object_get_region ((ArrangerObject *) self);
   g_return_if_fail (region);
 
   /* don't set value - wait for engine to process
@@ -219,8 +208,7 @@ automation_point_set_fvalue (
 
   if (pub_events)
     {
-      EVENTS_PUSH (
-        ET_ARRANGER_OBJECT_CHANGED, self);
+      EVENTS_PUSH (ET_ARRANGER_OBJECT_CHANGED, self);
     }
 }
 
@@ -237,14 +225,12 @@ automation_point_get_normalized_value_in_curve (
   AutomationPoint * self,
   double            x)
 {
-  g_return_val_if_fail (
-    self && x >= 0.0 && x <= 1.0, 0.0);
+  g_return_val_if_fail (self && x >= 0.0 && x <= 1.0, 0.0);
 
-  ZRegion * region = arranger_object_get_region (
-    (ArrangerObject *) self);
+  ZRegion * region =
+    arranger_object_get_region ((ArrangerObject *) self);
   AutomationPoint * next_ap =
-    automation_region_get_next_ap (
-      region, self, true, true);
+    automation_region_get_next_ap (region, self, true, true);
   if (!next_ap)
     {
       return self->fvalue;
@@ -279,14 +265,12 @@ automation_point_set_curviness (
  * that this AutomationPoint is for.
  */
 Port *
-automation_point_get_port (
-  const AutomationPoint * const self)
+automation_point_get_port (const AutomationPoint * const self)
 {
   const AutomationTrack * const at =
     automation_point_get_automation_track (self);
   g_return_val_if_fail (at, NULL);
-  Port * port =
-    port_find_from_identifier (&at->port_id);
+  Port * port = port_find_from_identifier (&at->port_id);
   g_return_val_if_fail (port, NULL);
 
   return port;
@@ -301,9 +285,8 @@ automation_point_get_automation_track (
   const AutomationPoint * const self)
 {
   g_return_val_if_fail (self, NULL);
-  const ZRegion * const region =
-    arranger_object_get_region (
-      (const ArrangerObject * const) self);
+  const ZRegion * const region = arranger_object_get_region (
+    (const ArrangerObject * const) self);
   g_return_val_if_fail (region, NULL);
   return region_get_automation_track (region);
 }

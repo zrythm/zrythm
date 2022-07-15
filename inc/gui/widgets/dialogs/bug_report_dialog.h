@@ -29,8 +29,7 @@
 #include <gtk/gtk.h>
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored \
-  "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <gtksourceview/gtksource.h>
 #pragma GCC diagnostic pop
 

@@ -99,12 +99,10 @@ typedef struct PluginDescriptor  PluginDescriptor;
 
 /* currently missing from the spec */
 #ifndef LV2_CORE__enabled
-#  define LV2_CORE__enabled \
-    LV2_CORE_PREFIX "enabled"
+#  define LV2_CORE__enabled LV2_CORE_PREFIX "enabled"
 #endif
 #ifndef LV2_CORE__isSideChain
-#  define LV2_CORE__isSideChain \
-    LV2_CORE_PREFIX "isSideChain"
+#  define LV2_CORE__isSideChain LV2_CORE_PREFIX "isSideChain"
 #endif
 
 #define LV2_PARAM_MAX_STR_LEN 1200
@@ -252,8 +250,8 @@ typedef struct Lv2Plugin
   /** Frames since last update sent to UI. */
   uint32_t event_delta_t;
   uint32_t
-       midi_event_id; ///< MIDI event class ID in event context
-  bool exit; ///< True iff execution is finished
+    midi_event_id; ///< MIDI event class ID in event context
+  bool exit;       ///< True iff execution is finished
 
   /** Whether a plugin update is needed. */
   bool request_update;
@@ -376,8 +374,7 @@ lv2_plugin_init_loaded (Lv2Plugin * self);
  */
 NONNULL
 PluginDescriptor *
-lv2_plugin_create_descriptor_from_lilv (
-  const LilvPlugin * lp);
+lv2_plugin_create_descriptor_from_lilv (const LilvPlugin * lp);
 
 /**
  * Creates an LV2 plugin from given uri.
@@ -560,8 +557,7 @@ lv2_plugin_pick_most_preferable_ui (
 /* FIXME remove */
 NONNULL
 bool
-lv2_plugin_ui_type_is_external (
-  const LilvNode * ui_type);
+lv2_plugin_ui_type_is_external (const LilvNode * ui_type);
 
 NONNULL
 bool
@@ -619,14 +615,11 @@ lv2_plugin_get_abs_state_file_path (
  */
 NONNULL
 void
-lv2_plugin_allocate_port_buffers (
-  Lv2Plugin * plugin);
+lv2_plugin_allocate_port_buffers (Lv2Plugin * plugin);
 
 NONNULL
 int
-lv2_plugin_activate (
-  Lv2Plugin * self,
-  bool        activate);
+lv2_plugin_activate (Lv2Plugin * self, bool activate);
 
 /**
  * Returns whether the plugin can be cleaned up

@@ -46,9 +46,7 @@ static const cyaml_schema_field_t
       ChordSelections_v1,
       base,
       arranger_selections_fields_schema_v1),
-    YAML_FIELD_INT (
-      ChordSelections_v1,
-      schema_version),
+    YAML_FIELD_INT (ChordSelections_v1, schema_version),
     YAML_FIELD_DYN_ARRAY_VAR_COUNT (
       ChordSelections_v1,
       chord_objects,
@@ -57,11 +55,10 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  chord_selections_schema_v1 = {
-    YAML_VALUE_PTR (
-      ChordSelections_v1,
-      chord_selections_fields_schema_v1),
-  };
+static const cyaml_schema_value_t chord_selections_schema_v1 = {
+  YAML_VALUE_PTR (
+    ChordSelections_v1,
+    chord_selections_fields_schema_v1),
+};
 
 #endif

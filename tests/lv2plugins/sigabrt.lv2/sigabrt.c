@@ -37,8 +37,7 @@
    file is a good convention to follow.  If this URI does not match that used
    in the data files, the host will fail to load the plugin.
 */
-#define AMP_URI \
-  "https://www.zrythm.org/plugins/sigabrt"
+#define AMP_URI "https://www.zrythm.org/plugins/sigabrt"
 
 /**
    In code, ports are referred to by index.  An enumeration of port indices
@@ -96,10 +95,7 @@ instantiate (
    context as run().
 */
 static void
-connect_port (
-  LV2_Handle instance,
-  uint32_t   port,
-  void *     data)
+connect_port (LV2_Handle instance, uint32_t port, void * data)
 {
   Amp * amp = (Amp *) instance;
 
@@ -214,9 +210,8 @@ extension_data (const char * uri)
    library constructors and destructors to clean up properly.
 */
 static const LV2_Descriptor descriptor = {
-  AMP_URI,  instantiate,   connect_port,
-  activate, run,           deactivate,
-  cleanup,  extension_data
+  AMP_URI, instantiate, connect_port, activate,
+  run,     deactivate,  cleanup,      extension_data
 };
 
 /**

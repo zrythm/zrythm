@@ -36,13 +36,11 @@ audio_encoder_new_from_file (const char * filepath)
   audec_set_log_func (audio_audec_log_func);
 
   /* read info */
-  self->audec_handle =
-    audec_open (filepath, &self->nfo);
+  self->audec_handle = audec_open (filepath, &self->nfo);
   if (!self->audec_handle)
     {
       g_critical (
-        "An error has occurred opening the file %s",
-        filepath);
+        "An error has occurred opening the file %s", filepath);
       free (self);
       return NULL;
     }
@@ -71,13 +69,11 @@ audio_encoder_decode (
   g_message ("--audio decoding start--");
 
   g_debug (
-    "source file samplerate: %u",
-    self->nfo.sample_rate);
+    "source file samplerate: %u", self->nfo.sample_rate);
 
   self->out_frames = NULL;
   ssize_t num_out_frames = audec_read (
-    self->audec_handle, &self->out_frames,
-    samplerate);
+    self->audec_handle, &self->out_frames, samplerate);
   if (num_out_frames < 0)
     {
       g_critical (
@@ -85,11 +81,8 @@ audio_encoder_decode (
         "the audio file %s",
         self->file);
     }
-  self->num_out_frames =
-    (unsigned_frame_t) num_out_frames;
-  g_message (
-    "num out frames %" PRIu64,
-    self->num_out_frames);
+  self->num_out_frames = (unsigned_frame_t) num_out_frames;
+  g_message ("num out frames %" PRIu64, self->num_out_frames);
   self->channels = self->nfo.channels;
   audec_close (self->audec_handle);
   g_message ("--audio decoding end--");

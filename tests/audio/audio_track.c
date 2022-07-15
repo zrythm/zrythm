@@ -35,32 +35,26 @@ test_fill_when_region_starts_on_loop_end (void)
 
   /* prepare loop */
   transport_set_loop (TRANSPORT, true, true);
-  position_set_to_bar (
-    &TRANSPORT->loop_end_pos, LOOP_BAR);
-  position_set_to_bar (
-    &TRANSPORT->loop_start_pos, LOOP_BAR);
-  position_add_frames (
-    &TRANSPORT->loop_start_pos, -31);
+  position_set_to_bar (&TRANSPORT->loop_end_pos, LOOP_BAR);
+  position_set_to_bar (&TRANSPORT->loop_start_pos, LOOP_BAR);
+  position_add_frames (&TRANSPORT->loop_start_pos, -31);
 
   /* create audio track with region */
   char * filepath = g_build_filename (
-    TESTS_SRCDIR, "test_start_with_signal.mp3",
-    NULL);
+    TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
   int num_tracks_before = TRACKLIST->num_tracks;
 
   transport_request_pause (TRANSPORT, true);
   Track * track = track_create_with_action (
-    TRACK_TYPE_AUDIO, NULL, file,
-    &TRANSPORT->loop_end_pos, num_tracks_before, 1,
-    NULL);
+    TRACK_TYPE_AUDIO, NULL, file, &TRANSPORT->loop_end_pos,
+    num_tracks_before, 1, NULL);
   /*transport_request_roll (TRANSPORT);*/
   TRANSPORT->play_state = PLAYSTATE_ROLLING;
 
   StereoPorts * ports = stereo_ports_new_generic (
-    false, "ports", "ports", PORT_OWNER_TYPE_TRACK,
-    track);
+    false, "ports", "ports", PORT_OWNER_TYPE_TRACK, track);
   port_allocate_bufs (ports->l);
   port_allocate_bufs (ports->r);
 
@@ -87,8 +81,7 @@ test_fill_when_region_starts_on_loop_end (void)
   /* run after loop end and make sure sample is
    * played */
   position_set_to_bar (&pos, LOOP_BAR);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = (nframes_t) nframes;
   track_fill_events (track, &time_nfo, NULL, ports);
@@ -97,10 +90,10 @@ test_fill_when_region_starts_on_loop_end (void)
       /* take into account builtin fades */
       if (j == 0)
         {
-          g_assert_true (math_floats_equal (
-            ports->l->buf[j], 0.f));
-          g_assert_true (math_floats_equal (
-            ports->r->buf[j], 0.f));
+          g_assert_true (
+            math_floats_equal (ports->l->buf[j], 0.f));
+          g_assert_true (
+            math_floats_equal (ports->r->buf[j], 0.f));
         }
       else
         {
@@ -111,8 +104,7 @@ test_fill_when_region_starts_on_loop_end (void)
         }
     }
 
-  object_free_w_func_and_null (
-    stereo_ports_free, ports);
+  object_free_w_func_and_null (stereo_ports_free, ports);
 
   test_helper_zrythm_cleanup ();
 }
@@ -125,10 +117,8 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/audio_track/"
 
   g_test_add_func (
-    TEST_PREFIX
-    "test fill when region starts on loop end",
-    (GTestFunc)
-      test_fill_when_region_starts_on_loop_end);
+    TEST_PREFIX "test fill when region starts on loop end",
+    (GTestFunc) test_fill_when_region_starts_on_loop_end);
 
   return g_test_run ();
 }

@@ -13,8 +13,7 @@ typedef enum WindowsSpecialPath
 } WindowsSpecialPath;
 
 char *
-windows_get_special_path (
-  WindowsSpecialPath path_type);
+windows_get_special_path (WindowsSpecialPath path_type);
 
 #endif // _WOE32
 

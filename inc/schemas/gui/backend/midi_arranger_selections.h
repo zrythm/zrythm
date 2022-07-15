@@ -46,9 +46,7 @@ static const cyaml_schema_field_t
       MidiArrangerSelections_v1,
       base,
       arranger_selections_fields_schema_v1),
-    YAML_FIELD_INT (
-      MidiArrangerSelections_v1,
-      schema_version),
+    YAML_FIELD_INT (MidiArrangerSelections_v1, schema_version),
     YAML_FIELD_DYN_ARRAY_VAR_COUNT (
       MidiArrangerSelections_v1,
       midi_notes,

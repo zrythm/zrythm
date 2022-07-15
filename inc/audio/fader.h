@@ -50,8 +50,7 @@ typedef struct PortIdentifier  PortIdentifier;
 
 #define FADER_MAGIC 32548791
 #define IS_FADER(f) (f->magic == FADER_MAGIC)
-#define IS_FADER_AND_NONNULL(f) \
-  (f && f->magic == FADER_MAGIC)
+#define IS_FADER_AND_NONNULL(f) (f && f->magic == FADER_MAGIC)
 
 #define fader_is_in_active_project(self) \
   ((self->track != NULL \
@@ -91,13 +90,12 @@ typedef enum FaderType
 } FaderType;
 
 static const cyaml_strval_t fader_type_strings[] = {
-  {"none",              FADER_TYPE_NONE         },
-  { "monitor",          FADER_TYPE_MONITOR      },
-  { "sample processor",
-   FADER_TYPE_SAMPLE_PROCESSOR                  },
-  { "audio channel",    FADER_TYPE_AUDIO_CHANNEL},
-  { "midi channel",     FADER_TYPE_MIDI_CHANNEL },
-  { "generic",          FADER_TYPE_GENERIC      },
+  {"none",              FADER_TYPE_NONE            },
+  { "monitor",          FADER_TYPE_MONITOR         },
+  { "sample processor", FADER_TYPE_SAMPLE_PROCESSOR},
+  { "audio channel",    FADER_TYPE_AUDIO_CHANNEL   },
+  { "midi channel",     FADER_TYPE_MIDI_CHANNEL    },
+  { "generic",          FADER_TYPE_GENERIC         },
 };
 
 typedef enum MidiFaderMode
@@ -109,11 +107,9 @@ typedef enum MidiFaderMode
   MIDI_FADER_MODE_CC_VOLUME,
 } MidiFaderMode;
 
-static const cyaml_strval_t
-  midi_fader_mode_strings[] = {
-    {"vel_multiplier",
-     MIDI_FADER_MODE_VEL_MULTIPLIER             },
-    { "cc_volume",     MIDI_FADER_MODE_CC_VOLUME},
+static const cyaml_strval_t midi_fader_mode_strings[] = {
+  {"vel_multiplier", MIDI_FADER_MODE_VEL_MULTIPLIER},
+  { "cc_volume",     MIDI_FADER_MODE_CC_VOLUME     },
 };
 
 /**
@@ -234,27 +230,12 @@ static const cyaml_schema_field_t fader_fields_schema[] = {
   YAML_FIELD_INT (Fader, schema_version),
   YAML_FIELD_ENUM (Fader, type, fader_type_strings),
   YAML_FIELD_FLOAT (Fader, volume),
-  YAML_FIELD_MAPPING_PTR (
-    Fader,
-    amp,
-    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Fader, amp, port_fields_schema),
   YAML_FIELD_FLOAT (Fader, phase),
-  YAML_FIELD_MAPPING_PTR (
-    Fader,
-    balance,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Fader,
-    mute,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Fader,
-    solo,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Fader,
-    listen,
-    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Fader, balance, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Fader, mute, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Fader, solo, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Fader, listen, port_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     Fader,
     mono_compat_enabled,
@@ -275,10 +256,7 @@ static const cyaml_schema_field_t fader_fields_schema[] = {
     Fader,
     stereo_out,
     stereo_ports_fields_schema),
-  YAML_FIELD_ENUM (
-    Fader,
-    midi_mode,
-    midi_fader_mode_strings),
+  YAML_FIELD_ENUM (Fader, midi_mode, midi_fader_mode_strings),
   YAML_FIELD_INT (Fader, passthrough),
 
   CYAML_FIELD_END
@@ -314,8 +292,7 @@ fader_new (
   SampleProcessor * sample_processor);
 
 Fader *
-fader_find_from_port_identifier (
-  const PortIdentifier * id);
+fader_find_from_port_identifier (const PortIdentifier * id);
 
 /**
  * Appends the ports owned by fader to the given
@@ -323,9 +300,7 @@ fader_find_from_port_identifier (
  */
 NONNULL
 void
-fader_append_ports (
-  const Fader * self,
-  GPtrArray *   ports);
+fader_append_ports (const Fader * self, GPtrArray * ports);
 
 /**
  * Sets the amplitude of the fader. (0.0 to 2.0)
@@ -366,10 +341,7 @@ fader_set_midi_mode (
  * to the undo stack.
  */
 void
-fader_set_muted (
-  Fader * self,
-  bool    mute,
-  bool    fire_events);
+fader_set_muted (Fader * self, bool mute, bool fire_events);
 
 /**
  * Returns if the fader is muted.
@@ -404,20 +376,14 @@ fader_get_implied_soloed (Fader * self);
  * to the undo stack.
  */
 void
-fader_set_listened (
-  Fader * self,
-  bool    listen,
-  bool    fire_events);
+fader_set_listened (Fader * self, bool listen, bool fire_events);
 
 /**
  * Sets track soloed and optionally adds the action
  * to the undo stack.
  */
 void
-fader_set_soloed (
-  Fader * self,
-  bool    solo,
-  bool    fire_events);
+fader_set_soloed (Fader * self, bool solo, bool fire_events);
 
 /**
  * Gets the fader amplitude (not db)

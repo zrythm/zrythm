@@ -45,7 +45,9 @@ inspector_midi_widget_show_midi (
       gtk_label_set_text (self->header, string);
       g_free (string);
 
-      for (int i = 0; i < num_midis; i++) { }
+      for (int i = 0; i < num_midis; i++)
+        {
+        }
     }
 }
 
@@ -61,22 +63,18 @@ inspector_midi_widget_class_init (
     GTK_WIDGET_CLASS (klass), InspectorMidiWidget,
     position_box);
   gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass), InspectorMidiWidget,
-    length_box);
+    GTK_WIDGET_CLASS (klass), InspectorMidiWidget, length_box);
   gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass), InspectorMidiWidget,
-    color);
+    GTK_WIDGET_CLASS (klass), InspectorMidiWidget, color);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass), InspectorMidiWidget,
     mute_toggle);
   gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass), InspectorMidiWidget,
-    header);
+    GTK_WIDGET_CLASS (klass), InspectorMidiWidget, header);
 }
 
 static void
-inspector_midi_widget_init (
-  InspectorMidiWidget * self)
+inspector_midi_widget_init (InspectorMidiWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }

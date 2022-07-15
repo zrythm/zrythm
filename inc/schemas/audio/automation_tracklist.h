@@ -41,9 +41,7 @@ typedef struct AutomationTracklist_v1
 
 static const cyaml_schema_field_t
   automation_tracklist_fields_schema_v1[] = {
-    YAML_FIELD_INT (
-      AutomationTracklist_v1,
-      schema_version),
+    YAML_FIELD_INT (AutomationTracklist_v1, schema_version),
     YAML_FIELD_DYN_ARRAY_VAR_COUNT (
       AutomationTracklist_v1,
       ats,

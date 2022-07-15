@@ -35,8 +35,7 @@ typedef struct UserShortcuts  UserShortcuts;
 #define S_UI_INSPECTOR SETTINGS->ui_inspector
 #define S_UI_MIXER SETTINGS->ui_mixer
 #define S_UI_PANELS SETTINGS->ui_panels
-#define S_UI_PLUGIN_BROWSER \
-  SETTINGS->ui_plugin_browser
+#define S_UI_PLUGIN_BROWSER SETTINGS->ui_plugin_browser
 #define S_UI_FILE_BROWSER SETTINGS->ui_file_browser
 #define S_TRANSPORT SETTINGS->transport
 
@@ -44,33 +43,26 @@ typedef struct UserShortcuts  UserShortcuts;
 
 /* ---- Preferences ---- */
 #define S_P_DSP_PAN SETTINGS->preferences_dsp_pan
-#define S_P_EDITING_AUDIO \
-  SETTINGS->preferences_editing_audio
+#define S_P_EDITING_AUDIO SETTINGS->preferences_editing_audio
 #define S_P_EDITING_AUTOMATION \
   SETTINGS->preferences_editing_automation
-#define S_P_EDITING_UNDO \
-  SETTINGS->preferences_editing_undo
+#define S_P_EDITING_UNDO SETTINGS->preferences_editing_undo
 #define S_P_GENERAL_ENGINE \
   SETTINGS->preferences_general_engine
-#define S_P_GENERAL_PATHS \
-  SETTINGS->preferences_general_paths
+#define S_P_GENERAL_PATHS SETTINGS->preferences_general_paths
 #define S_P_GENERAL_UPDATES \
   SETTINGS->preferences_general_updates
-#define S_P_PLUGINS_UIS \
-  SETTINGS->preferences_plugins_uis
-#define S_P_PLUGINS_PATHS \
-  SETTINGS->preferences_plugins_paths
+#define S_P_PLUGINS_UIS SETTINGS->preferences_plugins_uis
+#define S_P_PLUGINS_PATHS SETTINGS->preferences_plugins_paths
 #define S_P_PROJECTS_GENERAL \
   SETTINGS->preferences_projects_general
-#define S_P_UI_GENERAL \
-  SETTINGS->preferences_ui_general
+#define S_P_UI_GENERAL SETTINGS->preferences_ui_general
 #define S_P_SCRIPTING_GENERAL \
   SETTINGS->preferences_scripting_general
 
 /* ---- end preferences ---- */
 
-#define S_IS_DEBUG \
-  (g_settings_get_int (S_GENERAL, "debug"))
+#define S_IS_DEBUG (g_settings_get_int (S_GENERAL, "debug"))
 
 #define S_SET_ENUM(settings, key, val) \
   g_settings_set_enum (settings, key, val)
@@ -78,8 +70,7 @@ typedef struct UserShortcuts  UserShortcuts;
 #define S_GET_ENUM(settings, key) \
   g_settings_get_enum (settings, key)
 
-#define S_UI_SET_ENUM(key, val) \
-  S_SET_ENUM (S_UI, key, val)
+#define S_UI_SET_ENUM(key, val) S_SET_ENUM (S_UI, key, val)
 
 #define S_UI_GET_ENUM(key) S_GET_ENUM (S_UI, key)
 
@@ -190,9 +181,7 @@ settings_append_to_strv (
   bool         ignore_if_duplicate);
 
 GVariant *
-settings_get_range (
-  const char * schema,
-  const char * key);
+settings_get_range (const char * schema, const char * key);
 
 void
 settings_get_range_double (
@@ -216,9 +205,7 @@ settings_get_default_value_double (
  * allocated string.
  */
 char *
-settings_get_summary (
-  GSettings *  settings,
-  const char * key);
+settings_get_summary (GSettings * settings, const char * key);
 
 /**
  * Returns the localized description as a newly

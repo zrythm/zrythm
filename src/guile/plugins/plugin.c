@@ -65,13 +65,11 @@ init_module (void * data)
 #  include "plugins_plugin.x"
 #endif
   scm_c_export (
-    "plugin-get-in-port", "plugin-get-out-port",
-    NULL);
+    "plugin-get-in-port", "plugin-get-out-port", NULL);
 }
 
 void
 guile_plugins_plugin_define_module (void)
 {
-  scm_c_define_module (
-    "plugins plugin", init_module, NULL);
+  scm_c_define_module ("plugins plugin", init_module, NULL);
 }

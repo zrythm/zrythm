@@ -38,8 +38,7 @@
 
 #define AUTOMATION_SELECTIONS_SCHEMA_VERSION 1
 
-#define AUTOMATION_SELECTIONS \
-  (PROJECT->automation_selections)
+#define AUTOMATION_SELECTIONS (PROJECT->automation_selections)
 
 /**
  * Selections to be used for the AutomationArrangerWidget's
@@ -60,9 +59,7 @@ typedef struct AutomationSelections
 
 static const cyaml_schema_field_t
   automation_selections_fields_schema[] = {
-    YAML_FIELD_INT (
-      AutomationSelections,
-      schema_version),
+    YAML_FIELD_INT (AutomationSelections, schema_version),
     YAML_FIELD_MAPPING_EMBEDDED (
       AutomationSelections,
       base,
@@ -80,13 +77,12 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  automation_selections_schema = {
-    CYAML_VALUE_MAPPING (
-      CYAML_FLAG_POINTER,
-      AutomationSelections,
-      automation_selections_fields_schema),
-  };
+static const cyaml_schema_value_t automation_selections_schema = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    AutomationSelections,
+    automation_selections_fields_schema),
+};
 
 /**
  * Returns if the selections can be pasted.

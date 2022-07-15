@@ -70,9 +70,7 @@ typedef struct _BindCcDialogWidget
  * Creates an bind_cc dialog widget and displays it.
  */
 BindCcDialogWidget *
-bind_cc_dialog_widget_new (
-  Port * port,
-  bool   perform_action);
+bind_cc_dialog_widget_new (Port * port, bool perform_action);
 
 /**
  * @}

@@ -145,8 +145,7 @@ FileBrowserLocation *
 file_browser_location_new (void);
 
 FileBrowserLocation *
-file_browser_location_clone (
-  FileBrowserLocation * loc);
+file_browser_location_clone (FileBrowserLocation * loc);
 
 /**
  * Adds a location and saves the settings.
@@ -171,8 +170,7 @@ file_manager_remove_location_and_save (
 
 NONNULL
 void
-file_browser_location_free (
-  FileBrowserLocation * loc);
+file_browser_location_free (FileBrowserLocation * loc);
 
 /**
  * @}

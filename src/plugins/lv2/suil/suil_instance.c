@@ -124,15 +124,14 @@ suil_instance_new (
   if (!lib)
     {
       SUIL_ERRORF (
-        "Unable to open UI library %s (%s)\n",
-        ui_binary_path, dlerror ());
+        "Unable to open UI library %s (%s)\n", ui_binary_path,
+        dlerror ());
       return NULL;
     }
 
   // Get discovery function
-  LV2UI_DescriptorFunction df =
-    (LV2UI_DescriptorFunction) suil_dlfunc (
-      lib, "lv2ui_descriptor");
+  LV2UI_DescriptorFunction df = (LV2UI_DescriptorFunction)
+    suil_dlfunc (lib, "lv2ui_descriptor");
   if (!df)
     {
       SUIL_ERRORF (
@@ -160,15 +159,15 @@ suil_instance_new (
   if (!descriptor)
     {
       SUIL_ERRORF (
-        "Failed to find descriptor for <%s> in %s\n",
-        ui_uri, ui_binary_path);
+        "Failed to find descriptor for <%s> in %s\n", ui_uri,
+        ui_binary_path);
       dlclose (lib);
       return NULL;
     }
 
   // Create SuilInstance
-  SuilInstance * instance = (SuilInstance *)
-    calloc (1, sizeof (SuilInstance));
+  SuilInstance * instance =
+    (SuilInstance *) calloc (1, sizeof (SuilInstance));
   if (!instance)
     {
       SUIL_ERRORF (
@@ -182,8 +181,8 @@ suil_instance_new (
   instance->descriptor = descriptor;
 
   // Make UI features array
-  instance->features = (LV2_Feature **) malloc (
-    sizeof (LV2_Feature *));
+  instance->features =
+    (LV2_Feature **) malloc (sizeof (LV2_Feature *));
   instance->features[0] = NULL;
 
   // Copy user provided features
@@ -193,19 +192,17 @@ suil_instance_new (
     {
       const LV2_Feature * f = *fi++;
       suil_add_feature (
-        &instance->features, &n_features, f->URI,
-        f->data);
+        &instance->features, &n_features, f->URI, f->data);
     }
 
   // Add additional features implemented by SuilHost functions
   if (host->index_func)
     {
       instance->port_map.handle = controller;
-      instance->port_map.port_index =
-        host->index_func;
+      instance->port_map.port_index = host->index_func;
       suil_add_feature (
-        &instance->features, &n_features,
-        LV2_UI__portMap, &instance->port_map);
+        &instance->features, &n_features, LV2_UI__portMap,
+        &instance->port_map);
     }
   if (host->subscribe_func && host->unsubscribe_func)
     {
@@ -216,16 +213,15 @@ suil_instance_new (
         host->unsubscribe_func;
       suil_add_feature (
         &instance->features, &n_features,
-        LV2_UI__portSubscribe,
-        &instance->port_subscribe);
+        LV2_UI__portSubscribe, &instance->port_subscribe);
     }
   if (host->touch_func)
     {
       instance->touch.handle = controller;
       instance->touch.touch = host->touch_func;
       suil_add_feature (
-        &instance->features, &n_features,
-        LV2_UI__touch, &instance->touch);
+        &instance->features, &n_features, LV2_UI__touch,
+        &instance->touch);
     }
 
   // Open wrapper (this may add additional features)
@@ -245,30 +241,27 @@ suil_instance_new (
 
   // Instantiate UI
   instance->handle = descriptor->instantiate (
-    descriptor, plugin_uri, ui_bundle_path,
-    host->write_func, controller,
-    &instance->ui_widget,
-    (const LV2_Feature * const *)
-      instance->features);
+    descriptor, plugin_uri, ui_bundle_path, host->write_func,
+    controller, &instance->ui_widget,
+    (const LV2_Feature * const *) instance->features);
 
   // Failed to instantiate UI
   if (!instance->handle)
     {
       SUIL_ERRORF (
-        "Failed to instantiate UI <%s> in %s\n",
-        ui_uri, ui_binary_path);
+        "Failed to instantiate UI <%s> in %s\n", ui_uri,
+        ui_binary_path);
       suil_instance_free (instance);
       return NULL;
     }
 
   if (instance->wrapper)
     {
-      if (instance->wrapper->wrap (
-            instance->wrapper, instance))
+      if (instance->wrapper->wrap (instance->wrapper, instance))
         {
           SUIL_ERRORF (
-            "Failed to wrap UI <%s> in type <%s>\n",
-            ui_uri, container_type_uri);
+            "Failed to wrap UI <%s> in type <%s>\n", ui_uri,
+            container_type_uri);
           suil_instance_free (instance);
           return NULL;
         }
@@ -287,8 +280,7 @@ suil_instance_free (SuilInstance * instance)
   g_message ("freeing suil instance %p", instance);
   if (instance)
     {
-      for (unsigned i = 0; instance->features[i];
-           ++i)
+      for (unsigned i = 0; instance->features[i]; ++i)
         {
           free (instance->features[i]);
         }
@@ -298,16 +290,14 @@ suil_instance_free (SuilInstance * instance)
       if (instance->wrapper && instance->wrapper->free)
         {
           g_message ("freeing wrapper");
-          instance->wrapper->free (
-            instance->wrapper);
+          instance->wrapper->free (instance->wrapper);
         }
 
       // Call cleanup to destroy UI (if it still exists at this point)
       if (instance->handle)
         {
           g_message ("cleaning up UI");
-          instance->descriptor->cleanup (
-            instance->handle);
+          instance->descriptor->cleanup (instance->handle);
         }
 
       dlclose (instance->lib_handle);
@@ -348,8 +338,8 @@ suil_instance_port_event (
   if (instance->descriptor->port_event)
     {
       instance->descriptor->port_event (
-        instance->handle, port_index, buffer_size,
-        format, buffer);
+        instance->handle, port_index, buffer_size, format,
+        buffer);
     }
 }
 
@@ -360,8 +350,7 @@ suil_instance_extension_data (
 {
   if (instance->descriptor->extension_data)
     {
-      return instance->descriptor->extension_data (
-        uri);
+      return instance->descriptor->extension_data (uri);
     }
   return NULL;
 }

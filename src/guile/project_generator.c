@@ -39,8 +39,7 @@ guile_project_generator_generate_project_from_string (
   const char * script,
   const char * prj_path)
 {
-  g_return_val_if_fail (
-    ZRYTHM && prj_path && script, -1);
+  g_return_val_if_fail (ZRYTHM && prj_path && script, -1);
 
   bool use_tmp_project = false;
   if (!PROJECT)
@@ -51,15 +50,13 @@ guile_project_generator_generate_project_from_string (
     }
 
   /* create the project at a temporary path */
-  char * tmp_path = g_dir_make_tmp (
-    "zrythm_guile_prj_gen_XXXXXX", NULL);
+  char * tmp_path =
+    g_dir_make_tmp ("zrythm_guile_prj_gen_XXXXXX", NULL);
   Project * prj = project_create_default (
-    use_tmp_project ? PROJECT : NULL, tmp_path,
-    true, true);
+    use_tmp_project ? PROJECT : NULL, tmp_path, true, true);
 
   /* save the project at the given path */
-  project_save (
-    prj, prj_path, false, false, F_NO_ASYNC);
+  project_save (prj, prj_path, false, false, F_NO_ASYNC);
 
   /* remember prev project (if any) */
   Project * prev_prj = NULL;
@@ -86,8 +83,7 @@ guile_project_generator_generate_project_from_string (
     }
 
   /* save the project at the given path */
-  project_save (
-    prj, prj_path, false, false, F_NO_ASYNC);
+  project_save (prj, prj_path, false, false, F_NO_ASYNC);
 
   /* free the instance */
   project_free (prj);
@@ -120,8 +116,7 @@ guile_project_generator_generate_project_from_file (
     filepath, &contents, &contents_len, &err);
   if (err)
     {
-      g_warning (
-        "Failed to open file: %s", err->message);
+      g_warning ("Failed to open file: %s", err->message);
       return -1;
     }
 

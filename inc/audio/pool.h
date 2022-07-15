@@ -76,21 +76,18 @@ typedef struct AudioPool
   size_t clips_size;
 } AudioPool;
 
-static const cyaml_schema_field_t
-  audio_pool_fields_schema[] = {
-    YAML_FIELD_INT (AudioPool, schema_version),
-    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-      AudioPool,
-      clips,
-      audio_clip_schema),
+static const cyaml_schema_field_t audio_pool_fields_schema[] = {
+  YAML_FIELD_INT (AudioPool, schema_version),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+    AudioPool,
+    clips,
+    audio_clip_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t audio_pool_schema = {
-  YAML_VALUE_PTR (
-    AudioPool,
-    audio_pool_fields_schema),
+  YAML_VALUE_PTR (AudioPool, audio_pool_fields_schema),
 };
 
 /**
@@ -114,9 +111,7 @@ audio_pool_new (void);
  * @return The ID in the pool.
  */
 int
-audio_pool_add_clip (
-  AudioPool * self,
-  AudioClip * clip);
+audio_pool_add_clip (AudioPool * self, AudioClip * clip);
 
 /**
  * Duplicates the clip with the given ID and returns
@@ -160,9 +155,7 @@ audio_pool_remove_clip (
  *   directory.
  */
 void
-audio_pool_remove_unused (
-  AudioPool * self,
-  bool        backup);
+audio_pool_remove_unused (AudioPool * self, bool backup);
 
 /**
  * Ensures that the name of the clip is unique.
@@ -196,8 +189,7 @@ audio_pool_gen_name_for_recording_clip (
  * change in the project (eg, object added/removed).
  */
 void
-audio_pool_reload_clip_frame_bufs (
-  AudioPool * self);
+audio_pool_reload_clip_frame_bufs (AudioPool * self);
 
 /**
  * Writes all the clips to disk.
@@ -207,9 +199,7 @@ audio_pool_reload_clip_frame_bufs (
  * @param is_backup Whether this is a backup project.
  */
 void
-audio_pool_write_to_disk (
-  AudioPool * self,
-  bool        is_backup);
+audio_pool_write_to_disk (AudioPool * self, bool is_backup);
 
 /**
  * To be used during serialization.

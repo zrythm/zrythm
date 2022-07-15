@@ -67,8 +67,7 @@ bool
 color_is_same (GdkRGBA * src, GdkRGBA * dest)
 {
   float epsilon = 0.000001f;
-  return math_floats_equal_epsilon (
-           src->red, dest->red, epsilon)
+  return math_floats_equal_epsilon (src->red, dest->red, epsilon)
          && math_floats_equal_epsilon (
            src->green, dest->green, epsilon)
          && math_floats_equal_epsilon (
@@ -150,11 +149,7 @@ color_get_opposite (GdkRGBA * src, GdkRGBA * dest)
  * @b.
  */
 void
-color_morph (
-  GdkRGBA * a,
-  GdkRGBA * b,
-  float     amt,
-  GdkRGBA * result)
+color_morph (GdkRGBA * a, GdkRGBA * b, float amt, GdkRGBA * result)
 {
   g_return_if_fail (amt >= 0.f);
   g_return_if_fail (amt <= 1.f);
@@ -162,7 +157,6 @@ color_morph (
 
   float amt_inv = 1.f - amt;
   result->red = amt_inv * a->red + amt * b->red;
-  result->green =
-    amt_inv * a->green + amt * b->green;
+  result->green = amt_inv * a->green + amt * b->green;
   result->blue = amt_inv * a->blue + amt * b->blue;
 }

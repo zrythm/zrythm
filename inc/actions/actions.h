@@ -293,15 +293,11 @@ DECLARE_SIMPLE (activate_enable_selected_tracks);
 DECLARE_SIMPLE (activate_disable_selected_tracks);
 DECLARE_SIMPLE (activate_change_track_color);
 DECLARE_SIMPLE (activate_track_set_midi_channel);
-DECLARE_SIMPLE (
-  activate_quick_bounce_selected_tracks);
+DECLARE_SIMPLE (activate_quick_bounce_selected_tracks);
 DECLARE_SIMPLE (activate_bounce_selected_tracks);
-DECLARE_SIMPLE (
-  activate_selected_tracks_direct_out_to);
-DECLARE_SIMPLE (
-  activate_selected_tracks_direct_out_new);
-DECLARE_SIMPLE (
-  activate_toggle_track_passthrough_input);
+DECLARE_SIMPLE (activate_selected_tracks_direct_out_to);
+DECLARE_SIMPLE (activate_selected_tracks_direct_out_new);
+DECLARE_SIMPLE (activate_toggle_track_passthrough_input);
 
 void
 activate_snap_events (
@@ -406,28 +402,21 @@ activate_delete_cc_binding (
   gpointer        user_data);
 
 COLD DECLARE_SIMPLE (activate_show_file_browser);
-DECLARE_SIMPLE (
-  activate_toggle_timeline_event_viewer);
-DECLARE_SIMPLE (
-  activate_toggle_editor_event_viewer);
+DECLARE_SIMPLE (activate_toggle_timeline_event_viewer);
+DECLARE_SIMPLE (activate_toggle_editor_event_viewer);
 DECLARE_SIMPLE (activate_insert_silence);
 DECLARE_SIMPLE (activate_remove_range);
 
-DECLARE_SIMPLE (
-  change_state_timeline_playhead_scroll_edges);
-DECLARE_SIMPLE (
-  change_state_timeline_playhead_follow);
-DECLARE_SIMPLE (
-  change_state_editor_playhead_scroll_edges);
-DECLARE_SIMPLE (
-  change_state_editor_playhead_follow);
+DECLARE_SIMPLE (change_state_timeline_playhead_scroll_edges);
+DECLARE_SIMPLE (change_state_timeline_playhead_follow);
+DECLARE_SIMPLE (change_state_editor_playhead_scroll_edges);
+DECLARE_SIMPLE (change_state_editor_playhead_follow);
 
 /* Editor functions. */
 DECLARE_SIMPLE (activate_editor_function);
 DECLARE_SIMPLE (activate_editor_function_lv2);
 
-COLD DECLARE_SIMPLE (
-  activate_midi_editor_highlighting);
+COLD DECLARE_SIMPLE (activate_midi_editor_highlighting);
 
 DECLARE_SIMPLE (activate_rename_track);
 DECLARE_SIMPLE (activate_rename_arranger_object);
@@ -444,17 +433,14 @@ DECLARE_SIMPLE (activate_export_midi_regions);
 DECLARE_SIMPLE (activate_quick_bounce_selections);
 DECLARE_SIMPLE (activate_bounce_selections);
 DECLARE_SIMPLE (activate_set_curve_algorithm);
-DECLARE_SIMPLE (
-  activate_set_region_fade_in_algorithm_preset);
-DECLARE_SIMPLE (
-  activate_set_region_fade_out_algorithm_preset);
+DECLARE_SIMPLE (activate_set_region_fade_in_algorithm_preset);
+DECLARE_SIMPLE (activate_set_region_fade_out_algorithm_preset);
 DECLARE_SIMPLE (activate_arranger_object_view_info);
 
 /* chord presets */
 DECLARE_SIMPLE (activate_save_chord_preset);
 DECLARE_SIMPLE (activate_load_chord_preset);
-DECLARE_SIMPLE (
-  activate_load_chord_preset_from_scale);
+DECLARE_SIMPLE (activate_load_chord_preset_from_scale);
 DECLARE_SIMPLE (activate_transpose_chord_pad);
 DECLARE_SIMPLE (activate_add_chord_preset_pack);
 DECLARE_SIMPLE (activate_delete_chord_preset_pack);
@@ -475,24 +461,18 @@ DECLARE_SIMPLE (activate_plugin_inspect);
 DECLARE_SIMPLE (activate_mixer_selections_delete);
 
 /* panel file browser actions */
-DECLARE_SIMPLE (
-  activate_panel_file_browser_add_bookmark);
-DECLARE_SIMPLE (
-  activate_panel_file_browser_delete_bookmark);
+DECLARE_SIMPLE (activate_panel_file_browser_add_bookmark);
+DECLARE_SIMPLE (activate_panel_file_browser_delete_bookmark);
 
 /* plugin browser actions */
-DECLARE_SIMPLE (
-  activate_plugin_browser_add_to_project);
-DECLARE_SIMPLE (
-  activate_plugin_browser_add_to_project_carla);
+DECLARE_SIMPLE (activate_plugin_browser_add_to_project);
+DECLARE_SIMPLE (activate_plugin_browser_add_to_project_carla);
 DECLARE_SIMPLE (
   activate_plugin_browser_add_to_project_bridged_ui);
 DECLARE_SIMPLE (
   activate_plugin_browser_add_to_project_bridged_full);
-DECLARE_SIMPLE (
-  change_state_plugin_browser_toggle_generic_ui);
-DECLARE_SIMPLE (
-  activate_plugin_browser_add_to_collection);
+DECLARE_SIMPLE (change_state_plugin_browser_toggle_generic_ui);
+DECLARE_SIMPLE (activate_plugin_browser_add_to_collection);
 DECLARE_SIMPLE (
   activate_plugin_browser_remove_from_collection);
 DECLARE_SIMPLE (activate_plugin_browser_reset);

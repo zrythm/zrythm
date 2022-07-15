@@ -36,11 +36,9 @@
  */
 
 #define RESOURCES_PATH "/org/zrythm/Zrythm/app"
-#define RESOURCES_TEMPLATE_PATH \
-  RESOURCES_PATH "/ui"
+#define RESOURCES_TEMPLATE_PATH RESOURCES_PATH "/ui"
 #define RESOURCES_ICON_PATH RESOURCES_PATH "/icons"
-#define RESOURCES_GL_SHADERS_PATH \
-  RESOURCES_PATH "/gl/shaders"
+#define RESOURCES_GL_SHADERS_PATH RESOURCES_PATH "/gl/shaders"
 
 typedef enum IconType
 {
@@ -57,9 +55,7 @@ typedef enum IconType
  * @return a GtkImage.
  */
 GtkWidget *
-resources_get_icon (
-  IconType     icon_type,
-  const char * filename);
+resources_get_icon (IconType icon_type, const char * filename);
 
 void
 resources_set_image_icon (

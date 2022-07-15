@@ -45,8 +45,7 @@ G_DECLARE_FINAL_TYPE (
   CHORD_PAD_PANEL_WIDGET,
   GtkGrid)
 
-#define MW_CHORD_PAD_PANEL \
-  MW_BOT_DOCK_EDGE->chord_pad_panel
+#define MW_CHORD_PAD_PANEL MW_BOT_DOCK_EDGE->chord_pad_panel
 
 /**
  * Brings up the ChordPadPanelWidget in the notebook.
@@ -74,16 +73,14 @@ typedef struct _ChordPadPanelWidget
 } ChordPadPanelWidget;
 
 void
-chord_pad_panel_widget_setup (
-  ChordPadPanelWidget * self);
+chord_pad_panel_widget_setup (ChordPadPanelWidget * self);
 
 void
 chord_pad_panel_widget_refresh_load_preset_menu (
   ChordPadPanelWidget * self);
 
 void
-chord_pad_panel_widget_refresh (
-  ChordPadPanelWidget * self);
+chord_pad_panel_widget_refresh (ChordPadPanelWidget * self);
 
 ChordPadPanelWidget *
 chord_pad_panel_widget_new (void);

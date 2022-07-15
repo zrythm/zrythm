@@ -73,17 +73,14 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  chord_preset_pack_schema = {
-    YAML_VALUE_PTR (
-      ChordPresetPack,
-      chord_preset_pack_fields_schema),
-  };
+static const cyaml_schema_value_t chord_preset_pack_schema = {
+  YAML_VALUE_PTR (
+    ChordPresetPack,
+    chord_preset_pack_fields_schema),
+};
 
 ChordPresetPack *
-chord_preset_pack_new (
-  const char * name,
-  bool         is_standard);
+chord_preset_pack_new (const char * name, bool is_standard);
 
 bool
 chord_preset_pack_contains_name (
@@ -110,8 +107,7 @@ chord_preset_pack_delete_preset (
   ChordPreset *     pset);
 
 const char *
-chord_preset_pack_get_name (
-  const ChordPresetPack * self);
+chord_preset_pack_get_name (const ChordPresetPack * self);
 
 void
 chord_preset_pack_set_name (
@@ -119,8 +115,7 @@ chord_preset_pack_set_name (
   const char *      name);
 
 ChordPresetPack *
-chord_preset_pack_clone (
-  const ChordPresetPack * src);
+chord_preset_pack_clone (const ChordPresetPack * src);
 
 GMenuModel *
 chord_preset_pack_generate_context_menu (

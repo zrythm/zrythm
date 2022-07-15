@@ -31,20 +31,18 @@ G_DECLARE_FINAL_TYPE (
   AUTOMATION_TRACK_WIDGET,
   GtkGrid)
 
-typedef struct _TrackWidget    TrackWidget;
-typedef struct AutomationTrack AutomationTrack;
-typedef struct _DigitalMeterWidget
-                     DigitalMeterWidget;
-typedef struct Track Track;
-typedef struct _AutomationPointWidget
-  AutomationPointWidget;
-typedef struct AutomationTrack AutomationTrack;
+typedef struct _TrackWidget           TrackWidget;
+typedef struct AutomationTrack        AutomationTrack;
+typedef struct _DigitalMeterWidget    DigitalMeterWidget;
+typedef struct Track                  Track;
+typedef struct _AutomationPointWidget AutomationPointWidget;
+typedef struct AutomationTrack        AutomationTrack;
 typedef struct _AutomatableSelectorButtonWidget
   AutomatableSelectorButtonWidget;
 
 typedef struct _AutomationTrackWidget
 {
-  GtkGrid parent_instance;
+  GtkGrid                           parent_instance;
   AutomatableSelectorButtonWidget * selector;
   GtkTreeModel *                    selector_model;
   GtkBox *                          value_box;
@@ -82,8 +80,7 @@ automation_track_widget_new (AutomationTrack * at);
  * Updates GUI.
  */
 void
-automation_track_widget_refresh (
-  AutomationTrackWidget * self);
+automation_track_widget_refresh (AutomationTrackWidget * self);
 
 void
 automation_track_widget_update_current_val (

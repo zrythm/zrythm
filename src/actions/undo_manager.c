@@ -29,7 +29,8 @@ typedef enum
 GQuark
 z_actions_undo_manager_error_quark (void);
 G_DEFINE_QUARK (
-  z-actions-undo-manager-error-quark, z_actions_undo_manager_error)
+  z - actions - undo - manager - error - quark,
+  z_actions_undo_manager_error)
 
 /**
  * Inits the undo manager by populating the
@@ -54,8 +55,7 @@ undo_manager_new (void)
 {
   g_message ("%s: creating...", __func__);
   UndoManager * self = object_new (UndoManager);
-  self->schema_version =
-    UNDO_MANAGER_SCHEMA_VERSION;
+  self->schema_version = UNDO_MANAGER_SCHEMA_VERSION;
 
   self->undo_stack = undo_stack_new ();
   self->redo_stack = undo_stack_new ();
@@ -88,8 +88,7 @@ do_or_undo_action (
     {
       /* pop the action from the undo stack and
        * undo it */
-      action = (UndoableAction *) undo_stack_peek (
-        main_stack);
+      action = (UndoableAction *) undo_stack_peek (main_stack);
       need_pop = true;
     }
 
@@ -111,9 +110,7 @@ do_or_undo_action (
   else
     {
       /* invalid stack */
-      g_critical (
-        "%s: invalid stack (err %d)", __func__,
-        ret);
+      g_critical ("%s: invalid stack (err %d)", __func__, ret);
       return -1;
     }
 
@@ -122,8 +119,7 @@ do_or_undo_action (
     {
       zix_sem_post (&self->action_sem);
       g_warning (
-        "%s: action not performed (err %d)",
-        __func__, ret);
+        "%s: action not performed (err %d)", __func__, ret);
       return -1;
     }
   /* else if no error pop from the stack */
@@ -133,18 +129,15 @@ do_or_undo_action (
     }
 
   /* if redo stack is locked don't alter it */
-  if (
-    self->redo_stack_locked
-    && opposite_stack == self->redo_stack)
+  if (self->redo_stack_locked && opposite_stack == self->redo_stack)
     return 0;
 
   /* if the redo stack is full, delete the last
    * element */
   if (undo_stack_is_full (opposite_stack))
     {
-      UndoableAction * action_to_delete =
-        (UndoableAction *) undo_stack_pop_last (
-          opposite_stack);
+      UndoableAction * action_to_delete = (UndoableAction *)
+        undo_stack_pop_last (opposite_stack);
 
       /* TODO create functions to delete
        * unnecessary files held by the action
@@ -155,8 +148,7 @@ do_or_undo_action (
 
   /* push action to the redo stack */
   undo_stack_push (opposite_stack, action);
-  undo_stack_get_total_cached_actions (
-    opposite_stack);
+  undo_stack_get_total_cached_actions (opposite_stack);
 
   return 0;
 }
@@ -165,17 +157,14 @@ do_or_undo_action (
  * Undo last action.
  */
 int
-undo_manager_undo (
-  UndoManager * self,
-  GError **     error)
+undo_manager_undo (UndoManager * self, GError ** error)
 {
-  g_warn_if_fail (
-    !undo_stack_is_empty (self->undo_stack));
+  g_warn_if_fail (!undo_stack_is_empty (self->undo_stack));
 
   zix_sem_wait (&self->action_sem);
 
-  UndoableAction * action = (UndoableAction *)
-    undo_stack_peek (self->undo_stack);
+  UndoableAction * action =
+    (UndoableAction *) undo_stack_peek (self->undo_stack);
   g_return_val_if_fail (action, -1);
   const int num_actions = action->num_actions;
   g_return_val_if_fail (num_actions > 0, -1);
@@ -183,10 +172,9 @@ undo_manager_undo (
   int ret = 0;
   for (int i = 0; i < num_actions; i++)
     {
-      g_message (
-        "[ACTION %d/%d]", i + 1, num_actions);
-      action = (UndoableAction *) undo_stack_peek (
-        self->undo_stack);
+      g_message ("[ACTION %d/%d]", i + 1, num_actions);
+      action =
+        (UndoableAction *) undo_stack_peek (self->undo_stack);
       if (i == 0)
         action->num_actions = 1;
       else if (i == num_actions - 1)
@@ -194,13 +182,11 @@ undo_manager_undo (
 
       GError * err = NULL;
       ret = do_or_undo_action (
-        self, NULL, self->undo_stack,
-        self->redo_stack, &err);
+        self, NULL, self->undo_stack, self->redo_stack, &err);
       if (ret != 0)
         {
           PROPAGATE_PREFIXED_ERROR (
-            error, err, "%s",
-            _ ("Failed to undo action"));
+            error, err, "%s", _ ("Failed to undo action"));
           break;
         }
     }
@@ -222,17 +208,14 @@ undo_manager_undo (
  * Redo last undone action.
  */
 int
-undo_manager_redo (
-  UndoManager * self,
-  GError **     error)
+undo_manager_redo (UndoManager * self, GError ** error)
 {
-  g_warn_if_fail (
-    !undo_stack_is_empty (self->redo_stack));
+  g_warn_if_fail (!undo_stack_is_empty (self->redo_stack));
 
   zix_sem_wait (&self->action_sem);
 
-  UndoableAction * action = (UndoableAction *)
-    undo_stack_peek (self->redo_stack);
+  UndoableAction * action =
+    (UndoableAction *) undo_stack_peek (self->redo_stack);
   g_return_val_if_fail (action, -1);
   const int num_actions = action->num_actions;
   g_return_val_if_fail (num_actions > 0, -1);
@@ -240,10 +223,9 @@ undo_manager_redo (
   int ret = 0;
   for (int i = 0; i < num_actions; i++)
     {
-      g_message (
-        "[ACTION %d/%d]", i + 1, num_actions);
-      action = (UndoableAction *) undo_stack_peek (
-        self->redo_stack);
+      g_message ("[ACTION %d/%d]", i + 1, num_actions);
+      action =
+        (UndoableAction *) undo_stack_peek (self->redo_stack);
       if (i == 0)
         action->num_actions = 1;
       else if (i == num_actions - 1)
@@ -251,13 +233,11 @@ undo_manager_redo (
 
       GError * err = NULL;
       ret = do_or_undo_action (
-        self, NULL, self->redo_stack,
-        self->undo_stack, &err);
+        self, NULL, self->redo_stack, self->undo_stack, &err);
       if (ret != 0)
         {
           PROPAGATE_PREFIXED_ERROR (
-            error, err, "%s",
-            _ ("Failed to redo action"));
+            error, err, "%s", _ ("Failed to redo action"));
           break;
         }
     }
@@ -290,10 +270,8 @@ undo_manager_perform (
   /* check that action is not already in the
    * stacks */
   g_return_val_if_fail (
-    !undo_stack_contains_action (
-      self->undo_stack, action)
-      && !undo_stack_contains_action (
-        self->redo_stack, action),
+    !undo_stack_contains_action (self->undo_stack, action)
+      && !undo_stack_contains_action (self->redo_stack, action),
     -1);
 
   zix_sem_wait (&self->action_sem);
@@ -301,13 +279,11 @@ undo_manager_perform (
   /* if error return */
   GError * err = NULL;
   int      ret = do_or_undo_action (
-         self, action, self->redo_stack,
-         self->undo_stack, &err);
+         self, action, self->redo_stack, self->undo_stack, &err);
   if (ret != 0)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s",
-        _ ("Failed to perform action"));
+        error, err, "%s", _ ("Failed to perform action"));
       zix_sem_post (&self->action_sem);
       return ret;
     }
@@ -335,14 +311,11 @@ undo_manager_perform (
  * stack.
  */
 bool
-undo_manager_contains_clip (
-  UndoManager * self,
-  AudioClip *   clip)
+undo_manager_contains_clip (UndoManager * self, AudioClip * clip)
 {
   bool ret =
     undo_stack_contains_clip (self->undo_stack, clip)
-    || undo_stack_contains_clip (
-      self->redo_stack, clip);
+    || undo_stack_contains_clip (self->redo_stack, clip);
 
   g_debug ("%s: %d", __func__, ret);
 
@@ -356,9 +329,7 @@ undo_manager_contains_clip (
  */
 NONNULL
 void
-undo_manager_get_plugins (
-  UndoManager * self,
-  GPtrArray *   arr)
+undo_manager_get_plugins (UndoManager * self, GPtrArray * arr)
 {
   undo_stack_get_plugins (self->undo_stack, arr);
   undo_stack_get_plugins (self->redo_stack, arr);
@@ -374,8 +345,8 @@ undo_manager_get_last_action (UndoManager * self)
   if (undo_stack_is_empty (self->undo_stack))
     return NULL;
 
-  UndoableAction * action = (UndoableAction *)
-    undo_stack_peek (self->undo_stack);
+  UndoableAction * action =
+    (UndoableAction *) undo_stack_peek (self->undo_stack);
   return action;
 }
 
@@ -383,12 +354,9 @@ undo_manager_get_last_action (UndoManager * self)
  * Clears the undo and redo stacks.
  */
 void
-undo_manager_clear_stacks (
-  UndoManager * self,
-  bool          free)
+undo_manager_clear_stacks (UndoManager * self, bool free)
 {
-  g_return_if_fail (
-    self->undo_stack && self->redo_stack);
+  g_return_if_fail (self->undo_stack && self->redo_stack);
   undo_stack_clear (self->undo_stack, free);
   undo_stack_clear (self->redo_stack, free);
 }
@@ -397,13 +365,10 @@ UndoManager *
 undo_manager_clone (const UndoManager * src)
 {
   UndoManager * self = object_new (UndoManager);
-  self->schema_version =
-    UNDO_MANAGER_SCHEMA_VERSION;
+  self->schema_version = UNDO_MANAGER_SCHEMA_VERSION;
 
-  self->undo_stack =
-    undo_stack_clone (src->undo_stack);
-  self->redo_stack =
-    undo_stack_clone (src->redo_stack);
+  self->undo_stack = undo_stack_clone (src->undo_stack);
+  self->redo_stack = undo_stack_clone (src->redo_stack);
 
   zix_sem_init (&self->action_sem, 1);
 

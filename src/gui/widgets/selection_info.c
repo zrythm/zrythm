@@ -26,11 +26,9 @@ G_DEFINE_TYPE_WITH_PRIVATE (
   GTK_TYPE_GRID)
 
 SelectionInfoWidgetPrivate *
-selection_info_widget_get_private (
-  SelectionInfoWidget * self)
+selection_info_widget_get_private (SelectionInfoWidget * self)
 {
-  return selection_info_widget_get_instance_private (
-    self);
+  return selection_info_widget_get_instance_private (self);
 }
 
 /**
@@ -60,8 +58,8 @@ selection_info_widget_add_info (
   /* add separator if not 0 */
   if (l > 0)
     {
-      GtkWidget * separator = gtk_separator_new (
-        GTK_ORIENTATION_VERTICAL);
+      GtkWidget * separator =
+        gtk_separator_new (GTK_ORIENTATION_VERTICAL);
       gtk_widget_set_visible (separator, 1);
       gtk_grid_attach (
         GTK_GRID (self), separator, l - 1, 0, 1, 2);
@@ -69,11 +67,9 @@ selection_info_widget_add_info (
 
   if (label)
     {
-      gtk_grid_attach (
-        GTK_GRID (self), label, l, 0, 1, 1);
+      gtk_grid_attach (GTK_GRID (self), label, l, 0, 1, 1);
     }
-  gtk_grid_attach (
-    GTK_GRID (self), widget, l, 1, 1, 1);
+  gtk_grid_attach (GTK_GRID (self), widget, l, 1, 1, 1);
   gtk_widget_set_vexpand (widget, 1);
   /*g_object_set (*/
   /*G_OBJECT (widget),*/
@@ -86,26 +82,21 @@ selection_info_widget_add_info (
  * Destroys all children.
  */
 void
-selection_info_widget_clear (
-  SelectionInfoWidget * self)
+selection_info_widget_clear (SelectionInfoWidget * self)
 {
-  z_gtk_widget_destroy_all_children (
-    GTK_WIDGET (self));
+  z_gtk_widget_destroy_all_children (GTK_WIDGET (self));
 }
 
 static void
 selection_info_widget_class_init (
   SelectionInfoWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "selection-info");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass, "selection-info");
 }
 
 static void
-selection_info_widget_init (
-  SelectionInfoWidget * self)
+selection_info_widget_init (SelectionInfoWidget * self)
 {
   gtk_widget_set_visible (GTK_WIDGET (self), 1);
   gtk_grid_set_column_spacing (GTK_GRID (self), 4);

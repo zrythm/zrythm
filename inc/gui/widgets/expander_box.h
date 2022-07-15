@@ -89,8 +89,7 @@ typedef struct _ExpanderBoxWidgetClass
  * Gets the private.
  */
 ExpanderBoxWidgetPrivate *
-expander_box_widget_get_private (
-  ExpanderBoxWidget * self);
+expander_box_widget_get_private (ExpanderBoxWidget * self);
 
 /**
  * Sets the label to show.
@@ -120,8 +119,7 @@ expander_box_widget_set_icon_resource (
   ExpanderBoxWidgetPrivate * prv =
     expander_box_widget_get_private (self);
 
-  resources_set_image_icon (
-    prv->btn_img, icon_type, path);
+  resources_set_image_icon (prv->btn_img, icon_type, path);
 }
 
 void

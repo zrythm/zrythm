@@ -38,8 +38,7 @@
 
 #define CHORD_SELECTIONS_SCHEMA_VERSION 1
 
-#define CHORD_SELECTIONS \
-  (PROJECT->chord_selections)
+#define CHORD_SELECTIONS (PROJECT->chord_selections)
 
 /**
  * Selections to be used for the ChordArrangerWidget's
@@ -77,12 +76,11 @@ static const cyaml_schema_field_t
     CYAML_FIELD_END
   };
 
-static const cyaml_schema_value_t
-  chord_selections_schema = {
-    YAML_VALUE_PTR (
-      ChordSelections,
-      chord_selections_fields_schema),
-  };
+static const cyaml_schema_value_t chord_selections_schema = {
+  YAML_VALUE_PTR (
+    ChordSelections,
+    chord_selections_fields_schema),
+};
 
 /**
  * Returns if the selections can be pasted.

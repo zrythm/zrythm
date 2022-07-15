@@ -43,8 +43,7 @@ G_DEFINE_TYPE (
 
 /** Used as the first row in the Plugin treeview to
  * indicate if "Track ports is selected or not. */
-static const Plugin * dummy_plugin =
-  (const Plugin *) 123;
+static const Plugin * dummy_plugin = (const Plugin *) 123;
 
 static void
 on_response (
@@ -57,8 +56,7 @@ on_response (
       if (!self->selected_port)
         {
           ui_show_error_message (
-            MAIN_WINDOW, false,
-            _ ("No port selected"));
+            MAIN_WINDOW, false, _ ("No port selected"));
           return;
         }
 
@@ -79,14 +77,12 @@ on_response (
       if (ports_can_be_connected (src, dest))
         {
           GError * err = NULL;
-          bool     ret =
-            port_connection_action_perform_connect (
-              &src->id, &dest->id, &err);
+          bool ret = port_connection_action_perform_connect (
+            &src->id, &dest->id, &err);
           if (!ret)
             {
               HANDLE_ERROR (
-                err,
-                _ ("Failed to connect %s to %s"),
+                err, _ ("Failed to connect %s to %s"),
                 src->id.label, dest->id.label);
             }
 
@@ -119,8 +115,7 @@ create_model_for_ports (
 
   /* icon, name, pointer to port */
   list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING,
-    G_TYPE_POINTER);
+    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
   PortType type = self->port->id.type;
   PortFlow flow = self->port->id.flow;
@@ -128,15 +123,15 @@ create_model_for_ports (
 /* Add a new row to the model if not already
 * in the destinations */
 #define ADD_ROW \
-  if ((flow == FLOW_INPUT && \
-       !ports_connected (port, self->port)) || \
-       (flow == FLOW_OUTPUT && \
-        !ports_connected (self->port, port))) \
+  if ( \
+    (flow == FLOW_INPUT \
+     && !ports_connected (port, self->port)) \
+    || (flow == FLOW_OUTPUT && !ports_connected (self->port, port))) \
     { \
       gtk_list_store_append (list_store, &iter); \
       gtk_list_store_set ( \
-        list_store, &iter, 0, "node-type-cusp", \
-        1, port->id.label, 2, port, -1); \
+        list_store, &iter, 0, "node-type-cusp", 1, \
+        port->id.label, 2, port, -1); \
     }
 
   Port * port;
@@ -172,11 +167,9 @@ create_model_for_ports (
             {
               if (track->in_signal_type == TYPE_AUDIO)
                 {
-                  port =
-                    track->processor->stereo_in->l;
+                  port = track->processor->stereo_in->l;
                   ADD_ROW;
-                  port =
-                    track->processor->stereo_in->r;
+                  port = track->processor->stereo_in->r;
                   ADD_ROW;
                 }
 
@@ -184,21 +177,16 @@ create_model_for_ports (
                 {
                   port = track->channel->fader->amp;
                   ADD_ROW;
-                  port =
-                    track->channel->fader->balance;
+                  port = track->channel->fader->balance;
                   ADD_ROW;
                 }
 
               if (track->type == TRACK_TYPE_MODULATOR)
                 {
-                  for (
-                    int j = 0;
-                    j < track->num_modulator_macros;
-                    j++)
+                  for (int j = 0;
+                       j < track->num_modulator_macros; j++)
                     {
-                      port =
-                        track->modulator_macros[j]
-                          ->cv_in;
+                      port = track->modulator_macros[j]->cv_in;
                       ADD_ROW;
                     }
                 }
@@ -254,25 +242,21 @@ create_model_for_ports (
 }
 
 static GtkTreeModel *
-create_model_for_tracks (
-  PortSelectorDialogWidget * self)
+create_model_for_tracks (PortSelectorDialogWidget * self)
 {
   GtkListStore * list_store;
   GtkTreeIter    iter;
 
   /* icon, name, pointer to channel */
   list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING,
-    G_TYPE_POINTER);
+    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
   Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
       track = TRACKLIST->tracks[i];
 
-      if (
-        track->type != TRACK_TYPE_MODULATOR
-        && !track->channel)
+      if (track->type != TRACK_TYPE_MODULATOR && !track->channel)
         continue;
 
       // Add a new row to the model
@@ -322,8 +306,7 @@ create_model_for_plugins (
 
   /* icon, name, pointer to plugin */
   list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING,
-    G_TYPE_POINTER);
+    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
   Port *           port = self->port;
   PortIdentifier * id = &port->id;
@@ -353,19 +336,15 @@ create_model_for_plugins (
           for (int i = 0; i < STRIP_SIZE; i++)
             {
               pl = ch->midi_fx[i];
-              add_plugin (
-                self, pl, list_store, &iter);
+              add_plugin (self, pl, list_store, &iter);
             }
           for (int i = 0; i < STRIP_SIZE; i++)
             {
               pl = ch->inserts[i];
-              add_plugin (
-                self, pl, list_store, &iter);
+              add_plugin (self, pl, list_store, &iter);
             }
 
-          add_plugin (
-            self, ch->instrument, list_store,
-            &iter);
+          add_plugin (self, ch->instrument, list_store, &iter);
         }
       for (int i = 0; i < track->num_modulators; i++)
         {
@@ -388,43 +367,33 @@ on_selection_changed (
   GtkTreeSelection *         ts,
   PortSelectorDialogWidget * self)
 {
-  GtkTreeView * tv =
-    gtk_tree_selection_get_tree_view (ts);
-  GtkTreeModel * model =
-    gtk_tree_view_get_model (tv);
-  GList * selected_rows =
+  GtkTreeView *  tv = gtk_tree_selection_get_tree_view (ts);
+  GtkTreeModel * model = gtk_tree_view_get_model (tv);
+  GList *        selected_rows =
     gtk_tree_selection_get_selected_rows (ts, NULL);
   if (selected_rows)
     {
       GtkTreePath * tp =
-        (GtkTreePath *) g_list_first (selected_rows)
-          ->data;
+        (GtkTreePath *) g_list_first (selected_rows)->data;
       GtkTreeIter iter;
       gtk_tree_model_get_iter (model, &iter, tp);
       GValue value = G_VALUE_INIT;
 
       if (model == self->track_model)
         {
-          gtk_tree_model_get_value (
-            model, &iter, 2, &value);
-          self->selected_track =
-            g_value_get_pointer (&value);
-          self->plugin_model =
-            create_model_for_plugins (
-              self, self->selected_track);
-          tree_view_setup (
-            self, self->plugin_model, false);
-          self->port_model = create_model_for_ports (
-            self, NULL, NULL);
-          tree_view_setup (
-            self, self->port_model, false);
+          gtk_tree_model_get_value (model, &iter, 2, &value);
+          self->selected_track = g_value_get_pointer (&value);
+          self->plugin_model = create_model_for_plugins (
+            self, self->selected_track);
+          tree_view_setup (self, self->plugin_model, false);
+          self->port_model =
+            create_model_for_ports (self, NULL, NULL);
+          tree_view_setup (self, self->port_model, false);
         }
       else if (model == self->plugin_model)
         {
-          gtk_tree_model_get_value (
-            model, &iter, 2, &value);
-          Plugin * selected_pl =
-            g_value_get_pointer (&value);
+          gtk_tree_model_get_value (model, &iter, 2, &value);
+          Plugin * selected_pl = g_value_get_pointer (&value);
           if (selected_pl == dummy_plugin)
             {
               self->selected_plugin = NULL;
@@ -437,22 +406,17 @@ on_selection_changed (
             }
 
           if (self->track_ports_selected)
-            self->port_model =
-              create_model_for_ports (
-                self, self->selected_track, NULL);
+            self->port_model = create_model_for_ports (
+              self, self->selected_track, NULL);
           else
-            self->port_model =
-              create_model_for_ports (
-                self, NULL, self->selected_plugin);
-          tree_view_setup (
-            self, self->port_model, false);
+            self->port_model = create_model_for_ports (
+              self, NULL, self->selected_plugin);
+          tree_view_setup (self, self->port_model, false);
         }
       else if (model == self->port_model)
         {
-          gtk_tree_model_get_value (
-            model, &iter, 2, &value);
-          self->selected_port =
-            g_value_get_pointer (&value);
+          gtk_tree_model_get_value (model, &iter, 2, &value);
+          self->selected_port = g_value_get_pointer (&value);
         }
     }
 }
@@ -486,17 +450,15 @@ tree_view_setup (
 
       /* column for icon */
       renderer = gtk_cell_renderer_pixbuf_new ();
-      column =
-        gtk_tree_view_column_new_with_attributes (
-          "icon", renderer, "icon-name", 0, NULL);
+      column = gtk_tree_view_column_new_with_attributes (
+        "icon", renderer, "icon-name", 0, NULL);
       gtk_tree_view_append_column (
         GTK_TREE_VIEW (tree_view), column);
 
       /* column for name */
       renderer = gtk_cell_renderer_text_new ();
-      column =
-        gtk_tree_view_column_new_with_attributes (
-          "name", renderer, "text", 1, NULL);
+      column = gtk_tree_view_column_new_with_attributes (
+        "name", renderer, "text", 1, NULL);
       gtk_tree_view_append_column (
         GTK_TREE_VIEW (tree_view), column);
 
@@ -511,8 +473,7 @@ tree_view_setup (
       g_signal_connect (
         G_OBJECT (gtk_tree_view_get_selection (
           GTK_TREE_VIEW (tree_view))),
-        "changed",
-        G_CALLBACK (on_selection_changed), self);
+        "changed", G_CALLBACK (on_selection_changed), self);
     }
 }
 
@@ -522,20 +483,14 @@ port_selector_dialog_widget_refresh (
   Port *                     port)
 {
   self->port = port;
-  self->track_model =
-    create_model_for_tracks (self);
-  tree_view_setup (
-    self, self->track_model, !self->setup);
+  self->track_model = create_model_for_tracks (self);
+  tree_view_setup (self, self->track_model, !self->setup);
 
-  self->plugin_model =
-    create_model_for_plugins (self, NULL);
-  tree_view_setup (
-    self, self->plugin_model, !self->setup);
+  self->plugin_model = create_model_for_plugins (self, NULL);
+  tree_view_setup (self, self->plugin_model, !self->setup);
 
-  self->port_model =
-    create_model_for_ports (self, NULL, NULL);
-  tree_view_setup (
-    self, self->port_model, !self->setup);
+  self->port_model = create_model_for_ports (self, NULL, NULL);
+  tree_view_setup (self, self->port_model, !self->setup);
 
   self->setup = true;
 }
@@ -548,11 +503,9 @@ port_selector_dialog_widget_new (
   PortConnectionsPopoverWidget * owner)
 {
   PortSelectorDialogWidget * self = g_object_new (
-    PORT_SELECTOR_DIALOG_WIDGET_TYPE, "modal",
-    true, NULL);
+    PORT_SELECTOR_DIALOG_WIDGET_TYPE, "modal", true, NULL);
 
-  GtkRoot * root =
-    gtk_widget_get_root (GTK_WIDGET (owner));
+  GtkRoot * root = gtk_widget_get_root (GTK_WIDGET (owner));
   gtk_window_set_transient_for (
     GTK_WINDOW (self), GTK_WINDOW (root));
 
@@ -565,8 +518,7 @@ static void
 port_selector_dialog_widget_class_init (
   PortSelectorDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "port_selector_dialog.ui");
 
@@ -603,6 +555,6 @@ port_selector_dialog_widget_init (
     self->port_scroll, max_height);
 
   g_signal_connect (
-    G_OBJECT (self), "response",
-    G_CALLBACK (on_response), self);
+    G_OBJECT (self), "response", G_CALLBACK (on_response),
+    self);
 }

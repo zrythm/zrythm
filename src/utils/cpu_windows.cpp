@@ -92,8 +92,8 @@ cpu_windows_get_usage (int pid)
   HANDLE hProcess =
     OpenProcess (PROCESS_ALL_ACCESS, false, pid);
   if (!GetProcessTimes (
-        hProcess, &creation_time, &exit_time,
-        &kernel_time, &user_time))
+        hProcess, &creation_time, &exit_time, &kernel_time,
+        &user_time))
     {
       // can not find the process
       exit (EXIT_FAILURE);
@@ -111,8 +111,7 @@ cpu_windows_get_usage (int pid)
       return cpu_windows_get_usage (pid);
     }
 
-  system_time_delta =
-    system_time - last_system_time_;
+  system_time_delta = system_time - last_system_time_;
   time_delta = time - last_time_;
 
   if (time_delta == 0)

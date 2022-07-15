@@ -22,10 +22,8 @@
 static rtaudio_api_t
 get_api_from_audio_backend (AudioBackend backend)
 {
-  const rtaudio_api_t * apis =
-    rtaudio_compiled_api ();
-  unsigned int num_apis =
-    rtaudio_get_num_compiled_apis ();
+  const rtaudio_api_t * apis = rtaudio_compiled_api ();
+  unsigned int num_apis = rtaudio_get_num_compiled_apis ();
   for (unsigned int i = 0; i < num_apis; i++)
     {
       if (
@@ -91,8 +89,7 @@ audio_cb (
   engine_process (self, num_frames);
 
   dsp_fill (
-    out_buf, DENORMAL_PREVENTION_VAL,
-    (size_t) (nframes * 2));
+    out_buf, DENORMAL_PREVENTION_VAL, (size_t) (nframes * 2));
   for (nframes_t i = 0; i < num_frames; i++)
     {
 #  ifdef TRIAL_VER
@@ -104,8 +101,7 @@ audio_cb (
         }
 #  endif
       out_buf[i * 2] = self->monitor_out->l->buf[i];
-      out_buf[i * 2 + 1] =
-        self->monitor_out->r->buf[i];
+      out_buf[i * 2 + 1] = self->monitor_out->r->buf[i];
     }
 
   return 0;
@@ -127,10 +123,8 @@ engine_rtaudio_create_rtaudio (AudioEngine * self)
   if (engine_rtaudio_first_run)
     {
       /* print compiled APIs */
-      const rtaudio_api_t * apis =
-        rtaudio_compiled_api ();
-      unsigned int num_apis =
-        rtaudio_get_num_compiled_apis ();
+      const rtaudio_api_t * apis = rtaudio_compiled_api ();
+      unsigned int num_apis = rtaudio_get_num_compiled_apis ();
       for (unsigned int i = 0; i < num_apis; i++)
         {
           g_message (
@@ -140,8 +134,8 @@ engine_rtaudio_create_rtaudio (AudioEngine * self)
       engine_rtaudio_first_run = false;
     }
 
-  rtaudio_api_t api = get_api_from_audio_backend (
-    self->audio_backend);
+  rtaudio_api_t api =
+    get_api_from_audio_backend (self->audio_backend);
   if (api == RTAUDIO_API_DUMMY)
     {
       g_warning (
@@ -155,8 +149,7 @@ engine_rtaudio_create_rtaudio (AudioEngine * self)
 
   if (rtaudio_error (rtaudio))
     {
-      g_critical (
-        "RtAudio: %s", rtaudio_error (rtaudio));
+      g_critical ("RtAudio: %s", rtaudio_error (rtaudio));
       return NULL;
     }
 
@@ -166,9 +159,7 @@ engine_rtaudio_create_rtaudio (AudioEngine * self)
 }
 
 static void
-print_dev_info (
-  rtaudio_device_info_t * nfo,
-  char *                  buf)
+print_dev_info (rtaudio_device_info_t * nfo, char * buf)
 {
   sprintf (
     buf,
@@ -194,18 +185,15 @@ print_dev_info (
 int
 engine_rtaudio_setup (AudioEngine * self)
 {
-  g_message (
-    "Setting up RtAudio %s...", rtaudio_version ());
+  g_message ("Setting up RtAudio %s...", rtaudio_version ());
 
-  self->rtaudio =
-    engine_rtaudio_create_rtaudio (self);
+  self->rtaudio = engine_rtaudio_create_rtaudio (self);
   if (!self->rtaudio)
     {
       return -1;
     }
 
-  int dev_count =
-    rtaudio_device_count (self->rtaudio);
+  int dev_count = rtaudio_device_count (self->rtaudio);
   if (dev_count == 0)
     {
       g_warning ("No devices found");
@@ -216,8 +204,7 @@ engine_rtaudio_setup (AudioEngine * self)
    * of devices and get the id of the output device
    * to open */
   char * out_device = g_settings_get_string (
-    S_P_GENERAL_ENGINE,
-    "rtaudio-audio-device-name");
+    S_P_GENERAL_ENGINE, "rtaudio-audio-device-name");
   int out_device_id = -1;
   for (int i = 0; i < dev_count; i++)
     {
@@ -225,8 +212,7 @@ engine_rtaudio_setup (AudioEngine * self)
         rtaudio_get_device_info (self->rtaudio, i);
       char dev_nfo_str[800];
       print_dev_info (&dev_nfo, dev_nfo_str);
-      g_message (
-        "RtAudio device %d: %s", i, dev_nfo_str);
+      g_message ("RtAudio device %d: %s", i, dev_nfo_str);
       if (
         string_is_equal (dev_nfo.name, out_device)
         && dev_nfo.output_channels > 0)
@@ -236,12 +222,10 @@ engine_rtaudio_setup (AudioEngine * self)
     }
   if (out_device_id == -1)
     {
-      out_device_id =
-        (int) rtaudio_get_default_output_device (
-          self->rtaudio);
+      out_device_id = (int)
+        rtaudio_get_default_output_device (self->rtaudio);
       rtaudio_device_info_t dev_nfo =
-        rtaudio_get_device_info (
-          self->rtaudio, out_device_id);
+        rtaudio_get_device_info (self->rtaudio, out_device_id);
       out_device = g_strdup (dev_nfo.name);
     }
 
@@ -273,9 +257,9 @@ engine_rtaudio_setup (AudioEngine * self)
 
   int ret = rtaudio_open_stream (
     self->rtaudio, &out_stream_params, NULL,
-    RTAUDIO_FORMAT_FLOAT32, samplerate,
-    &buffer_size, (rtaudio_cb_t) audio_cb, self,
-    &stream_opts, (rtaudio_error_cb_t) error_cb);
+    RTAUDIO_FORMAT_FLOAT32, samplerate, &buffer_size,
+    (rtaudio_cb_t) audio_cb, self, &stream_opts,
+    (rtaudio_error_cb_t) error_cb);
   if (ret)
     {
       g_warning (
@@ -293,9 +277,7 @@ engine_rtaudio_setup (AudioEngine * self)
 }
 
 void
-engine_rtaudio_activate (
-  AudioEngine * self,
-  bool          activate)
+engine_rtaudio_activate (AudioEngine * self, bool activate)
 {
   if (activate)
     {
@@ -338,9 +320,8 @@ engine_rtaudio_get_device_names (
   char **       names,
   int *         num_names)
 {
-  rtaudio_t rtaudio =
-    engine_rtaudio_create_rtaudio (self);
-  int num_devs = rtaudio_device_count (rtaudio);
+  rtaudio_t rtaudio = engine_rtaudio_create_rtaudio (self);
+  int       num_devs = rtaudio_device_count (rtaudio);
   *num_names = 0;
   for (int i = 0; i < num_devs; i++)
     {
@@ -350,23 +331,20 @@ engine_rtaudio_get_device_names (
         input
         && (dev_nfo.input_channels > 0 || dev_nfo.duplex_channels > 0))
         {
-          names[(*num_names)++] =
-            g_strdup (dev_nfo.name);
+          names[(*num_names)++] = g_strdup (dev_nfo.name);
         }
       else if (
         !input
         && (dev_nfo.output_channels > 0 || dev_nfo.duplex_channels > 0))
         {
-          names[(*num_names)++] =
-            g_strdup (dev_nfo.name);
+          names[(*num_names)++] = g_strdup (dev_nfo.name);
         }
       else
         {
           continue;
         }
       g_message (
-        "RtAudio device %d: %s", i,
-        names[*num_names - 1]);
+        "RtAudio device %d: %s", i, names[*num_names - 1]);
     }
   rtaudio_destroy (rtaudio);
 }

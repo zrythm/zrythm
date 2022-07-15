@@ -88,13 +88,12 @@ typedef enum MusicalScaleType_v1
   SCALE_YO_v1,
 } MusicalScaleType_v1;
 
-static const cyaml_strval_t
-  musical_scale_type_strings_v1[] = {
-    {"Acoustic",   SCALE_ACOUSTIC_v1 },
-    { "Aeolian",   SCALE_AEOLIAN_v1  },
-    { "Algerian",  SCALE_ALGERIAN_v1 },
-    { "Altered",   SCALE_ALTERED_v1  },
-    { "Augmented", SCALE_AUGMENTED_v1},
+static const cyaml_strval_t musical_scale_type_strings_v1[] = {
+  {"Acoustic",   SCALE_ACOUSTIC_v1 },
+  { "Aeolian",   SCALE_AEOLIAN_v1  },
+  { "Algerian",  SCALE_ALGERIAN_v1 },
+  { "Altered",   SCALE_ALTERED_v1  },
+  { "Augmented", SCALE_AUGMENTED_v1},
 };
 
 typedef struct MusicalScale_v1
@@ -110,33 +109,31 @@ typedef struct MusicalScale_v1
   int                  num_notes;
 } MusicalScale_v1;
 
-static const cyaml_schema_field_t
-  musical_scale_fields_schema_v1[] = {
-    YAML_FIELD_INT (MusicalScale_v1, schema_version),
-    YAML_FIELD_ENUM (
-      MusicalScale_v1,
-      type,
-      musical_scale_type_strings_v1),
-    CYAML_FIELD_ENUM (
-      MusicalScale_v1,
-      root_key,
-      musical_note_strings_v1),
-    CYAML_FIELD_SEQUENCE_FIXED (
-      "notes",
-      CYAML_FLAG_OPTIONAL,
-      MusicalScale_v1,
-      notes,
-      &int_schema,
-      12),
+static const cyaml_schema_field_t musical_scale_fields_schema_v1[] = {
+  YAML_FIELD_INT (MusicalScale_v1, schema_version),
+  YAML_FIELD_ENUM (
+    MusicalScale_v1,
+    type,
+    musical_scale_type_strings_v1),
+  CYAML_FIELD_ENUM (
+    MusicalScale_v1,
+    root_key,
+    musical_note_strings_v1),
+  CYAML_FIELD_SEQUENCE_FIXED (
+    "notes",
+    CYAML_FLAG_OPTIONAL,
+    MusicalScale_v1,
+    notes,
+    &int_schema,
+    12),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  musical_scale_schema_v1 = {
-    YAML_VALUE_PTR (
-      MusicalScale_v1,
-      musical_scale_fields_schema_v1),
-  };
+static const cyaml_schema_value_t musical_scale_schema_v1 = {
+  YAML_VALUE_PTR (
+    MusicalScale_v1,
+    musical_scale_fields_schema_v1),
+};
 
 #endif

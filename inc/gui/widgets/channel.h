@@ -12,8 +12,7 @@
 typedef struct _PluginStripExpanderWidget
   PluginStripExpanderWidget;
 
-#define CHANNEL_WIDGET_TYPE \
-  (channel_widget_get_type ())
+#define CHANNEL_WIDGET_TYPE (channel_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ChannelWidget,
   channel_widget,
@@ -28,12 +27,9 @@ typedef struct Channel            Channel;
 typedef struct _ChannelSlotWidget ChannelSlotWidget;
 typedef struct _RouteTargetSelectorWidget
   RouteTargetSelectorWidget;
-typedef struct _BalanceControlWidget
-  BalanceControlWidget;
-typedef struct _EditableLabelWidget
-  EditableLabelWidget;
-typedef struct _FaderButtonsWidget
-  FaderButtonsWidget;
+typedef struct _BalanceControlWidget BalanceControlWidget;
+typedef struct _EditableLabelWidget  EditableLabelWidget;
+typedef struct _FaderButtonsWidget   FaderButtonsWidget;
 typedef struct _ChannelSendsExpanderWidget
   ChannelSendsExpanderWidget;
 
@@ -43,12 +39,12 @@ typedef struct _ChannelWidget
   GtkGrid *                   grid;
   RouteTargetSelectorWidget * output;
   ColorAreaWidget *           color;
-  GtkBox *              icon_and_name_event_box;
-  EditableLabelWidget * name;
-  GtkBox *              phase_controls;
-  GtkButton *           phase_invert;
-  GtkLabel *            phase_reading;
-  KnobWidget *          phase_knob;
+  GtkBox *                    icon_and_name_event_box;
+  EditableLabelWidget *       name;
+  GtkBox *                    phase_controls;
+  GtkButton *                 phase_invert;
+  GtkLabel *                  phase_reading;
+  KnobWidget *                phase_knob;
 
   /** Instrument slot. */
   GtkBox *            instrument_box;
@@ -165,8 +161,7 @@ void
 channel_widget_refresh (ChannelWidget * self);
 
 void
-channel_widget_refresh_buttons (
-  ChannelWidget * self);
+channel_widget_refresh_buttons (ChannelWidget * self);
 
 /**
  * Displays the widget.

@@ -45,20 +45,17 @@ _test (
 {
   /* 1. add helm */
   test_plugin_manager_create_tracks_from_plugin (
-    pl_bundle, pl_uri, is_instrument, with_carla,
-    1);
+    pl_bundle, pl_uri, is_instrument, with_carla, 1);
 
   /* select it */
   Track * helm_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
-    helm_track, F_SELECT, true,
-    F_NO_PUBLISH_EVENTS);
+    helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
 
   /* 2. delete track */
   tracklist_selections_action_perform_delete (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
-    NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
 
   /* 3. undo track deletion */
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -98,8 +95,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX \
   "/integration/undo_redo_helm_track_creation/"
 
-  g_test_add_func (
-    TEST_PREFIX "test", (GTestFunc) test);
+  g_test_add_func (TEST_PREFIX "test", (GTestFunc) test);
 
   return g_test_run ();
 }

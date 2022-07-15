@@ -58,8 +58,7 @@ prepare_region_with_note_at_start_to_end (
   position_update_frames_from_ticks (&start_pos);
   position_update_frames_from_ticks (&end_pos);
   ZRegion * r = midi_region_new (
-    &start_pos, &end_pos,
-    track_get_name_hash (track), 0, 0);
+    &start_pos, &end_pos, track_get_name_hash (track), 0, 0);
   MidiNote * mn1 = midi_note_new (
     &r->id, &start_pos, &end_pos, pitch, velocity);
   midi_region_add_midi_note (r, mn1, 0);
@@ -84,8 +83,7 @@ test_fill_midi_events (void)
 
   midi_byte_t pitch1 = 35;
   midi_byte_t vel1 = 91;
-  ZRegion *   r =
-    prepare_region_with_note_at_start_to_end (
+  ZRegion *   r = prepare_region_with_note_at_start_to_end (
       track, pitch1, vel1);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   track_add_region (track, r, NULL, 0, 1, 0);
@@ -106,18 +104,15 @@ test_fill_midi_events (void)
     .local_offset = 0,
     .nframes = BUFFER_SIZE,
   };
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 1);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_nonnull (ev);
   g_assert_cmpuint (
     midi_get_channel_1_to_16 (ev->raw_buffer), ==,
     midi_region_get_midi_ch (r));
   g_assert_cmpuint (
-    midi_get_note_number (ev->raw_buffer), ==,
-    pitch1);
+    midi_get_note_number (ev->raw_buffer), ==, pitch1);
   g_assert_cmpuint (
     midi_get_velocity (ev->raw_buffer), ==, vel1);
   g_assert_cmpint ((long) ev->time, ==, pos.frames);
@@ -131,14 +126,11 @@ test_fill_midi_events (void)
    * Expected result:
    * MIDI note start is skipped (no events).
    */
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames + 1;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames + 1;
   time_nfo.local_offset = 1;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 0);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 0);
 
   /*
    * Start: region start
@@ -148,14 +140,11 @@ test_fill_midi_events (void)
    * MIDI note is added even though the cycle is
    * only 1 sample.
    */
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 1;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 1);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 1);
   midi_events_clear (events, F_QUEUED);
 
   /*
@@ -166,14 +155,11 @@ test_fill_midi_events (void)
    * No MIDI notes in range.
    */
   position_add_frames (&pos, BUFFER_SIZE);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 0);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 0);
 
   /*
    * Start: region end - (BUFFER_SIZE + 1)
@@ -185,14 +171,11 @@ test_fill_midi_events (void)
    */
   position_set_to_pos (&pos, &r_obj->end_pos);
   position_add_frames (&pos, (-BUFFER_SIZE) - 1);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 0);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 0);
 
   /*
    * Start: region end - BUFFER_SIZE
@@ -204,20 +187,16 @@ test_fill_midi_events (void)
    */
   position_set_to_pos (&pos, &r_obj->end_pos);
   position_add_frames (&pos, -BUFFER_SIZE);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 2);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, BUFFER_SIZE - 1);
   ev = &events->queued_events[1];
-  g_assert_true (
-    midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, BUFFER_SIZE - 1);
   midi_events_clear (events, F_QUEUED);
 
@@ -231,23 +210,18 @@ test_fill_midi_events (void)
    * is exclusive.
    */
   position_add_ticks (&mn_obj->end_pos, -5);
-  position_update_frames_from_ticks (
-    &mn_obj->end_pos);
+  position_update_frames_from_ticks (&mn_obj->end_pos);
   position_set_to_pos (&pos, &mn_obj->end_pos);
   pos.frames = mn_obj->end_pos.frames;
   position_add_frames (&pos, -BUFFER_SIZE);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 1);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_cmpuint (ev->time, ==, BUFFER_SIZE - 1);
-  position_set_to_pos (
-    &mn_obj->end_pos, &r_obj->end_pos);
+  position_set_to_pos (&mn_obj->end_pos, &r_obj->end_pos);
   midi_events_clear (events, F_QUEUED);
 
   /*
@@ -259,23 +233,18 @@ test_fill_midi_events (void)
    * its actual end.
    */
   position_add_ticks (&mn_obj->end_pos, -5);
-  position_update_frames_from_ticks (
-    &mn_obj->end_pos);
+  position_update_frames_from_ticks (&mn_obj->end_pos);
   position_set_to_pos (&pos, &mn_obj->end_pos);
   pos.frames = mn_obj->end_pos.frames;
   position_add_frames (&pos, (-BUFFER_SIZE) + 1);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 1);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_cmpuint (ev->time, ==, BUFFER_SIZE - 2);
-  position_set_to_pos (
-    &mn_obj->end_pos, &r_obj->end_pos);
+  position_set_to_pos (&mn_obj->end_pos, &r_obj->end_pos);
   midi_events_clear (events, F_QUEUED);
 
   /*
@@ -288,20 +257,16 @@ test_fill_midi_events (void)
    */
   position_set_to_pos (&pos, &r_obj->end_pos);
   position_add_frames (&pos, (-BUFFER_SIZE) + 1);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 2);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, BUFFER_SIZE - 2);
   ev = &events->queued_events[1];
-  g_assert_true (
-    midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, BUFFER_SIZE - 2);
   midi_events_clear (events, F_QUEUED);
 
@@ -316,18 +281,14 @@ test_fill_midi_events (void)
   position_set_to_bar (&r_obj->end_pos, 4);
   position_set_to_bar (&r_obj->loop_end_pos, 2);
   position_update_frames_from_ticks (&r_obj->pos);
-  position_update_frames_from_ticks (
-    &r_obj->end_pos);
-  position_update_frames_from_ticks (
-    &r_obj->loop_end_pos);
+  position_update_frames_from_ticks (&r_obj->end_pos);
+  position_update_frames_from_ticks (&r_obj->loop_end_pos);
   position_set_to_bar (&mn_obj->pos, 1);
   position_add_ticks (&mn_obj->pos, -1);
   position_update_frames_from_ticks (&mn_obj->pos);
-  position_set_to_pos (
-    &mn_obj->end_pos, &mn_obj->pos);
+  position_set_to_pos (&mn_obj->end_pos, &mn_obj->pos);
   position_add_ticks (&mn_obj->end_pos, 2000);
-  position_update_frames_from_ticks (
-    &mn_obj->end_pos);
+  position_update_frames_from_ticks (&mn_obj->end_pos);
 
   /*
    * Premise: note starts 1 tick before region.
@@ -339,14 +300,11 @@ test_fill_midi_events (void)
    */
   position_set_to_pos (&pos, &r_obj->pos);
   position_add_frames (&pos, -365);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 512;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 0);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 0);
 
   /*
    * Initialization
@@ -361,19 +319,15 @@ test_fill_midi_events (void)
   position_set_to_bar (&r_obj->loop_end_pos, 2);
   position_add_ticks (&r_obj->loop_start_pos, 7);
   position_update_frames_from_ticks (&r_obj->pos);
-  position_update_frames_from_ticks (
-    &r_obj->end_pos);
-  position_update_frames_from_ticks (
-    &r_obj->loop_start_pos);
-  position_update_frames_from_ticks (
-    &r_obj->loop_end_pos);
+  position_update_frames_from_ticks (&r_obj->end_pos);
+  position_update_frames_from_ticks (&r_obj->loop_start_pos);
+  position_update_frames_from_ticks (&r_obj->loop_end_pos);
   position_set_to_bar (&mn_obj->pos, 1);
   position_add_ticks (&mn_obj->pos, 7);
   position_set_to_bar (&mn_obj->end_pos, 2);
   position_add_ticks (&mn_obj->end_pos, 7);
   position_update_frames_from_ticks (&mn_obj->pos);
-  position_update_frames_from_ticks (
-    &mn_obj->end_pos);
+  position_update_frames_from_ticks (&mn_obj->end_pos);
 
   /*
    * Premise: note starts at the loop_start point
@@ -387,17 +341,13 @@ test_fill_midi_events (void)
    */
   position_set_to_bar (&pos, 3);
   position_add_frames (&pos, -365);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 2000;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 2);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
-  g_assert_true (
-    midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 364);
   ev = &events->queued_events[1];
   g_assert_true (midi_is_note_on (ev->raw_buffer));
@@ -416,17 +366,13 @@ test_fill_midi_events (void)
   position_set_to_bar (&r_obj->pos, 2);
   position_set_to_bar (&r_obj->end_pos, 3);
   position_update_frames_from_ticks (&r_obj->pos);
-  position_update_frames_from_ticks (
-    &r_obj->end_pos);
+  position_update_frames_from_ticks (&r_obj->end_pos);
   position_set_to_bar (&mn_obj->pos, 1);
   position_update_frames_from_ticks (&mn_obj->pos);
-  position_set_to_pos (
-    &mn_obj->end_pos, &mn_obj->pos);
+  position_set_to_pos (&mn_obj->end_pos, &mn_obj->pos);
   position_add_ticks (&mn_obj->end_pos, 2000);
-  position_update_frames_from_ticks (
-    &mn_obj->end_pos);
-  position_set_to_pos (
-    &r_obj->loop_end_pos, &mn_obj->end_pos);
+  position_update_frames_from_ticks (&mn_obj->end_pos);
+  position_set_to_pos (&r_obj->loop_end_pos, &mn_obj->end_pos);
 
   /*
    * Premise: note starts 1 tick before region.
@@ -440,14 +386,11 @@ test_fill_midi_events (void)
   position_update_frames_from_ticks (&mn_obj->pos);
   position_set_to_pos (&pos, &r_obj->pos);
   position_add_frames (&pos, -6);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 0);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 0);
   position_add_ticks (&mn_obj->pos, 1);
   position_update_frames_from_ticks (&mn_obj->pos);
 
@@ -460,14 +403,11 @@ test_fill_midi_events (void)
    */
   position_set_to_bar (&pos, 1);
   position_update_frames_from_ticks (&pos);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 0);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 0);
 
   /**
    * Start: frame after region end
@@ -479,14 +419,11 @@ test_fill_midi_events (void)
    */
   position_set_to_bar (&pos, 3);
   position_update_frames_from_ticks (&pos);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 0);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 0);
 
   /**
    * Start: before region start
@@ -497,14 +434,11 @@ test_fill_midi_events (void)
    */
   position_set_to_pos (&pos, &r_obj->pos);
   position_add_frames (&pos, -10);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 1);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_cmpuint (ev->time, ==, 10);
   midi_events_clear (events, F_QUEUED);
@@ -518,14 +452,11 @@ test_fill_midi_events (void)
    */
   position_set_to_pos (&pos, &r_obj->pos);
   position_add_frames (&pos, -10);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 1);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_cmpuint (ev->time, ==, 10);
   midi_events_clear (events, F_QUEUED);
@@ -542,17 +473,13 @@ test_fill_midi_events (void)
   position_set_to_bar (&r_obj->end_pos, 3);
   position_set_to_bar (&r_obj->loop_start_pos, 1);
   position_update_frames_from_ticks (&r_obj->pos);
-  position_update_frames_from_ticks (
-    &r_obj->end_pos);
+  position_update_frames_from_ticks (&r_obj->end_pos);
   position_set_to_bar (&mn_obj->pos, 1);
   position_update_frames_from_ticks (&mn_obj->pos);
-  position_set_to_pos (
-    &mn_obj->end_pos, &mn_obj->pos);
+  position_set_to_pos (&mn_obj->end_pos, &mn_obj->pos);
   position_add_ticks (&mn_obj->end_pos, 2000);
-  position_update_frames_from_ticks (
-    &mn_obj->end_pos);
-  position_set_to_pos (
-    &r_obj->loop_end_pos, &mn_obj->end_pos);
+  position_update_frames_from_ticks (&mn_obj->end_pos);
+  position_set_to_pos (&r_obj->loop_end_pos, &mn_obj->end_pos);
 
   /**
    * Start: before region loop point
@@ -566,20 +493,16 @@ test_fill_midi_events (void)
   position_set_to_pos (&pos, &r_obj->loop_end_pos);
   position_add_frames (&pos, r_obj->pos.frames);
   position_add_frames (&pos, -10);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 3);
+  track_fill_events (track, &time_nfo, events, NULL);
+  g_assert_cmpint (events->num_queued_events, ==, 3);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 9);
   ev = &events->queued_events[1];
-  g_assert_true (
-    midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 9);
   ev = &events->queued_events[2];
   g_assert_true (midi_is_note_on (ev->raw_buffer));
@@ -601,21 +524,17 @@ test_fill_midi_events (void)
   position_set_to_bar (&mn_obj->end_pos, 2);
   position_set_to_pos (&pos, &r_obj->end_pos);
   position_add_frames (&pos, -10);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
+  track_fill_events (track, &time_nfo, events, NULL);
   midi_events_print (events, F_QUEUED);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 2);
+  g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 9);
   ev = &events->queued_events[1];
-  g_assert_true (
-    midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 9);
   midi_events_clear (events, F_QUEUED);
 
@@ -640,15 +559,12 @@ test_fill_midi_events (void)
   position_add_frames (&pos, 400);
   position_set_to_pos (&mn_obj->end_pos, &pos);
   position_set_to_bar (&pos, 3);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
+  track_fill_events (track, &time_nfo, events, NULL);
   midi_events_print (events, F_QUEUED);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 1);
+  g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 0);
@@ -669,39 +585,30 @@ test_fill_midi_events (void)
   position_set_to_pos (
     &r_obj->loop_end_pos, &TRANSPORT->loop_end_pos);
   position_set_to_bar (&mn_obj->pos, 1);
-  position_set_to_pos (
-    &pos, &TRANSPORT->loop_end_pos);
+  position_set_to_pos (&pos, &TRANSPORT->loop_end_pos);
   position_add_frames (&pos, -20);
   position_set_to_pos (&mn_obj->end_pos, &pos);
-  position_set_to_pos (
-    &pos, &TRANSPORT->loop_end_pos);
+  position_set_to_pos (&pos, &TRANSPORT->loop_end_pos);
   position_add_frames (&pos, -30);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 30;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
+  track_fill_events (track, &time_nfo, events, NULL);
   midi_events_print (events, F_QUEUED);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 2);
+  g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 9);
   ev = &events->queued_events[1];
-  g_assert_true (
-    midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 29);
   midi_events_clear (events, F_QUEUED);
 
-  position_set_to_pos (
-    &pos, &TRANSPORT->loop_start_pos);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  position_set_to_pos (&pos, &TRANSPORT->loop_start_pos);
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 10;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
+  track_fill_events (track, &time_nfo, events, NULL);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 0);
@@ -726,21 +633,17 @@ test_fill_midi_events (void)
   position_set_to_bar (&mn_obj->end_pos, 3);
   position_set_to_pos (&pos, &mn_obj->pos);
   position_add_frames (&pos, -10);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 50;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
+  track_fill_events (track, &time_nfo, events, NULL);
   midi_events_print (events, F_QUEUED);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 2);
+  g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 10);
   ev = &events->queued_events[1];
-  g_assert_true (
-    midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 39);
   midi_events_clear (events, F_QUEUED);
 
@@ -761,25 +664,20 @@ test_fill_midi_events (void)
   position_add_beats (&mn_obj->end_pos, 1);
   position_set_to_pos (&pos, &r_obj->loop_end_pos);
   position_add_frames (&pos, -5);
-  time_nfo.g_start_frame =
-    (unsigned_frame_t) pos.frames;
+  time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 50;
-  track_fill_events (
-    track, &time_nfo, events, NULL);
+  track_fill_events (track, &time_nfo, events, NULL);
   midi_events_print (events, F_QUEUED);
-  g_assert_cmpint (
-    events->num_queued_events, ==, 3);
+  g_assert_cmpint (events->num_queued_events, ==, 3);
   ev = &events->queued_events[0];
-  g_assert_true (
-    midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 4);
   ev = &events->queued_events[1];
   g_assert_true (midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 5);
   ev = &events->queued_events[2];
-  g_assert_true (
-    midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 14);
   midi_events_clear (events, F_QUEUED);
 
@@ -803,13 +701,11 @@ test_fill_midi_events_from_engine (void)
   Track * ins_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
-  ZRegion * r =
-    prepare_region_with_note_at_start_to_end (
-      ins_track, 35, 60);
+  ZRegion * r = prepare_region_with_note_at_start_to_end (
+    ins_track, 35, 60);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   track_add_region (
-    ins_track, r, NULL, 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
 
 #  if 0
   MidiNote * mn =
@@ -841,8 +737,7 @@ test_fill_midi_events_from_engine (void)
   g_assert_cmpuint (
     midi_get_note_number (ev->raw_buffer), ==, 35);
   ev = &midi_events->events[1];
-  g_assert_true (
-    midi_is_all_notes_off (ev->raw_buffer));
+  g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 19);
   ev = &midi_events->events[2];
   g_assert_true (midi_is_note_on (ev->raw_buffer));

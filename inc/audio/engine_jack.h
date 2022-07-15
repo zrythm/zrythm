@@ -39,13 +39,10 @@ engine_jack_rescan_ports (AudioEngine * self);
  * port to the selected devices.
  */
 int
-engine_jack_reconnect_monitor (
-  AudioEngine * self,
-  bool          left);
+engine_jack_reconnect_monitor (AudioEngine * self, bool left);
 
 void
-engine_jack_handle_position_change (
-  AudioEngine * self);
+engine_jack_handle_position_change (AudioEngine * self);
 
 void
 engine_jack_handle_start (AudioEngine * self);
@@ -115,9 +112,7 @@ void
 engine_jack_tear_down (AudioEngine * self);
 
 int
-engine_jack_activate (
-  AudioEngine * self,
-  bool          activate);
+engine_jack_activate (AudioEngine * self, bool activate);
 
 /**
  * Returns the JACK type string.

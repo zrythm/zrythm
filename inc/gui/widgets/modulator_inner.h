@@ -31,11 +31,9 @@ G_DECLARE_FINAL_TYPE (
   MODULATOR_INNER_WIDGET,
   GtkBox)
 
-typedef struct _KnobWithNameWidget
-  KnobWithNameWidget;
-typedef struct _LiveWaveformWidget
-                                LiveWaveformWidget;
-typedef struct _ModulatorWidget ModulatorWidget;
+typedef struct _KnobWithNameWidget KnobWithNameWidget;
+typedef struct _LiveWaveformWidget LiveWaveformWidget;
+typedef struct _ModulatorWidget    ModulatorWidget;
 typedef struct _PortConnectionsPopoverWidget
   PortConnectionsPopoverWidget;
 
@@ -55,8 +53,8 @@ typedef struct _ModulatorInnerWidget
   size_t                knobs_size;
 
   /** The graphs on the right. */
-  GtkOverlay * waveform_overlays[16];
-  GtkButton *  waveform_automate_buttons[16];
+  GtkOverlay *         waveform_overlays[16];
+  GtkButton *          waveform_automate_buttons[16];
   LiveWaveformWidget * waveforms[16];
   int                  num_waveforms;
 
@@ -69,14 +67,12 @@ typedef struct _ModulatorInnerWidget
 } ModulatorInnerWidget;
 
 void
-modulator_inner_widget_refresh (
-  ModulatorInnerWidget * self);
+modulator_inner_widget_refresh (ModulatorInnerWidget * self);
 
 /**
  * Creates a new widget.
  */
 ModulatorInnerWidget *
-modulator_inner_widget_new (
-  ModulatorWidget * parent);
+modulator_inner_widget_new (ModulatorWidget * parent);
 
 #endif

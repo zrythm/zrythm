@@ -32,8 +32,7 @@
  * @{
  */
 
-#define TOOLBOX_WIDGET_TYPE \
-  (toolbox_widget_get_type ())
+#define TOOLBOX_WIDGET_TYPE (toolbox_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ToolboxWidget,
   toolbox_widget,

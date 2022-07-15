@@ -32,10 +32,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  VisibilityWidget,
-  visibility_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (VisibilityWidget, visibility_widget, GTK_TYPE_BOX)
 
 /**
  * Refreshes the visibility widget.
@@ -53,11 +50,9 @@ visibility_widget_new ()
   VisibilityWidget * self =
     g_object_new (VISIBILITY_WIDGET_TYPE, NULL);
 
-  self->track_visibility =
-    track_visibility_tree_widget_new ();
+  self->track_visibility = track_visibility_tree_widget_new ();
   gtk_box_append (
-    GTK_BOX (self),
-    GTK_WIDGET (self->track_visibility));
+    GTK_BOX (self), GTK_WIDGET (self->track_visibility));
   gtk_widget_set_vexpand (
     GTK_WIDGET (self->track_visibility), true);
 
@@ -65,13 +60,10 @@ visibility_widget_new ()
 }
 
 static void
-visibility_widget_class_init (
-  VisibilityWidgetClass * _klass)
+visibility_widget_class_init (VisibilityWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
-  gtk_widget_class_set_css_name (
-    klass, "visibility");
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (klass, "visibility");
 }
 
 static void

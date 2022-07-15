@@ -66,25 +66,16 @@ typedef struct TruePeakDsp
  * @param n Number of samples.
  */
 void
-true_peak_dsp_process (
-  TruePeakDsp * self,
-  float *       p,
-  int           n);
+true_peak_dsp_process (TruePeakDsp * self, float * p, int n);
 
 void
-true_peak_dsp_process_max (
-  TruePeakDsp * self,
-  float *       p,
-  int           n);
+true_peak_dsp_process_max (TruePeakDsp * self, float * p, int n);
 
 float
 true_peak_dsp_read_f (TruePeakDsp * self);
 
 void
-true_peak_dsp_read (
-  TruePeakDsp * self,
-  float *       m,
-  float *       p);
+true_peak_dsp_read (TruePeakDsp * self, float * m, float * p);
 
 void
 true_peak_dsp_reset (TruePeakDsp * self);
@@ -93,9 +84,7 @@ true_peak_dsp_reset (TruePeakDsp * self);
  * Init with the samplerate.
  */
 void
-true_peak_dsp_init (
-  TruePeakDsp * self,
-  float         samplerate);
+true_peak_dsp_init (TruePeakDsp * self, float samplerate);
 
 TruePeakDsp *
 true_peak_dsp_new (void);

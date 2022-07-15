@@ -41,12 +41,10 @@ G_DECLARE_FINAL_TYPE (
   TIMELINE_SELECTION_INFO_WIDGET,
   GtkStack);
 
-#define MW_TS_INFO \
-  MW_TIMELINE_PANEL->selection_info
+#define MW_TS_INFO MW_TIMELINE_PANEL->selection_info
 
-typedef struct _SelectionInfoWidget
-  SelectionInfoWidget;
-typedef struct TimelineSelections TimelineSelections;
+typedef struct _SelectionInfoWidget SelectionInfoWidget;
+typedef struct TimelineSelections   TimelineSelections;
 
 /**
  * A widget for showing info about the current

@@ -108,13 +108,11 @@ typedef enum CurveAlgorithm
 } CurveAlgorithm;
 
 static const cyaml_strval_t curve_algorithm_strings[] = {
-  {__ ("Exponent"),      CURVE_ALGORITHM_EXPONENT},
-  { __ ("Superellipse"),
-   CURVE_ALGORITHM_SUPERELLIPSE                  },
-  { __ ("Vital"),        CURVE_ALGORITHM_VITAL   },
-  { __ ("Pulse"),        CURVE_ALGORITHM_PULSE   },
-  { __ ("Logarithmic"),
-   CURVE_ALGORITHM_LOGARITHMIC                   },
+  {__ ("Exponent"),      CURVE_ALGORITHM_EXPONENT    },
+  { __ ("Superellipse"), CURVE_ALGORITHM_SUPERELLIPSE},
+  { __ ("Vital"),        CURVE_ALGORITHM_VITAL       },
+  { __ ("Pulse"),        CURVE_ALGORITHM_PULSE       },
+  { __ ("Logarithmic"),  CURVE_ALGORITHM_LOGARITHMIC },
 };
 
 /**
@@ -132,25 +130,20 @@ typedef struct CurveOptions
   double curviness;
 } CurveOptions;
 
-static const cyaml_schema_field_t
-  curve_options_fields_schema[] = {
-    YAML_FIELD_INT (CurveOptions, schema_version),
-    YAML_FIELD_ENUM (
-      CurveOptions,
-      algo,
-      curve_algorithm_strings),
-    YAML_FIELD_FLOAT (CurveOptions, curviness),
+static const cyaml_schema_field_t curve_options_fields_schema[] = {
+  YAML_FIELD_INT (CurveOptions, schema_version),
+  YAML_FIELD_ENUM (CurveOptions, algo, curve_algorithm_strings),
+  YAML_FIELD_FLOAT (CurveOptions, curviness),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  curve_options_schema = {
-    CYAML_VALUE_MAPPING (
-      CYAML_FLAG_POINTER,
-      CurveOptions,
-      curve_options_fields_schema),
-  };
+static const cyaml_schema_value_t curve_options_schema = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_POINTER,
+    CurveOptions,
+    curve_options_fields_schema),
+};
 
 typedef struct CurveFadePreset
 {

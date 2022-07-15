@@ -21,19 +21,16 @@ static void
 respond (CreateProjectDialogWidget * self)
 {
   /* get the zrythm project name */
-  char * str = g_settings_get_string (
-    S_GENERAL, "last-project-dir");
+  char * str =
+    g_settings_get_string (S_GENERAL, "last-project-dir");
   ZRYTHM->create_project_path = g_build_filename (
-    str,
-    gtk_editable_get_text (
-      GTK_EDITABLE (self->name)),
+    str, gtk_editable_get_text (GTK_EDITABLE (self->name)),
     NULL);
   g_free (str);
 
   /* TODO validate */
 
-  gtk_dialog_response (
-    GTK_DIALOG (self), GTK_RESPONSE_OK);
+  gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_OK);
 }
 
 static void
@@ -45,9 +42,7 @@ on_name_activate (
 }
 
 static void
-on_ok_clicked (
-  GtkButton *                 btn,
-  CreateProjectDialogWidget * self)
+on_ok_clicked (GtkButton * btn, CreateProjectDialogWidget * self)
 {
   respond (self);
 }
@@ -57,8 +52,7 @@ on_cancel_clicked (
   GtkButton *                 btn,
   CreateProjectDialogWidget * self)
 {
-  gtk_dialog_response (
-    GTK_DIALOG (self), GTK_RESPONSE_CANCEL);
+  gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_CANCEL);
 }
 
 static void
@@ -68,8 +62,7 @@ on_name_changed (
 {
   gtk_widget_set_sensitive (
     GTK_WIDGET (self->ok),
-    strlen (gtk_editable_get_text (
-      GTK_EDITABLE (self->name)))
+    strlen (gtk_editable_get_text (GTK_EDITABLE (self->name)))
       > 0);
 }
 
@@ -82,18 +75,15 @@ on_fc_file_set (
   CreateProjectDialogWidget * self =
     Z_CREATE_PROJECT_DIALOG_WIDGET (user_data);
 
-  GtkFileChooser * file_chooser =
-    GTK_FILE_CHOOSER (dialog);
-  GFile * file =
-    gtk_file_chooser_get_file (file_chooser);
-  char * str = g_file_get_path (file);
-  g_settings_set_string (
-    S_GENERAL, "last-project-dir", str);
+  GtkFileChooser * file_chooser = GTK_FILE_CHOOSER (dialog);
+  GFile * file = gtk_file_chooser_get_file (file_chooser);
+  char *  str = g_file_get_path (file);
+  g_settings_set_string (S_GENERAL, "last-project-dir", str);
   g_free (str);
 
   file_chooser_button_widget_std_response (
-    Z_FILE_CHOOSER_BUTTON_WIDGET (self->fc),
-    dialog, response_id);
+    Z_FILE_CHOOSER_BUTTON_WIDGET (self->fc), dialog,
+    response_id);
 }
 
 CreateProjectDialogWidget *
@@ -101,19 +91,15 @@ create_project_dialog_widget_new ()
 {
   CreateProjectDialogWidget * self = g_object_new (
     CREATE_PROJECT_DIALOG_WIDGET_TYPE, "title",
-    _ ("Create New Project"), "icon-name",
-    "zrythm", NULL);
+    _ ("Create New Project"), "icon-name", "zrythm", NULL);
 
-  char * str = g_settings_get_string (
-    S_GENERAL, "last-project-dir");
-  file_chooser_button_widget_set_path (
-    self->fc, str);
+  char * str =
+    g_settings_get_string (S_GENERAL, "last-project-dir");
+  file_chooser_button_widget_set_path (self->fc, str);
 
   /* get next available "Untitled Project" */
-  char * untitled_project =
-    g_strdup (_ ("Untitled Project"));
-  char * tmp =
-    g_build_filename (str, untitled_project, NULL);
+  char * untitled_project = g_strdup (_ ("Untitled Project"));
+  char * tmp = g_build_filename (str, untitled_project, NULL);
   char * dir = io_get_next_available_filepath (tmp);
   g_free (tmp);
   g_free (untitled_project);
@@ -146,16 +132,14 @@ create_project_dialog_widget_init (
        "in"),
     GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
   file_chooser_button_widget_set_response_callback (
-    self->fc, G_CALLBACK (on_fc_file_set), self,
-    NULL);
+    self->fc, G_CALLBACK (on_fc_file_set), self, NULL);
 }
 
 static void
 create_project_dialog_widget_class_init (
   CreateProjectDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass =
-    GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (
     klass, "create_project_dialog.ui");
 

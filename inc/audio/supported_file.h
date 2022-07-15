@@ -81,27 +81,20 @@ typedef struct SupportedFile
   WrappedObjectWithChangeSignal * gobj;
 } SupportedFile;
 
-static const cyaml_schema_field_t
-  supported_file_fields_schema[] = {
-    YAML_FIELD_STRING_PTR (SupportedFile, abs_path),
-    YAML_FIELD_ENUM (
-      SupportedFile,
-      type,
-      file_type_strings),
-    YAML_FIELD_STRING_PTR_OPTIONAL (
-      SupportedFile,
-      label),
-    YAML_FIELD_INT (SupportedFile, hidden),
+static const cyaml_schema_field_t supported_file_fields_schema[] = {
+  YAML_FIELD_STRING_PTR (SupportedFile, abs_path),
+  YAML_FIELD_ENUM (SupportedFile, type, file_type_strings),
+  YAML_FIELD_STRING_PTR_OPTIONAL (SupportedFile, label),
+  YAML_FIELD_INT (SupportedFile, hidden),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  supported_file_schema = {
-    YAML_VALUE_PTR_NULLABLE (
-      SupportedFile,
-      supported_file_fields_schema),
-  };
+static const cyaml_schema_value_t supported_file_schema = {
+  YAML_VALUE_PTR_NULLABLE (
+    SupportedFile,
+    supported_file_fields_schema),
+};
 
 /**
  * Creates a new SupportedFile from the given absolute
@@ -120,8 +113,7 @@ supported_file_new_from_uri (const char * uri);
  * Example: wav -> "Wave file".
  */
 char *
-supported_file_type_get_description (
-  ZFileType type);
+supported_file_type_get_description (ZFileType type);
 
 /**
  * Clones the given SupportedFile.
@@ -166,8 +158,7 @@ supported_file_get_type (const char * file);
  */
 NONNULL
 bool
-supported_file_should_autoplay (
-  const SupportedFile * self);
+supported_file_should_autoplay (const SupportedFile * self);
 
 /**
  * Gets the corresponding icon name for the given

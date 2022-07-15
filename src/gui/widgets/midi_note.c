@@ -40,14 +40,11 @@ recreate_pango_layouts (MidiNote * self, int width)
 
   if (!PANGO_IS_LAYOUT (self->layout))
     {
-      self->layout =
-        z_cairo_create_default_pango_layout (
-          GTK_WIDGET (
-            arranger_object_get_arranger (obj)));
+      self->layout = z_cairo_create_default_pango_layout (
+        GTK_WIDGET (arranger_object_get_arranger (obj)));
     }
   pango_layout_set_width (
-    self->layout,
-    pango_units_from_double (width - 2));
+    self->layout, pango_units_from_double (width - 2));
 }
 
 /**
@@ -55,9 +52,7 @@ recreate_pango_layouts (MidiNote * self, int width)
  * @param arr_rect Arranger's rectangle.
  */
 void
-midi_note_draw (
-  MidiNote *    self,
-  GtkSnapshot * snapshot)
+midi_note_draw (MidiNote * self, GtkSnapshot * snapshot)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
@@ -68,20 +63,19 @@ midi_note_draw (
   GdkRGBA color;
   midi_note_get_adjusted_color (self, &color);
 
-  Track * tr = arranger_object_get_track (
-    (ArrangerObject *) self);
+  Track * tr =
+    arranger_object_get_track ((ArrangerObject *) self);
   g_return_if_fail (IS_TRACK_AND_NONNULL (tr));
   bool drum_mode = tr->drum_mode;
 
   /* create clip */
-  GskRoundedRect rounded_rect;
+  GskRoundedRect  rounded_rect;
   graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
     full_rect.x, full_rect.y, full_rect.width,
     full_rect.height);
   if (drum_mode)
     {
-      gtk_snapshot_push_clip (
-        snapshot, &graphene_rect);
+      gtk_snapshot_push_clip (snapshot, &graphene_rect);
     }
   else
     {
@@ -89,25 +83,21 @@ midi_note_draw (
       gsk_rounded_rect_init_from_rect (
         &rounded_rect, &graphene_rect,
         full_rect.height / 6.0f);
-      gtk_snapshot_push_rounded_clip (
-        snapshot, &rounded_rect);
+      gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
     }
 
   /* draw bg */
   cairo_t * diamond_cr = NULL;
   if (drum_mode)
     {
-      diamond_cr = gtk_snapshot_append_cairo (
-        snapshot, &graphene_rect);
-      gdk_cairo_set_source_rgba (
-        diamond_cr, &color);
+      diamond_cr =
+        gtk_snapshot_append_cairo (snapshot, &graphene_rect);
+      gdk_cairo_set_source_rgba (diamond_cr, &color);
       /* translate to the full rect */
       cairo_translate (
-        diamond_cr, (int) (full_rect.x),
-        (int) (full_rect.y));
+        diamond_cr, (int) (full_rect.x), (int) (full_rect.y));
       z_cairo_diamond (
-        diamond_cr, 0, 0, full_rect.width,
-        full_rect.height);
+        diamond_cr, 0, 0, full_rect.width, full_rect.height);
       cairo_fill_preserve (diamond_cr);
     }
   else
@@ -120,8 +110,7 @@ midi_note_draw (
   char str[30];
   midi_note_get_val_as_string (self, str, 1);
   int fontsize =
-    piano_roll_keys_widget_get_font_size (
-      MW_PIANO_ROLL_KEYS);
+    piano_roll_keys_widget_get_font_size (MW_PIANO_ROLL_KEYS);
   if ((DEBUGGING || !drum_mode) && fontsize > 10)
     {
       char fontize_str[120];
@@ -130,8 +119,7 @@ midi_note_draw (
         /* subtract half a point for the padding */
         fontsize * 1000 - 4000, str);
 
-      double fontsize_ratio =
-        (double) fontsize / 12.0;
+      double fontsize_ratio = (double) fontsize / 12.0;
 
       GdkRGBA c2;
       ui_get_contrast_color (&color, &c2);
@@ -146,35 +134,29 @@ midi_note_draw (
           (float)
           (fontsize_ratio * REGION_NAME_BOX_PADDING +
              full_rect.y)));
-      pango_layout_set_markup (
-        self->layout, fontize_str, -1);
-      gtk_snapshot_append_layout (
-        snapshot, self->layout, &c2);
+      pango_layout_set_markup (self->layout, fontize_str, -1);
+      gtk_snapshot_append_layout (snapshot, self->layout, &c2);
       gtk_snapshot_restore (snapshot);
     }
 
   /* add border */
   const float border_width = 1.f;
-  GdkRGBA border_color = { 0.5f, 0.5f, 0.5f, 0.4f };
+  GdkRGBA     border_color = { 0.5f, 0.5f, 0.5f, 0.4f };
   if (drum_mode)
     {
-      gdk_cairo_set_source_rgba (
-        diamond_cr, &border_color);
+      gdk_cairo_set_source_rgba (diamond_cr, &border_color);
       cairo_stroke (diamond_cr);
     }
   else
     {
       float border_widths[] = {
-        border_width, border_width, border_width,
-        border_width
+        border_width, border_width, border_width, border_width
       };
       GdkRGBA border_colors[] = {
-        border_color, border_color, border_color,
-        border_color
+        border_color, border_color, border_color, border_color
       };
       gtk_snapshot_append_border (
-        snapshot, &rounded_rect, border_widths,
-        border_colors);
+        snapshot, &rounded_rect, border_widths, border_colors);
     }
 
   /* pop clip */
@@ -186,20 +168,15 @@ midi_note_draw (
 }
 
 void
-midi_note_get_adjusted_color (
-  MidiNote * self,
-  GdkRGBA *  color)
+midi_note_get_adjusted_color (MidiNote * self, GdkRGBA * color)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   ArrangerWidget * arranger =
     arranger_object_get_arranger (obj);
-  ZRegion * region =
-    arranger_object_get_region (obj);
-  ZRegion * ce_region =
-    clip_editor_get_region (CLIP_EDITOR);
-  Position global_start_pos;
-  midi_note_get_global_start_pos (
-    self, &global_start_pos);
+  ZRegion * region = arranger_object_get_region (obj);
+  ZRegion * ce_region = clip_editor_get_region (CLIP_EDITOR);
+  Position  global_start_pos;
+  midi_note_get_global_start_pos (self, &global_start_pos);
   ChordObject * co = chord_track_get_chord_at_pos (
     P_CHORD_TRACK, &global_start_pos);
   ScaleObject * so = chord_track_get_scale_at_pos (
@@ -207,18 +184,15 @@ midi_note_get_adjusted_color (
   int  normalized_key = self->val % 12;
   bool in_scale =
     so
-    && musical_scale_contains_note (
-      so->scale, normalized_key);
+    && musical_scale_contains_note (so->scale, normalized_key);
   bool in_chord =
     co
     && chord_descriptor_is_key_in_chord (
-      chord_object_get_chord_descriptor (co),
-      normalized_key);
+      chord_object_get_chord_descriptor (co), normalized_key);
   bool is_bass =
     co
     && chord_descriptor_is_key_bass (
-      chord_object_get_chord_descriptor (co),
-      normalized_key);
+      chord_object_get_chord_descriptor (co), normalized_key);
 
   /* get color */
   if (
@@ -229,8 +203,8 @@ midi_note_get_adjusted_color (
       *color = UI_COLORS->highlight_bass_bg;
     }
   else if (
-    PIANO_ROLL->highlighting == PR_HIGHLIGHT_BOTH
-    && in_scale && in_chord)
+    PIANO_ROLL->highlighting == PR_HIGHLIGHT_BOTH && in_scale
+    && in_chord)
     {
       *color = UI_COLORS->highlight_both_bg;
     }
@@ -250,8 +224,7 @@ midi_note_get_adjusted_color (
     }
   else
     {
-      Track * track =
-        arranger_object_get_track (obj);
+      Track * track = arranger_object_get_track (obj);
       *color = track->color;
     }
 
@@ -275,22 +248,18 @@ midi_note_get_adjusted_color (
   /* adjust color for velocity */
   GdkRGBA max_vel_color = *color;
   color_brighten (
-    &max_vel_color,
-    color_get_darkness (color) * 0.1f);
+    &max_vel_color, color_get_darkness (color) * 0.1f);
   GdkRGBA grey = *color;
-  color_darken (
-    &grey, color_get_brightness (color) * 0.6f);
+  color_darken (&grey, color_get_brightness (color) * 0.6f);
   float vel_multiplier = self->vel->vel / 127.f;
-  color_morph (
-    &grey, &max_vel_color, vel_multiplier, color);
+  color_morph (&grey, &max_vel_color, vel_multiplier, color);
 
   /* also morph into grey */
   grey.red = 0.5f;
   grey.green = 0.5f;
   grey.blue = 0.5f;
   color_morph (
-    &grey, color, MIN (vel_multiplier + 0.4f, 1.f),
-    color);
+    &grey, color, MIN (vel_multiplier + 0.4f, 1.f), color);
 
   /* draw notes of main region */
   if (region == ce_region)
@@ -309,8 +278,7 @@ midi_note_get_adjusted_color (
         color, arranger->hovered_object == obj,
         midi_note_is_selected (self),
         /* FIXME */
-        false,
-        arranger_object_get_muted (obj, false));
+        false, arranger_object_get_muted (obj, false));
       color->alpha = 0.5;
     }
 }

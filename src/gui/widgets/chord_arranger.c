@@ -70,12 +70,10 @@ chord_arranger_widget_create_chord (
   int              chord_index,
   ZRegion *        region)
 {
-  g_return_if_fail (
-    chord_index < CHORD_EDITOR->num_chords);
+  g_return_if_fail (chord_index < CHORD_EDITOR->num_chords);
   self->action = UI_OVERLAY_ACTION_CREATING_MOVING;
 
-  ArrangerObject * region_obj =
-    (ArrangerObject *) region;
+  ArrangerObject * region_obj = (ArrangerObject *) region;
 
   /* get local pos */
   Position local_pos;
@@ -84,10 +82,8 @@ chord_arranger_widget_create_chord (
 
   /* create a new chord */
   ChordObject * chord = chord_object_new (
-    &region->id, chord_index,
-    region->num_chord_objects);
-  ArrangerObject * chord_obj =
-    (ArrangerObject *) chord;
+    &region->id, chord_index, region->num_chord_objects);
+  ArrangerObject * chord_obj = (ArrangerObject *) chord;
 
   /* add it to chord region */
   chord_region_add_chord_object (
@@ -95,12 +91,10 @@ chord_arranger_widget_create_chord (
 
   arranger_object_set_position (
     chord_obj, &local_pos,
-    ARRANGER_OBJECT_POSITION_TYPE_START,
-    F_NO_VALIDATE);
+    ARRANGER_OBJECT_POSITION_TYPE_START, F_NO_VALIDATE);
 
   arranger_object_select (
-    chord_obj, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    chord_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 }
 
 /**

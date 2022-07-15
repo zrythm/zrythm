@@ -57,8 +57,8 @@ lv2_evbuf_new (
     aligned_alloc (
       64,
 #endif
-      sizeof (LV2_Evbuf)
-      + sizeof (LV2_Atom_Sequence) + capacity);
+      sizeof (LV2_Evbuf) + sizeof (LV2_Atom_Sequence)
+      + capacity);
   g_return_val_if_fail (evbuf, NULL);
   evbuf->capacity = capacity;
   evbuf->atom_Chunk = atom_Chunk;
@@ -78,8 +78,7 @@ lv2_evbuf_reset (LV2_Evbuf * evbuf, bool input)
 {
   if (input)
     {
-      evbuf->atom.atom.size =
-        sizeof (LV2_Atom_Sequence_Body);
+      evbuf->atom.atom.size = sizeof (LV2_Atom_Sequence_Body);
       evbuf->atom.atom.type = evbuf->atom_Sequence;
     }
   else
@@ -98,8 +97,7 @@ lv2_evbuf_get_size (LV2_Evbuf * evbuf)
            >= sizeof (LV2_Atom_Sequence_Body),
     0);
   return evbuf->atom.atom.type == evbuf->atom_Sequence
-           ? evbuf->atom.atom.size
-               - sizeof (LV2_Atom_Sequence_Body)
+           ? evbuf->atom.atom.size - sizeof (LV2_Atom_Sequence_Body)
            : 0;
 
   return 0;
@@ -121,7 +119,7 @@ lv2_evbuf_begin (LV2_Evbuf * evbuf)
 LV2_Evbuf_Iterator
 lv2_evbuf_end (LV2_Evbuf * evbuf)
 {
-  const uint32_t size = lv2_evbuf_get_size (evbuf);
+  const uint32_t           size = lv2_evbuf_get_size (evbuf);
   const LV2_Evbuf_Iterator iter = {
     evbuf, lv2_evbuf_pad_size (size)
   };
@@ -131,8 +129,7 @@ lv2_evbuf_end (LV2_Evbuf * evbuf)
 bool
 lv2_evbuf_is_valid (LV2_Evbuf_Iterator iter)
 {
-  return iter.offset
-         < lv2_evbuf_get_size (iter.evbuf);
+  return iter.offset < lv2_evbuf_get_size (iter.evbuf);
 }
 
 LV2_Evbuf_Iterator
@@ -149,8 +146,8 @@ lv2_evbuf_next (LV2_Evbuf_Iterator iter)
   size = ((LV2_Atom_Event*)
           ((char*)LV2_ATOM_CONTENTS(LV2_Atom_Sequence, &evbuf->atom)
            + offset))->body.size;
-  offset += lv2_evbuf_pad_size (
-    sizeof (LV2_Atom_Event) + size);
+  offset +=
+    lv2_evbuf_pad_size (sizeof (LV2_Atom_Event) + size);
 
   LV2_Evbuf_Iterator next = { evbuf, offset };
   return next;
@@ -201,8 +198,7 @@ lv2_evbuf_write (
   LV2_Atom_Event *    aev;
   aseq = &iter->evbuf->atom;
   if (
-    iter->evbuf->capacity - sizeof (LV2_Atom)
-      - aseq->atom.size
+    iter->evbuf->capacity - sizeof (LV2_Atom) - aseq->atom.size
     < sizeof (LV2_Atom_Event) + size)
     {
       return false;
@@ -215,8 +211,7 @@ lv2_evbuf_write (
   aev->body.type = type;
   aev->body.size = size;
   memcpy (LV2_ATOM_BODY (&aev->body), data, size);
-  size = lv2_evbuf_pad_size (
-    sizeof (LV2_Atom_Event) + size);
+  size = lv2_evbuf_pad_size (sizeof (LV2_Atom_Event) + size);
   aseq->atom.size += size;
   iter->offset += size;
 

@@ -48,8 +48,7 @@ typedef struct PluginDescriptor PluginDescriptor;
  * as a newly allocated string.
  */
 char *
-z_carla_discovery_get_discovery_path (
-  PluginArchitecture arch);
+z_carla_discovery_get_discovery_path (PluginArchitecture arch);
 
 /**
  * Runs carla discovery for the given arch with the
