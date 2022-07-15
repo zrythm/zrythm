@@ -165,6 +165,7 @@ results*
 # subprojects
 subprojects/**/*
 !subprojects/*.wrap
+subprojects/*sass*.wrap
 
 #VS Code config
 .vscode
