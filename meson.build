@@ -955,7 +955,7 @@ libadwaita_dep = dependency (
     'default_library=shared'])
 
 libpanel_dep = dependency (
-  'libpanel-1', version: '>=1.0.0',
+  'libpanel-1', version: '>=1.0',
   fallback: ['libpanel', 'libpanel_static_dep'],
   default_options: [
     'vapi=false',
