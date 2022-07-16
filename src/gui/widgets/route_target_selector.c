@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/channel.h"
 #include "audio/track.h"
@@ -72,9 +56,10 @@ route_target_selector_widget_refresh (
 
   Track * track = NULL;
   if (self->channel)
-    track = channel_get_track (self->channel);
-  g_return_if_fail (
-    !self->channel || (self->channel && track));
+    {
+      track = channel_get_track (self->channel);
+    }
+  g_return_if_fail (!self->channel || track);
 
   /* if unroutable */
   if (!self->channel)
@@ -83,7 +68,7 @@ route_target_selector_widget_refresh (
         GTK_WIDGET (self->box), _ ("Cannot be routed"));
     }
   /* if routed by default and cannot be changed */
-  else if (track->type == TRACK_TYPE_MASTER)
+  else if (track && track->type == TRACK_TYPE_MASTER)
     {
       gtk_widget_set_tooltip_text (
         GTK_WIDGET (self->box), _ ("Routed to engine"));

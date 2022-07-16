@@ -330,7 +330,7 @@ append_files_from_dir_ending_in (
         !end_string
         || (end_string && g_str_has_suffix (full_path, end_string)))
         {
-          *files = realloc (
+          *files = g_realloc (
             *files,
             sizeof (char *) * (size_t) (*num_files + 2));
           (*files)[(*num_files)] = g_strdup (full_path);

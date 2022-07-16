@@ -924,7 +924,8 @@ arranger_object_add_ticks_to_children (
 /**
  * Returns the Track this ArrangerObject is in.
  */
-HOT Track *
+HOT NONNULL
+Track *
 arranger_object_get_track (const ArrangerObject * const self);
 
 static inline const char *

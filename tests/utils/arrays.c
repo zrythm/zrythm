@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
@@ -30,7 +14,7 @@
 static void
 test_array_dynamic_swap (void)
 {
-  int ** arr1 = calloc (1, sizeof (int *));
+  int ** arr1 = object_new (int *);
   size_t sz1 = 1;
   int ** arr2 = NULL;
   size_t sz2 = 0;
@@ -57,12 +41,12 @@ test_array_dynamic_swap (void)
    */
   int a = 0, b = 1, c = 2, d = 3, e = 4;
   sz1 = 3;
-  arr1 = realloc (arr1, sz1 * sizeof (int *));
+  arr1 = g_realloc (arr1, sz1 * sizeof (int *));
   arr1[0] = &a;
   arr1[1] = &b;
   arr1[2] = &c;
   sz2 = 2;
-  arr2 = realloc (arr2, sz2 * sizeof (int *));
+  arr2 = g_realloc (arr2, sz2 * sizeof (int *));
   arr2[0] = &d;
   arr2[1] = &e;
 
@@ -83,9 +67,9 @@ test_array_dynamic_swap (void)
    * b = { 3, 4 }
    */
   sz1 = 0;
-  arr1 = realloc (arr1, 1 * sizeof (int *));
+  arr1 = g_realloc (arr1, 1 * sizeof (int *));
   sz2 = 2;
-  arr2 = realloc (arr2, sz2 * sizeof (int *));
+  arr2 = g_realloc (arr2, sz2 * sizeof (int *));
   arr2[0] = &d;
   arr2[1] = &e;
 

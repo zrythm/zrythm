@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -140,7 +124,7 @@ _array_dynamic_swap (
 
   /* resize the small array */
   *small_arr =
-    realloc (*small_arr, *large_sz * sizeof (void *));
+    g_realloc (*small_arr, *large_sz * sizeof (void *));
 
   /* copy the elements of the small array in tmp */
   void * tmp[*small_sz > 0 ? *small_sz : 1];
@@ -151,7 +135,7 @@ _array_dynamic_swap (
 
   /* resize large array */
   *large_arr =
-    realloc (*large_arr, *small_sz * sizeof (void *));
+    g_realloc (*large_arr, *small_sz * sizeof (void *));
 
   /* copy the elements from temp to large array */
   memcpy (*large_arr, tmp, sizeof (void *) * *small_sz);

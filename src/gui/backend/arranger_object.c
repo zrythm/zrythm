@@ -3084,6 +3084,7 @@ arranger_object_unsplit (
         track_remove_region (
           t1, (ZRegion *) r1, fire_events, F_FREE);
         Track * t2 = arranger_object_get_track (r2);
+        g_return_if_fail (IS_TRACK_AND_NONNULL (t2));
         track_remove_region (
           t2, (ZRegion *) r2, fire_events, F_FREE);
       }
