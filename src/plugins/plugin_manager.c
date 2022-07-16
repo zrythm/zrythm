@@ -937,8 +937,8 @@ scan_carla_descriptors_from_paths (
                 {
                   if (protocol == PROT_SFZ || protocol == PROT_SF2)
                     {
-                      descriptors = object_new_n (
-                        2, PluginDescriptor *);
+                      descriptors =
+                        object_new_n (2, PluginDescriptor *);
                       descriptors[0] =
                         plugin_descriptor_new ();
                       PluginDescriptor * descr =

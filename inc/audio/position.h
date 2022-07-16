@@ -54,27 +54,28 @@
  * 0 = equal
  * positive = p2 is earlier
  */
-#define position_compare(p1, p2) ((p1)->frames - (p2)->frames)
+#define position_compare_frames(p1, p2) \
+  ((p1)->frames - (p2)->frames)
 
 /** Checks if _pos is before _cmp. */
 #define position_is_before(_pos, _cmp) \
-  (position_compare (_pos, _cmp) < 0)
+  (position_compare_frames (_pos, _cmp) < 0)
 
 /** Checks if _pos is before or equal to _cmp. */
 #define position_is_before_or_equal(_pos, _cmp) \
-  (position_compare (_pos, _cmp) <= 0)
+  (position_compare_frames (_pos, _cmp) <= 0)
 
 /** Checks if _pos is equal to _cmp. */
 #define position_is_equal(_pos, _cmp) \
-  (position_compare (_pos, _cmp) == 0)
+  (position_compare_frames (_pos, _cmp) == 0)
 
 /** Checks if _pos is after _cmp. */
 #define position_is_after(_pos, _cmp) \
-  (position_compare (_pos, _cmp) > 0)
+  (position_compare_frames (_pos, _cmp) > 0)
 
 /** Checks if _pos is after or equal to _cmp. */
 #define position_is_after_or_equal(_pos, _cmp) \
-  (position_compare (_pos, _cmp) >= 0)
+  (position_compare_frames (_pos, _cmp) >= 0)
 
 #define position_is_positive(pos) \
   ((pos)->frames >= 0 && (pos)->ticks >= 0)
@@ -106,11 +107,11 @@
 
 /** Returns minimum of p1 and p2 */
 #define position_min(p1, p2) \
-  (position_compare (p1, p2) < 0 ? p1 : p2)
+  (position_compare_frames (p1, p2) < 0 ? p1 : p2)
 
 /** Returns maximum of p1 and p2 */
 #define position_max(p1, p2) \
-  (position_compare (p1, p2) > 0 ? p1 : p2)
+  (position_compare_frames (p1, p2) > 0 ? p1 : p2)
 
 /** Inits the default position on the stack. */
 #define POSITION_INIT_ON_STACK(name) \
@@ -140,6 +141,13 @@ typedef struct Position
 
   /** Position in frames (samples). */
   signed_frame_t frames;
+  /**
+   * Position in frames (samples).
+   *
+   * This should be rounded to the nearest frame when
+   * performing calculations on integer frames.
+   */
+  //double frames;
 } Position;
 
 static const cyaml_schema_field_t position_fields_schema[] = {
@@ -166,7 +174,7 @@ position_cmp_func (const void * _a, const void * _b)
 {
   const Position * a = (Position const *) _a;
   const Position * b = (Position const *) _b;
-  return position_compare (a, b);
+  return position_compare_frames (a, b);
 }
 
 /**

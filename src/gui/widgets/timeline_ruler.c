@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
 
@@ -358,10 +342,10 @@ timeline_ruler_on_drag_update (
               g_message ("moving punch in");
               /* if position is acceptable */
               if (
-                position_compare (&tmp, &timeline_start) >= 0
-                && position_compare (
-                     &tmp, &TRANSPORT->punch_out_pos)
-                     < 0)
+                position_is_after_or_equal (
+                  &tmp, &timeline_start)
+                && position_is_before (
+                  &tmp, &TRANSPORT->punch_out_pos))
                 {
                   position_set_to_pos (
                     &TRANSPORT->punch_in_pos, &tmp);
@@ -375,10 +359,10 @@ timeline_ruler_on_drag_update (
             {
               /* if position is acceptable */
               if (
-                position_compare (&tmp, &timeline_end) <= 0
-                && position_compare (
-                     &tmp, &TRANSPORT->punch_in_pos)
-                     > 0)
+                position_is_before_or_equal (
+                  &tmp, &timeline_end)
+                && position_is_after (
+                  &tmp, &TRANSPORT->punch_in_pos))
                 {
                   position_set_to_pos (
                     &TRANSPORT->punch_out_pos, &tmp);
@@ -393,10 +377,10 @@ timeline_ruler_on_drag_update (
               g_message ("moving loop start");
               /* if position is acceptable */
               if (
-                position_compare (&tmp, &timeline_start) >= 0
-                && position_compare (
-                     &tmp, &TRANSPORT->loop_end_pos)
-                     < 0)
+                position_is_after_or_equal (
+                  &tmp, &timeline_start)
+                && position_is_before (
+                  &tmp, &TRANSPORT->loop_end_pos))
                 {
                   position_set_to_pos (
                     &TRANSPORT->loop_start_pos, &tmp);
@@ -409,10 +393,10 @@ timeline_ruler_on_drag_update (
             {
               /* if position is acceptable */
               if (
-                position_compare (&tmp, &timeline_end) <= 0
-                && position_compare (
-                     &tmp, &TRANSPORT->loop_start_pos)
-                     > 0)
+                position_is_before_or_equal (
+                  &tmp, &timeline_end)
+                && position_is_after (
+                  &tmp, &TRANSPORT->loop_start_pos))
                 {
                   position_set_to_pos (
                     &TRANSPORT->loop_end_pos, &tmp);

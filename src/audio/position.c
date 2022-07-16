@@ -31,7 +31,8 @@ position_cmpfunc (const void * a, const void * b)
 {
   const Position * posa = (Position const *) a;
   const Position * posb = (Position const *) b;
-  return (int) CLAMP (position_compare (posa, posb), -1, 1);
+  return (
+    int) CLAMP (position_compare_frames (posa, posb), -1, 1);
 }
 
 void

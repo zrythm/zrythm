@@ -239,7 +239,8 @@ hardware_processor_rescan_ext_ports (HardwareProcessor * self)
       g_return_val_if_fail (ext_port, G_SOURCE_REMOVE);
       if (i >= self->num_audio_ports)
         {
-          g_return_val_if_fail (self->audio_ports, G_SOURCE_REMOVE);
+          g_return_val_if_fail (
+            self->audio_ports, G_SOURCE_REMOVE);
           self->audio_ports[i] = create_port_for_ext_port (
             ext_port, TYPE_AUDIO, FLOW_OUTPUT);
           self->num_audio_ports++;

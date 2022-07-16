@@ -33,7 +33,8 @@ automation_region_sort_func (const void * _a, const void * _b)
   AutomationPoint * b = *(AutomationPoint * const *) _b;
   ArrangerObject *  a_obj = (ArrangerObject *) a;
   ArrangerObject *  b_obj = (ArrangerObject *) b;
-  long ret = position_compare (&a_obj->pos, &b_obj->pos);
+  long              ret =
+    position_compare_frames (&a_obj->pos, &b_obj->pos);
   if (ret == 0 && a->index < b->index)
     {
       return -1;

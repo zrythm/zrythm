@@ -817,13 +817,12 @@ test_strict_cflags += [
   '-Werror=sizeof-pointer-div',
   '-Werror=shift-count-overflow',
   '-Werror=free-nonheap-object',
-  # broken in gcc 12.1
-  #'-fanalyzer',
+  '-fanalyzer',
   '-Werror=analyzer-possible-null-dereference',
   '-Werror=analyzer-malloc-leak',
-  # gives false positives
-  '-Werror=analyzer-null-dereference',
-  '-Werror=analyzer-null-argument',
+  # these 2 give false positives in gcc 12.1
+  #'-Werror=analyzer-null-dereference',
+  #'-Werror=analyzer-null-argument',
   '-Werror=analyzer-use-after-free',
   '-Werror=analyzer-possible-null-argument',
   '-Werror=analyzer-double-free',
