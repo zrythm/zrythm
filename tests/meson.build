@@ -351,7 +351,7 @@ if get_option ('tests')
     foreach suite : suites
       if suite.contains ('benchmark') or suite.contains ('integration') or suite.contains ('actions')
         is_parallel = false
-        timeout = 480
+        timeout = 520
       endif
     endforeach
 

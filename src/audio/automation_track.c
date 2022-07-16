@@ -803,7 +803,7 @@ automation_track_update_positions (
     {
       arranger_object_update_positions (
         (ArrangerObject *) self->regions[i], from_ticks,
-        bpm_change);
+        bpm_change, NULL);
     }
 }
 

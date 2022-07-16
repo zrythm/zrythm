@@ -139,15 +139,20 @@ typedef struct Position
   /** Precise total number of ticks. */
   double ticks;
 
-  /** Position in frames (samples). */
-  signed_frame_t frames;
   /**
    * Position in frames (samples).
    *
-   * This should be rounded to the nearest frame when
-   * performing calculations on integer frames.
+   * This should be used in most calculations.
    */
-  //double frames;
+  signed_frame_t frames;
+
+  /**
+   * Precise position in frames (samples).
+   *
+   * To be used where more precision than Position.frames is
+   * needed.
+   */
+  double precise_frames;
 } Position;
 
 static const cyaml_schema_field_t position_fields_schema[] = {
@@ -301,21 +306,36 @@ position_set_min_size (
 
 /**
  * Updates ticks.
+ *
+ * @param ticks_per_frame If zero, AudioEngine.ticks_per_frame
+ *   will be used instead.
  */
 HOT NONNULL void
-position_update_ticks_from_frames (Position * position);
+position_update_ticks_from_frames (
+  Position * position,
+  double     ticks_per_frame);
 
 /**
  * Converts ticks to frames.
+ *
+ * @param frames_per_tick If zero, AudioEngine.frames_per_tick
+ *   will be used instead.
  */
 signed_frame_t
-position_get_frames_from_ticks (double ticks);
+position_get_frames_from_ticks (
+  double ticks,
+  double frames_per_tick);
 
 /**
  * Updates frames.
+ *
+ * @param frames_per_tick If zero, AudioEngine.frames_per_tick
+ *   will be used instead.
  */
 HOT NONNULL void
-position_update_frames_from_ticks (Position * position);
+position_update_frames_from_ticks (
+  Position * self,
+  double     frames_per_tick);
 
 /**
  * Updates the position from ticks or frames.
@@ -323,14 +343,16 @@ position_update_frames_from_ticks (Position * position);
  * @param from_ticks Whether to update the
  *   position based on ticks (true) or frames
  *   (false).
+ * @param ratio Frames per tick when \ref from_ticks is true
+ *   and ticks per frame when false.
  */
 static inline void
-position_update (Position * self, bool from_ticks)
+position_update (Position * self, bool from_ticks, double ratio)
 {
   if (from_ticks)
-    position_update_frames_from_ticks (self);
+    position_update_frames_from_ticks (self, ratio);
   else
-    position_update_ticks_from_frames (self);
+    position_update_ticks_from_frames (self, ratio);
 }
 
 /**

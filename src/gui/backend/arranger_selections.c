@@ -42,11 +42,15 @@
  *
  * @param project Whether these are project
  *   selections (as opposed to clones).
+ * @param action To be passed when this is called from an
+ *   undoable action.
  */
+NONNULL
 void
 arranger_selections_init_loaded (
   ArrangerSelections * self,
-  bool                 project)
+  bool                 project,
+  UndoableAction *     action)
 {
   int                      i;
   TimelineSelections *     ts;
@@ -78,7 +82,7 @@ arranger_selections_init_loaded (
                 } \
             } \
           arranger_object_update_positions ( \
-            obj, true, false); \
+            obj, true, false, NULL); \
           sel->sc##s[i] = (cc *) arranger_object_find (obj); \
         } \
       else \
@@ -86,7 +90,7 @@ arranger_selections_init_loaded (
           arranger_object_init_loaded ( \
             (ArrangerObject *) sel->sc##s[i]); \
           arranger_object_update_positions ( \
-            obj, true, false); \
+            obj, true, false, action); \
         } \
     }
 
@@ -105,7 +109,7 @@ arranger_selections_init_loaded (
           MidiNote *       mn = mas->midi_notes[i];
           ArrangerObject * mn_obj = (ArrangerObject *) mn;
           arranger_object_update_positions (
-            mn_obj, true, false);
+            mn_obj, true, false, action);
           if (project)
             {
               mas->midi_notes[i] =

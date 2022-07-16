@@ -2598,19 +2598,19 @@ track_update_positions (
     {
       arranger_object_update_positions (
         (ArrangerObject *) self->chord_regions[i], from_ticks,
-        bpm_change);
+        bpm_change, NULL);
     }
   for (i = 0; i < self->num_scales; i++)
     {
       arranger_object_update_positions (
         (ArrangerObject *) self->scales[i], from_ticks,
-        bpm_change);
+        bpm_change, NULL);
     }
   for (i = 0; i < self->num_markers; i++)
     {
       arranger_object_update_positions (
         (ArrangerObject *) self->markers[i], from_ticks,
-        bpm_change);
+        bpm_change, NULL);
     }
 
   automation_tracklist_update_positions (

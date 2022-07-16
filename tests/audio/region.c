@@ -66,7 +66,7 @@ test_region_is_hit (void)
    * Returns true either exclusive or inclusive.
    */
   position_set_to_pos (&pos, &r_obj->pos);
-  position_update_frames_from_ticks (&pos);
+  position_update_frames_from_ticks (&pos, 0.0);
   ret = region_is_hit (r, pos.frames, 0);
   g_assert_cmpint (ret, ==, 1);
   ret = region_is_hit (r, pos.frames, 1);
@@ -79,7 +79,7 @@ test_region_is_hit (void)
    * Returns false either exclusive or inclusive.
    */
   position_set_to_pos (&pos, &r_obj->pos);
-  position_update_frames_from_ticks (&pos);
+  position_update_frames_from_ticks (&pos, 0.0);
   position_add_frames (&pos, -1);
   ret = region_is_hit (r, pos.frames, 0);
   g_assert_cmpint (ret, ==, 0);
@@ -93,7 +93,7 @@ test_region_is_hit (void)
    * Returns true for inclusive, false for not.
    */
   position_set_to_pos (&pos, &r_obj->end_pos);
-  position_update_frames_from_ticks (&pos);
+  position_update_frames_from_ticks (&pos, 0.0);
   ret = region_is_hit (r, pos.frames, 0);
   g_assert_cmpint (ret, ==, 0);
   ret = region_is_hit (r, pos.frames, 1);
@@ -106,7 +106,7 @@ test_region_is_hit (void)
    * Returns true for both.
    */
   position_set_to_pos (&pos, &r_obj->end_pos);
-  position_update_frames_from_ticks (&pos);
+  position_update_frames_from_ticks (&pos, 0.0);
   position_add_frames (&pos, -1);
   ret = region_is_hit (r, pos.frames, 0);
   g_assert_cmpint (ret, ==, 1);
@@ -120,7 +120,7 @@ test_region_is_hit (void)
    * Returns false for both.
    */
   position_set_to_pos (&pos, &r_obj->end_pos);
-  position_update_frames_from_ticks (&pos);
+  position_update_frames_from_ticks (&pos, 0.0);
   position_add_frames (&pos, 1);
   ret = region_is_hit (r, pos.frames, 0);
   g_assert_cmpint (ret, ==, 0);

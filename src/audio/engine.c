@@ -1053,7 +1053,7 @@ engine_resume (AudioEngine * self, EngineState * state)
   if (state->playing)
     {
       position_update_frames_from_ticks (
-        &xport->playhead_before_pause);
+        &xport->playhead_before_pause, 0.0);
       transport_move_playhead (
         xport, &xport->playhead_before_pause, F_NO_PANIC,
         F_NO_SET_CUE_POINT, F_NO_PUBLISH_EVENTS);

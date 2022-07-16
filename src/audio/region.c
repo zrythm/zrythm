@@ -991,13 +991,15 @@ region_print_to_str (
   snprintf (
     buf, buf_size,
     "%s [%s] - track name hash %u - lane pos %d - "
-    "idx %d - address %p - <%s> to <%s> - "
+    "idx %d - address %p - <%s> to <%s> (%ld frames, %f ticks) - "
     "loop end <%s> - link group %d",
     self->name,
     region_identifier_get_region_type_name (self->id.type),
     self->id.track_name_hash, self->id.lane_pos, self->id.idx,
-    self, from_pos_str, to_pos_str, loop_end_pos_str,
-    self->id.link_group);
+    self, from_pos_str, to_pos_str,
+    self->base.end_pos.frames - self->base.pos.frames,
+    self->base.end_pos.ticks - self->base.pos.ticks,
+    loop_end_pos_str, self->id.link_group);
 }
 
 /**

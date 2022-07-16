@@ -59,11 +59,12 @@ arranger_selections_action_init_loaded (
       self->sel = (ArrangerSelections *) self->sc##_sel; \
       self->sel_after = \
         (ArrangerSelections *) self->sc##_sel_after; \
-      arranger_selections_init_loaded (self->sel, false); \
+      arranger_selections_init_loaded ( \
+        self->sel, false, (UndoableAction *) self); \
       if (self->sel_after) \
         { \
           arranger_selections_init_loaded ( \
-            self->sel_after, false); \
+            self->sel_after, false, (UndoableAction *) self); \
         } \
     }
   DO_SELECTIONS (chord);
@@ -684,7 +685,7 @@ arranger_selections_action_new_split (
   g_ptr_array_unref (split_objs_arr);
 
   self->pos = *pos;
-  position_update_frames_from_ticks (&self->pos);
+  position_update_frames_from_ticks (&self->pos, 0.0);
 
   UndoableAction * ua = (UndoableAction *) self;
   return ua;

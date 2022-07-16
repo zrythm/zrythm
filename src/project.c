@@ -1052,16 +1052,18 @@ load (const char * filename, const int is_template)
   midi_mappings_init_loaded (self->midi_mappings);
 
   arranger_selections_init_loaded (
-    (ArrangerSelections *) self->timeline_selections, true);
+    (ArrangerSelections *) self->timeline_selections, true,
+    NULL);
   arranger_selections_init_loaded (
     (ArrangerSelections *) self->midi_arranger_selections,
-    true);
+    true, NULL);
   arranger_selections_init_loaded (
-    (ArrangerSelections *) self->chord_selections, true);
+    (ArrangerSelections *) self->chord_selections, true, NULL);
   arranger_selections_init_loaded (
-    (ArrangerSelections *) self->automation_selections, true);
+    (ArrangerSelections *) self->automation_selections, true,
+    NULL);
   arranger_selections_init_loaded (
-    (ArrangerSelections *) self->audio_selections, true);
+    (ArrangerSelections *) self->audio_selections, true, NULL);
 
   tracklist_selections_init_loaded (
     self->tracklist_selections);

@@ -60,6 +60,8 @@ undoable_action_init (
   self->schema_version = UNDOABLE_ACTION_SCHEMA_VERSION;
   self->type = type;
   self->num_actions = 1;
+
+  self->frames_per_tick = AUDIO_ENGINE->frames_per_tick;
 }
 
 /**

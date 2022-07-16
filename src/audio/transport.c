@@ -725,12 +725,17 @@ transport_update_positions (
   Transport * self,
   bool        update_from_ticks)
 {
-  position_update (&self->playhead_pos, update_from_ticks);
-  position_update (&self->cue_pos, update_from_ticks);
-  position_update (&self->loop_start_pos, update_from_ticks);
-  position_update (&self->loop_end_pos, update_from_ticks);
-  position_update (&self->punch_in_pos, update_from_ticks);
-  position_update (&self->punch_out_pos, update_from_ticks);
+  position_update (
+    &self->playhead_pos, update_from_ticks, 0.0);
+  position_update (&self->cue_pos, update_from_ticks, 0.0);
+  position_update (
+    &self->loop_start_pos, update_from_ticks, 0.0);
+  position_update (
+    &self->loop_end_pos, update_from_ticks, 0.0);
+  position_update (
+    &self->punch_in_pos, update_from_ticks, 0.0);
+  position_update (
+    &self->punch_out_pos, update_from_ticks, 0.0);
 }
 
 #define GATHER_MARKERS \

@@ -22,12 +22,13 @@ range_action_init_loaded (RangeAction * self)
     {
       arranger_selections_init_loaded (
         (ArrangerSelections *) self->sel_before,
-        F_NOT_PROJECT);
+        F_NOT_PROJECT, (UndoableAction *) self);
     }
   if (self->sel_after)
     {
       arranger_selections_init_loaded (
-        (ArrangerSelections *) self->sel_after, F_NOT_PROJECT);
+        (ArrangerSelections *) self->sel_after, F_NOT_PROJECT,
+        (UndoableAction *) self);
     }
 
   transport_init_loaded (self->transport, NULL, NULL);

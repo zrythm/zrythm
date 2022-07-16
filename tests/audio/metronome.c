@@ -22,7 +22,7 @@ test_find_and_queue_metronome (void)
     Position play_pos;
     position_set_to_bar (&play_pos, 11);
     position_add_ticks (&play_pos, 0.26567493534093956);
-    position_update_frames_from_ticks (&play_pos);
+    position_update_frames_from_ticks (&play_pos, 0.0);
     transport_set_playhead_pos (TRANSPORT, &play_pos);
     metronome_queue_events (
       AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);
@@ -62,7 +62,7 @@ test_find_and_queue_metronome (void)
     position_add_beats (&play_pos, 3);
     position_add_sixteenths (&play_pos, 3);
     position_add_ticks (&play_pos, 226.99682539682544302);
-    position_update_frames_from_ticks (&play_pos);
+    position_update_frames_from_ticks (&play_pos, 0.0);
     transport_set_playhead_pos (TRANSPORT, &play_pos);
     metronome_queue_events (
       AUDIO_ENGINE, 0, AUDIO_ENGINE->block_length);

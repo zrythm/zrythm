@@ -1115,12 +1115,15 @@ arranger_object_init_loaded (ArrangerObject * self)
  * @param from_ticks Whether to update the
  *   positions based on ticks (true) or frames
  *   (false).
+ * @param action To be passed when called from an undoable
+ *   action.
  */
 void
 arranger_object_update_positions (
   ArrangerObject * self,
   bool             from_ticks,
-  bool             bpm_change)
+  bool             bpm_change,
+  UndoableAction * action)
 {
   long frames_len_before = 0;
   if (bpm_change && arranger_object_type_has_length (self->type))
@@ -1129,10 +1132,23 @@ arranger_object_update_positions (
         arranger_object_get_length_in_frames (self);
     }
 
-  position_update (&self->pos, from_ticks);
+  double ratio = 0.0;
+  if (action)
+    {
+      if (from_ticks)
+        {
+          ratio = action->frames_per_tick;
+        }
+      else
+        {
+          ratio = 1.0 / action->frames_per_tick;
+        }
+    }
+
+  position_update (&self->pos, from_ticks, ratio);
   if (arranger_object_type_has_length (self->type))
     {
-      position_update (&self->end_pos, from_ticks);
+      position_update (&self->end_pos, from_ticks, ratio);
 
       if (router_is_processing_kickoff_thread (ROUTER))
         {
@@ -1144,14 +1160,16 @@ arranger_object_update_positions (
     }
   if (arranger_object_type_can_loop (self->type))
     {
-      position_update (&self->clip_start_pos, from_ticks);
-      position_update (&self->loop_start_pos, from_ticks);
-      position_update (&self->loop_end_pos, from_ticks);
+      position_update (
+        &self->clip_start_pos, from_ticks, ratio);
+      position_update (
+        &self->loop_start_pos, from_ticks, ratio);
+      position_update (&self->loop_end_pos, from_ticks, ratio);
     }
   if (arranger_object_can_fade (self))
     {
-      position_update (&self->fade_in_pos, from_ticks);
-      position_update (&self->fade_out_pos, from_ticks);
+      position_update (&self->fade_in_pos, from_ticks, ratio);
+      position_update (&self->fade_out_pos, from_ticks, ratio);
     }
 
   ZRegion * r;
@@ -1206,6 +1224,7 @@ arranger_object_update_positions (
                 r, tl_frames, F_NORMALIZE);
             }
 
+          region_print (r);
           z_return_if_fail_cmp (
             local_frames, <,
             (signed_frame_t) clip->num_frames);
@@ -1215,27 +1234,27 @@ arranger_object_update_positions (
         {
           arranger_object_update_positions (
             (ArrangerObject *) r->midi_notes[i], from_ticks,
-            bpm_change);
+            bpm_change, action);
         }
       for (int i = 0; i < r->num_unended_notes; i++)
         {
           arranger_object_update_positions (
             (ArrangerObject *) r->unended_notes[i],
-            from_ticks, bpm_change);
+            from_ticks, bpm_change, action);
         }
 
       for (int i = 0; i < r->num_aps; i++)
         {
           arranger_object_update_positions (
             (ArrangerObject *) r->aps[i], from_ticks,
-            bpm_change);
+            bpm_change, action);
         }
 
       for (int i = 0; i < r->num_chord_objects; i++)
         {
           arranger_object_update_positions (
             (ArrangerObject *) r->chord_objects[i],
-            from_ticks, bpm_change);
+            from_ticks, bpm_change, action);
         }
       break;
     default:

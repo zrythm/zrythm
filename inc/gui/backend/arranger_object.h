@@ -21,6 +21,7 @@ typedef struct ArrangerObject        ArrangerObject;
 typedef struct ArrangerSelections    ArrangerSelections;
 typedef struct _ArrangerWidget       ArrangerWidget;
 typedef struct _ArrangerObjectWidget ArrangerObjectWidget;
+typedef struct UndoableAction        UndoableAction;
 typedef enum ArrangerSelectionsActionEditType
   ArrangerSelectionsActionEditType;
 
@@ -850,12 +851,15 @@ arranger_object_get_loop_length_in_frames (
  * @param from_ticks Whether to update the
  *   positions based on ticks (true) or frames
  *   (false).
+ * @param action To be passed when called from an undoable
+ *   action.
  */
 void
 arranger_object_update_positions (
   ArrangerObject * self,
   bool             from_ticks,
-  bool             bpm_change);
+  bool             bpm_change,
+  UndoableAction * action);
 
 /**
  * Frees only this object.

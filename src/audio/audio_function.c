@@ -387,7 +387,7 @@ audio_function_apply (
 
   unsigned_frame_t nudge_frames =
     (unsigned_frame_t) position_get_frames_from_ticks (
-      ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS);
+      ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS, 0.0);
   unsigned_frame_t nudge_frames_all_channels =
     channels * nudge_frames;
   unsigned_frame_t num_frames_excl_nudge;

@@ -43,33 +43,53 @@ position_sort_array (Position * array, const size_t size)
 
 /**
  * Updates ticks.
+ *
+ * @param ticks_per_frame If zero, AudioEngine.ticks_per_frame
+ *   will be used instead.
  */
 void
-position_update_ticks_from_frames (Position * self)
+position_update_ticks_from_frames (
+  Position * self,
+  double     ticks_per_frame)
 {
-  g_return_if_fail (AUDIO_ENGINE->ticks_per_frame > 0);
-  self->ticks =
-    (double) self->frames * AUDIO_ENGINE->ticks_per_frame;
+  if (math_doubles_equal (ticks_per_frame, 0.0))
+    {
+      ticks_per_frame = AUDIO_ENGINE->ticks_per_frame;
+    }
+  g_return_if_fail (ticks_per_frame > 0);
+  self->ticks = (double) self->frames * ticks_per_frame;
 }
 
 /**
  * Converts ticks to frames.
  */
 signed_frame_t
-position_get_frames_from_ticks (double ticks)
+position_get_frames_from_ticks (
+  double ticks,
+  double frames_per_tick)
 {
-  g_return_val_if_fail (AUDIO_ENGINE->frames_per_tick > 0, -1);
+  if (math_doubles_equal (frames_per_tick, 0.0))
+    {
+      frames_per_tick = AUDIO_ENGINE->frames_per_tick;
+    }
+  g_return_val_if_fail (frames_per_tick > 0, -1);
   return math_round_double_to_signed_frame_t (
-    (ticks * AUDIO_ENGINE->frames_per_tick));
+    (ticks * frames_per_tick));
 }
 
 /**
  * Updates frames.
+ *
+ * @param frames_per_tick If zero, AudioEngine.frames_per_tick
+ *   will be used instead.
  */
 void
-position_update_frames_from_ticks (Position * self)
+position_update_frames_from_ticks (
+  Position * self,
+  double     frames_per_tick)
 {
-  self->frames = position_get_frames_from_ticks (self->ticks);
+  self->frames = position_get_frames_from_ticks (
+    self->ticks, frames_per_tick);
 }
 
 /**
@@ -113,7 +133,7 @@ void
 position_add_frames (Position * pos, const signed_frame_t frames)
 {
   pos->frames += frames;
-  position_update_ticks_from_frames (pos);
+  position_update_ticks_from_frames (pos, 0.0);
 }
 
 /**
@@ -548,7 +568,7 @@ position_from_ticks (Position * pos, double ticks)
 {
   pos->schema_version = POSITION_SCHEMA_VERSION;
   pos->ticks = ticks;
-  position_update_frames_from_ticks (pos);
+  position_update_frames_from_ticks (pos, 0.0);
 
   /* assert that no overflow occurred */
   if (ticks >= 0)
@@ -564,7 +584,7 @@ position_from_frames (
 {
   pos->schema_version = POSITION_SCHEMA_VERSION;
   pos->frames = frames;
-  position_update_ticks_from_frames (pos);
+  position_update_ticks_from_frames (pos, 0.0);
 }
 
 void
