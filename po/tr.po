@@ -5,13 +5,14 @@
 # Burak Hüseyin Ekseli <burakekseli@yandex.com>, 2021.
 # Oğuz Ersen <oguzersen@protonmail.com>, 2021, 2022.
 # benjamin <itsbenx@outlook.com>, 2022.
+# Sabri Ünal <libreajans@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-26 15:29+0100\n"
-"PO-Revision-Date: 2022-04-02 14:09+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-05-02 00:23+0000\n"
+"Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
 "Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/zrythm/tr/"
 ">\n"
 "Language: tr\n"
@@ -19,13 +20,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 4.12.1\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:139 inc/audio/engine.h:278
 #: inc/audio/engine.h:342
 msgid "Dummy"
-msgstr "Dummy"
+msgstr "Temsili"
 
 #: inc/schemas/gui/backend/arranger_object.h:51
 #: inc/gui/backend/arranger_object.h:86 inc/audio/transport.h:54
@@ -103,7 +104,7 @@ msgstr "Ritim"
 #: inc/schemas/audio/region.h:46 inc/audio/region.h:86
 #: src/gui/widgets/track.c:975
 msgid "Inherit"
-msgstr "Aktar"
+msgstr "Miras al"
 
 #: inc/schemas/audio/region.h:48 inc/audio/region.h:87
 #: src/gui/widgets/bot_bar.c:476 src/audio/automation_track.c:191
@@ -165,7 +166,7 @@ msgstr "_Hepsini Seç"
 
 #: inc/utils/gtk.h:90 src/gui/widgets/home_toolbar.c:147
 msgid "Duplicate"
-msgstr "Kopya oluştur"
+msgstr "Çoğalt"
 
 #: inc/utils/gtk.h:94 src/gui/widgets/channel.c:726
 #: src/gui/widgets/monitor_section.c:39 src/gui/widgets/monitor_section.c:340
@@ -186,15 +187,15 @@ msgstr "Ters Çevir"
 
 #: inc/audio/audio_function.h:69
 msgid "Normalize peak"
-msgstr "Piki Normalleştir"
+msgstr "Piki normalleştir"
 
 #: inc/audio/audio_function.h:71
 msgid "Normalize RMS"
-msgstr "RMS'i Normalleştir"
+msgstr "RMS'yi normalleştir"
 
 #: inc/audio/audio_function.h:73
 msgid "Normalize LUFS"
-msgstr "LUFS'yi Normalleştir"
+msgstr "LUFS'yi normalleştir"
 
 #: inc/audio/audio_function.h:75
 msgid "Linear fade in"
@@ -214,7 +215,7 @@ msgstr "Sağa sürükle"
 
 #: inc/audio/audio_function.h:81
 msgid "Reverse"
-msgstr "Terse çevir"
+msgstr "Ters çevir"
 
 #: inc/audio/audio_function.h:82
 msgid "External program"
@@ -222,7 +223,7 @@ msgstr "Harici program"
 
 #: inc/audio/audio_function.h:84
 msgid "Guile script"
-msgstr "Guile dosyası"
+msgstr "Guile betiği"
 
 #: inc/audio/audio_function.h:86
 msgid "Custom plugin"
@@ -276,7 +277,7 @@ msgstr "Modülatör"
 
 #: inc/audio/track.h:180
 msgid "Audio FX"
-msgstr "Ses FX"
+msgstr "Ses Efekti"
 
 #: inc/audio/track.h:181
 msgid "Audio Group"
@@ -293,7 +294,7 @@ msgstr "MIDI FX"
 
 #: inc/audio/track.h:184
 msgid "MIDI Group"
-msgstr "MIDI Türü"
+msgstr "MIDI Grubu"
 
 #: inc/audio/track.h:185
 msgid "Folder"
@@ -325,7 +326,6 @@ msgid "32,000"
 msgstr "32,000"
 
 #: inc/audio/engine.h:224
-#, fuzzy
 msgid "44,100"
 msgstr "44,100"
 
@@ -346,9 +346,8 @@ msgid "192,000"
 msgstr "192,000"
 
 #: inc/audio/engine.h:279
-#, fuzzy
 msgid "Dummy (libsoundio)"
-msgstr "Dummy (libsoundio)"
+msgstr "Temsili (libsoundio)"
 
 #: inc/audio/engine.h:343
 msgid "ALSA Sequencer (not working)"
@@ -363,16 +362,19 @@ msgid "Crescendo"
 msgstr "Artış"
 
 #: inc/audio/midi_function.h:56 resources/ui/editor_toolbar.ui:157
+#, fuzzy
 msgid "Flam"
 msgstr "Flam"
 
 #: inc/audio/midi_function.h:57 inc/audio/automation_function.h:49
+#, fuzzy
 msgid "Flip H"
-msgstr "Çevir: H"
+msgstr "Çevir H"
 
 #: inc/audio/midi_function.h:58 inc/audio/automation_function.h:51
+#, fuzzy
 msgid "Flip V"
-msgstr "Çevir: V"
+msgstr "Çevir V"
 
 #: inc/audio/midi_function.h:59 resources/ui/editor_toolbar.ui:178
 #, fuzzy
@@ -464,7 +466,7 @@ msgstr ""
 
 #: inc/audio/scale.h:164
 msgid "Acoustic"
-msgstr ""
+msgstr "Akustik"
 
 #: inc/audio/scale.h:165
 msgid "Harmonic Major"
@@ -480,7 +482,7 @@ msgstr ""
 
 #: inc/audio/scale.h:169
 msgid "Algerian"
-msgstr ""
+msgstr "Cezayirli"
 
 #: inc/audio/scale.h:170
 msgid "Augmented"
@@ -492,7 +494,7 @@ msgstr ""
 
 #: inc/audio/scale.h:172
 msgid "Chinese"
-msgstr ""
+msgstr "Çince"
 
 #: inc/audio/scale.h:173
 msgid "Diminished"
@@ -504,7 +506,7 @@ msgstr ""
 
 #: inc/audio/scale.h:176
 msgid "Egyptian"
-msgstr ""
+msgstr "Mısırlı"
 
 #: inc/audio/scale.h:177
 msgid "Eight Tone Spanish"
@@ -694,13 +696,13 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
-"Daha yeni yedekleme bulundu:\n"
+"Daha yeni yedek bulundu:\n"
 "  %s.\n"
-"Daha yeni yedekleme kullanılsın mı?"
+"Daha yeni yedek kullanılsın mı?"
 
 #: src/project.c:913
 msgid "Backup found"
-msgstr "Yedekleme bulundu"
+msgstr "Yedek bulundu"
 
 #: src/project.c:973
 #, fuzzy, c-format
@@ -717,7 +719,7 @@ msgstr ""
 
 #: src/project.c:1224
 msgid "Failed to load project. Will create a new one instead."
-msgstr "Proje yüklenemedi. Bunun yerine yeni bir tane oluşturulacak."
+msgstr "Proje yüklenemedi. Yeni bir tane oluşturulacak."
 
 #: src/project.c:1539
 #, fuzzy
@@ -726,7 +728,7 @@ msgstr "Proje dosyasının sıkıştırması açılamadı: %s"
 
 #: src/project.c:1584 src/project.c:1588
 msgid "Backup saved."
-msgstr "Yedekleme kaydedildi."
+msgstr "Yedek kaydedildi."
 
 #: src/project.c:1599
 msgid "Project saved."
@@ -960,9 +962,9 @@ msgid "Init"
 msgstr ""
 
 #: src/plugins/carla_native_plugin.c:694
-#, fuzzy, c-format
+#, c-format
 msgid "Preset %u"
-msgstr "Aygıt Adı"
+msgstr "Önayar %u"
 
 #: src/plugins/carla_native_plugin.c:1152
 msgid "Audio in"
@@ -1006,9 +1008,9 @@ msgid ""
 msgstr ""
 
 #: src/plugins/carla_native_plugin.c:2596
-#, fuzzy, c-format
+#, c-format
 msgid "State file %s doesn't exist"
-msgstr "İstenen istemci mevcut değil"
+msgstr "Durum dosyası %s yok"
 
 #: src/plugins/plugin_manager.c:421
 msgid "Error loading LV2 bundle dir: "
@@ -1068,9 +1070,8 @@ msgstr ""
 
 #: src/plugins/plugin.c:506 src/plugins/plugin_gtk.c:159
 #: src/gui/widgets/plugin_properties_expander.c:159
-#, fuzzy
 msgid "Failed to apply preset"
-msgstr "Dosya açılamadı: %s"
+msgstr "Önayar uygulanamadı"
 
 #: src/plugins/plugin.c:582
 msgid "Failed to get Carla plugin"
@@ -1114,7 +1115,7 @@ msgstr "Dosya açılamadı: %s"
 
 #: src/plugins/plugin_gtk.c:83 src/plugins/lv2/lv2_gtk.c:74
 msgid "Save State"
-msgstr ""
+msgstr "Durumu Kaydet"
 
 #: src/plugins/plugin_gtk.c:86 src/plugins/plugin_gtk.c:305
 #: src/plugins/lv2/lv2_gtk.c:77 src/plugins/lv2/lv2_gtk.c:265
@@ -1132,18 +1133,18 @@ msgstr ""
 #: resources/ui/string_entry_dialog.ui:47
 #: resources/ui/port_selector_dialog.ui:120 resources/ui/quantize_dialog.ui:149
 msgid "_Cancel"
-msgstr ""
+msgstr "_İptal Et"
 
 #: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:306
 #: src/plugins/lv2/lv2_gtk.c:78
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:155
 #: src/actions/actions.c:738
 msgid "_Save"
-msgstr ""
+msgstr "_Kaydet"
 
 #: src/plugins/plugin_gtk.c:301
 msgid "Save Preset"
-msgstr ""
+msgstr "Önayarları Kaydet"
 
 #: src/plugins/plugin_gtk.c:344
 msgid "_Prefix plugin name"
@@ -1245,11 +1246,11 @@ msgstr ""
 
 #: src/plugins/lv2/lv2_state.c:443
 msgid "Failed to apply LV2 preset"
-msgstr ""
+msgstr "LV2 önayarı uygulanamadı"
 
 #: src/plugins/lv2/lv2_gtk.c:260
 msgid "Delete Preset?"
-msgstr ""
+msgstr "Önayar Silinsin mi?"
 
 #: src/plugins/lv2/lv2_gtk.c:266
 #: src/gui/widgets/dialogs/bug_report_dialog.c:227
@@ -1377,12 +1378,14 @@ msgid "_Delete Tracks"
 msgstr ""
 
 #: src/gui/widgets/channel.c:667 src/gui/widgets/track.c:731
+#, fuzzy
 msgid "_Duplicate Track"
-msgstr ""
+msgstr "Parçayı _Çoğalt"
 
 #: src/gui/widgets/channel.c:669 src/gui/widgets/track.c:734
+#, fuzzy
 msgid "_Duplicate Tracks"
-msgstr ""
+msgstr "Parçaları _Çoğalt"
 
 #: src/gui/widgets/channel.c:679 src/gui/widgets/track.c:755
 msgid "Hide Track"
@@ -1526,9 +1529,8 @@ msgid "_Create"
 msgstr ""
 
 #: src/gui/widgets/project_assistant.c:492
-#, fuzzy
 msgid "No project selected"
-msgstr "Proje kaydedildi."
+msgstr "Proje seçilmedi"
 
 #: src/gui/widgets/project_assistant.c:509
 msgid "Select Project File"
@@ -1639,7 +1641,7 @@ msgstr ""
 
 #: src/gui/widgets/bot_dock_edge.c:303
 msgid "Chord pad"
-msgstr ""
+msgstr "Akor pedi"
 
 #: src/gui/widgets/digital_meter.c:103
 msgid "Tempo/BPM"
@@ -1742,9 +1744,8 @@ msgid "Failed to move selection"
 msgstr "Dosya açılamadı: %s"
 
 #: src/gui/widgets/arranger.c:1808 src/gui/widgets/arranger.c:4251
-#, fuzzy
 msgid "Failed to move chords"
-msgstr "Dosya açılamadı: %s"
+msgstr "Akorlar taşınamadı"
 
 #: src/gui/widgets/arranger.c:2445 src/gui/widgets/track.c:681
 #: resources/ui/string_entry_dialog.ui:23
@@ -1776,7 +1777,7 @@ msgstr ""
 
 #: src/gui/widgets/arranger.c:3861
 msgid "Failed to duplicate automation"
-msgstr ""
+msgstr "Otomasyon çoğaltılamadı"
 
 #: src/gui/widgets/arranger.c:3885 src/gui/widgets/arranger.c:4295
 #: src/gui/widgets/arranger.c:4770
@@ -1806,16 +1807,15 @@ msgstr "Dosya açılamadı: %s"
 
 #: src/gui/widgets/arranger.c:4162
 msgid "Failed to duplicate MIDI notes"
-msgstr ""
+msgstr "MIDI notları çoğaltılamadı"
 
 #: src/gui/widgets/arranger.c:4185
 msgid "Failed to create MIDI notes"
 msgstr ""
 
 #: src/gui/widgets/arranger.c:4273
-#, fuzzy
 msgid "Failed to duplicate chords"
-msgstr "Dosya açılamadı: %s"
+msgstr "Akorlar çoğaltılamadı"
 
 #: src/gui/widgets/arranger.c:4368 src/gui/widgets/arranger.c:4662
 msgid "Failed resizing selection"
@@ -1877,7 +1877,7 @@ msgstr ""
 
 #: src/gui/widgets/piano_roll_keys.c:223
 msgid "chord"
-msgstr ""
+msgstr "akor"
 
 #: src/gui/widgets/plugin_browser.c:458
 msgid "Rename"
@@ -2083,8 +2083,9 @@ msgid "Custom Marker"
 msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:923
+#, fuzzy
 msgid "Fade Preset"
-msgstr ""
+msgstr "Soldurma Ön Ayarı"
 
 #: src/gui/widgets/timeline_arranger.c:988
 msgid "Musical Mode"
@@ -2147,19 +2148,19 @@ msgstr ""
 
 #: src/gui/widgets/help_toolbar.c:39
 msgid "About Zrythm"
-msgstr "Zrythm hakkında"
+msgstr "Zrythm Hakkında"
 
 #: src/gui/widgets/help_toolbar.c:40
 msgid "Chat (Matrix)"
-msgstr ""
+msgstr "Sohbet (Matrix)"
 
 #: src/gui/widgets/help_toolbar.c:41
 msgid "Manual"
-msgstr ""
+msgstr "Yardım Belgeleri"
 
 #: src/gui/widgets/help_toolbar.c:42 resources/gtk/help-overlay.ui:46
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Klavye Kısayolları"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Donate"
@@ -2167,7 +2168,7 @@ msgstr "Bağış Yap"
 
 #: src/gui/widgets/help_toolbar.c:45
 msgid "Report a Bug"
-msgstr ""
+msgstr "Hata Raporla"
 
 #: src/gui/widgets/port_connections_tree.c:94
 #, c-format
@@ -2237,11 +2238,11 @@ msgstr "Bağlantıyı sil"
 
 #: src/gui/widgets/right_dock_edge.c:148 src/utils/gtk.c:1296
 msgid "Chord Preset Browser"
-msgstr ""
+msgstr "Akor Önayar Tarayıcı"
 
 #: src/gui/widgets/plugin_properties_expander.c:106
 msgid "Load Preset"
-msgstr ""
+msgstr "Önayar Yükle"
 
 #: src/gui/widgets/plugin_properties_expander.c:111
 msgid "_Load"
@@ -2266,16 +2267,16 @@ msgstr ""
 #: src/gui/widgets/plugin_properties_expander.c:275
 #: resources/ui/file_browser_filters.ui:26
 msgid "Presets"
-msgstr ""
+msgstr "Önayarlar"
 
 #: src/gui/widgets/plugin_properties_expander.c:303
 #: src/gui/widgets/project_toolbar.c:41
 msgid "Save"
-msgstr ""
+msgstr "Kaydet"
 
 #: src/gui/widgets/plugin_properties_expander.c:307
 msgid "Save preset"
-msgstr ""
+msgstr "Önayarları kaydet"
 
 #: src/gui/widgets/plugin_properties_expander.c:310
 msgid "Load"
@@ -2283,7 +2284,7 @@ msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:314
 msgid "Load preset"
-msgstr ""
+msgstr "Önayar yükle"
 
 #: src/gui/widgets/route_target_selector.c:86
 msgid "Cannot be routed"
@@ -2348,15 +2349,15 @@ msgstr ""
 
 #: src/gui/widgets/chord_pad_panel.c:108
 msgid "Preset Packs"
-msgstr ""
+msgstr "Önayar Paketleri"
 
 #: src/gui/widgets/main_window.c:141
 msgid "Unsaved changes"
-msgstr ""
+msgstr "Kaydedilmemiş değişiklikler"
 
 #: src/gui/widgets/main_window.c:145
 msgid "_Save & Quit"
-msgstr ""
+msgstr "_Kaydet ve Çık"
 
 #: src/gui/widgets/main_window.c:146
 msgid "_Quit without saving"
@@ -2564,7 +2565,7 @@ msgstr ""
 
 #: src/gui/widgets/chord_pack_browser.c:183
 msgid "No preset selected"
-msgstr ""
+msgstr "Önayar seçilmedi"
 
 #: src/gui/widgets/channel_sends_expander.c:66
 #: src/gui/widgets/ports_expander.c:435
@@ -2728,19 +2729,19 @@ msgstr "Dosya açılamadı: %s"
 
 #: src/gui/widgets/project_toolbar.c:40
 msgid "New Project"
-msgstr ""
+msgstr "Yeni Proje"
 
 #: src/gui/widgets/project_toolbar.c:42
 msgid "Save As"
-msgstr ""
+msgstr "Farklı Kaydet"
 
 #: src/gui/widgets/project_toolbar.c:43 src/utils/dialogs.c:42
 msgid "Open Project"
-msgstr ""
+msgstr "Proje Aç"
 
 #: src/gui/widgets/project_toolbar.c:44
 msgid "Export As"
-msgstr ""
+msgstr "Dışa Farklı Aktar"
 
 #: src/gui/widgets/project_toolbar.c:45
 msgid "Export Graph"
@@ -2748,11 +2749,11 @@ msgstr ""
 
 #: src/gui/widgets/view_toolbar.c:23
 msgid "Toggle Status Bar"
-msgstr ""
+msgstr "Durum Çubuğunu Göster/Gizle"
 
 #: src/gui/widgets/view_toolbar.c:24
 msgid "Fullscreen"
-msgstr ""
+msgstr "Tam Ekran"
 
 #: src/gui/widgets/item_factory.c:103
 #, fuzzy
@@ -2760,24 +2761,20 @@ msgid "Failed to enable binding"
 msgstr "Dosya açılamadı: %s"
 
 #: src/gui/widgets/item_factory.c:199
-#, fuzzy
 msgid "Invalid position"
-msgstr "Dosya açılamadı: %s"
+msgstr "Geçersiz konum"
 
 #: src/gui/widgets/item_factory.c:206
-#, fuzzy
 msgid "Failed to parse position"
-msgstr "Dosya açılamadı: %s"
+msgstr "Konum ayıklanamadı"
 
 #: src/gui/widgets/item_factory.c:289
-#, fuzzy
 msgid "Invalid name"
-msgstr "Geçersiz"
+msgstr "Geçersiz ad"
 
 #: src/gui/widgets/item_factory.c:301
-#, fuzzy
 msgid "Invalid velocity"
-msgstr "Geçersiz"
+msgstr "Geçersiz hız"
 
 #: src/gui/widgets/item_factory.c:323
 #, fuzzy
@@ -2785,46 +2782,43 @@ msgid "Invalid pitch"
 msgstr "Geçersiz"
 
 #: src/gui/widgets/item_factory.c:351 src/gui/widgets/item_factory.c:380
-#, fuzzy
 msgid "Invalid value"
-msgstr "Geçersiz"
+msgstr "Geçersiz değer"
 
 #: src/gui/widgets/item_factory.c:582
 msgid "Add Bookmark"
-msgstr ""
+msgstr "Yer İmi Ekle"
 
 #: src/gui/widgets/item_factory.c:774 src/gui/widgets/item_factory.c:791
 #: src/gui/widgets/item_factory.c:807 src/gui/widgets/item_factory.c:824
 #: src/gui/widgets/item_factory.c:840 src/gui/widgets/item_factory.c:856
 #: src/gui/widgets/dialogs/port_info.c:70
 msgid "N/A"
-msgstr ""
+msgstr "Yok"
 
 #: src/gui/widgets/file_chooser_button.c:52
-#, fuzzy
 msgid "Select path"
-msgstr "_Hepsini Seç"
+msgstr "Yol seç"
 
 #: src/gui/widgets/editor_toolbar.c:52
 msgid "Apply function"
-msgstr ""
+msgstr "İşlevi uygula"
 
 #: src/gui/widgets/editor_toolbar.c:135
-#, fuzzy
 msgid "Plugin Effect"
-msgstr "Eklenti"
+msgstr "Eklenti Efekti"
 
 #: src/gui/widgets/editor_toolbar.c:193 src/gui/widgets/editor_toolbar.c:225
 #: src/gui/widgets/editor_toolbar.c:249
 #, c-format
 msgid "Apply %s"
-msgstr ""
+msgstr "%s uygula"
 
 #: src/gui/widgets/editor_toolbar.c:196 src/gui/widgets/editor_toolbar.c:229
 #: src/gui/widgets/editor_toolbar.c:252
 #, c-format
 msgid "Apply %s with previous settings"
-msgstr ""
+msgstr "Önceki ayarlarla %s uygula"
 
 #: src/gui/widgets/editor_toolbar.c:295
 msgid "No Highlight"
@@ -2832,7 +2826,7 @@ msgstr ""
 
 #: src/gui/widgets/editor_toolbar.c:299
 msgid "Highlight Chord"
-msgstr ""
+msgstr "Akoru Vurgula"
 
 #: src/gui/widgets/editor_toolbar.c:303
 msgid "Highlight Scale"
@@ -2857,15 +2851,15 @@ msgstr ""
 
 #: src/gui/widgets/track.c:317
 msgid "Hide instrument UI"
-msgstr ""
+msgstr "Enstrüman arayüzünü gizle"
 
 #: src/gui/widgets/track.c:321
 msgid "Show instrument UI"
-msgstr ""
+msgstr "Enstrüman arayüzünü göster"
 
 #: src/gui/widgets/track.c:352 resources/ui/fader_buttons.ui:13
 msgid "Mono compatibility"
-msgstr ""
+msgstr "Mono uyumluluk"
 
 #: src/gui/widgets/track.c:358
 msgid "Disarm"
@@ -3000,7 +2994,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/create_project_dialog.c:145
 msgid "Select parent directory to save the project in"
-msgstr ""
+msgstr "Projeyi kaydetmek için üst dizini seçin"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:54
 msgid "Please enter a valid name."
@@ -3013,7 +3007,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:138
 msgid "Save Chord Preset"
-msgstr ""
+msgstr "Akor Önayarını Kaydet"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:166
 msgid "Pack"
@@ -3021,9 +3015,8 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:168
 #: src/actions/actions.c:3427
-#, fuzzy
 msgid "Preset Name"
-msgstr "Aygıt Adı"
+msgstr "Önayar Adı"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:85
 msgid "Failed to quantize editor selections"
@@ -3115,7 +3108,7 @@ msgstr ""
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:149
 #: src/gui/widgets/dialogs/export_dialog.c:1511
 msgid "_Export"
-msgstr ""
+msgstr "_Dışa Aktar"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:160
 msgid "Base region"
@@ -3398,7 +3391,7 @@ msgstr "_Hepsini Seç"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:258
 msgid "Location to save user files"
-msgstr ""
+msgstr "Kullanıcı dosyalarının kaydedileceği konum"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:260
 #, fuzzy
@@ -3481,7 +3474,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:68
 msgid "Saved"
-msgstr ""
+msgstr "Kaydedildi"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:71
 msgid "Project Progress"
@@ -3559,13 +3552,12 @@ msgid "Trial limit has been reached. %s will now go silent"
 msgstr ""
 
 #: src/gui/backend/event_manager.c:1360
-#, fuzzy
 msgid "Plugin preset saved."
-msgstr "Proje kaydedildi."
+msgstr "Eklenti önayarı kaydedildi."
 
 #: src/gui/backend/event_manager.c:1364
 msgid "Plugin preset loaded."
-msgstr ""
+msgstr "Eklenti önayarı yüklendi."
 
 #: src/gui/backend/tracklist_selections.c:735
 #, fuzzy, c-format
@@ -3605,7 +3597,7 @@ msgstr ""
 
 #: src/utils/gtk.c:1275
 msgid "Chord Pad"
-msgstr ""
+msgstr "Akor Pedi"
 
 #: src/utils/gtk.c:1278
 msgid "Editor"
@@ -3684,7 +3676,7 @@ msgstr ""
 
 #: src/settings/chord_preset_pack_manager.c:154
 msgid "Most Often Used Chords"
-msgstr ""
+msgstr "En Sık Kullanılan Akorlar"
 
 #: src/settings/chord_preset_pack_manager.c:171
 msgid "Eastern Pop"
@@ -3782,7 +3774,7 @@ msgstr ""
 #: src/settings/chord_preset.c:66 src/audio/chord_track.c:43
 #: resources/ui/inspector_chord.ui:7
 msgid "Chords"
-msgstr ""
+msgstr "Akorlar"
 
 #: src/settings/plugin_settings.c:329
 msgid ""
@@ -4116,6 +4108,8 @@ msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
+"%s ses arka ucu başlatılamadı. Bunun yerine temsili arka uç kullanacak. "
+"Lütfen Tercihler'de arka uç ayarlarınızı kontrol edin."
 
 #: src/audio/engine.c:584
 #, c-format
@@ -4123,6 +4117,8 @@ msgid ""
 "The JACK MIDI backend can only be used with the JACK audio backend (your "
 "current audio backend is %s). Will use the dummy MIDI backend instead."
 msgstr ""
+"JACK MIDI arka ucu yalnızca JACK ses arka ucu ile kullanılabilir (geçerli "
+"ses arka ucunuz %s). Temsili MIDI arka ucu kullanılacak."
 
 #: src/audio/engine.c:621
 #, c-format
@@ -4130,6 +4126,8 @@ msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
+"%s MIDI arka ucu başlatılamadı. Bunun yerine temsili arka uç kullanacak. "
+"Lütfen Tercihler'de arka uç ayarlarınızı kontrol edin."
 
 #: src/audio/engine.c:666
 msgid ""
@@ -4144,6 +4142,9 @@ msgid ""
 "installed. The audio and MIDI backends were set to \"Dummy\". Please set "
 "your preferred backend from the preferences."
 msgstr ""
+"Seçilen MIDI/ses arka ucu, yüklediğiniz %s sürümünde bulunamadı. Ses ve MIDI "
+"arka uçları \"Temsili\" olarak ayarlandı. Lütfen tercih ettiğiniz arka ucu "
+"tercihlerden ayarlayın."
 
 #: src/audio/engine_pulse.c:103
 msgid ""
@@ -4427,7 +4428,7 @@ msgstr "JACK sunucusuyla iletişim hatası"
 
 #: src/audio/engine_jack.c:652
 msgid "Requested client does not exist"
-msgstr "İstenen istemci mevcut değil"
+msgstr "İstenen istemci yok"
 
 #: src/audio/engine_jack.c:657
 msgid "Unable to load internal client"
@@ -4503,7 +4504,7 @@ msgstr ""
 
 #: src/actions/arranger_selections.c:3176
 msgid "Create chord selections"
-msgstr ""
+msgstr "Akor seçimleri oluştur"
 
 #: src/actions/arranger_selections.c:3179
 msgid "Create MIDI selections"
@@ -4515,7 +4516,7 @@ msgstr ""
 
 #: src/actions/arranger_selections.c:3188
 msgid "Duplicate arranger selections"
-msgstr ""
+msgstr "Aranjör seçimlerini çoğalt"
 
 #: src/actions/arranger_selections.c:3191
 msgid "Move arranger selections"
@@ -4597,6 +4598,8 @@ msgstr "Hayır"
 #: src/actions/actions.c:630
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
+"Geçerli projedeki kaydedilmemiş tüm değişiklikler kaybolacak. Devam edilsin "
+"mi?"
 
 #: src/actions/actions.c:669
 msgid "Loading is disabled in the trial version"
@@ -4608,7 +4611,7 @@ msgstr ""
 
 #: src/actions/actions.c:736
 msgid "Save Project"
-msgstr ""
+msgstr "Projeyi Kaydet"
 
 #: src/actions/actions.c:803
 msgid "Export routing graph"
@@ -4643,11 +4646,11 @@ msgstr ""
 
 #: src/actions/actions.c:914 src/actions/undo_manager.c:260
 msgid "Failed to redo action"
-msgstr ""
+msgstr "İşlem yinelenemedi"
 
 #: src/actions/actions.c:920 src/actions/undo_manager.c:203
 msgid "Failed to undo action"
-msgstr ""
+msgstr "İşlem geri alınamadı"
 
 #: src/actions/actions.c:944 src/guile/actions/undo_manager.c:93
 msgid "Failed to redo"
@@ -4664,9 +4667,8 @@ msgid "Can't paste incompatible data"
 msgstr ""
 
 #: src/actions/actions.c:1265
-#, fuzzy
 msgid "Failed to duplicate selections"
-msgstr "Dosya açılamadı: %s"
+msgstr "Seçimler çoğaltılamadı"
 
 #: src/actions/actions.c:1513
 #, fuzzy
@@ -4699,7 +4701,7 @@ msgstr "Dosya açılamadı: %s"
 #: src/actions/actions.c:1732
 #, fuzzy
 msgid "Failed to duplicate tracks"
-msgstr "Dosya açılamadı: %s"
+msgstr "Parçalar çoğaltılamadı"
 
 #: src/actions/actions.c:1807 src/actions/actions.c:1875
 #, fuzzy
@@ -4836,14 +4838,16 @@ msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
 msgstr ""
+"Özel önayar paketi bulunamadı. Lütfen önce akor önayar tarayıcıdan bir "
+"önayar paketi oluşturun."
 
 #: src/actions/actions.c:3335 src/actions/actions.c:3383
 msgid "Preset Pack Name"
-msgstr ""
+msgstr "Önayar Paket Adı"
 
 #: src/actions/actions.c:3361 src/actions/actions.c:3405
 msgid "Are you sure you want to remove this chord preset pack?"
-msgstr ""
+msgstr "Bu akor önayar paketini kaldırmak istediğinizden emin misiniz?"
 
 #: src/actions/actions.c:3518
 msgid ""
@@ -4928,7 +4932,7 @@ msgstr "Dosya açılamadı: %s"
 #: src/actions/channel_send_action.c:248 src/actions/channel_send_action.c:314
 #, c-format
 msgid "Failed to perform channel send action: %s"
-msgstr ""
+msgstr "Kanal gönderme işlemi gerçekleştirilemedi: %s"
 
 #: src/actions/channel_send_action.c:343
 msgid "Connect sidechain"
@@ -5294,11 +5298,11 @@ msgstr ""
 
 #: src/actions/chord_action.c:179
 msgid "Change chords"
-msgstr ""
+msgstr "Akorları değiştir"
 
 #: src/actions/undo_manager.c:310
 msgid "Failed to perform action"
-msgstr ""
+msgstr "İşlem gerçekleştirilemedi"
 
 #: src/guile/guile.c:25
 msgid "Script execution successful"
@@ -5331,31 +5335,31 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:1168
 #: build/data/org.zrythm.Zrythm.gschema.xml:1222
 msgid "General"
-msgstr ""
+msgstr "Genel"
 
 #: resources/gtk/help-overlay.ui:53
 msgid "Toggle Fullscreen"
-msgstr ""
+msgstr "Tam Ekran Görünümünü Aç/Kapat"
 
 #: resources/gtk/help-overlay.ui:60
 msgid "Quit"
-msgstr ""
+msgstr "Çık"
 
 #: resources/gtk/help-overlay.ui:70
 msgid "Panels"
-msgstr ""
+msgstr "Paneller"
 
 #: resources/gtk/help-overlay.ui:74
 msgid "Toggle left panel"
-msgstr ""
+msgstr "Sol paneli aç/kapat"
 
 #: resources/gtk/help-overlay.ui:81
 msgid "Toggle right panel"
-msgstr ""
+msgstr "Sağ paneli aç/kapat"
 
 #: resources/gtk/help-overlay.ui:88
 msgid "Toggle bottom panel"
-msgstr ""
+msgstr "Alt paneli aç/kapat"
 
 #: resources/gtk/help-overlay.ui:98 resources/ui/header.ui:23
 msgid "Project"
@@ -5363,67 +5367,67 @@ msgstr "Proje"
 
 #: resources/gtk/help-overlay.ui:110
 msgid "Open a project"
-msgstr ""
+msgstr "Proje aç"
 
 #: resources/gtk/help-overlay.ui:117
 msgid "Save the project"
-msgstr ""
+msgstr "Projeyi kaydet"
 
 #: resources/gtk/help-overlay.ui:126
 msgid "Copy and Paste"
-msgstr ""
+msgstr "Kopyala ve Yapıştır"
 
 #: resources/gtk/help-overlay.ui:131
 msgid "Copy selection to clipboard"
-msgstr ""
+msgstr "Seçimi panoya kopyala"
 
 #: resources/gtk/help-overlay.ui:138
 msgid "Cut selection to clipboard"
-msgstr ""
+msgstr "Seçimi panoya kes"
 
 #: resources/gtk/help-overlay.ui:145
 msgid "Paste from clipboard"
-msgstr ""
+msgstr "Panodan yapıştır"
 
 #: resources/gtk/help-overlay.ui:154
 msgid "Undo and Redo"
-msgstr ""
+msgstr "Geri Al ve Yinele"
 
 #: resources/gtk/help-overlay.ui:159
 msgid "Undo previous command"
-msgstr ""
+msgstr "Önceki komutu geri al"
 
 #: resources/gtk/help-overlay.ui:166
 msgid "Redo previous command"
-msgstr ""
+msgstr "Önceki komutu yinele"
 
 #: resources/gtk/help-overlay.ui:175
 msgid "Selections"
-msgstr ""
+msgstr "Seçimler"
 
 #: resources/gtk/help-overlay.ui:187
 msgid "Unselect all"
-msgstr ""
+msgstr "Tüm seçimi kaldır"
 
 #: resources/gtk/help-overlay.ui:199
 msgid "Editor Shortcuts"
-msgstr ""
+msgstr "Düzenleyici Kısayolları"
 
 #: resources/gtk/help-overlay.ui:203
 msgid "Tool"
-msgstr ""
+msgstr "Araç"
 
 #: resources/gtk/help-overlay.ui:207
 msgid "Select/Stretch tool"
-msgstr ""
+msgstr "Seç/Uzat aracı"
 
 #: resources/gtk/help-overlay.ui:214
 msgid "Pencil tool"
-msgstr ""
+msgstr "Kalem aracı"
 
 #: resources/gtk/help-overlay.ui:221
 msgid "Eraser tool"
-msgstr ""
+msgstr "Silgi aracı"
 
 #: resources/gtk/help-overlay.ui:228
 msgid "Ramp tool"
@@ -5435,23 +5439,23 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:245
 msgid "Zooming"
-msgstr ""
+msgstr "Yakınlaştırma"
 
 #: resources/gtk/help-overlay.ui:250
 msgid "Zoom in"
-msgstr ""
+msgstr "Yakınlaştır"
 
 #: resources/gtk/help-overlay.ui:257
 msgid "Zoom out"
-msgstr ""
+msgstr "Uzaklaştır"
 
 #: resources/gtk/help-overlay.ui:264
 msgid "Best fit"
-msgstr ""
+msgstr "En uygun"
 
 #: resources/gtk/help-overlay.ui:271
 msgid "Original size"
-msgstr ""
+msgstr "Özgün boyut"
 
 #: resources/gtk/help-overlay.ui:280
 msgid "Quantizing"
@@ -5471,19 +5475,19 @@ msgstr ""
 
 #: resources/ui/view_toolbar.ui:41 resources/ui/main_window.ui:37
 msgid "Toggle Left Panel"
-msgstr ""
+msgstr "Sol Paneli Aç/Kapat"
 
 #: resources/ui/view_toolbar.ui:47 resources/ui/bot_bar.ui:63
 msgid "Toggle Bottom Panel"
-msgstr ""
+msgstr "Alt Paneli Aç/Kapat"
 
 #: resources/ui/view_toolbar.ui:53
 msgid "Toggle Top Panel"
-msgstr ""
+msgstr "Üst Paneli Aç/Kapat"
 
 #: resources/ui/view_toolbar.ui:59 resources/ui/main_window.ui:51
 msgid "Toggle Right Panel"
-msgstr ""
+msgstr "Sağ Paneli Aç/Kapat"
 
 #: resources/ui/bind_cc_dialog.ui:5
 msgid "Bind MIDI CC"
@@ -5500,15 +5504,15 @@ msgstr ""
 #: resources/ui/bind_cc_dialog.ui:36 resources/ui/create_project_dialog.ui:58
 #: resources/ui/generic_progress_dialog.ui:52 resources/ui/bounce_dialog.ui:93
 msgid "Cancel"
-msgstr ""
+msgstr "İptal Et"
 
 #: resources/ui/log_viewer.ui:17
 msgid "Log Level"
-msgstr ""
+msgstr "Günlük Seviyesi"
 
 #: resources/ui/log_viewer.ui:40
 msgid "Save As..."
-msgstr ""
+msgstr "Farklı Kaydet..."
 
 #: resources/ui/scale_selector_window.ui:22
 msgid "Root Key"
@@ -5754,7 +5758,7 @@ msgstr ""
 
 #: resources/ui/help_toolbar.ui:40
 msgid "News"
-msgstr ""
+msgstr "Haberler"
 
 #: resources/ui/modulator_inner.ui:14
 msgid "Show/hide UI"
@@ -5865,7 +5869,7 @@ msgstr "Durdur"
 
 #: resources/ui/header.ui:34
 msgid "View"
-msgstr "Görüntüle"
+msgstr "Görünüm"
 
 #: resources/ui/header.ui:45
 msgid "Help"
@@ -6939,11 +6943,11 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:716
 msgid "Chord pack browser detached"
-msgstr ""
+msgstr "Akor paketi tarayıcı ayrıldı"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:717
 msgid "Whether the chord pack browser panel is detached."
-msgstr ""
+msgstr "Akor paketi tarayıcı panelinin ayrılmış olma durumu."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:721
 msgid "File browser size"
@@ -7019,19 +7023,19 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:766
 msgid "Chord pad detached"
-msgstr ""
+msgstr "Akor pedi ayrılmış"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:767
 msgid "Whether the chord pad panel is detached."
-msgstr ""
+msgstr "Akor pedi panelinin ayrılmış olma durumu."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:771
 msgid "Chord pad size"
-msgstr ""
+msgstr "Akor pedi boyutu"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:772
 msgid "Chord pad panel size when detached."
-msgstr ""
+msgstr "Ayrıldığında akor pedi paneli boyutu."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:776
 msgid "Timeline detached"
@@ -7307,7 +7311,6 @@ msgid "Zrythm path"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1019
-#, fuzzy
 msgid "Directory used to save user data in."
 msgstr "Kullanıcı verilerini kaydetmek için kullanılan dizin."
 
@@ -7372,9 +7375,8 @@ msgid "VST plugins"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1091
-#, fuzzy
 msgid "Plugin search paths."
-msgstr "Eklentiler"
+msgstr "Eklenti arama yolları."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1095
 msgid "SFZ instruments"
@@ -7382,9 +7384,8 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1096
 #: build/data/org.zrythm.Zrythm.gschema.xml:1101
-#, fuzzy
 msgid "Instrument search paths."
-msgstr "Enstrüman"
+msgstr "Enstrüman arama yolları."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1100
 msgid "SF2 instruments"
@@ -7422,11 +7423,13 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1158
 msgid "Autosave interval"
-msgstr ""
+msgstr "Otomatik kaydetme aralığı"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1159
 msgid "Interval to auto-save project backups, in minutes. Set to 0 to disable."
 msgstr ""
+"Proje yedeklerini otomatik kaydetme aralığı, dakika cinsinden. Devre dışı "
+"bırakmak için 0'a ayarlayın."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1167
 msgid "UI"
@@ -7550,6 +7553,8 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
 msgid "Simplify check for unsaved changes (only look at last performed action)"
 msgstr ""
+"Kaydedilmemiş değişiklikleri kontrol etmeyi basitleştir (yalnızca son "
+"gerçekleştirilen işleme bak)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
 msgid "Update French, Chinese (Simplified), Portuguese, Catalan translations"

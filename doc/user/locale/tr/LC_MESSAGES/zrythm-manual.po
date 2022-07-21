@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-26 15:30+0100\n"
-"PO-Revision-Date: 2022-01-22 02:54+0000\n"
-"Last-Translator: benjamin <itsbenx@outlook.com>\n"
+"PO-Revision-Date: 2022-05-02 00:24+0000\n"
+"Last-Translator: Sabri Ünal <libreajans@gmail.com>\n"
+"Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/tr/>\n"
 "Language: tr\n"
-"Language-Team: Turkish <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/tr/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.12.1\n"
 "Generated-By: Babel 2.10.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -251,7 +252,7 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:7
 msgid "Chord Pad"
-msgstr ""
+msgstr "Akor Pedi"
 
 #: ../../chords-and-scales/chord-pad.rst:10
 #: ../../editing/clip-editors/overview.rst:7 ../../editing/overview.rst:7
@@ -279,7 +280,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:86
 #: ../../plugins-files/audio-midi-files/file-browser.rst:68
 msgid "Presets"
-msgstr ""
+msgstr "Önayarlar"
 
 #: ../../chords-and-scales/chord-pad.rst:25
 msgid ""
@@ -289,7 +290,7 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:30
 msgid "Preset Packs"
-msgstr ""
+msgstr "Önayar Paketleri"
 
 #: ../../chords-and-scales/chord-pad.rst:32
 msgid ""
@@ -831,7 +832,7 @@ msgstr ""
 
 #: ../../configuration/shortcuts.rst:19
 msgid "Editor Shortcuts"
-msgstr ""
+msgstr "Düzenleyici Kısayolları"
 
 #: ../../configuration/shortcuts.rst:25
 msgid "Custom Shortcuts"
@@ -1229,7 +1230,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:85
 msgid "Reverse"
-msgstr ""
+msgstr "Ters çevir"
 
 #: ../../editing/clip-editors/audio-editor.rst:86
 msgid "Reverse the audio (play back backwards)."
@@ -1409,7 +1410,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:23
 msgid "Chords"
-msgstr ""
+msgstr "Akorlar"
 
 #: ../../editing/clip-editors/chord-editor.rst:24
 msgid ""
@@ -1638,8 +1639,9 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:131
+#, fuzzy
 msgid "Flam"
-msgstr ""
+msgstr "Flam"
 
 #: ../../editing/clip-editors/piano-roll.rst:130
 msgid ""
@@ -1966,7 +1968,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:67
 msgid "Duplicate"
-msgstr "Kopya oluştur"
+msgstr "Çoğalt"
 
 #: ../../editing/common-operations.rst:68
 msgid ""
@@ -1988,7 +1990,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:84
 msgid "Selections"
-msgstr ""
+msgstr "Seçimler"
 
 #: ../../editing/common-operations.rst:86
 msgid "Clear Selection"
@@ -2016,7 +2018,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:100
 msgid "Zooming"
-msgstr ""
+msgstr "Yakınlaştırma"
 
 #: ../../editing/common-operations.rst:102
 msgid ""
@@ -2042,7 +2044,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:114
 msgid "Zoom out"
-msgstr ""
+msgstr "Uzaklaştır"
 
 #: ../../editing/common-operations.rst:115
 msgid "Original Size"
@@ -3899,7 +3901,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:122
 msgid "Project"
-msgstr ""
+msgstr "Proje"
 
 #: ../../glossary/intro.rst:124
 msgid ""
@@ -7305,7 +7307,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:25
 msgid "Audio FX"
-msgstr "Ses FX"
+msgstr "Ses Efekti"
 
 #: ../../tracks/track-types.rst:28 ../../tracks/track-types.rst:33
 #: ../../tracks/track-types.rst:43 ../../tracks/track-types.rst:53
@@ -7340,7 +7342,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:40
 msgid "Folder"
-msgstr ""
+msgstr "Klasör"
 
 #: ../../tracks/track-types.rst:49 ../../tracks/track-types.rst:69
 msgid "MIDI regions"
@@ -7356,7 +7358,7 @@ msgstr "MIDI FX"
 
 #: ../../tracks/track-types.rst:75
 msgid "MIDI Group"
-msgstr "MIDI Türü"
+msgstr "MIDI Grubu"
 
 #: ../../tracks/track-types.rst:80
 msgid "Tempo"
@@ -7827,7 +7829,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:40
 msgid "New Project"
-msgstr ""
+msgstr "Yeni Proje"
 
 #: ../../zrythm-interface/main-toolbar.rst:41
 msgid "Create a new project."
@@ -7835,7 +7837,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:42
 msgid "Save"
-msgstr ""
+msgstr "Kaydet"
 
 #: ../../zrythm-interface/main-toolbar.rst:43
 msgid "Save the current project at its current location."
@@ -7843,7 +7845,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:44
 msgid "Save As"
-msgstr ""
+msgstr "Farklı Kaydet"
 
 #: ../../zrythm-interface/main-toolbar.rst:45
 msgid "Save the current project at a new location."
@@ -7863,7 +7865,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:52
 msgid "Export As"
-msgstr ""
+msgstr "Dışa Farklı Aktar"
 
 #: ../../zrythm-interface/main-toolbar.rst:52
 msgid ""
@@ -7897,7 +7899,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:66
 msgid "Toggle Status Bar"
-msgstr ""
+msgstr "Durum Çubuğunu Göster/Gizle"
 
 #: ../../zrythm-interface/main-toolbar.rst:67
 msgid "Toggles the visibility of the status bar."
@@ -7905,7 +7907,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:68
 msgid "Fullscreen"
-msgstr ""
+msgstr "Tam Ekran"
 
 #: ../../zrythm-interface/main-toolbar.rst:69
 msgid "Toggles fullscreen mode."
@@ -7949,7 +7951,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Manual"
-msgstr ""
+msgstr "Yardım Belgeleri"
 
 #: ../../zrythm-interface/main-toolbar.rst:88
 msgid "View the user manual."
@@ -7957,7 +7959,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:89
 msgid "News"
-msgstr ""
+msgstr "Haberler"
 
 #: ../../zrythm-interface/main-toolbar.rst:90
 msgid "Show the latest changelog."
@@ -7965,7 +7967,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:91
 msgid "Keyboard Shortcuts"
-msgstr ""
+msgstr "Klavye Kısayolları"
 
 #: ../../zrythm-interface/main-toolbar.rst:92
 msgid "Show all the available keyboard shortcuts."
@@ -7981,7 +7983,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:96
 msgid "Report a Bug"
-msgstr ""
+msgstr "Hata Raporla"
 
 #: ../../zrythm-interface/main-toolbar.rst:96
 msgid "Opens the page to report a new bug."
