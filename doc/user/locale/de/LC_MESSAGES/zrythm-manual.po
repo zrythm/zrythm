@@ -42,20 +42,21 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-26 15:30+0100\n"
-"PO-Revision-Date: 2022-02-08 09:06+0000\n"
-"Last-Translator: Ulrich <drulli@airmail.cc>\n"
+"PO-Revision-Date: 2022-07-10 15:50+0000\n"
+"Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/de/>\n"
 "Language: de\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.13.1-dev\n"
 "Generated-By: Babel 2.10.1\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
-msgstr ""
+msgstr "Umgebungsvariablen"
 
 #: ../../appendix/environment.rst:13
 msgid ""
@@ -65,46 +66,61 @@ msgid ""
 "program:`zrythm` or :program:`zrythm_launch`, like: ``LV2_PATH=/my/custom/"
 "path zrythm_launch``"
 msgstr ""
+"Zrythm versteht die folgenden Umgebungsvariablen. Sie können in :file:`."
+"bashrc` oder einer ähnlichen Shell-Konfigurationsdatei konfiguriert werden, "
+"in den Einstellungen des Betriebssystems oder sie können direkt beim Aufruf "
+"von :program:`zrythm` oder :program:`zrythm_launch` übergeben werden, wie: "
+"``LV2_PATH=/mein/angepasster/Pfad zrythm_launch``"
 
 #: ../../appendix/environment.rst:23
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
 msgstr ""
+"Geben Sie hier die Orte an, die nach :term:`LV2`-Plugins durchsucht werden "
+"sollen."
 
 #: ../../appendix/environment.rst:26
 msgid "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
-msgstr ""
+msgstr "Beispiel: ``LV2_PATH=$HOME/custom-lv2-dir``"
 
 #: ../../appendix/environment.rst:31
 msgid "Set to 1 to disable plugin scanning."
-msgstr ""
+msgstr "Auf 1 stellen, um die Suche nach Plugins zu deaktivieren."
 
 #: ../../appendix/environment.rst:33
 msgid "Example: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
-msgstr ""
+msgstr "Beispiel: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
 
 #: ../../appendix/environment.rst:38
 msgid "Set this to the locations to scan for :term:`VST2` plugins."
 msgstr ""
+"Stellen Sie hier die Orte ein, an denen nach :term:`VST2`-Plugins gesucht "
+"werden soll."
 
 #: ../../appendix/environment.rst:43
 msgid "Set this to the locations to scan for :term:`VST3` plugins."
 msgstr ""
+"Stellen Sie hier die Orte ein, an denen nach :term:`VST3`-Plugins gesucht "
+"werden soll."
 
 #: ../../appendix/environment.rst:48
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
 msgstr ""
+"Anzahl der zu verwendenden DSP-Threads. Der Standardwert ist die Anzahl der "
+"CPU-Kerne - 1."
 
 #: ../../appendix/environment.rst:53
 msgid "Set to 1 to show extra information useful for developers."
 msgstr ""
+"Auf 1 setzen, um zusätzliche Informationen anzuzeigen, die für Entwickler "
+"nützlich sind."
 
 #: ../../appendix/files-and-directories.rst:7
 msgid "Files and Directories"
-msgstr ""
+msgstr "Dateien und Ordner"
 
 #: ../../appendix/files-and-directories.rst:10
 msgid "User path"
-msgstr ""
+msgstr "Benutzerpfad"
 
 #: ../../appendix/files-and-directories.rst:11
 msgid ""
@@ -112,18 +128,24 @@ msgid ""
 "directory for saving your user data. See :term:`Zrythm user path` for "
 "details."
 msgstr ""
+"Wenn Zrythm zum ersten Mal gestartet wird, werden Sie auch aufgefordert, ein "
+"Verzeichnis zum Speichern Ihrer Benutzerdaten auszuwählen. Siehe :term:`"
+"Zrythm Benutzerpfad` für Details."
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
-msgstr ""
+msgstr "Installierte Dateien"
 
 #: ../../appendix/files-and-directories.rst:17
 msgid "When Zrythm is installed, it installs the following files by default."
 msgstr ""
+"Bei der Installation von Zrythm werden standardmäßig die folgenden Dateien "
+"installiert."
 
 #: ../../appendix/files-and-directories.rst:21
+#, fuzzy
 msgid "Desktop Entry"
-msgstr ""
+msgstr "Desktop-Eintrag"
 
 #: ../../appendix/files-and-directories.rst:22
 msgid ""
@@ -133,10 +155,15 @@ msgid ""
 "menus, etc. This is normally installed at :file:`/usr/share/applications/"
 "zrythm.desktop`."
 msgstr ""
+"Eine `freedesktop-konforme Konfigurationsdatei <https://specifications."
+"freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_, die "
+"beschreibt, wie ein bestimmtes Programm gestartet werden soll, wie es in "
+"Menüs erscheint, usw. Diese wird normalerweise unter :file:`/usr/share/"
+"applications/zrythm.desktop` installiert."
 
 #: ../../appendix/files-and-directories.rst:29
 msgid "GLib Schema"
-msgstr ""
+msgstr "GLib-Schema"
 
 #: ../../appendix/files-and-directories.rst:30
 msgid ""
@@ -144,50 +171,50 @@ msgid ""
 "installed at :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
 "xml`."
 msgstr ""
+"Diese Datei enthält das Schema für Benutzerkonfigurationen. Sie wird "
+"normalerweise unter :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm."
+"gschema.xml` installiert."
 
 #: ../../appendix/files-and-directories.rst:35
 msgid "Desktop Icon"
-msgstr ""
+msgstr "Desktop-Symbol"
 
 #: ../../appendix/files-and-directories.rst:36
 msgid ""
 "This is used by the desktop environment. Normally installed at :file:`/usr/"
 "share/icons/hicolor/scalable/apps/zrythm.svg`."
 msgstr ""
+"Dies wird von der Desktop-Umgebung verwendet. Normalerweise installiert "
+"unter :file:`/usr/share/icons/hicolor/scalable/apps/zrythm.svg`."
 
 #: ../../appendix/files-and-directories.rst:41
 msgid "Localization Files"
-msgstr ""
+msgstr "Übersetzungsdateien"
 
 #: ../../appendix/files-and-directories.rst:42
 msgid ""
 "Localization files are installed under :file:`/usr/share/locale`. For "
 "example, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` for Korean."
 msgstr ""
+"Übersetzungsdateien werden unter :file:`/usr/share/locale` installiert. Zum "
+"Beispiel: :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` für Koreanisch."
 
 #: ../../appendix/files-and-directories.rst:48
 #: ../../getting-started/getting-plugins.rst:101
-#, fuzzy
 msgid "Samples"
-msgstr ""
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Zustände"
+msgstr "Samples"
 
 #: ../../appendix/files-and-directories.rst:49
 msgid ""
 "Default audio samples used by Zrythm (such as the metronome). Normally "
 "installed under :file:`/usr/share/zrythm/samples`."
 msgstr ""
+"Standard-Audio-Samples, die von Zrythm verwendet werden (z. B. das Metronom)"
+". Normalerweise installiert unter :file:`/usr/share/zrythm/samples`."
 
 #: ../../appendix/files-and-directories.rst:54
-#, fuzzy
 msgid "Fonts"
-msgstr ""
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Ports"
+msgstr "Schriftarten"
 
 #: ../../appendix/files-and-directories.rst:55
 msgid ""
@@ -195,26 +222,33 @@ msgid ""
 "required by Zrythm will normally be installed under :file:`/usr/share/fonts/"
 "zrythm`."
 msgstr ""
+"Sofern Ihre Distribution keine Pakete für die benötigten Schriftarten "
+"bereitstellt, werden die von Zrythm benötigten Schriftarten normalerweise "
+"unter :file:`/usr/share/fonts/zrythm` installiert."
 
 #: ../../appendix/files-and-directories.rst:61
 msgid "GtkSourceView Stylesheets"
-msgstr ""
+msgstr "GtkSourceView-Stylesheets"
 
 #: ../../appendix/files-and-directories.rst:62
 msgid ""
 "Zrythm will install CSS stylesheets to be used by some text input widgets "
 "under :file:`/usr/share/zrythm/sourceview-styles`."
 msgstr ""
+"Zrythm installiert CSS-Stylesheets, die von einigen Texteingabe-Widgets "
+"verwendet werden, unter :file:`/usr/share/zrythm/sourceview-styles`."
 
 #: ../../appendix/files-and-directories.rst:67
 msgid "Themes"
-msgstr ""
+msgstr "Themen"
 
 #: ../../appendix/files-and-directories.rst:68
 msgid ""
 "Default themes (including icon themes) will normally be installed under :"
 "file:`/usr/share/zrythm/themes`."
 msgstr ""
+"Standardthemen (einschließlich Symbolthemen) werden normalerweise unter "
+":file:`/usr/share/zrythm/themes` installiert."
 
 #: ../../appendix/files-and-directories.rst:72
 msgid ""
@@ -222,38 +256,41 @@ msgid ""
 "files in the :term:`Zrythm user path`. See :doc:`../theming/intro` for "
 "details."
 msgstr ""
+"Zrythm bietet Möglichkeiten, einige dieser Dateien durch benutzerspezifische "
+"Dateien im :term:`Zrythm user path` zu ersetzen. Siehe :doc:`../theming/"
+"intro` für Details."
 
 #: ../../appendix/files-and-directories.rst:78
 msgid "User Files"
-msgstr ""
+msgstr "Benutzerdateien"
 
 #: ../../appendix/files-and-directories.rst:80
 msgid "Cached Plugin Descriptors"
-msgstr ""
+msgstr "Plugin-Deskriptoren im Cache"
 
 #: ../../appendix/files-and-directories.rst:81
 msgid ""
 "Plugin descriptor cache for faster scanning. This is found at :file:"
 "`cached_plugin_descriptors.yaml` under the :term:`Zrythm user path`."
 msgstr ""
+"Plugin-Deskriptoren-Cache für schnelleres Suchen. Dieser befindet sich unter "
+":file:`cached_plugin_descriptors.yaml` unter dem :term:`Zrythm user path`."
 
 #: ../../appendix/files-and-directories.rst:87
-#, fuzzy
 msgid "Plugin Collections"
-msgstr ""
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Sammlungen"
+msgstr "Plugin-Sammlungen"
 
 #: ../../appendix/files-and-directories.rst:88
 msgid ""
 "This file contains your plugin collections. It is found at :file:"
 "`plugin_collections.yaml` under the :term:`Zrythm user path`."
 msgstr ""
+"Diese Datei enthält Ihre Plugin-Sammlungen. Sie befindet sich unter "
+":file:`plugin_collections.yaml` unter dem :term:`Zrythm user path`."
 
 #: ../../appendix/files-and-directories.rst:94
 msgid "Log File"
-msgstr ""
+msgstr "Protokolldatei"
 
 #: ../../appendix/files-and-directories.rst:95
 msgid ""
@@ -261,14 +298,20 @@ msgid ""
 "subdirectory under the :term:`Zrythm user path`. The filename will contain "
 "the current date and time, for example :file:`log_2020-06-26_15-34-19.log`."
 msgstr ""
+"Zrythm schreibt bei jedem Lauf in eine Protokolldatei im Unterverzeichnis "
+":file:`log` unter dem :term:`Zrythm-Benutzerpfad`. Der Dateiname enthält das "
+"aktuelle Datum und die Uhrzeit, zum Beispiel :file:`log_2020-06-26_15-34-19."
+"log`."
 
 #: ../../appendix/files-and-directories.rst:101
 msgid "This log file is useful for debugging crashes and other problems."
 msgstr ""
+"Diese Protokolldatei ist für die Fehlersuche bei Abstürzen und anderen "
+"Problemen nützlich."
 
 #: ../../appendix/gnu-free-documentation-license.rst:7
 msgid "GNU Free Documentation License"
-msgstr ""
+msgstr "GNU-Lizenz für freie Dokumentation"
 
 #: ../../appendix/intro.rst:7
 msgid "Appendix"
@@ -294,11 +337,11 @@ msgstr "Todo"
 
 #: ../../appendix/troubleshooting.rst:11
 msgid "Write this page."
-msgstr ""
+msgstr "Schreiben Sie diese Seite."
 
 #: ../../chords-and-scales/chord-pad.rst:7
 msgid "Chord Pad"
-msgstr ""
+msgstr "Akkord-Pad"
 
 #: ../../chords-and-scales/chord-pad.rst:10
 #: ../../editing/clip-editors/overview.rst:7 ../../editing/overview.rst:7
@@ -315,12 +358,17 @@ msgid ""
 "The chord pad contains 12 pads (1 for each key on a piano keyboard) that can "
 "be used to trigger chords. The chord pad can be found in the bottom panel."
 msgstr ""
+"Das Akkord-Pad enthält 12 Pads (1 für jede Taste auf einer Klaviertastatur), "
+"die zum Triggern von Akkorden verwendet werden können. Das Akkord-Pad "
+"befindet sich im unteren Bedienfeld."
 
 #: ../../chords-and-scales/chord-pad.rst:19
 msgid ""
 "These 12 chords are linked to the chords in the :ref:`Chord Editor <editing/"
 "clip-editors/chord-editor:Chord Editor>`."
 msgstr ""
+"Diese 12 Akkorde sind mit den Akkorden im :ref:`Akkord-Editor <editing/"
+"clip-editors/chord-editor:Chord Editor>` verbunden."
 
 #: ../../chords-and-scales/chord-pad.rst:23
 #: ../../getting-started/getting-plugins.rst:86
@@ -329,10 +377,14 @@ msgid "Presets"
 msgstr "Presets"
 
 #: ../../chords-and-scales/chord-pad.rst:25
+#, fuzzy
 msgid ""
 "Zrythm comes with pre-installed chord presets, and it also allows you to "
 "generate chord presets from scales, or even save your own."
 msgstr ""
+"Zrythm wird mit vorinstallierten Akkord-Presets geliefert und ermöglicht es "
+"Ihnen außerdem, Akkord-Presets aus Tonleitern zu generieren oder sogar Ihre "
+"eigenen zu speichern."
 
 #: ../../chords-and-scales/chord-pad.rst:30
 #, fuzzy
@@ -344,10 +396,13 @@ msgid ""
 "A list of preset packs and presets is found in the :ref:`Right Panel <zrythm-"
 "interface/right-panel:Right Panel>` under :guilabel:`Chord Preset Browser`."
 msgstr ""
+"Eine Liste der Preset-Packs und Presets finden Sie im :ref:`Rechten "
+"Bedienfeld <zrythm-interface/right-panel:Right Panel>` unter :guilabel"
+":`Akkord-Preset-Browser`."
 
 #: ../../chords-and-scales/chord-pad.rst:39
 msgid "Chord preset browser"
-msgstr ""
+msgstr "Akkord-Preset-Browser"
 
 #: ../../chords-and-scales/chord-pad.rst:42
 #: ../../plugins-files/audio-midi-files/file-browser.rst:48
@@ -359,6 +414,8 @@ msgid ""
 "Clicking a preset pack in the top will filter the list of presets to presets "
 "in the selected pack."
 msgstr ""
+"Wenn Sie oben auf ein Preset-Paket klicken, wird die Liste der "
+"Voreinstellungen auf die Presets im ausgewählten Paket gefiltert."
 
 #: ../../chords-and-scales/chord-pad.rst:48
 #: ../../plugins-files/audio-midi-files/file-browser.rst:87
@@ -373,15 +430,21 @@ msgid ""
 "`auditioning in the File Browser <plugins-files/audio-midi-files/file-"
 "browser:Auditioning>`."
 msgstr ""
+"Sie können Akkord-Presets vorhören, indem Sie ein Instrumenten-Plugin aus "
+"der Liste auswählen und die verfügbaren Wiedergabesteuerungen verwenden. "
+"Dies funktioniert ähnlich wie :ref:`Vorhören im Dateibrowser <plugins-files/"
+"audio-midi-files/file-browser:Auditioning>`."
 
 #: ../../chords-and-scales/chord-pad.rst:56
 msgid "Standard Packs"
-msgstr ""
+msgstr "Standardpakete"
 
 #: ../../chords-and-scales/chord-pad.rst:58
 msgid ""
 "Zrythm comes with some standard packs that cannot be renamed or deleted."
 msgstr ""
+"Zrythm wird mit einigen Standardpaketen geliefert, die nicht umbenannt oder "
+"gelöscht werden können."
 
 #: ../../chords-and-scales/chord-pad.rst:62
 #, fuzzy
@@ -398,10 +461,12 @@ msgid ""
 "You can create your own pack by clicking the :guilabel:`Add` button below "
 "the list of chord preset packs."
 msgstr ""
+"Sie können Ihr eigenes Paket erstellen, indem Sie auf die Schaltfläche "
+":guilabel:`Hinzufügen` unterhalb der Liste der Akkord-Preset-Pakete klicken."
 
 #: ../../chords-and-scales/chord-pad.rst:74
 msgid "Creating a chord preset pack"
-msgstr ""
+msgstr "Erstellen eines Akkord-Preset-Pakets"
 
 #: ../../chords-and-scales/chord-pad.rst:77
 #, fuzzy
@@ -411,14 +476,18 @@ msgstr "Spuren bearbeiten"
 #: ../../chords-and-scales/chord-pad.rst:79
 msgid "Custom packs can be renamed or deleted by right-clicking."
 msgstr ""
+"Benutzerdefinierte Pakete können durch Rechtsklick umbenannt oder gelöscht "
+"werden."
 
 #: ../../chords-and-scales/chord-pad.rst:85
 msgid "Renaming or deleting a custom chord preset pack"
-msgstr ""
+msgstr "Umbenennen oder Löschen eines benutzerdefinierten Akkord-Preset-Pakets"
 
 #: ../../chords-and-scales/chord-pad.rst:87
 msgid "Chord presets under the selected pack can also be renamed and deleted."
 msgstr ""
+"Akkord-Presets unter dem ausgewählten Paket können ebenfalls umbenannt und "
+"gelöscht werden."
 
 #: ../../chords-and-scales/chord-pad.rst:91
 #, fuzzy
@@ -430,10 +499,13 @@ msgid ""
 "Clicking on the :guilabel:`Save Preset` button in the top part of the chord "
 "pad will allow you to save the current chord configuration in a preset."
 msgstr ""
+"Wenn Sie auf die Schaltfläche :guilabel:`Preset speichern` im oberen Bereich "
+"des Akkord-Pads klicken, können Sie die aktuelle Akkordkonfiguration in "
+"einem Preset speichern."
 
 #: ../../chords-and-scales/chord-pad.rst:100
 msgid "Saving a chord preset"
-msgstr ""
+msgstr "Speichern eines Akkord-Presets"
 
 #: ../../chords-and-scales/chord-pad.rst:103
 #, fuzzy
@@ -445,6 +517,9 @@ msgid ""
 "To load a preset, click the :guilabel:`Load Preset` button in the top part "
 "of the chord pad, then select the preset you want to use."
 msgstr ""
+"Um ein Preset zu laden, klicken Sie auf die Schaltfläche :guilabel:`Preset "
+"laden` im oberen Bereich des Akkord-Pads und wählen dann das gewünschte "
+"Preset aus."
 
 #: ../../chords-and-scales/chord-pad.rst:112
 #, fuzzy
@@ -455,20 +530,26 @@ msgstr "Spuren auswählen"
 msgid ""
 "You can also load a preset by double clicking on it in the preset browser."
 msgstr ""
+"Sie können ein Preset auch laden, indem Sie im Preset-Browser darauf "
+"doppelklicken."
 
 #: ../../chords-and-scales/chord-pad.rst:118
 msgid "Generating Chords from Scale"
-msgstr ""
+msgstr "Akkorde aus Tonleitern generieren"
 
 #: ../../chords-and-scales/chord-pad.rst:120
 msgid ""
 "Chords can be generated from a scale and a root note by clicking on the :"
 "guilabel:`Load Preset` button, then selecting a scale and a root note."
 msgstr ""
+"Akkorde können aus einer Tonleiter und einem Grundton erzeugt werden, indem "
+"Sie auf die Schaltfläche :guilabel:`Preset laden` klicken und dann eine "
+"Tonleiter und einen Grundton auswählen."
 
 #: ../../chords-and-scales/chord-pad.rst:127
+#, fuzzy
 msgid "Generating chords from a scale"
-msgstr ""
+msgstr "Akkorde aus einer Tonleiter erzeugen"
 
 #: ../../chords-and-scales/chord-pad.rst:130
 msgid "Transpose"
@@ -479,6 +560,8 @@ msgid ""
 "Clicking on the up/down transpose buttons will transpose all chords by 1 "
 "semitone up or down."
 msgstr ""
+"Durch Klicken auf die Aufwärts-/Abwärts-Transponier-Schaltflächen werden "
+"alle Akkorde um 1 Halbton nach oben oder unten transponiert."
 
 #: ../../chords-and-scales/chord-pad.rst:136
 #, fuzzy
@@ -495,6 +578,8 @@ msgid ""
 "Clicking on the chord button will bring up the chord selector window that "
 "allows you to change the current chord."
 msgstr ""
+"Wenn Sie auf die Akkordschaltfläche klicken, wird das Akkordauswahlfenster "
+"geöffnet, in dem Sie den aktuellen Akkord ändern können."
 
 #: ../../chords-and-scales/chord-pad.rst:148
 #, fuzzy
@@ -507,6 +592,9 @@ msgid ""
 "can be created by selecting its root note, its type, its accent and its bass "
 "note."
 msgstr ""
+"Im Moment ist nur die Registerkarte :guilabel:`Akkord-Erzeuger` "
+"funktionsfähig. Ein Akkord kann durch Auswahl seines Grundtons, Typs, "
+"Akzents und Basstons erstellt werden."
 
 #: ../../chords-and-scales/chord-pad.rst:154
 msgid ""
@@ -514,10 +602,14 @@ msgid ""
 "options that correspond to chords inside the currently active scale. This "
 "makes it easy to create chords that stay in the current scale."
 msgstr ""
+"Wenn Sie :guilabel:`In Tonleiter` unter :guilabel:`Sichtbarkeit` auswählen, "
+"werden nur die Optionen angezeigt, die sich auf Akkorde innerhalb der "
+"aktuell aktiven Tonleiter beziehen. Das macht es einfach, Akkorde zu "
+"erzeugen, die in der aktuellen Tonleiter bleiben."
 
 #: ../../chords-and-scales/chord-pad.rst:162
 msgid "Inversions"
-msgstr ""
+msgstr "Umkehrungen"
 
 #: ../../chords-and-scales/chord-pad.rst:164
 msgid ""
@@ -526,10 +618,15 @@ msgid ""
 "octave higher, and each inversion towards the left moves the highest note in "
 "the chord one octave below."
 msgstr ""
+"Wenn Sie auf den linken oder rechten Pfeil klicken, können Sie den Akkord "
+"umkehren. Jede Umkehrung nach rechts verschiebt die tiefste Note im Akkord "
+"um eine Oktave nach oben, und jede Umkehrung nach links verschiebt die "
+"höchste Note im Akkord um eine Oktave nach unten."
 
 #: ../../chords-and-scales/intro.rst:9
+#, fuzzy
 msgid "Chords and Scales"
-msgstr "Akkorde und Skalen"
+msgstr "Akkorde und Tonleitern"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:7
 #, fuzzy
@@ -545,6 +642,9 @@ msgid ""
 "You can use highlighting inside the piano roll to highlight the notes "
 "corresponding to the scale, chord, or both at the position of the playhead."
 msgstr ""
+"Sie können die Hervorhebung innerhalb der Notenrolle verwenden, um die Noten "
+"hervorzuheben, die der Tonleiter, dem Akkord oder beidem an der Position des "
+"Abspielkopfes entsprechen."
 
 #: ../../chords-and-scales/piano-roll-integration.rst:22
 #, fuzzy
@@ -559,11 +659,11 @@ msgstr "Hervorheben"
 #: ../../chords-and-scales/piano-roll-integration.rst:34
 #, fuzzy
 msgid "Scale highlighting"
-msgstr "Hervorheben"
+msgstr "Tonleiter hervorheben"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:40
 msgid "Scale and chord highlighting"
-msgstr ""
+msgstr "Tonleitern und Akkorde hervorheben"
 
 #: ../../configuration/additional-settings.rst:7
 msgid "Additional Settings"
@@ -587,6 +687,10 @@ msgid ""
 "line, or the optional GUI tool `dconf-editor <https://wiki.gnome.org/Apps/"
 "DconfEditor>`_."
 msgstr ""
+"Zrythm speichert die meisten seiner Konfigurationen mithilfe des GSettings-"
+"Mechanismus, der mit dem Befehl ``gsettings`` zum Ändern von Einstellungen "
+"von der Kommandozeile oder dem optionalen GUI-Tool `dconf-editor "
+"<https://wiki.gnome.org/Apps/DconfEditor>`_ geliefert wird."
 
 #: ../../configuration/additional-settings.rst:18
 #, fuzzy
@@ -620,6 +724,8 @@ msgid ""
 "See :option:`zrythm --reset-to-factory` and :ref:`configuration/preferences:"
 "Reset to Factory Settings`."
 msgstr ""
+"Siehe :option:`zrythm --reset-to-factory` und :ref:`configuration/"
+"preferences:Zurücksetzen auf Werkseinstellungen`."
 
 #: ../../configuration/additional-settings.rst:37
 #, fuzzy
@@ -3222,39 +3328,31 @@ msgstr ""
 #: ../../editing/timeline/arranger.rst:149
 #, fuzzy
 msgid "Scales"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Zustände"
+msgstr "Tonleitern"
 
 #: ../../editing/timeline/arranger.rst:150
+#, fuzzy
 msgid ""
 "Scales are used to indicate the start of a section using a specific musical "
 "scale."
 msgstr ""
+"Tonleitern werden verwendet, um den Beginn eines Abschnitts unter Verwendung "
+"einer bestimmten Tonleiter anzuzeigen."
 
 #: ../../editing/timeline/arranger.rst:156
 #, fuzzy
 msgid "Scale"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Zustände"
+msgstr "Tonleiter"
 
 #: ../../editing/timeline/arranger.rst:158
+#, fuzzy
 msgid "Scales appear inside the Chord track."
-msgstr ""
+msgstr "Tonleitern erscheinen innerhalb der Akkordspur."
 
 #: ../../editing/timeline/arranger.rst:163
 #, fuzzy
 msgid "Chord track with scale"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Regionen erstellen\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+msgstr "Akkordspur mit Tonleiter"
 
 #: ../../editing/timeline/arranger.rst:166
 msgid "Editing Regions"
@@ -8729,11 +8827,7 @@ msgstr "Akkord"
 #: ../../tracks/track-types.rst:39
 #, fuzzy
 msgid "Chord regions, scales"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Regionen erstellen\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+msgstr "Akkordbereiche, Tonleitern"
 
 #: ../../tracks/track-types.rst:40
 msgid "Folder"
@@ -8867,30 +8961,22 @@ msgid ""
 "when the song is using a particular chord or scale. Its main purpose is to "
 "assist with chord progressions."
 msgstr ""
-"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
-"Die Akkordspur beinhaltet Akkorde und Tonartenobjekte, die benutzt werden um "
-"anzugeben wann das Lied einen bestimmten Akkord oder eine bestimmte Tonart "
-"benutzt.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
-"Die Akkordspur beinhaltet Akkorde und Tonartenobjekte, die benutzt werden um "
-"anzugeben wann das Lied einen bestimmten Akkord oder eine bestimmte Tonart "
-"benutzt.\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"Die Akkordspur enthält Akkord- und Tonleiterobjekte, mit denen angegeben "
+"werden kann, wann der Song einen bestimmten Akkord oder eine bestimmte "
+"Tonleiter verwendet. Ihr Hauptzweck ist es, bei Akkordfolgen zu helfen."
 
 #: ../../tracks/track-types.rst:145
+#, fuzzy
 msgid "Chord track with a chord region and a scale"
-msgstr ""
+msgstr "Akkordspur mit Akkordbereich und Tonleiter"
 
 #: ../../tracks/track-types.rst:147
-#, fuzzy
 msgid ""
 "For more information about chords, see the section :ref:`chords-and-scales/"
 "intro:Chords and Scales`."
 msgstr ""
-"Weitere Informationen finden Sie im Abschnitt :doc:`../chords-and-scales/"
-"intro`."
+"Weitere Informationen über Akkorde finden Sie im Abschnitt :ref:`chords-"
+"and-scales/intro:Akkorde und Tonleitern`."
 
 #: ../../tracks/track-types.rst:150
 msgid ""
@@ -9700,11 +9786,13 @@ msgstr ""
 
 #: ../../zrythm-interface/right-panel.rst:21
 msgid ":ref:`Chord Preset Browser <chords-and-scales/chord-pad:Presets>`"
-msgstr ""
+msgstr ":ref:`Akkord-Preset-Browser <chords-and-scales/chord-pad:Presets>`"
 
 #: ../../zrythm-interface/right-panel.rst:23
 msgid "Write and point to correct chord preset browser section."
 msgstr ""
+"Schreiben Sie und zeigen Sie auf den korrekten Akkord-Preset-"
+"Browserabschnitt."
 
 #: ../../zrythm-interface/transport-bar.rst:8
 msgid "Transport Bar"

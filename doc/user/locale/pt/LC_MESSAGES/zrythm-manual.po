@@ -13,15 +13,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-26 15:30+0100\n"
-"PO-Revision-Date: 2022-04-09 18:10+0000\n"
+"PO-Revision-Date: 2022-07-02 11:19+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/pt/>\n"
 "Language: pt\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/pt/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.13.1-dev\n"
 "Generated-By: Babel 2.10.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -1746,7 +1747,7 @@ msgstr "Barra de ferramentas principal"
 
 #: ../../editing/clip-editors/piano-roll.rst:39
 msgid "Drum View"
-msgstr "Vista do Tambor"
+msgstr "Visualização da bateria"
 
 #: ../../editing/clip-editors/piano-roll.rst:31
 #, fuzzy
@@ -1849,7 +1850,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:89
 msgid "Velocity Editor"
-msgstr "Editor de velocidade"
+msgstr "Editor de Velocidade"
 
 #: ../../editing/clip-editors/piano-roll.rst:90
 msgid ""
@@ -7003,9 +7004,8 @@ msgid "See :ref:`export-routing-graph` for details."
 msgstr "Veja :ref:`export-routing-graph` para detalhes."
 
 #: ../../routing/monitor-section.rst:6
-#, fuzzy
 msgid "Monitor Section"
-msgstr "Seleção de loop"
+msgstr "Secção de Monitoramento"
 
 #: ../../routing/monitor-section.rst:7
 #, fuzzy
@@ -8056,7 +8056,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:105
 msgid "Aux Sends"
-msgstr "Aux Envia"
+msgstr "Envios Aux"
 
 #: ../../tracks/inspector-page.rst:107
 msgid ""
@@ -8431,9 +8431,8 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/track-lanes.rst:6
-#, fuzzy
 msgid "Track Lanes"
-msgstr "Nome da Faixa"
+msgstr "Faixas de Pista"
 
 #: ../../tracks/track-lanes.rst:8
 #, fuzzy
