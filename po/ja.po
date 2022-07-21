@@ -6,13 +6,14 @@
 # Alexandros Theodotou <alex@zrythm.org>, 2019, 2020, 2021, 2022.
 # Nikita Saschenko <neketa777@gmail.com>, 2021.
 # Seio Inoue <sei0okun@gmail.com>, 2022.
+# KokiOgawa <mupimupicandy@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-26 15:29+0100\n"
-"PO-Revision-Date: 2022-05-08 15:13+0000\n"
-"Last-Translator: Seio Inoue <sei0okun@gmail.com>\n"
+"PO-Revision-Date: 2022-06-02 15:49+0000\n"
+"Last-Translator: KokiOgawa <mupimupicandy@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -20,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.12.1\n"
+"X-Generator: Weblate 4.13-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:139 inc/audio/engine.h:278
@@ -483,11 +484,12 @@ msgstr "アルジェリアン"
 
 #: inc/audio/scale.h:170
 msgid "Augmented"
-msgstr ""
+msgstr "オーギュメント"
 
 #: inc/audio/scale.h:171
+#, fuzzy
 msgid "Double Harmonic"
-msgstr ""
+msgstr "ダブルハーモニック"
 
 #: inc/audio/scale.h:172
 #, fuzzy
@@ -495,12 +497,14 @@ msgid "Chinese"
 msgstr "中国語[zh]"
 
 #: inc/audio/scale.h:173
+#, fuzzy
 msgid "Diminished"
-msgstr ""
+msgstr "ディミニッシュ"
 
 #: inc/audio/scale.h:174
+#, fuzzy
 msgid "Dominant Diminished"
-msgstr ""
+msgstr "ドミナント・ディミニッシュ"
 
 #: inc/audio/scale.h:176
 msgid "Egyptian"
@@ -8089,20 +8093,24 @@ msgid "Fix MIDI region content selection in MIDI export dialog"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:130
+#, fuzzy
 msgid "Fix some memory leaks reported by gcc sanitizer"
-msgstr ""
+msgstr "gccサニタイザーが表示するメモリリークを修正"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+#, fuzzy
 msgid "Fix error when right-clicking inside audio editor"
-msgstr ""
+msgstr "オーディオエディター内で右クリックすると発生するエラーの修正"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:135
+#, fuzzy
 msgid "Remove unused bootstrap js files"
-msgstr ""
+msgstr "未使用のbootstrap jsファイルを削除する"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:144
+#, fuzzy
 msgid "Fix PDF manual build"
-msgstr ""
+msgstr "PDFマニュアルのビルドを修正"
 
 #, fuzzy
 #~ msgctxt "Loop"
