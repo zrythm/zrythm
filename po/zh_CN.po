@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-26 15:29+0100\n"
-"PO-Revision-Date: 2022-04-19 19:15+0000\n"
+"PO-Revision-Date: 2022-04-28 00:08+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 4.12.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:139 inc/audio/engine.h:278
@@ -1583,7 +1583,6 @@ msgid "Plugin Inspector"
 msgstr "插件检查器"
 
 #: src/gui/widgets/left_dock_edge.c:225
-#, fuzzy
 msgid "Track Visibility"
 msgstr "音轨可见性"
 
@@ -2222,9 +2221,8 @@ msgid "File Browser"
 msgstr "文件浏览器"
 
 #: src/gui/widgets/right_dock_edge.c:135
-#, fuzzy
 msgid "Monitor Section"
-msgstr "监视部分"
+msgstr "监视器部分"
 
 #: src/gui/widgets/right_dock_edge.c:148 src/utils/gtk.c:1296
 msgid "Chord Preset Browser"
@@ -2562,9 +2560,8 @@ msgid "Failed to edit scale"
 msgstr "编辑 scale 失败"
 
 #: src/gui/widgets/add_track_menu_button.c:66
-#, fuzzy
 msgid "Add track"
-msgstr "添加FX 轨"
+msgstr "添加音轨"
 
 #: src/gui/widgets/event_viewer.c:603 src/gui/widgets/event_viewer.c:742
 #: src/gui/widgets/event_viewer.c:867 src/gui/widgets/item_factory.c:227
@@ -3419,19 +3416,16 @@ msgid "Stems"
 msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:1412
-#, fuzzy
 msgctxt "Export time range"
 msgid "Loop"
 msgstr "循环"
 
 #: src/gui/widgets/dialogs/export_dialog.c:1413
-#, fuzzy
 msgctxt "Export time range"
 msgid "Song"
 msgstr "歌曲"
 
 #: src/gui/widgets/dialogs/export_dialog.c:1414
-#, fuzzy
 msgctxt "Export time range"
 msgid "Custom"
 msgstr "自定义"
@@ -5956,7 +5950,6 @@ msgid "Format"
 msgstr "格式"
 
 #: resources/ui/export_dialog.ui:67
-#, fuzzy
 msgid "Bit Depth"
 msgstr "位深度"
 
@@ -5990,19 +5983,16 @@ msgid "Only events inside this time range will be exported."
 msgstr ""
 
 #: resources/ui/export_dialog.ui:117 resources/ui/export_dialog.ui:241
-#, fuzzy
 msgid "Track Selection"
-msgstr "选择"
+msgstr "音轨选择"
 
 #: resources/ui/export_dialog.ui:134 resources/ui/export_dialog.ui:258
-#, fuzzy
 msgid "Output"
-msgstr "%s 输出"
+msgstr "输出"
 
 #: resources/ui/export_dialog.ui:196
-#, fuzzy
 msgid "Export Lanes as Tracks"
-msgstr "将 lane 导出为"
+msgstr "将 lane 导出为音轨"
 
 #: resources/ui/plugin_browser.ui:28
 msgid "Collection"
@@ -7068,19 +7058,16 @@ msgid "Bit depth to use when exporting"
 msgstr "导出时使用的位深度"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:870
-#, fuzzy
 msgid "Genre to use when exporting."
-msgstr "导出时使用的位深度"
+msgstr "导出时使用的流派。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:875
-#, fuzzy
 msgid "Artist to use when exporting."
-msgstr "导出时使用的位深度"
+msgstr "导出时使用的艺术家。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:880
-#, fuzzy
 msgid "Title to use when exporting."
-msgstr "导出时使用的位深度"
+msgstr "导出时使用的标题。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:891
 msgid "MIDI file format (Type 0 or 1)."

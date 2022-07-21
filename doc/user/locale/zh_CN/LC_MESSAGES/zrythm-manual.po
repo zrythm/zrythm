@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-26 15:30+0100\n"
-"PO-Revision-Date: 2022-04-21 05:09+0000\n"
-"Last-Translator: InvalidTricycle <trz1118@126.com>\n"
-"Language: zh_CN\n"
+"PO-Revision-Date: 2022-04-28 00:08+0000\n"
+"Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.12.1-dev\n"
 "Generated-By: Babel 2.10.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -3178,7 +3179,7 @@ msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:42
 msgid "Bit Depth"
-msgstr ""
+msgstr "位深度"
 
 #: ../../exporting/audio-and-midi.rst:43
 msgid ""
@@ -5988,7 +5989,7 @@ msgstr ""
 
 #: ../../routing/monitor-section.rst:6
 msgid "Monitor Section"
-msgstr "监视选区"
+msgstr "监视器部分"
 
 #: ../../routing/monitor-section.rst:7
 msgid ""
@@ -6161,7 +6162,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:35 ../../tracks/track-types.rst:17
 msgid "Output"
-msgstr ""
+msgstr "输出"
 
 #: ../../routing/ports.rst:35
 msgid "The port sends signals"
@@ -7637,7 +7638,7 @@ msgstr ""
 
 #: ../../tracks/track-visibility.rst:8
 msgid "Track Visibility"
-msgstr ""
+msgstr "音轨可见性"
 
 #: ../../tracks/track-visibility.rst:10
 msgid ""
