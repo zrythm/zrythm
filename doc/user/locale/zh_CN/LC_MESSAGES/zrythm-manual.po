@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-26 15:30+0100\n"
-"PO-Revision-Date: 2022-04-28 00:08+0000\n"
-"Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
+"PO-Revision-Date: 2022-07-13 15:50+0000\n"
+"Last-Translator: Cris Q <qygw@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.12.1-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 "Generated-By: Babel 2.10.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -1507,7 +1507,7 @@ msgstr "钢琴卷帘控件"
 
 #: ../../editing/clip-editors/piano-roll.rst:39
 msgid "Drum View"
-msgstr ""
+msgstr "鼓视图"
 
 #: ../../editing/clip-editors/piano-roll.rst:31
 msgid ""
@@ -1586,7 +1586,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:89
 msgid "Velocity Editor"
-msgstr ""
+msgstr "速度编辑"
 
 #: ../../editing/clip-editors/piano-roll.rst:90
 msgid ""
@@ -4178,7 +4178,7 @@ msgstr ""
 
 #: ../../mixing/routing.rst:7 ../../routing/intro.rst:7
 msgid "Routing"
-msgstr ""
+msgstr "路由"
 
 #: ../../mixing/routing.rst:10
 msgid "Groups"
@@ -6415,7 +6415,7 @@ msgstr ""
 
 #: ../../scripting/intro.rst:8
 msgid "Scripting"
-msgstr "脚本编写"
+msgstr "脚本"
 
 #: ../../scripting/overview.rst:9
 msgid ""

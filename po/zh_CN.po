@@ -12,13 +12,14 @@
 # poi <erbaotao@outlook.com>, 2022.
 # Eric <alchemillatruth@purelymail.com>, 2022.
 # 刘韬 <lyuutau@outlook.com>, 2022.
+# Cris Q <qygw@outlook.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-26 15:29+0100\n"
-"PO-Revision-Date: 2022-04-28 00:08+0000\n"
-"Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
+"PO-Revision-Date: 2022-07-10 15:50+0000\n"
+"Last-Translator: Cris Q <qygw@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -26,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.12.1-dev\n"
+"X-Generator: Weblate 4.13.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:139 inc/audio/engine.h:278
@@ -7384,7 +7385,7 @@ msgstr "Pan定律"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1221
 msgid "Scripting"
-msgstr "脚本编写"
+msgstr "脚本"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1226
 msgid "Default script"
