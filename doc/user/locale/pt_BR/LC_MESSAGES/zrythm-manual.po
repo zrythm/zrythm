@@ -39,20 +39,22 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-26 15:30+0100\n"
-"PO-Revision-Date: 2021-10-16 04:35+0000\n"
-"Last-Translator: Vinicius Monego <monego@posteo.net>\n"
-"Language: pt_BR\n"
+"PO-Revision-Date: 2022-06-02 15:49+0000\n"
+"Last-Translator: Vitor Sabino Cardoso da SIlva <vitorcsilva180396@gmail.com>"
+"\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/pt_BR/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.13-dev\n"
 "Generated-By: Babel 2.10.1\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
-msgstr ""
+msgstr "Variáveis de Ambiente"
 
 #: ../../appendix/environment.rst:13
 msgid ""
@@ -1592,7 +1594,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:39
 msgid "Drum View"
-msgstr ""
+msgstr "Visualização da bateria"
 
 #: ../../editing/clip-editors/piano-roll.rst:31
 msgid ""
@@ -1671,7 +1673,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:89
 msgid "Velocity Editor"
-msgstr ""
+msgstr "Editor de Velocidade"
 
 #: ../../editing/clip-editors/piano-roll.rst:90
 msgid ""
@@ -2222,7 +2224,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:21
 msgid "Select/Stretch Tool"
-msgstr ""
+msgstr "Ferramenta Selecionar/Esticar"
 
 #: ../../editing/edit-tools.rst:22
 msgid "This can be toggled to switch between Select and Stretch."
@@ -2337,7 +2339,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:107
 msgid "Edit Tool"
-msgstr ""
+msgstr "Ferramenta de Edição"
 
 #: ../../editing/edit-tools.rst:108
 msgid ""
@@ -2356,7 +2358,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:120
 msgid "Cut Tool"
-msgstr ""
+msgstr "Ferramenta de Corte"
 
 #: ../../editing/edit-tools.rst:121
 msgid ""
@@ -2377,7 +2379,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:134
 msgid "Ramp Tool"
-msgstr ""
+msgstr "Ferramenta de Rampa"
 
 #: ../../editing/edit-tools.rst:135
 msgid ""
@@ -4414,7 +4416,7 @@ msgstr ""
 
 #: ../../mixing/routing.rst:7 ../../routing/intro.rst:7
 msgid "Routing"
-msgstr ""
+msgstr "Roteamento"
 
 #: ../../mixing/routing.rst:10
 msgid "Groups"
@@ -5037,7 +5039,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:9
 msgid "File Browser"
-msgstr "Gerenciador de Arquivos"
+msgstr "Navegador de arquivos"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:11
 msgid ""
@@ -6272,9 +6274,8 @@ msgid "See :ref:`export-routing-graph` for details."
 msgstr ""
 
 #: ../../routing/monitor-section.rst:6
-#, fuzzy
 msgid "Monitor Section"
-msgstr "Seleção de loop"
+msgstr "Seção de Monitoramento"
 
 #: ../../routing/monitor-section.rst:7
 msgid ""
@@ -7190,7 +7191,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:105
 msgid "Aux Sends"
-msgstr ""
+msgstr "Envios Aux"
 
 #: ../../tracks/inspector-page.rst:107
 msgid ""
@@ -7502,9 +7503,8 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/track-lanes.rst:6
-#, fuzzy
 msgid "Track Lanes"
-msgstr "Nome da Faixa"
+msgstr "Faixas de Pista"
 
 #: ../../tracks/track-lanes.rst:8
 msgid ""
@@ -8307,7 +8307,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:93
 msgid "Donate"
-msgstr "Faça uma doação"
+msgstr "Doar"
 
 #: ../../zrythm-interface/main-toolbar.rst:94
 msgid "Donate to Zrythm through LiberaPay."
