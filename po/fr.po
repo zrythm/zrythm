@@ -2379,7 +2379,7 @@ msgstr "Sortie Stéréo"
 
 #: src/gui/widgets/fader_controls_expander.c:41 src/gui/widgets/fader.c:427
 msgid "Fader"
-msgstr "Charriots"
+msgstr "Curseur"
 
 #: src/gui/widgets/automatable_selector_popover.c:92
 msgid "No control selected"
@@ -2742,7 +2742,7 @@ msgstr "Périphérique"
 
 #: src/gui/widgets/cc_bindings_tree.c:180 src/gui/widgets/item_factory.c:692
 msgid "Note/Control"
-msgstr "Contrôles des notes"
+msgstr "Note/Contrôle"
 
 #: src/gui/widgets/ports_expander.c:180 src/gui/widgets/ports_expander.c:429
 msgid "Controls"
@@ -2935,7 +2935,7 @@ msgstr "Échec de l'écriture du fichier : %s"
 
 #: src/gui/widgets/inspector_track.c:144
 msgid "Comment"
-msgstr "Commenter"
+msgstr "Commentaire"
 
 #: src/gui/widgets/track_visibility_tree.c:134
 msgid "Visible"
@@ -3315,7 +3315,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/about_dialog.c:73
 msgid "Website"
-msgstr "Site ouèbe"
+msgstr "Site Web"
 
 #: src/gui/widgets/dialogs/export_progress_dialog.c:80
 msgid "Exporting..."
