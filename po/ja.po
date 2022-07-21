@@ -5,13 +5,14 @@
 # Acid Chicken (硫酸鶏) <root@acid-chicken.com>, 2020.
 # Alexandros Theodotou <alex@zrythm.org>, 2019, 2020, 2021, 2022.
 # Nikita Saschenko <neketa777@gmail.com>, 2021.
+# Seio Inoue <sei0okun@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-26 15:29+0100\n"
-"PO-Revision-Date: 2022-04-21 05:09+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-05-08 15:13+0000\n"
+"Last-Translator: Seio Inoue <sei0okun@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -19,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 4.12.1\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:139 inc/audio/engine.h:278
@@ -826,11 +827,14 @@ msgid ""
 "memory. This may cause audio dropouts. Please refer to the 'Getting Started' "
 "section in the user manual for details."
 msgstr ""
+"%s に無制限にメモリを確保させる権限がユーザーにはありません。このため、音声が"
+"途切れることがあります。詳しくは、ユーザーマニュアルの 'Getting Started' "
+"の項を参照してください。"
 
 #: src/zrythm_app.c:872
 #, c-format
 msgid "Could not get system memory lock limit (%s)"
-msgstr ""
+msgstr "システム メモリ ロック制限を取得できませんでした (%s)"
 
 #: src/zrythm_app.c:895
 #, fuzzy, c-format
@@ -2482,7 +2486,7 @@ msgstr "低音符"
 
 #: src/gui/widgets/velocity_settings.c:91
 msgid "Velocity used on newly created notes"
-msgstr ""
+msgstr "新しいノートのベロシティ"
 
 #: src/gui/widgets/snap_grid.c:58
 #, c-format
@@ -2495,7 +2499,7 @@ msgstr "スナップ/グリッド設定"
 
 #: src/gui/widgets/preferences.c:180
 msgid "All preferences have been successfully reset to initial values"
-msgstr ""
+msgstr "すべての設定が初期化されました"
 
 #: src/gui/widgets/preferences.c:579
 msgid "Select a folder"
@@ -2513,7 +2517,7 @@ msgstr "ディザ"
 
 #: src/gui/widgets/preferences.c:832
 msgid "Reset all preferences to initial values."
-msgstr ""
+msgstr "すべての設定を初期化する。"
 
 #: src/gui/widgets/preferences.c:1059
 #, c-format
@@ -3180,6 +3184,9 @@ msgid ""
 "%sZrythm relies on donations and purchases to sustain development%s. If you "
 "enjoy the software, please consider %sdonating%s or %sbuying an installer%s."
 msgstr ""
+"%sZrythm は、開発維持のために寄付と購入に頼っています%s "
+"。もしこのソフトウェアを気に入っていただけたなら、"
+"%s寄付%sあるいは%sインストーラの購入%s をご検討ください。"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:66
 msgid "Flatpak users"
@@ -3194,7 +3201,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:77
 msgid "Flatpak limitation"
-msgstr ""
+msgstr "Flatpakの制限"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:78
 msgid "Only Flatpak-installed plugins are supported."
