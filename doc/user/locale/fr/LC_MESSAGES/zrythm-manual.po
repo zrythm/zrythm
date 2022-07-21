@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-26 15:30+0100\n"
-"PO-Revision-Date: 2022-05-04 20:10+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2022-06-04 15:50+0000\n"
+"Last-Translator: Maxime Leroy <lisacintosh@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/fr/>\n"
 "Language: fr\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.12.1\n"
+"X-Generator: Weblate 4.13-dev\n"
 "Generated-By: Babel 2.10.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -3292,13 +3292,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:68
-#, fuzzy
 msgid "MIDI Regions"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Éditer des Régions\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+msgstr "Régions MIDI"
 
 #: ../../editing/timeline/arranger.rst:69
 msgid "MIDI regions contain :term:`MIDI` notes."
@@ -6463,7 +6458,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/inspector-page.rst:53
 msgid "Display"
-msgstr ""
+msgstr "Affichage"
 
 #: ../../plugins-files/plugins/inspector-page.rst:54
 msgid ""
@@ -7709,7 +7704,7 @@ msgstr ""
 
 #: ../../routing/monitor-section.rst:68
 msgid "Dim"
-msgstr ""
+msgstr "Dim"
 
 #: ../../routing/monitor-section.rst:68
 msgid "Dim the output to the dim level"
@@ -8648,7 +8643,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:124
 msgid "Fader"
-msgstr "Charriots"
+msgstr "Curseur"
 
 #: ../../tracks/inspector-page.rst:125
 msgid "Fader section to control the volume and stereo balance."
@@ -9006,9 +9001,8 @@ msgid "Only available on instrument tracks."
 msgstr ""
 
 #: ../../tracks/track-controls.rst:54
-#, fuzzy
 msgid "Other"
-msgstr "Bruit de dispersion"
+msgstr "Autre"
 
 #: ../../tracks/track-controls.rst:59
 msgid "Lock"
