@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-26 15:30+0100\n"
-"PO-Revision-Date: 2022-04-26 14:22+0000\n"
+"PO-Revision-Date: 2022-05-04 20:10+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/fr/>\n"
 "Language: fr\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.12.1\n"
 "Generated-By: Babel 2.10.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -129,7 +130,6 @@ msgstr ""
 "applications/zrythm.desktop`."
 
 #: ../../appendix/files-and-directories.rst:29
-#, fuzzy
 msgid "GLib Schema"
 msgstr "Schéma Glib"
 
@@ -196,7 +196,6 @@ msgstr ""
 "normalement installées sous :file:`/usr/share/fonts/zrythm`."
 
 #: ../../appendix/files-and-directories.rst:61
-#, fuzzy
 msgid "GtkSourceView Stylesheets"
 msgstr "Feuilles de styles GtkSourceView"
 
@@ -253,7 +252,6 @@ msgid "Plugin Collections"
 msgstr "Collections de greffon"
 
 #: ../../appendix/files-and-directories.rst:88
-#, fuzzy
 msgid ""
 "This file contains your plugin collections. It is found at :file:"
 "`plugin_collections.yaml` under the :term:`Zrythm user path`."
@@ -262,9 +260,8 @@ msgstr ""
 "`plugin_collections.yaml`dans le :term:`Zrythm user path`."
 
 #: ../../appendix/files-and-directories.rst:94
-#, fuzzy
 msgid "Log File"
-msgstr "Fichier de journal"
+msgstr "Fichier de journalisation"
 
 #: ../../appendix/files-and-directories.rst:95
 msgid ""
@@ -272,20 +269,18 @@ msgid ""
 "subdirectory under the :term:`Zrythm user path`. The filename will contain "
 "the current date and time, for example :file:`log_2020-06-26_15-34-19.log`."
 msgstr ""
-"Zrythm écrira un fichier de journal à chaque démarrage dans :file:`log` "
-"subdirectory under the :term:`Zrythm user path`.  Le nom de fichier "
-"contiendra la date et l'heure actuelle, par exmple :file:"
-"`log_2020-06-26_15-34-19.log`."
+"Zrythm écrira un fichier de journalisation à chaque démarrage dans le sous-"
+"répertoire :file:`log` sous le :term:`Zrythm user path`. Le nom de fichier "
+"contiendra la date et l'heure actuelles, par exemple "
+":file:`log_2020-06-26_15-34-19.log`."
 
 #: ../../appendix/files-and-directories.rst:101
-#, fuzzy
 msgid "This log file is useful for debugging crashes and other problems."
 msgstr ""
-"Ce fichier de journal est utile pour débugger les crashes ainsi que d'autres "
-"problèmes."
+"Ce fichier de journalisation est utile pour déboguer les plantages ainsi que "
+"d'autres problèmes."
 
 #: ../../appendix/gnu-free-documentation-license.rst:7
-#, fuzzy
 msgid "GNU Free Documentation License"
 msgstr "Licence de documentation libre GNU"
 
@@ -339,13 +334,12 @@ msgstr ""
 "d'accord se trouve dans le panneau inférieur."
 
 #: ../../chords-and-scales/chord-pad.rst:19
-#, fuzzy
 msgid ""
 "These 12 chords are linked to the chords in the :ref:`Chord Editor <editing/"
 "clip-editors/chord-editor:Chord Editor>`."
 msgstr ""
-"Ces 12 accords sont liés aux accords dans :ref:`Chord Editor <editing/clip-"
-"editors/chord-editor:Chord Editor>`."
+"Ces 12 accords sont liés aux accords dans le :ref:`Chord Editor <editing/"
+"clip-editors/chord-editor:Chord Editor>`."
 
 #: ../../chords-and-scales/chord-pad.rst:23
 #: ../../getting-started/getting-plugins.rst:86
@@ -354,33 +348,30 @@ msgid "Presets"
 msgstr "Pré-réglages"
 
 #: ../../chords-and-scales/chord-pad.rst:25
-#, fuzzy
 msgid ""
 "Zrythm comes with pre-installed chord presets, and it also allows you to "
 "generate chord presets from scales, or even save your own."
 msgstr ""
-"Zrythm est fourni avec des préréglages d'accords, il permet aussi de générer "
-"des pré-réglages d'accords à partir de gammes, et permet aussi de "
-"sauvegarder les vos propres pré-réglages."
+"Zrythm est fourni avec des pré-réglages d'accords préinstallés, et il vous "
+"permet aussi de générer des pré-réglages d'accords à partir de gammes, ou "
+"même sauvegarder les vôtres."
 
 #: ../../chords-and-scales/chord-pad.rst:30
-#, fuzzy
 msgid "Preset Packs"
-msgstr "Pack de Pré-réglages"
+msgstr "Packs de préréglages"
 
 #: ../../chords-and-scales/chord-pad.rst:32
-#, fuzzy
 msgid ""
 "A list of preset packs and presets is found in the :ref:`Right Panel <zrythm-"
 "interface/right-panel:Right Panel>` under :guilabel:`Chord Preset Browser`."
 msgstr ""
-"Une liste de pré-réglages à été trouvée dans :ref:`Right Panel <zrythm-"
-"interface/right-panel:Right Panel>` under :guilabel:`Chord Preset Browser`."
+"Une liste de packs de préréglages et de préréglages a été trouvée dans le "
+":ref:`Right Panel <zrythm-interface/right-panel:Right Panel>` sous "
+":guilabel:`Chord Preset Browser`."
 
 #: ../../chords-and-scales/chord-pad.rst:39
-#, fuzzy
 msgid "Chord preset browser"
-msgstr "Navigateur de pré-réglages d'accords"
+msgstr "Navigateur de préréglages d'accords"
 
 #: ../../chords-and-scales/chord-pad.rst:42
 #: ../../plugins-files/audio-midi-files/file-browser.rst:48
@@ -395,38 +386,33 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:48
 #: ../../plugins-files/audio-midi-files/file-browser.rst:87
-#, fuzzy
 msgid "Auditioning"
 msgstr "Écoute"
 
 #: ../../chords-and-scales/chord-pad.rst:50
-#, fuzzy
 msgid ""
 "You can audition chord presets by selecting an instrument plugin from the "
 "list and using the available playback controls. This works similarly to :ref:"
 "`auditioning in the File Browser <plugins-files/audio-midi-files/file-"
 "browser:Auditioning>`."
 msgstr ""
-"Vous pouvez écouter les pré-réglages d'accords en sélectionnant un greffon "
+"Vous pouvez écouter les préréglages d'accords en sélectionnant un greffon "
 "d'instrument dans la liste, et utiliser les contrôles de lectures "
 "disponibles. Le fonctionnement est similaire à :ref:`auditioning in the File "
 "Browser <plugins-files/audio-midi-files/file-browser:Auditioning>`."
 
 #: ../../chords-and-scales/chord-pad.rst:56
-#, fuzzy
 msgid "Standard Packs"
 msgstr "Packs standards"
 
 #: ../../chords-and-scales/chord-pad.rst:58
-#, fuzzy
 msgid ""
 "Zrythm comes with some standard packs that cannot be renamed or deleted."
 msgstr ""
-"Zrythm est fourni avec des packs standards, ceux-ci ne peuvent être ni "
-"renommés, ni effacés."
+"Zrythm est fourni avec des packs standards qui ne peuvent être ni renommés, "
+"ni effacés."
 
 #: ../../chords-and-scales/chord-pad.rst:62
-#, fuzzy
 msgid "Custom Packs"
 msgstr "Packs personnalisés"
 
@@ -436,58 +422,50 @@ msgid "Creating Custom Packs"
 msgstr "Créer des pistes"
 
 #: ../../chords-and-scales/chord-pad.rst:67
-#, fuzzy
 msgid ""
 "You can create your own pack by clicking the :guilabel:`Add` button below "
 "the list of chord preset packs."
 msgstr ""
-"Vous pouvez créer votre propre pack en cliquant sur le bouton :guilabel:"
-"`Add`en dessous de la liste des pack de pré-réglages d'accords."
+"Vous pouvez créer votre propre pack en cliquant sur le bouton :guilabel:`Add`"
+"en dessous de la liste des packs de préréglages d'accords."
 
 #: ../../chords-and-scales/chord-pad.rst:74
-#, fuzzy
 msgid "Creating a chord preset pack"
-msgstr "Créer un pack de pré-réglages d'accords"
+msgstr "Créer un pack de préréglages d'accords"
 
 #: ../../chords-and-scales/chord-pad.rst:77
-#, fuzzy
 msgid "Editing Custom Packs"
 msgstr "Éditer des packs personnalisés"
 
 #: ../../chords-and-scales/chord-pad.rst:79
-#, fuzzy
 msgid "Custom packs can be renamed or deleted by right-clicking."
 msgstr ""
 "Les packs personnalisés peuvent être renommés ou effacés en cliquant-droit."
 
 #: ../../chords-and-scales/chord-pad.rst:85
 msgid "Renaming or deleting a custom chord preset pack"
-msgstr "Renommer ou effacer un pack de pré-réglage d'accords"
+msgstr "Renommer ou effacer un pack de préréglage d'accords"
 
 #: ../../chords-and-scales/chord-pad.rst:87
-#, fuzzy
 msgid "Chord presets under the selected pack can also be renamed and deleted."
 msgstr ""
-"Les pré-réglages d'accords sous le pack sélectionné peuvent aussi être "
+"Les préréglages d'accords sous le pack sélectionné peuvent aussi être "
 "renommés et effacés."
 
 #: ../../chords-and-scales/chord-pad.rst:91
-#, fuzzy
 msgid "Saving Presets"
-msgstr "Sauvegarde de pré-réglages"
+msgstr "Sauvegarde de préréglages"
 
 #: ../../chords-and-scales/chord-pad.rst:93
-#, fuzzy
 msgid ""
 "Clicking on the :guilabel:`Save Preset` button in the top part of the chord "
 "pad will allow you to save the current chord configuration in a preset."
 msgstr ""
-"Il est possible de sauvegarder a configuration d'accord dans un pré-réglage "
-"en cliquant sur le bouton :guilabel:`Save Preset` situé dans la partie "
-"supérieure du pad d'accord."
+"Cliquer sur le bouton :guilabel:`Save Preset` situé dans la partie "
+"supérieure du pad d'accord vous permettra de sauvegarder la configuration "
+"d'accord actuelle dans un préréglage."
 
 #: ../../chords-and-scales/chord-pad.rst:100
-#, fuzzy
 msgid "Saving a chord preset"
 msgstr "Sauvegarder un pré-réglage d'accord"
 
@@ -500,38 +478,35 @@ msgid ""
 "To load a preset, click the :guilabel:`Load Preset` button in the top part "
 "of the chord pad, then select the preset you want to use."
 msgstr ""
-"Pour charger u pré-réglage, cliquez sur le bouton :guilabel:`Load Preset` "
+"Pour charger un pré-réglage, cliquez sur le bouton :guilabel:`Load Preset` "
 "sur la partie supérieure du pad d'accord, puis sélectionnez le pré-réglage "
 "désiré."
 
 #: ../../chords-and-scales/chord-pad.rst:112
-#, fuzzy
 msgid "Selecting a chord preset"
-msgstr "Sélectionner un pré-réglage d'accord"
+msgstr "Sélectionner un préréglage d'accord"
 
 #: ../../chords-and-scales/chord-pad.rst:114
 msgid ""
 "You can also load a preset by double clicking on it in the preset browser."
 msgstr ""
-"Il est possible de charger un pré-réglage en double-cliquant dessus dans le "
-"navigateur de pré-réglages."
+"Vous pouvez également charger un pré-réglage en double-cliquant dessus dans "
+"le navigateur de pré-réglages."
 
 #: ../../chords-and-scales/chord-pad.rst:118
-#, fuzzy
 msgid "Generating Chords from Scale"
 msgstr "Générer des accords à partir d'une gamme"
 
 #: ../../chords-and-scales/chord-pad.rst:120
-#, fuzzy
 msgid ""
 "Chords can be generated from a scale and a root note by clicking on the :"
 "guilabel:`Load Preset` button, then selecting a scale and a root note."
 msgstr ""
 "Les accords peuvent être générés à partir d'une gamme et d'une note "
-"fondamentale en cliquant sur le bouton guilabel:`Load Preset`."
+"fondamentale en cliquant sur le bouton guilabel:`Load Preset`, puis en "
+"sélectionnant une gamme et une note fondamentale."
 
 #: ../../chords-and-scales/chord-pad.rst:127
-#, fuzzy
 msgid "Generating chords from a scale"
 msgstr "Génération d'accords à partir d'une gamme"
 
@@ -540,38 +515,34 @@ msgid "Transpose"
 msgstr "Transposer"
 
 #: ../../chords-and-scales/chord-pad.rst:132
-#, fuzzy
 msgid ""
 "Clicking on the up/down transpose buttons will transpose all chords by 1 "
 "semitone up or down."
 msgstr ""
 "Les boutons Transposer Haut/Bas transposeront tous les accords un demi-ton "
-"au-dessus ou au-dessous"
+"plus haut ou plus bas."
 
 #: ../../chords-and-scales/chord-pad.rst:136
-#, fuzzy
 msgid "Editing Chords"
 msgstr "Édition d'accords"
 
 #: ../../chords-and-scales/chord-pad.rst:139
 msgid "Chord Selection"
-msgstr "Séléction d'accords"
+msgstr "Sélection d'accords"
 
 #: ../../chords-and-scales/chord-pad.rst:141
-#, fuzzy
 msgid ""
 "Clicking on the chord button will bring up the chord selector window that "
 "allows you to change the current chord."
 msgstr ""
-"Cliquer sur le bouton Accords affichera la fenêtre du sélecteur d'accord, et "
-"permet de changer l'accord actuel."
+"Cliquer sur le bouton d'accords affichera la fenêtre du sélecteur d'accord "
+"qui permet de changer l'accord actuel."
 
 #: ../../chords-and-scales/chord-pad.rst:148
 msgid "Chord selector"
-msgstr "Sélecteur d'Accords"
+msgstr "Sélecteur d'accords"
 
 #: ../../chords-and-scales/chord-pad.rst:150
-#, fuzzy
 msgid ""
 "At the moment, only the :guilabel:`Chord Creator` tab is functional. A chord "
 "can be created by selecting its root note, its type, its accent and its bass "
@@ -582,15 +553,14 @@ msgstr ""
 "accent et sa note de basse."
 
 #: ../../chords-and-scales/chord-pad.rst:154
-#, fuzzy
 msgid ""
 "Selecting :guilabel:`In scale` under :guilabel:`Visibility` will only show "
 "options that correspond to chords inside the currently active scale. This "
 "makes it easy to create chords that stay in the current scale."
 msgstr ""
-"Sélectionner :guilabel:`In scale` under :guilabel:`Visibility`montrera "
-"seulement les options qui correspondent aux accords dans la gamme actuelle. "
-"Cela rend facile la création d'accords qui se trouvent dans la gamme "
+"Sélectionner :guilabel:`In scale` sous :guilabel:`Visibility`montrera "
+"seulement les options qui correspondent aux accords dans la gamme active "
+"actuelle. Cela facilite la création d'accords qui se trouvent dans la gamme "
 "actuelle."
 
 #: ../../chords-and-scales/chord-pad.rst:162
@@ -598,17 +568,16 @@ msgid "Inversions"
 msgstr "Inversions"
 
 #: ../../chords-and-scales/chord-pad.rst:164
-#, fuzzy
 msgid ""
 "Clicking on the left or right arrows will allow you to invert the chord. "
 "Each inversion towards the right moves the lowest note in the chord one "
 "octave higher, and each inversion towards the left moves the highest note in "
 "the chord one octave below."
 msgstr ""
-"Cliquer sur le flèche droite ou gauche permet d'inverser l'accord. Chaque "
-"inversion vers la droite déplace la note la plus grave une octave plus haut, "
-"et chaque inversion vers la gauche déplace la note la plus aiguë une octave "
-"plus bas."
+"Cliquer sur les flèches droite ou gauche vous permet d'inverser l'accord. "
+"Chaque inversion vers la droite déplace la note la plus grave de l'accord "
+"d'une octave plus haute, et chaque inversion vers la gauche déplace la note "
+"la plus aiguë de l'accord d'une octave plus basse."
 
 #: ../../chords-and-scales/intro.rst:9
 msgid "Chords and Scales"
@@ -616,7 +585,7 @@ msgstr "Accords et gammes"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:7
 msgid "Piano Roll Integration"
-msgstr "Édition piano-roll (partition défilante)"
+msgstr "Intégration du piano-roll"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:12
 msgid "Highlighting"
@@ -634,7 +603,7 @@ msgstr ""
 
 #: ../../chords-and-scales/piano-roll-integration.rst:22
 msgid "No highlighting"
-msgstr "Aucun surlignage d'accord."
+msgstr "Aucun surlignage."
 
 #: ../../chords-and-scales/piano-roll-integration.rst:28
 #, fuzzy
@@ -642,7 +611,6 @@ msgid "Chord highlighting"
 msgstr "Surlignage des accords."
 
 #: ../../chords-and-scales/piano-roll-integration.rst:34
-#, fuzzy
 msgid "Scale highlighting"
 msgstr "Surlignage de gamme"
 
@@ -656,7 +624,6 @@ msgid "Additional Settings"
 msgstr "Paramètres additionnels"
 
 #: ../../configuration/additional-settings.rst:10
-#, fuzzy
 msgid "GSettings"
 msgstr "GSettings"
 
@@ -678,9 +645,8 @@ msgstr ""
 "Normalement, vous ne devriez pas avoir besoin d'accéder à ces paramètres car "
 "la plupart d'entre eux se trouvent dans l'interface utilisateur de Zrythm, "
 "il n'est pas recommandé de les modifier car Zrythm valide certains "
-"paramètres avant de les enregistrer, mais dans certains cas vous pourriez "
-"vouloir les modifier manuellement pour une raison quelconque - si par "
-"exemple le système audio sélectionné fait planter Zrythm."
+"paramètres avant de les enregistrer ou utilise certains paramètres en "
+"interne."
 
 #: ../../configuration/additional-settings.rst:26
 msgid "Viewing the Current Settings"
@@ -696,7 +662,6 @@ msgid "Reset to Factory Settings"
 msgstr "Restaurer les réglages d'origine"
 
 #: ../../configuration/additional-settings.rst:33
-#, fuzzy
 msgid ""
 "See :option:`zrythm --reset-to-factory` and :ref:`configuration/preferences:"
 "Reset to Factory Settings`."
@@ -705,7 +670,6 @@ msgstr ""
 "Reset to Factory Settings`."
 
 #: ../../configuration/additional-settings.rst:37
-#, fuzzy
 msgid "Plugin Settings"
 msgstr "Paramétrages de greffons"
 
@@ -734,9 +698,8 @@ msgstr ""
 "utilisateurs ne sont pas censés l'éditer."
 
 #: ../../configuration/device-setup.rst:7
-#, fuzzy
 msgid "Devices"
-msgstr "Périphériques MIDI"
+msgstr "Périphériques"
 
 #: ../../configuration/device-setup.rst:10
 msgid "Device Setup"
@@ -747,14 +710,13 @@ msgid "Connecting MIDI and Audio Devices"
 msgstr "Connecter les périphériques MIDI et audio"
 
 #: ../../configuration/device-setup.rst:15
-#, fuzzy
 msgid ""
 "Zrythm will auto-connect to the devices specified in the :ref:`Preferences "
 "<configuration/preferences:Preferences>` and make these devices available "
 "in :ref:`track inputs <tracks/inspector-page:Inputs>` and other places."
 msgstr ""
-"Zythm connectera automatiquement les périphériques MIDI spécifiés dans :ref:"
-"`Preferences <configuration/preferences:Preferences>`et les rendra "
+"Zrythm se connectera automatiquement aux périphériques MIDI spécifiés dans "
+"les :ref:`Preferences <configuration/preferences:Preferences>`et les rendra "
 "disponibles dans :ref:`track inputs <tracks/inspector-page:Inputs>` ainsi "
 "que dans d'autres endroits."
 
@@ -776,35 +738,32 @@ msgstr ""
 "``a2jmidid``."
 
 #: ../../configuration/device-setup.rst:33
-#, fuzzy
 msgid "Device connections in Qjackctl"
-msgstr "Connections de périphériques dans Qjackctl"
+msgstr "Connections de périphérique dans Qjackctl"
 
 #: ../../configuration/device-setup.rst:35
-#, fuzzy
 msgid ""
 "Zrythm will manage hardware connections on its own, so users are not "
 "expected to have to use such a patchbay to route MIDI/audio devices, however "
 "such a tool can be used to route signals from other apps into Zrythm to "
 "record their output, or to route the output of Zrythm into other JACK apps."
 msgstr ""
-"Zrythm gère lui-même les connexions hardware, les utilisateurs ne sont pas "
-"obligés d'utiliser un patchbay pour router des périphériques MIDI ou Audio, "
-"cependant, les patchbays peuvent être utilisés pour router un signal vers "
-"d'autres applications."
+"Zrythm gèrera lui-même les connexions matérielles, les utilisateurs ne sont "
+"donc pas obligés d'utiliser une baie de brassage pour router des "
+"périphériques MIDI ou audio, cependant, les baies de brassage peuvent être "
+"utilisées pour diriger un signal provenant d'autres applications vers "
+"Zrythm, ou pour diriger la sortie de Zrythm vers d'autres applications JACK."
 
 #: ../../configuration/device-setup.rst:42
-#, fuzzy
 msgid "Any connections made externally will not be remembered by Zrythm."
-msgstr "Les connexions externes ne seront pas sauvegardées par Zrythm."
+msgstr ""
+"Les connexions effectuées en externe ne seront pas mémorisées par Zrythm."
 
 #: ../../configuration/device-setup.rst:46
-#, fuzzy
 msgid "MIDI Bindings"
 msgstr "Liaisons MIDI"
 
 #: ../../configuration/device-setup.rst:49
-#, fuzzy
 msgid "Creating Bindings"
 msgstr "Créer des liaisons"
 
@@ -816,18 +775,16 @@ msgid ""
 "clicking on eligible controls and selecting :guilabel:`MIDI learn`."
 msgstr ""
 "Les contrôles de périphériques MIDI peuvent êtres liés à des contrôles "
-"internes à Zrythm (ou à d'autres contrôles qui les supporte). Après avoir "
-"activé un périphérique dans :ref:`Preferences <configuration/preferences:"
-"Preferences>`, une liaison peut être créée en cliquant-droit sur un contrôle "
-"et en séléctionnant :guilabel: `MIDI learn`."
+"internes à Zrythm (sur les contrôles qui les supporte). Après avoir activé "
+"un périphérique dans :ref:`Preferences <configuration/"
+"preferences:Preferences>`, une liaison peut être créée en cliquant-droit sur "
+"un contrôle éligible et en sélectionnant :guilabel: `MIDI learn`."
 
 #: ../../configuration/device-setup.rst:62
-#, fuzzy
 msgid "MIDI learn on channel sends"
-msgstr "Apprentissage MIDI sur l'envoi de piste"
+msgstr "Apprentissage MIDI sur les envois de piste"
 
 #: ../../configuration/device-setup.rst:64
-#, fuzzy
 msgid ""
 "A window will show up asking you to press a key or move a knob on your MIDI "
 "device."
@@ -836,18 +793,16 @@ msgstr ""
 "un potentiomètre sur votre périphérique MIDI."
 
 #: ../../configuration/device-setup.rst:70
-#, fuzzy
 msgid "MIDI learn window"
 msgstr "Fenêtre d'apprentissage MIDI"
 
 #: ../../configuration/device-setup.rst:72
-#, fuzzy
 msgid ""
 "When the mapping is confirmed, the selected control can be controlled using "
 "the MIDI device."
 msgstr ""
-"Lorsque la liaison est confirmée, le contrôle sélectionné peut être contrôlé "
-"en utilisant le périphérique MIDI."
+"Lorsque la cartographie est confirmée, le contrôle sélectionné peut être "
+"contrôlé en utilisant le périphérique MIDI."
 
 #: ../../configuration/device-setup.rst:76
 msgid "Managing Bindings"
