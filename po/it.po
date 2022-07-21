@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-26 15:29+0100\n"
-"PO-Revision-Date: 2022-04-21 05:09+0000\n"
+"PO-Revision-Date: 2022-05-21 15:49+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 4.13-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:139 inc/audio/engine.h:278
@@ -6240,7 +6240,7 @@ msgstr "Selezioni"
 
 #: resources/ui/export_dialog.ui:134 resources/ui/export_dialog.ui:258
 msgid "Output"
-msgstr ""
+msgstr "Uscita"
 
 #: resources/ui/export_dialog.ui:196
 #, fuzzy

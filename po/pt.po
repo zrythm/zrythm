@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-26 15:29+0100\n"
-"PO-Revision-Date: 2022-01-30 22:48+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"PO-Revision-Date: 2022-05-21 15:49+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
 "Language: pt\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.11-dev\n"
+"X-Generator: Weblate 4.13-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:139 inc/audio/engine.h:278
@@ -3163,7 +3163,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:111
 msgid "Welcome"
-msgstr ""
+msgstr "Bem-vindo"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:101
 #, fuzzy
