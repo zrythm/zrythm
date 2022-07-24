@@ -33,16 +33,17 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-26 15:30+0100\n"
-"PO-Revision-Date: 2021-12-23 10:52+0000\n"
-"Last-Translator: kakiremora <piotrek.pastuszak2003@gmail.com>\n"
+"PO-Revision-Date: 2022-05-14 15:17+0000\n"
+"Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/pl/>\n"
 "Language: pl\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/pl/>\n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.13-dev\n"
 "Generated-By: Babel 2.10.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -1360,7 +1361,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Exponent"
-msgstr ""
+msgstr "Wykładnik"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Exponential curve."
@@ -2761,7 +2762,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:135 ../../tracks/track-types.rst:50
 msgid "Marker"
-msgstr ""
+msgstr "Znacznik"
 
 #: ../../editing/timeline/arranger.rst:137
 msgid "Markers appear inside the marker track."

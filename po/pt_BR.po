@@ -8,13 +8,15 @@
 # Rodrigo Zimmermann <rodrigo.zimmermann23@gmail.com>, 2021.
 # Pedro Portela <pportela@disroot.org>, 2021.
 # Wilker Santana da Silva <wilker@posteo.com.br>, 2022.
+# Vitor Sabino Cardoso da SIlva <vitorcsilva180396@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-26 15:29+0100\n"
-"PO-Revision-Date: 2022-03-06 09:46+0000\n"
-"Last-Translator: Wilker Santana da Silva <wilker@posteo.com.br>\n"
+"PO-Revision-Date: 2022-06-02 15:49+0000\n"
+"Last-Translator: Vitor Sabino Cardoso da SIlva <vitorcsilva180396@gmail.com>"
+"\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -22,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 4.13-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:139 inc/audio/engine.h:278
@@ -2205,7 +2207,7 @@ msgstr "Atalhos de Teclado"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Donate"
-msgstr "Faça uma doação"
+msgstr "Doar"
 
 #: src/gui/widgets/help_toolbar.c:45
 msgid "Report a Bug"
@@ -2269,12 +2271,11 @@ msgstr "Gerenciador de Plugins"
 #: src/gui/widgets/right_dock_edge.c:122 src/gui/widgets/right_dock_edge.c:159
 #: src/gui/widgets/file_browser_window.c:21 src/utils/gtk.c:1293
 msgid "File Browser"
-msgstr "Gerenciador de Arquivos"
+msgstr "Navegador de arquivos"
 
 #: src/gui/widgets/right_dock_edge.c:135
-#, fuzzy
 msgid "Monitor Section"
-msgstr "Saída do monitor"
+msgstr "Seção de Monitoramento"
 
 #: src/gui/widgets/right_dock_edge.c:148 src/utils/gtk.c:1296
 msgid "Chord Preset Browser"

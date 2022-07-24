@@ -1,15 +1,15 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# Reza Almanda <rezaalmanda27@gmail.com>, 2021.
+# Reza Almanda <rezaalmanda27@gmail.com>, 2021, 2022.
 # Narendra Utpala <naredra81@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-26 15:29+0100\n"
-"PO-Revision-Date: 2022-03-03 06:59+0000\n"
-"Last-Translator: Narendra Utpala <naredra81@gmail.com>\n"
+"PO-Revision-Date: 2022-06-16 15:50+0000\n"
+"Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "id/>\n"
 "Language: id\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.11.1-dev\n"
+"X-Generator: Weblate 4.13-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:139 inc/audio/engine.h:278
@@ -3330,7 +3330,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:256
 msgid "User path"
-msgstr ""
+msgstr "User path"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:258
 msgid "Location to save user files"
@@ -3527,7 +3527,7 @@ msgstr ""
 
 #: src/utils/gtk.c:1275
 msgid "Chord Pad"
-msgstr ""
+msgstr "Pad Akor"
 
 #: src/utils/gtk.c:1278
 msgid "Editor"
@@ -5236,7 +5236,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:98 resources/ui/header.ui:23
 msgid "Project"
-msgstr ""
+msgstr "Proyek"
 
 #: resources/gtk/help-overlay.ui:110
 msgid "Open a project"

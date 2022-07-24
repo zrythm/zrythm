@@ -1,24 +1,24 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# gnu-ewm <gnu.ewm@protonmail.com>, 2021.
+# gnu-ewm <gnu.ewm@protonmail.com>, 2021, 2022.
 # kakiremora <piotrek.pastuszak2003@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-26 15:29+0100\n"
-"PO-Revision-Date: 2021-12-23 10:52+0000\n"
-"Last-Translator: kakiremora <piotrek.pastuszak2003@gmail.com>\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/zrythm/pl/"
-">\n"
+"PO-Revision-Date: 2022-05-14 15:17+0000\n"
+"Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/zrythm/pl/>"
+"\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.13-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:139 inc/audio/engine.h:278
@@ -51,7 +51,7 @@ msgstr "Region"
 #: inc/schemas/gui/backend/arranger_object.h:54
 #: inc/gui/backend/arranger_object.h:89
 msgid "Midi Note"
-msgstr ""
+msgstr "Nuta Midi"
 
 #: inc/schemas/gui/backend/arranger_object.h:56
 #: inc/gui/backend/arranger_object.h:91
@@ -66,7 +66,7 @@ msgstr ""
 #: inc/schemas/gui/backend/arranger_object.h:60
 #: inc/gui/backend/arranger_object.h:95 inc/audio/track.h:177
 msgid "Marker"
-msgstr ""
+msgstr "Znacznik"
 
 #: inc/schemas/gui/backend/arranger_object.h:61
 #: inc/gui/backend/arranger_object.h:96
@@ -83,7 +83,7 @@ msgstr "Prędkość"
 #: inc/schemas/audio/curve.h:44 inc/audio/curve.h:111 src/audio/curve.c:55
 #, c-format
 msgid "Exponent"
-msgstr ""
+msgstr "Wykładnik"
 
 #: inc/schemas/audio/curve.h:45 inc/audio/curve.h:112 src/audio/curve.c:58
 #, c-format

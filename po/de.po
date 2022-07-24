@@ -15,16 +15,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-04-26 15:29+0100\n"
-"PO-Revision-Date: 2022-04-04 03:09+0000\n"
+"PO-Revision-Date: 2022-07-10 15:50+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 4.13.1-dev\n"
 
 #. TRANSLATORS: Dummy backend
 #: inc/plugins/plugin_descriptor.h:139 inc/audio/engine.h:278
@@ -66,8 +66,9 @@ msgstr "Akkord-Objekt"
 
 #: inc/schemas/gui/backend/arranger_object.h:58
 #: inc/gui/backend/arranger_object.h:93
+#, fuzzy
 msgid "Scale Object"
-msgstr "Skalen-Objekt"
+msgstr "Tonleiterobjekt"
 
 #: inc/schemas/gui/backend/arranger_object.h:60
 #: inc/gui/backend/arranger_object.h:95 inc/audio/track.h:177
@@ -1901,8 +1902,9 @@ msgid "both"
 msgstr "beide"
 
 #: src/gui/widgets/piano_roll_keys.c:204
+#, fuzzy
 msgid "scale"
-msgstr "Skala"
+msgstr "Tonleiter"
 
 #: src/gui/widgets/piano_roll_keys.c:223
 msgid "chord"
@@ -2367,8 +2369,9 @@ msgid "[Modulator %d] %s"
 msgstr "[Modulator %d] %s"
 
 #: src/gui/widgets/chord_pad_panel.c:72
+#, fuzzy
 msgid "From scale"
-msgstr "Von Skala"
+msgstr "Von Tonleiter"
 
 #: src/gui/widgets/chord_pad_panel.c:75
 msgid "Predefined"
@@ -2600,8 +2603,9 @@ msgid "Sends"
 msgstr "Sendet"
 
 #: src/gui/widgets/scale_selector_window.c:71
+#, fuzzy
 msgid "Failed to edit scale"
-msgstr "Skala konnte nicht bearbeitet werden"
+msgstr "Tonleiter konnte nicht bearbeitet werden"
 
 #: src/gui/widgets/add_track_menu_button.c:66
 #, fuzzy
@@ -2861,8 +2865,9 @@ msgid "Highlight Chord"
 msgstr "Akkorde hervorheben"
 
 #: src/gui/widgets/editor_toolbar.c:303
+#, fuzzy
 msgid "Highlight Scale"
-msgstr "Skala hervorheben"
+msgstr "Tonleiter hervorheben"
 
 #: src/gui/widgets/editor_toolbar.c:307
 msgid "Highlight Both"
@@ -3435,9 +3440,8 @@ msgid "Preferred language"
 msgstr "Pre-Fader-Balance"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:256
-#, fuzzy
 msgid "User path"
-msgstr "Pfad auswählen"
+msgstr "Benutzerpfad"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:258
 msgid "Location to save user files"
@@ -5674,12 +5678,14 @@ msgid "B"
 msgstr "H"
 
 #: resources/ui/scale_selector_window.ui:161 resources/ui/inspector_chord.ui:18
+#, fuzzy
 msgid "Scale"
 msgstr "Tonleiter"
 
 #: resources/ui/scale_selector_window.ui:178
+#, fuzzy
 msgid "Scale - Other"
-msgstr "Skala – andere"
+msgstr "Tonleiter – andere"
 
 #: resources/ui/scale_selector_window.ui:196
 #: resources/ui/chord_selector_window.ui:506
@@ -5777,8 +5783,9 @@ msgid "Bass Note"
 msgstr "Basston"
 
 #: resources/ui/chord_selector_window.ui:494
+#, fuzzy
 msgid "In scale"
-msgstr "Im Maßstab"
+msgstr "In Tonleiter"
 
 #: resources/ui/chord_selector_window.ui:599
 msgid "Diatonic"
@@ -5848,8 +5855,9 @@ msgid "Show/hide UI"
 msgstr "Benutzeroberfläche anzeigen/ausblenden"
 
 #: resources/ui/inspector_chord.ui:29
+#, fuzzy
 msgid "Enforce scale"
-msgstr "Skala erzwingen"
+msgstr "Tonleiter erzwingen"
 
 #: resources/ui/arranger_object_info_dialog.ui:43
 msgid "Owner"
@@ -6603,9 +6611,10 @@ msgid "Piano roll highlight"
 msgstr "Piano-Roll-Hervorhebung"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:407
+#, fuzzy
 msgid "Whether to highlight chords, scales, both or none in the piano roll."
 msgstr ""
-"Ob Akkorde, Skalen, beides oder beides nicht im Piano Roll hervorgehoben "
+"Ob Akkorde, Tonleitern, beide oder keine in der Notenrolle hervorgehoben "
 "werden sollen."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:411
