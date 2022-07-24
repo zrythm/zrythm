@@ -1123,15 +1123,16 @@ track_validate (Track * self)
       for (int j = 0; j < lane->num_regions; j++)
         {
           ZRegion * region = lane->regions[j];
-          region_validate (
-            region, track_is_in_active_project (self));
+          bool is_project = track_is_in_active_project (self);
+          region_validate (region, is_project, 0);
         }
     }
 
   for (int i = 0; i < self->num_chord_regions; i++)
     {
       ZRegion * r = self->chord_regions[i];
-      region_validate (r, track_is_in_active_project (self));
+      region_validate (
+        r, track_is_in_active_project (self), 0);
     }
 
   g_debug ("done validating track '%s'", self->name);
@@ -1801,7 +1802,7 @@ track_insert_region (
       track = automation_track_get_track (at);
     }
   g_return_if_fail (IS_TRACK (track));
-  g_return_if_fail (region_validate (region, false));
+  g_return_if_fail (region_validate (region, false, 0));
   g_return_if_fail (track_type_can_have_region_type (
     track->type, region->id.type));
 

@@ -12,6 +12,7 @@
 
 #include <stdbool.h>
 
+#include "utils/types.h"
 #include "utils/yaml.h"
 
 typedef struct AudioClip              AudioClip;
@@ -89,6 +90,14 @@ typedef struct UndoableAction
   double frames_per_tick;
 
   /**
+   * Sample rate of this action.
+   *
+   * Used to recalculate UndoableAction.frames_per_tick when
+   * the project is loaded under a new samplerate.
+   */
+  sample_rate_t sample_rate;
+
+  /**
    * Index in the stack.
    *
    * Used during deserialization.
@@ -114,6 +123,7 @@ static const cyaml_schema_field_t undoable_action_fields_schema[] = {
     type,
     undoable_action_type_strings),
   YAML_FIELD_FLOAT (UndoableAction, frames_per_tick),
+  YAML_FIELD_INT (UndoableAction, sample_rate),
   YAML_FIELD_INT (UndoableAction, stack_idx),
   YAML_FIELD_INT (UndoableAction, num_actions),
 

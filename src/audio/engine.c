@@ -160,6 +160,8 @@ engine_update_frames_per_tick (
       return;
     }
 
+  self->updating_frames_per_tick = true;
+
   /* process all recording events */
   recording_manager_process_events (RECORDING_MANAGER);
 
@@ -191,6 +193,8 @@ engine_update_frames_per_tick (
       track_update_positions (
         TRACKLIST->tracks[i], update_from_ticks, bpm_change);
     }
+
+  self->updating_frames_per_tick = false;
 }
 
 /**

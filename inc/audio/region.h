@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -705,9 +689,16 @@ region_get_arranger_selections (ZRegion * self);
 
 /**
  * Sanity checking.
+ *
+ * @param frames_per_tick Frames per tick used when
+ * validating audio regions. Passing 0 will use the value
+ * from the current engine.
  */
 bool
-region_validate (ZRegion * self, bool is_project);
+region_validate (
+  ZRegion * self,
+  bool      is_project,
+  double    frames_per_tick);
 
 /**
  * Disconnects the region and anything using it.

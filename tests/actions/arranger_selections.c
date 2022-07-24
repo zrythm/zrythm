@@ -284,7 +284,7 @@ test_delete_chords (void)
   rebootstrap_timeline ();
 
   ZRegion * r = P_CHORD_TRACK->chord_regions[0];
-  g_assert_true (region_validate (r, F_PROJECT));
+  g_assert_true (region_validate (r, F_PROJECT, 0));
 
   /* add another chord */
   ChordObject * c = chord_object_new (&r->id, 2, 2);
@@ -304,7 +304,7 @@ test_delete_chords (void)
     (ArrangerObject *) r->chord_objects[0]);
   arranger_selections_action_perform_delete (
     CHORD_SELECTIONS, NULL);
-  g_assert_true (region_validate (r, F_PROJECT));
+  g_assert_true (region_validate (r, F_PROJECT, 0));
 
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -478,7 +478,6 @@ check_after_move_timeline (int new_tracks)
 static void
 test_move_audio_region_and_lower_bpm (void)
 {
-  return;
   test_helper_zrythm_init ();
 
   char audio_file_path[2000];
@@ -510,14 +509,79 @@ test_move_audio_region_and_lower_bpm (void)
       /* lower BPM and attempt to save */
       bpm_t bpm_before =
         tempo_track_get_current_bpm (P_TEMPO_TRACK);
+      ZRegion * r = TRACKLIST->tracks[5]->lanes[0]->regions[0];
+      long frames_len = arranger_object_get_length_in_frames (
+        (ArrangerObject *) r);
+      double ticks_len = arranger_object_get_length_in_ticks (
+        (ArrangerObject *) r);
+      AudioClip * clip = AUDIO_ENGINE->pool->clips[r->pool_id];
+      g_message (
+        "before | r size: %ld (ticks %f), clip size %ld",
+        frames_len, ticks_len, clip->num_frames);
+      region_print (r);
+      region_validate (r, true, 0);
       tempo_track_set_bpm (
         P_TEMPO_TRACK, bpm_before - bpm_diff, bpm_before,
         Z_F_NOT_TEMPORARY, F_NO_PUBLISH_EVENTS);
+      frames_len = arranger_object_get_length_in_frames (
+        (ArrangerObject *) r);
+      ticks_len = arranger_object_get_length_in_ticks (
+        (ArrangerObject *) r);
+      g_message (
+        "after | r size: %ld (ticks %f), clip size %ld",
+        frames_len, ticks_len, clip->num_frames);
+      region_print (r);
+      region_validate (r, true, 0);
       test_project_save_and_reload ();
 
       /* undo lowering BPM */
       undo_manager_undo (UNDO_MANAGER, NULL);
     }
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
+test_move_audio_region_and_lower_samplerate (void)
+{
+  test_helper_zrythm_init ();
+
+  char audio_file_path[2000];
+  sprintf (
+    audio_file_path, "%s%s%s", TESTS_SRCDIR,
+    G_DIR_SEPARATOR_S, "test.wav");
+
+  /* create audio track with region */
+  Position pos;
+  position_init (&pos);
+  int             track_pos = TRACKLIST->num_tracks;
+  SupportedFile * file =
+    supported_file_new_from_path (audio_file_path);
+  Track * track = track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, file, &pos, track_pos, 1, NULL);
+
+  /* move the region */
+  arranger_object_select (
+    (ArrangerObject *) track->lanes[0]->regions[0], F_SELECT,
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_move_timeline (
+    TL_SELECTIONS, MOVE_TICKS, 0, 0, F_NOT_ALREADY_MOVED,
+    NULL);
+
+  /* save the project */
+  int ret =
+    project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
+  g_assert_cmpint (ret, ==, 0);
+  char * prj_file =
+    g_build_filename (PROJECT->dir, PROJECT_FILE, NULL);
+
+  /* adjust the samplerate to be given at startup */
+  zrythm_app->samplerate = (int) AUDIO_ENGINE->sample_rate / 2;
+
+  object_free_w_func_and_null (project_free, PROJECT);
+
+  /* reload */
+  ret = project_load (prj_file, 0);
 
   test_helper_zrythm_cleanup ();
 }
@@ -1432,7 +1496,7 @@ test_split (void)
   g_assert_cmpint (lane2->num_regions, ==, 1);
 
   ZRegion * region2 = lane2->regions[0];
-  region_validate (region2, false);
+  region_validate (region2, false, 0);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -1447,7 +1511,7 @@ test_split (void)
   g_assert_cmpint (lane->num_regions, ==, 1);
 
   ZRegion * region = lane->regions[0];
-  region_validate (region, false);
+  region_validate (region, false, 0);
   r_obj = (ArrangerObject *) region;
   arranger_object_select (
     r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
@@ -3066,6 +3130,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test move audio_region_and lower samplerate",
+    (GTestFunc) test_move_audio_region_and_lower_samplerate);
   g_test_add_func (
     TEST_PREFIX "test move audio_region_and lower bpm",
     (GTestFunc) test_move_audio_region_and_lower_bpm);

@@ -600,23 +600,49 @@ audio_region_detect_bpm (ZRegion * self, GArray * candidates)
     (unsigned int) AUDIO_ENGINE->sample_rate, candidates);
 }
 
+/**
+ * Sanity checking.
+ *
+ * @param frames_per_tick Frames per tick used when
+ * validating audio regions. Passing 0 will use the value
+ * from the current engine.
+ */
 bool
-audio_region_validate (ZRegion * self)
+audio_region_validate (ZRegion * self, double frames_per_tick)
 {
-  if (PROJECT->loaded)
+  if (PROJECT->loaded && !AUDIO_ENGINE->updating_frames_per_tick)
     {
       AudioClip * clip = audio_region_get_clip (self);
       g_return_val_if_fail (clip, false);
 
-      signed_frame_t loop_len =
-        arranger_object_get_loop_length_in_frames (
-          (ArrangerObject *) self);
-
       /* verify that the loop does not contain more
        * frames than available in the clip */
-      z_return_val_if_fail_cmp (
-        loop_len, <=, (signed_frame_t) clip->num_frames,
-        false);
+      /* use global positions because sometimes the loop
+       * appears to have 1 more frame due to rounding to
+       * nearest frame*/
+      ArrangerObject * obj = (ArrangerObject *) self;
+      signed_frame_t   loop_start_global =
+        position_get_frames_from_ticks (
+          obj->pos.ticks + obj->loop_start_pos.ticks,
+          frames_per_tick);
+      signed_frame_t loop_end_global =
+        position_get_frames_from_ticks (
+          obj->pos.ticks + obj->loop_end_pos.ticks,
+          frames_per_tick);
+      signed_frame_t loop_len =
+        loop_end_global - loop_start_global;
+      /*g_debug ("loop  len: %" SIGNED_FRAME_FORMAT, loop_len);*/
+
+      if (loop_len > (signed_frame_t) clip->num_frames)
+        {
+          g_critical (
+            "Audio region loop length in frames (%" SIGNED_FRAME_FORMAT
+            ") is "
+            "greater than the number of frames in the "
+            "clip (%" UNSIGNED_FRAME_FORMAT "). ",
+            loop_len, clip->num_frames);
+          return false;
+        }
     }
 
   return true;

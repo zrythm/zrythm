@@ -45,7 +45,6 @@
  * @param action To be passed when this is called from an
  *   undoable action.
  */
-NONNULL
 void
 arranger_selections_init_loaded (
   ArrangerSelections * self,
@@ -85,12 +84,18 @@ arranger_selections_init_loaded (
             obj, true, false, NULL); \
           sel->sc##s[i] = (cc *) arranger_object_find (obj); \
         } \
-      else \
+      else /* else if not project */ \
         { \
           arranger_object_init_loaded ( \
             (ArrangerObject *) sel->sc##s[i]); \
           arranger_object_update_positions ( \
             obj, true, false, action); \
+          if (obj->type == ARRANGER_OBJECT_TYPE_REGION) \
+            { \
+              region_validate ( \
+                (ZRegion *) obj, project, \
+                action ? action->frames_per_tick : 0); \
+            } \
         } \
     }
 

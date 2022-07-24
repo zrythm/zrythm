@@ -240,8 +240,20 @@ track_lane_update_positions (
         continue;
 
       g_return_if_fail (IS_REGION_AND_NONNULL (r_obj));
+      if (ZRYTHM_TESTING)
+        {
+          region_validate (
+            (ZRegion *) r_obj,
+            track_lane_is_in_active_project (self), 0);
+        }
       arranger_object_update_positions (
         r_obj, from_ticks, bpm_change, NULL);
+      if (ZRYTHM_TESTING)
+        {
+          region_validate (
+            (ZRegion *) r_obj,
+            track_lane_is_in_active_project (self), 0);
+        }
     }
 }
 

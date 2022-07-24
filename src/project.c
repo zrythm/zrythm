@@ -1029,15 +1029,6 @@ load (const char * filename, const int is_template)
    * during engine pre setup */
   audio_pool_init_loaded (self->audio_engine->pool);
 
-  if (self->undo_manager)
-    {
-      undo_manager_init_loaded (self->undo_manager);
-    }
-  else
-    {
-      self->undo_manager = undo_manager_new ();
-    }
-
   clip_editor_init_loaded (self->clip_editor);
   timeline_init_loaded (self->timeline);
   tracklist_init_loaded (self->tracklist, self, NULL);
@@ -1048,6 +1039,17 @@ load (const char * filename, const int is_template)
     AUDIO_ENGINE, beats_per_bar,
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate, true, true, false);
+
+  /* undo manager must be loaded after updating engine
+   * frames per tick */
+  if (self->undo_manager)
+    {
+      undo_manager_init_loaded (self->undo_manager);
+    }
+  else
+    {
+      self->undo_manager = undo_manager_new ();
+    }
 
   midi_mappings_init_loaded (self->midi_mappings);
 

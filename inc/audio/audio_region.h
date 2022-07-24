@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -159,8 +143,15 @@ audio_region_fill_stereo_ports (
 float
 audio_region_detect_bpm (ZRegion * self, GArray * candidates);
 
+/**
+ * Sanity checking.
+ *
+ * @param frames_per_tick Frames per tick used when
+ * validating audio regions. Passing 0 will use the value
+ * from the current engine.
+ */
 bool
-audio_region_validate (ZRegion * self);
+audio_region_validate (ZRegion * self, double frames_per_tick);
 
 /**
  * Frees members only but not the audio region itself.

@@ -88,7 +88,7 @@ region_init (
 
   self->magic = REGION_MAGIC;
 
-  region_validate (self, false);
+  region_validate (self, false, 0);
 }
 
 /**
@@ -476,9 +476,16 @@ region_get_type_as_string (RegionType type, char * buf)
 
 /**
  * Sanity checking.
+ *
+ * @param frames_per_tick Frames per tick used when
+ * validating audio regions. Passing 0 will use the value
+ * from the current engine.
  */
 bool
-region_validate (ZRegion * self, bool is_project)
+region_validate (
+  ZRegion * self,
+  bool      is_project,
+  double    frames_per_tick)
 {
   g_return_val_if_fail (IS_REGION (self), false);
 
@@ -511,7 +518,7 @@ region_validate (ZRegion * self, bool is_project)
       automation_region_validate (self);
       break;
     case REGION_TYPE_AUDIO:
-      audio_region_validate (self);
+      audio_region_validate (self, frames_per_tick);
       break;
     default:
       break;

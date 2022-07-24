@@ -1070,7 +1070,8 @@ init_loaded_region (ZRegion * self)
 
   arranger_object_gen_escaped_name ((ArrangerObject *) self);
 
-  region_validate (self, false);
+  /* TODO reenable */
+  /*region_validate (self, false);*/
 }
 
 /**
@@ -1125,6 +1126,15 @@ arranger_object_update_positions (
   bool             bpm_change,
   UndoableAction * action)
 {
+#if 0
+  g_debug ("\n\n\nobject before");
+  arranger_object_print (self);
+  if (self->type == ARRANGER_OBJECT_TYPE_REGION)
+    {
+      region_print ((ZRegion *) self);
+    }
+#endif
+
   long frames_len_before = 0;
   if (bpm_change && arranger_object_type_has_length (self->type))
     {
@@ -1172,6 +1182,15 @@ arranger_object_update_positions (
       position_update (&self->fade_out_pos, from_ticks, ratio);
     }
 
+#if 0
+  g_debug ("\n\n\nobject after just position updates");
+  arranger_object_print (self);
+  if (self->type == ARRANGER_OBJECT_TYPE_REGION)
+    {
+      region_print ((ZRegion *) self);
+    }
+#endif
+
   ZRegion * r;
   switch (self->type)
     {
@@ -1205,11 +1224,21 @@ arranger_object_update_positions (
           clip = audio_region_get_clip (r);
           g_return_if_fail (clip);
 
+#if 0
+          g_debug (
+            "\n\n\nobject after audio region main logic");
+          arranger_object_print (self);
+#endif
+
           /* sometimes due to rounding errors,
            * the region frames are 1 frame more
            * than the clip frames. this works
            * around it by resizing the region
            * by -1 frame*/
+#if 0
+          signed_frame_t loop_len_frames =
+            arranger_object_get_loop_length_in_frames (self);
+#endif
           while (
             local_frames == (signed_frame_t) clip->num_frames)
             {
@@ -1222,12 +1251,37 @@ arranger_object_update_positions (
                 ticks, false);
               local_frames = region_timeline_frames_to_local (
                 r, tl_frames, F_NORMALIZE);
+#if 0
+              loop_len_frames =
+                arranger_object_get_loop_length_in_frames (
+                  self);
+              g_return_if_fail (
+                loop_len_frames
+                <= (signed_frame_t) clip->num_frames);
+#endif
             }
 
+#if 0
+          arranger_object_print (self);
           region_print (r);
+          double loop_len_ticks =
+            arranger_object_get_loop_length_in_ticks (self);
+          g_message (
+            "\t\t\tassert local frames %" SIGNED_FRAME_FORMAT
+            " < clip frames %" UNSIGNED_FRAME_FORMAT
+            ", loop len %f ticks %" SIGNED_FRAME_FORMAT
+            " frames",
+            local_frames, clip->num_frames, loop_len_ticks,
+            loop_len_frames);
+#endif
           z_return_if_fail_cmp (
             local_frames, <,
             (signed_frame_t) clip->num_frames);
+#if 0
+          z_return_if_fail_cmp (
+          loop_len_frames, <=,
+          (signed_frame_t) clip->num_frames);
+#endif
         }
 
       for (int i = 0; i < r->num_midi_notes; i++)

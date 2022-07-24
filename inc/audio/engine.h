@@ -774,6 +774,13 @@ typedef struct AudioEngine
 
   /** Pointer to owner project, if any. */
   Project * project;
+
+  /**
+   * True while updating frames per tick.
+   *
+   * See engine_update_frames_per_tick().
+   */
+  bool updating_frames_per_tick;
 } AudioEngine;
 
 static const cyaml_schema_field_t engine_fields_schema[] = {

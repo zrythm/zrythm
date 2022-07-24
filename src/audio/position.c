@@ -679,9 +679,19 @@ position_to_string_full (
   int    sixteenths = position_get_sixteenths (pos, true);
   double ticks = position_get_ticks (pos);
   g_return_if_fail (bars > -80000);
-  sprintf (
-    buf, "%d.%d.%d.%.*f", bars, abs (beats), abs (sixteenths),
-    decimal_places, fabs (ticks));
+  if (ZRYTHM_TESTING)
+    {
+      sprintf (
+        buf, "%d.%d.%d.%.*f (%" SIGNED_FRAME_FORMAT ")", bars,
+        abs (beats), abs (sixteenths), decimal_places,
+        fabs (ticks), pos->frames);
+    }
+  else
+    {
+      sprintf (
+        buf, "%d.%d.%d.%.*f", bars, abs (beats),
+        abs (sixteenths), decimal_places, fabs (ticks));
+    }
 }
 
 /**

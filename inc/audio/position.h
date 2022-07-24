@@ -151,8 +151,11 @@ typedef struct Position
    *
    * To be used where more precision than Position.frames is
    * needed.
+   *
+   * @note Does not seem needed, keep comment around for
+   * reference in the future.
    */
-  double precise_frames;
+  //double precise_frames;
 } Position;
 
 static const cyaml_schema_field_t position_fields_schema[] = {
