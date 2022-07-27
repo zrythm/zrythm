@@ -1765,7 +1765,7 @@ z_gtk_dialog_run (GtkDialog * dialog, bool destroy_on_close)
 
   g_object_unref (dialog);
 
-  if (destroy_on_close)
+  if (destroy_on_close && GTK_IS_WINDOW (dialog))
     gtk_window_destroy (GTK_WINDOW (dialog));
 
   return ri.response_id;
