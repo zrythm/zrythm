@@ -547,7 +547,10 @@ _project_compress (
  *   from the most recent backup.
  */
 char *
-project_get_existing_yaml (Project * self, bool backup);
+project_get_existing_yaml (
+  Project * self,
+  bool      backup,
+  GError ** error);
 
 /**
  * Deep-clones the given project.

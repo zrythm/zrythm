@@ -153,6 +153,19 @@ ui_show_message_full (
   static char buf[40000];
   vsprintf (buf, format, args);
 
+  /* log the message anyway */
+  switch (type)
+    {
+    case GTK_MESSAGE_ERROR:
+      g_warning ("%s", buf);
+      break;
+    case GTK_MESSAGE_INFO:
+    default:
+      g_message ("%s", buf);
+      break;
+    }
+
+  /* if have UI, also show a message dialog */
   if (ZRYTHM_HAVE_UI)
     {
       GtkDialogFlags flags =
@@ -178,21 +191,6 @@ ui_show_message_full (
           g_signal_connect (
             GTK_DIALOG (dialog), "response",
             G_CALLBACK (gtk_window_destroy), NULL);
-        }
-    }
-  else
-    {
-      switch (type)
-        {
-        case GTK_MESSAGE_ERROR:
-          g_warning ("%s", buf);
-          break;
-        case GTK_MESSAGE_INFO:
-          g_message ("%s", buf);
-          break;
-        default:
-          g_critical ("should not be reached");
-          break;
         }
     }
 

@@ -754,7 +754,10 @@ project_create_default (
  *   from the most recent backup.
  */
 char *
-project_get_existing_yaml (Project * self, bool backup)
+project_get_existing_yaml (
+  Project * self,
+  bool      backup,
+  GError ** error)
 {
   /* get file contents */
   char * project_file_path = project_get_path (
@@ -772,12 +775,9 @@ project_get_existing_yaml (Project * self, bool backup)
     &err);
   if (err != NULL)
     {
-      /* Report error to user, and free error */
-      char str[1200];
-      sprintf (
-        str, _ ("Unable to read file: %s"), err->message);
-      ui_show_error_message (MAIN_WINDOW, true, str);
-      g_error_free (err);
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, _ ("Unable to read file at %s"),
+        project_file_path);
       return NULL;
     }
 
@@ -792,8 +792,10 @@ project_get_existing_yaml (Project * self, bool backup)
   g_free (compressed_pj);
   if (!ret)
     {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to decompress project file"));
+      PROPAGATE_PREFIXED_ERROR (
+        error, err,
+        _ ("Failed to decompress project file at %s"),
+        project_file_path);
       return NULL;
     }
 
@@ -891,9 +893,15 @@ load (const char * filename, const int is_template)
   bool use_backup = PROJECT->backup_dir != NULL;
   PROJECT->loading_from_backup = use_backup;
 
-  char * yaml =
-    project_get_existing_yaml (PROJECT, use_backup);
-  g_return_val_if_fail (yaml, -1);
+  GError * err = NULL;
+  char *   yaml =
+    project_get_existing_yaml (PROJECT, use_backup, &err);
+  if (!yaml)
+    {
+      HANDLE_ERROR (
+        err, "%s", _ ("Failed to get existing yaml"));
+      return -1;
+    }
 
   g_message ("project from yaml...");
   gint64    time_before = g_get_monotonic_time ();
