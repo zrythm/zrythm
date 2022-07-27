@@ -1,7 +1,5 @@
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 /* SPDX-License-Identifier: LicenseRef-ZrythmLicense */
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 /**
  * \file
@@ -31,6 +29,7 @@ typedef struct _MainWindowWidget        MainWindowWidget;
 typedef struct _SplashWindowWidget      SplashWindowWidget;
 typedef struct _FirstRunAssistantWidget FirstRunAssistantWidget;
 typedef struct _ProjectAssistantWidget ProjectAssistantWidget;
+typedef struct _BugReportDialogWidget  BugReportDialogWidget;
 typedef struct Zrythm                  Zrythm;
 typedef struct UiCaches                UiCaches;
 
@@ -156,6 +155,9 @@ struct _ZrythmApp
    * loads.
    */
   GAsyncQueue * project_load_message_queue;
+
+  /** Currently opened bug report dialog. */
+  BugReportDialogWidget * bug_report_dialog;
 };
 
 /**

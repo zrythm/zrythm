@@ -122,7 +122,18 @@ segv_handler (int sig)
   sprintf (
     prefix, _ ("Error: %s - Backtrace:\n"), strsignal (sig));
 #endif
-  char * bt = backtrace_get_with_lines (prefix, 100, true);
+
+  /* avoid getting backtraces too often if a bug report dialog
+   * is already opened - it makes it hard to type due to lag */
+  char * bt;
+  if (zrythm_app->bug_report_dialog)
+    {
+      bt = g_strdup ("");
+    }
+  else
+    {
+      bt = backtrace_get_with_lines (prefix, 100, true);
+    }
 
   /* call the callback to write queued messages
    * and get last few lines of the log, before
@@ -133,12 +144,17 @@ segv_handler (int sig)
 
   if (MAIN_WINDOW)
     {
-      char str[500];
-      sprintf (str, _ ("%s has crashed. "), PROGRAM_NAME);
-      BugReportDialogWidget * dialog = bug_report_dialog_new (
-        GTK_WINDOW (MAIN_WINDOW), str, bt, true);
+      if (!zrythm_app->bug_report_dialog)
+        {
+          char str[500];
+          sprintf (str, _ ("%s has crashed. "), PROGRAM_NAME);
+          zrythm_app
+            ->bug_report_dialog = bug_report_dialog_new (
+            GTK_WINDOW (MAIN_WINDOW), str, bt, true);
 
-      gtk_window_present (GTK_WINDOW (dialog));
+          gtk_window_present (
+            GTK_WINDOW (zrythm_app->bug_report_dialog));
+        }
       return;
     }
 
