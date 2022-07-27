@@ -467,7 +467,10 @@ channel_widget_update_midi_fx_and_inserts (
   ChannelWidget * self)
 {
   plugin_strip_expander_widget_refresh (self->inserts);
-  plugin_strip_expander_widget_refresh (self->midi_fx);
+  if (self->channel->track->in_signal_type == TYPE_EVENT)
+    {
+      plugin_strip_expander_widget_refresh (self->midi_fx);
+    }
 }
 
 static void
