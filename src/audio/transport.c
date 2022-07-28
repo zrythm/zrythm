@@ -464,9 +464,11 @@ transport_update_caches (
 void
 transport_request_pause (Transport * self, bool with_wait)
 {
-  /* can only be called from the gtk thread */
+  /* can only be called from the gtk thread or when preparing
+   * to export */
   g_return_if_fail (
-    !AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
+    !AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD
+    || AUDIO_ENGINE->preparing_to_export);
 
   if (with_wait)
     {

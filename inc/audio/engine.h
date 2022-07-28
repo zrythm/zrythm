@@ -504,6 +504,9 @@ typedef struct AudioEngine
   /** Ok to process or not. */
   volatile gint run;
 
+  /** To be set to true when preparing to export. */
+  bool preparing_to_export;
+
   /** 1 if currently exporting. */
   gint exporting;
 

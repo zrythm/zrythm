@@ -893,6 +893,8 @@ exporter_export (ExportSettings * info)
 
   export_settings_print (info);
 
+  AUDIO_ENGINE->preparing_to_export = true;
+
   /* pause engine */
   EngineState state;
   engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE);
@@ -902,6 +904,7 @@ exporter_export (ExportSettings * info)
   TRANSPORT->play_state = PLAYSTATE_ROLLING;
 
   AUDIO_ENGINE->exporting = true;
+  AUDIO_ENGINE->preparing_to_export = false;
   TRANSPORT->loop = false;
 
   g_message ("deactivating and reactivating plugins");
