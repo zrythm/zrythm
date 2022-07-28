@@ -702,7 +702,11 @@ need_backtrace (Log * self, const LogEvent * const ev)
     /* libpanel */
     !string_contains_substr (
       ev->message,
-      "gdk_drop_status: assertion 'gdk_drag_action_is_unique (preferred)' failed");
+      "gdk_drop_status: assertion 'gdk_drag_action_is_unique (preferred)' failed")
+    &&
+    /* gtk error after last update */
+    !string_contains_substr (
+      ev->message, "reports a minimum width of ");
 
   if (ret)
     self->last_bt_time = time_now;
