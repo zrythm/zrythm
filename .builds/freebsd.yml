@@ -46,7 +46,7 @@ packages:
   - gtk3
   - pango
   - python3
-  - py-pip
+  - py39-pip
   - reproc
   - fftw3
   - fftw3-float
