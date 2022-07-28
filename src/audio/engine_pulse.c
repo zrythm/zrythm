@@ -137,6 +137,7 @@ engine_pulse_stream_state_callback (
       g_message ("Pulse stream ready");
       break;
     case PA_STREAM_FAILED:
+      /* FIXME handle gracefully */
       g_critical (
         "Error in pulse stream: %s",
         pa_strerror (pa_context_errno (pulse)));
@@ -171,6 +172,7 @@ engine_pulse_context_state_callback (
       g_message ("Pulse context ready");
       break;
     case PA_CONTEXT_FAILED:
+      /* FIXME handle gracefully */
       g_critical (
         "Error in pulse context: %s",
         pa_strerror (pa_context_errno (pulse)));

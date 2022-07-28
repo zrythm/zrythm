@@ -1,7 +1,5 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 #include "zrythm-config.h"
 
@@ -711,6 +709,8 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left)
         JackPortIsPhysical | JackPortIsInput);
       if (ports == NULL || ports[0] == NULL || ports[1] == NULL)
         {
+          /* FIXME handle gracefully - just don't connect to
+           * anything and show an error in the UI */
           g_critical ("no physical playback ports found");
           return -1;
         }
