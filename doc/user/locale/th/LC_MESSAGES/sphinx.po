@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.22\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-08-07 11:39+0100\n"
-"PO-Revision-Date: 2021-08-27 21:44+0000\n"
-"Last-Translator: N. <nontawatchaiyokad@gmail.com>\n"
+"PO-Revision-Date: 2022-07-29 14:34+0000\n"
+"Last-Translator: altinat <poiiiii4yy@gmail.com>\n"
 "Language-Team: Thai <https://hosted.weblate.org/projects/zrythm/"
 "user-manual-sphinx/th/>\n"
 "Language: th\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.8.1-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 "Generated-By: Babel 2.9.1\n"
 
 #: ../../_templates/page.html:61
@@ -30,7 +30,7 @@ msgstr "ก่อนหน้า"
 
 #: ../../_templates/page.html:76
 msgid "Home"
-msgstr "บ้าน"
+msgstr "หน้าแรก"
 
 #: ../../_templates/page.html:88
 #, python-format

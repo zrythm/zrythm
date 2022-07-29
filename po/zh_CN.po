@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-07-24 23:53+0900\n"
-"PO-Revision-Date: 2022-07-10 15:50+0000\n"
-"Last-Translator: Cris Q <qygw@outlook.com>\n"
+"PO-Revision-Date: 2022-07-25 15:52+0000\n"
+"Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.13.1-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: inc/schemas/audio/region.h:45 inc/audio/region.h:66
 #: src/gui/widgets/track.c:916
@@ -7404,9 +7404,8 @@ msgid "Use libpanel for docking/panels"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-#, fuzzy
 msgid "Add search entry in file browser"
-msgstr "文件浏览器中选中的书签。"
+msgstr "文件浏览器中添加搜索项"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Add AIFF, AU, CAF, W64 export support"
