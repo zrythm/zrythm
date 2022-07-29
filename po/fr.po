@@ -18,10 +18,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-07-24 23:53+0900\n"
-"PO-Revision-Date: 2022-07-12 06:29+0000\n"
+"PO-Revision-Date: 2022-07-25 15:52+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -7896,7 +7896,7 @@ msgstr "Scan des greffons"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:39
 msgid "DAW"
-msgstr ""
+msgstr "STAN"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
@@ -7906,7 +7906,7 @@ msgstr "Ajouté :"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
 msgid "Use libpanel for docking/panels"
-msgstr ""
+msgstr "Utiliser libpanel pour les docking/panneaux"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 #, fuzzy
@@ -7915,7 +7915,7 @@ msgstr "Onglet du navigateur du greffon sélectionné."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Add AIFF, AU, CAF, W64 export support"
-msgstr ""
+msgstr "Ajout de la prise en charge des exportations AIFF, AU, CAF, W64"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:83
@@ -7951,54 +7951,70 @@ msgstr "Correction d'une erreur lors d'un clic-droit dans l'éditeur audio"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:68
 msgid "Fix undo history getting cleared when deleting tracks"
 msgstr ""
+"Correction de l'historique d'annulation qui s’effaçait lors de la "
+"suppression de pistes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid ""
 "Add more bundled plugins: Flanger, Phaser, Wah4, Triple Synth, Parametric "
 "EQ, Highpass Filter, Lowpass Filter, Peak Limiter, White Noise"
 msgstr ""
+"Ajouter plus de greffons embarqués : flanger, phaseur, wah4, triple synth, "
+"égaliseur paramétrique, filtre passe-haut, filtre passe-bas, limiteur de "
+"crête, bruit blanc"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:78
 msgid "Implement add track button on tracklist and mixer"
 msgstr ""
+"Implémentation d'un bouton d'ajout de piste sur la liste de piste et la "
+"table de mixage"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:79
 msgid "Add more metadata in bundled plugins"
-msgstr ""
+msgstr "Ajouter plus de métadonnées dans les greffons embarqués"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:80
 msgid "Enable vectorization optimizations on bundled plugins"
-msgstr ""
+msgstr "Activer les optimisations de vectorisation sur les greffons embarqués"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:81
 msgid "Extract more control port info from Carla plugins"
 msgstr ""
+"Extraire plus d'informations sur les ports de contrôle des greffons Carla"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:85
 msgid "Change port symbols for some bundled plugins"
-msgstr ""
+msgstr "Changement des symboles de port pour certains greffons embarqués"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:86
 msgid "Avoid attempting to get too many backtraces at once"
-msgstr ""
+msgstr "Évitez d'essayer d'obtenir trop de rétrotraces à la fois"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:87
 msgid "Preferences: convert icon and CSS theme selection entries to dropdowns"
 msgstr ""
+"Préférences : conversion des entrées de sélection d'icônes et de thèmes CSS "
+"en listes déroulantes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:91
 msgid "Fix paths not being updated when selected from a file chooser button"
 msgstr ""
+"Correction des chemins d'accès qui n'étaient pas mis à jour lorsque "
+"sélectionnés à partir d'un bouton du sélecteur de fichiers"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:92
 msgid "Fix positioning of context menu on BPM and playhead position widgets"
 msgstr ""
+"Correction du positionnement du menu contextuel sur les widgets BPM et de "
+"position de la tête de lecture"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:93
 msgid ""
 "Fix saving a backup removing files from the main project's audio pool "
 "instead of the backup's"
 msgstr ""
+"Correction de l'enregistrement d'une sauvegarde en supprimant les fichiers "
+"du pool audio du projet principal au lieu de celui de la sauvegarde"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:102
 msgid "Add status page to modulators tab"

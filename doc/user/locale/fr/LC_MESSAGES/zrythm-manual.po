@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-04-26 15:30+0100\n"
-"PO-Revision-Date: 2022-07-14 15:51+0000\n"
+"PO-Revision-Date: 2022-07-25 15:52+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/fr/>\n"
@@ -4910,7 +4910,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:59
 msgid "DAW"
-msgstr ""
+msgstr "STAN"
 
 #: ../../glossary/intro.rst:61
 msgid ""
