@@ -3,18 +3,21 @@
 # This file is distributed under the same license as the Zrythm package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2021.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.22\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-04-26 15:30+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2022-07-29 14:34+0000\n"
+"Last-Translator: altinat <poiiiii4yy@gmail.com>\n"
+"Language-Team: Thai <https://hosted.weblate.org/projects/zrythm/user-manual/"
+"th/>\n"
+"Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.14-dev\n"
 "Generated-By: Babel 2.10.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -1187,7 +1190,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:75
 msgid "Invert"
-msgstr ""
+msgstr "กลับด้าน"
 
 #: ../../editing/clip-editors/audio-editor.rst:76
 msgid "Invert the polarity of the audio."
@@ -1227,7 +1230,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:85
 msgid "Reverse"
-msgstr ""
+msgstr "กลับด้าน"
 
 #: ../../editing/clip-editors/audio-editor.rst:86
 msgid "Reverse the audio (play back backwards)."
@@ -1332,7 +1335,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:46
 msgid "Exponent"
-msgstr ""
+msgstr "ตัวชิ้กำลัง"
 
 #: ../../editing/clip-editors/automation-editor.rst:47
 msgid "Exponential curve."
@@ -1340,7 +1343,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:48
 msgid "Superellipse"
-msgstr ""
+msgstr "Superellipse"
 
 #: ../../editing/clip-editors/automation-editor.rst:49
 msgid "Elliptical curve."
@@ -1349,7 +1352,7 @@ msgstr ""
 #: ../../editing/clip-editors/automation-editor.rst:51
 #: ../../editing/timeline/arranger.rst:277
 msgid "Vital"
-msgstr ""
+msgstr "Vital"
 
 #: ../../editing/clip-editors/automation-editor.rst:51
 msgid "The curve that Vital synth uses, similar to exponential curve."
@@ -1357,7 +1360,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/automation-editor.rst:54
 msgid "Pulse"
-msgstr ""
+msgstr "Pulse"
 
 #: ../../editing/clip-editors/automation-editor.rst:54
 msgid "Pulse wave."
@@ -1627,7 +1630,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:127
 msgid "Crescendo"
-msgstr ""
+msgstr "เครสเซนโด"
 
 #: ../../editing/clip-editors/piano-roll.rst:127
 msgid ""
@@ -1637,7 +1640,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:131
 msgid "Flam"
-msgstr ""
+msgstr "แฟลม"
 
 #: ../../editing/clip-editors/piano-roll.rst:130
 msgid ""
@@ -1651,7 +1654,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:137
 msgid "Legato"
-msgstr ""
+msgstr "เลกาโต"
 
 #: ../../editing/clip-editors/piano-roll.rst:137
 msgid "Connect all selected notes so that they play smoothly."
@@ -1659,7 +1662,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:140
 msgid "Portato"
-msgstr ""
+msgstr "พอร์ตาโต"
 
 #: ../../editing/clip-editors/piano-roll.rst:140
 msgid "Similar to legato, but leaves some space between the notes."
@@ -1667,7 +1670,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:142
 msgid "Staccato"
-msgstr ""
+msgstr "สแตคคาโต"
 
 #: ../../editing/clip-editors/piano-roll.rst:143
 msgid "Make the selected notes short and punctuated."
@@ -1964,7 +1967,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:67
 msgid "Duplicate"
-msgstr ""
+msgstr "ทำซ้ำ"
 
 #: ../../editing/common-operations.rst:68
 msgid ""
@@ -2613,7 +2616,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:43 ../../glossary/intro.rst:135
 msgid "Region"
-msgstr ""
+msgstr "พื้นที่"
 
 #: ../../editing/timeline/arranger.rst:45
 msgid "The following types of regions exist."
@@ -2733,7 +2736,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:135 ../../tracks/track-types.rst:50
 msgid "Marker"
-msgstr ""
+msgstr "มาร์คเกอร์"
 
 #: ../../editing/timeline/arranger.rst:137
 msgid "Markers appear inside the marker track."
@@ -3833,7 +3836,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:71 ../../tracks/track-types.rst:72
 #: ../../tracks/track-types.rst:76 ../../tracks/track-types.rst:77
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:91
 msgid ""
@@ -4853,7 +4856,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:47 ../../tracks/track-types.rst:56
 #: ../../tracks/track-types.rst:57
 msgid "Audio"
-msgstr ""
+msgstr "เสียง"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:64
 msgid "Only show audio files."
@@ -4932,7 +4935,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:105
 #: ../../tracks/inspector-page.rst:40 ../../tracks/track-types.rst:45
 msgid "Instrument"
-msgstr ""
+msgstr "ดนตรี"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:106
 msgid ""
@@ -6087,7 +6090,7 @@ msgstr ""
 
 #: ../../routing/monitor-section.rst:71 ../../tracks/track-controls.rst:24
 msgid "Mute"
-msgstr ""
+msgstr "ปิดเสียง"
 
 #: ../../routing/monitor-section.rst:71
 msgid "Mute the output"
@@ -7302,7 +7305,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:25
 msgid "Audio FX"
-msgstr ""
+msgstr "เอฟเฟ็กต์เสียง"
 
 #: ../../tracks/track-types.rst:28 ../../tracks/track-types.rst:33
 #: ../../tracks/track-types.rst:43 ../../tracks/track-types.rst:53
@@ -7321,15 +7324,15 @@ msgstr ""
 #: ../../tracks/track-types.rst:79 ../../tracks/track-types.rst:81
 #: ../../tracks/track-types.rst:82 ../../tracks/track-types.rst:84
 msgid "None"
-msgstr ""
+msgstr "ไม่มี"
 
 #: ../../tracks/track-types.rst:30
 msgid "Audio Group"
-msgstr ""
+msgstr "กลุ่มเสียง"
 
 #: ../../tracks/track-types.rst:35
 msgid "Chord"
-msgstr ""
+msgstr "คอร์ด"
 
 #: ../../tracks/track-types.rst:39
 msgid "Chord regions, scales"
@@ -7337,7 +7340,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:40
 msgid "Folder"
-msgstr ""
+msgstr "โฟลเดอร์"
 
 #: ../../tracks/track-types.rst:49 ../../tracks/track-types.rst:69
 msgid "MIDI regions"
@@ -7345,19 +7348,19 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:55
 msgid "Master"
-msgstr ""
+msgstr "หลัก"
 
 #: ../../tracks/track-types.rst:70
 msgid "MIDI FX"
-msgstr ""
+msgstr "เอฟเฟ็กต์ MIDI"
 
 #: ../../tracks/track-types.rst:75
 msgid "MIDI Group"
-msgstr ""
+msgstr "กลุ่ม MIDI"
 
 #: ../../tracks/track-types.rst:80
 msgid "Tempo"
-msgstr ""
+msgstr "จังหวะ"
 
 #: ../../tracks/track-types.rst:86
 msgid ""
