@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-07-24 23:53+0900\n"
-"PO-Revision-Date: 2022-07-05 15:50+0000\n"
+"PO-Revision-Date: 2022-07-25 15:52+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.13.1-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: inc/schemas/audio/region.h:45 inc/audio/region.h:66
 #: src/gui/widgets/track.c:916
@@ -7535,7 +7535,7 @@ msgstr "Finestra principal amb complements"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:39
 msgid "DAW"
-msgstr ""
+msgstr "DAW"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
@@ -7545,16 +7545,15 @@ msgstr "Afegit:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
 msgid "Use libpanel for docking/panels"
-msgstr ""
+msgstr "Utilitza libpanel per a l'acoblament / panells"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-#, fuzzy
 msgid "Add search entry in file browser"
-msgstr "Favorit seleccionat al navegador de fitxers."
+msgstr "Afegir l'entrada de cerca al navegador de fitxers"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Add AIFF, AU, CAF, W64 export support"
-msgstr ""
+msgstr "Afegir suport per a l'exportació AIFF, AU, CAF, W64"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:83
@@ -7564,16 +7563,12 @@ msgid "Changed:"
 msgstr "Canviat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-#, fuzzy
 msgid "Redesign export dialog"
-msgstr "Redisseny del diàleg d'informe d'errors"
+msgstr "Redissenyar el diàleg d'exportació"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
-#, fuzzy
 msgid "Update French, Chinese (Simplified), Catalan translations"
-msgstr ""
-"Actualitzar les traduccions al francès, xinès (simplificat), portuguès i "
-"català"
+msgstr "Actualitzar les traduccions a francès, xinès (simplificat) i català"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:89
@@ -7583,62 +7578,71 @@ msgid "Fixed:"
 msgstr "Solucionat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
-#, fuzzy
 msgid "Fix error when creating a region in the 3rd automation track"
-msgstr ""
-"Soluciona l'error en fer clic amb el botó dret dins de l'editor d'àudio"
+msgstr "Soluciona un error en crear una regió a la 3a pista d'automatització"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:68
 msgid "Fix undo history getting cleared when deleting tracks"
-msgstr ""
+msgstr "Soluciona l'historial de desfer que s'esborra en suprimir pistes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid ""
 "Add more bundled plugins: Flanger, Phaser, Wah4, Triple Synth, Parametric "
 "EQ, Highpass Filter, Lowpass Filter, Peak Limiter, White Noise"
 msgstr ""
+"Afegeix més complements al paquet: Flanger, Phaser, Wah4, Triple Synth, "
+"Parametric EQ, Highpass Filter, Lowpass Filter, Peak Limiter, White Noise"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:78
 msgid "Implement add track button on tracklist and mixer"
 msgstr ""
+"Implementa el botó afegir una pista a la llista de pistes i al mesclador"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:79
 msgid "Add more metadata in bundled plugins"
-msgstr ""
+msgstr "Afegeix més metadades als complements del paquet"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:80
 msgid "Enable vectorization optimizations on bundled plugins"
-msgstr ""
+msgstr "Habilita les optimitzacions de vectorització en connectors del paquet"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:81
 msgid "Extract more control port info from Carla plugins"
-msgstr ""
+msgstr "Extreu més informació del port de control dels complements Carla"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:85
 msgid "Change port symbols for some bundled plugins"
-msgstr ""
+msgstr "Canvia els símbols del port per a alguns connectors del paquet"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:86
 msgid "Avoid attempting to get too many backtraces at once"
-msgstr ""
+msgstr "Eviteu intentar obtenir massa retrocessos alhora"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:87
 msgid "Preferences: convert icon and CSS theme selection entries to dropdowns"
 msgstr ""
+"Preferències: converteix les entrades de selecció d'icones i temes CSS en "
+"desplegables"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:91
 msgid "Fix paths not being updated when selected from a file chooser button"
 msgstr ""
+"Corregeix camins que no s'actualitzen quan se selecciona des d'un botó de "
+"selecció de fitxers"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:92
 msgid "Fix positioning of context menu on BPM and playhead position widgets"
 msgstr ""
+"Soluciona el posicionament del menú contextual als ginys de posició del "
+"capçal de reproducció i BPM"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:93
 msgid ""
 "Fix saving a backup removing files from the main project's audio pool "
 "instead of the backup's"
 msgstr ""
+"Soluciona el desament d'una còpia de seguretat eliminant fitxers del grup "
+"d'àudio del projecte principal en lloc de la còpia de seguretat"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:102
 msgid "Add status page to modulators tab"
@@ -7647,7 +7651,7 @@ msgstr "Afegir la pàgina d'estat a la pestanya de moduladors"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:103
 msgid "Add bundled plugins: compressor, delay, gate, distortion, reverb"
 msgstr ""
-"Afegir complements agrupats: compressor, retard, porta, distorsió, "
+"Afegeix complements al paquet: compressor, retard, porta, distorsió, "
 "reverberació"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:107
