@@ -1,4 +1,4 @@
 [wrap-git]
 url=https://gitlab.gnome.org/GNOME/gtk
 # FIXME set to the next gtk release
-revision=2b131f09a8403c9ba3d7288901a3c918840df2c3
+revision=924da0e84b3969d1eda80e3bcf2d3b8ab6ce6085
