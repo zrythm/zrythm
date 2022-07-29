@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-07-24 23:53+0900\n"
-"PO-Revision-Date: 2022-07-25 15:52+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2022-07-27 15:52+0000\n"
+"Last-Translator: Maxime Leroy <lisacintosh@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -974,9 +974,8 @@ msgid "Failed to redo action"
 msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/actions/undo_manager.c:286
-#, fuzzy
 msgid "Failed to perform action"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de l'action"
 
 #: src/actions/chord_action.c:166
 msgid "Change chords"
@@ -1124,14 +1123,12 @@ msgid "Graph exported"
 msgstr "Graphe exporté"
 
 #: src/actions/actions.c:845 src/guile/actions/undo_manager.c:67
-#, fuzzy
 msgid "Failed to undo"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de l'annulation"
 
 #: src/actions/actions.c:898 src/guile/actions/undo_manager.c:91
-#, fuzzy
 msgid "Failed to redo"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de l'action refaire"
 
 #: src/actions/actions.c:935 src/actions/actions.c:949
 #: src/actions/actions.c:1149
@@ -1202,9 +1199,8 @@ msgid "Failed to duplicate tracks"
 msgstr "Impossible de réinitialiser le schéma %s"
 
 #: src/actions/actions.c:1691 src/actions/actions.c:1753
-#, fuzzy
 msgid "Failed to delete tracks"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de suppression des pistes"
 
 #: src/actions/actions.c:1718
 #, fuzzy
@@ -1376,9 +1372,8 @@ msgid "Preset Name"
 msgstr "Pré-réglages"
 
 #: src/actions/actions.c:3210 src/gui/widgets/modulator_inner.c:92
-#, fuzzy
 msgid "Failed to delete plugins"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de suppression des greffons"
 
 #: src/actions/actions.c:3234
 msgid ""
@@ -1390,9 +1385,9 @@ msgstr ""
 "la suppression ?"
 
 #: src/actions/actions.c:3284
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reset %s"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de réinitialisation de %s"
 
 #: src/actions/actions.c:3310
 #, fuzzy, c-format
@@ -1429,9 +1424,8 @@ msgid "Failed getting contents for %s"
 msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/actions/tracklist_selections.c:316
-#, fuzzy
 msgid "No tracks selected"
-msgstr "Aucun port sélectionné"
+msgstr "Aucune piste sélectionnée"
 
 #: src/actions/tracklist_selections.c:333
 msgid "Failed to clone tracklist selections"
@@ -1439,9 +1433,8 @@ msgstr "Échec du clonage des sélections de la liste de piste"
 
 #: src/actions/tracklist_selections.c:350 src/audio/tracklist.c:1626
 #: src/audio/tracklist.c:1754
-#, fuzzy
 msgid "Failed to clone track"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de clonage de la piste"
 
 #: src/actions/tracklist_selections.c:378
 msgid "Failed to clone tracklist selections: "
@@ -1466,9 +1459,9 @@ msgstr ""
 "pour plus de détails."
 
 #: src/actions/tracklist_selections.c:825
-#, fuzzy, c-format
+#, c-format
 msgid "Failed saving file %s"
-msgstr "Échec de l'ouverture du fichier"
+msgstr "Échec d'enregistrement du fichier %s"
 
 #: src/actions/tracklist_selections.c:914
 #, fuzzy, c-format
@@ -1657,9 +1650,9 @@ msgid "Enable %d Tracks"
 msgstr "Détacher les pistes %d"
 
 #: src/actions/tracklist_selections.c:2085
-#, fuzzy, c-format
+#, c-format
 msgid "Disable %d Tracks"
-msgstr "Supprimer %d Pistes"
+msgstr "Désactiver %d Pistes"
 
 #: src/actions/tracklist_selections.c:2089
 #, fuzzy, c-format
@@ -1855,20 +1848,17 @@ msgid "Failed to clone mixer selections"
 msgstr "Impossible de trouver le greffon avec l'URI:%s"
 
 #: src/actions/mixer_selections_action.c:431 src/audio/channel.c:1834
-#, fuzzy
 msgid "Failed to clone plugin"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Échec de clonage du greffon"
 
 #: src/actions/mixer_selections_action.c:526
-#, fuzzy
 msgid "Could not create plugin"
-msgstr "Greffons"
+msgstr "Échec de création du greffon"
 
 #: src/actions/mixer_selections_action.c:537 src/audio/audio_function.c:139
 #: src/audio/track.c:2104 src/audio/track.c:3155
-#, fuzzy
 msgid "Failed to instantiate plugin"
-msgstr "Active ou désactive le greffon"
+msgstr "Échec d’instanciation du greffon"
 
 #: src/actions/mixer_selections_action.c:725
 #: src/actions/mixer_selections_action.c:1092
@@ -2293,18 +2283,16 @@ msgid "Elliptic"
 msgstr "Elliptique"
 
 #: src/audio/audio_function.c:131 src/gui/widgets/drag_dest_box.c:309
-#, fuzzy
 msgid "Failed to create plugin"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de création du greffon"
 
 #: src/audio/audio_function.c:363
 msgid "Invalid positions - skipping function"
 msgstr "Positions non valides - fonction ignorée"
 
 #: src/audio/audio_function.c:492
-#, fuzzy
 msgid "Failed to apply plugin"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Échec de l'application du greffon"
 
 #: src/audio/graph_thread.c:493
 #, c-format
@@ -2379,9 +2367,8 @@ msgstr "Ne peut pas être routé"
 #: src/gui/widgets/panel_file_browser.c:393 src/settings/plugin_settings.c:346
 #: src/settings/plugin_settings.c:360 src/settings/plugin_settings.c:428
 #: src/settings/plugin_settings.c:541
-#, fuzzy
 msgid "Failed to create track"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de création de la piste"
 
 #: src/audio/automation_track.c:171
 msgid "Rec"
@@ -2750,14 +2737,12 @@ msgstr ""
 "La limite des essais a été atteinte. %s va maintenant devenir silencieux"
 
 #: src/gui/backend/event_manager.c:1252
-#, fuzzy
 msgid "Plugin preset saved."
-msgstr "Filtre du navigateur de greffon"
+msgstr "Préréglages du greffon enregistrés."
 
 #: src/gui/backend/event_manager.c:1255
-#, fuzzy
 msgid "Plugin preset loaded."
-msgstr "Onglet du navigateur de greffon"
+msgstr "Préréglages du greffon chargés."
 
 #: src/gui/backend/arranger_selections.c:2394
 #, fuzzy
@@ -3334,9 +3319,8 @@ msgid "Direct out"
 msgstr "Sortie directe"
 
 #: src/gui/widgets/track.c:841
-#, fuzzy
 msgid "New direct out"
-msgstr "Modifier la sortie directe"
+msgstr "Nouvelle sortie directe"
 
 #: src/gui/widgets/track.c:851 src/gui/widgets/bot_bar.c:455
 #: src/gui/widgets/channel.c:710 src/gui/widgets/dialogs/export_dialog.c:1117
@@ -3386,9 +3370,8 @@ msgid "No inputs"
 msgstr "Pas d'entrée"
 
 #: src/gui/widgets/add_track_menu_button.c:60
-#, fuzzy
 msgid "Add track"
-msgstr "Ajouter une piste de bus d'effet"
+msgstr "Ajouter une piste"
 
 #: src/gui/widgets/automation_arranger.c:209
 #: build/data/org.zrythm.Zrythm.gschema.xml:1128
@@ -3449,9 +3432,8 @@ msgstr "Charger un pré-réglage"
 #: src/gui/widgets/arranger.c:1578 src/gui/widgets/arranger.c:1597
 #: src/gui/widgets/arranger.c:1642 src/gui/widgets/arranger.c:1708
 #: src/gui/widgets/arranger.c:1727
-#, fuzzy
 msgid "Failed to move selection"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de déplacement de la sélection"
 
 #: src/gui/widgets/arranger.c:1661 src/gui/widgets/arranger.c:3930
 #, fuzzy
@@ -3473,14 +3455,12 @@ msgstr ""
 "bouclés et non bouclés."
 
 #: src/gui/widgets/arranger.c:3481
-#, fuzzy
 msgid "Failed to delete selection"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de suppression de la sélection"
 
 #: src/gui/widgets/arranger.c:3505 src/gui/widgets/arranger.c:4097
-#, fuzzy
 msgid "Failed to edit selection"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la modification de la sélection"
 
 #: src/gui/widgets/arranger.c:3554
 #, fuzzy
@@ -3488,15 +3468,13 @@ msgid "Failed to move automation"
 msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/gui/widgets/arranger.c:3577
-#, fuzzy
 msgid "Failed to duplicate automation"
-msgstr "Dupliquer l'automatisation"
+msgstr "Échec de duplication de l'automatisation"
 
 #: src/gui/widgets/arranger.c:3598 src/gui/widgets/arranger.c:3970
 #: src/gui/widgets/arranger.c:4394
-#, fuzzy
 msgid "Failed to create objects"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de création d'objets"
 
 #: src/gui/widgets/arranger.c:3618
 #, fuzzy
@@ -3645,9 +3623,8 @@ msgid "Fullscreen"
 msgstr "Plein écran"
 
 #: src/gui/widgets/project_assistant.c:39
-#, fuzzy
 msgid "<File not found>"
-msgstr "Fichier %s non trouvé."
+msgstr "<Fichier non trouvé>"
 
 #: src/gui/widgets/project_assistant.c:143
 #: resources/ui/project_assistant.ui:105
@@ -3659,19 +3636,16 @@ msgid "_Create"
 msgstr "_Créer"
 
 #: src/gui/widgets/project_assistant.c:445
-#, fuzzy
 msgid "No project selected"
-msgstr "Aucun objet sélectionné"
+msgstr "Aucun projet sélectionné"
 
 #: src/gui/widgets/project_assistant.c:460
-#, fuzzy
 msgid "Select Project File"
-msgstr "Sélectionner un projet"
+msgstr "Sélectionner un fichier de projet"
 
 #: src/gui/widgets/project_assistant.c:580 src/gui/widgets/item_factory.c:848
-#, fuzzy
 msgid "Template Name"
-msgstr "Nom de piste"
+msgstr "Nom du modèle"
 
 #: src/gui/widgets/project_assistant.c:589 src/gui/widgets/item_factory.c:853
 msgid "Path"
@@ -3746,9 +3720,8 @@ msgid "Failed to enable connection"
 msgstr "Active/désactive la connexion"
 
 #: src/gui/widgets/port_connection_row.c:71
-#, fuzzy
 msgid "Failed to disconnect"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de déconnexion"
 
 #: src/gui/widgets/port_connection_row.c:118
 msgid "Enable/disable connection"
@@ -4088,9 +4061,8 @@ msgid "Display"
 msgstr "Affichage"
 
 #: src/gui/widgets/chord_pack_browser.c:168
-#, fuzzy
 msgid "No preset selected"
-msgstr "Aucun port sélectionné"
+msgstr "Aucun préréglage sélectionné"
 
 #: src/gui/widgets/piano_roll_keys.c:156
 msgid "bass"
@@ -4109,9 +4081,8 @@ msgid "chord"
 msgstr "accord"
 
 #: src/gui/widgets/editor_ruler.c:238
-#, fuzzy
 msgid "Failed to edit position"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de modification de la position"
 
 #: src/gui/widgets/balance_control.c:245
 #, fuzzy
@@ -4129,9 +4100,8 @@ msgid "Failed to edit scale"
 msgstr "Impossible de réinitialiser le schéma %s"
 
 #: src/gui/widgets/editor_toolbar.c:51
-#, fuzzy
 msgid "Apply function"
-msgstr "Sélection de la fonction"
+msgstr "Appliquer la fonction"
 
 #: src/gui/widgets/editor_toolbar.c:130
 #, fuzzy
@@ -4620,9 +4590,8 @@ msgid "Separate tracks"
 msgstr "Renommer la piste"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:205
-#, fuzzy
 msgid "Export lanes as"
-msgstr "Exporter sous"
+msgstr "Exporter les lignes sous"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:80
 #, fuzzy
@@ -4775,23 +4744,20 @@ msgid "Initial Configuration"
 msgstr "Configuration initiale"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:211
-#, fuzzy
 msgid "Preferred language"
-msgstr "Balance pré-fader"
+msgstr "Langue préférée"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:228
-#, fuzzy
 msgid "User path"
-msgstr "Sélectionner tout"
+msgstr "Chemin utilisateur"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:230
 msgid "Location to save user files"
 msgstr "Emplacement de sauvegarde des fichiers utilisateur"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:232
-#, fuzzy
 msgid "Select a directory"
-msgstr "Sélectionner un projet"
+msgstr "Sélectionner un dossier"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:263
 msgid "_Reset"
@@ -4883,9 +4849,8 @@ msgid "Please copy the template below in a %snew issue%s."
 msgstr "Veuillez copier le modèle ci-dessous dans un %snouveau problème%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:529
-#, fuzzy
 msgid "Fatal Error"
-msgstr "Erreur"
+msgstr "Erreur fatale"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:529
 msgid "Error"
@@ -4909,9 +4874,8 @@ msgstr ""
 "reproduire)"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:624
-#, fuzzy
 msgid "Error details"
-msgstr "Détail du dessin"
+msgstr "Détail de l'erreur"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:631
 msgid "Backtrace"
@@ -4922,9 +4886,8 @@ msgid "Log"
 msgstr "Journal"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:663
-#, fuzzy
 msgid "System info"
-msgstr "Voir les infos"
+msgstr "Infos système"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:678
 msgid "_Close"
@@ -5005,9 +4968,8 @@ msgid "Name '%s' is taken. Please enter a different name"
 msgstr "Le nom '%s' ; est pris. Veuillez entrer un autre nom"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:129
-#, fuzzy
 msgid "Save Chord Preset"
-msgstr "Sauvegarder le pré-réglage"
+msgstr "Sauvegarder le pré-réglage d'accord"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:154
 msgid "Pack"
@@ -5281,9 +5243,9 @@ msgid "Remove from collection"
 msgstr "Retirer de la collection"
 
 #: src/plugins/carla_native_plugin.c:639
-#, fuzzy, c-format
+#, c-format
 msgid "Preset %u"
-msgstr "Pré-réglages"
+msgstr "Pré-réglages %u"
 
 #: src/plugins/carla_native_plugin.c:1072
 msgid "Audio in"
@@ -5942,16 +5904,14 @@ msgid "Scale"
 msgstr "Gamme"
 
 #: resources/ui/scale_selector_window.ui:178
-#, fuzzy
 msgid "Scale - Other"
-msgstr "Objet d'échelle"
+msgstr "Échelle - Autre"
 
 #: resources/ui/bot_bar.ui:63 resources/ui/view_toolbar.ui:47
 msgid "Toggle Bottom Panel"
 msgstr "Basculer le panneau inférieur"
 
 #: resources/ui/project_assistant.ui:5
-#, fuzzy
 msgid "Select a Project"
 msgstr "Sélectionner un projet"
 
@@ -6099,9 +6059,8 @@ msgid "Only events inside this time range will be exported."
 msgstr "Seuls les événements compris dans cette plage horaire seront exportés."
 
 #: resources/ui/export_dialog.ui:117 resources/ui/export_dialog.ui:241
-#, fuzzy
 msgid "Track Selection"
-msgstr "Sélections"
+msgstr "Sélection de piste"
 
 #: resources/ui/export_dialog.ui:134 resources/ui/export_dialog.ui:258
 msgid "Output"
@@ -6182,9 +6141,8 @@ msgid "Merge selections"
 msgstr "Fusionner les sélections"
 
 #: resources/ui/modulator_view.ui:43
-#, fuzzy
 msgid "No modulators"
-msgstr "Modulateurs"
+msgstr "Aucun modulateur"
 
 #: resources/ui/modulator_view.ui:44
 #, fuzzy
@@ -6226,9 +6184,8 @@ msgstr "Options de bounce"
 
 #: resources/ui/bounce_dialog.ui:21
 #: build/data/org.zrythm.Zrythm.gschema.xml:329
-#, fuzzy
 msgid "Bounce with parents"
-msgstr "Bounce avec effets"
+msgstr "Rebond avec parents"
 
 #: resources/ui/bounce_dialog.ui:40
 msgid "Tail"
@@ -6986,9 +6943,8 @@ msgstr ""
 "Trois chemins des collections sélectionnées dans le navigateur de greffons."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:540
-#, fuzzy
 msgid "Plugin browser authors"
-msgstr "Catégories du navigateur de greffons"
+msgstr "Auteurs du navigateur de greffons"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:541
 msgid "Tree paths of the selected authors in the plugin browser."
@@ -7014,9 +6970,8 @@ msgstr ""
 "Trois chemins des protocoles sélectionnés dans le navigateur de greffons."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:559
-#, fuzzy
 msgid "File browser bookmarks"
-msgstr "Navigateur de fichier"
+msgstr "Favoris du navigateur de fichiers"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:560
 msgid "Location bookmarks for file browser (absolute paths)."
@@ -7047,14 +7002,12 @@ msgid "Whether to show hidden files in the file browser."
 msgstr "S'il faut afficher les fichiers cachés dans le navigateur de fichiers."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:584
-#, fuzzy
 msgid "File browser filter"
-msgstr "Filtre du navigateur de greffon"
+msgstr "Filtre du navigateur de fichiers"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:585
-#, fuzzy
 msgid "Selected file browser filter"
-msgstr "Filtre du navigateur de greffon sélectionné"
+msgstr "Filtre du navigateur de fichiers sélectionné"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:589
 msgid "Last location"
@@ -7197,9 +7150,8 @@ msgid "Whether the track inspector panel is detached."
 msgstr "Si les pistes d'insert sont étendues."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:686
-#, fuzzy
 msgid "Track inspector size"
-msgstr "Inspecteur de piste"
+msgstr "Taille de l'inspecteur de piste"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:687
 msgid "Track inspector panel size when detached."
@@ -7215,18 +7167,16 @@ msgid "Whether the plugin inspector panel is detached."
 msgstr "Si le métronome est activé."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:696
-#, fuzzy
 msgid "Plugin inspector size"
-msgstr "Visualiseur de greffon"
+msgstr "Taille de l'inspecteur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:697
 msgid "Plugin inspector panel size when detached."
 msgstr "Taille du panneau de l'inspecteur de greffon lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:701
-#, fuzzy
 msgid "Plugin browser detached"
-msgstr "Onglet du navigateur de greffon"
+msgstr "Navigateur de greffon détaché"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:702
 #, fuzzy
@@ -7234,9 +7184,8 @@ msgid "Whether the plugin browser panel is detached."
 msgstr "Si le métronome est activé."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:706
-#, fuzzy
 msgid "Plugin browser size"
-msgstr "Filtre du navigateur de greffon"
+msgstr "Taille du navigateur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:707
 msgid "Plugin browser panel size when detached."
@@ -7299,9 +7248,8 @@ msgid "Whether the modulator view panel is detached."
 msgstr "Si le métronome est activé."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:741
-#, fuzzy
 msgid "Modulator view size"
-msgstr "Modulateurs"
+msgstr "Taille de la vue du modulateur"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:742
 msgid "Modulator view panel size when detached."
@@ -7408,9 +7356,8 @@ msgid "Whether the port connections panel is detached."
 msgstr "Si le métronome est activé."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:801
-#, fuzzy
 msgid "Port connections size"
-msgstr "Connexions du port"
+msgstr "Taille des connexions du port"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:802
 msgid "Port connections panel size when detached."
@@ -7730,9 +7677,8 @@ msgid "VST plugins"
 msgstr "Greffons VST"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1091
-#, fuzzy
 msgid "Plugin search paths."
-msgstr "Catégories du navigateur de greffons"
+msgstr "Chemin de recherche du greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1095
 msgid "SFZ instruments"
@@ -7740,9 +7686,8 @@ msgstr "instruments SFZ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1096
 #: build/data/org.zrythm.Zrythm.gschema.xml:1101
-#, fuzzy
 msgid "Instrument search paths."
-msgstr "Instrument"
+msgstr "Chemin de recherche de l'instrument"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1100
 msgid "SF2 instruments"
@@ -7810,9 +7755,8 @@ msgid "Font scale"
 msgstr "Échelle des caractères"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1179
-#, fuzzy
 msgid "Font scaling."
-msgstr "Échelle des caractères"
+msgstr "Échelle de la police."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1183
 msgid "User interface language"
@@ -7865,7 +7809,6 @@ msgid "The Zrythm contributors"
 msgstr "Les contributeurs à Zrythm"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:8
-#, fuzzy
 msgid "Digital audio workstation"
 msgstr "Station de travail audio numérique"
 
@@ -7925,9 +7868,8 @@ msgid "Changed:"
 msgstr "Modifié :"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-#, fuzzy
 msgid "Redesign export dialog"
-msgstr "Refonte du dialogue de rapport de bogue"
+msgstr "Refonte du dialogue d'export"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
 #, fuzzy
