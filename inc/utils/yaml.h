@@ -245,11 +245,12 @@ yaml_serialize (
   void *                       data,
   const cyaml_schema_value_t * schema);
 
-NONNULL
+NONNULL_ARGS (1, 2)
 void *
 yaml_deserialize (
   const char *                 yaml,
-  const cyaml_schema_value_t * schema);
+  const cyaml_schema_value_t * schema,
+  GError **                    error);
 
 NONNULL
 void

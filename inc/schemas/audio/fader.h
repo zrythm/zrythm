@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -35,17 +19,19 @@ typedef enum FaderType_v1
 {
   FADER_TYPE_NONE_v1,
   FADER_TYPE_MONITOR_v1,
+  FADER_TYPE_SAMPLE_PROCESSOR_v1,
   FADER_TYPE_AUDIO_CHANNEL_v1,
   FADER_TYPE_MIDI_CHANNEL_v1,
   FADER_TYPE_GENERIC_v1,
 } FaderType_v1;
 
 static const cyaml_strval_t fader_type_strings_v1[] = {
-  {"none",             FADER_TYPE_NONE_v1         },
-  { "monitor channel", FADER_TYPE_MONITOR_v1      },
-  { "audio channel",   FADER_TYPE_AUDIO_CHANNEL_v1},
-  { "midi channel",    FADER_TYPE_MIDI_CHANNEL_v1 },
-  { "generic",         FADER_TYPE_GENERIC_v1      },
+  {"none",              FADER_TYPE_NONE_v1            },
+  { "monitor",          FADER_TYPE_MONITOR_v1         },
+  { "sample processor", FADER_TYPE_SAMPLE_PROCESSOR_v1},
+  { "audio channel",    FADER_TYPE_AUDIO_CHANNEL_v1   },
+  { "midi channel",     FADER_TYPE_MIDI_CHANNEL_v1    },
+  { "generic",          FADER_TYPE_GENERIC_v1         },
 };
 
 typedef enum MidiFaderMode_v1
@@ -69,7 +55,9 @@ typedef struct Fader_v1
   Port_v1 *        amp;
   Port_v1 *        balance;
   Port_v1 *        mute;
-  int              solo;
+  Port_v1 *        solo;
+  Port_v1 *        listen;
+  Port_v1 *        mono_compat_enabled;
   StereoPorts_v1 * stereo_in;
   StereoPorts_v1 * stereo_out;
   Port_v1 *        midi_in;
@@ -78,16 +66,12 @@ typedef struct Fader_v1
   float            r_port_db;
   FaderType_v1     type;
   MidiFaderMode_v1 midi_mode;
-  bool             mono_compat_enabled;
   bool             passthrough;
-  int              track_pos;
-  int              magic;
-  bool             is_project;
 } Fader_v1;
 
 static const cyaml_schema_field_t fader_fields_schema_v1[] = {
   YAML_FIELD_INT (Fader_v1, schema_version),
-  YAML_FIELD_ENUM (Fader_v1, type, fader_type_strings_v1),
+  YAML_FIELD_ENUM (Fader_v1, type, fader_type_strings),
   YAML_FIELD_FLOAT (Fader_v1, volume),
   YAML_FIELD_MAPPING_PTR (Fader_v1, amp, port_fields_schema_v1),
   YAML_FIELD_FLOAT (Fader_v1, phase),
@@ -96,7 +80,15 @@ static const cyaml_schema_field_t fader_fields_schema_v1[] = {
     balance,
     port_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR (Fader_v1, mute, port_fields_schema_v1),
-  YAML_FIELD_INT (Fader_v1, solo),
+  YAML_FIELD_MAPPING_PTR (Fader_v1, solo, port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (
+    Fader_v1,
+    listen,
+    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (
+    Fader_v1,
+    mono_compat_enabled,
+    port_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Fader_v1,
     midi_in,
@@ -117,9 +109,7 @@ static const cyaml_schema_field_t fader_fields_schema_v1[] = {
     Fader_v1,
     midi_mode,
     midi_fader_mode_strings_v1),
-  YAML_FIELD_INT (Fader_v1, track_pos),
   YAML_FIELD_INT (Fader_v1, passthrough),
-  YAML_FIELD_INT (Fader_v1, mono_compat_enabled),
 
   CYAML_FIELD_END
 };

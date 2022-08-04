@@ -31,7 +31,7 @@ typedef struct AudioClip AudioClip;
  * @{
  */
 
-#define UNDO_STACK_SCHEMA_VERSION 1
+#define UNDO_STACK_SCHEMA_VERSION 2
 
 /**
  * Serializable stack for undoable actions.

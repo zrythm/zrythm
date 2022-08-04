@@ -105,13 +105,14 @@ return_new_instance:
     }
 
   UserShortcuts * self = (UserShortcuts *) yaml_deserialize (
-    yaml, &user_shortcuts_schema);
+    yaml, &user_shortcuts_schema, &err);
   if (!self)
     {
       g_warning (
         "Failed to deserialize "
-        "UserShortcuts from %s",
-        path);
+        "UserShortcuts from %s: \n%s",
+        path, err->message);
+      g_error_free (err);
       g_free (yaml);
       goto return_new_instance;
     }

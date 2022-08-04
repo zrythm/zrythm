@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -63,12 +47,42 @@ typedef enum NoteLength
   NOTE_LENGTH_1_128
 } NoteLength;
 
+static const cyaml_strval_t note_length_strings[] = {
+  {"bar",    NOTE_LENGTH_BAR  },
+  { "beat",  NOTE_LENGTH_BEAT },
+  { "2/1",   NOTE_LENGTH_2_1  },
+  { "1/1",   NOTE_LENGTH_1_1  },
+  { "1/2",   NOTE_LENGTH_1_2  },
+  { "1/4",   NOTE_LENGTH_1_4  },
+  { "1/8",   NOTE_LENGTH_1_8  },
+  { "1/16",  NOTE_LENGTH_1_16 },
+  { "1/32",  NOTE_LENGTH_1_32 },
+  { "1/64",  NOTE_LENGTH_1_64 },
+  { "1/128", NOTE_LENGTH_1_128},
+};
+
 typedef enum NoteType
 {
   NOTE_TYPE_NORMAL,
   NOTE_TYPE_DOTTED, ///< 2/3 of its original size
   NOTE_TYPE_TRIPLET ///< 3/2 of its original size
 } NoteType;
+
+static const cyaml_strval_t note_type_strings[] = {
+  {"normal",   NOTE_TYPE_NORMAL },
+  { "dotted",  NOTE_TYPE_DOTTED },
+  { "triplet", NOTE_TYPE_TRIPLET},
+};
+
+/**
+ * These are not meant to be serialized, they are
+ * only used for convenience.
+ */
+static const cyaml_strval_t note_type_short_strings[] = {
+  {"",   NOTE_TYPE_NORMAL },
+  { ".", NOTE_TYPE_DOTTED },
+  { "t", NOTE_TYPE_TRIPLET},
+};
 
 typedef enum NoteLengthType
 {
@@ -82,6 +96,12 @@ typedef enum NoteLengthType
   NOTE_LENGTH_LAST_OBJECT,
 } NoteLengthType;
 
+static const cyaml_strval_t note_length_type_strings[] = {
+  {"custom",       NOTE_LENGTH_CUSTOM     },
+  { "link",        NOTE_LENGTH_LINK       },
+  { "last object", NOTE_LENGTH_LAST_OBJECT},
+};
+
 /**
  * Snap grid type.
  */
@@ -90,6 +110,11 @@ typedef enum SnapGridType
   SNAP_GRID_TYPE_TIMELINE,
   SNAP_GRID_TYPE_EDITOR,
 } SnapGridType;
+
+static const cyaml_strval_t snap_grid_type_strings[] = {
+  {"timeline", SNAP_GRID_TYPE_TIMELINE},
+  { "editor",  SNAP_GRID_TYPE_EDITOR  },
+};
 
 typedef struct SnapGrid
 {
@@ -146,47 +171,6 @@ typedef struct SnapGrid
    */
   NoteLengthType length_type;
 } SnapGrid;
-
-static const cyaml_strval_t snap_grid_type_strings[] = {
-  {"timeline", SNAP_GRID_TYPE_TIMELINE},
-  { "editor",  SNAP_GRID_TYPE_EDITOR  },
-};
-
-static const cyaml_strval_t note_length_strings[] = {
-  {"bar",    NOTE_LENGTH_BAR  },
-  { "beat",  NOTE_LENGTH_BEAT },
-  { "2/1",   NOTE_LENGTH_2_1  },
-  { "1/1",   NOTE_LENGTH_1_1  },
-  { "1/2",   NOTE_LENGTH_1_2  },
-  { "1/4",   NOTE_LENGTH_1_4  },
-  { "1/8",   NOTE_LENGTH_1_8  },
-  { "1/16",  NOTE_LENGTH_1_16 },
-  { "1/32",  NOTE_LENGTH_1_32 },
-  { "1/64",  NOTE_LENGTH_1_64 },
-  { "1/128", NOTE_LENGTH_1_128},
-};
-
-static const cyaml_strval_t note_type_strings[] = {
-  {"normal",   NOTE_TYPE_NORMAL },
-  { "dotted",  NOTE_TYPE_DOTTED },
-  { "triplet", NOTE_TYPE_TRIPLET},
-};
-
-static const cyaml_strval_t note_length_type_strings[] = {
-  {"custom",       NOTE_LENGTH_CUSTOM     },
-  { "link",        NOTE_LENGTH_LINK       },
-  { "last object", NOTE_LENGTH_LAST_OBJECT},
-};
-
-/**
- * These are not meant to be serialized, they are
- * only used for convenience.
- */
-static const cyaml_strval_t note_type_short_strings[] = {
-  {"",   NOTE_TYPE_NORMAL },
-  { ".", NOTE_TYPE_DOTTED },
-  { "t", NOTE_TYPE_TRIPLET},
-};
 
 static const cyaml_schema_field_t snap_grid_fields_schema[] = {
   YAML_FIELD_INT (SnapGrid, schema_version),

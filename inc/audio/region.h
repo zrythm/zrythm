@@ -12,7 +12,6 @@
 #include "audio/automation_point.h"
 #include "audio/chord_object.h"
 #include "audio/midi_note.h"
-#include "audio/midi_region.h"
 #include "audio/position.h"
 #include "audio/region_identifier.h"
 #include "gui/backend/arranger_object.h"

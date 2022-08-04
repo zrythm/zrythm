@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -25,6 +9,21 @@
 
 #ifndef __SCHEMAS_AUDIO_TRACK_H__
 #define __SCHEMAS_AUDIO_TRACK_H__
+
+#include "utils/yaml.h"
+
+#include <gtk/gtk.h>
+
+#include "schemas/audio/automation_tracklist.h"
+#include "schemas/audio/channel.h"
+#include "schemas/audio/marker.h"
+#include "schemas/audio/modulator_macro_processor.h"
+#include "schemas/audio/port.h"
+#include "schemas/audio/region.h"
+#include "schemas/audio/scale_object.h"
+#include "schemas/audio/track_lane.h"
+#include "schemas/audio/track_processor.h"
+#include "schemas/plugins/plugin.h"
 
 typedef enum TrackType_v1
 {
@@ -65,18 +64,21 @@ typedef struct Track_v1
   int                          pos;
   TrackType_v1                 type;
   char *                       name;
+  unsigned int                 name_hash;
   char *                       icon_name;
   bool                         automation_visible;
   bool                         lanes_visible;
   bool                         visible;
   double                       main_height;
   Port_v1 *                    recording;
-  bool                         active;
+  bool                         record_set_automatically;
+  bool                         enabled;
   GdkRGBA                      color;
   TrackLane_v1 **              lanes;
   int                          num_lanes;
   size_t                       lanes_size;
   uint8_t                      midi_ch;
+  bool                         drum_mode;
   int                          passthrough_midi_input;
   ZRegion_v1 *                 recording_region;
   bool                         recording_start_sent;
@@ -93,7 +95,10 @@ typedef struct Track_v1
   int                          num_markers;
   size_t                       markers_size;
   Port_v1 *                    bpm_port;
-  Port_v1 *                    time_sig_port;
+  Port_v1 *                    beats_per_bar_port;
+  Port_v1 *                    beat_unit_port;
+  int                          size;
+  bool                         folded;
   Plugin_v1 **                 modulators;
   int                          num_modulators;
   size_t                       modulators_size;
@@ -108,13 +113,14 @@ typedef struct Track_v1
   PortType_v1                  out_signal_type;
   char *                       comment;
   bool                         bounce;
-  int *                        children;
+  bool                         bounce_to_master;
+  unsigned int *               children;
   int                          num_children;
   size_t                       children_size;
   bool                         frozen;
   int                          pool_id;
   int                          magic;
-  bool                         is_project;
+  bool                         disconnecting;
 } Track_v1;
 
 static const cyaml_schema_field_t track_fields_schema_v1[] = {
@@ -132,11 +138,11 @@ static const cyaml_schema_field_t track_fields_schema_v1[] = {
     Track_v1,
     recording,
     port_fields_schema_v1),
-  YAML_FIELD_INT (Track_v1, enabled_v1),
+  YAML_FIELD_INT (Track_v1, enabled),
   YAML_FIELD_MAPPING_EMBEDDED (
     Track_v1,
     color,
-    gdk_rgba_fields_schema_v1),
+    gdk_rgba_fields_schema),
   YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
     Track_v1,
     lanes,
@@ -163,7 +169,11 @@ static const cyaml_schema_field_t track_fields_schema_v1[] = {
     port_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Track_v1,
-    time_sig_port,
+    beats_per_bar_port,
+    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Track_v1,
+    beat_unit_port,
     port_fields_schema_v1),
   YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     Track_v1,
@@ -195,9 +205,13 @@ static const cyaml_schema_field_t track_fields_schema_v1[] = {
   YAML_FIELD_DYN_ARRAY_VAR_COUNT_PRIMITIVES (
     Track_v1,
     children,
-    int_schema),
+    unsigned_int_schema),
   YAML_FIELD_INT (Track_v1, frozen),
   YAML_FIELD_INT (Track_v1, pool_id),
+  YAML_FIELD_INT (Track_v1, size),
+  YAML_FIELD_INT (Track_v1, folded),
+  YAML_FIELD_INT (Track_v1, record_set_automatically),
+  YAML_FIELD_INT (Track_v1, drum_mode),
 
   CYAML_FIELD_END
 };

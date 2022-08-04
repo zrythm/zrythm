@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -41,21 +25,19 @@ typedef enum TrackProcessorMidiAutomatable_v1
 typedef struct TrackProcessor_v1
 {
   int              schema_version;
-  StereoPorts_v1 * stereo_in;
   Port_v1 *        mono;
   Port_v1 *        input_gain;
-  StereoPorts_v1 * stereo_out;
+  Port_v1 *        output_gain;
   Port_v1 *        midi_in;
   Port_v1 *        midi_out;
   Port_v1 *        piano_roll;
-  Port_v1 * midi_automatables[NUM_MIDI_AUTOMATABLES * 16];
-  float     last_automatable_vals[NUM_MIDI_AUTOMATABLES * 16];
-  float     l_port_db;
-  float     r_port_db;
-  int       track_pos;
-  void *    track;
-  bool      is_project;
-  int       magic;
+  Port_v1 *        monitor_audio;
+  StereoPorts_v1 * stereo_in;
+  StereoPorts_v1 * stereo_out;
+  Port_v1 *        midi_cc[128 * 16];
+  Port_v1 *        pitch_bend[16];
+  Port_v1 *        poly_key_pressure[16];
+  Port_v1 *        channel_pressure[16];
 } TrackProcessor_v1;
 
 static const cyaml_schema_field_t track_processor_fields_schema_v1[] = {
@@ -67,6 +49,10 @@ static const cyaml_schema_field_t track_processor_fields_schema_v1[] = {
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor_v1,
     input_gain,
+    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    TrackProcessor_v1,
+    output_gain,
     port_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor_v1,
@@ -82,6 +68,10 @@ static const cyaml_schema_field_t track_processor_fields_schema_v1[] = {
     port_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor_v1,
+    monitor_audio,
+    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    TrackProcessor_v1,
     stereo_in,
     stereo_ports_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
@@ -90,10 +80,24 @@ static const cyaml_schema_field_t track_processor_fields_schema_v1[] = {
     stereo_ports_fields_schema_v1),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
     TrackProcessor_v1,
-    midi_automatables,
+    midi_cc,
     port_schema_v1,
-    NUM_MIDI_AUTOMATABLES * 16),
-  YAML_FIELD_INT (TrackProcessor_v1, track_pos),
+    128 * 16),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
+    TrackProcessor_v1,
+    pitch_bend,
+    port_schema_v1,
+    16),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
+    TrackProcessor_v1,
+    poly_key_pressure,
+    port_schema_v1,
+    16),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
+    TrackProcessor_v1,
+    channel_pressure,
+    port_schema_v1,
+    16),
 
   CYAML_FIELD_END
 };

@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -56,12 +40,9 @@ typedef struct Channel_v1
   Port_v1 *        midi_out;
   StereoPorts_v1 * stereo_out;
   int              has_output;
-  int              output_pos;
+  unsigned int     output_name_hash;
   int              track_pos;
-  int              magic;
-  void *           widget;
-  int              record_set_automatically;
-  void *           track;
+  int              width;
 } Channel_v1;
 
 static const cyaml_schema_field_t channel_fields_schema_v1[] = {
@@ -101,8 +82,8 @@ static const cyaml_schema_field_t channel_fields_schema_v1[] = {
     Channel_v1,
     stereo_out,
     stereo_ports_fields_schema_v1),
-  YAML_FIELD_INT (Channel_v1, has_output),
-  YAML_FIELD_INT (Channel_v1, output_pos),
+  YAML_FIELD_UINT (Channel_v1, has_output),
+  YAML_FIELD_UINT (Channel_v1, output_name_hash),
   YAML_FIELD_INT (Channel_v1, track_pos),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
     Channel_v1,
@@ -125,7 +106,7 @@ static const cyaml_schema_field_t channel_fields_schema_v1[] = {
     ext_port_schema_v1),
   YAML_FIELD_INT (Channel_v1, all_stereo_r_ins),
   YAML_FIELD_INT (Channel_v1, all_midi_channels),
-  YAML_FIELD_INT (Channel_v1, record_set_automatically),
+  YAML_FIELD_INT (Channel_v1, width),
 
   CYAML_FIELD_END
 };

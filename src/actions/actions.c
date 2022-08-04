@@ -1044,11 +1044,15 @@ activate_paste (
   if (!text)
     return;
 
-  Clipboard * clipboard =
-    (Clipboard *) yaml_deserialize (text, &clipboard_schema);
+  GError *    err = NULL;
+  Clipboard * clipboard = (Clipboard *) yaml_deserialize (
+    text, &clipboard_schema, &err);
   if (!clipboard)
     {
-      g_message ("invalid clipboard data received:\n%s", text);
+      g_message (
+        "invalid clipboard data received:\n%s\n%s",
+        err->message, text);
+      g_error_free (err);
       return;
     }
 

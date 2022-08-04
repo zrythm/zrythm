@@ -639,7 +639,7 @@ return_new_instance:
         "Failed to create PluginSettings "
         "from %s",
         path);
-      g_free (err);
+      g_error_free (err);
       g_free (yaml);
       g_free (path);
       return NULL;
@@ -660,14 +660,14 @@ return_new_instance:
     }
 
   PluginSettings * self = (PluginSettings *)
-    yaml_deserialize (yaml, &plugin_settings_schema);
+    yaml_deserialize (yaml, &plugin_settings_schema, &err);
   if (!self)
     {
       g_warning (
         "Failed to deserialize "
-        "PluginSettings from %s",
-        path);
-      g_free (err);
+        "PluginSettings from %s: \n%s",
+        path, err->message);
+      g_error_free (err);
       g_free (yaml);
       goto return_new_instance;
     }

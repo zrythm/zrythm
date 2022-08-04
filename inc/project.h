@@ -50,7 +50,7 @@ typedef struct TracklistSelections TracklistSelections;
  * @{
  */
 
-#define PROJECT_SCHEMA_VERSION 1
+#define PROJECT_SCHEMA_VERSION 2
 
 #define PROJECT ZRYTHM->project
 #define DEFAULT_PROJECT_NAME "Untitled Project"
@@ -569,6 +569,14 @@ project_clone (const Project * src, bool for_backup);
  */
 COLD Project *
 project_new (Zrythm * zrythm);
+
+/**
+ * Upgrades the given project YAML's schema if needed.
+ *
+ * @return True if the schema was upgraded.
+ */
+COLD bool
+project_upgrade_schema (char ** yaml, int src_ver);
 
 /**
  * Tears down the project.

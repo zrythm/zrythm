@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm.org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <string.h>
 
@@ -23,6 +7,18 @@
 #include "utils/yaml.h"
 
 #include <gtk/gtk.h>
+
+#if 0
+typedef enum
+{
+  Z_YAML_ERROR_UNKNOWN,
+} ZYamlError;
+#endif
+
+#define Z_YAML_ERROR z_yaml_error_quark ()
+GQuark
+z_yaml_error_quark (void);
+G_DEFINE_QUARK (z - yaml - error - quark, z_yaml_error)
 
 cyaml_log_t _cyaml_log_level = CYAML_LOG_WARNING;
 
@@ -106,7 +102,8 @@ yaml_serialize (void * data, const cyaml_schema_value_t * schema)
 void *
 yaml_deserialize (
   const char *                 yaml,
-  const cyaml_schema_value_t * schema)
+  const cyaml_schema_value_t * schema,
+  GError **                    error)
 {
   void *         obj;
   cyaml_config_t cyaml_config;
@@ -116,7 +113,9 @@ yaml_deserialize (
     &cyaml_config, schema, (cyaml_data_t **) &obj, NULL);
   if (err != CYAML_OK)
     {
-      g_warning ("cyaml error: %s", cyaml_strerror (err));
+      g_set_error (
+        error, Z_YAML_ERROR, err, "cyaml error: %s",
+        cyaml_strerror (err));
       return NULL;
     }
 

@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -36,11 +20,8 @@
 typedef struct ScaleObject_v1
 {
   ArrangerObject_v1 base;
-  int               schema_version;
-  MusicalScale_v1 * scale;
   int               index;
-  int               magic;
-  void *            layout;
+  MusicalScale_v2 * scale;
 } ScaleObject_v1;
 
 static const cyaml_schema_field_t scale_object_fields_schema_v1[] = {
@@ -52,7 +33,7 @@ static const cyaml_schema_field_t scale_object_fields_schema_v1[] = {
   YAML_FIELD_MAPPING_PTR (
     ScaleObject_v1,
     scale,
-    musical_scale_fields_schema_v1),
+    musical_scale_fields_schema_v2),
 
   CYAML_FIELD_END
 };

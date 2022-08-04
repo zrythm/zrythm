@@ -56,8 +56,16 @@ init_common (SampleProcessor * self)
       PluginSetting * setting = NULL;
       if (strlen (setting_yaml) > 0)
         {
+          GError * err = NULL;
           setting = (PluginSetting *) yaml_deserialize (
-            setting_yaml, &plugin_setting_schema);
+            setting_yaml, &plugin_setting_schema, &err);
+          if (!setting)
+            {
+              g_warning (
+                "failed to deserialize plugin setting schema: %s",
+                err->message);
+              g_error_free (err);
+            }
           (void) setting;
         }
       else

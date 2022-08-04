@@ -67,6 +67,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "schemas/project.h"
 #include <time.h>
 #include <zstd.h>
 
@@ -904,19 +905,32 @@ load (const char * filename, const int is_template)
     }
 
   g_message ("project from yaml...");
-  gint64    time_before = g_get_monotonic_time ();
-  Project * self =
-    (Project *) yaml_deserialize (yaml, &project_schema);
+  gint64 time_before = g_get_monotonic_time ();
+
+  int schema_ver = string_get_regex_group_as_int (
+    yaml, "---\nschema_version: (.*)\n", 1, -1);
+  if (schema_ver != PROJECT_SCHEMA_VERSION)
+    {
+      /* upgrade project */
+      bool upgraded =
+        project_upgrade_schema (&yaml, schema_ver);
+      g_return_val_if_fail (upgraded, -1);
+    }
+
+  Project * self = (Project *) yaml_deserialize (
+    yaml, &project_schema, &err);
   gint64 time_after = g_get_monotonic_time ();
   g_message (
     "time to deserialize: %ldms",
     (long) (time_after - time_before) / 1000);
-  free (yaml);
   if (!self)
     {
-      g_warning ("Failed to load project");
+      HANDLE_ERROR (
+        err, "%s", _ ("Failed to deserialize project YAML"));
+      free (yaml);
       return -1;
     }
+  free (yaml);
   self->backup_dir = g_strdup (PROJECT->backup_dir);
 
   /* return if old, incompatible version */
@@ -1223,6 +1237,41 @@ project_load (const char * filename, const bool is_template)
   g_debug ("project %p loaded", PROJECT);
 
   return 0;
+}
+
+/**
+ * Upgrades the given project YAML's schema if needed.
+ *
+ * @return True if the schema was upgraded.
+ */
+bool
+project_upgrade_schema (char ** yaml, int src_ver)
+{
+  if (src_ver == 1)
+    {
+      /* deserialize into the previous version of the struct */
+      GError *     err = NULL;
+      Project_v1 * self = (Project_v1 *) yaml_deserialize (
+        *yaml, &project_schema_v1, &err);
+      if (!self)
+        {
+          HANDLE_ERROR (
+            err, "%s",
+            _ ("Failed to deserialize v1 project file"));
+          return false;
+        }
+
+      /* only dropping undo history, so just re-serialize
+       * into YAML */
+      g_free (*yaml);
+      *yaml = yaml_serialize (self, &project_schema_v1);
+      cyaml_config_t cyaml_config;
+      yaml_get_cyaml_config (&cyaml_config);
+
+      /* free memory allocated by libcyaml */
+      cyaml_free (&cyaml_config, &project_schema_v1, self, 0);
+    }
+  return true;
 }
 
 /**

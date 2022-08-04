@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -49,20 +33,19 @@ typedef struct Marker_v1
 {
   ArrangerObject_v1 base;
   int               schema_version;
-  MarkerType_v1     type;
   char *            name;
-  int               track_pos;
+  unsigned int      track_name_hash;
   int               index;
-  void *            layout;
-} Marker;
+  MarkerType_v1     type;
+} Marker_v1;
 
 static const cyaml_schema_field_t marker_fields_schema_v1[] = {
   YAML_FIELD_MAPPING_EMBEDDED (
     Marker_v1,
     base,
     arranger_object_fields_schema_v1),
-  YAML_FIELD_MAPPING_STRING_PTR (Marker_v1, name),
-  YAML_FIELD_INT (Marker_v1, track_pos),
+  YAML_FIELD_STRING_PTR (Marker_v1, name),
+  YAML_FIELD_UINT (Marker, track_name_hash),
   YAML_FIELD_INT (Marker_v1, index),
   YAML_FIELD_ENUM (Marker_v1, type, marker_type_strings_v1),
 

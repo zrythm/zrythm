@@ -116,14 +116,16 @@ return_new_instance:
       goto return_new_instance;
     }
 
-  CachedPluginDescriptors * self = (CachedPluginDescriptors *)
-    yaml_deserialize (yaml, &cached_plugin_descriptors_schema);
+  CachedPluginDescriptors * self =
+    (CachedPluginDescriptors *) yaml_deserialize (
+      yaml, &cached_plugin_descriptors_schema, &err);
   if (!self)
     {
       g_critical (
         "Failed to deserialize "
-        "CachedPluginDescriptors from %s",
-        path);
+        "CachedPluginDescriptors from %s:\n%s",
+        path, err->message);
+      g_error_free (err);
       g_free (yaml);
       g_free (path);
       return NULL;

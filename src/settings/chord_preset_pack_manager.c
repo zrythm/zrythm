@@ -518,8 +518,14 @@ chord_preset_pack_manager_new (bool scan_for_packs)
 
               ChordPresetPack * pack =
                 (ChordPresetPack *) yaml_deserialize (
-                  yaml, &chord_preset_pack_schema);
-              g_return_val_if_fail (pack, NULL);
+                  yaml, &chord_preset_pack_schema, &err);
+              if (!pack)
+                {
+                  g_critical (
+                    "failed to load chord preset pack: %s",
+                    err->message);
+                  return NULL;
+                }
               if (!pack->presets)
                 {
                   pack->presets_size = 12;

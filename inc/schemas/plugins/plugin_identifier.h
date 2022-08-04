@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -49,7 +33,7 @@ typedef struct PluginIdentifier_v1
 {
   int               schema_version;
   PluginSlotType_v1 slot_type;
-  int               track_pos;
+  unsigned int      track_name_hash;
   int               slot;
 } PluginIdentifier_v1;
 
@@ -59,8 +43,8 @@ static const cyaml_schema_field_t
     YAML_FIELD_ENUM (
       PluginIdentifier_v1,
       slot_type,
-      plugin_slot_type_strings) _v1,
-    YAML_FIELD_INT (PluginIdentifier_v1, track_pos),
+      plugin_slot_type_strings_v1),
+    YAML_FIELD_UINT (PluginIdentifier_v1, track_name_hash),
     YAML_FIELD_INT (PluginIdentifier_v1, slot),
 
     CYAML_FIELD_END

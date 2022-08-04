@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -28,20 +12,18 @@
 
 #include "zrythm-config.h"
 
-#include "audio/port.h"
-#include "plugins/lv2_plugin.h"
-#include "plugins/plugin_descriptor.h"
-#include "plugins/plugin_identifier.h"
-#include "plugins/plugin_preset.h"
-#include "settings/plugin_settings.h"
 #include "utils/types.h"
+
+#include "schemas/audio/port.h"
+#include "schemas/plugins/plugin_descriptor.h"
+#include "schemas/plugins/plugin_identifier.h"
+#include "schemas/plugins/plugin_preset.h"
+#include "schemas/settings/plugin_settings.h"
 
 typedef struct Plugin_v1
 {
   int                       schema_version;
   PluginIdentifier_v1       id;
-  void *                    lv2;
-  void *                    carla;
   PluginSetting_v1 *        setting;
   Port_v1 **                in_ports;
   int                       num_in_ports;
@@ -49,37 +31,13 @@ typedef struct Plugin_v1
   Port_v1 **                out_ports;
   int                       num_out_ports;
   size_t                    out_ports_size;
-  void **                   lilv_ports;
-  int                       num_lilv_ports;
-  void *                    enabled;
-  void *                    own_enabled_port;
-  void *                    gain;
   PluginBank_v1 **          banks;
   int                       num_banks;
   size_t                    banks_size;
   PluginPresetIdentifier_v1 selected_bank;
   PluginPresetIdentifier_v1 selected_preset;
   bool                      visible;
-  nframes_t                 latency;
-  bool                      instantiated;
-  bool                      instantiation_failed;
-  bool                      activated;
-  int                       ui_instantiated;
-  float                     ui_update_hz;
-  float                     ui_scale_factor;
   char *                    state_dir;
-  bool                      deleting;
-  void *                    active_preset_item;
-  void *                    window;
-  bool                      external_ui_visible;
-  void *                    ev_box;
-  void *                    vbox;
-  gulong                    destroy_window_id;
-  gulong                    delete_event_id;
-  int                       magic;
-  bool                      is_project;
-  void *                    modulator_widget;
-  guint                     update_ui_source_id;
 } Plugin_v1;
 
 static const cyaml_schema_field_t plugin_fields_schema_v1[] = {

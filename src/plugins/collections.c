@@ -135,13 +135,13 @@ return_new_instance:
     }
 
   PluginCollections * self = (PluginCollections *)
-    yaml_deserialize (yaml, &plugin_collections_schema);
+    yaml_deserialize (yaml, &plugin_collections_schema, &err);
   if (!self)
     {
       g_critical (
         "Failed to deserialize "
-        "PluginCollections from %s",
-        path);
+        "PluginCollections from %s:\n%s",
+        path, err->message);
       g_free (err);
       g_free (yaml);
       g_free (path);

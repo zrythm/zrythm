@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
@@ -222,6 +206,20 @@ test_save_backup_w_pool_and_plugins (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_load_v1_0_0_beta_2_1_1 (void)
+{
+  test_helper_zrythm_init ();
+
+  /* TODO test opening a project from 1.0.0 beta 2.1.1 that
+   * has undo history */
+
+  /*yaml_set_log_level (CYAML_LOG_DEBUG);*/
+  /*project_load ("/home/alex/.var/app/org.zrythm.Zrythm/data/zrythm/projects/プロジェクト名未設定 (3)/project.zpj", false);*/
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char * argv[])
 {
@@ -229,6 +227,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/project/"
 
+  g_test_add_func (
+    TEST_PREFIX "test load v1.0.0-beta.2.1.1",
+    (GTestFunc) test_load_v1_0_0_beta_2_1_1);
   g_test_add_func (
     TEST_PREFIX "test save backup w pool and plugins",
     (GTestFunc) test_save_backup_w_pool_and_plugins);

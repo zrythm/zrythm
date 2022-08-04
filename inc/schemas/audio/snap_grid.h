@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -32,6 +16,8 @@
 
 typedef enum NoteLength_v1
 {
+  NOTE_LENGTH_BAR_v1,
+  NOTE_LENGTH_BEAT_v1,
   NOTE_LENGTH_2_1_v1,
   NOTE_LENGTH_1_1_v1,
   NOTE_LENGTH_1_2_v1,
@@ -44,7 +30,9 @@ typedef enum NoteLength_v1
 } NoteLength_v1;
 
 static const cyaml_strval_t note_length_strings_v1[] = {
-  {"2/1",    NOTE_LENGTH_2_1_v1  },
+  {"bar",    NOTE_LENGTH_BAR_v1  },
+  { "beat",  NOTE_LENGTH_BEAT_v1 },
+  { "2/1",   NOTE_LENGTH_2_1_v1  },
   { "1/1",   NOTE_LENGTH_1_1_v1  },
   { "1/2",   NOTE_LENGTH_1_2_v1  },
   { "1/4",   NOTE_LENGTH_1_4_v1  },
@@ -87,7 +75,7 @@ typedef enum SnapGridType_v1
   SNAP_GRID_TYPE_EDITOR_v1,
 } SnapGridType_v1;
 
-static const cyaml_strval_t snap_grid_type_strings[] = {
+static const cyaml_strval_t snap_grid_type_strings_v1[] = {
   {"timeline", SNAP_GRID_TYPE_TIMELINE_v1},
   { "editor",  SNAP_GRID_TYPE_EDITOR_v1  },
 };
@@ -106,12 +94,10 @@ typedef struct SnapGrid_v1
   NoteType_v1       default_note_type;
   bool              default_adaptive;
   NoteLengthType_v1 length_type;
-  void *            snap_points;
-  int               num_snap_points;
-  size_t            snap_points_size;
 } SnapGrid_v1;
 
 static const cyaml_schema_field_t snap_grid_fields_schema_v1[] = {
+  YAML_FIELD_INT (SnapGrid_v1, schema_version),
   YAML_FIELD_ENUM (SnapGrid_v1, type, snap_grid_type_strings_v1),
   YAML_FIELD_ENUM (
     SnapGrid_v1,
@@ -142,7 +128,7 @@ static const cyaml_schema_field_t snap_grid_fields_schema_v1[] = {
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t snap_grid_schema = {
+static const cyaml_schema_value_t snap_grid_schema_v1 = {
   YAML_VALUE_PTR (SnapGrid_v1, snap_grid_fields_schema_v1),
 };
 
