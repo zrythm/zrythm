@@ -6,6 +6,22 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.0.1] - 2022-08-04
+### Changed
+- Update French, Chinese (Simplified), Catalan, Turkish, Portuguese (Brazil), Japanese, Polish, Hebrew, Indonesian, Ukrainian, Russian, Portuguese, Italian, German, Thai translations
+- Add better error handling when failing to read project yaml
+- Ignore GTK critical message (widget size related)
+- Meson: accept libpanel alpha release version
+- Upgrade project format and drop undo history when loading older projects
+
+### Fixed
+- Fix error when lowering BPM and saving a project with audio regions
+- Fix loading projects with audio regions under different sample rate
+- Fix endless stream of bug report dialogs (only allow a single dialog to be open at any time)
+- Fix error when adding an insert to an audio track
+- Fix error when attempting to change buffer size
+- Fix error when attempting to bounce a track while transport is playing
+
 ## [1.0.0-beta.2.1.1] - 2022-04-29
 ### Added
 - Use libpanel for docking/panels
