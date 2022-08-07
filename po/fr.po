@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-07-24 23:53+0900\n"
-"PO-Revision-Date: 2022-07-27 15:52+0000\n"
-"Last-Translator: Maxime Leroy <lisacintosh@gmail.com>\n"
+"PO-Revision-Date: 2022-07-31 15:52+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -975,7 +975,7 @@ msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/actions/undo_manager.c:286
 msgid "Failed to perform action"
-msgstr "Échec de l'action"
+msgstr "Échec de l'exécution de l'action"
 
 #: src/actions/chord_action.c:166
 msgid "Change chords"
@@ -1200,7 +1200,7 @@ msgstr "Impossible de réinitialiser le schéma %s"
 
 #: src/actions/actions.c:1691 src/actions/actions.c:1753
 msgid "Failed to delete tracks"
-msgstr "Échec de suppression des pistes"
+msgstr "Échec de la suppression des pistes"
 
 #: src/actions/actions.c:1718
 #, fuzzy
@@ -1373,7 +1373,7 @@ msgstr "Pré-réglages"
 
 #: src/actions/actions.c:3210 src/gui/widgets/modulator_inner.c:92
 msgid "Failed to delete plugins"
-msgstr "Échec de suppression des greffons"
+msgstr "Échec de la suppression des greffons"
 
 #: src/actions/actions.c:3234
 msgid ""
@@ -1387,7 +1387,7 @@ msgstr ""
 #: src/actions/actions.c:3284
 #, c-format
 msgid "Failed to reset %s"
-msgstr "Échec de réinitialisation de %s"
+msgstr "Échec de la réinitialisation de %s"
 
 #: src/actions/actions.c:3310
 #, fuzzy, c-format
@@ -1434,7 +1434,7 @@ msgstr "Échec du clonage des sélections de la liste de piste"
 #: src/actions/tracklist_selections.c:350 src/audio/tracklist.c:1626
 #: src/audio/tracklist.c:1754
 msgid "Failed to clone track"
-msgstr "Échec de clonage de la piste"
+msgstr "Échec de clonage d'une piste"
 
 #: src/actions/tracklist_selections.c:378
 msgid "Failed to clone tracklist selections: "
@@ -1461,7 +1461,7 @@ msgstr ""
 #: src/actions/tracklist_selections.c:825
 #, c-format
 msgid "Failed saving file %s"
-msgstr "Échec d'enregistrement du fichier %s"
+msgstr "Échec de la sauvegarde du fichier %s"
 
 #: src/actions/tracklist_selections.c:914
 #, fuzzy, c-format
@@ -1652,7 +1652,7 @@ msgstr "Détacher les pistes %d"
 #: src/actions/tracklist_selections.c:2085
 #, c-format
 msgid "Disable %d Tracks"
-msgstr "Désactiver %d Pistes"
+msgstr "Désactiver %d pistes"
 
 #: src/actions/tracklist_selections.c:2089
 #, fuzzy, c-format
@@ -1849,11 +1849,11 @@ msgstr "Impossible de trouver le greffon avec l'URI:%s"
 
 #: src/actions/mixer_selections_action.c:431 src/audio/channel.c:1834
 msgid "Failed to clone plugin"
-msgstr "Échec de clonage du greffon"
+msgstr "Échec du clonage du greffon"
 
 #: src/actions/mixer_selections_action.c:526
 msgid "Could not create plugin"
-msgstr "Échec de création du greffon"
+msgstr "Échec de la création du greffon"
 
 #: src/actions/mixer_selections_action.c:537 src/audio/audio_function.c:139
 #: src/audio/track.c:2104 src/audio/track.c:3155
@@ -2284,7 +2284,7 @@ msgstr "Elliptique"
 
 #: src/audio/audio_function.c:131 src/gui/widgets/drag_dest_box.c:309
 msgid "Failed to create plugin"
-msgstr "Échec de création du greffon"
+msgstr "Échec de la création du greffon"
 
 #: src/audio/audio_function.c:363
 msgid "Invalid positions - skipping function"
@@ -2368,7 +2368,7 @@ msgstr "Ne peut pas être routé"
 #: src/settings/plugin_settings.c:360 src/settings/plugin_settings.c:428
 #: src/settings/plugin_settings.c:541
 msgid "Failed to create track"
-msgstr "Échec de création de la piste"
+msgstr "Échec de la création d'une piste"
 
 #: src/audio/automation_track.c:171
 msgid "Rec"
@@ -2738,11 +2738,11 @@ msgstr ""
 
 #: src/gui/backend/event_manager.c:1252
 msgid "Plugin preset saved."
-msgstr "Préréglages du greffon enregistrés."
+msgstr "Préréglage du greffon enregistré."
 
 #: src/gui/backend/event_manager.c:1255
 msgid "Plugin preset loaded."
-msgstr "Préréglages du greffon chargés."
+msgstr "Préréglage du greffon chargé."
 
 #: src/gui/backend/arranger_selections.c:2394
 #, fuzzy
@@ -3433,7 +3433,7 @@ msgstr "Charger un pré-réglage"
 #: src/gui/widgets/arranger.c:1642 src/gui/widgets/arranger.c:1708
 #: src/gui/widgets/arranger.c:1727
 msgid "Failed to move selection"
-msgstr "Échec de déplacement de la sélection"
+msgstr "Échec du déplacement de la sélection"
 
 #: src/gui/widgets/arranger.c:1661 src/gui/widgets/arranger.c:3930
 #, fuzzy
@@ -3456,7 +3456,7 @@ msgstr ""
 
 #: src/gui/widgets/arranger.c:3481
 msgid "Failed to delete selection"
-msgstr "Échec de suppression de la sélection"
+msgstr "Échec de la suppression de la sélection"
 
 #: src/gui/widgets/arranger.c:3505 src/gui/widgets/arranger.c:4097
 msgid "Failed to edit selection"
@@ -3469,12 +3469,12 @@ msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/gui/widgets/arranger.c:3577
 msgid "Failed to duplicate automation"
-msgstr "Échec de duplication de l'automatisation"
+msgstr "Échec de la duplication de l'automatisation"
 
 #: src/gui/widgets/arranger.c:3598 src/gui/widgets/arranger.c:3970
 #: src/gui/widgets/arranger.c:4394
 msgid "Failed to create objects"
-msgstr "Échec de création d'objets"
+msgstr "Échec de la création d'objets"
 
 #: src/gui/widgets/arranger.c:3618
 #, fuzzy
@@ -3721,7 +3721,7 @@ msgstr "Active/désactive la connexion"
 
 #: src/gui/widgets/port_connection_row.c:71
 msgid "Failed to disconnect"
-msgstr "Échec de déconnexion"
+msgstr "Échec de la déconnexion"
 
 #: src/gui/widgets/port_connection_row.c:118
 msgid "Enable/disable connection"
@@ -4082,7 +4082,7 @@ msgstr "accord"
 
 #: src/gui/widgets/editor_ruler.c:238
 msgid "Failed to edit position"
-msgstr "Échec de modification de la position"
+msgstr "Échec de la modification de la position"
 
 #: src/gui/widgets/balance_control.c:245
 #, fuzzy
@@ -4875,7 +4875,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:624
 msgid "Error details"
-msgstr "Détail de l'erreur"
+msgstr "Détails de l'erreur"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:631
 msgid "Backtrace"
@@ -4969,7 +4969,7 @@ msgstr "Le nom '%s' ; est pris. Veuillez entrer un autre nom"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:129
 msgid "Save Chord Preset"
-msgstr "Sauvegarder le pré-réglage d'accord"
+msgstr "Sauvegarder le préréglage d'accord"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:154
 msgid "Pack"
@@ -5245,7 +5245,7 @@ msgstr "Retirer de la collection"
 #: src/plugins/carla_native_plugin.c:639
 #, c-format
 msgid "Preset %u"
-msgstr "Pré-réglages %u"
+msgstr "Préréglages %u"
 
 #: src/plugins/carla_native_plugin.c:1072
 msgid "Audio in"
@@ -6185,7 +6185,7 @@ msgstr "Options de bounce"
 #: resources/ui/bounce_dialog.ui:21
 #: build/data/org.zrythm.Zrythm.gschema.xml:329
 msgid "Bounce with parents"
-msgstr "Rebond avec parents"
+msgstr "Bounce avec parents"
 
 #: resources/ui/bounce_dialog.ui:40
 msgid "Tail"
@@ -6944,7 +6944,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:540
 msgid "Plugin browser authors"
-msgstr "Auteurs du navigateur de greffons"
+msgstr "Auteurs du navigateur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:541
 msgid "Tree paths of the selected authors in the plugin browser."
@@ -6971,7 +6971,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:559
 msgid "File browser bookmarks"
-msgstr "Favoris du navigateur de fichiers"
+msgstr "Favoris du navigateur de fichier"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:560
 msgid "Location bookmarks for file browser (absolute paths)."
@@ -7003,11 +7003,11 @@ msgstr "S'il faut afficher les fichiers cachés dans le navigateur de fichiers."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:584
 msgid "File browser filter"
-msgstr "Filtre du navigateur de fichiers"
+msgstr "Filtre du navigateur de fichier"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:585
 msgid "Selected file browser filter"
-msgstr "Filtre du navigateur de fichiers sélectionné"
+msgstr "Filtre du navigateur de fichiers sélectionnés"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:589
 msgid "Last location"
@@ -7357,7 +7357,7 @@ msgstr "Si le métronome est activé."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:801
 msgid "Port connections size"
-msgstr "Taille des connexions du port"
+msgstr "Taille du port de connexions"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:802
 msgid "Port connections panel size when detached."
@@ -7678,7 +7678,7 @@ msgstr "Greffons VST"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1091
 msgid "Plugin search paths."
-msgstr "Chemin de recherche du greffon"
+msgstr "Chemins de recherche de greffon."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1095
 msgid "SFZ instruments"
@@ -7687,7 +7687,7 @@ msgstr "instruments SFZ"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1096
 #: build/data/org.zrythm.Zrythm.gschema.xml:1101
 msgid "Instrument search paths."
-msgstr "Chemin de recherche de l'instrument"
+msgstr "Chemin de recherche d'instrument"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1100
 msgid "SF2 instruments"

@@ -18,17 +18,17 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-07-24 23:53+0900\n"
-"PO-Revision-Date: 2022-07-08 15:50+0000\n"
-"Last-Translator: Viktor <xasertop@gmail.com>\n"
+"PO-Revision-Date: 2022-07-31 15:52+0000\n"
+"Last-Translator: Vik <xasertop@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.13.1-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: inc/schemas/audio/region.h:45 inc/audio/region.h:66
 #: src/gui/widgets/track.c:916
@@ -247,7 +247,7 @@ msgstr "MIDI-групповой (MIDI Group)"
 
 #: inc/audio/track.h:178
 msgid "Folder"
-msgstr "Папка (Folder)"
+msgstr "Папка"
 
 #: inc/audio/engine.h:191
 msgid "1,024"
@@ -293,7 +293,7 @@ msgstr "192,000"
 #: inc/audio/engine.h:269 inc/audio/engine.h:325
 #: inc/plugins/plugin_descriptor.h:139
 msgid "Dummy"
-msgstr "Заглушка (Dummy)"
+msgstr "Заглушка"
 
 #: inc/audio/engine.h:269
 msgid "Dummy (libsoundio)"
@@ -309,7 +309,7 @@ msgstr "AlSA Sequencer (rtmidi)"
 
 #: inc/audio/audio_function.h:68
 msgid "Invert"
-msgstr "Инвертировать (Invert)"
+msgstr "Инвертировать"
 
 #: inc/audio/audio_function.h:69
 msgid "Normalize peak"
@@ -329,7 +329,7 @@ msgstr "Линейный феид-ин (Linear fade in)"
 
 #: inc/audio/audio_function.h:73
 msgid "Linear fade out"
-msgstr "Линейное затухание (Linear fade out)"
+msgstr "Линейное затухание"
 
 #: inc/audio/audio_function.h:74 src/gui/widgets/home_toolbar.c:142
 msgid "Nudge left"
@@ -349,7 +349,7 @@ msgstr "Внешняя программа (External program)"
 
 #: inc/audio/audio_function.h:78
 msgid "Guile script"
-msgstr "Guile скрипт"
+msgstr "Скрипт Guile"
 
 #: inc/audio/audio_function.h:79
 msgid "Custom plugin"
@@ -357,7 +357,7 @@ msgstr "Пользовательский плагин (Custom plugin)"
 
 #: inc/audio/audio_function.h:80
 msgid "Invalid"
-msgstr "Неверное значение (Invalid)"
+msgstr "Неверное значение"
 
 #: inc/audio/midi_function.h:54 resources/ui/editor_toolbar.ui:151
 msgid "Crescendo"
@@ -409,11 +409,11 @@ msgstr "Хроматика"
 
 #: inc/audio/scale.h:144
 msgid "Major"
-msgstr ""
+msgstr "Мажор"
 
 #: inc/audio/scale.h:145
 msgid "Minor"
-msgstr ""
+msgstr "Минор"
 
 #: inc/audio/scale.h:146
 #, fuzzy
@@ -422,15 +422,15 @@ msgstr "Ионийский (Мажор)"
 
 #: inc/audio/scale.h:147
 msgid "Dorian"
-msgstr ""
+msgstr "Дорический"
 
 #: inc/audio/scale.h:148
 msgid "Phrygian"
-msgstr ""
+msgstr "Фригийский"
 
 #: inc/audio/scale.h:149
 msgid "Lydian"
-msgstr ""
+msgstr "Лидийский"
 
 #: inc/audio/scale.h:150
 msgid "Mixolydian"
@@ -2223,9 +2223,8 @@ msgid "Client zombie"
 msgstr "Зомби клиент"
 
 #: src/audio/curve.c:306
-#, fuzzy
 msgid "Exponential"
-msgstr "Экспонента (Exponential)"
+msgstr "Экспоненциально"
 
 #: src/audio/curve.c:311
 #, fuzzy
@@ -2925,7 +2924,7 @@ msgstr "Горячие клавиши (Keyboard Shortcuts)"
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Donate"
-msgstr "Пожертвовать (Donate)"
+msgstr "Пожертвовать"
 
 #: src/gui/widgets/help_toolbar.c:44
 msgid "Report a Bug"
@@ -3342,7 +3341,7 @@ msgstr "Пресеты"
 #: src/gui/widgets/plugin_properties_expander.c:277
 #: src/gui/widgets/project_toolbar.c:40
 msgid "Save"
-msgstr "Сохранить (Save)"
+msgstr "Сохранить"
 
 #: src/gui/widgets/plugin_properties_expander.c:280
 msgid "Save preset"
@@ -3522,7 +3521,7 @@ msgstr "Название трека (Track Name)"
 
 #: src/gui/widgets/view_toolbar.c:23
 msgid "Toggle Status Bar"
-msgstr "Переключить строку состояния"
+msgstr ""
 
 #: src/gui/widgets/view_toolbar.c:24
 msgid "Fullscreen"
@@ -3573,15 +3572,15 @@ msgstr "Пустой проект"
 
 #: src/gui/widgets/project_toolbar.c:39
 msgid "New Project"
-msgstr "Создать (New Project)"
+msgstr "Новый проект"
 
 #: src/gui/widgets/project_toolbar.c:41
 msgid "Save As"
-msgstr "Сохранить как (Save As)"
+msgstr "Сохранить как"
 
 #: src/gui/widgets/project_toolbar.c:43
 msgid "Export As"
-msgstr "Экспорт (Export As)"
+msgstr "Экспортировать как"
 
 #: src/gui/widgets/project_toolbar.c:44
 msgid "Export Graph"
@@ -4155,9 +4154,8 @@ msgid "Region Functions"
 msgstr "Содержимое области"
 
 #: src/gui/widgets/timeline_arranger.c:1086
-#, fuzzy
 msgid "Audio Regions"
-msgstr "Добавить область"
+msgstr "Регионы аудио"
 
 #: src/gui/widgets/timeline_arranger.c:1108
 #, fuzzy
@@ -5667,7 +5665,7 @@ msgstr "Привязка"
 
 #: resources/ui/snap_grid_popover.ui:211
 msgid "Link"
-msgstr "Связь"
+msgstr "Ссылка"
 
 #: resources/ui/snap_grid_popover.ui:212
 msgid "Link length to snap setting"
@@ -5732,7 +5730,7 @@ msgstr "Протокол (Protocol)"
 
 #: resources/ui/header.ui:23 resources/gtk/help-overlay.ui:98
 msgid "Project"
-msgstr "Проект (Project)"
+msgstr "Проект"
 
 #: resources/ui/header.ui:34
 msgid "View"
@@ -7553,7 +7551,7 @@ msgstr "Инструменты SF2 (SF2 instruments)"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1123
 #: build/data/org.zrythm.Zrythm.gschema.xml:1137
 msgid "Editing"
-msgstr "Редактирование (Editing)"
+msgstr "Редактирование"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1114
 msgid "Fade algorithm"
