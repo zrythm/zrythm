@@ -37,19 +37,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-04-26 15:30+0100\n"
+"POT-Creation-Date: 2022-08-07 17:55+0900\n"
 "PO-Revision-Date: 2022-07-31 15:52+0000\n"
 "Last-Translator: Vik <xasertop@gmail.com>\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/ru/>\n"
 "Language: ru\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/ru/>\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14-dev\n"
-"Generated-By: Babel 2.10.1\n"
+"Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
@@ -241,8 +240,8 @@ msgid ""
 "Plugin descriptor cache for faster scanning. This is found at :file:"
 "`cached_plugin_descriptors.yaml` under the :term:`Zrythm user path`."
 msgstr ""
-"Кэш дескрипторов плагинов для более быстрого сканирования. Находится в "
-":file:`cached_plugin_descriptors.yaml` внутри :term:`Zrythm user path`."
+"Кэш дескрипторов плагинов для более быстрого сканирования. Находится в :file:"
+"`cached_plugin_descriptors.yaml` внутри :term:`Zrythm user path`."
 
 #: ../../appendix/files-and-directories.rst:87
 msgid "Plugin Collections"
@@ -327,8 +326,8 @@ msgid ""
 "These 12 chords are linked to the chords in the :ref:`Chord Editor <editing/"
 "clip-editors/chord-editor:Chord Editor>`."
 msgstr ""
-"Эти 12 аккордов связаны с аккордами в :ref:`Редакторе аккордов <editing/"
-"clip-editors/chord-editor:Chord Editor>`."
+"Эти 12 аккордов связаны с аккордами в :ref:`Редакторе аккордов <editing/clip-"
+"editors/chord-editor:Chord Editor>`."
 
 #: ../../chords-and-scales/chord-pad.rst:23
 #: ../../getting-started/getting-plugins.rst:86
@@ -5588,8 +5587,8 @@ msgid ""
 "recorded inside new regions in the timeline."
 msgstr ""
 "После активации треков, на которые вы хотите записывать события, включите "
-"запись (Record) в :ref:`transport-controls` и нажмите кнопку \"Воспроизвести"
-"\" (Play)."
+"запись (Record) в :ref:`transport-controls` и нажмите кнопку "
+"\"Воспроизвести\" (Play)."
 
 #: ../../playback-and-recording/recording.rst:39
 #, fuzzy
@@ -6809,7 +6808,8 @@ msgstr ""
 #: ../../plugins-files/plugins/scanning.rst:32
 msgid ""
 "On Flatpak builds, Zrythm will scan for LV2 plugins in the following paths."
-msgstr "Во Flatpak сборках Zrythm просканирует плагины VST2 по следующим путям."
+msgstr ""
+"Во Flatpak сборках Zrythm просканирует плагины VST2 по следующим путям."
 
 #: ../../plugins-files/plugins/scanning.rst:39
 #, fuzzy
@@ -6919,7 +6919,8 @@ msgstr "Zrythm просканирует плагины VST2 по следующ�
 #: ../../plugins-files/plugins/scanning.rst:110
 msgid ""
 "On Flatpak builds, Zrythm will scan for DSSI plugins in the following paths."
-msgstr "Во Flatpak сборках Zrythm просканирует плагины VST2 по следующим путям."
+msgstr ""
+"Во Flatpak сборках Zrythm просканирует плагины VST2 по следующим путям."
 
 #: ../../plugins-files/plugins/scanning.rst:115
 #, fuzzy
@@ -6939,7 +6940,8 @@ msgstr "Zrythm просканирует плагины VST2 по следующ�
 msgid ""
 "On Flatpak builds, Zrythm will scan for LADSPA plugins in the following "
 "paths."
-msgstr "Во Flatpak сборках Zrythm просканирует плагины VST2 по следующим путям."
+msgstr ""
+"Во Flatpak сборках Zrythm просканирует плагины VST2 по следующим путям."
 
 #: ../../plugins-files/plugins/scanning.rst:135
 #, fuzzy
@@ -8111,34 +8113,50 @@ msgid "Selecting an automatable control"
 msgstr ""
 
 #: ../../tracks/automation.rst:35
+msgid "Playback Mode"
+msgstr ""
+
+#: ../../tracks/automation.rst:37
+msgid ""
+"Automation can be enabled or disabled using the :guilabel:`On` and :guilabel:"
+"`Off` toggles in the track lane."
+msgstr ""
+
+#: ../../tracks/automation.rst:40
+msgid ""
+"Touch/latch modes can also be used to record automation live (see the :ref:"
+"`playback-and-recording/recording:Recording Automation` section)."
+msgstr ""
+
+#: ../../tracks/automation.rst:46
 msgid "Editing Automation"
 msgstr "Редактирование автоматизации"
 
-#: ../../tracks/automation.rst:36
+#: ../../tracks/automation.rst:47
 msgid ""
 "Editing automation involves creating automation regions and then creating "
 "automation events inside the automation editor. See :ref:`editing/clip-"
 "editors/automation-editor:Automation Editor` for details."
 msgstr ""
 
-#: ../../tracks/automation.rst:43
+#: ../../tracks/automation.rst:54
 msgid "Behavior"
 msgstr ""
 
-#: ../../tracks/automation.rst:44
+#: ../../tracks/automation.rst:55
 msgid ""
 "The control corresponding to each automation lane will use the value from "
 "the automation lane if there are automation events present at the current "
 "playhead position."
 msgstr ""
 
-#: ../../tracks/automation.rst:49
+#: ../../tracks/automation.rst:60
 msgid ""
 "If there is no automation at the playhead, the control will use the last "
 "known value, either from the automation lane or from a manual change."
 msgstr ""
 
-#: ../../tracks/automation.rst:53
+#: ../../tracks/automation.rst:64
 msgid "This behavior also applies when rendering (exporting) the project."
 msgstr ""
 
@@ -11232,8 +11250,8 @@ msgstr ""
 #~ "фильтрации плагинов. Есть 3 вкладки:"
 
 #~ msgid ""
-#~ "Filter plugins by category based on the plugin metadata, such as \"Delay"
-#~ "\", \"Distortion\", etc."
+#~ "Filter plugins by category based on the plugin metadata, such as "
+#~ "\"Delay\", \"Distortion\", etc."
 #~ msgstr ""
 #~ "Фильтрирование плагинов по категориям на основе метаданных плагина, таких "
 #~ "как \"Задержка (Delay)\", \"Искажение (Distortion)\" и т.д."
@@ -11330,8 +11348,8 @@ msgstr ""
 #~ "The auto-save interval can be changed (or disabled) in the preferences "
 #~ "window."
 #~ msgstr ""
-#~ "Интервал автосохранения можно изменить (или отключить) в окне \"Настройки"
-#~ "\" (Preferences)."
+#~ "Интервал автосохранения можно изменить (или отключить) в окне "
+#~ "\"Настройки\" (Preferences)."
 
 #~ msgid ""
 #~ "The backups are saved in the project's directory, under :file:`backups`."
@@ -11342,9 +11360,9 @@ msgstr ""
 #~ "Displays the log, which gets updated real-time. Preferences Shows the "
 #~ "preferences dialog. See :ref:`preferences` for more information."
 #~ msgstr ""
-#~ "Показывает лог, который обновляется в реальном времени. Кнопка \"Настройки"
-#~ "\" открывает окно \"Настройки\". Смотрите :ref:`preferences` для "
-#~ "получения дополнительной информации."
+#~ "Показывает лог, который обновляется в реальном времени. Кнопка "
+#~ "\"Настройки\" открывает окно \"Настройки\". Смотрите :ref:`preferences` "
+#~ "для получения дополнительной информации."
 
 #~ msgid "Interface Overview"
 #~ msgstr "Обзор интерфейса"

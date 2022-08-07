@@ -13,18 +13,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-04-26 15:30+0100\n"
+"POT-Creation-Date: 2022-08-07 17:55+0900\n"
 "PO-Revision-Date: 2022-07-31 15:52+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/fr/>\n"
 "Language: fr\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/fr/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
-"Generated-By: Babel 2.10.1\n"
+"Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
@@ -271,8 +270,8 @@ msgid ""
 msgstr ""
 "Zrythm écrira un fichier de journalisation à chaque démarrage dans le sous-"
 "répertoire :file:`log` sous le :term:`Zrythm user path`. Le nom de fichier "
-"contiendra la date et l'heure actuelles, par exemple "
-":file:`log_2020-06-26_15-34-19.log`."
+"contiendra la date et l'heure actuelles, par exemple :file:"
+"`log_2020-06-26_15-34-19.log`."
 
 #: ../../appendix/files-and-directories.rst:101
 msgid "This log file is useful for debugging crashes and other problems."
@@ -365,9 +364,9 @@ msgid ""
 "A list of preset packs and presets is found in the :ref:`Right Panel <zrythm-"
 "interface/right-panel:Right Panel>` under :guilabel:`Chord Preset Browser`."
 msgstr ""
-"Une liste de packs de préréglages et de préréglages a été trouvée dans le "
-":ref:`Right Panel <zrythm-interface/right-panel:Right Panel>` sous "
-":guilabel:`Chord Preset Browser`."
+"Une liste de packs de préréglages et de préréglages a été trouvée dans le :"
+"ref:`Right Panel <zrythm-interface/right-panel:Right Panel>` sous :guilabel:"
+"`Chord Preset Browser`."
 
 #: ../../chords-and-scales/chord-pad.rst:39
 msgid "Chord preset browser"
@@ -428,8 +427,8 @@ msgid ""
 "You can create your own pack by clicking the :guilabel:`Add` button below "
 "the list of chord preset packs."
 msgstr ""
-"Vous pouvez créer votre propre pack en cliquant sur le bouton :guilabel:`Add`"
-"en dessous de la liste des packs de préréglages d'accords."
+"Vous pouvez créer votre propre pack en cliquant sur le bouton :guilabel:"
+"`Add`en dessous de la liste des packs de préréglages d'accords."
 
 #: ../../chords-and-scales/chord-pad.rst:74
 msgid "Creating a chord preset pack"
@@ -792,9 +791,9 @@ msgid ""
 msgstr ""
 "Les contrôles de périphériques MIDI peuvent êtres liés à des contrôles "
 "internes à Zrythm (sur les contrôles qui les supporte). Après avoir activé "
-"un périphérique dans :ref:`Preferences <configuration/"
-"preferences:Preferences>`, une liaison peut être créée en cliquant-droit sur "
-"un contrôle éligible et en sélectionnant :guilabel: `MIDI learn`."
+"un périphérique dans :ref:`Preferences <configuration/preferences:"
+"Preferences>`, une liaison peut être créée en cliquant-droit sur un contrôle "
+"éligible et en sélectionnant :guilabel: `MIDI learn`."
 
 #: ../../configuration/device-setup.rst:62
 msgid "MIDI learn on channel sends"
@@ -1014,16 +1013,16 @@ msgid ""
 "The language of the user interface can be changed under :menuselection:`UI --"
 "> General`."
 msgstr ""
-"La langue de l'interface-utilisateur peut être changée dans :menuselection: `"
-"UI --> Général`"
+"La langue de l'interface-utilisateur peut être changée dans :menuselection: "
+"`UI --> Général`"
 
 #: ../../configuration/preferences.rst:108
 msgid ""
 "There is an option to reset Zrythm to its default settings under :"
 "menuselection:`General --> Other`."
 msgstr ""
-"Il y a une option pour réinitialiser Zrythm à ses valeurs par défaut dans "
-":menuselection:`Général --> Autre`"
+"Il y a une option pour réinitialiser Zrythm à ses valeurs par défaut dans :"
+"menuselection:`Général --> Autre`"
 
 #: ../../configuration/preferences.rst:111
 #, fuzzy
@@ -1236,8 +1235,8 @@ msgid ""
 msgstr ""
 "Zrythm utilise une terminologie similaire à celle de logiciels audios "
 "existants. Il peut-être utile d'emprunter des termes à ces derniers. Voir le "
-"`manuel artiste Cubase Pro <https://steinberg.help/cubase_pro_artist/v9/fr/>`"
-"_ par exemple (remplacez `fr` dans l'URL parle code code de votre langue)."
+"`manuel artiste Cubase Pro <https://steinberg.help/cubase_pro_artist/v9/fr/"
+">`_ par exemple (remplacez `fr` dans l'URL parle code code de votre langue)."
 
 #: ../../contributing/intro.rst:76
 msgid "User Manual"
@@ -1978,9 +1977,9 @@ msgid ""
 "Switch to drum editor view (or `Drum mode`), where each :term:`MIDI note` is "
 "drawn as a diamond and the piano roll keys display the name of each drum."
 msgstr ""
-"Basculer sur la vue d'éditeur de percussion (ou `Drum mode`), où chaque "
-":term: `MIDI note` est dessinée comme un diamant et les touches du piano "
-"roll affichent le nom de chaque percussion."
+"Basculer sur la vue d'éditeur de percussion (ou `Drum mode`), où chaque :"
+"term: `MIDI note` est dessinée comme un diamant et les touches du piano roll "
+"affichent le nom de chaque percussion."
 
 #: ../../editing/clip-editors/piano-roll.rst:39
 #, fuzzy
@@ -8440,34 +8439,50 @@ msgid "Selecting an automatable control"
 msgstr "Sélection de l'automatisation"
 
 #: ../../tracks/automation.rst:35
+msgid "Playback Mode"
+msgstr ""
+
+#: ../../tracks/automation.rst:37
+msgid ""
+"Automation can be enabled or disabled using the :guilabel:`On` and :guilabel:"
+"`Off` toggles in the track lane."
+msgstr ""
+
+#: ../../tracks/automation.rst:40
+msgid ""
+"Touch/latch modes can also be used to record automation live (see the :ref:"
+"`playback-and-recording/recording:Recording Automation` section)."
+msgstr ""
+
+#: ../../tracks/automation.rst:46
 msgid "Editing Automation"
 msgstr "Édition de l'automatisation"
 
-#: ../../tracks/automation.rst:36
+#: ../../tracks/automation.rst:47
 msgid ""
 "Editing automation involves creating automation regions and then creating "
 "automation events inside the automation editor. See :ref:`editing/clip-"
 "editors/automation-editor:Automation Editor` for details."
 msgstr ""
 
-#: ../../tracks/automation.rst:43
+#: ../../tracks/automation.rst:54
 msgid "Behavior"
 msgstr ""
 
-#: ../../tracks/automation.rst:44
+#: ../../tracks/automation.rst:55
 msgid ""
 "The control corresponding to each automation lane will use the value from "
 "the automation lane if there are automation events present at the current "
 "playhead position."
 msgstr ""
 
-#: ../../tracks/automation.rst:49
+#: ../../tracks/automation.rst:60
 msgid ""
 "If there is no automation at the playhead, the control will use the last "
 "known value, either from the automation lane or from a manual change."
 msgstr ""
 
-#: ../../tracks/automation.rst:53
+#: ../../tracks/automation.rst:64
 msgid "This behavior also applies when rendering (exporting) the project."
 msgstr ""
 
@@ -9171,8 +9186,8 @@ msgid ""
 "Lanes can be made visible by clicking the \"hamburger\" icon in the track "
 "view."
 msgstr ""
-"Les lignes peuvent être rendues visibles en cliquant sur l'icône \"hamburger"
-"\"."
+"Les lignes peuvent être rendues visibles en cliquant sur l'icône "
+"\"hamburger\"."
 
 #: ../../tracks/track-lanes.rst:23
 #, fuzzy
@@ -11354,8 +11369,8 @@ msgstr ""
 #~ "greffons. Il y a 3 onglets :"
 
 #~ msgid ""
-#~ "Filter plugins by category based on the plugin metadata, such as \"Delay"
-#~ "\", \"Distortion\", etc."
+#~ "Filter plugins by category based on the plugin metadata, such as "
+#~ "\"Delay\", \"Distortion\", etc."
 #~ msgstr ""
 #~ "#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
 #~ "Filtrer les greffons par catégorie en fonction des métadonnées du "
@@ -11624,8 +11639,8 @@ msgstr ""
 
 #~ msgid ""
 #~ "You can install the latest version of Zrythm for your distro `here "
-#~ "<https://software.opensuse.org//download.html?project=home"
-#~ "%3Aalextee&package=zrythm>`_"
+#~ "<https://software.opensuse.org//download.html?"
+#~ "project=home%3Aalextee&package=zrythm>`_"
 #~ msgstr ""
 #~ "Vous pouvez installer la dernière version de Zrythm pour votre "
 #~ "distribution `ici <https://software.opensuse.org//download.html?"
@@ -11761,12 +11776,12 @@ msgstr ""
 
 #~ msgid ""
 #~ "JACK needs to be set up and configured before running Zrythm. We "
-#~ "recommend using `Cadence <http://kxstudio.linuxaudio.org/Applications"
-#~ "%3ACadence>`_, as it makes the process very easy."
+#~ "recommend using `Cadence <http://kxstudio.linuxaudio.org/"
+#~ "Applications%3ACadence>`_, as it makes the process very easy."
 #~ msgstr ""
 #~ "JACK doit être configuré avant de lancer Zrythm. Nous recommandons "
-#~ "d'utiliser `Cadence <http://kxstudio.linuxaudio.org/Applications"
-#~ "%3ACadence>`_, car cela rend le processus très facile."
+#~ "d'utiliser `Cadence <http://kxstudio.linuxaudio.org/"
+#~ "Applications%3ACadence>`_, car cela rend le processus très facile."
 
 #~ msgid "Open Cadence"
 #~ msgstr "Ouvrir Cadence"

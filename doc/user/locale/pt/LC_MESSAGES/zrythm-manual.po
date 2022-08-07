@@ -12,18 +12,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-04-26 15:30+0100\n"
+"POT-Creation-Date: 2022-08-07 17:55+0900\n"
 "PO-Revision-Date: 2022-07-02 11:19+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.13.1-dev\n"
-"Generated-By: Babel 2.10.1\n"
+"Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
@@ -813,8 +812,8 @@ msgid ""
 "can be accessed by clicking the gear icon or with :kbd:`Control-Shift-p`"
 msgstr ""
 "O Zrythm tem uma caixa de diálogo de Preferências com todas as configurações "
-"globais que podem ser acessadas a clicar no ícone de engrenagem ou por ``Ctrl"
-"+Shift+p``"
+"globais que podem ser acessadas a clicar no ícone de engrenagem ou por "
+"``Ctrl+Shift+p``"
 
 #: ../../configuration/preferences.rst:20
 #, fuzzy
@@ -7796,34 +7795,50 @@ msgid "Selecting an automatable control"
 msgstr "Selecionar Automação"
 
 #: ../../tracks/automation.rst:35
+msgid "Playback Mode"
+msgstr ""
+
+#: ../../tracks/automation.rst:37
+msgid ""
+"Automation can be enabled or disabled using the :guilabel:`On` and :guilabel:"
+"`Off` toggles in the track lane."
+msgstr ""
+
+#: ../../tracks/automation.rst:40
+msgid ""
+"Touch/latch modes can also be used to record automation live (see the :ref:"
+"`playback-and-recording/recording:Recording Automation` section)."
+msgstr ""
+
+#: ../../tracks/automation.rst:46
 msgid "Editing Automation"
 msgstr "Automatizar a Edição"
 
-#: ../../tracks/automation.rst:36
+#: ../../tracks/automation.rst:47
 msgid ""
 "Editing automation involves creating automation regions and then creating "
 "automation events inside the automation editor. See :ref:`editing/clip-"
 "editors/automation-editor:Automation Editor` for details."
 msgstr ""
 
-#: ../../tracks/automation.rst:43
+#: ../../tracks/automation.rst:54
 msgid "Behavior"
 msgstr ""
 
-#: ../../tracks/automation.rst:44
+#: ../../tracks/automation.rst:55
 msgid ""
 "The control corresponding to each automation lane will use the value from "
 "the automation lane if there are automation events present at the current "
 "playhead position."
 msgstr ""
 
-#: ../../tracks/automation.rst:49
+#: ../../tracks/automation.rst:60
 msgid ""
 "If there is no automation at the playhead, the control will use the last "
 "known value, either from the automation lane or from a manual change."
 msgstr ""
 
-#: ../../tracks/automation.rst:53
+#: ../../tracks/automation.rst:64
 msgid "This behavior also applies when rendering (exporting) the project."
 msgstr ""
 
@@ -10827,8 +10842,8 @@ msgstr ""
 #~ "os suplemento. Existem 3 separadores:"
 
 #~ msgid ""
-#~ "Filter plugins by category based on the plugin metadata, such as \"Delay"
-#~ "\", \"Distortion\", etc."
+#~ "Filter plugins by category based on the plugin metadata, such as "
+#~ "\"Delay\", \"Distortion\", etc."
 #~ msgstr ""
 #~ "Filtrar suplementos por categoria com base nos metadados dos suplementos, "
 #~ "tais como \"Delay\", \"Distortion\", etc."
@@ -11123,8 +11138,8 @@ msgstr ""
 
 #~ msgid ""
 #~ "JACK needs to be set up and configured before running Zrythm. We "
-#~ "recommend using `Cadence <http://kxstudio.linuxaudio.org/Applications"
-#~ "%3ACadence>`_, as it makes the process very easy."
+#~ "recommend using `Cadence <http://kxstudio.linuxaudio.org/"
+#~ "Applications%3ACadence>`_, as it makes the process very easy."
 #~ msgstr ""
 #~ "JACK deve ser instalado e configurado antes de executar o Zrythm. "
 #~ "Recomendamos o uso de `Cadence <http://kxstudio.linuxaudio.org/"

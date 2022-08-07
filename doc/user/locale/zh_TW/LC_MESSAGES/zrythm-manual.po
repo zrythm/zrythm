@@ -33,14 +33,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-04-26 15:30+0100\n"
+"POT-Creation-Date: 2022-08-07 17:55+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.10.1\n"
+"Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
@@ -6751,34 +6751,50 @@ msgid "Selecting an automatable control"
 msgstr ""
 
 #: ../../tracks/automation.rst:35
+msgid "Playback Mode"
+msgstr ""
+
+#: ../../tracks/automation.rst:37
+msgid ""
+"Automation can be enabled or disabled using the :guilabel:`On` and :guilabel:"
+"`Off` toggles in the track lane."
+msgstr ""
+
+#: ../../tracks/automation.rst:40
+msgid ""
+"Touch/latch modes can also be used to record automation live (see the :ref:"
+"`playback-and-recording/recording:Recording Automation` section)."
+msgstr ""
+
+#: ../../tracks/automation.rst:46
 msgid "Editing Automation"
 msgstr ""
 
-#: ../../tracks/automation.rst:36
+#: ../../tracks/automation.rst:47
 msgid ""
 "Editing automation involves creating automation regions and then creating "
 "automation events inside the automation editor. See :ref:`editing/clip-"
 "editors/automation-editor:Automation Editor` for details."
 msgstr ""
 
-#: ../../tracks/automation.rst:43
+#: ../../tracks/automation.rst:54
 msgid "Behavior"
 msgstr ""
 
-#: ../../tracks/automation.rst:44
+#: ../../tracks/automation.rst:55
 msgid ""
 "The control corresponding to each automation lane will use the value from "
 "the automation lane if there are automation events present at the current "
 "playhead position."
 msgstr ""
 
-#: ../../tracks/automation.rst:49
+#: ../../tracks/automation.rst:60
 msgid ""
 "If there is no automation at the playhead, the control will use the last "
 "known value, either from the automation lane or from a manual change."
 msgstr ""
 
-#: ../../tracks/automation.rst:53
+#: ../../tracks/automation.rst:64
 msgid "This behavior also applies when rendering (exporting) the project."
 msgstr ""
 
