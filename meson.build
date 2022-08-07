@@ -1006,6 +1006,9 @@ sratom_dep = dependency (
 lilv_dep = dependency (
   'lilv-0', version: '>=0.24.6',
   fallback: ['lilv', 'lilv_dep'],
+  default_options: [
+    'tests=false',
+    ],
   static: all_static)
 
 json_glib_dep = dependency (
