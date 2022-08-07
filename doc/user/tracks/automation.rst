@@ -31,6 +31,17 @@ automate in each automation lane.
 
    Selecting an automatable control
 
+Playback Mode
+-------------
+
+Automation can be enabled or disabled using the
+:guilabel:`On` and :guilabel:`Off` toggles in the track lane.
+
+Touch/latch modes can also be used to record automation live
+(see the
+:ref:`playback-and-recording/recording:Recording Automation`
+section).
+
 Editing Automation
 ------------------
 Editing automation involves creating automation
