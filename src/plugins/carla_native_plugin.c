@@ -2186,7 +2186,7 @@ carla_native_plugin_set_param_value (
 
   float cur_val = carla_get_current_parameter_value (
     self->host_handle, 0, id);
-  if (!math_floats_equal (cur_val, val))
+  if (DEBUGGING && !math_floats_equal (cur_val, val))
     {
       g_debug (
         "setting param %d value to %f", id, (double) val);

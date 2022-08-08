@@ -535,6 +535,7 @@ graph_update_latencies (Graph * self, bool use_setup_nodes)
     use_setup_nodes ? self->setup_graph_nodes : self->graph_nodes;
   GHashTableIter iter;
   gpointer       key, value;
+  g_debug ("setting all latencies to 0");
   g_hash_table_iter_init (&iter, ht);
   while (g_hash_table_iter_next (&iter, &key, &value))
     {
@@ -542,7 +543,10 @@ graph_update_latencies (Graph * self, bool use_setup_nodes)
       n->playback_latency = 0;
       n->route_playback_latency = 0;
     }
+  g_debug ("done setting all latencies to 0");
 
+  g_debug (
+    "iterating over %u nodes...", g_hash_table_size (ht));
   g_hash_table_iter_init (&iter, ht);
   while (g_hash_table_iter_next (&iter, &key, &value))
     {
@@ -555,6 +559,7 @@ graph_update_latencies (Graph * self, bool use_setup_nodes)
             n, n->playback_latency);
         }
     }
+  g_debug ("iterating done...");
 
   g_message (
     "Total latencies:\n"

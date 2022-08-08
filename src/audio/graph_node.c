@@ -464,11 +464,10 @@ add_depends (GraphNode * self, GraphNode * src)
 }
 
 /**
- * Returns the latency of only the given port,
- * without adding the previous/next latencies.
+ * Returns the latency of only the given port, without adding
+ * the previous/next latencies.
  *
- * It returns the plugin's latency if plugin,
- * otherwise 0.
+ * It returns the plugin's latency if plugin, otherwise 0.
  */
 nframes_t
 graph_node_get_single_playback_latency (GraphNode * node)
@@ -508,11 +507,17 @@ graph_node_set_route_playback_latency (
     {
       node->route_playback_latency = dest_latency;
     }
+  else
+    {
+      /* assumed that parent nodes already have the previous
+       * latency set */
+      /* TODO double-check if this is OK to do, needs testing */
+      return;
+    }
 
-  GraphNode * parent;
   for (int i = 0; i < node->init_refcount; i++)
     {
-      parent = node->parentnodes[i];
+      GraphNode * parent = node->parentnodes[i];
       graph_node_set_route_playback_latency (
         parent, node->route_playback_latency);
 #if 0

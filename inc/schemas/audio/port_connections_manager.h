@@ -4,15 +4,16 @@
 #ifndef __SCHEMAS_AUDIO_PORT_CONNECTIONS_MANAGER_H__
 #define __SCHEMAS_AUDIO_PORT_CONNECTIONS_MANAGER_H__
 
-#include "schemas/audio/port_connection.h"
 #include "utils/yaml.h"
+
+#include "schemas/audio/port_connection.h"
 
 typedef struct PortConnectionsManager_v1
 {
-  int schema_version;
+  int                  schema_version;
   PortConnection_v1 ** connections;
-  int               num_connections;
-  size_t            connections_size;
+  int                  num_connections;
+  size_t               connections_size;
 } PortConnectionsManager_v1;
 
 static const cyaml_schema_field_t
