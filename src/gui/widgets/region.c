@@ -856,7 +856,7 @@ draw_fade_part (
     }
 
   const int step = 1;
-  if (fade_in_px - start_px != 0)
+  if (vis_fade_in_px - vis_start_px > 0)
     {
       double local_px_diff = (double) (fade_in_px - start_px);
 
@@ -864,11 +864,11 @@ draw_fade_part (
       cairo_t * cr = NULL;
       if (use_cairo)
         {
-          cr = gtk_snapshot_append_cairo (
-            snapshot,
-            &GRAPHENE_RECT_INIT (
-              vis_start_px, 0, vis_fade_in_px - vis_start_px,
-              height));
+          graphene_rect_t grect = GRAPHENE_RECT_INIT (
+            vis_start_px, 0, vis_fade_in_px - vis_start_px,
+            height);
+          /*z_graphene_rect_print (&grect);*/
+          cr = gtk_snapshot_append_cairo (snapshot, &grect);
           cairo_set_source_rgba (cr, 0.2, 0.2, 0.2, 0.6);
           /*cairo_set_line_width (cr, 3);*/
         }
@@ -916,10 +916,11 @@ draw_fade_part (
             }
           else
             {
+              graphene_rect_t grect = GRAPHENE_RECT_INIT (
+                (float) i, 0, (float) step, draw_y_val);
+              /*z_graphene_rect_print (&grect);*/
               gtk_snapshot_append_color (
-                snapshot, &color,
-                &GRAPHENE_RECT_INIT (
-                  (float) i, 0, (float) step, draw_y_val));
+                snapshot, &color, &grect);
             }
         }
 
@@ -941,7 +942,7 @@ draw_fade_part (
   int visible_fade_out_px = MAX (fade_out_px, vis_offset_x);
   int visible_end_px = MIN (end_px, vis_offset_x + vis_width);
 
-  if (end_px - fade_out_px != 0)
+  if (visible_end_px - visible_fade_out_px > 0)
     {
       double local_px_diff = (double) (end_px - fade_out_px);
 
@@ -949,11 +950,11 @@ draw_fade_part (
       cairo_t * cr = NULL;
       if (use_cairo)
         {
-          cr = gtk_snapshot_append_cairo (
-            snapshot,
-            &GRAPHENE_RECT_INIT (
-              visible_fade_out_px, 0,
-              visible_end_px - visible_fade_out_px, height));
+          graphene_rect_t grect = GRAPHENE_RECT_INIT (
+            visible_fade_out_px, 0,
+            visible_end_px - visible_fade_out_px, height);
+          /*z_graphene_rect_print (&grect);*/
+          cr = gtk_snapshot_append_cairo (snapshot, &grect);
           cairo_set_source_rgba (cr, 0.2, 0.2, 0.2, 0.6);
           /*cairo_set_line_width (cr, 3);*/
         }
@@ -1001,10 +1002,11 @@ draw_fade_part (
           else
             {
               float draw_y_val = (float) (val * height);
+              graphene_rect_t grect = GRAPHENE_RECT_INIT (
+                (float) i, 0, 1, draw_y_val);
+              /*z_graphene_rect_print (&grect);*/
               gtk_snapshot_append_color (
-                snapshot, &color,
-                &GRAPHENE_RECT_INIT (
-                  (float) i, 0, 1, draw_y_val));
+                snapshot, &color, &grect);
             }
         }
 

@@ -2154,3 +2154,13 @@ z_gtk_list_box_remove_all_children (GtkListBox * list_box)
       gtk_list_box_remove (list_box, GTK_WIDGET (row));
     }
 }
+
+void
+z_graphene_rect_print (const graphene_rect_t * rect)
+{
+  g_return_if_fail (rect->size.width >= 0);
+  g_return_if_fail (rect->size.height >= 0);
+  g_message (
+    "graphene rect: x %f y %f w %f h %f", rect->origin.x,
+    rect->origin.y, rect->size.width, rect->size.height);
+}
