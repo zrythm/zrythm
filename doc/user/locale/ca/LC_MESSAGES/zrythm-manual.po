@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-08-07 17:55+0900\n"
-"PO-Revision-Date: 2022-06-14 15:50+0000\n"
+"PO-Revision-Date: 2022-08-07 15:52+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ca/>\n"
 "Language: ca\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ca/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.14-dev\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -7998,19 +7999,24 @@ msgstr "Selecció d'un control automatitzat"
 
 #: ../../tracks/automation.rst:35
 msgid "Playback Mode"
-msgstr ""
+msgstr "Mode reproducció"
 
 #: ../../tracks/automation.rst:37
 msgid ""
 "Automation can be enabled or disabled using the :guilabel:`On` and :guilabel:"
 "`Off` toggles in the track lane."
 msgstr ""
+"L'automatització es pot habilitar o deshabilitar amb els commutadors "
+":guilabel:`On` i :guilabel:`Off` al carril de la pista."
 
 #: ../../tracks/automation.rst:40
 msgid ""
 "Touch/latch modes can also be used to record automation live (see the :ref:"
 "`playback-and-recording/recording:Recording Automation` section)."
 msgstr ""
+"Els modes tàctil / pestell també es poden utilitzar per a gravar "
+"l'automatització en directe (vegeu la secció:ref:`playback-and-recording/"
+"recording:Recording Automation`)."
 
 #: ../../tracks/automation.rst:46
 msgid "Editing Automation"

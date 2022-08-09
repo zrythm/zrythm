@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-07-24 23:53+0900\n"
-"PO-Revision-Date: 2022-07-25 15:52+0000\n"
+"PO-Revision-Date: 2022-08-07 15:52+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -26,14 +26,14 @@ msgstr "Heretar"
 #: inc/schemas/audio/region.h:46 inc/audio/region.h:67
 #: src/audio/automation_track.c:174 src/gui/widgets/bot_bar.c:439
 msgid "Off"
-msgstr "Apagar"
+msgstr "Off"
 
 #: inc/schemas/audio/region.h:47 inc/audio/region.h:68
 #: src/audio/automation_track.c:168 src/gui/widgets/cc_bindings_tree.c:158
 #: src/gui/widgets/port_connections_tree.c:230
 #: src/gui/widgets/item_factory.c:604 src/gui/widgets/bot_bar.c:439
 msgid "On"
-msgstr "Encendre"
+msgstr "On"
 
 #: inc/schemas/audio/curve.h:43 inc/audio/curve.h:111 src/audio/curve.c:54
 #, c-format
@@ -114,7 +114,7 @@ msgstr "Aprendre MIDI"
 
 #: inc/utils/gtk.h:61
 msgid "Cu_t"
-msgstr "Tall_ar"
+msgstr "_Tallar"
 
 #: inc/utils/gtk.h:64
 msgid "_Copy"
@@ -136,7 +136,7 @@ msgstr "Nete_jar selecció"
 
 #: inc/utils/gtk.h:81
 msgid "Select A_ll"
-msgstr "Se_leccionar tot"
+msgstr "Se_leccionar-ho tot"
 
 #: inc/utils/gtk.h:85 src/gui/widgets/home_toolbar.c:137
 msgid "Duplicate"
