@@ -28,23 +28,26 @@
 # #-#-#-#-#  zrythm-interface.po (Zrythm 0.8)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-08-07 17:55+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2022-08-09 12:29+0000\n"
+"Last-Translator: Q mo <qqmo520316@gmail.com>\n"
+"Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
+"zrythm/user-manual/zh_Hant/>\n"
+"Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.14-dev\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
-msgstr ""
+msgstr "環境變數"
 
 #: ../../appendix/environment.rst:13
 msgid ""
@@ -1267,7 +1270,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:85
 msgid "Reverse"
-msgstr ""
+msgstr "翻轉"
 
 #: ../../editing/clip-editors/audio-editor.rst:86
 msgid "Reverse the audio (play back backwards)."
@@ -2948,7 +2951,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:262
 msgid "Linear"
-msgstr ""
+msgstr "線性"
 
 #: ../../editing/timeline/arranger.rst:267
 msgid "Exponential"
@@ -7460,7 +7463,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:40
 msgid "Folder"
-msgstr ""
+msgstr "資料夾"
 
 #: ../../tracks/track-types.rst:49 ../../tracks/track-types.rst:69
 msgid "MIDI regions"

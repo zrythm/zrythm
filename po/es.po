@@ -22,7 +22,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-07-24 23:53+0900\n"
-"PO-Revision-Date: 2022-04-21 05:09+0000\n"
+"PO-Revision-Date: 2022-08-07 15:52+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
@@ -31,7 +31,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: inc/schemas/audio/region.h:45 inc/audio/region.h:66
 #: src/gui/widgets/track.c:916
@@ -7973,7 +7973,7 @@ msgstr "Analizando complementos"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:39
 msgid "DAW"
-msgstr ""
+msgstr "DAW"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
