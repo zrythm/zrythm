@@ -6,6 +6,17 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.0.17] - 2022-08-09
+### Changed
+- Update Chinese (Simplified), Chinese (Traditional), Catalan, French translations
+- Meson: use official lilv repository as subproject
+- User manual: explain automation lane on/off buttons
+
+### Fixed
+- Fix lag when clicking on plugins in a large project
+- Fix long loading time when loading large projects
+- Fix crash when zooming in on audio regions
+
 ## [1.0.0-beta.3.0.1] - 2022-08-04
 ### Changed
 - Update French, Chinese (Simplified), Catalan, Turkish, Portuguese (Brazil), Japanese, Polish, Hebrew, Indonesian, Ukrainian, Russian, Portuguese, Italian, German, Thai translations
