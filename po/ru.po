@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-07-24 23:53+0900\n"
-"PO-Revision-Date: 2022-07-31 15:52+0000\n"
-"Last-Translator: Vik <xasertop@gmail.com>\n"
+"PO-Revision-Date: 2022-08-07 15:52+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -7689,7 +7689,7 @@ msgstr "Сканирование плагинов"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:39
 msgid "DAW"
-msgstr ""
+msgstr "Цифровая звуковая рабочая станция (DAW)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75

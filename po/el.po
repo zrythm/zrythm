@@ -10,16 +10,16 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-07-24 23:53+0900\n"
-"PO-Revision-Date: 2022-03-15 18:54+0000\n"
-"Last-Translator: Anthony V. <batmanplayer123@gmail.com>\n"
-"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/"
-">\n"
+"PO-Revision-Date: 2022-08-07 15:52+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"Language-Team: Greek <https://hosted.weblate.org/projects/zrythm/zrythm/el/>"
+"\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12-dev\n"
+"X-Generator: Weblate 4.14-dev\n"
 
 #: inc/schemas/audio/region.h:45 inc/audio/region.h:66
 #: src/gui/widgets/track.c:916
@@ -7962,7 +7962,7 @@ msgstr "Σκανάρισμα προσθέτων"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:39
 msgid "DAW"
-msgstr ""
+msgstr "DAW"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
