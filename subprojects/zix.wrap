@@ -1,3 +1,3 @@
 [wrap-git]
 url = https://github.com/drobilla/zix
-revision = main
+revision = atomic-ring
