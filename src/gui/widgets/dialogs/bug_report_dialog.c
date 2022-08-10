@@ -523,11 +523,11 @@ bug_report_dialog_new (
   self->undo_stack =
     PROJECT && UNDO_MANAGER
       ? undo_stack_get_as_string (UNDO_MANAGER->undo_stack, 12)
-      : g_strdup ("<undo stack uninitialized>");
+      : g_strdup ("<undo stack uninitialized>\n");
   self->undo_stack_long =
     PROJECT && UNDO_MANAGER
       ? undo_stack_get_as_string (UNDO_MANAGER->undo_stack, 64)
-      : g_strdup ("<undo stack uninitialized>");
+      : g_strdup ("<undo stack uninitialized>\n");
   self->backtrace = g_strdup (backtrace);
   self->system_nfo = zrythm_get_system_info ();
   self->fatal = fatal;
