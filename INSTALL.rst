@@ -90,6 +90,9 @@ Required
 `xxhash (2-Clause BSD) <https://cyan4973.github.io/xxHash/>`_
   Hashing
 
+`zix (ISC) <https://github.com/drobilla/zix>`_
+  Portability wrappers and data structures
+
 `zstd (3-Clause BSD) <https://github.com/facebook/zstd>`_
   Compression
 
