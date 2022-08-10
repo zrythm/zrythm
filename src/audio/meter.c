@@ -14,7 +14,7 @@
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
-#include "ext/zix/zix/ring.h"
+#include <zix/ring.h>
 
 /**
  * Get the current meter value.

@@ -73,9 +73,6 @@ texi2html = find_program (
   ['texi2html'], required: false)
 ulimit = find_program (
   'tools/check_have_unlimited_memlock.sh')
-lv2ls_bin = find_program ('lv2ls', required: false)
-lv2info_bin = find_program (
-  'lv2info', required: false)
 get_lv2_bundle_uri_bin = find_program (
   'tools/get_lv2_bundle_uri.sh')
 get_vst_path_bin = find_program (
@@ -211,7 +208,6 @@ inc_inc = include_directories ('inc')
 ext_inc = include_directories ('ext')
 midilib_inc = include_directories ('ext/midilib')
 whereami_inc = include_directories ('ext/whereami')
-zix_inc = include_directories ('ext/zix')
 weakjack_inc = include_directories ('ext/weakjack')
 suil_inc = include_directories ('inc/plugins/lv2')
 all_inc = [
@@ -220,124 +216,11 @@ all_inc = [
   ext_inc,
   midilib_inc,
   whereami_inc,
-  zix_inc,
   weakjack_inc,
   suil_inc,
   ]
 
 all_static = get_option ('static_deps')
-
-# plugins for testing
-ext_lv2_plugins = {
-  'ams_lfo': [
-    'AMS LFO',
-    'http://github.com/blablack/ams-lv2/lfo'],
-  'calf_monosynth': [
-    'Calf Monosynth',
-    'http://calf.sourceforge.net/plugins/Monosynth'],
-  'helm': [
-    'Helm', 'http://tytel.org/helm'],
-  'sherlock_atom_inspector': [
-    'Sherlock Atom Inspector',
-    'http://open-music-kontrollers.ch/lv2/sherlock#atom_inspector'],
-  'lsp_compressor_mono': [
-    'LSP Compressor Mono',
-    'http://lsp-plug.in/plugins/lv2/compressor_mono'],
-  'lsp_compressor': [
-    'LSP Compressor',
-    'http://lsp-plug.in/plugins/lv2/compressor_stereo'],
-  'lsp_sidechain_compressor': [
-    'LSP Sidechain Compressor',
-    'http://lsp-plug.in/plugins/lv2/sc_compressor_stereo'],
-  'lsp_multisampler_24_do': [
-    'LSP MultiSampler x24 Direct Out',
-    'http://lsp-plug.in/plugins/lv2/multisampler_x24_do'],
-  'carla_rack': [
-    'Carla Rack',
-    'http://kxstudio.sf.net/carla/plugins/carlarack'],
-  'no_delay_line': [
-    'No Delay Line',
-    'http://gareus.org/oss/lv2/nodelay'],
-  'mda_ambience': [
-    'mda Ambience',
-    'http://drobilla.net/plugins/mda/Ambience'],
-  'midi_cc_map': [
-    'MIDI CC Map',
-    'http://gareus.org/oss/lv2/midifilter#mapcc'],
-  'noize_maker': [
-    'NoizeMak3r',
-    'http://kunz.corrupt.ch/products/tal-noisemaker'],
-  'tal_filter': [
-    'TAL Filter',
-    'urn:juce:TalFilter'],
-  'geonkick': [
-    'Geonkick',
-    'http://geontime.com/geonkick/single'],
-  'chipwave': [
-    'ChipWave',
-    'https://github.com/linuxmao-org/shiru-plugins/chipwave'],
-  'calf_compressor': [
-    'Calf Compressor',
-    'http://calf.sourceforge.net/plugins/Compressor'],
-  'mverb': [
-    'MVerb',
-    'http://distrho.sf.net/plugins/MVerb'],
-  'sfizz': [
-    'Sfizz',
-    'http://sfztools.github.io/sfizz'],
-  'drops': [
-    'Drops',
-    'http://github.com/clearly-broken-software/drops'],
-  'test_signal': [
-    'Test Signal',
-    'http://gareus.org/oss/lv2/testsignal'],
-  }
-have_ext_lv2_plugins = {}
-ext_lv2_plugin_bundles = {}
-ext_vst_plugins = {
-  'noizemaker': 'TAL-NoiseMaker.so',
-  }
-have_ext_vst_plugins = {}
-ext_vst_plugin_paths = {}
-if get_option ('tests')
-  # get lv2 bundle paths
-  if lv2ls_bin.found () and lv2info_bin.found ()
-    lv2ls_res = run_command (
-      lv2ls_bin, check: true).stdout ()
-    foreach name, info : ext_lv2_plugins
-      uri = info[1]
-      have_ext_lv2 = lv2ls_res.contains (uri)
-      have_ext_lv2_plugins += {
-        name: have_ext_lv2
-        }
-      if have_ext_lv2
-        ext_lv2_plugin_bundles += {
-          name: run_command (
-            get_lv2_bundle_uri_bin, lv2info_bin,
-            uri, check: true).stdout ().strip ()
-          }
-      endif
-    endforeach
-  endif
-  # get vst plugin paths
-  if get_vst_path_bin.found ()
-    foreach name, filename : ext_vst_plugins
-      have_ext_vst = run_command (
-        get_vst_path_bin,
-        filename).returncode () == 0
-      have_ext_vst_plugins += {
-        name: have_ext_vst
-        }
-      if have_ext_vst
-        ext_vst_plugin_paths += {
-          name: run_command (
-            get_vst_path_bin, filename,
-            check: true).stdout ().strip ()
-          }
-      endif
-    endforeach
-  endif
-endif
 
 # command to open a directory
 if os_gnu or os_freebsd
@@ -987,6 +870,8 @@ endif
 lv2_dep = dependency (
   'lv2', version: '>=1.16.0',
   fallback: ['lv2', 'lv2_dep'],
+  default_options: [
+    'tests=disabled',],
   static: all_static)
 if lv2_dep.version().version_compare('>=1.18.0')
   cdata.set('HAVE_LV2_1_18', 1)
@@ -994,22 +879,34 @@ endif
 serd_dep = dependency (
   'serd-0', version: '>=0.30.0',
   fallback: ['serd', 'serd_dep'],
+  default_options: [
+    'tests=disabled',
+    'default_library=static',
+    ],
   static: all_static)
 sord_dep = dependency (
   'sord-0', version: '>=0.14.0',
   fallback: ['sord', 'sord_dep'],
+  default_options: [
+    'tests=disabled',
+    'default_library=static',
+    ],
   static: all_static)
 sratom_dep = dependency (
   'sratom-0', version: '>=0.4.0',
   fallback: ['sratom', 'sratom_dep'],
+  default_options: [
+    'tests=disabled', 'docs=disabled',
+    'default_library=static',
+    ],
   static: all_static)
 lilv_dep = dependency (
   'lilv-0', version: '>=0.24.6',
   fallback: ['lilv', 'lilv_dep'],
   default_options: [
-    'tests=false',
-    ],
-  static: all_static)
+    'tests=disabled', 'docs=disabled', 'tools=disabled',
+    'default_library=static',
+    ])
 
 json_glib_dep = dependency (
   'json-glib-1.0',
@@ -1265,6 +1162,13 @@ pcre2_dep = dependency (
   'libpcre2-8',
   fallback: ['pcre2', 'libpcre2_8'])
 
+zix_dep = dependency (
+  'Zix',
+  fallback: ['zix', 'zix_dep'],
+  default_options: [
+    'tests=disabled', 'default_library=static',
+    ])
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -1310,6 +1214,7 @@ zrythm_deps = [
   vamp_deps,
   dependency ('libcurl'),
   json_glib_dep,
+  zix_dep,
 
   libm,
 ]
@@ -1417,6 +1322,123 @@ add_project_link_arguments (
   common_ldflags,
   language: [ 'c', 'cpp' ],
   )
+
+# plugins for testing
+ext_lv2_plugins = {
+  'ams_lfo': [
+    'AMS LFO',
+    'http://github.com/blablack/ams-lv2/lfo'],
+  'calf_monosynth': [
+    'Calf Monosynth',
+    'http://calf.sourceforge.net/plugins/Monosynth'],
+  'helm': [
+    'Helm', 'http://tytel.org/helm'],
+  'sherlock_atom_inspector': [
+    'Sherlock Atom Inspector',
+    'http://open-music-kontrollers.ch/lv2/sherlock#atom_inspector'],
+  'lsp_compressor_mono': [
+    'LSP Compressor Mono',
+    'http://lsp-plug.in/plugins/lv2/compressor_mono'],
+  'lsp_compressor': [
+    'LSP Compressor',
+    'http://lsp-plug.in/plugins/lv2/compressor_stereo'],
+  'lsp_sidechain_compressor': [
+    'LSP Sidechain Compressor',
+    'http://lsp-plug.in/plugins/lv2/sc_compressor_stereo'],
+  'lsp_multisampler_24_do': [
+    'LSP MultiSampler x24 Direct Out',
+    'http://lsp-plug.in/plugins/lv2/multisampler_x24_do'],
+  'carla_rack': [
+    'Carla Rack',
+    'http://kxstudio.sf.net/carla/plugins/carlarack'],
+  'no_delay_line': [
+    'No Delay Line',
+    'http://gareus.org/oss/lv2/nodelay'],
+  'mda_ambience': [
+    'mda Ambience',
+    'http://drobilla.net/plugins/mda/Ambience'],
+  'midi_cc_map': [
+    'MIDI CC Map',
+    'http://gareus.org/oss/lv2/midifilter#mapcc'],
+  'noize_maker': [
+    'NoizeMak3r',
+    'http://kunz.corrupt.ch/products/tal-noisemaker'],
+  'tal_filter': [
+    'TAL Filter',
+    'urn:juce:TalFilter'],
+  'geonkick': [
+    'Geonkick',
+    'http://geontime.com/geonkick/single'],
+  'chipwave': [
+    'ChipWave',
+    'https://github.com/linuxmao-org/shiru-plugins/chipwave'],
+  'calf_compressor': [
+    'Calf Compressor',
+    'http://calf.sourceforge.net/plugins/Compressor'],
+  'mverb': [
+    'MVerb',
+    'http://distrho.sf.net/plugins/MVerb'],
+  'sfizz': [
+    'Sfizz',
+    'http://sfztools.github.io/sfizz'],
+  'drops': [
+    'Drops',
+    'http://github.com/clearly-broken-software/drops'],
+  'test_signal': [
+    'Test Signal',
+    'http://gareus.org/oss/lv2/testsignal'],
+  }
+have_ext_lv2_plugins = {}
+ext_lv2_plugin_bundles = {}
+ext_vst_plugins = {
+  'noizemaker': 'TAL-NoiseMaker.so',
+  }
+have_ext_vst_plugins = {}
+ext_vst_plugin_paths = {}
+# when using the lilv subproject, we can't use lv2ls and
+# lv2info
+if get_option ('tests') and lilv_dep.type_name () != 'internal'
+  lv2ls_bin = find_program ('lv2ls', required: false)
+  lv2info_bin = find_program (
+    'lv2info', required: false)
+  # get lv2 bundle paths
+  if lv2ls_bin.found () and lv2info_bin.found ()
+    lv2ls_res = run_command (
+      lv2ls_bin, check: true).stdout ()
+    foreach name, info : ext_lv2_plugins
+      uri = info[1]
+      have_ext_lv2 = lv2ls_res.contains (uri)
+      have_ext_lv2_plugins += {
+        name: have_ext_lv2
+        }
+      if have_ext_lv2
+        ext_lv2_plugin_bundles += {
+          name: run_command (
+            get_lv2_bundle_uri_bin, lv2info_bin,
+            uri, check: true).stdout ().strip ()
+          }
+      endif
+    endforeach
+  endif
+  # get vst plugin paths
+  if get_vst_path_bin.found ()
+    foreach name, filename : ext_vst_plugins
+      have_ext_vst = run_command (
+        get_vst_path_bin,
+        filename).returncode () == 0
+      have_ext_vst_plugins += {
+        name: have_ext_vst
+        }
+      if have_ext_vst
+        ext_vst_plugin_paths += {
+          name: run_command (
+            get_vst_path_bin, filename,
+            check: true).stdout ().strip ()
+          }
+      endif
+    endforeach
+  endif
+endif
 
 ext_srcs = []
 

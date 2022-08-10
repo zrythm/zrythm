@@ -14,7 +14,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "ext/zix/zix/ring.h"
+#include <zix/ring.h>
 
 G_DEFINE_TYPE (
   BounceStepSelectorWidget,

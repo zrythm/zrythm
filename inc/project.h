@@ -37,7 +37,7 @@
 
 #include <gtk/gtk.h>
 
-#include "ext/zix/zix/sem.h"
+#include <zix/sem.h>
 
 typedef struct Timeline            Timeline;
 typedef struct Transport           Transport;

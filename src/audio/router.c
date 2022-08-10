@@ -244,7 +244,7 @@ router_new (void)
   zix_sem_init (&self->graph_access, 1);
 
   self->ctrl_port_change_queue =
-    zix_ring_new (sizeof (ControlPortChange) * (size_t) 24);
+    zix_ring_new (zix_default_allocator (), sizeof (ControlPortChange) * (size_t) 24);
 
   g_message ("done");
 

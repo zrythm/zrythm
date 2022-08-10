@@ -2746,9 +2746,9 @@ lv2_plugin_instantiate (
   /* Create Plugin <=> UI communication
    * buffers */
   self->ui_to_plugin_events =
-    zix_ring_new (self->comm_buffer_size);
+    zix_ring_new (zix_default_allocator (), self->comm_buffer_size);
   self->plugin_to_ui_events =
-    zix_ring_new (self->comm_buffer_size);
+    zix_ring_new (zix_default_allocator (), self->comm_buffer_size);
   zix_ring_mlock (self->ui_to_plugin_events);
   zix_ring_mlock (self->plugin_to_ui_events);
 
