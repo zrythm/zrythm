@@ -90,6 +90,7 @@ windows_mme_device_new (int input, int index)
     }
 
   self->midi_ring = zix_ring_new (
+    zix_default_allocator (),
     sizeof (uint8_t) * (size_t) MIDI_BUFFER_SIZE);
 
   return self;

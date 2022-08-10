@@ -76,16 +76,18 @@ port_allocate_bufs (Port * self)
       self->midi_events = midi_events_new ();
       object_free_w_func_and_null (
         zix_ring_free, self->midi_ring);
-      self->midi_ring =
-        zix_ring_new (zix_default_allocator (), sizeof (MidiEvent) * (size_t) 11);
+      self->midi_ring = zix_ring_new (
+        zix_default_allocator (),
+        sizeof (MidiEvent) * (size_t) 11);
       break;
     case TYPE_AUDIO:
     case TYPE_CV:
       {
         object_free_w_func_and_null (
           zix_ring_free, self->audio_ring);
-        self->audio_ring =
-          zix_ring_new (zix_default_allocator (), sizeof (float) * AUDIO_RING_SIZE);
+        self->audio_ring = zix_ring_new (
+          zix_default_allocator (),
+          sizeof (float) * AUDIO_RING_SIZE);
         object_zero_and_free (self->buf);
         size_t max = MAX (
           AUDIO_ENGINE->block_length, self->min_buf_size);

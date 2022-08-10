@@ -110,10 +110,12 @@ lv2_worker_init (
     {
       zix_thread_create (
         &worker->thread, 4096, worker_func, worker);
-      worker->requests = zix_ring_new (zix_default_allocator (), 4096);
+      worker->requests =
+        zix_ring_new (zix_default_allocator (), 4096);
       zix_ring_mlock (worker->requests);
     }
-  worker->responses = zix_ring_new (zix_default_allocator (), 4096);
+  worker->responses =
+    zix_ring_new (zix_default_allocator (), 4096);
   worker->response = malloc (4096);
   zix_ring_mlock (worker->responses);
 }
