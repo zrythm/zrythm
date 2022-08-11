@@ -1163,7 +1163,7 @@ pcre2_dep = dependency (
   fallback: ['pcre2', 'libpcre2_8'])
 
 zix_dep = dependency (
-  'Zix',
+  'zix-0',
   fallback: ['zix', 'zix_dep'],
   default_options: [
     'tests=disabled', 'default_library=static',
