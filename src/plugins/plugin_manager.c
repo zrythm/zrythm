@@ -775,6 +775,7 @@ plugin_manager_supports_protocol (
       return true;
     case PROT_LADSPA:
     case PROT_VST:
+    case PROT_VST3:
     case PROT_SFZ:
 #ifdef HAVE_CARLA
       return true;
@@ -782,7 +783,6 @@ plugin_manager_supports_protocol (
       return false;
 #endif
     case PROT_DSSI:
-    case PROT_VST3:
     case PROT_AU:
     case PROT_SF2:
       {
