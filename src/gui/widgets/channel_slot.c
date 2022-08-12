@@ -323,7 +323,12 @@ on_dnd_drop (
           bool ret = mixer_selections_action_perform_create (
             self->type, track_get_name_hash (self->track),
             self->slot_index, setting, 1, &err);
-          if (!ret)
+          if (ret)
+            {
+              plugin_setting_increment_num_instantiations (
+                setting);
+            }
+          else
             {
               HANDLE_ERROR (
                 err, _ ("Failed to create plugin %s"),

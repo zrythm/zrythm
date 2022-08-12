@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -39,8 +23,8 @@
  * @{
  */
 
-#define PLUGIN_SETTING_SCHEMA_VERSION 1
-#define PLUGIN_SETTINGS_SCHEMA_VERSION 4
+#define PLUGIN_SETTING_SCHEMA_VERSION 2
+#define PLUGIN_SETTINGS_SCHEMA_VERSION 5
 
 /**
  * A setting for a specific plugin descriptor.
@@ -66,16 +50,14 @@ typedef struct PluginSetting
    * not forcing a generic UI and have a custom
    * UI */
   char * ui_uri;
+
+  /** Last datetime instantiated (number of microseconds since
+   * January 1, 1970 UTC). */
+  gint64 last_instantiated_time;
+
+  /** Number of times this plugin has been instantiated. */
+  int num_instantiations;
 } PluginSetting;
-
-typedef struct PluginSettings
-{
-  int schema_version;
-
-  /** Settings. */
-  PluginSetting * settings[90000];
-  int             num_settings;
-} PluginSettings;
 
 static const cyaml_schema_field_t plugin_setting_fields_schema[] = {
   YAML_FIELD_INT (PluginSetting, schema_version),
@@ -90,6 +72,8 @@ static const cyaml_schema_field_t plugin_setting_fields_schema[] = {
     bridge_mode,
     carla_bridge_mode_strings),
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginSetting, ui_uri),
+  YAML_FIELD_INT (PluginSetting, last_instantiated_time),
+  YAML_FIELD_INT (PluginSetting, num_instantiations),
 
   CYAML_FIELD_END
 };
@@ -97,6 +81,15 @@ static const cyaml_schema_field_t plugin_setting_fields_schema[] = {
 static const cyaml_schema_value_t plugin_setting_schema = {
   YAML_VALUE_PTR (PluginSetting, plugin_setting_fields_schema),
 };
+
+typedef struct PluginSettings
+{
+  int schema_version;
+
+  /** Settings. */
+  PluginSetting * settings[90000];
+  int             num_settings;
+} PluginSettings;
 
 static const cyaml_schema_field_t
   plugin_settings_fields_schema[] = {
@@ -144,10 +137,23 @@ plugin_setting_print (const PluginSetting * self);
 /**
  * Creates necessary tracks at the end of the
  * tracklist.
+ *
+ * @return False if errors occurred.
+ */
+NONNULL
+bool
+plugin_setting_activate (PluginSetting * self);
+
+/**
+ * Increments the number of times this plugin has been
+ * instantiated.
+ *
+ * @note This also serializes all plugin settings.
  */
 NONNULL
 void
-plugin_setting_activate (const PluginSetting * self);
+plugin_setting_increment_num_instantiations (
+  PluginSetting * self);
 
 /**
  * Frees the plugin setting.

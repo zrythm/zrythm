@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/port_connection_action.h"
 #include "actions/tracklist_selections.h"
@@ -81,6 +65,9 @@ plugin_setting_clone (const PluginSetting * src, bool validate)
   new_setting->schema_version = PLUGIN_SETTING_SCHEMA_VERSION;
   new_setting->descr = plugin_descriptor_clone (src->descr);
   new_setting->ui_uri = g_strdup (src->ui_uri);
+  new_setting->last_instantiated_time =
+    src->last_instantiated_time;
+  new_setting->num_instantiations = src->num_instantiations;
 
 #ifndef HAVE_CARLA
   if (new_setting->open_with_carla)
@@ -109,11 +96,15 @@ plugin_setting_print (const PluginSetting * self)
     "open_with_carla=%d\n"
     "force_generic_ui=%d\n"
     "bridge_mode=%s\n"
-    "ui_uri=%s",
+    "ui_uri=%s\n"
+    "last_instantiated_time=%" G_GINT64_FORMAT
+    "\n"
+    "num_instantiations=%d",
     self->descr->uri, self->open_with_carla,
     self->force_generic_ui,
     carla_bridge_mode_strings[self->bridge_mode].str,
-    self->ui_uri);
+    self->ui_uri, self->last_instantiated_time,
+    self->num_instantiations);
 }
 
 /**
@@ -287,9 +278,11 @@ plugin_setting_validate (PluginSetting * self)
 /**
  * Creates necessary tracks at the end of the
  * tracklist.
+ *
+ * @return False if errors occurred.
  */
-void
-plugin_setting_activate (const PluginSetting * self)
+bool
+plugin_setting_activate (PluginSetting * self)
 {
   TrackType type =
     track_get_type_from_plugin_descriptor (self->descr);
@@ -316,6 +309,7 @@ plugin_setting_activate (const PluginSetting * self)
         }
     }
 
+  bool has_errors = false;
   if (autoroute_multiout)
     {
       GtkWidget * dialog = gtk_message_dialog_new (
@@ -344,6 +338,7 @@ plugin_setting_activate (const PluginSetting * self)
         {
           HANDLE_ERROR (
             err, "%s", _ ("Failed to create track"));
+          has_errors = true;
         }
       num_actions++;
 
@@ -358,6 +353,7 @@ plugin_setting_activate (const PluginSetting * self)
         {
           HANDLE_ERROR (
             err, "%s", _ ("Failed to create track"));
+          has_errors = true;
         }
       num_actions++;
 
@@ -376,6 +372,7 @@ plugin_setting_activate (const PluginSetting * self)
       if (!ret)
         {
           HANDLE_ERROR (err, "%s", _ ("Failed to move track"));
+          has_errors = true;
         }
       num_actions++;
 
@@ -390,6 +387,7 @@ plugin_setting_activate (const PluginSetting * self)
         {
           HANDLE_ERROR (
             err, "%s", _ ("Failed to set direct out"));
+          has_errors = true;
         }
       num_actions++;
 
@@ -403,6 +401,7 @@ plugin_setting_activate (const PluginSetting * self)
         {
           HANDLE_ERROR (
             err, "%s", _ ("Failed to rename track"));
+          has_errors = true;
         }
       num_actions++;
 
@@ -426,6 +425,7 @@ plugin_setting_activate (const PluginSetting * self)
             {
               HANDLE_ERROR (
                 err, "%s", _ ("Failed to create track"));
+              has_errors = true;
             }
           num_actions++;
 
@@ -443,6 +443,7 @@ plugin_setting_activate (const PluginSetting * self)
             {
               HANDLE_ERROR (
                 err, "%s", _ ("Failed to rename track"));
+              has_errors = true;
             }
           num_actions++;
 
@@ -458,6 +459,7 @@ plugin_setting_activate (const PluginSetting * self)
             {
               HANDLE_ERROR (
                 err, "%s", _ ("Failed to move track"));
+              has_errors = true;
             }
           num_actions++;
 
@@ -473,6 +475,7 @@ plugin_setting_activate (const PluginSetting * self)
             {
               HANDLE_ERROR (
                 err, "%s", _ ("Failed to move track"));
+              has_errors = true;
             }
           num_actions++;
 
@@ -489,6 +492,7 @@ plugin_setting_activate (const PluginSetting * self)
             {
               HANDLE_ERROR (
                 err, "%s", _ ("Failed to set direct out"));
+              has_errors = true;
             }
           num_actions++;
 
@@ -505,6 +509,7 @@ plugin_setting_activate (const PluginSetting * self)
             {
               HANDLE_ERROR (
                 err, "%s", _ ("Failed to connect L port"));
+              has_errors = true;
             }
           num_actions++;
 
@@ -520,6 +525,7 @@ plugin_setting_activate (const PluginSetting * self)
             {
               HANDLE_ERROR (
                 err, "%s", _ ("Failed to connect R port"));
+              has_errors = true;
             }
           num_actions++;
         }
@@ -539,8 +545,32 @@ plugin_setting_activate (const PluginSetting * self)
         {
           HANDLE_ERROR (
             err, "%s", _ ("Failed to create track"));
+          has_errors = true;
         }
     }
+
+  if (!has_errors)
+    {
+      plugin_setting_increment_num_instantiations (self);
+    }
+
+  return !has_errors;
+}
+
+/**
+ * Increments the number of times this plugin has been
+ * instantiated.
+ *
+ * @note This also serializes all plugin settings.
+ */
+void
+plugin_setting_increment_num_instantiations (
+  PluginSetting * self)
+{
+  self->last_instantiated_time = g_get_real_time ();
+  self->num_instantiations++;
+
+  plugin_settings_set (S_PLUGIN_SETTINGS, self, true);
 }
 
 /**
@@ -730,6 +760,10 @@ plugin_settings_set (
         setting->force_generic_ui;
       own_setting->open_with_carla = setting->open_with_carla;
       own_setting->bridge_mode = setting->bridge_mode;
+      own_setting->last_instantiated_time =
+        setting->last_instantiated_time;
+      own_setting->num_instantiations =
+        setting->num_instantiations;
     }
   else
     {
