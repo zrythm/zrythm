@@ -6,6 +6,17 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.1.1] - 2022-08-12
+### Changed
+- Drop vendored zix and depend on zix library
+- Replace some icons with icons from GNOME icon library
+- Replace about dialog with AdwDialogWindow
+
+### Fixed
+- Meson: fix lilv-related subprojects
+- Fix bug report format breaking when undo history is empty
+- Fix VST3 support being disabled
+
 ## [1.0.0-beta.3.0.17] - 2022-08-09
 ### Changed
 - Update Chinese (Simplified), Chinese (Traditional), Catalan, French translations
