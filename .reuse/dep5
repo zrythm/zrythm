@@ -795,3 +795,10 @@ Files:
   tests/loopbase.mid
 Copyright: 2022 Robert Panovics
 License: LicenseRef-ZrythmLicense
+
+Files:
+  resources/icons/gnome-icon-library/*.svg
+Copyright: GNOME Design Team
+License: CC0-1.0
+Comment:
+  See https://gitlab.gnome.org/Teams/Design/icon-development-kit

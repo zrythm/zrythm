@@ -43,7 +43,7 @@
           <object class="AdwViewStackPage">
             <property name="name">help</property>
             <property name="title" translatable="yes">Help</property>
-            <property name="icon-name">help-hint</property>
+            <property name="icon-name">gnome-icon-library-info-symbolic</property>
             <property name="child">
               <object class="HelpToolbarWidget" id="help_toolbar">
               </object>

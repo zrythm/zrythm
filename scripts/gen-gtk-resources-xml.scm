@@ -118,7 +118,7 @@ Args:
                    (or
                      (string-suffix? ".svg" f)
                      (string-suffix? ".png" f))))))
-           '("arena" "gnome-builder" "ext"
+           '("arena" "gnome-builder" "gnome-icon-library" "ext"
              "fork-awesome" "font-awesome"
              "fluentui" "jam-icons"))
 

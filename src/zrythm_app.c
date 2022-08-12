@@ -1188,6 +1188,8 @@ zrythm_app_startup (GApplication * app)
     self->default_settings, icon_theme, "node-type-cusp");
 
   g_message ("Setting gtk icon theme resource paths...");
+  /* TODO auto-generate this code from meson (also in
+   * gen-gtk-resources-xml script) */
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/zrythm");
   gtk_icon_theme_add_resource_path (
@@ -1200,6 +1202,9 @@ zrythm_app_startup (GApplication * app)
     icon_theme, "/org/zrythm/Zrythm/app/icons/ext");
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/gnome-builder");
+  gtk_icon_theme_add_resource_path (
+    icon_theme,
+    "/org/zrythm/Zrythm/app/icons/gnome-icon-library");
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/fluentui");
   gtk_icon_theme_add_resource_path (

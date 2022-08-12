@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="16px"
+   viewBox="0 0 16 16"
+   width="16px"
+   version="1.1"
+   id="svg4"
+   sodipodi:docname="chat-symbolic.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs8" />
+  <sodipodi:namedview
+     id="namedview6"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="49.625"
+     inkscape:cx="8.0100756"
+     inkscape:cy="8.0100756"
+     inkscape:window-width="2560"
+     inkscape:window-height="1023"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg4" />
+  <path
+     d="m 13.5 1.988281 c 1.382812 0 2.503906 1.117188 2.5 2.5 v 6 c 0 1.386719 -1.113281 2.5 -2.5 2.5 h -6.375 l -3.125 3 v -3 h -1.5 c -1.5 0 -2.5 -1.3125 -2.5 -2.5 v -6 c 0 -1.382812 1.117188 -2.5 2.5 -2.5 z m 0 0"
+     fill="#222222"
+     id="path2"
+     style="fill:#f2f2f2" />
+</svg>

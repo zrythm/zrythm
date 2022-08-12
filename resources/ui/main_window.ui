@@ -63,19 +63,19 @@
                 <child>
                   <object class="GtkButton" id="scripting_interface">
                     <property name="action_name">app.scripting-interface</property>
-                    <property name="icon_name">amarok_scripts</property>
+                    <property name="icon_name">gnome-icon-library-terminal-symbolic</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkButton" id="log_viewer">
                     <property name="action_name">app.log</property>
-                    <property name="icon_name">view-list-text</property>
+                    <property name="icon_name">gnome-icon-library-papyrus-vertical-symbolic</property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkButton" id="preferences">
                     <property name="action_name">app.preferences</property>
-                    <property name="icon_name">fork-awesome-fa-cog</property>
+                    <property name="icon_name">gnome-icon-library-settings-symbolic</property>
                   </object>
                 </child>
               </object>

@@ -7,8 +7,8 @@
     </style>
     <child>
       <object class="GtkButton" id="about">
-        <property name="action_name">app.about</property>
-        <property name="icon_name">help-about</property>
+        <property name="action-name">app.about</property>
+        <property name="icon-name">gnome-icon-library-about-symbolic</property>
       </object>
     </child>
     <child>
@@ -24,38 +24,38 @@
         <child>
           <object class="GtkButton" id="chat">
             <property name="action_name">app.chat</property>
-            <property name="icon_name">dialog-messages</property>
+            <property name="icon_name">gnome-icon-library-chat-symbolic</property>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="manual">
             <property name="action_name">app.manual</property>
-            <property name="icon_name">system-help</property>
+            <property name="icon_name">gnome-icon-library-open-book-symbolic</property>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="news">
-            <property name="action_name">app.news</property>
-            <property name="icon_name">news-subscribe</property>
+            <property name="action-name">app.news</property>
+            <property name="icon-name">gnome-icon-library-newspaper-symbolic</property>
             <property name="tooltip-text" translatable="yes">News</property>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="shortcuts">
-            <property name="icon-name">input-keyboard</property>
             <property name="action-name">win.show-help-overlay</property>
+            <property name="icon-name">gnome-icon-library-keyboard-shortcuts-symbolic</property>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="donate_btn">
-            <property name="action_name">app.donate</property>
-            <property name="icon_name">taxes-finances</property>
+            <property name="action-name">app.donate</property>
+            <property name="icon-name">gnome-icon-library-credit-card-symbolic</property>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="report_a_bug_btn">
-            <property name="action_name">app.bugreport</property>
-            <property name="icon_name">tools-report-bug</property>
+            <property name="action-name">app.bugreport</property>
+            <property name="icon-name">gnome-icon-library-bug-symbolic</property>
           </object>
         </child>
       </object>
