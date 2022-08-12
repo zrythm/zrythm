@@ -115,6 +115,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <libpanel.h>
 
 static GtkWindow * file_browser_window = NULL;
 
@@ -1378,6 +1379,24 @@ DEFINE_SIMPLE (activate_fullscreen)
       g_debug ("fullscreening");
       gtk_window_fullscreen (GTK_WINDOW (MAIN_WINDOW));
     }
+}
+
+DEFINE_SIMPLE (activate_new_workspace_window)
+{
+  GtkWindow * window = GTK_WINDOW (gtk_window_new ());
+  PanelDock * dock = PANEL_DOCK (panel_dock_new ());
+  /*PanelGrid * grid = PANEL_GRID (panel_grid_new ());*/
+  PanelPaned * paned = PANEL_PANED (panel_paned_new ());
+  PanelFrame * frame = PANEL_FRAME (panel_frame_new ());
+  PanelWidget * pw = PANEL_WIDGET (panel_widget_new ());
+  panel_widget_set_child (pw, gtk_label_new ("test"));
+  panel_frame_add (frame, pw);
+  /*panel_grid_add (grid, pw);*/
+  panel_paned_append (paned, GTK_WIDGET (frame));
+  /*panel_paned_append (paned, gtk_label_new ("test2"));*/
+  gtk_widget_set_parent (GTK_WIDGET (paned), GTK_WIDGET (dock));
+  gtk_window_set_child (window, GTK_WIDGET (dock));
+  gtk_window_present (window);
 }
 
 /**

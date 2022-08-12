@@ -1806,6 +1806,7 @@ zrythm_app_init (ZrythmApp * self)
     { "load_project",        on_load_project             },
     { "about",               activate_about              },
     { "fullscreen",          activate_fullscreen         },
+    { "new-workspace-window", activate_new_workspace_window         },
     { "chat",                activate_chat               },
     { "manual",              activate_manual             },
     { "news",                activate_news               },

@@ -234,6 +234,8 @@ activate_fullscreen (
   GVariant *      variant,
   gpointer        user_data);
 
+COLD DECLARE_SIMPLE (activate_new_workspace_window);
+
 COLD DECLARE_SIMPLE (activate_news);
 COLD DECLARE_SIMPLE (activate_manual);
 COLD DECLARE_SIMPLE (activate_chat);

@@ -61,5 +61,20 @@
         </child>
       </object>
     </child>
+    <child>
+      <object class="GtkSeparator">
+        <style>
+          <class name="spacer"/>
+        </style>
+        <property name="orientation">vertical</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="new_workspace_window_btn">
+        <property name="icon-name">gnome-icon-library-window-symbolic</property>
+        <property name="action-name">app.new-workspace-window</property>
+        <property name="tooltip-text" translatable="yes">New workspace window</property>
+      </object>
+    </child>
   </template>
 </interface>
