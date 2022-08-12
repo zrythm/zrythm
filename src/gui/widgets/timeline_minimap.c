@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/engine.h"
 #include "gui/backend/event.h"
@@ -264,9 +248,8 @@ drag_begin (
   if (!gtk_widget_has_focus (GTK_WIDGET (self)))
     gtk_widget_grab_focus (GTK_WIDGET (self));
 
-  /*GdkModifierType state =*/
-  /*gtk_event_controller_get_current_event_state (*/
-  /*GTK_EVENT_CONTROLLER (gesture));*/
+  self->start_zoom_level =
+    ruler_widget_get_zoom_level (MW_RULER);
 
   int is_hit = ui_is_child_hit (
     GTK_WIDGET (self), GTK_WIDGET (self->selection), 1, 1,
@@ -282,8 +265,6 @@ drag_begin (
         {
           self->action =
             TIMELINE_MINIMAP_ACTION_STARTING_MOVING;
-          ui_set_cursor_from_name (
-            GTK_WIDGET (self->selection), "grabbing");
         }
 
       double wx, wy;
@@ -296,9 +277,6 @@ drag_begin (
         + gtk_widget_get_allocated_width (
           GTK_WIDGET (self->selection));
 
-      self->start_zoom_level =
-        ruler_widget_get_zoom_level (MW_RULER);
-
       /* motion handler was causing drag update
        * to not get called */
       /*g_signal_handlers_disconnect_by_func (*/
@@ -308,16 +286,33 @@ drag_begin (
     }
   else /* nothing hit */
     {
+      self->action = TIMELINE_MINIMAP_ACTION_NONE;
+
       if (self->n_press == 1)
         {
-          /* TODO move the selection to be centered around
-           * this point */
+          self->action =
+            TIMELINE_MINIMAP_ACTION_STARTING_MOVING;
+
+          double selection_width =
+            self->selection_end_pos
+            - self->selection_start_pos;
+          self->selection_start_pos =
+            start_x - selection_width / 2.0;
+          self->selection_end_pos =
+            self->selection_start_pos
+            + gtk_widget_get_allocated_width (
+              GTK_WIDGET (self->selection));
         }
       else if (self->n_press == 2)
         {
           /* TODO or here for double click */
         }
-      self->action = TIMELINE_MINIMAP_ACTION_NONE;
+    }
+
+  if (self->action == TIMELINE_MINIMAP_ACTION_STARTING_MOVING)
+    {
+      ui_set_cursor_from_name (
+        GTK_WIDGET (self->selection), "grabbing");
     }
 
   /* update inspector */
