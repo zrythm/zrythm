@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
 
@@ -24,6 +8,7 @@
 #include "utils/resources.h"
 #include "zrythm.h"
 
+#include <adwaita.h>
 #include <glib/gi18n.h>
 
 #include "src/translators.h"
@@ -31,7 +16,7 @@
 /**
  * Creates and displays the about dialog.
  */
-GtkAboutDialog *
+GtkWindow *
 about_dialog_widget_new (GtkWindow * parent)
 {
   const char * artists[] = {
@@ -50,9 +35,13 @@ about_dialog_widget_new (GtkWindow * parent)
   const char * translators = TRANSLATORS_STR;
 
   char * version = zrythm_get_version (true);
+  char * sys_nfo = zrythm_get_system_info ();
 
-  GtkAboutDialog * dialog = g_object_new (
-    GTK_TYPE_ABOUT_DIALOG, "artists", artists, "authors",
+  char * release_notes =
+    g_strdup_printf ("<p><code>%s</code></p>", CHANGELOG_TXT);
+
+  AdwAboutWindow * dialog = g_object_new (
+    ADW_TYPE_ABOUT_WINDOW, "artists", artists, "developers",
     authors, "copyright",
     "Copyright © " COPYRIGHT_YEARS " " COPYRIGHT_NAME
 #if !defined(HAVE_CUSTOM_LOGO_AND_SPLASH) \
@@ -60,17 +49,20 @@ about_dialog_widget_new (GtkWindow * parent)
     "\nZrythm and the Zrythm logo are trademarks of Alexandros Theodotou"
 #endif
     ,
-    "documenters", documenters, "logo-icon-name",
-    "zrythm-splash-png",
+    "developer-name", COPYRIGHT_NAME, "documenters",
+    documenters, "application-icon", "zrythm",
     /*"logo", pixbuf,*/
-    "program-name", PROGRAM_NAME, "comments",
+    "application-name", PROGRAM_NAME, "comments",
     _ ("a highly automated and intuitive digital audio workstation"),
+    "debug-info", sys_nfo, "issue-url", ISSUE_TRACKER_URL,
     "license-type", GTK_LICENSE_AGPL_3_0, "translator-credits",
-    translators, "website", "https://www.zrythm.org",
-    "website-label", _ ("Website"), "version", version, NULL);
+    translators, "release-notes", release_notes, "website",
+    "https://www.zrythm.org", "version", version, NULL);
   gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
 
   g_free (version);
+  g_free (sys_nfo);
+  g_free (release_notes);
 
-  return dialog;
+  return GTK_WINDOW (dialog);
 }
