@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="ChordSelectorWindowWidget" parent="GtkWindow">
+  <template class="ChordSelectorWindowWidget" parent="GtkDialog">
     <property name="visible">1</property>
     <property name="title">Chord Selector</property>
     <property name="modal">1</property>

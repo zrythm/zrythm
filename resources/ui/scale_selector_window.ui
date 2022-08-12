@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
+  <requires lib="Adw" version="1.0"/>
   <requires lib="gtk" version="4.0"/>
-  <template class="ScaleSelectorWindowWidget" parent="GtkWindow">
-    <property name="visible">1</property>
+  <template class="ScaleSelectorWindowWidget" parent="GtkDialog">
     <property name="title">Scale Selector</property>
     <property name="modal">1</property>
-    <child>
-      <placeholder/>
-    </child>
     <property name="child">
       <object class="GtkNotebook">
         <property name="focusable">1</property>
@@ -199,9 +196,6 @@
           </object>
         </child>
         <child>
-          <placeholder/>
-        </child>
-        <child>
           <object class="GtkNotebookPage">
             <property name="position">2</property>
             <property name="child">
@@ -215,9 +209,6 @@
               </object>
             </property>
           </object>
-        </child>
-        <child>
-          <placeholder/>
         </child>
       </object>
     </property>

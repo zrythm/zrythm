@@ -22,7 +22,7 @@
 G_DEFINE_TYPE (
   ChordSelectorWindowWidget,
   chord_selector_window_widget,
-  GTK_TYPE_WINDOW)
+  GTK_TYPE_DIALOG)
 
 static gboolean
 on_close_request (
