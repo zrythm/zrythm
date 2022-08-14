@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-08-07 17:55+0900\n"
-"PO-Revision-Date: 2022-08-07 15:52+0000\n"
+"PO-Revision-Date: 2022-08-14 15:51+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/ca/>\n"
@@ -4465,7 +4465,7 @@ msgstr "BPM"
 
 #: ../../glossary/intro.rst:29
 msgid "The :abbr:`BPM (Beats Per Minute)` is the tempo of the song."
-msgstr "El :abbr:`BPM (Beats Per Minute)` és el tempo de la cançó."
+msgstr "El :abbr:`BPM (Beats Per Minut)` és el tempo de la cançó."
 
 #: ../../glossary/intro.rst:31
 msgid "Carla"
@@ -5228,7 +5228,7 @@ msgid ""
 "This is the top number that indicates the number of Beats that should be in "
 "a Bar. It can be set from 1 to 16."
 msgstr ""
-"Aquest és el número superior que indica el nombre de tocs que haurien "
+"Aquest és el número superior que indica el nombre de beats que haurien "
 "d'estar en una barra. Es pot establir de l'1 al 16."
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:40
