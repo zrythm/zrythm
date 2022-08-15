@@ -58,6 +58,45 @@ enum
 #define CATEGORIES_ICON "category"
 #define AUTHORS_ICON "user"
 
+/**
+ * Updates the label below the list of plugins with
+ * the plugin info.
+ */
+static void
+update_plugin_info_label (PluginBrowserWidget * self)
+{
+  GObject * gobj = gtk_single_selection_get_selected_item (
+    GTK_SINGLE_SELECTION (self->plugin_selection_model));
+  if (!gobj)
+    return;
+
+  /* get wrapped object */
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
+  PluginDescriptor * descr =
+    (PluginDescriptor *) wrapped_obj->obj;
+
+  char * label = g_strdup_printf (
+    "%s\n%s, %s%s\nAudio: %d, %d\nMidi: %d, "
+    "%d\nControls: %d, %d\nCV: %d, %d",
+    descr->author, descr->category_str,
+    plugin_protocol_to_str (descr->protocol),
+    descr->arch == ARCH_32 ? " (32-bit)" : "",
+    descr->num_audio_ins, descr->num_audio_outs,
+    descr->num_midi_ins, descr->num_midi_outs,
+    descr->num_ctrl_ins, descr->num_ctrl_outs,
+    descr->num_cv_ins, descr->num_cv_outs);
+  gtk_label_set_text (self->plugin_info, label);
+  g_free (label);
+}
+
+static PluginBrowserSortStyle
+get_sort_style (void)
+{
+  return g_settings_get_enum (
+    S_UI_PLUGIN_BROWSER, "plugin-browser-sort-style");
+}
+
 static void
 update_stack_switcher_emblems (PluginBrowserWidget * self)
 {
@@ -184,6 +223,7 @@ restore_tree_view_selections (PluginBrowserWidget * self)
   restore_tree_view_selection (
     self, self->protocol_tree_view,
     "plugin-browser-protocols");
+  update_plugin_info_label (self);
 }
 
 /**
@@ -406,6 +446,68 @@ on_use_generic_ui_toggled (
 }
 #endif
 
+static gint
+plugin_sort_func (
+  const void * _a,
+  const void * _b,
+  gpointer     user_data)
+{
+  WrappedObjectWithChangeSignal * wrapped_obj_a =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL ((void *) _a);
+  PluginDescriptor * descr_a =
+    (PluginDescriptor *) wrapped_obj_a->obj;
+  WrappedObjectWithChangeSignal * wrapped_obj_b =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL ((void *) _b);
+  PluginDescriptor * descr_b =
+    (PluginDescriptor *) wrapped_obj_b->obj;
+
+  PluginBrowserSortStyle sort_style = get_sort_style ();
+  if (sort_style == PLUGIN_BROWSER_SORT_ALPHA)
+    {
+      return g_strcmp0 (descr_a->name, descr_b->name);
+    }
+  else
+    {
+      PluginSetting * setting_a =
+        plugin_setting_new_default (descr_a);
+      PluginSetting * setting_b =
+        plugin_setting_new_default (descr_b);
+
+      int ret = -1;
+
+      /* higher values are sorted higher */
+      if (sort_style == PLUGIN_BROWSER_SORT_LAST_USED)
+        {
+          gint64 ret64 =
+            setting_b->last_instantiated_time
+            - setting_a->last_instantiated_time;
+          if (ret64 == 0)
+            ret = 0;
+          else if (ret64 > 0)
+            ret = 1;
+          else
+            ret = -1;
+        }
+      else if (sort_style == PLUGIN_BROWSER_SORT_MOST_USED)
+        {
+          ret =
+            setting_b->num_instantiations
+            - setting_a->num_instantiations;
+        }
+      else
+        {
+          g_return_val_if_reached (-1);
+        }
+
+      plugin_setting_free (setting_a);
+      plugin_setting_free (setting_b);
+
+      return ret;
+    }
+
+  g_return_val_if_reached (-1);
+}
+
 static void
 show_collection_context_menu (
   PluginBrowserWidget * self,
@@ -592,22 +694,6 @@ on_author_right_click (
   show_author_context_menu (self, x, y);
 }
 
-/**
- * Updates the label below the list of plugins with
- * the plugin info.
- */
-static int
-update_plugin_info_label (
-  PluginBrowserWidget * self,
-  gpointer              user_data)
-{
-  char * label = (char *) user_data;
-
-  gtk_label_set_text (self->plugin_info, label);
-
-  return G_SOURCE_REMOVE;
-}
-
 static void
 cat_selected_foreach (
   GtkTreeModel *        model,
@@ -737,6 +823,7 @@ on_tree_selection_changed (
 
   save_tree_view_selections (self);
   update_stack_switcher_emblems (self);
+  update_plugin_info_label (self);
 }
 
 static void
@@ -765,18 +852,7 @@ on_plugin_selection_changed (
   self->num_current_descriptors = 1;
 
   /* update status label */
-  char * label = g_strdup_printf (
-    "%s\n%s, %s%s\nAudio: %d, %d\nMidi: %d, "
-    "%d\nControls: %d, %d\nCV: %d, %d",
-    descr->author, descr->category_str,
-    plugin_protocol_to_str (descr->protocol),
-    descr->arch == ARCH_32 ? " (32-bit)" : "",
-    descr->num_audio_ins, descr->num_audio_outs,
-    descr->num_midi_ins, descr->num_midi_outs,
-    descr->num_ctrl_ins, descr->num_ctrl_outs,
-    descr->num_cv_ins, descr->num_cv_outs);
-  update_plugin_info_label (self, label);
-  g_free (label);
+  update_plugin_info_label (self);
 }
 
 static GtkTreeModel *
@@ -917,10 +993,20 @@ create_model_for_plugins (PluginBrowserWidget * self)
       g_list_store_append (store, wrapped_descr);
     }
 
+  /* create sorter */
+  self->plugin_sorter =
+    gtk_custom_sorter_new (plugin_sort_func, self, NULL);
+  self->plugin_sort_model = gtk_sort_list_model_new (
+    G_LIST_MODEL (store), GTK_SORTER (self->plugin_sorter));
+
+  /* create filter */
   self->plugin_filter = gtk_custom_filter_new (
     (GtkCustomFilterFunc) plugin_filter_func, self, NULL);
   self->plugin_filter_model = gtk_filter_list_model_new (
-    G_LIST_MODEL (store), GTK_FILTER (self->plugin_filter));
+    G_LIST_MODEL (self->plugin_sort_model),
+    GTK_FILTER (self->plugin_filter));
+
+  /* create single selection */
   self->plugin_selection_model = gtk_single_selection_new (
     G_LIST_MODEL (self->plugin_filter_model));
 
@@ -1196,6 +1282,7 @@ toggles_changed (
   gtk_filter_changed (
     GTK_FILTER (self->plugin_filter),
     GTK_FILTER_CHANGE_DIFFERENT);
+  update_plugin_info_label (self);
 }
 
 static void
@@ -1265,6 +1352,7 @@ on_key_release (
   gtk_filter_changed (
     GTK_FILTER (self->plugin_filter),
     GTK_FILTER_CHANGE_DIFFERENT);
+  update_plugin_info_label (self);
 
   g_message ("key release");
 }
@@ -1277,6 +1365,38 @@ on_plugin_search_changed (
   gtk_filter_changed (
     GTK_FILTER (self->plugin_filter),
     GTK_FILTER_CHANGE_DIFFERENT);
+  update_plugin_info_label (self);
+}
+
+static void
+on_sort_style_changed (
+  GtkToggleButton *     btn,
+  PluginBrowserWidget * self)
+{
+  PluginBrowserSortStyle sort_style =
+    PLUGIN_BROWSER_SORT_ALPHA;
+  if (gtk_toggle_button_get_active (self->alpha_sort_btn))
+    {
+      sort_style = PLUGIN_BROWSER_SORT_ALPHA;
+    }
+  else if (gtk_toggle_button_get_active (
+             self->last_used_sort_btn))
+    {
+      sort_style = PLUGIN_BROWSER_SORT_LAST_USED;
+    }
+  else if (gtk_toggle_button_get_active (
+             self->most_used_sort_btn))
+    {
+      sort_style = PLUGIN_BROWSER_SORT_MOST_USED;
+    }
+
+  g_settings_set_enum (
+    S_UI_PLUGIN_BROWSER, "plugin-browser-sort-style",
+    sort_style);
+
+  gtk_sorter_changed (
+    GTK_SORTER (self->plugin_sorter),
+    GTK_SORTER_CHANGE_DIFFERENT);
 }
 
 static void
@@ -1444,6 +1564,11 @@ plugin_browser_widget_new ()
   g_message (
     "setting plugin browser divider pos to %d", divider_pos);
 
+  /* re-sort */
+  gtk_sorter_changed (
+    GTK_SORTER (self->plugin_sorter),
+    GTK_SORTER_CHANGE_DIFFERENT);
+
   /* notify when tab changes */
   g_signal_connect (
     G_OBJECT (self->stack), "notify::visible-child",
@@ -1499,6 +1624,9 @@ plugin_browser_widget_class_init (
   BIND_CHILD (toggle_effects);
   BIND_CHILD (toggle_modulators);
   BIND_CHILD (toggle_midi_modifiers);
+  BIND_CHILD (alpha_sort_btn);
+  BIND_CHILD (last_used_sort_btn);
+  BIND_CHILD (most_used_sort_btn);
 
 #undef BIND_CHILD
 
@@ -1544,4 +1672,40 @@ plugin_browser_widget_init (PluginBrowserWidget * self)
 
   gtk_widget_add_css_class (
     GTK_WIDGET (self), "plugin-browser");
+
+  /* add toggle group for sort buttons */
+  gtk_toggle_button_set_group (
+    self->last_used_sort_btn, self->alpha_sort_btn);
+  gtk_toggle_button_set_group (
+    self->most_used_sort_btn, self->alpha_sort_btn);
+  gtk_toggle_button_set_active (self->alpha_sort_btn, true);
+
+  /* use sort style from last time */
+  PluginBrowserSortStyle sort_style = get_sort_style ();
+  switch (sort_style)
+    {
+    case PLUGIN_BROWSER_SORT_ALPHA:
+      gtk_toggle_button_set_active (
+        self->alpha_sort_btn, true);
+      break;
+    case PLUGIN_BROWSER_SORT_LAST_USED:
+      gtk_toggle_button_set_active (
+        self->last_used_sort_btn, true);
+      break;
+    case PLUGIN_BROWSER_SORT_MOST_USED:
+      gtk_toggle_button_set_active (
+        self->most_used_sort_btn, true);
+      break;
+    }
+
+  /* add callback when sort style changed */
+  g_signal_connect (
+    G_OBJECT (self->alpha_sort_btn), "toggled",
+    G_CALLBACK (on_sort_style_changed), self);
+  g_signal_connect (
+    G_OBJECT (self->last_used_sort_btn), "toggled",
+    G_CALLBACK (on_sort_style_changed), self);
+  g_signal_connect (
+    G_OBJECT (self->most_used_sort_btn), "toggled",
+    G_CALLBACK (on_sort_style_changed), self);
 }

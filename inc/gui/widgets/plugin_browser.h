@@ -53,6 +53,13 @@ typedef enum
   PLUGIN_BROWSER_FILTER_MIDI_EFFECT,
 } PluginBrowserFilter;
 
+typedef enum
+{
+  PLUGIN_BROWSER_SORT_ALPHA,
+  PLUGIN_BROWSER_SORT_LAST_USED,
+  PLUGIN_BROWSER_SORT_MOST_USED,
+} PluginBrowserSortStyle;
+
 /**
  * The plugin browser allows to browse and filter
  * available Plugin's on the system.
@@ -103,6 +110,10 @@ typedef struct _PluginBrowserWidget
   GtkToggleButton * toggle_modulators;
   GtkToggleButton * toggle_midi_modifiers;
 
+  GtkToggleButton * alpha_sort_btn;
+  GtkToggleButton * last_used_sort_btn;
+  GtkToggleButton * most_used_sort_btn;
+
   /** A label to show info about the currently
    * selected Plugin. */
   GtkLabel * plugin_info;
@@ -133,6 +144,8 @@ typedef struct _PluginBrowserWidget
   /** List view -> selection model -> filter model */
   GtkCustomFilter *    plugin_filter;
   GtkFilterListModel * plugin_filter_model;
+  GtkCustomSorter *    plugin_sorter;
+  GtkSortListModel *   plugin_sort_model;
   GtkSingleSelection * plugin_selection_model;
   ItemFactory *        plugin_item_factory;
 
@@ -157,6 +170,8 @@ typedef struct _PluginBrowserWidget
    * These are pointers to the actual descriptors and
    * must not be deleted.
    */
+  /* FIXME remove this, add a getter instead that gets the
+   * selection from the widget directly via GTK API */
   PluginDescriptor ** current_descriptors;
   int                 num_current_descriptors;
 

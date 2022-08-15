@@ -278,6 +278,9 @@ Args:
            '("none" "instrument" "effect" "modulator"
              "midi-effect"))
          (print-enum
+           "plugin-browser-sort-style"
+           '("alpha" "last-used" "most-used"))
+         (print-enum
            "file-browser-filter"
            '("none" "audio" "midi" "preset"))
          (print-enum
@@ -614,6 +617,11 @@ Args:
                  "plugin-browser-filter" "none"
                  "Plugin browser filter"
                  "Selected plugin browser filter")
+               (make-schema-key-with-enum
+                 "plugin-browser-sort-style"
+                 "plugin-browser-sort-style" "alpha"
+                 "Plugin browser sort style"
+                 "Selected plugin browser sort style")
                (make-schema-key
                  "plugin-browser-collections" "as"
                  "[]"

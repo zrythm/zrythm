@@ -86,40 +86,101 @@
           <object class="GtkBox" id="browser_bot">
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkBox" id="plugin_toolbar">
-                <style>
-                  <class name="toolbar"/>
-                </style>
+              <object class="GtkBox">
                 <child>
-                  <object class="GtkToggleButton" id="toggle_instruments">
-                    <property name="icon-name">instrument</property>
-                    <property name="tooltip-text" translatable="true">Instruments</property>
-                    <property name="hexpand">True</property>
-                    <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
+                  <object class="GtkBox" id="plugin_toolbar">
+                    <style>
+                      <class name="toolbar"/>
+                    </style>
+                    <child>
+                      <object class="GtkToggleButton" id="toggle_instruments">
+                        <property name="icon-name">instrument</property>
+                        <property name="tooltip-text" translatable="true">Instruments</property>
+                        <property name="hexpand">True</property>
+                        <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkToggleButton" id="toggle_effects">
+                        <property name="icon-name">bars</property>
+                        <property name="tooltip-text" translatable="true">Effects</property>
+                        <property name="hexpand">True</property>
+                        <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkToggleButton" id="toggle_modulators">
+                        <property name="icon-name">modulator</property>
+                        <property name="tooltip-text" translatable="true">Modulators</property>
+                        <property name="hexpand">True</property>
+                        <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkToggleButton" id="toggle_midi_modifiers">
+                        <property name="icon-name">signal-midi</property>
+                        <property name="tooltip-text" translatable="true">MIDI Modifiers</property>
+                        <property name="hexpand">True</property>
+                        <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkToggleButton" id="toggle_effects">
-                    <property name="icon-name">bars</property>
-                    <property name="tooltip-text" translatable="true">Effects</property>
-                    <property name="hexpand">True</property>
-                    <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
+                  <object class="GtkSeparator">
+                    <style>
+                      <class name="spacer"/>
+                    </style>
+                    <property name="orientation">vertical</property>
                   </object>
                 </child>
                 <child>
-                  <object class="GtkToggleButton" id="toggle_modulators">
-                    <property name="icon-name">modulator</property>
-                    <property name="tooltip-text" translatable="true">Modulators</property>
-                    <property name="hexpand">True</property>
-                    <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="toggle_midi_modifiers">
-                    <property name="icon-name">signal-midi</property>
-                    <property name="tooltip-text" translatable="true">MIDI Modifiers</property>
-                    <property name="hexpand">True</property>
-                    <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
+                  <object class="GtkBox" id="sort_box">
+                    <property name="orientation">horizontal</property>
+                    <child>
+                      <object class="GtkBox" id="sort_type_box">
+                        <style>
+                          <class name="linked"/>
+                        </style>
+                        <child>
+                          <object class="GtkToggleButton" id="alpha_sort_btn">
+                            <property name="icon-name">gnome-icon-library-font-x-generic-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Sort alphabetically</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkToggleButton" id="last_used_sort_btn">
+                            <property name="icon-name">gnome-icon-library-clock-alt-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Sort by last used</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkToggleButton" id="most_used_sort_btn">
+                            <property name="icon-name">gnome-icon-library-fire2-symbolic</property>
+                            <property name="tooltip-text" translatable="yes">Sort by most used</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    <!--
+                    <child>
+                      <object class="GtkBox" id="sort_order_box">
+                        <style>
+                          <class name="linked"/>
+                        </style>
+                        <child>
+                          <object class="GtkToggleButton" id="asc_sort_btn">
+                            <property name="icon-name">arrow1-up-symbolic</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkToggleButton" id="desc_sort_btn">
+                            <property name="icon-name">arrow1-down-symbolic</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
+                    -->
                   </object>
                 </child>
               </object>
