@@ -151,7 +151,7 @@
                         <child>
                           <object class="GtkToggleButton" id="last_used_sort_btn">
                             <property name="icon-name">gnome-icon-library-clock-alt-symbolic</property>
-                            <property name="tooltip-text" translatable="yes">Sort by last used</property>
+                            <property name="tooltip-text" translatable="yes">Sort by recently used</property>
                           </object>
                         </child>
                         <child>
