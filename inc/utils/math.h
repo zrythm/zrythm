@@ -1,23 +1,10 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- *
  * This file incorporates work covered by the following copyright and
  * permission notices:
+ *
+ * ---
  *
  * Copyright (C) 2017-2019 Robin Gareus <robin@gareus.org>
  *
@@ -34,6 +21,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * ---
  */
 
 /**
@@ -146,7 +135,7 @@ math_fast_log2 (float val)
   t.f = val;
   int * const exp_ptr = &t.i;
   int         x = *exp_ptr;
-  const int   log_2 = ((x >> 23) & 255) - 128;
+  const float log_2 = (float) (((x >> 23) & 255) - 128);
 
   x &= ~(255 << 23);
   x += 127 << 23;

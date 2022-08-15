@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
 
@@ -64,7 +48,8 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
   gtk_snapshot_save (snapshot);
   gtk_snapshot_translate (
     snapshot,
-    &GRAPHENE_POINT_INIT (obj->full_rect.x, obj->full_rect.y));
+    &GRAPHENE_POINT_INIT (
+      (float) obj->full_rect.x, (float) obj->full_rect.y));
 
   /* --- draw --- */
 
@@ -74,9 +59,10 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
-      obj->full_rect.width / 2 - VELOCITY_LINE_WIDTH / 2,
-      circle_radius, VELOCITY_LINE_WIDTH,
-      obj->full_rect.height));
+      (float) obj->full_rect.width / 2.f
+        - VELOCITY_LINE_WIDTH / 2.f,
+      (float) circle_radius, VELOCITY_LINE_WIDTH,
+      (float) obj->full_rect.height));
 
   /*
    * draw circle:
@@ -94,7 +80,8 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
   gsk_rounded_rect_init_from_rect (
     &rounded_rect,
     &GRAPHENE_RECT_INIT (
-      0, 0, circle_radius * 2 + 1, circle_radius * 2 + 1),
+      0.f, 0.f, (float) circle_radius * 2.f + 1.f,
+      (float) circle_radius * 2.f + 1.f),
     circle_angle);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
   gtk_snapshot_append_color (
@@ -122,7 +109,8 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
       gtk_snapshot_save (snapshot);
       gtk_snapshot_translate (
         snapshot,
-        &GRAPHENE_POINT_INIT (text_start_x, text_start_y));
+        &GRAPHENE_POINT_INIT (
+          (float) text_start_x, (float) text_start_y));
       PangoLayout * layout = arranger->vel_layout;
       pango_layout_set_text (layout, text, -1);
       gtk_snapshot_append_layout (

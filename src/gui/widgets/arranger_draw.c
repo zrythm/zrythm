@@ -204,7 +204,8 @@ draw_playhead (
     {
       gtk_snapshot_append_color (
         snapshot, &UI_COLORS->prefader_send,
-        &GRAPHENE_RECT_INIT (px - 1, 0, 2, height));
+        &GRAPHENE_RECT_INIT (
+          (float) px - 1.f, 0.f, 2.f, (float) height));
       self->last_playhead_px = px;
     }
 
@@ -253,7 +254,7 @@ draw_playhead (
           gtk_snapshot_append_color (
             snapshot, &color,
             &GRAPHENE_RECT_INIT (
-              (float) hover_x - 1, 0, 2, height));
+              (float) hover_x - 1, 0.f, 2.f, (float) height));
         }
     }
 }
@@ -306,7 +307,7 @@ draw_timeline_bg (
           gtk_snapshot_append_color (
             snapshot, &thick_grid_line_color,
             &GRAPHENE_RECT_INIT (
-              0, (float) (line_y - 1), width, 2));
+              0.f, (float) (line_y - 1), (float) width, 2.f));
         }
 
       /* draw selection tint */
@@ -315,7 +316,7 @@ draw_timeline_bg (
           gtk_snapshot_append_color (
             snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.04f),
             &GRAPHENE_RECT_INIT (
-              0, (float) track_start_offset, width,
+              0.f, (float) track_start_offset, (float) width,
               (float) full_track_height));
         }
 
@@ -342,8 +343,8 @@ draw_timeline_bg (
                     snapshot,
                     &Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.4f),
                     &GRAPHENE_RECT_INIT (
-                      0, (float) OFFSET_PLUS_TOTAL_HEIGHT,
-                      width, 1));
+                      0.f, (float) OFFSET_PLUS_TOTAL_HEIGHT,
+                      (float) width, 1.f));
                 }
 
               total_height += (double) lane->height;
@@ -379,8 +380,8 @@ draw_timeline_bg (
                     snapshot,
                     &Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.2f),
                     &GRAPHENE_RECT_INIT (
-                      0, (float) OFFSET_PLUS_TOTAL_HEIGHT,
-                      width, 1));
+                      0.f, (float) OFFSET_PLUS_TOTAL_HEIGHT,
+                      (float) width, 1.f));
                 }
 
               float normalized_val =
@@ -409,8 +410,9 @@ draw_timeline_bg (
                   track->color.red, track->color.green,
                   track->color.blue, 0.3f),
                 &GRAPHENE_RECT_INIT (
-                  0, (float) (OFFSET_PLUS_TOTAL_HEIGHT + y_px),
-                  width, 1));
+                  0.f,
+                  (float) (OFFSET_PLUS_TOTAL_HEIGHT + y_px),
+                  (float) width, 1.f));
 
               total_height += (double) at->height;
             }
@@ -444,18 +446,18 @@ draw_midi_bg (
             snapshot,
             &Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.5f),
             &GRAPHENE_RECT_INIT (
-              0, (float) y_offset, width, 1));
+              0.f, (float) y_offset, (float) width, 1.f));
           if (piano_roll_is_key_black (
                 PIANO_ROLL->piano_descriptors[i]->value))
             {
               gtk_snapshot_append_color (
                 snapshot, &Z_GDK_RGBA_INIT (0, 0, 0, 0.2f),
                 &GRAPHENE_RECT_INIT (
-                  0,
+                  0.f,
                   /* + 1 since the border is
                    * bottom */
-                  (int) (y_offset + 1), width,
-                  (int) adj_px_per_key));
+                  (float) (y_offset + 1), (float) width,
+                  (float) adj_px_per_key));
             }
         }
       bool drum_mode =
@@ -471,11 +473,11 @@ draw_midi_bg (
           gtk_snapshot_append_color (
             snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.06f),
             &GRAPHENE_RECT_INIT (
-              0,
+              0.f,
               /* + 1 since the border is
                * bottom */
-              (int) (y_offset + 1), width,
-              (int) adj_px_per_key));
+              (float) (y_offset + 1), (float) width,
+              (float) adj_px_per_key));
         }
     }
 }
@@ -490,10 +492,11 @@ draw_velocity_bg (
 {
   for (int i = 1; i < 4; i++)
     {
-      double y_offset = height * (i / 4.0);
+      float y_offset = (float) height * ((float) i / 4.f);
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.2f),
-        &GRAPHENE_RECT_INIT (0, (float) y_offset, width, 1));
+        &GRAPHENE_RECT_INIT (
+          0.f, (float) y_offset, (float) width, 1.f));
     }
 }
 
@@ -704,8 +707,8 @@ draw_audio_bg (
       1.f + (float) gain_line_start_x,
       /* invert because gtk draws the opposite
        * way */
-      (float) (height * (1.0 - gain_fader_val)),
-      (float) (gain_line_end_x - gain_line_start_x), 2));
+      (float) height * (1.f - gain_fader_val),
+      (float) (gain_line_end_x - gain_line_start_x), 2.f));
 
   /* draw gain text */
   double gain_db = math_amp_to_dbfs (ar->gain);
@@ -717,7 +720,8 @@ draw_audio_bg (
     gtk_widget_get_style_context (GTK_WIDGET (self));
   gtk_snapshot_render_layout (
     snapshot, style_ctx, gain_txt_padding + gain_line_start_x,
-    gain_txt_padding + (int) (height * (1.0 - gain_fader_val)),
+    gain_txt_padding
+      + (int) ((double) height * (1.0 - gain_fader_val)),
     self->audio_layout);
 }
 
@@ -792,7 +796,8 @@ draw_vertical_lines (
           gtk_snapshot_append_color (
             snapshot, &thick_color,
             &GRAPHENE_RECT_INIT (
-              (float) curr_px, 0, thick_width, height));
+              (float) curr_px, 0.f, (float) thick_width,
+              (float) height));
         }
       i = 0;
       if (ten_sec_interval > 0)
@@ -809,7 +814,8 @@ draw_vertical_lines (
               gtk_snapshot_append_color (
                 snapshot, &thinner_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, thinner_width, height));
+                  (float) curr_px, 0.f, (float) thinner_width,
+                  (float) height));
             }
         }
       i = 0;
@@ -827,7 +833,8 @@ draw_vertical_lines (
               gtk_snapshot_append_color (
                 snapshot, &thinnest_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, thinnest_width, height));
+                  (float) curr_px, 0.f,
+                  (float) thinnest_width, (float) height));
             }
         }
     }
@@ -861,7 +868,8 @@ draw_vertical_lines (
           gtk_snapshot_append_color (
             snapshot, &thick_color,
             &GRAPHENE_RECT_INIT (
-              (float) curr_px, 0, thick_width, height));
+              (float) curr_px, 0.f, (float) thick_width,
+              (float) height));
         }
       i = 0;
       if (beat_interval > 0)
@@ -878,7 +886,8 @@ draw_vertical_lines (
               gtk_snapshot_append_color (
                 snapshot, &thinner_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, thinner_width, height));
+                  (float) curr_px, 0.f, (float) thinner_width,
+                  (float) height));
             }
         }
       i = 0;
@@ -897,7 +906,8 @@ draw_vertical_lines (
               gtk_snapshot_append_color (
                 snapshot, &thinnest_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, thinnest_width, height));
+                  (float) curr_px, 0.f,
+                  (float) thinnest_width, (float) height));
             }
         }
     }
@@ -918,20 +928,23 @@ draw_range (
   gtk_snapshot_append_color (
     snapshot, &Z_GDK_RGBA_INIT (0.3f, 0.3f, 0.3f, 0.3f),
     &GRAPHENE_RECT_INIT (
-      (float) MAX (0, range_first_px), 0,
-      (float) (range_second_px - range_first_px), height));
+      (float) MAX (0, range_first_px), 0.f,
+      (float) (range_second_px - range_first_px),
+      (float) height));
 
   /* draw start and end lines */
-  const int     line_width = 2;
+  const float   line_width = 2.f;
   const GdkRGBA color = { 0.8f, 0.8f, 0.8f, 0.4f };
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
-      (float) range_first_px + 1.f, 0, line_width, height));
+      (float) range_first_px + 1.f, 0.f, line_width,
+      (float) height));
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
-      (float) range_second_px + 1.f, 0, line_width, height));
+      (float) range_second_px + 1.f, 0.f, line_width,
+      (float) height));
 }
 
 void
@@ -1043,21 +1056,21 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       gtk_snapshot_append_color (
         snapshot, &loop_color,
         &GRAPHENE_RECT_INIT (
-          (float) start_px + 1.f, 0, 2, height));
+          (float) start_px + 1.f, 0.f, 2.f, (float) height));
 
       /* draw loop end line */
       gtk_snapshot_append_color (
         snapshot, &loop_color,
         &GRAPHENE_RECT_INIT (
-          (float) end_px + 1.f, 0, 2, height));
+          (float) end_px + 1.f, 0.f, 2.f, (float) height));
 
       /* draw transport loop area */
       double loop_start_x = MAX (0, start_px);
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (0, 0.9f, 0.7f, 0.02f),
         &GRAPHENE_RECT_INIT (
-          (float) loop_start_x, 0,
-          (float) (end_px - start_px), height));
+          (float) loop_start_x, 0.f,
+          (float) (end_px - start_px), (float) height));
     }
 
   /* --- handle vertical drawing --- */

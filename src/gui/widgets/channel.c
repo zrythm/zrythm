@@ -78,7 +78,8 @@ channel_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         &Z_GDK_RGBA_INIT (
           track->color.red, track->color.green,
           track->color.blue, 0.15f),
-        &GRAPHENE_RECT_INIT (0, 0, width, height));
+        &GRAPHENE_RECT_INIT (
+          0.f, 0.f, (float) width, (float) height));
     }
 
   GTK_WIDGET_CLASS (channel_widget_parent_class)

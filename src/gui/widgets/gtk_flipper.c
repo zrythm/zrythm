@@ -151,14 +151,14 @@ gtk_flipper_size_allocate (
   if (self->flip_horizontal)
     {
       transform = gsk_transform_translate (
-        transform, &GRAPHENE_POINT_INIT (width, 0));
+        transform, &GRAPHENE_POINT_INIT ((float) width, 0.f));
       transform = gsk_transform_scale (transform, -1, 1);
     }
 
   if (self->flip_vertical)
     {
       transform = gsk_transform_translate (
-        transform, &GRAPHENE_POINT_INIT (0, height));
+        transform, &GRAPHENE_POINT_INIT (0.f, (float) height));
       transform = gsk_transform_scale (transform, 1, -1);
       baseline = -1;
     }
@@ -170,7 +170,8 @@ gtk_flipper_size_allocate (
       height = tmp;
       transform = gsk_transform_rotate (transform, 90);
       transform = gsk_transform_translate (
-        transform, &GRAPHENE_POINT_INIT (0, -height));
+        transform,
+        &GRAPHENE_POINT_INIT (0.f, -(float) height));
       baseline = -1;
     }
 
@@ -458,7 +459,7 @@ gtk_flipper_set_flip_horizontal (
   if (self->flip_horizontal == flip_horizontal)
     return;
 
-  self->flip_horizontal = flip_horizontal;
+  self->flip_horizontal = flip_horizontal ? 1 : 0;
 
   gtk_widget_queue_allocate (GTK_WIDGET (self));
 
@@ -503,7 +504,7 @@ gtk_flipper_set_flip_vertical (
   if (self->flip_vertical == flip_vertical)
     return;
 
-  self->flip_vertical = flip_vertical;
+  self->flip_vertical = flip_vertical ? 1 : 0;
 
   gtk_widget_queue_allocate (GTK_WIDGET (self));
 
@@ -546,7 +547,7 @@ gtk_flipper_set_rotate (GtkFlipper * self, gboolean rotate)
   if (self->rotate == rotate)
     return;
 
-  self->rotate = rotate;
+  self->rotate = rotate ? 1 : 0;
 
   gtk_widget_queue_resize (GTK_WIDGET (self));
 

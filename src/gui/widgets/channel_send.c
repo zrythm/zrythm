@@ -82,8 +82,9 @@ channel_send_snapshot (
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, 1.f),
         &GRAPHENE_RECT_INIT (
-          padding, padding, width - padding * 2,
-          height - padding * 2));
+          (float) padding, (float) padding,
+          (float) width - (float) padding * 2.f,
+          (float) height - (float) padding * 2.f));
 
       /* fill text */
       int w, h;
@@ -116,19 +117,21 @@ channel_send_snapshot (
       gtk_snapshot_append_color (
         snapshot, &bg_color,
         &GRAPHENE_RECT_INIT (
-          padding, padding, width - padding * 2,
-          height - padding * 2));
+          (float) padding, (float) padding,
+          (float) width - (float) padding * 2.f,
+          (float) height - (float) padding * 2.f));
 
       /* fill amount */
       bg_color.alpha = 1.f;
       float amount =
         channel_send_get_amount_for_widgets (self->send)
-        * width;
+        * (float) width;
       gtk_snapshot_append_color (
         snapshot, &bg_color,
         &GRAPHENE_RECT_INIT (
-          padding, padding, amount - padding * 2,
-          height - padding * 2));
+          (float) padding, (float) padding,
+          amount - (float) padding * 2.f,
+          (float) height - (float) padding * 2));
 
       /* fill text */
       int w, h;

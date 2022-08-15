@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
@@ -125,7 +125,7 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          val_px, 0, zero_px - val_px, height));
+          val_px, 0.f, zero_px - val_px, (float) height));
     }
   /* draw from zero to val */
   else
@@ -133,7 +133,7 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          zero_px, 0, val_px - zero_px, height));
+          zero_px, 0.f, val_px - zero_px, (float) height));
     }
 
   if (!self->layout)
@@ -175,7 +175,8 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   gtk_snapshot_translate (
     snapshot,
     &GRAPHENE_POINT_INIT (
-      width / 2 - we / 2, height / 2 - he / 2));
+      (float) width / 2.f - (float) we / 2.f,
+      (float) height / 2.f - (float) he / 2.f));
   pango_layout_set_markup (self->layout, str, -1);
   gtk_snapshot_append_layout (
     snapshot, self->layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
@@ -185,7 +186,8 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.12f),
-        &GRAPHENE_RECT_INIT (0, 0, width, height));
+        &GRAPHENE_RECT_INIT (
+          0.f, 0.f, (float) width, (float) height));
     }
 }
 

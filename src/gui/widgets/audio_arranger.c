@@ -119,7 +119,7 @@ get_region_gain_y (ArrangerWidget * self, ZRegion * region)
     gtk_widget_get_allocated_height (GTK_WIDGET (self));
   float gain_fader_val =
     math_get_fader_val_from_amp (region->gain);
-  return height * (1.0 - gain_fader_val);
+  return height * (1.0 - (double) gain_fader_val);
 }
 
 /**

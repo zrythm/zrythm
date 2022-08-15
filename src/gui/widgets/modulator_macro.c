@@ -67,7 +67,8 @@ on_inputs_draw (
         cr, - w / 2.0, - h / 2.0);
 #endif
       cairo_move_to (
-        cr, width / 2.0 - w / 2.0, height / 2.0 - h / 2.0);
+        cr, (double) width / 2.0 - (double) w / 2.0,
+        (double) height / 2.0 - (double) h / 2.0);
       z_cairo_draw_text (cr, widget, self->layout, str);
 
 #if 0

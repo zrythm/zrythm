@@ -40,21 +40,24 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     snapshot, context, 0, 0, width, height);
 
   float fader_val = self->fader ? self->fader->fader_val : 1.f;
-  float value_px = height * fader_val;
+  float value_px = (float) height * fader_val;
 
   const float fill_radius = 2.f;
 
   /* draw background bar */
   GskRoundedRect rounded_rect;
   gsk_rounded_rect_init_from_rect (
-    &rounded_rect, &GRAPHENE_RECT_INIT (0, 0, width, height),
+    &rounded_rect,
+    &GRAPHENE_RECT_INIT (
+      0.f, 0.f, (float) width, (float) height),
     fill_radius);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
   gtk_snapshot_append_color (
     snapshot,
     &Z_GDK_RGBA_INIT (
       0.1f, 0.1f, 0.1f, self->hover ? 0.8f : 0.6f),
-    &GRAPHENE_RECT_INIT (0, 0, width, height));
+    &GRAPHENE_RECT_INIT (
+      0.f, 0.f, (float) width, (float) height));
   gtk_snapshot_pop (snapshot);
 
   /*const int padding = 2;*/
@@ -84,10 +87,11 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   const float inner_line_width = 2.f;
 
-  const int       border_width = 3.f;
+  const float     border_width = 3.f;
   graphene_rect_t value_graphene_rect = GRAPHENE_RECT_INIT (
-    border_width, border_width, width - border_width * 2,
-    height - border_width * 2);
+    border_width, border_width,
+    (float) width - border_width * 2.f,
+    (float) height - border_width * 2.f);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &value_graphene_rect, fill_radius);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
@@ -96,8 +100,10 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     &Z_GDK_RGBA_INIT (
       (float) r, (float) g, (float) b, (float) a),
     &GRAPHENE_RECT_INIT (
-      0, (float) (height - value_px) + inner_line_width * 2,
-      width, value_px));
+      0.f,
+      ((float) height - value_px)
+        + (float) inner_line_width * 2.f,
+      (float) width, value_px));
   gtk_snapshot_pop (snapshot);
 
 #if 0
@@ -133,8 +139,9 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
       border_width,
-      (height - value_px) - inner_line_width / 2.f,
-      width - border_width * 2, inner_line_width));
+      ((float) height - value_px)
+        - (float) inner_line_width / 2.f,
+      (float) width - border_width * 2.f, inner_line_width));
 }
 
 static void

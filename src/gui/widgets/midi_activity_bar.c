@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/engine.h"
 #include "audio/track.h"
@@ -68,8 +52,8 @@ midi_activity_bar_snapshot (
   if (self->draw_border)
     {
       GskRoundedRect  rounded_rect;
-      graphene_rect_t graphene_rect =
-        GRAPHENE_RECT_INIT (0, 0, width, height);
+      graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
+        0.f, 0.f, (float) width, (float) height);
       gsk_rounded_rect_init_from_rect (
         &rounded_rect, &graphene_rect, 0);
       const float border_width = 1.f;
@@ -105,7 +89,8 @@ midi_activity_bar_snapshot (
     {
       gtk_snapshot_append_color (
         snapshot, &other_color,
-        &GRAPHENE_RECT_INIT (0, 0, width, height));
+        &GRAPHENE_RECT_INIT (
+          0.f, 0.f, (float) width, (float) height));
 
       switch (self->type)
         {
@@ -133,10 +118,10 @@ midi_activity_bar_snapshot (
               gtk_snapshot_append_color (
                 snapshot, &other_color,
                 &GRAPHENE_RECT_INIT (
-                  0,
+                  0.f,
                   (float) height
                     * ((float) time_diff / (float) MAX_TIME),
-                  width, height));
+                  (float) width, (float) height));
             }
           else if (self->animation == MAB_ANIMATION_FLASH)
             {
@@ -144,7 +129,8 @@ midi_activity_bar_snapshot (
                 1.f - (float) time_diff / (float) MAX_TIME;
               gtk_snapshot_append_color (
                 snapshot, &other_color,
-                &GRAPHENE_RECT_INIT (0, 0, width, height));
+                &GRAPHENE_RECT_INIT (
+                  0.f, 0.f, (float) width, (float) height));
             }
         }
     }

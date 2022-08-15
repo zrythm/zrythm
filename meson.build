@@ -636,8 +636,7 @@ test_strict_cflags += [
   #'-Werror=cast-qual',
   '-Werror=clobbered',
 
-  # this is too strict - it complains when
-  # converting int to float
+  # FIXME enable and fix all reported errors
   #'-Werror=conversion',
 
   '-Werror=disabled-optimization',
@@ -649,8 +648,8 @@ test_strict_cflags += [
   '-Werror=stringop-truncation',
   '-Werror=missing-declarations',
   '-Werror=int-to-pointer-cast',
-  # fails with graphene
-  # https://github.com/ebassi/graphene/issues/249
+
+  # maybe not needed but keep for future reference
   #'-Werror=double-promotion',
 
   #'-Werror=redundant-decls',
@@ -817,6 +816,14 @@ pangoft2_dep = dependency (
   default_options: [
     'default_library=static',
     'introspection=disabled',])
+
+# include separately with -isystem to bypass
+# https://github.com/ebassi/graphene/issues/249
+# NOTE this won't fix the issue when using graphene as a
+# subproject
+graphene_dep = dependency (
+  'graphene-1.0',
+  include_type: 'system')
 
 gtk_dep = dependency (
   'gtk4', version: '>=' + gtk_req,
@@ -1176,6 +1183,7 @@ zrythm_deps = [
   libpanel_dep,
   fontconfig_dep,
   pangoft2_dep,
+  graphene_dep,
   gtk_dep,
   sndfile_dep,
   samplerate_dep,

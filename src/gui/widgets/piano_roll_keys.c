@@ -76,14 +76,14 @@ piano_roll_keys_snapshot (
   float label_width = (float) width * 0.55f;
   if (drum_mode)
     {
-      label_width = width - 8;
+      label_width = (float) width - 8.f;
     }
   float key_width = (float) width - label_width;
   float px_per_key = (float) self->px_per_key + 1.f;
 
   char str[400];
 
-  for (int i = 0; i < 128; i++)
+  for (uint8_t i = 0; i < 128; i++)
     {
       /* skip keys outside visible rectangle */
       if (
@@ -282,11 +282,11 @@ piano_roll_keys_snapshot (
         }
 
       /* add border below */
-      float y = ((127 - i) + 1) * px_per_key;
+      float y = (float) ((127 - i) + 1) * px_per_key;
       color = Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.3f);
       gtk_snapshot_append_color (
         snapshot, &color,
-        &GRAPHENE_RECT_INIT (0, y, width, 1));
+        &GRAPHENE_RECT_INIT (0.f, y, (float) width, 1.f));
     }
 }
 

@@ -92,7 +92,8 @@ automation_point_draw (
   if (automation_point_settings_changed (ap, &draw_rect, false))
     {
       cr_node = gsk_cairo_node_new (&GRAPHENE_RECT_INIT (
-        0, 0, draw_rect.width + 3, draw_rect.height + 3));
+        0.f, 0.f, (float) draw_rect.width + 3.f,
+        (float) draw_rect.height + 3.f));
 
       object_free_w_func_and_null (
         gsk_render_node_unref, ap->cairo_node);
@@ -104,7 +105,8 @@ automation_point_draw (
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          draw_rect.x - 1, draw_rect.y - 1));
+          (float) draw_rect.x - 1.f,
+          (float) draw_rect.y - 1.f));
       gtk_snapshot_append_node (snapshot, cr_node);
       gtk_snapshot_restore (snapshot);
 
@@ -279,7 +281,8 @@ automation_point_draw (
   gtk_snapshot_save (snapshot);
   gtk_snapshot_translate (
     snapshot,
-    &GRAPHENE_POINT_INIT (draw_rect.x - 1, draw_rect.y - 1));
+    &GRAPHENE_POINT_INIT (
+      (float) draw_rect.x - 1.f, (float) draw_rect.y - 1.f));
   gtk_snapshot_append_node (snapshot, cr_node);
   gtk_snapshot_restore (snapshot);
 

@@ -97,13 +97,15 @@ timeline_minimap_bg_snapshot (
               gtk_snapshot_append_color (
                 snapshot, &color,
                 &GRAPHENE_RECT_INIT (
-                  ((float) px_start / (float) song_px) * width,
+                  ((float) px_start / (float) song_px)
+                    * (float) width,
                   ((float) wy / (float) total_track_height)
-                    * height,
-                  ((float) px_length / (float) song_px) * width,
+                    * (float) height,
+                  ((float) px_length / (float) song_px)
+                    * (float) width,
                   ((float) track_height
                    / (float) total_track_height)
-                    * height));
+                    * (float) height));
             }
         }
     }

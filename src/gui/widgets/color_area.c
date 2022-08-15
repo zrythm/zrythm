@@ -63,7 +63,8 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   gtk_snapshot_append_color (
     snapshot, &color,
-    &GRAPHENE_RECT_INIT (0, 0, width, height));
+    &GRAPHENE_RECT_INIT (
+      0.f, 0.f, (float) width, (float) height));
 
   if (self->type == COLOR_AREA_TYPE_TRACK)
     {
@@ -97,7 +98,7 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
           gtk_snapshot_append_color (
             snapshot, &color,
             &GRAPHENE_RECT_INIT (
-              0, (float) start_y, width, (float) h));
+              0.f, (float) start_y, (float) width, (float) h));
         }
     }
 }

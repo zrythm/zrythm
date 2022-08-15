@@ -208,7 +208,7 @@ draw_bg (
           ui_get_mid_color (
             &mid_c, &c, &self->last_colors[i],
             1.f
-              - self->transition_frames
+              - (float) self->transition_frames
                   / CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES);
           c = mid_c;
           if (i == NUM_AUTOMATION_MODES - 1)

@@ -182,7 +182,15 @@ position_cmp_func (const void * _a, const void * _b)
 {
   const Position * a = (Position const *) _a;
   const Position * b = (Position const *) _b;
-  return position_compare_frames (a, b);
+
+  /* prevent conversion overflows */
+  signed_frame_t diff = position_compare_frames (a, b);
+  if (diff < 0)
+    return -1;
+  else if (diff > 0)
+    return 1;
+  else
+    return 0;
 }
 
 /**

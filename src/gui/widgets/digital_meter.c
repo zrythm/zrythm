@@ -189,7 +189,8 @@ digital_meter_snapshot (
   gtk_snapshot_translate (
     snapshot,
     &GRAPHENE_POINT_INIT (
-      width / 2.f - caption_textw / 2.f, PADDING_TOP));
+      (float) width / 2.f - (float) caption_textw / 2.f,
+      (float) PADDING_TOP));
   gtk_snapshot_append_layout (
     snapshot, self->caption_layout, &color);
   gtk_snapshot_restore (snapshot);
@@ -200,7 +201,8 @@ digital_meter_snapshot (
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          0, caption_texth + PADDING_TOP, width, 1));
+          0.f, (float) caption_texth + (float) PADDING_TOP,
+          (float) width, 1.f));
     }
 
   /*GdkRGBA color;*/
@@ -257,7 +259,8 @@ digital_meter_snapshot (
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          self->num_part_start_pos, self->height_start_pos));
+          (float) self->num_part_start_pos,
+          (float) self->height_start_pos));
       gtk_snapshot_append_layout (
         snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
@@ -272,7 +275,8 @@ digital_meter_snapshot (
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          self->dec_part_start_pos, self->height_start_pos));
+          (float) self->dec_part_start_pos,
+          (float) self->height_start_pos));
       gtk_snapshot_append_layout (
         snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
@@ -327,7 +331,8 @@ digital_meter_snapshot (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              self->minutes_start_pos, self->height_start_pos));
+              (float) self->minutes_start_pos,
+              (float) self->height_start_pos));
           gtk_snapshot_append_layout (
             snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
@@ -343,7 +348,8 @@ digital_meter_snapshot (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              self->seconds_start_pos, self->height_start_pos));
+              (float) self->seconds_start_pos,
+              (float) self->height_start_pos));
           gtk_snapshot_append_layout (
             snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
@@ -361,7 +367,8 @@ digital_meter_snapshot (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              self->ms_start_pos, self->height_start_pos));
+              (float) self->ms_start_pos,
+              (float) self->height_start_pos));
           gtk_snapshot_append_layout (
             snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
@@ -419,7 +426,8 @@ digital_meter_snapshot (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              self->bars_start_pos, self->height_start_pos));
+              (float) self->bars_start_pos,
+              (float) self->height_start_pos));
           gtk_snapshot_append_layout (
             snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
@@ -431,7 +439,8 @@ digital_meter_snapshot (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              self->beats_start_pos, self->height_start_pos));
+              (float) self->beats_start_pos,
+              (float) self->height_start_pos));
           gtk_snapshot_append_layout (
             snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
@@ -443,8 +452,8 @@ digital_meter_snapshot (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              self->sixteenths_start_pos,
-              self->height_start_pos));
+              (float) self->sixteenths_start_pos,
+              (float) self->height_start_pos));
           gtk_snapshot_append_layout (
             snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
@@ -461,7 +470,8 @@ digital_meter_snapshot (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              self->ticks_start_pos, self->height_start_pos));
+              (float) self->ticks_start_pos,
+              (float) self->height_start_pos));
           gtk_snapshot_append_layout (
             snapshot, self->seg7_layout, &color);
           gtk_snapshot_restore (snapshot);
@@ -481,7 +491,8 @@ digital_meter_snapshot (
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          width / 2 - textw / 2, self->height_start_pos));
+          (float) width / 2.f - (float) textw / 2.f,
+          (float) self->height_start_pos));
       gtk_snapshot_append_layout (
         snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
@@ -512,7 +523,8 @@ digital_meter_snapshot (
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          width / 2 - textw / 2, self->height_start_pos));
+          (float) width / 2.f - (float) textw / 2.f,
+          (float) self->height_start_pos));
       gtk_snapshot_append_layout (
         snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
@@ -549,7 +561,8 @@ digital_meter_snapshot (
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          width / 2 - textw / 2, self->height_start_pos));
+          (float) width / 2.f - (float) textw / 2.f,
+          (float) self->height_start_pos));
       gtk_snapshot_append_layout (
         snapshot, self->seg7_layout, &color);
       gtk_snapshot_restore (snapshot);
@@ -806,8 +819,9 @@ digital_meter_show_context_menu (
 {
   z_gtk_show_context_menu_from_g_menu (
     self->popover_menu,
-    gtk_widget_get_allocated_width (GTK_WIDGET (self)) / 2.0,
-    0.0, menu);
+    (float) gtk_widget_get_allocated_width (GTK_WIDGET (self))
+      / 2.f,
+    0.f, menu);
 }
 
 /**

@@ -71,8 +71,8 @@ midi_note_draw (MidiNote * self, GtkSnapshot * snapshot)
   /* create clip */
   GskRoundedRect  rounded_rect;
   graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
-    full_rect.x, full_rect.y, full_rect.width,
-    full_rect.height);
+    (float) full_rect.x, (float) full_rect.y,
+    (float) full_rect.width, (float) full_rect.height);
   if (drum_mode)
     {
       gtk_snapshot_push_clip (snapshot, &graphene_rect);
@@ -82,7 +82,7 @@ midi_note_draw (MidiNote * self, GtkSnapshot * snapshot)
       /* clip rounded rectangle for whole note */
       gsk_rounded_rect_init_from_rect (
         &rounded_rect, &graphene_rect,
-        full_rect.height / 6.0f);
+        (float) full_rect.height / 6.0f);
       gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
     }
 
@@ -130,10 +130,10 @@ midi_note_draw (MidiNote * self, GtkSnapshot * snapshot)
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          REGION_NAME_BOX_PADDING + full_rect.x,
+          REGION_NAME_BOX_PADDING + (float) full_rect.x,
           (float)
           (fontsize_ratio * REGION_NAME_BOX_PADDING +
-             full_rect.y)));
+             (float) full_rect.y)));
       pango_layout_set_markup (self->layout, fontize_str, -1);
       gtk_snapshot_append_layout (snapshot, self->layout, &c2);
       gtk_snapshot_restore (snapshot);

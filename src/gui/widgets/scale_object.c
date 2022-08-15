@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/chord_track.h"
@@ -54,11 +54,12 @@ scale_object_draw (ScaleObject * self, GtkSnapshot * snapshot)
   /* create clip */
   GskRoundedRect  rounded_rect;
   graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
-    obj->full_rect.x, obj->full_rect.y, obj->full_rect.width,
-    obj->full_rect.height);
+    (float) obj->full_rect.x, (float) obj->full_rect.y,
+    (float) obj->full_rect.width,
+    (float) obj->full_rect.height);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect,
-    obj->full_rect.height / 6.0f);
+    (float) obj->full_rect.height / 6.0f);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
 
   /* fill */
@@ -73,8 +74,8 @@ scale_object_draw (ScaleObject * self, GtkSnapshot * snapshot)
   gtk_snapshot_translate (
     snapshot,
     &GRAPHENE_POINT_INIT (
-      obj->full_rect.x + SCALE_OBJECT_NAME_PADDING,
-      obj->full_rect.y + SCALE_OBJECT_NAME_PADDING));
+      (float) obj->full_rect.x + SCALE_OBJECT_NAME_PADDING,
+      (float) obj->full_rect.y + SCALE_OBJECT_NAME_PADDING));
   pango_layout_set_text (self->layout, str, -1);
   g_free (str);
   gtk_snapshot_append_layout (snapshot, self->layout, &c2);

@@ -259,7 +259,8 @@ draw_other_region (
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
-      px_start, 0, px_end - px_start, height / 4.f));
+      (float) px_start, 0.f, (float) px_end - (float) px_start,
+      (float) height / 4.f));
 }
 
 /**
@@ -298,7 +299,8 @@ draw_regions (
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
-      px_start, 0, px_end - px_start, height / 4.f));
+      (float) px_start, 0.f, (float) px_end - (float) px_start,
+      (float) height / 4.f));
 
   /* draw its transient if copy-moving TODO */
   if (arranger_object_should_orig_be_visible (region_obj, NULL))
@@ -308,7 +310,9 @@ draw_regions (
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          px_start, 0, px_end - px_start, height / 4.f));
+          (float) px_start, 0.f,
+          (float) px_end - (float) px_start,
+          (float) height / 4.f));
     }
 
   /* draw the other regions */
@@ -377,7 +381,9 @@ draw_loop_start (
 
   cairo_t * cr = gtk_snapshot_append_cairo (
     snapshot,
-    &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
+    &GRAPHENE_RECT_INIT (
+      (float) dr.x, (float) dr.y, (float) dr.width,
+      (float) dr.height));
 
   if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
@@ -442,7 +448,9 @@ draw_loop_end (
 
   cairo_t * cr = gtk_snapshot_append_cairo (
     snapshot,
-    &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
+    &GRAPHENE_RECT_INIT (
+      (float) dr.x, (float) dr.y, (float) dr.width,
+      (float) dr.height));
 
   if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
@@ -479,7 +487,9 @@ draw_punch_in (
 
   cairo_t * cr = gtk_snapshot_append_cairo (
     snapshot,
-    &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
+    &GRAPHENE_RECT_INIT (
+      (float) dr.x, (float) dr.y, (float) dr.width,
+      (float) dr.height));
 
   if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
@@ -517,7 +527,9 @@ draw_punch_out (
 
   cairo_t * cr = gtk_snapshot_append_cairo (
     snapshot,
-    &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
+    &GRAPHENE_RECT_INIT (
+      (float) dr.x, (float) dr.y, (float) dr.width,
+      (float) dr.height));
 
   if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
@@ -586,7 +598,9 @@ draw_cue_point (
 
   cairo_t * cr = gtk_snapshot_append_cairo (
     snapshot,
-    &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
+    &GRAPHENE_RECT_INIT (
+      (float) dr.x, (float) dr.y, (float) dr.width,
+      (float) dr.height));
 
   if (self->type == TYPE (TIMELINE))
     {
@@ -659,7 +673,9 @@ draw_playhead (
 
       cairo_t * cr = gtk_snapshot_append_cairo (
         snapshot,
-        &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
+        &GRAPHENE_RECT_INIT (
+          (float) dr.x, (float) dr.y, (float) dr.width,
+          (float) dr.height));
 
       cairo_set_source_rgb (cr, 0.7, 0.7, 0.7);
       cairo_set_line_width (cr, 2);
@@ -725,7 +741,7 @@ draw_lines_and_labels (
         (curr_px =
            self->px_per_min * (i += min_interval)
            + SPACE_BEFORE_START)
-        < rect->x + rect->width + 20.0)
+        < (double) (rect->x + rect->width) + 20.0)
         {
           if (curr_px + 20.0 < rect->x)
             continue;
@@ -733,7 +749,7 @@ draw_lines_and_labels (
           gtk_snapshot_append_color (
             snapshot, &main_color,
             &GRAPHENE_RECT_INIT (
-              (float) curr_px, 0, 1, height / 3.f));
+              (float) curr_px, 0.f, 1.f, (float) height / 3.f));
 
           sprintf (text, "%d", i);
           pango_layout_set_text (
@@ -744,8 +760,8 @@ draw_lines_and_labels (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              (float) curr_px + 1 - textw / 2.f,
-              height / 3.f + 2));
+              (float) curr_px + 1.f - (float) textw / 2.f,
+              (float) height / 3.f + 2.f));
           gtk_snapshot_append_layout (
             snapshot, self->layout_normal, &main_text_color);
           gtk_snapshot_restore (snapshot);
@@ -766,7 +782,8 @@ draw_lines_and_labels (
               gtk_snapshot_append_color (
                 snapshot, &secondary_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, 1, height / 4.f));
+                  (float) curr_px, 0.f, 1.f,
+                  (float) height / 4.f));
 
               if (
                 (self->px_per_10sec > RW_PX_TO_HIDE_BEATS * 2)
@@ -783,8 +800,9 @@ draw_lines_and_labels (
                   gtk_snapshot_translate (
                     snapshot,
                     &GRAPHENE_POINT_INIT (
-                      (float) curr_px + 1 - textw / 2.f,
-                      height / 4.f + 2));
+                      (float) curr_px + 1.f
+                        - (float) textw / 2.f,
+                      (float) height / 4.f + 2.f));
                   gtk_snapshot_append_layout (
                     snapshot, self->layout_small,
                     &secondary_text_color);
@@ -808,7 +826,8 @@ draw_lines_and_labels (
               gtk_snapshot_append_color (
                 snapshot, &tertiary_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, 1, height / 6.f));
+                  (float) curr_px, 0.f, 1.f,
+                  (float) height / 6.f));
 
               if (
                 (self->px_per_sec > RW_PX_TO_HIDE_BEATS * 2)
@@ -828,8 +847,9 @@ draw_lines_and_labels (
                   gtk_snapshot_translate (
                     snapshot,
                     &GRAPHENE_POINT_INIT (
-                      (float) curr_px + 1 - textw / 2.f,
-                      height / 4.f + 2));
+                      (float) curr_px + 1.f
+                        - (float) textw / 2.f,
+                      (float) height / 4.f + 2.f));
                   gtk_snapshot_append_layout (
                     snapshot, self->layout_small,
                     &tertiary_text_color);
@@ -859,7 +879,7 @@ draw_lines_and_labels (
         (curr_px =
            self->px_per_bar * (i += bar_interval)
            + SPACE_BEFORE_START)
-        < rect->x + rect->width + 20.0)
+        < (double) (rect->x + rect->width) + 20.0)
         {
           if (curr_px + 20.0 < rect->x)
             continue;
@@ -867,7 +887,7 @@ draw_lines_and_labels (
           gtk_snapshot_append_color (
             snapshot, &main_color,
             &GRAPHENE_RECT_INIT (
-              (float) curr_px, 0, 1, height / 3.f));
+              (float) curr_px, 0.f, 1.f, (float) height / 3.f));
 
           sprintf (text, "%d", i + 1);
           pango_layout_set_text (
@@ -878,8 +898,8 @@ draw_lines_and_labels (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              (float) curr_px + 1 - textw / 2.f,
-              height / 3.f + 2));
+              (float) curr_px + 1.f - (float) textw / 2.f,
+              (float) height / 3.f + 2.f));
           gtk_snapshot_append_layout (
             snapshot, self->layout_normal, &main_text_color);
           gtk_snapshot_restore (snapshot);
@@ -900,7 +920,8 @@ draw_lines_and_labels (
               gtk_snapshot_append_color (
                 snapshot, &secondary_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, 1, height / 4.f));
+                  (float) curr_px, 0.f, 1.f,
+                  (float) height / 4.f));
 
               if (
                 (self->px_per_beat > RW_PX_TO_HIDE_BEATS * 2)
@@ -917,8 +938,9 @@ draw_lines_and_labels (
                   gtk_snapshot_translate (
                     snapshot,
                     &GRAPHENE_POINT_INIT (
-                      (float) curr_px + 1 - textw / 2.f,
-                      height / 4.f + 2));
+                      (float) curr_px + 1.f
+                        - (float) textw / 2.f,
+                      (float) height / 4.f + 2.f));
                   gtk_snapshot_append_layout (
                     snapshot, self->layout_small,
                     &secondary_text_color);
@@ -942,7 +964,8 @@ draw_lines_and_labels (
               gtk_snapshot_append_color (
                 snapshot, &tertiary_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0, 1, height / 6.f));
+                  (float) curr_px, 0.f, 1.f,
+                  (float) height / 6.f));
 
               if (
                 (self->px_per_sixteenth
@@ -963,8 +986,9 @@ draw_lines_and_labels (
                   gtk_snapshot_translate (
                     snapshot,
                     &GRAPHENE_POINT_INIT (
-                      (float) curr_px + 1 - textw / 2.f,
-                      height / 4.f + 2));
+                      (float) curr_px + 1.f
+                        - (float) textw / 2.f,
+                      (float) height / 4.f + 2.f));
                   gtk_snapshot_append_layout (
                     snapshot, self->layout_small,
                     &tertiary_text_color);
@@ -1071,8 +1095,8 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          (float) start_px, 0, line_width,
-          visible_rect.size.height));
+          (float) start_px, 0.f, (float) line_width,
+          (float) visible_rect.size.height));
     }
   /* if transport loop end is within the
    * screen */
@@ -1084,8 +1108,8 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          (float) end_px, 0, line_width,
-          visible_rect.size.height));
+          (float) end_px, 0.f, (float) line_width,
+          (float) visible_rect.size.height));
     }
 
   /* create gradient for loop area */
@@ -1121,10 +1145,11 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   gtk_snapshot_append_linear_gradient (
     snapshot,
     &GRAPHENE_RECT_INIT (
-      (float) start_px, 0, (float) (end_px - start_px), height),
+      (float) start_px, 0, (float) (end_px - start_px),
+      (float) height),
     &GRAPHENE_POINT_INIT (0, 0),
-    &GRAPHENE_POINT_INIT (0, (float) (height * 3) / 4), stops,
-    G_N_ELEMENTS (stops));
+    &GRAPHENE_POINT_INIT (0.f, ((float) height * 3.f) / 4.f),
+    stops, G_N_ELEMENTS (stops));
 
   draw_lines_and_labels (self, snapshot, &visible_rect_gdk);
 
@@ -1160,16 +1185,20 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       /* fill */
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.27f),
-        &GRAPHENE_RECT_INIT (dr.x, dr.y, dr.width, dr.height));
+        &GRAPHENE_RECT_INIT (
+          (float) dr.x, (float) dr.y, (float) dr.width,
+          (float) dr.height));
 
       /* draw edges */
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.7f),
-        &GRAPHENE_RECT_INIT (dr.x, dr.y, 2, dr.height));
+        &GRAPHENE_RECT_INIT (
+          (float) dr.x, (float) dr.y, 2.f, (float) dr.height));
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.7f),
         &GRAPHENE_RECT_INIT (
-          dr.x + dr.width, dr.y, 2, dr.height - dr.y));
+          (float) dr.x + (float) dr.width, (float) dr.y, 2.f,
+          (float) dr.height - (float) dr.y));
     }
 
   /* ----- draw regions --------- */

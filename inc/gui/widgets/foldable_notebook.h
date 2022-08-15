@@ -75,7 +75,7 @@ typedef struct _FoldableNotebookWidget
    */
   GtkWidget * tab_during_press;
 
-  guint switch_page_handler_id;
+  gulong switch_page_handler_id;
 } FoldableNotebookWidget;
 
 /**

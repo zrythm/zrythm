@@ -148,8 +148,9 @@ channel_slot_snapshot (
   gtk_snapshot_append_color (
     snapshot, &bg,
     &GRAPHENE_RECT_INIT (
-      padding, padding, width - padding * 2,
-      height - padding * 2));
+      (float) padding, (float) padding,
+      (float) width - (float) padding * 2.f,
+      (float) height - (float) padding * 2.f));
 
   update_pango_layouts (self);
 

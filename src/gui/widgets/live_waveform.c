@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/engine.h"
 #include "audio/master_track.h"
@@ -47,8 +31,8 @@ draw_lines (
   cairo_t *            cr,
   float *              lbuf,
   float *              rbuf,
-  nframes_t            lstart_index,
-  nframes_t            rstart_index)
+  size_t               lstart_index,
+  size_t               rstart_index)
 {
   gint width =
     gtk_widget_get_allocated_width (GTK_WIDGET (self));
@@ -122,8 +106,8 @@ live_waveform_draw_cb (
       cairo_stroke (cr);
     }
 
-  size_t block_size_in_bytes =
-    sizeof (float) * (size_t) AUDIO_ENGINE->block_length;
+  uint32_t block_size_in_bytes =
+    sizeof (float) * (uint32_t) AUDIO_ENGINE->block_length;
 
   Port * port = NULL;
   switch (self->type)
@@ -158,9 +142,9 @@ live_waveform_draw_cb (
     return;
 
   /* get the L buffer */
-  size_t read_space_avail =
+  uint32_t read_space_avail =
     zix_ring_read_space (port->audio_ring);
-  size_t blocks_to_read =
+  uint32_t blocks_to_read =
     block_size_in_bytes == 0
       ? 0
       : read_space_avail / block_size_in_bytes;
@@ -174,10 +158,10 @@ live_waveform_draw_cb (
         self->bufs[0], self->buf_sz[0], self->buf_sz[0],
         float);
     }
-  size_t lblocks_read = zix_ring_peek (
+  uint32_t lblocks_read = zix_ring_peek (
     port->audio_ring, &(self->bufs[0][0]), read_space_avail);
   lblocks_read /= block_size_in_bytes;
-  size_t lstart_index =
+  uint32_t lstart_index =
     (lblocks_read - 1) * AUDIO_ENGINE->block_length;
   if (lblocks_read == 0)
     {

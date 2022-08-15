@@ -72,14 +72,16 @@ balance_control_snapshot (
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          value_px, 0, half_width - value_px, height));
+          value_px, 0.f, (float) half_width - value_px,
+          (float) height));
     }
   else
     {
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          half_width, 0, value_px - half_width, height));
+          half_width, 0.f, value_px - (float) half_width,
+          (float) height));
     }
 
   /* draw vertical line at current val */
@@ -91,7 +93,8 @@ balance_control_snapshot (
   const int line_width = 2;
   gtk_snapshot_append_color (
     snapshot, &color,
-    &GRAPHENE_RECT_INIT (value_px, 0, line_width, height));
+    &GRAPHENE_RECT_INIT (
+      value_px, 0.f, (float) line_width, (float) height));
 
   /* draw text */
   PangoLayout *  layout = self->layout;
@@ -106,7 +109,8 @@ balance_control_snapshot (
   gtk_snapshot_translate (
     snapshot,
     &GRAPHENE_POINT_INIT (
-      TEXT_PADDING, height / 2.f - pangorect.height / 2.f));
+      TEXT_PADDING,
+      (float) height / 2.f - (float) pangorect.height / 2.f));
   gtk_snapshot_append_layout (snapshot, layout, &color);
   gtk_snapshot_restore (snapshot);
 
@@ -117,8 +121,8 @@ balance_control_snapshot (
   gtk_snapshot_translate (
     snapshot,
     &GRAPHENE_POINT_INIT (
-      (float) (width - (TEXT_PADDING + pangorect.width)),
-      height / 2.f - pangorect.height / 2.f));
+      (float) width - (TEXT_PADDING + (float) pangorect.width),
+      (float) height / 2.f - (float) pangorect.height / 2.f));
   gtk_snapshot_append_layout (snapshot, layout, &color);
   gtk_snapshot_restore (snapshot);
 }

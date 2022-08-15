@@ -28,14 +28,15 @@
 
 G_DEFINE_TYPE (CpuWidget, cpu_widget, GTK_TYPE_WIDGET)
 
-#define BAR_HEIGHT 12
-#define BAR_WIDTH 3
+#define BAR_HEIGHT 12.f
+#define BAR_WIDTH 3.f
 #define NUM_BARS 12
-#define PADDING 2
+#define PADDING 2.f
 #define ICON_SIZE BAR_HEIGHT
-#define TOTAL_H (PADDING * 3 + BAR_HEIGHT * 2)
+#define TOTAL_H (PADDING * 3.f + BAR_HEIGHT * 2.f)
 #define TOTAL_W \
-  (ICON_SIZE + PADDING * 3 + NUM_BARS * PADDING * 2)
+  (ICON_SIZE + PADDING * 3.f \
+   + (float) NUM_BARS * PADDING * 2.f)
 
 /**
  * Taken from
@@ -88,12 +89,10 @@ cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   gtk_snapshot_pop (snapshot);
 
-  int limit, i;
-
   /* CPU */
-  limit = (self->cpu * NUM_BARS) / 100;
+  int limit = (self->cpu * NUM_BARS) / 100;
 
-  for (i = 1; i <= NUM_BARS; i++)
+  for (int i = 1; i <= NUM_BARS; i++)
     {
       if (i <= limit)
         color = active_color;
@@ -103,14 +102,14 @@ cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          ICON_SIZE + PADDING + i * PADDING * 2, PADDING,
-          BAR_WIDTH, BAR_HEIGHT));
+          ICON_SIZE + PADDING + (float) i * PADDING * 2.f,
+          PADDING, BAR_WIDTH, BAR_HEIGHT));
     }
 
   /* DSP */
   limit = (self->dsp * NUM_BARS) / 100;
 
-  for (i = 1; i <= NUM_BARS; i++)
+  for (int i = 1; i <= NUM_BARS; i++)
     {
       if (i <= limit)
         color = active_color;
@@ -120,8 +119,8 @@ cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          ICON_SIZE + PADDING + i * PADDING * 2,
-          PADDING * 2 + BAR_HEIGHT, BAR_WIDTH, BAR_HEIGHT));
+          ICON_SIZE + PADDING + (float) i * PADDING * 2.f,
+          PADDING * 2.f + BAR_HEIGHT, BAR_WIDTH, BAR_HEIGHT));
     }
 }
 

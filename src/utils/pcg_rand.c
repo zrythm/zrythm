@@ -1,27 +1,16 @@
+// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
+ *
+ * ---
  *
  * *Really* minimal PCG32 code / (c) 2014 M.E. O'Neill / pcg-random.org
  * Licensed under Apache License 2.0 (NO WARRANTY, etc. see website)
  * Adapted for airwindows (c) 2021 by Robin Gareus <robin@gareus.org>
+ *
+ * ---
  */
 
 #include "utils/objects.h"
@@ -56,14 +45,14 @@ pcg_rand_new (void)
 float
 pcg_rand_uf (PCGRand * self)
 {
-  return pcg_rand_u32 (self) / 4294967295.f;
+  return (float) pcg_rand_u32 (self) / 4294967295.f;
 }
 
 /* signed float [-1..+1] */
 float
 pcg_rand_sf (PCGRand * self)
 {
-  return (pcg_rand_u32 (self) / 2147483647.5f) - 1.f;
+  return ((float) pcg_rand_u32 (self) / 2147483647.5f) - 1.f;
 }
 
 uint32_t
@@ -72,7 +61,8 @@ pcg_rand_u32 (PCGRand * self)
   uint64_t oldstate = self->_state;
   self->_state =
     oldstate * 6364136223846793005ULL + self->_inc;
-  uint32_t xorshifted = ((oldstate >> 18u) ^ oldstate) >> 27u;
-  uint32_t rot = oldstate >> 59u;
+  uint32_t xorshifted =
+    (uint32_t) (((oldstate >> 18u) ^ oldstate) >> 27u);
+  uint32_t rot = (uint32_t) (oldstate >> 59u);
   return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
 }

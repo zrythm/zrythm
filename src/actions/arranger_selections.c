@@ -2495,7 +2495,7 @@ do_or_undo_split (
           g_return_val_if_fail (self->r1[i], -1);
           g_return_val_if_fail (self->r2[i], -1);
           set_split_objects (
-            self, i, self->r1[i], self->r2[i], true);
+            self, (int) i, self->r1[i], self->r2[i], true);
         }
       /* else if undoing split */
       else
@@ -2522,7 +2522,7 @@ do_or_undo_split (
           arranger_object_insert_to_project (obj);
 
           /* free the copies created in _do */
-          free_split_objects (self, i);
+          free_split_objects (self, (int) i);
         }
     }
 

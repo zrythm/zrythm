@@ -105,7 +105,7 @@ draw_bg (
 {
   GskRoundedRect  rounded_rect;
   graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
-    (float) x, (float) y, (float) width, self->size);
+    (float) x, (float) y, (float) width, (float) self->size);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &graphene_rect,
     (float) self->corner_radius);
@@ -141,7 +141,7 @@ draw_bg (
       ui_get_mid_color (
         &mid_c, &c, &self->last_color,
         1.f
-          - self->transition_frames
+          - (float) self->transition_frames
               / CUSTOM_BUTTON_WIDGET_MAX_TRANSITION_FRAMES);
       c = mid_c;
       self->transition_frames--;

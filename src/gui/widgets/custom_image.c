@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/custom_image.h"
@@ -18,8 +18,8 @@ custom_image_snapshot (
   gtk_snapshot_append_texture (
     snapshot, self->texture,
     &GRAPHENE_RECT_INIT (
-      0, 0, gdk_texture_get_width (self->texture),
-      gdk_texture_get_height (self->texture)));
+      0.f, 0.f, (float) gdk_texture_get_width (self->texture),
+      (float) gdk_texture_get_height (self->texture)));
 }
 
 /**
