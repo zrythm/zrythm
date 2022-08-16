@@ -17,13 +17,14 @@
 # Chris <chris@wepache.com>, 2021.
 # Jesus Meneses <jesusm0812@gmail.com>, 2021.
 # Yokox1 <mryokox@outlook.com>, 2021.
+# Adolfo Jayme Barrientos <fitojb@ubuntu.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-07-24 23:53+0900\n"
-"PO-Revision-Date: 2022-08-07 15:52+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-08-10 15:52+0000\n"
+"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -4553,7 +4554,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:103
 msgid "Welcome"
-msgstr "Bienvenida"
+msgstr "Le damos la bienvenida"
 
 #: src/gui/widgets/dialogs/port_selector_dialog.c:59
 msgid "No port selected"
@@ -4687,7 +4688,7 @@ msgstr "Interfaz de línea de comandos"
 #: src/gui/widgets/dialogs/scripting_dialog.c:107
 #: src/gui/widgets/dialogs/first_run_dialog.c:210
 msgid "Language"
-msgstr "Lenguaje"
+msgstr "Idioma"
 
 #: src/gui/widgets/dialogs/scripting_dialog.c:110
 #, fuzzy
@@ -4868,7 +4869,7 @@ msgstr "Error de ALSA: %s"
 #: src/gui/widgets/dialogs/bug_report_dialog.c:185
 #: src/gui/widgets/dialogs/bug_report_dialog.c:362
 msgid "Done"
-msgstr ""
+msgstr "Terminado"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:201
 #, fuzzy
@@ -7752,7 +7753,7 @@ msgstr "Si el track fader se expande."
 #: build/data/org.zrythm.Zrythm.gschema.xml:1050
 #: build/data/org.zrythm.Zrythm.gschema.xml:1081
 msgid "Plugins"
-msgstr "Plugins"
+msgstr "Complementos"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1051
 msgid "UIs"

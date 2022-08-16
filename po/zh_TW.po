@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-07-24 23:53+0900\n"
-"PO-Revision-Date: 2022-08-09 12:29+0000\n"
+"PO-Revision-Date: 2022-08-13 15:51+0000\n"
 "Last-Translator: Q mo <qqmo520316@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
@@ -343,11 +343,11 @@ msgstr "翻轉"
 
 #: inc/audio/audio_function.h:77
 msgid "External program"
-msgstr ""
+msgstr "外部程式"
 
 #: inc/audio/audio_function.h:78
 msgid "Guile script"
-msgstr ""
+msgstr "Guile 腳本"
 
 #: inc/audio/audio_function.h:79
 msgid "Custom plugin"
@@ -407,7 +407,7 @@ msgstr "半音階"
 
 #: inc/audio/scale.h:144
 msgid "Major"
-msgstr ""
+msgstr "大調"
 
 #: inc/audio/scale.h:145
 msgid "Minor"
@@ -951,52 +951,51 @@ msgstr ""
 
 #: src/actions/range_action.c:651 resources/ui/range_action_buttons.ui:11
 msgid "Insert silence"
-msgstr ""
+msgstr "插入靜音"
 
 #: src/actions/range_action.c:654
 msgid "Delete range"
-msgstr ""
+msgstr "刪除範圍"
 
 #: src/actions/undo_manager.c:189 src/actions/actions.c:875
 #, fuzzy
 msgid "Failed to undo action"
-msgstr "無法開啟檔案: %s"
+msgstr "無法撤銷操作"
 
 #: src/actions/undo_manager.c:240 src/actions/actions.c:870
-#, fuzzy
 msgid "Failed to redo action"
-msgstr "無法開啟檔案: %s"
+msgstr "無法重做操作"
 
 #: src/actions/undo_manager.c:286
-#, fuzzy
 msgid "Failed to perform action"
-msgstr "無法開啟檔案: %s"
+msgstr "未能執行操作"
 
 #: src/actions/chord_action.c:166
-#, fuzzy
 msgid "Change chords"
-msgstr "更改顏色"
+msgstr "更改和弦"
 
 #: src/actions/port_connection_action.c:172
 msgid "Connect ports"
-msgstr ""
+msgstr "連接埠"
 
 #: src/actions/port_connection_action.c:175
 msgid "Disconnect ports"
-msgstr ""
+msgstr "斷開埠"
 
 #: src/actions/port_connection_action.c:178
 #, fuzzy
 msgid "Enable port connection"
-msgstr "啟用/停用連接"
+msgstr "啟用埠連接"
 
 #: src/actions/port_connection_action.c:181
+#, fuzzy
 msgid "Disable port connection"
-msgstr ""
+msgstr "禁用埠連接"
 
 #: src/actions/port_connection_action.c:184
+#, fuzzy
 msgid "Change port connection"
-msgstr ""
+msgstr "更改埠連接"
 
 #: src/actions/midi_mapping_action.c:244
 msgid "MIDI mapping enable"
@@ -1015,8 +1014,9 @@ msgid "MIDI mapping unbind"
 msgstr ""
 
 #: src/actions/port_action.c:144
+#, fuzzy
 msgid "Set control value"
-msgstr ""
+msgstr "設置控制值"
 
 #: src/actions/actions.c:308
 #, c-format
@@ -1029,7 +1029,7 @@ msgstr ""
 #, c-format
 msgid ""
 "Creating new projects is disabled. Please restart %s to start a new project"
-msgstr ""
+msgstr "創建新項目處於禁用狀態。請重新啟動 %s 以啟動新專案"
 
 #: src/actions/actions.c:601 resources/gtk/help-overlay.ui:103
 msgid "Create new project"
@@ -1048,12 +1048,14 @@ msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr "專案尚未儲存，確定要繼續？"
 
 #: src/actions/actions.c:642
+#, fuzzy
 msgid "Loading is disabled in the trial version"
-msgstr ""
+msgstr "試用版本中的載入是被禁用的"
 
 #: src/actions/actions.c:671 src/actions/actions.c:696
+#, fuzzy
 msgid "Saving is disabled in the trial version"
-msgstr ""
+msgstr "在試用版中保存是禁用的"
 
 #: src/actions/actions.c:706
 msgid "Save Project"
@@ -1126,7 +1128,7 @@ msgstr "無法刪除已選取的內容"
 
 #: src/actions/actions.c:1121
 msgid "Can't paste incompatible data"
-msgstr ""
+msgstr "無法貼上不相容的數據"
 
 #: src/actions/actions.c:1195
 msgid "Failed to duplicate selections"
