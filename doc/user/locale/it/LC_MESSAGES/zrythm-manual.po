@@ -36,7 +36,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-08-07 17:55+0900\n"
+"POT-Creation-Date: 2022-08-16 09:55+0900\n"
 "PO-Revision-Date: 2022-01-22 17:40+0000\n"
 "Last-Translator: G R <gradaellig@gmail.com>\n"
 "Language: it\n"
@@ -6198,6 +6198,30 @@ msgstr ""
 "Gli strumenti SFZ e SF2 verranno scansionati in tutte le cartelle e "
 "sottocartelle specificate in: ref: `vst-path`.\n"
 "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+
+#: ../../plugins-files/plugins/scanning.rst:156
+msgid "About Flatpak"
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:158
+msgid ""
+"When using Flatpak builds, only plugins installed as Flatpaks should be used "
+"(i.e., plugins using the `Linux Audio base extension <https://github.com/"
+"flathub/org.freedesktop.LinuxAudio.BaseExtension>`_)."
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:162
+msgid ""
+"While Zrythm allows the user to use plugins not packaged as Flatpaks using "
+"the environment variables above, this is not recommended and we do not offer "
+"support if it causes issues."
+msgstr ""
+
+#: ../../plugins-files/plugins/scanning.rst:167
+msgid ""
+"Flatpak builds have no access to :file:`/usr` so it is not possible to use "
+"system plugins, even when using the environment variables above."
+msgstr ""
 
 #: ../../projects/intro.rst:9
 msgid "Projects"

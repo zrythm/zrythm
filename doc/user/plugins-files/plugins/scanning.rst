@@ -157,7 +157,7 @@ About Flatpak
 
 When using Flatpak builds, only plugins installed
 as Flatpaks should be used (i.e., plugins using the
-`Linux Audio base extension <https://github.com/flathub/org.freedesktop.LinuxAudio.BaseExtension>`_.
+`Linux Audio base extension <https://github.com/flathub/org.freedesktop.LinuxAudio.BaseExtension>`_).
 
 .. warning:: While Zrythm allows the user to use plugins not
    packaged as Flatpaks using the environment variables above,
