@@ -151,3 +151,19 @@ SFZ/SF2 Scan
 scanned in all  directories
 and subdirectories specified in the
 :ref:`preferences <configuration/preferences:Preferences>`.
+
+About Flatpak
+-------------
+
+When using Flatpak builds, only plugins installed
+as Flatpaks should be used (i.e., plugins using the
+`Linux Audio base extension <https://github.com/flathub/org.freedesktop.LinuxAudio.BaseExtension>`_.
+
+.. warning:: While Zrythm allows the user to use plugins not
+   packaged as Flatpaks using the environment variables above,
+   this is not recommended and we do not offer support if it
+   causes issues.
+
+.. note:: Flatpak builds have no access to :file:`/usr`
+   so it is not possible to use system plugins, even when
+   using the environment variables above.

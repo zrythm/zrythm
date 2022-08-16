@@ -828,7 +828,7 @@ scan_carla_descriptors_from_paths (
     plugin_protocol_to_str (protocol);
   if (!plugin_manager_supports_protocol (self, protocol))
     {
-      g_message (
+      g_warning (
         "Plugin protocol %s not supported in this "
         "build",
         protocol_str);
