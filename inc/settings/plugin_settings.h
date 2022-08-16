@@ -72,8 +72,8 @@ static const cyaml_schema_field_t plugin_setting_fields_schema[] = {
     bridge_mode,
     carla_bridge_mode_strings),
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginSetting, ui_uri),
-  YAML_FIELD_INT (PluginSetting, last_instantiated_time),
-  YAML_FIELD_INT (PluginSetting, num_instantiations),
+  YAML_FIELD_INT_OPT (PluginSetting, last_instantiated_time),
+  YAML_FIELD_INT_OPT (PluginSetting, num_instantiations),
 
   CYAML_FIELD_END
 };

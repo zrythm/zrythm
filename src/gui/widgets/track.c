@@ -1688,9 +1688,9 @@ track_widget_update_size (TrackWidget * self)
   g_return_if_fail (self->track);
   int height =
     (int) track_get_full_visible_height (self->track);
+  g_return_if_fail (height > 1);
   int w;
   gtk_widget_get_size_request ((GtkWidget *) self, &w, NULL);
-  g_return_if_fail (height > 1);
   gtk_widget_set_size_request (GTK_WIDGET (self), w, height);
 }
 

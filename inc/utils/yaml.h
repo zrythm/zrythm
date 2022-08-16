@@ -177,6 +177,10 @@
 #define YAML_FIELD_INT(owner, member) \
   CYAML_FIELD_INT (#member, CYAML_FLAG_DEFAULT, owner, member)
 
+#define YAML_FIELD_INT_OPT(owner, member) \
+  CYAML_FIELD_INT ( \
+    #member, CYAML_FLAG_OPTIONAL, owner, member)
+
 #define YAML_FIELD_UINT(owner, member) \
   CYAML_FIELD_UINT ( \
     #member, CYAML_FLAG_DEFAULT, owner, member)
