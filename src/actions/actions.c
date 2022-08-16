@@ -79,7 +79,7 @@
 #include "gui/widgets/port_connections.h"
 #include "gui/widgets/port_connections_tree.h"
 #include "gui/widgets/preferences.h"
-#include "gui/widgets/project_assistant.h"
+#include "gui/widgets/dialogs/project_assistant.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
 #ifdef HAVE_GUILE

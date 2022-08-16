@@ -5,6 +5,7 @@
     <property name="modal">1</property>
     <property name="default_width">280</property>
     <property name="icon_name">zrythm</property>
+    <property name="use-header-bar">1</property>
     <child internal-child="content_area">
       <object class="GtkBox">
         <property name="orientation">vertical</property>
@@ -38,27 +39,6 @@
                 <signal name="changed" handler="on_name_changed" object="CreateProjectDialogWidget" swapped="no"/>
               </object>
             </child>
-          </object>
-        </child>
-      </object>
-    </child>
-    <child internal-child="action_area">
-      <object class="GtkBox">
-        <property name="valign">center</property>
-        <child>
-          <object class="GtkButton" id="ok">
-            <property name="label" translatable="yes">OK</property>
-            <property name="focusable">1</property>
-            <property name="receives_default">1</property>
-            <signal name="clicked" handler="on_ok_clicked" object="CreateProjectDialogWidget" swapped="no"/>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="cancel">
-            <property name="label" translatable="yes">Cancel</property>
-            <property name="focusable">1</property>
-            <property name="receives_default">1</property>
-            <signal name="clicked" handler="on_cancel_clicked" object="CreateProjectDialogWidget" swapped="no"/>
           </object>
         </child>
       </object>

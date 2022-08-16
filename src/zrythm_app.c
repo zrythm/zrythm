@@ -57,7 +57,7 @@
 #include "gui/widgets/dialogs/first_run_dialog.h"
 #include "gui/widgets/dialogs/welcome_message_dialog.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/project_assistant.h"
+#include "gui/widgets/dialogs/project_assistant.h"
 #include "gui/widgets/splash.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"

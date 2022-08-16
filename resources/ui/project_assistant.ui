@@ -7,7 +7,7 @@
     <property name="icon_name">zrythm</property>
     <property name="decorated">0</property>
     <property name="modal">True</property>
-    <property name="use_header_bar">0</property>
+    <property name="use-header-bar">True</property>
     <property name="height-request">280</property>
     <property name="width-request">680</property>
     <child internal-child="content_area">

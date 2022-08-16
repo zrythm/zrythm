@@ -18,8 +18,18 @@ G_DEFINE_TYPE (
   GTK_TYPE_DIALOG)
 
 static void
-respond (CreateProjectDialogWidget * self)
+on_response (
+  GtkDialog *              dialog,
+  gint                     response_id,
+  CreateProjectDialogWidget * self)
 {
+  switch (response_id)
+    {
+    case GTK_RESPONSE_CANCEL:
+    case GTK_RESPONSE_CLOSE:
+      return;
+    }
+
   /* get the zrythm project name */
   char * str =
     g_settings_get_string (S_GENERAL, "last-project-dir");
@@ -29,8 +39,6 @@ respond (CreateProjectDialogWidget * self)
   g_free (str);
 
   /* TODO validate */
-
-  gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_OK);
 }
 
 static void
@@ -38,21 +46,7 @@ on_name_activate (
   GtkEntry *                  entry,
   CreateProjectDialogWidget * self)
 {
-  respond (self);
-}
-
-static void
-on_ok_clicked (GtkButton * btn, CreateProjectDialogWidget * self)
-{
-  respond (self);
-}
-
-static void
-on_cancel_clicked (
-  GtkButton *                 btn,
-  CreateProjectDialogWidget * self)
-{
-  gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_CANCEL);
+  gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_OK);
 }
 
 static void
@@ -60,8 +54,8 @@ on_name_changed (
   GtkEditable *               editable,
   CreateProjectDialogWidget * self)
 {
-  gtk_widget_set_sensitive (
-    GTK_WIDGET (self->ok),
+  gtk_dialog_set_response_sensitive (
+    GTK_DIALOG (self), GTK_RESPONSE_OK,
     strlen (gtk_editable_get_text (GTK_EDITABLE (self->name)))
       > 0);
 }
@@ -126,6 +120,13 @@ create_project_dialog_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  gtk_dialog_add_button (
+    GTK_DIALOG (self), _("_Cancel"), GTK_RESPONSE_CANCEL);
+  gtk_dialog_add_button (
+    GTK_DIALOG (self), _("_OK"), GTK_RESPONSE_OK);
+  gtk_dialog_set_default_response (
+    GTK_DIALOG (self), GTK_RESPONSE_OK);
+
   file_chooser_button_widget_setup (
     self->fc, GTK_WINDOW (self),
     _ ("Select parent directory to save the project "
@@ -133,6 +134,9 @@ create_project_dialog_widget_init (
     GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
   file_chooser_button_widget_set_response_callback (
     self->fc, G_CALLBACK (on_fc_file_set), self, NULL);
+
+  g_signal_connect (
+    self, "response", G_CALLBACK (on_response), self);
 }
 
 static void
@@ -147,14 +151,9 @@ create_project_dialog_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, CreateProjectDialogWidget, x)
 
-  BIND_CHILD (ok);
   BIND_CHILD (fc);
   BIND_CHILD (name);
 
-  gtk_widget_class_bind_template_callback (
-    klass, on_ok_clicked);
-  gtk_widget_class_bind_template_callback (
-    klass, on_cancel_clicked);
   gtk_widget_class_bind_template_callback (
     klass, on_name_changed);
   gtk_widget_class_bind_template_callback (

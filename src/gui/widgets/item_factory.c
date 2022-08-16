@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/midi_mapping.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
@@ -23,7 +7,7 @@
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/item_factory.h"
 #include "gui/widgets/popover_menu_bin.h"
-#include "gui/widgets/project_assistant.h"
+#include "gui/widgets/dialogs/project_assistant.h"
 #include "plugins/collection.h"
 #include "plugins/collections.h"
 #include "plugins/plugin_manager.h"
