@@ -464,7 +464,8 @@ plugin_sort_func (
   PluginBrowserSortStyle sort_style = get_sort_style ();
   if (sort_style == PLUGIN_BROWSER_SORT_ALPHA)
     {
-      return g_strcmp0 (descr_a->name, descr_b->name);
+      return string_utf8_strcasecmp (
+        descr_a->name, descr_b->name);
     }
   else
     {

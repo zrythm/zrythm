@@ -1,20 +1,30 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
  *
- * This file is part of Zrythm
+ * ---
  *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * Copyright (C) 1999-2008 Novell, Inc. (www.novell.com)
+ * Copyright (C) 2012 Intel Corporation
  *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * This library is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this library. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Authors: Rodrigo Moya <rodrigo@ximian.com>
+ *          Tristan Van Berkom <tristanvb@openismus.com>
+ *
+ * ---
  */
 
 /**
@@ -221,6 +231,17 @@ string_symbolify (const char * in);
  */
 PURE bool
 string_is_empty (const char * str);
+
+/**
+ * Compares two UTF-8 strings using approximate case-insensitive ordering.
+ *
+ * @return < 0 if @param s1 compares before @param s2, 0 if they compare equal,
+ *          > 0 if @param s1 compares after @param s2
+ *
+ * @note Taken from src/libedataserver/e-data-server-util.c in evolution-data-center (e_util_utf8_strcasecmp).
+ **/
+int
+string_utf8_strcasecmp (const char * s1, const char * s2);
 
 /**
  * @}
