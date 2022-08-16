@@ -27,9 +27,11 @@ inc/schemas/audio/channel.h
 inc/schemas/audio/quantize_options.h
 inc/schemas/audio/track.h
 inc/schemas/audio/snap_grid.h
+inc/schemas/audio/port_connections_manager.h
 inc/schemas/audio/track_processor.h
 inc/schemas/audio/ext_port.h
 inc/schemas/audio/engine.h
+inc/schemas/audio/port_connection.h
 inc/schemas/audio/sample_processor.h
 inc/schemas/audio/port.h
 inc/schemas/audio/region_link_group.h
@@ -58,6 +60,7 @@ inc/schemas/audio/position.h
 inc/schemas/audio/velocity.h
 inc/schemas/audio/scale_object.h
 inc/schemas/audio/marker.h
+inc/schemas/audio/tempo_track.h
 inc/schemas/audio/pool.h
 inc/schemas/gui/backend/arranger_object.h
 inc/schemas/gui/backend/arranger_selections.h
@@ -65,6 +68,7 @@ inc/schemas/gui/backend/piano_roll.h
 inc/schemas/gui/backend/editor_settings.h
 inc/schemas/gui/backend/tracklist_selections.h
 inc/schemas/gui/backend/audio_selections.h
+inc/schemas/gui/backend/timeline.h
 inc/schemas/gui/backend/chord_editor.h
 inc/schemas/gui/backend/timeline_selections.h
 inc/schemas/gui/backend/chord_selections.h
