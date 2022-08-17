@@ -65,7 +65,7 @@ and VST3 plugins in the following paths.
 On Flatpak builds, Zrythm will scan for VST2 plugins
 in the following paths
 
-- :file:`/app/extensions/Plugins/lxvst`
+- :file:`/app/extensions/Plugins/vst`
 
 and VST3 plugins in the following paths.
 

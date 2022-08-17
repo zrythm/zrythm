@@ -450,7 +450,7 @@ get_vst_paths (PluginManager * self)
   if (!vst_path || (strlen (vst_path) == 0))
     {
 #    ifdef FLATPAK_BUILD
-      vst_path = g_strdup ("/app/extensions/Plugins/lxvst");
+      vst_path = g_strdup ("/app/extensions/Plugins/vst");
 #    else
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
