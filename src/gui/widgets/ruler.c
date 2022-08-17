@@ -1374,32 +1374,6 @@ on_click_pressed (
   return FALSE;
 }
 
-#if 0
-static void
-on_display_type_changed (
-  GtkCheckMenuItem * menuitem,
-  RulerWidget *      self)
-{
-  if (menuitem == self->bbt_display_check &&
-        gtk_check_menu_item_get_active (menuitem))
-    {
-      g_settings_set_enum (
-        S_UI, "ruler-display",
-        TRANSPORT_DISPLAY_BBT);
-    }
-  else if (menuitem == self->time_display_check &&
-             gtk_check_menu_item_get_active (
-               menuitem))
-    {
-      g_settings_set_enum (
-        S_UI, "ruler-display",
-        TRANSPORT_DISPLAY_TIME);
-    }
-
-  EVENTS_PUSH (ET_RULER_DISPLAY_TYPE_CHANGED, NULL);
-}
-#endif
-
 static gboolean
 on_right_click_pressed (
   GtkGestureClick * gesture,
@@ -1413,21 +1387,13 @@ on_right_click_pressed (
     {
       GMenu * menu = g_menu_new ();
 
-      GSimpleActionGroup * action_group =
-        g_simple_action_group_new ();
-      GAction * display_action =
-        g_settings_create_action (S_UI, "ruler-display");
-
-      g_action_map_add_action (
-        G_ACTION_MAP (action_group), display_action);
-      gtk_widget_insert_action_group (
-        GTK_WIDGET (self), "ruler",
-        G_ACTION_GROUP (action_group));
-
+      GMenu * section = g_menu_new ();
       g_menu_append (
-        menu, _ ("Display"), "ruler.ruler-display");
-
-      /* TODO fire event on change */
+        section, _ ("BBT"), "ruler.ruler-display::bbt");
+      g_menu_append (
+        section, _ ("Time"), "ruler.ruler-display::time");
+      g_menu_append_section (
+        menu, _ ("Display"), G_MENU_MODEL (section));
 
       z_gtk_show_context_menu_from_g_menu (
         self->popover_menu, x, y, menu);
@@ -1849,6 +1815,17 @@ ruler_widget_init (RulerWidget * self)
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) ruler_tick_cb, self,
     NULL);
+
+  /* add action group for right click menu */
+  GSimpleActionGroup * action_group =
+    g_simple_action_group_new ();
+  GAction * display_action =
+    g_settings_create_action (S_UI, "ruler-display");
+  g_action_map_add_action (
+    G_ACTION_MAP (action_group), display_action);
+  gtk_widget_insert_action_group (
+    GTK_WIDGET (self), "ruler",
+    G_ACTION_GROUP (action_group));
 }
 
 static void

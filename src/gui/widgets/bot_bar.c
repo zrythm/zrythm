@@ -154,18 +154,15 @@ on_transport_playhead_right_click (
   if (n_press != 1)
     return;
 
-  GSimpleActionGroup * action_group =
-    g_simple_action_group_new ();
-  GAction * display_action =
-    g_settings_create_action (S_UI, "transport-display");
-
-  g_action_map_add_action (
-    G_ACTION_MAP (action_group), display_action);
-
   GMenu * menu = g_menu_new ();
+
+  GMenu * section = g_menu_new ();
   g_menu_append (
-    menu, _ ("Transport display"),
-    "bot-bar.transport-display");
+    section, _ ("BBT"), "bot-bar-transport.transport-display::bbt");
+  g_menu_append (
+    section, _ ("Time"), "bot-bar-transport.transport-display::time");
+  g_menu_append_section (
+    menu, _ ("Display"), G_MENU_MODEL (section));
 
   /* TODO fire event on change */
 
@@ -177,35 +174,18 @@ on_transport_playhead_right_click (
 
       g_menu_append (
         jack_section, _ ("Become JACK Transport master"),
-        "bot-bar.jack-mode::become-master");
+        "bot-bar-transport.jack-mode::become-master");
       g_menu_append (
         jack_section, _ ("Sync to JACK Transport"),
-        "bot-bar.jack-mode::sync");
+        "bot-bar-transport.jack-mode::sync");
       g_menu_append (
         jack_section, _ ("Unlink JACK Transport"),
-        "bot-bar.jack-mode::unlink");
-
-      const char * jack_modes[] = {
-        "'become-master'",
-        "'sync'",
-        "'unlink'",
-      };
-      GActionEntry actions[] = {
-        {"jack-mode", activate_jack_mode, "s",
-         jack_modes[AUDIO_ENGINE->transport_type]},
-      };
-      g_action_map_add_action_entries (
-        G_ACTION_MAP (action_group), actions,
-        G_N_ELEMENTS (actions), self);
+        "bot-bar-transport.jack-mode::unlink");
 
       g_menu_append_section (
         menu, "JACK", G_MENU_MODEL (jack_section));
     }
 #endif
-
-  gtk_widget_insert_action_group (
-    GTK_WIDGET (self->digital_transport), "bot-bar",
-    G_ACTION_GROUP (action_group));
 
   digital_meter_show_context_menu (
     self->digital_transport, menu);
@@ -234,6 +214,31 @@ bot_bar_widget_refresh (BotBarWidget * self)
   gtk_overlay_set_child (
     self->playhead_overlay,
     GTK_WIDGET (self->digital_transport));
+
+  /* create action group for right click menu */
+  GSimpleActionGroup * action_group =
+    g_simple_action_group_new ();
+  GAction * display_action =
+    g_settings_create_action (S_UI, "transport-display");
+  g_action_map_add_action (
+    G_ACTION_MAP (action_group), display_action);
+#ifdef HAVE_JACK
+  const char * jack_modes[] = {
+    "'become-master'",
+    "'sync'",
+    "'unlink'",
+  };
+  GActionEntry actions[] = {
+    {"jack-mode", activate_jack_mode, "s",
+     jack_modes[AUDIO_ENGINE->transport_type]},
+  };
+  g_action_map_add_action_entries (
+    G_ACTION_MAP (action_group), actions,
+    G_N_ELEMENTS (actions), self);
+#endif
+  gtk_widget_insert_action_group (
+    GTK_WIDGET (self->digital_transport), "bot-bar-transport",
+    G_ACTION_GROUP (action_group));
 
 #ifdef HAVE_JACK
   if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
