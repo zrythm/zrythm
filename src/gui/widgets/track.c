@@ -725,6 +725,18 @@ show_context_menu (TrackWidget * self, double x, double y)
         "window-pin", "app.pin-selected-tracks");
       g_menu_append_item (edit_submenu, menuitem);
 
+      menuitem = z_gtk_create_menu_item (
+        _ ("Change color..."), "color-fill",
+        "app.change-track-color");
+      g_menu_append_item (edit_submenu, menuitem);
+
+      if (num_selected == 1)
+        {
+          menuitem = z_gtk_create_menu_item (
+            _ ("Rename..."), "color-fill", "app.rename-track");
+          g_menu_append_item (edit_submenu, menuitem);
+        }
+
       g_menu_append_section (
         menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
     }
@@ -858,11 +870,6 @@ show_context_menu (TrackWidget * self, double x, double y)
         _ ("Enable"), "online", "app.enable-selected-tracks");
       g_menu_append_item (menu, menuitem);
     }
-
-  menuitem = z_gtk_create_menu_item (
-    _ ("Change color..."), "color-fill",
-    "app.change-track-color");
-  g_menu_append_item (menu, menuitem);
 
 #if 0
   menuitem =

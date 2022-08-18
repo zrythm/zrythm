@@ -2559,7 +2559,13 @@ DEFINE_SIMPLE (activate_midi_editor_highlighting)
 
 DEFINE_SIMPLE (activate_rename_track)
 {
-  g_message ("TODO - track");
+  g_return_if_fail (TRACKLIST_SELECTIONS->num_tracks == 1);
+  StringEntryDialogWidget * dialog =
+    string_entry_dialog_widget_new (
+      _ ("Track name"), TRACKLIST_SELECTIONS->tracks[0],
+      (GenericStringGetter) track_get_name,
+      (GenericStringSetter) track_set_name_with_action);
+  gtk_window_present (GTK_WINDOW (dialog));
 }
 
 DEFINE_SIMPLE (activate_rename_arranger_object)
