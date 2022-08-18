@@ -19,8 +19,8 @@ G_DEFINE_TYPE (
 
 static void
 on_response (
-  GtkDialog *              dialog,
-  gint                     response_id,
+  GtkDialog *                 dialog,
+  gint                        response_id,
   CreateProjectDialogWidget * self)
 {
   switch (response_id)
@@ -121,9 +121,9 @@ create_project_dialog_widget_init (
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_dialog_add_button (
-    GTK_DIALOG (self), _("_Cancel"), GTK_RESPONSE_CANCEL);
+    GTK_DIALOG (self), _ ("_Cancel"), GTK_RESPONSE_CANCEL);
   gtk_dialog_add_button (
-    GTK_DIALOG (self), _("_OK"), GTK_RESPONSE_OK);
+    GTK_DIALOG (self), _ ("_OK"), GTK_RESPONSE_OK);
   gtk_dialog_set_default_response (
     GTK_DIALOG (self), GTK_RESPONSE_OK);
 

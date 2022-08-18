@@ -427,6 +427,27 @@ tracklist_selections_contains_uncopyable_track (
 }
 
 /**
+ * Returns whether the tracklist selections contains a track
+ * that cannot have automation lanes.
+ */
+bool
+tracklist_selections_contains_non_automatable_track (
+  const TracklistSelections * self)
+{
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      Track * track = self->tracks[i];
+
+      if (track_get_automation_tracklist (track) == NULL)
+        {
+          return true;
+        }
+    }
+
+  return false;
+}
+
+/**
  * Returns whether the selections contain a soloed
  * track if @ref soloed is true or an unsoloed track
  * if @ref soloed is false.

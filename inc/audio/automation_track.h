@@ -484,6 +484,11 @@ automation_track_set_caches (AutomationTrack * self);
 
 NONNULL
 bool
+automation_track_contains_automation (
+  const AutomationTrack * self);
+
+NONNULL
+bool
 automation_track_verify (AutomationTrack * self);
 
 /**

@@ -550,10 +550,13 @@ main_window_widget_init (MainWindowWidget * self)
     {
      "toggle-track-passthrough-input",                                    activate_toggle_track_passthrough_input,
      },
+    {
+     "show-used-automation-lanes-on-selected-tracks",      activate_show_used_automation_lanes_on_selected_tracks,
+     },
 
  /* piano roll */
-    { "toggle-drum-mode",      activate_toggle_drum_mode },
-    { "toggle-listen-notes",                NULL, NULL,
+    { "toggle-drum-mode",                activate_toggle_drum_mode },
+    { "toggle-listen-notes",                                    NULL, NULL,
      g_settings_get_boolean (S_UI, "listen-notes")
         ? "true"
         : "false",
@@ -562,18 +565,18 @@ main_window_widget_init (MainWindowWidget * self)
      activate_midi_editor_highlighting, "s" },
 
  /* automation */
-    { "show-automation-values",NULL, NULL,
+    { "show-automation-values",                        NULL, NULL,
      g_settings_get_boolean (S_UI, "show-automation-values")
         ? "true"
         : "false",
      change_state_show_automation_values },
 
  /* control room */
-    { "toggle-dim-output",                        NULL, NULL, "true",
+    { "toggle-dim-output",                                    NULL, NULL, "true",
      change_state_dim_output },
 
  /* file browser */
-    { "show-file-browser",                                    activate_show_file_browser },
+    { "show-file-browser",activate_show_file_browser },
 
  /* show/hide event viewers */
     { "toggle-timeline-event-viewer",
@@ -582,73 +585,73 @@ main_window_widget_init (MainWindowWidget * self)
      activate_toggle_editor_event_viewer },
 
  /* editor functions */
-    { "editor-function",                                    activate_editor_function, "s" },
-    { "editor-function-lv2",activate_editor_function_lv2,
+    { "editor-function",activate_editor_function, "s" },
+    { "editor-function-lv2",                          activate_editor_function_lv2,
      "s" },
 
  /* rename track/region */
-    { "rename-track",                          activate_rename_track },
+    { "rename-track",                                    activate_rename_track },
     { "rename-arranger-object",
      activate_rename_arranger_object },
 
  /* arranger selections */
-    { "nudge-selection",activate_nudge_selection, "s" },
-    { "detect-bpm",                   activate_detect_bpm, "s" },
-    { "timeline-function",                                 activate_timeline_function, "i" },
+    { "nudge-selection",                   activate_nudge_selection, "s" },
+    { "detect-bpm",                                 activate_detect_bpm, "s" },
+    { "timeline-function",                     activate_timeline_function, "i" },
     { "quick-bounce-selections",
      activate_quick_bounce_selections },
-    { "bounce-selections",                                    activate_bounce_selections },
+    { "bounce-selections",             activate_bounce_selections },
     {
-     "set-curve-algorithm",             activate_set_curve_algorithm,
+     "set-curve-algorithm",   activate_set_curve_algorithm,
      "i", },
     {
-     "set-region-fade-in-algorithm-preset",   activate_set_region_fade_in_algorithm_preset,
+     "set-region-fade-in-algorithm-preset",                     activate_set_region_fade_in_algorithm_preset,
      "s", },
     {
-     "set-region-fade-out-algorithm-preset",                     activate_set_region_fade_out_algorithm_preset,
+     "set-region-fade-out-algorithm-preset",                   activate_set_region_fade_out_algorithm_preset,
      "s", },
     { "arranger-object-view-info",
      activate_arranger_object_view_info, "s" },
-    { "export-midi-regions",                                    activate_export_midi_regions },
+    { "export-midi-regions",activate_export_midi_regions },
 
  /* chord presets */
     {
-     "save-chord-preset",activate_save_chord_preset,
+     "save-chord-preset",                         activate_save_chord_preset,
      },
-    { "load-chord-preset",                         activate_load_chord_preset, "s" },
+    { "load-chord-preset",                                    activate_load_chord_preset, "s" },
     { "load-chord-preset-from-scale",
      activate_load_chord_preset_from_scale, "s" },
-    { "transpose-chord-pad",activate_transpose_chord_pad,
+    { "transpose-chord-pad",                        activate_transpose_chord_pad,
      "s" },
     {
-     "add-chord-preset-pack",                        activate_add_chord_preset_pack,
+     "add-chord-preset-pack",                                    activate_add_chord_preset_pack,
      },
     { "delete-chord-preset-pack",
      activate_delete_chord_preset_pack, "s" },
     { "rename-chord-preset-pack",
      activate_rename_chord_preset_pack, "s" },
-    { "delete-chord-preset",                            activate_delete_chord_preset,
+    { "delete-chord-preset",                                    activate_delete_chord_preset,
      "s" },
-    { "rename-chord-preset",                                    activate_rename_chord_preset,
+    { "rename-chord-preset",activate_rename_chord_preset,
      "s" },
 
  /* cc bindings */
-    { "bind-midi-cc",activate_bind_midi_cc, "s" },
-    { "delete-cc-binding",               activate_delete_cc_binding, "i" },
+    { "bind-midi-cc",               activate_bind_midi_cc, "s" },
+    { "delete-cc-binding",                                    activate_delete_cc_binding, "i" },
 
  /* port actions */
-    { "reset-stereo-balance",                                    activate_reset_stereo_balance,
+    { "reset-stereo-balance", activate_reset_stereo_balance,
      "s" },
-    { "reset-fader", activate_reset_fader, "s" },
-    { "reset-control",             activate_reset_control, "s" },
-    { "port-view-info",                                    activate_port_view_info, "s" },
+    { "reset-fader",             activate_reset_fader, "s" },
+    { "reset-control",                                    activate_reset_control, "s" },
+    { "port-view-info",    activate_port_view_info, "s" },
     { "port-connection-remove",
      activate_port_connection_remove },
 
  /* plugin actions */
-    { "plugin-toggle-enabled",               activate_plugin_toggle_enabled,
+    { "plugin-toggle-enabled",                                    activate_plugin_toggle_enabled,
      "s" },
-    { "plugin-inspect",                                    activate_plugin_inspect },
+    { "plugin-inspect",    activate_plugin_inspect },
     { "mixer-selections-delete",
      activate_mixer_selections_delete },
 
@@ -667,22 +670,22 @@ main_window_widget_init (MainWindowWidget * self)
      activate_plugin_browser_add_to_project_bridged_ui, "s" },
     { "plugin-browser-add-to-project-bridged-full",
      activate_plugin_browser_add_to_project_bridged_full, "s" },
-    { "plugin-browser-toggle-generic-ui",             NULL, NULL, "false",
+    { "plugin-browser-toggle-generic-ui",                                    NULL, NULL, "false",
      change_state_plugin_browser_toggle_generic_ui },
     { "plugin-browser-add-to-collection",
      activate_plugin_browser_add_to_collection, "s" },
     { "plugin-browser-remove-from-collection",
      activate_plugin_browser_remove_from_collection, "s" },
-    { "plugin-browser-reset",             activate_plugin_browser_reset,
+    { "plugin-browser-reset",                                    activate_plugin_browser_reset,
      "s" },
     {
-     "plugin-collection-add",                                    activate_plugin_collection_add,
+     "plugin-collection-add",      activate_plugin_collection_add,
      },
     {
-     "plugin-collection-rename",      activate_plugin_collection_rename,
+     "plugin-collection-rename",                 activate_plugin_collection_rename,
      },
     {
-     "plugin-collection-remove",                 activate_plugin_collection_remove,
+     "plugin-collection-remove",                                    activate_plugin_collection_remove,
      },
   };
 

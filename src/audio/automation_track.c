@@ -885,6 +885,13 @@ automation_track_set_caches (AutomationTrack * self)
   self->port = port_find_from_identifier (&self->port_id);
 }
 
+bool
+automation_track_contains_automation (
+  const AutomationTrack * self)
+{
+  return self->num_regions > 0;
+}
+
 /**
  * Clones the AutomationTrack.
  */

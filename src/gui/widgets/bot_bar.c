@@ -158,9 +158,11 @@ on_transport_playhead_right_click (
 
   GMenu * section = g_menu_new ();
   g_menu_append (
-    section, _ ("BBT"), "bot-bar-transport.transport-display::bbt");
+    section, _ ("BBT"),
+    "bot-bar-transport.transport-display::bbt");
   g_menu_append (
-    section, _ ("Time"), "bot-bar-transport.transport-display::time");
+    section, _ ("Time"),
+    "bot-bar-transport.transport-display::time");
   g_menu_append_section (
     menu, _ ("Display"), G_MENU_MODEL (section));
 

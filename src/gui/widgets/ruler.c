@@ -1824,8 +1824,7 @@ ruler_widget_init (RulerWidget * self)
   g_action_map_add_action (
     G_ACTION_MAP (action_group), display_action);
   gtk_widget_insert_action_group (
-    GTK_WIDGET (self), "ruler",
-    G_ACTION_GROUP (action_group));
+    GTK_WIDGET (self), "ruler", G_ACTION_GROUP (action_group));
 }
 
 static void

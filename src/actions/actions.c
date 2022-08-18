@@ -58,6 +58,7 @@
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "gui/widgets/dialogs/port_info.h"
+#include "gui/widgets/dialogs/project_assistant.h"
 #include "gui/widgets/dialogs/quantize_dialog.h"
 #include "gui/widgets/dialogs/save_chord_preset_dialog.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
@@ -79,7 +80,6 @@
 #include "gui/widgets/port_connections.h"
 #include "gui/widgets/port_connections_tree.h"
 #include "gui/widgets/preferences.h"
-#include "gui/widgets/dialogs/project_assistant.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
 #ifdef HAVE_GUILE
@@ -3798,6 +3798,41 @@ DEFINE_SIMPLE (activate_toggle_track_passthrough_input)
     track->name, !track->passthrough_midi_input);
   track->passthrough_midi_input =
     !track->passthrough_midi_input;
+}
+
+DEFINE_SIMPLE (
+  activate_show_used_automation_lanes_on_selected_tracks)
+{
+  for (int i = 0; i < TRACKLIST_SELECTIONS->num_tracks; i++)
+    {
+      Track * track = TRACKLIST_SELECTIONS->tracks[i];
+      AutomationTracklist * atl =
+        track_get_automation_tracklist (track);
+      if (atl == NULL)
+        continue;
+
+      bool automation_vis_changed = false;
+      for (int j = 0; j < atl->num_ats; j++)
+        {
+          AutomationTrack * at = atl->ats[j];
+          if (!automation_track_contains_automation (at))
+            continue;
+
+          if (at->visible)
+            continue;
+
+          at->visible = true;
+          automation_vis_changed = true;
+        }
+
+      if (automation_vis_changed)
+        {
+          EVENTS_PUSH (
+            ET_TRACK_AUTOMATION_VISIBILITY_CHANGED, track);
+        }
+
+      track->automation_visible = true;
+    }
 }
 
 /**

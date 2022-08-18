@@ -937,6 +937,24 @@ show_context_menu (TrackWidget * self, double x, double y)
         G_MENU_MODEL (piano_roll_section));
     }
 
+  if (
+    num_selected > 0
+    && !tracklist_selections_contains_non_automatable_track (
+      TRACKLIST_SELECTIONS))
+    {
+      GMenu * automation_section = g_menu_new ();
+
+      menuitem = z_gtk_create_menu_item (
+        _ ("Show used automation lanes"),
+        TRACK_ICON_NAME_SHOW_AUTOMATION_LANES,
+        "app.show-used-automation-lanes-on-selected-tracks");
+      g_menu_append_item (automation_section, menuitem);
+
+      g_menu_append_section (
+        menu, _ ("Automation"),
+        G_MENU_MODEL (automation_section));
+    }
+
   z_gtk_show_context_menu_from_g_menu (
     self->popover_menu, x, y, menu);
 }
