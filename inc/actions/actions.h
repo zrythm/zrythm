@@ -284,6 +284,8 @@ DECLARE_SIMPLE (activate_selected_tracks_direct_out_new);
 DECLARE_SIMPLE (activate_toggle_track_passthrough_input);
 DECLARE_SIMPLE (
   activate_show_used_automation_lanes_on_selected_tracks);
+DECLARE_SIMPLE (
+  activate_hide_unused_automation_lanes_on_selected_tracks);
 
 void
 activate_snap_events (

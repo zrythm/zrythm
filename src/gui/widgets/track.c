@@ -945,9 +945,14 @@ show_context_menu (TrackWidget * self, double x, double y)
       GMenu * automation_section = g_menu_new ();
 
       menuitem = z_gtk_create_menu_item (
-        _ ("Show used automation lanes"),
+        _ ("Show used lanes"),
         TRACK_ICON_NAME_SHOW_AUTOMATION_LANES,
         "app.show-used-automation-lanes-on-selected-tracks");
+      g_menu_append_item (automation_section, menuitem);
+      menuitem = z_gtk_create_menu_item (
+        _ ("Hide unused lanes"),
+        TRACK_ICON_NAME_SHOW_AUTOMATION_LANES,
+        "app.hide-unused-automation-lanes-on-selected-tracks");
       g_menu_append_item (automation_section, menuitem);
 
       g_menu_append_section (

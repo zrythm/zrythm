@@ -3825,13 +3825,50 @@ DEFINE_SIMPLE (
           automation_vis_changed = true;
         }
 
+      if (!track->automation_visible)
+        {
+          automation_vis_changed = true;
+          track->automation_visible = true;
+        }
+
       if (automation_vis_changed)
         {
           EVENTS_PUSH (
             ET_TRACK_AUTOMATION_VISIBILITY_CHANGED, track);
         }
+    }
+}
 
-      track->automation_visible = true;
+DEFINE_SIMPLE (
+  activate_hide_unused_automation_lanes_on_selected_tracks)
+{
+  for (int i = 0; i < TRACKLIST_SELECTIONS->num_tracks; i++)
+    {
+      Track * track = TRACKLIST_SELECTIONS->tracks[i];
+      AutomationTracklist * atl =
+        track_get_automation_tracklist (track);
+      if (atl == NULL)
+        continue;
+
+      bool automation_vis_changed = false;
+      for (int j = 0; j < atl->num_ats; j++)
+        {
+          AutomationTrack * at = atl->ats[j];
+          if (automation_track_contains_automation (at))
+            continue;
+
+          if (!at->visible)
+            continue;
+
+          at->visible = false;
+          automation_vis_changed = true;
+        }
+
+      if (automation_vis_changed)
+        {
+          EVENTS_PUSH (
+            ET_TRACK_AUTOMATION_VISIBILITY_CHANGED, track);
+        }
     }
 }
 
