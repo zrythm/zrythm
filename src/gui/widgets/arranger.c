@@ -2282,6 +2282,23 @@ on_drag_begin_handle_hit_object (
           return true;
         }
     }
+  /* if double click on automation point, ask for value */
+  else if (obj->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
+    {
+      if (self->n_press == 2 && !self->ctrl_held)
+        {
+          StringEntryDialogWidget * dialog =
+            string_entry_dialog_widget_new (
+              _ ("Automation value"), obj,
+              (GenericStringGetter)
+                automation_point_get_fvalue_as_string,
+              (GenericStringSetter)
+                automation_point_set_fvalue_with_action);
+          gtk_window_present (GTK_WINDOW (dialog));
+          self->action = UI_OVERLAY_ACTION_NONE;
+          return true;
+        }
+    }
 
   /* check if all selected objects are fadeable or
    * resizable */

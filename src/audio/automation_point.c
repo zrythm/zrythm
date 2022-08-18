@@ -1,7 +1,5 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 /** \file
  */
@@ -32,6 +30,8 @@
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 static AutomationPoint *
 _create_new (const Position * pos)
@@ -212,6 +212,45 @@ automation_point_set_fvalue (
     }
 }
 
+const char *
+automation_point_get_fvalue_as_string (AutomationPoint * self)
+{
+  if (self->tmp_str)
+    g_free (self->tmp_str);
+
+  self->tmp_str = g_strdup_printf ("%f", self->fvalue);
+
+  return self->tmp_str;
+}
+
+void
+automation_point_set_fvalue_with_action (
+  AutomationPoint * self,
+  const char *      fval_str)
+{
+  Port * port = automation_point_get_port (self);
+  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+
+  float val;
+  int   res = sscanf (fval_str, "%f", &val);
+  if (
+    res != 1 || res == EOF || val < port->minf
+    || val > port->maxf)
+    {
+      ui_show_error_message (
+        MAIN_WINDOW, GTK_MESSAGE_ERROR, _ ("Invalid value"));
+    }
+  else
+    {
+      ArrangerObject * obj = (ArrangerObject *) self;
+      arranger_object_edit_begin (obj);
+      automation_point_set_fvalue (
+        self, val, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+      arranger_object_edit_finish (
+        obj, ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
+    }
+}
+
 /**
  * The function to return a point on the curve.
  *
@@ -229,6 +268,7 @@ automation_point_get_normalized_value_in_curve (
 
   ZRegion * region =
     arranger_object_get_region ((ArrangerObject *) self);
+  g_return_val_if_fail (IS_REGION_AND_NONNULL (region), 0.0);
   AutomationPoint * next_ap =
     automation_region_get_next_ap (region, self, true, true);
   if (!next_ap)

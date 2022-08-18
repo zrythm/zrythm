@@ -77,6 +77,9 @@ typedef struct AutomationPoint
   /** Cached cairo node to reuse when drawing in the
    * timeline. */
   GskRenderNode * cairo_node_tl;
+
+  /** Temporary string used with StringEntryDialogWidget. */
+  char * tmp_str;
 } AutomationPoint;
 
 static const cyaml_schema_field_t automation_point_fields_schema[] = {
@@ -125,6 +128,14 @@ automation_point_set_fvalue (
   float             real_val,
   bool              is_normalized,
   bool              pub_events);
+
+const char *
+automation_point_get_fvalue_as_string (AutomationPoint * self);
+
+void
+automation_point_set_fvalue_with_action (
+  AutomationPoint * self,
+  const char *      fval_str);
 
 /**
  * Sets the ZRegion and the index in the
