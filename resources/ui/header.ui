@@ -71,7 +71,7 @@
                       <class name="small-vertical-lbl"/>
                     </style>
                     <!-- TRANSLATORS: either leave this untranslated or make sure the translated text is max 7 characters -->
-                    <property name="label" translatable="yes">MIDI in</property>
+                    <property name="label" translatable="no">MIDI in</property>
                   </object>
                 </property>
               </object>
