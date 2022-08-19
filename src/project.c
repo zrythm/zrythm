@@ -1307,7 +1307,7 @@ project_autosave_cb (void * data)
     4 * 1000000;
 
   /* skip if semaphore busy */
-  if (!zix_sem_try_wait (&PROJECT->save_sem))
+  if (zix_sem_try_wait (&PROJECT->save_sem) != ZIX_STATUS_SUCCESS)
     {
       g_message (
         "can't acquire project lock - skipping "

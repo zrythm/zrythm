@@ -1404,7 +1404,7 @@ engine_process_prepare (AudioEngine * self, nframes_t nframes)
   port_clear_buffer (self->monitor_out->r);
 
   bool lock_acquired =
-    zix_sem_try_wait (&self->port_operation_lock);
+    zix_sem_try_wait (&self->port_operation_lock) == ZIX_STATUS_SUCCESS;
 
   if (!lock_acquired && !self->exporting)
     {

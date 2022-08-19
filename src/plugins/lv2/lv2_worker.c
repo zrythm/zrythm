@@ -131,7 +131,7 @@ lv2_worker_finish (Lv2Worker * worker)
       if (worker->threaded)
         {
           zix_sem_post (&worker->sem);
-          zix_thread_join (worker->thread, NULL);
+          zix_thread_join (worker->thread);
           zix_ring_free (worker->requests);
         }
       zix_ring_free (worker->responses);

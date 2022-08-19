@@ -1,3 +1,4 @@
 [wrap-git]
 url = https://github.com/drobilla/zix
-revision = main
+# FIXME set to main after the timedwait issue is fixed
+revision = 93eb717f520d68d27bfe110d48057cdd54a4a2bc

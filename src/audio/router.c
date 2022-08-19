@@ -98,7 +98,7 @@ router_start_cycle (
   if (g_thread_self () != zrythm_app->gtk_thread)
     self->process_kickoff_thread = g_thread_self ();
 
-  if (!zix_sem_try_wait (&self->graph_access))
+  if (zix_sem_try_wait (&self->graph_access) != ZIX_STATUS_SUCCESS)
     {
       g_message ("graph access is busy, returning...");
       return;
