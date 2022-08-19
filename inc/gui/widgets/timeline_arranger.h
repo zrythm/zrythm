@@ -235,11 +235,16 @@ timeline_arranger_widget_remove_children (
   ArrangerWidget * self);
 
 /**
- * Show context menu at x, y.
+ * Generate a context menu at x, y.
+ *
+ * @param menu A menu to append entries to (optional).
+ *
+ * @return The given updated menu or a new menu.
  */
-void
-timeline_arranger_widget_show_context_menu (
+GMenu *
+timeline_arranger_widget_gen_context_menu (
   ArrangerWidget * self,
+  GMenu *          menu,
   double           x,
   double           y);
 

@@ -168,15 +168,23 @@ typedef struct CurveAlgorithmInfo
 } CurveAlgorithmInfo;
 
 /**
- * Show context menu at x, y.
+ * Generate a context menu at x, y.
+ *
+ * @param menu A menu to append entries to (optional).
+ *
+ * @return The given updated menu or a new menu.
  */
-void
-automation_arranger_widget_show_context_menu (
+GMenu *
+automation_arranger_widget_gen_context_menu (
   ArrangerWidget * self,
+  GMenu *          menu,
   double           x,
   double           y)
 {
-  GMenu *     menu = g_menu_new ();
+  if (!menu)
+    {
+      menu = g_menu_new ();
+    }
   GMenuItem * menuitem;
 
   ArrangerObject * obj =
@@ -210,8 +218,7 @@ automation_arranger_widget_show_context_menu (
         G_MENU_MODEL (curve_algorithm_submenu));
     }
 
-  z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+  return menu;
 }
 
 /**

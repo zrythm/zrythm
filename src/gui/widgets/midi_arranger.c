@@ -405,13 +405,24 @@ midi_arranger_listen_notes (ArrangerWidget * self, bool listen)
     }
 }
 
-void
-midi_arranger_show_context_menu (
+/**
+ * Generate a context menu at x, y.
+ *
+ * @param menu A menu to append entries to (optional).
+ *
+ * @return The given updated menu or a new menu.
+ */
+GMenu *
+midi_arranger_widget_gen_context_menu (
   ArrangerWidget * self,
-  gdouble          x,
-  gdouble          y)
+  GMenu *          menu,
+  double           x,
+  double           y)
 {
-  GMenu *     menu = g_menu_new ();
+  if (!menu)
+    {
+      menu = g_menu_new ();
+    }
   GMenuItem * menuitem;
 
   ArrangerObject * mn_obj =
@@ -467,8 +478,7 @@ midi_arranger_show_context_menu (
   g_menu_append_section (
     menu, _ ("Selection"), G_MENU_MODEL (selection_submenu));
 
-  z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+  return menu;
 }
 
 /**

@@ -743,6 +743,35 @@ bool
 arranger_widget_get_drum_mode_enabled (ArrangerWidget * self);
 
 /**
+ * Called when an item needs to be created at the
+ * given position.
+ *
+ * @param autofilling Whether this is part of an
+ *   autofill action.
+ */
+NONNULL
+void
+arranger_widget_create_item (
+  ArrangerWidget * self,
+  double           start_x,
+  double           start_y,
+  bool             autofilling);
+
+/**
+ * To be called after using arranger_widget_create_item() in
+ * an action (ie, not from click + drag interaction with the
+ * arranger) to finish the action.
+ *
+ * @return Whether an action was performed.
+ */
+NONNULL
+bool
+arranger_widget_finish_creating_item_from_action (
+  ArrangerWidget * self,
+  double           x,
+  double           y);
+
+/**
  * @}
  */
 

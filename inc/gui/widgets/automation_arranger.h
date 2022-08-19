@@ -62,11 +62,16 @@ automation_arranger_widget_resize_curves (
   double           offset_y);
 
 /**
- * Show context menu at x, y.
+ * Generate a context menu at x, y.
+ *
+ * @param menu A menu to append entries to (optional).
+ *
+ * @return The given updated menu or a new menu.
  */
-void
-automation_arranger_widget_show_context_menu (
+GMenu *
+automation_arranger_widget_gen_context_menu (
   ArrangerWidget * self,
+  GMenu *          menu,
   double           x,
   double           y);
 

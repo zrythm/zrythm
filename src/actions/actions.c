@@ -2606,6 +2606,29 @@ DEFINE_SIMPLE (activate_rename_arranger_object)
     }
 }
 
+void
+activate_create_arranger_object (
+  GSimpleAction * action,
+  GVariant *      value,
+  gpointer        user_data)
+{
+  double       x, y;
+  const char * str;
+  g_variant_get (value, "(sdd)", &str, &x, &y);
+  ArrangerWidget * arranger;
+  sscanf (str, "%p", &arranger);
+  g_debug ("called %f %f", x, y);
+  arranger_widget_create_item (arranger, x, y, false);
+  bool action_performed =
+    arranger_widget_finish_creating_item_from_action (
+      arranger, x, y);
+  if (!action_performed)
+    {
+      ui_show_notification (_ (
+        "An object cannot be created at the selected location."));
+    }
+}
+
 DEFINE_SIMPLE (activate_add_region)
 {
   if (TRACKLIST_SELECTIONS->num_tracks == 0)

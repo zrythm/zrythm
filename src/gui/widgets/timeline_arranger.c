@@ -964,15 +964,23 @@ create_musical_mode_pset_menu (
 #endif
 
 /**
- * Show context menu at x, y.
+ * Generate a context menu at x, y.
+ *
+ * @param menu A menu to append entries to (optional).
+ *
+ * @return The given updated menu or a new menu.
  */
-void
-timeline_arranger_widget_show_context_menu (
+GMenu *
+timeline_arranger_widget_gen_context_menu (
   ArrangerWidget * self,
+  GMenu *          menu,
   double           x,
   double           y)
 {
-  GMenu *     menu = g_menu_new ();
+  if (!menu)
+    {
+      menu = g_menu_new ();
+    }
   GMenuItem * menuitem;
 
   ArrangerObject * obj =
@@ -1109,14 +1117,13 @@ timeline_arranger_widget_show_context_menu (
           g_menu_append_item (menu, menuitem);
         }
     }
-  else
+  else /* else if no object clicked */
     {
       menuitem = CREATE_PASTE_MENU_ITEM ("app.paste");
       g_menu_append_item (menu, menuitem);
     }
 
-  z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+  return menu;
 }
 
 /**

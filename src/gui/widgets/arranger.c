@@ -1221,12 +1221,15 @@ arranger_widget_get_editor_settings (ArrangerWidget * self)
   g_return_val_if_reached (NULL);
 }
 
-static void
-show_context_menu_audio (
+static GMenu *
+gen_context_menu_audio (
   ArrangerWidget * self,
+  GMenu *          menu,
   gdouble          x,
   gdouble          y)
 {
+  return g_menu_new ();
+
 #if 0
   GtkWidget *menu, *menuitem;
 
@@ -1244,47 +1247,69 @@ show_context_menu_audio (
 #endif
 }
 
-static void
-show_context_menu_chord (
+static GMenu *
+gen_context_menu_chord (
   ArrangerWidget * self,
+  GMenu *          menu,
   gdouble          x,
   gdouble          y)
 {
+  return g_menu_new ();
 }
 
-static void
-show_context_menu_midi_modifier (
+static GMenu *
+gen_context_menu_midi_modifier (
   ArrangerWidget * self,
+  GMenu *          menu,
   gdouble          x,
   gdouble          y)
 {
+  return g_menu_new ();
 }
 
 static void
 show_context_menu (ArrangerWidget * self, gdouble x, gdouble y)
 {
+  GMenu *     menu = NULL;
+  GMenuItem * menuitem;
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      timeline_arranger_widget_show_context_menu (self, x, y);
+      menu = timeline_arranger_widget_gen_context_menu (
+        self, menu, x, y);
       break;
     case TYPE (MIDI):
-      midi_arranger_show_context_menu (self, x, y);
+      menu = midi_arranger_widget_gen_context_menu (
+        self, menu, x, y);
       break;
     case TYPE (MIDI_MODIFIER):
-      show_context_menu_midi_modifier (self, x, y);
+      menu = gen_context_menu_midi_modifier (self, menu, x, y);
       break;
     case TYPE (CHORD):
-      show_context_menu_chord (self, x, y);
+      menu = gen_context_menu_chord (self, menu, x, y);
       break;
     case TYPE (AUTOMATION):
-      automation_arranger_widget_show_context_menu (
-        self, x, y);
+      menu = automation_arranger_widget_gen_context_menu (
+        self, menu, x, y);
       break;
     case TYPE (AUDIO):
-      show_context_menu_audio (self, x, y);
+      menu = gen_context_menu_audio (self, menu, x, y);
       break;
     }
+
+  g_return_if_fail (menu);
+
+  /* add "create object" menu item */
+  char action_name[500];
+  sprintf (
+    action_name, "app.create-arranger-obj(('%p',%f,%f))",
+    self, x, y);
+  menuitem = z_gtk_create_menu_item (
+    _ ("Create object"), NULL, action_name);
+  g_menu_append_item (menu, menuitem);
+
+  z_gtk_show_context_menu_from_g_menu (
+    self->popover_menu, x, y, menu);
 }
 
 static void
@@ -1868,9 +1893,8 @@ click_stopped (GtkGestureClick * click, ArrangerWidget * self)
  * @param autofilling Whether this is part of an
  *   autofill action.
  */
-NONNULL
-static void
-create_item (
+void
+arranger_widget_create_item (
   ArrangerWidget * self,
   double           start_x,
   double           start_y,
@@ -2091,7 +2115,7 @@ autofill (ArrangerWidget * self, double x, double y)
       /* move aps or create ap */
       if (!automation_arranger_move_hit_aps (self, x, y))
         {
-          create_item (self, x, y, true);
+          arranger_widget_create_item (self, x, y, true);
         }
     }
   else
@@ -2109,7 +2133,7 @@ autofill (ArrangerWidget * self, double x, double y)
             x, y);
           return;
         }
-      create_item (self, x, y, true);
+      arranger_widget_create_item (self, x, y, true);
     }
 }
 
@@ -2714,7 +2738,7 @@ drag_begin (
                   else
                     {
                       /* something is created */
-                      create_item (
+                      arranger_widget_create_item (
                         self, start_x, start_y, false);
                     }
                 }
@@ -2757,7 +2781,8 @@ drag_begin (
             case TOOL_SELECT_NORMAL:
             case TOOL_SELECT_STRETCH:
             case TOOL_EDIT:
-              create_item (self, start_x, start_y, false);
+              arranger_widget_create_item (
+                self, start_x, start_y, false);
               break;
             case TOOL_ERASER:
               /* delete selection */
@@ -4571,25 +4596,28 @@ drag_end (
     }
 
   /* if right click, show context */
-  GdkEventSequence * sequence =
-    gtk_gesture_single_get_current_sequence (
-      GTK_GESTURE_SINGLE (gesture));
-  GdkEvent * ev = gtk_gesture_get_last_event (
-    GTK_GESTURE (gesture), sequence);
-  guint btn;
-  if (
-    ev
-    && (GDK_IS_EVENT_TYPE (ev, GDK_BUTTON_PRESS) || GDK_IS_EVENT_TYPE (ev, GDK_BUTTON_RELEASE)))
+  if (gesture)
     {
-      btn = gdk_button_event_get_button (ev);
-      g_warn_if_fail (btn);
+      GdkEventSequence * sequence =
+        gtk_gesture_single_get_current_sequence (
+          GTK_GESTURE_SINGLE (gesture));
+      GdkEvent * ev = gtk_gesture_get_last_event (
+        GTK_GESTURE (gesture), sequence);
+      guint btn;
       if (
-        btn == GDK_BUTTON_SECONDARY
-        && self->action != UI_OVERLAY_ACTION_ERASING)
+        ev
+        && (GDK_IS_EVENT_TYPE (ev, GDK_BUTTON_PRESS) || GDK_IS_EVENT_TYPE (ev, GDK_BUTTON_RELEASE)))
         {
-          show_context_menu (
-            self, self->start_x + offset_x,
-            self->start_y + offset_y);
+          btn = gdk_button_event_get_button (ev);
+          g_warn_if_fail (btn);
+          if (
+            btn == GDK_BUTTON_SECONDARY
+            && self->action != UI_OVERLAY_ACTION_ERASING)
+            {
+              show_context_menu (
+                self, self->start_x + offset_x,
+                self->start_y + offset_y);
+            }
         }
     }
 
@@ -4627,6 +4655,26 @@ drag_end (
   arranger_widget_refresh_cursor (self);
 
   g_debug ("arranger drag end done");
+}
+
+/**
+ * To be called after using arranger_widget_create_item() in
+ * an action (ie, not from click + drag interaction with the
+ * arranger) to finish the action.
+ *
+ * @return Whether an action was performed.
+ */
+bool
+arranger_widget_finish_creating_item_from_action (
+  ArrangerWidget * self,
+  double           x,
+  double           y)
+{
+  bool has_action = self->action != UI_OVERLAY_ACTION_NONE;
+
+  drag_end (NULL, x, y, self);
+
+  return has_action;
 }
 
 #if 0

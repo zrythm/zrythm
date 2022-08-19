@@ -120,11 +120,19 @@ midi_arranger_calc_deltamax_for_note_movement (int y_delta);
 void
 midi_arranger_listen_notes (ArrangerWidget * self, bool listen);
 
-void
-midi_arranger_show_context_menu (
+/**
+ * Generate a context menu at x, y.
+ *
+ * @param menu A menu to append entries to (optional).
+ *
+ * @return The given updated menu or a new menu.
+ */
+GMenu *
+midi_arranger_widget_gen_context_menu (
   ArrangerWidget * self,
-  gdouble          x,
-  gdouble          y);
+  GMenu *          menu,
+  double           x,
+  double           y);
 
 /**
  * Handle ctrl+shift+scroll.
