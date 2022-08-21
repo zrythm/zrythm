@@ -6,6 +6,27 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.2.1] - 2022-08-21
+### Added
+- Allow clicking anywhere on timeline minimap to navigate
+- Add sorting by name, last used and most used in plugin browser
+- User manual: add note about using non-flatpak plugins in flatpak builds
+- Add right click option on tracks to show used and hide unused automation lanes
+- Allow double-clicking on automation points to specify exact value
+- Allow renaming tracks via right click menu
+- Add right click option to create an object on all arrangers
+
+### Changed
+- Update Spanish, French, Catalan, Chinese (Traditional) translations
+- Use case-insensitive alphabetical sorting in plugin browser
+- Use vst instead of vstlx for flatpak VST2 plugin scan paths
+- Make MIDI in label in header untranslatable to avoid sizing issues
+
+### Fixed
+- Fix chord and scale selector windows not closing with Esc key
+- Fix plugin info label not being updated when filtering
+- Fix transport display and ruler right click menus not working
+
 ## [1.0.0-beta.3.1.1] - 2022-08-12
 ### Changed
 - Drop vendored zix and depend on zix library
