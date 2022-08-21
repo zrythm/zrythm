@@ -62,6 +62,10 @@
 #  include <limits.h>
 #endif
 
+#ifdef __linux__
+#  include <sys/syscall.h>
+#endif
+
 #include "audio/engine.h"
 #include "audio/graph.h"
 #include "audio/graph_node.h"
@@ -79,6 +83,10 @@
 #endif
 
 #include <glib/gi18n.h>
+
+#ifdef __linux__
+#  include <rtkit/rtkit.h>
+#endif
 
 /* uncomment to show debug messages */
 /*#define DEBUG_THREADS 1*/
@@ -452,9 +460,12 @@ graph_thread_new (const int id, const bool is_main, Graph * graph)
   if (realtime)
     {
       g_debug ("creating RT thread");
-      priority = get_absolute_rt_priority (priority);
+      int wanted_priority = priority;
+      (void) wanted_priority;
+      int posix_priority = get_absolute_rt_priority (priority);
 
-      if (priority > 0)
+      /* if have enough permissions, use POSIX API */
+      if (posix_priority > 0)
         {
           /* this throws error on windows:
            * res = 129 */
@@ -470,8 +481,8 @@ graph_thread_new (const int id, const bool is_main, Graph * graph)
             }
           struct sched_param rt_param;
           memset (&rt_param, 0, sizeof (rt_param));
-          rt_param.sched_priority = priority;
-          g_debug ("priority: %d", priority);
+          rt_param.sched_priority = posix_priority;
+          g_debug ("priority: %d", posix_priority);
 
           res = pthread_attr_setschedparam (
             &attributes, &rt_param);
@@ -484,27 +495,108 @@ graph_thread_new (const int id, const bool is_main, Graph * graph)
               return NULL;
             }
         }
-      else if (
-        is_main && ZRYTHM_HAVE_UI && !ZRYTHM_TESTING
-        && !zrythm_app->rt_priority_message_shown)
+      /* else if not have enough permissions, try rtkit */
+      else
         {
-          char * str = g_strdup_printf (
-            _ (
-              "Your user does not have "
-              "enough privileges to allow %s "
-              "to set the scheduling priority "
-              "of threads. Please refer to "
-              "the 'Getting Started' "
-              "section in the "
-              "user manual for details."),
-            PROGRAM_NAME);
-          ZrythmAppUiMessage * ui_msg =
-            zrythm_app_ui_message_new (
-              GTK_MESSAGE_WARNING, str);
-          g_async_queue_push (
-            zrythm_app->project_load_message_queue, ui_msg);
-          g_free (str);
-          zrythm_app->rt_priority_message_shown = true;
+          bool dbus_fail = true;
+
+          /* FIXME code below doesn't work:
+           * org.freedesktop.DBus.Error.AccessDenied: Operation not permitted
+           */
+#  if 0
+#    ifdef HAVE_DBUS
+          g_message (
+            "not enough permissions to make thread realtime - trying RTKit with wanted priority %d...",
+            wanted_priority);
+
+          int rtkit_max_rt_priority,
+          rtkit_priority = wanted_priority, ret;
+          pid_t kernel_thread_id;
+
+          DBusError        dbus_err = {0};
+          DBusConnection * system_bus =
+            dbus_bus_get_private (DBUS_BUS_SYSTEM, &dbus_err);
+          if (!system_bus)
+            {
+              g_warning (
+                "Failed to connect to system DBus: [%s] %s",
+                dbus_err.name, dbus_err.message);
+              goto dbus_fail_handling;
+            }
+
+          rtkit_max_rt_priority =
+            rtkit_get_max_realtime_priority (system_bus);
+          g_debug (
+            "max RT priority (RTKit): %d",
+            rtkit_max_rt_priority);
+          if (rtkit_max_rt_priority < 0)
+            {
+              goto dbus_fail_handling;
+            }
+          rtkit_priority =
+            MAX (rtkit_priority, rtkit_max_rt_priority);
+          g_return_if_fail (rtkit_priority >= 0);
+          g_message (
+            "setting RT priority to %d", rtkit_priority);
+
+          kernel_thread_id = syscall (SYS_gettid);
+          ret = rtkit_make_realtime (
+              system_bus, kernel_thread_id, rtkit_priority);
+          g_message ("rtkit_make_realtime ret (%p, %d, %d): %d", system_bus, kernel_thread_id, rtkit_priority, ret);
+          if (ret < 0)
+            {
+              switch (ret)
+                {
+                case -ENOMEM:
+                  g_message ("ENOMEM");
+                  break;
+                case -ENOENT:
+                  g_message ("ENOENT");
+                  break;
+                case -EACCES:
+                  g_message ("EACCES");
+                  break;
+                case -EIO:
+                  g_message ("EIO");
+                  break;
+                default:
+                  g_message ("unknown error");
+                  break;
+                }
+              goto dbus_fail_handling;
+            }
+          g_message ("thread made realtime (RTKit)");
+          dbus_fail = false;
+#    endif
+#  endif
+
+          goto dbus_fail_handling;
+
+dbus_fail_handling:
+          if (
+            dbus_fail && is_main && ZRYTHM_HAVE_UI
+            && !ZRYTHM_TESTING
+            && !zrythm_app->rt_priority_message_shown)
+            {
+              char * str = g_strdup_printf (
+                _ (
+                  "Your user does not have "
+                  "enough privileges to allow %s "
+                  "to set the scheduling priority "
+                  "of threads. Please refer to "
+                  "the 'Getting Started' "
+                  "section in the "
+                  "user manual for details."),
+                PROGRAM_NAME);
+              ZrythmAppUiMessage * ui_msg =
+                zrythm_app_ui_message_new (
+                  GTK_MESSAGE_WARNING, str);
+              g_async_queue_push (
+                zrythm_app->project_load_message_queue,
+                ui_msg);
+              g_free (str);
+              zrythm_app->rt_priority_message_shown = true;
+            }
         }
     }
 #endif /* __linux__ */

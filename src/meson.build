@@ -36,6 +36,7 @@ zrythm_link_libs = [
   widgets_lib,
   midilib,
   nanovg_lib,
+  rtkit_lib,
   whereami_lib,
   zita_resampler_lib,
   optimized_audio_lib,

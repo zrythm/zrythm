@@ -709,6 +709,7 @@ test_strict_cflags += [
   '-Werror=analyzer-possible-null-argument',
   '-Werror=analyzer-double-free',
   '-Werror=analyzer-file-leak',
+  '-Werror=analyzer-use-of-uninitialized-value',
   '-Werror=nonnull',
   '-Werror=nonnull-compare',
   '-Werror=pointer-size',
@@ -852,6 +853,12 @@ libpanel_dep = dependency (
     'install-examples=false',
     'introspection=disabled',
     'default_library=static'])
+
+dbus_dep = dependency (
+  'dbus-1', required: false)
+if (dbus_dep.found ())
+  cdata.set('HAVE_DBUS', 1)
+endif
 
 min_version = '>=1.0.25'
 if get_option ('opus')
@@ -1223,6 +1230,7 @@ zrythm_deps = [
   dependency ('libcurl'),
   json_glib_dep,
   zix_dep,
+  dbus_dep,
 
   libm,
 ]

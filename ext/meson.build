@@ -4,6 +4,7 @@
 subdir ('midilib')
 subdir ('nanovg')
 subdir ('qm-dsp')
+subdir ('rtkit')
 subdir ('weakjack')
 subdir ('whereami')
 subdir ('zita-resampler')
