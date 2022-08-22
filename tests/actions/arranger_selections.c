@@ -1546,6 +1546,40 @@ test_split (void)
 }
 
 static void
+test_split_large_audio_file (void)
+{
+#ifdef TEST_SINE_OGG_30MIN
+  test_helper_zrythm_init ();
+
+  Track * track = track_new (
+    TRACK_TYPE_AUDIO, TRACKLIST->num_tracks, "test track",
+    F_WITH_LANE);
+  tracklist_append_track (
+    TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+  unsigned int track_name_hash = track_get_name_hash (track);
+  Position     pos;
+  position_set_to_bar (&pos, 3);
+  ZRegion * r = audio_region_new (
+    -1, TEST_SINE_OGG_30MIN, true, NULL, 0, NULL, 0, 0, &pos,
+    track_name_hash, AUDIO_REGION_LANE, 0);
+  AudioClip * clip = audio_region_get_clip (r);
+  g_assert_cmpuint (clip->num_frames, ==, 79380000);
+  track_add_region (
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  arranger_selections_add_object (
+    (ArrangerSelections *) TL_SELECTIONS,
+    (ArrangerObject *) r);
+
+  /* attempt split */
+  position_set_to_bar (&pos, 4);
+  arranger_selections_action_perform_split (
+    (ArrangerSelections *) TL_SELECTIONS, &pos, NULL);
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
+static void
 test_quantize (void)
 {
   rebootstrap_timeline ();
@@ -3130,6 +3164,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test split large audio file",
+    (GTestFunc) test_split_large_audio_file);
   g_test_add_func (
     TEST_PREFIX "test move audio_region_and lower samplerate",
     (GTestFunc) test_move_audio_region_and_lower_samplerate);

@@ -84,6 +84,8 @@ iwyu_tool = find_program (
   'iwyu_tool', 'iwyu-tool', required: false)
 faust2lv2 = find_program (
   'faust2lv2', required: false)
+sox = find_program (
+  'sox', required: false)
 
 # --- Set common variables ---
 

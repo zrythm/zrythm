@@ -65,6 +65,21 @@ if get_option ('tests')
       meson.current_build_dir () / 'test2.wav')
   endif
 
+  # generate 30-min audio file with sine wave
+  if sox.found ()
+    # timestretched test file x 2
+    filename = 'test_sine_ogg_30min.ogg'
+    test_sine_ogg_30min = configure_file (
+      output: filename,
+      command: [
+        sox, '-n', '-r', '44100', '@OUTPUT@', 'synth', '1800',
+        'sine', '500',
+        ])
+    test_config.set_quoted (
+      'TEST_SINE_OGG_30MIN',
+      meson.current_build_dir () / filename)
+  endif
+
   # external LV2
   foreach name, info : ext_lv2_plugins
     uri = info[1]

@@ -2923,7 +2923,7 @@ arranger_object_split (
             (size_t) r2_local_end.frames
             * prev_r2_clip->channels;
           z_return_if_fail_cmp (num_frames, >, 0);
-          float frames[num_frames];
+          float * frames = object_new_n (num_frames, float);
           dsp_copy (
             &frames[0],
             &prev_r2_clip->frames
@@ -2942,6 +2942,7 @@ arranger_object_split (
             new_r2->pool_id != prev_r2->pool_id);
           arranger_object_free ((ArrangerObject *) prev_r2);
           *r2 = (ArrangerObject *) new_r2;
+          free (frames);
         }
     }
 
