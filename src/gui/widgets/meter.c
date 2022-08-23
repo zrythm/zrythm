@@ -101,7 +101,7 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* draw peak */
   float   peak_amp = math_get_amp_val_from_fader (peak);
   GdkRGBA color;
-  if (peak_amp > 1.f)
+  if (peak_amp > 1.f && self->meter->port->id.type == TYPE_AUDIO)
     {
       /* make higher peak brighter */
       color.red = 0.6f + 0.4f * (float) peak;
@@ -257,14 +257,6 @@ meter_widget_setup (MeterWidget * self, Port * port, int width)
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
-#if 0
-  self->timeout_source = g_timeout_source_new (20);
-  g_source_set_callback (
-    self->timeout_source, meter_timeout,
-    self, NULL);
-  self->source_id =
-    g_source_attach (self->timeout_source, NULL);
-#endif
 
   char buf[1200];
   port_get_full_designation (port, buf);
