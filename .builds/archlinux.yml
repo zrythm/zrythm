@@ -47,6 +47,7 @@ packages:
   - sassc
   - sed
   - sfizz
+  - sox
   - suil
   - valgrind
   - vamp-plugin-sdk
