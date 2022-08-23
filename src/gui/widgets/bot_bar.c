@@ -193,6 +193,20 @@ on_transport_playhead_right_click (
     self->digital_transport, menu);
 }
 
+/**
+ * Setter for transport display meter.
+ */
+static void
+set_playhead_pos (Transport * transport, Position * pos)
+{
+  /* only set playhead position if the user is currently
+   * allowed to move the playhead */
+  if (transport_can_user_move_playhead (transport))
+    {
+      transport_set_playhead_pos (transport, pos);
+    }
+}
+
 void
 bot_bar_widget_refresh (BotBarWidget * self)
 {
@@ -208,7 +222,7 @@ bot_bar_widget_refresh (BotBarWidget * self)
   self->digital_transport =
     digital_meter_widget_new_for_position (
       TRANSPORT, NULL, transport_get_playhead_pos,
-      transport_set_playhead_pos, NULL, _ ("playhead"));
+      set_playhead_pos, NULL, _ ("playhead"));
   self->digital_transport->is_transport = true;
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->digital_transport), PLAYHEAD_CAPTION);

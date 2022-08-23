@@ -107,7 +107,8 @@ test_handle_drop_empty_midi_file (void)
   g_free (path);
 
   tracklist_import_files (
-    TRACKLIST, NULL, file, NULL, NULL, PLAYHEAD, Z_F_NO_PROGRESS, true);
+    TRACKLIST, NULL, file, NULL, NULL, PLAYHEAD,
+    Z_F_NO_PROGRESS, true);
 
   test_helper_zrythm_cleanup ();
 }

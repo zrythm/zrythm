@@ -541,6 +541,13 @@ void
 transport_move_forward (Transport * self, bool with_wait);
 
 /**
+ * Returns whether the user can currently move the playhead
+ * (eg, via the UI or via scripts).
+ */
+bool
+transport_can_user_move_playhead (const Transport * self);
+
+/**
  * Moves playhead to given pos.
  *
  * This is only for moves other than while playing

@@ -277,7 +277,8 @@ on_dnd_drop (
         }
 
       tracklist_import_files (
-        TRACKLIST, uris, file, NULL, NULL, NULL, Z_F_PROGRESS, true);
+        TRACKLIST, uris, file, NULL, NULL, NULL, Z_F_PROGRESS,
+        true);
       return true;
     }
   else if (pd)

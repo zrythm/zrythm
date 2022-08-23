@@ -608,6 +608,22 @@ transport_get_playhead_pos (Transport * self, Position * pos)
 }
 
 /**
+ * Returns whether the user can currently move the playhead
+ * (eg, via the UI or via scripts).
+ */
+bool
+transport_can_user_move_playhead (const Transport * self)
+{
+  if (
+    self->recording && self->play_state == PLAYSTATE_ROLLING
+    && self->audio_engine
+    && g_atomic_int_get (&self->audio_engine->run))
+    return false;
+  else
+    return true;
+}
+
+/**
  * Moves playhead to given pos.
  *
  * This is only for moves other than while playing
@@ -626,6 +642,14 @@ transport_move_playhead (
   bool        set_cue_point,
   bool        fire_events)
 {
+  /* if currently recording, do nothing */
+  if (!transport_can_user_move_playhead (self))
+    {
+      g_message (
+        "currently recording - refusing to move playhead manually");
+      return;
+    }
+
   int i, j, k, l;
   /* send MIDI note off on currently playing timeline
    * objects */

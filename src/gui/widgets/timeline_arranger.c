@@ -1334,8 +1334,8 @@ on_dnd_drop (
       ui_px_to_pos_timeline (
         self->highlight_rect.x, &pos, true);
       tracklist_import_files (
-        TRACKLIST, uris, file, track, lane, &pos, Z_F_PROGRESS,
-        true);
+        TRACKLIST, uris, file, track, lane, &pos,
+        Z_F_PROGRESS, true);
 
       if (uris)
         g_strfreev (uris);
