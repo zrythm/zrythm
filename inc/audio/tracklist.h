@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -453,18 +437,20 @@ tracklist_multiply_track_heights (
  * @param lane TrackLane, if any.
  * @param pos Position the file was dropped at, if
  *   inside track.
+ * @param with_progress Whether to show a progress dialog TODO.
  * @param perform_actions Whether to perform
  *   undoable actions in addition to creating the
  *   regions/tracks.
  */
 void
-tracklist_handle_file_drop (
+tracklist_import_files (
   Tracklist *     self,
   char **         uri_list,
   SupportedFile * orig_file,
   Track *         track,
   TrackLane *     lane,
   Position *      pos,
+  bool            with_progress,
   bool            perform_actions);
 
 /**

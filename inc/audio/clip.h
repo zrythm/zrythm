@@ -126,7 +126,7 @@ audio_clip_init_loaded (AudioClip * self);
  *
  * The name used is the basename of the file.
  */
-COLD NONNULL AudioClip *
+NONNULL AudioClip *
 audio_clip_new_from_file (const char * full_path);
 
 /**

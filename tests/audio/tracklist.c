@@ -106,8 +106,8 @@ test_handle_drop_empty_midi_file (void)
   SupportedFile * file = supported_file_new_from_path (path);
   g_free (path);
 
-  tracklist_handle_file_drop (
-    TRACKLIST, NULL, file, NULL, NULL, PLAYHEAD, true);
+  tracklist_import_files (
+    TRACKLIST, NULL, file, NULL, NULL, PLAYHEAD, Z_F_NO_PROGRESS, true);
 
   test_helper_zrythm_cleanup ();
 }

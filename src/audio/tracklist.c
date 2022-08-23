@@ -1216,18 +1216,20 @@ tracklist_expose_ports_to_backend (Tracklist * self)
  * @param lane TrackLane, if any.
  * @param pos Position the file was dropped at, if
  *   inside track.
+ * @param with_progress Whether to show a progress dialog TODO.
  * @param perform_actions Whether to perform
  *   undoable actions in addition to creating the
  *   regions/tracks.
  */
 void
-tracklist_handle_file_drop (
+tracklist_import_files (
   Tracklist *     self,
   char **         uri_list,
   SupportedFile * orig_file,
   Track *         track,
   TrackLane *     lane,
   Position *      pos,
+  bool            with_progress,
   bool            perform_actions)
 {
   GPtrArray * file_arr = g_ptr_array_new_with_free_func (

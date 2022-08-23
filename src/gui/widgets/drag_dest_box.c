@@ -276,8 +276,8 @@ on_dnd_drop (
           uris = strv_builder_end (uris_builder);
         }
 
-      tracklist_handle_file_drop (
-        TRACKLIST, uris, file, NULL, NULL, NULL, true);
+      tracklist_import_files (
+        TRACKLIST, uris, file, NULL, NULL, NULL, Z_F_PROGRESS, true);
       return true;
     }
   else if (pd)
