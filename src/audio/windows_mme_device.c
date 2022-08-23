@@ -184,10 +184,13 @@ windows_mme_device_dequeue_midi_event (
   *timestamp = h.time;
   *data_size = h.size;
 
-  g_message (
-    "Denqueing MIDI data device: %s "
-    "with timestamp: %llu and size %lld",
-    self->name, h.time, h.size);
+  if (DEBUGGING)
+    {
+      g_debug (
+        "Denqueing MIDI data device: %s "
+        "with timestamp: %llu and size %lld",
+        self->name, h.time, h.size);
+    }
   g_return_val_if_fail (h.size >= 1 && h.size <= 3, 1);
   g_return_val_if_fail (
     read_space >= sizeof (MidiEventHeader) + h.size, 1);
@@ -250,10 +253,13 @@ enqueue_midi_msg (
   // don't use winmme timestamps for now
   uint64_t ts = (uint64_t) g_get_monotonic_time ();
 
-  g_message (
-    "Enqueuing MIDI data device: %s "
-    "with timestamp: %llu and size %lld",
-    self->name, ts, data_size);
+  if (DEBUGGING)
+    {
+      g_debug (
+        "Enqueuing MIDI data device: %s "
+        "with timestamp: %llu and size %lld",
+        self->name, ts, data_size);
+    }
 
   MidiEventHeader h = {
     .time = ts,
@@ -324,7 +330,7 @@ handle_sysex_msg (
       enqueue_midi_msg (self, data, byte_count, timestamp);
     }
 
-  g_message (
+  g_debug (
     "Adding sysex buffer back to WinMME buffer "
     "pool");
 
@@ -440,17 +446,23 @@ windows_mme_device_input_cb (
         (uint32_t) timestamp);
       break;
     case MIM_DATA:
-      g_message (
-        "WinMME: [%s] short msg at %u", self->name,
-        (uint32_t) timestamp);
+      if (DEBUGGING)
+        {
+          g_debug (
+            "WinMME: [%s] short msg at %u", self->name,
+            (uint32_t) timestamp);
+        }
       handle_short_msg (
         self, (const uint8_t *) &midi_msg,
         (uint32_t) timestamp);
       break;
     case MIM_LONGDATA:
-      g_message (
-        "WinMME: [%s] long msg at %u", self->name,
-        (uint32_t) timestamp);
+      if (DEBUGGING)
+        {
+          g_debug (
+            "WinMME: [%s] long msg at %u", self->name,
+            (uint32_t) timestamp);
+        }
       handle_sysex_msg (
         self, (MIDIHDR *) midi_msg, (uint32_t) timestamp);
       break;
