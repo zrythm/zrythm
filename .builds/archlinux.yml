@@ -69,7 +69,7 @@ tasks:
       sudo pip3 install sphinx-intl sphinx-copybutton furo sphinxcontrib-svg2pdfconverter
       pip3 install --user 'meson' --force-reinstall
       cd zrythm
-      meson build -Dtests=true -Dmanpage=true -Db_coverage=true
+      meson build -Dtests=true -Dmanpage=true -Db_coverage=true -Dforce_fallback_for=gtk4,libadwaita,libpanel,lilv,sord,serd,sratom,lv2,zix
   - build: |
       cd zrythm
       ninja -C build
