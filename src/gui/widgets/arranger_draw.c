@@ -260,6 +260,31 @@ draw_playhead (
 }
 
 static void
+draw_debug_text (
+  ArrangerWidget * self,
+  GtkSnapshot *    snapshot,
+  GdkRectangle *   rect)
+{
+  gtk_snapshot_append_color (
+    snapshot, &Z_GDK_RGBA_INIT (0, 0, 0, 0.4),
+    &GRAPHENE_RECT_INIT (
+      (float) rect->x, (float) rect->y, 400.f, 400.f));
+  GtkStyleContext * style_ctx =
+    gtk_widget_get_style_context (GTK_WIDGET (self));
+  char debug_txt[6000];
+  sprintf (
+    debug_txt,
+    "Hover: (%f, %f)\nNormalized hover: (%f, %f)\nAction: %s",
+    self->hover_x, self->hover_y, self->hover_x - rect->x,
+    self->hover_y - rect->y,
+    ui_get_overlay_action_string (self->action));
+  pango_layout_set_markup (self->debug_layout, debug_txt, -1);
+  gtk_snapshot_render_layout (
+    snapshot, style_ctx, rect->x + 4, rect->y + 4,
+    self->debug_layout);
+}
+
+static void
 draw_timeline_bg (
   ArrangerWidget * self,
   GtkSnapshot *    snapshot,
@@ -1199,6 +1224,11 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     visible_rect_gdk.x, visible_rect_gdk.y);
   cairo_paint (cr);
 #endif
+
+  if (DEBUGGING)
+    {
+      draw_debug_text (self, snapshot, &visible_rect_gdk);
+    }
 
   gint64 end_time = g_get_monotonic_time ();
 

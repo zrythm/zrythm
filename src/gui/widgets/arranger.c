@@ -5010,8 +5010,7 @@ arranger_widget_is_playhead_visible (ArrangerWidget * self)
 }
 
 static gboolean
-update_hadj_value (
-  gpointer user_data)
+update_hadj_value (gpointer user_data)
 {
   ArrangerWidget * self = Z_ARRANGER_WIDGET (user_data);
 
@@ -6365,6 +6364,9 @@ arranger_widget_setup (
       break;
     }
 
+  self->debug_layout = z_cairo_create_pango_layout_from_string (
+    GTK_WIDGET (self), "8", PANGO_ELLIPSIZE_NONE, 0);
+
   GtkEventControllerScroll * scroll_controller =
     GTK_EVENT_CONTROLLER_SCROLL (
       gtk_event_controller_scroll_new (
@@ -6458,6 +6460,8 @@ finalize (ArrangerWidget * self)
     g_object_unref, self->ap_layout);
   object_free_w_func_and_null (
     g_object_unref, self->audio_layout);
+  object_free_w_func_and_null (
+    g_object_unref, self->debug_layout);
 
   object_free_w_func_and_null (
     g_object_unref, self->symbolic_link_texture);

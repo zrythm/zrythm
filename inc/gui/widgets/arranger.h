@@ -435,6 +435,9 @@ typedef struct _ArrangerWidget
    */
   PangoLayout * audio_layout;
 
+  /** Layout for debug text. */
+  PangoLayout * debug_layout;
+
   /**
    * Cached playhead x to draw.
    *
