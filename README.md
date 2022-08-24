@@ -68,9 +68,28 @@ on our website.
 Zrythm is currently in beta. The project format is
 stable and we are working towards a v1 release.
 
-### Supported backends
-- Audio: JACK (PipeWire), PulseAudio, SDL2, RtAudio (ALSA/WASAPI/CoreAudio)
-- MIDI: JACK (PipeWire), WindowsMME, RtMidi (ALSA sequencer/Windows MME/CoreMIDI)
+### Audio backend support status
+
+|  Backend  |  Status  |
+| ---- | ---- |
+|  JACK  |  Fully supported + PipeWire support  |
+|  PulseAudio (RtAudio)  |  Supported  |
+|  PulseAudio |  Has known issues |
+|  SDL2 |  Has known issues |
+|  ALSA (RtAudio) |  Supported |
+|  ALSA |  Broken |
+|  WASAPI (RtAudio) |  Supported |
+|  CoreAudio (RtAudio) |  Supported |
+
+### MIDI backend support status
+
+|  Backend  |  Status  |
+| ---- | ---- |
+|  JACK MIDI |  Fully supported + PipeWire support  |
+|  WindowsMME |  Supported  |
+|  ALSA Sequencer (RtMidi) |  Supported |
+|  WindowsMME (RtMidi) |  Supported |
+|  CoreMIDI (RtMidi) |  Supported |
 
 ### Supported platforms
 - GNU/Linux, FreeBSD, Windows, MacOS
