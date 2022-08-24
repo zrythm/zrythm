@@ -298,104 +298,6 @@ create_model_for_files (PanelFileBrowserWidget * self)
 }
 
 static void
-on_bookmark_row_activated (
-  GtkTreeView *            tree_view,
-  GtkTreePath *            tp,
-  GtkTreeViewColumn *      column,
-  PanelFileBrowserWidget * self)
-{
-  GtkTreeModel * model =
-    GTK_TREE_MODEL (gtk_tree_view_get_model (tree_view));
-  GtkTreeIter iter;
-  gtk_tree_model_get_iter (model, &iter, tp);
-  GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (model, &iter, 2, &value);
-  FileBrowserLocation * loc = g_value_get_pointer (&value);
-
-  file_manager_set_selection (FILE_MANAGER, loc, true, true);
-  self->files_selection_model =
-    GTK_SINGLE_SELECTION (create_model_for_files (self));
-  gtk_list_view_set_model (
-    self->files_list_view,
-    GTK_SELECTION_MODEL (self->files_selection_model));
-}
-
-static void
-on_file_search_changed (
-  GtkSearchEntry *         search_entry,
-  PanelFileBrowserWidget * self)
-{
-  gtk_filter_changed (
-    GTK_FILTER (self->files_filter),
-    GTK_FILTER_CHANGE_DIFFERENT);
-}
-
-static void
-on_file_row_activated (
-  GtkListView * list_view,
-  guint         position,
-  gpointer      user_data)
-{
-  PanelFileBrowserWidget * self =
-    Z_PANEL_FILE_BROWSER_WIDGET (user_data);
-
-  GObject * gobj = g_list_model_get_object (
-    G_LIST_MODEL (self->files_selection_model), position);
-  if (!gobj)
-    return;
-
-  /* get wrapped object */
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  SupportedFile * descr = (SupportedFile *) wrapped_obj->obj;
-
-  if (
-    descr->type == FILE_TYPE_DIR
-    || descr->type == FILE_TYPE_PARENT_DIR)
-    {
-      /* FIXME free unnecessary stuff */
-      FileBrowserLocation * loc =
-        object_new (FileBrowserLocation);
-      loc->path = descr->abs_path;
-      loc->label = g_path_get_basename (loc->path);
-      file_manager_set_selection (
-        FILE_MANAGER, loc, true, true);
-      self->files_selection_model =
-        GTK_SINGLE_SELECTION (create_model_for_files (self));
-      gtk_list_view_set_model (
-        self->files_list_view,
-        GTK_SELECTION_MODEL (self->files_selection_model));
-    }
-  else if (
-    descr->type == FILE_TYPE_WAV || descr->type == FILE_TYPE_OGG
-    || descr->type == FILE_TYPE_FLAC
-    || descr->type == FILE_TYPE_MP3)
-    {
-      GError * err = NULL;
-      bool     ret = track_create_with_action (
-            TRACK_TYPE_AUDIO, NULL, descr, PLAYHEAD,
-            TRACKLIST->num_tracks, 1, &err);
-      if (!ret)
-        {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to create track"));
-        }
-    }
-  else if (descr->type == FILE_TYPE_MIDI)
-    {
-      GError * err = NULL;
-      bool     ret = track_create_with_action (
-            TRACK_TYPE_MIDI, NULL, descr, PLAYHEAD,
-            TRACKLIST->num_tracks, 1, &err);
-      if (!ret)
-        {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to create track"));
-        }
-    }
-}
-
-static void
 on_files_selection_changed (
   GtkSelectionModel * selection_model,
   guint               position,
@@ -449,6 +351,7 @@ files_list_view_setup (
   GtkSelectionModel *      selection_model)
 {
   gtk_list_view_set_model (list_view, selection_model);
+  ItemFactory * prev_factory = self->files_item_factory;
   self->files_item_factory = item_factory_new (
     ITEM_FACTORY_ICON_AND_TEXT, false, NULL);
   gtk_list_view_set_factory (
@@ -457,6 +360,109 @@ files_list_view_setup (
   g_signal_connect (
     G_OBJECT (selection_model), "selection-changed",
     G_CALLBACK (on_files_selection_changed), self);
+
+  if (prev_factory)
+    {
+      item_factory_free (prev_factory);
+    }
+}
+
+static void
+on_bookmark_row_activated (
+  GtkTreeView *            tree_view,
+  GtkTreePath *            tp,
+  GtkTreeViewColumn *      column,
+  PanelFileBrowserWidget * self)
+{
+  GtkTreeModel * model =
+    GTK_TREE_MODEL (gtk_tree_view_get_model (tree_view));
+  GtkTreeIter iter;
+  gtk_tree_model_get_iter (model, &iter, tp);
+  GValue value = G_VALUE_INIT;
+  gtk_tree_model_get_value (model, &iter, 2, &value);
+  FileBrowserLocation * loc = g_value_get_pointer (&value);
+
+  file_manager_set_selection (FILE_MANAGER, loc, true, true);
+  self->files_selection_model =
+    GTK_SINGLE_SELECTION (create_model_for_files (self));
+  files_list_view_setup (
+    self, self->files_list_view,
+    GTK_SELECTION_MODEL (self->files_selection_model));
+}
+
+static void
+on_file_search_changed (
+  GtkSearchEntry *         search_entry,
+  PanelFileBrowserWidget * self)
+{
+  gtk_filter_changed (
+    GTK_FILTER (self->files_filter),
+    GTK_FILTER_CHANGE_DIFFERENT);
+}
+
+static void
+on_file_row_activated (
+  GtkListView * list_view,
+  guint         position,
+  gpointer      user_data)
+{
+  PanelFileBrowserWidget * self =
+    Z_PANEL_FILE_BROWSER_WIDGET (user_data);
+
+  GObject * gobj = g_list_model_get_object (
+    G_LIST_MODEL (self->files_selection_model), position);
+  if (!gobj)
+    return;
+
+  /* get wrapped object */
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
+  SupportedFile * descr = (SupportedFile *) wrapped_obj->obj;
+
+  if (
+    descr->type == FILE_TYPE_DIR
+    || descr->type == FILE_TYPE_PARENT_DIR)
+    {
+      /* FIXME free unnecessary stuff */
+      FileBrowserLocation * loc =
+        object_new (FileBrowserLocation);
+      loc->path = descr->abs_path;
+      loc->label = g_path_get_basename (loc->path);
+      file_manager_set_selection (
+        FILE_MANAGER, loc, true, true);
+      self->files_selection_model =
+        GTK_SINGLE_SELECTION (create_model_for_files (self));
+      files_list_view_setup (
+        self, self->files_list_view,
+        GTK_SELECTION_MODEL (self->files_selection_model));
+    }
+  else if (
+    descr->type == FILE_TYPE_WAV || descr->type == FILE_TYPE_OGG
+    || descr->type == FILE_TYPE_FLAC
+    || descr->type == FILE_TYPE_MP3)
+    {
+      GError * err = NULL;
+      bool     ret = track_create_with_action (
+            TRACK_TYPE_AUDIO, NULL, descr, PLAYHEAD,
+            TRACKLIST->num_tracks, 1, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s", _ ("Failed to create track"));
+        }
+    }
+  else if (descr->type == FILE_TYPE_MIDI)
+    {
+      GError * err = NULL;
+      bool     ret = track_create_with_action (
+            TRACK_TYPE_MIDI, NULL, descr, PLAYHEAD,
+            TRACKLIST->num_tracks, 1, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s", _ ("Failed to create track"));
+        }
+    }
 }
 
 static void
