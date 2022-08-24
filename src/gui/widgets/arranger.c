@@ -5010,6 +5010,29 @@ arranger_widget_is_playhead_visible (ArrangerWidget * self)
 }
 
 static gboolean
+update_hadj_value (
+  gpointer user_data)
+{
+  ArrangerWidget * self = Z_ARRANGER_WIDGET (user_data);
+
+  GtkScrolledWindow * scroll =
+    arranger_widget_get_scrolled_window (self);
+  GtkAdjustment * adj =
+    gtk_scrolled_window_get_hadjustment (scroll);
+  double prev_adj_val = gtk_adjustment_get_value (adj);
+
+  if (!math_doubles_equal (self->new_hadj_val, prev_adj_val))
+    {
+      g_debug ("setting hadj to %f", self->new_hadj_val);
+      gtk_adjustment_set_value (adj, self->new_hadj_val);
+
+      g_idle_add (update_hadj_value, self);
+    }
+
+  return G_SOURCE_REMOVE;
+}
+
+static gboolean
 on_scroll (
   GtkEventControllerScroll * scroll_controller,
   gdouble                    dx,
@@ -5068,6 +5091,10 @@ on_scroll (
       arranger_widget_px_to_pos (
         self, x, &cursor_pos, F_PADDING);
 
+#if 0
+      position_print (&cursor_pos);
+#endif
+
       /* get px diff so we can calculate the new
        * adjustment later */
       double diff = x - adj_val;
@@ -5084,17 +5111,28 @@ on_scroll (
             ruler, ruler_widget_get_zoom_level (ruler) * 1.3);
         }
 
-      int new_x =
-        arranger_widget_pos_to_px (self, &cursor_pos, 1);
+      int new_x = arranger_widget_pos_to_px (
+        self, &cursor_pos, F_PADDING);
+
+#if 0
+      g_debug (
+        "x %f adj val %f diff %f new x %d", x, adj_val, diff,
+        new_x);
+#endif
 
       /* refresh relevant widgets */
       if (self->type == TYPE (TIMELINE))
         timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
 
-      /* get updated adjustment and set its value
-       at the same offset as before */
-      adj = gtk_scrolled_window_get_hadjustment (scroll);
-      gtk_adjustment_set_value (adj, new_x - diff);
+      /* set adjustment value at the same offset as before */
+      double new_hadj_val = new_x - diff;
+      self->new_hadj_val = new_hadj_val;
+      update_hadj_value (self);
+
+      /* also add an idle call because the value seems to get
+       * changed after being set here (likely because the
+       * ruler size changes) */
+      g_idle_add (update_hadj_value, self);
     }
 
   return true;

@@ -407,6 +407,10 @@ typedef struct _ArrangerWidget
    */
   bool first_draw;
 
+  /** New temporary hadjustment value used when zooming
+   * in/out. */
+  double new_hadj_val;
+
   /** Cached setting. */
   TransportDisplay ruler_display;
 
