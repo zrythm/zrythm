@@ -41,7 +41,7 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (KnobWidget, knob_widget, GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (KnobWidget, knob_widget, GTK_TYPE_WIDGET)
 
 #define ARC_CUT_ANGLE 60.f
 
@@ -104,20 +104,22 @@ set_real_val (KnobWidget * self, float real_val)
  * Draws the knob.
  */
 static void
-knob_draw_cb (
-  GtkDrawingArea * drawing_area,
-  cairo_t *        cr,
-  int              width,
-  int              height,
-  gpointer         user_data)
+knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
-  KnobWidget * self = Z_KNOB_WIDGET (user_data);
-  GtkWidget *  widget = GTK_WIDGET (drawing_area);
+  KnobWidget * self = Z_KNOB_WIDGET (widget);
+
+  int width = gtk_widget_get_allocated_width (widget);
+  int height = gtk_widget_get_allocated_height (widget);
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
 
-  gtk_render_background (context, cr, 0, 0, width, height);
+  gtk_snapshot_render_background (
+    snapshot, context, 0, 0, width, height);
+
+  cairo_t * cr = gtk_snapshot_append_cairo (
+    snapshot, &GRAPHENE_RECT_INIT (0, 0, width, height));
+
   cairo_pattern_t * shade_pattern;
 
   const float scale = (float) MIN (width, height);
@@ -375,6 +377,8 @@ knob_draw_cb (
     }
 
   cairo_identity_matrix (cr);
+
+  cairo_destroy (cr);
 }
 
 static void
@@ -534,8 +538,6 @@ _knob_widget_new (
     GTK_EVENT_CONTROLLER (motion_controller));
 
   /* connect signals */
-  gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self), knob_draw_cb, self, NULL);
   g_signal_connect (
     G_OBJECT (self->drag), "drag-update",
     G_CALLBACK (drag_update), self);
@@ -547,6 +549,15 @@ _knob_widget_new (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
 
   return self;
+}
+
+static void
+dispose (KnobWidget * self)
+{
+  gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (knob_widget_parent_class)
+    ->dispose (G_OBJECT (self));
 }
 
 static void
@@ -562,20 +573,29 @@ finalize (KnobWidget * self)
 static void
 knob_widget_init (KnobWidget * self)
 {
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
   self->layout = z_cairo_create_pango_layout_from_string (
     (GtkWidget *) self, "7", PANGO_ELLIPSIZE_NONE, -1);
-
-  gtk_widget_set_visible (GTK_WIDGET (self), true);
 }
 
 static void
 knob_widget_class_init (KnobWidgetClass * klass)
 {
-  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  wklass->snapshot = knob_snapshot;
 
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BIN_LAYOUT);
+
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
   oklass->finalize = (GObjectFinalizeFunc) finalize;
 }

@@ -1,77 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="ModulatorMacroWidget" parent="GtkGrid">
-    <property name="column_spacing">1</property>
+  <template class="ModulatorMacroWidget" parent="GtkWidget">
     <child>
-      <object class="GtkDrawingArea" id="output">
-        <property name="margin-start">4</property>
-        <property name="margin-end">4</property>
-        <layout>
-          <property name="column">2</property>
-          <property name="row">1</property>
-        </layout>
-      </object>
-    </child>
-    <child>
-      <object class="GtkDrawingArea" id="inputs">
-        <property name="margin-top">2</property>
-        <property name="margin-bottom">2</property>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">2</property>
-          <property name="column-span">3</property>
-        </layout>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="outputs">
-        <property name="focusable">1</property>
-        <property name="focus_on_click">0</property>
-        <property name="receives_default">1</property>
-        <property name="valign">start</property>
-        <style>
-          <class name="small-button"/>
-        </style>
+      <object class="GtkGrid" id="grid">
+        <property name="column_spacing">1</property>
         <child>
-          <object class="GtkImage">
-            <property name="icon-name">automate</property>
+          <object class="GtkDrawingArea" id="output">
+            <property name="margin-start">4</property>
+            <property name="margin-end">4</property>
+            <layout>
+              <property name="column">2</property>
+              <property name="row">1</property>
+            </layout>
           </object>
         </child>
-        <layout>
-          <property name="column">2</property>
-          <property name="row">0</property>
-        </layout>
-      </object>
-    </child>
-    <child>
-      <object class="GtkButton" id="add_input">
-        <property name="focusable">1</property>
-        <property name="focus_on_click">0</property>
-        <property name="receives_default">1</property>
-        <property name="valign">end</property>
-        <style>
-          <class name="small-button"/>
-        </style>
         <child>
-          <object class="GtkImage">
-            <property name="icon-name">add</property>
+          <object class="GtkDrawingArea" id="inputs">
+            <property name="margin-top">2</property>
+            <property name="margin-bottom">2</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">2</property>
+              <property name="column-span">3</property>
+            </layout>
           </object>
         </child>
-        <layout>
-          <property name="column">0</property>
-          <property name="row">1</property>
-        </layout>
+        <child>
+          <object class="GtkButton" id="outputs">
+            <property name="focusable">1</property>
+            <property name="focus_on_click">0</property>
+            <property name="receives_default">1</property>
+            <property name="valign">start</property>
+            <style>
+              <class name="small-button"/>
+            </style>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">automate</property>
+              </object>
+            </child>
+            <layout>
+              <property name="column">2</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="add_input">
+            <property name="focusable">1</property>
+            <property name="focus_on_click">0</property>
+            <property name="receives_default">1</property>
+            <property name="valign">end</property>
+            <style>
+              <class name="small-button"/>
+            </style>
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">add</property>
+              </object>
+            </child>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
       </object>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
-    </child>
-    <child>
-      <placeholder/>
     </child>
   </template>
 </interface>

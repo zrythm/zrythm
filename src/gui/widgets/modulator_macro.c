@@ -27,7 +27,7 @@
 G_DEFINE_TYPE (
   ModulatorMacroWidget,
   modulator_macro_widget,
-  GTK_TYPE_GRID)
+  GTK_TYPE_WIDGET)
 
 static void
 on_inputs_draw (
@@ -146,6 +146,10 @@ on_knob_right_click (
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
+  KnobWidget * knob =
+    Z_KNOB_WIDGET (gtk_event_controller_get_widget (
+      GTK_EVENT_CONTROLLER (gesture)));
+
   char tmp[600];
   sprintf (tmp, "app.reset-control::%p", port);
   menuitem = z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
@@ -160,7 +164,8 @@ on_knob_right_click (
     z_gtk_create_menu_item (_ ("View info"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
-  z_gtk_show_context_menu_from_g_menu (NULL, x, y, menu);
+  z_gtk_show_context_menu_from_g_menu (
+    knob->popover_menu, x, y, menu);
 }
 
 void
@@ -219,8 +224,8 @@ modulator_macro_widget_new (int modulator_macro_idx)
     (GenericStringSetter) modulator_macro_processor_set_name,
     knob, GTK_ORIENTATION_VERTICAL, true, 2);
   gtk_grid_attach (
-    GTK_GRID (self), GTK_WIDGET (self->knob_with_name), 1, 0,
-    1, 2);
+    GTK_GRID (self->grid), GTK_WIDGET (self->knob_with_name),
+    1, 0, 1, 2);
 
   /* add context menu */
   GtkGestureClick * mp =
@@ -276,6 +281,7 @@ static void
 dispose (ModulatorMacroWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->connections_popover));
+  gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
   G_OBJECT_CLASS (modulator_macro_widget_parent_class)
     ->dispose (G_OBJECT (self));
@@ -285,16 +291,19 @@ static void
 modulator_macro_widget_class_init (
   ModulatorMacroWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
 
-  resources_set_class_template (klass, "modulator_macro.ui");
+  resources_set_class_template (wklass, "modulator_macro.ui");
 
-  gtk_widget_class_set_css_name (klass, "modulator-macro");
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_css_name (wklass, "modulator-macro");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, ModulatorMacroWidget, x)
+    wklass, ModulatorMacroWidget, x)
 
+  BIND_CHILD (grid);
   BIND_CHILD (inputs);
   BIND_CHILD (output);
   BIND_CHILD (add_input);
@@ -324,4 +333,9 @@ modulator_macro_widget_init (ModulatorMacroWidget * self)
     port_connections_popover_widget_new (GTK_WIDGET (self));
   gtk_widget_set_parent (
     GTK_WIDGET (self->connections_popover), GTK_WIDGET (self));
+
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 }
