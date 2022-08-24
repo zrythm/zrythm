@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
@@ -134,7 +118,7 @@ create_model_for_ports (
         port->id.label, 2, port, -1); \
     }
 
-  Port * port;
+  /* if filtering to track ports */
   if (track)
     {
       Channel * ch = track->channel;
@@ -144,6 +128,7 @@ create_model_for_ports (
             (type == TYPE_AUDIO || type == TYPE_CV)
             && track->out_signal_type == TYPE_AUDIO)
             {
+              Port * port;
               port = ch->prefader->stereo_out->l;
               ADD_ROW;
               port = ch->prefader->stereo_out->r;
@@ -157,55 +142,64 @@ create_model_for_ports (
             type == TYPE_EVENT
             && track->out_signal_type == TYPE_EVENT)
             {
+              Port * port;
               port = ch->midi_out;
               ADD_ROW;
             }
         }
       else if (flow == FLOW_OUTPUT)
         {
-          if (type == TYPE_AUDIO || type == TYPE_CV)
+          if (type == TYPE_AUDIO)
             {
               if (track->in_signal_type == TYPE_AUDIO)
                 {
+                  Port * port;
                   port = track->processor->stereo_in->l;
                   ADD_ROW;
                   port = track->processor->stereo_in->r;
                   ADD_ROW;
                 }
-
+            }
+          else if (type == TYPE_CV)
+            {
               if (track->channel)
                 {
+                  Port * port;
                   port = track->channel->fader->amp;
                   ADD_ROW;
                   port = track->channel->fader->balance;
                   ADD_ROW;
                 }
-
               if (track->type == TRACK_TYPE_MODULATOR)
                 {
                   for (int j = 0;
                        j < track->num_modulator_macros; j++)
                     {
+                      Port * port;
                       port = track->modulator_macros[j]->cv_in;
                       ADD_ROW;
                     }
                 }
             }
-          else if (
-            type == TYPE_EVENT
-            && track->in_signal_type == TYPE_EVENT)
+          else if (type == TYPE_EVENT)
             {
-              port = track->processor->midi_in;
-              ADD_ROW;
+              if (track->in_signal_type == TYPE_EVENT)
+                {
+                  Port * port;
+                  port = track->processor->midi_in;
+                  ADD_ROW;
+                }
             }
-        }
-    }
+        } /* endif output */
+    }     /* endif filtering to track ports */
+  /* else if filtering to plugin ports */
   else if (pl)
     {
       if (flow == FLOW_INPUT)
         {
           for (int i = 0; i < pl->num_out_ports; i++)
             {
+              Port * port;
               port = pl->out_ports[i];
 
               if (
@@ -222,6 +216,7 @@ create_model_for_ports (
         {
           for (int i = 0; i < pl->num_in_ports; i++)
             {
+              Port * port;
               port = pl->in_ports[i];
 
               if (
