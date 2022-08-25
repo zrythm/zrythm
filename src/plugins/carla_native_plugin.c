@@ -1635,9 +1635,25 @@ carla_native_plugin_instantiate (
   self->native_plugin_handle =
     self->native_plugin_descriptor->instantiate (
       &self->native_host_descriptor);
+  if (!self->native_plugin_handle)
+    {
+      g_set_error_literal (
+        error, Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR,
+        Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_INSTANTIATION_FAILED,
+        "Failed to get native plugin handle");
+      return -1;
+    }
   self->host_handle = carla_create_native_plugin_host_handle (
     self->native_plugin_descriptor,
     self->native_plugin_handle);
+  if (!self->host_handle)
+    {
+      g_set_error_literal (
+        error, Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR,
+        Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_INSTANTIATION_FAILED,
+        "Failed to get host handle");
+      return -1;
+    }
   self->carla_plugin_id = 0;
 
   /* set binary paths */
