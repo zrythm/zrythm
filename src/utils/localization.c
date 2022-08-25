@@ -328,6 +328,13 @@ localization_init (
       setlocale (LC_ALL, "C");
     }
 
+  /* if LC_ALL passed, use that value instead of logic above */
+  const char * lc_all_from_env = g_getenv ("LC_ALL");
+  if (lc_all_from_env)
+    {
+      setlocale (LC_ALL, lc_all_from_env);
+    }
+
     /* bind text domain */
 #if defined(_WOE32) && defined(INSTALLER_VER)
   const char * windows_localedir = "share/locale";
