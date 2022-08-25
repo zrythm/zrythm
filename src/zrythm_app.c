@@ -115,6 +115,9 @@ G_DEFINE_TYPE (ZrythmApp, zrythm_app, GTK_TYPE_APPLICATION);
 static void
 segv_handler (int sig)
 {
+  /* stop this handler from being called multiple times */
+  signal (SIGSEGV, SIG_DFL);
+
   char prefix[200];
 #ifdef _WOE32
   strcpy (prefix, _ ("Error - Backtrace:\n"));
@@ -155,6 +158,7 @@ segv_handler (int sig)
           gtk_window_present (
             GTK_WINDOW (zrythm_app->bug_report_dialog));
         }
+
       return;
     }
 
