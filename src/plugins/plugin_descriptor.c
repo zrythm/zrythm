@@ -408,6 +408,7 @@ CarlaBridgeMode
 plugin_descriptor_get_min_bridge_mode (
   const PluginDescriptor * self)
 {
+  CarlaBridgeMode mode = CARLA_BRIDGE_NONE;
   if (self->protocol == PROT_LV2)
     {
       /* TODO if the UI and DSP binary is the same
@@ -423,6 +424,7 @@ plugin_descriptor_get_min_bridge_mode (
       bool             needs_bridging = lv2_plugin_pick_ui (
                     uis, LV2_PLUGIN_UI_FOR_BRIDGING, &picked_ui,
                     &picked_ui_type);
+
       if (needs_bridging)
         {
           const LilvNode * ui_uri =
@@ -447,30 +449,22 @@ plugin_descriptor_get_min_bridge_mode (
             || lilv_node_equals (
               picked_ui_type, PM_GET_NODE (LV2_UI__Gtk3UI)))
             {
-              return CARLA_BRIDGE_FULL;
+              mode = CARLA_BRIDGE_FULL;
             }
           else
             {
-              return CARLA_BRIDGE_UI;
+              mode = CARLA_BRIDGE_UI;
             }
           lilv_nodes_free (ui_required_features);
-        }
-      else /* does not need bridging */
-        {
-          return CARLA_BRIDGE_NONE;
         }
       lilv_uis_free (uis);
     }
   else if (self->arch == ARCH_32)
     {
-      return CARLA_BRIDGE_FULL;
-    }
-  else
-    {
-      return CARLA_BRIDGE_NONE;
+      mode = CARLA_BRIDGE_FULL;
     }
 
-  g_return_val_if_reached (CARLA_BRIDGE_NONE);
+  return mode;
 }
 
 /**

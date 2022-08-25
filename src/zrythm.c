@@ -698,6 +698,8 @@ zrythm_free (Zrythm * self)
   object_free_w_func_and_null (
     symap_free, self->error_domain_symap);
 
+  object_free_w_func_and_null (settings_free, self->settings);
+
   if (ZRYTHM == self)
     {
       ZRYTHM = NULL;
