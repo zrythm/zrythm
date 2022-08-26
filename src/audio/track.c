@@ -1244,7 +1244,7 @@ NONNULL
 bool
 track_get_should_be_visible (Track * self)
 {
-  if (!self->visible)
+  if (!self->visible || self->filtered)
     return false;
 
   GPtrArray * parents = g_ptr_array_new ();

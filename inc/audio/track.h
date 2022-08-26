@@ -238,6 +238,10 @@ typedef struct Track
   /** Whole Track is visible or not. */
   bool visible;
 
+  /** Track will be hidden if true (temporary and not
+   * serializable). */
+  bool filtered;
+
   /** Height of the main part (without lanes). */
   double main_height;
 

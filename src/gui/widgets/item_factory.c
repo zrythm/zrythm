@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/midi_mapping.h"
+#include "gui/backend/event.h"
+#include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/dialogs/project_assistant.h"
@@ -59,6 +61,7 @@ static void
 on_toggled (GtkCheckButton * self, gpointer user_data)
 {
   ItemFactoryData * data = (ItemFactoryData *) user_data;
+  ItemFactory *     factory = data->factory;
 
   WrappedObjectWithChangeSignal * obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data->obj);
@@ -79,6 +82,17 @@ on_toggled (GtkCheckButton * self, gpointer user_data)
           {
             HANDLE_ERROR (
               err, "%s", _ ("Failed to enable binding"));
+          }
+      }
+      break;
+    case WRAPPED_OBJECT_TYPE_TRACK:
+      {
+        Track * track = (Track *) obj->obj;
+        if (string_is_equal (
+              factory->column_name, _ ("Visibility")))
+          {
+            track->visible = active;
+            EVENTS_PUSH (ET_TRACK_VISIBILITY_CHANGED, track);
           }
       }
       break;
@@ -595,6 +609,18 @@ item_factory_bind_cb (
                 }
             }
             break;
+          case WRAPPED_OBJECT_TYPE_TRACK:
+            {
+              if (string_is_equal (
+                    self->column_name, _ ("Visibility")))
+                {
+                  Track * track = (Track *) obj->obj;
+                  gtk_check_button_set_active (
+                    GTK_CHECK_BUTTON (check_btn),
+                    track->visible);
+                }
+            }
+            break;
           default:
             break;
           }
@@ -843,6 +869,17 @@ item_factory_bind_cb (
                   self->column_name, _ ("Last Modified")))
                 {
                   strcpy (str, nfo->modified_str);
+                }
+            }
+            break;
+          case WRAPPED_OBJECT_TYPE_TRACK:
+            {
+              Track * track = (Track *) obj->obj;
+
+              if (string_is_equal (
+                    self->column_name, _ ("Name")))
+                {
+                  strcpy (str, track->name);
                 }
             }
           default:
