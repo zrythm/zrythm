@@ -48,6 +48,12 @@ tracklist_header_widget_init (TracklistHeaderWidget * self)
 
   gtk_menu_button_set_create_popup_func (
     self->filter_menu_btn, create_filter_popup, self, NULL);
+
+  /* hack - this will cause the tracklist to get filtered */
+  TrackFilterPopoverWidget * track_filter_popover =
+    track_filter_popover_widget_new ();
+  g_object_ref_sink (track_filter_popover);
+  g_object_unref (track_filter_popover);
 }
 
 static void

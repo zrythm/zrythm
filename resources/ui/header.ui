@@ -32,7 +32,7 @@
           <object class="AdwViewStackPage">
             <property name="name">view</property>
             <property name="title" translatable="yes">View</property>
-            <property name="icon-name">view-visible</property>
+            <property name="icon-name">gnome-icon-library-eye-open-negative-filled-symbolic</property>
             <property name="child">
               <object class="ViewToolbarWidget" id="view_toolbar">
               </object>

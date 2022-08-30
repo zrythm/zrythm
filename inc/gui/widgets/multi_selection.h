@@ -32,9 +32,13 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
+/**
+ * Callback to call when any selection changes.
+ */
 typedef void (*MultiSelectionChangedCallback) (
-  void * object,
-  int    selection);
+  MultiSelectionWidget * multi_selection,
+  const GArray *         selection_indices,
+  void *                 object);
 
 /**
  * A menu button that allows selecting active
@@ -47,8 +51,8 @@ typedef struct _MultiSelectionWidget
   /** Array of items as string labels. */
   GArray * item_strings;
 
-  /** Array of selected items (subset of
-   * MultiSelectionWidget.item_strings). */
+  /** Array of selected item indices from
+   * MultiSelectionWidget.item_strings. */
   GArray * selections;
 
   /** Object to call callbacks with. */
@@ -67,7 +71,7 @@ multi_selection_widget_setup (
   const cyaml_strval_t *        cyaml_strings,
   const int                     num_items,
   MultiSelectionChangedCallback sel_changed_cb,
-  const int *                   selections,
+  const guint *                 selections,
   const int                     num_selections,
   void *                        object);
 

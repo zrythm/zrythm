@@ -27,6 +27,37 @@ G_DEFINE_TYPE (
   GTK_TYPE_POPOVER)
 
 static void
+on_track_types_changed (
+  MultiSelectionWidget * multi_selection,
+  const GArray *         selection_indices,
+  void *                 user_data)
+{
+  TrackFilterPopoverWidget * self =
+    Z_TRACK_FILTER_POPOVER_WIDGET (user_data);
+
+  g_debug (
+    "selected filter track types changed: %u selected",
+    selection_indices->len);
+
+  GVariantBuilder builder;
+  g_variant_builder_init (
+    &builder, (const GVariantType *) "au");
+  for (guint i = 0; i < selection_indices->len; i++)
+    {
+      guint idx = g_array_index (selection_indices, guint, i);
+      g_variant_builder_add (&builder, "u", idx);
+    }
+  GVariant * variant = g_variant_builder_end (&builder);
+  g_settings_set_value (S_UI, "track-filter-type", variant);
+  g_variant_ref_sink (variant);
+  g_variant_unref (variant);
+
+  gtk_filter_changed (
+    GTK_FILTER (self->custom_filter),
+    GTK_FILTER_CHANGE_DIFFERENT);
+}
+
+static void
 on_track_name_changed (
   GtkEditable *              editable,
   TrackFilterPopoverWidget * self)
@@ -54,18 +85,40 @@ filter_func (void * gobj, void * user_data)
   Track * track = (Track *) wrapped_track->obj;
   g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
 
-  bool ret = string_contains_substr_case_insensitive (
+  bool filtered = !string_contains_substr_case_insensitive (
     track->name, name);
-
   g_free (name);
 
-  if (track->filtered == ret)
+  if (!filtered)
     {
-      track->filtered = !ret;
+      GVariant * variant =
+        g_settings_get_value (S_UI, "track-filter-type");
+      gsize         n_elements;
+      gconstpointer arr_ptr = g_variant_get_fixed_array (
+        variant, &n_elements, sizeof (guint));
+      const guint * elements = (const guint *) arr_ptr;
+      bool          track_type_matched = n_elements == 0;
+      for (gsize i = 0; i < n_elements; i++)
+        {
+          guint cur_track_type = elements[i];
+          if (track->type == cur_track_type)
+            {
+              track_type_matched = true;
+              break;
+            }
+        }
+      g_variant_unref (variant);
+
+      filtered = !track_type_matched;
+    }
+
+  if (track->filtered == !filtered)
+    {
+      track->filtered = filtered;
       EVENTS_PUSH (ET_TRACK_VISIBILITY_CHANGED, track);
     }
 
-  return ret;
+  return !filtered;
 }
 
 static void
@@ -128,6 +181,24 @@ setup_col_view (
 
   /* refresh to add items */
   refresh_track_col_view_items (self);
+}
+
+static int
+get_track_type_selections (guint * selections)
+{
+  GVariant * variant =
+    g_settings_get_value (S_UI, "track-filter-type");
+  gsize         n_elements;
+  gconstpointer arr_ptr = g_variant_get_fixed_array (
+    variant, &n_elements, sizeof (guint));
+  const guint * elements = (const guint *) arr_ptr;
+  for (gsize i = 0; i < n_elements; i++)
+    {
+      selections[i] = elements[i];
+    }
+  g_variant_unref (variant);
+
+  return (int) n_elements;
 }
 
 TrackFilterPopoverWidget *
@@ -199,9 +270,12 @@ track_filter_popover_widget_init (
     ADW_PREFERENCES_ROW (exp_row), _ ("Track types"));
   MultiSelectionWidget * multi_select =
     multi_selection_widget_new ();
+  guint selections[100];
+  int num_selections = get_track_type_selections (selections);
   multi_selection_widget_setup (
     multi_select, NULL, track_type_strings,
-    TRACK_TYPE_FOLDER + 1, NULL, NULL, 0, NULL);
+    TRACK_TYPE_FOLDER + 1, on_track_types_changed, selections,
+    num_selections, self);
   GtkListBoxRow * list_box_row =
     GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
   gtk_list_box_row_set_child (

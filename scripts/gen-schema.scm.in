@@ -607,10 +607,8 @@ Args:
                  "Track filter name"
                  "Name to filter tracks with.")
                (make-schema-key
-                 "track-filter-type" "ab"
-                 "[ false, false, false, false, false, false,
-                  false, false, false, false, false, false,
-                  false ]"
+                 "track-filter-type" "au"
+                 "[]"
                  "Track filter type"
                  "Track types to filter tracks with.")
              ))) ;; ui

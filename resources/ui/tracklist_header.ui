@@ -22,7 +22,29 @@
         <child>
           <object class="GtkMenuButton" id="filter_menu_btn">
             <property name="focusable">1</property>
-            <property name="icon-name">gnome-icon-library-funnel-outline-symbolic</property>
+            <property name="direction">right</property>
+            <property name="tooltip-text" translatable="yes">Track filters/visibility</property>
+            <child>
+              <object class="GtkBox">
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">gnome-icon-library-funnel-outline-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSeparator">
+                    <style>
+                      <class name="spacer"/>
+                    </style>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">gnome-icon-library-eye-open-negative-filled-symbolic</property>
+                  </object>
+                </child>
+              </object>
+            </child>
           </object>
         </child>
       </object>
