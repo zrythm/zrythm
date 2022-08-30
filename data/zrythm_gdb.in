@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-set -xe
+set -x
 
 flatpak_build="@FLATPAK_BUILD@"
 if [ "$flatpak_build" != "1" ]; then
