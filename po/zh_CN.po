@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-08-16 09:57+0900\n"
-"PO-Revision-Date: 2022-07-25 15:52+0000\n"
+"PO-Revision-Date: 2022-08-16 15:52+0000\n"
 "Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -679,14 +679,14 @@ msgid "Logarithmic"
 msgstr ""
 
 #: src/project.c:780
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read file at %s"
-msgstr "无法读取文件:%s"
+msgstr "无法读取位于 %s 文件"
 
 #: src/project.c:798
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to decompress project file at %s"
-msgstr "未能解压缩工程文件"
+msgstr "解压缩 %s 项目文件失败"
 
 #: src/project.c:860
 #, c-format
@@ -704,14 +704,12 @@ msgid "Backup found"
 msgstr "找到备份"
 
 #: src/project.c:903
-#, fuzzy
 msgid "Failed to get existing yaml"
-msgstr "编辑 scale 失败"
+msgstr "获取现有 yaml 失败"
 
 #: src/project.c:929
-#, fuzzy
 msgid "Failed to deserialize project YAML"
-msgstr "未能序列化当前项目"
+msgstr "反序列化 YAML 项目失败"
 
 #: src/project.c:942
 #, c-format
@@ -729,9 +727,8 @@ msgid "Failed to load project. Will create a new one instead."
 msgstr "无法加载项目。将创建一个新项目。"
 
 #: src/project.c:1260
-#, fuzzy
 msgid "Failed to deserialize v1 project file"
-msgstr "未能序列化当前项目"
+msgstr "反序列化 v1 项目文件失败"
 
 #: src/project.c:1502
 msgid "Failed to compress project file"
@@ -6589,14 +6586,12 @@ msgid "Selected plugin browser filter"
 msgstr "选定的插件浏览器筛选器"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:540
-#, fuzzy
 msgid "Plugin browser sort style"
-msgstr "插件浏览器大小"
+msgstr "插件浏览器排序样式"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:541
-#, fuzzy
 msgid "Selected plugin browser sort style"
-msgstr "选定的插件浏览器筛选器"
+msgstr "选定的插件浏览器排序样式"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:545
 msgid "Plugin browser collections"
