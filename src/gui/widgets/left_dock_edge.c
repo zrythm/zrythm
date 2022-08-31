@@ -10,7 +10,6 @@
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/port_connections.h"
-#include "gui/widgets/visibility.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
@@ -83,8 +82,6 @@ left_dock_edge_widget_setup (LeftDockEdgeWidget * self)
 {
   inspector_track_widget_setup (
     self->track_inspector, TRACKLIST_SELECTIONS);
-
-  visibility_widget_refresh (self->visibility);
 }
 
 static GtkScrolledWindow *
@@ -185,18 +182,6 @@ left_dock_edge_widget_init (LeftDockEdgeWidget * self)
     self, GTK_WIDGET (inspector_wrap));
   self->plugin_inspector_scroll = scroll;
   ADD_TAB (scroll, "plug", _ ("Plugin Inspector"));
-
-  /* setup visibility */
-  self->visibility = visibility_widget_new ();
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->visibility), min_width, -1);
-  self->visibility_box =
-    GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  gtk_box_append (
-    self->visibility_box, GTK_WIDGET (self->visibility));
-  ADD_TAB (
-    self->visibility_box, "view-visible",
-    _ ("Track Visibility"));
 
 #undef ADD_TAB
 }

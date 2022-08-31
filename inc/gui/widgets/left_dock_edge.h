@@ -14,7 +14,6 @@
 #include <libpanel.h>
 
 typedef struct _InspectorWidget        InspectorWidget;
-typedef struct _VisibilityWidget       VisibilityWidget;
 typedef struct _FoldableNotebookWidget FoldableNotebookWidget;
 typedef struct _InspectorTrackWidget   InspectorTrackWidget;
 typedef struct _InspectorPluginWidget  InspectorPluginWidget;
@@ -55,10 +54,6 @@ typedef struct _LeftDockEdgeWidget
 {
   GtkWidget    parent_instance;
   PanelFrame * panel_frame;
-
-  /** Track visibility. */
-  GtkBox *           visibility_box;
-  VisibilityWidget * visibility;
 
   /** For TracklistSelections. */
   GtkScrolledWindow *    track_inspector_scroll;

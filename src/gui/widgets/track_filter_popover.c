@@ -181,6 +181,10 @@ setup_col_view (
 
   /* refresh to add items */
   refresh_track_col_view_items (self);
+
+  /* set style */
+  gtk_widget_add_css_class (
+    GTK_WIDGET (self->track_col_view), "data-table");
 }
 
 static int

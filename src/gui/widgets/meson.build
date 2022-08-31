@@ -144,7 +144,6 @@ widget_srcs = files([
   'track_filter_popover.c',
   'track_input_expander.c',
   'track_properties_expander.c',
-  'track_visibility_tree.c',
   'tracklist.c',
   'tracklist_header.c',
   'transport_controls.c',
@@ -152,7 +151,6 @@ widget_srcs = files([
   'velocity.c',
   'velocity_settings.c',
   'view_toolbar.c',
-  'visibility.c',
   'volume.c',
   'zoom_buttons.c',
   ])

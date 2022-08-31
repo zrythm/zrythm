@@ -41,7 +41,6 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/right_dock_edge.h"
-#include "gui/widgets/visibility.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
@@ -1204,9 +1203,6 @@ on_create_window (
   SET_TITLE_AND_ROLE (
     MW_BOT_DOCK_EDGE->clip_editor_box, _ ("Editor"), "editor");
   SET_TITLE_AND_ROLE (
-    MW_LEFT_DOCK_EDGE->visibility_box, _ ("Visibility"),
-    "track-visibility");
-  SET_TITLE_AND_ROLE (
     MW_LEFT_DOCK_EDGE->track_inspector_scroll,
     _ ("Track Inspector"), "track-inspector");
   SET_TITLE_AND_ROLE (
@@ -1384,8 +1380,6 @@ z_gtk_notebook_make_detachable (
   g_hash_table_insert (data->ht, w, g_strdup (key))
 
   data->ht = g_hash_table_new_full (NULL, NULL, NULL, g_free);
-  ADD_PAIR (
-    "track-visibility", MW_LEFT_DOCK_EDGE->visibility_box);
   ADD_PAIR (
     "track-inspector",
     MW_LEFT_DOCK_EDGE->track_inspector_scroll);

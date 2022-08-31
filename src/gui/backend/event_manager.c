@@ -73,11 +73,9 @@
 #include "gui/widgets/top_bar.h"
 #include "gui/widgets/track.h"
 #include "gui/widgets/track_properties_expander.h"
-#include "gui/widgets/track_visibility_tree.h"
 #include "gui/widgets/tracklist.h"
 #include "gui/widgets/tracklist_header.h"
 #include "gui/widgets/transport_controls.h"
-#include "gui/widgets/visibility.h"
 #include "plugins/plugin_gtk.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -235,8 +233,6 @@ on_automation_track_added (AutomationTrack * at)
       TrackWidget * tw = (TrackWidget *) track->widget;
       track_widget_update_size (tw);
     }
-
-  visibility_widget_refresh (MW_VISIBILITY);
 }
 
 static void
@@ -480,7 +476,6 @@ on_track_name_changed (Track * track)
    * also affected */
   mixer_widget_soft_refresh (MW_MIXER);
   left_dock_edge_widget_refresh (MW_LEFT_DOCK_EDGE);
-  visibility_widget_refresh (MW_VISIBILITY);
 }
 
 static void
@@ -670,7 +665,6 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
         mixer_widget_hard_refresh (MW_MIXER);
       if (MW_TRACKLIST)
         tracklist_widget_hard_refresh (MW_TRACKLIST);
-      visibility_widget_refresh (MW_VISIBILITY);
       tracklist_header_widget_refresh_track_count (
         MW_TRACKLIST_HEADER);
       left_dock_edge_widget_refresh (MW_LEFT_DOCK_EDGE);
@@ -832,7 +826,6 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
         mixer_widget_hard_refresh (MW_MIXER);
       if (MW_TRACKLIST)
         tracklist_widget_hard_refresh (MW_TRACKLIST);
-      visibility_widget_refresh (MW_VISIBILITY);
       tracklist_header_widget_refresh_track_count (
         MW_TRACKLIST_HEADER);
       break;
@@ -857,8 +850,6 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case ET_TRACK_VISIBILITY_CHANGED:
       tracklist_widget_update_track_visibility (MW_TRACKLIST);
-      track_visibility_tree_widget_refresh (
-        MW_TRACK_VISIBILITY_TREE);
       tracklist_header_widget_refresh_track_count (
         MW_TRACKLIST_HEADER);
       mixer_widget_hard_refresh (MW_MIXER);
@@ -916,8 +907,6 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       /*if (MW_PINNED_TRACKLIST)*/
       /*pinned_tracklist_widget_hard_refresh (*/
       /*MW_PINNED_TRACKLIST);*/
-
-      visibility_widget_refresh (MW_VISIBILITY);
 
       /* needs to be called later because tracks
        * need time to get allocated */
