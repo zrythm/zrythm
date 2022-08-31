@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-08-16 09:57+0900\n"
-"PO-Revision-Date: 2022-08-07 15:52+0000\n"
+"PO-Revision-Date: 2022-08-18 15:52+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -666,14 +666,14 @@ msgid "Logarithmic"
 msgstr "Logarítmic"
 
 #: src/project.c:780
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read file at %s"
-msgstr "Error en llegir el fitxer: %s"
+msgstr "No es pot llegir el fitxer a %s"
 
 #: src/project.c:798
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to decompress project file at %s"
-msgstr "Error en descomprimir el fitxer del projecte"
+msgstr "No s'ha pogut descomprimir el fitxer del projecte a %s"
 
 #: src/project.c:860
 #, c-format
@@ -691,14 +691,12 @@ msgid "Backup found"
 msgstr "S'ha trobat una còpia de seguretat"
 
 #: src/project.c:903
-#, fuzzy
 msgid "Failed to get existing yaml"
-msgstr "Error en editar l'escala"
+msgstr "Error en obtenir el yaml existent"
 
 #: src/project.c:929
-#, fuzzy
 msgid "Failed to deserialize project YAML"
-msgstr "Error en serialitzar el projecte actual"
+msgstr "Error en deserialitzar el projecte YAML"
 
 #: src/project.c:942
 #, c-format
@@ -719,9 +717,8 @@ msgid "Failed to load project. Will create a new one instead."
 msgstr "Error en carregar el projecte. Se'n crearà un de nou."
 
 #: src/project.c:1260
-#, fuzzy
 msgid "Failed to deserialize v1 project file"
-msgstr "Error en serialitzar el projecte actual"
+msgstr "Error en deserialitzar el fitxer de projecte v1"
 
 #: src/project.c:1502
 msgid "Failed to compress project file"
@@ -820,7 +817,7 @@ msgid ""
 msgstr ""
 "El vostre usuari no té prou privilegis per a permetre a %s bloquejar la "
 "memòria il·limitada. Això pot provocar interrupcions d'àudio. Consulta la "
-"secció «Començar» del manual d'usuari per a obtenir-ne més detalls."
+"secció 'Getting Started' del manual d'usuari per a més detalls."
 
 #: src/zrythm_app.c:829
 #, c-format
@@ -853,8 +850,8 @@ msgstr ""
 "%s no té CAP GARANTIA!\n"
 "\n"
 "Aquest és programari lliure i pots redistribuir-lo\n"
-"sota determinades condicions. Consulta el fitxer «COPIAR» per a més "
-"detalls.\n"
+"sota determinades condicions. Consulta el fitxer 'COPYING' per a més detalls."
+"\n"
 "\n"
 "Escriu comentaris i errors a %s\n"
 "Dona suport a aquest projecte a https://liberapay.com/Zrythm\n"
@@ -867,7 +864,7 @@ msgstr "No s'ha trobat el fitxer %s."
 
 #: src/zrythm_app.c:1397
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
-msgstr "Cap fitxer de sortida especificat. Passa un amb `--output=FILE`."
+msgstr "Cap fitxer de sortida especificat. Indica un amb `--output=FILE`."
 
 #: src/zrythm_app.c:1452
 #, c-format
@@ -1326,7 +1323,7 @@ msgstr "Nom de paquet predefinit"
 
 #: src/actions/actions.c:3098 src/actions/actions.c:3136
 msgid "Are you sure you want to remove this chord preset pack?"
-msgstr "Segur que vols suprimir aquest paquet predefinit d'acords?"
+msgstr "Segur que vols suprimir aquest paquet d'acords predefinit?"
 
 #: src/actions/actions.c:3156
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:156
@@ -1882,8 +1879,8 @@ msgid ""
 "2. Run <b>locale-gen</b> as root\n"
 "3. Restart %s"
 msgstr ""
-"La configuració regional no està disponible per a l'idioma que has "
-"seleccionat. Habilita un seguint els passos següents i torna-ho a provar.\n"
+"La configuració regional per a l'idioma que has seleccionat no està "
+"disponible. Habilita'n una seguint els passos següents i torna-ho a provar.\n"
 "1. Treu els comentaris de qualsevol configuració regional que comenci pel "
 "codi d'idioma <b>%s</b> a <b>/etc/locale.gen</b> (necessita privilegis de "
 "root)\n"
@@ -1995,7 +1992,7 @@ msgstr "Sobreescriure el complement"
 #: src/plugins/lv2/lv2_gtk.c:263 resources/ui/port_selector_dialog.ui:126
 #: resources/ui/string_entry_dialog.ui:55
 msgid "_OK"
-msgstr "_D'acord"
+msgstr "_OK"
 
 #: src/utils/dialogs.c:65
 msgid "A plugin already exists at the selected slot. Overwrite it?"
@@ -2239,8 +2236,8 @@ msgid ""
 "user manual for details."
 msgstr ""
 "El teu usuari no té prou privilegis per a permetre a %s establir la "
-"prioritat de programació dels fils. Consulta la secció «Començar» del manual "
-"d'usuari per a obtenir-ne més detalls."
+"prioritat de programació dels fils. Consulta la secció 'Getting Started' del "
+"manual d'usuari per a més detalls."
 
 #: src/audio/track.c:326
 msgid "Track record"
@@ -2326,8 +2323,8 @@ msgid ""
 "The JACK MIDI backend can only be used with the JACK audio backend (your "
 "current audio backend is %s). Will use the dummy MIDI backend instead."
 msgstr ""
-"El rerefons JACK MIDI només es pot utilitzar amb el rerefons d'àudio JACK "
-"(el rerefons d'àudio actual és %s). S'utilitzarà el rerefons MIDI fictici."
+"El rerefons MIDI JACK només es pot utilitzar amb el rerefons d'àudio JACK ("
+"el rerefons d'àudio actual és %s). S'utilitzarà el rerefons MIDI fictici."
 
 #: src/audio/engine.c:577
 #, c-format
@@ -2414,7 +2411,7 @@ msgstr "Edita-ho en una aplicació externa"
 #: src/audio/clip.c:606
 #, c-format
 msgid "Edit the file at <u>%s</u>, then press OK"
-msgstr "Edita el fitxer a <u>%s</u> i prem D'acord"
+msgstr "Edita el fitxer a <u>%s</u> i prem OK"
 
 #: src/audio/clip.c:618
 msgid "Launch"
@@ -2840,7 +2837,7 @@ msgstr "Interfície de script"
 
 #: src/gui/widgets/right_dock_edge.c:117
 msgid "Monitor Section"
-msgstr "Secció del monitor"
+msgstr "Secció monitor"
 
 #: src/gui/widgets/header.c:88
 #, c-format
@@ -4062,7 +4059,7 @@ msgstr "Error en connectar l'enviament"
 #: resources/ui/create_project_dialog.ui:50 resources/ui/bind_cc_dialog.ui:43
 #: resources/ui/generic_progress_dialog.ui:43
 msgid "OK"
-msgstr "Acceptar"
+msgstr "OK"
 
 #: src/gui/widgets/main_notebook.c:128
 msgid "Scenes (Live View)"
@@ -4284,7 +4281,7 @@ msgid ""
 "'Getting Started' section in the %suser manual%s."
 msgstr ""
 "Si és la primera vegada que utilitzes Zrythm, et suggerim que vagis a la "
-"secció «Començar» al %smanual d'usuari%s."
+"secció 'Getting Started' del %smanual d'usuari%s."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:51
 #, c-format
@@ -4292,7 +4289,7 @@ msgid ""
 "%sZrythm relies on donations and purchases to sustain development%s. If you "
 "enjoy the software, please consider %sdonating%s or %sbuying an installer%s."
 msgstr ""
-"%sZrythm es basa en donacions i compres per a mantenir el desenvolupament%s. "
+"%sZrythm depén de donacions i compres per a mantenir el desenvolupament%s. "
 "Si t'agrada el programari, considera %sdonar%s o %scomprar un instal·lador%s."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:63
@@ -4305,10 +4302,9 @@ msgid ""
 "errors when starting Zrythm. We recommend setting a fixed buffer size for "
 "Zrythm in your PipeWire config to avoid this."
 msgstr ""
-"La versió PipeWire d'aquest temps d'execució de Flatpak té un error conegut "
-"que pot provocar errors en iniciar Zrythm. Recomanem establir una mida de "
-"memòria intermèdia fixa per a Zrythm a la configuració de PipeWire per a "
-"evitar-ho."
+"La versió PipeWire d'aquest executable Flatpak té un error conegut que pot "
+"provocar errors en iniciar Zrythm. Recomanem establir una mida de memòria "
+"intermèdia fixa per a Zrythm a la configuració de PipeWire per a evitar-ho."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:73
 msgid "Flatpak limitation"
@@ -4629,8 +4625,8 @@ msgid ""
 "Click OK to submit. You can verify what will be sent below. By clicking OK, "
 "you agree to our %sPrivacy Policy%s."
 msgstr ""
-"Clica a D'acord per a enviar-lo. A continuació pots verificar el que "
-"s'enviarà. En clicar a D'acord, acceptes la nostra %sPolítica de privadesa%s."
+"Clica OK per a enviar-lo. A continuació pots verificar el que s'enviarà. En "
+"clicar OK, acceptes la nostra %sPolítica de privadesa%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:214
 msgid "<b>Data</b>"
@@ -5036,7 +5032,7 @@ msgstr "Afegir al projecte (IU pontada)"
 
 #: src/plugins/plugin_descriptor.c:562
 msgid "Add to project (bridged full)"
-msgstr "Afegir al projecte (pontat completament)"
+msgstr "Afegir al projecte (completament pontat)"
 
 #: src/plugins/plugin_descriptor.c:570
 msgid "Use _Generic UI"
@@ -5324,7 +5320,7 @@ msgid ""
 "preferences. Type 'y' to continue:"
 msgstr ""
 "Això restablirà Zrythm a la configuració de fàbrica. Perdràs totes les teves "
-"preferències. Escriu «y» per a continuar:"
+"preferències. Escriu 'y' per a continuar:"
 
 #: src/settings/settings.c:323
 #, c-format
@@ -5623,15 +5619,15 @@ msgstr "Protocol"
 
 #: resources/ui/plugin_browser.ui:148
 msgid "Sort alphabetically"
-msgstr ""
+msgstr "Ordenar alfabèticament"
 
 #: resources/ui/plugin_browser.ui:154
 msgid "Sort by recently used"
-msgstr ""
+msgstr "Ordenar per ús recent"
 
 #: resources/ui/plugin_browser.ui:160
 msgid "Sort by most used"
-msgstr ""
+msgstr "Ordenar per més utilitzats"
 
 #: resources/ui/header.ui:23 resources/gtk/help-overlay.ui:98
 msgid "Project"
@@ -6347,7 +6343,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:326
 msgid "A list of output devices to route the right monitor output to."
 msgstr ""
-"Una llista de dispositius de sortida on dirigir la sortida dreta del monitor."
+"Una llista de dispositius de sortida on dirigir la sortida del monitor dret."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:335
 msgid "Whether to bounce with parent tracks (direct outputs)."
@@ -6713,14 +6709,12 @@ msgid "Selected plugin browser filter"
 msgstr "Filtre del navegador de complements seleccionat"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:540
-#, fuzzy
 msgid "Plugin browser sort style"
-msgstr "Mida del navegador de complements"
+msgstr "Estil d'ordenació del navegador de complements"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:541
-#, fuzzy
 msgid "Selected plugin browser sort style"
-msgstr "Filtre del navegador de complements seleccionat"
+msgstr "Estil d'ordenació del navegador de complements seleccionat"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:545
 msgid "Plugin browser collections"
@@ -6991,7 +6985,7 @@ msgstr "Mida del quadre del navegador de fitxers quan es separa."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:736
 msgid "Monitor section detached"
-msgstr "Secció de monitor desconnectat"
+msgstr "Secció monitor desconnectat"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:737
 msgid "Whether the monitor section panel is detached."
@@ -7579,15 +7573,16 @@ msgstr "Canviat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
 msgid "Drop vendored zix and depend on zix library"
-msgstr ""
+msgstr "Deixar anar el zix distribuït i dependre de la biblioteca zix"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 msgid "Replace some icons with icons from GNOME icon library"
 msgstr ""
+"Substituir algunes icones per icones de la biblioteca d'icones del GNOME"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Replace about dialog with AdwDialogWindow"
-msgstr ""
+msgstr "Substituir el diàleg quant a per AdwDialogWindow"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
@@ -7597,46 +7592,47 @@ msgid "Fixed:"
 msgstr "Solucionat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-#, fuzzy
 msgid "Meson: fix lilv-related subprojects"
-msgstr "Actualitzar les versions de subprojectes relacionades amb GTK"
+msgstr "Meson: corregir subprojectes relacionats amb lilv"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
 msgid "Fix bug report format breaking when undo history is empty"
 msgstr ""
+"Correcció del format de l'informe d'error quan l'historial de desfer està "
+"buit"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
 msgid "Fix VST3 support being disabled"
-msgstr ""
+msgstr "Correcció de la inhabilitació del suport VST3"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:73
-#, fuzzy
 msgid ""
 "Update Chinese (Simplified), Chinese (Traditional), Catalan, French "
 "translations"
 msgstr ""
-"Actualitzar les traduccions al francès, xinès (simplificat), portuguès i "
-"català"
+"Actualització de traduccions xinès (simplificat), xinès (tradicional), "
+"català i francès"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:74
 msgid "Meson: use official lilv repository as subproject"
-msgstr ""
+msgstr "Meson: utilitzar el repositori oficial de lilv com a subprojecte"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 msgid "User manual: explain automation lane on/off buttons"
 msgstr ""
+"Manual d'usuari: explicació els botons on/off del carril d'automatització"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:79
 msgid "Fix lag when clicking on plugins in a large project"
-msgstr ""
+msgstr "Correcció del retard en fer clic als complements d'un projecte gran"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:80
 msgid "Fix long loading time when loading large projects"
-msgstr ""
+msgstr "Correcció del temps de càrrega llargs en carregar projectes grans"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:81
 msgid "Fix crash when zooming in on audio regions"
-msgstr ""
+msgstr "Correcció del bloqueig en ampliar les regions d'àudio"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
 msgid ""
@@ -7644,50 +7640,64 @@ msgid ""
 "Japanese, Polish, Hebrew, Indonesian, Ukrainian, Russian, Portuguese, "
 "Italian, German, Thai translations"
 msgstr ""
+"Actualització de les traduccions al francès, xinès (simplificat), català, "
+"turc, portuguès (Brasil), japonès, polonès, hebreu, indonesi, ucraïnès, rus, "
+"portuguès, italià, alemany i tailandès"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:91
 msgid "Add better error handling when failing to read project yaml"
 msgstr ""
+"S'ha afegit una millor gestió d'errors quan falla la lectura del projecte "
+"yaml"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:92
 msgid "Ignore GTK critical message (widget size related)"
-msgstr ""
+msgstr "Ignora el missatge crític de GTK (relacionat amb la mida del widget)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:93
 msgid "Meson: accept libpanel alpha release version"
-msgstr ""
+msgstr "Meson: acceptació de la versió alfa de libpanel"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:94
 msgid ""
 "Upgrade project format and drop undo history when loading older projects"
 msgstr ""
+"S'ha actualitzat el format del projecte i s'ha eliminat l'historial de "
+"desfers en carregar projectes antics"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:98
 msgid "Fix error when lowering BPM and saving a project with audio regions"
 msgstr ""
+"S'ha corregit un error en reduir el BPM i desar un projecte amb regions "
+"d'àudio"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:99
 msgid "Fix loading projects with audio regions under different sample rate"
 msgstr ""
+"S'ha corregit la càrrega de projectes amb regions d'àudio amb una freqüència "
+"de mostreig diferent"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:100
 msgid ""
 "Fix endless stream of bug report dialogs (only allow a single dialog to be "
 "open at any time)"
 msgstr ""
+"S'ha corregit el flux interminable de diàlegs d'informes d'errors (només "
+"permet que s'obri un diàleg alhora)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:101
-#, fuzzy
 msgid "Fix error when adding an insert to an audio track"
-msgstr "Soluciona un error en crear una regió a la 3a pista d'automatització"
+msgstr "Soluciona un error en afegir una inserció a una pista d'àudio"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:102
 msgid "Fix error when attempting to change buffer size"
-msgstr ""
+msgstr "Soluciona l'error en intentar canviar la mida de la memòria intermèdia"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:103
 msgid "Fix error when attempting to bounce a track while transport is playing"
 msgstr ""
+"Soluciona un error en intentar rebotar una pista mentre el transport s'està "
+"reproduint"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:110
 msgid "Added:"

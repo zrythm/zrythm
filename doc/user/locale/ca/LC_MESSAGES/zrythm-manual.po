@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-08-16 09:55+0900\n"
-"PO-Revision-Date: 2022-08-14 15:51+0000\n"
+"PO-Revision-Date: 2022-08-18 15:52+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ca/>\n"
 "Language: ca\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ca/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.14-dev\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -1530,9 +1531,8 @@ msgid ""
 "Once you've made your changes to the file, close the external app and press "
 "OK. Zrythm will then apply your changes to the selected audio part."
 msgstr ""
-"Un cop hagis fet els canvis al fitxer, tanca l'aplicació externa i prem "
-"D'acord. Aleshores, Zrythm aplicarà els teus canvis a la part d'àudio "
-"seleccionada."
+"Un cop hagis fet els canvis al fitxer, tanca l'aplicació externa i prem OK. "
+"Aleshores, Zrythm aplicarà els teus canvis a la part d'àudio seleccionada."
 
 #: ../../editing/clip-editors/audio-editor.rst:109
 msgid ""
@@ -4139,9 +4139,9 @@ msgid ""
 "tarball <https://www.zrythm.org/releases/>`_ or `git <https://git.zrythm.org/"
 "zrythm/zrythm/>`_."
 msgstr ""
-"Pots crear Zrythm des de la font, ja sigui utilitzant un `tarball de "
-"distribució de fonts <https://www.zrythm.org/releases/>`_ o `git <https://"
-"git.zrythm.org/zrythm/zrythm/>` _."
+"Pots construir Zrythm des de la font, ja sigui utilitzant una `tarball de "
+"distribució de fonts <https://www.zrythm.org/releases/>`_ o `git <https://git"
+".zrythm.org/zrythm/zrythm/>`_."
 
 #: ../../getting-started/installation.rst:43
 msgid ""
@@ -5388,8 +5388,8 @@ msgid ""
 "inspector <track-inspector>`."
 msgstr ""
 "Les pistes es poden armar per a gravar clicant el botó de gravació, ja sigui "
-"dins la pista o dins la seva secció d'atenuador al canal o :ref:`inspector "
-"de pistes <track-inspector>`."
+"dins la pista o dins la seva secció d'atenuador al canal o :ref:`track "
+"inspector <track-inspector>`."
 
 #: ../../playback-and-recording/recording.rst:19
 msgid ""
@@ -5441,7 +5441,7 @@ msgid ""
 "Inspector>` to adjust inputs for recording."
 msgstr ""
 "Les pistes d'àudio i MIDI/Instrument tenen una secció :ref:`tracks/inspector-"
-"page:Inputs` a la seva :ref:`Pàgina Inspector <tracks/inspector-page:Track "
+"page:Inputs` a la seva :ref:`Inspector Page <tracks/inspector-page:Track "
 "Inspector>` per a ajustar les entrades per a la gravació."
 
 #: ../../playback-and-recording/recording.rst:52
@@ -6300,7 +6300,7 @@ msgstr "Filtrar per complement fabricant/autor."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:32
 msgid "Built-in plugins can be found under `Zrythm DAW` here."
-msgstr "Els complements integrats es poden trobar a «Zrythm DAW» aquí."
+msgstr "Els complements integrats es poden trobar aquí `Zrythm DAW`."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:35
 msgid "Category"
@@ -6829,9 +6829,8 @@ msgstr ""
 "Preferences>`."
 
 #: ../../plugins-files/plugins/scanning.rst:156
-#, fuzzy
 msgid "About Flatpak"
-msgstr "Flatpak"
+msgstr "Quant a Flatpak"
 
 #: ../../plugins-files/plugins/scanning.rst:158
 msgid ""
@@ -6839,6 +6838,10 @@ msgid ""
 "(i.e., plugins using the `Linux Audio base extension <https://github.com/"
 "flathub/org.freedesktop.LinuxAudio.BaseExtension>`_)."
 msgstr ""
+"Quan s'utilitzen construccions de Flatpak, només s'han d'utilitzar "
+"complements instal·lats com a Flatpaks (és a dir, complements que utilitzen "
+"l'extensió base d'àudio de Linux <https://github.com/flathub/org.freedesktop."
+"LinuxAudio.BaseExtension>`_)."
 
 #: ../../plugins-files/plugins/scanning.rst:162
 msgid ""
@@ -6846,12 +6849,18 @@ msgid ""
 "the environment variables above, this is not recommended and we do not offer "
 "support if it causes issues."
 msgstr ""
+"Tot i que Zrythm permet a l'usuari utilitzar complements no empaquetats com "
+"Flatpaks utilitzant les variables d'entorn anteriors, això no es recomana i "
+"no oferim assistència si causa problemes."
 
 #: ../../plugins-files/plugins/scanning.rst:167
 msgid ""
 "Flatpak builds have no access to :file:`/usr` so it is not possible to use "
 "system plugins, even when using the environment variables above."
 msgstr ""
+"Les construccions de flatpak no tenen accés a :file:`/usr` de manera que no "
+"és possible utilitzar complements del sistema, fins i tot quan s'utilitzen "
+"les variables d'entorn anteriors."
 
 #: ../../projects/intro.rst:9
 msgid "Projects"
@@ -7149,8 +7158,8 @@ msgid ""
 "sidechain input from a kick track to get a pumping/ducking effect."
 msgstr ""
 "Per exemple, pots utilitzar un complement de compressor en una pista baixa "
-"que accepti una entrada de cadena lateral d'una pista de bombo per a obtenir "
-"un efecte de bombeig/atenuació."
+"que accepti una entrada de cadena lateral d'una pista de bombo per a un "
+"efecte de bombeig/atenuació."
 
 #: ../../routing/connections.rst:63
 msgid "Managing Connections"
@@ -7230,7 +7239,7 @@ msgstr "Consulta :ref:`export-routing-graph` per a més detalls."
 
 #: ../../routing/monitor-section.rst:6
 msgid "Monitor Section"
-msgstr "Secció del monitor"
+msgstr "Secció monitor"
 
 #: ../../routing/monitor-section.rst:7
 msgid ""
@@ -7399,9 +7408,9 @@ msgid ""
 "A port does not process anything on its own, and is usually part of a "
 "`processor`, like a plugin or track."
 msgstr ""
-"Els ports són els principals elements de construcció utilitzats per a "
-"encaminar senyals a través de Zrythm. Un port no processa res per si mateix, "
-"i normalment forma part d'un `processor`, com ara un complement o una pista."
+"Els ports són els pilars per a encaminar senyals a través de Zrythm. Un port "
+"no processa res per si mateix i normalment forma part d'un `processor`, com "
+"ara un complement o una pista."
 
 #: ../../routing/ports.rst:22
 msgid ""
@@ -7753,7 +7762,7 @@ msgid ""
 "all available procedures in the API. Each section in the API corresponds to "
 "a specific Guile module."
 msgstr ""
-"La :ref:`secció API <scripting/api/intro:API>` és una llista completa de "
+"La :ref:`API section <scripting/api/intro:API>` és una llista completa de "
 "tots els procediments disponibles a l'API. Cada secció de l'API correspon a "
 "un mòdul Guile específic."
 
@@ -8039,7 +8048,7 @@ msgid ""
 "`playback-and-recording/recording:Recording Automation` section)."
 msgstr ""
 "Els modes tàctil / pestell també es poden utilitzar per a gravar "
-"l'automatització en directe (vegeu la secció:ref:`playback-and-recording/"
+"l'automatització en directe (vegeu la secció :ref:`playback-and-recording/"
 "recording:Recording Automation`)."
 
 #: ../../tracks/automation.rst:46
@@ -8432,9 +8441,9 @@ msgid ""
 "Tracks are the main building blocks of projects. Tracks appear in the "
 "tracklist and contain various events such as :ref:`regions <regions>`."
 msgstr ""
-"Les pistes són els construccions principals dels projectes. Les pistes "
-"apareixen a la llista de cançons i contenen diversos esdeveniments com ara :"
-"ref:`regions <regions>`."
+"Les pistes són els pilars dels projectes. Les pistes apareixen a la llista "
+"de cançons i contenen diversos esdeveniments com ara :ref:`regions "
+"<regions>`."
 
 #: ../../tracks/overview.rst:15
 msgid "Track in tracklist"
@@ -8460,10 +8469,10 @@ msgid ""
 "track-types:Marker Track>`, which contain chords and markers respectively."
 msgstr ""
 "Hi ha diversos tipus de pistes adequades per a diferents propòsits, que "
-"s'expliquen a les seccions següents. Algunes pistes són especials, com la :"
-"ref:`Pista d'acords <tracks/track-types:Chord Track>` i la de :ref:`Pista "
-"marcadors <tracks/track-types:Marker Track>`, que contenen acords i "
-"marcadors respectivament."
+"s'expliquen a les seccions següents. Algunes pistes són especials, com la "
+":ref:`Chord Track <tracks/track-types:Chord Track>` i la de :ref:`Marker "
+"Track <tracks/track-types:Marker Track>`, que contenen acords i marcadors "
+"respectivament."
 
 #: ../../tracks/overview.rst:34
 msgid ""
