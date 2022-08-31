@@ -265,7 +265,6 @@ inc/gui/backend/automation_editor.h
 inc/gui/widgets/automation_point.h
 inc/gui/widgets/chord_arranger.h
 inc/gui/widgets/arranger_object.h
-inc/gui/widgets/visibility.h
 inc/gui/widgets/editor_selection_info.h
 inc/gui/widgets/digital_meter.h
 inc/gui/widgets/popover_menu_bin.h
@@ -333,7 +332,7 @@ inc/gui/widgets/color_area.h
 inc/gui/widgets/port_connection_row.h
 inc/gui/widgets/splash.h
 inc/gui/widgets/project_toolbar.h
-inc/gui/widgets/track_visibility_tree.h
+inc/gui/widgets/track_filter_popover.h
 inc/gui/widgets/active_hardware_popover.h
 inc/gui/widgets/timeline_ruler.h
 inc/gui/widgets/fader_buttons.h
@@ -403,7 +402,6 @@ inc/gui/widgets/chord_editor_space.h
 inc/gui/widgets/plugin_browser.h
 inc/gui/widgets/velocity.h
 inc/gui/widgets/track_canvas.h
-inc/gui/widgets/project_assistant.h
 inc/gui/widgets/scale_object.h
 inc/gui/widgets/snap_box.h
 inc/gui/widgets/channel_slot.h
@@ -414,6 +412,7 @@ inc/gui/widgets/automation_editor_space.h
 inc/gui/widgets/bar_slider.h
 inc/gui/widgets/tracklist_header.h
 inc/gui/widgets/marker.h
+inc/gui/widgets/multi_selection.h
 inc/gui/widgets/channel_sends_expander.h
 inc/gui/widgets/toolbox.h
 inc/gui/widgets/playhead_scroll_buttons.h
@@ -441,6 +440,7 @@ inc/gui/widgets/dialogs/scripting_dialog.h
 inc/gui/widgets/dialogs/track_icon_chooser_dialog.h
 inc/gui/widgets/dialogs/welcome_message_dialog.h
 inc/gui/widgets/dialogs/create_project_dialog.h
+inc/gui/widgets/dialogs/project_assistant.h
 inc/gui/widgets/dialogs/first_run_dialog.h
 inc/gui/widgets/dialogs/port_selector_dialog.h
 inc/gui/widgets/dialogs/string_entry_dialog.h
@@ -734,14 +734,11 @@ src/gui/widgets/tracklist_header.c
 src/gui/widgets/plugin_strip_expander.c
 src/gui/widgets/audio_editor_space.c
 src/gui/widgets/active_hardware_mb.c
-src/gui/widgets/visibility.c
-src/gui/widgets/track_visibility_tree.c
 src/gui/widgets/chord_selector_window.c
 src/gui/widgets/cpu.c
 src/gui/widgets/timeline_panel.c
 src/gui/widgets/view_toolbar.c
 src/gui/widgets/file_browser_window.c
-src/gui/widgets/project_assistant.c
 src/gui/widgets/project_toolbar.c
 src/gui/widgets/channel_slot.c
 src/gui/widgets/expander_box.c
@@ -753,6 +750,7 @@ src/gui/widgets/timeline_minimap_bg.c
 src/gui/widgets/custom_button.c
 src/gui/widgets/timeline_minimap.c
 src/gui/widgets/transport_controls.c
+src/gui/widgets/multi_selection.c
 src/gui/widgets/home_toolbar.c
 src/gui/widgets/bot_dock_edge.c
 src/gui/widgets/pinned_tracklist.c
@@ -793,6 +791,7 @@ src/gui/widgets/file_browser.c
 src/gui/widgets/scale_selector_window.c
 src/gui/widgets/editor_toolbar.c
 src/gui/widgets/chord_object.c
+src/gui/widgets/track_filter_popover.c
 src/gui/widgets/color_area.c
 src/gui/widgets/timeline_selection_info.c
 src/gui/widgets/item_factory.c
@@ -834,6 +833,7 @@ src/gui/widgets/dialogs/first_run_dialog.c
 src/gui/widgets/dialogs/object_color_chooser_dialog.c
 src/gui/widgets/dialogs/bug_report_dialog.c
 src/gui/widgets/dialogs/about_dialog.c
+src/gui/widgets/dialogs/project_assistant.c
 src/gui/widgets/dialogs/bind_cc_dialog.c
 src/gui/widgets/dialogs/arranger_object_info.c
 src/gui/widgets/dialogs/add_tracks_to_group_dialog.c
