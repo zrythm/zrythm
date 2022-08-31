@@ -13,13 +13,14 @@
 # Eric <alchemillatruth@purelymail.com>, 2022.
 # 刘韬 <lyuutau@outlook.com>, 2022.
 # Cris Q <qygw@outlook.com>, 2022.
+# Hugel <qihu@nfschina.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-08-16 09:57+0900\n"
-"PO-Revision-Date: 2022-08-16 15:52+0000\n"
-"Last-Translator: Eric <alchemillatruth@purelymail.com>\n"
+"PO-Revision-Date: 2022-08-23 15:51+0000\n"
+"Last-Translator: Hugel <qihu@nfschina.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -4264,7 +4265,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:103
 msgid "Welcome"
-msgstr ""
+msgstr "欢迎"
 
 #: src/gui/widgets/dialogs/port_selector_dialog.c:59
 msgid "No port selected"
@@ -4550,7 +4551,7 @@ msgstr "错误：%s"
 #: src/gui/widgets/dialogs/bug_report_dialog.c:169
 #: src/gui/widgets/dialogs/bug_report_dialog.c:346
 msgid "Done"
-msgstr ""
+msgstr "完成"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:185
 msgid "Send Automatically"
