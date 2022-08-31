@@ -18,7 +18,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-08-16 09:57+0900\n"
-"PO-Revision-Date: 2022-08-10 15:52+0000\n"
+"PO-Revision-Date: 2022-08-16 15:52+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
 ">\n"
@@ -181,9 +181,8 @@ msgid "Neapolitan Minor"
 msgstr "Aeolien (mineur naturel)"
 
 #: inc/schemas/audio/scale.h:132 inc/audio/scale.h:164
-#, fuzzy
 msgid "Oriental"
-msgstr "Horizontal"
+msgstr "Oriental"
 
 #: inc/schemas/audio/scale.h:133 inc/audio/scale.h:165
 msgid "Romanian Minor"
@@ -5835,15 +5834,15 @@ msgstr "Protocole"
 
 #: resources/ui/plugin_browser.ui:148
 msgid "Sort alphabetically"
-msgstr ""
+msgstr "Trier par ordre alphabétique"
 
 #: resources/ui/plugin_browser.ui:154
 msgid "Sort by recently used"
-msgstr ""
+msgstr "Trier par ordre d'utilisation récente"
 
 #: resources/ui/plugin_browser.ui:160
 msgid "Sort by most used"
-msgstr ""
+msgstr "Trier par les plus utilisés"
 
 #: resources/ui/header.ui:23 resources/gtk/help-overlay.ui:98
 msgid "Project"
@@ -7883,15 +7882,17 @@ msgstr "Modifié :"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
 msgid "Drop vendored zix and depend on zix library"
-msgstr ""
+msgstr "Suppression du zix embarqué et de la dépendance de la bibliothèque zix"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 msgid "Replace some icons with icons from GNOME icon library"
 msgstr ""
+"Remplacer certaines icônes par des icônes de la bibliothèque d'icônes de "
+"GNOME"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Replace about dialog with AdwDialogWindow"
-msgstr ""
+msgstr "Remplacer le dialogue d'à propos par AdwDialogWindow"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
@@ -7908,10 +7909,12 @@ msgstr "Mise à jour des versions des sous-projets liés à GTK"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
 msgid "Fix bug report format breaking when undo history is empty"
 msgstr ""
+"Correction du format des rapports de bogue lorsque l'historique d'annulation "
+"est vide"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
 msgid "Fix VST3 support being disabled"
-msgstr ""
+msgstr "Correction de la désactivation du support VST3"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:73
 #, fuzzy
@@ -7924,23 +7927,27 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:74
 msgid "Meson: use official lilv repository as subproject"
-msgstr ""
+msgstr "Meson : utiliser le dépôt officiel de lilv comme sous-projet"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 msgid "User manual: explain automation lane on/off buttons"
 msgstr ""
+"Manuel d'utilisation : expliquer les boutons d'activation/désactivation de "
+"la ligne d'automatisation"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:79
 msgid "Fix lag when clicking on plugins in a large project"
 msgstr ""
+"Correction du décalage lors du clic sur les greffons dans un grand projet"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:80
 msgid "Fix long loading time when loading large projects"
 msgstr ""
+"Correction du temps de chargement long lors du chargement de grands projets"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:81
 msgid "Fix crash when zooming in on audio regions"
-msgstr ""
+msgstr "Correction d'un plantage lors du zoom sur les régions audio"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
 msgid ""
@@ -7948,37 +7955,50 @@ msgid ""
 "Japanese, Polish, Hebrew, Indonesian, Ukrainian, Russian, Portuguese, "
 "Italian, German, Thai translations"
 msgstr ""
+"Mise à jour des traductions en français, chinois (simplifié), catalan, turc, "
+"portugais (Brésil), japonais, polonais, hébreu, indonésien, ukrainien, "
+"russe, portugais, italien, allemand, et thaïlandais."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:91
 msgid "Add better error handling when failing to read project yaml"
 msgstr ""
+"Ajout d'un meilleur traitement de l'erreur lorsque la lecture du projet yaml "
+"échoue"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:92
 msgid "Ignore GTK critical message (widget size related)"
-msgstr ""
+msgstr "Ignorer le message critique de GTK (lié à la taille du widget)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:93
 msgid "Meson: accept libpanel alpha release version"
-msgstr ""
+msgstr "Meson : acceptation de la version alpha de libpanel"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:94
 msgid ""
 "Upgrade project format and drop undo history when loading older projects"
 msgstr ""
+"Mise à jour du format de projet et suppression de l'historique des "
+"annulations lors du chargement d'anciens projets"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:98
 msgid "Fix error when lowering BPM and saving a project with audio regions"
 msgstr ""
+"Correction d'une erreur lors de la réduction du BPM et de la sauvegarde d'un "
+"projet avec des régions audio"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:99
 msgid "Fix loading projects with audio regions under different sample rate"
 msgstr ""
+"Correction du chargement des projets avec des régions audio sous un taux "
+"d'échantillonnage différent"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:100
 msgid ""
 "Fix endless stream of bug report dialogs (only allow a single dialog to be "
 "open at any time)"
 msgstr ""
+"Correction du flux sans fin de boîtes de dialogue de rapport de bogue "
+"(n'autoriser qu'une seule boîte de dialogue à être ouverte à la fois)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:101
 #, fuzzy
@@ -7988,10 +8008,14 @@ msgstr "Correction d'une erreur lors d'un clic-droit dans l'éditeur audio"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:102
 msgid "Fix error when attempting to change buffer size"
 msgstr ""
+"Correction d'une erreur lors d'une tentative de modification de la taille du "
+"tampon"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:103
 msgid "Fix error when attempting to bounce a track while transport is playing"
 msgstr ""
+"Correction d'une erreur lors d'une tentative de bouncer une piste alors que "
+"le transport est en cours de lecture"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:110
 msgid "Added:"
