@@ -254,7 +254,7 @@ if get_option ('tests')
     'plugins/lv2/lv2_state': { 'parallel': false },
     'plugins/plugin': { 'parallel': false },
     'plugins/plugin_manager': { 'parallel': true },
-    'project': { 'parallel': true },
+    'project': { 'parallel': false },
     'settings/settings': { 'parallel': true },
     'utils/arrays': { 'parallel': true },
     'utils/file': { 'parallel': true },

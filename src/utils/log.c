@@ -126,6 +126,14 @@ static GLogLevelFlags log_always_fatal = G_LOG_FATAL_MASK;
 
 static char * tmp_log_file = NULL;
 
+/**
+ * Whether to use the default log writer (eg after the log
+ * object has been free'd.
+ *
+ * Used by the log writer.
+ */
+static bool use_default_log_writer = false;
+
 typedef struct LogEvent
 {
   char * message;
@@ -964,6 +972,11 @@ log_writer (
   gsize             n_fields,
   Log *             self)
 {
+  if (use_default_log_writer)
+    {
+      return g_log_writer_default (log_level, fields, n_fields, NULL);
+    }
+
   char * str = log_writer_format_fields (
     log_level, fields, n_fields, F_NO_USE_COLOR);
 
@@ -1334,8 +1347,14 @@ log_new (void)
   self->use_structured_for_console = true;
   self->min_log_level_for_test_console = G_LOG_LEVEL_MESSAGE;
 
-  g_log_set_writer_func (
-    (GLogWriterFunc) log_writer, self, NULL);
+  static bool log_writer_set = false;
+  if (!log_writer_set)
+    {
+      log_writer_set = true;
+      g_log_set_writer_func (
+        (GLogWriterFunc) log_writer, self, NULL);
+      use_default_log_writer = false;
+    }
 
   /* remove temporary log file if it exists */
   if (tmp_log_file)
@@ -1364,15 +1383,15 @@ log_free (Log * self)
   /* clear the queue */
   log_idle_cb (self);
 
-  /* set back default log handler */
-  g_log_set_writer_func (g_log_writer_default, NULL, NULL);
-
   /* close log file */
   if (self->logfile)
     {
       fclose (self->logfile);
       self->logfile = NULL;
     }
+
+  /* switch to default log writer */
+  use_default_log_writer = true;
 
   /* free children */
   object_free_w_func_and_null (
