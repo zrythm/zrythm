@@ -868,13 +868,10 @@ if get_option ('opus')
   min_version = '>=1.0.29'
 endif
 sndfile_dep = dependency (
-  'sndfile', version: min_version, required: true)
-if not sndfile_dep.found ()
-  sndfile_subproject = cmake.subproject (
-    'sndfile', options: cmake_opts)
-  sndfile_dep = sndfile_subproject.dependency (
-    'sndfile')
-endif
+  'sndfile', version: min_version,
+  fallback: ['libsndfile', 'libsndfile_dep'],
+  default_options: [
+    'programs=false',])
 samplerate_dep = dependency (
   'samplerate', version: '>=0.1.8', required: true)
 if not samplerate_dep.found ()
