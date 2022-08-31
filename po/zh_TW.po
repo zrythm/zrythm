@@ -7,13 +7,14 @@
 # sonata-chen <sonatachen39@gmail.com>, 2020, 2021.
 # tommyliu313 <liuchaktin@gmail.com>, 2022.
 # Q mo <qqmo520316@gmail.com>, 2022.
+# StarAtt <tea55688@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-08-16 09:57+0900\n"
-"PO-Revision-Date: 2022-08-13 15:51+0000\n"
-"Last-Translator: Q mo <qqmo520316@gmail.com>\n"
+"PO-Revision-Date: 2022-08-28 15:52+0000\n"
+"Last-Translator: StarAtt <tea55688@gmail.com>\n"
 "Language-Team: Chinese (Traditional) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hant/>\n"
 "Language: zh_TW\n"
@@ -21,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.1-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -36,92 +37,88 @@ msgid "Minor"
 msgstr "小調"
 
 #: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
-#, fuzzy
 msgid "Ionian"
-msgstr "大調音階"
+msgstr "Ionian"
 
 #: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
 msgid "Dorian"
-msgstr ""
+msgstr "Dorian"
 
 #: inc/schemas/audio/scale.h:98 inc/audio/scale.h:132
 msgid "Phrygian"
-msgstr ""
+msgstr "Phrygian"
 
 #: inc/schemas/audio/scale.h:99 inc/audio/scale.h:133
 msgid "Lydian"
-msgstr ""
+msgstr "Lydian"
 
 #: inc/schemas/audio/scale.h:100 inc/audio/scale.h:134
 msgid "Mixolydian"
-msgstr ""
+msgstr "Mixolydian"
 
 #: inc/schemas/audio/scale.h:101 inc/audio/scale.h:135
 msgid "Aeolian"
-msgstr ""
+msgstr "Aeolian"
 
 #: inc/schemas/audio/scale.h:102 inc/audio/scale.h:136
 msgid "Locrian"
-msgstr ""
+msgstr "Locrian"
 
 #: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
-#, fuzzy
 msgid "Melodic Minor"
-msgstr "和聲小音階"
+msgstr "旋律小音階"
 
 #: inc/schemas/audio/scale.h:104 inc/audio/scale.h:138
 msgid "Harmonic Minor"
 msgstr "和聲小音階"
 
 #: inc/schemas/audio/scale.h:105 inc/audio/scale.h:139
-#, fuzzy
 msgid "Whole Tone"
-msgstr "顯示/隱藏頂部面板"
+msgstr "全音階"
 
 #: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
 msgid "Major Pentatonic"
-msgstr ""
+msgstr "大調五聲音階"
 
 #: inc/schemas/audio/scale.h:107 inc/audio/scale.h:141
 msgid "Minor Pentatonic"
-msgstr ""
+msgstr "小調五聲音階"
 
 #: inc/schemas/audio/scale.h:108 inc/audio/scale.h:142
 msgid "Octatonic Half Whole"
-msgstr ""
+msgstr "半全八聲音階"
 
 #: inc/schemas/audio/scale.h:110 inc/audio/scale.h:143
 msgid "Octatonic Whole Half"
-msgstr ""
+msgstr "全半八聲音階"
 
 #: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
 msgid "Acoustic"
-msgstr ""
+msgstr "泛音階"
 
 #: inc/schemas/audio/scale.h:113 inc/audio/scale.h:145
-#, fuzzy
 msgid "Harmonic Major"
-msgstr "和聲小音階"
+msgstr "和聲大音階"
 
 #: inc/schemas/audio/scale.h:114 inc/audio/scale.h:146
 msgid "Phrygian Dominant"
-msgstr ""
+msgstr "屬 Phrygian"
 
 #: inc/schemas/audio/scale.h:115 inc/audio/scale.h:147
 msgid "Major Locrian"
-msgstr ""
+msgstr "大 Locrian 音階"
 
 #: inc/schemas/audio/scale.h:116 inc/audio/scale.h:148
 msgid "Algerian"
-msgstr ""
+msgstr "阿爾及利亞音階"
 
 #: inc/schemas/audio/scale.h:117 inc/audio/scale.h:149
 msgid "Augmented"
-msgstr ""
+msgstr "增音階"
 
 #: inc/schemas/audio/scale.h:118 inc/audio/scale.h:150
 msgid "Double Harmonic"
-msgstr ""
+msgstr "雙和聲大調"
 
 #: inc/schemas/audio/scale.h:119 inc/audio/scale.h:151
 msgid "Chinese"
