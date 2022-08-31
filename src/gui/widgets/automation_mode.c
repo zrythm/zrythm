@@ -84,6 +84,8 @@ automation_mode_widget_new (
   PangoFontDescription * desc =
     pango_font_description_from_string ("7");
   pango_layout_set_font_description (self->layout, desc);
+  pango_layout_set_ellipsize (
+    self->layout, PANGO_ELLIPSIZE_NONE);
   pango_font_description_free (desc);
   automation_mode_widget_init (self);
 

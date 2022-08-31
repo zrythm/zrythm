@@ -974,7 +974,8 @@ log_writer (
 {
   if (use_default_log_writer)
     {
-      return g_log_writer_default (log_level, fields, n_fields, NULL);
+      return g_log_writer_default (
+        log_level, fields, n_fields, NULL);
     }
 
   char * str = log_writer_format_fields (
