@@ -6,6 +6,32 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.3.1] - 2022-09-01
+### Added
+- Add track filtering by name and type
+- Add more error checking when instantiating Carla plugins
+
+### Changed
+- Don't allow moving the playhead while recording
+- Don't show red peak on MIDI meters
+- Windows MME: only print debug messages if `ZRYTHM_DEBUG` is set
+- Update Spanish, Russian, French, Catalan, Chinese (Simplified), Chinese (Traditional) translations
+- Stop SIGSEGV handler from being called multiple times
+- Support `LC_ALL` from the environment
+- Move track visibility toggles to new track filtering popover
+- Avoid showing bug report dialogs for known issues that are not Zrythm bugs
+
+### Fixed
+- Fix error when splitting a large audio clip
+- Fix screen moving backwards when zooming in towards the end of the project
+- Fix autoplay breaking when changing directories in the file browser
+- Fix file info label not being updated when changing directories in the file browser
+- Fix error when right-clicking on Macro knob
+- Fix direct connection port selector incorrectly allowing connecting audio ports to CV ports
+- Fix some memory leaks
+- Fix incorrectly calling `g_log_set_writer_func()` more than once causing an error on exit on some systems
+- Fix automation mode switches in automation tracks being ellipsized on some systems
+
 ## [1.0.0-beta.3.2.1] - 2022-08-21
 ### Added
 - Allow clicking anywhere on timeline minimap to navigate
