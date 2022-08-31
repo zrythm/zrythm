@@ -452,21 +452,23 @@ ui_show_message_full (
   ...) G_GNUC_PRINTF (4, 5);
 
 /**
- * Wrapper to show error message so that no casting
- * of the window is needed on the caller side.
- */
-#define ui_show_error_message(win, block, msg) \
-  ui_show_message_full ( \
-    win ? GTK_WINDOW (win) : NULL, GTK_MESSAGE_ERROR, block, \
-    "%s", msg);
-
-/**
  * Type can be GTK_MESSAGE_ERROR, etc.
  */
 #define ui_show_message_printf(win, type, block, fmt, ...) \
   ui_show_message_full ( \
     win ? GTK_WINDOW (win) : NULL, type, block, fmt, \
     __VA_ARGS__)
+
+/**
+ * Wrapper to show error message so that no casting
+ * of the window is needed on the caller side.
+ */
+#define ui_show_error_message_printf(win, block, fmt, ...) \
+  ui_show_message_printf ( \
+    win, GTK_MESSAGE_ERROR, block, fmt, __VA_ARGS__);
+
+#define ui_show_error_message(win, block, msg) \
+  ui_show_error_message_printf (win, block, "%s", msg)
 
 /**
  * Returns if \ref rect is hit or not by the

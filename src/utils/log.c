@@ -714,7 +714,17 @@ need_backtrace (Log * self, const LogEvent * const ev)
     &&
     /* gtk error after last update */
     !string_contains_substr (
-      ev->message, "reports a minimum width of ");
+      ev->message, "reports a minimum width of ")
+    &&
+    /* user's system is broken - avoid bug reports */
+    !string_contains_substr (
+      ev->message,
+      "Unable to register the application: GDBus.Error:org.freedesktop.DBus.Error.NoReply: Message recipient disconnected from message bus without replying")
+    &&
+    /* wireplumber bug */
+    !string_contains_substr (
+      ev->message,
+      "Failed to set scheduler settings: Operation not permitted");
 
   if (ret)
     self->last_bt_time = time_now;

@@ -1,9 +1,10 @@
+// SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
+ *
+ * ---
  *
  * Copyright (C) 2015 Tim Mayberry <mojofunk@gmail.com>
  *
@@ -19,6 +20,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * ---
  */
 
 #include "zrythm-config.h"
@@ -97,7 +100,8 @@ engine_windows_mme_print_error (MMRESULT error_code, int input)
      error_code, input, msg, 600);
   if (!ret)
     {
-      g_critical ("Windows MME error: %s", msg);
+      ui_show_error_message_printf (
+        MAIN_WINDOW, false, "Windows MME error: %s", msg);
     }
 }
 
@@ -196,7 +200,12 @@ engine_windows_mme_rescan_devices (AudioEngine * self, int start)
         WINDOWS_MME_DEVICE_FLOW_INPUT, i);
       g_return_val_if_fail (dev, -1);
       int ret = windows_mme_device_open (dev, 0);
-      g_return_val_if_fail (ret == 0, -1);
+      if (ret != 0)
+        {
+          g_warning (
+            "failed to open Windows MME input device %d", i);
+          continue;
+        }
       self->mme_in_devs[self->num_mme_in_devs++] = dev;
     }
 
@@ -210,7 +219,12 @@ engine_windows_mme_rescan_devices (AudioEngine * self, int start)
       g_return_val_if_fail (dev, -1);
       g_message ("found midi output device %s", dev->name);
       int ret = windows_mme_device_open (dev, 0);
-      g_return_val_if_fail (ret == 0, -1);
+      if (ret != 0)
+        {
+          g_warning (
+            "failed to open Windows MME output device %d", i);
+          continue;
+        }
       self->mme_out_devs[self->num_mme_out_devs++] = dev;
     }
 
