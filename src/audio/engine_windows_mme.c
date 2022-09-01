@@ -36,9 +36,11 @@
 #  include "audio/router.h"
 #  include "audio/windows_mmcss.h"
 #  include "audio/windows_mme_device.h"
+#  include "gui/widgets/main_window.h"
 #  include "project.h"
 #  include "settings/settings.h"
 #  include "utils/ui.h"
+#  include "zrythm_app.h"
 
 #  include <glib/gi18n.h>
 #  include <gtk/gtk.h>
