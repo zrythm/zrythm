@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-08-31 21:00+0900\n"
-"PO-Revision-Date: 2022-08-07 15:52+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-09-01 15:40+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.1-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -141,31 +141,31 @@ msgstr "ドミナント・ディミニッシュ"
 
 #: inc/schemas/audio/scale.h:122 inc/audio/scale.h:154
 msgid "Egyptian"
-msgstr ""
+msgstr "エジプト音階"
 
 #: inc/schemas/audio/scale.h:123 inc/audio/scale.h:155
 msgid "Eight Tone Spanish"
-msgstr ""
+msgstr "エイト・トーン・スパニッシュ"
 
 #: inc/schemas/audio/scale.h:124 inc/audio/scale.h:156
 msgid "Enigmatic"
-msgstr ""
+msgstr "エニグマティック"
 
 #: inc/schemas/audio/scale.h:125 inc/audio/scale.h:157
 msgid "Geez"
-msgstr ""
+msgstr "Geez"
 
 #: inc/schemas/audio/scale.h:126 inc/audio/scale.h:158
 msgid "Hindu"
-msgstr ""
+msgstr "ヒンズー"
 
 #: inc/schemas/audio/scale.h:127 inc/audio/scale.h:159
 msgid "Hirajoshi"
-msgstr ""
+msgstr "平吉"
 
 #: inc/schemas/audio/scale.h:128 inc/audio/scale.h:160
 msgid "Hungarian Gypsy"
-msgstr ""
+msgstr "ハンガリージプシー"
 
 #: inc/schemas/audio/scale.h:129 inc/audio/scale.h:161
 #, fuzzy
@@ -194,31 +194,31 @@ msgstr "和声的短音階"
 
 #: inc/schemas/audio/scale.h:134 inc/audio/scale.h:166
 msgid "Altered"
-msgstr ""
+msgstr "オルタード"
 
 #: inc/schemas/audio/scale.h:135 inc/audio/scale.h:167
 msgid "Maqam"
-msgstr ""
+msgstr "マカーム"
 
 #: inc/schemas/audio/scale.h:136 inc/audio/scale.h:168
 msgid "Yo"
-msgstr ""
+msgstr "陽旋法"
 
 #: inc/schemas/audio/scale.h:137 inc/audio/scale.h:169
 msgid "Bebop Locrian"
-msgstr ""
+msgstr "ビーバップ・ロクリアン"
 
 #: inc/schemas/audio/scale.h:138 inc/audio/scale.h:170
 msgid "Bebop Dominant"
-msgstr ""
+msgstr "ビバップ・ドミナント"
 
 #: inc/schemas/audio/scale.h:139 inc/audio/scale.h:171
 msgid "Bebop Major"
-msgstr ""
+msgstr "ビバップメジャー"
 
 #: inc/schemas/audio/scale.h:140 inc/audio/scale.h:172
 msgid "Super Locrian"
-msgstr ""
+msgstr "スーパーロクリアン"
 
 #: inc/schemas/audio/scale.h:141 inc/audio/scale.h:173
 #, fuzzy
@@ -227,11 +227,11 @@ msgstr "和声的短音階"
 
 #: inc/schemas/audio/scale.h:142 inc/audio/scale.h:174
 msgid "Composite"
-msgstr ""
+msgstr "コンポジット"
 
 #: inc/schemas/audio/scale.h:143 inc/audio/scale.h:175
 msgid "Bhairav"
-msgstr ""
+msgstr "Bhairav"
 
 #: inc/schemas/audio/scale.h:144 inc/audio/scale.h:176
 #, fuzzy
@@ -240,39 +240,39 @@ msgstr "和声的短音階"
 
 #: inc/schemas/audio/scale.h:145 inc/audio/scale.h:177
 msgid "Persian"
-msgstr ""
+msgstr "ペルシア音階"
 
 #: inc/schemas/audio/scale.h:146 inc/audio/scale.h:178
 msgid "Iwato"
-msgstr ""
+msgstr "岩戸"
 
 #: inc/schemas/audio/scale.h:147 inc/audio/scale.h:179
 msgid "Kumoi"
-msgstr ""
+msgstr "雲井"
 
 #: inc/schemas/audio/scale.h:148 inc/audio/scale.h:180
 msgid "Pelog"
-msgstr ""
+msgstr "ペロッグ"
 
 #: inc/schemas/audio/scale.h:149 inc/audio/scale.h:181
 msgid "Prometheus"
-msgstr ""
+msgstr "プロメテウス"
 
 #: inc/schemas/audio/scale.h:150 inc/audio/scale.h:182
 msgid "Prometheus Neapolitan"
-msgstr ""
+msgstr "プロメテウス・ナポリタン"
 
 #: inc/schemas/audio/scale.h:152 inc/audio/scale.h:183
 msgid "Prometheus Liszt"
-msgstr ""
+msgstr "プロメテウス・リスト"
 
 #: inc/schemas/audio/scale.h:153 inc/audio/scale.h:184
 msgid "Balinese"
-msgstr ""
+msgstr "バリ音階"
 
 #: inc/schemas/audio/scale.h:154 inc/audio/scale.h:185
 msgid "RagaTodi"
-msgstr ""
+msgstr "ラガトディ"
 
 #: inc/schemas/audio/scale.h:155 inc/audio/scale.h:186
 #, fuzzy
@@ -1237,6 +1237,9 @@ msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
+"選択されたトラックには、インスタンス化されていないプラグインが含まれています"
+"。これらを削除すると元に戻せなくなり、取り消し履歴もクリアされます。削除を続"
+"行しますか？"
 
 #: src/actions/actions.c:1791
 #, fuzzy
@@ -1345,8 +1348,9 @@ msgid "Object name"
 msgstr "プロジェクト名"
 
 #: src/actions/actions.c:2628
+#, fuzzy
 msgid "An object cannot be created at the selected location."
-msgstr ""
+msgstr "選択した場所でオブジェクトを作成することはできません。"
 
 #: src/actions/actions.c:2653
 #, fuzzy
@@ -1417,6 +1421,9 @@ msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
+"選択範囲には、インスタンス化されていないプラグインが含まれています。それらを"
+"削除すると、元に戻すことができなくなり、取り消し履歴も消去されます。削除を続"
+"行しますか？"
 
 #: src/actions/actions.c:3317
 #, fuzzy, c-format
@@ -1988,15 +1995,15 @@ msgstr ""
 
 #: src/utils/audio.c:27
 msgid "16 bit"
-msgstr ""
+msgstr "16ビット"
 
 #: src/utils/audio.c:28
 msgid "24 bit"
-msgstr ""
+msgstr "24ビット"
 
 #: src/utils/audio.c:29
 msgid "32 bit"
-msgstr ""
+msgstr "32ビット"
 
 #: src/utils/gtk.c:1196
 msgid "Mixer"
@@ -2094,7 +2101,7 @@ msgstr "プラグイン%sのインスタンス化エラー。詳細はログを�
 #: src/utils/log.c:822
 #, c-format
 msgid "%s has encountered an error\n"
-msgstr ""
+msgstr "%sはエラーが発生しました。\n"
 
 #: src/audio/supported_file.c:269
 msgid "Failed opening file"
@@ -2332,6 +2339,9 @@ msgid ""
 "priority of threads. Please refer to the 'Getting Started' section in the "
 "user manual for details."
 msgstr ""
+"%s がスレッドのスケジューリング優先度を設定できるような十分な権限が、お客様の"
+"ユーザーにはありません。詳しくは、ユーザーマニュアルの 'Getting Started' "
+"の項を参照してください。"
 
 #: src/audio/track.c:326
 msgid "Track record"
@@ -2647,7 +2657,7 @@ msgstr "サポートされていないファイルの種類 %s"
 
 #: src/audio/tracklist.c:1319
 msgid "This MIDI file contains no data"
-msgstr ""
+msgstr "このMIDIファイルにはデータが含まれていません"
 
 #: src/audio/tracklist.c:1336
 #, fuzzy
@@ -4078,7 +4088,7 @@ msgstr "MIDI出力"
 
 #: src/gui/widgets/ruler.c:1392 src/gui/widgets/bot_bar.c:161
 msgid "BBT"
-msgstr ""
+msgstr "BBT"
 
 #: src/gui/widgets/ruler.c:1394 src/gui/widgets/bot_bar.c:164
 #, fuzzy
@@ -4176,8 +4186,9 @@ msgid "Visibility"
 msgstr "表示/未表示設定"
 
 #: src/gui/widgets/track_filter_popover.c:253
+#, fuzzy
 msgid "Filter"
-msgstr ""
+msgstr "絞り込む"
 
 #: src/gui/widgets/track_filter_popover.c:274
 #, fuzzy
@@ -4459,7 +4470,7 @@ msgstr "フォントのスケール"
 
 #: src/gui/widgets/chord_pad_panel.c:70
 msgid "Predefined"
-msgstr ""
+msgstr "定義済み"
 
 #: src/gui/widgets/chord_pad_panel.c:98
 #, fuzzy
@@ -4498,7 +4509,7 @@ msgstr "トラック"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:39
 msgid "Welcome to the Zrythm DAW"
-msgstr ""
+msgstr "Zrythm DAWへようこそ"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:42
 #, c-format
@@ -4506,6 +4517,8 @@ msgid ""
 "If this is your first time using Zrythm, we suggest going through the "
 "'Getting Started' section in the %suser manual%s."
 msgstr ""
+"初めてZrythmを使用する場合は、%suser manual%s の 'Getting Started' "
+"のセクションを確認することをお勧めします。"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:51
 #, c-format
@@ -4519,7 +4532,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:63
 msgid "Flatpak users"
-msgstr ""
+msgstr "Flatpakのユーザー"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:65
 msgid ""
@@ -4527,6 +4540,9 @@ msgid ""
 "errors when starting Zrythm. We recommend setting a fixed buffer size for "
 "Zrythm in your PipeWire config to avoid this."
 msgstr ""
+"このFlatpakランタイムのPipeWire版には、Zrythmの起動時にエラーが発生する可能性"
+"のある既知のバグがあります。これを避けるために、PipeWireの設定でZrythmのバッ"
+"ファサイズを固定にすることをお勧めします。"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:73
 msgid "Flatpak limitation"
@@ -4534,12 +4550,12 @@ msgstr "Flatpakの制限"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:74
 msgid "Only Flatpak-installed plugins are supported."
-msgstr ""
+msgstr "Flatpakにインストールされているプラグインのみ対応しています。"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:86
 #, c-format
 msgid "Zrythm and the Zrythm logo are %strademarks of Alexandros Theodotou%s."
-msgstr ""
+msgstr "ZrythmおよびZrythmのロゴは%sAlexandros Theodotouの商標です%s。"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:103
 msgid "Welcome"
@@ -4799,7 +4815,7 @@ msgstr "Zrythmを設定しています"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:201
 msgid "Initial Configuration"
-msgstr ""
+msgstr "初期設定"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:211
 #, fuzzy
@@ -4813,7 +4829,7 @@ msgstr "すべてを選択"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:230
 msgid "Location to save user files"
-msgstr ""
+msgstr "ユーザーファイルの保存場所"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:232
 #, fuzzy
@@ -4963,15 +4979,15 @@ msgstr "閉じる"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:665
 msgid "Submit on _SourceHut"
-msgstr ""
+msgstr "SourceHutで投稿する(_S)"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:666
 msgid "Send via _email (publicly visible)"
-msgstr ""
+msgstr "メールで送信する（一般公開）(_E)"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:667
 msgid "Preview and send _automatically (privately)"
-msgstr ""
+msgstr "プレビューと自動送信（非公開）(_A)"
 
 #: src/gui/widgets/dialogs/about_dialog.c:56
 msgid "a highly automated and intuitive digital audio workstation"
@@ -5404,11 +5420,12 @@ msgstr "URI %s を持つプラグインの検索に失敗しました。"
 msgid ""
 "This plugin contains multiple audio outputs. Would you like to auto-route "
 "each output to a separate FX track?"
-msgstr ""
+msgstr "このプラグインには複数の音声出力があります。各出力を別々のFXトラックに自動ル"
+"ーティングしますか？"
 
 #: src/settings/plugin_settings.c:319
 msgid "Are the outputs stereo?"
-msgstr ""
+msgstr "出力はステレオですか？"
 
 #: src/settings/plugin_settings.c:374 src/settings/plugin_settings.c:461
 #: src/settings/plugin_settings.c:477
@@ -5429,7 +5446,7 @@ msgstr "ディム出力"
 #: src/settings/plugin_settings.c:437
 #, c-format
 msgid "%s %d"
-msgstr ""
+msgstr "%s %d"
 
 #: src/settings/plugin_settings.c:511
 #, fuzzy
@@ -5925,15 +5942,15 @@ msgstr "プロトコル"
 
 #: resources/ui/plugin_browser.ui:148
 msgid "Sort alphabetically"
-msgstr ""
+msgstr "アルファベット順に並べる"
 
 #: resources/ui/plugin_browser.ui:154
 msgid "Sort by recently used"
-msgstr ""
+msgstr "最近使った順に並べ替え"
 
 #: resources/ui/plugin_browser.ui:160
 msgid "Sort by most used"
-msgstr ""
+msgstr "使用頻度の高い順に並べ替え"
 
 #: resources/ui/header.ui:23 resources/gtk/help-overlay.ui:98
 msgid "Project"
@@ -6037,7 +6054,7 @@ msgstr "%sを作成"
 
 #: resources/ui/project_assistant.ui:99
 msgid "Open from _Path"
-msgstr ""
+msgstr "パスから開く(_P)"
 
 #: resources/ui/modulator_inner.ui:14
 msgid "Show/hide UI"
@@ -6108,7 +6125,7 @@ msgstr "...としてエクスポート"
 
 #: resources/ui/export_dialog.ui:39 resources/ui/export_dialog.ui:160
 msgid "Metadata"
-msgstr ""
+msgstr "メタデータ"
 
 #: resources/ui/export_dialog.ui:42 resources/ui/export_dialog.ui:163
 #: build/data/org.zrythm.Zrythm.gschema.xml:850
@@ -6157,7 +6174,8 @@ msgstr "ミックスダウン"
 msgid ""
 "Whether to export the selected tracks as a single mixdown file or each track "
 "in its own file."
-msgstr ""
+msgstr "選択したトラックを1つのミックスダウンファイルとして書き出すか、各トラックを独"
+"立したファイルとして書き出すかを選択します。"
 
 #: resources/ui/export_dialog.ui:105 resources/ui/export_dialog.ui:229
 #: build/data/org.zrythm.Zrythm.gschema.xml:855
@@ -6167,7 +6185,7 @@ msgstr "時間の範囲"
 
 #: resources/ui/export_dialog.ui:106 resources/ui/export_dialog.ui:230
 msgid "Only events inside this time range will be exported."
-msgstr ""
+msgstr "この時間範囲内のイベントのみがエクスポートされます。"
 
 #: resources/ui/export_dialog.ui:117 resources/ui/export_dialog.ui:241
 #, fuzzy
@@ -6775,7 +6793,7 @@ msgstr "最後のプロジェクトディレクトリ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:397
 msgid "Last set velocity on a MIDI note."
-msgstr ""
+msgstr "MIDIノートで最後に設定されたベロシティ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:402
 msgid ""
@@ -7028,7 +7046,7 @@ msgstr "トラックフェーダーの展開状況"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:532
 msgid "Track types to filter tracks with."
-msgstr ""
+msgstr "トラックを絞り込むためのトラックタイプ。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:540
 msgid "Plugin browser tab"
