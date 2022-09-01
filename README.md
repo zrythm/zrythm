@@ -68,7 +68,7 @@ on our website.
 Zrythm is currently in beta. The project format is
 stable and we are working towards a v1 release.
 
-### Audio backend support status
+### Audio backends
 
 |  Backend  |  Status  |
 | ---- | ---- |
@@ -81,7 +81,7 @@ stable and we are working towards a v1 release.
 |  WASAPI (RtAudio) |  Supported |
 |  CoreAudio (RtAudio) |  Supported |
 
-### MIDI backend support status
+### MIDI backends
 
 |  Backend  |  Status  |
 | ---- | ---- |
@@ -91,8 +91,18 @@ stable and we are working towards a v1 release.
 |  WindowsMME (RtMidi) |  Supported |
 |  CoreMIDI (RtMidi) |  Supported |
 
-### Supported platforms
-- GNU/Linux, FreeBSD, Windows, MacOS
+### Platforms
+
+|  Platform  |  x86_64/AMD64/x64  | AArch64/ARM64/ARMv8 | ARMv7 | PowerPC64 | i386 | i686 |
+| ---- | ---- | ---- | ---- | ---- | ---- | ---- |
+|  GNU/Linux  |  ○ | ○ | △| △ | △ | △ |
+|  FreeBSD  |  ○ | △ | △ | △ | △ | △ |
+|  Windows  |  ○ | × | × | × | × | × |
+|  MacOS  |  ○ | ○ | × | × | × | × |
+
+○: Supported
+△: Untested
+×: Not supported
 
 ## Building and Installation
 See [INSTALL.rst](INSTALL.rst) for build
