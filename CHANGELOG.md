@@ -6,7 +6,7 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-beta.3.3.1] - 2022-09-01
+## [1.0.0-beta.3.3.3] - 2022-09-01
 ### Added
 - Add track filtering by name and type
 - Add more error checking when instantiating Carla plugins
