@@ -48,10 +48,7 @@ header_widget_setup (HeaderWidget * self, const char * title)
 static void
 dispose (HeaderWidget * self)
 {
-  /* unparenting the stack throws a CRITICAL on
-   * close */
-  /*gtk_widget_unparent (GTK_WIDGET (self->stack));*/
-
+  gtk_widget_unparent (GTK_WIDGET (self->stack));
   gtk_widget_unparent (GTK_WIDGET (self->end_box));
 
   G_OBJECT_CLASS (header_widget_parent_class)
