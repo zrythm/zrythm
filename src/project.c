@@ -959,6 +959,31 @@ load (const char * filename, const int is_template)
            "logs for more information."));
       RETURN_ERROR;
     }
+
+  /* check for FINISHED file */
+  if (schema_ver >= 3)
+    {
+      char * finished_file_path = project_get_path (
+        PROJECT, PROJECT_PATH_FINISHED_FILE, use_backup);
+      bool finished_file_exists =
+        g_file_test (finished_file_path, G_FILE_TEST_EXISTS);
+      if (!finished_file_exists)
+        {
+          ui_show_error_message_printf (
+            MAIN_WINDOW, true,
+            _ ("Could not load project: Corrupted project detected (missing FINISHED file at '%s')."),
+            finished_file_path);
+          RETURN_ERROR;
+        }
+      g_free (finished_file_path);
+    }
+  else
+    {
+      g_message (
+        "skipping check for %s file (schema ver %d)",
+        PROJECT_FINISHED_FILE, schema_ver);
+    }
+
   g_message ("Project successfully deserialized.");
 
   /* if template, also copy the pool and plugin
@@ -1247,31 +1272,39 @@ project_load (const char * filename, const bool is_template)
 bool
 project_upgrade_schema (char ** yaml, int src_ver)
 {
-  if (src_ver == 1)
+  switch (src_ver)
     {
-      /* deserialize into the previous version of the struct */
-      GError *     err = NULL;
-      Project_v1 * self = (Project_v1 *) yaml_deserialize (
-        *yaml, &project_schema_v1, &err);
-      if (!self)
-        {
-          HANDLE_ERROR (
-            err, "%s",
-            _ ("Failed to deserialize v1 project file"));
-          return false;
-        }
+    case 1:
+      {
+        /* deserialize into the previous version of the struct */
+        GError *     err = NULL;
+        Project_v1 * self = (Project_v1 *) yaml_deserialize (
+          *yaml, &project_schema_v1, &err);
+        if (!self)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _ ("Failed to deserialize v1 project file"));
+            return false;
+          }
 
-      /* only dropping undo history, so just re-serialize
+        /* only dropping undo history, so just re-serialize
        * into YAML */
-      g_free (*yaml);
-      *yaml = yaml_serialize (self, &project_schema_v1);
-      cyaml_config_t cyaml_config;
-      yaml_get_cyaml_config (&cyaml_config);
+        g_free (*yaml);
+        *yaml = yaml_serialize (self, &project_schema_v1);
+        cyaml_config_t cyaml_config;
+        yaml_get_cyaml_config (&cyaml_config);
 
-      /* free memory allocated by libcyaml */
-      cyaml_free (&cyaml_config, &project_schema_v1, self, 0);
+        /* free memory allocated by libcyaml */
+        cyaml_free (
+          &cyaml_config, &project_schema_v1, self, 0);
+
+        return true;
+      }
+      break;
+    default:
+      return true;
     }
-  return true;
 }
 
 /**
@@ -1409,7 +1442,9 @@ project_get_path (Project * self, ProjectPath path, bool backup)
       return g_build_filename (dir, PROJECT_POOL_DIR, NULL);
     case PROJECT_PATH_PROJECT_FILE:
       return g_build_filename (dir, PROJECT_FILE, NULL);
-      break;
+    case PROJECT_PATH_FINISHED_FILE:
+      return g_build_filename (
+        dir, PROJECT_FINISHED_FILE, NULL);
     default:
       g_return_val_if_reached (NULL);
     }
@@ -1912,6 +1947,14 @@ project_save (
     }
 
   object_free_w_func_and_null (project_save_data_free, data);
+
+  /* write FINISHED file */
+  {
+    char * finished_file_path = project_get_path (
+      self, PROJECT_PATH_FINISHED_FILE, is_backup);
+    io_touch_file (finished_file_path);
+    g_free (finished_file_path);
+  }
 
   if (ZRYTHM_TESTING)
     tracklist_validate (self->tracklist);

@@ -46,6 +46,12 @@ io_mkdir (const char * dir);
  */
 NONNULL
 FILE *
+io_create_file (const char * filename);
+
+/**
+ * Touches a file similar to UNIX touch.
+ */
+void
 io_touch_file (const char * filename);
 
 NONNULL

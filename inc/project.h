@@ -50,7 +50,7 @@ typedef struct TracklistSelections TracklistSelections;
  * @{
  */
 
-#define PROJECT_SCHEMA_VERSION 2
+#define PROJECT_SCHEMA_VERSION 3
 
 #define PROJECT ZRYTHM->project
 #define DEFAULT_PROJECT_NAME "Untitled Project"
@@ -63,6 +63,7 @@ typedef struct TracklistSelections TracklistSelections;
 #define PROJECT_EXPORTS_DIR "exports"
 #define PROJECT_STEMS_DIR "stems"
 #define PROJECT_POOL_DIR "pool"
+#define PROJECT_FINISHED_FILE "FINISHED"
 
 typedef enum ProjectPath
 {
@@ -89,6 +90,8 @@ typedef enum ProjectPath
   PROJECT_PATH_EXPORTS_STEMS,
 
   PROJECT_PATH_POOL,
+
+  PROJECT_PATH_FINISHED_FILE,
 } ProjectPath;
 
 /**

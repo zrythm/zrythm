@@ -109,9 +109,24 @@ io_file_get_ext (const char * filename)
  * Creates the file if doesn't exist
  */
 FILE *
-io_touch_file (const char * filename)
+io_create_file (const char * filename)
 {
   return fopen (filename, "ab+");
+}
+
+/**
+ * Touches a file similar to UNIX touch.
+ */
+void
+io_touch_file (const char * filename)
+{
+  FILE * f = io_create_file (filename);
+  if (!f)
+    {
+      g_warning ("failed to create file: %s", filename);
+      return;
+    }
+  fclose (f);
 }
 
 /**
