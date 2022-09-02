@@ -6,6 +6,16 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.4.1] - 2022-09-02
+### Added
+- Write FINISHED file after finishing saving a project and check for this file on load
+- Use new higher quality "Finer" timestretcher when using rubberband v3
+
+### Changed
+- Fix header widget not unparenting its child stack
+- Update French, Japanese translations
+- Change trial version limitation to max 25 tracks per project
+
 ## [1.0.0-beta.3.3.3] - 2022-09-01
 ### Added
 - Add track filtering by name and type
