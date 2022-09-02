@@ -1,23 +1,10 @@
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
+ *
+ * ---
  *
  * Copyright (C) 2018 Robin Gareus <robin@gareus.org>
  *
@@ -33,6 +20,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * ---
  */
 
 #include <math.h>
@@ -69,26 +58,28 @@ stretcher_new_rubberband (
 {
   Stretcher * self = object_new (Stretcher);
 
+  RubberBandOptions opts = 0;
+
   self->backend = STRETCHER_BACKEND_RUBBERBAND;
   self->samplerate = samplerate;
   self->channels = channels;
   self->is_realtime = realtime;
   if (realtime)
     {
+      opts =
+        RubberBandOptionProcessRealTime
+        | RubberBandOptionTransientsCrisp
+        | RubberBandOptionDetectorCompound
+        | RubberBandOptionPhaseLaminar
+        | RubberBandOptionThreadingAlways
+        | RubberBandOptionWindowStandard
+        | RubberBandOptionSmoothingOff
+        | RubberBandOptionFormantShifted
+        | RubberBandOptionPitchHighSpeed
+        | RubberBandOptionChannelsApart;
       self->block_size = 16000;
       self->rubberband_state = rubberband_new (
-        samplerate, channels,
-        RubberBandOptionProcessRealTime
-          | RubberBandOptionTransientsCrisp
-          | RubberBandOptionDetectorCompound
-          | RubberBandOptionPhaseLaminar
-          | RubberBandOptionThreadingAlways
-          | RubberBandOptionWindowStandard
-          | RubberBandOptionSmoothingOff
-          | RubberBandOptionFormantShifted
-          | RubberBandOptionPitchHighSpeed
-          | RubberBandOptionChannelsApart,
-        time_ratio, pitch_ratio);
+        samplerate, channels, opts, time_ratio, pitch_ratio);
 
       /* feed it samples so it is ready to use */
 #if 0
@@ -147,21 +138,27 @@ stretcher_new_rubberband (
     }
   else
     {
+      opts =
+        RubberBandOptionProcessOffline
+        | RubberBandOptionStretchElastic
+        | RubberBandOptionTransientsCrisp
+        | RubberBandOptionDetectorCompound
+        | RubberBandOptionPhaseLaminar
+        | RubberBandOptionThreadingNever
+        | RubberBandOptionWindowStandard
+        | RubberBandOptionSmoothingOff
+        | RubberBandOptionFormantShifted
+        | RubberBandOptionPitchHighQuality
+        | RubberBandOptionChannelsApart
+      /* use finer engine if rubberband v3 */
+#if RUBBERBAND_API_MAJOR_VERSION > 2 \
+  || (RUBBERBAND_API_MAJOR_VERSION == 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
+        | RubberBandOptionEngineFiner
+#endif
+        ;
       self->block_size = 6000;
       self->rubberband_state = rubberband_new (
-        samplerate, channels,
-        RubberBandOptionProcessOffline
-          | RubberBandOptionStretchElastic
-          | RubberBandOptionTransientsCrisp
-          | RubberBandOptionDetectorCompound
-          | RubberBandOptionPhaseLaminar
-          | RubberBandOptionThreadingNever
-          | RubberBandOptionWindowStandard
-          | RubberBandOptionSmoothingOff
-          | RubberBandOptionFormantShifted
-          | RubberBandOptionPitchHighQuality
-          | RubberBandOptionChannelsApart,
-        time_ratio, pitch_ratio);
+        samplerate, channels, opts, time_ratio, pitch_ratio);
       rubberband_set_max_process_size (
         self->rubberband_state, self->block_size);
     }
