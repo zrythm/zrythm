@@ -230,13 +230,6 @@ typedef enum EventType
    */
   ET_PIANO_ROLL_KEY_HEIGHT_CHANGED,
 
-  /**
-   * Trial limit reached.
-   *
-   * Used to show a window to inform the user.
-   */
-  ET_TRIAL_LIMIT_REACHED,
-
   /** Sent after the main window finishes loading. */
   ET_MAIN_WINDOW_LOADED,
 

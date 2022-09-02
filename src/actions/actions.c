@@ -586,17 +586,6 @@ activate_new (
   GVariant *      variant,
   gpointer        user_data)
 {
-#ifdef TRIAL_VER
-  char msg[600];
-  sprintf (
-    msg,
-    _ ("Creating new projects is disabled. Please "
-       "restart %s to start a new project"),
-    PROGRAM_NAME);
-  ui_show_error_message (MAIN_WINDOW, false, msg);
-  return;
-#endif
-
   GtkWidget * dialog = gtk_dialog_new_with_buttons (
     _ ("Create new project"), GTK_WINDOW (MAIN_WINDOW),
     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -636,13 +625,6 @@ run_open_dialog (GtkDialog * dialog)
 
 DEFINE_SIMPLE (activate_open)
 {
-#ifdef TRIAL_VER
-  ui_show_error_message (
-    MAIN_WINDOW, false,
-    _ ("Loading is disabled in the trial version"));
-  return;
-#endif
-
   GtkDialog * dialog = dialogs_get_open_project_dialog (
     GTK_WINDOW (MAIN_WINDOW));
 
@@ -665,13 +647,6 @@ activate_save (
   GVariant *      variant,
   gpointer        user_data)
 {
-#ifdef TRIAL_VER
-  ui_show_error_message (
-    MAIN_WINDOW, false,
-    _ ("Saving is disabled in the trial version"));
-  return;
-#endif
-
   if (!PROJECT->dir || !PROJECT->title)
     {
       activate_save_as (action, variant, user_data);
@@ -690,13 +665,6 @@ activate_save_as (
   GVariant *      variant,
   gpointer        user_data)
 {
-#ifdef TRIAL_VER
-  ui_show_error_message (
-    MAIN_WINDOW, false,
-    _ ("Saving is disabled in the trial version"));
-  return;
-#endif
-
   GtkWidget *          dialog;
   GtkFileChooser *     chooser;
   GtkFileChooserAction _action = GTK_FILE_CHOOSER_ACTION_SAVE;

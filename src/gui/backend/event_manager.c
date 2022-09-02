@@ -1125,19 +1125,6 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
     case ET_AUTOMATION_TRACKLIST_AT_REMOVED:
       /* TODO */
       break;
-    case ET_TRIAL_LIMIT_REACHED:
-      {
-        char msg[500];
-        sprintf (
-          msg,
-          _ ("Trial limit has been reached. "
-             "%s will now go silent"),
-          PROGRAM_NAME);
-        ui_show_message_full (
-          GTK_WINDOW (MAIN_WINDOW), GTK_MESSAGE_INFO, true,
-          "%s", msg);
-      }
-      break;
     case ET_CHANNEL_SEND_CHANGED:
       {
         ChannelSend *       send = (ChannelSend *) ev->arg;

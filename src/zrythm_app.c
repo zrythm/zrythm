@@ -367,7 +367,6 @@ on_setup_main_window (
   /*router_recalc_graph (ROUTER);*/
   /*engine_set_run (AUDIO_ENGINE, true);*/
 
-#ifndef TRIAL_VER
   /* add timeout for auto-saving projects */
   unsigned int autosave_interval = g_settings_get_uint (
     S_P_PROJECTS_GENERAL, "autosave-interval");
@@ -376,7 +375,6 @@ on_setup_main_window (
       PROJECT->last_autosave_time = g_get_monotonic_time ();
       g_timeout_add_seconds (3, project_autosave_cb, NULL);
     }
-#endif
 
   if (self->splash)
     {

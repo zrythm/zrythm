@@ -64,14 +64,6 @@ engine_pulse_stream_write_callback (
 
   for (nframes_t i = 0; i < num_frames; i++)
     {
-#  ifdef TRIAL_VER
-      if (self->limit_reached)
-        {
-          float_buf[i * 2] = 0;
-          float_buf[i * 2 + 1] = 0;
-          continue;
-        }
-#  endif
       float_buf[i * 2] = self->monitor_out->l->buf[i];
       float_buf[i * 2 + 1] = self->monitor_out->r->buf[i];
     }

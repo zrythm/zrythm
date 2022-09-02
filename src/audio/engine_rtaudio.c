@@ -92,14 +92,6 @@ audio_cb (
     out_buf, DENORMAL_PREVENTION_VAL, (size_t) (nframes * 2));
   for (nframes_t i = 0; i < num_frames; i++)
     {
-#  ifdef TRIAL_VER
-      if (self->limit_reached)
-        {
-          out_buf[i * 2] = 0;
-          out_buf[i * 2 + 1] = 0;
-          continue;
-        }
-#  endif
       out_buf[i * 2] = self->monitor_out->l->buf[i];
       out_buf[i * 2 + 1] = self->monitor_out->r->buf[i];
     }

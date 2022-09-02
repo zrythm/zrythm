@@ -850,19 +850,8 @@ send_audio_data_to_jack (
   float * out = (float *) jack_port_get_buffer (
     jport, AUDIO_ENGINE->nframes);
 
-#  ifdef TRIAL_VER
-  if (AUDIO_ENGINE->limit_reached)
-    {
-      dsp_fill (&out[start_frames], 0.f, nframes);
-    }
-  else
-    {
-#  endif
-      dsp_copy (
-        &out[start_frames], &port->buf[start_frames], nframes);
-#  ifdef TRIAL_VER
-    }
-#  endif
+  dsp_copy (
+    &out[start_frames], &port->buf[start_frames], nframes);
 }
 
 /**

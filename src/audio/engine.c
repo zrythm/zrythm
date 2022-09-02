@@ -438,10 +438,6 @@ engine_pre_setup (AudioEngine * self)
 
   g_return_if_fail (self && !self->setup && !self->pre_setup);
 
-#ifdef TRIAL_VER
-  self->zrythm_start_time = g_get_monotonic_time ();
-#endif
-
   int ret = 0;
   switch (self->audio_backend)
     {
