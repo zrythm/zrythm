@@ -213,6 +213,14 @@ ZrythmApp **
 zrythm_app_get (void);
 
 /**
+ * Shows the trial limitation error message.
+ *
+ * @return Whether the limit was reached.
+ */
+bool
+zrythm_app_check_and_show_trial_limit_error (ZrythmApp * self);
+
+/**
  * @}
  */
 

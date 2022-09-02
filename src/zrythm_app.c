@@ -1723,6 +1723,30 @@ zrythm_app_get (void)
 }
 
 /**
+ * Shows the trial limitation error message.
+ *
+ * @return Whether the limit was reached.
+ */
+bool
+zrythm_app_check_and_show_trial_limit_error (ZrythmApp * self)
+{
+#ifdef TRIAL_VER
+  if (
+    PROJECT && TRACKLIST
+    && TRACKLIST->num_tracks >= TRIAL_MAX_TRACKS)
+    {
+      ui_show_error_message_printf (
+        self->main_window, true,
+        _ ("This version of Zrythm does not support creating more than %d tracks."),
+        TRIAL_MAX_TRACKS);
+      return true;
+    }
+#endif
+
+  return false;
+}
+
+/**
  * Creates the Zrythm GApplication.
  *
  * This also initializes the Zrythm struct.

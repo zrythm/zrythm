@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -276,9 +276,13 @@ on_dnd_drop (
           uris = strv_builder_end (uris_builder);
         }
 
-      tracklist_import_files (
-        TRACKLIST, uris, file, NULL, NULL, NULL, Z_F_PROGRESS,
-        true);
+      if (!zrythm_app_check_and_show_trial_limit_error (
+            zrythm_app))
+        {
+          tracklist_import_files (
+            TRACKLIST, uris, file, NULL, NULL, NULL,
+            Z_F_PROGRESS, true);
+        }
       return true;
     }
   else if (pd)
@@ -290,7 +294,11 @@ on_dnd_drop (
           PluginSetting * setting =
             plugin_setting_new_default (pd);
 
-          plugin_setting_activate (setting);
+          if (!zrythm_app_check_and_show_trial_limit_error (
+                zrythm_app))
+            {
+              plugin_setting_activate (setting);
+            }
 
           plugin_setting_free (setting);
         }
@@ -354,7 +362,7 @@ on_dnd_drop (
       pos++;
 
       GError * err = NULL;
-      bool     ret;
+      bool     ret = false;
       if (action == GDK_ACTION_COPY)
         {
           if (tracklist_selections_contains_uncopyable_track (
@@ -365,9 +373,13 @@ on_dnd_drop (
                 "contains uncopyable track");
               return false;
             }
-          ret = tracklist_selections_action_perform_copy (
-            TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, pos,
-            &err);
+          if (!zrythm_app_check_and_show_trial_limit_error (
+                zrythm_app))
+            {
+              ret = tracklist_selections_action_perform_copy (
+                TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
+                pos, &err);
+            }
         }
       else if (action == GDK_ACTION_MOVE)
         {

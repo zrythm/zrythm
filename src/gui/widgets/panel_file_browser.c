@@ -400,6 +400,7 @@ on_file_search_changed (
     GTK_FILTER_CHANGE_DIFFERENT);
 }
 
+/* FIXME duplicated code with file_browser's on_file_chooser_file_activated - move to a single place */
 static void
 on_file_row_activated (
   GtkListView * list_view,
@@ -441,6 +442,10 @@ on_file_row_activated (
     || descr->type == FILE_TYPE_FLAC
     || descr->type == FILE_TYPE_MP3)
     {
+      if (zrythm_app_check_and_show_trial_limit_error (
+            zrythm_app))
+        return;
+
       GError * err = NULL;
       bool     ret = track_create_with_action (
             TRACK_TYPE_AUDIO, NULL, descr, PLAYHEAD,
@@ -453,6 +458,10 @@ on_file_row_activated (
     }
   else if (descr->type == FILE_TYPE_MIDI)
     {
+      if (zrythm_app_check_and_show_trial_limit_error (
+            zrythm_app))
+        return;
+
       GError * err = NULL;
       bool     ret = track_create_with_action (
             TRACK_TYPE_MIDI, NULL, descr, PLAYHEAD,

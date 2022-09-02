@@ -68,6 +68,9 @@ on_file_chooser_file_activated (
   GtkFileChooser *    chooser,
   FileBrowserWidget * self)
 {
+  if (zrythm_app_check_and_show_trial_limit_error (zrythm_app))
+    return;
+
   GFile * gfile = gtk_file_chooser_get_file (chooser);
   char *  abs_path = g_file_get_path (gfile);
   g_object_unref (gfile);

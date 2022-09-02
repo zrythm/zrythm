@@ -1497,92 +1497,60 @@ activate_snap_events (
     g_return_if_reached ();
 }
 
-DEFINE_SIMPLE (activate_create_audio_track)
+static void
+create_empty_track (TrackType type)
 {
+  if (zrythm_app_check_and_show_trial_limit_error (zrythm_app))
+    return;
+
   GError * err = NULL;
-  bool     ret =
-    track_create_empty_with_action (TRACK_TYPE_AUDIO, &err);
+  bool     ret = track_create_empty_with_action (type, &err);
   if (!ret)
     {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to create audio track"));
+      HANDLE_ERROR (err, "%s", _ ("Failed to create track"));
     }
+}
+
+DEFINE_SIMPLE (activate_create_audio_track)
+{
+  create_empty_track (TRACK_TYPE_AUDIO);
 }
 
 DEFINE_SIMPLE (activate_create_midi_track)
 {
-  GError * err = NULL;
-  bool     ret =
-    track_create_empty_with_action (TRACK_TYPE_MIDI, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to create MIDI track"));
-    }
+  create_empty_track (TRACK_TYPE_MIDI);
 }
 
 DEFINE_SIMPLE (activate_create_audio_bus_track)
 {
-  GError * err = NULL;
-  bool     ret = track_create_empty_with_action (
-        TRACK_TYPE_AUDIO_BUS, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to create audio FX track"));
-    }
+  create_empty_track (TRACK_TYPE_AUDIO_BUS);
 }
 
 DEFINE_SIMPLE (activate_create_midi_bus_track)
 {
-  GError * err = NULL;
-  bool     ret = track_create_empty_with_action (
-        TRACK_TYPE_MIDI_BUS, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to create MIDI FX track"));
-    }
+  create_empty_track (TRACK_TYPE_MIDI_BUS);
 }
 
 DEFINE_SIMPLE (activate_create_audio_group_track)
 {
-  GError * err = NULL;
-  bool     ret = track_create_empty_with_action (
-        TRACK_TYPE_AUDIO_GROUP, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to create audio group track"));
-    }
+  create_empty_track (TRACK_TYPE_AUDIO_GROUP);
 }
 
 DEFINE_SIMPLE (activate_create_midi_group_track)
 {
-  GError * err = NULL;
-  bool     ret = track_create_empty_with_action (
-        TRACK_TYPE_MIDI_GROUP, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to create MIDI group track"));
-    }
+  create_empty_track (TRACK_TYPE_MIDI_GROUP);
 }
 
 DEFINE_SIMPLE (activate_create_folder_track)
 {
-  GError * err = NULL;
-  bool     ret =
-    track_create_empty_with_action (TRACK_TYPE_FOLDER, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to create folder track"));
-    }
+  create_empty_track (TRACK_TYPE_FOLDER);
 }
 
 DEFINE_SIMPLE (activate_duplicate_selected_tracks)
 {
+  if (zrythm_app_check_and_show_trial_limit_error (zrythm_app))
+    return;
+
   GError * err = NULL;
   bool     ret = tracklist_selections_action_perform_copy (
         TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
@@ -3369,6 +3337,9 @@ activate_plugin_setting (
   PluginSetting *    setting,
   PluginDescriptor * descr)
 {
+  if (zrythm_app_check_and_show_trial_limit_error (zrythm_app))
+    return;
+
   bool setting_created = false;
   if (!setting)
     {
