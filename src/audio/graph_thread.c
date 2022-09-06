@@ -84,7 +84,7 @@
 
 #include <glib/gi18n.h>
 
-#ifdef __linux__
+#ifdef HAVE_DBUS
 #  include <rtkit/rtkit.h>
 #endif
 
