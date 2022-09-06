@@ -24,7 +24,9 @@ gnome = import ('gnome')
 fs = import ('fs')
 cmake = import ('cmake')
 cmake_opts = cmake.subproject_options ()
-cmake_opts.add_cmake_defines ({'CMAKE_POSITION_INDEPENDENT_CODE': 'ON'})
+cmake_opts.add_cmake_defines ({
+  'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
+  })
 
 # --- Check for programs ---
 
@@ -804,11 +806,17 @@ endif
 cyaml_dep = dependency(
   'libcyaml', version: '>=1.2.0',
   static: all_static,
-  fallback: ['libcyaml', 'zrythm_cyaml_dep'])
+  fallback: ['libcyaml', 'zrythm_cyaml_dep'],
+  default_options: [
+    'default_library=static',
+    ])
 audec_dep = dependency(
   'audec', version: '>=0.3.2',
   fallback: ['libaudec', 'libaudec_dep'],
-  static: all_static)
+  static: all_static,
+  default_options: [
+    'default_library=static',
+    ])
 
 # link to fontconfig/pangoft2 directly because
 # they are used in utils/pango.c
@@ -872,7 +880,9 @@ sndfile_dep = dependency (
   'sndfile', version: min_version,
   fallback: ['libsndfile', 'libsndfile_dep'],
   default_options: [
-    'programs=false',])
+    'programs=false',
+    'default_library=static',
+    ])
 samplerate_dep = dependency (
   'samplerate', version: '>=0.1.8', required: true)
 if not samplerate_dep.found ()
@@ -927,7 +937,9 @@ json_glib_dep = dependency (
   fallback: ['json-glib', 'json_glib_dep'],
   default_options: [
     'introspection=disabled', 'gtk_doc=disabled',
-    'tests=false',])
+    'tests=false',
+    'default_library=static',
+    ])
 
 # fftw
 fftw3_deps = [
@@ -1117,14 +1129,20 @@ endif
 
 sdl_dep = dependency (
   'sdl2', required: get_option ('sdl'),
-  fallback: ['sdl2', 'sdl2_dep'])
+  fallback: ['sdl2', 'sdl2_dep'],
+  default_options: [
+    'default_library=static',
+    ])
 if sdl_dep.found ()
   cdata.set('HAVE_SDL', 1)
 endif
 
 zstd_dep = dependency (
   'libzstd',
-  fallback: ['zstd', 'libzstd_dep'])
+  fallback: ['zstd', 'libzstd_dep'],
+  default_options: [
+    'default_library=static',
+    ])
 
 reproc_dep = dependency (
   'reproc', version: '>=14.1.0', required: false,
@@ -1161,7 +1179,10 @@ cdata.set ('HAVE_LIBBACKTRACE', 1)
 
 xxhash_dep = dependency (
   'libxxhash',
-  fallback: ['xxhash', 'xxhash_dep'])
+  fallback: ['xxhash', 'xxhash_dep'],
+  default_options: [
+    'default_library=static',
+    ])
 
 vamp_static = get_option ('vamp_static')
 vamp_dep = dependency ('vamp', static: vamp_static)
@@ -1171,10 +1192,16 @@ vamp_deps = [ vamp_dep, vamp_host_sdk_dep ]
 
 pcre_dep = dependency (
   'libpcre',
-  fallback: ['pcre', 'pcre_dep'])
+  fallback: ['pcre', 'pcre_dep'],
+  default_options: [
+    'default_library=static',
+    ])
 pcre2_dep = dependency (
   'libpcre2-8',
-  fallback: ['pcre2', 'libpcre2_8'])
+  fallback: ['pcre2', 'libpcre2_8'],
+  default_options: [
+    'default_library=static',
+    ])
 
 zix_dep = dependency (
   'zix-0',
