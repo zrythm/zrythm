@@ -1,4 +1,4 @@
 [wrap-git]
 url=https://gitlab.gnome.org/GNOME/gtk
-# 4.7.2
-revision=6eb3548192a0c1cd8feb961aa01f6779c7e82f84
+depth=1
+revision=4.8.0
