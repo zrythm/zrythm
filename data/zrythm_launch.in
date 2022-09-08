@@ -8,6 +8,10 @@ if [ "$flatpak_build" != "1" ]; then
   export @LD_LIBRARY_PATH_ENV@="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:$jack_path:@LIBDIR@:$@LD_LIBRARY_PATH_ENV@"
 
   export GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@
+
+  if [ "@INSTALLER_VER@" = "1" ]; then
+    export GDK_PIXBUF_MODULE_FILE="@CONFIGURE_LIBDIR@/gdk-pixbuf-2.0/2.10.0/loaders.cache"
+  fi
 fi
 
 # if not first run, set language so that pre-startup
