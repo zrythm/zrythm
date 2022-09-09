@@ -9,7 +9,7 @@ if [ "$flatpak_build" != "1" ]; then
 
   export GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@
 
-  if [ "@INSTALLER_VER@" = "1" ]; then
+  if [ "@IS_INSTALLER_VER@" = "1" ]; then
     export GDK_PIXBUF_MODULE_FILE="@LIBDIR@/gdk-pixbuf-2.0/2.10.0/loaders.cache"
   fi
 fi

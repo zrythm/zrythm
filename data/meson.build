@@ -42,6 +42,7 @@ zrythm_launcher_config.set (
   'LD_LIBRARY_PATH_ENV',
   os_darwin ? 'DYLD_LIBRARY_PATH' : 'LD_LIBRARY_PATH')
 zrythm_launcher_config.set ('FLATPAK_BUILD', flatpak_build ? '1' : '0')
+zrythm_launcher_config.set ('IS_INSTALLER_VER', get_option ('installer_ver') ? '1' : '0')
 
 # install desktop file and launcher scripts
 if os_gnu or os_freebsd or os_darwin
