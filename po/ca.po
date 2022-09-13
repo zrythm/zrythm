@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-08-31 21:00+0900\n"
-"PO-Revision-Date: 2022-08-18 15:52+0000\n"
+"PO-Revision-Date: 2022-09-05 15:51+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.1-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -1277,7 +1277,6 @@ msgid "Failed to apply automation function"
 msgstr "Error en aplicar la funció d'automatització"
 
 #: src/actions/actions.c:2565 src/gui/widgets/track_filter_popover.c:268
-#, fuzzy
 msgid "Track name"
 msgstr "Nom de pista"
 
@@ -1287,7 +1286,7 @@ msgstr "Nom d'objecte"
 
 #: src/actions/actions.c:2628
 msgid "An object cannot be created at the selected location."
-msgstr ""
+msgstr "No es pot crear un objecte a la ubicació seleccionada."
 
 #: src/actions/actions.c:2653
 msgid "Please enter a BPM"
@@ -3198,9 +3197,8 @@ msgid "Change color..."
 msgstr "Canviar color..."
 
 #: src/gui/widgets/track.c:736
-#, fuzzy
 msgid "Rename..."
-msgstr "Canviar el nom"
+msgstr "Canviar el nom..."
 
 #: src/gui/widgets/track.c:741 src/gui/widgets/channel_slot.c:693
 #: src/gui/widgets/timeline_arranger.c:1008 resources/ui/header.ui:12
@@ -3267,14 +3265,12 @@ msgid "Piano Roll"
 msgstr "Rotlle de pianola"
 
 #: src/gui/widgets/track.c:955
-#, fuzzy
 msgid "Show used lanes"
-msgstr "Mostrar carrils"
+msgstr "Mostrar els carrils utilitzats"
 
 #: src/gui/widgets/track.c:960
-#, fuzzy
 msgid "Hide unused lanes"
-msgstr "Ocultar carrils"
+msgstr "Ocultar carrils no utilitzats"
 
 #: src/gui/widgets/modulator_macro.c:56
 #: src/gui/widgets/track_input_expander.c:327
@@ -3342,9 +3338,8 @@ msgid "Load preset"
 msgstr "Carregar preconfiguració"
 
 #: src/gui/widgets/arranger.c:1308
-#, fuzzy
 msgid "Create object"
-msgstr "Crear projecte nou"
+msgstr "Crear objecte"
 
 #: src/gui/widgets/arranger.c:1603 src/gui/widgets/arranger.c:1622
 #: src/gui/widgets/arranger.c:1667 src/gui/widgets/arranger.c:1733
@@ -3357,9 +3352,8 @@ msgid "Failed to move chords"
 msgstr "Error en moure acords"
 
 #: src/gui/widgets/arranger.c:2316
-#, fuzzy
 msgid "Automation value"
-msgstr "Mostrar els valors d'automatització"
+msgstr "Valors d'automatització"
 
 #: src/gui/widgets/arranger.c:2341
 msgid "Cannot resize because the selection contains objects without length"
@@ -3905,12 +3899,11 @@ msgstr "Sortida MIDI"
 
 #: src/gui/widgets/ruler.c:1392 src/gui/widgets/bot_bar.c:161
 msgid "BBT"
-msgstr ""
+msgstr "BBT"
 
 #: src/gui/widgets/ruler.c:1394 src/gui/widgets/bot_bar.c:164
-#, fuzzy
 msgid "Time"
-msgstr "Línia de temps"
+msgstr "Temps"
 
 #: src/gui/widgets/ruler.c:1396 src/gui/widgets/bot_bar.c:167
 msgid "Display"
@@ -3996,14 +3989,12 @@ msgid "Visibility"
 msgstr "Visibilitat"
 
 #: src/gui/widgets/track_filter_popover.c:253
-#, fuzzy
 msgid "Filter"
-msgstr "Alterat"
+msgstr "Filtre"
 
 #: src/gui/widgets/track_filter_popover.c:274
-#, fuzzy
 msgid "Track types"
-msgstr "Ports de pista"
+msgstr "Tipus de pista"
 
 #: src/gui/widgets/timeline_selection_info.c:242
 msgid "clip start (rel.)"
@@ -6102,9 +6093,8 @@ msgid "Initializing..."
 msgstr "Iniciant..."
 
 #: resources/ui/tracklist_header.ui:26
-#, fuzzy
 msgid "Track filters & visibility"
-msgstr "Visibilitat de la pista"
+msgstr "Filtres de pista i visibilitat"
 
 #: resources/gtk/help-overlay.ui:30
 msgid "Global Shortcuts"
@@ -6747,23 +6737,20 @@ msgstr ""
 "visible romandrà centrada al capçal de reproducció (editor)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:526
-#, fuzzy
 msgid "Track filter name"
-msgstr "Nom de pista"
+msgstr "Nom del filtre de pista"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:527
-#, fuzzy
 msgid "Name to filter tracks with."
-msgstr "Error en suprimir pistes"
+msgstr "Nom amb el qual filtrar pistes."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:531
-#, fuzzy
 msgid "Track filter type"
-msgstr "Atenuador de pista expandit"
+msgstr "Tipus de filtre de pista"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:532
 msgid "Track types to filter tracks with."
-msgstr ""
+msgstr "Tipus de pistes amb les quals filtrar pistes."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:540
 msgid "Plugin browser tab"
@@ -7644,32 +7631,43 @@ msgstr "Afegit:"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
 msgid "Allow clicking anywhere on timeline minimap to navigate"
 msgstr ""
+"Permet fer clic a qualsevol lloc del minimapa de la línia de temps per a "
+"navegar"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 msgid "Add sorting by name, last used and most used in plugin browser"
 msgstr ""
+"Afegir l'ordenació per nom, últims utilitzats i més utilitzats en el "
+"navegador de complements"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "User manual: add note about using non-flatpak plugins in flatpak builds"
 msgstr ""
+"Manual d'usuari: afegir nota sobre l'ús de complements que no siguin flatpak "
+"en construccions flatpak"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
 msgid ""
 "Add right click option on tracks to show used and hide unused automation "
 "lanes"
 msgstr ""
+"Afegir l'opció de clic dret als canals per a mostrar els carrils "
+"d'automatització utilitzats i amagar-los"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 msgid "Allow double-clicking on automation points to specify exact value"
 msgstr ""
+"Permet doble clic als punts d'automatització per a especificar el valor "
+"exacte"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:61
 msgid "Allow renaming tracks via right click menu"
-msgstr ""
+msgstr "Permet canviar el nom de les pistes mitjançant el menú del clic dret"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
 msgid "Add right click option to create an object on all arrangers"
 msgstr ""
+"Afegir l'opció de clic dret per a crear un objecte a tots els arranjadors"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:82
@@ -7679,23 +7677,27 @@ msgid "Changed:"
 msgstr "Canviat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:66
-#, fuzzy
 msgid "Update Spanish, French, Catalan, Chinese (Traditional) translations"
 msgstr ""
-"Actualitza les traduccions a l'alemany, francès, japonès, xinès "
-"(simplificat) i turc"
+"Actualitza les traduccions al castellà, francès, català i xinès (tradicional)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
 msgid "Use case-insensitive alphabetical sorting in plugin browser"
 msgstr ""
+"Al navegador de complements utilitzar l'ordenació alfabètica sense distingir "
+"entre majúscules i minúscules"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:68
 msgid "Use vst instead of vstlx for flatpak VST2 plugin scan paths"
 msgstr ""
+"Utilitzar vst en comptes de vstlx per als camins d'exploració del complement "
+"flatpak VST2"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:69
 msgid "Make MIDI in label in header untranslatable to avoid sizing issues"
 msgstr ""
+"A l'etiqueta a la capçalera fer que MIDI no es pugui traduir per a evitar "
+"problemes de mida"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:71
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:88
@@ -7707,14 +7709,20 @@ msgstr "Solucionat:"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:73
 msgid "Fix chord and scale selector windows not closing with Esc key"
 msgstr ""
+"Soluciona les finestres del selector d'acords i escales que no es tanquen "
+"amb la tecla Esc"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:74
 msgid "Fix plugin info label not being updated when filtering"
 msgstr ""
+"Soluciona l'etiqueta d'informació del complement que no s'actualitza quan es "
+"filtra"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 msgid "Fix transport display and ruler right click menus not working"
 msgstr ""
+"Soluciona la pantalla de transport i els menús de clic dret de la regla que "
+"no funcionen"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:84
 msgid "Drop vendored zix and depend on zix library"
