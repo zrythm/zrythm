@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.19\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-08-16 09:55+0900\n"
-"PO-Revision-Date: 2022-06-16 15:50+0000\n"
-"Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
+"PO-Revision-Date: 2022-09-02 14:19+0000\n"
+"Last-Translator: Neko Nekowazarashi <kodra@nekoweb.my.id>\n"
+"Language-Team: Indonesian <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/id/>\n"
 "Language: id\n"
-"Language-Team: Indonesian <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/id/>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.14.1-dev\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -3435,7 +3436,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:28
 msgid "Flatpak"
-msgstr ""
+msgstr "Flatpak"
 
 #: ../../getting-started/installation.rst:29
 msgid "Zrythm is available on `Flathub`_ under the ID `org.zrythm.Zrythm`_."
@@ -3492,7 +3493,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:31
 msgid "Language"
-msgstr ""
+msgstr "Bahasa"
 
 #: ../../getting-started/running-zrythm.rst:26
 msgid ""
@@ -5589,7 +5590,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:79
 msgid "Windows"
-msgstr ""
+msgstr "Windows"
 
 #: ../../plugins-files/plugins/scanning.rst:80
 msgid ""
@@ -5599,7 +5600,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:85
 msgid "MacOS"
-msgstr ""
+msgstr "MacOS"
 
 #: ../../plugins-files/plugins/scanning.rst:86
 msgid ""
