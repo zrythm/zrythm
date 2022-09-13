@@ -810,6 +810,18 @@ cyaml_dep = dependency(
   default_options: [
     'default_library=static',
     ])
+min_version = '>=1.0.25'
+if get_option ('opus')
+  cdata.set('HAVE_OPUS', 1)
+  min_version = '>=1.0.29'
+endif
+sndfile_dep = dependency (
+  'sndfile', version: min_version,
+  fallback: ['libsndfile', 'libsndfile_dep'],
+  default_options: [
+    'programs=false',
+    'default_library=static',
+    ])
 audec_dep = dependency(
   'audec', version: '>=0.3.2',
   fallback: ['libaudec', 'libaudec_dep'],
@@ -870,19 +882,6 @@ dbus_dep = dependency (
 if (dbus_dep.found ())
   cdata.set('HAVE_DBUS', 1)
 endif
-
-min_version = '>=1.0.25'
-if get_option ('opus')
-  cdata.set('HAVE_OPUS', 1)
-  min_version = '>=1.0.29'
-endif
-sndfile_dep = dependency (
-  'sndfile', version: min_version,
-  fallback: ['libsndfile', 'libsndfile_dep'],
-  default_options: [
-    'programs=false',
-    'default_library=static',
-    ])
 samplerate_dep = dependency (
   'samplerate', version: '>=0.1.8', required: true)
 if not samplerate_dep.found ()
