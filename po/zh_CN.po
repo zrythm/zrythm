@@ -14,13 +14,14 @@
 # 刘韬 <lyuutau@outlook.com>, 2022.
 # Cris Q <qygw@outlook.com>, 2022.
 # Hugel <qihu@nfschina.com>, 2022.
+# Eric <hamburger1024@firemail.cc>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-08-31 21:00+0900\n"
-"PO-Revision-Date: 2022-08-23 15:51+0000\n"
-"Last-Translator: Hugel <qihu@nfschina.com>\n"
+"PO-Revision-Date: 2022-09-02 14:19+0000\n"
+"Last-Translator: Eric <hamburger1024@firemail.cc>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -28,7 +29,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.1-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -3151,9 +3152,8 @@ msgid "Change color..."
 msgstr "修改颜色…"
 
 #: src/gui/widgets/track.c:736
-#, fuzzy
 msgid "Rename..."
-msgstr "重命名"
+msgstr "重命名…"
 
 #: src/gui/widgets/track.c:741 src/gui/widgets/channel_slot.c:693
 #: src/gui/widgets/timeline_arranger.c:1008 resources/ui/header.ui:12
@@ -6628,9 +6628,8 @@ msgid "Track filter name"
 msgstr "曲目名称"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:527
-#, fuzzy
 msgid "Name to filter tracks with."
-msgstr "删除音轨失败"
+msgstr "用于过滤曲目的名称。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:531
 #, fuzzy
