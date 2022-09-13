@@ -126,6 +126,7 @@ resources_dir = meson_src_root / 'resources'
 data_dir = meson_src_root / 'data'
 
 flatpak_build = get_option ('for_flathub') or get_option ('flatpak')
+installer_ver = get_option ('installer_ver')
 
 # Used for building manpages, manual, etc., using
 # foreach.
@@ -328,7 +329,7 @@ if get_option ('trial_ver')
   cdata.set ('TRIAL_VER', 1)
   cdata.set ('TRIAL_MAX_TRACKS', 25)
 endif
-if get_option ('installer_ver')
+if installer_ver
   cdata.set ('INSTALLER_VER', 1)
 endif
 if get_option ('appimage')
@@ -536,7 +537,7 @@ foreach a : attributes
   test_cflags += '-D' + a.to_upper() + '=__attribute__((' + a + '))'
 endforeach
 
-if os_windows or get_option ('appimage')
+if os_windows or get_option ('appimage') or installer_ver
   test_cflags += [
     '-DUSE_WEAK_JACK=1',
     ]
@@ -1114,7 +1115,7 @@ rtaudio_dep = dependency (
   version: '>=5.1.0',
   fallback: ['rtaudio', 'rtaudio_dep'],
   default_options: [
-    'jack=' + (os_windows ? 'disabled' : 'auto'),
+    'jack=' + (os_windows or installer_ver ? 'disabled' : 'auto'),
     # TODO use shared in the future so .dll can be
     # replaced on windows
     'default_library=static',
@@ -1272,7 +1273,7 @@ if all_static
     ]
 endif
 
-if os_windows
+if os_windows or installer_ver
   # Windows MME
   zrythm_deps += cc.find_library (
     'winmm', static: true)
