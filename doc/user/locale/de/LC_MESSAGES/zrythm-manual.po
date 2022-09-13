@@ -42,15 +42,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-08-16 09:55+0900\n"
-"PO-Revision-Date: 2022-07-10 15:50+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
+"PO-Revision-Date: 2022-09-12 15:52+0000\n"
+"Last-Translator: leochras <leo@traussnigg.com>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/de/>\n"
 "Language: de\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.14.1-dev\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -377,19 +378,18 @@ msgid "Presets"
 msgstr "Presets"
 
 #: ../../chords-and-scales/chord-pad.rst:25
-#, fuzzy
 msgid ""
 "Zrythm comes with pre-installed chord presets, and it also allows you to "
 "generate chord presets from scales, or even save your own."
 msgstr ""
-"Zrythm wird mit vorinstallierten Akkord-Presets geliefert und ermöglicht es "
-"Ihnen außerdem, Akkord-Presets aus Tonleitern zu generieren oder sogar Ihre "
-"eigenen zu speichern."
+"Zrythm wird mit vorinstallierten Akkord-Voreinstellungen geliefert und "
+"ermöglicht es Ihnen, Akkord-Presets aus Tonleitern zu generieren oder sogar "
+"Ihre eigenen zu speichern."
 
 #: ../../chords-and-scales/chord-pad.rst:30
 #, fuzzy
 msgid "Preset Packs"
-msgstr "Presets"
+msgstr "Voreinstellungspakete"
 
 #: ../../chords-and-scales/chord-pad.rst:32
 msgid ""
@@ -421,7 +421,7 @@ msgstr ""
 #: ../../plugins-files/audio-midi-files/file-browser.rst:87
 #, fuzzy
 msgid "Auditioning"
-msgstr "Bearbeitung"
+msgstr "Vorspielen"
 
 #: ../../chords-and-scales/chord-pad.rst:50
 msgid ""
@@ -1923,7 +1923,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:89
 msgid "Velocity Editor"
-msgstr ""
+msgstr "Anschlaggeschwindigkeit bearbeiten"
 
 #: ../../editing/clip-editors/piano-roll.rst:90
 msgid ""
@@ -3363,8 +3363,9 @@ msgid "The following operations apply to regions."
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:170
+#, fuzzy
 msgid "Looping"
-msgstr "Schleifenwiedergabe"
+msgstr "Dauerschleife"
 
 #: ../../editing/timeline/arranger.rst:171
 msgid ""
@@ -8687,7 +8688,7 @@ msgstr ""
 #: ../../tracks/track-lanes.rst:6
 #, fuzzy
 msgid "Track Lanes"
-msgstr "Spurarten"
+msgstr "Spuren"
 
 #: ../../tracks/track-lanes.rst:8
 msgid ""
