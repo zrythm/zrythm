@@ -2,66 +2,70 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
+# Huy Quang Bui (Bùi Huy Quang) <bhuyquang1@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-08-31 21:00+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2022-09-13 15:51+0000\n"
+"Last-Translator: Huy Quang Bui (Bùi Huy Quang) <bhuyquang1@gmail.com>\n"
+"Language-Team: Vietnamese <https://hosted.weblate.org/projects/zrythm/zrythm/"
+"vi/>\n"
 "Language: vi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.14.1-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
-msgstr ""
+msgstr "Nửa cung"
 
 #: inc/schemas/audio/scale.h:94 inc/audio/scale.h:128
 msgid "Major"
-msgstr ""
+msgstr "Trưởng"
 
 #: inc/schemas/audio/scale.h:95 inc/audio/scale.h:129
 msgid "Minor"
-msgstr ""
+msgstr "Thứ"
 
 #: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
 msgid "Ionian"
-msgstr ""
+msgstr "Kiểu Ionia"
 
 #: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
 msgid "Dorian"
-msgstr ""
+msgstr "Kiểu Doria"
 
 #: inc/schemas/audio/scale.h:98 inc/audio/scale.h:132
 msgid "Phrygian"
-msgstr ""
+msgstr "Kiểu Phrygia"
 
 #: inc/schemas/audio/scale.h:99 inc/audio/scale.h:133
 msgid "Lydian"
-msgstr ""
+msgstr "Kiểu Lydia"
 
 #: inc/schemas/audio/scale.h:100 inc/audio/scale.h:134
 msgid "Mixolydian"
-msgstr ""
+msgstr "Kiểu Mixolydia"
 
 #: inc/schemas/audio/scale.h:101 inc/audio/scale.h:135
 msgid "Aeolian"
-msgstr ""
+msgstr "Kiểu Aeolia"
 
 #: inc/schemas/audio/scale.h:102 inc/audio/scale.h:136
 msgid "Locrian"
-msgstr ""
+msgstr "Kiểu Locria"
 
 #: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
 msgid "Melodic Minor"
-msgstr ""
+msgstr "Thứ giai điệu"
 
 #: inc/schemas/audio/scale.h:104 inc/audio/scale.h:138
 msgid "Harmonic Minor"
-msgstr ""
+msgstr "Thứ hòa âm"
 
 #: inc/schemas/audio/scale.h:105 inc/audio/scale.h:139
 msgid "Whole Tone"
@@ -69,27 +73,27 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
 msgid "Major Pentatonic"
-msgstr ""
+msgstr "Ngũ cung trưởng"
 
 #: inc/schemas/audio/scale.h:107 inc/audio/scale.h:141
 msgid "Minor Pentatonic"
-msgstr ""
+msgstr "Ngũ cung thứ"
 
 #: inc/schemas/audio/scale.h:108 inc/audio/scale.h:142
 msgid "Octatonic Half Whole"
-msgstr ""
+msgstr "Bát cung dạng nửa cung/một cung"
 
 #: inc/schemas/audio/scale.h:110 inc/audio/scale.h:143
 msgid "Octatonic Whole Half"
-msgstr ""
+msgstr "Bát cung dạng một cung/nửa cung"
 
 #: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
 msgid "Acoustic"
-msgstr ""
+msgstr "Trữ tình"
 
 #: inc/schemas/audio/scale.h:113 inc/audio/scale.h:145
 msgid "Harmonic Major"
-msgstr ""
+msgstr "Trưởng hòa âm"
 
 #: inc/schemas/audio/scale.h:114 inc/audio/scale.h:146
 msgid "Phrygian Dominant"
@@ -97,11 +101,11 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:115 inc/audio/scale.h:147
 msgid "Major Locrian"
-msgstr ""
+msgstr "Trưởng kiểu Locria"
 
 #: inc/schemas/audio/scale.h:116 inc/audio/scale.h:148
 msgid "Algerian"
-msgstr ""
+msgstr "Kiểu Algeria"
 
 #: inc/schemas/audio/scale.h:117 inc/audio/scale.h:149
 msgid "Augmented"
@@ -109,15 +113,15 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:118 inc/audio/scale.h:150
 msgid "Double Harmonic"
-msgstr ""
+msgstr "Hòa âm kép"
 
 #: inc/schemas/audio/scale.h:119 inc/audio/scale.h:151
 msgid "Chinese"
-msgstr ""
+msgstr "Kiểu Trung Hoa"
 
 #: inc/schemas/audio/scale.h:120 inc/audio/scale.h:152
 msgid "Diminished"
-msgstr ""
+msgstr "Giảm"
 
 #: inc/schemas/audio/scale.h:121 inc/audio/scale.h:153
 msgid "Dominant Diminished"
@@ -125,7 +129,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:122 inc/audio/scale.h:154
 msgid "Egyptian"
-msgstr ""
+msgstr "Kiểu Ai Cập"
 
 #: inc/schemas/audio/scale.h:123 inc/audio/scale.h:155
 msgid "Eight Tone Spanish"
@@ -149,7 +153,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:128 inc/audio/scale.h:160
 msgid "Hungarian Gypsy"
-msgstr ""
+msgstr "Kiểu Zigan Hungary"
 
 #: inc/schemas/audio/scale.h:129 inc/audio/scale.h:161
 msgid "Insen"
@@ -157,11 +161,11 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:130 inc/audio/scale.h:162
 msgid "Neapolitan Major"
-msgstr ""
+msgstr "Trưởng kiểu Napoli"
 
 #: inc/schemas/audio/scale.h:131 inc/audio/scale.h:163
 msgid "Neapolitan Minor"
-msgstr ""
+msgstr "Thứ kiểu Napoli"
 
 #: inc/schemas/audio/scale.h:132 inc/audio/scale.h:164
 msgid "Oriental"
@@ -177,7 +181,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:135 inc/audio/scale.h:167
 msgid "Maqam"
-msgstr ""
+msgstr "Kiểu Maqam"
 
 #: inc/schemas/audio/scale.h:136 inc/audio/scale.h:168
 msgid "Yo"
