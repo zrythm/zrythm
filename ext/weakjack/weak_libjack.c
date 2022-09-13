@@ -53,7 +53,7 @@ static void* lib_symbol(void* const lib, const char* const sym) {
 #endif
 }
 
-#if defined(_MSC_VER) && _MSC_VER && !__INTEL_COMPILER
+#if defined _MSC_VER  && ! defined __INTEL_COMPILER
 typedef void * pvoid_t;
 #define MAPSYM(SYM, FAIL) _j._ ## SYM = (func_t)lib_symbol(lib, "jack_" # SYM); \
 	if (!_j._ ## SYM) err |= FAIL;
@@ -92,7 +92,7 @@ static struct WeakJack {
 } _j;
 
 static int _status = -1;
-#if !defined(_MSC_VER)
+#if !defined _MSC_VER || defined __INTEL_COMPILER
 __attribute__((constructor))
 #endif
 static void init_weak_jack(void)
@@ -110,6 +110,21 @@ static void init_weak_jack(void)
 	if (!lib) {
 		lib = lib_open("/usr/local/lib/libjack.dylib");
 	}
+	if (!lib) {
+		/* New Homebrew location */
+		lib = lib_open("/opt/homebrew/lib/libjack.dylib");
+		if (lib) {
+			fprintf(stderr, "*** WEAK-JACK: using Homebrew\n");
+		}
+	}
+	if (!lib) {
+		/* MacPorts location */
+		lib = lib_open("/opt/local/lib/libjack.dylib");
+		if (lib) {
+			fprintf(stderr, "*** WEAK-JACK: using MacPorts\n");
+		}
+	}
+
 #elif (defined _WIN32)
 # if defined(__x86_64__) || defined(_M_X64) || defined(__amd64__)
 	lib = lib_open("libjack64.dll");

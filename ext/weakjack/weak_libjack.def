@@ -75,10 +75,19 @@ JPFUN(1, const char *,   port_type, (const jack_port_t *p), (p), 0)
 JPFUN(1, const char **,  port_get_connections, (const jack_port_t *p), (p), 0)
 JPFUN(1, const char **,  port_get_all_connections, (const jack_client_t *c, const jack_port_t *p), (c,p), 0)
 JPFUN(1, int,            port_set_name, (jack_port_t *p, const char *n), (p,n), -1)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#if defined(__clang__)
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#elif __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 JXFUN(0, int,            port_rename, (jack_client_t *c, jack_port_t *p, const char *n), (c,p,n), return jack_port_set_name (p,n);)
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#elif __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
 #pragma GCC diagnostic pop
+#endif
 JPFUN(1, int,            port_get_aliases, (const jack_port_t *port, char* const aliases[2]), (port,aliases), 0)
 JPFUN(1, int,            port_disconnect, (jack_client_t *c, jack_port_t *p), (c,p), 0)
 JPFUN(1, int,            connect, (jack_client_t *c, const char *s, const char *d), (c,s,d), -1)
@@ -97,6 +106,7 @@ JPFUN(1, jack_nframes_t, get_current_transport_frame, (const jack_client_t *c), 
 JXFUN(1, jack_transport_state_t, transport_query, (const jack_client_t *c, jack_position_t *p), (c,p), memset(p, 0, sizeof(jack_position_t)); return JackTransportStopped;)
 JPFUN(1, int,            set_sync_callback, (jack_client_t *c, JackSyncCallback p, void *a), (c,p,a), -1)
 JPFUN(1, int,            set_timebase_callback, (jack_client_t *c, int l, JackTimebaseCallback p, void *a), (c,l,p,a), -1)
+JPFUN(1, int,            set_sync_timeout, (jack_client_t *c, jack_time_t t), (c,t), -1)
 JCFUN(1, int,            release_timebase, 0)
 
 /* <jack/midiport.h> */
@@ -130,11 +140,14 @@ JCFUN(0, int,            client_real_time_priority, 0)
 JCFUN(0, int,            client_max_real_time_priority, 0)
 JPFUN(0, int,            acquire_real_time_scheduling, (jack_native_thread_t t, int p), (t,p), 0)
 JPFUN(0, int,            drop_real_time_scheduling, (jack_native_thread_t t), (t), 0)
-#ifdef HAVE_JACK2
+#if (!defined _WIN32 && (defined _REENTRANT || defined __linux__))
+	/* on POSIX systems, call pthread_join() when libjack does not provide jack_client_stop_thread */
+JXFUN(0, int,            client_stop_thread, (jack_client_t* c, jack_native_thread_t t), (c,t), if (t) { pthread_join(t, NULL); return 0; } else { return -1;})
+#else
 JPFUN(0, int,            client_stop_thread, (jack_client_t* c, jack_native_thread_t t), (c,t), 0)
-JPFUN(0, int,            client_kill_thread, (jack_client_t* c, jack_native_thread_t t), (c,t), 0)
 #endif
-#ifndef _WOE32
+JPFUN(0, int,            client_kill_thread, (jack_client_t* c, jack_native_thread_t t), (c,t), 0)
+#ifndef _WIN32
 JVFUN(0,                 set_thread_creator, (jack_thread_creator_t c), (c),)
 #endif
 JPFUN(1, int,            client_create_thread, \
