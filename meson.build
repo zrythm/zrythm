@@ -1273,7 +1273,7 @@ if all_static
     ]
 endif
 
-if os_windows or installer_ver
+if os_windows
   # Windows MME
   zrythm_deps += cc.find_library (
     'winmm', static: true)
@@ -1286,6 +1286,9 @@ if os_windows or installer_ver
   #drmingw_dep = drmingw_subproject.dependency (
   #  'drmingw')
   #zrythm_deps += drmingw_dep
+endif
+
+if os_windows or installer_ver
   zrythm_deps += jack_dep.partial_dependency (
     link_args: false, links: false)
 else
