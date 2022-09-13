@@ -3,218 +3,215 @@
 # This file is distributed under the same license as the zrythm package.
 # webweblate <webweblate@riseup.net>, 2020, 2021.
 # Tymofij Lytvynenko <till.svit@gmail.com>, 2021.
-# Tymofii Lytvynenko <till.svit@gmail.com>, 2021.
+# Tymofii Lytvynenko <till.svit@gmail.com>, 2021, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-08-31 21:00+0900\n"
-"PO-Revision-Date: 2022-05-21 15:50+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-09-09 15:52+0000\n"
+"Last-Translator: Tymofii Lytvynenko <till.svit@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "uk/>\n"
 "Language: uk\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.13-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.14.1-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
-msgstr ""
+msgstr "Хроматика"
 
 #: inc/schemas/audio/scale.h:94 inc/audio/scale.h:128
 msgid "Major"
-msgstr ""
+msgstr "Мажор"
 
 #: inc/schemas/audio/scale.h:95 inc/audio/scale.h:129
 msgid "Minor"
-msgstr ""
+msgstr "Мінор"
 
 #: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
 msgid "Ionian"
-msgstr ""
+msgstr "Іонічний"
 
 #: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
 msgid "Dorian"
-msgstr ""
+msgstr "Дорічний"
 
 #: inc/schemas/audio/scale.h:98 inc/audio/scale.h:132
 msgid "Phrygian"
-msgstr ""
+msgstr "Фригійський"
 
 #: inc/schemas/audio/scale.h:99 inc/audio/scale.h:133
 msgid "Lydian"
-msgstr ""
+msgstr "Лідійський"
 
 #: inc/schemas/audio/scale.h:100 inc/audio/scale.h:134
 msgid "Mixolydian"
-msgstr ""
+msgstr "Міксолідійський"
 
 #: inc/schemas/audio/scale.h:101 inc/audio/scale.h:135
 msgid "Aeolian"
-msgstr ""
+msgstr "Еолійська"
 
 #: inc/schemas/audio/scale.h:102 inc/audio/scale.h:136
 msgid "Locrian"
-msgstr ""
+msgstr "Локрійський"
 
 #: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
 msgid "Melodic Minor"
-msgstr ""
+msgstr "Мелодійний мінор"
 
 #: inc/schemas/audio/scale.h:104 inc/audio/scale.h:138
 msgid "Harmonic Minor"
-msgstr ""
+msgstr "Гармонійний мінор"
 
 #: inc/schemas/audio/scale.h:105 inc/audio/scale.h:139
-#, fuzzy
 msgid "Whole Tone"
-msgstr "Перемикнути верхню панель"
+msgstr "Весь тон"
 
 #: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
 msgid "Major Pentatonic"
-msgstr ""
+msgstr "Мажорна пентатоніка"
 
 #: inc/schemas/audio/scale.h:107 inc/audio/scale.h:141
 msgid "Minor Pentatonic"
-msgstr ""
+msgstr "Мінорна пентатоніка"
 
 #: inc/schemas/audio/scale.h:108 inc/audio/scale.h:142
 msgid "Octatonic Half Whole"
-msgstr ""
+msgstr "Октатонічна половина цілого"
 
 #: inc/schemas/audio/scale.h:110 inc/audio/scale.h:143
 msgid "Octatonic Whole Half"
-msgstr ""
+msgstr "Октатонічна ціла половина"
 
 #: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
 msgid "Acoustic"
-msgstr ""
+msgstr "Акустичний"
 
 #: inc/schemas/audio/scale.h:113 inc/audio/scale.h:145
 msgid "Harmonic Major"
-msgstr ""
+msgstr "Гармонійний мажор"
 
 #: inc/schemas/audio/scale.h:114 inc/audio/scale.h:146
 msgid "Phrygian Dominant"
-msgstr ""
+msgstr "Фригійська домінанта"
 
 #: inc/schemas/audio/scale.h:115 inc/audio/scale.h:147
 msgid "Major Locrian"
-msgstr ""
+msgstr "Локрійський мажор"
 
 #: inc/schemas/audio/scale.h:116 inc/audio/scale.h:148
 msgid "Algerian"
-msgstr ""
+msgstr "Алжирський"
 
 #: inc/schemas/audio/scale.h:117 inc/audio/scale.h:149
 msgid "Augmented"
-msgstr ""
+msgstr "Доповнений"
 
 #: inc/schemas/audio/scale.h:118 inc/audio/scale.h:150
 msgid "Double Harmonic"
-msgstr ""
+msgstr "Подвійна гармоніка"
 
 #: inc/schemas/audio/scale.h:119 inc/audio/scale.h:151
-#, fuzzy
 msgid "Chinese"
-msgstr "Викривленість/Curviness"
+msgstr "Китайська"
 
 #: inc/schemas/audio/scale.h:120 inc/audio/scale.h:152
 msgid "Diminished"
-msgstr ""
+msgstr "Зменшено"
 
 #: inc/schemas/audio/scale.h:121 inc/audio/scale.h:153
 msgid "Dominant Diminished"
-msgstr ""
+msgstr "Зменшена домінанта"
 
 #: inc/schemas/audio/scale.h:122 inc/audio/scale.h:154
 msgid "Egyptian"
-msgstr ""
+msgstr "Єгипетська"
 
 #: inc/schemas/audio/scale.h:123 inc/audio/scale.h:155
 msgid "Eight Tone Spanish"
-msgstr ""
+msgstr "Восьмитонна іспанська"
 
 #: inc/schemas/audio/scale.h:124 inc/audio/scale.h:156
 msgid "Enigmatic"
-msgstr ""
+msgstr "Енігматика"
 
 #: inc/schemas/audio/scale.h:125 inc/audio/scale.h:157
 msgid "Geez"
-msgstr ""
+msgstr "Джіз"
 
 #: inc/schemas/audio/scale.h:126 inc/audio/scale.h:158
 msgid "Hindu"
-msgstr ""
+msgstr "Гінду"
 
 #: inc/schemas/audio/scale.h:127 inc/audio/scale.h:159
 msgid "Hirajoshi"
-msgstr ""
+msgstr "Гіраджоші"
 
 #: inc/schemas/audio/scale.h:128 inc/audio/scale.h:160
 msgid "Hungarian Gypsy"
-msgstr ""
+msgstr "Угорський циган"
 
 #: inc/schemas/audio/scale.h:129 inc/audio/scale.h:161
-#, fuzzy
 msgid "Insen"
 msgstr "Вставки"
 
 #: inc/schemas/audio/scale.h:130 inc/audio/scale.h:162
 msgid "Neapolitan Major"
-msgstr ""
+msgstr "Неаполітанський мажор"
 
 #: inc/schemas/audio/scale.h:131 inc/audio/scale.h:163
 msgid "Neapolitan Minor"
-msgstr ""
+msgstr "Неаполітанський мінор"
 
 #: inc/schemas/audio/scale.h:132 inc/audio/scale.h:164
 msgid "Oriental"
-msgstr ""
+msgstr "Орієнталь"
 
 #: inc/schemas/audio/scale.h:133 inc/audio/scale.h:165
 msgid "Romanian Minor"
-msgstr ""
+msgstr "Румунський мінор"
 
 #: inc/schemas/audio/scale.h:134 inc/audio/scale.h:166
 msgid "Altered"
-msgstr ""
+msgstr "Змінено"
 
 #: inc/schemas/audio/scale.h:135 inc/audio/scale.h:167
 msgid "Maqam"
-msgstr ""
+msgstr "Макам"
 
 #: inc/schemas/audio/scale.h:136 inc/audio/scale.h:168
 msgid "Yo"
-msgstr ""
+msgstr "Йо"
 
 #: inc/schemas/audio/scale.h:137 inc/audio/scale.h:169
 msgid "Bebop Locrian"
-msgstr ""
+msgstr "Локрійський бібоп"
 
 #: inc/schemas/audio/scale.h:138 inc/audio/scale.h:170
 msgid "Bebop Dominant"
-msgstr ""
+msgstr "Бібоп домінант"
 
 #: inc/schemas/audio/scale.h:139 inc/audio/scale.h:171
 msgid "Bebop Major"
-msgstr ""
+msgstr "Бібоп мажор"
 
 #: inc/schemas/audio/scale.h:140 inc/audio/scale.h:172
 msgid "Super Locrian"
-msgstr ""
+msgstr "Суперлокрійський"
 
 #: inc/schemas/audio/scale.h:141 inc/audio/scale.h:173
 msgid "Enigmatic Minor"
-msgstr ""
+msgstr "Еніґматік мінор"
 
 #: inc/schemas/audio/scale.h:142 inc/audio/scale.h:174
 msgid "Composite"
-msgstr ""
+msgstr "Композит"
 
 #: inc/schemas/audio/scale.h:143 inc/audio/scale.h:175
 msgid "Bhairav"
@@ -254,19 +251,19 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:153 inc/audio/scale.h:184
 msgid "Balinese"
-msgstr ""
+msgstr "Балін'єзе"
 
 #: inc/schemas/audio/scale.h:154 inc/audio/scale.h:185
 msgid "RagaTodi"
-msgstr ""
+msgstr "Раґатоді"
 
 #: inc/schemas/audio/scale.h:155 inc/audio/scale.h:186
 msgid "Japanese 1"
-msgstr ""
+msgstr "Японська 1"
 
 #: inc/schemas/audio/scale.h:156 inc/audio/scale.h:187
 msgid "Japanese 2"
-msgstr ""
+msgstr "Японська 2"
 
 #: inc/schemas/audio/curve.h:27 inc/audio/curve.h:111 src/audio/curve.c:54
 #, c-format
@@ -468,7 +465,7 @@ msgstr "MIDI Група"
 
 #: inc/audio/track.h:178
 msgid "Folder"
-msgstr ""
+msgstr "Каталог"
 
 #: inc/audio/engine.h:175
 msgid "1,024"
@@ -537,14 +534,12 @@ msgid "Normalize peak"
 msgstr "Нормалізувати пік сигналу (Normalize peak)"
 
 #: inc/audio/audio_function.h:70
-#, fuzzy
 msgid "Normalize RMS"
-msgstr "Нормалізувати"
+msgstr "Нормалізувати RMS"
 
 #: inc/audio/audio_function.h:71
-#, fuzzy
 msgid "Normalize LUFS"
-msgstr "Нормалізувати"
+msgstr "Нормалізувати LUFS"
 
 #: inc/audio/audio_function.h:72
 #, fuzzy
@@ -2012,7 +2007,7 @@ msgstr "Оглядач розширень/Plugin Browser"
 #: src/gui/widgets/right_dock_edge.c:138
 #: src/gui/widgets/file_browser_window.c:21
 msgid "File Browser"
-msgstr "Оглядач файлів/File Browser"
+msgstr "Файловий оглядач"
 
 #: src/utils/gtk.c:1219 src/gui/widgets/right_dock_edge.c:127
 msgid "Chord Preset Browser"
@@ -2937,9 +2932,8 @@ msgid "Scripting interface"
 msgstr "Інтерфейс сценаріїв"
 
 #: src/gui/widgets/right_dock_edge.c:117
-#, fuzzy
 msgid "Monitor Section"
-msgstr "Розділ монітора/Monitor Section"
+msgstr "Секція монітору"
 
 #: src/gui/widgets/header.c:88
 #, c-format
@@ -6468,7 +6462,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:301
 msgid "Looping"
-msgstr ""
+msgstr "Зациклення"
 
 #: data/zrythm.desktop.in:6 build/data/org.zrythm.Zrythm.appdata.xml.in:6
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:38
@@ -7796,9 +7790,8 @@ msgid "Pan law"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1241
-#, fuzzy
 msgid "Scripting"
-msgstr "Редагування"
+msgstr "Написання скриптів"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1246
 #, fuzzy
