@@ -904,7 +904,17 @@ load (const char * filename, const int is_template)
       return -1;
     }
 
-  g_message ("project from yaml...");
+  char * prj_ver_str =
+    string_get_regex_group (yaml, "\nversion: (.*)\n", 1);
+  if (!prj_ver_str)
+    {
+      HANDLE_ERROR (
+        err, "%s", _ ("Invalid project: missing version"));
+      return -1;
+    }
+  g_message ("project from yaml (version %s)...", prj_ver_str);
+  g_free (prj_ver_str);
+
   gint64 time_before = g_get_monotonic_time ();
 
   int schema_ver = string_get_regex_group_as_int (
