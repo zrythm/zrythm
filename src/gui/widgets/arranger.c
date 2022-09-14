@@ -5022,7 +5022,10 @@ update_hadj_value (gpointer user_data)
 
   if (!math_doubles_equal (self->new_hadj_val, prev_adj_val))
     {
-      g_debug ("setting hadj to %f", self->new_hadj_val);
+      if (DEBUGGING)
+        {
+          g_debug ("setting hadj to %f", self->new_hadj_val);
+        }
       gtk_adjustment_set_value (adj, self->new_hadj_val);
 
       g_idle_add (update_hadj_value, self);
