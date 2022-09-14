@@ -914,7 +914,7 @@ load (const char * filename, const int is_template)
       /* upgrade project */
       bool upgraded =
         project_upgrade_schema (&yaml, schema_ver);
-      g_return_val_if_fail (upgraded, -1);
+      g_warn_if_fail (upgraded);
     }
 
   Project * self = (Project *) yaml_deserialize (
