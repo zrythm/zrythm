@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-08-16 09:55+0900\n"
-"PO-Revision-Date: 2022-08-31 12:00+0000\n"
+"PO-Revision-Date: 2022-09-07 15:52+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/es/>\n"
@@ -342,7 +342,7 @@ msgstr ""
 
 #: ../../chords-and-scales/chord-pad.rst:30
 msgid "Preset Packs"
-msgstr ""
+msgstr "Paquetes de preconfiguraciones"
 
 #: ../../chords-and-scales/chord-pad.rst:32
 msgid ""
@@ -4177,7 +4177,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:25
 msgid "The installers also include bundled plugins."
-msgstr "Los instaladores también incluyen paquetes de plugins."
+msgstr "Los instaladores también incluyen complementos incorporados."
 
 #: ../../getting-started/installation.rst:28
 msgid "Flatpak"
@@ -4189,20 +4189,19 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:33
 msgid "Distribution Repositories"
-msgstr ""
+msgstr "Repositorios de la distribución"
 
 #: ../../getting-started/installation.rst:34
-#, fuzzy
 msgid ""
 "If Zrythm is available in your distro's repositories, you can also install "
 "it from there."
 msgstr ""
-"Si la distribución proporciona un paquete de Zrythm, también puedes "
-"instalarlo desde allí."
+"Si Zrythm está disponible en los repositorios de la distribución, también "
+"puede instalarlo desde allí."
 
 #: ../../getting-started/installation.rst:38
 msgid "Building from Source"
-msgstr ""
+msgstr "Compilar a partir del código fuente"
 
 #: ../../getting-started/installation.rst:39
 #, fuzzy
@@ -4229,28 +4228,26 @@ msgstr "Primeros pasos"
 
 #: ../../getting-started/running-zrythm.rst:9
 msgid "Running Zrythm"
-msgstr "Ejecutando Zrythm"
+msgstr "Ejecución de Zrythm"
 
 #: ../../getting-started/running-zrythm.rst:12
-#, fuzzy
 msgid "Initial Configuration"
-msgstr "Configuración"
+msgstr "Configuración inicial"
 
 #: ../../getting-started/running-zrythm.rst:14
-#, fuzzy
 msgid ""
 "When you first run Zrythm, it will display a dialog that lets you configure "
 "the basic settings that Zrythm will use. These include the :term:`Zrythm "
 "user path` and the language of the user interface."
 msgstr ""
-"Cuando ejecutas Zrythm por primera vez, se muestra un asistente que te "
-"permite configurar los ajustes básicos que utiliza Zrythm. Estos incluyen "
-"la :term:`ruta de usuario de Zrythm <Zrythm user path>`, el idioma de la "
-"interfaz de usuario y los backends de audio/MIDI."
+"Cuando se ejecuta Zrythm por vez primera, se mostrará un cuadro de diálogo "
+"que le permite configurar los parámetros básicos que Zrythm habrá de "
+"utilizar. Entre estos se incluye la :term:`ruta de usuario de Zrythm` y la "
+"lengua de la interfaz de usuario."
 
 #: ../../getting-started/running-zrythm.rst:23
 msgid "Initial configuration dialog"
-msgstr ""
+msgstr "Diálogo de configuración inicial"
 
 #: ../../getting-started/running-zrythm.rst:31
 msgid "Language"
@@ -4268,23 +4265,14 @@ msgstr ""
 "#languages>`_, así que elige el idioma con el que te sientas más cómodo."
 
 #: ../../getting-started/running-zrythm.rst:31
-#, fuzzy
 msgid "You must have a locale enabled for the language you want to use."
 msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Debería tener habilitado la localización para el lenguaje que quiera usar.\n"
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Debes tener una configuración regional habilitada para el idioma que deseas "
+"Debe disponer de una configuración regional activa para el idioma que desee "
 "utilizar."
 
 #: ../../getting-started/running-zrythm.rst:34
-#, fuzzy
 msgid "Path"
-msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Directorio\n"
-"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Ruta"
+msgstr "Ruta"
 
 #: ../../getting-started/running-zrythm.rst:34
 msgid "This is the :term:`Zrythm user path`."
@@ -4292,11 +4280,11 @@ msgstr "Esta es la :term:`Ruta de usuario de Zrythm <Zrythm user path>`."
 
 #: ../../getting-started/running-zrythm.rst:36
 msgid "More settings are available in the :ref:`preferences`."
-msgstr ""
+msgstr "Hay más parámetros disponibles en las :ref:`preferences`."
 
 #: ../../getting-started/running-zrythm.rst:40
 msgid "Plugin Scan"
-msgstr "Escáner de plugins"
+msgstr "Búsqueda de complementos"
 
 #: ../../getting-started/running-zrythm.rst:41
 msgid ""
@@ -4689,7 +4677,7 @@ msgstr "Una señal audio de canal único (véase también :term:`Stereo`)."
 
 #: ../../glossary/intro.rst:105
 msgid "Pan law"
-msgstr "Pan law"
+msgstr "Ley de panorama"
 
 #: ../../glossary/intro.rst:107
 #, fuzzy
@@ -5720,7 +5708,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
 msgid "Bookmarks"
-msgstr ""
+msgstr "Marcadores"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:20
 msgid ""
@@ -9301,15 +9289,13 @@ msgid "Opens the page to report a new bug."
 msgstr "Abre la página para informar de un nuevo error."
 
 #: ../../zrythm-interface/main-toolbar.rst:99
-#, fuzzy
 msgid "Additional Buttons"
-msgstr "Ajustes adicionales"
+msgstr "Botones adicionales"
 
 #: ../../zrythm-interface/main-toolbar.rst:100
-#, fuzzy
 msgid "The main toolbar also contains the following buttons."
 msgstr ""
-"La barra de herramientas principal también contiene los siguientes widgets."
+"La barra de herramientas principal también contiene los botones siguientes."
 
 #: ../../zrythm-interface/main-toolbar.rst:106
 #, fuzzy
@@ -9339,7 +9325,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:119
 msgid "MIDI In"
-msgstr ""
+msgstr "Entrada MIDI"
 
 #: ../../zrythm-interface/main-toolbar.rst:119
 msgid "Shows the :term:`MIDI` activity of auto-connected MIDI devices."
@@ -9347,11 +9333,11 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:121
 msgid "Oscilloscope"
-msgstr ""
+msgstr "Osciloscopio"
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Shows the audio waveform from the master output."
-msgstr ""
+msgstr "Muestra la onda de audio de la salida de máster."
 
 #: ../../zrythm-interface/overview.rst:8
 msgid "The Zrythm interface is split into various sub-modules."

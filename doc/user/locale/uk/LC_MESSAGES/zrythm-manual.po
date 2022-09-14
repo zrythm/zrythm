@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-08-16 09:55+0900\n"
-"PO-Revision-Date: 2021-11-17 14:28+0000\n"
+"PO-Revision-Date: 2022-09-09 15:52+0000\n"
 "Last-Translator: Tymofii Lytvynenko <till.svit@gmail.com>\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/uk/>\n"
 "Language: uk\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/uk/>\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.14.1-dev\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -1514,7 +1515,7 @@ msgstr "Елементи керування"
 
 #: ../../editing/clip-editors/piano-roll.rst:39
 msgid "Drum View"
-msgstr ""
+msgstr "Вигляд барабана"
 
 #: ../../editing/clip-editors/piano-roll.rst:31
 msgid ""
@@ -1594,7 +1595,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:89
 msgid "Velocity Editor"
-msgstr ""
+msgstr "Редактор швидкостей"
 
 #: ../../editing/clip-editors/piano-roll.rst:90
 msgid ""
@@ -2809,7 +2810,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:170
 msgid "Looping"
-msgstr ""
+msgstr "Зациклення"
 
 #: ../../editing/timeline/arranger.rst:171
 msgid ""
@@ -3865,7 +3866,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:71 ../../tracks/track-types.rst:72
 #: ../../tracks/track-types.rst:76 ../../tracks/track-types.rst:77
 msgid "MIDI"
-msgstr ""
+msgstr "MIDI"
 
 #: ../../glossary/intro.rst:91
 msgid ""
@@ -4814,7 +4815,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:9
 msgid "File Browser"
-msgstr "Оглядач файлів/File Browser"
+msgstr "Файловий оглядач"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:11
 msgid ""
@@ -6040,9 +6041,8 @@ msgid "See :ref:`export-routing-graph` for details."
 msgstr ""
 
 #: ../../routing/monitor-section.rst:6
-#, fuzzy
 msgid "Monitor Section"
-msgstr "Виділення петлі"
+msgstr "Секція монітору"
 
 #: ../../routing/monitor-section.rst:7
 msgid ""
@@ -6472,7 +6472,7 @@ msgstr ""
 
 #: ../../scripting/intro.rst:8
 msgid "Scripting"
-msgstr ""
+msgstr "Написання скриптів"
 
 #: ../../scripting/overview.rst:9
 msgid ""
@@ -6961,7 +6961,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:105
 msgid "Aux Sends"
-msgstr ""
+msgstr "AUX-направлення"
 
 #: ../../tracks/inspector-page.rst:107
 msgid ""
@@ -7267,7 +7267,7 @@ msgstr ""
 
 #: ../../tracks/track-lanes.rst:6
 msgid "Track Lanes"
-msgstr ""
+msgstr "Смуги доріжок"
 
 #: ../../tracks/track-lanes.rst:8
 msgid ""
@@ -7424,7 +7424,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:40
 msgid "Folder"
-msgstr ""
+msgstr "Каталог"
 
 #: ../../tracks/track-types.rst:49 ../../tracks/track-types.rst:69
 msgid "MIDI regions"

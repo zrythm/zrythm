@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the zrythm package.
 # Reza Almanda <rezaalmanda27@gmail.com>, 2021, 2022.
 # Narendra Utpala <naredra81@gmail.com>, 2022.
+# Neko Nekowazarashi <kodra@nekoweb.my.id>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-08-31 21:00+0900\n"
-"PO-Revision-Date: 2022-06-16 15:50+0000\n"
-"Last-Translator: Reza Almanda <rezaalmanda27@gmail.com>\n"
+"PO-Revision-Date: 2022-09-02 14:19+0000\n"
+"Last-Translator: Neko Nekowazarashi <kodra@nekoweb.my.id>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "id/>\n"
 "Language: id\n"
@@ -17,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.13-dev\n"
+"X-Generator: Weblate 4.14.1-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -2533,7 +2534,7 @@ msgstr ""
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:54
 msgid "Home"
-msgstr ""
+msgstr "Beranda"
 
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:63
@@ -3464,7 +3465,7 @@ msgstr ""
 
 #: src/gui/widgets/channel_slot.c:707
 msgid "Select"
-msgstr ""
+msgstr "Pilih"
 
 #: src/gui/widgets/channel_slot.c:916
 msgid "empty slot"
@@ -4240,7 +4241,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:103
 msgid "Welcome"
-msgstr ""
+msgstr "Selamat Datang"
 
 #: src/gui/widgets/dialogs/port_selector_dialog.c:43
 msgid "No port selected"
@@ -4363,7 +4364,7 @@ msgstr ""
 #: src/gui/widgets/dialogs/scripting_dialog.c:107
 #: src/gui/widgets/dialogs/first_run_dialog.c:210
 msgid "Language"
-msgstr ""
+msgstr "Bahasa"
 
 #: src/gui/widgets/dialogs/scripting_dialog.c:110
 msgid "Select the language of the script"
@@ -4529,7 +4530,7 @@ msgstr ""
 #: src/gui/widgets/dialogs/bug_report_dialog.c:169
 #: src/gui/widgets/dialogs/bug_report_dialog.c:346
 msgid "Done"
-msgstr ""
+msgstr "Selesai"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:185
 msgid "Send Automatically"

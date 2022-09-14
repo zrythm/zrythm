@@ -10,21 +10,22 @@
 # Johannes Maibaum <jmaibaum@gmail.com>, 2022.
 # ssantos <ssantos@web.de>, 2022.
 # Cgrieger <translate@cgrieger.org>, 2022.
+# leochras <leo@traussnigg.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-08-31 21:00+0900\n"
-"PO-Revision-Date: 2022-07-10 15:50+0000\n"
-"Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"PO-Revision-Date: 2022-09-12 15:52+0000\n"
+"Last-Translator: leochras <leo@traussnigg.com>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.13.1-dev\n"
+"X-Generator: Weblate 4.14.1-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -132,7 +133,7 @@ msgstr "Vermindert"
 
 #: inc/schemas/audio/scale.h:121 inc/audio/scale.h:153
 msgid "Dominant Diminished"
-msgstr ""
+msgstr "Dominant Vermindert"
 
 #: inc/schemas/audio/scale.h:122 inc/audio/scale.h:154
 msgid "Egyptian"
@@ -221,8 +222,9 @@ msgid "Enigmatic Minor"
 msgstr "Harmonisches Moll"
 
 #: inc/schemas/audio/scale.h:142 inc/audio/scale.h:174
+#, fuzzy
 msgid "Composite"
-msgstr ""
+msgstr "Komposition"
 
 #: inc/schemas/audio/scale.h:143 inc/audio/scale.h:175
 msgid "Bhairav"
@@ -2655,7 +2657,6 @@ msgstr "Plugins konnten nicht eingefügt werden"
 
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:54
-#, fuzzy
 msgid "Home"
 msgstr "Start"
 
@@ -4324,8 +4325,9 @@ msgid "Predefined"
 msgstr "Vordefiniert"
 
 #: src/gui/widgets/chord_pad_panel.c:98
+#, fuzzy
 msgid "Preset Packs"
-msgstr "Preset-Pakete"
+msgstr "Voreinstellungspakete"
 
 #: src/gui/widgets/midi_arranger.c:479 resources/ui/export_dialog.ui:102
 #: resources/ui/export_dialog.ui:226
@@ -6349,8 +6351,9 @@ msgid "Quantize"
 msgstr "Quantisieren"
 
 #: resources/gtk/help-overlay.ui:301
+#, fuzzy
 msgid "Looping"
-msgstr "Schleifenwiedergabe"
+msgstr "Dauerschleife"
 
 #: data/zrythm.desktop.in:6 build/data/org.zrythm.Zrythm.appdata.xml.in:6
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:38
