@@ -29,6 +29,8 @@ install_data (
 
 zrythm_launcher_config = configuration_data ()
 zrythm_launcher_config.set (
+  'DATADIR', datadir)
+zrythm_launcher_config.set (
   'SCHEMAS_DIR', schemasdir)
 zrythm_launcher_config.set ('BIN_DIR', bindir)
 zrythm_launcher_config.set (

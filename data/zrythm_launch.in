@@ -9,8 +9,12 @@ if [ "$flatpak_build" != "1" ]; then
 
   export GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@
 
+  # used by the universal installer
   if [ "@IS_INSTALLER_VER@" = "1" ]; then
     export GDK_PIXBUF_MODULE_FILE="@LIBDIR@/gdk-pixbuf-2.0/2.10.0/loaders.cache"
+    export GUILE_LOAD_PATH="@DATADIR@/guile/3.0"
+    export GUILE_LOAD_COMPILED_PATH="@LIBDIR@/guile/3.0"
+    export GUILE_AUTO_COMPILE=0
   fi
 fi
 
