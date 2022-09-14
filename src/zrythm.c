@@ -271,8 +271,14 @@ zrythm_get_system_info (void)
     }
 
   g_string_append_printf (
-    gstr, "XDG_SESSION_TYPE=%s",
+    gstr, "XDG_SESSION_TYPE=%s\n",
     g_getenv ("XDG_SESSION_TYPE"));
+  g_string_append_printf (
+    gstr, "XDG_CURRENT_DESKTOP=%s\n",
+    g_getenv ("XDG_CURRENT_DESKTOP"));
+  g_string_append_printf (
+    gstr, "DESKTOP_SESSION=%s\n",
+    g_getenv ("DESKTOP_SESSION"));
 
   char * str = g_string_free (gstr, false);
 
