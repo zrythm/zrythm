@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: LicenseRef-ZrythmLicense */
-/*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
- */
+// SPDX-FileCopyrightText: © 2018-2019, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_ENGINE_JACK_H__
 #define __AUDIO_ENGINE_JACK_H__
@@ -37,9 +35,14 @@ engine_jack_rescan_ports (AudioEngine * self);
 /**
  * Disconnects and reconnects the monitor output
  * port to the selected devices.
+ *
+ * @return Whether successful.
  */
-int
-engine_jack_reconnect_monitor (AudioEngine * self, bool left);
+bool
+engine_jack_reconnect_monitor (
+  AudioEngine * self,
+  bool          left,
+  GError **     error);
 
 void
 engine_jack_handle_position_change (AudioEngine * self);

@@ -21,6 +21,7 @@
 #  include "project.h"
 #  include "settings/settings.h"
 #  include "utils/backtrace.h"
+#  include "utils/error.h"
 #  include "utils/midi.h"
 #  include "utils/mpmc_queue.h"
 #  include "utils/object_pool.h"
@@ -32,6 +33,20 @@
 #  include <gtk/gtk.h>
 
 #  include <jack/thread.h>
+
+typedef enum
+{
+  Z_AUDIO_ENGINE_JACK_ERROR_FAILED,
+  Z_AUDIO_ENGINE_JACK_ERROR_NO_PHYSICAL_PORTS,
+} ZAudioEngineJackError;
+
+#  define Z_AUDIO_ENGINE_JACK_ERROR \
+    z_audio_engine_jack_error_quark ()
+GQuark
+z_audio_engine_jack_error_quark (void);
+G_DEFINE_QUARK (
+  z - audio - engine - jack - error - quark,
+  z_audio_engine_jack_error)
 
 /**
  * Refreshes the list of external ports.
@@ -646,9 +661,14 @@ engine_jack_tear_down (AudioEngine * self)
 /**
  * Disconnects and reconnects the monitor output
  * port to the selected devices.
+ *
+ * @return Whether successful.
  */
-int
-engine_jack_reconnect_monitor (AudioEngine * self, bool left)
+bool
+engine_jack_reconnect_monitor (
+  AudioEngine * self,
+  bool          left,
+  GError **     error)
 {
   gchar ** devices = g_settings_get_strv (
     S_MONITOR, left ? "l-devices" : "r-devices");
@@ -664,7 +684,7 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left)
       char msg[600];
       engine_jack_get_error_message (ret, msg);
       g_critical ("failed to disconnect monitor out: %s", msg);
-      return ret;
+      return false;
     }
 
   int i = 0;
@@ -709,10 +729,11 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left)
         JackPortIsPhysical | JackPortIsInput);
       if (ports == NULL || ports[0] == NULL || ports[1] == NULL)
         {
-          /* FIXME handle gracefully - just don't connect to
-           * anything and show an error in the UI */
-          g_critical ("no physical playback ports found");
-          return -1;
+          g_set_error (
+            error, Z_AUDIO_ENGINE_JACK_ERROR,
+            Z_AUDIO_ENGINE_JACK_ERROR_NO_PHYSICAL_PORTS, "%s",
+            _ ("JACK: No physical playback ports found"));
+          return false;
         }
 
       ret = jack_connect (
@@ -733,7 +754,7 @@ engine_jack_reconnect_monitor (AudioEngine * self, bool left)
       jack_free (ports);
     }
 
-  return num_connected == 0;
+  return num_connected > 0;
 }
 
 int
@@ -771,14 +792,22 @@ engine_jack_activate (AudioEngine * self, bool activate)
 
       g_message ("connecting to system out ports...");
 
-      int ret = engine_jack_reconnect_monitor (self, true);
-      if (ret)
+      GError * err = NULL;
+      bool     ret =
+        engine_jack_reconnect_monitor (self, true, &err);
+      if (!ret)
         {
+          HANDLE_ERROR (
+            err, "%s",
+            _ ("Failed to connect to left monitor output port"));
           return -1;
         }
-      ret = engine_jack_reconnect_monitor (self, false);
-      if (ret)
+      ret = engine_jack_reconnect_monitor (self, false, &err);
+      if (!ret)
         {
+          HANDLE_ERROR (
+            err, "%s",
+            _ ("Failed to connect to right monitor output port"));
           return -1;
         }
     }

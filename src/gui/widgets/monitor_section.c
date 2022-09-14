@@ -227,8 +227,25 @@ on_devices_updated (MonitorSectionWidget * self)
 {
 #ifdef HAVE_JACK
   /* reconnect to devices */
-  engine_jack_reconnect_monitor (AUDIO_ENGINE, true);
-  engine_jack_reconnect_monitor (AUDIO_ENGINE, false);
+  GError * err = NULL;
+  bool     ret =
+    engine_jack_reconnect_monitor (AUDIO_ENGINE, true, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _ ("Failed to connect to left monitor output port"));
+      return;
+    }
+  ret =
+    engine_jack_reconnect_monitor (AUDIO_ENGINE, false, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s",
+        _ ("Failed to connect to right monitor output port"));
+      return;
+    }
 #endif
 }
 
