@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-08-31 21:00+0900\n"
+"POT-Creation-Date: 2022-09-14 19:12+0900\n"
 "PO-Revision-Date: 2022-09-05 15:51+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
@@ -712,23 +712,30 @@ msgid "Failed to load project. Please check the logs for more information."
 msgstr ""
 "Error en carregar el projecte. Consulta els registres per a més informació."
 
-#: src/project.c:1180
+#: src/project.c:974
+#, c-format
+msgid ""
+"Could not load project: Corrupted project detected (missing FINISHED file at "
+"'%s')."
+msgstr ""
+
+#: src/project.c:1205
 msgid "Failed to load project. Will create a new one instead."
 msgstr "Error en carregar el projecte. Se'n crearà un de nou."
 
-#: src/project.c:1260
+#: src/project.c:1287
 msgid "Failed to deserialize v1 project file"
 msgstr "Error en deserialitzar el fitxer de projecte v1"
 
-#: src/project.c:1502
+#: src/project.c:1537
 msgid "Failed to compress project file"
 msgstr "Error en comprimir el fitxer del projecte"
 
-#: src/project.c:1546 src/project.c:1549
+#: src/project.c:1581 src/project.c:1584
 msgid "Backup saved."
 msgstr "S'ha desat la còpia de seguretat."
 
-#: src/project.c:1560
+#: src/project.c:1595
 msgid "Project saved."
 msgstr "Projecte desat."
 
@@ -770,45 +777,45 @@ msgstr ""
 msgid "Setting up main window"
 msgstr "Configuració de la finestra principal"
 
-#: src/zrythm_app.c:405
+#: src/zrythm_app.c:403
 msgid "Loading project"
 msgstr "Carregant el projecte"
 
-#: src/zrythm_app.c:419
+#: src/zrythm_app.c:417
 #, c-format
 msgid "No project has been selected. %s will now close."
 msgstr "No s'ha seleccionat cap projecte. %s es tancarà."
 
-#: src/zrythm_app.c:438
+#: src/zrythm_app.c:436
 msgid "Initializing settings"
 msgstr "Inicialitzant els paràmetres"
 
-#: src/zrythm_app.c:444
+#: src/zrythm_app.c:442
 #, c-format
 msgid "Initializing %s directories"
 msgstr "Inicialitzant %s directoris"
 
-#: src/zrythm_app.c:452
+#: src/zrythm_app.c:450
 msgid "Initializing logging system"
 msgstr "Inicialitzant el sistema de registre"
 
-#: src/zrythm_app.c:468
+#: src/zrythm_app.c:466
 msgid "Initializing caches"
 msgstr "Inicialitzant la memòria cau"
 
-#: src/zrythm_app.c:472
+#: src/zrythm_app.c:470
 msgid "Initializing file manager"
 msgstr "Inicialitzant l'administrador de fitxers"
 
-#: src/zrythm_app.c:478
+#: src/zrythm_app.c:476
 msgid "Scanning plugins"
 msgstr "Explorant complements"
 
-#: src/zrythm_app.c:598
+#: src/zrythm_app.c:596
 msgid "Waiting for project"
 msgstr "Esperant projecte"
 
-#: src/zrythm_app.c:815
+#: src/zrythm_app.c:813
 #, c-format
 msgid ""
 "Your user does not have enough privileges to allow %s to lock unlimited "
@@ -819,17 +826,17 @@ msgstr ""
 "memòria il·limitada. Això pot provocar interrupcions d'àudio. Consulta la "
 "secció 'Getting Started' del manual d'usuari per a més detalls."
 
-#: src/zrythm_app.c:833
+#: src/zrythm_app.c:831
 #, c-format
 msgid "Could not get system memory lock limit (%s)"
 msgstr "No s'ha pogut obtenir el límit de bloqueig de memòria del sistema (%s)"
 
-#: src/zrythm_app.c:854
+#: src/zrythm_app.c:852
 #, c-format
 msgid "Cannot lock down memory: %s"
 msgstr "No es pot bloquejar la memòria: %s"
 
-#: src/zrythm_app.c:989
+#: src/zrythm_app.c:987
 #, c-format
 msgid ""
 "%s-%s\n"
@@ -857,74 +864,74 @@ msgstr ""
 "Dona suport a aquest projecte a https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1382
+#: src/zrythm_app.c:1380
 #, c-format
 msgid "File %s not found."
 msgstr "No s'ha trobat el fitxer %s."
 
-#: src/zrythm_app.c:1401
+#: src/zrythm_app.c:1399
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr "Cap fitxer de sortida especificat. Indica un amb `--output=FILE`."
 
-#: src/zrythm_app.c:1456
+#: src/zrythm_app.c:1454
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "Error en descomprimir el projecte: %s\n"
 
-#: src/zrythm_app.c:1473
+#: src/zrythm_app.c:1471
 msgid "Unknown operation"
 msgstr "Operació desconeguda"
 
-#: src/zrythm_app.c:1490
+#: src/zrythm_app.c:1488
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "es requereix libguile per a aquesta opció\n"
 
-#: src/zrythm_app.c:1637
+#: src/zrythm_app.c:1635
 msgid "Print version information"
 msgstr "Mostrar la informació de la versió"
 
-#: src/zrythm_app.c:1640
+#: src/zrythm_app.c:1638
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "Convertir ZPJ-FILE a YAML"
 
-#: src/zrythm_app.c:1643
+#: src/zrythm_app.c:1641
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "Convertir YAML-PROJECT-FILE a .zpj"
 
-#: src/zrythm_app.c:1647
+#: src/zrythm_app.c:1645
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Generar un projecte a partir de SCRIPT-FILE"
 
-#: src/zrythm_app.c:1651
+#: src/zrythm_app.c:1649
 msgid "Print output in user-friendly way"
 msgstr "Sortida d'impressió d'una manera més amigable"
 
-#: src/zrythm_app.c:1653
+#: src/zrythm_app.c:1651
 msgid "Print current settings"
 msgstr "Imprimir els paràmetres actuals"
 
-#: src/zrythm_app.c:1657 src/gui/widgets/preferences.c:737
+#: src/zrythm_app.c:1655 src/gui/widgets/preferences.c:737
 msgid "Reset to factory settings"
 msgstr "Restabliment dels paràmetres de fàbrica"
 
-#: src/zrythm_app.c:1660
+#: src/zrythm_app.c:1658
 msgid "Override the audio backend to use"
 msgstr "Sobreescriure el rerefons d'àudio a utilitzar"
 
-#: src/zrythm_app.c:1663
+#: src/zrythm_app.c:1661
 msgid "Override the MIDI backend to use"
 msgstr "Sobreescriure el rerefons MIDI a utilitzar"
 
-#: src/zrythm_app.c:1665
+#: src/zrythm_app.c:1663
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "Transcripció per a --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1693
+#: src/zrythm_app.c:1691
 msgid "[PROJECT-FILE]"
 msgstr "[PROJECTE-FITXER]"
 
-#: src/zrythm_app.c:1699
+#: src/zrythm_app.c:1697
 #, c-format
 msgid ""
 "Examples:\n"
@@ -944,10 +951,15 @@ msgstr ""
 "\n"
 "Informa els problemes a %s\n"
 
-#: src/zrythm_app.c:1711
+#: src/zrythm_app.c:1709
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Executa %s, passant opcionalment un fitxer de projecte."
+
+#: src/zrythm_app.c:1740
+#, c-format
+msgid "This version of Zrythm does not support creating more than %d tracks."
+msgstr ""
 
 #: src/actions/range_action.c:651 resources/ui/range_action_buttons.ui:11
 msgid "Insert silence"
@@ -957,11 +969,11 @@ msgstr "Inserir silenci"
 msgid "Delete range"
 msgstr "Suprimir interval"
 
-#: src/actions/undo_manager.c:189 src/actions/actions.c:875
+#: src/actions/undo_manager.c:189 src/actions/actions.c:843
 msgid "Failed to undo action"
 msgstr "Error en desfer l'acció"
 
-#: src/actions/undo_manager.c:240 src/actions/actions.c:870
+#: src/actions/undo_manager.c:240 src/actions/actions.c:838
 msgid "Failed to redo action"
 msgstr "Error en tornar a fer l'acció"
 
@@ -1022,44 +1034,28 @@ msgstr ""
 "L'extensibilitat de script amb <a href=\"%s\">GNU Guile</a> no està "
 "habilitada a la teva instal·lació %s."
 
-#: src/actions/actions.c:593
-#, c-format
-msgid ""
-"Creating new projects is disabled. Please restart %s to start a new project"
-msgstr ""
-"La creació de nous projectes està inhabilitada. Reinicia %s per a iniciar un "
-"projecte nou"
-
-#: src/actions/actions.c:601 resources/gtk/help-overlay.ui:103
+#: src/actions/actions.c:590 resources/gtk/help-overlay.ui:103
 msgid "Create new project"
 msgstr "Crear projecte nou"
 
-#: src/actions/actions.c:603
+#: src/actions/actions.c:592
 msgid "Yes"
 msgstr "Sí"
 
-#: src/actions/actions.c:603
+#: src/actions/actions.c:592
 msgid "No"
 msgstr "No"
 
-#: src/actions/actions.c:606
+#: src/actions/actions.c:595
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
 "Es perdran tots els canvis no desats al projecte actual. Vols continuar?"
 
-#: src/actions/actions.c:642
-msgid "Loading is disabled in the trial version"
-msgstr "La càrrega està inhabilitada a la versió de prova"
-
-#: src/actions/actions.c:671 src/actions/actions.c:696
-msgid "Saving is disabled in the trial version"
-msgstr "Desar està inhabilitat a la versió de prova"
-
-#: src/actions/actions.c:706
+#: src/actions/actions.c:674
 msgid "Save Project"
 msgstr "Desar projecte"
 
-#: src/actions/actions.c:707 src/utils/dialogs.c:41 src/utils/dialogs.c:60
+#: src/actions/actions.c:675 src/utils/dialogs.c:41 src/utils/dialogs.c:60
 #: src/audio/clip.c:589 src/gui/widgets/main_window.c:137
 #: src/gui/widgets/plugin_properties_expander.c:107
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:140
@@ -1078,30 +1074,30 @@ msgstr "Desar projecte"
 msgid "_Cancel"
 msgstr "_Cancel·lar"
 
-#: src/actions/actions.c:707
+#: src/actions/actions.c:675
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:146
 #: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:301
 #: src/plugins/lv2/lv2_gtk.c:78
 msgid "_Save"
 msgstr "_Desar"
 
-#: src/actions/actions.c:767
+#: src/actions/actions.c:735
 msgid "Export routing graph"
 msgstr "Exportar gràfic d’encaminament"
 
-#: src/actions/actions.c:768
+#: src/actions/actions.c:736
 msgid "Image (PNG)"
 msgstr "Imatge (PNG)"
 
-#: src/actions/actions.c:768
+#: src/actions/actions.c:736
 msgid "Image (SVG)"
 msgstr "Imatge (PNG)"
 
-#: src/actions/actions.c:769
+#: src/actions/actions.c:737
 msgid "Dot graph"
 msgstr "Gràfic de punts"
 
-#: src/actions/actions.c:775
+#: src/actions/actions.c:743
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
@@ -1110,83 +1106,61 @@ msgstr ""
 "El gràfic s’exportarà a <a href=\"%s\"> %s </a>\n"
 "Selecciona un format d'exportació"
 
-#: src/actions/actions.c:823
+#: src/actions/actions.c:791
 msgid "Graph exported"
 msgstr "Gràfic exportat"
 
-#: src/actions/actions.c:845 src/guile/actions/undo_manager.c:67
+#: src/actions/actions.c:813 src/guile/actions/undo_manager.c:67
 msgid "Failed to undo"
 msgstr "Error en desfer"
 
-#: src/actions/actions.c:898 src/guile/actions/undo_manager.c:91
+#: src/actions/actions.c:866 src/guile/actions/undo_manager.c:91
 msgid "Failed to redo"
 msgstr "Error en tornar a fer"
 
-#: src/actions/actions.c:935 src/actions/actions.c:949
-#: src/actions/actions.c:1153
+#: src/actions/actions.c:903 src/actions/actions.c:917
+#: src/actions/actions.c:1121
 msgid "Failed to delete selections"
 msgstr "Error en suprimir les seleccions"
 
-#: src/actions/actions.c:1125
+#: src/actions/actions.c:1093
 msgid "Can't paste incompatible data"
 msgstr "No es poden enganxar dades incompatibles"
 
-#: src/actions/actions.c:1199
+#: src/actions/actions.c:1167
 msgid "Failed to duplicate selections"
 msgstr "Error en duplicar seleccions"
 
-#: src/actions/actions.c:1423
+#: src/actions/actions.c:1391
 msgid "Failed to unbind"
 msgstr "Error en desvincular"
 
-#: src/actions/actions.c:1464 src/actions/actions.c:1968
-#: src/actions/actions.c:1998
+#: src/actions/actions.c:1432 src/actions/actions.c:1904
+#: src/actions/actions.c:1934
 msgid "Failed to quantize"
 msgstr "Error en quantizar"
 
-#: src/actions/actions.c:1540 src/audio/exporter.c:870 src/audio/exporter.c:877
-msgid "Failed to create audio track"
-msgstr "Error en crear pistes d'àudio"
+#: src/actions/actions.c:1510 src/audio/track.c:3606 src/audio/tracklist.c:1452
+#: src/gui/widgets/panel_file_browser.c:456
+#: src/gui/widgets/panel_file_browser.c:472 src/settings/plugin_settings.c:340
+#: src/settings/plugin_settings.c:355 src/settings/plugin_settings.c:427
+#: src/settings/plugin_settings.c:547
+msgid "Failed to create track"
+msgstr "Error en crear pista"
 
-#: src/actions/actions.c:1552
-msgid "Failed to create MIDI track"
-msgstr "Error en crear pista MIDI"
-
-#: src/actions/actions.c:1564
-msgid "Failed to create audio FX track"
-msgstr "Error en crear pista FX d'àudio"
-
-#: src/actions/actions.c:1576
-msgid "Failed to create MIDI FX track"
-msgstr "Error en crear la pista FX MIDI"
-
-#: src/actions/actions.c:1588
-#: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:119
-msgid "Failed to create audio group track"
-msgstr "Error en crear la pista en grup d'àudio"
-
-#: src/actions/actions.c:1600
-#: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:133
-msgid "Failed to create MIDI group track"
-msgstr "Error en crear la pista en grup MIDI"
-
-#: src/actions/actions.c:1612
-msgid "Failed to create folder track"
-msgstr "Error en crear pista en carpeta"
-
-#: src/actions/actions.c:1625
+#: src/actions/actions.c:1561
 msgid "Failed to duplicate tracks"
 msgstr "Error en duplicar pistes"
 
-#: src/actions/actions.c:1695 src/actions/actions.c:1757
+#: src/actions/actions.c:1631 src/actions/actions.c:1693
 msgid "Failed to delete tracks"
 msgstr "Error en suprimir pistes"
 
-#: src/actions/actions.c:1722
+#: src/actions/actions.c:1658
 msgid "Cannot delete tracks: selection contains an undeletable track"
 msgstr "No es poden suprimir pistes: la selecció conté una pista no eliminable"
 
-#: src/actions/actions.c:1734
+#: src/actions/actions.c:1670
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
@@ -1195,43 +1169,43 @@ msgstr ""
 "no es podrà desfer i l'historial de desfer s'esborrarà. Vols continuar amb "
 "la supressió?"
 
-#: src/actions/actions.c:1791
+#: src/actions/actions.c:1727
 msgid "Failed to pin/unpin tracks"
 msgstr "Error en ancorar / desancorar pistes"
 
-#: src/actions/actions.c:1802
+#: src/actions/actions.c:1738
 msgid "Failed to solo tracks"
 msgstr "Error en fer solo a pistes"
 
-#: src/actions/actions.c:1813
+#: src/actions/actions.c:1749
 msgid "Failed to unsolo tracks"
 msgstr "Error en treure el solo de pistes"
 
-#: src/actions/actions.c:1824
+#: src/actions/actions.c:1760
 msgid "Failed to mute tracks"
 msgstr "Error en silenciar pistes"
 
-#: src/actions/actions.c:1835
+#: src/actions/actions.c:1771
 msgid "Failed to unmute tracks"
 msgstr "Error en deixar de silenciar les pistes"
 
-#: src/actions/actions.c:1846
+#: src/actions/actions.c:1782
 msgid "Failed to listen tracks"
 msgstr "Error en escoltar pistes"
 
-#: src/actions/actions.c:1858
+#: src/actions/actions.c:1794
 msgid "Failed to unlisten tracks"
 msgstr "Error en deixar d'escoltar pistes"
 
-#: src/actions/actions.c:1869
+#: src/actions/actions.c:1805
 msgid "Failed to enable tracks"
 msgstr "Error en habilitar pistes"
 
-#: src/actions/actions.c:1880
+#: src/actions/actions.c:1816
 msgid "Failed to disable tracks"
 msgstr "Error en inhabilitar pistes"
 
-#: src/actions/actions.c:2015
+#: src/actions/actions.c:1951
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
@@ -1239,86 +1213,86 @@ msgid ""
 msgstr ""
 "Primer seleccionar o la línia de temps o l'editor. La selecció actual és %s"
 
-#: src/actions/actions.c:2087
+#: src/actions/actions.c:2023
 msgid "Failed to mute selections"
 msgstr "Error en silenciar seleccions"
 
-#: src/actions/actions.c:2101
+#: src/actions/actions.c:2037
 msgid "No regions selected"
 msgstr "Cap regió seleccionada"
 
-#: src/actions/actions.c:2109
+#: src/actions/actions.c:2045
 msgid "Selections must be on the same lane"
 msgstr "Les seleccions han de ser al mateix carril"
 
-#: src/actions/actions.c:2116
+#: src/actions/actions.c:2052
 msgid "Cannot merge looped regions"
 msgstr "No es poden combinar les regions repetides"
 
-#: src/actions/actions.c:2131
+#: src/actions/actions.c:2067
 msgid "Failed to merge selections"
 msgstr "Error en combinar seleccions"
 
-#: src/actions/actions.c:2236
+#: src/actions/actions.c:2172
 msgid "Failed to insert silence"
 msgstr "Error en inserir el silenci"
 
-#: src/actions/actions.c:2253
+#: src/actions/actions.c:2189
 msgid "Failed to remove range"
 msgstr "Error en eliminar l'interval"
 
-#: src/actions/actions.c:2327 src/actions/arranger_selections.c:521
+#: src/actions/actions.c:2263 src/actions/arranger_selections.c:521
 msgid "Failed to apply MIDI function"
 msgstr "Error en aplicar la funció MIDI"
 
-#: src/actions/actions.c:2353 src/actions/actions.c:2392
+#: src/actions/actions.c:2289 src/actions/actions.c:2328
 #: src/actions/arranger_selections.c:557
 msgid "Failed to apply automation function"
 msgstr "Error en aplicar la funció d'automatització"
 
-#: src/actions/actions.c:2565 src/gui/widgets/track_filter_popover.c:268
+#: src/actions/actions.c:2501 src/gui/widgets/track_filter_popover.c:268
 msgid "Track name"
 msgstr "Nom de pista"
 
-#: src/actions/actions.c:2590
+#: src/actions/actions.c:2526
 msgid "Object name"
 msgstr "Nom d'objecte"
 
-#: src/actions/actions.c:2628
+#: src/actions/actions.c:2564
 msgid "An object cannot be created at the selected location."
 msgstr "No es pot crear un objecte a la ubicació seleccionada."
 
-#: src/actions/actions.c:2653
+#: src/actions/actions.c:2589
 msgid "Please enter a BPM"
 msgstr "Introdueix un bpm"
 
-#: src/actions/actions.c:2722
+#: src/actions/actions.c:2658
 msgid "Failed to move selections"
 msgstr "Error en moure seleccions"
 
-#: src/actions/actions.c:2739
+#: src/actions/actions.c:2675
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr "BPM detectat: %.2f"
 
-#: src/actions/actions.c:2741
+#: src/actions/actions.c:2677
 msgid "Candidates:"
 msgstr "Candidats:"
 
-#: src/actions/actions.c:2789 src/actions/arranger_selections.c:596
+#: src/actions/actions.c:2725 src/actions/arranger_selections.c:596
 #: src/actions/arranger_selections.c:610
 msgid "Failed to apply audio function"
 msgstr "Error en aplicar la funció d'àudio"
 
-#: src/actions/actions.c:2904
+#: src/actions/actions.c:2840
 msgid "Failed to set curve algorithm"
 msgstr "Error en establir l'algorisme de corba"
 
-#: src/actions/actions.c:2955
+#: src/actions/actions.c:2891
 msgid "Failed to edit fades"
 msgstr "Error en editar atenuacions"
 
-#: src/actions/actions.c:3019
+#: src/actions/actions.c:2955
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
@@ -1326,24 +1300,24 @@ msgstr ""
 "No s'ha trobat cap paquet predefinit personalitzat. Crea primer un paquet "
 "predefinit des del navegador predefinit d'acords."
 
-#: src/actions/actions.c:3106 src/actions/actions.c:3147
+#: src/actions/actions.c:3042 src/actions/actions.c:3083
 msgid "Preset Pack Name"
 msgstr "Nom de paquet predefinit"
 
-#: src/actions/actions.c:3127 src/actions/actions.c:3165
+#: src/actions/actions.c:3063 src/actions/actions.c:3101
 msgid "Are you sure you want to remove this chord preset pack?"
 msgstr "Segur que vols suprimir aquest paquet d'acords predefinit?"
 
-#: src/actions/actions.c:3185
+#: src/actions/actions.c:3121
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:156
 msgid "Preset Name"
 msgstr "Nom predefinit"
 
-#: src/actions/actions.c:3243 src/gui/widgets/modulator_inner.c:92
+#: src/actions/actions.c:3179 src/gui/widgets/modulator_inner.c:92
 msgid "Failed to delete plugins"
 msgstr "Error en suprimir complements"
 
-#: src/actions/actions.c:3267
+#: src/actions/actions.c:3203
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared. Continue with deletion?"
@@ -1351,35 +1325,35 @@ msgstr ""
 "La selecció conté complements sense instància. La supressió no es podrà "
 "desfer i l'historial de desfer s'esborrarà. Vols continuar amb la supressió?"
 
-#: src/actions/actions.c:3317
+#: src/actions/actions.c:3253
 #, c-format
 msgid "Failed to reset %s"
 msgstr "Error en reiniciar %s"
 
-#: src/actions/actions.c:3343
+#: src/actions/actions.c:3279
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "Error en desconnectar %s de %s"
 
-#: src/actions/actions.c:3373
+#: src/actions/actions.c:3309
 msgid "Cannot delete standard bookmark"
 msgstr "No es pot suprimir el favorit estàndar"
 
-#: src/actions/actions.c:3381
+#: src/actions/actions.c:3317
 msgid "Are you sure you want to remove this bookmark?"
 msgstr "Eliminar aquest favorit?"
 
-#: src/actions/actions.c:3577 src/actions/actions.c:3606
+#: src/actions/actions.c:3516 src/actions/actions.c:3545
 msgid "Collection name"
 msgstr "Nom de col·lecció"
 
-#: src/actions/actions.c:3628
+#: src/actions/actions.c:3567
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr "Aquesta col·lecció conté %d complements. Segur que vols suprimir-la?"
 
-#: src/actions/actions.c:3796
+#: src/actions/actions.c:3735
 msgid "Failed to change direct output"
 msgstr "Error en canviar la sortida directa"
 
@@ -2222,7 +2196,7 @@ msgstr "Exponencial"
 msgid "Elliptic"
 msgstr "El·líptic"
 
-#: src/audio/audio_function.c:131 src/gui/widgets/drag_dest_box.c:310
+#: src/audio/audio_function.c:131 src/gui/widgets/drag_dest_box.c:318
 msgid "Failed to create plugin"
 msgstr "Error en crear complement"
 
@@ -2290,14 +2264,6 @@ msgstr "No es pot configurar la icona de la pista"
 msgid "Cannot set track enabled"
 msgstr "No es pot configurar la pista habilitada"
 
-#: src/audio/track.c:3606 src/audio/tracklist.c:1452
-#: src/gui/widgets/panel_file_browser.c:451
-#: src/gui/widgets/panel_file_browser.c:463 src/settings/plugin_settings.c:340
-#: src/settings/plugin_settings.c:355 src/settings/plugin_settings.c:427
-#: src/settings/plugin_settings.c:547
-msgid "Failed to create track"
-msgstr "Error en crear pista"
-
 #: src/audio/automation_track.c:171
 msgid "Rec"
 msgstr "Gravar"
@@ -2315,7 +2281,7 @@ msgstr "Pestell"
 msgid "Automation"
 msgstr "Automatització"
 
-#: src/audio/engine.c:500
+#: src/audio/engine.c:496
 #, c-format
 msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
@@ -2324,7 +2290,7 @@ msgstr ""
 "Error en inicialitzar el rerefons d'àudio %s. S'utilitzarà el rerefons "
 "fictici. Comprova els paràmetres de rerefons a Preferències."
 
-#: src/audio/engine.c:541
+#: src/audio/engine.c:537
 #, c-format
 msgid ""
 "The JACK MIDI backend can only be used with the JACK audio backend (your "
@@ -2333,7 +2299,7 @@ msgstr ""
 "El rerefons MIDI JACK només es pot utilitzar amb el rerefons d'àudio JACK "
 "(el rerefons d'àudio actual és %s). S'utilitzarà el rerefons MIDI fictici."
 
-#: src/audio/engine.c:577
+#: src/audio/engine.c:573
 #, c-format
 msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
@@ -2342,7 +2308,7 @@ msgstr ""
 "Error en inicialitzar el rerefons MIDI %s. S'utilitzarà el rerefons fictici. "
 "Comprova els paràmetres de rerefons a Preferències."
 
-#: src/audio/engine.c:619
+#: src/audio/engine.c:615
 msgid ""
 "Your selected combination of backends may not work properly. If you want to "
 "use JACK, please select JACK as both your audio and MIDI backend."
@@ -2351,7 +2317,7 @@ msgstr ""
 "correctament. Si vols utilitzar JACK, selecciona JACK com a rerefons d'àudio "
 "i MIDI."
 
-#: src/audio/engine.c:813
+#: src/audio/engine.c:809
 #, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
@@ -2380,7 +2346,11 @@ msgstr ""
 "Error en obrir l'SNDFILE %s:\n"
 "%d: %s"
 
-#: src/audio/engine_pulse.c:98
+#: src/audio/exporter.c:870 src/audio/exporter.c:877
+msgid "Failed to create audio track"
+msgstr "Error en crear pistes d'àudio"
+
+#: src/audio/engine_pulse.c:90
 msgid ""
 "A buffer underflow has occurred. Try increasing the buffer size in the "
 "settings to avoid audio glitches."
@@ -2388,16 +2358,16 @@ msgstr ""
 "S'ha produït un desbordament de la memòria intermèdia. Intenta augmentar la "
 "mida de la memòria intermèdia a la configuració per a evitar errors d'àudio."
 
-#: src/audio/engine_pulse.c:212
+#: src/audio/engine_pulse.c:204
 msgid "PulseAudio error: Failed to create main loop"
 msgstr "Error de PulseAudio: error en crear la repetició principal"
 
-#: src/audio/engine_pulse.c:232
+#: src/audio/engine_pulse.c:224
 #, c-format
 msgid "PulseAudio Error: %s"
 msgstr "Error de PulseAudio: %s"
 
-#: src/audio/engine_pulse.c:249
+#: src/audio/engine_pulse.c:241
 msgid "PulseAudio Error: Failed to connect"
 msgstr "Error de PulseAudio: Error en connectar"
 
@@ -2642,16 +2612,11 @@ msgstr "Error en enganxar pistes"
 msgid "Plugin '%s' has crashed and has been disabled."
 msgstr "El complement «%s» ha fallat i s'ha inhabilitat."
 
-#: src/gui/backend/event_manager.c:1133
-#, c-format
-msgid "Trial limit has been reached. %s will now go silent"
-msgstr "S'ha assolit el límit de prova. %s es silenciarà"
-
-#: src/gui/backend/event_manager.c:1241
+#: src/gui/backend/event_manager.c:1228
 msgid "Plugin preset saved."
 msgstr "S'ha desat el valor predefinit del complement."
 
-#: src/gui/backend/event_manager.c:1244
+#: src/gui/backend/event_manager.c:1231
 msgid "Plugin preset loaded."
 msgstr "S'ha carregat el complement predefinit."
 
@@ -2833,17 +2798,17 @@ msgstr ""
 "El projecte conté canvis no desats.\n"
 "Si surts sense desar, es perdran els canvis no desats."
 
-#: src/gui/widgets/main_window.c:731 src/gui/widgets/preferences.c:957
+#: src/gui/widgets/main_window.c:727 src/gui/widgets/preferences.c:957
 #: resources/ui/file_auditioner_controls.ui:34 resources/gtk/menus.ui:40
 #: resources/gtk/help-overlay.ui:39
 msgid "Preferences"
 msgstr "Preferències"
 
-#: src/gui/widgets/main_window.c:732
+#: src/gui/widgets/main_window.c:728
 msgid "Log viewer"
 msgstr "Visor de registre"
 
-#: src/gui/widgets/main_window.c:733
+#: src/gui/widgets/main_window.c:729
 msgid "Scripting interface"
 msgstr "Interfície de script"
 
@@ -2851,7 +2816,7 @@ msgstr "Interfície de script"
 msgid "Monitor Section"
 msgstr "Secció monitor"
 
-#: src/gui/widgets/header.c:88
+#: src/gui/widgets/header.c:85
 #, c-format
 msgid "About %s"
 msgstr "Quant al %s"
@@ -3061,16 +3026,16 @@ msgstr "Error en canviar la indicació de compàs"
 msgid "No file selected"
 msgstr "Cap fitxer seleccionat"
 
-#: src/gui/widgets/panel_file_browser.c:611
+#: src/gui/widgets/panel_file_browser.c:620
 #: src/gui/widgets/plugin_browser.c:1504
 msgid "Search..."
 msgstr "Cercar…"
 
-#: src/gui/widgets/drag_dest_box.c:343
+#: src/gui/widgets/drag_dest_box.c:351
 msgid "Failed to move or copy plugin"
 msgstr "Error en moure o copiar el complement"
 
-#: src/gui/widgets/drag_dest_box.c:384
+#: src/gui/widgets/drag_dest_box.c:396
 msgid "Failed to move or copy track"
 msgstr "Error en moure o copiar la pista"
 
@@ -3937,7 +3902,7 @@ msgstr "Error en editar la posició"
 msgid "Failed to change balance"
 msgstr "Error en canviar el balanç"
 
-#: src/gui/widgets/file_browser.c:109
+#: src/gui/widgets/file_browser.c:112
 #, c-format
 msgid "Failed to create track for file '%s'"
 msgstr "Error en crear la pista al fitxer «%s»"
@@ -4797,6 +4762,14 @@ msgstr "Grup nou"
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:96
 msgid "Move tracks under group"
 msgstr "Moure les pistes en grup"
+
+#: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:119
+msgid "Failed to create audio group track"
+msgstr "Error en crear la pista en grup d'àudio"
+
+#: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:133
+msgid "Failed to create MIDI group track"
+msgstr "Error en crear la pista en grup MIDI"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:152
 #, c-format
@@ -7625,28 +7598,165 @@ msgid "DAW"
 msgstr "DAW"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:70
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
 msgid "Added:"
 msgstr "Afegit:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
+msgid ""
+"Write FINISHED file after finishing saving a project and check for this file "
+"on load"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+msgid "Use new higher quality \"Finer\" timestretcher when using rubberband v3"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+msgid "Changed:"
+msgstr "Canviat:"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
+msgid "Fix header widget not unparenting its child stack"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+#, fuzzy
+msgid "Update French, Japanese translations"
+msgstr "Actualitzar les traduccions a l'hongarès"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+msgid "Change trial version limitation to max 25 tracks per project"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+#, fuzzy
+msgid "Add track filtering by name and type"
+msgstr "Nom del filtre de pista"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+#, fuzzy
+msgid "Add more error checking when instantiating Carla plugins"
+msgstr "Error en instanciar el complement %s"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+msgid "Don't allow moving the playhead while recording"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+msgid "Don't show red peak on MIDI meters"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+msgid "Windows MME: only print debug messages if `ZRYTHM_DEBUG` is set"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+#, fuzzy
+msgid ""
+"Update Spanish, Russian, French, Catalan, Chinese (Simplified), Chinese "
+"(Traditional) translations"
+msgstr ""
+"Actualitza les traduccions al castellà, francès, català i xinès (tradicional)"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
+msgid "Stop SIGSEGV handler from being called multiple times"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
+msgid "Support `LC_ALL` from the environment"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
+msgid "Move track visibility toggles to new track filtering popover"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
+msgid ""
+"Avoid showing bug report dialogs for known issues that are not Zrythm bugs"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
+msgid "Fixed:"
+msgstr "Solucionat:"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+#, fuzzy
+msgid "Fix error when splitting a large audio clip"
+msgstr "Soluciona un error en afegir una inserció a una pista d'àudio"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+msgid ""
+"Fix screen moving backwards when zooming in towards the end of the project"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
+#, fuzzy
+msgid "Fix autoplay breaking when changing directories in the file browser"
+msgstr ""
+"Correcció dels fitxers MIDI que no es poden activar al navegador de fitxers"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
+#, fuzzy
+msgid ""
+"Fix file info label not being updated when changing directories in the file "
+"browser"
+msgstr ""
+"Soluciona l'etiqueta d'informació del complement que no s'actualitza quan es "
+"filtra"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+msgid "Fix error when right-clicking on Macro knob"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+msgid ""
+"Fix direct connection port selector incorrectly allowing connecting audio "
+"ports to CV ports"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#, fuzzy
+msgid "Fix some memory leaks"
+msgstr "Soluciona algunes fuites de memòria notificades pel sanejador GCC"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+msgid ""
+"Fix incorrectly calling `g_log_set_writer_func()` more than once causing an "
+"error on exit on some systems"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+msgid ""
+"Fix automation mode switches in automation tracks being ellipsized on some "
+"systems"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid "Allow clicking anywhere on timeline minimap to navigate"
 msgstr ""
 "Permet fer clic a qualsevol lloc del minimapa de la línia de temps per a "
 "navegar"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid "Add sorting by name, last used and most used in plugin browser"
 msgstr ""
 "Afegir l'ordenació per nom, últims utilitzats i més utilitzats en el "
 "navegador de complements"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
 msgid "User manual: add note about using non-flatpak plugins in flatpak builds"
 msgstr ""
 "Manual d'usuari: afegir nota sobre l'ús de complements que no siguin flatpak "
 "en construccions flatpak"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
 msgid ""
 "Add right click option on tracks to show used and hide unused automation "
 "lanes"
@@ -7654,196 +7764,195 @@ msgstr ""
 "Afegir l'opció de clic dret als canals per a mostrar els carrils "
 "d'automatització utilitzats i amagar-los"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
 msgid "Allow double-clicking on automation points to specify exact value"
 msgstr ""
 "Permet doble clic als punts d'automatització per a especificar el valor "
 "exacte"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
 msgid "Allow renaming tracks via right click menu"
 msgstr "Permet canviar el nom de les pistes mitjançant el menú del clic dret"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
 msgid "Add right click option to create an object on all arrangers"
 msgstr ""
 "Afegir l'opció de clic dret per a crear un objecte a tots els arranjadors"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
-msgid "Changed:"
-msgstr "Canviat:"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
 msgid "Update Spanish, French, Catalan, Chinese (Traditional) translations"
 msgstr ""
 "Actualitza les traduccions al castellà, francès, català i xinès (tradicional)"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
 msgid "Use case-insensitive alphabetical sorting in plugin browser"
 msgstr ""
 "Al navegador de complements utilitzar l'ordenació alfabètica sense distingir "
 "entre majúscules i minúscules"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
 msgid "Use vst instead of vstlx for flatpak VST2 plugin scan paths"
 msgstr ""
 "Utilitzar vst en comptes de vstlx per als camins d'exploració del complement "
 "flatpak VST2"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
 msgid "Make MIDI in label in header untranslatable to avoid sizing issues"
 msgstr ""
 "A l'etiqueta a la capçalera fer que MIDI no es pugui traduir per a evitar "
 "problemes de mida"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
-msgid "Fixed:"
-msgstr "Solucionat:"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
 msgid "Fix chord and scale selector windows not closing with Esc key"
 msgstr ""
 "Soluciona les finestres del selector d'acords i escales que no es tanquen "
 "amb la tecla Esc"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
 msgid "Fix plugin info label not being updated when filtering"
 msgstr ""
 "Soluciona l'etiqueta d'informació del complement que no s'actualitza quan es "
 "filtra"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
 msgid "Fix transport display and ruler right click menus not working"
 msgstr ""
 "Soluciona la pantalla de transport i els menús de clic dret de la regla que "
 "no funcionen"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
 msgid "Drop vendored zix and depend on zix library"
 msgstr "Deixar anar el zix distribuït i dependre de la biblioteca zix"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
 msgid "Replace some icons with icons from GNOME icon library"
 msgstr ""
 "Substituir algunes icones per icones de la biblioteca d'icones del GNOME"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
 msgid "Replace about dialog with AdwDialogWindow"
 msgstr "Substituir el diàleg quant a per AdwDialogWindow"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid "Meson: fix lilv-related subprojects"
 msgstr "Meson: corregir subprojectes relacionats amb lilv"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
 msgid "Fix bug report format breaking when undo history is empty"
 msgstr ""
 "Correcció del format de l'informe d'error quan l'historial de desfer està "
 "buit"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
 msgid "Fix VST3 support being disabled"
 msgstr "Correcció de la inhabilitació del suport VST3"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
-msgid ""
-"Update Chinese (Simplified), Chinese (Traditional), Catalan, French "
-"translations"
-msgstr ""
-"Actualització de traduccions xinès (simplificat), xinès (tradicional), "
-"català i francès"
+#, c-format
+#~ msgid ""
+#~ "Creating new projects is disabled. Please restart %s to start a new "
+#~ "project"
+#~ msgstr ""
+#~ "La creació de nous projectes està inhabilitada. Reinicia %s per a iniciar "
+#~ "un projecte nou"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
-msgid "Meson: use official lilv repository as subproject"
-msgstr "Meson: utilitzar el repositori oficial de lilv com a subprojecte"
+#~ msgid "Loading is disabled in the trial version"
+#~ msgstr "La càrrega està inhabilitada a la versió de prova"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
-msgid "User manual: explain automation lane on/off buttons"
-msgstr ""
-"Manual d'usuari: explicació els botons on/off del carril d'automatització"
+#~ msgid "Saving is disabled in the trial version"
+#~ msgstr "Desar està inhabilitat a la versió de prova"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
-msgid "Fix lag when clicking on plugins in a large project"
-msgstr "Correcció del retard en fer clic als complements d'un projecte gran"
+#~ msgid "Failed to create MIDI track"
+#~ msgstr "Error en crear pista MIDI"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
-msgid "Fix long loading time when loading large projects"
-msgstr "Correcció del temps de càrrega llargs en carregar projectes grans"
+#~ msgid "Failed to create audio FX track"
+#~ msgstr "Error en crear pista FX d'àudio"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
-msgid "Fix crash when zooming in on audio regions"
-msgstr "Correcció del bloqueig en ampliar les regions d'àudio"
+#~ msgid "Failed to create MIDI FX track"
+#~ msgstr "Error en crear la pista FX MIDI"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
-msgid ""
-"Update French, Chinese (Simplified), Catalan, Turkish, Portuguese (Brazil), "
-"Japanese, Polish, Hebrew, Indonesian, Ukrainian, Russian, Portuguese, "
-"Italian, German, Thai translations"
-msgstr ""
-"Actualització de les traduccions al francès, xinès (simplificat), català, "
-"turc, portuguès (Brasil), japonès, polonès, hebreu, indonesi, ucraïnès, rus, "
-"portuguès, italià, alemany i tailandès"
+#~ msgid "Failed to create folder track"
+#~ msgstr "Error en crear pista en carpeta"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
-msgid "Add better error handling when failing to read project yaml"
-msgstr ""
-"S'ha afegit una millor gestió d'errors quan falla la lectura del projecte "
-"yaml"
+#, c-format
+#~ msgid "Trial limit has been reached. %s will now go silent"
+#~ msgstr "S'ha assolit el límit de prova. %s es silenciarà"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
-msgid "Ignore GTK critical message (widget size related)"
-msgstr "Ignora el missatge crític de GTK (relacionat amb la mida del widget)"
+#~ msgid ""
+#~ "Update Chinese (Simplified), Chinese (Traditional), Catalan, French "
+#~ "translations"
+#~ msgstr ""
+#~ "Actualització de traduccions xinès (simplificat), xinès (tradicional), "
+#~ "català i francès"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
-msgid "Meson: accept libpanel alpha release version"
-msgstr "Meson: acceptació de la versió alfa de libpanel"
+#~ msgid "Meson: use official lilv repository as subproject"
+#~ msgstr "Meson: utilitzar el repositori oficial de lilv com a subprojecte"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
-msgid ""
-"Upgrade project format and drop undo history when loading older projects"
-msgstr ""
-"S'ha actualitzat el format del projecte i s'ha eliminat l'historial de "
-"desfers en carregar projectes antics"
+#~ msgid "User manual: explain automation lane on/off buttons"
+#~ msgstr ""
+#~ "Manual d'usuari: explicació els botons on/off del carril d'automatització"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
-msgid "Fix error when lowering BPM and saving a project with audio regions"
-msgstr ""
-"S'ha corregit un error en reduir el BPM i desar un projecte amb regions "
-"d'àudio"
+#~ msgid "Fix lag when clicking on plugins in a large project"
+#~ msgstr "Correcció del retard en fer clic als complements d'un projecte gran"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
-msgid "Fix loading projects with audio regions under different sample rate"
-msgstr ""
-"S'ha corregit la càrrega de projectes amb regions d'àudio amb una freqüència "
-"de mostreig diferent"
+#~ msgid "Fix long loading time when loading large projects"
+#~ msgstr "Correcció del temps de càrrega llargs en carregar projectes grans"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
-msgid ""
-"Fix endless stream of bug report dialogs (only allow a single dialog to be "
-"open at any time)"
-msgstr ""
-"S'ha corregit el flux interminable de diàlegs d'informes d'errors (només "
-"permet que s'obri un diàleg alhora)"
+#~ msgid "Fix crash when zooming in on audio regions"
+#~ msgstr "Correcció del bloqueig en ampliar les regions d'àudio"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
-msgid "Fix error when adding an insert to an audio track"
-msgstr "Soluciona un error en afegir una inserció a una pista d'àudio"
+#~ msgid ""
+#~ "Update French, Chinese (Simplified), Catalan, Turkish, Portuguese "
+#~ "(Brazil), Japanese, Polish, Hebrew, Indonesian, Ukrainian, Russian, "
+#~ "Portuguese, Italian, German, Thai translations"
+#~ msgstr ""
+#~ "Actualització de les traduccions al francès, xinès (simplificat), català, "
+#~ "turc, portuguès (Brasil), japonès, polonès, hebreu, indonesi, ucraïnès, "
+#~ "rus, portuguès, italià, alemany i tailandès"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
-msgid "Fix error when attempting to change buffer size"
-msgstr "Soluciona l'error en intentar canviar la mida de la memòria intermèdia"
+#~ msgid "Add better error handling when failing to read project yaml"
+#~ msgstr ""
+#~ "S'ha afegit una millor gestió d'errors quan falla la lectura del projecte "
+#~ "yaml"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
-msgid "Fix error when attempting to bounce a track while transport is playing"
-msgstr ""
-"Soluciona un error en intentar rebotar una pista mentre el transport s'està "
-"reproduint"
+#~ msgid "Ignore GTK critical message (widget size related)"
+#~ msgstr ""
+#~ "Ignora el missatge crític de GTK (relacionat amb la mida del widget)"
+
+#~ msgid "Meson: accept libpanel alpha release version"
+#~ msgstr "Meson: acceptació de la versió alfa de libpanel"
+
+#~ msgid ""
+#~ "Upgrade project format and drop undo history when loading older projects"
+#~ msgstr ""
+#~ "S'ha actualitzat el format del projecte i s'ha eliminat l'historial de "
+#~ "desfers en carregar projectes antics"
+
+#~ msgid "Fix error when lowering BPM and saving a project with audio regions"
+#~ msgstr ""
+#~ "S'ha corregit un error en reduir el BPM i desar un projecte amb regions "
+#~ "d'àudio"
+
+#~ msgid "Fix loading projects with audio regions under different sample rate"
+#~ msgstr ""
+#~ "S'ha corregit la càrrega de projectes amb regions d'àudio amb una "
+#~ "freqüència de mostreig diferent"
+
+#~ msgid ""
+#~ "Fix endless stream of bug report dialogs (only allow a single dialog to "
+#~ "be open at any time)"
+#~ msgstr ""
+#~ "S'ha corregit el flux interminable de diàlegs d'informes d'errors (només "
+#~ "permet que s'obri un diàleg alhora)"
+
+#~ msgid "Fix error when attempting to change buffer size"
+#~ msgstr ""
+#~ "Soluciona l'error en intentar canviar la mida de la memòria intermèdia"
+
+#~ msgid ""
+#~ "Fix error when attempting to bounce a track while transport is playing"
+#~ msgstr ""
+#~ "Soluciona un error en intentar rebotar una pista mentre el transport "
+#~ "s'està reproduint"
 
 #~ msgid "Visible"
 #~ msgstr "Visible"
@@ -8088,9 +8197,6 @@ msgstr ""
 #~ "Soluciona la selecció de contingut de la regió MIDI al diàleg "
 #~ "d'exportació MIDI"
 
-#~ msgid "Fix some memory leaks reported by gcc sanitizer"
-#~ msgstr "Soluciona algunes fuites de memòria notificades pel sanejador GCC"
-
 #~ msgid "Remove unused bootstrap js files"
 #~ msgstr "Elimina els fitxers bootstrap js no utilitzats"
 
@@ -8191,9 +8297,6 @@ msgstr ""
 #~ "Desplaçar-se fins a la nota del mig quan es mostri per primera vegada el "
 #~ "rotlle de pianola"
 
-#~ msgid "Update Hungarian translations"
-#~ msgstr "Actualitzar les traduccions a l'hongarès"
-
 #~ msgid "INSTALL: clarify build instructions"
 #~ msgstr "INSTAL·LACIÓ: aclareix les instruccions de construcció"
 
@@ -8226,11 +8329,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Correcció dels carrils d'automatització que no es mostren immediatament "
 #~ "quan es fan visibles"
-
-#~ msgid "Fix MIDI files not being activatable in the file browser"
-#~ msgstr ""
-#~ "Correcció dels fitxers MIDI que no es poden activar al navegador de "
-#~ "fitxers"
 
 #~ msgid "Fix audio engine not being resumed after running Guile scripts"
 #~ msgstr ""

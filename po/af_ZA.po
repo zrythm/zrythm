@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-08-31 21:00+0900\n"
+"POT-Creation-Date: 2022-09-14 19:12+0900\n"
 "PO-Revision-Date: 2021-01-01 00:11+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Afrikaans <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -722,25 +722,32 @@ msgstr ""
 msgid "Failed to load project. Please check the logs for more information."
 msgstr "Kon nie projek oop maak nie. Kyk na die logs vir meer inligting."
 
-#: src/project.c:1180
+#: src/project.c:974
+#, c-format
+msgid ""
+"Could not load project: Corrupted project detected (missing FINISHED file at "
+"'%s')."
+msgstr ""
+
+#: src/project.c:1205
 msgid "Failed to load project. Will create a new one instead."
 msgstr "Kon nie projek oop maak nie. n Nuwe een sal gemaak word."
 
-#: src/project.c:1260
+#: src/project.c:1287
 #, fuzzy
 msgid "Failed to deserialize v1 project file"
 msgstr "Kon nie na lêer skryf nie: %s"
 
-#: src/project.c:1502
+#: src/project.c:1537
 #, fuzzy
 msgid "Failed to compress project file"
 msgstr "Kon nie die projeklêer dekomprimeer nie: %s"
 
-#: src/project.c:1546 src/project.c:1549
+#: src/project.c:1581 src/project.c:1584
 msgid "Backup saved."
 msgstr "Rugsteun gestoor"
 
-#: src/project.c:1560
+#: src/project.c:1595
 msgid "Project saved."
 msgstr "Projek gestoor"
 
@@ -779,45 +786,45 @@ msgstr ""
 msgid "Setting up main window"
 msgstr "Stel n nuwe venster op"
 
-#: src/zrythm_app.c:405
+#: src/zrythm_app.c:403
 msgid "Loading project"
 msgstr "Laai tans projek"
 
-#: src/zrythm_app.c:419
+#: src/zrythm_app.c:417
 #, c-format
 msgid "No project has been selected. %s will now close."
 msgstr "Geen projek was geselekteer nie. %s sal nou toegemaak word."
 
-#: src/zrythm_app.c:438
+#: src/zrythm_app.c:436
 msgid "Initializing settings"
 msgstr "Initialiseer instellings"
 
-#: src/zrythm_app.c:444
+#: src/zrythm_app.c:442
 #, c-format
 msgid "Initializing %s directories"
 msgstr "Initialiseer %s gidse"
 
-#: src/zrythm_app.c:452
+#: src/zrythm_app.c:450
 msgid "Initializing logging system"
 msgstr "Initialiseer aanmeldstelsel"
 
-#: src/zrythm_app.c:468
+#: src/zrythm_app.c:466
 msgid "Initializing caches"
 msgstr "Initialiseer caches"
 
-#: src/zrythm_app.c:472
+#: src/zrythm_app.c:470
 msgid "Initializing file manager"
 msgstr "Initialiseer léer bestuurder"
 
-#: src/zrythm_app.c:478
+#: src/zrythm_app.c:476
 msgid "Scanning plugins"
 msgstr "Skandeer tans inproppe"
 
-#: src/zrythm_app.c:598
+#: src/zrythm_app.c:596
 msgid "Waiting for project"
 msgstr "Wag vir projek"
 
-#: src/zrythm_app.c:815
+#: src/zrythm_app.c:813
 #, c-format
 msgid ""
 "Your user does not have enough privileges to allow %s to lock unlimited "
@@ -825,17 +832,17 @@ msgid ""
 "section in the user manual for details."
 msgstr ""
 
-#: src/zrythm_app.c:833
+#: src/zrythm_app.c:831
 #, c-format
 msgid "Could not get system memory lock limit (%s)"
 msgstr ""
 
-#: src/zrythm_app.c:854
+#: src/zrythm_app.c:852
 #, c-format
 msgid "Cannot lock down memory: %s"
 msgstr ""
 
-#: src/zrythm_app.c:989
+#: src/zrythm_app.c:987
 #, fuzzy, c-format
 msgid ""
 "%s-%s\n"
@@ -861,78 +868,78 @@ msgstr ""
 "Ondersteun hierdie projek op https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1382
+#: src/zrythm_app.c:1380
 #, c-format
 msgid "File %s not found."
 msgstr "Léer %s nie gevind nie"
 
-#: src/zrythm_app.c:1401
+#: src/zrythm_app.c:1399
 #, fuzzy
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "n Uitvoer léer was nie gespesifiseer nie. Gee een aan met `--output[FILE]`."
 
-#: src/zrythm_app.c:1456
+#: src/zrythm_app.c:1454
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "Projek kon nie dekomprimeer nie: %s\n"
 
-#: src/zrythm_app.c:1473
+#: src/zrythm_app.c:1471
 #, fuzzy
 msgid "Unknown operation"
 msgstr "Onbekende opsie\n"
 
-#: src/zrythm_app.c:1490
+#: src/zrythm_app.c:1488
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr ""
 
-#: src/zrythm_app.c:1637
+#: src/zrythm_app.c:1635
 #, fuzzy
 msgid "Print version information"
 msgstr "Lisensie Inligting"
 
-#: src/zrythm_app.c:1640
+#: src/zrythm_app.c:1638
 msgid "Convert ZPJ-FILE to YAML"
 msgstr ""
 
-#: src/zrythm_app.c:1643
+#: src/zrythm_app.c:1641
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr ""
 
-#: src/zrythm_app.c:1647
+#: src/zrythm_app.c:1645
 msgid "Generate a project from SCRIPT-FILE"
 msgstr ""
 
-#: src/zrythm_app.c:1651
+#: src/zrythm_app.c:1649
 msgid "Print output in user-friendly way"
 msgstr ""
 
-#: src/zrythm_app.c:1653
+#: src/zrythm_app.c:1651
 msgid "Print current settings"
 msgstr ""
 
-#: src/zrythm_app.c:1657 src/gui/widgets/preferences.c:737
+#: src/zrythm_app.c:1655 src/gui/widgets/preferences.c:737
 msgid "Reset to factory settings"
 msgstr ""
 
-#: src/zrythm_app.c:1660
+#: src/zrythm_app.c:1658
 msgid "Override the audio backend to use"
 msgstr ""
 
-#: src/zrythm_app.c:1663
+#: src/zrythm_app.c:1661
 msgid "Override the MIDI backend to use"
 msgstr ""
 
-#: src/zrythm_app.c:1665
+#: src/zrythm_app.c:1663
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr ""
 
-#: src/zrythm_app.c:1693
+#: src/zrythm_app.c:1691
 msgid "[PROJECT-FILE]"
 msgstr ""
 
-#: src/zrythm_app.c:1699
+#: src/zrythm_app.c:1697
 #, c-format
 msgid ""
 "Examples:\n"
@@ -944,9 +951,14 @@ msgid ""
 "Please report issues to %s\n"
 msgstr ""
 
-#: src/zrythm_app.c:1711
+#: src/zrythm_app.c:1709
 #, c-format
 msgid "Run %s, optionally passing a project file."
+msgstr ""
+
+#: src/zrythm_app.c:1740
+#, c-format
+msgid "This version of Zrythm does not support creating more than %d tracks."
 msgstr ""
 
 #: src/actions/range_action.c:651 resources/ui/range_action_buttons.ui:11
@@ -957,12 +969,12 @@ msgstr ""
 msgid "Delete range"
 msgstr ""
 
-#: src/actions/undo_manager.c:189 src/actions/actions.c:875
+#: src/actions/undo_manager.c:189 src/actions/actions.c:843
 #, fuzzy
 msgid "Failed to undo action"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/undo_manager.c:240 src/actions/actions.c:870
+#: src/actions/undo_manager.c:240 src/actions/actions.c:838
 #, fuzzy
 msgid "Failed to redo action"
 msgstr "Kon nie lêer oop maak nie: %s"
@@ -1024,41 +1036,27 @@ msgid ""
 "your %s installation."
 msgstr ""
 
-#: src/actions/actions.c:593
-#, c-format
-msgid ""
-"Creating new projects is disabled. Please restart %s to start a new project"
-msgstr ""
-
-#: src/actions/actions.c:601 resources/gtk/help-overlay.ui:103
+#: src/actions/actions.c:590 resources/gtk/help-overlay.ui:103
 msgid "Create new project"
 msgstr ""
 
-#: src/actions/actions.c:603
+#: src/actions/actions.c:592
 msgid "Yes"
 msgstr ""
 
-#: src/actions/actions.c:603
+#: src/actions/actions.c:592
 msgid "No"
 msgstr ""
 
-#: src/actions/actions.c:606
+#: src/actions/actions.c:595
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
 
-#: src/actions/actions.c:642
-msgid "Loading is disabled in the trial version"
-msgstr ""
-
-#: src/actions/actions.c:671 src/actions/actions.c:696
-msgid "Saving is disabled in the trial version"
-msgstr ""
-
-#: src/actions/actions.c:706
+#: src/actions/actions.c:674
 msgid "Save Project"
 msgstr ""
 
-#: src/actions/actions.c:707 src/utils/dialogs.c:41 src/utils/dialogs.c:60
+#: src/actions/actions.c:675 src/utils/dialogs.c:41 src/utils/dialogs.c:60
 #: src/audio/clip.c:589 src/gui/widgets/main_window.c:137
 #: src/gui/widgets/plugin_properties_expander.c:107
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:140
@@ -1077,336 +1075,308 @@ msgstr ""
 msgid "_Cancel"
 msgstr "_Kanseleer"
 
-#: src/actions/actions.c:707
+#: src/actions/actions.c:675
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:146
 #: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:301
 #: src/plugins/lv2/lv2_gtk.c:78
 msgid "_Save"
 msgstr "_Stoor"
 
-#: src/actions/actions.c:767
+#: src/actions/actions.c:735
 msgid "Export routing graph"
 msgstr ""
 
-#: src/actions/actions.c:768
+#: src/actions/actions.c:736
 msgid "Image (PNG)"
 msgstr ""
 
-#: src/actions/actions.c:768
+#: src/actions/actions.c:736
 msgid "Image (SVG)"
 msgstr ""
 
-#: src/actions/actions.c:769
+#: src/actions/actions.c:737
 msgid "Dot graph"
 msgstr ""
 
-#: src/actions/actions.c:775
+#: src/actions/actions.c:743
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
 "Please select a format to export as"
 msgstr ""
 
-#: src/actions/actions.c:823
+#: src/actions/actions.c:791
 msgid "Graph exported"
 msgstr ""
 
-#: src/actions/actions.c:845 src/guile/actions/undo_manager.c:67
+#: src/actions/actions.c:813 src/guile/actions/undo_manager.c:67
 #, fuzzy
 msgid "Failed to undo"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:898 src/guile/actions/undo_manager.c:91
+#: src/actions/actions.c:866 src/guile/actions/undo_manager.c:91
 #, fuzzy
 msgid "Failed to redo"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:935 src/actions/actions.c:949
-#: src/actions/actions.c:1153
+#: src/actions/actions.c:903 src/actions/actions.c:917
+#: src/actions/actions.c:1121
 #, fuzzy
 msgid "Failed to delete selections"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:1125
+#: src/actions/actions.c:1093
 msgid "Can't paste incompatible data"
 msgstr ""
 
-#: src/actions/actions.c:1199
+#: src/actions/actions.c:1167
 #, fuzzy
 msgid "Failed to duplicate selections"
 msgstr "Kon nie na lêer skryf nie: %s"
 
-#: src/actions/actions.c:1423
+#: src/actions/actions.c:1391
 #, fuzzy
 msgid "Failed to unbind"
 msgstr "Misluk om inprop te vind met URI: %s"
 
-#: src/actions/actions.c:1464 src/actions/actions.c:1968
-#: src/actions/actions.c:1998
+#: src/actions/actions.c:1432 src/actions/actions.c:1904
+#: src/actions/actions.c:1934
 #, fuzzy
 msgid "Failed to quantize"
 msgstr "Misluk om inprop te vind met URI: %s"
 
-#: src/actions/actions.c:1540 src/audio/exporter.c:870 src/audio/exporter.c:877
+#: src/actions/actions.c:1510 src/audio/track.c:3606 src/audio/tracklist.c:1452
+#: src/gui/widgets/panel_file_browser.c:456
+#: src/gui/widgets/panel_file_browser.c:472 src/settings/plugin_settings.c:340
+#: src/settings/plugin_settings.c:355 src/settings/plugin_settings.c:427
+#: src/settings/plugin_settings.c:547
 #, fuzzy
-msgid "Failed to create audio track"
+msgid "Failed to create track"
 msgstr "Kon nie na lêer skryf nie: %s"
 
-#: src/actions/actions.c:1552
-#, fuzzy
-msgid "Failed to create MIDI track"
-msgstr "Kon nie na lêer skryf nie: %s"
-
-#: src/actions/actions.c:1564
-#, fuzzy
-msgid "Failed to create audio FX track"
-msgstr "Kon nie na lêer skryf nie: %s"
-
-#: src/actions/actions.c:1576
-#, fuzzy
-msgid "Failed to create MIDI FX track"
-msgstr "Kon nie na lêer skryf nie: %s"
-
-#: src/actions/actions.c:1588
-#: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:119
-#, fuzzy
-msgid "Failed to create audio group track"
-msgstr "Kon nie na lêer skryf nie: %s"
-
-#: src/actions/actions.c:1600
-#: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:133
-#, fuzzy
-msgid "Failed to create MIDI group track"
-msgstr "Kon nie na lêer skryf nie: %s"
-
-#: src/actions/actions.c:1612
-#, fuzzy
-msgid "Failed to create folder track"
-msgstr "Kon nie na lêer skryf nie: %s"
-
-#: src/actions/actions.c:1625
+#: src/actions/actions.c:1561
 #, fuzzy
 msgid "Failed to duplicate tracks"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:1695 src/actions/actions.c:1757
+#: src/actions/actions.c:1631 src/actions/actions.c:1693
 #, fuzzy
 msgid "Failed to delete tracks"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:1722
+#: src/actions/actions.c:1658
 msgid "Cannot delete tracks: selection contains an undeletable track"
 msgstr ""
 
-#: src/actions/actions.c:1734
+#: src/actions/actions.c:1670
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
 
-#: src/actions/actions.c:1791
+#: src/actions/actions.c:1727
 #, fuzzy
 msgid "Failed to pin/unpin tracks"
 msgstr "Misluk om inprop te vind met URI: %s"
 
-#: src/actions/actions.c:1802
+#: src/actions/actions.c:1738
 #, fuzzy
 msgid "Failed to solo tracks"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:1813
+#: src/actions/actions.c:1749
 #, fuzzy
 msgid "Failed to unsolo tracks"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:1824
+#: src/actions/actions.c:1760
 #, fuzzy
 msgid "Failed to mute tracks"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:1835
+#: src/actions/actions.c:1771
 #, fuzzy
 msgid "Failed to unmute tracks"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:1846
+#: src/actions/actions.c:1782
 #, fuzzy
 msgid "Failed to listen tracks"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:1858
+#: src/actions/actions.c:1794
 #, fuzzy
 msgid "Failed to unlisten tracks"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:1869
+#: src/actions/actions.c:1805
 #, fuzzy
 msgid "Failed to enable tracks"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:1880
+#: src/actions/actions.c:1816
 #, fuzzy
 msgid "Failed to disable tracks"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:2015
+#: src/actions/actions.c:1951
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
 msgstr ""
 
-#: src/actions/actions.c:2087
+#: src/actions/actions.c:2023
 #, fuzzy
 msgid "Failed to mute selections"
 msgstr "Kon nie na lêer skryf nie: %s"
 
-#: src/actions/actions.c:2101
+#: src/actions/actions.c:2037
 msgid "No regions selected"
 msgstr ""
 
-#: src/actions/actions.c:2109
+#: src/actions/actions.c:2045
 msgid "Selections must be on the same lane"
 msgstr ""
 
-#: src/actions/actions.c:2116
+#: src/actions/actions.c:2052
 msgid "Cannot merge looped regions"
 msgstr ""
 
-#: src/actions/actions.c:2131
+#: src/actions/actions.c:2067
 #, fuzzy
 msgid "Failed to merge selections"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:2236
+#: src/actions/actions.c:2172
 #, fuzzy
 msgid "Failed to insert silence"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:2253
+#: src/actions/actions.c:2189
 #, fuzzy
 msgid "Failed to remove range"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:2327 src/actions/arranger_selections.c:521
+#: src/actions/actions.c:2263 src/actions/arranger_selections.c:521
 #, fuzzy
 msgid "Failed to apply MIDI function"
 msgstr "Misluk om inprop te vind met URI: %s"
 
-#: src/actions/actions.c:2353 src/actions/actions.c:2392
+#: src/actions/actions.c:2289 src/actions/actions.c:2328
 #: src/actions/arranger_selections.c:557
 #, fuzzy
 msgid "Failed to apply automation function"
 msgstr "Misluk om inprop te vind met URI: %s"
 
-#: src/actions/actions.c:2565 src/gui/widgets/track_filter_popover.c:268
+#: src/actions/actions.c:2501 src/gui/widgets/track_filter_popover.c:268
 #, fuzzy
 msgid "Track name"
 msgstr "Snitnaam"
 
-#: src/actions/actions.c:2590
+#: src/actions/actions.c:2526
 #, fuzzy
 msgid "Object name"
 msgstr "Streek"
 
-#: src/actions/actions.c:2628
+#: src/actions/actions.c:2564
 msgid "An object cannot be created at the selected location."
 msgstr ""
 
-#: src/actions/actions.c:2653
+#: src/actions/actions.c:2589
 msgid "Please enter a BPM"
 msgstr ""
 
-#: src/actions/actions.c:2722
+#: src/actions/actions.c:2658
 #, fuzzy
 msgid "Failed to move selections"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:2739
+#: src/actions/actions.c:2675
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr ""
 
-#: src/actions/actions.c:2741
+#: src/actions/actions.c:2677
 msgid "Candidates:"
 msgstr ""
 
-#: src/actions/actions.c:2789 src/actions/arranger_selections.c:596
+#: src/actions/actions.c:2725 src/actions/arranger_selections.c:596
 #: src/actions/arranger_selections.c:610
 msgid "Failed to apply audio function"
 msgstr ""
 
-#: src/actions/actions.c:2904
+#: src/actions/actions.c:2840
 #, fuzzy
 msgid "Failed to set curve algorithm"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:2955
+#: src/actions/actions.c:2891
 #, fuzzy
 msgid "Failed to edit fades"
 msgstr "Kon nie na lêer skryf nie: %s"
 
-#: src/actions/actions.c:3019
+#: src/actions/actions.c:2955
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
 msgstr ""
 
-#: src/actions/actions.c:3106 src/actions/actions.c:3147
+#: src/actions/actions.c:3042 src/actions/actions.c:3083
 #, fuzzy
 msgid "Preset Pack Name"
 msgstr "Snitnaam"
 
-#: src/actions/actions.c:3127 src/actions/actions.c:3165
+#: src/actions/actions.c:3063 src/actions/actions.c:3101
 msgid "Are you sure you want to remove this chord preset pack?"
 msgstr ""
 
-#: src/actions/actions.c:3185
+#: src/actions/actions.c:3121
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:156
 msgid "Preset Name"
 msgstr ""
 
-#: src/actions/actions.c:3243 src/gui/widgets/modulator_inner.c:92
+#: src/actions/actions.c:3179 src/gui/widgets/modulator_inner.c:92
 #, fuzzy
 msgid "Failed to delete plugins"
 msgstr "Kon nie na lêer skryf nie: %s"
 
-#: src/actions/actions.c:3267
+#: src/actions/actions.c:3203
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
 
-#: src/actions/actions.c:3317
+#: src/actions/actions.c:3253
 #, fuzzy, c-format
 msgid "Failed to reset %s"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:3343
+#: src/actions/actions.c:3279
 #, fuzzy, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/actions/actions.c:3373
+#: src/actions/actions.c:3309
 msgid "Cannot delete standard bookmark"
 msgstr ""
 
-#: src/actions/actions.c:3381
+#: src/actions/actions.c:3317
 msgid "Are you sure you want to remove this bookmark?"
 msgstr ""
 
-#: src/actions/actions.c:3577 src/actions/actions.c:3606
+#: src/actions/actions.c:3516 src/actions/actions.c:3545
 #, fuzzy
 msgid "Collection name"
 msgstr "Streek"
 
-#: src/actions/actions.c:3628
+#: src/actions/actions.c:3567
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
 
-#: src/actions/actions.c:3796
+#: src/actions/actions.c:3735
 #, fuzzy
 msgid "Failed to change direct output"
 msgstr "Kon nie lêer oop maak nie: %s"
@@ -2259,7 +2229,7 @@ msgstr ""
 msgid "Elliptic"
 msgstr ""
 
-#: src/audio/audio_function.c:131 src/gui/widgets/drag_dest_box.c:310
+#: src/audio/audio_function.c:131 src/gui/widgets/drag_dest_box.c:318
 #, fuzzy
 msgid "Failed to create plugin"
 msgstr "Kon nie na lêer skryf nie: %s"
@@ -2330,15 +2300,6 @@ msgstr ""
 msgid "Cannot set track enabled"
 msgstr ""
 
-#: src/audio/track.c:3606 src/audio/tracklist.c:1452
-#: src/gui/widgets/panel_file_browser.c:451
-#: src/gui/widgets/panel_file_browser.c:463 src/settings/plugin_settings.c:340
-#: src/settings/plugin_settings.c:355 src/settings/plugin_settings.c:427
-#: src/settings/plugin_settings.c:547
-#, fuzzy
-msgid "Failed to create track"
-msgstr "Kon nie na lêer skryf nie: %s"
-
 #: src/audio/automation_track.c:171
 msgid "Rec"
 msgstr ""
@@ -2356,34 +2317,34 @@ msgstr ""
 msgid "Automation"
 msgstr ""
 
-#: src/audio/engine.c:500
+#: src/audio/engine.c:496
 #, c-format
 msgid ""
 "Failed to initialize the %s audio backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
 
-#: src/audio/engine.c:541
+#: src/audio/engine.c:537
 #, c-format
 msgid ""
 "The JACK MIDI backend can only be used with the JACK audio backend (your "
 "current audio backend is %s). Will use the dummy MIDI backend instead."
 msgstr ""
 
-#: src/audio/engine.c:577
+#: src/audio/engine.c:573
 #, c-format
 msgid ""
 "Failed to initialize the %s MIDI backend. Will use the dummy backend "
 "instead. Please check your backend settings in the Preferences."
 msgstr ""
 
-#: src/audio/engine.c:619
+#: src/audio/engine.c:615
 msgid ""
 "Your selected combination of backends may not work properly. If you want to "
 "use JACK, please select JACK as both your audio and MIDI backend."
 msgstr ""
 
-#: src/audio/engine.c:813
+#: src/audio/engine.c:809
 #, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
@@ -2407,22 +2368,27 @@ msgid ""
 "%d: %s"
 msgstr ""
 
-#: src/audio/engine_pulse.c:98
+#: src/audio/exporter.c:870 src/audio/exporter.c:877
+#, fuzzy
+msgid "Failed to create audio track"
+msgstr "Kon nie na lêer skryf nie: %s"
+
+#: src/audio/engine_pulse.c:90
 msgid ""
 "A buffer underflow has occurred. Try increasing the buffer size in the "
 "settings to avoid audio glitches."
 msgstr ""
 
-#: src/audio/engine_pulse.c:212
+#: src/audio/engine_pulse.c:204
 msgid "PulseAudio error: Failed to create main loop"
 msgstr ""
 
-#: src/audio/engine_pulse.c:232
+#: src/audio/engine_pulse.c:224
 #, c-format
 msgid "PulseAudio Error: %s"
 msgstr ""
 
-#: src/audio/engine_pulse.c:249
+#: src/audio/engine_pulse.c:241
 msgid "PulseAudio Error: Failed to connect"
 msgstr ""
 
@@ -2678,17 +2644,12 @@ msgstr "Kon nie lêer oop maak nie: %s"
 msgid "Plugin '%s' has crashed and has been disabled."
 msgstr ""
 
-#: src/gui/backend/event_manager.c:1133
-#, c-format
-msgid "Trial limit has been reached. %s will now go silent"
-msgstr ""
-
-#: src/gui/backend/event_manager.c:1241
+#: src/gui/backend/event_manager.c:1228
 #, fuzzy
 msgid "Plugin preset saved."
 msgstr "Inprop inspekteur"
 
-#: src/gui/backend/event_manager.c:1244
+#: src/gui/backend/event_manager.c:1231
 #, fuzzy
 msgid "Plugin preset loaded."
 msgstr "Inprop inspekteur"
@@ -2875,17 +2836,17 @@ msgid ""
 "If you quit without saving, unsaved changes will be lost."
 msgstr ""
 
-#: src/gui/widgets/main_window.c:731 src/gui/widgets/preferences.c:957
+#: src/gui/widgets/main_window.c:727 src/gui/widgets/preferences.c:957
 #: resources/ui/file_auditioner_controls.ui:34 resources/gtk/menus.ui:40
 #: resources/gtk/help-overlay.ui:39
 msgid "Preferences"
 msgstr ""
 
-#: src/gui/widgets/main_window.c:732
+#: src/gui/widgets/main_window.c:728
 msgid "Log viewer"
 msgstr ""
 
-#: src/gui/widgets/main_window.c:733
+#: src/gui/widgets/main_window.c:729
 msgid "Scripting interface"
 msgstr ""
 
@@ -2894,7 +2855,7 @@ msgstr ""
 msgid "Monitor Section"
 msgstr "Poort verbindings"
 
-#: src/gui/widgets/header.c:88
+#: src/gui/widgets/header.c:85
 #, c-format
 msgid "About %s"
 msgstr ""
@@ -3108,17 +3069,17 @@ msgstr "Kon nie lêer oop maak nie: %s"
 msgid "No file selected"
 msgstr "Geen voorwerp gekies nie"
 
-#: src/gui/widgets/panel_file_browser.c:611
+#: src/gui/widgets/panel_file_browser.c:620
 #: src/gui/widgets/plugin_browser.c:1504
 msgid "Search..."
 msgstr ""
 
-#: src/gui/widgets/drag_dest_box.c:343
+#: src/gui/widgets/drag_dest_box.c:351
 #, fuzzy
 msgid "Failed to move or copy plugin"
 msgstr "Misluk om inprop te vind met URI: %s"
 
-#: src/gui/widgets/drag_dest_box.c:384
+#: src/gui/widgets/drag_dest_box.c:396
 #, fuzzy
 msgid "Failed to move or copy track"
 msgstr "Kon nie lêer oop maak nie: %s"
@@ -4030,7 +3991,7 @@ msgstr "Kon nie lêer oop maak nie: %s"
 msgid "Failed to change balance"
 msgstr "Kon nie lêer oop maak nie: %s"
 
-#: src/gui/widgets/file_browser.c:109
+#: src/gui/widgets/file_browser.c:112
 #, fuzzy, c-format
 msgid "Failed to create track for file '%s'"
 msgstr "Kon nie na lêer skryf nie: %s"
@@ -4919,6 +4880,16 @@ msgstr "MIDI Groep"
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:96
 msgid "Move tracks under group"
 msgstr ""
+
+#: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:119
+#, fuzzy
+msgid "Failed to create audio group track"
+msgstr "Kon nie na lêer skryf nie: %s"
+
+#: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:133
+#, fuzzy
+msgid "Failed to create MIDI group track"
+msgstr "Kon nie na lêer skryf nie: %s"
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:152
 #, c-format
@@ -7735,181 +7706,233 @@ msgid "DAW"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:70
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
 msgid "Added:"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
-msgid "Allow clicking anywhere on timeline minimap to navigate"
+msgid ""
+"Write FINISHED file after finishing saving a project and check for this file "
+"on load"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-msgid "Add sorting by name, last used and most used in plugin browser"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
-msgid "User manual: add note about using non-flatpak plugins in flatpak builds"
+msgid "Use new higher quality \"Finer\" timestretcher when using rubberband v3"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+#, fuzzy
+msgid "Changed:"
+msgstr "Geen kanaal"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
+msgid "Fix header widget not unparenting its child stack"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+msgid "Update French, Japanese translations"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+msgid "Change trial version limitation to max 25 tracks per project"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+#, fuzzy
+msgid "Add track filtering by name and type"
+msgstr "Snitnaam"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+msgid "Add more error checking when instantiating Carla plugins"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+msgid "Don't allow moving the playhead while recording"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+msgid "Don't show red peak on MIDI meters"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+msgid "Windows MME: only print debug messages if `ZRYTHM_DEBUG` is set"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+msgid ""
+"Update Spanish, Russian, French, Catalan, Chinese (Simplified), Chinese "
+"(Traditional) translations"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
+msgid "Stop SIGSEGV handler from being called multiple times"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
+msgid "Support `LC_ALL` from the environment"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
+msgid "Move track visibility toggles to new track filtering popover"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
+msgid ""
+"Avoid showing bug report dialogs for known issues that are not Zrythm bugs"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
+msgid "Fixed:"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+msgid "Fix error when splitting a large audio clip"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+msgid ""
+"Fix screen moving backwards when zooming in towards the end of the project"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
+msgid "Fix autoplay breaking when changing directories in the file browser"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
+msgid ""
+"Fix file info label not being updated when changing directories in the file "
+"browser"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+msgid "Fix error when right-clicking on Macro knob"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+msgid ""
+"Fix direct connection port selector incorrectly allowing connecting audio "
+"ports to CV ports"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+msgid "Fix some memory leaks"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+msgid ""
+"Fix incorrectly calling `g_log_set_writer_func()` more than once causing an "
+"error on exit on some systems"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+msgid ""
+"Fix automation mode switches in automation tracks being ellipsized on some "
+"systems"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
+msgid "Allow clicking anywhere on timeline minimap to navigate"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+msgid "Add sorting by name, last used and most used in plugin browser"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+msgid "User manual: add note about using non-flatpak plugins in flatpak builds"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
 msgid ""
 "Add right click option on tracks to show used and hide unused automation "
 "lanes"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
 msgid "Allow double-clicking on automation points to specify exact value"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
 msgid "Allow renaming tracks via right click menu"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
 msgid "Add right click option to create an object on all arrangers"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
-#, fuzzy
-msgid "Changed:"
-msgstr "Geen kanaal"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
 msgid "Update Spanish, French, Catalan, Chinese (Traditional) translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
 msgid "Use case-insensitive alphabetical sorting in plugin browser"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
 msgid "Use vst instead of vstlx for flatpak VST2 plugin scan paths"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
 msgid "Make MIDI in label in header untranslatable to avoid sizing issues"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
-msgid "Fixed:"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
 msgid "Fix chord and scale selector windows not closing with Esc key"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
 msgid "Fix plugin info label not being updated when filtering"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
 msgid "Fix transport display and ruler right click menus not working"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
 msgid "Drop vendored zix and depend on zix library"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
 msgid "Replace some icons with icons from GNOME icon library"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
 msgid "Replace about dialog with AdwDialogWindow"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid "Meson: fix lilv-related subprojects"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
 msgid "Fix bug report format breaking when undo history is empty"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
 msgid "Fix VST3 support being disabled"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
-msgid ""
-"Update Chinese (Simplified), Chinese (Traditional), Catalan, French "
-"translations"
-msgstr ""
+#, fuzzy
+#~ msgid "Failed to create MIDI track"
+#~ msgstr "Kon nie na lêer skryf nie: %s"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
-msgid "Meson: use official lilv repository as subproject"
-msgstr ""
+#, fuzzy
+#~ msgid "Failed to create audio FX track"
+#~ msgstr "Kon nie na lêer skryf nie: %s"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
-msgid "User manual: explain automation lane on/off buttons"
-msgstr ""
+#, fuzzy
+#~ msgid "Failed to create MIDI FX track"
+#~ msgstr "Kon nie na lêer skryf nie: %s"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
-msgid "Fix lag when clicking on plugins in a large project"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
-msgid "Fix long loading time when loading large projects"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
-msgid "Fix crash when zooming in on audio regions"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
-msgid ""
-"Update French, Chinese (Simplified), Catalan, Turkish, Portuguese (Brazil), "
-"Japanese, Polish, Hebrew, Indonesian, Ukrainian, Russian, Portuguese, "
-"Italian, German, Thai translations"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
-msgid "Add better error handling when failing to read project yaml"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
-msgid "Ignore GTK critical message (widget size related)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
-msgid "Meson: accept libpanel alpha release version"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
-msgid ""
-"Upgrade project format and drop undo history when loading older projects"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
-msgid "Fix error when lowering BPM and saving a project with audio regions"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
-msgid "Fix loading projects with audio regions under different sample rate"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
-msgid ""
-"Fix endless stream of bug report dialogs (only allow a single dialog to be "
-"open at any time)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
-msgid "Fix error when adding an insert to an audio track"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
-msgid "Fix error when attempting to change buffer size"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
-msgid "Fix error when attempting to bounce a track while transport is playing"
-msgstr ""
+#, fuzzy
+#~ msgid "Failed to create folder track"
+#~ msgstr "Kon nie na lêer skryf nie: %s"
 
 #, fuzzy
 #~ msgid "Instruments"
