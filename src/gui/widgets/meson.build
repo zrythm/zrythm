@@ -61,6 +61,7 @@ widget_srcs = files([
   'file_browser_filters.c',
   'file_browser_window.c',
   'file_chooser_button.c',
+  'file_chooser_entry.c',
   'foldable_notebook.c',
   'folder_channel.c',
   'gtk_flipper.c',

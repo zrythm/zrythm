@@ -5,7 +5,7 @@
 
 #include "audio/engine.h"
 #include "gui/widgets/active_hardware_mb.h"
-#include "gui/widgets/file_chooser_button.h"
+#include "gui/widgets/file_chooser_entry.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/preferences.h"
 #include "plugins/plugin_gtk.h"
@@ -125,23 +125,18 @@ on_backends_combo_box_active_changed (
 
 static void
 on_file_set (
-  GtkNativeDialog * dialog,
-  gint              response_id,
-  gpointer          user_data)
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
 {
   CallbackData *   data = (CallbackData *) user_data;
-  GtkFileChooser * fc = GTK_FILE_CHOOSER (dialog);
+  IdeFileChooserEntry * fc_entry = IDE_FILE_CHOOSER_ENTRY (gobject);
 
-  GFile * file = gtk_file_chooser_get_file (fc);
+  GFile * file = ide_file_chooser_entry_get_file (fc_entry);
   char *  str = g_file_get_path (file);
   g_settings_set_string (data->info->settings, data->key, str);
   g_free (str);
   g_object_unref (file);
-
-  FileChooserButtonWidget * fc_btn =
-    Z_FILE_CHOOSER_BUTTON_WIDGET (data->widget);
-  file_chooser_button_widget_std_response (
-    fc_btn, dialog, response_id);
 }
 
 static void
@@ -505,8 +500,7 @@ make_control (
         path_type == PATH_TYPE_DIRECTORY
         || path_type == PATH_TYPE_FILE)
         {
-          widget = GTK_WIDGET (file_chooser_button_widget_new (
-            GTK_WINDOW (MAIN_WINDOW),
+          widget = GTK_WIDGET (ide_file_chooser_entry_new (
             path_type == PATH_TYPE_DIRECTORY
               ? _ ("Select a folder")
               : _ ("Select a file"),
@@ -515,18 +509,21 @@ make_control (
               : GTK_FILE_CHOOSER_ACTION_OPEN));
           char * path =
             g_settings_get_string (info->settings, key);
-          file_chooser_button_widget_set_path (
-            Z_FILE_CHOOSER_BUTTON_WIDGET (widget), path);
+          GFile * gf_path = g_file_new_for_path (path);
+          ide_file_chooser_entry_set_file (
+            IDE_FILE_CHOOSER_ENTRY (widget), gf_path);
           g_free (path);
+          g_object_unref (gf_path);
           CallbackData * data = object_new (CallbackData);
           data->info = info;
           data->preferences_widget = self;
           data->key = g_strdup (key);
           data->widget = widget;
-          file_chooser_button_widget_set_response_callback (
-            Z_FILE_CHOOSER_BUTTON_WIDGET (widget),
+          g_signal_connect_data (
+            widget, "notify::file",
             G_CALLBACK (on_file_set), data,
-            (GClosureNotify) on_closure_notify_delete_data);
+            (GClosureNotify) on_closure_notify_delete_data,
+            G_CONNECT_AFTER);
         }
       else if (path_type == PATH_TYPE_NONE)
         {
