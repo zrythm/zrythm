@@ -13,7 +13,7 @@
 #include "audio/engine_pulse.h"
 #include "gui/widgets/active_hardware_mb.h"
 #include "gui/widgets/dialogs/first_run_dialog.h"
-#include "gui/widgets/file_chooser_button.h"
+#include "gui/widgets/file_chooser_entry.h"
 #include "plugins/plugin_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
@@ -80,11 +80,13 @@ first_run_dialog_widget_ok (FirstRunDialogWidget * self)
 void
 first_run_dialog_widget_reset (FirstRunDialogWidget * self)
 {
-  char * dir = zrythm_get_default_user_dir ();
+  char *  dir = zrythm_get_default_user_dir ();
+  GFile * gf_dir = g_file_new_for_path (dir);
   g_message ("reset to %s", dir);
-  file_chooser_button_widget_set_path (self->fc_btn, dir);
+  ide_file_chooser_entry_set_file (self->fc_entry, gf_dir);
   g_settings_set_string (S_P_GENERAL_PATHS, "zrythm-dir", dir);
   g_free (dir);
+  g_object_unref (gf_dir);
 
   /* reset language */
   ui_setup_language_dropdown (self->language_dropdown);
@@ -139,23 +141,22 @@ on_language_changed (
 
 static void
 on_file_set (
-  GtkFileChooserNative * file_chooser_native,
-  gint                   response_id,
-  FirstRunDialogWidget * self)
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
 {
-  GFile * file = gtk_file_chooser_get_file (
-    GTK_FILE_CHOOSER (file_chooser_native));
-  char * str = g_file_get_path (file);
+  IdeFileChooserEntry * fc_entry =
+    IDE_FILE_CHOOSER_ENTRY (gobject);
+
+  GFile * file = ide_file_chooser_entry_get_file (fc_entry);
+  char *  str = g_file_get_path (file);
   g_settings_set_string (S_P_GENERAL_PATHS, "zrythm-dir", str);
   char * str2 =
     g_build_filename (str, ZRYTHM_PROJECTS_DIR, NULL);
   g_settings_set_string (S_GENERAL, "last-project-dir", str);
   g_free (str);
   g_free (str2);
-
-  file_chooser_button_widget_std_response (
-    Z_FILE_CHOOSER_BUTTON_WIDGET (self->fc_btn),
-    GTK_NATIVE_DIALOG (file_chooser_native), response_id);
+  g_object_unref (file);
 }
 
 /**
@@ -228,17 +229,21 @@ first_run_dialog_widget_init (FirstRunDialogWidget * self)
     ADW_PREFERENCES_ROW (row), _ ("User path"));
   adw_action_row_set_subtitle (
     row, _ ("Location to save user files"));
-  self->fc_btn = file_chooser_button_widget_new (
-    NULL, _ ("Select a directory"),
-    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
-  char * dir = zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
-  file_chooser_button_widget_set_path (self->fc_btn, dir);
-  file_chooser_button_widget_set_response_callback (
-    self->fc_btn, G_CALLBACK (on_file_set), self, NULL);
+  self->fc_entry =
+    IDE_FILE_CHOOSER_ENTRY (ide_file_chooser_entry_new (
+      _ ("Select a directory"),
+      GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER));
+  char *  dir = zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
+  GFile * dir_gf = g_file_new_for_path (dir);
+  ide_file_chooser_entry_set_file (self->fc_entry, dir_gf);
+  g_object_unref (dir_gf);
+  g_signal_connect_data (
+    self->fc_entry, "notify::file", G_CALLBACK (on_file_set),
+    self, NULL, G_CONNECT_AFTER);
   g_settings_set_string (S_P_GENERAL_PATHS, "zrythm-dir", dir);
   gtk_widget_set_valign (
-    GTK_WIDGET (self->fc_btn), GTK_ALIGN_CENTER);
-  adw_action_row_add_suffix (row, GTK_WIDGET (self->fc_btn));
+    GTK_WIDGET (self->fc_entry), GTK_ALIGN_CENTER);
+  adw_action_row_add_suffix (row, GTK_WIDGET (self->fc_entry));
   adw_preferences_group_add (pref_group, GTK_WIDGET (row));
 
   /* add error text */
