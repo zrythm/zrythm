@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/dialogs/create_project_dialog.h"
-#include "gui/widgets/file_chooser_button.h"
+#include "gui/widgets/file_chooser_entry.h"
 #include "settings/settings.h"
 #include "utils/io.h"
 #include "utils/objects.h"
@@ -62,22 +62,18 @@ on_name_changed (
 
 static void
 on_fc_file_set (
-  GtkNativeDialog * dialog,
-  gint              response_id,
-  gpointer          user_data)
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
 {
-  CreateProjectDialogWidget * self =
-    Z_CREATE_PROJECT_DIALOG_WIDGET (user_data);
+  IdeFileChooserEntry * fc_entry =
+    IDE_FILE_CHOOSER_ENTRY (gobject);
 
-  GtkFileChooser * file_chooser = GTK_FILE_CHOOSER (dialog);
-  GFile * file = gtk_file_chooser_get_file (file_chooser);
+  GFile * file = ide_file_chooser_entry_get_file (fc_entry);
   char *  str = g_file_get_path (file);
   g_settings_set_string (S_GENERAL, "last-project-dir", str);
   g_free (str);
-
-  file_chooser_button_widget_std_response (
-    Z_FILE_CHOOSER_BUTTON_WIDGET (self->fc), dialog,
-    response_id);
+  g_object_unref (file);
 }
 
 CreateProjectDialogWidget *
@@ -89,7 +85,9 @@ create_project_dialog_widget_new ()
 
   char * str =
     g_settings_get_string (S_GENERAL, "last-project-dir");
-  file_chooser_button_widget_set_path (self->fc, str);
+  GFile * str_gf = g_file_new_for_path (str);
+  ide_file_chooser_entry_set_file (self->fc, str_gf);
+  g_object_unref (str_gf);
 
   /* get next available "Untitled Project" */
   char * untitled_project = g_strdup (_ ("Untitled Project"));
@@ -116,7 +114,7 @@ static void
 create_project_dialog_widget_init (
   CreateProjectDialogWidget * self)
 {
-  g_type_ensure (FILE_CHOOSER_BUTTON_WIDGET_TYPE);
+  g_type_ensure (IDE_TYPE_FILE_CHOOSER_ENTRY);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -127,13 +125,15 @@ create_project_dialog_widget_init (
   gtk_dialog_set_default_response (
     GTK_DIALOG (self), GTK_RESPONSE_OK);
 
-  file_chooser_button_widget_setup (
-    self->fc, GTK_WINDOW (self),
+  self->fc = IDE_FILE_CHOOSER_ENTRY (ide_file_chooser_entry_new (
     _ ("Select parent directory to save the project "
        "in"),
-    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER);
-  file_chooser_button_widget_set_response_callback (
-    self->fc, G_CALLBACK (on_fc_file_set), self, NULL);
+    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER));
+  gtk_widget_set_hexpand (GTK_WIDGET (self->fc), true);
+  gtk_box_append (self->fc_box, GTK_WIDGET (self->fc));
+  g_signal_connect_data (
+    self->fc, "notify::file", G_CALLBACK (on_fc_file_set),
+    self, NULL, G_CONNECT_AFTER);
 
   g_signal_connect (
     self, "response", G_CALLBACK (on_response), self);
@@ -151,7 +151,7 @@ create_project_dialog_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, CreateProjectDialogWidget, x)
 
-  BIND_CHILD (fc);
+  BIND_CHILD (fc_box);
   BIND_CHILD (name);
 
   gtk_widget_class_bind_template_callback (

@@ -23,7 +23,7 @@
               </object>
             </child>
             <child>
-              <object class="FileChooserButtonWidget" id="fc">
+              <object class="GtkBox" id="fc_box">
               </object>
             </child>
             <child>

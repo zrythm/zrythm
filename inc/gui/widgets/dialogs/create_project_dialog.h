@@ -12,7 +12,7 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _FileChooserButtonWidget FileChooserButtonWidget;
+typedef struct _IdeFileChooserEntry IdeFileChooserEntry;
 
 /**
  * @addtogroup widgets
@@ -36,8 +36,9 @@ typedef struct _CreateProjectDialogWidget
 {
   GtkDialog parent_instance;
 
-  GtkEntry *                name;
-  FileChooserButtonWidget * fc;
+  GtkEntry *            name;
+  GtkBox *              fc_box;
+  IdeFileChooserEntry * fc;
 } CreateProjectDialogWidget;
 
 CreateProjectDialogWidget *
