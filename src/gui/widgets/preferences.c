@@ -129,8 +129,9 @@ on_file_set (
   GParamSpec * pspec,
   gpointer     user_data)
 {
-  CallbackData *   data = (CallbackData *) user_data;
-  IdeFileChooserEntry * fc_entry = IDE_FILE_CHOOSER_ENTRY (gobject);
+  CallbackData *        data = (CallbackData *) user_data;
+  IdeFileChooserEntry * fc_entry =
+    IDE_FILE_CHOOSER_ENTRY (gobject);
 
   GFile * file = ide_file_chooser_entry_get_file (fc_entry);
   char *  str = g_file_get_path (file);
@@ -520,8 +521,8 @@ make_control (
           data->key = g_strdup (key);
           data->widget = widget;
           g_signal_connect_data (
-            widget, "notify::file",
-            G_CALLBACK (on_file_set), data,
+            widget, "notify::file", G_CALLBACK (on_file_set),
+            data,
             (GClosureNotify) on_closure_notify_delete_data,
             G_CONNECT_AFTER);
         }

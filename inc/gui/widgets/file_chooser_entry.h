@@ -29,15 +29,27 @@
 
 G_BEGIN_DECLS
 
-#define IDE_TYPE_FILE_CHOOSER_ENTRY (ide_file_chooser_entry_get_type())
+#define IDE_TYPE_FILE_CHOOSER_ENTRY \
+  (ide_file_chooser_entry_get_type ())
 
-G_DECLARE_FINAL_TYPE (IdeFileChooserEntry, ide_file_chooser_entry, IDE, FILE_CHOOSER_ENTRY, GtkWidget)
+G_DECLARE_FINAL_TYPE (
+  IdeFileChooserEntry,
+  ide_file_chooser_entry,
+  IDE,
+  FILE_CHOOSER_ENTRY,
+  GtkWidget)
 
-GtkWidget           *ide_file_chooser_entry_new       (const gchar          *title,
-                                                       GtkFileChooserAction  action);
-GFile               *ide_file_chooser_entry_get_file  (IdeFileChooserEntry  *self);
-void                 ide_file_chooser_entry_set_file  (IdeFileChooserEntry  *self,
-                                                       GFile                *file);
-GtkEntry            *ide_file_chooser_entry_get_entry (IdeFileChooserEntry  *self);
+GtkWidget *
+ide_file_chooser_entry_new (
+  const gchar *        title,
+  GtkFileChooserAction action);
+GFile *
+ide_file_chooser_entry_get_file (IdeFileChooserEntry * self);
+void
+ide_file_chooser_entry_set_file (
+  IdeFileChooserEntry * self,
+  GFile *               file);
+GtkEntry *
+ide_file_chooser_entry_get_entry (IdeFileChooserEntry * self);
 
 G_END_DECLS

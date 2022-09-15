@@ -198,9 +198,10 @@ tracklist_selections_action_new (
     && tracklist_selections_contains_uncopyable_track (
       tls_before))
     {
-      g_set_error (error, Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR,
-        Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR_FAILED,
-        "%s", _("Cannot duplicate tracks: selection contains an uncopyable track"));
+      g_set_error (
+        error, Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR,
+        Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR_FAILED, "%s",
+        _ ("Cannot duplicate tracks: selection contains an uncopyable track"));
       return NULL;
     }
 
@@ -209,9 +210,10 @@ tracklist_selections_action_new (
     && tracklist_selections_contains_undeletable_track (
       tls_before))
     {
-      g_set_error (error, Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR,
-        Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR_FAILED,
-        "%s", _("Cannot delete tracks: selection contains an undeletable track"));
+      g_set_error (
+        error, Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR,
+        Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR_FAILED, "%s",
+        _ ("Cannot delete tracks: selection contains an undeletable track"));
       return NULL;
     }
 

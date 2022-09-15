@@ -16,8 +16,8 @@ bool
 plugin_identifier_validate (const PluginIdentifier * self)
 {
   z_return_val_if_fail_cmp (
-    self->schema_version, ==, PLUGIN_IDENTIFIER_SCHEMA_VERSION,
-    false);
+    self->schema_version, ==,
+    PLUGIN_IDENTIFIER_SCHEMA_VERSION, false);
   g_return_val_if_fail (
     plugin_identifier_validate_slot_type_slot_combo (
       self->slot_type, self->slot),
