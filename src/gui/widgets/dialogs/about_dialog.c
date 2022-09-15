@@ -37,8 +37,9 @@ about_dialog_widget_new (GtkWindow * parent)
   char * version = zrythm_get_version (true);
   char * sys_nfo = zrythm_get_system_info ();
 
-  char * release_notes =
-    g_strdup_printf ("<p><code>%s</code></p>", CHANGELOG_TXT);
+  /* quick hack - eventually reuse the XML from appdata.xml */
+  char * release_notes = g_strdup_printf (
+    "<p>%s</p>", CHANGELOG_TXT_FOR_ABOUT_DIALOG);
 
   AdwAboutWindow * dialog = g_object_new (
     ADW_TYPE_ABOUT_WINDOW, "artists", artists, "developers",

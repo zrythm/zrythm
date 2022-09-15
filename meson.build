@@ -389,6 +389,8 @@ if chlog.contains (meson.project_version () + '] -')
   cdata.set ('HAVE_CHANGELOG', 1)
   cdata.set_quoted ('CHANGELOG_DATE', chlog_date)
   cdata.set_quoted ('CHANGELOG_TXT', '\\n'.join (chlog.split ('\n')))
+  # quick hack - eventually reuse the XML from appdata.xml
+  cdata.set_quoted ('CHANGELOG_TXT_FOR_ABOUT_DIALOG', '</p><p>'.join (chlog.split ('\n')))
 endif
 
 if os_gnu
