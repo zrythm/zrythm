@@ -1551,6 +1551,9 @@ DEFINE_SIMPLE (activate_duplicate_selected_tracks)
   if (zrythm_app_check_and_show_trial_limit_error (zrythm_app))
     return;
 
+  tracklist_selections_select_foldable_children (
+    TRACKLIST_SELECTIONS);
+
   GError * err = NULL;
   bool     ret = tracklist_selections_action_perform_copy (
         TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
@@ -1650,15 +1653,8 @@ activate_delete_selected_tracks (
 {
   g_message ("deleting selected tracks");
 
-  if (tracklist_selections_contains_undeletable_track (
-        TRACKLIST_SELECTIONS))
-    {
-      ui_show_message_printf (
-        MAIN_WINDOW, GTK_MESSAGE_INFO, false, "%s",
-        _ ("Cannot delete tracks: selection "
-           "contains an undeletable track"));
-      return;
-    }
+  tracklist_selections_select_foldable_children (
+    TRACKLIST_SELECTIONS);
 
   if (tracklist_selections_contains_uninstantiated_plugin (
         TRACKLIST_SELECTIONS))

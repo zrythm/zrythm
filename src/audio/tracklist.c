@@ -269,6 +269,9 @@ tracklist_insert_track (
     "inserting %s at %d (has output %d)...", track->name, pos,
     track->channel && track->channel->has_output);
 
+  /* TODO throw critical if attempted to add a special track
+   * (like master) when it already exists */
+
   /* set to -1 so other logic knows it is a new
    * track */
   track->pos = -1;

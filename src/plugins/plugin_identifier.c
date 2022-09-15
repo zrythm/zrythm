@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin_identifier.h"
+#include "utils/debug.h"
 
 void
 plugin_identifier_init (PluginIdentifier * self)
@@ -14,8 +15,8 @@ plugin_identifier_init (PluginIdentifier * self)
 bool
 plugin_identifier_validate (const PluginIdentifier * self)
 {
-  g_return_val_if_fail (
-    self->schema_version == PLUGIN_IDENTIFIER_SCHEMA_VERSION,
+  z_return_val_if_fail_cmp (
+    self->schema_version, ==, PLUGIN_IDENTIFIER_SCHEMA_VERSION,
     false);
   g_return_val_if_fail (
     plugin_identifier_validate_slot_type_slot_combo (

@@ -34,6 +34,7 @@
 
 typedef enum
 {
+  Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR_FAILED,
   Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR_NO_TRACKS,
 } ZActionsTracklistSelectionsError;
 
@@ -197,9 +198,20 @@ tracklist_selections_action_new (
     && tracklist_selections_contains_uncopyable_track (
       tls_before))
     {
-      g_critical (
-        "cannot copy - track selection "
-        "contains uncopyable track");
+      g_set_error (error, Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR,
+        Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR_FAILED,
+        "%s", _("Cannot duplicate tracks: selection contains an uncopyable track"));
+      return NULL;
+    }
+
+  if (
+    type == TRACKLIST_SELECTIONS_ACTION_DELETE
+    && tracklist_selections_contains_undeletable_track (
+      tls_before))
+    {
+      g_set_error (error, Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR,
+        Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR_FAILED,
+        "%s", _("Cannot delete tracks: selection contains an undeletable track"));
       return NULL;
     }
 
