@@ -13,9 +13,22 @@
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
 #include <samplerate.h>
+
+typedef enum
+{
+  Z_AUDIO_ENCODER_ERROR_FAILED,
+} ZAudioEncoderError;
+
+#define Z_AUDIO_ENCODER_ERROR z_audio_encoder_error_quark ()
+GQuark
+z_audio_encoder_error_quark (void);
+G_DEFINE_QUARK (
+  z - audio - encoder - error - quark,
+  z_audio_encoder_error)
 
 /**
  * Creates a new instance of an AudioEncoder from
@@ -26,7 +39,9 @@
  * for decoding it into the project's sample rate.
  */
 AudioEncoder *
-audio_encoder_new_from_file (const char * filepath)
+audio_encoder_new_from_file (
+  const char * filepath,
+  GError **    error)
 {
   AudioEncoder * self = object_new (AudioEncoder);
 
@@ -37,8 +52,11 @@ audio_encoder_new_from_file (const char * filepath)
   self->audec_handle = audec_open (filepath, &self->nfo);
   if (!self->audec_handle)
     {
-      g_critical (
-        "An error has occurred opening the file %s", filepath);
+      g_set_error (
+        error, Z_AUDIO_ENCODER_ERROR,
+        Z_AUDIO_ENCODER_ERROR_FAILED,
+        _ ("An error has occurred opening the audio file '%s'"),
+        filepath);
       free (self);
       return NULL;
     }

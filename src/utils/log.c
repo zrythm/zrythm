@@ -141,6 +141,9 @@ typedef struct LogEvent
   /** Backtrace, if warning or critical. */
   char *         backtrace;
   GLogLevelFlags log_level;
+
+  /** Whether the log event is from the "zrythm" log domain. */
+  bool is_zrythm_domain;
 } LogEvent;
 
 static void
@@ -651,6 +654,7 @@ need_backtrace (Log * self, const LogEvent * const ev)
   bool ret =
     (time_now - self->last_bt_time > BT_COOLDOWN_TIME)
     && ev->log_level == G_LOG_LEVEL_CRITICAL
+    && ev->is_zrythm_domain
     && !string_contains_substr (
       ev->message,
       "assertion 'size >= 0' failed in "
@@ -998,6 +1002,19 @@ log_writer (
         (LogEvent *) object_pool_get (self->obj_pool);
       ev->log_level = log_level;
       ev->message = str;
+
+      ev->is_zrythm_domain = false;
+      for (gsize i = 0; i < n_fields; i++)
+        {
+          if (
+            string_is_equal (fields[i].key, "GLIB_DOMAIN")
+            && string_is_equal (
+              (const char *) fields[i].value, "zrythm"))
+            {
+              ev->is_zrythm_domain = true;
+              break;
+            }
+        }
 
       if (need_backtrace (self, ev) && !RUNNING_ON_VALGRIND)
         {

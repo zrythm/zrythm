@@ -235,7 +235,7 @@ supported_file_should_autoplay (const SupportedFile * self)
   if (supported_file_type_is_audio (self->type))
     {
       AudioEncoder * enc =
-        audio_encoder_new_from_file (self->abs_path);
+        audio_encoder_new_from_file (self->abs_path, NULL);
       if (!enc)
         return false;
 
@@ -262,7 +262,7 @@ supported_file_get_info_text_for_label (
   if (supported_file_type_is_audio (self->type))
     {
       AudioEncoder * enc =
-        audio_encoder_new_from_file (self->abs_path);
+        audio_encoder_new_from_file (self->abs_path, NULL);
       if (!enc)
         {
           g_free (file_type_label);

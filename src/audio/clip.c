@@ -75,7 +75,9 @@ audio_clip_init_from_file (
   self->samplerate = (int) AUDIO_ENGINE->sample_rate;
   g_return_if_fail (self->samplerate > 0);
 
-  AudioEncoder * enc = audio_encoder_new_from_file (full_path);
+  AudioEncoder * enc =
+    audio_encoder_new_from_file (full_path, NULL);
+  g_return_if_fail (enc);
   audio_encoder_decode (
     enc, self->samplerate, F_SHOW_PROGRESS);
 

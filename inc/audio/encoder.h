@@ -16,6 +16,8 @@
 
 #include "utils/types.h"
 
+#include <glib.h>
+
 #include <audec/audec.h>
 
 /**
@@ -54,7 +56,9 @@ typedef struct AudioEncoder
  * for decoding it into the project's sample rate.
  */
 AudioEncoder *
-audio_encoder_new_from_file (const char * filepath);
+audio_encoder_new_from_file (
+  const char * filepath,
+  GError **    error);
 
 /**
  * Decodes the information in the AudioEncoder

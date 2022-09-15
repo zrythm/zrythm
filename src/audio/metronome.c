@@ -55,7 +55,7 @@ metronome_new (void)
 
   /* decode */
   AudioEncoder * enc =
-    audio_encoder_new_from_file (self->emphasis_path);
+    audio_encoder_new_from_file (self->emphasis_path, NULL);
   if (!enc)
     {
       g_critical (
@@ -84,7 +84,16 @@ metronome_new (void)
     (size_t) enc->num_out_frames * (size_t) enc->channels);
   audio_encoder_free (enc);
 
-  enc = audio_encoder_new_from_file (self->normal_path);
+  enc = audio_encoder_new_from_file (self->normal_path, NULL);
+  if (!enc)
+    {
+      g_critical (
+        "Failed to load samples for metronome "
+        "from %s",
+        self->normal_path);
+      metronome_free (self);
+      return NULL;
+    }
   audio_encoder_decode (
     enc, (int) AUDIO_ENGINE->sample_rate, F_NO_SHOW_PROGRESS);
   self->normal = object_new_n (
