@@ -53,6 +53,11 @@ clip_editor_set_region (
   ZRegion *    region,
   bool         fire_events)
 {
+  if (region)
+    {
+      g_return_if_fail (IS_REGION (region));
+    }
+
   /* if first time showing a region, show the
    * event viewer as necessary */
   if (fire_events && !self->has_region && region)

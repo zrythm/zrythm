@@ -760,12 +760,37 @@ get_hit_objects (
           if (!r)
             break;
 
+          /* add main region notes */
           for (int i = 0; i < r->num_midi_notes; i++)
             {
               MidiNote * mn = r->midi_notes[i];
               obj = (ArrangerObject *) mn;
               nfo.obj = obj;
               add_object_if_overlap (self, &nfo);
+            }
+
+          /* add other region notes for same track (ghosted) */
+          Track * track =
+            arranger_object_get_track ((ArrangerObject *) r);
+          g_return_if_fail (track);
+
+          for (int i = 0; i < track->num_lanes; i++)
+            {
+              TrackLane * lane = track->lanes[i];
+              for (int j = 0; j < lane->num_regions; j++)
+                {
+                  ZRegion * cur_r = lane->regions[j];
+                  if (cur_r == r)
+                    continue;
+                  for (int k = 0; k < cur_r->num_midi_notes;
+                       k++)
+                    {
+                      MidiNote * mn = cur_r->midi_notes[k];
+                      obj = (ArrangerObject *) mn;
+                      nfo.obj = obj;
+                      add_object_if_overlap (self, &nfo);
+                    }
+                }
             }
         }
       break;
@@ -2264,7 +2289,7 @@ on_drag_begin_handle_hit_object (
     && self->drag_start_btn == GDK_BUTTON_PRIMARY)
     {
       clip_editor_set_region (
-        CLIP_EDITOR, (ZRegion *) obj, true);
+        CLIP_EDITOR, (ZRegion *) obj, F_PUBLISH_EVENTS);
 
       /* if double click bring up piano roll */
       if (self->n_press == 2 && !self->ctrl_held)
@@ -2273,6 +2298,18 @@ on_drag_begin_handle_hit_object (
             "double clicked on region - "
             "showing piano roll");
           EVENTS_PUSH (ET_REGION_ACTIVATED, NULL);
+        }
+    }
+  /* if midi note from a ghosted region set the clip editor
+   * region */
+  else if (obj->type == ARRANGER_OBJECT_TYPE_MIDI_NOTE)
+    {
+      ZRegion * cur_r = clip_editor_get_region (CLIP_EDITOR);
+      ZRegion * r = arranger_object_get_region (obj);
+      if (r != cur_r)
+        {
+          clip_editor_set_region (
+            CLIP_EDITOR, r, F_PUBLISH_EVENTS);
         }
     }
   /* if open marker dialog if double click on

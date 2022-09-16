@@ -125,15 +125,14 @@ draw_highlight (
       return;
     }
 
-    /* FIXME port to snapshot */
-#if 0
-  z_cairo_draw_selection_with_color (
-    cr, &UI_COLORS->bright_orange,
-    (self->highlight_rect.x + 1) - rect->x,
-    (self->highlight_rect.y + 1) - rect->y,
-    self->highlight_rect.width - 1,
-    self->highlight_rect.height - 1);
-#endif
+  /* this wasn't tested since porting to gtk4 */
+  gtk_snapshot_append_color (
+    snapshot, &UI_COLORS->prefader_send,
+    &GRAPHENE_RECT_INIT (
+      (float) ((self->highlight_rect.x + 1) - rect->x),
+      (float) ((self->highlight_rect.y + 1) - rect->y),
+      (float) (self->highlight_rect.width - 1),
+      (float) (self->highlight_rect.height - 1)));
 }
 
 /**
