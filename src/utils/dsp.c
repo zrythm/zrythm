@@ -195,7 +195,6 @@ dsp_mix_add2 (
 #endif
 }
 
-
 /**
  * Calculate linear fade by multiplying from 0 to 1 for
  * @param total_frames_to_fade samples.
