@@ -494,6 +494,10 @@ Args:
                  "listen-notes" "b" "true"
                  "Listen to notes while they are moved"
                  "Whether to listen to MIDI notes while dragging them in the piano roll.")
+               (make-schema-key
+                 "ghost-notes" "b" "false"
+                 "Ghost notes"
+                 "Whether to show notes of other regions in the piano roll.")
                (make-schema-key-with-enum
                  "piano-roll-highlight"
                  "piano-roll-highlight" "none"

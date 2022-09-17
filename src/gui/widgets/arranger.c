@@ -769,26 +769,30 @@ get_hit_objects (
               add_object_if_overlap (self, &nfo);
             }
 
-          /* add other region notes for same track (ghosted) */
-          Track * track =
-            arranger_object_get_track ((ArrangerObject *) r);
-          g_return_if_fail (track);
-
-          for (int i = 0; i < track->num_lanes; i++)
+          if (g_settings_get_boolean (S_UI, "ghost-notes"))
             {
-              TrackLane * lane = track->lanes[i];
-              for (int j = 0; j < lane->num_regions; j++)
+              /* add other region notes for same track
+               * (ghosted) */
+              Track * track = arranger_object_get_track (
+                (ArrangerObject *) r);
+              g_return_if_fail (track);
+
+              for (int i = 0; i < track->num_lanes; i++)
                 {
-                  ZRegion * cur_r = lane->regions[j];
-                  if (cur_r == r)
-                    continue;
-                  for (int k = 0; k < cur_r->num_midi_notes;
-                       k++)
+                  TrackLane * lane = track->lanes[i];
+                  for (int j = 0; j < lane->num_regions; j++)
                     {
-                      MidiNote * mn = cur_r->midi_notes[k];
-                      obj = (ArrangerObject *) mn;
-                      nfo.obj = obj;
-                      add_object_if_overlap (self, &nfo);
+                      ZRegion * cur_r = lane->regions[j];
+                      if (cur_r == r)
+                        continue;
+                      for (int k = 0;
+                           k < cur_r->num_midi_notes; k++)
+                        {
+                          MidiNote * mn = cur_r->midi_notes[k];
+                          obj = (ArrangerObject *) mn;
+                          nfo.obj = obj;
+                          add_object_if_overlap (self, &nfo);
+                        }
                     }
                 }
             }

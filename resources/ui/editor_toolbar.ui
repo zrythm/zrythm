@@ -134,6 +134,21 @@
               </object>
             </child>
             <child>
+              <object class="GtkToggleButton" id="ghost_notes_btn">
+                <property name="action-name">app.toggle-ghost-notes</property>
+                <property name="icon-name">gnome-icon-library-theater-symbolic</property>
+                <property name="tooltip-text" translatable="yes">Toggle ghost note visibility</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSeparator">
+                <style>
+                  <class name="spacer"/>
+                </style>
+                <property name="orientation">vertical</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkButton" id="event_viewer_toggle">
                 <property name="action-name">app.toggle-editor-event-viewer</property>
                 <property name="icon-name">event-viewer</property>

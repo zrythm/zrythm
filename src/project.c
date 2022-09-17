@@ -1331,8 +1331,8 @@ project_autosave_cb (void * data)
 {
   if (
     !PROJECT || !PROJECT->loaded || !PROJECT->dir
-    || !PROJECT->datetime_str || !MAIN_WINDOW ||
-    !MAIN_WINDOW->setup)
+    || !PROJECT->datetime_str || !MAIN_WINDOW
+    || !MAIN_WINDOW->setup)
     return G_SOURCE_CONTINUE;
 
   unsigned int autosave_interval_mins = g_settings_get_uint (

@@ -983,16 +983,19 @@ engine_wait_for_pause (
   state->playing = TRANSPORT_IS_ROLLING;
   state->looping = TRANSPORT->loop;
 
-  g_message (
-    "setting fade out samples and waiting for remaining samples to become 0");
-  g_atomic_int_set (
-    &MONITOR_FADER->fade_out_samples,
-    FADER_DEFAULT_FADE_FRAMES);
-  g_atomic_int_set (&MONITOR_FADER->fading_out, 1);
-  while (
-    g_atomic_int_get (&MONITOR_FADER->fade_out_samples) > 0)
+  if (state->running && !self->stop_dummy_audio_thread)
     {
-      g_usleep (100);
+      g_message (
+        "setting fade out samples and waiting for remaining samples to become 0");
+      g_atomic_int_set (
+        &MONITOR_FADER->fade_out_samples,
+        FADER_DEFAULT_FADE_FRAMES);
+      g_atomic_int_set (&MONITOR_FADER->fading_out, 1);
+      while (
+        g_atomic_int_get (&MONITOR_FADER->fade_out_samples) > 0)
+        {
+          g_usleep (100);
+        }
     }
 
   /* send panic */

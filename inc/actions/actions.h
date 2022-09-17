@@ -339,6 +339,12 @@ change_state_listen_notes (
   gpointer        user_data);
 
 void
+change_state_ghost_notes (
+  GSimpleAction * action,
+  GVariant *      value,
+  gpointer        user_data);
+
+void
 activate_quick_quantize (
   GSimpleAction * action,
   GVariant *      variant,
