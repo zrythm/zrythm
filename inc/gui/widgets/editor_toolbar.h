@@ -51,6 +51,9 @@ typedef struct _EditorToolbarWidget
   GtkSeparator * sep_after_chord_highlight;
   GtkBox *       chord_highlight_box;
 
+  GtkToggleButton * ghost_notes_btn;
+  GtkSeparator *    sep_after_ghost_notes;
+
   VelocitySettingsWidget * velocity_settings;
   GtkSeparator *           sep_after_velocity_settings;
 

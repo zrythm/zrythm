@@ -992,7 +992,8 @@ engine_wait_for_pause (
         FADER_DEFAULT_FADE_FRAMES);
       g_atomic_int_set (&MONITOR_FADER->fading_out, 1);
       while (
-        g_atomic_int_get (&MONITOR_FADER->fade_out_samples) > 0)
+        g_atomic_int_get (&MONITOR_FADER->fade_out_samples)
+        > 0)
         {
           g_usleep (100);
         }

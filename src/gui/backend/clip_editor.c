@@ -110,6 +110,10 @@ clip_editor_set_region (
     && MW_CLIP_EDITOR)
     {
       EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED, NULL);
+
+      /* setting the region potentially changes the active
+       * arranger - process now to change the active arranger */
+      event_manager_process_now (EVENT_MANAGER);
     }
 }
 

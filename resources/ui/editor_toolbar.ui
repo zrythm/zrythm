@@ -141,7 +141,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkSeparator">
+              <object class="GtkSeparator" id="sep_after_ghost_notes">
                 <style>
                   <class name="spacer"/>
                 </style>
