@@ -1047,7 +1047,7 @@ fader_process (
                             time_nfo->nframes);
                         }
                     }
-                }
+                } /* endif have listened tracks */
 
               /* apply dim if enabled */
               if (CONTROL_ROOM->dim_output)
@@ -1061,6 +1061,94 @@ fader_process (
                        ->buf[time_nfo->local_offset],
                     dim_amp, time_nfo->nframes);
                 }
+
+              /* handle fade in */
+              int fade_in_samples =
+                g_atomic_int_get (&self->fade_in_samples);
+              if (G_UNLIKELY (fade_in_samples > 0))
+                {
+#if 0
+                  g_debug ("fading in %d samples", fade_in_samples);
+#endif
+                  dsp_linear_fade_in (
+                    &self->stereo_out->l
+                       ->buf[time_nfo->local_offset],
+                    FADER_DEFAULT_FADE_FRAMES - fade_in_samples,
+                    FADER_DEFAULT_FADE_FRAMES,
+                    time_nfo->nframes);
+                  dsp_linear_fade_in (
+                    &self->stereo_out->r
+                       ->buf[time_nfo->local_offset],
+                    FADER_DEFAULT_FADE_FRAMES - fade_in_samples,
+                    FADER_DEFAULT_FADE_FRAMES,
+                    time_nfo->nframes);
+                  fade_in_samples -= (int) time_nfo->nframes;
+                  fade_in_samples = MAX (fade_in_samples, 0);
+                  g_atomic_int_set (
+                    &self->fade_in_samples, fade_in_samples);
+                }
+
+              /* handle fade out */
+              if (G_UNLIKELY (
+                    g_atomic_int_get (&self->fading_out)))
+                {
+                  int fade_out_samples = g_atomic_int_get (
+                    &self->fade_out_samples);
+                  int samples_to_process = MAX (
+                    0,
+                    MIN (
+                      fade_out_samples,
+                      (int) time_nfo->nframes));
+                  if (fade_out_samples > 0)
+                    {
+#if 0
+                      g_debug (
+                        "fading out %d frames",
+                        samples_to_process);
+#endif
+                      dsp_linear_fade_out (
+                        &self->stereo_out->l
+                           ->buf[time_nfo->local_offset],
+                        FADER_DEFAULT_FADE_FRAMES
+                          - fade_out_samples,
+                        FADER_DEFAULT_FADE_FRAMES,
+                        (size_t) samples_to_process);
+                      dsp_linear_fade_out (
+                        &self->stereo_out->r
+                           ->buf[time_nfo->local_offset],
+                        FADER_DEFAULT_FADE_FRAMES
+                          - fade_out_samples,
+                        FADER_DEFAULT_FADE_FRAMES,
+                        (size_t) samples_to_process);
+                      fade_out_samples -= samples_to_process;
+                      g_atomic_int_set (
+                        &self->fade_out_samples,
+                        fade_out_samples);
+                    }
+
+                  /* if still fading out and have no more fade
+                   * out samples, silence */
+                  if (fade_out_samples == 0)
+                    {
+                      size_t remaining_frames =
+                        time_nfo->nframes
+                        - (size_t) samples_to_process;
+#if 0
+                      g_debug (
+                        "silence for remaining %zu frames",
+                        remaining_frames);
+#endif
+                      dsp_mul_k2 (
+                        &self->stereo_out->l
+                           ->buf[time_nfo->local_offset],
+                        0.f, remaining_frames);
+                      dsp_mul_k2 (
+                        &self->stereo_out->r
+                           ->buf[time_nfo->local_offset],
+                        0.f, remaining_frames);
+                    }
+                }
+
             } /* endif monitor fader */
 
           float pan =

@@ -983,6 +983,18 @@ engine_wait_for_pause (
   state->playing = TRANSPORT_IS_ROLLING;
   state->looping = TRANSPORT->loop;
 
+  g_message (
+    "setting fade out samples and waiting for remaining samples to become 0");
+  g_atomic_int_set (
+    &MONITOR_FADER->fade_out_samples,
+    FADER_DEFAULT_FADE_FRAMES);
+  g_atomic_int_set (&MONITOR_FADER->fading_out, 1);
+  while (
+    g_atomic_int_get (&MONITOR_FADER->fade_out_samples) > 0)
+    {
+      g_usleep (100);
+    }
+
   /* send panic */
   midi_events_panic_all (F_QUEUED);
 
@@ -1016,6 +1028,8 @@ engine_wait_for_pause (
     }
 
   g_message ("cycle finished");
+
+  g_atomic_int_set (&MONITOR_FADER->fading_out, 0);
 
   if (PROJECT->loaded)
     {
@@ -1063,6 +1077,11 @@ engine_resume (AudioEngine * self, EngineState * state)
     {
       transport_request_pause (xport, true);
     }
+
+  g_message ("restarting engine: setting fade in samples");
+  g_atomic_int_set (
+    &MONITOR_FADER->fade_in_samples,
+    FADER_DEFAULT_FADE_FRAMES);
 
   g_atomic_int_set (&self->run, (guint) state->running);
 }

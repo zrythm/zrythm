@@ -421,10 +421,14 @@ audio_function_apply (
       /* TODO lufs-normalize */
       break;
     case AUDIO_FUNCTION_LINEAR_FADE_IN:
-      dsp_linear_fade_in (&frames[0], num_frames * channels);
+      dsp_linear_fade_in (
+        &frames[0], 0, num_frames * channels,
+        num_frames * channels);
       break;
     case AUDIO_FUNCTION_LINEAR_FADE_OUT:
-      dsp_linear_fade_out (&frames[0], num_frames * channels);
+      dsp_linear_fade_out (
+        &frames[0], 0, num_frames * channels,
+        num_frames * channels);
       break;
     case AUDIO_FUNCTION_NUDGE_LEFT:
       g_return_val_if_fail (num_frames > nudge_frames, -1);

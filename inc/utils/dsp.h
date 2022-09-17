@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * @file
@@ -218,20 +202,38 @@ dsp_mix_add2 (
   size_t        size);
 
 /**
- * Calculate linear fade in by multiplying from
- * 0 to 1.
+ * Calculate linear fade by multiplying from 0 to 1 for
+ * @param total_frames_to_fade samples.
+ *
+ * @param start_offset Start offset in the fade interval.
+ * @param total_frames_to_fade Total frames that should be
+ * faded.
+ * @param size Number of frames to process.
  */
 NONNULL
 void
-dsp_linear_fade_in (float * dest, size_t size);
+dsp_linear_fade_in (
+  float * dest,
+  int32_t start_offset,
+  int32_t total_frames_to_fade,
+  size_t  size);
 
 /**
- * Calculate linear fade in by multiplying from
- * 1 to 0.
+ * Calculate linear fade by multiplying from 0 to 1 for
+ * @param total_frames_to_fade samples.
+ *
+ * @param start_offset Start offset in the fade interval.
+ * @param total_frames_to_fade Total frames that should be
+ * faded.
+ * @param size Number of frames to process.
  */
 NONNULL
 void
-dsp_linear_fade_out (float * dest, size_t size);
+dsp_linear_fade_out (
+  float * dest,
+  int32_t start_offset,
+  int32_t total_frames_to_fade,
+  size_t  size);
 
 /**
  * Makes the two signals mono.

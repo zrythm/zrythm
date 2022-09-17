@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
 
@@ -211,34 +195,81 @@ dsp_mix_add2 (
 #endif
 }
 
+
 /**
- * Calculate linear fade in by multiplying from
- * 0 to 1.
+ * Calculate linear fade by multiplying from 0 to 1 for
+ * @param total_frames_to_fade samples.
+ *
+ * @param start_offset Start offset in the fade interval.
+ * @param total_frames_to_fade Total frames that should be
+ * faded.
+ * @param size Number of frames to process.
  */
-NONNULL
 void
-dsp_linear_fade_in (float * dest, size_t size)
+dsp_linear_fade_in (
+  float * dest,
+  int32_t start_offset,
+  int32_t total_frames_to_fade,
+  size_t  size)
 {
-  for (size_t i = 0; i < size; i++)
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      float k = (float) i / (float) size;
-      dest[i] *= k;
+      lsp_dsp_lin_inter_mul2 (
+        dest, 0, 0.f, total_frames_to_fade, 1.f, start_offset,
+        size);
     }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          float k =
+            (float) (i + (size_t) start_offset)
+            / (float) total_frames_to_fade;
+          dest[i] *= k;
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
 }
 
 /**
- * Calculate linear fade in by multiplying from
- * 1 to 0.
+ * Calculate linear fade by multiplying from 0 to 1 for
+ * @param total_frames_to_fade samples.
+ *
+ * @param start_offset Start offset in the fade interval.
+ * @param total_frames_to_fade Total frames that should be
+ * faded.
+ * @param size Number of frames to process.
  */
-NONNULL
 void
-dsp_linear_fade_out (float * dest, size_t size)
+dsp_linear_fade_out (
+  float * dest,
+  int32_t start_offset,
+  int32_t total_frames_to_fade,
+  size_t  size)
 {
-  for (size_t i = 0; i < size; i++)
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
-      float k = (float) (size - i) / (float) size;
-      dest[i] *= k;
+      lsp_dsp_lin_inter_mul2 (
+        dest, 0, 1.f, total_frames_to_fade, 0.f, start_offset,
+        size);
     }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          float k =
+            (float) ((size_t) total_frames_to_fade - (i + (size_t) start_offset))
+            / (float) total_frames_to_fade;
+          dest[i] *= k;
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
 }
 
 /**

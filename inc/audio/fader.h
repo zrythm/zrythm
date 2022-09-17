@@ -36,6 +36,8 @@ typedef struct PortIdentifier  PortIdentifier;
 #define IS_FADER(f) (f->magic == FADER_MAGIC)
 #define IS_FADER_AND_NONNULL(f) (f && f->magic == FADER_MAGIC)
 
+#define FADER_DEFAULT_FADE_FRAMES 8000
+
 #define fader_is_in_active_project(self) \
   ((self->track != NULL \
     && track_is_in_active_project (self->track)) \
@@ -208,6 +210,21 @@ typedef struct Fader
    * graph. */
   bool implied_soloed;
   bool soloed;
+
+  /** Number of samples left to fade in. */
+  int fade_in_samples;
+
+  /**
+   * Number of samples left to fade out.
+   */
+  int fade_out_samples;
+
+  /** Whether currently fading out.
+   *
+   * When true, if fade_out_samples becomes 0 then the output
+   * will be silenced.
+   */
+  int fading_out;
 } Fader;
 
 static const cyaml_schema_field_t fader_fields_schema[] = {
