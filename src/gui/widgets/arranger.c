@@ -4492,7 +4492,14 @@ on_drag_end_timeline (ArrangerWidget * self)
           SNAP_GRID_ANY_SNAP (self->snap_grid)
           && !self->shift_held)
           {
-            position_snap_simple (&cut_pos, self->snap_grid);
+            /* keep offset is not applicable here and causes
+             * errors if enabled */
+            SnapGrid * sg = snap_grid_clone (self->snap_grid);
+            sg->snap_to_grid_keep_offset = false;
+
+            position_snap_simple (&cut_pos, sg);
+
+            snap_grid_free (sg);
           }
         if (arranger_selections_can_split_at_pos (
               (ArrangerSelections *) TL_SELECTIONS, &cut_pos))
