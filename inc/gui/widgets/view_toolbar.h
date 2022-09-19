@@ -27,10 +27,10 @@ typedef struct _ViewToolbarWidget
   GtkBox              parent_instance;
   GtkButton *         status_bar;
   GtkButton *         fullscreen;
-  PanelDockSwitcher * left_panel;
-  PanelDockSwitcher * bot_panel;
-  PanelDockSwitcher * top_panel;
-  PanelDockSwitcher * right_panel;
+  PanelToggleButton * left_panel;
+  PanelToggleButton * bot_panel;
+  PanelToggleButton * top_panel;
+  PanelToggleButton * right_panel;
 } ViewToolbarWidget;
 
 #endif

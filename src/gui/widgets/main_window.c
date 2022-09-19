@@ -708,7 +708,7 @@ main_window_widget_init (MainWindowWidget * self)
   g_type_ensure (TOP_BAR_WIDGET_TYPE);
   g_type_ensure (CENTER_DOCK_WIDGET_TYPE);
   g_type_ensure (BOT_BAR_WIDGET_TYPE);
-  g_type_ensure (PANEL_TYPE_DOCK_SWITCHER);
+  g_type_ensure (PANEL_TYPE_TOGGLE_BUTTON);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

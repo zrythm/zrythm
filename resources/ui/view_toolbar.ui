@@ -36,26 +36,26 @@
     <child>
       <object class="GtkBox">
         <child>
-          <object class="PanelDockSwitcher" id="left_panel">
-            <property name="position">start</property>
+          <object class="PanelToggleButton" id="left_panel">
+            <property name="area">start</property>
             <property name="tooltip-text" translatable="yes">Toggle Left Panel</property>
           </object>
         </child>
         <child>
-          <object class="PanelDockSwitcher" id="bot_panel">
-            <property name="position">bottom</property>
+          <object class="PanelToggleButton" id="bot_panel">
+            <property name="area">bottom</property>
             <property name="tooltip-text" translatable="yes">Toggle Bottom Panel</property>
           </object>
         </child>
         <child>
-          <object class="PanelDockSwitcher" id="top_panel">
-            <property name="position">top</property>
+          <object class="PanelToggleButton" id="top_panel">
+            <property name="area">top</property>
             <property name="tooltip-text" translatable="yes">Toggle Top Panel</property>
           </object>
         </child>
         <child>
-          <object class="PanelDockSwitcher" id="right_panel">
-            <property name="position">end</property>
+          <object class="PanelToggleButton" id="right_panel">
+            <property name="area">end</property>
             <property name="tooltip-text" translatable="yes">Toggle Right Panel</property>
           </object>
         </child>

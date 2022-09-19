@@ -84,7 +84,7 @@ typedef struct _BotBarWidget
   TransportControlsWidget * transport_controls;
   CpuWidget *               cpu_load;
 
-  PanelDockSwitcher * bot_dock_switcher;
+  PanelToggleButton * bot_dock_switcher;
 
   /** Color in hex to use in pango markups. */
   char hex_color[8];

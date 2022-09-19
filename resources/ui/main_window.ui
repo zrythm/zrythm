@@ -32,8 +32,8 @@
                   </object>
                 </child>
                 <child>
-                  <object class="PanelDockSwitcher" id="start_dock_switcher">
-                    <property name="position">start</property>
+                  <object class="PanelToggleButton" id="start_dock_switcher">
+                    <property name="area">start</property>
                     <property name="tooltip-text" translatable="yes">Toggle Left Panel</property>
                   </object>
                 </child>
@@ -46,8 +46,8 @@
             <child type="end">
               <object class="GtkBox" id="header_end_box">
                 <child>
-                  <object class="PanelDockSwitcher" id="end_dock_switcher">
-                    <property name="position">end</property>
+                  <object class="PanelToggleButton" id="end_dock_switcher">
+                    <property name="area">end</property>
                     <property name="tooltip-text" translatable="yes">Toggle Right Panel</property>
                   </object>
                 </child>

@@ -47,9 +47,9 @@ typedef struct _MainWindowWidget
   AdwApplicationWindow parent_instance;
 
   GtkHeaderBar *      header_bar;
-  PanelDockSwitcher * start_dock_switcher;
+  PanelToggleButton * start_dock_switcher;
   AdwWindowTitle *    window_title;
-  PanelDockSwitcher * end_dock_switcher;
+  PanelToggleButton * end_dock_switcher;
 
   AdwViewSwitcher * view_switcher;
 

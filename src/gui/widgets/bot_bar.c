@@ -578,7 +578,7 @@ bot_bar_widget_init (BotBarWidget * self)
   g_type_ensure (TRANSPORT_CONTROLS_WIDGET_TYPE);
   g_type_ensure (CPU_WIDGET_TYPE);
   g_type_ensure (BUTTON_WITH_MENU_WIDGET_TYPE);
-  g_type_ensure (PANEL_TYPE_DOCK_SWITCHER);
+  g_type_ensure (PANEL_TYPE_TOGGLE_BUTTON);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 

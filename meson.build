@@ -883,6 +883,7 @@ libpanel_dep = dependency (
   default_options: [
     'vapi=false',
     'install-examples=false',
+    'docs=disabled',
     'introspection=disabled',
     'default_library=static'])
 

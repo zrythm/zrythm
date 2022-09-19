@@ -58,8 +58,8 @@
               </object>
             </child>
             <child>
-              <object class="PanelDockSwitcher" id="bot_dock_switcher">
-                <property name="position">bottom</property>
+              <object class="PanelToggleButton" id="bot_dock_switcher">
+                <property name="area">bottom</property>
                 <property name="tooltip-text" translatable="yes">Toggle Bottom Panel</property>
               </object>
             </child>
