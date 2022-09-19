@@ -279,6 +279,7 @@ midi_note_get_adjusted_color (MidiNote * self, GdkRGBA * color)
         midi_note_is_selected (self),
         /* FIXME */
         false, arranger_object_get_muted (obj, false));
-      color->alpha = 0.3;
+      color_darken_default (color);
+      color->alpha = 0.2;
     }
 }
