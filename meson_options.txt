@@ -281,3 +281,9 @@ option (
   type: 'boolean',
   value: true,
   description: 'Build and install bundled plugins.')
+
+option (
+  'search_fftw3_threads_pc',
+  type: 'boolean',
+  value: false,
+  description: 'Whether to look for fftw3_threads pkgconfig files separate from the main fftw3 one. If this is false, zrythm will look for libfftw3_threads libraries directly without pkgconfig.')

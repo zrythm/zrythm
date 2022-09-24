@@ -954,12 +954,6 @@ json_glib_dep = dependency (
 fftw3_deps = [
   dependency (
     'fftw3', version: '>=3.3.5', static: all_static),
-  dependency (
-    'fftw3_threads', required: false,
-    static: all_static),
-  dependency (
-    'fftw3f_threads', required: false,
-    static: all_static),
   ]
 if os_darwin or os_freebsd
   fftw3_deps += [
@@ -975,6 +969,15 @@ if os_darwin or os_freebsd
       dirs: [
         '/usr/lib', '/usr/local/lib',
         '/opt/homebrew/lib' ]),
+    ]
+elif get_option ('search_fftw3_threads_pc')
+  fftw3_deps += [
+    dependency (
+      'fftw3_threads', required: false,
+      static: all_static),
+    dependency (
+      'fftw3f_threads', required: false,
+      static: all_static),
     ]
 else
   fftw3_deps += [
