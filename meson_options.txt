@@ -290,6 +290,6 @@ option (
 
 option (
   'fftw3f_separate',
-  type: 'boolean'
+  type: 'boolean',
   value: false,
   description: 'Whether to look for fftw3f separate of fftw3')
