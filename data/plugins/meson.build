@@ -105,7 +105,10 @@ foreach pl : plugins
       sources: pl_cpp,
       name_prefix: '',
       gnu_symbol_visibility: 'hidden',
-      dependencies: dependency ('boost'),
+      dependencies: [
+        dependency ('boost'),
+        lv2_dep,
+        ],
       override_options: [
         'b_sanitize=none',
         ],
