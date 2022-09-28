@@ -5,7 +5,6 @@
 flatpak_build="@FLATPAK_BUILD@"
 if [ "$flatpak_build" != "1" ]; then
   jack_path=$(dirname $(ldconfig -p | grep 'libjack.so ' | head -n 1 | cut -d ' ' -f 4))
-  export @LD_LIBRARY_PATH_ENV@="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:$jack_path:@LIBDIR@:$@LD_LIBRARY_PATH_ENV@"
 
   export GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@
 
@@ -15,6 +14,9 @@ if [ "$flatpak_build" != "1" ]; then
     export GUILE_LOAD_PATH="@DATADIR@/guile/3.0"
     export GUILE_LOAD_COMPILED_PATH="@LIBDIR@/guile/3.0"
     export GUILE_AUTO_COMPILE=0
+    export @LD_LIBRARY_PATH_ENV@="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:@LIBDIR@:$jack_path:$@LD_LIBRARY_PATH_ENV@"
+  else
+    export @LD_LIBRARY_PATH_ENV@="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:$jack_path:@LIBDIR@:$@LD_LIBRARY_PATH_ENV@"
   fi
 fi
 

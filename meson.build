@@ -955,8 +955,16 @@ fftw3_deps = [
   dependency (
     'fftw3', version: '>=3.3.5', static: all_static),
   ]
-if get_option ('search_fftw3_threads_pc')
-  if os_darwin or os_freebsd
+if get_option ('fftw3_threads_separate')
+  threads_dep = dependency (
+    'fftw3_threads', required: false,
+    static: all_static)
+  threadsf_dep = dependency (
+    'fftw3f_threads', required: false,
+    static: all_static)
+  if threads_dep.found () and threadsf_dep.found ()
+    fftw3_deps += [ threads_dep, threadsf_dep ]
+  else
     fftw3_deps += [
       cc.find_library (
         'fftw3_threads', required: true,
@@ -970,15 +978,6 @@ if get_option ('search_fftw3_threads_pc')
         dirs: [
           '/usr/lib', '/usr/local/lib',
           '/opt/homebrew/lib' ]),
-      ]
-  else
-    fftw3_deps += [
-      dependency (
-        'fftw3_threads', required: false,
-        static: all_static),
-      dependency (
-        'fftw3f_threads', required: false,
-        static: all_static),
       ]
   endif
 endif
