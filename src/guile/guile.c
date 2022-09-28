@@ -215,8 +215,14 @@ guile_run_script (const char * script, GuileScriptLanguage lang)
 
   ExecutionInfo nfo = { .script = script, .lang = lang };
 
+  /* libguile is weird and sends abort signals */
+  struct sigaction oldact;
+  sigaction(SIGABRT, NULL, &oldact);
+
   char * ret =
     scm_with_guile (&guile_mode_func, (void *) &nfo);
+
+  sigaction(SIGABRT, &oldact, NULL);
 
   /* restart engine */
   engine_resume (AUDIO_ENGINE, &state);
