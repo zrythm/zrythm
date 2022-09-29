@@ -950,21 +950,48 @@ json_glib_dep = dependency (
     'default_library=static',
     ])
 
-# fftw
+# fftw - this is a mess because every distro handles fftw3
+# in various different ways
 fftw3_deps = [
   dependency (
     'fftw3', version: '>=3.3.5', static: all_static),
   ]
 if get_option ('fftw3_threads_separate')
-  threads_dep = dependency (
-    'fftw3_threads', required: false,
-    static: all_static)
-  threadsf_dep = dependency (
-    'fftw3f_threads', required: false,
-    static: all_static)
-  if threads_dep.found () and threadsf_dep.found ()
-    fftw3_deps += [ threads_dep, threadsf_dep ]
-  else
+  if get_option ('fftw3_threads_separate_type') == 'auto'
+    threads_dep = dependency (
+      'fftw3_threads', required: false,
+      static: all_static)
+    threadsf_dep = dependency (
+      'fftw3f_threads', required: false,
+      static: all_static)
+    if threads_dep.found () and threadsf_dep.found ()
+      fftw3_deps += [ threads_dep, threadsf_dep ]
+    else
+      fftw3_deps += [
+        cc.find_library (
+          'fftw3_threads', required: true,
+          static: all_static,
+          dirs: [
+            '/usr/lib', '/usr/local/lib',
+            '/opt/homebrew/lib' ]),
+        cc.find_library (
+          'fftw3f_threads', required: true,
+          static: all_static,
+          dirs: [
+            '/usr/lib', '/usr/local/lib',
+            '/opt/homebrew/lib' ]),
+        ]
+    endif
+  elif get_option ('fftw3_threads_separate_type') == 'dependency'
+    fftw3_deps += [
+      dependency (
+        'fftw3_threads', required: true,
+        static: all_static),
+      dependency (
+        'fftw3f_threads', required: true,
+        static: all_static),
+      ]
+  elif get_option ('fftw3_threads_separate_type') == 'library'
     fftw3_deps += [
       cc.find_library (
         'fftw3_threads', required: true,
@@ -979,6 +1006,8 @@ if get_option ('fftw3_threads_separate')
           '/usr/lib', '/usr/local/lib',
           '/opt/homebrew/lib' ]),
       ]
+  else
+    error ('fftw3_threads_separate_type must be either of: library, dependency, auto')
   endif
 endif
 if os_windows or get_option ('fftw3f_separate')
@@ -993,7 +1022,7 @@ fftw3_funcs = [
   ]
 foreach func : fftw3_funcs
   if not cc.has_function (func, dependencies: fftw3_deps)
-    warning (
+    error (
       func + ' missing. ' +
       'If linking fails, on some systems you ' +
       'may have to point zrythm to the ' +

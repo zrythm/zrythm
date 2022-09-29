@@ -289,6 +289,12 @@ option (
   description: 'Whether to look for fftw3_threads pkgconfig files (or libs directly if not found) separate from the main fftw3 one.')
 
 option (
+  'fftw3_threads_separate_type',
+  type: 'string',
+  value: 'auto',
+  description: 'Method to look for separate fftw3_threads. Either "library" or "dependency" or "auto".')
+
+option (
   'fftw3f_separate',
   type: 'boolean',
   value: true,
