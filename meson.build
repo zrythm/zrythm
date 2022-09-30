@@ -957,6 +957,11 @@ fftw3_deps = [
     'fftw3', version: '>=3.3.5', static: all_static),
   ]
 if get_option ('fftw3_threads_separate')
+  search_paths = []
+  if not os_windows
+    search_paths = [
+      '/usr/lib', '/usr/local/lib', '/opt/homebrew/lib' ]
+  endif
   if get_option ('fftw3_threads_separate_type') == 'auto'
     threads_dep = dependency (
       'fftw3_threads', required: false,
@@ -971,15 +976,11 @@ if get_option ('fftw3_threads_separate')
         cc.find_library (
           'fftw3_threads', required: true,
           static: all_static,
-          dirs: [
-            '/usr/lib', '/usr/local/lib',
-            '/opt/homebrew/lib' ]),
+          dirs: search_paths),
         cc.find_library (
           'fftw3f_threads', required: true,
           static: all_static,
-          dirs: [
-            '/usr/lib', '/usr/local/lib',
-            '/opt/homebrew/lib' ]),
+          dirs: search_paths),
         ]
     endif
   elif get_option ('fftw3_threads_separate_type') == 'dependency'
@@ -996,15 +997,11 @@ if get_option ('fftw3_threads_separate')
       cc.find_library (
         'fftw3_threads', required: true,
         static: all_static,
-        dirs: [
-          '/usr/lib', '/usr/local/lib',
-          '/opt/homebrew/lib' ]),
+        dirs: search_paths),
       cc.find_library (
         'fftw3f_threads', required: true,
         static: all_static,
-        dirs: [
-          '/usr/lib', '/usr/local/lib',
-          '/opt/homebrew/lib' ]),
+        dirs: search_paths),
       ]
   else
     error ('fftw3_threads_separate_type must be either of: library, dependency, auto')
