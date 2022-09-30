@@ -14,6 +14,7 @@ if [ "$flatpak_build" != "1" ]; then
     export GUILE_LOAD_PATH="@DATADIR@/guile/3.0"
     export GUILE_LOAD_COMPILED_PATH="@LIBDIR@/guile/3.0"
     export GUILE_AUTO_COMPILE=0
+    export PATH="@PREFIX@/libexec:$PATH"
     export @LD_LIBRARY_PATH_ENV@="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:@LIBDIR@:$jack_path:$@LD_LIBRARY_PATH_ENV@"
   else
     export @LD_LIBRARY_PATH_ENV@="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:$jack_path:@LIBDIR@:$@LD_LIBRARY_PATH_ENV@"
