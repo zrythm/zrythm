@@ -6,15 +6,41 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.5.1] - 2022-10-01
+### Added
+- Switch to new file chooser widget (from GNOME Builder)
+- Add option to ghost MIDI notes from other regions in the same track
+- Add fade in/out when audio engine starts/stops to prevent clicks
+
+### Changed
+- Update Chinese (Simplified), Indonesian, Catalan, Spanish, Ukrainian, German, Vietnamese translations
+- Update bundled weakjack
+- Make some debug output silent in normal builds
+- Handle failure to connect JACK monitor output gracefully
+- Add more system info to bug report templates (`DESKTOP_SESSION` and `XDG_CURRENT_DESKTOP`)
+- Update libpanel dependency to >= 1.0.0
+- Meson: change fft3 detection (added new options `fftw3_threads_separate`, `fftw3_threads_separate_type` and `fftw3f_separate`)
+
+### Fixed
+- Fix incorrectly showing bug report dialog when alpha project upgrade fails
+- Fix newlines not showing in the release notes in the About dialog
+- Fix error when selecting an invalid WAV file in the file browser
+- Fix incorrectly allowing to delete/clone the master track when inside a foldable track
+- Fix attempting to autosave when main window not set up yet
+- Fix error when clicking on a chord region then an audio region
+- Fix error when cutting a region while snap-keep-offset is enabled
+
 ## [1.0.0-beta.3.4.1] - 2022-09-02
 ### Added
 - Write FINISHED file after finishing saving a project and check for this file on load
 - Use new higher quality "Finer" timestretcher when using rubberband v3
 
 ### Changed
-- Fix header widget not unparenting its child stack
 - Update French, Japanese translations
 - Change trial version limitation to max 25 tracks per project
+
+### Fixed
+- Fix header widget not unparenting its child stack
 
 ## [1.0.0-beta.3.3.3] - 2022-09-01
 ### Added
