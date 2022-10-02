@@ -6311,7 +6311,7 @@ arranger_widget_handle_playhead_auto_scroll (
               (double) playhead_x - buffer,
               gtk_adjustment_get_lower (adj),
               gtk_adjustment_get_upper (adj)));
-          g_debug ("autoscrolling at playhead edges");
+          /*g_debug ("autoscrolling at playhead edges");*/
         }
     }
 }

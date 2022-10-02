@@ -7,6 +7,8 @@
 #include "audio/position.h"
 #include "utils/audio.h"
 
+typedef struct EngineState EngineState;
+
 /**
  * @addtogroup audio
  *
@@ -217,11 +219,15 @@ export_settings_free (ExportSettings * self);
  * This must be called on the main thread after the
  * intended tracks have been marked for bounce and
  * before exporting.
+ *
+ * @param engine_state Engine state when export was started so
+ *   that it can be re-set after exporting.
  */
 NONNULL
 GPtrArray *
 exporter_prepare_tracks_for_export (
-  const ExportSettings * const settings);
+  const ExportSettings * const settings,
+  EngineState *                engine_state);
 
 /**
  * This must be called on the main thread after the
@@ -231,12 +237,15 @@ exporter_prepare_tracks_for_export (
  *   exporter_prepare_tracks_for_export(). This
  *   function takes ownership of it and is
  *   responsible for freeing it.
+ * @param engine_state Engine state when export was started so
+ *   that it can be re-set after exporting.
  */
 NONNULL_ARGS (1)
 void
-exporter_return_connections_post_export (
+exporter_post_export (
   const ExportSettings * const settings,
-  GPtrArray *                  connections);
+  GPtrArray *                  connections,
+  EngineState *                engine_state);
 
 /**
  * Generic export thread to be used for simple

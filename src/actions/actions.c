@@ -2770,6 +2770,10 @@ DEFINE_SIMPLE (activate_quick_bounce_selections)
   timeline_selections_mark_for_bounce (
     TL_SELECTIONS, settings.bounce_with_parents);
 
+  EngineState state;
+  GPtrArray * conns =
+    exporter_prepare_tracks_for_export (&settings, &state);
+
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
     "bounce_thread",
@@ -2784,6 +2788,8 @@ DEFINE_SIMPLE (activate_quick_bounce_selections)
   z_gtk_dialog_run (GTK_DIALOG (progress_dialog), true);
 
   g_thread_join (thread);
+
+  exporter_post_export (&settings, conns, &state);
 
   if (
     !settings.progress_info.has_error
@@ -3630,6 +3636,10 @@ DEFINE_SIMPLE (activate_quick_bounce_selected_tracks)
     TRACKLIST_SELECTIONS, settings.bounce_with_parents,
     F_NO_MARK_MASTER);
 
+  EngineState state;
+  GPtrArray * conns =
+    exporter_prepare_tracks_for_export (&settings, &state);
+
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
     "bounce_thread",
@@ -3644,6 +3654,8 @@ DEFINE_SIMPLE (activate_quick_bounce_selected_tracks)
   z_gtk_dialog_run (GTK_DIALOG (progress_dialog), true);
 
   g_thread_join (thread);
+
+  exporter_post_export (&settings, conns, &state);
 
   if (
     !settings.progress_info.has_error

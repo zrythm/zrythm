@@ -72,8 +72,9 @@ test_mono_plugin (void)
   settings.bounce_with_parents = true;
   settings.mode = EXPORT_MODE_FULL;
 
+  EngineState state;
   GPtrArray * conns =
-    exporter_prepare_tracks_for_export (&settings);
+    exporter_prepare_tracks_for_export (&settings, &state);
 
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
@@ -82,7 +83,7 @@ test_mono_plugin (void)
 
   g_thread_join (thread);
 
-  exporter_return_connections_post_export (&settings, conns);
+  exporter_post_export (&settings, conns, &state);
 
   g_assert_false (audio_file_is_silent (settings.file_uri));
 

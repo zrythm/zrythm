@@ -686,8 +686,9 @@ on_export (ExportDialogWidget * self, bool audio)
           ExportSettings info;
           init_export_info (self, &info, track);
 
+          EngineState state;
           GPtrArray * conns =
-            exporter_prepare_tracks_for_export (&info);
+            exporter_prepare_tracks_for_export (&info, &state);
 
           g_message ("exporting %s", info.file_uri);
 
@@ -712,8 +713,7 @@ on_export (ExportDialogWidget * self, bool audio)
           g_thread_join (thread);
 
           /* re-connect disconnected connections */
-          exporter_return_connections_post_export (
-            &info, conns);
+          exporter_post_export (&info, conns, &state);
 
           g_free (info.file_uri);
 
@@ -744,6 +744,10 @@ on_export (ExportDialogWidget * self, bool audio)
 
       g_message ("exporting %s", info.file_uri);
 
+      EngineState state;
+      GPtrArray * conns =
+        exporter_prepare_tracks_for_export (&info, &state);
+
       /* start exporting in a new thread */
       GThread * thread = g_thread_new (
         "export_thread",
@@ -761,6 +765,9 @@ on_export (ExportDialogWidget * self, bool audio)
       z_gtk_dialog_run (GTK_DIALOG (progress_dialog), true);
 
       g_thread_join (thread);
+
+      /* re-connect disconnected connections */
+      exporter_post_export (&info, conns, &state);
 
       g_free (info.file_uri);
 

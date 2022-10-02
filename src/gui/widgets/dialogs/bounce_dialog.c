@@ -86,8 +86,9 @@ on_bounce_clicked (GtkButton * btn, BounceDialogWidget * self)
       break;
     }
 
+  EngineState state;
   GPtrArray * conns =
-    exporter_prepare_tracks_for_export (&settings);
+    exporter_prepare_tracks_for_export (&settings, &state);
 
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
@@ -104,7 +105,7 @@ on_bounce_clicked (GtkButton * btn, BounceDialogWidget * self)
 
   g_thread_join (thread);
 
-  exporter_return_connections_post_export (&settings, conns);
+  exporter_post_export (&settings, conns, &state);
 
   if (
     !self->bounce_to_file && !settings.progress_info.has_error

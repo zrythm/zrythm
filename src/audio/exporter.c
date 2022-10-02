@@ -647,66 +647,88 @@ export_settings_set_bounce_defaults (
  * This must be called on the main thread after the
  * intended tracks have been marked for bounce and
  * before exporting.
+ *
+ * @param engine_state Engine state when export was started so
+ *   that it can be re-set after exporting.
  */
 GPtrArray *
 exporter_prepare_tracks_for_export (
-  const ExportSettings * const settings)
+  const ExportSettings * const settings,
+  EngineState *                engine_state)
 {
-  /* not needed when exporting full */
-  if (settings->mode == EXPORT_MODE_FULL)
-    return NULL;
+  AUDIO_ENGINE->preparing_to_export = true;
 
-  EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE);
+  engine_wait_for_pause (
+    AUDIO_ENGINE, engine_state, Z_F_NO_FORCE);
+  g_message ("engine paused");
 
-  /* disconnect all track faders from
-   * their channel outputs so that
-   * sends and custom connections will
-   * work */
-  GPtrArray * conns = g_ptr_array_new_full (
-    100, (GDestroyNotify) port_connection_free);
-  for (int j = 0; j < TRACKLIST->num_tracks; j++)
+  TRANSPORT->play_state = PLAYSTATE_ROLLING;
+
+  AUDIO_ENGINE->exporting = true;
+  AUDIO_ENGINE->preparing_to_export = false;
+  TRANSPORT->loop = false;
+
+  g_message ("deactivating and reactivating plugins");
+
+  /* deactivate and activate all plugins to make
+   * them reset their states */
+  /* TODO this doesn't reset the plugin state as
+   * expected, so sending note off is needed */
+  tracklist_activate_all_plugins (TRACKLIST, false);
+  tracklist_activate_all_plugins (TRACKLIST, true);
+
+  GPtrArray * conns = NULL;
+  if (settings->mode != EXPORT_MODE_FULL)
     {
-      Track * cur_tr = TRACKLIST->tracks[j];
-      if (
-        cur_tr->bounce
-        || !track_type_has_channel (cur_tr->type)
-        || cur_tr->out_signal_type != TYPE_AUDIO)
-        continue;
+      /* disconnect all track faders from
+       * their channel outputs so that
+       * sends and custom connections will
+       * work */
+      conns = g_ptr_array_new_full (
+        100, (GDestroyNotify) port_connection_free);
+      for (int j = 0; j < TRACKLIST->num_tracks; j++)
+        {
+          Track * cur_tr = TRACKLIST->tracks[j];
+          if (
+            cur_tr->bounce
+            || !track_type_has_channel (cur_tr->type)
+            || cur_tr->out_signal_type != TYPE_AUDIO)
+            continue;
 
-      PortIdentifier * l_src_id =
-        &cur_tr->channel->fader->stereo_out->l->id;
-      PortIdentifier * l_dest_id =
-        &cur_tr->channel->stereo_out->l->id;
-      PortConnection * l_conn =
-        port_connections_manager_find_connection (
-          PORT_CONNECTIONS_MGR, l_src_id, l_dest_id);
-      g_return_val_if_fail (l_conn, NULL);
-      g_ptr_array_add (conns, port_connection_clone (l_conn));
-      port_connections_manager_ensure_disconnect (
-        PORT_CONNECTIONS_MGR, l_src_id, l_dest_id);
+          PortIdentifier * l_src_id =
+            &cur_tr->channel->fader->stereo_out->l->id;
+          PortIdentifier * l_dest_id =
+            &cur_tr->channel->stereo_out->l->id;
+          PortConnection * l_conn =
+            port_connections_manager_find_connection (
+              PORT_CONNECTIONS_MGR, l_src_id, l_dest_id);
+          g_return_val_if_fail (l_conn, NULL);
+          g_ptr_array_add (
+            conns, port_connection_clone (l_conn));
+          port_connections_manager_ensure_disconnect (
+            PORT_CONNECTIONS_MGR, l_src_id, l_dest_id);
 
-      PortIdentifier * r_src_id =
-        &cur_tr->channel->fader->stereo_out->r->id;
-      PortIdentifier * r_dest_id =
-        &cur_tr->channel->stereo_out->r->id;
-      PortConnection * r_conn =
-        port_connections_manager_find_connection (
-          PORT_CONNECTIONS_MGR, r_src_id, r_dest_id);
-      g_return_val_if_fail (r_conn, NULL);
-      g_ptr_array_add (conns, port_connection_clone (r_conn));
-      port_connections_manager_ensure_disconnect (
-        PORT_CONNECTIONS_MGR, r_src_id, r_dest_id);
+          PortIdentifier * r_src_id =
+            &cur_tr->channel->fader->stereo_out->r->id;
+          PortIdentifier * r_dest_id =
+            &cur_tr->channel->stereo_out->r->id;
+          PortConnection * r_conn =
+            port_connections_manager_find_connection (
+              PORT_CONNECTIONS_MGR, r_src_id, r_dest_id);
+          g_return_val_if_fail (r_conn, NULL);
+          g_ptr_array_add (
+            conns, port_connection_clone (r_conn));
+          port_connections_manager_ensure_disconnect (
+            PORT_CONNECTIONS_MGR, r_src_id, r_dest_id);
+        }
+
+      /* recalculate the graph to apply the
+       * changes */
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
+
+      /* remark all tracks for bounce */
+      tracklist_mark_all_tracks_for_bounce (TRACKLIST, true);
     }
-
-  /* recalculate the graph to apply the
-   * changes */
-  router_recalc_graph (ROUTER, F_NOT_SOFT);
-
-  /* remark all tracks for bounce */
-  tracklist_mark_all_tracks_for_bounce (TRACKLIST, true);
-
-  engine_resume (AUDIO_ENGINE, &state);
 
   return conns;
 }
@@ -719,36 +741,39 @@ exporter_prepare_tracks_for_export (
  *   exporter_prepare_tracks_for_export(). This
  *   function takes ownership of it and is
  *   responsible for freeing it.
+ * @param engine_state Engine state when export was started so
+ *   that it can be re-set after exporting.
  */
 void
-exporter_return_connections_post_export (
+exporter_post_export (
   const ExportSettings * const settings,
-  GPtrArray *                  connections)
+  GPtrArray *                  connections,
+  EngineState *                engine_state)
 {
   /* not needed when exporting full */
-  if (settings->mode == EXPORT_MODE_FULL)
-    return;
-
-  g_return_if_fail (connections);
-
-  EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE);
-
-  /* re-connect disconnected connections */
-  for (size_t j = 0; j < connections->len; j++)
+  if (settings->mode != EXPORT_MODE_FULL)
     {
-      PortConnection * conn =
-        g_ptr_array_index (connections, j);
-      port_connections_manager_ensure_connect_from_connection (
-        PORT_CONNECTIONS_MGR, conn);
+      g_return_if_fail (connections);
+
+      /* re-connect disconnected connections */
+      for (size_t j = 0; j < connections->len; j++)
+        {
+          PortConnection * conn =
+            g_ptr_array_index (connections, j);
+          port_connections_manager_ensure_connect_from_connection (
+            PORT_CONNECTIONS_MGR, conn);
+        }
+      g_ptr_array_unref (connections);
+
+      /* recalculate the graph to apply the
+       * changes */
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
     }
-  g_ptr_array_unref (connections);
 
-  /* recalculate the graph to apply the
-   * changes */
-  router_recalc_graph (ROUTER, F_NOT_SOFT);
-
-  engine_resume (AUDIO_ENGINE, &state);
+  /* restart engine */
+  AUDIO_ENGINE->exporting = false;
+  engine_resume (AUDIO_ENGINE, engine_state);
+  g_message ("engine resumed");
 }
 
 /**
@@ -893,29 +918,6 @@ exporter_export (ExportSettings * info)
 
   export_settings_print (info);
 
-  AUDIO_ENGINE->preparing_to_export = true;
-
-  /* pause engine */
-  EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE);
-
-  g_message ("engine paused");
-
-  TRANSPORT->play_state = PLAYSTATE_ROLLING;
-
-  AUDIO_ENGINE->exporting = true;
-  AUDIO_ENGINE->preparing_to_export = false;
-  TRANSPORT->loop = false;
-
-  g_message ("deactivating and reactivating plugins");
-
-  /* deactivate and activate all plugins to make
-   * them reset their states */
-  /* TODO this doesn't reset the plugin state as
-   * expected, so sending note off is needed */
-  tracklist_activate_all_plugins (TRACKLIST, false);
-  tracklist_activate_all_plugins (TRACKLIST, true);
-
   int ret = 0;
   if (
     info->format == EXPORT_FORMAT_MIDI0
@@ -927,10 +929,6 @@ exporter_export (ExportSettings * info)
     {
       ret = export_audio (info);
     }
-
-  /* restart engine */
-  AUDIO_ENGINE->exporting = false;
-  engine_resume (AUDIO_ENGINE, &state);
 
   if (ret)
     {

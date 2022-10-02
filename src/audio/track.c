@@ -2003,6 +2003,10 @@ track_freeze (Track * self, bool freeze)
       export_settings_set_bounce_defaults (
         &settings, EXPORT_FORMAT_WAV, NULL, self->name);
 
+      EngineState state;
+      GPtrArray * conns = exporter_prepare_tracks_for_export (
+        &settings, &state);
+
       /* start exporting in a new thread */
       GThread * thread = g_thread_new (
         "bounce_thread",
@@ -2019,6 +2023,8 @@ track_freeze (Track * self, bool freeze)
       z_gtk_dialog_run (GTK_DIALOG (progress_dialog), true);
 
       g_thread_join (thread);
+
+      exporter_post_export (&settings, conns, &state);
 
       /* assert exporting is finished */
       g_return_if_fail (!AUDIO_ENGINE->exporting);
