@@ -4405,6 +4405,22 @@ on_drag_end_timeline (ArrangerWidget * self)
           /* double click on object */
           /*g_message ("DOUBLE CLICK");*/
         }
+      else if (self->n_press == 1)
+        {
+          /* single click on object */
+          if (self->start_object)
+            {
+              if (
+                self->start_object->type
+                == ARRANGER_OBJECT_TYPE_MARKER)
+                {
+                  transport_move_playhead (
+                    TRANSPORT, &self->start_object->pos,
+                    F_PANIC, F_SET_CUE_POINT,
+                    F_PUBLISH_EVENTS);
+                }
+            }
+        }
       break;
     case UI_OVERLAY_ACTION_MOVING:
       {
