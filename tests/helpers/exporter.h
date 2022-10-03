@@ -56,9 +56,21 @@ test_exporter_export_audio (
     project_get_path (PROJECT, PROJECT_PATH_EXPORTS, false);
   settings.file_uri =
     g_build_filename (exports_dir, filename, NULL);
-  int ret = exporter_export (&settings);
+
+  EngineState state;
+  GPtrArray * conns =
+    exporter_prepare_tracks_for_export (&settings, &state);
+
+  /* start exporting in a new thread */
+  GThread * thread = g_thread_new (
+    "bounce_thread",
+    (GThreadFunc) exporter_generic_export_thread, &settings);
+
+  g_thread_join (thread);
+
+  exporter_post_export (&settings, conns, &state);
+
   g_assert_false (AUDIO_ENGINE->exporting);
-  g_assert_cmpint (ret, ==, 0);
   g_free (filename);
 
   char * file = g_strdup (settings.file_uri);
