@@ -6,6 +6,19 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.6.1] - 2022-10-03
+### Added
+- Jump to marker position when clicked
+
+### Changed
+- Add "Scales" indicator text in the bottom of the chord track
+- Make spacebar toggle play/pause regardless of the focused widget (with exception for text editor widgets)
+
+### Fixed
+- Fix hang when exporting audio when project contains VST3 plugins
+- Fix markers incorrectly being shown when marker track is invisible
+- Fix incorrectly allowing to clone/rename start/end markers
+
 ## [1.0.0-beta.3.5.1] - 2022-10-01
 ### Added
 - Switch to new file chooser widget (from GNOME Builder)
