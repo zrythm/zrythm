@@ -275,6 +275,7 @@ inc/gui/widgets/header.h
 inc/gui/widgets/ruler_marker.h
 inc/gui/widgets/chord_key.h
 inc/gui/widgets/timeline_panel.h
+inc/gui/widgets/file_chooser_entry.h
 inc/gui/widgets/chord_selector_window.h
 inc/gui/widgets/bot_dock_edge.h
 inc/gui/widgets/fader_controls_grid.h
@@ -784,6 +785,7 @@ src/gui/widgets/arranger_object.c
 src/gui/widgets/popover_menu_bin.c
 src/gui/widgets/chord_editor_space.c
 src/gui/widgets/editor_ruler.c
+src/gui/widgets/file_chooser_entry.c
 src/gui/widgets/two_col_expander_box.c
 src/gui/widgets/balance_control.c
 src/gui/widgets/playhead_scroll_buttons.c

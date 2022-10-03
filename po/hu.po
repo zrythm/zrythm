@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2022-09-14 19:12+0900\n"
+"POT-Creation-Date: 2022-10-03 21:08+0900\n"
 "PO-Revision-Date: 2022-03-24 05:00+0000\n"
 "Last-Translator: Nagy Tibor <xnagytibor@gmail.com>\n"
 "Language-Team: Hungarian <translation-team-hu@lists.sourceforge.net>\n"
@@ -454,7 +454,7 @@ msgid "Duplicate"
 msgstr "Kettőzés"
 
 #: inc/utils/gtk.h:72 src/gui/widgets/track.c:318 src/gui/widgets/track.c:790
-#: src/gui/widgets/monitor_section.c:39 src/gui/widgets/monitor_section.c:306
+#: src/gui/widgets/monitor_section.c:39 src/gui/widgets/monitor_section.c:323
 #: src/gui/widgets/channel.c:676 resources/ui/fader_buttons.ui:49
 #: build/data/org.zrythm.Zrythm.gschema.xml:315
 msgid "Mute"
@@ -481,27 +481,27 @@ msgstr "Alacsony"
 msgid "Ultra Low"
 msgstr "Rendkívül alacsony"
 
-#: inc/audio/exporter.h:110
+#: inc/audio/exporter.h:112
 msgid "Before inserts"
 msgstr ""
 
-#: inc/audio/exporter.h:111
+#: inc/audio/exporter.h:113
 msgid "Pre-fader"
 msgstr ""
 
-#: inc/audio/exporter.h:112
+#: inc/audio/exporter.h:114
 msgid "Post fader"
 msgstr ""
 
 #: inc/audio/track.h:166 src/gui/widgets/route_target_selector_popover.c:160
 #: src/gui/widgets/track_properties_expander.c:124
-#: build/data/org.zrythm.Zrythm.gschema.xml:614
+#: build/data/org.zrythm.Zrythm.gschema.xml:619
 msgid "Instrument"
 msgstr "Hangszer"
 
 #: inc/audio/track.h:167 src/audio/region.c:466 src/gui/widgets/bot_bar.c:453
 #: resources/ui/file_browser_filters.ui:10
-#: build/data/org.zrythm.Zrythm.gschema.xml:1130
+#: build/data/org.zrythm.Zrythm.gschema.xml:1135
 msgid "Audio"
 msgstr "Audio"
 
@@ -606,87 +606,87 @@ msgstr "ALSA szekvenszer (nem működik)"
 msgid "ALSA Sequencer (rtmidi)"
 msgstr "ALSA szekvenszer (rtmidi)"
 
-#: inc/audio/audio_function.h:68
+#: inc/audio/audio_function.h:52
 msgid "Invert"
 msgstr "Invertálás"
 
-#: inc/audio/audio_function.h:69
+#: inc/audio/audio_function.h:53
 msgid "Normalize peak"
 msgstr "Csúcs-normalizálás"
 
-#: inc/audio/audio_function.h:70
+#: inc/audio/audio_function.h:54
 msgid "Normalize RMS"
 msgstr "RMS-normalizálás"
 
-#: inc/audio/audio_function.h:71
+#: inc/audio/audio_function.h:55
 msgid "Normalize LUFS"
 msgstr "LUFS-normalizálás"
 
-#: inc/audio/audio_function.h:72
+#: inc/audio/audio_function.h:56
 msgid "Linear fade in"
 msgstr "Lineáris felkeverés"
 
-#: inc/audio/audio_function.h:73
+#: inc/audio/audio_function.h:57
 msgid "Linear fade out"
 msgstr "Lineáris lekeverés"
 
-#: inc/audio/audio_function.h:74 src/gui/widgets/home_toolbar.c:142
+#: inc/audio/audio_function.h:58 src/gui/widgets/home_toolbar.c:142
 msgid "Nudge left"
 msgstr "Balra lökés"
 
-#: inc/audio/audio_function.h:75 src/gui/widgets/home_toolbar.c:143
+#: inc/audio/audio_function.h:59 src/gui/widgets/home_toolbar.c:143
 msgid "Nudge right"
 msgstr "Jobbra lökés"
 
-#: inc/audio/audio_function.h:76
+#: inc/audio/audio_function.h:60
 msgid "Reverse"
 msgstr "Megfordítás"
 
-#: inc/audio/audio_function.h:77
+#: inc/audio/audio_function.h:61
 msgid "External program"
 msgstr "Külső program"
 
-#: inc/audio/audio_function.h:78
+#: inc/audio/audio_function.h:62
 msgid "Guile script"
 msgstr "Guile szkript"
 
-#: inc/audio/audio_function.h:79
+#: inc/audio/audio_function.h:63
 msgid "Custom plugin"
 msgstr "Egyedi bővítmény"
 
-#: inc/audio/audio_function.h:80
+#: inc/audio/audio_function.h:64
 msgid "Invalid"
 msgstr "Érvénytelen"
 
-#: inc/audio/midi_function.h:54 resources/ui/editor_toolbar.ui:151
+#: inc/audio/midi_function.h:38 resources/ui/editor_toolbar.ui:166
 msgid "Crescendo"
 msgstr "Crescendo"
 
-#: inc/audio/midi_function.h:55 resources/ui/editor_toolbar.ui:157
+#: inc/audio/midi_function.h:39 resources/ui/editor_toolbar.ui:172
 msgid "Flam"
 msgstr "Flam"
 
-#: inc/audio/midi_function.h:56 inc/audio/automation_function.h:48
+#: inc/audio/midi_function.h:40 inc/audio/automation_function.h:32
 msgid "Flip H"
 msgstr "V tükrözés"
 
-#: inc/audio/midi_function.h:57 inc/audio/automation_function.h:49
+#: inc/audio/midi_function.h:41 inc/audio/automation_function.h:33
 msgid "Flip V"
 msgstr "F tükrözés"
 
-#: inc/audio/midi_function.h:58 resources/ui/editor_toolbar.ui:178
+#: inc/audio/midi_function.h:42 resources/ui/editor_toolbar.ui:193
 msgid "Legato"
 msgstr "Legato"
 
-#: inc/audio/midi_function.h:59 resources/ui/editor_toolbar.ui:184
+#: inc/audio/midi_function.h:43 resources/ui/editor_toolbar.ui:199
 msgid "Portato"
 msgstr "Portato"
 
-#: inc/audio/midi_function.h:60 resources/ui/editor_toolbar.ui:190
+#: inc/audio/midi_function.h:44 resources/ui/editor_toolbar.ui:205
 msgid "Staccato"
 msgstr "Staccato"
 
-#: inc/audio/midi_function.h:61 resources/ui/editor_toolbar.ui:196
+#: inc/audio/midi_function.h:45 resources/ui/editor_toolbar.ui:211
 msgid "Strum"
 msgstr "Pengetés"
 
@@ -719,28 +719,28 @@ msgid "On"
 msgstr "Be"
 
 #. TRANSLATORS: decibels
-#: inc/audio/pan.h:51
+#: inc/audio/pan.h:35
 msgid "0dB"
 msgstr "0dB"
 
-#: inc/audio/pan.h:52
+#: inc/audio/pan.h:36
 msgid "-3dB"
 msgstr "-3dB"
 
-#: inc/audio/pan.h:53
+#: inc/audio/pan.h:37
 msgid "-6dB"
 msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
-#: inc/audio/pan.h:73 src/utils/ui.c:798 src/audio/curve.c:302
+#: inc/audio/pan.h:57 src/utils/ui.c:798 src/audio/curve.c:302
 msgid "Linear"
 msgstr "Lineáris"
 
-#: inc/audio/pan.h:74 src/utils/ui.c:799
+#: inc/audio/pan.h:58 src/utils/ui.c:799
 msgid "Square Root"
 msgstr "Négyzetgyökös"
 
-#: inc/audio/pan.h:75
+#: inc/audio/pan.h:59
 msgid "Sine"
 msgstr "Szinuszos"
 
@@ -779,12 +779,17 @@ msgstr "Biztonsági mentés található"
 msgid "Failed to get existing yaml"
 msgstr "Hangsor szerkesztése sikertelen"
 
-#: src/project.c:929
+#: src/project.c:912
+#, fuzzy
+msgid "Invalid project: missing version"
+msgstr "Érvénytelen objektumnév %s"
+
+#: src/project.c:939
 #, fuzzy
 msgid "Failed to deserialize project YAML"
 msgstr "A jelenlegi projekt szerializálása sikertelen"
 
-#: src/project.c:942
+#: src/project.c:952
 #, fuzzy, c-format
 msgid ""
 "This project was created with an unsupported version of %s (%s). It may not "
@@ -793,35 +798,35 @@ msgstr ""
 "Ez a projekt %s egy másfajta verziójával készült (%s). Nem biztos, hogy "
 "megfelelően fog működni."
 
-#: src/project.c:958
+#: src/project.c:968
 msgid "Failed to load project. Please check the logs for more information."
 msgstr "Projekt betöltése sikertelen. További információért lásd a naplót."
 
-#: src/project.c:974
+#: src/project.c:984
 #, c-format
 msgid ""
 "Could not load project: Corrupted project detected (missing FINISHED file at "
 "'%s')."
 msgstr ""
 
-#: src/project.c:1205
+#: src/project.c:1215
 msgid "Failed to load project. Will create a new one instead."
 msgstr "Projekt betöltése sikertelen. Helyette egy új projekt lesz létrehozva."
 
-#: src/project.c:1287
+#: src/project.c:1297
 #, fuzzy
 msgid "Failed to deserialize v1 project file"
 msgstr "A jelenlegi projekt szerializálása sikertelen"
 
-#: src/project.c:1537
+#: src/project.c:1548
 msgid "Failed to compress project file"
 msgstr "Projektfájl tömörítése sikertelen"
 
-#: src/project.c:1581 src/project.c:1584
+#: src/project.c:1592 src/project.c:1595
 msgid "Backup saved."
 msgstr "Biztonsági mentés elmentve."
 
-#: src/project.c:1595
+#: src/project.c:1606
 msgid "Project saved."
 msgstr "Projekt elmentve."
 
@@ -998,7 +1003,7 @@ msgstr "Felhasználóbarát kimenet"
 msgid "Print current settings"
 msgstr "Jelenlegi beállítások kiírása"
 
-#: src/zrythm_app.c:1655 src/gui/widgets/preferences.c:737
+#: src/zrythm_app.c:1655 src/gui/widgets/preferences.c:735
 msgid "Reset to factory settings"
 msgstr "Gyári beállítások visszaállítása"
 
@@ -1145,12 +1150,12 @@ msgid "Save Project"
 msgstr "Projekt mentése"
 
 #: src/actions/actions.c:675 src/utils/dialogs.c:41 src/utils/dialogs.c:60
-#: src/audio/clip.c:589 src/gui/widgets/main_window.c:137
+#: src/audio/clip.c:591 src/gui/widgets/main_window.c:137
 #: src/gui/widgets/plugin_properties_expander.c:107
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:140
-#: src/gui/widgets/dialogs/export_dialog.c:1414
-#: src/gui/widgets/dialogs/create_project_dialog.c:124
-#: src/gui/widgets/dialogs/first_run_dialog.c:262
+#: src/gui/widgets/dialogs/export_dialog.c:1421
+#: src/gui/widgets/dialogs/create_project_dialog.c:122
+#: src/gui/widgets/dialogs/first_run_dialog.c:267
 #: src/gui/widgets/dialogs/bug_report_dialog.c:186
 #: src/gui/widgets/dialogs/project_assistant.c:446
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:158
@@ -1208,7 +1213,7 @@ msgid "Failed to redo"
 msgstr "Sikertelen megismétlés"
 
 #: src/actions/actions.c:903 src/actions/actions.c:917
-#: src/actions/actions.c:1121
+#: src/actions/actions.c:1139
 msgid "Failed to delete selections"
 msgstr "Kijelölések törlése sikertelen"
 
@@ -1216,20 +1221,20 @@ msgstr "Kijelölések törlése sikertelen"
 msgid "Can't paste incompatible data"
 msgstr "Inkompatibilis adatokat nem lehet beilleszteni"
 
-#: src/actions/actions.c:1167
+#: src/actions/actions.c:1170
 msgid "Failed to duplicate selections"
 msgstr "Kijelölés kettőzése sikertelen"
 
-#: src/actions/actions.c:1391
+#: src/actions/actions.c:1394
 msgid "Failed to unbind"
 msgstr ""
 
-#: src/actions/actions.c:1432 src/actions/actions.c:1904
-#: src/actions/actions.c:1934
+#: src/actions/actions.c:1435 src/actions/actions.c:1916
+#: src/actions/actions.c:1946
 msgid "Failed to quantize"
 msgstr "Sikertelen kvantálás"
 
-#: src/actions/actions.c:1510 src/audio/track.c:3606 src/audio/tracklist.c:1452
+#: src/actions/actions.c:1513 src/audio/track.c:3612 src/audio/tracklist.c:1455
 #: src/gui/widgets/panel_file_browser.c:456
 #: src/gui/widgets/panel_file_browser.c:472 src/settings/plugin_settings.c:340
 #: src/settings/plugin_settings.c:355 src/settings/plugin_settings.c:427
@@ -1237,19 +1242,15 @@ msgstr "Sikertelen kvantálás"
 msgid "Failed to create track"
 msgstr "Sáv létrehozása sikertelen"
 
-#: src/actions/actions.c:1561
+#: src/actions/actions.c:1567
 msgid "Failed to duplicate tracks"
 msgstr "Sávok kettőzése sikertelen"
 
-#: src/actions/actions.c:1631 src/actions/actions.c:1693
+#: src/actions/actions.c:1637 src/actions/actions.c:1692
 msgid "Failed to delete tracks"
 msgstr "Sávok törlése sikertelen"
 
-#: src/actions/actions.c:1658
-msgid "Cannot delete tracks: selection contains an undeletable track"
-msgstr "A sávokat nem lehet törölni: a kijelölés törölhetetlen sávot tartalmaz"
-
-#: src/actions/actions.c:1670
+#: src/actions/actions.c:1669
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
@@ -1258,43 +1259,43 @@ msgstr ""
 "visszavonhatatlan és a visszavonási előzményeid is törölve lesznek. "
 "Szeretnéd folytatni a törlést?"
 
-#: src/actions/actions.c:1727
+#: src/actions/actions.c:1726
 msgid "Failed to pin/unpin tracks"
 msgstr "Sávok rögzítése/feloldása sikertelen"
 
-#: src/actions/actions.c:1738
+#: src/actions/actions.c:1737
 msgid "Failed to solo tracks"
 msgstr "Sávok szólózása sikertelen"
 
-#: src/actions/actions.c:1749
+#: src/actions/actions.c:1748
 msgid "Failed to unsolo tracks"
 msgstr "Sávok szólózásának megszüntetése sikertelen"
 
-#: src/actions/actions.c:1760
+#: src/actions/actions.c:1759
 msgid "Failed to mute tracks"
 msgstr "Sávok némítása sikertelen"
 
-#: src/actions/actions.c:1771
+#: src/actions/actions.c:1770
 msgid "Failed to unmute tracks"
 msgstr "Sávok visszahangosítása sikertelen"
 
-#: src/actions/actions.c:1782
+#: src/actions/actions.c:1781
 msgid "Failed to listen tracks"
 msgstr "Sávok figyelése sikertelen"
 
-#: src/actions/actions.c:1794
+#: src/actions/actions.c:1793
 msgid "Failed to unlisten tracks"
 msgstr "Sávok figyelésének megszüntetése sikertelen"
 
-#: src/actions/actions.c:1805
+#: src/actions/actions.c:1804
 msgid "Failed to enable tracks"
 msgstr "Sávok engegélyezése sikertelen"
 
-#: src/actions/actions.c:1816
+#: src/actions/actions.c:1815
 msgid "Failed to disable tracks"
 msgstr "Sávok tiltása sikertelen"
 
-#: src/actions/actions.c:1951
+#: src/actions/actions.c:1963
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
@@ -1303,87 +1304,87 @@ msgstr ""
 "Először ki kell jelölnöd az idővonalat vagy a szerkesztőt. A jelenlegi "
 "kijelölésed: %s"
 
-#: src/actions/actions.c:2023
+#: src/actions/actions.c:2035
 msgid "Failed to mute selections"
 msgstr "Kijelölés némítása sikertelen"
 
-#: src/actions/actions.c:2037
+#: src/actions/actions.c:2049
 msgid "No regions selected"
 msgstr "Nincs régió kiválasztva"
 
-#: src/actions/actions.c:2045
+#: src/actions/actions.c:2057
 msgid "Selections must be on the same lane"
 msgstr "A kijelöléseknek ugyanazon az alsávon kell lenniük"
 
-#: src/actions/actions.c:2052
+#: src/actions/actions.c:2064
 msgid "Cannot merge looped regions"
 msgstr "Ismételt régiókat nem lehet összevonni"
 
-#: src/actions/actions.c:2067
+#: src/actions/actions.c:2079
 msgid "Failed to merge selections"
 msgstr "Kijelölések összevonása sikertelen"
 
-#: src/actions/actions.c:2172
+#: src/actions/actions.c:2184
 msgid "Failed to insert silence"
 msgstr "Csend beszúrása sikertelen"
 
-#: src/actions/actions.c:2189
+#: src/actions/actions.c:2201
 msgid "Failed to remove range"
 msgstr "Tartomány eltávolítása sikertelen"
 
-#: src/actions/actions.c:2263 src/actions/arranger_selections.c:521
+#: src/actions/actions.c:2275 src/actions/arranger_selections.c:560
 msgid "Failed to apply MIDI function"
 msgstr "MIDI-funkció alkalmazása sikertelen"
 
-#: src/actions/actions.c:2289 src/actions/actions.c:2328
-#: src/actions/arranger_selections.c:557
+#: src/actions/actions.c:2301 src/actions/actions.c:2340
+#: src/actions/arranger_selections.c:596
 msgid "Failed to apply automation function"
 msgstr "Automatizációs-funkció alkalmazása sikertelen"
 
-#: src/actions/actions.c:2501 src/gui/widgets/track_filter_popover.c:268
+#: src/actions/actions.c:2513 src/gui/widgets/track_filter_popover.c:268
 #, fuzzy
 msgid "Track name"
 msgstr "Sáv neve"
 
-#: src/actions/actions.c:2526
+#: src/actions/actions.c:2538
 msgid "Object name"
 msgstr "Objektum neve"
 
-#: src/actions/actions.c:2564
+#: src/actions/actions.c:2576
 msgid "An object cannot be created at the selected location."
 msgstr ""
 
-#: src/actions/actions.c:2589
+#: src/actions/actions.c:2601
 msgid "Please enter a BPM"
 msgstr "Kérlek adj meg egy BPM-et"
 
-#: src/actions/actions.c:2658
+#: src/actions/actions.c:2670
 msgid "Failed to move selections"
 msgstr "Kijelölés mozgatása sikertelen"
 
-#: src/actions/actions.c:2675
+#: src/actions/actions.c:2687
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr "Felismert BPM: %.2f"
 
-#: src/actions/actions.c:2677
+#: src/actions/actions.c:2689
 msgid "Candidates:"
 msgstr "Jelöltek:"
 
-#: src/actions/actions.c:2725 src/actions/arranger_selections.c:596
-#: src/actions/arranger_selections.c:610
+#: src/actions/actions.c:2737 src/actions/arranger_selections.c:635
+#: src/actions/arranger_selections.c:649
 msgid "Failed to apply audio function"
 msgstr "Audio-funkció alkalmazása sikertelen"
 
-#: src/actions/actions.c:2840
+#: src/actions/actions.c:2858
 msgid "Failed to set curve algorithm"
 msgstr "Görbe-algoritmus beállítása sikertelen"
 
-#: src/actions/actions.c:2891
+#: src/actions/actions.c:2909
 msgid "Failed to edit fades"
 msgstr ""
 
-#: src/actions/actions.c:2955
+#: src/actions/actions.c:2973
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
@@ -1391,24 +1392,24 @@ msgstr ""
 "Nem található egyedi előbeállítás-csomag. Kérlek először hozz létre egyet az "
 "akkord-előbeállítás böngészőben."
 
-#: src/actions/actions.c:3042 src/actions/actions.c:3083
+#: src/actions/actions.c:3060 src/actions/actions.c:3101
 msgid "Preset Pack Name"
 msgstr "Előbeállítás-csomag neve"
 
-#: src/actions/actions.c:3063 src/actions/actions.c:3101
+#: src/actions/actions.c:3081 src/actions/actions.c:3119
 msgid "Are you sure you want to remove this chord preset pack?"
 msgstr "Tényleg el szeretnéd távolítani ezt az akkord-előbeállítás csomagot?"
 
-#: src/actions/actions.c:3121
+#: src/actions/actions.c:3139
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:156
 msgid "Preset Name"
 msgstr "Előbeállítás neve"
 
-#: src/actions/actions.c:3179 src/gui/widgets/modulator_inner.c:92
+#: src/actions/actions.c:3197 src/gui/widgets/modulator_inner.c:92
 msgid "Failed to delete plugins"
 msgstr "Bővítmények törlése sikertelen"
 
-#: src/actions/actions.c:3203
+#: src/actions/actions.c:3221
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared. Continue with deletion?"
@@ -1417,307 +1418,316 @@ msgstr ""
 "visszavonhatatlan és a visszavonási előzményeid is törölve lesznek. "
 "Szeretnéd folytatni a törlést?"
 
-#: src/actions/actions.c:3253
+#: src/actions/actions.c:3271
 #, c-format
 msgid "Failed to reset %s"
 msgstr "%s visszaállítása sikertelen"
 
-#: src/actions/actions.c:3279
+#: src/actions/actions.c:3297
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "%s és %s szétválasztása sikertelen"
 
-#: src/actions/actions.c:3309
+#: src/actions/actions.c:3327
 msgid "Cannot delete standard bookmark"
 msgstr "A szabványos könyvjelző nem törölhető"
 
-#: src/actions/actions.c:3317
+#: src/actions/actions.c:3335
 msgid "Are you sure you want to remove this bookmark?"
 msgstr "Tényleg el szeretnéd távolítani ezt a könyvjelzőt?"
 
-#: src/actions/actions.c:3516 src/actions/actions.c:3545
+#: src/actions/actions.c:3534 src/actions/actions.c:3563
 msgid "Collection name"
 msgstr "Gyűjtemény neve"
 
-#: src/actions/actions.c:3567
+#: src/actions/actions.c:3585
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
 "Ez a gyűjtemény %d bővítményt tartalmaz. Tényleg el szeretnéd távolítani?"
 
-#: src/actions/actions.c:3735
+#: src/actions/actions.c:3759
 msgid "Failed to change direct output"
 msgstr "Közvetlen kimenet megváltoztatása sikertelen"
 
-#: src/actions/tracklist_selections.c:281
+#: src/actions/tracklist_selections.c:204
+#, fuzzy
+msgid "Cannot duplicate tracks: selection contains an uncopyable track"
+msgstr "A sávokat nem lehet törölni: a kijelölés törölhetetlen sávot tartalmaz"
+
+#: src/actions/tracklist_selections.c:216
+msgid "Cannot delete tracks: selection contains an undeletable track"
+msgstr "A sávokat nem lehet törölni: a kijelölés törölhetetlen sávot tartalmaz"
+
+#: src/actions/tracklist_selections.c:295
 #, c-format
 msgid "Failed getting contents for %s"
 msgstr "%s tartalmának lekérése sikertelen"
 
-#: src/actions/tracklist_selections.c:316
+#: src/actions/tracklist_selections.c:330
 msgid "No tracks selected"
 msgstr "Nincs sáv kiválasztva"
 
-#: src/actions/tracklist_selections.c:333
+#: src/actions/tracklist_selections.c:347
 msgid "Failed to clone tracklist selections"
 msgstr "Sávlista kijelölések klónozása sikertelen"
 
-#: src/actions/tracklist_selections.c:350 src/audio/tracklist.c:1628
-#: src/audio/tracklist.c:1756
+#: src/actions/tracklist_selections.c:364 src/audio/tracklist.c:1631
+#: src/audio/tracklist.c:1759
 msgid "Failed to clone track"
 msgstr "Sáv klónozása sikertelen"
 
-#: src/actions/tracklist_selections.c:378
+#: src/actions/tracklist_selections.c:392
 msgid "Failed to clone tracklist selections: "
 msgstr "Sávlista kijelölések klónozása sikertelen: "
 
-#: src/actions/tracklist_selections.c:697
+#: src/actions/tracklist_selections.c:711
 #, c-format
 msgid "%s Track"
 msgstr "%s sáv"
 
-#: src/actions/tracklist_selections.c:744 src/audio/sample_processor.c:560
+#: src/actions/tracklist_selections.c:758 src/audio/sample_processor.c:560
 #: src/gui/widgets/channel_slot.c:335
 #, c-format
 msgid "Failed to create plugin %s"
 msgstr "%s bővítmény létrehozása sikertelen"
 
-#: src/actions/tracklist_selections.c:754
+#: src/actions/tracklist_selections.c:768
 #, c-format
 msgid "Error instantiating plugin %s"
 msgstr "%s bővítmény példányosítása sikertelen"
 
-#: src/actions/tracklist_selections.c:825
+#: src/actions/tracklist_selections.c:839
 #, c-format
 msgid "Failed saving file %s"
 msgstr "Fájl mentése sikertelen %s"
 
-#: src/actions/tracklist_selections.c:914
+#: src/actions/tracklist_selections.c:928
 #, c-format
 msgid "Failed to create track at %d"
 msgstr "Sáv létrehozása sikertelen %d helyen"
 
-#: src/actions/tracklist_selections.c:954
-#: src/actions/tracklist_selections.c:1402
+#: src/actions/tracklist_selections.c:968
+#: src/actions/tracklist_selections.c:1416
 #, c-format
 msgid "Failed to clone track: %s"
 msgstr "Sáv klónozása sikertelen: %s"
 
-#: src/actions/tracklist_selections.c:1948
+#: src/actions/tracklist_selections.c:1962
 msgid "Copy Track inside"
 msgstr "Sáv bemásolása"
 
-#: src/actions/tracklist_selections.c:1950
+#: src/actions/tracklist_selections.c:1964
 msgid "Copy Track"
 msgstr "Sáv másolása"
 
-#: src/actions/tracklist_selections.c:1956
+#: src/actions/tracklist_selections.c:1970
 #, c-format
 msgid "Copy %d Tracks inside"
 msgstr "%d sáv bemásolása"
 
-#: src/actions/tracklist_selections.c:1960
+#: src/actions/tracklist_selections.c:1974
 #, c-format
 msgid "Copy %d Tracks"
 msgstr "%d sáv másolása"
 
-#: src/actions/tracklist_selections.c:1970
+#: src/actions/tracklist_selections.c:1984
 #, c-format
 msgid "Create %s Track"
 msgstr "%s sáv létrehozása"
 
-#: src/actions/tracklist_selections.c:1975
+#: src/actions/tracklist_selections.c:1989
 #, c-format
 msgid "Create %d %s Tracks"
 msgstr "%d %s sáv létrehozása"
 
-#: src/actions/tracklist_selections.c:1982
+#: src/actions/tracklist_selections.c:1996
 msgid "Delete Track"
 msgstr "Sáv törlése"
 
-#: src/actions/tracklist_selections.c:1987
+#: src/actions/tracklist_selections.c:2001
 #, c-format
 msgid "Delete %d Tracks"
 msgstr "%d sáv törlése"
 
-#: src/actions/tracklist_selections.c:1999
+#: src/actions/tracklist_selections.c:2013
 msgid "Solo Track"
 msgstr "Sáv szólózása"
 
-#: src/actions/tracklist_selections.c:2001
+#: src/actions/tracklist_selections.c:2015
 msgid "Unsolo Track"
 msgstr "Sáv szólózásának megszüntetése"
 
-#: src/actions/tracklist_selections.c:2004
+#: src/actions/tracklist_selections.c:2018
 msgid "Solo Lane"
 msgstr "Alsáv szólózása"
 
-#: src/actions/tracklist_selections.c:2006
+#: src/actions/tracklist_selections.c:2020
 msgid "Unsolo Lane"
 msgstr "Alsáv szólózásának megszüntetése"
 
-#: src/actions/tracklist_selections.c:2009
+#: src/actions/tracklist_selections.c:2023
 msgid "Mute Track"
 msgstr "Sáv némítása"
 
-#: src/actions/tracklist_selections.c:2011
+#: src/actions/tracklist_selections.c:2025
 msgid "Unmute Track"
 msgstr "Sáv visszahangosítása"
 
-#: src/actions/tracklist_selections.c:2014
+#: src/actions/tracklist_selections.c:2028
 msgid "Mute Lane"
 msgstr "Alsáv némítása"
 
-#: src/actions/tracklist_selections.c:2016
+#: src/actions/tracklist_selections.c:2030
 msgid "Unmute Lane"
 msgstr "Alsáv némításának megszüntetése"
 
-#: src/actions/tracklist_selections.c:2019
+#: src/actions/tracklist_selections.c:2033
 msgid "Listen Track"
 msgstr "Sáv figyelése"
 
-#: src/actions/tracklist_selections.c:2021
+#: src/actions/tracklist_selections.c:2035
 msgid "Unlisten Track"
 msgstr "Sáv figyelésének megszüntetése"
 
-#: src/actions/tracklist_selections.c:2024
+#: src/actions/tracklist_selections.c:2038
 msgid "Enable Track"
 msgstr "Sáv engedélyezése"
 
-#: src/actions/tracklist_selections.c:2026
+#: src/actions/tracklist_selections.c:2040
 msgid "Disable Track"
 msgstr "Sáv letiltása"
 
-#: src/actions/tracklist_selections.c:2029
+#: src/actions/tracklist_selections.c:2043
 msgid "Fold Track"
 msgstr "Sáv összehajtása"
 
-#: src/actions/tracklist_selections.c:2031
+#: src/actions/tracklist_selections.c:2045
 msgid "Unfold Track"
 msgstr "Sáv kihajtása"
 
-#: src/actions/tracklist_selections.c:2033
+#: src/actions/tracklist_selections.c:2047
 msgid "Change Fader"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:2035
+#: src/actions/tracklist_selections.c:2049
 msgid "Change Pan"
 msgstr "Panoráma megváltoztatása"
 
-#: src/actions/tracklist_selections.c:2037
-#: src/actions/tracklist_selections.c:2098
+#: src/actions/tracklist_selections.c:2051
+#: src/actions/tracklist_selections.c:2112
 msgid "Change direct out"
 msgstr "Közvetlen kimenet megváltoztatása"
 
-#: src/actions/tracklist_selections.c:2039
+#: src/actions/tracklist_selections.c:2053
 msgid "Rename track"
 msgstr "Sáv átnevezése"
 
-#: src/actions/tracklist_selections.c:2041
+#: src/actions/tracklist_selections.c:2055
 msgid "Rename lane"
 msgstr "Alsáv átnevezése"
 
-#: src/actions/tracklist_selections.c:2043
-#: src/actions/tracklist_selections.c:2094
+#: src/actions/tracklist_selections.c:2057
+#: src/actions/tracklist_selections.c:2108
 msgid "Change color"
 msgstr "Szín megváltoztatása"
 
-#: src/actions/tracklist_selections.c:2045
+#: src/actions/tracklist_selections.c:2059
 msgid "Change icon"
 msgstr "Ikon megváltoztatása"
 
-#: src/actions/tracklist_selections.c:2047
+#: src/actions/tracklist_selections.c:2061
 msgid "Change comment"
 msgstr "Megjegyzés megváltoztatása"
 
-#: src/actions/tracklist_selections.c:2049
-#: src/actions/tracklist_selections.c:2096
+#: src/actions/tracklist_selections.c:2063
+#: src/actions/tracklist_selections.c:2110
 msgid "Change MIDI fader mode"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:2061
+#: src/actions/tracklist_selections.c:2075
 #, c-format
 msgid "Solo %d Tracks"
 msgstr "%d sáv szólózása"
 
-#: src/actions/tracklist_selections.c:2064
+#: src/actions/tracklist_selections.c:2078
 #, c-format
 msgid "Unsolo %d Tracks"
 msgstr "%d sáv szólózásának megszüntetése"
 
-#: src/actions/tracklist_selections.c:2068
+#: src/actions/tracklist_selections.c:2082
 #, c-format
 msgid "Mute %d Tracks"
 msgstr "%d sáv némítása"
 
-#: src/actions/tracklist_selections.c:2071
+#: src/actions/tracklist_selections.c:2085
 #, c-format
 msgid "Unmute %d Tracks"
 msgstr "%d sáv visszahangosítása"
 
-#: src/actions/tracklist_selections.c:2075
+#: src/actions/tracklist_selections.c:2089
 #, c-format
 msgid "Listen %d Tracks"
 msgstr "%d sáv figyelése"
 
-#: src/actions/tracklist_selections.c:2078
+#: src/actions/tracklist_selections.c:2092
 #, c-format
 msgid "Unlisten %d Tracks"
 msgstr "%d sáv figyelésének megszüntetése"
 
-#: src/actions/tracklist_selections.c:2082
+#: src/actions/tracklist_selections.c:2096
 #, c-format
 msgid "Enable %d Tracks"
 msgstr "%d sáv engedélyezése"
 
-#: src/actions/tracklist_selections.c:2085
+#: src/actions/tracklist_selections.c:2099
 #, c-format
 msgid "Disable %d Tracks"
 msgstr "%d sáv letiltása"
 
-#: src/actions/tracklist_selections.c:2089
+#: src/actions/tracklist_selections.c:2103
 #, c-format
 msgid "Fold %d Tracks"
 msgstr "%d sáv összehajtása"
 
-#: src/actions/tracklist_selections.c:2092
+#: src/actions/tracklist_selections.c:2106
 #, c-format
 msgid "Unfold %d Tracks"
 msgstr "%d sáv kihajtása"
 
-#: src/actions/tracklist_selections.c:2109
+#: src/actions/tracklist_selections.c:2123
 msgid "Move Track inside"
 msgstr "Sáv bemozgatása"
 
-#: src/actions/tracklist_selections.c:2113
+#: src/actions/tracklist_selections.c:2127
 msgid "Move Track"
 msgstr "Sáv mozgatása"
 
-#: src/actions/tracklist_selections.c:2121
+#: src/actions/tracklist_selections.c:2135
 #, c-format
 msgid "Move %d Tracks inside"
 msgstr "%d sáv bemozgatása"
 
-#: src/actions/tracklist_selections.c:2127
+#: src/actions/tracklist_selections.c:2141
 #, c-format
 msgid "Move %d Tracks"
 msgstr "%d sáv mozgatása"
 
-#: src/actions/tracklist_selections.c:2135
+#: src/actions/tracklist_selections.c:2149
 msgid "Pin Track"
 msgstr "Sáv rögzítése"
 
-#: src/actions/tracklist_selections.c:2140
+#: src/actions/tracklist_selections.c:2154
 #, c-format
 msgid "Pin %d Tracks"
 msgstr "%d sáv rögzítése"
 
-#: src/actions/tracklist_selections.c:2145
+#: src/actions/tracklist_selections.c:2159
 msgid "Unpin Track"
 msgstr "Sáv rögzítésének feloldása"
 
-#: src/actions/tracklist_selections.c:2150
+#: src/actions/tracklist_selections.c:2164
 #, c-format
 msgid "Unpin %d Tracks"
 msgstr "%d sáv rögzítésének feloldása"
@@ -1734,88 +1744,97 @@ msgstr "Ütés per ütem megváltoztatása"
 msgid "Beat unit change"
 msgstr "Ütésegység megváltoztatása"
 
-#: src/actions/arranger_selections.c:375
+#: src/actions/arranger_selections.c:298
+#, fuzzy
+msgid "Arranger selections contain an object that cannot be duplicated"
+msgstr "A rendező-kijelölések törölhetetlen objektumot tartalmaznak"
+
+#: src/actions/arranger_selections.c:389
 msgid "Arranger selections contain an undeletable object"
 msgstr "A rendező-kijelölések törölhetetlen objektumot tartalmaznak"
 
-#: src/actions/arranger_selections.c:734
+#: src/actions/arranger_selections.c:455 src/actions/arranger_selections.c:512
+msgid "Cannot rename selected object(s)"
+msgstr ""
+
+#: src/actions/arranger_selections.c:773
 msgid "Attempted to resize unresizable objects"
 msgstr "Nem átméretezhető objektumok átméretezésének kísérlete"
 
-#: src/actions/arranger_selections.c:749
+#: src/actions/arranger_selections.c:788
 #, c-format
 msgid "Cannot perform %s resize - selections contain looped objects"
 msgstr ""
 "%s átméretezése sikertelen - a kijelölés ismételt objektumokat tartalmaz"
 
-#: src/actions/arranger_selections.c:766
+#: src/actions/arranger_selections.c:805
 #, c-format
 msgid "Cannot perform %s resize - selections contain unloopable objects"
 msgstr ""
 "%s átméretezése sikertelen - a kijelölés nem ismételhető objektumokat "
 "tartalmaz"
 
-#: src/actions/arranger_selections.c:2914
+#: src/actions/arranger_selections.c:2953
 msgid "Create timeline selections"
 msgstr "Idővonal-kijelölések létrehozása"
 
-#: src/actions/arranger_selections.c:2916
+#: src/actions/arranger_selections.c:2955
 msgid "Create audio selections"
 msgstr "Audio-kijelölések létrehozása"
 
-#: src/actions/arranger_selections.c:2918
+#: src/actions/arranger_selections.c:2957
 msgid "Create automation selections"
 msgstr "Automatizációs kijelölések létrehozása"
 
-#: src/actions/arranger_selections.c:2920
+#: src/actions/arranger_selections.c:2959
 msgid "Create chord selections"
 msgstr "Akkord-kijelölések létrehozása"
 
-#: src/actions/arranger_selections.c:2922
+#: src/actions/arranger_selections.c:2961
 msgid "Create MIDI selections"
 msgstr "MIDI-kijelölések létrehozása"
 
-#: src/actions/arranger_selections.c:2927
+#: src/actions/arranger_selections.c:2966
 msgid "Delete arranger selections"
 msgstr "Rendező-kijelölések törlése"
 
-#: src/actions/arranger_selections.c:2929
+#: src/actions/arranger_selections.c:2968
 msgid "Duplicate arranger selections"
 msgstr "Rendező-kijelölések kettőzése"
 
-#: src/actions/arranger_selections.c:2931
+#: src/actions/arranger_selections.c:2970
 msgid "Move arranger selections"
 msgstr "Rendező-kijelölések mozgatása"
 
-#: src/actions/arranger_selections.c:2933
+#: src/actions/arranger_selections.c:2972
 msgid "Link arranger selections"
 msgstr "Rendező-kijelölések összekapcsolása"
 
-#: src/actions/arranger_selections.c:2935
+#: src/actions/arranger_selections.c:2974
 msgid "Record arranger selections"
 msgstr "Rendező-kijelölések felvétele"
 
-#: src/actions/arranger_selections.c:2937
+#: src/actions/arranger_selections.c:2976
 msgid "Edit arranger selections"
 msgstr "Rendező-kijelölések szerkesztése"
 
-#: src/actions/arranger_selections.c:2939
+#: src/actions/arranger_selections.c:2978
 msgid "Automation fill"
 msgstr "Automatizáció kitöltés"
 
-#: src/actions/arranger_selections.c:2941
+#: src/actions/arranger_selections.c:2980
 msgid "Split arranger selections"
 msgstr "Rendező-kijelölések szétválasztása"
 
-#: src/actions/arranger_selections.c:2943
+#: src/actions/arranger_selections.c:2982
 msgid "Merge arranger selections"
 msgstr "Rendező-kijelölések összevonása"
 
-#: src/actions/arranger_selections.c:2945
+#: src/actions/arranger_selections.c:2984
 msgid "Resize arranger selections"
 msgstr "Rendező-kijelölések átméretezése"
 
-#: src/actions/arranger_selections.c:2947
+#: src/actions/arranger_selections.c:2986
 msgid "Quantize arranger selections"
 msgstr "Rendező-kijelölések kvantálása"
 
@@ -1873,7 +1892,7 @@ msgid "Could not create plugin"
 msgstr "Bővítmény létrehozása sikertelen"
 
 #: src/actions/mixer_selections_action.c:537 src/audio/audio_function.c:139
-#: src/audio/track.c:2104 src/audio/track.c:3155
+#: src/audio/track.c:2110 src/audio/track.c:3161
 msgid "Failed to instantiate plugin"
 msgstr "Bővítmény példányosítása sikertelen"
 
@@ -2049,9 +2068,9 @@ msgstr "_Megnyitás"
 msgid "Overwrite Plugin"
 msgstr "Bővítmény felülírása"
 
-#: src/utils/dialogs.c:60 src/audio/clip.c:589
-#: src/gui/widgets/dialogs/create_project_dialog.c:126
-#: src/gui/widgets/dialogs/first_run_dialog.c:263
+#: src/utils/dialogs.c:60 src/audio/clip.c:591
+#: src/gui/widgets/dialogs/create_project_dialog.c:124
+#: src/gui/widgets/dialogs/first_run_dialog.c:268
 #: src/gui/widgets/dialogs/bug_report_dialog.c:186
 #: src/plugins/lv2/lv2_gtk.c:263 resources/ui/port_selector_dialog.ui:126
 #: resources/ui/string_entry_dialog.ui:55
@@ -2066,7 +2085,7 @@ msgstr "A kiválasztott helyen már van egy bővítmény. Felülírod?"
 msgid "Error instantiating plugin. Please see log for details."
 msgstr "Bővítmény példányosítása sikertelen. A részletekért lásd a naplót."
 
-#: src/utils/log.c:822
+#: src/utils/log.c:826
 #, c-format
 msgid "%s has encountered an error\n"
 msgstr ""
@@ -2095,180 +2114,199 @@ msgstr ""
 msgid "Adaptive"
 msgstr "Adaptív"
 
-#: src/audio/fader.c:122
+#: src/audio/fader.c:120
 msgid "Prefader Volume"
 msgstr ""
 
-#: src/audio/fader.c:122
+#: src/audio/fader.c:120
 msgid "Fader Volume"
 msgstr ""
 
-#: src/audio/fader.c:151
+#: src/audio/fader.c:149
 msgid "Prefader Balance"
 msgstr ""
 
-#: src/audio/fader.c:151
+#: src/audio/fader.c:149
 msgid "Fader Balance"
 msgstr ""
 
-#: src/audio/fader.c:170
+#: src/audio/fader.c:168
 msgid "Prefader Mute"
 msgstr ""
 
-#: src/audio/fader.c:170
+#: src/audio/fader.c:168
 msgid "Fader Mute"
 msgstr ""
 
-#: src/audio/fader.c:191
+#: src/audio/fader.c:189
 msgid "Prefader Solo"
 msgstr ""
 
-#: src/audio/fader.c:191
+#: src/audio/fader.c:189
 msgid "Fader Solo"
 msgstr ""
 
-#: src/audio/fader.c:205
+#: src/audio/fader.c:203
 msgid "Prefader Listen"
 msgstr ""
 
-#: src/audio/fader.c:205
+#: src/audio/fader.c:203
 msgid "Fader Listen"
 msgstr ""
 
-#: src/audio/fader.c:220
+#: src/audio/fader.c:218
 msgid "Prefader Mono Compat"
 msgstr ""
 
-#: src/audio/fader.c:221
+#: src/audio/fader.c:219
 msgid "Fader Mono Compat"
 msgstr ""
 
-#: src/audio/fader.c:245
+#: src/audio/fader.c:243
 msgid "Ch Pre-Fader in"
 msgstr ""
 
-#: src/audio/fader.c:250
+#: src/audio/fader.c:248
 msgid "Ch Fader in"
 msgstr ""
 
-#: src/audio/fader.c:256
+#: src/audio/fader.c:254
 msgid "Sample Processor Fader in"
 msgstr ""
 
-#: src/audio/fader.c:261
+#: src/audio/fader.c:259
 msgid "Monitor Fader in"
 msgstr ""
 
-#: src/audio/fader.c:279
+#: src/audio/fader.c:277
 msgid "Ch Pre-Fader out"
 msgstr ""
 
-#: src/audio/fader.c:284
+#: src/audio/fader.c:282
 msgid "Ch Fader out"
 msgstr ""
 
-#: src/audio/fader.c:290
+#: src/audio/fader.c:288
 msgid "Sample Processor Fader out"
 msgstr ""
 
-#: src/audio/fader.c:295
+#: src/audio/fader.c:293
 msgid "Monitor Fader out"
 msgstr ""
 
-#: src/audio/fader.c:317
+#: src/audio/fader.c:315
 msgid "Ch MIDI Pre-Fader in"
 msgstr ""
 
-#: src/audio/fader.c:322
+#: src/audio/fader.c:320
 msgid "Ch MIDI Fader in"
 msgstr ""
 
-#: src/audio/fader.c:334
+#: src/audio/fader.c:332
 msgid "Ch MIDI Pre-Fader out"
 msgstr ""
 
-#: src/audio/fader.c:339
+#: src/audio/fader.c:337
 msgid "Ch MIDI Fader out"
 msgstr ""
 
-#: src/audio/fader.c:568
+#: src/audio/fader.c:566
 msgid "Failed to change volume"
 msgstr "Hangerő megváltoztatása sikertelen"
 
-#: src/audio/fader.c:617
+#: src/audio/fader.c:615
 msgid "Failed to set MIDI mode"
 msgstr "MIDI-mód beállítása sikertelen"
+
+#: src/audio/encoder.c:58
+#, c-format
+msgid "An error has occurred opening the audio file '%s'"
+msgstr ""
 
 #: src/audio/marker_track.c:43
 msgid "Markers"
 msgstr "Jelölők"
 
-#: src/audio/marker_track.c:60 src/gui/widgets/timeline_selection_info.c:228
+#: src/audio/marker_track.c:61 src/gui/widgets/timeline_selection_info.c:228
 #: resources/ui/quantize_dialog.ui:62
 msgid "start"
 msgstr "kezdőpont"
 
-#: src/audio/marker_track.c:66 src/gui/widgets/timeline_selection_info.c:234
+#: src/audio/marker_track.c:68 src/gui/widgets/timeline_selection_info.c:234
 #: resources/ui/quantize_dialog.ui:70
 msgid "end"
 msgstr "végpont"
 
-#: src/audio/engine_jack.c:272
+#: src/audio/engine_jack.c:287
 msgid "XRUN occurred - check your JACK configuration"
 msgstr "XRUN történt - ellenőrizd a JACK beállításaidat"
 
-#: src/audio/engine_jack.c:330
+#: src/audio/engine_jack.c:345
 msgid "JACK has shut down"
 msgstr "JACK leállt"
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:580
+#: src/audio/engine_jack.c:595
 msgid "Overall operation failed"
 msgstr "Teljes művelet sikertelen"
 
-#: src/audio/engine_jack.c:586
+#: src/audio/engine_jack.c:601
 msgid "The operation contained an invalid or unsupported option"
 msgstr "A művelet érvénytelen vagy nem támogatott opciót tartalmazott"
 
-#: src/audio/engine_jack.c:592
+#: src/audio/engine_jack.c:607
 msgid "The desired client name was not unique"
 msgstr "A kívánt kliensnév nem egyedi"
 
-#: src/audio/engine_jack.c:596
+#: src/audio/engine_jack.c:611
 msgid "Unable to connect to the JACK server"
 msgstr "A JACK szerverhez történő kapcsolódás sikertelen"
 
-#: src/audio/engine_jack.c:601
+#: src/audio/engine_jack.c:616
 msgid "Communication error with the JACK server"
 msgstr "Kommunikációs hiba a JACK szerverrel"
 
-#: src/audio/engine_jack.c:605
+#: src/audio/engine_jack.c:620
 msgid "Requested client does not exist"
 msgstr "A kért kliens nem létezik"
 
-#: src/audio/engine_jack.c:609
+#: src/audio/engine_jack.c:624
 msgid "Unable to load internal client"
 msgstr "A belső-kliens betöltése sikertelen"
 
-#: src/audio/engine_jack.c:613
+#: src/audio/engine_jack.c:628
 msgid "Unable to initialize client"
 msgstr "A kliens előkészítése sikertelen"
 
-#: src/audio/engine_jack.c:617
+#: src/audio/engine_jack.c:632
 msgid "Unable to access shared memory"
 msgstr "Az osztott memóriához történő hozzáférés sikertelen"
 
-#: src/audio/engine_jack.c:622
+#: src/audio/engine_jack.c:637
 msgid "Client's protocol version does not match"
 msgstr "A klient protokollverziója nem egyezik"
 
-#: src/audio/engine_jack.c:626
+#: src/audio/engine_jack.c:641
 msgid "Backend error"
 msgstr "Háttérrendszer hiba"
 
-#: src/audio/engine_jack.c:630
+#: src/audio/engine_jack.c:645
 msgid "Client zombie"
 msgstr "Zombi-kliens"
+
+#: src/audio/engine_jack.c:735
+msgid "JACK: No physical playback ports found"
+msgstr ""
+
+#: src/audio/engine_jack.c:802 src/gui/widgets/monitor_section.c:237
+#, fuzzy
+msgid "Failed to connect to left monitor output port"
+msgstr "B port csatlakoztatása sikertelen"
+
+#: src/audio/engine_jack.c:810 src/gui/widgets/monitor_section.c:246
+#, fuzzy
+msgid "Failed to connect to right monitor output port"
+msgstr "B port csatlakoztatása sikertelen"
 
 #: src/audio/curve.c:306
 msgid "Exponential"
@@ -2286,7 +2324,7 @@ msgstr "Bővítmény létrehozása sikertelen"
 msgid "Invalid positions - skipping function"
 msgstr "Érvénytelen pozíciók - funkció átugrása"
 
-#: src/audio/audio_function.c:493
+#: src/audio/audio_function.c:497
 msgid "Failed to apply plugin"
 msgstr "Bővítmény alkalmazása sikertelen"
 
@@ -2329,20 +2367,20 @@ msgstr "Sáv szólózása sikertelen"
 msgid "Cannot set track listened"
 msgstr "Sáv figyelése sikertelen"
 
-#: src/audio/track.c:2843 src/settings/plugin_settings.c:403
+#: src/audio/track.c:2849 src/settings/plugin_settings.c:403
 #: src/settings/plugin_settings.c:445
 msgid "Failed to rename track"
 msgstr "Sáv átnevezése sikertelen"
 
-#: src/audio/track.c:3203 src/audio/track.c:3248
+#: src/audio/track.c:3209 src/audio/track.c:3254
 msgid "Cannot set track comment"
 msgstr "Sáv megjegyzésének beállítása sikertelen"
 
-#: src/audio/track.c:3284
+#: src/audio/track.c:3290
 msgid "Cannot set track icon"
 msgstr "Sáv ikonjának beállítása sikertelen"
 
-#: src/audio/track.c:3519
+#: src/audio/track.c:3525
 msgid "Cannot set track enabled"
 msgstr "Sáv engedélyezése sikertelen"
 
@@ -2359,7 +2397,7 @@ msgid "Latch"
 msgstr ""
 
 #: src/audio/region.c:469 src/gui/widgets/track.c:966
-#: build/data/org.zrythm.Zrythm.gschema.xml:1144
+#: build/data/org.zrythm.Zrythm.gschema.xml:1149
 msgid "Automation"
 msgstr "Automatizáció"
 
@@ -2432,7 +2470,7 @@ msgstr ""
 "Az SNDFILE megnyitása sikertelen:%s\n"
 "%d: %s"
 
-#: src/audio/exporter.c:870 src/audio/exporter.c:877
+#: src/audio/exporter.c:895 src/audio/exporter.c:902
 msgid "Failed to create audio track"
 msgstr "Audio-sáv létrehozása sikertelen"
 
@@ -2467,16 +2505,16 @@ msgstr "Nincs implementálva"
 msgid "Chords"
 msgstr "Akkordok"
 
-#: src/audio/clip.c:587
+#: src/audio/clip.c:589
 msgid "Edit in external app"
 msgstr "Szerkesztés külső alkalmazásban"
 
-#: src/audio/clip.c:606
+#: src/audio/clip.c:608
 #, c-format
 msgid "Edit the file at <u>%s</u>, then press OK"
 msgstr "Szerkeszd a <u>%s</u> fájlt, majd nyomj OK-t"
 
-#: src/audio/clip.c:618
+#: src/audio/clip.c:620
 msgid "Launch"
 msgstr "Indítás"
 
@@ -2591,28 +2629,28 @@ msgstr "%s bemenet"
 msgid "PortAudio Error: %s"
 msgstr "PortAudio hiba: %s"
 
-#: src/audio/tracklist.c:1275
+#: src/audio/tracklist.c:1278
 msgid "No file was found"
 msgstr "Fájl nem található"
 
-#: src/audio/tracklist.c:1300
+#: src/audio/tracklist.c:1303
 #, c-format
 msgid "Unsupported file type %s"
 msgstr "Nem támogatott fájltípus: %s"
 
-#: src/audio/tracklist.c:1319
+#: src/audio/tracklist.c:1322
 msgid "This MIDI file contains no data"
 msgstr ""
 
-#: src/audio/tracklist.c:1336
+#: src/audio/tracklist.c:1339
 msgid "Can only drop 1 file at a time on existing tracks"
 msgstr "Meglévő sávokra egyszerre csak egy fájl dobható"
 
-#: src/audio/tracklist.c:1349
+#: src/audio/tracklist.c:1352
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
 msgstr "MIDI/hangszer sávokra csak MIDI-fájlok dobhatóak"
 
-#: src/audio/tracklist.c:1359
+#: src/audio/tracklist.c:1362
 #, c-format
 msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
@@ -2620,40 +2658,40 @@ msgid ""
 msgstr ""
 "Ez a MIDI-fájl %d sávot tartalmaz. Nem lehet egy már meglévő sávra dobni"
 
-#: src/audio/tracklist.c:1374
+#: src/audio/tracklist.c:1377
 msgid "Can only drop audio files on audio tracks"
 msgstr "Audio-sávokra csak audio-fájlok dobhatóak"
 
-#: src/audio/tracklist.c:1426
+#: src/audio/tracklist.c:1429
 msgid "Failed to create arranger objects"
 msgstr "Rendező-objektumok létrehozása sikertelen"
 
-#: src/audio/tracklist.c:1490
+#: src/audio/tracklist.c:1493
 msgid "Failed to move tracks after copying or moving inside folder"
 msgstr ""
 "Sávok mappába másolása vagy mozgatása után történő mozgatása sikertelen"
 
-#: src/audio/tracklist.c:1568
+#: src/audio/tracklist.c:1571
 msgid "Failed to copy tracks inside"
 msgstr "Sávok bemásolása sikertelen"
 
-#: src/audio/tracklist.c:1610
+#: src/audio/tracklist.c:1613
 msgid "Failed to copy track inside"
 msgstr "Sáv bemásolása sikertelen"
 
-#: src/audio/tracklist.c:1651
+#: src/audio/tracklist.c:1654
 msgid "Failed to copy tracks"
 msgstr "Sávok másolása sikertelen"
 
-#: src/audio/tracklist.c:1676
+#: src/audio/tracklist.c:1679
 msgid "Cannot drag folder into itself"
 msgstr "A mappa nem húzható önmagába"
 
-#: src/audio/tracklist.c:1694 src/audio/tracklist.c:1738
+#: src/audio/tracklist.c:1697 src/audio/tracklist.c:1741
 msgid "Failed to move track inside folder"
 msgstr "Sáv mappába történő mozgatása sikertelen"
 
-#: src/audio/tracklist.c:1779
+#: src/audio/tracklist.c:1782
 msgid "Failed to move tracks"
 msgstr "Sávok mozgatása sikertelen"
 
@@ -2690,12 +2728,12 @@ msgstr "Saját könyvtár"
 msgid "Desktop"
 msgstr "Asztal"
 
-#: src/gui/backend/tracklist_selections.c:722
+#: src/gui/backend/tracklist_selections.c:706
 #, c-format
 msgid "Failed to clone track '%s'"
 msgstr "'%s' sáv klónozása sikertelen"
 
-#: src/gui/backend/tracklist_selections.c:760
+#: src/gui/backend/tracklist_selections.c:744
 msgid "Failed to paste tracks"
 msgstr "Sávok beillesztése sikertelen"
 
@@ -2712,7 +2750,7 @@ msgstr "Bővítmény-előbeállítás elmentve."
 msgid "Plugin preset loaded."
 msgstr "Bővítmény-előbeállítás betöltve."
 
-#: src/gui/backend/arranger_selections.c:2394
+#: src/gui/backend/arranger_selections.c:2415
 msgid "Failed to paste selections"
 msgstr "Kijelölések beillesztése sikertelen"
 
@@ -2730,7 +2768,7 @@ msgid "Failed to rename object"
 msgstr "Objektum átnevezése sikertelen"
 
 #: src/gui/widgets/inspector_port.c:140 src/gui/widgets/fader.c:275
-#: src/gui/widgets/preferences.c:304 src/gui/widgets/modulator_inner.c:154
+#: src/gui/widgets/preferences.c:300 src/gui/widgets/modulator_inner.c:154
 #: src/gui/widgets/modulator_macro.c:155 src/gui/widgets/balance_control.c:267
 #: src/gui/widgets/plugin_browser.c:614 src/gui/widgets/plugin_browser.c:661
 msgid "Reset"
@@ -2891,17 +2929,17 @@ msgstr ""
 "Amennyiben mentés nélkül lépsz ki, a mentetlen változtatásaid el fognak "
 "veszni."
 
-#: src/gui/widgets/main_window.c:727 src/gui/widgets/preferences.c:957
+#: src/gui/widgets/main_window.c:756 src/gui/widgets/preferences.c:955
 #: resources/ui/file_auditioner_controls.ui:34 resources/gtk/menus.ui:40
 #: resources/gtk/help-overlay.ui:39
 msgid "Preferences"
 msgstr "Beállítások"
 
-#: src/gui/widgets/main_window.c:728
+#: src/gui/widgets/main_window.c:757
 msgid "Log viewer"
 msgstr "Naplófigyelő"
 
-#: src/gui/widgets/main_window.c:729
+#: src/gui/widgets/main_window.c:758
 msgid "Scripting interface"
 msgstr "Szkriptelő felület"
 
@@ -2915,29 +2953,29 @@ msgstr "Kapcsolat"
 msgid "About %s"
 msgstr "%s névjegye"
 
-#: src/gui/widgets/preferences.c:169
+#: src/gui/widgets/preferences.c:165
 msgid "All preferences have been successfully reset to initial values"
 msgstr ""
 
-#: src/gui/widgets/preferences.c:511
+#: src/gui/widgets/preferences.c:506
 msgid "Select a folder"
 msgstr "Válassz egy mappát"
 
-#: src/gui/widgets/preferences.c:512
+#: src/gui/widgets/preferences.c:507
 msgid "Select a file"
 msgstr "Válassz egy fájlt"
 
-#: src/gui/widgets/preferences.c:720
-#: build/data/org.zrythm.Zrythm.gschema.xml:1062
+#: src/gui/widgets/preferences.c:718
+#: build/data/org.zrythm.Zrythm.gschema.xml:1067
 #, fuzzy
 msgid "Other"
 msgstr "Szórás"
 
-#: src/gui/widgets/preferences.c:739
+#: src/gui/widgets/preferences.c:737
 msgid "Reset all preferences to initial values."
 msgstr ""
 
-#: src/gui/widgets/preferences.c:943
+#: src/gui/widgets/preferences.c:941
 #, c-format
 msgid "Some changes will only take effect after you restart %s"
 msgstr "Egyes módosítások csak %s újraindítása után lépnek életbe"
@@ -3078,17 +3116,17 @@ msgid "Curviness"
 msgstr "Görbület"
 
 #: src/gui/widgets/file_auditioner_controls.c:216
-#: build/data/org.zrythm.Zrythm.gschema.xml:589
+#: build/data/org.zrythm.Zrythm.gschema.xml:594
 msgid "Autoplay"
 msgstr "Automatikus lejátszás"
 
 #: src/gui/widgets/file_auditioner_controls.c:220
-#: build/data/org.zrythm.Zrythm.gschema.xml:594
+#: build/data/org.zrythm.Zrythm.gschema.xml:599
 msgid "Show unsupported files"
 msgstr "Nem támogatott fájlok megjelenítése"
 
 #: src/gui/widgets/file_auditioner_controls.c:223
-#: build/data/org.zrythm.Zrythm.gschema.xml:599
+#: build/data/org.zrythm.Zrythm.gschema.xml:604
 msgid "Show hidden files"
 msgstr "Rejtett fájlok megjelenítése"
 
@@ -3210,7 +3248,7 @@ msgstr "Összehajtás"
 msgid "Unfold"
 msgstr "Kihajtás"
 
-#: src/gui/widgets/track.c:655 src/gui/widgets/arranger.c:2286
+#: src/gui/widgets/track.c:655 src/gui/widgets/arranger.c:2328
 #: resources/ui/string_entry_dialog.ui:23
 msgid "Marker name"
 msgstr "Jelölő neve"
@@ -3290,12 +3328,12 @@ msgid "New direct out"
 msgstr "Új közvetlen kimenet"
 
 #: src/gui/widgets/track.c:863 src/gui/widgets/bot_bar.c:476
-#: src/gui/widgets/channel.c:714 src/gui/widgets/dialogs/export_dialog.c:1117
+#: src/gui/widgets/channel.c:714 src/gui/widgets/dialogs/export_dialog.c:1124
 msgid "Disable"
 msgstr "Letiltás"
 
 #: src/gui/widgets/track.c:870 src/gui/widgets/bot_bar.c:476
-#: src/gui/widgets/channel.c:721 src/gui/widgets/dialogs/export_dialog.c:1107
+#: src/gui/widgets/channel.c:721 src/gui/widgets/dialogs/export_dialog.c:1114
 msgid "Enable"
 msgstr "Engedélyezés"
 
@@ -3345,7 +3383,7 @@ msgid "Add track"
 msgstr "Effektus-sáv hozzáadása"
 
 #: src/gui/widgets/automation_arranger.c:217
-#: build/data/org.zrythm.Zrythm.gschema.xml:1148
+#: build/data/org.zrythm.Zrythm.gschema.xml:1153
 msgid "Curve algorithm"
 msgstr "Görbe-algoritmus"
 
@@ -3385,6 +3423,7 @@ msgstr "Előbeállítások"
 
 #: src/gui/widgets/plugin_properties_expander.c:277
 #: src/gui/widgets/project_toolbar.c:40
+#: src/gui/widgets/file_chooser_entry.c:123
 msgid "Save"
 msgstr "Mentés"
 
@@ -3400,33 +3439,33 @@ msgstr "Betöltés"
 msgid "Load preset"
 msgstr "Előbeállítás betöltése"
 
-#: src/gui/widgets/arranger.c:1308
+#: src/gui/widgets/arranger.c:1325
 #, fuzzy
 msgid "Create object"
 msgstr "Új projekt létrehozása"
 
-#: src/gui/widgets/arranger.c:1603 src/gui/widgets/arranger.c:1622
-#: src/gui/widgets/arranger.c:1667 src/gui/widgets/arranger.c:1733
-#: src/gui/widgets/arranger.c:1752
+#: src/gui/widgets/arranger.c:1633 src/gui/widgets/arranger.c:1652
+#: src/gui/widgets/arranger.c:1697 src/gui/widgets/arranger.c:1763
+#: src/gui/widgets/arranger.c:1782
 msgid "Failed to move selection"
 msgstr "Kijelölés mozgatása sikertelen"
 
-#: src/gui/widgets/arranger.c:1686 src/gui/widgets/arranger.c:3972
+#: src/gui/widgets/arranger.c:1716 src/gui/widgets/arranger.c:4020
 msgid "Failed to move chords"
 msgstr "Akkordok mozgatása sikertelen"
 
-#: src/gui/widgets/arranger.c:2316
+#: src/gui/widgets/arranger.c:2358
 #, fuzzy
 msgid "Automation value"
 msgstr "Automatizációs értékek megjelenítése"
 
-#: src/gui/widgets/arranger.c:2341
+#: src/gui/widgets/arranger.c:2383
 msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
 "Az átméretezés sikertelen, mert a kijelölés hossz nélküli objektumokat "
 "tartalmaz"
 
-#: src/gui/widgets/arranger.c:2366
+#: src/gui/widgets/arranger.c:2408
 msgid ""
 "Cannot resize because the selection contains a mix of looped and unloopable "
 "objects"
@@ -3434,94 +3473,95 @@ msgstr ""
 "Az átméretezés sikertelen, mert a kijelölés ismételt és nem ismételt "
 "objektumok keverékét tartalmazza"
 
-#: src/gui/widgets/arranger.c:3523
+#: src/gui/widgets/arranger.c:3571
 msgid "Failed to delete selection"
 msgstr "Kijelölés törlése sikertelen"
 
-#: src/gui/widgets/arranger.c:3547 src/gui/widgets/arranger.c:4139
+#: src/gui/widgets/arranger.c:3595 src/gui/widgets/arranger.c:4187
 msgid "Failed to edit selection"
 msgstr "Kijelölés szerkesztése sikertelen"
 
-#: src/gui/widgets/arranger.c:3596
+#: src/gui/widgets/arranger.c:3644
 msgid "Failed to move automation"
 msgstr "Automatizáció mozgatása sikertelen"
 
-#: src/gui/widgets/arranger.c:3619
+#: src/gui/widgets/arranger.c:3667
 msgid "Failed to duplicate automation"
 msgstr "Automatizáció kettőzése sikertelen"
 
-#: src/gui/widgets/arranger.c:3640 src/gui/widgets/arranger.c:4012
-#: src/gui/widgets/arranger.c:4436
+#: src/gui/widgets/arranger.c:3688 src/gui/widgets/arranger.c:4060
+#: src/gui/widgets/arranger.c:4499
 msgid "Failed to create objects"
 msgstr "Objektumok létrehozása sikertelen"
 
-#: src/gui/widgets/arranger.c:3660
+#: src/gui/widgets/arranger.c:3708
 msgid "Failed to fill automation"
 msgstr "Automatizáció kitöltése sikertelen"
 
-#: src/gui/widgets/arranger.c:3690 src/gui/widgets/arranger.c:3735
-#: src/gui/widgets/arranger.c:3756 src/gui/widgets/timeline_arranger.c:891
+#: src/gui/widgets/arranger.c:3738 src/gui/widgets/arranger.c:3783
+#: src/gui/widgets/arranger.c:3804 src/gui/widgets/timeline_arranger.c:891
 msgid "Failed to edit selections"
 msgstr "Kijelölések szerkesztése sikertelen"
 
-#: src/gui/widgets/arranger.c:3787 src/gui/widgets/arranger.c:3809
+#: src/gui/widgets/arranger.c:3835 src/gui/widgets/arranger.c:3857
 msgid "Failed to resize objects"
 msgstr "Objektumok átméretezése sikertelen"
 
-#: src/gui/widgets/arranger.c:3819 src/gui/widgets/arranger.c:3865
+#: src/gui/widgets/arranger.c:3867 src/gui/widgets/arranger.c:3913
 msgid "Failed to move MIDI notes"
 msgstr "MIDI hangjegyek mozgatása sikertelen"
 
-#: src/gui/widgets/arranger.c:3888
+#: src/gui/widgets/arranger.c:3936
 msgid "Failed to duplicate MIDI notes"
 msgstr "MIDI hangjegyek kettőzése sikertelen"
 
-#: src/gui/widgets/arranger.c:3909
+#: src/gui/widgets/arranger.c:3957
 msgid "Failed to create MIDI notes"
 msgstr "MIDI hangjegyek létrehozása sikertelen"
 
-#: src/gui/widgets/arranger.c:3992
+#: src/gui/widgets/arranger.c:4040
 msgid "Failed to duplicate chords"
 msgstr "Akkordok kettőzése sikertelen"
 
-#: src/gui/widgets/arranger.c:4079 src/gui/widgets/arranger.c:4337
+#: src/gui/widgets/arranger.c:4127 src/gui/widgets/arranger.c:4385
 msgid "Failed resizing selection"
 msgstr "Kijelölés átméretezése sikertelen"
 
-#: src/gui/widgets/arranger.c:4172
+#: src/gui/widgets/arranger.c:4220
 msgid "Failed to edit timeline objects"
 msgstr "Idővonal objektumok szerkesztése sikertelen"
 
-#: src/gui/widgets/arranger.c:4193 src/gui/widgets/arranger.c:4214
+#: src/gui/widgets/arranger.c:4241 src/gui/widgets/arranger.c:4262
 msgid "Failed to resize timeline objects"
 msgstr "Idővonal objektumok átméretezése sikertelen"
 
-#: src/gui/widgets/arranger.c:4234
+#: src/gui/widgets/arranger.c:4282
 msgid "Failed to resize selection"
 msgstr "Kijelölés átméretezése sikertelen"
 
-#: src/gui/widgets/arranger.c:4255
+#: src/gui/widgets/arranger.c:4303
 msgid "Failed setting fade in position"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:4276 src/gui/widgets/arranger.c:4298
-#: src/gui/widgets/arranger.c:4317
+#: src/gui/widgets/arranger.c:4324 src/gui/widgets/arranger.c:4346
+#: src/gui/widgets/arranger.c:4365
 msgid "Failed resizing selections"
 msgstr "Kijelölések átméretezése sikertelen"
 
-#: src/gui/widgets/arranger.c:4377
+#: src/gui/widgets/arranger.c:4441
 msgid "Failed to move objects"
 msgstr "Objekumok mozgatása sikertelen"
 
-#: src/gui/widgets/arranger.c:4414
-msgid "Failed to link or move selection"
+#: src/gui/widgets/arranger.c:4478
+#, fuzzy
+msgid "Failed to link or copy selection"
 msgstr "Kijelölés mozgatása vagy összekapcsolása sikertelen"
 
-#: src/gui/widgets/arranger.c:4466
+#: src/gui/widgets/arranger.c:4536
 msgid "Failed to split selection"
 msgstr "Kijelölés szétválasztása sikertelen"
 
-#: src/gui/widgets/arranger.c:4477
+#: src/gui/widgets/arranger.c:4547
 #, c-format
 msgid "%s name"
 msgstr "%s név"
@@ -3620,7 +3660,7 @@ msgstr "Vizsgálás"
 msgid "Plugin"
 msgstr "Bővítmény"
 
-#: src/gui/widgets/channel_slot.c:707
+#: src/gui/widgets/channel_slot.c:707 src/gui/widgets/file_chooser_entry.c:118
 msgid "Select"
 msgstr "Kiválasztás"
 
@@ -3675,7 +3715,7 @@ msgid "Create takes (mute previous)"
 msgstr "Próbafelvételek készítése (előző némítása)"
 
 #: src/gui/widgets/transport_controls.c:396
-#: build/data/org.zrythm.Zrythm.gschema.xml:970
+#: build/data/org.zrythm.Zrythm.gschema.xml:975
 msgid "Recording mode"
 msgstr "Felvételi mód"
 
@@ -3696,7 +3736,7 @@ msgid "Redo"
 msgstr "Újra"
 
 #: src/gui/widgets/home_toolbar.c:45
-#: build/data/org.zrythm.Zrythm.gschema.xml:1158
+#: build/data/org.zrythm.Zrythm.gschema.xml:1163
 msgid "Undo"
 msgstr "Visszavonás"
 
@@ -3748,6 +3788,11 @@ msgstr "Forrás"
 #: src/gui/widgets/port_connections_tree.c:254
 msgid "Multiplier"
 msgstr "Szorzó"
+
+#: src/gui/widgets/track_canvas.c:759
+#, fuzzy
+msgid "Scales"
+msgstr "Hangsor"
 
 #: src/gui/widgets/track_input_expander.c:282
 msgid "All MIDI Inputs"
@@ -3803,7 +3848,7 @@ msgid "MIDI channel to filter to"
 msgstr "MIDI csatornaszűrő"
 
 #: src/gui/widgets/track_input_expander.c:631
-#: src/gui/widgets/monitor_section.c:293
+#: src/gui/widgets/monitor_section.c:310
 msgid "Mono"
 msgstr "Monó"
 
@@ -3815,7 +3860,7 @@ msgstr "Erősítés"
 msgid "Inputs"
 msgstr "Bemenetek"
 
-#: src/gui/widgets/monitor_section.c:51 src/gui/widgets/monitor_section.c:300
+#: src/gui/widgets/monitor_section.c:51 src/gui/widgets/monitor_section.c:317
 msgid "Dim"
 msgstr ""
 
@@ -3858,27 +3903,27 @@ msgstr "Összes sáv visszahangosítása sikertelen"
 msgid "Failed to unlisten all tracks"
 msgstr "Összes sáv figyelésének megszüntetése sikertelen"
 
-#: src/gui/widgets/monitor_section.c:347
+#: src/gui/widgets/monitor_section.c:364
 msgid "Unsolo all tracks"
 msgstr "Összes sáv szólózásának megszüntetése"
 
-#: src/gui/widgets/monitor_section.c:349
+#: src/gui/widgets/monitor_section.c:366
 msgid "Unmute all tracks"
 msgstr "Összes sáv visszahangosítása"
 
-#: src/gui/widgets/monitor_section.c:352
+#: src/gui/widgets/monitor_section.c:369
 msgid "Unlisten all tracks"
 msgstr "Összes sáv figyelésének megszüntetése"
 
-#: src/gui/widgets/monitor_section.c:398
+#: src/gui/widgets/monitor_section.c:415
 msgid "Soloing"
 msgstr "Szólózás"
 
-#: src/gui/widgets/monitor_section.c:402
+#: src/gui/widgets/monitor_section.c:419
 msgid "Muting"
 msgstr "Némítás"
 
-#: src/gui/widgets/monitor_section.c:406
+#: src/gui/widgets/monitor_section.c:423
 msgid "Listening"
 msgstr "Figyelés"
 
@@ -4001,6 +4046,21 @@ msgstr "akkord"
 msgid "Failed to edit position"
 msgstr "Pozíció szerkesztése sikertelen"
 
+#: src/gui/widgets/file_chooser_entry.c:113
+#: src/gui/widgets/file_chooser_entry.c:172
+#, fuzzy
+msgid "Open"
+msgstr "_Megnyitás"
+
+#: src/gui/widgets/file_chooser_entry.c:171 resources/ui/bounce_dialog.ui:93
+#: resources/ui/bind_cc_dialog.ui:36 resources/ui/generic_progress_dialog.ui:52
+msgid "Cancel"
+msgstr "Mégsem"
+
+#: src/gui/widgets/file_chooser_entry.c:459
+msgid "Browse…"
+msgstr ""
+
 #: src/gui/widgets/balance_control.c:249
 msgid "Failed to change balance"
 msgstr "Panoráma megváltoztatása sikertelen"
@@ -4023,31 +4083,31 @@ msgstr "Funkció kiválasztása"
 msgid "Plugin Effect"
 msgstr "Bővítmény effektus"
 
-#: src/gui/widgets/editor_toolbar.c:181 src/gui/widgets/editor_toolbar.c:207
-#: src/gui/widgets/editor_toolbar.c:228
+#: src/gui/widgets/editor_toolbar.c:189 src/gui/widgets/editor_toolbar.c:224
+#: src/gui/widgets/editor_toolbar.c:245
 #, c-format
 msgid "Apply %s"
 msgstr "%s alkalmazása"
 
-#: src/gui/widgets/editor_toolbar.c:184 src/gui/widgets/editor_toolbar.c:210
-#: src/gui/widgets/editor_toolbar.c:231
+#: src/gui/widgets/editor_toolbar.c:192 src/gui/widgets/editor_toolbar.c:227
+#: src/gui/widgets/editor_toolbar.c:248
 #, c-format
 msgid "Apply %s with previous settings"
 msgstr "%s alkalmazása előző beállításokkal"
 
-#: src/gui/widgets/editor_toolbar.c:271
+#: src/gui/widgets/editor_toolbar.c:288
 msgid "No Highlight"
 msgstr "Nincs kiemelés"
 
-#: src/gui/widgets/editor_toolbar.c:275
+#: src/gui/widgets/editor_toolbar.c:292
 msgid "Highlight Chord"
 msgstr "Akkord kiemelése"
 
-#: src/gui/widgets/editor_toolbar.c:279
+#: src/gui/widgets/editor_toolbar.c:296
 msgid "Highlight Scale"
 msgstr "Hangsor kiemelése"
 
-#: src/gui/widgets/editor_toolbar.c:283
+#: src/gui/widgets/editor_toolbar.c:300
 msgid "Highlight Both"
 msgstr "Mindkettő kiemelése"
 
@@ -4468,7 +4528,7 @@ msgid "Select MIDI file"
 msgstr "MIDI-fájl kiválasztása"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:139
-#: src/gui/widgets/dialogs/export_dialog.c:1416
+#: src/gui/widgets/dialogs/export_dialog.c:1423
 msgid "_Export"
 msgstr "_Exportálás"
 
@@ -4529,7 +4589,7 @@ msgid "Scripting Interface"
 msgstr "Szkriptelő felület"
 
 #: src/gui/widgets/dialogs/scripting_dialog.c:107
-#: src/gui/widgets/dialogs/first_run_dialog.c:210
+#: src/gui/widgets/dialogs/first_run_dialog.c:211
 msgid "Language"
 msgstr "Nyelv"
 
@@ -4579,50 +4639,50 @@ msgstr "az alábbi könyvtárban:"
 msgid "No tracks to export"
 msgstr "Nincsenek exportálandó sávok"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1262
+#: src/gui/widgets/dialogs/export_dialog.c:1269
 msgid "<name>.<format>"
 msgstr "<név>.<formátum>"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1263
+#: src/gui/widgets/dialogs/export_dialog.c:1270
 msgid "<date>_<name>.<format>"
 msgstr "<dátum>_<név>.<formátum>"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1297
+#: src/gui/widgets/dialogs/export_dialog.c:1304
 msgid "Mixdown"
 msgstr "Lekeverés"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1298
+#: src/gui/widgets/dialogs/export_dialog.c:1305
 msgid "Stems"
 msgstr ""
 
-#: src/gui/widgets/dialogs/export_dialog.c:1324
+#: src/gui/widgets/dialogs/export_dialog.c:1331
 #, fuzzy
 msgctxt "Export time range"
 msgid "Loop"
 msgstr "Ismétlés"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1325
+#: src/gui/widgets/dialogs/export_dialog.c:1332
 #, fuzzy
 msgctxt "Export time range"
 msgid "Song"
 msgstr "Dal"
 
-#: src/gui/widgets/dialogs/export_dialog.c:1326
+#: src/gui/widgets/dialogs/export_dialog.c:1333
 #, fuzzy
 msgctxt "Export time range"
 msgid "Custom"
 msgstr "Egyedi"
 
-#: src/gui/widgets/dialogs/create_project_dialog.c:88
+#: src/gui/widgets/dialogs/create_project_dialog.c:84
 msgid "Create New Project"
 msgstr "Új projekt létrehozása"
 
 #. get next available "Untitled Project"
-#: src/gui/widgets/dialogs/create_project_dialog.c:95
+#: src/gui/widgets/dialogs/create_project_dialog.c:93
 msgid "Untitled Project"
 msgstr "Névtelen projekt"
 
-#: src/gui/widgets/dialogs/create_project_dialog.c:132
+#: src/gui/widgets/dialogs/create_project_dialog.c:129
 msgid "Select parent directory to save the project in"
 msgstr "Válaszd ki a projekt mentésének szülőkönyvtárát"
 
@@ -4651,33 +4711,33 @@ msgstr "Megnyitja a tartalmazó könyvtárat"
 msgid "Running %s version <b>%s</b>%s%s"
 msgstr "%s verzió futtatva <b>%s</b>%s%s"
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:169
+#: src/gui/widgets/dialogs/first_run_dialog.c:170
 msgid "Setup Zrythm"
 msgstr "Zrythm beállítása"
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:201
+#: src/gui/widgets/dialogs/first_run_dialog.c:202
 msgid "Initial Configuration"
 msgstr ""
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:211
+#: src/gui/widgets/dialogs/first_run_dialog.c:212
 #, fuzzy
 msgid "Preferred language"
 msgstr "Felhasználói felület nyelve"
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:228
+#: src/gui/widgets/dialogs/first_run_dialog.c:229
 #, fuzzy
 msgid "User path"
 msgstr "Útvonal kiválasztása"
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:230
+#: src/gui/widgets/dialogs/first_run_dialog.c:231
 msgid "Location to save user files"
 msgstr ""
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:232
+#: src/gui/widgets/dialogs/first_run_dialog.c:234
 msgid "Select a directory"
 msgstr "Válassz egy könyvtárat"
 
-#: src/gui/widgets/dialogs/first_run_dialog.c:263
+#: src/gui/widgets/dialogs/first_run_dialog.c:268
 #, fuzzy
 msgid "_Reset"
 msgstr "Visszaállítás"
@@ -4827,7 +4887,7 @@ msgstr ""
 msgid "Preview and send _automatically (privately)"
 msgstr ""
 
-#: src/gui/widgets/dialogs/about_dialog.c:56
+#: src/gui/widgets/dialogs/about_dialog.c:57
 msgid "a highly automated and intuitive digital audio workstation"
 msgstr ""
 "egy magas szinten automatizált és intuitív digitális audio munkaállomás"
@@ -5784,19 +5844,24 @@ msgstr "Súgó"
 msgid "MIDI in activity"
 msgstr "MIDI aktivitás"
 
-#: resources/ui/editor_toolbar.ui:140 resources/ui/timeline_toolbar.ui:105
+#: resources/ui/editor_toolbar.ui:140
+#, fuzzy
+msgid "Toggle ghost note visibility"
+msgstr "Jobb panel be/ki"
+
+#: resources/ui/editor_toolbar.ui:155 resources/ui/timeline_toolbar.ui:105
 msgid "Toggle event viewer"
 msgstr "Eseménynézegető be/ki"
 
-#: resources/ui/editor_toolbar.ui:163 resources/ui/editor_toolbar.ui:206
+#: resources/ui/editor_toolbar.ui:178 resources/ui/editor_toolbar.ui:221
 msgid "Flip"
 msgstr "Tükrözés"
 
-#: resources/ui/editor_toolbar.ui:165 resources/ui/editor_toolbar.ui:208
+#: resources/ui/editor_toolbar.ui:180 resources/ui/editor_toolbar.ui:223
 msgid "Horizontal"
 msgstr "Vízszintes"
 
-#: resources/ui/editor_toolbar.ui:171 resources/ui/editor_toolbar.ui:214
+#: resources/ui/editor_toolbar.ui:186 resources/ui/editor_toolbar.ui:229
 msgid "Vertical"
 msgstr "Függőleges"
 
@@ -5939,26 +6004,26 @@ msgid "Metadata"
 msgstr ""
 
 #: resources/ui/export_dialog.ui:42 resources/ui/export_dialog.ui:163
-#: build/data/org.zrythm.Zrythm.gschema.xml:850
-#: build/data/org.zrythm.Zrythm.gschema.xml:899
+#: build/data/org.zrythm.Zrythm.gschema.xml:855
+#: build/data/org.zrythm.Zrythm.gschema.xml:904
 msgid "Title"
 msgstr "Cím"
 
 #: resources/ui/export_dialog.ui:47 resources/ui/export_dialog.ui:168
-#: build/data/org.zrythm.Zrythm.gschema.xml:845
-#: build/data/org.zrythm.Zrythm.gschema.xml:894
+#: build/data/org.zrythm.Zrythm.gschema.xml:850
+#: build/data/org.zrythm.Zrythm.gschema.xml:899
 msgid "Artist"
 msgstr "Előadó"
 
 #: resources/ui/export_dialog.ui:52 resources/ui/export_dialog.ui:173
-#: build/data/org.zrythm.Zrythm.gschema.xml:840
-#: build/data/org.zrythm.Zrythm.gschema.xml:889
+#: build/data/org.zrythm.Zrythm.gschema.xml:845
+#: build/data/org.zrythm.Zrythm.gschema.xml:894
 msgid "Genre"
 msgstr "Műfaj"
 
 #: resources/ui/export_dialog.ui:62 resources/ui/export_dialog.ui:183
-#: build/data/org.zrythm.Zrythm.gschema.xml:860
-#: build/data/org.zrythm.Zrythm.gschema.xml:910
+#: build/data/org.zrythm.Zrythm.gschema.xml:865
+#: build/data/org.zrythm.Zrythm.gschema.xml:915
 msgid "Format"
 msgstr "Formátum"
 
@@ -5968,7 +6033,7 @@ msgid "Bit Depth"
 msgstr "Bitmélység"
 
 #: resources/ui/export_dialog.ui:72
-#: build/data/org.zrythm.Zrythm.gschema.xml:870
+#: build/data/org.zrythm.Zrythm.gschema.xml:875
 msgid "Dither"
 msgstr "Szórás"
 
@@ -5988,8 +6053,8 @@ msgid ""
 msgstr ""
 
 #: resources/ui/export_dialog.ui:105 resources/ui/export_dialog.ui:229
-#: build/data/org.zrythm.Zrythm.gschema.xml:855
-#: build/data/org.zrythm.Zrythm.gschema.xml:904
+#: build/data/org.zrythm.Zrythm.gschema.xml:860
+#: build/data/org.zrythm.Zrythm.gschema.xml:909
 msgid "Time range"
 msgstr "Időtartomány"
 
@@ -6141,11 +6206,6 @@ msgstr "ms"
 msgid "Disable after bounce"
 msgstr ""
 
-#: resources/ui/bounce_dialog.ui:93 resources/ui/bind_cc_dialog.ui:36
-#: resources/ui/generic_progress_dialog.ui:52
-msgid "Cancel"
-msgstr "Mégsem"
-
 #: resources/ui/chord_key.ui:7
 msgid "Amin 7"
 msgstr "Amin 7"
@@ -6205,13 +6265,13 @@ msgid "Global Shortcuts"
 msgstr "Globális gyorsbillentyűk"
 
 #: resources/gtk/help-overlay.ui:35
-#: build/data/org.zrythm.Zrythm.gschema.xml:984
-#: build/data/org.zrythm.Zrythm.gschema.xml:1033
-#: build/data/org.zrythm.Zrythm.gschema.xml:1047
-#: build/data/org.zrythm.Zrythm.gschema.xml:1061
-#: build/data/org.zrythm.Zrythm.gschema.xml:1173
-#: build/data/org.zrythm.Zrythm.gschema.xml:1188
-#: build/data/org.zrythm.Zrythm.gschema.xml:1242
+#: build/data/org.zrythm.Zrythm.gschema.xml:989
+#: build/data/org.zrythm.Zrythm.gschema.xml:1038
+#: build/data/org.zrythm.Zrythm.gschema.xml:1052
+#: build/data/org.zrythm.Zrythm.gschema.xml:1066
+#: build/data/org.zrythm.Zrythm.gschema.xml:1178
+#: build/data/org.zrythm.Zrythm.gschema.xml:1193
+#: build/data/org.zrythm.Zrythm.gschema.xml:1247
 msgid "General"
 msgstr "Általános"
 
@@ -6614,20 +6674,29 @@ msgid "Whether to listen to MIDI notes while dragging them in the piano roll."
 msgstr "Lejátsza-e vagy sem a zongoratekercsen húzott MIDI-hangjegyeket."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:411
+msgid "Ghost notes"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:412
+#, fuzzy
+msgid "Whether to show notes of other regions in the piano roll."
+msgstr "Lejátsza-e vagy sem a zongoratekercsen húzott MIDI-hangjegyeket."
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:416
 msgid "Piano roll highlight"
 msgstr "Zongoratekercs kiemelése"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:412
+#: build/data/org.zrythm.Zrythm.gschema.xml:417
 msgid "Whether to highlight chords, scales, both or none in the piano roll."
 msgstr ""
 "Akkordok és hangsorok kiemelése a zongoratekercsen (akkord vagy hangsor, "
 "mindkettő, egyik sem)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:416
+#: build/data/org.zrythm.Zrythm.gschema.xml:421
 msgid "Piano roll MIDI modifier"
 msgstr "Zongoratekercs MIDI-módosítója"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:417
+#: build/data/org.zrythm.Zrythm.gschema.xml:422
 msgid ""
 "The MIDI modifier to display in the MIDI editor (only velocity is valid at "
 "the moment)."
@@ -6635,125 +6704,125 @@ msgstr ""
 "A MIDI-szerkesztőben megjelenítendő MIDI-módosító (jelenleg csak a sebesség "
 "érvényes)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:421
+#: build/data/org.zrythm.Zrythm.gschema.xml:426
 msgid "Show automation values"
 msgstr "Automatizációs értékek megjelenítése"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:422
+#: build/data/org.zrythm.Zrythm.gschema.xml:427
 msgid "Whether to show automation values in the automation editor."
 msgstr ""
 "Megjelenítse-e vagy sem az automatizációs értékeket az automatizáció "
 "szerkesztőben."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:426
+#: build/data/org.zrythm.Zrythm.gschema.xml:431
 msgid "Browser divider position"
 msgstr "Böngésző elválasztójának pozíciója"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:427
+#: build/data/org.zrythm.Zrythm.gschema.xml:432
 msgid "Height of the top part of the plugin/file browser."
 msgstr "A bővítmény- és fájlböngésző felső részének magassága."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:431
+#: build/data/org.zrythm.Zrythm.gschema.xml:436
 msgid "Left panel divider position"
 msgstr "Bal panel elválasztójának pozíciója"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:432
+#: build/data/org.zrythm.Zrythm.gschema.xml:437
 msgid "Position of the resize handle of the left panel."
 msgstr "A bal panel méretező-fogantyújának pozíciója."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:436
+#: build/data/org.zrythm.Zrythm.gschema.xml:441
 msgid "Left panel tab index"
 msgstr "Bal panel fülének sorszáma"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:437
+#: build/data/org.zrythm.Zrythm.gschema.xml:442
 msgid "Index of the currently opened left panel tab."
 msgstr "A jelenleg megnyitott bal panel fülének sorszáma."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:441
+#: build/data/org.zrythm.Zrythm.gschema.xml:446
 msgid "Right panel divider position"
 msgstr "Jobb panel elválasztójának pozíciója"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:442
+#: build/data/org.zrythm.Zrythm.gschema.xml:447
 msgid "Position of the resize handle of the right panel."
 msgstr "A jobb panel méretező-fogantyújának pozíciója."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:446
+#: build/data/org.zrythm.Zrythm.gschema.xml:451
 msgid "Right panel tab index"
 msgstr "Jobb panel fülének sorszáma"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:447
+#: build/data/org.zrythm.Zrythm.gschema.xml:452
 msgid "Index of the currently opened right panel tab."
 msgstr "A jelenleg megnyitott jobb panel fülének sorszáma."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:451
+#: build/data/org.zrythm.Zrythm.gschema.xml:456
 msgid "Bot panel divider position"
 msgstr "Alsó panel elválasztójának pozíciója"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:452
+#: build/data/org.zrythm.Zrythm.gschema.xml:457
 msgid "Position of the resize handle of the bot panel."
 msgstr "Az alsó panel méretező-fogantyújának pozíciója."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:456
+#: build/data/org.zrythm.Zrythm.gschema.xml:461
 msgid "Bot panel tab index"
 msgstr "Alsó panel fülének sorszáma"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:457
+#: build/data/org.zrythm.Zrythm.gschema.xml:462
 msgid "Index of the currently opened bottom panel tab."
 msgstr "A jelenleg megnyitott alsó panel fülének sorszáma."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:461
+#: build/data/org.zrythm.Zrythm.gschema.xml:466
 msgid "Timeline event viewer visibility"
 msgstr "Idővonal eseménynézegetőjének láthatósága"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:462
+#: build/data/org.zrythm.Zrythm.gschema.xml:467
 msgid "Whether the timeline event viewer is visible or not."
 msgstr "Az idővonal eseménynézegetője látható-e, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:466
+#: build/data/org.zrythm.Zrythm.gschema.xml:471
 msgid "Editor event viewer visibility"
 msgstr "Szerkesztő eseménynézegetőjének láthatósága"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:467
+#: build/data/org.zrythm.Zrythm.gschema.xml:472
 msgid "Whether the editor event viewer is visible."
 msgstr "A szerkesztő eseménynézegetője látható-e, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:471
+#: build/data/org.zrythm.Zrythm.gschema.xml:476
 msgid "Playhead display type"
 msgstr "Lejátszófej megjelenítésének típusa"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:472
+#: build/data/org.zrythm.Zrythm.gschema.xml:477
 msgid "Selected playhead display type (BBT/time)."
 msgstr "A kiválasztott lejátszófej-megjelenítés típusa (BBT/idő)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:476
+#: build/data/org.zrythm.Zrythm.gschema.xml:481
 msgid "JACK transport type"
 msgstr "JACK transzport típusa"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:477
+#: build/data/org.zrythm.Zrythm.gschema.xml:482
 msgid "Selected JACK transport behavior (master/client/none)"
 msgstr "Kiválasztott JACK transzport viselkedés (mester/kliens/nincs)"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:481
+#: build/data/org.zrythm.Zrythm.gschema.xml:486
 msgid "Ruler display type"
 msgstr "Vonalzó megjelenítésének típusa"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:482
+#: build/data/org.zrythm.Zrythm.gschema.xml:487
 msgid "Selected ruler display type (BBT/time)."
 msgstr "Kiválasztott vonalzó-megjelenítés típusa (BBT/idő)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:486
+#: build/data/org.zrythm.Zrythm.gschema.xml:491
 msgid "Selected editing tool"
 msgstr "Kiválasztott szerkesztőeszköz"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:487
+#: build/data/org.zrythm.Zrythm.gschema.xml:492
 msgid "Selected editing tool."
 msgstr "Kiválasztott szerkesztőeszköz."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:491
+#: build/data/org.zrythm.Zrythm.gschema.xml:496
 msgid "Last used MIDI function"
 msgstr "Legutóbb használt MIDI-funkció"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:492
+#: build/data/org.zrythm.Zrythm.gschema.xml:497
 msgid ""
 "Last used MIDI function (index corresponding to enum in midi function "
 "action)."
@@ -6761,11 +6830,11 @@ msgstr ""
 "A legutóbb használt MIDI-funkció (a MIDI-funkció művelet felsorolási "
 "típusának megfelelő sorszám)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:496
+#: build/data/org.zrythm.Zrythm.gschema.xml:501
 msgid "Last used automation function"
 msgstr "Legutóbb használt automatizációs funkció"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:497
+#: build/data/org.zrythm.Zrythm.gschema.xml:502
 msgid ""
 "Last used automation function (index corresponding to enum in automation "
 "function action)."
@@ -6773,11 +6842,11 @@ msgstr ""
 "A legutóbb használt automatizációs funkció (az automatizációs funkció "
 "művelet felsorolási típusának megfelelő sorszám)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:501
+#: build/data/org.zrythm.Zrythm.gschema.xml:506
 msgid "Last used audio function"
 msgstr "Legutóbb használt audio-funkció"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:502
+#: build/data/org.zrythm.Zrythm.gschema.xml:507
 msgid ""
 "Last used audio function (index corresponding to enum in audio function "
 "action)."
@@ -6785,760 +6854,760 @@ msgstr ""
 "A legutóbb használt audio-funkció (az audio-funkció művelet felsorolási "
 "típusának megfelelő sorszám)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:506
+#: build/data/org.zrythm.Zrythm.gschema.xml:511
 msgid "Playhead scroll edges (timeline)"
 msgstr "Lejátszófej görget-e a széleken (idővonal)"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:507
+#: build/data/org.zrythm.Zrythm.gschema.xml:512
 msgid ""
 "Whether to scroll when the playhead reaches the visible edge (timeline)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:511
+#: build/data/org.zrythm.Zrythm.gschema.xml:516
 msgid "Follow playhead (timeline)"
 msgstr "Lejátszófej követése (idővonal)"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:512
+#: build/data/org.zrythm.Zrythm.gschema.xml:517
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (timeline)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:516
+#: build/data/org.zrythm.Zrythm.gschema.xml:521
 msgid "Playhead scroll edges (editor)"
 msgstr "Lejátszófej görget-e a széleken (szerkesztő)"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:517
+#: build/data/org.zrythm.Zrythm.gschema.xml:522
 msgid "Whether to scroll when the playhead reaches the visible edge (editor)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:521
+#: build/data/org.zrythm.Zrythm.gschema.xml:526
 msgid "Follow playhead (editor)"
 msgstr "Lejátszófej követése (szerkesztő)"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:522
+#: build/data/org.zrythm.Zrythm.gschema.xml:527
 msgid ""
 "Whether to follow the playhead. When this is on, the visible area will stay "
 "centered on the playhead (editor)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:526
+#: build/data/org.zrythm.Zrythm.gschema.xml:531
 #, fuzzy
 msgid "Track filter name"
 msgstr "Sáv neve"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:527
+#: build/data/org.zrythm.Zrythm.gschema.xml:532
 #, fuzzy
 msgid "Name to filter tracks with."
 msgstr "Sávok törlése sikertelen"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:531
+#: build/data/org.zrythm.Zrythm.gschema.xml:536
 #, fuzzy
 msgid "Track filter type"
 msgstr "Sávláthatóság"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:532
+#: build/data/org.zrythm.Zrythm.gschema.xml:537
 msgid "Track types to filter tracks with."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:540
+#: build/data/org.zrythm.Zrythm.gschema.xml:545
 msgid "Plugin browser tab"
 msgstr "Bővítményböngésző fül"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:541
+#: build/data/org.zrythm.Zrythm.gschema.xml:546
 msgid "Selected plugin browser tab."
 msgstr "A kiválasztott bővítményböngésző fül."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:545
+#: build/data/org.zrythm.Zrythm.gschema.xml:550
 msgid "Plugin browser filter"
 msgstr "Bővítményböngésző szűrő"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:546
+#: build/data/org.zrythm.Zrythm.gschema.xml:551
 msgid "Selected plugin browser filter"
 msgstr "A kiválasztott bővítményböngésző szűrő"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:550
+#: build/data/org.zrythm.Zrythm.gschema.xml:555
 #, fuzzy
 msgid "Plugin browser sort style"
 msgstr "Bővítményböngésző mérete"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:551
+#: build/data/org.zrythm.Zrythm.gschema.xml:556
 #, fuzzy
 msgid "Selected plugin browser sort style"
 msgstr "A kiválasztott bővítményböngésző szűrő"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:555
+#: build/data/org.zrythm.Zrythm.gschema.xml:560
 msgid "Plugin browser collections"
 msgstr "Bővítményböngésző gyűjtemények"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:556
+#: build/data/org.zrythm.Zrythm.gschema.xml:561
 msgid "Tree paths of the selected collections in the plugin browser."
 msgstr "A bővítményböngésző kiválasztott gyűjteményeinek fa-útvonalai."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:560
+#: build/data/org.zrythm.Zrythm.gschema.xml:565
 msgid "Plugin browser authors"
 msgstr "Bővítményböngésző szerzők"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:561
+#: build/data/org.zrythm.Zrythm.gschema.xml:566
 msgid "Tree paths of the selected authors in the plugin browser."
 msgstr "A bővítményböngésző kiválasztott szerzőinek fa-útvonalai."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:565
+#: build/data/org.zrythm.Zrythm.gschema.xml:570
 msgid "Plugin browser categories"
 msgstr "Bővítményböngésző kategóriák"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:566
+#: build/data/org.zrythm.Zrythm.gschema.xml:571
 msgid "Tree paths of the selected categories in the plugin browser."
 msgstr "A bővítményböngésző kiválasztott kategóriáinak fa-útvonalai."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:570
+#: build/data/org.zrythm.Zrythm.gschema.xml:575
 msgid "Plugin browser protocols"
 msgstr "Bővítményböngésző protokollok"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:571
+#: build/data/org.zrythm.Zrythm.gschema.xml:576
 msgid "Tree paths of the selected protocols in the plugin browser."
 msgstr "A bővítményböngésző kiválasztott protokolljainak fa-útvonalai."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:579
+#: build/data/org.zrythm.Zrythm.gschema.xml:584
 msgid "File browser bookmarks"
 msgstr "Fájlböngésző könyvjelzők"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:580
+#: build/data/org.zrythm.Zrythm.gschema.xml:585
 msgid "Location bookmarks for file browser (absolute paths)."
 msgstr "A fájlböngésző útvonal-könyvjelzői (abszolút útvonalak)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:584
+#: build/data/org.zrythm.Zrythm.gschema.xml:589
 msgid "File browser selected bookmark"
 msgstr "Kiválasztott fájlböngésző könyvjelző"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:585
+#: build/data/org.zrythm.Zrythm.gschema.xml:590
 msgid "Selected bookmark in file browser."
 msgstr "A fájlböngésző kiválasztott könyvjelzője."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:590
+#: build/data/org.zrythm.Zrythm.gschema.xml:595
 msgid "Whether to autoplay the selected file."
 msgstr "A kiválasztott fájlokat automatikusa lejátsza-e, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:595
+#: build/data/org.zrythm.Zrythm.gschema.xml:600
 msgid "Whether to show unsupported files in the file browser."
 msgstr "A fájlböngésző mutassa-e, vagy sem a nem támogatott fájlokat."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:600
+#: build/data/org.zrythm.Zrythm.gschema.xml:605
 msgid "Whether to show hidden files in the file browser."
 msgstr "A fájlböngésző mutassa-e, vagy sem a rejtett fájlokat."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:604
+#: build/data/org.zrythm.Zrythm.gschema.xml:609
 msgid "File browser filter"
 msgstr "Fájlböngésző szűrő"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:605
+#: build/data/org.zrythm.Zrythm.gschema.xml:610
 msgid "Selected file browser filter"
 msgstr "A kiválasztott fájlböngésző szűrő"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:609
+#: build/data/org.zrythm.Zrythm.gschema.xml:614
 msgid "Last location"
 msgstr "Legutóbbi hely"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:610
+#: build/data/org.zrythm.Zrythm.gschema.xml:615
 msgid "Last visited location."
 msgstr "A legutóbb meglátogatott hely."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:615
+#: build/data/org.zrythm.Zrythm.gschema.xml:620
 msgid "Instrument plugin to use for MIDI auditioning."
 msgstr "MIDI hangpróbához használandó hangszerbővítmény."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:623
+#: build/data/org.zrythm.Zrythm.gschema.xml:628
 msgid "Inserts expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:624
+#: build/data/org.zrythm.Zrythm.gschema.xml:629
 msgid "Whether inserts are expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:628
+#: build/data/org.zrythm.Zrythm.gschema.xml:633
 msgid "MIDI FX expanded"
 msgstr "Lenyitott MIDI effektusok"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:629
+#: build/data/org.zrythm.Zrythm.gschema.xml:634
 msgid "Whether MIDI FX are expanded."
 msgstr "A MIDI effektusok le vannak-e nyitva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:633
+#: build/data/org.zrythm.Zrythm.gschema.xml:638
 msgid "Sends expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:634
+#: build/data/org.zrythm.Zrythm.gschema.xml:639
 msgid "Whether sends are expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:642
+#: build/data/org.zrythm.Zrythm.gschema.xml:647
 msgid "Track properties expanded"
 msgstr "Lenyitott sáv tulajdonságok"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:643
+#: build/data/org.zrythm.Zrythm.gschema.xml:648
 msgid "Whether track properties is expanded."
 msgstr "A sáv tulajdonságok le vannak-e nyitva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:647
+#: build/data/org.zrythm.Zrythm.gschema.xml:652
 msgid "Track outputs expanded"
 msgstr "Lenyitott sáv kimenetek"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:648
+#: build/data/org.zrythm.Zrythm.gschema.xml:653
 msgid "Whether track outputs is expanded."
 msgstr "A sáv kimenetek le vannak-e nyitva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:652
+#: build/data/org.zrythm.Zrythm.gschema.xml:657
 msgid "Track sends expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:653
+#: build/data/org.zrythm.Zrythm.gschema.xml:658
 msgid "Whether track sends is expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:657
+#: build/data/org.zrythm.Zrythm.gschema.xml:662
 msgid "Track inputs expanded"
 msgstr "Lenyitott sáv bemenetek"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:658
+#: build/data/org.zrythm.Zrythm.gschema.xml:663
 msgid "Whether track inputs is expanded."
 msgstr "A sáv bemenetek le vannak-e nyitva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:662
+#: build/data/org.zrythm.Zrythm.gschema.xml:667
 msgid "Track controls expanded"
 msgstr "Lenyitott sávvezérlők"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:663
+#: build/data/org.zrythm.Zrythm.gschema.xml:668
 msgid "Whether track controls is expanded."
 msgstr "A sávvezérlők le vannak-e nyitva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:667
+#: build/data/org.zrythm.Zrythm.gschema.xml:672
 msgid "Track inserts expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:668
+#: build/data/org.zrythm.Zrythm.gschema.xml:673
 msgid "Whether track inserts is expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:672
+#: build/data/org.zrythm.Zrythm.gschema.xml:677
 msgid "Track midi-fx expanded"
 msgstr "Lenyitott sáv MIDI-effektusok"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:673
+#: build/data/org.zrythm.Zrythm.gschema.xml:678
 msgid "Whether track midi-fx is expanded."
 msgstr "A sáv MIDI-effektusok le vannak-e nyitva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:677
+#: build/data/org.zrythm.Zrythm.gschema.xml:682
 msgid "Track fader expanded"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:678
+#: build/data/org.zrythm.Zrythm.gschema.xml:683
 msgid "Whether track fader is expanded."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:682
+#: build/data/org.zrythm.Zrythm.gschema.xml:687
 msgid "Track comment expanded"
 msgstr "Lenyitott sáv megjegyzés"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:683
+#: build/data/org.zrythm.Zrythm.gschema.xml:688
 msgid "Whether track comment is expanded."
 msgstr "A sáv megjegyzés le van-e nyitva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:691
+#: build/data/org.zrythm.Zrythm.gschema.xml:696
 msgid "Track visibility detached"
 msgstr "Leválasztott sávláthatóság"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:692
+#: build/data/org.zrythm.Zrythm.gschema.xml:697
 msgid "Whether the track visibility panel is detached."
 msgstr "A sávláthatóság panel le van-e választva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:696
+#: build/data/org.zrythm.Zrythm.gschema.xml:701
 msgid "Track visibility size"
 msgstr "Sávláthatóság mérete"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:697
+#: build/data/org.zrythm.Zrythm.gschema.xml:702
 msgid "Track visibility panel size when detached."
 msgstr "A leválasztott sávláthatóság panel mérete."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:701
+#: build/data/org.zrythm.Zrythm.gschema.xml:706
 msgid "Track inspector detached"
 msgstr "Leválasztott sávvizsgáló"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:702
+#: build/data/org.zrythm.Zrythm.gschema.xml:707
 msgid "Whether the track inspector panel is detached."
 msgstr "A sávvizsgáló panel le van-e választva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:706
+#: build/data/org.zrythm.Zrythm.gschema.xml:711
 msgid "Track inspector size"
 msgstr "Sávvizsgáló mérete"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:707
+#: build/data/org.zrythm.Zrythm.gschema.xml:712
 msgid "Track inspector panel size when detached."
 msgstr "A leválasztott sávvizsgáló panel mérete."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:711
+#: build/data/org.zrythm.Zrythm.gschema.xml:716
 msgid "Plugin inspector detached"
 msgstr "Leválasztott bővítményvizsgáló"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:712
+#: build/data/org.zrythm.Zrythm.gschema.xml:717
 msgid "Whether the plugin inspector panel is detached."
 msgstr "A bővítményvizsgáló panel le van-e választva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:716
+#: build/data/org.zrythm.Zrythm.gschema.xml:721
 msgid "Plugin inspector size"
 msgstr "Bővítményvizsgáló mérete"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:717
+#: build/data/org.zrythm.Zrythm.gschema.xml:722
 msgid "Plugin inspector panel size when detached."
 msgstr "A leválasztott bővítményvizsgáló panel mérete."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:721
+#: build/data/org.zrythm.Zrythm.gschema.xml:726
 msgid "Plugin browser detached"
 msgstr "Leválasztott bővítményböngésző"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:722
+#: build/data/org.zrythm.Zrythm.gschema.xml:727
 msgid "Whether the plugin browser panel is detached."
 msgstr "A bővítményböngésző panel le van-e választva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:726
+#: build/data/org.zrythm.Zrythm.gschema.xml:731
 msgid "Plugin browser size"
 msgstr "Bővítményböngésző mérete"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:727
+#: build/data/org.zrythm.Zrythm.gschema.xml:732
 msgid "Plugin browser panel size when detached."
 msgstr "A leválasztott bővítményböngésző panel mérete."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:731
+#: build/data/org.zrythm.Zrythm.gschema.xml:736
 msgid "File browser detached"
 msgstr "Leválasztott fájlböngésző"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:732
+#: build/data/org.zrythm.Zrythm.gschema.xml:737
 msgid "Whether the file browser panel is detached."
 msgstr "A fájlböngésző panel le van-e választva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:736
+#: build/data/org.zrythm.Zrythm.gschema.xml:741
 msgid "Chord pack browser detached"
 msgstr "Leválasztott akkordcsomag-böngésző"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:737
+#: build/data/org.zrythm.Zrythm.gschema.xml:742
 msgid "Whether the chord pack browser panel is detached."
 msgstr "Az akkordcsomag-böngésző le van-e választva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:741
+#: build/data/org.zrythm.Zrythm.gschema.xml:746
 msgid "File browser size"
 msgstr "Fájlböngésző mérete"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:742
+#: build/data/org.zrythm.Zrythm.gschema.xml:747
 msgid "File browser panel size when detached."
 msgstr "A leválasztott fájlböngésző panel mérete."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:746
+#: build/data/org.zrythm.Zrythm.gschema.xml:751
 msgid "Monitor section detached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:747
+#: build/data/org.zrythm.Zrythm.gschema.xml:752
 msgid "Whether the monitor section panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:751
+#: build/data/org.zrythm.Zrythm.gschema.xml:756
 msgid "Monitor section size"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:752
+#: build/data/org.zrythm.Zrythm.gschema.xml:757
 msgid "Monitor section panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:756
+#: build/data/org.zrythm.Zrythm.gschema.xml:761
 msgid "Modulator view detached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:757
+#: build/data/org.zrythm.Zrythm.gschema.xml:762
 msgid "Whether the modulator view panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:761
+#: build/data/org.zrythm.Zrythm.gschema.xml:766
 msgid "Modulator view size"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:762
+#: build/data/org.zrythm.Zrythm.gschema.xml:767
 msgid "Modulator view panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:766
+#: build/data/org.zrythm.Zrythm.gschema.xml:771
 msgid "Mixer detached"
 msgstr "Leválasztott keverő"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:767
+#: build/data/org.zrythm.Zrythm.gschema.xml:772
 msgid "Whether the mixer panel is detached."
 msgstr "A keverőpanel le van-e választva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:771
+#: build/data/org.zrythm.Zrythm.gschema.xml:776
 msgid "Mixer size"
 msgstr "Keverő mérete"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:772
+#: build/data/org.zrythm.Zrythm.gschema.xml:777
 msgid "Mixer panel size when detached."
 msgstr "A leválasztott keverőpanel mérete."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:776
+#: build/data/org.zrythm.Zrythm.gschema.xml:781
 msgid "Clip editor detached"
 msgstr "Leválasztott klipszerkesztő"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:777
+#: build/data/org.zrythm.Zrythm.gschema.xml:782
 msgid "Whether the clip editor panel is detached."
 msgstr "A klipszerkesztő panel le van-e választva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:781
+#: build/data/org.zrythm.Zrythm.gschema.xml:786
 msgid "Clip editor size"
 msgstr "Klipszerkesztő mérete"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:782
+#: build/data/org.zrythm.Zrythm.gschema.xml:787
 msgid "Clip editor panel size when detached."
 msgstr "A leválasztott klipszerkesztő panel mérete."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:786
+#: build/data/org.zrythm.Zrythm.gschema.xml:791
 msgid "Chord pad detached"
 msgstr "Leválasztott akkord-pad"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:787
+#: build/data/org.zrythm.Zrythm.gschema.xml:792
 msgid "Whether the chord pad panel is detached."
 msgstr "Az akkord-pad panel le van-e választva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:791
+#: build/data/org.zrythm.Zrythm.gschema.xml:796
 msgid "Chord pad size"
 msgstr "Akkord-pad mérete"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:792
+#: build/data/org.zrythm.Zrythm.gschema.xml:797
 msgid "Chord pad panel size when detached."
 msgstr "A leválasztott akkord-pad panel mérete."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:796
+#: build/data/org.zrythm.Zrythm.gschema.xml:801
 msgid "Timeline detached"
 msgstr "Leválasztott idővonal"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:797
+#: build/data/org.zrythm.Zrythm.gschema.xml:802
 msgid "Whether the timeline panel is detached."
 msgstr "A idővonal panel le van-e választva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:801
+#: build/data/org.zrythm.Zrythm.gschema.xml:806
 msgid "Timeline size"
 msgstr "Idővonal mérete"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:802
+#: build/data/org.zrythm.Zrythm.gschema.xml:807
 msgid "Timeline panel size when detached."
 msgstr "A leválasztott idővonal mérete."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:806
+#: build/data/org.zrythm.Zrythm.gschema.xml:811
 msgid "CC bindings detached"
 msgstr "Leválasztott CC hozzárendelések"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:807
+#: build/data/org.zrythm.Zrythm.gschema.xml:812
 msgid "Whether the CC bindings panel is detached."
 msgstr "A CC hozzárendelések panel le van-e választva, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:811
+#: build/data/org.zrythm.Zrythm.gschema.xml:816
 msgid "CC bindings size"
 msgstr "CC hozzárendelések mérete"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:812
+#: build/data/org.zrythm.Zrythm.gschema.xml:817
 msgid "CC bindings panel size when detached."
 msgstr "A leválasztott CC hozzárendelések panel mérete."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:816
+#: build/data/org.zrythm.Zrythm.gschema.xml:821
 msgid "Port connections detached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:817
+#: build/data/org.zrythm.Zrythm.gschema.xml:822
 msgid "Whether the port connections panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:821
+#: build/data/org.zrythm.Zrythm.gschema.xml:826
 msgid "Port connections size"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:822
+#: build/data/org.zrythm.Zrythm.gschema.xml:827
 msgid "Port connections panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:826
+#: build/data/org.zrythm.Zrythm.gschema.xml:831
 msgid "Scenes detached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:827
+#: build/data/org.zrythm.Zrythm.gschema.xml:832
 msgid "Whether the scenes panel is detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:831
+#: build/data/org.zrythm.Zrythm.gschema.xml:836
 msgid "Scenes size"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:832
+#: build/data/org.zrythm.Zrythm.gschema.xml:837
 msgid "Scenes panel size when detached."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:841
+#: build/data/org.zrythm.Zrythm.gschema.xml:846
 msgid "Genre to use when exporting, if the file type supports it."
 msgstr "Exportáláskor használandó műfaj, amennyiben a fájltípus támogatja."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:846
+#: build/data/org.zrythm.Zrythm.gschema.xml:851
 msgid "Artist to use when exporting, if the file type supports it."
 msgstr "Exportáláskor használandó előadó, amennyiben a fájltípus támogatja."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:851
+#: build/data/org.zrythm.Zrythm.gschema.xml:856
 msgid "Title to use when exporting, if the file type supports it."
 msgstr "Exportáláskor használandó cím, amennyiben a fájltípus támogatja."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:856
-#: build/data/org.zrythm.Zrythm.gschema.xml:905
+#: build/data/org.zrythm.Zrythm.gschema.xml:861
+#: build/data/org.zrythm.Zrythm.gschema.xml:910
 msgid "Time range to export."
 msgstr "Az exportálandó időtartomány."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:861
+#: build/data/org.zrythm.Zrythm.gschema.xml:866
 msgid "Format to export to."
 msgstr "Az exportálásnál használandó formátum."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:865
-#: build/data/org.zrythm.Zrythm.gschema.xml:915
+#: build/data/org.zrythm.Zrythm.gschema.xml:870
+#: build/data/org.zrythm.Zrythm.gschema.xml:920
 msgid "Filename pattern"
 msgstr "Fájlnév minta"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:866
-#: build/data/org.zrythm.Zrythm.gschema.xml:916
+#: build/data/org.zrythm.Zrythm.gschema.xml:871
+#: build/data/org.zrythm.Zrythm.gschema.xml:921
 msgid "Filename pattern for exported files."
 msgstr "Az exportált fájlok fájlnév mintája."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:871
+#: build/data/org.zrythm.Zrythm.gschema.xml:876
 msgid "Add low level noise to reduce errors on lower bit depths."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:875
-#: build/data/org.zrythm.Zrythm.gschema.xml:925
+#: build/data/org.zrythm.Zrythm.gschema.xml:880
+#: build/data/org.zrythm.Zrythm.gschema.xml:930
 msgid "Export stems"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:876
-#: build/data/org.zrythm.Zrythm.gschema.xml:926
+#: build/data/org.zrythm.Zrythm.gschema.xml:881
+#: build/data/org.zrythm.Zrythm.gschema.xml:931
 msgid "Whether to export stems instead of the mixdown."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:880
+#: build/data/org.zrythm.Zrythm.gschema.xml:885
 msgid "Bit depth"
 msgstr "Bitmélység"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:881
+#: build/data/org.zrythm.Zrythm.gschema.xml:886
 msgid "Bit depth to use when exporting"
-msgstr "Exportáláskor használandó bitmélység"
-
-#: build/data/org.zrythm.Zrythm.gschema.xml:890
-#, fuzzy
-msgid "Genre to use when exporting."
 msgstr "Exportáláskor használandó bitmélység"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:895
 #, fuzzy
-msgid "Artist to use when exporting."
+msgid "Genre to use when exporting."
 msgstr "Exportáláskor használandó bitmélység"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:900
 #, fuzzy
+msgid "Artist to use when exporting."
+msgstr "Exportáláskor használandó bitmélység"
+
+#: build/data/org.zrythm.Zrythm.gschema.xml:905
+#, fuzzy
 msgid "Title to use when exporting."
 msgstr "Exportáláskor használandó bitmélység"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:911
+#: build/data/org.zrythm.Zrythm.gschema.xml:916
 msgid "MIDI file format (Type 0 or 1)."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:920
+#: build/data/org.zrythm.Zrythm.gschema.xml:925
 msgid "Lanes as tracks"
 msgstr "Alsávok sávokként"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:921
+#: build/data/org.zrythm.Zrythm.gschema.xml:926
 msgid "Export track lanes as separate MIDI tracks."
 msgstr "Alsávok exportálása különálló MIDI sávokként."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:934
+#: build/data/org.zrythm.Zrythm.gschema.xml:939
 msgid "Transport loop"
 msgstr "Transzport ismétlés"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:935
+#: build/data/org.zrythm.Zrythm.gschema.xml:940
 msgid "Whether looping is enabled."
 msgstr "At ismétlés engedélyezve van-e, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:939
+#: build/data/org.zrythm.Zrythm.gschema.xml:944
 msgid "Return to cue"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:940
+#: build/data/org.zrythm.Zrythm.gschema.xml:945
 msgid "Whether return to cue on stop is enabled."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:944
+#: build/data/org.zrythm.Zrythm.gschema.xml:949
 msgid "Metronome enabled"
 msgstr "Metronóm engedélyezve"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:945
+#: build/data/org.zrythm.Zrythm.gschema.xml:950
 msgid "Whether the metronome is enabled."
 msgstr "A metronóm engedélyezve van-e, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:950
+#: build/data/org.zrythm.Zrythm.gschema.xml:955
 msgid "Metronome volume"
 msgstr "Metronóm hangereje"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:951
+#: build/data/org.zrythm.Zrythm.gschema.xml:956
 msgid "The metronome volume in amplitude (0 to 2)."
 msgstr "A metronóm hangerejének amplitúdója (0 és 2 között)."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:955
+#: build/data/org.zrythm.Zrythm.gschema.xml:960
 msgid "Metronome Count-in"
 msgstr "Metronóm beszámolás"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:956
+#: build/data/org.zrythm.Zrythm.gschema.xml:961
 msgid "Count-in bars for the metronome."
 msgstr "A metronóm beszámolási ütemei."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:960
+#: build/data/org.zrythm.Zrythm.gschema.xml:965
 msgid "Punch mode enabled"
 msgstr "Bekötési mód engedélyezve"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:961
+#: build/data/org.zrythm.Zrythm.gschema.xml:966
 msgid "Whether punch in/out is enabled for recording."
 msgstr "Felvételkor használt bekötési mód engedélyezve van-e, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:965
+#: build/data/org.zrythm.Zrythm.gschema.xml:970
 msgid "Start playback on MIDI input"
 msgstr "Lejátszás indítása MIDI-bemenetre"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:966
+#: build/data/org.zrythm.Zrythm.gschema.xml:971
 msgid "Whether to start playback on MIDI input."
 msgstr "Elindítsa-e a lejátszást MIDI-bemenetre, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:971
+#: build/data/org.zrythm.Zrythm.gschema.xml:976
 msgid "Recording mode."
 msgstr "Felvételi mód."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:975
+#: build/data/org.zrythm.Zrythm.gschema.xml:980
 msgid "Recording Pre-Roll"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:976
+#: build/data/org.zrythm.Zrythm.gschema.xml:981
 msgid "Number of bars to pre-roll when recording."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:985
+#: build/data/org.zrythm.Zrythm.gschema.xml:990
 msgid "Engine"
 msgstr "Motor"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:989
+#: build/data/org.zrythm.Zrythm.gschema.xml:994
 msgid "Audio backend"
 msgstr "Audio-háttérrendszer"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:994
+#: build/data/org.zrythm.Zrythm.gschema.xml:999
 msgid "RtAudio device"
 msgstr "RtAudio eszköz"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:999
+#: build/data/org.zrythm.Zrythm.gschema.xml:1004
 msgid "SDL device"
 msgstr "SDL eszköz"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1004
+#: build/data/org.zrythm.Zrythm.gschema.xml:1009
 msgid "Samplerate"
 msgstr "Mintavételezési frekvencia"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1005
+#: build/data/org.zrythm.Zrythm.gschema.xml:1010
 #, fuzzy
 msgid "Samplerate to pass to the backend."
 msgstr "A háttérrendszernek átadott mintavételezési frekvencia."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1009
+#: build/data/org.zrythm.Zrythm.gschema.xml:1014
 msgid "Buffer size"
 msgstr "Pufferméret"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1010
+#: build/data/org.zrythm.Zrythm.gschema.xml:1015
 #, fuzzy
 msgid "Buffer size to pass to the backend."
 msgstr "A háttérrendszernek átadott puffer mérete."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1014
+#: build/data/org.zrythm.Zrythm.gschema.xml:1019
 msgid "MIDI backend"
 msgstr "MIDI-háttérrendszer"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1019
+#: build/data/org.zrythm.Zrythm.gschema.xml:1024
 msgid "Audio inputs"
 msgstr "Audio bemenetek"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1020
+#: build/data/org.zrythm.Zrythm.gschema.xml:1025
 #, fuzzy
 msgid "A list of audio inputs to enable."
 msgstr "Engedélyezhető audio bemenetek listája."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1024
+#: build/data/org.zrythm.Zrythm.gschema.xml:1029
 msgid "MIDI controllers"
 msgstr "MIDI-vezérlők"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1025
+#: build/data/org.zrythm.Zrythm.gschema.xml:1030
 #, fuzzy
 msgid "A list of controllers to enable."
 msgstr "Engedélyezhető vezérlők listája."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1034
-#: build/data/org.zrythm.Zrythm.gschema.xml:1102
+#: build/data/org.zrythm.Zrythm.gschema.xml:1039
+#: build/data/org.zrythm.Zrythm.gschema.xml:1107
 msgid "Paths"
 msgstr "Útvonalak"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1038
+#: build/data/org.zrythm.Zrythm.gschema.xml:1043
 msgid "Zrythm path"
 msgstr "Zrythm útvonala"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1039
+#: build/data/org.zrythm.Zrythm.gschema.xml:1044
 #, fuzzy
 msgid "Directory used to save user data in."
 msgstr "A felhasználói adatok mentésére használandó könyvtár."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1048
+#: build/data/org.zrythm.Zrythm.gschema.xml:1053
 msgid "Updates"
 msgstr "Frissítések"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1052
+#: build/data/org.zrythm.Zrythm.gschema.xml:1057
 msgid "Check for updates"
 msgstr "Frissítések keresése"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1053
+#: build/data/org.zrythm.Zrythm.gschema.xml:1058
 #, fuzzy
 msgid "Whether to check for updates on startup."
 msgstr "Keressen-e frissítéseket, vagy sem."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1070
-#: build/data/org.zrythm.Zrythm.gschema.xml:1101
+#: build/data/org.zrythm.Zrythm.gschema.xml:1075
+#: build/data/org.zrythm.Zrythm.gschema.xml:1106
 msgid "Plugins"
 msgstr "Bővítmények"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1071
+#: build/data/org.zrythm.Zrythm.gschema.xml:1076
 msgid "UIs"
 msgstr "Felhasználói felületek"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1075
+#: build/data/org.zrythm.Zrythm.gschema.xml:1080
 msgid "Open UI on instantiation"
 msgstr "Felület megnyitása példányosítás után"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1076
+#: build/data/org.zrythm.Zrythm.gschema.xml:1081
 #, fuzzy
 msgid "Open plugin UIs when they are instantiated."
 msgstr "A bővítmények felületeinek megnyitása példányosításukat követően."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1080
+#: build/data/org.zrythm.Zrythm.gschema.xml:1085
 msgid "Keep window on top"
 msgstr "Ablak felül tartása"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1081
+#: build/data/org.zrythm.Zrythm.gschema.xml:1086
 #, fuzzy
 msgid "Show plugin UIs on top of the main window (if possible)."
 msgstr ""
 "A bővítmények felhasználói felületeit mindig a főablak felett jelenítse meg."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1086
+#: build/data/org.zrythm.Zrythm.gschema.xml:1091
 msgid "Refresh rate"
 msgstr "Frissítési gyakoriság"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1087
+#: build/data/org.zrythm.Zrythm.gschema.xml:1092
 #, fuzzy
 msgid ""
 "Refresh rate in Hz. If set to 0, the screen's refresh rate will be used."
@@ -7546,11 +7615,11 @@ msgstr ""
 "A frissítés gyakorisága Hz-ben. Ha 0-ra van állítva, akkor a képernyő "
 "frissítési frekvenciája lesz használva."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1092
+#: build/data/org.zrythm.Zrythm.gschema.xml:1097
 msgid "Scale factor"
 msgstr "Skálázási tényező"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1093
+#: build/data/org.zrythm.Zrythm.gschema.xml:1098
 #, fuzzy
 msgid ""
 "Scale factor to pass to plugin UIs. If set to 0, the monitor's scale factor "
@@ -7559,138 +7628,138 @@ msgstr ""
 "A bővítmények felületeinek átadott skálázási tényező. Ha 0-ra van állítva, "
 "akkor a képernyő skálázási tényezője lesz használva."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1110
+#: build/data/org.zrythm.Zrythm.gschema.xml:1115
 msgid "VST plugins"
 msgstr "VST bővítmények"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1111
+#: build/data/org.zrythm.Zrythm.gschema.xml:1116
 #, fuzzy
 msgid "Plugin search paths."
 msgstr "Bővítményböngésző szerzők"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1115
+#: build/data/org.zrythm.Zrythm.gschema.xml:1120
 msgid "SFZ instruments"
 msgstr "SFZ hangszerek"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1116
 #: build/data/org.zrythm.Zrythm.gschema.xml:1121
+#: build/data/org.zrythm.Zrythm.gschema.xml:1126
 #, fuzzy
 msgid "Instrument search paths."
 msgstr "Hangszerek"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1120
+#: build/data/org.zrythm.Zrythm.gschema.xml:1125
 msgid "SF2 instruments"
 msgstr "SF2 hangszerek"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1129
-#: build/data/org.zrythm.Zrythm.gschema.xml:1143
-#: build/data/org.zrythm.Zrythm.gschema.xml:1157
+#: build/data/org.zrythm.Zrythm.gschema.xml:1134
+#: build/data/org.zrythm.Zrythm.gschema.xml:1148
+#: build/data/org.zrythm.Zrythm.gschema.xml:1162
 msgid "Editing"
 msgstr "Szerkesztés"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1134
+#: build/data/org.zrythm.Zrythm.gschema.xml:1139
 msgid "Fade algorithm"
 msgstr "Keverési algoritmus"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1135
+#: build/data/org.zrythm.Zrythm.gschema.xml:1140
 msgid "Default fade in/out algorithm."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1149
+#: build/data/org.zrythm.Zrythm.gschema.xml:1154
 #, fuzzy
 msgid "Default automation curve algorithm."
 msgstr "Görbe-algoritmus beállítása sikertelen"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1163
+#: build/data/org.zrythm.Zrythm.gschema.xml:1168
 msgid "Undo stack length"
 msgstr "Visszavonási verem hossza"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1164
+#: build/data/org.zrythm.Zrythm.gschema.xml:1169
 #, fuzzy
 msgid "Maximum undo history stack length. Set to -1 for unlimited."
 msgstr ""
 "A visszavonási előzmények vermének maximum hossza. A -1 értékre állítva "
 "korlátlan."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1172
+#: build/data/org.zrythm.Zrythm.gschema.xml:1177
 msgid "Projects"
 msgstr "Projektek"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1178
+#: build/data/org.zrythm.Zrythm.gschema.xml:1183
 msgid "Autosave interval"
 msgstr "Automatikus mentés időköze"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1179
+#: build/data/org.zrythm.Zrythm.gschema.xml:1184
 #, fuzzy
 msgid "Interval to auto-save project backups, in minutes. Set to 0 to disable."
 msgstr ""
 "A projektek automatikus mentésének időköze, percben megadva. 0-ra állítva "
 "letiltja az automatikus mentést."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1187
+#: build/data/org.zrythm.Zrythm.gschema.xml:1192
 msgid "UI"
 msgstr "Felhasználói felület"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1192
+#: build/data/org.zrythm.Zrythm.gschema.xml:1197
 msgid "Draw detail"
 msgstr "Rajzolási részletesség"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1193
+#: build/data/org.zrythm.Zrythm.gschema.xml:1198
 #, fuzzy
 msgid "Level of detail to use when drawing graphics."
 msgstr "A grafika rajzolásához használandó részletességi szint."
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1198
+#: build/data/org.zrythm.Zrythm.gschema.xml:1203
 msgid "Font scale"
 msgstr "Betűméret"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1199
+#: build/data/org.zrythm.Zrythm.gschema.xml:1204
 #, fuzzy
 msgid "Font scaling."
 msgstr "Betűméret"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1203
+#: build/data/org.zrythm.Zrythm.gschema.xml:1208
 msgid "User interface language"
 msgstr "Felhasználói felület nyelve"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1208
+#: build/data/org.zrythm.Zrythm.gschema.xml:1213
 msgid "CSS theme"
 msgstr "CSS téma"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1213
+#: build/data/org.zrythm.Zrythm.gschema.xml:1218
 msgid "Icon theme"
 msgstr "Ikontéma"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1222
+#: build/data/org.zrythm.Zrythm.gschema.xml:1227
 msgid "DSP"
 msgstr "DSP"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1223
+#: build/data/org.zrythm.Zrythm.gschema.xml:1228
 msgid "Pan"
 msgstr "Panoráma"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1227
+#: build/data/org.zrythm.Zrythm.gschema.xml:1232
 msgid "Pan algorithm"
 msgstr "Panoráma algoritmus"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1228
 #: build/data/org.zrythm.Zrythm.gschema.xml:1233
+#: build/data/org.zrythm.Zrythm.gschema.xml:1238
 msgid "Not used at the moment."
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1232
+#: build/data/org.zrythm.Zrythm.gschema.xml:1237
 msgid "Pan law"
 msgstr "Panoráma korrekció"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1241
+#: build/data/org.zrythm.Zrythm.gschema.xml:1246
 msgid "Scripting"
 msgstr "Szkriptelés"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1246
+#: build/data/org.zrythm.Zrythm.gschema.xml:1251
 msgid "Default script"
 msgstr "Alapértelmezett szkript"
 
-#: build/data/org.zrythm.Zrythm.gschema.xml:1247
+#: build/data/org.zrythm.Zrythm.gschema.xml:1252
 #, fuzzy
 msgid "Default script to use in the scripting window."
 msgstr "A szkriptelő ablakban alapértelmezetten használt szkript."
@@ -7726,217 +7795,273 @@ msgid "DAW"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:70
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
 msgid "Added:"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
+msgid "Switch to new file chooser widget (from GNOME Builder)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+msgid "Add option to ghost MIDI notes from other regions in the same track"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+msgid "Add fade in/out when audio engine starts/stops to prevent clicks"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:147
+#, fuzzy
+msgid "Changed:"
+msgstr "módosítás"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+msgid ""
+"Update Chinese (Simplified), Indonesian, Catalan, Spanish, Ukrainian, "
+"German, Vietnamese translations"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+msgid "Update bundled weakjack"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+msgid "Make some debug output silent in normal builds"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+msgid "Handle failure to connect JACK monitor output gracefully"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+msgid ""
+"Add more system info to bug report templates (`DESKTOP_SESSION` and "
+"`XDG_CURRENT_DESKTOP`)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+msgid "Update libpanel dependency to &gt;= 1.0.0"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+msgid ""
+"Meson: change fft3 detection (added new options `fftw3_threads_separate`, "
+"`fftw3_threads_separate_type` and `fftw3f_separate`)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:70
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:154
+msgid "Fixed:"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+msgid ""
+"Fix incorrectly showing bug report dialog when alpha project upgrade fails"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+msgid "Fix newlines not showing in the release notes in the About dialog"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+#, fuzzy
+msgid "Fix error when selecting an invalid WAV file in the file browser"
+msgstr "A fájlböngésző mutassa-e, vagy sem a rejtett fájlokat."
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+msgid ""
+"Fix incorrectly allowing to delete/clone the master track when inside a "
+"foldable track"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
+msgid "Fix attempting to autosave when main window not set up yet"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+msgid "Fix error when clicking on a chord region then an audio region"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+msgid "Fix error when cutting a region while snap-keep-offset is enabled"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
 msgid ""
 "Write FINISHED file after finishing saving a project and check for this file "
 "on load"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
 msgid "Use new higher quality \"Finer\" timestretcher when using rubberband v3"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
-#, fuzzy
-msgid "Changed:"
-msgstr "módosítás"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
-msgid "Fix header widget not unparenting its child stack"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
 msgid "Update French, Japanese translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
 msgid "Change trial version limitation to max 25 tracks per project"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
+msgid "Fix header widget not unparenting its child stack"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 #, fuzzy
 msgid "Add track filtering by name and type"
 msgstr "Sáv neve"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
 #, fuzzy
 msgid "Add more error checking when instantiating Carla plugins"
 msgstr "%s bővítmény példányosítása sikertelen"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
 msgid "Don't allow moving the playhead while recording"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
 msgid "Don't show red peak on MIDI meters"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
 msgid "Windows MME: only print debug messages if `ZRYTHM_DEBUG` is set"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
 msgid ""
 "Update Spanish, Russian, French, Catalan, Chinese (Simplified), Chinese "
 "(Traditional) translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
 msgid "Stop SIGSEGV handler from being called multiple times"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
 msgid "Support `LC_ALL` from the environment"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
 msgid "Move track visibility toggles to new track filtering popover"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
 msgid ""
 "Avoid showing bug report dialogs for known issues that are not Zrythm bugs"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
-msgid "Fixed:"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
 msgid "Fix error when splitting a large audio clip"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
 msgid ""
 "Fix screen moving backwards when zooming in towards the end of the project"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
 msgid "Fix autoplay breaking when changing directories in the file browser"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
 msgid ""
 "Fix file info label not being updated when changing directories in the file "
 "browser"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 msgid "Fix error when right-clicking on Macro knob"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
 msgid ""
 "Fix direct connection port selector incorrectly allowing connecting audio "
 "ports to CV ports"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
 msgid "Fix some memory leaks"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
 msgid ""
 "Fix incorrectly calling `g_log_set_writer_func()` more than once causing an "
 "error on exit on some systems"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
 msgid ""
 "Fix automation mode switches in automation tracks being ellipsized on some "
 "systems"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid "Allow clicking anywhere on timeline minimap to navigate"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
 msgid "Add sorting by name, last used and most used in plugin browser"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
 msgid "User manual: add note about using non-flatpak plugins in flatpak builds"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:142
 msgid ""
 "Add right click option on tracks to show used and hide unused automation "
 "lanes"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:143
 msgid "Allow double-clicking on automation points to specify exact value"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:144
 msgid "Allow renaming tracks via right click menu"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
 msgid "Add right click option to create an object on all arrangers"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
 msgid "Update Spanish, French, Catalan, Chinese (Traditional) translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:150
 msgid "Use case-insensitive alphabetical sorting in plugin browser"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
 msgid "Use vst instead of vstlx for flatpak VST2 plugin scan paths"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:152
 msgid "Make MIDI in label in header untranslatable to avoid sizing issues"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
 msgid "Fix chord and scale selector windows not closing with Esc key"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:157
 msgid "Fix plugin info label not being updated when filtering"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:158
 msgid "Fix transport display and ruler right click menus not working"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
-msgid "Drop vendored zix and depend on zix library"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
-msgid "Replace some icons with icons from GNOME icon library"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
-msgid "Replace about dialog with AdwDialogWindow"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
-msgid "Meson: fix lilv-related subprojects"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:140
-msgid "Fix bug report format breaking when undo history is empty"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:141
-msgid "Fix VST3 support being disabled"
 msgstr ""
 
 #, c-format

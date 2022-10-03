@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.11\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-08-16 09:55+0900\n"
+"POT-Creation-Date: 2022-10-03 21:09+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -238,8 +238,8 @@ msgstr ""
 #: ../../editing/clip-editors/piano-roll.rst:149
 #: ../../exporting/audio-and-midi.rst:39
 #: ../../plugins-files/audio-midi-files/file-browser.rst:70
-#: ../../tracks/inspector-page.rst:157 ../../tracks/overview.rst:70
-#: ../../zrythm-interface/right-panel.rst:23
+#: ../../tracks/inspector-page.rst:158 ../../tracks/overview.rst:71
+#: ../../zrythm-interface/right-panel.rst:24
 msgid "Todo"
 msgstr ""
 
@@ -256,8 +256,8 @@ msgstr ""
 #: ../../editing/timeline/overview.rst:7
 #: ../../playback-and-recording/overview.rst:7
 #: ../../plugins-files/audio-midi-files/overview.rst:7
-#: ../../scripting/overview.rst:7 ../../tracks/overview.rst:6
-#: ../../zrythm-interface/overview.rst:6
+#: ../../scripting/overview.rst:7 ../../tracks/overview.rst:7
+#: ../../zrythm-interface/overview.rst:7
 msgid "Overview"
 msgstr ""
 
@@ -682,7 +682,7 @@ msgstr ""
 
 #: ../../configuration/preferences.rst:11
 #: ../../plugins-files/audio-midi-files/file-browser.rst:117
-#: ../../zrythm-interface/main-toolbar.rst:110
+#: ../../zrythm-interface/main-toolbar.rst:111
 msgid "Preferences"
 msgstr ""
 
@@ -1718,7 +1718,7 @@ msgid ""
 msgstr ""
 
 #: ../../editing/clip-editors/ruler.rst:24
-#: ../../editing/timeline/arranger.rst:127 ../../tracks/track-types.rst:54
+#: ../../editing/timeline/arranger.rst:127 ../../tracks/track-types.rst:55
 msgid "Markers"
 msgstr ""
 
@@ -2731,7 +2731,7 @@ msgid ""
 "such as `Chorus` or `Intro`."
 msgstr ""
 
-#: ../../editing/timeline/arranger.rst:135 ../../tracks/track-types.rst:50
+#: ../../editing/timeline/arranger.rst:135 ../../tracks/track-types.rst:51
 msgid "Marker"
 msgstr ""
 
@@ -3163,7 +3163,7 @@ msgstr ""
 msgid "Dither"
 msgstr ""
 
-#: ../../exporting/audio-and-midi.rst:39 ../../tracks/inspector-page.rst:157
+#: ../../exporting/audio-and-midi.rst:39 ../../tracks/inspector-page.rst:158
 msgid "Implement."
 msgstr ""
 
@@ -3237,7 +3237,7 @@ msgstr ""
 msgid "Exporting"
 msgstr ""
 
-#: ../../exporting/routing-graph.rst:9 ../../routing/connections.rst:96
+#: ../../exporting/routing-graph.rst:9 ../../routing/connections.rst:97
 msgid "Routing Graph"
 msgstr ""
 
@@ -3533,7 +3533,7 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:59
-#: ../../projects/saving-loading.rst:20
+#: ../../projects/saving-loading.rst:21
 msgid "Project selection"
 msgstr ""
 
@@ -3578,7 +3578,7 @@ msgid ""
 msgstr ""
 
 #: ../../getting-started/system-requirements.rst:25
-#: ../../tracks/track-controls.rst:37
+#: ../../tracks/track-controls.rst:38
 msgid "Monitor"
 msgstr ""
 
@@ -3755,7 +3755,7 @@ msgstr ""
 msgid "Used interchangeably with :ref:`region <regions>`."
 msgstr ""
 
-#: ../../glossary/intro.rst:47 ../../routing/ports.rst:47
+#: ../../glossary/intro.rst:47 ../../routing/ports.rst:48
 msgid "Control"
 msgstr ""
 
@@ -3766,7 +3766,7 @@ msgid ""
 "control. Used interchangeably with :term:`Parameter`."
 msgstr ""
 
-#: ../../glossary/intro.rst:54 ../../routing/ports.rst:51
+#: ../../glossary/intro.rst:54 ../../routing/ports.rst:52
 msgid "CV"
 msgstr ""
 
@@ -3827,11 +3827,11 @@ msgstr ""
 #: ../../glossary/intro.rst:89
 #: ../../plugins-files/audio-midi-files/file-browser.rst:65
 #: ../../plugins-files/audio-midi-files/overview.rst:59
-#: ../../tracks/track-types.rst:36 ../../tracks/track-types.rst:37
-#: ../../tracks/track-types.rst:46 ../../tracks/track-types.rst:65
-#: ../../tracks/track-types.rst:66 ../../tracks/track-types.rst:67
-#: ../../tracks/track-types.rst:71 ../../tracks/track-types.rst:72
-#: ../../tracks/track-types.rst:76 ../../tracks/track-types.rst:77
+#: ../../tracks/track-types.rst:37 ../../tracks/track-types.rst:38
+#: ../../tracks/track-types.rst:47 ../../tracks/track-types.rst:66
+#: ../../tracks/track-types.rst:67 ../../tracks/track-types.rst:68
+#: ../../tracks/track-types.rst:72 ../../tracks/track-types.rst:73
+#: ../../tracks/track-types.rst:77 ../../tracks/track-types.rst:78
 msgid "MIDI"
 msgstr ""
 
@@ -3850,7 +3850,7 @@ msgid ""
 ":term:`MIDI` Notes are used to trigger virtual (or hardware) instruments."
 msgstr ""
 
-#: ../../glossary/intro.rst:101 ../../routing/monitor-section.rst:65
+#: ../../glossary/intro.rst:101 ../../routing/monitor-section.rst:66
 msgid "Mono"
 msgstr ""
 
@@ -4222,7 +4222,7 @@ msgid ""
 "are different things in Zrythm."
 msgstr ""
 
-#: ../../mixing/routing.rst:46 ../../routing/connections.rst:47
+#: ../../mixing/routing.rst:46 ../../routing/connections.rst:48
 msgid "Sidechaining"
 msgstr ""
 
@@ -4232,7 +4232,7 @@ msgid ""
 "sidechain ports, if the plugin has any. See :ref:`track-sends` for details."
 msgstr ""
 
-#: ../../modulators/intro.rst:9 ../../tracks/track-types.rst:60
+#: ../../modulators/intro.rst:9 ../../tracks/track-types.rst:61
 msgid "Modulators"
 msgstr ""
 
@@ -4465,7 +4465,7 @@ msgstr ""
 msgid "Ticks are expressed in decimals."
 msgstr ""
 
-#: ../../playback-and-recording/recording.rst:7 ../../tracks/track-lanes.rst:30
+#: ../../playback-and-recording/recording.rst:7 ../../tracks/track-lanes.rst:31
 msgid "Recording"
 msgstr ""
 
@@ -4510,7 +4510,7 @@ msgid "Recording audio"
 msgstr ""
 
 #: ../../playback-and-recording/recording.rst:42
-#: ../../tracks/inspector-page.rst:45
+#: ../../tracks/inspector-page.rst:46
 msgid "Inputs"
 msgstr ""
 
@@ -4644,7 +4644,7 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:9
-#: ../../zrythm-interface/transport-bar.rst:24
+#: ../../zrythm-interface/transport-bar.rst:25
 msgid "Transport Controls"
 msgstr ""
 
@@ -4696,7 +4696,7 @@ msgid ""
 msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:40
-#: ../../tracks/track-controls.rst:16
+#: ../../tracks/track-controls.rst:17
 msgid "Record"
 msgstr ""
 
@@ -4846,12 +4846,12 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:63
 #: ../../plugins-files/audio-midi-files/overview.rst:19
-#: ../../routing/ports.rst:41 ../../tracks/track-types.rst:20
-#: ../../tracks/track-types.rst:21 ../../tracks/track-types.rst:22
-#: ../../tracks/track-types.rst:26 ../../tracks/track-types.rst:27
-#: ../../tracks/track-types.rst:31 ../../tracks/track-types.rst:32
-#: ../../tracks/track-types.rst:47 ../../tracks/track-types.rst:56
-#: ../../tracks/track-types.rst:57
+#: ../../routing/ports.rst:42 ../../tracks/track-types.rst:21
+#: ../../tracks/track-types.rst:22 ../../tracks/track-types.rst:23
+#: ../../tracks/track-types.rst:27 ../../tracks/track-types.rst:28
+#: ../../tracks/track-types.rst:32 ../../tracks/track-types.rst:33
+#: ../../tracks/track-types.rst:48 ../../tracks/track-types.rst:57
+#: ../../tracks/track-types.rst:58
 msgid "Audio"
 msgstr ""
 
@@ -4930,7 +4930,7 @@ msgid "Control the loudness of the output audio."
 msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:105
-#: ../../tracks/inspector-page.rst:40 ../../tracks/track-types.rst:45
+#: ../../tracks/inspector-page.rst:41 ../../tracks/track-types.rst:46
 msgid "Instrument"
 msgstr ""
 
@@ -5705,22 +5705,22 @@ msgstr ""
 msgid "Projects"
 msgstr ""
 
-#: ../../projects/project-management-and-compatibility.rst:6
+#: ../../projects/project-management-and-compatibility.rst:7
 msgid "Project Management and Compatibility"
 msgstr ""
 
-#: ../../projects/project-management-and-compatibility.rst:8
+#: ../../projects/project-management-and-compatibility.rst:9
 msgid ""
 "Zrythm projects created after the beta release are expected to be compatible "
 "with later releases. If we discover an issue that requires changing the "
 "project format, Zrythm will offer an option to upgrade older projects."
 msgstr ""
 
-#: ../../projects/project-structure.rst:6
+#: ../../projects/project-structure.rst:7
 msgid "Project Structure"
 msgstr ""
 
-#: ../../projects/project-structure.rst:8
+#: ../../projects/project-structure.rst:9
 msgid ""
 "In Zrythm, work is saved inside :term:`projects <Project>`. Projects consist "
 "of a directory with a project file describing the project along with "
@@ -5728,39 +5728,39 @@ msgid ""
 "and plugin states."
 msgstr ""
 
-#: ../../projects/project-structure.rst:16
+#: ../../projects/project-structure.rst:17
 msgid "Backups"
 msgstr ""
 
-#: ../../projects/project-structure.rst:17
+#: ../../projects/project-structure.rst:18
 msgid ""
 "Backups are also kept in the project directory, and each backup is a "
 "standalone project on its own - ie, it contains all the files it needs to "
 "load as a separate project."
 msgstr ""
 
-#: ../../projects/project-structure.rst:22
+#: ../../projects/project-structure.rst:23
 msgid ""
 "Projects inside the :file:`backups` dir of a parent project are considered "
 "backups of the parent project."
 msgstr ""
 
-#: ../../projects/project-structure.rst:27
+#: ../../projects/project-structure.rst:28
 msgid ""
 "Zrythm will keep backups automatically by default during autosave. You can "
 "change the autosave interval or turn it off in the :ref:`preferences "
 "<configuration/preferences:Preferences>`."
 msgstr ""
 
-#: ../../projects/project-structure.rst:34
+#: ../../projects/project-structure.rst:35
 msgid "Project Directory"
 msgstr ""
 
-#: ../../projects/project-structure.rst:107
+#: ../../projects/project-structure.rst:108
 msgid "Project File Format"
 msgstr ""
 
-#: ../../projects/project-structure.rst:108
+#: ../../projects/project-structure.rst:109
 msgid ""
 "Zrythm uses a custom `MIME <https://en.wikipedia.org/wiki/MIME>`_ type ``x-"
 "zrythm-project`` (which is an alias of ``application/zstd``) for its project "
@@ -5769,102 +5769,102 @@ msgid ""
 "(converted to YAML) for inspection using :option:`zrythm --zpj-to-yaml`."
 msgstr ""
 
-#: ../../projects/project-structure.rst:120
+#: ../../projects/project-structure.rst:121
 msgid "Audio Pool"
 msgstr ""
 
-#: ../../projects/project-structure.rst:121
+#: ../../projects/project-structure.rst:122
 msgid ""
 "The audio pool (:file:`pool` directory) contains all audio files currently "
 "used by the project. Zrythm will automatically delete unused files during "
 "save."
 msgstr ""
 
-#: ../../projects/project-structure.rst:125
+#: ../../projects/project-structure.rst:126
 msgid "These files will be copied to backups as well."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:8
+#: ../../projects/saving-loading.rst:9
 msgid "Saving & Loading"
 msgstr ""
 
-#: ../../projects/saving-loading.rst:11
+#: ../../projects/saving-loading.rst:12
 msgid "Loading Projects"
 msgstr ""
 
-#: ../../projects/saving-loading.rst:13
+#: ../../projects/saving-loading.rst:14
 msgid ""
 "When Zrythm launches, it will ask you to select a project to load from a "
 "list of recent projects or from a path, or to create a new one."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:22
+#: ../../projects/saving-loading.rst:23
 msgid ""
 "When you select a project and click :guilabel:`&Open Selected`, Zrythm will "
 "load that project."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:26
+#: ../../projects/saving-loading.rst:27
 msgid "To load a project from a path, click :guilabel:`Open from Path`."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:30
+#: ../../projects/saving-loading.rst:31
 msgid "Creating Projects"
 msgstr ""
 
-#: ../../projects/saving-loading.rst:32
+#: ../../projects/saving-loading.rst:33
 msgid ""
 "To create a new project, select the :guilabel:`Create New` tab and choose a "
 "template for creating the new project, then click :guilabel:`Create`."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:40
+#: ../../projects/saving-loading.rst:41
 msgid "Project template selection"
 msgstr ""
 
-#: ../../projects/saving-loading.rst:42
+#: ../../projects/saving-loading.rst:43
 msgid ""
 "A blank template is available, and you can create your own templates by "
 "copying a project directory under :file:`templates` in the :term:`Zrythm "
 "user path`."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:47
+#: ../../projects/saving-loading.rst:48
 msgid ""
 "After clicking :guilabel:`Create`, Zrythm will ask you for a parent "
 "directory to save the project in and a title for the project."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:54
+#: ../../projects/saving-loading.rst:55
 msgid "New project creation"
 msgstr ""
 
-#: ../../projects/saving-loading.rst:56
+#: ../../projects/saving-loading.rst:57
 msgid ""
 "Once you click :guilabel:`OK`, the new project will be set up and you will "
 "be ready to go."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:60
+#: ../../projects/saving-loading.rst:61
 msgid "Saving Projects"
 msgstr ""
 
-#: ../../projects/saving-loading.rst:62
+#: ../../projects/saving-loading.rst:63
 msgid ""
 "Saving works as you would expect: :guilabel:`Save As...` will save the "
 "Project in a new location and :guilabel:`Save` will save the Project in the "
 "previous location."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:66
+#: ../../projects/saving-loading.rst:67
 msgid "When saving projects, Zrythm expects you to give it a directory"
 msgstr ""
 
-#: ../../projects/saving-loading.rst:70
+#: ../../projects/saving-loading.rst:71
 msgid "Automatic Backups"
 msgstr ""
 
-#: ../../projects/saving-loading.rst:72
+#: ../../projects/saving-loading.rst:73
 msgid ""
 "Zrythm has an option to auto-save the current project as a back-up. When "
 "launching Zrythm and selecting to load your project, Zrythm will let you "
@@ -5872,96 +5872,96 @@ msgid ""
 "load them instead."
 msgstr ""
 
-#: ../../projects/saving-loading.rst:81
+#: ../../projects/saving-loading.rst:82
 msgid ""
 "See :ref:`projects/project-structure:Backups` for more information about "
 "backups."
 msgstr ""
 
-#: ../../routing/connections.rst:8
+#: ../../routing/connections.rst:9
 msgid "Connections"
 msgstr ""
 
-#: ../../routing/connections.rst:11
+#: ../../routing/connections.rst:12
 msgid "Making Connections"
 msgstr ""
 
-#: ../../routing/connections.rst:14
+#: ../../routing/connections.rst:15
 msgid "Direct Connections"
 msgstr ""
 
-#: ../../routing/connections.rst:16
+#: ../../routing/connections.rst:17
 msgid ""
 "Zrythm allows the user to connect almost any port to any other port, as long "
 "as they are compatible. For example, you can route an LFO's CV output to a "
 "filter plugin's cutoff parameter."
 msgstr ""
 
-#: ../../routing/connections.rst:21
+#: ../../routing/connections.rst:22
 msgid ""
 "Connections can be made by double clicking on ports in the :ref:`track-"
 "inspector` or the :ref:`plugin-inspector-page`."
 msgstr ""
 
-#: ../../routing/connections.rst:28
+#: ../../routing/connections.rst:29
 msgid "Plugin controls"
 msgstr ""
 
-#: ../../routing/connections.rst:30
+#: ../../routing/connections.rst:31
 msgid ""
 "In the popover, you can view existing connections and press :guilabel:`Add` "
 "to create a new connection."
 msgstr ""
 
-#: ../../routing/connections.rst:36
+#: ../../routing/connections.rst:37
 msgid "Port connections for control"
 msgstr ""
 
-#: ../../routing/connections.rst:38
+#: ../../routing/connections.rst:39
 msgid "You can select the port to connect to in the presented dialog."
 msgstr ""
 
-#: ../../routing/connections.rst:44 ../../routing/connections.rst:56
+#: ../../routing/connections.rst:45 ../../routing/connections.rst:57
 msgid "Selecting a new port to connect to"
 msgstr ""
 
-#: ../../routing/connections.rst:49
+#: ../../routing/connections.rst:50
 msgid ""
 "Signal from tracks can be routed to plugins that have sidechain inputs via :"
 "ref:`Aux Sends <tracks/inspector-page:Aux Sends>`."
 msgstr ""
 
-#: ../../routing/connections.rst:58
+#: ../../routing/connections.rst:59
 msgid ""
 "For example, you can use a compressor plugin on a bass track that accepts a "
 "sidechain input from a kick track to get a pumping/ducking effect."
 msgstr ""
 
-#: ../../routing/connections.rst:63
+#: ../../routing/connections.rst:64
 msgid "Managing Connections"
 msgstr ""
 
-#: ../../routing/connections.rst:65
+#: ../../routing/connections.rst:66
 msgid ""
 "Connections can be managed in the Connections tab in the :ref:`Main Panel "
 "<zrythm-interface/main-panel:Main Panel>`."
 msgstr ""
 
-#: ../../routing/connections.rst:72
+#: ../../routing/connections.rst:73
 msgid "Managing connections"
 msgstr ""
 
-#: ../../routing/connections.rst:74
+#: ../../routing/connections.rst:75
 msgid ""
 "Individual connections can be edited in the inspector pages by double "
 "clicking."
 msgstr ""
 
-#: ../../routing/connections.rst:80
+#: ../../routing/connections.rst:81
 msgid "Editing a connection"
 msgstr ""
 
-#: ../../routing/connections.rst:82
+#: ../../routing/connections.rst:83
 msgid ""
 "You can click and drag the bar to select how much the connection should "
 "affect the signal. 100% means the whole signal will be passed from the "
@@ -5969,27 +5969,27 @@ msgid ""
 "through."
 msgstr ""
 
-#: ../../routing/connections.rst:88
+#: ../../routing/connections.rst:89
 msgid "The following controls are also available."
 msgstr ""
 
-#: ../../routing/connections.rst:90
+#: ../../routing/connections.rst:91
 msgid "Enable/Disable Connection"
 msgstr ""
 
-#: ../../routing/connections.rst:91
+#: ../../routing/connections.rst:92
 msgid "Toggle whether the connection is enabled (active)"
 msgstr ""
 
-#: ../../routing/connections.rst:93
+#: ../../routing/connections.rst:94
 msgid "Delete Connection"
 msgstr ""
 
-#: ../../routing/connections.rst:93
+#: ../../routing/connections.rst:94
 msgid "Delete the connection"
 msgstr ""
 
-#: ../../routing/connections.rst:97
+#: ../../routing/connections.rst:98
 msgid ""
 "It may be helpful to be able to view the routing graph when making "
 "connections. We plan to add this functionality into Zrythm in the future, "
@@ -5997,75 +5997,75 @@ msgid ""
 "so you can view it externally."
 msgstr ""
 
-#: ../../routing/connections.rst:103
+#: ../../routing/connections.rst:104
 msgid "See :ref:`export-routing-graph` for details."
 msgstr ""
 
-#: ../../routing/monitor-section.rst:6
+#: ../../routing/monitor-section.rst:7
 msgid "Monitor Section"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:7
+#: ../../routing/monitor-section.rst:8
 msgid ""
 "The monitor section is used to edit global settings related to mixing and "
 "routing signals. It is found inside the :ref:`Right Panel <zrythm-interface/"
 "right-panel:Right Panel>`."
 msgstr ""
 
-#: ../../routing/monitor-section.rst:15
+#: ../../routing/monitor-section.rst:16
 msgid "Monitor section"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:18
+#: ../../routing/monitor-section.rst:19
 msgid "Channel Controls"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:20
+#: ../../routing/monitor-section.rst:21
 msgid ""
 "The monitor section displays the number of tracks currently soloed, muted or "
 "listened, along with buttons to unsolo, unmute, or unlisten every track."
 msgstr ""
 
-#: ../../routing/monitor-section.rst:25
+#: ../../routing/monitor-section.rst:26
 msgid "Global Levels"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:27
+#: ../../routing/monitor-section.rst:28
 msgid ""
 "The monitor section includes global mute, listen and dim level controls."
 msgstr ""
 
-#: ../../routing/monitor-section.rst:30
+#: ../../routing/monitor-section.rst:31
 msgid "Mute Level"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:31
+#: ../../routing/monitor-section.rst:32
 msgid "The level at which muted tracks will be played"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:32
+#: ../../routing/monitor-section.rst:33
 msgid "Listen Level"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:33
+#: ../../routing/monitor-section.rst:34
 msgid "The level at which listened tracks will be played"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:36
+#: ../../routing/monitor-section.rst:37
 msgid "Dim Level"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:35
+#: ../../routing/monitor-section.rst:36
 msgid ""
 "The level at which unlistened tracks will be played when at least 1 track is "
 "listened"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:39
+#: ../../routing/monitor-section.rst:40
 msgid "Monitor Output"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:41
+#: ../../routing/monitor-section.rst:42
 msgid ""
 "In Zrythm, what you actually hear through your speakers is not the output of "
 "the master track, but the monitor output. The master track routes its output "
@@ -6073,165 +6073,165 @@ msgid ""
 "output to the speakers."
 msgstr ""
 
-#: ../../routing/monitor-section.rst:49
+#: ../../routing/monitor-section.rst:50
 msgid "Monitor Knob"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:51
+#: ../../routing/monitor-section.rst:52
 msgid ""
 "The :guilabel:`Monitor` knob controls the output volume. If set to 0dB, the "
 "volume coming from the master track will remain unchanged."
 msgstr ""
 
-#: ../../routing/monitor-section.rst:56
+#: ../../routing/monitor-section.rst:57
 msgid "Monitor Controls"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:58
+#: ../../routing/monitor-section.rst:59
 msgid ""
 "The following buttons exist to alter the signal passing through the monitor "
 "processor."
 msgstr ""
 
-#: ../../routing/monitor-section.rst:62
+#: ../../routing/monitor-section.rst:63
 msgid "Sum the output to mono"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:64
+#: ../../routing/monitor-section.rst:65
 msgid "This is useful for checking how the mix sounds in mono."
 msgstr ""
 
-#: ../../routing/monitor-section.rst:68
+#: ../../routing/monitor-section.rst:69
 msgid "Dim"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:68
+#: ../../routing/monitor-section.rst:69
 msgid "Dim the output to the dim level"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:71 ../../tracks/track-controls.rst:24
+#: ../../routing/monitor-section.rst:72 ../../tracks/track-controls.rst:25
 msgid "Mute"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:71
+#: ../../routing/monitor-section.rst:72
 msgid "Mute the output"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:74
+#: ../../routing/monitor-section.rst:75
 msgid "JACK Output"
 msgstr ""
 
-#: ../../routing/monitor-section.rst:76
+#: ../../routing/monitor-section.rst:77
 msgid ""
 "When using the :term:`JACK` backend, there will be additional controls to "
 "route the output signal to one or more user-specified devices, instead of "
 "the default device used by JACK."
 msgstr ""
 
-#: ../../routing/monitor-section.rst:84
+#: ../../routing/monitor-section.rst:85
 msgid "JACK output"
 msgstr ""
 
-#: ../../routing/ports.rst:8
+#: ../../routing/ports.rst:9
 msgid "Ports"
 msgstr ""
 
-#: ../../routing/ports.rst:10
+#: ../../routing/ports.rst:11
 msgid ""
 "Before getting into connections, it is necessary to understand some basic "
 "information about ports."
 msgstr ""
 
-#: ../../routing/ports.rst:13
+#: ../../routing/ports.rst:14
 msgid ""
 "Ports are the main building blocks used to route signals throughout Zrythm. "
 "A port does not process anything on its own, and is usually part of a "
 "`processor`, like a plugin or track."
 msgstr ""
 
-#: ../../routing/ports.rst:22
+#: ../../routing/ports.rst:23
 msgid ""
 "2 input ports connected to a processor, which produces output to 2 output "
 "ports"
 msgstr ""
 
-#: ../../routing/ports.rst:25
+#: ../../routing/ports.rst:26
 msgid ""
 "For example, an instrument track has a `MIDI input` port it uses to read "
 "MIDI data from and 2 `Audio output` ports where it copies the stereo signal "
 "after being processed."
 msgstr ""
 
-#: ../../routing/ports.rst:31
+#: ../../routing/ports.rst:32
 msgid "Port Directions"
 msgstr ""
 
-#: ../../routing/ports.rst:32 ../../tracks/track-types.rst:16
+#: ../../routing/ports.rst:33 ../../tracks/track-types.rst:17
 msgid "Input"
 msgstr ""
 
-#: ../../routing/ports.rst:33
+#: ../../routing/ports.rst:34
 msgid "The port receives signals"
 msgstr ""
 
-#: ../../routing/ports.rst:35 ../../tracks/track-types.rst:17
+#: ../../routing/ports.rst:36 ../../tracks/track-types.rst:18
 msgid "Output"
 msgstr ""
 
-#: ../../routing/ports.rst:35
+#: ../../routing/ports.rst:36
 msgid "The port sends signals"
 msgstr ""
 
-#: ../../routing/ports.rst:38
+#: ../../routing/ports.rst:39
 msgid "Port Types"
 msgstr ""
 
-#: ../../routing/ports.rst:41
+#: ../../routing/ports.rst:42
 msgid "Ports of this type receive or send raw audio signals"
 msgstr ""
 
-#: ../../routing/ports.rst:44
+#: ../../routing/ports.rst:45
 msgid "Event"
 msgstr ""
 
-#: ../../routing/ports.rst:44
+#: ../../routing/ports.rst:45
 msgid "Event ports are mainly used for routing MIDI signals"
 msgstr ""
 
-#: ../../routing/ports.rst:47
+#: ../../routing/ports.rst:48
 msgid ""
 "Control ports are user-editable parameters that can also be automated in "
 "automation lanes"
 msgstr ""
 
-#: ../../routing/ports.rst:50
+#: ../../routing/ports.rst:51
 msgid ""
 ":term:`CV` ports handle continuous signals and can be used to modulate "
 "control ports"
 msgstr ""
 
-#: ../../routing/ports.rst:54
+#: ../../routing/ports.rst:55
 msgid "Port Connections"
 msgstr ""
 
-#: ../../routing/ports.rst:55
+#: ../../routing/ports.rst:56
 msgid ""
 "Ports can be connected with each other, as long as they are of the same type "
 "and opposite direction, with the exception of CV ports which may be routed "
 "to both CV ports and control ports."
 msgstr ""
 
-#: ../../routing/ports.rst:61
+#: ../../routing/ports.rst:62
 msgid ""
 "When ports are connected, the signal from the source port is added to the "
 "destination port during processing."
 msgstr ""
 
-#: ../../routing/ports.rst:68
+#: ../../routing/ports.rst:69
 msgid "Port connection graph for an audio track"
 msgstr ""
 
-#: ../../routing/ports.rst:70
+#: ../../routing/ports.rst:71
 msgid ""
 "In the above example, the output audio port ``TP Stereo out L`` is connected "
 "to the input audio port ``Ch Pre-Fader in L``. This connection is created "
@@ -6427,7 +6427,7 @@ msgstr ""
 msgid "Print all tracks"
 msgstr ""
 
-#: ../../scripting/intro.rst:8
+#: ../../scripting/intro.rst:9
 msgid "Scripting"
 msgstr ""
 
@@ -6479,7 +6479,7 @@ msgid "To use it from ECMAScript, use:"
 msgstr ""
 
 #: ../../scripting/scripting-interface.rst:7
-#: ../../zrythm-interface/main-toolbar.rst:105
+#: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Scripting Interface"
 msgstr ""
 
@@ -6638,15 +6638,15 @@ msgid ""
 "contents on MacOS."
 msgstr ""
 
-#: ../../tracks/automation.rst:8
+#: ../../tracks/automation.rst:9
 msgid "Automation"
 msgstr ""
 
-#: ../../tracks/automation.rst:11
+#: ../../tracks/automation.rst:12
 msgid "Automation Tracks"
 msgstr ""
 
-#: ../../tracks/automation.rst:12
+#: ../../tracks/automation.rst:13
 msgid ""
 "Automation tracks (or automation *lanes*) are used to create automation "
 "events for various automatable parameters/controls, such as fader volume, "
@@ -6654,90 +6654,90 @@ msgid ""
 "it."
 msgstr ""
 
-#: ../../tracks/automation.rst:18
+#: ../../tracks/automation.rst:19
 msgid "To show the automation lanes for a track, click the cusp icon."
 msgstr ""
 
-#: ../../tracks/automation.rst:24
+#: ../../tracks/automation.rst:25
 msgid "Automation track for Fader Volume"
 msgstr ""
 
-#: ../../tracks/automation.rst:26
+#: ../../tracks/automation.rst:27
 msgid ""
 "You can choose which parameter you want to automate in each automation lane."
 msgstr ""
 
-#: ../../tracks/automation.rst:32
+#: ../../tracks/automation.rst:33
 msgid "Selecting an automatable control"
 msgstr ""
 
-#: ../../tracks/automation.rst:35
+#: ../../tracks/automation.rst:36
 msgid "Playback Mode"
 msgstr ""
 
-#: ../../tracks/automation.rst:37
+#: ../../tracks/automation.rst:38
 msgid ""
 "Automation can be enabled or disabled using the :guilabel:`On` and :guilabel:"
 "`Off` toggles in the track lane."
 msgstr ""
 
-#: ../../tracks/automation.rst:40
+#: ../../tracks/automation.rst:41
 msgid ""
 "Touch/latch modes can also be used to record automation live (see the :ref:"
 "`playback-and-recording/recording:Recording Automation` section)."
 msgstr ""
 
-#: ../../tracks/automation.rst:46
+#: ../../tracks/automation.rst:47
 msgid "Editing Automation"
 msgstr ""
 
-#: ../../tracks/automation.rst:47
+#: ../../tracks/automation.rst:48
 msgid ""
 "Editing automation involves creating automation regions and then creating "
 "automation events inside the automation editor. See :ref:`editing/clip-"
 "editors/automation-editor:Automation Editor` for details."
 msgstr ""
 
-#: ../../tracks/automation.rst:54
+#: ../../tracks/automation.rst:55
 msgid "Behavior"
 msgstr ""
 
-#: ../../tracks/automation.rst:55
+#: ../../tracks/automation.rst:56
 msgid ""
 "The control corresponding to each automation lane will use the value from "
 "the automation lane if there are automation events present at the current "
 "playhead position."
 msgstr ""
 
-#: ../../tracks/automation.rst:60
+#: ../../tracks/automation.rst:61
 msgid ""
 "If there is no automation at the playhead, the control will use the last "
 "known value, either from the automation lane or from a manual change."
 msgstr ""
 
-#: ../../tracks/automation.rst:64
+#: ../../tracks/automation.rst:65
 msgid "This behavior also applies when rendering (exporting) the project."
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:6
+#: ../../tracks/creating-tracks.rst:7
 msgid "Creating Tracks"
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:9
+#: ../../tracks/creating-tracks.rst:10
 msgid "Blank Tracks"
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:11
+#: ../../tracks/creating-tracks.rst:12
 msgid ""
 "To add an empty track, right click on empty space in the Tracklist and "
 "select the type of track you want to add."
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:18
+#: ../../tracks/creating-tracks.rst:19
 msgid "Creating Tracks From Plugins"
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:20
+#: ../../tracks/creating-tracks.rst:21
 msgid ""
 "Plugins can be clicked and dragged from the Plugin Browser and dropped into "
 "empty space in the Tracklist or Mixer to instantiate them. If the plugin is "
@@ -6745,15 +6745,15 @@ msgid ""
 "an effect, a bus Track will be created."
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:26
+#: ../../tracks/creating-tracks.rst:27
 msgid "See :ref:`instantiating-plugins` for how to instantiate plugins."
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:30
+#: ../../tracks/creating-tracks.rst:31
 msgid "Creating Audio Tracks From Audio Files"
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:32
+#: ../../tracks/creating-tracks.rst:33
 msgid ""
 "Likewise, to create an Audio Track from an audio file (WAV, FLAC, etc.), you "
 "can drag an audio file from the File Browser into empty space in the "
@@ -6761,171 +6761,171 @@ msgid ""
 "Audio Clip at the current Playhead position."
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:39
+#: ../../tracks/creating-tracks.rst:40
 msgid "Creating Tracks by Duplicating"
 msgstr ""
 
-#: ../../tracks/creating-tracks.rst:41
+#: ../../tracks/creating-tracks.rst:42
 msgid ""
 "Most Tracks can be duplicated by right clicking inside the Track and "
 "selecting :zbutton:`Duplicate`."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:8
+#: ../../tracks/inspector-page.rst:9
 msgid "Track Inspector"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:10
+#: ../../tracks/inspector-page.rst:11
 msgid ""
 "Each track will display its page in the inspector when selected. Depending "
 "on the track, the properties shown will be different."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:18
+#: ../../tracks/inspector-page.rst:19
 msgid "Track Properties"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:20
+#: ../../tracks/inspector-page.rst:21
 msgid "Track properties are basic properties that the track has."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:27
+#: ../../tracks/inspector-page.rst:28
 msgid "Track Name"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:27
+#: ../../tracks/inspector-page.rst:28
 msgid "Name of the track. Can be changed by double clicking."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:35
+#: ../../tracks/inspector-page.rst:36
 msgid "Direct Out"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:30
+#: ../../tracks/inspector-page.rst:31
 msgid "The track that this track routes its output to."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:35
+#: ../../tracks/inspector-page.rst:36
 msgid "Routing an instrument to an audio group"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:38
+#: ../../tracks/inspector-page.rst:39
 msgid ""
 "The instrument plugin from this track. This is only applicable to :ref:"
 "`Instrument tracks <tracks/track-types:Instrument Track>`."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:47
+#: ../../tracks/inspector-page.rst:48
 msgid ""
 "If the track takes input, there will be an input selection section. This is "
 "mainly used for :ref:`playback-and-recording/recording:Recording`."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:52
+#: ../../tracks/inspector-page.rst:53
 msgid "MIDI Inputs"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:57
+#: ../../tracks/inspector-page.rst:58
 msgid "Input Device"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:58
+#: ../../tracks/inspector-page.rst:59
 msgid "Device to read MIDI input from"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:61
+#: ../../tracks/inspector-page.rst:62
 msgid "MIDI Channels"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:60
+#: ../../tracks/inspector-page.rst:61
 msgid "MIDI channels to listen to (other channels will be ignored)"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:64
+#: ../../tracks/inspector-page.rst:65
 msgid "Audio Inputs"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:69
+#: ../../tracks/inspector-page.rst:70
 msgid "Left Input"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:70
+#: ../../tracks/inspector-page.rst:71
 msgid "Left audio input port to listen to"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:71
+#: ../../tracks/inspector-page.rst:72
 msgid "Right Input"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:72
+#: ../../tracks/inspector-page.rst:73
 msgid "Right audio input port to listen to"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:73
+#: ../../tracks/inspector-page.rst:74
 msgid "Mono toggle"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:74
+#: ../../tracks/inspector-page.rst:75
 msgid "Duplicate the left signal on both channels"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:76
+#: ../../tracks/inspector-page.rst:77
 msgid "Gain knob"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:76
+#: ../../tracks/inspector-page.rst:77
 msgid "Adjust input gain"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:79
+#: ../../tracks/inspector-page.rst:80
 msgid "MIDI FX/Inserts"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:81
+#: ../../tracks/inspector-page.rst:82
 msgid ""
 "These are slots for dropping audio or MIDI effects that will be applied to "
 "the signal as it passes through the track."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:87
+#: ../../tracks/inspector-page.rst:88
 msgid ""
 "MIDI FX are processed after the input and piano roll events and before the "
 "instruments in instrument tracks, or before the inserts in MIDI tracks."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:91
+#: ../../tracks/inspector-page.rst:92
 msgid "Only MIDI and Instrument tracks support MIDI FX."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:93
+#: ../../tracks/inspector-page.rst:94
 msgid ""
 "Inserts are processed in order. For instrument tracks, the inserts will be "
 "added onto the signal coming from the instrument, and for other tracks they "
 "will be added on the incoming signal."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:98
+#: ../../tracks/inspector-page.rst:99
 msgid "The signal flow is summarized below."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:100
+#: ../../tracks/inspector-page.rst:101
 msgid ""
 "``[track input] -> [MIDI FX, if any] -> [instrument, if any] -> [inserts, if "
 "any] -> [track output]``"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:105
+#: ../../tracks/inspector-page.rst:106
 msgid "Aux Sends"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:107
+#: ../../tracks/inspector-page.rst:108
 msgid ""
 "These are `aux sends <https://en.wikipedia.org/wiki/Aux-send>`_ to other "
 "tracks or plugin side-chain inputs. These are generally useful for side-"
 "chaining or applying additional effects to channels, such as reverb."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:117
+#: ../../tracks/inspector-page.rst:118
 msgid ""
 "The first 6 slots are for pre-fader sends and the last 3 slots are for post-"
 "fader sends. The pre-fader slots will send the signal before the fader is "
@@ -6933,101 +6933,101 @@ msgid ""
 "applied."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:124
+#: ../../tracks/inspector-page.rst:125
 msgid "Fader"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:125
+#: ../../tracks/inspector-page.rst:126
 msgid "Fader section to control the volume and stereo balance."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:130
+#: ../../tracks/inspector-page.rst:131
 msgid ""
 "To change the fader or stereo balance amount, click and drag their "
 "respective widgets. You can reset them to their default positions with :"
 "menuselection:`Right click --> Reset`."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:135
+#: ../../tracks/inspector-page.rst:136
 msgid ""
 "The meter displays the amplitude of the signal in dBFS as it is processed "
 "live. The following values are displayed next to the meter for additional "
 "reference."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:139
+#: ../../tracks/inspector-page.rst:140
 msgid "Peak"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:140
+#: ../../tracks/inspector-page.rst:141
 msgid "Peak signal value"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:142
+#: ../../tracks/inspector-page.rst:143
 msgid "RMS"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:142
+#: ../../tracks/inspector-page.rst:143
 msgid "Root Mean Square of the signal value"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:144
+#: ../../tracks/inspector-page.rst:145
 msgid ""
 "The controls available for controlling the signal flow are covered in :ref:"
 "`tracks/track-controls:Signal Flow`."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:148
+#: ../../tracks/inspector-page.rst:149
 msgid "MIDI faders use MIDI volume CC."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:150
+#: ../../tracks/inspector-page.rst:151
 msgid ""
 "The MIDI fader is a TODO feature - currently, it lets the signal pass "
 "through unchanged."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:155
+#: ../../tracks/inspector-page.rst:156
 msgid "Channel Settings"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:160
+#: ../../tracks/inspector-page.rst:161
 msgid "Comments"
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:161
+#: ../../tracks/inspector-page.rst:162
 msgid "User comments. This feature is useful for keeping notes about tracks."
 msgstr ""
 
-#: ../../tracks/inspector-page.rst:167
+#: ../../tracks/inspector-page.rst:168
 msgid "Clicking the pencil button will bring up a popup to edit the comment."
 msgstr ""
 
-#: ../../tracks/intro.rst:8
+#: ../../tracks/intro.rst:9
 msgid "Tracks"
 msgstr ""
 
-#: ../../tracks/overview.rst:8
+#: ../../tracks/overview.rst:9
 msgid ""
 "Tracks are the main building blocks of projects. Tracks appear in the "
 "tracklist and contain various events such as :ref:`regions <regions>`."
 msgstr ""
 
-#: ../../tracks/overview.rst:15
+#: ../../tracks/overview.rst:16
 msgid "Track in tracklist"
 msgstr ""
 
-#: ../../tracks/overview.rst:17
+#: ../../tracks/overview.rst:18
 msgid ""
 "Most types of tracks have a corresponding channel that appears in the :ref:"
 "`Mixer <mixer>`. See :ref:`channels` for more info."
 msgstr ""
 
-#: ../../tracks/overview.rst:24
+#: ../../tracks/overview.rst:25
 msgid "Channel in mixer"
 msgstr ""
 
-#: ../../tracks/overview.rst:26
+#: ../../tracks/overview.rst:27
 msgid ""
 "There are various kinds of tracks suited for different purposes, explained "
 "in the following sections. Some tracks are special, like the :ref:`Chord "
@@ -7035,7 +7035,7 @@ msgid ""
 "track-types:Marker Track>`, which contain chords and markers respectively."
 msgstr ""
 
-#: ../../tracks/overview.rst:34
+#: ../../tracks/overview.rst:35
 msgid ""
 "In Zrythm, group tracks are used for grouping signals (direct routing), FX/"
 "bus tracks are used for effects/sends, and folder tracks (coming soon) are  "
@@ -7043,23 +7043,23 @@ msgid ""
 "operations."
 msgstr ""
 
-#: ../../tracks/overview.rst:41
+#: ../../tracks/overview.rst:42
 msgid ""
 "Moreover, Zrythm uses Instrument tracks for instrument plugins, such as "
 "synthesizers, and MIDI tracks for MIDI plugins, such as a MIDI arpegiator."
 msgstr ""
 
-#: ../../tracks/overview.rst:46
+#: ../../tracks/overview.rst:47
 msgid ""
 "This is different from what many other :term:`DAWs <DAW>` do, so please keep "
 "this in mind."
 msgstr ""
 
-#: ../../tracks/overview.rst:51
+#: ../../tracks/overview.rst:52
 msgid "Track Interface"
 msgstr ""
 
-#: ../../tracks/overview.rst:56
+#: ../../tracks/overview.rst:57
 msgid ""
 "Each track has a color, an icon (corresponding to its type) a name and "
 "various buttons. Tracks that can have lanes, like instrument tracks, will "
@@ -7067,190 +7067,190 @@ msgid ""
 "automation will have an option to display automation tracks as above."
 msgstr ""
 
-#: ../../tracks/overview.rst:62
+#: ../../tracks/overview.rst:63
 msgid ""
 "If the track produces output, it will have a meter on its right-hand side "
 "showing the current level."
 msgstr ""
 
-#: ../../tracks/overview.rst:66
+#: ../../tracks/overview.rst:67
 msgid "Track Icon"
 msgstr ""
 
-#: ../../tracks/overview.rst:67
+#: ../../tracks/overview.rst:68
 msgid "The icon can be changed by clicking on the icon in the tracklist."
 msgstr ""
 
-#: ../../tracks/overview.rst:70
+#: ../../tracks/overview.rst:71
 msgid "Add pic and explain how to add custom icons."
 msgstr ""
 
-#: ../../tracks/overview.rst:74
+#: ../../tracks/overview.rst:75
 msgid "Context Menu"
 msgstr ""
 
-#: ../../tracks/overview.rst:76
+#: ../../tracks/overview.rst:77
 msgid ""
 "Each tracks has a context menu with additional options depending on its type."
 msgstr ""
 
-#: ../../tracks/overview.rst:82
+#: ../../tracks/overview.rst:83
 msgid ""
 "The section :ref:`track-operations` explains the various track operations "
 "available."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:6
+#: ../../tracks/track-controls.rst:7
 msgid "Track Controls"
 msgstr ""
 
-#: ../../tracks/track-controls.rst:8
+#: ../../tracks/track-controls.rst:9
 msgid ""
 "Tracks have various controls available in the track views inside the "
 "tracklist and in their corresponding channels inside the mixer. Each "
 "available control is explained below."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:14
+#: ../../tracks/track-controls.rst:15
 msgid "Signal Flow"
 msgstr ""
 
-#: ../../tracks/track-controls.rst:17
+#: ../../tracks/track-controls.rst:18
 msgid "Arm the track for recording."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:19
+#: ../../tracks/track-controls.rst:20
 msgid "Mute the track, meaning no signal will be sent to its direct out."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:22
+#: ../../tracks/track-controls.rst:23
 msgid ""
 "The track will still be processed, so if you are looking to decrease :term:"
 "`DSP` usage, try disabling plugins instead."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:27
+#: ../../tracks/track-controls.rst:28
 msgid "Solo"
 msgstr ""
 
-#: ../../tracks/track-controls.rst:27
+#: ../../tracks/track-controls.rst:28
 msgid ""
 "Solo the track. If any track is soloed, only the soloed tracks will produce "
 "sounds."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:32
+#: ../../tracks/track-controls.rst:33
 msgid "Listen"
 msgstr ""
 
-#: ../../tracks/track-controls.rst:30
+#: ../../tracks/track-controls.rst:31
 msgid ""
 "Similar to solo, except it dims the volume of other tracks instead of muting "
 "them. The dim amount can be controlled in the :ref:`Monitor Section <routing/"
 "monitor-section:Monitor Section>`."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:35
+#: ../../tracks/track-controls.rst:36
 msgid "Listen to incoming signal when recording."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:37
+#: ../../tracks/track-controls.rst:38
 msgid "This is only used on audio tracks."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:40
+#: ../../tracks/track-controls.rst:41
 msgid "Visibility"
 msgstr ""
 
-#: ../../tracks/track-controls.rst:43
+#: ../../tracks/track-controls.rst:44
 msgid "Show Lanes"
 msgstr ""
 
-#: ../../tracks/track-controls.rst:43
+#: ../../tracks/track-controls.rst:44
 msgid ""
 "Toggle the visibility of :ref:`track lanes <tracks/track-lanes:Track Lanes>`."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:46
+#: ../../tracks/track-controls.rst:47
 msgid "Show Automation"
 msgstr ""
 
-#: ../../tracks/track-controls.rst:46
+#: ../../tracks/track-controls.rst:47
 msgid ""
 "Toggle the visibility of :ref:`automation tracks <tracks/automation:"
 "Automation Tracks>`."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:51
+#: ../../tracks/track-controls.rst:52
 msgid "Show UI"
 msgstr ""
 
-#: ../../tracks/track-controls.rst:49
+#: ../../tracks/track-controls.rst:50
 msgid "Show or hide the UI of the instrument plugin."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:51
+#: ../../tracks/track-controls.rst:52
 msgid "Only available on instrument tracks."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:54
+#: ../../tracks/track-controls.rst:55
 msgid "Other"
 msgstr ""
 
-#: ../../tracks/track-controls.rst:59
+#: ../../tracks/track-controls.rst:60
 msgid "Lock"
 msgstr ""
 
-#: ../../tracks/track-controls.rst:57
+#: ../../tracks/track-controls.rst:58
 msgid "Prevent any edits on the track while locked."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:59 ../../tracks/track-controls.rst:66
+#: ../../tracks/track-controls.rst:60 ../../tracks/track-controls.rst:67
 msgid "Not implemented yet."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:65
+#: ../../tracks/track-controls.rst:66
 msgid "Freeze"
 msgstr ""
 
-#: ../../tracks/track-controls.rst:62
+#: ../../tracks/track-controls.rst:63
 msgid ""
 "Bounce the track to an audio file internally and prevent edits while frozen. "
 "This is intended to reduce :term:`DSP` load on DSP-hungry tracks."
 msgstr ""
 
-#: ../../tracks/track-lanes.rst:6
+#: ../../tracks/track-lanes.rst:7
 msgid "Track Lanes"
 msgstr ""
 
-#: ../../tracks/track-lanes.rst:8
+#: ../../tracks/track-lanes.rst:9
 msgid ""
 "Some tracks can have multiple lanes for their regions. By default, all "
 "regions are created on the first lane. Additional lanes will be auto-created "
 "and deleted as you add regions to each lane."
 msgstr ""
 
-#: ../../tracks/track-lanes.rst:17
+#: ../../tracks/track-lanes.rst:18
 msgid "Instrument track lanes"
 msgstr ""
 
-#: ../../tracks/track-lanes.rst:19
+#: ../../tracks/track-lanes.rst:20
 msgid ""
 "Lanes can be made visible by clicking the \"hamburger\" icon in the track "
 "view."
 msgstr ""
 
-#: ../../tracks/track-lanes.rst:23
+#: ../../tracks/track-lanes.rst:24
 msgid "Organization"
 msgstr ""
 
-#: ../../tracks/track-lanes.rst:25
+#: ../../tracks/track-lanes.rst:26
 msgid ""
 "Track lanes are useful for organizing regions in a track into layers. For "
 "example you can keep high notes in lane 1 and bass notes in lane 2."
 msgstr ""
 
-#: ../../tracks/track-lanes.rst:32
+#: ../../tracks/track-lanes.rst:33
 msgid ""
 "Lanes are also useful when recording. If you set the :ref:`recording mode "
 "<playback-and-recording/recording:Recording Modes>` to :guilabel:`Create "
@@ -7258,182 +7258,182 @@ msgid ""
 "optionally mute the last recorded region in the previous lane."
 msgstr ""
 
-#: ../../tracks/track-lanes.rst:40
+#: ../../tracks/track-lanes.rst:41
 msgid "MIDI Export"
 msgstr ""
 
-#: ../../tracks/track-lanes.rst:42
+#: ../../tracks/track-lanes.rst:43
 msgid ""
 "When exporting MIDI from MIDI and instrument tracks, MIDI events in each "
 "lane can be exported as separate tracks in the resulting MIDI file."
 msgstr ""
 
-#: ../../tracks/track-operations.rst:8
+#: ../../tracks/track-operations.rst:9
 msgid "Track Operations"
 msgstr ""
 
-#: ../../tracks/track-operations.rst:11
+#: ../../tracks/track-operations.rst:12
 msgid "Moving Tracks"
 msgstr ""
 
-#: ../../tracks/track-operations.rst:12
+#: ../../tracks/track-operations.rst:13
 msgid ""
 "Tracks can be moved by clicking and dragging inside empty space in the "
 "Track, and dropping it at another location. The drop locations will be "
 "highlighted as you move the Track."
 msgstr ""
 
-#: ../../tracks/track-operations.rst:18
+#: ../../tracks/track-operations.rst:19
 msgid "Copying Tracks"
 msgstr ""
 
-#: ../../tracks/track-operations.rst:20
+#: ../../tracks/track-operations.rst:21
 msgid ""
 "Tracks can be copied/cloned by clicking and dragging the selected tracks "
 "while holding :kbd:`Control`."
 msgstr ""
 
-#: ../../tracks/track-operations.rst:24
+#: ../../tracks/track-operations.rst:25
 msgid "Deleting Tracks"
 msgstr ""
 
-#: ../../tracks/track-operations.rst:26
+#: ../../tracks/track-operations.rst:27
 msgid ""
 "Tracks can be deleted by right-clicking them and selecting :guilabel:"
 "`Delete`."
 msgstr ""
 
-#: ../../tracks/track-operations.rst:30
+#: ../../tracks/track-operations.rst:31
 msgid "All Track operations are undoable."
 msgstr ""
 
-#: ../../tracks/track-types.rst:6
+#: ../../tracks/track-types.rst:7
 msgid "Track Types"
 msgstr ""
 
-#: ../../tracks/track-types.rst:8
+#: ../../tracks/track-types.rst:9
 msgid "Zrythm has the following types of Tracks."
 msgstr ""
 
-#: ../../tracks/track-types.rst:10
+#: ../../tracks/track-types.rst:11
 msgid "Track types and characteristics"
 msgstr ""
 
-#: ../../tracks/track-types.rst:15
+#: ../../tracks/track-types.rst:16
 msgid "Track type"
 msgstr ""
 
-#: ../../tracks/track-types.rst:18
+#: ../../tracks/track-types.rst:19
 msgid "Can record"
 msgstr ""
 
-#: ../../tracks/track-types.rst:19
+#: ../../tracks/track-types.rst:20
 msgid "Objects"
 msgstr ""
 
-#: ../../tracks/track-types.rst:23 ../../tracks/track-types.rst:38
-#: ../../tracks/track-types.rst:48 ../../tracks/track-types.rst:68
+#: ../../tracks/track-types.rst:24 ../../tracks/track-types.rst:39
+#: ../../tracks/track-types.rst:49 ../../tracks/track-types.rst:69
 msgid "Yes"
 msgstr ""
 
-#: ../../tracks/track-types.rst:24
+#: ../../tracks/track-types.rst:25
 msgid "Audio regions"
 msgstr ""
 
-#: ../../tracks/track-types.rst:25
+#: ../../tracks/track-types.rst:26
 msgid "Audio FX"
 msgstr ""
 
-#: ../../tracks/track-types.rst:28 ../../tracks/track-types.rst:33
-#: ../../tracks/track-types.rst:43 ../../tracks/track-types.rst:53
-#: ../../tracks/track-types.rst:58 ../../tracks/track-types.rst:63
-#: ../../tracks/track-types.rst:73 ../../tracks/track-types.rst:78
-#: ../../tracks/track-types.rst:83
+#: ../../tracks/track-types.rst:29 ../../tracks/track-types.rst:34
+#: ../../tracks/track-types.rst:44 ../../tracks/track-types.rst:54
+#: ../../tracks/track-types.rst:59 ../../tracks/track-types.rst:64
+#: ../../tracks/track-types.rst:74 ../../tracks/track-types.rst:79
+#: ../../tracks/track-types.rst:84
 msgid "No"
 msgstr ""
 
-#: ../../tracks/track-types.rst:29 ../../tracks/track-types.rst:34
-#: ../../tracks/track-types.rst:41 ../../tracks/track-types.rst:42
-#: ../../tracks/track-types.rst:44 ../../tracks/track-types.rst:51
-#: ../../tracks/track-types.rst:52 ../../tracks/track-types.rst:59
-#: ../../tracks/track-types.rst:61 ../../tracks/track-types.rst:62
-#: ../../tracks/track-types.rst:64 ../../tracks/track-types.rst:74
-#: ../../tracks/track-types.rst:79 ../../tracks/track-types.rst:81
-#: ../../tracks/track-types.rst:82 ../../tracks/track-types.rst:84
+#: ../../tracks/track-types.rst:30 ../../tracks/track-types.rst:35
+#: ../../tracks/track-types.rst:42 ../../tracks/track-types.rst:43
+#: ../../tracks/track-types.rst:45 ../../tracks/track-types.rst:52
+#: ../../tracks/track-types.rst:53 ../../tracks/track-types.rst:60
+#: ../../tracks/track-types.rst:62 ../../tracks/track-types.rst:63
+#: ../../tracks/track-types.rst:65 ../../tracks/track-types.rst:75
+#: ../../tracks/track-types.rst:80 ../../tracks/track-types.rst:82
+#: ../../tracks/track-types.rst:83 ../../tracks/track-types.rst:85
 msgid "None"
 msgstr ""
 
-#: ../../tracks/track-types.rst:30
+#: ../../tracks/track-types.rst:31
 msgid "Audio Group"
 msgstr ""
 
-#: ../../tracks/track-types.rst:35
+#: ../../tracks/track-types.rst:36
 msgid "Chord"
 msgstr ""
 
-#: ../../tracks/track-types.rst:39
+#: ../../tracks/track-types.rst:40
 msgid "Chord regions, scales"
 msgstr ""
 
-#: ../../tracks/track-types.rst:40
+#: ../../tracks/track-types.rst:41
 msgid "Folder"
 msgstr ""
 
-#: ../../tracks/track-types.rst:49 ../../tracks/track-types.rst:69
+#: ../../tracks/track-types.rst:50 ../../tracks/track-types.rst:70
 msgid "MIDI regions"
 msgstr ""
 
-#: ../../tracks/track-types.rst:55
+#: ../../tracks/track-types.rst:56
 msgid "Master"
 msgstr ""
 
-#: ../../tracks/track-types.rst:70
+#: ../../tracks/track-types.rst:71
 msgid "MIDI FX"
 msgstr ""
 
-#: ../../tracks/track-types.rst:75
+#: ../../tracks/track-types.rst:76
 msgid "MIDI Group"
 msgstr ""
 
-#: ../../tracks/track-types.rst:80
+#: ../../tracks/track-types.rst:81
 msgid "Tempo"
 msgstr ""
 
-#: ../../tracks/track-types.rst:86
+#: ../../tracks/track-types.rst:87
 msgid ""
 "All tracks types except Chord and Folder tracks have automation lanes "
 "available."
 msgstr ""
 
-#: ../../tracks/track-types.rst:90
+#: ../../tracks/track-types.rst:91
 msgid "Audio Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:92
+#: ../../tracks/track-types.rst:93
 msgid ""
 "An Audio Track contains audio regions and can be used for recording and "
 "playing back audio clips."
 msgstr ""
 
-#: ../../tracks/track-types.rst:98
+#: ../../tracks/track-types.rst:99
 msgid "Audio track with an audio region"
 msgstr ""
 
-#: ../../tracks/track-types.rst:101
+#: ../../tracks/track-types.rst:102
 msgid "Audio FX Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:102
+#: ../../tracks/track-types.rst:103
 msgid ""
 "Audio FX tracks can be used for effects by sending audio signals to them "
 "with :ref:`track-sends`."
 msgstr ""
 
-#: ../../tracks/track-types.rst:109
+#: ../../tracks/track-types.rst:110
 msgid "Audio FX track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:111
+#: ../../tracks/track-types.rst:112
 msgid ""
 "A common use case is to create a separate Audio FX track with a reverb "
 "plugin and to send audio from another track to it. This way, the reverb "
@@ -7441,11 +7441,11 @@ msgid ""
 "several tracks."
 msgstr ""
 
-#: ../../tracks/track-types.rst:118
+#: ../../tracks/track-types.rst:119
 msgid "Audio Group Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:120
+#: ../../tracks/track-types.rst:121
 msgid ""
 "Audio group tracks can be used for grouping audio signals together via "
 "direct routing. For example, kicks, snares and hihats can be routed to a "
@@ -7453,105 +7453,105 @@ msgid ""
 "collectively instead of separately."
 msgstr ""
 
-#: ../../tracks/track-types.rst:130
+#: ../../tracks/track-types.rst:131
 msgid "Audio Group track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:132 ../../tracks/track-types.rst:286
+#: ../../tracks/track-types.rst:133 ../../tracks/track-types.rst:287
 msgid "Group tracks are foldable."
 msgstr ""
 
-#: ../../tracks/track-types.rst:135
+#: ../../tracks/track-types.rst:136
 msgid "Chord Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:137
+#: ../../tracks/track-types.rst:138
 msgid ""
 "The Chord Track contains chord and scale objects that are used to specify "
 "when the song is using a particular chord or scale. Its main purpose is to "
 "assist with chord progressions."
 msgstr ""
 
-#: ../../tracks/track-types.rst:145
+#: ../../tracks/track-types.rst:146
 msgid "Chord track with a chord region and a scale"
 msgstr ""
 
-#: ../../tracks/track-types.rst:147
+#: ../../tracks/track-types.rst:148
 msgid ""
 "For more information about chords, see the section :ref:`chords-and-scales/"
 "intro:Chords and Scales`."
 msgstr ""
 
-#: ../../tracks/track-types.rst:150
+#: ../../tracks/track-types.rst:151
 msgid ""
 "For editing chords inside chord regions, see :ref:`editing/clip-editors/"
 "chord-editor:Chord Editor`."
 msgstr ""
 
-#: ../../tracks/track-types.rst:154
+#: ../../tracks/track-types.rst:155
 msgid "Live Audition"
 msgstr ""
 
-#: ../../tracks/track-types.rst:156
+#: ../../tracks/track-types.rst:157
 msgid ""
 "You can route the output of the chord track to a MIDI or Instrument track "
 "for live auditioning of the chord track's events. You can also play the "
 "chords live with a MIDI keyboard."
 msgstr ""
 
-#: ../../tracks/track-types.rst:162
+#: ../../tracks/track-types.rst:163
 msgid "Folder Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:164
+#: ../../tracks/track-types.rst:165
 msgid "Folder tracks are used to organize tracks."
 msgstr ""
 
-#: ../../tracks/track-types.rst:169
+#: ../../tracks/track-types.rst:170
 msgid "Folder track with a MIDI FX track as a child"
 msgstr ""
 
-#: ../../tracks/track-types.rst:171
+#: ../../tracks/track-types.rst:172
 msgid ""
 "To move tracks inside folder tracks, simply select the tracks you want and "
 "drag-and-drop them inside the folder track."
 msgstr ""
 
-#: ../../tracks/track-types.rst:175
+#: ../../tracks/track-types.rst:176
 msgid ""
 "Clicking the folder button will hide and expand the folder track's children."
 msgstr ""
 
-#: ../../tracks/track-types.rst:178
+#: ../../tracks/track-types.rst:179
 msgid "Audio/MIDI group tracks are also foldable."
 msgstr ""
 
-#: ../../tracks/track-types.rst:181
+#: ../../tracks/track-types.rst:182
 msgid "Instrument Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:183
+#: ../../tracks/track-types.rst:184
 msgid ""
 "The instrument track is used for synths and other instruments. Instrument "
 "tracks contain a special `instrument slot` in the mixer that will get "
 "processed `after` the MIDI FX section and `before` the Inserts section."
 msgstr ""
 
-#: ../../tracks/track-types.rst:192
+#: ../../tracks/track-types.rst:193
 msgid "Instrument track with a MIDI region"
 msgstr ""
 
-#: ../../tracks/track-types.rst:194
+#: ../../tracks/track-types.rst:195
 msgid ""
 "Instrument tracks are similar to MIDI tracks, except that they produce audio "
 "instead of :term:`MIDI`."
 msgstr ""
 
-#: ../../tracks/track-types.rst:198
+#: ../../tracks/track-types.rst:199
 msgid "Marker Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:200
+#: ../../tracks/track-types.rst:201
 msgid ""
 "The marker track holds song markers - either custom or pre-defined ones - "
 "that make it easier to jump to or to export specific sections of the song. "
@@ -7559,669 +7559,669 @@ msgid ""
 "can be hidden)."
 msgstr ""
 
-#: ../../tracks/track-types.rst:210
+#: ../../tracks/track-types.rst:211
 msgid "Marker track with 2 markers"
 msgstr ""
 
-#: ../../tracks/track-types.rst:213
+#: ../../tracks/track-types.rst:214
 msgid "Master Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:215
+#: ../../tracks/track-types.rst:216
 msgid ""
 "The master track is a special type of Audio Group Track that Zrythm uses to "
 "route the resulting audio signal after all the processing is done to the "
 "audio backend."
 msgstr ""
 
-#: ../../tracks/track-types.rst:224
+#: ../../tracks/track-types.rst:225
 msgid "Master track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:227
+#: ../../tracks/track-types.rst:228
 msgid "Modulator Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:229
+#: ../../tracks/track-types.rst:230
 msgid ""
 "The modulator track is a special track that is used for global modulators "
 "like LFOs and macro knobs that can be assigned to any automatable control "
 "inside Zrythm."
 msgstr ""
 
-#: ../../tracks/track-types.rst:237
+#: ../../tracks/track-types.rst:238
 msgid "Modulator track with automation for macro knob 1"
 msgstr ""
 
-#: ../../tracks/track-types.rst:239
+#: ../../tracks/track-types.rst:240
 msgid "For more details, see :ref:`modulators/intro:Modulators`."
 msgstr ""
 
-#: ../../tracks/track-types.rst:243
+#: ../../tracks/track-types.rst:244
 msgid "MIDI Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:245
+#: ../../tracks/track-types.rst:246
 msgid ""
 "A MIDI track contains MIDI regions and its purpose is playing back MIDI "
 "events and routing those MIDI signals to other instruments (including "
 "external instruments and hardware)."
 msgstr ""
 
-#: ../../tracks/track-types.rst:250
+#: ../../tracks/track-types.rst:251
 msgid ""
 "MIDI tracks, unlike instrument tracks, produce MIDI output and so their "
 "channel strips will only have MIDI effects (plugins that change MIDI "
 "signals)."
 msgstr ""
 
-#: ../../tracks/track-types.rst:254
+#: ../../tracks/track-types.rst:255
 msgid ""
 "MIDI tracks also have automation lanes for automating various parameters."
 msgstr ""
 
-#: ../../tracks/track-types.rst:260
+#: ../../tracks/track-types.rst:261
 msgid "MIDI track with a MIDI region"
 msgstr ""
 
-#: ../../tracks/track-types.rst:263
+#: ../../tracks/track-types.rst:264
 msgid "MIDI FX Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:265
+#: ../../tracks/track-types.rst:266
 msgid ""
 "MIDI FX tracks can be used for MIDI effects by sending MIDI signals to them "
 "using :ref:`track-sends`."
 msgstr ""
 
-#: ../../tracks/track-types.rst:272
+#: ../../tracks/track-types.rst:273
 msgid "MIDI FX track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:275
+#: ../../tracks/track-types.rst:276
 msgid "MIDI Group Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:277
+#: ../../tracks/track-types.rst:278
 msgid ""
 "These are similar to Audio Group tracks, except that they act on MIDI "
 "signals instead of audio signals."
 msgstr ""
 
-#: ../../tracks/track-types.rst:284
+#: ../../tracks/track-types.rst:285
 msgid "MIDI Group track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:289
+#: ../../tracks/track-types.rst:290
 msgid "Tempo Track"
 msgstr ""
 
-#: ../../tracks/track-types.rst:291
+#: ../../tracks/track-types.rst:292
 msgid ""
 "The tempo track is a special track that allows automating the BPM and time "
 "signature."
 msgstr ""
 
-#: ../../tracks/track-types.rst:297
+#: ../../tracks/track-types.rst:298
 msgid "Tempo track with BPM automation"
 msgstr ""
 
-#: ../../tracks/track-visibility.rst:8
+#: ../../tracks/track-visibility.rst:9
 msgid "Track Visibility"
 msgstr ""
 
-#: ../../tracks/track-visibility.rst:10
+#: ../../tracks/track-visibility.rst:11
 msgid ""
 "The track visibility tab in the :ref:`left-panel` allows toggling the "
 "visibility of tracks."
 msgstr ""
 
-#: ../../tracks/track-visibility.rst:16
+#: ../../tracks/track-visibility.rst:17
 msgid ""
 "Tracks can also be quickly hidden with :menuselection:`Right click --> Hide`."
 msgstr ""
 
-#: ../../user-media/intro.rst:6
+#: ../../user-media/intro.rst:7
 msgid "User Media"
 msgstr ""
 
-#: ../../user-media/intro.rst:8
+#: ../../user-media/intro.rst:9
 msgid ""
 "This chapter contains references to user-created media not part of Zrythm."
 msgstr ""
 
-#: ../../user-media/intro.rst:12
+#: ../../user-media/intro.rst:13
 msgid "Mascot Idea"
 msgstr ""
 
-#: ../../user-media/intro.rst:15
+#: ../../user-media/intro.rst:16
 msgid "Concept"
 msgstr ""
 
-#: ../../user-media/intro.rst:20
+#: ../../user-media/intro.rst:21
 msgid "Concept by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
 msgstr ""
 
-#: ../../user-media/intro.rst:23
+#: ../../user-media/intro.rst:24
 msgid "Sketches"
 msgstr ""
 
-#: ../../user-media/intro.rst:25
+#: ../../user-media/intro.rst:26
 msgid "User Sketches"
 msgstr ""
 
-#: ../../user-media/intro.rst:30
+#: ../../user-media/intro.rst:31
 msgid "Sketch by `FanaticMoose`_ [`CC-BY-SA-4.0`_]"
 msgstr ""
 
-#: ../../user-media/intro.rst:35
+#: ../../user-media/intro.rst:36
 msgid "Sketch by `@weoxm@koyu.space`_"
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:8
+#: ../../zrythm-interface/bottom-panel.rst:9
 msgid "Bottom Panel"
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:13
+#: ../../zrythm-interface/bottom-panel.rst:14
 msgid "Bottom panel"
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:15
+#: ../../zrythm-interface/bottom-panel.rst:16
 msgid ""
 "The bottom panel consists of the following views, each explained in its own "
 "section."
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:18
+#: ../../zrythm-interface/bottom-panel.rst:19
 msgid ":ref:`Editor <editors>`"
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:19
+#: ../../zrythm-interface/bottom-panel.rst:20
 msgid ":ref:`Mixer <mixing>`"
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:20
+#: ../../zrythm-interface/bottom-panel.rst:21
 msgid ":ref:`Modulators <modulators/intro:Modulators>`"
 msgstr ""
 
-#: ../../zrythm-interface/bottom-panel.rst:21
+#: ../../zrythm-interface/bottom-panel.rst:22
 msgid ":ref:`Chord Pad <chords-and-scales/chord-pad:Chord Pad>`"
 msgstr ""
 
-#: ../../zrythm-interface/intro.rst:6
+#: ../../zrythm-interface/intro.rst:7
 msgid "Interface"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:8
+#: ../../zrythm-interface/left-panel.rst:9
 msgid "Left Panel"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:13
+#: ../../zrythm-interface/left-panel.rst:14
 msgid "Left panel"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:15
+#: ../../zrythm-interface/left-panel.rst:16
 msgid ""
 "The left panel consists of the following views, each explained in its own "
 "section."
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:18
+#: ../../zrythm-interface/left-panel.rst:19
 msgid ":ref:`Track Inspector <track-inspector>`"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:19
+#: ../../zrythm-interface/left-panel.rst:20
 msgid ""
 ":ref:`Plugin Inspector <plugins-files/plugins/inspector-page:Inspector Page>`"
 msgstr ""
 
-#: ../../zrythm-interface/left-panel.rst:20
+#: ../../zrythm-interface/left-panel.rst:21
 msgid ":ref:`Track Visibility <track-visibility>`"
 msgstr ""
 
-#: ../../zrythm-interface/main-panel.rst:8
+#: ../../zrythm-interface/main-panel.rst:9
 msgid "Main Panel"
 msgstr ""
 
-#: ../../zrythm-interface/main-panel.rst:13
+#: ../../zrythm-interface/main-panel.rst:14
 msgid "Main panel"
 msgstr ""
 
-#: ../../zrythm-interface/main-panel.rst:15
+#: ../../zrythm-interface/main-panel.rst:16
 msgid ""
 "The main panel consists of the following views, each explained in its own "
 "section."
 msgstr ""
 
-#: ../../zrythm-interface/main-panel.rst:18
+#: ../../zrythm-interface/main-panel.rst:19
 msgid ":ref:`Timeline <editing-timeline>`"
 msgstr ""
 
-#: ../../zrythm-interface/main-panel.rst:19
+#: ../../zrythm-interface/main-panel.rst:20
 msgid ":ref:`Connections <routing/connections:Managing Connections>`"
 msgstr ""
 
-#: ../../zrythm-interface/main-panel.rst:20
+#: ../../zrythm-interface/main-panel.rst:21
 msgid ":ref:`Bindings <configuration/device-setup:MIDI Bindings>`"
 msgstr ""
 
-#: ../../zrythm-interface/main-panel.rst:21
+#: ../../zrythm-interface/main-panel.rst:22
 msgid "Scenes *(not implemented yet)*"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:8
+#: ../../zrythm-interface/main-toolbar.rst:9
 msgid "Main Toolbar"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:10
+#: ../../zrythm-interface/main-toolbar.rst:11
 msgid ""
 "The main toolbar contains global actions, such as saving and loading a "
 "project or opening the preferences window."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:17
+#: ../../zrythm-interface/main-toolbar.rst:18
 msgid ""
 "The name of the project is displayed at the center, with the project path "
 "being shown below it."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:21
+#: ../../zrythm-interface/main-toolbar.rst:22
 msgid "Global Menus"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:22
+#: ../../zrythm-interface/main-toolbar.rst:23
 msgid "The main toolbar contains the following global menus."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:25
+#: ../../zrythm-interface/main-toolbar.rst:26
 msgid "Edit Menu"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:26
+#: ../../zrythm-interface/main-toolbar.rst:27
 msgid ""
 "The Edit menu has various buttons and controls that are used often during "
 "editing and arranging."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:29
+#: ../../zrythm-interface/main-toolbar.rst:30
 msgid "The :ref:`editing` chapter explains these controls in detail."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:33
+#: ../../zrythm-interface/main-toolbar.rst:34
 msgid "Project Menu"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:34
+#: ../../zrythm-interface/main-toolbar.rst:35
 msgid ""
 "The Project menu contains various project-related actions such as saving, "
 "loading and exporting MIDI or audio."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:39
+#: ../../zrythm-interface/main-toolbar.rst:40
 msgid "Project Management"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:40
+#: ../../zrythm-interface/main-toolbar.rst:41
 msgid "New Project"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:41
+#: ../../zrythm-interface/main-toolbar.rst:42
 msgid "Create a new project."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:42
+#: ../../zrythm-interface/main-toolbar.rst:43
 msgid "Save"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:43
+#: ../../zrythm-interface/main-toolbar.rst:44
 msgid "Save the current project at its current location."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:44
+#: ../../zrythm-interface/main-toolbar.rst:45
 msgid "Save As"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:45
+#: ../../zrythm-interface/main-toolbar.rst:46
 msgid "Save the current project at a new location."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:47
+#: ../../zrythm-interface/main-toolbar.rst:48
 msgid "Load"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:47
+#: ../../zrythm-interface/main-toolbar.rst:48
 msgid "Load a project."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:50
+#: ../../zrythm-interface/main-toolbar.rst:51
 msgid "Export"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:52
+#: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Export As"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:52
+#: ../../zrythm-interface/main-toolbar.rst:53
 msgid ""
 "Export the project as audio or MIDI. See :ref:`export-audio-and-midi` for "
 "more details."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:56
+#: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Export Graph"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:55
+#: ../../zrythm-interface/main-toolbar.rst:56
 msgid ""
 "Export the routing graph as an image or .dot graph. See :ref:`export-routing-"
 "graph` for more details."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:58
+#: ../../zrythm-interface/main-toolbar.rst:59
 msgid "For more information about projects, see the :ref:`projects` chapter."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:62
+#: ../../zrythm-interface/main-toolbar.rst:63
 msgid "View Menu"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:63
+#: ../../zrythm-interface/main-toolbar.rst:64
 msgid ""
 "The View menu contains controls to change the appearance of Zrythm and its "
 "various areas."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:66
+#: ../../zrythm-interface/main-toolbar.rst:67
 msgid "Toggle Status Bar"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:67
+#: ../../zrythm-interface/main-toolbar.rst:68
 msgid "Toggles the visibility of the status bar."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:68
+#: ../../zrythm-interface/main-toolbar.rst:69
 msgid "Fullscreen"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:69
+#: ../../zrythm-interface/main-toolbar.rst:70
 msgid "Toggles fullscreen mode."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:71
+#: ../../zrythm-interface/main-toolbar.rst:72
 msgid "Toggle Left/Right/Bottom/Main Panels"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:71
+#: ../../zrythm-interface/main-toolbar.rst:72
 msgid "Toggles the visibility of the selected panel."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:74
+#: ../../zrythm-interface/main-toolbar.rst:75
 msgid "Help Menu"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:75
+#: ../../zrythm-interface/main-toolbar.rst:76
 msgid ""
 "The Help menu contains links for reporting bugs, donating, chatting and "
 "other useful links."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:83
+#: ../../zrythm-interface/main-toolbar.rst:84
 msgid "About"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:79
+#: ../../zrythm-interface/main-toolbar.rst:80
 msgid ""
 "View information about the running instance of Zrythm, such as version "
 "information, authors and copyright."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:85
+#: ../../zrythm-interface/main-toolbar.rst:86
 msgid "Chat"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:86
+#: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Join the Zrythm chatroom on Matrix."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:87
+#: ../../zrythm-interface/main-toolbar.rst:88
 msgid "Manual"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:88
+#: ../../zrythm-interface/main-toolbar.rst:89
 msgid "View the user manual."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:89
+#: ../../zrythm-interface/main-toolbar.rst:90
 msgid "News"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:90
+#: ../../zrythm-interface/main-toolbar.rst:91
 msgid "Show the latest changelog."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:91
+#: ../../zrythm-interface/main-toolbar.rst:92
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:92
+#: ../../zrythm-interface/main-toolbar.rst:93
 msgid "Show all the available keyboard shortcuts."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:93
+#: ../../zrythm-interface/main-toolbar.rst:94
 msgid "Donate"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:94
+#: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Donate to Zrythm through LiberaPay."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:96
+#: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Report a Bug"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:96
+#: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Opens the page to report a new bug."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:99
+#: ../../zrythm-interface/main-toolbar.rst:100
 msgid "Additional Buttons"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:100
+#: ../../zrythm-interface/main-toolbar.rst:101
 msgid "The main toolbar also contains the following buttons."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:106
+#: ../../zrythm-interface/main-toolbar.rst:107
 msgid "Shows the :ref:`scripting interface <scripting>`."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:107
+#: ../../zrythm-interface/main-toolbar.rst:108
 msgid "Log Viewer"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:108
+#: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Displays the log, which gets updated real-time."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:110
+#: ../../zrythm-interface/main-toolbar.rst:111
 msgid "Shows the :ref:`preferences dialog <preferences>`."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:113
+#: ../../zrythm-interface/main-toolbar.rst:114
 msgid "Live Indicators"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:115
+#: ../../zrythm-interface/main-toolbar.rst:116
 msgid "The following live indicators are displayed on the right."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:119
+#: ../../zrythm-interface/main-toolbar.rst:120
 msgid "MIDI In"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:119
+#: ../../zrythm-interface/main-toolbar.rst:120
 msgid "Shows the :term:`MIDI` activity of auto-connected MIDI devices."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:121
+#: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Oscilloscope"
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:122
+#: ../../zrythm-interface/main-toolbar.rst:123
 msgid "Shows the audio waveform from the master output."
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:8
+#: ../../zrythm-interface/overview.rst:9
 msgid "The Zrythm interface is split into various sub-modules."
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:13
+#: ../../zrythm-interface/overview.rst:14
 msgid "Each sub-module is explained in its own section."
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:15
+#: ../../zrythm-interface/overview.rst:16
 msgid ":ref:`main-toolbar` (1)"
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:16
+#: ../../zrythm-interface/overview.rst:17
 msgid ":ref:`main-panel` (2)"
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:17
+#: ../../zrythm-interface/overview.rst:18
 msgid ":ref:`left-panel` (3)"
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:18
+#: ../../zrythm-interface/overview.rst:19
 msgid ":ref:`bottom-panel` (4)"
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:19
+#: ../../zrythm-interface/overview.rst:20
 msgid ":ref:`right-panel` (5)"
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:20
+#: ../../zrythm-interface/overview.rst:21
 msgid ":ref:`transport-bar` (6)"
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:22
+#: ../../zrythm-interface/overview.rst:23
 msgid ""
 "Panels contain multiple *views*, each of which is made visible by clicking "
 "on its corresponding tab."
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:26
+#: ../../zrythm-interface/overview.rst:27
 msgid "Detaching Views"
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:27
+#: ../../zrythm-interface/overview.rst:28
 msgid ""
 "Views in each panel are detachable. To detach a view into its own separate "
 "window, click and drag its tab outside the main window of Zrythm."
 msgstr ""
 
-#: ../../zrythm-interface/overview.rst:35
+#: ../../zrythm-interface/overview.rst:36
 msgid "Detached timeline view"
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:8
+#: ../../zrythm-interface/right-panel.rst:9
 msgid "Right Panel"
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:13
+#: ../../zrythm-interface/right-panel.rst:14
 msgid "Right panel"
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:15
+#: ../../zrythm-interface/right-panel.rst:16
 msgid ""
 "The right panel consists of the following views, each explained in its own "
 "section."
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:18
+#: ../../zrythm-interface/right-panel.rst:19
 msgid ":ref:`Plugin Browsers <plugin-browser>`"
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:19
+#: ../../zrythm-interface/right-panel.rst:20
 msgid ":ref:`File Browser <file-browser>`"
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:20
+#: ../../zrythm-interface/right-panel.rst:21
 msgid ":ref:`Monitor Section <routing/monitor-section:Monitor Section>`"
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:21
+#: ../../zrythm-interface/right-panel.rst:22
 msgid ":ref:`Chord Preset Browser <chords-and-scales/chord-pad:Presets>`"
 msgstr ""
 
-#: ../../zrythm-interface/right-panel.rst:23
+#: ../../zrythm-interface/right-panel.rst:24
 msgid "Write and point to correct chord preset browser section."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:8
+#: ../../zrythm-interface/transport-bar.rst:9
 msgid "Transport Bar"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:10
+#: ../../zrythm-interface/transport-bar.rst:11
 msgid ""
 "The transport bar contains information about the audio engine, transport "
 "controls and CPU/DSP usage."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:16
+#: ../../zrythm-interface/transport-bar.rst:17
 msgid "Transport bar"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:19
+#: ../../zrythm-interface/transport-bar.rst:20
 msgid "BPM and Time Signature"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:20
+#: ../../zrythm-interface/transport-bar.rst:21
 msgid ""
 "BPM and Time Signature are covered in :ref:`playback-and-recording/bpm-and-"
 "time-signatures:BPM and Time Signatures`."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:25
+#: ../../zrythm-interface/transport-bar.rst:26
 msgid ""
 "Transport controls are covered in :ref:`playback-and-recording/transport-"
 "controls:Transport Controls`."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:29
+#: ../../zrythm-interface/transport-bar.rst:30
 msgid "Backend Information"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:30
+#: ../../zrythm-interface/transport-bar.rst:31
 msgid ""
 "Information about the currently selected backend and options is visible in "
 "the bottom left corner."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:36
+#: ../../zrythm-interface/transport-bar.rst:37
 msgid "Backend info"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:38
+#: ../../zrythm-interface/transport-bar.rst:39
 msgid ""
 "If the backend supports it, the buffer size can be changed live by clicking "
 "the :guilabel:`change` button."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:42
+#: ../../zrythm-interface/transport-bar.rst:43
 msgid ""
 "If the backend supports it, the engine can be temporarily disabled by "
 "clicking the :guilabel:`Disable` button."
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:47
+#: ../../zrythm-interface/transport-bar.rst:48
 msgid "CPU/DSP Usage"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:52
+#: ../../zrythm-interface/transport-bar.rst:53
 msgid "CPU/DSP usage"
 msgstr ""
 
-#: ../../zrythm-interface/transport-bar.rst:54
+#: ../../zrythm-interface/transport-bar.rst:55
 #, python-format
 msgid ""
 "This widget displays the current CPU % usage at the top and the current DSP "

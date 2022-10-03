@@ -26,6 +26,7 @@ i18n.gettext (
     '--keyword=__',
     '--keyword=N_',
     '--keyword=C_:1c,2',
+    '--from-code=UTF-8',
     ],
   )
 
