@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-08-16 09:55+0900\n"
-"PO-Revision-Date: 2022-08-24 15:52+0000\n"
+"PO-Revision-Date: 2022-09-29 18:22+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/fr/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -1941,7 +1941,7 @@ msgstr ""
 #: ../../editing/clip-editors/piano-roll.rst:9
 #: ../../editing/clip-editors/toolbar.rst:30
 msgid "Piano Roll"
-msgstr "Piano Roll"
+msgstr "Rouleau de piano"
 
 #: ../../editing/clip-editors/piano-roll.rst:11
 msgid ""
@@ -1971,7 +1971,7 @@ msgstr "Barre d'outils"
 
 #: ../../editing/clip-editors/piano-roll.rst:39
 msgid "Drum View"
-msgstr "Affichage percussion"
+msgstr "Vue de percussion"
 
 #: ../../editing/clip-editors/piano-roll.rst:31
 msgid ""
@@ -4561,9 +4561,8 @@ msgid "Initial configuration dialog"
 msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:31
-#, fuzzy
 msgid "Language"
-msgstr "Plage"
+msgstr "Langue"
 
 #: ../../getting-started/running-zrythm.rst:26
 msgid ""

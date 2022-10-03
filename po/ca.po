@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-09-14 19:12+0900\n"
-"PO-Revision-Date: 2022-09-05 15:51+0000\n"
+"PO-Revision-Date: 2022-09-24 15:53+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -718,6 +718,8 @@ msgid ""
 "Could not load project: Corrupted project detected (missing FINISHED file at "
 "'%s')."
 msgstr ""
+"No s'ha pogut carregar el projecte: s'ha detectat un projecte malmès (falta "
+"el fitxer FINISHED a '%s')."
 
 #: src/project.c:1205
 msgid "Failed to load project. Will create a new one instead."
@@ -959,7 +961,7 @@ msgstr "Executa %s, passant opcionalment un fitxer de projecte."
 #: src/zrythm_app.c:1740
 #, c-format
 msgid "This version of Zrythm does not support creating more than %d tracks."
-msgstr ""
+msgstr "Aquesta versió de Zrythm no admet la creació de més de %d pistes."
 
 #: src/actions/range_action.c:651 resources/ui/range_action_buttons.ui:11
 msgid "Insert silence"
@@ -7608,10 +7610,15 @@ msgid ""
 "Write FINISHED file after finishing saving a project and check for this file "
 "on load"
 msgstr ""
+"Escriu el fitxer FINISHED després d'acabar de desar un projecte i comprova "
+"si aquest fitxer està carregat"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+#, fuzzy
 msgid "Use new higher quality \"Finer\" timestretcher when using rubberband v3"
 msgstr ""
+"Utilitza un nou estirador de temps «Finer» de més qualitat quan feu servir "
+"la banda de goma v3"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
@@ -7621,39 +7628,48 @@ msgid "Changed:"
 msgstr "Canviat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:61
+#, fuzzy
 msgid "Fix header widget not unparenting its child stack"
 msgstr ""
+"Soluciona el giny de la capçalera que no elimina la seva pila secundària"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-#, fuzzy
 msgid "Update French, Japanese translations"
-msgstr "Actualitzar les traduccions a l'hongarès"
+msgstr "Actualitza les traduccions francès i japonès"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+#, fuzzy
 msgid "Change trial version limitation to max 25 tracks per project"
 msgstr ""
+"Canvia la limitació de la versió de prova a un màxim de 25 pistes per "
+"projecte"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:72
 #, fuzzy
 msgid "Add track filtering by name and type"
-msgstr "Nom del filtre de pista"
+msgstr "Afegir filtratge de pistes per nom i tipus"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:73
 #, fuzzy
 msgid "Add more error checking when instantiating Carla plugins"
-msgstr "Error en instanciar el complement %s"
+msgstr "Afegir més comprovació d'errors quan s'instancia els complements Carla"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#, fuzzy
 msgid "Don't allow moving the playhead while recording"
-msgstr ""
+msgstr "No permetis moure el capçal de reproducció durant la gravació"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+#, fuzzy
 msgid "Don't show red peak on MIDI meters"
-msgstr ""
+msgstr "No mostris el pic vermell als comptadors MIDI"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+#, fuzzy
 msgid "Windows MME: only print debug messages if `ZRYTHM_DEBUG` is set"
 msgstr ""
+"Windows MME: només imprimeix missatges de depuració si s'ha establert "
+"`ZRYTHM_DEBUG`"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:80
 #, fuzzy
@@ -7665,20 +7681,25 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:81
 msgid "Stop SIGSEGV handler from being called multiple times"
-msgstr ""
+msgstr "Evita que el controlador SIGSEGV sigui cridat diverses vegades"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:82
 msgid "Support `LC_ALL` from the environment"
-msgstr ""
+msgstr "Suport `LC_ALL` des de l'entorn"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:83
+#, fuzzy
 msgid "Move track visibility toggles to new track filtering popover"
 msgstr ""
+"Mou els canvis de visibilitat de la pista a la nova finestra emergent de "
+"filtratge de pistes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:84
 msgid ""
 "Avoid showing bug report dialogs for known issues that are not Zrythm bugs"
 msgstr ""
+"Evita mostrar els diàlegs d'informes d'errors per problemes coneguts que no "
+"siguin errors de Zrythm"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:86
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:120
@@ -7695,12 +7716,14 @@ msgstr "Soluciona un error en afegir una inserció a una pista d'àudio"
 msgid ""
 "Fix screen moving backwards when zooming in towards the end of the project"
 msgstr ""
+"Soluciona la pantalla que es mou cap enrere quan s'apropa cap al final del "
+"projecte"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
 #, fuzzy
 msgid "Fix autoplay breaking when changing directories in the file browser"
 msgstr ""
-"Correcció dels fitxers MIDI que no es poden activar al navegador de fitxers"
+"Soluciona dels fitxers MIDI que no es poden activar al navegador de fitxers"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:91
 #, fuzzy
@@ -7708,35 +7731,45 @@ msgid ""
 "Fix file info label not being updated when changing directories in the file "
 "browser"
 msgstr ""
-"Soluciona l'etiqueta d'informació del complement que no s'actualitza quan es "
-"filtra"
+"Soluciona l'etiqueta d'informació del fitxer que no s'actualitza quan es "
+"canvia de directoris al navegador de fitxers"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+#, fuzzy
 msgid "Fix error when right-clicking on Macro knob"
-msgstr ""
+msgstr "Soluciona l'error en fer clic amb el botó dret al botó Macro"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+#, fuzzy
 msgid ""
 "Fix direct connection port selector incorrectly allowing connecting audio "
 "ports to CV ports"
 msgstr ""
+"Soluciona el selector de port de connexió directa de manera incorrecta que "
+"permet connectar els ports d'àudio als ports CV"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:94
 #, fuzzy
 msgid "Fix some memory leaks"
-msgstr "Soluciona algunes fuites de memòria notificades pel sanejador GCC"
+msgstr "Soluciona algunes fuites de memòria"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#, fuzzy
 msgid ""
 "Fix incorrectly calling `g_log_set_writer_func()` more than once causing an "
 "error on exit on some systems"
 msgstr ""
+"Soluciona la crida incorrecta a `g_log_set_writer_func()` més d'una vegada "
+"que provocava un error a la sortida en alguns sistemes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+#, fuzzy
 msgid ""
 "Fix automation mode switches in automation tracks being ellipsized on some "
 "systems"
 msgstr ""
+"Soluciona els interruptors del mode d'automatització a les pistes "
+"d'automatització que s'el·lipsen en alguns sistemes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid "Allow clicking anywhere on timeline minimap to navigate"
@@ -7838,14 +7871,15 @@ msgid "Meson: fix lilv-related subprojects"
 msgstr "Meson: corregir subprojectes relacionats amb lilv"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:140
+#, fuzzy
 msgid "Fix bug report format breaking when undo history is empty"
 msgstr ""
-"Correcció del format de l'informe d'error quan l'historial de desfer està "
+"Soluciona del format de l'informe d'error quan l'historial de desfer està "
 "buit"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:141
 msgid "Fix VST3 support being disabled"
-msgstr "Correcció de la inhabilitació del suport VST3"
+msgstr "Soluciona de la inhabilitació del suport VST3"
 
 #, c-format
 #~ msgid ""

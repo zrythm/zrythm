@@ -15,13 +15,14 @@
 # Cris Q <qygw@outlook.com>, 2022.
 # Hugel <qihu@nfschina.com>, 2022.
 # Eric <hamburger1024@firemail.cc>, 2022.
+# Eric <hamburger1024@mailbox.org>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-09-14 19:12+0900\n"
-"PO-Revision-Date: 2022-09-02 14:19+0000\n"
-"Last-Translator: Eric <hamburger1024@firemail.cc>\n"
+"PO-Revision-Date: 2022-09-14 15:51+0000\n"
+"Last-Translator: Eric <hamburger1024@mailbox.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -3187,14 +3188,12 @@ msgid "Piano Roll"
 msgstr "钢琴卷帘"
 
 #: src/gui/widgets/track.c:955
-#, fuzzy
 msgid "Show used lanes"
-msgstr "显示音轨"
+msgstr "显示使用的音轨"
 
 #: src/gui/widgets/track.c:960
-#, fuzzy
 msgid "Hide unused lanes"
-msgstr "隐藏音轨"
+msgstr "隐藏未用音轨"
 
 #: src/gui/widgets/modulator_macro.c:56
 #: src/gui/widgets/track_input_expander.c:327
@@ -3262,9 +3261,8 @@ msgid "Load preset"
 msgstr "加载预设"
 
 #: src/gui/widgets/arranger.c:1308
-#, fuzzy
 msgid "Create object"
-msgstr "创建新项目"
+msgstr "创建项目"
 
 #: src/gui/widgets/arranger.c:1603 src/gui/widgets/arranger.c:1622
 #: src/gui/widgets/arranger.c:1667 src/gui/widgets/arranger.c:1733
@@ -3277,9 +3275,8 @@ msgid "Failed to move chords"
 msgstr "未能移动和弦"
 
 #: src/gui/widgets/arranger.c:2316
-#, fuzzy
 msgid "Automation value"
-msgstr "显示自动值"
+msgstr "自动值"
 
 #: src/gui/widgets/arranger.c:2341
 msgid "Cannot resize because the selection contains objects without length"
@@ -3825,9 +3822,8 @@ msgid "BBT"
 msgstr ""
 
 #: src/gui/widgets/ruler.c:1394 src/gui/widgets/bot_bar.c:164
-#, fuzzy
 msgid "Time"
-msgstr "时间线"
+msgstr "时间"
 
 #: src/gui/widgets/ruler.c:1396 src/gui/widgets/bot_bar.c:167
 msgid "Display"
@@ -3917,9 +3913,8 @@ msgid "Filter"
 msgstr ""
 
 #: src/gui/widgets/track_filter_popover.c:274
-#, fuzzy
 msgid "Track types"
-msgstr "音轨端口"
+msgstr "音轨类型"
 
 #: src/gui/widgets/timeline_selection_info.c:242
 msgid "clip start (rel.)"
@@ -5988,9 +5983,8 @@ msgid "Initializing..."
 msgstr "正在初始化..."
 
 #: resources/ui/tracklist_header.ui:26
-#, fuzzy
 msgid "Track filters & visibility"
-msgstr "音轨可见性"
+msgstr "音轨过滤器和可见性"
 
 #: resources/gtk/help-overlay.ui:30
 msgid "Global Shortcuts"
@@ -6598,18 +6592,16 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:526
-#, fuzzy
 msgid "Track filter name"
-msgstr "曲目名称"
+msgstr "音轨过滤器名称"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:527
 msgid "Name to filter tracks with."
 msgstr "用于过滤曲目的名称。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:531
-#, fuzzy
 msgid "Track filter type"
-msgstr "音轨推子扩展"
+msgstr "音轨过滤器类型"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:532
 msgid "Track types to filter tracks with."
@@ -7503,14 +7495,12 @@ msgid "Change trial version limitation to max 25 tracks per project"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:72
-#, fuzzy
 msgid "Add track filtering by name and type"
-msgstr "曲目名称"
+msgstr "按名称和类型添加音轨过滤"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:73
-#, fuzzy
 msgid "Add more error checking when instantiating Carla plugins"
-msgstr "在实例化插件时始终显示插件UI"
+msgstr "实例化 Carla 插件时添加更多错误检查"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid "Don't allow moving the playhead while recording"
