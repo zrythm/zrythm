@@ -16,6 +16,8 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
+#include <glib/gi18n.h>
+
 G_DEFINE_TYPE (
   TrackCanvasWidget,
   track_canvas_widget,
@@ -748,6 +750,21 @@ track_canvas_snapshot (
       0.15),
     &GRAPHENE_RECT_INIT (
       0.f, 0.f, (float) width, (float) height));
+
+  if (track->type == TRACK_TYPE_CHORD)
+    {
+      /* show where scales start */
+      PangoLayout * layout = self->automation_value_layout;
+      char          scales_txt[100];
+      sprintf (scales_txt, "%s", _ ("Scales"));
+      pango_layout_set_text (layout, scales_txt, -1);
+      PangoRectangle pangorect;
+      pango_layout_get_pixel_extents (
+        layout, NULL, &pangorect);
+      gtk_snapshot_render_layout (
+        snapshot, context, 22,
+        (height - pangorect.height) - 2, layout);
+    }
 
   if (tw->bg_hovered)
     {
