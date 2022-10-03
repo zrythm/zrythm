@@ -1108,20 +1108,6 @@ activate_delete (
     project_get_arranger_selections_for_last_selection (
       PROJECT);
 
-  if (
-    sel && arranger_selections_has_any (sel)
-    && !arranger_selections_contains_undeletable_object (sel))
-    {
-      GError * err = NULL;
-      bool     ret =
-        arranger_selections_action_perform_delete (sel, &err);
-      if (!ret)
-        {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to delete selections"));
-        }
-    }
-
   switch (PROJECT->last_selection)
     {
     case SELECTION_TYPE_TRACKLIST:
@@ -1136,6 +1122,23 @@ activate_delete (
       g_action_group_activate_action (
         G_ACTION_GROUP (MAIN_WINDOW),
         "delete-mixer-selections", NULL);
+      break;
+    case SELECTION_TYPE_TIMELINE:
+    case SELECTION_TYPE_EDITOR:
+      if (
+        sel && arranger_selections_has_any (sel)
+        && !arranger_selections_contains_undeletable_object (
+          sel))
+        {
+          GError * err = NULL;
+          bool ret = arranger_selections_action_perform_delete (
+            sel, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR (
+                err, "%s", _ ("Failed to delete selections"));
+            }
+        }
       break;
     default:
       g_warning ("not implemented yet");

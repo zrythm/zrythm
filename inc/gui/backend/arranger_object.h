@@ -1103,7 +1103,10 @@ arranger_object_is_frozen (ArrangerObject * obj);
  * or not (eg, start marker).
  */
 bool
-arranger_object_is_deletable (ArrangerObject * obj);
+arranger_object_is_deletable (const ArrangerObject * obj);
+
+bool
+arranger_object_is_renamable (const ArrangerObject * obj);
 
 /**
  * Removes the child from the given object.

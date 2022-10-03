@@ -1804,8 +1804,9 @@ arranger_selections_contains_object (
  */
 bool
 arranger_selections_contains_undeletable_object (
-  ArrangerSelections * self)
+  const ArrangerSelections * self)
 {
+  /* FIXME use arranger_object_is_deletable() */
   switch (self->type)
     {
     case ARRANGER_SELECTIONS_TYPE_TIMELINE:
@@ -1826,6 +1827,26 @@ arranger_selections_contains_undeletable_object (
       return false;
     }
   return false;
+}
+
+/**
+ * Returns if the selections contain an unclonable
+ * object (such as the start marker).
+ */
+bool
+arranger_selections_contains_unclonable_object (
+  const ArrangerSelections * self)
+{
+  return arranger_selections_contains_undeletable_object (
+    self);
+}
+
+bool
+arranger_selections_contains_unrenamable_object (
+  const ArrangerSelections * self)
+{
+  return arranger_selections_contains_undeletable_object (
+    self);
 }
 
 /**

@@ -1475,11 +1475,17 @@ arranger_widget_on_key_release (
       self->alt_held = 0;
     }
 
+  ArrangerSelections * sel =
+    arranger_widget_get_selections (self);
+
   if (ACTION_IS (STARTING_MOVING))
     {
       if (self->alt_held && self->can_link)
         self->action = UI_OVERLAY_ACTION_MOVING_LINK;
-      else if (self->ctrl_held)
+      else if (
+        self->ctrl_held
+        && !arranger_selections_contains_unclonable_object (
+          sel))
         self->action = UI_OVERLAY_ACTION_MOVING_COPY;
       else
         self->action = UI_OVERLAY_ACTION_MOVING;
@@ -1488,7 +1494,9 @@ arranger_widget_on_key_release (
     {
       self->action = UI_OVERLAY_ACTION_MOVING_LINK;
     }
-  else if (ACTION_IS (MOVING) && self->ctrl_held)
+  else if (
+    ACTION_IS (MOVING) && self->ctrl_held
+    && !arranger_selections_contains_unclonable_object (sel))
     {
       self->action = UI_OVERLAY_ACTION_MOVING_COPY;
     }
@@ -1544,9 +1552,16 @@ arranger_widget_on_key_press (
       self->alt_held = 1;
     }
 
+  ArrangerSelections * sel =
+    arranger_widget_get_selections (self);
+  g_return_val_if_fail (sel, false);
+
   if (ACTION_IS (STARTING_MOVING))
     {
-      if (self->ctrl_held)
+      if (
+        self->ctrl_held
+        && !arranger_selections_contains_unclonable_object (
+          sel))
         self->action = UI_OVERLAY_ACTION_MOVING_COPY;
       else
         self->action = UI_OVERLAY_ACTION_MOVING;
@@ -1555,7 +1570,9 @@ arranger_widget_on_key_press (
     {
       self->action = UI_OVERLAY_ACTION_MOVING_LINK;
     }
-  else if (ACTION_IS (MOVING) && self->ctrl_held)
+  else if (
+    ACTION_IS (MOVING) && self->ctrl_held
+    && !arranger_selections_contains_unclonable_object (sel))
     {
       self->action = UI_OVERLAY_ACTION_MOVING_COPY;
     }
@@ -1572,10 +1589,6 @@ arranger_widget_on_key_press (
     }
   else if (ACTION_IS (NONE))
     {
-      ArrangerSelections * sel =
-        arranger_widget_get_selections (self);
-      g_return_val_if_fail (sel, false);
-
       if (arranger_selections_has_any (sel))
         {
           double move_ticks = 0.0;
@@ -3248,7 +3261,10 @@ drag_update (
     case UI_OVERLAY_ACTION_STARTING_MOVING:
       if (self->alt_held && self->can_link)
         self->action = UI_OVERLAY_ACTION_MOVING_LINK;
-      else if (self->ctrl_held)
+      else if (
+        self->ctrl_held
+        && !arranger_selections_contains_unclonable_object (
+          sel))
         self->action = UI_OVERLAY_ACTION_MOVING_COPY;
       else
         self->action = UI_OVERLAY_ACTION_MOVING;
@@ -3256,7 +3272,10 @@ drag_update (
     case UI_OVERLAY_ACTION_MOVING:
       if (self->alt_held && self->can_link)
         self->action = UI_OVERLAY_ACTION_MOVING_LINK;
-      else if (self->ctrl_held)
+      else if (
+        self->ctrl_held
+        && !arranger_selections_contains_unclonable_object (
+          sel))
         self->action = UI_OVERLAY_ACTION_MOVING_COPY;
       break;
     case UI_OVERLAY_ACTION_MOVING_LINK:
@@ -4440,8 +4459,7 @@ on_drag_end_timeline (ArrangerWidget * self)
           {
             HANDLE_ERROR (
               err, "%s",
-              _ ("Failed to link or move "
-                 "selection"));
+              _ ("Failed to link or copy selection"));
           }
       }
       break;

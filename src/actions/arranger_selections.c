@@ -287,6 +287,20 @@ arranger_selections_action_new_move_or_duplicate (
       && arranger_selections_has_any (sel),
     NULL);
 
+  /* validate */
+  if (!move)
+    {
+      if (arranger_selections_contains_unclonable_object (sel))
+        {
+          g_set_error (
+            error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
+            Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED, "%s",
+            _ ("Arranger selections contain an object that "
+               "cannot be duplicated"));
+          return NULL;
+        }
+    }
+
   ArrangerSelectionsAction * self = _create_action (sel);
   UndoableAction *           ua = (UndoableAction *) self;
   if (move)
@@ -429,6 +443,19 @@ arranger_selections_action_new_edit (
   bool                             already_edited,
   GError **                        error)
 {
+  /* validate */
+  if (
+    type == ARRANGER_SELECTIONS_ACTION_EDIT_NAME
+    && arranger_selections_contains_unrenamable_object (
+      sel_before))
+    {
+      g_set_error (
+        error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
+        Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED, "%s",
+        _ ("Cannot rename selected object(s)"));
+      return NULL;
+    }
+
   ArrangerSelectionsAction * self =
     _create_action (sel_before);
   self->type = AS_ACTION_EDIT;
@@ -473,6 +500,18 @@ arranger_selections_action_new_edit_single_obj (
 {
   g_return_val_if_fail (obj_before, NULL);
   g_return_val_if_fail (obj_after, NULL);
+
+  /* validate */
+  if (
+    type == ARRANGER_SELECTIONS_ACTION_EDIT_NAME
+    && arranger_object_is_renamable (obj_before))
+    {
+      g_set_error (
+        error, Z_ACTIONS_ARRANGER_SELECTIONS_ERROR,
+        Z_ACTIONS_ARRANGER_SELECTIONS_ERROR_FAILED, "%s",
+        _ ("Cannot rename selected object(s)"));
+      return NULL;
+    }
 
   ArrangerSelections * prj_sel =
     arranger_object_get_selections_for_type (obj_before->type);

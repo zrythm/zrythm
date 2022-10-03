@@ -3645,7 +3645,7 @@ arranger_object_is_frozen (ArrangerObject * obj)
  * or not (eg, start marker).
  */
 bool
-arranger_object_is_deletable (ArrangerObject * obj)
+arranger_object_is_deletable (const ArrangerObject * obj)
 {
   switch (obj->type)
     {
@@ -3659,6 +3659,12 @@ arranger_object_is_deletable (ArrangerObject * obj)
       break;
     }
   return true;
+}
+
+bool
+arranger_object_is_renamable (const ArrangerObject * obj)
+{
+  return arranger_object_is_deletable (obj);
 }
 
 static void

@@ -57,13 +57,16 @@ marker_track_default (int track_pos)
   /* add start and end markers */
   Marker * marker;
   Position pos;
-  marker = marker_new (_ ("start"));
+  char     marker_name[200];
+  sprintf (marker_name, "[%s]", _ ("start"));
+  marker = marker_new (marker_name);
   ArrangerObject * m_obj = (ArrangerObject *) marker;
   position_set_to_bar (&pos, 1);
   arranger_object_pos_setter (m_obj, &pos);
   marker->type = MARKER_TYPE_START;
   marker_track_add_marker (self, marker);
-  marker = marker_new (_ ("end"));
+  sprintf (marker_name, "[%s]", _ ("end"));
+  marker = marker_new (marker_name);
   m_obj = (ArrangerObject *) marker;
   position_set_to_bar (&pos, 129);
   arranger_object_pos_setter (m_obj, &pos);

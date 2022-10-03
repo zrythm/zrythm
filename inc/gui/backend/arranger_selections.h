@@ -381,7 +381,21 @@ arranger_selections_contains_object (
 NONNULL
 bool
 arranger_selections_contains_undeletable_object (
-  ArrangerSelections * self);
+  const ArrangerSelections * self);
+
+/**
+ * Returns if the selections contain an unclonable
+ * object (such as the start marker).
+ */
+NONNULL
+bool
+arranger_selections_contains_unclonable_object (
+  const ArrangerSelections * self);
+
+NONNULL
+bool
+arranger_selections_contains_unrenamable_object (
+  const ArrangerSelections * self);
 
 /**
  * Checks whether an object matches the given
