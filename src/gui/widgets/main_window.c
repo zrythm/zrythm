@@ -191,13 +191,37 @@ main_window_widget_new (ZrythmApp * _app)
 
 static gboolean
 on_key_pressed (
-  GtkEventControllerKey * self,
+  GtkEventControllerKey * key_controller,
   guint                   keyval,
   guint                   keycode,
   GdkModifierType         state,
   gpointer                user_data)
 {
   g_debug ("main window key press");
+  MainWindowWidget * self = Z_MAIN_WINDOW_WIDGET (user_data);
+
+  /* if pressed space and currently not inside a GtkEditable,
+   * activate the play-pause action */
+  if (keyval == GDK_KEY_space || keyval == GDK_KEY_KP_Space)
+    {
+      g_debug ("space pressed");
+      GtkWidget * focus_child =
+        gtk_widget_get_focus_child (GTK_WIDGET (self));
+      GtkWidget * next_child = focus_child;
+      while (next_child)
+        {
+          focus_child = next_child;
+          next_child = gtk_widget_get_focus_child (
+            GTK_WIDGET (focus_child));
+        }
+      z_gtk_widget_print_hierarchy (focus_child);
+      if (!GTK_IS_EDITABLE (focus_child))
+        {
+          g_action_group_activate_action (
+            G_ACTION_GROUP (zrythm_app), "play-pause", NULL);
+          return true;
+        }
+    }
 
   if (!z_gtk_keyval_is_arrow (keyval))
     return false;
@@ -757,6 +781,8 @@ main_window_widget_init (MainWindowWidget * self)
 
   GtkEventControllerKey * key_controller =
     GTK_EVENT_CONTROLLER_KEY (gtk_event_controller_key_new ());
+  gtk_event_controller_set_propagation_phase (
+    GTK_EVENT_CONTROLLER (key_controller), GTK_PHASE_CAPTURE);
   g_signal_connect (
     G_OBJECT (key_controller), "key-pressed",
     G_CALLBACK (on_key_pressed), self);
