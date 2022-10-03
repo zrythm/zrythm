@@ -592,20 +592,6 @@ get_hit_objects (
         && type != ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
         break;
 
-      /* add overlapping scales */
-      if (
-        type == ARRANGER_OBJECT_TYPE_ALL
-        || type == ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
-        {
-          for (int i = 0; i < P_CHORD_TRACK->num_scales; i++)
-            {
-              obj =
-                (ArrangerObject *) P_CHORD_TRACK->scales[i];
-              nfo.obj = obj;
-              add_object_if_overlap (self, &nfo);
-            }
-        }
-
       /* add overlapping regions */
       if (
         type == ARRANGER_OBJECT_TYPE_ALL
@@ -724,8 +710,9 @@ get_hit_objects (
 
       /* add overlapping scales */
       if (
-        type == ARRANGER_OBJECT_TYPE_ALL
-        || type == ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
+        (type == ARRANGER_OBJECT_TYPE_ALL
+         || type == ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
+        && track_get_should_be_visible (P_CHORD_TRACK))
         {
           for (int j = 0; j < P_CHORD_TRACK->num_scales; j++)
             {
@@ -738,8 +725,9 @@ get_hit_objects (
 
       /* add overlapping markers */
       if (
-        type == ARRANGER_OBJECT_TYPE_ALL
-        || type == ARRANGER_OBJECT_TYPE_MARKER)
+        (type == ARRANGER_OBJECT_TYPE_ALL
+         || type == ARRANGER_OBJECT_TYPE_MARKER)
+        && track_get_should_be_visible (P_MARKER_TRACK))
         {
           for (int j = 0; j < P_MARKER_TRACK->num_markers; j++)
             {

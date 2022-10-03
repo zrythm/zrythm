@@ -750,7 +750,7 @@ track_get_tracklist (Track * self);
  */
 NONNULL
 bool
-track_get_should_be_visible (Track * self);
+track_get_should_be_visible (const Track * self);
 
 /**
  * Returns the full visible height (main height +
@@ -1043,9 +1043,9 @@ track_validate (Track * self);
  */
 void
 track_add_folder_parents (
-  Track *     self,
-  GPtrArray * parents,
-  bool        prepend);
+  const Track * self,
+  GPtrArray *   parents,
+  bool          prepend);
 
 /**
  * Returns the closest foldable parent or NULL.

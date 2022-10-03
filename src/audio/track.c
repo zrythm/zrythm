@@ -1149,9 +1149,9 @@ track_validate (Track * self)
  */
 void
 track_add_folder_parents (
-  Track *     self,
-  GPtrArray * parents,
-  bool        prepend)
+  const Track * self,
+  GPtrArray *   parents,
+  bool          prepend)
 {
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
@@ -1242,7 +1242,7 @@ track_type_can_host_region_type (
  */
 NONNULL
 bool
-track_get_should_be_visible (Track * self)
+track_get_should_be_visible (const Track * self)
 {
   if (!self->visible || self->filtered)
     return false;

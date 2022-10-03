@@ -298,9 +298,9 @@ draw_timeline_bg (
       Track * const track = TRACKLIST->tracks[i];
 
       /* skip tracks in the other timeline (pinned/
-       * non-pinned) */
+       * non-pinned) or invisible tracks */
       if (
-        !track->visible
+        !track_get_should_be_visible (track)
         || (!self->is_pinned && track_is_pinned (track))
         || (self->is_pinned && !track_is_pinned (track)))
         continue;
