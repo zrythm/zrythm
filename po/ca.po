@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-10-03 21:08+0900\n"
-"PO-Revision-Date: 2022-09-24 15:53+0000\n"
+"PO-Revision-Date: 2022-10-04 15:52+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -695,9 +695,8 @@ msgid "Failed to get existing yaml"
 msgstr "Error en obtenir el yaml existent"
 
 #: src/project.c:912
-#, fuzzy
 msgid "Invalid project: missing version"
-msgstr "Nom d'objecte no vàlid %s"
+msgstr "Projecte no vàlid: falta la versió"
 
 #: src/project.c:939
 msgid "Failed to deserialize project YAML"
@@ -1361,9 +1360,9 @@ msgid "Failed to change direct output"
 msgstr "Error en canviar la sortida directa"
 
 #: src/actions/tracklist_selections.c:204
-#, fuzzy
 msgid "Cannot duplicate tracks: selection contains an uncopyable track"
-msgstr "No es poden suprimir pistes: la selecció conté una pista no eliminable"
+msgstr ""
+"No es poden duplicar pistes: la selecció conté una pista que no es pot copiar"
 
 #: src/actions/tracklist_selections.c:216
 msgid "Cannot delete tracks: selection contains an undeletable track"
@@ -1654,10 +1653,9 @@ msgid "Beat unit change"
 msgstr "Canvi d'unitat de beat"
 
 #: src/actions/arranger_selections.c:298
-#, fuzzy
 msgid "Arranger selections contain an object that cannot be duplicated"
 msgstr ""
-"Les seleccions de l'arranjador contenen un objecte que no es pot esborrar"
+"Les seleccions de l'arranjador contenen un objecte que no es pot duplicar"
 
 #: src/actions/arranger_selections.c:389
 msgid "Arranger selections contain an undeletable object"
@@ -1666,7 +1664,7 @@ msgstr ""
 
 #: src/actions/arranger_selections.c:455 src/actions/arranger_selections.c:512
 msgid "Cannot rename selected object(s)"
-msgstr ""
+msgstr "No es pot canviar el nom dels objectes seleccionats"
 
 #: src/actions/arranger_selections.c:773
 msgid "Attempted to resize unresizable objects"
@@ -2142,7 +2140,7 @@ msgstr "Error en configurar el mode MIDI"
 #: src/audio/encoder.c:58
 #, c-format
 msgid "An error has occurred opening the audio file '%s'"
-msgstr ""
+msgstr "S'ha produït un error en obrir el fitxer d'àudio '%s'"
 
 #: src/audio/marker_track.c:43
 msgid "Markers"
@@ -2217,17 +2215,15 @@ msgstr "Client zombi"
 
 #: src/audio/engine_jack.c:735
 msgid "JACK: No physical playback ports found"
-msgstr ""
+msgstr "JACK: no s'han trobat ports de reproducció físics"
 
 #: src/audio/engine_jack.c:802 src/gui/widgets/monitor_section.c:237
-#, fuzzy
 msgid "Failed to connect to left monitor output port"
-msgstr "Error en connectar ports E"
+msgstr "Error en connectar al port de sortida del monitor esquerre"
 
 #: src/audio/engine_jack.c:810 src/gui/widgets/monitor_section.c:246
-#, fuzzy
 msgid "Failed to connect to right monitor output port"
-msgstr "Error en connectar ports E"
+msgstr "Error en connectar al port de sortida del monitor dret"
 
 #: src/audio/curve.c:306
 msgid "Exponential"
@@ -3455,9 +3451,8 @@ msgid "Failed to move objects"
 msgstr "Error en moure objectes"
 
 #: src/gui/widgets/arranger.c:4478
-#, fuzzy
 msgid "Failed to link or copy selection"
-msgstr "Error en enllaçar o moure la selecció"
+msgstr "Error en enllaçar o copiar la selecció"
 
 #: src/gui/widgets/arranger.c:4536
 msgid "Failed to split selection"
@@ -3691,9 +3686,8 @@ msgid "Multiplier"
 msgstr "Multiplicador"
 
 #: src/gui/widgets/track_canvas.c:759
-#, fuzzy
 msgid "Scales"
-msgstr "Escala"
+msgstr "Escales"
 
 #: src/gui/widgets/track_input_expander.c:282
 msgid "All MIDI Inputs"
@@ -3948,9 +3942,8 @@ msgstr "Error en editar la posició"
 
 #: src/gui/widgets/file_chooser_entry.c:113
 #: src/gui/widgets/file_chooser_entry.c:172
-#, fuzzy
 msgid "Open"
-msgstr "_Obrir"
+msgstr "Obrir"
 
 #: src/gui/widgets/file_chooser_entry.c:171 resources/ui/bounce_dialog.ui:93
 #: resources/ui/bind_cc_dialog.ui:36 resources/ui/generic_progress_dialog.ui:52
@@ -3959,7 +3952,7 @@ msgstr "Cancel·lar"
 
 #: src/gui/widgets/file_chooser_entry.c:459
 msgid "Browse…"
-msgstr ""
+msgstr "Navegar…"
 
 #: src/gui/widgets/balance_control.c:249
 msgid "Failed to change balance"
@@ -5722,9 +5715,8 @@ msgid "MIDI in activity"
 msgstr "MIDI en activitat"
 
 #: resources/ui/editor_toolbar.ui:140
-#, fuzzy
 msgid "Toggle ghost note visibility"
-msgstr "Commutar quadre dret"
+msgstr "Commutar la visibilitat de la nota fantasma"
 
 #: resources/ui/editor_toolbar.ui:155 resources/ui/timeline_toolbar.ui:105
 msgid "Toggle event viewer"
@@ -6559,12 +6551,11 @@ msgstr "Si escoltar notes MIDI mentre s'arrosseguen al rotlle de pianola."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:411
 msgid "Ghost notes"
-msgstr ""
+msgstr "Notes fantasma"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:412
-#, fuzzy
 msgid "Whether to show notes of other regions in the piano roll."
-msgstr "Si escoltar notes MIDI mentre s'arrosseguen al rotlle de pianola."
+msgstr "Si mostrar notes d'altres regions al rotlle de pianola."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:416
 msgid "Piano roll highlight"
@@ -7678,15 +7669,18 @@ msgstr "Afegit:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
 msgid "Switch to new file chooser widget (from GNOME Builder)"
-msgstr ""
+msgstr "Canviar al nou widget de selecció de fitxers (des del GNOME Builder)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 msgid "Add option to ghost MIDI notes from other regions in the same track"
 msgstr ""
+"Afegir opció a les notes MIDI fantasma d'altres regions de la mateixa pista"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Add fade in/out when audio engine starts/stops to prevent clicks"
 msgstr ""
+"Afegir un esvaïment d'entrada/sortida quan el motor d'àudio s'iniciï/s'aturi "
+"per a evitar clics"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
@@ -7696,31 +7690,34 @@ msgid "Changed:"
 msgstr "Canviat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-#, fuzzy
 msgid ""
 "Update Chinese (Simplified), Indonesian, Catalan, Spanish, Ukrainian, "
 "German, Vietnamese translations"
 msgstr ""
-"Actualització de traduccions xinès (simplificat), xinès (tradicional), "
-"català i francès"
+"Actualització de traduccions xinès (simplificat), indonesi, català, "
+"espanyol, ucraïnès, alemany, vietnamita"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+#, fuzzy
 msgid "Update bundled weakjack"
-msgstr ""
+msgstr "Actualització del weakjack inclòs"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
 msgid "Make some debug output silent in normal builds"
 msgstr ""
+"Fer que la sortida de depuració sigui silenciosa en construccions normals"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
 msgid "Handle failure to connect JACK monitor output gracefully"
-msgstr ""
+msgstr "Gestionar amb gràcia l'error de connexió de la sortida del monitor JACK"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:66
 msgid ""
 "Add more system info to bug report templates (`DESKTOP_SESSION` and "
 "`XDG_CURRENT_DESKTOP`)"
 msgstr ""
+"Afegir més informació del sistema a les plantilles d'informes d'errors ("
+"'DESKTOP_SESSION' i 'XDG_CURRENT_DESKTOP')"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
 msgid "Update libpanel dependency to &gt;= 1.0.0"
