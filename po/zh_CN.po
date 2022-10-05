@@ -21,7 +21,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-10-03 21:08+0900\n"
-"PO-Revision-Date: 2022-09-14 15:51+0000\n"
+"PO-Revision-Date: 2022-10-04 15:52+0000\n"
 "Last-Translator: Eric <hamburger1024@mailbox.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -30,7 +30,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.1-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -711,9 +711,8 @@ msgid "Failed to get existing yaml"
 msgstr "获取现有 yaml 失败"
 
 #: src/project.c:912
-#, fuzzy
 msgid "Invalid project: missing version"
-msgstr "无效的对象名称 %s"
+msgstr "无效工程：缺少版本"
 
 #: src/project.c:939
 msgid "Failed to deserialize project YAML"
@@ -2193,14 +2192,12 @@ msgid "JACK: No physical playback ports found"
 msgstr ""
 
 #: src/audio/engine_jack.c:802 src/gui/widgets/monitor_section.c:237
-#, fuzzy
 msgid "Failed to connect to left monitor output port"
-msgstr "连接 L 端口失败"
+msgstr "未能连接到左监视器输出端口"
 
 #: src/audio/engine_jack.c:810 src/gui/widgets/monitor_section.c:246
-#, fuzzy
 msgid "Failed to connect to right monitor output port"
-msgstr "连接 L 端口失败"
+msgstr "未能连接到右监视器输出端口"
 
 #: src/audio/curve.c:306
 msgid "Exponential"
@@ -3405,9 +3402,8 @@ msgid "Failed to move objects"
 msgstr "未能移动对象"
 
 #: src/gui/widgets/arranger.c:4478
-#, fuzzy
 msgid "Failed to link or copy selection"
-msgstr "未能链接或移动所选"
+msgstr "未能链接或复制所选"
 
 #: src/gui/widgets/arranger.c:4536
 msgid "Failed to split selection"
@@ -3641,7 +3637,6 @@ msgid "Multiplier"
 msgstr ""
 
 #: src/gui/widgets/track_canvas.c:759
-#, fuzzy
 msgid "Scales"
 msgstr "音阶"
 
@@ -3898,9 +3893,8 @@ msgstr "未能编辑位置"
 
 #: src/gui/widgets/file_chooser_entry.c:113
 #: src/gui/widgets/file_chooser_entry.c:172
-#, fuzzy
 msgid "Open"
-msgstr "_Open"
+msgstr "打开"
 
 #: src/gui/widgets/file_chooser_entry.c:171 resources/ui/bounce_dialog.ui:93
 #: resources/ui/bind_cc_dialog.ui:36 resources/ui/generic_progress_dialog.ui:52
@@ -5637,9 +5631,8 @@ msgid "MIDI in activity"
 msgstr "活动中的MIDI"
 
 #: resources/ui/editor_toolbar.ui:140
-#, fuzzy
 msgid "Toggle ghost note visibility"
-msgstr "切换右面板"
+msgstr "切换 ghost note 可见性"
 
 #: resources/ui/editor_toolbar.ui:155 resources/ui/timeline_toolbar.ui:105
 msgid "Toggle event viewer"
@@ -6457,9 +6450,8 @@ msgid "Ghost notes"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:412
-#, fuzzy
 msgid "Whether to show notes of other regions in the piano roll."
-msgstr "是否一边听MIDI音符，一边在钢琴卷里拖它们。"
+msgstr "是否显示钢琴卷中其他区域的音符。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:416
 msgid "Piano roll highlight"
@@ -7603,9 +7595,8 @@ msgid "Fix newlines not showing in the release notes in the About dialog"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:74
-#, fuzzy
 msgid "Fix error when selecting an invalid WAV file in the file browser"
-msgstr "是否在文件浏览器中显示隐藏文件。"
+msgstr "修复了在文件浏览器中选择无效 WAV 文件时的错误"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 msgid ""
