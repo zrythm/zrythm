@@ -1066,6 +1066,12 @@ create_ports (CarlaNativePlugin * self, bool loading)
     {
       const CarlaPortCountInfo * audio_port_count_nfo =
         carla_get_audio_port_count_info (self->host_handle, 0);
+      /* TODO investigate:
+       * sometimes port count info returns 1 audio in
+       * but the descriptor thinks the plugin has 2 audio
+       * ins
+       * happens with WAVES Abbey Road Saturator Mono when
+       * bridged with yabridge (VST2) */
       z_return_if_fail_cmp (
         (int) audio_port_count_nfo->ins, ==,
         descr->num_audio_ins);
