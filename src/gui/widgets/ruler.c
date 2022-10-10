@@ -582,6 +582,21 @@ get_clip_start_rect (RulerWidget * self, GdkRectangle * rect)
   rect->height = RW_CUE_MARKER_HEIGHT;
 }
 
+static void
+get_cue_pos_rect (RulerWidget * self, GdkRectangle * rect)
+{
+  rect->x = 0;
+  rect->y = 0;
+
+  if (self->type == TYPE (TIMELINE))
+    {
+      rect->x = ui_pos_to_px_timeline (&TRANSPORT->cue_pos, 1);
+      rect->y = RW_RULER_MARKER_SIZE;
+    }
+  rect->width = RW_CUE_MARKER_WIDTH;
+  rect->height = RW_CUE_MARKER_HEIGHT;
+}
+
 /**
  * Draws the cue point (or clip start if this is
  * the editor ruler.
@@ -594,19 +609,25 @@ draw_cue_point (
 {
   /* draw rect */
   GdkRectangle dr;
-  get_clip_start_rect (self, &dr);
+  if (self->type == TYPE (EDITOR))
+    {
+      get_clip_start_rect (self, &dr);
+    }
+  else if (self->type == TYPE (TIMELINE))
+    {
+      get_cue_pos_rect (self, &dr);
+    }
+  else
+    {
+      g_warn_if_reached ();
+      return;
+    }
 
   cairo_t * cr = gtk_snapshot_append_cairo (
     snapshot,
     &GRAPHENE_RECT_INIT (
       (float) dr.x, (float) dr.y, (float) dr.width,
       (float) dr.height));
-
-  if (self->type == TYPE (TIMELINE))
-    {
-      dr.x = ui_pos_to_px_timeline (&TRANSPORT->cue_pos, 1);
-      dr.y = RW_RULER_MARKER_SIZE;
-    }
 
   if (dr.x >= rect->x - dr.width && dr.x <= rect->x + rect->width)
     {
