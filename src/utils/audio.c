@@ -108,8 +108,8 @@ audio_write_raw_file (
   g_return_val_if_fail (samplerate < 10000000, -1);
 
   g_debug (
-    "writing raw file: already written %ld, "
-    "nframes %ld, samplerate %u, channels %u, "
+    "writing raw file: already written %zu, "
+    "nframes %zu, samplerate %u, channels %u, "
     "filename %s, flac? %d",
     frames_already_written, nframes, samplerate, channels,
     filename, flac);

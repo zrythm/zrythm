@@ -1455,8 +1455,8 @@ add_internal_plugin_from_descr (
           ret = carla_add_plugin (
             self->host_handle,
             descr->arch == ARCH_64 ? BINARY_NATIVE : BINARY_WIN32,
-            type, descr->path, descr->name, descr->uri,
-            0, NULL, PLUGIN_OPTIONS_NULL);
+            type, descr->path, descr->name, descr->uri, 0,
+            NULL, PLUGIN_OPTIONS_NULL);
           break;
         default:
           g_return_val_if_reached (-1);
@@ -2078,7 +2078,6 @@ carla_native_plugin_open_ui (CarlaNativePlugin * self, bool show)
     case PROT_JSFX:
       if (show)
         {
-          g_warning ("\n\n\n\n\n\n\n\n\n");
           char * title = plugin_generate_window_title (pl);
           g_debug ("plugin window title '%s'", title);
           carla_set_custom_ui_title (

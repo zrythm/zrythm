@@ -433,16 +433,32 @@ audio_clip_write_to_file (
   bool         parts)
 {
   g_return_val_if_fail (self->samplerate > 0, -1);
+  g_return_val_if_fail (self->frames_written < SIZE_MAX, -1);
   size_t before_frames = (size_t) self->frames_written;
   unsigned_frame_t ch_offset =
     parts ? self->frames_written : 0;
   unsigned_frame_t offset = ch_offset * self->channels;
-  int              ret = audio_write_raw_file (
-                 &self->frames[offset], ch_offset,
-    parts ? (self->num_frames - self->frames_written)
-                       : self->num_frames,
-                 (uint32_t) self->samplerate, self->use_flac,
-                 self->bit_depth, self->channels, filepath);
+
+  size_t nframes;
+  if (parts)
+    {
+      z_return_val_if_fail_cmp (
+        self->num_frames, >=, self->frames_written, -1);
+      unsigned_frame_t _nframes =
+        self->num_frames - self->frames_written;
+      z_return_val_if_fail_cmp (_nframes, <, SIZE_MAX, -1);
+      nframes = _nframes;
+    }
+  else
+    {
+      z_return_val_if_fail_cmp (
+        self->num_frames, <, SIZE_MAX, -1);
+      nframes = self->num_frames;
+    }
+  int ret = audio_write_raw_file (
+    &self->frames[offset], ch_offset, nframes,
+    (uint32_t) self->samplerate, self->use_flac,
+    self->bit_depth, self->channels, filepath);
   audio_clip_update_channel_caches (self, before_frames);
 
   if (parts && ret == 0)

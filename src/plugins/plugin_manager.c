@@ -810,7 +810,8 @@ get_clap_paths (PluginManager * self)
   else
     {
       g_message (
-        "using %s from the environment (CLAP_PATH)", clap_path);
+        "using %s from the environment (CLAP_PATH)",
+        clap_path);
     }
   g_return_val_if_fail (clap_path, NULL);
   char ** paths =
@@ -868,10 +869,10 @@ get_jsfx_paths (PluginManager * self)
       if (strlen (jsfx_env_path) > 0)
         {
           g_message (
-            "Prepending %s from the environment (JSFX_PATH)", jsfx_env_path);
-          env_paths =
-            g_strsplit (jsfx_env_path, G_SEARCHPATH_SEPARATOR_S, 0);
-
+            "Prepending %s from the environment (JSFX_PATH)",
+            jsfx_env_path);
+          env_paths = g_strsplit (
+            jsfx_env_path, G_SEARCHPATH_SEPARATOR_S, 0);
         }
       g_free (jsfx_env_path);
     }

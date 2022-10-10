@@ -81,7 +81,7 @@ tasks:
       ninja -C build clang-format-check
   - test: |
       cd zrythm
-      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5
+      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5 --num-processes 1
   - gen-coverage-report: |
       cd zrythm
       ninja -C build coverage-text
@@ -94,7 +94,7 @@ tasks:
   - test-no-jack-sanitize: |
       cd zrythm
       meson build --reconfigure -Dgraphviz=enabled -Djack=disabled -Db_sanitize=address
-      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5
+      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5 --num-processes 1
   - run_cppcheck: |
       cd zrythm
       # pass for now
@@ -104,12 +104,12 @@ tasks:
       rm -rf /tmp/lv2* /tmp/zrythm*
       cd zrythm
       meson build --reconfigure -Dsdl=enabled -Drtaudio=disabled -Drtmidi=disabled -Doptimization=3
-      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5
+      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5 --num-processes 1
   - test-strict-flags-trial: |
       rm -rf /tmp/lv2* /tmp/zrythm*
       cd zrythm
       meson build --reconfigure -Dgraphviz=disabled -Dtrial_ver=true -Dstrict_flags=true -Ddseg_font=false
-      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5
+      meson test -C build --no-suite=skip-ci --no-suite=pango --no-suite=gtksourceview5 --num-processes 1
   - test-user-manual-valgrind: |
       rm -rf /tmp/lv2* /tmp/zrythm*
       cd zrythm
