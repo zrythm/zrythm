@@ -6,6 +6,10 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.7.1] - 2022-10-10
+### Added
+- JSFX and CLAP plugin support
+
 ## [1.0.0-beta.3.6.1] - 2022-10-03
 ### Added
 - Jump to marker position when clicked
