@@ -757,7 +757,189 @@ get_ladspa_paths (PluginManager * self)
 
   return paths;
 }
-#endif
+
+/**
+ * For the official paths see:
+ * https://github.com/free-audio/clap/blob/b902efa94e7a069dc1576617ebd74d2310746bd4/include/clap/entry.h#L14
+ */
+static char **
+get_clap_paths (PluginManager * self)
+{
+  g_message ("%s: getting paths...", __func__);
+
+#  ifdef _WOE32
+  char ** paths = g_strsplit (
+    "C:\\Program Files\\Common Files\\CLAP" G_SEARCHPATH_SEPARATOR_S
+    "C:\\Program Files (x86)\\Common Files\\CLAP",
+    G_SEARCHPATH_SEPARATOR_S, 0);
+#  elif defined(__APPLE__)
+  char ** paths = g_strsplit (
+    "/Library/Audio/Plug-ins/CLAP" G_SEARCHPATH_SEPARATOR_S,
+    G_SEARCHPATH_SEPARATOR_S, -1);
+#  else
+  char * clap_path = g_strdup (getenv ("CLAP_PATH"));
+  if (!clap_path || (strlen (clap_path) == 0))
+    {
+#    ifdef FLATPAK_BUILD
+      clap_path = g_strdup ("/app/extensions/Plugins/clap");
+#    else
+      if (string_is_equal (LIBDIR_NAME, "lib"))
+        {
+          clap_path = g_strdup_printf (
+            "%s/.clap:%s/.local/lib/clap:"
+            "/usr/" LIBDIR_NAME
+            "/clap:"
+            "/usr/local/" LIBDIR_NAME "/clap",
+            g_get_home_dir (), g_get_home_dir ());
+        }
+      else
+        {
+          clap_path = g_strdup_printf (
+            "%s/.clap:%s/.local/lib/clap:"
+            "/usr/lib/clap:"
+            "/usr/" LIBDIR_NAME
+            "/clap:"
+            "/usr/local/lib/clap:"
+            "/usr/local/" LIBDIR_NAME "/clap",
+            g_get_home_dir (), g_get_home_dir ());
+        }
+#    endif
+
+      g_message ("Using standard CLAP paths: %s", clap_path);
+    }
+  else
+    {
+      g_message (
+        "using %s from the environment (CLAP_PATH)", clap_path);
+    }
+  g_return_val_if_fail (clap_path, NULL);
+  char ** paths =
+    g_strsplit (clap_path, G_SEARCHPATH_SEPARATOR_S, 0);
+  g_free (clap_path);
+#  endif // __APPLE__
+
+  g_message ("%s: done", __func__);
+
+  return paths;
+}
+
+static int
+get_clap_count (PluginManager * self)
+{
+  char ** paths = get_clap_paths (self);
+  g_return_val_if_fail (paths, 0);
+  int    path_idx = 0;
+  char * path;
+  int    count = 0;
+  while ((path = paths[path_idx++]) != NULL)
+    {
+      if (!g_file_test (path, G_FILE_TEST_EXISTS))
+        continue;
+
+      char ** clap_plugins = io_get_files_in_dir_ending_in (
+        path, 1, ".clap", false);
+      if (!clap_plugins)
+        continue;
+
+      char * plugin_path;
+      int    plugin_idx = 0;
+      while (
+        (plugin_path = clap_plugins[plugin_idx++]) != NULL)
+        {
+          count++;
+        }
+      g_strfreev (clap_plugins);
+    }
+  g_strfreev (paths);
+
+  return count;
+}
+
+static char **
+get_jsfx_paths (PluginManager * self)
+{
+  g_message ("%s: getting paths...", __func__);
+
+  char ** env_paths = NULL;
+
+  char * jsfx_env_path = g_strdup (getenv ("JSFX_PATH"));
+  if (jsfx_env_path)
+    {
+      if (strlen (jsfx_env_path) > 0)
+        {
+          g_message (
+            "Prepending %s from the environment (JSFX_PATH)", jsfx_env_path);
+          env_paths =
+            g_strsplit (jsfx_env_path, G_SEARCHPATH_SEPARATOR_S, 0);
+
+        }
+      g_free (jsfx_env_path);
+    }
+
+  /* append paths from preferences */
+  char ** pref_paths;
+  if (ZRYTHM_TESTING)
+    {
+      StrvBuilder * builder = strv_builder_new ();
+      pref_paths = strv_builder_end (builder);
+    }
+  else
+    {
+      pref_paths = g_settings_get_strv (
+        S_P_PLUGINS_PATHS, "jsfx-search-paths");
+    }
+  g_return_val_if_fail (pref_paths, NULL);
+
+  StrvBuilder * builder = strv_builder_new ();
+  if (env_paths)
+    {
+      strv_builder_addv (builder, (const char **) env_paths);
+      g_strfreev (env_paths);
+      env_paths = NULL;
+    }
+  /* FIXME skip duplicates, otherwise plugins show twice */
+  strv_builder_addv (builder, (const char **) pref_paths);
+  g_strfreev (pref_paths);
+
+  char ** paths = strv_builder_end (builder);
+
+  g_message ("%s: done", __func__);
+
+  return paths;
+}
+
+static int
+get_jsfx_count (PluginManager * self)
+{
+  char ** paths = get_jsfx_paths (self);
+  g_return_val_if_fail (paths, 0);
+  int    path_idx = 0;
+  char * path;
+  int    count = 0;
+  while ((path = paths[path_idx++]) != NULL)
+    {
+      if (!g_file_test (path, G_FILE_TEST_EXISTS))
+        continue;
+
+      char ** jsfx_plugins = io_get_files_in_dir_ending_in (
+        path, 1, ".jsfx", false);
+      if (!jsfx_plugins)
+        continue;
+
+      char * plugin_path;
+      int    plugin_idx = 0;
+      while (
+        (plugin_path = jsfx_plugins[plugin_idx++]) != NULL)
+        {
+          count++;
+        }
+      g_strfreev (jsfx_plugins);
+    }
+  g_strfreev (paths);
+
+  return count;
+}
+#endif /* HAVE_CARLA */
 
 /**
  * Returns if the plugin manager supports the given
@@ -777,6 +959,8 @@ plugin_manager_supports_protocol (
     case PROT_VST:
     case PROT_VST3:
     case PROT_SFZ:
+    case PROT_JSFX:
+    case PROT_CLAP:
 #ifdef HAVE_CARLA
       return true;
 #else
@@ -813,6 +997,9 @@ plugin_manager_supports_protocol (
 }
 
 #ifdef HAVE_CARLA
+/**
+ * Used for plugin protocols that are scanned from paths.
+ */
 static void
 scan_carla_descriptors_from_paths (
   PluginManager * self,
@@ -868,6 +1055,14 @@ scan_carla_descriptors_from_paths (
     case PROT_SF2:
       paths = get_sf_paths (self, true);
       suffix = ".sf2";
+      break;
+    case PROT_CLAP:
+      paths = get_clap_paths (self);
+      suffix = ".clap";
+      break;
+    case PROT_JSFX:
+      paths = get_jsfx_paths (self);
+      suffix = ".jsfx";
       break;
     default:
       break;
@@ -975,6 +1170,7 @@ scan_carla_descriptors_from_paths (
                       descr->arch = ARCH_64;
                       descr->protocol = protocol;
                     }
+                  /* else if not SFZ or SF2 */
                   else
                     {
                       descriptors =
@@ -1117,6 +1313,8 @@ plugin_manager_scan_plugins (
   size += (double) get_vst3_count (self);
   size += (double) get_sf_count (self, PROT_SFZ);
   size += (double) get_sf_count (self, PROT_SF2);
+  size += (double) get_clap_count (self);
+  size += (double) get_jsfx_count (self);
 #  ifdef __APPLE__
   size += carla_get_cached_plugin_count (PLUGIN_AU, NULL);
 #  endif
@@ -1239,6 +1437,16 @@ plugin_manager_scan_plugins (
   /* scan sf2 */
   scan_carla_descriptors_from_paths (
     self, PROT_SF2, &count, size, progress, start_progress,
+    max_progress);
+
+  /* scan clap */
+  scan_carla_descriptors_from_paths (
+    self, PROT_CLAP, &count, size, progress, start_progress,
+    max_progress);
+
+  /* scan jsfx */
+  scan_carla_descriptors_from_paths (
+    self, PROT_JSFX, &count, size, progress, start_progress,
     max_progress);
 
 #  ifdef __APPLE__

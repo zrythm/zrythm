@@ -386,6 +386,8 @@ plugin_descriptor_has_custom_ui (const PluginDescriptor * self)
     case PROT_VST:
     case PROT_VST3:
     case PROT_AU:
+    case PROT_CLAP:
+    case PROT_JSFX:
 #ifdef HAVE_CARLA
       return carla_native_plugin_has_custom_ui (self);
 #else

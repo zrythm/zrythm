@@ -1817,6 +1817,7 @@ plugin_open_ui (Plugin * self)
   char pl_str[700];
   plugin_print (self, pl_str, 700);
   g_debug ("opening plugin UI [%s]", pl_str);
+  g_warning ("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
   PluginSetting *          setting = self->setting;
   const PluginDescriptor * descr = setting->descr;

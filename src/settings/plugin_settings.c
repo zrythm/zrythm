@@ -142,7 +142,9 @@ plugin_setting_validate (PluginSetting * self)
     || descr->protocol == PROT_AU || descr->protocol == PROT_SFZ
     || descr->protocol == PROT_SF2
     || descr->protocol == PROT_DSSI
-    || descr->protocol == PROT_LADSPA)
+    || descr->protocol == PROT_LADSPA
+    || descr->protocol == PROT_JSFX
+    || descr->protocol == PROT_CLAP)
     {
       self->open_with_carla = true;
 #ifndef HAVE_CARLA

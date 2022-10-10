@@ -242,7 +242,7 @@ check_vs_orig_state:
   obj = (ArrangerObject *) P_MARKER_TRACK->markers[0];
   m = (Marker *) obj;
   g_assert_true (m);
-  g_assert_cmpstr (m->name, ==, "start");
+  g_assert_cmpstr (m->name, ==, "[start]");
   obj = (ArrangerObject *) P_MARKER_TRACK->markers[2];
   m = (Marker *) obj;
   g_assert_cmppos (&obj->pos, p1);

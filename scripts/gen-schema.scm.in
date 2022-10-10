@@ -1175,16 +1175,20 @@ Args:
         \"C:\\\\Program Files\\\\Steinberg\\\\VSTPlugins\",
         \"C:\\\\Program Files\\\\Common Files\\\\VST2\",
         \"C:\\\\Program Files\\\\Common Files\\\\Steinberg\\\\VST2\" ]"
-                     "VST plugins"
-                     "Plugin search paths.")
+                     "VST2 plugins"
+                     "VST2 plugin search paths separated by : (or ; on Windows).")
                    (make-schema-key
                      "sfz-search-paths" "as" "[]"
                      "SFZ instruments"
-                     "Instrument search paths.")
+                     "SFZ instrument search paths separated by : (or ; on Windows).")
                    (make-schema-key
                      "sf2-search-paths" "as" "[]"
                      "SF2 instruments"
-                     "Instrument search paths.")
+                     "SF2 instrument search paths separated by : (or ; on Windows).")
+                   (make-schema-key
+                     "jsfx-search-paths" "as" "[]"
+                     "JSFX plugin paths"
+                     "JSFX plugin search paths separated by : (or ; on Windows).")
                  )) ;; plugins/paths
              ))) ;; plugins
 

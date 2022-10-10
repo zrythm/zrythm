@@ -935,7 +935,7 @@ create_model_for_protocols (void)
 
   GtkTreeIter iter;
 
-  for (PluginProtocol prot = PROT_LV2; prot <= PROT_SF2; prot++)
+  for (PluginProtocol prot = PROT_LV2; prot <= PROT_JSFX; prot++)
     {
       const char * name = plugin_protocol_to_str (prot);
 

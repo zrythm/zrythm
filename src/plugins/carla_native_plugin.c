@@ -78,6 +78,10 @@ get_plugin_type_from_protocol (PluginProtocol protocol)
       return PLUGIN_DSSI;
     case PROT_LADSPA:
       return PLUGIN_LADSPA;
+    case PROT_CLAP:
+      return PLUGIN_CLAP;
+    case PROT_JSFX:
+      return PLUGIN_JSFX;
     default:
       g_return_val_if_reached (0);
     }
@@ -1440,6 +1444,20 @@ add_internal_plugin_from_descr (
             descr->path, descr->name, descr->name, 0, NULL,
             PLUGIN_OPTIONS_NULL);
           break;
+        case PROT_JSFX:
+          ret = carla_add_plugin (
+            self->host_handle,
+            descr->arch == ARCH_64 ? BINARY_NATIVE : BINARY_WIN32,
+            type, descr->path, descr->name, descr->name,
+            descr->unique_id, NULL, PLUGIN_OPTIONS_NULL);
+          break;
+        case PROT_CLAP:
+          ret = carla_add_plugin (
+            self->host_handle,
+            descr->arch == ARCH_64 ? BINARY_NATIVE : BINARY_WIN32,
+            type, descr->path, descr->name, descr->uri,
+            0, NULL, PLUGIN_OPTIONS_NULL);
+          break;
         default:
           g_return_val_if_reached (-1);
           break;
@@ -2056,8 +2074,11 @@ carla_native_plugin_open_ui (CarlaNativePlugin * self, bool show)
     case PROT_DSSI:
     case PROT_LV2:
     case PROT_AU:
+    case PROT_CLAP:
+    case PROT_JSFX:
       if (show)
         {
+          g_warning ("\n\n\n\n\n\n\n\n\n");
           char * title = plugin_generate_window_title (pl);
           g_debug ("plugin window title '%s'", title);
           carla_set_custom_ui_title (

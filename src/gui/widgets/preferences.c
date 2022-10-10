@@ -206,6 +206,7 @@ get_path_type (
     }
   else if (
     KEY_IS ("Plugins", "Paths", "vst-search-paths-windows")
+    || KEY_IS ("Plugins", "Paths", "jsfx-search-paths")
     || KEY_IS ("Plugins", "Paths", "sfz-search-paths")
     || KEY_IS ("Plugins", "Paths", "sf2-search-paths"))
     {
@@ -228,6 +229,7 @@ should_be_hidden (
 #ifndef HAVE_CARLA
     KEY_IS ("Plugins", "Paths", "sfz-search-paths")
     || KEY_IS ("Plugins", "Paths", "sf2-search-paths") ||
+    || KEY_IS ("Plugins", "Paths", "jsfx-search-paths") ||
 #endif
     (AUDIO_ENGINE->audio_backend != AUDIO_BACKEND_SDL
      && KEY_IS ("General", "Engine", "sdl-audio-device-name"))

@@ -304,6 +304,12 @@ z_carla_discovery_create_descriptors_from_file (
     case PROT_LADSPA:
       type = "ladspa";
       break;
+    case PROT_CLAP:
+      type = "clap";
+      break;
+    case PROT_JSFX:
+      type = "jsfx";
+      break;
     default:
       break;
     }
