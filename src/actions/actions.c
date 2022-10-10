@@ -2591,7 +2591,9 @@ DEFINE_SIMPLE (activate_go_to_start)
 {
   Position pos;
   position_init (&pos);
-  transport_set_playhead_pos (TRANSPORT, &pos);
+  transport_move_playhead (
+    TRANSPORT, &pos, F_PANIC, F_SET_CUE_POINT,
+    F_PUBLISH_EVENTS);
 }
 
 DEFINE_SIMPLE (activate_input_bpm)
