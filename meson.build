@@ -1073,14 +1073,16 @@ if have_guile
 endif
 
 carla_host_plugin_dep = dependency (
-  'carla-host-plugin', version: '>=2.4.1',
+  # FIXME need unreleased carla, bump version when new version
+  # released
+  'carla-host-plugin', version: '>=2.5.1',
   required: get_option ('carla'),
   static: all_static)
 have_carla = carla_host_plugin_dep.found ()
 if have_carla
   carla_bins_dir = get_option ('carla_binaries_dir')
   if carla_bins_dir == ''
-    carla_bins_dir = carla_host_plugin_dep.get_variable (pkgconfig: 'libdir')
+    carla_bins_dir = carla_host_plugin_dep.get_variable (pkgconfig: 'carla_libdir')
   endif
   install_data (
     find_program (
