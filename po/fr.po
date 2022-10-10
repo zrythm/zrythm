@@ -18,10 +18,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-10-03 21:08+0900\n"
-"PO-Revision-Date: 2022-09-29 18:22+0000\n"
+"PO-Revision-Date: 2022-10-04 15:52+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1728,7 +1728,7 @@ msgstr "Les sélections d'arrangeurs contiennent un objet non supprimable."
 
 #: src/actions/arranger_selections.c:455 src/actions/arranger_selections.c:512
 msgid "Cannot rename selected object(s)"
-msgstr ""
+msgstr "Impossible de renommer le ou les objets sélectionnés"
 
 #: src/actions/arranger_selections.c:773
 msgid "Attempted to resize unresizable objects"
@@ -2217,7 +2217,7 @@ msgstr ""
 #: src/audio/encoder.c:58
 #, c-format
 msgid "An error has occurred opening the audio file '%s'"
-msgstr ""
+msgstr "Une erreur s'est produite lors de l'ouverture du fichier audio '%s'"
 
 #: src/audio/marker_track.c:43
 msgid "Markers"
@@ -4119,7 +4119,7 @@ msgstr "Annuler"
 
 #: src/gui/widgets/file_chooser_entry.c:459
 msgid "Browse…"
-msgstr ""
+msgstr "Parcourir…"
 
 #: src/gui/widgets/balance_control.c:249
 #, fuzzy
@@ -6802,7 +6802,7 @@ msgstr "Entendre les notes MIDI pendant qu'on les place dans le piano-roll."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:411
 msgid "Ghost notes"
-msgstr ""
+msgstr "Notes fantômes"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:412
 #, fuzzy
@@ -7991,7 +7991,7 @@ msgstr "Ajouté :"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
 msgid "Switch to new file chooser widget (from GNOME Builder)"
-msgstr ""
+msgstr "Passage au nouveau widget du sélecteur de fichiers (de GNOME Builder)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 msgid "Add option to ghost MIDI notes from other regions in the same track"
@@ -8000,6 +8000,8 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Add fade in/out when audio engine starts/stops to prevent clicks"
 msgstr ""
+"Ajout d'un fondu en entrée/sortie lorsque le moteur audio démarre/s'arrête "
+"pour éviter les clics"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
@@ -8019,31 +8021,38 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
 msgid "Update bundled weakjack"
-msgstr ""
+msgstr "Mise à jour du weakjack embarqué"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
 msgid "Make some debug output silent in normal builds"
 msgstr ""
+"Rendre certaines sorties de débogage silencieuses dans les constructions "
+"normales"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
 msgid "Handle failure to connect JACK monitor output gracefully"
 msgstr ""
+"Gérer gracieusement l'échec de la connexion de la sortie du moniteur JACK"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:66
 msgid ""
 "Add more system info to bug report templates (`DESKTOP_SESSION` and "
 "`XDG_CURRENT_DESKTOP`)"
 msgstr ""
+"Ajouter plus d'informations-système aux modèles de rapport de bogue "
+"(`DESKTOP_SESSION` et `XDG_CURRENT_DESKTOP`)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
 msgid "Update libpanel dependency to &gt;= 1.0.0"
-msgstr ""
+msgstr "Mise à jour de la dépendance libpanel pour &gt;= 1.0.0"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:68
 msgid ""
 "Meson: change fft3 detection (added new options `fftw3_threads_separate`, "
 "`fftw3_threads_separate_type` and `fftw3f_separate`)"
 msgstr ""
+"Meson : modification de la détection fft3 (ajout de nouvelles options "
+"`fftw3_threads_separate`, `fftw3_threads_separate_type` et `fftw3f_separate`)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:70
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:95
@@ -8056,10 +8065,14 @@ msgstr "Corrigé :"
 msgid ""
 "Fix incorrectly showing bug report dialog when alpha project upgrade fails"
 msgstr ""
+"Correction de l'affichage incorrect du dialogue de rapport de bogue lorsque "
+"la mise à jour du projet alpha échoue"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:73
 msgid "Fix newlines not showing in the release notes in the About dialog"
 msgstr ""
+"Correction des retours à la ligne qui n'apparaissaient pas dans les notes de "
+"version de la boîte de dialogue À propos de..."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:74
 #, fuzzy
@@ -8073,10 +8086,14 @@ msgid ""
 "Fix incorrectly allowing to delete/clone the master track when inside a "
 "foldable track"
 msgstr ""
+"Correction d'une erreur qu permettait de supprimer/cloner la piste "
+"principale lorsqu'elle se trouvait dans une piste pliable"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:76
 msgid "Fix attempting to autosave when main window not set up yet"
 msgstr ""
+"Correction de la tentative de sauvegarde automatique lorsque la fenêtre "
+"principale n'est pas encore configurée"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 #, fuzzy

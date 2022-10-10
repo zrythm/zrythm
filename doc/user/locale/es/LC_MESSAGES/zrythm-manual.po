@@ -17,15 +17,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-10-03 21:09+0900\n"
-"PO-Revision-Date: 2022-09-18 15:52+0000\n"
+"PO-Revision-Date: 2022-10-05 15:52+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.14.1\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -2858,8 +2859,8 @@ msgid ""
 "Select the amount to quantize by. 100% will quantize to the given options "
 "fully, while 0% will perform no quantization."
 msgstr ""
-"Selecciona la cantidad a cuantizar. El 100% cuantiza completamente las "
-"opciones especificadas, mientras que el 0% no realiza ninguna cuantización."
+"Seleccione la cantidad que se cuantizará. El 100 % cuantiza por completo las "
+"opciones especificadas, mientras que el 0 % no efectúa ninguna cuantización."
 
 #: ../../editing/quantization.rst:35
 msgid "Swing"
@@ -3032,9 +3033,8 @@ msgid "The Length section controls the default length of objects."
 msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:67
-#, fuzzy
 msgid "Link"
-msgstr "Plugin"
+msgstr "Enlace"
 
 #: ../../editing/snapping-grid-options.rst:68
 msgid "Use the same options as Snap"
@@ -3941,7 +3941,7 @@ msgstr ""
 
 #: ../../getting-started/getting-plugins.rst:9
 msgid "Getting Plugins, Instruments and Samples"
-msgstr "Consiguiendo Plugins, Instrumentos y Samples"
+msgstr "Conseguir complementos, instrumentos y muestras"
 
 #: ../../getting-started/getting-plugins.rst:12
 #: ../../plugins-files/plugins/intro.rst:7
@@ -4461,8 +4461,8 @@ msgid ""
 "A proprietary plugin standard, mainly used on MacOS. We recommend using :"
 "term:`LV2` instead."
 msgstr ""
-"Un plugin estándar propietario, principalmente usado en MacOS. En su lugar, "
-"recomendamos usar :term:`LV2`."
+"Un estándar de complementos privativo, utilizado sobre todo en macOS. "
+"Recomendamos usar :term:`LV2` en su lugar."
 
 #: ../../glossary/intro.rst:20
 msgid "Balance"
@@ -4584,8 +4584,8 @@ msgid ""
 "Free/libre software means users control the program, as opposed to "
 "proprietary software, where the program controls the users."
 msgstr ""
-"El software libre permite a los usuarios controlar el programa, al contrario "
-"que el software propietario, donde el programa controla a los usuarios."
+"Que un programa sea «libre» quiere decir que sus usuarios lo controlan, a "
+"diferencia de los programas privativos, que controlan a los usuarios."
 
 #: ../../glossary/intro.rst:76
 msgid ""
@@ -4656,25 +4656,8 @@ msgid "Pan law"
 msgstr "Ley de panorama"
 
 #: ../../glossary/intro.rst:107
-#, fuzzy
 msgid "TODO"
-msgstr ""
-"#-#-#-#-#  appendix.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Pendiente\n"
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Pendiente\n"
-"#-#-#-#-#  exporting.po (Zrythm 0.5)  #-#-#-#-#\n"
-"Pendiente\n"
-"#-#-#-#-#  glossary.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#\n"
-"PENDIENTE DE HACER\n"
-"#-#-#-#-#  modulators.po (Zrythm 0.5)  #-#-#-#-#\n"
-"Pendiente\n"
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"Pendiente\n"
-"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
-"PENDIENTE DE HACER\n"
-"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
-"PENDIENTE DE HACER"
+msgstr "PENDIENTE"
 
 #: ../../glossary/intro.rst:108
 msgid "Panning"
@@ -4698,7 +4681,7 @@ msgstr "Usado indistintamente con :term:`Control`."
 
 #: ../../glossary/intro.rst:116
 msgid "Plugin"
-msgstr "Plugin"
+msgstr "Complemento"
 
 #: ../../glossary/intro.rst:118
 msgid ""
@@ -4774,7 +4757,7 @@ msgid ""
 "A proprietary plugin standard and the predecessor of VST3. We do not "
 "recommend using this standard."
 msgstr ""
-"Un plugin estándar propietario y el predecesor de VST3. No recomendamos "
+"Un estándar de complementos privativo, predecesor de VST3. No recomendamos "
 "utilizar este estándar."
 
 #: ../../glossary/intro.rst:155
@@ -4995,8 +4978,8 @@ msgid ""
 "The name of the track the channel corresponds to can be changed by double "
 "clicking the name at the top of the channel."
 msgstr ""
-"El nombre del canal al que la pista corresponde puede ser cambiado haciendo "
-"doble click en el nombre arriba del canal."
+"El nombre de la pista que se corresponde con el canal puede modificarse "
+"mediante una pulsación doble sobre el nombre en la parte superior del canal."
 
 #: ../../mixing/overview.rst:73
 msgid "Changing the track name from the channel view"
@@ -5169,23 +5152,14 @@ msgstr ""
 "widget de BPM."
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:18
-#, fuzzy
 msgid ""
 "Clicking and dragging on the integer counterpart will change the integer (e."
 "g., from 140.24 to 141.24) and clicking and dragging on the decimal "
 "counterpart will change the decimal value (e.g., from 140.24 to 140.25)."
 msgstr ""
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"Haciendo click y arrastrando en la zona el número entero cambiará el número "
-"entero (Ejemplo: Desde 140.24 a 141.24) y haciendo click y arrastrando en la "
-"zona del decimal cambiará el decimal (Ejemplo: Desde 140.24 a 140.25)\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  playback-and-recording.po (Zrythm 0.5)  #-#-#-#-#\n"
-"Haciendo click y arrastrando en la zona el número entero cambiará el número "
-"entero (Ejemplo: Desde 140.24 a 141.24) y haciendo click y arrastrando en la "
-"zona del decimal cambiará el decimal (Ejemplo: Desde 140.24 a 140.25)\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"Es posible cambiar el valor entero al pulsar y arrastrar la parte entera (p. "
+"ej., de 140,24 a 141,24); del mismo modo, se puede cambiar el valor decimal "
+"pulsándolo y arrastrándolo (p. ej., de 140,24 a 140,25)."
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:26
 msgid "Time Signature"
@@ -6000,7 +5974,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/overview.rst:64
 msgid "Type 0"
-msgstr ""
+msgstr "Tipo 0"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:65
 msgid "An entire performance merged into a single track."
@@ -6008,7 +5982,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/overview.rst:67
 msgid "Type 1"
-msgstr ""
+msgstr "Tipo 1"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:67
 msgid ""
@@ -6017,7 +5991,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/overview.rst:71
 msgid "Type 2"
-msgstr ""
+msgstr "Tipo 2"
 
 #: ../../plugins-files/audio-midi-files/overview.rst:70
 msgid ""
@@ -6031,7 +6005,7 @@ msgstr ""
 
 #: ../../plugins-files/intro.rst:7
 msgid "Plugins & Files"
-msgstr "Plugins y archivos"
+msgstr "Complementos y archivos"
 
 #: ../../plugins-files/plugins/inspector-page.rst:9
 msgid "Inspector Page"
@@ -6049,9 +6023,8 @@ msgstr ""
 "siguiente."
 
 #: ../../plugins-files/plugins/inspector-page.rst:19
-#, fuzzy
 msgid "Plugin inspector"
-msgstr "Inspector de plugins"
+msgstr "Inspector de complementos"
 
 #: ../../plugins-files/plugins/inspector-page.rst:21
 msgid ""
@@ -6063,7 +6036,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/inspector-page.rst:26
 msgid "Plugin Properties"
-msgstr "Propiedades de plugins"
+msgstr "Propiedades de complemento"
 
 #: ../../plugins-files/plugins/inspector-page.rst:27
 msgid ""
@@ -6080,7 +6053,7 @@ msgstr "Puertos de plugins"
 
 #: ../../plugins-files/plugins/inspector-page.rst:35
 msgid "These are the ports that the plugin has."
-msgstr "Estos son los puertos que tiene el plugin."
+msgstr "Estos son los puertos que tiene el complemento."
 
 #: ../../plugins-files/plugins/inspector-page.rst:40
 #, fuzzy
@@ -6303,11 +6276,11 @@ msgstr "En Zrythm, :term:`SFZ`/:term:`SF2` también se utilizan como plugins."
 
 #: ../../plugins-files/plugins/plugin-info.rst:19
 msgid "Plugin Types"
-msgstr "Tipos de plugins"
+msgstr "Tipos de complementos"
 
 #: ../../plugins-files/plugins/plugin-info.rst:21
 msgid "Plugins are classified into the following categories."
-msgstr "Los plugins se clasifican en las siguientes categorías."
+msgstr "Los complementos se clasifican en las categorías siguientes."
 
 #: ../../plugins-files/plugins/plugin-info.rst:26
 msgid "|icon_instrument| Instrument"
@@ -7251,7 +7224,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:36 ../../tracks/track-types.rst:18
 msgid "Output"
-msgstr ""
+msgstr "Salida"
 
 #: ../../routing/ports.rst:36
 msgid "The port sends signals"
@@ -9118,9 +9091,8 @@ msgid "Load a project."
 msgstr "Cargar un proyecto."
 
 #: ../../zrythm-interface/main-toolbar.rst:51
-#, fuzzy
 msgid "Export"
-msgstr "Exportación"
+msgstr "Exportar"
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Export As"
@@ -9167,7 +9139,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:67
 msgid "Toggle Status Bar"
-msgstr ""
+msgstr "Alternar barra de estado"
 
 #: ../../zrythm-interface/main-toolbar.rst:68
 #, fuzzy
@@ -9176,11 +9148,11 @@ msgstr "Conmuta la visibilidad de las pistas de automatización."
 
 #: ../../zrythm-interface/main-toolbar.rst:69
 msgid "Fullscreen"
-msgstr ""
+msgstr "Pantalla completa"
 
 #: ../../zrythm-interface/main-toolbar.rst:70
 msgid "Toggles fullscreen mode."
-msgstr ""
+msgstr "Alterna el modo de pantalla completa."
 
 #: ../../zrythm-interface/main-toolbar.rst:72
 #, fuzzy
@@ -9206,13 +9178,15 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:84
 msgid "About"
-msgstr ""
+msgstr "Acerca de"
 
 #: ../../zrythm-interface/main-toolbar.rst:80
 msgid ""
 "View information about the running instance of Zrythm, such as version "
 "information, authors and copyright."
 msgstr ""
+"Vea información sobre la copia en ejecución de Zrythm, como los datos de la "
+"versión, los autores y los derechos de reproducción."
 
 #: ../../zrythm-interface/main-toolbar.rst:86
 msgid "Chat"
@@ -9228,7 +9202,7 @@ msgstr "Manual"
 
 #: ../../zrythm-interface/main-toolbar.rst:89
 msgid "View the user manual."
-msgstr "Consulta el manual del usuario."
+msgstr "Permite consultar el manual del usuario."
 
 #: ../../zrythm-interface/main-toolbar.rst:90
 msgid "News"
@@ -9252,7 +9226,7 @@ msgstr "Donar"
 
 #: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Donate to Zrythm through LiberaPay."
-msgstr "Dona a Zrythm a través de LiberaPay."
+msgstr "Done a Zrythm a través de LiberaPay."
 
 #: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Report a Bug"
