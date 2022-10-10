@@ -87,6 +87,19 @@ typedef struct _InspectorPortWidget
   /** Port this is for. */
   Port * port;
 
+  /**
+   * Caches of last real value and its corresponding
+   * normalized value.
+   *
+   * This is used to avoid re-calculating a normalized value
+   * for the same real value.
+   *
+   * TODO move this optimization on Port struct.
+   */
+  float last_real_val;
+  float last_normalized_val;
+  bool  last_port_val_set;
+
   /** Meter for this widget. */
   Meter * meter;
 

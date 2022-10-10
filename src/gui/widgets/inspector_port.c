@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
 
@@ -243,8 +227,21 @@ get_snapped_port_value (InspectorPortWidget * self)
   Port * port = self->port;
   if (port->id.type == TYPE_CONTROL)
     {
-      return control_port_real_val_to_normalized (
-        port, port->control);
+      /* optimization */
+      if (
+        G_LIKELY (self->last_port_val_set)
+        && math_floats_equal (
+          self->last_real_val, port->control))
+        {
+          return self->last_normalized_val;
+        }
+
+      self->last_real_val = port->control;
+      self->last_normalized_val =
+        control_port_real_val_to_normalized (
+          port, port->control);
+      self->last_port_val_set = true;
+      return self->last_normalized_val;
     }
   else
     {

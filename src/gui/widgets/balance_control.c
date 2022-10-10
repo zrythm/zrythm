@@ -121,7 +121,8 @@ balance_control_snapshot (
   gtk_snapshot_translate (
     snapshot,
     &GRAPHENE_POINT_INIT (
-      (float) width - ((float) TEXT_PADDING + (float) pangorect.width),
+      (float) width
+        - ((float) TEXT_PADDING + (float) pangorect.width),
       (float) height / 2.f - (float) pangorect.height / 2.f));
   gtk_snapshot_append_layout (snapshot, layout, &color);
   gtk_snapshot_restore (snapshot);

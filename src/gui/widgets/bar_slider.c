@@ -11,6 +11,7 @@
 #include "gui/widgets/bar_slider.h"
 #include "utils/cairo.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 #include "utils/objects.h"
 
 #include <gtk/gtk.h>
@@ -91,7 +92,8 @@ recreate_pango_layouts (BarSliderWidget * self)
 static void
 bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
-  BarSliderWidget * self = Z_BAR_SLIDER_WIDGET (widget);
+  /* do normal cast because this gets called a lot */
+  BarSliderWidget * self = (BarSliderWidget *) widget;
 
   GtkStyleContext * context =
     gtk_widget_get_style_context (widget);
@@ -139,32 +141,44 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   if (!self->layout)
     recreate_pango_layouts (self);
 
-  char str[3000];
-  if (!self->show_value)
+  if (
+    self->last_width_extent == 0
+    || !math_floats_equal (self->last_real_val, real_val))
     {
-      sprintf (str, "%s%s", self->prefix, self->suffix);
+      char str[3000];
+      if (!self->show_value)
+        {
+          sprintf (str, "%s%s", self->prefix, self->suffix);
+        }
+      else if (self->decimals == 0)
+        {
+          sprintf (
+            str, "%s%d%s", self->prefix,
+            (int) (self->convert_to_percentage ? real_val * 100 : real_val),
+            self->suffix);
+        }
+      else if (self->decimals < 5)
+        {
+          sprintf (
+            str, "%s%.*f%s", self->prefix, self->decimals,
+            (double) (self->convert_to_percentage ? real_val * 100.f : real_val),
+            self->suffix);
+        }
+      else
+        {
+          g_warn_if_reached ();
+        }
+      int we, he;
+      z_cairo_get_text_extents_for_widget (
+        widget, self->layout, str, &we, &he);
+      pango_layout_set_markup (self->layout, str, -1);
+      self->last_width_extent = we;
+      self->last_height_extent = he;
+      strcpy (self->last_extent_str, str);
     }
-  else if (self->decimals == 0)
-    {
-      sprintf (
-        str, "%s%d%s", self->prefix,
-        (int) (self->convert_to_percentage ? real_val * 100 : real_val),
-        self->suffix);
-    }
-  else if (self->decimals < 5)
-    {
-      sprintf (
-        str, "%s%.*f%s", self->prefix, self->decimals,
-        (double) (self->convert_to_percentage ? real_val * 100.f : real_val),
-        self->suffix);
-    }
-  else
-    {
-      g_warn_if_reached ();
-    }
-  int we, he;
-  z_cairo_get_text_extents_for_widget (
-    widget, self->layout, str, &we, &he);
+
+  int we = self->last_width_extent;
+  int he = self->last_height_extent;
   if (width < we)
     {
       gtk_widget_set_size_request (
@@ -177,7 +191,6 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     &GRAPHENE_POINT_INIT (
       (float) width / 2.f - (float) we / 2.f,
       (float) height / 2.f - (float) he / 2.f));
-  pango_layout_set_markup (self->layout, str, -1);
   gtk_snapshot_append_layout (
     snapshot, self->layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
   gtk_snapshot_restore (snapshot);
@@ -189,6 +202,8 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         &GRAPHENE_RECT_INIT (
           0.f, 0.f, (float) width, (float) height));
     }
+
+  self->last_real_val = real_val;
 }
 
 static void
