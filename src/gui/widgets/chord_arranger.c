@@ -70,7 +70,8 @@ chord_arranger_widget_create_chord (
   int              chord_index,
   ZRegion *        region)
 {
-  g_return_if_fail (chord_index < CHORD_EDITOR->num_chords);
+  g_return_val_if_fail (
+    chord_index < CHORD_EDITOR->num_chords, NULL);
   self->action = UI_OVERLAY_ACTION_CREATING_MOVING;
 
   ArrangerObject * region_obj = (ArrangerObject *) region;
