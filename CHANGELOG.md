@@ -6,6 +6,21 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.8.1] - 2022-10-11
+### Added
+- Add fade in/out when muting/unmuting tracks (fixes pops)
+- Allow moving chord objects vertically
+
+### Changed
+- Add more error checking when writing audio to file
+- Optimize bar slider drawing (fixes lags in plugin inspector)
+
+### Fixed
+- Fix cue marker being invisible
+- Fix pressing Home not setting the cue marker
+- Fix plugin and file drag-n-drop being broken on Windows
+- Fix track icon selector being empty
+
 ## [1.0.0-beta.3.7.1] - 2022-10-10
 ### Added
 - JSFX and CLAP plugin support
