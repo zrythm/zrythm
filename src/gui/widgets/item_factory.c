@@ -935,7 +935,8 @@ item_factory_bind_cb (
               GtkDragSource * drag_source =
                 gtk_drag_source_new ();
               gtk_drag_source_set_actions (
-                drag_source, GDK_ACTION_COPY);
+                drag_source,
+                GDK_ACTION_COPY | GDK_ACTION_MOVE);
               ItemFactoryData * data =
                 item_factory_data_new (self, obj);
               g_object_set_data (
@@ -966,7 +967,8 @@ item_factory_bind_cb (
               GtkDragSource * drag_source =
                 gtk_drag_source_new ();
               gtk_drag_source_set_actions (
-                drag_source, GDK_ACTION_COPY);
+                drag_source,
+                GDK_ACTION_COPY | GDK_ACTION_MOVE);
               ItemFactoryData * data =
                 item_factory_data_new (self, obj);
               g_object_set_data (
