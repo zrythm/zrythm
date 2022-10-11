@@ -500,74 +500,67 @@ graph_thread_new (const int id, const bool is_main, Graph * graph)
         {
           bool dbus_fail = true;
 
-          /* FIXME code below doesn't work:
-           * org.freedesktop.DBus.Error.AccessDenied: Operation not permitted
-           */
+/* FIXME doesn't work */
 #  if 0
 #    ifdef HAVE_DBUS
           g_message (
-            "not enough permissions to make thread realtime - trying RTKit with wanted priority %d...",
-            wanted_priority);
+            "not enough permissions to make thread realtime - trying RTKit...");
 
-          int rtkit_max_rt_priority,
-          rtkit_priority = wanted_priority, ret;
-          pid_t kernel_thread_id;
+          guint64 process_id = (guint64) (pid_t) getpid ();
+          guint64 thread_id =
+            (guint64) (pid_t) syscall (SYS_gettid);
 
-          DBusError        dbus_err = {0};
-          DBusConnection * system_bus =
-            dbus_bus_get_private (DBUS_BUS_SYSTEM, &dbus_err);
-          if (!system_bus)
+          GError *          err = NULL;
+          GDBusConnection * conn =
+            g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, &err);
+          if (!conn)
             {
-              g_warning (
-                "Failed to connect to system DBus: [%s] %s",
-                dbus_err.name, dbus_err.message);
-              goto dbus_fail_handling;
+              g_error (
+                "Failed to get dbus connection: %s",
+                err->message);
             }
 
-          rtkit_max_rt_priority =
-            rtkit_get_max_realtime_priority (system_bus);
-          g_debug (
-            "max RT priority (RTKit): %d",
-            rtkit_max_rt_priority);
-          if (rtkit_max_rt_priority < 0)
+          GVariant * ret_prop = g_dbus_connection_call_sync (
+            conn, "org.freedesktop.portal.Desktop",
+            "/org/freedesktop/portal/desktop",
+            "org.freedesktop.DBus.Properties", "Get",
+            g_variant_new (
+              "(ss)", "org.freedesktop.portal.Realtime",
+              "MaxRealtimePriority"),
+            G_VARIANT_TYPE ("(v)"), G_DBUS_CALL_FLAGS_NONE,
+            -1, NULL, &err);
+          if (!ret_prop)
             {
-              goto dbus_fail_handling;
+              g_error (
+                "Failed to get MaxRealtimePriority: %s",
+                err->message);
             }
-          rtkit_priority =
-            MAX (rtkit_priority, rtkit_max_rt_priority);
-          g_return_if_fail (rtkit_priority >= 0);
+          GVariant * prop = NULL;
+          g_variant_get (ret_prop, "(v)", &prop);
+          gint32 max_rt_prio = g_variant_get_int32 (prop);
+          g_message ("Max RT Priority: %d", max_rt_prio);
+
+          g_return_if_fail (max_rt_prio >= 0);
+          guint32 priority_to_set = (guint32) max_rt_prio;
           g_message (
-            "setting RT priority to %d", rtkit_priority);
-
-          kernel_thread_id = syscall (SYS_gettid);
-          ret = rtkit_make_realtime (
-              system_bus, kernel_thread_id, rtkit_priority);
-          g_message ("rtkit_make_realtime ret (%p, %d, %d): %d", system_bus, kernel_thread_id, rtkit_priority, ret);
-          if (ret < 0)
+            "setting priority to: %u", priority_to_set);
+          g_dbus_connection_call_sync (
+            conn, "org.freedesktop.portal.Desktop",
+            "/org/freedesktop/portal/desktop",
+            "org.freedesktop.portal.Realtime",
+            "MakeThreadRealtimeWithPID",
+            g_variant_new (
+              "(ttu)", (guint64) process_id,
+              (guint64) thread_id, (guint32) max_rt_prio),
+            NULL, G_DBUS_CALL_FLAGS_NONE, -1, NULL, &err);
+          if (err)
             {
-              switch (ret)
-                {
-                case -ENOMEM:
-                  g_message ("ENOMEM");
-                  break;
-                case -ENOENT:
-                  g_message ("ENOENT");
-                  break;
-                case -EACCES:
-                  g_message ("EACCES");
-                  break;
-                case -EIO:
-                  g_message ("EIO");
-                  break;
-                default:
-                  g_message ("unknown error");
-                  break;
-                }
-              goto dbus_fail_handling;
+              g_error (
+                "Failed to set realtime priority: %s",
+                err->message);
             }
-          g_message ("thread made realtime (RTKit)");
-          dbus_fail = false;
-#    endif
+
+#    endif /* HAVE_DBUS */
 #  endif
 
           goto dbus_fail_handling;
