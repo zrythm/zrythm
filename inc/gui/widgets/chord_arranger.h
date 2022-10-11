@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2019, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_CHORD_ARRANGER_H__
 #define __GUI_WIDGETS_CHORD_ARRANGER_H__
@@ -52,12 +36,20 @@ chord_arranger_widget_get_chord_at_y (double y);
  * Called on drag begin in parent when background is double
  * clicked (i.e., a note is created).
  */
-void
+ChordObject *
 chord_arranger_widget_create_chord (
   ArrangerWidget * self,
   const Position * pos,
   int              chord_index,
   ZRegion *        region);
+
+/**
+ * Called on move items_y setup.
+ *
+ * calculates the max possible y movement
+ */
+int
+chord_arranger_calc_deltamax_for_chord_movement (int y_delta);
 
 /**
  * @}

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2020, 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
@@ -63,7 +63,7 @@
  *
  * @param pos The pre-snapped position.
  */
-void
+ChordObject *
 chord_arranger_widget_create_chord (
   ArrangerWidget * self,
   const Position * pos,
@@ -93,8 +93,13 @@ chord_arranger_widget_create_chord (
     chord_obj, &local_pos,
     ARRANGER_OBJECT_POSITION_TYPE_START, F_NO_VALIDATE);
 
+  /* set as start object */
+  self->start_object = chord_obj;
+
   arranger_object_select (
     chord_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+
+  return chord;
 }
 
 /**
@@ -109,4 +114,30 @@ chord_arranger_widget_get_chord_at_y (double y)
       MW_CHORD_EDITOR_SPACE)
     + 1;
   return (int) floor (adj_y / adj_px_per_key);
+}
+
+/**
+ * Called on move items_y setup.
+ *
+ * calculates the max possible y movement
+ */
+int
+chord_arranger_calc_deltamax_for_chord_movement (int y_delta)
+{
+  for (int i = 0; i < CHORD_SELECTIONS->num_chord_objects; i++)
+    {
+      ChordObject * co = CHORD_SELECTIONS->chord_objects[i];
+      if (co->chord_index + y_delta < 0)
+        {
+          y_delta = 0;
+        }
+      else if (
+        co->chord_index + y_delta
+        >= (CHORD_EDITOR->num_chords - 1))
+        {
+          y_delta =
+            (CHORD_EDITOR->num_chords - 1) - co->chord_index;
+        }
+    }
+  return y_delta;
 }

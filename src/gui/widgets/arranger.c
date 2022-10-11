@@ -1004,6 +1004,9 @@ get_fvalue_at_y (ArrangerWidget * self, double y)
   return automatable_value;
 }
 
+/**
+ * Move selected arranger objects vertically.
+ */
 static void
 move_items_y (ArrangerWidget * self, double offset_y)
 {
@@ -1155,6 +1158,32 @@ move_items_y (ArrangerWidget * self, double offset_y)
 
         /*midi_arranger_listen_notes (*/
         /*self, 1);*/
+      }
+      break;
+    case TYPE (CHORD):
+      {
+        int y_delta;
+        /* first chord selected */
+        ChordObject * first_co =
+          (ChordObject *) self->start_object;
+        int first_chord_selected = first_co->chord_index;
+        /* chord at cursor */
+        int chord_at_cursor =
+          chord_arranger_widget_get_chord_at_y (
+            self->start_y + offset_y);
+
+        y_delta = chord_at_cursor - first_chord_selected;
+        y_delta =
+          chord_arranger_calc_deltamax_for_chord_movement (
+            y_delta);
+
+        for (int i = 0;
+             i < CHORD_SELECTIONS->num_chord_objects; i++)
+          {
+            ChordObject * co =
+              CHORD_SELECTIONS->chord_objects[i];
+            co->chord_index = co->chord_index + y_delta;
+          }
       }
       break;
     default:

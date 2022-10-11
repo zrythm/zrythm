@@ -346,10 +346,9 @@ midi_arranger_widget_snap_midi_notes_r (
 int
 midi_arranger_calc_deltamax_for_note_movement (int y_delta)
 {
-  MidiNote * midi_note;
   for (int i = 0; i < MA_SELECTIONS->num_midi_notes; i++)
     {
-      midi_note = MA_SELECTIONS->midi_notes[i];
+      MidiNote * midi_note = MA_SELECTIONS->midi_notes[i];
       /*g_message ("midi note val %d, y delta %d",*/
       /*midi_note->val, y_delta);*/
       if (midi_note->val + y_delta < 0)
