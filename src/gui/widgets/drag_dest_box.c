@@ -202,6 +202,7 @@ on_dnd_motion (
   /* request value */
   GdkDrop * drop =
     gtk_drop_target_get_current_drop (drop_target);
+  /* FIXME just use gtk_drop_target_get_value() */
   gdk_drop_read_value_async (
     drop, G_TYPE_OBJECT, 0, NULL, on_dnd_motion_value_ready,
     self);

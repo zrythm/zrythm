@@ -54,6 +54,7 @@
 #include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
+#include "utils/strv_builder.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -1766,6 +1767,186 @@ track_tick_cb (
   return G_SOURCE_CONTINUE;
 }
 
+# if 0
+static gboolean
+on_dnd_drop (
+  GtkDropTarget * drop_target,
+  const GValue *  value,
+  double          x,
+  double          y,
+  gpointer        data)
+{
+  TrackWidget * self = Z_TRACK_WIDGET (data);
+  Track *       track = self->track;
+  g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
+
+  GdkDragAction action =
+    z_gtk_drop_target_get_selected_action (drop_target);
+
+  SupportedFile *    file = NULL;
+  PluginDescriptor * pd = NULL;
+  Plugin *           pl = NULL;
+  if (G_VALUE_HOLDS (
+        value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
+    {
+      WrappedObjectWithChangeSignal * wrapped_obj =
+        g_value_get_object (value);
+      if (wrapped_obj->type == WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
+        {
+          file = (SupportedFile *) wrapped_obj->obj;
+        }
+      else if (wrapped_obj->type == WRAPPED_OBJECT_TYPE_PLUGIN)
+        {
+          pl = (Plugin *) wrapped_obj->obj;
+        }
+      else if (
+        wrapped_obj->type == WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
+        {
+          pd = (PluginDescriptor *) wrapped_obj->obj;
+        }
+    }
+
+  if (
+    G_VALUE_HOLDS (value, GDK_TYPE_FILE_LIST)
+    || G_VALUE_HOLDS (value, G_TYPE_FILE) || file)
+    {
+      char ** uris = NULL;
+      if (G_VALUE_HOLDS (value, G_TYPE_FILE))
+        {
+          GFile *       gfile = g_value_get_object (value);
+          StrvBuilder * uris_builder = strv_builder_new ();
+          char *        uri = g_file_get_uri (gfile);
+          strv_builder_add (uris_builder, uri);
+          uris = strv_builder_end (uris_builder);
+        }
+      else if (G_VALUE_HOLDS (value, GDK_TYPE_FILE_LIST))
+        {
+          StrvBuilder * uris_builder = strv_builder_new ();
+          GSList *      l;
+          for (l = g_value_get_boxed (value); l; l = l->next)
+            {
+              char * uri = g_file_get_uri (l->data);
+              strv_builder_add (uris_builder, uri);
+              g_free (uri);
+            }
+          uris = strv_builder_end (uris_builder);
+        }
+
+      /* TODO import files on track */
+      (void) uris;
+
+      return false;
+    }
+  else if (pd)
+    {
+      PluginSetting * setting =
+        plugin_setting_new_default (pd);
+
+      /* TODO add the plugin to the track */
+      switch (track->type)
+        {
+        case TRACK_TYPE_MIDI:
+          if (plugin_descriptor_is_instrument (pd))
+            {
+              ui_show_error_message (
+                MAIN_WINDOW, false,
+                _("Operation not implemented"));
+            }
+
+          break;
+        default:
+          break;
+        }
+
+      plugin_setting_free (setting);
+
+      return false;
+    }
+  else if (pl)
+    {
+      /* NOTE this is a cloned pointer, don't use
+       * it */
+      g_warn_if_fail (pl);
+
+      GError * err = NULL;
+      bool     ret = false;
+      if (action == GDK_ACTION_COPY)
+        {
+          /* TODO */
+          return false;
+        }
+      else if (action == GDK_ACTION_MOVE)
+        {
+          /* TODO */
+          return false;
+        }
+      else
+        g_return_val_if_reached (true);
+
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s", _ ("Failed to move or copy plugin"));
+        }
+
+      return true;
+    }
+
+  /* drag was not accepted */
+  return false;
+}
+
+static GdkDragAction
+on_dnd_motion (
+  GtkDropTarget * drop_target,
+  gdouble         x,
+  gdouble         y,
+  gpointer        user_data)
+{
+  /* request value */
+  const GValue * value =
+    gtk_drop_target_get_value (drop_target);
+  if (G_VALUE_HOLDS (
+        value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
+    {
+      WrappedObjectWithChangeSignal * wrapped_obj =
+        g_value_get_object (value);
+      switch (wrapped_obj->type)
+        {
+        case WRAPPED_OBJECT_TYPE_SUPPORTED_FILE:
+        case WRAPPED_OBJECT_TYPE_PLUGIN:
+        case WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
+          return GDK_ACTION_MOVE;
+        default:
+          return 0;
+        }
+    }
+
+  return 0;
+}
+
+static void
+setup_dnd (TrackWidget * self)
+{
+  GtkDropTarget * drop_target = gtk_drop_target_new (
+    G_TYPE_INVALID, GDK_ACTION_COPY | GDK_ACTION_MOVE);
+  GType types[] = {
+    GDK_TYPE_FILE_LIST, G_TYPE_FILE,
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE
+  };
+  gtk_drop_target_set_gtypes (
+    drop_target, types, G_N_ELEMENTS (types));
+  gtk_widget_add_controller (
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (drop_target));
+
+  /* connect signal */
+  g_signal_connect (
+    drop_target, "drop", G_CALLBACK (on_dnd_drop), self);
+  g_signal_connect (
+    drop_target, "motion", G_CALLBACK (on_dnd_motion), self);
+}
+#endif
+
 /**
  * Wrapper for child track widget.
  *
@@ -1931,6 +2112,8 @@ track_widget_new (Track * track)
     NULL);
 
   track_canvas_widget_setup (self->canvas, self);
+
+  /*setup_dnd (self);*/
 
   return self;
 }
