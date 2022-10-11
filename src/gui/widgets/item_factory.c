@@ -128,7 +128,10 @@ on_dnd_drag_prepare (
 {
   ItemFactoryData * data = (ItemFactoryData *) user_data;
 
-  g_debug ("PREPARE");
+  g_debug ("dnd prepare from item factory");
+
+  g_return_val_if_fail (
+    Z_IS_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data->obj), NULL);
   GdkContentProvider * content_providers[] = {
     gdk_content_provider_new_typed (
       WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, data->obj),
@@ -931,6 +934,8 @@ item_factory_bind_cb (
               /* set as drag source */
               GtkDragSource * drag_source =
                 gtk_drag_source_new ();
+              gtk_drag_source_set_actions (
+                drag_source, GDK_ACTION_COPY);
               ItemFactoryData * data =
                 item_factory_data_new (self, obj);
               g_object_set_data (
@@ -960,6 +965,8 @@ item_factory_bind_cb (
               /* set as drag source */
               GtkDragSource * drag_source =
                 gtk_drag_source_new ();
+              gtk_drag_source_set_actions (
+                drag_source, GDK_ACTION_COPY);
               ItemFactoryData * data =
                 item_factory_data_new (self, obj);
               g_object_set_data (
@@ -1057,7 +1064,7 @@ item_factory_unbind_cb (
           case WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
           case WRAPPED_OBJECT_TYPE_SUPPORTED_FILE:
             {
-              /* set as drag source */
+              /* remove drag source */
               GtkDragSource * drag_source = g_object_get_data (
                 G_OBJECT (bin), "drag-source");
               gtk_widget_remove_controller (
