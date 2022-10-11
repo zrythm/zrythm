@@ -199,24 +199,30 @@ dsp_mix_add2 (
  * Calculate linear fade by multiplying from 0 to 1 for
  * @param total_frames_to_fade samples.
  *
+ * @note Does not work properly when @param
+ *   fade_from_multiplier is < 1k.
+ *
  * @param start_offset Start offset in the fade interval.
  * @param total_frames_to_fade Total frames that should be
- * faded.
+ *   faded.
  * @param size Number of frames to process.
+ * @param fade_from_multiplier Multiplier to fade from (0 to
+ *   fade from silence.)
  */
 void
-dsp_linear_fade_in (
+dsp_linear_fade_in_from (
   float * dest,
   int32_t start_offset,
   int32_t total_frames_to_fade,
-  size_t  size)
+  size_t  size,
+  float   fade_from_multiplier)
 {
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp_dsp_lin_inter_mul2 (
-        dest, 0, 0.f, total_frames_to_fade, 1.f, start_offset,
-        size);
+        dest, 0, fade_from_multiplier, total_frames_to_fade,
+        1.f, start_offset, size);
     }
   else
     {
@@ -226,6 +232,8 @@ dsp_linear_fade_in (
           float k =
             (float) (i + (size_t) start_offset)
             / (float) total_frames_to_fade;
+          k = fade_from_multiplier
+              + (1.f - fade_from_multiplier) * k;
           dest[i] *= k;
         }
 #ifdef HAVE_LSP_DSP
@@ -239,22 +247,26 @@ dsp_linear_fade_in (
  *
  * @param start_offset Start offset in the fade interval.
  * @param total_frames_to_fade Total frames that should be
- * faded.
+ *   faded.
  * @param size Number of frames to process.
+ * @param fade_to_multiplier Multiplier to fade to (0 to fade
+ *   to silence.)
  */
+NONNULL
 void
-dsp_linear_fade_out (
+dsp_linear_fade_out_to (
   float * dest,
   int32_t start_offset,
   int32_t total_frames_to_fade,
-  size_t  size)
+  size_t  size,
+  float   fade_to_multiplier)
 {
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp_dsp_lin_inter_mul2 (
-        dest, 0, 1.f, total_frames_to_fade, 0.f, start_offset,
-        size);
+        dest, 0, 1.f, total_frames_to_fade,
+        fade_to_multiplier, start_offset, size);
     }
   else
     {
@@ -264,6 +276,8 @@ dsp_linear_fade_out (
           float k =
             (float) ((size_t) total_frames_to_fade - (i + (size_t) start_offset))
             / (float) total_frames_to_fade;
+          k = fade_to_multiplier
+              + (1.f - fade_to_multiplier) * k;
           dest[i] *= k;
         }
 #ifdef HAVE_LSP_DSP

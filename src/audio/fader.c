@@ -16,6 +16,7 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/debug.h"
 #include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/flags.h"
@@ -907,6 +908,9 @@ fader_process (
       g_return_if_fail (IS_TRACK_AND_NONNULL (track));
     }
 
+  const int default_fade_frames =
+    FADER_FADE_FRAMES_FOR_TYPE (self);
+
   bool effectively_muted = false;
   if (!self->passthrough)
     {
@@ -991,8 +995,10 @@ fader_process (
       else /* not prefader */
         {
           /* if monitor */
+          float mute_amp;
           if (self->type == FADER_TYPE_MONITOR)
             {
+              mute_amp = AUDIO_ENGINE->denormal_prevention_val;
               float dim_amp =
                 fader_get_amp (CONTROL_ROOM->dim_fader);
 
@@ -1059,95 +1065,126 @@ fader_process (
                        ->buf[time_nfo->local_offset],
                     dim_amp, time_nfo->nframes);
                 }
+            } /* endif monitor fader */
+          else
+            {
+              mute_amp =
+                fader_get_amp (CONTROL_ROOM->mute_fader);
 
-              /* handle fade in */
-              int fade_in_samples =
-                g_atomic_int_get (&self->fade_in_samples);
-              if (G_UNLIKELY (fade_in_samples > 0))
+              /* add fade if changed from muted to non-muted or
+               * vice versa */
+              if (effectively_muted && !self->was_effectively_muted)
                 {
+                  g_atomic_int_set (
+                    &self->fade_out_samples,
+                    default_fade_frames);
+                  g_atomic_int_set (&self->fading_out, 1);
+                }
+              else if (
+                !effectively_muted
+                && self->was_effectively_muted)
+                {
+                  g_atomic_int_set (&self->fading_out, 0);
+                  g_atomic_int_set (
+                    &self->fade_in_samples,
+                    default_fade_frames);
+                }
+            }
+
+          /* handle fade in */
+          int fade_in_samples =
+            g_atomic_int_get (&self->fade_in_samples);
+          if (G_UNLIKELY (fade_in_samples > 0))
+            {
+              z_return_if_fail_cmp (
+                default_fade_frames, >=, fade_in_samples);
 #if 0
-                  g_debug ("fading in %d samples", fade_in_samples);
+              g_debug (
+                "fading in %d samples", fade_in_samples);
 #endif
-                  dsp_linear_fade_in (
+              dsp_linear_fade_in_from (
+                &self->stereo_out->l
+                   ->buf[time_nfo->local_offset],
+                default_fade_frames - fade_in_samples,
+                default_fade_frames, time_nfo->nframes,
+                mute_amp);
+              dsp_linear_fade_in_from (
+                &self->stereo_out->r
+                   ->buf[time_nfo->local_offset],
+                default_fade_frames - fade_in_samples,
+                default_fade_frames, time_nfo->nframes,
+                mute_amp);
+              fade_in_samples -= (int) time_nfo->nframes;
+              fade_in_samples = MAX (fade_in_samples, 0);
+              g_atomic_int_set (
+                &self->fade_in_samples, fade_in_samples);
+            }
+
+          /* handle fade out */
+          size_t faded_out_frames = 0;
+          if (G_UNLIKELY (g_atomic_int_get (&self->fading_out)))
+            {
+              int fade_out_samples =
+                g_atomic_int_get (&self->fade_out_samples);
+              int samples_to_process = MAX (
+                0,
+                MIN (
+                  fade_out_samples, (int) time_nfo->nframes));
+              if (fade_out_samples > 0)
+                {
+                  z_return_if_fail_cmp (
+                    default_fade_frames, >=, fade_out_samples);
+
+#if 0
+                  g_debug (
+                    "fading out %d frames",
+                    samples_to_process);
+#endif
+                  dsp_linear_fade_out_to (
                     &self->stereo_out->l
                        ->buf[time_nfo->local_offset],
-                    FADER_DEFAULT_FADE_FRAMES - fade_in_samples,
-                    FADER_DEFAULT_FADE_FRAMES,
-                    time_nfo->nframes);
-                  dsp_linear_fade_in (
+                    default_fade_frames - fade_out_samples,
+                    default_fade_frames,
+                    (size_t) samples_to_process, mute_amp);
+                  dsp_linear_fade_out_to (
                     &self->stereo_out->r
                        ->buf[time_nfo->local_offset],
-                    FADER_DEFAULT_FADE_FRAMES - fade_in_samples,
-                    FADER_DEFAULT_FADE_FRAMES,
-                    time_nfo->nframes);
-                  fade_in_samples -= (int) time_nfo->nframes;
-                  fade_in_samples = MAX (fade_in_samples, 0);
+                    default_fade_frames - fade_out_samples,
+                    default_fade_frames,
+                    (size_t) samples_to_process, mute_amp);
+                  fade_out_samples -= samples_to_process;
+                  faded_out_frames +=
+                    (size_t) samples_to_process;
                   g_atomic_int_set (
-                    &self->fade_in_samples, fade_in_samples);
+                    &self->fade_out_samples, fade_out_samples);
                 }
 
-              /* handle fade out */
-              if (G_UNLIKELY (
-                    g_atomic_int_get (&self->fading_out)))
-                {
-                  int fade_out_samples = g_atomic_int_get (
-                    &self->fade_out_samples);
-                  int samples_to_process = MAX (
-                    0,
-                    MIN (
-                      fade_out_samples,
-                      (int) time_nfo->nframes));
-                  if (fade_out_samples > 0)
-                    {
-#if 0
-                      g_debug (
-                        "fading out %d frames",
-                        samples_to_process);
-#endif
-                      dsp_linear_fade_out (
-                        &self->stereo_out->l
-                           ->buf[time_nfo->local_offset],
-                        FADER_DEFAULT_FADE_FRAMES
-                          - fade_out_samples,
-                        FADER_DEFAULT_FADE_FRAMES,
-                        (size_t) samples_to_process);
-                      dsp_linear_fade_out (
-                        &self->stereo_out->r
-                           ->buf[time_nfo->local_offset],
-                        FADER_DEFAULT_FADE_FRAMES
-                          - fade_out_samples,
-                        FADER_DEFAULT_FADE_FRAMES,
-                        (size_t) samples_to_process);
-                      fade_out_samples -= samples_to_process;
-                      g_atomic_int_set (
-                        &self->fade_out_samples,
-                        fade_out_samples);
-                    }
-
-                  /* if still fading out and have no more fade
+              /* if still fading out and have no more fade
                    * out samples, silence */
-                  if (fade_out_samples == 0)
-                    {
-                      size_t remaining_frames =
-                        time_nfo->nframes
-                        - (size_t) samples_to_process;
+              if (fade_out_samples == 0)
+                {
+                  size_t remaining_frames =
+                    time_nfo->nframes
+                    - (size_t) samples_to_process;
 #if 0
-                      g_debug (
-                        "silence for remaining %zu frames",
-                        remaining_frames);
+                  g_debug (
+                    "silence for remaining %zu frames",
+                    remaining_frames);
 #endif
-                      dsp_mul_k2 (
-                        &self->stereo_out->l
-                           ->buf[time_nfo->local_offset],
-                        0.f, remaining_frames);
-                      dsp_mul_k2 (
-                        &self->stereo_out->r
-                           ->buf[time_nfo->local_offset],
-                        0.f, remaining_frames);
-                    }
+                  dsp_mul_k2 (
+                    &self->stereo_out->l->buf
+                       [time_nfo->local_offset
+                        + faded_out_frames],
+                    mute_amp, remaining_frames);
+                  dsp_mul_k2 (
+                    &self->stereo_out->r->buf
+                       [time_nfo->local_offset
+                        + faded_out_frames],
+                    mute_amp, remaining_frames);
+                  faded_out_frames +=
+                    (size_t) remaining_frames;
                 }
-
-            } /* endif monitor fader */
+            }
 
           float pan =
             port_get_control_value (self->balance, 0);
@@ -1186,34 +1223,46 @@ fader_process (
                 time_nfo->nframes, false);
             }
 
-          if (effectively_muted)
+          int fade_out_samples =
+            g_atomic_int_get (&self->fade_out_samples);
+          if (
+            effectively_muted && fade_out_samples == 0
+            && time_nfo->nframes - faded_out_frames > 0)
             {
+#if 0
+              g_debug (
+                "muting %zu frames",
+                time_nfo->nframes - faded_out_frames);
+#endif
               /* apply mute level */
-              float mute_amp =
-                fader_get_amp (CONTROL_ROOM->mute_fader);
               if (mute_amp < 0.00001f)
                 {
                   dsp_fill (
-                    &self->stereo_out->l
-                       ->buf[time_nfo->local_offset],
+                    &self->stereo_out->l->buf
+                       [time_nfo->local_offset
+                        + faded_out_frames],
                     AUDIO_ENGINE->denormal_prevention_val,
-                    time_nfo->nframes);
+                    time_nfo->nframes - faded_out_frames);
                   dsp_fill (
-                    &self->stereo_out->r
-                       ->buf[time_nfo->local_offset],
+                    &self->stereo_out->r->buf
+                       [time_nfo->local_offset
+                        + faded_out_frames],
                     AUDIO_ENGINE->denormal_prevention_val,
-                    time_nfo->nframes);
+                    time_nfo->nframes - faded_out_frames);
                 }
               else
                 {
                   dsp_mul_k2 (
                     &self->stereo_out->l
                        ->buf[time_nfo->local_offset],
-                    mute_amp, time_nfo->nframes);
+                    mute_amp,
+                    time_nfo->nframes - faded_out_frames);
                   dsp_mul_k2 (
-                    &self->stereo_out->r
-                       ->buf[time_nfo->local_offset],
-                    mute_amp, time_nfo->nframes);
+                    &self->stereo_out->r->buf
+                       [time_nfo->local_offset
+                        + faded_out_frames],
+                    mute_amp,
+                    time_nfo->nframes - faded_out_frames);
                 }
             }
 
@@ -1283,6 +1332,8 @@ fader_process (
             }
         }
     }
+
+  self->was_effectively_muted = effectively_muted;
 
   if (ZRYTHM_TESTING)
     {

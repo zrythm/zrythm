@@ -36,7 +36,14 @@ typedef struct PortIdentifier  PortIdentifier;
 #define IS_FADER(f) (f->magic == FADER_MAGIC)
 #define IS_FADER_AND_NONNULL(f) (f && f->magic == FADER_MAGIC)
 
-#define FADER_DEFAULT_FADE_FRAMES 8000
+#define FADER_DEFAULT_FADE_FRAMES 8192
+/** Causes loud volume in when < 1k. */
+#define FADER_DEFAULT_FADE_FRAMES_SHORT 1024
+
+#define FADER_FADE_FRAMES_FOR_TYPE(f) \
+  ((f)->type == FADER_TYPE_MONITOR \
+     ? FADER_DEFAULT_FADE_FRAMES \
+     : FADER_DEFAULT_FADE_FRAMES_SHORT)
 
 #define fader_is_in_active_project(self) \
   ((self->track != NULL \
@@ -225,6 +232,9 @@ typedef struct Fader
    * will be silenced.
    */
   int fading_out;
+
+  /** Cache. */
+  bool was_effectively_muted;
 } Fader;
 
 static const cyaml_schema_field_t fader_fields_schema[] = {

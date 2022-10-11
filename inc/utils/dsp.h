@@ -205,18 +205,24 @@ dsp_mix_add2 (
  * Calculate linear fade by multiplying from 0 to 1 for
  * @param total_frames_to_fade samples.
  *
+ * @note Does not work properly when @param
+ *   fade_from_multiplier is < 1k.
+ *
  * @param start_offset Start offset in the fade interval.
  * @param total_frames_to_fade Total frames that should be
- * faded.
+ *   faded.
  * @param size Number of frames to process.
+ * @param fade_from_multiplier Multiplier to fade from (0 to
+ *   fade from silence.)
  */
 NONNULL
 void
-dsp_linear_fade_in (
+dsp_linear_fade_in_from (
   float * dest,
   int32_t start_offset,
   int32_t total_frames_to_fade,
-  size_t  size);
+  size_t  size,
+  float   fade_from_multiplier);
 
 /**
  * Calculate linear fade by multiplying from 0 to 1 for
@@ -224,16 +230,19 @@ dsp_linear_fade_in (
  *
  * @param start_offset Start offset in the fade interval.
  * @param total_frames_to_fade Total frames that should be
- * faded.
+ *   faded.
  * @param size Number of frames to process.
+ * @param fade_to_multiplier Multiplier to fade to (0 to fade
+ *   to silence.)
  */
 NONNULL
 void
-dsp_linear_fade_out (
+dsp_linear_fade_out_to (
   float * dest,
   int32_t start_offset,
   int32_t total_frames_to_fade,
-  size_t  size);
+  size_t  size,
+  float   fade_to_multiplier);
 
 /**
  * Makes the two signals mono.
