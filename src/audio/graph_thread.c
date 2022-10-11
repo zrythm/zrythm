@@ -84,10 +84,6 @@
 
 #include <glib/gi18n.h>
 
-#ifdef HAVE_DBUS
-#  include <rtkit/rtkit.h>
-#endif
-
 /* uncomment to show debug messages */
 /*#define DEBUG_THREADS 1*/
 
