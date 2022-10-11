@@ -704,7 +704,8 @@ z_gdk_pixbuf_new_from_icon_name (
   const char * icon_name,
   int          width,
   int          height,
-  int          scale);
+  int          scale,
+  GError **    error);
 
 /**
  * Creates a new texture for the given icon scaled

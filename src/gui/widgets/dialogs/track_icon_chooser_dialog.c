@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/region.h"
 #include "audio/track.h"
@@ -103,40 +87,69 @@ create_list_store (void)
   GtkListStore * store =
     gtk_list_store_new (2, G_TYPE_STRING, GDK_TYPE_PIXBUF);
 
-  /* TODO */
-#if 0
-  GtkIconTheme * icon_theme =
-    gtk_icon_theme_get_default ();
+  GtkIconTheme * icon_theme = z_gtk_icon_theme_get_default ();
 
   GtkTreeIter iter;
-  GList * list =
-    gtk_icon_theme_list_icons (
-      icon_theme, "TrackTypes");
-  for (GList * l = list; l != NULL; l = l->next)
+  char ** list = gtk_icon_theme_get_icon_names (icon_theme);
+  char *  icon_name;
+  for (int i = 0; (icon_name = list[i]) != NULL; i++)
     {
-      char * icon_name = (char *) l->data;
-      GdkPixbuf * pixbuf =
-        gtk_icon_theme_load_icon (
-          icon_theme, icon_name, 16, 0, NULL);
+      int                size = 16;
+      GtkIconPaintable * paintable = gtk_icon_theme_lookup_icon (
+        icon_theme, icon_name, NULL, size, 1,
+        GTK_TEXT_DIR_NONE, GTK_ICON_LOOKUP_FORCE_SYMBOLIC);
+      GdkPixbuf * pixbuf = NULL;
+      bool        is_track_type_icon = false;
+      if (paintable)
+        {
+          GFile * file =
+            gtk_icon_paintable_get_file (paintable);
+          if (file)
+            {
+              char * path = g_file_get_path (file);
+              /* FIXME GTK4 doesn't have API to return icons of
+               * a given context and it also doesn't return
+               * icons in non-standard subdirectories like
+               * "tracktypes" - for now, just show all 'zrythm'
+               * icons */
+              if (
+                path
+                && string_contains_substr_case_insensitive (
+                  path, "zrythm"))
+                {
+                  g_debug (
+                    "found track type icon path: %s", path);
+                  is_track_type_icon = true;
+                  GError * err = NULL;
+                  pixbuf = gdk_pixbuf_new_from_file_at_scale (
+                    path, size, size, true, &err);
+                  if (!pixbuf)
+                    {
+                      g_warning (
+                        "failed to get pixbuf: %s",
+                        err->message);
+                      g_error_free (err);
+                    }
+                  g_free (path);
+                }
+              g_object_unref (file);
+            }
+          g_object_unref (paintable);
+        }
+
       if (pixbuf)
         {
-          gtk_list_store_append (
-            store, &iter);
+          gtk_list_store_append (store, &iter);
           gtk_list_store_set (
-            store, &iter,
-            COL_LABEL, icon_name,
-            COL_PIXBUF, pixbuf,
-            -1);
+            store, &iter, COL_LABEL, icon_name, COL_PIXBUF,
+            pixbuf, -1);
         }
-      else
+      else if (is_track_type_icon)
         {
-          g_warning (
-            "no pixbuf loaded for %s", icon_name);
+          g_message ("no pixbuf loaded for %s", icon_name);
         }
-      g_free (l->data);
     }
-  g_list_free (list);
-#endif
+  g_strfreev (list);
 
   return store;
 }

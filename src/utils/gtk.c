@@ -60,6 +60,18 @@
 
 #include <gsk/gskrenderer.h>
 
+typedef enum
+{
+  Z_UTILS_GTK_ERROR_FAILED,
+} ZUtilsGtkError;
+
+#define Z_UTILS_GTK_ERROR z_utils_gtk_error_quark ()
+GQuark
+z_utils_gtk_error_quark (void);
+G_DEFINE_QUARK (
+  z - utils - gtk - error - quark,
+  z_utils_gtk_error)
+
 GdkMonitor *
 z_gtk_get_primary_monitor (void)
 {
@@ -1946,7 +1958,8 @@ z_gdk_pixbuf_new_from_icon_name (
   const char * icon_name,
   int          width,
   int          height,
-  int          scale)
+  int          scale,
+  GError **    error)
 {
   GtkIconTheme * icon_theme = z_gtk_icon_theme_get_default ();
   GtkIconPaintable * paintable = gtk_icon_theme_lookup_icon (
@@ -1977,8 +1990,9 @@ z_gdk_pixbuf_new_from_icon_name (
 
   if (!pixbuf)
     {
-      g_critical (
-        "failed to load pixbuf for icon %s", icon_name);
+      g_set_error (
+        error, Z_UTILS_GTK_ERROR, Z_UTILS_GTK_ERROR_FAILED,
+        "Failed to load pixbuf for icon %s", icon_name);
       return NULL;
     }
 
@@ -1999,8 +2013,9 @@ z_gdk_texture_new_from_icon_name (
   int          height,
   int          scale)
 {
+  /* FIXME pass GError and handle gracefully */
   GdkPixbuf * pixbuf = z_gdk_pixbuf_new_from_icon_name (
-    icon_name, width, height, scale);
+    icon_name, width, height, scale, NULL);
   g_return_val_if_fail (pixbuf, NULL);
 
   return gdk_texture_new_for_pixbuf (pixbuf);
