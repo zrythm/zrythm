@@ -213,6 +213,9 @@ zrythm_app_check_for_updates (ZrythmApp * self)
         _ ("Do you want %s to check for "
            "updates on startup?"),
         PROGRAM_NAME);
+      gtk_window_set_modal (GTK_WINDOW (dialog), true);
+      gtk_window_set_transient_for (
+        GTK_WINDOW (dialog), GTK_WINDOW (MAIN_WINDOW));
       gtk_window_set_icon_name (GTK_WINDOW (dialog), "zrythm");
       gtk_window_set_title (
         GTK_WINDOW (dialog), _ ("Check for Updates"));
