@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-10-03 21:08+0900\n"
-"PO-Revision-Date: 2022-10-04 15:52+0000\n"
+"PO-Revision-Date: 2022-10-12 11:56+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -7721,13 +7721,15 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
 msgid "Update libpanel dependency to &gt;= 1.0.0"
-msgstr ""
+msgstr "Actualitza la dependència de libpanel a &gt;= 1.0.0"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:68
 msgid ""
 "Meson: change fft3 detection (added new options `fftw3_threads_separate`, "
 "`fftw3_threads_separate_type` and `fftw3f_separate`)"
 msgstr ""
+"Meson: detecció de fft3 modificada (s'han afegit noves opcions "
+"`fftw3_threads_separate`, `fftw3_threads_separate_type` i `fftw3f_separate`)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:70
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:95
@@ -7740,10 +7742,14 @@ msgstr "Solucionat:"
 msgid ""
 "Fix incorrectly showing bug report dialog when alpha project upgrade fails"
 msgstr ""
+"S'ha corregit la visualització incorrecta del diàleg d'informe d'errors quan "
+"fallava l'actualització del projecte alfa"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:73
 msgid "Fix newlines not showing in the release notes in the About dialog"
 msgstr ""
+"S'han corregit les línies noves que no es mostren a les notes de la versió "
+"del diàleg Quant a"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:74
 #, fuzzy
@@ -7756,10 +7762,14 @@ msgid ""
 "Fix incorrectly allowing to delete/clone the master track when inside a "
 "foldable track"
 msgstr ""
+"S'ha corregit un error que permetia suprimir/clonar la pista principal quan "
+"estava en una pista plegable"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:76
 msgid "Fix attempting to autosave when main window not set up yet"
 msgstr ""
+"S'ha corregit l'intent de desat automàtic quan la finestra principal encara "
+"no està configurada"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 #, fuzzy
@@ -7890,9 +7900,8 @@ msgstr ""
 "canvia de directoris al navegador de fitxers"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:126
-#, fuzzy
 msgid "Fix error when right-clicking on Macro knob"
-msgstr "Soluciona l'error en fer clic amb el botó dret al botó Macro"
+msgstr "Soluciona l'error en fer clic dret a la rodeta Macro"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:127
 #, fuzzy
