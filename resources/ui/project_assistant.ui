@@ -29,7 +29,7 @@
             <child>
               <object class="AdwViewStackPage">
                 <property name="name">open-recent</property>
-                <property name="title" translatable="yes">Open Recent</property>
+                <property name="title" translatable="yes">Open Project</property>
                 <property name="icon-name">folder-recent</property>
                 <property name="child">
                   <object class="GtkBox">
