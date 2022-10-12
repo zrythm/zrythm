@@ -8,16 +8,17 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-10-03 21:09+0900\n"
-"PO-Revision-Date: 2022-09-09 15:52+0000\n"
+"PO-Revision-Date: 2022-10-12 15:51+0000\n"
 "Last-Translator: Tymofii Lytvynenko <till.svit@gmail.com>\n"
+"Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/uk/>\n"
 "Language: uk\n"
-"Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/uk/>\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.15-dev\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -1514,7 +1515,7 @@ msgstr "Елементи керування"
 
 #: ../../editing/clip-editors/piano-roll.rst:39
 msgid "Drum View"
-msgstr "Вигляд барабана"
+msgstr "Барабанний вигляд"
 
 #: ../../editing/clip-editors/piano-roll.rst:31
 msgid ""
@@ -1813,7 +1814,7 @@ msgstr ""
 #: ../../editing/clip-editors/toolbar.rst:19
 #, fuzzy
 msgid "Common sections"
-msgstr "Виділення петлі"
+msgstr "Виділення циклу"
 
 #: ../../editing/clip-editors/toolbar.rst:21
 msgid "All editor toolbars include the following sections."
@@ -2025,7 +2026,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:95
 msgid "Loop Selection"
-msgstr "Виділення петлі"
+msgstr "Виділення циклу"
 
 #: ../../editing/common-operations.rst:96
 msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
@@ -2371,7 +2372,7 @@ msgstr ""
 #: ../../editing/event-viewers.rst:40
 #, fuzzy
 msgid "Object Selection"
-msgstr "Виділення петлі"
+msgstr "Виділення циклу"
 
 #: ../../editing/event-viewers.rst:42
 msgid ""
@@ -5916,7 +5917,7 @@ msgstr ""
 #: ../../routing/connections.rst:9
 #, fuzzy
 msgid "Connections"
-msgstr "Виділення петлі"
+msgstr "Виділення циклу"
 
 #: ../../routing/connections.rst:12
 msgid "Making Connections"
@@ -6053,7 +6054,7 @@ msgstr ""
 #: ../../routing/monitor-section.rst:16
 #, fuzzy
 msgid "Monitor section"
-msgstr "Виділення петлі"
+msgstr "Виділення циклу"
 
 #: ../../routing/monitor-section.rst:19
 #, fuzzy

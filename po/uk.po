@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-10-03 21:08+0900\n"
-"PO-Revision-Date: 2022-09-09 15:52+0000\n"
+"PO-Revision-Date: 2022-10-12 15:51+0000\n"
 "Last-Translator: Tymofii Lytvynenko <till.svit@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "uk/>\n"
@@ -17,9 +17,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14.1-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -215,27 +215,27 @@ msgstr "Композит"
 
 #: inc/schemas/audio/scale.h:143 inc/audio/scale.h:175
 msgid "Bhairav"
-msgstr ""
+msgstr "Бхайрав"
 
 #: inc/schemas/audio/scale.h:144 inc/audio/scale.h:176
 msgid "Hungarian Minor"
-msgstr ""
+msgstr "Угорський мінор"
 
 #: inc/schemas/audio/scale.h:145 inc/audio/scale.h:177
 msgid "Persian"
-msgstr ""
+msgstr "Перська"
 
 #: inc/schemas/audio/scale.h:146 inc/audio/scale.h:178
 msgid "Iwato"
-msgstr ""
+msgstr "Івато"
 
 #: inc/schemas/audio/scale.h:147 inc/audio/scale.h:179
 msgid "Kumoi"
-msgstr ""
+msgstr "Кумой"
 
 #: inc/schemas/audio/scale.h:148 inc/audio/scale.h:180
 msgid "Pelog"
-msgstr ""
+msgstr "Пелоґ"
 
 #: inc/schemas/audio/scale.h:149 inc/audio/scale.h:181
 msgid "Prometheus"
@@ -3043,12 +3043,12 @@ msgstr "Початок кліпу"
 #: src/gui/widgets/event_viewer.c:580 src/gui/widgets/item_factory.c:231
 #: src/gui/widgets/item_factory.c:728
 msgid "Loop start"
-msgstr "Початок петлі"
+msgstr "Початок циклу"
 
 #: src/gui/widgets/event_viewer.c:591 src/gui/widgets/item_factory.c:237
 #: src/gui/widgets/item_factory.c:742
 msgid "Loop end"
-msgstr "Кінець петлі"
+msgstr "Кінець циклу"
 
 #: src/gui/widgets/event_viewer.c:602 src/gui/widgets/item_factory.c:243
 #: src/gui/widgets/item_factory.c:770
@@ -4164,11 +4164,11 @@ msgstr "початок кліпу (відн.)"
 
 #: src/gui/widgets/timeline_selection_info.c:250
 msgid "loop start (rel.)"
-msgstr "запуск петлі (відн.)"
+msgstr "запуск циклу (відн.)"
 
 #: src/gui/widgets/timeline_selection_info.c:257
 msgid "loop end (rel.)"
-msgstr "кінець петлі (відн.)"
+msgstr "кінець циклу (відн.)"
 
 #: src/gui/widgets/timeline_selection_info.c:279
 #: src/gui/widgets/timeline_selection_info.c:298
@@ -4444,7 +4444,7 @@ msgstr "Переднабори/Presets"
 #: resources/ui/export_dialog.ui:226
 #, fuzzy
 msgid "Selection"
-msgstr "Виділення петлі"
+msgstr "Виділення циклу"
 
 #: src/gui/widgets/plugin_browser.c:528
 msgid "Rename"
@@ -4715,7 +4715,7 @@ msgstr ""
 #, fuzzy
 msgctxt "Export time range"
 msgid "Loop"
-msgstr "Кінець петлі"
+msgstr "Кінець циклу"
 
 #: src/gui/widgets/dialogs/export_dialog.c:1332
 msgctxt "Export time range"
@@ -6156,7 +6156,7 @@ msgstr ""
 #: resources/ui/export_dialog.ui:117 resources/ui/export_dialog.ui:241
 #, fuzzy
 msgid "Track Selection"
-msgstr "Виділення петлі"
+msgstr "Виділення циклу"
 
 #: resources/ui/export_dialog.ui:134 resources/ui/export_dialog.ui:258
 msgid "Output"
