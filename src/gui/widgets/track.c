@@ -1767,7 +1767,7 @@ track_tick_cb (
   return G_SOURCE_CONTINUE;
 }
 
-# if 0
+#if 0
 static gboolean
 on_dnd_drop (
   GtkDropTarget * drop_target,

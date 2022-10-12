@@ -499,8 +499,9 @@ graph_thread_new (const int id, const bool is_main, Graph * graph)
 /* FIXME doesn't work */
 #  if 0
 #    ifdef HAVE_DBUS
+          posix_priority = - priority;
           g_message (
-            "not enough permissions to make thread realtime - trying RTKit...");
+            "not enough permissions to make thread realtime - trying RTKit (wanted priority: %d)...", posix_priority);
 
           guint64 process_id = (guint64) (pid_t) getpid ();
           guint64 thread_id =
@@ -537,7 +538,7 @@ graph_thread_new (const int id, const bool is_main, Graph * graph)
           g_message ("Max RT Priority: %d", max_rt_prio);
 
           g_return_if_fail (max_rt_prio >= 0);
-          guint32 priority_to_set = (guint32) max_rt_prio;
+          guint32 priority_to_set = (guint32) MIN (posix_priority, max_rt_prio);
           g_message (
             "setting priority to: %u", priority_to_set);
           g_dbus_connection_call_sync (
