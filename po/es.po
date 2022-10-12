@@ -23,7 +23,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-10-03 21:08+0900\n"
-"PO-Revision-Date: 2022-10-05 15:51+0000\n"
+"PO-Revision-Date: 2022-10-12 11:56+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
@@ -32,7 +32,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -1286,20 +1286,17 @@ msgid "Failed to insert silence"
 msgstr "Fallo en el restablecimiento del esquema %s"
 
 #: src/actions/actions.c:2201
-#, fuzzy
 msgid "Failed to remove range"
-msgstr "No se pudo abrir el archivo: %s"
+msgstr "No se pudo quitar el intervalo"
 
 #: src/actions/actions.c:2275 src/actions/arranger_selections.c:560
-#, fuzzy
 msgid "Failed to apply MIDI function"
-msgstr "Última función de automatización utilizada"
+msgstr "No se pudo aplicar la función MIDI"
 
 #: src/actions/actions.c:2301 src/actions/actions.c:2340
 #: src/actions/arranger_selections.c:596
-#, fuzzy
 msgid "Failed to apply automation function"
-msgstr "Última función de automatización utilizada"
+msgstr "No se pudo aplicar la función de automatización"
 
 #: src/actions/actions.c:2513 src/gui/widgets/track_filter_popover.c:268
 msgid "Track name"
@@ -1431,9 +1428,8 @@ msgid "Failed getting contents for %s"
 msgstr "No se pudo abrir el archivo: %s"
 
 #: src/actions/tracklist_selections.c:330
-#, fuzzy
 msgid "No tracks selected"
-msgstr "No se ha seleccionado ningún puerto"
+msgstr "No se seleccionó ninguna pista"
 
 #: src/actions/tracklist_selections.c:347
 msgid "Failed to clone tracklist selections"
@@ -1441,9 +1437,8 @@ msgstr ""
 
 #: src/actions/tracklist_selections.c:364 src/audio/tracklist.c:1631
 #: src/audio/tracklist.c:1759
-#, fuzzy
 msgid "Failed to clone track"
-msgstr "No se pudo abrir el archivo: %s"
+msgstr "No se pudo clonar la pista"
 
 #: src/actions/tracklist_selections.c:392
 msgid "Failed to clone tracklist selections: "
@@ -1456,9 +1451,9 @@ msgstr "%s pista"
 
 #: src/actions/tracklist_selections.c:758 src/audio/sample_processor.c:560
 #: src/gui/widgets/channel_slot.c:335
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create plugin %s"
-msgstr "No se pudo escribir el archivo %s"
+msgstr "No se pudo crear el complemento %s"
 
 #: src/actions/tracklist_selections.c:768
 #, fuzzy, c-format
@@ -2020,7 +2015,7 @@ msgstr "Explorador de plugins"
 #: src/gui/widgets/right_dock_edge.c:138
 #: src/gui/widgets/file_browser_window.c:21
 msgid "File Browser"
-msgstr "Explorador de archivos"
+msgstr "Navegador de archivos"
 
 #: src/utils/gtk.c:1219 src/gui/widgets/right_dock_edge.c:127
 msgid "Chord Preset Browser"
@@ -6500,7 +6495,7 @@ msgstr ""
 #. Translators: Search terms to find this application. Do NOT translate or localize the semicolons! The list MUST also end with a semicolon!
 #: data/zrythm.desktop.in:11
 msgid "daw;audio;midi;music;"
-msgstr ""
+msgstr "daw;audio;midi;música;"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:242
 msgid "Recent project list"
@@ -7039,7 +7034,7 @@ msgstr "Pestaña del explorador de plugins"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:546
 msgid "Selected plugin browser tab."
-msgstr "Pestaña seleccionada del explorador de complementos."
+msgstr "Se seleccionó una pestaña del navegador de complementos."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:550
 msgid "Plugin browser filter"
@@ -7080,9 +7075,8 @@ msgid "Tree paths of the selected authors in the plugin browser."
 msgstr "Altura de la parte superior del navegador de plugins/archivos."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:570
-#, fuzzy
 msgid "Plugin browser categories"
-msgstr "Filtro de explorador de plugins"
+msgstr "Categorías del navegador de complementos"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:571
 #, fuzzy
@@ -7100,9 +7094,8 @@ msgid "Tree paths of the selected protocols in the plugin browser."
 msgstr "Altura de la parte superior del navegador de plugins/archivos."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:584
-#, fuzzy
 msgid "File browser bookmarks"
-msgstr "Explorador de archivos"
+msgstr "Marcadores del navegador de archivos"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:585
 msgid "Location bookmarks for file browser (absolute paths)."
@@ -7132,9 +7125,8 @@ msgid "Whether to show hidden files in the file browser."
 msgstr "Sea esta la primera carrera o no."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:609
-#, fuzzy
 msgid "File browser filter"
-msgstr "Filtro de explorador de plugins"
+msgstr "Filtro del navegador de archivos"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:610
 #, fuzzy
@@ -7142,14 +7134,12 @@ msgid "Selected file browser filter"
 msgstr "Filtro de explorador de plugins seleccionado"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:614
-#, fuzzy
 msgid "Last location"
-msgstr "Ubicación"
+msgstr "Última ubicación"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:615
-#, fuzzy
 msgid "Last visited location."
-msgstr "Última función de automatización utilizada"
+msgstr "La última ubicación visitada."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:620
 msgid "Instrument plugin to use for MIDI auditioning."
@@ -8114,9 +8104,8 @@ msgid "Fix header widget not unparenting its child stack"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:106
-#, fuzzy
 msgid "Add track filtering by name and type"
-msgstr "Nombre de pista"
+msgstr "Añade filtrado de pistas por nombre y tipo"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:107
 msgid "Add more error checking when instantiating Carla plugins"

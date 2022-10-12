@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-10-03 21:09+0900\n"
-"PO-Revision-Date: 2022-10-05 15:52+0000\n"
+"PO-Revision-Date: 2022-10-12 11:56+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/es/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.15-dev\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -2468,14 +2468,8 @@ msgstr ""
 "nuevo tamaño."
 
 #: ../../editing/edit-tools.rst:35
-#, fuzzy
 msgid "Creating Objects"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Seleccionar objetos\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Creación de proyectos"
+msgstr "Creación de objetos"
 
 #: ../../editing/edit-tools.rst:36
 #, fuzzy
@@ -2492,13 +2486,8 @@ msgstr ""
 "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
 
 #: ../../editing/edit-tools.rst:44
-#, fuzzy
 msgid "Creating a region"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Editar regiones\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+msgstr "Crear una región"
 
 #: ../../editing/edit-tools.rst:47
 msgid "Selecting Objects"
@@ -2525,14 +2514,8 @@ msgid "Selecting objects"
 msgstr "Selección de objetos"
 
 #: ../../editing/edit-tools.rst:62
-#, fuzzy
 msgid "Moving Objects"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Editar objetos\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Carga de proyectos"
+msgstr "Mover objetos"
 
 #: ../../editing/edit-tools.rst:63
 msgid ""
@@ -2543,13 +2526,8 @@ msgstr ""
 "a otras pistas si los tipos de pista son compatibles."
 
 #: ../../editing/edit-tools.rst:70
-#, fuzzy
 msgid "Moving a region"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Editar regiones\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+msgstr "Mover una región"
 
 #: ../../editing/edit-tools.rst:73
 msgid "Cloning (Copy-Moving) Objects"
@@ -2742,9 +2720,8 @@ msgstr ""
 "lista."
 
 #: ../../editing/event-viewers.rst:15
-#, fuzzy
 msgid "Timeline event viewer"
-msgstr "Visor de sucesos"
+msgstr "Visor de sucesos de la línea de tiempo"
 
 #: ../../editing/event-viewers.rst:17
 msgid ""
@@ -3401,7 +3378,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:217
 msgid "Renaming a region"
-msgstr ""
+msgstr "Cambiar el nombre de una región"
 
 #: ../../editing/timeline/arranger.rst:220
 msgid "Adjusting Fades"
@@ -3460,22 +3437,12 @@ msgid "Linear"
 msgstr ""
 
 #: ../../editing/timeline/arranger.rst:267
-#, fuzzy
 msgid "Exponential"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Exponente\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+msgstr "Exponencial"
 
 #: ../../editing/timeline/arranger.rst:272
-#, fuzzy
 msgid "Elliptic (Superellipse)"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"Superellipse\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+msgstr "Elíptico (superelipse)"
 
 #: ../../editing/timeline/arranger.rst:279
 msgid ""
@@ -3641,9 +3608,8 @@ msgstr ""
 "cual se volverá cuando la reproducción se detenga."
 
 #: ../../editing/timeline/ruler.rst:41
-#, fuzzy
 msgid "Range Selection"
-msgstr "Selección de idioma"
+msgstr "Selección de intervalo"
 
 #: ../../editing/timeline/ruler.rst:42
 msgid ""
@@ -3653,9 +3619,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/ruler.rst:50
-#, fuzzy
 msgid "Range selection"
-msgstr "Selección de idioma"
+msgstr "Selección de intervalo"
 
 #: ../../editing/timeline/toolbar.rst:7
 msgid "Toolbar"
@@ -3686,9 +3651,8 @@ msgid "Audio region options"
 msgstr "Sección de región de audio"
 
 #: ../../editing/timeline/toolbar.rst:22
-#, fuzzy
 msgid "Range actions"
-msgstr "Traducción"
+msgstr "Acciones del intervalo"
 
 #: ../../editing/timeline/toolbar.rst:24
 #, fuzzy
@@ -3717,9 +3681,8 @@ msgstr ""
 "nuevo para coincidir con el nuevo BPM sin que se alargue el tiempo."
 
 #: ../../editing/timeline/toolbar.rst:40
-#, fuzzy
 msgid "Range Actions"
-msgstr "Traducción"
+msgstr "Acciones del intervalo"
 
 #: ../../editing/timeline/toolbar.rst:42
 msgid "Range actions are performed on the selected :term:`Range`."
@@ -3746,13 +3709,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:53
-#, fuzzy
 msgid "Object Merging"
-msgstr ""
-"#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Menú Proyecto"
+msgstr "Fusión de objetos"
 
 #: ../../editing/timeline/toolbar.rst:56
 #, fuzzy
@@ -4039,11 +3997,11 @@ msgid "Synths"
 msgstr "Sintetizadores"
 
 #: ../../getting-started/getting-plugins.rst:57
-#, fuzzy
 msgid ""
 "`Helm <https://tytel.org/helm/>`_ is an easy to use subtractive synthesizer."
 msgstr ""
-"`Helm <https://tytel.org/helm/>`_ es un potente sintetizador sustractivo."
+"`Helm <https://tytel.org/helm/>`_ es un sintetizador sustractivo fácil de "
+"utilizar."
 
 #: ../../getting-started/getting-plugins.rst:60
 msgid ""
@@ -5646,7 +5604,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:9
 msgid "File Browser"
-msgstr "Explorador de archivos"
+msgstr "Navegador de archivos"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:11
 msgid ""
