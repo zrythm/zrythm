@@ -878,7 +878,7 @@ libadwaita_dep = dependency (
     'default_library=shared'])
 
 libpanel_dep = dependency (
-  'libpanel-1', version: '>=1.0',
+  'libpanel-1', version: '>=1.0.1',
   fallback: ['libpanel', 'libpanel_static_dep'],
   default_options: [
     'vapi=false',
@@ -1075,7 +1075,7 @@ endif
 carla_host_plugin_dep = dependency (
   # FIXME need unreleased carla, bump version when new version
   # released
-  'carla-host-plugin', version: '>=2.5.1',
+  'carla-host-plugin', version: '>=2.6.0',
   required: get_option ('carla'),
   static: all_static)
 have_carla = carla_host_plugin_dep.found ()
