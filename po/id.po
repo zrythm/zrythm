@@ -4,13 +4,14 @@
 # Reza Almanda <rezaalmanda27@gmail.com>, 2021, 2022.
 # Narendra Utpala <naredra81@gmail.com>, 2022.
 # Neko Nekowazarashi <kodra@nekoweb.my.id>, 2022.
+# Magnitudee <bdls_unbecoming@aleeas.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-10-03 21:08+0900\n"
-"PO-Revision-Date: 2022-09-02 14:19+0000\n"
-"Last-Translator: Neko Nekowazarashi <kodra@nekoweb.my.id>\n"
+"PO-Revision-Date: 2022-10-10 17:53+0000\n"
+"Last-Translator: Magnitudee <bdls_unbecoming@aleeas.com>\n"
 "Language-Team: Indonesian <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "id/>\n"
 "Language: id\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.1-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -6139,7 +6140,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:301
 msgid "Looping"
-msgstr ""
+msgstr "Perulangan"
 
 #: data/zrythm.desktop.in:6 build/data/org.zrythm.Zrythm.appdata.xml.in:6
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:38

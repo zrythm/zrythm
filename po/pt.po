@@ -5,13 +5,15 @@
 # ssantos <ssantos@web.de>, 2020, 2021, 2022.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
 # Malu CubeCraft <malucubecraft@gmail.com>, 2022.
+# Vitor Sabino Cardoso da SIlva <vitorcsilva180396@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-10-03 21:08+0900\n"
-"PO-Revision-Date: 2022-08-07 15:52+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2022-10-10 17:53+0000\n"
+"Last-Translator: Vitor Sabino Cardoso da SIlva <vitorcsilva180396@gmail.com>"
+"\n"
 "Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "pt/>\n"
 "Language: pt\n"
@@ -19,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.14.1\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -27,11 +29,11 @@ msgstr "Cromático"
 
 #: inc/schemas/audio/scale.h:94 inc/audio/scale.h:128
 msgid "Major"
-msgstr ""
+msgstr "Maior"
 
 #: inc/schemas/audio/scale.h:95 inc/audio/scale.h:129
 msgid "Minor"
-msgstr ""
+msgstr "Menor"
 
 #: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
 #, fuzzy

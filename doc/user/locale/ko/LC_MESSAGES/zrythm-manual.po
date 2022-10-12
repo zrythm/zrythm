@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-10-03 21:09+0900\n"
-"PO-Revision-Date: 2022-02-28 15:54+0000\n"
-"Last-Translator: 이정희 <daemul72@gmail.com>\n"
+"PO-Revision-Date: 2022-10-12 11:56+0000\n"
+"Last-Translator: Hoseok Seo <ddinghoya@gmail.com>\n"
+"Language-Team: Korean <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ko/>\n"
 "Language: ko\n"
-"Language-Team: Korean <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ko/>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.15-dev\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -34,43 +35,43 @@ msgstr ""
 
 #: ../../appendix/environment.rst:23
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
-msgstr ""
+msgstr ":term:`LV2` 플러그인을 검색할 위치로 설정합니다."
 
 #: ../../appendix/environment.rst:26
 msgid "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
-msgstr ""
+msgstr "예: ``LV2_PATH=$HOME/custom-lv2-dir``"
 
 #: ../../appendix/environment.rst:31
 msgid "Set to 1 to disable plugin scanning."
-msgstr ""
+msgstr "플러그인 스캔을 비활성화하려면 1로 설정하세요."
 
 #: ../../appendix/environment.rst:33
 msgid "Example: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
-msgstr ""
+msgstr "예: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
 
 #: ../../appendix/environment.rst:38
 msgid "Set this to the locations to scan for :term:`VST2` plugins."
-msgstr ""
+msgstr ":term:`VST2` 플러그인을 검색할 위치로 설정합니다."
 
 #: ../../appendix/environment.rst:43
 msgid "Set this to the locations to scan for :term:`VST3` plugins."
-msgstr ""
+msgstr ":term:`VST3` 플러그인을 검색할 위치로 설정합니다."
 
 #: ../../appendix/environment.rst:48
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
-msgstr ""
+msgstr "사용할 DSP 스레드 수입니다. 기본값은 CPU 코어 수 - 1입니다."
 
 #: ../../appendix/environment.rst:53
 msgid "Set to 1 to show extra information useful for developers."
-msgstr ""
+msgstr "개발자에게 유용한 추가 정보를 표시하려면 1로 설정합니다."
 
 #: ../../appendix/files-and-directories.rst:7
 msgid "Files and Directories"
-msgstr ""
+msgstr "파일 및 디렉토리"
 
 #: ../../appendix/files-and-directories.rst:10
 msgid "User path"
-msgstr ""
+msgstr "사용자 경로"
 
 #: ../../appendix/files-and-directories.rst:11
 msgid ""
@@ -78,18 +79,20 @@ msgid ""
 "directory for saving your user data. See :term:`Zrythm user path` for "
 "details."
 msgstr ""
+"Zrythm을 처음 실행하면 사용자 데이터를 저장할 디렉토리를 선택하라는 메시지도 "
+"표시됩니다. 자세한 내용은 :term:`Zrythm 사용자 경로`를 참조하세요."
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
-msgstr ""
+msgstr "설치된 파일"
 
 #: ../../appendix/files-and-directories.rst:17
 msgid "When Zrythm is installed, it installs the following files by default."
-msgstr ""
+msgstr "Zrythm이 설치되면 기본적으로 다음 파일을 설치합니다."
 
 #: ../../appendix/files-and-directories.rst:21
 msgid "Desktop Entry"
-msgstr ""
+msgstr "데스크탑 항목"
 
 #: ../../appendix/files-and-directories.rst:22
 msgid ""
@@ -99,10 +102,14 @@ msgid ""
 "menus, etc. This is normally installed at :file:`/usr/share/applications/"
 "zrythm.desktop`."
 msgstr ""
+"특정 프로그램을 시작하는 방법, 메뉴에 나타나는 방법 등을 설명하는 `"
+"무료데스크탑 호환 구성 파일<https://specifications.freedesktop.org/"
+"desktop-entry-spec/desktop-entry-spec-latest.html>` 입니다. 이것은 "
+"일반적으로 :file:`/usr/share/applications/zrythm.desktop`에 설치됩니다."
 
 #: ../../appendix/files-and-directories.rst:29
 msgid "GLib Schema"
-msgstr ""
+msgstr "GLib 스키마"
 
 #: ../../appendix/files-and-directories.rst:30
 msgid ""
@@ -110,41 +117,50 @@ msgid ""
 "installed at :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
 "xml`."
 msgstr ""
+"이 파일에는 사용자 구성에 대한 스키마가 포함되어 있습니다. 일반적으로 "
+":file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema.xml`에 "
+"설치됩니다."
 
 #: ../../appendix/files-and-directories.rst:35
 msgid "Desktop Icon"
-msgstr ""
+msgstr "데스크탑 아이콘"
 
 #: ../../appendix/files-and-directories.rst:36
 msgid ""
 "This is used by the desktop environment. Normally installed at :file:`/usr/"
 "share/icons/hicolor/scalable/apps/zrythm.svg`."
 msgstr ""
+"이것은 데스크탑 환경에서 사용됩니다. 일반적으로 :file:`/usr/share/icons/"
+"hicolor/scalable/apps/zrythm.svg`에 설치됩니다."
 
 #: ../../appendix/files-and-directories.rst:41
 msgid "Localization Files"
-msgstr ""
+msgstr "현지화 파일"
 
 #: ../../appendix/files-and-directories.rst:42
 msgid ""
 "Localization files are installed under :file:`/usr/share/locale`. For "
 "example, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` for Korean."
 msgstr ""
+"현지화 파일은 :file:`/usr/share/locale`에 설치됩니다. 예를 들어 한국어의 "
+"경우 :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo`입니다."
 
 #: ../../appendix/files-and-directories.rst:48
 #: ../../getting-started/getting-plugins.rst:101
 msgid "Samples"
-msgstr ""
+msgstr "샘플"
 
 #: ../../appendix/files-and-directories.rst:49
 msgid ""
 "Default audio samples used by Zrythm (such as the metronome). Normally "
 "installed under :file:`/usr/share/zrythm/samples`."
 msgstr ""
+"Zrythm에서 사용하는 기본 오디오 샘플 (예: 메트로놈)입니다. 일반적으로 "
+":file:`/usr/share/zrythm/samples`에 설치됩니다."
 
 #: ../../appendix/files-and-directories.rst:54
 msgid "Fonts"
-msgstr ""
+msgstr "글꼴"
 
 #: ../../appendix/files-and-directories.rst:55
 msgid ""
@@ -152,26 +168,31 @@ msgid ""
 "required by Zrythm will normally be installed under :file:`/usr/share/fonts/"
 "zrythm`."
 msgstr ""
+"배포판에서 필요한 글꼴에 대한 패키지를 제공하지 않는 한 Zrythm에 필요한 "
+"글꼴은 일반적으로 :file:`/usr/share/fonts/zrythm` 아래에 설치됩니다."
 
 #: ../../appendix/files-and-directories.rst:61
 msgid "GtkSourceView Stylesheets"
-msgstr ""
+msgstr "GtkSourceView 스타일시트"
 
 #: ../../appendix/files-and-directories.rst:62
 msgid ""
 "Zrythm will install CSS stylesheets to be used by some text input widgets "
 "under :file:`/usr/share/zrythm/sourceview-styles`."
 msgstr ""
+"Zrythm은 일부 텍스트 입력 위젯에서 사용할 CSS 스타일시트를 :file:`/usr/share/"
+"zrythm/sourceview-styles` 아래에 설치합니다."
 
 #: ../../appendix/files-and-directories.rst:67
 msgid "Themes"
-msgstr ""
+msgstr "테마"
 
 #: ../../appendix/files-and-directories.rst:68
 msgid ""
 "Default themes (including icon themes) will normally be installed under :"
 "file:`/usr/share/zrythm/themes`."
-msgstr ""
+msgstr "기본 테마 (아이콘 테마 포함)는 일반적으로 :file:`/usr/share/zrythm/themes` "
+"아래에 설치됩니다."
 
 #: ../../appendix/files-and-directories.rst:72
 msgid ""
@@ -179,34 +200,42 @@ msgid ""
 "files in the :term:`Zrythm user path`. See :doc:`../theming/intro` for "
 "details."
 msgstr ""
+"Zrythm은 이러한 파일 중 일부를 :term:`Zrythm 사용자 경로`에 있는 사용자 지정 "
+"파일로 재정의하는 방법을 제공합니다. 자세한 내용은 :doc:`../theming/intro`를 "
+"참조하세요."
 
 #: ../../appendix/files-and-directories.rst:78
 msgid "User Files"
-msgstr ""
+msgstr "사용자 파일"
 
 #: ../../appendix/files-and-directories.rst:80
 msgid "Cached Plugin Descriptors"
-msgstr ""
+msgstr "캐시된 플러그인 기술 문구"
 
 #: ../../appendix/files-and-directories.rst:81
 msgid ""
 "Plugin descriptor cache for faster scanning. This is found at :file:"
 "`cached_plugin_descriptors.yaml` under the :term:`Zrythm user path`."
 msgstr ""
+"더 빠른 스캔을 위한 플러그인 기술 문구 캐시입니다. 이것은 :term:`Zrythm "
+"사용자 경로` 아래의 :file:`cached_plugin_descriptors.yaml`에서 찾을 수 "
+"있습니다."
 
 #: ../../appendix/files-and-directories.rst:87
 msgid "Plugin Collections"
-msgstr ""
+msgstr "플러그인 컬렉션"
 
 #: ../../appendix/files-and-directories.rst:88
 msgid ""
 "This file contains your plugin collections. It is found at :file:"
 "`plugin_collections.yaml` under the :term:`Zrythm user path`."
 msgstr ""
+"이 파일에는 플러그인 컬렉션이 포함되어 있습니다. :term:`Zrythm 사용자 경로` "
+"아래의 :file:`plugin_collections.yaml`에서 찾을 수 있습니다."
 
 #: ../../appendix/files-and-directories.rst:94
 msgid "Log File"
-msgstr ""
+msgstr "로그 파일"
 
 #: ../../appendix/files-and-directories.rst:95
 msgid ""
@@ -214,26 +243,29 @@ msgid ""
 "subdirectory under the :term:`Zrythm user path`. The filename will contain "
 "the current date and time, for example :file:`log_2020-06-26_15-34-19.log`."
 msgstr ""
+"Zrythm은 실행될 때마다 :term:`Zrythm 사용자 경로` 아래의 :file:`log` 하위 "
+"디렉토리에 로그 파일을 기록합니다. 파일 이름에는 현재 날짜와 시간이 "
+"포함됩니다 (예: :file:`log_2020-06-26_15-34-19.log`)."
 
 #: ../../appendix/files-and-directories.rst:101
 msgid "This log file is useful for debugging crashes and other problems."
-msgstr ""
+msgstr "이 로그 파일은 충돌 및 기타 문제를 디버깅하는 데 유용합니다."
 
 #: ../../appendix/gnu-free-documentation-license.rst:7
 msgid "GNU Free Documentation License"
-msgstr ""
+msgstr "GNU 자유 문서 사용 허가서"
 
 #: ../../appendix/intro.rst:7
 msgid "Appendix"
-msgstr ""
+msgstr "부록"
 
 #: ../../appendix/menu-actions.rst:7
 msgid "Menu Actions"
-msgstr ""
+msgstr "메뉴 작업"
 
 #: ../../appendix/troubleshooting.rst:9
 msgid "Troubleshooting"
-msgstr ""
+msgstr "문제 해결"
 
 #: ../../appendix/troubleshooting.rst:11 ../../configuration/shortcuts.rst:47
 #: ../../editing/clip-editors/automation-editor.rst:56
@@ -243,15 +275,15 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:158 ../../tracks/overview.rst:71
 #: ../../zrythm-interface/right-panel.rst:24
 msgid "Todo"
-msgstr ""
+msgstr "할 것"
 
 #: ../../appendix/troubleshooting.rst:11
 msgid "Write this page."
-msgstr ""
+msgstr "이 페이지를 작성하세요."
 
 #: ../../chords-and-scales/chord-pad.rst:7
 msgid "Chord Pad"
-msgstr ""
+msgstr "화음 패드"
 
 #: ../../chords-and-scales/chord-pad.rst:10
 #: ../../editing/clip-editors/overview.rst:7 ../../editing/overview.rst:7
@@ -261,61 +293,70 @@ msgstr ""
 #: ../../scripting/overview.rst:7 ../../tracks/overview.rst:7
 #: ../../zrythm-interface/overview.rst:7
 msgid "Overview"
-msgstr ""
+msgstr "개요"
 
 #: ../../chords-and-scales/chord-pad.rst:12
 msgid ""
 "The chord pad contains 12 pads (1 for each key on a piano keyboard) that can "
 "be used to trigger chords. The chord pad can be found in the bottom panel."
 msgstr ""
+"코드 패드에는 코드를 트리거하는 데 사용할 수 있는 12개의 패드 (피아노 건반의 "
+"각 건반에 대해 1개)가 있습니다. 코드 패드는 하단 패널에서 찾을 수 있습니다."
 
 #: ../../chords-and-scales/chord-pad.rst:19
 msgid ""
 "These 12 chords are linked to the chords in the :ref:`Chord Editor <editing/"
 "clip-editors/chord-editor:Chord Editor>`."
 msgstr ""
+"이 12개의 코드는 :ref:`코드 편집기 <editing/clip-editors/chord-editor:Chord "
+"Editor>`의 코드에 연결됩니다."
 
 #: ../../chords-and-scales/chord-pad.rst:23
 #: ../../getting-started/getting-plugins.rst:86
 #: ../../plugins-files/audio-midi-files/file-browser.rst:68
 msgid "Presets"
-msgstr ""
+msgstr "사전 설정"
 
 #: ../../chords-and-scales/chord-pad.rst:25
 msgid ""
 "Zrythm comes with pre-installed chord presets, and it also allows you to "
 "generate chord presets from scales, or even save your own."
-msgstr ""
+msgstr "Zrythm은 사전 설치된 코드 사전 설정과 함께 제공되며 음계에서 코드 사전 "
+"설정을 생성하거나 직접 저장할 수도 있습니다."
 
 #: ../../chords-and-scales/chord-pad.rst:30
 msgid "Preset Packs"
-msgstr ""
+msgstr "사전 설정 팩"
 
 #: ../../chords-and-scales/chord-pad.rst:32
 msgid ""
 "A list of preset packs and presets is found in the :ref:`Right Panel <zrythm-"
 "interface/right-panel:Right Panel>` under :guilabel:`Chord Preset Browser`."
 msgstr ""
+"사전 설정 팩 및 사전 설정 목록은 :guilabel:`코드 사전 설정 탐색기` 아래의 "
+":ref:`오른쪽 패널 <zrythm-interface/right-panel:Right Panel>`에서 찾을 수 "
+"있습니다."
 
 #: ../../chords-and-scales/chord-pad.rst:39
 msgid "Chord preset browser"
-msgstr ""
+msgstr "코드 사전 설정 탐색기"
 
 #: ../../chords-and-scales/chord-pad.rst:42
 #: ../../plugins-files/audio-midi-files/file-browser.rst:48
 msgid "Filtering"
-msgstr ""
+msgstr "필터링"
 
 #: ../../chords-and-scales/chord-pad.rst:44
 msgid ""
 "Clicking a preset pack in the top will filter the list of presets to presets "
 "in the selected pack."
-msgstr ""
+msgstr "상단의 사전 설정 팩을 클릭하면 사전 설정 목록이 선택한 팩의 사전 설정으로 "
+"필터링됩니다."
 
 #: ../../chords-and-scales/chord-pad.rst:48
 #: ../../plugins-files/audio-midi-files/file-browser.rst:87
 msgid "Auditioning"
-msgstr ""
+msgstr "오디션"
 
 #: ../../chords-and-scales/chord-pad.rst:50
 msgid ""
@@ -324,96 +365,106 @@ msgid ""
 "`auditioning in the File Browser <plugins-files/audio-midi-files/file-"
 "browser:Auditioning>`."
 msgstr ""
+"목록에서 악기 플러그인을 선택하고 사용 가능한 재생 컨트롤을 사용하여 코드 "
+"사전 설정을 오디션할 수 있습니다. 이는 파일 탐색기 <plugins-files/"
+"audio-midi-files/file-browser:Auditioning>의 오디션과 유사하게 작동합니다."
 
 #: ../../chords-and-scales/chord-pad.rst:56
 msgid "Standard Packs"
-msgstr ""
+msgstr "표준 팩"
 
 #: ../../chords-and-scales/chord-pad.rst:58
 msgid ""
 "Zrythm comes with some standard packs that cannot be renamed or deleted."
-msgstr ""
+msgstr "Zrythm은 이름을 바꾸거나 삭제할 수 없는 일부 표준 팩과 함께 제공됩니다."
 
 #: ../../chords-and-scales/chord-pad.rst:62
 msgid "Custom Packs"
-msgstr ""
+msgstr "커스텀 팩"
 
 #: ../../chords-and-scales/chord-pad.rst:65
 msgid "Creating Custom Packs"
-msgstr ""
+msgstr "커스텀 팩 만들기"
 
 #: ../../chords-and-scales/chord-pad.rst:67
 msgid ""
 "You can create your own pack by clicking the :guilabel:`Add` button below "
 "the list of chord preset packs."
-msgstr ""
+msgstr "코드 사전 설정 팩 목록 아래에 있는 :guilabel:`추가` 버튼을 클릭하여 자신만의 "
+"팩을 만들 수 있습니다."
 
 #: ../../chords-and-scales/chord-pad.rst:74
 msgid "Creating a chord preset pack"
-msgstr ""
+msgstr "코드 사전 설정 팩 만들기"
 
 #: ../../chords-and-scales/chord-pad.rst:77
 msgid "Editing Custom Packs"
-msgstr ""
+msgstr "커스텀 팩 편집"
 
 #: ../../chords-and-scales/chord-pad.rst:79
 msgid "Custom packs can be renamed or deleted by right-clicking."
-msgstr ""
+msgstr "커스텀 팩은 마우스 오른쪽 버튼을 클릭하여 이름을 바꾸거나 삭제할 수 있습니다."
 
 #: ../../chords-and-scales/chord-pad.rst:85
 msgid "Renaming or deleting a custom chord preset pack"
-msgstr ""
+msgstr "커스텀 코드 사전 설정 팩 이름 바꾸기 또는 삭제"
 
 #: ../../chords-and-scales/chord-pad.rst:87
 msgid "Chord presets under the selected pack can also be renamed and deleted."
-msgstr ""
+msgstr "선택한 팩 아래의 코드 사전 설정도 이름을 바꾸고 삭제할 수 있습니다."
 
 #: ../../chords-and-scales/chord-pad.rst:91
 msgid "Saving Presets"
-msgstr ""
+msgstr "사전 설정 저장"
 
 #: ../../chords-and-scales/chord-pad.rst:93
 msgid ""
 "Clicking on the :guilabel:`Save Preset` button in the top part of the chord "
 "pad will allow you to save the current chord configuration in a preset."
-msgstr ""
+msgstr "코드 패드 상단의 :guilabel:`사전 설정 저장` 버튼을 클릭하면 현재 코드 구성을 "
+"사전 설정에 저장할 수 있습니다."
 
 #: ../../chords-and-scales/chord-pad.rst:100
 msgid "Saving a chord preset"
-msgstr ""
+msgstr "코드 사전 설정 저장"
 
 #: ../../chords-and-scales/chord-pad.rst:103
 msgid "Loading Presets"
-msgstr ""
+msgstr "사전 설정 불러오기 중"
 
 #: ../../chords-and-scales/chord-pad.rst:105
 msgid ""
 "To load a preset, click the :guilabel:`Load Preset` button in the top part "
 "of the chord pad, then select the preset you want to use."
 msgstr ""
+"사전 설정을 불러오려면 코드 패드 상단에 있는 :guilabel:`사전 설정 불러오기` "
+"버튼을 클릭한 다음 사용할 사전 설정을 선택하세요."
 
 #: ../../chords-and-scales/chord-pad.rst:112
 msgid "Selecting a chord preset"
-msgstr ""
+msgstr "코드 사전 설정 선택"
 
 #: ../../chords-and-scales/chord-pad.rst:114
 msgid ""
 "You can also load a preset by double clicking on it in the preset browser."
-msgstr ""
+msgstr "사전 설정 탐색기에서 사전 설정을 두 번 클릭하여 사전 설정을 불러올 수도 "
+"있습니다."
 
 #: ../../chords-and-scales/chord-pad.rst:118
 msgid "Generating Chords from Scale"
-msgstr ""
+msgstr "스케일에서 코드 생성"
 
 #: ../../chords-and-scales/chord-pad.rst:120
 msgid ""
 "Chords can be generated from a scale and a root note by clicking on the :"
 "guilabel:`Load Preset` button, then selecting a scale and a root note."
 msgstr ""
+"코드는 스케일과 근음에서 생성할 수 있습니다. :guilabel:`사전 설정 불러오기` "
+"버튼을 클릭한 다음 스케일과 근음을 선택합니다."
 
 #: ../../chords-and-scales/chord-pad.rst:127
 msgid "Generating chords from a scale"
-msgstr ""
+msgstr "스케일에서 코드 생성"
 
 #: ../../chords-and-scales/chord-pad.rst:130
 #, fuzzy
@@ -424,11 +475,11 @@ msgstr "번역자"
 msgid ""
 "Clicking on the up/down transpose buttons will transpose all chords by 1 "
 "semitone up or down."
-msgstr ""
+msgstr "위/아래 조옮김 버튼을 클릭하면 모든 코드를 1반음 위 또는 아래로 조옮김합니다."
 
 #: ../../chords-and-scales/chord-pad.rst:136
 msgid "Editing Chords"
-msgstr ""
+msgstr "코드 편집"
 
 #: ../../chords-and-scales/chord-pad.rst:139
 #, fuzzy
@@ -439,11 +490,11 @@ msgstr "번역"
 msgid ""
 "Clicking on the chord button will bring up the chord selector window that "
 "allows you to change the current chord."
-msgstr ""
+msgstr "코드 버튼을 클릭하면 현재 코드를 변경할 수 있는 코드 선택 창이 나타납니다."
 
 #: ../../chords-and-scales/chord-pad.rst:148
 msgid "Chord selector"
-msgstr ""
+msgstr "코드 선택기"
 
 #: ../../chords-and-scales/chord-pad.rst:150
 msgid ""
@@ -451,17 +502,23 @@ msgid ""
 "can be created by selecting its root note, its type, its accent and its bass "
 "note."
 msgstr ""
+"현재 :guilabel:`코드 생성기` 탭만 작동합니다. 코드는 근음, 유형, 악센트 및 "
+"베이스 음을 선택하여 만들 수 있습니다."
 
 #: ../../chords-and-scales/chord-pad.rst:154
+#, fuzzy
 msgid ""
 "Selecting :guilabel:`In scale` under :guilabel:`Visibility` will only show "
 "options that correspond to chords inside the currently active scale. This "
 "makes it easy to create chords that stay in the current scale."
 msgstr ""
+":guilabel:`가시성` 아래에서 :guilabel:`스케일`을 선택하면 현재 활성화된 음계 "
+"내부의 코드에 해당하는 옵션만 표시됩니다. 이렇게 하면 현재 음계에 유지되는 "
+"코드를 쉽게 생성할 수 있습니다."
 
 #: ../../chords-and-scales/chord-pad.rst:162
 msgid "Inversions"
-msgstr ""
+msgstr "반전"
 
 #: ../../chords-and-scales/chord-pad.rst:164
 msgid ""
@@ -470,48 +527,52 @@ msgid ""
 "octave higher, and each inversion towards the left moves the highest note in "
 "the chord one octave below."
 msgstr ""
+"왼쪽 또는 오른쪽 화살표를 클릭하면 코드를 반전시킬 수 있습니다. 오른쪽으로 "
+"전환할 때마다 코드의 가장 낮은 음을 한 옥타브 위로 이동하고 왼쪽으로 전환할 "
+"때마다 코드에서 가장 높은 음을 한 옥타브 아래로 이동합니다."
 
 #: ../../chords-and-scales/intro.rst:9
 msgid "Chords and Scales"
-msgstr ""
+msgstr "코드 및 스케일"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:7
 msgid "Piano Roll Integration"
-msgstr ""
+msgstr "피아노 롤 통합"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:12
 msgid "Highlighting"
-msgstr ""
+msgstr "강조하기"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:14
 msgid ""
 "You can use highlighting inside the piano roll to highlight the notes "
 "corresponding to the scale, chord, or both at the position of the playhead."
-msgstr ""
+msgstr "피아노 롤 내부의 강조 표시를 사용하여 재생 헤드 위치에서 음계, 코드 또는 둘 "
+"다에 해당하는 음표를 강조 표시할 수 있습니다."
 
 #: ../../chords-and-scales/piano-roll-integration.rst:22
 msgid "No highlighting"
-msgstr ""
+msgstr "강조하기 없음"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:28
 msgid "Chord highlighting"
-msgstr ""
+msgstr "코드 강조하기"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:34
 msgid "Scale highlighting"
-msgstr ""
+msgstr "스케일 강조하기"
 
 #: ../../chords-and-scales/piano-roll-integration.rst:40
 msgid "Scale and chord highlighting"
-msgstr ""
+msgstr "스케일 및 코드 강조하기"
 
 #: ../../configuration/additional-settings.rst:7
 msgid "Additional Settings"
-msgstr ""
+msgstr "추가 설정"
 
 #: ../../configuration/additional-settings.rst:10
 msgid "GSettings"
-msgstr ""
+msgstr "G설정"
 
 #: ../../configuration/additional-settings.rst:11
 msgid ""
@@ -520,6 +581,9 @@ msgid ""
 "line, or the optional GUI tool `dconf-editor <https://wiki.gnome.org/Apps/"
 "DconfEditor>`_."
 msgstr ""
+"Zrythm은 명령줄에서 설정을 변경하기 위한 ``gsettings`` 명령이나 선택적 GUI "
+"도구인 `dconf-editor <https://wiki.gnome.org/Apps/DconfEditor>'와 함께 "
+"제공되는 G설정 메커니즘을 사용하여 대부분의 구성을 저장합니다_."
 
 #: ../../configuration/additional-settings.rst:18
 msgid ""
@@ -528,29 +592,34 @@ msgid ""
 "Zrythm validates some settings before it saves them or uses some settings "
 "internally."
 msgstr ""
+"일반적으로 이러한 설정 중 대부분은 Zrythm의 UI 내부에 있으므로 접속할 필요가 "
+"없으며 Zrythm이 일부 설정을 저장하거나 일부 설정을 내부적으로 사용하기 전에 "
+"일부 설정의 유효성을 검사하므로 편집하지 않는 것이 좋습니다."
 
 #: ../../configuration/additional-settings.rst:26
 msgid "Viewing the Current Settings"
-msgstr ""
+msgstr "현재 설정 보기"
 
 #: ../../configuration/additional-settings.rst:28
 msgid "See :option:`zrythm --print-settings`."
-msgstr ""
+msgstr ":option:`zrythm --print-settings`를 참조하세요."
 
 #: ../../configuration/additional-settings.rst:31
 #: ../../configuration/preferences.rst:106
 msgid "Reset to Factory Settings"
-msgstr ""
+msgstr "공장 설정으로 재설정"
 
 #: ../../configuration/additional-settings.rst:33
 msgid ""
 "See :option:`zrythm --reset-to-factory` and :ref:`configuration/preferences:"
 "Reset to Factory Settings`."
 msgstr ""
+":option:`zrythm --reset-to-factory` 및 :ref:`configuration/preferences:Reset "
+"to Factory Settings`를 참조하세요."
 
 #: ../../configuration/additional-settings.rst:37
 msgid "Plugin Settings"
-msgstr ""
+msgstr "플러그인 설정"
 
 #: ../../configuration/additional-settings.rst:38
 msgid ""
@@ -968,7 +1037,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:76
 msgid "User Manual"
-msgstr ""
+msgstr "사용자 설명서"
 
 #: ../../contributing/intro.rst:77
 msgid ""
@@ -1440,7 +1509,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/chord-editor.rst:23
 msgid "Chords"
-msgstr ""
+msgstr "화음"
 
 #: ../../editing/clip-editors/chord-editor.rst:24
 msgid ""
@@ -1505,7 +1574,7 @@ msgstr ""
 #: ../../editing/clip-editors/piano-roll.rst:9
 #: ../../editing/clip-editors/toolbar.rst:30
 msgid "Piano Roll"
-msgstr ""
+msgstr "피아노 롤"
 
 #: ../../editing/clip-editors/piano-roll.rst:11
 #, fuzzy
@@ -1532,7 +1601,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:39
 msgid "Drum View"
-msgstr ""
+msgstr "드럼 보기"
 
 #: ../../editing/clip-editors/piano-roll.rst:31
 msgid ""
@@ -1611,7 +1680,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:89
 msgid "Velocity Editor"
-msgstr ""
+msgstr "속도 편집기"
 
 #: ../../editing/clip-editors/piano-roll.rst:90
 msgid ""
@@ -1755,7 +1824,7 @@ msgstr ""
 #: ../../editing/clip-editors/ruler.rst:24
 #: ../../editing/timeline/arranger.rst:127 ../../tracks/track-types.rst:55
 msgid "Markers"
-msgstr ""
+msgstr "표시"
 
 #: ../../editing/clip-editors/ruler.rst:28
 msgid "Clip Start"
@@ -2146,7 +2215,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:21
 msgid "Select/Stretch Tool"
-msgstr ""
+msgstr "선택/늘이기 도구"
 
 #: ../../editing/edit-tools.rst:22
 msgid "This can be toggled to switch between Select and Stretch."
@@ -2261,7 +2330,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:107
 msgid "Edit Tool"
-msgstr ""
+msgstr "편집 도구"
 
 #: ../../editing/edit-tools.rst:108
 msgid ""
@@ -2280,7 +2349,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:120
 msgid "Cut Tool"
-msgstr ""
+msgstr "자르기 도구"
 
 #: ../../editing/edit-tools.rst:121
 msgid ""
@@ -2301,7 +2370,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:134
 msgid "Ramp Tool"
-msgstr ""
+msgstr "램프 도구"
 
 #: ../../editing/edit-tools.rst:135
 msgid ""
@@ -2368,7 +2437,7 @@ msgstr ""
 
 #: ../../editing/event-viewers.rst:28 ../../editing/intro.rst:9
 msgid "Editing"
-msgstr ""
+msgstr "편집"
 
 #: ../../editing/event-viewers.rst:30
 msgid ""
@@ -2582,7 +2651,7 @@ msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:60
 msgid "Adaptive"
-msgstr ""
+msgstr "적응형"
 
 #: ../../editing/snapping-grid-options.rst:60
 msgid "Adapt snapping to the current zoom level"
@@ -2788,7 +2857,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:149
 msgid "Scales"
-msgstr ""
+msgstr "음계"
 
 #: ../../editing/timeline/arranger.rst:150
 msgid ""
@@ -2798,7 +2867,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:156
 msgid "Scale"
-msgstr ""
+msgstr "음계"
 
 #: ../../editing/timeline/arranger.rst:158
 msgid "Scales appear inside the Chord track."
@@ -2818,7 +2887,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:170
 msgid "Looping"
-msgstr ""
+msgstr "루프"
 
 #: ../../editing/timeline/arranger.rst:171
 msgid ""
@@ -2931,7 +3000,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:267
 msgid "Exponential"
-msgstr ""
+msgstr "지수 함수"
 
 #: ../../editing/timeline/arranger.rst:272
 msgid "Elliptic (Superellipse)"
@@ -2945,7 +3014,7 @@ msgstr ""
 
 #: ../../editing/timeline/intro.rst:9
 msgid "Timeline"
-msgstr ""
+msgstr "타임라인"
 
 #: ../../editing/timeline/overview.rst:8
 msgid ""
@@ -3308,7 +3377,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:12
 #: ../../plugins-files/plugins/intro.rst:7
 msgid "Plugins"
-msgstr ""
+msgstr "플러그인"
 
 #: ../../getting-started/getting-plugins.rst:14
 msgid ""
@@ -3448,7 +3517,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:14
 msgid "Installers"
-msgstr ""
+msgstr "설치 프로그램"
 
 #: ../../getting-started/installation.rst:15
 msgid ""
@@ -3624,7 +3693,7 @@ msgstr ""
 #: ../../getting-started/system-requirements.rst:25
 #: ../../tracks/track-controls.rst:38
 msgid "Monitor"
-msgstr ""
+msgstr "모니터"
 
 #: ../../getting-started/system-requirements.rst:25
 msgid ""
@@ -3764,7 +3833,7 @@ msgstr ""
 #: ../../glossary/intro.rst:27
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:10
 msgid "BPM"
-msgstr ""
+msgstr "BPM"
 
 #: ../../glossary/intro.rst:29
 msgid "The :abbr:`BPM (Beats Per Minute)` is the tempo of the song."
@@ -3940,7 +4009,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:122
 msgid "Project"
-msgstr ""
+msgstr "프로젝트"
 
 #: ../../glossary/intro.rst:124
 msgid ""
@@ -4148,7 +4217,7 @@ msgstr ""
 
 #: ../../mixing/overview.rst:25
 msgid "Mixer"
-msgstr ""
+msgstr "믹서"
 
 #: ../../mixing/overview.rst:26
 msgid ""
@@ -4212,7 +4281,7 @@ msgstr ""
 
 #: ../../mixing/routing.rst:7 ../../routing/intro.rst:7
 msgid "Routing"
-msgstr ""
+msgstr "라우팅"
 
 #: ../../mixing/routing.rst:10
 msgid "Groups"
@@ -4278,7 +4347,7 @@ msgstr ""
 
 #: ../../modulators/intro.rst:9 ../../tracks/track-types.rst:61
 msgid "Modulators"
-msgstr ""
+msgstr "변조기"
 
 #: ../../modulators/intro.rst:10
 msgid ""
@@ -4661,7 +4730,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:108
 msgid "Latch"
-msgstr ""
+msgstr "잠금"
 
 #: ../../playback-and-recording/recording.rst:113
 msgid ""
@@ -4671,7 +4740,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:117
 msgid "Touch"
-msgstr ""
+msgstr "접촉"
 
 #: ../../playback-and-recording/recording.rst:122
 msgid ""
@@ -4825,7 +4894,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:9
 msgid "File Browser"
-msgstr ""
+msgstr "파일 탐색기"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:11
 msgid ""
@@ -5246,7 +5315,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:9
 msgid "Plugin Browser"
-msgstr ""
+msgstr "플러그인 탐색기"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:11
 msgid ""
@@ -5626,7 +5695,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:79
 msgid "Windows"
-msgstr "Windows"
+msgstr "윈도우즈"
 
 #: ../../plugins-files/plugins/scanning.rst:80
 msgid ""
@@ -6050,7 +6119,7 @@ msgstr ""
 
 #: ../../routing/monitor-section.rst:7
 msgid "Monitor Section"
-msgstr ""
+msgstr "모니터 섹션"
 
 #: ../../routing/monitor-section.rst:8
 msgid ""
@@ -6260,7 +6329,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:55
 msgid "Port Connections"
-msgstr ""
+msgstr "포트 연결"
 
 #: ../../routing/ports.rst:56
 msgid ""
@@ -6477,7 +6546,7 @@ msgstr ""
 
 #: ../../scripting/intro.rst:9
 msgid "Scripting"
-msgstr ""
+msgstr "스크립팅"
 
 #: ../../scripting/overview.rst:9
 msgid ""
@@ -6689,7 +6758,7 @@ msgstr ""
 
 #: ../../tracks/automation.rst:9
 msgid "Automation"
-msgstr ""
+msgstr "자동화"
 
 #: ../../tracks/automation.rst:12
 msgid "Automation Tracks"
@@ -6822,7 +6891,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:9
 msgid "Track Inspector"
-msgstr ""
+msgstr "트랙 검사기"
 
 #: ../../tracks/inspector-page.rst:11
 msgid ""
@@ -6965,7 +7034,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:106
 msgid "Aux Sends"
-msgstr ""
+msgstr "Aux 보내기"
 
 #: ../../tracks/inspector-page.rst:108
 msgid ""
@@ -7270,7 +7339,7 @@ msgstr ""
 
 #: ../../tracks/track-lanes.rst:7
 msgid "Track Lanes"
-msgstr ""
+msgstr "트랙 레인"
 
 #: ../../tracks/track-lanes.rst:9
 msgid ""
@@ -7384,7 +7453,7 @@ msgstr ""
 #: ../../tracks/track-types.rst:24 ../../tracks/track-types.rst:39
 #: ../../tracks/track-types.rst:49 ../../tracks/track-types.rst:69
 msgid "Yes"
-msgstr ""
+msgstr "예"
 
 #: ../../tracks/track-types.rst:25
 msgid "Audio regions"
@@ -7400,7 +7469,7 @@ msgstr "오디오 FX"
 #: ../../tracks/track-types.rst:74 ../../tracks/track-types.rst:79
 #: ../../tracks/track-types.rst:84
 msgid "No"
-msgstr ""
+msgstr "아니오"
 
 #: ../../tracks/track-types.rst:30 ../../tracks/track-types.rst:35
 #: ../../tracks/track-types.rst:42 ../../tracks/track-types.rst:43
@@ -7427,7 +7496,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:41
 msgid "Folder"
-msgstr ""
+msgstr "폴더"
 
 #: ../../tracks/track-types.rst:50 ../../tracks/track-types.rst:70
 msgid "MIDI regions"
@@ -8028,7 +8097,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:86
 msgid "Chat"
-msgstr ""
+msgstr "채팅"
 
 #: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Join the Zrythm chatroom on Matrix."
@@ -8060,7 +8129,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:94
 msgid "Donate"
-msgstr ""
+msgstr "기부"
 
 #: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Donate to Zrythm through LiberaPay."
