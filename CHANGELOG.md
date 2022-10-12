@@ -6,6 +6,14 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.8.13] - 2022-10-12
+### Changed
+- Update Korean, Spanish, French, Indonesian, Catalan, Portuguese translations
+- Project assistant: rename Open Recent to Open Project
+
+### Removed
+- Drop rtkit code (replace with GDBus - currently disabled)
+
 ## [1.0.0-beta.3.8.1] - 2022-10-11
 ### Added
 - Add fade in/out when muting/unmuting tracks (fixes pops)
