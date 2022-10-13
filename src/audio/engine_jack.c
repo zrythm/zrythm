@@ -38,6 +38,7 @@ typedef enum
 {
   Z_AUDIO_ENGINE_JACK_ERROR_FAILED,
   Z_AUDIO_ENGINE_JACK_ERROR_NO_PHYSICAL_PORTS,
+  Z_AUDIO_ENGINE_JACK_ERROR_CONNECTION_CHANGE_FAILED,
 } ZAudioEngineJackError;
 
 #  define Z_AUDIO_ENGINE_JACK_ERROR \
@@ -683,12 +684,16 @@ engine_jack_reconnect_monitor (
     {
       char msg[600];
       engine_jack_get_error_message (ret, msg);
-      g_critical ("failed to disconnect monitor out: %s", msg);
+      g_set_error (
+        error, Z_AUDIO_ENGINE_JACK_ERROR,
+        Z_AUDIO_ENGINE_JACK_ERROR_CONNECTION_CHANGE_FAILED,
+        _ ("JACK: Failed to disconnect monitor out: %s"), msg);
       return false;
     }
 
-  int i = 0;
-  int num_connected = 0;
+  int  i = 0;
+  int  num_connected = 0;
+  char jack_msg[600];
   while (devices[i])
     {
       char *    device = devices[i++];
@@ -703,10 +708,9 @@ engine_jack_reconnect_monitor (
             ext_port->full_name);
           if (ret)
             {
-              char msg[600];
-              engine_jack_get_error_message (ret, msg);
+              engine_jack_get_error_message (ret, jack_msg);
               g_warning (
-                "cannot connect monitor out: %s", msg);
+                "cannot connect monitor out: %s", jack_msg);
             }
           else
             {
@@ -742,9 +746,13 @@ engine_jack_reconnect_monitor (
         left ? ports[0] : ports[1]);
       if (ret)
         {
-          char msg[600];
-          engine_jack_get_error_message (ret, msg);
-          g_warning ("cannot connect monitor out: %s", msg);
+          engine_jack_get_error_message (ret, jack_msg);
+          g_set_error (
+            error, Z_AUDIO_ENGINE_JACK_ERROR,
+            Z_AUDIO_ENGINE_JACK_ERROR_CONNECTION_CHANGE_FAILED,
+            _ ("JACK: Failed to connect monitor output [%s]: %s"),
+            left ? _ ("left") : _ ("right"), jack_msg);
+          return false;
         }
       else
         {
@@ -754,7 +762,9 @@ engine_jack_reconnect_monitor (
       jack_free (ports);
     }
 
-  return num_connected > 0;
+  g_return_if_fail (num_connected > 0);
+
+  return true;
 }
 
 int
