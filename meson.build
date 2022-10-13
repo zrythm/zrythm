@@ -560,10 +560,6 @@ if get_option ('native_build')
     '-march=native',
     '-mtune=native',
     ]
-else
-  extra_optimizations_cflags += [
-    '-mtune=generic',
-    ]
 endif
 
 if host_machine.cpu() == 'x86_64'
@@ -1073,8 +1069,6 @@ if have_guile
 endif
 
 carla_host_plugin_dep = dependency (
-  # FIXME need unreleased carla, bump version when new version
-  # released
   'carla-host-plugin', version: '>=2.6.0',
   required: get_option ('carla'),
   static: all_static)
