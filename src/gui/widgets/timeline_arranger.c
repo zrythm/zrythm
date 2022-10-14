@@ -1347,25 +1347,30 @@ finish_data_received:
   return true;
 }
 
-#if 0
-static void
-on_dnd_motion_value_ready (
-  GObject* source_object,
-  GAsyncResult* res,
-  gpointer user_data)
+static GdkDragAction
+on_dnd_motion (
+  GtkDropTarget * drop_target,
+  gdouble         x,
+  gdouble         y,
+  gpointer        user_data)
 {
   ArrangerWidget * self =
     Z_ARRANGER_WIDGET (user_data);
-  GdkDrop * drop = GDK_DROP (source_object);
-  GError * err = NULL;
-  const GValue * value =
-    gdk_drop_read_value_finish (drop, res, &err);
-  if (err)
-    {
-      g_message ("error: %s", err->message);
-      return;
-    }
 
+  self->hovered_at =
+    timeline_arranger_widget_get_at_at_y (self, y);
+  self->hovered_lane =
+    timeline_arranger_widget_get_track_lane_at_y (
+      self, y);
+  self->hovered_track =
+    timeline_arranger_widget_get_track_at_y (
+      self, y);
+
+  arranger_widget_set_highlight_rect (self, NULL);
+
+  const GValue * value =
+    gtk_drop_target_get_value (
+      drop_target);
   ChordDescriptor * chord_descr = NULL;
   SupportedFile * supported_file = NULL;
   if (G_VALUE_HOLDS (
@@ -1406,15 +1411,15 @@ on_dnd_motion_value_ready (
           !track_type_has_piano_roll (track->type))
         {
           /* nothing to do */
-          return;
+          return 0;
         }
 
       /* highlight track */
       highlight_timeline (
-        self, 0, (int) self->hover_x,
-        (int) self->hover_y, track, lane);
+        self, 0, (int) x,
+        (int) y, track, lane);
 
-      return;
+      return GDK_ACTION_COPY;
     }
   else if (has_files || supported_file)
     {
@@ -1427,59 +1432,30 @@ on_dnd_motion_value_ready (
                  TRACK_TYPE_INSTRUMENT &&
               track->type != TRACK_TYPE_AUDIO)
             {
-              return;
+              return 0;
             }
 
           /* track is compatible, highlight */
           highlight_timeline (
-            self, 0, (int) self->hover_x,
-            (int) self->hover_y, track, lane);
+            self, 0, (int) x,
+            (int) y, track, lane);
           g_message ("highlighting track");
 
-          return;
+          return GDK_ACTION_COPY;
         }
       /* else if no track, highlight below the
        * last track  TODO */
       else
         {
           highlight_timeline (
-            self, 0, (int) self->hover_x,
-            (int) self->hover_y, NULL, NULL);
+            self, 0, (int) x,
+            (int) y, NULL, NULL);
+          return GDK_ACTION_COPY;
         }
     }
+
+  return 0;
 }
-
-static GdkDragAction
-on_dnd_motion (
-  GtkDropTarget * drop_target,
-  gdouble         x,
-  gdouble         y,
-  gpointer        user_data)
-{
-  ArrangerWidget * self =
-    Z_ARRANGER_WIDGET (user_data);
-
-  self->hovered_at =
-    timeline_arranger_widget_get_at_at_y (self, y);
-  self->hovered_lane =
-    timeline_arranger_widget_get_track_lane_at_y (
-      self, y);
-  self->hovered_track =
-    timeline_arranger_widget_get_track_at_y (
-      self, y);
-
-  arranger_widget_set_highlight_rect (self, NULL);
-
-  GdkDrop * drop =
-    gtk_drop_target_get_current_drop (
-      drop_target);
-  gdk_drop_read_value_async (
-    drop, G_TYPE_OBJECT,
-    0, NULL, on_dnd_motion_value_ready, self);
-
-  return GDK_ACTION_MOVE;
-}
-#endif
 
 static void
 on_dnd_leave (GtkDropTarget * drop_target, ArrangerWidget * self)
@@ -1503,16 +1479,16 @@ timeline_arranger_setup_drag_dest (ArrangerWidget * self)
   };
   gtk_drop_target_set_gtypes (
     drop_target, types, G_N_ELEMENTS (types));
+  gtk_drop_target_set_preload (
+    drop_target, true);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (drop_target));
 
   g_signal_connect (
     drop_target, "drop", G_CALLBACK (on_dnd_drop), self);
-#if 0
   g_signal_connect (
     drop_target, "motion",
     G_CALLBACK (on_dnd_motion), self);
-#endif
   g_signal_connect (
     drop_target, "leave", G_CALLBACK (on_dnd_leave), self);
 }

@@ -127,10 +127,10 @@ draw_highlight (
 
   /* this wasn't tested since porting to gtk4 */
   gtk_snapshot_append_color (
-    snapshot, &UI_COLORS->prefader_send,
+    snapshot, &UI_COLORS->bright_orange,
     &GRAPHENE_RECT_INIT (
-      (float) ((self->highlight_rect.x + 1) - rect->x),
-      (float) ((self->highlight_rect.y + 1) - rect->y),
+      (float) ((self->highlight_rect.x + 1)),
+      (float) ((self->highlight_rect.y + 1)),
       (float) (self->highlight_rect.width - 1),
       (float) (self->highlight_rect.height - 1)));
 }
