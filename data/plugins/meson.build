@@ -98,10 +98,20 @@ foreach pl : plugins
 
   pl_cpp = pl_generated_dir / pl_underscored_name + '.cpp'
   if fs.is_file (pl_cpp)
+    pl_cpp_args = [ '-std=c++11', '-O3', ]
+    pl_link_args = []
+    if is_gcc and os_gnu and get_option ('build_plugins_with_static_libs')
+      # x42: plugins should be statically linked against
+      # libstdc++, but not the host. The host should uses
+      # system-wide libstdc++ or libc++
+      # one exception: windows. you may have to ship
+      # libstdc++.dll there
+      pl_link_args += [ '-static-libgcc', '-static-libstdc++' ]
+    endif
     shared_module (
       pl_underscored_name,
-      cpp_args: [
-        '-std=c++11', '-O3' ],
+      cpp_args: pl_cpp_args,
+      link_args: pl_link_args,
       sources: pl_cpp,
       name_prefix: '',
       gnu_symbol_visibility: 'hidden',

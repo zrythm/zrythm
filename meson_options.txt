@@ -299,3 +299,9 @@ option (
   type: 'boolean',
   value: true,
   description: 'Whether to look for fftw3f separate of fftw3')
+
+option (
+  'build_plugins_with_static_libs',
+  type: 'boolean',
+  value: true,
+  description: 'Whether to build bundled plugins with static libs (libgcc, libstdc++). Distros should turn this off.')
