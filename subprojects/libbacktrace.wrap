@@ -1,3 +1,4 @@
 [wrap-git]
 url = https://github.com/alex-tee/libbacktrace
-revision = meson_expose_so_info
+revision = meson_expose_so_info2
+depth = 1
