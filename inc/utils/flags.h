@@ -354,4 +354,7 @@
 #define Z_F_PROGRESS 1
 #define Z_F_NO_PROGRESS 0
 
+#define Z_F_BLOCK 1
+#define Z_F_NO_BLOCK 0
+
 #endif

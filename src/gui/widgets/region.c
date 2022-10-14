@@ -509,7 +509,7 @@ draw_chord_region (
                   &next_co_obj->pos, &obj->loop_end_pos))
                 {
                   /*tmp_end_ticks =*/
-                    /*loop_end_ticks + loop_ticks * j;*/
+                  /*loop_end_ticks + loop_ticks * j;*/
                 }
               else
                 {

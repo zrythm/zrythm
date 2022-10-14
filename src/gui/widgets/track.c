@@ -77,13 +77,19 @@ G_DEFINE_TYPE (TrackWidget, track_widget, GTK_TYPE_WIDGET)
 const char *
 track_widget_highlight_to_str (TrackWidgetHighlight highlight)
 {
-  const char * str[] = {
-    "Highlight top",
-    "Highlight bottom",
-    "Highlight inside",
-  };
-
-  return str[highlight];
+  switch (highlight)
+    {
+    case TRACK_WIDGET_HIGHLIGHT_NONE:
+      return "Highlight none";
+    case TRACK_WIDGET_HIGHLIGHT_TOP:
+      return "Highlight top";
+    case TRACK_WIDGET_HIGHLIGHT_INSIDE:
+      return "Highlight inside";
+    case TRACK_WIDGET_HIGHLIGHT_BOTTOM:
+      return "Highlight bottom";
+    default:
+      g_return_val_if_reached ("unknown highlight val");
+    }
 }
 
 CustomButtonWidget *
@@ -1498,78 +1504,46 @@ track_widget_do_highlight (
     {
       TrackWidgetHighlight location =
         track_widget_get_highlight_location (self, y);
+      self->highlight_loc = location;
       if (location == TRACK_WIDGET_HIGHLIGHT_INSIDE)
         {
-          /* highlight inside */
-          self->highlight_inside = true;
-
           /* unhighlight top */
-          /*gtk_drag_unhighlight (*/
-          /*GTK_WIDGET (*/
-          /*self->highlight_top_box));*/
           gtk_widget_set_size_request (
             GTK_WIDGET (self->highlight_top_box), -1, -1);
 
           /* unhighlight bot */
-          /*gtk_drag_unhighlight (*/
-          /*GTK_WIDGET (*/
-          /*self->highlight_bot_box));*/
           gtk_widget_set_size_request (
             GTK_WIDGET (self->highlight_bot_box), -1, -1);
         }
       else if (location == TRACK_WIDGET_HIGHLIGHT_TOP)
         {
           /* highlight top */
-          /*gtk_drag_highlight (*/
-          /*GTK_WIDGET (*/
-          /*self->highlight_top_box));*/
           gtk_widget_set_size_request (
             GTK_WIDGET (self->highlight_top_box), -1, 2);
 
           /* unhighlight bot */
-          /*gtk_drag_unhighlight (*/
-          /*GTK_WIDGET (*/
-          /*self->highlight_bot_box));*/
           gtk_widget_set_size_request (
             GTK_WIDGET (self->highlight_bot_box), -1, -1);
-
-          /* unhighlight inside */
-          self->highlight_inside = false;
         }
       else
         {
           /* highlight bot */
-          /*gtk_drag_highlight (*/
-          /*GTK_WIDGET (*/
-          /*self->highlight_bot_box));*/
           gtk_widget_set_size_request (
             GTK_WIDGET (self->highlight_bot_box), -1, 2);
 
           /* unhighlight top */
-          /*gtk_drag_unhighlight (*/
-          /*GTK_WIDGET (*/
-          /*self->highlight_top_box));*/
           gtk_widget_set_size_request (
             GTK_WIDGET (self->highlight_top_box), -1, -1);
-
-          /* unhighlight inside */
-          self->highlight_inside = false;
         }
     }
   else
     {
       /* unhighlight all */
-      /*gtk_drag_unhighlight (*/
-      /*GTK_WIDGET (*/
-      /*self->highlight_top_box));*/
       gtk_widget_set_size_request (
         GTK_WIDGET (self->highlight_top_box), -1, -1);
-      /*gtk_drag_unhighlight (*/
-      /*GTK_WIDGET (*/
-      /*self->highlight_bot_box));*/
       gtk_widget_set_size_request (
         GTK_WIDGET (self->highlight_bot_box), -1, -1);
-      self->highlight_inside = false;
+      self->highlight_loc = TRACK_WIDGET_HIGHLIGHT_NONE;
     }
 }
 

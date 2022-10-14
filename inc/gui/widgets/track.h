@@ -85,6 +85,7 @@ typedef struct _TrackCanvasWidget   TrackCanvasWidget;
  */
 typedef enum TrackWidgetHighlight
 {
+  TRACK_WIDGET_HIGHLIGHT_NONE,
   TRACK_WIDGET_HIGHLIGHT_TOP,
   TRACK_WIDGET_HIGHLIGHT_BOTTOM,
   TRACK_WIDGET_HIGHLIGHT_INSIDE,
@@ -188,9 +189,13 @@ typedef struct _TrackWidget
   GtkBox * highlight_top_box;
   GtkBox * highlight_bot_box;
 
-  /** Whether to highlight inside the track (eg,
-   * when dragging inside foldable tracks). */
-  bool highlight_inside;
+  /**
+   * Highlight location.
+   *
+   * Eg, whether to highlight inside the track (eg,
+   * when dragging inside foldable tracks).
+   */
+  TrackWidgetHighlight highlight_loc;
 
   /** The track selection processing was done in
    * the dnd callbacks, so no need to do it in

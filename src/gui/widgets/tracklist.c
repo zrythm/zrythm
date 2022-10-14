@@ -159,14 +159,6 @@ on_dnd_drop (
       return false;
     }
 
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    g_value_get_object (value);
-  if (wrapped_obj->type != WRAPPED_OBJECT_TYPE_TRACK)
-    {
-      g_message ("dropped object not a track");
-      return false;
-    }
-
   TracklistWidget * self = Z_TRACKLIST_WIDGET (user_data);
   g_message ("dnd data received on tracklist");
 
@@ -194,6 +186,20 @@ on_dnd_drop (
 
   if (!hit_tw)
     return false;
+
+  hit_tw->highlight_loc = TRACK_WIDGET_HIGHLIGHT_NONE;
+
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    g_value_get_object (value);
+  if (wrapped_obj->type != WRAPPED_OBJECT_TYPE_TRACK)
+    {
+      g_message ("dropped object not a track");
+      ui_show_message_literal (
+        MAIN_WINDOW, GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
+        _ ("Dropped a non-track onto a track - this is not "
+           "supported yet."));
+      return false;
+    }
 
   Track * this_track = hit_tw->track;
 

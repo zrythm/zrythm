@@ -1354,61 +1354,51 @@ on_dnd_motion (
   gdouble         y,
   gpointer        user_data)
 {
-  ArrangerWidget * self =
-    Z_ARRANGER_WIDGET (user_data);
+  ArrangerWidget * self = Z_ARRANGER_WIDGET (user_data);
 
   self->hovered_at =
     timeline_arranger_widget_get_at_at_y (self, y);
   self->hovered_lane =
-    timeline_arranger_widget_get_track_lane_at_y (
-      self, y);
+    timeline_arranger_widget_get_track_lane_at_y (self, y);
   self->hovered_track =
-    timeline_arranger_widget_get_track_at_y (
-      self, y);
+    timeline_arranger_widget_get_track_at_y (self, y);
 
   arranger_widget_set_highlight_rect (self, NULL);
 
   const GValue * value =
-    gtk_drop_target_get_value (
-      drop_target);
+    gtk_drop_target_get_value (drop_target);
   ChordDescriptor * chord_descr = NULL;
-  SupportedFile * supported_file = NULL;
+  SupportedFile *   supported_file = NULL;
   if (G_VALUE_HOLDS (
-        value,
-        WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
+        value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
       WrappedObjectWithChangeSignal * wrapped_obj =
         g_value_get_object (value);
-      if (wrapped_obj->type ==
-            WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
+      if (wrapped_obj->type == WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
-          supported_file =
-            (SupportedFile *) wrapped_obj->obj;
+          supported_file = (SupportedFile *) wrapped_obj->obj;
         }
-      else if (wrapped_obj->type ==
-                 WRAPPED_OBJECT_TYPE_CHORD_DESCR)
+      else if (
+        wrapped_obj->type == WRAPPED_OBJECT_TYPE_CHORD_DESCR)
         {
-          chord_descr =
-            (ChordDescriptor *) wrapped_obj->obj;
+          chord_descr = (ChordDescriptor *) wrapped_obj->obj;
         }
     }
 
   bool has_files = false;
-  if (G_VALUE_HOLDS (
-        value, GDK_TYPE_FILE_LIST)
-      ||
-      G_VALUE_HOLDS (value, G_TYPE_FILE))
+  if (
+    G_VALUE_HOLDS (value, GDK_TYPE_FILE_LIST)
+    || G_VALUE_HOLDS (value, G_TYPE_FILE))
     {
       has_files = true;
     }
 
-  Track * track = self->hovered_track;
-  TrackLane * lane = self->hovered_lane;
+  Track *           track = self->hovered_track;
+  TrackLane *       lane = self->hovered_lane;
   AutomationTrack * at = self->hovered_at;
   if (chord_descr)
     {
-      if (at || !track ||
-          !track_type_has_piano_roll (track->type))
+      if (at || !track || !track_type_has_piano_roll (track->type))
         {
           /* nothing to do */
           return 0;
@@ -1416,8 +1406,7 @@ on_dnd_motion (
 
       /* highlight track */
       highlight_timeline (
-        self, 0, (int) x,
-        (int) y, track, lane);
+        self, 0, (int) x, (int) y, track, lane);
 
       return GDK_ACTION_COPY;
     }
@@ -1427,18 +1416,17 @@ on_dnd_motion (
        * supports dnd highlight */
       if (track)
         {
-          if (track->type != TRACK_TYPE_MIDI &&
-               track->type !=
-                 TRACK_TYPE_INSTRUMENT &&
-              track->type != TRACK_TYPE_AUDIO)
+          if (
+            track->type != TRACK_TYPE_MIDI
+            && track->type != TRACK_TYPE_INSTRUMENT
+            && track->type != TRACK_TYPE_AUDIO)
             {
               return 0;
             }
 
           /* track is compatible, highlight */
           highlight_timeline (
-            self, 0, (int) x,
-            (int) y, track, lane);
+            self, 0, (int) x, (int) y, track, lane);
           g_message ("highlighting track");
 
           return GDK_ACTION_COPY;
@@ -1448,8 +1436,7 @@ on_dnd_motion (
       else
         {
           highlight_timeline (
-            self, 0, (int) x,
-            (int) y, NULL, NULL);
+            self, 0, (int) x, (int) y, NULL, NULL);
           return GDK_ACTION_COPY;
         }
     }
@@ -1479,16 +1466,14 @@ timeline_arranger_setup_drag_dest (ArrangerWidget * self)
   };
   gtk_drop_target_set_gtypes (
     drop_target, types, G_N_ELEMENTS (types));
-  gtk_drop_target_set_preload (
-    drop_target, true);
+  gtk_drop_target_set_preload (drop_target, true);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (drop_target));
 
   g_signal_connect (
     drop_target, "drop", G_CALLBACK (on_dnd_drop), self);
   g_signal_connect (
-    drop_target, "motion",
-    G_CALLBACK (on_dnd_motion), self);
+    drop_target, "motion", G_CALLBACK (on_dnd_motion), self);
   g_signal_connect (
     drop_target, "leave", G_CALLBACK (on_dnd_leave), self);
 }

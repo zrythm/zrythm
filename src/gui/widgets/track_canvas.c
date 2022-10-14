@@ -724,22 +724,33 @@ track_canvas_snapshot (
     .x = 0, .y = 0, .width = width, .height = height
   };
 
-  if (tw->highlight_inside)
+  const int   line_w = MIN (128, width);
+  const int   line_h = 4;
+  const float line_x = (float) (width / 2 - line_w / 2);
+  switch (tw->highlight_loc)
     {
-      /* TODO */
-#if 0
-      gdk_cairo_set_source_rgba (
-        self->cached_cr,
-        &UI_COLORS->bright_orange);
-      const int line_w = MIN (128, width);
-      const int line_h = 4;
-      cairo_rectangle (
-        self->cached_cr,
-        width / 2 - line_w / 2,
-        height / 2 - line_h / 2,
-        line_w, line_h);
-      cairo_fill (self->cached_cr);
-#endif
+    case TRACK_WIDGET_HIGHLIGHT_NONE:
+      break;
+    case TRACK_WIDGET_HIGHLIGHT_TOP:
+      gtk_snapshot_append_color (
+        snapshot, &UI_COLORS->bright_orange,
+        &GRAPHENE_RECT_INIT (
+          line_x, 0.f, (float) line_w, (float) line_h));
+      break;
+    case TRACK_WIDGET_HIGHLIGHT_INSIDE:
+      gtk_snapshot_append_color (
+        snapshot, &UI_COLORS->bright_orange,
+        &GRAPHENE_RECT_INIT (
+          line_x, (float) (height / 2 - line_h / 2),
+          (float) line_w, (float) line_h));
+      break;
+    case TRACK_WIDGET_HIGHLIGHT_BOTTOM:
+      gtk_snapshot_append_color (
+        snapshot, &UI_COLORS->bright_orange,
+        &GRAPHENE_RECT_INIT (
+          line_x, (float) (height - line_h), (float) line_w,
+          (float) line_h));
+      break;
     }
 
   /* tint background */

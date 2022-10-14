@@ -35,8 +35,7 @@ G_DEFINE_TYPE (CpuWidget, cpu_widget, GTK_TYPE_WIDGET)
 #define ICON_SIZE BAR_HEIGHT
 #define TOTAL_H (PADDING * 3 + BAR_HEIGHT * 2)
 #define TOTAL_W \
-  (ICON_SIZE + PADDING * 3 \
-   + NUM_BARS * PADDING * 2)
+  (ICON_SIZE + PADDING * 3 + NUM_BARS * PADDING * 2)
 
 /**
  * Taken from

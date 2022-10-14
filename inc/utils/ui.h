@@ -460,6 +460,13 @@ ui_show_message_full (
     __VA_ARGS__)
 
 /**
+ * Type can be GTK_MESSAGE_ERROR, etc.
+ */
+#define ui_show_message_literal(win, type, block, str) \
+  ui_show_message_full ( \
+    win ? GTK_WINDOW (win) : NULL, type, block, "%s", str)
+
+/**
  * Wrapper to show error message so that no casting
  * of the window is needed on the caller side.
  */
