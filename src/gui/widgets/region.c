@@ -426,7 +426,8 @@ draw_chord_region (
   int    num_loops = arranger_object_get_num_loops (obj, 1);
   double ticks_in_region =
     arranger_object_get_length_in_ticks (obj);
-  double x_start, x_end;
+  double x_start;
+  /*double x_end;*/
 
   /*int vis_offset_x =*/
   /*draw_rect->x - full_rect->x;*/
@@ -440,7 +441,7 @@ draw_chord_region (
   int full_height = full_rect->height;
 
   /* draw chords notes */
-  double loop_end_ticks = obj->loop_end_pos.ticks;
+  /*double loop_end_ticks = obj->loop_end_pos.ticks;*/
   double loop_ticks =
     arranger_object_get_loop_length_in_ticks (obj);
   double        clip_start_ticks = obj->clip_start_pos.ticks;
@@ -457,16 +458,19 @@ draw_chord_region (
       /* get ratio (0.0 - 1.0) on x where chord
        * starts & ends */
       double co_start_ticks = co_obj->pos.ticks;
-      double co_end_ticks;
+      /*double co_end_ticks;*/
       if (i < self->num_chord_objects - 1)
         {
           next_co = self->chord_objects[i + 1];
           next_co_obj = (ArrangerObject *) next_co;
-          co_end_ticks = next_co_obj->pos.ticks;
+          /*co_end_ticks = next_co_obj->pos.ticks;*/
         }
       else
-        co_end_ticks = obj->end_pos.ticks;
-      double tmp_start_ticks, tmp_end_ticks;
+        {
+          /*co_end_ticks = obj->end_pos.ticks;*/
+        }
+      double tmp_start_ticks;
+      /*double tmp_end_ticks;*/
 
       /* adjust for clip start */
       /*int adjusted_mn_start_ticks =*/
@@ -503,17 +507,21 @@ draw_chord_region (
                 next_co
                 && position_is_after_or_equal (
                   &next_co_obj->pos, &obj->loop_end_pos))
-                tmp_end_ticks =
-                  loop_end_ticks + loop_ticks * j;
+                {
+                  /*tmp_end_ticks =*/
+                    /*loop_end_ticks + loop_ticks * j;*/
+                }
               else
-                tmp_end_ticks = co_end_ticks + loop_ticks * j;
+                {
+                  /*tmp_end_ticks = co_end_ticks + loop_ticks * j;*/
+                }
 
               /* adjust for clip start */
               tmp_start_ticks -= clip_start_ticks;
-              tmp_end_ticks -= clip_start_ticks;
+              /*tmp_end_ticks -= clip_start_ticks;*/
 
               x_start = tmp_start_ticks / ticks_in_region;
-              x_end = tmp_end_ticks / ticks_in_region;
+              /*x_end = tmp_end_ticks / ticks_in_region;*/
 
               /* skip if before the region */
               if (x_start < 0.0)
@@ -524,7 +532,7 @@ draw_chord_region (
               /* get actual values using the
                * ratios */
               x_start *= (double) full_width;
-              x_end *= (double) full_width;
+              /*x_end *= (double) full_width;*/
 
               /* draw */
               gtk_snapshot_append_color (

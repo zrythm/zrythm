@@ -762,7 +762,7 @@ engine_jack_reconnect_monitor (
       jack_free (ports);
     }
 
-  g_return_if_fail (num_connected > 0);
+  g_return_val_if_fail (num_connected > 0, false);
 
   return true;
 }

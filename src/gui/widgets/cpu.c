@@ -28,15 +28,15 @@
 
 G_DEFINE_TYPE (CpuWidget, cpu_widget, GTK_TYPE_WIDGET)
 
-#define BAR_HEIGHT 12.f
-#define BAR_WIDTH 3.f
+#define BAR_HEIGHT 12
+#define BAR_WIDTH 3
 #define NUM_BARS 12
-#define PADDING 2.f
+#define PADDING 2
 #define ICON_SIZE BAR_HEIGHT
-#define TOTAL_H (PADDING * 3.f + BAR_HEIGHT * 2.f)
+#define TOTAL_H (PADDING * 3 + BAR_HEIGHT * 2)
 #define TOTAL_W \
-  (ICON_SIZE + PADDING * 3.f \
-   + (float) NUM_BARS * PADDING * 2.f)
+  (ICON_SIZE + PADDING * 3 \
+   + NUM_BARS * PADDING * 2)
 
 /**
  * Taken from

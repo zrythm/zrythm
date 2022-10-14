@@ -253,7 +253,6 @@ musical_scale_new (MusicalScaleType type, MusicalNote root);
  *   ascending or descending (some scales have
  *   different notes when rising/falling).
  */
-RETURNS_NONNULL
 const bool *
 musical_scale_get_notes (
   MusicalScaleType scale_type,
