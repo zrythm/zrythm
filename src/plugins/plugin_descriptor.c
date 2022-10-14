@@ -654,3 +654,10 @@ plugin_descriptor_free (PluginDescriptor * self)
 
   object_zero_and_free (self);
 }
+
+void
+plugin_descriptor_free_closure (void * data, GClosure * closure)
+{
+  PluginDescriptor * self = (PluginDescriptor *) data;
+  plugin_descriptor_free (self);
+}

@@ -144,6 +144,34 @@ on_dnd_motion (
   return GDK_ACTION_MOVE;
 }
 
+static void
+on_drop_instrument_onto_midi_track (
+  GtkDialog * dialog,
+  gint        response_id,
+  gpointer    user_data)
+{
+  const PluginDescriptor * descr =
+    (PluginDescriptor *) user_data;
+
+  switch (response_id)
+    {
+    case GTK_RESPONSE_YES:
+      {
+        PluginSetting * setting =
+          plugin_setting_new_default (descr);
+        plugin_setting_activate (setting);
+        plugin_setting_free (setting);
+      }
+    default:
+      break;
+    }
+
+  if (dialog)
+    {
+      gtk_window_destroy (GTK_WINDOW (dialog));
+    }
+}
+
 static gboolean
 on_dnd_drop (
   GtkDropTarget * drop_target,
@@ -152,13 +180,6 @@ on_dnd_drop (
   gdouble         y,
   gpointer        user_data)
 {
-  if (!G_VALUE_HOLDS (
-        value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
-    {
-      g_message ("invalid DND type");
-      return false;
-    }
-
   TracklistWidget * self = Z_TRACKLIST_WIDGET (user_data);
   g_message ("dnd data received on tracklist");
 
@@ -187,21 +208,95 @@ on_dnd_drop (
   if (!hit_tw)
     return false;
 
+  Track * this_track = hit_tw->track;
+  g_return_if_fail (IS_TRACK_AND_NONNULL (this_track));
+
   hit_tw->highlight_loc = TRACK_WIDGET_HIGHLIGHT_NONE;
 
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    g_value_get_object (value);
-  if (wrapped_obj->type != WRAPPED_OBJECT_TYPE_TRACK)
+  if (G_VALUE_HOLDS (
+        value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
-      g_message ("dropped object not a track");
+      WrappedObjectWithChangeSignal * wrapped_obj =
+        g_value_get_object (value);
+      switch (wrapped_obj->type)
+        {
+        case WRAPPED_OBJECT_TYPE_SUPPORTED_FILE:
+          /* TODO */
+          ui_show_message_literal (
+            MAIN_WINDOW, GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
+            _ ("Operation unimplemented"));
+          return false;
+          break;
+        case WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
+          {
+            PluginDescriptor * descr =
+              (PluginDescriptor *) wrapped_obj->obj;
+            if (
+              plugin_descriptor_is_instrument (descr)
+              && this_track->type == TRACK_TYPE_MIDI)
+              {
+                /* TODO convert track to instrument */
+                GtkWidget * dialog = gtk_message_dialog_new (
+                  GTK_WINDOW (MAIN_WINDOW),
+                  GTK_DIALOG_DESTROY_WITH_PARENT
+                    | GTK_DIALOG_MODAL,
+                  GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO,
+                  "%s",
+                  _ ("Attempted to drop an instrument onto a "
+                     "MIDI track, which is not supported. "
+                     "Create a new instrument track instead?"));
+
+                PluginDescriptor * descr_clone =
+                  plugin_descriptor_clone (descr);
+                g_signal_connect_data (
+                  dialog, "response",
+                  G_CALLBACK (
+                    on_drop_instrument_onto_midi_track),
+                  descr_clone, plugin_descriptor_free_closure,
+                  0);
+
+                gtk_window_present (GTK_WINDOW (dialog));
+                return true;
+              }
+            else if (
+              plugin_descriptor_is_effect (descr)
+              && this_track->out_signal_type == TYPE_AUDIO)
+              {
+                /* TODO append insert if space left */
+              }
+
+            ui_show_message_literal (
+              MAIN_WINDOW, GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
+              _ ("Operation unimplemented"));
+            return false;
+          }
+          break;
+        case WRAPPED_OBJECT_TYPE_TRACK:
+          break;
+        default:
+          ui_show_message_literal (
+            MAIN_WINDOW, GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
+            _ ("Dragged item is not supported"));
+          return false;
+        }
+    }
+  else if (
+    G_VALUE_HOLDS (value, GDK_TYPE_FILE_LIST)
+    || G_VALUE_HOLDS (value, G_TYPE_FILE))
+    {
+      /* TODO */
       ui_show_message_literal (
         MAIN_WINDOW, GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
-        _ ("Dropped a non-track onto a track - this is not "
-           "supported yet."));
+        _ ("Operation unimplemented"));
       return false;
     }
-
-  Track * this_track = hit_tw->track;
+  else
+    {
+      ui_show_message_literal (
+        MAIN_WINDOW, GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
+        _ ("Dragged item is not supported"));
+      return false;
+    }
 
   /* determine if moving or copying */
   GdkDragAction action =

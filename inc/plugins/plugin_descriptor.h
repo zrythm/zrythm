@@ -406,6 +406,12 @@ NONNULL
 void
 plugin_descriptor_free (PluginDescriptor * self);
 
+NONNULL
+void
+plugin_descriptor_free_closure (
+  void *     data,
+  GClosure * closure);
+
 /**
  * @}
  */
