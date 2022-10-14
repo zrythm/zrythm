@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-10-03 21:09+0900\n"
-"PO-Revision-Date: 2022-10-12 11:56+0000\n"
+"PO-Revision-Date: 2022-10-14 15:02+0000\n"
 "Last-Translator: Hoseok Seo <ddinghoya@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/ko/>\n"
@@ -2038,7 +2038,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:46
 msgid "Cut"
-msgstr ""
+msgstr "잘라내기"
 
 #: ../../editing/common-operations.rst:47
 msgid ""
@@ -2048,7 +2048,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:53
 msgid "Copy"
-msgstr ""
+msgstr "복사"
 
 #: ../../editing/common-operations.rst:54
 msgid ""
@@ -2058,7 +2058,7 @@ msgstr ""
 
 #: ../../editing/common-operations.rst:60
 msgid "Paste"
-msgstr ""
+msgstr "붙여넣기"
 
 #: ../../editing/common-operations.rst:61
 msgid ""
@@ -3307,7 +3307,7 @@ msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:59
 msgid "Mixdown"
-msgstr ""
+msgstr "믹스다운"
 
 #: ../../exporting/audio-and-midi.rst:60
 msgid ""
@@ -3325,7 +3325,7 @@ msgstr ""
 
 #: ../../exporting/audio-and-midi.rst:75
 msgid "Stems"
-msgstr ""
+msgstr "줄기"
 
 #: ../../exporting/audio-and-midi.rst:76
 msgid ""
@@ -3580,7 +3580,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:12
 msgid "Initial Configuration"
-msgstr ""
+msgstr "초기 구성"
 
 #: ../../getting-started/running-zrythm.rst:14
 msgid ""
@@ -3891,7 +3891,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:59
 msgid "DAW"
-msgstr ""
+msgstr "DAW"
 
 #: ../../glossary/intro.rst:61
 msgid ""
@@ -3965,7 +3965,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:101 ../../routing/monitor-section.rst:66
 msgid "Mono"
-msgstr ""
+msgstr "모노"
 
 #: ../../glossary/intro.rst:103
 msgid "A single-channel audio signal (see also :term:`Stereo`)."
@@ -3999,7 +3999,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:116
 msgid "Plugin"
-msgstr ""
+msgstr "플러그인"
 
 #: ../../glossary/intro.rst:118
 msgid ""
@@ -4625,7 +4625,7 @@ msgstr ""
 #: ../../playback-and-recording/recording.rst:42
 #: ../../tracks/inspector-page.rst:46
 msgid "Inputs"
-msgstr ""
+msgstr "입력"
 
 #: ../../playback-and-recording/recording.rst:43
 msgid ""
@@ -4654,11 +4654,11 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:66
 msgid "Options"
-msgstr ""
+msgstr "옵션"
 
 #: ../../playback-and-recording/recording.rst:76
 msgid "Punch in/out"
-msgstr ""
+msgstr "펀치 인/아웃"
 
 #: ../../playback-and-recording/recording.rst:68
 msgid ""
@@ -4673,7 +4673,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:80
 msgid "Start on MIDI input"
-msgstr ""
+msgstr "MIDI 입력에서 시작"
 
 #: ../../playback-and-recording/recording.rst:79
 msgid ""
@@ -4686,7 +4686,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:85
 msgid "Overwrite events"
-msgstr ""
+msgstr "이벤트 덮어쓰기"
 
 #: ../../playback-and-recording/recording.rst:85
 msgid "Overwrite any existing events in the track during recording"
@@ -4694,7 +4694,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:88
 msgid "Merge events"
-msgstr ""
+msgstr "이벤트 병합"
 
 #: ../../playback-and-recording/recording.rst:88
 msgid "Merge the newly recorded events with the existing events in the track"
@@ -4702,7 +4702,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:90
 msgid "Create takes"
-msgstr ""
+msgstr "테이크 만들기"
 
 #: ../../playback-and-recording/recording.rst:91
 msgid "Create a new lane (`take`) for each new recording"
@@ -4710,7 +4710,7 @@ msgstr ""
 
 #: ../../playback-and-recording/recording.rst:99
 msgid "Create takes (mute previous)"
-msgstr ""
+msgstr "테이크 만들기 (이전 음소거)"
 
 #: ../../playback-and-recording/recording.rst:93
 msgid ""
@@ -4811,7 +4811,7 @@ msgstr ""
 #: ../../playback-and-recording/transport-controls.rst:40
 #: ../../tracks/track-controls.rst:17
 msgid "Record"
-msgstr ""
+msgstr "녹음"
 
 #: ../../playback-and-recording/transport-controls.rst:41
 msgid "Arms the project for recording."
@@ -4819,7 +4819,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:42
 msgid "Record options"
-msgstr ""
+msgstr "녹음 옵션"
 
 #: ../../playback-and-recording/transport-controls.rst:43
 msgid "Sets the settings to use when recording."
@@ -5530,7 +5530,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:63
 msgid "Enabled"
-msgstr ""
+msgstr "활성화"
 
 #: ../../plugins-files/plugins/plugin-info.rst:63
 msgid "Controls whether the plugin is active or bypassed."
@@ -5538,7 +5538,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:67
 msgid "Gain"
-msgstr ""
+msgstr "게인"
 
 #: ../../plugins-files/plugins/plugin-info.rst:66
 msgid "Increases the output volume of the plugin (if applicable)."
@@ -6220,7 +6220,7 @@ msgstr ""
 
 #: ../../routing/monitor-section.rst:69
 msgid "Dim"
-msgstr ""
+msgstr "희미함"
 
 #: ../../routing/monitor-section.rst:69
 msgid "Dim the output to the dim level"
@@ -6598,7 +6598,7 @@ msgstr ""
 #: ../../scripting/scripting-interface.rst:7
 #: ../../zrythm-interface/main-toolbar.rst:106
 msgid "Scripting Interface"
-msgstr ""
+msgstr "스크립팅 인터페이스"
 
 #: ../../scripting/scripting-interface.rst:9
 msgid ""
@@ -7983,7 +7983,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:41
 msgid "New Project"
-msgstr ""
+msgstr "새로운 프로젝트"
 
 #: ../../zrythm-interface/main-toolbar.rst:42
 msgid "Create a new project."
@@ -7999,7 +7999,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:45
 msgid "Save As"
-msgstr ""
+msgstr "다른 이름으로 저장"
 
 #: ../../zrythm-interface/main-toolbar.rst:46
 msgid "Save the current project at a new location."
@@ -8019,7 +8019,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid "Export As"
-msgstr ""
+msgstr "다른 이름으로 내보내기"
 
 #: ../../zrythm-interface/main-toolbar.rst:53
 msgid ""
@@ -8029,7 +8029,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:57
 msgid "Export Graph"
-msgstr ""
+msgstr "그래프 내보내기"
 
 #: ../../zrythm-interface/main-toolbar.rst:56
 msgid ""
@@ -8053,7 +8053,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:67
 msgid "Toggle Status Bar"
-msgstr ""
+msgstr "상태 표시줄 전환"
 
 #: ../../zrythm-interface/main-toolbar.rst:68
 msgid "Toggles the visibility of the status bar."
@@ -8061,7 +8061,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:69
 msgid "Fullscreen"
-msgstr ""
+msgstr "전체화면"
 
 #: ../../zrythm-interface/main-toolbar.rst:70
 msgid "Toggles fullscreen mode."
