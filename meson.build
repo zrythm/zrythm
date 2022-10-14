@@ -1169,7 +1169,8 @@ zstd_dep = dependency (
     ])
 
 reproc_dep = dependency (
-  'reproc', version: '>=14.1.0', required: false,
+  # need windows assertion bugfix in 14.2.1
+  'reproc', version: '>=14.2.1', required: false,
   static: all_static)
 if not reproc_dep.found ()
   reproc_subproject = cmake.subproject (
