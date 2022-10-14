@@ -498,8 +498,6 @@ test_cflags = [
   '-Walloca',
   '-fno-common',
   '-DLV2_UI__Gtk4UI="https://lv2plug.in/ns/extensions/ui#Gtk4UI"',
-  '-DGDK_DISABLE_DEPRECATED',
-  '-DGTK_DISABLE_DEPRECATED',
   # dummy macro for extracting translatable strings
   # when we can't use gettext()
   '-D__(x)=x',
