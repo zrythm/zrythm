@@ -6,6 +6,20 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.9.1] - 2022-10-15
+### Added
+- Show dialog to create a new instrument track when dropping an instrument plugin onto a MIDI track
+- Add whitelist of plugin authors and bridge all other plugins
+
+### Changed
+- Update Ukrainian translations
+- Meson: don't set -mtune=generic if not native build
+- JACK: handle failure to connect to monitor output gracefully
+- Update reproc version requirement (fixes occasional assert failures during plugin scan on Windows)
+- Re-enable highlighting in timeline while dragging files
+- Re-enable highlighting in track widgets while dragging other tracks
+- Meson: build bundled plugins with `-static-libgcc -static-libstdc++` by default on GNU/Linux + GCC
+
 ## [1.0.0-beta.3.8.17] - 2022-10-12
 ### Changed
 - Update Korean, Spanish, French, Indonesian, Catalan, Portuguese translations
