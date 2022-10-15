@@ -638,7 +638,6 @@ elif os_windows
 endif
 
 test_strict_cflags += [
-  '-Werror=format=2',
   '-Werror=format-overflow',
   '-Werror=format-truncation',
   #'-Werror=cast-qual',
@@ -751,6 +750,7 @@ if is_gcc
     # reports unnecessary errors
     '-Werror=sign-conversion',
     '-Werror=implicit-fallthrough',
+    '-Werror=format=2',
     ]
 endif
 

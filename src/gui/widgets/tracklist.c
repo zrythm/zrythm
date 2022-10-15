@@ -209,7 +209,8 @@ on_dnd_drop (
     return false;
 
   Track * this_track = hit_tw->track;
-  g_return_if_fail (IS_TRACK_AND_NONNULL (this_track));
+  g_return_val_if_fail (
+    IS_TRACK_AND_NONNULL (this_track), false);
 
   hit_tw->highlight_loc = TRACK_WIDGET_HIGHLIGHT_NONE;
 
