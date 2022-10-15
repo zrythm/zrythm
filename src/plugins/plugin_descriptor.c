@@ -411,6 +411,7 @@ plugin_descriptor_get_min_bridge_mode (
   const PluginDescriptor * self)
 {
   CarlaBridgeMode mode = CARLA_BRIDGE_NONE;
+
   if (self->protocol == PROT_LV2)
     {
       /* TODO if the UI and DSP binary is the same
@@ -467,6 +468,96 @@ plugin_descriptor_get_min_bridge_mode (
     }
 
   return mode;
+}
+
+/**
+ * Returns whether the plugin is known to work, so it should
+ * be whitelisted.
+ *
+ * Non-whitelisted plugins will run in full bridge mode. This
+ * is to prevent crashes when Zrythm is not at fault.
+ *
+ * These must all be free-software plugins so that they can
+ * be debugged if issues arise.
+ */
+bool
+plugin_descriptor_is_whitelisted (
+  const PluginDescriptor * self)
+{
+  static const char * authors[] = {
+    "Alexandros Theodotou",
+    "Andrew Deryabin",
+    "AnnieShin",
+    "Artican",
+    "Aurelien Leblond",
+    "Automatl",
+    "Breakfast Quay",
+    "brummer",
+    "Clearly Broken Software",
+    "Creative Intent",
+    "Damien Zammit",
+    "Datsounds",
+    "David Robillard",
+    "Digital Suburban",
+    "DISTRHO",
+    "dRowAudio",
+    "DrumGizmo Team",
+    "falkTX",
+    "Filipe Coelho",
+    "Guitarix team",
+    "Hanspeter Portner",
+    "Hermann Meyer",
+    "IEM",
+    "Iurie Nistor",
+    "Jean Pierre Cimalando",
+    "Klangfreund",
+    "kRAkEn/gORe",
+    "Lkjb",
+    "LSP LADSPA",
+    "LSP LV2",
+    "LSP VST",
+    "Luciano Dato",
+    "Martin Eastwood, falkTX",
+    "Matt Tytel",
+    "Michael Willis",
+    "Michael Willis and Rob vd Berg",
+    "ndc Plugs",
+    "OpenAV",
+    "Patrick Desaulniers",
+    "Paul Ferrand",
+    "Plainweave Software",
+    "Punk Labs LLC",
+    "Resonant DSP",
+    "Robin Gareus",
+    "RockHardbuns",
+    "SFZTools",
+    "Spencer Jackson",
+    "Stefan Westerfeld",
+    "Surge Synth Team",
+    "Sven Jaehnichen",
+    "TAL-Togu Audio Line",
+    "TheWaveWarden",
+    "Tom Szilagyi",
+    "tumbetoene",
+    "Zrythm DAW",
+  };
+
+  if (!self->author)
+    {
+      return false;
+    }
+
+  for (size_t i = 0; i < G_N_ELEMENTS (authors); i++)
+    {
+      if (string_is_equal (self->author, authors[i]))
+        {
+          g_message (
+            "author '%s' is whitelisted", self->author);
+          return true;
+        }
+    }
+
+  return false;
 }
 
 /**

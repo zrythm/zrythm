@@ -397,6 +397,21 @@ CarlaBridgeMode
 plugin_descriptor_get_min_bridge_mode (
   const PluginDescriptor * self);
 
+/**
+ * Returns whether the plugin is known to work, so it should
+ * be whitelisted.
+ *
+ * Non-whitelisted plugins will run in full bridge mode. This
+ * is to prevent crashes when Zrythm is not at fault.
+ *
+ * These must all be free-software plugins so that they can
+ * be debugged if issues arise.
+ */
+NONNULL
+bool
+plugin_descriptor_is_whitelisted (
+  const PluginDescriptor * self);
+
 NONNULL
 GMenuModel *
 plugin_descriptor_generate_context_menu (

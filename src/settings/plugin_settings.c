@@ -179,7 +179,18 @@ plugin_setting_validate (PluginSetting * self)
   if (self->bridge_mode == CARLA_BRIDGE_NONE)
     {
       self->bridge_mode = descr->min_bridge_mode;
-      if (self->bridge_mode != CARLA_BRIDGE_NONE)
+      if (self->bridge_mode == CARLA_BRIDGE_NONE)
+        {
+          /* bridge if plugin is not whitelisted */
+          if (!plugin_descriptor_is_whitelisted (descr))
+            {
+              self->open_with_carla = true;
+              self->bridge_mode = CARLA_BRIDGE_FULL;
+              g_message (
+                "plugin descriptor not whitelisted - will bridge full");
+            }
+        }
+      else
         {
           self->open_with_carla = true;
         }

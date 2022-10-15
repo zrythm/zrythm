@@ -5,7 +5,8 @@ packages:
   - alsa-lib
   - binutils
   - boost
-  - carla
+  - carla-git
+  - ccache
   - clang
   - cmake
   - chromaprint
