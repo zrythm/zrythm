@@ -162,7 +162,7 @@ io_get_files_in_dir_ending_in (
  *   a file with the same filename as a directory
  *   in \ref srcdir_str.
  *
- * @seealso https://stackoverflow.com/questions/16453739/how-do-i-recursively-copy-a-directory-using-vala
+ * @see https://stackoverflow.com/questions/16453739/how-do-i-recursively-copy-a-directory-using-vala
  */
 void
 io_copy_dir (

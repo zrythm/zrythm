@@ -240,7 +240,7 @@ typedef struct ArrangerObject
    * object back to its place before creating
    * new copies.
    *
-   * @seealso arranger_selections_action_do().
+   * @see arranger_selections_action_do().
    */
   int index_in_prev_lane;
 

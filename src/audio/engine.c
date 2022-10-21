@@ -105,7 +105,7 @@ engine_audio_backend_to_string (AudioBackend backend)
  * The backend is expected to call the buffer size
  * change callbacks.
  *
- * @seealso jack_set_buffer_size().
+ * @see jack_set_buffer_size().
  */
 void
 engine_set_buffer_size (AudioEngine * self, uint32_t buf_size)

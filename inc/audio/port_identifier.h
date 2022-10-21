@@ -285,7 +285,7 @@ typedef enum PortFlags
    * declared as either writable or readable (or
    * both).
    *
-   * @seealso http://lv2plug.in/ns/lv2core#Parameter. */
+   * @see http://lv2plug.in/ns/lv2core#Parameter. */
   PORT_FLAG_IS_PROPERTY = 1 << 30,
 } PortFlags;
 

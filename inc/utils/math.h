@@ -67,7 +67,7 @@
 /**
  * Checks if 2 doubles are equal.
  *
- * @param epsilon The allowed difference.
+ * @param e The allowed difference (epsilon).
  */
 #define math_floats_equal_epsilon(a, b, e) \
   ((a) > (b) ? (a) - (b) < e : (b) - (a) < e)

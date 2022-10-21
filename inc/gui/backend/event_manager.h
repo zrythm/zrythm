@@ -32,7 +32,7 @@ typedef struct ZEvent ZEvent;
  * This API is responsible for collecting and processing UI
  * events on the GTK thread.
  *
- * @seealso Event.
+ * @see ZEvent.
  */
 typedef struct EventManager
 {

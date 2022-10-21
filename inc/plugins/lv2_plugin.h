@@ -180,7 +180,7 @@ typedef struct Lv2Plugin
    * UI after instantiating the plugin, if the
    * plugin requires data access.
    *
-   * @seealso https://lv2plug.in/ns/ext/data-access.
+   * @see https://lv2plug.in/ns/ext/data-access.
    */
   LV2_Extension_Data_Feature ext_data_feature;
 
@@ -191,7 +191,7 @@ typedef struct Lv2Plugin
    * Options interface for setting plugin options
    * dynamically.
    *
-   * @seealso http://lv2plug.in/ns/ext/options#interface.
+   * @see http://lv2plug.in/ns/ext/options#interface.
    */
   const LV2_Options_Interface * options_iface;
 
@@ -262,7 +262,7 @@ typedef struct Lv2Plugin
    * Index of control input port, or -1 if no port
    * with "control" designation found.
    *
-   * @seealso http://lv2plug.in/ns/lv2core#control.
+   * @see http://lv2plug.in/ns/lv2core#control.
    */
   int control_in;
 
@@ -270,7 +270,7 @@ typedef struct Lv2Plugin
    * Index of enabled port, or -1 if no port with
    * "enabled" designation found.
    *
-   * @seealso http://lv2plug.in/ns/lv2core#enabled.
+   * @see http://lv2plug.in/ns/lv2core#enabled.
    */
   int enabled_in;
 

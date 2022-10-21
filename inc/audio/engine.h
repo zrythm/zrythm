@@ -998,7 +998,7 @@ engine_samplerate_enum_to_int (
  * The backend is expected to call the buffer size
  * change callbacks.
  *
- * @seealso jack_set_buffer_size().
+ * @see jack_set_buffer_size().
  */
 void
 engine_set_buffer_size (AudioEngine * self, uint32_t buf_size);

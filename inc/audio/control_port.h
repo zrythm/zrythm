@@ -45,14 +45,14 @@ typedef struct ControlPortChange
   /**
    * Flag to identify the port the change is for.
    *
-   * @seealso PORT_FLAG_BPM.
+   * @see PORT_FLAG_BPM.
    */
   PortFlags flag1;
 
   /**
    * Flag to identify the port the change is for.
    *
-   * @seealso PORT_FLAG2_BEATS_PER_BAR and
+   * @see PORT_FLAG2_BEATS_PER_BAR and
    *   PORT_FLAG2_BEAT_UNIT.
    */
   PortFlags2 flag2;

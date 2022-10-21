@@ -515,7 +515,7 @@ typedef struct Port
    * Also used by track processor for MIDI
    * controls.
    *
-   * @seealso lv2_ui_send_control_val_event_from_plugin_to_ui().
+   * @see lv2_ui_send_control_val_event_from_plugin_to_ui().
    */
   float last_sent_control;
 

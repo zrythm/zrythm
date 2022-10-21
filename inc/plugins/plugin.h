@@ -254,7 +254,7 @@ typedef struct Plugin
   /**
    * ID of GSource (if > 0).
    *
-   * @seealso update_plugin_ui().
+   * @see update_plugin_ui().
    */
   guint update_ui_source_id;
 
