@@ -27,7 +27,12 @@ typedef struct ZEvent ZEvent;
  */
 
 /**
- * Event manager.
+ * Event manager for the UI.
+ *
+ * This API is responsible for collecting and processing UI
+ * events on the GTK thread.
+ *
+ * @seealso Event.
  */
 typedef struct EventManager
 {
@@ -42,7 +47,11 @@ typedef struct EventManager
    */
   ObjectPool * obj_pool;
 
-  /** ID of the event processing source func. */
+  /**
+   * ID of the event processing source func.
+   *
+   * Will be zero when stopped and non-zero when active.
+   */
   guint process_source_id;
 
   /** A soft recalculation of the routing graph
@@ -107,7 +116,8 @@ typedef struct EventManager
   if ( \
     ZRYTHM_HAVE_UI && EVENT_MANAGER && EVENT_QUEUE \
     && zrythm_app->gtk_thread == g_thread_self () \
-    && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting)) \
+    && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting) \
+    && EVENT_MANAGER->process_source_id) \
     { \
       ZEvent * _ev = (ZEvent *) object_pool_get ( \
         EVENT_MANAGER->obj_pool); \

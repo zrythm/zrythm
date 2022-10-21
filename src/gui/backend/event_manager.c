@@ -1422,6 +1422,7 @@ event_manager_stop_events (EventManager * self)
     {
       object_pool_return (self->obj_pool, event);
     }
+  g_return_if_fail (self->obj_pool->num_obj_available == self->obj_pool->max_objects);
 }
 
 /**
