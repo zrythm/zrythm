@@ -250,17 +250,14 @@ export_audio (ExportSettings * info)
           marker_track_get_start_marker (P_MARKER_TRACK);
         ArrangerObject * end = (ArrangerObject *)
           marker_track_get_end_marker (P_MARKER_TRACK);
-        transport_move_playhead (
-          TRANSPORT, &start->pos, F_PANIC, F_NO_SET_CUE_POINT,
-          F_NO_PUBLISH_EVENTS);
+        transport_set_playhead_pos (TRANSPORT, &start->pos);
         position_set_to_pos (&start_pos, &start->pos);
         position_set_to_pos (&stop_pos, &end->pos);
       }
       break;
     case TIME_RANGE_LOOP:
-      transport_move_playhead (
-        TRANSPORT, &TRANSPORT->loop_start_pos, F_PANIC,
-        F_NO_SET_CUE_POINT, F_NO_PUBLISH_EVENTS);
+      transport_set_playhead_pos (
+        TRANSPORT, &TRANSPORT->loop_start_pos);
       position_set_to_pos (
         &start_pos, &TRANSPORT->loop_start_pos);
       position_set_to_pos (

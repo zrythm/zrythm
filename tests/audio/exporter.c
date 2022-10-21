@@ -700,6 +700,65 @@ test_bounce_instrument_track (void)
     BOUNCE_STEP_POST_FADER, false);
 }
 
+static void
+test_bounce_with_note_at_start (void)
+{
+  test_helper_zrythm_init ();
+
+  /* create the instrument track */
+  test_plugin_manager_create_tracks_from_plugin (
+    TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
+  Track * ins_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    ins_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+
+  /* add region with note */
+  Position start, end;
+  position_init (&start);
+  position_set_to_bar (&end, 4);
+  ZRegion * r = midi_region_new (
+    &start, &end, ins_track->name_hash, 0, 0);
+  track_add_region (
+    ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  position_init (&start);
+  position_set_to_bar (&end, 4);
+  MidiNote * mn = midi_note_new (&r->id, &start, &end, 70, 70);
+  midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+
+  /* bounce the loop */
+  ExportSettings settings;
+  memset (&settings, 0, sizeof (ExportSettings));
+  settings.mode = EXPORT_MODE_REGIONS;
+  export_settings_set_bounce_defaults (
+    &settings, EXPORT_FORMAT_WAV, NULL, r->name);
+  settings.time_range = TIME_RANGE_LOOP;
+  timeline_selections_mark_for_bounce (
+    TL_SELECTIONS, settings.bounce_with_parents);
+
+  {
+    EngineState state;
+    GPtrArray * conns =
+      exporter_prepare_tracks_for_export (&settings, &state);
+
+    /* start exporting in a new thread */
+    GThread * thread = g_thread_new (
+      "bounce_thread",
+      (GThreadFunc) exporter_generic_export_thread, &settings);
+
+    print_progress_and_sleep (&settings.progress_info);
+
+    g_thread_join (thread);
+
+    exporter_post_export (&settings, conns, &state);
+  }
+
+  g_assert_false (audio_file_is_silent (settings.file_uri));
+}
+
 /**
  * Export the audio mixdown when the chord track with
  * data is routed to an instrument track.
@@ -1016,6 +1075,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/audio/exporter/"
 
+  g_test_add_func (
+    TEST_PREFIX "test bounce with note at start",
+    (GTestFunc) test_bounce_with_note_at_start);
   g_test_add_func (
     TEST_PREFIX "test mixdown midi",
     (GTestFunc) test_mixdown_midi);

@@ -629,8 +629,10 @@ transport_can_user_move_playhead (const Transport * self)
  * This is only for moves other than while playing
  * and for looping while playing.
  *
+ * Should not be used during exporting.
+ *
  * @param target Position to set to.
- * @param panic Send MIDI panic or not.
+ * @param panic Send MIDI panic or not FIXME unused.
  * @param set_cue_point Also set the cue point at
  *   this position.
  */
@@ -650,37 +652,31 @@ transport_move_playhead (
       return;
     }
 
-  int i, j, k, l;
   /* send MIDI note off on currently playing timeline
    * objects */
-  Track *      track;
-  ZRegion *    region;
-  MidiNote *   midi_note;
-  MidiEvents * midi_events;
-  TrackLane *  lane;
-  for (i = 0; i < TRACKLIST->num_tracks; i++)
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
-      track = TRACKLIST->tracks[i];
+      Track * track = TRACKLIST->tracks[i];
 
-      for (k = 0; k < track->num_lanes; k++)
+      for (int k = 0; k < track->num_lanes; k++)
         {
-          lane = track->lanes[k];
+          TrackLane * lane = track->lanes[k];
 
-          for (l = 0; l < lane->num_regions; l++)
+          for (int l = 0; l < lane->num_regions; l++)
             {
-              region = lane->regions[l];
+              ZRegion * region = lane->regions[l];
 
               if (!region_is_hit (region, PLAYHEAD->frames, 1))
                 continue;
 
-              for (j = 0; j < region->num_midi_notes; j++)
+              for (int j = 0; j < region->num_midi_notes; j++)
                 {
-                  midi_note = region->midi_notes[j];
+                  MidiNote * midi_note = region->midi_notes[j];
 
                   if (midi_note_hit (
                         midi_note, PLAYHEAD->frames))
                     {
-                      midi_events =
+                      MidiEvents * midi_events =
                         track->processor->piano_roll
                           ->midi_events;
 

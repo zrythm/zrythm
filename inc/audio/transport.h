@@ -553,8 +553,10 @@ transport_can_user_move_playhead (const Transport * self);
  * This is only for moves other than while playing
  * and for looping while playing.
  *
+ * Should not be used during exporting.
+ *
  * @param target Position to set to.
- * @param panic Send MIDI panic or not.
+ * @param panic Send MIDI panic or not FIXME unused.
  * @param set_cue_point Also set the cue point at
  *   this position.
  */
