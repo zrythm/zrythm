@@ -50,17 +50,30 @@ plugins = [
     'ReverbPlugin' ],
   ]
 
+uri_prefix = 'https://lv2.zrythm.org/faust-builtin'
 gen_lv2_sh = configure_file (
   output: 'gen-lv2.sh',
   input: 'gen-lv2.sh.in',
   configuration: {
     'BASH': bash.full_path (),
-    'URI_PREFIX': 'https://lv2.zrythm.org/faust-builtin',
+    'URI_PREFIX': uri_prefix,
     'LIB_SUFFIX': '@LIB_SUFFIX@',
     },
   )
 
+gen_lv2_bundle_for_test = configure_file (
+  output: 'gen-lv2-bundle-for-test.sh',
+  input: 'gen-lv2-bundle-for-test.sh.in',
+  configuration: {
+    'BASH': bash.full_path (),
+    },
+  )
+
 pl_generate_targets = []
+
+# these are used during tests
+bundled_plugins_for_tests = []
+bundled_plugins_for_tests_tgts = []
 
 foreach pl : plugins
   pl_name = pl[0]
@@ -108,7 +121,7 @@ foreach pl : plugins
       # libstdc++.dll there
       pl_link_args += [ '-static-libgcc', '-static-libstdc++' ]
     endif
-    shared_module (
+    pl_module = shared_module (
       pl_underscored_name,
       cpp_args: pl_cpp_args,
       link_args: pl_link_args,
@@ -116,7 +129,7 @@ foreach pl : plugins
       name_prefix: '',
       gnu_symbol_visibility: 'hidden',
       dependencies: [
-        dependency ('boost'),
+        dependency ('boost', static: true),
         lv2_dep,
         ],
       override_options: [
@@ -140,6 +153,28 @@ foreach pl : plugins
       configuration: { 'LIB_SUFFIX': lib_suffix })
     install_data (
       pl_ttl, install_dir: pl_install_dir)
+
+    build_pl_target = custom_target (
+      pl_underscored_name + '-tgt-for-tests',
+      output: pl_underscored_name + '.lv2',
+      command: [
+        gen_lv2_bundle_for_test, '@OUTPUT@',
+        '@INPUT0@', '@INPUT1@', '@INPUT2@',
+        ],
+      input: [
+        pl_ttl,
+        pl_manifest_ttl,
+        pl_module,
+        ],
+      )
+
+    bundled_plugins_for_tests += {
+      'name': pl_underscored_name,
+      'uri': uri_prefix + '/' + pl_underscored_name,
+      'target': build_pl_target,
+      }
+    bundled_plugins_for_tests_tgts += build_pl_target
+
   else
     warning (
       pl_cpp + ' not found. Run `ninja -C build gen-faust-plugins` to generate it')

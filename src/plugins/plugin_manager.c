@@ -269,11 +269,15 @@ create_and_load_lilv_word (PluginManager * self)
     {
       const char * tests_builddir =
         g_getenv ("G_TEST_BUILDDIR");
+      const char * root_builddir =
+        g_getenv ("G_TEST_BUILD_ROOT_DIR");
       g_return_if_fail (tests_builddir);
+      g_return_if_fail (root_builddir);
 
       char * before_path = self->lv2_path;
       self->lv2_path = g_strdup_printf (
-        "%s:%s/lv2plugins", before_path, tests_builddir);
+        "%s:%s/lv2plugins:%s/data/plugins", before_path,
+        tests_builddir, root_builddir);
       g_free (before_path);
     }
 

@@ -1,0 +1,19 @@
+#!@BASH@
+#
+# SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-License-Identifier: LicenseRef-ZrythmLicense
+#
+# This script copies the produced .ttls and shared module to
+# the given output dir (used in tests).
+
+set -ex
+
+out_dir="$1"
+pl_ttl="$2"
+pl_manifest_ttl="$3"
+pl_module="$4"
+
+rm -rf "$out_dir"
+mkdir -p "$out_dir"
+cp "$pl_ttl" "$pl_module" "$out_dir/"
+cp "$pl_manifest_ttl" "$out_dir/manifest.ttl"

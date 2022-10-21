@@ -13,6 +13,8 @@ if get_option ('tests')
   test_env.set (
     'G_TEST_SRCDIR', meson.current_source_dir ())
   test_env.set (
+    'G_TEST_BUILD_ROOT_DIR', meson_build_root)
+  test_env.set (
     'G_TEST_BUILDDIR', meson.current_build_dir ())
   test_env.set ('G_SLICE', 'debug-blocks')
   test_env.set (
@@ -79,6 +81,37 @@ if get_option ('tests')
       'TEST_SINE_OGG_30MIN',
       meson.current_build_dir () / filename)
   endif
+
+  # internal (bundled) LV2
+  if not lv2info_bin.found ()
+    error ('lv2info required for tests')
+  endif
+  foreach pl : bundled_plugins_for_tests
+    name = pl['name']
+    uri = pl['uri']
+    target = pl['target']
+    plugin_bundle_uri = run_command (
+      get_lv2_bundle_uri_bin, lv2info_bin.full_path (),
+      uri, check: true,
+      env: {
+        'LV2_PATH': meson_build_root / 'data/plugins',
+        },
+      ).stdout ().strip ()
+    # C
+    test_config.set (
+      'HAVE_' + name.to_upper(), 1)
+    test_config.set_quoted (
+      name.to_upper() + '_URI', uri)
+    test_config.set_quoted (
+      name.to_upper() + '_BUNDLE', plugin_bundle_uri)
+    # Guile
+    test_config_guile.set (
+      'HAVE_' + name.to_upper(), '#t')
+    test_config_guile.set_quoted (
+      name.to_upper() + '_URI', uri)
+    test_config_guile.set_quoted (
+      name.to_upper() + '_BUNDLE', plugin_bundle_uri)
+  endforeach
 
   # external LV2
   foreach name, info : ext_lv2_plugins
@@ -377,6 +410,7 @@ if get_option ('tests')
         sources: [
           source,
           test_config_h,
+          bundled_plugins_for_tests_tgts,
           ],
         c_args : [
           common_cflags, strict_cflags,
@@ -420,6 +454,7 @@ if get_option ('tests')
         sources: [
           'guile_runner.c',
           test_config_h,
+          bundled_plugins_for_tests_tgts,
           ],
         c_args : [
           common_cflags, strict_cflags,

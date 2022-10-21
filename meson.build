@@ -1468,10 +1468,9 @@ have_ext_vst_plugins = {}
 ext_vst_plugin_paths = {}
 # when using the lilv subproject, we can't use lv2ls and
 # lv2info
+lv2info_bin = find_program ('lv2info', required: false)
 if get_option ('tests') and lilv_dep.type_name () != 'internal'
   lv2ls_bin = find_program ('lv2ls', required: false)
-  lv2info_bin = find_program (
-    'lv2info', required: false)
   # get lv2 bundle paths
   if lv2ls_bin.found () and lv2info_bin.found ()
     lv2ls_res = run_command (
