@@ -290,9 +290,10 @@ option (
 
 option (
   'fftw3_threads_separate_type',
-  type: 'string',
+  type: 'combo',
+  choices: [ 'auto', 'dependency', 'library', ],
   value: 'auto',
-  description: 'Method to look for separate fftw3_threads. Either "library" or "dependency" or "auto".')
+  description: 'Method to look for separate fftw3_threads. Auto: look for dependency first and then library if not found.')
 
 option (
   'fftw3f_separate',
