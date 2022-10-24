@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/mixer_selections.h"
+#include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/inspector_plugin.h"
@@ -10,6 +11,7 @@
 #include "gui/widgets/plugin_properties_expander.h"
 #include "gui/widgets/ports_expander.h"
 #include "plugins/plugin.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
@@ -63,11 +65,30 @@ inspector_plugin_widget_show (
       g_debug ("raised plugin inspector");
     }
 
-  /* show info for first plugin */
+  /* show info for first selected plugin, or first plugin in
+   * the selected track */
   Plugin * pl = NULL;
   if (ms->has_any)
     {
       pl = mixer_selections_get_first_plugin (ms);
+    }
+  else
+    {
+      Track * tr = tracklist_selections_get_highest_track (
+        TRACKLIST_SELECTIONS);
+      Channel * ch = track_get_channel (tr);
+      if (ch)
+        {
+          Plugin * pls[120];
+          int      num_pls = channel_get_plugins (ch, pls);
+          if (num_pls > 0)
+            {
+              pl = pls[0];
+              g_message (
+                "showing info for plugin %s",
+                pl->setting->descr->name);
+            }
+        }
     }
 
   if (pl)
