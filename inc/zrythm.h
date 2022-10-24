@@ -12,6 +12,8 @@
 
 #include "zrythm-config.h"
 
+#include <stdbool.h>
+
 #include <glib.h>
 
 #include "zix/sem.h"
