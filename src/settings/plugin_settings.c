@@ -92,13 +92,13 @@ plugin_setting_print (const PluginSetting * self)
 {
   g_message (
     "[PluginSetting]\n"
-    "descr.uri=%s\n"
-    "open_with_carla=%d\n"
-    "force_generic_ui=%d\n"
-    "bridge_mode=%s\n"
-    "ui_uri=%s\n"
+    "descr.uri=%s, "
+    "open_with_carla=%d, "
+    "force_generic_ui=%d, "
+    "bridge_mode=%s, "
+    "ui_uri=%s, "
     "last_instantiated_time=%" G_GINT64_FORMAT
-    "\n"
+    ", "
     "num_instantiations=%d",
     self->descr->uri, self->open_with_carla,
     self->force_generic_ui,
@@ -119,8 +119,6 @@ plugin_setting_print (const PluginSetting * self)
 void
 plugin_setting_validate (PluginSetting * self)
 {
-  g_debug ("validating plugin setting");
-
   const PluginDescriptor * descr = self->descr;
 
   /* force carla */
@@ -175,7 +173,7 @@ plugin_setting_validate (PluginSetting * self)
 #ifdef HAVE_CARLA
   /* if no bridge mode specified, calculate the
    * bridge mode here */
-  g_message ("%s: recalculating bridge mode...", __func__);
+  /*g_debug ("%s: recalculating bridge mode...", __func__);*/
   if (self->bridge_mode == CARLA_BRIDGE_NONE)
     {
       self->bridge_mode = descr->min_bridge_mode;
@@ -186,8 +184,8 @@ plugin_setting_validate (PluginSetting * self)
             {
               self->open_with_carla = true;
               self->bridge_mode = CARLA_BRIDGE_FULL;
-              g_message (
-                "plugin descriptor not whitelisted - will bridge full");
+              /*g_debug (*/
+              /*"plugin descriptor not whitelisted - will bridge full");*/
             }
         }
       else
@@ -221,7 +219,7 @@ plugin_setting_validate (PluginSetting * self)
   /*g_debug ("checking if plugin has custom UI...");*/
   if (!descr->has_custom_ui)
     {
-      g_debug ("plugin %s has no custom UI", descr->name);
+      /*g_debug ("plugin %s has no custom UI", descr->name);*/
       self->force_generic_ui = true;
     }
   /*g_debug ("done checking if plugin has custom UI");*/
@@ -231,7 +229,7 @@ plugin_setting_validate (PluginSetting * self)
     descr->protocol != PROT_LV2 || self->open_with_carla
     || self->force_generic_ui)
     {
-      g_debug ("cannot have UI URI");
+      /*g_debug ("cannot have UI URI");*/
       g_free_and_null (self->ui_uri);
     }
   /* otherwise validate it */

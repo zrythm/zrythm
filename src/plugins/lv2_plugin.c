@@ -1,23 +1,10 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- *
  * This file incorporates work covered by the following copyright and
  * permission notices:
+ *
+ * ---
  *
   Copyright 2007-2016 David Robillard <http://drobilla.net>
 
@@ -32,6 +19,8 @@
   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+  ---
 
  * Copyright (C) 2008-2012 Carl Hetherington <carl@carlh.net>
  * Copyright (C) 2008-2017 Paul Davis <paul@linuxaudiosystems.com>
@@ -56,6 +45,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * ---
 */
 
 #include "zrythm-config.h"
@@ -2052,8 +2043,9 @@ lv2_plugin_pick_most_preferable_ui (
   /* get wrappable UI */
   bool ui_picked = lv2_plugin_pick_ui (
     uis, LV2_PLUGIN_UI_WRAPPABLE, &out_ui, &out_ui_type);
-  g_debug ("wrappable UI found: %d", ui_picked);
+  bool have_wrappable = ui_picked;
 
+  bool have_bridgable = false;
 #ifdef HAVE_CARLA
   /* try a bridged UI */
   if (!ui_picked && allow_bridged)
@@ -2061,17 +2053,18 @@ lv2_plugin_pick_most_preferable_ui (
       ui_picked = lv2_plugin_pick_ui (
         uis, LV2_PLUGIN_UI_FOR_BRIDGING, &out_ui,
         &out_ui_type);
-      g_debug ("bridgable UI found: %d", ui_picked);
+      have_bridgable = ui_picked;
     }
 #endif
 
   /* try an external UI */
+  bool have_external = false;
   if (!ui_picked)
     {
       ui_picked = lv2_plugin_pick_ui (
         uis, LV2_PLUGIN_UI_EXTERNAL, &out_ui, &out_ui_type);
+      have_external = ui_picked;
     }
-  g_debug ("external UI found: %d", ui_picked);
 
   if (out_ui_str)
     {
@@ -2083,6 +2076,10 @@ lv2_plugin_pick_most_preferable_ui (
       *out_ui_type_str =
         g_strdup (lilv_node_as_uri (out_ui_type));
     }
+
+  g_debug (
+    "most preferable UI: wrappable %d, bridgeable %d, external %d",
+    have_wrappable, have_bridgable, have_external);
 
   lilv_uis_free (uis);
 
@@ -2110,16 +2107,18 @@ lv2_plugin_pick_ui (
       const LilvUI *    cur_ui = lilv_uis_get (uis, u);
       const LilvNodes * ui_types =
         lilv_ui_get_classes (cur_ui);
-      g_message (
+#if 0
+      g_debug (
         "Checking UI: %s",
         lilv_node_as_uri (lilv_ui_get_uri (cur_ui)));
+#endif
       LILV_FOREACH (nodes, t, ui_types)
         {
           const LilvNode * ui_type =
             lilv_nodes_get (ui_types, t);
           const char * ui_type_uri =
             lilv_node_as_uri (ui_type);
-          g_message ("Found UI type: %s", ui_type_uri);
+          /*g_debug ("Found UI type: %s", ui_type_uri);*/
 
           bool acceptable = false;
           switch (flag)
@@ -2131,7 +2130,7 @@ lv2_plugin_pick_ui (
                 {
                   if (out_ui_type)
                     *out_ui_type = ui_type;
-                  g_message ("Wrappable UI accepted");
+                  /*g_debug ("Wrappable UI accepted");*/
                 }
               break;
             case LV2_PLUGIN_UI_EXTERNAL:
@@ -2144,7 +2143,7 @@ lv2_plugin_pick_ui (
                       *out_ui_type =
                         PM_GET_NODE (LV2_KX__externalUi);
                     }
-                  g_message ("External KX UI accepted");
+                  /*g_debug ("External KX UI accepted");*/
                 }
               break;
             case LV2_PLUGIN_UI_FOR_BRIDGING:
@@ -2179,10 +2178,12 @@ lv2_plugin_pick_ui (
                     {
                       *out_ui_type = ui_type;
                     }
-                  g_message (
+#if 0
+                  g_debug (
                     "UI %s accepted for "
                     "bridging",
                     lilv_node_as_string (ui_type));
+#endif
                 }
               break;
             }
@@ -2193,6 +2194,7 @@ lv2_plugin_pick_ui (
                 {
                   *out_ui = cur_ui;
                 }
+              g_debug ("LV2: picked UI <%s>", ui_type_uri);
               return true;
             }
         }
