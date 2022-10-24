@@ -84,7 +84,7 @@ if get_option ('tests')
 
   # internal (bundled) LV2
   if not lv2info_bin.found ()
-    error ('lv2info required for tests')
+    error ('Missing lv2info required for tests')
   endif
   foreach pl : bundled_plugins_for_tests
     name = pl['name']
