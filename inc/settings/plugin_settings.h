@@ -135,14 +135,14 @@ void
 plugin_setting_print (const PluginSetting * self);
 
 /**
- * Creates necessary tracks at the end of the
- * tracklist.
+ * Creates necessary tracks at the end of the tracklist.
  *
- * @return False if errors occurred.
+ * This may happen asynchronously so the caller should not
+ * expect the setting to be activated on return.
  */
 NONNULL
-bool
-plugin_setting_activate (PluginSetting * self);
+void
+plugin_setting_activate (const PluginSetting * self);
 
 /**
  * Increments the number of times this plugin has been
@@ -161,6 +161,9 @@ plugin_setting_increment_num_instantiations (
 NONNULL
 void
 plugin_setting_free (PluginSetting * self);
+
+void
+plugin_setting_free_closure (void * self, GClosure * closure);
 
 /**
  * Reads the file and fills up the object.

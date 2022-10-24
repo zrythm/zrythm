@@ -289,57 +289,23 @@ plugin_setting_validate (PluginSetting * self)
 }
 
 /**
- * Creates necessary tracks at the end of the
- * tracklist.
- *
- * @return False if errors occurred.
+ * Finish activating a plugin setting.
  */
-bool
-plugin_setting_activate (PluginSetting * self)
+static void
+activate_finish (
+  const PluginSetting * self,
+  bool                  autoroute_multiout,
+  bool                  has_stereo_outputs)
 {
+  bool has_errors = false;
+
   TrackType type =
     track_get_type_from_plugin_descriptor (self->descr);
 
-  bool autoroute_multiout = false;
-  if (
-    self->descr->num_audio_outs > 2
-    && type == TRACK_TYPE_INSTRUMENT)
-    {
-      GtkWidget * dialog = gtk_message_dialog_new (
-        GTK_WINDOW (MAIN_WINDOW),
-        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-        GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
-        _ ("This plugin contains multiple "
-           "audio outputs. "
-           "Would you like to auto-route each "
-           "output to a separate FX track?"));
-      int result =
-        z_gtk_dialog_run (GTK_DIALOG (dialog), true);
-
-      if (result == GTK_RESPONSE_YES)
-        {
-          autoroute_multiout = true;
-        }
-    }
-
-  bool has_errors = false;
   if (autoroute_multiout)
     {
-      GtkWidget * dialog = gtk_message_dialog_new (
-        GTK_WINDOW (MAIN_WINDOW),
-        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-        GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
-        _ ("Are the outputs stereo?"));
-      int result =
-        z_gtk_dialog_run (GTK_DIALOG (dialog), true);
-      bool stereo = false;
-      if (result == GTK_RESPONSE_YES)
-        {
-          stereo = true;
-        }
-
       int num_pairs = self->descr->num_audio_outs;
-      if (stereo)
+      if (has_stereo_outputs)
         num_pairs = num_pairs / 2;
       int num_actions = 0;
 
@@ -509,7 +475,7 @@ plugin_setting_activate (PluginSetting * self)
             }
           num_actions++;
 
-          int    l_index = stereo ? i * 2 : i;
+          int    l_index = has_stereo_outputs ? i * 2 : i;
           Port * port =
             g_ptr_array_index (pl_audio_outs, l_index);
 
@@ -526,7 +492,7 @@ plugin_setting_activate (PluginSetting * self)
             }
           num_actions++;
 
-          int r_index = stereo ? i * 2 + 1 : i;
+          int r_index = has_stereo_outputs ? i * 2 + 1 : i;
           port = g_ptr_array_index (pl_audio_outs, r_index);
 
           /* route right port to audio fx */
@@ -549,7 +515,7 @@ plugin_setting_activate (PluginSetting * self)
         undo_manager_get_last_action (UNDO_MANAGER);
       ua->num_actions = num_actions;
     }
-  else
+  else /* else if not autoroute multiout */
     {
       GError * err = NULL;
       bool     ret = track_create_for_plugin_at_idx_w_action (
@@ -564,10 +530,94 @@ plugin_setting_activate (PluginSetting * self)
 
   if (!has_errors)
     {
-      plugin_setting_increment_num_instantiations (self);
+      PluginSetting * setting_clone =
+        plugin_setting_clone (self, F_NO_VALIDATE);
+      plugin_setting_increment_num_instantiations (
+        setting_clone);
+      plugin_setting_free (setting_clone);
+    }
+}
+
+static void
+on_outputs_stereo_response (
+  GtkDialog *     dialog,
+  gint            response_id,
+  PluginSetting * self)
+{
+  bool stereo = response_id == GTK_RESPONSE_YES;
+
+  activate_finish (self, true, stereo);
+
+  gtk_window_destroy (GTK_WINDOW (dialog));
+}
+
+static void
+on_contains_multiple_outputs_response (
+  GtkDialog *     dialog,
+  gint            response_id,
+  PluginSetting * self)
+{
+  bool autoroute_multiout = response_id == GTK_RESPONSE_YES;
+
+  if (autoroute_multiout)
+    {
+      GtkWidget * stereo_dialog = gtk_message_dialog_new (
+        GTK_WINDOW (MAIN_WINDOW),
+        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+        GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
+        _ ("Are the outputs stereo?"));
+      PluginSetting * setting_clone =
+        plugin_setting_clone (self, false);
+      g_signal_connect_data (
+        stereo_dialog, "response",
+        G_CALLBACK (on_outputs_stereo_response),
+        setting_clone, plugin_setting_free_closure, 0);
+      gtk_widget_show (GTK_WIDGET (stereo_dialog));
+    }
+  else
+    {
+      activate_finish (self, false, false);
     }
 
-  return !has_errors;
+  gtk_window_destroy (GTK_WINDOW (dialog));
+}
+
+/**
+ * Creates necessary tracks at the end of the tracklist.
+ *
+ * This may happen asynchronously so the caller should not
+ * expect the setting to be activated on return.
+ */
+void
+plugin_setting_activate (const PluginSetting * self)
+{
+  TrackType type =
+    track_get_type_from_plugin_descriptor (self->descr);
+
+  if (
+    self->descr->num_audio_outs > 2
+    && type == TRACK_TYPE_INSTRUMENT)
+    {
+      GtkWidget * dialog = gtk_message_dialog_new (
+        GTK_WINDOW (MAIN_WINDOW),
+        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+        GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
+        _ ("This plugin contains multiple "
+           "audio outputs. "
+           "Would you like to auto-route each "
+           "output to a separate FX track?"));
+      PluginSetting * setting_clone =
+        plugin_setting_clone (self, false);
+      g_signal_connect_data (
+        dialog, "response",
+        G_CALLBACK (on_contains_multiple_outputs_response),
+        setting_clone, plugin_setting_free_closure, 0);
+      gtk_widget_show (GTK_WIDGET (dialog));
+    }
+  else
+    {
+      activate_finish (self, false, false);
+    }
 }
 
 /**
@@ -596,6 +646,12 @@ plugin_setting_free (PluginSetting * self)
     plugin_descriptor_free, self->descr);
 
   object_zero_and_free (self);
+}
+
+void
+plugin_setting_free_closure (void * self, GClosure * closure)
+{
+  plugin_setting_free ((PluginSetting *) self);
 }
 
 static char *
