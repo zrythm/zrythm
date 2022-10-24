@@ -40,6 +40,7 @@
 #include "audio/transport.h"
 #include "project.h"
 #include "utils/objects.h"
+#include "zrythm_app.h"
 
 /**
  * Type of MIDI event.
@@ -501,15 +502,37 @@ midi_events_add_all_notes_off (
     self->num_events++;
 }
 
+/**
+ * Adds a note off message to every MIDI channel.
+ */
 void
-midi_events_panic (MidiEvents * self, bool queued)
+midi_events_panic_without_lock (MidiEvents * self, bool queued)
 {
-  zix_sem_wait (&self->access_sem);
   /*g_message ("sending PANIC");*/
   for (midi_byte_t i = 1; i < 17; i++)
     {
       midi_events_add_all_notes_off (self, i, 0, queued);
     }
+}
+
+/**
+ * Must only be called from the UI thread.
+ */
+void
+midi_events_panic (MidiEvents * self, bool queued)
+{
+  if (zrythm_app)
+    {
+      g_return_if_fail (
+        g_thread_self () == zrythm_app->gtk_thread);
+    }
+
+  while (
+    zix_sem_try_wait (&self->access_sem) != ZIX_STATUS_SUCCESS)
+    {
+      g_usleep (10);
+    }
+  midi_events_panic_without_lock (self, queued);
   zix_sem_post (&self->access_sem);
 }
 

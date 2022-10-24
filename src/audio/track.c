@@ -804,8 +804,10 @@ track_set_recording (
     }
   else
     {
-      /*g_warn_if_reached ();*/
       g_message ("disabled recording on %s", track->name);
+
+      /* send all notes off if can record MIDI */
+      track->processor->pending_midi_panic = true;
     }
 
   if (fire_events)
@@ -2651,6 +2653,7 @@ track_fill_events (
 
   if (midi_events)
     {
+      /* FIXME don't block */
       zix_sem_wait (&midi_events->access_sem);
     }
 

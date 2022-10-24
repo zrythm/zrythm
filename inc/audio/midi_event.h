@@ -73,14 +73,11 @@ typedef struct MidiEvents
   MidiEvent events[MAX_MIDI_EVENTS];
 
   /**
-   * For queueing events from the GUI or from ALSA
-   * at random times, since they run in different
-   * threads.
+   * For queueing events from the GUI or from hardware,
+   * since they run in different threads.
    *
-   * Engine will copy them to the
-   * original MIDI events when ready to be processed
-   *
-   * Also has other uses.
+   * Engine will copy them to the unqueued MIDI events when
+   * ready to be processed.
    */
   MidiEvent    queued_events[MAX_MIDI_EVENTS];
   volatile int num_queued_events;
@@ -335,6 +332,17 @@ midi_events_add_all_notes_off (
   midi_time_t  time,
   bool         queued);
 
+/**
+ * Adds a note off message to every MIDI channel.
+ */
+NONNULL
+void
+midi_events_panic_without_lock (MidiEvents * self, bool queued);
+
+/**
+ * Must only be called from the UI thread.
+ */
+NONNULL
 void
 midi_events_panic (MidiEvents * self, bool queued);
 

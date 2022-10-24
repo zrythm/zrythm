@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -151,6 +151,14 @@ typedef struct TrackProcessor
   /** Pointer to owner track, if any. */
   Track * track;
 
+  /**
+   * To be set to true when a panic (all notes off) message
+   * should be sent during processing.
+   *
+   * Only applies to tracks that receive MIDI input.
+   */
+  bool pending_midi_panic;
+
   int magic;
 } TrackProcessor;
 
@@ -287,7 +295,7 @@ track_processor_get_track (const TrackProcessor * self);
  */
 void
 track_processor_process (
-  const TrackProcessor *              self,
+  TrackProcessor *                    self,
   const EngineProcessTimeInfo * const time_nfo);
 
 /**

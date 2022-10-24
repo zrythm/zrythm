@@ -827,7 +827,7 @@ add_events_from_midi_cc_control_ports (
  */
 void
 track_processor_process (
-  const TrackProcessor *              self,
+  TrackProcessor *                    self,
   const EngineProcessTimeInfo * const time_nfo)
 {
 #define g_start_frames (time_nfo->g_start_frames)
@@ -859,7 +859,7 @@ track_processor_process (
       /* panic MIDI if necessary */
       if (g_atomic_int_get (&AUDIO_ENGINE->panic))
         {
-          midi_events_panic (pr->midi_events, 1);
+          midi_events_panic (pr->midi_events, F_QUEUED);
         }
       /* get events from track if playing */
       else if (
@@ -1003,7 +1003,8 @@ track_processor_process (
       if (!tr->passthrough_midi_input)
         {
           midi_events_set_channel (
-            self->midi_in->midi_events, 0, tr->midi_ch);
+            self->midi_in->midi_events, F_NOT_QUEUED,
+            tr->midi_ch);
         }
 
       /* process midi bindings */
@@ -1032,6 +1033,15 @@ track_processor_process (
             self->midi_in->midi_events, local_offset, nframes,
             F_NOT_QUEUED);
         }
+
+      /* if pending a panic message, append it */
+      if (self->pending_midi_panic)
+        {
+          midi_events_panic_without_lock (
+            self->midi_out->midi_events, F_NOT_QUEUED);
+          self->pending_midi_panic = false;
+        }
+
       break;
     default:
       break;
@@ -1043,12 +1053,11 @@ track_processor_process (
       (track_type_can_record (tr->type)
        || tr->automation_tracklist.num_ats > 0))
     {
-      /* handle recording. this will only create
-       * events in regions. it will not copy the
-       * input content to the output ports.
-       * this will also create automation for MIDI
-       * CC, if any (see
-       * midi_mappings_apply_cc_events above) */
+      /* handle recording. this will only create events in
+       * regions. it will not copy the input content to the
+       * output ports.
+       * this will also create automation for MIDI CC, if any
+       * (see midi_mappings_apply_cc_events above) */
       handle_recording (self, time_nfo);
     }
 
