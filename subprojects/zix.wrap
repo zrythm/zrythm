@@ -1,4 +1,4 @@
 [wrap-git]
 url = https://github.com/drobilla/zix
 depth = 1
-revision = e883ea50dd1154294e21e946e391dd38e04d6527
+revision = main
