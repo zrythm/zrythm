@@ -1235,7 +1235,7 @@ zix_dep = dependency (
   default_options: [
     # workaround: semaphore API is disabled when tests disabled
     'tests=enabled', 'default_library=static',
-    'docs=disabled',
+    #'docs=disabled',
     ])
 
 # TODO add Cantarell font as dependency
