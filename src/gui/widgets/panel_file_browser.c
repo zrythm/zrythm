@@ -80,6 +80,9 @@ create_model_for_locations (PanelFileBrowserWidget * self)
         case FILE_MANAGER_DESKTOP:
           strcpy (icon_name, "desktop");
           break;
+        case FILE_MANAGER_DRIVE:
+          strcpy (icon_name, "drive-harddisk-symbolic");
+          break;
         }
 
       /* Add a new row to the model */

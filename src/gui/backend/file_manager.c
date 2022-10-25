@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdlib.h>
 #include <string.h>
@@ -41,8 +25,6 @@ file_manager_new (void)
 {
   FileManager * self = object_new (FileManager);
 
-  /*self->num_collections = 0;*/
-
   self->files = g_ptr_array_new_full (
     400, (GDestroyNotify) supported_file_free);
   self->locations = g_ptr_array_new_with_free_func (
@@ -65,6 +47,54 @@ file_manager_new (void)
     g_get_user_special_dir (G_USER_DIRECTORY_DESKTOP));
   fl->special_location = FILE_MANAGER_DESKTOP;
   g_ptr_array_add (self->locations, fl);
+
+  /* drives */
+  GVolumeMonitor * vol_monitor = g_volume_monitor_get ();
+  GList *          drives =
+    g_volume_monitor_get_connected_drives (vol_monitor);
+  GList * dl = drives;
+  while (dl != NULL)
+    {
+      GList * dn = dl->next;
+
+      GDrive * drive = G_DRIVE (dl->data);
+
+      g_debug ("drive: %s", g_drive_get_name (drive));
+
+      GList * vols = g_drive_get_volumes (drive);
+      GList * vl = vols;
+      while (vl != NULL)
+        {
+          GList *   vn = vl->next;
+          GVolume * vol = G_VOLUME (vl->data);
+          g_debug ("  vol: %s", g_volume_get_name (vol));
+          GMount * mount = g_volume_get_mount (vol);
+
+          if (mount)
+            {
+              GFile * loc =
+                g_mount_get_default_location (mount);
+
+              fl = file_browser_location_new ();
+              fl->label = g_volume_get_name (vol);
+              fl->path = g_file_get_path (loc);
+              fl->special_location = FILE_MANAGER_DRIVE;
+              file_browser_location_print (fl);
+              g_ptr_array_add (self->locations, fl);
+
+              g_object_unref (loc);
+              g_object_unref (mount);
+            }
+          g_object_unref (vol);
+
+          vl = vn;
+        }
+      g_list_free (vols);
+      g_object_unref (drive);
+
+      dl = dn;
+    }
+  g_list_free (drives);
 
   if (!ZRYTHM_TESTING)
     {
@@ -366,6 +396,14 @@ file_browser_location_clone (FileBrowserLocation * loc)
   self->label = g_strdup (loc->label);
 
   return self;
+}
+
+void
+file_browser_location_print (const FileBrowserLocation * loc)
+{
+  g_message (
+    "[FileBrowserLocation] %s: '%s', special: %d", loc->label,
+    loc->path, loc->special_location);
 }
 
 void
