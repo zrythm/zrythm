@@ -545,10 +545,6 @@ engine_jack_setup (AudioEngine * self)
       return -1;
     }
 
-  /* Set audio engine properties */
-  self->sample_rate = jack_get_sample_rate (self->client);
-  self->block_length = jack_get_buffer_size (self->client);
-
   /* set jack callbacks */
   int ret;
   jack_set_process_callback (self->client, process_cb, self);
@@ -573,6 +569,13 @@ engine_jack_setup (AudioEngine * self)
 #  ifdef JALV_JACK_SESSION
   /*jack_set_session_callback(client, &jack_session_cb, arg);*/
 #  endif
+
+  /* Set audio engine properties */
+  self->sample_rate = jack_get_sample_rate (self->client);
+  self->block_length = jack_get_buffer_size (self->client);
+  g_message (
+    "jack sample rate %u, block length %u", self->sample_rate,
+    self->block_length);
 
   engine_jack_set_transport_type (
     self, g_settings_get_enum (S_UI, "jack-transport-type"));
