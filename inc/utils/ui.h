@@ -666,10 +666,13 @@ AdwComboRow *
 ui_gen_audio_backends_combo_row (bool with_signal);
 
 /**
- * Sets up a MIDI backends combo box.
+ * Generates a combo row for selecting the MIDI backend.
+ *
+ * @param with_signal Add a signal to change the backend in
+ *   GSettings.
  */
-void
-ui_setup_midi_backends_combo_box (GtkComboBox * cb);
+AdwComboRow *
+ui_gen_midi_backends_combo_row (bool with_signal);
 
 /**
  * Sets up a pan algorithm combo box.

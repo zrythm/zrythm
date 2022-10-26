@@ -141,16 +141,6 @@ on_string_combo_box_active_changed (
 }
 
 static void
-on_backends_combo_box_active_changed (
-  GtkComboBox *  combo,
-  CallbackData * data)
-{
-  g_settings_set_enum (
-    data->info->settings, data->key,
-    atoi (gtk_combo_box_get_active_id (combo)));
-}
-
-static void
 on_file_set (
   GObject *    gobject,
   GParamSpec * pspec,
@@ -378,19 +368,8 @@ make_control (
     }
   else if (KEY_IS ("General", "Engine", "midi-backend"))
     {
-      /* TODO handle in similar way as audio backend */
-      widget = gtk_combo_box_new ();
-      ui_setup_midi_backends_combo_box (
-        GTK_COMBO_BOX (widget));
-      CallbackData * data = object_new (CallbackData);
-      data->info = info;
-      data->preferences_widget = self;
-      data->key = g_strdup (key);
-      g_signal_connect_data (
-        G_OBJECT (widget), "changed",
-        G_CALLBACK (on_backends_combo_box_active_changed),
-        data, (GClosureNotify) on_closure_notify_delete_data,
-        G_CONNECT_AFTER);
+      widget =
+        GTK_WIDGET (ui_gen_midi_backends_combo_row (true));
     }
   else if (KEY_IS ("General", "Engine", "audio-backend"))
     {

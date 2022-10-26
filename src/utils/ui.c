@@ -614,65 +614,6 @@ ui_create_language_model ()
 #endif
 
 static GtkTreeModel *
-ui_create_midi_backends_model (void)
-{
-  const int values[] = {
-    MIDI_BACKEND_DUMMY,
-#ifdef HAVE_ALSA
-    MIDI_BACKEND_ALSA,
-#  ifdef HAVE_RTMIDI
-    MIDI_BACKEND_ALSA_RTMIDI,
-#  endif
-#endif
-#ifdef HAVE_JACK
-    MIDI_BACKEND_JACK,
-#  ifdef HAVE_RTMIDI
-    MIDI_BACKEND_JACK_RTMIDI,
-#  endif
-#endif
-#ifdef _WOE32
-    MIDI_BACKEND_WINDOWS_MME,
-#  ifdef HAVE_RTMIDI
-    MIDI_BACKEND_WINDOWS_MME_RTMIDI,
-#  endif
-#endif
-#ifdef __APPLE__
-#  ifdef HAVE_RTMIDI
-    MIDI_BACKEND_COREMIDI_RTMIDI,
-#  endif
-#endif
-  };
-  const gchar * labels[] = {
-    _ (midi_backend_str[MIDI_BACKEND_DUMMY]),
-#ifdef HAVE_ALSA
-    _ (midi_backend_str[MIDI_BACKEND_ALSA]),
-#  ifdef HAVE_RTMIDI
-    _ (midi_backend_str[MIDI_BACKEND_ALSA_RTMIDI]),
-#  endif
-#endif
-#ifdef HAVE_JACK
-    _ (midi_backend_str[MIDI_BACKEND_JACK]),
-#  ifdef HAVE_RTMIDI
-    _ (midi_backend_str[MIDI_BACKEND_JACK_RTMIDI]),
-#  endif
-#endif
-#ifdef _WOE32
-    _ (midi_backend_str[MIDI_BACKEND_WINDOWS_MME]),
-#  ifdef HAVE_RTMIDI
-    _ (midi_backend_str[MIDI_BACKEND_WINDOWS_MME_RTMIDI]),
-#  endif
-#endif
-#ifdef __APPLE__
-#  ifdef HAVE_RTMIDI
-    _ (midi_backend_str[MIDI_BACKEND_COREMIDI_RTMIDI]),
-#  endif
-#endif
-  };
-
-  CREATE_SIMPLE_MODEL_BOILERPLATE;
-}
-
-static GtkTreeModel *
 ui_create_pan_algo_model (void)
 {
 
@@ -803,56 +744,58 @@ AdwComboRow *
 ui_gen_audio_backends_combo_row (bool with_signal)
 {
   const gchar * labels[] = {
-    _ (audio_backend_str[AUDIO_BACKEND_DUMMY]),
+    audio_backend_str[AUDIO_BACKEND_DUMMY],
 #ifdef HAVE_LIBSOUNDIO
-    _ (audio_backend_str[AUDIO_BACKEND_DUMMY_LIBSOUNDIO]),
+    audio_backend_str[AUDIO_BACKEND_DUMMY_LIBSOUNDIO],
 #endif
 #ifdef HAVE_ALSA
   /* broken */
-  /*_ (audio_backend_str[AUDIO_BACKEND_ALSA]),*/
+  /*audio_backend_str[AUDIO_BACKEND_ALSA],*/
 #  ifdef HAVE_LIBSOUNDIO
-    _ (audio_backend_str[AUDIO_BACKEND_ALSA_LIBSOUNDIO]),
+    audio_backend_str[AUDIO_BACKEND_ALSA_LIBSOUNDIO],
 #  endif
 #  ifdef HAVE_RTAUDIO
-    _ (audio_backend_str[AUDIO_BACKEND_ALSA_RTAUDIO]),
+    audio_backend_str[AUDIO_BACKEND_ALSA_RTAUDIO],
 #  endif
 #endif /* HAVE_ALSA */
 #ifdef HAVE_JACK
-    _ (audio_backend_str[AUDIO_BACKEND_JACK]),
+    audio_backend_str[AUDIO_BACKEND_JACK],
 #  ifdef HAVE_LIBSOUNDIO
-    _ (audio_backend_str[AUDIO_BACKEND_JACK_LIBSOUNDIO]),
+    audio_backend_str[AUDIO_BACKEND_JACK_LIBSOUNDIO],
 #  endif
 #  ifdef HAVE_RTAUDIO
-    _ (audio_backend_str[AUDIO_BACKEND_JACK_RTAUDIO]),
+  /* unnecessary */
+  /*audio_backend_str[AUDIO_BACKEND_JACK_RTAUDIO],*/
 #  endif
 #endif /* HAVE_JACK */
 #ifdef HAVE_PULSEAUDIO
-    _ (audio_backend_str[AUDIO_BACKEND_PULSEAUDIO]),
+    audio_backend_str[AUDIO_BACKEND_PULSEAUDIO],
 #  ifdef HAVE_LIBSOUNDIO
-    _ (audio_backend_str[AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO]),
+    audio_backend_str[AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO],
 #  endif
 #  ifdef HAVE_RTAUDIO
-    _ (audio_backend_str[AUDIO_BACKEND_PULSEAUDIO_RTAUDIO]),
+    audio_backend_str[AUDIO_BACKEND_PULSEAUDIO_RTAUDIO],
 #  endif
 #endif /* HAVE_PULSEAUDIO */
 #ifdef __APPLE__
 #  ifdef HAVE_LIBSOUNDIO
-    _ (audio_backend_str[AUDIO_BACKEND_COREAUDIO_LIBSOUNDIO]),
+    audio_backend_str[AUDIO_BACKEND_COREAUDIO_LIBSOUNDIO],
 #  endif
 #  ifdef HAVE_RTAUDIO
-    _ (audio_backend_str[AUDIO_BACKEND_COREAUDIO_RTAUDIO]),
+    audio_backend_str[AUDIO_BACKEND_COREAUDIO_RTAUDIO],
 #  endif
 #endif /* __APPLE__ */
 #ifdef HAVE_SDL
-    _ (audio_backend_str[AUDIO_BACKEND_SDL]),
+  /* has issues */
+  /*audio_backend_str[AUDIO_BACKEND_SDL],*/
 #endif
 #ifdef _WOE32
 #  ifdef HAVE_LIBSOUNDIO
-    _ (audio_backend_str[AUDIO_BACKEND_WASAPI_LIBSOUNDIO]),
+    audio_backend_str[AUDIO_BACKEND_WASAPI_LIBSOUNDIO],
 #  endif
 #  ifdef HAVE_RTAUDIO
-    _ (audio_backend_str[AUDIO_BACKEND_WASAPI_RTAUDIO]),
-    _ (audio_backend_str[AUDIO_BACKEND_ASIO_RTAUDIO]),
+    audio_backend_str[AUDIO_BACKEND_WASAPI_RTAUDIO],
+    audio_backend_str[AUDIO_BACKEND_ASIO_RTAUDIO],
 #  endif
 #endif /* _WOE32 */
     NULL,
@@ -868,7 +811,8 @@ ui_gen_audio_backends_combo_row (bool with_signal)
   for (size_t i = 0; i < G_N_ELEMENTS (labels); i++)
     {
       if (string_is_equal (
-            _ (audio_backend_str[selected]), labels[i]))
+            engine_audio_backend_to_string (selected),
+            labels[i]))
         {
           adw_combo_row_set_selected (combo_row, i);
           break;
@@ -886,20 +830,88 @@ ui_gen_audio_backends_combo_row (bool with_signal)
   return combo_row;
 }
 
-/**
- * Sets up a MIDI backends combo box.
- */
-void
-ui_setup_midi_backends_combo_box (GtkComboBox * cb)
+static void
+on_midi_backend_selected_item_changed (
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
 {
-  z_gtk_configure_simple_combo_box (
-    cb, ui_create_midi_backends_model ());
+  AdwComboRow *     combo_row = ADW_COMBO_ROW (gobject);
+  GtkStringObject * selected_item = GTK_STRING_OBJECT (
+    adw_combo_row_get_selected_item (combo_row));
+  const char * str =
+    gtk_string_object_get_string (selected_item);
+  MidiBackend backend = engine_midi_backend_from_string (str);
+  g_settings_set_enum (
+    S_P_GENERAL_ENGINE, "midi-backend", backend);
+}
 
-  char id[40];
-  sprintf (
-    id, "%d",
-    g_settings_get_enum (S_P_GENERAL_ENGINE, "midi-backend"));
-  gtk_combo_box_set_active_id (GTK_COMBO_BOX (cb), id);
+/**
+ * Generates a combo row for selecting the MIDI backend.
+ *
+ * @param with_signal Add a signal to change the backend in
+ *   GSettings.
+ */
+AdwComboRow *
+ui_gen_midi_backends_combo_row (bool with_signal)
+{
+  const gchar * labels[] = {
+    midi_backend_str[MIDI_BACKEND_DUMMY],
+#ifdef HAVE_ALSA
+  /* broken */
+  /*midi_backend_str[MIDI_BACKEND_ALSA],*/
+#  ifdef HAVE_RTMIDI
+    midi_backend_str[MIDI_BACKEND_ALSA_RTMIDI],
+#  endif
+#endif
+#ifdef HAVE_JACK
+    midi_backend_str[MIDI_BACKEND_JACK],
+#  ifdef HAVE_RTMIDI
+  /* unnecessary */
+  /*midi_backend_str[MIDI_BACKEND_JACK_RTMIDI],*/
+#  endif
+#endif
+#ifdef _WOE32
+    midi_backend_str[MIDI_BACKEND_WINDOWS_MME],
+#  ifdef HAVE_RTMIDI
+    midi_backend_str[MIDI_BACKEND_WINDOWS_MME_RTMIDI],
+#  endif
+#endif /* _WOE32 */
+#ifdef __APPLE__
+#  ifdef HAVE_RTMIDI
+    midi_backend_str[MIDI_BACKEND_COREMIDI_RTMIDI],
+#  endif
+#endif /* __APPLE__ */
+    NULL,
+  };
+  GtkStringList * string_list = gtk_string_list_new (labels);
+  AdwComboRow *   combo_row =
+    ADW_COMBO_ROW (adw_combo_row_new ());
+  adw_combo_row_set_model (
+    combo_row, G_LIST_MODEL (string_list));
+
+  int selected =
+    g_settings_get_enum (S_P_GENERAL_ENGINE, "midi-backend");
+  for (size_t i = 0; i < G_N_ELEMENTS (labels); i++)
+    {
+      if (string_is_equal (
+            engine_midi_backend_to_string (selected),
+            labels[i]))
+        {
+          adw_combo_row_set_selected (combo_row, i);
+          break;
+        }
+    }
+
+  if (with_signal)
+    {
+      g_signal_connect (
+        G_OBJECT (combo_row), "notify::selected-item",
+        G_CALLBACK (on_midi_backend_selected_item_changed),
+        NULL);
+    }
+
+  return combo_row;
 }
 
 /**
