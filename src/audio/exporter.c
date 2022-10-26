@@ -87,34 +87,36 @@ export_audio (ExportSettings * info)
 
 #define EXPORT_CHANNELS 2
 
+  int type_major = 0;
+
   switch (info->format)
     {
     case EXPORT_FORMAT_AIFF:
-      sfinfo.format = SF_FORMAT_AIFF;
+      type_major = SF_FORMAT_AIFF;
       break;
     case EXPORT_FORMAT_AU:
-      sfinfo.format = SF_FORMAT_AU;
+      type_major = SF_FORMAT_AU;
       break;
     case EXPORT_FORMAT_CAF:
-      sfinfo.format = SF_FORMAT_CAF;
+      type_major = SF_FORMAT_CAF;
       break;
     case EXPORT_FORMAT_FLAC:
-      sfinfo.format = SF_FORMAT_FLAC;
+      type_major = SF_FORMAT_FLAC;
       break;
     case EXPORT_FORMAT_RAW:
-      sfinfo.format = SF_FORMAT_RAW;
+      type_major = SF_FORMAT_RAW;
       break;
     case EXPORT_FORMAT_WAV:
-      sfinfo.format = SF_FORMAT_WAV;
+      type_major = SF_FORMAT_WAV;
       break;
     case EXPORT_FORMAT_W64:
-      sfinfo.format = SF_FORMAT_W64;
+      type_major = SF_FORMAT_W64;
       break;
     case EXPORT_FORMAT_OGG_VORBIS:
 #ifdef HAVE_OPUS
     case EXPORT_FORMAT_OGG_OPUS:
 #endif
-      sfinfo.format = SF_FORMAT_OGG;
+      type_major = SF_FORMAT_OGG;
       break;
     default:
       {
@@ -132,31 +134,34 @@ export_audio (ExportSettings * info)
       break;
     }
 
+  int type_minor = 0;
   if (info->format == EXPORT_FORMAT_OGG_VORBIS)
     {
-      sfinfo.format = sfinfo.format | SF_FORMAT_VORBIS;
+      type_minor = SF_FORMAT_VORBIS;
     }
 #ifdef HAVE_OPUS
   else if (info->format == EXPORT_FORMAT_OGG_OPUS)
     {
-      sfinfo.format = sfinfo.format | SF_FORMAT_OPUS;
+      type_minor = SF_FORMAT_OPUS;
     }
 #endif
   else if (info->depth == BIT_DEPTH_16)
     {
-      sfinfo.format = sfinfo.format | SF_FORMAT_PCM_16;
+      type_minor = SF_FORMAT_PCM_16;
       g_message ("PCM 16");
     }
   else if (info->depth == BIT_DEPTH_24)
     {
-      sfinfo.format = sfinfo.format | SF_FORMAT_PCM_24;
+      type_minor = SF_FORMAT_PCM_24;
       g_message ("PCM 24");
     }
   else if (info->depth == BIT_DEPTH_32)
     {
-      sfinfo.format = sfinfo.format | SF_FORMAT_PCM_32;
+      type_minor = SF_FORMAT_PCM_32;
       g_message ("PCM 32");
     }
+
+  sfinfo.format = type_major | type_minor;
 
   switch (info->time_range)
     {
@@ -224,6 +229,18 @@ export_audio (ExportSettings * info)
         info->progress_info.error_str,
         _ ("Couldn't open SNDFILE %s:\n%d: %s"),
         info->file_uri, error, error_str);
+      g_warning ("%s", info->progress_info.error_str);
+
+      return -1;
+    }
+  if (sfinfo.format != (type_major | type_minor))
+    {
+      info->progress_info.has_error = true;
+      sprintf (
+        info->progress_info.error_str,
+        _ ("Invalid SNDFILE format %s: 0x%08X != 0x%08X"),
+        info->file_uri, sfinfo.format,
+        type_major | type_minor);
       g_warning ("%s", info->progress_info.error_str);
 
       return -1;
