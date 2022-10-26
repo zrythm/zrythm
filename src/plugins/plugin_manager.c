@@ -1627,8 +1627,10 @@ plugin_manager_free (PluginManager * self)
   for (int i = 0; i < self->num_nodes; i++)
     {
       LilvNode * node = self->nodes[i];
+#if 0
       g_debug (
         "freeing lilv node: %s", lilv_node_as_string (node));
+#endif
       lilv_node_free (node);
     }
 
