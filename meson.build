@@ -1140,7 +1140,9 @@ rtaudio_dep = dependency (
   version: '>=5.1.0',
   fallback: ['rtaudio', 'rtaudio_dep'],
   default_options: [
-    'jack=' + (os_windows or installer_ver ? 'disabled' : 'auto'),
+    # always disable jack - unnecessary
+    #'jack=' + (os_windows or installer_ver ? 'disabled' : 'auto'),
+    'jack=disabled',
     # TODO use shared in the future so .dll can be
     # replaced on windows
     'default_library=static',

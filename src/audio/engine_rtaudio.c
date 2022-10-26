@@ -1,7 +1,5 @@
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 #include "zrythm-config.h"
 
@@ -136,7 +134,7 @@ engine_rtaudio_create_rtaudio (AudioEngine * self)
       return NULL;
     }
 
-  g_message ("calling rtaudio_create...");
+  g_debug ("calling rtaudio_create...");
   rtaudio = rtaudio_create (api);
 
   if (rtaudio_error (rtaudio))
@@ -145,7 +143,7 @@ engine_rtaudio_create_rtaudio (AudioEngine * self)
       return NULL;
     }
 
-  g_message ("rtaudio_create() successful");
+  g_debug ("rtaudio_create() successful");
 
   return rtaudio;
 }
@@ -260,6 +258,12 @@ engine_rtaudio_setup (AudioEngine * self)
         rtaudio_error (self->rtaudio));
       return -1;
     }
+  bool is_open = rtaudio_is_stream_open (self->rtaudio);
+  if (!is_open)
+    {
+      g_warning ("RtAudio stream failed to open");
+      return -1;
+    }
   self->block_length = buffer_size;
   self->sample_rate = (sample_rate_t) samplerate;
 
@@ -312,8 +316,14 @@ engine_rtaudio_get_device_names (
   char **       names,
   int *         num_names)
 {
-  rtaudio_t rtaudio = engine_rtaudio_create_rtaudio (self);
-  int       num_devs = rtaudio_device_count (rtaudio);
+  bool      reuse_rtaudio = true;
+  rtaudio_t rtaudio = self->rtaudio;
+  if (!rtaudio)
+    {
+      reuse_rtaudio = false;
+      rtaudio = engine_rtaudio_create_rtaudio (self);
+    }
+  int num_devs = rtaudio_device_count (rtaudio);
   *num_names = 0;
   for (int i = 0; i < num_devs; i++)
     {
@@ -338,7 +348,10 @@ engine_rtaudio_get_device_names (
       g_message (
         "RtAudio device %d: %s", i, names[*num_names - 1]);
     }
-  rtaudio_destroy (rtaudio);
+  if (!reuse_rtaudio)
+    {
+      rtaudio_destroy (rtaudio);
+    }
 }
 
 /**

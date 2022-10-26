@@ -363,10 +363,6 @@ hardware_processor_setup (HardwareProcessor * self)
   return 0;
 }
 
-/*void*/
-/*hardware_processor_find_or_create_rtaudio_dev (*/
-/*HardwareProcessor * self,*/
-
 /**
  * Starts or stops the ports.
  *

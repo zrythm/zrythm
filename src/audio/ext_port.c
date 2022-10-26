@@ -1,7 +1,5 @@
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 #include "zrythm-config.h"
 
@@ -608,8 +606,13 @@ get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
    * the zrythm side */
   if (flow == FLOW_OUTPUT)
     {
-      rtaudio_t rtaudio =
-        engine_rtaudio_create_rtaudio (AUDIO_ENGINE);
+      bool      reuse_rtaudio = true;
+      rtaudio_t rtaudio = AUDIO_ENGINE->rtaudio;
+      if (!rtaudio)
+        {
+          reuse_rtaudio = false;
+          rtaudio = engine_rtaudio_create_rtaudio (AUDIO_ENGINE);
+        }
       if (!rtaudio)
         {
           g_warn_if_reached ();
@@ -646,12 +649,20 @@ get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
               continue;
             }
         }
-      rtaudio_destroy (rtaudio);
+      if (!reuse_rtaudio)
+        {
+          rtaudio_destroy (rtaudio);
+        }
     }
   else if (flow == FLOW_INPUT)
     {
-      rtaudio_t rtaudio =
-        engine_rtaudio_create_rtaudio (AUDIO_ENGINE);
+      bool      reuse_rtaudio = true;
+      rtaudio_t rtaudio = AUDIO_ENGINE->rtaudio;
+      if (!rtaudio)
+        {
+          reuse_rtaudio = false;
+          rtaudio = engine_rtaudio_create_rtaudio (AUDIO_ENGINE);
+        }
       if (!rtaudio)
         {
           g_warn_if_reached ();
@@ -687,6 +698,10 @@ get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
             {
               continue;
             }
+        }
+      if (!reuse_rtaudio)
+        {
+          rtaudio_destroy (rtaudio);
         }
     }
 }
