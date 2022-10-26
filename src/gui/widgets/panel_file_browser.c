@@ -575,6 +575,17 @@ refilter_files (PanelFileBrowserWidget * self)
     GTK_FILTER_CHANGE_DIFFERENT);
 }
 
+static void
+on_file_filter_option_changed (
+  GSettings * settings,
+  char *      key,
+  gpointer    user_data)
+{
+  PanelFileBrowserWidget * self =
+    Z_PANEL_FILE_BROWSER_WIDGET (user_data);
+  refilter_files (self);
+}
+
 PanelFileBrowserWidget *
 panel_file_browser_widget_new ()
 {
@@ -710,6 +721,15 @@ panel_file_browser_widget_init (PanelFileBrowserWidget * self)
   gtk_widget_set_hexpand (GTK_WIDGET (self->paned), true);
 
   self->selected_files = g_ptr_array_new ();
+
+  /* re-filter when these change */
+  g_signal_connect (
+    G_OBJECT (S_UI_FILE_BROWSER),
+    "changed::show-unsupported-files",
+    G_CALLBACK (on_file_filter_option_changed), self);
+  g_signal_connect (
+    G_OBJECT (S_UI_FILE_BROWSER), "changed::show-hidden-files",
+    G_CALLBACK (on_file_filter_option_changed), self);
 
   gtk_widget_add_css_class (GTK_WIDGET (self), "file-browser");
 }
