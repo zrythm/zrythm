@@ -82,10 +82,23 @@ on_enum_drop_down_selection_changed (
   gpointer     user_data)
 {
   CallbackData * data = (CallbackData *) user_data;
-  GtkDropDown *  dropdown = GTK_DROP_DOWN (gobject);
+  unsigned int   idx;
+  if (GTK_IS_DROP_DOWN (gobject))
+    {
+      GtkDropDown * dropdown = GTK_DROP_DOWN (gobject);
+      idx = gtk_drop_down_get_selected (dropdown);
+    }
+  else if (ADW_IS_COMBO_ROW (gobject))
+    {
+      AdwComboRow * combo_row = ADW_COMBO_ROW (gobject);
+      idx = adw_combo_row_get_selected (combo_row);
+    }
+  else
+    {
+      g_return_if_reached ();
+    }
   g_settings_set_enum (
-    data->info->settings, data->key,
-    (int) gtk_drop_down_get_selected (dropdown));
+    data->info->settings, data->key, (gint) idx);
 }
 
 static void
@@ -95,9 +108,23 @@ on_string_drop_down_selection_changed (
   gpointer     user_data)
 {
   CallbackData *    data = (CallbackData *) user_data;
-  GtkDropDown *     dropdown = GTK_DROP_DOWN (gobject);
-  GtkStringObject * str_obj = GTK_STRING_OBJECT (
-    gtk_drop_down_get_selected_item (dropdown));
+  GtkStringObject * str_obj = NULL;
+  if (GTK_IS_DROP_DOWN (gobject))
+    {
+      GtkDropDown * dropdown = GTK_DROP_DOWN (gobject);
+      str_obj = GTK_STRING_OBJECT (
+        gtk_drop_down_get_selected_item (dropdown));
+    }
+  else if (ADW_IS_COMBO_ROW (gobject))
+    {
+      AdwComboRow * combo_row = ADW_COMBO_ROW (gobject);
+      str_obj = GTK_STRING_OBJECT (
+        adw_combo_row_get_selected_item (combo_row));
+    }
+  else
+    {
+      g_return_if_reached ();
+    }
   g_return_if_fail (str_obj);
   const char * str = gtk_string_object_get_string (str_obj);
   g_settings_set_string (data->info->settings, data->key, str);
@@ -431,8 +458,9 @@ make_control (
       gtk_string_list_splice (
         string_list, 1, 0, (const char **) css_themes);
       g_strfreev (css_themes);
-      widget =
-        gtk_drop_down_new (G_LIST_MODEL (string_list), NULL);
+      widget = adw_combo_row_new ();
+      adw_combo_row_set_model (
+        ADW_COMBO_ROW (widget), G_LIST_MODEL (string_list));
 
       /* select */
       char * selected_str =
@@ -451,8 +479,8 @@ make_control (
             }
         }
       g_free (selected_str);
-      gtk_drop_down_set_selected (
-        GTK_DROP_DOWN (widget), selected_idx);
+      adw_combo_row_set_selected (
+        ADW_COMBO_ROW (widget), selected_idx);
 
       CallbackData * data = object_new (CallbackData);
       data->info = info;
@@ -595,10 +623,12 @@ make_control (
                         string_list, _ (strv[i]));
                     }
                 }
-              widget = gtk_drop_down_new (
-                G_LIST_MODEL (string_list), NULL);
-              gtk_drop_down_set_selected (
-                GTK_DROP_DOWN (widget),
+              widget = adw_combo_row_new ();
+              adw_combo_row_set_model (
+                ADW_COMBO_ROW (widget),
+                G_LIST_MODEL (string_list));
+              adw_combo_row_set_selected (
+                ADW_COMBO_ROW (widget),
                 (unsigned int) g_settings_get_enum (
                   info->settings, key));
               CallbackData * data = object_new (CallbackData);
@@ -782,10 +812,6 @@ add_subgroup (
                 {
                   gtk_widget_set_hexpand (widget, true);
                 }
-#if 0
-              gtk_widget_set_tooltip_text (
-                widget, description);
-#endif
               gtk_widget_set_valign (widget, GTK_ALIGN_CENTER);
               adw_action_row_add_suffix (
                 ADW_ACTION_ROW (row), widget);
