@@ -1020,7 +1020,7 @@ const char *
 engine_audio_backend_to_string (AudioBackend backend);
 
 AudioBackend
-engine_audio_backend_from_string (char * str);
+engine_audio_backend_from_string (const char * str);
 
 /**
  * Returns the MIDI backend as a string.
@@ -1032,7 +1032,7 @@ engine_midi_backend_to_string (MidiBackend backend)
 }
 
 MidiBackend
-engine_midi_backend_from_string (char * str);
+engine_midi_backend_from_string (const char * str);
 
 /**
  * Reset the bounce mode on the engine, all tracks

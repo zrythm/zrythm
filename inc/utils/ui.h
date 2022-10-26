@@ -16,6 +16,7 @@
 #include "utils/localization.h"
 #include "utils/types.h"
 
+#include <adwaita.h>
 #include <gtk/gtk.h>
 
 typedef struct Position Position;
@@ -656,10 +657,13 @@ void
 ui_setup_language_dropdown (GtkDropDown * dropdown);
 
 /**
- * Sets up an audio backends combo box.
+ * Generates a combo row for selecting the audio backend.
+ *
+ * @param with_signal Add a signal to change the backend in
+ *   GSettings.
  */
-void
-ui_setup_audio_backends_combo_box (GtkComboBox * cb);
+AdwComboRow *
+ui_gen_audio_backends_combo_row (bool with_signal);
 
 /**
  * Sets up a MIDI backends combo box.

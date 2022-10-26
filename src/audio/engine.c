@@ -1896,7 +1896,7 @@ engine_samplerate_enum_to_int (
 }
 
 AudioBackend
-engine_audio_backend_from_string (char * str)
+engine_audio_backend_from_string (const char * str)
 {
   for (int i = 0; i < NUM_AUDIO_BACKENDS; i++)
     {
@@ -1924,7 +1924,7 @@ engine_audio_backend_from_string (char * str)
 }
 
 MidiBackend
-engine_midi_backend_from_string (char * str)
+engine_midi_backend_from_string (const char * str)
 {
   for (int i = 0; i < NUM_MIDI_BACKENDS; i++)
     {

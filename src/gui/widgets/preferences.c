@@ -351,6 +351,7 @@ make_control (
     }
   else if (KEY_IS ("General", "Engine", "midi-backend"))
     {
+      /* TODO handle in similar way as audio backend */
       widget = gtk_combo_box_new ();
       ui_setup_midi_backends_combo_box (
         GTK_COMBO_BOX (widget));
@@ -366,18 +367,8 @@ make_control (
     }
   else if (KEY_IS ("General", "Engine", "audio-backend"))
     {
-      widget = gtk_combo_box_new ();
-      ui_setup_audio_backends_combo_box (
-        GTK_COMBO_BOX (widget));
-      CallbackData * data = object_new (CallbackData);
-      data->info = info;
-      data->preferences_widget = self;
-      data->key = g_strdup (key);
-      g_signal_connect_data (
-        G_OBJECT (widget), "changed",
-        G_CALLBACK (on_backends_combo_box_active_changed),
-        data, (GClosureNotify) on_closure_notify_delete_data,
-        G_CONNECT_AFTER);
+      widget =
+        GTK_WIDGET (ui_gen_audio_backends_combo_row (true));
     }
   else if (KEY_IS ("General", "Engine", "audio-inputs"))
     {
@@ -758,34 +749,47 @@ add_subgroup (
 
       g_message ("adding control for %s", key);
 
-      /* create a row to add controls */
-      AdwPreferencesRow * row =
-        ADW_PREFERENCES_ROW (adw_action_row_new ());
-      adw_preferences_row_set_title (row, summary);
-      adw_action_row_set_subtitle (
-        ADW_ACTION_ROW (row), description);
-      adw_preferences_group_add (subgroup, GTK_WIDGET (row));
-
       /* add control */
       GtkWidget * widget =
         make_control (self, group_idx, subgroup_idx, key);
       if (widget)
         {
-          if (GTK_IS_SWITCH (widget))
+          AdwPreferencesRow * row = NULL;
+          if (ADW_IS_COMBO_ROW (widget))
             {
-              gtk_widget_set_halign (widget, GTK_ALIGN_START);
+              row = ADW_PREFERENCES_ROW (widget);
             }
           else
             {
-              gtk_widget_set_hexpand (widget, true);
+              row =
+                ADW_PREFERENCES_ROW (adw_action_row_new ());
             }
+
+          adw_preferences_row_set_title (row, summary);
+          adw_action_row_set_subtitle (
+            ADW_ACTION_ROW (row), description);
+          adw_preferences_group_add (
+            subgroup, GTK_WIDGET (row));
+
+          if (!ADW_IS_COMBO_ROW (widget))
+            {
+              if (GTK_IS_SWITCH (widget))
+                {
+                  gtk_widget_set_halign (
+                    widget, GTK_ALIGN_START);
+                }
+              else
+                {
+                  gtk_widget_set_hexpand (widget, true);
+                }
 #if 0
-          gtk_widget_set_tooltip_text (
-            widget, description);
+              gtk_widget_set_tooltip_text (
+                widget, description);
 #endif
-          gtk_widget_set_valign (widget, GTK_ALIGN_CENTER);
-          adw_action_row_add_suffix (
-            ADW_ACTION_ROW (row), widget);
+              gtk_widget_set_valign (widget, GTK_ALIGN_CENTER);
+              adw_action_row_add_suffix (
+                ADW_ACTION_ROW (row), widget);
+            }
           num_controls++;
         }
       else

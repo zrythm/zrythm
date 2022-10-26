@@ -23,7 +23,7 @@ option (
   'portaudio',
   type: 'feature',
   value: 'disabled',
-  description: 'Compile with portaudio support')
+  description: 'Compile with portaudio support (BROKEN)')
 
 option (
   'rtmidi',
