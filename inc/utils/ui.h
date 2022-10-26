@@ -654,7 +654,7 @@ ui_show_notification_idle_func (char * msg);
  * languages.
  */
 void
-ui_setup_language_dropdown (GtkDropDown * dropdown);
+ui_setup_language_combo_row (AdwComboRow * combo_row);
 
 /**
  * Generates a combo row for selecting the audio backend.

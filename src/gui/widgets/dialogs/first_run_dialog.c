@@ -89,8 +89,8 @@ first_run_dialog_widget_reset (FirstRunDialogWidget * self)
   g_object_unref (gf_dir);
 
   /* reset language */
-  ui_setup_language_dropdown (self->language_dropdown);
-  gtk_drop_down_set_selected (self->language_dropdown, LL_EN);
+  ui_setup_language_combo_row (self->language_dropdown);
+  adw_combo_row_set_selected (self->language_dropdown, LL_EN);
   gtk_widget_set_visible (
     GTK_WIDGET (self->lang_error_txt), false);
 }
@@ -101,10 +101,10 @@ on_language_changed (
   GParamSpec *           pspec,
   FirstRunDialogWidget * self)
 {
-  GtkDropDown * dropdown = self->language_dropdown;
+  AdwComboRow * combo_row = self->language_dropdown;
 
   LocalizationLanguage lang = (LocalizationLanguage)
-    gtk_drop_down_get_selected (dropdown);
+    adw_combo_row_get_selected (combo_row);
 
   g_message (
     "language changed to %s",
@@ -206,21 +206,17 @@ first_run_dialog_widget_init (FirstRunDialogWidget * self)
   AdwActionRow * row;
 
   /* setup languages */
-  row = ADW_ACTION_ROW (adw_action_row_new ());
+  self->language_dropdown =
+    ADW_COMBO_ROW (adw_combo_row_new ());
+  ui_setup_language_combo_row (self->language_dropdown);
+  row = ADW_ACTION_ROW (self->language_dropdown);
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (row), _ ("Language"));
   adw_action_row_set_subtitle (row, _ ("Preferred language"));
-  self->language_dropdown =
-    GTK_DROP_DOWN (gtk_drop_down_new (NULL, NULL));
-  ui_setup_language_dropdown (self->language_dropdown);
   g_signal_connect (
     G_OBJECT (self->language_dropdown), "notify::selected",
     G_CALLBACK (on_language_changed), self);
   on_language_changed (NULL, NULL, self);
-  gtk_widget_set_valign (
-    GTK_WIDGET (self->language_dropdown), GTK_ALIGN_CENTER);
-  adw_action_row_add_suffix (
-    row, GTK_WIDGET (self->language_dropdown));
   adw_preferences_group_add (pref_group, GTK_WIDGET (row));
 
   /* set zrythm dir */

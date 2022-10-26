@@ -757,7 +757,7 @@ ui_create_samplerate_model (void)
  * languages.
  */
 void
-ui_setup_language_dropdown (GtkDropDown * dropdown)
+ui_setup_language_combo_row (AdwComboRow * combo_row)
 {
   GtkStringList * string_list = gtk_string_list_new (NULL);
   const char **   lang_strings_w_codes =
@@ -767,13 +767,13 @@ ui_setup_language_dropdown (GtkDropDown * dropdown)
       gtk_string_list_append (
         string_list, lang_strings_w_codes[i]);
     }
-  gtk_drop_down_set_model (
-    dropdown, G_LIST_MODEL (string_list));
+  adw_combo_row_set_model (
+    combo_row, G_LIST_MODEL (string_list));
 
   int active_lang =
     g_settings_get_enum (S_P_UI_GENERAL, "language");
-  gtk_drop_down_set_selected (
-    dropdown, (unsigned int) active_lang);
+  adw_combo_row_set_selected (
+    combo_row, (unsigned int) active_lang);
 }
 
 static void

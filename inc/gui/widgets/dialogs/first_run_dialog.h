@@ -4,6 +4,7 @@
 #ifndef __GUI_WIDGETS_FIRST_RUN_DIALOG_H__
 #define __GUI_WIDGETS_FIRST_RUN_DIALOG_H__
 
+#include <adwaita.h>
 #include <gtk/gtk.h>
 
 #define FIRST_RUN_DIALOG_WIDGET_TYPE \
@@ -23,7 +24,7 @@ typedef struct _FirstRunDialogWidget
 {
   GtkDialog parent_instance;
 
-  GtkDropDown *         language_dropdown;
+  AdwComboRow *         language_dropdown;
   IdeFileChooserEntry * fc_entry;
 
   GtkLabel * lang_error_txt;
