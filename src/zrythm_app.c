@@ -583,8 +583,8 @@ on_prompt_for_project (
     {
       if (g_settings_get_boolean (S_GENERAL, "first-run"))
         {
-          GtkDialog * dialog =
-            welcome_message_dialog_new (NULL);
+          GtkDialog * dialog = welcome_message_dialog_new (
+            GTK_WINDOW (self->splash));
           gtk_widget_show (GTK_WIDGET (dialog));
           g_signal_connect (
             G_OBJECT (dialog), "response",
