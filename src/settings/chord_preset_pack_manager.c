@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -157,7 +141,7 @@ add_standard_packs (ChordPresetPackManager * self)
   pack = chord_preset_pack_new (_ ("Eastern Pop"), true);
 
   /* fight together */
-  pset = chord_preset_new (_ ("Together"));
+  pset = chord_preset_new ("Fight Together");
   ADD_SIMPLE_CHORDS (
     NOTE_G, CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MAJ, NOTE_D,
     CHORD_TYPE_MAJ, NOTE_G, CHORD_TYPE_MAJ, NOTE_A,
@@ -169,7 +153,7 @@ add_standard_packs (ChordPresetPackManager * self)
   chord_preset_free (pset);
 
   /* gee */
-  pset = chord_preset_new (_ ("GG"));
+  pset = chord_preset_new ("Gee");
   ADD_SIMPLE_CHORDS (
     NOTE_A, CHORD_TYPE_MAJ, NOTE_FS, CHORD_TYPE_MIN, NOTE_GS,
     CHORD_TYPE_MIN, NOTE_GS, CHORD_TYPE_MIN, NOTE_CS,
@@ -184,7 +168,7 @@ add_standard_packs (ChordPresetPackManager * self)
   chord_preset_free (pset);
 
   /* yuriyurarararayuruyuri */
-  pset = chord_preset_new (_ ("Daijiken"));
+  pset = chord_preset_new ("Daijiken");
   ADD_SIMPLE_CHORDS (
     NOTE_DS, CHORD_TYPE_MAJ, NOTE_AS, CHORD_TYPE_MIN, NOTE_F,
     CHORD_TYPE_MAJ, NOTE_AS, CHORD_TYPE_MIN, NOTE_GS,
@@ -202,7 +186,7 @@ add_standard_packs (ChordPresetPackManager * self)
   pack = chord_preset_pack_new (_ ("Dance"), true);
 
   /* the idolm@ster 2 */
-  pset = chord_preset_new (_ ("Idol 1"));
+  pset = chord_preset_new ("Idol 2");
   ADD_SIMPLE_4CHORDS (
     NOTE_C, CHORD_TYPE_MAJ, NOTE_D, CHORD_TYPE_MAJ, NOTE_B,
     CHORD_TYPE_MIN, NOTE_E, CHORD_TYPE_MIN);
@@ -230,7 +214,7 @@ add_standard_packs (ChordPresetPackManager * self)
   chord_preset_free (pset);
 
   /* connect */
-  pset = chord_preset_new (_ ("Connection"));
+  pset = chord_preset_new ("Connect");
   ADD_SIMPLE_CHORDS (
     NOTE_B, CHORD_TYPE_MAJ, NOTE_CS, CHORD_TYPE_MAJ, NOTE_AS,
     CHORD_TYPE_MIN, NOTE_DS, CHORD_TYPE_MIN, NOTE_GS,
@@ -244,7 +228,7 @@ add_standard_packs (ChordPresetPackManager * self)
   chord_preset_free (pset);
 
   /* secret base */
-  pset = chord_preset_new (_ ("Secret Base"));
+  pset = chord_preset_new ("Secret Base");
   ADD_SIMPLE_CHORDS (
     NOTE_B, CHORD_TYPE_MAJ, NOTE_CS, CHORD_TYPE_MAJ, NOTE_DS,
     CHORD_TYPE_MIN, NOTE_CS, CHORD_TYPE_MAJ, NOTE_B,
@@ -300,8 +284,8 @@ add_standard_packs (ChordPresetPackManager * self)
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
-  /* believe */
-  pset = chord_preset_new (_ ("Future"));
+  /* believe / dreamin' of you */
+  pset = chord_preset_new ("Dreamin' Of You");
   ADD_SIMPLE_CHORDS (
     NOTE_F, CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_MAJ, NOTE_D,
     CHORD_TYPE_MIN, NOTE_AS, CHORD_TYPE_MAJ, NOTE_G,
@@ -313,7 +297,7 @@ add_standard_packs (ChordPresetPackManager * self)
   chord_preset_free (pset);
 
   /* get me power */
-  pset = chord_preset_new ("2 Power");
+  pset = chord_preset_new ("Get Me Power");
   ADD_SIMPLE_CHORDS (
     NOTE_B, CHORD_TYPE_MIN, NOTE_E, CHORD_TYPE_MIN, NOTE_D,
     CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MAJ, NOTE_G,
@@ -350,7 +334,7 @@ add_standard_packs (ChordPresetPackManager * self)
   chord_preset_free (pset);
 
   /* break in2 the nite */
-  pset = chord_preset_new ("Step in2 the Night");
+  pset = chord_preset_new ("Step in2 the Nite");
   ADD_SIMPLE_CHORDS (
     NOTE_D, CHORD_TYPE_MIN, NOTE_F, CHORD_TYPE_MAJ, NOTE_C,
     CHORD_TYPE_MAJ, NOTE_D, CHORD_TYPE_MIN, NOTE_AS,
@@ -369,7 +353,7 @@ add_standard_packs (ChordPresetPackManager * self)
   pack =
     chord_preset_pack_new (_ ("Progressive Trance"), true);
 
-  pset = chord_preset_new (_ ("Sajek Valley"));
+  pset = chord_preset_new ("Sajek Valley");
   ADD_SIMPLE_CHORDS (
     NOTE_A, CHORD_TYPE_MIN, NOTE_D, CHORD_TYPE_MIN, NOTE_F,
     CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_MAJ, NOTE_G,
@@ -388,7 +372,7 @@ add_standard_packs (ChordPresetPackManager * self)
 
   pack = chord_preset_pack_new (_ ("Rock"), true);
 
-  pset = chord_preset_new (_ ("Overdrive"));
+  pset = chord_preset_new ("Overdrive");
   ADD_SIMPLE_CHORDS (
     NOTE_FS, CHORD_TYPE_MAJ, NOTE_GS, CHORD_TYPE_MAJ, NOTE_AS,
     CHORD_TYPE_MIN, NOTE_AS, CHORD_TYPE_MAJ, NOTE_FS,
@@ -400,7 +384,7 @@ add_standard_packs (ChordPresetPackManager * self)
   chord_preset_free (pset);
 
   /* kokoro */
-  pset = chord_preset_new (_ ("Heart"));
+  pset = chord_preset_new ("Kokoro");
   ADD_SIMPLE_CHORDS (
     NOTE_FS, CHORD_TYPE_MAJ, NOTE_F, CHORD_TYPE_MIN, NOTE_AS,
     CHORD_TYPE_MIN, NOTE_DS, CHORD_TYPE_MIN, NOTE_GS,
@@ -411,7 +395,7 @@ add_standard_packs (ChordPresetPackManager * self)
   chord_preset_pack_add_preset (pack, pset);
   chord_preset_free (pset);
 
-  pset = chord_preset_new (_ ("Pray"));
+  pset = chord_preset_new ("Pray");
   ADD_SIMPLE_CHORDS (
     NOTE_B, CHORD_TYPE_MIN, NOTE_G, CHORD_TYPE_MAJ, NOTE_D,
     CHORD_TYPE_MAJ, NOTE_A, CHORD_TYPE_MAJ, NOTE_E,
@@ -423,7 +407,7 @@ add_standard_packs (ChordPresetPackManager * self)
   chord_preset_free (pset);
 
   /* no thank you */
-  pset = chord_preset_new (_ ("Thank You"));
+  pset = chord_preset_new ("No Thank You");
   ADD_SIMPLE_CHORDS (
     NOTE_E, CHORD_TYPE_MIN, NOTE_D, CHORD_TYPE_MAJ, NOTE_A,
     CHORD_TYPE_MAJ, NOTE_C, CHORD_TYPE_MAJ, NOTE_G,
