@@ -749,7 +749,8 @@ ui_gen_audio_backends_combo_row (bool with_signal)
 #  endif
 #endif /* HAVE_JACK */
 #ifdef HAVE_PULSEAUDIO
-    audio_backend_str[AUDIO_BACKEND_PULSEAUDIO],
+  /* use rtaudio version - this has known issues */
+  /*audio_backend_str[AUDIO_BACKEND_PULSEAUDIO],*/
 #  ifdef HAVE_LIBSOUNDIO
     audio_backend_str[AUDIO_BACKEND_PULSEAUDIO_LIBSOUNDIO],
 #  endif
@@ -852,7 +853,8 @@ ui_gen_midi_backends_combo_row (bool with_signal)
 #  endif
 #endif
 #ifdef _WOE32
-    midi_backend_str[MIDI_BACKEND_WINDOWS_MME],
+  /* has known issues - use rtmidi */
+  /*midi_backend_str[MIDI_BACKEND_WINDOWS_MME],*/
 #  ifdef HAVE_RTMIDI
     midi_backend_str[MIDI_BACKEND_WINDOWS_MME_RTMIDI],
 #  endif
