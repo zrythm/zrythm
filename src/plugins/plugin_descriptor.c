@@ -316,7 +316,7 @@ plugin_descriptor_category_to_string (ZPluginCategory category)
 
 #undef RET_STRING
 
-  return g_strdup ("Other");
+  return g_strdup ("Plugin");
 }
 
 /**
