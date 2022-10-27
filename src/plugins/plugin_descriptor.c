@@ -551,8 +551,10 @@ plugin_descriptor_is_whitelisted (
     {
       if (string_is_equal (self->author, authors[i]))
         {
-          g_message (
+#if 0
+          g_debug (
             "author '%s' is whitelisted", self->author);
+#endif
           return true;
         }
     }

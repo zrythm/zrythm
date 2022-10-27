@@ -50,7 +50,7 @@ plugin_setting_new_default (const PluginDescriptor * descr)
       self = object_new (PluginSetting);
       self->schema_version = PLUGIN_SETTING_SCHEMA_VERSION;
       self->descr = plugin_descriptor_clone (descr);
-      plugin_setting_validate (self);
+      plugin_setting_validate (self, false);
     }
 
   return self;
@@ -81,10 +81,19 @@ plugin_setting_clone (const PluginSetting * src, bool validate)
 
   if (validate)
     {
-      plugin_setting_validate (new_setting);
+      plugin_setting_validate (new_setting, false);
     }
 
   return new_setting;
+}
+
+bool
+plugin_setting_is_equal (
+  const PluginSetting * a,
+  const PluginSetting * b)
+{
+  /* TODO */
+  g_return_val_if_reached (false);
 }
 
 void
@@ -117,7 +126,7 @@ plugin_setting_print (const PluginSetting * self)
  * to true.
  */
 void
-plugin_setting_validate (PluginSetting * self)
+plugin_setting_validate (PluginSetting * self, bool print_result)
 {
   const PluginDescriptor * descr = self->descr;
 
@@ -282,8 +291,11 @@ plugin_setting_validate (PluginSetting * self)
         }
     }
 
-  g_debug ("plugin setting validated. new setting:");
-  plugin_setting_print (self);
+  if (print_result)
+    {
+      g_debug ("plugin setting validated. new setting:");
+      plugin_setting_print (self);
+    }
 }
 
 /**

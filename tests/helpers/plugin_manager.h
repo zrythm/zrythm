@@ -120,7 +120,7 @@ test_plugin_manager_get_plugin_setting (
   setting->open_with_carla = with_carla;
 #endif
 
-  plugin_setting_validate (setting);
+  plugin_setting_validate (setting, true);
 
   /* run the logger to avoid too many messages
    * being queued */

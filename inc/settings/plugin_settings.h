@@ -117,6 +117,11 @@ plugin_setting_new_default (const PluginDescriptor * descr);
 PluginSetting * NONNULL
 plugin_setting_clone (const PluginSetting * src, bool validate);
 
+bool
+plugin_setting_is_equal (
+  const PluginSetting * a,
+  const PluginSetting * b);
+
 /**
  * Makes sure the setting is valid in the current
  * run and changes any fields to make it conform.
@@ -128,7 +133,9 @@ plugin_setting_clone (const PluginSetting * src, bool validate);
  */
 NONNULL
 void
-plugin_setting_validate (PluginSetting * self);
+plugin_setting_validate (
+  PluginSetting * self,
+  bool            print_result);
 
 NONNULL
 void

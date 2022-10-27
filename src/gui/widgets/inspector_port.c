@@ -532,7 +532,7 @@ dispose (InspectorPortWidget * self)
   (((ZGObjectImpl *) self->connections_popover)->ref_count)
 
   int refcount = (int) GET_REFCOUNT;
-  g_debug ("refcount: %d", refcount);
+  /*g_debug ("refcount: %d", refcount);*/
   gtk_widget_unparent (GTK_WIDGET (self->connections_popover));
   refcount--;
 
