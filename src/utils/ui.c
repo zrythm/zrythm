@@ -673,26 +673,6 @@ ui_create_buffer_size_model (void)
   CREATE_SIMPLE_MODEL_BOILERPLATE;
 }
 
-static GtkTreeModel *
-ui_create_samplerate_model (void)
-{
-  const int values[NUM_AUDIO_ENGINE_SAMPLERATES] = {
-    AUDIO_ENGINE_SAMPLERATE_22050,
-    AUDIO_ENGINE_SAMPLERATE_32000,
-    AUDIO_ENGINE_SAMPLERATE_44100,
-    AUDIO_ENGINE_SAMPLERATE_48000,
-    AUDIO_ENGINE_SAMPLERATE_88200,
-    AUDIO_ENGINE_SAMPLERATE_96000,
-    AUDIO_ENGINE_SAMPLERATE_192000,
-  };
-  const gchar * labels[NUM_AUDIO_ENGINE_BUFFER_SIZES] = {
-    "22050", "32000", "44100",  "48000",
-    "88200", "96000", "192000",
-  };
-
-  CREATE_SIMPLE_MODEL_BOILERPLATE;
-}
-
 /**
  * Sets up a combo box to have a selection of
  * languages.
@@ -995,32 +975,35 @@ ui_setup_buffer_size_combo_box (GtkComboBox * cb)
   gtk_combo_box_set_active_id (GTK_COMBO_BOX (cb), id);
 }
 
-/**
- * Sets up a pan law combo box.
- */
-void
-ui_setup_samplerate_combo_box (GtkComboBox * cb)
+static void
+on_audio_device_selection_changed (
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
 {
-  z_gtk_configure_simple_combo_box (
-    cb, ui_create_samplerate_model ());
-
-  char id[40];
-  sprintf (
-    id, "%d",
-    g_settings_get_enum (S_P_GENERAL_ENGINE, "sample-rate"));
-  gtk_combo_box_set_active_id (GTK_COMBO_BOX (cb), id);
+  const char *      settings_key = (const char *) user_data;
+  AdwComboRow *     combo_row = ADW_COMBO_ROW (gobject);
+  GtkStringObject * str_obj = GTK_STRING_OBJECT (
+    adw_combo_row_get_selected_item (combo_row));
+  g_return_if_fail (str_obj);
+  const char * str = gtk_string_object_get_string (str_obj);
+  g_settings_set_string (
+    S_P_GENERAL_ENGINE, settings_key, str);
 }
 
 /**
- * Sets up a pan law combo box.
+ * Sets up a combo row for selecting the audio device name.
+ *
+ * @param with_signal Add a signal to change the backend in
+ *   GSettings.
  */
 void
-ui_setup_device_name_combo_box (GtkComboBoxText * cb)
+ui_setup_audio_device_name_combo_row (
+  AdwComboRow * combo_row,
+  bool          with_signal)
 {
   AudioBackend backend = (AudioBackend) g_settings_get_enum (
     S_P_GENERAL_ENGINE, "audio-backend");
-
-  gtk_combo_box_text_remove_all (cb);
 
 #define SETUP_DEVICES(type) \
   { \
@@ -1028,21 +1011,30 @@ ui_setup_device_name_combo_box (GtkComboBoxText * cb)
     int    num_names; \
     engine_##type##_get_device_names ( \
       AUDIO_ENGINE, 0, names, &num_names); \
+    GtkStringList * string_list = gtk_string_list_new (NULL); \
     for (int i = 0; i < num_names; i++) \
       { \
-        gtk_combo_box_text_append (cb, NULL, names[i]); \
+        gtk_string_list_append (string_list, names[i]); \
       } \
-    char * current_device = g_settings_get_string ( \
-      S_P_GENERAL_ENGINE, #type "-audio-device-name"); \
+    adw_combo_row_set_model ( \
+      combo_row, G_LIST_MODEL (string_list)); \
+    const char * settings_key = #type "-audio-device-name"; \
+    char *       current_device = g_settings_get_string ( \
+            S_P_GENERAL_ENGINE, settings_key); \
     for (int i = 0; i < num_names; i++) \
       { \
         if (string_is_equal (names[i], current_device)) \
           { \
-            gtk_combo_box_set_active (GTK_COMBO_BOX (cb), i); \
+            adw_combo_row_set_selected ( \
+              combo_row, (guint) i); \
           } \
         g_free (names[i]); \
       } \
     g_free (current_device); \
+    g_signal_connect ( \
+      G_OBJECT (combo_row), "notify::selected", \
+      G_CALLBACK (on_audio_device_selection_changed), \
+      (gpointer) settings_key); \
   }
 
   switch (backend)

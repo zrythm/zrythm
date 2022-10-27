@@ -131,16 +131,6 @@ on_string_drop_down_selection_changed (
 }
 
 static void
-on_string_combo_box_active_changed (
-  GtkComboBoxText * combo,
-  CallbackData *    data)
-{
-  g_settings_set_string (
-    data->info->settings, data->key,
-    gtk_combo_box_text_get_active_text (combo));
-}
-
-static void
 on_file_set (
   GObject *    gobject,
   GParamSpec * pspec,
@@ -353,18 +343,9 @@ make_control (
     KEY_IS ("General", "Engine", "rtaudio-audio-device-name")
     || KEY_IS ("General", "Engine", "sdl-audio-device-name"))
     {
-      widget = gtk_combo_box_text_new ();
-      ui_setup_device_name_combo_box (
-        GTK_COMBO_BOX_TEXT (widget));
-      CallbackData * data = object_new (CallbackData);
-      data->info = info;
-      data->preferences_widget = self;
-      data->key = g_strdup (key);
-      g_signal_connect_data (
-        G_OBJECT (widget), "changed",
-        G_CALLBACK (on_string_combo_box_active_changed), data,
-        (GClosureNotify) on_closure_notify_delete_data,
-        G_CONNECT_AFTER);
+      widget = adw_combo_row_new ();
+      ui_setup_audio_device_name_combo_row (
+        ADW_COMBO_ROW (widget), true);
     }
   else if (KEY_IS ("General", "Engine", "midi-backend"))
     {

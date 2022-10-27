@@ -693,16 +693,15 @@ void
 ui_setup_buffer_size_combo_box (GtkComboBox * cb);
 
 /**
- * Sets up a pan law combo box.
+ * Sets up a combo row for selecting the audio device name.
+ *
+ * @param with_signal Add a signal to change the backend in
+ *   GSettings.
  */
 void
-ui_setup_samplerate_combo_box (GtkComboBox * cb);
-
-/**
- * Sets up a pan law combo box.
- */
-void
-ui_setup_device_name_combo_box (GtkComboBoxText * cb);
+ui_setup_audio_device_name_combo_row (
+  AdwComboRow * combo_row,
+  bool          with_signal);
 
 /**
  * Sets up the VST paths entry.
