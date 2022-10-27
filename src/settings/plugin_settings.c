@@ -272,7 +272,7 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
         {
           char * picked_ui = NULL;
           bool ui_picked = lv2_plugin_pick_most_preferable_ui (
-            descr->uri, &picked_ui, NULL, true);
+            descr->uri, &picked_ui, NULL, true, false);
 
           /* if a suitable UI was found, set the
            * UI URI */

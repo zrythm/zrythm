@@ -2028,7 +2028,8 @@ lv2_plugin_pick_most_preferable_ui (
   const char * plugin_uri,
   char **      out_ui_str,
   char **      out_ui_type_str,
-  bool         allow_bridged)
+  bool         allow_bridged,
+  bool         print_result)
 {
   LilvNode * uri = lilv_new_uri (LILV_WORLD, plugin_uri);
   const LilvPlugin * lilv_pl =
@@ -2077,9 +2078,12 @@ lv2_plugin_pick_most_preferable_ui (
         g_strdup (lilv_node_as_uri (out_ui_type));
     }
 
-  g_debug (
-    "most preferable UI: wrappable %d, bridgeable %d, external %d",
-    have_wrappable, have_bridgable, have_external);
+  if (print_result)
+    {
+      g_debug (
+        "most preferable UI: wrappable %d, bridgeable %d, external %d",
+        have_wrappable, have_bridgable, have_external);
+    }
 
   lilv_uis_free (uis);
 

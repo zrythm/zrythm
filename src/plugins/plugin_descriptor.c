@@ -380,7 +380,7 @@ plugin_descriptor_has_custom_ui (const PluginDescriptor * self)
     case PROT_LV2:
       {
         return lv2_plugin_pick_most_preferable_ui (
-          self->uri, NULL, NULL, true);
+          self->uri, NULL, NULL, true, false);
       }
       break;
     case PROT_VST:

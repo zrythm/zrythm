@@ -541,7 +541,8 @@ lv2_plugin_pick_most_preferable_ui (
   const char * plugin_uri,
   char **      out_ui,
   char **      out_ui_type,
-  bool         allow_bridged);
+  bool         allow_bridged,
+  bool         print_result);
 
 /* FIXME remove */
 NONNULL
