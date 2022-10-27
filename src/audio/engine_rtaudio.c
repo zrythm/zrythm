@@ -209,11 +209,13 @@ engine_rtaudio_setup (AudioEngine * self)
         string_is_equal (dev_nfo.name, out_device)
         && dev_nfo.output_channels > 0)
         {
+          g_message ("found device at index %d", i);
           out_device_id = i;
         }
     }
   if (out_device_id == -1)
     {
+      g_message ("selected device not found, using default");
       out_device_id = (int)
         rtaudio_get_default_output_device (self->rtaudio);
       rtaudio_device_info_t dev_nfo =
@@ -319,13 +321,8 @@ engine_rtaudio_get_device_names (
   char **       names,
   int *         num_names)
 {
-  bool      reuse_rtaudio = true;
-  rtaudio_t rtaudio = self->rtaudio;
-  if (!rtaudio)
-    {
-      reuse_rtaudio = false;
-      rtaudio = engine_rtaudio_create_rtaudio (self, backend);
-    }
+  rtaudio_t rtaudio =
+    engine_rtaudio_create_rtaudio (self, backend);
   int num_devs = rtaudio_device_count (rtaudio);
   *num_names = 0;
   for (int i = 0; i < num_devs; i++)
@@ -351,10 +348,7 @@ engine_rtaudio_get_device_names (
       g_message (
         "RtAudio device %d: %s", i, names[*num_names - 1]);
     }
-  if (!reuse_rtaudio)
-    {
-      rtaudio_destroy (rtaudio);
-    }
+  rtaudio_destroy (rtaudio);
 }
 
 /**

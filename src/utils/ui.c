@@ -1056,13 +1056,23 @@ ui_setup_audio_device_name_combo_row (
     }
   char * current_device =
     g_settings_get_string (S_P_GENERAL_ENGINE, settings_key);
+  bool found = false;
+  g_message (
+    "current device from settings: %s", current_device);
   for (int i = 0; i < num_names; i++)
     {
       if (string_is_equal (names[i], current_device))
         {
+          g_message ("settings %d as selected", i);
+          found = true;
           adw_combo_row_set_selected (combo_row, (guint) i);
         }
       g_free (names[i]);
+    }
+  if (!found && num_names > 0)
+    {
+      g_warning ("rtaudio device not found, selecting first");
+      adw_combo_row_set_selected (combo_row, 0);
     }
   g_free (current_device);
 
