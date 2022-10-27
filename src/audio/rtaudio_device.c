@@ -77,7 +77,8 @@ rtaudio_device_new (
   self->id = device_id;
   self->port = port;
   self->channel_idx = channel_idx;
-  self->handle = engine_rtaudio_create_rtaudio (AUDIO_ENGINE);
+  self->handle = engine_rtaudio_create_rtaudio (
+    AUDIO_ENGINE, AUDIO_ENGINE->audio_backend);
   if (!self->handle)
     {
       g_warning ("Failed to create RtAudio handle");

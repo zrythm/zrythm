@@ -106,7 +106,9 @@ error_cb (rtaudio_error_t err, const char * msg)
 static bool engine_rtaudio_first_run = true;
 
 rtaudio_t
-engine_rtaudio_create_rtaudio (AudioEngine * self)
+engine_rtaudio_create_rtaudio (
+  AudioEngine * self,
+  AudioBackend  backend)
 {
   rtaudio_t rtaudio;
 
@@ -124,13 +126,12 @@ engine_rtaudio_create_rtaudio (AudioEngine * self)
       engine_rtaudio_first_run = false;
     }
 
-  rtaudio_api_t api =
-    get_api_from_audio_backend (self->audio_backend);
+  rtaudio_api_t api = get_api_from_audio_backend (backend);
   if (api == RTAUDIO_API_DUMMY)
     {
       g_warning (
         "RtAudio API for %s not enabled",
-        audio_backend_str[self->audio_backend]);
+        audio_backend_str[backend]);
       return NULL;
     }
 
@@ -177,7 +178,8 @@ engine_rtaudio_setup (AudioEngine * self)
 {
   g_message ("Setting up RtAudio %s...", rtaudio_version ());
 
-  self->rtaudio = engine_rtaudio_create_rtaudio (self);
+  self->rtaudio =
+    engine_rtaudio_create_rtaudio (self, self->audio_backend);
   if (!self->rtaudio)
     {
       return -1;
@@ -312,6 +314,7 @@ engine_rtaudio_test (GtkWindow * win)
 void
 engine_rtaudio_get_device_names (
   AudioEngine * self,
+  AudioBackend  backend,
   int           input,
   char **       names,
   int *         num_names)
@@ -321,7 +324,7 @@ engine_rtaudio_get_device_names (
   if (!rtaudio)
     {
       reuse_rtaudio = false;
-      rtaudio = engine_rtaudio_create_rtaudio (self);
+      rtaudio = engine_rtaudio_create_rtaudio (self, backend);
     }
   int num_devs = rtaudio_device_count (rtaudio);
   *num_names = 0;

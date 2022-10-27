@@ -611,8 +611,8 @@ get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
       if (!rtaudio)
         {
           reuse_rtaudio = false;
-          rtaudio =
-            engine_rtaudio_create_rtaudio (AUDIO_ENGINE);
+          rtaudio = engine_rtaudio_create_rtaudio (
+            AUDIO_ENGINE, AUDIO_ENGINE->audio_backend);
         }
       if (!rtaudio)
         {
@@ -662,8 +662,8 @@ get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
       if (!rtaudio)
         {
           reuse_rtaudio = false;
-          rtaudio =
-            engine_rtaudio_create_rtaudio (AUDIO_ENGINE);
+          rtaudio = engine_rtaudio_create_rtaudio (
+            AUDIO_ENGINE, AUDIO_ENGINE->audio_backend);
         }
       if (!rtaudio)
         {

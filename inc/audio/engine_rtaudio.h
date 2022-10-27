@@ -44,7 +44,9 @@ void
 engine_rtaudio_activate (AudioEngine * self, bool activate);
 
 rtaudio_t
-engine_rtaudio_create_rtaudio (AudioEngine * self);
+engine_rtaudio_create_rtaudio (
+  AudioEngine * self,
+  AudioBackend  backend);
 
 /**
  * Returns a list of names inside \ref names that
@@ -55,6 +57,7 @@ engine_rtaudio_create_rtaudio (AudioEngine * self);
 void
 engine_rtaudio_get_device_names (
   AudioEngine * self,
+  AudioBackend  backend,
   int           input,
   char **       names,
   int *         num_names);

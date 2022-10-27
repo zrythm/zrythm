@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -72,6 +56,11 @@ typedef struct _PreferencesWidget
   GtkNotebook *        group_notebook;
 
   SubgroupInfo subgroup_infos[12][40];
+
+  /** Remembered for toggling visibility. */
+  AdwPreferencesRow * audio_backend_rtaudio_device_row;
+  AdwPreferencesRow * audio_backend_buffer_size_row;
+  AdwPreferencesRow * audio_backend_sample_rate_row;
 } PreferencesWidget;
 
 PreferencesWidget *

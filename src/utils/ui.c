@@ -985,7 +985,11 @@ on_audio_device_selection_changed (
   AdwComboRow *     combo_row = ADW_COMBO_ROW (gobject);
   GtkStringObject * str_obj = GTK_STRING_OBJECT (
     adw_combo_row_get_selected_item (combo_row));
-  g_return_if_fail (str_obj);
+  if (!str_obj)
+    {
+      g_message ("no selected item");
+      return;
+    }
   const char * str = gtk_string_object_get_string (str_obj);
   g_settings_set_string (
     S_P_GENERAL_ENGINE, settings_key, str);
@@ -1000,62 +1004,74 @@ on_audio_device_selection_changed (
 void
 ui_setup_audio_device_name_combo_row (
   AdwComboRow * combo_row,
+  bool          populate,
   bool          with_signal)
 {
   AudioBackend backend = (AudioBackend) g_settings_get_enum (
     S_P_GENERAL_ENGINE, "audio-backend");
 
-#define SETUP_DEVICES(type) \
-  { \
-    char * names[1024]; \
-    int    num_names; \
-    engine_##type##_get_device_names ( \
-      AUDIO_ENGINE, 0, names, &num_names); \
-    GtkStringList * string_list = gtk_string_list_new (NULL); \
-    for (int i = 0; i < num_names; i++) \
-      { \
-        gtk_string_list_append (string_list, names[i]); \
-      } \
-    adw_combo_row_set_model ( \
-      combo_row, G_LIST_MODEL (string_list)); \
-    const char * settings_key = #type "-audio-device-name"; \
-    char *       current_device = g_settings_get_string ( \
-            S_P_GENERAL_ENGINE, settings_key); \
-    for (int i = 0; i < num_names; i++) \
-      { \
-        if (string_is_equal (names[i], current_device)) \
-          { \
-            adw_combo_row_set_selected ( \
-              combo_row, (guint) i); \
-          } \
-        g_free (names[i]); \
-      } \
-    g_free (current_device); \
-    g_signal_connect ( \
-      G_OBJECT (combo_row), "notify::selected", \
-      G_CALLBACK (on_audio_device_selection_changed), \
-      (gpointer) settings_key); \
-  }
-
-  switch (backend)
+  GtkStringList * string_list = gtk_string_list_new (NULL);
+  char *          names[1024];
+  int             num_names = 0;
+  if (populate)
     {
+      if (backend == AUDIO_BACKEND_SDL)
+        {
 #ifdef HAVE_SDL
-    case AUDIO_BACKEND_SDL:
-      SETUP_DEVICES (sdl);
-      break;
+          engine_sdl_get_device_names (
+            AUDIO_ENGINE, 0, names, &num_names);
 #endif
+        }
+      else if (audio_backend_is_rtaudio (backend))
+        {
 #ifdef HAVE_RTAUDIO
-    case AUDIO_BACKEND_ALSA_RTAUDIO:
-    case AUDIO_BACKEND_JACK_RTAUDIO:
-    case AUDIO_BACKEND_PULSEAUDIO_RTAUDIO:
-    case AUDIO_BACKEND_COREAUDIO_RTAUDIO:
-    case AUDIO_BACKEND_WASAPI_RTAUDIO:
-    case AUDIO_BACKEND_ASIO_RTAUDIO:
-      SETUP_DEVICES (rtaudio);
-      break;
+          engine_rtaudio_get_device_names (
+            AUDIO_ENGINE, backend, 0, names, &num_names);
 #endif
-    default:
-      break;
+        }
+      else
+        {
+          g_object_unref (string_list);
+          return;
+        }
+      for (int i = 0; i < num_names; i++)
+        {
+          gtk_string_list_append (string_list, names[i]);
+        }
+    }
+  adw_combo_row_set_model (
+    combo_row, G_LIST_MODEL (string_list));
+  const char * settings_key = NULL;
+  if (backend == AUDIO_BACKEND_SDL)
+    {
+      settings_key = "sdl-audio-device-name";
+    }
+  else if (audio_backend_is_rtaudio (backend))
+    {
+      settings_key = "rtaudio-audio-device-name";
+    }
+  else
+    {
+      return;
+    }
+  char * current_device =
+    g_settings_get_string (S_P_GENERAL_ENGINE, settings_key);
+  for (int i = 0; i < num_names; i++)
+    {
+      if (string_is_equal (names[i], current_device))
+        {
+          adw_combo_row_set_selected (combo_row, (guint) i);
+        }
+      g_free (names[i]);
+    }
+  g_free (current_device);
+
+  if (with_signal)
+    {
+      g_signal_connect (
+        G_OBJECT (combo_row), "notify::selected",
+        G_CALLBACK (on_audio_device_selection_changed),
+        (gpointer) settings_key);
     }
 }
 

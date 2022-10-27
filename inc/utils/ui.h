@@ -701,6 +701,7 @@ ui_setup_buffer_size_combo_box (GtkComboBox * cb);
 void
 ui_setup_audio_device_name_combo_row (
   AdwComboRow * combo_row,
+  bool          populate,
   bool          with_signal);
 
 /**

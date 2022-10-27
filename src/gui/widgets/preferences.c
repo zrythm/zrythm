@@ -229,6 +229,12 @@ should_be_hidden (
   const char * subgroup,
   const char * key)
 {
+  AudioBackend audio_backend = (AudioBackend)
+    g_settings_get_enum (S_P_GENERAL_ENGINE, "audio-backend");
+  bool audio_backend_has_opts =
+    audio_backend == AUDIO_BACKEND_SDL
+    || audio_backend_is_rtaudio (audio_backend);
+
   return
 #ifndef _WOE32
     KEY_IS ("Plugins", "Paths", "vst-search-paths-windows") ||
@@ -238,11 +244,11 @@ should_be_hidden (
     || KEY_IS ("Plugins", "Paths", "sf2-search-paths") ||
     || KEY_IS ("Plugins", "Paths", "jsfx-search-paths") ||
 #endif
-    (AUDIO_ENGINE->audio_backend != AUDIO_BACKEND_SDL
+    (audio_backend != AUDIO_BACKEND_SDL
      && KEY_IS ("General", "Engine", "sdl-audio-device-name"))
-    || (!audio_backend_is_rtaudio (AUDIO_ENGINE->audio_backend) && KEY_IS ("General", "Engine", "rtaudio-audio-device-name"))
-    || (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK && KEY_IS ("General", "Engine", "sample-rate"))
-    || (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK && KEY_IS ("General", "Engine", "buffer-size"));
+    || (!audio_backend_is_rtaudio (audio_backend) && KEY_IS ("General", "Engine", "rtaudio-audio-device-name"))
+    || (!audio_backend_has_opts && KEY_IS ("General", "Engine", "sample-rate"))
+    || (!audio_backend_has_opts && KEY_IS ("General", "Engine", "buffer-size"));
 }
 
 static void
@@ -289,6 +295,30 @@ get_range_vals (
   g_variant_unref (range_vals);
   g_variant_unref (lower_var);
   g_variant_unref (upper_var);
+}
+
+static void
+on_audio_backend_selected_item_changed (
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
+{
+  PreferencesWidget * self = Z_PREFERENCES_WIDGET (user_data);
+  AudioBackend backend = (AudioBackend) g_settings_get_enum (
+    S_P_GENERAL_ENGINE, "audio-backend");
+  bool show_opts = audio_backend_is_rtaudio (backend);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->audio_backend_rtaudio_device_row),
+    show_opts);
+  ui_setup_audio_device_name_combo_row (
+    ADW_COMBO_ROW (self->audio_backend_rtaudio_device_row),
+    show_opts, false);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->audio_backend_buffer_size_row),
+    show_opts);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->audio_backend_sample_rate_row),
+    show_opts);
 }
 
 static GtkWidget *
@@ -345,7 +375,13 @@ make_control (
     {
       widget = adw_combo_row_new ();
       ui_setup_audio_device_name_combo_row (
-        ADW_COMBO_ROW (widget), true);
+        ADW_COMBO_ROW (widget), true, true);
+      if (KEY_IS (
+            "General", "Engine", "rtaudio-audio-device-name"))
+        {
+          self->audio_backend_rtaudio_device_row =
+            ADW_PREFERENCES_ROW (widget);
+        }
     }
   else if (KEY_IS ("General", "Engine", "midi-backend"))
     {
@@ -356,6 +392,10 @@ make_control (
     {
       widget =
         GTK_WIDGET (ui_gen_audio_backends_combo_row (true));
+      g_signal_connect (
+        G_OBJECT (widget), "notify::selected-item",
+        G_CALLBACK (on_audio_backend_selected_item_changed),
+        self);
     }
   else if (KEY_IS ("General", "Engine", "audio-inputs"))
     {
@@ -624,7 +664,18 @@ make_control (
                 (GClosureNotify) on_closure_notify_delete_data,
                 G_CONNECT_AFTER);
             }
-        }
+
+          if (KEY_IS ("General", "Engine", "sample-rate"))
+            {
+              self->audio_backend_sample_rate_row =
+                ADW_PREFERENCES_ROW (widget);
+            }
+          else if (KEY_IS ("General", "Engine", "buffer-size"))
+            {
+              self->audio_backend_buffer_size_row =
+                ADW_PREFERENCES_ROW (widget);
+            }
+        } /* endif PATH_TYPE_NONE */
     }
   else if (TYPE_EQUALS (STRING_ARRAY))
     {
@@ -732,9 +783,7 @@ add_subgroup (
             g_settings_schema_key_get_description (schema_key);
         }
 
-      if (
-        string_is_equal (key, "info")
-        || should_be_hidden (info->group_name, info->name, key))
+      if (string_is_equal (key, "info"))
         continue;
 
       g_message ("adding control for %s", key);
@@ -776,6 +825,13 @@ add_subgroup (
               adw_action_row_add_suffix (
                 ADW_ACTION_ROW (row), widget);
             }
+
+          if (should_be_hidden (
+                info->group_name, info->name, key))
+            {
+              gtk_widget_set_visible (GTK_WIDGET (row), false);
+            }
+
           num_controls++;
         }
       else
