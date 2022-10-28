@@ -7,6 +7,7 @@
 #include "audio/router.h"
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
+#include "gui/widgets/digital_meter.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -535,6 +536,8 @@ on_progress_dialog_closed (
 }
 
 /**
+ * Initializes the export info struct.
+ *
  * @param track If non-NULL, assumed to be a stem
  *   for this track.
  */
@@ -618,13 +621,22 @@ init_export_info (
   g_settings_set_string (s, "title", info->title);
   g_settings_set_string (s, "genre", info->genre);
 
-  GtkDropDown * time_range_drop_down =
+  AdwComboRow * time_range_combo =
     is_audio
-      ? self->audio_time_range_drop_down
-      : self->midi_time_range_drop_down;
+      ? self->audio_time_range_combo
+      : self->midi_time_range_combo;
   info->time_range = (ExportTimeRange)
-    gtk_drop_down_get_selected (time_range_drop_down);
+    adw_combo_row_get_selected (time_range_combo);
   g_settings_set_enum (s, "time-range", info->time_range);
+
+  info->custom_start =
+    is_audio
+      ? self->audio_custom_start_pos
+      : self->midi_custom_start_pos;
+  info->custom_end =
+    is_audio
+      ? self->audio_custom_end_pos
+      : self->midi_custom_end_pos;
 
   info->file_uri = get_export_filename (self, true, track);
 
@@ -1322,9 +1334,29 @@ setup_mixdown_or_stems_combo_row (
 }
 
 static void
-setup_time_range_drop_down (
+on_time_range_changed (
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
+{
+  ExportDialogWidget * self =
+    Z_EXPORT_DIALOG_WIDGET (user_data);
+  AdwComboRow * combo_row = ADW_COMBO_ROW (gobject);
+  bool is_audio = combo_row == self->audio_time_range_combo;
+  ExportTimeRange time_range =
+    adw_combo_row_get_selected (combo_row);
+  gtk_widget_set_visible (
+    GTK_WIDGET (
+      is_audio
+        ? self->audio_custom_tr_row
+        : self->midi_custom_tr_row),
+    time_range == TIME_RANGE_CUSTOM);
+}
+
+static void
+setup_time_range_combo_row (
   ExportDialogWidget * self,
-  GtkDropDown *        drop_down,
+  AdwComboRow *        combo_row,
   bool                 is_audio)
 {
   const char * strings[] = {
@@ -1335,13 +1367,57 @@ setup_time_range_drop_down (
   };
   GtkStringList * string_list = gtk_string_list_new (strings);
 
-  gtk_drop_down_set_model (
-    drop_down, G_LIST_MODEL (string_list));
+  adw_combo_row_set_model (
+    combo_row, G_LIST_MODEL (string_list));
 
-  gtk_drop_down_set_selected (
-    drop_down,
-    (guint) g_settings_get_enum (
-      is_audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI, "time-range"));
+  g_signal_connect (
+    G_OBJECT (combo_row), "notify::selected",
+    G_CALLBACK (on_time_range_changed), self);
+
+  ExportTimeRange tr = g_settings_get_enum (
+    is_audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI, "time-range");
+  adw_combo_row_set_selected (combo_row, (guint) tr);
+}
+
+static void
+get_pos (Position * own_pos_ptr, Position * pos)
+{
+  position_set_to_pos (pos, own_pos_ptr);
+}
+
+static void
+set_pos (Position * own_pos_ptr, Position * pos)
+{
+  position_set_to_pos (own_pos_ptr, pos);
+}
+
+static void
+setup_custom_time_range_row (
+  ExportDialogWidget * self,
+  bool                 is_audio)
+{
+  DigitalMeterWidget * startm =
+    digital_meter_widget_new_for_position (
+      is_audio
+        ? &self->audio_custom_start_pos
+        : &self->midi_custom_start_pos,
+      NULL, get_pos, set_pos, NULL, _ ("Start"));
+  gtk_box_append (
+    is_audio
+      ? self->audio_custom_tr_start_meter_box
+      : self->midi_custom_tr_start_meter_box,
+    GTK_WIDGET (startm));
+  DigitalMeterWidget * endm =
+    digital_meter_widget_new_for_position (
+      is_audio
+        ? &self->audio_custom_end_pos
+        : &self->midi_custom_end_pos,
+      NULL, get_pos, set_pos, NULL, _ ("End"));
+  gtk_box_append (
+    is_audio
+      ? self->audio_custom_tr_end_meter_box
+      : self->midi_custom_tr_end_meter_box,
+    GTK_WIDGET (endm));
 }
 
 static void
@@ -1395,7 +1471,10 @@ export_dialog_widget_class_init (
   BIND_CHILD (audio_dither_switch);
   BIND_CHILD (audio_filename_pattern);
   BIND_CHILD (audio_mixdown_or_stems);
-  BIND_CHILD (audio_time_range_drop_down);
+  BIND_CHILD (audio_time_range_combo);
+  BIND_CHILD (audio_custom_tr_row);
+  BIND_CHILD (audio_custom_tr_start_meter_box);
+  BIND_CHILD (audio_custom_tr_end_meter_box);
   BIND_CHILD (audio_tracks_treeview);
   BIND_CHILD (audio_output_label);
   BIND_CHILD (midi_title);
@@ -1405,7 +1484,10 @@ export_dialog_widget_class_init (
   BIND_CHILD (midi_export_lanes_as_tracks_switch);
   BIND_CHILD (midi_filename_pattern);
   BIND_CHILD (midi_mixdown_or_stems);
-  BIND_CHILD (midi_time_range_drop_down);
+  BIND_CHILD (midi_time_range_combo);
+  BIND_CHILD (midi_custom_tr_row);
+  BIND_CHILD (midi_custom_tr_start_meter_box);
+  BIND_CHILD (midi_custom_tr_end_meter_box);
   BIND_CHILD (midi_tracks_treeview);
   BIND_CHILD (midi_output_label);
 
@@ -1447,8 +1529,9 @@ export_dialog_widget_init (ExportDialogWidget * self)
     self, self->audio_mixdown_or_stems, true);
 
   /* selections */
-  setup_time_range_drop_down (
-    self, self->audio_time_range_drop_down, true);
+  setup_time_range_combo_row (
+    self, self->audio_time_range_combo, true);
+  setup_custom_time_range_row (self, true);
   setup_tracks_treeview (self, true);
 
   /* --- end audio --- */
@@ -1479,8 +1562,9 @@ export_dialog_widget_init (ExportDialogWidget * self)
     self, self->midi_mixdown_or_stems, false);
 
   /* selections */
-  setup_time_range_drop_down (
-    self, self->midi_time_range_drop_down, false);
+  setup_time_range_combo_row (
+    self, self->midi_time_range_combo, false);
+  setup_custom_time_range_row (self, false);
   setup_tracks_treeview (self, false);
 
   /* --- end MIDI --- */

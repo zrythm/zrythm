@@ -101,13 +101,25 @@
                           <object class="AdwPreferencesGroup">
                             <property name="title" translatable="yes">Selection</property>
                             <child>
-                              <object class="AdwActionRow">
+                              <object class="AdwComboRow" id="audio_time_range_combo">
                                 <property name="title" translatable="yes">Time range</property>
                                 <property name="subtitle" translatable="yes">Only events inside this time range will be exported.</property>
-                                <property name="activatable_widget">audio_time_range_drop_down</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwActionRow" id="audio_custom_tr_row">
+                                <property name="title" translatable="yes">Custom time range</property>
                                 <child>
-                                  <object class="GtkDropDown" id="audio_time_range_drop_down">
-                                    <property name="valign">center</property>
+                                  <object class="GtkBox" id="audio_custom_tr_start_meter_box">
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="label"> ~ </property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="audio_custom_tr_end_meter_box">
                                   </object>
                                 </child>
                               </object>
@@ -225,13 +237,25 @@
                           <object class="AdwPreferencesGroup">
                             <property name="title" translatable="yes">Selection</property>
                             <child>
-                              <object class="AdwActionRow">
+                              <object class="AdwComboRow" id="midi_time_range_combo">
                                 <property name="title" translatable="yes">Time range</property>
                                 <property name="subtitle" translatable="yes">Only events inside this time range will be exported.</property>
-                                <property name="activatable_widget">midi_time_range_drop_down</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="AdwActionRow" id="midi_custom_tr_row">
+                                <property name="title" translatable="yes">Custom time range</property>
                                 <child>
-                                  <object class="GtkDropDown" id="midi_time_range_drop_down">
-                                    <property name="valign">center</property>
+                                  <object class="GtkBox" id="midi_custom_tr_start_meter_box">
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="label"> ~ </property>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="midi_custom_tr_end_meter_box">
                                   </object>
                                 </child>
                               </object>

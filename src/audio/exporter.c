@@ -932,6 +932,26 @@ exporter_export (ExportSettings * info)
 
   export_settings_print (info);
 
+  /* validate */
+  if (info->time_range == TIME_RANGE_CUSTOM)
+    {
+      Position init_pos;
+      position_set_to_bar (&init_pos, 1);
+      if (
+        !position_is_before (
+          &info->custom_start, &info->custom_end)
+        || !position_is_after_or_equal (
+          &info->custom_start, &init_pos))
+        {
+          info->progress_info.has_error = true;
+          sprintf (
+            info->progress_info.error_str, "%s",
+            _ ("Invalid time range"));
+          g_warning ("invalid time range");
+          return -1;
+        }
+    }
+
   int ret = 0;
   if (
     info->format == EXPORT_FORMAT_MIDI0

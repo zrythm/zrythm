@@ -22,6 +22,8 @@ G_DECLARE_FINAL_TYPE (
   EXPORT_DIALOG_WIDGET,
   GtkDialog)
 
+typedef struct _DigitalMeterWidget DigitalMeterWidget;
+
 /**
  * @addtogroup widgets
  *
@@ -45,47 +47,45 @@ typedef struct _ExportDialogWidget
   AdwViewStack *         stack;
 
   /* audio */
-  AdwEntryRow *  audio_title;
-  AdwEntryRow *  audio_artist;
-  AdwEntryRow *  audio_genre;
-  AdwComboRow *  audio_format;
-  AdwComboRow *  audio_bit_depth;
-  AdwActionRow * audio_dither;
-  GtkSwitch *    audio_dither_switch;
-  AdwComboRow *  audio_filename_pattern;
-  AdwComboRow *  audio_mixdown_or_stems;
-  GtkDropDown *  audio_time_range_drop_down;
-  GtkTreeView *  audio_tracks_treeview;
-  GtkLabel *     audio_output_label;
+  AdwEntryRow *        audio_title;
+  AdwEntryRow *        audio_artist;
+  AdwEntryRow *        audio_genre;
+  AdwComboRow *        audio_format;
+  AdwComboRow *        audio_bit_depth;
+  AdwActionRow *       audio_dither;
+  GtkSwitch *          audio_dither_switch;
+  AdwComboRow *        audio_filename_pattern;
+  AdwComboRow *        audio_mixdown_or_stems;
+  AdwComboRow *        audio_time_range_combo;
+  AdwActionRow *       audio_custom_tr_row;
+  GtkBox *             audio_custom_tr_start_meter_box;
+  DigitalMeterWidget * audio_custom_tr_start_meter;
+  Position             audio_custom_start_pos;
+  GtkBox *             audio_custom_tr_end_meter_box;
+  DigitalMeterWidget * audio_custom_tr_end_meter;
+  Position             audio_custom_end_pos;
+  GtkTreeView *        audio_tracks_treeview;
+  GtkLabel *           audio_output_label;
 
   /* MIDI */
-  AdwEntryRow * midi_title;
-  AdwEntryRow * midi_artist;
-  AdwEntryRow * midi_genre;
-  AdwComboRow * midi_format;
-  GtkSwitch *   midi_export_lanes_as_tracks_switch;
-  AdwComboRow * midi_filename_pattern;
-  AdwComboRow * midi_mixdown_or_stems;
-  GtkDropDown * midi_time_range_drop_down;
-  GtkTreeView * midi_tracks_treeview;
-  GtkLabel *    midi_output_label;
+  AdwEntryRow *        midi_title;
+  AdwEntryRow *        midi_artist;
+  AdwEntryRow *        midi_genre;
+  AdwComboRow *        midi_format;
+  GtkSwitch *          midi_export_lanes_as_tracks_switch;
+  AdwComboRow *        midi_filename_pattern;
+  AdwComboRow *        midi_mixdown_or_stems;
+  AdwComboRow *        midi_time_range_combo;
+  AdwActionRow *       midi_custom_tr_row;
+  GtkBox *             midi_custom_tr_start_meter_box;
+  DigitalMeterWidget * midi_custom_tr_start_meter;
+  Position             midi_custom_start_pos;
+  GtkBox *             midi_custom_tr_end_meter_box;
+  DigitalMeterWidget * midi_custom_tr_end_meter;
+  Position             midi_custom_end_pos;
+  GtkTreeView *        midi_tracks_treeview;
+  GtkLabel *           midi_output_label;
 
-#if 0
-  GtkEntry *        export_artist;
-  GtkEntry *        export_title;
-  GtkEntry *        export_genre;
-  GtkComboBox *     filename_pattern;
-  GtkToggleButton * time_range_song;
-  GtkToggleButton * time_range_loop;
-  GtkToggleButton * time_range_custom;
-  GtkComboBox *     format;
-  GtkComboBox *     bit_depth;
-  GtkCheckButton *  lanes_as_tracks;
-  GtkToggleButton * dither;
-
-  GtkToggleButton * mixdown_toggle;
-  GtkToggleButton * stems_toggle;
-#endif
 } ExportDialogWidget;
 
 /**
