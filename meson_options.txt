@@ -47,7 +47,7 @@ option (
   'carla',
   type: 'feature',
   value: 'enabled',
-  description: 'Use Carla to wrap some plugins')
+  description: 'Use Carla to wrap some plugins (note: now a hard dependency)')
 
 option (
   'jack',
