@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: FSFAP
 
 [Desktop Entry]
-Name=Zrythm
+Name=@DESKTOP_ENTRY_NAME@
 GenericName=Digital Audio Workstation
 Version=1.0
 Comment=highly automated and intuitive digital audio workstation

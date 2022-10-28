@@ -115,7 +115,7 @@ option (
   'installer_ver',
   type: 'boolean',
   value: false,
-  description: 'This is only used by Zrythm maintainers when making installers')
+  description: 'This is only used by Zrythm maintainers when making binary distributions')
 
 option (
   'trial_ver',

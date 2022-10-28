@@ -36,6 +36,9 @@ zrythm_launcher_config.set (
   'SCHEMAS_DIR', schemasdir)
 zrythm_launcher_config.set ('BIN_DIR', bindir)
 zrythm_launcher_config.set (
+  'DESKTOP_ENTRY_NAME',
+  installer_ver ? 'Zrythm beta' : prog_name)
+zrythm_launcher_config.set (
   'PROGRAM_NAME_LOWERCASE', prog_name_lowercase)
 zrythm_launcher_config.set (
   'ZRYTHM_LIBDIR', zrythm_libdir)
