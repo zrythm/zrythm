@@ -279,7 +279,7 @@ clip_editor_inner_widget_init (ClipEditorInnerWidget * self)
     GTK_WIDGET (self->left_of_ruler_box));
 
   gtk_widget_set_size_request (
-    GTK_WIDGET (self->ruler_scroll), -1, 32);
+    GTK_WIDGET (self->ruler), -1, 32);
 
   GdkRGBA color;
   gdk_rgba_parse (&color, "gray");
@@ -301,8 +301,8 @@ clip_editor_inner_widget_class_init (
   BIND_CHILD (bot_of_arranger_toolbar);
   BIND_CHILD (track_name_lbl);
   BIND_CHILD (left_of_ruler_box);
-  BIND_CHILD (ruler_scroll);
-  BIND_CHILD (ruler_viewport);
+  /*BIND_CHILD (ruler_scroll);*/
+  /*BIND_CHILD (ruler_viewport);*/
   BIND_CHILD (ruler);
   BIND_CHILD (toggle_notation);
   BIND_CHILD (toggle_listen_notes);

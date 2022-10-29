@@ -80,19 +80,7 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkScrolledWindow" id="ruler_scroll">
-                        <property name="focusable">1</property>
-                        <property name="hexpand">1</property>
-                        <property name="hscrollbar_policy">external</property>
-                        <property name="vscrollbar_policy">never</property>
-                        <property name="child">
-                          <object class="GtkViewport" id="ruler_viewport">
-                            <child>
-                              <object class="RulerWidget" id="ruler">
-                              </object>
-                            </child>
-                          </object>
-                        </property>
+                      <object class="RulerWidget" id="ruler">
                       </object>
                     </child>
                   </object>

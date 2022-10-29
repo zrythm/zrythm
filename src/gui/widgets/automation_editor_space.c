@@ -27,6 +27,7 @@ G_DEFINE_TYPE (
   automation_editor_space_widget,
   GTK_TYPE_BOX)
 
+#if 0
 /**
  * Links scroll windows after all widgets have been
  * initialized.
@@ -43,6 +44,7 @@ link_scrolls (AutomationEditorSpaceWidget * self)
           self->arranger_scroll));
     }
 }
+#endif
 
 /**
  * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
@@ -61,7 +63,7 @@ void
 automation_editor_space_widget_refresh (
   AutomationEditorSpaceWidget * self)
 {
-  link_scrolls (self);
+  /*link_scrolls (self);*/
   /*automation_editor_legend_widget_refresh (*/
   /*self->legend);*/
 }
@@ -92,6 +94,8 @@ automation_editor_space_widget_init (
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  gtk_widget_set_vexpand (GTK_WIDGET (self->arranger), true);
+
   self->arranger->type = ARRANGER_WIDGET_TYPE_AUTOMATION;
 }
 
@@ -107,8 +111,8 @@ automation_editor_space_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, AutomationEditorSpaceWidget, x)
 
-  BIND_CHILD (arranger_scroll);
-  BIND_CHILD (arranger_viewport);
+  /*BIND_CHILD (arranger_scroll);*/
+  /*BIND_CHILD (arranger_viewport);*/
   BIND_CHILD (arranger);
   BIND_CHILD (left_box);
   /*BIND_CHILD (legend);*/

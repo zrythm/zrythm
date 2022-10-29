@@ -9,21 +9,7 @@
           <object class="GtkBox" id="left_box"/>
         </child>
         <child>
-          <object class="GtkScrolledWindow" id="arranger_scroll">
-            <property name="focusable">1</property>
-            <property name="hscrollbar_policy">always</property>
-            <property name="vscrollbar_policy">never</property>
-            <property name="hexpand">1</property>
-            <property name="child">
-              <object class="GtkViewport" id="arranger_viewport">
-                <property name="scroll-to-focus">0</property>
-                <child>
-                  <object class="ArrangerWidget" id="arranger">
-                    <property name="visible">1</property>
-                  </object>
-                </child>
-              </object>
-            </property>
+          <object class="ArrangerWidget" id="arranger">
           </object>
         </child>
       </object>

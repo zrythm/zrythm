@@ -1787,6 +1787,8 @@ ruler_widget_init (RulerWidget * self)
   gtk_widget_set_parent (
     GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
+  gtk_widget_set_hexpand (GTK_WIDGET (self), true);
+
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
     G_OBJECT (self->drag), "drag-begin",
