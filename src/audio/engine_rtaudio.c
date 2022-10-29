@@ -323,6 +323,11 @@ engine_rtaudio_get_device_names (
 {
   rtaudio_t rtaudio =
     engine_rtaudio_create_rtaudio (self, backend);
+  if (!rtaudio)
+    {
+      g_warning ("failed to create rtaudio instance");
+      return;
+    }
   int num_devs = rtaudio_device_count (rtaudio);
   *num_names = 0;
   for (int i = 0; i < num_devs; i++)

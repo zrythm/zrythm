@@ -776,8 +776,8 @@ ui_gen_audio_backends_combo_row (bool with_signal)
 #  endif
 #  ifdef HAVE_RTAUDIO
     audio_backend_str[AUDIO_BACKEND_WASAPI_RTAUDIO],
-    /* doesn't work & licensing issues */
-    /*audio_backend_str[AUDIO_BACKEND_ASIO_RTAUDIO],*/
+  /* doesn't work & licensing issues */
+  /*audio_backend_str[AUDIO_BACKEND_ASIO_RTAUDIO],*/
 #  endif
 #endif /* _WOE32 */
     NULL,
