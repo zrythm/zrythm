@@ -6,6 +6,36 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.10.1] - 2022-10-29
+### Added
+- Show drives in file browser
+- Custom time range export for audio
+
+### Changed
+- Make plugin setting activation-related dialogs async (fixes errors when drag-n-dropping some instruments into the tracklist)
+- Send all notes off when disarming tracks that accept MIDI
+- Silence some unnecessary logging
+- Show info for first plugin of selected track in the plugin inspector if no plugin slot is selected
+- Add more error checking to file export
+- Port various dropdowns to AdwComboRow
+- Make welcome dialog transient to the splash screen (prevents it from being shown below the splash screen)
+- Verify stream is open when activating an rtaudio device
+- Preferences: refresh the audio device selector instantly when changing the audio backend
+- Improve naming of default chord presets
+- Merge "Plugin" and "Other" plugin categories
+- Use "Zrythm beta" as the desktop file name in installer versions
+- Use audio & MIDI region snapshots during playback instead of live data (allows editing regions while transport is rolling)
+
+### Fixed
+- Fix first MIDI note skipped when bouncing to audio
+- Fix occasional error when closing a project
+- Fix Zrythm potentially not getting notified of buffer size changes on JACK/PipeWire
+- Fix RtAudio devices being wrong in the preferences when choosing a different RtAudio backend
+- Fix region loop end point stopping moving instead of being clamped when moved past the start point
+
+### Removed
+- Remove SDL, ALSA, PulseAudio, JACK (rtaudio), ASIO (rtaudio), Windows MME from selectable backends
+
 ## [1.0.0-beta.3.9.1] - 2022-10-15
 ### Added
 - Show dialog to create a new instrument track when dropping an instrument plugin onto a MIDI track
