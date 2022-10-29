@@ -122,6 +122,7 @@ editor_ruler_on_drag_update (
             {
               position_set_to_pos (
                 &region_local_pos, &r_obj->clip_start_pos);
+              position_add_frames (&region_local_pos, 1);
             }
           else if (r->id.type == REGION_TYPE_AUDIO)
             {
