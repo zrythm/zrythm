@@ -1020,6 +1020,7 @@ draw_lines_and_labels (
     }
 }
 
+#if 0
 static GtkScrolledWindow *
 get_scrolled_window (RulerWidget * self)
 {
@@ -1033,18 +1034,22 @@ get_scrolled_window (RulerWidget * self)
 
   return NULL;
 }
+#endif
 
 static void
 ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
-  RulerWidget *       self = Z_RULER_WIDGET (widget);
+  RulerWidget * self = Z_RULER_WIDGET (widget);
+#if 0
   GtkScrolledWindow * scroll = get_scrolled_window (self);
-  graphene_rect_t     visible_rect;
   z_gtk_scrolled_window_get_visible_rect (
     scroll, &visible_rect);
+#endif
   GdkRectangle visible_rect_gdk;
-  z_gtk_graphene_rect_t_to_gdk_rectangle (
-    &visible_rect_gdk, &visible_rect);
+  gtk_widget_get_allocation (widget, &visible_rect_gdk);
+  graphene_rect_t visible_rect;
+  z_gdk_rectangle_to_graphene_rect_t (
+    &visible_rect, &visible_rect_gdk);
 
   /* engine is run only set after everything is set
    * up so this is a good way to decide if we
@@ -1678,6 +1683,7 @@ ruler_widget_refresh (RulerWidget * self)
     }
 }
 
+#if 0
 GtkScrolledWindow *
 ruler_widget_get_parent_scroll (RulerWidget * self)
 {
@@ -1692,6 +1698,7 @@ ruler_widget_get_parent_scroll (RulerWidget * self)
 
   g_return_val_if_reached (NULL);
 }
+#endif
 
 /**
  * Sets zoom level and disables/enables buttons

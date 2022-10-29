@@ -496,6 +496,7 @@ midi_arranger_handle_vertical_zoom_scroll (
   if (!(state & GDK_CONTROL_MASK && state & GDK_SHIFT_MASK))
     return;
 
+#if 0
   GtkScrolledWindow * scroll =
     arranger_widget_get_scrolled_window (self);
 
@@ -538,4 +539,5 @@ midi_arranger_handle_vertical_zoom_scroll (
    at the same offset as before */
   adj = gtk_scrolled_window_get_vadjustment (scroll);
   gtk_adjustment_set_value (adj, adj_perc * size_after - diff);
+#endif
 }

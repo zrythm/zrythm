@@ -39,39 +39,10 @@
             <child>
               <object class="GtkBox" id="midi_arranger_box">
                 <property name="hexpand">1</property>
+                <property name="vexpand">1</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkBox" id="arranger_inner_box">
-                    <property name="orientation">horizontal</property>
-                    <child>
-                      <object class="GtkScrolledWindow" id="arranger_scroll">
-                        <property name="hexpand">1</property>
-                        <property name="vexpand">1</property>
-                        <property name="focusable">1</property>
-                        <property name="hscrollbar_policy">external</property>
-                        <property name="vscrollbar_policy">external</property>
-                        <property name="overlay-scrolling">0</property>
-                        <property name="child">
-                          <object class="GtkViewport">
-                            <property name="scroll-to-focus">0</property>
-                            <child>
-                              <object class="ArrangerWidget" id="arranger">
-                              </object>
-                            </child>
-                          </object>
-                        </property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkScrollbar" id="arranger_vscrollbar">
-                        <property name="orientation">vertical</property>
-                      </object>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkScrollbar" id="arranger_hscrollbar">
-                    <property name="orientation">horizontal</property>
+                  <object class="ArrangerWidget" id="arranger">
                   </object>
                 </child>
               </object>
@@ -98,20 +69,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkScrolledWindow" id="modifier_arranger_scroll">
-                <property name="hexpand">1</property>
-                <property name="focusable">1</property>
-                <property name="hscrollbar_policy">external</property>
-                <property name="vscrollbar_policy">never</property>
-                <property name="child">
-                  <object class="GtkViewport">
-                    <property name="scroll-to-focus">0</property>
-                    <child>
-                      <object class="ArrangerWidget" id="modifier_arranger">
-                      </object>
-                    </child>
-                  </object>
-                </property>
+              <object class="ArrangerWidget" id="modifier_arranger">
               </object>
             </child>
           </object>

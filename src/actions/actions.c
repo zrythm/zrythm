@@ -508,6 +508,7 @@ DEFINE_SIMPLE (activate_best_fit)
       return;
     }
 
+#if 0
   double              total_ticks = position_to_ticks (&pos);
   GtkScrolledWindow * scroll =
     ruler_widget_get_parent_scroll (ruler);
@@ -520,6 +521,7 @@ DEFINE_SIMPLE (activate_best_fit)
     ruler_widget_get_zoom_level (ruler)
     * (needed_px_per_tick / ruler->px_per_tick);
   ruler_widget_set_zoom_level (ruler, new_zoom_level);
+#endif
 
   EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, ruler);
 }

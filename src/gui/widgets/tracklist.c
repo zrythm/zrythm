@@ -592,13 +592,14 @@ tracklist_widget_setup (
     self->pinned_size_group, GTK_WIDGET (self->pinned_box));
   gtk_size_group_add_widget (
     self->pinned_size_group,
-    GTK_WIDGET (MW_TIMELINE_PANEL->pinned_timeline_scroll));
+    GTK_WIDGET (MW_TIMELINE_PANEL->pinned_timeline));
 
+  /* doesn't work */
   self->unpinned_size_group =
     gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
   gtk_size_group_add_widget (
     self->unpinned_size_group,
-    GTK_WIDGET (self->unpinned_box));
+    GTK_WIDGET (self->unpinned_scroll));
   gtk_size_group_add_widget (
     self->unpinned_size_group,
     GTK_WIDGET (MW_TIMELINE_PANEL->timeline));

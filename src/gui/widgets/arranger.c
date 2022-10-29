@@ -1428,6 +1428,7 @@ auto_scroll (ArrangerWidget * self, int x, int y)
   if (!scroll_h && !scroll_v)
     return;
 
+#if 0
   GtkScrolledWindow * scroll =
     arranger_widget_get_scrolled_window (self);
   g_return_if_fail (scroll);
@@ -1472,6 +1473,7 @@ auto_scroll (ArrangerWidget * self, int x, int y)
       gtk_adjustment_set_value (
         vadj, gtk_adjustment_get_value (vadj) + v_delta);
     }
+#endif
 
   return;
 }
@@ -5009,12 +5011,14 @@ arranger_widget_get_selections (ArrangerWidget * self)
 /*#undef UPDATE_VISIBILITY*/
 /*}*/
 
+#if 0
 /**
  * Gets the corresponding scrolled window.
  */
 GtkScrolledWindow *
 arranger_widget_get_scrolled_window (ArrangerWidget * self)
 {
+  return NULL;
   switch (self->type)
     {
     case TYPE (TIMELINE):
@@ -5040,6 +5044,7 @@ arranger_widget_get_scrolled_window (ArrangerWidget * self)
 
   return NULL;
 }
+#endif
 
 /**
  * Get all objects currently present in the
@@ -5077,6 +5082,11 @@ arranger_widget_get_visible_rect (
   ArrangerWidget * self,
   GdkRectangle *   rect)
 {
+  /* FIXME */
+  gtk_widget_get_allocation (GTK_WIDGET (self), rect);
+  return;
+
+#if 0
   GtkScrolledWindow * scroll =
     arranger_widget_get_scrolled_window (self);
   GtkAdjustment * xadj =
@@ -5089,6 +5099,7 @@ arranger_widget_get_visible_rect (
     gtk_widget_get_allocated_height (GTK_WIDGET (scroll));
   rect->width =
     gtk_widget_get_allocated_width (GTK_WIDGET (scroll));
+#endif
 }
 
 bool
@@ -5108,6 +5119,7 @@ arranger_widget_is_playhead_visible (ArrangerWidget * self)
   return width >= 0;
 }
 
+#if 0
 static gboolean
 update_hadj_value (gpointer user_data)
 {
@@ -5132,6 +5144,7 @@ update_hadj_value (gpointer user_data)
 
   return G_SOURCE_REMOVE;
 }
+#endif
 
 static gboolean
 on_scroll (
@@ -5174,13 +5187,14 @@ on_scroll (
         }
     }
   /* else if just control pressed handle horizontal
-   * zooom */
+   * zoom */
   else
     {
+#if 0
       Position            cursor_pos;
+      RulerWidget * ruler = arranger_widget_get_ruler (self);
       GtkScrolledWindow * scroll =
         arranger_widget_get_scrolled_window (self);
-      RulerWidget * ruler = arranger_widget_get_ruler (self);
 
       /* get current adjustment so we can get the
        * difference from the cursor */
@@ -5191,10 +5205,6 @@ on_scroll (
       /* get position of cursor */
       arranger_widget_px_to_pos (
         self, x, &cursor_pos, F_PADDING);
-
-#if 0
-      position_print (&cursor_pos);
-#endif
 
       /* get px diff so we can calculate the new
        * adjustment later */
@@ -5214,6 +5224,7 @@ on_scroll (
 
       int new_x = arranger_widget_pos_to_px (
         self, &cursor_pos, F_PADDING);
+#endif
 
 #if 0
       g_debug (
@@ -5221,6 +5232,7 @@ on_scroll (
         new_x);
 #endif
 
+#if 0
       /* refresh relevant widgets */
       if (self->type == TYPE (TIMELINE))
         timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
@@ -5234,6 +5246,7 @@ on_scroll (
        * changed after being set here (likely because the
        * ruler size changes) */
       g_idle_add (update_hadj_value, self);
+#endif
     }
 
   return true;
@@ -6175,6 +6188,7 @@ arranger_widget_scroll_until_obj (
   int              left,
   double           padding)
 {
+#if 0
   GtkScrolledWindow * scroll =
     arranger_widget_get_scrolled_window (self);
   int scroll_width =
@@ -6247,6 +6261,7 @@ arranger_widget_scroll_until_obj (
             }
         }
     }
+#endif
 }
 
 /**
@@ -6312,6 +6327,7 @@ arranger_widget_handle_playhead_auto_scroll (
   if (!TRANSPORT_IS_ROLLING && !force)
     return;
 
+#if 0
   bool scroll_edges = false;
   bool follow = false;
   if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
@@ -6365,6 +6381,7 @@ arranger_widget_handle_playhead_auto_scroll (
           /*g_debug ("autoscrolling at playhead edges");*/
         }
     }
+#endif
 }
 
 static gboolean

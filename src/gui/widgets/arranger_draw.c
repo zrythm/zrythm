@@ -974,7 +974,15 @@ draw_range (
 void
 arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
-  ArrangerWidget *    self = Z_ARRANGER_WIDGET (widget);
+  ArrangerWidget * self = Z_ARRANGER_WIDGET (widget);
+
+  GdkRectangle visible_rect_gdk;
+  gtk_widget_get_allocation (widget, &visible_rect_gdk);
+  graphene_rect_t visible_rect;
+  z_gdk_rectangle_to_graphene_rect_t (
+    &visible_rect, &visible_rect_gdk);
+
+#if 0
   GtkScrolledWindow * scroll =
     arranger_widget_get_scrolled_window (self);
   graphene_rect_t visible_rect;
@@ -983,6 +991,7 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   GdkRectangle visible_rect_gdk;
   z_gtk_graphene_rect_t_to_gdk_rectangle (
     &visible_rect_gdk, &visible_rect);
+#endif
 
   gint64 start_time = g_get_monotonic_time ();
 
@@ -999,10 +1008,12 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       self->first_draw = false;
 
+#if 0
       GtkAdjustment * hadj =
         gtk_scrolled_window_get_hadjustment (scroll);
       GtkAdjustment * vadj =
         gtk_scrolled_window_get_vadjustment (scroll);
+#endif
 
       EditorSettings * settings =
         arranger_widget_get_editor_settings (self);
@@ -1021,8 +1032,10 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       g_debug (
         "setting arranger adjustment to %d, %d", new_x, new_y);
 
+#if 0
       gtk_adjustment_set_value (hadj, new_x);
       gtk_adjustment_set_value (vadj, new_y);
+#endif
     }
 
   /* skip drawing if rectangle too large */

@@ -505,12 +505,14 @@ arranger_widget_get_cursor (ArrangerWidget * self);
 void
 arranger_widget_refresh_cursor (ArrangerWidget * self);
 
+#if 0
 /**
  * Gets the corresponding scrolled window.
  */
 NONNULL
 GtkScrolledWindow *
 arranger_widget_get_scrolled_window (ArrangerWidget * self);
+#endif
 
 /**
  * Get all objects currently present in the

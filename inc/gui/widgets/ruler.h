@@ -21,6 +21,8 @@
 #define RW_PLAYHEAD_TRIANGLE_HEIGHT 8
 #define RW_RANGE_HEIGHT_DIVISOR 4
 
+#define RW_HEIGHT 42
+
 /**
  * Minimum number of pixels between beat lines.
  */
@@ -233,8 +235,10 @@ ruler_widget_is_range_hit (
 double
 ruler_widget_get_zoom_level (RulerWidget * self);
 
+#if 0
 GtkScrolledWindow *
 ruler_widget_get_parent_scroll (RulerWidget * self);
+#endif
 
 void
 ruler_widget_refresh (RulerWidget * self);

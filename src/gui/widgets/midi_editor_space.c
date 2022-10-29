@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019, 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019, 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/channel.h"
 #include "audio/chord_track.h"
@@ -58,6 +42,7 @@ on_midi_modifier_changed (
     PIANO_ROLL, gtk_combo_box_get_active (widget));
 }
 
+#if 0
 /**
  * Links scroll windows after all widgets have been
  * initialized.
@@ -103,6 +88,7 @@ link_scrolls (MidiEditorSpaceWidget * self)
     gtk_scrolled_window_get_vadjustment (
       GTK_SCROLLED_WINDOW (self->arranger_scroll)));
 }
+#endif
 
 static int
 on_scroll (
@@ -124,6 +110,7 @@ on_scroll (
   return TRUE;
 }
 
+#if 0
 /**
  * Source function that keeps trying to scroll to the
  * mid note until successful.
@@ -153,6 +140,7 @@ midi_editor_space_tick_cb (
 
   return G_SOURCE_CONTINUE;
 }
+#endif
 
 void
 midi_editor_space_widget_refresh (MidiEditorSpaceWidget * self)
@@ -160,7 +148,7 @@ midi_editor_space_widget_refresh (MidiEditorSpaceWidget * self)
   piano_roll_keys_widget_refresh (self->piano_roll_keys);
 
   /* relink scrolls (why?) */
-  link_scrolls (self);
+  /*link_scrolls (self);*/
 
   /* setup combo box */
   gtk_combo_box_set_active (
@@ -221,8 +209,8 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
 
   /* make hscrollbar invisible until GTK bug
    * 4478 is fixed */
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->arranger_hscrollbar), false);
+  /*gtk_widget_set_visible (*/
+  /*GTK_WIDGET (self->arranger_hscrollbar), false);*/
 
   gtk_paned_set_resize_start_child (
     self->midi_arranger_velocity_paned, true);
@@ -237,6 +225,7 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
   self->modifier_arranger->type =
     ARRANGER_WIDGET_TYPE_MIDI_MODIFIER;
 
+  /* doesn't work */
   self->arranger_and_keys_vsize_group =
     gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
   gtk_size_group_add_widget (
@@ -244,7 +233,15 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
     GTK_WIDGET (self->arranger));
   gtk_size_group_add_widget (
     self->arranger_and_keys_vsize_group,
-    GTK_WIDGET (self->piano_roll_keys));
+    GTK_WIDGET (self->piano_roll_keys_scroll));
+
+  /* above doesn't work so set vexpand instead */
+  gtk_widget_set_vexpand (GTK_WIDGET (self->arranger), true);
+
+  /* also hexpand the modifier arranger TODO use a size
+   * group */
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->modifier_arranger), true);
 
   /* setup signals */
   g_signal_connect (
@@ -266,8 +263,8 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (scroll_controller));
 
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), midi_editor_space_tick_cb, self, NULL);
+  /*gtk_widget_add_tick_callback (*/
+  /*GTK_WIDGET (self), midi_editor_space_tick_cb, self, NULL);*/
 }
 
 static void
@@ -285,12 +282,12 @@ midi_editor_space_widget_class_init (
   BIND_CHILD (piano_roll_keys_scroll);
   BIND_CHILD (piano_roll_keys);
   BIND_CHILD (midi_arranger_velocity_paned);
-  BIND_CHILD (arranger_scroll);
+  /*BIND_CHILD (arranger_scroll);*/
   BIND_CHILD (arranger);
-  BIND_CHILD (modifier_arranger_scroll);
+  /*BIND_CHILD (modifier_arranger_scroll);*/
   BIND_CHILD (modifier_arranger);
-  BIND_CHILD (arranger_hscrollbar);
-  BIND_CHILD (arranger_vscrollbar);
+  /*BIND_CHILD (arranger_hscrollbar);*/
+  /*BIND_CHILD (arranger_vscrollbar);*/
   BIND_CHILD (midi_notes_box);
   BIND_CHILD (midi_vel_chooser_box);
 

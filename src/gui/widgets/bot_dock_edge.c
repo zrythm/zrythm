@@ -151,12 +151,15 @@ bot_dock_edge_widget_show_clip_editor (
       g_return_if_fail (IS_REGION_AND_NONNULL (r));
       ArrangerObject * r_obj = (ArrangerObject *) r;
       int px = ui_pos_to_px_editor (&r_obj->pos, false);
+#if 0
       GtkScrolledWindow * scroll =
         arranger_widget_get_scrolled_window (
           Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
       GtkAdjustment * hadj =
         gtk_scrolled_window_get_hadjustment (scroll);
       gtk_adjustment_set_value (hadj, px);
+#endif
+      (void) px;
     }
 }
 

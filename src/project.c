@@ -1780,6 +1780,7 @@ project_save (
     {
       if (MW_TIMELINE)
         {
+#if 0
           GtkScrolledWindow * scroll =
             arranger_widget_get_scrolled_window (MW_TIMELINE);
           GtkAdjustment * adj =
@@ -1789,9 +1790,11 @@ project_save (
           adj = gtk_scrolled_window_get_vadjustment (scroll);
           PRJ_TIMELINE->editor_settings.scroll_start_y =
             (int) gtk_adjustment_get_value (adj);
+#endif
         }
       if (MW_MIDI_ARRANGER)
         {
+#if 0
           GtkScrolledWindow * scroll =
             arranger_widget_get_scrolled_window (
               MW_MIDI_ARRANGER);
@@ -1802,9 +1805,11 @@ project_save (
           adj = gtk_scrolled_window_get_vadjustment (scroll);
           PIANO_ROLL->editor_settings.scroll_start_y =
             (int) gtk_adjustment_get_value (adj);
+#endif
         }
       if (MW_AUTOMATION_ARRANGER)
         {
+#if 0
           GtkScrolledWindow * scroll =
             arranger_widget_get_scrolled_window (
               MW_AUTOMATION_ARRANGER);
@@ -1815,9 +1820,11 @@ project_save (
           adj = gtk_scrolled_window_get_vadjustment (scroll);
           AUTOMATION_EDITOR->editor_settings.scroll_start_y =
             (int) gtk_adjustment_get_value (adj);
+#endif
         }
       if (MW_AUDIO_ARRANGER)
         {
+#if 0
           GtkScrolledWindow * scroll =
             arranger_widget_get_scrolled_window (
               MW_AUDIO_ARRANGER);
@@ -1828,9 +1835,11 @@ project_save (
           adj = gtk_scrolled_window_get_vadjustment (scroll);
           AUDIO_CLIP_EDITOR->editor_settings.scroll_start_y =
             (int) gtk_adjustment_get_value (adj);
+#endif
         }
       if (MW_CHORD_ARRANGER)
         {
+#if 0
           GtkScrolledWindow * scroll =
             arranger_widget_get_scrolled_window (
               MW_CHORD_ARRANGER);
@@ -1841,6 +1850,7 @@ project_save (
           adj = gtk_scrolled_window_get_vadjustment (scroll);
           CHORD_EDITOR->editor_settings.scroll_start_y =
             (int) gtk_adjustment_get_value (adj);
+#endif
         }
     }
 
