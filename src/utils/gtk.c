@@ -291,19 +291,23 @@ z_gtk_widget_remove_children_of_type (
         {
           if (GTK_IS_BOX (widget))
             {
+#if 0
               g_debug (
                 "removing %s (%p) from box %s (%p)",
                 gtk_widget_get_name (child), child,
                 gtk_widget_get_name (widget), widget);
+#endif
               gtk_box_remove (GTK_BOX (widget), child);
             }
           else
             {
+#if 0
               g_debug (
                 "unparenting %s (%p) from "
                 "parent %s (%p)",
                 gtk_widget_get_name (child), child,
                 gtk_widget_get_name (widget), widget);
+#endif
               gtk_widget_unparent (child);
             }
         }
