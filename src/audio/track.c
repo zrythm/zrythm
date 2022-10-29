@@ -481,9 +481,9 @@ track_clone (Track * track, GError ** error)
   /* --- copy objects --- */
 
   new_track->num_lanes = track->num_lanes;
-  new_track->lanes = g_realloc (
-    new_track->lanes,
-    sizeof (TrackLane *) * (size_t) track->num_lanes);
+  new_track->lanes = g_realloc_n (
+    new_track->lanes, (size_t) track->num_lanes,
+    sizeof (TrackLane *));
   for (int j = 0; j < track->num_lanes; j++)
     {
       TrackLane * lane = track->lanes[j];
@@ -493,9 +493,9 @@ track_clone (Track * track, GError ** error)
     }
 
   new_track->num_scales = track->num_scales;
-  new_track->scales = g_realloc (
-    new_track->scales,
-    sizeof (ScaleObject *) * (size_t) track->num_scales);
+  new_track->scales = g_realloc_n (
+    new_track->scales, (size_t) track->num_scales,
+    sizeof (ScaleObject *));
   for (int j = 0; j < track->num_scales; j++)
     {
       ScaleObject * s = track->scales[j];
@@ -504,9 +504,9 @@ track_clone (Track * track, GError ** error)
     }
 
   new_track->num_markers = track->num_markers;
-  new_track->markers = g_realloc (
-    new_track->markers,
-    sizeof (Marker *) * (size_t) track->num_markers);
+  new_track->markers = g_realloc_n (
+    new_track->markers, (size_t) track->num_markers,
+    sizeof (Marker *));
   for (int j = 0; j < track->num_markers; j++)
     {
       Marker * m = track->markers[j];
@@ -515,9 +515,9 @@ track_clone (Track * track, GError ** error)
     }
 
   new_track->num_chord_regions = track->num_chord_regions;
-  new_track->chord_regions = g_realloc (
+  new_track->chord_regions = g_realloc_n (
     new_track->chord_regions,
-    sizeof (ZRegion *) * (size_t) track->num_chord_regions);
+    (size_t) track->num_chord_regions, sizeof (ZRegion *));
   for (int j = 0; j < track->num_chord_regions; j++)
     {
       ZRegion * r = track->chord_regions[j];
@@ -2661,34 +2661,49 @@ track_fill_events (
   g_message (
     "%s: TRACK %s STARTING from %ld, "
     "local start frame %u, nframes %u",
-    __func__, track->name, g_start_frames,
-    local_start_frame, nframes);
+    __func__, self->name, time_nfo->g_start_frame,
+    time_nfo->local_offset, time_nfo->nframes);
 #endif
 
   TrackType tt = self->type;
 
+  bool use_caches = !track_is_auditioner (self);
+
+  TrackLane ** lanes =
+    use_caches ? self->lane_snapshots : self->lanes;
+  int num_lanes =
+    use_caches ? self->num_lane_snapshots : self->num_lanes;
+  ZRegion ** chord_regions =
+    use_caches
+      ? self->chord_region_snapshots
+      : self->chord_regions;
+  int num_chord_regions =
+    use_caches
+      ? self->num_chord_region_snapshots
+      : self->num_chord_regions;
+
   /* go through each lane */
   const int num_loops =
-    (tt == TRACK_TYPE_CHORD ? 1 : self->num_lanes);
+    (tt == TRACK_TYPE_CHORD ? 1 : num_lanes);
   for (int j = 0; j < num_loops; j++)
     {
       TrackLane * lane = NULL;
       if (tt != TRACK_TYPE_CHORD)
         {
-          lane = self->lanes[j];
+          lane = lanes[j];
           g_return_if_fail (lane);
         }
 
       /* go through each region */
       const int num_regions =
         (tt == TRACK_TYPE_CHORD
-           ? self->num_chord_regions
+           ? num_chord_regions
            : lane->num_regions);
       for (int i = 0; i < num_regions; i++)
         {
           ZRegion * r =
             tt == TRACK_TYPE_CHORD
-              ? self->chord_regions[i]
+              ? chord_regions[i]
               : lane->regions[i];
           ArrangerObject * r_obj = (ArrangerObject *) r;
           g_return_if_fail (IS_REGION (r));
@@ -3657,22 +3672,127 @@ remove_ats_from_automation_tracklist (
     }
 }
 
+/**
+ * Set various caches (snapshots, track name hash, plugin
+ * input/output ports, etc).
+ */
 void
-track_set_caches (Track * self)
+track_set_caches (Track * self, CacheTypes types)
 {
   AutomationTracklist * atl =
     track_get_automation_tracklist (self);
 
-  /* update name hash */
-  self->name_hash = track_get_name_hash (self);
-
-  if (track_type_has_channel (self->type))
+  if (types & CACHE_TYPE_TRACK_NAME_HASHES)
     {
-      channel_set_caches (self->channel);
+      /* update name hash */
+      self->name_hash = track_get_name_hash (self);
     }
 
-  if (atl)
-    automation_tracklist_set_caches (atl);
+  if (
+    types & CACHE_TYPE_PLAYBACK_SNAPSHOTS
+    && !track_is_auditioner (self))
+    {
+      g_return_if_fail (
+        g_atomic_int_get (&AUDIO_ENGINE->run) == 0);
+
+      /* normal track lanes */
+      for (int i = 0; i < self->num_lane_snapshots; i++)
+        {
+          track_lane_free (self->lane_snapshots[i]);
+        }
+      self->num_lane_snapshots = 0;
+      self->lane_snapshots = g_realloc_n (
+        self->lane_snapshots, (size_t) self->num_lanes,
+        sizeof (TrackLane *));
+      for (int i = 0; i < self->num_lanes; i++)
+        {
+          self->lane_snapshots[i] =
+            track_lane_gen_snapshot (self->lanes[i]);
+          self->num_lane_snapshots++;
+        }
+
+      /* chord regions */
+      for (int i = 0; i < self->num_chord_region_snapshots; i++)
+        {
+          arranger_object_free (
+            (ArrangerObject *) self->chord_region_snapshots[i]);
+        }
+      self->num_chord_region_snapshots = 0;
+      self->chord_region_snapshots = g_realloc_n (
+        self->chord_region_snapshots,
+        (size_t) self->num_chord_regions, sizeof (ZRegion *));
+      for (int i = 0; i < self->num_chord_regions; i++)
+        {
+          self->chord_region_snapshots[i] =
+            (ZRegion *) arranger_object_clone (
+              (ArrangerObject *) self->chord_regions[i]);
+          self->num_chord_region_snapshots++;
+        }
+
+      /* scales */
+      for (int i = 0; i < self->num_scale_snapshots; i++)
+        {
+          arranger_object_free (
+            (ArrangerObject *) self->scale_snapshots[i]);
+        }
+      self->num_scale_snapshots = 0;
+      self->scale_snapshots = g_realloc_n (
+        self->scale_snapshots, (size_t) self->num_scales,
+        sizeof (ScaleObject *));
+      for (int i = 0; i < self->num_scales; i++)
+        {
+          self->scale_snapshots[i] =
+            (ScaleObject *) arranger_object_clone (
+              (ArrangerObject *) self->scales[i]);
+          self->num_scale_snapshots++;
+        }
+
+      /* markers */
+      for (int i = 0; i < self->num_marker_snapshots; i++)
+        {
+          arranger_object_free (
+            (ArrangerObject *) self->marker_snapshots[i]);
+        }
+      self->num_marker_snapshots = 0;
+      self->marker_snapshots = g_realloc_n (
+        self->marker_snapshots, (size_t) self->num_markers,
+        sizeof (Marker *));
+      for (int i = 0; i < self->num_markers; i++)
+        {
+          self->marker_snapshots[i] =
+            (Marker *) arranger_object_clone (
+              (ArrangerObject *) self->markers[i]);
+          self->num_marker_snapshots++;
+        }
+
+      /* automation regions */
+      if (atl)
+        {
+          automation_tracklist_set_caches (
+            atl, CACHE_TYPE_PLAYBACK_SNAPSHOTS);
+        }
+    }
+
+  if (types & CACHE_TYPE_PLUGIN_PORTS)
+    {
+      if (track_type_has_channel (self->type))
+        {
+          channel_set_caches (self->channel);
+        }
+    }
+
+  if (
+    types & CACHE_TYPE_AUTOMATION_LANE_RECORD_MODES
+    || types & CACHE_TYPE_AUTOMATION_LANE_PORTS)
+    {
+      if (atl)
+        {
+          automation_tracklist_set_caches (
+            atl,
+            CACHE_TYPE_AUTOMATION_LANE_RECORD_MODES
+              | CACHE_TYPE_AUTOMATION_LANE_PORTS);
+        }
+    }
 }
 
 /**
@@ -3689,12 +3809,19 @@ track_free (Track * self)
       self->widget->track = NULL;
     }
 
-  /* remove regions */
+  /* remove lanes */
   for (int i = 0; i < self->num_lanes; i++)
     {
       object_free_w_func_and_null (
         track_lane_free, self->lanes[i]);
     }
+  object_zero_and_free (self->lanes);
+  for (int i = 0; i < self->num_lane_snapshots; i++)
+    {
+      object_free_w_func_and_null (
+        track_lane_free, self->lane_snapshots[i]);
+    }
+  object_zero_and_free (self->lane_snapshots);
 
   /* remove automation points, curves, tracks,
    * lanes*/
@@ -3704,10 +3831,50 @@ track_free (Track * self)
   /* remove chords */
   for (int i = 0; i < self->num_chord_regions; i++)
     {
-      arranger_object_free (
-        (ArrangerObject *) self->chord_regions[i]);
-      self->chord_regions[i] = NULL;
+      object_free_w_func_and_null_cast (
+        arranger_object_free, ArrangerObject *,
+        self->chord_regions[i]);
     }
+  object_zero_and_free (self->chord_regions);
+  for (int i = 0; i < self->num_chord_region_snapshots; i++)
+    {
+      object_free_w_func_and_null_cast (
+        arranger_object_free, ArrangerObject *,
+        self->chord_region_snapshots[i]);
+    }
+  object_zero_and_free (self->chord_region_snapshots);
+
+  /* remove scales */
+  for (int i = 0; i < self->num_scales; i++)
+    {
+      object_free_w_func_and_null_cast (
+        arranger_object_free, ArrangerObject *,
+        self->scales[i]);
+    }
+  object_zero_and_free (self->scales);
+  for (int i = 0; i < self->num_scale_snapshots; i++)
+    {
+      object_free_w_func_and_null_cast (
+        arranger_object_free, ArrangerObject *,
+        self->scale_snapshots[i]);
+    }
+  object_zero_and_free (self->scale_snapshots);
+
+  /* remove markers */
+  for (int i = 0; i < self->num_markers; i++)
+    {
+      object_free_w_func_and_null_cast (
+        arranger_object_free, ArrangerObject *,
+        self->markers[i]);
+    }
+  object_zero_and_free (self->markers);
+  for (int i = 0; i < self->num_marker_snapshots; i++)
+    {
+      object_free_w_func_and_null_cast (
+        arranger_object_free, ArrangerObject *,
+        self->marker_snapshots[i]);
+    }
+  object_zero_and_free (self->marker_snapshots);
 
   if (self->bpm_port)
     {

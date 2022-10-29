@@ -2337,7 +2337,12 @@ clone_region (const ZRegion * region)
     case REGION_TYPE_AUDIO:
       {
         ZRegion * ar = audio_region_new (
-          region->pool_id, NULL, true, NULL, 0, NULL, 0, 0,
+          region->pool_id, NULL, true,
+          region->clip ? region->clip->frames : NULL,
+          region->clip ? region->clip->num_frames : 0,
+          region->clip ? region->clip->name : NULL,
+          region->clip ? region->clip->channels : 0,
+          region->clip ? region->clip->bit_depth : 0,
           &r_obj->pos, region->id.track_name_hash,
           region->id.lane_pos, region->id.idx);
 
@@ -2429,6 +2434,9 @@ clone_region (const ZRegion * region)
   /* set track to NULL and remember track pos */
   region_identifier_copy (&new_region->id, &region->id);
   g_warn_if_fail (new_region->id.idx >= 0);
+
+  /* clone bounce options */
+  new_region->bounce = region->bounce;
 
   return (ArrangerObject *) new_region;
 }

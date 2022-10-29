@@ -686,19 +686,19 @@ automation_track_set_index (AutomationTrack * self, int index)
 }
 
 /**
- * Returns the actual parameter value at the given
- * position.
+ * Returns the actual parameter value at the given position.
  *
- * If there is no automation point/curve during
- * the position, it returns the current value
- * of the parameter it is automating.
+ * If there is no automation point/curve during the position,
+ * it returns the current value of the parameter it is
+ * automating.
  *
- * @param normalized Whether to return the value
- *   normalized.
- * @param ends_after Whether to only check in
- *   regions that also end after \ref pos (ie,
- *   the region surrounds \ref pos), otherwise
- *   check in the region that ends last.
+ * @param normalized Whether to return the value normalized.
+ * @param ends_after Whether to only check in regions that also
+ *   end after \ref pos (ie, the region surrounds \ref pos),
+ *   otherwise check in the region that ends last.
+ * @param use_snapshots Whether to get the value from the
+ *   snapshotted (cached) regions. This should be set to true
+ *   when called during dsp playback. TODO unimplemented
  */
 float
 automation_track_get_val_at_pos (
@@ -880,9 +880,34 @@ automation_track_verify (AutomationTrack * self)
 }
 
 void
-automation_track_set_caches (AutomationTrack * self)
+automation_track_set_caches (
+  AutomationTrack * self,
+  CacheTypes        types)
 {
-  self->port = port_find_from_identifier (&self->port_id);
+  if (types & CACHE_TYPE_PLAYBACK_SNAPSHOTS)
+    {
+      for (int i = 0; i < self->num_region_snapshots; i++)
+        {
+          arranger_object_free (
+            (ArrangerObject *) self->region_snapshots[i]);
+        }
+      self->num_region_snapshots = 0;
+      self->region_snapshots = g_realloc_n (
+        self->region_snapshots, (size_t) self->num_regions,
+        sizeof (ZRegion *));
+      for (int i = 0; i < self->num_regions; i++)
+        {
+          self->region_snapshots[i] =
+            (ZRegion *) arranger_object_clone (
+              (ArrangerObject *) self->regions[i]);
+          self->num_region_snapshots++;
+        }
+    }
+
+  if (types & CACHE_TYPE_AUTOMATION_LANE_PORTS)
+    {
+      self->port = port_find_from_identifier (&self->port_id);
+    }
 }
 
 bool
@@ -935,6 +960,13 @@ automation_track_free (AutomationTrack * self)
         self->regions[i]);
     }
   object_zero_and_free (self->regions);
+  for (int i = 0; i < self->num_region_snapshots; i++)
+    {
+      object_free_w_func_and_null_cast (
+        arranger_object_free, ArrangerObject *,
+        self->region_snapshots[i]);
+    }
+  object_zero_and_free (self->region_snapshots);
 
   port_identifier_free_members (&self->port_id);
 

@@ -92,11 +92,15 @@ test_fill_midi_events (void)
 
   /* -- BASIC TESTS (no loops) -- */
 
-  /* stop dummy audio engine processing so we can
-   * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
+  /* deactivate audio engine processing so we can process
+   * manually */
+  engine_activate (AUDIO_ENGINE, false);
   TRANSPORT->play_state = PLAYSTATE_ROLLING;
+
+#define SET_CACHES_AND_FILL \
+  tracklist_set_caches ( \
+    TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS); \
+  track_fill_events (track, &time_nfo, events, NULL);
 
   /* try basic fill */
   EngineProcessTimeInfo time_nfo = {
@@ -104,7 +108,7 @@ test_fill_midi_events (void)
     .local_offset = 0,
     .nframes = BUFFER_SIZE,
   };
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_nonnull (ev);
@@ -129,7 +133,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames + 1;
   time_nfo.local_offset = 1;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 0);
 
   /*
@@ -143,7 +147,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 1;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 1);
   midi_events_clear (events, F_QUEUED);
 
@@ -158,7 +162,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 0);
 
   /*
@@ -174,7 +178,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 0);
 
   /*
@@ -190,7 +194,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));
@@ -217,7 +221,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_cmpuint (ev->time, ==, BUFFER_SIZE - 1);
@@ -240,7 +244,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_cmpuint (ev->time, ==, BUFFER_SIZE - 2);
@@ -260,7 +264,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));
@@ -304,7 +308,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 512;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 0);
 
   /*
@@ -347,7 +351,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 2000;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
@@ -392,7 +396,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 0);
   position_add_ticks (&mn_obj->pos, 1);
   position_update_frames_from_ticks (&mn_obj->pos, 0.0);
@@ -409,7 +413,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 0);
 
   /**
@@ -425,7 +429,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 0);
 
   /**
@@ -440,7 +444,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_cmpuint (ev->time, ==, 10);
@@ -458,7 +462,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
   g_assert_cmpuint (ev->time, ==, 10);
@@ -499,7 +503,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   g_assert_cmpint (events->num_queued_events, ==, 3);
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));
@@ -530,7 +534,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   midi_events_print (events, F_QUEUED);
   g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
@@ -565,7 +569,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = BUFFER_SIZE;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   midi_events_print (events, F_QUEUED);
   g_assert_cmpint (events->num_queued_events, ==, 1);
   ev = &events->queued_events[0];
@@ -596,7 +600,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 30;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   midi_events_print (events, F_QUEUED);
   g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
@@ -611,7 +615,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 10;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   ev = &events->queued_events[0];
   g_assert_true (midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 0);
@@ -639,7 +643,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 50;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   midi_events_print (events, F_QUEUED);
   g_assert_cmpint (events->num_queued_events, ==, 2);
   ev = &events->queued_events[0];
@@ -670,7 +674,7 @@ test_fill_midi_events (void)
   time_nfo.g_start_frame = (unsigned_frame_t) pos.frames;
   time_nfo.local_offset = 0;
   time_nfo.nframes = 50;
-  track_fill_events (track, &time_nfo, events, NULL);
+  SET_CACHES_AND_FILL;
   midi_events_print (events, F_QUEUED);
   g_assert_cmpint (events->num_queued_events, ==, 3);
   ev = &events->queued_events[0];

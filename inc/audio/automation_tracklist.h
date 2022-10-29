@@ -289,7 +289,9 @@ automation_tracklist_print_regions (
 
 NONNULL
 void
-automation_tracklist_set_caches (AutomationTracklist * self);
+automation_tracklist_set_caches (
+  AutomationTracklist * self,
+  CacheTypes            types);
 
 NONNULL
 void

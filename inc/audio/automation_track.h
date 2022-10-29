@@ -87,6 +87,10 @@ typedef struct AutomationTrack
   int        num_regions;
   size_t     regions_size;
 
+  /** Snapshots used during playback TODO unimplemented. */
+  ZRegion ** region_snapshots;
+  int        num_region_snapshots;
+
   /**
    * Whether visible or not.
    *
@@ -432,24 +436,24 @@ void
 automation_track_clear (AutomationTrack * self);
 
 /**
- * Returns the actual parameter value at the given
- * position.
+ * Returns the actual parameter value at the given position.
  *
- * If there is no automation point/curve during
- * the position, it returns the current value
- * of the parameter it is automating.
+ * If there is no automation point/curve during the position,
+ * it returns the current value of the parameter it is
+ * automating.
  *
- * @param normalized Whether to return the value
- *   normalized.
- * @param ends_after Whether to only check in
- *   regions that also end after \ref pos (ie,
- *   the region surrounds \ref pos), otherwise
- *   check in the region that ends last.
+ * @param normalized Whether to return the value normalized.
+ * @param ends_after Whether to only check in regions that also
+ *   end after \ref pos (ie, the region surrounds \ref pos),
+ *   otherwise check in the region that ends last.
+ * @param use_snapshots Whether to get the value from the
+ *   snapshotted (cached) regions. This should be set to true
+ *   when called during dsp playback. TODO unimplemented
  */
 NONNULL
 float
 automation_track_get_val_at_pos (
-  AutomationTrack * at,
+  AutomationTrack * self,
   Position *        pos,
   bool              normalized,
   bool              ends_after);
@@ -480,7 +484,9 @@ automation_track_get_last_region (AutomationTrack * self);
 
 NONNULL
 void
-automation_track_set_caches (AutomationTrack * self);
+automation_track_set_caches (
+  AutomationTrack * self,
+  CacheTypes        types);
 
 NONNULL
 bool

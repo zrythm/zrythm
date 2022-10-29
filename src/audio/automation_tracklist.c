@@ -648,7 +648,9 @@ automation_tracklist_get_num_regions (
 }
 
 void
-automation_tracklist_set_caches (AutomationTracklist * self)
+automation_tracklist_set_caches (
+  AutomationTracklist * self,
+  CacheTypes            types)
 {
   Track * track = automation_tracklist_get_track (self);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
@@ -656,17 +658,22 @@ automation_tracklist_set_caches (AutomationTracklist * self)
   if (track_is_auditioner (track))
     return;
 
-  self->ats_in_record_mode = g_realloc_n (
-    self->ats_in_record_mode, (size_t) self->num_ats,
-    sizeof (AutomationTrack *));
-  self->num_ats_in_record_mode = 0;
+  if (types & CACHE_TYPE_AUTOMATION_LANE_RECORD_MODES)
+    {
+      self->ats_in_record_mode = g_realloc_n (
+        self->ats_in_record_mode, (size_t) self->num_ats,
+        sizeof (AutomationTrack *));
+      self->num_ats_in_record_mode = 0;
+    }
 
   for (int i = 0; i < self->num_ats; i++)
     {
       AutomationTrack * at = self->ats[i];
-      automation_track_set_caches (at);
+      automation_track_set_caches (at, types);
 
-      if (at->automation_mode == AUTOMATION_MODE_RECORD)
+      if (
+        types & CACHE_TYPE_AUTOMATION_LANE_RECORD_MODES
+        && at->automation_mode == AUTOMATION_MODE_RECORD)
         {
           array_append (
             self->ats_in_record_mode,

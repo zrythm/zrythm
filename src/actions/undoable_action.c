@@ -134,17 +134,9 @@ undoable_action_needs_pause (UndoableAction * self)
     {
     case UA_ARRANGER_SELECTIONS:
       {
-        ArrangerSelectionsAction * action =
-          (ArrangerSelectionsAction *) self;
-        if (action->type == AS_ACTION_EDIT)
-          {
-            if (
-              action->edit_type
-              == ARRANGER_SELECTIONS_ACTION_EDIT_MUTE)
-              {
-                return false;
-              }
-          }
+        /* always needs a pause to update the track playback
+         * snapshots */
+        return true;
       }
       break;
     case UA_TRACKLIST_SELECTIONS:

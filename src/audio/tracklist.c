@@ -1822,13 +1822,17 @@ tracklist_get_total_bars (Tracklist * self, int * total_bars)
     }
 }
 
+/**
+ * Set various caches (snapshots, track name hashes, plugin
+ * input/output ports, etc).
+ */
 void
-tracklist_set_caches (Tracklist * self)
+tracklist_set_caches (Tracklist * self, CacheTypes types)
 {
   for (int i = 0; i < self->num_tracks; i++)
     {
       Track * track = self->tracks[i];
-      track_set_caches (track);
+      track_set_caches (track, types);
     }
 }
 

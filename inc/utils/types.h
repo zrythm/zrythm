@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -177,6 +177,21 @@ typedef struct EngineProcessTimeInfo
    */
   nframes_t nframes;
 } EngineProcessTimeInfo;
+
+typedef enum CacheTypes
+{
+  CACHE_TYPE_TRACK_NAME_HASHES = 1 << 0,
+  CACHE_TYPE_PLUGIN_PORTS = 1 << 1,
+  CACHE_TYPE_PLAYBACK_SNAPSHOTS = 1 << 2,
+  CACHE_TYPE_AUTOMATION_LANE_RECORD_MODES = 1 << 3,
+  CACHE_TYPE_AUTOMATION_LANE_PORTS = 1 << 4,
+} CacheTypes;
+
+#define CACHE_TYPE_ALL \
+  (CACHE_TYPE_TRACK_NAME_HASHES | CACHE_TYPE_PLUGIN_PORTS \
+   | CACHE_TYPE_PLAYBACK_SNAPSHOTS \
+   | CACHE_TYPE_AUTOMATION_LANE_RECORD_MODES \
+   | CACHE_TYPE_AUTOMATION_LANE_PORTS)
 
 /**
  * @}

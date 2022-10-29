@@ -572,6 +572,16 @@ track_lane_write_to_midi_file (
 }
 
 /**
+ * Generate a snapshot for playback.
+ */
+TrackLane *
+track_lane_gen_snapshot (const TrackLane * self)
+{
+  TrackLane * snapshot = track_lane_clone (self, self->track);
+  return snapshot;
+}
+
+/**
  * Frees the TrackLane.
  */
 void

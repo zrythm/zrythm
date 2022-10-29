@@ -280,6 +280,10 @@ typedef struct Track
   int          num_lanes;
   size_t       lanes_size;
 
+  /** Snapshots used during playback. */
+  TrackLane ** lane_snapshots;
+  int          num_lane_snapshots;
+
   /** MIDI channel (MIDI/Instrument track only). */
   uint8_t midi_ch;
 
@@ -363,6 +367,10 @@ typedef struct Track
   int        num_chord_regions;
   size_t     chord_regions_size;
 
+  /** Snapshots used during playback. */
+  ZRegion ** chord_region_snapshots;
+  int        num_chord_region_snapshots;
+
   /**
    * ScaleObject's.
    *
@@ -372,6 +380,10 @@ typedef struct Track
   int            num_scales;
   size_t         scales_size;
 
+  /** Snapshots used during playback TODO unimplemented. */
+  ScaleObject ** scale_snapshots;
+  int            num_scale_snapshots;
+
   /* ==== CHORD TRACK END ==== */
 
   /* ==== MARKER TRACK ==== */
@@ -379,6 +391,10 @@ typedef struct Track
   Marker ** markers;
   int       num_markers;
   size_t    markers_size;
+
+  /** Snapshots used during playback TODO unimplemented. */
+  Marker ** marker_snapshots;
+  int       num_marker_snapshots;
 
   /* ==== MARKER TRACK END ==== */
 
@@ -1554,8 +1570,12 @@ track_type_get_from_string (const char * str);
 void
 track_get_total_bars (Track * self, int * total_bars);
 
+/**
+ * Set various caches (snapshots, track name hash, plugin
+ * input/output ports, etc).
+ */
 void
-track_set_caches (Track * self);
+track_set_caches (Track * self, CacheTypes types);
 
 Track *
 track_create_with_action (

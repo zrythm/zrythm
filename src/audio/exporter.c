@@ -744,6 +744,10 @@ exporter_prepare_tracks_for_export (
       tracklist_mark_all_tracks_for_bounce (TRACKLIST, true);
     }
 
+  g_message ("preparing playback snapshots...");
+  tracklist_set_caches (
+    TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS);
+
   return conns;
 }
 

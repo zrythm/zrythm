@@ -31,7 +31,9 @@ process_cb (gpointer data)
   while (1)
     {
       if (self->stop_dummy_audio_thread)
-        break;
+        {
+          break;
+        }
 
       engine_process (self, self->block_length);
       g_usleep (sleep_time);

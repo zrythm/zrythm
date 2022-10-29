@@ -287,6 +287,12 @@ int
 track_lane_calculate_lane_idx (const TrackLane * self);
 
 /**
+ * Generate a snapshot for playback.
+ */
+TrackLane *
+track_lane_gen_snapshot (const TrackLane * self);
+
+/**
  * Frees the TrackLane.
  */
 NONNULL

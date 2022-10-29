@@ -1217,8 +1217,9 @@ graph_setup (
    * ======================== */
 
   clip_editor_set_caches (CLIP_EDITOR);
-  tracklist_set_caches (TRACKLIST);
-  tracklist_set_caches (SAMPLE_PROCESSOR->tracklist);
+  tracklist_set_caches (TRACKLIST, CACHE_TYPE_ALL);
+  tracklist_set_caches (
+    SAMPLE_PROCESSOR->tracklist, CACHE_TYPE_ALL);
 
   /*graph_print (self);*/
 

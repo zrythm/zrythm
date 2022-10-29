@@ -2837,48 +2837,59 @@ do_or_undo (
   bool                       _do,
   GError **                  error)
 {
+  int ret = -1;
   switch (self->type)
     {
     case AS_ACTION_CREATE:
-      return do_or_undo_create_or_delete (
-        self, _do, true, error);
+      ret =
+        do_or_undo_create_or_delete (self, _do, true, error);
       break;
     case AS_ACTION_DELETE:
-      return do_or_undo_create_or_delete (
-        self, _do, false, error);
+      ret =
+        do_or_undo_create_or_delete (self, _do, false, error);
       break;
     case AS_ACTION_DUPLICATE:
-      return do_or_undo_duplicate_or_link (
+      ret = do_or_undo_duplicate_or_link (
         self, false, _do, error);
+      break;
     case AS_ACTION_MOVE:
-      return do_or_undo_move (self, _do, error);
+      ret = do_or_undo_move (self, _do, error);
+      break;
     case AS_ACTION_LINK:
-      return do_or_undo_duplicate_or_link (
-        self, true, _do, error);
+      ret =
+        do_or_undo_duplicate_or_link (self, true, _do, error);
+      break;
     case AS_ACTION_RECORD:
-      return do_or_undo_record (self, _do, error);
+      ret = do_or_undo_record (self, _do, error);
       break;
     case AS_ACTION_EDIT:
-      return do_or_undo_edit (self, _do, error);
+      ret = do_or_undo_edit (self, _do, error);
       break;
     case AS_ACTION_AUTOMATION_FILL:
-      return do_or_undo_automation_fill (self, _do, error);
+      ret = do_or_undo_automation_fill (self, _do, error);
+      break;
     case AS_ACTION_SPLIT:
-      return do_or_undo_split (self, _do, error);
+      ret = do_or_undo_split (self, _do, error);
       break;
     case AS_ACTION_MERGE:
-      return do_or_undo_merge (self, _do, error);
+      ret = do_or_undo_merge (self, _do, error);
       break;
     case AS_ACTION_RESIZE:
-      return do_or_undo_resize (self, _do, error);
+      ret = do_or_undo_resize (self, _do, error);
       break;
     case AS_ACTION_QUANTIZE:
-      return do_or_undo_quantize (self, _do, error);
+      ret = do_or_undo_quantize (self, _do, error);
       break;
     default:
+      g_return_val_if_reached (-1);
       break;
     }
-  g_return_val_if_reached (-1);
+
+  /* update playback caches */
+  tracklist_set_caches (
+    TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS);
+
+  return ret;
 }
 
 int

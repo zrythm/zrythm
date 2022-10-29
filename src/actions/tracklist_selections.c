@@ -1206,7 +1206,7 @@ do_or_undo_create_or_delete (
   /* restore connections */
   save_or_load_port_connections (self, _do);
 
-  tracklist_set_caches (TRACKLIST);
+  tracklist_set_caches (TRACKLIST, CACHE_TYPE_ALL);
   tracklist_validate (TRACKLIST);
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
@@ -1624,7 +1624,7 @@ do_or_undo_move_or_copy (
   /* restore connections */
   save_or_load_port_connections (self, _do);
 
-  tracklist_set_caches (TRACKLIST);
+  tracklist_set_caches (TRACKLIST, CACHE_TYPE_ALL);
   tracklist_validate (TRACKLIST);
 
   router_recalc_graph (ROUTER, F_NOT_SOFT);
@@ -1884,7 +1884,7 @@ do_or_undo_edit (
 
   if (need_tracklist_cache_update)
     {
-      tracklist_set_caches (TRACKLIST);
+      tracklist_set_caches (TRACKLIST, CACHE_TYPE_ALL);
     }
 
   if (need_recalc_graph)

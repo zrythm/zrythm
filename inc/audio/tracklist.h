@@ -555,9 +555,13 @@ tracklist_mark_all_tracks_for_bounce (
 void
 tracklist_get_total_bars (Tracklist * self, int * total_bars);
 
+/**
+ * Set various caches (snapshots, track name hashes, plugin
+ * input/output ports, etc).
+ */
 NONNULL
 void
-tracklist_set_caches (Tracklist * self);
+tracklist_set_caches (Tracklist * self, CacheTypes types);
 
 /**
  * Only clones what is needed for project save.
