@@ -270,12 +270,15 @@ draw_debug_text (
       (float) rect->x, (float) rect->y, 400.f, 400.f));
   GtkStyleContext * style_ctx =
     gtk_widget_get_style_context (GTK_WIDGET (self));
-  char debug_txt[6000];
+  char                   debug_txt[6000];
+  const EditorSettings * settings =
+    arranger_widget_get_editor_settings (self);
   sprintf (
     debug_txt,
-    "Hover: (%f, %f)\nNormalized hover: (%f, %f)\nAction: %s",
-    self->hover_x, self->hover_y, self->hover_x - rect->x,
-    self->hover_y - rect->y,
+    "Hover: (%.0f, %.0f)\nNormalized hover: (%.0f, %.0f)\nAction: %s",
+    self->hover_x, self->hover_y,
+    self->hover_x - settings->scroll_start_x,
+    self->hover_y - settings->scroll_start_y,
     ui_get_overlay_action_string (self->action));
   pango_layout_set_markup (self->debug_layout, debug_txt, -1);
   gtk_snapshot_render_layout (
@@ -977,21 +980,15 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   ArrangerWidget * self = Z_ARRANGER_WIDGET (widget);
 
   GdkRectangle visible_rect_gdk;
-  gtk_widget_get_allocation (widget, &visible_rect_gdk);
+  arranger_widget_get_visible_rect (self, &visible_rect_gdk);
   graphene_rect_t visible_rect;
   z_gdk_rectangle_to_graphene_rect_t (
     &visible_rect, &visible_rect_gdk);
 
-#if 0
-  GtkScrolledWindow * scroll =
-    arranger_widget_get_scrolled_window (self);
-  graphene_rect_t visible_rect;
-  z_gtk_scrolled_window_get_visible_rect (
-    scroll, &visible_rect);
-  GdkRectangle visible_rect_gdk;
-  z_gtk_graphene_rect_t_to_gdk_rectangle (
-    &visible_rect_gdk, &visible_rect);
-#endif
+  if (self->first_draw)
+    {
+      self->first_draw = false;
+    }
 
   gint64 start_time = g_get_monotonic_time ();
 
@@ -1003,40 +1000,6 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   RulerWidget * ruler = arranger_widget_get_ruler (self);
   if (ruler->px_per_bar < 2.0)
     return;
-
-  if (self->first_draw)
-    {
-      self->first_draw = false;
-
-#if 0
-      GtkAdjustment * hadj =
-        gtk_scrolled_window_get_hadjustment (scroll);
-      GtkAdjustment * vadj =
-        gtk_scrolled_window_get_vadjustment (scroll);
-#endif
-
-      EditorSettings * settings =
-        arranger_widget_get_editor_settings (self);
-
-      int new_x = settings->scroll_start_x;
-      int new_y = settings->scroll_start_y;
-      if (self->type == TYPE (TIMELINE) && self->is_pinned)
-        {
-          new_y = 0;
-        }
-      else if (self->type == TYPE (MIDI_MODIFIER))
-        {
-          new_y = 0;
-        }
-
-      g_debug (
-        "setting arranger adjustment to %d, %d", new_x, new_y);
-
-#if 0
-      gtk_adjustment_set_value (hadj, new_x);
-      gtk_adjustment_set_value (vadj, new_y);
-#endif
-    }
 
   /* skip drawing if rectangle too large */
   if (
@@ -1068,6 +1031,13 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   gtk_snapshot_render_background (
     snapshot, context, 0, 0, width, height);
+
+  /* pretend we're drawing from 0, 0 */
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (
+      -visible_rect.origin.x, -visible_rect.origin.y));
 
   /* draw loop background */
   if (TRANSPORT->loop)
@@ -1241,6 +1211,8 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       draw_debug_text (self, snapshot, &visible_rect_gdk);
     }
+
+  gtk_snapshot_restore (snapshot);
 
   gint64 end_time = g_get_monotonic_time ();
 

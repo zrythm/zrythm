@@ -27,6 +27,7 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -574,6 +575,33 @@ tracklist_widget_update_track_visibility (
     }
 }
 
+static void
+on_unpinned_scroll_hadj_changed (
+  GtkAdjustment *   adj,
+  TracklistWidget * self)
+{
+  editor_settings_set_scroll_start_y (
+    &PRJ_TIMELINE->editor_settings,
+    (int) gtk_adjustment_get_value (adj), F_VALIDATE);
+}
+
+/**
+ * Updates the scroll adjustment.
+ */
+void
+tracklist_widget_set_unpinned_scroll_start_y (
+  TracklistWidget * self,
+  int               y)
+{
+  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
+    self->unpinned_scroll);
+  if (!math_doubles_equal (
+        (double) y, gtk_adjustment_get_value (hadj)))
+    {
+      gtk_adjustment_set_value (hadj, (double) y);
+    }
+}
+
 void
 tracklist_widget_setup (
   TracklistWidget * self,
@@ -603,6 +631,15 @@ tracklist_widget_setup (
   gtk_size_group_add_widget (
     self->unpinned_size_group,
     GTK_WIDGET (MW_TIMELINE_PANEL->timeline));
+
+  /* add a signal handler to update the editor settings on
+   * scroll */
+  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
+    self->unpinned_scroll);
+  self->unpinned_scroll_vall_changed_handler_id =
+    g_signal_connect (
+      hadj, "value-changed",
+      G_CALLBACK (on_unpinned_scroll_hadj_changed), self);
 
   self->setup = true;
 }

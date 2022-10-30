@@ -22,6 +22,7 @@
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -58,12 +59,10 @@ move_selection_x (TimelineMinimapWidget * self, double offset_x)
 
   double ratio = new_wx / width;
   double ruler_px = MW_RULER->total_px * ratio;
-  (void) ruler_px;
-#if 0
-  GtkAdjustment * adj = gtk_scrollable_get_hadjustment (
-    GTK_SCROLLABLE (MW_TIMELINE_PANEL->ruler_viewport));
-  gtk_adjustment_set_value (adj, ruler_px);
-#endif
+
+  editor_settings_set_scroll_start_x (
+    &PRJ_TIMELINE->editor_settings, (int) ruler_px,
+    F_VALIDATE);
 }
 
 static void
@@ -93,12 +92,9 @@ resize_selection_l (
       /* set alignment */
       ratio = new_l / width;
       double ruler_px = MW_RULER->total_px * ratio;
-      (void) ruler_px;
-#if 0
-      GtkAdjustment * adj = gtk_scrollable_get_hadjustment (
-        GTK_SCROLLABLE (MW_TIMELINE_PANEL->ruler_viewport));
-      gtk_adjustment_set_value (adj, ruler_px);
-#endif
+      editor_settings_set_scroll_start_x (
+        &PRJ_TIMELINE->editor_settings, (int) ruler_px,
+        F_VALIDATE);
 
       EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, MW_RULER);
     }
@@ -132,12 +128,9 @@ resize_selection_r (
       /* set alignment */
       ratio = self->selection_start_pos / width;
       double ruler_px = MW_RULER->total_px * ratio;
-#if 0
-      GtkAdjustment * adj = gtk_scrollable_get_hadjustment (
-        GTK_SCROLLABLE (MW_TIMELINE_PANEL->ruler_viewport));
-      gtk_adjustment_set_value (adj, ruler_px);
-#endif
-      (void) ruler_px;
+      editor_settings_set_scroll_start_x (
+        &PRJ_TIMELINE->editor_settings, (int) ruler_px,
+        F_VALIDATE);
 
       EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, MW_RULER);
     }
@@ -174,13 +167,9 @@ get_child_position (
             GTK_WIDGET (self));
 
           /* get pixels at start of visible ruler */
-#if 0
-          GtkAdjustment * adj =
-            gtk_scrollable_get_hadjustment (GTK_SCROLLABLE (
-              MW_TIMELINE_PANEL->ruler_viewport));
-          double px_start = gtk_adjustment_get_value (adj);
-#endif
-          double px_start = 0;
+          double px_start =
+            (double)
+              PRJ_TIMELINE->editor_settings.scroll_start_x;
           double px_width = gtk_widget_get_allocated_width (
             GTK_WIDGET (MW_TIMELINE_PANEL->ruler));
 

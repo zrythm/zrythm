@@ -47,6 +47,8 @@ typedef struct _TracklistWidget
   /** The scrolled window for unpinned tracks. */
   GtkScrolledWindow * unpinned_scroll;
 
+  gulong unpinned_scroll_vall_changed_handler_id;
+
   /** Box to hold pinned tracks. */
   GtkBox * pinned_box;
 
@@ -124,6 +126,14 @@ tracklist_widget_handle_vertical_zoom_scroll (
   TracklistWidget *          self,
   GtkEventControllerScroll * scroll_controller,
   double                     dy);
+
+/**
+ * Updates the scroll adjustment.
+ */
+void
+tracklist_widget_set_unpinned_scroll_start_y (
+  TracklistWidget * self,
+  int               y);
 
 /**
  * Refreshes each track without recreating it.

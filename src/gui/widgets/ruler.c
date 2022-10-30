@@ -26,11 +26,14 @@
 #include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/ruler_range.h"
 #include "gui/widgets/timeline_arranger.h"
+#include "gui/widgets/timeline_bot_box.h"
+#include "gui/widgets/timeline_minimap.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/cairo.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/string.h"
@@ -58,21 +61,11 @@ G_DEFINE_TYPE (RulerWidget, ruler_widget, GTK_TYPE_WIDGET)
 double
 ruler_widget_get_zoom_level (RulerWidget * self)
 {
-  if (self->type == RULER_WIDGET_TYPE_TIMELINE)
-    {
-      return PRJ_TIMELINE->editor_settings.hzoom_level;
-    }
-  else if (self->type == RULER_WIDGET_TYPE_EDITOR)
-    {
-      ArrangerWidget * arr =
-        clip_editor_inner_widget_get_visible_arranger (
-          MW_CLIP_EDITOR_INNER);
-      EditorSettings * settings =
-        arranger_widget_get_editor_settings (arr);
-      g_return_val_if_fail (settings, 1.f);
+  EditorSettings * settings =
+    ruler_widget_get_editor_settings (self);
+  g_return_val_if_fail (settings, 1.0);
 
-      return settings->hzoom_level;
-    }
+  return settings->hzoom_level;
 
   g_return_val_if_reached (1.f);
 }
@@ -1020,33 +1013,13 @@ draw_lines_and_labels (
     }
 }
 
-#if 0
-static GtkScrolledWindow *
-get_scrolled_window (RulerWidget * self)
-{
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      return MW_TIMELINE_PANEL->ruler_scroll;
-    case TYPE (EDITOR):
-      return MW_CLIP_EDITOR_INNER->ruler_scroll;
-    }
-
-  return NULL;
-}
-#endif
-
 static void
 ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   RulerWidget * self = Z_RULER_WIDGET (widget);
-#if 0
-  GtkScrolledWindow * scroll = get_scrolled_window (self);
-  z_gtk_scrolled_window_get_visible_rect (
-    scroll, &visible_rect);
-#endif
+
   GdkRectangle visible_rect_gdk;
-  gtk_widget_get_allocation (widget, &visible_rect_gdk);
+  ruler_widget_get_visible_rect (self, &visible_rect_gdk);
   graphene_rect_t visible_rect;
   z_gdk_rectangle_to_graphene_rect_t (
     &visible_rect, &visible_rect_gdk);
@@ -1065,11 +1038,17 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   GtkStyleContext * context =
     gtk_widget_get_style_context (GTK_WIDGET (self));
   gtk_snapshot_render_background (
-    snapshot, context, visible_rect.origin.x,
-    visible_rect.origin.y, visible_rect.size.width,
+    snapshot, context, 0, 0, visible_rect.size.width,
     visible_rect.size.height);
 
   self->last_rect = visible_rect;
+
+  /* pretend we're drawing from 0, 0 */
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (
+      -visible_rect.origin.x, -visible_rect.origin.y));
 
   /* ----- ruler background ------- */
 
@@ -1249,6 +1228,8 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* --------- draw playhead ---------- */
 
   draw_playhead (self, snapshot, &visible_rect_gdk);
+
+  gtk_snapshot_restore (snapshot);
 }
 
 #undef beats_per_bar
@@ -1435,6 +1416,9 @@ drag_begin (
   gdouble          start_y,
   RulerWidget *    self)
 {
+  EditorSettings * settings =
+    ruler_widget_get_editor_settings (self);
+  start_x += settings->scroll_start_x;
   self->start_x = start_x;
   self->start_y = start_y;
 
@@ -1560,6 +1544,12 @@ on_motion (
     gtk_event_controller_get_current_event_state (
       GTK_EVENT_CONTROLLER (motion_controller));
 
+  EditorSettings * settings =
+    ruler_widget_get_editor_settings (self);
+  x += settings->scroll_start_x;
+  self->hover_x = x;
+  self->hover_y = y;
+
   /* drag-update didn't work so do the drag-update
    * here */
   if (self->dragging && event_type != GDK_LEAVE_NOTIFY)
@@ -1683,22 +1673,43 @@ ruler_widget_refresh (RulerWidget * self)
     }
 }
 
-#if 0
-GtkScrolledWindow *
-ruler_widget_get_parent_scroll (RulerWidget * self)
+/**
+ * Gets the pointer to the EditorSettings associated with the
+ * arranger this ruler is for.
+ */
+EditorSettings *
+ruler_widget_get_editor_settings (RulerWidget * self)
 {
-  if (self->type == TYPE (TIMELINE))
+  if (self->type == RULER_WIDGET_TYPE_TIMELINE)
     {
-      return MW_TIMELINE_PANEL->ruler_scroll;
+      return &PRJ_TIMELINE->editor_settings;
     }
-  else if (self->type == TYPE (EDITOR))
+  else if (self->type == RULER_WIDGET_TYPE_EDITOR)
     {
-      return MW_CLIP_EDITOR_INNER->ruler_scroll;
+      ArrangerWidget * arr =
+        clip_editor_inner_widget_get_visible_arranger (
+          MW_CLIP_EDITOR_INNER);
+      EditorSettings * settings =
+        arranger_widget_get_editor_settings (arr);
+      return settings;
     }
-
   g_return_val_if_reached (NULL);
 }
-#endif
+
+/**
+ * Fills in the visible rectangle.
+ */
+void
+ruler_widget_get_visible_rect (
+  RulerWidget *  self,
+  GdkRectangle * rect)
+{
+  gtk_widget_get_allocation (GTK_WIDGET (self), rect);
+  const EditorSettings * settings =
+    ruler_widget_get_editor_settings (self);
+  rect->x = settings->scroll_start_x;
+  rect->y = 0;
+}
 
 /**
  * Sets zoom level and disables/enables buttons
@@ -1734,21 +1745,10 @@ ruler_widget_set_zoom_level (
 
   if (update)
     {
-      if (self->type == RULER_WIDGET_TYPE_TIMELINE)
-        {
-          PRJ_TIMELINE->editor_settings.hzoom_level =
-            zoom_level;
-        }
-      else if (self->type == RULER_WIDGET_TYPE_EDITOR)
-        {
-          ArrangerWidget * arr =
-            clip_editor_inner_widget_get_visible_arranger (
-              MW_CLIP_EDITOR_INNER);
-          EditorSettings * settings =
-            arranger_widget_get_editor_settings (arr);
-          g_return_val_if_fail (settings, false);
-          settings->hzoom_level = zoom_level;
-        }
+      EditorSettings * settings =
+        ruler_widget_get_editor_settings (self);
+      g_return_val_if_fail (settings, false);
+      settings->hzoom_level = zoom_level;
       ruler_widget_refresh (self);
       return true;
     }
@@ -1756,6 +1756,122 @@ ruler_widget_set_zoom_level (
     {
       return false;
     }
+}
+
+void
+ruler_widget_px_to_pos (
+  RulerWidget * self,
+  double        px,
+  Position *    pos,
+  bool          has_padding)
+{
+  if (self->type == TYPE (TIMELINE))
+    {
+      ui_px_to_pos_timeline (px, pos, has_padding);
+    }
+  else
+    {
+      ui_px_to_pos_editor (px, pos, has_padding);
+    }
+}
+
+int
+ruler_widget_pos_to_px (
+  RulerWidget * self,
+  Position *    pos,
+  int           use_padding)
+{
+  if (self->type == TYPE (TIMELINE))
+    {
+      return ui_pos_to_px_timeline (pos, use_padding);
+    }
+  else
+    {
+      return ui_pos_to_px_editor (pos, use_padding);
+    }
+}
+
+static gboolean
+on_scroll (
+  GtkEventControllerScroll * scroll_controller,
+  gdouble                    dx,
+  gdouble                    dy,
+  gpointer                   user_data)
+{
+  RulerWidget * self = Z_RULER_WIDGET (user_data);
+
+  double x = self->hover_x;
+  /*double y = self->hover_y;*/
+
+  GdkModifierType modifier_type =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+
+  bool ctrl_held = modifier_type & GDK_CONTROL_MASK;
+  bool shift_held = modifier_type & GDK_SHIFT_MASK;
+  if (ctrl_held)
+    {
+      g_debug ("ctrl held");
+
+      if (!shift_held)
+        {
+          EditorSettings * settings =
+            ruler_widget_get_editor_settings (self);
+          double adj_val = (double) settings->scroll_start_x;
+
+          /* get position of cursor */
+          Position cursor_pos;
+          ruler_widget_px_to_pos (
+            self, x, &cursor_pos, F_PADDING);
+
+          /* get px diff so we can calculate the new
+           * adjustment later */
+          double diff = x - adj_val;
+
+          /* scroll down, zoom out */
+          if (dy > 0)
+            {
+              ruler_widget_set_zoom_level (
+                self,
+                ruler_widget_get_zoom_level (self) / 1.3);
+            }
+          else /* scroll up, zoom in */
+            {
+              ruler_widget_set_zoom_level (
+                self,
+                ruler_widget_get_zoom_level (self) * 1.3);
+            }
+
+          int new_x = ruler_widget_pos_to_px (
+            self, &cursor_pos, F_PADDING);
+
+          g_debug (
+            "x %f adj val %f diff %f new x %d", x, adj_val,
+            diff, new_x);
+
+          /* refresh relevant widgets */
+          if (self->type == TYPE (TIMELINE))
+            {
+              timeline_minimap_widget_refresh (
+                MW_TIMELINE_MINIMAP);
+            }
+        }
+    }
+  else /* else if not ctrl held */
+    {
+      /* scroll normally */
+      if (modifier_type & GDK_SHIFT_MASK)
+        {
+          const int        scroll_amt = RW_SCROLL_SPEED;
+          int              scroll_x = (int) dy;
+          EditorSettings * settings =
+            ruler_widget_get_editor_settings (self);
+          editor_settings_append_scroll (
+            settings, scroll_x * scroll_amt, 0, F_VALIDATE);
+        }
+    }
+
+  return true;
 }
 
 static guint
@@ -1829,6 +1945,17 @@ ruler_widget_init (RulerWidget * self)
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (motion_controller));
 
+  GtkEventControllerScroll * scroll_controller =
+    GTK_EVENT_CONTROLLER_SCROLL (
+      gtk_event_controller_scroll_new (
+        GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES));
+  g_signal_connect (
+    G_OBJECT (scroll_controller), "scroll",
+    G_CALLBACK (on_scroll), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self),
+    GTK_EVENT_CONTROLLER (scroll_controller));
+
   self->layout_normal =
     gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
   PangoFontDescription * desc =
@@ -1855,6 +1982,9 @@ ruler_widget_init (RulerWidget * self)
     G_ACTION_MAP (action_group), display_action);
   gtk_widget_insert_action_group (
     GTK_WIDGET (self), "ruler", G_ACTION_GROUP (action_group));
+
+  gtk_widget_set_overflow (
+    GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 }
 
 static void

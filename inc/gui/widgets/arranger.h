@@ -238,7 +238,7 @@ typedef struct _ArrangerWidget
   Position end_pos; ///< for moving regions
   gboolean key_is_pressed;
 
-  /** Current hovering positions. */
+  /** Current hovering positions (absolute). */
   double hover_x;
   double hover_y;
 
@@ -703,6 +703,14 @@ arranger_widget_set_highlight_rect (
  */
 EditorSettings *
 arranger_widget_get_editor_settings (ArrangerWidget * self);
+
+/**
+ * Get just the values, adjusted properly for special cases
+ * (like pinned timeline).
+ */
+EditorSettings
+arranger_widget_get_editor_setting_values (
+  ArrangerWidget * self);
 
 bool
 arranger_widget_is_playhead_visible (ArrangerWidget * self);

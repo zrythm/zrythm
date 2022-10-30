@@ -10,6 +10,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_minimap_bg.h"
 #include "gui/widgets/timeline_panel.h"
+#include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "zrythm_app.h"
 
@@ -70,8 +71,9 @@ timeline_minimap_bg_snapshot (
 
       double wy;
       gtk_widget_translate_coordinates (
-        GTK_WIDGET (track->widget), GTK_WIDGET (MW_TIMELINE),
-        0, 0, NULL, &wy);
+        GTK_WIDGET (track->widget),
+        GTK_WIDGET (MW_TRACKLIST->unpinned_box), 0, 0, NULL,
+        &wy);
       track_height = gtk_widget_get_allocated_height (
         GTK_WIDGET (track->widget));
 
