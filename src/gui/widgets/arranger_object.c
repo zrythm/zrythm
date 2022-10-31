@@ -559,7 +559,10 @@ arranger_object_set_full_rectangle (
           {
             gtk_widget_translate_coordinates (
               (GtkWidget *) (track->widget),
-              (GtkWidget *) (arranger->is_pinned ? arranger : MW_TRACKLIST->unpinned_box), 0, 0, &wx, &wy);
+              arranger->is_pinned
+                ? (GtkWidget *) arranger
+                : (GtkWidget *) MW_TRACKLIST->unpinned_box,
+              0, 0, &wx, &wy);
             /* for some reason it returns a few
              * negatives at first */
             if (wy < 0)
