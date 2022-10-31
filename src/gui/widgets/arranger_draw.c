@@ -196,15 +196,15 @@ draw_playhead (
   /*int px = self->queued_playhead_px;*/
   /*g_message ("drawing %d", px);*/
 
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int height = rect->height;
 
   if (px >= rect->x && px <= rect->x + rect->width)
     {
       gtk_snapshot_append_color (
         snapshot, &UI_COLORS->prefader_send,
         &GRAPHENE_RECT_INIT (
-          (float) px - 1.f, 0.f, 2.f, (float) height));
+          (float) px - 1.f, (float) rect->y, 2.f,
+          (float) height));
       self->last_playhead_px = px;
     }
 
@@ -253,7 +253,8 @@ draw_playhead (
           gtk_snapshot_append_color (
             snapshot, &color,
             &GRAPHENE_RECT_INIT (
-              (float) hover_x - 1, 0.f, 2.f, (float) height));
+              (float) hover_x - 1, (float) rect->y, 2.f,
+              (float) height));
         }
     }
 }
@@ -290,7 +291,6 @@ static void
 draw_timeline_bg (
   ArrangerWidget * self,
   GtkSnapshot *    snapshot,
-  const int        width,
   GdkRectangle *   rect)
 {
   /* handle horizontal drawing for tracks */
@@ -334,7 +334,8 @@ draw_timeline_bg (
           gtk_snapshot_append_color (
             snapshot, &thick_grid_line_color,
             &GRAPHENE_RECT_INIT (
-              0.f, (float) (line_y - 1), (float) width, 2.f));
+              (float) rect->x, (float) (line_y - 1),
+              (float) rect->width, 2.f));
         }
 
       /* draw selection tint */
@@ -343,8 +344,8 @@ draw_timeline_bg (
           gtk_snapshot_append_color (
             snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.04f),
             &GRAPHENE_RECT_INIT (
-              0.f, (float) track_start_offset, (float) width,
-              (float) full_track_height));
+              (float) rect->x, (float) track_start_offset,
+              (float) rect->width, (float) full_track_height));
         }
 
       double total_height = track->main_height;
@@ -370,8 +371,9 @@ draw_timeline_bg (
                     snapshot,
                     &Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.4f),
                     &GRAPHENE_RECT_INIT (
-                      0.f, (float) OFFSET_PLUS_TOTAL_HEIGHT,
-                      (float) width, 1.f));
+                      (float) rect->x,
+                      (float) OFFSET_PLUS_TOTAL_HEIGHT,
+                      (float) rect->width, 1.f));
                 }
 
               total_height += (double) lane->height;
@@ -407,8 +409,9 @@ draw_timeline_bg (
                     snapshot,
                     &Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.2f),
                     &GRAPHENE_RECT_INIT (
-                      0.f, (float) OFFSET_PLUS_TOTAL_HEIGHT,
-                      (float) width, 1.f));
+                      (float) rect->x,
+                      (float) OFFSET_PLUS_TOTAL_HEIGHT,
+                      (float) rect->width, 1.f));
                 }
 
               float normalized_val =
@@ -437,9 +440,9 @@ draw_timeline_bg (
                   track->color.red, track->color.green,
                   track->color.blue, 0.3f),
                 &GRAPHENE_RECT_INIT (
-                  0.f,
+                  (float) rect->x,
                   (float) (OFFSET_PLUS_TOTAL_HEIGHT + y_px),
-                  (float) width, 1.f));
+                  (float) rect->width, 1.f));
 
               total_height += (double) at->height;
             }
@@ -791,8 +794,7 @@ draw_vertical_lines (
   const int thinner_width = 1;
   const int thinnest_width = 1;
 
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int height = rect->height;
 
   /* if time display */
   if (self->ruler_display == TRANSPORT_DISPLAY_TIME)
@@ -823,8 +825,8 @@ draw_vertical_lines (
           gtk_snapshot_append_color (
             snapshot, &thick_color,
             &GRAPHENE_RECT_INIT (
-              (float) curr_px, 0.f, (float) thick_width,
-              (float) height));
+              (float) curr_px, (float) rect->y,
+              (float) thick_width, (float) height));
         }
       i = 0;
       if (ten_sec_interval > 0)
@@ -841,8 +843,8 @@ draw_vertical_lines (
               gtk_snapshot_append_color (
                 snapshot, &thinner_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0.f, (float) thinner_width,
-                  (float) height));
+                  (float) curr_px, (float) rect->y,
+                  (float) thinner_width, (float) height));
             }
         }
       i = 0;
@@ -860,7 +862,7 @@ draw_vertical_lines (
               gtk_snapshot_append_color (
                 snapshot, &thinnest_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0.f,
+                  (float) curr_px, (float) rect->y,
                   (float) thinnest_width, (float) height));
             }
         }
@@ -895,8 +897,8 @@ draw_vertical_lines (
           gtk_snapshot_append_color (
             snapshot, &thick_color,
             &GRAPHENE_RECT_INIT (
-              (float) curr_px, 0.f, (float) thick_width,
-              (float) height));
+              (float) curr_px, (float) rect->y,
+              (float) thick_width, (float) height));
         }
       i = 0;
       if (beat_interval > 0)
@@ -913,8 +915,8 @@ draw_vertical_lines (
               gtk_snapshot_append_color (
                 snapshot, &thinner_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0.f, (float) thinner_width,
-                  (float) height));
+                  (float) curr_px, (float) rect->y,
+                  (float) thinner_width, (float) height));
             }
         }
       i = 0;
@@ -933,7 +935,7 @@ draw_vertical_lines (
               gtk_snapshot_append_color (
                 snapshot, &thinnest_color,
                 &GRAPHENE_RECT_INIT (
-                  (float) curr_px, 0.f,
+                  (float) curr_px, (float) rect->y,
                   (float) thinnest_width, (float) height));
             }
         }
@@ -1141,8 +1143,7 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   if (self->type == TYPE (TIMELINE))
     {
-      draw_timeline_bg (
-        self, snapshot, width, &visible_rect_gdk);
+      draw_timeline_bg (self, snapshot, &visible_rect_gdk);
     }
   else if (self->type == TYPE (MIDI))
     {

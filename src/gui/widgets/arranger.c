@@ -4931,18 +4931,9 @@ arranger_widget_get_hit_arranger_object (
 
   g_ptr_array_unref (objs_arr);
 
-  return obj;
+  /*g_debug ("hit obj at %f %f: %p", x, y, obj);*/
 
-  /*switch (self->type)*/
-  /*{*/
-  /*case TYPE (TIMELINE):*/
-  /*return*/
-  /*get_hit_timeline_object (self, type, x, y);*/
-  /*break;*/
-  /*default:*/
-  /*break;*/
-  /*}*/
-  /*return NULL;*/
+  return obj;
 }
 
 /**
