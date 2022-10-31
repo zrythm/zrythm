@@ -634,6 +634,9 @@ z_gdk_rectangle_to_graphene_rect_t (
   graphene_rect_t * grect,
   GdkRectangle *    rect);
 
+void
+z_gdk_rectangle_print (const GdkRectangle * rect);
+
 /**
  * Mimics the blocking behavior.
  *
