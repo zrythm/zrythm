@@ -21,6 +21,7 @@
 #include "gui/widgets/piano_roll_keys.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/resources.h"
@@ -169,6 +170,33 @@ midi_editor_space_widget_update_size_group (
     visible);
 }
 
+/**
+ * Updates the scroll adjustment.
+ */
+void
+midi_editor_space_widget_set_piano_keys_scroll_start_y (
+  MidiEditorSpaceWidget * self,
+  int                     y)
+{
+  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
+    self->piano_roll_keys_scroll);
+  if (!math_doubles_equal (
+        (double) y, gtk_adjustment_get_value (hadj)))
+    {
+      gtk_adjustment_set_value (hadj, (double) y);
+    }
+}
+
+static void
+on_piano_keys_scroll_hadj_changed (
+  GtkAdjustment *         adj,
+  MidiEditorSpaceWidget * self)
+{
+  editor_settings_set_scroll_start_y (
+    &PIANO_ROLL->editor_settings,
+    (int) gtk_adjustment_get_value (adj), F_VALIDATE);
+}
+
 void
 midi_editor_space_widget_setup (MidiEditorSpaceWidget * self)
 {
@@ -186,6 +214,14 @@ midi_editor_space_widget_setup (MidiEditorSpaceWidget * self)
     }
 
   piano_roll_keys_widget_setup (self->piano_roll_keys);
+
+  /* add a signal handler to update the editor settings on
+   * scroll */
+  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
+    self->piano_roll_keys_scroll);
+  g_signal_connect (
+    hadj, "value-changed",
+    G_CALLBACK (on_piano_keys_scroll_hadj_changed), self);
 
   midi_editor_space_widget_refresh (self);
 }
@@ -282,12 +318,8 @@ midi_editor_space_widget_class_init (
   BIND_CHILD (piano_roll_keys_scroll);
   BIND_CHILD (piano_roll_keys);
   BIND_CHILD (midi_arranger_velocity_paned);
-  /*BIND_CHILD (arranger_scroll);*/
   BIND_CHILD (arranger);
-  /*BIND_CHILD (modifier_arranger_scroll);*/
   BIND_CHILD (modifier_arranger);
-  /*BIND_CHILD (arranger_hscrollbar);*/
-  /*BIND_CHILD (arranger_vscrollbar);*/
   BIND_CHILD (midi_notes_box);
   BIND_CHILD (midi_vel_chooser_box);
 

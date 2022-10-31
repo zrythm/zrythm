@@ -5176,7 +5176,16 @@ on_scroll (
       else
         {
           scroll_x = 0;
-          scroll_y = (int) dy;
+
+          /* if not midi modifier and not pinned timeline,
+           * handle the scroll, otherwise ignore */
+          if (
+            self->type != TYPE (MIDI_MODIFIER)
+            && !(
+              self->type == TYPE (TIMELINE) && self->is_pinned))
+            {
+              scroll_y = (int) dy;
+            }
         }
       EditorSettings * settings =
         arranger_widget_get_editor_settings (self);
@@ -5184,12 +5193,21 @@ on_scroll (
       scroll_y = scroll_y * scroll_amt;
       editor_settings_append_scroll (
         settings, scroll_x, scroll_y, F_VALIDATE);
-      if (
-        scroll_y != 0 && self->type == TYPE (TIMELINE)
-        && !self->is_pinned)
+
+      /* auto-scroll linked widgets */
+      if (scroll_y != 0)
         {
-          tracklist_widget_set_unpinned_scroll_start_y (
-            MW_TRACKLIST, settings->scroll_start_y);
+          if (self->type == TYPE (TIMELINE) && !self->is_pinned)
+            {
+              tracklist_widget_set_unpinned_scroll_start_y (
+                MW_TRACKLIST, settings->scroll_start_y);
+            }
+          else if (self->type == TYPE (MIDI))
+            {
+              midi_editor_space_widget_set_piano_keys_scroll_start_y (
+                MW_MIDI_EDITOR_SPACE,
+                settings->scroll_start_y);
+            }
         }
     }
 

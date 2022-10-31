@@ -51,16 +51,9 @@ typedef struct _MidiEditorSpaceWidget
   PianoRollKeysWidget * piano_roll_keys;
 
   /** Piano roll. */
-  GtkBox * midi_arranger_box;
-  //GtkScrolledWindow * arranger_scroll;
-  //GtkViewport *       arranger_viewport;
+  GtkBox *         midi_arranger_box;
   ArrangerWidget * arranger;
-  //GtkScrolledWindow * modifier_arranger_scroll;
-  //GtkViewport *       modifier_arranger_viewport;
   ArrangerWidget * modifier_arranger;
-
-  //GtkScrollbar * arranger_hscrollbar;
-  //GtkScrollbar * arranger_vscrollbar;
 
   GtkBox *          midi_vel_chooser_box;
   GtkComboBoxText * midi_modifier_chooser;
@@ -80,6 +73,14 @@ void
 midi_editor_space_widget_update_size_group (
   MidiEditorSpaceWidget * self,
   int                     visible);
+
+/**
+ * Updates the scroll adjustment.
+ */
+void
+midi_editor_space_widget_set_piano_keys_scroll_start_y (
+  MidiEditorSpaceWidget * self,
+  int                     y);
 
 void
 midi_editor_space_widget_refresh (
