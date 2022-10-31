@@ -671,18 +671,30 @@ handle_loop (
 
       const int line_width = 2;
 
-      double ac_width = fabs (x_end - x_start);
-      ac_width *= full_rect->width;
+      double ac_width =
+        fabs (x_end - x_start) * full_rect->width;
+
+      ArrangerWidget * arranger =
+        arranger_object_get_arranger (obj);
+      EditorSettings settings =
+        arranger_widget_get_editor_setting_values (arranger);
+      GdkRectangle vis_rect = Z_GDK_RECTANGLE_INIT (
+        settings.scroll_start_x, 0,
+        gtk_widget_get_allocated_width (GTK_WIDGET (arranger)),
+        full_rect->height);
+      vis_rect.x -= full_rect->x;
+      vis_rect.y -= full_rect->y;
 
       GskRenderNode * cr_node = NULL;
       cairo_t *       cr = NULL;
-      GdkRectangle    ap_draw_rect = Z_GDK_RECTANGLE_INIT (
-           (int) MAX (x_start_real, 0.0), 0,
-           (int) (x_start_real + ac_width + 0.1),
-           full_rect->height);
+      GdkRectangle ap_loop_part_rect = Z_GDK_RECTANGLE_INIT (
+        (int) MAX (x_start_real, 0.0), 0,
+        /* this seems wrong to add x */
+        /*(int) (x_start_real + ac_width + 0.1),*/
+        (int) (ac_width + 0.1), full_rect->height);
       /* don't use cairo if it will result in a too large
        * surface */
-      if (ap_draw_rect.width > 16000)
+      if (ap_loop_part_rect.width > 16000)
         {
           use_cairo = false;
         }
@@ -690,11 +702,11 @@ handle_loop (
       if (use_cairo)
         {
           if (automation_point_settings_changed (
-                ap, &ap_draw_rect, true))
+                ap, &ap_loop_part_rect, true))
             {
               cr_node = gsk_cairo_node_new (&GRAPHENE_RECT_INIT (
-                0.f, 0.f, (float) ap_draw_rect.width,
-                (float) ap_draw_rect.height));
+                0.f, 0.f, (float) ap_loop_part_rect.width,
+                (float) ap_loop_part_rect.height));
 
               object_free_w_func_and_null (
                 gsk_render_node_unref, ap->cairo_node_tl);
@@ -706,8 +718,8 @@ handle_loop (
               gtk_snapshot_translate (
                 snapshot,
                 &GRAPHENE_POINT_INIT (
-                  (float) ap_draw_rect.x,
-                  (float) ap_draw_rect.y));
+                  (float) ap_loop_part_rect.x,
+                  (float) ap_loop_part_rect.y));
               gtk_snapshot_append_node (snapshot, cr_node);
               gtk_snapshot_restore (snapshot);
               return false;
@@ -716,17 +728,26 @@ handle_loop (
           cr = gsk_cairo_node_get_draw_context (cr_node);
           cairo_save (cr);
           cairo_translate (
-            cr, -(ap_draw_rect.x), -(ap_draw_rect.y));
+            cr, -(ap_loop_part_rect.x),
+            -(ap_loop_part_rect.y));
           gdk_cairo_set_source_rgba (cr, &color);
           cairo_set_line_width (cr, (double) line_width);
-        }
+        } /* endif use_cairo */
 
       double new_x, ap_y, new_y;
       double ac_height =
         fabs (y_end - y_start) * full_rect->height;
       double step = use_cairo ? 0.1 : 1.0;
-      for (double k = MAX (x_start_real, 0.0);
-           k < (x_start_real) + ac_width + step; k += step)
+      double start_from =
+        use_cairo
+          ? ap_loop_part_rect.x
+          : MAX (vis_rect.x, ap_loop_part_rect.x);
+      start_from = MAX (start_from, 0.0);
+      double until =
+        ap_loop_part_rect.x + ap_loop_part_rect.width;
+      if (!use_cairo)
+        until = MIN (vis_rect.x + vis_rect.width, until);
+      for (double k = start_from; k < until + step; k += step)
         {
           if (math_doubles_equal (ac_width, 0.0))
             {
@@ -792,14 +813,14 @@ handle_loop (
           gtk_snapshot_translate (
             snapshot,
             &GRAPHENE_POINT_INIT (
-              (float) ap_draw_rect.x - 1.f,
-              (float) ap_draw_rect.y - 1.f));
+              (float) ap_loop_part_rect.x - 1.f,
+              (float) ap_loop_part_rect.y - 1.f));
           gtk_snapshot_append_node (snapshot, cr_node);
           gtk_snapshot_restore (snapshot);
 
           ap->last_settings_tl.fvalue = ap->fvalue;
           ap->last_settings_tl.curve_opts = ap->curve_opts;
-          ap->last_settings_tl.draw_rect = ap_draw_rect;
+          ap->last_settings_tl.draw_rect = ap_loop_part_rect;
           ap->cairo_node_tl = cr_node;
 
         } /* endif use_cairo */
