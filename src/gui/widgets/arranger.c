@@ -358,24 +358,6 @@ arranger_widget_get_snap_grid (ArrangerWidget * self)
   g_return_val_if_reached (NULL);
 }
 
-#if 0
-/**
- * Returns the number of regions inside the given
- * editor arranger.
- */
-static int
-get_regions_in_editor_rect (
-  ArrangerWidget * self,
-  GdkRectangle *   rect,
-  ZRegion **       regions)
-{
-  return
-    editor_ruler_get_regions_in_range (
-      EDITOR_RULER, rect->x, rect->x + rect->width,
-      regions);
-}
-#endif
-
 typedef struct ObjectOverlapInfo
 {
   /**
@@ -1447,25 +1429,20 @@ auto_scroll (ArrangerWidget * self, int x, int y)
   if (!scroll_h && !scroll_v)
     return;
 
-#if 0
-  GtkScrolledWindow * scroll =
-    arranger_widget_get_scrolled_window (self);
-  g_return_if_fail (scroll);
+  EditorSettings * settings =
+    arranger_widget_get_editor_settings (self);
+  g_return_if_fail (settings);
   int h_scroll_speed = 20;
   int v_scroll_speed = 10;
   int border_distance = 5;
   int scroll_width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (scroll));
+    gtk_widget_get_allocated_width (GTK_WIDGET (self));
   int scroll_height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (scroll));
-  GtkAdjustment * hadj = gtk_scrolled_window_get_hadjustment (
-    GTK_SCROLLED_WINDOW (scroll));
-  GtkAdjustment * vadj = gtk_scrolled_window_get_vadjustment (
-    GTK_SCROLLED_WINDOW (scroll));
+    gtk_widget_get_allocated_height (GTK_WIDGET (self));
   int v_delta = 0;
   int h_delta = 0;
-  int adj_x = (int) gtk_adjustment_get_value (hadj);
-  int adj_y = (int) gtk_adjustment_get_value (vadj);
+  int adj_x = settings->scroll_start_x;
+  int adj_y = settings->scroll_start_y;
   if (y + border_distance >= adj_y + scroll_height)
     {
       v_delta = v_scroll_speed;
@@ -1482,17 +1459,14 @@ auto_scroll (ArrangerWidget * self, int x, int y)
     {
       h_delta = -h_scroll_speed;
     }
-  if (h_delta != 0 && scroll_h)
-    {
-      gtk_adjustment_set_value (
-        hadj, gtk_adjustment_get_value (hadj) + h_delta);
-    }
-  if (v_delta != 0 && scroll_v)
-    {
-      gtk_adjustment_set_value (
-        vadj, gtk_adjustment_get_value (vadj) + v_delta);
-    }
-#endif
+
+  if (!scroll_h)
+    h_delta = 0;
+  if (!scroll_v)
+    v_delta = 0;
+
+  editor_settings_append_scroll (
+    settings, h_delta, v_delta, F_VALIDATE);
 
   return;
 }
@@ -6314,7 +6288,6 @@ arranger_widget_handle_playhead_auto_scroll (
   if (!TRANSPORT_IS_ROLLING && !force)
     return;
 
-#if 0
   bool scroll_edges = false;
   bool follow = false;
   if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
@@ -6338,15 +6311,13 @@ arranger_widget_handle_playhead_auto_scroll (
   int buffer = 5;
   int playhead_x = arranger_widget_get_playhead_px (self);
 
-  GtkScrolledWindow * scroll =
-    arranger_widget_get_scrolled_window (self);
-  GtkAdjustment * adj =
-    gtk_scrolled_window_get_hadjustment (scroll);
+  EditorSettings * settings =
+    arranger_widget_get_editor_settings (self);
   if (follow)
     {
       /* scroll */
-      gtk_adjustment_set_value (
-        adj, playhead_x - rect.width / 2);
+      editor_settings_set_scroll_start_x (
+        settings, playhead_x - rect.width / 2, true);
       g_debug ("autoscrolling to follow playhead");
     }
   else if (scroll_edges)
@@ -6359,16 +6330,11 @@ arranger_widget_handle_playhead_auto_scroll (
         playhead_x > ((rect.x + rect.width) - buffer)
         || playhead_x < rect.x + buffer)
         {
-          gtk_adjustment_set_value (
-            adj,
-            CLAMP (
-              (double) playhead_x - buffer,
-              gtk_adjustment_get_lower (adj),
-              gtk_adjustment_get_upper (adj)));
+          editor_settings_set_scroll_start_x (
+            settings, playhead_x - buffer, true);
           /*g_debug ("autoscrolling at playhead edges");*/
         }
     }
-#endif
 }
 
 static gboolean
