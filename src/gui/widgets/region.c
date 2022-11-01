@@ -245,6 +245,57 @@ draw_loop_points (
 }
 
 /**
+ * TODO move this to arranger and show 1 line globally.
+ *
+ * @param rect Arranger rectangle.
+ * @param full_rect Object full rectangle.
+ */
+static void
+draw_cut_line (
+  ZRegion *        self,
+  GtkSnapshot *    snapshot,
+  ArrangerWidget * arranger,
+  GdkRectangle *   full_rect,
+  GdkRectangle *   draw_rect)
+{
+  GskRenderNode * cut_line_node = NULL;
+  const int       padding = 1;
+  const int       line_width = 1;
+  if (!arranger->cut_line_node)
+    {
+      arranger->cut_line_node = gsk_cairo_node_new (
+        &GRAPHENE_RECT_INIT (0, 0, 3, 800));
+
+      cairo_t * cr = gsk_cairo_node_get_draw_context (
+        arranger->cut_line_node);
+      gdk_cairo_set_source_rgba (cr, &UI_COLORS->dark_text);
+      double dashes[] = { 5 };
+      cairo_set_dash (cr, dashes, 1, 0);
+      cairo_set_line_width (cr, line_width);
+      cairo_move_to (cr, padding, 0);
+      cairo_line_to (cr, padding, 800);
+      cairo_stroke (cr);
+      cairo_destroy (cr);
+    }
+  cut_line_node = arranger->cut_line_node;
+
+  int x_px = (int) arranger->hover_x - full_rect->x;
+
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT ((float) x_px - (float) padding, 0.f));
+  gtk_snapshot_push_clip (
+    snapshot,
+    &GRAPHENE_RECT_INIT (
+      0.f, 0.f, (float) line_width + (float) padding * 2.f,
+      (float) full_rect->height));
+  gtk_snapshot_append_node (snapshot, cut_line_node);
+  gtk_snapshot_pop (snapshot);
+  gtk_snapshot_restore (snapshot);
+}
+
+/**
  * @param rect Arranger rectangle.
  */
 static void
@@ -1598,7 +1649,14 @@ region_draw (
 
       draw_loop_points (
         self, snapshot, &full_rect, &draw_rect);
-      /* TODO draw cut line */
+
+      if (arranger_object_should_show_cut_lines (
+            obj, arranger->alt_held))
+        {
+          draw_cut_line (
+            self, snapshot, arranger, &full_rect, &draw_rect);
+        }
+
       draw_name (self, snapshot, &full_rect, &draw_rect);
 
       /* draw anything on the bottom right part

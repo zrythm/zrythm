@@ -5195,9 +5195,9 @@ on_motion (
       GTK_EVENT_CONTROLLER (motion_controller));
   if (state)
     {
-      self->alt_held = state & GDK_ALT_MASK;
-      self->ctrl_held = state & GDK_CONTROL_MASK;
-      self->shift_held = state & GDK_SHIFT_MASK;
+      /*self->alt_held = state & GDK_ALT_MASK;*/
+      /*self->ctrl_held = state & GDK_CONTROL_MASK;*/
+      /*self->shift_held = state & GDK_SHIFT_MASK;*/
     }
 
   /* highlight hovered object */
@@ -5215,6 +5215,11 @@ on_motion (
         !self->hovered_object
         || IS_ARRANGER_OBJECT (self->hovered_object));
       self->hovered_object = obj;
+    }
+
+  if (ACTION_IS (CUTTING) && !self->alt_held && P_TOOL != TOOL_CUT)
+    {
+      self->action = UI_OVERLAY_ACTION_NONE;
     }
 
   arranger_widget_refresh_cursor (self);
@@ -6094,6 +6099,7 @@ arranger_widget_scroll_until_obj (
   gtk_widget_get_allocation (GTK_WIDGET (self), &allocation);
   EditorSettings * settings =
     arranger_widget_get_editor_settings (self);
+  g_return_if_fail (settings);
 
   if (horizontal)
     {

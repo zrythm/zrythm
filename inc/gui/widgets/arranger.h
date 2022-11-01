@@ -313,6 +313,7 @@ typedef struct _ArrangerWidget
   /** Cached nodes for region loop lines. */
   GskRenderNode * loop_line_node;
   GskRenderNode * clip_start_line_node;
+  GskRenderNode * cut_line_node;
 
   /* ----- END TIMELINE ----- */
 

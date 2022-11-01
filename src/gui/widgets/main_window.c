@@ -241,7 +241,7 @@ on_key_pressed (
           MAIN_WINDOW->last_focused));
 
       /* stop other handlers */
-      return TRUE;
+      return true;
     }
 #endif
 
