@@ -113,7 +113,9 @@ arranger_widget_get_editor_setting_values (
 {
   EditorSettings * settings =
     arranger_widget_get_editor_settings (self);
-  EditorSettings ret = *settings;
+  EditorSettings ret = { 0 };
+  g_return_val_if_fail (settings, ret);
+  ret = *settings;
   if (!arranger_widget_can_scroll_vertically (self))
     {
       ret.scroll_start_y = 0;
@@ -1277,6 +1279,12 @@ gen_context_menu_midi_modifier (
   return g_menu_new ();
 }
 
+/**
+ * Show context menu at the given point.
+ *
+ * @param x X in absolute coordinates.
+ * @param y Y in absolute coordinates.
+ */
 static void
 show_context_menu (ArrangerWidget * self, gdouble x, gdouble y)
 {
@@ -1318,8 +1326,11 @@ show_context_menu (ArrangerWidget * self, gdouble x, gdouble y)
     _ ("Create object"), NULL, action_name);
   g_menu_append_item (menu, menuitem);
 
+  const EditorSettings settings =
+    arranger_widget_get_editor_setting_values (self);
   z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+    self->popover_menu, x - settings.scroll_start_x,
+    y - settings.scroll_start_y, menu);
 }
 
 static void
@@ -4684,15 +4695,9 @@ drag_end (
             btn == GDK_BUTTON_SECONDARY
             && self->action != UI_OVERLAY_ACTION_ERASING)
             {
-              const EditorSettings settings =
-                arranger_widget_get_editor_setting_values (
-                  self);
               show_context_menu (
-                self,
-                (self->start_x + offset_x)
-                  - settings.scroll_start_x,
-                (self->start_y + offset_y)
-                  - settings.scroll_start_y);
+                self, self->start_x + offset_x,
+                self->start_y + offset_y);
             }
         }
     }
