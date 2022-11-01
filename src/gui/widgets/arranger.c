@@ -85,7 +85,7 @@ G_DEFINE_TYPE (ArrangerWidget, arranger_widget, GTK_TYPE_WIDGET)
 
 #define TYPE_IS(x) (self->type == TYPE (x))
 
-#define SCROLL_PADDING 8.0
+#define SCROLL_PADDING 8
 
 /**
  * Returns if the arranger can scroll vertically.
@@ -976,7 +976,7 @@ move_items_x (ArrangerWidget * self, const double ticks_diff)
     arranger_widget_get_selections (self);
   g_return_if_fail (sel);
 
-  EVENTS_PUSH (ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
+  EVENTS_PUSH_NOW (ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
 
   arranger_selections_add_ticks (sel, ticks_diff);
   g_debug ("adding %f ticks to selections", ticks_diff);
@@ -6137,28 +6137,19 @@ arranger_widget_scroll_until_obj (
   int              horizontal,
   int              up,
   int              left,
-  double           padding)
+  int              padding)
 {
-#if 0
-  GtkScrolledWindow * scroll =
-    arranger_widget_get_scrolled_window (self);
-  int scroll_width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (scroll));
-  int scroll_height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (scroll));
-  GtkAdjustment * hadj = gtk_scrolled_window_get_hadjustment (
-    GTK_SCROLLED_WINDOW (scroll));
-  GtkAdjustment * vadj = gtk_scrolled_window_get_vadjustment (
-    GTK_SCROLLED_WINDOW (scroll));
-  double adj_x = gtk_adjustment_get_value (hadj);
-  double adj_y = gtk_adjustment_get_value (vadj);
+  GtkAllocation allocation;
+  gtk_widget_get_allocation (GTK_WIDGET (self), &allocation);
+  EditorSettings * settings =
+    arranger_widget_get_editor_settings (self);
 
   if (horizontal)
     {
-      double start_px = (double) arranger_widget_pos_to_px (
-        self, &obj->pos, 1);
-      double end_px = (double) arranger_widget_pos_to_px (
-        self, &obj->end_pos, 1);
+      int start_px =
+        arranger_widget_pos_to_px (self, &obj->pos, 1);
+      int end_px =
+        arranger_widget_pos_to_px (self, &obj->end_pos, 1);
 
       /* adjust px for objects with non-global
        * positions */
@@ -6167,52 +6158,52 @@ arranger_widget_scroll_until_obj (
           ArrangerObject * r_obj = (ArrangerObject *)
             clip_editor_get_region (CLIP_EDITOR);
           g_return_if_fail (r_obj);
-          double tmp_px = (double) arranger_widget_pos_to_px (
-            self, &r_obj->pos, 1);
+          int tmp_px =
+            arranger_widget_pos_to_px (self, &r_obj->pos, 1);
           start_px += tmp_px;
           end_px += tmp_px;
         }
 
       if (
-        start_px <= adj_x
-        || end_px >= adj_x + (double) scroll_width)
+        start_px <= settings->scroll_start_x
+        || end_px >= settings->scroll_start_x + allocation.width)
         {
           if (left)
             {
-              gtk_adjustment_set_value (
-                hadj, start_px - padding);
+              editor_settings_set_scroll_start_x (
+                settings, start_px - padding, F_NO_VALIDATE);
             }
           else
             {
-              double tmp =
-                (end_px + padding) - (double) scroll_width;
-              gtk_adjustment_set_value (hadj, tmp);
+              int tmp = (end_px + padding) - allocation.width;
+              editor_settings_set_scroll_start_x (
+                settings, tmp, F_NO_VALIDATE);
             }
         }
     }
   else
     {
       arranger_object_set_full_rectangle (obj, self);
-      double start_px = obj->full_rect.y;
-      double end_px = obj->full_rect.y + obj->full_rect.height;
+      int start_px = obj->full_rect.y;
+      int end_px = obj->full_rect.y + obj->full_rect.height;
       if (
-        start_px <= adj_y
-        || end_px >= adj_y + (double) scroll_height)
+        start_px <= settings->scroll_start_y
+        || end_px
+             >= settings->scroll_start_y + allocation.height)
         {
           if (up)
             {
-              gtk_adjustment_set_value (
-                vadj, start_px - padding);
+              editor_settings_set_scroll_start_y (
+                settings, start_px - padding, F_NO_VALIDATE);
             }
           else
             {
-              double tmp =
-                (end_px + padding) - (double) scroll_height;
-              gtk_adjustment_set_value (vadj, tmp);
+              int tmp = (end_px + padding) - allocation.height;
+              editor_settings_set_scroll_start_y (
+                settings, tmp, F_NO_VALIDATE);
             }
         }
     }
-#endif
 }
 
 /**

@@ -60,11 +60,9 @@ typedef struct _ClipEditorInnerWidget
   GtkBox *          bot_of_arranger_toolbar;
   GtkLabel *        track_name_lbl;
   GtkBox *          left_of_ruler_box;
-  //GtkScrolledWindow * ruler_scroll;
-  //GtkViewport *       ruler_viewport;
-  RulerWidget *  ruler;
-  GtkStack *     editor_stack;
-  GtkSizeGroup * left_of_ruler_size_group;
+  RulerWidget *     ruler;
+  GtkStack *        editor_stack;
+  GtkSizeGroup *    left_of_ruler_size_group;
 
   /* ==== Piano Roll (Midi Editor) ==== */
 

@@ -717,8 +717,6 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       {
 #if 0
         RulerWidget * ruler = Z_RULER_WIDGET (ev->arg);
-        gtk_widget_set_size_request (
-          GTK_WIDGET (ruler), (int) ruler->total_px, -1);
 #endif
       }
       break;

@@ -43,54 +43,6 @@ on_midi_modifier_changed (
     PIANO_ROLL, gtk_combo_box_get_active (widget));
 }
 
-#if 0
-/**
- * Links scroll windows after all widgets have been
- * initialized.
- */
-static void
-link_scrolls (MidiEditorSpaceWidget * self)
-{
-  /* link note keys v scroll to arranger v scroll */
-  if (self->piano_roll_keys_scroll)
-    {
-      gtk_scrolled_window_set_vadjustment (
-        self->piano_roll_keys_scroll,
-        gtk_scrolled_window_get_vadjustment (
-          GTK_SCROLLED_WINDOW (self->arranger_scroll)));
-    }
-
-  /* link ruler h scroll to arranger h scroll */
-  if (MW_CLIP_EDITOR_INNER->ruler_scroll)
-    {
-      gtk_scrolled_window_set_hadjustment (
-        self->arranger_scroll,
-        gtk_scrolled_window_get_hadjustment (
-          MW_CLIP_EDITOR_INNER->ruler_scroll));
-    }
-
-  /* link modifier arranger h scroll to arranger h
-   * scroll */
-  if (self->modifier_arranger_scroll)
-    {
-      gtk_scrolled_window_set_hadjustment (
-        self->modifier_arranger_scroll,
-        gtk_scrolled_window_get_hadjustment (
-          MW_CLIP_EDITOR_INNER->ruler_scroll));
-    }
-
-  /* set scrollbar adjustments */
-  gtk_scrollbar_set_adjustment (
-    self->arranger_hscrollbar,
-    gtk_scrolled_window_get_hadjustment (
-      MW_CLIP_EDITOR_INNER->ruler_scroll));
-  gtk_scrollbar_set_adjustment (
-    self->arranger_vscrollbar,
-    gtk_scrolled_window_get_vadjustment (
-      GTK_SCROLLED_WINDOW (self->arranger_scroll)));
-}
-#endif
-
 static int
 on_scroll (
   GtkEventControllerScroll * scroll_controller,
@@ -111,45 +63,10 @@ on_scroll (
   return TRUE;
 }
 
-#if 0
-/**
- * Source function that keeps trying to scroll to the
- * mid note until successful.
- */
-static gboolean
-midi_editor_space_tick_cb (
-  GtkWidget *     widget,
-  GdkFrameClock * frame_clock,
-  gpointer        user_data)
-{
-  MidiEditorSpaceWidget * self =
-    Z_MIDI_EDITOR_SPACE_WIDGET (user_data);
-  GtkAdjustment * adj = gtk_scrolled_window_get_vadjustment (
-    self->arranger_scroll);
-  double lower = gtk_adjustment_get_lower (adj);
-  double upper = gtk_adjustment_get_upper (adj);
-
-  /* keep trying until the scrolled window has
-   * a proper size */
-  if (upper > 0)
-    {
-      gtk_adjustment_set_value (
-        adj, lower + (upper - lower) / 2.0);
-
-      return G_SOURCE_REMOVE;
-    }
-
-  return G_SOURCE_CONTINUE;
-}
-#endif
-
 void
 midi_editor_space_widget_refresh (MidiEditorSpaceWidget * self)
 {
   piano_roll_keys_widget_refresh (self->piano_roll_keys);
-
-  /* relink scrolls (why?) */
-  /*link_scrolls (self);*/
 
   /* setup combo box */
   gtk_combo_box_set_active (
@@ -243,11 +160,6 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  /* make hscrollbar invisible until GTK bug
-   * 4478 is fixed */
-  /*gtk_widget_set_visible (*/
-  /*GTK_WIDGET (self->arranger_hscrollbar), false);*/
-
   gtk_paned_set_resize_start_child (
     self->midi_arranger_velocity_paned, true);
   gtk_paned_set_resize_end_child (
@@ -298,9 +210,6 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (scroll_controller));
-
-  /*gtk_widget_add_tick_callback (*/
-  /*GTK_WIDGET (self), midi_editor_space_tick_cb, self, NULL);*/
 }
 
 static void

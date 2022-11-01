@@ -27,25 +27,6 @@ G_DEFINE_TYPE (
   automation_editor_space_widget,
   GTK_TYPE_BOX)
 
-#if 0
-/**
- * Links scroll windows after all widgets have been
- * initialized.
- */
-static void
-link_scrolls (AutomationEditorSpaceWidget * self)
-{
-  /* link ruler h scroll to arranger h scroll */
-  if (MW_CLIP_EDITOR_INNER->ruler_scroll)
-    {
-      gtk_scrolled_window_set_hadjustment (
-        MW_CLIP_EDITOR_INNER->ruler_scroll,
-        gtk_scrolled_window_get_hadjustment (
-          self->arranger_scroll));
-    }
-}
-#endif
-
 /**
  * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
  */
@@ -111,8 +92,6 @@ automation_editor_space_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, AutomationEditorSpaceWidget, x)
 
-  /*BIND_CHILD (arranger_scroll);*/
-  /*BIND_CHILD (arranger_viewport);*/
   BIND_CHILD (arranger);
   BIND_CHILD (left_box);
   /*BIND_CHILD (legend);*/

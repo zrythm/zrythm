@@ -301,8 +301,6 @@ clip_editor_inner_widget_class_init (
   BIND_CHILD (bot_of_arranger_toolbar);
   BIND_CHILD (track_name_lbl);
   BIND_CHILD (left_of_ruler_box);
-  /*BIND_CHILD (ruler_scroll);*/
-  /*BIND_CHILD (ruler_viewport);*/
   BIND_CHILD (ruler);
   BIND_CHILD (toggle_notation);
   BIND_CHILD (toggle_listen_notes);

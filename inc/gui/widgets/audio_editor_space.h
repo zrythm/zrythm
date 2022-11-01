@@ -40,9 +40,7 @@ typedef struct _AudioEditorSpaceWidget
 {
   GtkBox parent_instance;
 
-  GtkBox * left_box;
-  //GtkScrolledWindow * arranger_scroll;
-  //GtkViewport *       arranger_viewport;
+  GtkBox *         left_box;
   ArrangerWidget * arranger;
 } AudioEditorSpaceWidget;
 

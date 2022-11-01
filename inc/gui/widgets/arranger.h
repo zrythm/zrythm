@@ -126,7 +126,6 @@ typedef struct _ArrangerWidget
 
   /** Whether there is an offset from a user scroll that should
    * be added to the offset while dragging. */
-  bool   have_offset_from_scroll;
   double offset_x_from_scroll;
   double offset_y_from_scroll;
 
@@ -667,7 +666,7 @@ arranger_widget_scroll_until_obj (
   int              horizontal,
   int              up,
   int              left,
-  double           padding);
+  int              padding);
 
 /**
  * Toggles the mute status of the selection, based

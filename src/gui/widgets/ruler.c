@@ -1418,6 +1418,7 @@ drag_begin (
 {
   EditorSettings * settings =
     ruler_widget_get_editor_settings (self);
+  g_return_if_fail (settings);
   start_x += settings->scroll_start_x;
   self->start_x = start_x;
   self->start_y = start_y;
@@ -1546,9 +1547,9 @@ on_motion (
 
   EditorSettings * settings =
     ruler_widget_get_editor_settings (self);
+  g_return_if_fail (settings);
   x += settings->scroll_start_x;
   self->hover_x = x;
-  self->hover_y = y;
 
   /* drag-update didn't work so do the drag-update
    * here */
@@ -1707,6 +1708,7 @@ ruler_widget_get_visible_rect (
   gtk_widget_get_allocation (GTK_WIDGET (self), rect);
   const EditorSettings * settings =
     ruler_widget_get_editor_settings (self);
+  g_return_if_fail (settings);
   rect->x = settings->scroll_start_x;
   rect->y = 0;
 }
@@ -1801,7 +1803,6 @@ on_scroll (
   RulerWidget * self = Z_RULER_WIDGET (user_data);
 
   double x = self->hover_x;
-  /*double y = self->hover_y;*/
 
   GdkModifierType modifier_type =
     gtk_event_controller_get_current_event_state (
@@ -1811,12 +1812,12 @@ on_scroll (
   bool shift_held = modifier_type & GDK_SHIFT_MASK;
   if (ctrl_held)
     {
-      g_debug ("ctrl held");
 
       if (!shift_held)
         {
           EditorSettings * settings =
             ruler_widget_get_editor_settings (self);
+          g_return_val_if_fail (settings, false);
           double adj_val = (double) settings->scroll_start_x;
 
           /* get position of cursor */
@@ -1855,6 +1856,9 @@ on_scroll (
               timeline_minimap_widget_refresh (
                 MW_TIMELINE_MINIMAP);
             }
+
+          /* also update hover x since we're using it here */
+          self->hover_x = new_x;
         }
     }
   else /* else if not ctrl held */

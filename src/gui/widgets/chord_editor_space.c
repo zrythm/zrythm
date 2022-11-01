@@ -32,34 +32,6 @@ G_DEFINE_TYPE (
 
 #define DEFAULT_PX_PER_KEY 12
 
-#if 0
-/**
- * Links scroll windows after all widgets have been
- * initialized.
- */
-static void
-link_scrolls (ChordEditorSpaceWidget * self)
-{
-  /* link note keys v scroll to arranger v scroll */
-  if (self->chord_keys_scroll)
-    {
-      gtk_scrolled_window_set_vadjustment (
-        self->chord_keys_scroll,
-        gtk_scrolled_window_get_vadjustment (
-          GTK_SCROLLED_WINDOW (self->arranger_scroll)));
-    }
-
-  /* link ruler h scroll to arranger h scroll */
-  if (MW_CLIP_EDITOR_INNER->ruler_scroll)
-    {
-      gtk_scrolled_window_set_hadjustment (
-        MW_CLIP_EDITOR_INNER->ruler_scroll,
-        gtk_scrolled_window_get_hadjustment (
-          self->arranger_scroll));
-    }
-}
-#endif
-
 /**
  * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
  */
@@ -194,8 +166,6 @@ chord_editor_space_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, ChordEditorSpaceWidget, x)
 
-  /*BIND_CHILD (arranger_scroll);*/
-  /*BIND_CHILD (arranger_viewport);*/
   BIND_CHILD (arranger);
   BIND_CHILD (left_box);
   BIND_CHILD (chord_keys_box);

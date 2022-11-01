@@ -27,27 +27,6 @@ G_DEFINE_TYPE (
   audio_editor_space_widget,
   GTK_TYPE_BOX)
 
-#if 0
-/**
- * Links scroll windows after all widgets have been
- * initialized.
- */
-static void
-link_scrolls (AudioEditorSpaceWidget * self)
-{
-  /* link ruler h scroll to arranger h scroll */
-  if (MW_CLIP_EDITOR_INNER->ruler_scroll)
-    {
-      g_return_if_fail (
-        GTK_IS_WIDGET (MW_CLIP_EDITOR_INNER->ruler_scroll));
-      gtk_scrolled_window_set_hadjustment (
-        MW_CLIP_EDITOR_INNER->ruler_scroll,
-        gtk_scrolled_window_get_hadjustment (
-          GTK_SCROLLED_WINDOW (self->arranger_scroll)));
-    }
-}
-#endif
-
 /**
  * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
  */

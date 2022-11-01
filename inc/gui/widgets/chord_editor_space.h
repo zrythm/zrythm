@@ -70,8 +70,6 @@ typedef struct _ChordEditorSpaceWidget
 
   /** The arranger. */
   ArrangerWidget * arranger;
-  //GtkScrolledWindow * arranger_scroll;
-  //GtkViewport *       arranger_viewport;
 } ChordEditorSpaceWidget;
 
 int

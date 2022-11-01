@@ -129,7 +129,6 @@ typedef struct _RulerWidget
   double last_offset_x;
 
   double hover_x;
-  double hover_y;
 
   GtkGestureDrag *  drag;
   GtkGestureClick * click;

@@ -52,12 +52,6 @@ typedef struct _TimelinePanelWidget
   /** Box for the timelines and the ruler. */
   GtkBox * timelines_plus_ruler;
 
-  /** Scroll for ruler holding the viewport. */
-  //GtkScrolledWindow * ruler_scroll;
-
-  /** Viewport for ruler holding the ruler. */
-  //GtkViewport * ruler_viewport;
-
   /** Ruler. */
   RulerWidget * ruler;
 
@@ -65,16 +59,10 @@ typedef struct _TimelinePanelWidget
    * timelines. */
   GtkBox * timeline_divider_box;
 
-  //GtkScrolledWindow * timeline_scroll;
-  //GtkViewport *       timeline_viewport;
-
   /** The main timeline. */
   ArrangerWidget * timeline;
 
   TimelineToolbarWidget * timeline_toolbar;
-
-  //GtkScrolledWindow * pinned_timeline_scroll;
-  //GtkViewport *       pinned_timeline_viewport;
 
   /** The pinned timeline above the main one. */
   ArrangerWidget * pinned_timeline;
