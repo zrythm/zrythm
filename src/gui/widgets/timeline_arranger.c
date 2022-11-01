@@ -24,6 +24,7 @@
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/tracklist.h"
 #include "project.h"
 #include "utils/error.h"
 #include "utils/flags.h"
@@ -143,8 +144,10 @@ timeline_arranger_widget_get_track_at_y (
         }
 
       if (ui_is_child_hit (
-            GTK_WIDGET (self), GTK_WIDGET (track->widget), 0,
-            1, 0, y, 0, 1))
+            self->is_pinned
+              ? GTK_WIDGET (self)
+              : GTK_WIDGET (MW_TRACKLIST->unpinned_box),
+            GTK_WIDGET (track->widget), 0, 1, 0, y, 0, 1))
         return track;
     }
 
