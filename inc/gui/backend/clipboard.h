@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -26,6 +10,7 @@
 #ifndef __GUI_BACKEND_CLIPBOARD_H__
 #define __GUI_BACKEND_CLIPBOARD_H__
 
+#include "gui/backend/audio_selections.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/chord_selections.h"
 #include "gui/backend/midi_arranger_selections.h"
@@ -49,6 +34,7 @@ typedef enum ClipboardType
   CLIPBOARD_TYPE_MIDI_SELECTIONS,
   CLIPBOARD_TYPE_AUTOMATION_SELECTIONS,
   CLIPBOARD_TYPE_CHORD_SELECTIONS,
+  CLIPBOARD_TYPE_AUDIO_SELECTIONS,
   CLIPBOARD_TYPE_MIXER_SELECTIONS,
   CLIPBOARD_TYPE_TRACKLIST_SELECTIONS,
 } ClipboardType;
@@ -59,6 +45,7 @@ static const cyaml_strval_t clipboard_type_strings[] = {
   { "Automation selections",
    CLIPBOARD_TYPE_AUTOMATION_SELECTIONS                        },
   { "Chord selections",      CLIPBOARD_TYPE_CHORD_SELECTIONS   },
+  { "Audio selections",      CLIPBOARD_TYPE_AUDIO_SELECTIONS   },
   { "Mixer selections",      CLIPBOARD_TYPE_MIXER_SELECTIONS   },
   { "Tracklist selections",
    CLIPBOARD_TYPE_TRACKLIST_SELECTIONS                         },
@@ -74,6 +61,7 @@ typedef struct Clipboard
   MidiArrangerSelections * ma_sel;
   ChordSelections *        chord_sel;
   AutomationSelections *   automation_sel;
+  AudioSelections *        audio_sel;
   MixerSelections *        mixer_sel;
   TracklistSelections *    tracklist_sel;
 } Clipboard;
@@ -96,6 +84,10 @@ static const cyaml_schema_field_t clipboard_fields_schema[] = {
     Clipboard,
     automation_sel,
     automation_selections_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Clipboard,
+    audio_sel,
+    audio_selections_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Clipboard,
     mixer_sel,

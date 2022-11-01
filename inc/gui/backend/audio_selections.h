@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -10,9 +10,12 @@
 #ifndef __GUI_BACKEND_AUDIO_SELECTIONS_H__
 #define __GUI_BACKEND_AUDIO_SELECTIONS_H__
 
+#include "audio/position.h"
 #include "audio/region_identifier.h"
 #include "gui/backend/arranger_selections.h"
 #include "utils/yaml.h"
+
+typedef struct ZRegion ZRegion;
 
 /**
  * @addtogroup gui_backend

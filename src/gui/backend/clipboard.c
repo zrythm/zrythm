@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/clipboard.h"
 #include "utils/flags.h"
@@ -54,6 +38,10 @@ clipboard_new_for_arranger_selections (
     case ARRANGER_SELECTIONS_TYPE_CHORD:
       self->chord_sel = (ChordSelections *) sel;
       self->type = CLIPBOARD_TYPE_CHORD_SELECTIONS;
+      break;
+    case ARRANGER_SELECTIONS_TYPE_AUDIO:
+      self->audio_sel = (AudioSelections *) sel;
+      self->type = CLIPBOARD_TYPE_AUDIO_SELECTIONS;
       break;
     default:
       g_return_val_if_reached (NULL);
@@ -126,6 +114,7 @@ clipboard_get_selections (Clipboard * self)
   RETURN_IF_EXISTS (timeline_sel);
   RETURN_IF_EXISTS (automation_sel);
   RETURN_IF_EXISTS (chord_sel);
+  RETURN_IF_EXISTS (audio_sel);
 
 #undef RETURN_IF_EXISTS
 
@@ -144,6 +133,7 @@ clipboard_free (Clipboard * self)
     case CLIPBOARD_TYPE_MIDI_SELECTIONS:
     case CLIPBOARD_TYPE_AUTOMATION_SELECTIONS:
     case CLIPBOARD_TYPE_CHORD_SELECTIONS:
+    case CLIPBOARD_TYPE_AUDIO_SELECTIONS:
       {
         ArrangerSelections * sel =
           clipboard_get_selections (self);

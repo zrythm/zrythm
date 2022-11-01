@@ -20,7 +20,8 @@ typedef struct Position       Position;
 typedef struct AudioClip      AudioClip;
 typedef struct UndoableAction UndoableAction;
 typedef enum ArrangerSelectionsActionEditType
-  ArrangerSelectionsActionEditType;
+                       ArrangerSelectionsActionEditType;
+typedef struct ZRegion ZRegion;
 
 /**
  * @addtogroup gui_backend

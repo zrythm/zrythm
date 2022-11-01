@@ -941,6 +941,7 @@ activate_copy (
           Clipboard * clipboard =
             clipboard_new_for_arranger_selections (
               sel, F_CLONE);
+          g_return_if_fail (clipboard);
           if (clipboard->timeline_sel)
             {
               timeline_selections_set_vis_track_indices (
@@ -1031,6 +1032,7 @@ activate_paste (
     case CLIPBOARD_TYPE_MIDI_SELECTIONS:
     case CLIPBOARD_TYPE_AUTOMATION_SELECTIONS:
     case CLIPBOARD_TYPE_CHORD_SELECTIONS:
+    case CLIPBOARD_TYPE_AUDIO_SELECTIONS:
       sel = clipboard_get_selections (clipboard);
       break;
     case CLIPBOARD_TYPE_MIXER_SELECTIONS:

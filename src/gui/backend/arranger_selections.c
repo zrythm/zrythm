@@ -1537,6 +1537,9 @@ arranger_selections_post_deserialize (
       cs = (ChordSelections *) self;
       POST_DESERIALIZE (cs, chord_object);
       break;
+    case TYPE (AUDIO):
+      /* no post-deserialization needed */
+      break;
     default:
       g_return_if_reached ();
     }
@@ -2305,6 +2308,10 @@ arranger_selections_can_be_pasted (ArrangerSelections * self)
     case ARRANGER_SELECTIONS_TYPE_AUTOMATION:
       return automation_selections_can_be_pasted (
         (AutomationSelections *) self, pos, r);
+    case ARRANGER_SELECTIONS_TYPE_AUDIO:
+      /* TODO */
+      g_warning ("unimplemented");
+      return false;
     default:
       g_return_val_if_reached (false);
       break;
