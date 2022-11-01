@@ -950,16 +950,13 @@ draw_range (
   int              range_second_px,
   GdkRectangle *   rect)
 {
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
-
   /* draw range */
   gtk_snapshot_append_color (
     snapshot, &Z_GDK_RGBA_INIT (0.3f, 0.3f, 0.3f, 0.3f),
     &GRAPHENE_RECT_INIT (
-      (float) MAX (0, range_first_px), 0.f,
+      (float) MAX (0, range_first_px), (float) rect->y,
       (float) (range_second_px - range_first_px),
-      (float) height));
+      (float) rect->height));
 
   /* draw start and end lines */
   const float   line_width = 2.f;
@@ -967,13 +964,13 @@ draw_range (
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
-      (float) range_first_px + 1.f, 0.f, line_width,
-      (float) height));
+      (float) range_first_px + 1.f, (float) rect->y,
+      line_width, (float) rect->height));
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
-      (float) range_second_px + 1.f, 0.f, line_width,
-      (float) height));
+      (float) range_second_px + 1.f, (float) rect->y,
+      line_width, (float) rect->height));
 }
 
 void

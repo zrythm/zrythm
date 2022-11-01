@@ -980,9 +980,7 @@ move_items_x (ArrangerWidget * self, const double ticks_diff)
     arranger_widget_get_selections (self);
   g_return_if_fail (sel);
 
-  /* queue a redraw for the selections at their
-   * current position before the move */
-  EVENTS_PUSH_NOW (ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
+  EVENTS_PUSH (ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
 
   arranger_selections_add_ticks (sel, ticks_diff);
   g_debug ("adding %f ticks to selections", ticks_diff);
@@ -2716,6 +2714,9 @@ drag_begin (
 {
   g_debug ("arranger drag begin starting...");
 
+  self->offset_x_from_scroll = 0;
+  self->offset_y_from_scroll = 0;
+
   const EditorSettings settings =
     arranger_widget_get_editor_setting_values (self);
   start_x += settings.scroll_start_x;
@@ -3200,6 +3201,9 @@ drag_update (
   gdouble          offset_y,
   ArrangerWidget * self)
 {
+  offset_x += self->offset_x_from_scroll;
+  offset_y += self->offset_y_from_scroll;
+
   if (
     !self->drag_update_started
     && !gtk_drag_check_threshold (
@@ -5191,8 +5195,17 @@ on_scroll (
         arranger_widget_get_editor_settings (self);
       scroll_x = scroll_x * scroll_amt;
       scroll_y = scroll_y * scroll_amt;
+      int scroll_x_before = settings->scroll_start_x;
+      int scroll_y_before = settings->scroll_start_y;
       editor_settings_append_scroll (
         settings, scroll_x, scroll_y, F_VALIDATE);
+
+      /* also adjust the drag offsets (in case we are currently
+       * dragging */
+      scroll_x = settings->scroll_start_x - scroll_x_before;
+      scroll_y = settings->scroll_start_y - scroll_y_before;
+      self->offset_x_from_scroll += scroll_x;
+      self->offset_y_from_scroll += scroll_y;
 
       /* auto-scroll linked widgets */
       if (scroll_y != 0)
@@ -5206,6 +5219,12 @@ on_scroll (
             {
               midi_editor_space_widget_set_piano_keys_scroll_start_y (
                 MW_MIDI_EDITOR_SPACE,
+                settings->scroll_start_y);
+            }
+          else if (self->type == TYPE (CHORD))
+            {
+              chord_editor_space_widget_set_chord_keys_scroll_start_y (
+                MW_CHORD_EDITOR_SPACE,
                 settings->scroll_start_y);
             }
         }

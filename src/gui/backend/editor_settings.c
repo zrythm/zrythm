@@ -5,6 +5,7 @@
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_notebook.h"
@@ -73,6 +74,18 @@ editor_settings_set_scroll_start_y (
             (self->scroll_start_y
              + piano_roll_keys_scroll_height)
             - piano_roll_keys_height;
+        }
+      else if (self == &CHORD_EDITOR->editor_settings)
+        {
+          int chord_keys_height =
+            gtk_widget_get_allocated_height (GTK_WIDGET (
+              MW_CHORD_EDITOR_SPACE->chord_keys_box));
+          int chord_keys_scroll_height =
+            gtk_widget_get_allocated_height (GTK_WIDGET (
+              MW_CHORD_EDITOR_SPACE->chord_keys_scroll));
+          diff =
+            (self->scroll_start_y + chord_keys_scroll_height)
+            - chord_keys_height;
         }
 
       if (diff > 0)

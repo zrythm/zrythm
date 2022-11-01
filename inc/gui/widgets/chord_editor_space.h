@@ -95,6 +95,11 @@ chord_editor_space_widget_update_size_group (
   int                      visible);
 
 void
+chord_editor_space_widget_set_chord_keys_scroll_start_y (
+  ChordEditorSpaceWidget * self,
+  int                      y);
+
+void
 chord_editor_space_widget_refresh (
   ChordEditorSpaceWidget * self);
 

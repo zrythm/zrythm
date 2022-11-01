@@ -17,7 +17,9 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
@@ -71,9 +73,28 @@ chord_editor_space_widget_update_size_group (
     visible);
 }
 
-static void
-on_realize (GtkWidget * widget, ChordEditorSpaceWidget * self)
+void
+chord_editor_space_widget_set_chord_keys_scroll_start_y (
+  ChordEditorSpaceWidget * self,
+  int                      y)
 {
+  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
+    self->chord_keys_scroll);
+  if (!math_doubles_equal (
+        (double) y, gtk_adjustment_get_value (hadj)))
+    {
+      gtk_adjustment_set_value (hadj, (double) y);
+    }
+}
+
+static void
+on_chord_keys_scroll_hadj_changed (
+  GtkAdjustment *          adj,
+  ChordEditorSpaceWidget * self)
+{
+  editor_settings_set_scroll_start_y (
+    &CHORD_EDITOR->editor_settings,
+    (int) gtk_adjustment_get_value (adj), F_VALIDATE);
 }
 
 int
@@ -131,6 +152,14 @@ chord_editor_space_widget_setup (ChordEditorSpaceWidget * self)
       self->chord_key_boxes[i] = box;
     }
 
+  /* add a signal handler to update the editor settings on
+   * scroll */
+  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
+    self->chord_keys_scroll);
+  g_signal_connect (
+    hadj, "value-changed",
+    G_CALLBACK (on_chord_keys_scroll_hadj_changed), self);
+
   chord_editor_space_widget_refresh (self);
 }
 
@@ -151,9 +180,6 @@ chord_editor_space_widget_init (ChordEditorSpaceWidget * self)
   gtk_size_group_add_widget (
     self->arranger_and_keys_vsize_group,
     GTK_WIDGET (self->chord_keys_box));
-
-  g_signal_connect (
-    G_OBJECT (self), "realize", G_CALLBACK (on_realize), self);
 }
 
 static void
