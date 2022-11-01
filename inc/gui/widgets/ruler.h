@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -21,6 +21,11 @@
 #define RW_PLAYHEAD_TRIANGLE_HEIGHT 8
 #define RW_RANGE_HEIGHT_DIVISOR 4
 
+#define RW_HEIGHT 42
+
+/** Mouse wheel scroll speed (number of pixels). */
+#define RW_SCROLL_SPEED 48
+
 /**
  * Minimum number of pixels between beat lines.
  */
@@ -40,7 +45,8 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-typedef struct Position Position;
+typedef struct Position       Position;
+typedef struct EditorSettings EditorSettings;
 
 /**
  * Pixels to draw between each beat, before being
@@ -61,7 +67,7 @@ typedef struct Position Position;
 #define RULER_ZOOM_LEVEL_MULTIPLIER 1.28
 
 #define MIN_ZOOM_LEVEL 0.05
-#define MAX_ZOOM_LEVEL 400.
+#define MAX_ZOOM_LEVEL 1200.
 
 /**
  * The ruler widget target acting upon.
@@ -121,6 +127,8 @@ typedef struct _RulerWidget
   double start_x;
   double start_y;
   double last_offset_x;
+
+  double hover_x;
 
   GtkGestureDrag *  drag;
   GtkGestureClick * click;
@@ -233,8 +241,33 @@ ruler_widget_is_range_hit (
 double
 ruler_widget_get_zoom_level (RulerWidget * self);
 
-GtkScrolledWindow *
-ruler_widget_get_parent_scroll (RulerWidget * self);
+void
+ruler_widget_px_to_pos (
+  RulerWidget * self,
+  double        px,
+  Position *    pos,
+  bool          has_padding);
+
+int
+ruler_widget_pos_to_px (
+  RulerWidget * self,
+  Position *    pos,
+  int           use_padding);
+
+/**
+ * Gets the pointer to the EditorSettings associated with the
+ * arranger this ruler is for.
+ */
+EditorSettings *
+ruler_widget_get_editor_settings (RulerWidget * self);
+
+/**
+ * Fills in the visible rectangle.
+ */
+void
+ruler_widget_get_visible_rect (
+  RulerWidget *  self,
+  GdkRectangle * rect);
 
 void
 ruler_widget_refresh (RulerWidget * self);

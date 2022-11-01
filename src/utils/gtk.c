@@ -1642,6 +1642,25 @@ z_gtk_graphene_rect_t_to_gdk_rectangle (
   rect->height = (int) grect->size.height;
 }
 
+void
+z_gdk_rectangle_to_graphene_rect_t (
+  graphene_rect_t * grect,
+  GdkRectangle *    rect)
+{
+  grect->origin.x = (float) rect->x;
+  grect->origin.y = (float) rect->y;
+  grect->size.width = (float) rect->width;
+  grect->size.height = (float) rect->height;
+}
+
+void
+z_gdk_rectangle_print (const GdkRectangle * rect)
+{
+  g_message (
+    "[GdkRectangle] x: %d | y %d | width %d | height %d",
+    rect->x, rect->y, rect->width, rect->height);
+}
+
 typedef struct
 {
   GtkDialog * dialog;

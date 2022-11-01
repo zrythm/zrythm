@@ -687,6 +687,12 @@ ArrangerSelections *
 region_get_arranger_selections (ZRegion * self);
 
 /**
+ * Returns the arranger for editing the region's children.
+ */
+ArrangerWidget *
+region_get_arranger_for_children (ZRegion * self);
+
+/**
  * Sanity checking.
  *
  * @param frames_per_tick Frames per tick used when

@@ -496,18 +496,16 @@ midi_arranger_handle_vertical_zoom_scroll (
   if (!(state & GDK_CONTROL_MASK && state & GDK_SHIFT_MASK))
     return;
 
-  GtkScrolledWindow * scroll =
-    arranger_widget_get_scrolled_window (self);
-
   double y = self->hover_y;
   double delta_y = dy;
 
   /* get current adjustment so we can get the
    * difference from the cursor */
-  GtkAdjustment * adj =
-    gtk_scrolled_window_get_vadjustment (scroll);
-  double adj_val = gtk_adjustment_get_value (adj);
-  double size_before = gtk_adjustment_get_upper (adj);
+  EditorSettings * settings =
+    arranger_widget_get_editor_settings (self);
+  double adj_val = settings->scroll_start_y;
+  double size_before = gtk_widget_get_allocated_height (
+    GTK_WIDGET (MW_PIANO_ROLL_KEYS));
   double adj_perc = y / size_before;
 
   /* get px diff so we can calculate the new
@@ -534,8 +532,8 @@ midi_arranger_handle_vertical_zoom_scroll (
   /* refresh relevant widgets */
   midi_editor_space_widget_refresh (MW_MIDI_EDITOR_SPACE);
 
-  /* get updated adjustment and set its value
-   at the same offset as before */
-  adj = gtk_scrolled_window_get_vadjustment (scroll);
-  gtk_adjustment_set_value (adj, adj_perc * size_after - diff);
+  /* set value at the same offset as before */
+  editor_settings_set_scroll_start_y (
+    settings, (int) (adj_perc * size_after - diff),
+    F_NO_VALIDATE);
 }

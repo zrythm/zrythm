@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019, 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019, 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/channel.h"
 #include "audio/chord_track.h"
@@ -37,6 +21,7 @@
 #include "gui/widgets/piano_roll_keys.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/resources.h"
@@ -56,52 +41,6 @@ on_midi_modifier_changed (
 {
   piano_roll_set_midi_modifier (
     PIANO_ROLL, gtk_combo_box_get_active (widget));
-}
-
-/**
- * Links scroll windows after all widgets have been
- * initialized.
- */
-static void
-link_scrolls (MidiEditorSpaceWidget * self)
-{
-  /* link note keys v scroll to arranger v scroll */
-  if (self->piano_roll_keys_scroll)
-    {
-      gtk_scrolled_window_set_vadjustment (
-        self->piano_roll_keys_scroll,
-        gtk_scrolled_window_get_vadjustment (
-          GTK_SCROLLED_WINDOW (self->arranger_scroll)));
-    }
-
-  /* link ruler h scroll to arranger h scroll */
-  if (MW_CLIP_EDITOR_INNER->ruler_scroll)
-    {
-      gtk_scrolled_window_set_hadjustment (
-        self->arranger_scroll,
-        gtk_scrolled_window_get_hadjustment (
-          MW_CLIP_EDITOR_INNER->ruler_scroll));
-    }
-
-  /* link modifier arranger h scroll to arranger h
-   * scroll */
-  if (self->modifier_arranger_scroll)
-    {
-      gtk_scrolled_window_set_hadjustment (
-        self->modifier_arranger_scroll,
-        gtk_scrolled_window_get_hadjustment (
-          MW_CLIP_EDITOR_INNER->ruler_scroll));
-    }
-
-  /* set scrollbar adjustments */
-  gtk_scrollbar_set_adjustment (
-    self->arranger_hscrollbar,
-    gtk_scrolled_window_get_hadjustment (
-      MW_CLIP_EDITOR_INNER->ruler_scroll));
-  gtk_scrollbar_set_adjustment (
-    self->arranger_vscrollbar,
-    gtk_scrolled_window_get_vadjustment (
-      GTK_SCROLLED_WINDOW (self->arranger_scroll)));
 }
 
 static int
@@ -124,43 +63,10 @@ on_scroll (
   return TRUE;
 }
 
-/**
- * Source function that keeps trying to scroll to the
- * mid note until successful.
- */
-static gboolean
-midi_editor_space_tick_cb (
-  GtkWidget *     widget,
-  GdkFrameClock * frame_clock,
-  gpointer        user_data)
-{
-  MidiEditorSpaceWidget * self =
-    Z_MIDI_EDITOR_SPACE_WIDGET (user_data);
-  GtkAdjustment * adj = gtk_scrolled_window_get_vadjustment (
-    self->arranger_scroll);
-  double lower = gtk_adjustment_get_lower (adj);
-  double upper = gtk_adjustment_get_upper (adj);
-
-  /* keep trying until the scrolled window has
-   * a proper size */
-  if (upper > 0)
-    {
-      gtk_adjustment_set_value (
-        adj, lower + (upper - lower) / 2.0);
-
-      return G_SOURCE_REMOVE;
-    }
-
-  return G_SOURCE_CONTINUE;
-}
-
 void
 midi_editor_space_widget_refresh (MidiEditorSpaceWidget * self)
 {
   piano_roll_keys_widget_refresh (self->piano_roll_keys);
-
-  /* relink scrolls (why?) */
-  link_scrolls (self);
 
   /* setup combo box */
   gtk_combo_box_set_active (
@@ -181,6 +87,33 @@ midi_editor_space_widget_update_size_group (
     visible);
 }
 
+/**
+ * Updates the scroll adjustment.
+ */
+void
+midi_editor_space_widget_set_piano_keys_scroll_start_y (
+  MidiEditorSpaceWidget * self,
+  int                     y)
+{
+  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
+    self->piano_roll_keys_scroll);
+  if (!math_doubles_equal (
+        (double) y, gtk_adjustment_get_value (hadj)))
+    {
+      gtk_adjustment_set_value (hadj, (double) y);
+    }
+}
+
+static void
+on_piano_keys_scroll_hadj_changed (
+  GtkAdjustment *         adj,
+  MidiEditorSpaceWidget * self)
+{
+  editor_settings_set_scroll_start_y (
+    &PIANO_ROLL->editor_settings,
+    (int) gtk_adjustment_get_value (adj), F_VALIDATE);
+}
+
 void
 midi_editor_space_widget_setup (MidiEditorSpaceWidget * self)
 {
@@ -198,6 +131,14 @@ midi_editor_space_widget_setup (MidiEditorSpaceWidget * self)
     }
 
   piano_roll_keys_widget_setup (self->piano_roll_keys);
+
+  /* add a signal handler to update the editor settings on
+   * scroll */
+  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
+    self->piano_roll_keys_scroll);
+  g_signal_connect (
+    hadj, "value-changed",
+    G_CALLBACK (on_piano_keys_scroll_hadj_changed), self);
 
   midi_editor_space_widget_refresh (self);
 }
@@ -219,11 +160,6 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  /* make hscrollbar invisible until GTK bug
-   * 4478 is fixed */
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->arranger_hscrollbar), false);
-
   gtk_paned_set_resize_start_child (
     self->midi_arranger_velocity_paned, true);
   gtk_paned_set_resize_end_child (
@@ -237,6 +173,7 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
   self->modifier_arranger->type =
     ARRANGER_WIDGET_TYPE_MIDI_MODIFIER;
 
+  /* doesn't work */
   self->arranger_and_keys_vsize_group =
     gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
   gtk_size_group_add_widget (
@@ -244,7 +181,15 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
     GTK_WIDGET (self->arranger));
   gtk_size_group_add_widget (
     self->arranger_and_keys_vsize_group,
-    GTK_WIDGET (self->piano_roll_keys));
+    GTK_WIDGET (self->piano_roll_keys_scroll));
+
+  /* above doesn't work so set vexpand instead */
+  gtk_widget_set_vexpand (GTK_WIDGET (self->arranger), true);
+
+  /* also hexpand the modifier arranger TODO use a size
+   * group */
+  gtk_widget_set_hexpand (
+    GTK_WIDGET (self->modifier_arranger), true);
 
   /* setup signals */
   g_signal_connect (
@@ -265,9 +210,6 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (scroll_controller));
-
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), midi_editor_space_tick_cb, self, NULL);
 }
 
 static void
@@ -285,12 +227,8 @@ midi_editor_space_widget_class_init (
   BIND_CHILD (piano_roll_keys_scroll);
   BIND_CHILD (piano_roll_keys);
   BIND_CHILD (midi_arranger_velocity_paned);
-  BIND_CHILD (arranger_scroll);
   BIND_CHILD (arranger);
-  BIND_CHILD (modifier_arranger_scroll);
   BIND_CHILD (modifier_arranger);
-  BIND_CHILD (arranger_hscrollbar);
-  BIND_CHILD (arranger_vscrollbar);
   BIND_CHILD (midi_notes_box);
   BIND_CHILD (midi_vel_chooser_box);
 

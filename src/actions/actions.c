@@ -508,11 +508,9 @@ DEFINE_SIMPLE (activate_best_fit)
       return;
     }
 
-  double              total_ticks = position_to_ticks (&pos);
-  GtkScrolledWindow * scroll =
-    ruler_widget_get_parent_scroll (ruler);
+  double total_ticks = position_to_ticks (&pos);
   double allocated_px = (double)
-    gtk_widget_get_allocated_width (GTK_WIDGET (scroll));
+    gtk_widget_get_allocated_width (GTK_WIDGET (ruler));
   double buffer_px = allocated_px / 16.0;
   double needed_px_per_tick =
     (allocated_px - buffer_px) / total_ticks;

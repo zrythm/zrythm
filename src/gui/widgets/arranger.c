@@ -85,7 +85,42 @@ G_DEFINE_TYPE (ArrangerWidget, arranger_widget, GTK_TYPE_WIDGET)
 
 #define TYPE_IS(x) (self->type == TYPE (x))
 
-#define SCROLL_PADDING 8.0
+#define SCROLL_PADDING 8
+
+/**
+ * Returns if the arranger can scroll vertically.
+ */
+bool
+arranger_widget_can_scroll_vertically (ArrangerWidget * self)
+{
+  if (
+    (self->type == TYPE (TIMELINE) && self->is_pinned)
+    || self->type == TYPE (MIDI_MODIFIER)
+    || self->type == TYPE (AUDIO)
+    || self->type == TYPE (AUTOMATION))
+    return false;
+
+  return true;
+}
+
+/**
+ * Get just the values, adjusted properly for special cases
+ * (like pinned timeline).
+ */
+EditorSettings
+arranger_widget_get_editor_setting_values (
+  ArrangerWidget * self)
+{
+  EditorSettings * settings =
+    arranger_widget_get_editor_settings (self);
+  EditorSettings ret = *settings;
+  if (!arranger_widget_can_scroll_vertically (self))
+    {
+      ret.scroll_start_y = 0;
+    }
+
+  return ret;
+}
 
 static void
 drag_end (
@@ -336,24 +371,6 @@ arranger_widget_get_snap_grid (ArrangerWidget * self)
     }
   g_return_val_if_reached (NULL);
 }
-
-#if 0
-/**
- * Returns the number of regions inside the given
- * editor arranger.
- */
-static int
-get_regions_in_editor_rect (
-  ArrangerWidget * self,
-  GdkRectangle *   rect,
-  ZRegion **       regions)
-{
-  return
-    editor_ruler_get_regions_in_range (
-      EDITOR_RULER, rect->x, rect->x + rect->width,
-      regions);
-}
-#endif
 
 typedef struct ObjectOverlapInfo
 {
@@ -959,8 +976,6 @@ move_items_x (ArrangerWidget * self, const double ticks_diff)
     arranger_widget_get_selections (self);
   g_return_if_fail (sel);
 
-  /* queue a redraw for the selections at their
-   * current position before the move */
   EVENTS_PUSH_NOW (ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
 
   arranger_selections_add_ticks (sel, ticks_diff);
@@ -1397,7 +1412,7 @@ static void
 auto_scroll (ArrangerWidget * self, int x, int y)
 {
   /* figure out if we should scroll */
-  int scroll_h = 0, scroll_v = 0;
+  bool scroll_h = false, scroll_v = false;
   switch (self->action)
     {
     case UI_OVERLAY_ACTION_MOVING:
@@ -1406,8 +1421,8 @@ auto_scroll (ArrangerWidget * self, int x, int y)
     case UI_OVERLAY_ACTION_CREATING_MOVING:
     case UI_OVERLAY_ACTION_SELECTING:
     case UI_OVERLAY_ACTION_RAMPING:
-      scroll_h = 1;
-      scroll_v = 1;
+      scroll_h = true;
+      scroll_v = true;
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
     case UI_OVERLAY_ACTION_RESIZING_L:
@@ -1416,36 +1431,37 @@ auto_scroll (ArrangerWidget * self, int x, int y)
     case UI_OVERLAY_ACTION_STRETCHING_R:
     case UI_OVERLAY_ACTION_AUTOFILLING:
     case UI_OVERLAY_ACTION_AUDITIONING:
-      scroll_h = 1;
+      scroll_h = true;
       break;
     case UI_OVERLAY_ACTION_RESIZING_UP:
-      scroll_v = 1;
+      scroll_v = true;
       break;
     default:
       break;
     }
 
+  if (!arranger_widget_can_scroll_vertically (self))
+    {
+      scroll_v = false;
+    }
+
   if (!scroll_h && !scroll_v)
     return;
 
-  GtkScrolledWindow * scroll =
-    arranger_widget_get_scrolled_window (self);
-  g_return_if_fail (scroll);
+  EditorSettings * settings =
+    arranger_widget_get_editor_settings (self);
+  g_return_if_fail (settings);
   int h_scroll_speed = 20;
   int v_scroll_speed = 10;
   int border_distance = 5;
   int scroll_width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (scroll));
+    gtk_widget_get_allocated_width (GTK_WIDGET (self));
   int scroll_height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (scroll));
-  GtkAdjustment * hadj = gtk_scrolled_window_get_hadjustment (
-    GTK_SCROLLED_WINDOW (scroll));
-  GtkAdjustment * vadj = gtk_scrolled_window_get_vadjustment (
-    GTK_SCROLLED_WINDOW (scroll));
+    gtk_widget_get_allocated_height (GTK_WIDGET (self));
   int v_delta = 0;
   int h_delta = 0;
-  int adj_x = (int) gtk_adjustment_get_value (hadj);
-  int adj_y = (int) gtk_adjustment_get_value (vadj);
+  int adj_x = settings->scroll_start_x;
+  int adj_y = settings->scroll_start_y;
   if (y + border_distance >= adj_y + scroll_height)
     {
       v_delta = v_scroll_speed;
@@ -1462,16 +1478,14 @@ auto_scroll (ArrangerWidget * self, int x, int y)
     {
       h_delta = -h_scroll_speed;
     }
-  if (h_delta != 0 && scroll_h)
-    {
-      gtk_adjustment_set_value (
-        hadj, gtk_adjustment_get_value (hadj) + h_delta);
-    }
-  if (v_delta != 0 && scroll_v)
-    {
-      gtk_adjustment_set_value (
-        vadj, gtk_adjustment_get_value (vadj) + v_delta);
-    }
+
+  if (!scroll_h)
+    h_delta = 0;
+  if (!scroll_v)
+    v_delta = 0;
+
+  editor_settings_append_scroll (
+    settings, h_delta, v_delta, F_VALIDATE);
 
   return;
 }
@@ -2693,6 +2707,14 @@ drag_begin (
 {
   g_debug ("arranger drag begin starting...");
 
+  self->offset_x_from_scroll = 0;
+  self->offset_y_from_scroll = 0;
+
+  const EditorSettings settings =
+    arranger_widget_get_editor_setting_values (self);
+  start_x += settings.scroll_start_x;
+  start_y += settings.scroll_start_y;
+
   self->start_x = start_x;
   self->hover_x = start_x;
   arranger_widget_px_to_pos (
@@ -3172,6 +3194,9 @@ drag_update (
   gdouble          offset_y,
   ArrangerWidget * self)
 {
+  offset_x += self->offset_x_from_scroll;
+  offset_y += self->offset_y_from_scroll;
+
   if (
     !self->drag_update_started
     && !gtk_drag_check_threshold (
@@ -4713,9 +4738,15 @@ drag_end (
             btn == GDK_BUTTON_SECONDARY
             && self->action != UI_OVERLAY_ACTION_ERASING)
             {
+              const EditorSettings settings =
+                arranger_widget_get_editor_setting_values (
+                  self);
               show_context_menu (
-                self, self->start_x + offset_x,
-                self->start_y + offset_y);
+                self,
+                (self->start_x + offset_x)
+                  - settings.scroll_start_x,
+                (self->start_y + offset_y)
+                  - settings.scroll_start_y);
             }
         }
     }
@@ -4897,18 +4928,9 @@ arranger_widget_get_hit_arranger_object (
 
   g_ptr_array_unref (objs_arr);
 
-  return obj;
+  /*g_debug ("hit obj at %f %f: %p", x, y, obj);*/
 
-  /*switch (self->type)*/
-  /*{*/
-  /*case TYPE (TIMELINE):*/
-  /*return*/
-  /*get_hit_timeline_object (self, type, x, y);*/
-  /*break;*/
-  /*default:*/
-  /*break;*/
-  /*}*/
-  /*return NULL;*/
+  return obj;
 }
 
 /**
@@ -4960,88 +4982,6 @@ arranger_widget_get_selections (ArrangerWidget * self)
 }
 
 /**
- * Sets transient object and actual object
- * visibility for every ArrangerObject in the
- * ArrangerWidget based on the current action.
- */
-/*void*/
-/*arranger_widget_update_visibility (*/
-/*ArrangerWidget * self)*/
-/*{*/
-/*GList *children, *iter;*/
-/*ArrangerObjectWidget * aow;*/
-
-/*#define UPDATE_VISIBILITY(x) \*/
-/*children = \*/
-/*gtk_container_get_children ( \*/
-/*GTK_CONTAINER (x)); \*/
-/*aow = NULL; \*/
-/*for (iter = children; \*/
-/*iter != NULL; \*/
-/*iter = g_list_next (iter)) \*/
-/*{ \*/
-/*if (!Z_IS_ARRANGER_OBJECT_WIDGET ( \*/
-/*iter->data)) \*/
-/*continue; \*/
-/*\*/
-/*aow = \*/
-/*Z_ARRANGER_OBJECT_WIDGET (iter->data); \*/
-/*ARRANGER_OBJECT_WIDGET_GET_PRIVATE (aow); \*/
-/*g_warn_if_fail (ao_prv->arranger_object); \*/
-/*arranger_object_set_widget_visibility_and_state ( \*/
-/*ao_prv->arranger_object, 1); \*/
-/*} \*/
-/*g_list_free (children);*/
-
-/*UPDATE_VISIBILITY (self);*/
-
-/* if midi arranger, do the same for midi modifier
-   * arranger, and vice versa */
-/*if (Z_IS_MIDI_ARRANGER_WIDGET (self))*/
-/*{*/
-/*UPDATE_VISIBILITY (MW_MIDI_MODIFIER_ARRANGER);*/
-/*}*/
-/*else if (Z_IS_MIDI_MODIFIER_ARRANGER_WIDGET (self))*/
-/*{*/
-/*UPDATE_VISIBILITY (MW_MIDI_ARRANGER);*/
-/*}*/
-
-/*#undef UPDATE_VISIBILITY*/
-/*}*/
-
-/**
- * Gets the corresponding scrolled window.
- */
-GtkScrolledWindow *
-arranger_widget_get_scrolled_window (ArrangerWidget * self)
-{
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      if (self->is_pinned)
-        {
-          return MW_TIMELINE_PANEL->pinned_timeline_scroll;
-        }
-      else
-        {
-          return MW_TIMELINE_PANEL->timeline_scroll;
-        }
-    case TYPE (MIDI):
-      return MW_MIDI_EDITOR_SPACE->arranger_scroll;
-    case TYPE (MIDI_MODIFIER):
-      return MW_MIDI_EDITOR_SPACE->modifier_arranger_scroll;
-    case TYPE (AUDIO):
-      return MW_AUDIO_EDITOR_SPACE->arranger_scroll;
-    case TYPE (CHORD):
-      return MW_CHORD_EDITOR_SPACE->arranger_scroll;
-    case TYPE (AUTOMATION):
-      return MW_AUTOMATION_EDITOR_SPACE->arranger_scroll;
-    }
-
-  return NULL;
-}
-
-/**
  * Get all objects currently present in the
  * arranger.
  */
@@ -5077,18 +5017,11 @@ arranger_widget_get_visible_rect (
   ArrangerWidget * self,
   GdkRectangle *   rect)
 {
-  GtkScrolledWindow * scroll =
-    arranger_widget_get_scrolled_window (self);
-  GtkAdjustment * xadj =
-    gtk_scrolled_window_get_hadjustment (scroll);
-  rect->x = (int) gtk_adjustment_get_value (xadj);
-  GtkAdjustment * yadj =
-    gtk_scrolled_window_get_vadjustment (scroll);
-  rect->y = (int) gtk_adjustment_get_value (yadj);
-  rect->height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (scroll));
-  rect->width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (scroll));
+  gtk_widget_get_allocation (GTK_WIDGET (self), rect);
+  const EditorSettings settings =
+    arranger_widget_get_editor_setting_values (self);
+  rect->x = settings.scroll_start_x;
+  rect->y = settings.scroll_start_y;
 }
 
 bool
@@ -5109,31 +5042,6 @@ arranger_widget_is_playhead_visible (ArrangerWidget * self)
 }
 
 static gboolean
-update_hadj_value (gpointer user_data)
-{
-  ArrangerWidget * self = Z_ARRANGER_WIDGET (user_data);
-
-  GtkScrolledWindow * scroll =
-    arranger_widget_get_scrolled_window (self);
-  GtkAdjustment * adj =
-    gtk_scrolled_window_get_hadjustment (scroll);
-  double prev_adj_val = gtk_adjustment_get_value (adj);
-
-  if (!math_doubles_equal (self->new_hadj_val, prev_adj_val))
-    {
-      if (DEBUGGING)
-        {
-          g_debug ("setting hadj to %f", self->new_hadj_val);
-        }
-      gtk_adjustment_set_value (adj, self->new_hadj_val);
-
-      g_idle_add (update_hadj_value, self);
-    }
-
-  return G_SOURCE_REMOVE;
-}
-
-static gboolean
 on_scroll (
   GtkEventControllerScroll * scroll_controller,
   gdouble                    dx,
@@ -5145,7 +5053,9 @@ on_scroll (
   double x = self->hover_x;
   double y = self->hover_y;
 
-  g_debug ("scrolled to %f (d %f), %f (d %f)", x, dx, y, dy);
+  g_debug (
+    "scrolled to %.1f (d %d), %.1f (d %d)", x, (int) dx, y,
+    (int) dy);
 
   EVENTS_PUSH (ET_ARRANGER_SCROLLED, self);
 
@@ -5153,87 +5063,135 @@ on_scroll (
     gtk_event_controller_get_current_event_state (
       GTK_EVENT_CONTROLLER (scroll_controller));
 
-  if (!(modifier_type & GDK_CONTROL_MASK))
-    return false;
-
-  g_debug ("ctrl held");
-
-  /* if shift also pressed, handle vertical zoom */
-  if (modifier_type & GDK_SHIFT_MASK)
+  bool ctrl_held = modifier_type & GDK_CONTROL_MASK;
+  if (ctrl_held)
     {
-      g_debug ("shift held");
-      if (self->type == TYPE (MIDI))
+      /* if shift also pressed, handle vertical zoom */
+      if (modifier_type & GDK_SHIFT_MASK)
         {
-          midi_arranger_handle_vertical_zoom_scroll (
-            self, scroll_controller, dy);
+          if (self->type == TYPE (MIDI))
+            {
+              midi_arranger_handle_vertical_zoom_scroll (
+                self, scroll_controller, dy);
+            }
+          else if (self->type == TYPE (TIMELINE))
+            {
+              tracklist_widget_handle_vertical_zoom_scroll (
+                MW_TRACKLIST, scroll_controller, dy);
+            }
+
+          /* TODO also update hover y since we're using it
+           * here */
+          /*self->hover_y = new_y;*/
         }
-      else if (self->type == TYPE (TIMELINE))
+      /* else if just control pressed handle horizontal
+       * zoom */
+      else
         {
-          tracklist_widget_handle_vertical_zoom_scroll (
-            MW_TRACKLIST, scroll_controller, dy);
+          RulerWidget * ruler =
+            arranger_widget_get_ruler (self);
+
+          /* get current adjustment so we can get the
+           * difference from the cursor */
+          EditorSettings * settings =
+            arranger_widget_get_editor_settings (self);
+
+          /* get position of cursor */
+          Position cursor_pos;
+          arranger_widget_px_to_pos (
+            self, x, &cursor_pos, F_PADDING);
+          /*position_print (&cursor_pos);*/
+
+          /* get px diff so we can calculate the new
+           * adjustment later */
+          double diff = x - (double) settings->scroll_start_x;
+
+          double scroll_multiplier =
+            (dy > 0) ? (1.0 / 1.3) : 1.3;
+          ruler_widget_set_zoom_level (
+            ruler,
+            ruler_widget_get_zoom_level (ruler)
+              * scroll_multiplier);
+
+          int new_x = arranger_widget_pos_to_px (
+            self, &cursor_pos, F_PADDING);
+
+          editor_settings_set_scroll_start_x (
+            settings, new_x - (int) diff, F_VALIDATE);
+
+          /* refresh relevant widgets */
+          if (self->type == TYPE (TIMELINE))
+            {
+              timeline_minimap_widget_refresh (
+                MW_TIMELINE_MINIMAP);
+            }
+
+          /* also update hover x since we're using it here */
+          self->hover_x = new_x;
         }
     }
-  /* else if just control pressed handle horizontal
-   * zooom */
-  else
+  else /* else if not ctrl held */
     {
-      Position            cursor_pos;
-      GtkScrolledWindow * scroll =
-        arranger_widget_get_scrolled_window (self);
-      RulerWidget * ruler = arranger_widget_get_ruler (self);
-
-      /* get current adjustment so we can get the
-       * difference from the cursor */
-      GtkAdjustment * adj =
-        gtk_scrolled_window_get_hadjustment (scroll);
-      double adj_val = gtk_adjustment_get_value (adj);
-
-      /* get position of cursor */
-      arranger_widget_px_to_pos (
-        self, x, &cursor_pos, F_PADDING);
-
-#if 0
-      position_print (&cursor_pos);
-#endif
-
-      /* get px diff so we can calculate the new
-       * adjustment later */
-      double diff = x - adj_val;
-
-      /* scroll down, zoom out */
-      if (dy > 0)
+      /* scroll normally */
+      const int scroll_amt = RW_SCROLL_SPEED;
+      int       scroll_x = 0;
+      int       scroll_y = 0;
+      if (modifier_type & GDK_SHIFT_MASK)
         {
-          ruler_widget_set_zoom_level (
-            ruler, ruler_widget_get_zoom_level (ruler) / 1.3);
+          scroll_x = (int) dy;
+          scroll_y = 0;
         }
-      else /* scroll up, zoom in */
+      else
         {
-          ruler_widget_set_zoom_level (
-            ruler, ruler_widget_get_zoom_level (ruler) * 1.3);
+          scroll_x = 0;
+
+          /* if not midi modifier and not pinned timeline,
+           * handle the scroll, otherwise ignore */
+          if (
+            self->type != TYPE (MIDI_MODIFIER)
+            && !(
+              self->type == TYPE (TIMELINE) && self->is_pinned))
+            {
+              scroll_y = (int) dy;
+            }
         }
+      EditorSettings * settings =
+        arranger_widget_get_editor_settings (self);
+      scroll_x = scroll_x * scroll_amt;
+      scroll_y = scroll_y * scroll_amt;
+      int scroll_x_before = settings->scroll_start_x;
+      int scroll_y_before = settings->scroll_start_y;
+      editor_settings_append_scroll (
+        settings, scroll_x, scroll_y, F_VALIDATE);
 
-      int new_x = arranger_widget_pos_to_px (
-        self, &cursor_pos, F_PADDING);
+      /* also adjust the drag offsets (in case we are currently
+       * dragging */
+      scroll_x = settings->scroll_start_x - scroll_x_before;
+      scroll_y = settings->scroll_start_y - scroll_y_before;
+      self->offset_x_from_scroll += scroll_x;
+      self->offset_y_from_scroll += scroll_y;
 
-#if 0
-      g_debug (
-        "x %f adj val %f diff %f new x %d", x, adj_val, diff,
-        new_x);
-#endif
-
-      /* refresh relevant widgets */
-      if (self->type == TYPE (TIMELINE))
-        timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
-
-      /* set adjustment value at the same offset as before */
-      double new_hadj_val = new_x - diff;
-      self->new_hadj_val = new_hadj_val;
-      update_hadj_value (self);
-
-      /* also add an idle call because the value seems to get
-       * changed after being set here (likely because the
-       * ruler size changes) */
-      g_idle_add (update_hadj_value, self);
+      /* auto-scroll linked widgets */
+      if (scroll_y != 0)
+        {
+          if (self->type == TYPE (TIMELINE) && !self->is_pinned)
+            {
+              tracklist_widget_set_unpinned_scroll_start_y (
+                MW_TRACKLIST, settings->scroll_start_y);
+            }
+          else if (self->type == TYPE (MIDI))
+            {
+              midi_editor_space_widget_set_piano_keys_scroll_start_y (
+                MW_MIDI_EDITOR_SPACE,
+                settings->scroll_start_y);
+            }
+          else if (self->type == TYPE (CHORD))
+            {
+              chord_editor_space_widget_set_chord_keys_scroll_start_y (
+                MW_CHORD_EDITOR_SPACE,
+                settings->scroll_start_y);
+            }
+        }
     }
 
   return true;
@@ -5272,8 +5230,14 @@ on_motion (
   gdouble                    y,
   ArrangerWidget *           self)
 {
-  self->hover_x = MAX (x, 0.0);
-  self->hover_y = MAX (y, 0.0);
+  const EditorSettings settings =
+    arranger_widget_get_editor_setting_values (self);
+  x += settings.scroll_start_x;
+  y += settings.scroll_start_y;
+  x = MAX (x, 0.0);
+  y = MAX (y, 0.0);
+  self->hover_x = x;
+  self->hover_y = y;
 
   GdkModifierType state =
     gtk_event_controller_get_current_event_state (
@@ -6173,27 +6137,19 @@ arranger_widget_scroll_until_obj (
   int              horizontal,
   int              up,
   int              left,
-  double           padding)
+  int              padding)
 {
-  GtkScrolledWindow * scroll =
-    arranger_widget_get_scrolled_window (self);
-  int scroll_width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (scroll));
-  int scroll_height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (scroll));
-  GtkAdjustment * hadj = gtk_scrolled_window_get_hadjustment (
-    GTK_SCROLLED_WINDOW (scroll));
-  GtkAdjustment * vadj = gtk_scrolled_window_get_vadjustment (
-    GTK_SCROLLED_WINDOW (scroll));
-  double adj_x = gtk_adjustment_get_value (hadj);
-  double adj_y = gtk_adjustment_get_value (vadj);
+  GtkAllocation allocation;
+  gtk_widget_get_allocation (GTK_WIDGET (self), &allocation);
+  EditorSettings * settings =
+    arranger_widget_get_editor_settings (self);
 
   if (horizontal)
     {
-      double start_px = (double) arranger_widget_pos_to_px (
-        self, &obj->pos, 1);
-      double end_px = (double) arranger_widget_pos_to_px (
-        self, &obj->end_pos, 1);
+      int start_px =
+        arranger_widget_pos_to_px (self, &obj->pos, 1);
+      int end_px =
+        arranger_widget_pos_to_px (self, &obj->end_pos, 1);
 
       /* adjust px for objects with non-global
        * positions */
@@ -6202,48 +6158,49 @@ arranger_widget_scroll_until_obj (
           ArrangerObject * r_obj = (ArrangerObject *)
             clip_editor_get_region (CLIP_EDITOR);
           g_return_if_fail (r_obj);
-          double tmp_px = (double) arranger_widget_pos_to_px (
-            self, &r_obj->pos, 1);
+          int tmp_px =
+            arranger_widget_pos_to_px (self, &r_obj->pos, 1);
           start_px += tmp_px;
           end_px += tmp_px;
         }
 
       if (
-        start_px <= adj_x
-        || end_px >= adj_x + (double) scroll_width)
+        start_px <= settings->scroll_start_x
+        || end_px >= settings->scroll_start_x + allocation.width)
         {
           if (left)
             {
-              gtk_adjustment_set_value (
-                hadj, start_px - padding);
+              editor_settings_set_scroll_start_x (
+                settings, start_px - padding, F_NO_VALIDATE);
             }
           else
             {
-              double tmp =
-                (end_px + padding) - (double) scroll_width;
-              gtk_adjustment_set_value (hadj, tmp);
+              int tmp = (end_px + padding) - allocation.width;
+              editor_settings_set_scroll_start_x (
+                settings, tmp, F_NO_VALIDATE);
             }
         }
     }
   else
     {
       arranger_object_set_full_rectangle (obj, self);
-      double start_px = obj->full_rect.y;
-      double end_px = obj->full_rect.y + obj->full_rect.height;
+      int start_px = obj->full_rect.y;
+      int end_px = obj->full_rect.y + obj->full_rect.height;
       if (
-        start_px <= adj_y
-        || end_px >= adj_y + (double) scroll_height)
+        start_px <= settings->scroll_start_y
+        || end_px
+             >= settings->scroll_start_y + allocation.height)
         {
           if (up)
             {
-              gtk_adjustment_set_value (
-                vadj, start_px - padding);
+              editor_settings_set_scroll_start_y (
+                settings, start_px - padding, F_NO_VALIDATE);
             }
           else
             {
-              double tmp =
-                (end_px + padding) - (double) scroll_height;
-              gtk_adjustment_set_value (vadj, tmp);
+              int tmp = (end_px + padding) - allocation.height;
+              editor_settings_set_scroll_start_y (
+                settings, tmp, F_NO_VALIDATE);
             }
         }
     }
@@ -6335,15 +6292,13 @@ arranger_widget_handle_playhead_auto_scroll (
   int buffer = 5;
   int playhead_x = arranger_widget_get_playhead_px (self);
 
-  GtkScrolledWindow * scroll =
-    arranger_widget_get_scrolled_window (self);
-  GtkAdjustment * adj =
-    gtk_scrolled_window_get_hadjustment (scroll);
+  EditorSettings * settings =
+    arranger_widget_get_editor_settings (self);
   if (follow)
     {
       /* scroll */
-      gtk_adjustment_set_value (
-        adj, playhead_x - rect.width / 2);
+      editor_settings_set_scroll_start_x (
+        settings, playhead_x - rect.width / 2, true);
       g_debug ("autoscrolling to follow playhead");
     }
   else if (scroll_edges)
@@ -6356,12 +6311,8 @@ arranger_widget_handle_playhead_auto_scroll (
         playhead_x > ((rect.x + rect.width) - buffer)
         || playhead_x < rect.x + buffer)
         {
-          gtk_adjustment_set_value (
-            adj,
-            CLAMP (
-              (double) playhead_x - buffer,
-              gtk_adjustment_get_lower (adj),
-              gtk_adjustment_get_upper (adj)));
+          editor_settings_set_scroll_start_x (
+            settings, playhead_x - buffer, true);
           /*g_debug ("autoscrolling at playhead edges");*/
         }
     }
@@ -6700,4 +6651,7 @@ arranger_widget_init (ArrangerWidget * self)
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (self->right_click),
     GDK_BUTTON_SECONDARY);
+
+  gtk_widget_set_overflow (
+    GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 }

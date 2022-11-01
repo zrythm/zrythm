@@ -1559,8 +1559,10 @@ track_widget_get_local_y (
 {
   double y_local;
   gtk_widget_translate_coordinates (
-    GTK_WIDGET (arranger), GTK_WIDGET (self), 0,
-    (int) arranger_y, NULL, &y_local);
+    arranger->is_pinned
+      ? GTK_WIDGET (arranger)
+      : GTK_WIDGET (MW_TRACKLIST->unpinned_box),
+    GTK_WIDGET (self), 0, (int) arranger_y, NULL, &y_local);
 
   return (int) y_local;
 }

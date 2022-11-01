@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * @file
@@ -69,6 +53,28 @@ static const cyaml_schema_value_t editor_settings_schema = {
 
 void
 editor_settings_init (EditorSettings * self);
+
+void
+editor_settings_set_scroll_start_x (
+  EditorSettings * self,
+  int              x,
+  bool             validate);
+
+void
+editor_settings_set_scroll_start_y (
+  EditorSettings * self,
+  int              y,
+  bool             validate);
+
+/**
+ * Appends the given deltas to the scroll x/y values.
+ */
+void
+editor_settings_append_scroll (
+  EditorSettings * self,
+  int              dx,
+  int              dy,
+  bool             validate);
 
 /**
  * @}

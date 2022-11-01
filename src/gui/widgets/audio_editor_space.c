@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/channel.h"
@@ -28,25 +28,6 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 /**
- * Links scroll windows after all widgets have been
- * initialized.
- */
-static void
-link_scrolls (AudioEditorSpaceWidget * self)
-{
-  /* link ruler h scroll to arranger h scroll */
-  if (MW_CLIP_EDITOR_INNER->ruler_scroll)
-    {
-      g_return_if_fail (
-        GTK_IS_WIDGET (MW_CLIP_EDITOR_INNER->ruler_scroll));
-      gtk_scrolled_window_set_hadjustment (
-        MW_CLIP_EDITOR_INNER->ruler_scroll,
-        gtk_scrolled_window_get_hadjustment (
-          GTK_SCROLLED_WINDOW (self->arranger_scroll)));
-    }
-}
-
-/**
  * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
  */
 void
@@ -63,7 +44,7 @@ void
 audio_editor_space_widget_refresh (
   AudioEditorSpaceWidget * self)
 {
-  link_scrolls (self);
+  /*link_scrolls (self);*/
 }
 
 void
@@ -84,6 +65,9 @@ audio_editor_space_widget_init (AudioEditorSpaceWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  gtk_widget_set_hexpand (GTK_WIDGET (self->arranger), true);
+  gtk_widget_set_vexpand (GTK_WIDGET (self->arranger), true);
+
   self->arranger->type = ARRANGER_WIDGET_TYPE_AUDIO;
 }
 
@@ -99,8 +83,6 @@ audio_editor_space_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, AudioEditorSpaceWidget, x)
 
-  BIND_CHILD (arranger_scroll);
   BIND_CHILD (left_box);
-  BIND_CHILD (arranger_viewport);
   BIND_CHILD (arranger);
 }

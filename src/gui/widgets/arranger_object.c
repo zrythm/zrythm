@@ -29,6 +29,7 @@
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/track.h"
+#include "gui/widgets/tracklist.h"
 #include "gui/widgets/velocity.h"
 #include "project.h"
 #include "utils/cairo.h"
@@ -558,7 +559,10 @@ arranger_object_set_full_rectangle (
           {
             gtk_widget_translate_coordinates (
               (GtkWidget *) (track->widget),
-              (GtkWidget *) (arranger), 0, 0, &wx, &wy);
+              arranger->is_pinned
+                ? (GtkWidget *) arranger
+                : (GtkWidget *) MW_TRACKLIST->unpinned_box,
+              0, 0, &wx, &wy);
             /* for some reason it returns a few
              * negatives at first */
             if (wy < 0)
@@ -586,17 +590,6 @@ arranger_object_set_full_rectangle (
             g_return_if_fail (at);
             if (!at->created || !track->automation_visible)
               return;
-
-            if (track->widget)
-              {
-                gtk_widget_translate_coordinates (
-                  (GtkWidget *) (track->widget),
-                  (GtkWidget *) (arranger), 0, 0, &wx, &wy);
-                /* for some reason it returns a few
-                 * negatives at first */
-                if (wy < 0)
-                  wy = 0;
-              }
 
             self->full_rect.y = (int) wy + at->y;
             self->full_rect.height = (int) at->height;

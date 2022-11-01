@@ -17,13 +17,21 @@
 #include "audio/router.h"
 #include "audio/stretcher.h"
 #include "audio/track.h"
+#include "gui/widgets/audio_arranger.h"
+#include "gui/widgets/audio_editor_space.h"
+#include "gui/widgets/automation_arranger.h"
+#include "gui/widgets/automation_editor_space.h"
 #include "gui/widgets/automation_region.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
+#include "gui/widgets/chord_arranger.h"
+#include "gui/widgets/chord_editor_space.h"
 #include "gui/widgets/chord_region.h"
 #include "gui/widgets/clip_editor.h"
+#include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_arranger.h"
+#include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/timeline_arranger.h"
@@ -36,6 +44,7 @@
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
+#include "zrythm_app.h"
 
 #include <glib/gi18n.h>
 
@@ -1129,6 +1138,34 @@ region_get_arranger_selections (ZRegion * self)
     }
 
   return sel;
+}
+
+/**
+ * Returns the arranger for editing the region's children.
+ */
+ArrangerWidget *
+region_get_arranger_for_children (ZRegion * self)
+{
+  ArrangerWidget * arranger = NULL;
+  switch (self->id.type)
+    {
+    case REGION_TYPE_MIDI:
+      arranger = (ArrangerWidget *) MW_MIDI_ARRANGER;
+      break;
+    case REGION_TYPE_AUTOMATION:
+      arranger = (ArrangerWidget *) MW_AUTOMATION_ARRANGER;
+      break;
+    case REGION_TYPE_CHORD:
+      arranger = (ArrangerWidget *) MW_CHORD_ARRANGER;
+      break;
+    case REGION_TYPE_AUDIO:
+      arranger = (ArrangerWidget *) MW_AUDIO_ARRANGER;
+      break;
+    default:
+      break;
+    }
+
+  return arranger;
 }
 
 /**

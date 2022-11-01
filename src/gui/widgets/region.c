@@ -561,6 +561,276 @@ draw_chord_region (
 }
 
 /**
+ * @return Whether to break.
+ */
+OPTIMIZE_O3
+static inline bool
+handle_loop (
+  ZRegion *         self,
+  GtkSnapshot *     snapshot,
+  GdkRectangle *    full_rect,
+  GdkRectangle *    draw_rect,
+  int               cur_loop,
+  AutomationPoint * ap,
+  AutomationPoint * next_ap,
+  double            ticks_in_region)
+{
+  ArrangerObject * obj = (ArrangerObject *) self;
+  ArrangerObject * ap_obj = (ArrangerObject *) ap;
+  ArrangerObject * next_ap_obj = (ArrangerObject *) next_ap;
+
+  double loop_end_ticks = obj->loop_end_pos.ticks;
+  double loop_ticks =
+    arranger_object_get_loop_length_in_ticks (obj);
+  double clip_start_ticks = obj->clip_start_pos.ticks;
+
+  double ap_start_ticks = ap_obj->pos.ticks;
+  double ap_end_ticks = ap_start_ticks;
+  if (next_ap)
+    {
+      ap_end_ticks = next_ap_obj->pos.ticks;
+    }
+
+  /* if ap started before loop start
+   * only draw it once */
+  if (
+    position_is_before (&ap_obj->pos, &obj->loop_start_pos)
+    && cur_loop != 0)
+    return true;
+
+  /* calculate draw endpoints */
+  double tmp_start_ticks =
+    ap_start_ticks + loop_ticks * (double) cur_loop;
+
+  /* if should be clipped */
+  double tmp_end_ticks;
+  if (
+    next_ap
+    && position_is_after_or_equal (
+      &next_ap_obj->pos, &obj->loop_end_pos))
+    tmp_end_ticks =
+      loop_end_ticks + loop_ticks * (double) cur_loop;
+  else
+    tmp_end_ticks =
+      ap_end_ticks + loop_ticks * (double) cur_loop;
+
+  /* adjust for clip start */
+  tmp_start_ticks -= clip_start_ticks;
+  tmp_end_ticks -= clip_start_ticks;
+
+  /* note: these are local to the
+   * region */
+  double x_start, x_end;
+  x_start = tmp_start_ticks / ticks_in_region;
+  x_end = tmp_end_ticks / ticks_in_region;
+
+  /* get ratio (0.0 - 1.0) on y where
+   * ap is
+   * note: these are local to the region */
+  double y_start, y_end;
+  y_start = 1.0 - (double) ap->normalized_val;
+  if (next_ap)
+    {
+      y_end = 1.0 - (double) next_ap->normalized_val;
+    }
+  else
+    {
+      y_end = y_start;
+    }
+
+  double x_start_real = x_start * full_rect->width;
+  /*double x_end_real =*/
+  /*x_end * width;*/
+  double y_start_real = y_start * full_rect->height;
+  double y_end_real = y_end * full_rect->height;
+
+  GdkRGBA color = object_fill_color;
+
+  /* draw ap */
+  if (x_start_real > 0.0 && x_start_real < full_rect->width)
+    {
+      int padding = 1;
+      gtk_snapshot_append_color (
+        snapshot, &color,
+        &GRAPHENE_RECT_INIT (
+          (float) (x_start_real - padding),
+          (float) (y_start_real - padding),
+          2.f * (float) padding, 2.f * (float) padding));
+    }
+
+  /* draw curve */
+  if (next_ap)
+    {
+      /* use cairo if normal detail or higher */
+      bool     use_cairo = false;
+      UiDetail detail = ui_get_detail_level ();
+      if (detail < UI_DETAIL_LOW)
+        {
+          use_cairo = true;
+        }
+
+      const int line_width = 2;
+
+      double ac_width =
+        fabs (x_end - x_start) * full_rect->width;
+
+      ArrangerWidget * arranger =
+        arranger_object_get_arranger (obj);
+      EditorSettings settings =
+        arranger_widget_get_editor_setting_values (arranger);
+      GdkRectangle vis_rect = Z_GDK_RECTANGLE_INIT (
+        settings.scroll_start_x, 0,
+        gtk_widget_get_allocated_width (GTK_WIDGET (arranger)),
+        full_rect->height);
+      vis_rect.x -= full_rect->x;
+      vis_rect.y -= full_rect->y;
+
+      GskRenderNode * cr_node = NULL;
+      cairo_t *       cr = NULL;
+      GdkRectangle ap_loop_part_rect = Z_GDK_RECTANGLE_INIT (
+        (int) MAX (x_start_real, 0.0), 0,
+        /* this seems wrong to add x */
+        /*(int) (x_start_real + ac_width + 0.1),*/
+        (int) (ac_width + 0.1), full_rect->height);
+      /* don't use cairo if it will result in a too large
+       * surface */
+      if (ap_loop_part_rect.width > 16000)
+        {
+          use_cairo = false;
+        }
+
+      if (use_cairo)
+        {
+          if (automation_point_settings_changed (
+                ap, &ap_loop_part_rect, true))
+            {
+              cr_node = gsk_cairo_node_new (&GRAPHENE_RECT_INIT (
+                0.f, 0.f, (float) ap_loop_part_rect.width,
+                (float) ap_loop_part_rect.height));
+
+              object_free_w_func_and_null (
+                gsk_render_node_unref, ap->cairo_node_tl);
+            }
+          else
+            {
+              cr_node = ap->cairo_node_tl;
+              gtk_snapshot_save (snapshot);
+              gtk_snapshot_translate (
+                snapshot,
+                &GRAPHENE_POINT_INIT (
+                  (float) ap_loop_part_rect.x,
+                  (float) ap_loop_part_rect.y));
+              gtk_snapshot_append_node (snapshot, cr_node);
+              gtk_snapshot_restore (snapshot);
+              return false;
+            }
+
+          cr = gsk_cairo_node_get_draw_context (cr_node);
+          cairo_save (cr);
+          cairo_translate (
+            cr, -(ap_loop_part_rect.x),
+            -(ap_loop_part_rect.y));
+          gdk_cairo_set_source_rgba (cr, &color);
+          cairo_set_line_width (cr, (double) line_width);
+        } /* endif use_cairo */
+
+      double new_x, ap_y, new_y;
+      double ac_height =
+        fabs (y_end - y_start) * full_rect->height;
+      double step = use_cairo ? 0.1 : 1.0;
+      double start_from =
+        use_cairo
+          ? ap_loop_part_rect.x
+          : MAX (vis_rect.x, ap_loop_part_rect.x);
+      start_from = MAX (start_from, 0.0);
+      double until =
+        ap_loop_part_rect.x + ap_loop_part_rect.width;
+      if (!use_cairo)
+        until = MIN (vis_rect.x + vis_rect.width, until);
+      for (double k = start_from; k < until + step; k += step)
+        {
+          if (math_doubles_equal (ac_width, 0.0))
+            {
+              ap_y = 0.5;
+            }
+          else
+            {
+              ap_y =
+                /* in pixels, higher values
+                 * are lower */
+                1.0
+                - automation_point_get_normalized_value_in_curve (
+                  ap,
+                  CLAMP (
+                    (k - x_start_real) / ac_width, 0.0, 1.0));
+            }
+          ap_y *= ac_height;
+
+          new_x = k;
+          if (y_start > y_end)
+            new_y = ap_y + y_end_real;
+          else
+            new_y = ap_y + y_start_real;
+
+          if (new_x >= full_rect->width)
+            return true;
+
+          if (math_doubles_equal (k, 0.0))
+            {
+              if (use_cairo)
+                {
+                  cairo_move_to (cr, new_x, new_y);
+                }
+              else
+                {
+                  gtk_snapshot_append_color (
+                    snapshot, &color,
+                    &GRAPHENE_RECT_INIT (
+                      (float) new_x, (float) new_y, 1,
+                      line_width));
+                }
+            }
+
+          if (use_cairo)
+            {
+              cairo_line_to (cr, new_x, new_y);
+            }
+          else
+            {
+              gtk_snapshot_append_color (
+                snapshot, &color,
+                &GRAPHENE_RECT_INIT (
+                  (float) new_x, (float) new_y, 1, line_width));
+            }
+        } /* end foreach draw step */
+
+      if (use_cairo)
+        {
+          cairo_stroke (cr);
+          cairo_destroy (cr);
+
+          gtk_snapshot_save (snapshot);
+          gtk_snapshot_translate (
+            snapshot,
+            &GRAPHENE_POINT_INIT (
+              (float) ap_loop_part_rect.x - 1.f,
+              (float) ap_loop_part_rect.y - 1.f));
+          gtk_snapshot_append_node (snapshot, cr_node);
+          gtk_snapshot_restore (snapshot);
+
+          ap->last_settings_tl.fvalue = ap->fvalue;
+          ap->last_settings_tl.curve_opts = ap->curve_opts;
+          ap->last_settings_tl.draw_rect = ap_loop_part_rect;
+          ap->cairo_node_tl = cr_node;
+
+        } /* endif use_cairo */
+
+    } /* endif have next ap */
+
+  return false;
+}
+
+/**
  * @param rect Arranger rectangle.
  */
 static void
@@ -572,262 +842,31 @@ draw_automation_region (
 {
   ArrangerObject * obj = (ArrangerObject *) self;
 
-  GdkRGBA color = object_fill_color;
-
-  UiDetail detail = ui_get_detail_level ();
-
-  /* use cairo if normal detail or higher */
-  bool use_cairo = false;
-  if (detail < UI_DETAIL_LOW)
-    {
-      use_cairo = true;
-    }
-
   int    num_loops = arranger_object_get_num_loops (obj, 1);
   double ticks_in_region =
     arranger_object_get_length_in_ticks (obj);
-  double x_start, y_start, x_end, y_end;
-
-  int full_width = full_rect->width;
-  int full_height = full_rect->height;
 
   /* draw automation */
-  double loop_end_ticks = obj->loop_end_pos.ticks;
-  double loop_ticks =
-    arranger_object_get_loop_length_in_ticks (obj);
-  double clip_start_ticks = obj->clip_start_pos.ticks;
-  AutomationPoint *ap, *next_ap;
   for (int i = 0; i < self->num_aps; i++)
     {
-      ap = self->aps[i];
-      next_ap =
+      AutomationPoint * ap = self->aps[i];
+      ArrangerObject *  ap_obj = (ArrangerObject *) ap;
+      AutomationPoint * next_ap =
         automation_region_get_next_ap (self, ap, true, true);
-      ArrangerObject * ap_obj = (ArrangerObject *) ap;
-      ArrangerObject * next_ap_obj =
-        (ArrangerObject *) next_ap;
-
-      double ap_start_ticks = ap_obj->pos.ticks;
-      double ap_end_ticks = ap_start_ticks;
-      if (next_ap)
-        {
-          ap_end_ticks = next_ap_obj->pos.ticks;
-        }
-      double tmp_start_ticks, tmp_end_ticks;
 
       /* if before loop end */
       if (position_is_before (&ap_obj->pos, &obj->loop_end_pos))
         {
           for (int j = 0; j < num_loops; j++)
             {
-              /* if ap started before loop start
-               * only draw it once */
-              if (
-                position_is_before (
-                  &ap_obj->pos, &obj->loop_start_pos)
-                && j != 0)
+              bool need_break = handle_loop (
+                self, snapshot, full_rect, draw_rect, j, ap,
+                next_ap, ticks_in_region);
+              if (need_break)
                 break;
-
-              /* calculate draw endpoints */
-              tmp_start_ticks =
-                ap_start_ticks + loop_ticks * (double) j;
-
-              /* if should be clipped */
-              if (
-                next_ap
-                && position_is_after_or_equal (
-                  &next_ap_obj->pos, &obj->loop_end_pos))
-                tmp_end_ticks =
-                  loop_end_ticks + loop_ticks * (double) j;
-              else
-                tmp_end_ticks =
-                  ap_end_ticks + loop_ticks * (double) j;
-
-              /* adjust for clip start */
-              tmp_start_ticks -= clip_start_ticks;
-              tmp_end_ticks -= clip_start_ticks;
-
-              /* note: these are local to the
-               * region */
-              x_start = tmp_start_ticks / ticks_in_region;
-              x_end = tmp_end_ticks / ticks_in_region;
-
-              /* get ratio (0.0 - 1.0) on y where
-               * ap is
-               * note: these are local to the region */
-              y_start = 1.0 - (double) ap->normalized_val;
-              if (next_ap)
-                {
-                  y_end =
-                    1.0 - (double) next_ap->normalized_val;
-                }
-              else
-                {
-                  y_end = y_start;
-                }
-
-              double x_start_real = x_start * full_width;
-              /*double x_end_real =*/
-              /*x_end * width;*/
-              double y_start_real = y_start * full_height;
-              double y_end_real = y_end * full_height;
-
-              /* draw ap */
-              if (x_start_real > 0.0 && x_start_real < full_width)
-                {
-                  int padding = 1;
-                  gtk_snapshot_append_color (
-                    snapshot, &color,
-                    &GRAPHENE_RECT_INIT (
-                      (float) (x_start_real - padding),
-                      (float) (y_start_real - padding),
-                      2.f * (float) padding,
-                      2.f * (float) padding));
-                }
-
-              /* draw curve */
-              if (next_ap)
-                {
-                  double ac_width = fabs (x_end - x_start);
-                  ac_width *= full_width;
-
-                  GskRenderNode * cr_node = NULL;
-                  cairo_t *       cr = NULL;
-                  GdkRectangle    ap_draw_rect;
-                  if (use_cairo)
-                    {
-                      ap_draw_rect = Z_GDK_RECTANGLE_INIT (
-                        (int) MAX (x_start_real, 0.0), 0,
-                        (int) (x_start_real + ac_width + 0.1),
-                        full_height);
-                      if (automation_point_settings_changed (
-                            ap, &ap_draw_rect, true))
-                        {
-                          cr_node = gsk_cairo_node_new (
-                            &GRAPHENE_RECT_INIT (
-                              0.f, 0.f,
-                              (float) ap_draw_rect.width,
-                              (float) ap_draw_rect.height));
-
-                          object_free_w_func_and_null (
-                            gsk_render_node_unref,
-                            ap->cairo_node_tl);
-                        }
-                      else
-                        {
-                          cr_node = ap->cairo_node_tl;
-                          gtk_snapshot_save (snapshot);
-                          gtk_snapshot_translate (
-                            snapshot,
-                            &GRAPHENE_POINT_INIT (
-                              (float) ap_draw_rect.x,
-                              (float) ap_draw_rect.y));
-                          gtk_snapshot_append_node (
-                            snapshot, cr_node);
-                          gtk_snapshot_restore (snapshot);
-                          continue;
-                        }
-
-                      cr = gsk_cairo_node_get_draw_context (
-                        cr_node);
-                      cairo_save (cr);
-                      cairo_translate (
-                        cr, -(ap_draw_rect.x),
-                        -(ap_draw_rect.y));
-                      gdk_cairo_set_source_rgba (cr, &color);
-                      cairo_set_line_width (cr, 2.0);
-                    }
-
-                  double new_x, ap_y, new_y;
-                  double ac_height = fabs (y_end - y_start);
-                  ac_height *= full_height;
-                  for (double k = MAX (x_start_real, 0.0);
-                       k < (x_start_real) + ac_width + 0.1;
-                       k += 0.1)
-                    {
-                      if (math_doubles_equal (ac_width, 0.0))
-                        {
-                          ap_y = 0.5;
-                        }
-                      else
-                        {
-                          ap_y =
-                            /* in pixels, higher values
-                             * are lower */
-                            1.0
-                            - automation_point_get_normalized_value_in_curve (
-                              ap,
-                              CLAMP (
-                                (k - x_start_real) / ac_width,
-                                0.0, 1.0));
-                        }
-                      ap_y *= ac_height;
-
-                      new_x = k;
-                      if (y_start > y_end)
-                        new_y = ap_y + y_end_real;
-                      else
-                        new_y = ap_y + y_start_real;
-
-                      if (new_x >= full_width)
-                        break;
-
-                      if (math_doubles_equal (k, 0.0))
-                        {
-                          if (use_cairo)
-                            {
-                              cairo_move_to (cr, new_x, new_y);
-                            }
-                          else
-                            {
-                              gtk_snapshot_append_color (
-                                snapshot, &color,
-                                &GRAPHENE_RECT_INIT (
-                                  (float) new_x,
-                                  (float) new_y, 1, 1));
-                            }
-                        }
-
-                      if (use_cairo)
-                        {
-                          cairo_line_to (cr, new_x, new_y);
-                        }
-                      else
-                        {
-                          gtk_snapshot_append_color (
-                            snapshot, &color,
-                            &GRAPHENE_RECT_INIT (
-                              (float) new_x, (float) new_y, 1,
-                              1));
-                        }
-                    }
-
-                  if (use_cairo)
-                    {
-                      cairo_stroke (cr);
-                      cairo_destroy (cr);
-
-                      gtk_snapshot_save (snapshot);
-                      gtk_snapshot_translate (
-                        snapshot,
-                        &GRAPHENE_POINT_INIT (
-                          (float) ap_draw_rect.x - 1.f,
-                          (float) ap_draw_rect.y - 1.f));
-                      gtk_snapshot_append_node (
-                        snapshot, cr_node);
-                      gtk_snapshot_restore (snapshot);
-
-                      ap->last_settings_tl.fvalue = ap->fvalue;
-                      ap->last_settings_tl.curve_opts =
-                        ap->curve_opts;
-                      ap->last_settings_tl.draw_rect =
-                        ap_draw_rect;
-                      ap->cairo_node_tl = cr_node;
-                    }
-
-                } /* endif have next ap */
-
             } /* end foreach loop */
-        }
+
+        } /* endif before loop end */
     }
 }
 

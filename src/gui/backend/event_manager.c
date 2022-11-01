@@ -715,9 +715,9 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case ET_RULER_SIZE_CHANGED:
       {
+#if 0
         RulerWidget * ruler = Z_RULER_WIDGET (ev->arg);
-        gtk_widget_set_size_request (
-          GTK_WIDGET (ruler), (int) ruler->total_px, -1);
+#endif
       }
       break;
     case ET_CLIP_MARKER_POS_CHANGED:

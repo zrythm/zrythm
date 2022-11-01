@@ -17,7 +17,9 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/math.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
@@ -29,32 +31,6 @@ G_DEFINE_TYPE (
   GTK_TYPE_BOX)
 
 #define DEFAULT_PX_PER_KEY 12
-
-/**
- * Links scroll windows after all widgets have been
- * initialized.
- */
-static void
-link_scrolls (ChordEditorSpaceWidget * self)
-{
-  /* link note keys v scroll to arranger v scroll */
-  if (self->chord_keys_scroll)
-    {
-      gtk_scrolled_window_set_vadjustment (
-        self->chord_keys_scroll,
-        gtk_scrolled_window_get_vadjustment (
-          GTK_SCROLLED_WINDOW (self->arranger_scroll)));
-    }
-
-  /* link ruler h scroll to arranger h scroll */
-  if (MW_CLIP_EDITOR_INNER->ruler_scroll)
-    {
-      gtk_scrolled_window_set_hadjustment (
-        MW_CLIP_EDITOR_INNER->ruler_scroll,
-        gtk_scrolled_window_get_hadjustment (
-          self->arranger_scroll));
-    }
-}
 
 /**
  * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
@@ -69,9 +45,28 @@ chord_editor_space_widget_update_size_group (
     visible);
 }
 
-static void
-on_realize (GtkWidget * widget, ChordEditorSpaceWidget * self)
+void
+chord_editor_space_widget_set_chord_keys_scroll_start_y (
+  ChordEditorSpaceWidget * self,
+  int                      y)
 {
+  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
+    self->chord_keys_scroll);
+  if (!math_doubles_equal (
+        (double) y, gtk_adjustment_get_value (hadj)))
+    {
+      gtk_adjustment_set_value (hadj, (double) y);
+    }
+}
+
+static void
+on_chord_keys_scroll_hadj_changed (
+  GtkAdjustment *          adj,
+  ChordEditorSpaceWidget * self)
+{
+  editor_settings_set_scroll_start_y (
+    &CHORD_EDITOR->editor_settings,
+    (int) gtk_adjustment_get_value (adj), F_VALIDATE);
 }
 
 int
@@ -95,7 +90,7 @@ void
 chord_editor_space_widget_refresh (
   ChordEditorSpaceWidget * self)
 {
-  link_scrolls (self);
+  /*link_scrolls (self);*/
 }
 
 void
@@ -129,6 +124,14 @@ chord_editor_space_widget_setup (ChordEditorSpaceWidget * self)
       self->chord_key_boxes[i] = box;
     }
 
+  /* add a signal handler to update the editor settings on
+   * scroll */
+  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
+    self->chord_keys_scroll);
+  g_signal_connect (
+    hadj, "value-changed",
+    G_CALLBACK (on_chord_keys_scroll_hadj_changed), self);
+
   chord_editor_space_widget_refresh (self);
 }
 
@@ -139,6 +142,8 @@ chord_editor_space_widget_init (ChordEditorSpaceWidget * self)
 
   self->arranger->type = ARRANGER_WIDGET_TYPE_CHORD;
 
+  gtk_widget_set_vexpand (GTK_WIDGET (self->arranger), true);
+
   self->arranger_and_keys_vsize_group =
     gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
   gtk_size_group_add_widget (
@@ -147,9 +152,6 @@ chord_editor_space_widget_init (ChordEditorSpaceWidget * self)
   gtk_size_group_add_widget (
     self->arranger_and_keys_vsize_group,
     GTK_WIDGET (self->chord_keys_box));
-
-  g_signal_connect (
-    G_OBJECT (self), "realize", G_CALLBACK (on_realize), self);
 }
 
 static void
@@ -164,8 +166,6 @@ chord_editor_space_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, ChordEditorSpaceWidget, x)
 
-  BIND_CHILD (arranger_scroll);
-  BIND_CHILD (arranger_viewport);
   BIND_CHILD (arranger);
   BIND_CHILD (left_box);
   BIND_CHILD (chord_keys_box);

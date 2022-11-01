@@ -22,7 +22,6 @@
             <child>
               <object class="TracklistWidget" id="tracklist">
                 <property name="name">tracklist</property>
-                <property name="visible">1</property>
               </object>
             </child>
           </object>
@@ -32,66 +31,18 @@
             <property name="name">timelines-plus-ruler-box</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkScrolledWindow" id="ruler_scroll">
-                <property name="height-request">42</property>
-                <property name="focusable">1</property>
-                <property name="hexpand">1</property>
-                <property name="hscrollbar-policy">external</property>
-                <property name="vscrollbar-policy">never</property>
-                <property name="child">
-                  <object class="GtkViewport" id="ruler_viewport">
-                    <property name="hexpand">1</property>
-                    <property name="scroll-to-focus">0</property>
-                    <child>
-                      <object class="RulerWidget" id="ruler">
-                      </object>
-                    </child>
-                  </object>
-                </property>
+              <object class="RulerWidget" id="ruler">
               </object>
             </child>
             <child>
               <object class="GtkBox" id="timeline_divider_box">
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkScrolledWindow" id="pinned_timeline_scroll">
-                    <property name="focusable">1</property>
-                    <property name="hscrollbar-policy">external</property>
-                    <property name="vscrollbar-policy">never</property>
-                    <property name="min-content-width">400</property>
-                    <property name="child">
-                      <object class="GtkViewport" id="pinned_timeline_viewport">
-                        <property name="hexpand">1</property>
-                        <property name="hscroll-policy">natural</property>
-                        <property name="vscroll-policy">natural</property>
-                        <property name="scroll-to-focus">0</property>
-                        <child>
-                          <object class="ArrangerWidget" id="pinned_timeline">
-                          </object>
-                        </child>
-                      </object>
-                    </property>
+                  <object class="ArrangerWidget" id="pinned_timeline">
                   </object>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="timeline_scroll">
-                    <property name="focusable">1</property>
-                    <property name="hscrollbar-policy">always</property>
-                    <property name="min-content-width">400</property>
-                    <property name="vexpand">1</property>
-                    <property name="child">
-                      <object class="GtkViewport" id="timeline_viewport">
-                        <property name="hexpand">1</property>
-                        <property name="hscroll-policy">natural</property>
-                        <property name="vscroll-policy">natural</property>
-                        <property name="scroll-to-focus">0</property>
-                        <child>
-                          <object class="ArrangerWidget" id="timeline">
-                            <property name="visible">1</property>
-                          </object>
-                        </child>
-                      </object>
-                    </property>
+                  <object class="ArrangerWidget" id="timeline">
                   </object>
                 </child>
               </object>
@@ -102,15 +53,8 @@
     </child>
     <child>
       <object class="TimelineBotBoxWidget" id="bot_box">
-        <property name="visible">1</property>
         <property name="vexpand_set">1</property>
       </object>
     </child>
   </template>
-  <object class="GtkSizeGroup">
-    <property name="mode">GTK_SIZE_GROUP_VERTICAL</property>
-    <widgets>
-      <widget name="pinned_timeline_scroll"/>
-    </widgets>
-  </object>
 </interface>

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/clip_editor.h"
+#include "gui/backend/editor_settings.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/chord_pad_panel.h"
@@ -15,6 +16,7 @@
 #include "gui/widgets/modulator_view.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
@@ -151,12 +153,12 @@ bot_dock_edge_widget_show_clip_editor (
       g_return_if_fail (IS_REGION_AND_NONNULL (r));
       ArrangerObject * r_obj = (ArrangerObject *) r;
       int px = ui_pos_to_px_editor (&r_obj->pos, false);
-      GtkScrolledWindow * scroll =
-        arranger_widget_get_scrolled_window (
-          Z_ARRANGER_WIDGET (MW_MIDI_ARRANGER));
-      GtkAdjustment * hadj =
-        gtk_scrolled_window_get_hadjustment (scroll);
-      gtk_adjustment_set_value (hadj, px);
+      ArrangerWidget * arranger =
+        region_get_arranger_for_children (r);
+      EditorSettings * settings =
+        arranger_widget_get_editor_settings (arranger);
+      editor_settings_set_scroll_start_x (
+        settings, px, F_NO_VALIDATE);
     }
 }
 

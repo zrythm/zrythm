@@ -30,17 +30,6 @@ G_DEFINE_TYPE (
   timeline_panel_widget,
   GTK_TYPE_BOX)
 
-static void
-on_hadj_value_changed (GtkAdjustment * adj, gpointer user_data)
-{
-#if 0
-  g_debug (
-    "horizontal adjustment value changed to %f",
-    gtk_adjustment_get_value (adj));
-#endif
-  EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, MW_RULER);
-}
-
 void
 timeline_panel_widget_setup (TimelinePanelWidget * self)
 {
@@ -52,53 +41,31 @@ timeline_panel_widget_setup (TimelinePanelWidget * self)
   /*TRACKLIST);*/
 
   /* set tracklist header size */
-  GtkRequisition req;
-  gtk_widget_get_preferred_size (
-    GTK_WIDGET (self->ruler_scroll), &req, NULL);
   gtk_widget_set_size_request (
-    GTK_WIDGET (self->tracklist_header), -1, req.height);
+    GTK_WIDGET (self->tracklist_header), -1, RW_HEIGHT);
+  gtk_widget_set_size_request (
+    GTK_WIDGET (self->ruler), -1, RW_HEIGHT);
   tracklist_header_widget_setup (self->tracklist_header);
-
-  /* setup ruler */
-  gtk_scrolled_window_set_hadjustment (
-    self->ruler_scroll,
-    gtk_scrolled_window_get_hadjustment (
-      self->timeline_scroll));
-
-  /* set pinned timeline to follow main timeline's
-   * hscroll */
-  gtk_scrolled_window_set_hadjustment (
-    self->pinned_timeline_scroll,
-    gtk_scrolled_window_get_hadjustment (
-      self->timeline_scroll));
 
   ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
   ruler_widget_refresh (Z_RULER_WIDGET (EDITOR_RULER));
 
-  /* setup timeline */
+  /* setup unpinned timeline */
   arranger_widget_setup (
     Z_ARRANGER_WIDGET (self->timeline),
     ARRANGER_WIDGET_TYPE_TIMELINE, SNAP_GRID_TIMELINE);
+
+  /* for some reason the size group in TracklistWidget
+   * doesn't work, so just vexpand here */
+  gtk_widget_set_vexpand (GTK_WIDGET (self->timeline), true);
+
+  /* setup pinned timeline */
   self->pinned_timeline->is_pinned = 1;
   gtk_widget_add_css_class (
     GTK_WIDGET (self->pinned_timeline), "pinned");
   arranger_widget_setup (
     Z_ARRANGER_WIDGET (self->pinned_timeline),
     ARRANGER_WIDGET_TYPE_TIMELINE, SNAP_GRID_TIMELINE);
-
-  /* link vertical scroll of timeline to
-   * tracklist */
-  gtk_scrolled_window_set_vadjustment (
-    self->timeline_scroll,
-    gtk_scrolled_window_get_vadjustment (
-      self->tracklist->unpinned_scroll));
-
-  GtkAdjustment * adj = gtk_scrollable_get_hadjustment (
-    GTK_SCROLLABLE (self->ruler_viewport));
-
-  g_signal_connect (
-    G_OBJECT (adj), "value-changed",
-    G_CALLBACK (on_hadj_value_changed), self);
 
   timeline_toolbar_widget_setup (self->timeline_toolbar);
 }
@@ -162,8 +129,6 @@ timeline_panel_widget_init (TimelinePanelWidget * self)
   gtk_widget_set_name (
     GTK_WIDGET (self->tracklist_top), "tracklist-top-box");
   gtk_widget_set_name (
-    GTK_WIDGET (self->ruler_scroll), "ruler-scrolled-window");
-  gtk_widget_set_name (
     GTK_WIDGET (self->timeline_divider_box),
     "timeline-divider-box");
 }
@@ -185,15 +150,9 @@ timeline_panel_widget_class_init (
   BIND_CHILD (tracklist_top);
   BIND_CHILD (tracklist_header);
   BIND_CHILD (tracklist);
-  BIND_CHILD (ruler_scroll);
-  BIND_CHILD (ruler_viewport);
-  BIND_CHILD (timeline_scroll);
-  BIND_CHILD (timeline_viewport);
   BIND_CHILD (timeline);
   BIND_CHILD (ruler);
   BIND_CHILD (timeline_divider_box);
-  BIND_CHILD (pinned_timeline_scroll);
-  BIND_CHILD (pinned_timeline_viewport);
   BIND_CHILD (pinned_timeline);
   BIND_CHILD (timeline_toolbar);
   BIND_CHILD (timelines_plus_ruler);

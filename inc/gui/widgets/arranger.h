@@ -124,6 +124,11 @@ typedef struct _ArrangerWidget
   double last_offset_x;
   double last_offset_y;
 
+  /** Whether there is an offset from a user scroll that should
+   * be added to the offset while dragging. */
+  double offset_x_from_scroll;
+  double offset_y_from_scroll;
+
   UiOverlayAction action;
 
   /** X-axis coordinate at start of drag. */
@@ -238,7 +243,7 @@ typedef struct _ArrangerWidget
   Position end_pos; ///< for moving regions
   gboolean key_is_pressed;
 
-  /** Current hovering positions. */
+  /** Current hovering positions (absolute). */
   double hover_x;
   double hover_y;
 
@@ -463,6 +468,12 @@ PURE const char *
 arranger_widget_get_type_str (ArrangerWidgetType type);
 
 /**
+ * Returns if the arranger can scroll vertically.
+ */
+bool
+arranger_widget_can_scroll_vertically (ArrangerWidget * self);
+
+/**
  * Creates a timeline widget using the given
  * timeline data.
  */
@@ -504,13 +515,6 @@ arranger_widget_get_cursor (ArrangerWidget * self);
  */
 void
 arranger_widget_refresh_cursor (ArrangerWidget * self);
-
-/**
- * Gets the corresponding scrolled window.
- */
-NONNULL
-GtkScrolledWindow *
-arranger_widget_get_scrolled_window (ArrangerWidget * self);
 
 /**
  * Get all objects currently present in the
@@ -662,7 +666,7 @@ arranger_widget_scroll_until_obj (
   int              horizontal,
   int              up,
   int              left,
-  double           padding);
+  int              padding);
 
 /**
  * Toggles the mute status of the selection, based
@@ -701,6 +705,14 @@ arranger_widget_set_highlight_rect (
  */
 EditorSettings *
 arranger_widget_get_editor_settings (ArrangerWidget * self);
+
+/**
+ * Get just the values, adjusted properly for special cases
+ * (like pinned timeline).
+ */
+EditorSettings
+arranger_widget_get_editor_setting_values (
+  ArrangerWidget * self);
 
 bool
 arranger_widget_is_playhead_visible (ArrangerWidget * self);
