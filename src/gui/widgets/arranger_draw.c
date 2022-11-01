@@ -454,7 +454,6 @@ static void
 draw_midi_bg (
   ArrangerWidget * self,
   GtkSnapshot *    snapshot,
-  const int        width,
   GdkRectangle *   rect)
 {
   /* px per key adjusted for border width */
@@ -476,17 +475,18 @@ draw_midi_bg (
             snapshot,
             &Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.5f),
             &GRAPHENE_RECT_INIT (
-              0.f, (float) y_offset, (float) width, 1.f));
+              (float) rect->x, (float) y_offset,
+              (float) rect->width, 1.f));
           if (piano_roll_is_key_black (
                 PIANO_ROLL->piano_descriptors[i]->value))
             {
               gtk_snapshot_append_color (
                 snapshot, &Z_GDK_RGBA_INIT (0, 0, 0, 0.2f),
                 &GRAPHENE_RECT_INIT (
-                  0.f,
+                  (float) rect->x,
                   /* + 1 since the border is
                    * bottom */
-                  (float) (y_offset + 1), (float) width,
+                  (float) (y_offset + 1), (float) rect->width,
                   (float) adj_px_per_key));
             }
         }
@@ -503,10 +503,10 @@ draw_midi_bg (
           gtk_snapshot_append_color (
             snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.06f),
             &GRAPHENE_RECT_INIT (
-              0.f,
+              (float) rect->x,
               /* + 1 since the border is
                * bottom */
-              (float) (y_offset + 1), (float) width,
+              (float) (y_offset + 1), (float) rect->width,
               (float) adj_px_per_key));
         }
     }
@@ -516,17 +516,17 @@ static void
 draw_velocity_bg (
   ArrangerWidget * self,
   GtkSnapshot *    snapshot,
-  const int        width,
-  const int        height,
   GdkRectangle *   rect)
 {
   for (int i = 1; i < 4; i++)
     {
-      float y_offset = (float) height * ((float) i / 4.f);
+      float y_offset =
+        (float) rect->height * ((float) i / 4.f);
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.2f),
         &GRAPHENE_RECT_INIT (
-          0.f, (float) y_offset, (float) width, 1.f));
+          (float) rect->x, (float) y_offset,
+          (float) rect->width, 1.f));
     }
 }
 
@@ -534,7 +534,6 @@ static void
 draw_audio_bg (
   ArrangerWidget * self,
   GtkSnapshot *    snapshot,
-  int              height,
   GdkRectangle *   rect)
 {
   ZRegion * ar = clip_editor_get_region (CLIP_EDITOR);
@@ -638,7 +637,9 @@ draw_audio_bg (
 
       double from_y = -rect->y;
       double draw_height =
-        (MIN ((double) max * (double) height, (double) height)
+        (MIN (
+           (double) max * (double) rect->height,
+           (double) rect->height)
          - rect->y)
         - from_y;
 
@@ -703,9 +704,12 @@ draw_audio_bg (
       min = (min + 1.f) / 2.f; /* normallize */
       max = (max + 1.f) / 2.f; /* normalize */
       double from_y =
-        MAX ((double) min * (double) height, 0.0) - rect->y;
+        MAX ((double) min * (double) rect->height, 0.0)
+        - rect->y;
       double draw_height =
-        (MIN ((double) max * (double) height, (double) height)
+        (MIN (
+           (double) max * (double) rect->height,
+           (double) rect->height)
          - rect->y)
         - from_y;
       DRAW_VLINE (
@@ -737,7 +741,7 @@ draw_audio_bg (
       1.f + (float) gain_line_start_x,
       /* invert because gtk draws the opposite
        * way */
-      (float) height * (1.f - gain_fader_val),
+      (float) rect->height * (1.f - gain_fader_val),
       (float) (gain_line_end_x - gain_line_start_x), 2.f));
 
   /* draw gain text */
@@ -751,7 +755,7 @@ draw_audio_bg (
   gtk_snapshot_render_layout (
     snapshot, style_ctx, gain_txt_padding + gain_line_start_x,
     gain_txt_padding
-      + (int) ((double) height * (1.0 - gain_fader_val)),
+      + (int) ((double) rect->height * (1.0 - gain_fader_val)),
     self->audio_layout);
 }
 
@@ -1144,17 +1148,15 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     }
   else if (self->type == TYPE (MIDI))
     {
-      draw_midi_bg (self, snapshot, width, &visible_rect_gdk);
+      draw_midi_bg (self, snapshot, &visible_rect_gdk);
     }
   else if (self->type == TYPE (MIDI_MODIFIER))
     {
-      draw_velocity_bg (
-        self, snapshot, height, width, &visible_rect_gdk);
+      draw_velocity_bg (self, snapshot, &visible_rect_gdk);
     }
   else if (self->type == TYPE (AUDIO))
     {
-      draw_audio_bg (
-        self, snapshot, height, &visible_rect_gdk);
+      draw_audio_bg (self, snapshot, &visible_rect_gdk);
     }
   else if (self->type == TYPE (AUTOMATION))
     {
