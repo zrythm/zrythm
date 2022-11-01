@@ -469,6 +469,12 @@ PURE const char *
 arranger_widget_get_type_str (ArrangerWidgetType type);
 
 /**
+ * Returns if the arranger can scroll vertically.
+ */
+bool
+arranger_widget_can_scroll_vertically (ArrangerWidget * self);
+
+/**
  * Creates a timeline widget using the given
  * timeline data.
  */
@@ -510,15 +516,6 @@ arranger_widget_get_cursor (ArrangerWidget * self);
  */
 void
 arranger_widget_refresh_cursor (ArrangerWidget * self);
-
-#if 0
-/**
- * Gets the corresponding scrolled window.
- */
-NONNULL
-GtkScrolledWindow *
-arranger_widget_get_scrolled_window (ArrangerWidget * self);
-#endif
 
 /**
  * Get all objects currently present in the

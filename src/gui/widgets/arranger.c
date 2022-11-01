@@ -88,6 +88,22 @@ G_DEFINE_TYPE (ArrangerWidget, arranger_widget, GTK_TYPE_WIDGET)
 #define SCROLL_PADDING 8.0
 
 /**
+ * Returns if the arranger can scroll vertically.
+ */
+bool
+arranger_widget_can_scroll_vertically (ArrangerWidget * self)
+{
+  if (
+    (self->type == TYPE (TIMELINE) && self->is_pinned)
+    || self->type == TYPE (MIDI_MODIFIER)
+    || self->type == TYPE (AUDIO)
+    || self->type == TYPE (AUTOMATION))
+    return false;
+
+  return true;
+}
+
+/**
  * Get just the values, adjusted properly for special cases
  * (like pinned timeline).
  */
@@ -98,9 +114,7 @@ arranger_widget_get_editor_setting_values (
   EditorSettings * settings =
     arranger_widget_get_editor_settings (self);
   EditorSettings ret = *settings;
-  if (
-    (self->type == TYPE (TIMELINE) && self->is_pinned)
-    || self->type == TYPE (MIDI_MODIFIER))
+  if (!arranger_widget_can_scroll_vertically (self))
     {
       ret.scroll_start_y = 0;
     }
@@ -1398,7 +1412,7 @@ static void
 auto_scroll (ArrangerWidget * self, int x, int y)
 {
   /* figure out if we should scroll */
-  int scroll_h = 0, scroll_v = 0;
+  bool scroll_h = false, scroll_v = false;
   switch (self->action)
     {
     case UI_OVERLAY_ACTION_MOVING:
@@ -1407,8 +1421,8 @@ auto_scroll (ArrangerWidget * self, int x, int y)
     case UI_OVERLAY_ACTION_CREATING_MOVING:
     case UI_OVERLAY_ACTION_SELECTING:
     case UI_OVERLAY_ACTION_RAMPING:
-      scroll_h = 1;
-      scroll_v = 1;
+      scroll_h = true;
+      scroll_v = true;
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
     case UI_OVERLAY_ACTION_RESIZING_L:
@@ -1417,13 +1431,18 @@ auto_scroll (ArrangerWidget * self, int x, int y)
     case UI_OVERLAY_ACTION_STRETCHING_R:
     case UI_OVERLAY_ACTION_AUTOFILLING:
     case UI_OVERLAY_ACTION_AUDITIONING:
-      scroll_h = 1;
+      scroll_h = true;
       break;
     case UI_OVERLAY_ACTION_RESIZING_UP:
-      scroll_v = 1;
+      scroll_v = true;
       break;
     default:
       break;
+    }
+
+  if (!arranger_widget_can_scroll_vertically (self))
+    {
+      scroll_v = false;
     }
 
   if (!scroll_h && !scroll_v)
@@ -4962,41 +4981,6 @@ arranger_widget_get_selections (ArrangerWidget * self)
     }
 }
 
-#if 0
-/**
- * Gets the corresponding scrolled window.
- */
-GtkScrolledWindow *
-arranger_widget_get_scrolled_window (ArrangerWidget * self)
-{
-  return NULL;
-  switch (self->type)
-    {
-    case TYPE (TIMELINE):
-      if (self->is_pinned)
-        {
-          return MW_TIMELINE_PANEL->pinned_timeline_scroll;
-        }
-      else
-        {
-          return MW_TIMELINE_PANEL->timeline_scroll;
-        }
-    case TYPE (MIDI):
-      return MW_MIDI_EDITOR_SPACE->arranger_scroll;
-    case TYPE (MIDI_MODIFIER):
-      return MW_MIDI_EDITOR_SPACE->modifier_arranger_scroll;
-    case TYPE (AUDIO):
-      return MW_AUDIO_EDITOR_SPACE->arranger_scroll;
-    case TYPE (CHORD):
-      return MW_CHORD_EDITOR_SPACE->arranger_scroll;
-    case TYPE (AUTOMATION):
-      return MW_AUTOMATION_EDITOR_SPACE->arranger_scroll;
-    }
-
-  return NULL;
-}
-#endif
-
 /**
  * Get all objects currently present in the
  * arranger.
@@ -5069,7 +5053,9 @@ on_scroll (
   double x = self->hover_x;
   double y = self->hover_y;
 
-  g_debug ("scrolled to %f (d %f), %f (d %f)", x, dx, y, dy);
+  g_debug (
+    "scrolled to %.1f (d %d), %.1f (d %d)", x, (int) dx, y,
+    (int) dy);
 
   EVENTS_PUSH (ET_ARRANGER_SCROLLED, self);
 
@@ -5080,12 +5066,9 @@ on_scroll (
   bool ctrl_held = modifier_type & GDK_CONTROL_MASK;
   if (ctrl_held)
     {
-      g_debug ("ctrl held");
-
       /* if shift also pressed, handle vertical zoom */
       if (modifier_type & GDK_SHIFT_MASK)
         {
-          g_debug ("shift held");
           if (self->type == TYPE (MIDI))
             {
               midi_arranger_handle_vertical_zoom_scroll (
@@ -5096,6 +5079,10 @@ on_scroll (
               tracklist_widget_handle_vertical_zoom_scroll (
                 MW_TRACKLIST, scroll_controller, dy);
             }
+
+          /* TODO also update hover y since we're using it
+           * here */
+          /*self->hover_y = new_y;*/
         }
       /* else if just control pressed handle horizontal
        * zoom */
@@ -5138,6 +5125,9 @@ on_scroll (
               timeline_minimap_widget_refresh (
                 MW_TIMELINE_MINIMAP);
             }
+
+          /* also update hover x since we're using it here */
+          self->hover_x = new_x;
         }
     }
   else /* else if not ctrl held */

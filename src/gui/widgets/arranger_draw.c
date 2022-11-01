@@ -1066,21 +1066,24 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       gtk_snapshot_append_color (
         snapshot, &loop_color,
         &GRAPHENE_RECT_INIT (
-          (float) start_px + 1.f, 0.f, 2.f, (float) height));
+          (float) start_px + 1.f, visible_rect.origin.y, 2.f,
+          visible_rect.size.height));
 
       /* draw loop end line */
       gtk_snapshot_append_color (
         snapshot, &loop_color,
         &GRAPHENE_RECT_INIT (
-          (float) end_px + 1.f, 0.f, 2.f, (float) height));
+          (float) end_px + 1.f, visible_rect.origin.y, 2.f,
+          visible_rect.size.height));
 
       /* draw transport loop area */
       double loop_start_x = MAX (0, start_px);
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (0, 0.9f, 0.7f, 0.02f),
         &GRAPHENE_RECT_INIT (
-          (float) loop_start_x, 0.f,
-          (float) (end_px - start_px), (float) height));
+          (float) loop_start_x, visible_rect.origin.y,
+          (float) (end_px - start_px),
+          visible_rect.size.height));
     }
 
   /* --- handle vertical drawing --- */
