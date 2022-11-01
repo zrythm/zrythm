@@ -646,13 +646,68 @@ draw_cue_point (
 /**
  * Returns the playhead's x coordinate in absolute
  * coordinates.
+ *
+ * @param after_loops Whether to get the playhead px after
+ *   loops are applied.
  */
-static int
-get_playhead_px (RulerWidget * self)
+int
+ruler_widget_get_playhead_px (
+  RulerWidget * self,
+  bool          after_loops)
 {
   if (self->type == TYPE (EDITOR))
     {
-      return ui_pos_to_px_editor (PLAYHEAD, 1);
+      if (after_loops)
+        {
+          long      frames = 0;
+          ZRegion * clip_editor_region =
+            clip_editor_get_region (CLIP_EDITOR);
+          if (!clip_editor_region)
+            {
+              g_warning ("no clip editor region");
+              return ui_pos_to_px_editor (PLAYHEAD, 1);
+            }
+
+          ZRegion * r = NULL;
+
+          if (clip_editor_region->id.type == REGION_TYPE_AUTOMATION)
+            {
+              AutomationTrack * at =
+                region_get_automation_track (
+                  clip_editor_region);
+              r = region_at_position (NULL, at, PLAYHEAD);
+            }
+          else
+            {
+              r = region_at_position (
+                arranger_object_get_track (
+                  (ArrangerObject *) clip_editor_region),
+                NULL, PLAYHEAD);
+            }
+          Position tmp;
+          if (r)
+            {
+              ArrangerObject * obj = (ArrangerObject *) r;
+              signed_frame_t   region_local_frames =
+                (signed_frame_t)
+                  region_timeline_frames_to_local (
+                    r, PLAYHEAD->frames, 1);
+              region_local_frames += obj->pos.frames;
+              position_from_frames (&tmp, region_local_frames);
+              frames = tmp.frames;
+            }
+          else
+            {
+              frames = PLAYHEAD->frames;
+            }
+          Position pos;
+          position_from_frames (&pos, frames);
+          return ui_pos_to_px_editor (&pos, 1);
+        }
+      else /* else if not after loops */
+        {
+          return ui_pos_to_px_editor (PLAYHEAD, 1);
+        }
     }
   else if (self->type == TYPE (TIMELINE))
     {
@@ -667,7 +722,7 @@ draw_playhead (
   GtkSnapshot *  snapshot,
   GdkRectangle * rect)
 {
-  int px = get_playhead_px (self);
+  int px = ruler_widget_get_playhead_px (self, true);
 
   if (
     px >= rect->x - RW_PLAYHEAD_TRIANGLE_WIDTH / 2

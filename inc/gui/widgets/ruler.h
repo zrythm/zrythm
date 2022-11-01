@@ -269,6 +269,18 @@ ruler_widget_get_visible_rect (
   RulerWidget *  self,
   GdkRectangle * rect);
 
+/**
+ * Returns the playhead's x coordinate in absolute
+ * coordinates.
+ *
+ * @param after_loops Whether to get the playhead px after
+ *   loops are applied.
+ */
+int
+ruler_widget_get_playhead_px (
+  RulerWidget * self,
+  bool          after_loops);
+
 void
 ruler_widget_refresh (RulerWidget * self);
 

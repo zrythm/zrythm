@@ -165,59 +165,8 @@ arranger_widget_get_drum_mode_enabled (ArrangerWidget * self)
 int
 arranger_widget_get_playhead_px (ArrangerWidget * self)
 {
-  ZRegion * clip_editor_region =
-    clip_editor_get_region (CLIP_EDITOR);
-
-  /* get frames */
-  long frames = 0;
-  if (self->type == TYPE (TIMELINE))
-    {
-      frames = PLAYHEAD->frames;
-    }
-  else if (clip_editor_region)
-    {
-      ZRegion * r = NULL;
-
-      if (self->type == ARRANGER_WIDGET_TYPE_AUTOMATION)
-        {
-          /* for some reason hidden arrangers
-           * try to call this */
-          if (clip_editor_region->id.type != REGION_TYPE_AUTOMATION)
-            {
-              return 0;
-            }
-
-          AutomationTrack * at =
-            region_get_automation_track (clip_editor_region);
-          r = region_at_position (NULL, at, PLAYHEAD);
-        }
-      else
-        {
-          r = region_at_position (
-            arranger_object_get_track (
-              (ArrangerObject *) clip_editor_region),
-            NULL, PLAYHEAD);
-        }
-      Position tmp;
-      if (r)
-        {
-          ArrangerObject * obj = (ArrangerObject *) r;
-          signed_frame_t   region_local_frames =
-            (signed_frame_t) region_timeline_frames_to_local (
-              r, PLAYHEAD->frames, 1);
-          region_local_frames += obj->pos.frames;
-          position_from_frames (&tmp, region_local_frames);
-          frames = tmp.frames;
-        }
-      else
-        {
-          frames = PLAYHEAD->frames;
-        }
-    }
-
-  Position pos;
-  position_from_frames (&pos, frames);
-  return arranger_widget_pos_to_px (self, &pos, 1);
+  RulerWidget * ruler = arranger_widget_get_ruler (self);
+  return ruler_widget_get_playhead_px (ruler, false);
 }
 
 /**
@@ -2004,9 +1953,6 @@ arranger_widget_create_item (
       position_snap (
         &self->earliest_obj_start_pos, &pos, track_for_snap,
         NULL, self->snap_grid);
-      /*start_x =*/
-      /*arranger_widget_pos_to_px (*/
-      /*self, &pos, true);*/
     }
 
   g_message ("creating item at %f,%f", start_x, start_y);
