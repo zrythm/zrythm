@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-10-15 00:01+0900\n"
-"PO-Revision-Date: 2022-10-12 11:56+0000\n"
+"PO-Revision-Date: 2022-10-23 23:55+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -2215,27 +2215,26 @@ msgid "Client zombie"
 msgstr "Client zombi"
 
 #: src/audio/engine_jack.c:690
-#, fuzzy, c-format
+#, c-format
 msgid "JACK: Failed to disconnect monitor out: %s"
-msgstr "Error en desconnectar %s de %s"
+msgstr "JACK: No s'ha pogut desconnectar el monitor: %s"
 
 #: src/audio/engine_jack.c:739
 msgid "JACK: No physical playback ports found"
 msgstr "JACK: no s'han trobat ports de reproducció físics"
 
 #: src/audio/engine_jack.c:753
-#, fuzzy, c-format
+#, c-format
 msgid "JACK: Failed to connect monitor output [%s]: %s"
-msgstr "Error en connectar al port de sortida del monitor esquerre"
+msgstr "JACK: no s'ha pogut connectar la sortida del monitor [%s]: %s"
 
 #: src/audio/engine_jack.c:754
 msgid "left"
-msgstr ""
+msgstr "esquerra"
 
 #: src/audio/engine_jack.c:754
-#, fuzzy
 msgid "right"
-msgstr "Copet cap a la dreta"
+msgstr "dreta"
 
 #: src/audio/engine_jack.c:812 src/gui/widgets/monitor_section.c:237
 msgid "Failed to connect to left monitor output port"
@@ -3295,9 +3294,8 @@ msgid "Hide unused lanes"
 msgstr "Ocultar carrils no utilitzats"
 
 #: src/gui/widgets/track.c:1827
-#, fuzzy
 msgid "Operation not implemented"
-msgstr "No implementat"
+msgstr "Operació no implementada"
 
 #: src/gui/widgets/modulator_macro.c:56
 #: src/gui/widgets/track_input_expander.c:327
@@ -4293,20 +4291,20 @@ msgstr "Afegir pista en carpeta"
 
 #: src/gui/widgets/tracklist.c:227 src/gui/widgets/tracklist.c:270
 #: src/gui/widgets/tracklist.c:290
-#, fuzzy
 msgid "Operation unimplemented"
-msgstr "No implementat"
+msgstr "Operació sense implementar"
 
 #: src/gui/widgets/tracklist.c:245
 msgid ""
 "Attempted to drop an instrument onto a MIDI track, which is not supported. "
 "Create a new instrument track instead?"
 msgstr ""
+"S'ha intentat deixar caure un instrument en una pista MIDI, que no és "
+"compatible. Vols crear una pista d'instrument nova?"
 
 #: src/gui/widgets/tracklist.c:279 src/gui/widgets/tracklist.c:297
-#, fuzzy
 msgid "Dragged item is not supported"
-msgstr "La funcionalitat necessària %s no és compatible"
+msgstr "L'element arrossegat no és compatible"
 
 #: src/gui/widgets/chord_pad_panel.c:67
 msgid "From scale"
@@ -7536,13 +7534,12 @@ msgstr ""
 "s'utilitzarà el factor d'escala del monitor."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1115
-#, fuzzy
 msgid "VST2 plugins"
-msgstr "Complements VST"
+msgstr "Complements VST2"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1116
 msgid "VST2 plugin search paths separated by : (or ; on Windows)."
-msgstr ""
+msgstr "Camins de cerca del complement VST2 separats per: (o ; a Windows)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1120
 msgid "SFZ instruments"
@@ -7550,7 +7547,7 @@ msgstr "Instruments SFZ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1121
 msgid "SFZ instrument search paths separated by : (or ; on Windows)."
-msgstr ""
+msgstr "Camins de cerca d'instruments SFZ separats per: (o ; a Windows)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1125
 msgid "SF2 instruments"
@@ -7558,16 +7555,15 @@ msgstr "Instruments SF2"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1126
 msgid "SF2 instrument search paths separated by : (or ; on Windows)."
-msgstr ""
+msgstr "Camins de cerca d'instruments SF2 separats per : (o ; a Windows)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1130
-#, fuzzy
 msgid "JSFX plugin paths"
-msgstr "Complements VST"
+msgstr "Camins del complement JSFX"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1131
 msgid "JSFX plugin search paths separated by : (or ; on Windows)."
-msgstr ""
+msgstr "Camins de cerca del complement JSFX separats per: (o ; a Windows)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1139
 #: build/data/org.zrythm.Zrythm.gschema.xml:1153
@@ -7718,19 +7714,18 @@ msgid "Changed:"
 msgstr "Canviat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
-#, fuzzy
 msgid ""
 "Update Korean, Spanish, French, Indonesian, Catalan, Portuguese translations"
 msgstr ""
-"Actualitza les traduccions al castellà, francès, català i xinès (tradicional)"
+"Actualitzar traduccions coreà, espanyol, francès, indonesi, català, portuguès"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 msgid "Project assistant: rename Open Recent to Open Project"
-msgstr ""
+msgstr "Assistent de projecte: canvia el nom d'Obrir Recent a Obrir Projecte"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Bump required carla and libpanel versions"
-msgstr ""
+msgstr "Bump requereix versions de carla i libpanel"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:83
@@ -7740,7 +7735,7 @@ msgstr "Solucionat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
 msgid "Fix \"check for updates?\" dialog not being modal"
-msgstr ""
+msgstr "Corregir el diàleg «Cercar actualitzacions?» que no és modal"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
 msgid "Removed:"
@@ -7748,7 +7743,7 @@ msgstr "Eliminat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:66
 msgid "Drop rtkit code (replace with GDBus currently disabled)"
-msgstr ""
+msgstr "Deixar anar el codi rtkit (reemplaçar per GDBus actualment desactivat)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:73
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:95
@@ -7757,76 +7752,81 @@ msgid "Added:"
 msgstr "Afegit:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
-#, fuzzy
 msgid "Add fade in/out when muting/unmuting tracks (fixes pops)"
 msgstr ""
-"Afegir un esvaïment d'entrada/sortida quan el motor d'àudio s'iniciï/s'aturi "
-"per a evitar clics"
+"Afegir una atenuació d'in/out en silenciar/deixar de silenciar les pistes ("
+"corregeix els pops)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:76
 msgid "Allow moving chord objects vertically"
-msgstr ""
+msgstr "Permet moure objectes d'acord verticalment"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:80
-#, fuzzy
 msgid "Add more error checking when writing audio to file"
-msgstr "Afegir més comprovació d'errors quan s'instancia els complements Carla"
+msgstr "Afegir més comprovació d'errors en escriure àudio a fitxer"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:81
 msgid "Optimize bar slider drawing (fixes lags in plugin inspector)"
 msgstr ""
+"Optimitza el dibuix lliscant de barres (soluciona els retards en l'inspector "
+"de complements)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:85
 msgid "Fix cue marker being invisible"
-msgstr ""
+msgstr "Corregir la invisibilitat dels marcadors"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:86
 msgid "Fix pressing Home not setting the cue marker"
-msgstr ""
+msgstr "Corregir que en prémer Inici no es fixi el marcador de referència"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:87
 msgid "Fix plugin and file drag-n-drop being broken on Windows"
 msgstr ""
+"Corregir el complement i la funció d'arrossegar i deixar anar fitxers que no "
+"funciona a Windows"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:88
 msgid "Fix track icon selector being empty"
-msgstr ""
+msgstr "Corregir que el selector d'icones de pista estigui buit"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:97
 msgid "JSFX and CLAP plugin support"
-msgstr ""
+msgstr "Compatibilitat amb connectors JSFX i CLAP"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid "Jump to marker position when clicked"
-msgstr ""
+msgstr "Salta a la posició del marcador en clicar"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:110
 msgid "Add \"Scales\" indicator text in the bottom of the chord track"
 msgstr ""
+"Afegir el text indicador d'«Escales» a la part inferior de la pista d'acords"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:111
 msgid ""
 "Make spacebar toggle play/pause regardless of the focused widget (with "
 "exception for text editor widgets)"
 msgstr ""
+"Fer que la barra espaiadora commuti reproducció/pausa independentment del "
+"giny enfocat (a excepció dels ginys de l'editor de text)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:115
 msgid "Fix hang when exporting audio when project contains VST3 plugins"
 msgstr ""
+"Corregir el bloqueig en exportar àudio quan el projecte conté complements "
+"VST3"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:116
-#, fuzzy
 msgid "Fix markers incorrectly being shown when marker track is invisible"
 msgstr ""
-"Correcció dels carrils d'automatització que no es mostren immediatament quan "
-"es fan visibles"
+"Corregir els marcadors que es mostren incorrectament quan la pista del "
+"marcador és invisible"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:117
-#, fuzzy
 msgid "Fix incorrectly allowing to clone/rename start/end markers"
 msgstr ""
-"S'ha corregit un error que permetia suprimir/clonar la pista principal quan "
-"estava en una pista plegable"
+"Corregir la incorrecta possibilitat de clonar/canviar el nom dels marcadors "
+"d'inici/finalització"
 
 #~ msgid "Open Recent"
 #~ msgstr "Obrir recents"
