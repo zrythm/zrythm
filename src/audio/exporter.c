@@ -341,7 +341,11 @@ export_audio (ExportSettings * info)
   sf_count_t covered_frames = 0;
   double     covered_ticks = 0;
   /*sf_count_t last_playhead_frames = start_pos.frames;*/
-  float out_ptr[AUDIO_ENGINE->block_length * EXPORT_CHANNELS];
+  const size_t out_ptr_sz =
+    AUDIO_ENGINE->block_length * EXPORT_CHANNELS;
+  float out_ptr[out_ptr_sz];
+  bool  clipped = false;
+  float clip_amp = 0.f;
   do
     {
       /* calculate number of frames to process
@@ -366,12 +370,30 @@ export_audio (ExportSettings * info)
       /* by this time, the Master channel should
        * have its Stereo Out ports filled.
        * pass its buffers to the output */
+      float tmp_l[nframes];
+      float tmp_r[nframes];
       for (nframes_t i = 0; i < nframes; i++)
         {
-          out_ptr[i * 2] =
+          tmp_l[i] =
             P_MASTER_TRACK->channel->stereo_out->l->buf[i];
-          out_ptr[i * 2 + 1] =
+          tmp_r[i] =
             P_MASTER_TRACK->channel->stereo_out->r->buf[i];
+          out_ptr[i * 2] = tmp_l[i];
+          out_ptr[i * 2 + 1] = tmp_r[i];
+        }
+
+      /* clipping detection */
+      float max_amp = dsp_abs_max (tmp_l, nframes);
+      if (max_amp > 1.f && max_amp > clip_amp)
+        {
+          clip_amp = max_amp;
+          clipped = true;
+        }
+      max_amp = dsp_abs_max (tmp_r, nframes);
+      if (max_amp > 1.f && max_amp > clip_amp)
+        {
+          clip_amp = max_amp;
+          clipped = true;
         }
 
       /* apply dither */
@@ -483,6 +505,19 @@ export_audio (ExportSettings * info)
     {
       g_message (
         "successfully exported to %s", info->file_uri);
+
+      if (clipped)
+        {
+          float max_db = math_amp_to_dbfs (clip_amp);
+          g_warning ("clipping occurred");
+          sprintf (
+            info->progress_info.message_str,
+            _ ("The exported audio contains segments louder than 0 dB (max detected %.1f dB)."),
+            max_db);
+          info->progress_info.has_message = true;
+          info->progress_info.message_type =
+            GTK_MESSAGE_WARNING;
+        }
     }
 
   return 0;

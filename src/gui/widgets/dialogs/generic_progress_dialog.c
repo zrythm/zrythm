@@ -71,7 +71,7 @@ tick_cb (
 
   if (
     math_doubles_equal (info->progress, 1.0)
-    || info->has_error || info->cancelled)
+    || info->has_error || info->cancelled || info->has_message)
     {
       if (prv->autoclose || info->cancelled)
         {
@@ -102,6 +102,14 @@ tick_cb (
             gtk_window_get_transient_for (GTK_WINDOW (self));
           ui_show_error_message (
             transient_parent, true, info->error_str);
+        }
+      else if (info->has_message)
+        {
+          GtkWindow * transient_parent =
+            gtk_window_get_transient_for (GTK_WINDOW (self));
+          ui_show_message_literal (
+            transient_parent, info->message_type, false,
+            info->message_str);
         }
       return G_SOURCE_REMOVE;
     }

@@ -128,6 +128,12 @@ typedef struct GenericProgressInfo
   /** Error occurred. */
   bool has_error;
 
+  /** Message to show after completion. */
+  bool           has_message;
+  GtkMessageType message_type;
+
+  char message_str[1800];
+
   /** String to show in the label during the
    * action. */
   char label_str[1800];
