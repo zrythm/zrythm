@@ -977,26 +977,24 @@ arranger_object_clone (const ArrangerObject * self);
 /**
  * Splits the given object at the given Position.
  *
- * if \ref is_project is true, it
- * deletes the original object and adds 2 new
- * objects in the same parent (Track or
+ * if \ref is_project is true, it deletes the original object
+ * and adds 2 new objects in the same parent (Track or
  * AutomationTrack or Region).
  *
  * @param region The ArrangerObject to split. This
  *   ArrangerObject will be deleted.
  * @param pos The Position to split at.
- * @param pos_is_local If the position is local (1)
- *   or global (0).
- * @param r1 Address to hold the pointer to the
- *   newly created ArrangerObject 1.
- * @param r2 Address to hold the pointer to the
- *   newly created ArrangerObject 2.
- * @param is_project Whether the object being
- *   passed is a project object. If true, it will
- *   be removed from the project and the child
- *   objects will be added to the project,
- *   otherwise it will be untouched and the
- *   children will be mere clones.
+ * @param pos_is_local If the position is local (1) or global
+ *   (0).
+ * @param r1 Address to hold the pointer to the newly created
+ *   ArrangerObject 1.
+ * @param r2 Address to hold the pointer to the newly created
+ *   ArrangerObject 2.
+ * @param is_project Whether the object being passed is a
+ *   project object. If true, it will be removed from the
+ *   project and the child objects will be added to the
+ *   project, otherwise it will be untouched and the children
+ *   will be mere clones.
  */
 void
 arranger_object_split (

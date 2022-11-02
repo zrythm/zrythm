@@ -2738,26 +2738,24 @@ arranger_object_remove_child (
 /**
  * Splits the given object at the given Position.
  *
- * if \ref is_project is true, it
- * deletes the original object and adds 2 new
- * objects in the same parent (Track or
+ * if \ref is_project is true, it deletes the original object
+ * and adds 2 new objects in the same parent (Track or
  * AutomationTrack or Region).
  *
  * @param region The ArrangerObject to split. This
  *   ArrangerObject will be deleted.
  * @param pos The Position to split at.
- * @param pos_is_local If the position is local (1)
- *   or global (0).
- * @param r1 Address to hold the pointer to the
- *   newly created ArrangerObject 1.
- * @param r2 Address to hold the pointer to the
- *   newly created ArrangerObject 2.
- * @param is_project Whether the object being
- *   passed is a project object. If true, it will
- *   be removed from the project and the child
- *   objects will be added to the project,
- *   otherwise it will be untouched and the
- *   children will be mere clones.
+ * @param pos_is_local If the position is local (1) or global
+ *   (0).
+ * @param r1 Address to hold the pointer to the newly created
+ *   ArrangerObject 1.
+ * @param r2 Address to hold the pointer to the newly created
+ *   ArrangerObject 2.
+ * @param is_project Whether the object being passed is a
+ *   project object. If true, it will be removed from the
+ *   project and the child objects will be added to the
+ *   project, otherwise it will be untouched and the children
+ *   will be mere clones.
  */
 void
 arranger_object_split (
@@ -2832,8 +2830,8 @@ arranger_object_split (
     *r1, &localp, ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
     F_NO_VALIDATE);
 
-  /* of original object was not looped, make the
-   * new object unlooped also */
+  /* if original object was not looped, make the new object
+   * unlooped also */
   if (!orig_is_looped)
     {
       arranger_object_loop_end_pos_setter (*r1, &localp);
@@ -2892,8 +2890,8 @@ arranger_object_split (
     *r2, &r2_local_end,
     ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT, F_NO_VALIDATE);
 
-  /* of original object was not looped, make the
-   * new object unlooped also */
+  /* if original object was not looped, make the new object
+   * unlooped also */
   if (!orig_is_looped)
     {
       Position init_pos;
@@ -3000,7 +2998,11 @@ arranger_object_split (
             for (int i = 0; i < region2->num_aps; i++)
               {
                 AutomationPoint * ap = region2->aps[i];
-                ap->index -= region2->num_aps;
+                /* note: not sure what this is supposed to do,
+                 * was `region2->num_aps` but changed to fix
+                 * a bug - TODO replace this with a comment
+                 * about what this does and why it's needed */
+                ap->index -= region1->num_aps;
                 g_return_if_fail (ap->index >= 0);
               }
           }

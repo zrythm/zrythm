@@ -3113,7 +3113,7 @@ test_cut_automation_region (void)
   /* create master fader automation region */
   Position pos1, pos2;
   position_set_to_bar (&pos1, 1);
-  position_set_to_bar (&pos2, 4);
+  position_set_to_bar (&pos2, 8);
   AutomationTrack * at = channel_get_automation_track (
     P_MASTER_TRACK->channel, PORT_FLAG_CHANNEL_FADER);
   g_assert_nonnull (at);
@@ -3130,7 +3130,7 @@ test_cut_automation_region (void)
   /* create 2 points spanning the split point */
   for (int i = 0; i < 2; i++)
     {
-      position_set_to_bar (&pos1, i == 0 ? 1 : 3);
+      position_set_to_bar (&pos1, i == 0 ? 3 : 5);
       AutomationPoint * ap =
         automation_point_new_float (1.f, 1.f, &pos1);
       automation_region_add_ap (r, ap, F_NO_PUBLISH_EVENTS);
@@ -3141,7 +3141,22 @@ test_cut_automation_region (void)
         AUTOMATION_SELECTIONS, NULL);
     }
 
-  /* split */
+  /* split between the 2 points */
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  position_set_to_bar (&pos1, 4);
+  arranger_selections_action_perform_split (
+    (ArrangerSelections *) TL_SELECTIONS, &pos1, NULL);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+
+  /* split before the first point */
+  r = at->regions[0];
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
@@ -3152,7 +3167,6 @@ test_cut_automation_region (void)
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
   undo_manager_undo (UNDO_MANAGER, NULL);
-  undo_manager_redo (UNDO_MANAGER, NULL);
 
   test_helper_zrythm_cleanup ();
 }
@@ -3165,6 +3179,9 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test cut automation region",
+    (GTestFunc) test_cut_automation_region);
+  g_test_add_func (
     TEST_PREFIX "test split large audio file",
     (GTestFunc) test_split_large_audio_file);
   g_test_add_func (
@@ -3176,9 +3193,6 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test move timeline",
     (GTestFunc) test_move_timeline);
-  g_test_add_func (
-    TEST_PREFIX "test cut automation region",
-    (GTestFunc) test_cut_automation_region);
   g_test_add_func (
     TEST_PREFIX "test delete midi notes",
     (GTestFunc) test_delete_midi_notes);
