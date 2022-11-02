@@ -1650,10 +1650,8 @@ region_draw (
       draw_loop_points (
         self, snapshot, &full_rect, &draw_rect);
 
-      if (
-        arranger_object_should_show_cut_lines (
-          obj, MAIN_WINDOW->alt_held || arranger->alt_held)
-        && arranger->hovered)
+      if (arranger_object_should_show_cut_lines (
+            obj, arranger->alt_held))
         {
           draw_cut_line (
             self, snapshot, arranger, &full_rect, &draw_rect);

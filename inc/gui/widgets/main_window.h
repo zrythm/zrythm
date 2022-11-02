@@ -74,15 +74,6 @@ typedef struct _MainWindowWidget
   /** Whether preferences window is opened. */
   bool preferences_opened;
 
-  /**
-   * Whether alt is currently held down.
-   *
-   * Used here because the arranger can't tell if alt is held
-   * properly in its motion handler and the arranger doesn't
-   * receive key events if not focused even though hovered.
-   */
-  bool alt_held;
-
   /** Whether log has pending warnings (if true,
    * the log viewer button will have an emblem until
    * clicked). */
