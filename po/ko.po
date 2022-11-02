@@ -10,10 +10,10 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-10-15 00:01+0900\n"
-"PO-Revision-Date: 2022-10-12 11:56+0000\n"
+"PO-Revision-Date: 2022-10-18 23:55+0000\n"
 "Last-Translator: Hoseok Seo <ddinghoya@gmail.com>\n"
-"Language-Team: Korean <https://hosted.weblate.org/projects/zrythm/zrythm/ko/"
-">\n"
+"Language-Team: Korean <https://hosted.weblate.org/projects/zrythm/zrythm/ko/>"
+"\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2198,27 +2198,26 @@ msgid "Client zombie"
 msgstr "클라이언트 좀비"
 
 #: src/audio/engine_jack.c:690
-#, fuzzy, c-format
+#, c-format
 msgid "JACK: Failed to disconnect monitor out: %s"
-msgstr "%s에서 %s 연결 해제 실패"
+msgstr "JACK: 모니터 연결 해제 실패: %s"
 
 #: src/audio/engine_jack.c:739 src/audio/engine_jack.c:735
 msgid "JACK: No physical playback ports found"
 msgstr "JACK: 물리적 재생 포트를 찾을 수 없음"
 
 #: src/audio/engine_jack.c:753
-#, fuzzy, c-format
+#, c-format
 msgid "JACK: Failed to connect monitor output [%s]: %s"
-msgstr "왼쪽 모니터 출력 포트에 연결 실패"
+msgstr "JACK: 모니터 출력 [%s] 연결 실패: %s"
 
 #: src/audio/engine_jack.c:754
 msgid "left"
 msgstr ""
 
 #: src/audio/engine_jack.c:754
-#, fuzzy
 msgid "right"
-msgstr "오른쪽 밀기"
+msgstr "오른쪽"
 
 #: src/audio/engine_jack.c:812 src/gui/widgets/monitor_section.c:237
 #: src/audio/engine_jack.c:802
@@ -2918,27 +2917,27 @@ msgstr "기부"
 
 #: src/gui/widgets/help_toolbar.c:44
 msgid "Report a Bug"
-msgstr ""
+msgstr "버그 신고"
 
 #: src/gui/widgets/folder_channel.c:165
 msgid "Failed to move or copy track(s)"
-msgstr ""
+msgstr "트랙 이동 또는 복사 실패"
 
 #: src/gui/widgets/route_target_selector.c:68
 msgid "Cannot be routed"
-msgstr ""
+msgstr "라우팅할 수 없음"
 
 #: src/gui/widgets/route_target_selector.c:74
 msgid "Routed to engine"
-msgstr ""
+msgstr "엔진으로 라우팅됨"
 
 #: src/gui/widgets/route_target_selector.c:81
 msgid "Select channel to route signal to"
-msgstr ""
+msgstr "신호를 라우팅할 채널 선택"
 
 #: src/gui/widgets/route_target_selector.c:158
 msgid "Stereo Out"
-msgstr ""
+msgstr "스테레오 출력"
 
 #: src/gui/widgets/event_viewer.c:538 src/gui/widgets/event_viewer.c:698
 #: src/gui/widgets/plugin_properties_expander.c:219
@@ -2952,7 +2951,7 @@ msgstr ""
 #: src/gui/widgets/item_factory.c:796 src/gui/widgets/item_factory.c:856
 #: src/gui/widgets/item_factory.c:880
 msgid "Name"
-msgstr ""
+msgstr "이름"
 
 #: src/gui/widgets/event_viewer.c:547
 #: src/gui/widgets/plugin_properties_expander.c:231
@@ -2960,62 +2959,62 @@ msgstr ""
 #: resources/ui/arranger_object_info_dialog.ui:55
 #: resources/ui/port_info_dialog.ui:111 src/gui/widgets/item_factory.c:806
 msgid "Type"
-msgstr ""
+msgstr "유형"
 
 #: src/gui/widgets/event_viewer.c:558 src/gui/widgets/event_viewer.c:671
 #: src/gui/widgets/event_viewer.c:775 src/gui/widgets/item_factory.c:215
 #: src/gui/widgets/item_factory.c:709 src/gui/widgets/item_factory.c:212
 #: src/gui/widgets/item_factory.c:706
 msgid "Start"
-msgstr ""
+msgstr "시작"
 
 #: src/gui/widgets/event_viewer.c:569 src/gui/widgets/item_factory.c:228
 #: src/gui/widgets/item_factory.c:759 src/gui/widgets/item_factory.c:225
 #: src/gui/widgets/item_factory.c:756
 msgid "Clip start"
-msgstr ""
+msgstr "클립 시작"
 
 #: src/gui/widgets/event_viewer.c:580 src/gui/widgets/item_factory.c:234
 #: src/gui/widgets/item_factory.c:731 src/gui/widgets/item_factory.c:231
 #: src/gui/widgets/item_factory.c:728
 msgid "Loop start"
-msgstr ""
+msgstr "루프 시작"
 
 #: src/gui/widgets/event_viewer.c:591 src/gui/widgets/item_factory.c:240
 #: src/gui/widgets/item_factory.c:745 src/gui/widgets/item_factory.c:237
 #: src/gui/widgets/item_factory.c:742
 msgid "Loop end"
-msgstr ""
+msgstr "루프 끝"
 
 #: src/gui/widgets/event_viewer.c:602 src/gui/widgets/item_factory.c:246
 #: src/gui/widgets/item_factory.c:773 src/gui/widgets/item_factory.c:243
 #: src/gui/widgets/item_factory.c:770
 msgid "Fade in"
-msgstr ""
+msgstr "페이드 인"
 
 #: src/gui/widgets/event_viewer.c:613 src/gui/widgets/item_factory.c:252
 #: src/gui/widgets/item_factory.c:786 src/gui/widgets/item_factory.c:249
 #: src/gui/widgets/item_factory.c:783
 msgid "Fade out"
-msgstr ""
+msgstr "페이드 아웃"
 
 #: src/gui/widgets/event_viewer.c:624 src/gui/widgets/event_viewer.c:682
 #: src/gui/widgets/event_viewer.c:781 src/gui/widgets/item_factory.c:222
 #: src/gui/widgets/item_factory.c:717 src/gui/widgets/item_factory.c:219
 #: src/gui/widgets/item_factory.c:714
 msgid "End"
-msgstr ""
+msgstr "끝"
 
 #: src/gui/widgets/event_viewer.c:640 src/gui/widgets/item_factory.c:697
 #: src/gui/widgets/item_factory.c:694
 msgid "Note"
-msgstr ""
+msgstr "음표"
 
 #: src/gui/widgets/event_viewer.c:650 src/gui/widgets/item_factory.c:296
 #: src/gui/widgets/item_factory.c:703 src/gui/widgets/item_factory.c:293
 #: src/gui/widgets/item_factory.c:700
 msgid "Pitch"
-msgstr ""
+msgstr "피치"
 
 #: src/gui/widgets/event_viewer.c:709 src/gui/widgets/event_viewer.c:737
 #: src/gui/widgets/digital_meter.c:110 src/gui/widgets/item_factory.c:216
@@ -3023,92 +3022,94 @@ msgstr ""
 #: resources/ui/inspector_ap.ui:51 resources/ui/inspector_midi.ui:51
 #: src/gui/widgets/item_factory.c:213 src/gui/widgets/item_factory.c:708
 msgid "Position"
-msgstr ""
+msgstr "위치"
 
 #: src/gui/widgets/event_viewer.c:726 src/gui/widgets/item_factory.c:823
 #: src/gui/widgets/item_factory.c:820
 msgid "Index"
-msgstr ""
+msgstr "인덱스"
 
 #: src/gui/widgets/event_viewer.c:746 src/gui/widgets/item_factory.c:318
 #: src/gui/widgets/item_factory.c:830 src/gui/widgets/item_factory.c:315
 #: src/gui/widgets/item_factory.c:827
 msgid "Value"
-msgstr ""
+msgstr "값"
 
 #: src/gui/widgets/event_viewer.c:756 src/gui/widgets/item_factory.c:837
 #: src/gui/widgets/item_factory.c:834
 msgid "Curve type"
-msgstr ""
+msgstr "곡선 유형"
 
 #: src/gui/widgets/event_viewer.c:765 src/gui/widgets/item_factory.c:348
 #: src/gui/widgets/item_factory.c:845 src/gui/widgets/item_factory.c:345
 #: src/gui/widgets/item_factory.c:842
 msgid "Curviness"
-msgstr ""
+msgstr "곡선"
 
 #: src/gui/widgets/file_auditioner_controls.c:216
 #: build/data/org.zrythm.Zrythm.gschema.xml:594
 msgid "Autoplay"
-msgstr ""
+msgstr "자동 재생"
 
 #: src/gui/widgets/file_auditioner_controls.c:220
 #: build/data/org.zrythm.Zrythm.gschema.xml:599
 msgid "Show unsupported files"
-msgstr ""
+msgstr "지원되지 않는 파일 표시"
 
 #: src/gui/widgets/file_auditioner_controls.c:223
 #: build/data/org.zrythm.Zrythm.gschema.xml:604
 msgid "Show hidden files"
-msgstr ""
+msgstr "숨김 파일 표시"
 
 #: src/gui/widgets/digital_meter.c:97
 msgid "Tempo/BPM"
-msgstr ""
+msgstr "템포/BPM"
 
 #: src/gui/widgets/digital_meter.c:133
 msgid "Time Signature - Beats per bar / Beat unit"
-msgstr ""
+msgstr "박자 - 마디당 비트/비트 단위"
 
 #: src/gui/widgets/digital_meter.c:506
 msgid "normal"
-msgstr ""
+msgstr "보통"
 
 #: src/gui/widgets/digital_meter.c:509
+#, fuzzy
 msgid "dotted"
-msgstr ""
+msgstr "점음표"
 
 #: src/gui/widgets/digital_meter.c:512
+#, fuzzy
 msgid "triplet"
-msgstr ""
+msgstr "셋잇단음표"
 
 #: src/gui/widgets/digital_meter.c:780 src/gui/widgets/digital_meter.c:795
 msgid "Failed to change time signature"
-msgstr ""
+msgstr "박자표 변경 실패"
 
 #: src/gui/widgets/panel_file_browser.c:249 src/gui/widgets/file_browser.c:57
 msgid "No file selected"
-msgstr ""
+msgstr "파일이 선택되지 않음"
 
 #: src/gui/widgets/panel_file_browser.c:620
 #: src/gui/widgets/plugin_browser.c:1505 src/gui/widgets/plugin_browser.c:1504
 msgid "Search..."
-msgstr ""
+msgstr "검색..."
 
 #: src/gui/widgets/drag_dest_box.c:352 src/gui/widgets/track.c:1863
 #: src/gui/widgets/drag_dest_box.c:351
 msgid "Failed to move or copy plugin"
-msgstr ""
+msgstr "플러그인 이동 또는 복사 실패"
 
 #: src/gui/widgets/drag_dest_box.c:397 src/gui/widgets/drag_dest_box.c:396
 msgid "Failed to move or copy track"
-msgstr ""
+msgstr "트랙 이동 또는 복사 실패"
 
 #: src/gui/widgets/track.c:304 src/gui/widgets/track.c:780
 #: src/gui/widgets/channel.c:660 resources/ui/fader_buttons.ui:37
 #: src/gui/widgets/track.c:297 src/gui/widgets/track.c:773
 msgid "Solo"
-msgstr ""
+msgstr "솔로"
 
 #: src/gui/widgets/track.c:310 src/gui/widgets/track.c:303
 msgid "Hide instrument UI"
@@ -3122,19 +3123,19 @@ msgstr "악기 UI 표시"
 #: src/gui/widgets/channel.c:700 src/gui/widgets/track.c:325
 #: src/gui/widgets/track.c:815
 msgid "Unlisten"
-msgstr ""
+msgstr "듣지 않음"
 
 #: src/gui/widgets/track.c:336 src/gui/widgets/track.c:814
 #: src/gui/widgets/monitor_section.c:45 src/gui/widgets/channel.c:692
 #: resources/ui/fader_buttons.ui:61 src/gui/widgets/track.c:329
 #: src/gui/widgets/track.c:807
 msgid "Listen"
-msgstr ""
+msgstr "듣기"
 
 #: src/gui/widgets/track.c:345 resources/ui/fader_buttons.ui:13
 #: src/gui/widgets/track.c:338
 msgid "Mono compatibility"
-msgstr ""
+msgstr "모노 호환성"
 
 #: src/gui/widgets/track.c:351 src/gui/widgets/track.c:344
 msgid "Disarm"
@@ -3146,36 +3147,36 @@ msgstr ""
 
 #: src/gui/widgets/track.c:362 src/gui/widgets/track.c:355
 msgid "Hide lanes"
-msgstr ""
+msgstr "레인 숨기기"
 
 #: src/gui/widgets/track.c:366 src/gui/widgets/track.c:359
 msgid "Show lanes"
-msgstr ""
+msgstr "레인 표시"
 
 #: src/gui/widgets/track.c:373 src/gui/widgets/track.c:366
 msgid "Hide automation"
-msgstr ""
+msgstr "자동화 숨기기"
 
 #: src/gui/widgets/track.c:377 src/gui/widgets/track.c:370
 msgid "Show automation"
-msgstr ""
+msgstr "자동화 표시"
 
 #: src/gui/widgets/track.c:382 src/gui/widgets/port_connections_popover.c:174
 #: src/gui/widgets/plugin_browser.c:542 src/gui/widgets/track.c:375
 msgid "Add"
-msgstr ""
+msgstr "추가"
 
 #: src/gui/widgets/track.c:386 src/gui/widgets/track.c:379
 msgid "Remove"
-msgstr ""
+msgstr "삭제"
 
 #: src/gui/widgets/track.c:390 src/gui/widgets/track.c:383
 msgid "Freeze/unfreeze"
-msgstr ""
+msgstr "고정/고정 해제"
 
 #: src/gui/widgets/track.c:394 src/gui/widgets/track.c:387
 msgid "Lock/unlock"
-msgstr ""
+msgstr "잠금/잠금 해제"
 
 #: src/gui/widgets/track.c:398 src/gui/widgets/track.c:391
 msgid "Fold"
@@ -3325,9 +3326,8 @@ msgid "Hide unused lanes"
 msgstr ""
 
 #: src/gui/widgets/track.c:1827
-#, fuzzy
 msgid "Operation not implemented"
-msgstr "구현되지 않음"
+msgstr "작업이 구현되지 않음"
 
 #: src/gui/widgets/modulator_macro.c:56
 #: src/gui/widgets/track_input_expander.c:327
@@ -4084,7 +4084,7 @@ msgstr ""
 
 #: src/gui/widgets/track_filter_popover.c:274
 msgid "Track types"
-msgstr ""
+msgstr "트랙 유형"
 
 #: src/gui/widgets/timeline_selection_info.c:242
 msgid "clip start (rel.)"
@@ -4103,11 +4103,11 @@ msgstr ""
 #: src/gui/widgets/timeline_selection_info.c:315
 #: src/gui/widgets/timeline_selection_info.c:334
 msgid "position"
-msgstr ""
+msgstr "위치"
 
 #: src/gui/widgets/item_factory.c:84
 msgid "Failed to enable binding"
-msgstr ""
+msgstr "바인딩 활성화 실패"
 
 #: src/gui/widgets/item_factory.c:188 src/gui/widgets/item_factory.c:185
 msgid "Invalid position"
@@ -4131,7 +4131,7 @@ msgstr "잘못된 피치"
 
 #: src/gui/widgets/item_factory.c:542 src/gui/widgets/item_factory.c:539
 msgid "Add Bookmark"
-msgstr ""
+msgstr "북마크 추가"
 
 #: src/gui/widgets/item_factory.c:727 src/gui/widgets/item_factory.c:741
 #: src/gui/widgets/item_factory.c:755 src/gui/widgets/item_factory.c:769
@@ -4141,45 +4141,45 @@ msgstr ""
 #: src/gui/widgets/item_factory.c:766 src/gui/widgets/item_factory.c:779
 #: src/gui/widgets/item_factory.c:792
 msgid "N/A"
-msgstr ""
+msgstr "N/A"
 
 #: src/gui/widgets/item_factory.c:861
 #: src/gui/widgets/dialogs/project_assistant.c:564
 #: src/gui/widgets/item_factory.c:858
 msgid "Template Name"
-msgstr ""
+msgstr "템플릿 이름"
 
 #: src/gui/widgets/item_factory.c:866
 #: src/gui/widgets/dialogs/project_assistant.c:573
 #: src/gui/widgets/item_factory.c:863
 msgid "Path"
-msgstr ""
+msgstr "경로"
 
 #: src/gui/widgets/item_factory.c:872
 #: src/gui/widgets/dialogs/project_assistant.c:583
 #: src/gui/widgets/item_factory.c:869
 msgid "Last Modified"
-msgstr ""
+msgstr "마지막 수정"
 
 #: src/gui/widgets/channel_send_selector.c:124
 msgid "Failed to disconnect send"
-msgstr ""
+msgstr "보내기 연결 해제 실패"
 
 #: src/gui/widgets/channel_send_selector.c:160
 #: src/gui/widgets/channel_send_selector.c:192
 #: src/gui/widgets/channel_send_selector.c:230
 msgid "Failed to connect send"
-msgstr ""
+msgstr "보내기 연결 실패"
 
 #: src/gui/widgets/channel_send_selector.c:470
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:84
 #: resources/ui/bind_cc_dialog.ui:43 resources/ui/generic_progress_dialog.ui:43
 msgid "OK"
-msgstr ""
+msgstr "확인"
 
 #: src/gui/widgets/main_notebook.c:128
 msgid "Scenes (Live View)"
-msgstr ""
+msgstr "장면 (라이브 보기)"
 
 #: src/gui/widgets/channel_send.c:219
 msgid "Failed to change send amount"
@@ -4188,125 +4188,125 @@ msgstr ""
 #. create a new marker
 #: src/gui/widgets/timeline_arranger.c:386
 msgid "Custom Marker"
-msgstr ""
+msgstr "커스텀 마커"
 
 #: src/gui/widgets/timeline_arranger.c:848
 msgid "Fade Preset"
-msgstr ""
+msgstr "페이드 사전 설정"
 
 #: src/gui/widgets/timeline_arranger.c:912
 msgid "Musical Mode"
-msgstr ""
+msgstr "뮤지컬 모드"
 
 #: src/gui/widgets/timeline_arranger.c:1025
 msgid "Detect BPM"
-msgstr ""
+msgstr "BPM 감지"
 
 #: src/gui/widgets/timeline_arranger.c:1075
 msgid "Region Functions"
-msgstr ""
+msgstr "영역 기능"
 
 #: src/gui/widgets/timeline_arranger.c:1078
 msgid "Audio Regions"
-msgstr ""
+msgstr "오디오 영역"
 
 #: src/gui/widgets/timeline_arranger.c:1100
 msgid "Export as MIDI file..."
-msgstr ""
+msgstr "MIDI 파일로 내보내기..."
 
 #: src/gui/widgets/timeline_arranger.c:1106
 msgid "MIDI Regions"
-msgstr ""
+msgstr "MIDI 영역"
 
 #: src/gui/widgets/timeline_arranger.c:1298
 msgid "Failed to create selections"
-msgstr ""
+msgstr "선택 항목 만들기 실패"
 
 #: src/gui/widgets/bot_bar.c:40
 msgid "Playhead [Jack Timebase Master]"
-msgstr ""
+msgstr "플레이헤드 [잭 타임베이스 마스터]"
 
 #: src/gui/widgets/bot_bar.c:42
 msgid "Playhead [Jack Client]"
-msgstr ""
+msgstr "플레이헤드 [잭 클라이언트]"
 
 #: src/gui/widgets/bot_bar.c:136
 msgid "Input"
-msgstr ""
+msgstr "입력"
 
 #. TRANSLATORS: tap tempo
 #: src/gui/widgets/bot_bar.c:140
 msgid "Tap"
-msgstr ""
+msgstr "두드리기"
 
 #: src/gui/widgets/bot_bar.c:178
 msgid "Become JACK Transport master"
-msgstr ""
+msgstr "JACK 전송 마스터 되기"
 
 #: src/gui/widgets/bot_bar.c:181
 msgid "Sync to JACK Transport"
-msgstr ""
+msgstr "JACK 전송에 동기화"
 
 #: src/gui/widgets/bot_bar.c:184
 msgid "Unlink JACK Transport"
-msgstr ""
+msgstr "JACK 전송 연결 해제"
 
 #: src/gui/widgets/bot_bar.c:225
 msgid "playhead"
-msgstr ""
+msgstr "플레이헤드"
 
 #: src/gui/widgets/bot_bar.c:276
 msgid "JACK Transport client"
-msgstr ""
+msgstr "JACK 전송 클라이언트"
 
 #: src/gui/widgets/bot_bar.c:289
 msgid "JACK Timebase master"
-msgstr ""
+msgstr "JACK 타임베이스 마스터"
 
 #: src/gui/widgets/bot_bar.c:356
 msgid "New buffer size"
-msgstr ""
+msgstr "새로운 버퍼 크기"
 
 #: src/gui/widgets/bot_bar.c:368
 msgid "Failed reading value"
-msgstr ""
+msgstr "값 읽기 실패"
 
 #: src/gui/widgets/bot_bar.c:384
 msgid "This feature is not available at the moment"
-msgstr ""
+msgstr "이 기능은 현재 사용할 수 없음"
 
 #: src/gui/widgets/bot_bar.c:458
 msgid "Status"
-msgstr ""
+msgstr "상태"
 
 #. TRANSLATORS: buffer size, please keep the
 #. * translation short
 #: src/gui/widgets/bot_bar.c:464
 msgid "Buf sz"
-msgstr ""
+msgstr "Buf sz"
 
 #. TRANSLATORS: verb - change buffer size
 #: src/gui/widgets/bot_bar.c:469
 msgid "change"
-msgstr ""
+msgstr "변경"
 
 #. TRANSLATORS: sample rate
 #: src/gui/widgets/bot_bar.c:472
 msgid "Rate"
-msgstr ""
+msgstr "속도"
 
 #: src/gui/widgets/bot_bar.c:506
 msgid "Metronome"
-msgstr ""
+msgstr "메트로놈"
 
 #: src/gui/widgets/bot_bar.c:506
 msgid "Metronome options"
-msgstr ""
+msgstr "메트로놈 옵션"
 
 #. volume
 #: src/gui/widgets/bot_bar.c:516 resources/ui/file_auditioner_controls.ui:29
 msgid "Volume"
-msgstr ""
+msgstr "볼륨"
 
 #. countin
 #: src/gui/widgets/bot_bar.c:531
@@ -4315,7 +4315,7 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:596
 msgid "bpm"
-msgstr ""
+msgstr "bpm"
 
 #: src/gui/widgets/bot_bar.c:598
 msgid "time sig."
@@ -4323,40 +4323,39 @@ msgstr ""
 
 #: src/gui/widgets/tracklist.c:45
 msgid "Add _MIDI Track"
-msgstr ""
+msgstr "MIDI 트랙 추가(_A)"
 
 #: src/gui/widgets/tracklist.c:49
 msgid "Add Audio Track"
-msgstr ""
+msgstr "오디오 트랙 추가"
 
 #: src/gui/widgets/tracklist.c:62
 msgid "Add FX Track"
-msgstr ""
+msgstr "FX 트랙 추가"
 
 #: src/gui/widgets/tracklist.c:74
 msgid "Add Group Track"
-msgstr ""
+msgstr "그룹 트랙 추가"
 
 #: src/gui/widgets/tracklist.c:77
 msgid "Add Folder Track"
-msgstr ""
+msgstr "폴더 트랙 추가"
 
 #: src/gui/widgets/tracklist.c:227 src/gui/widgets/tracklist.c:270
 #: src/gui/widgets/tracklist.c:290
-#, fuzzy
 msgid "Operation unimplemented"
-msgstr "구현되지 않음"
+msgstr "구현되지 않은 작업"
 
 #: src/gui/widgets/tracklist.c:245
 msgid ""
 "Attempted to drop an instrument onto a MIDI track, which is not supported. "
 "Create a new instrument track instead?"
-msgstr ""
+msgstr "지원되지 않는 MIDI 트랙에 악기를 떨어뜨리려고 했습니다. 대신 새로운 악기 "
+"트랙을 만들겠습니까?"
 
 #: src/gui/widgets/tracklist.c:279 src/gui/widgets/tracklist.c:297
-#, fuzzy
 msgid "Dragged item is not supported"
-msgstr "형식 %s은(는) 아직 지원되지 않음"
+msgstr "드래그한 항목은 지원되지 않음"
 
 #: src/gui/widgets/chord_pad_panel.c:67
 msgid "From scale"
@@ -4364,7 +4363,7 @@ msgstr "음계에서"
 
 #: src/gui/widgets/chord_pad_panel.c:70
 msgid "Predefined"
-msgstr ""
+msgstr "사전 정의"
 
 #: src/gui/widgets/chord_pad_panel.c:98
 msgid "Preset Packs"
@@ -4373,42 +4372,43 @@ msgstr "사전 설정 팩"
 #: src/gui/widgets/midi_arranger.c:478 resources/ui/export_dialog.ui:102
 #: resources/ui/export_dialog.ui:226 src/gui/widgets/midi_arranger.c:479
 msgid "Selection"
-msgstr ""
+msgstr "선택"
 
 #: src/gui/widgets/plugin_browser.c:528
 msgid "Rename"
-msgstr ""
+msgstr "이름 바꾸기"
 
 #: src/gui/widgets/log_viewer.c:109
 msgid "Log Viewer"
-msgstr ""
+msgstr "로그 뷰어"
 
 #: src/gui/widgets/track_properties_expander.c:102
 msgid "Track Name"
-msgstr ""
+msgstr "트랙 이름"
 
 #: src/gui/widgets/track_properties_expander.c:114
 msgid "Direct Out"
-msgstr ""
+msgstr "다이렉트 아웃"
 
 #: src/gui/widgets/track_properties_expander.c:136
 msgid "Track Properties"
-msgstr ""
+msgstr "트랙 속성"
 
 #: src/gui/widgets/channel.c:646 resources/ui/port_selector_dialog.ui:26
 msgid "Track"
-msgstr ""
+msgstr "트랙"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:39
 msgid "Welcome to the Zrythm DAW"
-msgstr ""
+msgstr "Zrythm DAW에 오신 것을 환영합니다"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:42
 #, c-format
 msgid ""
 "If this is your first time using Zrythm, we suggest going through the "
 "'Getting Started' section in the %suser manual%s."
-msgstr ""
+msgstr "Zrythm을 처음 사용하는 경우 %suser manual%s의 '시작하기' 섹션을 살펴보는 "
+"것이 좋습니다."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:51
 #, c-format
@@ -4416,10 +4416,12 @@ msgid ""
 "%sZrythm relies on donations and purchases to sustain development%s. If you "
 "enjoy the software, please consider %sdonating%s or %sbuying an installer%s."
 msgstr ""
+"%sZrythm은 개발을 유지하기 위해 기부와 구매에 의존합니다%s. 소프트웨어가 "
+"마음에 든다면 %s기부%s 또는 %s설치 프로그램%s 구매를 고려하세요."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:63
 msgid "Flatpak users"
-msgstr ""
+msgstr "Flatpak 사용자"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:65
 msgid ""
@@ -4427,19 +4429,22 @@ msgid ""
 "errors when starting Zrythm. We recommend setting a fixed buffer size for "
 "Zrythm in your PipeWire config to avoid this."
 msgstr ""
+"이 Flatpak 런타임의 PipeWire 버전에는 Zrythm을 시작할 때 오류를 일으킬 수 "
+"있는 알려진 버그가 있습니다. 이를 방지하려면 PipeWire 구성에서 Zrythm에 대해 "
+"고정 버퍼 크기를 설정하는 것이 좋습니다."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:73
 msgid "Flatpak limitation"
-msgstr ""
+msgstr "Flatpak 제한"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:74
 msgid "Only Flatpak-installed plugins are supported."
-msgstr ""
+msgstr "Flatpak이 설치된 플러그인만 지원됩니다."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:86
 #, c-format
 msgid "Zrythm and the Zrythm logo are %strademarks of Alexandros Theodotou%s."
-msgstr ""
+msgstr "Zrythm 및 Zrythm 로고는 %sAlexandros Theodotou의 상표%s입니다."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:103
 msgid "Welcome"
@@ -4447,32 +4452,32 @@ msgstr "환영"
 
 #: src/gui/widgets/dialogs/port_selector_dialog.c:43
 msgid "No port selected"
-msgstr ""
+msgstr "선택한 포트 없음"
 
 #: src/gui/widgets/dialogs/port_selector_dialog.c:69
 #, c-format
 msgid "Failed to connect %s to %s"
-msgstr ""
+msgstr "%s을(를) %s에 연결 실패"
 
 #: src/gui/widgets/dialogs/port_selector_dialog.c:80
 msgid "These ports cannot be connected"
-msgstr ""
+msgstr "이 포트는 연결할 수 없음"
 
 #: src/gui/widgets/dialogs/port_selector_dialog.c:323
 msgid "Track Ports"
-msgstr ""
+msgstr "트랙 포트"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:63
 msgid "Saving..."
-msgstr ""
+msgstr "저장 중..."
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:66
 msgid "Saved"
-msgstr ""
+msgstr "저장됨"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:69
 msgid "Project Progress"
-msgstr ""
+msgstr "프로젝트 진행"
 
 #: src/gui/widgets/dialogs/port_info.c:53
 #, c-format
@@ -4481,15 +4486,15 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/port_info.c:137
 msgid "Port info"
-msgstr ""
+msgstr "포트 정보"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:94
 msgid "MIDI region exported."
-msgstr ""
+msgstr "MIDI 영역을 내보냈습니다."
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:104
 msgid "MIDI regions exported."
-msgstr ""
+msgstr "MIDI 영역을 내보냈습니다."
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:110
 msgid "Failed to export MIDI regions."
@@ -5710,68 +5715,68 @@ msgstr ""
 
 #: resources/ui/snap_grid_popover.ui:225
 msgid "Use last created object's length"
-msgstr ""
+msgstr "마지막으로 생성된 객체의 길이 사용"
 
 #: resources/ui/snap_grid_popover.ui:239 resources/ui/inspector_master.ui:71
 #: resources/ui/inspector_ap.ui:71 resources/ui/inspector_midi.ui:71
 msgid "Length"
-msgstr ""
+msgstr "길이"
 
 #: resources/ui/panel_file_browser.ui:29
 msgid "Bookmarks"
-msgstr ""
+msgstr "북마크"
 
 #: resources/ui/transport_controls.ui:9
 msgid "Return to cue point on stop"
-msgstr ""
+msgstr "정지 시 큐 포인트로 돌아가기"
 
 #: resources/ui/transport_controls.ui:26
 msgid "Play"
-msgstr ""
+msgstr "재생"
 
 #: resources/ui/transport_controls.ui:50
 msgid "Backward"
-msgstr ""
+msgstr "뒤로"
 
 #: resources/ui/transport_controls.ui:62
 msgid "Forward"
-msgstr ""
+msgstr "앞으로"
 
 #: resources/ui/transport_controls.ui:74
 msgid "Loop"
-msgstr ""
+msgstr "루프"
 
 #: resources/ui/event_viewer.ui:9
 msgid "Event Viewer"
-msgstr ""
+msgstr "이벤트 뷰어"
 
 #: resources/ui/plugin_browser.ui:28
 msgid "Collection"
-msgstr ""
+msgstr "컬렉션"
 
 #: resources/ui/plugin_browser.ui:42
 msgid "Author"
-msgstr ""
+msgstr "저작자"
 
 #: resources/ui/plugin_browser.ui:56
 msgid "Category"
-msgstr ""
+msgstr "범주"
 
 #: resources/ui/plugin_browser.ui:70
 msgid "Protocol"
-msgstr ""
+msgstr "프로토콜"
 
 #: resources/ui/plugin_browser.ui:148
 msgid "Sort alphabetically"
-msgstr ""
+msgstr "알파벳순으로 정렬"
 
 #: resources/ui/plugin_browser.ui:154
 msgid "Sort by recently used"
-msgstr ""
+msgstr "최근 사용순으로 정렬"
 
 #: resources/ui/plugin_browser.ui:160
 msgid "Sort by most used"
-msgstr ""
+msgstr "가장 많이 사용하는 순으로 정렬"
 
 #: resources/ui/header.ui:23 resources/gtk/help-overlay.ui:98
 msgid "Project"
@@ -5779,39 +5784,39 @@ msgstr "프로젝트"
 
 #: resources/ui/header.ui:34
 msgid "View"
-msgstr ""
+msgstr "보기"
 
 #: resources/ui/header.ui:45
 msgid "Help"
-msgstr ""
+msgstr "도움말"
 
 #: resources/ui/header.ui:60
 msgid "MIDI in activity"
-msgstr ""
+msgstr "활동 중인 MIDI"
 
 #: resources/ui/editor_toolbar.ui:140
 msgid "Toggle ghost note visibility"
-msgstr ""
+msgstr "고스트 음표 가시성 전환"
 
 #: resources/ui/editor_toolbar.ui:155 resources/ui/timeline_toolbar.ui:105
 msgid "Toggle event viewer"
-msgstr ""
+msgstr "이벤트 뷰어 전환"
 
 #: resources/ui/editor_toolbar.ui:178 resources/ui/editor_toolbar.ui:221
 msgid "Flip"
-msgstr ""
+msgstr "뒤집기"
 
 #: resources/ui/editor_toolbar.ui:180 resources/ui/editor_toolbar.ui:223
 msgid "Horizontal"
-msgstr ""
+msgstr "수평"
 
 #: resources/ui/editor_toolbar.ui:186 resources/ui/editor_toolbar.ui:229
 msgid "Vertical"
-msgstr ""
+msgstr "수직"
 
 #: resources/ui/create_project_dialog.ui:22
 msgid "Parent directory"
-msgstr ""
+msgstr "상위 디렉토리"
 
 #: resources/ui/fishbowl_window.ui:6
 msgid "Fishbowl"
@@ -5819,7 +5824,7 @@ msgstr ""
 
 #: resources/ui/quantize_dialog.ui:5
 msgid "Quantize Options"
-msgstr ""
+msgstr "양자화 옵션"
 
 #: resources/ui/quantize_dialog.ui:26
 msgid "Quantize to"
@@ -7537,9 +7542,8 @@ msgstr ""
 "용됩니다."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1115
-#, fuzzy
 msgid "VST2 plugins"
-msgstr "플러그인"
+msgstr "VST2 플러그인"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1116
 msgid "VST2 plugin search paths separated by : (or ; on Windows)."
