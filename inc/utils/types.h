@@ -13,6 +13,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include <gtk.h>
+
 /**
  * @addtogroup utils
  *

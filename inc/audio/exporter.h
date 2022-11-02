@@ -68,6 +68,18 @@ typedef enum ExportTimeRange
   TIME_RANGE_CUSTOM,
 } ExportTimeRange;
 
+static const char * export_time_range_str[] = {
+  "Loop",
+  "Song",
+  "Custom",
+};
+
+static inline const char *
+export_time_range_to_str (ExportTimeRange export_time_range)
+{
+  return export_time_range_str[export_time_range];
+}
+
 /**
  * Export mode.
  *

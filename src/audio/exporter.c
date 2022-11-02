@@ -23,6 +23,7 @@
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/io.h"
@@ -183,10 +184,12 @@ export_audio (ExportSettings * info)
       break;
     case TIME_RANGE_CUSTOM:
       sfinfo.frames =
-        position_to_frames (&info->custom_start)
-        - position_to_frames (&info->custom_end);
+        position_to_frames (&info->custom_end)
+        - position_to_frames (&info->custom_start);
       break;
     }
+
+  g_return_val_if_fail (sfinfo.frames > 0, -1);
 
   /* set samplerate */
   if (info->format == EXPORT_FORMAT_OGG_OPUS)
@@ -823,6 +826,23 @@ export_settings_free_members (ExportSettings * self)
 void
 export_settings_print (const ExportSettings * self)
 {
+  const char * time_range_type_str =
+    export_time_range_to_str (self->time_range);
+  char time_range[600];
+  if (self->time_range == TIME_RANGE_CUSTOM)
+    {
+      char start_str[200];
+      position_to_string (&self->custom_start, start_str);
+      char end_str[200];
+      position_to_string (&self->custom_end, end_str);
+      sprintf (
+        time_range, "Custom: %s ~ %s", start_str, end_str);
+    }
+  else
+    {
+      strcpy (time_range, time_range_type_str);
+    }
+
   g_message (
     "~~~ Export Settings ~~~\n"
     "format: %s\n"
@@ -840,7 +860,7 @@ export_settings_print (const ExportSettings * self)
     "num files: %d\n",
     export_format_to_pretty_str (self->format), self->artist,
     self->title, self->genre,
-    audio_bit_depth_enum_to_int (self->depth), "TODO",
+    audio_bit_depth_enum_to_int (self->depth), time_range,
     export_mode_to_str (self->mode),
     self->disable_after_bounce, self->bounce_with_parents,
     bounce_step_to_str (self->bounce_step), self->dither,
