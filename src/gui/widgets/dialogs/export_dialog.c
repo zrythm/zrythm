@@ -1342,9 +1342,12 @@ on_time_range_changed (
   ExportDialogWidget * self =
     Z_EXPORT_DIALOG_WIDGET (user_data);
   AdwComboRow * combo_row = ADW_COMBO_ROW (gobject);
-  bool is_audio = combo_row == self->audio_time_range_combo;
+  bool is_audio = (combo_row == self->audio_time_range_combo);
   ExportTimeRange time_range =
     adw_combo_row_get_selected (combo_row);
+  g_debug (
+    "time range selected changed (is audio? %d): %s",
+    is_audio, export_time_range_to_str (time_range));
   gtk_widget_set_visible (
     GTK_WIDGET (
       is_audio
@@ -1367,6 +1370,10 @@ setup_time_range_combo_row (
   };
   GtkStringList * string_list = gtk_string_list_new (strings);
 
+  g_debug (
+    "setting up time range combo row (is audio ? %d)",
+    is_audio);
+
   adw_combo_row_set_model (
     combo_row, G_LIST_MODEL (string_list));
 
@@ -1377,6 +1384,7 @@ setup_time_range_combo_row (
   ExportTimeRange tr = g_settings_get_enum (
     is_audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI, "time-range");
   adw_combo_row_set_selected (combo_row, (guint) tr);
+  on_time_range_changed (G_OBJECT (combo_row), NULL, self);
 }
 
 static void
