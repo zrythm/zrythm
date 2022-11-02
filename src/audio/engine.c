@@ -177,6 +177,7 @@ engine_update_frames_per_tick (
   self->frames_per_tick =
     (((double) sample_rate * 60.0 * (double) beats_per_bar)
      / ((double) bpm * (double) self->transport->ticks_per_bar));
+  g_return_if_fail (self->frames_per_tick > 1.0);
   self->ticks_per_frame = 1.0 / self->frames_per_tick;
 
   g_message (

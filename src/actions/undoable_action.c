@@ -23,6 +23,7 @@ undoable_action_init_loaded (UndoableAction * self)
     / (double) self->sample_rate;
   self->frames_per_tick =
     self->frames_per_tick * sample_rate_ratio;
+  self->sample_rate = AUDIO_ENGINE->sample_rate;
 
   /* uppercase, camel case, snake case */
 #define INIT_LOADED(uc, sc, cc) \

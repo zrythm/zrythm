@@ -568,20 +568,24 @@ test_move_audio_region_and_lower_samplerate (void)
     TL_SELECTIONS, MOVE_TICKS, 0, 0, F_NOT_ALREADY_MOVED,
     NULL);
 
-  /* save the project */
-  int ret =
-    project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
-  g_assert_cmpint (ret, ==, 0);
-  char * prj_file =
-    g_build_filename (PROJECT->dir, PROJECT_FILE, NULL);
+  for (int i = 0; i < 4; i++)
+    {
+      /* save the project */
+      int ret = project_save (
+        PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
+      g_assert_cmpint (ret, ==, 0);
+      char * prj_file =
+        g_build_filename (PROJECT->dir, PROJECT_FILE, NULL);
 
-  /* adjust the samplerate to be given at startup */
-  zrythm_app->samplerate = (int) AUDIO_ENGINE->sample_rate / 2;
+      /* adjust the samplerate to be given at startup */
+      zrythm_app->samplerate =
+        (int) AUDIO_ENGINE->sample_rate / 2;
 
-  object_free_w_func_and_null (project_free, PROJECT);
+      object_free_w_func_and_null (project_free, PROJECT);
 
-  /* reload */
-  ret = project_load (prj_file, 0);
+      /* reload */
+      ret = project_load (prj_file, 0);
+    }
 
   test_helper_zrythm_cleanup ();
 }
@@ -3179,14 +3183,14 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test move audio_region_and lower samplerate",
+    (GTestFunc) test_move_audio_region_and_lower_samplerate);
+  g_test_add_func (
     TEST_PREFIX "test cut automation region",
     (GTestFunc) test_cut_automation_region);
   g_test_add_func (
     TEST_PREFIX "test split large audio file",
     (GTestFunc) test_split_large_audio_file);
-  g_test_add_func (
-    TEST_PREFIX "test move audio_region_and lower samplerate",
-    (GTestFunc) test_move_audio_region_and_lower_samplerate);
   g_test_add_func (
     TEST_PREFIX "test move audio_region_and lower bpm",
     (GTestFunc) test_move_audio_region_and_lower_bpm);
