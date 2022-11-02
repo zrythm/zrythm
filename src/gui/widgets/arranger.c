@@ -87,6 +87,12 @@ G_DEFINE_TYPE (ArrangerWidget, arranger_widget, GTK_TYPE_WIDGET)
 
 #define SCROLL_PADDING 8
 
+static inline bool
+is_alt_held (ArrangerWidget * self)
+{
+  return self->alt_held | MAIN_WINDOW->alt_held;
+}
+
 /**
  * Returns if the arranger can scroll vertically.
  */
@@ -1483,7 +1489,7 @@ arranger_widget_on_key_release (
 
   if (ACTION_IS (STARTING_MOVING))
     {
-      if (self->alt_held && self->can_link)
+      if (is_alt_held (self) && self->can_link)
         self->action = UI_OVERLAY_ACTION_MOVING_LINK;
       else if (
         self->ctrl_held
@@ -1493,7 +1499,8 @@ arranger_widget_on_key_release (
       else
         self->action = UI_OVERLAY_ACTION_MOVING;
     }
-  else if (ACTION_IS (MOVING) && self->alt_held && self->can_link)
+  else if (
+    ACTION_IS (MOVING) && is_alt_held (self) && self->can_link)
     {
       self->action = UI_OVERLAY_ACTION_MOVING_LINK;
     }
@@ -1504,7 +1511,7 @@ arranger_widget_on_key_release (
       self->action = UI_OVERLAY_ACTION_MOVING_COPY;
     }
   else if (
-    ACTION_IS (MOVING_LINK) && !self->alt_held
+    ACTION_IS (MOVING_LINK) && !is_alt_held (self)
     && self->can_link)
     {
       self->action =
@@ -1569,7 +1576,8 @@ arranger_widget_on_key_press (
       else
         self->action = UI_OVERLAY_ACTION_MOVING;
     }
-  else if (ACTION_IS (MOVING) && self->alt_held && self->can_link)
+  else if (
+    ACTION_IS (MOVING) && is_alt_held (self) && self->can_link)
     {
       self->action = UI_OVERLAY_ACTION_MOVING_LINK;
     }
@@ -1579,7 +1587,7 @@ arranger_widget_on_key_press (
     {
       self->action = UI_OVERLAY_ACTION_MOVING_COPY;
     }
-  else if (ACTION_IS (MOVING_LINK) && !self->alt_held)
+  else if (ACTION_IS (MOVING_LINK) && !is_alt_held (self))
     {
       self->action =
         self->ctrl_held
@@ -2250,7 +2258,7 @@ on_drag_begin_handle_hit_object (
   bool is_resize_loop =
     arranger_object_is_resize_loop (obj, wy);
   bool show_cut_lines = arranger_object_should_show_cut_lines (
-    obj, self->alt_held);
+    obj, is_alt_held (self));
   bool is_rename = arranger_object_is_rename (obj, wx, wy);
   bool is_selected = arranger_object_is_selected (obj);
   self->start_object_was_selected = is_selected;
@@ -3248,6 +3256,7 @@ drag_update (
    * it's just
    * a click, so we can check at drag_end and see if
    * anything was selected */
+  bool alt_held = is_alt_held (self);
   switch (self->action)
     {
     case UI_OVERLAY_ACTION_STARTING_SELECTION:
@@ -3270,7 +3279,7 @@ drag_update (
       }
       break;
     case UI_OVERLAY_ACTION_STARTING_MOVING:
-      if (self->alt_held && self->can_link)
+      if (alt_held && self->can_link)
         self->action = UI_OVERLAY_ACTION_MOVING_LINK;
       else if (
         self->ctrl_held
@@ -3281,7 +3290,7 @@ drag_update (
         self->action = UI_OVERLAY_ACTION_MOVING;
       break;
     case UI_OVERLAY_ACTION_MOVING:
-      if (self->alt_held && self->can_link)
+      if (alt_held && self->can_link)
         self->action = UI_OVERLAY_ACTION_MOVING_LINK;
       else if (
         self->ctrl_held
@@ -3290,7 +3299,7 @@ drag_update (
         self->action = UI_OVERLAY_ACTION_MOVING_COPY;
       break;
     case UI_OVERLAY_ACTION_MOVING_LINK:
-      if (!self->alt_held)
+      if (!alt_held)
         self->action =
           self->ctrl_held
             ? UI_OVERLAY_ACTION_MOVING_COPY
@@ -3299,7 +3308,7 @@ drag_update (
     case UI_OVERLAY_ACTION_MOVING_COPY:
       if (!self->ctrl_held)
         self->action =
-          self->alt_held && self->can_link
+          alt_held && self->can_link
             ? UI_OVERLAY_ACTION_MOVING_LINK
             : UI_OVERLAY_ACTION_MOVING;
       break;
@@ -3313,7 +3322,7 @@ drag_update (
     case UI_OVERLAY_ACTION_CUTTING:
       /* alt + move changes the action from
        * cutting to moving-link */
-      if (self->alt_held && self->can_link)
+      if (alt_held && self->can_link)
         self->action = UI_OVERLAY_ACTION_MOVING_LINK;
       break;
     case UI_OVERLAY_ACTION_STARTING_AUDITIONING:
@@ -5217,7 +5226,9 @@ on_motion (
       self->hovered_object = obj;
     }
 
-  if (ACTION_IS (CUTTING) && !self->alt_held && P_TOOL != TOOL_CUT)
+  if (
+    ACTION_IS (CUTTING) && !is_alt_held (self)
+    && P_TOOL != TOOL_CUT)
     {
       self->action = UI_OVERLAY_ACTION_NONE;
     }
@@ -5713,7 +5724,7 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
               {
                 if (r_obj)
                   {
-                    if (self->alt_held)
+                    if (is_alt_held (self))
                       return ARRANGER_CURSOR_CUT;
                     int wx =
                       (int) self->hover_x - r_obj->full_rect.x;

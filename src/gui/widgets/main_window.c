@@ -190,6 +190,23 @@ main_window_widget_new (ZrythmApp * _app)
 }
 
 static gboolean
+on_key_released (
+  GtkEventControllerKey * key_controller,
+  guint                   keyval,
+  guint                   keycode,
+  GdkModifierType         state,
+  gpointer                user_data)
+{
+  MainWindowWidget * self = Z_MAIN_WINDOW_WIDGET (user_data);
+  if (z_gtk_keyval_is_alt (keyval))
+    {
+      self->alt_held = false;
+    }
+
+  return false;
+}
+
+static gboolean
 on_key_pressed (
   GtkEventControllerKey * key_controller,
   guint                   keyval,
@@ -199,6 +216,11 @@ on_key_pressed (
 {
   g_debug ("main window key press");
   MainWindowWidget * self = Z_MAIN_WINDOW_WIDGET (user_data);
+
+  if (z_gtk_keyval_is_alt (keyval))
+    {
+      self->alt_held = true;
+    }
 
   /* if pressed space and currently not inside a GtkEditable,
    * activate the play-pause action */
@@ -786,6 +808,9 @@ main_window_widget_init (MainWindowWidget * self)
   g_signal_connect (
     G_OBJECT (key_controller), "key-pressed",
     G_CALLBACK (on_key_pressed), self);
+  g_signal_connect (
+    G_OBJECT (key_controller), "key-released",
+    G_CALLBACK (on_key_released), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (key_controller));
 
