@@ -29,6 +29,7 @@
 typedef enum
 {
   Z_AUDIO_AUDIO_FUNCTION_ERROR_INVALID_POSITIONS,
+  Z_AUDIO_AUDIO_FUNCTION_ERROR_FAILED,
 } ZAudioAudioFunctionError;
 
 #define Z_AUDIO_AUDIO_FUNCTION_ERROR \
@@ -471,7 +472,14 @@ audio_function_apply (
           "tmp-clip");
         tmp_clip = audio_clip_edit_in_ext_program (tmp_clip);
         if (!tmp_clip)
-          return -1;
+          {
+            /* FIXME this should be handled async */
+            g_set_error_literal (
+              error, Z_AUDIO_AUDIO_FUNCTION_ERROR,
+              Z_AUDIO_AUDIO_FUNCTION_ERROR_FAILED,
+              _ ("Failed to get audio clip from external program"));
+            return -1;
+          }
         dsp_copy (
           &frames[0], &tmp_clip->frames[0],
           MIN (num_frames, (size_t) tmp_clip->num_frames)
