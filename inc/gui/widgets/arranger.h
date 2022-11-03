@@ -692,8 +692,8 @@ arranger_widget_get_min_possible_position (
 /**
  * Sets the highlight rectangle.
  *
- * @param rect The rectangle, or NULL to
- *   unset/unhighlight.
+ * @param rect The rectangle with absolute positions, or NULL
+ *   to unset/unhighlight.
  */
 void
 arranger_widget_set_highlight_rect (

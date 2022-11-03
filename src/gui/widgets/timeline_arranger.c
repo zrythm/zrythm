@@ -1228,6 +1228,11 @@ on_dnd_drop (
 {
   ArrangerWidget * self = Z_ARRANGER_WIDGET (data);
 
+  const EditorSettings settings =
+    arranger_widget_get_editor_setting_values (self);
+  x += (double) settings.scroll_start_x;
+  y += (double) settings.scroll_start_y;
+
   Track * track =
     timeline_arranger_widget_get_track_at_y (self, y);
   TrackLane * lane =
@@ -1358,6 +1363,11 @@ on_dnd_motion (
   gpointer        user_data)
 {
   ArrangerWidget * self = Z_ARRANGER_WIDGET (user_data);
+
+  const EditorSettings settings =
+    arranger_widget_get_editor_setting_values (self);
+  x += (double) settings.scroll_start_x;
+  y += (double) settings.scroll_start_y;
 
   self->hovered_at =
     timeline_arranger_widget_get_at_at_y (self, y);
