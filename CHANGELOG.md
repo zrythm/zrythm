@@ -6,6 +6,26 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.3.11.1] - 2022-11-03
+### Added
+- Add clipping detection when exporting audio
+
+### Changed
+- Handle scrolling manually in arrangers instead of using GtkScrolledWindow
+- Clip editor: Draw the playhead position in the arranger and the loop-adjusted position in the ruler instead of the other way around
+- Update Spanish, Chinese (Simplified), Ukrainian, French, Korean, Catalan, Russian translations
+
+### Fixed
+- Fix crash when attempting to get RtAudio device names
+- Fix errors when attempting to cut/paste audio data
+- Fix linear fade out function not working
+- Fix cut indicator not being drawn inside regions
+- Fix error when cutting automation regions before the first automation point
+- Fix showing an bug report dialog when clicking cancel when attempting to edit audio in an external program
+- Fix custom timerange being calculated wrongly when attempting to export audio
+- Fix error after loading a project in a different sample rate when audio clips exist in the undo stack
+- Fix custom range selector not being hidden when showing the export dialog for the first time and the current time range type is "Loop"
+
 ## [1.0.0-beta.3.10.1] - 2022-10-29
 ### Added
 - Show drives in file browser
