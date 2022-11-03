@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-10-03 21:09+0900\n"
-"PO-Revision-Date: 2022-10-14 15:02+0000\n"
+"PO-Revision-Date: 2022-10-18 23:55+0000\n"
 "Last-Translator: Hoseok Seo <ddinghoya@gmail.com>\n"
 "Language-Team: Korean <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/ko/>\n"
@@ -1482,7 +1482,7 @@ msgstr ""
 #: ../../editing/clip-editors/automation-editor.rst:67
 #: ../../editing/clip-editors/piano-roll.rst:134
 msgid "Flip"
-msgstr ""
+msgstr "뒤집기"
 
 #: ../../editing/clip-editors/automation-editor.rst:67
 msgid "Reverse/flip the selected automation horizontally or vertically."
@@ -2659,7 +2659,7 @@ msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:63
 msgid "Length"
-msgstr ""
+msgstr "길이"
 
 #: ../../editing/snapping-grid-options.rst:64
 msgid "The Length section controls the default length of objects."
@@ -2725,7 +2725,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:48
 msgid "Audio Regions"
-msgstr ""
+msgstr "오디오 영역"
 
 #: ../../editing/timeline/arranger.rst:49
 msgid "Audio regions contain audio clips from audio files."
@@ -2752,7 +2752,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:68
 msgid "MIDI Regions"
-msgstr ""
+msgstr "MIDI 영역"
 
 #: ../../editing/timeline/arranger.rst:69
 msgid "MIDI regions contain :term:`MIDI` notes."
@@ -3179,7 +3179,7 @@ msgstr ""
 
 #: ../../editing/timeline/toolbar.rst:32
 msgid "Musical Mode"
-msgstr ""
+msgstr "뮤지컬 모드"
 
 #: ../../editing/timeline/toolbar.rst:33
 msgid ""
@@ -3614,7 +3614,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:34
 msgid "Path"
-msgstr ""
+msgstr "경로"
 
 #: ../../getting-started/running-zrythm.rst:34
 msgid "This is the :term:`Zrythm user path`."
@@ -4564,7 +4564,7 @@ msgstr ""
 
 #: ../../playback-and-recording/overview.rst:24
 msgid "Position"
-msgstr ""
+msgstr "위치"
 
 #: ../../playback-and-recording/overview.rst:26
 msgid "Zrythm uses the following format for positions:"
@@ -4792,7 +4792,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Metronome options"
-msgstr ""
+msgstr "메트로놈 옵션"
 
 #: ../../playback-and-recording/transport-controls.rst:35
 msgid "Sets the volume of the metronome"
@@ -4800,7 +4800,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:38
 msgid "Return to cue point on stop"
-msgstr ""
+msgstr "정지 시 큐 포인트로 돌아가기"
 
 #: ../../playback-and-recording/transport-controls.rst:37
 msgid ""
@@ -4827,7 +4827,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:46
 msgid "Play"
-msgstr ""
+msgstr "재생"
 
 #: ../../playback-and-recording/transport-controls.rst:45
 msgid ""
@@ -4845,7 +4845,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:52
 msgid "Backward"
-msgstr ""
+msgstr "뒤로"
 
 #: ../../playback-and-recording/transport-controls.rst:52
 msgid "Moves the Playhead backward by the size of 1 snap point."
@@ -4853,7 +4853,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:55
 msgid "Forward"
-msgstr ""
+msgstr "앞으로"
 
 #: ../../playback-and-recording/transport-controls.rst:55
 msgid "Moves the Playhead forward by the size of 1 snap point."
@@ -4861,7 +4861,7 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:60
 msgid "Loop"
-msgstr ""
+msgstr "루프"
 
 #: ../../playback-and-recording/transport-controls.rst:58
 msgid ""
@@ -4904,7 +4904,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:19
 msgid "Bookmarks"
-msgstr ""
+msgstr "북마크"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:20
 msgid ""
@@ -5036,7 +5036,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:102
 msgid "Volume"
-msgstr ""
+msgstr "볼륨"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:102
 msgid "Control the loudness of the output audio."
@@ -5055,7 +5055,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:111
 msgid "Autoplay"
-msgstr ""
+msgstr "자동 재생"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:112
 msgid ""
@@ -5339,7 +5339,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:27
 msgid "Collection"
-msgstr ""
+msgstr "컬렉션"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:26
 msgid ""
@@ -5349,7 +5349,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:33
 msgid "Author"
-msgstr ""
+msgstr "저작자"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Filter by plugin manufacturer/author."
@@ -5361,7 +5361,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:35
 msgid "Category"
-msgstr ""
+msgstr "범주"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:36
 msgid "Filter by category (`Delay`, `Distortion`, etc.)."
@@ -5369,7 +5369,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "Protocol"
-msgstr ""
+msgstr "프로토콜"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:38
 msgid "Filter by protocol (`LV2`, `SFZ`, etc.)."
@@ -6285,7 +6285,7 @@ msgstr ""
 
 #: ../../routing/ports.rst:33 ../../tracks/track-types.rst:17
 msgid "Input"
-msgstr ""
+msgstr "입력"
 
 #: ../../routing/ports.rst:34
 msgid "The port receives signals"
@@ -6901,7 +6901,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:19
 msgid "Track Properties"
-msgstr ""
+msgstr "트랙 속성"
 
 #: ../../tracks/inspector-page.rst:21
 msgid "Track properties are basic properties that the track has."
@@ -6909,7 +6909,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:28
 msgid "Track Name"
-msgstr ""
+msgstr "트랙 이름"
 
 #: ../../tracks/inspector-page.rst:28
 msgid "Name of the track. Can be changed by double clicking."
@@ -6917,7 +6917,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:36
 msgid "Direct Out"
-msgstr ""
+msgstr "다이렉트 아웃"
 
 #: ../../tracks/inspector-page.rst:31
 msgid "The track that this track routes its output to."
@@ -7249,7 +7249,7 @@ msgstr ""
 
 #: ../../tracks/track-controls.rst:28
 msgid "Solo"
-msgstr ""
+msgstr "솔로"
 
 #: ../../tracks/track-controls.rst:28
 msgid ""
@@ -7259,7 +7259,7 @@ msgstr ""
 
 #: ../../tracks/track-controls.rst:33
 msgid "Listen"
-msgstr ""
+msgstr "듣기"
 
 #: ../../tracks/track-controls.rst:31
 msgid ""
@@ -8137,7 +8137,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Report a Bug"
-msgstr ""
+msgstr "버그 신고"
 
 #: ../../zrythm-interface/main-toolbar.rst:97
 msgid "Opens the page to report a new bug."
@@ -8157,7 +8157,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:108
 msgid "Log Viewer"
-msgstr ""
+msgstr "로그 뷰어"
 
 #: ../../zrythm-interface/main-toolbar.rst:109
 msgid "Displays the log, which gets updated real-time."

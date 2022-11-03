@@ -21,7 +21,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-10-15 00:01+0900\n"
-"PO-Revision-Date: 2022-10-04 15:52+0000\n"
+"PO-Revision-Date: 2022-10-17 00:10+0000\n"
 "Last-Translator: Eric <hamburger1024@mailbox.org>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
@@ -30,7 +30,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -2189,18 +2189,18 @@ msgid "Client zombie"
 msgstr "客户端瘫痪"
 
 #: src/audio/engine_jack.c:690
-#, fuzzy, c-format
+#, c-format
 msgid "JACK: Failed to disconnect monitor out: %s"
-msgstr "未能将 %s 与 %s 断开"
+msgstr "JACK: 未能断开监视器输出: %s"
 
 #: src/audio/engine_jack.c:739
 msgid "JACK: No physical playback ports found"
 msgstr ""
 
 #: src/audio/engine_jack.c:753
-#, fuzzy, c-format
+#, c-format
 msgid "JACK: Failed to connect monitor output [%s]: %s"
-msgstr "未能连接到左监视器输出端口"
+msgstr "JACK: 未能连接监视器输出 [%s]: %s"
 
 #: src/audio/engine_jack.c:754
 msgid "left"

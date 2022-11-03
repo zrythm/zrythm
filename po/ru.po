@@ -13,22 +13,23 @@
 # Nikita Saschenko <neketa777@gmail.com>, 2021.
 # Mikhail Chekan <chekoopa@mail.ru>, 2021.
 # Viktor <xasertop@gmail.com>, 2022.
+# kitamiq <i4v.mail@ya.ru>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-10-15 00:01+0900\n"
-"PO-Revision-Date: 2022-08-25 15:52+0000\n"
-"Last-Translator: Vik <xasertop@gmail.com>\n"
+"PO-Revision-Date: 2022-11-02 23:56+0000\n"
+"Last-Translator: kitamiq <i4v.mail@ya.ru>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -43,9 +44,8 @@ msgid "Minor"
 msgstr "Минор"
 
 #: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
-#, fuzzy
 msgid "Ionian"
-msgstr "Ионийский (Мажор)"
+msgstr "Ионийский"
 
 #: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
 msgid "Dorian"
@@ -61,58 +61,55 @@ msgstr "Лидийский"
 
 #: inc/schemas/audio/scale.h:100 inc/audio/scale.h:134
 msgid "Mixolydian"
-msgstr ""
+msgstr "Миксолидийский"
 
 #: inc/schemas/audio/scale.h:101 inc/audio/scale.h:135
 msgid "Aeolian"
-msgstr ""
+msgstr "Эолийский"
 
 #: inc/schemas/audio/scale.h:102 inc/audio/scale.h:136
 msgid "Locrian"
-msgstr ""
+msgstr "Локрийский"
 
 #: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
-#, fuzzy
 msgid "Melodic Minor"
-msgstr "Гармонический минор"
+msgstr "Мелодический минор"
 
 #: inc/schemas/audio/scale.h:104 inc/audio/scale.h:138
 msgid "Harmonic Minor"
 msgstr "Гармонический минор"
 
 #: inc/schemas/audio/scale.h:105 inc/audio/scale.h:139
-#, fuzzy
 msgid "Whole Tone"
-msgstr "Переключить верхнюю панель"
+msgstr "Целый тон"
 
 #: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
 msgid "Major Pentatonic"
-msgstr ""
+msgstr "Мажорная пентатоника"
 
 #: inc/schemas/audio/scale.h:107 inc/audio/scale.h:141
 msgid "Minor Pentatonic"
-msgstr ""
+msgstr "Минорная пентатоника"
 
 #: inc/schemas/audio/scale.h:108 inc/audio/scale.h:142
 msgid "Octatonic Half Whole"
-msgstr ""
+msgstr "Уменьшенный лад (полутон-тон)"
 
 #: inc/schemas/audio/scale.h:110 inc/audio/scale.h:143
 msgid "Octatonic Whole Half"
-msgstr ""
+msgstr "Уменьшенный лад (тон-полутон)"
 
 #: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
 msgid "Acoustic"
-msgstr ""
+msgstr "Акустический"
 
 #: inc/schemas/audio/scale.h:113 inc/audio/scale.h:145
-#, fuzzy
 msgid "Harmonic Major"
-msgstr "Гармонический минор"
+msgstr "Гармонический мажор"
 
 #: inc/schemas/audio/scale.h:114 inc/audio/scale.h:146
 msgid "Phrygian Dominant"
-msgstr ""
+msgstr "Фригийская доминанта"
 
 #: inc/schemas/audio/scale.h:115 inc/audio/scale.h:147
 msgid "Major Locrian"
@@ -120,20 +117,19 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:116 inc/audio/scale.h:148
 msgid "Algerian"
-msgstr ""
+msgstr "Алжирский"
 
 #: inc/schemas/audio/scale.h:117 inc/audio/scale.h:149
 msgid "Augmented"
-msgstr ""
+msgstr "Дополненный"
 
 #: inc/schemas/audio/scale.h:118 inc/audio/scale.h:150
 msgid "Double Harmonic"
-msgstr ""
+msgstr "Двойная гармоника"
 
 #: inc/schemas/audio/scale.h:119 inc/audio/scale.h:151
-#, fuzzy
 msgid "Chinese"
-msgstr "Кривизна (Curviness)"
+msgstr "Китайский"
 
 #: inc/schemas/audio/scale.h:120 inc/audio/scale.h:152
 msgid "Diminished"
@@ -145,7 +141,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:122 inc/audio/scale.h:154
 msgid "Egyptian"
-msgstr ""
+msgstr "Египетский"
 
 #: inc/schemas/audio/scale.h:123 inc/audio/scale.h:155
 msgid "Eight Tone Spanish"
@@ -172,19 +168,16 @@ msgid "Hungarian Gypsy"
 msgstr ""
 
 #: inc/schemas/audio/scale.h:129 inc/audio/scale.h:161
-#, fuzzy
 msgid "Insen"
-msgstr "Возвраты"
+msgstr "Инсен"
 
 #: inc/schemas/audio/scale.h:130 inc/audio/scale.h:162
-#, fuzzy
 msgid "Neapolitan Major"
-msgstr "Ионийский (Мажор)"
+msgstr "Неаполитанский мажор"
 
 #: inc/schemas/audio/scale.h:131 inc/audio/scale.h:163
-#, fuzzy
 msgid "Neapolitan Minor"
-msgstr "Эолийский (Натуральный минор)"
+msgstr "Неаполитанский минор"
 
 #: inc/schemas/audio/scale.h:132 inc/audio/scale.h:164
 #, fuzzy
@@ -192,9 +185,8 @@ msgid "Oriental"
 msgstr "По горизонтали"
 
 #: inc/schemas/audio/scale.h:133 inc/audio/scale.h:165
-#, fuzzy
 msgid "Romanian Minor"
-msgstr "Гармонический минор"
+msgstr "Румынский минор"
 
 #: inc/schemas/audio/scale.h:134 inc/audio/scale.h:166
 msgid "Altered"
@@ -202,15 +194,15 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:135 inc/audio/scale.h:167
 msgid "Maqam"
-msgstr ""
+msgstr "Макам"
 
 #: inc/schemas/audio/scale.h:136 inc/audio/scale.h:168
 msgid "Yo"
-msgstr ""
+msgstr "Йо"
 
 #: inc/schemas/audio/scale.h:137 inc/audio/scale.h:169
 msgid "Bebop Locrian"
-msgstr ""
+msgstr "Локрийский бибоп"
 
 #: inc/schemas/audio/scale.h:138 inc/audio/scale.h:170
 msgid "Bebop Dominant"
@@ -218,11 +210,11 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:139 inc/audio/scale.h:171
 msgid "Bebop Major"
-msgstr ""
+msgstr "Бибоп мажор"
 
 #: inc/schemas/audio/scale.h:140 inc/audio/scale.h:172
 msgid "Super Locrian"
-msgstr ""
+msgstr "Суперлокрийский"
 
 #: inc/schemas/audio/scale.h:141 inc/audio/scale.h:173
 #, fuzzy

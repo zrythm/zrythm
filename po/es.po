@@ -23,7 +23,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-10-15 00:01+0900\n"
-"PO-Revision-Date: 2022-10-12 11:56+0000\n"
+"PO-Revision-Date: 2022-10-26 23:55+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
@@ -32,7 +32,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.14.2-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -1174,9 +1174,8 @@ msgid "Failed to duplicate selections"
 msgstr "No se pudieron duplicar las selecciones"
 
 #: src/actions/actions.c:1394
-#, fuzzy
 msgid "Failed to unbind"
-msgstr "No se pudo encontrar el plugin con URI: %s"
+msgstr "No se pudo desvincular"
 
 #: src/actions/actions.c:1435 src/actions/actions.c:1916
 #: src/actions/actions.c:1946
@@ -1456,11 +1455,9 @@ msgid "Failed to create plugin %s"
 msgstr "No se pudo crear el complemento %s"
 
 #: src/actions/tracklist_selections.c:768
-#, fuzzy, c-format
+#, c-format
 msgid "Error instantiating plugin %s"
-msgstr ""
-"Error al crear instancia del plugin %s. Consulta el registro para obtener "
-"más detalles."
+msgstr "Error al crear una instancia del complemento %s"
 
 #: src/actions/tracklist_selections.c:839
 #, fuzzy, c-format
@@ -2319,14 +2316,12 @@ msgid "right"
 msgstr "Empujar a la derecha"
 
 #: src/audio/engine_jack.c:812 src/gui/widgets/monitor_section.c:237
-#, fuzzy
 msgid "Failed to connect to left monitor output port"
-msgstr "No se pudo abrir el archivo: %s"
+msgstr "No se pudo conectar con el puerto de salida del monitor izquierdo"
 
 #: src/audio/engine_jack.c:820 src/gui/widgets/monitor_section.c:246
-#, fuzzy
 msgid "Failed to connect to right monitor output port"
-msgstr "No se pudo abrir el archivo: %s"
+msgstr "No se pudo conectar con el puerto de salida del monitor derecho"
 
 #: src/audio/curve.c:306
 msgid "Exponential"
@@ -4467,11 +4462,12 @@ msgid ""
 "Attempted to drop an instrument onto a MIDI track, which is not supported. "
 "Create a new instrument track instead?"
 msgstr ""
+"Se intentó soltar un instrumento sobre una pista MIDI, lo cual no se admite. "
+"¿Quiere crear una pista instrumental nueva en su lugar?"
 
 #: src/gui/widgets/tracklist.c:279 src/gui/widgets/tracklist.c:297
-#, fuzzy
 msgid "Dragged item is not supported"
-msgstr "No se admite la funcionalidad requerida %s"
+msgstr "No se admite el elemento colocado"
 
 #: src/gui/widgets/chord_pad_panel.c:67
 msgid "From scale"
@@ -5052,12 +5048,11 @@ msgstr "_Seleccionar"
 
 #: src/gui/widgets/dialogs/string_entry_dialog.c:81
 msgid "Please enter a value"
-msgstr "Introduce un valor"
+msgstr "Introduzca un valor"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:52
-#, fuzzy
 msgid "Please enter a valid name."
-msgstr "Introduce un valor"
+msgstr "Introduzca un nombre válido."
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:60
 #, c-format
@@ -5078,12 +5073,11 @@ msgstr "Ejecución del guión con éxito"
 
 #: src/guile/guile.c:27
 msgid "Script execution failed"
-msgstr "La ejecución del guión falló"
+msgstr "Falló la ejecución de la secuencia de órdenes"
 
 #: src/guile/actions/port_connection_action.c:50
-#, fuzzy
 msgid "Failed to connect ports"
-msgstr "No se pudo abrir el archivo: %s"
+msgstr "No se pudieron conectar los puertos"
 
 #: src/guile/actions/channel_send_action.c:47
 #, fuzzy
@@ -5097,7 +5091,7 @@ msgstr "Error al cargar el directorio del paquete LV2: "
 #: src/plugins/plugin_manager.c:1249
 #, c-format
 msgid "Scanned %s plugin: %s"
-msgstr "%s plugin escaneado: %s"
+msgstr "Se analizó el complemento %s: %s"
 
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
@@ -5105,30 +5099,30 @@ msgstr "%s plugin escaneado: %s"
 #: src/plugins/plugin_manager.c:1262
 #, c-format
 msgid "Skipped %1$s plugin at %2$s"
-msgstr "plugin %1$s omitido en %2$s"
+msgstr "Se omitió el complemento %1$s en %2$s"
 
 #: src/plugins/plugin_manager.c:1387
 msgid "Scanned LV2 plugin"
-msgstr "plugin LV2 escaneado"
+msgstr "Se analizó el complemento LV2"
 
 #: src/plugins/plugin_manager.c:1397
 #, c-format
 msgid "Skipped LV2 plugin at %s"
-msgstr "Se saltó el plugin del LV2 en %s"
+msgstr "Se omitió el complemento LV2 en %s"
 
 #: src/plugins/plugin_manager.c:1492
 msgid "Scanned AU plugin"
-msgstr "Plugin de AU escaneado"
+msgstr "Se analizó el complemento AU"
 
 #: src/plugins/plugin_manager.c:1497
 #, c-format
 msgid "Skipped AU plugin at %u"
-msgstr "Se saltó el plugin AU en %u"
+msgstr "Se omitió el complemento AU en %u"
 
 #: src/plugins/lv2_plugin.c:1745
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get LV2 plugin from URI <%s>"
-msgstr "No se pudo encontrar el plugin con URI: %s"
+msgstr "No se pudo obtener el complemento LV2 a partir del URI <%s>"
 
 #: src/plugins/lv2_plugin.c:1998
 #, c-format
@@ -5141,19 +5135,19 @@ msgid "Failed to make temporary dir"
 msgstr "No se pudo ver el esquema %s"
 
 #: src/plugins/lv2_plugin.c:2351
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find preset with URI <%s>"
-msgstr "No se pudo encontrar el plugin con URI: %s"
+msgstr "No se pudo encontrar la preconfiguración con el URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2369
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load state from %s"
-msgstr "No se pudo abrir el archivo: %s"
+msgstr "No se pudo cargar el estado a partir de %s"
 
 #: src/plugins/lv2_plugin.c:2397
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find plugin with URI <%s>"
-msgstr "No se pudo encontrar el plugin con URI: %s"
+msgstr "No se pudo encontrar el complemento con el URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2419
 #, fuzzy, c-format
@@ -6560,7 +6554,7 @@ msgstr "Directorio de instalación"
 msgid ""
 "This is the directory Zrythm is installed in. Currently only used on Windows."
 msgstr ""
-"Este es el directorio en el que está instalado Zrythm. Actualmente sólo se "
+"Este es el directorio en el que está instalado Zrythm. Actualmente solo se "
 "usa en Windows."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:257
