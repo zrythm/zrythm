@@ -549,8 +549,7 @@ recreate_main_window (void)
  * Initializes the selections in the project.
  *
  * @note
- * Not meant to be used anywhere besides
- * tests and project.c
+ * Not meant to be used anywhere besides tests and project.c
  */
 void
 project_init_selections (Project * self)
@@ -1110,19 +1109,38 @@ load (const char * filename, const int is_template)
 
   midi_mappings_init_loaded (self->midi_mappings);
 
-  arranger_selections_init_loaded (
-    (ArrangerSelections *) self->timeline_selections, true,
-    NULL);
-  arranger_selections_init_loaded (
-    (ArrangerSelections *) self->midi_arranger_selections,
-    true, NULL);
-  arranger_selections_init_loaded (
-    (ArrangerSelections *) self->chord_selections, true, NULL);
-  arranger_selections_init_loaded (
-    (ArrangerSelections *) self->automation_selections, true,
-    NULL);
-  arranger_selections_init_loaded (
-    (ArrangerSelections *) self->audio_selections, true, NULL);
+  /* note: when converting from older projects there may be no
+   * selections (because it's too much work with little
+   * benefit to port the selections from older projects) */
+
+#define INIT_OR_CREATE_ARR_SELECTIONS( \
+  prefix, c_type, type_name) \
+  if (self->prefix##_selections) \
+    { \
+      arranger_selections_init_loaded ( \
+        (ArrangerSelections *) self->prefix##_selections, \
+        true, NULL); \
+    } \
+  else \
+    { \
+      self->prefix##_selections = \
+        (c_type##Selections *) arranger_selections_new ( \
+          ARRANGER_SELECTIONS_TYPE_##type_name); \
+    }
+
+  INIT_OR_CREATE_ARR_SELECTIONS (audio, Audio, AUDIO);
+  INIT_OR_CREATE_ARR_SELECTIONS (chord, Chord, CHORD);
+  INIT_OR_CREATE_ARR_SELECTIONS (
+    automation, Automation, AUTOMATION);
+  INIT_OR_CREATE_ARR_SELECTIONS (timeline, Timeline, TIMELINE);
+  INIT_OR_CREATE_ARR_SELECTIONS (
+    midi_arranger, MidiArranger, MIDI);
+
+  if (!self->mixer_selections)
+    {
+      self->mixer_selections = mixer_selections_new ();
+      mixer_selections_init (self->mixer_selections);
+    }
 
   tracklist_selections_init_loaded (
     self->tracklist_selections);

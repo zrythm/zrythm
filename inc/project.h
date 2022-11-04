@@ -330,27 +330,27 @@ static const cyaml_schema_field_t project_fields_schema[] = {
     Project,
     audio_engine,
     engine_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Project,
     mixer_selections,
     mixer_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Project,
     timeline_selections,
     timeline_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Project,
     midi_arranger_selections,
     midi_arranger_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Project,
     chord_selections,
     chord_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Project,
     automation_selections,
     automation_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Project,
     audio_selections,
     audio_selections_fields_schema),
@@ -501,8 +501,7 @@ project_get_path (Project * self, ProjectPath path, bool backup);
  * Initializes the selections in the project.
  *
  * @note
- * Not meant to be used anywhere besides
- * tests and project.c
+ * Not meant to be used anywhere besides tests and project.c
  */
 COLD void
 project_init_selections (Project * self);
