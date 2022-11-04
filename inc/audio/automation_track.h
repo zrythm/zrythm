@@ -32,7 +32,7 @@ typedef struct AutomationModeWidget   AutomationModeWidget;
  * @{
  */
 
-#define AUTOMATION_TRACK_SCHEMA_VERSION 1
+#define AUTOMATION_TRACK_SCHEMA_VERSION 2
 
 #define MAX_AUTOMATION_POINTS 1200
 
@@ -183,6 +183,10 @@ static const cyaml_schema_field_t automation_track_fields_schema[] = {
     AutomationTrack,
     automation_mode,
     automation_mode_strings),
+  YAML_FIELD_ENUM (
+    AutomationTrack,
+    record_mode,
+    automation_record_mode_strings),
   YAML_FIELD_INT (AutomationTrack, visible),
   YAML_FIELD_FLOAT (AutomationTrack, height),
 
