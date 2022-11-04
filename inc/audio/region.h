@@ -92,10 +92,15 @@ typedef struct ZRegion
 
   /**
    * TODO region color independent of track.
-   *
-   * If null, the track color is used.
    */
   GdkRGBA color;
+
+  /**
+   * Whether to use the custom color.
+   *
+   * If false, the track color will be used.
+   */
+  bool use_color;
 
   /* ==== MIDI REGION ==== */
 
@@ -289,6 +294,11 @@ static const cyaml_schema_field_t region_fields_schema[] = {
   YAML_FIELD_STRING_PTR (ZRegion, name),
   YAML_FIELD_INT (ZRegion, pool_id),
   YAML_FIELD_FLOAT (ZRegion, gain),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    ZRegion,
+    color,
+    gdk_rgba_fields_schema),
+  YAML_FIELD_INT (ZRegion, use_color),
   CYAML_FIELD_SEQUENCE_COUNT (
     "midi_notes",
     CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
