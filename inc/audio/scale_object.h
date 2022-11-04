@@ -63,8 +63,7 @@ static const cyaml_schema_field_t scale_object_fields_schema[] = {
     ScaleObject,
     base,
     arranger_object_fields_schema),
-  /* FIXME uncomment before v1 release and upgrade project */
-  //YAML_FIELD_INT (ScaleObject, schema_version),
+  YAML_FIELD_INT (ScaleObject, schema_version),
   YAML_FIELD_INT (ScaleObject, index),
   YAML_FIELD_MAPPING_PTR (
     ScaleObject,
