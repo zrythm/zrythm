@@ -142,6 +142,22 @@ Use `MALLOC_CHECK_=3` to enforce additional checks
 when allocating memory. This is used during tests.
 See `man malloc` for details.
 
+### Valgrind
+
+To debug memory errors (invalid read/writes), use Valgrind
+as follows:
+
+    valgrind --num-callers=30 --log-file=valog --suppressions=tools/vg.sup --vgdb-error=1 build/src/zrythm
+
+The same environment variables mentioned above should be passed
+as appropriate before the command.
+
+Explanation for options:
+- `--num-callers=30` makes valgrind show enough functions in the call stack
+- `--log-file=valog` makes valgrind log into a file instead of in the console (optional)
+- `--suppressions=tools/vg.sup` tells valgrind to ignore errors that are outside Zrythm's control and false positives
+- `--vgdb-error=1` will make valgrind pause execution on the first error and allow gdb to be attached to it (valgrind will print instructions)
+
 ## Verifying Compiler Flags
 Zrythm is built with `-frecord-gcc-switches` by
 default, which stores the gcc flags used in each
