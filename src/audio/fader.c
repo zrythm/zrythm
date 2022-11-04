@@ -71,6 +71,7 @@ fader_append_ports (const Fader * self, GPtrArray * ports)
   ADD_PORT (solo);
   ADD_PORT (listen);
   ADD_PORT (mono_compat_enabled);
+  ADD_PORT (swap_phase);
   if (self->stereo_in)
     {
       ADD_PORT (stereo_in->l);
@@ -85,6 +86,24 @@ fader_append_ports (const Fader * self, GPtrArray * ports)
   ADD_PORT (midi_out);
 
 #undef ADD_PORT
+}
+
+Port *
+fader_create_swap_phase_port (Fader * self, bool passthrough)
+{
+  Port * swap_phase = port_new_with_type (
+    TYPE_CONTROL, FLOW_INPUT,
+    passthrough
+      ? _ ("Prefader Swap Phase")
+      : _ ("Fader Swap Phase"));
+  swap_phase->id.sym =
+    passthrough
+      ? g_strdup ("prefader_swap_phase")
+      : g_strdup ("fader_swap_phase");
+  swap_phase->id.flags2 |= PORT_FLAG2_FADER_SWAP_PHASE;
+  swap_phase->id.flags |= PORT_FLAG_TOGGLE;
+
+  return swap_phase;
 }
 
 /**
@@ -229,6 +248,14 @@ fader_new (
   self->mono_compat_enabled->id.flags2 |=
     PORT_FLAG2_FADER_MONO_COMPAT;
   self->mono_compat_enabled->id.flags |= PORT_FLAG_TOGGLE;
+
+  /* set swap phase */
+  self->swap_phase =
+    fader_create_swap_phase_port (self, passthrough);
+  control_port_set_toggled (
+    self->swap_phase, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
+  port_set_owner (
+    self->swap_phase, PORT_OWNER_TYPE_FADER, self);
 
   if (
     type == FADER_TYPE_AUDIO_CHANNEL
@@ -661,6 +688,40 @@ fader_set_mono_compat_enabled (
     }
 }
 
+/**
+ * Gets whether mono compatibility is enabled.
+ */
+bool
+fader_get_swap_phase (Fader * self)
+{
+  return control_port_is_toggled (self->swap_phase);
+}
+
+/**
+ * Sets whether mono compatibility is enabled.
+ */
+void
+fader_set_swap_phase (
+  Fader * self,
+  bool    enabled,
+  bool    fire_events)
+{
+  control_port_set_toggled (
+    self->swap_phase, enabled, fire_events);
+
+  if (
+    self->type == FADER_TYPE_AUDIO_CHANNEL
+    || self->type == FADER_TYPE_MIDI_CHANNEL)
+    {
+      Track * track = fader_get_track (self);
+      g_return_if_fail (track);
+      if (fire_events)
+        {
+          EVENTS_PUSH (ET_TRACK_STATE_CHANGED, track);
+        }
+    }
+}
+
 float
 fader_get_fader_val (void * self)
 {
@@ -794,6 +855,7 @@ fader_disconnect_all (Fader * self)
   port_disconnect_all (self->solo);
   port_disconnect_all (self->listen);
   port_disconnect_all (self->mono_compat_enabled);
+  port_disconnect_all (self->swap_phase);
 }
 
 /**
@@ -814,72 +876,8 @@ fader_copy_values (Fader * src, Fader * dest)
   dest->listen->control = src->listen->control;
   dest->mono_compat_enabled->control =
     src->mono_compat_enabled->control;
+  dest->swap_phase->control = src->swap_phase->control;
 }
-
-#if 0
-/**
- * Updates the track pos of the fader.
- */
-void
-fader_update_track_pos (
-  Fader * self,
-  int     pos)
-{
-  self->track_pos = pos;
-
-  if (self->amp)
-    {
-      port_update_track_pos (self->amp, NULL, pos);
-    }
-  if (self->balance)
-    {
-      port_update_track_pos (
-        self->balance, NULL, pos);
-    }
-  if (self->mute)
-    {
-      port_update_track_pos (self->mute, NULL, pos);
-    }
-  if (self->solo)
-    {
-      port_update_track_pos (self->solo, NULL, pos);
-    }
-  if (self->listen)
-    {
-      port_update_track_pos (
-        self->listen, NULL, pos);
-    }
-  if (self->mono_compat_enabled)
-    {
-      port_update_track_pos (
-        self->mono_compat_enabled, NULL, pos);
-    }
-  if (self->stereo_in)
-    {
-      port_update_track_pos (
-        self->stereo_in->l, NULL, pos);
-      port_update_track_pos (
-        self->stereo_in->r, NULL, pos);
-    }
-  if (self->stereo_out)
-    {
-      port_update_track_pos (
-        self->stereo_out->l, NULL, pos);
-      port_update_track_pos (
-        self->stereo_out->r, NULL, pos);
-    }
-  if (self->midi_in)
-    {
-      port_update_track_pos (
-        self->midi_in, NULL, pos);
-    }
-  if (self->midi_out)
-    {
-      port_update_track_pos (
-        self->midi_out, NULL, pos);
-    }
-}
-#endif
 
 /**
  * Process the Fader.
@@ -1223,6 +1221,19 @@ fader_process (
                 time_nfo->nframes, false);
             }
 
+          /* swap phase if need */
+          if (control_port_is_toggled (self->swap_phase))
+            {
+              dsp_mul_k2 (
+                &self->stereo_out->l
+                   ->buf[time_nfo->local_offset],
+                -1.f, time_nfo->nframes);
+              dsp_mul_k2 (
+                &self->stereo_out->r
+                   ->buf[time_nfo->local_offset],
+                -1.f, time_nfo->nframes);
+            }
+
           int fade_out_samples =
             g_atomic_int_get (&self->fade_out_samples);
           if (
@@ -1359,6 +1370,7 @@ fader_clone (const Fader * src)
   self->listen = port_clone (src->listen);
   self->mono_compat_enabled =
     port_clone (src->mono_compat_enabled);
+  self->swap_phase = port_clone (src->swap_phase);
   if (src->midi_in)
     self->midi_in = port_clone (src->midi_in);
   if (src->midi_out)
@@ -1388,6 +1400,7 @@ fader_free (Fader * self)
   DISCONNECT_AND_FREE (self->solo);
   DISCONNECT_AND_FREE (self->listen);
   DISCONNECT_AND_FREE (self->mono_compat_enabled);
+  DISCONNECT_AND_FREE (self->swap_phase);
 
 #define DISCONNECT_AND_FREE_STEREO(x) \
   object_free_w_func_and_null (stereo_ports_free, x)

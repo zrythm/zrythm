@@ -502,6 +502,23 @@ channel_set_mono_compat_enabled (
   bool      fire_events);
 
 /**
+ * Gets whether mono compatibility is enabled.
+ */
+NONNULL
+bool
+channel_get_swap_phase (Channel * self);
+
+/**
+ * Sets whether mono compatibility is enabled.
+ */
+NONNULL
+void
+channel_set_swap_phase (
+  Channel * self,
+  bool      enabled,
+  bool      fire_events);
+
+/**
  * Selects/deselects all plugins in the given slot
  * type.
  */

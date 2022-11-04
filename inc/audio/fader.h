@@ -28,7 +28,7 @@ typedef struct PortIdentifier  PortIdentifier;
  * @{
  */
 
-#define FADER_SCHEMA_VERSION 1
+#define FADER_SCHEMA_VERSION 2
 
 #define MONITOR_FADER (CONTROL_ROOM->monitor_fader)
 
@@ -159,9 +159,11 @@ typedef struct Fader
   /** Listened or not. */
   Port * listen;
 
-  /** Whether mono compatibility switch is
-   * enabled. */
+  /** Whether mono compatibility switch is enabled. */
   Port * mono_compat_enabled;
+
+  /** Swap phase toggle. */
+  Port * swap_phase;
 
   /**
    * L & R audio input ports, if audio.
@@ -251,6 +253,7 @@ static const cyaml_schema_field_t fader_fields_schema[] = {
     Fader,
     mono_compat_enabled,
     port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Fader, swap_phase, port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Fader,
     midi_in,
@@ -304,6 +307,9 @@ fader_new (
 
 Fader *
 fader_find_from_port_identifier (const PortIdentifier * id);
+
+Port *
+fader_create_swap_phase_port (Fader * self, bool passthrough);
 
 /**
  * Appends the ports owned by fader to the given
@@ -415,6 +421,21 @@ fader_get_mono_compat_enabled (Fader * self);
  */
 void
 fader_set_mono_compat_enabled (
+  Fader * self,
+  bool    enabled,
+  bool    fire_events);
+
+/**
+ * Gets whether mono compatibility is enabled.
+ */
+bool
+fader_get_swap_phase (Fader * self);
+
+/**
+ * Sets whether mono compatibility is enabled.
+ */
+void
+fader_set_swap_phase (
   Fader * self,
   bool    enabled,
   bool    fire_events);

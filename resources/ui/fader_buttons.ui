@@ -67,6 +67,18 @@
       </object>
     </child>
     <child>
+      <object class="GtkToggleButton" id="swap_phase">
+        <property name="focusable">1</property>
+        <property name="receives_default">1</property>
+        <property name="tooltip-text" translatable="yes">Swap phase</property>
+        <child>
+          <object class="GtkImage">
+            <property name="icon_name">phase</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
       <object class="GtkButton" id="e">
         <property name="focusable">1</property>
         <property name="receives_default">1</property>

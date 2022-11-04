@@ -52,6 +52,7 @@ typedef struct _TrackCanvasWidget   TrackCanvasWidget;
 #define TRACK_COLOR_AREA_WIDTH 18
 
 #define TRACK_ICON_NAME_MONO_COMPAT "mono"
+#define TRACK_ICON_NAME_SWAP_PHASE "phase"
 #define TRACK_ICON_NAME_RECORD "media-record"
 #define TRACK_ICON_NAME_SOLO "solo"
 #define TRACK_ICON_NAME_MUTE "mute"

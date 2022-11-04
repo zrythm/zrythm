@@ -302,6 +302,12 @@ draw_buttons (
           state = CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
         }
       else if (
+        TRACK_CB_ICON_IS (SWAP_PHASE)
+        && channel_get_swap_phase (track->channel))
+        {
+          state = CUSTOM_BUTTON_WIDGET_STATE_TOGGLED;
+        }
+      else if (
         TRACK_CB_ICON_IS (RECORD)
         && track_get_recording (track))
         {

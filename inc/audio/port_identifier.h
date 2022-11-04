@@ -405,6 +405,9 @@ typedef enum PortFlags2
    * track/channel (including faders owned by those
    * tracks/channels). */
   PORT_FLAG2_SAMPLE_PROCESSOR_TRACK = 1 << 28,
+
+  /** Fader swap phase. */
+  PORT_FLAG2_FADER_SWAP_PHASE = 1 << 29,
 } PortFlags2;
 
 static const cyaml_bitdef_t port_flags2_bitvals[] = {
@@ -437,6 +440,7 @@ static const cyaml_bitdef_t port_flags2_bitvals[] = {
   YAML_BITVAL ("monitor_fader", 26),
   YAML_BITVAL ("sample_processor_fader", 27),
   YAML_BITVAL ("sample_processor_track", 28),
+  YAML_BITVAL ("fader_swap_phase", 29),
 };
 
 /**

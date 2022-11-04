@@ -745,6 +745,27 @@ channel_set_mono_compat_enabled (
     self->fader, enabled, fire_events);
 }
 
+/**
+ * Gets whether mono compatibility is enabled.
+ */
+bool
+channel_get_swap_phase (Channel * self)
+{
+  return fader_get_swap_phase (self->fader);
+}
+
+/**
+ * Sets whether mono compatibility is enabled.
+ */
+void
+channel_set_swap_phase (
+  Channel * self,
+  bool      enabled,
+  bool      fire_events)
+{
+  fader_set_swap_phase (self->fader, enabled, fire_events);
+}
+
 static void
 channel_connect_plugins (Channel * self)
 {
@@ -1093,12 +1114,14 @@ channel_append_ports (
   _ADD (self->prefader->solo);
   _ADD (self->prefader->listen);
   _ADD (self->prefader->mono_compat_enabled);
+  _ADD (self->prefader->swap_phase);
   _ADD (self->fader->amp);
   _ADD (self->fader->balance);
   _ADD (self->fader->mute);
   _ADD (self->fader->solo);
   _ADD (self->fader->listen);
   _ADD (self->fader->mono_compat_enabled);
+  _ADD (self->fader->swap_phase);
 
   if (include_plugins)
     {

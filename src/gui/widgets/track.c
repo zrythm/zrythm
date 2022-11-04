@@ -344,6 +344,10 @@ set_tooltip_from_button (
     {
       SET_TOOLTIP (_ ("Mono compatibility"));
     }
+  else if (TRACK_CB_ICON_IS (SWAP_PHASE))
+    {
+      SET_TOOLTIP (_ ("Swap phase"));
+    }
   else if (TRACK_CB_ICON_IS (RECORD))
     {
       if (track_get_recording (track))
@@ -1117,6 +1121,13 @@ click_released (
                 track->channel,
                 !channel_get_mono_compat_enabled (
                   track->channel),
+                F_PUBLISH_EVENTS);
+            }
+          else if (TRACK_CB_ICON_IS (SWAP_PHASE))
+            {
+              channel_set_swap_phase (
+                track->channel,
+                !channel_get_swap_phase (track->channel),
                 F_PUBLISH_EVENTS);
             }
           else if (TRACK_CB_ICON_IS (RECORD))
@@ -1946,6 +1957,7 @@ track_widget_new (Track * track)
       add_button (self, true, TRACK_ICON_NAME_MUTE);
       add_button (self, true, TRACK_ICON_NAME_LISTEN);
       add_button (self, true, TRACK_ICON_NAME_SHOW_UI);
+      add_button (self, true, TRACK_ICON_NAME_SWAP_PHASE);
       add_button (self, false, TRACK_ICON_NAME_LOCK);
       add_button (self, false, TRACK_ICON_NAME_FREEZE);
       add_button (
@@ -1988,6 +2000,7 @@ track_widget_new (Track * track)
       add_solo_button (self, 1);
       add_button (self, 1, TRACK_ICON_NAME_MUTE);
       add_button (self, true, TRACK_ICON_NAME_LISTEN);
+      add_button (self, true, TRACK_ICON_NAME_SWAP_PHASE);
       add_button (
         self, 0, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       break;
@@ -2002,6 +2015,7 @@ track_widget_new (Track * track)
       add_solo_button (self, 1);
       add_button (self, 1, TRACK_ICON_NAME_MUTE);
       add_button (self, true, TRACK_ICON_NAME_LISTEN);
+      add_button (self, true, TRACK_ICON_NAME_SWAP_PHASE);
       add_button (
         self, 0, TRACK_ICON_NAME_SHOW_AUTOMATION_LANES);
       add_button (
@@ -2026,6 +2040,7 @@ track_widget_new (Track * track)
       add_solo_button (self, 1);
       add_button (self, 1, TRACK_ICON_NAME_MUTE);
       add_button (self, true, TRACK_ICON_NAME_LISTEN);
+      add_button (self, true, TRACK_ICON_NAME_SWAP_PHASE);
       add_button (self, 0, TRACK_ICON_NAME_MONITOR_AUDIO);
       add_button (self, 0, TRACK_ICON_NAME_LOCK);
       add_button (self, 0, TRACK_ICON_NAME_SHOW_TRACK_LANES);

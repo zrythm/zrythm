@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/track.h"
@@ -105,6 +105,25 @@ on_mono_compat_toggled (
     }
 }
 
+static void
+on_swap_phase_toggled (
+  GtkToggleButton *    btn,
+  FaderButtonsWidget * self)
+{
+  Track * track = self->track;
+  if (track)
+    {
+      if (!track_is_selected (track))
+        {
+          track_select (
+            track, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
+        }
+      channel_set_swap_phase (
+        track->channel, gtk_toggle_button_get_active (btn),
+        F_PUBLISH_EVENTS);
+    }
+}
+
 void
 fader_buttons_widget_block_signal_handlers (
   FaderButtonsWidget * self)
@@ -117,6 +136,8 @@ fader_buttons_widget_block_signal_handlers (
 
   g_signal_handler_block (
     self->mono_compat, self->mono_compat_toggled_handler_id);
+  g_signal_handler_block (
+    self->swap_phase, self->swap_phase_toggled_handler_id);
   g_signal_handler_block (
     self->solo, self->solo_toggled_handler_id);
   g_signal_handler_block (
@@ -139,6 +160,8 @@ fader_buttons_widget_unblock_signal_handlers (
 
   g_signal_handler_unblock (
     self->mono_compat, self->mono_compat_toggled_handler_id);
+  g_signal_handler_unblock (
+    self->swap_phase, self->swap_phase_toggled_handler_id);
   g_signal_handler_unblock (
     self->solo, self->solo_toggled_handler_id);
   g_signal_handler_unblock (
@@ -171,6 +194,19 @@ fader_buttons_widget_refresh (
         {
           gtk_widget_set_visible (
             GTK_WIDGET (self->mono_compat), false);
+        }
+      if (track->out_signal_type == TYPE_AUDIO)
+        {
+          gtk_toggle_button_set_active (
+            self->swap_phase,
+            channel_get_swap_phase (track->channel));
+          gtk_widget_set_visible (
+            GTK_WIDGET (self->swap_phase), true);
+        }
+      else
+        {
+          gtk_widget_set_visible (
+            GTK_WIDGET (self->swap_phase), false);
         }
       gtk_toggle_button_set_active (
         self->mute, track_get_muted (track));
@@ -224,6 +260,10 @@ on_btn_right_click (
     {
       port = fader->mono_compat_enabled;
     }
+  else if (widget == GTK_WIDGET (self->swap_phase))
+    {
+      port = fader->swap_phase;
+    }
   else if (widget == GTK_WIDGET (self->record))
     {
       port = self->track->recording;
@@ -273,6 +313,9 @@ fader_buttons_widget_init (FaderButtonsWidget * self)
   self->mono_compat_toggled_handler_id = g_signal_connect (
     G_OBJECT (self->mono_compat), "toggled",
     G_CALLBACK (on_mono_compat_toggled), self);
+  self->swap_phase_toggled_handler_id = g_signal_connect (
+    G_OBJECT (self->swap_phase), "toggled",
+    G_CALLBACK (on_swap_phase_toggled), self);
   self->solo_toggled_handler_id = g_signal_connect (
     G_OBJECT (self->solo), "toggled",
     G_CALLBACK (on_solo_toggled), self);
@@ -303,6 +346,7 @@ fader_buttons_widget_init (FaderButtonsWidget * self)
   ADD_RIGHT_CLICK_CB (self->solo);
   ADD_RIGHT_CLICK_CB (self->listen);
   ADD_RIGHT_CLICK_CB (self->mono_compat);
+  ADD_RIGHT_CLICK_CB (self->swap_phase);
   ADD_RIGHT_CLICK_CB (self->record);
 
 #undef ADD_RIGHT_CLICK_CB
@@ -320,6 +364,7 @@ fader_buttons_widget_class_init (
     klass, FaderButtonsWidget, x)
 
   BIND_CHILD (mono_compat);
+  BIND_CHILD (swap_phase);
   BIND_CHILD (solo);
   BIND_CHILD (mute);
   BIND_CHILD (listen);
