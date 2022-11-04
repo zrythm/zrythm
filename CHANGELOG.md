@@ -6,14 +6,17 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-beta.3.11.1] - 2022-11-03
+## [1.0.0-beta.4.0.1] - 2022-11-03
 ### Added
 - Add clipping detection when exporting audio
+- Add swap phase button to tracks that output audio
 
 ### Changed
 - Handle scrolling manually in arrangers instead of using GtkScrolledWindow
 - Clip editor: Draw the playhead position in the arranger and the loop-adjusted position in the ruler instead of the other way around
 - Update Spanish, Chinese (Simplified), Ukrainian, French, Korean, Catalan, Russian translations
+- Upgrade project format to v4 and auto-upgrade older projects
+- Automation tracks: save record mode with projects
 
 ### Fixed
 - Fix crash when attempting to get RtAudio device names
@@ -25,6 +28,9 @@ All notable changes to this project will be documented in this file.
 - Fix custom timerange being calculated wrongly when attempting to export audio
 - Fix error after loading a project in a different sample rate when audio clips exist in the undo stack
 - Fix custom range selector not being hidden when showing the export dialog for the first time and the current time range type is "Loop"
+- Fix schema version not being saved with marker objects
+- Fix error when loading a project with exposed ports with the dummy engine
+- Fix custom time range label text being wrapped in the export dialog
 
 ## [1.0.0-beta.3.10.1] - 2022-10-29
 ### Added
