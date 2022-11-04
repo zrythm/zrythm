@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -128,6 +112,8 @@ typedef enum PluginProtocol_v1
   PROT_AU_v1,
   PROT_SFZ_v1,
   PROT_SF2_v1,
+  PROT_CLAP_v1,
+  PROT_JSFX_v1,
 } PluginProtocol_v1;
 
 static const cyaml_strval_t plugin_protocol_strings_v1[] = {
@@ -140,11 +126,10 @@ static const cyaml_strval_t plugin_protocol_strings_v1[] = {
   { "AU",     PROT_AU_v1    },
   { "SFZ",    PROT_SFZ_v1   },
   { "SF2",    PROT_SF2_v1   },
+  { "CLAP",   PROT_CLAP_v1  },
+  { "JSFX",   PROT_JSFX_v1  },
 };
 
-/**
- * 32 or 64 bit.
- */
 typedef enum PluginArchitecture_v1
 {
   ARCH_32_v1,
@@ -154,6 +139,19 @@ typedef enum PluginArchitecture_v1
 static const cyaml_strval_t plugin_architecture_strings_v1[] = {
   {"32-bit",  ARCH_32_v1},
   { "64-bit", ARCH_64_v1},
+};
+
+typedef enum CarlaBridgeMode_v1
+{
+  CARLA_BRIDGE_NONE_v1,
+  CARLA_BRIDGE_UI_v1,
+  CARLA_BRIDGE_FULL_v1,
+} CarlaBridgeMode_v1;
+
+static const cyaml_strval_t carla_bridge_mode_strings_v1[] = {
+  {"None",  CARLA_BRIDGE_NONE_v1},
+  { "UI",   CARLA_BRIDGE_UI_v1  },
+  { "Full", CARLA_BRIDGE_FULL_v1},
 };
 
 /***
@@ -181,6 +179,8 @@ typedef struct PluginDescriptor_v1
   char *                path;
   char *                uri;
   int64_t               unique_id;
+  CarlaBridgeMode_v1    min_bridge_mode;
+  bool                  has_custom_ui;
   unsigned int          ghash;
 } PluginDescriptor_v1;
 
@@ -203,8 +203,8 @@ static const cyaml_schema_field_t plugin_descriptor_fields_schema_v1[] = {
   YAML_FIELD_INT (PluginDescriptor_v1, num_ctrl_ins),
   YAML_FIELD_INT (PluginDescriptor_v1, num_ctrl_outs),
   YAML_FIELD_INT (PluginDescriptor_v1, num_cv_ins),
-  YAML_FIELD_UINT (PluginDescriptor_v1, unique_id),
   YAML_FIELD_INT (PluginDescriptor_v1, num_cv_outs),
+  YAML_FIELD_UINT (PluginDescriptor_v1, unique_id),
   YAML_FIELD_ENUM (
     PluginDescriptor_v1,
     arch,
@@ -215,6 +215,11 @@ static const cyaml_schema_field_t plugin_descriptor_fields_schema_v1[] = {
     plugin_protocol_strings_v1),
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor_v1, path),
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor_v1, uri),
+  YAML_FIELD_ENUM (
+    PluginDescriptor_v1,
+    min_bridge_mode,
+    carla_bridge_mode_strings_v1),
+  YAML_FIELD_INT (PluginDescriptor_v1, has_custom_ui),
   YAML_FIELD_UINT (PluginDescriptor_v1, ghash),
 
   CYAML_FIELD_END
@@ -225,5 +230,8 @@ static const cyaml_schema_value_t plugin_descriptor_schema_v1 = {
     PluginDescriptor_v1,
     plugin_descriptor_fields_schema_v1),
 };
+
+PluginDescriptor *
+plugin_descriptor_upgrade_from_v1 (PluginDescriptor_v1 * old);
 
 #endif

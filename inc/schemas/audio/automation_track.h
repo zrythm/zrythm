@@ -29,6 +29,7 @@ static const cyaml_strval_t automation_mode_strings_v1[] = {
   { "<invalid>", NUM_AUTOMATION_MODES_v1  },
 };
 
+#if 0
 typedef enum AutomationRecordMode_v1
 {
   AUTOMATION_RECORD_MODE_TOUCH_v1,
@@ -41,26 +42,19 @@ static const cyaml_strval_t automation_record_mode_strings_v1[] = {
   { "Latch",     AUTOMATION_RECORD_MODE_LATCH_v1},
   { "<invalid>", NUM_AUTOMATION_RECORD_MODES_v1 },
 };
+#endif
 
 typedef struct AutomationTrack_v1
 {
-  int                     schema_version;
-  int                     index;
-  PortIdentifier_v1       port_id;
-  bool                    created;
-  ZRegion_v1 **           regions;
-  int                     num_regions;
-  size_t                  regions_size;
-  bool                    visible;
-  int                     y;
-  double                  height;
-  float                   last_recorded_value;
-  AutomationMode_v1       automation_mode;
-  AutomationRecordMode_v1 record_mode;
-  bool                    recording_started;
-  void *                  recording_region;
-  bool                    recording_start_sent;
-  bool                    recording_paused;
+  int               schema_version;
+  int               index;
+  PortIdentifier_v1 port_id;
+  bool              created;
+  ZRegion_v1 **     regions;
+  int               num_regions;
+  bool              visible;
+  double            height;
+  AutomationMode_v1 automation_mode;
 } AutomationTrack_v1;
 
 static const cyaml_schema_field_t
@@ -91,5 +85,8 @@ static const cyaml_schema_value_t automation_track_schema_v1 = {
     AutomationTrack_v1,
     automation_track_fields_schema_v1),
 };
+
+AutomationTrack *
+automation_track_upgrade_from_v1 (AutomationTrack_v1 * old);
 
 #endif

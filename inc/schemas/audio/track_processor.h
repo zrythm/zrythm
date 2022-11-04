@@ -108,4 +108,7 @@ static const cyaml_schema_value_t track_processor_schema_v1 = {
     track_processor_fields_schema_v1),
 };
 
+TrackProcessor *
+track_processor_upgrade_from_v1 (TrackProcessor_v1 * old);
+
 #endif

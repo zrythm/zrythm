@@ -68,4 +68,7 @@ static const cyaml_schema_value_t
       region_identifier_fields_schema_v1),
   };
 
+RegionIdentifier *
+region_identifier_upgrade_from_v1 (RegionIdentifier_v1 * old);
+
 #endif

@@ -67,20 +67,8 @@ typedef struct ArrangerObject_v1
   Position_v1            fade_out_pos;
   CurveOptions_v1        fade_in_opts;
   CurveOptions_v1        fade_out_opts;
-  GdkRectangle           full_rect;
-  int                    textw;
-  int                    texth;
-  void *                 transient;
-  void *                 main;
   bool                   muted;
-  int                    magic;
   RegionIdentifier_v1    region_id;
-  int                    index_in_prev_lane;
-  bool                   deleted_temporarily;
-  bool                   use_cache;
-  void *                 cached_cr[2];
-  void *                 cached_surface[2];
-  GdkRectangle           last_name_rect;
 } ArrangerObject_v1;
 
 static const cyaml_schema_field_t arranger_object_fields_schema_v1[] = {
@@ -146,5 +134,8 @@ static const cyaml_schema_value_t arranger_object_schema_v1 = {
     ArrangerObject_v1,
     arranger_object_fields_schema_v1),
 };
+
+ArrangerObject *
+arranger_object_upgrade_from_v1 (ArrangerObject_v1 * old);
 
 #endif

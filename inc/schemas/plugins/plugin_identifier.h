@@ -12,6 +12,8 @@
 
 #include "utils/yaml.h"
 
+typedef struct PluginIdentifier PluginIdentifier;
+
 typedef enum PluginSlotType_v1
 {
   PLUGIN_SLOT_INVALID_v1,
@@ -55,5 +57,8 @@ static const cyaml_schema_value_t plugin_identifier_schema_v1 = {
     PluginIdentifier_v1,
     plugin_identifier_fields_schema_v1),
 };
+
+PluginIdentifier *
+plugin_identifier_upgrade_from_v1 (PluginIdentifier_v1 * old);
 
 #endif

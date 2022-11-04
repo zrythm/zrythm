@@ -14,6 +14,8 @@
 
 #include "schemas/audio/fader.h"
 
+typedef struct SampleProcessor SampleProcessor;
+
 typedef struct SampleProcessor_v1
 {
   int        schema_version;
@@ -36,5 +38,8 @@ static const cyaml_schema_value_t sample_processor_schema_v1 = {
     SampleProcessor_v1,
     sample_processor_fields_schema_v1),
 };
+
+SampleProcessor *
+sample_processor_upgrade_from_v1 (SampleProcessor_v1 * old);
 
 #endif

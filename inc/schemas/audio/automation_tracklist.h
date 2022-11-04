@@ -19,7 +19,6 @@ typedef struct AutomationTracklist_v1
   int                   schema_version;
   AutomationTrack_v1 ** ats;
   int                   num_ats;
-  size_t                ats_size;
 } AutomationTracklist_v1;
 
 static const cyaml_schema_field_t
@@ -39,5 +38,9 @@ static const cyaml_schema_value_t
       AutomationTracklist_v1,
       automation_tracklist_fields_schema_v1),
   };
+
+AutomationTracklist *
+automation_tracklist_upgrade_from_v1 (
+  AutomationTracklist_v1 * old);
 
 #endif

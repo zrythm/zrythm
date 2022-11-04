@@ -27,13 +27,10 @@ typedef struct Plugin_v1
   PluginSetting_v1 *        setting;
   Port_v1 **                in_ports;
   int                       num_in_ports;
-  size_t                    in_ports_size;
   Port_v1 **                out_ports;
   int                       num_out_ports;
-  size_t                    out_ports_size;
   PluginBank_v1 **          banks;
   int                       num_banks;
-  size_t                    banks_size;
   PluginPresetIdentifier_v1 selected_bank;
   PluginPresetIdentifier_v1 selected_preset;
   bool                      visible;
@@ -82,5 +79,8 @@ static const cyaml_schema_value_t plugin_schema_v1 = {
     Plugin_v1,
     plugin_fields_schema_v1),
 };
+
+Plugin *
+plugin_upgrade_from_v1 (Plugin_v1 * old);
 
 #endif

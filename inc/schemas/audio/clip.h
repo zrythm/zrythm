@@ -18,20 +18,14 @@
 
 typedef struct AudioClip_v1
 {
-  int              schema_version;
-  char *           name;
-  sample_t *       frames;
-  unsigned_frame_t num_frames;
-  sample_t *       ch_frames[16];
-  channels_t       channels;
-  bpm_t            bpm;
-  int              samplerate;
-  BitDepth         bit_depth;
-  bool             use_flac;
-  int              pool_id;
-  char *           file_hash;
-  unsigned_frame_t frames_written;
-  gint64           last_write;
+  int      schema_version;
+  char *   name;
+  bpm_t    bpm;
+  int      samplerate;
+  BitDepth bit_depth;
+  bool     use_flac;
+  int      pool_id;
+  char *   file_hash;
 } AudioClip_v1;
 
 static const cyaml_schema_field_t audio_clip_fields_schema_v1[] = {
@@ -48,7 +42,12 @@ static const cyaml_schema_field_t audio_clip_fields_schema_v1[] = {
 };
 
 static const cyaml_schema_value_t audio_clip_schema_v1 = {
-  YAML_VALUE_PTR (AudioClip_v1, audio_clip_fields_schema_v1),
+  YAML_VALUE_PTR_NULLABLE (
+    AudioClip_v1,
+    audio_clip_fields_schema_v1),
 };
+
+AudioClip *
+audio_clip_upgrade_from_v1 (AudioClip_v1 * old);
 
 #endif

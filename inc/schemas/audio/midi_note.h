@@ -40,7 +40,12 @@ static const cyaml_schema_field_t midi_note_fields_schema_v1[] = {
 };
 
 static const cyaml_schema_value_t midi_note_schema_v1 = {
-  YAML_VALUE_PTR (MidiNote_v1, midi_note_fields_schema_v1),
+  YAML_VALUE_PTR_NULLABLE (
+    MidiNote_v1,
+    midi_note_fields_schema_v1),
 };
+
+MidiNote *
+midi_note_upgrade_from_v1 (MidiNote_v1 * old);
 
 #endif

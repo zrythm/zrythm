@@ -13,13 +13,11 @@ typedef struct TrackLane_v1
   int           schema_version;
   int           pos;
   char *        name;
-  int           y;
   double        height;
   int           mute;
   int           solo;
   ZRegion_v1 ** regions;
   int           num_regions;
-  size_t        regions_size;
   uint8_t       midi_ch;
 } TrackLane_v1;
 
@@ -45,5 +43,8 @@ static const cyaml_schema_value_t track_lane_schema_v1 = {
     TrackLane_v1,
     track_lane_fields_schema_v1),
 };
+
+TrackLane *
+track_lane_upgrade_from_v1 (TrackLane_v1 * old);
 
 #endif

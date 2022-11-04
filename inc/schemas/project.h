@@ -50,29 +50,29 @@ static const cyaml_strval_t selection_type_strings_v1[] = {
 
 typedef struct Project_v1
 {
-  int                    schema_version;
-  char *                 title;
-  char *                 datetime_str;
-  char *                 version;
-  Tracklist *            tracklist; /**/
-  ClipEditor *           clip_editor;
-  Timeline *             timeline;
-  SnapGrid               snap_grid_timeline;
-  QuantizeOptions        quantize_opts_timeline;
-  SnapGrid               snap_grid_editor;
-  QuantizeOptions        quantize_opts_editor;
-  AutomationSelections   automation_selections;
-  AudioSelections        audio_selections;
-  ChordSelections        chord_selections;
-  TimelineSelections     timeline_selections;
-  MidiArrangerSelections midi_arranger_selections;
-  TracklistSelections *  tracklist_selections;
-  MixerSelections        mixer_selections;
-  RegionLinkGroupManager region_link_group_manager;
-  PortConnectionsManager port_connections_manager;
-  AudioEngine *          audio_engine;
-  MidiMappings *         midi_mappings;
-  SelectionType          last_selection;
+  int               schema_version;
+  char *            title;
+  char *            datetime_str;
+  char *            version;
+  Tracklist_v1 *    tracklist;
+  ClipEditor *      clip_editor;
+  Timeline *        timeline;
+  SnapGrid *        snap_grid_timeline;
+  QuantizeOptions * quantize_opts_timeline;
+  SnapGrid *        snap_grid_editor;
+  QuantizeOptions * quantize_opts_editor;
+  //AutomationSelections *   automation_selections;
+  //AudioSelections *        audio_selections;
+  //ChordSelections *        chord_selections;
+  //TimelineSelections_v1 *  timeline_selections;
+  //MidiArrangerSelections * midi_arranger_selections;
+  TracklistSelections_v1 * tracklist_selections;
+  //MixerSelections *        mixer_selections;
+  RegionLinkGroupManager * region_link_group_manager;
+  PortConnectionsManager * port_connections_manager;
+  AudioEngine_v1 *         audio_engine;
+  MidiMappings *           midi_mappings;
+  SelectionType            last_selection;
 } Project_v1;
 
 static const cyaml_schema_field_t project_fields_schema_v1[] = {
@@ -83,7 +83,7 @@ static const cyaml_schema_field_t project_fields_schema_v1[] = {
   YAML_FIELD_MAPPING_PTR (
     Project_v1,
     tracklist,
-    tracklist_fields_schema),
+    tracklist_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR (
     Project_v1,
     clip_editor,
@@ -92,59 +92,46 @@ static const cyaml_schema_field_t project_fields_schema_v1[] = {
     Project_v1,
     timeline,
     timeline_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project_v1,
     snap_grid_timeline,
     snap_grid_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project_v1,
     snap_grid_editor,
     snap_grid_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project_v1,
     quantize_opts_timeline,
     quantize_options_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project_v1,
     quantize_opts_editor,
     quantize_options_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     Project_v1,
     audio_engine,
-    engine_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Project_v1,
-    mixer_selections,
-    mixer_selections_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Project_v1,
-    timeline_selections,
-    timeline_selections_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Project_v1,
-    midi_arranger_selections,
-    midi_arranger_selections_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Project_v1,
-    chord_selections,
-    chord_selections_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Project_v1,
-    automation_selections,
-    automation_selections_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Project_v1,
-    audio_selections,
-    audio_selections_fields_schema),
+    engine_fields_schema_v1),
+  CYAML_FIELD_IGNORE ("mixer_selections", CYAML_FLAG_DEFAULT),
+  CYAML_FIELD_IGNORE ("timeline_selections", CYAML_FLAG_DEFAULT),
+  CYAML_FIELD_IGNORE (
+    "midi_arranger_selections",
+    CYAML_FLAG_DEFAULT),
+  CYAML_FIELD_IGNORE (
+    "automation_selections",
+    CYAML_FLAG_DEFAULT),
+  CYAML_FIELD_IGNORE ("chord_selections", CYAML_FLAG_DEFAULT),
+  CYAML_FIELD_IGNORE ("audio_selections", CYAML_FLAG_DEFAULT),
+  //CYAML_FIELD_IGNORE ("tracklist_selections", CYAML_FLAG_DEFAULT),
   YAML_FIELD_MAPPING_PTR (
     Project_v1,
     tracklist_selections,
-    tracklist_selections_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+    tracklist_selections_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (
     Project_v1,
     region_link_group_manager,
     region_link_group_manager_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
+  YAML_FIELD_MAPPING_PTR (
     Project_v1,
     port_connections_manager,
     port_connections_manager_fields_schema),

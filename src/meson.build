@@ -28,6 +28,7 @@ subdir('audio')
 subdir('gui')
 subdir('guile')
 subdir('plugins')
+subdir('schemas')
 subdir('settings')
 subdir('utils')
 

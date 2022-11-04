@@ -76,7 +76,6 @@ typedef struct Track_v1
   GdkRGBA                      color;
   TrackLane_v1 **              lanes;
   int                          num_lanes;
-  size_t                       lanes_size;
   uint8_t                      midi_ch;
   bool                         drum_mode;
   int                          passthrough_midi_input;
@@ -87,13 +86,10 @@ typedef struct Track_v1
   int                          last_lane_idx;
   ZRegion_v1 **                chord_regions;
   int                          num_chord_regions;
-  size_t                       chord_regions_size;
   ScaleObject_v1 **            scales;
   int                          num_scales;
-  size_t                       scales_size;
   Marker_v1 **                 markers;
   int                          num_markers;
-  size_t                       markers_size;
   Port_v1 *                    bpm_port;
   Port_v1 *                    beats_per_bar_port;
   Port_v1 *                    beat_unit_port;
@@ -101,7 +97,6 @@ typedef struct Track_v1
   bool                         folded;
   Plugin_v1 **                 modulators;
   int                          num_modulators;
-  size_t                       modulators_size;
   ModulatorMacroProcessor_v1 * modulator_macros[128];
   int                          num_modulator_macros;
   int                          num_visible_modulator_macros;
@@ -116,7 +111,6 @@ typedef struct Track_v1
   bool                         bounce_to_master;
   unsigned int *               children;
   int                          num_children;
-  size_t                       children_size;
   bool                         frozen;
   int                          pool_id;
   int                          magic;
@@ -219,5 +213,8 @@ static const cyaml_schema_field_t track_fields_schema_v1[] = {
 static const cyaml_schema_value_t track_schema_v1 = {
   YAML_VALUE_PTR (Track_v1, track_fields_schema_v1),
 };
+
+Track *
+track_upgrade_from_v1 (Track_v1 * old);
 
 #endif

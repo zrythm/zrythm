@@ -102,4 +102,14 @@ static const cyaml_schema_value_t plugin_bank_schema_v1 = {
   YAML_VALUE_PTR (PluginBank_v1, plugin_bank_fields_schema_v1),
 };
 
+PluginPresetIdentifier *
+plugin_preset_identifier_upgrade_from_v1 (
+  PluginPresetIdentifier_v1 * old);
+
+PluginPreset *
+plugin_preset_upgrade_from_v1 (PluginPreset_v1 * old);
+
+PluginBank *
+plugin_bank_upgrade_from_v1 (PluginBank_v1 * old);
+
 #endif

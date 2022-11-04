@@ -103,4 +103,7 @@ static const cyaml_schema_value_t engine_schema_v1 = {
   YAML_VALUE_PTR (AudioEngine_v1, engine_fields_schema_v1),
 };
 
+AudioEngine *
+engine_upgrade_from_v1 (AudioEngine_v1 * old);
+
 #endif

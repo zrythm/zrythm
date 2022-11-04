@@ -37,32 +37,15 @@ typedef struct ZRegion_v1
   int                   schema_version;
   RegionIdentifier_v1   id;
   char *                name;
-  char *                escaped_name;
-  GdkRGBA               color;
   MidiNote_v1 **        midi_notes;
   int                   num_midi_notes;
-  size_t                midi_notes_size;
-  MidiNote_v1 *         unended_notes[12000];
-  int                   num_unended_notes;
   int                   pool_id;
-  bool                  stretching;
-  double                before_length;
-  double                stretch_ratio;
-  bool                  read_from_pool;
   float                 gain;
-  AudioClip_v1 *        clip;
   RegionMusicalMode_v1  musical_mode;
-  Position_v1 *         split_points;
-  int                   num_split_points;
-  size_t                split_points_size;
   AutomationPoint_v1 ** aps;
   int                   num_aps;
-  size_t                aps_size;
-  AutomationPoint_v1 *  last_recorded_ap;
   ChordObject_v1 **     chord_objects;
   int                   num_chord_objects;
-  size_t                chord_objects_size;
-  int                   bounce;
 } ZRegion_v1;
 
 static const cyaml_schema_field_t region_fields_schema_v1[] = {
@@ -114,10 +97,10 @@ static const cyaml_schema_field_t region_fields_schema_v1[] = {
 };
 
 static const cyaml_schema_value_t region_schema_v1 = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER_NULL_STR,
-    ZRegion_v1,
-    region_fields_schema_v1),
+  YAML_VALUE_PTR_NULLABLE (ZRegion_v1, region_fields_schema_v1),
 };
+
+ZRegion *
+region_upgrade_from_v1 (ZRegion_v1 * old);
 
 #endif

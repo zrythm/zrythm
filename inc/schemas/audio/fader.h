@@ -50,8 +50,6 @@ typedef struct Fader_v1
   int              schema_version;
   float            volume;
   float            phase;
-  float            fader_val;
-  float            last_cc_volume;
   Port_v1 *        amp;
   Port_v1 *        balance;
   Port_v1 *        mute;
@@ -62,8 +60,6 @@ typedef struct Fader_v1
   StereoPorts_v1 * stereo_out;
   Port_v1 *        midi_in;
   Port_v1 *        midi_out;
-  float            l_port_db;
-  float            r_port_db;
   FaderType_v1     type;
   MidiFaderMode_v1 midi_mode;
   bool             passthrough;
@@ -117,5 +113,8 @@ static const cyaml_schema_field_t fader_fields_schema_v1[] = {
 static const cyaml_schema_value_t fader_schema_v1 = {
   YAML_VALUE_PTR (Fader_v1, fader_fields_schema_v1),
 };
+
+Fader *
+fader_upgrade_from_v1 (Fader_v1 * old);
 
 #endif

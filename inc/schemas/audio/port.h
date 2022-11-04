@@ -78,4 +78,10 @@ static const cyaml_schema_value_t stereo_ports_schema_v1 = {
   YAML_VALUE_PTR (StereoPorts_v1, stereo_ports_fields_schema_v1),
 };
 
+Port *
+port_upgrade_from_v1 (Port_v1 * old);
+
+StereoPorts *
+stereo_ports_upgrade_from_v1 (StereoPorts_v1 * old);
+
 #endif

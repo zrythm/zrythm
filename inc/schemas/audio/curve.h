@@ -20,6 +20,7 @@ typedef enum CurveAlgorithm_v1
   CURVE_ALGORITHM_SUPERELLIPSE_v1,
   CURVE_ALGORITHM_VITAL_v1,
   CURVE_ALGORITHM_PULSE_v1,
+  CURVE_ALGORITHM_LOGARITHMIC_v1,
   NUM_CURVE_ALGORITHMS_v1,
 } CurveAlgorithm_v1;
 
@@ -28,6 +29,7 @@ static const cyaml_strval_t curve_algorithm_strings_v1[] = {
   { __ ("Superellipse"), CURVE_ALGORITHM_SUPERELLIPSE_v1},
   { __ ("Vital"),        CURVE_ALGORITHM_VITAL_v1       },
   { __ ("Pulse"),        CURVE_ALGORITHM_PULSE_v1       },
+  { __ ("Logarithmic"),  CURVE_ALGORITHM_LOGARITHMIC_v1 },
 };
 
 typedef struct CurveOptions_v1
@@ -54,5 +56,8 @@ static const cyaml_schema_value_t curve_options_schema_v1 = {
     CurveOptions_v1,
     curve_options_fields_schema_v1),
 };
+
+CurveOptions *
+curve_options_upgrade_from_v1 (CurveOptions_v1 * old);
 
 #endif

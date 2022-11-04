@@ -184,4 +184,7 @@ static const cyaml_schema_value_t musical_scale_schema_v2 = {
     musical_scale_fields_schema_v2),
 };
 
+MusicalScale *
+musical_scale_upgrade_from_v2 (MusicalScale_v2 * old);
+
 #endif

@@ -14,6 +14,8 @@
 
 #include "schemas/plugins/plugin_identifier.h"
 
+typedef struct PortIdentifier PortIdentifier;
+
 typedef enum PortFlow_v1
 {
   FLOW_UNKNOWN_v1,
@@ -165,6 +167,7 @@ typedef enum PortFlags2_v1
   PORT_FLAG2_MONITOR_FADER_v1 = 1 << 26,
   PORT_FLAG2_SAMPLE_PROCESSOR_FADER_v1 = 1 << 27,
   PORT_FLAG2_SAMPLE_PROCESSOR_TRACK_v1 = 1 << 28,
+  PORT_FLAG2_FADER_SWAP_PHASE_v1 = 1 << 29,
 } PortFlags2_v1;
 
 static const cyaml_bitdef_t port_flags_bitvals_v1[] = {
@@ -231,6 +234,7 @@ static const cyaml_bitdef_t port_flags2_bitvals_v1[] = {
   YAML_BITVAL ("monitor_fader", 26),
   YAML_BITVAL ("sample_processor_fader", 27),
   YAML_BITVAL ("sample_processor_track", 28),
+  YAML_BITVAL ("fader_swap_phase", 29),
 };
 
 typedef struct PortIdentifier_v1
@@ -262,10 +266,10 @@ static const cyaml_schema_field_t port_identifier_fields_schema_v1[] = {
   YAML_FIELD_ENUM (
     PortIdentifier_v1,
     owner_type,
-    port_owner_type_strings),
-  YAML_FIELD_ENUM (PortIdentifier_v1, type, port_type_strings),
-  YAML_FIELD_ENUM (PortIdentifier_v1, flow, port_flow_strings),
-  YAML_FIELD_ENUM (PortIdentifier_v1, unit, port_unit_strings),
+    port_owner_type_strings_v1),
+  YAML_FIELD_ENUM (PortIdentifier_v1, type, port_type_strings_v1),
+  YAML_FIELD_ENUM (PortIdentifier_v1, flow, port_flow_strings_v1),
+  YAML_FIELD_ENUM (PortIdentifier_v1, unit, port_unit_strings_v1),
   YAML_FIELD_BITFIELD (
     PortIdentifier_v1,
     flags,
@@ -302,5 +306,8 @@ static const cyaml_schema_value_t
       PortIdentifier_v1,
       port_identifier_fields_schema_v1),
   };
+
+PortIdentifier *
+port_identifier_upgrade_from_v1 (PortIdentifier_v1 * old);
 
 #endif

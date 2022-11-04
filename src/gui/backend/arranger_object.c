@@ -2199,6 +2199,7 @@ find_chord_object (ChordObject * clone)
 
   g_return_val_if_fail (
     r && r->num_chord_objects > clone->index, NULL);
+  z_return_val_if_fail_cmp (clone->index, >=, 0, NULL);
 
   ChordObject * prj_co = r->chord_objects[clone->index];
   g_return_val_if_fail (

@@ -42,4 +42,7 @@ static const cyaml_schema_value_t scale_object_schema_v1 = {
   YAML_VALUE_PTR (ScaleObject_v1, scale_object_fields_schema_v1),
 };
 
+ScaleObject *
+scale_object_upgrade_from_v1 (ScaleObject_v1 * old);
+
 #endif

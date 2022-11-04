@@ -20,33 +20,24 @@
 
 typedef struct Transport_v1
 {
-  int                    schema_version;
-  int                    total_bars;
-  Position               playhead_pos;
-  Position               cue_pos;
-  Position               loop_start_pos;
-  Position               loop_end_pos;
-  Position               punch_in_pos;
-  Position               punch_out_pos;
-  Position               range_1;
-  Position               range_2;
-  int                    has_range;
-  nframes_t              position;
-  bool                   loop;
-  bool                   punch_mode;
-  bool                   recording;
-  bool                   metronome_enabled;
-  signed_frame_t         preroll_frames_remaining;
-  signed_frame_t         countin_frames_remaining;
-  bool                   start_playback_on_midi_input;
-  TransportRecordingMode recording_mode;
-  Port *                 roll;
-  Port *                 stop;
-  Port *                 backward;
-  Port *                 forward;
-  Port *                 loop_toggle;
-  Port *                 rec_toggle;
-  Play_State             play_state;
+  int         schema_version;
+  int         total_bars;
+  Position_v1 playhead_pos;
+  Position_v1 cue_pos;
+  Position_v1 loop_start_pos;
+  Position_v1 loop_end_pos;
+  Position_v1 punch_in_pos;
+  Position_v1 punch_out_pos;
+  Position_v1 range_1;
+  Position_v1 range_2;
+  int         has_range;
+  nframes_t   position;
+  Port_v1 *   roll;
+  Port_v1 *   stop;
+  Port_v1 *   backward;
+  Port_v1 *   forward;
+  Port_v1 *   loop_toggle;
+  Port_v1 *   rec_toggle;
 } Transport_v1;
 
 static const cyaml_schema_field_t transport_fields_schema_v1[] = {
@@ -117,5 +108,8 @@ static const cyaml_schema_field_t transport_fields_schema_v1[] = {
 static const cyaml_schema_value_t transport_schema_v1 = {
   YAML_VALUE_PTR (Transport_v1, transport_fields_schema_v1),
 };
+
+Transport *
+transport_upgrade_from_v1 (Transport_v1 * old);
 
 #endif

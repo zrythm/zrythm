@@ -12,6 +12,8 @@
 
 #include "schemas/audio/track.h"
 
+typedef struct Tracklist Tracklist;
+
 typedef struct Tracklist_v1
 {
   int        schema_version;
@@ -34,5 +36,8 @@ static const cyaml_schema_field_t tracklist_fields_schema_v1[] = {
 static const cyaml_schema_value_t tracklist_schema_v1 = {
   YAML_VALUE_PTR (Tracklist_v1, tracklist_fields_schema_v1),
 };
+
+Tracklist *
+tracklist_upgrade_from_v1 (Tracklist_v1 * old);
 
 #endif

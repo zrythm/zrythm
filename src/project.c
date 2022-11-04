@@ -918,11 +918,12 @@ load (const char * filename, const int is_template)
 
   int schema_ver = string_get_regex_group_as_int (
     yaml, "---\nschema_version: (.*)\n", 1, -1);
+  g_message ("detected schema version %d", schema_ver);
+  bool upgraded = false;
   if (schema_ver != PROJECT_SCHEMA_VERSION)
     {
       /* upgrade project */
-      bool upgraded =
-        project_upgrade_schema (&yaml, schema_ver);
+      upgraded = project_upgrade_schema (&yaml, schema_ver);
       g_warn_if_fail (upgraded);
     }
 
@@ -970,7 +971,7 @@ load (const char * filename, const int is_template)
     }
 
   /* check for FINISHED file */
-  if (schema_ver >= 3)
+  if (schema_ver > 3)
     {
       char * finished_file_path = project_get_path (
         PROJECT, PROJECT_PATH_FINISHED_FILE, use_backup);
@@ -1201,6 +1202,23 @@ load (const char * filename, const int is_template)
 
   engine_set_run (self->audio_engine, true);
 
+  if (schema_ver != PROJECT_SCHEMA_VERSION)
+    {
+      char * str = g_strdup_printf (
+        _ (
+          "This project has been automatically upgraded from "
+          "v%d to v%d. Saving this project will overwrite the "
+          "old one. If you would like to keep both, please "
+          "use 'Save As...'."),
+        schema_ver, PROJECT_SCHEMA_VERSION);
+      ui_show_message_full (
+        MAIN_WINDOW
+          ? GTK_WINDOW (MAIN_WINDOW)
+          : GTK_WINDOW (zrythm_app->splash),
+        GTK_MESSAGE_INFO, false, "%s", str);
+      g_free (str);
+    }
+
   return 0;
 }
 
@@ -1300,6 +1318,8 @@ project_load (const char * filename, const bool is_template)
 bool
 project_upgrade_schema (char ** yaml, int src_ver)
 {
+  g_message (
+    "upgrading project schema from version %d...", src_ver);
   switch (src_ver)
     {
     case 1:
@@ -1326,6 +1346,72 @@ project_upgrade_schema (char ** yaml, int src_ver)
         /* free memory allocated by libcyaml */
         cyaml_free (
           &cyaml_config, &project_schema_v1, self, 0);
+
+        /* call again for next iteration */
+        project_upgrade_schema (yaml, 3);
+
+        return true;
+      }
+      break;
+    case 2:
+    case 3:
+      {
+        /* deserialize into the previous version of the struct */
+        GError *     err = NULL;
+        Project_v1 * old_prj = (Project_v1 *)
+          yaml_deserialize (*yaml, &project_schema_v1, &err);
+        if (!old_prj)
+          {
+            HANDLE_ERROR (
+              err, "%s",
+              _ ("Failed to deserialize v1 project file"));
+            return false;
+          }
+
+        /* create the new project and serialize it */
+        Project   _new_prj;
+        Project * new_prj = &_new_prj;
+        memset (new_prj, 0, sizeof (Project));
+        new_prj->schema_version = PROJECT_SCHEMA_VERSION;
+        new_prj->title = old_prj->title;
+        new_prj->datetime_str =
+          datetime_get_current_as_string ();
+        new_prj->version = zrythm_get_version (false);
+
+        /* upgrade */
+        new_prj->tracklist =
+          tracklist_upgrade_from_v1 (old_prj->tracklist);
+        new_prj->audio_engine =
+          engine_upgrade_from_v1 (old_prj->audio_engine);
+        new_prj->tracklist_selections =
+          tracklist_selections_upgrade_from_v1 (
+            old_prj->tracklist_selections);
+
+        new_prj->clip_editor = old_prj->clip_editor;
+        new_prj->timeline = old_prj->timeline;
+        new_prj->snap_grid_timeline =
+          old_prj->snap_grid_timeline;
+        new_prj->snap_grid_editor = old_prj->snap_grid_editor;
+        new_prj->quantize_opts_timeline =
+          old_prj->quantize_opts_timeline;
+        new_prj->quantize_opts_editor =
+          old_prj->quantize_opts_editor;
+        new_prj->region_link_group_manager =
+          old_prj->region_link_group_manager;
+        new_prj->port_connections_manager =
+          old_prj->port_connections_manager;
+        new_prj->midi_mappings = old_prj->midi_mappings;
+        new_prj->last_selection = old_prj->last_selection;
+
+        /* re-serialize */
+        g_free (*yaml);
+        *yaml = yaml_serialize (new_prj, &project_schema);
+        cyaml_config_t cyaml_config;
+        yaml_get_cyaml_config (&cyaml_config);
+
+        /* free memory allocated by libcyaml */
+        cyaml_free (
+          &cyaml_config, &project_schema_v1, old_prj, 0);
 
         return true;
       }
