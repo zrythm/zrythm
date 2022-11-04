@@ -31,6 +31,8 @@
   ((m)->type != MARKER_TYPE_START \
    && (m)->type != MARKER_TYPE_END)
 
+#define MARKER_SCHEMA_VERSION 2
+
 /**
  * Marker type.
  */
@@ -85,6 +87,7 @@ static const cyaml_schema_field_t marker_fields_schema[] = {
     Marker,
     base,
     arranger_object_fields_schema),
+  YAML_FIELD_INT (Marker, schema_version),
   YAML_FIELD_STRING_PTR (Marker, name),
   YAML_FIELD_UINT (Marker, track_name_hash),
   YAML_FIELD_INT (Marker, index),
