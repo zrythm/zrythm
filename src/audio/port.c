@@ -3208,6 +3208,10 @@ port_set_expose_to_backend (Port * self, int expose)
     {
       switch (AUDIO_ENGINE->audio_backend)
         {
+        case AUDIO_BACKEND_DUMMY:
+          g_message (
+            "called %s with dummy audio backend", __func__);
+          return;
 #ifdef HAVE_JACK
         case AUDIO_BACKEND_JACK:
           expose_to_jack (self, expose);
@@ -3231,6 +3235,10 @@ port_set_expose_to_backend (Port * self, int expose)
     {
       switch (AUDIO_ENGINE->midi_backend)
         {
+        case MIDI_BACKEND_DUMMY:
+          g_message (
+            "called %s with MIDI dummy backend", __func__);
+          return;
 #ifdef HAVE_JACK
         case MIDI_BACKEND_JACK:
           expose_to_jack (self, expose);
@@ -3255,8 +3263,10 @@ port_set_expose_to_backend (Port * self, int expose)
           break;
         }
     }
-  else
-    g_return_if_reached ();
+  else /* else if not audio or MIDI */
+    {
+      g_return_if_reached ();
+    }
 }
 
 /**
