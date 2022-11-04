@@ -509,7 +509,7 @@ export_audio (ExportSettings * info)
       if (clipped)
         {
           float max_db = math_amp_to_dbfs (clip_amp);
-          g_warning ("clipping occurred");
+          g_message ("clipping occurred");
           sprintf (
             info->progress_info.message_str,
             _ ("The exported audio contains segments louder than 0 dB (max detected %.1f dB)."),
