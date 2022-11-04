@@ -144,7 +144,9 @@ static const cyaml_schema_field_t channel_send_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t channel_send_schema = {
-  YAML_VALUE_PTR (ChannelSend, channel_send_fields_schema),
+  YAML_VALUE_PTR_NULLABLE (
+    ChannelSend,
+    channel_send_fields_schema),
 };
 
 NONNULL_ARGS (1)
