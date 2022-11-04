@@ -406,6 +406,9 @@ port_find_from_identifier (const PortIdentifier * const id)
               else if (
                 flags2 & PORT_FLAG2_FADER_MONO_COMPAT && fader)
                 return fader->mono_compat_enabled;
+              else if (
+                flags2 & PORT_FLAG2_FADER_SWAP_PHASE && fader)
+                return fader->swap_phase;
             }
           break;
         default:
