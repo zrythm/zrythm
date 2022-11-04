@@ -23,7 +23,7 @@ typedef enum EditTracksActionType EditTracksActionType;
  * @{
  */
 
-#define TRACKLIST_SELECTIONS_SCHEMA_VERSION 1
+#define TRACKLIST_SELECTIONS_SCHEMA_VERSION 2
 
 #define TRACKLIST_SELECTIONS (PROJECT->tracklist_selections)
 

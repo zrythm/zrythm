@@ -199,30 +199,6 @@ typedef struct MusicalScale
 
   /** Root key of the scale. */
   MusicalNote root_key;
-
-#if 0
-  /** Flag if scale has different notes when
-   * ascending and descending. */
-  int                has_asc_desc;
-
-  /** Notes in the scale (if has_asc_desc is 0). */
-  bool               notes[12];
-
-  /** Notes when ascending (if has_asc_desc is 1). */
-  bool               notes_asc[12];
-
-  /** Notes when descending (if has_asc_desc is
-   * 0). */
-  bool               notes_desc[12];
-
-  /**
-   * Default triad chords with base note, as many
-   * as the notes in the scale.
-   *
-   * Triads with base note.
-   */
-  ChordDescriptor *  default_chords[12];
-#endif
 } MusicalScale;
 
 static const cyaml_schema_field_t musical_scale_fields_schema[] = {

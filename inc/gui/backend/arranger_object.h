@@ -253,9 +253,6 @@ typedef struct ArrangerObject
    */
   bool deleted_temporarily;
 
-  /** 1 when hovering over the object. */
-  //int                hover;
-
   /* ---- The following should only be used for
    * objects that really need caching, such as
    * audio regions ---- */
@@ -361,10 +358,7 @@ static const cyaml_schema_field_t arranger_object_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t arranger_object_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    ArrangerObject,
-    arranger_object_fields_schema),
+  YAML_VALUE_PTR (ArrangerObject, arranger_object_fields_schema),
 };
 
 /**

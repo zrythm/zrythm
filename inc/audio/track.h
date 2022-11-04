@@ -57,7 +57,7 @@ typedef struct _WrappedObjectWithChangeSignal
  * @{
  */
 
-#define TRACK_SCHEMA_VERSION 1
+#define TRACK_SCHEMA_VERSION 2
 
 #define TRACK_MIN_HEIGHT 24
 #define TRACK_DEF_HEIGHT 48

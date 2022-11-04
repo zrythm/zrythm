@@ -19,7 +19,7 @@ typedef struct AudioEngine AudioEngine;
  * @{
  */
 
-#define CONTROL_ROOM_SCHEMA_VERSION 1
+#define CONTROL_ROOM_SCHEMA_VERSION 2
 
 #define CONTROL_ROOM (AUDIO_ENGINE->control_room)
 

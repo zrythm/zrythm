@@ -12,7 +12,12 @@
 
 #include <stdbool.h>
 
+#include "audio/ext_port.h"
+#include "audio/port.h"
+
 #include <gtk/gtk.h>
+
+typedef struct AudioEngine AudioEngine;
 
 /**
  * @addtogroup audio

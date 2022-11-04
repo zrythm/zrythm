@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -38,7 +38,7 @@ typedef struct ExtPort         ExtPort;
  * @{
  */
 
-#define CHANNEL_SCHEMA_VERSION 1
+#define CHANNEL_SCHEMA_VERSION 2
 
 /** Magic number to identify channels. */
 #define CHANNEL_MAGIC 8431676
@@ -251,6 +251,7 @@ static const cyaml_schema_field_t channel_fields_schema[] = {
     midi_channels,
     int_schema,
     16),
+  YAML_FIELD_INT (Channel, all_midi_channels),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
     Channel,
     ext_stereo_l_ins,
@@ -261,7 +262,6 @@ static const cyaml_schema_field_t channel_fields_schema[] = {
     ext_stereo_r_ins,
     ext_port_schema),
   YAML_FIELD_INT (Channel, all_stereo_r_ins),
-  YAML_FIELD_INT (Channel, all_midi_channels),
   YAML_FIELD_INT (Channel, width),
 
   CYAML_FIELD_END

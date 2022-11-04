@@ -70,7 +70,7 @@ typedef struct MPMCQueue         MPMCQueue;
  * @{
  */
 
-#define AUDIO_ENGINE_SCHEMA_VERSION 1
+#define AUDIO_ENGINE_SCHEMA_VERSION 2
 
 #define BLOCK_LENGTH 4096  // should be set by backend
 #define MIDI_BUF_SIZE 1024 // should be set by backend

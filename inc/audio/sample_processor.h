@@ -12,6 +12,7 @@
 
 #include "audio/fader.h"
 #include "audio/port.h"
+#include "audio/position.h"
 #include "audio/sample_playback.h"
 #include "utils/types.h"
 
@@ -28,7 +29,7 @@ typedef struct ChordPreset   ChordPreset;
  * @{
  */
 
-#define SAMPLE_PROCESSOR_SCHEMA_VERSION 1
+#define SAMPLE_PROCESSOR_SCHEMA_VERSION 2
 
 #define SAMPLE_PROCESSOR (AUDIO_ENGINE->sample_processor)
 

@@ -318,10 +318,7 @@ static const cyaml_schema_field_t plugin_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t plugin_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER_NULL_STR,
-    Plugin,
-    plugin_fields_schema),
+  YAML_VALUE_PTR_NULLABLE (Plugin, plugin_fields_schema),
 };
 
 NONNULL_ARGS (1)

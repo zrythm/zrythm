@@ -26,7 +26,7 @@ typedef struct SupportedFile          SupportedFile;
  * @{
  */
 
-#define TRACKLIST_SCHEMA_VERSION 1
+#define TRACKLIST_SCHEMA_VERSION 2
 
 #define TRACKLIST (PROJECT->tracklist)
 #define MAX_TRACKS 3000
