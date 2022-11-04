@@ -34,6 +34,7 @@
                     <child>
                       <object class="AdwPreferencesPage">
                         <property name="title">Export Audio</property>
+                        <property name="width-request">512</property>
                         <child>
                           <object class="AdwPreferencesGroup">
                             <property name="title" translatable="yes">Metadata</property>
