@@ -60,6 +60,15 @@ first_run_dialog_widget_ok (FirstRunDialogWidget * self)
 
   g_settings_set_boolean (S_GENERAL, "first-run", false);
 
+  if (g_settings_get_boolean (S_GENERAL, "first-run") != false)
+    {
+      ui_show_error_message (
+        zrythm_app->splash, false,
+        "Could not set 'first-run' to 'false'. "
+        "There is likely a problem with your GSettings "
+        "backend.");
+    }
+
   zrythm_app->init_finished = false;
 
   /* start plugin scanning in another thread */
