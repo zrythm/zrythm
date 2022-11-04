@@ -3,11 +3,11 @@
 
 #include "audio/sample_processor.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/sample_processor.h"
 
 SampleProcessor *
-sample_processor_upgrade_from_v1 (
-  SampleProcessor_v1 * old)
+sample_processor_upgrade_from_v1 (SampleProcessor_v1 * old)
 {
   if (!old)
     return NULL;

@@ -3,11 +3,11 @@
 
 #include "audio/transport.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/transport.h"
 
 Transport *
-transport_upgrade_from_v1 (
-  Transport_v1 * old)
+transport_upgrade_from_v1 (Transport_v1 * old)
 {
   if (!old)
     return NULL;

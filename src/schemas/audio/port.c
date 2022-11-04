@@ -3,18 +3,19 @@
 
 #include "audio/port.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/port.h"
 
 Port *
-port_upgrade_from_v1 (
-  Port_v1 * old)
+port_upgrade_from_v1 (Port_v1 * old)
 {
   if (!old)
     return NULL;
 
   Port * self = object_new (Port);
   self->schema_version = PORT_SCHEMA_VERSION;
-  PortIdentifier * id = port_identifier_upgrade_from_v1 (&old->id);
+  PortIdentifier * id =
+    port_identifier_upgrade_from_v1 (&old->id);
   self->id = *id;
   self->exposed_to_backend = old->exposed_to_backend;
   self->control = old->control;
@@ -28,8 +29,7 @@ port_upgrade_from_v1 (
 }
 
 StereoPorts *
-stereo_ports_upgrade_from_v1 (
-  StereoPorts_v1 * old)
+stereo_ports_upgrade_from_v1 (StereoPorts_v1 * old)
 {
   if (!old)
     return NULL;

@@ -3,11 +3,11 @@
 
 #include "audio/scale.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/scale.h"
 
 MusicalScale *
-musical_scale_upgrade_from_v2 (
-  MusicalScale_v2 * old)
+musical_scale_upgrade_from_v2 (MusicalScale_v2 * old)
 {
   if (!old)
     return NULL;

@@ -3,6 +3,7 @@
 
 #include "gui/backend/arranger_selections.h"
 #include "utils/objects.h"
+
 #include "schemas/gui/backend/arranger_selections.h"
 
 ArrangerSelections *

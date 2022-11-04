@@ -3,11 +3,11 @@
 
 #include "settings/plugin_settings.h"
 #include "utils/objects.h"
+
 #include "schemas/settings/plugin_settings.h"
 
 PluginSetting *
-plugin_setting_upgrade_from_v1 (
-  PluginSetting_v1 * old)
+plugin_setting_upgrade_from_v1 (PluginSetting_v1 * old)
 {
   if (!old)
     return NULL;

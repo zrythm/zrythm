@@ -3,11 +3,11 @@
 
 #include "audio/scale_object.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/scale_object.h"
 
 ScaleObject *
-scale_object_upgrade_from_v1 (
-  ScaleObject_v1 * old)
+scale_object_upgrade_from_v1 (ScaleObject_v1 * old)
 {
   if (!old)
     return NULL;
@@ -18,7 +18,8 @@ scale_object_upgrade_from_v1 (
 
 #define UPDATE(name) self->name = old->name
 
-  ArrangerObject * base = arranger_object_upgrade_from_v1 (&old->base);
+  ArrangerObject * base =
+    arranger_object_upgrade_from_v1 (&old->base);
   self->base = *base;
 
   UPDATE (index);

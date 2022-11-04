@@ -3,6 +3,7 @@
 
 #include "audio/modulator_macro_processor.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/modulator_macro_processor.h"
 
 ModulatorMacroProcessor *
@@ -12,9 +13,11 @@ modulator_macro_processor_upgrade_from_v1 (
   if (!old)
     return NULL;
 
-  ModulatorMacroProcessor * self = object_new (ModulatorMacroProcessor);
+  ModulatorMacroProcessor * self =
+    object_new (ModulatorMacroProcessor);
 
-  self->schema_version = MODULATOR_MACRO_PROCESSOR_SCHEMA_VERSION;
+  self->schema_version =
+    MODULATOR_MACRO_PROCESSOR_SCHEMA_VERSION;
   self->name = old->name;
   self->cv_in = port_upgrade_from_v1 (old->cv_in);
   self->cv_out = port_upgrade_from_v1 (old->cv_out);

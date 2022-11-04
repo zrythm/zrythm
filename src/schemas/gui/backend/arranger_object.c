@@ -3,11 +3,11 @@
 
 #include "gui/backend/arranger_object.h"
 #include "utils/objects.h"
+
 #include "schemas/gui/backend/arranger_object.h"
 
 ArrangerObject *
-arranger_object_upgrade_from_v1 (
-  ArrangerObject_v1 * old)
+arranger_object_upgrade_from_v1 (ArrangerObject_v1 * old)
 {
   if (!old)
     return NULL;
@@ -31,11 +31,14 @@ arranger_object_upgrade_from_v1 (
   UPDATE_POS (loop_end_pos);
   UPDATE_POS (fade_in_pos);
   UPDATE_POS (fade_out_pos);
-  CurveOptions * fade_in_opts = curve_options_upgrade_from_v1 (&old->fade_in_opts);
+  CurveOptions * fade_in_opts =
+    curve_options_upgrade_from_v1 (&old->fade_in_opts);
   self->fade_in_opts = *fade_in_opts;
-  CurveOptions * fade_out_opts = curve_options_upgrade_from_v1 (&old->fade_out_opts);
+  CurveOptions * fade_out_opts =
+    curve_options_upgrade_from_v1 (&old->fade_out_opts);
   self->fade_out_opts = *fade_out_opts;
-  RegionIdentifier * region_id = region_identifier_upgrade_from_v1 (&old->region_id);
+  RegionIdentifier * region_id =
+    region_identifier_upgrade_from_v1 (&old->region_id);
   self->region_id = *region_id;
 
   return self;

@@ -3,11 +3,11 @@
 
 #include "audio/clip.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/clip.h"
 
 AudioClip *
-audio_clip_upgrade_from_v1 (
-  AudioClip_v1 * old)
+audio_clip_upgrade_from_v1 (AudioClip_v1 * old)
 {
   if (!old)
     return NULL;

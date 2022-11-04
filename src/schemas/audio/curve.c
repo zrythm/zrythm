@@ -3,11 +3,11 @@
 
 #include "audio/curve.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/curve.h"
 
 CurveOptions *
-curve_options_upgrade_from_v1 (
-  CurveOptions_v1 * old)
+curve_options_upgrade_from_v1 (CurveOptions_v1 * old)
 {
   if (!old)
     return NULL;

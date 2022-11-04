@@ -3,11 +3,11 @@
 
 #include "audio/port_identifier.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/port_identifier.h"
 
 PortIdentifier *
-port_identifier_upgrade_from_v1 (
-  PortIdentifier_v1 * old)
+port_identifier_upgrade_from_v1 (PortIdentifier_v1 * old)
 {
   if (!old)
     return NULL;
@@ -25,7 +25,8 @@ port_identifier_upgrade_from_v1 (
   self->flags = (PortFlags) old->flags;
   self->flags2 = (PortFlags2) old->flags2;
   self->track_name_hash = old->track_name_hash;
-  PluginIdentifier * plugin_id = plugin_identifier_upgrade_from_v1 (&old->plugin_id);
+  PluginIdentifier * plugin_id =
+    plugin_identifier_upgrade_from_v1 (&old->plugin_id);
   self->plugin_id = *plugin_id;
   self->port_group = old->port_group;
   self->ext_port_id = old->ext_port_id;

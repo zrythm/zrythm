@@ -3,11 +3,11 @@
 
 #include "audio/tracklist.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/tracklist.h"
 
 Tracklist *
-tracklist_upgrade_from_v1 (
-  Tracklist_v1 * old)
+tracklist_upgrade_from_v1 (Tracklist_v1 * old)
 {
   if (!old)
     return NULL;

@@ -3,11 +3,11 @@
 
 #include "plugins/plugin_descriptor.h"
 #include "utils/objects.h"
+
 #include "schemas/plugins/plugin_descriptor.h"
 
 PluginDescriptor *
-plugin_descriptor_upgrade_from_v1 (
-  PluginDescriptor_v1 * old)
+plugin_descriptor_upgrade_from_v1 (PluginDescriptor_v1 * old)
 {
   if (!old)
     return NULL;
@@ -33,7 +33,8 @@ plugin_descriptor_upgrade_from_v1 (
   self->protocol = (PluginProtocol) old->protocol;
   self->path = old->path;
   self->uri = old->uri;
-  self->min_bridge_mode = (CarlaBridgeMode) old->min_bridge_mode;
+  self->min_bridge_mode =
+    (CarlaBridgeMode) old->min_bridge_mode;
   self->has_custom_ui = old->has_custom_ui;
   self->ghash = old->ghash;
 

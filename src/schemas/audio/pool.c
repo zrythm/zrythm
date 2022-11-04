@@ -3,11 +3,11 @@
 
 #include "audio/pool.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/pool.h"
 
 AudioPool *
-audio_pool_upgrade_from_v1 (
-  AudioPool_v1 * old)
+audio_pool_upgrade_from_v1 (AudioPool_v1 * old)
 {
   if (!old)
     return NULL;
@@ -17,10 +17,12 @@ audio_pool_upgrade_from_v1 (
   self->schema_version = AUDIO_POOL_SCHEMA_VERSION;
 
   self->num_clips = old->num_clips;
-  self->clips = g_malloc_n ((size_t) old->num_clips, sizeof (AudioClip *));
+  self->clips = g_malloc_n (
+    (size_t) old->num_clips, sizeof (AudioClip *));
   for (int i = 0; i < self->num_clips; i++)
     {
-      self->clips[i] = audio_clip_upgrade_from_v1 (old->clips[i]);
+      self->clips[i] =
+        audio_clip_upgrade_from_v1 (old->clips[i]);
     }
 
   return self;

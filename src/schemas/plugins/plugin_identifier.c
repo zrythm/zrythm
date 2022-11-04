@@ -3,11 +3,11 @@
 
 #include "plugins/plugin_identifier.h"
 #include "utils/objects.h"
+
 #include "schemas/plugins/plugin_identifier.h"
 
 PluginIdentifier *
-plugin_identifier_upgrade_from_v1 (
-  PluginIdentifier_v1 * old)
+plugin_identifier_upgrade_from_v1 (PluginIdentifier_v1 * old)
 {
   if (!old)
     return NULL;

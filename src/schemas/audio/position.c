@@ -3,11 +3,11 @@
 
 #include "audio/position.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/position.h"
 
 Position *
-position_upgrade_from_v1 (
-  Position_v1 * old)
+position_upgrade_from_v1 (Position_v1 * old)
 {
   if (!old)
     return NULL;

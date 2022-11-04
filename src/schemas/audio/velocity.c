@@ -3,11 +3,11 @@
 
 #include "audio/velocity.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/velocity.h"
 
 Velocity *
-velocity_upgrade_from_v1 (
-  Velocity_v1 * old)
+velocity_upgrade_from_v1 (Velocity_v1 * old)
 {
   if (!old)
     return NULL;
@@ -18,7 +18,8 @@ velocity_upgrade_from_v1 (
 
 #define UPDATE(name) self->name = old->name
 
-  ArrangerObject * base = arranger_object_upgrade_from_v1 (&old->base);
+  ArrangerObject * base =
+    arranger_object_upgrade_from_v1 (&old->base);
   self->base = *base;
 
   UPDATE (vel);

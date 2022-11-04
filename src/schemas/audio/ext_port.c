@@ -3,11 +3,11 @@
 
 #include "audio/ext_port.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/ext_port.h"
 
 ExtPort *
-ext_port_upgrade_from_v1 (
-  ExtPort_v1 * old)
+ext_port_upgrade_from_v1 (ExtPort_v1 * old)
 {
   if (!old)
     return NULL;

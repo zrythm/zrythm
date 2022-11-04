@@ -3,11 +3,11 @@
 
 #include "audio/region_identifier.h"
 #include "utils/objects.h"
+
 #include "schemas/audio/region_identifier.h"
 
 RegionIdentifier *
-region_identifier_upgrade_from_v1 (
-  RegionIdentifier_v1 * old)
+region_identifier_upgrade_from_v1 (RegionIdentifier_v1 * old)
 {
   if (!old)
     return NULL;
