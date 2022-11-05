@@ -644,45 +644,46 @@ main_window_widget_init (MainWindowWidget * self)
     { "create-arranger-obj",activate_create_arranger_object,
      "(sdd)" },
     { "change-region-color",                        activate_change_region_color },
+    { "reset-region-color",                                    activate_reset_region_color },
 
  /* chord presets */
     {
-     "save-chord-preset",                                    activate_save_chord_preset,
+     "save-chord-preset",activate_save_chord_preset,
      },
-    { "load-chord-preset",activate_load_chord_preset, "s" },
+    { "load-chord-preset",                            activate_load_chord_preset, "s" },
     { "load-chord-preset-from-scale",
      activate_load_chord_preset_from_scale, "s" },
-    { "transpose-chord-pad",                                    activate_transpose_chord_pad,
+    { "transpose-chord-pad",activate_transpose_chord_pad,
      "s" },
     {
-     "add-chord-preset-pack",activate_add_chord_preset_pack,
+     "add-chord-preset-pack",               activate_add_chord_preset_pack,
      },
     { "delete-chord-preset-pack",
      activate_delete_chord_preset_pack, "s" },
     { "rename-chord-preset-pack",
      activate_rename_chord_preset_pack, "s" },
-    { "delete-chord-preset", activate_delete_chord_preset,
+    { "delete-chord-preset",             activate_delete_chord_preset,
      "s" },
-    { "rename-chord-preset",             activate_rename_chord_preset,
+    { "rename-chord-preset",                                    activate_rename_chord_preset,
      "s" },
 
  /* cc bindings */
-    { "bind-midi-cc",                                    activate_bind_midi_cc, "s" },
-    { "delete-cc-binding",    activate_delete_cc_binding, "i" },
+    { "bind-midi-cc",    activate_bind_midi_cc, "s" },
+    { "delete-cc-binding",               activate_delete_cc_binding, "i" },
 
  /* port actions */
-    { "reset-stereo-balance",               activate_reset_stereo_balance,
+    { "reset-stereo-balance",                                    activate_reset_stereo_balance,
      "s" },
-    { "reset-fader",                                    activate_reset_fader, "s" },
-    { "reset-control",    activate_reset_control, "s" },
-    { "port-view-info",               activate_port_view_info, "s" },
+    { "reset-fader",    activate_reset_fader, "s" },
+    { "reset-control",               activate_reset_control, "s" },
+    { "port-view-info",                                    activate_port_view_info, "s" },
     { "port-connection-remove",
      activate_port_connection_remove },
 
  /* plugin actions */
-    { "plugin-toggle-enabled",       activate_plugin_toggle_enabled,
+    { "plugin-toggle-enabled",               activate_plugin_toggle_enabled,
      "s" },
-    { "plugin-inspect",               activate_plugin_inspect },
+    { "plugin-inspect",                                    activate_plugin_inspect },
     { "mixer-selections-delete",
      activate_mixer_selections_delete },
 
@@ -701,22 +702,22 @@ main_window_widget_init (MainWindowWidget * self)
      activate_plugin_browser_add_to_project_bridged_ui, "s" },
     { "plugin-browser-add-to-project-bridged-full",
      activate_plugin_browser_add_to_project_bridged_full, "s" },
-    { "plugin-browser-toggle-generic-ui",      NULL, NULL, "false",
+    { "plugin-browser-toggle-generic-ui",                 NULL, NULL, "false",
      change_state_plugin_browser_toggle_generic_ui },
     { "plugin-browser-add-to-collection",
      activate_plugin_browser_add_to_collection, "s" },
     { "plugin-browser-remove-from-collection",
      activate_plugin_browser_remove_from_collection, "s" },
-    { "plugin-browser-reset",       activate_plugin_browser_reset,
+    { "plugin-browser-reset",                                    activate_plugin_browser_reset,
      "s" },
     {
-     "plugin-collection-add",                                    activate_plugin_collection_add,
+     "plugin-collection-add", activate_plugin_collection_add,
      },
     {
-     "plugin-collection-rename", activate_plugin_collection_rename,
+     "plugin-collection-rename",             activate_plugin_collection_rename,
      },
     {
-     "plugin-collection-remove",             activate_plugin_collection_remove,
+     "plugin-collection-remove",                                    activate_plugin_collection_remove,
      },
   };
 

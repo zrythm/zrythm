@@ -1469,7 +1469,11 @@ region_draw (
 
   /* set color */
   GdkRGBA color;
-  if (track)
+  if (self->use_color)
+    {
+      color = self->color;
+    }
+  else if (track)
     color = track->color;
   else
     {

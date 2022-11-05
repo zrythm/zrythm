@@ -2432,6 +2432,10 @@ clone_region (const ZRegion * region)
   arranger_object_gen_escaped_name (
     (ArrangerObject *) new_region);
 
+  /* color */
+  new_region->color = region->color;
+  new_region->use_color = region->use_color;
+
   /* set track to NULL and remember track pos */
   region_identifier_copy (&new_region->id, &region->id);
   g_warn_if_fail (new_region->id.idx >= 0);

@@ -1029,6 +1029,10 @@ timeline_arranger_widget_gen_context_menu (
             "app.change-region-color");
           g_menu_append_item (menu, menuitem);
 
+          menuitem = z_gtk_create_menu_item (
+            _ ("Reset Color"), NULL, "app.reset-region-color");
+          g_menu_append_item (menu, menuitem);
+
           if (timeline_selections_contains_only_region_types (
                 TL_SELECTIONS, REGION_TYPE_AUDIO))
             {

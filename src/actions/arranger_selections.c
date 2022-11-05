@@ -2326,6 +2326,7 @@ do_or_undo_edit (
                       {
                         SET_PRIMITIVE (ArrangerObject, muted);
                         SET_PRIMITIVE (ZRegion, color);
+                        SET_PRIMITIVE (ZRegion, use_color);
                         SET_PRIMITIVE (ZRegion, musical_mode);
                         SET_PRIMITIVE (ZRegion, gain);
                       }

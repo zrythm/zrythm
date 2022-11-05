@@ -2575,13 +2575,108 @@ activate_create_arranger_object (
     }
 }
 
+static void
+on_region_color_dialog_response (
+  GtkDialog * dialog,
+  gint        response_id,
+  gpointer    user_data)
+{
+  if (response_id == GTK_RESPONSE_OK)
+    {
+      /* clone the selections before the change */
+      ArrangerSelections * sel_before =
+        arranger_selections_clone (
+          (ArrangerSelections *) TL_SELECTIONS);
+
+      GdkRGBA color;
+      gtk_color_chooser_get_rgba (
+        GTK_COLOR_CHOOSER (dialog), &color);
+
+      for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
+        {
+          /* change */
+          ZRegion * r = TL_SELECTIONS->regions[i];
+          r->use_color = true;
+          r->color = color;
+        }
+
+      /* perform action */
+      GError * err = NULL;
+      bool     ret = arranger_selections_action_perform_edit (
+            sel_before, (ArrangerSelections *) TL_SELECTIONS,
+            ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true, &err);
+      if (!ret)
+        {
+          HANDLE_ERROR (
+            err, "%s", _ ("Failed to set region color"));
+        }
+
+      arranger_selections_free_full (sel_before);
+    }
+
+  gtk_window_destroy (GTK_WINDOW (dialog));
+}
+
 DEFINE_SIMPLE (activate_change_region_color)
 {
   if (!timeline_selections_contains_only_regions (
         TL_SELECTIONS))
     return;
 
-  g_message ("change region color");
+  ZRegion * r = TL_SELECTIONS->regions[0];
+  GdkRGBA   color;
+  if (r->use_color)
+    {
+      color = r->color;
+    }
+  else
+    {
+      Track * track =
+        arranger_object_get_track ((ArrangerObject *) r);
+      color = track->color;
+    }
+
+  GtkColorChooserDialog * dialog =
+    GTK_COLOR_CHOOSER_DIALOG (gtk_color_chooser_dialog_new (
+      _ ("Region Color"), UI_ACTIVE_WINDOW_OR_NULL));
+  gtk_color_chooser_set_rgba (
+    GTK_COLOR_CHOOSER (dialog), &color);
+
+  g_signal_connect_after (
+    G_OBJECT (dialog), "response",
+    G_CALLBACK (on_region_color_dialog_response), NULL);
+  gtk_window_present (GTK_WINDOW (dialog));
+}
+
+DEFINE_SIMPLE (activate_reset_region_color)
+{
+  if (!timeline_selections_contains_only_regions (
+        TL_SELECTIONS))
+    return;
+
+  /* clone the selections before the change */
+  ArrangerSelections * sel_before = arranger_selections_clone (
+    (ArrangerSelections *) TL_SELECTIONS);
+
+  for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
+    {
+      /* change */
+      ZRegion * r = TL_SELECTIONS->regions[i];
+      r->use_color = false;
+    }
+
+  /* perform action */
+  GError * err = NULL;
+  bool     ret = arranger_selections_action_perform_edit (
+        sel_before, (ArrangerSelections *) TL_SELECTIONS,
+        ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR (
+        err, "%s", _ ("Failed to reset region color"));
+    }
+
+  arranger_selections_free_full (sel_before);
 }
 
 DEFINE_SIMPLE (activate_add_region)

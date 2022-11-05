@@ -91,7 +91,7 @@ typedef struct ZRegion
   char * escaped_name;
 
   /**
-   * TODO region color independent of track.
+   * Region color independent of track.
    */
   GdkRGBA color;
 
