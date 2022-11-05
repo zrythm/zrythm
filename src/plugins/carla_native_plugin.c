@@ -1991,11 +1991,8 @@ carla_native_plugin_instantiate (
             self->plugin->carla, NULL, &err);
       if (!state_loaded)
         {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err, "%s",
-            _ ("Failed to load Carla state"));
-          self->plugin->instantiation_failed = true;
-          return -1;
+          HANDLE_ERROR (
+            err, "%s", _ ("Failed to load Carla state"));
         }
     }
 
