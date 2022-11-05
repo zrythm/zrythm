@@ -1,10 +1,17 @@
-# SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2020, 2022 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-weakjack_srcs = [
-  'weak_libjack.c',
-  ]
-
+weakjack_lib = []
 if have_jack
-ext_srcs += files (weakjack_srcs)
+  weakjack_cflags = []
+  if use_weak_jack
+    weakjack_cflags += [
+      '-DUSE_WEAK_JACK=1',
+      ]
+  endif
+  weakjack_lib = static_library (
+    'weakjack',
+    'weak_libjack.c',
+    c_args: weakjack_cflags,
+    )
 endif

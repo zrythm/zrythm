@@ -9,8 +9,6 @@
  * see https://en.wikibooks.org/wiki/C_Programming/Preprocessor#X-Macros
  */
 
-#include "zrythm-config.h"
-
 #ifdef USE_WEAK_JACK
 
 /* <jack/jack.h> */

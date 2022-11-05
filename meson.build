@@ -435,6 +435,7 @@ check_functions = [
   ]
 
 # prefer jack1
+use_weak_jack = os_windows or get_option ('appimage') or installer_ver
 jack_dep = dependency (
   'jack', required: false, version: '<1.0',
   static: all_static)
@@ -538,7 +539,7 @@ foreach a : attributes
   test_cflags += '-D' + a.to_upper() + '=__attribute__((' + a + '))'
 endforeach
 
-if os_windows or get_option ('appimage') or installer_ver
+if use_weak_jack
   test_cflags += [
     '-DUSE_WEAK_JACK=1',
     ]
@@ -1317,7 +1318,7 @@ if os_windows
   #zrythm_deps += drmingw_dep
 endif
 
-if os_windows or installer_ver
+if use_weak_jack
   zrythm_deps += jack_dep.partial_dependency (
     link_args: false, links: false)
 else

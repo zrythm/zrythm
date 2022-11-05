@@ -42,6 +42,7 @@ zrythm_link_libs = [
   optimized_audio_lib,
   optimized_utils_lib,
   vamp_plugins_lib,
+  weakjack_lib,
   ]
 
 if guile_dep.found ()
