@@ -3183,6 +3183,9 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test audio functions",
+    (GTestFunc) test_audio_functions);
+  g_test_add_func (
     TEST_PREFIX "test move audio_region_and lower samplerate",
     (GTestFunc) test_move_audio_region_and_lower_samplerate);
   g_test_add_func (
@@ -3246,9 +3249,6 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test delete chords",
     (GTestFunc) test_delete_chords);
-  g_test_add_func (
-    TEST_PREFIX "test audio functions",
-    (GTestFunc) test_audio_functions);
   g_test_add_func (
     TEST_PREFIX "test create timeline",
     (GTestFunc) test_create_timeline);

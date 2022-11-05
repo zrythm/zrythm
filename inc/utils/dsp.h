@@ -188,6 +188,78 @@ dsp_mix2 (
 }
 
 /**
+ * Reverse the order of samples: dst[i] <=> dst[count - i - 1].
+ */
+NONNULL
+HOT static inline void
+dsp_reverse1 (float * dest, size_t size)
+{
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_reverse1 (dest, size);
+    }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          dest[i] = dest[(size - i) - 1];
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+}
+
+/**
+ * Reverse the order of samples: dst[i] <=> src[count - i - 1].
+ */
+NONNULL
+HOT static inline void
+dsp_reverse2 (float * dest, float * src, size_t size)
+{
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_reverse2 (dest, src, size);
+    }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          dest[i] = src[(size - i) - 1];
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+}
+
+/**
+ * Calculate normalized values:
+ * dst[i] = src[i] / (max { abs(src) }).
+ */
+NONNULL
+HOT static inline void
+dsp_normalize (float * dest, const float * src, size_t size)
+{
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_normalize (dest, src, size);
+    }
+  else
+    {
+#endif
+      dsp_copy (dest, src, size);
+      float abs_peak = dsp_abs_max (dest, size);
+      dsp_mul_k2 (dest, 1.f / abs_peak, size);
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+}
+
+/**
  * Calculate
  * dst[i] = dst[i] + src1[i] * k1 + src2[i] * k2.
  */

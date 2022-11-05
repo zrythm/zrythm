@@ -152,8 +152,7 @@ audio_write_raw_file (
 
   if (!sf_format_check (&info))
     {
-      g_critical (
-        "Invalid SFINFO: %s", sf_strerror (NULL));
+      g_critical ("Invalid SFINFO: %s", sf_strerror (NULL));
       return -1;
     }
 

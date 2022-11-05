@@ -377,15 +377,32 @@ audio_function_apply (
   unsigned_frame_t num_frames =
     (unsigned_frame_t) (end.frames - start.frames);
 
+  bool use_interleaved = true;
+
   /* interleaved frames */
   channels_t channels = orig_clip->channels;
   float      src_frames[num_frames * channels];
-  float      frames[num_frames * channels];
+  float      dest_frames[num_frames * channels];
   dsp_copy (
-    &frames[0],
+    &dest_frames[0],
     &orig_clip->frames[start.frames * (long) channels],
     num_frames * channels);
-  dsp_copy (&src_frames[0], &frames[0], num_frames * channels);
+  dsp_copy (
+    &src_frames[0], &dest_frames[0], num_frames * channels);
+
+  /* uninterleaved frames */
+  float ch_src_frames[channels][num_frames];
+  float ch_dest_frames[channels][num_frames];
+  for (size_t j = 0; j < channels; j++)
+    {
+      for (size_t i = 0; i < num_frames; i++)
+        {
+          ch_src_frames[j][i] = src_frames[i * channels + j];
+        }
+      dsp_copy (
+        &ch_dest_frames[j][0], &ch_src_frames[j][0],
+        num_frames);
+    }
 
   unsigned_frame_t nudge_frames =
     (unsigned_frame_t) position_get_frames_from_ticks (
@@ -393,7 +410,6 @@ audio_function_apply (
   unsigned_frame_t nudge_frames_all_channels =
     channels * nudge_frames;
   unsigned_frame_t num_frames_excl_nudge;
-
   g_debug (
     "num frames %" PRIu64
     ", "
@@ -404,16 +420,15 @@ audio_function_apply (
   switch (type)
     {
     case AUDIO_FUNCTION_INVERT:
-      dsp_mul_k2 (&frames[0], -1.f, num_frames * channels);
+      dsp_mul_k2 (
+        &dest_frames[0], -1.f, num_frames * channels);
       break;
     case AUDIO_FUNCTION_NORMALIZE_PEAK:
-      /* peak-normalize */
-      {
-        float abs_peak =
-          dsp_abs_max (&frames[0], num_frames * channels);
-        dsp_mul_k2 (
-          &frames[0], 1.f / abs_peak, num_frames * channels);
-      }
+      /* note: this normalizes by taking all channels into
+       * account */
+      dsp_normalize (
+        &dest_frames[0], &dest_frames[0],
+        num_frames * channels);
       break;
     case AUDIO_FUNCTION_NORMALIZE_RMS:
       /* TODO rms-normalize */
@@ -423,12 +438,12 @@ audio_function_apply (
       break;
     case AUDIO_FUNCTION_LINEAR_FADE_IN:
       dsp_linear_fade_in_from (
-        &frames[0], 0, num_frames * channels,
+        &dest_frames[0], 0, num_frames * channels,
         num_frames * channels, 0.f);
       break;
     case AUDIO_FUNCTION_LINEAR_FADE_OUT:
       dsp_linear_fade_out_to (
-        &frames[0], 0, num_frames * channels,
+        &dest_frames[0], 0, num_frames * channels,
         num_frames * channels, 0.f);
       break;
     case AUDIO_FUNCTION_NUDGE_LEFT:
@@ -436,10 +451,11 @@ audio_function_apply (
       num_frames_excl_nudge =
         num_frames - (size_t) nudge_frames;
       dsp_copy (
-        &frames[0], &src_frames[nudge_frames_all_channels],
+        &dest_frames[0],
+        &src_frames[nudge_frames_all_channels],
         channels * num_frames_excl_nudge);
       dsp_fill (
-        &frames[channels * num_frames_excl_nudge], 0.f,
+        &dest_frames[channels * num_frames_excl_nudge], 0.f,
         nudge_frames_all_channels);
       break;
     case AUDIO_FUNCTION_NUDGE_RIGHT:
@@ -447,22 +463,18 @@ audio_function_apply (
       num_frames_excl_nudge =
         num_frames - (size_t) nudge_frames;
       dsp_copy (
-        &frames[nudge_frames], &src_frames[0],
+        &dest_frames[nudge_frames], &src_frames[0],
         channels * num_frames_excl_nudge);
-      dsp_fill (&frames[0], 0.f, nudge_frames_all_channels);
+      dsp_fill (
+        &dest_frames[0], 0.f, nudge_frames_all_channels);
       break;
     case AUDIO_FUNCTION_REVERSE:
-      for (size_t i = 0; i < num_frames; i++)
+      use_interleaved = false;
+      for (size_t j = 0; j < channels; j++)
         {
-          for (size_t j = 0; j < channels; j++)
-            {
-              frames[i * channels + j] =
-                orig_clip->frames
-                  [((size_t) start.frames
-                    + ((num_frames - i) - 1))
-                     * channels
-                   + j];
-            }
+          dsp_reverse2 (
+            &ch_dest_frames[j][0], &ch_src_frames[j][0],
+            num_frames);
         }
       break;
     case AUDIO_FUNCTION_EXT_PROGRAM:
@@ -481,13 +493,13 @@ audio_function_apply (
             return -1;
           }
         dsp_copy (
-          &frames[0], &tmp_clip->frames[0],
+          &dest_frames[0], &tmp_clip->frames[0],
           MIN (num_frames, (size_t) tmp_clip->num_frames)
             * channels);
         if ((size_t) tmp_clip->num_frames < num_frames)
           {
             dsp_fill (
-              &frames[0], 0.f,
+              &dest_frames[0], 0.f,
               (num_frames - (size_t) tmp_clip->num_frames)
                 * channels);
           }
@@ -498,7 +510,7 @@ audio_function_apply (
         g_return_val_if_fail (uri, -1);
         GError * err = NULL;
         int      ret = apply_plugin (
-               uri, frames, num_frames, channels, &err);
+               uri, dest_frames, num_frames, channels, &err);
         if (ret != 0)
           {
             PROPAGATE_PREFIXED_ERROR (
@@ -527,8 +539,21 @@ audio_function_apply (
   g_free (tmp);
 #endif
 
+  /* convert to interleaved */
+  if (!use_interleaved)
+    {
+      for (size_t j = 0; j < channels; j++)
+        {
+          for (size_t i = 0; i < num_frames; i++)
+            {
+              dest_frames[i * channels + j] =
+                ch_dest_frames[j][i];
+            }
+        }
+    }
+
   AudioClip * clip = audio_clip_new_from_float_array (
-    &frames[0], num_frames, channels, BIT_DEPTH_32,
+    &dest_frames[0], num_frames, channels, BIT_DEPTH_32,
     orig_clip->name);
   audio_pool_add_clip (AUDIO_POOL, clip);
   g_message (
@@ -541,7 +566,7 @@ audio_function_apply (
     {
       /* replace the frames in the region */
       audio_region_replace_frames (
-        r, frames, (size_t) start.frames, num_frames,
+        r, dest_frames, (size_t) start.frames, num_frames,
         F_NO_DUPLICATE_CLIP);
     }
 
