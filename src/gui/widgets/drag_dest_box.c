@@ -36,7 +36,6 @@
 #include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
-#include "utils/strv_builder.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -258,23 +257,23 @@ on_dnd_drop (
       char ** uris = NULL;
       if (G_VALUE_HOLDS (value, G_TYPE_FILE))
         {
-          GFile *       gfile = g_value_get_object (value);
-          StrvBuilder * uris_builder = strv_builder_new ();
-          char *        uri = g_file_get_uri (gfile);
-          strv_builder_add (uris_builder, uri);
-          uris = strv_builder_end (uris_builder);
+          GFile *        gfile = g_value_get_object (value);
+          GStrvBuilder * uris_builder = g_strv_builder_new ();
+          char *         uri = g_file_get_uri (gfile);
+          g_strv_builder_add (uris_builder, uri);
+          uris = g_strv_builder_end (uris_builder);
         }
       else if (G_VALUE_HOLDS (value, GDK_TYPE_FILE_LIST))
         {
-          StrvBuilder * uris_builder = strv_builder_new ();
-          GSList *      l;
+          GStrvBuilder * uris_builder = g_strv_builder_new ();
+          GSList *       l;
           for (l = g_value_get_boxed (value); l; l = l->next)
             {
               char * uri = g_file_get_uri (l->data);
-              strv_builder_add (uris_builder, uri);
+              g_strv_builder_add (uris_builder, uri);
               g_free (uri);
             }
-          uris = strv_builder_end (uris_builder);
+          uris = g_strv_builder_end (uris_builder);
         }
 
       if (!zrythm_app_check_and_show_trial_limit_error (

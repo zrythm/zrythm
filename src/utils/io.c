@@ -45,7 +45,6 @@
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
-#include "utils/strv_builder.h"
 #include "utils/system.h"
 #include "zrythm.h"
 
@@ -465,18 +464,18 @@ io_get_files_in_dir_as_basenames (
   if (!files)
     return NULL;
 
-  int           i = 0;
-  StrvBuilder * builder = strv_builder_new ();
-  char *        f;
+  int            i = 0;
+  GStrvBuilder * builder = g_strv_builder_new ();
+  char *         f;
   while ((f = files[i++]))
     {
       char * new_str = g_path_get_basename (f);
-      strv_builder_add (builder, new_str);
+      g_strv_builder_add (builder, new_str);
       g_free (new_str);
     }
   g_strfreev (files);
 
-  return strv_builder_end (builder);
+  return g_strv_builder_end (builder);
 }
 
 /**

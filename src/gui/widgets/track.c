@@ -54,7 +54,6 @@
 #include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
-#include "utils/strv_builder.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"

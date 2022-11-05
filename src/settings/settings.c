@@ -19,7 +19,6 @@
 #include "utils/mem.h"
 #include "utils/objects.h"
 #include "utils/string.h"
-#include "utils/strv_builder.h"
 #include "utils/terminal.h"
 #include "zrythm.h"
 
@@ -513,14 +512,14 @@ settings_append_to_strv (
     "%s: key %s val %s ignore if duplicate %d", __func__, key,
     val, ignore_if_duplicate);
 
-  StrvBuilder * builder = strv_builder_new ();
-  char **       strv =
+  GStrvBuilder * builder = g_strv_builder_new ();
+  char **        strv =
     ZRYTHM_TESTING ? NULL : g_settings_get_strv (settings, key);
   if (strv)
-    strv_builder_addv (builder, (const char **) strv);
-  strv_builder_add (builder, val);
+    g_strv_builder_addv (builder, (const char **) strv);
+  g_strv_builder_add (builder, val);
 
-  char ** new_strv = strv_builder_end (builder);
+  char ** new_strv = g_strv_builder_end (builder);
 
   if (ZRYTHM_TESTING)
     {

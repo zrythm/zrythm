@@ -11,7 +11,6 @@
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
-#include "utils/strv_builder.h"
 #include "zrythm.h"
 
 #include <glib/gi18n.h>
@@ -294,7 +293,7 @@ file_browser_location_equal_func (
 static void
 save_locations (FileManager * self)
 {
-  StrvBuilder * strv_builder = strv_builder_new ();
+  GStrvBuilder * strv_builder = g_strv_builder_new ();
   for (guint i = 0; i < FILE_MANAGER->locations->len; i++)
     {
       FileBrowserLocation * loc =
@@ -302,10 +301,10 @@ save_locations (FileManager * self)
       if (loc->special_location > FILE_MANAGER_NONE)
         continue;
 
-      strv_builder_add (strv_builder, loc->path);
+      g_strv_builder_add (strv_builder, loc->path);
     }
 
-  char ** strings = strv_builder_end (strv_builder);
+  char ** strings = g_strv_builder_end (strv_builder);
   g_settings_set_strv (
     S_UI_FILE_BROWSER, "file-browser-bookmarks",
     (const char * const *) strings);

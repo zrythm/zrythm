@@ -46,7 +46,6 @@
 #include "utils/objects.h"
 #include "utils/sort.h"
 #include "utils/string.h"
-#include "utils/strv_builder.h"
 #include "utils/ui.h"
 #include "utils/windows.h"
 #include "zrythm.h"
@@ -436,8 +435,8 @@ get_vst_paths (PluginManager * self)
   char ** paths;
   if (ZRYTHM_TESTING)
     {
-      StrvBuilder * builder = strv_builder_new ();
-      paths = strv_builder_end (builder);
+      GStrvBuilder * builder = g_strv_builder_new ();
+      paths = g_strv_builder_end (builder);
     }
   else
     {
@@ -885,8 +884,8 @@ get_jsfx_paths (PluginManager * self)
   char ** pref_paths;
   if (ZRYTHM_TESTING)
     {
-      StrvBuilder * builder = strv_builder_new ();
-      pref_paths = strv_builder_end (builder);
+      GStrvBuilder * builder = g_strv_builder_new ();
+      pref_paths = g_strv_builder_end (builder);
     }
   else
     {
@@ -895,18 +894,18 @@ get_jsfx_paths (PluginManager * self)
     }
   g_return_val_if_fail (pref_paths, NULL);
 
-  StrvBuilder * builder = strv_builder_new ();
+  GStrvBuilder * builder = g_strv_builder_new ();
   if (env_paths)
     {
-      strv_builder_addv (builder, (const char **) env_paths);
+      g_strv_builder_addv (builder, (const char **) env_paths);
       g_strfreev (env_paths);
       env_paths = NULL;
     }
   /* FIXME skip duplicates, otherwise plugins show twice */
-  strv_builder_addv (builder, (const char **) pref_paths);
+  g_strv_builder_addv (builder, (const char **) pref_paths);
   g_strfreev (pref_paths);
 
-  char ** paths = strv_builder_end (builder);
+  char ** paths = g_strv_builder_end (builder);
 
   g_message ("%s: done", __func__);
 

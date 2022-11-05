@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -36,7 +20,6 @@
 #include "utils/localization.h"
 #include "utils/resources.h"
 #include "utils/string.h"
-#include "utils/strv_builder.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -140,20 +123,20 @@ export_midi_file_dialog_widget_run (
       _ ("_Cancel")));
 
   /* add region content choice */
-  StrvBuilder * region_content_ids_builder =
-    strv_builder_new ();
-  StrvBuilder * region_content_labels_builder =
-    strv_builder_new ();
-  strv_builder_add (region_content_ids_builder, "base");
-  strv_builder_add (
+  GStrvBuilder * region_content_ids_builder =
+    g_strv_builder_new ();
+  GStrvBuilder * region_content_labels_builder =
+    g_strv_builder_new ();
+  g_strv_builder_add (region_content_ids_builder, "base");
+  g_strv_builder_add (
     region_content_labels_builder, _ ("Base region"));
-  strv_builder_add (region_content_ids_builder, "full");
-  strv_builder_add (
+  g_strv_builder_add (region_content_ids_builder, "full");
+  g_strv_builder_add (
     region_content_labels_builder, _ ("Full region"));
   char ** region_content_ids =
-    strv_builder_end (region_content_ids_builder);
+    g_strv_builder_end (region_content_ids_builder);
   char ** region_content_labels =
-    strv_builder_end (region_content_labels_builder);
+    g_strv_builder_end (region_content_labels_builder);
   gtk_file_chooser_add_choice (
     GTK_FILE_CHOOSER (fc_native), "region-content",
     _ ("Region Content"), (const char **) region_content_ids,
@@ -162,19 +145,20 @@ export_midi_file_dialog_widget_run (
   g_strfreev (region_content_labels);
 
   /* add MIDI format choice */
-  StrvBuilder * midi_format_ids_builder = strv_builder_new ();
-  StrvBuilder * midi_format_labels_builder =
-    strv_builder_new ();
-  strv_builder_add (midi_format_ids_builder, "zero");
-  strv_builder_add (
+  GStrvBuilder * midi_format_ids_builder =
+    g_strv_builder_new ();
+  GStrvBuilder * midi_format_labels_builder =
+    g_strv_builder_new ();
+  g_strv_builder_add (midi_format_ids_builder, "zero");
+  g_strv_builder_add (
     midi_format_labels_builder, _ ("Format 0"));
-  strv_builder_add (midi_format_ids_builder, "one");
-  strv_builder_add (
+  g_strv_builder_add (midi_format_ids_builder, "one");
+  g_strv_builder_add (
     midi_format_labels_builder, _ ("Format 1"));
   char ** midi_format_ids =
-    strv_builder_end (midi_format_ids_builder);
+    g_strv_builder_end (midi_format_ids_builder);
   char ** midi_format_labels =
-    strv_builder_end (midi_format_labels_builder);
+    g_strv_builder_end (midi_format_labels_builder);
   gtk_file_chooser_add_choice (
     GTK_FILE_CHOOSER (fc_native), "midi-format",
     _ ("MIDI Format"), (const char **) midi_format_ids,
@@ -183,23 +167,23 @@ export_midi_file_dialog_widget_run (
   g_strfreev (midi_format_labels);
 
   /* add MIDI format choice */
-  StrvBuilder * lane_export_type_ids_builder =
-    strv_builder_new ();
-  StrvBuilder * lane_export_type_labels_builder =
-    strv_builder_new ();
-  strv_builder_add (
+  GStrvBuilder * lane_export_type_ids_builder =
+    g_strv_builder_new ();
+  GStrvBuilder * lane_export_type_labels_builder =
+    g_strv_builder_new ();
+  g_strv_builder_add (
     lane_export_type_ids_builder, "part-of-track");
-  strv_builder_add (
+  g_strv_builder_add (
     lane_export_type_labels_builder,
     _ ("Part of parent track"));
-  strv_builder_add (
+  g_strv_builder_add (
     lane_export_type_ids_builder, "separate-tracks");
-  strv_builder_add (
+  g_strv_builder_add (
     lane_export_type_labels_builder, _ ("Separate tracks"));
   char ** lane_export_type_ids =
-    strv_builder_end (lane_export_type_ids_builder);
+    g_strv_builder_end (lane_export_type_ids_builder);
   char ** lane_export_type_labels =
-    strv_builder_end (lane_export_type_labels_builder);
+    g_strv_builder_end (lane_export_type_labels_builder);
   gtk_file_chooser_add_choice (
     GTK_FILE_CHOOSER (fc_native), "lane-export-type",
     _ ("Export lanes as"),

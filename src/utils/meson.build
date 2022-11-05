@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 util_srcs = [
@@ -31,11 +31,9 @@ util_srcs = [
   'objects.c',
   'pango.c',
   'resources.c',
-  #'smf.c',
   'sort.c',
   'stack.c',
   'string.c',
-  'strv_builder.c',
   'symap.c',
   'system.c',
   'ui.c',

@@ -18,7 +18,6 @@
 #include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
-#include "utils/strv_builder.h"
 #include "utils/ui.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
@@ -741,9 +740,9 @@ add_subgroup (
     subgroup, localized_subgroup_name);
   adw_preferences_page_add (page, subgroup);
 
-  StrvBuilder * builder = strv_builder_new ();
+  GStrvBuilder * builder = g_strv_builder_new ();
   char ** keys = g_settings_schema_list_keys (info->schema);
-  strv_builder_addv (builder, (const char **) keys);
+  g_strv_builder_addv (builder, (const char **) keys);
   g_strfreev (keys);
 
   /* add option to reset to factory */
@@ -751,10 +750,10 @@ add_subgroup (
     group_idx == 0
     && string_is_equal (localized_subgroup_name, _ ("Other")))
     {
-      strv_builder_add (builder, reset_to_factory_key);
+      g_strv_builder_add (builder, reset_to_factory_key);
     }
 
-  keys = strv_builder_end (builder);
+  keys = g_strv_builder_end (builder);
 
   int    i = 0;
   int    num_controls = 0;
