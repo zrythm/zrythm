@@ -1317,14 +1317,26 @@ show_context_menu (ArrangerWidget * self, gdouble x, gdouble y)
 
   g_return_if_fail (menu);
 
-  /* add "create object" menu item */
-  char action_name[500];
-  sprintf (
-    action_name, "app.create-arranger-obj(('%p',%f,%f))",
-    self, x, y);
-  menuitem = z_gtk_create_menu_item (
-    _ ("Create object"), NULL, action_name);
-  g_menu_append_item (menu, menuitem);
+  ArrangerObject * obj =
+    arranger_widget_get_hit_arranger_object (
+      self, ARRANGER_OBJECT_TYPE_ALL, x, y);
+
+  if (!obj)
+    {
+      GMenu * create_submenu = g_menu_new ();
+
+      /* add "create object" menu item */
+      char action_name[500];
+      sprintf (
+        action_name, "app.create-arranger-obj(('%p',%f,%f))",
+        self, x, y);
+      menuitem = z_gtk_create_menu_item (
+        _ ("Create Object"), NULL, action_name);
+      g_menu_append_item (create_submenu, menuitem);
+
+      g_menu_append_section (
+        menu, _ ("Create"), G_MENU_MODEL (create_submenu));
+    }
 
   const EditorSettings settings =
     arranger_widget_get_editor_setting_values (self);

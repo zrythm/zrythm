@@ -415,6 +415,7 @@ COLD DECLARE_SIMPLE (activate_midi_editor_highlighting);
 DECLARE_SIMPLE (activate_rename_track);
 DECLARE_SIMPLE (activate_rename_arranger_object);
 DECLARE_SIMPLE (activate_create_arranger_object);
+DECLARE_SIMPLE (activate_change_region_color);
 
 DECLARE_SIMPLE (activate_add_region);
 DECLARE_SIMPLE (activate_go_to_start);

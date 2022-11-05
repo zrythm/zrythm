@@ -2575,6 +2575,15 @@ activate_create_arranger_object (
     }
 }
 
+DEFINE_SIMPLE (activate_change_region_color)
+{
+  if (!timeline_selections_contains_only_regions (
+        TL_SELECTIONS))
+    return;
+
+  g_message ("change region color");
+}
+
 DEFINE_SIMPLE (activate_add_region)
 {
   if (TRACKLIST_SELECTIONS->num_tracks == 0)

@@ -1012,6 +1012,23 @@ timeline_arranger_widget_gen_context_menu (
       if (timeline_selections_contains_only_regions (
             TL_SELECTIONS))
         {
+          if (arranger_object_get_muted (obj, false))
+            {
+              menuitem = CREATE_UNMUTE_MENU_ITEM (
+                "app.mute-selection::timeline");
+            }
+          else
+            {
+              menuitem = CREATE_MUTE_MENU_ITEM (
+                "app.mute-selection::timeline");
+            }
+          g_menu_append_item (menu, menuitem);
+
+          menuitem = z_gtk_create_menu_item (
+            _ ("Change Color..."), NULL,
+            "app.change-region-color");
+          g_menu_append_item (menu, menuitem);
+
           if (timeline_selections_contains_only_region_types (
                 TL_SELECTIONS, REGION_TYPE_AUDIO))
             {
@@ -1073,25 +1090,13 @@ timeline_arranger_widget_gen_context_menu (
                   g_menu_append_item (
                     region_functions_subsubmenu, submenu_item);
                 }
-              g_menu_append_section (
-                audio_regions_submenu, _ ("Region Functions"),
+              g_menu_append_submenu (
+                audio_regions_submenu, _ ("Functions"),
                 G_MENU_MODEL (region_functions_subsubmenu));
               g_menu_append_section (
                 menu, _ ("Audio Regions"),
                 G_MENU_MODEL (audio_regions_submenu));
-            }
-
-          if (arranger_object_get_muted (obj, false))
-            {
-              menuitem = CREATE_UNMUTE_MENU_ITEM (
-                "app.mute-selection::timeline");
-            }
-          else
-            {
-              menuitem = CREATE_MUTE_MENU_ITEM (
-                "app.mute-selection::timeline");
-            }
-          g_menu_append_item (menu, menuitem);
+            } /* endif contains only audio regions */
 
           if (timeline_selections_contains_only_region_types (
                 TL_SELECTIONS, REGION_TYPE_MIDI))
@@ -1109,20 +1114,31 @@ timeline_arranger_widget_gen_context_menu (
                 G_MENU_MODEL (midi_regions_submenu));
             }
 
+          GMenu * bounce_submenu = g_menu_new ();
+
           menuitem = z_gtk_create_menu_item (
-            _ ("Quick bounce"), NULL,
+            _ ("Quick Bounce"), NULL,
             "app.quick-bounce-selections");
-          g_menu_append_item (menu, menuitem);
+          g_menu_append_item (bounce_submenu, menuitem);
 
           menuitem = z_gtk_create_menu_item (
             _ ("Bounce..."), NULL, "app.bounce-selections");
-          g_menu_append_item (menu, menuitem);
+          g_menu_append_item (bounce_submenu, menuitem);
+
+          g_menu_append_section (
+            menu, _ ("Bounce to Audio"),
+            G_MENU_MODEL (bounce_submenu));
         }
     }
   else /* else if no object clicked */
     {
+      GMenu * edit_submenu = g_menu_new ();
+
       menuitem = CREATE_PASTE_MENU_ITEM ("app.paste");
-      g_menu_append_item (menu, menuitem);
+      g_menu_append_item (edit_submenu, menuitem);
+
+      g_menu_append_section (
+        menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
     }
 
   return menu;
