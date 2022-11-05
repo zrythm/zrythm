@@ -40,7 +40,7 @@ on_response (
       if (!self->selected_port)
         {
           ui_show_error_message (
-            MAIN_WINDOW, false, _ ("No port selected"));
+            false, _ ("No port selected"));
           return;
         }
 
@@ -76,8 +76,7 @@ on_response (
       else
         {
           ui_show_error_message (
-            MAIN_WINDOW, false,
-            _ ("These ports cannot be connected"));
+            false, _ ("These ports cannot be connected"));
         }
     }
 

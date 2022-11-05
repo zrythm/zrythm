@@ -2455,16 +2455,15 @@ lv2_plugin_instantiate (
               sprintf (
                 msg,
                 _ (
-                  "%s <%s> contains a reference to "
-                  "%s, which may cause issues.\n"
-                  "If the plugin does not load, please "
-                  "try instantiating the plugin in full-"
-                  "bridged mode, and report this to the "
-                  "plugin distributor and/or author:\n"
+                  "%s <%s> contains a reference to %s, which "
+                  "may cause issues.\nIf the plugin does not "
+                  "load, please try instantiating the plugin "
+                  "in full-bridged mode, and report this to "
+                  "the plugin distributor and/or author:\n"
                   "%s <%s>"),
                 descr->name, descr->uri, basename,
                 descr->author, descr->website);
-              ui_show_error_message (MAIN_WINDOW, true, msg);
+              ui_show_error_message (true, msg);
               g_free (basename);
             }
 

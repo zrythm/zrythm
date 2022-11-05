@@ -452,31 +452,37 @@ ui_show_message_full (
   const char *   format,
   ...) G_GNUC_PRINTF (4, 5);
 
-/**
- * Type can be GTK_MESSAGE_ERROR, etc.
- */
-#define ui_show_message_printf(win, type, block, fmt, ...) \
-  ui_show_message_full ( \
-    win ? GTK_WINDOW (win) : NULL, type, block, fmt, \
-    __VA_ARGS__)
+#define UI_ACTIVE_WINDOW_OR_NULL \
+  (gtk_application_get_active_window ( \
+     GTK_APPLICATION (zrythm_app)) \
+     ? gtk_application_get_active_window ( \
+       GTK_APPLICATION (zrythm_app)) \
+     : NULL)
 
 /**
  * Type can be GTK_MESSAGE_ERROR, etc.
  */
-#define ui_show_message_literal(win, type, block, str) \
+#define ui_show_message_printf(type, block, fmt, ...) \
   ui_show_message_full ( \
-    win ? GTK_WINDOW (win) : NULL, type, block, "%s", str)
+    UI_ACTIVE_WINDOW_OR_NULL, type, block, fmt, __VA_ARGS__)
+
+/**
+ * Type can be GTK_MESSAGE_ERROR, etc.
+ */
+#define ui_show_message_literal(type, block, str) \
+  ui_show_message_full ( \
+    UI_ACTIVE_WINDOW_OR_NULL, type, block, "%s", str)
 
 /**
  * Wrapper to show error message so that no casting
  * of the window is needed on the caller side.
  */
-#define ui_show_error_message_printf(win, block, fmt, ...) \
+#define ui_show_error_message_printf(block, fmt, ...) \
   ui_show_message_printf ( \
-    win, GTK_MESSAGE_ERROR, block, fmt, __VA_ARGS__);
+    GTK_MESSAGE_ERROR, block, fmt, __VA_ARGS__);
 
-#define ui_show_error_message(win, block, msg) \
-  ui_show_error_message_printf (win, block, "%s", msg)
+#define ui_show_error_message(block, msg) \
+  ui_show_error_message_printf (block, "%s", msg)
 
 /**
  * Returns if \ref rect is hit or not by the

@@ -492,7 +492,6 @@ engine_pre_setup (AudioEngine * self)
       if (ZRYTHM_HAVE_UI && !ZRYTHM_TESTING)
         {
           ui_show_message_printf (
-            MAIN_WINDOW ? GTK_WINDOW (MAIN_WINDOW) : NULL,
             GTK_MESSAGE_WARNING, true,
             _ ("Failed to initialize the %s audio "
                "backend. Will use the dummy backend "
@@ -534,7 +533,7 @@ setup_dummy_midi:
       else
         {
           ui_show_message_printf (
-            NULL, GTK_MESSAGE_ERROR, true,
+            GTK_MESSAGE_ERROR, true,
             _ ("The JACK MIDI backend can only be "
                "used with the JACK audio backend "
                "(your current audio backend is %s). "
@@ -569,8 +568,7 @@ setup_dummy_midi:
       if (!ZRYTHM_TESTING)
         {
           ui_show_message_printf (
-            GTK_WINDOW (MAIN_WINDOW), GTK_MESSAGE_WARNING,
-            true,
+            GTK_MESSAGE_WARNING, true,
             _ ("Failed to initialize the %s MIDI "
                "backend. Will use the dummy backend "
                "instead. Please check your backend "
@@ -611,8 +609,7 @@ engine_setup (AudioEngine * self)
     || (self->audio_backend != AUDIO_BACKEND_JACK && self->midi_backend == MIDI_BACKEND_JACK))
     {
       ui_show_message_printf (
-        GTK_WINDOW (MAIN_WINDOW), GTK_MESSAGE_WARNING, true,
-        "%s",
+        GTK_MESSAGE_WARNING, true, "%s",
         _ ("Your selected combination of backends "
            "may not work properly. If you want to "
            "use JACK, please select JACK as both "
@@ -805,7 +802,7 @@ init_common (AudioEngine * self)
   if (backend_reset_to_dummy && !ZRYTHM_TESTING)
     {
       ui_show_message_printf (
-        GTK_WINDOW (MAIN_WINDOW), GTK_MESSAGE_WARNING, true,
+        GTK_MESSAGE_WARNING, true,
         _ (
           "The selected MIDI/audio backend was not "
           "found in the version of %s you have "

@@ -419,7 +419,7 @@ on_load_project (
         _ ("No project has been selected. %s "
            "will now close."),
         PROGRAM_NAME);
-      ui_show_error_message (NULL, true, msg);
+      ui_show_error_message (true, msg);
       exit (0);
     }
 
@@ -1738,7 +1738,7 @@ zrythm_app_check_and_show_trial_limit_error (ZrythmApp * self)
     && TRACKLIST->num_tracks >= TRIAL_MAX_TRACKS)
     {
       ui_show_error_message_printf (
-        self->main_window, true,
+        true,
         _ ("This version of Zrythm does not support creating more than %d tracks."),
         TRIAL_MAX_TRACKS);
       return true;

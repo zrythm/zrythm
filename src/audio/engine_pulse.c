@@ -1,8 +1,6 @@
+// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020 Ryan Gonzalez <rymg19 at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2020 Ryan Gonzalez <rymg19 at gmail dot com>
- * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 #include "zrythm-config.h"
 
@@ -86,7 +84,7 @@ engine_pulse_notify_underflow (void * userdata)
   if (MAIN_WINDOW)
     {
       ui_show_error_message (
-        MAIN_WINDOW, false,
+        false,
         _ ("A buffer underflow has occurred."
            " Try increasing the buffer size in"
            " the settings to avoid audio"
@@ -443,7 +441,8 @@ engine_pulse_test (GtkWindow * win)
     {
       if (win)
         {
-          ui_show_error_message (win, true, msg);
+          ui_show_message_full (
+            win, GTK_MESSAGE_ERROR, true, "%s", msg);
         }
       else
         {

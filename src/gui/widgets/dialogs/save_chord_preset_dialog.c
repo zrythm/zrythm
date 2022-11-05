@@ -49,14 +49,14 @@ on_response (
       if (!entered_name || strlen (entered_name) < 1)
         {
           ui_show_error_message (
-            dialog, false, _ ("Please enter a valid name."));
+            false, _ ("Please enter a valid name."));
           return;
         }
       else if (chord_preset_pack_contains_name (
                  pack, entered_name))
         {
           ui_show_message_printf (
-            dialog, GTK_MESSAGE_ERROR, false,
+            GTK_MESSAGE_ERROR, false,
             _ ("Name '%s' is taken. Please enter "
                "a different name"),
             entered_name);

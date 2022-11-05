@@ -1274,8 +1274,7 @@ tracklist_import_files (
 
   if (file_arr->len == 0)
     {
-      ui_show_error_message (
-        MAIN_WINDOW, true, _ ("No file was found"));
+      ui_show_error_message (true, _ ("No file was found"));
 
       goto free_file_array_and_return;
     }
@@ -1302,7 +1301,7 @@ tracklist_import_files (
           char * msg = g_strdup_printf (
             _ ("Unsupported file type %s"), descr);
           g_free (descr);
-          ui_show_error_message (MAIN_WINDOW, true, msg);
+          ui_show_error_message (true, msg);
           g_free (msg);
 
           goto free_file_array_and_return;
@@ -1318,7 +1317,7 @@ tracklist_import_files (
               if (ZRYTHM_HAVE_UI)
                 {
                   ui_show_error_message (
-                    MAIN_WINDOW, true,
+                    true,
                     _ ("This MIDI file contains "
                        "no data"));
                 }
@@ -1335,7 +1334,7 @@ tracklist_import_files (
               if (file_arr->len > 1)
                 {
                   ui_show_error_message (
-                    MAIN_WINDOW, true,
+                    true,
                     _ ("Can only drop 1 file at a "
                        "time on existing tracks"));
                   goto free_file_array_and_return;
@@ -1348,7 +1347,7 @@ tracklist_import_files (
                     && track->type != TRACK_TYPE_INSTRUMENT)
                     {
                       ui_show_error_message (
-                        MAIN_WINDOW, true,
+                        true,
                         _ ("Can only drop MIDI files on "
                            "MIDI/instrument tracks"));
                       goto free_file_array_and_return;
@@ -1363,8 +1362,7 @@ tracklist_import_files (
                            "tracks. It cannot be dropped "
                            "into an existing track"),
                         num_nonempty_midi_tracks);
-                      ui_show_error_message (
-                        MAIN_WINDOW, true, msg);
+                      ui_show_error_message (true, msg);
                       goto free_file_array_and_return;
                     }
                 }
@@ -1373,7 +1371,7 @@ tracklist_import_files (
                 && track->type != TRACK_TYPE_AUDIO)
                 {
                   ui_show_error_message (
-                    MAIN_WINDOW, true,
+                    true,
                     _ ("Can only drop audio files on "
                        "audio tracks"));
                   goto free_file_array_and_return;
@@ -1675,7 +1673,7 @@ tracklist_handle_move_or_copy (
               if (!ZRYTHM_TESTING)
                 {
                   ui_show_error_message (
-                    MAIN_WINDOW, true,
+                    true,
                     _ ("Cannot drag folder into "
                        "itself"));
                 }

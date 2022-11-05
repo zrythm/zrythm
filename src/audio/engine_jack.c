@@ -344,7 +344,7 @@ shutdown_cb (void * arg)
   if (ZRYTHM_HAVE_UI && MAIN_WINDOW)
     {
       char * msg = _ ("JACK has shut down");
-      ui_show_error_message (MAIN_WINDOW, false, msg);
+      ui_show_error_message (false, msg);
     }
 }
 
@@ -505,7 +505,8 @@ engine_jack_test (GtkWindow * win)
       sprintf (full_msg, "JACK Error: %s", msg);
       if (win)
         {
-          ui_show_error_message (win, false, full_msg);
+          ui_show_message_full (
+            win, GTK_MESSAGE_ERROR, false, "%s", full_msg);
         }
       else
         {
@@ -540,7 +541,7 @@ engine_jack_setup (AudioEngine * self)
       engine_jack_get_error_message (status, msg);
       char full_msg[800];
       sprintf (full_msg, "JACK Error: %s", msg);
-      ui_show_error_message (NULL, false, full_msg);
+      ui_show_error_message (false, full_msg);
 
       return -1;
     }

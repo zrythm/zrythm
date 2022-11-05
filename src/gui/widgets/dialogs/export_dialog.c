@@ -669,8 +669,7 @@ on_export (ExportDialogWidget * self, bool audio)
     get_enabled_tracks (self, tree_view, &num_tracks);
   if (!tracks)
     {
-      ui_show_error_message (
-        MAIN_WINDOW, false, _ ("No tracks to export"));
+      ui_show_error_message (false, _ ("No tracks to export"));
       return;
     }
 

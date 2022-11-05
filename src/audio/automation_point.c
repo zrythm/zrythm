@@ -238,7 +238,7 @@ automation_point_set_fvalue_with_action (
     || val > port->maxf)
     {
       ui_show_error_message (
-        MAIN_WINDOW, GTK_MESSAGE_ERROR, _ ("Invalid value"));
+        GTK_MESSAGE_ERROR, _ ("Invalid value"));
     }
   else
     {

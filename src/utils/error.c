@@ -24,7 +24,7 @@ error_handle_prv (GError * err, const char * format, ...)
         _ ("%s\n---Backtrace---\n%s"), tmp, err->message);
       g_free (tmp);
       ui_show_message_printf (
-        MAIN_WINDOW, GTK_MESSAGE_ERROR, true, "%s", str);
+        GTK_MESSAGE_ERROR, true, "%s", str);
       g_free (str);
       g_error_free (err);
     }

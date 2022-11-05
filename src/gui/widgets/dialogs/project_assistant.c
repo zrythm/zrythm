@@ -426,7 +426,7 @@ on_response (
           if (!selected_project)
             {
               ui_show_error_message (
-                self, false, _ ("No project selected"));
+                false, _ ("No project selected"));
               return;
             }
           ZRYTHM->open_filename = selected_project->filename;

@@ -255,7 +255,7 @@ show_startup_errors (MainWindowWidget * self)
   for (int k = 0; k < zrythm_app->num_startup_errors; k++)
     {
       char * msg = zrythm_app->startup_errors[k];
-      ui_show_error_message (self, true, msg);
+      ui_show_error_message (true, msg);
       g_free (msg);
     }
   zrythm_app->num_startup_errors = 0;

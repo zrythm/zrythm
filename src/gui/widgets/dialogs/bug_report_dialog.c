@@ -43,8 +43,7 @@ validate_input (BugReportDialogWidget * self)
     {
       g_free_and_null (steps_to_reproduce);
       ui_show_error_message (
-        GTK_WINDOW (self), false,
-        _ ("Please enter more details"));
+        false, _ ("Please enter more details"));
       return false;
     }
 
@@ -369,7 +368,7 @@ on_preview_and_send_automatically_response (
         PREVIEW_AND_SEND_AUTOMATICALLY_RESPONSE, false);
 
       ui_show_message_printf (
-        self, GTK_MESSAGE_INFO, false, "%s",
+        GTK_MESSAGE_INFO, false, "%s",
         _ ("Sent successfully"));
     }
 

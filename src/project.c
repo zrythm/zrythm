@@ -953,10 +953,7 @@ load (const char * filename, const int is_template)
            "unsupported version of %s (%s). "
            "It may not work correctly."),
         PROGRAM_NAME, self->version);
-      ui_show_message_full (
-        MAIN_WINDOW
-          ? GTK_WINDOW (MAIN_WINDOW)
-          : GTK_WINDOW (zrythm_app->splash),
+      ui_show_message_printf (
         GTK_MESSAGE_WARNING, true, "%s", str);
       g_free (str);
     }
@@ -964,7 +961,7 @@ load (const char * filename, const int is_template)
   if (self == NULL)
     {
       ui_show_error_message (
-        MAIN_WINDOW, true,
+        true,
         _ ("Failed to load project. Please check the "
            "logs for more information."));
       RETURN_ERROR;
@@ -980,7 +977,7 @@ load (const char * filename, const int is_template)
       if (!finished_file_exists)
         {
           ui_show_error_message_printf (
-            MAIN_WINDOW, true,
+            true,
             _ ("Could not load project: Corrupted project detected (missing FINISHED file at '%s')."),
             finished_file_path);
           RETURN_ERROR;
@@ -1211,10 +1208,7 @@ load (const char * filename, const int is_template)
           "old one. If you would like to keep both, please "
           "use 'Save As...'."),
         schema_ver, PROJECT_SCHEMA_VERSION);
-      ui_show_message_full (
-        MAIN_WINDOW
-          ? GTK_WINDOW (MAIN_WINDOW)
-          : GTK_WINDOW (zrythm_app->splash),
+      ui_show_message_printf (
         GTK_MESSAGE_INFO, false, "%s", str);
       g_free (str);
     }
@@ -1247,7 +1241,7 @@ project_load (const char * filename, const bool is_template)
       if (ret)
         {
           ui_show_error_message (
-            NULL, true,
+            true,
             _ ("Failed to load project. Will create "
                "a new one instead."));
 

@@ -63,7 +63,7 @@ first_run_dialog_widget_ok (FirstRunDialogWidget * self)
   if (g_settings_get_boolean (S_GENERAL, "first-run") != false)
     {
       ui_show_error_message (
-        zrythm_app->splash, false,
+        false,
         "Could not set 'first-run' to 'false'. "
         "There is likely a problem with your GSettings "
         "backend.");

@@ -225,7 +225,7 @@ on_dnd_drop (
         case WRAPPED_OBJECT_TYPE_SUPPORTED_FILE:
           /* TODO */
           ui_show_message_literal (
-            MAIN_WINDOW, GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
+            GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
             _ ("Operation unimplemented"));
           return false;
           break;
@@ -268,7 +268,7 @@ on_dnd_drop (
               }
 
             ui_show_message_literal (
-              MAIN_WINDOW, GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
+              GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
               _ ("Operation unimplemented"));
             return false;
           }
@@ -277,7 +277,7 @@ on_dnd_drop (
           break;
         default:
           ui_show_message_literal (
-            MAIN_WINDOW, GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
+            GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
             _ ("Dragged item is not supported"));
           return false;
         }
@@ -288,14 +288,14 @@ on_dnd_drop (
     {
       /* TODO */
       ui_show_message_literal (
-        MAIN_WINDOW, GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
+        GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
         _ ("Operation unimplemented"));
       return false;
     }
   else
     {
       ui_show_message_literal (
-        MAIN_WINDOW, GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
+        GTK_MESSAGE_WARNING, Z_F_NO_BLOCK,
         _ ("Dragged item is not supported"));
       return false;
     }

@@ -1959,7 +1959,7 @@ do_quantize (const char * variant, bool quick)
   else
     {
       ui_show_message_printf (
-        MAIN_WINDOW, GTK_MESSAGE_WARNING, false,
+        GTK_MESSAGE_WARNING, false,
         _ ("Must select either the timeline or the "
            "editor first. The current selection is "
            "%s"),
@@ -2045,23 +2045,21 @@ DEFINE_SIMPLE (activate_merge_selection)
 
   if (TL_SELECTIONS->num_regions == 0)
     {
-      ui_show_error_message (
-        MAIN_WINDOW, false, _ ("No regions selected"));
+      ui_show_error_message (false, _ ("No regions selected"));
       return;
     }
   if (!arranger_selections_all_on_same_lane (
         (ArrangerSelections *) TL_SELECTIONS))
     {
       ui_show_error_message (
-        MAIN_WINDOW, false,
-        _ ("Selections must be on the same lane"));
+        false, _ ("Selections must be on the same lane"));
       return;
     }
   if (arranger_selections_contains_looped (
         (ArrangerSelections *) TL_SELECTIONS))
     {
       ui_show_error_message (
-        MAIN_WINDOW, false, _ ("Cannot merge looped regions"));
+        false, _ ("Cannot merge looped regions"));
       return;
     }
   if (TL_SELECTIONS->num_regions == 1)
@@ -2609,8 +2607,7 @@ DEFINE_SIMPLE (activate_input_bpm)
 DEFINE_SIMPLE (activate_tap_bpm)
 {
   ui_show_message_printf (
-    MAIN_WINDOW, GTK_MESSAGE_WARNING, false, "%s",
-    "Not implemented yet");
+    GTK_MESSAGE_WARNING, false, "%s", "Not implemented yet");
 }
 
 void
@@ -2695,8 +2692,7 @@ DEFINE_SIMPLE (activate_detect_bpm)
       g_string_append_printf (gstr, " %.2f", candidate);
     }
   char * str = g_string_free (gstr, false);
-  ui_show_message_printf (
-    MAIN_WINDOW, GTK_MESSAGE_INFO, false, "%s", str);
+  ui_show_message_printf (GTK_MESSAGE_INFO, false, "%s", str);
   g_free (str);
 }
 
@@ -2971,7 +2967,7 @@ DEFINE_SIMPLE (activate_save_chord_preset)
   else
     {
       ui_show_error_message (
-        MAIN_WINDOW, false,
+        false,
         _ ("No custom preset packs found. Please "
            "create a preset pack first from the "
            "chord preset browser."));
@@ -3325,8 +3321,7 @@ DEFINE_SIMPLE (activate_panel_file_browser_delete_bookmark)
     > FILE_MANAGER_NONE)
     {
       ui_show_error_message (
-        MAIN_WINDOW, false,
-        _ ("Cannot delete standard bookmark"));
+        false, _ ("Cannot delete standard bookmark"));
       return;
     }
 

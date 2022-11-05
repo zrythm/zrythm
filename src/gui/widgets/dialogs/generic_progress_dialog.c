@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -100,15 +100,16 @@ tick_cb (
         {
           GtkWindow * transient_parent =
             gtk_window_get_transient_for (GTK_WINDOW (self));
-          ui_show_error_message (
-            transient_parent, true, info->error_str);
+          ui_show_message_full (
+            transient_parent, GTK_MESSAGE_ERROR, true, "%s",
+            info->error_str);
         }
       else if (info->has_message)
         {
           GtkWindow * transient_parent =
             gtk_window_get_transient_for (GTK_WINDOW (self));
-          ui_show_message_literal (
-            transient_parent, info->message_type, false,
+          ui_show_message_full (
+            transient_parent, info->message_type, false, "%s",
             info->message_str);
         }
       return G_SOURCE_REMOVE;
