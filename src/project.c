@@ -1348,9 +1348,9 @@ project_upgrade_schema (char ** yaml, int src_ver)
           &cyaml_config, &project_schema_v1, self, 0);
 
         /* call again for next iteration */
-        project_upgrade_schema (yaml, 3);
+        bool upgraded = project_upgrade_schema (yaml, 3);
 
-        return true;
+        return upgraded;
       }
       break;
     case 2:
@@ -1364,7 +1364,7 @@ project_upgrade_schema (char ** yaml, int src_ver)
           {
             HANDLE_ERROR (
               err, "%s",
-              _ ("Failed to deserialize v1 project file"));
+              _ ("Failed to deserialize v2/3 project file"));
             return false;
           }
 

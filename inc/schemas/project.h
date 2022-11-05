@@ -112,17 +112,12 @@ static const cyaml_schema_field_t project_fields_schema_v1[] = {
     Project_v1,
     audio_engine,
     engine_fields_schema_v1),
-  CYAML_FIELD_IGNORE ("mixer_selections", CYAML_FLAG_DEFAULT),
-  CYAML_FIELD_IGNORE ("timeline_selections", CYAML_FLAG_DEFAULT),
-  CYAML_FIELD_IGNORE (
-    "midi_arranger_selections",
-    CYAML_FLAG_DEFAULT),
-  CYAML_FIELD_IGNORE (
-    "automation_selections",
-    CYAML_FLAG_DEFAULT),
-  CYAML_FIELD_IGNORE ("chord_selections", CYAML_FLAG_DEFAULT),
-  CYAML_FIELD_IGNORE ("audio_selections", CYAML_FLAG_DEFAULT),
-  //CYAML_FIELD_IGNORE ("tracklist_selections", CYAML_FLAG_DEFAULT),
+  YAML_FIELD_IGNORE_OPT ("mixer_selections"),
+  YAML_FIELD_IGNORE_OPT ("timeline_selections"),
+  YAML_FIELD_IGNORE_OPT ("midi_arranger_selections"),
+  YAML_FIELD_IGNORE_OPT ("automation_selections"),
+  YAML_FIELD_IGNORE_OPT ("chord_selections"),
+  YAML_FIELD_IGNORE_OPT ("audio_selections"),
   YAML_FIELD_MAPPING_PTR (
     Project_v1,
     tracklist_selections,
@@ -140,7 +135,7 @@ static const cyaml_schema_field_t project_fields_schema_v1[] = {
     midi_mappings,
     midi_mappings_fields_schema),
   /* ignore undo history */
-  CYAML_FIELD_IGNORE ("undo_manager", CYAML_FLAG_DEFAULT),
+  YAML_FIELD_IGNORE_OPT ("undo_manager"),
   YAML_FIELD_ENUM (
     Project_v1,
     last_selection,

@@ -21,6 +21,12 @@
  */
 
 /**
+ * Ignores a key and doesn't require it to be present either.
+ */
+#define YAML_FIELD_IGNORE_OPT(key) \
+  CYAML_FIELD_IGNORE (key, CYAML_FLAG_OPTIONAL)
+
+/**
  * Mapping embedded inside the struct.
  */
 #define YAML_FIELD_MAPPING_EMBEDDED(owner, member, schema) \
