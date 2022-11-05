@@ -82,15 +82,13 @@ audio_audec_log_func (
 }
 
 /**
- * Writes the buffer as a raw file to the given
- * path.
+ * Writes the buffer as a raw file to the given path.
  *
  * @param size The number of frames per channel.
  * @param samplerate The samplerate of \ref buff.
- * @param frames_already_written Frames (per
- *   channel)already written. If this is non-zero
- *   and the file exists, it will append to the
- *   existing file.
+ * @param frames_already_written Frames (per channel) already
+ *   written. If this is non-zero and the file exists, it will
+ *   append to the existing file.
  *
  * @return Non-zero if fail.
  */
@@ -117,25 +115,30 @@ audio_write_raw_file (
   SF_INFO info;
 
   memset (&info, 0, sizeof (info));
-  info.frames = (sf_count_t) nframes;
   info.channels = (int) channels;
   info.samplerate = (int) samplerate;
-  info.format = flac ? SF_FORMAT_FLAC : SF_FORMAT_WAV;
+  int type_major = flac ? SF_FORMAT_FLAC : SF_FORMAT_WAV;
+  int type_minor = 0;
   switch (bit_depth)
     {
     case BIT_DEPTH_16:
-      info.format = info.format | SF_FORMAT_PCM_16;
+      type_minor = SF_FORMAT_PCM_16;
       break;
     case BIT_DEPTH_24:
-      info.format = info.format | SF_FORMAT_PCM_24;
+      type_minor = SF_FORMAT_PCM_24;
       break;
     case BIT_DEPTH_32:
       g_return_val_if_fail (!flac, -1);
-      info.format = info.format | SF_FORMAT_PCM_32;
+      type_minor = SF_FORMAT_PCM_32;
       break;
     }
-  info.seekable = 1;
-  info.sections = 1;
+  info.format = type_major | type_minor;
+
+  if (!flac)
+    {
+      info.seekable = 1;
+      info.sections = 1;
+    }
 
   bool write_chunk =
     (frames_already_written > 0)
@@ -147,6 +150,13 @@ audio_write_raw_file (
       return -1;
     }
 
+  if (!sf_format_check (&info))
+    {
+      g_critical (
+        "Invalid SFINFO: %s", sf_strerror (NULL));
+      return -1;
+    }
+
   SNDFILE * sndfile =
     sf_open (filename, flac ? SFM_WRITE : SFM_RDWR, &info);
   if (!sndfile)
@@ -155,6 +165,16 @@ audio_write_raw_file (
         "error opening sndfile: %s", sf_strerror (NULL));
       return -1;
     }
+
+  if (info.format != (type_major | type_minor))
+    {
+      g_critical (
+        "Invalid SNDFILE format: 0x%08X != 0x%08X",
+        info.format, type_major | type_minor);
+      return -1;
+    }
+
+  sf_set_string (sndfile, SF_STR_SOFTWARE, PROGRAM_NAME);
 
   if (!flac)
     {
@@ -170,15 +190,16 @@ audio_write_raw_file (
         }
     }
 
-  g_debug ("nframes = %zu", nframes);
+  sf_count_t _nframes = (sf_count_t) nframes;
+  g_debug ("nframes = %ld", _nframes);
   sf_count_t count =
-    sf_writef_float (sndfile, buff, (sf_count_t) nframes);
+    sf_writef_float (sndfile, buff, (sf_count_t) _nframes);
   if (count != (sf_count_t) nframes)
     {
       g_critical (
         "mismatch: expected %ld frames, got %ld\n"
         "error: %s",
-        (sf_count_t) nframes, count, sf_strerror (sndfile));
+        _nframes, count, sf_strerror (sndfile));
     }
 
   sf_write_sync (sndfile);

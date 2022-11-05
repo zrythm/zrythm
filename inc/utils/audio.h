@@ -90,15 +90,13 @@ audio_audec_log_func (
   va_list       args) G_GNUC_PRINTF (2, 0);
 
 /**
- * Writes the buffer as a raw file to the given
- * path.
+ * Writes the buffer as a raw file to the given path.
  *
  * @param size The number of frames per channel.
  * @param samplerate The samplerate of \ref buff.
- * @param frames_already_written Frames (per
- *   channel)already written. If this is non-zero
- *   and the file exists, it will append to the
- *   existing file.
+ * @param frames_already_written Frames (per channel) already
+ *   written. If this is non-zero and the file exists, it will
+ *   append to the existing file.
  *
  * @return Non-zero if fail.
  */
