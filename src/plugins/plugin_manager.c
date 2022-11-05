@@ -237,7 +237,15 @@ create_and_load_lilv_word (PluginManager * self)
         "/Library/Audio/Plug-Ins/LV2:"
         "/usr/local/lib/lv2:/usr/lib/lv2:%s",
         g_get_home_dir (), extra_zrythm_plugin_paths);
-#else  // else if GNU or similar
+#elif defined(INSTALLER_VER) // GNU or similar
+      self->lv2_path = g_strdup_printf (
+        "%s/.lv2:"
+        "/usr/local/lib64/lv2:"
+        "/usr/local/lib/lv2:"
+        "/usr/lib64/lv2:"
+        "/usr/lib/lv2:%s",
+        g_get_home_dir (), extra_zrythm_plugin_paths);
+#else                        // GNU or similar
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           self->lv2_path = g_strdup_printf (
@@ -256,7 +264,7 @@ create_and_load_lilv_word (PluginManager * self)
             "/usr/local/lib/lv2:/usr/lib/lv2:%s",
             g_get_home_dir (), extra_zrythm_plugin_paths);
         }
-#endif // end per-OS logic
+#endif                       // end per-OS logic
     }
 
   g_message ("LV2 path: %s", self->lv2_path);
@@ -454,7 +462,15 @@ get_vst_paths (PluginManager * self)
     {
 #    ifdef FLATPAK_BUILD
       vst_path = g_strdup ("/app/extensions/Plugins/vst");
-#    else
+#    elif defined(INSTALLER_VER)
+      vst_path = g_strdup_printf (
+        "%s/.vst:%s/vst:"
+        "/usr/lib/vst:"
+        "/usr/lib64/vst:"
+        "/usr/local/lib/vst:"
+        "/usr/local/lib64/vst",
+        g_get_home_dir (), g_get_home_dir ());
+#    else  /* else if not installer ver */
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           vst_path = g_strdup_printf (
@@ -475,7 +491,7 @@ get_vst_paths (PluginManager * self)
             "/usr/local/" LIBDIR_NAME "/vst",
             g_get_home_dir (), g_get_home_dir ());
         }
-#    endif
+#    endif /* FLATPAK_BUILD */
 
       g_message ("Using standard VST paths: %s", vst_path);
     }
@@ -488,7 +504,7 @@ get_vst_paths (PluginManager * self)
   char ** paths =
     g_strsplit (vst_path, G_SEARCHPATH_SEPARATOR_S, 0);
   g_free (vst_path);
-#  endif // __APPLE__
+#  endif   // __APPLE__
 
   g_message ("%s: done", __func__);
 
@@ -513,7 +529,15 @@ get_vst3_paths (PluginManager * self)
     {
 #    ifdef FLATPAK_BUILD
       vst_path = g_strdup ("/app/extensions/Plugins/vst3");
-#    else
+#    elif defined(INSTALLER_VER)
+      vst_path = g_strdup_printf (
+        "%s/.vst3:"
+        "/usr/lib/vst3:"
+        "/usr/lib64/vst3:"
+        "/usr/local/lib/vst3:"
+        "/usr/local/lib64/vst3",
+        g_get_home_dir ());
+#    else /* else if not installer ver */
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           vst_path = g_strdup_printf (
@@ -678,7 +702,13 @@ get_dssi_paths (PluginManager * self)
     {
 #  ifdef FLATPAK_BUILD
       dssi_path = g_strdup ("/app/extensions/Plugins/dssi");
-#  else
+#  elif defined(INSTALLER_VER)
+      dssi_path = g_strdup (
+        "/usr/lib/dssi:"
+        "/usr/lib64/dssi:"
+        "/usr/local/lib/dssi:"
+        "/usr/local/lib64/dssi");
+#  else  /* else if not installer ver */
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           dssi_path = g_strdup (
@@ -725,7 +755,13 @@ get_ladspa_paths (PluginManager * self)
 #  ifdef FLATPAK_BUILD
       ladspa_path =
         g_strdup ("/app/extensions/Plugins/ladspa");
-#  else
+#  elif defined(INSTALLER_VER)
+      ladspa_path = g_strdup (
+        "/usr/lib/ladspa:"
+        "/usr/lib64/ladspa:"
+        "/usr/local/lib/ladspa:"
+        "/usr/local/lib64/ladspa");
+#  else  /* else if not installer ver */
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           ladspa_path = g_strdup (
@@ -785,7 +821,15 @@ get_clap_paths (PluginManager * self)
     {
 #    ifdef FLATPAK_BUILD
       clap_path = g_strdup ("/app/extensions/Plugins/clap");
-#    else
+#    elif defined(INSTALLER_VER)
+      clap_path = g_strdup_printf (
+        "%s/.clap:%s/.local/lib/clap:"
+        "/usr/lib/clap:"
+        "/usr/lib64/clap:"
+        "/usr/local/lib/clap:"
+        "/usr/local/lib64/clap",
+        g_get_home_dir (), g_get_home_dir ());
+#    else /* else if not flatpak && not installer ver */
       if (string_is_equal (LIBDIR_NAME, "lib"))
         {
           clap_path = g_strdup_printf (
@@ -1105,15 +1149,26 @@ scan_carla_descriptors_from_paths (
               int                i = 0;
               while ((descriptor = descriptors[i++]))
                 {
+                  bool added = false;
+                  if (!g_ptr_array_find_with_equal_func (
+                        self->plugin_descriptors, descriptor,
+                        (GEqualFunc)
+                          plugin_descriptor_is_same_plugin,
+                        NULL))
+                    {
+                      PluginDescriptor * clone =
+                        plugin_descriptor_clone (descriptor);
+                      g_ptr_array_add (
+                        self->plugin_descriptors, clone);
+                      add_category_and_author (
+                        self, clone->category_str,
+                        clone->author);
+                      added = true;
+                    }
                   g_debug (
-                    "Found cached %s %s", protocol_str,
-                    descriptor->name);
-                  PluginDescriptor * clone =
-                    plugin_descriptor_clone (descriptor);
-                  g_ptr_array_add (
-                    self->plugin_descriptors, clone);
-                  add_category_and_author (
-                    self, clone->category_str, clone->author);
+                    "Found cached %s %s%s", protocol_str,
+                    descriptor->name,
+                    added ? "" : " (skipped)");
                 }
             }
           /* if no cached descriptors found */

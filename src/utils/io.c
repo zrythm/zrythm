@@ -30,7 +30,7 @@
 #include <stdio.h>
 
 #include <ftw.h>
-#include <unistd.h>
+#include <limits.h>
 
 #ifdef _WOE32
 #  include <windows.h>
@@ -58,7 +58,6 @@
 #if defined(__APPLE__) && defined(INSTALLER_VER)
 #  include "CoreFoundation/CoreFoundation.h"
 #  include <libgen.h>
-#  include <unistd.h>
 #endif
 
 /**
@@ -634,3 +633,33 @@ io_get_bundle_path (char * bundle_path)
   return 0;
 }
 #endif
+
+/**
+ * Returns the new path after traversing any symlinks (using
+ * readlink()).
+ */
+char *
+io_traverse_path (const char * abs_path)
+{
+  /* TODO handle on other platforms as well */
+#if defined(__linux__) || defined(__FreeBSD__)
+  char * traversed_path = realpath (abs_path, NULL);
+  if (traversed_path)
+    {
+      if (!string_is_equal (traversed_path, abs_path))
+        {
+          g_debug (
+            "traversed path: %s => %s", abs_path,
+            traversed_path);
+        }
+      return traversed_path;
+    }
+  else
+    {
+      g_warning ("realpath() failed: %s", strerror (errno));
+      return g_strdup (abs_path);
+    }
+#else
+  return g_strdup (abs_path);
+#endif
+}

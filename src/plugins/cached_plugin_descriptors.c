@@ -1,8 +1,9 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/cached_plugin_descriptors.h"
 #include "utils/file.h"
+#include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
@@ -167,19 +168,23 @@ cached_plugin_descriptors_is_blacklisted (
   CachedPluginDescriptors * self,
   const char *              abs_path)
 {
+  char * traversed_path = io_traverse_path (abs_path);
+
   for (int i = 0; i < self->num_blacklisted; i++)
     {
       PluginDescriptor * descr = self->blacklisted[i];
       GFile * file = g_file_new_for_path (descr->path);
       if (
-        string_is_equal (descr->path, abs_path)
+        string_is_equal (descr->path, traversed_path)
         && descr->ghash == g_file_hash (file))
         {
           g_object_unref (file);
+          g_free (traversed_path);
           return 1;
         }
       g_object_unref (file);
     }
+  g_free (traversed_path);
   return 0;
 }
 
@@ -248,7 +253,10 @@ cached_plugin_descriptors_get (
     object_new_n (1, PluginDescriptor *);
   int num_descriptors = 0;
 
-  g_debug ("Getting cached descriptors for %s", abs_path);
+  char * traversed_path = io_traverse_path (abs_path);
+
+  g_debug (
+    "Getting cached descriptors for %s", traversed_path);
 
   for (int i = 0; i < self->num_descriptors; i++)
     {
@@ -259,7 +267,7 @@ cached_plugin_descriptors_get (
         continue;
 
       GFile * file = g_file_new_for_path (descr->path);
-      if (string_is_equal (descr->path, abs_path))
+      if (string_is_equal (descr->path, traversed_path))
         {
           if (descr->ghash == g_file_hash (file))
             {
@@ -283,12 +291,14 @@ cached_plugin_descriptors_get (
   if (num_descriptors == 0)
     {
       free (descriptors);
+      g_free (traversed_path);
       return NULL;
     }
 
   /* NULL-terminate */
   descriptors[num_descriptors] = NULL;
 
+  g_free (traversed_path);
   return descriptors;
 }
 
@@ -306,9 +316,11 @@ cached_plugin_descriptors_blacklist (
 {
   g_return_if_fail (abs_path && self);
 
+  char * traversed_path = io_traverse_path (abs_path);
+
   PluginDescriptor * new_descr = object_new (PluginDescriptor);
-  new_descr->path = g_strdup (abs_path);
-  GFile * file = g_file_new_for_path (abs_path);
+  new_descr->path = g_strdup (traversed_path);
+  GFile * file = g_file_new_for_path (traversed_path);
   new_descr->ghash = g_file_hash (file);
   g_object_unref (file);
   self->blacklisted[self->num_blacklisted++] = new_descr;
@@ -316,6 +328,7 @@ cached_plugin_descriptors_blacklist (
     {
       cached_plugin_descriptors_serialize_to_file (self);
     }
+  g_free (traversed_path);
 }
 
 /**

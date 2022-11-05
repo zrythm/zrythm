@@ -218,6 +218,14 @@ io_get_bundle_path (char * bundle_path);
 #endif
 
 /**
+ * Returns the new path after traversing any symlinks (using
+ * readlink()).
+ */
+NONNULL
+char *
+io_traverse_path (const char * abs_path);
+
+/**
  * @}
  */
 
