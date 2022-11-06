@@ -66,8 +66,8 @@ typedef struct EditorSettings EditorSettings;
 /** Multiplier when zooming in/out. */
 #define RULER_ZOOM_LEVEL_MULTIPLIER 1.28
 
-#define MIN_ZOOM_LEVEL 0.05
-#define MAX_ZOOM_LEVEL 1200.
+#define MIN_ZOOM_LEVEL 0.04
+#define MAX_ZOOM_LEVEL 1800.
 
 /**
  * The ruler widget target acting upon.
