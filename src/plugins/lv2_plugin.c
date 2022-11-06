@@ -2198,7 +2198,7 @@ lv2_plugin_pick_ui (
                 {
                   *out_ui = cur_ui;
                 }
-              g_debug ("LV2: picked UI <%s>", ui_type_uri);
+              /*g_debug ("LV2: picked UI <%s>", ui_type_uri);*/
               return true;
             }
         }
