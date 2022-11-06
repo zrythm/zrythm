@@ -21,6 +21,7 @@
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
 
@@ -381,8 +382,10 @@ audio_function_apply (
 
   /* interleaved frames */
   channels_t channels = orig_clip->channels;
-  float      src_frames[num_frames * channels];
-  float      dest_frames[num_frames * channels];
+  float *    src_frames =
+    object_new_n (num_frames * channels, float);
+  float * dest_frames =
+    object_new_n (num_frames * channels, float);
   dsp_copy (
     &dest_frames[0],
     &orig_clip->frames[start.frames * (long) channels],
@@ -391,10 +394,12 @@ audio_function_apply (
     &src_frames[0], &dest_frames[0], num_frames * channels);
 
   /* uninterleaved frames */
-  float ch_src_frames[channels][num_frames];
-  float ch_dest_frames[channels][num_frames];
+  float * ch_src_frames[channels];
+  float * ch_dest_frames[channels];
   for (size_t j = 0; j < channels; j++)
     {
+      ch_src_frames[j] = object_new_n (num_frames, float);
+      ch_dest_frames[j] = object_new_n (num_frames, float);
       for (size_t i = 0; i < num_frames; i++)
         {
           ch_src_frames[j][i] = src_frames[i * channels + j];
@@ -576,6 +581,15 @@ audio_function_apply (
     {
       /* set last action */
       g_settings_set_int (S_UI, "audio-function", type);
+    }
+
+  /* free allocated memory */
+  free (src_frames);
+  free (dest_frames);
+  for (size_t j = 0; j < channels; j++)
+    {
+      free (ch_src_frames[j]);
+      free (ch_dest_frames[j]);
     }
 
   EVENTS_PUSH (ET_EDITOR_FUNCTION_APPLIED, NULL);
