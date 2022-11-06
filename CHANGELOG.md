@@ -6,6 +6,27 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.1.1] - 2022-11-06
+### Added
+- Allow setting per-region colors
+
+### Changed
+- Show error message if failed to write to GSettings backend on first run
+- Build: bump glib requirement to 2.70 (for GStrvBuilder)
+- Build: link weakjack as a static lib instead of including its source directly
+- Use real path (symlinks traversed) of plugins when caching
+- Audio functions: use SIMD implementations for reverse/normalize
+- Instantiate plugins anyway even if loading their state fails
+- Show all UI messages on top of the active window instead of the main window
+- Clean up/reorganize timeline context menu
+- Make LV2 scan quieter
+- Improve audio wave drawing performance
+- Allow zooming in/out more
+
+### Fixed
+- Fix upgrading v1 projects being broken
+- Fix crash when applying audio functions to large clips
+
 ## [1.0.0-beta.4.0.1] - 2022-11-03
 ### Added
 - Add clipping detection when exporting audio
