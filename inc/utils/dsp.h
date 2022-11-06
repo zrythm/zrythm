@@ -68,8 +68,7 @@ HOT void
 dsp_mul_k2 (float * dest, float k, size_t size);
 
 /**
- * Gets the maximum absolute value of the buffer (as
- * amplitude).
+ * Gets the maximum absolute value of the buffer (as amplitude).
  */
 NONNULL
 WARN_UNUSED_RESULT

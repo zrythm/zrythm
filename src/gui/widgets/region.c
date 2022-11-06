@@ -31,6 +31,7 @@
 #include "utils/cairo.h"
 #include "utils/color.h"
 #include "utils/debug.h"
+#include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
@@ -1198,14 +1199,8 @@ draw_audio_part (
   signed_frame_t prev_frames =
     (signed_frame_t) (multiplier * local_start_x);
   signed_frame_t curr_frames = prev_frames;
-  /*g_message ("cur frames %ld", curr_frames);*/
-  /*Position tmp;*/
-  /*position_from_frames (&tmp, curr_frames);*/
-  /*position_print (&tmp);*/
 
-  GdkRGBA         color = object_fill_color;
-  graphene_rect_t grect =
-    GRAPHENE_RECT_INIT (0, 0, (float) width, 0);
+  float prev_min = 0.5f, prev_max = 0.5f;
   for (double i = local_start_x; i < (double) local_end_x;
        i += increment)
     {
@@ -1218,39 +1213,54 @@ draw_audio_part (
           if (loop_frames == 0)
             break;
         }
-      float min = 0.f, max = 0.f;
-      for (signed_frame_t j = prev_frames; j < curr_frames; j++)
+
+      if (prev_frames >= (signed_frame_t) clip->num_frames)
+        {
+          prev_frames = curr_frames;
+          continue;
+        }
+
+      z_return_if_fail_cmp (curr_frames, >=, 0);
+      float  min = 0.f, max = 0.f;
+      size_t from = (size_t) (MAX (0, prev_frames));
+      size_t to = (size_t) (MIN (
+        clip->num_frames, (unsigned_frame_t) curr_frames));
+      size_t frames_to_check = to - from;
+      if (from + frames_to_check > clip->num_frames)
+        frames_to_check = clip->num_frames - from;
+      z_return_if_fail_cmp (from, <, clip->num_frames);
+      z_return_if_fail_cmp (
+        from + frames_to_check, <=, clip->num_frames);
+      if (frames_to_check > 0)
         {
           for (unsigned int k = 0; k < clip->channels; k++)
             {
-              signed_frame_t index =
-                j * (signed_frame_t) clip->channels
-                + (signed_frame_t) k;
-
-              /* if outside bounds */
-              if (
-                index < 0
-                || index >= (signed_frame_t) clip->num_frames
-                              * (signed_frame_t) clip->channels)
-                {
-                  /* skip */
-                  continue;
-                }
-              float val = clip->frames[index];
-              if (val > max)
-                {
-                  max = val;
-                }
-              if (val < min)
-                {
-                  min = val;
-                }
+              min = dsp_min (
+                &clip->ch_frames[k][from], frames_to_check);
+              max = dsp_max (
+                &clip->ch_frames[k][from], frames_to_check);
             }
+
+          /* normalize */
+          min = (min + 1.f) / 2.f;
+          max = (max + 1.f) / 2.f;
+        }
+      else
+        {
+          min = prev_min;
+          max = prev_max;
         }
 
-      /* normalize */
-      min = (min + 1.f) / 2.f;
-      max = (max + 1.f) / 2.f;
+      /* adjust to draw from the middle so it draws bars
+       * instead of single points when zoomed */
+      if (max > 0.5f && min > 0.5f)
+        {
+          min = 0.5f;
+        }
+      if (min < 0.5f && max < 0.5f)
+        {
+          max = 0.5f;
+        }
 
       /* local from the full rect y */
       double local_min_y =
@@ -1261,16 +1271,23 @@ draw_audio_part (
         (double) full_height);
 
       /* only draw if non-silent */
-      if (fabs (local_min_y - local_max_y) > 0.01)
+      float       avg = (max + min) / 2.f;
+      const float epsilon = 0.001f;
+      if (
+        !math_floats_equal_epsilon (avg, 0.5f, epsilon)
+        || max - min > epsilon)
         {
-          grect.origin.x = (float) i;
-          grect.origin.y = (float) local_min_y;
-          grect.size.height =
-            (float) (local_max_y - local_min_y);
-          gtk_snapshot_append_color (snapshot, &color, &grect);
+          gtk_snapshot_append_color (
+            snapshot, &object_fill_color,
+            &GRAPHENE_RECT_INIT (
+              (float) i, (float) local_min_y,
+              (float) MAX (width, 1),
+              (float) MAX (local_max_y - local_min_y, 1)));
         }
 
       prev_frames = curr_frames;
+      prev_min = min;
+      prev_max = max;
     }
 }
 

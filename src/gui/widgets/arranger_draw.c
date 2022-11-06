@@ -32,6 +32,7 @@
 #include "utils/cairo.h"
 #include "utils/color.h"
 #include "utils/debug.h"
+#include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
@@ -568,7 +569,9 @@ draw_audio_bg (
   switch (detail)
     {
     case UI_DETAIL_HIGH:
-      increment = 0.5;
+      /* snapshot does not work with midpoints */
+      /*increment = 0.5;*/
+      increment = 1;
       width = 1;
       break;
     case UI_DETAIL_NORMAL:
@@ -659,6 +662,7 @@ draw_audio_bg (
       color->red + 0.3f, color->green + 0.3f,
       color->blue + 0.3f, 0.9f
   };
+  float prev_min = 0.5f, prev_max = 0.5f;
   for (double i = local_start_x; i < local_end_x;
        i += increment)
     {
@@ -667,65 +671,77 @@ draw_audio_bg (
       if (curr_frames < 0)
         continue;
 
-      float min = 0.f, max = 0.f;
-      for (signed_frame_t j = prev_frames; j < curr_frames; j++)
+      if (prev_frames >= (signed_frame_t) clip->num_frames)
         {
-          if (j >= (signed_frame_t) clip->num_frames)
-            break;
+          prev_frames = curr_frames;
+          continue;
+        }
+
+      float  min = 0.f, max = 0.f;
+      size_t from = (size_t) (MAX (0, prev_frames));
+      size_t to = (size_t) (MIN (
+        clip->num_frames, (unsigned_frame_t) curr_frames));
+      size_t frames_to_check = to - from;
+      if (from + frames_to_check > clip->num_frames)
+        frames_to_check = clip->num_frames - from;
+      z_return_if_fail_cmp (from, <, clip->num_frames);
+      z_return_if_fail_cmp (
+        from + frames_to_check, <=, clip->num_frames);
+      if (frames_to_check > 0)
+        {
           for (unsigned int k = 0; k < clip->channels; k++)
             {
-              signed_frame_t index =
-                j * (signed_frame_t) clip->channels
-                + (signed_frame_t) k;
-              g_return_if_fail (
-                index >= 0 &&
-                index <
-                  (signed_frame_t)
-                  (clip->num_frames *
-                     clip->channels));
-              float val = clip->frames[index];
-              if (val > max)
-                {
-                  max = val;
-                }
-              if (val < min)
-                {
-                  min = val;
-                }
+              min = dsp_min (
+                &clip->ch_frames[k][from], frames_to_check);
+              max = dsp_max (
+                &clip->ch_frames[k][from], frames_to_check);
             }
+
+          /* normalize */
+          min = (min + 1.f) / 2.f;
+          max = (max + 1.f) / 2.f;
         }
-#define DRAW_VLINE(x, from_y, _height) \
-  gtk_snapshot_append_color ( \
-    snapshot, &audio_lines_color, \
-    &GRAPHENE_RECT_INIT ( \
-      (float) (x), (float) (from_y), (float) width, \
-      (float) (_height)))
+      else
+        {
+          min = prev_min;
+          max = prev_max;
+        }
 
-      min = (min + 1.f) / 2.f; /* normallize */
-      max = (max + 1.f) / 2.f; /* normalize */
-      double from_y =
-        MAX ((double) min * (double) rect->height, 0.0)
-        - rect->y;
-      double draw_height =
-        (MIN (
-           (double) max * (double) rect->height,
-           (double) rect->height)
-         - rect->y)
-        - from_y;
-      DRAW_VLINE (
-        /* x */
-        i,
-        /* from y */
-        from_y,
-        /* to y */
-        draw_height);
+      /* adjust to draw from the middle so it draws bars
+       * instead of single points when zoomed */
+      if (max > 0.5f && min > 0.5f)
+        {
+          min = 0.5f;
+        }
+      if (min < 0.5f && max < 0.5f)
+        {
+          max = 0.5f;
+        }
 
-      if (curr_frames >= (signed_frame_t) clip->num_frames)
-        break;
+      double min_y =
+        MAX ((double) min * (double) rect->height, 0.0);
+      double max_y = MIN (
+        (double) max * (double) rect->height,
+        (double) rect->height);
+
+      /* only draw if non-silent */
+      float       avg = (max + min) / 2.f;
+      const float epsilon = 0.001f;
+      if (
+        !math_floats_equal_epsilon (avg, 0.5f, epsilon)
+        || max - min > epsilon)
+        {
+          gtk_snapshot_append_color (
+            snapshot, &audio_lines_color,
+            &GRAPHENE_RECT_INIT (
+              (float) i, (float) min_y, (float) MAX (width, 1),
+              (float) MAX (max_y - min_y, 1)));
+        }
 
       prev_frames = curr_frames;
+      prev_min = min;
+      prev_max = max;
     }
-#undef DRAW_VLINE
 
   /* draw gain line */
   float gain_fader_val =
