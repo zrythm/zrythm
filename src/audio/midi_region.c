@@ -1,10 +1,11 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022 Robert Panovics <robert.panovics at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- * Copyright (C) 2022 Robert Panovics <robert.panovics at gmail dot com>
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
+ *
+ * ---
  *
  *  AUTHOR: Steven Goodwin (StevenGoodwin@gmail.com)
  *      Copyright 2010, Steven Goodwin.
@@ -22,6 +23,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ *  ---
  */
 #include "audio/channel.h"
 #include "audio/exporter.h"

@@ -30,6 +30,7 @@ util_srcs = [
   'object_pool.c',
   'objects.c',
   'pango.c',
+  'progress_info.c',
   'resources.c',
   'sort.c',
   'stack.c',

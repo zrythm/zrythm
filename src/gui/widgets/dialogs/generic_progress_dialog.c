@@ -15,6 +15,7 @@
 #include "project.h"
 #include "utils/io.h"
 #include "utils/math.h"
+#include "utils/progress_info.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -37,7 +38,7 @@ on_closed (
   GenericProgressDialogWidget * self)
 {
   GET_PRIVATE (self);
-  prv->progress_info->cancelled = true;
+  progress_info_request_cancellation (prv->progress_info);
 }
 
 static void
@@ -54,7 +55,7 @@ on_cancel_clicked (
   GenericProgressDialogWidget * self)
 {
   GET_PRIVATE (self);
-  prv->progress_info->cancelled = true;
+  progress_info_request_cancellation (prv->progress_info);
 }
 
 static gboolean
@@ -64,16 +65,22 @@ tick_cb (
   GenericProgressDialogWidget * self)
 {
   GET_PRIVATE (self);
-  GenericProgressInfo * info = prv->progress_info;
+  ProgressInfo * info = prv->progress_info;
 
+  double progress;
+  progress_info_get_progress (info, &progress, NULL);
   gtk_progress_bar_set_fraction (
-    GTK_PROGRESS_BAR (widget), info->progress);
+    GTK_PROGRESS_BAR (widget), progress);
 
-  if (
-    math_doubles_equal (info->progress, 1.0)
-    || info->has_error || info->cancelled || info->has_message)
+  ProgressStatus status = progress_info_get_status (info);
+  if (status == PROGRESS_STATUS_COMPLETED)
     {
-      if (prv->autoclose || info->cancelled)
+      ProgressCompletionType compl_type =
+        progress_info_get_completion_type (info);
+      char * msg = progress_info_get_message (info);
+      if (
+        prv->autoclose
+        || compl_type == PROGRESS_COMPLETED_CANCELLED)
         {
           gtk_dialog_response (GTK_DIALOG (self), 0);
         }
@@ -92,26 +99,28 @@ tick_cb (
                     GTK_WIDGET (btn->btn), true);
                 }
             }
-          gtk_label_set_text (
-            prv->label, info->label_done_str);
+          gtk_label_set_text (prv->label, msg);
         }
 
-      if (info->has_error)
+      if (compl_type == PROGRESS_COMPLETED_HAS_ERROR)
         {
           GtkWindow * transient_parent =
             gtk_window_get_transient_for (GTK_WINDOW (self));
           ui_show_message_full (
             transient_parent, GTK_MESSAGE_ERROR, true, "%s",
-            info->error_str);
+            msg);
         }
-      else if (info->has_message)
+      else if (msg)
         {
           GtkWindow * transient_parent =
             gtk_window_get_transient_for (GTK_WINDOW (self));
           ui_show_message_full (
-            transient_parent, info->message_type, false, "%s",
-            info->message_str);
+            transient_parent, GTK_MESSAGE_INFO, false, "%s",
+            msg);
         }
+
+      g_free (msg);
+
       return G_SOURCE_REMOVE;
     }
   else
@@ -173,7 +182,8 @@ void
 generic_progress_dialog_widget_setup (
   GenericProgressDialogWidget * self,
   const char *                  title,
-  GenericProgressInfo *         progress_info,
+  ProgressInfo *                progress_info,
+  const char *                  initial_label,
   bool                          autoclose,
   bool                          cancelable)
 {
@@ -183,7 +193,7 @@ generic_progress_dialog_widget_setup (
   prv->progress_info = progress_info;
   prv->autoclose = autoclose;
 
-  gtk_label_set_text (prv->label, progress_info->label_str);
+  gtk_label_set_text (prv->label, initial_label);
 
   if (cancelable)
     {

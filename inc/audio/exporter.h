@@ -7,7 +7,8 @@
 #include "audio/position.h"
 #include "utils/audio.h"
 
-typedef struct EngineState EngineState;
+typedef struct EngineState  EngineState;
+typedef struct ProgressInfo ProgressInfo;
 
 /**
  * @addtogroup audio
@@ -189,7 +190,7 @@ typedef struct ExportSettings
    * for progress calculation. */
   int num_files;
 
-  GenericProgressInfo progress_info;
+  ProgressInfo * progress_info;
 } ExportSettings;
 
 /**
@@ -198,7 +199,7 @@ typedef struct ExportSettings
  * It must be free'd with export_settings_free().
  */
 ExportSettings *
-export_settings_default (void);
+export_settings_new (void);
 
 /**
  * Sets the defaults for bouncing.
@@ -220,9 +221,6 @@ export_settings_set_bounce_defaults (
 
 void
 export_settings_print (const ExportSettings * self);
-
-void
-export_settings_free_members (ExportSettings * self);
 
 void
 export_settings_free (ExportSettings * self);
@@ -264,9 +262,26 @@ exporter_post_export (
  * exporting.
  *
  * See bounce_dialog for an example.
+ *
+ * To be used as a GThreadFunc.
  */
 void *
 exporter_generic_export_thread (void * data);
+
+/**
+ * Generic export task thread function to be used for simple
+ * exporting.
+ *
+ * To be used as a GTaskThreadFunc.
+ *
+ * TODO.
+ */
+void
+exporter_generic_export_task_thread (
+  GTask *        task,
+  gpointer       source_obj,
+  gpointer       task_data,
+  GCancellable * cancellable);
 
 /**
  * To be called to create and perform an undoable

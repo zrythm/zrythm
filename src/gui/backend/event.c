@@ -12,7 +12,7 @@
 ZEvent *
 event_new (void)
 {
-  ZEvent * self = object_new (ZEvent);
+  ZEvent * self = object_new_unresizable (ZEvent);
 
   return self;
 }
@@ -21,5 +21,5 @@ void
 event_free (ZEvent * self)
 {
   g_free_and_null (self->backtrace);
-  object_zero_and_free (self);
+  object_zero_and_free_unresizable (ZEvent, self);
 }

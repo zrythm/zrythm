@@ -29,6 +29,7 @@
 #include "utils/io.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/progress_info.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -86,6 +87,8 @@ export_audio (ExportSettings * info)
 {
   SF_INFO sfinfo = {};
 
+  ProgressInfo * pinfo = info->progress_info;
+
 #define EXPORT_CHANNELS 2
 
   int type_major = 0;
@@ -124,11 +127,12 @@ export_audio (ExportSettings * info)
         const char * format =
           export_format_to_pretty_str (info->format);
 
-        info->progress_info.has_error = true;
-        sprintf (
-          info->progress_info.error_str,
+        char * err_str = g_strdup_printf (
           _ ("Format %s not supported yet"), format);
-        g_warning ("%s", info->progress_info.error_str);
+        progress_info_mark_completed (
+          pinfo, PROGRESS_COMPLETED_HAS_ERROR, err_str);
+        g_warning ("%s", err_str);
+        g_free (err_str);
 
         return -1;
       }
@@ -208,10 +212,11 @@ export_audio (ExportSettings * info)
 
   if (!sf_format_check (&sfinfo))
     {
-      info->progress_info.has_error = true;
-      strcpy (
-        info->progress_info.error_str, _ ("SF INFO invalid"));
-      g_warning ("%s", info->progress_info.error_str);
+      char * err_str = g_strdup (_ ("SF INFO invalid"));
+      progress_info_mark_completed (
+        pinfo, PROGRESS_COMPLETED_HAS_ERROR, err_str);
+      g_warning ("%s", err_str);
+      g_free (err_str);
 
       return -1;
     }
@@ -227,24 +232,24 @@ export_audio (ExportSettings * info)
       int          error = sf_error (NULL);
       const char * error_str = sf_error_number (error);
 
-      info->progress_info.has_error = true;
-      sprintf (
-        info->progress_info.error_str,
+      char * err_str = g_strdup_printf (
         _ ("Couldn't open SNDFILE %s:\n%d: %s"),
         info->file_uri, error, error_str);
-      g_warning ("%s", info->progress_info.error_str);
+      progress_info_mark_completed (
+        pinfo, PROGRESS_COMPLETED_HAS_ERROR, err_str);
+      g_free (err_str);
 
       return -1;
     }
   if (sfinfo.format != (type_major | type_minor))
     {
-      info->progress_info.has_error = true;
-      sprintf (
-        info->progress_info.error_str,
+      char * err_str = g_strdup_printf (
         _ ("Invalid SNDFILE format %s: 0x%08X != 0x%08X"),
         info->file_uri, sfinfo.format,
         type_major | type_minor);
-      g_warning ("%s", info->progress_info.error_str);
+      progress_info_mark_completed (
+        pinfo, PROGRESS_COMPLETED_HAS_ERROR, err_str);
+      g_free (err_str);
 
       return -1;
     }
@@ -448,15 +453,17 @@ export_audio (ExportSettings * info)
       last_playhead_frames += nframes;
 #endif
 
-      info->progress_info.progress =
+      progress_info_update_progress (
+        pinfo,
         (TRANSPORT->playhead_pos.ticks - start_pos.ticks)
-        / total_ticks;
+          / total_ticks,
+        NULL);
     }
   while (
     TRANSPORT->playhead_pos.ticks < stop_pos.ticks
-    && !info->progress_info.cancelled);
+    && !progress_info_pending_cancellation (pinfo));
 
-  if (!info->progress_info.cancelled)
+  if (!progress_info_pending_cancellation (pinfo))
     {
       g_warn_if_fail (math_floats_equal_epsilon (
         covered_ticks, total_ticks, 1.0));
@@ -464,7 +471,7 @@ export_audio (ExportSettings * info)
 
   /* TODO silence output */
 
-  info->progress_info.progress = 1.0;
+  progress_info_update_progress (pinfo, 1.0, NULL);
 
   /* set jack freewheeling mode and transport type */
 #ifdef HAVE_JACK
@@ -491,15 +498,19 @@ export_audio (ExportSettings * info)
   sf_close (sndfile);
 
   /* if cancelled, delete */
-  if (info->progress_info.cancelled)
+  if (progress_info_pending_cancellation (pinfo))
     {
       io_remove (info->file_uri);
     }
 
   /* if cancelled, delete */
-  if (info->progress_info.cancelled)
+  if (progress_info_pending_cancellation (pinfo))
     {
       g_message ("cancelled export to %s", info->file_uri);
+
+      progress_info_mark_completed (
+        pinfo, PROGRESS_COMPLETED_CANCELLED, NULL);
+      return 0;
     }
   else
     {
@@ -508,17 +519,19 @@ export_audio (ExportSettings * info)
 
       if (clipped)
         {
-          float max_db = math_amp_to_dbfs (clip_amp);
-          g_message ("clipping occurred");
-          sprintf (
-            info->progress_info.message_str,
+          float  max_db = math_amp_to_dbfs (clip_amp);
+          char * warn_str = g_strdup_printf (
             _ ("The exported audio contains segments louder than 0 dB (max detected %.1f dB)."),
             max_db);
-          info->progress_info.has_message = true;
-          info->progress_info.message_type =
-            GTK_MESSAGE_WARNING;
+          progress_info_mark_completed (
+            pinfo, PROGRESS_COMPLETED_HAS_WARNING, warn_str);
+          g_free (warn_str);
+          return 0;
         }
     }
+
+  progress_info_mark_completed (
+    pinfo, PROGRESS_COMPLETED_SUCCESS, _ ("Exported"));
 
   return 0;
 }
@@ -582,13 +595,16 @@ export_midi (ExportSettings * info)
                     midi_events_free, events);
                 }
             }
-          info->progress_info.progress =
-            (double) i / (double) TRACKLIST->num_tracks;
+          progress_info_update_progress (
+            info->progress_info,
+            (double) i / (double) TRACKLIST->num_tracks, NULL);
         }
 
       midiFileClose (mf);
     }
-  info->progress_info.progress = 1.0;
+
+  progress_info_mark_completed (
+    info->progress_info, PROGRESS_COMPLETED_SUCCESS, NULL);
 
   return 0;
 }
@@ -599,11 +615,12 @@ export_midi (ExportSettings * info)
  * It must be free'd with export_settings_free().
  */
 ExportSettings *
-export_settings_default ()
+export_settings_new ()
 {
-  ExportSettings * self = calloc (1, sizeof (ExportSettings));
+  ExportSettings * self =
+    object_new_unresizable (ExportSettings);
 
-  /* TODO */
+  self->progress_info = progress_info_new ();
 
   return self;
 }
@@ -632,8 +649,6 @@ export_settings_set_bounce_defaults (
   self->genre = g_strdup ("");
   self->depth = BIT_DEPTH_16;
   self->time_range = TIME_RANGE_CUSTOM;
-  self->progress_info.cancelled = false;
-  self->progress_info.has_error = false;
   switch (self->mode)
     {
     case EXPORT_MODE_REGIONS:
@@ -837,6 +852,8 @@ exporter_post_export (
  * exporting.
  *
  * See bounce_dialog for an example.
+ *
+ * To be used as a GThreadFunc.
  */
 void *
 exporter_generic_export_thread (void * data)
@@ -849,13 +866,20 @@ exporter_generic_export_thread (void * data)
   return NULL;
 }
 
+/**
+ * Generic export task thread function.
+ *
+ * To be used as a GTaskThreadFunc.
+ *
+ * TODO.
+ */
 void
-export_settings_free_members (ExportSettings * self)
+exporter_generic_export_task_thread (
+  GTask *        task,
+  gpointer       source_obj,
+  gpointer       task_data,
+  GCancellable * cancellable)
 {
-  g_free_and_null (self->artist);
-  g_free_and_null (self->title);
-  g_free_and_null (self->genre);
-  g_free_and_null (self->file_uri);
 }
 
 void
@@ -902,12 +926,23 @@ export_settings_print (const ExportSettings * self)
     self->file_uri, self->num_files);
 }
 
+static void
+export_settings_free_members (ExportSettings * self)
+{
+  g_free_and_null (self->artist);
+  g_free_and_null (self->title);
+  g_free_and_null (self->genre);
+  g_free_and_null (self->file_uri);
+  object_free_w_func_and_null (
+    progress_info_free, self->progress_info);
+}
+
 void
 export_settings_free (ExportSettings * self)
 {
   export_settings_free_members (self);
 
-  free (self);
+  object_zero_and_free_unresizable (ExportSettings, self);
 }
 
 /**
@@ -1002,9 +1037,8 @@ exporter_export (ExportSettings * info)
         || !position_is_after_or_equal (
           &info->custom_start, &init_pos))
         {
-          info->progress_info.has_error = true;
-          sprintf (
-            info->progress_info.error_str, "%s",
+          progress_info_mark_completed (
+            info->progress_info, PROGRESS_COMPLETED_HAS_ERROR,
             _ ("Invalid time range"));
           g_warning ("invalid time range");
           return -1;

@@ -3,6 +3,7 @@
 /*
  * This file incorporates work covered by the following copyright and
  * permission notice:
+ *  ---
  *
  * Copyright (C) 2005-2019 Paul Davis <paul@linuxaudiosystems.com>
  * Copyright (C) 2005 Taybin Rutkin <taybin@taybin.com>
@@ -26,6 +27,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *  ---
  */
 
 #include "zrythm-config.h"

@@ -59,6 +59,7 @@
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/objects.h"
+#include "utils/progress_info.h"
 #include "utils/string.h"
 #include "utils/ui.h"
 #include "zrythm.h"
@@ -1597,13 +1598,25 @@ project_new (Zrythm * _zrythm)
   return self;
 }
 
-static void
+ProjectSaveData *
+project_save_data_new (void)
+{
+  ProjectSaveData * self =
+    object_new_unresizable (ProjectSaveData);
+  self->progress_info = progress_info_new ();
+
+  return self;
+}
+
+void
 project_save_data_free (ProjectSaveData * self)
 {
   g_free_and_null (self->project_file_path);
   object_free_w_func_and_null (project_free, self->project);
+  object_free_w_func_and_null (
+    progress_info_free, self->progress_info);
 
-  object_zero_and_free (self);
+  object_zero_and_free_unresizable (ProjectSaveData, self);
 }
 
 /**
@@ -1709,7 +1722,8 @@ project_idle_saved_cb (ProjectSaveData * data)
       EVENTS_PUSH (ET_PROJECT_SAVED, PROJECT);
     }
 
-  data->progress_info.progress = 1.0;
+  progress_info_mark_completed (
+    data->progress_info, PROGRESS_COMPLETED_SUCCESS, NULL);
 
   return G_SOURCE_REMOVE;
 }
@@ -1873,7 +1887,7 @@ project_save (
   audio_pool_remove_unused (AUDIO_POOL, is_backup);
   audio_pool_write_to_disk (AUDIO_POOL, is_backup);
 
-  ProjectSaveData * data = object_new (ProjectSaveData);
+  ProjectSaveData * data = project_save_data_new ();
   data->project_file_path = project_get_path (
     self, PROJECT_PATH_PROJECT_FILE, is_backup);
   data->show_notification = show_notification;
@@ -1960,6 +1974,7 @@ project_save (
           g_idle_add (
             (GSourceFunc) project_idle_saved_cb, data);
 
+#if 0
           /* show progress while saving */
           ProjectProgressDialogWidget * dialog =
             project_progress_dialog_widget_new (data);
@@ -1969,6 +1984,7 @@ project_save (
             GTK_WINDOW (dialog), GTK_WINDOW (MAIN_WINDOW));
           gtk_window_set_modal (GTK_WINDOW (dialog), true);
           z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+#endif
         }
       else
         {

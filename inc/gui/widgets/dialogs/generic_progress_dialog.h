@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -23,7 +23,7 @@ G_DECLARE_DERIVABLE_TYPE (
   GENERIC_PROGRESS_DIALOG_WIDGET,
   GtkDialog)
 
-typedef struct GenericProgressInfo GenericProgressInfo;
+typedef struct ProgressInfo ProgressInfo;
 
 /**
  * @addtogroup widgets
@@ -68,7 +68,7 @@ typedef struct
    */
   bool cancelable;
 
-  GenericProgressInfo * progress_info;
+  ProgressInfo * progress_info;
 
   /**
    * Additional buttons.
@@ -93,7 +93,8 @@ void
 generic_progress_dialog_widget_setup (
   GenericProgressDialogWidget * self,
   const char *                  title,
-  GenericProgressInfo *         progress_info,
+  ProgressInfo *                progress_info,
+  const char *                  initial_label,
   bool                          autoclose,
   bool                          cancelable);
 

@@ -11,6 +11,7 @@
 #include "utils/chromaprint.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/progress_info.h"
 #include "zrythm.h"
 
 #include <glib.h>
@@ -21,12 +22,14 @@
 #include <sndfile.h>
 
 static void
-print_progress_and_sleep (const GenericProgressInfo * info)
+print_progress_and_sleep (ProgressInfo * info)
 {
-  while (info->progress < 1.0)
+  while (progress_info_get_status (info) != PROGRESS_STATUS_COMPLETED)
     {
-      g_message ("progress: %f.1", info->progress * 100.0);
-      g_usleep (1000);
+      double progress;
+      progress_info_get_progress (info, &progress, NULL);
+      g_message ("progress: %.1f", progress * 100.0);
+      g_usleep (10000);
     }
 }
 
@@ -62,59 +65,57 @@ test_export_wav (void)
           char * filename =
             g_strdup_printf ("test_wav%d.wav", i);
 
-          ExportSettings settings;
-          settings.progress_info.has_error = false;
-          settings.progress_info.cancelled = false;
-          settings.format = EXPORT_FORMAT_WAV;
-          settings.artist = g_strdup ("Test Artist");
-          settings.title = g_strdup ("Test Title");
-          settings.genre = g_strdup ("Test Genre");
-          settings.depth = BIT_DEPTH_16;
-          settings.time_range = TIME_RANGE_LOOP;
+          ExportSettings * settings = export_settings_new ();
+          settings->format = EXPORT_FORMAT_WAV;
+          settings->artist = g_strdup ("Test Artist");
+          settings->title = g_strdup ("Test Title");
+          settings->genre = g_strdup ("Test Genre");
+          settings->depth = BIT_DEPTH_16;
+          settings->time_range = TIME_RANGE_LOOP;
           if (j == 0)
             {
-              settings.mode = EXPORT_MODE_FULL;
+              settings->mode = EXPORT_MODE_FULL;
               tracklist_mark_all_tracks_for_bounce (
                 TRACKLIST, F_NO_BOUNCE);
-              settings.bounce_with_parents = false;
+              settings->bounce_with_parents = false;
             }
           else
             {
-              settings.mode = EXPORT_MODE_TRACKS;
+              settings->mode = EXPORT_MODE_TRACKS;
               tracklist_mark_all_tracks_for_bounce (
                 TRACKLIST, F_BOUNCE);
-              settings.bounce_with_parents = true;
+              settings->bounce_with_parents = true;
             }
           char * exports_dir = project_get_path (
             PROJECT, PROJECT_PATH_EXPORTS, false);
-          settings.file_uri =
+          settings->file_uri =
             g_build_filename (exports_dir, filename, NULL);
 
           EngineState state;
           GPtrArray * conns =
             exporter_prepare_tracks_for_export (
-              &settings, &state);
+              settings, &state);
 
           /* start exporting in a new thread */
           GThread * thread = g_thread_new (
             "bounce_thread",
             (GThreadFunc) exporter_generic_export_thread,
-            &settings);
+            settings);
 
-          print_progress_and_sleep (&settings.progress_info);
+          print_progress_and_sleep (settings->progress_info);
 
           g_thread_join (thread);
 
-          exporter_post_export (&settings, conns, &state);
+          exporter_post_export (settings, conns, &state);
 
           g_assert_false (AUDIO_ENGINE->exporting);
 
           z_chromaprint_check_fingerprint_similarity (
-            filepath, settings.file_uri, 83, 6);
+            filepath, settings->file_uri, 83, 6);
 
-          io_remove (settings.file_uri);
+          io_remove (settings->file_uri);
           g_free (filename);
-          export_settings_free_members (&settings);
+          export_settings_free (settings);
 
           g_assert_false (TRANSPORT_IS_ROLLING);
           g_assert_cmpint (
@@ -730,33 +731,34 @@ test_bounce_with_note_at_start (void)
     F_NO_PUBLISH_EVENTS);
 
   /* bounce the loop */
-  ExportSettings settings;
-  memset (&settings, 0, sizeof (ExportSettings));
-  settings.mode = EXPORT_MODE_REGIONS;
+  ExportSettings * settings = export_settings_new ();
+  settings->mode = EXPORT_MODE_REGIONS;
   export_settings_set_bounce_defaults (
-    &settings, EXPORT_FORMAT_WAV, NULL, r->name);
-  settings.time_range = TIME_RANGE_LOOP;
+    settings, EXPORT_FORMAT_WAV, NULL, r->name);
+  settings->time_range = TIME_RANGE_LOOP;
   timeline_selections_mark_for_bounce (
-    TL_SELECTIONS, settings.bounce_with_parents);
+    TL_SELECTIONS, settings->bounce_with_parents);
 
   {
     EngineState state;
     GPtrArray * conns =
-      exporter_prepare_tracks_for_export (&settings, &state);
+      exporter_prepare_tracks_for_export (settings, &state);
 
     /* start exporting in a new thread */
     GThread * thread = g_thread_new (
       "bounce_thread",
-      (GThreadFunc) exporter_generic_export_thread, &settings);
+      (GThreadFunc) exporter_generic_export_thread, settings);
 
-    print_progress_and_sleep (&settings.progress_info);
+    print_progress_and_sleep (settings->progress_info);
 
     g_thread_join (thread);
 
-    exporter_post_export (&settings, conns, &state);
+    exporter_post_export (settings, conns, &state);
   }
 
-  g_assert_false (audio_file_is_silent (settings.file_uri));
+  g_assert_false (audio_file_is_silent (settings->file_uri));
+
+  export_settings_free (settings);
 }
 
 /**
@@ -905,13 +907,12 @@ test_export_send (void)
             }
 
           /* bounce */
-          ExportSettings settings;
-          memset (&settings, 0, sizeof (ExportSettings));
+          ExportSettings * settings = export_settings_new ();
           export_settings_set_bounce_defaults (
-            &settings, EXPORT_FORMAT_WAV, NULL, __func__);
-          settings.time_range = TIME_RANGE_LOOP;
-          settings.bounce_with_parents = true;
-          settings.mode = EXPORT_MODE_TRACKS;
+            settings, EXPORT_FORMAT_WAV, NULL, __func__);
+          settings->time_range = TIME_RANGE_LOOP;
+          settings->bounce_with_parents = true;
+          settings->mode = EXPORT_MODE_TRACKS;
 
           /* unmark all tracks for bounce */
           tracklist_mark_all_tracks_for_bounce (
@@ -925,32 +926,32 @@ test_export_send (void)
           EngineState state;
           GPtrArray * conns =
             exporter_prepare_tracks_for_export (
-              &settings, &state);
+              settings, &state);
 
           /* start exporting in a new thread */
           GThread * thread = g_thread_new (
             "bounce_thread",
             (GThreadFunc) exporter_generic_export_thread,
-            &settings);
+            settings);
 
-          print_progress_and_sleep (&settings.progress_info);
+          print_progress_and_sleep (settings->progress_info);
 
           g_thread_join (thread);
 
-          exporter_post_export (&settings, conns, &state);
+          exporter_post_export (settings, conns, &state);
 
           if (i == 0)
             {
               g_assert_true (
-                audio_file_is_silent (settings.file_uri));
+                audio_file_is_silent (settings->file_uri));
             }
           else
             {
               g_assert_false (
-                audio_file_is_silent (settings.file_uri));
+                audio_file_is_silent (settings->file_uri));
             }
 
-          export_settings_free_members (&settings);
+          export_settings_free (settings);
 
           /* skip unnecessary iteration */
           if (i == 0 && j == 0)
@@ -1007,31 +1008,30 @@ test_mixdown_midi (void)
   midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
 
   /* bounce */
-  ExportSettings settings;
-  memset (&settings, 0, sizeof (ExportSettings));
-  settings.mode = EXPORT_MODE_FULL;
+  ExportSettings * settings = export_settings_new ();
+  settings->mode = EXPORT_MODE_FULL;
   export_settings_set_bounce_defaults (
-    &settings, EXPORT_FORMAT_MIDI1, NULL, __func__);
-  settings.time_range = TIME_RANGE_LOOP;
+    settings, EXPORT_FORMAT_MIDI1, NULL, __func__);
+  settings->time_range = TIME_RANGE_LOOP;
 
   EngineState state;
   GPtrArray * conns =
-    exporter_prepare_tracks_for_export (&settings, &state);
+    exporter_prepare_tracks_for_export (settings, &state);
 
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
     "bounce_thread",
-    (GThreadFunc) exporter_generic_export_thread, &settings);
+    (GThreadFunc) exporter_generic_export_thread, settings);
 
-  print_progress_and_sleep (&settings.progress_info);
+  print_progress_and_sleep (settings->progress_info);
 
   g_thread_join (thread);
 
-  exporter_post_export (&settings, conns, &state);
+  exporter_post_export (settings, conns, &state);
 
   /* create a MIDI track from the MIDI file */
   SupportedFile * file =
-    supported_file_new_from_path (settings.file_uri);
+    supported_file_new_from_path (settings->file_uri);
   Track * exported_track = track_create_with_action (
     TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
     TRACKLIST->num_tracks, 1, NULL);
@@ -1063,7 +1063,7 @@ test_mixdown_midi (void)
   g_assert_cmppos (&mn_obj->pos, &start);
   g_assert_cmppos (&mn_obj->end_pos, &end);
 
-  export_settings_free_members (&settings);
+  export_settings_free (settings);
 
   test_helper_zrythm_cleanup ();
 }

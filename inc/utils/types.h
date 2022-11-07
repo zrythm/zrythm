@@ -114,41 +114,6 @@ typedef bool (*GenericPredicateFunc) (
   const void * object,
   const void * user_data);
 
-/**
- * Generic progress info.
- */
-typedef struct GenericProgressInfo
-{
-  /** Progress done (0.0 to 1.0). */
-  double progress;
-
-  /** Action cancelled. */
-  bool cancelled;
-
-  /** Error occurred. */
-  bool has_error;
-
-  /** Message to show after completion. */
-  bool           has_message;
-  GtkMessageType message_type;
-
-  char message_str[1800];
-
-  /** String to show in the label during the
-   * action. */
-  char label_str[1800];
-
-  /** String to show in the label when the action
-   * is complete (progress == 1.0). */
-  char label_done_str[1800];
-
-  /**
-   * String to show in a popup when
-   * GenericProgressInfo.has_error is true.
-   */
-  char error_str[1800];
-} GenericProgressInfo;
-
 typedef enum AudioValueFormat
 {
   /** 0 to 2, amplitude. */

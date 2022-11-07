@@ -49,6 +49,7 @@
 #include "utils/mem.h"
 #include "utils/object_utils.h"
 #include "utils/objects.h"
+#include "utils/progress_info.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
 
@@ -1997,28 +1998,28 @@ track_freeze (Track * self, bool freeze)
 
   if (freeze)
     {
-      ExportSettings settings;
+      ExportSettings * settings = export_settings_new ();
       track_mark_for_bounce (
         self, F_BOUNCE, F_MARK_REGIONS, F_NO_MARK_CHILDREN,
         F_NO_MARK_PARENTS);
-      settings.mode = EXPORT_MODE_TRACKS;
+      settings->mode = EXPORT_MODE_TRACKS;
       export_settings_set_bounce_defaults (
-        &settings, EXPORT_FORMAT_WAV, NULL, self->name);
+        settings, EXPORT_FORMAT_WAV, NULL, self->name);
 
       EngineState state;
-      GPtrArray * conns = exporter_prepare_tracks_for_export (
-        &settings, &state);
+      GPtrArray * conns =
+        exporter_prepare_tracks_for_export (settings, &state);
 
       /* start exporting in a new thread */
       GThread * thread = g_thread_new (
         "bounce_thread",
         (GThreadFunc) exporter_generic_export_thread,
-        &settings);
+        settings);
 
       /* create a progress dialog and block */
       ExportProgressDialogWidget * progress_dialog =
         export_progress_dialog_widget_new (
-          &settings, true, false, F_CANCELABLE);
+          settings, true, false, F_CANCELABLE);
       gtk_window_set_transient_for (
         GTK_WINDOW (progress_dialog),
         GTK_WINDOW (MAIN_WINDOW));
@@ -2026,18 +2027,19 @@ track_freeze (Track * self, bool freeze)
 
       g_thread_join (thread);
 
-      exporter_post_export (&settings, conns, &state);
+      exporter_post_export (settings, conns, &state);
 
       /* assert exporting is finished */
       g_return_if_fail (!AUDIO_ENGINE->exporting);
 
       if (
-        !settings.progress_info.has_error
-        && !settings.progress_info.cancelled)
+        progress_info_get_completion_type (
+          settings->progress_info)
+        == PROGRESS_COMPLETED_SUCCESS)
         {
           /* move the temporary file to the pool */
           AudioClip * clip =
-            audio_clip_new_from_file (settings.file_uri);
+            audio_clip_new_from_file (settings->file_uri);
           audio_pool_add_clip (AUDIO_POOL, clip);
           audio_clip_write_to_pool (
             clip, F_NO_PARTS, F_NOT_BACKUP);
@@ -2045,12 +2047,12 @@ track_freeze (Track * self, bool freeze)
         }
 
       if (g_file_test (
-            settings.file_uri, G_FILE_TEST_IS_REGULAR))
+            settings->file_uri, G_FILE_TEST_IS_REGULAR))
         {
-          io_remove (settings.file_uri);
+          io_remove (settings->file_uri);
         }
 
-      export_settings_free_members (&settings);
+      export_settings_free (settings);
     }
   else
     {

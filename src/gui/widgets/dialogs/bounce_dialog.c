@@ -14,6 +14,8 @@
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
+#include "utils/objects.h"
+#include "utils/progress_info.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -35,15 +37,15 @@ on_cancel_clicked (GtkButton * btn, BounceDialogWidget * self)
 static void
 on_bounce_clicked (GtkButton * btn, BounceDialogWidget * self)
 {
-  ExportSettings settings;
+  ExportSettings * settings = export_settings_new ();
 
   switch (self->type)
     {
     case BOUNCE_DIALOG_REGIONS:
-      settings.mode = EXPORT_MODE_REGIONS;
+      settings->mode = EXPORT_MODE_REGIONS;
       break;
     case BOUNCE_DIALOG_TRACKS:
-      settings.mode = EXPORT_MODE_TRACKS;
+      settings->mode = EXPORT_MODE_TRACKS;
       break;
     }
 
@@ -55,7 +57,7 @@ on_bounce_clicked (GtkButton * btn, BounceDialogWidget * self)
   else
     {
       export_settings_set_bounce_defaults (
-        &settings, EXPORT_FORMAT_WAV, NULL, self->bounce_name);
+        settings, EXPORT_FORMAT_WAV, NULL, self->bounce_name);
     }
 
   Position start_pos;
@@ -64,8 +66,8 @@ on_bounce_clicked (GtkButton * btn, BounceDialogWidget * self)
     {
     case BOUNCE_DIALOG_REGIONS:
       timeline_selections_mark_for_bounce (
-        TL_SELECTIONS, settings.bounce_with_parents);
-      settings.mode = EXPORT_MODE_REGIONS;
+        TL_SELECTIONS, settings->bounce_with_parents);
+      settings->mode = EXPORT_MODE_REGIONS;
       arranger_selections_get_start_pos (
         (ArrangerSelections *) TL_SELECTIONS, &start_pos,
         F_GLOBAL);
@@ -73,9 +75,9 @@ on_bounce_clicked (GtkButton * btn, BounceDialogWidget * self)
     case BOUNCE_DIALOG_TRACKS:
       {
         tracklist_selections_mark_for_bounce (
-          TRACKLIST_SELECTIONS, settings.bounce_with_parents,
+          TRACKLIST_SELECTIONS, settings->bounce_with_parents,
           F_NO_MARK_MASTER);
-        settings.mode = EXPORT_MODE_TRACKS;
+        settings->mode = EXPORT_MODE_TRACKS;
 
         /* start at start marker */
         Marker * m =
@@ -88,35 +90,38 @@ on_bounce_clicked (GtkButton * btn, BounceDialogWidget * self)
 
   EngineState state;
   GPtrArray * conns =
-    exporter_prepare_tracks_for_export (&settings, &state);
+    exporter_prepare_tracks_for_export (settings, &state);
 
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
     "bounce_thread",
-    (GThreadFunc) exporter_generic_export_thread, &settings);
+    (GThreadFunc) exporter_generic_export_thread, settings);
 
   /* create a progress dialog and block */
   ExportProgressDialogWidget * progress_dialog =
     export_progress_dialog_widget_new (
-      &settings, true, false, F_CANCELABLE);
+      settings, true, false, F_CANCELABLE);
   gtk_window_set_transient_for (
     GTK_WINDOW (progress_dialog), GTK_WINDOW (self));
   z_gtk_dialog_run (GTK_DIALOG (progress_dialog), true);
 
   g_thread_join (thread);
 
-  exporter_post_export (&settings, conns, &state);
+  exporter_post_export (settings, conns, &state);
+
+  ProgressInfo * pinfo = settings->progress_info;
 
   if (
-    !self->bounce_to_file && !settings.progress_info.has_error
-    && !settings.progress_info.cancelled)
+    !self->bounce_to_file
+    && progress_info_get_completion_type (pinfo)
+         == PROGRESS_COMPLETED_SUCCESS)
     {
       /* create audio track with bounced material */
       exporter_create_audio_track_after_bounce (
-        &settings, &start_pos);
+        settings, &start_pos);
     }
 
-  export_settings_free_members (&settings);
+  object_free_w_func_and_null (export_settings_free, settings);
 
   gtk_window_close (GTK_WINDOW (self));
 }

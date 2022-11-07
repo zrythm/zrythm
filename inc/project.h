@@ -407,8 +407,14 @@ typedef struct ProjectSaveData
   /** Whether an error occurred during saving. */
   bool has_error;
 
-  GenericProgressInfo progress_info;
+  ProgressInfo * progress_info;
 } ProjectSaveData;
+
+ProjectSaveData *
+project_save_data_new (void);
+
+void
+project_save_data_free (ProjectSaveData * self);
 
 /**
  * Checks that everything is okay with the project.

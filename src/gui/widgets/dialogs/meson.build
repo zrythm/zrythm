@@ -19,7 +19,7 @@ widget_srcs += files([
   'port_info.c',
   'port_selector_dialog.c',
   'project_assistant.c',
-  'project_progress_dialog.c',
+  #'project_progress_dialog.c',
   'quantize_dialog.c',
   'save_chord_preset_dialog.c',
   'scripting_dialog.c',

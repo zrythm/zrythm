@@ -541,16 +541,13 @@ on_progress_dialog_closed (
  * @param track If non-NULL, assumed to be a stem
  *   for this track.
  */
-static void
-init_export_info (
-  ExportDialogWidget * self,
-  ExportSettings *     info,
-  Track *              track)
+static ExportSettings *
+init_export_info (ExportDialogWidget * self, Track * track)
 {
   bool        is_audio = AUDIO_STACK_VISIBLE (self);
   GSettings * s = get_current_settings (self);
 
-  memset (info, 0, sizeof (ExportSettings));
+  ExportSettings * info = export_settings_new ();
 
   if (is_audio)
     {
@@ -643,9 +640,8 @@ init_export_info (
   info->bounce_with_parents = true;
 
   info->mode = EXPORT_MODE_TRACKS;
-  info->progress_info.has_error = false;
-  info->progress_info.cancelled = false;
-  strcpy (info->progress_info.error_str, "");
+
+  return info;
 }
 
 /**
@@ -694,25 +690,25 @@ on_export (ExportDialogWidget * self, bool audio)
             track, F_BOUNCE, F_MARK_REGIONS, F_MARK_CHILDREN,
             F_MARK_PARENTS);
 
-          ExportSettings info;
-          init_export_info (self, &info, track);
+          ExportSettings * info =
+            init_export_info (self, track);
 
           EngineState state;
           GPtrArray * conns =
-            exporter_prepare_tracks_for_export (&info, &state);
+            exporter_prepare_tracks_for_export (info, &state);
 
-          g_message ("exporting %s", info.file_uri);
+          g_message ("exporting %s", info->file_uri);
 
           /* start exporting in a new thread */
           GThread * thread = g_thread_new (
             "export_thread",
             (GThreadFunc) exporter_generic_export_thread,
-            &info);
+            info);
 
           /* create a progress dialog and block */
           ExportProgressDialogWidget * progress_dialog =
             export_progress_dialog_widget_new (
-              &info, true, true, F_CANCELABLE);
+              info, true, true, F_CANCELABLE);
           gtk_window_set_transient_for (
             GTK_WINDOW (progress_dialog), GTK_WINDOW (self));
           g_signal_connect (
@@ -724,11 +720,12 @@ on_export (ExportDialogWidget * self, bool audio)
           g_thread_join (thread);
 
           /* re-connect disconnected connections */
-          exporter_post_export (&info, conns, &state);
-
-          g_free (info.file_uri);
+          exporter_post_export (info, conns, &state);
 
           track->bounce = false;
+
+          object_free_w_func_and_null (
+            export_settings_free, info);
 
           g_debug (
             "~ finished bouncing stem for %s ~", track->name);
@@ -738,8 +735,7 @@ on_export (ExportDialogWidget * self, bool audio)
     {
       g_debug ("~ bouncing mixdown ~");
 
-      ExportSettings info;
-      init_export_info (self, &info, NULL);
+      ExportSettings * info = init_export_info (self, NULL);
 
       /* unmark all tracks for bounce */
       tracklist_mark_all_tracks_for_bounce (TRACKLIST, false);
@@ -753,21 +749,21 @@ on_export (ExportDialogWidget * self, bool audio)
             F_NO_MARK_CHILDREN, F_MARK_PARENTS);
         }
 
-      g_message ("exporting %s", info.file_uri);
+      g_message ("exporting %s", info->file_uri);
 
       EngineState state;
       GPtrArray * conns =
-        exporter_prepare_tracks_for_export (&info, &state);
+        exporter_prepare_tracks_for_export (info, &state);
 
       /* start exporting in a new thread */
       GThread * thread = g_thread_new (
         "export_thread",
-        (GThreadFunc) exporter_generic_export_thread, &info);
+        (GThreadFunc) exporter_generic_export_thread, info);
 
       /* create a progress dialog and block */
       ExportProgressDialogWidget * progress_dialog =
         export_progress_dialog_widget_new (
-          &info, true, true, F_CANCELABLE);
+          info, true, true, F_CANCELABLE);
       gtk_window_set_transient_for (
         GTK_WINDOW (progress_dialog), GTK_WINDOW (self));
       g_signal_connect (
@@ -778,9 +774,9 @@ on_export (ExportDialogWidget * self, bool audio)
       g_thread_join (thread);
 
       /* re-connect disconnected connections */
-      exporter_post_export (&info, conns, &state);
+      exporter_post_export (info, conns, &state);
 
-      g_free (info.file_uri);
+      object_free_w_func_and_null (export_settings_free, info);
 
       g_debug ("~ finished bouncing mixdown ~");
     }

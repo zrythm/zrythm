@@ -107,6 +107,7 @@
 #include "utils/io.h"
 #include "utils/localization.h"
 #include "utils/log.h"
+#include "utils/progress_info.h"
 #include "utils/resources.h"
 #include "utils/stack.h"
 #include "utils/string.h"
@@ -2868,37 +2869,37 @@ DEFINE_SIMPLE (activate_quick_bounce_selections)
 
   ZRegion * r = TL_SELECTIONS->regions[0];
 
-  ExportSettings settings;
-  settings.mode = EXPORT_MODE_REGIONS;
+  ExportSettings * settings = export_settings_new ();
+  settings->mode = EXPORT_MODE_REGIONS;
   export_settings_set_bounce_defaults (
-    &settings, EXPORT_FORMAT_WAV, NULL, r->name);
+    settings, EXPORT_FORMAT_WAV, NULL, r->name);
   timeline_selections_mark_for_bounce (
-    TL_SELECTIONS, settings.bounce_with_parents);
+    TL_SELECTIONS, settings->bounce_with_parents);
 
   EngineState state;
   GPtrArray * conns =
-    exporter_prepare_tracks_for_export (&settings, &state);
+    exporter_prepare_tracks_for_export (settings, &state);
 
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
     "bounce_thread",
-    (GThreadFunc) exporter_generic_export_thread, &settings);
+    (GThreadFunc) exporter_generic_export_thread, settings);
 
   /* create a progress dialog and block */
   ExportProgressDialogWidget * progress_dialog =
     export_progress_dialog_widget_new (
-      &settings, true, false, F_CANCELABLE);
+      settings, true, false, F_CANCELABLE);
   gtk_window_set_transient_for (
     GTK_WINDOW (progress_dialog), GTK_WINDOW (MAIN_WINDOW));
   z_gtk_dialog_run (GTK_DIALOG (progress_dialog), true);
 
   g_thread_join (thread);
 
-  exporter_post_export (&settings, conns, &state);
+  exporter_post_export (settings, conns, &state);
 
   if (
-    !settings.progress_info.has_error
-    && !settings.progress_info.cancelled)
+    progress_info_get_completion_type (settings->progress_info)
+    == PROGRESS_COMPLETED_SUCCESS)
     {
       /* create audio track with bounced material */
       Position first_pos;
@@ -2906,10 +2907,10 @@ DEFINE_SIMPLE (activate_quick_bounce_selections)
         (ArrangerSelections *) TL_SELECTIONS, &first_pos,
         F_GLOBAL);
       exporter_create_audio_track_after_bounce (
-        &settings, &first_pos);
+        settings, &first_pos);
     }
 
-  export_settings_free_members (&settings);
+  export_settings_free (settings);
 }
 
 DEFINE_SIMPLE (activate_bounce_selections)
@@ -3732,48 +3733,50 @@ DEFINE_SIMPLE (activate_quick_bounce_selected_tracks)
 {
   Track * track = TRACKLIST_SELECTIONS->tracks[0];
 
-  ExportSettings settings;
-  settings.mode = EXPORT_MODE_TRACKS;
+  ExportSettings * settings = export_settings_new ();
+  settings->mode = EXPORT_MODE_TRACKS;
   export_settings_set_bounce_defaults (
-    &settings, EXPORT_FORMAT_WAV, NULL, track->name);
+    settings, EXPORT_FORMAT_WAV, NULL, track->name);
   tracklist_selections_mark_for_bounce (
-    TRACKLIST_SELECTIONS, settings.bounce_with_parents,
+    TRACKLIST_SELECTIONS, settings->bounce_with_parents,
     F_NO_MARK_MASTER);
 
   EngineState state;
   GPtrArray * conns =
-    exporter_prepare_tracks_for_export (&settings, &state);
+    exporter_prepare_tracks_for_export (settings, &state);
 
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
     "bounce_thread",
-    (GThreadFunc) exporter_generic_export_thread, &settings);
+    (GThreadFunc) exporter_generic_export_thread, settings);
 
   /* create a progress dialog and block */
   ExportProgressDialogWidget * progress_dialog =
     export_progress_dialog_widget_new (
-      &settings, true, false, F_CANCELABLE);
+      settings, true, false, F_CANCELABLE);
   gtk_window_set_transient_for (
     GTK_WINDOW (progress_dialog), GTK_WINDOW (MAIN_WINDOW));
   z_gtk_dialog_run (GTK_DIALOG (progress_dialog), true);
 
   g_thread_join (thread);
 
-  exporter_post_export (&settings, conns, &state);
+  exporter_post_export (settings, conns, &state);
+
+  ProgressInfo * pinfo = settings->progress_info;
 
   if (
-    !settings.progress_info.has_error
-    && !settings.progress_info.cancelled)
+    progress_info_get_completion_type (pinfo)
+    == PROGRESS_COMPLETED_SUCCESS)
     {
       /* create audio track with bounced material */
       Marker * m =
         marker_track_get_start_marker (P_MARKER_TRACK);
       ArrangerObject * m_obj = (ArrangerObject *) m;
       exporter_create_audio_track_after_bounce (
-        &settings, &m_obj->pos);
+        settings, &m_obj->pos);
     }
 
-  export_settings_free_members (&settings);
+  export_settings_free (settings);
 }
 
 DEFINE_SIMPLE (activate_bounce_selected_tracks)

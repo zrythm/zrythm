@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __UTILS_OBJECTS_H__
@@ -6,16 +6,56 @@
 
 #include <stddef.h>
 
+#include <gmodule.h>
+
 /**
  * @addtogroup utils
  *
  * @{
  */
 
+NONNULL
+static inline void
+_object_zero_and_free (void ** ptr, size_t sz)
+{
+  if (!*ptr)
+    return;
+
+  memset (*ptr, 0, sz);
+  free (*ptr);
+  *ptr = NULL;
+}
+
+/**
+ * @note Some objects are created by libcyaml which uses
+ *   plain malloc so avoid using this on serializable objects.
+ */
+NONNULL
+static inline void
+_object_zero_and_free_unresizable (void ** ptr, size_t sz)
+{
+  if (!*ptr)
+    return;
+
+  memset (*ptr, 0, sz);
+  g_slice_free1 (sz, *ptr);
+  *ptr = NULL;
+}
+
 /**
  * Allocates memory for an object of type \ref type.
  */
 #define object_new(type) g_malloc0 (sizeof (type))
+
+/**
+ * Allocates memory for an object of type \ref type.
+ *
+ * This is more efficient than object_new() but does not
+ * support resizing.
+ *
+ * Must be free'd with object_free_unresizable().
+ */
+#define object_new_unresizable(type) g_slice_new0 (type)
 
 /**
  * Calloc equivalent.
@@ -49,9 +89,13 @@
 #define object_set_to_zero(ptr) \
   memset (ptr, 0, sizeof (*(ptr)))
 
-NONNULL
-void
-_object_zero_and_free (void ** ptr, size_t sz);
+/**
+ * Frees memory for objects created with object_new().
+ *
+ * @note Prefer object_zero_and_free_unresizable().
+ */
+#define object_free_unresizable(type, obj) \
+  g_slice_free (type, obj)
 
 /**
  * Zero's out a struct pointed to by \ref ptr and
@@ -59,6 +103,10 @@ _object_zero_and_free (void ** ptr, size_t sz);
  */
 #define object_zero_and_free(ptr) \
   _object_zero_and_free ((void **) &(ptr), sizeof (*(ptr)))
+
+#define object_zero_and_free_unresizable(type, ptr) \
+  _object_zero_and_free_unresizable ( \
+    (void **) &(ptr), sizeof (type))
 
 /**
  * Call the function \ref _func to free \ref _obj

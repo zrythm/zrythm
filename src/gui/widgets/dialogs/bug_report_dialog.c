@@ -15,6 +15,7 @@
 #include "utils/io.h"
 #include "utils/log.h"
 #include "utils/objects.h"
+#include "utils/progress_info.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -140,10 +141,10 @@ get_json_string (BugReportDialogWidget * self)
 
 typedef struct AutomaticReportData
 {
-  const char *        json;
-  const char *        screenshot_path;
-  const char *        log_file_path;
-  GenericProgressInfo progress_nfo;
+  const char *   json;
+  const char *   screenshot_path;
+  const char *   log_file_path;
+  ProgressInfo * progress_nfo;
 } AutomaticReportData;
 
 static void *
@@ -158,14 +159,15 @@ send_data (AutomaticReportData * data)
          "log_file", data->log_file_path, "application/zstd", NULL);
   if (ret != 0)
     {
-      data->progress_nfo.has_error = true;
-      sprintf (
-        data->progress_nfo.error_str, _ ("error: %s"),
+      progress_info_mark_completed (
+        data->progress_nfo, PROGRESS_COMPLETED_HAS_ERROR,
         err->message);
+      return NULL;
     }
 
-  data->progress_nfo.progress = 1.0;
-  strcpy (data->progress_nfo.label_done_str, _ ("Done"));
+  progress_info_mark_completed (
+    data->progress_nfo, PROGRESS_COMPLETED_SUCCESS,
+    _ ("Done"));
 
   return NULL;
 }
@@ -340,15 +342,15 @@ on_preview_and_send_automatically_response (
   data.json = json_str;
   data.screenshot_path = screenshot_path;
   data.log_file_path = log_file_path;
-  data.progress_nfo.progress = 0;
-  strcpy (data.progress_nfo.label_str, _ ("Sending data..."));
-  strcpy (data.progress_nfo.label_done_str, _ ("Done"));
-  strcpy (data.progress_nfo.error_str, _ ("Failed"));
+  data.progress_nfo = progress_info_new ();
+  /*strcpy (data.progress_nfo.label_str, _ ("Sending data..."));*/
+  /*strcpy (data.progress_nfo.label_done_str, _ ("Done"));*/
+  /*strcpy (data.progress_nfo.error_str, _ ("Failed"));*/
   GenericProgressDialogWidget * progress_dialog =
     generic_progress_dialog_widget_new ();
   generic_progress_dialog_widget_setup (
-    progress_dialog, _ ("Sending..."), &data.progress_nfo,
-    true, false);
+    progress_dialog, _ ("Sending..."), data.progress_nfo,
+    _ ("Sending data..."), true, false);
 
   /* start sending in a new thread */
   GThread * thread = g_thread_new (
@@ -361,7 +363,9 @@ on_preview_and_send_automatically_response (
 
   g_thread_join (thread);
 
-  if (!data.progress_nfo.has_error)
+  if (
+    progress_info_get_completion_type (data.progress_nfo)
+    == PROGRESS_COMPLETED_SUCCESS)
     {
       gtk_dialog_set_response_sensitive (
         GTK_DIALOG (self),
@@ -392,6 +396,8 @@ on_preview_and_send_automatically_response (
       io_rmdir (screenshot_tmpdir, Z_F_NO_FORCE);
       g_free_and_null (screenshot_tmpdir);
     }
+
+  progress_info_free (data.progress_nfo);
 
   g_free (json_str);
 }

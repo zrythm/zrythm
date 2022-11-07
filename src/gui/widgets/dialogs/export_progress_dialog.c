@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -16,6 +16,7 @@
 #include "project.h"
 #include "utils/io.h"
 #include "utils/math.h"
+#include "utils/progress_info.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -57,12 +58,11 @@ export_progress_dialog_widget_new (
     Z_GENERIC_PROGRESS_DIALOG_WIDGET (self);
 
   self->info = info;
-  strcpy (info->progress_info.label_str, _ ("Exporting..."));
-  strcpy (info->progress_info.label_done_str, _ ("Exported"));
 
   generic_progress_dialog_widget_setup (
     generic_progress_dialog, _ ("Export Progress"),
-    &info->progress_info, autoclose, cancelable);
+    info->progress_info, _ ("Exporting..."), autoclose,
+    cancelable);
 
   self->show_open_dir_btn = show_open_dir_btn;
 
