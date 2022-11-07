@@ -613,6 +613,8 @@ draw_chord_region (
 }
 
 /**
+ * @param full_rect Region rectangle with absolute coordinates.
+ *
  * @return Whether to break.
  */
 OPTIMIZE_O3
@@ -631,83 +633,133 @@ handle_loop (
   ArrangerObject * ap_obj = (ArrangerObject *) ap;
   ArrangerObject * next_ap_obj = (ArrangerObject *) next_ap;
 
-  double loop_end_ticks = obj->loop_end_pos.ticks;
   double loop_ticks =
     arranger_object_get_loop_length_in_ticks (obj);
-  double clip_start_ticks = obj->clip_start_pos.ticks;
 
-  double ap_start_ticks = ap_obj->pos.ticks;
-  double ap_end_ticks = ap_start_ticks;
+  double ap_end_ticks = ap_obj->pos.ticks;
   if (next_ap)
     {
       ap_end_ticks = next_ap_obj->pos.ticks;
     }
 
-  /* if ap started before loop start
-   * only draw it once */
+  /* if both ap and next ap are before loop start don't
+   * draw at all */
+  if (
+    position_is_before (&ap_obj->pos, &obj->loop_start_pos)
+    && next_ap
+    && position_is_before (
+      &next_ap_obj->pos, &obj->loop_start_pos)
+    && cur_loop != 0)
+    {
+      return true;
+    }
+
+  /* calculate draw endpoints */
+  z_return_val_if_fail_cmp (loop_ticks, >, 0, true);
+  z_return_val_if_fail_cmp (cur_loop, >=, 0, true);
+  double abs_start_ticks_after_loops =
+    ap_obj->pos.ticks + loop_ticks * (double) cur_loop;
+
+  /* if ap started before loop start only draw from the loop
+   * start point */
   if (
     position_is_before (&ap_obj->pos, &obj->loop_start_pos)
     && cur_loop != 0)
-    return true;
-
-  /* calculate draw endpoints */
-  double tmp_start_ticks =
-    ap_start_ticks + loop_ticks * (double) cur_loop;
+    {
+      abs_start_ticks_after_loops +=
+        obj->loop_start_pos.ticks - ap_obj->pos.ticks;
+    }
 
   /* if should be clipped */
-  double tmp_end_ticks;
+  double abs_end_ticks_after_loops =
+    ap_end_ticks + loop_ticks * (double) cur_loop;
+  double
+    abs_end_ticks_after_loops_with_clipoff; /* same as above but the part outside the loop/region is clipped off */
   if (
     next_ap
     && position_is_after_or_equal (
       &next_ap_obj->pos, &obj->loop_end_pos))
-    tmp_end_ticks =
-      loop_end_ticks + loop_ticks * (double) cur_loop;
+    {
+      abs_end_ticks_after_loops_with_clipoff =
+        obj->loop_end_pos.ticks
+        + loop_ticks * (double) cur_loop;
+    }
+  else if (
+    next_ap
+    && position_is_after_or_equal (
+      &next_ap_obj->pos, &obj->end_pos))
+    {
+      g_debug ("HIT");
+      abs_end_ticks_after_loops_with_clipoff =
+        obj->end_pos.ticks + loop_ticks * (double) cur_loop;
+    }
   else
-    tmp_end_ticks =
-      ap_end_ticks + loop_ticks * (double) cur_loop;
+    {
+      abs_end_ticks_after_loops_with_clipoff =
+        abs_end_ticks_after_loops;
+    }
 
   /* adjust for clip start */
-  tmp_start_ticks -= clip_start_ticks;
-  tmp_end_ticks -= clip_start_ticks;
+  abs_start_ticks_after_loops -= obj->clip_start_pos.ticks;
+  abs_end_ticks_after_loops -= obj->clip_start_pos.ticks;
+  abs_end_ticks_after_loops_with_clipoff -=
+    obj->clip_start_pos.ticks;
 
-  /* note: these are local to the
-   * region */
-  double x_start, x_end;
-  x_start = tmp_start_ticks / ticks_in_region;
-  x_end = tmp_end_ticks / ticks_in_region;
+  g_debug (
+    "loop %d:, abs start ticks after loops %f | abs end ticks after loops %f | abs end ticks after loops w clipof %f",
+    cur_loop, abs_start_ticks_after_loops,
+    abs_end_ticks_after_loops,
+    abs_end_ticks_after_loops_with_clipoff);
 
-  /* get ratio (0.0 - 1.0) on y where
-   * ap is
-   * note: these are local to the region */
-  double y_start, y_end;
-  y_start = 1.0 - (double) ap->normalized_val;
+  double x_start_ratio_in_region =
+    abs_start_ticks_after_loops / ticks_in_region;
+  double x_end_ratio_in_region =
+    abs_end_ticks_after_loops / ticks_in_region;
+  double x_end_ratio_in_region_with_clipoff =
+    abs_end_ticks_after_loops_with_clipoff / ticks_in_region;
+
+  /* get ratio (0.0 - 1.0) on y where ap is */
+  double y_start_ratio, y_end_ratio;
+  y_start_ratio = 1.0 - (double) ap->normalized_val;
   if (next_ap)
     {
-      y_end = 1.0 - (double) next_ap->normalized_val;
+      y_end_ratio = 1.0 - (double) next_ap->normalized_val;
     }
   else
     {
-      y_end = y_start;
+      y_end_ratio = y_start_ratio;
     }
 
-  double x_start_real = x_start * full_rect->width;
-  /*double x_end_real =*/
-  /*x_end * width;*/
-  double y_start_real = y_start * full_rect->height;
-  double y_end_real = y_end * full_rect->height;
+  double x_start_in_region =
+    x_start_ratio_in_region * full_rect->width;
+  double x_end_in_region =
+    x_end_ratio_in_region * full_rect->width;
+  double x_end_in_region_with_clipoff =
+    x_end_ratio_in_region_with_clipoff * full_rect->width;
+  double y_start = y_start_ratio * full_rect->height;
+  double y_end = y_end_ratio * full_rect->height;
+
+  g_debug (
+    "x start ratio in region %f full rect width %d x start in region %f | x end ratio in region %f x end in region %f",
+    x_start_ratio_in_region, full_rect->width,
+    x_start_in_region, x_end_ratio_in_region, x_end_in_region);
+
+  /*  -- OK UP TO HERE --  */
 
   GdkRGBA color = object_fill_color;
 
   /* draw ap */
-  if (x_start_real > 0.0 && x_start_real < full_rect->width)
+  if (
+    x_start_in_region > 0.0
+    && x_start_in_region < full_rect->width)
     {
       int padding = 1;
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          (float) (x_start_real - padding),
-          (float) (y_start_real - padding),
-          2.f * (float) padding, 2.f * (float) padding));
+          (float) (x_start_in_region - padding),
+          (float) (y_start - padding), 2.f * (float) padding,
+          2.f * (float) padding));
     }
 
   /* draw curve */
@@ -723,49 +775,74 @@ handle_loop (
 
       const int line_width = 2;
 
+      /* automation curve width */
       double ac_width =
-        fabs (x_end - x_start) * full_rect->width;
+        fabs (x_end_in_region - x_start_in_region);
 
       ArrangerWidget * arranger =
         arranger_object_get_arranger (obj);
-      EditorSettings settings =
+      const EditorSettings settings =
         arranger_widget_get_editor_setting_values (arranger);
+
+      /* rectangle where origin is the top left of the
+       * screen */
       GdkRectangle vis_rect = Z_GDK_RECTANGLE_INIT (
-        settings.scroll_start_x, 0,
+        settings.scroll_start_x - full_rect->x, -full_rect->y,
         gtk_widget_get_allocated_width (GTK_WIDGET (arranger)),
         full_rect->height);
-      vis_rect.x -= full_rect->x;
-      vis_rect.y -= full_rect->y;
 
       GskRenderNode * cr_node = NULL;
       cairo_t *       cr = NULL;
       GdkRectangle ap_loop_part_rect = Z_GDK_RECTANGLE_INIT (
-        (int) MAX (x_start_real, 0.0), 0,
-        /* this seems wrong to add x */
-        /*(int) (x_start_real + ac_width + 0.1),*/
-        (int) (ac_width + 0.1), full_rect->height);
+        (int) x_start_in_region, 0,
+        /* add the line width otherwise the end of the
+         * curve gets cut off */
+        (int) (ac_width) + line_width, full_rect->height);
+
+      /* adjust if automation point starts before the region */
+      if (x_start_in_region < 0)
+        {
+          ap_loop_part_rect.x = 0;
+          ap_loop_part_rect.width += (int) x_start_in_region;
+        }
+
+      /* adjust if automation point ends after the loop/region end */
+      if (x_end_in_region > x_end_in_region_with_clipoff)
+        {
+          double clipoff =
+            x_end_in_region - x_end_in_region_with_clipoff;
+          g_debug ("clipped off %f", clipoff);
+          ap_loop_part_rect.width -= (int) clipoff;
+        }
+
       /* don't use cairo if it will result in a too large
        * surface */
       if (ap_loop_part_rect.width > 16000)
         {
           use_cairo = false;
         }
+      z_gdk_rectangle_print (&ap_loop_part_rect);
 
       if (use_cairo)
         {
-          if (automation_point_settings_changed (
-                ap, &ap_loop_part_rect, true))
+          if (
+            automation_point_settings_changed (
+              ap, &ap_loop_part_rect, true)
+            || ap->cairo_node_tl == NULL)
             {
               cr_node = gsk_cairo_node_new (&GRAPHENE_RECT_INIT (
                 0.f, 0.f, (float) ap_loop_part_rect.width,
                 (float) ap_loop_part_rect.height));
-
+              g_return_val_if_fail (
+                cr_node && GSK_IS_RENDER_NODE (cr_node), true);
               object_free_w_func_and_null (
                 gsk_render_node_unref, ap->cairo_node_tl);
             }
           else
             {
               cr_node = ap->cairo_node_tl;
+              g_return_val_if_fail (
+                cr_node && GSK_IS_RENDER_NODE (cr_node), true);
               gtk_snapshot_save (snapshot);
               gtk_snapshot_translate (
                 snapshot,
@@ -786,9 +863,8 @@ handle_loop (
           cairo_set_line_width (cr, (double) line_width);
         } /* endif use_cairo */
 
-      double new_x, ap_y, new_y;
       double ac_height =
-        fabs (y_end - y_start) * full_rect->height;
+        fabs (y_end_ratio - y_start_ratio) * full_rect->height;
       double step = use_cairo ? 0.1 : 1.0;
       double start_from =
         use_cairo
@@ -801,28 +877,26 @@ handle_loop (
         until = MIN (vis_rect.x + vis_rect.width, until);
       for (double k = start_from; k < until + step; k += step)
         {
-          if (math_doubles_equal (ac_width, 0.0))
-            {
-              ap_y = 0.5;
-            }
-          else
-            {
-              ap_y =
-                /* in pixels, higher values
+          double ap_y =
+            math_doubles_equal (ac_width, 0.0)
+              ? 0.5
+              :
+              /* in pixels, higher values
                  * are lower */
-                1.0
+              1.0
                 - automation_point_get_normalized_value_in_curve (
-                  ap,
-                  CLAMP (
-                    (k - x_start_real) / ac_width, 0.0, 1.0));
-            }
+                  ap, CLAMP (
+                        (k - x_start_in_region) / ac_width,
+                        0.0, 1.0));
+          /*g_debug ("start from %f k %f x start in region %f ratio %f, ac width %f, ap y %f", start_from, k, x_start_in_region, CLAMP ((k - x_start_in_region) / ac_width, 0.0, 1.0), ac_width, ap_y);*/
           ap_y *= ac_height;
 
-          new_x = k;
-          if (y_start > y_end)
-            new_y = ap_y + y_end_real;
+          double new_x = k;
+          double new_y;
+          if (y_start_ratio > y_end_ratio)
+            new_y = ap_y + y_end;
           else
-            new_y = ap_y + y_start_real;
+            new_y = ap_y + y_start;
 
           if (new_x >= full_rect->width)
             return true;
@@ -883,7 +957,7 @@ handle_loop (
 }
 
 /**
- * @param rect Arranger rectangle.
+ * @param full_rect Region rectangle with absolute coordinates.
  */
 static void
 draw_automation_region (
@@ -1161,7 +1235,7 @@ draw_audio_part (
     case UI_DETAIL_HIGH:
       /* snapshot does not work with midpoints */
       /*increment = 0.5;*/
-      increment = 1;
+      increment = 0.2;
       width = 1;
       break;
     case UI_DETAIL_NORMAL:
