@@ -56,7 +56,7 @@ extensions = [
 
 # Add any paths that contain templates here,
 # relative to this directory.
-templates_path = ['@MESON_DOC_USER_SRC_DIR@/_templates']
+# templates_path = ['@MESON_DOC_USER_SRC_DIR@/_templates']
 
 # Make sure the section target is unique
 autosectionlabel_prefix_document = True
