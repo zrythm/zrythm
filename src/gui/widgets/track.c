@@ -1955,8 +1955,8 @@ track_widget_new (Track * track)
       add_solo_button (self, 1);
       add_button (self, true, TRACK_ICON_NAME_MUTE);
       add_button (self, true, TRACK_ICON_NAME_LISTEN);
-      add_button (self, true, TRACK_ICON_NAME_SHOW_UI);
       add_button (self, true, TRACK_ICON_NAME_SWAP_PHASE);
+      add_button (self, false, TRACK_ICON_NAME_SHOW_UI);
       add_button (self, false, TRACK_ICON_NAME_LOCK);
       add_button (self, false, TRACK_ICON_NAME_FREEZE);
       add_button (
