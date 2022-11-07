@@ -24,7 +24,9 @@
 static void
 print_progress_and_sleep (ProgressInfo * info)
 {
-  while (progress_info_get_status (info) != PROGRESS_STATUS_COMPLETED)
+  while (
+    progress_info_get_status (info)
+    != PROGRESS_STATUS_COMPLETED)
     {
       double progress;
       progress_info_get_progress (info, &progress, NULL);
