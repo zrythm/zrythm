@@ -94,6 +94,7 @@ file_manager_new (void)
       dl = dn;
     }
   g_list_free (drives);
+  g_object_unref (vol_monitor);
 
   if (!ZRYTHM_TESTING)
     {
