@@ -180,6 +180,7 @@ ui_show_message_full (
         {
           gtk_window_set_transient_for (
             GTK_WINDOW (dialog), parent_window);
+          gtk_window_set_modal (GTK_WINDOW (dialog), true);
         }
       if (block)
         {
