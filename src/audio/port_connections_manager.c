@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/port_connections_manager.h"
@@ -208,6 +208,56 @@ port_connections_manager_get_sources_or_dests (
 
   /* return number of connections found */
   return (int) res->len;
+}
+
+/**
+ * Adds the sources/destinations of @ref id in the
+ * given array.
+ *
+ * The returned instances of PortConnection are owned
+ * by @ref self and must not be free'd.
+ *
+ * @param id The identifier of the port to look for.
+ * @param arr Optional array to fill.
+ * @param sources True to look for sources, false for
+ *   destinations.
+ *
+ * @return The number of ports found.
+ */
+NONNULL_ARGS (1, 3)
+int
+port_connections_manager_get_unlocked_sources_or_dests (
+  const PortConnectionsManager * self,
+  GPtrArray *                    arr,
+  const PortIdentifier *         id,
+  bool                           sources)
+{
+  g_return_val_if_fail (self->dest_ht && self->src_ht, 0);
+  g_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, 0);
+  GPtrArray * res = g_hash_table_lookup (
+    /* note: we look at the opposite hashtable */
+    (sources ? self->dest_ht : self->src_ht), id);
+
+  if (!res)
+    return 0;
+
+  int ret = 0;
+  for (size_t i = 0; i < res->len; i++)
+    {
+      PortConnection * conn =
+        (PortConnection *) g_ptr_array_index (res, i);
+      if (!conn->locked)
+        ret++;
+
+      /* append to the given array */
+      if (arr)
+        {
+          g_ptr_array_add (arr, conn);
+        }
+    }
+
+  /* return number of connections found */
+  return (int) ret;
 }
 
 /**

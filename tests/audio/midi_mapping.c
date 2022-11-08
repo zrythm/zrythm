@@ -31,9 +31,8 @@ test_midi_mappping (void)
     P_MASTER_TRACK->channel->fader->amp, F_NO_PUBLISH_EVENTS);
   g_assert_cmpint (MIDI_MAPPINGS->num_mappings, ==, 1);
 
-  int size = 0;
-  midi_mappings_get_for_port (
-    MIDI_MAPPINGS, P_MASTER_TRACK->channel->fader->amp, &size);
+  int size = midi_mappings_get_for_port (
+    MIDI_MAPPINGS, P_MASTER_TRACK->channel->fader->amp, NULL);
   g_assert_cmpint (size, ==, 1);
 
   midi_mappings_apply (MIDI_MAPPINGS, buf);

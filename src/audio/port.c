@@ -1054,21 +1054,11 @@ get_num_unlocked (const Port * self, bool sources)
       && port_is_in_active_project (self),
     0);
 
-  GPtrArray * conns = g_ptr_array_new ();
-  int         num_conns =
-    port_connections_manager_get_sources_or_dests (
-      PORT_CONNECTIONS_MGR, conns, &self->id, sources);
-  int ret = 0;
-  for (int i = 0; i < num_conns; i++)
-    {
-      PortConnection * conn =
-        (PortConnection *) g_ptr_array_index (conns, i);
-      if (!conn->locked)
-        ret++;
-    }
-  g_ptr_array_unref (conns);
+  int num_unlocked_conns =
+    port_connections_manager_get_unlocked_sources_or_dests (
+      PORT_CONNECTIONS_MGR, NULL, &self->id, sources);
 
-  return ret;
+  return num_unlocked_conns;
 }
 
 /**

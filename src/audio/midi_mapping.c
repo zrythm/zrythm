@@ -1,7 +1,5 @@
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 #include "audio/control_port.h"
 #include "audio/midi_event.h"
@@ -325,33 +323,32 @@ midi_mappings_new ()
 /**
  * Get MIDI mappings for the given port.
  *
- * @param size Size to set.
+ * @param arr Optional array to fill with the mappings.
  *
- * @return a newly allocated array that must be
- * free'd with free().
+ * @return The number of results.
  */
-MidiMapping **
+int
 midi_mappings_get_for_port (
   MidiMappings * self,
   Port *         dest_port,
-  int *          count)
+  GPtrArray *    arr)
 {
-  g_return_val_if_fail (self && dest_port, NULL);
+  g_return_val_if_fail (self && dest_port, 0);
 
-  MidiMapping ** arr = NULL;
-  *count = 0;
+  int count = 0;
   for (int i = 0; i < self->num_mappings; i++)
     {
       MidiMapping * mapping = self->mappings[i];
       if (mapping->dest == dest_port)
         {
-          arr = g_realloc (
-            arr,
-            (size_t) (*count + 1) * sizeof (MidiMapping *));
-          array_append (arr, *count, mapping);
+          if (arr)
+            {
+              g_ptr_array_add (arr, mapping);
+            }
+          count++;
         }
     }
-  return arr;
+  return count;
 }
 
 MidiMappings *

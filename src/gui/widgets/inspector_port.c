@@ -55,11 +55,8 @@ get_port_str (InspectorPortWidget * self, Port * port, char * buf)
     || port->id.owner_type == PORT_OWNER_TYPE_FADER
     || port->id.owner_type == PORT_OWNER_TYPE_TRACK)
     {
-      int            num_midi_mappings = 0;
-      MidiMapping ** mappings = midi_mappings_get_for_port (
-        MIDI_MAPPINGS, port, &num_midi_mappings);
-      if (mappings)
-        free (mappings);
+      int num_midi_mappings = midi_mappings_get_for_port (
+        MIDI_MAPPINGS, port, NULL);
 
       const char * star = (num_midi_mappings > 0 ? "*" : "");
       char *       port_label =

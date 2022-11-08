@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/engine.h"
 #include "audio/port.h"
@@ -325,12 +309,10 @@ ports_expander_widget_setup_plugin (
     }
   g_array_sort (ports, port_identifier_port_group_cmp);
 
-  g_debug ("adding ports...");
-
-#define ADD_SINGLE(x) \
-  ip = inspector_port_widget_new (x); \
-  two_col_expander_box_widget_add_single ( \
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (ip))
+  g_debug (
+    "adding ports for plugin %s, type %s flow %s...",
+    pl ? pl->setting->descr->name : "(none)",
+    port_type_strings[type].str, port_flow_strings[flow].str);
 
   /* Add ports in group order */
   const char * last_group = NULL;
@@ -363,10 +345,11 @@ ports_expander_widget_setup_plugin (
       last_group = group;
 
       /* Add row to table for this controller */
-      ADD_SINGLE (port);
+      ip = inspector_port_widget_new (port);
+      two_col_expander_box_widget_add_single (
+        /* use normal casts because this gets called a lot */
+        (TwoColExpanderBoxWidget *) self, (GtkWidget *) ip);
     }
-
-#undef ADD_SINGLE
 
   g_debug ("added ports");
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/engine.h"
@@ -193,7 +193,7 @@ meter_get_value (
 Meter *
 meter_new_for_port (Port * port)
 {
-  Meter * self = object_new (Meter);
+  Meter * self = object_new_unresizable (Meter);
 
   self->port = port;
 
@@ -248,5 +248,5 @@ meter_free (Meter * self)
 
 #undef FREE_DSP
 
-  free (self);
+  object_zero_and_free_unresizable (Meter, self);
 }

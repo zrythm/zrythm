@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -215,16 +215,15 @@ midi_mappings_apply (MidiMappings * self, midi_byte_t * buf);
 /**
  * Get MIDI mappings for the given port.
  *
- * @param size Size to set.
+ * @param arr Optional array to fill with the mappings.
  *
- * @return a newly allocated array that must be
- * free'd with free().
+ * @return The number of results.
  */
-MidiMapping **
+int
 midi_mappings_get_for_port (
   MidiMappings * self,
   Port *         dest_port,
-  int *          size);
+  GPtrArray *    arr);
 
 MidiMappings *
 midi_mappings_clone (const MidiMappings * src);

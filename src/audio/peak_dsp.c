@@ -1,7 +1,6 @@
+// SPDX-FileCopyrightText: © 2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
  *
@@ -33,6 +32,7 @@
 #include <stdlib.h>
 
 #include "audio/peak_dsp.h"
+#include "utils/objects.h"
 
 /**
  * Process.
@@ -148,7 +148,7 @@ peak_dsp_init (PeakDsp * self, float samplerate)
 PeakDsp *
 peak_dsp_new (void)
 {
-  PeakDsp * self = calloc (1, sizeof (PeakDsp));
+  PeakDsp * self = object_new_unresizable (PeakDsp);
 
   return self;
 }
@@ -156,5 +156,5 @@ peak_dsp_new (void)
 void
 peak_dsp_free (PeakDsp * self)
 {
-  free (self);
+  object_zero_and_free_unresizable (PeakDsp, self);
 }
