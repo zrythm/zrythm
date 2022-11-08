@@ -229,7 +229,6 @@ automation_region_remove_ap (
   g_return_if_fail (
     IS_REGION (self) && IS_ARRANGER_OBJECT (ap));
 
-  g_message ("removing %p", ap);
   /* deselect */
   arranger_object_select (
     (ArrangerObject *) ap, F_NO_SELECT, F_APPEND,
@@ -257,10 +256,6 @@ automation_region_remove_ap (
        * while recording */
       free_later (ap, arranger_object_free);
     }
-
-  EVENTS_PUSH (
-    ET_ARRANGER_OBJECT_REMOVED,
-    ARRANGER_OBJECT_TYPE_AUTOMATION_POINT);
 }
 
 /**

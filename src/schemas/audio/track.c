@@ -66,6 +66,8 @@ track_upgrade_from_v1 (Track_v1 * old)
   self->beat_unit_port =
     port_upgrade_from_v1 (old->beat_unit_port);
   self->num_modulators = old->num_modulators;
+  self->modulators = g_malloc_n (
+    (size_t) old->num_modulators, sizeof (Plugin *));
   for (int i = 0; i < self->num_modulators; i++)
     {
       self->modulators[i] =
