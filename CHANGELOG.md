@@ -6,6 +6,20 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.1.14] - 2022-11-09
+### Changed
+- Html user manual: don't use a custom template
+- Refactor exporting and progress dialogs
+- Instrument tracks: move "show UI" to bottom row
+- Make UI message dialogs modal
+- Use WAV instead of FLAC for audio file pool
+- Make switching tracks a bit more performant
+
+### Fixed
+- Fix various issues with automation region drawing
+- Fix segfault when upgrading projects with modulators
+- Fix error when right-clicking on knobs in the modulator panel
+
 ## [1.0.0-beta.4.1.1] - 2022-11-06
 ### Added
 - Allow setting per-region colors
