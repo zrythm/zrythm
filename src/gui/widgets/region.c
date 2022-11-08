@@ -689,7 +689,6 @@ handle_loop (
     && position_is_after_or_equal (
       &next_ap_obj->pos, &obj->end_pos))
     {
-      g_debug ("HIT");
       abs_end_ticks_after_loops_with_clipoff =
         obj->end_pos.ticks + loop_ticks * (double) cur_loop;
     }
@@ -705,11 +704,13 @@ handle_loop (
   abs_end_ticks_after_loops_with_clipoff -=
     obj->clip_start_pos.ticks;
 
+#if 0
   g_debug (
     "loop %d:, abs start ticks after loops %f | abs end ticks after loops %f | abs end ticks after loops w clipof %f",
     cur_loop, abs_start_ticks_after_loops,
     abs_end_ticks_after_loops,
     abs_end_ticks_after_loops_with_clipoff);
+#endif
 
   double x_start_ratio_in_region =
     abs_start_ticks_after_loops / ticks_in_region;
@@ -739,10 +740,12 @@ handle_loop (
   double y_start = y_start_ratio * full_rect->height;
   double y_end = y_end_ratio * full_rect->height;
 
+#if 0
   g_debug (
     "x start ratio in region %f full rect width %d x start in region %f | x end ratio in region %f x end in region %f",
     x_start_ratio_in_region, full_rect->width,
     x_start_in_region, x_end_ratio_in_region, x_end_in_region);
+#endif
 
   /*  -- OK UP TO HERE --  */
 
@@ -811,7 +814,7 @@ handle_loop (
         {
           double clipoff =
             x_end_in_region - x_end_in_region_with_clipoff;
-          g_debug ("clipped off %f", clipoff);
+          /*g_debug ("clipped off %f", clipoff);*/
           ap_loop_part_rect.width -= (int) clipoff;
         }
 
@@ -821,7 +824,7 @@ handle_loop (
         {
           use_cairo = false;
         }
-      z_gdk_rectangle_print (&ap_loop_part_rect);
+      /*z_gdk_rectangle_print (&ap_loop_part_rect);*/
 
       if (use_cairo)
         {
