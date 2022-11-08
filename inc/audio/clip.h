@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -114,6 +114,16 @@ static const cyaml_schema_field_t audio_clip_fields_schema[] = {
 static const cyaml_schema_value_t audio_clip_schema = {
   YAML_VALUE_PTR_NULLABLE (AudioClip, audio_clip_fields_schema),
 };
+
+static inline bool
+audio_clip_use_flac (BitDepth bd)
+{
+  return false;
+  /* FLAC seems to fail writing sometimes so disable for now */
+#if 0
+  return bd < BIT_DEPTH_32;
+#endif
+}
 
 /**
  * Inits after loading a Project.

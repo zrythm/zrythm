@@ -97,21 +97,18 @@ audio_clip_init_from_file (
     {
     case 16:
       self->bit_depth = BIT_DEPTH_16;
-      self->use_flac = true;
       break;
     case 24:
       self->bit_depth = BIT_DEPTH_24;
-      self->use_flac = true;
       break;
     case 32:
       self->bit_depth = BIT_DEPTH_32;
-      self->use_flac = false;
       break;
     default:
       g_debug ("unknown bit depth: %d", enc->nfo.bit_depth);
       self->bit_depth = BIT_DEPTH_32;
-      self->use_flac = false;
     }
+  self->use_flac = audio_clip_use_flac (self->bit_depth);
   /*g_message (*/
   /*"\n\n num frames %ld \n\n", self->num_frames);*/
   audio_clip_update_channel_caches (self, 0);
@@ -179,7 +176,7 @@ audio_clip_new_from_float_array (
   g_return_val_if_fail (self->samplerate > 0, NULL);
   self->name = g_strdup (name);
   self->bit_depth = bit_depth;
-  self->use_flac = bit_depth < BIT_DEPTH_32;
+  self->use_flac = audio_clip_use_flac (bit_depth);
   self->pool_id = -1;
   dsp_copy (
     self->frames, arr, (size_t) nframes * (size_t) channels);
