@@ -728,9 +728,9 @@ region_find (const RegionIdentifier * const id)
         {
           automation_tracklist_print_regions (atl);
           g_critical (
-            "Automation track for %s has no "
-            "regions",
-            at->port_id.label);
+            "Automation track for %s has less regions (%d) "
+            "than the given index %d",
+            at->port_id.label, at->num_regions, id->idx);
           return NULL;
         }
       ZRegion * region = at->regions[id->idx];
