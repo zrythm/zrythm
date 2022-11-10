@@ -37,7 +37,6 @@
 #include "utils/hash.h"
 #include "utils/math.h"
 #include "utils/mem.h"
-#include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm_app.h"

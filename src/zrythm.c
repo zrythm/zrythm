@@ -35,7 +35,6 @@
 #include "utils/localization.h"
 #include "utils/log.h"
 #include "utils/object_pool.h"
-#include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/pcg_rand.h"
 #include "utils/string.h"
@@ -696,10 +695,6 @@ zrythm_free (Zrythm * self)
     chord_preset_pack_manager_free,
     self->chord_preset_pack_manager);
 
-  /* free object utils around last */
-  object_free_w_func_and_null (
-    object_utils_free, self->object_utils);
-
   object_free_w_func_and_null (symap_free, self->symap);
   object_free_w_func_and_null (
     symap_free, self->error_domain_symap);
@@ -742,7 +737,6 @@ zrythm_new (
   self->testing = testing;
   self->use_optimized_dsp = optimized_dsp;
   self->settings = settings_new ();
-  self->object_utils = object_utils_new ();
   self->recording_manager = recording_manager_new ();
   self->plugin_manager = plugin_manager_new ();
   self->symap = symap_new ();

@@ -1,7 +1,6 @@
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
- * SPDX-License-Identifier: LicenseRef-ZrythmLicense
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
  *
@@ -44,18 +43,17 @@
 #include "utils/flags.h"
 #include "utils/mem.h"
 #include "utils/mpmc_queue.h"
-#include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/stoat.h"
 #include "utils/string.h"
 
-/* called from a terminal node (from the Graph
- * worked-thread) to indicate it has completed
- * processing.
+/**
+ * Called from a terminal node (from the Graph worked-thread)
+ * to indicate it has completed processing.
  *
- * The thread of the last terminal node that
- * reaches here will inform the main-thread, wait,
- * and kick off the next process cycle.
+ * The thread of the last terminal node that reaches here will
+ * inform the main-thread, wait, and kick off the next
+ * process cycle.
  */
 void
 graph_on_reached_terminal_node (Graph * self)

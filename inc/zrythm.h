@@ -22,7 +22,6 @@ typedef struct Project                Project;
 typedef struct Symap                  Symap;
 typedef struct RecordingManager       RecordingManager;
 typedef struct EventManager           EventManager;
-typedef struct ObjectUtils            ObjectUtils;
 typedef struct PluginManager          PluginManager;
 typedef struct FileManager            FileManager;
 typedef struct ChordPresetPackManager ChordPresetPackManager;
@@ -259,9 +258,6 @@ typedef struct Zrythm
    * String interner for error domains.
    */
   Symap * error_domain_symap;
-
-  /** Object utils. */
-  ObjectUtils * object_utils;
 
   /** Random number generator. */
   PCGRand * rand;

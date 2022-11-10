@@ -1,9 +1,10 @@
-/* SPDX-License-Identifier: LicenseRef-ZrythmLicense */
+// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
+ *
+ * ---
  *
  * Copyright (C) 2017, 2019 Robin Gareus <robin@gareus.org>
  *
@@ -19,6 +20,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * ---
  */
 
 /**
@@ -236,13 +239,13 @@ graph_get_max_route_playback_latency (
   Graph * graph,
   bool    use_setup_nodes);
 
-/* called from a terminal node (from the Graph
- * worked-thread) to indicate it has completed
- * processing.
+/**
+ * Called from a terminal node (from the Graph worked-thread)
+ * to indicate it has completed processing.
  *
- * The thread of the last terminal node that
- * reaches here will inform the main-thread, wait,
- * and kick off the next process cycle.
+ * The thread of the last terminal node that reaches here will
+ * inform the main-thread, wait, and kick off the next
+ * process cycle.
  */
 HOT void
 graph_on_reached_terminal_node (Graph * self);

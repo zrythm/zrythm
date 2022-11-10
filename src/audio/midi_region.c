@@ -53,7 +53,6 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/mem.h"
-#include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
 #include "zrythm_app.h"
@@ -332,7 +331,9 @@ midi_region_remove_midi_note (
     }
 
   if (free)
-    free_later (midi_note, arranger_object_free);
+    {
+      arranger_object_free ((ArrangerObject *) midi_note);
+    }
 
   if (pub_event)
     {

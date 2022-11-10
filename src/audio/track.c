@@ -47,7 +47,6 @@
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/mem.h"
-#include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/progress_info.h"
 #include "utils/string.h"

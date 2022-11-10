@@ -13,7 +13,6 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/mem.h"
-#include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
@@ -231,7 +230,7 @@ chord_track_remove_scale (
 
   if (free)
     {
-      free_later (scale, arranger_object_free);
+      arranger_object_free ((ArrangerObject *) scale);
     }
 
   EVENTS_PUSH (

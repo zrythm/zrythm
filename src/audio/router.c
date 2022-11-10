@@ -55,7 +55,6 @@
 #include "utils/flags.h"
 #include "utils/midi.h"
 #include "utils/mpmc_queue.h"
-#include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/stoat.h"
 #include "zrythm_app.h"

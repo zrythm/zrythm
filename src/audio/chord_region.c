@@ -1,7 +1,5 @@
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 #include "audio/chord_object.h"
 #include "audio/chord_region.h"
@@ -12,7 +10,6 @@
 #include "utils/arrays.h"
 #include "utils/flags.h"
 #include "utils/mem.h"
-#include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
@@ -143,7 +140,7 @@ chord_region_remove_chord_object (
 
   if (free)
     {
-      free_later (chord, arranger_object_free);
+      arranger_object_free ((ArrangerObject *) chord);
     }
 
   if (fire_events)

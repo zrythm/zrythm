@@ -21,7 +21,6 @@
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
-#include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
@@ -2398,7 +2397,8 @@ do_or_undo_edit (
                     MusicalScale * old = scale->scale;
                     scale->scale =
                       musical_scale_clone (dest_scale->scale);
-                    free_later (old, musical_scale_free);
+                    object_free_w_func_and_null (
+                      musical_scale_free, old);
                   }
                   break;
                 case ARRANGER_SELECTIONS_ACTION_EDIT_MUTE:

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdlib.h>
@@ -12,7 +12,6 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/mem.h"
-#include "utils/object_utils.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
 
@@ -222,7 +221,9 @@ marker_track_remove_marker (
     }
 
   if (free)
-    free_later (marker, arranger_object_free);
+    {
+      arranger_object_free ((ArrangerObject *) marker);
+    }
 
   EVENTS_PUSH (
     ET_ARRANGER_OBJECT_REMOVED, ARRANGER_OBJECT_TYPE_MARKER);

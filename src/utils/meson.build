@@ -26,7 +26,6 @@ util_srcs = [
   'log.c',
   'math.c',
   'mem.c',
-  'object_utils.c',
   'object_pool.c',
   'objects.c',
   'pango.c',
