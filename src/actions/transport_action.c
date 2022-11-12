@@ -223,6 +223,8 @@ transport_action_do (TransportAction * self, GError ** error)
   else
     {
       do_or_undo (self, true);
+      tracklist_set_caches (
+        TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS);
     }
 
   EVENTS_PUSH (ET_BPM_CHANGED, NULL);
