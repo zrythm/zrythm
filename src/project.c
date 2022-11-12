@@ -889,7 +889,7 @@ load (const char * filename, const int is_template)
                 }
             }
         }
-    }
+    } /* endif !is_template */
 
   bool use_backup = PROJECT->backup_dir != NULL;
   PROJECT->loading_from_backup = use_backup;
@@ -994,8 +994,7 @@ load (const char * filename, const int is_template)
 
   g_message ("Project successfully deserialized.");
 
-  /* if template, also copy the pool and plugin
-   * states */
+  /* if template, also copy the pool and plugin states */
   if (is_template)
     {
       char * prev_pool_dir =
@@ -1789,7 +1788,6 @@ cleanup_plugin_state_dirs (ProjectSaveData * data)
         {
           g_message (
             "removing unused plugin state in %s", full_path);
-          /*G_BREAKPOINT ();*/
           io_rmdir (full_path, Z_F_FORCE);
         }
 

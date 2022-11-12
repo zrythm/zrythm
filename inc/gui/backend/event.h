@@ -107,6 +107,7 @@ typedef enum EventType
   /** Plugin UI opened or closed, should redraw */
   ET_PLUGIN_WINDOW_VISIBILITY_CHANGED,
 
+  /** Plugin's control port values changed. */
   ET_PLUGIN_STATE_CHANGED,
 
   ET_TRACKS_ADDED,

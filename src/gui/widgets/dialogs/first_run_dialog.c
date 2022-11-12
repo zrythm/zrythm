@@ -58,6 +58,8 @@ first_run_dialog_widget_ok (FirstRunDialogWidget * self)
 {
   g_message ("first run dialog OK pressed");
 
+  zrythm_app->is_first_run = true;
+
   g_settings_set_boolean (S_GENERAL, "first-run", false);
 
   if (g_settings_get_boolean (S_GENERAL, "first-run") != false)
@@ -209,7 +211,6 @@ first_run_dialog_widget_init (FirstRunDialogWidget * self)
     ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
   adw_preferences_group_set_title (
     pref_group, _ ("Initial Configuration"));
-  gtk_box_append (content_area, GTK_WIDGET (pref_page));
   adw_preferences_page_add (pref_page, pref_group);
 
   AdwActionRow * row;

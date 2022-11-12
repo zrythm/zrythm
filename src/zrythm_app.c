@@ -491,11 +491,11 @@ init_thread (gpointer data)
 }
 
 /**
- * Unlike the init thread, this will run in the
- * main GTK thread. Do not put expensive logic here.
+ * Unlike the init thread, this will run in the main GTK
+ * thread. Do not put expensive logic here.
  *
- * This should be ran after the expensive
- * initialization has finished.
+ * This should be ran after the expensive initialization has
+ * finished.
  */
 int
 zrythm_app_prompt_for_project_func (ZrythmApp * self)
@@ -600,9 +600,21 @@ on_prompt_for_project (
       zrythm_app_set_progress_status (
         self, _ ("Waiting for project"), 0.8);
 
-      /* show the assistant */
-      project_assistant_widget_present (
-        GTK_WINDOW (self->splash), true, false);
+      /* if running for the first time (even after the
+       * GSetting is set to false) run the demo project,
+       * otherwise ask the user for a project */
+      if (self->is_first_run && ZRYTHM->demo_template)
+        {
+          project_assistant_widget_present (
+            GTK_WINDOW (self->splash), false,
+            ZRYTHM->demo_template);
+        }
+      else
+        {
+          /* show the assistant */
+          project_assistant_widget_present (
+            GTK_WINDOW (self->splash), false, NULL);
+        }
 
 #ifdef __APPLE__
       /* possibly not necessary / working, forces app

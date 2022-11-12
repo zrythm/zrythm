@@ -136,6 +136,9 @@ typedef enum ZrythmDirType
   /** The directory fonts/zrythm under datadir. */
   ZRYTHM_DIR_SYSTEM_FONTSDIR,
 
+  /** Project templates. */
+  ZRYTHM_DIR_SYSTEM_TEMPLATES,
+
   /* ************************************ */
 
   /*
@@ -208,14 +211,21 @@ typedef struct Zrythm
    */
   Project * project;
 
-  /** +1 to ensure last element is NULL in case
-   * full. */
+  /** +1 to ensure last element is NULL in case full. */
   char * recent_projects[MAX_RECENT_PROJECTS + 1];
   int    num_recent_projects;
 
-  /** NULL terminated array of project template
-   * absolute paths. */
+  /** NULL terminated array of project template absolute
+   * paths. */
   char ** templates;
+
+  /**
+   * Demo project template used when running for the first
+   * time.
+   *
+   * This is a copy of one of the strings in Zrythm.templates.
+   */
+  char * demo_template;
 
   /** Whether the open file is a template to be used
    * to create a new project from. */

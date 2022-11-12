@@ -90,22 +90,26 @@ typedef struct _ProjectAssistantWidget
 
   GtkWindow * parent;
 
+  char * template;
+
   bool zrythm_already_running;
 } ProjectAssistantWidget;
 
 /**
  * Runs the project assistant.
  *
- * @param zrythm_already_running If true, the logic
- *   applied is different (eg, close does not quit
- *   the program). Used when doing Ctrl+N. This
- *   should be set to false if during startup.
+ * @param zrythm_already_running If true, the logic applied is
+ *   different (eg, close does not quit the program). Used when
+ *   doing Ctrl+N. This should be set to false if during
+ *   startup.
+ * @param template Template to create a new project from, if
+ *   non-NULL.
  */
 void
 project_assistant_widget_present (
   GtkWindow * parent,
-  bool        show_create_new_project,
-  bool        zrythm_already_running);
+  bool        zrythm_already_running,
+  const char * template);
 
 /**
  * @}

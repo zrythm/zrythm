@@ -330,16 +330,18 @@ on_project_activate (
 /**
  * Runs the project assistant.
  *
- * @param zrythm_already_running If true, the logic
- *   applied is different (eg, close does not quit
- *   the program). Used when doing Ctrl+N. This
- *   should be set to false if during startup.
+ * @param zrythm_already_running If true, the logic applied is
+ *   different (eg, close does not quit the program). Used when
+ *   doing Ctrl+N. This should be set to false if during
+ *   startup.
+ * @param template Template to create a new project from, if
+ *   non-NULL.
  */
 void
 project_assistant_widget_present (
   GtkWindow * parent,
-  bool        show_create_new_project,
-  bool        zrythm_already_running)
+  bool        zrythm_already_running,
+  const char * template)
 {
   ProjectAssistantWidget * self =
     g_object_new (PROJECT_ASSISTANT_WIDGET_TYPE, NULL);
@@ -347,9 +349,34 @@ project_assistant_widget_present (
   self->zrythm_already_running = zrythm_already_running;
 
   self->parent = parent;
+  self->template = g_strdup (template);
 
-  gtk_window_set_transient_for (GTK_WINDOW (self), parent);
-  gtk_window_present (GTK_WINDOW (self));
+  if (template)
+    {
+      ZRYTHM->creating_project = true;
+      ZRYTHM->open_filename =
+        g_build_filename (template, PROJECT_FILE, NULL);
+      ZRYTHM->opening_template = true;
+      g_message (
+        "Creating project from template: %s",
+        ZRYTHM->open_filename);
+
+      CreateProjectDialogWidget * create_prj_dialog =
+        create_project_dialog_widget_new ();
+      g_signal_connect (
+        G_OBJECT (create_prj_dialog), "response",
+        G_CALLBACK (create_project_dialog_response_cb),
+        GINT_TO_POINTER (self->zrythm_already_running));
+      gtk_window_set_transient_for (
+        GTK_WINDOW (create_prj_dialog),
+        GTK_WINDOW (self->parent));
+      gtk_widget_show (GTK_WIDGET (create_prj_dialog));
+    }
+  else
+    {
+      gtk_window_set_transient_for (GTK_WINDOW (self), parent);
+      gtk_window_present (GTK_WINDOW (self));
+    }
 }
 
 static void

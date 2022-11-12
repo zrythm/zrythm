@@ -563,6 +563,10 @@ zrythm_get_dir (ZrythmDirType type)
           res = g_build_filename (
             prefix, "share", "fonts", "zrythm", NULL);
           break;
+        case ZRYTHM_DIR_SYSTEM_TEMPLATES:
+          res = g_build_filename (
+            prefix, "share", "zrythm", "templates", NULL);
+          break;
         default:
           break;
         }
@@ -659,12 +663,42 @@ zrythm_init_templates (Zrythm * self)
 {
   g_message ("Initializing templates...");
 
-  char * user_templates_dir =
-    zrythm_get_dir (ZRYTHM_DIR_USER_TEMPLATES);
-  ZRYTHM->templates =
-    io_get_files_in_dir (user_templates_dir, true);
+  GStrvBuilder * builder = g_strv_builder_new ();
+  {
+    char * user_templates_dir =
+      zrythm_get_dir (ZRYTHM_DIR_USER_TEMPLATES);
+    char ** user_templates =
+      io_get_files_in_dir (user_templates_dir, true);
+    g_free (user_templates_dir);
+    g_return_if_fail (user_templates);
+    g_strv_builder_addv (
+      builder, (const char **) user_templates);
+    g_strfreev (user_templates);
+  }
+  if (!ZRYTHM_TESTING)
+    {
+      char * system_templates_dir =
+        zrythm_get_dir (ZRYTHM_DIR_SYSTEM_TEMPLATES);
+      char ** system_templates =
+        io_get_files_in_dir (system_templates_dir, true);
+      g_free (system_templates_dir);
+      g_return_if_fail (system_templates);
+      g_strv_builder_addv (
+        builder, (const char **) system_templates);
+      g_strfreev (system_templates);
+    }
+  ZRYTHM->templates = g_strv_builder_end (builder);
   g_return_if_fail (ZRYTHM->templates);
-  g_free (user_templates_dir);
+
+  for (int i = 0; ZRYTHM->templates[i] != NULL; i++)
+    {
+      const char * template = ZRYTHM->templates[i];
+      g_message ("Template found: %s", template);
+      if (string_contains_substr (template, "demo_zsong01"))
+        {
+          ZRYTHM->demo_template = g_strdup (template);
+        }
+    }
 
   g_message ("done");
 }
@@ -700,6 +734,8 @@ zrythm_free (Zrythm * self)
     symap_free, self->error_domain_symap);
 
   object_free_w_func_and_null (settings_free, self->settings);
+
+  object_free_w_func_and_null (g_strfreev, self->templates);
 
   if (ZRYTHM == self)
     {

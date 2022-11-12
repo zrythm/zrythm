@@ -601,7 +601,7 @@ activate_new (
   if (res == GTK_RESPONSE_ACCEPT)
     {
       project_assistant_widget_present (
-        GTK_WINDOW (MAIN_WINDOW), true, true);
+        GTK_WINDOW (MAIN_WINDOW), true, NULL);
     }
 }
 
