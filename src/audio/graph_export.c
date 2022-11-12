@@ -231,6 +231,11 @@ fill_anodes (
   while (g_hash_table_iter_next (&iter, &key, &value))
     {
       GraphNode * node = (GraphNode *) value;
+#if 0
+      /* skip control ports */
+      if (node->type == ROUTE_NODE_TYPE_PORT && node->port->id.type == TYPE_CONTROL)
+        continue;
+#endif
       ANode *     anode = anode_new ();
       anode->node = node;
       g_hash_table_insert (anodes, node, anode);
@@ -352,8 +357,7 @@ export_as_graphviz_type (
     agopen ((char *) "routing_graph", Agstrictdirected, NULL);
 
   /* fill anodes with subgraphs */
-  /* Hash table of
-   * key: (GraphNode *), value: (ANode *) */
+  /* Hash table of key: (GraphNode *), value: (ANode *) */
   GHashTable * anodes = g_hash_table_new_full (
     g_direct_hash, g_direct_equal, NULL,
     (GDestroyNotify) anode_free);

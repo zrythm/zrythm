@@ -190,10 +190,17 @@ port_identifier_get_hash (const void * self)
   void *                 state = hash_create_state ();
   const PortIdentifier * id = (const PortIdentifier *) self;
   uint32_t               hash = 0;
-  if (id->label)
-    hash = hash ^ g_str_hash (id->label);
   if (id->sym)
-    hash = hash ^ g_str_hash (id->sym);
+    {
+      hash = hash ^ g_str_hash (id->sym);
+    }
+  /* don't check label when have symbol because label might be
+   * localized */
+  else if (id->label)
+    {
+      hash = hash ^ g_str_hash (id->label);
+    }
+
   if (id->uri)
     hash = hash ^ g_str_hash (id->uri);
   hash = hash ^ g_int_hash (&id->owner_type);

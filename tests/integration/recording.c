@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
@@ -153,12 +137,10 @@ do_takes_no_loop_no_punch (
   /* assert that audio is silent */
   AudioClip * clip = audio_region_get_clip (audio_r);
   g_assert_cmpuint (clip->num_frames, ==, CYCLE_SIZE);
-  for (nframes_t i = 0; i < CYCLE_SIZE; i++)
+  for (int i = 0; i < 2; i++)
     {
-      g_assert_cmpfloat_with_epsilon (
-        clip->ch_frames[0][i], 0.f, 0.000001f);
-      g_assert_cmpfloat_with_epsilon (
-        clip->ch_frames[1][i], 0.f, 0.000001f);
+      g_assert_false (audio_frames_empty (
+        &clip->ch_frames[i][0], CYCLE_SIZE));
     }
 
   /* assert that automation events are created */

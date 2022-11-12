@@ -198,8 +198,7 @@ typedef struct Fader
   /** MIDI fader mode. */
   MidiFaderMode midi_mode;
 
-  /** Whether this is a passthrough fader (like
-   * a prefader). */
+  /** Whether this is a passthrough fader (like a prefader). */
   bool passthrough;
 
   /** Pointer to owner track, if any. */

@@ -23,8 +23,7 @@ test_mono_plugin (void)
 
   /* stop dummy audio engine processing so we can
    * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
+  test_project_stop_dummy_engine ();
 
   /* create an audio track */
   char * filepath =
@@ -123,8 +122,7 @@ test_crash_handling (void)
 
   /* stop dummy audio engine processing so we can
    * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
+  test_project_stop_dummy_engine ();
 
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (
@@ -169,8 +167,7 @@ test_process (void)
 
   /* stop dummy audio engine processing so we can
    * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
+  test_project_stop_dummy_engine ();
 
   /* run plugin and check that output is filled */
   Port *                out = pl->out_ports[0];
