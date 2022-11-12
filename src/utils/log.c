@@ -1105,7 +1105,7 @@ log_init_writer_idle (Log * self, unsigned int secs)
 static void *
 create_log_event_obj (void)
 {
-  return calloc (1, sizeof (LogEvent));
+  return object_new_unresizable (LogEvent);
 }
 
 static void
@@ -1113,7 +1113,7 @@ free_log_event_obj (LogEvent * ev)
 {
   g_free_and_null (ev->message);
 
-  object_zero_and_free (ev);
+  object_zero_and_free_unresizable (LogEvent, ev);
 }
 
 #define LINE_SIZE 800
