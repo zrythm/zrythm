@@ -135,8 +135,8 @@ arranger_object_select (
 {
   g_return_if_fail (IS_ARRANGER_OBJECT (self));
 
-  g_debug ("selecting object:");
-  arranger_object_print (self);
+  /*g_debug ("selecting object:");*/
+  /*arranger_object_print (self);*/
 
   if (self->type == ARRANGER_OBJECT_TYPE_VELOCITY)
     {
@@ -3687,7 +3687,7 @@ free_region (ZRegion * self)
 {
   g_return_if_fail (IS_REGION (self));
 
-  g_message ("freeing region %s...", self->name);
+  /*g_message ("freeing region %s...", self->name);*/
 
 #define FREE_R(type, sc) \
   case REGION_TYPE_##type: \
