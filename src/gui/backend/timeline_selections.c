@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/chord_track.h"
 #include "audio/engine.h"
@@ -33,6 +17,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/audio.h"
+#include "utils/debug.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
@@ -551,11 +536,143 @@ timeline_selections_mark_for_bounce (
     }
 }
 
+static bool
+move_regions_to_new_lanes_or_tracks (
+  TimelineSelections * self,
+  const int            vis_track_diff,
+  const int            lane_diff)
+{
+  /* only 1 operation supported at once */
+  g_return_if_fail (lane_diff == 0 || vis_track_diff == 0);
+
+  /* if nothing to do return */
+  if (vis_track_diff == 0 && lane_diff == 0)
+    return false;
+
+  /* if there are objects other than regions, moving is not
+   * supported */
+  int num_objs = arranger_selections_get_num_objects (
+    (ArrangerSelections *) self);
+  if (num_objs != self->num_regions)
+    {
+      g_debug (
+        "selection contains non-regions - skipping "
+        "moving to another track/lane");
+      return false;
+    }
+
+  arranger_selections_sort_by_indices (
+    (ArrangerSelections *) self, false);
+
+  /* store selected regions because they will be
+   * deselected during moving */
+  z_return_val_if_fail_cmp (self->num_regions, >=, 0, false);
+  GPtrArray * regions_arr =
+    g_ptr_array_sized_new ((guint) self->num_regions);
+  for (int i = 0; i < self->num_regions; i++)
+    {
+      g_ptr_array_add (regions_arr, self->regions[i]);
+    }
+
+  /*
+   * for tracks, check that:
+   * - all regions can be moved to a compatible track
+   * for lanes, check that:
+   * - all regions are in the same track
+   * - only lane regions are selected
+   * - the lane bounds are not exceeded
+   */
+  bool compatible = true;
+  for (size_t i = 0; i < regions_arr->len; i++)
+    {
+      ZRegion * region =
+        (ZRegion *) g_ptr_array_index (regions_arr, i);
+      if (vis_track_diff != 0)
+        {
+          ArrangerObject * r_obj = (ArrangerObject *) region;
+          Track *          region_track =
+            arranger_object_get_track (r_obj);
+          Track * visible =
+            tracklist_get_visible_track_after_delta (
+              TRACKLIST, region_track, vis_track_diff);
+          if (
+            !visible
+            || !track_type_is_compatible_for_moving (
+              region_track->type, visible->type)
+            ||
+            /* do not allow moving automation tracks
+             * to other tracks for now */
+            region->id.type == REGION_TYPE_AUTOMATION)
+            {
+              compatible = false;
+              break;
+            }
+        }
+      else if (lane_diff != 0)
+        {
+          if (region->id.lane_pos + lane_diff < 0)
+            {
+              compatible = false;
+              break;
+            }
+        }
+    }
+  if (!compatible)
+    {
+      g_ptr_array_free (regions_arr, true);
+      return false;
+    }
+
+  /* new positions are all compatible, move the
+   * regions */
+  for (size_t i = 0; i < regions_arr->len; i++)
+    {
+      ZRegion * region =
+        (ZRegion *) g_ptr_array_index (regions_arr, i);
+      if (vis_track_diff != 0)
+        {
+          ArrangerObject * r_obj = (ArrangerObject *) region;
+          Track *          region_track =
+            arranger_object_get_track (r_obj);
+          g_warn_if_fail (region && region_track);
+          Track * track_to_move_to =
+            tracklist_get_visible_track_after_delta (
+              TRACKLIST, region_track, vis_track_diff);
+          g_warn_if_fail (track_to_move_to);
+
+          region_move_to_track (region, track_to_move_to, -1);
+        }
+      else if (lane_diff != 0)
+        {
+          TrackLane * lane = region_get_lane (region);
+          g_return_val_if_fail (region && lane, -1);
+
+          TrackLane * lane_to_move_to = NULL;
+          int         new_lane_pos = lane->pos + lane_diff;
+          g_return_val_if_fail (new_lane_pos >= 0, -1);
+          Track * track = track_lane_get_track (lane);
+          track_create_missing_lanes (track, new_lane_pos);
+          lane_to_move_to = track->lanes[new_lane_pos];
+          g_warn_if_fail (lane_to_move_to);
+
+          region_move_to_lane (region, lane_to_move_to, -1);
+        }
+    }
+
+  if (lane_diff != 0)
+    {
+      EVENTS_PUSH (ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
+    }
+
+  g_ptr_array_free (regions_arr, true);
+
+  return true;
+}
+
 /**
- * Move the selected Regions to new Lanes.
+ * Move the selected Regions to new lanes.
  *
- * @param diff The delta to move the
- *   Tracks.
+ * @param diff The delta to move the tracks.
  *
  * @return True if moved.
  */
@@ -564,70 +681,14 @@ timeline_selections_move_regions_to_new_lanes (
   TimelineSelections * self,
   const int            diff)
 {
-  arranger_selections_sort_by_indices (
-    (ArrangerSelections *) self, false);
-
-  /* store selected regions because they will be
-   * deselected during moving */
-  ZRegion * regions[600];
-  int       num_regions = 0;
-  ZRegion * region;
-  for (int i = 0; i < self->num_regions; i++)
-    {
-      regions[num_regions++] = self->regions[i];
-    }
-
-  /* check that:
-   * - all regions are in the same track
-   * - only lane regions are selected
-   * - the lane bounds are not exceeded */
-  bool compatible = true;
-  for (int i = 0; i < num_regions; i++)
-    {
-      region = regions[i];
-      if (region->id.lane_pos + diff < 0)
-        {
-          compatible = false;
-          break;
-        }
-    }
-  if (self->num_scale_objects > 0 || self->num_markers > 0)
-    {
-      compatible = false;
-    }
-  if (!compatible)
-    return false;
-
-  /* new positions are all compatible, move the
-   * regions */
-  for (int i = 0; i < num_regions; i++)
-    {
-      region = regions[i];
-      TrackLane * lane = region_get_lane (region);
-      g_return_val_if_fail (region && lane, -1);
-
-      TrackLane * lane_to_move_to = NULL;
-      int         new_lane_pos = lane->pos + diff;
-      g_return_val_if_fail (new_lane_pos >= 0, -1);
-      Track * track = track_lane_get_track (lane);
-      track_create_missing_lanes (track, new_lane_pos);
-      lane_to_move_to = track->lanes[new_lane_pos];
-      g_warn_if_fail (lane_to_move_to);
-
-      region_move_to_lane (region, lane_to_move_to, -1);
-    }
-
-  EVENTS_PUSH (ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
-
-  return true;
+  return move_regions_to_new_lanes_or_tracks (self, 0, diff);
 }
 
 /**
  * Move the selected Regions to the new Track.
  *
- * @param new_track_is_before 1 if the Region's
- *   should move to their previous tracks, 0 for
- *   their next tracks.
+ * @param new_track_is_before 1 if the Region's should move to
+ *   their previous tracks, 0 for their next tracks.
  *
  * @return True if moved.
  */
@@ -636,73 +697,8 @@ timeline_selections_move_regions_to_new_tracks (
   TimelineSelections * self,
   const int            vis_track_diff)
 {
-  g_debug (
-    "moving %d regions to new tracks "
-    "(visible track diff %d)...",
-    self->num_regions, vis_track_diff);
-
-  arranger_selections_sort_by_indices (
-    (ArrangerSelections *) self, false);
-
-  /* store selected regions because they will be
-   * deselected during moving */
-  ZRegion *        regions[600];
-  int              num_regions = 0;
-  ZRegion *        region;
-  ArrangerObject * r_obj;
-  for (int i = 0; i < self->num_regions; i++)
-    {
-      regions[num_regions++] = self->regions[i];
-    }
-
-  /* check that all regions can be moved to a
-   * compatible track */
-  bool compatible = true;
-  for (int i = 0; i < num_regions; i++)
-    {
-      region = regions[i];
-      r_obj = (ArrangerObject *) region;
-      Track * region_track = arranger_object_get_track (r_obj);
-      Track * visible =
-        tracklist_get_visible_track_after_delta (
-          TRACKLIST, region_track, vis_track_diff);
-      if (
-        !visible
-        || !track_type_is_compatible_for_moving (
-          region_track->type, visible->type)
-        ||
-        /* do not allow moving automation tracks
-         * to other tracks for now */
-        region->id.type == REGION_TYPE_AUTOMATION)
-        {
-          compatible = false;
-          break;
-        }
-    }
-  if (!compatible)
-    {
-      return false;
-    }
-
-  /* new positions are all compatible, move the
-   * regions */
-  for (int i = 0; i < num_regions; i++)
-    {
-      region = regions[i];
-      r_obj = (ArrangerObject *) region;
-      Track * region_track = arranger_object_get_track (r_obj);
-      g_warn_if_fail (region && region_track);
-      Track * track_to_move_to =
-        tracklist_get_visible_track_after_delta (
-          TRACKLIST, region_track, vis_track_diff);
-      g_warn_if_fail (track_to_move_to);
-
-      region_move_to_track (region, track_to_move_to, -1);
-    }
-
-  g_debug ("moved");
-
-  return true;
+  return move_regions_to_new_lanes_or_tracks (
+    self, vis_track_diff, 0);
 }
 
 /**

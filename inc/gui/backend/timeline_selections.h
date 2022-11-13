@@ -149,10 +149,9 @@ timeline_selections_mark_for_bounce (
   bool                 with_parents);
 
 /**
- * Move the selected Regions to new Lanes.
+ * Move the selected Regions to new lanes.
  *
- * @param diff The delta to move the
- *   Tracks.
+ * @param diff The delta to move the tracks.
  *
  * @return True if moved.
  */
@@ -164,9 +163,8 @@ timeline_selections_move_regions_to_new_lanes (
 /**
  * Move the selected Regions to the new Track.
  *
- * @param new_track_is_before 1 if the Region's
- *   should move to their previous tracks, 0 for
- *   their next tracks.
+ * @param new_track_is_before 1 if the Region's should move to
+ *   their previous tracks, 0 for their next tracks.
  *
  * @return True if moved.
  */

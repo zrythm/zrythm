@@ -804,8 +804,7 @@ DEFINE_SIMPLE (activate_undo)
 {
   if (arranger_widget_any_doing_action ())
     {
-      g_message (
-        "in the middle of an action, skipping undo");
+      g_message ("in the middle of an action, skipping undo");
       return;
     }
 
@@ -858,8 +857,7 @@ DEFINE_SIMPLE (activate_undo_n)
 {
   if (arranger_widget_any_doing_action ())
     {
-      g_message (
-        "in the middle of an action, skipping undo");
+      g_message ("in the middle of an action, skipping undo");
       return;
     }
 
@@ -871,8 +869,7 @@ DEFINE_SIMPLE (activate_redo)
 {
   if (arranger_widget_any_doing_action ())
     {
-      g_message (
-        "in the middle of an action, skipping redo");
+      g_message ("in the middle of an action, skipping redo");
       return;
     }
 
@@ -893,8 +890,7 @@ DEFINE_SIMPLE (activate_redo_n)
 {
   if (arranger_widget_any_doing_action ())
     {
-      g_message (
-        "in the middle of an action, skipping redo");
+      g_message ("in the middle of an action, skipping redo");
       return;
     }
 
