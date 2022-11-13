@@ -1298,24 +1298,33 @@ draw_audio_part (
         }
 
       z_return_if_fail_cmp (curr_frames, >=, 0);
-      float  min = 0.f, max = 0.f;
-      size_t from = (size_t) (MAX (0, prev_frames));
-      size_t to = (size_t) (MIN (
-        clip->num_frames, (unsigned_frame_t) curr_frames));
-      size_t frames_to_check = to - from;
-      if (from + frames_to_check > clip->num_frames)
-        frames_to_check = clip->num_frames - from;
-      z_return_if_fail_cmp (from, <, clip->num_frames);
+      float          min = 0.f, max = 0.f;
+      signed_frame_t from = (MAX (0, prev_frames));
+      signed_frame_t to = (MIN (
+        (signed_frame_t) clip->num_frames, curr_frames));
+      signed_frame_t frames_to_check = to - from;
+      if (
+        from + frames_to_check
+        > (signed_frame_t) clip->num_frames)
+        frames_to_check =
+          (signed_frame_t) clip->num_frames - from;
       z_return_if_fail_cmp (
-        from + frames_to_check, <=, clip->num_frames);
+        from, <, (signed_frame_t) clip->num_frames);
+      z_return_if_fail_cmp (
+        from + frames_to_check, <=,
+        (signed_frame_t) clip->num_frames);
       if (frames_to_check > 0)
         {
+          size_t frames_to_check_unsigned =
+            (size_t) frames_to_check;
           for (unsigned int k = 0; k < clip->channels; k++)
             {
               min = dsp_min (
-                &clip->ch_frames[k][from], frames_to_check);
+                &clip->ch_frames[k][from],
+                (size_t) frames_to_check_unsigned);
               max = dsp_max (
-                &clip->ch_frames[k][from], frames_to_check);
+                &clip->ch_frames[k][from],
+                (size_t) frames_to_check_unsigned);
             }
 
           /* normalize */
