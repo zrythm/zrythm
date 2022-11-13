@@ -1458,6 +1458,8 @@ auto_scroll (ArrangerWidget * self, int x, int y)
 
   editor_settings_append_scroll (
     settings, h_delta, v_delta, F_VALIDATE);
+  self->offset_x_from_scroll += h_delta;
+  self->offset_y_from_scroll += v_delta;
 
   return;
 }
