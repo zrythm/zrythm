@@ -167,7 +167,7 @@ send_data (AutomaticReportData * data)
 
   progress_info_mark_completed (
     data->progress_nfo, PROGRESS_COMPLETED_SUCCESS,
-    _ ("Done"));
+    _ ("Sent successfully"));
 
   return NULL;
 }
@@ -354,7 +354,7 @@ on_preview_and_send_automatically_response (
 
   /* start sending in a new thread */
   GThread * thread = g_thread_new (
-    "bounce_thread", (GThreadFunc) send_data, &data);
+    "send_data_thread", (GThreadFunc) send_data, &data);
 
   /* run dialog */
   gtk_window_set_transient_for (
@@ -370,10 +370,6 @@ on_preview_and_send_automatically_response (
       gtk_dialog_set_response_sensitive (
         GTK_DIALOG (self),
         PREVIEW_AND_SEND_AUTOMATICALLY_RESPONSE, false);
-
-      ui_show_message_printf (
-        GTK_MESSAGE_INFO, false, "%s",
-        _ ("Sent successfully"));
     }
 
   if (log_file_path)
