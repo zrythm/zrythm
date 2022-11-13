@@ -140,7 +140,12 @@ on_file_set (
     IDE_FILE_CHOOSER_ENTRY (gobject);
 
   GFile * file = ide_file_chooser_entry_get_file (fc_entry);
-  char *  str = g_file_get_path (file);
+  if (!file)
+    {
+      g_warning ("no file selected");
+      return;
+    }
+  char * str = g_file_get_path (file);
   g_settings_set_string (data->info->settings, data->key, str);
   g_free (str);
   g_object_unref (file);
