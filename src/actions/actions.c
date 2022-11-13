@@ -802,6 +802,13 @@ activate_properties (
 
 DEFINE_SIMPLE (activate_undo)
 {
+  if (arranger_widget_any_doing_action ())
+    {
+      g_message (
+        "in the middle of an action, skipping undo");
+      return;
+    }
+
   if (undo_stack_is_empty (UNDO_MANAGER->undo_stack))
     return;
 
@@ -849,12 +856,26 @@ handle_undo_or_redo_n (int idx, bool redo)
 
 DEFINE_SIMPLE (activate_undo_n)
 {
+  if (arranger_widget_any_doing_action ())
+    {
+      g_message (
+        "in the middle of an action, skipping undo");
+      return;
+    }
+
   int idx = (int) g_variant_get_int32 (variant);
   handle_undo_or_redo_n (idx, false);
 }
 
 DEFINE_SIMPLE (activate_redo)
 {
+  if (arranger_widget_any_doing_action ())
+    {
+      g_message (
+        "in the middle of an action, skipping redo");
+      return;
+    }
+
   if (undo_stack_is_empty (UNDO_MANAGER->redo_stack))
     return;
 
@@ -870,6 +891,13 @@ DEFINE_SIMPLE (activate_redo)
 
 DEFINE_SIMPLE (activate_redo_n)
 {
+  if (arranger_widget_any_doing_action ())
+    {
+      g_message (
+        "in the middle of an action, skipping redo");
+      return;
+    }
+
   int idx = (int) g_variant_get_int32 (variant);
   handle_undo_or_redo_n (idx, true);
 }
