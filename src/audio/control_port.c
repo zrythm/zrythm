@@ -285,7 +285,8 @@ control_port_set_val_from_normalized (
           EVENTS_PUSH (ET_AUTOMATION_VALUE_CHANGED, self);
 
           port_set_control_value (
-            self, real_val, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
+            self, real_val, F_NOT_NORMALIZED,
+            F_PUBLISH_EVENTS);
         }
 
       self->automating = automating;

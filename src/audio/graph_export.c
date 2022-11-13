@@ -231,12 +231,12 @@ fill_anodes (
   while (g_hash_table_iter_next (&iter, &key, &value))
     {
       GraphNode * node = (GraphNode *) value;
-#if 0
+#  if 0
       /* skip control ports */
       if (node->type == ROUTE_NODE_TYPE_PORT && node->port->id.type == TYPE_CONTROL)
         continue;
-#endif
-      ANode *     anode = anode_new ();
+#  endif
+      ANode * anode = anode_new ();
       anode->node = node;
       g_hash_table_insert (anodes, node, anode);
       get_graph_from_node (anodes, node);

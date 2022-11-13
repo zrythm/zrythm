@@ -130,9 +130,11 @@ test_new_from_template (void)
   engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
   engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
 
-  g_assert_true (dsp_abs_max (
-    &MONITOR_FADER->stereo_out->l->buf[0],
-    AUDIO_ENGINE->block_length) > 0.0001f);
+  g_assert_true (
+    dsp_abs_max (
+      &MONITOR_FADER->stereo_out->l->buf[0],
+      AUDIO_ENGINE->block_length)
+    > 0.0001f);
 
   test_project_save_and_reload ();
 
@@ -146,9 +148,11 @@ test_new_from_template (void)
   engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
   engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
 
-  g_assert_true (dsp_abs_max (
-    &MONITOR_FADER->stereo_out->l->buf[0],
-    AUDIO_ENGINE->block_length) > 0.0001f);
+  g_assert_true (
+    dsp_abs_max (
+      &MONITOR_FADER->stereo_out->l->buf[0],
+      AUDIO_ENGINE->block_length)
+    > 0.0001f);
 
   /* create a new project using old one as template */
   char * orig_dir = g_strdup (PROJECT->dir);
@@ -173,9 +177,11 @@ test_new_from_template (void)
   engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
   engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
 
-  g_assert_true (dsp_abs_max (
-    &MONITOR_FADER->stereo_out->l->buf[0],
-    AUDIO_ENGINE->block_length) > 0.0001f);
+  g_assert_true (
+    dsp_abs_max (
+      &MONITOR_FADER->stereo_out->l->buf[0],
+      AUDIO_ENGINE->block_length)
+    > 0.0001f);
 
   test_helper_zrythm_cleanup ();
 }
