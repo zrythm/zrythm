@@ -135,6 +135,23 @@ chord_editor_space_widget_setup (ChordEditorSpaceWidget * self)
   chord_editor_space_widget_refresh (self);
 }
 
+static gboolean
+chord_editor_space_tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data)
+{
+  ChordEditorSpaceWidget * self =
+    Z_CHORD_EDITOR_SPACE_WIDGET (user_data);
+
+  GtkAdjustment * vadj = gtk_scrolled_window_get_vadjustment (
+    self->chord_keys_scroll);
+  gtk_adjustment_set_value (
+    vadj, CHORD_EDITOR->editor_settings.scroll_start_y);
+
+  return G_SOURCE_CONTINUE;
+}
+
 static void
 chord_editor_space_widget_init (ChordEditorSpaceWidget * self)
 {
@@ -152,6 +169,9 @@ chord_editor_space_widget_init (ChordEditorSpaceWidget * self)
   gtk_size_group_add_widget (
     self->arranger_and_keys_vsize_group,
     GTK_WIDGET (self->chord_keys_box));
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), chord_editor_space_tick_cb, self, NULL);
 }
 
 static void

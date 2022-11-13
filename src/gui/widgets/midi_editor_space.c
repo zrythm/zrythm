@@ -143,6 +143,23 @@ midi_editor_space_widget_setup (MidiEditorSpaceWidget * self)
   midi_editor_space_widget_refresh (self);
 }
 
+static gboolean
+midi_editor_space_tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data)
+{
+  MidiEditorSpaceWidget * self =
+    Z_MIDI_EDITOR_SPACE_WIDGET (user_data);
+
+  GtkAdjustment * vadj = gtk_scrolled_window_get_vadjustment (
+    self->piano_roll_keys_scroll);
+  gtk_adjustment_set_value (
+    vadj, PIANO_ROLL->editor_settings.scroll_start_y);
+
+  return G_SOURCE_CONTINUE;
+}
+
 static void
 dispose (MidiEditorSpaceWidget * self)
 {
@@ -210,6 +227,9 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (scroll_controller));
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), midi_editor_space_tick_cb, self, NULL);
 }
 
 static void

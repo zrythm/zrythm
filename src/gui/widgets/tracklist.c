@@ -661,6 +661,22 @@ tracklist_widget_tear_down (TracklistWidget * self)
   g_message ("done");
 }
 
+static gboolean
+tracklist_tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data)
+{
+  TracklistWidget * self = Z_TRACKLIST_WIDGET (user_data);
+
+  GtkAdjustment * vadj = gtk_scrolled_window_get_vadjustment (
+    self->unpinned_scroll);
+  gtk_adjustment_set_value (
+    vadj, PRJ_TIMELINE->editor_settings.scroll_start_y);
+
+  return G_SOURCE_CONTINUE;
+}
+
 static void
 tracklist_widget_init (TracklistWidget * self)
 {
@@ -762,6 +778,9 @@ tracklist_widget_init (TracklistWidget * self)
 
   /* set minimum width */
   gtk_widget_set_size_request (GTK_WIDGET (self), 164, -1);
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), tracklist_tick_cb, self, NULL);
 }
 
 static void
