@@ -3088,12 +3088,14 @@ port_process (
              * and flag */
             AutomationPoint * ap =
               automation_track_get_ap_before_pos (
-                at, &pos, !can_read_previous_automation);
+                at, &pos, !can_read_previous_automation,
+                Z_F_USE_SNAPSHOTS);
             if (ap)
               {
                 float val = automation_track_get_val_at_pos (
                   at, &pos, true,
-                  !can_read_previous_automation);
+                  !can_read_previous_automation,
+                  Z_F_USE_SNAPSHOTS);
                 control_port_set_val_from_normalized (
                   port, val, true);
                 port->value_changed_from_reading = true;

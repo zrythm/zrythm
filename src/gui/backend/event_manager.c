@@ -236,7 +236,7 @@ on_automation_track_added (AutomationTrack * at)
 }
 
 static void
-on_track_added (Track * track)
+on_track_added (void)
 {
   if (!MAIN_WINDOW || !MW_CENTER_DOCK)
     return;
@@ -808,13 +808,10 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case ET_TRACK_LANES_VISIBILITY_CHANGED:
       tracklist_widget_update_track_visibility (MW_TRACKLIST);
-      /*arranger_widget_update_visibility (*/
-      /*(ArrangerWidget *) MW_TIMELINE);*/
-      /*arranger_widget_update_visibility (*/
-      /*(ArrangerWidget *) MW_PINNED_TIMELINE);*/
+      on_track_added ();
       break;
     case ET_TRACK_ADDED:
-      on_track_added ((Track *) ev->arg);
+      on_track_added ();
       tracklist_header_widget_refresh_track_count (
         MW_TRACKLIST_HEADER);
       break;
@@ -1235,7 +1232,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       }
       break;
     case ET_TRACK_FOLD_CHANGED:
-      on_track_added ((Track *) ev->arg);
+      on_track_added ();
       break;
     case ET_MIXER_CHANNEL_INSERTS_EXPANDED_CHANGED:
     case ET_MIXER_CHANNEL_MIDI_FX_EXPANDED_CHANGED:

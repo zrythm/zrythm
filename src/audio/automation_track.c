@@ -269,13 +269,20 @@ ZRegion *
 automation_track_get_region_before_pos (
   const AutomationTrack * self,
   const Position *        pos,
-  bool                    ends_after)
+  bool                    ends_after,
+  bool                    use_snapshots)
 {
+  ZRegion ** regions =
+    use_snapshots ? self->regions : self->region_snapshots;
+  int num_regions =
+    use_snapshots
+      ? self->num_regions
+      : self->num_region_snapshots;
   if (ends_after)
     {
-      for (int i = self->num_regions - 1; i >= 0; i--)
+      for (int i = num_regions - 1; i >= 0; i--)
         {
-          ZRegion *        region = self->regions[i];
+          ZRegion *        region = regions[i];
           ArrangerObject * r_obj = (ArrangerObject *) region;
           if (
             position_is_before_or_equal (&r_obj->pos, pos)
@@ -289,9 +296,9 @@ automation_track_get_region_before_pos (
       /* find latest region */
       ZRegion * latest_r = NULL;
       long      latest_distance = LONG_MIN;
-      for (int i = self->num_regions - 1; i >= 0; i--)
+      for (int i = num_regions - 1; i >= 0; i--)
         {
-          ZRegion *        region = self->regions[i];
+          ZRegion *        region = regions[i];
           ArrangerObject * r_obj = (ArrangerObject *) region;
           long             distance_from_r_end =
             r_obj->end_pos.frames - pos->frames;
@@ -321,10 +328,11 @@ AutomationPoint *
 automation_track_get_ap_before_pos (
   const AutomationTrack * self,
   const Position *        pos,
-  bool                    ends_after)
+  bool                    ends_after,
+  bool                    use_snapshots)
 {
   ZRegion * r = automation_track_get_region_before_pos (
-    self, pos, ends_after);
+    self, pos, ends_after, use_snapshots);
   ArrangerObject * r_obj = (ArrangerObject *) r;
 
   if (!r || arranger_object_get_muted (r_obj, true))
@@ -705,10 +713,11 @@ automation_track_get_val_at_pos (
   AutomationTrack * self,
   Position *        pos,
   bool              normalized,
-  bool              ends_after)
+  bool              ends_after,
+  bool              use_snapshots)
 {
   AutomationPoint * ap = automation_track_get_ap_before_pos (
-    self, pos, ends_after);
+    self, pos, ends_after, use_snapshots);
   ArrangerObject * ap_obj = (ArrangerObject *) ap;
 
   Port * port = port_find_from_identifier (&self->port_id);

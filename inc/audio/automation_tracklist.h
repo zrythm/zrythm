@@ -151,6 +151,37 @@ automation_tracklist_get_visible_tracks (
   AutomationTrack **    visible_tracks,
   int *                 num_visible);
 
+AutomationTrack *
+automation_tracklist_get_prev_visible_at (
+  AutomationTracklist * self,
+  AutomationTrack *     at);
+
+AutomationTrack *
+automation_tracklist_get_next_visible_at (
+  AutomationTracklist * self,
+  AutomationTrack *     at);
+
+/**
+ * Returns the AutomationTrack after delta visible
+ * AutomationTrack's.
+ *
+ * Negative delta searches backwards.
+ *
+ * This function searches tracks only in the same Tracklist
+ * as the given one (ie, pinned or not).
+ */
+AutomationTrack *
+automation_tracklist_get_visible_at_after_delta (
+  AutomationTracklist * self,
+  AutomationTrack *     at,
+  int                   delta);
+
+int
+automation_tracklist_get_visible_at_diff (
+  AutomationTracklist *   self,
+  const AutomationTrack * src,
+  const AutomationTrack * dest);
+
 /**
  * Updates the Track position of the Automatable's
  * and AutomationTrack's.

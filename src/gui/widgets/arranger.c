@@ -1017,8 +1017,9 @@ move_items_y (ArrangerWidget * self, double offset_y)
       break;
     case TYPE (TIMELINE):
       {
-        /* get old track, track where last change
-         * happened, and new track */
+        /* old = original track
+         * last = track where last change happened
+         * (new) = track at hover position */
         Track * track =
           timeline_arranger_widget_get_track_at_y (
             self, self->start_y + offset_y);
@@ -1029,7 +1030,6 @@ move_items_y (ArrangerWidget * self, double offset_y)
           tracklist_get_visible_track_after_delta (
             TRACKLIST, old_track, self->visible_track_diff);
 
-        /* TODO automations and other lanes */
         TrackLane * lane =
           timeline_arranger_widget_get_track_lane_at_y (
             self, self->start_y + offset_y);
@@ -1046,23 +1046,59 @@ move_items_y (ArrangerWidget * self, double offset_y)
                 ->lanes[old_lane->pos + self->lane_diff];
           }
 
+        AutomationTrack * at =
+          timeline_arranger_widget_get_at_at_y (
+            self, self->start_y + offset_y);
+        AutomationTrack * old_at =
+          timeline_arranger_widget_get_at_at_y (
+            self, self->start_y);
+        AutomationTrack * last_at = NULL;
+        if (track && old_at)
+          {
+            last_at =
+              automation_tracklist_get_visible_at_after_delta (
+                &track->automation_tracklist, old_at,
+                self->visible_at_diff);
+          }
+
         /* if new track is equal, move lanes or
          * automation lanes */
         if (
           track && last_track && track == last_track
-          && self->visible_track_diff == 0 && old_lane && lane
-          && last_lane)
+          && self->visible_track_diff == 0)
           {
-            int cur_diff = lane->pos - old_lane->pos;
-            int delta = lane->pos - last_lane->pos;
-            if (delta != 0)
+            if (old_lane && lane && last_lane && old_lane != lane)
               {
-                bool moved =
-                  timeline_selections_move_regions_to_new_lanes (
-                    TL_SELECTIONS, delta);
-                if (moved)
+                int cur_diff = lane->pos - old_lane->pos;
+                int delta = lane->pos - last_lane->pos;
+                if (delta != 0)
                   {
-                    self->lane_diff = cur_diff;
+                    bool moved =
+                      timeline_selections_move_regions_to_new_lanes (
+                        TL_SELECTIONS, delta);
+                    if (moved)
+                      {
+                        self->lane_diff = cur_diff;
+                      }
+                  }
+              }
+            else if (at && old_at && last_at && at != old_at)
+              {
+                int cur_diff =
+                  automation_tracklist_get_visible_at_diff (
+                    &track->automation_tracklist, old_at, at);
+                int delta =
+                  automation_tracklist_get_visible_at_diff (
+                    &track->automation_tracklist, last_at, at);
+                if (delta != 0)
+                  {
+                    bool moved =
+                      timeline_selections_move_regions_to_new_ats (
+                        TL_SELECTIONS, delta);
+                    if (moved)
+                      {
+                        self->visible_at_diff = cur_diff;
+                      }
                   }
               }
           }
@@ -4597,6 +4633,7 @@ on_drag_end_timeline (ArrangerWidget * self)
   self->resizing_range_start = 0;
   self->visible_track_diff = 0;
   self->lane_diff = 0;
+  self->visible_at_diff = 0;
 
   g_debug ("drag end timeline done");
 }

@@ -307,14 +307,15 @@ automation_region_get_ap_around (
   ZRegion *  self,
   Position * _pos,
   double     delta_ticks,
-  bool       before_only)
+  bool       before_only,
+  bool       use_snapshots)
 {
   Position pos;
   position_set_to_pos (&pos, _pos);
   AutomationTrack * at = region_get_automation_track (self);
   /* FIXME only check aps in this region */
-  AutomationPoint * ap =
-    automation_track_get_ap_before_pos (at, &pos, true);
+  AutomationPoint * ap = automation_track_get_ap_before_pos (
+    at, &pos, true, use_snapshots);
   ArrangerObject * ap_obj = (ArrangerObject *) ap;
   if (ap && pos.ticks - ap_obj->pos.ticks <= (double) delta_ticks)
     {
@@ -323,7 +324,8 @@ automation_region_get_ap_around (
   else if (!before_only)
     {
       position_add_ticks (&pos, delta_ticks);
-      ap = automation_track_get_ap_before_pos (at, &pos, true);
+      ap = automation_track_get_ap_before_pos (
+        at, &pos, true, use_snapshots);
       ap_obj = (ArrangerObject *) ap;
       if (ap)
         {

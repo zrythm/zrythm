@@ -417,12 +417,12 @@ draw_timeline_bg (
 
               float normalized_val =
                 automation_track_get_val_at_pos (
-                  at, PLAYHEAD, true, true);
+                  at, PLAYHEAD, true, true, Z_F_USE_SNAPSHOTS);
               Port * port =
                 port_find_from_identifier (&at->port_id);
               AutomationPoint * ap =
                 automation_track_get_ap_before_pos (
-                  at, PLAYHEAD, true);
+                  at, PLAYHEAD, true, Z_F_USE_SNAPSHOTS);
               if (!ap)
                 {
                   normalized_val =

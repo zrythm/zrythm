@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -125,7 +125,8 @@ automation_region_get_ap_around (
   ZRegion *  self,
   Position * _pos,
   double     delta_ticks,
-  bool       before_only);
+  bool       before_only,
+  bool       use_snapshots);
 
 NONNULL
 bool

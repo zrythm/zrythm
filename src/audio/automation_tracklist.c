@@ -389,10 +389,9 @@ automation_tracklist_get_visible_tracks (
   int *                 num_visible)
 {
   *num_visible = 0;
-  AutomationTrack * at;
   for (int i = 0; i < self->num_ats; i++)
     {
-      at = self->ats[i];
+      AutomationTrack * at = self->ats[i];
       if (at->created && at->visible)
         {
           if (visible_tracks)
@@ -405,6 +404,124 @@ automation_tracklist_get_visible_tracks (
             }
         }
     }
+}
+
+AutomationTrack *
+automation_tracklist_get_prev_visible_at (
+  AutomationTracklist * self,
+  AutomationTrack *     at)
+{
+  for (int i = at->index - 1; i >= 0; i--)
+    {
+      AutomationTrack * cur_at = self->ats[i];
+      if (cur_at->created && cur_at->visible)
+        {
+          return cur_at;
+        }
+    }
+
+  return NULL;
+}
+
+AutomationTrack *
+automation_tracklist_get_next_visible_at (
+  AutomationTracklist * self,
+  AutomationTrack *     at)
+{
+  for (int i = at->index + 1; i < self->num_ats; i++)
+    {
+      AutomationTrack * cur_at = self->ats[i];
+      if (cur_at->created && cur_at->visible)
+        {
+          return cur_at;
+        }
+    }
+
+  return NULL;
+}
+
+/**
+ * Returns the AutomationTrack after delta visible
+ * AutomationTrack's.
+ *
+ * Negative delta searches backwards.
+ *
+ * This function searches tracks only in the same Tracklist
+ * as the given one (ie, pinned or not).
+ */
+AutomationTrack *
+automation_tracklist_get_visible_at_after_delta (
+  AutomationTracklist * self,
+  AutomationTrack *     at,
+  int                   delta)
+{
+  if (delta > 0)
+    {
+      AutomationTrack * vis_at = at;
+      while (delta > 0)
+        {
+          vis_at = automation_tracklist_get_next_visible_at (
+            self, vis_at);
+
+          if (!vis_at)
+            return NULL;
+
+          delta--;
+        }
+      return vis_at;
+    }
+  else if (delta < 0)
+    {
+      AutomationTrack * vis_at = at;
+      while (delta < 0)
+        {
+          vis_at = automation_tracklist_get_prev_visible_at (
+            self, vis_at);
+
+          if (!vis_at)
+            return NULL;
+
+          delta++;
+        }
+      return vis_at;
+    }
+  else
+    return at;
+}
+
+int
+automation_tracklist_get_visible_at_diff (
+  AutomationTracklist *   self,
+  const AutomationTrack * src,
+  const AutomationTrack * dest)
+{
+  g_return_val_if_fail (src && dest, 0);
+
+  int count = 0;
+  if (src->index < dest->index)
+    {
+      for (int i = src->index; i < dest->index; i++)
+        {
+          AutomationTrack * at = self->ats[i];
+          if (at->created && at->visible)
+            {
+              count++;
+            }
+        }
+    }
+  else if (src->index > dest->index)
+    {
+      for (int i = dest->index; i < src->index; i++)
+        {
+          AutomationTrack * at = self->ats[i];
+          if (at->created && at->visible)
+            {
+              count--;
+            }
+        }
+    }
+
+  return count;
 }
 
 /**

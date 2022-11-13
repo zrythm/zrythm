@@ -149,6 +149,16 @@ timeline_selections_mark_for_bounce (
   bool                 with_parents);
 
 /**
+ * Move the selected regions to new automation tracks.
+ *
+ * @return True if moved.
+ */
+bool
+timeline_selections_move_regions_to_new_ats (
+  TimelineSelections * self,
+  const int            vis_at_diff);
+
+/**
  * Move the selected Regions to new lanes.
  *
  * @param diff The delta to move the tracks.

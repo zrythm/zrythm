@@ -520,9 +520,24 @@ typedef struct Track
   /** Pointer to owner tracklist, if any. */
   Tracklist * tracklist;
 
-  /** Pointer to owner tracklist selections, if
-   * any. */
+  /** Pointer to owner tracklist selections, if any. */
   TracklistSelections * ts;
+
+  /**
+   * Last lane created during this drag.
+   *
+   * This is used to prevent creating infinite lanes when you
+   * want to track a region from the last lane to the track
+   * below. Only 1 new lane will be created in case the
+   * user wants to move the region to a new lane instead of
+   * the track below.
+   *
+   * Used when moving regions vertically.
+   */
+  int last_lane_created;
+
+  /** Block auto-creating or deleting lanes. */
+  bool block_auto_creation_and_deletion;
 
   /** Used in Gtk. */
   WrappedObjectWithChangeSignal * gobj;
@@ -1358,16 +1373,18 @@ track_type_get_prefader_type (TrackType type);
 
 /**
  * Creates missing TrackLane's until pos.
+ *
+ * @return Whether a new lane was created.
  */
-void
-track_create_missing_lanes (Track * track, const int pos);
+bool
+track_create_missing_lanes (Track * self, const int pos);
 
 /**
  * Removes the empty last lanes of the Track
  * (except the last one).
  */
 void
-track_remove_empty_last_lanes (Track * track);
+track_remove_empty_last_lanes (Track * self);
 
 /**
  * Returns all the regions inside the given range,

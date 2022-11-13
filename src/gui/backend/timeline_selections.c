@@ -537,17 +537,30 @@ timeline_selections_mark_for_bounce (
 }
 
 static bool
-move_regions_to_new_lanes_or_tracks (
+move_regions_to_new_lanes_or_tracks_or_ats (
   TimelineSelections * self,
   const int            vis_track_diff,
-  const int            lane_diff)
+  const int            lane_diff,
+  const int            vis_at_diff)
 {
-  /* only 1 operation supported at once */
-  g_return_if_fail (lane_diff == 0 || vis_track_diff == 0);
-
   /* if nothing to do return */
-  if (vis_track_diff == 0 && lane_diff == 0)
+  if (vis_track_diff == 0 && lane_diff == 0 && vis_at_diff == 0)
     return false;
+
+  /* only 1 operation supported at once */
+  if (vis_track_diff != 0)
+    {
+      g_return_if_fail (lane_diff == 0 && vis_at_diff == 0);
+    }
+  if (lane_diff != 0)
+    {
+      g_return_if_fail (
+        vis_track_diff == 0 && vis_at_diff == 0);
+    }
+  if (vis_at_diff != 0)
+    {
+      g_return_if_fail (lane_diff == 0 && vis_track_diff == 0);
+    }
 
   /* if there are objects other than regions, moving is not
    * supported */
@@ -587,18 +600,18 @@ move_regions_to_new_lanes_or_tracks (
     {
       ZRegion * region =
         (ZRegion *) g_ptr_array_index (regions_arr, i);
+      ArrangerObject * r_obj = (ArrangerObject *) region;
+      Track * track = arranger_object_get_track (r_obj);
+      track->block_auto_creation_and_deletion = true;
       if (vis_track_diff != 0)
         {
-          ArrangerObject * r_obj = (ArrangerObject *) region;
-          Track *          region_track =
-            arranger_object_get_track (r_obj);
           Track * visible =
             tracklist_get_visible_track_after_delta (
-              TRACKLIST, region_track, vis_track_diff);
+              TRACKLIST, track, vis_track_diff);
           if (
             !visible
             || !track_type_is_compatible_for_moving (
-              region_track->type, visible->type)
+              track->type, visible->type)
             ||
             /* do not allow moving automation tracks
              * to other tracks for now */
@@ -615,6 +628,49 @@ move_regions_to_new_lanes_or_tracks (
               compatible = false;
               break;
             }
+
+          /* don't create more than 1 extra lanes */
+          TrackLane * lane = region_get_lane (region);
+          g_return_val_if_fail (region && lane, -1);
+          int new_lane_pos = lane->pos + lane_diff;
+          g_return_val_if_fail (new_lane_pos >= 0, -1);
+          if (new_lane_pos >= track->num_lanes)
+            {
+              g_debug (
+                "new lane position %d is >= the number of lanes in the track (%d)",
+                new_lane_pos, track->num_lanes);
+              compatible = false;
+              break;
+            }
+          if (
+            new_lane_pos > track->last_lane_created
+            && track->last_lane_created > 0 && lane_diff > 0)
+            {
+              g_debug (
+                "already created a new lane at %d, skipping new lane for %d",
+                track->last_lane_created, new_lane_pos);
+              compatible = false;
+              break;
+            }
+
+          if (region->id.type == REGION_TYPE_AUTOMATION)
+            {
+              compatible = false;
+              break;
+            }
+        }
+      else if (vis_at_diff != 0)
+        {
+          if (region->id.type != REGION_TYPE_AUTOMATION)
+            {
+              compatible = false;
+              break;
+            }
+
+          /* don't allow moving automation regions -- too
+           * error prone */
+          compatible = false;
+          break;
         }
     }
   if (!compatible)
@@ -629,10 +685,10 @@ move_regions_to_new_lanes_or_tracks (
     {
       ZRegion * region =
         (ZRegion *) g_ptr_array_index (regions_arr, i);
+      ArrangerObject * r_obj = (ArrangerObject *) region;
       if (vis_track_diff != 0)
         {
-          ArrangerObject * r_obj = (ArrangerObject *) region;
-          Track *          region_track =
+          Track * region_track =
             arranger_object_get_track (r_obj);
           g_warn_if_fail (region && region_track);
           Track * track_to_move_to =
@@ -651,22 +707,58 @@ move_regions_to_new_lanes_or_tracks (
           int         new_lane_pos = lane->pos + lane_diff;
           g_return_val_if_fail (new_lane_pos >= 0, -1);
           Track * track = track_lane_get_track (lane);
-          track_create_missing_lanes (track, new_lane_pos);
+          bool    new_lanes_created =
+            track_create_missing_lanes (track, new_lane_pos);
+          if (new_lanes_created)
+            {
+              track->last_lane_created = new_lane_pos;
+            }
           lane_to_move_to = track->lanes[new_lane_pos];
           g_warn_if_fail (lane_to_move_to);
 
           region_move_to_lane (region, lane_to_move_to, -1);
         }
+      else if (vis_at_diff != 0)
+        {
+          g_warning ("\t\t\t\t\t\\t MOVING %d", vis_at_diff);
+          AutomationTrack * at =
+            region_get_automation_track (region);
+          g_return_val_if_fail (region && at, -1);
+          AutomationTracklist * atl =
+            automation_track_get_automation_tracklist (at);
+          AutomationTrack * new_at =
+            automation_tracklist_get_visible_at_after_delta (
+              atl, at, vis_at_diff);
+
+          if (at != new_at)
+            {
+              /* TODO */
+              g_warning ("!MOVING!");
+              /*automation_track_remove_region (at, region);*/
+              /*automation_track_add_region (new_at, region);*/
+            }
+        }
     }
 
-  if (lane_diff != 0)
-    {
-      EVENTS_PUSH (ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
-    }
+  EVENTS_PUSH (ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
 
   g_ptr_array_free (regions_arr, true);
 
   return true;
+}
+
+/**
+ * Move the selected regions to new automation tracks.
+ *
+ * @return True if moved.
+ */
+bool
+timeline_selections_move_regions_to_new_ats (
+  TimelineSelections * self,
+  const int            vis_at_diff)
+{
+  return move_regions_to_new_lanes_or_tracks_or_ats (
+    self, 0, 0, vis_at_diff);
 }
 
 /**
@@ -681,7 +773,8 @@ timeline_selections_move_regions_to_new_lanes (
   TimelineSelections * self,
   const int            diff)
 {
-  return move_regions_to_new_lanes_or_tracks (self, 0, diff);
+  return move_regions_to_new_lanes_or_tracks_or_ats (
+    self, 0, diff, 0);
 }
 
 /**
@@ -697,8 +790,8 @@ timeline_selections_move_regions_to_new_tracks (
   TimelineSelections * self,
   const int            vis_track_diff)
 {
-  return move_regions_to_new_lanes_or_tracks (
-    self, vis_track_diff, 0);
+  return move_regions_to_new_lanes_or_tracks_or_ats (
+    self, vis_track_diff, 0, 0);
 }
 
 /**

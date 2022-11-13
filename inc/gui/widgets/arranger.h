@@ -268,15 +268,18 @@ typedef struct _ArrangerWidget
 
   /* ----- TIMELINE ------ */
 
-  /** The number of visible tracks moved during a
-   * moving operation between tracks up to the last
-   * cycle. */
+  /** The number of visible tracks moved during a moving
+   * operation between tracks up to the last cycle. */
   int visible_track_diff;
 
-  /** The number of lanes moved during a
-   * moving operation between lanes, up to the last
-   * cycle. */
+  /** The number of lanes moved during a moving operation
+   * between lanes, up to the last cycle. */
   int lane_diff;
+
+  /** The number of visible automation t racks moved during a
+   * moving operation between automation tracks up to the
+   * last cycle. */
+  int visible_at_diff;
 
   /** Whether this TimelineArrangerWidget is for
    * the PinnedTracklist or not. */

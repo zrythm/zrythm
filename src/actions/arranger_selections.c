@@ -2890,6 +2890,20 @@ do_or_undo (
   tracklist_set_caches (
     TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS);
 
+  /* reset new_lane_created */
+  for (int i = 0; i < TRACKLIST->num_tracks; i++)
+    {
+      Track * track = TRACKLIST->tracks[i];
+      track->last_lane_created = 0;
+      track->block_auto_creation_and_deletion = false;
+      track_create_missing_lanes (track, track->num_lanes - 1);
+      track_remove_empty_last_lanes (track);
+    }
+
+  /* this is only needed in a few cases but it's cheap so
+   * send the event here anyway */
+  EVENTS_PUSH (ET_TRACK_LANES_VISIBILITY_CHANGED, NULL);
+
   return ret;
 }
 

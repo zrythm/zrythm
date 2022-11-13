@@ -398,7 +398,8 @@ AutomationPoint *
 automation_track_get_ap_before_pos (
   const AutomationTrack * self,
   const Position *        pos,
-  bool                    ends_after);
+  bool                    ends_after,
+  bool                    use_snapshots);
 
 /**
  * Returns the ZRegion that starts before
@@ -413,7 +414,8 @@ ZRegion *
 automation_track_get_region_before_pos (
   const AutomationTrack * self,
   const Position *        pos,
-  bool                    ends_after);
+  bool                    ends_after,
+  bool                    use_snapshots);
 
 /**
  * Unselects all arranger objects.
@@ -460,7 +462,8 @@ automation_track_get_val_at_pos (
   AutomationTrack * self,
   Position *        pos,
   bool              normalized,
-  bool              ends_after);
+  bool              ends_after,
+  bool              use_snapshots);
 
 /**
  * Returns the y pixels from the value based on the

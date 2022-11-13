@@ -1907,14 +1907,23 @@ track_insert_region (
 
 /**
  * Creates missing TrackLane's until pos.
+ *
+ * @return Whether a new lane was created.
  */
-void
-track_create_missing_lanes (Track * track, const int pos)
+bool
+track_create_missing_lanes (Track * self, const int pos)
 {
-  while (track->num_lanes < pos + 2)
+  if (self->block_auto_creation_and_deletion)
+    return false;
+
+  bool ret = false;
+  while (self->num_lanes < pos + 2)
     {
-      track_add_lane (track, 0);
+      track_add_lane (self, 0);
+      ret = true;
     }
+
+  return ret;
 }
 
 /**
@@ -1922,15 +1931,24 @@ track_create_missing_lanes (Track * track, const int pos)
  * (except the last one).
  */
 void
-track_remove_empty_last_lanes (Track * track)
+track_remove_empty_last_lanes (Track * self)
 {
-  g_return_if_fail (track);
-  g_message ("removing empty last lanes from %s", track->name);
+  g_return_if_fail (self);
+
+  if (self->block_auto_creation_and_deletion)
+    return;
+
+  /* if currently have a temporary last lane created skip
+   * removing */
+  if (self->last_lane_created > 0)
+    return;
+
+  g_message ("removing empty last lanes from %s", self->name);
   int removed = 0;
-  for (int i = track->num_lanes - 1; i >= 1; i--)
+  for (int i = self->num_lanes - 1; i >= 1; i--)
     {
-      TrackLane * lane = track->lanes[i];
-      TrackLane * prev_lane = track->lanes[i - 1];
+      TrackLane * lane = self->lanes[i];
+      TrackLane * prev_lane = self->lanes[i - 1];
       g_return_if_fail (lane && prev_lane);
 
       if (lane->num_regions > 0)
@@ -1939,10 +1957,10 @@ track_remove_empty_last_lanes (Track * track)
       if (lane->num_regions == 0 && prev_lane->num_regions == 0)
         {
           g_message ("removing lane %d", i);
-          track->num_lanes--;
+          self->num_lanes--;
           object_free_w_func_and_null (
-            track_lane_free, track->lanes[i]);
-          track->lanes[i] = NULL;
+            track_lane_free, self->lanes[i]);
+          self->lanes[i] = NULL;
           removed = 1;
         }
     }

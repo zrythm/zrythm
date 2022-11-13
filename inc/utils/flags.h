@@ -357,4 +357,7 @@
 #define Z_F_BLOCK 1
 #define Z_F_NO_BLOCK 0
 
+#define Z_F_USE_SNAPSHOTS 1
+#define Z_F_NO_USE_SNAPSHOTS 0
+
 #endif

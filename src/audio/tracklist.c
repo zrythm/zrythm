@@ -673,8 +673,8 @@ tracklist_get_last_track (
  *
  * Negative delta searches backwards.
  *
- * This function searches tracks only in the same
- * Tracklist as the given one (ie, pinned or not).
+ * This function searches tracks only in the same Tracklist
+ * as the given one (ie, pinned or not).
  */
 Track *
 tracklist_get_visible_track_after_delta (
