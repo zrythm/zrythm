@@ -36,9 +36,10 @@ typedef struct PortIdentifier  PortIdentifier;
 #define IS_FADER(f) (f->magic == FADER_MAGIC)
 #define IS_FADER_AND_NONNULL(f) (f && f->magic == FADER_MAGIC)
 
-#define FADER_DEFAULT_FADE_FRAMES 8192
 /** Causes loud volume in when < 1k. */
 #define FADER_DEFAULT_FADE_FRAMES_SHORT 1024
+#define FADER_DEFAULT_FADE_FRAMES \
+  (ZRYTHM_TESTING ? FADER_DEFAULT_FADE_FRAMES_SHORT : 8192)
 
 #define FADER_FADE_FRAMES_FOR_TYPE(f) \
   ((f)->type == FADER_TYPE_MONITOR \
