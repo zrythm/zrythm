@@ -6,6 +6,36 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.2.1] - 2022-11-18
+### Added
+- Run demo project on first run if found
+- Allow moving automation regions to other automation lanes
+
+### Changed
+- Free memory for all objects immediately instead of freeing some objects with a delay
+- Allocate some objects with GLib's GSlice allocator instead of standard allocation
+- Don't fire related UI events when control port values haven't changed
+- Silence some more logs
+- Swap Show UI and Swap Phase buttons in instrument tracks
+- Don't allow undo/redo while editing (avoids errors)
+- Link vertical scrolls in tracklist/piano roll/chord editor
+- Meson: pin lilv-related subprojects to specific commits
+
+### Fixed
+- Don't spam UI event when a warning is printed in the log
+- Fix opening a project from a template in a different locale having silent tracks
+- Fix changing the BPM not recreating the track playback caches
+- Fix segfault when drawing audio region loops in the timeline
+- Fix error when no file is selected in a preferences setting
+- Fix incorrectly allowing to move selections to a different track when non-region objects are also selected
+- Fix auto-scrolling breaking the current hover position in arrangers
+- Fix bug report dialog success message being shown twice
+- Fix auto-scrolling in arrangers breaking when scrolling before 0,0
+- Fix UI behaving weirdly when attempting to move regions to another track
+- Fix undoing moving chord objects only moving back horizontally
+- Fix error when undoing duplication of automation points
+- Fix minor memory leak when copy-moving automation points
+
 ## [1.0.0-beta.4.1.14] - 2022-11-09
 ### Changed
 - Html user manual: don't use a custom template
