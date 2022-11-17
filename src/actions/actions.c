@@ -1188,7 +1188,8 @@ activate_duplicate (
 
       GError * err = NULL;
       bool ret = arranger_selections_action_perform_duplicate (
-        sel, length, 0, 0, 0, 0, 0, F_NOT_ALREADY_MOVED, &err);
+        sel, length, 0, 0, 0, 0, 0, NULL, F_NOT_ALREADY_MOVED,
+        &err);
       if (!ret)
         {
           HANDLE_ERROR (

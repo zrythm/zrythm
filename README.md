@@ -46,7 +46,7 @@ written in Scheme or ECMAScript.
 - Automate anything using automation events or CV signal from modulator plugins and macro knobs
 - Detachable views for multi-monitor setups
 - Searchable preferences
-- Support for LV2/VST2/VST3/AU/LADSPA/DSSI plugins, SFZ/SF2 SoundFonts, Type 0 and 1 MIDI files, and almost every audio file format
+- Support for LV2/CLAP/VST2/VST3/AU/LADSPA/DSSI plugins, SFZ/SF2 SoundFonts, Type 0 and 1 MIDI files, and almost every audio file format
 - Flexible built-in file and plugin browsers
 - Optional plugin sandboxing (bridging)
 - Stem export
@@ -153,7 +153,8 @@ a DAW takes years of work and contributions enable
 us to spend more time working on the project.
 
 - [liberapay.com/Zrythm](https://liberapay.com/Zrythm/donate)
-- [paypal.me/zrythm](https://paypal.me/zrythm)
+- [paypal.me/zrythm](https://paypal.me/zrythmdaw)
+- [ko-fi.com/zrythm](https://ko-fi.com/zrythm)
 - [opencollective.com/zrythm](https://opencollective.com/zrythm/donate)
 - Bitcoin (BTC): `bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j`
 - Litecoin (LTC): `ltc1qpva5up8vu8k03r8vncrfhu5apkd7p4cgy4355a`

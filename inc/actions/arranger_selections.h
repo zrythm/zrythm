@@ -17,6 +17,7 @@
 #include "audio/audio_function.h"
 #include "audio/automation_function.h"
 #include "audio/midi_function.h"
+#include "audio/port_identifier.h"
 #include "audio/position.h"
 #include "audio/quantize_options.h"
 #include "gui/backend/audio_selections.h"
@@ -167,14 +168,12 @@ typedef struct ArrangerSelectionsAction
   /** Action type. */
   ArrangerSelectionsActionType type;
 
-  /** A clone of the ArrangerSelections before the
-   * change. */
+  /** A clone of the ArrangerSelections before the change. */
   ArrangerSelections * sel;
 
   /**
-   * A clone of the ArrangerSelections after the
-   * change (used in the EDIT action and
-   * quantize).
+   * A clone of the ArrangerSelections after the change (used
+   * in the EDIT action and quantize).
    */
   ArrangerSelections * sel_after;
 
@@ -200,6 +199,11 @@ typedef struct ArrangerSelectionsAction
    * automation point normalized value.
    */
   double delta_normalized_amount;
+
+  /** Target port (used to find corresponding automation track
+   * when moving/copying automation regions to another
+   * automation track/another track). */
+  PortIdentifier * target_port;
 
   /** String, when changing a string. */
   char * str;
@@ -277,6 +281,10 @@ static const cyaml_schema_field_t arranger_selections_action_fields_schema[] = {
   YAML_FIELD_FLOAT (
     ArrangerSelectionsAction,
     delta_normalized_amount),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    ArrangerSelectionsAction,
+    target_port,
+    port_identifier_fields_schema),
   YAML_FIELD_STRING_PTR_OPTIONAL (ArrangerSelectionsAction, str),
   YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerSelectionsAction,
@@ -432,72 +440,75 @@ arranger_selections_action_new_record (
 WARN_UNUSED_RESULT
 UndoableAction *
 arranger_selections_action_new_move_or_duplicate (
-  ArrangerSelections * sel,
-  const bool           move,
-  const double         ticks,
-  const int            delta_chords,
-  const int            delta_pitch,
-  const int            delta_tracks,
-  const int            delta_lanes,
-  const double         delta_normalized_amount,
-  const bool           already_moved,
-  GError **            error);
+  ArrangerSelections *   sel,
+  const bool             move,
+  const double           ticks,
+  const int              delta_chords,
+  const int              delta_pitch,
+  const int              delta_tracks,
+  const int              delta_lanes,
+  const double           delta_normalized_amount,
+  const PortIdentifier * tgt_port_id,
+  const bool             already_moved,
+  GError **              error);
 
 #define arranger_selections_action_new_move( \
   sel, ticks, chords, pitch, tracks, lanes, norm_amt, \
-  already_moved, error) \
+  port_id, already_moved, error) \
   arranger_selections_action_new_move_or_duplicate ( \
     (ArrangerSelections *) sel, 1, ticks, chords, pitch, \
-    tracks, lanes, norm_amt, already_moved, error)
+    tracks, lanes, norm_amt, port_id, already_moved, error)
 #define arranger_selections_action_new_duplicate( \
   sel, ticks, chords, pitch, tracks, lanes, norm_amt, \
-  already_moved, error) \
+  port_id, already_moved, error) \
   arranger_selections_action_new_move_or_duplicate ( \
     (ArrangerSelections *) sel, 0, ticks, chords, pitch, \
-    tracks, lanes, norm_amt, already_moved, error)
+    tracks, lanes, norm_amt, port_id, already_moved, error)
 
 #define arranger_selections_action_new_move_timeline( \
-  sel, ticks, delta_tracks, delta_lanes, already_moved, \
-  error) \
+  sel, ticks, delta_tracks, delta_lanes, port_id, \
+  already_moved, error) \
   arranger_selections_action_new_move ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, \
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, \
     already_moved, error)
 #define arranger_selections_action_new_duplicate_timeline( \
-  sel, ticks, delta_tracks, delta_lanes, already_moved, \
-  error) \
+  sel, ticks, delta_tracks, delta_lanes, port_id, \
+  already_moved, error) \
   arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, \
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, \
     already_moved, error)
 
 #define arranger_selections_action_new_move_midi( \
   sel, ticks, delta_pitch, already_moved, error) \
   arranger_selections_action_new_move ( \
-    sel, ticks, 0, delta_pitch, 0, 0, 0, already_moved, \
-    error)
+    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, \
+    already_moved, error)
 #define arranger_selections_action_new_duplicate_midi( \
   sel, ticks, delta_pitch, already_moved, error) \
   arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, delta_pitch, 0, 0, 0, already_moved, \
-    error)
+    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, \
+    already_moved, error)
 #define arranger_selections_action_new_move_chord( \
   sel, ticks, delta_chords, already_moved, error) \
   arranger_selections_action_new_move ( \
-    sel, ticks, delta_chords, 0, 0, 0, 0, already_moved, \
-    error)
+    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, \
+    already_moved, error)
 #define arranger_selections_action_new_duplicate_chord( \
   sel, ticks, delta_chords, already_moved, error) \
   arranger_selections_action_new_duplicate ( \
-    sel, ticks, delta_chords, 0, 0, 0, 0, already_moved, \
-    error)
+    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, \
+    already_moved, error)
 
 #define arranger_selections_action_new_move_automation( \
   sel, ticks, norm_amt, already_moved, error) \
   arranger_selections_action_new_move ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, already_moved, error)
+    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, \
+    error)
 #define arranger_selections_action_new_duplicate_automation( \
   sel, ticks, norm_amt, already_moved, error) \
   arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, already_moved, error)
+    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, \
+    error)
 
 /**
  * Creates a new action for linking regions.
@@ -681,72 +692,75 @@ arranger_selections_action_perform_record (
 
 bool
 arranger_selections_action_perform_move_or_duplicate (
-  ArrangerSelections * sel,
-  const bool           move,
-  const double         ticks,
-  const int            delta_chords,
-  const int            delta_pitch,
-  const int            delta_tracks,
-  const int            delta_lanes,
-  const double         delta_normalized_amount,
-  const bool           already_moved,
-  GError **            error);
+  ArrangerSelections *   sel,
+  const bool             move,
+  const double           ticks,
+  const int              delta_chords,
+  const int              delta_pitch,
+  const int              delta_tracks,
+  const int              delta_lanes,
+  const double           delta_normalized_amount,
+  const PortIdentifier * port_id,
+  const bool             already_moved,
+  GError **              error);
 
 #define arranger_selections_action_perform_move( \
   sel, ticks, chords, pitch, tracks, lanes, norm_amt, \
-  already_moved, error) \
+  port_id, already_moved, error) \
   arranger_selections_action_perform_move_or_duplicate ( \
     (ArrangerSelections *) sel, 1, ticks, chords, pitch, \
-    tracks, lanes, norm_amt, already_moved, error)
+    tracks, lanes, norm_amt, port_id, already_moved, error)
 #define arranger_selections_action_perform_duplicate( \
   sel, ticks, chords, pitch, tracks, lanes, norm_amt, \
-  already_moved, error) \
+  port_id, already_moved, error) \
   arranger_selections_action_perform_move_or_duplicate ( \
     (ArrangerSelections *) sel, 0, ticks, chords, pitch, \
-    tracks, lanes, norm_amt, already_moved, error)
+    tracks, lanes, norm_amt, port_id, already_moved, error)
 
 #define arranger_selections_action_perform_move_timeline( \
-  sel, ticks, delta_tracks, delta_lanes, already_moved, \
-  error) \
+  sel, ticks, delta_tracks, delta_lanes, port_id, \
+  already_moved, error) \
   arranger_selections_action_perform_move ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, \
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, \
     already_moved, error)
 #define arranger_selections_action_perform_duplicate_timeline( \
-  sel, ticks, delta_tracks, delta_lanes, already_moved, \
-  error) \
+  sel, ticks, delta_tracks, delta_lanes, port_id, \
+  already_moved, error) \
   arranger_selections_action_perform_duplicate ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, \
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, \
     already_moved, error)
 
 #define arranger_selections_action_perform_move_midi( \
   sel, ticks, delta_pitch, already_moved, error) \
   arranger_selections_action_perform_move ( \
-    sel, ticks, 0, delta_pitch, 0, 0, 0, already_moved, \
-    error)
+    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, \
+    already_moved, error)
 #define arranger_selections_action_perform_duplicate_midi( \
   sel, ticks, delta_pitch, already_moved, error) \
   arranger_selections_action_perform_duplicate ( \
-    sel, ticks, 0, delta_pitch, 0, 0, 0, already_moved, \
-    error)
+    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, \
+    already_moved, error)
 #define arranger_selections_action_perform_move_chord( \
   sel, ticks, delta_chords, already_moved, error) \
   arranger_selections_action_perform_move ( \
-    sel, ticks, delta_chords, 0, 0, 0, 0, already_moved, \
-    error)
+    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, \
+    already_moved, error)
 #define arranger_selections_action_perform_duplicate_chord( \
   sel, ticks, delta_chords, already_moved, error) \
   arranger_selections_action_perform_duplicate ( \
-    sel, ticks, delta_chords, 0, 0, 0, 0, already_moved, \
-    error)
+    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, \
+    already_moved, error)
 
 #define arranger_selections_action_perform_move_automation( \
   sel, ticks, norm_amt, already_moved, error) \
   arranger_selections_action_perform_move ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, already_moved, error)
+    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, \
+    error)
 #define arranger_selections_action_perform_duplicate_automation( \
   sel, ticks, norm_amt, already_moved, error) \
   arranger_selections_action_perform_duplicate ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, already_moved, error)
+    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, \
+    error)
 
 bool
 arranger_selections_action_perform_link (
