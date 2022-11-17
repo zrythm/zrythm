@@ -66,8 +66,8 @@ typedef struct RegionIdentifier
   unsigned int track_name_hash;
   int          lane_pos;
 
-  /** Automation track index in the automation
-   * tracklist, if automation region. */
+  /** Automation track index in the automation tracklist, if
+   * automation region. */
   int at_idx;
 
   /** Index inside lane or automation track. */

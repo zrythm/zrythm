@@ -270,16 +270,17 @@ get_actual_arranger_selections (
  */
 UndoableAction *
 arranger_selections_action_new_move_or_duplicate (
-  ArrangerSelections * sel,
-  const bool           move,
-  const double         ticks,
-  const int            delta_chords,
-  const int            delta_pitch,
-  const int            delta_tracks,
-  const int            delta_lanes,
-  const double         delta_normalized_amount,
-  const bool           already_moved,
-  GError **            error)
+  ArrangerSelections *   sel,
+  const bool             move,
+  const double           ticks,
+  const int              delta_chords,
+  const int              delta_pitch,
+  const int              delta_tracks,
+  const int              delta_lanes,
+  const double           delta_normalized_amount,
+  const PortIdentifier * tgt_port_id,
+  const bool             already_moved,
+  GError **              error)
 {
   g_return_val_if_fail (
     IS_ARRANGER_SELECTIONS (sel)
@@ -323,6 +324,10 @@ arranger_selections_action_new_move_or_duplicate (
   self->delta_tracks = delta_tracks;
   self->delta_pitch = delta_pitch;
   self->delta_normalized_amount = delta_normalized_amount;
+  if (tgt_port_id)
+    {
+      self->target_port = port_identifier_clone (tgt_port_id);
+    }
 
   return ua;
 }
@@ -977,22 +982,23 @@ arranger_selections_action_perform_record (
 
 bool
 arranger_selections_action_perform_move_or_duplicate (
-  ArrangerSelections * sel,
-  const bool           move,
-  const double         ticks,
-  const int            delta_chords,
-  const int            delta_pitch,
-  const int            delta_tracks,
-  const int            delta_lanes,
-  const double         delta_normalized_amount,
-  const bool           already_moved,
-  GError **            error)
+  ArrangerSelections *   sel,
+  const bool             move,
+  const double           ticks,
+  const int              delta_chords,
+  const int              delta_pitch,
+  const int              delta_tracks,
+  const int              delta_lanes,
+  const double           delta_normalized_amount,
+  const PortIdentifier * tgt_port_id,
+  const bool             already_moved,
+  GError **              error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
     arranger_selections_action_new_move_or_duplicate, error,
     sel, move, ticks, delta_chords, delta_pitch, delta_tracks,
-    delta_lanes, delta_normalized_amount, already_moved,
-    error);
+    delta_lanes, delta_normalized_amount, tgt_port_id,
+    already_moved, error);
 }
 
 bool
@@ -1224,7 +1230,8 @@ do_or_undo_move (
 
               /* shift the actual object by
                * tracks */
-              region_move_to_track (r, track_to_move_to, -1);
+              region_move_to_track (
+                r, track_to_move_to, -1, -1);
 
               /* remember info in identifier */
               ZRegion * r_clone = (ZRegion *) own_obj;
@@ -1259,14 +1266,10 @@ do_or_undo_move (
                 arranger_object_get_track (obj);
               int new_lane_pos = r->id.lane_pos + delta_lanes;
               g_return_val_if_fail (new_lane_pos >= 0, -1);
-              track_create_missing_lanes (
-                region_track, new_lane_pos);
-              TrackLane * lane_to_move_to =
-                region_track->lanes[new_lane_pos];
 
-              /* shift the actual object by
-               * lanes */
-              region_move_to_lane (r, lane_to_move_to, -1);
+              /* shift the actual object by lanes */
+              region_move_to_track (
+                r, region_track, new_lane_pos, -1);
 
               /* remember info in identifier */
               ZRegion * r_own = (ZRegion *) own_obj;
@@ -1275,7 +1278,51 @@ do_or_undo_move (
 
           if (delta_chords != 0)
             {
-              /* TODO */
+              g_return_val_if_fail (
+                obj->type == ARRANGER_OBJECT_TYPE_CHORD_OBJECT,
+                -1);
+              ChordObject * co = (ChordObject *) obj;
+
+              /* shift the actual object */
+              co->chord_index += delta_chords;
+
+              /* also shift the copy so they can match */
+              ((ChordObject *) own_obj)->chord_index +=
+                delta_chords;
+            }
+
+          /* if moving automation */
+          if (self->target_port)
+            {
+              g_return_val_if_fail (
+                obj->type == ARRANGER_OBJECT_TYPE_REGION, -1);
+              ZRegion * r = (ZRegion *) obj;
+              g_return_val_if_fail (
+                r->id.type == REGION_TYPE_AUTOMATION, -1);
+              AutomationTrack * cur_at =
+                region_get_automation_track (r);
+              g_return_val_if_fail (cur_at, -1);
+              Port * port =
+                port_find_from_identifier (self->target_port);
+              g_return_val_if_fail (port, -1);
+              Track * track = port_get_track (port, true);
+              g_return_val_if_fail (track, -1);
+              AutomationTrack * at =
+                automation_track_find_from_port (
+                  port, track, true);
+              g_return_val_if_fail (at, -1);
+
+              /* move the actual object */
+              region_move_to_track (r, track, at->index, -1);
+
+              /* remember info in identifier */
+              ZRegion * r_own = (ZRegion *) own_obj;
+              region_identifier_copy (&r_own->id, &r->id);
+
+              object_free_w_func_and_null (
+                port_identifier_free, self->target_port);
+              self->target_port =
+                port_identifier_clone (&cur_at->port_id);
             }
 
           if (!math_doubles_equal (delta_normalized_amt, 0.0))
@@ -1344,6 +1391,9 @@ do_or_undo_move (
 
   update_region_link_groups (objs_arr);
 
+  /* validate */
+  clip_editor_get_region (CLIP_EDITOR);
+
   g_ptr_array_unref (objs_arr);
   g_hash_table_destroy (ht);
 
@@ -1387,7 +1437,7 @@ move_obj_by_tracks_and_lanes (
       else
         {
           region_move_to_track (
-            r, track_to_move_to,
+            r, track_to_move_to, -1,
             use_index_in_prev_lane ? index_in_prev_lane : -1);
         }
     }
@@ -1408,10 +1458,8 @@ move_obj_by_tracks_and_lanes (
         {
           track_create_missing_lanes (
             region_track, new_lane_pos);
-          TrackLane * lane_to_move_to =
-            region_track->lanes[new_lane_pos];
-          region_move_to_lane (
-            r, lane_to_move_to,
+          region_move_to_track (
+            r, region_track, new_lane_pos,
             use_index_in_prev_lane ? index_in_prev_lane : -1);
         }
     }
@@ -1463,11 +1511,10 @@ do_or_undo_duplicate_or_link (
   arranger_selections_clear (
     sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
-  /* this is used for automation points to
-   * keep track of which automation point in the
-   * project matches which automation point in
-   * the cached selections */
-  GHashTable * ht = g_hash_table_new (NULL, NULL);
+  /* this is used for automation points to keep track of
+   * which automation point in the project matches which
+   * automation point in the cached selections */
+  GHashTable * ap_ht = g_hash_table_new (NULL, NULL);
 
   for (int i = (int) objs_arr->len - 1; i >= 0; i--)
     {
@@ -1479,9 +1526,8 @@ do_or_undo_duplicate_or_link (
       own_orig_obj->flags |= ARRANGER_OBJECT_FLAG_NON_PROJECT;
       g_warn_if_fail (IS_ARRANGER_OBJECT (own_obj));
 
-      /* on first run, we need to first move
-       * the original object backwards (the
-       * project object too) */
+      /* on first run, we need to first move the original
+       * object backwards (the project object too) */
       if (_do && self->first_run)
         {
           if (own_obj->type == ARRANGER_OBJECT_TYPE_REGION)
@@ -1552,9 +1598,6 @@ do_or_undo_duplicate_or_link (
                 }
             }
 
-          /* chords */
-          /* TODO */
-
           /* pitch */
           if (delta_pitch)
             {
@@ -1562,6 +1605,29 @@ do_or_undo_duplicate_or_link (
                 (MidiNote *) obj, -delta_pitch);
               midi_note_shift_pitch (
                 (MidiNote *) own_obj, -delta_pitch);
+            }
+
+          /* chords */
+          if (delta_chords != 0)
+            {
+              g_return_val_if_fail (
+                obj->type == ARRANGER_OBJECT_TYPE_CHORD_OBJECT,
+                -1);
+              ChordObject * co = (ChordObject *) obj;
+
+              /* shift the actual object */
+              co->chord_index -= delta_chords;
+
+              /* also shift the copy so they can match */
+              ((ChordObject *) own_obj)->chord_index -=
+                delta_chords;
+            }
+
+          /* if moving automation */
+          if (self->target_port)
+            {
+              g_critical (
+                "not supported - automation must not be moved before performing the action");
             }
 
           /* automation value */
@@ -1592,11 +1658,11 @@ do_or_undo_duplicate_or_link (
       ArrangerObject * own_orig_obj = (ArrangerObject *)
         g_ptr_array_index (orig_objs_arr, i);
 
-      ArrangerObject * obj;
       if (_do)
         {
           /* clone the clone */
-          obj = arranger_object_clone (own_obj);
+          ArrangerObject * obj =
+            arranger_object_clone (own_obj);
 
           /* if region, clear the remembered index
            * so that the region gets appended
@@ -1610,11 +1676,160 @@ do_or_undo_duplicate_or_link (
           /* add to track. */
           arranger_object_add_to_project (
             obj, F_NO_PUBLISH_EVENTS);
+
+          /* edit both project object and the copy */
+          if (!math_doubles_equal (ticks, 0.0))
+            {
+              arranger_object_move (obj, ticks);
+              arranger_object_move (own_obj, ticks);
+            }
+          if (delta_tracks != 0)
+            {
+              move_obj_by_tracks_and_lanes (
+                obj, delta_tracks, 0, false, -1);
+              move_obj_by_tracks_and_lanes (
+                own_obj, delta_tracks, false, -1, 0);
+            }
+          if (delta_lanes != 0)
+            {
+              move_obj_by_tracks_and_lanes (
+                obj, 0, delta_lanes, false, -1);
+              move_obj_by_tracks_and_lanes (
+                own_obj, 0, delta_lanes, false, -1);
+            }
+          if (delta_pitch != 0)
+            {
+              midi_note_shift_pitch (
+                (MidiNote *) obj, delta_pitch);
+              midi_note_shift_pitch (
+                (MidiNote *) own_obj, delta_pitch);
+            }
+          if (delta_chords != 0)
+            {
+              ((ChordObject *) obj)->chord_index +=
+                delta_chords;
+              ((ChordObject *) own_obj)->chord_index +=
+                delta_chords;
+            }
+          if (self->target_port)
+            {
+              g_return_val_if_fail (
+                obj->type == ARRANGER_OBJECT_TYPE_REGION, -1);
+              ZRegion * r = (ZRegion *) obj;
+              g_return_val_if_fail (
+                r->id.type == REGION_TYPE_AUTOMATION, -1);
+              AutomationTrack * cur_at =
+                region_get_automation_track (r);
+              g_return_val_if_fail (cur_at, -1);
+              Port * port =
+                port_find_from_identifier (self->target_port);
+              g_return_val_if_fail (port, -1);
+              Track * track = port_get_track (port, true);
+              g_return_val_if_fail (track, -1);
+              AutomationTrack * at =
+                automation_track_find_from_port (
+                  port, track, true);
+              g_return_val_if_fail (at, -1);
+
+              /* move the actual object */
+              region_move_to_track (r, track, at->index, -1);
+            }
+          if (!math_floats_equal (delta_normalized_amount, 0.f))
+            {
+              AutomationPoint * ap = (AutomationPoint *) obj;
+              automation_point_set_fvalue (
+                ap,
+                ap->normalized_val + delta_normalized_amount,
+                F_NORMALIZED, F_NO_PUBLISH_EVENTS);
+              AutomationPoint * own_ap =
+                (AutomationPoint *) own_obj;
+              automation_point_set_fvalue (
+                own_ap,
+                own_ap->normalized_val
+                  + delta_normalized_amount,
+                F_NORMALIZED, F_NO_PUBLISH_EVENTS);
+            }
+
+          if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
+            {
+              /* if we are linking, create the necessary
+               * links */
+              if (link)
+                {
+                  /* add link group to original object if
+                   * necessary */
+                  ArrangerObject * orig_obj =
+                    arranger_object_find (own_orig_obj);
+                  ZRegion * orig_r = (ZRegion *) orig_obj;
+                  g_return_val_if_fail (
+                    orig_r->id.idx >= 0, -1);
+                  region_create_link_group_if_none (orig_r);
+                  int link_group = orig_r->id.link_group;
+
+                  /* add link group to clone */
+                  ZRegion * r_obj = (ZRegion *) obj;
+                  g_return_val_if_fail (
+                    r_obj->id.type == orig_r->id.type, -1);
+                  g_return_val_if_fail (
+                    r_obj->id.idx >= 0, -1);
+                  region_set_link_group (
+                    r_obj, link_group, true);
+
+                  /* remember link groups */
+                  ZRegion * r = (ZRegion *) own_orig_obj;
+                  region_set_link_group (r, link_group, true);
+                  r = (ZRegion *) own_obj;
+                  region_set_link_group (r, link_group, true);
+
+                  region_link_group_manager_validate (
+                    REGION_LINK_GROUP_MANAGER);
+                }
+              else /* else if we are not linking */
+                {
+                  ZRegion * region = (ZRegion *) obj;
+
+                  /* remove link group if first run */
+                  if (self->first_run)
+                    {
+                      if (region_has_link_group (region))
+                        {
+                          region_unlink (region);
+                        }
+                    }
+
+                  /* if this is an audio region,
+                   * duplicate the clip */
+                  if (region->id.type == REGION_TYPE_AUDIO)
+                    {
+                      AudioClip * clip =
+                        audio_region_get_clip (region);
+                      int id = audio_pool_duplicate_clip (
+                        AUDIO_POOL, clip->pool_id,
+                        F_WRITE_FILE);
+                      clip =
+                        audio_pool_get_clip (AUDIO_POOL, id);
+                      g_return_val_if_fail (clip, -1);
+                      region->pool_id = clip->pool_id;
+                    }
+                }
+            } /* endif region */
+
+          /* add the mapping to the hashtable */
+          g_hash_table_insert (ap_ht, obj, own_obj);
+
+          /* select it */
+          arranger_object_select (
+            obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+
+          /* remember the identifier */
+          arranger_object_copy_identifier (own_obj, obj);
+
         }  /* endif do */
       else /* if undo */
         {
           /* find the actual object */
-          obj = arranger_object_find (own_obj);
+          ArrangerObject * obj =
+            arranger_object_find (own_obj);
           g_return_val_if_fail (
             IS_ARRANGER_OBJECT_AND_NONNULL (obj), -1);
 
@@ -1643,175 +1858,64 @@ do_or_undo_duplicate_or_link (
 
           /* remove it */
           arranger_object_remove_from_project (obj);
+          obj = NULL;
+
+          /* set the copies back to original state */
+          if (!math_doubles_equal (ticks, 0.0))
+            {
+              arranger_object_move (own_obj, ticks);
+            }
+          if (delta_tracks != 0)
+            {
+              move_obj_by_tracks_and_lanes (
+                own_obj, delta_tracks, false, -1, 0);
+            }
+          if (delta_lanes != 0)
+            {
+              move_obj_by_tracks_and_lanes (
+                own_obj, 0, delta_lanes, false, -1);
+            }
+          if (delta_pitch != 0)
+            {
+              midi_note_shift_pitch (
+                (MidiNote *) own_obj, delta_pitch);
+            }
+          if (delta_chords != 0)
+            {
+              ((ChordObject *) own_obj)->chord_index +=
+                delta_chords;
+            }
+          if (self->target_port)
+            {
+              /* nothing needed */
+            }
+          if (!math_floats_equal (delta_normalized_amount, 0.f))
+            {
+              AutomationPoint * own_ap =
+                (AutomationPoint *) own_obj;
+              automation_point_set_fvalue (
+                own_ap,
+                own_ap->normalized_val
+                  + delta_normalized_amount,
+                F_NORMALIZED, F_NO_PUBLISH_EVENTS);
+            }
 
         } /* endif undo */
-
-      if (!math_doubles_equal (ticks, 0.0))
-        {
-          if (_do)
-            {
-              /* shift it */
-              arranger_object_move (obj, ticks);
-            }
-
-          /* also shift the copy */
-          arranger_object_move (own_obj, ticks);
-        }
-
-      if (delta_tracks != 0)
-        {
-          if (_do)
-            {
-              move_obj_by_tracks_and_lanes (
-                obj, delta_tracks, 0, false, -1);
-            }
-
-          /* also shift the copy */
-          move_obj_by_tracks_and_lanes (
-            own_obj, delta_tracks, false, -1, 0);
-        }
-
-      if (delta_pitch != 0)
-        {
-          if (_do)
-            {
-              MidiNote * mn = (MidiNote *) obj;
-
-              /* shift the actual object */
-              midi_note_shift_pitch (mn, delta_pitch);
-            }
-
-          /* also shift the copy so they can
-           * match */
-          midi_note_shift_pitch (
-            (MidiNote *) own_obj, delta_pitch);
-        }
-
-      if (delta_lanes != 0)
-        {
-          if (_do)
-            {
-              move_obj_by_tracks_and_lanes (
-                obj, 0, delta_lanes, false, -1);
-            }
-
-          /* also shift the copy */
-          move_obj_by_tracks_and_lanes (
-            own_obj, 0, delta_lanes, false, -1);
-        }
-
-      if (delta_chords != 0)
-        {
-          /* TODO */
-        }
-
-      if (!math_floats_equal (delta_normalized_amount, 0.f))
-        {
-          /* shift the obj */
-          AutomationPoint * ap = (AutomationPoint *) obj;
-          automation_point_set_fvalue (
-            ap, ap->normalized_val + delta_normalized_amount,
-            F_NORMALIZED, F_NO_PUBLISH_EVENTS);
-
-          /* also shift the copy */
-          AutomationPoint * cached_ap =
-            (AutomationPoint *) own_obj;
-          automation_point_set_fvalue (
-            cached_ap,
-            cached_ap->normalized_val + delta_normalized_amount,
-            F_NORMALIZED, F_NO_PUBLISH_EVENTS);
-        }
-
-      if (_do)
-        {
-          /* if we are linking, create the
-           * necessary links */
-          if (
-            link
-            && own_orig_obj->type == ARRANGER_OBJECT_TYPE_REGION)
-            {
-              /* add link group to original object
-               * if necessary */
-              ArrangerObject * orig_obj =
-                arranger_object_find (own_orig_obj);
-              ZRegion * orig_r = (ZRegion *) orig_obj;
-              g_return_val_if_fail (orig_r->id.idx >= 0, -1);
-              region_create_link_group_if_none (orig_r);
-              int link_group = orig_r->id.link_group;
-
-              /* add link group to clone */
-              ZRegion * r_obj = (ZRegion *) obj;
-              g_return_val_if_fail (
-                r_obj->id.type == orig_r->id.type, -1);
-              g_return_val_if_fail (r_obj->id.idx >= 0, -1);
-              region_set_link_group (r_obj, link_group, true);
-
-              /* remember link groups */
-              ZRegion * r = (ZRegion *) own_orig_obj;
-              region_set_link_group (r, link_group, true);
-              r = (ZRegion *) own_obj;
-              region_set_link_group (r, link_group, true);
-
-              region_link_group_manager_validate (
-                REGION_LINK_GROUP_MANAGER);
-            }
-          /* else if we are not linking and this
-           * is a region */
-          else if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
-            {
-              ZRegion * region = (ZRegion *) obj;
-
-              /* remove link group if first run */
-              if (self->first_run)
-                {
-                  if (region_has_link_group (region))
-                    {
-                      region_unlink (region);
-                    }
-                }
-
-              /* if this is an audio region,
-               * duplicate the clip */
-              if (region->id.type == REGION_TYPE_AUDIO)
-                {
-                  AudioClip * clip =
-                    audio_region_get_clip (region);
-                  int id = audio_pool_duplicate_clip (
-                    AUDIO_POOL, clip->pool_id, F_WRITE_FILE);
-                  clip = audio_pool_get_clip (AUDIO_POOL, id);
-                  g_return_val_if_fail (clip, -1);
-                  region->pool_id = clip->pool_id;
-                }
-            }
-        }
-
-      /* add the mapping to the hashtable */
-      g_hash_table_insert (ht, obj, own_obj);
-
-      if (_do)
-        {
-          /* select it */
-          arranger_object_select (
-            obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
-
-          /* remember the identifier */
-          arranger_object_copy_identifier (own_obj, obj);
-        }
 
       region_link_group_manager_validate (
         REGION_LINK_GROUP_MANAGER);
     }
 
-  /* if copy-moving automation points, re-sort
-   * the region and remember the new indices */
+  /* if copy-moving automation points, re-sort the region and
+   * remember the new indices */
   ArrangerObject * first_own_obj =
     (ArrangerObject *) g_ptr_array_index (objs_arr, 0);
   if (first_own_obj->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT)
     {
-      /* get the actual object from the
-       * project */
-      ArrangerObject * obj =
-        g_hash_table_get_keys_as_array (ht, NULL)[0];
+      /* get the actual object from the project */
+      gpointer * keys_arr =
+        g_hash_table_get_keys_as_array (ap_ht, NULL);
+      ArrangerObject * obj = keys_arr[0];
       g_return_val_if_fail (IS_ARRANGER_OBJECT (obj), -1);
       ZRegion * region = arranger_object_get_region (obj);
       g_return_val_if_fail (region, -1);
@@ -1820,7 +1924,7 @@ do_or_undo_duplicate_or_link (
       GHashTableIter iter;
       gpointer       key, value;
 
-      g_hash_table_iter_init (&iter, ht);
+      g_hash_table_iter_init (&iter, ap_ht);
       while (g_hash_table_iter_next (&iter, &key, &value))
         {
           AutomationPoint * prj_ap = (AutomationPoint *) key;
@@ -1831,14 +1935,16 @@ do_or_undo_duplicate_or_link (
         }
     }
 
+  /* validate */
   marker_track_validate (P_MARKER_TRACK);
   chord_track_validate (P_CHORD_TRACK);
   region_link_group_manager_validate (
     REGION_LINK_GROUP_MANAGER);
+  clip_editor_get_region (CLIP_EDITOR);
 
   g_ptr_array_unref (objs_arr);
   g_ptr_array_unref (orig_objs_arr);
-  g_hash_table_destroy (ht);
+  g_hash_table_destroy (ap_ht);
 
   sel = get_actual_arranger_selections (self);
   if (_do)

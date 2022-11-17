@@ -1685,14 +1685,13 @@ arranger_widget_on_key_press (
                   GError * err = NULL;
                   bool     ret =
                     arranger_selections_action_perform_move (
-                      sel, -move_ticks, 0, 0, 0, 0, 0,
+                      sel, -move_ticks, 0, 0, 0, 0, 0, NULL,
                       F_NOT_ALREADY_MOVED, &err);
                   if (!ret)
                     {
                       HANDLE_ERROR (
                         err, "%s",
-                        _ ("Failed to move "
-                           "selection"));
+                        _ ("Failed to move selection"));
                     }
 
                   /* scroll left if needed */
@@ -1705,7 +1704,7 @@ arranger_widget_on_key_press (
               GError * err = NULL;
               bool     ret =
                 arranger_selections_action_perform_move (
-                  sel, move_ticks, 0, 0, 0, 0, 0,
+                  sel, move_ticks, 0, 0, 0, 0, 0, NULL,
                   F_NOT_ALREADY_MOVED, &err);
               if (!ret)
                 {
@@ -1769,7 +1768,7 @@ arranger_widget_on_key_press (
                   GError * err = NULL;
                   bool     ret =
                     arranger_selections_action_perform_move_chord (
-                      sel, 0, -1, F_NOT_ALREADY_MOVED, &err);
+                      sel, 0, 1, F_NOT_ALREADY_MOVED, &err);
                   if (!ret)
                     {
                       HANDLE_ERROR (
@@ -1835,7 +1834,7 @@ arranger_widget_on_key_press (
                   GError * err = NULL;
                   bool     ret =
                     arranger_selections_action_perform_move_chord (
-                      sel, 0, 1, F_NOT_ALREADY_MOVED, &err);
+                      sel, 0, -1, F_NOT_ALREADY_MOVED, &err);
                   if (!ret)
                     {
                       HANDLE_ERROR (
@@ -4077,12 +4076,15 @@ on_drag_end_chord (ArrangerWidget * self)
           (ArrangerObject *) self->start_object;
         double ticks_diff =
           obj->pos.ticks - obj->transient->pos.ticks;
+        int chord_diff =
+          ((ChordObject *) obj)->chord_index
+          - ((ChordObject *) obj->transient)->chord_index;
 
         GError * err = NULL;
         bool     ret =
           arranger_selections_action_perform_move_chord (
-            CHORD_SELECTIONS, ticks_diff, 0, F_ALREADY_MOVED,
-            &err);
+            CHORD_SELECTIONS, ticks_diff, chord_diff,
+            F_ALREADY_MOVED, &err);
         if (!ret)
           {
             HANDLE_ERROR (
@@ -4097,12 +4099,15 @@ on_drag_end_chord (ArrangerWidget * self)
           (ArrangerObject *) self->start_object;
         double ticks_diff =
           obj->pos.ticks - obj->transient->pos.ticks;
+        int chord_diff =
+          ((ChordObject *) obj)->chord_index
+          - ((ChordObject *) obj->transient)->chord_index;
 
         GError * err = NULL;
         bool     ret =
           arranger_selections_action_perform_duplicate_chord (
-            CHORD_SELECTIONS, ticks_diff, 0, F_ALREADY_MOVED,
-            &err);
+            CHORD_SELECTIONS, ticks_diff, chord_diff,
+            F_ALREADY_MOVED, &err);
         if (!ret)
           {
             HANDLE_ERROR (
@@ -4503,7 +4508,7 @@ on_drag_end_timeline (ArrangerWidget * self)
         bool     ret =
           arranger_selections_action_perform_move_timeline (
             TL_SELECTIONS, ticks_diff, self->visible_track_diff,
-            self->lane_diff, F_ALREADY_MOVED, &err);
+            self->lane_diff, NULL, F_ALREADY_MOVED, &err);
         if (!ret)
           {
             HANDLE_ERROR (
@@ -4527,7 +4532,7 @@ on_drag_end_timeline (ArrangerWidget * self)
               arranger_selections_action_perform_duplicate_timeline (
                 TL_SELECTIONS, ticks_diff,
                 self->visible_track_diff, self->lane_diff,
-                F_ALREADY_MOVED, &err);
+                NULL, F_ALREADY_MOVED, &err);
           }
         else if (ACTION_IS (MOVING_LINK))
           {

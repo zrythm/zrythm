@@ -1118,6 +1118,58 @@ timeline_arranger_widget_gen_context_menu (
                 G_MENU_MODEL (midi_regions_submenu));
             }
 
+          if (timeline_selections_contains_only_region_types (
+                TL_SELECTIONS, REGION_TYPE_AUTOMATION))
+            {
+              GMenu * automation_regions_submenu =
+                g_menu_new ();
+
+              GMenu * tracks_submenu = g_menu_new ();
+
+              for (int i = 0; i < TRACKLIST->num_tracks; i++)
+                {
+                  Track * track = TRACKLIST->tracks[i];
+
+                  AutomationTracklist * atl =
+                    track_get_automation_tracklist (track);
+                  if (!atl)
+                    continue;
+
+                  GMenu * ats_submenu = g_menu_new ();
+
+                  for (int j = 0; j < atl->num_ats; j++)
+                    {
+                      AutomationTrack * at = atl->ats[j];
+
+                      if (!at->created)
+                        continue;
+
+                      Port * port = port_find_from_identifier (
+                        &at->port_id);
+
+                      char tmp[200];
+                      sprintf (
+                        tmp, "app.move-automation-regions::%p",
+                        port);
+                      GMenuItem * submenu_item =
+                        z_gtk_create_menu_item (
+                          port->id.label, NULL, tmp);
+                      g_menu_append_item (
+                        ats_submenu, submenu_item);
+                    }
+
+                  g_menu_append_submenu (
+                    tracks_submenu, track->name,
+                    G_MENU_MODEL (ats_submenu));
+                }
+              g_menu_append_submenu (
+                automation_regions_submenu, _ ("Move"),
+                G_MENU_MODEL (tracks_submenu));
+              g_menu_append_section (
+                menu, _ ("Automation Regions"),
+                G_MENU_MODEL (automation_regions_submenu));
+            } /* endif contains only automation regions */
+
           GMenu * bounce_submenu = g_menu_new ();
 
           menuitem = z_gtk_create_menu_item (

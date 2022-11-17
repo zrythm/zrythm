@@ -417,6 +417,7 @@ DECLARE_SIMPLE (activate_rename_arranger_object);
 DECLARE_SIMPLE (activate_create_arranger_object);
 DECLARE_SIMPLE (activate_change_region_color);
 DECLARE_SIMPLE (activate_reset_region_color);
+DECLARE_SIMPLE (activate_move_automation_regions);
 
 DECLARE_SIMPLE (activate_add_region);
 DECLARE_SIMPLE (activate_go_to_start);

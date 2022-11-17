@@ -3569,8 +3569,9 @@ arranger_object_insert_to_project (ArrangerObject * obj)
 }
 
 /**
- * Removes the object from its parent in the
- * project.
+ * Removes the object from its parent in the project.
+ *
+ * @note Also frees the object.
  */
 void
 arranger_object_remove_from_project (ArrangerObject * obj)

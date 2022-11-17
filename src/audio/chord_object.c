@@ -1,7 +1,5 @@
+// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2018-2022 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 #include <math.h>
 #include <stdlib.h>
@@ -11,6 +9,7 @@
 #include "audio/position.h"
 #include "gui/widgets/chord_object.h"
 #include "project.h"
+#include "utils/debug.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
@@ -49,6 +48,7 @@ ChordDescriptor *
 chord_object_get_chord_descriptor (const ChordObject * self)
 {
   g_return_val_if_fail (CLIP_EDITOR, NULL);
+  z_return_val_if_fail_cmp (self->chord_index, >=, 0, NULL);
   return CHORD_EDITOR->chords[self->chord_index];
 }
 

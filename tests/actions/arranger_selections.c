@@ -499,8 +499,8 @@ test_move_audio_region_and_lower_bpm (void)
     (ArrangerObject *) track->lanes[0]->regions[0], F_SELECT,
     F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_move_timeline (
-    TL_SELECTIONS, MOVE_TICKS, 0, 0, F_NOT_ALREADY_MOVED,
-    NULL);
+    TL_SELECTIONS, MOVE_TICKS, 0, 0, NULL,
+    F_NOT_ALREADY_MOVED, NULL);
 
   for (int i = 0; i < 2; i++)
     {
@@ -565,8 +565,8 @@ test_move_audio_region_and_lower_samplerate (void)
     (ArrangerObject *) track->lanes[0]->regions[0], F_SELECT,
     F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_move_timeline (
-    TL_SELECTIONS, MOVE_TICKS, 0, 0, F_NOT_ALREADY_MOVED,
-    NULL);
+    TL_SELECTIONS, MOVE_TICKS, 0, 0, NULL,
+    F_NOT_ALREADY_MOVED, NULL);
 
   for (int i = 0; i < 4; i++)
     {
@@ -623,7 +623,7 @@ test_move_timeline (void)
 
       /* do move ticks */
       arranger_selections_action_perform_move_timeline (
-        TL_SELECTIONS, MOVE_TICKS, track_diff, 0,
+        TL_SELECTIONS, MOVE_TICKS, track_diff, 0, NULL,
         F_NOT_ALREADY_MOVED, NULL);
 
       /* check */
@@ -962,10 +962,10 @@ test_duplicate_timeline (void)
               TRACKLIST, TARGET_AUDIO_TRACK_NAME);
           region_move_to_track (
             midi_track->lanes[MIDI_REGION_LANE]->regions[0],
-            new_midi_track, -1);
+            new_midi_track, -1, -1);
           region_move_to_track (
             audio_track->lanes[AUDIO_REGION_LANE]->regions[0],
-            new_audio_track, -1);
+            new_audio_track, -1, -1);
         }
       /* do move ticks */
       arranger_selections_add_ticks (
@@ -973,7 +973,7 @@ test_duplicate_timeline (void)
 
       /* do duplicate */
       arranger_selections_action_perform_duplicate_timeline (
-        TL_SELECTIONS, MOVE_TICKS, i > 0 ? 2 : 0, 0,
+        TL_SELECTIONS, MOVE_TICKS, i > 0 ? 2 : 0, 0, NULL,
         F_ALREADY_MOVED, NULL);
 
       /* check */
@@ -1064,8 +1064,8 @@ test_duplicate_automation_region (void)
     F_NO_PUBLISH_EVENTS);
 
   arranger_selections_action_perform_duplicate_timeline (
-    TL_SELECTIONS, MOVE_TICKS, 0, 0, F_NOT_ALREADY_MOVED,
-    NULL);
+    TL_SELECTIONS, MOVE_TICKS, 0, 0, NULL,
+    F_NOT_ALREADY_MOVED, NULL);
 
   r1 = at->regions[1];
   ap = r1->aps[0];
@@ -1112,10 +1112,10 @@ test_link_timeline (void)
               TRACKLIST, TARGET_AUDIO_TRACK_NAME);
           region_move_to_track (
             midi_track->lanes[MIDI_REGION_LANE]->regions[0],
-            new_midi_track, -1);
+            new_midi_track, -1, -1);
           region_move_to_track (
             audio_track->lanes[AUDIO_REGION_LANE]->regions[0],
-            new_audio_track, -1);
+            new_audio_track, -1, -1);
         }
       else
         {
@@ -1185,10 +1185,10 @@ test_link_then_duplicate (void)
               TRACKLIST, TARGET_AUDIO_TRACK_NAME);
           region_move_to_track (
             midi_track->lanes[MIDI_REGION_LANE]->regions[0],
-            new_midi_track, -1);
+            new_midi_track, -1, -1);
           region_move_to_track (
             audio_track->lanes[AUDIO_REGION_LANE]->regions[0],
-            new_audio_track, -1);
+            new_audio_track, -1, -1);
         }
       else
         {
@@ -1244,13 +1244,13 @@ test_link_then_duplicate (void)
               TRACKLIST, TARGET_AUDIO_TRACK_NAME);
           ZRegion * r =
             midi_track->lanes[MIDI_REGION_LANE]->regions[0];
-          region_move_to_track (r, new_midi_track, -1);
+          region_move_to_track (r, new_midi_track, -1, -1);
           arranger_object_select (
             (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
             F_NO_PUBLISH_EVENTS);
           r =
             audio_track->lanes[AUDIO_REGION_LANE]->regions[0];
-          region_move_to_track (r, new_audio_track, -1);
+          region_move_to_track (r, new_audio_track, -1, -1);
           arranger_object_select (
             (ArrangerObject *) r, F_SELECT, F_APPEND,
             F_NO_PUBLISH_EVENTS);
@@ -1287,7 +1287,7 @@ test_link_then_duplicate (void)
 
       /* do duplicate */
       arranger_selections_action_perform_duplicate_timeline (
-        TL_SELECTIONS, MOVE_TICKS, i > 0 ? 2 : 0, 0,
+        TL_SELECTIONS, MOVE_TICKS, i > 0 ? 2 : 0, 0, NULL,
         F_ALREADY_MOVED, NULL);
 
       /* check that new objects have no links */
@@ -1800,7 +1800,7 @@ test_duplicate_midi_regions_to_track_below (void)
 
   arranger_selections_action_perform_duplicate (
     TL_SELECTIONS, ticks, 0, 0,
-    new_midi_track->pos - midi_track->pos, 0, 0,
+    new_midi_track->pos - midi_track->pos, 0, 0, NULL,
     F_ALREADY_MOVED, NULL);
 
   /* check that new regions are created */
@@ -2345,8 +2345,8 @@ test_duplicate_audio_regions (void)
     (ArrangerObject *) track->lanes[0]->regions[0], F_SELECT,
     F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_duplicate_timeline (
-    TL_SELECTIONS, MOVE_TICKS, 0, 0, F_NOT_ALREADY_MOVED,
-    NULL);
+    TL_SELECTIONS, MOVE_TICKS, 0, 0, NULL,
+    F_NOT_ALREADY_MOVED, NULL);
 
   test_project_save_and_reload ();
 
@@ -2391,8 +2391,8 @@ test_undo_moving_midi_region_to_other_lane (void)
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_move_timeline (
-    TL_SELECTIONS, MOVE_TICKS, 0, -2, F_NOT_ALREADY_MOVED,
-    NULL);
+    TL_SELECTIONS, MOVE_TICKS, 0, -2, NULL,
+    F_NOT_ALREADY_MOVED, NULL);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
@@ -3175,6 +3175,141 @@ test_cut_automation_region (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_copy_and_move_automation_regions (void)
+{
+  test_helper_zrythm_init ();
+
+  /* create a new track */
+  Track * audio_track =
+    track_create_empty_with_action (TRACK_TYPE_AUDIO, NULL);
+
+  Position pos1, pos2;
+  position_set_to_bar (&pos1, 2);
+  position_set_to_bar (&pos2, 4);
+  AutomationTrack * fader_at = channel_get_automation_track (
+    P_MASTER_TRACK->channel, PORT_FLAG_CHANNEL_FADER);
+  g_assert_nonnull (fader_at);
+  ZRegion * r = automation_region_new (
+    &pos1, &pos2, track_get_name_hash (P_MASTER_TRACK),
+    fader_at->index, 0);
+  track_add_region (
+    P_MASTER_TRACK, r, fader_at, 0, F_GEN_NAME, 0);
+  arranger_selections_add_object (
+    (ArrangerSelections *) TL_SELECTIONS,
+    (ArrangerObject *) r);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
+
+  AutomationPoint * ap =
+    automation_point_new_float (0.5f, 0.5f, &pos1);
+  automation_region_add_ap (r, ap, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_create (
+    AUTOMATION_SELECTIONS, NULL);
+  ap = automation_point_new_float (0.6f, 0.6f, &pos2);
+  automation_region_add_ap (r, ap, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (
+    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_create (
+    AUTOMATION_SELECTIONS, NULL);
+
+  AutomationTrack * mute_at = channel_get_automation_track (
+    audio_track->channel, PORT_FLAG_FADER_MUTE);
+  g_assert_nonnull (mute_at);
+
+  /* 1st test */
+
+  /* when i == 1 we are copying */
+  for (int i = 0; i < 2; i++)
+    {
+      bool copy = i == 1;
+
+      g_assert_cmpint (fader_at->num_regions, ==, 1);
+      g_assert_cmpint (mute_at->num_regions, ==, 0);
+
+      if (copy)
+        {
+          arranger_selections_action_perform_duplicate_timeline (
+            TL_SELECTIONS, 0, 0, 0, &mute_at->port_id,
+            F_NOT_ALREADY_MOVED, NULL);
+          g_assert_cmpint (fader_at->num_regions, ==, 1);
+          g_assert_cmpint (mute_at->num_regions, ==, 1);
+          undo_manager_undo (UNDO_MANAGER, NULL);
+          g_assert_cmpint (fader_at->num_regions, ==, 1);
+          g_assert_cmpint (mute_at->num_regions, ==, 0);
+          undo_manager_redo (UNDO_MANAGER, NULL);
+          g_assert_cmpint (fader_at->num_regions, ==, 1);
+          g_assert_cmpint (mute_at->num_regions, ==, 1);
+          undo_manager_undo (UNDO_MANAGER, NULL);
+        }
+      else
+        {
+          arranger_selections_action_perform_move_timeline (
+            TL_SELECTIONS, 0, 0, 0, &mute_at->port_id,
+            F_NOT_ALREADY_MOVED, NULL);
+          g_assert_cmpint (fader_at->num_regions, ==, 0);
+          g_assert_cmpint (mute_at->num_regions, ==, 1);
+          undo_manager_undo (UNDO_MANAGER, NULL);
+          g_assert_cmpint (fader_at->num_regions, ==, 1);
+          g_assert_cmpint (mute_at->num_regions, ==, 0);
+          undo_manager_redo (UNDO_MANAGER, NULL);
+          g_assert_cmpint (fader_at->num_regions, ==, 0);
+          g_assert_cmpint (mute_at->num_regions, ==, 1);
+          undo_manager_undo (UNDO_MANAGER, NULL);
+        }
+
+      g_assert_cmpint (fader_at->num_regions, ==, 1);
+      g_assert_cmpint (mute_at->num_regions, ==, 0);
+    }
+
+  /* 2nd test */
+
+  /* create 2 copies in the empty lane a bit behind */
+  arranger_object_select (
+    (ArrangerObject *) fader_at->regions[0], F_SELECT,
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_duplicate_timeline (
+    TL_SELECTIONS, -200, 0, 0, &mute_at->port_id,
+    F_NOT_ALREADY_MOVED, NULL);
+  g_assert_cmpint (fader_at->num_regions, ==, 1);
+  g_assert_cmpint (mute_at->num_regions, ==, 1);
+  arranger_object_select (
+    (ArrangerObject *) fader_at->regions[0], F_SELECT,
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_duplicate_timeline (
+    TL_SELECTIONS, -400, 0, 0, &mute_at->port_id,
+    F_NOT_ALREADY_MOVED, NULL);
+  g_assert_cmpint (fader_at->num_regions, ==, 1);
+  g_assert_cmpint (mute_at->num_regions, ==, 2);
+
+  /* move the copy to the first lane */
+  arranger_object_select (
+    (ArrangerObject *) mute_at->regions[0], F_SELECT,
+    F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_move_timeline (
+    TL_SELECTIONS, 0, 0, 0, &fader_at->port_id,
+    F_NOT_ALREADY_MOVED, NULL);
+  g_assert_cmpint (fader_at->num_regions, ==, 2);
+  g_assert_cmpint (mute_at->num_regions, ==, 1);
+
+  /* undo and verify all ok */
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  g_assert_cmpint (fader_at->num_regions, ==, 1);
+  g_assert_cmpint (mute_at->num_regions, ==, 2);
+  undo_manager_redo (UNDO_MANAGER, NULL);
+  g_assert_cmpint (fader_at->num_regions, ==, 2);
+  g_assert_cmpint (mute_at->num_regions, ==, 1);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  g_assert_cmpint (fader_at->num_regions, ==, 1);
+  g_assert_cmpint (mute_at->num_regions, ==, 2);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char * argv[])
 {
@@ -3182,6 +3317,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test copy and move automation regions",
+    (GTestFunc) test_copy_and_move_automation_regions);
   g_test_add_func (
     TEST_PREFIX "test audio functions",
     (GTestFunc) test_audio_functions);

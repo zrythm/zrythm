@@ -637,13 +637,22 @@ automation_track_remove_region (
 {
   g_return_if_fail (IS_REGION (region));
 
+  ZRegion * clip_editor_region =
+    CLIP_EDITOR ? clip_editor_get_region (CLIP_EDITOR) : NULL;
+
   array_delete (self->regions, self->num_regions, region);
 
   for (int i = region->id.idx; i < self->num_regions; i++)
     {
       ZRegion * r = self->regions[i];
+
       r->id.idx = i;
       region_update_identifier (r);
+      if (r == clip_editor_region)
+        {
+          clip_editor_set_region (
+            CLIP_EDITOR, r, F_NO_PUBLISH_EVENTS);
+        }
     }
 }
 

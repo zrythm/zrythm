@@ -509,43 +509,26 @@ void
 region_update_link_group (ZRegion * self);
 
 /**
- * Moves the given ZRegion to the given TrackLane.
+ * Moves the ZRegion to the given Track, maintaining the
+ * selection status of the ZRegion.
  *
- * Works with TrackLane's of other Track's as well.
+ * Assumes that the ZRegion is already in a TrackLane or
+ * AutomationTrack.
  *
- * Maintains the selection status of the
- * Region.
- *
- * Assumes that the ZRegion is already in a
- * TrackLane.
- *
- * @param index_in_lane Index in lane in the
- *   new track to insert the region to, or -1 to
- *   append.
- */
-void
-region_move_to_lane (
-  ZRegion *   region,
-  TrackLane * lane,
-  int         index_in_lane);
-
-/**
- * Moves the ZRegion to the given Track, maintaining
- * the selection status of the ZRegion and the
- * TrackLane position.
- *
- * Assumes that the ZRegion is already in a
- * TrackLane.
- *
- * @param index_in_lane Index in lane in the
- *   new track to insert the region to, or -1 to
- *   append.
+ * @param lane_or_at_index If MIDI or audio, lane position.
+ *   If automation, automation track index in the automation
+ *   tracklist. If -1, the track lane or automation track
+ *   index will be inferred from the region.
+ * @param index If MIDI or audio, index in lane in the new
+ *   track to insert the region to, or -1 to append. If
+ *   automation, index in the automation track.
  */
 void
 region_move_to_track (
   ZRegion * region,
   Track *   track,
-  int       index_in_lane);
+  int       lane_or_at_index,
+  int       index);
 
 /**
  * Returns if the given ZRegion type can exist

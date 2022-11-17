@@ -696,15 +696,15 @@ move_regions_to_new_lanes_or_tracks_or_ats (
               TRACKLIST, region_track, vis_track_diff);
           g_warn_if_fail (track_to_move_to);
 
-          region_move_to_track (region, track_to_move_to, -1);
+          region_move_to_track (
+            region, track_to_move_to, -1, -1);
         }
       else if (lane_diff != 0)
         {
           TrackLane * lane = region_get_lane (region);
           g_return_val_if_fail (region && lane, -1);
 
-          TrackLane * lane_to_move_to = NULL;
-          int         new_lane_pos = lane->pos + lane_diff;
+          int new_lane_pos = lane->pos + lane_diff;
           g_return_val_if_fail (new_lane_pos >= 0, -1);
           Track * track = track_lane_get_track (lane);
           bool    new_lanes_created =
@@ -713,14 +713,12 @@ move_regions_to_new_lanes_or_tracks_or_ats (
             {
               track->last_lane_created = new_lane_pos;
             }
-          lane_to_move_to = track->lanes[new_lane_pos];
-          g_warn_if_fail (lane_to_move_to);
 
-          region_move_to_lane (region, lane_to_move_to, -1);
+          region_move_to_track (
+            region, track, new_lane_pos, -1);
         }
       else if (vis_at_diff != 0)
         {
-          g_warning ("\t\t\t\t\t\\t MOVING %d", vis_at_diff);
           AutomationTrack * at =
             region_get_automation_track (region);
           g_return_val_if_fail (region && at, -1);

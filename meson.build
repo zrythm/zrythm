@@ -1070,7 +1070,7 @@ endif
 
 carla_host_plugin_dep = dependency (
   'carla-host-plugin', version: '>=2.6.0',
-  required: get_option ('carla'),
+  required: true, #get_option ('carla'),
   static: all_static)
 have_carla = carla_host_plugin_dep.found ()
 if have_carla

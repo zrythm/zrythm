@@ -7,6 +7,7 @@
 #include "audio/chord_region.h"
 #include "audio/chord_track.h"
 #include "audio/clip.h"
+#include "audio/control_port.h"
 #include "audio/instrument_track.h"
 #include "audio/midi_note.h"
 #include "audio/midi_region.h"
@@ -146,24 +147,32 @@ region_set_lane (ZRegion * self, const TrackLane * const lane)
 }
 
 /**
- * Moves the ZRegion to the given Track, maintaining
- * the selection status of the ZRegion and the
- * TrackLane position.
+ * Moves the ZRegion to the given Track, maintaining the
+ * selection status of the ZRegion.
  *
- * Assumes that the ZRegion is already in a
- * TrackLane.
+ * Assumes that the ZRegion is already in a TrackLane or
+ * AutomationTrack.
  *
- * @param index_in_lane Index in lane in the
- *   new track to insert the region to, or -1 to
- *   append.
+ * @param lane_or_at_index If MIDI or audio, lane position.
+ *   If automation, automation track index in the automation
+ *   tracklist. If -1, the track lane or automation track
+ *   index will be inferred from the region.
+ * @param index If MIDI or audio, index in lane in the new
+ *   track to insert the region to, or -1 to append. If
+ *   automation, index in the automation track.
  */
 void
 region_move_to_track (
   ZRegion * region,
   Track *   track,
-  int       index_in_lane)
+  int       lane_or_at_index,
+  int       index)
 {
   g_return_if_fail (IS_REGION (region) && track);
+
+  Track * region_track =
+    arranger_object_get_track ((ArrangerObject *) region);
+  /*bool same_track = region_track == track;*/
 
   g_message (
     "moving region %s to track %s", region->name, track->name);
@@ -181,56 +190,107 @@ region_move_to_track (
         link_group, region, false, true);
     }
 
-  Track * region_track =
-    arranger_object_get_track ((ArrangerObject *) region);
-  g_return_if_fail (region_track);
+  bool      selected = region_is_selected (region);
+  ZRegion * clip_editor_region =
+    clip_editor_get_region (CLIP_EDITOR);
 
-  if (region_track == track)
-    return;
-
-  int selected = region_is_selected (region);
-  int lane_pos = region->id.lane_pos;
-
-  /* create lanes if they don't exist */
-  track_create_missing_lanes (track, lane_pos);
-
-  /* remove the region from its old track */
-  track_remove_region (
-    region_track, region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
-
-  /* add the region to its new track */
-  if (index_in_lane >= 0)
+  if (region_track)
     {
-      track_insert_region (
-        track, region, NULL, lane_pos, index_in_lane,
-        F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
+      /* remove the region from its old track */
+      track_remove_region (
+        region_track, region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
+    }
+
+  int lane_pos =
+    lane_or_at_index >= 0
+      ? lane_or_at_index
+      : region->id.lane_pos;
+  int at_pos =
+    lane_or_at_index >= 0 ? lane_or_at_index : region->id.at_idx;
+
+  if (region->id.type == REGION_TYPE_AUTOMATION)
+    {
+      AutomationTrack * at =
+        track->automation_tracklist.ats[at_pos];
+
+      /* convert the automation points to match the new
+       * automatable */
+      Port * port = port_find_from_identifier (&at->port_id);
+      g_return_if_fail (IS_PORT_AND_NONNULL (port));
+      for (int i = 0; i < region->num_aps; i++)
+        {
+          AutomationPoint * ap = region->aps[i];
+          ap->fvalue = control_port_normalized_val_to_real (
+            port, ap->normalized_val);
+        }
+
+      /* add the region to its new track */
+      if (index >= 0)
+        {
+          track_insert_region (
+            track, region, at, -1, index, F_NO_GEN_NAME,
+            F_NO_PUBLISH_EVENTS);
+        }
+      else
+        {
+          track_add_region (
+            track, region, at, -1, F_NO_GEN_NAME,
+            F_NO_PUBLISH_EVENTS);
+        }
+      g_warn_if_fail (region->id.at_idx == at->index);
+      region_set_automation_track (region, at);
     }
   else
     {
-      track_add_region (
-        track, region, NULL, lane_pos, F_NO_GEN_NAME,
-        F_NO_PUBLISH_EVENTS);
+      /* create lanes if they don't exist */
+      track_create_missing_lanes (track, lane_pos);
+
+      /* add the region to its new track */
+      if (index >= 0)
+        {
+          track_insert_region (
+            track, region, NULL, lane_pos, index,
+            F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
+        }
+      else
+        {
+          track_add_region (
+            track, region, NULL, lane_pos, F_NO_GEN_NAME,
+            F_NO_PUBLISH_EVENTS);
+        }
+      g_warn_if_fail (region->id.lane_pos == lane_pos);
+      g_warn_if_fail (
+        track->lanes[lane_pos]->num_regions > 0
+        && track->lanes[lane_pos]->regions[region->id.idx]
+             == region);
+      region_set_lane (region, track->lanes[lane_pos]);
+
+      track_create_missing_lanes (track, lane_pos);
+
+      if (region_track)
+        {
+          /* remove empty lanes if the region was the last on
+           * its track lane */
+          track_remove_empty_last_lanes (region_track);
+        }
+
+      if (link_group)
+        {
+          region_link_group_add_region (link_group, region);
+        }
     }
-  g_warn_if_fail (region->id.lane_pos == lane_pos);
-  g_warn_if_fail (
-    track->lanes[lane_pos]->num_regions > 0
-    && track->lanes[lane_pos]->regions[region->id.idx]
-         == region);
-  region_set_lane (region, track->lanes[lane_pos]);
+
+  /* reset the clip editor region because
+   * track_remove_region clears it */
+  if (region == clip_editor_region)
+    {
+      clip_editor_set_region (CLIP_EDITOR, region, true);
+    }
 
   /* reselect if necessary */
   arranger_object_select (
     (ArrangerObject *) region, selected, F_APPEND,
     F_NO_PUBLISH_EVENTS);
-
-  /* remove empty lanes if the region was the
-   * last on its track lane */
-  track_remove_empty_last_lanes (region_track);
-
-  if (link_group)
-    {
-      region_link_group_add_region (link_group, region);
-    }
 
   region_print_to_str (region, buf, sz);
   g_debug ("after: %s", buf);
@@ -352,70 +412,6 @@ region_stretch (ZRegion * self, double ratio)
 
   obj->use_cache = false;
   self->stretching = false;
-}
-
-/**
- * Moves the given ZRegion to the given TrackLane.
- *
- * Works with TrackLane's of other Track's as well.
- *
- * Maintains the selection status of the
- * Region.
- *
- * Assumes that the ZRegion is already in a
- * TrackLane.
- *
- * @param index_in_lane Index in lane in the
- *   new track to insert the region to, or -1 to
- *   append.
- */
-void
-region_move_to_lane (
-  ZRegion *   region,
-  TrackLane * lane,
-  int         index_in_lane)
-{
-  g_return_if_fail (IS_REGION (region) && lane);
-
-  Track * region_track =
-    arranger_object_get_track ((ArrangerObject *) region);
-  g_return_if_fail (region_track);
-
-  int selected = region_is_selected (region);
-  int is_clip_editor_region =
-    region == clip_editor_get_region (CLIP_EDITOR);
-
-  Track * lane_track = track_lane_get_track (lane);
-  track_remove_region (
-    region_track, region, F_NO_PUBLISH_EVENTS, F_NO_FREE);
-  if (index_in_lane >= 0)
-    {
-      track_insert_region (
-        lane_track, region, NULL, lane->pos, index_in_lane,
-        F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
-    }
-  else
-    {
-      track_add_region (
-        lane_track, region, NULL, lane->pos, F_NO_GEN_NAME,
-        F_NO_PUBLISH_EVENTS);
-    }
-
-  /* reset the clip editor region because
-   * track_remove_region clears it */
-  if (is_clip_editor_region)
-    {
-      clip_editor_set_region (CLIP_EDITOR, region, true);
-    }
-
-  arranger_object_select (
-    (ArrangerObject *) region, selected, F_APPEND,
-    F_NO_PUBLISH_EVENTS);
-  region_set_lane (region, lane);
-  g_warn_if_fail (lane->pos == region->id.lane_pos);
-
-  track_create_missing_lanes (region_track, lane->pos);
-  track_remove_empty_last_lanes (region_track);
 }
 
 /**

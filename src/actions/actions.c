@@ -2705,6 +2705,19 @@ DEFINE_SIMPLE (activate_reset_region_color)
   arranger_selections_free_full (sel_before);
 }
 
+DEFINE_SIMPLE (activate_move_automation_regions)
+{
+  size_t       size;
+  const char * _str = g_variant_get_string (variant, &size);
+  Port *       port = NULL;
+  sscanf (_str, "%p", &port);
+  g_return_if_fail (IS_PORT_AND_NONNULL (port));
+
+  arranger_selections_action_perform_move_timeline (
+    TL_SELECTIONS, 0, 0, 0, &port->id, F_NOT_ALREADY_MOVED,
+    NULL);
+}
+
 DEFINE_SIMPLE (activate_add_region)
 {
   if (TRACKLIST_SELECTIONS->num_tracks == 0)
@@ -2792,7 +2805,8 @@ DEFINE_SIMPLE (activate_nudge_selection)
 
   GError * err = NULL;
   bool     ret = arranger_selections_action_perform_move (
-        sel, ticks, 0, 0, 0, 0, 0, F_NOT_ALREADY_MOVED, &err);
+        sel, ticks, 0, 0, 0, 0, 0, NULL, F_NOT_ALREADY_MOVED,
+        &err);
   if (!ret)
     {
       HANDLE_ERROR (
