@@ -550,16 +550,18 @@ move_regions_to_new_lanes_or_tracks_or_ats (
   /* only 1 operation supported at once */
   if (vis_track_diff != 0)
     {
-      g_return_if_fail (lane_diff == 0 && vis_at_diff == 0);
+      g_return_val_if_fail (
+        lane_diff == 0 && vis_at_diff == 0, false);
     }
   if (lane_diff != 0)
     {
-      g_return_if_fail (
-        vis_track_diff == 0 && vis_at_diff == 0);
+      g_return_val_if_fail (
+        vis_track_diff == 0 && vis_at_diff == 0, false);
     }
   if (vis_at_diff != 0)
     {
-      g_return_if_fail (lane_diff == 0 && vis_track_diff == 0);
+      g_return_val_if_fail (
+        lane_diff == 0 && vis_track_diff == 0, false);
     }
 
   /* if there are objects other than regions, moving is not

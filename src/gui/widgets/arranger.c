@@ -1881,7 +1881,7 @@ arranger_widget_on_key_press (
       return false;
     }
   else
-    g_debug ("not ignoring keyval %hx", keyval);
+    g_debug ("not ignoring keyval %x", keyval);
 
   /* if key was Esc, cancel any drag and adjust
    * the undo/redo stacks */
