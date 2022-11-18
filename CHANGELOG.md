@@ -6,7 +6,7 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-beta.4.2.1] - 2022-11-18
+## [1.0.0-beta.4.2.3] - 2022-11-18
 ### Added
 - Run demo project on first run if found
 - Allow moving automation regions to other automation lanes
