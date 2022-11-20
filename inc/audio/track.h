@@ -684,6 +684,12 @@ bool
 track_type_has_channel (TrackType type);
 
 static inline bool
+track_type_can_have_direct_out (TrackType type)
+{
+  return type != TRACK_TYPE_MASTER;
+}
+
+static inline bool
 track_type_can_have_region_type (
   TrackType  type,
   RegionType region_type)

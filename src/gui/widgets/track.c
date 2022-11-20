@@ -827,11 +827,19 @@ show_context_menu (TrackWidget * self, double x, double y)
           g_menu_append_item (channel_submenu, menuitem);
         }
 
-      g_menu_append_section (
-        menu, _ ("Channel"), G_MENU_MODEL (channel_submenu));
-
-      /* change direct out */
       GMenu * direct_out_submenu = g_menu_new ();
+
+      if (track_type_can_have_direct_out (track->type))
+        {
+          /* add "route to new group" */
+          menuitem = z_gtk_create_menu_item (
+            _ ("New direct out"), NULL,
+            "app.selected-tracks-direct-out-new");
+          g_menu_append_item (direct_out_submenu, menuitem);
+        }
+
+      /* direct out targets */
+      GMenu * target_submenu = g_menu_new ();
       bool    have_groups = false;
       for (int i = 0; i < TRACKLIST->num_tracks; i++)
         {
@@ -839,7 +847,8 @@ show_context_menu (TrackWidget * self, double x, double y)
 
           if (
             !TRACK_CAN_BE_GROUP_TARGET (cur_tr)
-            || track->out_signal_type != cur_tr->in_signal_type)
+            || track->out_signal_type != cur_tr->in_signal_type
+            || track == cur_tr)
             continue;
 
           char tmp[600];
@@ -848,22 +857,27 @@ show_context_menu (TrackWidget * self, double x, double y)
             z_gtk_create_menu_item (cur_tr->name, NULL, tmp);
           g_menu_item_set_action_and_target_value (
             menuitem, tmp, g_variant_new_int32 (cur_tr->pos));
-          g_menu_append_item (direct_out_submenu, menuitem);
+          g_menu_append_item (target_submenu, menuitem);
           have_groups = true;
         }
       if (have_groups)
         {
           g_menu_append_section (
-            menu, _ ("Direct out"),
+            direct_out_submenu, _ ("Route Target"),
+            G_MENU_MODEL (target_submenu));
+        }
+
+      if (track_type_can_have_direct_out (track->type))
+        {
+          g_menu_append_submenu (
+            channel_submenu, _ ("Direct Output"),
             G_MENU_MODEL (direct_out_submenu));
         }
 
-      /* add "route to new group */
-      menuitem = z_gtk_create_menu_item (
-        _ ("New direct out"), NULL,
-        "app.selected-tracks-direct-out-new");
-      g_menu_append_item (menu, menuitem);
-    }
+      g_menu_append_section (
+        menu, _ ("Channel"), G_MENU_MODEL (channel_submenu));
+
+    } /* endif track has channel */
 
   /* add enable/disable */
   if (tracklist_selections_contains_enabled_track (
