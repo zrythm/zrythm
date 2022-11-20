@@ -195,6 +195,27 @@ automation_arranger_widget_gen_context_menu (
 
   if (ap)
     {
+      GMenu * edit_submenu = g_menu_new ();
+
+      /* create cut, copy, duplicate, delete */
+      menuitem = CREATE_CUT_MENU_ITEM ("app.cut");
+      g_menu_append_item (edit_submenu, menuitem);
+      menuitem = CREATE_COPY_MENU_ITEM ("app.copy");
+      g_menu_append_item (edit_submenu, menuitem);
+      menuitem = CREATE_DUPLICATE_MENU_ITEM ("app.duplicate");
+      g_menu_append_item (edit_submenu, menuitem);
+      menuitem = CREATE_DELETE_MENU_ITEM ("app.delete");
+      g_menu_append_item (edit_submenu, menuitem);
+
+      char str[100];
+      sprintf (str, "app.arranger-object-view-info::%p", obj);
+      menuitem =
+        z_gtk_create_menu_item (_ ("View info"), NULL, str);
+      g_menu_append_item (edit_submenu, menuitem);
+
+      g_menu_append_section (
+        menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
+
       /* add curve algorithm selection */
       GMenu * curve_algorithm_submenu = g_menu_new ();
       for (int i = 0; i < NUM_CURVE_ALGORITHMS; i++)

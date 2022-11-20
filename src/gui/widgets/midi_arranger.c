@@ -450,8 +450,10 @@ midi_arranger_widget_gen_context_menu (
       menuitem = CREATE_DUPLICATE_MENU_ITEM ("app.duplicate");
       g_menu_append_item (menu, menuitem);
 
-      menuitem = z_gtk_create_menu_item (
-        _ ("View info"), NULL, "app.duplicate");
+      char str[100];
+      sprintf (str, "app.arranger-object-view-info::%p", mn);
+      menuitem =
+        z_gtk_create_menu_item (_ ("View info"), NULL, str);
       g_menu_append_item (menu, menuitem);
     }
   else
