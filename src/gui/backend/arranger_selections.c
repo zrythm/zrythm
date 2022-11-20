@@ -2309,6 +2309,13 @@ arranger_selections_can_be_pasted (ArrangerSelections * self)
   ZRegion *  r = clip_editor_get_region (CLIP_EDITOR);
   Position * pos = PLAYHEAD;
 
+  if (arranger_selections_contains_unclonable_object (self))
+    {
+      g_message (
+        "selections contain an unclonable object, cannot paste");
+      return false;
+    }
+
   switch (self->type)
     {
     case ARRANGER_SELECTIONS_TYPE_TIMELINE:
