@@ -276,14 +276,17 @@ arranger_selections_redraw (
 #endif
 
 /**
- * Adds each object in the selection to the given
- * region (if applicable).
+ * Adds each object in the selection to the given region (if
+ * applicable).
+ *
+ * @param clone Whether to clone each object instead of adding
+ *   it directly.
  */
-NONNULL
 void
 arranger_selections_add_to_region (
   ArrangerSelections * self,
-  ZRegion *            region);
+  ZRegion *            region,
+  bool                 clone);
 
 /**
  * Moves the selections by the given

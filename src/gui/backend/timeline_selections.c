@@ -177,6 +177,7 @@ timeline_selections_get_first_track (TimelineSelections * ts)
 #undef CHECK_POS
 }
 
+#if 0
 /**
  * Gets index of the lowest track in the selections.
  *
@@ -187,9 +188,9 @@ get_lowest_track_pos (TimelineSelections * ts)
 {
   int track_pos = INT_MAX;
 
-#define CHECK_POS(id) \
-  { \
-  }
+#  define CHECK_POS(id) \
+    { \
+    }
 
   for (int i = 0; i < ts->num_regions; i++)
     {
@@ -215,6 +216,7 @@ get_lowest_track_pos (TimelineSelections * ts)
 
   return track_pos;
 }
+#endif
 
 /**
  * Replaces the track positions in each object with
@@ -250,45 +252,10 @@ timeline_selections_set_vis_track_indices (
 }
 
 /**
- * Saves the track positions in the poses array
- * and the size in num_poses.
- */
-static void
-get_track_poses (
-  TimelineSelections * ts,
-  int *                poses,
-  int *                num_poses)
-{
-  int i;
-  for (i = 0; i < ts->num_regions; i++)
-    {
-      ZRegion * r = ts->regions[i];
-      Track *   region_track =
-        arranger_object_get_track ((ArrangerObject *) r);
-      if (!array_contains_int (
-            poses, *num_poses, region_track->pos))
-        {
-          array_append (poses, *num_poses, region_track->pos);
-        }
-    }
-  if (ts->num_scale_objects > 0)
-    if (!array_contains_int (
-          poses, *num_poses, ts->chord_track_vis_index))
-      {
-        array_append (
-          poses, *num_poses, ts->chord_track_vis_index);
-      }
-  if (ts->num_markers > 0)
-    if (!array_contains_int (
-          poses, *num_poses, ts->marker_track_vis_index))
-      {
-        array_append (
-          poses, *num_poses, ts->marker_track_vis_index);
-      }
-}
-
-/**
- * Returns if the selections can be pasted.
+ * Returns whether the selections can be pasted.
+ *
+ * Zrythm only supports pasting all the selections into a
+ * single destination track.
  *
  * @param pos Position to paste to.
  * @param idx Track index to start pasting to.
@@ -299,72 +266,34 @@ timeline_selections_can_be_pasted (
   Position *           pos,
   const int            idx)
 {
-  int       i, j;
-  ZRegion * r;
-  /*Marker * m;*/
-  /*ScaleObject * s;*/
-  int     lowest_track_pos = get_lowest_track_pos (ts);
-  Track * cur_track = TRACKLIST_SELECTIONS->tracks[0];
-  int     poses[800];
-  int     num_poses = 0;
-  get_track_poses (ts, poses, &num_poses);
-  if (!cur_track || num_poses <= 0 || lowest_track_pos == INT_MAX)
+  Track * tr = TRACKLIST_SELECTIONS->tracks[0];
+  if (!tr)
     return false;
 
-  /*check if enough visible tracks exist and the*/
-  /*content can be pasted in each*/
-  int ts_pos;
-  for (i = 0; i < num_poses; i++)
+  for (int j = 0; j < ts->num_regions; j++)
     {
-      ts_pos = poses[i];
-      g_return_val_if_fail (ts_pos >= 0, 0);
+      ZRegion * r = ts->regions[j];
 
-      /*[> track at the new position <]*/
-      Track * tr = tracklist_get_visible_track_after_delta (
-        TRACKLIST, cur_track, ts_pos);
-      if (!tr)
+      /* automation regions can't be copy-pasted this way */
+      if (r->id.type == REGION_TYPE_AUTOMATION)
+        return false;
+
+      /* check if this track can host this region */
+      if (!track_type_can_host_region_type (
+            tr->type, r->id.type))
         {
           g_message (
-            "no track at current pos (%d) + "
-            "ts pos (%d)",
-            cur_track->pos, ts_pos);
+            "track %s can't host region type %d", tr->name,
+            r->id.type);
           return false;
         }
-
-      /* check if content matches */
-      for (j = 0; j < ts->num_regions; j++)
-        {
-          /* get region at this ts_pos */
-          r = ts->regions[j];
-          Track * region_track =
-            arranger_object_get_track ((ArrangerObject *) r);
-          if (region_track->pos != ts_pos)
-            continue;
-
-          /*check if this track can host this*/
-          /*region*/
-          if (!track_type_can_host_region_type (
-                tr->type, r->id.type))
-            {
-              g_message (
-                "track %s can't host region type %d",
-                tr->name, r->id.type);
-              return false;
-            }
-        }
-
-      /* check for chord track/marker track too */
-      if (
-        ts->num_scale_objects > 0
-        && ts_pos == ts->chord_track_vis_index
-        && tr->type != TRACK_TYPE_CHORD)
-        return false;
-      if (
-        ts->num_markers > 0
-        && ts_pos == ts->marker_track_vis_index
-        && tr->type != TRACK_TYPE_MARKER)
-        return false;
     }
+
+  if (ts->num_scale_objects > 0 && tr->type != TRACK_TYPE_CHORD)
+    return false;
+
+  if (ts->num_markers > 0 && tr->type != TRACK_TYPE_MARKER)
+    return false;
 
   return true;
 }

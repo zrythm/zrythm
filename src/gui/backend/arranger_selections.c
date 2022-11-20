@@ -972,13 +972,17 @@ arranger_selections_get_end_pos (
 }
 
 /**
- * Adds each object in the selection to the given
- * region (if applicable).
+ * Adds each object in the selection to the given region (if
+ * applicable).
+ *
+ * @param clone Whether to clone each object instead of adding
+ *   it directly.
  */
 void
 arranger_selections_add_to_region (
   ArrangerSelections * self,
-  ZRegion *            region)
+  ZRegion *            region,
+  bool                 clone)
 {
   switch (self->type)
     {
@@ -990,6 +994,10 @@ arranger_selections_add_to_region (
           {
             ArrangerObject * obj =
               (ArrangerObject *) mas->midi_notes[i];
+            if (clone)
+              {
+                obj = arranger_object_clone (obj);
+              }
             region_add_arranger_object (
               region, obj, F_NO_PUBLISH_EVENTS);
           }
@@ -1003,6 +1011,10 @@ arranger_selections_add_to_region (
           {
             ArrangerObject * obj =
               (ArrangerObject *) as->automation_points[i];
+            if (clone)
+              {
+                obj = arranger_object_clone (obj);
+              }
             region_add_arranger_object (
               region, obj, F_NO_PUBLISH_EVENTS);
           }
@@ -1015,6 +1027,10 @@ arranger_selections_add_to_region (
           {
             ArrangerObject * obj =
               (ArrangerObject *) cs->chord_objects[i];
+            if (clone)
+              {
+                obj = arranger_object_clone (obj);
+              }
             region_add_arranger_object (
               region, obj, F_NO_PUBLISH_EVENTS);
           }
@@ -2332,10 +2348,9 @@ arranger_selections_paste_to_pos (
 {
   g_return_if_fail (IS_ARRANGER_SELECTIONS (self));
 
-  /* FIXME this is not free'd properly and also
-   * its objects are directly used. its objects
-   * must be cloned if used and then this whole
-   * instance should be freed */
+  /* note: the objects in these selections will become the
+   * actual project objects so they should not be free'd
+   * here */
   ArrangerSelections * clone_sel =
     arranger_selections_clone (self);
   g_return_if_fail (clone_sel);
@@ -2357,6 +2372,7 @@ arranger_selections_paste_to_pos (
       TimelineSelections * ts =
         (TimelineSelections *) clone_sel;
       Track * track = TRACKLIST_SELECTIONS->tracks[0];
+      g_return_if_fail (track);
 
       arranger_selections_add_ticks (
         clone_sel, pos->ticks - first_obj_pos.ticks);
@@ -2365,26 +2381,14 @@ arranger_selections_paste_to_pos (
       for (int i = 0; i < ts->num_regions; i++)
         {
           ZRegion * r = ts->regions[i];
-          g_critical ("FIXME get proper delta");
-          Track * region_track =
-            tracklist_get_visible_track_after_delta (
-              TRACKLIST, track,
-              /* used to be track pos stored in
-               * region identifier */
-              0);
-          g_return_if_fail (region_track);
-          AutomationTrack * at = NULL;
+
+          /* automation not allowed to be pasted this way */
           if (r->id.type == REGION_TYPE_AUTOMATION)
-            {
-              at =
-                region_track->automation_tracklist
-                  .ats[r->id.at_idx];
-            }
-          /* FIXME need to save visible automation
-           * track offsets */
+            continue;
+
           track_add_region (
-            track, r, at, at ? -1 : r->id.lane_pos,
-            F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
+            track, r, NULL, r->id.lane_pos, F_NO_GEN_NAME,
+            F_NO_PUBLISH_EVENTS);
         }
 
       for (int i = 0; i < ts->num_scale_objects; i++)
@@ -2405,7 +2409,8 @@ arranger_selections_paste_to_pos (
       ArrangerObject * r_obj = (ArrangerObject *) region;
 
       /* add selections to region */
-      arranger_selections_add_to_region (clone_sel, region);
+      arranger_selections_add_to_region (
+        clone_sel, region, F_NO_CLONE);
       arranger_selections_add_ticks (
         clone_sel,
         (pos->ticks - r_obj->pos.ticks) - first_obj_pos.ticks);
@@ -2422,6 +2427,8 @@ arranger_selections_paste_to_pos (
             err, "%s", _ ("Failed to paste selections"));
         }
     }
+
+  arranger_selections_free (clone_sel);
 }
 
 /**

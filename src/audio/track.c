@@ -1213,8 +1213,8 @@ track_remove_from_folder_parents (Track * self)
 }
 
 /**
- * Returns if the given TrackType can host the
- * given RegionType.
+ * Returns if the given TrackType can host the given
+ * RegionType.
  */
 int
 track_type_can_host_region_type (

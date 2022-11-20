@@ -128,7 +128,10 @@ timeline_selections_set_vis_track_indices (
   TimelineSelections * ts);
 
 /**
- * Returns if the selections can be pasted.
+ * Returns whether the selections can be pasted.
+ *
+ * Zrythm only supports pasting all the selections into a
+ * single destination track.
  *
  * @param pos Position to paste to.
  * @param idx Track index to start pasting to.
