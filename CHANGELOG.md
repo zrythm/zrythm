@@ -6,6 +6,21 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.3.1] - 2022-11-21
+### Added
+- Add "View Info" context menu option to timeline and automation editor
+
+### Changed
+- Reorganize Direct Out submenu in track context menu
+- Only allow pasting all the copied info into the selected track instead of spreading the paste across multiple tracks
+
+### Fixed
+- Fix "View Info" in piano roll doing "Duplicate" instead
+- Fix object info dialog contents being invisible
+- Fix incorrectly allowing to set a track's output to itself
+- Fix copy-paste being broken in arrangers
+- Fix incorrectly allowing to copy-paste unclonable objects like the start/end markers
+
 ## [1.0.0-beta.4.2.3] - 2022-11-18
 ### Added
 - Run demo project on first run if found
