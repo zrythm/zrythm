@@ -360,4 +360,7 @@
 #define Z_F_USE_SNAPSHOTS 1
 #define Z_F_NO_USE_SNAPSHOTS 0
 
+#define Z_F_SHOW_NOTIFICATION 1
+#define Z_F_NO_SHOW_NOTIFICATION 0
+
 #endif

@@ -1269,7 +1269,9 @@ project_load (const char * filename, const bool is_template)
 
   if (is_template || !filename)
     {
-      project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
+      project_save (
+        PROJECT, PROJECT->dir, F_NOT_BACKUP,
+        Z_F_NO_SHOW_NOTIFICATION, F_NO_ASYNC);
     }
 
   PROJECT->last_saved_action =
@@ -1485,7 +1487,9 @@ project_autosave_cb (void * data)
     }
 
   /* ok to save */
-  project_save (PROJECT, PROJECT->dir, 1, 1, F_ASYNC);
+  project_save (
+    PROJECT, PROJECT->dir, F_BACKUP, Z_F_SHOW_NOTIFICATION,
+    F_ASYNC);
   PROJECT->last_autosave_time = cur_time;
 
 post_save_sem_and_continue:
@@ -2094,7 +2098,13 @@ project_clone (const Project * src, bool for_backup)
       src->port_connections_manager);
   self->midi_mappings =
     midi_mappings_clone (src->midi_mappings);
-  self->undo_manager = undo_manager_clone (src->undo_manager);
+
+  /* no undo history in backups */
+  if (!for_backup)
+    {
+      self->undo_manager =
+        undo_manager_clone (src->undo_manager);
+    }
 
   g_message ("finished cloning project");
 
