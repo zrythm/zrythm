@@ -179,12 +179,6 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   int we = self->last_width_extent;
   int he = self->last_height_extent;
-  if (width < we)
-    {
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self), we + Z_CAIRO_TEXT_PADDING * 2,
-        height);
-    }
   gtk_snapshot_save (snapshot);
   gtk_snapshot_translate (
     snapshot,
