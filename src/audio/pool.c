@@ -10,6 +10,7 @@
 #include "audio/tracklist.h"
 #include "project.h"
 #include "utils/arrays.h"
+#include "utils/error.h"
 #include "utils/file.h"
 #include "utils/flags.h"
 #include "utils/io.h"
@@ -17,6 +18,7 @@
 #include "utils/objects.h"
 #include "utils/string.h"
 
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
 /**
@@ -402,6 +404,26 @@ audio_pool_reload_clip_frame_bufs (AudioPool * self)
     }
 }
 
+typedef struct WriteClipData
+{
+  AudioClip * clip;
+  bool        is_backup;
+} WriteClipData;
+
+/**
+ * Thread for writing an audio clip to disk.
+ *
+ * To be used as a GThreadFunc.
+ */
+static void
+write_clip_thread (void * data, void * user_data)
+{
+  WriteClipData * write_clip_data = (WriteClipData *) data;
+  audio_clip_write_to_pool (
+    write_clip_data->clip, false, write_clip_data->is_backup);
+  object_zero_and_free (write_clip_data);
+}
+
 /**
  * Writes all the clips to disk.
  *
@@ -421,14 +443,34 @@ audio_pool_write_to_disk (AudioPool * self, bool is_backup)
     }
   g_free (prj_pool_dir);
 
+  GError *      err = NULL;
+  GThreadPool * thread_pool = g_thread_pool_new (
+    write_clip_thread, self, g_get_num_processors (),
+    F_NOT_EXCLUSIVE, &err);
+  if (err)
+    {
+      HANDLE_ERROR (
+        err, _ ("Failed to write audio pool: %s"),
+        err->message);
+    }
+
   for (int i = 0; i < self->num_clips; i++)
     {
       AudioClip * clip = self->clips[i];
       if (clip)
         {
-          audio_clip_write_to_pool (clip, false, is_backup);
+          WriteClipData * data = object_new (WriteClipData);
+          data->clip = clip;
+          data->is_backup = is_backup;
+
+          /* start writing in a new thread */
+          g_thread_pool_push (thread_pool, data, NULL);
         }
     }
+
+  g_debug ("waiting for thread pool to finish...");
+  g_thread_pool_free (thread_pool, false, true);
+  g_debug ("done");
 }
 
 void
