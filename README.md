@@ -153,7 +153,7 @@ a DAW takes years of work and contributions enable
 us to spend more time working on the project.
 
 - [liberapay.com/Zrythm](https://liberapay.com/Zrythm/donate)
-- [paypal.me/zrythm](https://paypal.me/zrythmdaw)
+- [paypal.me/zrythmdaw](https://paypal.me/zrythmdaw)
 - [ko-fi.com/zrythm](https://ko-fi.com/zrythm)
 - [opencollective.com/zrythm](https://opencollective.com/zrythm/donate)
 - Bitcoin (BTC): `bc1qjfyu2ruyfwv3r6u4hf2nvdh900djep2dlk746j`
