@@ -603,7 +603,13 @@ on_prompt_for_project (
       /* if running for the first time (even after the
        * GSetting is set to false) run the demo project,
        * otherwise ask the user for a project */
-      if (self->is_first_run && ZRYTHM->demo_template)
+      bool use_demo_template =
+        self->is_first_run && ZRYTHM->demo_template;
+#ifdef _WOE32
+      /* crashes on windows -- fix first then re-enable */
+      use_demo_template = false;
+#endif
+      if (use_demo_template)
         {
           project_assistant_widget_present (
             GTK_WINDOW (self->splash), false,
