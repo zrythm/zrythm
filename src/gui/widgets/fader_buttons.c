@@ -359,6 +359,8 @@ fader_buttons_widget_class_init (
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "fader_buttons.ui");
 
+  gtk_widget_class_set_css_name (klass, "fader-buttons");
+
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
     klass, FaderButtonsWidget, x)

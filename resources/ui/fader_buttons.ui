@@ -8,6 +8,7 @@
     <property name="margin_top">4</property>
     <child>
       <object class="GtkToggleButton" id="mono_compat">
+        <property name="hexpand">1</property>
         <property name="focusable">1</property>
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Mono compatibility</property>
@@ -20,6 +21,7 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="record">
+        <property name="hexpand">1</property>
         <property name="focusable">1</property>
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Record</property>
@@ -32,6 +34,7 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="solo">
+        <property name="hexpand">1</property>
         <property name="focusable">1</property>
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Solo</property>
@@ -44,6 +47,7 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="mute">
+        <property name="hexpand">1</property>
         <property name="focusable">1</property>
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Mute</property>
@@ -56,6 +60,7 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="listen">
+        <property name="hexpand">1</property>
         <property name="focusable">1</property>
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Listen</property>
@@ -68,6 +73,7 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="swap_phase">
+        <property name="hexpand">1</property>
         <property name="focusable">1</property>
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Swap phase</property>
@@ -80,6 +86,7 @@
     </child>
     <child>
       <object class="GtkButton" id="e">
+        <property name="hexpand">1</property>
         <property name="focusable">1</property>
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Channel settings</property>
