@@ -6,6 +6,14 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.4.1] - 2022-11-23
+### Changed
+- Use list view for control ports in the plugin inspector (fixes lags)
+- Don't use cairo to draw automation regions (fixes lags on large projects)
+- Don't use demo template on Windows on first run (currently broken)
+- Don't save undo history with backups (makes saving faster)
+- Write audio pool files in parallel (makes saving faster on projects with lots of audio files)
+
 ## [1.0.0-beta.4.3.1] - 2022-11-21
 ### Added
 - Add "View Info" context menu option to timeline and automation editor
