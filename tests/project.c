@@ -255,9 +255,12 @@ test_save_backup_w_pool_and_plugins (void)
   g_free (filepath);
   g_assert_cmpint (ret, ==, 0);
 
+  /* undo history not saved with backups anymore */
+#if 0
   /* test undo and redo cloning the track */
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_redo (UNDO_MANAGER, NULL);
+#endif
 
   /* free the project */
   object_free_w_func_and_null (project_free, PROJECT);
