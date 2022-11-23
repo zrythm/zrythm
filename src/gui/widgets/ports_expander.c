@@ -4,14 +4,17 @@
 #include "audio/engine.h"
 #include "audio/port.h"
 #include "audio/track.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/inspector_port.h"
 #include "gui/widgets/ports_expander.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/gtk.h"
+#include "utils/objects.h"
 #include "utils/string.h"
 
+#include <adwaita.h>
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (
@@ -131,6 +134,75 @@ set_icon_from_port_type (
       Z_EXPANDER_BOX_WIDGET (self), "configure");
 }
 
+typedef struct PortGroup
+{
+  char *      group_name;
+  GPtrArray * ports;
+} PortGroup;
+
+static void
+free_port_group (void * data)
+{
+  PortGroup * self = (PortGroup *) data;
+  g_free_and_null (self->group_name);
+  object_free_w_func_and_null (g_ptr_array_unref, self->ports);
+  object_zero_and_free (self);
+}
+
+static PortGroup *
+port_group_new (const char * name)
+{
+  PortGroup * self = object_new (PortGroup);
+  self->group_name = g_strdup (name);
+  self->ports = g_ptr_array_sized_new (50);
+  return self;
+}
+
+static void
+item_factory_setup_cb (
+  GtkSignalListItemFactory * factory,
+  GtkListItem *              listitem,
+  gpointer                   user_data)
+{
+  /*PortsExpanderWidget * self = (PortsExpanderWidget *) user_data;*/
+  gtk_list_item_set_child (
+    listitem, GTK_WIDGET (adw_bin_new ()));
+}
+
+static void
+item_factory_bind_cb (
+  GtkSignalListItemFactory * factory,
+  GtkListItem *              listitem,
+  gpointer                   user_data)
+{
+  WrappedObjectWithChangeSignal * obj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+      gtk_list_item_get_item (listitem));
+  InspectorPortWidget * ip =
+    inspector_port_widget_new ((Port *) obj->obj);
+  AdwBin * bin = ADW_BIN (gtk_list_item_get_child (listitem));
+  adw_bin_set_child (bin, GTK_WIDGET (ip));
+}
+
+static void
+item_factory_unbind_cb (
+  GtkSignalListItemFactory * factory,
+  GtkListItem *              listitem,
+  gpointer                   user_data)
+{
+  AdwBin * bin = ADW_BIN (gtk_list_item_get_child (listitem));
+  adw_bin_set_child (bin, NULL);
+}
+
+static void
+item_factory_teardown_cb (
+  GtkSignalListItemFactory * factory,
+  GtkListItem *              listitem,
+  gpointer                   user_data)
+{
+  gtk_list_item_set_child (listitem, NULL);
+}
+
 /**
  * Sets up the PortsExpanderWidget for a Plugin.
  */
@@ -192,9 +264,8 @@ ports_expander_widget_setup_plugin (
 
   GArray * ports = g_array_new (false, true, sizeof (Port *));
 
-  InspectorPortWidget * ip;
-  Port *                port;
-  PortIdentifier *      pi;
+  Port *           port;
+  PortIdentifier * pi;
   if (pl && type == TYPE_CONTROL && flow == FLOW_INPUT)
     {
       for (int i = 0; i < pl->num_in_ports; i++)
@@ -314,6 +385,10 @@ ports_expander_widget_setup_plugin (
     pl ? pl->setting->descr->name : "(none)",
     port_type_strings[type].str, port_flow_strings[flow].str);
 
+  /* temporary array */
+  GPtrArray * port_groups =
+    g_ptr_array_new_with_free_func (free_port_group);
+
   /* Add ports in group order */
   const char * last_group = NULL;
   int          num_ports = (int) ports->len;
@@ -322,34 +397,115 @@ ports_expander_widget_setup_plugin (
       port = g_array_index (ports, Port *, i);
       const char * group = port->id.port_group;
 
-      /* Check group and add new heading if
-       * necessary */
+      PortGroup * port_group = NULL;
+
+      /* Check group and add new heading if necessary */
       if (!string_is_equal (group, last_group))
         {
           const char * group_name =
             group ? group : _ ("Ungrouped");
-          GtkWidget * group_label = gtk_label_new (group_name);
+
+          port_group = port_group_new (group_name);
+          g_ptr_array_add (port_groups, port_group);
+        }
+      last_group = group;
+
+      if (!port_group)
+        {
+          if (port_groups->len > 0)
+            {
+              port_group = g_ptr_array_index (
+                port_groups, port_groups->len - 1);
+            }
+          else
+            {
+              port_group = port_group_new (group);
+              g_ptr_array_add (port_groups, port_group);
+            }
+        }
+
+      g_ptr_array_add (port_group->ports, port);
+    }
+
+  /* foreach port group */
+  for (size_t i = 0; i < port_groups->len; i++)
+    {
+      PortGroup * pg = g_ptr_array_index (port_groups, i);
+
+      /* add the header */
+      if (pg->group_name)
+        {
+          GtkWidget * group_label =
+            gtk_label_new (pg->group_name);
           gtk_widget_set_name (
             GTK_WIDGET (group_label),
             "ports-expander-inspector-port-group-label");
           gtk_label_set_xalign (GTK_LABEL (group_label), 0.f);
           gtk_widget_add_css_class (
             group_label, "port-group-lbl");
-          gtk_widget_set_visible (group_label, true);
           gtk_widget_set_margin_top (group_label, 3);
           gtk_widget_set_margin_bottom (group_label, 3);
           two_col_expander_box_widget_add_single (
             Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
             GTK_WIDGET (group_label));
         }
-      last_group = group;
 
-      /* Add row to table for this controller */
-      ip = inspector_port_widget_new (port);
-      two_col_expander_box_widget_add_single (
-        /* use normal casts because this gets called a lot */
-        (TwoColExpanderBoxWidget *) self, (GtkWidget *) ip);
+      /* add the list view of ports */
+      GListStore * store = g_list_store_new (
+        WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+      for (size_t j = 0; j < pg->ports->len; j++)
+        {
+          Port * p = g_ptr_array_index (pg->ports, j);
+          WrappedObjectWithChangeSignal * wrapped_obj =
+            wrapped_object_with_change_signal_new (
+              p, WRAPPED_OBJECT_TYPE_PORT);
+          g_list_store_append (store, wrapped_obj);
+        }
+      GtkNoSelection * no_selection =
+        gtk_no_selection_new (G_LIST_MODEL (store));
+      GtkListItemFactory * list_item_factory =
+        gtk_signal_list_item_factory_new ();
+      g_signal_connect (
+        G_OBJECT (list_item_factory), "setup",
+        G_CALLBACK (item_factory_setup_cb), self);
+      g_signal_connect (
+        G_OBJECT (list_item_factory), "bind",
+        G_CALLBACK (item_factory_bind_cb), self);
+      g_signal_connect (
+        G_OBJECT (list_item_factory), "unbind",
+        G_CALLBACK (item_factory_unbind_cb), self);
+      g_signal_connect (
+        G_OBJECT (list_item_factory), "teardown",
+        G_CALLBACK (item_factory_teardown_cb), self);
+      GtkListView * list_view =
+        GTK_LIST_VIEW (gtk_list_view_new (
+          GTK_SELECTION_MODEL (no_selection),
+          list_item_factory));
+      if (pg->ports->len > 100)
+        {
+          GtkScrolledWindow * scroll =
+            GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
+          gtk_scrolled_window_set_child (
+            scroll, GTK_WIDGET (list_view));
+          gtk_scrolled_window_set_placement (
+            scroll, GTK_CORNER_BOTTOM_RIGHT);
+          gtk_scrolled_window_set_policy (
+            scroll, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+          gtk_scrolled_window_set_min_content_height (
+            scroll, 500);
+          two_col_expander_box_widget_add_single (
+            (TwoColExpanderBoxWidget *) self,
+            (GtkWidget *) scroll);
+        }
+      else
+        {
+          two_col_expander_box_widget_add_single (
+            (TwoColExpanderBoxWidget *) self,
+            (GtkWidget *) list_view);
+        }
     }
+
+  g_ptr_array_unref (port_groups);
 
   g_debug ("added ports");
 
