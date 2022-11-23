@@ -776,6 +776,10 @@ handle_loop (
           use_cairo = true;
         }
 
+      /* disable cairo completely for now -- too slow on large
+       * projects */
+      use_cairo = false;
+
       const int line_width = 2;
 
       /* automation curve width */
