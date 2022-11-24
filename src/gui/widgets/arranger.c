@@ -4997,23 +4997,57 @@ arranger_widget_get_selections (ArrangerWidget * self)
 }
 
 /**
- * Get all objects currently present in the
- * arranger.
+ * Get all objects currently present in the arranger.
  */
 void
 arranger_widget_get_all_objects (
   ArrangerWidget * self,
   GPtrArray *      objs_arr)
 {
-  GdkRectangle rect = {
-    0,
-    0,
-    gtk_widget_get_allocated_width (GTK_WIDGET (self)),
-    gtk_widget_get_allocated_height (GTK_WIDGET (self)),
+  RulerWidget * ruler = arranger_widget_get_ruler (self);
+  GdkRectangle  rect = {
+     0,
+     0,
+     (int) ruler->total_px,
+     arranger_widget_get_total_height (self),
   };
 
   arranger_widget_get_hit_objects_in_rect (
     self, ARRANGER_OBJECT_TYPE_ALL, &rect, objs_arr);
+}
+
+/**
+ * Returns the total height (including off-screen).
+ */
+int
+arranger_widget_get_total_height (ArrangerWidget * self)
+{
+  int height = 0;
+  switch (self->type)
+    {
+    case TYPE (TIMELINE):
+      if (self->is_pinned)
+        {
+          height = gtk_widget_get_allocated_height (
+            GTK_WIDGET (self));
+        }
+      else
+        {
+          height = gtk_widget_get_allocated_height (
+            GTK_WIDGET (MW_TRACKLIST));
+        }
+      break;
+    case TYPE (MIDI):
+      height = gtk_widget_get_allocated_height (
+        GTK_WIDGET (MW_PIANO_ROLL_KEYS));
+      break;
+    default:
+      height =
+        gtk_widget_get_allocated_height (GTK_WIDGET (self));
+      break;
+    }
+
+  return height;
 }
 
 RulerWidget *

@@ -296,10 +296,6 @@ typedef struct _ArrangerWidget
    */
   int resizing_range_start;
 
-  /** Cache for chord object height, used during
-   * child size allocation. */
-  /*int                  chord_obj_height; */
-
   AutomationTrack * hovered_at;
   TrackLane *       hovered_lane;
   Track *           hovered_track;
@@ -521,8 +517,7 @@ void
 arranger_widget_refresh_cursor (ArrangerWidget * self);
 
 /**
- * Get all objects currently present in the
- * arranger.
+ * Get all objects currently present in the arranger.
  */
 void
 arranger_widget_get_all_objects (
@@ -793,6 +788,12 @@ arranger_widget_finish_creating_item_from_action (
   ArrangerWidget * self,
   double           x,
   double           y);
+
+/**
+ * Returns the total height (including off-screen).
+ */
+int
+arranger_widget_get_total_height (ArrangerWidget * self);
 
 /**
  * @}
