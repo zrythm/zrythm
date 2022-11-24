@@ -495,21 +495,60 @@ DEFINE_SIMPLE (activate_best_fit)
         }
     }
 
-  Position pos;
+  Position start, end;
+  position_init (&start);
+  position_init (&end);
   if (ruler == MW_RULER)
     {
       int total_bars = 0;
       tracklist_get_total_bars (TRACKLIST, &total_bars);
-      position_set_to_bar (&pos, total_bars);
+      position_set_to_bar (&end, total_bars);
     }
   else if (ruler == EDITOR_RULER)
     {
-      /* TODO */
-      g_warning ("unimplemented");
-      return;
+      ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+      if (!r)
+        return;
+
+      ArrangerWidget * arranger =
+        region_get_arranger_for_children (r);
+      GPtrArray * objs_arr = g_ptr_array_new_full (200, NULL);
+      arranger_widget_get_all_objects (arranger, objs_arr);
+      position_set_to_pos (&start, &r->base.pos);
+      position_set_to_pos (&end, &r->base.end_pos);
+      for (size_t i = 0; i < objs_arr->len; i++)
+        {
+          ArrangerObject * obj = (ArrangerObject *)
+            g_ptr_array_index (objs_arr, i);
+          Position global_start, global_end;
+          position_set_to_pos (&global_start, &obj->pos);
+          position_add_ticks (
+            &global_start, r->base.pos.ticks);
+          if (arranger_object_type_has_length (obj->type))
+            {
+              position_set_to_pos (&global_end, &obj->end_pos);
+              position_add_ticks (
+                &global_end, r->base.pos.ticks);
+            }
+          else
+            {
+              position_set_to_pos (&global_end, &global_start);
+            }
+
+          if (position_is_before (&global_start, &start))
+            {
+              position_set_to_pos (&start, &global_start);
+            }
+          if (position_is_after (&global_end, &end))
+            {
+              position_set_to_pos (&end, &global_end);
+            }
+        }
+      g_ptr_array_unref (objs_arr);
     }
 
-  double total_ticks = position_to_ticks (&pos);
+  double total_ticks =
+    position_to_ticks (&end) - position_to_ticks (&start);
   double allocated_px = (double)
     gtk_widget_get_allocated_width (GTK_WIDGET (ruler));
   double buffer_px = allocated_px / 16.0;
@@ -519,6 +558,11 @@ DEFINE_SIMPLE (activate_best_fit)
     ruler_widget_get_zoom_level (ruler)
     * (needed_px_per_tick / ruler->px_per_tick);
   ruler_widget_set_zoom_level (ruler, new_zoom_level);
+  int start_px = ruler_widget_pos_to_px (ruler, &start, false);
+  EditorSettings * settings =
+    ruler_widget_get_editor_settings (ruler);
+  editor_settings_set_scroll_start_x (
+    settings, start_px, F_VALIDATE);
 
   EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, ruler);
 }
