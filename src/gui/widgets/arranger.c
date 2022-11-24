@@ -1214,6 +1214,7 @@ arranger_widget_select_all (
           arranger_object_select (
             obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
         }
+      g_ptr_array_unref (objs_arr);
 
       if (fire_events)
         {
