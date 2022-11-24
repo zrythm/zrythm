@@ -1,5 +1,21 @@
 // SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+/*
+ * Copyright (C) 2015 Georges Basile Stavracas Neto <georges.stavracas@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 2.1 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include <stdlib.h>
 #include <string.h>
@@ -15,6 +31,39 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+
+static void
+add_volume (FileManager * self, GVolume * vol)
+{
+  GMount * mount = g_volume_get_mount (vol);
+  char *   name = g_volume_get_name (vol);
+  GFile *  root =
+    mount ? g_mount_get_default_location (mount) : NULL;
+  char * path = NULL;
+  if (root)
+    {
+      path = g_file_get_path (root);
+      g_object_unref (root);
+    }
+
+  g_debug ("vol: %s [%s]", name, path);
+
+  if (path && (!mount || !g_mount_is_shadowed (mount)))
+    {
+      FileBrowserLocation * fl = file_browser_location_new ();
+      fl->label = g_strdup (name);
+      fl->path = g_strdup (path);
+      fl->special_location = FILE_MANAGER_DRIVE;
+      file_browser_location_print (fl);
+      g_ptr_array_add (self->locations, fl);
+
+      g_debug ("  added location: %s", fl->path);
+    }
+
+  object_free_w_func_and_null (g_object_unref, mount);
+  g_free_and_null (name);
+  g_free_and_null (path);
+}
 
 /**
  * Creates the file manager.
@@ -48,6 +97,7 @@ file_manager_new (void)
   g_ptr_array_add (self->locations, fl);
 
   /* drives */
+  g_message ("adding drives...");
   GVolumeMonitor * vol_monitor = g_volume_monitor_get ();
   GList *          drives =
     g_volume_monitor_get_connected_drives (vol_monitor);
@@ -58,7 +108,9 @@ file_manager_new (void)
 
       GDrive * drive = G_DRIVE (dl->data);
 
-      g_debug ("drive: %s", g_drive_get_name (drive));
+      char * drive_name = g_drive_get_name (drive);
+      g_debug ("drive: %s", drive_name);
+      g_free (drive_name);
 
       GList * vols = g_drive_get_volumes (drive);
       GList * vl = vols;
@@ -66,34 +118,33 @@ file_manager_new (void)
         {
           GList *   vn = vl->next;
           GVolume * vol = G_VOLUME (vl->data);
-          g_debug ("  vol: %s", g_volume_get_name (vol));
-          GMount * mount = g_volume_get_mount (vol);
-
-          if (mount)
-            {
-              GFile * loc =
-                g_mount_get_default_location (mount);
-
-              fl = file_browser_location_new ();
-              fl->label = g_volume_get_name (vol);
-              fl->path = g_file_get_path (loc);
-              fl->special_location = FILE_MANAGER_DRIVE;
-              file_browser_location_print (fl);
-              g_ptr_array_add (self->locations, fl);
-
-              g_object_unref (loc);
-              g_object_unref (mount);
-            }
-          g_object_unref (vol);
+          add_volume (self, vol);
 
           vl = vn;
         }
-      g_list_free (vols);
-      g_object_unref (drive);
+      g_list_free_full (vols, g_object_unref);
 
       dl = dn;
     }
-  g_list_free (drives);
+  g_list_free_full (drives, g_object_unref);
+
+  /* volumes without an associated drive */
+  /* from nautilusgtkplacesview.c */
+  g_message ("adding volumes without an associated drive...");
+  GList * volumes = g_volume_monitor_get_volumes (vol_monitor);
+  for (GList * l = volumes; l != NULL; l = l->next)
+    {
+      GVolume * vol = l->data;
+      GDrive *  drive = g_volume_get_drive (vol);
+
+      if (drive)
+        {
+          g_object_unref (drive);
+          continue;
+        }
+
+      add_volume (self, vol);
+    }
   g_object_unref (vol_monitor);
 
   if (!ZRYTHM_TESTING)
