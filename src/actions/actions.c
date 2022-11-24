@@ -2596,23 +2596,15 @@ DEFINE_SIMPLE (activate_rename_arranger_object)
         {
           ArrangerObject * obj =
             arranger_selections_get_first_object (sel);
-          switch (obj->type)
+          if (arranger_object_type_has_name (obj->type))
             {
-            case ARRANGER_OBJECT_TYPE_REGION:
-            case ARRANGER_OBJECT_TYPE_MARKER:
-              {
-                StringEntryDialogWidget * dialog =
-                  string_entry_dialog_widget_new (
-                    _ ("Object name"), obj,
-                    (GenericStringGetter)
-                      arranger_object_get_name,
-                    (GenericStringSetter)
-                      arranger_object_set_name_with_action);
-                gtk_window_present (GTK_WINDOW (dialog));
-              }
-              break;
-            default:
-              break;
+              StringEntryDialogWidget * dialog =
+                string_entry_dialog_widget_new (
+                  _ ("Object name"), obj,
+                  (GenericStringGetter) arranger_object_get_name,
+                  (GenericStringSetter)
+                    arranger_object_set_name_with_action);
+              gtk_window_present (GTK_WINDOW (dialog));
             }
         }
     }

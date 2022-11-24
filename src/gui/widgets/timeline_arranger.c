@@ -1006,6 +1006,13 @@ timeline_arranger_widget_gen_context_menu (
       menuitem = CREATE_DELETE_MENU_ITEM ("app.delete");
       g_menu_append_item (edit_submenu, menuitem);
 
+      if (arranger_object_type_has_name (obj->type))
+        {
+          menuitem = z_gtk_create_menu_item (
+            _ ("Rename"), NULL, "app.rename-arranger-object");
+          g_menu_append_item (edit_submenu, menuitem);
+        }
+
       char str[100];
       sprintf (str, "app.arranger-object-view-info::%p", obj);
       menuitem =
