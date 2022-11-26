@@ -46,14 +46,6 @@
 
 G_DEFINE_TYPE (RulerWidget, ruler_widget, GTK_TYPE_WIDGET)
 
-#define Y_SPACING 5
-
-/* FIXME delete these, see ruler_marker.h */
-#define START_MARKER_TRIANGLE_HEIGHT 8
-#define START_MARKER_TRIANGLE_WIDTH 8
-#define Q_HEIGHT 12
-#define Q_WIDTH 7
-
 #define TYPE(x) RULER_WIDGET_TYPE_##x
 
 #define ACTION_IS(x) (self->action == UI_OVERLAY_ACTION_##x)
@@ -1412,6 +1404,8 @@ on_click_pressed (
       GTK_EVENT_CONTROLLER (gesture));
   if (state & GDK_SHIFT_MASK)
     self->shift_held = 1;
+  if (state & GDK_ALT_MASK)
+    self->alt_held = true;
 
   if (n_press == 2)
     {
@@ -1464,6 +1458,102 @@ on_right_click_pressed (
   return FALSE;
 }
 
+/**
+ * Sets the appropriate cursor based on the current
+ * drag/hover/action status.
+ */
+static void
+set_cursor (RulerWidget * self)
+{
+  if (self->action == UI_OVERLAY_ACTION_NONE)
+    {
+      if (self->hovering)
+        {
+          double x = self->hover_x;
+          double y = self->hover_y;
+          bool   punch_in_hit = is_punch_in_hit (self, x, y);
+          bool punch_out_hit = is_punch_out_hit (self, x, y);
+          bool loop_start_hit = is_loop_start_hit (self, x, y);
+          bool loop_end_hit = is_loop_end_hit (self, x, y);
+          bool clip_start_hit = is_clip_start_hit (self, x, y);
+          bool range_start_hit = ruler_widget_is_range_hit (
+            self, RW_RANGE_START, x, y);
+          bool range_end_hit = ruler_widget_is_range_hit (
+            self, RW_RANGE_END, x, y);
+
+          int height = gtk_widget_get_allocated_height (
+            GTK_WIDGET (self));
+          if (self->alt_held)
+            {
+              ui_set_cursor_from_name (
+                GTK_WIDGET (self), "all-scroll");
+            }
+          else if (
+            punch_in_hit || loop_start_hit || clip_start_hit
+            || range_start_hit)
+            {
+              ui_set_cursor_from_name (
+                GTK_WIDGET (self), "w-resize");
+            }
+          else if (punch_out_hit || loop_end_hit || range_end_hit)
+            {
+              ui_set_cursor_from_name (
+                GTK_WIDGET (self), "e-resize");
+            }
+          /* if lower 3/4ths */
+          else if (y > (height * 1) / 4)
+            {
+              /* set cursor to normal */
+              /*g_debug ("lower 3/4ths - setting default");*/
+              ui_set_cursor_from_name (
+                GTK_WIDGET (self), "default");
+            }
+          else /* upper 1/4th */
+            {
+              if (ruler_widget_is_range_hit (
+                    self, RW_RANGE_FULL, x, y))
+                {
+                  /* set cursor to movable */
+                  ui_set_hand_cursor (self);
+                }
+              else
+                {
+                  /* set cursor to range selection */
+                  ui_set_cursor_from_name (
+                    GTK_WIDGET (self), "text");
+                }
+            }
+        }
+      else
+        {
+          /*g_debug ("no hover - setting default");*/
+          ui_set_cursor_from_name (
+            GTK_WIDGET (self), "default");
+        }
+    }
+  else
+    {
+      switch (self->action)
+        {
+        case UI_OVERLAY_ACTION_STARTING_PANNING:
+        case UI_OVERLAY_ACTION_PANNING:
+          ui_set_cursor_from_name (
+            GTK_WIDGET (self), "all-scroll");
+          break;
+        case UI_OVERLAY_ACTION_STARTING_MOVING:
+        case UI_OVERLAY_ACTION_MOVING:
+          ui_set_cursor_from_name (
+            GTK_WIDGET (self), "grabbing");
+          break;
+        default:
+          /*g_debug ("no known action - setting default");*/
+          ui_set_cursor_from_name (
+            GTK_WIDGET (self), "default");
+          break;
+        }
+    }
+}
+
 static void
 drag_begin (
   GtkGestureDrag * gesture,
@@ -1499,8 +1589,13 @@ drag_begin (
   ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
   ArrangerObject * r_obj = (ArrangerObject *) region;
 
-  /* if one of the markers hit */
-  if (punch_in_hit)
+  /* if alt held down, start panning */
+  if (self->alt_held)
+    {
+      self->action = UI_OVERLAY_ACTION_STARTING_PANNING;
+    }
+  /* else if one of the markers hit */
+  else if (punch_in_hit)
     {
       self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
       self->target = RW_TARGET_PUNCH_IN;
@@ -1563,7 +1658,11 @@ drag_begin (
     }
 
   self->last_offset_x = 0;
+  self->last_offset_y = 0;
   self->dragging = 1;
+  self->vertical_panning_started = false;
+
+  set_cursor (self);
 }
 
 static void
@@ -1584,6 +1683,8 @@ drag_end (
     editor_ruler_on_drag_end (self);
 
   self->action = UI_OVERLAY_ACTION_NONE;
+
+  set_cursor (self);
 }
 
 static void
@@ -1605,86 +1706,106 @@ on_motion (
   g_return_if_fail (settings);
   x += settings->scroll_start_x;
   self->hover_x = x;
+  self->hover_y = y;
+  self->hovering = event_type != GDK_LEAVE_NOTIFY;
+
+  if (state & GDK_SHIFT_MASK)
+    self->shift_held = 1;
+  else
+    self->shift_held = 0;
+  if (state & GDK_ALT_MASK)
+    self->alt_held = 1;
+  else
+    self->alt_held = 0;
 
   /* drag-update didn't work so do the drag-update
    * here */
   if (self->dragging && event_type != GDK_LEAVE_NOTIFY)
     {
-      if (state & GDK_SHIFT_MASK)
-        self->shift_held = 1;
-      else
-        self->shift_held = 0;
-
       if (ACTION_IS (STARTING_MOVING))
         {
           self->action = UI_OVERLAY_ACTION_MOVING;
         }
+      else if (ACTION_IS (STARTING_PANNING))
+        {
+          self->action = UI_OVERLAY_ACTION_PANNING;
+        }
 
-      if (self->type == TYPE (TIMELINE))
+      /* panning is common */
+      double total_offset_x = x - self->start_x;
+      double offset_x = total_offset_x - self->last_offset_x;
+      double total_offset_y = y - self->start_y;
+      double offset_y = total_offset_y - self->last_offset_y;
+      if (self->action == UI_OVERLAY_ACTION_PANNING)
+        {
+          if (!math_doubles_equal_epsilon (offset_x, 0.0, 0.1))
+            {
+              /* pan horizontally */
+              editor_settings_append_scroll (
+                settings, (int) -offset_x, 0, F_VALIDATE);
+
+              /* these are also affected */
+              self->last_offset_x -= offset_x;
+              self->hover_x -= offset_x;
+              self->start_x -= offset_x;
+            }
+          int drag_threshold;
+          g_object_get (
+            zrythm_app->default_settings,
+            "gtk-dnd-drag-threshold", &drag_threshold, NULL);
+          if (!math_doubles_equal_epsilon (offset_y, 0.0, 0.1)
+              && (fabs (total_offset_y) >= drag_threshold || self->vertical_panning_started))
+            {
+              /* get position of cursor */
+              Position cursor_pos;
+              ruler_widget_px_to_pos (
+                self, self->hover_x, &cursor_pos, F_PADDING);
+
+              /* get px diff so we can calculate the new
+               * adjustment later */
+              double diff =
+                self->hover_x
+                - (double) settings->scroll_start_x;
+
+              double scroll_multiplier = 1.0 - 0.02 * offset_y;
+              ruler_widget_set_zoom_level (
+                self,
+                ruler_widget_get_zoom_level (self)
+                  * scroll_multiplier);
+
+              int new_x = ruler_widget_pos_to_px (
+                self, &cursor_pos, F_PADDING);
+
+              editor_settings_set_scroll_start_x (
+                settings, new_x - (int) diff, F_VALIDATE);
+
+              /* also update hover x since we're using it here */
+              self->hover_x = new_x;
+              self->start_x = self->hover_x - total_offset_x;
+
+              self->vertical_panning_started = true;
+            }
+        }
+      else if (self->type == TYPE (TIMELINE))
         {
           timeline_ruler_on_drag_update (
-            self, x - self->start_x, y - self->start_y);
+            self, total_offset_x, total_offset_y);
         }
       else if (self->type == TYPE (EDITOR))
         {
           editor_ruler_on_drag_update (
-            self, x - self->start_x, y - self->start_y);
+            self, total_offset_x, total_offset_y);
         }
 
-      self->last_offset_x = x - self->start_x;
+      self->last_offset_x = total_offset_x;
+      self->last_offset_y = total_offset_y;
+
+      set_cursor (self);
 
       return;
     }
 
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
-  if (event_type == GDK_MOTION_NOTIFY)
-    {
-      bool punch_in_hit = is_punch_in_hit (self, x, y);
-      bool punch_out_hit = is_punch_out_hit (self, x, y);
-      bool loop_start_hit = is_loop_start_hit (self, x, y);
-      bool loop_end_hit = is_loop_end_hit (self, x, y);
-      bool clip_start_hit = is_clip_start_hit (self, x, y);
-      bool range_start_hit = ruler_widget_is_range_hit (
-        self, RW_RANGE_START, x, y);
-      bool range_end_hit =
-        ruler_widget_is_range_hit (self, RW_RANGE_END, x, y);
-
-      if (
-        punch_in_hit || loop_start_hit || clip_start_hit
-        || range_start_hit)
-        {
-          ui_set_cursor_from_name (
-            GTK_WIDGET (self), "w-resize");
-        }
-      else if (punch_out_hit || loop_end_hit || range_end_hit)
-        {
-          ui_set_cursor_from_name (
-            GTK_WIDGET (self), "e-resize");
-        }
-      /* if lower 3/4ths */
-      else if (y > (height * 1) / 4)
-        {
-          /* set cursor to normal */
-          ui_set_cursor_from_name (
-            GTK_WIDGET (self), "default");
-        }
-      else /* upper 1/4th */
-        {
-          if (ruler_widget_is_range_hit (
-                self, RW_RANGE_FULL, x, y))
-            {
-              /* set cursor to movable */
-              ui_set_hand_cursor (self);
-            }
-          else
-            {
-              /* set cursor to range selection */
-              ui_set_cursor_from_name (
-                GTK_WIDGET (self), "text");
-            }
-        }
-    }
+  set_cursor (self);
 }
 
 static void
@@ -1692,7 +1813,7 @@ on_leave (
   GtkEventControllerMotion * motion_controller,
   RulerWidget *              self)
 {
-  ui_set_cursor_from_name (GTK_WIDGET (self), "default");
+  self->hovering = false;
 }
 
 void
@@ -1901,9 +2022,11 @@ on_scroll (
           int new_x = ruler_widget_pos_to_px (
             self, &cursor_pos, F_PADDING);
 
+#if 0
           g_debug (
             "x %f adj val %f diff %f new x %d", x, adj_val,
             diff, new_x);
+#endif
 
           /* refresh relevant widgets */
           if (self->type == TYPE (TIMELINE))

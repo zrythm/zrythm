@@ -127,8 +127,13 @@ typedef struct _RulerWidget
   double start_x;
   double start_y;
   double last_offset_x;
+  double last_offset_y;
 
   double hover_x;
+  double hover_y;
+  bool   hovering;
+
+  bool vertical_panning_started;
 
   GtkGestureDrag *  drag;
   GtkGestureClick * click;
@@ -140,6 +145,9 @@ typedef struct _RulerWidget
    * If shift was held down during the press.
    */
   int shift_held;
+
+  /** Whether alt is currently held down. */
+  bool alt_held;
 
   /** Px the playhead was last drawn at, so we can
    * redraw this and the new px only when the

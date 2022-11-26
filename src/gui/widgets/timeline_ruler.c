@@ -76,7 +76,6 @@ on_drag_begin_range_hit (
   else
     {
       self->action = UI_OVERLAY_ACTION_STARTING_MOVING;
-      ui_set_cursor_from_name (GTK_WIDGET (self), "grabbing");
     }
 
   position_set_to_pos (

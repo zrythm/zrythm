@@ -288,6 +288,9 @@ typedef enum UiOverlayAction
   UI_OVERLAY_ACTION_CUTTING,
 
   UI_OVERLAY_ACTION_RENAMING,
+
+  UI_OVERLAY_ACTION_STARTING_PANNING,
+  UI_OVERLAY_ACTION_PANNING,
   NUM_UI_OVERLAY_ACTIONS,
 } UiOverlayAction;
 
@@ -331,6 +334,8 @@ static const char * ui_overlay_strings[] = {
   "CUTTING",
   "RENAMING",
   "INVALID",
+  "STARTING_PANNING",
+  "PANNING",
 };
 
 static inline const char *
