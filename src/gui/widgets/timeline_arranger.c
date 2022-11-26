@@ -1176,10 +1176,10 @@ timeline_arranger_widget_gen_context_menu (
                     G_MENU_MODEL (ats_submenu));
                 }
               g_menu_append_submenu (
-                automation_regions_submenu, _ ("Move"),
+                automation_regions_submenu, _ ("Move to Lane"),
                 G_MENU_MODEL (tracks_submenu));
               g_menu_append_section (
-                menu, _ ("Automation Regions"),
+                menu, _ ("Automation Region"),
                 G_MENU_MODEL (automation_regions_submenu));
             } /* endif contains only automation regions */
 
