@@ -1915,23 +1915,27 @@ do_or_undo_duplicate_or_link (
       /* get the actual object from the project */
       gpointer * keys_arr =
         g_hash_table_get_keys_as_array (ap_ht, NULL);
-      ArrangerObject * obj = keys_arr[0];
-      g_return_val_if_fail (IS_ARRANGER_OBJECT (obj), -1);
-      ZRegion * region = arranger_object_get_region (obj);
-      g_return_val_if_fail (region, -1);
-      automation_region_force_sort (region);
-
-      GHashTableIter iter;
-      gpointer       key, value;
-
-      g_hash_table_iter_init (&iter, ap_ht);
-      while (g_hash_table_iter_next (&iter, &key, &value))
+      if (keys_arr[0])
         {
-          AutomationPoint * prj_ap = (AutomationPoint *) key;
-          AutomationPoint * cached_ap =
-            (AutomationPoint *) value;
-          automation_point_set_region_and_index (
-            cached_ap, region, prj_ap->index);
+          ArrangerObject * obj = keys_arr[0];
+          g_return_val_if_fail (IS_ARRANGER_OBJECT (obj), -1);
+          ZRegion * region = arranger_object_get_region (obj);
+          g_return_val_if_fail (region, -1);
+          automation_region_force_sort (region);
+
+          GHashTableIter iter;
+          gpointer       key, value;
+
+          g_hash_table_iter_init (&iter, ap_ht);
+          while (g_hash_table_iter_next (&iter, &key, &value))
+            {
+              AutomationPoint * prj_ap =
+                (AutomationPoint *) key;
+              AutomationPoint * cached_ap =
+                (AutomationPoint *) value;
+              automation_point_set_region_and_index (
+                cached_ap, region, prj_ap->index);
+            }
         }
     }
 
