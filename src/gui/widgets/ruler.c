@@ -1568,6 +1568,9 @@ drag_begin (
   self->start_x = start_x;
   self->start_y = start_y;
 
+  guint drag_start_btn = gtk_gesture_single_get_current_button (
+    GTK_GESTURE_SINGLE (gesture));
+
   if (self->type == TYPE (TIMELINE))
     {
       self->range1_first = position_is_before_or_equal (
@@ -1590,7 +1593,7 @@ drag_begin (
   ArrangerObject * r_obj = (ArrangerObject *) region;
 
   /* if alt held down, start panning */
-  if (self->alt_held)
+  if (self->alt_held || drag_start_btn == GDK_BUTTON_MIDDLE)
     {
       self->action = UI_OVERLAY_ACTION_STARTING_PANNING;
     }
@@ -1745,9 +1748,12 @@ on_motion (
                 settings, (int) -offset_x, 0, F_VALIDATE);
 
               /* these are also affected */
-              self->last_offset_x -= offset_x;
-              self->hover_x -= offset_x;
-              self->start_x -= offset_x;
+              self->last_offset_x =
+                MAX (0, self->last_offset_x - offset_x);
+              self->hover_x =
+                MAX (0, self->hover_x - offset_x);
+              self->start_x =
+                MAX (0, self->start_x - offset_x);
             }
           int drag_threshold;
           g_object_get (
@@ -1994,16 +2000,11 @@ on_scroll (
           EditorSettings * settings =
             ruler_widget_get_editor_settings (self);
           g_return_val_if_fail (settings, false);
-          double adj_val = (double) settings->scroll_start_x;
 
           /* get position of cursor */
           Position cursor_pos;
           ruler_widget_px_to_pos (
             self, x, &cursor_pos, F_PADDING);
-
-          /* get px diff so we can calculate the new
-           * adjustment later */
-          double diff = x - adj_val;
 
           /* scroll down, zoom out */
           if (dy > 0)
@@ -2021,12 +2022,6 @@ on_scroll (
 
           int new_x = ruler_widget_pos_to_px (
             self, &cursor_pos, F_PADDING);
-
-#if 0
-          g_debug (
-            "x %f adj val %f diff %f new x %d", x, adj_val,
-            diff, new_x);
-#endif
 
           /* refresh relevant widgets */
           if (self->type == TYPE (TIMELINE))
@@ -2088,6 +2083,9 @@ ruler_widget_init (RulerWidget * self)
   gtk_widget_set_hexpand (GTK_WIDGET (self), true);
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
+  /* allow all buttons for drag */
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (self->drag), 0);
   g_signal_connect (
     G_OBJECT (self->drag), "drag-begin",
     G_CALLBACK (drag_begin), self);

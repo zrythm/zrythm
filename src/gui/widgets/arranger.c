@@ -262,6 +262,9 @@ arranger_widget_set_cursor (
     case ARRANGER_CURSOR_RENAME:
       SET_CURSOR_FROM_NAME ("text");
       break;
+    case ARRANGER_CURSOR_PANNING:
+      SET_CURSOR_FROM_NAME ("all-scroll");
+      break;
     default:
       g_warn_if_reached ();
       break;
@@ -2749,13 +2752,22 @@ drag_begin (
       PROJECT->last_selection = SELECTION_TYPE_EDITOR;
     }
 
-  GdkEventSequence * sequence =
-    gtk_gesture_single_get_current_sequence (
-      GTK_GESTURE_SINGLE (gesture));
-  GdkEvent * ev = gtk_gesture_get_last_event (
-    GTK_GESTURE (gesture), sequence);
-  g_warn_if_fail (z_gtk_is_event_button (GDK_EVENT (ev)));
-  self->drag_start_btn = gdk_button_event_get_button (ev);
+  self->drag_start_btn = gtk_gesture_single_get_current_button (
+    GTK_GESTURE_SINGLE (gesture));
+  switch (self->drag_start_btn)
+    {
+    case GDK_BUTTON_PRIMARY:
+      g_debug ("primary button clicked");
+      break;
+    case GDK_BUTTON_SECONDARY:
+      g_debug ("secondary button clicked");
+      break;
+    case GDK_BUTTON_MIDDLE:
+      g_debug ("middle button clicked");
+      break;
+    default:
+      break;
+    }
   g_warn_if_fail (self->drag_start_btn);
 
   /* check if selections can create links */
@@ -2803,33 +2815,43 @@ drag_begin (
             {
             case TOOL_SELECT_NORMAL:
             case TOOL_SELECT_STRETCH:
-              /* selection */
-              self->action =
-                UI_OVERLAY_ACTION_STARTING_SELECTION;
-
-              if (!self->ctrl_held)
+              if (
+                self->drag_start_btn == GDK_BUTTON_MIDDLE
+                || self->alt_held)
                 {
-                  /* deselect all */
-                  arranger_widget_select_all (
-                    self, false, true);
-                }
-
-              /* set whether selecting
-               * objects or selecting range */
-              set_select_type (self, start_y);
-
-              /* hide range selection */
-              transport_set_has_range (TRANSPORT, false);
-
-              /* hide range selection if audio
-               * arranger and set appropriate
-               * action */
-              if (self->type == TYPE (AUDIO))
-                {
-                  AUDIO_SELECTIONS->has_selection = false;
                   self->action =
-                    audio_arranger_widget_get_action_on_drag_begin (
-                      self);
+                    UI_OVERLAY_ACTION_STARTING_PANNING;
+                }
+              else
+                {
+                  /* selection */
+                  self->action =
+                    UI_OVERLAY_ACTION_STARTING_SELECTION;
+
+                  if (!self->ctrl_held)
+                    {
+                      /* deselect all */
+                      arranger_widget_select_all (
+                        self, false, true);
+                    }
+
+                  /* set whether selecting
+                   * objects or selecting range */
+                  set_select_type (self, start_y);
+
+                  /* hide range selection */
+                  transport_set_has_range (TRANSPORT, false);
+
+                  /* hide range selection if audio
+                   * arranger and set appropriate
+                   * action */
+                  if (self->type == TYPE (AUDIO))
+                    {
+                      AUDIO_SELECTIONS->has_selection = false;
+                      self->action =
+                        audio_arranger_widget_get_action_on_drag_begin (
+                          self);
+                    }
                 }
               break;
             case TOOL_EDIT:
@@ -3201,6 +3223,30 @@ select_in_range (
     }
 }
 
+static void
+pan (ArrangerWidget * self, double offset_x, double offset_y)
+{
+  offset_x -= self->last_offset_x;
+  offset_y -= self->last_offset_y;
+  g_message ("panning %f %f", offset_x, offset_y);
+
+  /* pan */
+  EditorSettings * settings =
+    arranger_widget_get_editor_settings (self);
+  editor_settings_append_scroll (
+    settings, (int) -offset_x, (int) -offset_y, F_VALIDATE);
+
+  /* these are also affected */
+  self->last_offset_x =
+    MAX (0, self->last_offset_x - offset_x);
+  self->hover_x = MAX (0, self->hover_x - offset_x);
+  self->start_x = MAX (0, self->start_x - offset_x);
+  self->last_offset_y =
+    MAX (0, self->last_offset_y - offset_y);
+  self->hover_y = MAX (0, self->hover_y - offset_y);
+  self->start_y = MAX (0, self->start_y - offset_y);
+}
+
 NONNULL
 static void
 drag_update (
@@ -3338,6 +3384,8 @@ drag_update (
       else
         self->action = UI_OVERLAY_ACTION_MOVING;
       break;
+    case UI_OVERLAY_ACTION_STARTING_PANNING:
+      self->action = UI_OVERLAY_ACTION_PANNING;
     case UI_OVERLAY_ACTION_MOVING:
       if (self->alt_held && self->can_link)
         self->action = UI_OVERLAY_ACTION_MOVING_LINK;
@@ -3573,6 +3621,9 @@ drag_update (
         self,
         self->adj_ticks_diff - self->last_adj_ticks_diff);
       move_items_y (self, offset_y);
+      break;
+    case UI_OVERLAY_ACTION_PANNING:
+      pan (self, offset_x, offset_y);
       break;
     case UI_OVERLAY_ACTION_AUTOFILLING:
       g_message ("autofilling");
@@ -5461,6 +5512,10 @@ get_audio_arranger_cursor (ArrangerWidget * self, Tool tool)
     case UI_OVERLAY_ACTION_MOVING_LINK:
       ac = ARRANGER_CURSOR_GRABBING_LINK;
       break;
+    case UI_OVERLAY_ACTION_STARTING_PANNING:
+    case UI_OVERLAY_ACTION_PANNING:
+      ac = ARRANGER_CURSOR_PANNING;
+      break;
     case UI_OVERLAY_ACTION_RESIZING_UP:
       ac = ARRANGER_CURSOR_RESIZING_UP;
       break;
@@ -5550,6 +5605,10 @@ get_midi_modifier_arranger_cursor (
     case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:
     case UI_OVERLAY_ACTION_MOVING_LINK:
       ac = ARRANGER_CURSOR_GRABBING_LINK;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_PANNING:
+    case UI_OVERLAY_ACTION_PANNING:
+      ac = ARRANGER_CURSOR_PANNING;
       break;
     case UI_OVERLAY_ACTION_RESIZING_L:
       ac = ARRANGER_CURSOR_RESIZING_L;
@@ -5650,6 +5709,10 @@ get_chord_arranger_cursor (ArrangerWidget * self, Tool tool)
     case UI_OVERLAY_ACTION_MOVING_LINK:
       ac = ARRANGER_CURSOR_GRABBING_LINK;
       break;
+    case UI_OVERLAY_ACTION_STARTING_PANNING:
+    case UI_OVERLAY_ACTION_PANNING:
+      ac = ARRANGER_CURSOR_PANNING;
+      break;
     case UI_OVERLAY_ACTION_RESIZING_L:
       ac = ARRANGER_CURSOR_RESIZING_L;
       break;
@@ -5739,6 +5802,10 @@ get_automation_arranger_cursor (ArrangerWidget * self, Tool tool)
     case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:
     case UI_OVERLAY_ACTION_MOVING_LINK:
       ac = ARRANGER_CURSOR_GRABBING_LINK;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_PANNING:
+    case UI_OVERLAY_ACTION_PANNING:
+      ac = ARRANGER_CURSOR_PANNING;
       break;
     case UI_OVERLAY_ACTION_RESIZING_L:
       ac = ARRANGER_CURSOR_RESIZING_L;
@@ -5939,6 +6006,10 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
     case UI_OVERLAY_ACTION_MOVING:
       ac = ARRANGER_CURSOR_GRABBING;
       break;
+    case UI_OVERLAY_ACTION_STARTING_PANNING:
+    case UI_OVERLAY_ACTION_PANNING:
+      ac = ARRANGER_CURSOR_PANNING;
+      break;
     case UI_OVERLAY_ACTION_STRETCHING_L:
       ac = ARRANGER_CURSOR_STRETCHING_L;
       break;
@@ -6081,6 +6152,10 @@ get_midi_arranger_cursor (ArrangerWidget * self, Tool tool)
     case UI_OVERLAY_ACTION_STARTING_MOVING_LINK:
     case UI_OVERLAY_ACTION_MOVING_LINK:
       ac = ARRANGER_CURSOR_GRABBING_LINK;
+      break;
+    case UI_OVERLAY_ACTION_STARTING_PANNING:
+    case UI_OVERLAY_ACTION_PANNING:
+      ac = ARRANGER_CURSOR_PANNING;
       break;
     case UI_OVERLAY_ACTION_RESIZING_L:
       ac = ARRANGER_CURSOR_RESIZING_L;
@@ -6694,6 +6769,9 @@ arranger_widget_init (ArrangerWidget * self)
     GTK_GESTURE_SINGLE (self->drag), 0);
 
   self->click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  /* allow all buttons */
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (self->click), 0);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->click));
   gtk_event_controller_set_propagation_phase (

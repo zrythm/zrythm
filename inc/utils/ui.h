@@ -333,9 +333,9 @@ static const char * ui_overlay_strings[] = {
   "RAMPING",
   "CUTTING",
   "RENAMING",
-  "INVALID",
   "STARTING_PANNING",
   "PANNING",
+  "--INVALID--",
 };
 
 static inline const char *

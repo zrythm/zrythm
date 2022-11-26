@@ -79,6 +79,7 @@ typedef enum ArrangerCursor
   ARRANGER_CURSOR_FADE_IN,
   ARRANGER_CURSOR_FADE_OUT,
   ARRANGER_CURSOR_RENAME,
+  ARRANGER_CURSOR_PANNING,
 } ArrangerCursor;
 
 /**
