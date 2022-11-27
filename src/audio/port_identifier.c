@@ -89,52 +89,6 @@ port_identifier_copy (
 }
 
 /**
- * Returns if the 2 PortIdentifier's are equal.
- *
- * @note Does not check insignificant data like
- *   comment.
- */
-bool
-port_identifier_is_equal (
-  const PortIdentifier * src,
-  const PortIdentifier * dest)
-{
-  bool eq =
-    dest->owner_type == src->owner_type
-    && dest->type == src->type && dest->flow == src->flow
-    && dest->flags == src->flags && dest->flags2 == src->flags2
-    && dest->track_name_hash == src->track_name_hash;
-  if (dest->owner_type == PORT_OWNER_TYPE_PLUGIN)
-    {
-      eq =
-        eq
-        && plugin_identifier_is_equal (
-          &dest->plugin_id, &src->plugin_id);
-    }
-
-  /* if LV2 (has symbol) check symbol match,
-   * otherwise check index match and label match */
-  if (dest->sym)
-    {
-      eq = eq && string_is_equal (dest->sym, src->sym);
-    }
-  else
-    {
-      eq =
-        eq && dest->port_index == src->port_index
-        && string_is_equal (dest->label, src->label);
-    }
-
-  /* do string comparisons at the end */
-  eq =
-    eq && string_is_equal (dest->uri, src->uri)
-    && string_is_equal (dest->port_group, src->port_group)
-    && string_is_equal (dest->ext_port_id, src->ext_port_id);
-
-  return eq;
-}
-
-/**
  * To be used as GEqualFunc.
  */
 int
@@ -184,6 +138,7 @@ port_identifier_validate (PortIdentifier * self)
   return true;
 }
 
+OPTIMIZE_O3
 uint32_t
 port_identifier_get_hash (const void * self)
 {

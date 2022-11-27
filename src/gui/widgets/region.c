@@ -479,16 +479,7 @@ draw_chord_region (
   double ticks_in_region =
     arranger_object_get_length_in_ticks (obj);
   double x_start;
-  /*double x_end;*/
 
-  /*int vis_offset_x =*/
-  /*draw_rect->x - full_rect->x;*/
-  /*int vis_offset_y =*/
-  /*draw_rect->y - full_rect->y;*/
-  /*int vis_width = draw_rect->width;*/
-  /*int vis_height = draw_rect->height;*/
-  /*int full_offset_x = full_rect->x;*/
-  /*int full_offset_y = full_rect->y;*/
   int full_width = full_rect->width;
   int full_height = full_rect->height;
 
@@ -498,8 +489,6 @@ draw_chord_region (
     arranger_object_get_loop_length_in_ticks (obj);
   double        clip_start_ticks = obj->clip_start_pos.ticks;
   ChordObject * co;
-  ChordObject * next_co = NULL;
-  ArrangerObject * next_co_obj = NULL;
   for (int i = 0; i < self->num_chord_objects; i++)
     {
       co = self->chord_objects[i];
@@ -510,34 +499,8 @@ draw_chord_region (
       /* get ratio (0.0 - 1.0) on x where chord
        * starts & ends */
       double co_start_ticks = co_obj->pos.ticks;
-      /*double co_end_ticks;*/
-      if (i < self->num_chord_objects - 1)
-        {
-          next_co = self->chord_objects[i + 1];
-          next_co_obj = (ArrangerObject *) next_co;
-          /*co_end_ticks = next_co_obj->pos.ticks;*/
-        }
-      else
-        {
-          /*co_end_ticks = obj->end_pos.ticks;*/
-        }
       double tmp_start_ticks;
-      /*double tmp_end_ticks;*/
 
-      /* adjust for clip start */
-      /*int adjusted_mn_start_ticks =*/
-      /*mn_start_ticks - clip_start_ticks;*/
-      /*int adjusted_mn_end_ticks =*/
-      /*mn_end_ticks - clip_end_ticks;*/
-
-      /* if before loop start & after clip start */
-      /*if (position_compare (*/
-      /*&mn->start_pos, &r->loop_start_pos) < 0 &&*/
-      /*position_compare (*/
-      /*&mn->start_pos, &r->clip_start_pos) >= 0)*/
-      /*{*/
-
-      /*}*/
       /* if before loop end */
       if (position_is_before (&co_obj->pos, &obj->loop_end_pos))
         {
@@ -554,19 +517,6 @@ draw_chord_region (
               /* calculate draw endpoints */
               tmp_start_ticks =
                 co_start_ticks + loop_ticks * j;
-              /* if should be clipped */
-              if (
-                next_co
-                && position_is_after_or_equal (
-                  &next_co_obj->pos, &obj->loop_end_pos))
-                {
-                  /*tmp_end_ticks =*/
-                  /*loop_end_ticks + loop_ticks * j;*/
-                }
-              else
-                {
-                  /*tmp_end_ticks = co_end_ticks + loop_ticks * j;*/
-                }
 
               /* adjust for clip start */
               tmp_start_ticks -= clip_start_ticks;

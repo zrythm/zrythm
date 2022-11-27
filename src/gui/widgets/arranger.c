@@ -3386,6 +3386,7 @@ drag_update (
       break;
     case UI_OVERLAY_ACTION_STARTING_PANNING:
       self->action = UI_OVERLAY_ACTION_PANNING;
+      break;
     case UI_OVERLAY_ACTION_MOVING:
       if (self->alt_held && self->can_link)
         self->action = UI_OVERLAY_ACTION_MOVING_LINK;

@@ -3657,12 +3657,6 @@ track_create_with_action (
   return track;
 }
 
-unsigned int
-track_get_name_hash (Track * self)
-{
-  return g_str_hash (self->name);
-}
-
 /**
  * Removes the AutomationTrack's associated with
  * this channel from the AutomationTracklist in the

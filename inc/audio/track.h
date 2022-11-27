@@ -732,9 +732,7 @@ NONNULL
 void
 track_set_magic (Track * self);
 
-NONNULL
-unsigned int
-track_get_name_hash (Track * self);
+#define track_get_name_hash(self) g_str_hash(self->name)
 
 /**
  * Sets track muted and optionally adds the action

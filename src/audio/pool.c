@@ -445,7 +445,7 @@ audio_pool_write_to_disk (AudioPool * self, bool is_backup)
 
   GError *      err = NULL;
   GThreadPool * thread_pool = g_thread_pool_new (
-    write_clip_thread, self, g_get_num_processors (),
+    write_clip_thread, self, (int) g_get_num_processors (),
     F_NOT_EXCLUSIVE, &err);
   if (err)
     {

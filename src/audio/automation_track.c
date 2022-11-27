@@ -106,20 +106,26 @@ automation_track_validate (AutomationTrack * self)
           == track_name_hash,
         false);
     }
-  AutomationTrack * found_at =
-    automation_track_find_from_port_id (&self->port_id, false);
-  if (found_at != self)
+
+  /* this is expensive so only do this during tests */
+  if (ZRYTHM_TESTING)
     {
-      g_message (
-        "The automation track for the following "
-        "port identifier was not found");
-      port_identifier_print (&self->port_id);
-      g_message ("automation tracks:");
-      AutomationTracklist * atl =
-        automation_track_get_automation_tracklist (self);
-      automation_tracklist_print_ats (atl);
-      g_return_val_if_reached (false);
+      AutomationTrack * found_at =
+        automation_track_find_from_port_id (&self->port_id, !ZRYTHM_TESTING);
+      if (found_at != self)
+        {
+          g_message (
+            "The automation track for the following "
+            "port identifier was not found");
+          port_identifier_print (&self->port_id);
+          g_message ("automation tracks:");
+          AutomationTracklist * atl =
+            automation_track_get_automation_tracklist (self);
+          automation_tracklist_print_ats (atl);
+          g_return_val_if_reached (false);
+        }
     }
+
   for (int j = 0; j < self->num_regions; j++)
     {
       ZRegion * r = self->regions[j];
@@ -135,22 +141,8 @@ automation_track_validate (AutomationTrack * self)
             obj->region_id.track_name_hash == track_name_hash,
             false);
         }
-      for (int k = 0; k < r->num_midi_notes; k++)
-        {
-          MidiNote *       mn = r->midi_notes[k];
-          ArrangerObject * obj = (ArrangerObject *) mn;
-          g_return_val_if_fail (
-            obj->region_id.track_name_hash == track_name_hash,
-            false);
-        }
-      for (int k = 0; k < r->num_chord_objects; k++)
-        {
-          ChordObject *    co = r->chord_objects[k];
-          ArrangerObject * obj = (ArrangerObject *) co;
-          g_return_val_if_fail (
-            obj->region_id.track_name_hash == track_name_hash,
-            false);
-        }
+      g_return_val_if_fail (r->num_midi_notes == 0, false);
+      g_return_val_if_fail (r->num_chord_objects == 0, false);
     }
 
   return true;
@@ -365,8 +357,7 @@ automation_track_get_ap_before_pos (
 }
 
 /**
- * Finds the AutomationTrack associated with
- * `port`.
+ * Finds the AutomationTrack associated with `port`.
  *
  * FIXME use hashtable
  *
@@ -396,14 +387,15 @@ automation_track_find_from_port (
           PortIdentifier * src = &port->id;
           PortIdentifier * dest = &at->port_id;
           if (
-            (dest->sym
-               ? string_is_equal (dest->sym, src->sym)
-               : string_is_equal (dest->label, src->label))
-            && dest->owner_type == src->owner_type
+            dest->owner_type == src->owner_type
             && dest->type == src->type
             && dest->flow == src->flow
             && dest->flags == src->flags
-            && dest->track_name_hash == src->track_name_hash)
+            && dest->track_name_hash == src->track_name_hash
+            &&
+            (dest->sym
+               ? string_is_equal (dest->sym, src->sym)
+               : string_is_equal (dest->label, src->label)))
             {
               if (dest->owner_type == PORT_OWNER_TYPE_PLUGIN)
                 {

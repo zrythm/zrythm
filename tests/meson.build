@@ -422,6 +422,7 @@ if get_option ('tests')
         export_dynamic: false,
         link_with: test_link_libs,
         include_directories: all_inc,
+        #override_options: [ 'b_lto=false', ],
       )
       if is_benchmark
         benchmark (

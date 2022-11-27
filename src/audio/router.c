@@ -28,6 +28,8 @@
 
 #include "zrythm-config.h"
 
+#include <threads.h>
+
 #include "audio/audio_track.h"
 #include "audio/control_port.h"
 #include "audio/engine.h"
@@ -269,22 +271,45 @@ router_is_processing_kickoff_thread (const Router * const self)
 bool
 router_is_processing_thread (const Router * const self)
 {
-  if (!self->graph)
-    return false;
+  /* this is called too often so use this optimization */
+  static thread_local bool have_result = false;
+  static thread_local bool is_processing_thread = false;
+
+  if (G_LIKELY (have_result))
+    {
+      return is_processing_thread;
+    }
+
+  if (G_UNLIKELY (!self->graph))
+    {
+      have_result = false;
+      is_processing_thread = false;
+      return false;
+    }
 
   for (int j = 0; j < self->graph->num_threads; j++)
     {
       if (pthread_equal (
             pthread_self (), self->graph->threads[j]->pthread))
-        return true;
+        {
+          is_processing_thread = true;
+          have_result = true;
+          return true;
+        }
     }
 
   if (
     self->graph->main_thread
     && pthread_equal (
       pthread_self (), self->graph->main_thread->pthread))
-    return true;
+    {
+      is_processing_thread = true;
+      have_result = true;
+      return true;
+    }
 
+  have_result = true;
+  is_processing_thread = false;
   return false;
 }
 
