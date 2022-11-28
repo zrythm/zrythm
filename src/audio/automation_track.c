@@ -111,7 +111,8 @@ automation_track_validate (AutomationTrack * self)
   if (ZRYTHM_TESTING)
     {
       AutomationTrack * found_at =
-        automation_track_find_from_port_id (&self->port_id, !ZRYTHM_TESTING);
+        automation_track_find_from_port_id (
+          &self->port_id, !ZRYTHM_TESTING);
       if (found_at != self)
         {
           g_message (

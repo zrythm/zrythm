@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -39,7 +23,7 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _QuantizeMbWidget  QuantizeMbWidget;
 typedef struct _QuantizeBoxWidget QuantizeBoxWidget;
-typedef struct _SnapBoxWidget     SnapBoxWidget;
+typedef struct _SnapGridWidget    SnapGridWidget;
 typedef struct _RangeActionButtonsWidget
                                   RangeActionButtonsWidget;
 typedef struct _ZoomButtonsWidget ZoomButtonsWidget;
@@ -59,7 +43,7 @@ typedef struct _ZoomButtonsWidget ZoomButtonsWidget;
 typedef struct _TimelineToolbarWidget
 {
   GtkBox                     parent_instance;
-  SnapBoxWidget *            snap_box;
+  SnapGridWidget *           snap_grid;
   QuantizeBoxWidget *        quantize_box;
   GtkButton *                event_viewer_toggle;
   GtkToggleButton *          musical_mode_toggle;

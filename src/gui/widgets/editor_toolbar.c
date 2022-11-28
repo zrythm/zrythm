@@ -13,7 +13,6 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/playhead_scroll_buttons.h"
 #include "gui/widgets/quantize_box.h"
-#include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/velocity_settings.h"
 #include "gui/widgets/zoom_buttons.h"
@@ -274,7 +273,7 @@ void
 editor_toolbar_widget_setup (EditorToolbarWidget * self)
 {
   /* setup bot toolbar */
-  snap_box_widget_setup (self->snap_box, SNAP_GRID_EDITOR);
+  snap_grid_widget_setup (self->snap_grid, SNAP_GRID_EDITOR);
   quantize_box_widget_setup (
     self->quantize_box, QUANTIZE_OPTIONS_EDITOR);
 
@@ -335,7 +334,7 @@ static void
 editor_toolbar_widget_init (EditorToolbarWidget * self)
 {
   g_type_ensure (PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE);
-  g_type_ensure (SNAP_BOX_WIDGET_TYPE);
+  g_type_ensure (SNAP_GRID_WIDGET_TYPE);
   g_type_ensure (VELOCITY_SETTINGS_WIDGET_TYPE);
   g_type_ensure (ZOOM_BUTTONS_WIDGET_TYPE);
 
@@ -405,7 +404,7 @@ editor_toolbar_widget_class_init (
   BIND_CHILD (sep_after_chord_highlight);
   BIND_CHILD (ghost_notes_btn);
   BIND_CHILD (sep_after_ghost_notes);
-  BIND_CHILD (snap_box);
+  BIND_CHILD (snap_grid);
   BIND_CHILD (quantize_box);
   BIND_CHILD (event_viewer_toggle);
   BIND_CHILD (automation_functions_menu);

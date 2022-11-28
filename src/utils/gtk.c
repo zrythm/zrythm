@@ -2197,3 +2197,22 @@ z_graphene_rect_print (const graphene_rect_t * rect)
     "graphene rect: x %f y %f w %f h %f", rect->origin.x,
     rect->origin.y, rect->size.width, rect->size.height);
 }
+
+GtkStringList *
+z_gtk_string_list_new_from_cyaml_strvals (
+  const cyaml_strval_t * strvals,
+  size_t                 num_vals,
+  bool                   localized)
+{
+  GtkStringList * strlist = gtk_string_list_new (NULL);
+  for (size_t i = 0; i < num_vals; i++)
+    {
+      const char * str = strvals[i].str;
+      if (localized)
+        {
+          str = _ (str);
+        }
+      gtk_string_list_append (strlist, str);
+    }
+  return strlist;
+}

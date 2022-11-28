@@ -28,12 +28,12 @@
 
 #include "zrythm-config.h"
 
-#include <threads.h>
-
 #include "audio/audio_track.h"
 #include "audio/control_port.h"
 #include "audio/engine.h"
 #include "audio/engine_alsa.h"
+
+#include <threads.h>
 #ifdef HAVE_JACK
 #  include "audio/engine_jack.h"
 #endif

@@ -25,7 +25,7 @@ G_DECLARE_FINAL_TYPE (
 TYPEDEF_STRUCT_UNDERSCORED (ToolboxWidget);
 TYPEDEF_STRUCT_UNDERSCORED (QuantizeMbWidget);
 TYPEDEF_STRUCT_UNDERSCORED (QuantizeBoxWidget);
-TYPEDEF_STRUCT_UNDERSCORED (SnapBoxWidget);
+TYPEDEF_STRUCT_UNDERSCORED (SnapGridWidget);
 TYPEDEF_STRUCT_UNDERSCORED (PlayheadScrollButtonsWidget);
 TYPEDEF_STRUCT_UNDERSCORED (VelocitySettingsWidget);
 TYPEDEF_STRUCT_UNDERSCORED (ZoomButtonsWidget);
@@ -40,7 +40,7 @@ typedef struct _EditorToolbarWidget
   GtkScrolledWindow * scroll;
 
   GtkComboBoxText *   chord_highlighting;
-  SnapBoxWidget *     snap_box;
+  SnapGridWidget *    snap_grid;
   QuantizeBoxWidget * quantize_box;
   GtkButton *         event_viewer_toggle;
   GtkStack *          functions_btn_stack;

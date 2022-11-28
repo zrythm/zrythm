@@ -11,7 +11,7 @@
               <class name="toolbar"/>
             </style>
             <child>
-              <object class="SnapBoxWidget" id="snap_box">
+              <object class="SnapGridWidget" id="snap_grid">
               </object>
             </child>
             <child>

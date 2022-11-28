@@ -48,17 +48,17 @@ typedef enum NoteLength
 } NoteLength;
 
 static const cyaml_strval_t note_length_strings[] = {
-  {"bar",    NOTE_LENGTH_BAR  },
-  { "beat",  NOTE_LENGTH_BEAT },
-  { "2/1",   NOTE_LENGTH_2_1  },
-  { "1/1",   NOTE_LENGTH_1_1  },
-  { "1/2",   NOTE_LENGTH_1_2  },
-  { "1/4",   NOTE_LENGTH_1_4  },
-  { "1/8",   NOTE_LENGTH_1_8  },
-  { "1/16",  NOTE_LENGTH_1_16 },
-  { "1/32",  NOTE_LENGTH_1_32 },
-  { "1/64",  NOTE_LENGTH_1_64 },
-  { "1/128", NOTE_LENGTH_1_128},
+  {__ ("bar"),   NOTE_LENGTH_BAR  },
+  { __ ("beat"), NOTE_LENGTH_BEAT },
+  { "2/1",       NOTE_LENGTH_2_1  },
+  { "1/1",       NOTE_LENGTH_1_1  },
+  { "1/2",       NOTE_LENGTH_1_2  },
+  { "1/4",       NOTE_LENGTH_1_4  },
+  { "1/8",       NOTE_LENGTH_1_8  },
+  { "1/16",      NOTE_LENGTH_1_16 },
+  { "1/32",      NOTE_LENGTH_1_32 },
+  { "1/64",      NOTE_LENGTH_1_64 },
+  { "1/128",     NOTE_LENGTH_1_128},
 };
 
 typedef enum NoteType
@@ -69,9 +69,9 @@ typedef enum NoteType
 } NoteType;
 
 static const cyaml_strval_t note_type_strings[] = {
-  {"normal",   NOTE_TYPE_NORMAL },
-  { "dotted",  NOTE_TYPE_DOTTED },
-  { "triplet", NOTE_TYPE_TRIPLET},
+  {__ ("normal"),   NOTE_TYPE_NORMAL },
+  { __ ("dotted"),  NOTE_TYPE_DOTTED },
+  { __ ("triplet"), NOTE_TYPE_TRIPLET},
 };
 
 /**
@@ -86,20 +86,20 @@ static const cyaml_strval_t note_type_short_strings[] = {
 
 typedef enum NoteLengthType
 {
-  /** Custom length. */
-  NOTE_LENGTH_CUSTOM,
-
   /** Link length with snap setting. */
   NOTE_LENGTH_LINK,
 
   /** Use last created object's length. */
   NOTE_LENGTH_LAST_OBJECT,
+
+  /** Custom length. */
+  NOTE_LENGTH_CUSTOM,
 } NoteLengthType;
 
 static const cyaml_strval_t note_length_type_strings[] = {
-  {"custom",       NOTE_LENGTH_CUSTOM     },
-  { "link",        NOTE_LENGTH_LINK       },
+  {"link",         NOTE_LENGTH_LINK       },
   { "last object", NOTE_LENGTH_LAST_OBJECT},
+  { "custom",      NOTE_LENGTH_CUSTOM     },
 };
 
 /**
@@ -122,9 +122,8 @@ typedef struct SnapGrid
   SnapGridType type;
 
   /**
-   * If this is on, the snap note length will be
-   * determined automatically based on the current
-   * zoom level.
+   * If this is on, the snap note length will be determined
+   * automatically based on the current zoom level.
    *
    * The snap note type still applies.
    */

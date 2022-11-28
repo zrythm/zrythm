@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/snap_grid.h"
 #include "gui/widgets/snap_grid.h"
@@ -27,16 +11,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (SnapGridWidget, snap_grid_widget, GTK_TYPE_BOX)
-
-#if 0
-static void
-on_clicked (GtkButton * button,
-            SnapGridWidget * self)
-{
-  /*gtk_widget_show_all (GTK_WIDGET (self->popover));*/
-}
-#endif
+G_DEFINE_TYPE (SnapGridWidget, snap_grid_widget, GTK_TYPE_WIDGET)
 
 static void
 set_label (SnapGridWidget * self)
@@ -45,21 +20,28 @@ set_label (SnapGridWidget * self)
   char *     snap_str = snap_grid_stringize (sg);
 
   char new_str[600];
-  if (sg->length_type == NOTE_LENGTH_LINK)
+  if (sg->snap_to_grid)
     {
-      sprintf (new_str, "%s - 🔗", snap_str);
-    }
-  else if (sg->length_type == NOTE_LENGTH_LAST_OBJECT)
-    {
-      sprintf (new_str, _ ("%s - Last object"), snap_str);
+      if (sg->length_type == NOTE_LENGTH_LINK)
+        {
+          sprintf (new_str, "%s - 🔗", snap_str);
+        }
+      else if (sg->length_type == NOTE_LENGTH_LAST_OBJECT)
+        {
+          sprintf (new_str, _ ("%s - Last object"), snap_str);
+        }
+      else
+        {
+          char * default_str = snap_grid_stringize (sg);
+          sprintf (new_str, "%s - %s", snap_str, default_str);
+          g_free (default_str);
+        }
     }
   else
     {
-      char * default_str = snap_grid_stringize (sg);
-      sprintf (new_str, "%s - %s", snap_str, default_str);
-      g_free (default_str);
+      sprintf (new_str, "%s", _ ("Off"));
     }
-  gtk_label_set_text (self->label, new_str);
+  adw_button_content_set_label (self->content, new_str);
 
   g_free (snap_str);
 }
@@ -70,16 +52,24 @@ snap_grid_widget_refresh (SnapGridWidget * self)
   set_label (self);
 }
 
+static void
+create_popover (GtkMenuButton * menu_btn, gpointer user_data)
+{
+  SnapGridWidget * self = Z_SNAP_GRID_WIDGET (user_data);
+  self->popover = snap_grid_popover_widget_new (self);
+  gtk_menu_button_set_popover (
+    menu_btn, GTK_WIDGET (self->popover));
+}
+
 void
 snap_grid_widget_setup (
   SnapGridWidget * self,
   SnapGrid *       snap_grid)
 {
   self->snap_grid = snap_grid;
-  self->popover = snap_grid_popover_widget_new (self);
-  gtk_menu_button_set_popover (
-    GTK_MENU_BUTTON (self->menu_btn),
-    GTK_WIDGET (self->popover));
+  gtk_menu_button_set_create_popup_func (
+    GTK_MENU_BUTTON (self->menu_btn), create_popover, self,
+    NULL);
 
   set_label (self);
 }
@@ -87,28 +77,25 @@ snap_grid_widget_setup (
 static void
 snap_grid_widget_class_init (SnapGridWidgetClass * klass)
 {
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BIN_LAYOUT);
 }
 
 static void
 snap_grid_widget_init (SnapGridWidget * self)
 {
   self->menu_btn = GTK_MENU_BUTTON (gtk_menu_button_new ());
-  gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->menu_btn));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->menu_btn), GTK_WIDGET (self));
 
-  self->box =
-    GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
-  self->img =
-    GTK_IMAGE (gtk_image_new_from_icon_name ("snap-to-grid"));
-  self->label = GTK_LABEL (gtk_label_new (""));
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self->box), _ ("Snap/Grid options"));
-  gtk_box_append (self->box, GTK_WIDGET (self->img));
-  gtk_box_append (self->box, GTK_WIDGET (self->label));
+  self->content =
+    ADW_BUTTON_CONTENT (adw_button_content_new ());
+  adw_button_content_set_icon_name (
+    self->content, "snap-to-grid");
   gtk_menu_button_set_child (
-    GTK_MENU_BUTTON (self->menu_btn), GTK_WIDGET (self->box));
-#if 0
-  g_signal_connect (
-    G_OBJECT (self), "clicked",
-    G_CALLBACK (on_clicked), self);
-#endif
+    GTK_MENU_BUTTON (self->menu_btn),
+    GTK_WIDGET (self->content));
+  gtk_widget_set_tooltip_text (
+    GTK_WIDGET (self), _ ("Snap/Grid Settings"));
 }

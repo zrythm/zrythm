@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
@@ -24,7 +8,6 @@
 #include "gui/widgets/playhead_scroll_buttons.h"
 #include "gui/widgets/quantize_box.h"
 #include "gui/widgets/range_action_buttons.h"
-#include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_toolbar.h"
 #include "gui/widgets/zoom_buttons.h"
@@ -54,7 +37,7 @@ timeline_toolbar_widget_refresh (TimelineToolbarWidget * self)
 void
 timeline_toolbar_widget_setup (TimelineToolbarWidget * self)
 {
-  snap_box_widget_setup (self->snap_box, SNAP_GRID_TIMELINE);
+  snap_grid_widget_setup (self->snap_grid, SNAP_GRID_TIMELINE);
   quantize_box_widget_setup (
     self->quantize_box, QUANTIZE_OPTIONS_TIMELINE);
 }
@@ -64,7 +47,7 @@ timeline_toolbar_widget_init (TimelineToolbarWidget * self)
 {
   g_type_ensure (QUANTIZE_BOX_WIDGET_TYPE);
   g_type_ensure (RANGE_ACTION_BUTTONS_WIDGET_TYPE);
-  g_type_ensure (SNAP_BOX_WIDGET_TYPE);
+  g_type_ensure (SNAP_GRID_WIDGET_TYPE);
   g_type_ensure (PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE);
   g_type_ensure (ZOOM_BUTTONS_WIDGET_TYPE);
 
@@ -95,7 +78,7 @@ timeline_toolbar_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, TimelineToolbarWidget, x)
 
-  BIND_CHILD (snap_box);
+  BIND_CHILD (snap_grid);
   BIND_CHILD (quantize_box);
   BIND_CHILD (event_viewer_toggle);
   BIND_CHILD (musical_mode_toggle);

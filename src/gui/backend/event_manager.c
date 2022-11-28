@@ -62,7 +62,7 @@
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/route_target_selector.h"
 #include "gui/widgets/ruler_marker.h"
-#include "gui/widgets/snap_box.h"
+#include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bot_box.h"
 #include "gui/widgets/timeline_minimap.h"
@@ -1182,13 +1182,13 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
         SnapGrid * sg = (SnapGrid *) ev->arg;
         if (sg == SNAP_GRID_TIMELINE)
           {
-            snap_box_widget_refresh (
-              MW_TIMELINE_TOOLBAR->snap_box);
+            snap_grid_widget_refresh (
+              MW_TIMELINE_TOOLBAR->snap_grid);
           }
         else if (sg == SNAP_GRID_EDITOR)
           {
-            snap_box_widget_refresh (
-              MW_EDITOR_TOOLBAR->snap_box);
+            snap_grid_widget_refresh (
+              MW_EDITOR_TOOLBAR->snap_grid);
           }
       }
       break;

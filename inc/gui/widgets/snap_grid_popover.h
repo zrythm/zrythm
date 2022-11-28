@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2020, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * @file
@@ -26,6 +10,7 @@
 #ifndef __GUI_WIDGETS_SNAP_GRID_POPOVER_H__
 #define __GUI_WIDGETS_SNAP_GRID_POPOVER_H__
 
+#include <adwaita.h>
 #include <gtk/gtk.h>
 
 typedef struct _DigitalMeterWidget DigitalMeterWidget;
@@ -56,37 +41,25 @@ typedef struct _SnapGridPopoverWidget
   /** Owner button. */
   SnapGridWidget * owner;
 
+  AdwPreferencesPage * pref_page;
+
   /* --- snap --- */
-  GtkBox *             snap_length_box;
-  DigitalMeterWidget * snap_length_dm;
-  GtkBox *             snap_type_box;
-  //DigitalMeterWidget * snap_type_dm;
-  GtkToggleButton * snap_triplet_toggle;
-  gulong            snap_triplet_toggle_handler;
-  GtkToggleButton * snap_dotted_toggle;
-  gulong            snap_dotted_toggle_handler;
-  GtkCheckButton *  snap_adaptive;
-  gulong            snap_adaptive_handler;
+  AdwPreferencesGroup * snap_position_group;
+  GtkSwitch *           snap_to_grid;
+  GtkSwitch *           adaptive_snap;
+  AdwActionRow *        adaptive_snap_row;
+  AdwComboRow *         snap_length;
+  AdwComboRow *         snap_type;
+  GtkSwitch *           keep_offset;
+  AdwActionRow *        keep_offset_row;
+  GtkSwitch *           snap_to_events;
+  AdwActionRow *        snap_to_events_row;
 
-  /* --- default --- */
-  GtkBox *             default_length_box;
-  DigitalMeterWidget * default_length_dm;
-  GtkBox *             default_type_box;
-  //DigitalMeterWidget * default_type_dm;
-  GtkToggleButton * default_triplet_toggle;
-  gulong            default_triplet_toggle_handler;
-  GtkToggleButton * default_dotted_toggle;
-  gulong            default_dotted_toggle_handler;
-  GtkCheckButton *  default_adaptive;
-  gulong            default_adaptive_handler;
-
-  /** Toggle to link snap to default. */
-  GtkToggleButton * link_toggle;
-  gulong            link_handler;
-
-  /** Toggle to use last object's length. */
-  GtkToggleButton * last_object_toggle;
-  gulong            last_object_handler;
+  /* --- object lengths --- */
+  AdwPreferencesGroup * object_length_group;
+  AdwComboRow *         object_length_type;
+  AdwComboRow *         object_length;
+  AdwComboRow *         object_length_type_custom;
 
 } SnapGridPopoverWidget;
 

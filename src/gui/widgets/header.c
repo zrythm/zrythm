@@ -11,7 +11,6 @@
 #include "gui/widgets/live_waveform.h"
 #include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/project_toolbar.h"
-#include "gui/widgets/snap_box.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/view_toolbar.h"
@@ -60,7 +59,6 @@ header_widget_init (HeaderWidget * self)
 {
   g_type_ensure (HOME_TOOLBAR_WIDGET_TYPE);
   g_type_ensure (TOOLBOX_WIDGET_TYPE);
-  g_type_ensure (SNAP_BOX_WIDGET_TYPE);
   g_type_ensure (SNAP_GRID_WIDGET_TYPE);
   g_type_ensure (HELP_TOOLBAR_WIDGET_TYPE);
   g_type_ensure (VIEW_TOOLBAR_WIDGET_TYPE);

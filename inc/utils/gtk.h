@@ -7,26 +7,28 @@
  * GTK utils.
  */
 
+#ifndef __UTILS_GTK_H__
+#define __UTILS_GTK_H__
+
 #include "zrythm-config.h"
 
-#ifndef __UTILS_GTK_H__
-#  define __UTILS_GTK_H__
+#include <stdbool.h>
 
-#  include <stdbool.h>
+#include <gtk/gtk.h>
+#ifdef HAVE_X11
+#  include <gdk/x11/gdkx.h>
+#endif
 
-#  include <gtk/gtk.h>
-#  ifdef HAVE_X11
-#    include <gdk/x11/gdkx.h>
-#  endif
+#ifdef _WOE32
+#  include <gdk/win32/gdkwin32.h>
+#endif
 
-#  ifdef _WOE32
-#    include <gdk/win32/gdkwin32.h>
-#  endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#include <gtksourceview/gtksource.h>
+#pragma GCC diagnostic pop
 
-#  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#  include <gtksourceview/gtksource.h>
-#  pragma GCC diagnostic pop
+#include <cyaml/cyaml.h>
 
 /**
  * @addtogroup utils
@@ -34,74 +36,73 @@
  * @{
  */
 
-#  define DEFAULT_CLIPBOARD \
-    gdk_display_get_clipboard (gdk_display_get_default ())
+#define DEFAULT_CLIPBOARD \
+  gdk_display_get_clipboard (gdk_display_get_default ())
 
-#  define CREATE_MIDI_LEARN_MENU_ITEM(action) \
-    z_gtk_create_menu_item ( \
-      _ ("MIDI learn"), "signal-midi", action)
+#define CREATE_MIDI_LEARN_MENU_ITEM(action) \
+  z_gtk_create_menu_item ( \
+    _ ("MIDI learn"), "signal-midi", action)
 
-#  define CREATE_CUT_MENU_ITEM(action) \
-    z_gtk_create_menu_item (_ ("Cu_t"), "edit-cut", action)
+#define CREATE_CUT_MENU_ITEM(action) \
+  z_gtk_create_menu_item (_ ("Cu_t"), "edit-cut", action)
 
-#  define CREATE_COPY_MENU_ITEM(action) \
-    z_gtk_create_menu_item (_ ("_Copy"), "edit-copy", action)
+#define CREATE_COPY_MENU_ITEM(action) \
+  z_gtk_create_menu_item (_ ("_Copy"), "edit-copy", action)
 
-#  define CREATE_PASTE_MENU_ITEM(action) \
-    z_gtk_create_menu_item ( \
-      _ ("_Paste"), "edit-paste", action)
+#define CREATE_PASTE_MENU_ITEM(action) \
+  z_gtk_create_menu_item (_ ("_Paste"), "edit-paste", action)
 
-#  define CREATE_DELETE_MENU_ITEM(action) \
-    z_gtk_create_menu_item ( \
-      _ ("_Delete"), "edit-delete", action)
+#define CREATE_DELETE_MENU_ITEM(action) \
+  z_gtk_create_menu_item ( \
+    _ ("_Delete"), "edit-delete", action)
 
-#  define CREATE_CLEAR_SELECTION_MENU_ITEM(action) \
-    z_gtk_create_menu_item (/* TRANSLATORS: deselects everything */ \
-                            _ ("Cle_ar Selection"), \
-                            "edit-clear", action)
+#define CREATE_CLEAR_SELECTION_MENU_ITEM(action) \
+  z_gtk_create_menu_item (/* TRANSLATORS: deselects everything */ \
+                          _ ("Cle_ar Selection"), \
+                          "edit-clear", action)
 
-#  define CREATE_SELECT_ALL_MENU_ITEM(action) \
-    z_gtk_create_menu_item ( \
-      _ ("Select A_ll"), "edit-select-all", action)
+#define CREATE_SELECT_ALL_MENU_ITEM(action) \
+  z_gtk_create_menu_item ( \
+    _ ("Select A_ll"), "edit-select-all", action)
 
-#  define CREATE_DUPLICATE_MENU_ITEM(action) \
-    z_gtk_create_menu_item ( \
-      _ ("Duplicate"), "edit-duplicate", action)
+#define CREATE_DUPLICATE_MENU_ITEM(action) \
+  z_gtk_create_menu_item ( \
+    _ ("Duplicate"), "edit-duplicate", action)
 
-#  define CREATE_MUTE_MENU_ITEM(action) \
-    z_gtk_create_menu_item (_ ("Mute"), "mute", action)
+#define CREATE_MUTE_MENU_ITEM(action) \
+  z_gtk_create_menu_item (_ ("Mute"), "mute", action)
 
-#  define CREATE_UNMUTE_MENU_ITEM(action) \
-    z_gtk_create_menu_item (_ ("Unmute"), NULL, action)
+#define CREATE_UNMUTE_MENU_ITEM(action) \
+  z_gtk_create_menu_item (_ ("Unmute"), NULL, action)
 
-#  define z_gtk_assistant_set_current_page_complete( \
-    assistant, complete) \
-    gtk_assistant_set_page_complete ( \
+#define z_gtk_assistant_set_current_page_complete( \
+  assistant, complete) \
+  gtk_assistant_set_page_complete ( \
+    GTK_ASSISTANT (assistant), \
+    gtk_assistant_get_nth_page ( \
       GTK_ASSISTANT (assistant), \
-      gtk_assistant_get_nth_page ( \
-        GTK_ASSISTANT (assistant), \
-        gtk_assistant_get_current_page ( \
-          GTK_ASSISTANT (assistant))), \
-      complete);
+      gtk_assistant_get_current_page ( \
+        GTK_ASSISTANT (assistant))), \
+    complete);
 
-#  define Z_GDK_RGBA_INIT(r, g, b, a) \
-    (GdkRGBA) \
-    { \
-      .red = (float) (r), .green = (float) (g), \
-      .blue = (float) (b), .alpha = (float) (a) \
-    }
+#define Z_GDK_RGBA_INIT(r, g, b, a) \
+  (GdkRGBA) \
+  { \
+    .red = (float) (r), .green = (float) (g), \
+    .blue = (float) (b), .alpha = (float) (a) \
+  }
 
-#  define Z_GDK_RECTANGLE_INIT(_x, _y, _w, _h) \
-    (GdkRectangle) \
-    { \
-      .x = _x, .y = _y, .width = _w, .height = _h \
-    }
+#define Z_GDK_RECTANGLE_INIT(_x, _y, _w, _h) \
+  (GdkRectangle) \
+  { \
+    .x = _x, .y = _y, .width = _w, .height = _h \
+  }
 
-#  define Z_GDK_RECTANGLE_INIT_UNIT(_x, _y) \
-    (GdkRectangle) \
-    { \
-      .x = _x, .y = _y, .width = 1, .height = 1 \
-    }
+#define Z_GDK_RECTANGLE_INIT_UNIT(_x, _y) \
+  (GdkRectangle) \
+  { \
+    .x = _x, .y = _y, .width = 1, .height = 1 \
+  }
 
 typedef enum IconType IconType;
 
@@ -271,10 +272,10 @@ z_gtk_toggle_button_new_with_resource (
   IconType     icon_type,
   const char * name);
 
-#  define z_gtk_create_menu_item( \
-    lbl_name, icn_name, action_name) \
-    z_gtk_create_menu_item_full ( \
-      lbl_name, icn_name, action_name)
+#define z_gtk_create_menu_item( \
+  lbl_name, icn_name, action_name) \
+  z_gtk_create_menu_item_full ( \
+    lbl_name, icn_name, action_name)
 
 /**
  * Creates a menu item.
@@ -293,7 +294,7 @@ z_gtk_get_single_selection_pointer (
   GtkTreeView * tv,
   int           column);
 
-#  if 0
+#if 0
 /**
  * Returns the label from a given GtkMenuItem.
  *
@@ -303,7 +304,7 @@ z_gtk_get_single_selection_pointer (
 GtkLabel *
 z_gtk_get_label_from_menu_item (
   GtkMenuItem * mi);
-#  endif
+#endif
 
 /**
  * Gets the tooltip for the given action on the
@@ -342,7 +343,7 @@ z_gtk_set_tooltip_for_actionable (
   GtkActionable * actionable,
   const char *    tooltip);
 
-#  if 0
+#if 0
 /**
  * Changes the size of the icon inside tool buttons.
  */
@@ -350,7 +351,7 @@ void
 z_gtk_tool_button_set_icon_size (
   GtkToolButton * toolbutton,
   GtkIconSize     icon_size);
-#  endif
+#endif
 
 /**
  * Removes the given style class from the widget.
@@ -370,7 +371,7 @@ z_gtk_widget_get_device (GtkWidget * widget)
     gtk_widget_get_display (widget))));
 }
 
-#  if 0
+#if 0
 static inline GdkWindow *
 z_gtk_widget_get_root_gdk_window (
   GtkWidget * widget)
@@ -380,9 +381,9 @@ z_gtk_widget_get_root_gdk_window (
   return
     gdk_screen_get_root_window (screen);
 }
-#  endif
+#endif
 
-#  if 0
+#if 0
 static inline void
 z_gtk_widget_get_global_coordinates (
   GtkWidget * widget,
@@ -424,7 +425,7 @@ z_gtk_warp_cursor_to (
     z_gtk_widget_get_screen (widget);
   gdk_device_warp (dev, screen, x, y);
 }
-#  endif
+#endif
 
 static inline GdkSurface *
 z_gtk_widget_get_surface (GtkWidget * widget)
@@ -685,20 +686,20 @@ z_gtk_file_chooser_set_file_from_path (
 char *
 z_gdk_clipboard_get_text (GdkClipboard * clipboard);
 
-#  ifdef HAVE_X11
+#ifdef HAVE_X11
 Window
 z_gtk_window_get_x11_xid (GtkWindow * window);
-#  endif
+#endif
 
-#  ifdef _WOE32
+#ifdef _WOE32
 HWND
 z_gtk_window_get_windows_hwnd (GtkWindow * window);
-#  endif
+#endif
 
-#  ifdef __APPLE__
+#ifdef __APPLE__
 void *
 z_gtk_window_get_nsview (GtkWindow * window);
-#  endif
+#endif
 
 /**
  * Creates a new pixbuf for the given icon scaled
@@ -767,6 +768,12 @@ z_gtk_list_box_remove_all_children (GtkListBox * list_box);
 
 void
 z_graphene_rect_print (const graphene_rect_t * rect);
+
+GtkStringList *
+z_gtk_string_list_new_from_cyaml_strvals (
+  const cyaml_strval_t * strvals,
+  size_t                 num_vals,
+  bool                   localized);
 
 /**
  * @}
