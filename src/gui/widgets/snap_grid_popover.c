@@ -249,7 +249,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
     self->adaptive_snap_row, GTK_WIDGET (self->adaptive_snap));
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (self->adaptive_snap_row),
-    _ ("Adaptive snap"));
+    _ ("Adaptive Snap"));
   adw_action_row_set_subtitle (
     ADW_ACTION_ROW (self->adaptive_snap_row),
     _ ("Adjust snapping automatically based on the current zoom level. The note type still applies."));
@@ -284,7 +284,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
   adw_combo_row_set_selected (
     self->snap_type, sg->snap_note_type);
   adw_preferences_row_set_title (
-    ADW_PREFERENCES_ROW (self->snap_type), _ ("Note type"));
+    ADW_PREFERENCES_ROW (self->snap_type), _ ("Note Type"));
   adw_preferences_group_add (
     self->snap_position_group, GTK_WIDGET (self->snap_type));
 
@@ -302,7 +302,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
     self->keep_offset_row, GTK_WIDGET (self->keep_offset));
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (self->keep_offset_row),
-    _ ("Keep offset"));
+    _ ("Keep Offset"));
   adw_action_row_set_subtitle (
     ADW_ACTION_ROW (self->keep_offset_row),
     _ ("Keep offset of objects from the snap point when moving to a new position"));
@@ -326,7 +326,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
     GTK_WIDGET (self->snap_to_events));
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (self->snap_to_events_row),
-    _ ("Snap to events"));
+    _ ("Snap to Events"));
   adw_action_row_set_subtitle (
     ADW_ACTION_ROW (self->snap_to_events_row),
     _ ("Snap to other events"));
@@ -361,7 +361,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
     self->object_length_type, sg->length_type);
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (self->object_length_type),
-    _ ("Object length type"));
+    _ ("Object Length Lype"));
   adw_action_row_set_subtitle (
     ADW_ACTION_ROW (self->object_length_type),
     _ ("Link to snap settings, use the length of the last created object, or specify a custom length"));
@@ -395,7 +395,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
     self->object_length_type_custom, sg->default_note_type);
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (self->object_length_type_custom),
-    _ ("Note type"));
+    _ ("Note Type"));
   adw_preferences_group_add (
     self->object_length_group,
     GTK_WIDGET (self->object_length_type_custom));
