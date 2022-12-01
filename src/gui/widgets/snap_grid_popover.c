@@ -223,10 +223,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
   adw_preferences_page_add (
     self->pref_page, self->snap_position_group);
   adw_preferences_group_set_title (
-    self->snap_position_group, _ ("Snap"));
-  adw_preferences_group_set_description (
-    self->snap_position_group,
-    _ ("Position snapping options"));
+    self->snap_position_group, _ ("Position Snap"));
   self->snap_to_grid = GTK_SWITCH (gtk_switch_new ());
   gtk_switch_set_active (self->snap_to_grid, sg->snap_to_grid);
   gtk_widget_set_valign (
@@ -252,7 +249,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
     _ ("Adaptive Snap"));
   adw_action_row_set_subtitle (
     ADW_ACTION_ROW (self->adaptive_snap_row),
-    _ ("Adjust snapping automatically based on the current zoom level. The note type still applies."));
+    _ ("Adapt snapping behavior to the current zoom level based on the note type"));
   adw_preferences_group_add (
     self->snap_position_group,
     GTK_WIDGET (self->adaptive_snap_row));
@@ -327,9 +324,6 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (self->snap_to_events_row),
     _ ("Snap to Events"));
-  adw_action_row_set_subtitle (
-    ADW_ACTION_ROW (self->snap_to_events_row),
-    _ ("Snap to other events"));
   adw_preferences_group_add (
     self->snap_position_group,
     GTK_WIDGET (self->snap_to_events_row));
@@ -340,10 +334,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
   adw_preferences_page_add (
     self->pref_page, self->object_length_group);
   adw_preferences_group_set_title (
-    self->object_length_group, _ ("Object Length"));
-  adw_preferences_group_set_description (
-    self->object_length_group,
-    _ ("Default object length options"));
+    self->object_length_group, _ ("Default Object Length"));
 
   /* object length type */
   const char * strings[] = {
