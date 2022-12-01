@@ -33,7 +33,10 @@
 #include "audio/engine.h"
 #include "audio/engine_alsa.h"
 
+#ifdef HAVE_C11_THREADS
 #include <threads.h>
+#endif
+
 #ifdef HAVE_JACK
 #  include "audio/engine_jack.h"
 #endif
@@ -271,9 +274,14 @@ router_is_processing_kickoff_thread (const Router * const self)
 bool
 router_is_processing_thread (const Router * const self)
 {
+#ifdef HAVE_C11_THREADS
   /* this is called too often so use this optimization */
   static thread_local bool have_result = false;
   static thread_local bool is_processing_thread = false;
+#else
+  bool have_result = false;
+  bool is_processing_thread = false;
+#endif
 
   if (G_LIKELY (have_result))
     {

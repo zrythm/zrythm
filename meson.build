@@ -400,6 +400,7 @@ if os_gnu
   if have_unlimited_mem
     cdata.set ('HAVE_UNLIMITED_MEM', 1)
   endif
+  cdata.set ('HAVE_C11_THREADS', 1)
 endif
 
 # --- Check for size of data types ---
