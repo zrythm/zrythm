@@ -1,4 +1,4 @@
 [wrap-git]
-url=https://gitlab.gnome.org/GNOME/gtk
+url=https://gitlab.gnome.org/lb90/gtk
 depth=1
-revision=4.9.1
+revision=0b43085be7663a4113e0708572788d67d36ec4be
