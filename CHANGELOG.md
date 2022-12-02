@@ -6,6 +6,26 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.5.1] - 2022-12-02
+### Added
+- Implement best-fit zoom in editor
+- Add "Rename" context menu option on applicable timeline objects
+- Implement Ableton-style panning/zooming in the ruler
+- Implement middle-click (or alt-click) panning in arrangers
+
+### Changed
+- Minor UI improvements (widget paddings and sizes)
+- File browser: allow browsing volumes without associated drives
+- Minor optimizations
+- Redesign snap/grid menu
+- Require C11 thread support on GNU/Linux
+
+### Fixed
+- Fix arrangers sometimes not taking off-screen objects into account
+- Fix minor memory leak
+- Fix error when undoing duplication of automation points
+- Fix some functions that were supposed to be optimized not getting optimized
+
 ## [1.0.0-beta.4.4.1] - 2022-11-23
 ### Changed
 - Use list view for control ports in the plugin inspector (fixes lags)
