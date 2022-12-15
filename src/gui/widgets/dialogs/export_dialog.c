@@ -352,9 +352,11 @@ return_result:
 static char *
 get_exports_dir (ExportDialogWidget * self)
 {
-  GSettings * s = get_current_settings (self);
-  bool        export_stems =
-    g_settings_get_boolean (s, "export-stems");
+  bool is_audio = AUDIO_STACK_VISIBLE (self);
+  bool export_stems = (bool) adw_combo_row_get_selected (
+    is_audio
+      ? self->audio_mixdown_or_stems
+      : self->midi_mixdown_or_stems);
   return project_get_path (
     PROJECT,
     export_stems
@@ -376,10 +378,11 @@ get_export_filename (
   bool                 absolute,
   Track *              track)
 {
-  GSettings * s = get_current_settings (self);
-  bool        is_audio = AUDIO_STACK_VISIBLE (self);
-  bool        export_stems =
-    g_settings_get_boolean (s, "export-stems");
+  bool is_audio = AUDIO_STACK_VISIBLE (self);
+  bool export_stems = (bool) adw_combo_row_get_selected (
+    is_audio
+      ? self->audio_mixdown_or_stems
+      : self->midi_mixdown_or_stems);
   char * filename = NULL;
   if (export_stems)
     {
@@ -592,6 +595,22 @@ init_export_info (ExportDialogWidget * self, Track * track)
         s, "lanes-as-tracks", info->lanes_as_tracks);
     }
 
+  /* mixdown/stems */
+  if (is_audio)
+    {
+      g_settings_set_boolean (
+        S_EXPORT_AUDIO, "export-stems",
+        (bool) adw_combo_row_get_selected (
+          self->audio_mixdown_or_stems));
+    }
+  else
+    {
+      g_settings_set_boolean (
+        S_EXPORT_MIDI, "export-stems",
+        (bool) adw_combo_row_get_selected (
+          self->midi_mixdown_or_stems));
+    }
+
   AdwEntryRow * title;
   AdwEntryRow * artist;
   AdwEntryRow * genre;
@@ -653,12 +672,12 @@ init_export_info (ExportDialogWidget * self, Track * track)
 static void
 on_export (ExportDialogWidget * self, bool audio)
 {
-  GSettings *   s = audio ? S_EXPORT_AUDIO : S_EXPORT_MIDI;
   GtkTreeView * tree_view =
     audio ? self->audio_tracks_treeview
           : self->midi_tracks_treeview;
-  bool export_stems =
-    g_settings_get_boolean (s, "export-stems");
+  bool export_stems = (bool) adw_combo_row_get_selected (
+    audio ? self->audio_mixdown_or_stems
+          : self->midi_mixdown_or_stems);
 
   int      num_tracks;
   Track ** tracks =
