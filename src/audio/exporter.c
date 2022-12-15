@@ -531,7 +531,7 @@ export_audio (ExportSettings * info)
     }
 
   progress_info_mark_completed (
-    pinfo, PROGRESS_COMPLETED_SUCCESS, _ ("Exported"));
+    pinfo, PROGRESS_COMPLETED_SUCCESS, NULL);
 
   return 0;
 }

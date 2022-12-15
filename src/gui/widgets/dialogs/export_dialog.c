@@ -781,6 +781,8 @@ on_export (ExportDialogWidget * self, bool audio)
       g_debug ("~ finished bouncing mixdown ~");
     }
 
+  ui_show_notification (_ ("Exported"));
+
   free (tracks);
 }
 
