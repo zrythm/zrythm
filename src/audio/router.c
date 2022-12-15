@@ -34,7 +34,7 @@
 #include "audio/engine_alsa.h"
 
 #ifdef HAVE_C11_THREADS
-#include <threads.h>
+#  include <threads.h>
 #endif
 
 #ifdef HAVE_JACK
