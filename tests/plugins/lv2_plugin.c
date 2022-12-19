@@ -54,8 +54,9 @@ check_state_contains_wav (void)
 {
   Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->instrument;
-  char *   state_dir = plugin_get_abs_state_dir (pl, false);
-  char *   state_file =
+  char *   state_dir =
+    plugin_get_abs_state_dir (pl, false, false);
+  char * state_file =
     g_build_filename (state_dir, "state.ttl", NULL);
   GError * err = NULL;
   char *   content = NULL;

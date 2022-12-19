@@ -1970,14 +1970,15 @@ plugin_copy_state_dir (
     }
   else
     {
-      dir_to_use = plugin_get_abs_state_dir (self, is_backup);
+      dir_to_use =
+        plugin_get_abs_state_dir (self, is_backup, true);
     }
   char ** files_in_dir =
     io_get_files_in_dir (dir_to_use, false);
   g_return_val_if_fail (!files_in_dir, -1);
 
   char * src_dir_to_use =
-    plugin_get_abs_state_dir (src, is_backup);
+    plugin_get_abs_state_dir (src, is_backup, false);
 
   io_copy_dir (
     dir_to_use, src_dir_to_use, F_FOLLOW_SYMLINKS,
@@ -1995,9 +1996,19 @@ plugin_copy_state_dir (
  * Returns the state dir as an absolute path.
  */
 char *
-plugin_get_abs_state_dir (Plugin * self, bool is_backup)
+plugin_get_abs_state_dir (
+  Plugin * self,
+  bool     is_backup,
+  bool     create_if_not_exists)
 {
-  plugin_ensure_state_dir (self, is_backup);
+  if (create_if_not_exists)
+    {
+      plugin_ensure_state_dir (self, is_backup);
+    }
+  else
+    {
+      g_return_val_if_fail (self->state_dir, NULL);
+    }
 
   char * parent_dir = project_get_path (
     PROJECT, PROJECT_PATH_PLUGIN_STATES, is_backup);

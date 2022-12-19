@@ -2229,7 +2229,7 @@ lv2_plugin_get_abs_state_file_path (
   bool        is_backup)
 {
   char * abs_state_dir =
-    plugin_get_abs_state_dir (self->plugin, is_backup);
+    plugin_get_abs_state_dir (self->plugin, is_backup, true);
   char * state_file_abs_path =
     g_build_filename (abs_state_dir, "state.ttl", NULL);
 

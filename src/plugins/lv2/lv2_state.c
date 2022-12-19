@@ -1,23 +1,10 @@
+// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
+ *
+ * ---
  *
   Copyright 2007-2016 David Robillard <http://drobilla.net>
 
@@ -32,6 +19,8 @@
   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+  ---
 */
 
 #include <assert.h>
@@ -177,7 +166,7 @@ lv2_state_make_path_save (
 
   char * full_path =
     plugin_get_abs_state_dir (
-      pl->plugin, F_NOT_BACKUP);
+      pl->plugin, F_NOT_BACKUP, true);
 
   /* make sure the path is absolute */
   g_warn_if_fail (g_path_is_absolute (full_path));
@@ -232,7 +221,7 @@ lv2_state_save_to_file (Lv2Plugin * pl, bool is_backup)
     pl->plugin->instantiated && pl->instance, NULL);
 
   char * abs_state_dir =
-    plugin_get_abs_state_dir (pl->plugin, is_backup);
+    plugin_get_abs_state_dir (pl->plugin, is_backup, true);
   char * copy_dir = project_get_path (
     PROJECT, PROJECT_PATH_PLUGIN_EXT_COPIES, false);
   char * link_dir = project_get_path (

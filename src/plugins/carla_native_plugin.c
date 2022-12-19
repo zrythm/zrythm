@@ -2336,8 +2336,8 @@ carla_native_plugin_save_state (
     }
   else
     {
-      dir_to_use =
-        plugin_get_abs_state_dir (self->plugin, is_backup);
+      dir_to_use = plugin_get_abs_state_dir (
+        self->plugin, is_backup, true);
     }
   io_mkdir (dir_to_use);
   char * state_file_abs_path =
@@ -2359,6 +2359,7 @@ carla_native_plugin_save_state (
   return 0;
 }
 
+#  if 0
 char *
 carla_native_plugin_get_abs_state_file_path (
   const CarlaNativePlugin * self,
@@ -2373,6 +2374,7 @@ carla_native_plugin_get_abs_state_file_path (
 
   return state_file_abs_path;
 }
+#  endif
 
 /**
  * Loads the state from the given file or from
@@ -2389,7 +2391,6 @@ carla_native_plugin_load_state (
   Plugin * pl = self->plugin;
   g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), false);
 
-  g_debug ("%s: loading state from %s...", __func__, abs_path);
   char * state_file;
   if (abs_path)
     {
@@ -2397,12 +2398,23 @@ carla_native_plugin_load_state (
     }
   else
     {
+      if (!pl->state_dir)
+        {
+          g_set_error_literal (
+            error, Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR,
+            Z_PLUGINS_CARLA_NATIVE_PLUGIN_ERROR_FAILED,
+            _ ("Plugin doesn't have a state directory"));
+          return false;
+        }
       char * state_dir_abs_path = plugin_get_abs_state_dir (
-        pl, PROJECT->loading_from_backup);
+        pl, PROJECT->loading_from_backup, false);
       state_file = g_build_filename (
         state_dir_abs_path, CARLA_STATE_FILENAME, NULL);
       g_free (state_dir_abs_path);
     }
+  g_debug (
+    "loading state from %s (given path: %s)...", state_file,
+    abs_path);
 
   if (!file_exists (state_file))
     {

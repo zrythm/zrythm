@@ -487,7 +487,7 @@ queue_file_or_chord_preset (
       if (track->type == TRACK_TYPE_INSTRUMENT)
         {
           char * state_dir = plugin_get_abs_state_dir (
-            track->channel->instrument, F_NOT_BACKUP);
+            track->channel->instrument, F_NOT_BACKUP, true);
           if (state_dir)
             {
               io_rmdir (state_dir, Z_F_FORCE);

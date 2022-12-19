@@ -579,7 +579,10 @@ plugin_copy_state_dir (
 NONNULL
 MALLOC
 char *
-plugin_get_abs_state_dir (Plugin * self, bool is_backup);
+plugin_get_abs_state_dir (
+  Plugin * self,
+  bool     is_backup,
+  bool     create_if_not_exists);
 
 /**
  * Ensures the state dir exists or creates it.

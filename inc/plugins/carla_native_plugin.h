@@ -226,12 +226,14 @@ carla_native_plugin_instantiate (
   bool                use_state_file,
   GError **           error);
 
+#    if 0
 NONNULL
 MALLOC
 char *
 carla_native_plugin_get_abs_state_file_path (
   const CarlaNativePlugin * self,
   const bool                is_backup);
+#    endif
 
 /**
  * Processes the plugin for this cycle.
