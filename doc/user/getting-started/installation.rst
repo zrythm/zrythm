@@ -24,6 +24,14 @@ support for it.
 
 .. tip:: The installers also include bundled plugins.
 
+Windows
++++++++
+
+.. important::
+  On Windows, Zrythm will only work when installed in the default
+  path. Installing Zrythm to external hard drives or setting the
+  Zrythm user path to external hard drives is not supported.
+
 Flatpak
 -------
 Zrythm is available on `Flathub`_ under the ID
