@@ -100,9 +100,9 @@ test_change_samplerate (void)
   /*TRACKLIST->tracks[num_tracks_before];*/
 
   /* save the project */
-  int ret =
-    project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
-  g_assert_cmpint (ret, ==, 0);
+  bool success = project_save (
+    PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, NULL);
+  g_assert_true (success);
   char * prj_file =
     g_build_filename (PROJECT->dir, PROJECT_FILE, NULL);
 
@@ -112,7 +112,8 @@ test_change_samplerate (void)
   object_free_w_func_and_null (project_free, PROJECT);
 
   /* reload */
-  ret = project_load (prj_file, 0);
+  success = project_load (prj_file, 0, NULL);
+  g_assert_true (success);
 
   /* stop engine to process manually */
   test_project_stop_dummy_engine ();

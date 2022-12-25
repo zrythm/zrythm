@@ -449,14 +449,17 @@ transport_prepare_audio_regions_for_stretch (
  *   will be used to calculate the ratio.
  * @param force Force stretching, regardless of
  *   musical mode.
+ *
+ * @return Whether successful.
  */
-void
+bool
 transport_stretch_regions (
   Transport *          self,
   TimelineSelections * sel,
   bool                 with_fixed_ratio,
   double               time_ratio,
-  bool                 force);
+  bool                 force,
+  GError **            error);
 
 void
 transport_set_punch_mode_enabled (

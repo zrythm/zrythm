@@ -1674,8 +1674,15 @@ do_or_undo_duplicate_or_link (
             }
 
           /* add to track. */
-          arranger_object_add_to_project (
-            obj, F_NO_PUBLISH_EVENTS);
+          GError * err = NULL;
+          bool     success = arranger_object_add_to_project (
+                obj, F_NO_PUBLISH_EVENTS, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                error, err, "Failed to add object to project");
+              return -1;
+            }
 
           /* edit both project object and the copy */
           if (!math_doubles_equal (ticks, 0.0))
@@ -1805,7 +1812,14 @@ do_or_undo_duplicate_or_link (
                         audio_region_get_clip (region);
                       int id = audio_pool_duplicate_clip (
                         AUDIO_POOL, clip->pool_id,
-                        F_WRITE_FILE);
+                        F_WRITE_FILE, &err);
+                      if (id < 0)
+                        {
+                          PROPAGATE_PREFIXED_ERROR (
+                            error, err, "%s",
+                            "Failed to duplicate audio clip");
+                          return -1;
+                        }
                       clip =
                         audio_pool_get_clip (AUDIO_POOL, id);
                       g_return_val_if_fail (clip, -1);
@@ -2019,14 +2033,24 @@ do_or_undo_create_or_delete (
                 arranger_object_clone (own_obj);
 
               /* add it to the project */
+              bool     success;
+              GError * err = NULL;
               if (create)
                 {
-                  arranger_object_add_to_project (
-                    obj, F_NO_PUBLISH_EVENTS);
+                  success = arranger_object_add_to_project (
+                    obj, F_NO_PUBLISH_EVENTS, &err);
                 }
               else
                 {
-                  arranger_object_insert_to_project (obj);
+                  success = arranger_object_insert_to_project (
+                    obj, &err);
+                }
+              if (!success)
+                {
+                  PROPAGATE_PREFIXED_ERROR_LITERAL (
+                    error, err,
+                    "Failed to add object to project");
+                  return -1;
                 }
 
               /* select it */
@@ -2194,8 +2218,16 @@ do_or_undo_record (
                 arranger_object_clone (own_after_obj);
 
               /* add it to the project */
-              arranger_object_add_to_project (
-                obj, F_NO_PUBLISH_EVENTS);
+              GError * err = NULL;
+              bool success = arranger_object_add_to_project (
+                obj, F_NO_PUBLISH_EVENTS, &err);
+              if (!success)
+                {
+                  PROPAGATE_PREFIXED_ERROR_LITERAL (
+                    error, err,
+                    "Failed to add object to project");
+                  return -1;
+                }
 
               /* select it */
               arranger_object_select (
@@ -2262,8 +2294,16 @@ do_or_undo_record (
                 arranger_object_clone (own_before_obj);
 
               /* add it to the project */
-              arranger_object_add_to_project (
-                obj, F_NO_PUBLISH_EVENTS);
+              GError * err = NULL;
+              bool success = arranger_object_add_to_project (
+                obj, F_NO_PUBLISH_EVENTS, &err);
+              if (!success)
+                {
+                  PROPAGATE_PREFIXED_ERROR_LITERAL (
+                    error, err,
+                    "Failed to add object to project");
+                  return -1;
+                }
 
               /* select it */
               arranger_object_select (
@@ -2368,9 +2408,17 @@ do_or_undo_edit (
           g_free (src_clip_path);
 
           /* replace the frames in the region */
-          audio_region_replace_frames (
-            r, src_clip->frames, (size_t) start.frames,
-            num_frames, F_NO_DUPLICATE_CLIP);
+          GError * err = NULL;
+          bool     success = audio_region_replace_frames (
+                r, src_clip->frames, (size_t) start.frames,
+                num_frames, F_NO_DUPLICATE_CLIP, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err, "%s",
+                "Failed to replace frames for audio region");
+              return -1;
+            }
         }
       else /* not audio function */
         {
@@ -2589,8 +2637,15 @@ do_or_undo_automation_fill (
             : (ArrangerObject *) self->region_before);
 
       /* add it to the project */
-      arranger_object_add_to_project (
-        obj, F_NO_PUBLISH_EVENTS);
+      GError * err = NULL;
+      bool     success = arranger_object_add_to_project (
+            obj, F_NO_PUBLISH_EVENTS, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err, "Failed to add object to project");
+          return -1;
+        }
 
       /* select it */
       arranger_object_select (
@@ -2636,9 +2691,16 @@ do_or_undo_split (
           g_return_val_if_fail (obj, -1);
 
           /* split */
-          arranger_object_split (
-            obj, &self->pos, 0, &self->r1[i], &self->r2[i],
-            true);
+          GError * err = NULL;
+          bool     success = arranger_object_split (
+                obj, &self->pos, 0, &self->r1[i], &self->r2[i],
+                true, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                error, err, "Failed to split object");
+              return -1;
+            }
 
           /* r1 and r2 are now inside the project,
            * clone them to keep copies */
@@ -2656,8 +2718,16 @@ do_or_undo_split (
           g_return_val_if_fail (r1 && r2, -1);
 
           /* unsplit */
-          arranger_object_unsplit (
-            r1, r2, &obj, F_NO_PUBLISH_EVENTS);
+          GError * err = NULL;
+          bool     success = arranger_object_unsplit (
+                r1, r2, &obj, F_NO_PUBLISH_EVENTS, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                error, err, "Failed to unsplit object");
+              return -1;
+            }
+
           if (obj->type == ARRANGER_OBJECT_TYPE_REGION)
             {
               ZRegion * own_region = (ZRegion *) own_obj;
@@ -2669,7 +2739,15 @@ do_or_undo_split (
            * position */
           arranger_object_remove_from_project (obj);
           obj = arranger_object_clone (own_obj);
-          arranger_object_insert_to_project (obj);
+          err = NULL;
+          success =
+            arranger_object_insert_to_project (obj, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                error, err, "Failed to add object to project");
+              return -1;
+            }
 
           /* free the copies created in _do */
           free_split_objects (self, (int) i);
@@ -2748,8 +2826,15 @@ do_or_undo_merge (
       ArrangerObject * clone_obj =
         arranger_object_clone (own_after_obj);
 
-      arranger_object_add_to_project (
-        clone_obj, F_NO_PUBLISH_EVENTS);
+      GError * err = NULL;
+      bool     success = arranger_object_add_to_project (
+            clone_obj, F_NO_PUBLISH_EVENTS, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err, "Failed to add object to project");
+          return -1;
+        }
 
       /* remember positions */
       arranger_object_copy_identifier (
@@ -2833,13 +2918,26 @@ do_or_undo_resize (
             default:
               g_warn_if_reached ();
             }
-          arranger_object_resize (
-            obj, left, type, ticks, false);
+          GError * err = NULL;
+          bool     success = arranger_object_resize (
+                obj, left, type, ticks, false, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                error, err, "Failed to resize object");
+              return -1;
+            }
 
           /* also resize the clone so we can find
            * the actual object next time */
-          arranger_object_resize (
-            own_obj, left, type, ticks, false);
+          success = arranger_object_resize (
+            own_obj, left, type, ticks, false, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                error, err, "Failed to resize object");
+              return -1;
+            }
         }
     }
 

@@ -814,9 +814,9 @@ project_get_existing_yaml (
  * @param is_template Load the project as a
  *   template and create a new project from it.
  *
- * @return Non-zero if error.
+ * @return Whether successful.
  */
-static int
+static bool
 load (const char * filename, const int is_template)
 {
   g_return_val_if_fail (filename, -1);
@@ -901,7 +901,7 @@ load (const char * filename, const int is_template)
     {
       HANDLE_ERROR (
         err, "%s", _ ("Failed to get existing yaml"));
-      return -1;
+      return false;
     }
 
   char * prj_ver_str =
@@ -910,7 +910,7 @@ load (const char * filename, const int is_template)
     {
       HANDLE_ERROR (
         err, "%s", _ ("Invalid project: missing version"));
-      return -1;
+      return false;
     }
   g_message ("project from yaml (version %s)...", prj_ver_str);
   g_free (prj_ver_str);
@@ -939,7 +939,7 @@ load (const char * filename, const int is_template)
       HANDLE_ERROR (
         err, "%s", _ ("Failed to deserialize project YAML"));
       free (yaml);
-      return -1;
+      return false;
     }
   free (yaml);
   self->backup_dir = g_strdup (PROJECT->backup_dir);
@@ -965,7 +965,7 @@ load (const char * filename, const int is_template)
         true,
         _ ("Failed to load project. Please check the "
            "logs for more information."));
-      RETURN_ERROR;
+      return false;
     }
 
   /* check for FINISHED file */
@@ -981,7 +981,7 @@ load (const char * filename, const int is_template)
             true,
             _ ("Could not load project: Corrupted project detected (missing FINISHED file at '%s')."),
             finished_file_path);
-          RETURN_ERROR;
+          return false;
         }
       g_free (finished_file_path);
     }
@@ -1164,7 +1164,8 @@ load (const char * filename, const int is_template)
           destroy_prev_main_window (mww);
         }
 
-      g_return_val_if_fail (GTK_IS_WINDOW (MAIN_WINDOW), -1);
+      g_return_val_if_fail (
+        GTK_IS_WINDOW (MAIN_WINDOW), false);
     }
 
   /* sanity check */
@@ -1213,7 +1214,7 @@ load (const char * filename, const int is_template)
       g_free (str);
     }
 
-  return 0;
+  return true;
 }
 
 /**
@@ -1226,10 +1227,13 @@ load (const char * filename, const int is_template)
  * @param is_template Load the project as a
  *   template and create a new project from it.
  *
- * @return 0 if successful, non-zero otherwise.
+ * @return Whether successful.
  */
-int
-project_load (const char * filename, const bool is_template)
+bool
+project_load (
+  const char * filename,
+  const bool   is_template,
+  GError **    error)
 {
   g_message (
     "%s: filename: %s, is template: %d", __func__, filename,
@@ -1237,8 +1241,8 @@ project_load (const char * filename, const bool is_template)
 
   if (filename)
     {
-      int ret = load (filename, is_template);
-      if (ret)
+      bool success = load (filename, is_template);
+      if (!success)
         {
           ui_show_error_message (
             true,
@@ -1248,10 +1252,13 @@ project_load (const char * filename, const bool is_template)
           CreateProjectDialogWidget * dialog =
             create_project_dialog_widget_new ();
 
-          ret = z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+          int ret =
+            z_gtk_dialog_run (GTK_DIALOG (dialog), true);
 
           if (ret != GTK_RESPONSE_OK)
-            return -1;
+            {
+              return false;
+            }
 
           g_message (
             "%s: creating project %s", __func__,
@@ -1269,9 +1276,16 @@ project_load (const char * filename, const bool is_template)
 
   if (is_template || !filename)
     {
-      project_save (
-        PROJECT, PROJECT->dir, F_NOT_BACKUP,
-        Z_F_NO_SHOW_NOTIFICATION, F_NO_ASYNC);
+      GError * err = NULL;
+      bool     success = project_save (
+            PROJECT, PROJECT->dir, F_NOT_BACKUP,
+            Z_F_NO_SHOW_NOTIFICATION, F_NO_ASYNC, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s", _ ("Failed to save project"));
+          return false;
+        }
     }
 
   PROJECT->last_saved_action =
@@ -1303,7 +1317,7 @@ project_load (const char * filename, const bool is_template)
 
   g_debug ("project %p loaded", PROJECT);
 
-  return 0;
+  return true;
 }
 
 /**
@@ -1459,6 +1473,9 @@ project_autosave_cb (void * data)
       return G_SOURCE_CONTINUE;
     }
 
+  GError * err = NULL;
+  bool     success;
+
   /* skip if bad time to save or rolling */
   if (
     cur_time - PROJECT->last_autosave_time < microsec_to_autosave
@@ -1487,9 +1504,13 @@ project_autosave_cb (void * data)
     }
 
   /* ok to save */
-  project_save (
+  success = project_save (
     PROJECT, PROJECT->dir, F_BACKUP, Z_F_SHOW_NOTIFICATION,
-    F_ASYNC);
+    F_ASYNC, &err);
+  if (!success)
+    {
+      HANDLE_ERROR (err, "%s", _ ("Failed to save project"));
+    }
   PROJECT->last_autosave_time = cur_time;
 
 post_save_sem_and_continue:
@@ -1817,15 +1838,16 @@ cleanup_plugin_state_dirs (ProjectSaveData * data)
  * @param async Save asynchronously in another
  *   thread.
  *
- * @return Non-zero if error.
+ * @return Whether successful.
  */
-int
+bool
 project_save (
   Project *    self,
   const char * _dir,
   const bool   is_backup,
   const bool   show_notification,
-  const bool   async)
+  const bool   async,
+  GError **    error)
 {
   /* pause engine */
   EngineState state;
@@ -1874,7 +1896,13 @@ project_save (
 #define MK_PROJECT_DIR(_path) \
   tmp = project_get_path ( \
     self, PROJECT_PATH_##_path, is_backup); \
-  g_return_val_if_fail (tmp, -1); \
+  if (!tmp) \
+    { \
+      g_set_error_literal ( \
+        error, Z_PROJECT_ERROR, Z_PROJECT_ERROR_FAILED, \
+        "Failed to get path for " #_path); \
+      return false; \
+    } \
   io_mkdir (tmp); \
   g_free_and_null (tmp)
 
@@ -1887,17 +1915,31 @@ project_save (
 
   /* write the pool */
   audio_pool_remove_unused (AUDIO_POOL, is_backup);
-  audio_pool_write_to_disk (AUDIO_POOL, is_backup);
+  GError * err = NULL;
+  bool     success =
+    audio_pool_write_to_disk (AUDIO_POOL, is_backup, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s",
+        _ ("Failed to write audio pool to disk"));
+      return false;
+    }
 
   ProjectSaveData * data = project_save_data_new ();
   data->project_file_path = project_get_path (
     self, PROJECT_PATH_PROJECT_FILE, is_backup);
   data->show_notification = show_notification;
   data->is_backup = is_backup;
-  data->project = project_clone (PROJECT, is_backup);
-  g_return_val_if_fail (data->project, -1);
+  data->project = project_clone (PROJECT, is_backup, &err);
+  if (!data->project)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s", _ ("Failed to clone project"));
+      return false;
+    }
   g_return_val_if_fail (
-    data->project->tracklist_selections, -1);
+    data->project->tracklist_selections, false);
   data->project->tracklist_selections->free_tracks = true;
 
 #if 0
@@ -2028,7 +2070,7 @@ project_save (
       engine_resume (AUDIO_ENGINE, &state);
     }
 
-  RETURN_OK;
+  return true;
 }
 
 /**
@@ -2040,7 +2082,10 @@ project_save (
  *   is for a backup.
  */
 Project *
-project_clone (const Project * src, bool for_backup)
+project_clone (
+  const Project * src,
+  bool            for_backup,
+  GError **       error)
 {
   g_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, NULL);
   g_message ("cloning project...");
@@ -2085,8 +2130,8 @@ project_clone (const Project * src, bool for_backup)
     src->tracklist_selections, &err);
   if (!self->tracklist_selections)
     {
-      g_critical (
-        "Failed to clone track selections: %s", err->message);
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s", "Failed to clone track selections");
       return NULL;
     }
   self->tracklist_selections->is_project = true;

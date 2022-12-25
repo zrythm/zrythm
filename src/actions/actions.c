@@ -659,7 +659,13 @@ run_open_dialog (GtkDialog * dialog)
       char *           filename =
         z_gtk_file_chooser_get_filename (chooser);
       g_message ("filename %s", filename);
-      res = project_load (filename, 0);
+      GError * err = NULL;
+      bool     success = project_load (filename, 0, &err);
+      if (!success)
+        {
+          HANDLE_ERROR_LITERAL (
+            err, _ ("Failed to load project"));
+        }
       g_free (filename);
     }
 
@@ -676,7 +682,14 @@ DEFINE_SIMPLE (activate_open)
     {
       char * filename = z_gtk_file_chooser_get_filename (
         GTK_FILE_CHOOSER (dialog));
-      project_load (filename, Z_F_NOT_TEMPLATE);
+      GError * err = NULL;
+      bool     success =
+        project_load (filename, Z_F_NOT_TEMPLATE, &err);
+      if (!success)
+        {
+          HANDLE_ERROR (
+            err, "%s", _ ("Failed to load project"));
+        }
     }
 
   gtk_window_destroy (GTK_WINDOW (dialog));
@@ -697,9 +710,14 @@ activate_save (
     }
   g_message ("project dir: %s", PROJECT->dir);
 
-  project_save (
-    PROJECT, PROJECT->dir, F_NOT_BACKUP, ZRYTHM_F_NOTIFY,
-    F_NO_ASYNC);
+  GError * err = NULL;
+  bool     success = project_save (
+        PROJECT, PROJECT->dir, F_NOT_BACKUP, ZRYTHM_F_NOTIFY,
+        F_NO_ASYNC, &err);
+  if (!success)
+    {
+      HANDLE_ERROR (err, "%s", _ ("Failed to save project"));
+    }
 }
 
 void
@@ -733,9 +751,15 @@ activate_save_as (
       char * filename;
 
       filename = z_gtk_file_chooser_get_filename (chooser);
-      project_save (
-        PROJECT, filename, F_NOT_BACKUP, ZRYTHM_F_NO_NOTIFY,
-        F_NO_ASYNC);
+      GError * err = NULL;
+      bool     success = project_save (
+            PROJECT, filename, F_NOT_BACKUP, ZRYTHM_F_NO_NOTIFY,
+            F_NO_ASYNC, &err);
+      if (!success)
+        {
+          HANDLE_ERROR_LITERAL (
+            err, _ ("Failed to save project"));
+        }
       g_free (filename);
     }
 

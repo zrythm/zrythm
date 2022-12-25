@@ -872,14 +872,18 @@ arranger_object_free (ArrangerObject * self);
  * @param ticks Number of ticks to resize.
  * @param during_ui_action Whether this is called
  *   during a UI action (not at the end).
+ *
+ * @return Whether successful.
  */
-void
+WARN_UNUSED_RESULT
+bool
 arranger_object_resize (
   ArrangerObject *         self,
   const bool               left,
   ArrangerObjectResizeType type,
   const double             ticks,
-  bool                     during_ui_action);
+  bool                     during_ui_action,
+  GError **                error);
 
 void
 arranger_object_append_children (
@@ -989,26 +993,34 @@ arranger_object_clone (const ArrangerObject * self);
  *   project and the child objects will be added to the
  *   project, otherwise it will be untouched and the children
  *   will be mere clones.
+ *
+ * @return Whether successful.
  */
-void
+WARN_UNUSED_RESULT
+bool
 arranger_object_split (
   ArrangerObject *  self,
   const Position *  pos,
   const bool        pos_is_local,
   ArrangerObject ** r1,
   ArrangerObject ** r2,
-  bool              is_project);
+  bool              is_project,
+  GError **         error);
 
 /**
  * Undoes what arranger_object_split() did.
+ *
+ * @return Whether successful.
  */
+WARN_UNUSED_RESULT
 NONNULL_ARGS (1, 2)
-void
+bool
 arranger_object_unsplit (
   ArrangerObject *  r1,
   ArrangerObject *  r2,
   ArrangerObject ** obj,
-  bool              fire_events);
+  bool              fire_events,
+  GError **         error);
 
 /**
  * Sets the name of the object, if the object can
@@ -1052,29 +1064,36 @@ arranger_object_set_end_pos_full_size (
   Position *       pos);
 
 /**
- * Appends the ArrangerObject to where it belongs
- * in the project (eg, a Track), without taking
- * into account its previous index (eg, before
- * deletion if undoing).
+ * Appends the ArrangerObject to where it belongs in the
+ * project (eg, a Track), without taking into account its
+ * previous index (eg, before deletion if undoing).
+ *
+ * @return Whether successful.
  */
-NONNULL
-void
+WARN_UNUSED_RESULT
+NONNULL_ARGS (1)
+bool
 arranger_object_add_to_project (
   ArrangerObject * obj,
-  bool             fire_events);
+  bool             fire_events,
+  GError **        error);
 
 /**
- * Inserts the ArrangerObject where it belongs in
- * the project (eg, a Track).
+ * Inserts the ArrangerObject where it belongs in the project
+ * (eg, a Track).
  *
- * This function assumes that the object already
- * knows the index where it should be inserted
- * in its parent.
+ * This function assumes that the object already knows the
+ * index where it should be inserted in its parent.
  *
  * This is mostly used when undoing.
+ *
+ * @return Whether successful.
  */
-void
-arranger_object_insert_to_project (ArrangerObject * obj);
+WARN_UNUSED_RESULT
+bool
+arranger_object_insert_to_project (
+  ArrangerObject * obj,
+  GError **        error);
 
 /**
  * Removes the object from its parent in the project.

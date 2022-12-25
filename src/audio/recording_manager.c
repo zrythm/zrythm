@@ -153,7 +153,14 @@ handle_stop_recording (
       if (r->id.type == REGION_TYPE_AUDIO)
         {
           AudioClip * clip = audio_region_get_clip (r);
-          audio_clip_write_to_pool (clip, true, F_NOT_BACKUP);
+          bool        success = audio_clip_write_to_pool (
+                   clip, true, F_NOT_BACKUP, &err);
+          if (!success)
+            {
+              HANDLE_ERROR (
+                err, "%s",
+                "Failed to write audio region clip to pool");
+            }
         }
     }
 
@@ -778,9 +785,16 @@ handle_resume_event (
                 new_lane_pos, idx_inside_lane);
             }
           g_return_val_if_fail (new_region, false);
-          track_add_region (
-            tr, new_region, NULL, new_lane_pos, F_GEN_NAME,
-            F_PUBLISH_EVENTS);
+          GError * err = NULL;
+          bool     success = track_add_region (
+                tr, new_region, NULL, new_lane_pos, F_GEN_NAME,
+                F_PUBLISH_EVENTS, &err);
+          if (!success)
+            {
+              HANDLE_ERROR_LITERAL (
+                err, "Failed to add region to track");
+              return false;
+            }
 
           /* remember region */
           add_recorded_id (self, new_region);
@@ -839,9 +853,16 @@ handle_resume_event (
             &resume_pos, &end_pos, track_get_name_hash (tr),
             at->index, at->num_regions);
           g_return_val_if_fail (new_region, false);
-          track_add_region (
-            tr, new_region, at, -1, F_GEN_NAME,
-            F_PUBLISH_EVENTS);
+          GError * err = NULL;
+          bool     success = track_add_region (
+                tr, new_region, at, -1, F_GEN_NAME,
+                F_PUBLISH_EVENTS, &err);
+          if (!success)
+            {
+              HANDLE_ERROR_LITERAL (
+                err, "Failed to add region to track");
+              return false;
+            }
         }
       g_return_val_if_fail (new_region, false);
       add_recorded_id (self, new_region);
@@ -977,7 +998,14 @@ handle_audio_event (RecordingManager * self, RecordingEvent * ev)
     }
   if ((cur_time - clip->last_write) > nano_sec_to_wait)
     {
-      audio_clip_write_to_pool (clip, true, F_NOT_BACKUP);
+      GError * err = NULL;
+      bool     success = audio_clip_write_to_pool (
+            clip, true, F_NOT_BACKUP, &err);
+      if (!success)
+        {
+          HANDLE_ERROR (
+            err, "%s", "Failed to write audio clip to pool");
+        }
     }
 
 #if 0
@@ -1214,8 +1242,15 @@ handle_automation_event (
         track_get_name_hash (tr), at->index, at->num_regions);
       new_region_created = true;
       g_return_if_fail (region);
-      track_add_region (
-        tr, region, at, -1, F_GEN_NAME, F_PUBLISH_EVENTS);
+      GError * err = NULL;
+      bool     success = track_add_region (
+            tr, region, at, -1, F_GEN_NAME, F_PUBLISH_EVENTS,
+            &err);
+      if (!success)
+        {
+          HANDLE_ERROR_LITERAL (err, "Failed to add region");
+          return;
+        }
 
       add_recorded_id (self, region);
     }
@@ -1364,9 +1399,16 @@ handle_start_recording (
             new_lane_pos,
             tr->lanes[new_lane_pos]->num_regions);
           g_return_if_fail (region);
-          track_add_region (
-            tr, region, NULL, new_lane_pos, F_GEN_NAME,
-            F_PUBLISH_EVENTS);
+          GError * err = NULL;
+          bool     success = track_add_region (
+                tr, region, NULL, new_lane_pos, F_GEN_NAME,
+                F_PUBLISH_EVENTS, &err);
+          if (!success)
+            {
+              HANDLE_ERROR_LITERAL (
+                err, "Failed to add region");
+              return;
+            }
 
           tr->recording_region = region;
           add_recorded_id (self, region);
@@ -1376,9 +1418,16 @@ handle_start_recording (
           ZRegion * region = chord_region_new (
             &start_pos, &end_pos, tr->num_chord_regions);
           g_return_if_fail (region);
-          track_add_region (
-            tr, region, NULL, -1, F_GEN_NAME,
-            F_PUBLISH_EVENTS);
+          GError * err = NULL;
+          bool     success = track_add_region (
+                tr, region, NULL, -1, F_GEN_NAME,
+                F_PUBLISH_EVENTS, &err);
+          if (!success)
+            {
+              HANDLE_ERROR_LITERAL (
+                err, "Failed to add region");
+              return;
+            }
 
           tr->recording_region = region;
           add_recorded_id (self, region);
@@ -1395,9 +1444,16 @@ handle_start_recording (
             track_get_name_hash (tr), new_lane_pos,
             tr->lanes[new_lane_pos]->num_regions);
           g_return_if_fail (region);
-          track_add_region (
-            tr, region, NULL, new_lane_pos, F_GEN_NAME,
-            F_PUBLISH_EVENTS);
+          GError * err = NULL;
+          bool     success = track_add_region (
+                tr, region, NULL, new_lane_pos, F_GEN_NAME,
+                F_PUBLISH_EVENTS, &err);
+          if (!success)
+            {
+              HANDLE_ERROR_LITERAL (
+                err, "Failed to add region");
+              return;
+            }
 
           tr->recording_region = region;
           add_recorded_id (self, region);

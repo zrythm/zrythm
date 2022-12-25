@@ -98,9 +98,10 @@ audio_audec_log_func (
  *   written. If this is non-zero and the file exists, it will
  *   append to the existing file.
  *
- * @return Non-zero if fail.
+ * @return Whether successful.
  */
-int
+WARN_UNUSED_RESULT
+bool
 audio_write_raw_file (
   float *      buff,
   size_t       frames_already_written,
@@ -109,7 +110,8 @@ audio_write_raw_file (
   bool         flac,
   BitDepth     bit_depth,
   channels_t   channels,
-  const char * filename);
+  const char * filename,
+  GError **    error);
 
 /**
  * Returns the number of frames in the given audio

@@ -103,13 +103,14 @@ audio_pool_add_clip (AudioPool * self, AudioClip * clip);
  *
  * @param write_file Whether to also write the file.
  *
- * @return The ID in the pool.
+ * @return The ID in the pool, or -1 if an error occurred.
  */
 int
 audio_pool_duplicate_clip (
   AudioPool * self,
   int         clip_id,
-  bool        write_file);
+  bool        write_file,
+  GError **   error);
 
 /**
  * Returns the clip for the given ID.
@@ -181,9 +182,14 @@ audio_pool_reload_clip_frame_bufs (AudioPool * self);
  * Used when saving a project elsewhere.
  *
  * @param is_backup Whether this is a backup project.
+ *
+ * @return Whether successful.
  */
-void
-audio_pool_write_to_disk (AudioPool * self, bool is_backup);
+bool
+audio_pool_write_to_disk (
+  AudioPool * self,
+  bool        is_backup,
+  GError **   error);
 
 /**
  * To be used during serialization.

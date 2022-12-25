@@ -112,9 +112,10 @@ char *
 test_project_save (void)
 {
   /* save the project */
-  int ret =
-    project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
-  g_assert_cmpint (ret, ==, 0);
+  GError * err = NULL;
+  bool     success = project_save (
+        PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, &err);
+  g_assert_true (success);
   char * prj_file =
     g_build_filename (PROJECT->dir, PROJECT_FILE, NULL);
 
@@ -126,8 +127,9 @@ test_project_save (void)
 void
 test_project_reload (const char * prj_file)
 {
-  int ret = project_load (prj_file, 0);
-  g_assert_cmpint (ret, ==, 0);
+  GError * err = NULL;
+  bool     success = project_load (prj_file, 0, &err);
+  g_assert_true (success);
 }
 
 void
@@ -273,6 +275,8 @@ check_vs_orig_state:
 void
 test_project_rebootstrap_timeline (Position * p1, Position * p2)
 {
+  GError * err = NULL;
+
   test_helper_zrythm_init ();
 
   /* pause engine */
@@ -306,7 +310,9 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   ZRegion *    r = midi_region_new (
        p1, p2, track_get_name_hash (track), MIDI_REGION_LANE, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
-  track_add_region (track, r, NULL, MIDI_REGION_LANE, 1, 0);
+  bool             success = track_add_region (
+                track, r, NULL, MIDI_REGION_LANE, 1, 0, &err);
+  g_assert_true (success);
   arranger_object_set_name (
     r_obj, MIDI_REGION_NAME, F_NO_PUBLISH_EVENTS);
   g_assert_cmpuint (
@@ -335,7 +341,9 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   track_name_hash = track_get_name_hash (P_MASTER_TRACK);
   r = automation_region_new (
     p1, p2, track_name_hash, at->index, 0);
-  track_add_region (P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0);
+  success = track_add_region (
+    P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0, &err);
+  g_assert_true (success);
   g_assert_cmpuint (
     r->id.track_name_hash, ==, track_name_hash);
   g_assert_cmpint (r->id.at_idx, ==, at->index);
@@ -360,9 +368,10 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   /* Create and add a chord region with
    * 2 Chord's */
   r = chord_region_new (p1, p2, 0);
-  track_add_region (
+  success = track_add_region (
     P_CHORD_TRACK, r, NULL, 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    F_NO_PUBLISH_EVENTS, &err);
+  g_assert_true (success);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
@@ -418,7 +427,9 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   AudioClip * clip = audio_region_get_clip (r);
   g_assert_cmpuint (clip->num_frames, >, 151000);
   g_assert_cmpuint (clip->num_frames, <, 152000);
-  track_add_region (track, r, NULL, AUDIO_REGION_LANE, 1, 0);
+  success = track_add_region (
+    track, r, NULL, AUDIO_REGION_LANE, 1, 0, &err);
+  g_assert_true (success);
   r_obj = (ArrangerObject *) r;
   arranger_object_set_name (
     r_obj, AUDIO_REGION_NAME, F_NO_PUBLISH_EVENTS);

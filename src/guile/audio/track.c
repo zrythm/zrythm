@@ -1,27 +1,12 @@
-/*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "guile/modules.h"
 
 #ifndef SNARF_MODE
 #  include "audio/track.h"
 #  include "project.h"
+#  include "utils/error.h"
 #  include "utils/flags.h"
 #endif
 
@@ -143,9 +128,14 @@ SCM_DEFINE (
   "be used for regions with lanes (midi/audio)")
 #define FUNC_NAME s_
 {
-  track_add_region (
-    scm_to_pointer (track), scm_to_pointer (region), NULL,
-    scm_to_int (lane_pos), true, true);
+  GError * err = NULL;
+  bool     success = track_add_region (
+        scm_to_pointer (track), scm_to_pointer (region), NULL,
+        scm_to_int (lane_pos), true, true, &err);
+  if (!success)
+    {
+      HANDLE_ERROR (err, "%s", "Failed to add region");
+    }
 
   return SCM_BOOL_T;
 }

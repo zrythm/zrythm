@@ -939,14 +939,11 @@ track_is_selected (Track * self);
  *   not. This will be 0 if the caller already
  *   generated a unique name.
  */
-void
-track_add_region (
-  Track *           track,
-  ZRegion *         region,
-  AutomationTrack * at,
-  int               lane_pos,
-  int               gen_name,
-  int               fire_events);
+#define track_add_region( \
+  self, region, at, lane_pos, gen_name, fire_events, error) \
+  track_insert_region ( \
+    self, region, at, lane_pos, -1, gen_name, fire_events, \
+    error)
 
 /**
  * Inserts a ZRegion to the given lane or
@@ -965,8 +962,10 @@ track_add_region (
  * @param gen_name Generate a unique region name or
  *   not. This will be 0 if the caller already
  *   generated a unique name.
+ *
+ * @return Whether successful.
  */
-void
+bool
 track_insert_region (
   Track *           track,
   ZRegion *         region,
@@ -974,7 +973,8 @@ track_insert_region (
   int               lane_pos,
   int               idx,
   int               gen_name,
-  int               fire_events);
+  int               fire_events,
+  GError **         error);
 
 /**
  * Writes the track to the given MIDI file.
@@ -1507,9 +1507,11 @@ track_append_ports (
  * When the track is unfrozen, this file will be
  * removed from the pool and the track will be
  * played normally again.
+ *
+ * @return Whether successful.
  */
-void
-track_freeze (Track * self, bool freeze);
+bool
+track_freeze (Track * self, bool freeze, GError ** error);
 
 /**
  * Wrapper over channel_add_plugin() and

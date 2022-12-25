@@ -1209,10 +1209,17 @@ arranger_object_update_positions (
               double ticks =
                 (frames_len_before - frames_len_after)
                 * AUDIO_ENGINE->ticks_per_frame;
-              arranger_object_resize (
-                self, false,
-                ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE,
-                ticks, false);
+              GError * err = NULL;
+              bool     success = arranger_object_resize (
+                    self, false,
+                    ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE,
+                    ticks, false, &err);
+              if (!success)
+                {
+                  HANDLE_ERROR_LITERAL (
+                    err, "Failed to resize object");
+                  return;
+                }
             }
           z_return_if_fail_cmp (
             self->loop_end_pos.frames, >=, 0);
@@ -1245,10 +1252,17 @@ arranger_object_update_positions (
               g_debug ("adjusting for rounding error");
               double ticks = -AUDIO_ENGINE->ticks_per_frame;
               g_debug ("ticks %f", ticks);
-              arranger_object_resize (
-                self, false,
-                ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE,
-                ticks, false);
+              GError * err = NULL;
+              bool     success = arranger_object_resize (
+                    self, false,
+                    ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE,
+                    ticks, false, &err);
+              if (!success)
+                {
+                  HANDLE_ERROR_LITERAL (
+                    err, "Failed to resize object");
+                  return;
+                }
               local_frames = region_timeline_frames_to_local (
                 r, tl_frames, F_NORMALIZE);
 #if 0
@@ -1406,14 +1420,17 @@ arranger_object_add_ticks_to_children (
  * @param ticks Number of ticks to resize.
  * @param during_ui_action Whether this is called
  *   during a UI action (not at the end).
+ *
+ * @return Whether successful.
  */
-void
+bool
 arranger_object_resize (
   ArrangerObject *         self,
   const bool               left,
   ArrangerObjectResizeType type,
   const double             ticks,
-  bool                     during_ui_action)
+  bool                     during_ui_action,
+  GError **                error)
 {
   double before_length =
     arranger_object_get_length_in_ticks (self);
@@ -1535,13 +1552,14 @@ arranger_object_resize (
                 {
                   position_add_ticks (&tmp, ticks);
                 }
-              z_return_if_fail_cmp (tmp.frames, >=, 0);
+              z_return_val_if_fail_cmp (
+                tmp.frames, >=, 0, false);
               arranger_object_set_position (
                 self, &tmp,
                 ARRANGER_OBJECT_POSITION_TYPE_LOOP_END,
                 F_NO_VALIDATE);
-              g_return_if_fail (
-                self->loop_end_pos.frames >= 0);
+              g_return_val_if_fail (
+                self->loop_end_pos.frames >= 0, false);
 
               /* if stretching, also stretch loop
                * start */
@@ -1553,13 +1571,14 @@ arranger_object_resize (
                   position_from_ticks (
                     &tmp,
                     self->loop_start_pos.ticks * change_ratio);
-                  z_return_if_fail_cmp (tmp.frames, >=, 0);
+                  z_return_val_if_fail_cmp (
+                    tmp.frames, >=, 0, false);
                   arranger_object_set_position (
                     self, &tmp,
                     ARRANGER_OBJECT_POSITION_TYPE_LOOP_START,
                     F_NO_VALIDATE);
-                  g_return_if_fail (
-                    self->loop_start_pos.frames >= 0);
+                  g_return_val_if_fail (
+                    self->loop_start_pos.frames >= 0, false);
                 }
             }
           if (arranger_object_can_fade (self))
@@ -1577,13 +1596,14 @@ arranger_object_resize (
                 {
                   position_add_ticks (&tmp, ticks);
                 }
-              z_return_if_fail_cmp (tmp.frames, >=, 0);
+              z_return_val_if_fail_cmp (
+                tmp.frames, >=, 0, false);
               arranger_object_set_position (
                 self, &tmp,
                 ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT,
                 F_NO_VALIDATE);
-              g_return_if_fail (
-                self->fade_out_pos.frames >= 0);
+              g_return_val_if_fail (
+                self->fade_out_pos.frames >= 0, false);
 
               /* if stretching, also stretch fade
                * in */
@@ -1595,13 +1615,14 @@ arranger_object_resize (
                   position_from_ticks (
                     &tmp,
                     self->fade_in_pos.ticks * change_ratio);
-                  z_return_if_fail_cmp (tmp.frames, >=, 0);
+                  z_return_val_if_fail_cmp (
+                    tmp.frames, >=, 0, false);
                   arranger_object_set_position (
                     self, &tmp,
                     ARRANGER_OBJECT_POSITION_TYPE_FADE_IN,
                     F_NO_VALIDATE);
-                  g_return_if_fail (
-                    self->fade_in_pos.frames >= 0);
+                  g_return_val_if_fail (
+                    self->fade_in_pos.frames >= 0, false);
                 }
             }
 
@@ -1639,12 +1660,23 @@ arranger_object_resize (
                       /* stretch contents */
                       double stretch_ratio =
                         new_length / before_length;
-                      region_stretch (region, stretch_ratio);
+                      GError * err = NULL;
+                      bool     success = region_stretch (
+                            region, stretch_ratio, &err);
+                      if (!success)
+                        {
+                          PROPAGATE_PREFIXED_ERROR_LITERAL (
+                            error, err,
+                            "Failed to stretch region");
+                          return false;
+                        }
                     }
                 }
             }
         }
     }
+
+  return true;
 }
 
 static void
@@ -2761,17 +2793,20 @@ arranger_object_remove_child (
  *   project and the child objects will be added to the
  *   project, otherwise it will be untouched and the children
  *   will be mere clones.
+ *
+ * @return Whether successful.
  */
-void
+bool
 arranger_object_split (
   ArrangerObject *  self,
   const Position *  pos,
   const bool        pos_is_local,
   ArrangerObject ** r1,
   ArrangerObject ** r2,
-  bool              is_project)
+  bool              is_project,
+  GError **         error)
 {
-  g_return_if_fail (IS_ARRANGER_OBJECT (self));
+  g_return_val_if_fail (IS_ARRANGER_OBJECT (self), false);
 
   /* create the new objects */
   *r1 = arranger_object_clone (self);
@@ -2815,9 +2850,10 @@ arranger_object_split (
             (ZRegion *) self, globalp.frames, 1);
           position_from_frames (&localp, localp_frames);
 
-          g_return_if_fail (
+          g_return_val_if_fail (
             position_is_after (&globalp, &self->pos)
-            && position_is_before (&globalp, &self->end_pos));
+              && position_is_before (&globalp, &self->end_pos),
+            false);
         }
       else
         {
@@ -2861,21 +2897,22 @@ arranger_object_split (
           ZRegion *   prev_r1 = (ZRegion *) *r1;
           AudioClip * prev_r1_clip =
             audio_region_get_clip (prev_r1);
-          g_return_if_fail (prev_r1_clip);
+          g_return_val_if_fail (prev_r1_clip, false);
           float frames[localp.frames * prev_r1_clip->channels];
           dsp_copy (
             &frames[0], &prev_r1_clip->frames[0],
             (size_t) localp.frames * prev_r1_clip->channels);
-          g_return_if_fail (prev_r1->name);
-          z_return_if_fail_cmp (localp.frames, >=, 0);
+          g_return_val_if_fail (prev_r1->name, false);
+          z_return_val_if_fail_cmp (
+            localp.frames, >=, 0, false);
           ZRegion * new_r1 = audio_region_new (
             -1, NULL, true, frames,
             (unsigned_frame_t) localp.frames, prev_r1->name,
             prev_r1_clip->channels, prev_r1_clip->bit_depth,
             &prev_r1->base.pos, prev_r1->id.track_name_hash,
             prev_r1->id.lane_pos, prev_r1->id.idx);
-          g_return_if_fail (
-            new_r1->pool_id != prev_r1->pool_id);
+          g_return_val_if_fail (
+            new_r1->pool_id != prev_r1->pool_id, false);
           arranger_object_free ((ArrangerObject *) prev_r1);
           *r1 = (ArrangerObject *) new_r1;
         }
@@ -2929,19 +2966,20 @@ arranger_object_split (
           ZRegion *   prev_r2 = (ZRegion *) *r2;
           AudioClip * prev_r2_clip =
             audio_region_get_clip (prev_r2);
-          g_return_if_fail (prev_r2_clip);
+          g_return_val_if_fail (prev_r2_clip, false);
           size_t num_frames =
             (size_t) r2_local_end.frames
             * prev_r2_clip->channels;
-          z_return_if_fail_cmp (num_frames, >, 0);
+          z_return_val_if_fail_cmp (num_frames, >, 0, false);
           float * frames = object_new_n (num_frames, float);
           dsp_copy (
             &frames[0],
             &prev_r2_clip->frames
                [(size_t) localp.frames * prev_r2_clip->channels],
             num_frames);
-          g_return_if_fail (prev_r2->name);
-          z_return_if_fail_cmp (r2_local_end.frames, >=, 0);
+          g_return_val_if_fail (prev_r2->name, false);
+          z_return_val_if_fail_cmp (
+            r2_local_end.frames, >=, 0, false);
           ZRegion * new_r2 = audio_region_new (
             -1, NULL, true, frames,
             (unsigned_frame_t) r2_local_end.frames,
@@ -2949,8 +2987,8 @@ arranger_object_split (
             prev_r2_clip->bit_depth, &globalp,
             prev_r2->id.track_name_hash, prev_r2->id.lane_pos,
             prev_r2->id.idx);
-          g_return_if_fail (
-            new_r2->pool_id != prev_r2->pool_id);
+          g_return_val_if_fail (
+            new_r2->pool_id != prev_r2->pool_id, false);
           arranger_object_free ((ArrangerObject *) prev_r2);
           *r2 = (ArrangerObject *) new_r2;
           free (frames);
@@ -2976,7 +3014,7 @@ arranger_object_split (
   /* skip rest if non-project object */
   if (!is_project)
     {
-      return;
+      return true;
     }
 
   /* add them to the parent */
@@ -2993,9 +3031,16 @@ arranger_object_split (
           {
             at = region_get_automation_track (src_region);
           }
-        track_add_region (
-          track, region1, at, src_region->id.lane_pos,
-          F_GEN_NAME, F_PUBLISH_EVENTS);
+        GError * err = NULL;
+        bool     success = track_add_region (
+              track, region1, at, src_region->id.lane_pos,
+              F_GEN_NAME, F_PUBLISH_EVENTS, &err);
+        if (!success)
+          {
+            PROPAGATE_PREFIXED_ERROR (
+              error, err, "%s", "Failed to add region");
+            return false;
+          }
 
         if (!region_is_looped (region2))
           {
@@ -3008,13 +3053,19 @@ arranger_object_split (
                  * a bug - TODO replace this with a comment
                  * about what this does and why it's needed */
                 ap->index -= region1->num_aps;
-                g_return_if_fail (ap->index >= 0);
+                g_return_val_if_fail (ap->index >= 0, false);
               }
           }
 
-        track_add_region (
+        success = track_add_region (
           track, region2, at, src_region->id.lane_pos,
-          F_GEN_NAME, F_PUBLISH_EVENTS);
+          F_GEN_NAME, F_PUBLISH_EVENTS, &err);
+        if (!success)
+          {
+            PROPAGATE_PREFIXED_ERROR (
+              error, err, "%s", "Failed to add region");
+            return false;
+          }
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
@@ -3051,12 +3102,14 @@ arranger_object_split (
         ZRegion * region2 = (ZRegion *) *r2;
         if (region1->id.type == REGION_TYPE_CHORD)
           {
-            g_return_if_fail (
+            g_return_val_if_fail (
               region1->id.idx
-              < P_CHORD_TRACK->num_chord_regions);
-            g_return_if_fail (
+                < P_CHORD_TRACK->num_chord_regions,
+              false);
+            g_return_val_if_fail (
               region2->id.idx
-              < P_CHORD_TRACK->num_chord_regions);
+                < P_CHORD_TRACK->num_chord_regions,
+              false);
           }
       }
       break;
@@ -3082,17 +3135,22 @@ arranger_object_split (
 
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, *r1);
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, *r2);
+
+  return true;
 }
 
 /**
  * Undoes what arranger_object_split() did.
+ *
+ * @return Whether successful.
  */
-void
+bool
 arranger_object_unsplit (
   ArrangerObject *  r1,
   ArrangerObject *  r2,
   ArrangerObject ** obj,
-  bool              fire_events)
+  bool              fire_events,
+  GError **         error)
 {
   g_debug ("unsplitting objects...");
 
@@ -3133,10 +3191,17 @@ arranger_object_unsplit (
           {
             at = region_get_automation_track (r1_region);
           }
-        track_add_region (
-          arranger_object_get_track (r1), (ZRegion *) *obj,
-          at, ((ZRegion *) r1)->id.lane_pos, F_GEN_NAME,
-          fire_events);
+        GError * err = NULL;
+        bool     success = track_add_region (
+              arranger_object_get_track (r1), (ZRegion *) *obj,
+              at, ((ZRegion *) r1)->id.lane_pos, F_GEN_NAME,
+              fire_events, &err);
+        if (!success)
+          {
+            PROPAGATE_PREFIXED_ERROR (
+              error, err, "%s", "Failed to add region");
+            return false;
+          }
       }
       break;
     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
@@ -3158,7 +3223,7 @@ arranger_object_unsplit (
   /* select it */
   ArrangerSelections * sel =
     arranger_object_get_selections_for_type ((*obj)->type);
-  g_return_if_fail (sel);
+  g_return_val_if_fail (sel, false);
   arranger_selections_remove_object (sel, r1);
   arranger_selections_remove_object (sel, r2);
   arranger_selections_add_object (sel, *obj);
@@ -3169,11 +3234,12 @@ arranger_object_unsplit (
     case ARRANGER_OBJECT_TYPE_REGION:
       {
         Track * t1 = arranger_object_get_track (r1);
-        g_return_if_fail (t1);
+        g_return_val_if_fail (t1, false);
         track_remove_region (
           t1, (ZRegion *) r1, fire_events, F_FREE);
         Track * t2 = arranger_object_get_track (r2);
-        g_return_if_fail (IS_TRACK_AND_NONNULL (t2));
+        g_return_val_if_fail (
+          IS_TRACK_AND_NONNULL (t2), false);
         track_remove_region (
           t2, (ZRegion *) r2, fire_events, F_FREE);
       }
@@ -3204,6 +3270,8 @@ arranger_object_unsplit (
     {
       EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, *obj);
     }
+
+  return true;
 }
 
 /**
@@ -3345,15 +3413,17 @@ arranger_object_set_end_pos_full_size (
 }
 
 /**
- * Appends the ArrangerObject to where it belongs
- * in the project (eg, a Track), without taking
- * into account its previous index (eg, before
- * deletion if undoing).
+ * Appends the ArrangerObject to where it belongs in the
+ * project (eg, a Track), without taking into account its
+ * previous index (eg, before deletion if undoing).
+ *
+ * @return Whether successful.
  */
-void
+bool
 arranger_object_add_to_project (
   ArrangerObject * obj,
-  bool             fire_events)
+  bool             fire_events,
+  GError **        error)
 {
   g_message ("adding object to project:");
   arranger_object_print (obj);
@@ -3363,7 +3433,7 @@ arranger_object_add_to_project (
   if (arranger_object_owned_by_region (obj))
     {
       region = region_find (&obj->region_id);
-      g_return_if_fail (region);
+      g_return_val_if_fail (region, false);
     }
 
   switch (obj->type)
@@ -3373,7 +3443,7 @@ arranger_object_add_to_project (
         AutomationPoint * ap = (AutomationPoint *) obj;
 
         /* add it to the region */
-        g_return_if_fail (region);
+        g_return_val_if_fail (region, false);
         automation_region_add_ap (region, ap, fire_events);
       }
       break;
@@ -3382,7 +3452,7 @@ arranger_object_add_to_project (
         ChordObject * chord = (ChordObject *) obj;
 
         /* add it to the region */
-        g_return_if_fail (region);
+        g_return_val_if_fail (region, false);
         chord_region_add_chord_object (
           region, chord, fire_events);
       }
@@ -3392,7 +3462,7 @@ arranger_object_add_to_project (
         MidiNote * mn = (MidiNote *) obj;
 
         /* add it to the region */
-        g_return_if_fail (region);
+        g_return_val_if_fail (region, false);
         midi_region_add_midi_note (region, mn, fire_events);
       }
       break;
@@ -3419,27 +3489,37 @@ arranger_object_add_to_project (
         /* add it to track */
         Track * track = tracklist_find_track_by_name_hash (
           TRACKLIST, r->id.track_name_hash);
-        g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+        g_return_val_if_fail (
+          IS_TRACK_AND_NONNULL (track), false);
+        GError * err = NULL;
+        bool     success = true;
         switch (r->id.type)
           {
           case REGION_TYPE_AUTOMATION:
             {
               AutomationTrack * at =
                 track->automation_tracklist.ats[r->id.at_idx];
-              track_add_region (
-                track, r, at, -1, F_GEN_NAME, fire_events);
+              success = track_add_region (
+                track, r, at, -1, F_GEN_NAME, fire_events,
+                &err);
             }
             break;
           case REGION_TYPE_CHORD:
-            track_add_region (
+            success = track_add_region (
               P_CHORD_TRACK, r, NULL, -1, F_GEN_NAME,
-              fire_events);
+              fire_events, &err);
             break;
           default:
-            track_add_region (
+            success = track_add_region (
               track, r, NULL, r->id.lane_pos, F_GEN_NAME,
-              fire_events);
+              fire_events, &err);
             break;
+          }
+        if (!success)
+          {
+            PROPAGATE_PREFIXED_ERROR (
+              error, err, "%s", "Failed to add region");
+            return false;
           }
 
         /* if region, also set is as the clip
@@ -3454,27 +3534,33 @@ arranger_object_add_to_project (
 
   g_message ("after adding:");
   arranger_object_print (obj);
+
+  return true;
 }
 
 /**
- * Inserts the ArrangerObject where it belongs in
- * the project (eg, a Track).
+ * Inserts the ArrangerObject where it belongs in the project
+ * (eg, a Track).
  *
- * This function assumes that the object already
- * knows the index where it should be inserted
- * in its parent.
+ * This function assumes that the object already knows the
+ * index where it should be inserted in its parent.
  *
  * This is mostly used when undoing.
+ *
+ * @return Whether successful.
  */
-void
-arranger_object_insert_to_project (ArrangerObject * obj)
+bool
+arranger_object_insert_to_project (
+  ArrangerObject * obj,
+  GError **        error)
 {
   /* find the region (if owned by region) */
   ZRegion * region = NULL;
   if (arranger_object_owned_by_region (obj))
     {
       region = region_find (&obj->region_id);
-      g_return_if_fail (IS_REGION_AND_NONNULL (region));
+      g_return_val_if_fail (
+        IS_REGION_AND_NONNULL (region), false);
     }
 
   switch (obj->type)
@@ -3484,7 +3570,8 @@ arranger_object_insert_to_project (ArrangerObject * obj)
         AutomationPoint * ap = (AutomationPoint *) obj;
 
         /* add it to the region */
-        g_return_if_fail (IS_REGION_AND_NONNULL (region));
+        g_return_val_if_fail (
+          IS_REGION_AND_NONNULL (region), false);
         automation_region_add_ap (
           region, ap, F_NO_PUBLISH_EVENTS);
       }
@@ -3494,7 +3581,8 @@ arranger_object_insert_to_project (ArrangerObject * obj)
         ChordObject * chord = (ChordObject *) obj;
 
         /* add it to the region */
-        g_return_if_fail (IS_REGION_AND_NONNULL (region));
+        g_return_val_if_fail (
+          IS_REGION_AND_NONNULL (region), false);
         chord_region_insert_chord_object (
           region, chord, chord->index, F_NO_PUBLISH_EVENTS);
       }
@@ -3504,7 +3592,8 @@ arranger_object_insert_to_project (ArrangerObject * obj)
         MidiNote * mn = (MidiNote *) obj;
 
         /* add it to the region */
-        g_return_if_fail (IS_REGION_AND_NONNULL (region));
+        g_return_val_if_fail (
+          IS_REGION_AND_NONNULL (region), false);
         midi_region_insert_midi_note (
           region, mn, mn->pos, F_PUBLISH_EVENTS);
       }
@@ -3534,27 +3623,35 @@ arranger_object_insert_to_project (ArrangerObject * obj)
         /* add it to track */
         Track * track = tracklist_find_track_by_name_hash (
           TRACKLIST, r->id.track_name_hash);
+        bool     success = true;
+        GError * err = NULL;
         switch (r->id.type)
           {
           case REGION_TYPE_AUTOMATION:
             {
               AutomationTrack * at =
                 track->automation_tracklist.ats[r->id.at_idx];
-              track_insert_region (
+              success = track_insert_region (
                 track, r, at, -1, r->id.idx, F_GEN_NAME,
-                F_PUBLISH_EVENTS);
+                F_PUBLISH_EVENTS, &err);
             }
             break;
           case REGION_TYPE_CHORD:
-            track_insert_region (
+            success = track_insert_region (
               P_CHORD_TRACK, r, NULL, -1, r->id.idx,
-              F_GEN_NAME, F_PUBLISH_EVENTS);
+              F_GEN_NAME, F_PUBLISH_EVENTS, &err);
             break;
           default:
-            track_insert_region (
+            success = track_insert_region (
               track, r, NULL, r->id.lane_pos, r->id.idx,
-              F_GEN_NAME, F_PUBLISH_EVENTS);
+              F_GEN_NAME, F_PUBLISH_EVENTS, &err);
             break;
+          }
+        if (!success)
+          {
+            PROPAGATE_PREFIXED_ERROR (
+              error, err, "%s", "Failed to insert region");
+            return false;
           }
 
         /* if region, also set is as the clip
@@ -3566,6 +3663,8 @@ arranger_object_insert_to_project (ArrangerObject * obj)
       g_warn_if_reached ();
       break;
     }
+
+  return true;
 }
 
 /**

@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2021-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
 
@@ -45,8 +29,10 @@ test_region_length_in_ticks (
   ZRegion * r = midi_region_new (
     &p1, &p2, track_get_name_hash (track), 0, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
-  track_add_region (
-    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  GError *         err = NULL;
+  bool             success = track_add_region (
+                track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
+  g_assert_true (success);
 
   arranger_object_select (
     r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
@@ -86,8 +72,10 @@ test_get_last_object (void)
   position_set_to_bar (&p2, 4);
   ZRegion * r = midi_region_new (
     &p1, &p2, track_get_name_hash (track), 0, 0);
-  track_add_region (
-    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  GError * err = NULL;
+  bool     success = track_add_region (
+        track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
+  g_assert_true (success);
 
   position_from_frames (&p1, -40000);
   position_from_frames (&p2, -4000);
@@ -120,8 +108,10 @@ test_contains_object_with_property (void)
   position_set_to_bar (&p2, 4);
   ZRegion * r = midi_region_new (
     &p1, &p2, track_get_name_hash (track), 0, 0);
-  track_add_region (
-    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  GError * err = NULL;
+  bool     success = track_add_region (
+        track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
+  g_assert_true (success);
 
   position_from_frames (&p1, -40000);
   position_from_frames (&p2, -4000);

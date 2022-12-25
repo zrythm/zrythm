@@ -40,8 +40,6 @@ test_export_wav (void)
 {
   test_helper_zrythm_init ();
 
-  int ret;
-
   char * filepath =
     g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file =
@@ -52,9 +50,10 @@ test_export_wav (void)
 
   char * tmp_dir =
     g_dir_make_tmp ("test_wav_prj_XXXXXX", NULL);
-  ret = project_save (PROJECT, tmp_dir, 0, 0, F_NO_ASYNC);
+  bool success =
+    project_save (PROJECT, tmp_dir, 0, 0, F_NO_ASYNC, NULL);
+  g_assert_true (success);
   g_free (tmp_dir);
-  g_assert_cmpint (ret, ==, 0);
 
   for (int i = 0; i < 2; i++)
     {
@@ -722,8 +721,10 @@ test_bounce_with_note_at_start (void)
   position_set_to_bar (&end, 4);
   ZRegion * r = midi_region_new (
     &start, &end, ins_track->name_hash, 0, 0);
-  track_add_region (
-    ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  bool success = track_add_region (
+    ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
+    NULL);
+  g_assert_true (success);
   position_init (&start);
   position_set_to_bar (&end, 4);
   MidiNote * mn = midi_note_new (&r->id, &start, &end, 70, 70);
@@ -981,8 +982,9 @@ test_mixdown_midi (void)
   position_set_to_bar (&end, 4);
   ZRegion * r =
     midi_region_new (&start, &end, track->name_hash, 0, 0);
-  track_add_region (
-    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  bool success = track_add_region (
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
 
   /* midi note 1 */
   position_init (&start);
@@ -1000,8 +1002,9 @@ test_mixdown_midi (void)
   position_set_to_bar (&start, 2);
   position_set_to_bar (&end, 3);
   r = midi_region_new (&start, &end, track->name_hash, 0, 1);
-  track_add_region (
-    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  success = track_add_region (
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
 
   /* midi note 3 */
   position_init (&start);

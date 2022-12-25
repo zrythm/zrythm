@@ -88,15 +88,18 @@ test_prepare_common (void)
     track_create_empty_with_action (TRACK_TYPE_MIDI, NULL);
   midi_track_pos = midi_track->pos;
 
+  bool success;
+
 #define ADD_MREGION(start_bar, end_bar) \
   position_set_to_bar (&start, start_bar); \
   position_set_to_bar (&end, end_bar); \
   midi_region = midi_region_new ( \
     &start, &end, track_get_name_hash (midi_track), 0, \
     midi_track->lanes[0]->num_regions); \
-  track_add_region ( \
+  success = track_add_region ( \
     midi_track, midi_region, NULL, 0, F_GEN_NAME, \
-    F_NO_PUBLISH_EVENTS); \
+    F_NO_PUBLISH_EVENTS, NULL); \
+  g_assert_true (success); \
   g_assert_cmpint (midi_region->id.idx, >=, 0); \
   arranger_object_select ( \
     (ArrangerObject *) midi_region, F_SELECT, F_NO_APPEND, \
@@ -138,9 +141,10 @@ test_prepare_common (void)
       (ArrangerObject *) audio_region);
   double missing_ticks =
     (end.ticks - start.ticks) - audio_region_size_ticks;
-  arranger_object_resize (
+  success = arranger_object_resize (
     (ArrangerObject *) audio_region, false,
-    ARRANGER_OBJECT_RESIZE_LOOP, missing_ticks, false);
+    ARRANGER_OBJECT_RESIZE_LOOP, missing_ticks, false, NULL);
+  g_assert_true (success);
   arranger_selections_action_perform_resize (
     (ArrangerSelections *) TL_SELECTIONS,
     ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP, missing_ticks,

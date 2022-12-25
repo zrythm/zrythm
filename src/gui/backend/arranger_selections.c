@@ -2393,9 +2393,15 @@ arranger_selections_paste_to_pos (
           if (r->id.type == REGION_TYPE_AUTOMATION)
             continue;
 
-          track_add_region (
-            track, r, NULL, r->id.lane_pos, F_NO_GEN_NAME,
-            F_NO_PUBLISH_EVENTS);
+          GError * err = NULL;
+          bool     success = track_add_region (
+                track, r, NULL, r->id.lane_pos, F_NO_GEN_NAME,
+                F_NO_PUBLISH_EVENTS, &err);
+          if (!success)
+            {
+              HANDLE_ERROR (
+                err, "%s", _ ("Failed to add region"));
+            }
         }
 
       for (int i = 0; i < ts->num_scale_objects; i++)

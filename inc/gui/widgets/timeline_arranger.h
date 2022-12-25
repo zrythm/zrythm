@@ -84,15 +84,18 @@ timeline_arranger_widget_set_select_type (
  * @param track Track, if non-automation.
  * @param lane TrackLane, if midi/audio region.
  * @param at AutomationTrack, if automation Region.
+ *
+ * @return Whether successful.
  */
-void
+bool
 timeline_arranger_widget_create_region (
   ArrangerWidget *  self,
   const RegionType  type,
   Track *           track,
   TrackLane *       lane,
   AutomationTrack * at,
-  const Position *  pos);
+  const Position *  pos,
+  GError **         error);
 
 /**
  * Wrapper for

@@ -487,13 +487,14 @@ audio_function_apply (
         AudioClip * tmp_clip = audio_clip_new_from_float_array (
           src_frames, num_frames, channels, BIT_DEPTH_32,
           "tmp-clip");
-        tmp_clip = audio_clip_edit_in_ext_program (tmp_clip);
+        GError * err = NULL;
+        tmp_clip =
+          audio_clip_edit_in_ext_program (tmp_clip, &err);
         if (!tmp_clip)
           {
             /* FIXME this should be handled async */
-            g_set_error_literal (
-              error, Z_AUDIO_AUDIO_FUNCTION_ERROR,
-              Z_AUDIO_AUDIO_FUNCTION_ERROR_FAILED,
+            PROPAGATE_PREFIXED_ERROR (
+              error, err, "%s",
               _ ("Failed to get audio clip from external program"));
             return -1;
           }
@@ -563,16 +564,32 @@ audio_function_apply (
   audio_pool_add_clip (AUDIO_POOL, clip);
   g_message (
     "writing %s to pool (id %d)", clip->name, clip->pool_id);
-  audio_clip_write_to_pool (clip, false, F_NOT_BACKUP);
+  GError * err = NULL;
+  bool     success = audio_clip_write_to_pool (
+        clip, false, F_NOT_BACKUP, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s",
+        "Failed to write audio clip to pool");
+      return -1;
+    }
 
   audio_sel->pool_id = clip->pool_id;
 
   if (type != AUDIO_FUNCTION_INVALID)
     {
       /* replace the frames in the region */
-      audio_region_replace_frames (
+      success = audio_region_replace_frames (
         r, dest_frames, (size_t) start.frames, num_frames,
-        F_NO_DUPLICATE_CLIP);
+        F_NO_DUPLICATE_CLIP, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s",
+            "Failed to replace region frames");
+          return -1;
+        }
     }
 
   if (

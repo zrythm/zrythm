@@ -219,13 +219,14 @@ audio_pool_get_clip (AudioPool * self, int clip_id)
  *
  * @param write_file Whether to also write the file.
  *
- * @return The ID in the pool.
+ * @return The ID in the pool, or -1 if an error occurred.
  */
 int
 audio_pool_duplicate_clip (
   AudioPool * self,
   int         clip_id,
-  bool        write_file)
+  bool        write_file,
+  GError **   error)
 {
   AudioClip * clip = audio_pool_get_clip (self, clip_id);
   g_return_val_if_fail (clip, -1);
@@ -245,8 +246,15 @@ audio_pool_duplicate_clip (
 
   if (write_file)
     {
-      audio_clip_write_to_pool (
-        new_clip, F_NO_PARTS, F_NOT_BACKUP);
+      GError * err = NULL;
+      bool     success = audio_clip_write_to_pool (
+            new_clip, F_NO_PARTS, F_NOT_BACKUP, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s", "Failed to write clip to pool");
+          return -1;
+        }
     }
 
   return new_clip->pool_id;
@@ -408,6 +416,10 @@ typedef struct WriteClipData
 {
   AudioClip * clip;
   bool        is_backup;
+
+  /** To be set after writing the file. */
+  bool     successful;
+  GError * error;
 } WriteClipData;
 
 /**
@@ -419,9 +431,16 @@ static void
 write_clip_thread (void * data, void * user_data)
 {
   WriteClipData * write_clip_data = (WriteClipData *) data;
-  audio_clip_write_to_pool (
-    write_clip_data->clip, false, write_clip_data->is_backup);
-  object_zero_and_free (write_clip_data);
+  write_clip_data->successful = audio_clip_write_to_pool (
+    write_clip_data->clip, false, write_clip_data->is_backup,
+    &write_clip_data->error);
+}
+
+static void
+write_clip_data_free (void * data)
+{
+  WriteClipData * self = (WriteClipData *) data;
+  object_zero_and_free (self);
 }
 
 /**
@@ -430,9 +449,14 @@ write_clip_thread (void * data, void * user_data)
  * Used when saving a project elsewhere.
  *
  * @param is_backup Whether this is a backup project.
+ *
+ * @return Whether successful.
  */
-void
-audio_pool_write_to_disk (AudioPool * self, bool is_backup)
+bool
+audio_pool_write_to_disk (
+  AudioPool * self,
+  bool        is_backup,
+  GError **   error)
 {
   /* ensure pool dir exists */
   char * prj_pool_dir =
@@ -449,11 +473,13 @@ audio_pool_write_to_disk (AudioPool * self, bool is_backup)
     F_NOT_EXCLUSIVE, &err);
   if (err)
     {
-      HANDLE_ERROR (
-        err, _ ("Failed to write audio pool: %s"),
-        err->message);
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "%s", "Failed to create thread pool");
+      return false;
     }
 
+  GPtrArray * clip_data_arr =
+    g_ptr_array_new_with_free_func (write_clip_data_free);
   for (int i = 0; i < self->num_clips; i++)
     {
       AudioClip * clip = self->clips[i];
@@ -462,6 +488,9 @@ audio_pool_write_to_disk (AudioPool * self, bool is_backup)
           WriteClipData * data = object_new (WriteClipData);
           data->clip = clip;
           data->is_backup = is_backup;
+          data->successful = false;
+          data->error = NULL;
+          g_ptr_array_add (clip_data_arr, data);
 
           /* start writing in a new thread */
           g_thread_pool_push (thread_pool, data, NULL);
@@ -471,6 +500,25 @@ audio_pool_write_to_disk (AudioPool * self, bool is_backup)
   g_debug ("waiting for thread pool to finish...");
   g_thread_pool_free (thread_pool, false, true);
   g_debug ("done");
+
+  for (size_t i = 0; i < clip_data_arr->len; i++)
+    {
+      WriteClipData * clip_data = (WriteClipData *)
+        g_ptr_array_index (clip_data_arr, i);
+      if (!clip_data->successful)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, clip_data->error,
+            _ ("Failed to write clip %s"),
+            clip_data->clip->name);
+          clip_data->error = NULL;
+          return false;
+        }
+    }
+
+  g_ptr_array_unref (clip_data_arr);
+
+  return true;
 }
 
 void

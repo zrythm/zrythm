@@ -31,6 +31,20 @@
 
 #include <glib/gi18n.h>
 
+typedef enum
+{
+  Z_AUDIO_TRACKLIST_ERROR_FAILED,
+  Z_AUDIO_TRACKLIST_ERROR_NO_DATA,
+} ZAudioTracklistError;
+
+#define Z_AUDIO_TRACKLIST_ERROR \
+  z_audio_tracklist_error_quark ()
+GQuark
+z_audio_tracklist_error_quark (void);
+G_DEFINE_QUARK (
+  z - audio - tracklist - error - quark,
+  z_audio_tracklist_error)
+
 /**
  * Initializes the tracklist when loading a project.
  */
@@ -1222,8 +1236,10 @@ tracklist_expose_ports_to_backend (Tracklist * self)
  * @param perform_actions Whether to perform
  *   undoable actions in addition to creating the
  *   regions/tracks.
+ *
+ * @return Whether successful.
  */
-void
+bool
 tracklist_import_files (
   Tracklist *     self,
   char **         uri_list,
@@ -1232,8 +1248,10 @@ tracklist_import_files (
   TrackLane *     lane,
   Position *      pos,
   bool            with_progress,
-  bool            perform_actions)
+  bool            perform_actions,
+  GError **       error)
 {
+  bool        has_errors = false;
   GPtrArray * file_arr = g_ptr_array_new_with_free_func (
     (GDestroyNotify) supported_file_free);
   if (orig_file)
@@ -1243,7 +1261,7 @@ tracklist_import_files (
     }
   else
     {
-      g_return_if_fail (uri_list);
+      g_return_val_if_fail (uri_list, false);
 
       char * uri = NULL;
       int    i = 0;
@@ -1273,8 +1291,11 @@ tracklist_import_files (
 
   if (file_arr->len == 0)
     {
-      ui_show_error_message (true, _ ("No file was found"));
-
+      g_set_error_literal (
+        error, Z_AUDIO_TRACKLIST_ERROR,
+        Z_AUDIO_TRACKLIST_ERROR_FAILED,
+        _ ("No file was found"));
+      has_errors = true;
       goto free_file_array_and_return;
     }
 
@@ -1297,12 +1318,12 @@ tracklist_import_files (
         {
           char * descr =
             supported_file_type_get_description (file->type);
-          char * msg = g_strdup_printf (
+          g_set_error (
+            error, Z_AUDIO_TRACKLIST_ERROR,
+            Z_AUDIO_TRACKLIST_ERROR_FAILED,
             _ ("Unsupported file type %s"), descr);
           g_free (descr);
-          ui_show_error_message (true, msg);
-          g_free (msg);
-
+          has_errors = true;
           goto free_file_array_and_return;
         }
 
@@ -1313,13 +1334,11 @@ tracklist_import_files (
             midi_file_get_num_tracks (file->abs_path, true);
           if (num_nonempty_midi_tracks == 0)
             {
-              if (ZRYTHM_HAVE_UI)
-                {
-                  ui_show_error_message (
-                    true,
-                    _ ("This MIDI file contains "
-                       "no data"));
-                }
+              g_set_error_literal (
+                error, Z_AUDIO_TRACKLIST_ERROR,
+                Z_AUDIO_TRACKLIST_ERROR_NO_DATA,
+                _ ("This MIDI file contains no data"));
+              has_errors = true;
               goto free_file_array_and_return;
             }
         }
@@ -1332,10 +1351,11 @@ tracklist_import_files (
             {
               if (file_arr->len > 1)
                 {
-                  ui_show_error_message (
-                    true,
-                    _ ("Can only drop 1 file at a "
-                       "time on existing tracks"));
+                  g_set_error_literal (
+                    error, Z_AUDIO_TRACKLIST_ERROR,
+                    Z_AUDIO_TRACKLIST_ERROR_FAILED,
+                    _ ("Can only drop 1 file at a time on existing tracks"));
+                  has_errors = true;
                   goto free_file_array_and_return;
                 }
 
@@ -1345,23 +1365,24 @@ tracklist_import_files (
                     track->type != TRACK_TYPE_MIDI
                     && track->type != TRACK_TYPE_INSTRUMENT)
                     {
-                      ui_show_error_message (
-                        true,
-                        _ ("Can only drop MIDI files on "
-                           "MIDI/instrument tracks"));
+                      g_set_error_literal (
+                        error, Z_AUDIO_TRACKLIST_ERROR,
+                        Z_AUDIO_TRACKLIST_ERROR_FAILED,
+                        _ ("Can only drop MIDI files on MIDI/instrument tracks"));
+                      has_errors = true;
                       goto free_file_array_and_return;
                     }
 
                   if (num_nonempty_midi_tracks > 1)
                     {
-                      char msg[600];
-                      sprintf (
-                        msg,
+                      g_set_error (
+                        error, Z_AUDIO_TRACKLIST_ERROR,
+                        Z_AUDIO_TRACKLIST_ERROR_FAILED,
                         _ ("This MIDI file contains %d "
                            "tracks. It cannot be dropped "
                            "into an existing track"),
                         num_nonempty_midi_tracks);
-                      ui_show_error_message (true, msg);
+                      has_errors = true;
                       goto free_file_array_and_return;
                     }
                 }
@@ -1369,10 +1390,12 @@ tracklist_import_files (
                 track_type == TRACK_TYPE_AUDIO
                 && track->type != TRACK_TYPE_AUDIO)
                 {
-                  ui_show_error_message (
-                    true,
+                  g_set_error_literal (
+                    error, Z_AUDIO_TRACKLIST_ERROR,
+                    Z_AUDIO_TRACKLIST_ERROR_FAILED,
                     _ ("Can only drop audio files on "
                        "audio tracks"));
+                  has_errors = true;
                   goto free_file_array_and_return;
                 }
 
@@ -1408,23 +1431,33 @@ tracklist_import_files (
 
               if (region)
                 {
-                  track_add_region (
-                    track, region, NULL, lane_pos, F_GEN_NAME,
-                    F_PUBLISH_EVENTS);
+                  GError * err = NULL;
+                  bool     success = track_add_region (
+                        track, region, NULL, lane_pos, F_GEN_NAME,
+                        F_PUBLISH_EVENTS, &err);
+                  if (!success)
+                    {
+                      PROPAGATE_PREFIXED_ERROR_LITERAL (
+                        error, err, "Failed to add region");
+                      has_errors = true;
+                      goto free_file_array_and_return;
+                    }
                   arranger_object_select (
                     (ArrangerObject *) region, F_SELECT,
                     F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
-                  GError * err = NULL;
-                  bool     ret =
+                  err = NULL;
+                  bool ret =
                     arranger_selections_action_perform_create (
                       TL_SELECTIONS, &err);
                   if (!ret)
                     {
-                      HANDLE_ERROR (
-                        err, "%s",
+                      PROPAGATE_PREFIXED_ERROR_LITERAL (
+                        error, err,
                         _ ("Failed to create arranger "
                            "objects"));
+                      has_errors = true;
+                      goto free_file_array_and_return;
                     }
                 }
               else
@@ -1448,8 +1481,9 @@ tracklist_import_files (
                 }
               else
                 {
-                  HANDLE_ERROR (
-                    err, "%s", _ ("Failed to create track"));
+                  PROPAGATE_PREFIXED_ERROR_LITERAL (
+                    error, err, _ ("Failed to create track"));
+                  has_errors = true;
                   goto free_file_array_and_return;
                 }
             }
@@ -1463,7 +1497,14 @@ tracklist_import_files (
 free_file_array_and_return:
   g_ptr_array_unref (file_arr);
 
-  return;
+  if (has_errors)
+    {
+      return false;
+    }
+  else
+    {
+      return true;
+    }
 }
 
 static void

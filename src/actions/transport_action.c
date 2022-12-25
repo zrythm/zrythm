@@ -11,6 +11,7 @@
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "zrythm.h"
@@ -133,7 +134,7 @@ need_update_positions_from_ticks (TransportAction * self)
 }
 
 static int
-do_or_undo (TransportAction * self, bool _do)
+do_or_undo (TransportAction * self, bool _do, GError ** error)
 {
   ControlPortChange change = { 0 };
   switch (self->type)
@@ -194,8 +195,16 @@ do_or_undo (TransportAction * self, bool _do)
         /* doesn't work */
         false)
         {
-          transport_stretch_regions (
-            TRANSPORT, NULL, true, time_ratio, Z_F_NO_FORCE);
+          GError * err = NULL;
+          bool     success = transport_stretch_regions (
+                TRANSPORT, NULL, true, time_ratio, Z_F_NO_FORCE,
+                &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                error, err, "Failed to stretch regions");
+              return -1;
+            }
         }
     }
 
@@ -222,7 +231,11 @@ transport_action_do (TransportAction * self, GError ** error)
     }
   else
     {
-      do_or_undo (self, true);
+      int ret = do_or_undo (self, true, error);
+      if (ret != 0)
+        {
+          return ret;
+        }
       tracklist_set_caches (
         TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS);
     }
@@ -236,7 +249,11 @@ transport_action_do (TransportAction * self, GError ** error)
 int
 transport_action_undo (TransportAction * self, GError ** error)
 {
-  do_or_undo (self, false);
+  int ret = do_or_undo (self, false, error);
+  if (ret != 0)
+    {
+      return ret;
+    }
 
   EVENTS_PUSH (ET_BPM_CHANGED, NULL);
   EVENTS_PUSH (ET_TIME_SIGNATURE_CHANGED, NULL);

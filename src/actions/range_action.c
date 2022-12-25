@@ -9,6 +9,7 @@
 #include "gui/widgets/main_window.h"
 #include "plugins/plugin.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
@@ -227,9 +228,17 @@ range_action_do (RangeAction * self, GError ** error)
                 {
                   /* split at range start */
                   ArrangerObject *part1, *part2;
-                  arranger_object_split (
+                  GError *        err = NULL;
+                  bool success = arranger_object_split (
                     obj, &self->start_pos, false, &part1,
-                    &part2, false);
+                    &part2, false, &err);
+                  if (!success)
+                    {
+                      PROPAGATE_PREFIXED_ERROR_LITERAL (
+                        error, err,
+                        "Failed to unsplit object");
+                      return -1;
+                    }
 
                   /* move part2 by the range
                    * amount */
@@ -244,13 +253,27 @@ range_action_do (RangeAction * self, GError ** error)
                    * project */
                   ArrangerObject * prj_part1 =
                     arranger_object_clone (part1);
-                  arranger_object_add_to_project (
-                    prj_part1, F_NO_PUBLISH_EVENTS);
+                  success = arranger_object_add_to_project (
+                    prj_part1, F_NO_PUBLISH_EVENTS, &err);
+                  if (!success)
+                    {
+                      PROPAGATE_PREFIXED_ERROR_LITERAL (
+                        error, err,
+                        "Failed to add object to project");
+                      return -1;
+                    }
 
                   ArrangerObject * prj_part2 =
                     arranger_object_clone (part2);
-                  arranger_object_add_to_project (
-                    prj_part2, F_NO_PUBLISH_EVENTS);
+                  success = arranger_object_add_to_project (
+                    prj_part2, F_NO_PUBLISH_EVENTS, &err);
+                  if (!success)
+                    {
+                      PROPAGATE_PREFIXED_ERROR_LITERAL (
+                        error, err,
+                        "Failed to add object to project");
+                      return -1;
+                    }
 
                   g_message (
                     "object split and moved into the"
@@ -305,7 +328,16 @@ range_action_do (RangeAction * self, GError ** error)
               /* clone object and add to project */
               ArrangerObject * prj_obj =
                 arranger_object_clone (obj);
-              arranger_object_insert_to_project (prj_obj);
+              GError * err = NULL;
+              bool success = arranger_object_insert_to_project (
+                prj_obj, &err);
+              if (!success)
+                {
+                  PROPAGATE_PREFIXED_ERROR_LITERAL (
+                    error, err,
+                    "Failed to insert object to project");
+                  return -1;
+                }
             }
         }
 
@@ -361,10 +393,17 @@ range_action_do (RangeAction * self, GError ** error)
                   &prj_obj->pos, &self->start_pos))
                 {
                   /* split at range start */
+                  GError *        err = NULL;
                   ArrangerObject *part1, *part2;
-                  arranger_object_split (
+                  bool success = arranger_object_split (
                     obj, &self->start_pos, false, &part1,
-                    &part2, false);
+                    &part2, false, &err);
+                  if (!success)
+                    {
+                      PROPAGATE_PREFIXED_ERROR_LITERAL (
+                        error, err, "Failed to split object");
+                      return -1;
+                    }
 
                   /* if part 2 extends beyond the
                    * range end, split it  and
@@ -374,9 +413,16 @@ range_action_do (RangeAction * self, GError ** error)
                         part2, &self->end_pos, NULL))
                     {
                       ArrangerObject *part3, *part4;
-                      arranger_object_split (
+                      success = arranger_object_split (
                         part2, &self->end_pos, false, &part3,
-                        &part4, false);
+                        &part4, false, &err);
+                      if (!success)
+                        {
+                          PROPAGATE_PREFIXED_ERROR_LITERAL (
+                            error, err,
+                            "Failed to split o bject");
+                          return -1;
+                        }
                       arranger_object_free (part2);
                       arranger_object_free (part3);
                       part2 = part4;
@@ -405,16 +451,30 @@ range_action_do (RangeAction * self, GError ** error)
                    * project */
                   ArrangerObject * prj_part1 =
                     arranger_object_clone (part1);
-                  arranger_object_add_to_project (
-                    prj_part1, F_NO_PUBLISH_EVENTS);
+                  success = arranger_object_add_to_project (
+                    prj_part1, F_NO_PUBLISH_EVENTS, &err);
+                  if (!success)
+                    {
+                      PROPAGATE_PREFIXED_ERROR_LITERAL (
+                        error, err,
+                        "Failed to add object to project");
+                      return -1;
+                    }
                   ADD_AFTER (prj_part1, part1);
 
                   if (part2)
                     {
                       ArrangerObject * prj_part2 =
                         arranger_object_clone (part2);
-                      arranger_object_add_to_project (
-                        prj_part2, F_NO_PUBLISH_EVENTS);
+                      success = arranger_object_add_to_project (
+                        prj_part2, F_NO_PUBLISH_EVENTS, &err);
+                      if (!success)
+                        {
+                          PROPAGATE_PREFIXED_ERROR_LITERAL (
+                            error, err,
+                            "Failed to add object to project");
+                          return -1;
+                        }
                       g_message (
                         "object split to the "
                         "following:");
@@ -440,9 +500,16 @@ range_action_do (RangeAction * self, GError ** error)
                 {
                   /* split at range end */
                   ArrangerObject *part1, *part2;
-                  arranger_object_split (
+                  GError *        err = NULL;
+                  bool success = arranger_object_split (
                     obj, &self->end_pos, false, &part1,
-                    &part2, false);
+                    &part2, false, &err);
+                  if (!success)
+                    {
+                      PROPAGATE_PREFIXED_ERROR_LITERAL (
+                        error, err, "Failed to split object");
+                      return -1;
+                    }
 
                   /* move part2 by the range
                    * amount */
@@ -461,8 +528,15 @@ range_action_do (RangeAction * self, GError ** error)
                    * project */
                   ArrangerObject * prj_part2 =
                     arranger_object_clone (part2);
-                  arranger_object_add_to_project (
-                    prj_part2, F_NO_PUBLISH_EVENTS);
+                  success = arranger_object_add_to_project (
+                    prj_part2, F_NO_PUBLISH_EVENTS, &err);
+                  if (!success)
+                    {
+                      PROPAGATE_PREFIXED_ERROR_LITERAL (
+                        error, err,
+                        "Failed to add object to project");
+                      return -1;
+                    }
                   ADD_AFTER (prj_part2, part2);
 
                   g_message ("object split to just:");
@@ -542,7 +616,17 @@ range_action_do (RangeAction * self, GError ** error)
               /* clone object and add to project */
               ArrangerObject * prj_obj =
                 arranger_object_clone (obj);
-              arranger_object_insert_to_project (prj_obj);
+
+              GError * err = NULL;
+              bool success = arranger_object_insert_to_project (
+                prj_obj, &err);
+              if (!success)
+                {
+                  PROPAGATE_PREFIXED_ERROR_LITERAL (
+                    error, err,
+                    "Failed to insert object to project");
+                  return -1;
+                }
             }
         }
 
@@ -613,7 +697,16 @@ range_action_undo (RangeAction * self, GError ** error)
 
       /* clone object and add to project */
       ArrangerObject * prj_obj = arranger_object_clone (obj);
-      arranger_object_insert_to_project (prj_obj);
+
+      GError * err = NULL;
+      bool     success =
+        arranger_object_insert_to_project (prj_obj, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err, "Failed to insert object to project");
+          return -1;
+        }
 
       g_message ("adding");
       arranger_object_print (obj);

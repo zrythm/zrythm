@@ -1745,33 +1745,6 @@ track_setup (Track * track)
 }
 
 /**
- * Adds a ZRegion to the given lane of the track.
- *
- * The ZRegion must be the main region (see
- * ArrangerObjectInfo).
- *
- * @param at The AutomationTrack of this ZRegion, if
- *   automation region.
- * @param lane_pos The position of the lane to add
- *   to, if applicable.
- * @param gen_name Generate a unique region name or
- *   not. This will be 0 if the caller already
- *   generated a unique name.
- */
-void
-track_add_region (
-  Track *           track,
-  ZRegion *         region,
-  AutomationTrack * at,
-  int               lane_pos,
-  int               gen_name,
-  int               fire_events)
-{
-  track_insert_region (
-    track, region, at, lane_pos, -1, gen_name, fire_events);
-}
-
-/**
  * Inserts a ZRegion to the given lane or
  * AutomationTrack of the track, at the given
  * index.
@@ -1788,8 +1761,10 @@ track_add_region (
  * @param gen_name Generate a unique region name or
  *   not. This will be 0 if the caller already
  *   generated a unique name.
+ *
+ * @return Whether successful.
  */
-void
+bool
 track_insert_region (
   Track *           track,
   ZRegion *         region,
@@ -1797,23 +1772,27 @@ track_insert_region (
   int               lane_pos,
   int               idx,
   int               gen_name,
-  int               fire_events)
+  int               fire_events,
+  GError **         error)
 {
   if (region->id.type == REGION_TYPE_AUTOMATION)
     {
       track = automation_track_get_track (at);
     }
-  g_return_if_fail (IS_TRACK (track));
-  g_return_if_fail (region_validate (region, false, 0));
-  g_return_if_fail (track_type_can_have_region_type (
-    track->type, region->id.type));
+  g_return_val_if_fail (IS_TRACK (track), false);
+  g_return_val_if_fail (
+    region_validate (region, false, 0), false);
+  g_return_val_if_fail (
+    track_type_can_have_region_type (
+      track->type, region->id.type),
+    false);
 
   if (gen_name)
     {
       region_gen_name (region, NULL, at, track);
     }
 
-  g_return_if_fail (region->name);
+  g_return_val_if_fail (region->name, false);
   g_message (
     "inserting region '%s' to track '%s' "
     "at lane %d (idx %d)",
@@ -1841,7 +1820,7 @@ track_insert_region (
       /* enable extra lane if necessary */
       track_create_missing_lanes (track, lane_pos);
 
-      g_warn_if_fail (track->lanes[lane_pos]);
+      g_return_val_if_fail (track->lanes[lane_pos], false);
       if (idx == -1)
         {
           track_lane_add_region (
@@ -1852,7 +1831,7 @@ track_insert_region (
           track_lane_insert_region (
             track->lanes[lane_pos], region, idx);
         }
-      g_warn_if_fail (region->id.idx >= 0);
+      g_return_val_if_fail (region->id.idx >= 0, false);
     }
 
   if (add_at)
@@ -1869,7 +1848,7 @@ track_insert_region (
 
   if (add_chord)
     {
-      g_warn_if_fail (track == P_CHORD_TRACK);
+      g_return_val_if_fail (track == P_CHORD_TRACK, false);
 
       if (idx == -1)
         {
@@ -1888,7 +1867,16 @@ track_insert_region (
     && !track_is_auditioner (track))
     {
       AudioClip * clip = audio_region_get_clip (region);
-      audio_clip_write_to_pool (clip, false, F_NOT_BACKUP);
+      GError *    err = NULL;
+      bool        success = audio_clip_write_to_pool (
+               clip, false, F_NOT_BACKUP, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s",
+            "Failed to write audio region clip to pool");
+          return false;
+        }
     }
 
   g_message ("inserted:");
@@ -1903,6 +1891,8 @@ track_insert_region (
           EVENTS_PUSH (ET_TRACK_LANE_ADDED, NULL);
         }
     }
+
+  return true;
 }
 
 /**
@@ -2006,9 +1996,11 @@ track_update_children (Track * self)
  * When the track is unfrozen, this file will be
  * removed from the pool and the track will be
  * played normally again.
+ *
+ * @return Whether successful.
  */
-void
-track_freeze (Track * self, bool freeze)
+bool
+track_freeze (Track * self, bool freeze, GError ** error)
 {
   g_message (
     "%sfreezing %s...", freeze ? "" : "un", self->name);
@@ -2047,7 +2039,7 @@ track_freeze (Track * self, bool freeze)
       exporter_post_export (settings, conns, &state);
 
       /* assert exporting is finished */
-      g_return_if_fail (!AUDIO_ENGINE->exporting);
+      g_return_val_if_fail (!AUDIO_ENGINE->exporting, false);
 
       if (
         progress_info_get_completion_type (
@@ -2058,8 +2050,17 @@ track_freeze (Track * self, bool freeze)
           AudioClip * clip =
             audio_clip_new_from_file (settings->file_uri);
           audio_pool_add_clip (AUDIO_POOL, clip);
-          audio_clip_write_to_pool (
-            clip, F_NO_PARTS, F_NOT_BACKUP);
+          GError * err = NULL;
+          bool     success = audio_clip_write_to_pool (
+                clip, F_NO_PARTS, F_NOT_BACKUP, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err,
+                "Failed to write frozen audio for track '%s' to pool",
+                self->name);
+              return false;
+            }
           self->pool_id = clip->pool_id;
         }
 
@@ -2080,6 +2081,8 @@ track_freeze (Track * self, bool freeze)
 
   self->frozen = freeze;
   EVENTS_PUSH (ET_TRACK_FREEZE_CHANGED, self);
+
+  return true;
 }
 
 /**

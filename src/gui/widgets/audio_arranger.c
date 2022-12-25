@@ -13,6 +13,7 @@
 #include "gui/widgets/clip_editor.h"
 #include "gui/widgets/clip_editor_inner.h"
 #include "project.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "zrythm_app.h"
@@ -311,9 +312,16 @@ audio_arranger_widget_snap_fade (
         position_to_ticks (&new_pos)
         - position_to_ticks (
           fade_in ? &r_obj->fade_in_pos : &r_obj->fade_out_pos);
-      arranger_object_resize (
-        r_obj, fade_in, ARRANGER_OBJECT_RESIZE_FADE, diff,
-        true);
+      GError * err = NULL;
+      bool     success = arranger_object_resize (
+            r_obj, fade_in, ARRANGER_OBJECT_RESIZE_FADE, diff,
+            true, &err);
+      if (!success)
+        {
+          HANDLE_ERROR_LITERAL (
+            err, "Failed to resize object");
+          return -1;
+        }
     }
 
   if (fade_in)

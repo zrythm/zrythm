@@ -8,6 +8,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/datetime.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
@@ -234,8 +235,15 @@ post_finish (
     {
       if (zrythm_already_running)
         {
-          project_load (
-            ZRYTHM->open_filename, ZRYTHM->opening_template);
+          GError * err = NULL;
+          bool     success = project_load (
+                ZRYTHM->open_filename, ZRYTHM->opening_template,
+                &err);
+          if (!success)
+            {
+              HANDLE_ERROR (
+                err, "%s", _ ("Failed to load project"));
+            }
         }
       else
         {

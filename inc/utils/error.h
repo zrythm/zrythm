@@ -31,6 +31,9 @@ error_handle_prv (GError * err, const char * format, ...)
     err = NULL; \
   }
 
+#define HANDLE_ERROR_LITERAL(err, str) \
+  HANDLE_ERROR (err, "%s", str)
+
 void
 error_propagate_prefixed_prv (
   GError **    main_err,
@@ -44,5 +47,8 @@ error_propagate_prefixed_prv (
       main_err, err, fmt, __VA_ARGS__); \
     err = NULL; \
   }
+
+#define PROPAGATE_PREFIXED_ERROR_LITERAL(main_err, err, str) \
+  PROPAGATE_PREFIXED_ERROR (main_err, err, "%s", str)
 
 #endif

@@ -39,8 +39,10 @@ test_change_bpm_and_time_sig (void)
   /* loop the region */
   ZRegion *        r = audio_track->lanes[0]->regions[0];
   ArrangerObject * r_obj = (ArrangerObject *) r;
-  arranger_object_resize (
-    r_obj, false, ARRANGER_OBJECT_RESIZE_LOOP, 40000, false);
+  bool             success = arranger_object_resize (
+                r_obj, false, ARRANGER_OBJECT_RESIZE_LOOP, 40000, false,
+                NULL);
+  g_assert_true (success);
 
   /* print region before the change */
   g_assert_true (IS_REGION_AND_NONNULL (r));
@@ -208,8 +210,10 @@ test_change_bpm_twice_during_playback (void)
   /* loop the region */
   ZRegion *        r = audio_track->lanes[0]->regions[0];
   ArrangerObject * r_obj = (ArrangerObject *) r;
-  arranger_object_resize (
-    r_obj, false, ARRANGER_OBJECT_RESIZE_LOOP, 40000, false);
+  bool             success = arranger_object_resize (
+                r_obj, false, ARRANGER_OBJECT_RESIZE_LOOP, 40000, false,
+                NULL);
+  g_assert_true (success);
   g_assert_true (arranger_object_validate (r_obj));
 
   /* start playback */

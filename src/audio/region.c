@@ -42,6 +42,7 @@
 #include "utils/arrays.h"
 #include "utils/audio.h"
 #include "utils/debug.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/objects.h"
 #include "utils/yaml.h"
@@ -225,18 +226,27 @@ region_move_to_track (
         }
 
       /* add the region to its new track */
+      bool     success;
+      GError * err = NULL;
       if (index >= 0)
         {
-          track_insert_region (
+          success = track_insert_region (
             track, region, at, -1, index, F_NO_GEN_NAME,
-            F_NO_PUBLISH_EVENTS);
+            F_NO_PUBLISH_EVENTS, &err);
         }
       else
         {
-          track_add_region (
+          success = track_add_region (
             track, region, at, -1, F_NO_GEN_NAME,
-            F_NO_PUBLISH_EVENTS);
+            F_NO_PUBLISH_EVENTS, &err);
         }
+      if (!success)
+        {
+          HANDLE_ERROR_LITERAL (
+            err, "Failed to add region to track");
+          return;
+        }
+
       g_warn_if_fail (region->id.at_idx == at->index);
       region_set_automation_track (region, at);
     }
@@ -246,18 +256,27 @@ region_move_to_track (
       track_create_missing_lanes (track, lane_pos);
 
       /* add the region to its new track */
+      bool     success;
+      GError * err = NULL;
       if (index >= 0)
         {
-          track_insert_region (
+          success = track_insert_region (
             track, region, NULL, lane_pos, index,
-            F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS);
+            F_NO_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
         }
       else
         {
-          track_add_region (
+          success = track_add_region (
             track, region, NULL, lane_pos, F_NO_GEN_NAME,
-            F_NO_PUBLISH_EVENTS);
+            F_NO_PUBLISH_EVENTS, &err);
         }
+      if (!success)
+        {
+          HANDLE_ERROR_LITERAL (
+            err, "Failed to add region to track");
+          return;
+        }
+
       g_warn_if_fail (region->id.lane_pos == lane_pos);
       g_warn_if_fail (
         track->lanes[lane_pos]->num_regions > 0
@@ -309,11 +328,13 @@ region_move_to_track (
  * region's size.
  *
  * @param ratio The ratio to stretch by.
+ *
+ * @return Whether successful.
  */
-void
-region_stretch (ZRegion * self, double ratio)
+bool
+region_stretch (ZRegion * self, double ratio, GError ** error)
 {
-  g_return_if_fail (IS_REGION (self));
+  g_return_val_if_fail (IS_REGION (self), false);
 
   g_debug ("stretching region %p (ratio %f)", self, ratio);
 
@@ -373,8 +394,15 @@ region_stretch (ZRegion * self, double ratio)
     case REGION_TYPE_AUDIO:
       {
         AudioClip * clip = audio_region_get_clip (self);
+        GError *    err = NULL;
         int         new_clip_id = audio_pool_duplicate_clip (
-                  AUDIO_POOL, clip->pool_id, F_NO_WRITE_FILE);
+                  AUDIO_POOL, clip->pool_id, F_NO_WRITE_FILE, &err);
+        if (new_clip_id < 0)
+          {
+            PROPAGATE_PREFIXED_ERROR_LITERAL (
+              error, err, "Failed to duplicate clip");
+            return false;
+          }
         AudioClip * new_clip =
           audio_pool_get_clip (AUDIO_POOL, new_clip_id);
         audio_region_set_clip_id (self, new_clip->pool_id);
@@ -384,11 +412,18 @@ region_stretch (ZRegion * self, double ratio)
         ssize_t returned_frames = stretcher_stretch_interleaved (
           stretcher, new_clip->frames,
           (size_t) new_clip->num_frames, &new_clip->frames);
-        z_return_if_fail_cmp (returned_frames, >, 0);
+        z_return_val_if_fail_cmp (
+          returned_frames, >, 0, false);
         new_clip->num_frames =
           (unsigned_frame_t) returned_frames;
-        audio_clip_write_to_pool (
-          new_clip, F_NO_PARTS, F_NOT_BACKUP);
+        bool success = audio_clip_write_to_pool (
+          new_clip, F_NO_PARTS, F_NOT_BACKUP, &err);
+        if (!success)
+          {
+            PROPAGATE_PREFIXED_ERROR_LITERAL (
+              error, err, "Failed to write clip to pool");
+            return false;
+          }
         (void) obj;
         /* readjust end position to match the
          * number of frames exactly */
@@ -412,6 +447,8 @@ region_stretch (ZRegion * self, double ratio)
 
   obj->use_cache = false;
   self->stretching = false;
+
+  return true;
 }
 
 /**

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/mixer_selections_action.h"
@@ -744,13 +744,17 @@ do_or_undo_create_or_delete (
   return 0;
 }
 
-static void
+/**
+ * @return Whether successful.
+ */
+static bool
 copy_automation_from_track1_to_track2 (
   Track *        from_track,
   Track *        to_track,
   PluginSlotType slot_type,
   int            from_slot,
-  int            to_slot)
+  int            to_slot,
+  GError **      error)
 {
   AutomationTracklist * prev_atl =
     track_get_automation_tracklist (from_track);
@@ -792,12 +796,22 @@ copy_automation_from_track1_to_track2 (
               ZRegion * new_region =
                 (ZRegion *) arranger_object_clone (
                   (ArrangerObject *) prev_region);
-              track_add_region (
-                to_track, new_region, at, -1, 0, 0);
+              GError * err = NULL;
+              bool     success = track_add_region (
+                    to_track, new_region, at, -1, 0, 0, &err);
+              if (!success)
+                {
+                  PROPAGATE_PREFIXED_ERROR (
+                    error, err, "%s",
+                    "Failed to add region to track");
+                  return false;
+                }
             }
           break;
         }
     }
+
+  return true;
 }
 
 static int
@@ -970,9 +984,19 @@ do_or_undo_move_or_copy (
            * plugin */
         if (copy)
           {
-            copy_automation_from_track1_to_track2 (
-              from_tr, to_tr, to_slot_type, own_ms->slots[i],
-              to_slot);
+            GError * err = NULL;
+            bool     success =
+              copy_automation_from_track1_to_track2 (
+                from_tr, to_tr, to_slot_type,
+                own_ms->slots[i], to_slot, &err);
+            if (!success)
+              {
+                PROPAGATE_PREFIXED_ERROR (
+                  error, err,
+                  "Failed to copy automation from track %s to track %s",
+                  from_tr->name, to_tr->name);
+                return -1;
+              }
           }
 
         /* select it */

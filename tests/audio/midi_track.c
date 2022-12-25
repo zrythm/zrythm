@@ -86,7 +86,9 @@ test_fill_midi_events (void)
   ZRegion *   r = prepare_region_with_note_at_start_to_end (
       track, pitch1, vel1);
   ArrangerObject * r_obj = (ArrangerObject *) r;
-  track_add_region (track, r, NULL, 0, 1, 0);
+  bool             success =
+    track_add_region (track, r, NULL, 0, 1, 0, NULL);
+  g_assert_true (success);
   MidiNote *       mn = r->midi_notes[0];
   ArrangerObject * mn_obj = (ArrangerObject *) mn;
 

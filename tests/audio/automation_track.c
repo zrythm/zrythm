@@ -42,9 +42,10 @@ test_set_at_index (void)
   ZRegion * region = automation_region_new (
     &start, &end, track_get_name_hash (master),
     first_vis_at->index, 0);
-  track_add_region (
+  bool success = track_add_region (
     master, region, first_vis_at, -1, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) region, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
@@ -111,9 +112,10 @@ test_region_in_2nd_automation_track_get_muted (void)
   ZRegion * region = automation_region_new (
     &start, &end, track_get_name_hash (master), new_at->index,
     0);
-  track_add_region (
+  bool success = track_add_region (
     master, region, new_at, -1, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) region, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);

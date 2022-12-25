@@ -441,8 +441,10 @@ tracklist_multiply_track_heights (
  * @param perform_actions Whether to perform
  *   undoable actions in addition to creating the
  *   regions/tracks.
+ *
+ * @return Whether successful.
  */
-void
+bool
 tracklist_import_files (
   Tracklist *     self,
   char **         uri_list,
@@ -451,7 +453,8 @@ tracklist_import_files (
   TrackLane *     lane,
   Position *      pos,
   bool            with_progress,
-  bool            perform_actions);
+  bool            perform_actions,
+  GError **       error);
 
 /**
  * Handles a move or copy action based on a drag.

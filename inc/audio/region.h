@@ -487,10 +487,13 @@ region_gen_name (
  * region's size.
  *
  * @param ratio The ratio to stretch by.
+ *
+ * @return Whether successful.
  */
 NONNULL
-void
-region_stretch (ZRegion * self, double ratio);
+WARN_UNUSED_RESULT
+bool
+region_stretch (ZRegion * self, double ratio, GError ** error);
 
 /**
  * To be called every time the identifier changes

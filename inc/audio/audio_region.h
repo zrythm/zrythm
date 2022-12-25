@@ -115,14 +115,18 @@ audio_region_set_clip_id (ZRegion * self, int clip_id);
  * @param duplicate_clip Whether to duplicate the
  *   clip (eg, when other regions refer to it).
  * @param frames Frames, interleaved.
+ *
+ * @return Whether successful.
  */
-void
+WARN_UNUSED_RESULT
+bool
 audio_region_replace_frames (
   ZRegion *        self,
   float *          frames,
   unsigned_frame_t start_frame,
   unsigned_frame_t num_frames,
-  bool             duplicate_clip);
+  bool             duplicate_clip,
+  GError **        error);
 
 /**
  * Fills audio data from the region.

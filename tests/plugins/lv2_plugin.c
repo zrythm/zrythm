@@ -165,8 +165,9 @@ test_save_state_w_files (void)
   lilv_state_free (state);
   check_state_contains_wav ();
 
-  project_save (
-    PROJECT, PROJECT->dir, false, false, F_NO_ASYNC);
+  bool success = project_save (
+    PROJECT, PROJECT->dir, false, false, F_NO_ASYNC, NULL);
+  g_assert_true (success);
   check_state_contains_wav ();
 
   test_project_save_and_reload ();

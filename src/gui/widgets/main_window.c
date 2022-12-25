@@ -51,6 +51,7 @@
 #include "gui/widgets/view_toolbar.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
@@ -153,11 +154,21 @@ on_close_request (GtkWindow * window, MainWindowWidget * self)
       switch (dialog_res)
         {
         case GTK_RESPONSE_ACCEPT:
-          /* save project */
-          g_message ("saving project...");
-          project_save (
-            PROJECT, PROJECT->dir, F_NOT_BACKUP,
-            ZRYTHM_F_NO_NOTIFY, F_NO_ASYNC);
+          {
+            /* save project */
+            g_message ("saving project...");
+            GError * err = NULL;
+            bool     successful =
+              project_save (
+                PROJECT, PROJECT->dir, F_NOT_BACKUP,
+                ZRYTHM_F_NO_NOTIFY, F_NO_ASYNC, &err)
+              == 0;
+            if (!successful)
+              {
+                HANDLE_ERROR (
+                  err, "%s", _ ("Failed to save project"));
+              }
+          }
           break;
         case GTK_RESPONSE_REJECT:
           /* no action needed - just quit */

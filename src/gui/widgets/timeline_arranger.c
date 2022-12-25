@@ -198,15 +198,18 @@ timeline_arranger_widget_get_at_at_y (
  * @param track Track, if non-automation.
  * @param lane TrackLane, if midi/audio region.
  * @param at AutomationTrack, if automation Region.
+ *
+ * @return Whether successful.
  */
-void
+bool
 timeline_arranger_widget_create_region (
   ArrangerWidget *  self,
   const RegionType  type,
   Track *           track,
   TrackLane *       lane,
   AutomationTrack * at,
-  const Position *  pos)
+  const Position *  pos,
+  GError **         error)
 {
   bool autofilling =
     self->action == UI_OVERLAY_ACTION_AUTOFILLING;
@@ -241,7 +244,7 @@ timeline_arranger_widget_create_region (
         pos, &end_pos, P_CHORD_TRACK->num_chord_regions);
       break;
     case REGION_TYPE_AUTOMATION:
-      g_return_if_fail (at);
+      g_return_val_if_fail (at, false);
       region = automation_region_new (
         pos, &end_pos, track_get_name_hash (track), at->index,
         at->num_regions);
@@ -250,42 +253,41 @@ timeline_arranger_widget_create_region (
 
   ArrangerObject * r_obj = (ArrangerObject *) region;
   self->start_object = r_obj;
-  /*region_set_end_pos (*/
-  /*region, &end_pos, AO_UPDATE_ALL);*/
-  /*long length =*/
-  /*region_get_full_length_in_ticks (region);*/
-  /*position_from_ticks (*/
-  /*&region->true_end_pos, length);*/
-  /*region_set_true_end_pos (*/
-  /*region, &region->true_end_pos, AO_UPDATE_ALL);*/
-  /*position_init (&tmp);*/
-  /*region_set_clip_start_pos (*/
-  /*region, &tmp, AO_UPDATE_ALL);*/
-  /*region_set_loop_start_pos (*/
-  /*region, &tmp, AO_UPDATE_ALL);*/
-  /*region_set_loop_end_pos (*/
-  /*region, &region->true_end_pos, AO_UPDATE_ALL);*/
 
+  /* create region */
+  GError * err = NULL;
+  bool     success = true;
   switch (type)
     {
     case REGION_TYPE_MIDI:
-      track_add_region (
-        track, region, NULL,
-        lane
-          ? lane->pos
-          : (track->num_lanes == 1 ? 0 : track->num_lanes - 2),
-        F_GEN_NAME, F_PUBLISH_EVENTS);
+      {
+        success = track_add_region (
+          track, region, NULL,
+          lane
+            ? lane->pos
+            : (track->num_lanes == 1 ? 0 : track->num_lanes - 2),
+          F_GEN_NAME, F_PUBLISH_EVENTS, &err);
+      }
       break;
     case REGION_TYPE_AUDIO:
       break;
     case REGION_TYPE_CHORD:
-      track_add_region (
-        track, region, NULL, -1, F_GEN_NAME, F_PUBLISH_EVENTS);
+      success = track_add_region (
+        track, region, NULL, -1, F_GEN_NAME, F_PUBLISH_EVENTS,
+        &err);
       break;
     case REGION_TYPE_AUTOMATION:
-      track_add_region (
-        track, region, at, -1, F_GEN_NAME, F_PUBLISH_EVENTS);
+      success = track_add_region (
+        track, region, at, -1, F_GEN_NAME, F_PUBLISH_EVENTS,
+        &err);
       break;
+    }
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "Failed to add region to track %s",
+        track->name);
+      return false;
     }
 
   /* set visibility */
@@ -299,6 +301,8 @@ timeline_arranger_widget_create_region (
   arranger_object_select (
     r_obj, F_SELECT, autofilling ? F_APPEND : F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
+
+  return true;
 }
 
 /**
@@ -324,10 +328,21 @@ timeline_arranger_widget_create_chord_or_scale (
     NULL, &wy);
 
   if (y >= (double) track_height / 2.0)
-    timeline_arranger_widget_create_scale (self, track, pos);
+    {
+      timeline_arranger_widget_create_scale (self, track, pos);
+    }
   else
-    timeline_arranger_widget_create_region (
-      self, REGION_TYPE_CHORD, track, NULL, NULL, pos);
+    {
+      GError * err = NULL;
+      bool success = timeline_arranger_widget_create_region (
+        self, REGION_TYPE_CHORD, track, NULL, NULL, pos, &err);
+      if (!success)
+        {
+          HANDLE_ERROR (
+            err, "%s", _ ("Failed to create region"));
+          return;
+        }
+    }
 }
 
 /**
@@ -524,8 +539,15 @@ snap_region_l (
 
       if (is_valid)
         {
-          arranger_object_resize (
-            r_obj, true, type, diff, true);
+          GError * err = NULL;
+          bool     success = arranger_object_resize (
+                r_obj, true, type, diff, true, &err);
+          if (!success)
+            {
+              HANDLE_ERROR_LITERAL (
+                err, "Failed to resize object");
+              return -1;
+            }
         }
     }
 
@@ -691,9 +713,16 @@ snap_region_r (
 
       if (is_valid)
         {
-          arranger_object_resize (
-            r_obj, Z_F_NOT_LEFT, type, diff,
-            Z_F_DURING_UI_ACTION);
+          GError * err = NULL;
+          bool     success = arranger_object_resize (
+                r_obj, Z_F_NOT_LEFT, type, diff,
+                Z_F_DURING_UI_ACTION, &err);
+          if (!success)
+            {
+              HANDLE_ERROR_LITERAL (
+                err, "Failed to resize object");
+              return -1;
+            }
 
           /* if creating also set the loop points
            * appropriately */
@@ -1374,20 +1403,27 @@ on_dnd_drop (
       ZRegion * region = midi_region_new_from_chord_descr (
         &pos, descr, track_get_name_hash (track), lane_pos,
         idx_in_lane);
-      track_add_region (
-        track, region, NULL, lane_pos, F_GEN_NAME,
-        F_PUBLISH_EVENTS);
+      GError * err = NULL;
+      bool     success = track_add_region (
+            track, region, NULL, lane_pos, F_GEN_NAME,
+            F_PUBLISH_EVENTS, &err);
+      if (!success)
+        {
+          HANDLE_ERROR (
+            err, "%s", _ ("Failed to add region to track"));
+          return false;
+        }
       arranger_object_select (
         (ArrangerObject *) region, F_SELECT, F_NO_APPEND,
         F_NO_PUBLISH_EVENTS);
 
-      GError * err = NULL;
-      bool ret = arranger_selections_action_perform_create (
+      success = arranger_selections_action_perform_create (
         TL_SELECTIONS, &err);
-      if (!ret)
+      if (!success)
         {
           HANDLE_ERROR (
             err, "%s", _ ("Failed to create selections"));
+          return false;
         }
     }
   else if (
@@ -1425,9 +1461,17 @@ on_dnd_drop (
       Position pos;
       ui_px_to_pos_timeline (
         self->highlight_rect.x, &pos, true);
-      tracklist_import_files (
-        TRACKLIST, uris, file, track, lane, &pos,
-        Z_F_PROGRESS, true);
+
+      GError * err = NULL;
+      bool     success = tracklist_import_files (
+            TRACKLIST, uris, file, track, lane, &pos,
+            Z_F_PROGRESS, true, &err);
+      if (!success)
+        {
+          HANDLE_ERROR_LITERAL (
+            err, _ ("Failed to import files"));
+          return false;
+        }
 
       if (uris)
         g_strfreev (uris);

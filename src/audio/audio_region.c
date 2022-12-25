@@ -21,11 +21,14 @@
 #include "utils/audio.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
+
+#include <glib/gi18n.h>
 
 /**
  * Creates a region for audio data.
@@ -193,29 +196,39 @@ audio_region_set_clip_id (ZRegion * self, int clip_id)
  * @param duplicate_clip Whether to duplicate the
  *   clip (eg, when other regions refer to it).
  * @param frames Frames, interleaved.
+ *
+ * @return Whether successful.
  */
-void
+bool
 audio_region_replace_frames (
   ZRegion *        self,
   float *          frames,
   unsigned_frame_t start_frame,
   unsigned_frame_t num_frames,
-  bool             duplicate_clip)
+  bool             duplicate_clip,
+  GError **        error)
 {
   AudioClip * clip = audio_region_get_clip (self);
-  g_return_if_fail (clip);
+  g_return_val_if_fail (clip, false);
 
   if (duplicate_clip)
     {
       g_warn_if_reached ();
 
       /* TODO delete */
-      int prev_id = clip->pool_id;
-      int id = audio_pool_duplicate_clip (
-        AUDIO_POOL, clip->pool_id, F_NO_WRITE_FILE);
-      g_return_if_fail (id != prev_id);
+      int      prev_id = clip->pool_id;
+      GError * err = NULL;
+      int      id = audio_pool_duplicate_clip (
+             AUDIO_POOL, clip->pool_id, F_NO_WRITE_FILE, &err);
+      if (id != prev_id || id < 0)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "%s",
+            _ ("Failed to duplicate audio clip"));
+          return false;
+        }
       clip = audio_pool_get_clip (AUDIO_POOL, id);
-      g_return_if_fail (clip);
+      g_return_val_if_fail (clip, false);
 
       self->pool_id = clip->pool_id;
     }
@@ -225,9 +238,21 @@ audio_region_replace_frames (
     num_frames * clip->channels);
   audio_clip_update_channel_caches (clip, start_frame);
 
-  audio_clip_write_to_pool (clip, false, F_NOT_BACKUP);
+  GError * err = NULL;
+  bool     success = audio_clip_write_to_pool (
+        clip, false, F_NOT_BACKUP, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err,
+        "Failed to write audio region clip %s to pool",
+        clip->name);
+      return false;
+    }
 
   self->last_clip_change = g_get_monotonic_time ();
+
+  return true;
 }
 
 static void

@@ -279,9 +279,15 @@ on_dnd_drop (
       if (!zrythm_app_check_and_show_trial_limit_error (
             zrythm_app))
         {
-          tracklist_import_files (
-            TRACKLIST, uris, file, NULL, NULL, NULL,
-            Z_F_PROGRESS, true);
+          GError * err = NULL;
+          bool     success = tracklist_import_files (
+                TRACKLIST, uris, file, NULL, NULL, NULL,
+                Z_F_PROGRESS, true, &err);
+          if (!success)
+            {
+              HANDLE_ERROR_LITERAL (
+                err, _ ("Failed to import files"));
+            }
         }
       return true;
     }

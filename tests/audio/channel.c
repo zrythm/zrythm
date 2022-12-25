@@ -42,9 +42,10 @@ test_midi_fx_routing (void)
   g_assert_nonnull (midi_files);
   SupportedFile * file =
     supported_file_new_from_path (midi_files[0]);
-  tracklist_import_files (
+  bool success = tracklist_import_files (
     TRACKLIST, NULL, file, track, track->lanes[0], PLAYHEAD,
-    Z_F_NO_PROGRESS, true);
+    Z_F_NO_PROGRESS, true, NULL);
+  g_assert_true (success);
   supported_file_free (file);
   g_strfreev (midi_files);
 

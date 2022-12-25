@@ -2032,59 +2032,69 @@ arranger_widget_create_item (
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      /* figure out if we are creating a region or
-       * automation point */
-      at =
-        timeline_arranger_widget_get_at_at_y (self, start_y);
-      track = timeline_arranger_widget_get_track_at_y (
-        self, start_y);
+      {
+        /* figure out if we are creating a region or
+         * automation point */
+        at = timeline_arranger_widget_get_at_at_y (
+          self, start_y);
+        track = timeline_arranger_widget_get_track_at_y (
+          self, start_y);
 
-      /* creating automation region */
-      if (at)
-        {
-          timeline_arranger_widget_create_region (
-            self, REGION_TYPE_AUTOMATION, track, NULL, at,
-            &pos);
-        }
-      /* double click inside a track */
-      else if (track)
-        {
-          TrackLane * lane =
-            timeline_arranger_widget_get_track_lane_at_y (
-              self, start_y);
-          switch (track->type)
-            {
-            case TRACK_TYPE_INSTRUMENT:
-              timeline_arranger_widget_create_region (
-                self, REGION_TYPE_MIDI, track, lane, NULL,
-                &pos);
-              break;
-            case TRACK_TYPE_MIDI:
-              timeline_arranger_widget_create_region (
-                self, REGION_TYPE_MIDI, track, lane, NULL,
-                &pos);
-              break;
-            case TRACK_TYPE_AUDIO:
-              break;
-            case TRACK_TYPE_MASTER:
-              break;
-            case TRACK_TYPE_CHORD:
-              timeline_arranger_widget_create_chord_or_scale (
-                self, track, start_y, &pos);
-              break;
-            case TRACK_TYPE_AUDIO_BUS:
-              break;
-            case TRACK_TYPE_AUDIO_GROUP:
-              break;
-            case TRACK_TYPE_MARKER:
-              timeline_arranger_widget_create_marker (
-                self, track, &pos);
-              break;
-            default:
-              /* TODO */
-              break;
-            }
-        }
+        GError * err = NULL;
+        bool     success = true;
+        if (at) /* if creating automation region */
+          {
+            success = timeline_arranger_widget_create_region (
+              self, REGION_TYPE_AUTOMATION, track, NULL, at,
+              &pos, &err);
+          }
+        else if (track) /* else if double click inside track */
+          {
+            TrackLane * lane =
+              timeline_arranger_widget_get_track_lane_at_y (
+                self, start_y);
+            switch (track->type)
+              {
+              case TRACK_TYPE_INSTRUMENT:
+                success =
+                  timeline_arranger_widget_create_region (
+                    self, REGION_TYPE_MIDI, track, lane, NULL,
+                    &pos, &err);
+                break;
+              case TRACK_TYPE_MIDI:
+                success =
+                  timeline_arranger_widget_create_region (
+                    self, REGION_TYPE_MIDI, track, lane, NULL,
+                    &pos, &err);
+                break;
+              case TRACK_TYPE_AUDIO:
+                break;
+              case TRACK_TYPE_MASTER:
+                break;
+              case TRACK_TYPE_CHORD:
+                timeline_arranger_widget_create_chord_or_scale (
+                  self, track, start_y, &pos);
+                break;
+              case TRACK_TYPE_AUDIO_BUS:
+                break;
+              case TRACK_TYPE_AUDIO_GROUP:
+                break;
+              case TRACK_TYPE_MARKER:
+                timeline_arranger_widget_create_marker (
+                  self, track, &pos);
+                break;
+              default:
+                /* TODO */
+                break;
+              }
+          }
+        if (!success)
+          {
+            HANDLE_ERROR (
+              err, "%s", _ ("Failed to create region"));
+            return;
+          }
+      }
       break;
     case TYPE (MIDI):
       /* find the note and region at x,y */
@@ -4459,15 +4469,21 @@ on_drag_end_timeline (ArrangerWidget * self)
         double ticks_diff =
           obj->end_pos.ticks - obj->transient->end_pos.ticks;
         /* stretch now */
-        transport_stretch_regions (
-          TRANSPORT, TL_SELECTIONS, false, 0.0, Z_F_FORCE);
-
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_resize (
+        bool     success = transport_stretch_regions (
+              TRANSPORT, TL_SELECTIONS, false, 0.0, Z_F_FORCE,
+              &err);
+        if (!success)
+          {
+            HANDLE_ERROR_LITERAL (
+              err, "Failed stretching regions");
+          }
+
+        success = arranger_selections_action_perform_resize (
           (ArrangerSelections *) TL_SELECTIONS,
           ARRANGER_SELECTIONS_ACTION_STRETCH_R, ticks_diff,
           F_ALREADY_EDITED, &err);
-        if (!ret)
+        if (!success)
           {
             HANDLE_ERROR (
               err, "%s", _ ("Failed resizing selections"));

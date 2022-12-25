@@ -30,9 +30,10 @@ create_automation_region (int track_pos)
     &start, &end, track_get_name_hash (track), 0, 0);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
-  track_add_region (
+  bool success = track_add_region (
     track, region, atl->ats[0], 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) region, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
@@ -106,9 +107,11 @@ test_handle_drop_empty_midi_file (void)
   SupportedFile * file = supported_file_new_from_path (path);
   g_free (path);
 
-  tracklist_import_files (
-    TRACKLIST, NULL, file, NULL, NULL, PLAYHEAD,
-    Z_F_NO_PROGRESS, true);
+  GError * err = NULL;
+  bool     success = tracklist_import_files (
+        TRACKLIST, NULL, file, NULL, NULL, PLAYHEAD,
+        Z_F_NO_PROGRESS, true, &err);
+  g_assert_false (success);
 
   test_helper_zrythm_cleanup ();
 }

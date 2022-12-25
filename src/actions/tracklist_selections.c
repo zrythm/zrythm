@@ -807,9 +807,17 @@ create_track (
           ZRegion * ar = audio_region_new (
             self->pool_id, NULL, true, NULL, 0, NULL, 0, 0,
             &start_pos, track_get_name_hash (track), 0, 0);
-          track_add_region (
-            track, ar, NULL, 0, F_GEN_NAME,
-            F_NO_PUBLISH_EVENTS);
+          GError * err = NULL;
+          bool     success = track_add_region (
+                track, ar, NULL, 0, F_GEN_NAME,
+                F_NO_PUBLISH_EVENTS, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err, "%s",
+                "Failed to add region to track");
+              return -1;
+            }
         }
       else if (
         self->track_type == TRACK_TYPE_MIDI
@@ -848,18 +856,25 @@ create_track (
             track_get_name_hash (track), 0, 0, idx);
           if (mr)
             {
-              track_add_region (
+              bool success = track_add_region (
                 track, mr, NULL, 0,
                 /* name could already be generated
                  * based
                  * on the track name (if any) in
                  * the MIDI file */
                 mr->name ? F_NO_GEN_NAME : F_GEN_NAME,
-                F_NO_PUBLISH_EVENTS);
+                F_NO_PUBLISH_EVENTS, &err);
+              if (!success)
+                {
+                  PROPAGATE_PREFIXED_ERROR (
+                    error, err, "%s",
+                    "Failed to add region to track");
+                  return -1;
+                }
             }
           else
             {
-              g_message (
+              g_warning (
                 "Failed to create MIDI region from "
                 "file %s",
                 full_path);

@@ -26,6 +26,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/debug.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
@@ -323,14 +324,17 @@ transport_prepare_audio_regions_for_stretch (
  *   will be used to calculate the ratio.
  * @param force Force stretching, regardless of
  *   musical mode.
+ *
+ * @return Whether successful.
  */
-void
+bool
 transport_stretch_regions (
   Transport *          self,
   TimelineSelections * sel,
   bool                 with_fixed_ratio,
   double               time_ratio,
-  bool                 force)
+  bool                 force,
+  GError **            error)
 {
   if (sel)
     {
@@ -351,7 +355,14 @@ transport_stretch_regions (
                         ? time_ratio
                         : arranger_object_get_length_in_ticks (r_obj)
                   / region->before_length;
-          region_stretch (region, ratio);
+          GError * err = NULL;
+          bool success = region_stretch (region, ratio, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                error, err, "Failed to stretch region");
+              return false;
+            }
         }
     }
   else
@@ -384,11 +395,22 @@ transport_stretch_regions (
                       : arranger_object_get_length_in_ticks (
                           r_obj)
                           / region->before_length;
-                  region_stretch (region, ratio);
+                  GError * err = NULL;
+                  bool     success =
+                    region_stretch (region, ratio, &err);
+                  if (!success)
+                    {
+                      PROPAGATE_PREFIXED_ERROR_LITERAL (
+                        error, err,
+                        "Failed to stretch region");
+                      return false;
+                    }
                 }
             }
         }
     }
+
+  return true;
 }
 
 void

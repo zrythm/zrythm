@@ -1,23 +1,8 @@
-/*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "project.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "zrythm.h"
@@ -56,7 +41,14 @@ guile_project_generator_generate_project_from_string (
     use_tmp_project ? PROJECT : NULL, tmp_path, true, true);
 
   /* save the project at the given path */
-  project_save (prj, prj_path, false, false, F_NO_ASYNC);
+  GError * err = NULL;
+  bool     success = project_save (
+        prj, prj_path, false, false, F_NO_ASYNC, &err);
+  if (!success)
+    {
+      HANDLE_ERROR_LITERAL (err, "Failed to save project");
+      return -1;
+    }
 
   /* remember prev project (if any) */
   Project * prev_prj = NULL;
@@ -83,7 +75,13 @@ guile_project_generator_generate_project_from_string (
     }
 
   /* save the project at the given path */
-  project_save (prj, prj_path, false, false, F_NO_ASYNC);
+  success = project_save (
+    prj, prj_path, false, false, F_NO_ASYNC, &err);
+  if (!success)
+    {
+      HANDLE_ERROR_LITERAL (err, "Failed to save project");
+      return -1;
+    }
 
   /* free the instance */
   project_free (prj);

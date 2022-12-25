@@ -200,7 +200,9 @@ audio_clip_update_channel_caches (
  */
 NONNULL
 AudioClip *
-audio_clip_edit_in_ext_program (AudioClip * self);
+audio_clip_edit_in_ext_program (
+  AudioClip * self,
+  GError **   error);
 
 /**
  * Writes the given audio clip data to a file.
@@ -208,14 +210,16 @@ audio_clip_edit_in_ext_program (AudioClip * self);
  * @param parts If true, only write new data. @see
  *   AudioClip.frames_written.
  *
- * @return Non-zero if fail.
+ * @return Whether successful.
  */
+WARN_UNUSED_RESULT
 NONNULL
-int
+bool
 audio_clip_write_to_file (
   AudioClip *  self,
   const char * filepath,
-  bool         parts);
+  bool         parts,
+  GError **    error);
 
 /**
  * Writes the clip to the pool as a wav file.
@@ -224,13 +228,17 @@ audio_clip_write_to_file (
  *   AudioClip.frames_written.
  * @param is_backup Whether writing to a backup
  *   project.
+ *
+ * @return Whether successful.
  */
+WARN_UNUSED_RESULT
 NONNULL
-void
+bool
 audio_clip_write_to_pool (
   AudioClip * self,
   bool        parts,
-  bool        is_backup);
+  bool        is_backup,
+  GError **   error);
 
 /**
  * Gets the path of a clip matching \ref name from

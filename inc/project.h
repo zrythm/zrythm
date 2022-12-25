@@ -453,10 +453,14 @@ project_create_default (
  * @param is_template Load the project as a
  *   template and create a new project from it.
  *
- * @return 0 if successful, non-zero otherwise.
+ * @return Whether successful.
  */
-COLD int
-project_load (const char * filename, const bool is_template);
+WARN_UNUSED_RESULT
+COLD bool
+project_load (
+  const char * filename,
+  const bool   is_template,
+  GError **    error);
 
 /**
  * Saves the project to a project file in the
@@ -469,15 +473,17 @@ project_load (const char * filename, const bool is_template);
  * @param async Save asynchronously in another
  *   thread.
  *
- * @return Non-zero if error.
+ * @return Whether successful.
  */
-int
+WARN_UNUSED_RESULT
+bool
 project_save (
   Project *    self,
   const char * _dir,
   const bool   is_backup,
   const bool   show_notification,
-  const bool   async);
+  const bool   async,
+  GError **    error);
 
 /**
  * Autosave callback.
@@ -570,7 +576,10 @@ project_get_existing_yaml (
  */
 NONNULL
 Project *
-project_clone (const Project * src, bool for_backup);
+project_clone (
+  const Project * src,
+  bool            for_backup,
+  GError **       error);
 
 /**
  * Creates an empty project object.

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -165,7 +165,9 @@ _test_helper_zrythm_init (
 
   ZRYTHM->create_project_path =
     g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
-  project_load (NULL, false);
+  GError * err = NULL;
+  bool     success = project_load (NULL, false, &err);
+  g_assert_true (success);
 
   /* adaptive snap only supported with UI */
   SNAP_GRID_TIMELINE->snap_adaptive = false;

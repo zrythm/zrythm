@@ -21,6 +21,18 @@
 #  include <sys/sysctl.h>
 #endif
 
+typedef enum
+{
+  Z_UTILS_AUDIO_ERROR_FAILED,
+} ZUtilsAudioError;
+
+#define Z_UTILS_AUDIO_ERROR z_utils_audio_error_quark ()
+GQuark
+z_utils_audio_error_quark (void);
+G_DEFINE_QUARK (
+  z - utils - audio - error - quark,
+  z_utils_audio_error)
+
 static int num_cores = 0;
 
 static const char * bit_depth_pretty_strings[] = {
@@ -90,9 +102,10 @@ audio_audec_log_func (
  *   written. If this is non-zero and the file exists, it will
  *   append to the existing file.
  *
- * @return Non-zero if fail.
+ * @return Whether successful.
  */
-int
+WARN_UNUSED_RESULT
+bool
 audio_write_raw_file (
   float *      buff,
   size_t       frames_already_written,
@@ -101,9 +114,10 @@ audio_write_raw_file (
   bool         flac,
   BitDepth     bit_depth,
   channels_t   channels,
-  const char * filename)
+  const char * filename,
+  GError **    error)
 {
-  g_return_val_if_fail (samplerate < 10000000, -1);
+  g_return_val_if_fail (samplerate < 10000000, false);
 
   g_debug (
     "writing raw file: already written %zu, "
@@ -128,7 +142,7 @@ audio_write_raw_file (
       type_minor = SF_FORMAT_PCM_24;
       break;
     case BIT_DEPTH_32:
-      g_return_val_if_fail (!flac, -1);
+      g_return_val_if_fail (!flac, false);
       type_minor = SF_FORMAT_PCM_32;
       break;
     }
@@ -147,22 +161,23 @@ audio_write_raw_file (
   if (flac && write_chunk)
     {
       g_critical ("cannot write chunks for flac");
-      return -1;
+      return false;
     }
 
   if (!sf_format_check (&info))
     {
       g_critical ("Invalid SFINFO: %s", sf_strerror (NULL));
-      return -1;
+      return false;
     }
 
   SNDFILE * sndfile =
     sf_open (filename, flac ? SFM_WRITE : SFM_RDWR, &info);
   if (!sndfile)
     {
-      g_critical (
-        "error opening sndfile: %s", sf_strerror (NULL));
-      return -1;
+      g_set_error (
+        error, Z_UTILS_AUDIO_ERROR, Z_UTILS_AUDIO_ERROR_FAILED,
+        _ ("Error opening sndfile: %s"), sf_strerror (NULL));
+      return false;
     }
 
   if (info.format != (type_major | type_minor))
@@ -170,7 +185,7 @@ audio_write_raw_file (
       g_critical (
         "Invalid SNDFILE format: 0x%08X != 0x%08X",
         info.format, type_major | type_minor);
-      return -1;
+      return false;
     }
 
   sf_set_string (sndfile, SF_STR_SOFTWARE, PROGRAM_NAME);
@@ -184,8 +199,11 @@ audio_write_raw_file (
         sndfile, (sf_count_t) seek_to, SEEK_SET | SFM_WRITE);
       if (ret == -1 || ret != (int) seek_to)
         {
-          g_critical (
-            "seek error %d: %s", ret, sf_strerror (sndfile));
+          g_set_error (
+            error, Z_UTILS_AUDIO_ERROR,
+            Z_UTILS_AUDIO_ERROR_FAILED,
+            _ ("Seek error %d: %s"), ret, sf_strerror (NULL));
+          return false;
         }
     }
 
@@ -195,19 +213,26 @@ audio_write_raw_file (
     sf_writef_float (sndfile, buff, (sf_count_t) _nframes);
   if (count != (sf_count_t) nframes)
     {
-      g_critical (
-        "mismatch: expected %ld frames, got %ld\n"
-        "error: %s",
+      g_set_error (
+        error, Z_UTILS_AUDIO_ERROR, Z_UTILS_AUDIO_ERROR_FAILED,
+        "Mismatch: expected %ld frames, got %ld: %s",
         _nframes, count, sf_strerror (sndfile));
+      return false;
     }
 
   sf_write_sync (sndfile);
 
-  sf_close (sndfile);
+  if (sf_close (sndfile) != 0)
+    {
+      g_set_error (
+        error, Z_UTILS_AUDIO_ERROR, Z_UTILS_AUDIO_ERROR_FAILED,
+        "Failed to close sndfile: %s", sf_strerror (NULL));
+      return false;
+    }
 
   g_message ("wrote %zu frames to '%s'", count, filename);
 
-  return 0;
+  return true;
 }
 
 /**

@@ -513,8 +513,16 @@ queue_file_or_chord_preset (
       ZRegion * ar = audio_region_new (
         -1, file->abs_path, false, NULL, 0, NULL, 0, 0,
         &start_pos, 0, 0, 0);
-      track_add_region (
-        track, ar, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+      GError * err = NULL;
+      bool     success = track_add_region (
+            track, ar, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
+            &err);
+      if (!success)
+        {
+          HANDLE_ERROR (
+            err, "Failed to add region to track %s",
+            track->name);
+        }
 
       ArrangerObject * obj = (ArrangerObject *) ar;
       position_set_to_pos (&self->file_end_pos, &obj->end_pos);
@@ -595,21 +603,33 @@ queue_file_or_chord_preset (
                 track_get_name_hash (track), 0, 0, i);
               if (mr)
                 {
-                  track_add_region (
+                  err = NULL;
+                  bool success = track_add_region (
                     track, mr, NULL, 0,
                     /* name could already be generated
                      * based
                      * on the track name (if any) in
                      * the MIDI file */
                     mr->name ? F_NO_GEN_NAME : F_GEN_NAME,
-                    F_NO_PUBLISH_EVENTS);
-
-                  ArrangerObject * obj = (ArrangerObject *) mr;
-                  if (position_is_after (
-                        &obj->end_pos, &self->file_end_pos))
+                    F_NO_PUBLISH_EVENTS, &err);
+                  if (success)
                     {
-                      position_set_to_pos (
-                        &self->file_end_pos, &obj->end_pos);
+                      ArrangerObject * obj =
+                        (ArrangerObject *) mr;
+                      if (position_is_after (
+                            &obj->end_pos, &self->file_end_pos))
+                        {
+                          position_set_to_pos (
+                            &self->file_end_pos,
+                            &obj->end_pos);
+                        }
+                    }
+                  else
+                    {
+                      HANDLE_ERROR (
+                        err,
+                        "Failed to add region to track %s",
+                        track->name);
                     }
                 }
               else
@@ -672,10 +692,16 @@ queue_file_or_chord_preset (
                     &self->file_end_pos, &obj->end_pos);
                 }
 
-              track_add_region (
+              err = NULL;
+              bool success = track_add_region (
                 track, mr, NULL, 0,
                 mr->name ? F_NO_GEN_NAME : F_GEN_NAME,
-                F_NO_PUBLISH_EVENTS);
+                F_NO_PUBLISH_EVENTS, &err);
+              if (!success)
+                {
+                  HANDLE_ERROR_LITERAL (
+                    err, "Failed to add region to track");
+                }
 
             } /* endif chord preset */
 

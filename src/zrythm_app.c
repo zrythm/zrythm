@@ -411,19 +411,20 @@ on_load_project (
     "on_load_project called | open filename '%s' "
     "| opening template %d",
     ZRYTHM->open_filename, ZRYTHM->opening_template);
-  int ret = project_load (
-    ZRYTHM->open_filename, ZRYTHM->opening_template);
+  GError * err = NULL;
+  bool     success = project_load (
+        ZRYTHM->open_filename, ZRYTHM->opening_template, &err);
 
-  if (ret != 0)
+  if (!success)
     {
       char msg[600];
       sprintf (
         msg,
-        _ ("No project has been selected. %s "
-           "will now close."),
+        _ ("No project has been selected or project failed "
+           "to load. %s will now close."),
         PROGRAM_NAME);
       ui_show_error_message (true, msg);
-      exit (0);
+      exit (EXIT_SUCCESS);
     }
 
   g_action_group_activate_action (

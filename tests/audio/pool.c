@@ -57,17 +57,19 @@ test_remove_unused (void)
        * main project again */
       if (i == 1)
         {
-          char * dir = g_strdup (PROJECT->dir);
-          int    ret = project_save (
-               PROJECT, PROJECT->dir, F_NOT_BACKUP, 0,
-               F_NO_ASYNC);
-          g_assert_cmpint (ret, ==, 0);
+          char *   dir = g_strdup (PROJECT->dir);
+          GError * err = NULL;
+          bool     success = project_save (
+                PROJECT, PROJECT->dir, F_NOT_BACKUP, 0,
+                F_NO_ASYNC, &err);
+          g_assert_true (success);
 
           undo_manager_clear_stacks (UNDO_MANAGER, F_FREE);
 
-          ret = project_save (
-            PROJECT, PROJECT->dir, F_BACKUP, 0, F_NO_ASYNC);
-          g_assert_cmpint (ret, ==, 0);
+          success = project_save (
+            PROJECT, PROJECT->dir, F_BACKUP, 0, F_NO_ASYNC,
+            &err);
+          g_assert_true (success);
           g_assert_nonnull (PROJECT->backup_dir);
 
           /* free the project */
@@ -77,9 +79,9 @@ test_remove_unused (void)
           char * prj_filepath =
             g_build_filename (dir, PROJECT_FILE, NULL);
           g_free (dir);
-          ret = project_load (prj_filepath, false);
+          success = project_load (prj_filepath, false, &err);
+          g_assert_true (success);
           g_free (prj_filepath);
-          g_assert_cmpint (ret, ==, 0);
 
           test_helper_zrythm_cleanup ();
 

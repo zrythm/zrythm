@@ -23,16 +23,15 @@ test_empty_save_load (void)
 {
   test_helper_zrythm_init ();
 
-  int ret;
   g_assert_nonnull (PROJECT);
 
   /* save and reload the project */
   test_project_save_and_reload ();
 
   /* resave it */
-  ret = project_save (
-    PROJECT, PROJECT->dir, F_NOT_BACKUP, 0, F_NO_ASYNC);
-  g_assert_cmpint (ret, ==, 0);
+  bool success = project_save (
+    PROJECT, PROJECT->dir, F_NOT_BACKUP, 0, F_NO_ASYNC, NULL);
+  g_assert_true (success);
 
   test_helper_zrythm_cleanup ();
 }
@@ -42,7 +41,6 @@ test_save_load_with_data (void)
 {
   test_helper_zrythm_init ();
 
-  int ret;
   g_assert_nonnull (PROJECT);
 
   /* add some data */
@@ -50,8 +48,9 @@ test_save_load_with_data (void)
   test_project_rebootstrap_timeline (&p1, &p2);
 
   /* save the project */
-  ret = project_save (PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
-  g_assert_cmpint (ret, ==, 0);
+  bool success = project_save (
+    PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, NULL);
+  g_assert_true (success);
   char * prj_file =
     g_build_filename (PROJECT->dir, PROJECT_FILE, NULL);
 
@@ -72,8 +71,8 @@ test_save_load_with_data (void)
   track_clear (P_MASTER_TRACK);
 
   /* reload the project */
-  ret = project_load (prj_file, 0);
-  g_assert_cmpint (ret, ==, 0);
+  success = project_load (prj_file, 0, NULL);
+  g_assert_true (success);
 
   /* stop the engine */
   engine_resume (PROJECT->audio_engine, &state);
@@ -105,8 +104,9 @@ test_new_from_template (void)
   position_set_to_bar (&end, 3);
   ZRegion * r = midi_region_new (
     &start, &end, track_get_name_hash (track), 0, 0);
-  track_add_region (
-    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  bool success = track_add_region (
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
@@ -162,7 +162,8 @@ test_new_from_template (void)
   g_free_and_null (ZRYTHM->create_project_path);
   ZRYTHM->create_project_path =
     g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
-  project_load (filepath, true);
+  success = project_load (filepath, true, NULL);
+  g_assert_true (success);
   io_rmdir (orig_dir, true);
   g_free_and_null (orig_dir);
   g_free_and_null (filepath);
@@ -199,9 +200,9 @@ test_save_as_load_w_pool (void)
   g_assert_nonnull (orig_dir);
   char * new_dir =
     g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
-  int ret =
-    project_save (PROJECT, new_dir, false, false, F_NO_ASYNC);
-  g_assert_cmpint (ret, ==, 0);
+  bool success = project_save (
+    PROJECT, new_dir, false, false, F_NO_ASYNC, NULL);
+  g_assert_true (success);
 
   /* free the project */
   object_free_w_func_and_null (project_free, PROJECT);
@@ -209,8 +210,8 @@ test_save_as_load_w_pool (void)
   /* load the new one */
   char * filepath =
     g_build_filename (new_dir, "project.zpj", NULL);
-  ret = project_load (filepath, 0);
-  g_assert_cmpint (ret, ==, 0);
+  success = project_load (filepath, 0, NULL);
+  g_assert_true (success);
 
   io_rmdir (orig_dir, true);
 
@@ -239,9 +240,9 @@ test_save_backup_w_pool_and_plugins (void)
   char * dir = g_strdup (PROJECT->dir);
 
   /* save a project backup */
-  int ret = project_save (
-    PROJECT, PROJECT->dir, F_BACKUP, false, F_NO_ASYNC);
-  g_assert_cmpint (ret, ==, 0);
+  bool success = project_save (
+    PROJECT, PROJECT->dir, F_BACKUP, false, F_NO_ASYNC, NULL);
+  g_assert_true (success);
   g_assert_nonnull (PROJECT->backup_dir);
   char * backup_dir = g_strdup (PROJECT->backup_dir);
 
@@ -251,9 +252,9 @@ test_save_backup_w_pool_and_plugins (void)
   /* load the backup directly */
   char * filepath =
     g_build_filename (backup_dir, PROJECT_FILE, NULL);
-  ret = project_load (filepath, false);
+  success = project_load (filepath, false, NULL);
+  g_assert_true (success);
   g_free (filepath);
-  g_assert_cmpint (ret, ==, 0);
 
   /* undo history not saved with backups anymore */
 #if 0
@@ -269,9 +270,9 @@ test_save_backup_w_pool_and_plugins (void)
    * behavior from UI) */
   ZRYTHM->open_newer_backup = true;
   filepath = g_build_filename (dir, "project.zpj", NULL);
-  ret = project_load (filepath, false);
+  success = project_load (filepath, false, NULL);
+  g_assert_true (success);
   g_free (filepath);
-  g_assert_cmpint (ret, ==, 0);
 
   g_free (backup_dir);
   g_free (dir);

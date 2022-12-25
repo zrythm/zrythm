@@ -571,9 +571,10 @@ test_move_audio_region_and_lower_samplerate (void)
   for (int i = 0; i < 4; i++)
     {
       /* save the project */
-      int ret = project_save (
-        PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC);
-      g_assert_cmpint (ret, ==, 0);
+      GError * err = NULL;
+      bool     success = project_save (
+            PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, &err);
+      g_assert_true (success);
       char * prj_file =
         g_build_filename (PROJECT->dir, PROJECT_FILE, NULL);
 
@@ -584,7 +585,8 @@ test_move_audio_region_and_lower_samplerate (void)
       object_free_w_func_and_null (project_free, PROJECT);
 
       /* reload */
-      ret = project_load (prj_file, 0);
+      success = project_load (prj_file, 0, &err);
+      g_assert_true (success);
     }
 
   test_helper_zrythm_cleanup ();
@@ -1389,8 +1391,9 @@ test_edit_marker (void)
   ArrangerObject * marker_obj = (ArrangerObject *) marker;
   arranger_object_select (
     marker_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
-  arranger_object_add_to_project (
-    marker_obj, F_NO_PUBLISH_EVENTS);
+  bool success = arranger_object_add_to_project (
+    marker_obj, F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
   arranger_selections_action_perform_create (
     TL_SELECTIONS, NULL);
 
@@ -1477,9 +1480,11 @@ test_split (void)
   position_set_to_bar (&end_pos, 4);
   ZRegion *        r = chord_region_new (&pos, &end_pos, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
-  track_add_region (
-    P_CHORD_TRACK, r, NULL, -1, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+  GError *         err = NULL;
+  bool             success = track_add_region (
+                P_CHORD_TRACK, r, NULL, -1, F_GEN_NAME,
+                F_NO_PUBLISH_EVENTS, &err);
+  g_assert_true (success);
   arranger_object_select (
     r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
@@ -1568,8 +1573,10 @@ test_split_large_audio_file (void)
     track_name_hash, AUDIO_REGION_LANE, 0);
   AudioClip * clip = audio_region_get_clip (r);
   g_assert_cmpuint (clip->num_frames, ==, 79380000);
-  track_add_region (
-    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  GError * err = NULL;
+  bool     success = track_add_region (
+        track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
+  g_assert_true (success);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
@@ -1745,9 +1752,11 @@ test_duplicate_midi_regions_to_track_below (void)
   ZRegion * r1 = midi_region_new (
     &pos, &end_pos, track_get_name_hash (midi_track), 0,
     lane->num_regions);
-  track_add_region (
-    midi_track, r1, NULL, lane->pos, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+  GError * err = NULL;
+  bool     success = track_add_region (
+        midi_track, r1, NULL, lane->pos, F_GEN_NAME,
+        F_NO_PUBLISH_EVENTS, &err);
+  g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) r1, F_SELECT, F_NO_APPEND,
     F_PUBLISH_EVENTS);
@@ -1760,9 +1769,10 @@ test_duplicate_midi_regions_to_track_below (void)
   ZRegion * r2 = midi_region_new (
     &pos, &end_pos, track_get_name_hash (midi_track), 0,
     lane->num_regions);
-  track_add_region (
+  success = track_add_region (
     midi_track, r2, NULL, lane->pos, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    F_NO_PUBLISH_EVENTS, &err);
+  g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) r2, F_SELECT, F_NO_APPEND,
     F_PUBLISH_EVENTS);
@@ -1835,9 +1845,11 @@ test_midi_region_split (void)
   ZRegion * r = midi_region_new (
     &pos, &end_pos, track_get_name_hash (midi_track), 0,
     lane->num_regions);
-  track_add_region (
-    midi_track, r, NULL, lane->pos, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+  GError * err = NULL;
+  bool     success = track_add_region (
+        midi_track, r, NULL, lane->pos, F_GEN_NAME,
+        F_NO_PUBLISH_EVENTS, &err);
+  g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
     F_PUBLISH_EVENTS);
@@ -2205,7 +2217,10 @@ test_delete_chord_objects (void)
   position_set_to_bar (&pos1, 1);
   position_set_to_bar (&pos2, 4);
   ZRegion * r = chord_region_new (&pos1, &pos2, 0);
-  track_add_region (P_CHORD_TRACK, r, NULL, 0, F_GEN_NAME, 0);
+  GError *  err = NULL;
+  bool      success = track_add_region (
+         P_CHORD_TRACK, r, NULL, 0, F_GEN_NAME, 0, &err);
+  g_assert_true (success);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
@@ -2272,7 +2287,10 @@ test_delete_automation_points (void)
   ZRegion * r = automation_region_new (
     &pos1, &pos2, track_get_name_hash (P_MASTER_TRACK),
     at->index, 0);
-  track_add_region (P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0);
+  GError * err = NULL;
+  bool     success = track_add_region (
+        P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0, &err);
+  g_assert_true (success);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
@@ -2376,9 +2394,10 @@ test_undo_moving_midi_region_to_other_lane (void)
       r = midi_region_new (
         &start, &end, track_get_name_hash (midi_track),
         lane_pos, idx_inside_lane);
-      track_add_region (
+      bool success = track_add_region (
         midi_track, r, NULL, lane_pos, F_GEN_NAME,
-        F_NO_PUBLISH_EVENTS);
+        F_NO_PUBLISH_EVENTS, NULL);
+      g_assert_true (success);
       arranger_object_select (
         (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
         F_NO_PUBLISH_EVENTS);
@@ -2420,9 +2439,10 @@ test_delete_multiple_regions (void)
       ZRegion * r1 = midi_region_new (
         &pos, &end_pos, track_get_name_hash (midi_track), 0,
         lane->num_regions);
-      track_add_region (
+      bool success = track_add_region (
         midi_track, r1, NULL, lane->pos, F_GEN_NAME,
-        F_NO_PUBLISH_EVENTS);
+        F_NO_PUBLISH_EVENTS, NULL);
+      g_assert_true (success);
       arranger_object_select (
         (ArrangerObject *) r1, F_SELECT, F_NO_APPEND,
         F_NO_PUBLISH_EVENTS);
@@ -2481,9 +2501,10 @@ test_split_and_merge_midi_unlooped (void)
   ZRegion * r1 = midi_region_new (
     &pos, &end_pos, track_get_name_hash (midi_track), 0,
     lane->num_regions);
-  track_add_region (
+  bool success = track_add_region (
     midi_track, r1, NULL, lane->pos, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) r1, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);
@@ -3040,8 +3061,11 @@ test_delete_midi_notes (void)
   ZRegion * r = midi_region_new (
     &start, &end, track_get_name_hash (midi_track), 0, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
-  track_add_region (
-    midi_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  GError *         err = NULL;
+  bool             success = track_add_region (
+                midi_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
+                &err);
+  g_assert_true (success);
   arranger_object_select (
     r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
@@ -3124,7 +3148,9 @@ test_cut_automation_region (void)
   ZRegion * r = automation_region_new (
     &pos1, &pos2, track_get_name_hash (P_MASTER_TRACK),
     at->index, 0);
-  track_add_region (P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0);
+  bool success = track_add_region (
+    P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0, NULL);
+  g_assert_true (success);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
@@ -3193,8 +3219,10 @@ test_copy_and_move_automation_regions (void)
   ZRegion * r = automation_region_new (
     &pos1, &pos2, track_get_name_hash (P_MASTER_TRACK),
     fader_at->index, 0);
-  track_add_region (
-    P_MASTER_TRACK, r, fader_at, 0, F_GEN_NAME, 0);
+  GError * err = NULL;
+  bool     success = track_add_region (
+        P_MASTER_TRACK, r, fader_at, 0, F_GEN_NAME, 0, &err);
+  g_assert_true (success);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
     (ArrangerObject *) r);
