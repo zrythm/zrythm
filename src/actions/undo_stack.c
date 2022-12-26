@@ -392,6 +392,7 @@ undo_stack_get_plugins (UndoStack * self, GPtrArray * arr)
 void
 undo_stack_clear (UndoStack * self, bool free)
 {
+  g_debug ("clearing undo stack...");
   while (!undo_stack_is_empty (self))
     {
       UndoableAction * ua = undo_stack_pop (self);

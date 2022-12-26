@@ -3376,6 +3376,23 @@ DEFINE_SIMPLE (activate_plugin_inspect)
 }
 
 static void
+delete_plugins (bool clear_stacks)
+{
+  GError * err = NULL;
+  bool     success = mixer_selections_action_perform_delete (
+        MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, &err);
+  if (success && clear_stacks)
+    {
+      undo_manager_clear_stacks (UNDO_MANAGER, F_FREE);
+      EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE, NULL);
+    }
+  else if (!success)
+    {
+      HANDLE_ERROR (err, "%s", _ ("Failed to delete plugins"));
+    }
+}
+
+static void
 on_delete_plugins_response (
   GtkDialog * dialog,
   gint        response_id,
@@ -3385,19 +3402,7 @@ on_delete_plugins_response (
     {
     case GTK_RESPONSE_YES:
       {
-        GError * err = NULL;
-        bool ret = mixer_selections_action_perform_delete (
-          MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, &err);
-        if (ret)
-          {
-            undo_manager_clear_stacks (UNDO_MANAGER, F_FREE);
-            EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE, NULL);
-          }
-        else
-          {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to delete plugins"));
-          }
+        delete_plugins (true);
       }
       break;
     default:
@@ -3434,7 +3439,7 @@ DEFINE_SIMPLE (activate_mixer_selections_delete)
       return;
     }
 
-  on_delete_plugins_response (NULL, GTK_RESPONSE_YES, NULL);
+  delete_plugins (false);
 }
 
 DEFINE_SIMPLE (activate_reset_fader)
