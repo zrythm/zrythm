@@ -231,17 +231,17 @@ find_and_queue_metronome (
           /* offset of beat pos from start pos */
           signed_frame_t beat_offset_long =
             beat_pos.frames - start_pos->frames;
-          g_return_if_fail (beat_offset_long >= 0);
+          z_return_if_fail_cmp (beat_offset_long, >=, 0);
 
           /* add local offset */
           signed_frame_t metronome_offset_long =
             beat_offset_long + (signed_frame_t) loffset;
-          g_return_if_fail (metronome_offset_long >= 0);
+          z_return_if_fail_cmp (metronome_offset_long, >=, 0);
 
           nframes_t metronome_offset =
             (nframes_t) metronome_offset_long;
-          g_return_if_fail (
-            metronome_offset < AUDIO_ENGINE->block_length);
+          z_return_if_fail_cmp (
+            metronome_offset, <, AUDIO_ENGINE->block_length);
           sample_processor_queue_metronome (
             SAMPLE_PROCESSOR, METRONOME_TYPE_NORMAL,
             metronome_offset);
