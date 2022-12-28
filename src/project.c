@@ -2001,10 +2001,14 @@ project_save (
         F_NO_FOLLOW_SYMLINKS, F_RECURSIVE);
     }
 
-  /* TODO cleanup unused plugin states (or do it
-   * when executing mixer/tracklist selection
-   * actions) */
-  cleanup_plugin_state_dirs (data);
+  if (!is_backup)
+    {
+      /* cleanup unused plugin states (or do it when executing
+       * mixer/tracklist selection actions) */
+      cleanup_plugin_state_dirs (data);
+    }
+
+  /* TODO verify all plugin states exist */
 
   if (async)
     {

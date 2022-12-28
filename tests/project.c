@@ -272,6 +272,76 @@ test_save_backup_w_pool_and_plugins (void)
   filepath = g_build_filename (dir, "project.zpj", NULL);
   success = project_load (filepath, false, NULL);
   g_assert_true (success);
+
+  g_free (filepath);
+  g_free (backup_dir);
+  g_free (dir);
+
+  test_helper_zrythm_cleanup ();
+}
+
+/**
+ * Load a project with a plugin after saving a backup (there
+ * was a bug causing plugin states to be deleted when saving
+ * backups).
+ */
+static void
+test_load_with_plugin_after_backup (void)
+{
+  test_helper_zrythm_init ();
+
+  /* add a plugin */
+  int track_pos =
+    test_plugin_manager_create_tracks_from_plugin (
+      COMPRESSOR_BUNDLE, COMPRESSOR_URI, false, true, 1);
+  Track * track = TRACKLIST->tracks[track_pos];
+  track_select (
+    track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+
+  /* add an audio file too to test the pool as well */
+  char * audio_file_path =
+    g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
+  Position pos;
+  position_init (&pos);
+  SupportedFile * file =
+    supported_file_new_from_path (audio_file_path);
+  track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, file, &pos, TRACKLIST->num_tracks,
+    1, NULL);
+  object_free_w_func_and_null (supported_file_free, file);
+
+  char * dir = g_strdup (PROJECT->dir);
+
+  /* save the project normally */
+  bool success = project_save (
+    PROJECT, PROJECT->dir, F_NOT_BACKUP, false, F_NO_ASYNC,
+    NULL);
+  g_assert_true (success);
+
+  /* save a project backup */
+  success = project_save (
+    PROJECT, PROJECT->dir, F_BACKUP, false, F_NO_ASYNC, NULL);
+  g_assert_true (success);
+  g_assert_nonnull (PROJECT->backup_dir);
+  char * backup_dir = g_strdup (PROJECT->backup_dir);
+
+  /* free the project */
+  object_free_w_func_and_null (project_free, PROJECT);
+
+  /* attempt to open the normal project (not backup) */
+  ZRYTHM->open_newer_backup = false;
+  char * filepath =
+    g_build_filename (dir, "project.zpj", NULL);
+  success = project_load (filepath, false, NULL);
+  g_assert_true (success);
+
+  /* free the project */
+  object_free_w_func_and_null (project_free, PROJECT);
+
+  /* load the backup directly */
+  filepath = g_build_filename (backup_dir, PROJECT_FILE, NULL);
+  success = project_load (filepath, false, NULL);
+  g_assert_true (success);
   g_free (filepath);
 
   g_free (backup_dir);
@@ -302,14 +372,17 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/project/"
 
   g_test_add_func (
+    TEST_PREFIX "test load with plugin after backup",
+    (GTestFunc) test_load_with_plugin_after_backup);
+  g_test_add_func (
+    TEST_PREFIX "test save backup w pool and plugins",
+    (GTestFunc) test_save_backup_w_pool_and_plugins);
+  g_test_add_func (
     TEST_PREFIX "test new from template",
     (GTestFunc) test_new_from_template);
   g_test_add_func (
     TEST_PREFIX "test load v1.0.0-beta.2.1.1",
     (GTestFunc) test_load_v1_0_0_beta_2_1_1);
-  g_test_add_func (
-    TEST_PREFIX "test save backup w pool and plugins",
-    (GTestFunc) test_save_backup_w_pool_and_plugins);
   g_test_add_func (
     TEST_PREFIX "test empty save load",
     (GTestFunc) test_empty_save_load);

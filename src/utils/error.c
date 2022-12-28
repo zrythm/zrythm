@@ -23,8 +23,15 @@ error_handle_prv (GError * err, const char * format, ...)
       char * str = g_strdup_printf (
         _ ("%s\n---Backtrace---\n%s"), tmp, err->message);
       g_free (tmp);
-      ui_show_message_printf (
-        GTK_MESSAGE_ERROR, true, "%s", str);
+      if (ZRYTHM_HAVE_UI)
+        {
+          ui_show_message_printf (
+            GTK_MESSAGE_ERROR, true, "%s", str);
+        }
+      else
+        {
+          g_warning ("%s", str);
+        }
       g_free (str);
       g_error_free (err);
     }
