@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/midi_mapping_action.h"
@@ -62,7 +62,7 @@ midi_mapping_action_new_bind (
     {
       self->dev_port = ext_port_clone (device_port);
     }
-  self->dest_port_id = dest_port->id;
+  self->dest_port_id = port_identifier_clone (&dest_port->id);
 
   return ua;
 }
@@ -90,8 +90,11 @@ midi_mapping_action_clone (const MidiMappingAction * src)
   self->parent_instance = src->parent_instance;
 
   self->idx = src->idx;
-  port_identifier_copy (
-    &self->dest_port_id, &src->dest_port_id);
+  if (src->dest_port_id)
+    {
+      self->dest_port_id =
+        port_identifier_clone (src->dest_port_id);
+    }
   if (src->dev_port)
     {
       self->dev_port = ext_port_clone (src->dev_port);
@@ -145,7 +148,7 @@ bind_or_unbind (MidiMappingAction * self, bool bind)
   if (bind)
     {
       Port * port =
-        port_find_from_identifier (&self->dest_port_id);
+        port_find_from_identifier (self->dest_port_id);
       self->idx = MIDI_MAPPINGS->num_mappings;
       midi_mappings_bind_device (
         MIDI_MAPPINGS, self->buf, self->dev_port, port,
@@ -166,7 +169,10 @@ bind_or_unbind (MidiMappingAction * self, bool bind)
           self->dev_port =
             ext_port_clone (mapping->device_port);
         }
-      self->dest_port_id = mapping->dest_id;
+      object_free_w_func_and_null (
+        port_identifier_free, self->dest_port_id);
+      self->dest_port_id =
+        port_identifier_clone (&mapping->dest_id);
       midi_mappings_unbind (
         MIDI_MAPPINGS, self->idx, F_NO_PUBLISH_EVENTS);
     }

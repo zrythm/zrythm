@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __UNDO_MIDI_MAPPING_ACTION_H__
@@ -44,7 +44,7 @@ typedef struct MidiMappingAction
   /** Action type. */
   MidiMappingActionType type;
 
-  PortIdentifier dest_port_id;
+  PortIdentifier * dest_port_id;
 
   ExtPort * dev_port;
 
@@ -59,7 +59,7 @@ static const cyaml_schema_field_t
       parent_instance,
       undoable_action_fields_schema),
     YAML_FIELD_INT (MidiMappingAction, idx),
-    YAML_FIELD_MAPPING_EMBEDDED (
+    YAML_FIELD_MAPPING_PTR_OPTIONAL (
       MidiMappingAction,
       dest_port_id,
       port_identifier_fields_schema),

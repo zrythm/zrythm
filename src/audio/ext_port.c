@@ -414,9 +414,9 @@ ext_port_new_from_jack_port (jack_port_t * jport)
 
   char * aliases[2];
   aliases[0] =
-    (char *) malloc ((size_t) jack_port_name_size ());
+    (char *) g_malloc0 ((size_t) jack_port_name_size ());
   aliases[1] =
-    (char *) malloc ((size_t) jack_port_name_size ());
+    (char *) g_malloc0 ((size_t) jack_port_name_size ());
   self->num_aliases = jack_port_get_aliases (jport, aliases);
 
   if (self->num_aliases == 2)
@@ -425,7 +425,22 @@ ext_port_new_from_jack_port (jack_port_t * jport)
       self->alias1 = g_strdup (aliases[0]);
     }
   else if (self->num_aliases == 1)
-    self->alias1 = g_strdup (aliases[0]);
+    {
+      /* jack (or pipewire) behaves weird when num_aliases is
+       * 1 (it only puts the alias in the 2nd string) */
+      if (strlen (aliases[0]) > 0)
+        {
+          self->alias1 = g_strdup (aliases[0]);
+        }
+      else if (strlen (aliases[1]) > 0)
+        {
+          self->alias1 = g_strdup (aliases[1]);
+        }
+      else
+        {
+          self->num_aliases = 0;
+        }
+    }
 
   free (aliases[0]);
   free (aliases[1]);
@@ -833,9 +848,9 @@ ext_port_clone (ExtPort * ext_port)
     newport->full_name = g_strdup (ext_port->full_name);
   if (ext_port->short_name)
     newport->short_name = g_strdup (ext_port->short_name);
-  if (ext_port->alias1)
+  if (ext_port->num_aliases >= 1)
     newport->alias1 = g_strdup (ext_port->alias1);
-  if (ext_port->alias2)
+  if (ext_port->num_aliases >= 2)
     newport->alias2 = g_strdup (ext_port->alias2);
   newport->num_aliases = ext_port->num_aliases;
   newport->type = ext_port->type;
