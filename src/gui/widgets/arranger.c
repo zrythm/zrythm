@@ -5378,7 +5378,7 @@ on_motion (
     }
   if (self->hovered_object != obj)
     {
-      g_return_if_fail (
+      g_warn_if_fail (
         !self->hovered_object
         || IS_ARRANGER_OBJECT (self->hovered_object));
       self->hovered_object = obj;
