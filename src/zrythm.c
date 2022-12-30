@@ -279,6 +279,16 @@ zrythm_get_system_info (void)
     gstr, "DESKTOP_SESSION=%s\n",
     g_getenv ("DESKTOP_SESSION"));
 
+  g_string_append (gstr, "\n");
+
+#ifdef HAVE_CARLA
+  g_string_append_printf (
+    gstr, "Carla version: %s\n", CARLA_VERSION_STRING);
+#endif
+  g_string_append_printf (
+    gstr, "GTK version: %u.%u.%u\n", gtk_get_major_version (),
+    gtk_get_minor_version (), gtk_get_micro_version ());
+
   char * str = g_string_free (gstr, false);
 
   return str;

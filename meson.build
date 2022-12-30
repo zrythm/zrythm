@@ -1086,6 +1086,7 @@ if have_carla
         'carla-discovery-native').full_path(),
     install_dir: zrythm_libdir / 'carla')
   cdata.set('HAVE_CARLA', 1)
+  cdata.set_quoted('CARLA_VERSION_STRING', carla_host_plugin_dep.version ())
 
   # install discovery & bridge for 32-bit vst's on
   # windows
