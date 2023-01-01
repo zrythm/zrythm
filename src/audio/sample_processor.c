@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/audio_region.h"
@@ -149,11 +149,10 @@ sample_processor_remove_sample_playback (
 }
 
 /**
- * Process the samples for the given number of
- * frames.
+ * Process the samples for the given number of frames.
  *
- * @param cycle_offset The local offset in the
- *   processing cycle.
+ * @param offset The local offset in the processing cycle.
+ * @param nframes The number of frames to process in this call.
  */
 void
 sample_processor_process (
@@ -202,9 +201,10 @@ sample_processor_process (
           for (j = 0; j < max_frames; j++)
             {
               nframes_t buf_offset = j + cycle_offset;
-              z_return_if_fail_cmp (buf_offset, <, nframes)
-                z_return_if_fail_cmp (
-                  sp->offset, <, sp->buf_size);
+              z_return_if_fail_cmp (
+                buf_offset, <, AUDIO_ENGINE->block_length);
+              z_return_if_fail_cmp (
+                sp->offset, <, sp->buf_size);
               if (sp->channels == 1)
                 {
                   l[buf_offset] +=

@@ -362,8 +362,7 @@ typedef struct AudioEngine
   /** Current MIDI backend. */
   MidiBackend midi_backend;
 
-  /** Audio buffer size (block length), per
-   * channel. */
+  /** Audio buffer size (block length), per channel. */
   nframes_t block_length;
 
   /** Size of MIDI port buffers in bytes. */

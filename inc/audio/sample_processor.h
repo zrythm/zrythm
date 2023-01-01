@@ -119,11 +119,10 @@ sample_processor_prepare_process (
   const nframes_t   nframes);
 
 /**
- * Process the samples for the given number of
- * frames.
+ * Process the samples for the given number of frames.
  *
- * @param offset The local offset in the processing
- *   cycle.
+ * @param offset The local offset in the processing cycle.
+ * @param nframes The number of frames to process in this call.
  */
 void
 sample_processor_process (
