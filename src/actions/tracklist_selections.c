@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/tracklist_selections.h"
@@ -18,6 +18,7 @@
 #include "settings/settings.h"
 #include "utils/algorithms.h"
 #include "utils/arrays.h"
+#include "utils/debug.h"
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/io.h"
@@ -1916,33 +1917,53 @@ do_or_undo (
   bool                        _do,
   GError **                   error)
 {
+  bool ret = -1;
   switch (self->type)
     {
     case TRACKLIST_SELECTIONS_ACTION_COPY:
     case TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE:
-      return do_or_undo_move_or_copy (
+      ret = do_or_undo_move_or_copy (
         self, _do, true,
         self->type == TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE,
         error);
+      break;
     case TRACKLIST_SELECTIONS_ACTION_CREATE:
-      return do_or_undo_create_or_delete (
-        self, _do, true, error);
+      ret =
+        do_or_undo_create_or_delete (self, _do, true, error);
+      break;
     case TRACKLIST_SELECTIONS_ACTION_DELETE:
-      return do_or_undo_create_or_delete (
-        self, _do, false, error);
+      ret =
+        do_or_undo_create_or_delete (self, _do, false, error);
+      break;
     case TRACKLIST_SELECTIONS_ACTION_EDIT:
-      return do_or_undo_edit (self, _do, error);
+      ret = do_or_undo_edit (self, _do, error);
+      break;
     case TRACKLIST_SELECTIONS_ACTION_MOVE:
     case TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE:
     case TRACKLIST_SELECTIONS_ACTION_PIN:
     case TRACKLIST_SELECTIONS_ACTION_UNPIN:
-      return do_or_undo_move_or_copy (
+      ret = do_or_undo_move_or_copy (
         self, _do, false,
         self->type == TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE,
         error);
+      break;
+    default:
+      g_return_val_if_reached (-1);
+      break;
     }
 
-  g_return_val_if_reached (-1);
+  if (ZRYTHM_TESTING)
+    {
+      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+        {
+          Track * track = TRACKLIST->tracks[i];
+          z_return_val_if_fail_cmp (
+            (size_t) track->num_lanes, <=, track->lanes_size,
+            -1);
+        }
+    }
+
+  return ret;
 }
 
 int

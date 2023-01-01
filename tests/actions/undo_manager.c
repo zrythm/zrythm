@@ -181,14 +181,14 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/undo manager/"
 
   g_test_add_func (
+    TEST_PREFIX "test perform many actions",
+    (GTestFunc) test_perform_many_actions);
+  g_test_add_func (
     TEST_PREFIX "test multi actions",
     (GTestFunc) test_multi_actions);
   g_test_add_func (
     TEST_PREFIX "test fill stack",
     (GTestFunc) test_fill_stack);
-  g_test_add_func (
-    TEST_PREFIX "test perform many actions",
-    (GTestFunc) test_perform_many_actions);
 
   return g_test_run ();
 }

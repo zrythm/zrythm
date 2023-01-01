@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
@@ -3338,6 +3338,68 @@ test_copy_and_move_automation_regions (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_move_region_from_lane_3_to_lane_1 (void)
+{
+  test_helper_zrythm_init ();
+
+  Position pos, end_pos;
+  position_init (&pos);
+  Track * track = track_create_with_action (
+    TRACK_TYPE_MIDI, NULL, NULL, &pos, TRACKLIST->num_tracks,
+    1, NULL);
+  TrackLane * lane = track->lanes[0];
+  g_assert_cmpint (lane->num_regions, ==, 0);
+
+  /* create region */
+  position_set_to_bar (&pos, 2);
+  position_set_to_bar (&end_pos, 4);
+  ZRegion * r1 = midi_region_new (
+    &pos, &end_pos, track_get_name_hash (track), 0,
+    lane->num_regions);
+  bool success = track_add_region (
+    track, r1, NULL, lane->pos, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
+  arranger_object_select (
+    (ArrangerObject *) r1, F_SELECT, F_NO_APPEND,
+    F_PUBLISH_EVENTS);
+  arranger_selections_action_perform_create (
+    TL_SELECTIONS, NULL);
+  g_assert_cmpint (lane->num_regions, ==, 1);
+
+  /* move to lane 3 */
+  success = arranger_selections_action_perform_move_timeline (
+    TL_SELECTIONS, 0, 0, 2, NULL, F_NOT_ALREADY_MOVED, NULL);
+  g_assert_true (success);
+  g_assert_cmpint (lane->num_regions, ==, 0);
+  lane = track->lanes[2];
+  g_assert_cmpint (lane->num_regions, ==, 1);
+
+  /* duplicate track */
+  success = tracklist_selections_action_perform_copy (
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
+    track->pos + 1, NULL);
+  g_assert_true (success);
+
+  /* move new region to lane 1 */
+  track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, true);
+  g_assert_cmpint (track->num_lanes, <=, track->lanes_size);
+  lane = track->lanes[2];
+  r1 = lane->regions[0];
+  arranger_object_select (
+    (ArrangerObject *) r1, F_SELECT, F_NO_APPEND,
+    F_PUBLISH_EVENTS);
+  success = arranger_selections_action_perform_move_timeline (
+    TL_SELECTIONS, 0, 0, -2, NULL, F_NOT_ALREADY_MOVED, NULL);
+  g_assert_true (success);
+  lane = track->lanes[0];
+  g_assert_cmpint (lane->num_regions, ==, 1);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char * argv[])
 {
@@ -3345,6 +3407,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test move region from lane 3 to lane 1",
+    (GTestFunc) test_move_region_from_lane_3_to_lane_1);
   g_test_add_func (
     TEST_PREFIX "test copy and move automation regions",
     (GTestFunc) test_copy_and_move_automation_regions);

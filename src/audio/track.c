@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdlib.h>
@@ -85,6 +85,7 @@ track_init_loaded (
       lane = self->lanes[j];
       track_lane_init_loaded (lane, self);
     }
+  self->lanes_size = self->num_lanes;
   ScaleObject * scale;
   for (int i = 0; i < self->num_scales; i++)
     {
@@ -481,8 +482,9 @@ track_clone (Track * track, GError ** error)
   /* --- copy objects --- */
 
   new_track->num_lanes = track->num_lanes;
+  new_track->lanes_size = new_track->num_lanes;
   new_track->lanes = g_realloc_n (
-    new_track->lanes, (size_t) track->num_lanes,
+    new_track->lanes, new_track->lanes_size,
     sizeof (TrackLane *));
   for (int j = 0; j < track->num_lanes; j++)
     {

@@ -148,26 +148,23 @@ _array_dynamic_swap (
 }
 
 /**
- * Doubles the size of the array, for dynamically
- * allocated arrays.
+ * Doubles the size of the array, for dynamically allocated
+ * arrays.
  *
- * If \ref max_sz is zero, this will reallocate the
- * current array to \ref count * 2.
+ * If \ref max_sz is zero, this will reallocate the current
+ * array to \ref count * 2.
  *
- * If \ref max_sz is less than or equal to \ref
- * count, this will reallocate the current array to
- * \ref count * 2 and also memset the new memory to
- * 0.
+ * If \ref max_sz is equal to \ref count, this will reallocate
+ * the current array to \ref count * 2 and also memset the new
+ * memory to 0.
  *
- * Calling this function with other values is
- * invalid.
+ * Calling this function with other values is invalid.
  *
  * @param arr The array.
  * @param count The current number of elements.
- * @param max_sz The current max array size. The
- *   new size will be written to it.
- * @param el_sz The size of one element in the
- *   array.
+ * @param max_sz The current max array size. The new size will
+ *   be written to it.
+ * @param el_sz The size of one element in the array.
  */
 void
 _array_double_size_if_full (
