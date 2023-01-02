@@ -689,8 +689,15 @@ on_export (ExportDialogWidget * self, bool audio)
     }
 
   /* make exports dir if not there yet */
-  char * exports_dir = get_exports_dir (self);
-  io_mkdir (exports_dir);
+  char *   exports_dir = get_exports_dir (self);
+  GError * err = NULL;
+  bool     success = io_mkdir (exports_dir, &err);
+  if (!success)
+    {
+      ui_show_error_message (
+        false, "Failed to create exports directory");
+      return;
+    }
   g_free (exports_dir);
 
   if (export_stems)

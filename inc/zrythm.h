@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -439,12 +439,16 @@ char *
 zrythm_get_user_dir (bool force_default);
 
 /**
- * Initializes/creates the default dirs/files in
- * the user directory.
+ * Initializes/creates the default dirs/files in the user
+ * directory.
+ *
+ * @return Whether successful.
  */
 NONNULL
-void
-zrythm_init_user_dirs_and_files (Zrythm * self);
+bool
+zrythm_init_user_dirs_and_files (
+  Zrythm *  self,
+  GError ** error);
 
 /**
  * Initializes the array of project templates.

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -30,6 +30,7 @@
 #include "utils/cairo.h"
 #include "utils/curl.h"
 #include "utils/env.h"
+#include "utils/error.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/localization.h"
@@ -638,19 +639,28 @@ zrythm_get_dir (ZrythmDirType type)
 }
 
 /**
- * Initializes/creates the default dirs/files in
- * the user directory.
+ * Initializes/creates the default dirs/files in the user
+ * directory.
+ *
+ * @return Whether successful.
  */
-NONNULL
-void
-zrythm_init_user_dirs_and_files (Zrythm * self)
+bool
+zrythm_init_user_dirs_and_files (Zrythm * self, GError ** error)
 {
   g_message ("initing dirs and files");
-  char * dir;
+  char *   dir;
+  bool     success;
+  GError * err = NULL;
 
 #define MK_USER_DIR(x) \
   dir = zrythm_get_dir (ZRYTHM_DIR_USER_##x); \
-  io_mkdir (dir); \
+  success = io_mkdir (dir, &err); \
+  if (!success) \
+    { \
+      PROPAGATE_PREFIXED_ERROR ( \
+        error, err, "Failed to create directory %s", dir); \
+      return false; \
+    } \
   g_free (dir)
 
   MK_USER_DIR (TOP);
@@ -663,6 +673,8 @@ zrythm_init_user_dirs_and_files (Zrythm * self)
   MK_USER_DIR (GDB);
 
 #undef MK_USER_DIR
+
+  return true;
 }
 
 /**

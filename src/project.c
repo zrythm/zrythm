@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -335,9 +335,13 @@ set_datetime_str (Project * self)
 /**
  * Sets the next available backup dir to use for
  * saving a backup during this call.
+ *
+ * @return Whether successful.
  */
-static void
-set_and_create_next_available_backup_dir (Project * self)
+static bool
+set_and_create_next_available_backup_dir (
+  Project * self,
+  GError ** error)
 {
   if (self->backup_dir)
     g_free (self->backup_dir);
@@ -370,7 +374,17 @@ set_and_create_next_available_backup_dir (Project * self)
   while (file_exists (self->backup_dir));
   g_free (backups_dir);
 
-  io_mkdir (self->backup_dir);
+  GError * err = NULL;
+  bool     success = io_mkdir (self->backup_dir, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, _ ("Failed to create backup directory %s"),
+        self->backup_dir);
+      return false;
+    }
+
+  return true;
 }
 
 /**
@@ -817,7 +831,10 @@ project_get_existing_yaml (
  * @return Whether successful.
  */
 static bool
-load (const char * filename, const int is_template)
+load (
+  const char * filename,
+  const int    is_template,
+  GError **    error)
 {
   g_return_val_if_fail (filename, -1);
   char * dir = io_get_dir (filename);
@@ -899,8 +916,8 @@ load (const char * filename, const int is_template)
     project_get_existing_yaml (PROJECT, use_backup, &err);
   if (!yaml)
     {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to get existing yaml"));
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, _ ("Failed to get existing yaml"));
       return false;
     }
 
@@ -908,8 +925,8 @@ load (const char * filename, const int is_template)
     string_get_regex_group (yaml, "\nversion: (.*)\n", 1);
   if (!prj_ver_str)
     {
-      HANDLE_ERROR (
-        err, "%s", _ ("Invalid project: missing version"));
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, _ ("Invalid project: missing version"));
       return false;
     }
   g_message ("project from yaml (version %s)...", prj_ver_str);
@@ -936,8 +953,8 @@ load (const char * filename, const int is_template)
     (long) (time_after - time_before) / 1000);
   if (!self)
     {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to deserialize project YAML"));
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, _ ("Failed to deserialize project YAML"));
       free (yaml);
       return false;
     }
@@ -1006,12 +1023,24 @@ load (const char * filename, const int is_template)
       char * new_plugins_dir = g_build_filename (
         ZRYTHM->create_project_path, PROJECT_PLUGINS_DIR,
         NULL);
-      io_copy_dir (
+      bool success = io_copy_dir (
         new_pool_dir, prev_pool_dir, F_NO_FOLLOW_SYMLINKS,
-        F_RECURSIVE);
-      io_copy_dir (
+        F_RECURSIVE, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err, "Failed to copy pool directory");
+          return false;
+        }
+      success = io_copy_dir (
         new_plugins_dir, prev_plugins_dir,
-        F_NO_FOLLOW_SYMLINKS, F_RECURSIVE);
+        F_NO_FOLLOW_SYMLINKS, F_RECURSIVE, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err, "Failed to copy plugins directory");
+          return false;
+        }
       g_free (prev_pool_dir);
       g_free (new_pool_dir);
       g_free (prev_plugins_dir);
@@ -1030,9 +1059,15 @@ load (const char * filename, const int is_template)
         self->backup_dir, PROJECT_PLUGINS_DIR, NULL);
       char * new_plugins_dir =
         g_build_filename (dir, PROJECT_PLUGINS_DIR, NULL);
-      io_copy_dir (
+      bool success = io_copy_dir (
         new_plugins_dir, prev_plugins_dir,
-        F_NO_FOLLOW_SYMLINKS, F_RECURSIVE);
+        F_NO_FOLLOW_SYMLINKS, F_RECURSIVE, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err, "Failed to copy plugins directory");
+          return false;
+        }
       g_free (prev_plugins_dir);
       g_free (new_plugins_dir);
     }
@@ -1241,7 +1276,8 @@ project_load (
 
   if (filename)
     {
-      bool success = load (filename, is_template);
+      GError * err = NULL;
+      bool     success = load (filename, is_template, &err);
       if (!success)
         {
           ui_show_error_message (
@@ -1871,7 +1907,16 @@ project_save (
   /* set the dir and create it if it doesn't
    * exist */
   set_dir (self, dir);
-  io_mkdir (PROJECT->dir);
+  GError * err = NULL;
+  bool     success = io_mkdir (PROJECT->dir, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "Failed to create project directory %s",
+        PROJECT->dir);
+      return false;
+    }
+
   char * tmp;
 
   /* set the title */
@@ -1890,7 +1935,14 @@ project_save (
   /* if backup, get next available backup dir */
   if (is_backup)
     {
-      set_and_create_next_available_backup_dir (self);
+      success =
+        set_and_create_next_available_backup_dir (self, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err, "Failed to create backup directory");
+          return false;
+        }
     }
 
 #define MK_PROJECT_DIR(_path) \
@@ -1903,7 +1955,13 @@ project_save (
         "Failed to get path for " #_path); \
       return false; \
     } \
-  io_mkdir (tmp); \
+  success = io_mkdir (tmp, &err); \
+  if (!success) \
+    { \
+      PROPAGATE_PREFIXED_ERROR ( \
+        error, err, "Failed to create directory %s", tmp); \
+      return false; \
+    } \
   g_free_and_null (tmp)
 
   MK_PROJECT_DIR (EXPORTS);
@@ -1915,8 +1973,7 @@ project_save (
 
   /* write the pool */
   audio_pool_remove_unused (AUDIO_POOL, is_backup);
-  GError * err = NULL;
-  bool     success =
+  success =
     audio_pool_write_to_disk (AUDIO_POOL, is_backup, &err);
   if (!success)
     {
@@ -1996,9 +2053,15 @@ project_save (
         PROJECT, PROJECT_PATH_PLUGINS, F_NOT_BACKUP);
       char * prj_backup_pl_states_dir = project_get_path (
         PROJECT, PROJECT_PATH_PLUGINS, F_BACKUP);
-      io_copy_dir (
+      success = io_copy_dir (
         prj_backup_pl_states_dir, prj_pl_states_dir,
-        F_NO_FOLLOW_SYMLINKS, F_RECURSIVE);
+        F_NO_FOLLOW_SYMLINKS, F_RECURSIVE, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err, "Failed to copy plugin states");
+          return false;
+        }
     }
 
   if (!is_backup)

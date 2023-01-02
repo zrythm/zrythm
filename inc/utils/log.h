@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __UTILS_LOG_H__
@@ -130,12 +130,17 @@ log_generate_compressed_file (
  *
  * This can be called from any thread.
  *
- * @param filepath If non-NULL, the given file
- *   will be used, otherwise the default file
- *   will be created.
+ * @param filepath If non-NULL, the given file will be used,
+ *   otherwise the default file will be created.
+ *
+ * @return Whether successful.
  */
-void
-log_init_with_file (Log * self, const char * filepath);
+WARN_UNUSED_RESULT
+bool
+log_init_with_file (
+  Log *        self,
+  const char * filepath,
+  GError **    error);
 
 /**
  * Returns a pointer to the global zlog.

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -41,6 +41,7 @@
 #include <sys/types.h>
 
 #include "utils/datetime.h"
+#include "utils/error.h"
 #include "utils/file.h"
 #include "utils/io.h"
 #include "utils/objects.h"
@@ -60,6 +61,16 @@
 #  include <libgen.h>
 #endif
 
+typedef enum
+{
+  Z_UTILS_IO_ERROR_FAILED,
+} ZUtilsIOError;
+
+#define Z_UTILS_IO_ERROR z_utils_io_error_quark ()
+GQuark
+z_utils_io_error_quark (void);
+G_DEFINE_QUARK (z - utils - io - error - quark, z_utils_io_error)
+
 /**
  * Gets directory part of filename. MUST be freed.
  *
@@ -74,20 +85,35 @@ io_get_dir (const char * filename)
 /**
  * Makes directory if doesn't exist.
  *
- * @return 0 if the directory exists or was
- *   successfully created, -1 if error was occurred
- *   and errno is set.
+ * @return True if the directory exists or was successfully
+ *   created, false if error was occurred and errno is set.
  */
-int
-io_mkdir (const char * dir)
+NONNULL
+bool
+io_mkdir (const char * dir, GError ** error)
 {
+  g_return_val_if_fail (
+    error == NULL || *error == NULL, false);
+
   g_message ("Creating directory: %s", dir);
   struct stat st = { 0 };
   if (stat (dir, &st) == -1)
     {
-      return g_mkdir_with_parents (dir, 0700);
+      int ret = g_mkdir_with_parents (dir, 0700);
+      if (ret == 0)
+        {
+          return true;
+        }
+      else
+        {
+          g_set_error (
+            error, Z_UTILS_IO_ERROR, Z_UTILS_IO_ERROR_FAILED,
+            "Failed to make directory with parents: %s",
+            strerror (errno));
+          return false;
+        }
     }
-  return 0;
+  return true;
 }
 
 /**
@@ -358,24 +384,23 @@ append_files_from_dir_ending_in (
   (*files)[*num_files] = NULL;
 }
 
-void
+bool
 io_copy_dir (
   const char * destdir_str,
   const char * srcdir_str,
   bool         follow_symlinks,
-  bool         recursive)
+  bool         recursive,
+  GError **    error)
 {
-  GDir *        srcdir;
-  GError *      error = NULL;
-  const gchar * filename;
 
   g_debug (
     "attempting to copy dir '%s' to '%s' "
     "(recursive: %d)",
     srcdir_str, destdir_str, recursive);
 
-  srcdir = g_dir_open (srcdir_str, 0, &error);
-  if (error)
+  GError * err = NULL;
+  GDir *   srcdir = g_dir_open (srcdir_str, 0, &err);
+  if (!srcdir)
     {
       if (ZRYTHM_TESTING)
         {
@@ -386,15 +411,23 @@ io_copy_dir (
         }
       else
         {
-          g_warning (
-            "Failed opening directory %s: %s", srcdir_str,
-            error->message);
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "Failed opening directory %s",
+            srcdir_str);
         }
-      return;
+      return false;
     }
 
-  io_mkdir (destdir_str);
+  bool success = io_mkdir (destdir_str, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "Failed creating directory %s",
+        destdir_str);
+      return false;
+    }
 
+  const gchar * filename;
   while ((filename = g_dir_read_name (srcdir)))
     {
       char * src_full_path =
@@ -408,9 +441,17 @@ io_copy_dir (
       /* recurse if necessary */
       if (recursive && is_dir)
         {
-          io_copy_dir (
+          success = io_copy_dir (
             dest_full_path, src_full_path, follow_symlinks,
-            recursive);
+            recursive, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err,
+                "Failed copying directory %s to %s",
+                src_full_path, dest_full_path);
+              return false;
+            }
         }
       /* otherwise if not dir, copy file */
       else if (!is_dir)
@@ -419,22 +460,21 @@ io_copy_dir (
             g_file_new_for_path (src_full_path);
           GFile * dest_file =
             g_file_new_for_path (dest_full_path);
-          g_return_if_fail (src_file && dest_file);
-          error = NULL;
+          g_return_val_if_fail (src_file && dest_file, false);
           GFileCopyFlags flags = G_FILE_COPY_OVERWRITE;
           if (!follow_symlinks)
             {
               flags |= G_FILE_COPY_NOFOLLOW_SYMLINKS;
             }
-          bool ret = g_file_copy (
+          success = g_file_copy (
             src_file, dest_file, flags, NULL, NULL, NULL,
-            &error);
-          if (!ret)
+            &err);
+          if (!success)
             {
-              g_warning (
-                "Failed copying file %s to %s: %s",
-                src_full_path, dest_full_path, error->message);
-              return;
+              PROPAGATE_PREFIXED_ERROR (
+                error, err, "Failed copying file %s to %s",
+                src_full_path, dest_full_path);
+              return false;
             }
 
           g_object_unref (src_file);
@@ -445,6 +485,8 @@ io_copy_dir (
       g_free (dest_full_path);
     }
   g_dir_close (srcdir);
+
+  return true;
 }
 
 char **

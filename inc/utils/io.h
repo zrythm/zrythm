@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -33,13 +33,13 @@ io_get_dir (const char * filename);
 /**
  * Makes directory if doesn't exist.
  *
- * @return 0 if the directory exists or was
- *   successfully created, -1 if error was occurred
- *   and errno is set.
+ * @return True if the directory exists or was successfully
+ *   created, false if error was occurred and errno is set.
  */
-NONNULL
-int
-io_mkdir (const char * dir);
+WARN_UNUSED_RESULT
+NONNULL_ARGS (1)
+bool
+io_mkdir (const char * dir, GError ** error);
 
 /**
  * Creates the file if doesn't exist
@@ -164,12 +164,14 @@ io_get_files_in_dir_ending_in (
  *
  * @see https://stackoverflow.com/questions/16453739/how-do-i-recursively-copy-a-directory-using-vala
  */
-void
+WARN_UNUSED_RESULT
+bool
 io_copy_dir (
   const char * destdir_str,
   const char * srcdir_str,
   bool         follow_symlinks,
-  bool         recursive);
+  bool         recursive,
+  GError **    error);
 
 /**
  * Returns a newly allocated path that is either

@@ -1,9 +1,10 @@
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
+ *
+ * ---
  *
   Copyright (C) 2016 Florian Cabot
 
@@ -19,6 +20,8 @@
 
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * ---
  */
 
 #include "zrythm-config.h"
@@ -289,7 +292,15 @@ _backtrace_get (
           char * backtrace_filepath = g_strdup_printf (
             "%s%sbacktrace_%s.txt", user_bt_dir,
             G_DIR_SEPARATOR_S, str_datetime);
-          io_mkdir (user_bt_dir);
+          GError * err = NULL;
+          bool     success = io_mkdir (user_bt_dir, &err);
+          if (!success)
+            {
+              g_warning (
+                "failed to create directory file %s",
+                user_bt_dir);
+              goto call_backtrace_full;
+            }
           FILE * f = fopen (backtrace_filepath, "a");
           if (!f)
             {

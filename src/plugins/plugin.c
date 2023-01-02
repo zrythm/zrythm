@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -1547,15 +1547,22 @@ plugin_instantiate (
         self->state_dir ? true : false, &err);
       if (ret != 0)
         {
-          PROPAGATE_PREFIXED_ERROR (
-            error, err, "%s",
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err,
             _ ("Carla plugin instantiation failed"));
           return -1;
         }
 
       /* save the state */
-      carla_native_plugin_save_state (
-        self->carla, false, NULL);
+      bool success = carla_native_plugin_save_state (
+        self->carla, false, NULL, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err,
+            _ ("Failed saving Carla plugin state"));
+          return -1;
+        }
 #else
       g_return_val_if_reached (-1);
 #endif
@@ -1980,9 +1987,16 @@ plugin_copy_state_dir (
   char * src_dir_to_use =
     plugin_get_abs_state_dir (src, is_backup, false);
 
-  io_copy_dir (
-    dir_to_use, src_dir_to_use, F_FOLLOW_SYMLINKS,
-    F_RECURSIVE);
+  GError * err = NULL;
+  bool     success = io_copy_dir (
+        dir_to_use, src_dir_to_use, F_FOLLOW_SYMLINKS,
+        F_RECURSIVE, &err);
+  if (!success)
+    {
+      HANDLE_ERROR_LITERAL (
+        err, "Failed to copy state directory");
+      return -1;
+    }
 
   g_free (src_dir_to_use);
   g_free (dir_to_use);
@@ -2003,7 +2017,15 @@ plugin_get_abs_state_dir (
 {
   if (create_if_not_exists)
     {
-      plugin_ensure_state_dir (self, is_backup);
+      GError * err = NULL;
+      bool     success =
+        plugin_ensure_state_dir (self, is_backup, &err);
+      if (!success)
+        {
+          HANDLE_ERROR_LITERAL (
+            err, "Failed to create plugin state directory");
+          return NULL;
+        }
     }
   else
     {
@@ -2022,9 +2044,14 @@ plugin_get_abs_state_dir (
 
 /**
  * Ensures the state dir exists or creates it.
+ *
+ * @return Whether successful.
  */
-void
-plugin_ensure_state_dir (Plugin * self, bool is_backup)
+bool
+plugin_ensure_state_dir (
+  Plugin *  self,
+  bool      is_backup,
+  GError ** error)
 {
   if (self->state_dir)
     {
@@ -2032,17 +2059,25 @@ plugin_ensure_state_dir (Plugin * self, bool is_backup)
         PROJECT, PROJECT_PATH_PLUGIN_STATES, is_backup);
       char * abs_state_dir =
         g_build_filename (parent_dir, self->state_dir, NULL);
-      io_mkdir (abs_state_dir);
+      GError * err = NULL;
+      bool     success = io_mkdir (abs_state_dir, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "Failed to create state directory %s",
+            abs_state_dir);
+          return false;
+        }
       g_free (parent_dir);
       g_free (abs_state_dir);
-      return;
+      return true;
     }
 
   char * escaped_name = plugin_get_escaped_name (self);
-  g_return_if_fail (escaped_name);
+  g_return_val_if_fail (escaped_name, false);
   char * parent_dir = project_get_path (
     PROJECT, PROJECT_PATH_PLUGIN_STATES, is_backup);
-  g_return_if_fail (parent_dir);
+  g_return_val_if_fail (parent_dir, false);
   char * tmp = g_strdup_printf ("%s_XXXXXX", escaped_name);
   char * abs_state_dir_template =
     g_build_filename (parent_dir, tmp, NULL);
@@ -2051,9 +2086,17 @@ plugin_ensure_state_dir (Plugin * self, bool is_backup)
       g_critical (
         "Failed to build filename using '%s' / '%s'",
         parent_dir, tmp);
+      return false;
     }
-  int ret = io_mkdir (parent_dir);
-  g_return_if_fail (ret == 0);
+  GError * err = NULL;
+  bool     success = io_mkdir (parent_dir, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "Failed to create directory %s",
+        parent_dir);
+      return false;
+    }
   char * abs_state_dir = g_mkdtemp (abs_state_dir_template);
   if (!abs_state_dir)
     {
@@ -2061,6 +2104,7 @@ plugin_ensure_state_dir (Plugin * self, bool is_backup)
         "Failed to make state dir using template "
         "%s: %s",
         abs_state_dir_template, strerror (errno));
+      return false;
     }
   self->state_dir = g_path_get_basename (abs_state_dir);
   g_debug ("set plugin state dir to %s", self->state_dir);
@@ -2068,6 +2112,8 @@ plugin_ensure_state_dir (Plugin * self, bool is_backup)
   g_free (parent_dir);
   g_free (tmp);
   g_free (abs_state_dir);
+
+  return true;
 }
 
 /**
@@ -2120,8 +2166,16 @@ plugin_clone (Plugin * src, GError ** error)
       if (src->setting->open_with_carla)
         {
 #ifdef HAVE_CARLA
-          carla_native_plugin_save_state (
-            src->carla, F_NOT_BACKUP, NULL);
+          GError * err = NULL;
+          bool     success = carla_native_plugin_save_state (
+                src->carla, F_NOT_BACKUP, NULL, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                error, err,
+                _ ("Failed saving Carla plugin state"));
+              return NULL;
+            }
 #else
           g_return_val_if_reached (NULL);
 #endif

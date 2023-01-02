@@ -382,8 +382,14 @@ plugin_gtk_on_save_preset_activate (
             NULL, sprefix, sep, sym, ".preset.carla", NULL);
           char * dir =
             g_build_filename (dirname, bundle, NULL);
-          carla_native_plugin_save_state (
-            plugin->carla, false, dir);
+          GError * err = NULL;
+          bool     success = carla_native_plugin_save_state (
+                plugin->carla, false, dir, &err);
+          if (!success)
+            {
+              HANDLE_ERROR_LITERAL (
+                err, "Failed to save Carla state");
+            }
           g_free (dirname);
           g_free (basename);
           g_free (sym);

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -2304,29 +2304,29 @@ carla_native_plugin_get_latency (CarlaNativePlugin * self)
 }
 
 /**
- * Saves the state inside the standard state
- * directory.
+ * Saves the state inside the standard state directory.
  *
- * @param is_backup Whether this is a backup
- *   project. Used for calculating the absolute
- *   path to the state dir.
- * @param abs_state_dir If passed, the state will
- *   be saved inside this directory instead of the
- *   plugin's state directory. Used when saving
- *   presets.
+ * @param is_backup Whether this is a backup project. Used for
+ *   calculating the absolute path to the state dir.
+ * @param abs_state_dir If passed, the state will be saved
+ *   inside this directory instead of the plugin's state
+ *   directory. Used when saving presets.
+ *
+ * @return Whether successful.
  */
-int
+bool
 carla_native_plugin_save_state (
   CarlaNativePlugin * self,
   bool                is_backup,
-  const char *        abs_state_dir)
+  const char *        abs_state_dir,
+  GError **           error)
 {
   if (!self->plugin->instantiated)
     {
       g_debug (
         "plugin %s not instantiated, skipping %s",
         self->plugin->setting->descr->name, __func__);
-      return 0;
+      return true;
     }
 
   char * dir_to_use = NULL;
@@ -2339,7 +2339,14 @@ carla_native_plugin_save_state (
       dir_to_use = plugin_get_abs_state_dir (
         self->plugin, is_backup, true);
     }
-  io_mkdir (dir_to_use);
+  GError * err = NULL;
+  bool     success = io_mkdir (dir_to_use, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, "Failed to create backup directory");
+      return false;
+    }
   char * state_file_abs_path =
     g_build_filename (dir_to_use, CARLA_STATE_FILENAME, NULL);
   g_debug (
@@ -2356,7 +2363,7 @@ carla_native_plugin_save_state (
 
   g_warn_if_fail (self->plugin->state_dir);
 
-  return 0;
+  return true;
 }
 
 #  if 0

@@ -463,7 +463,15 @@ audio_pool_write_to_disk (
     project_get_path (PROJECT, PROJECT_PATH_POOL, is_backup);
   if (!file_exists (prj_pool_dir))
     {
-      io_mkdir (prj_pool_dir);
+      GError * err = NULL;
+      bool     success = io_mkdir (prj_pool_dir, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "Failed to create pool directory %s",
+            prj_pool_dir);
+          return false;
+        }
     }
   g_free (prj_pool_dir);
 

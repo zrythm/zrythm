@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -447,14 +447,29 @@ init_thread (gpointer data)
   sprintf (
     msg, _ ("Initializing %s directories"), PROGRAM_NAME);
   zrythm_app_set_progress_status (self, msg, 0.01);
-  zrythm_init_user_dirs_and_files (ZRYTHM);
+  GError * err = NULL;
+  bool     success =
+    zrythm_init_user_dirs_and_files (ZRYTHM, &err);
+  if (!success)
+    {
+      g_error (
+        "Failed to create user dirs and files: %s",
+        err->message);
+      return NULL;
+    }
   init_recent_projects ();
   zrythm_init_templates (ZRYTHM);
 
   /* init log */
   zrythm_app_set_progress_status (
     self, _ ("Initializing logging system"), 0.02);
-  log_init_with_file (LOG, NULL);
+  success = log_init_with_file (LOG, NULL, &err);
+  if (!success)
+    {
+      g_error (
+        "Failed to init log with file: %s", err->message);
+      return NULL;
+    }
 
   {
     char ver[2000];

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -98,9 +98,11 @@ test_helper_zrythm_gui_init (int argc, char * argv[]);
     G_STMT_END
 #endif
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored \
-  "-Wanalyzer-unsafe-call-within-signal-handler"
+#if defined(__GNUC__) && !defined(__clang__)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored \
+    "-Wanalyzer-unsafe-call-within-signal-handler"
+#endif
 static void
 segv_handler (int sig)
 {
@@ -117,7 +119,9 @@ segv_handler (int sig)
 
   exit (sig);
 }
-#pragma GCC diagnostic pop
+#if defined(__GNUC__) && !defined(__clang__)
+#  pragma GCC diagnostic pop
+#endif
 
 static void
 _test_helper_zrythm_init (
@@ -137,8 +141,11 @@ _test_helper_zrythm_init (
   ZRYTHM->undo_stack_len = 64;
 
   /* init logic - note: will use a random dir in
-   * tmp as the user dire */
-  zrythm_init_user_dirs_and_files (ZRYTHM);
+   * tmp as the user dir */
+  GError * err = NULL;
+  bool     success =
+    zrythm_init_user_dirs_and_files (ZRYTHM, &err);
+  g_assert_true (success);
   zrythm_init_templates (ZRYTHM);
 
   /* dummy ZrythmApp object for testing */
@@ -153,20 +160,21 @@ _test_helper_zrythm_init (
   /* init logging to custom file */
   char * tmp_log_dir = g_build_filename (
     g_get_tmp_dir (), "zrythm_test_logs", NULL);
-  io_mkdir (tmp_log_dir);
+  success = io_mkdir (tmp_log_dir, NULL);
+  g_assert_true (success);
   char * str_datetime = datetime_get_for_filename ();
   char * log_filepath = g_strdup_printf (
     "%s%slog_%s.log", tmp_log_dir, G_DIR_SEPARATOR_S,
     str_datetime);
   g_free (str_datetime);
   g_free (tmp_log_dir);
-  log_init_with_file (LOG, log_filepath);
+  success = log_init_with_file (LOG, log_filepath, NULL);
+  g_assert_true (success);
   log_init_writer_idle (LOG, 1);
 
   ZRYTHM->create_project_path =
     g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
-  GError * err = NULL;
-  bool     success = project_load (NULL, false, &err);
+  success = project_load (NULL, false, &err);
   g_assert_true (success);
 
   /* adaptive snap only supported with UI */

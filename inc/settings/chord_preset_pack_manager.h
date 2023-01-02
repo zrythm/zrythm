@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -104,9 +104,16 @@ chord_preset_pack_manager_delete_preset (
   ChordPreset *            pset,
   bool                     serialize);
 
-void
+/**
+ * Serializes the chord presets.
+ *
+ * @return Whether successful.
+ */
+WARN_UNUSED_RESULT
+bool
 chord_preset_pack_manager_serialize (
-  ChordPresetPackManager * self);
+  ChordPresetPackManager * self,
+  GError **                error);
 
 void
 chord_preset_pack_manager_free (

@@ -588,8 +588,12 @@ plugin_get_abs_state_dir (
  * Ensures the state dir exists or creates it.
  */
 NONNULL
-void
-plugin_ensure_state_dir (Plugin * self, bool is_backup);
+WARN_UNUSED_RESULT
+bool
+plugin_ensure_state_dir (
+  Plugin *  self,
+  bool      is_backup,
+  GError ** error);
 
 /**
  * Returns all plugins in the current project.

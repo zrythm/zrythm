@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -47,6 +47,7 @@
 #include "project.h"
 #include "utils/backtrace.h"
 #include "utils/datetime.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
@@ -1203,19 +1204,31 @@ log_get_last_n_lines (Log * self, int n)
  *
  * This can be called from any thread.
  *
- * @param filepath If non-NULL, the given file
- *   will be used, otherwise the default file
- *   will be created.
+ * @param filepath If non-NULL, the given file will be used,
+ *   otherwise the default file will be created.
+ *
+ * @return Whether successful.
  */
-void
-log_init_with_file (Log * self, const char * filepath)
+WARN_UNUSED_RESULT
+bool
+log_init_with_file (
+  Log *        self,
+  const char * filepath,
+  GError **    error)
 {
   /* open file to write to */
   if (filepath)
     {
       self->log_filepath = g_strdup (filepath);
       self->logfile = fopen (self->log_filepath, "a");
-      g_return_if_fail (self->logfile);
+      if (!self->logfile)
+        {
+          g_set_error (
+            error, Z_UTILS_LOG_ERROR, Z_UTILS_LOG_ERROR_FAILED,
+            "Failed to open logfile at %s",
+            self->log_filepath);
+          return false;
+        }
     }
   else
     {
@@ -1225,11 +1238,26 @@ log_init_with_file (Log * self, const char * filepath)
       self->log_filepath = g_strdup_printf (
         "%s%slog_%s.log", user_log_dir, G_DIR_SEPARATOR_S,
         str_datetime);
-      io_mkdir (user_log_dir);
+      GError * err = NULL;
+      bool     success = io_mkdir (user_log_dir, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "Failed to make log directory %s",
+            user_log_dir);
+          return false;
+        }
       self->logfile = fopen (self->log_filepath, "a");
+      if (!self->logfile)
+        {
+          g_set_error (
+            error, Z_UTILS_LOG_ERROR, Z_UTILS_LOG_ERROR_FAILED,
+            "Failed to open logfile at %s",
+            self->log_filepath);
+          return false;
+        }
       g_free (user_log_dir);
       g_free (str_datetime);
-      g_return_if_fail (self->logfile);
     }
 
   /* init buffers */
@@ -1246,6 +1274,8 @@ log_init_with_file (Log * self, const char * filepath)
     self->mqueue, (size_t) MESSAGES_MAX * sizeof (char *));
 
   self->initialized = true;
+
+  return true;
 }
 
 static guint

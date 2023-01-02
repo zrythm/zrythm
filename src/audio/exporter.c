@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -221,8 +221,16 @@ export_audio (ExportSettings * info)
       return -1;
     }
 
-  char * dir = io_get_dir (info->file_uri);
-  io_mkdir (dir);
+  char *   dir = io_get_dir (info->file_uri);
+  GError * err = NULL;
+  bool     success = io_mkdir (dir, &err);
+  if (!success)
+    {
+      g_warning (
+        "Failed to create directory %s: %s", dir,
+        err->message);
+      return -1;
+    }
   g_free (dir);
   SNDFILE * sndfile =
     sf_open (info->file_uri, SFM_WRITE, &sfinfo);
@@ -420,9 +428,11 @@ export_audio (ExportSettings * info)
             {
               if (seek_cnt < 0)
                 {
-                  char err[256];
-                  sf_error_str (0, err, sizeof (err) - 1);
-                  g_message ("Error seeking file: %s", err);
+                  char err_str[256];
+                  sf_error_str (
+                    0, err_str, sizeof (err_str) - 1);
+                  g_message (
+                    "Error seeking file: %s", err_str);
                 }
               g_warn_if_fail (seek_cnt == covered_frames);
             }

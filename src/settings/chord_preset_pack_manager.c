@@ -1,10 +1,11 @@
-// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"
 #include "settings/chord_preset_pack_manager.h"
+#include "utils/error.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "zrythm_app.h"
@@ -566,7 +567,16 @@ chord_preset_pack_manager_add_pack (
   g_ptr_array_add (self->pset_packs, new_pack);
 
   if (serialize)
-    chord_preset_pack_manager_serialize (self);
+    {
+      GError * err = NULL;
+      bool     success =
+        chord_preset_pack_manager_serialize (self, &err);
+      if (!success)
+        {
+          HANDLE_ERROR_LITERAL (
+            err, "Failed to serialize chord preset packs");
+        }
+    }
 
   EVENTS_PUSH (ET_CHORD_PRESET_PACK_ADDED, NULL);
 }
@@ -580,7 +590,16 @@ chord_preset_pack_manager_delete_pack (
   g_ptr_array_remove (self->pset_packs, pack);
 
   if (serialize)
-    chord_preset_pack_manager_serialize (self);
+    {
+      GError * err = NULL;
+      bool     success =
+        chord_preset_pack_manager_serialize (self, &err);
+      if (!success)
+        {
+          HANDLE_ERROR_LITERAL (
+            err, "Failed to serialize chord preset packs");
+        }
+    }
 
   EVENTS_PUSH (ET_CHORD_PRESET_PACK_REMOVED, NULL);
 }
@@ -653,7 +672,16 @@ chord_preset_pack_manager_add_preset (
   chord_preset_pack_add_preset (pack, pset);
 
   if (serialize)
-    chord_preset_pack_manager_serialize (self);
+    {
+      GError * err = NULL;
+      bool     success =
+        chord_preset_pack_manager_serialize (self, &err);
+      if (!success)
+        {
+          HANDLE_ERROR_LITERAL (
+            err, "Failed to serialize chord preset packs");
+        }
+    }
 }
 
 void
@@ -670,18 +698,34 @@ chord_preset_pack_manager_delete_preset (
   chord_preset_pack_delete_preset (pack, pset);
 
   if (serialize)
-    chord_preset_pack_manager_serialize (self);
+    {
+      GError * err = NULL;
+      bool     success =
+        chord_preset_pack_manager_serialize (self, &err);
+      if (!success)
+        {
+          HANDLE_ERROR_LITERAL (
+            err, "Failed to serialize chord preset packs");
+        }
+    }
 }
 
-void
+/**
+ * Serializes the chord presets.
+ *
+ * @return Whether successful.
+ */
+bool
 chord_preset_pack_manager_serialize (
-  ChordPresetPackManager * self)
+  ChordPresetPackManager * self,
+  GError **                error)
 {
   /* TODO backup existing packs first */
 
   g_message ("Serializing user preset packs...");
   char * main_path = get_user_packs_path ();
-  g_return_if_fail (main_path && strlen (main_path) > 2);
+  g_return_val_if_fail (
+    main_path && strlen (main_path) > 2, false);
   g_message ("Writing user chord packs to %s...", main_path);
 
   for (size_t i = 0; i < self->pset_packs->len; i++)
@@ -691,25 +735,32 @@ chord_preset_pack_manager_serialize (
       if (pack->is_standard)
         continue;
 
-      g_return_if_fail (pack->name && strlen (pack->name) > 0);
+      g_return_val_if_fail (
+        pack->name && strlen (pack->name) > 0, false);
 
       char * pack_dir =
         g_build_filename (main_path, pack->name, NULL);
-      io_mkdir (pack_dir);
+      GError * err = NULL;
+      bool     success = io_mkdir (pack_dir, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR (
+            error, err, "Failed to create directory %s",
+            pack_dir);
+          return false;
+        }
       char * pack_yaml =
         yaml_serialize (pack, &chord_preset_pack_schema);
-      g_return_if_fail (pack_yaml);
+      g_return_val_if_fail (pack_yaml, false);
       char * pack_path =
         g_build_filename (pack_dir, USER_PACK_FILENAME, NULL);
-      GError * err = NULL;
       g_file_set_contents (pack_path, pack_yaml, -1, &err);
       if (err != NULL)
         {
-          g_warning (
-            "Unable to write chord preset pack %s: "
-            "%s",
-            pack_path, err->message);
-          g_error_free (err);
+          PROPAGATE_PREFIXED_ERROR (
+            error, err,
+            "Unable to write chord preset pack %s", pack_path);
+          return false;
         }
       g_free (pack_path);
       g_free (pack_yaml);
@@ -717,6 +768,8 @@ chord_preset_pack_manager_serialize (
     }
 
   g_free (main_path);
+
+  return true;
 }
 
 void

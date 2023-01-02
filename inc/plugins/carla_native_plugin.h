@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -170,22 +154,23 @@ carla_native_plugin_get_descriptor_from_cached (
   PluginType                    type);
 
 /**
- * Saves the state inside the standard state
- * directory.
+ * Saves the state inside the standard state directory.
  *
- * @param is_backup Whether this is a backup
- *   project. Used for calculating the absolute
- *   path to the state dir.
- * @param abs_state_dir If passed, the state will
- *   be saved inside this directory instead of the
- *   plugin's state directory. Used when saving
- *   presets.
+ * @param is_backup Whether this is a backup project. Used for
+ *   calculating the absolute path to the state dir.
+ * @param abs_state_dir If passed, the state will be saved
+ *   inside this directory instead of the plugin's state
+ *   directory. Used when saving presets.
+ *
+ * @return Whether successful.
  */
-int
+WARN_UNUSED_RESULT
+bool
 carla_native_plugin_save_state (
   CarlaNativePlugin * self,
   bool                is_backup,
-  const char *        abs_state_dir);
+  const char *        abs_state_dir,
+  GError **           error);
 
 /**
  * Loads the state from the given file or from
