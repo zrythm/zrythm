@@ -1,10 +1,25 @@
 <!---
-SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou
+SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou
 SPDX-License-Identifier: FSFAP
 -->
 
 # Changelog
 All notable changes to this project will be documented in this file.
+
+## [1.0.0-beta.4.5.21] - 2022-01-04
+### Changed
+- Don't attempt to create plugin state directories when loading projects
+- Add more error checking to various operations
+- Include Carla and GTK versions in debug info
+
+### Fixed
+- Fix being unable to export stems
+- Fix multiple popups being shown when exporting stems
+- Fix removing inserts not being undoable
+- Fix plugin states being deleted from the main project when saving backups
+- Fix error when enabling/disabling MIDI bindings
+- Fix incorrectly throwing an error sometimes when processing the sample processor
+- Fix error when moving a region from the last lane
 
 ## [1.0.0-beta.4.5.1] - 2022-12-02
 ### Added
