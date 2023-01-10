@@ -16,13 +16,14 @@
 # Hugel <qihu@nfschina.com>, 2022.
 # Eric <hamburger1024@firemail.cc>, 2022.
 # Eric <hamburger1024@mailbox.org>, 2022.
+# SunRuikang <srk888666@qq.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-11-03 11:10+0900\n"
-"PO-Revision-Date: 2022-11-03 23:56+0000\n"
-"Last-Translator: Eric <hamburger1024@mailbox.org>\n"
+"PO-Revision-Date: 2022-11-26 23:56+0000\n"
+"Last-Translator: SunRuikang <srk888666@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -30,7 +31,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -38,11 +39,11 @@ msgstr "半音阶"
 
 #: inc/schemas/audio/scale.h:94 inc/audio/scale.h:128
 msgid "Major"
-msgstr ""
+msgstr "大调"
 
 #: inc/schemas/audio/scale.h:95 inc/audio/scale.h:129
 msgid "Minor"
-msgstr ""
+msgstr "小调"
 
 #: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
 msgid "Ionian"
@@ -50,27 +51,27 @@ msgstr "自然大调音阶"
 
 #: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
 msgid "Dorian"
-msgstr ""
+msgstr "多利亚音阶"
 
 #: inc/schemas/audio/scale.h:98 inc/audio/scale.h:132
 msgid "Phrygian"
-msgstr ""
+msgstr "弗里吉亚音阶"
 
 #: inc/schemas/audio/scale.h:99 inc/audio/scale.h:133
 msgid "Lydian"
-msgstr ""
+msgstr "利底亚音阶"
 
 #: inc/schemas/audio/scale.h:100 inc/audio/scale.h:134
 msgid "Mixolydian"
-msgstr ""
+msgstr "混合利底亚音阶"
 
 #: inc/schemas/audio/scale.h:101 inc/audio/scale.h:135
 msgid "Aeolian"
-msgstr ""
+msgstr "伊奥利亚音阶"
 
 #: inc/schemas/audio/scale.h:102 inc/audio/scale.h:136
 msgid "Locrian"
-msgstr ""
+msgstr "洛克里亚音阶"
 
 #: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
 msgid "Melodic Minor"
@@ -86,19 +87,19 @@ msgstr "全音音阶"
 
 #: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
 msgid "Major Pentatonic"
-msgstr ""
+msgstr "大调五声音阶"
 
 #: inc/schemas/audio/scale.h:107 inc/audio/scale.h:141
 msgid "Minor Pentatonic"
-msgstr ""
+msgstr "小调五声音阶"
 
 #: inc/schemas/audio/scale.h:108 inc/audio/scale.h:142
 msgid "Octatonic Half Whole"
-msgstr ""
+msgstr "八音半全音"
 
 #: inc/schemas/audio/scale.h:110 inc/audio/scale.h:143
 msgid "Octatonic Whole Half"
-msgstr ""
+msgstr "八分音符整半"
 
 #: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
 msgid "Acoustic"

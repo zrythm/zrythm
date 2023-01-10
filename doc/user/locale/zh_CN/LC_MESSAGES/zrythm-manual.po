@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-10-03 21:09+0900\n"
-"PO-Revision-Date: 2022-10-04 15:52+0000\n"
-"Last-Translator: Eric <hamburger1024@mailbox.org>\n"
+"PO-Revision-Date: 2022-11-26 23:56+0000\n"
+"Last-Translator: SunRuikang <srk888666@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -23,12 +23,12 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.1\n"
+"X-Generator: Weblate 4.15-dev\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
-msgstr ""
+msgstr "环境变量"
 
 #: ../../appendix/environment.rst:13
 msgid ""
@@ -73,7 +73,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:7
 msgid "Files and Directories"
-msgstr ""
+msgstr "文件和目录"
 
 #: ../../appendix/files-and-directories.rst:10
 msgid "User path"
@@ -88,15 +88,15 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
-msgstr ""
+msgstr "已安装的文件"
 
 #: ../../appendix/files-and-directories.rst:17
 msgid "When Zrythm is installed, it installs the following files by default."
-msgstr ""
+msgstr "安装 Zrythm 时，默认情况下会安装以下文件。"
 
 #: ../../appendix/files-and-directories.rst:21
 msgid "Desktop Entry"
-msgstr ""
+msgstr "桌面快捷方式"
 
 #: ../../appendix/files-and-directories.rst:22
 msgid ""
@@ -109,7 +109,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:29
 msgid "GLib Schema"
-msgstr ""
+msgstr "GLib模式"
 
 #: ../../appendix/files-and-directories.rst:30
 msgid ""
