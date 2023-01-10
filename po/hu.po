@@ -3,20 +3,22 @@
 # This file is distributed under the same license as the zrythm package.
 # Alexandros Theodotou <alex@zrythm.org>, 2022.
 # Nagy Tibor <xnagytibor@gmail.com>, 2022.
-#
+# Lajos Szabó <rendszergazda.kalaszsuli@gmail.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-11-03 11:10+0900\n"
-"PO-Revision-Date: 2022-03-24 05:00+0000\n"
-"Last-Translator: Nagy Tibor <xnagytibor@gmail.com>\n"
-"Language-Team: Hungarian <translation-team-hu@lists.sourceforge.net>\n"
+"PO-Revision-Date: 2022-11-29 23:55+0000\n"
+"Last-Translator: Lajos Szabó <rendszergazda.kalaszsuli@gmail.com>\n"
+"Language-Team: Hungarian <https://hosted.weblate.org/projects/zrythm/zrythm/"
+"hu/>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -3337,9 +3339,8 @@ msgid "Change color..."
 msgstr "Színváltás..."
 
 #: src/gui/widgets/track.c:743
-#, fuzzy
 msgid "Rename..."
-msgstr "Átnevezés"
+msgstr "Átnevezés..."
 
 #: src/gui/widgets/track.c:748 src/gui/widgets/channel_slot.c:693
 #: src/gui/widgets/timeline_arranger.c:1011 resources/ui/header.ui:12
