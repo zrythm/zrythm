@@ -11,21 +11,22 @@
 # ssantos <ssantos@web.de>, 2022.
 # Cgrieger <translate@cgrieger.org>, 2022.
 # leochras <leo@traussnigg.com>, 2022.
+# Ludwig <ludwig-o@freenet.de>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-11-03 11:10+0900\n"
-"PO-Revision-Date: 2022-09-12 15:52+0000\n"
-"Last-Translator: leochras <leo@traussnigg.com>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"PO-Revision-Date: 2022-12-01 23:54+0000\n"
+"Last-Translator: Ludwig <ludwig-o@freenet.de>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.1-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -6392,9 +6393,8 @@ msgid "Quantize"
 msgstr "Quantisieren"
 
 #: resources/gtk/help-overlay.ui:301
-#, fuzzy
 msgid "Looping"
-msgstr "Dauerschleife"
+msgstr "Wiederholen"
 
 #: data/zrythm.desktop.in:6
 msgid "@DESKTOP_ENTRY_NAME@"
