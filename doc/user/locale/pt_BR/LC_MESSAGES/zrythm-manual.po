@@ -39,16 +39,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-10-03 21:09+0900\n"
-"PO-Revision-Date: 2022-06-02 15:49+0000\n"
-"Last-Translator: Vitor Sabino Cardoso da SIlva <vitorcsilva180396@gmail."
-"com>\n"
-"Language: pt_BR\n"
+"PO-Revision-Date: 2022-12-02 23:55+0000\n"
+"Last-Translator: Gabriel fresan <gabrielfrsan@proton.me>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/pt_BR/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.15-dev\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -7701,7 +7701,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:41
 msgid "Folder"
-msgstr ""
+msgstr "Pasta"
 
 #: ../../tracks/track-types.rst:50 ../../tracks/track-types.rst:70
 msgid "MIDI regions"
