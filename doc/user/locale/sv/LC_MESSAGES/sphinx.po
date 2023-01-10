@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.14\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-16 08:25+0000\n"
-"PO-Revision-Date: 2021-10-16 04:35+0000\n"
-"Last-Translator: Henrik Mattsson-Mårn <h@archkive.org>\n"
+"PO-Revision-Date: 2023-01-05 23:59+0000\n"
+"Last-Translator: Ivar <ivar.bjerling@protonmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
 "user-manual-sphinx/sv/>\n"
 "Language: sv\n"
@@ -17,16 +17,16 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../_templates/page.html:61
 msgid "Next"
-msgstr ""
+msgstr "Nästa"
 
 #: ../../_templates/page.html:73
 msgid "Previous"
-msgstr ""
+msgstr "Föregående"
 
 #: ../../_templates/page.html:76
 msgid "Home"
@@ -58,8 +58,8 @@ msgstr ""
 
 #: ../../_templates/page.html:116
 msgid "Show Source"
-msgstr ""
+msgstr "Visa Källa"
 
 #: ../../_templates/page.html:137
 msgid "Contents"
-msgstr ""
+msgstr "Innehåll"
