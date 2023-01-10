@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "project.h"
@@ -37,13 +37,20 @@ guile_project_generator_generate_project_from_string (
   /* create the project at a temporary path */
   char * tmp_path =
     g_dir_make_tmp ("zrythm_guile_prj_gen_XXXXXX", NULL);
+  GError *  err = NULL;
   Project * prj = project_create_default (
-    use_tmp_project ? PROJECT : NULL, tmp_path, true, true);
+    use_tmp_project ? PROJECT : NULL, tmp_path, true, true,
+    &err);
+  if (!prj)
+    {
+      HANDLE_ERROR_LITERAL (
+        err, "Failed to create default project");
+      return -1;
+    }
 
   /* save the project at the given path */
-  GError * err = NULL;
-  bool     success = project_save (
-        prj, prj_path, false, false, F_NO_ASYNC, &err);
+  bool success = project_save (
+    prj, prj_path, false, false, F_NO_ASYNC, &err);
   if (!success)
     {
       HANDLE_ERROR_LITERAL (err, "Failed to save project");

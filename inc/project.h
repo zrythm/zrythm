@@ -429,22 +429,23 @@ project_get_arranger_selections_for_last_selection (
 /**
  * Creates a default project.
  *
- * This is only used internally or for generating
- * projects from scripts.
+ * This is only used internally or for generating projects
+ * from scripts.
  *
- * @param prj_dir The directory of the project to
- *   create, including its title.
- * @param headless Create the project assuming we
- *   are running without a UI.
- * @param start_engine Whether to also start the
- *   engine after creating the project.
+ * @param prj_dir The directory of the project to create,
+ *   including its title.
+ * @param headless Create the project assuming we are running
+ *   without a UI.
+ * @param start_engine Whether to also start the engine after
+ *   creating the project.
  */
-COLD Project *
+COLD WARN_UNUSED_RESULT Project *
 project_create_default (
   Project *    self,
   const char * prj_dir,
   bool         headless,
-  bool         with_engine);
+  bool         with_engine,
+  GError **    error);
 
 /**
  * If project has a filename set, it loads that.

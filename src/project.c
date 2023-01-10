@@ -88,6 +88,44 @@ init_common (Project * self)
   zix_sem_init (&self->save_sem, 1);
 }
 
+static bool
+make_project_dirs (
+  Project * self,
+  bool      is_backup,
+  GError ** error)
+{
+#define MK_PROJECT_DIR(_path) \
+  { \
+    char * tmp = project_get_path ( \
+      self, PROJECT_PATH_##_path, is_backup); \
+    if (!tmp) \
+      { \
+        g_set_error_literal ( \
+          error, Z_PROJECT_ERROR, Z_PROJECT_ERROR_FAILED, \
+          "Failed to get path for " #_path); \
+        return false; \
+      } \
+    GError * err = NULL; \
+    bool     success = io_mkdir (tmp, &err); \
+    if (!success) \
+      { \
+        PROPAGATE_PREFIXED_ERROR ( \
+          error, err, "Failed to create directory %s", tmp); \
+        return false; \
+      } \
+    g_free_and_null (tmp); \
+  }
+
+  MK_PROJECT_DIR (EXPORTS);
+  MK_PROJECT_DIR (EXPORTS_STEMS);
+  MK_PROJECT_DIR (POOL);
+  MK_PROJECT_DIR (PLUGIN_STATES);
+  MK_PROJECT_DIR (PLUGIN_EXT_COPIES);
+  MK_PROJECT_DIR (PLUGIN_EXT_LINKS);
+
+  return true;
+}
+
 /**
  * Compresses/decompress a project from a file/data
  * to a file/data.
@@ -226,23 +264,6 @@ _project_compress (
 
   return true;
 }
-
-/**
- * Frees the current x if any and sets a copy of
- * the given string.
- */
-#define DEFINE_SET_STR(x) \
-  static void set_##x (Project * self, const char * x) \
-  { \
-    if (self->x) \
-      g_free (self->x); \
-    self->x = g_strdup (x); \
-  }
-
-DEFINE_SET_STR (dir);
-DEFINE_SET_STR (title);
-
-#undef DEFINE_SET_STR
 
 /**
  * Returns the filepath of a backup (directory),
@@ -385,22 +406,6 @@ set_and_create_next_available_backup_dir (
     }
 
   return true;
-}
-
-/**
- * Sets the next available "Untitled Project" title
- * and directory.
- *
- * @param _dir The directory of the project to
- *   create, including its title.
- */
-static void
-create_and_set_dir_and_title (Project * self, const char * _dir)
-{
-  set_dir (self, _dir);
-  char * str = g_path_get_basename (_dir);
-  set_title (self, str);
-  g_free (str);
 }
 
 /**
@@ -587,22 +592,23 @@ project_init_selections (Project * self)
 /**
  * Creates a default project.
  *
- * This is only used internally or for generating
- * projects from scripts.
+ * This is only used internally or for generating projects
+ * from scripts.
  *
- * @param prj_dir The directory of the project to
- *   create, including its title.
- * @param headless Create the project assuming we
- *   are running without a UI.
- * @param start_engine Whether to also start the
- *   engine after creating the project.
+ * @param prj_dir The directory of the project to create,
+ *   including its title.
+ * @param headless Create the project assuming we are running
+ *   without a UI.
+ * @param start_engine Whether to also start the engine after
+ *   creating the project.
  */
 Project *
 project_create_default (
   Project *    self,
   const char * prj_dir,
   bool         headless,
-  bool         with_engine)
+  bool         with_engine,
+  GError **    error)
 {
   g_message ("creating default project...");
 
@@ -703,8 +709,19 @@ project_create_default (
     tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate, true, true, false);
 
-  /* create untitled project */
-  create_and_set_dir_and_title (self, prj_dir);
+  /* set directory/title and create standard dirs */
+  g_free_and_null (self->dir);
+  self->dir = g_strdup (prj_dir);
+  g_free_and_null (self->title);
+  self->title = g_path_get_basename (prj_dir);
+  GError * err = NULL;
+  bool success = make_project_dirs (self, F_NOT_BACKUP, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, "Failed to create project directories");
+      return NULL;
+    }
 
   if (have_ui)
     {
@@ -845,7 +862,8 @@ load (
       PROJECT = project_new (ZRYTHM);
     }
 
-  set_dir (PROJECT, dir);
+  g_free_and_null (PROJECT->dir);
+  PROJECT->dir = g_strdup (dir);
 
   /* if loading an actual project, check for
    * backups */
@@ -1089,7 +1107,8 @@ load (
   PROJECT = self;
 
   /* re-update paths for the newly loaded project */
-  set_dir (self, dir);
+  g_free_and_null (self->dir);
+  self->dir = g_strdup (dir);
 
   /* set the tempo track */
   Tracklist * tracklist = self->tracklist;
@@ -1299,15 +1318,31 @@ project_load (
           g_message (
             "%s: creating project %s", __func__,
             ZRYTHM->create_project_path);
-          project_create_default (
-            PROJECT, ZRYTHM->create_project_path, false, true);
+          Project * created_prj = project_create_default (
+            PROJECT, ZRYTHM->create_project_path, false, true,
+            &err);
+          if (!created_prj)
+            {
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                error, err,
+                "Failed to create default project");
+              return false;
+            }
         } /* endif failed to load project */
     }
   /* else if no filename given */
   else
     {
-      project_create_default (
-        PROJECT, ZRYTHM->create_project_path, false, true);
+      GError *  err = NULL;
+      Project * created_prj = project_create_default (
+        PROJECT, ZRYTHM->create_project_path, false, true,
+        &err);
+      if (!created_prj)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err, "Failed to create default project");
+          return false;
+        }
     }
 
   if (is_template || !filename)
@@ -1906,7 +1941,8 @@ project_save (
 
   /* set the dir and create it if it doesn't
    * exist */
-  set_dir (self, dir);
+  g_free_and_null (self->dir);
+  self->dir = g_strdup (dir);
   GError * err = NULL;
   bool     success = io_mkdir (PROJECT->dir, &err);
   if (!success)
@@ -1917,11 +1953,10 @@ project_save (
       return false;
     }
 
-  char * tmp;
-
   /* set the title */
   char * basename = g_path_get_basename (dir);
-  set_title (self, basename);
+  g_free_and_null (self->title);
+  self->title = g_strdup (basename);
   g_free (basename);
   g_free (dir);
 
@@ -1945,31 +1980,13 @@ project_save (
         }
     }
 
-#define MK_PROJECT_DIR(_path) \
-  tmp = project_get_path ( \
-    self, PROJECT_PATH_##_path, is_backup); \
-  if (!tmp) \
-    { \
-      g_set_error_literal ( \
-        error, Z_PROJECT_ERROR, Z_PROJECT_ERROR_FAILED, \
-        "Failed to get path for " #_path); \
-      return false; \
-    } \
-  success = io_mkdir (tmp, &err); \
-  if (!success) \
-    { \
-      PROPAGATE_PREFIXED_ERROR ( \
-        error, err, "Failed to create directory %s", tmp); \
-      return false; \
-    } \
-  g_free_and_null (tmp)
-
-  MK_PROJECT_DIR (EXPORTS);
-  MK_PROJECT_DIR (EXPORTS_STEMS);
-  MK_PROJECT_DIR (POOL);
-  MK_PROJECT_DIR (PLUGIN_STATES);
-  MK_PROJECT_DIR (PLUGIN_EXT_COPIES);
-  MK_PROJECT_DIR (PLUGIN_EXT_LINKS);
+  success = make_project_dirs (self, is_backup, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, "Failed to create project directories");
+      return false;
+    }
 
   /* write the pool */
   audio_pool_remove_unused (AUDIO_POOL, is_backup);
