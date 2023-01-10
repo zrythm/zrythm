@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-10-03 21:09+0900\n"
-"PO-Revision-Date: 2022-11-05 23:56+0000\n"
-"Last-Translator: Nicolas FAURE <sub26nico@laposte.net>\n"
+"PO-Revision-Date: 2022-11-06 23:55+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/fr/>\n"
 "Language: fr\n"
@@ -419,7 +419,6 @@ msgid "Custom Packs"
 msgstr "Packs personnalisés"
 
 #: ../../chords-and-scales/chord-pad.rst:65
-#, fuzzy
 msgid "Creating Custom Packs"
 msgstr "Création de paquets personnalisés"
 

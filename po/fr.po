@@ -18,8 +18,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-11-03 11:10+0900\n"
-"PO-Revision-Date: 2022-11-05 23:55+0000\n"
-"Last-Translator: Nicolas FAURE <sub26nico@laposte.net>\n"
+"PO-Revision-Date: 2022-11-20 23:54+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.14.2\n"
+"X-Generator: Weblate 4.15-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -2298,7 +2298,7 @@ msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/audio/engine_jack.c:742
 msgid "JACK: No physical playback ports found"
-msgstr "JACK : Aucun port de lecture physique trouvé"
+msgstr "JACK : aucun port de lecture physique trouvé"
 
 #: src/audio/engine_jack.c:756
 #, fuzzy, c-format
@@ -2505,13 +2505,15 @@ msgstr ""
 #: src/audio/exporter.c:244
 #, c-format
 msgid "Invalid SNDFILE format %s: 0x%08X != 0x%08X"
-msgstr ""
+msgstr "Format SNDFILE non valide %s : 0x%08X!= 0x%08X"
 
 #: src/audio/exporter.c:515
 #, c-format
 msgid ""
 "The exported audio contains segments louder than 0 dB (max detected %.1f dB)."
 msgstr ""
+"L'audio exporté contient des segments plus forts que 0 dB (max. détecté %.1f "
+"dB)."
 
 #: src/audio/exporter.c:968 src/audio/exporter.c:975
 #, fuzzy
@@ -4506,6 +4508,8 @@ msgid ""
 "Attempted to drop an instrument onto a MIDI track, which is not supported. "
 "Create a new instrument track instead?"
 msgstr ""
+"Vous avez tenté de déposer un instrument sur une piste MIDI, ce qui n'est "
+"pas pris en charge. Créez plutôt une nouvelle piste d'instrument ?"
 
 #: src/gui/widgets/tracklist.c:281 src/gui/widgets/tracklist.c:299
 #, fuzzy
@@ -6506,7 +6510,7 @@ msgstr "Bouclage"
 
 #: data/zrythm.desktop.in:6
 msgid "@DESKTOP_ENTRY_NAME@"
-msgstr ""
+msgstr "@DESKTOP_ENTRY_NAME@"
 
 #: data/zrythm.desktop.in:7
 msgid "Digital Audio Workstation"
@@ -7826,7 +7830,7 @@ msgstr "Greffons VST"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1116
 msgid "VST2 plugin search paths separated by : (or ; on Windows)."
-msgstr ""
+msgstr "Chemins de recherche de greffon VST2 séparés par : (ou ; sous Windows)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1120
 msgid "SFZ instruments"
@@ -7835,6 +7839,7 @@ msgstr "instruments SFZ"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1121
 msgid "SFZ instrument search paths separated by : (or ; on Windows)."
 msgstr ""
+"Chemins de recherche des instruments SFZ séparés par : (ou ; sous Windows)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1125
 msgid "SF2 instruments"
@@ -7843,15 +7848,17 @@ msgstr "instruments SF2"
 #: build/data/org.zrythm.Zrythm.gschema.xml:1126
 msgid "SF2 instrument search paths separated by : (or ; on Windows)."
 msgstr ""
+"Les chemins de recherche des instruments SF2 séparés par : (ou ; sous "
+"Windows)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1130
-#, fuzzy
 msgid "JSFX plugin paths"
-msgstr "Greffons VST"
+msgstr "Chemins d'accès aux greffons JSFX"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1131
 msgid "JSFX plugin search paths separated by : (or ; on Windows)."
 msgstr ""
+"Chemins de recherche des greffons JSFX séparés par : (ou ; sous Windows)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1139
 #: build/data/org.zrythm.Zrythm.gschema.xml:1153
@@ -8019,7 +8026,7 @@ msgstr "Afficher le navigateur de fichiers"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 msgid "Custom time range export for audio"
-msgstr ""
+msgstr "Exportation d'une plage de temps personnalisée pour l'audio"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:97
@@ -8033,20 +8040,26 @@ msgid ""
 "Make plugin setting activation-related dialogs async (fixes errors when drag-"
 "n-dropping some instruments into the tracklist)"
 msgstr ""
+"Rendre asynchrone les dialogues liés à l'activation des greffons (corrige "
+"des erreurs lors du glisser-déposer de certains instruments dans la liste de "
+"pistes)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
 msgid "Send all notes off when disarming tracks that accept MIDI"
 msgstr ""
+"Envoyer des notes off lors du désarmement des pistes qui acceptent le MIDI"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
 msgid "Silence some unnecessary logging"
-msgstr ""
+msgstr "Réduire au silence certaines journalisations inutiles"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
 msgid ""
 "Show info for first plugin of selected track in the plugin inspector if no "
 "plugin slot is selected"
 msgstr ""
+"Affiche les informations du premier greffon de la piste sélectionnée dans "
+"l'inspecteur de greffon si aucun emplacement de greffon n'est sélectionné"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
 #, fuzzy
@@ -8056,41 +8069,51 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:66
 msgid "Port various dropdowns to AdwComboRow"
-msgstr ""
+msgstr "Portage de diverses listes déroulantes dans AdwComboRow"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
 msgid ""
 "Make welcome dialog transient to the splash screen (prevents it from being "
 "shown below the splash screen)"
 msgstr ""
+"Rendre le dialogue de bienvenue transitoire à l'écran d'accueil (l'empêcher "
+"d'être affiché en dessous de l'écran d'accueil)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:68
 msgid "Verify stream is open when activating an rtaudio device"
 msgstr ""
+"Vérifier que le flux est ouvert lors de l'activation d'un périphérique "
+"rtaudio"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:69
 msgid ""
 "Preferences: refresh the audio device selector instantly when changing the "
 "audio backend"
 msgstr ""
+"Préférences : rafraîchissement instantané du sélecteur de périphérique audio "
+"lors du changement de dorsal audio"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:70
 msgid "Improve naming of default chord presets"
-msgstr ""
+msgstr "Amélioration de la dénomination des préréglages d'accord par défaut"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:71
 msgid "Merge \"Plugin\" and \"Other\" plugin categories"
-msgstr ""
+msgstr "Fusionner les catégories \"Greffon\" et \"Autre\"."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:72
 msgid "Use \"Zrythm beta\" as the desktop file name in installer versions"
 msgstr ""
+"Utiliser \"Zrythm bêta\" comme nom de fichier du bureau dans les versions "
+"d'installateurs"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:73
 msgid ""
 "Use audio &amp; MIDI region snapshots during playback instead of live data "
 "(allows editing regions while transport is rolling)"
 msgstr ""
+"Utilisation d'instantanés de régions audio &amp; MIDI pendant la lecture au "
+"lieu de données en direct (permet d'éditer les régions pendant le transport)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:118
@@ -8101,6 +8124,7 @@ msgstr "Corrigé :"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid "Fix first MIDI note skipped when bouncing to audio"
 msgstr ""
+"Correction de la première note MIDI sautée lors du bouncing vers l'audio"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:78
 #, fuzzy
@@ -8113,18 +8137,24 @@ msgid ""
 "Fix Zrythm potentially not getting notified of buffer size changes on JACK/"
 "PipeWire"
 msgstr ""
+"Correction du fait que Zrythm n'est potentiellement pas notifié des "
+"changements de taille de mémoire tampon sur JACK/PipeWire"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:80
 msgid ""
 "Fix RtAudio devices being wrong in the preferences when choosing a different "
 "RtAudio backend"
 msgstr ""
+"Correction des périphériques RtAudio qui étaient incorrects dans les "
+"préférences lorsque l'on choisit un dorsal RtAudio différent"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:81
 msgid ""
 "Fix region loop end point stopping moving instead of being clamped when "
 "moved past the start point"
 msgstr ""
+"Correction du point de fin de la boucle de la région qui s'arrêtait de "
+"bouger au lieu d'être bloqué lorsqu'il est déplacé au-delà du point de départ"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:83
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:122
@@ -8136,16 +8166,22 @@ msgid ""
 "Remove SDL, ALSA, PulseAudio, JACK (rtaudio), ASIO (rtaudio), Windows MME "
 "from selectable backends"
 msgstr ""
+"Suppression de SDL, ALSA, PulseAudio, JACK (rtaudio), ASIO (rtaudio), "
+"Windows MME des dorsaux sélectionnables"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:94
 msgid ""
 "Show dialog to create a new instrument track when dropping an instrument "
 "plugin onto a MIDI track"
 msgstr ""
+"Afficher la boîte de dialogue pour créer une nouvelle piste d'instrument "
+"lors du dépôt d'un greffon d'instrument sur une piste MIDI"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:95
 msgid "Add whitelist of plugin authors and bridge all other plugins"
 msgstr ""
+"Ajout d'une liste blanche des auteurs de greffon et pontage de tous les "
+"autres greffons"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:99
 #, fuzzy
@@ -8155,6 +8191,7 @@ msgstr "Mise à jour des traductions en Hongrois"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:100
 msgid "Meson: don't set -mtune=generic if not native build"
 msgstr ""
+"Meson : ne pas définir -mtune=generic si ce n'est pas une construction native"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:101
 #, fuzzy
@@ -8167,20 +8204,28 @@ msgid ""
 "Update reproc version requirement (fixes occasional assert failures during "
 "plugin scan on Windows)"
 msgstr ""
+"Mise à jour de la version requise de reproc (corrige les échecs occasionnels "
+"d'assert pendant l'analyse du greffon sous Windows)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:103
 msgid "Re-enable highlighting in timeline while dragging files"
 msgstr ""
+"Réactivation de la mise en évidence dans la ligne temporelle lors du "
+"déplacement de fichiers"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:104
 msgid "Re-enable highlighting in track widgets while dragging other tracks"
 msgstr ""
+"Réactivation de la mise en évidence dans les widgets de piste lors du "
+"déplacement d'autres pistes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid ""
 "Meson: build bundled plugins with `-static-libgcc -static-libstdc++` by "
 "default on GNU/Linux + GCC"
 msgstr ""
+"Meson : construire des greffons groupés avec `-static-libgcc -static-"
+"libstdc++` par défaut sur GNU/Linux + GCC"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:114
 #, fuzzy
@@ -8192,19 +8237,21 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:115
 msgid "Project assistant: rename Open Recent to Open Project"
-msgstr ""
+msgstr "Assistant de projet : renommer Ouvrir récent en Ouvrir projet"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:116
 msgid "Bump required carla and libpanel versions"
-msgstr ""
+msgstr "Mise à jour des versions requises pour carla et libpanel"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:120
 msgid "Fix \"check for updates?\" dialog not being modal"
 msgstr ""
+"Correction de la boîte de dialogue \"vérifier les mises à jour ?\" qui "
+"n'était pas modale"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:124
 msgid "Drop rtkit code (replace with GDBus currently disabled)"
-msgstr ""
+msgstr "Abandon du code rtkit (remplacé par GDBus actuellement désactivé)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:133
 #, fuzzy
@@ -8215,7 +8262,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:134
 msgid "Allow moving chord objects vertically"
-msgstr ""
+msgstr "Permet de déplacer les objets d'accord verticalement"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:138
 #, fuzzy
@@ -8226,22 +8273,27 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid "Optimize bar slider drawing (fixes lags in plugin inspector)"
 msgstr ""
+"Optimisation du dessin du curseur de la barre (corrige des décalages dans "
+"l'inspecteur du greffon)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:143
 msgid "Fix cue marker being invisible"
-msgstr ""
+msgstr "Correction de l'invisibilité du marqueur cue"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:144
 msgid "Fix pressing Home not setting the cue marker"
 msgstr ""
+"Correction de l'appui sur Home qui ne mettait pas le marqueur de cue en place"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:145
 msgid "Fix plugin and file drag-n-drop being broken on Windows"
 msgstr ""
+"Correction d'un problème de glisser-déposer de greffon et de fichier sous "
+"Windows"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:146
 msgid "Fix track icon selector being empty"
-msgstr ""
+msgstr "Correction du sélecteur d'icône de piste qui était vide"
 
 #~ msgid "Together"
 #~ msgstr "Ensemble"
