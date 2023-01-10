@@ -23,7 +23,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-11-03 11:10+0900\n"
-"PO-Revision-Date: 2022-10-26 23:55+0000\n"
+"PO-Revision-Date: 2022-11-30 23:54+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
@@ -32,7 +32,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14.2-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -2512,9 +2512,8 @@ msgid "Failed to create audio track"
 msgstr "No se pudo escribir el archivo %s"
 
 #: src/audio/exporter.c:1008
-#, fuzzy
 msgid "Invalid time range"
-msgstr "Nombre no válido"
+msgstr "Intervalo de tiempo no válido"
 
 #: src/audio/engine_pulse.c:90
 msgid ""
