@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
@@ -266,11 +266,11 @@ automation_track_get_region_before_pos (
   bool                    use_snapshots)
 {
   ZRegion ** regions =
-    use_snapshots ? self->regions : self->region_snapshots;
+    use_snapshots ? self->region_snapshots : self->regions;
   int num_regions =
     use_snapshots
-      ? self->num_regions
-      : self->num_region_snapshots;
+      ? self->num_region_snapshots
+      : self->num_regions;
   if (ends_after)
     {
       for (int i = num_regions - 1; i >= 0; i--)
@@ -772,9 +772,22 @@ automation_track_get_val_at_pos (
   signed_frame_t ap_frames = position_to_frames (&ap_obj->pos);
   signed_frame_t next_ap_frames =
     position_to_frames (&next_ap_obj->pos);
-  double ratio =
-    (double) (localp - ap_frames)
-    / (double) (next_ap_frames - ap_frames);
+  double         ratio;
+  signed_frame_t numerator = localp - ap_frames;
+  signed_frame_t denominator = next_ap_frames - ap_frames;
+  if (numerator == 0)
+    {
+      ratio = 0.0;
+    }
+  else if (G_UNLIKELY (denominator == 0))
+    {
+      g_warning ("denominator is 0. this should never happen");
+      ratio = 1.0;
+    }
+  else
+    {
+      ratio = (double) numerator / (double) denominator;
+    }
   g_return_val_if_fail (ratio >= 0, 0.f);
 
   float result = (float)
