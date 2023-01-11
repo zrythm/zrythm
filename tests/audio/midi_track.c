@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
@@ -693,35 +693,32 @@ test_fill_midi_events (void)
   test_helper_zrythm_cleanup ();
 }
 
-#ifdef HAVE_HELM
 static void
 test_fill_midi_events_from_engine (void)
 {
   test_helper_zrythm_init ();
 
-  /* stop dummy audio engine processing so we can
-   * process manually */
-  AUDIO_ENGINE->stop_dummy_audio_thread = true;
-  g_usleep (1000000);
+  /* deactivate audio engine processing so we can process
+   * manually */
+  test_project_stop_dummy_engine ();
 
   /* create an instrument track for testing */
   test_plugin_manager_create_tracks_from_plugin (
-    HELM_BUNDLE, HELM_URI, true, false, 1);
+    TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
   Track * ins_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
   ZRegion * r = prepare_region_with_note_at_start_to_end (
     ins_track, 35, 60);
   ArrangerObject * r_obj = (ArrangerObject *) r;
-  track_add_region (
-    ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
-
-#  if 0
-  MidiNote * mn =
-    r->midi_notes[0];
-  ArrangerObject * mn_obj =
-    (ArrangerObject *) mn;
-#  endif
+  bool             success = track_add_region (
+                ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
+                NULL);
+  g_assert_true (success);
+  engine_set_run (AUDIO_ENGINE, 0); // needed to set caches
+  tracklist_set_caches (
+    TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS);
+  engine_set_run (AUDIO_ENGINE, 1);
 
   transport_set_loop (TRANSPORT, true, true);
   position_set_to_pos (
@@ -764,7 +761,6 @@ test_fill_midi_events_from_engine (void)
 
   test_helper_zrythm_cleanup ();
 }
-#endif
 
 int
 main (int argc, char * argv[])
@@ -776,11 +772,9 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test fill midi events",
     (GTestFunc) test_fill_midi_events);
-#ifdef HAVE_HELM
   g_test_add_func (
     TEST_PREFIX "test fill midi events from engine",
     (GTestFunc) test_fill_midi_events_from_engine);
-#endif
 
   return g_test_run ();
 }

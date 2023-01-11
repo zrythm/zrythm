@@ -3385,7 +3385,8 @@ test_move_region_from_lane_3_to_lane_1 (void)
   /* move new region to lane 1 */
   track = tracklist_get_last_track (
     TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, true);
-  g_assert_cmpint (track->num_lanes, <=, track->lanes_size);
+  g_assert_cmpint (
+    track->num_lanes, <=, (int) track->lanes_size);
   lane = track->lanes[2];
   r1 = lane->regions[0];
   arranger_object_select (
@@ -3407,6 +3408,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/actions/arranger_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test delete automation points",
+    (GTestFunc) test_delete_automation_points);
   g_test_add_func (
     TEST_PREFIX "test move region from lane 3 to lane 1",
     (GTestFunc) test_move_region_from_lane_3_to_lane_1);
@@ -3461,9 +3465,6 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test link then duplicate",
     (GTestFunc) test_link_then_duplicate);
-  g_test_add_func (
-    TEST_PREFIX "test delete automation points",
-    (GTestFunc) test_delete_automation_points);
   g_test_add_func (
     TEST_PREFIX "test delete chord objects",
     (GTestFunc) test_delete_chord_objects);

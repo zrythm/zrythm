@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
@@ -140,8 +140,9 @@ test_save_state_w_files (void)
   position_set_to_bar (&end_pos, 3);
   ZRegion * r = midi_region_new (
     &pos, &end_pos, track_get_name_hash (track), 0, 0);
-  track_add_region (
-    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  bool success = track_add_region (
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
   MidiNote * mn =
     midi_note_new (&r->id, &pos, &end_pos, 57, 120);
   midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
@@ -165,7 +166,7 @@ test_save_state_w_files (void)
   lilv_state_free (state);
   check_state_contains_wav ();
 
-  bool success = project_save (
+  success = project_save (
     PROJECT, PROJECT->dir, false, false, F_NO_ASYNC, NULL);
   g_assert_true (success);
   check_state_contains_wav ();

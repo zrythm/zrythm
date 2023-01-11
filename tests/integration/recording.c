@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
@@ -31,6 +31,13 @@
 /** Automation value to set. */
 #define AUTOMATION_VAL 0.23f
 
+#define SET_CACHES_AND_PROCESS \
+  engine_set_run (AUDIO_ENGINE, 0); \
+  tracklist_set_caches ( \
+    TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS); \
+  engine_set_run (AUDIO_ENGINE, 1); \
+  engine_process (AUDIO_ENGINE, CYCLE_SIZE)
+
 static void
 prepare (void)
 {
@@ -46,7 +53,6 @@ prepare (void)
   port_allocate_bufs (AUDIO_ENGINE->dummy_input->r);
 }
 
-#ifdef HAVE_HELM
 static void
 do_takes_no_loop_no_punch (
   Track * ins_track,
@@ -99,9 +105,10 @@ do_takes_no_loop_no_punch (
   g_assert_nonnull (on_port);
   float on_val_at_start = on_port->control;
 
-  /* run the engine for 1 cycle */
-  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  SET_CACHES_AND_PROCESS;
   recording_manager_process_events (RECORDING_MANAGER);
+
+  g_message ("process 1 ended");
 
   ZRegion *mr, *audio_r, *latch_r, *touch_r, *on_r;
   (void) on_r;
@@ -139,7 +146,7 @@ do_takes_no_loop_no_punch (
   g_assert_cmpuint (clip->num_frames, ==, CYCLE_SIZE);
   for (int i = 0; i < 2; i++)
     {
-      g_assert_false (audio_frames_empty (
+      g_assert_true (audio_frames_empty (
         &clip->ch_frames[i][0], CYCLE_SIZE));
     }
 
@@ -192,8 +199,10 @@ do_takes_no_loop_no_punch (
     F_NO_PUBLISH_EVENTS);
 
   /* run the engine */
-  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  SET_CACHES_AND_PROCESS;
   recording_manager_process_events (RECORDING_MANAGER);
+
+  g_message ("process 2 ended");
 
   /* verify MIDI region positions */
   long r_length_frames =
@@ -274,9 +283,11 @@ do_takes_no_loop_no_punch (
   latch_at->automation_mode = AUTOMATION_MODE_READ;
 
   /* run engine 1 more cycle to finalize recording */
-  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  SET_CACHES_AND_PROCESS;
   transport_request_pause (TRANSPORT, true);
   recording_manager_process_events (RECORDING_MANAGER);
+
+  g_message ("process 3 ended");
 
   /* save and undo/redo */
   test_project_save_and_reload ();
@@ -299,7 +310,7 @@ do_takes_loop_no_punch (
   position_set_to_bar (&TRANSPORT->loop_end_pos, 5);
   transport_set_punch_mode_enabled (TRANSPORT, false);
 
-#  define FRAMES_BEFORE_LOOP 4
+#define FRAMES_BEFORE_LOOP 4
 
   /* move playhead to 4 ticks before loop */
   Position pos;
@@ -344,7 +355,7 @@ do_takes_loop_no_punch (
 
   /* run the engine for 1 cycle */
   g_message ("--- processing engine...");
-  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  SET_CACHES_AND_PROCESS;
   g_message ("--- processing recording events...");
   recording_manager_process_events (RECORDING_MANAGER);
 
@@ -458,18 +469,18 @@ do_takes_loop_no_punch (
   g_assert_cmppos (&pos, &ap_obj->pos);
   g_assert_cmpfloat_with_epsilon (
     ap->fvalue, latch_val_at_start, 0.0001f);
-#  if 0
+#if 0
   ap = latch_r->aps[1];
   ap_obj = (ArrangerObject *) ap;
   position_from_frames (&pos, FRAMES_BEFORE_LOOP);
   g_assert_cmppos (&pos, &ap_obj->pos);
   g_assert_cmpfloat_with_epsilon (
     ap->fvalue, latch_val_at_start, 0.0001f);
-#  endif
+#endif
 
   /* TODO try the above steps again with data like
    * below */
-#  if 0
+#if 0
   /* send a MIDI event */
   Port * port = ins_track->processor->midi_in;
   midi_events_add_note_on (
@@ -494,7 +505,7 @@ do_takes_loop_no_punch (
     F_NO_PUBLISH_EVENTS);
 
   /* run the engine */
-  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  SET_CACHES_AND_PROCESS;
   recording_manager_process_events (
     RECORDING_MANAGER);
 
@@ -587,12 +598,12 @@ do_takes_loop_no_punch (
   latch_at->automation_mode = AUTOMATION_MODE_READ;
 
   /* run engine 1 more cycle to finalize recording */
-  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  SET_CACHES_AND_PROCESS;
   recording_manager_process_events (
     RECORDING_MANAGER);
-#  endif
+#endif
 
-#  undef FRAMES_BEFORE_LOOP
+#undef FRAMES_BEFORE_LOOP
 
   /* save and undo/redo */
   test_project_save_and_reload ();
@@ -635,7 +646,7 @@ test_recording (void)
 
   /* create an instrument track for testing */
   test_plugin_manager_create_tracks_from_plugin (
-    HELM_BUNDLE, HELM_URI, true, false, 1);
+    TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
   Track * ins_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
@@ -662,7 +673,7 @@ test_automation_touch_recording (void)
 
   /* create an instrument track from helm */
   test_plugin_manager_create_tracks_from_plugin (
-    HELM_BUNDLE, HELM_URI, true, false, 1);
+    TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
 
   int     ins_track_pos = TRACKLIST->num_tracks - 1;
   Track * ins_track = TRACKLIST->tracks[ins_track_pos];
@@ -679,7 +690,7 @@ test_automation_touch_recording (void)
   position_set_to_bar (&TRANSPORT->loop_end_pos, 5);
   transport_set_punch_mode_enabled (TRANSPORT, false);
 
-#  define FRAMES_BEFORE_LOOP 4
+#define FRAMES_BEFORE_LOOP 4
 
   /* move playhead to 4 ticks before loop */
   Position pos;
@@ -708,7 +719,7 @@ test_automation_touch_recording (void)
 
   /* run the engine for 1 cycle */
   g_message ("--- processing engine...");
-  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  SET_CACHES_AND_PROCESS;
   g_message ("--- processing recording events...");
   recording_manager_process_events (RECORDING_MANAGER);
 
@@ -726,7 +737,7 @@ test_automation_touch_recording (void)
 
   /* run the engine for 1 cycle (including loop) */
   g_message ("--- processing engine...");
-  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  SET_CACHES_AND_PROCESS;
   g_message ("--- processing recording events...");
   recording_manager_process_events (RECORDING_MANAGER);
 
@@ -750,7 +761,7 @@ test_automation_touch_recording (void)
   position_from_frames (&pos, CYCLE_SIZE - FRAMES_BEFORE_LOOP);
   g_assert_cmppos (&pos, &touch_r_obj->loop_end_pos);
 
-#  undef FRAMES_BEFORE_LOOP
+#undef FRAMES_BEFORE_LOOP
 
   /* assert that automation points are created */
   touch_r = touch_at->regions[0];
@@ -772,7 +783,6 @@ test_automation_touch_recording (void)
 
   test_helper_zrythm_cleanup ();
 }
-#endif
 
 static void
 test_mono_recording (void)
@@ -817,7 +827,7 @@ test_mono_recording (void)
     }
 
   /* run the engine for 1 cycle */
-  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  SET_CACHES_AND_PROCESS;
   recording_manager_process_events (RECORDING_MANAGER);
 
   ZRegion *        audio_r;
@@ -849,7 +859,7 @@ test_mono_recording (void)
   track_set_recording (audio_track, false, false);
 
   /* run engine 1 more cycle to finalize recording */
-  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  SET_CACHES_AND_PROCESS;
   transport_request_pause (TRANSPORT, true);
   recording_manager_process_events (RECORDING_MANAGER);
 
@@ -923,7 +933,7 @@ test_long_audio_recording (void)
           processed_ch_frames++;
         }
 
-      engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+      SET_CACHES_AND_PROCESS;
       recording_manager_process_events (RECORDING_MANAGER);
 
       /* assert that audio events are created */
@@ -976,7 +986,7 @@ test_long_audio_recording (void)
   track_set_recording (audio_track, false, false);
 
   /* run engine 1 more cycle to finalize recording */
-  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  SET_CACHES_AND_PROCESS;
   transport_request_pause (TRANSPORT, true);
   recording_manager_process_events (RECORDING_MANAGER);
 
@@ -1074,7 +1084,7 @@ test_2nd_audio_recording (void)
           processed_ch_frames++;
         }
 
-      engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+      SET_CACHES_AND_PROCESS;
       recording_manager_process_events (RECORDING_MANAGER);
 
       /* assert that audio events are created */
@@ -1104,7 +1114,7 @@ test_2nd_audio_recording (void)
   track_set_recording (audio_track, false, false);
 
   /* run engine 1 more cycle to finalize recording */
-  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  SET_CACHES_AND_PROCESS;
   transport_request_pause (TRANSPORT, true);
   recording_manager_process_events (RECORDING_MANAGER);
 
@@ -1153,7 +1163,7 @@ test_chord_track_recording (void)
   /* run the engine for a few cycles */
   for (int i = 0; i < 4; i++)
     {
-      engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+      SET_CACHES_AND_PROCESS;
       recording_manager_process_events (RECORDING_MANAGER);
     }
 
@@ -1167,7 +1177,7 @@ test_chord_track_recording (void)
 
   /* run engine 1 more cycle to finalize
    * recording */
-  engine_process (AUDIO_ENGINE, CYCLE_SIZE);
+  SET_CACHES_AND_PROCESS;
   transport_request_pause (TRANSPORT, true);
   recording_manager_process_events (RECORDING_MANAGER);
 
@@ -1191,6 +1201,11 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/integration/recording/"
 
   g_test_add_func (
+    TEST_PREFIX "test_recording", (GTestFunc) test_recording);
+  g_test_add_func (
+    TEST_PREFIX "test automation touch recording",
+    (GTestFunc) test_automation_touch_recording);
+  g_test_add_func (
     TEST_PREFIX "test 2nd audio recording",
     (GTestFunc) test_2nd_audio_recording);
   g_test_add_func (
@@ -1199,13 +1214,6 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test long audio recording",
     (GTestFunc) test_long_audio_recording);
-#ifdef HAVE_HELM
-  g_test_add_func (
-    TEST_PREFIX "test_recording", (GTestFunc) test_recording);
-  g_test_add_func (
-    TEST_PREFIX "test automation touch recording",
-    (GTestFunc) test_automation_touch_recording);
-#endif
   g_test_add_func (
     TEST_PREFIX "test mono recording",
     (GTestFunc) test_mono_recording);

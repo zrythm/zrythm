@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
@@ -143,9 +143,10 @@ _test_port_and_plugin_track_pos_after_duplication (
   ZRegion * region = automation_region_new (
     &start_pos, &end_pos, track_name_hash, at->index,
     at->num_regions);
-  track_add_region (
+  bool success = track_add_region (
     src_track, region, at, -1, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) region, true, false,
     F_NO_PUBLISH_EVENTS);
@@ -303,9 +304,10 @@ _test_undo_track_deletion (
   ZRegion * region = automation_region_new (
     &start_pos, &end_pos, track_name_hash, at->index,
     at->num_regions);
-  track_add_region (
+  bool success = track_add_region (
     helm_track, region, at, -1, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS);
+    F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) region, true, false,
     F_NO_PUBLISH_EVENTS);
@@ -830,8 +832,10 @@ test_ins_track_deletion_w_automation (void)
   ZRegion * region = automation_region_new (
     &start_pos, &end_pos, track_get_name_hash (track),
     at->index, at->num_regions);
-  track_add_region (
-    track, region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  bool success = track_add_region (
+    track, region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
+    NULL);
+  g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) region, true, false,
     F_NO_PUBLISH_EVENTS);
@@ -864,8 +868,10 @@ test_ins_track_deletion_w_automation (void)
   region = automation_region_new (
     &start_pos, &end_pos, track_get_name_hash (track),
     at->index, at->num_regions);
-  track_add_region (
-    track, region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+  success = track_add_region (
+    track, region, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
+    NULL);
+  g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) region, true, false,
     F_NO_PUBLISH_EVENTS);
@@ -1023,9 +1029,10 @@ _test_move_tracks (
   position_add_ticks (&end_pos, 600);
   ZRegion * ar = automation_region_new (
     &pos, &end_pos, track_get_name_hash (fx_track), 0, 0);
-  track_add_region (
+  bool success = track_add_region (
     fx_track, ar, fx_track->automation_tracklist.ats[0], -1,
-    F_GEN_NAME, F_NO_PUBLISH_EVENTS);
+    F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) ar, F_SELECT, F_NO_APPEND,
     F_NO_PUBLISH_EVENTS);

@@ -1224,6 +1224,8 @@ handle_automation_event (
       at, &end_pos, true, Z_F_NO_USE_SNAPSHOTS);
   if (!region && automation_value_changed)
     {
+      g_debug (
+        "creating new automation region (automation value changed)");
       /* create region */
       Position pos_to_end_new_r;
       if (region_at_end)
@@ -1504,7 +1506,7 @@ recording_manager_process_events (RecordingManager * self)
       switch (ev->type)
         {
         case RECORDING_EVENT_TYPE_MIDI:
-          g_message ("-------- RECORD MIDI");
+          /*g_message ("-------- RECORD MIDI");*/
           handle_midi_event (self, ev);
           break;
         case RECORDING_EVENT_TYPE_AUDIO:

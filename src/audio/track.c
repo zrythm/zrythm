@@ -85,7 +85,7 @@ track_init_loaded (
       lane = self->lanes[j];
       track_lane_init_loaded (lane, self);
     }
-  self->lanes_size = self->num_lanes;
+  self->lanes_size = (size_t) self->num_lanes;
   ScaleObject * scale;
   for (int i = 0; i < self->num_scales; i++)
     {
@@ -482,7 +482,7 @@ track_clone (Track * track, GError ** error)
   /* --- copy objects --- */
 
   new_track->num_lanes = track->num_lanes;
-  new_track->lanes_size = new_track->num_lanes;
+  new_track->lanes_size = (size_t) new_track->num_lanes;
   new_track->lanes = g_realloc_n (
     new_track->lanes, new_track->lanes_size,
     sizeof (TrackLane *));
@@ -2670,7 +2670,9 @@ track_fill_events (
   StereoPorts *                       stereo_ports)
 {
   if (!track_is_auditioner (self) && !TRANSPORT_IS_ROLLING)
-    return;
+    {
+      return;
+    }
 
   const unsigned_frame_t g_end_frames =
     time_nfo->g_start_frame + time_nfo->nframes;

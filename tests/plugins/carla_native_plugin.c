@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
@@ -63,30 +63,29 @@ test_mono_plugin (void)
   engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
 
   /* bounce */
-  ExportSettings settings;
-  memset (&settings, 0, sizeof (ExportSettings));
+  ExportSettings * settings = export_settings_new ();
   export_settings_set_bounce_defaults (
-    &settings, EXPORT_FORMAT_WAV, NULL, __func__);
-  settings.time_range = TIME_RANGE_LOOP;
-  settings.bounce_with_parents = true;
-  settings.mode = EXPORT_MODE_FULL;
+    settings, EXPORT_FORMAT_WAV, NULL, __func__);
+  settings->time_range = TIME_RANGE_LOOP;
+  settings->bounce_with_parents = true;
+  settings->mode = EXPORT_MODE_FULL;
 
   EngineState state;
   GPtrArray * conns =
-    exporter_prepare_tracks_for_export (&settings, &state);
+    exporter_prepare_tracks_for_export (settings, &state);
 
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
     "bounce_thread",
-    (GThreadFunc) exporter_generic_export_thread, &settings);
+    (GThreadFunc) exporter_generic_export_thread, settings);
 
   g_thread_join (thread);
 
-  exporter_post_export (&settings, conns, &state);
+  exporter_post_export (settings, conns, &state);
 
-  g_assert_false (audio_file_is_silent (settings.file_uri));
+  g_assert_false (audio_file_is_silent (settings->file_uri));
 
-  export_settings_free_members (&settings);
+  export_settings_free (settings);
 
   test_helper_zrythm_cleanup ();
 #endif
