@@ -267,11 +267,17 @@ transport_action_stringize (TransportAction * self)
   switch (self->type)
     {
     case TRANSPORT_ACTION_BPM_CHANGE:
-      return g_strdup (_ ("Change BPM"));
+      return g_strdup_printf (
+        _ ("Change BPM from %.2f to %.2f"), self->bpm_before,
+        self->bpm_after);
     case TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE:
-      return g_strdup (_ ("Beats per bar change"));
+      return g_strdup_printf (
+        _ ("Change beats per bar from %d to %d"),
+        self->int_before, self->int_after);
     case TRANSPORT_ACTION_BEAT_UNIT_CHANGE:
-      return g_strdup (_ ("Beat unit change"));
+      return g_strdup_printf (
+        _ ("Change beat unit from %d to %d"),
+        self->int_before, self->int_after);
     }
 
   g_return_val_if_reached (NULL);
