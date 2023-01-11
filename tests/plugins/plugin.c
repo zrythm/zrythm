@@ -199,6 +199,25 @@ test_bypass_state_after_project_load (void)
 #endif
 }
 
+static void
+test_plugin_without_outputs (void)
+{
+#ifdef HAVE_KXSTUDIO_LFO
+  test_helper_zrythm_init ();
+
+  test_plugin_manager_create_tracks_from_plugin (
+    KXSTUDIO_LFO_BUNDLE, KXSTUDIO_LFO_URI, false, true, 1);
+  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Plugin * pl = track->channel->inserts[0];
+  g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
+
+  /* reload project */
+  test_project_save_and_reload ();
+
+  test_helper_zrythm_cleanup ();
+#endif
+}
+
 int
 main (int argc, char * argv[])
 {
@@ -208,6 +227,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/plugins/plugin/"
 
+  g_test_add_func (
+    TEST_PREFIX "test plugin without outputs",
+    (GTestFunc) test_plugin_without_outputs);
   g_test_add_func (
     TEST_PREFIX "test bypass state after project load",
     (GTestFunc) test_bypass_state_after_project_load);

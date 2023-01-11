@@ -291,11 +291,11 @@ static const cyaml_schema_field_t plugin_fields_schema[] = {
     Plugin,
     setting,
     plugin_setting_fields_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     Plugin,
     in_ports,
     port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     Plugin,
     out_ports,
     port_schema),

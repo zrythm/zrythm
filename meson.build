@@ -1465,6 +1465,9 @@ ext_lv2_plugins = {
   'test_signal': [
     'Test Signal',
     'http://gareus.org/oss/lv2/testsignal'],
+  'kxstudio_lfo': [
+    'KXStudio LFO',
+    'http://kxstudio.sf.net/carla/plugins/lfo'],
   }
 have_ext_lv2_plugins = {}
 ext_lv2_plugin_bundles = {}
