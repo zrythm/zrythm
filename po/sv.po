@@ -4,13 +4,15 @@
 # Felix Paulsson <fpaulsson@protonmail.com>, 2020.
 # Mattias Münster <mattiasmun@gmail.com>, 2020.
 # Henrik Mattsson-Mårn <h@archkive.org>, 2021.
+# tygyh <jonis9898@hotmail.com>, 2022.
+# Ivar <ivar.bjerling@protonmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-11-03 11:10+0900\n"
-"PO-Revision-Date: 2022-08-07 15:52+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2023-01-06 23:59+0000\n"
+"Last-Translator: Ivar <ivar.bjerling@protonmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/zrythm/sv/"
 ">\n"
 "Language: sv\n"
@@ -18,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.14-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -26,11 +28,11 @@ msgstr "Kromatisk"
 
 #: inc/schemas/audio/scale.h:94 inc/audio/scale.h:128
 msgid "Major"
-msgstr ""
+msgstr "Dur"
 
 #: inc/schemas/audio/scale.h:95 inc/audio/scale.h:129
 msgid "Minor"
-msgstr ""
+msgstr "Moll"
 
 #: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
 #, fuzzy
@@ -43,99 +45,95 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:98 inc/audio/scale.h:132
 msgid "Phrygian"
-msgstr ""
+msgstr "Frygisk"
 
 #: inc/schemas/audio/scale.h:99 inc/audio/scale.h:133
 msgid "Lydian"
-msgstr ""
+msgstr "Lydiska"
 
 #: inc/schemas/audio/scale.h:100 inc/audio/scale.h:134
 msgid "Mixolydian"
-msgstr ""
+msgstr "Mixolydisk"
 
 #: inc/schemas/audio/scale.h:101 inc/audio/scale.h:135
 msgid "Aeolian"
-msgstr ""
+msgstr "Eoliska"
 
 #: inc/schemas/audio/scale.h:102 inc/audio/scale.h:136
 msgid "Locrian"
 msgstr ""
 
 #: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
-#, fuzzy
 msgid "Melodic Minor"
-msgstr "Harmonisk moll"
+msgstr "Melodisk Moll"
 
 #: inc/schemas/audio/scale.h:104 inc/audio/scale.h:138
 msgid "Harmonic Minor"
 msgstr "Harmonisk moll"
 
 #: inc/schemas/audio/scale.h:105 inc/audio/scale.h:139
-#, fuzzy
 msgid "Whole Tone"
-msgstr "Aktivera/Inaktivera övre panelen"
+msgstr "Helton"
 
 #: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
 msgid "Major Pentatonic"
-msgstr ""
+msgstr "Dur Pentatonisk"
 
 #: inc/schemas/audio/scale.h:107 inc/audio/scale.h:141
 msgid "Minor Pentatonic"
-msgstr ""
+msgstr "Moll Pentatonisk"
 
 #: inc/schemas/audio/scale.h:108 inc/audio/scale.h:142
 msgid "Octatonic Half Whole"
-msgstr ""
+msgstr "Oktatonisk halv hel"
 
 #: inc/schemas/audio/scale.h:110 inc/audio/scale.h:143
 msgid "Octatonic Whole Half"
-msgstr ""
+msgstr "Oktatonisk hel hel Halv"
 
 #: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
 msgid "Acoustic"
-msgstr ""
+msgstr "Akustisk"
 
 #: inc/schemas/audio/scale.h:113 inc/audio/scale.h:145
-#, fuzzy
 msgid "Harmonic Major"
-msgstr "Harmonisk moll"
+msgstr "Harmonisk Dur"
 
 #: inc/schemas/audio/scale.h:114 inc/audio/scale.h:146
 msgid "Phrygian Dominant"
-msgstr ""
+msgstr "Frygisk Dominerande"
 
 #: inc/schemas/audio/scale.h:115 inc/audio/scale.h:147
 msgid "Major Locrian"
-msgstr ""
+msgstr "Dur Lokrisk"
 
 #: inc/schemas/audio/scale.h:116 inc/audio/scale.h:148
 msgid "Algerian"
-msgstr ""
+msgstr "Algerisk"
 
 #: inc/schemas/audio/scale.h:117 inc/audio/scale.h:149
 msgid "Augmented"
-msgstr ""
+msgstr "Förstärkt"
 
 #: inc/schemas/audio/scale.h:118 inc/audio/scale.h:150
 msgid "Double Harmonic"
-msgstr ""
+msgstr "Dubbel Harmonisk"
 
 #: inc/schemas/audio/scale.h:119 inc/audio/scale.h:151
-#, fuzzy
 msgid "Chinese"
-msgstr "Kurvighet"
+msgstr "Kinesisk"
 
 #: inc/schemas/audio/scale.h:120 inc/audio/scale.h:152
 msgid "Diminished"
-msgstr ""
+msgstr "Minskad"
 
 #: inc/schemas/audio/scale.h:121 inc/audio/scale.h:153
 msgid "Dominant Diminished"
-msgstr ""
+msgstr "Dominant Diminished"
 
 #: inc/schemas/audio/scale.h:122 inc/audio/scale.h:154
 msgid "Egyptian"
-msgstr ""
+msgstr "Egyptiskt"
 
 #: inc/schemas/audio/scale.h:123 inc/audio/scale.h:155
 msgid "Eight Tone Spanish"
@@ -151,102 +149,95 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:126 inc/audio/scale.h:158
 msgid "Hindu"
-msgstr ""
+msgstr "Hinduisk"
 
 #: inc/schemas/audio/scale.h:127 inc/audio/scale.h:159
 msgid "Hirajoshi"
-msgstr ""
+msgstr "Hirajoshi"
 
 #: inc/schemas/audio/scale.h:128 inc/audio/scale.h:160
 msgid "Hungarian Gypsy"
-msgstr ""
+msgstr "Ungersk Zigernare"
 
 #: inc/schemas/audio/scale.h:129 inc/audio/scale.h:161
-#, fuzzy
 msgid "Insen"
-msgstr "Inlägg"
+msgstr "Insen"
 
 #: inc/schemas/audio/scale.h:130 inc/audio/scale.h:162
-#, fuzzy
 msgid "Neapolitan Major"
-msgstr "Jonisk (dur)"
+msgstr "Neapolitansk Dur"
 
 #: inc/schemas/audio/scale.h:131 inc/audio/scale.h:163
-#, fuzzy
 msgid "Neapolitan Minor"
-msgstr "Eolisk (moll)"
+msgstr "Neapolitansk Moll"
 
 #: inc/schemas/audio/scale.h:132 inc/audio/scale.h:164
-#, fuzzy
 msgid "Oriental"
-msgstr "Horisontellt"
+msgstr "Orientalisk"
 
 #: inc/schemas/audio/scale.h:133 inc/audio/scale.h:165
-#, fuzzy
 msgid "Romanian Minor"
-msgstr "Harmonisk moll"
+msgstr "Rumänsk Moll"
 
 #: inc/schemas/audio/scale.h:134 inc/audio/scale.h:166
 msgid "Altered"
-msgstr ""
+msgstr "Ändrad"
 
 #: inc/schemas/audio/scale.h:135 inc/audio/scale.h:167
 msgid "Maqam"
-msgstr ""
+msgstr "Maqam"
 
 #: inc/schemas/audio/scale.h:136 inc/audio/scale.h:168
 msgid "Yo"
-msgstr ""
+msgstr "Yo"
 
 #: inc/schemas/audio/scale.h:137 inc/audio/scale.h:169
 msgid "Bebop Locrian"
-msgstr ""
+msgstr "Becop Lokrisk"
 
 #: inc/schemas/audio/scale.h:138 inc/audio/scale.h:170
 msgid "Bebop Dominant"
-msgstr ""
+msgstr "Bebop Dominant"
 
 #: inc/schemas/audio/scale.h:139 inc/audio/scale.h:171
 msgid "Bebop Major"
-msgstr ""
+msgstr "Bebop Major"
 
 #: inc/schemas/audio/scale.h:140 inc/audio/scale.h:172
 msgid "Super Locrian"
-msgstr ""
+msgstr "Super Lokrisk"
 
 #: inc/schemas/audio/scale.h:141 inc/audio/scale.h:173
-#, fuzzy
 msgid "Enigmatic Minor"
-msgstr "Harmonisk moll"
+msgstr "Enigmatisk Moll"
 
 #: inc/schemas/audio/scale.h:142 inc/audio/scale.h:174
 msgid "Composite"
-msgstr ""
+msgstr "Komposit"
 
 #: inc/schemas/audio/scale.h:143 inc/audio/scale.h:175
 msgid "Bhairav"
-msgstr ""
+msgstr "Bhairav"
 
 #: inc/schemas/audio/scale.h:144 inc/audio/scale.h:176
-#, fuzzy
 msgid "Hungarian Minor"
-msgstr "Harmonisk moll"
+msgstr "Ungersk Moll"
 
 #: inc/schemas/audio/scale.h:145 inc/audio/scale.h:177
 msgid "Persian"
-msgstr ""
+msgstr "Persisk"
 
 #: inc/schemas/audio/scale.h:146 inc/audio/scale.h:178
 msgid "Iwato"
-msgstr ""
+msgstr "Iwato"
 
 #: inc/schemas/audio/scale.h:147 inc/audio/scale.h:179
 msgid "Kumoi"
-msgstr ""
+msgstr "Kumoi"
 
 #: inc/schemas/audio/scale.h:148 inc/audio/scale.h:180
 msgid "Pelog"
-msgstr ""
+msgstr "Pelog"
 
 #: inc/schemas/audio/scale.h:149 inc/audio/scale.h:181
 msgid "Prometheus"
@@ -4501,9 +4492,8 @@ msgid "Metronome"
 msgstr "Metronom"
 
 #: src/gui/widgets/bot_bar.c:506
-#, fuzzy
 msgid "Metronome options"
-msgstr "Metronom"
+msgstr "Metronomval"
 
 #. volume
 #: src/gui/widgets/bot_bar.c:516 resources/ui/file_auditioner_controls.ui:29
@@ -4540,35 +4530,33 @@ msgid "Add Group Track"
 msgstr "Lägg till gruppspår"
 
 #: src/gui/widgets/tracklist.c:78
-#, fuzzy
 msgid "Add Folder Track"
-msgstr "Lägg till effektspår"
+msgstr "Lägg till katalogspår"
 
 #: src/gui/widgets/tracklist.c:229 src/gui/widgets/tracklist.c:272
 #: src/gui/widgets/tracklist.c:292
-#, fuzzy
 msgid "Operation unimplemented"
-msgstr "Ej implementerat"
+msgstr "Operation ej implementerad"
 
 #: src/gui/widgets/tracklist.c:247
 msgid ""
 "Attempted to drop an instrument onto a MIDI track, which is not supported. "
 "Create a new instrument track instead?"
 msgstr ""
+"Försökte släppa ett instrument på ett MIDI-spår, vilket inte stöds. Skapa "
+"ett nytt instrumentspår istället?"
 
 #: src/gui/widgets/tracklist.c:281 src/gui/widgets/tracklist.c:299
-#, fuzzy
 msgid "Dragged item is not supported"
-msgstr "Det finns ingen stöd för denna kombination av backend"
+msgstr "Pådraget objekt stöds ej"
 
 #: src/gui/widgets/chord_pad_panel.c:67
-#, fuzzy
 msgid "From scale"
 msgstr "I skala"
 
 #: src/gui/widgets/chord_pad_panel.c:70
 msgid "Predefined"
-msgstr ""
+msgstr "Fördefinierad"
 
 #: src/gui/widgets/chord_pad_panel.c:98
 #, fuzzy
@@ -4577,14 +4565,12 @@ msgstr "Förinställningar"
 
 #: src/gui/widgets/midi_arranger.c:478 resources/ui/export_dialog.ui:102
 #: resources/ui/export_dialog.ui:238
-#, fuzzy
 msgid "Selection"
-msgstr "Markeringar"
+msgstr "Markering"
 
 #: src/gui/widgets/plugin_browser.c:528
-#, fuzzy
 msgid "Rename"
-msgstr "region_namn"
+msgstr "Döp om"
 
 #: src/gui/widgets/log_viewer.c:109
 msgid "Log Viewer"
@@ -4608,7 +4594,7 @@ msgstr "Spår"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:23
 msgid "Welcome to the Zrythm DAW"
-msgstr ""
+msgstr "Välkommen till den digitala ljudarbetsstationen Zrythm"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:26
 #, c-format
@@ -4616,6 +4602,8 @@ msgid ""
 "If this is your first time using Zrythm, we suggest going through the "
 "'Getting Started' section in the %suser manual%s."
 msgstr ""
+"Om detta är första gången du använder Zrythm föreslår vi att du går igenom "
+"avsnittet 'Getting Started' i %sanvändarhandboken%s."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:35
 #, c-format
@@ -4623,10 +4611,13 @@ msgid ""
 "%sZrythm relies on donations and purchases to sustain development%s. If you "
 "enjoy the software, please consider %sdonating%s or %sbuying an installer%s."
 msgstr ""
+"%sZrythm förlitar sig på donationer och inköp för att upprätthålla "
+"utvecklingen%s. Om du tycker om programmet kan du överväga att %s donera%s "
+"eller %s köpa ett installationsprogram%s."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:47
 msgid "Flatpak users"
-msgstr ""
+msgstr "Flatpak-användare"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:49
 msgid ""
@@ -4634,19 +4625,24 @@ msgid ""
 "errors when starting Zrythm. We recommend setting a fixed buffer size for "
 "Zrythm in your PipeWire config to avoid this."
 msgstr ""
+"PipeWire-versionen av denna Flatpak-körningstid har ett känt fel som kan "
+"orsaka fel när Zrythm startas. Vi rekommenderar att du ställer in en fast "
+"buffertstorlek för Zrythm i din PipeWire-konfiguration för att undvika detta."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:57
 msgid "Flatpak limitation"
-msgstr ""
+msgstr "Flatpak-begränsning"
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:58
 msgid "Only Flatpak-installed plugins are supported."
-msgstr ""
+msgstr "Endast Flatpak-installerade plugins stöds."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:70
 #, c-format
 msgid "Zrythm and the Zrythm logo are %strademarks of Alexandros Theodotou%s."
 msgstr ""
+"Zrythm och Zrythm-logotypen är %svarumärken som tillhör Alexandros "
+"Theodotou%s."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:87
 msgid "Welcome"
@@ -4657,9 +4653,9 @@ msgid "No port selected"
 msgstr "Inget port är valt"
 
 #: src/gui/widgets/dialogs/port_selector_dialog.c:69
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to connect %s to %s"
-msgstr "Kunde inte öppna filen: %s"
+msgstr "Kunde inte ansluta %s till %s"
 
 #: src/gui/widgets/dialogs/port_selector_dialog.c:80
 msgid "These ports cannot be connected"
@@ -4674,14 +4670,12 @@ msgid "Saving..."
 msgstr "Sparar..."
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:66
-#, fuzzy
 msgid "Saved"
-msgstr "Spara"
+msgstr "Sparad"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:69
-#, fuzzy
 msgid "Project Progress"
-msgstr "Exporteringsstatus"
+msgstr "Projektstatus"
 
 #: src/gui/widgets/dialogs/port_info.c:53
 #, c-format
@@ -4693,28 +4687,25 @@ msgid "Port info"
 msgstr "Portinfo"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:94
-#, fuzzy
 msgid "MIDI region exported."
-msgstr "MIDI-ingång"
+msgstr "MIDI-region exporterad."
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:104
-#, fuzzy
 msgid "MIDI regions exported."
-msgstr "MIDI-ingång"
+msgstr "MIDI-regioner exporterade."
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:110
-#, fuzzy
 msgid "Failed to export MIDI regions."
-msgstr "Kunde inte återställa schemat %s"
+msgstr "Kunde inte exportera MIDI regioner."
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:138
 msgid "Select MIDI file"
-msgstr "Välj en MIDI-fil"
+msgstr "Välj MIDI-fil"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:139
 #: src/gui/widgets/dialogs/export_dialog.c:1513
 msgid "_Export"
-msgstr "Exportera"
+msgstr "_Exportera"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:149
 msgid "Base region"
@@ -4725,9 +4716,8 @@ msgid "Full region"
 msgstr "Hela regionen"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:159
-#, fuzzy
 msgid "Region Content"
-msgstr "Regionens innehåll"
+msgstr "Regioninnehåll"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:170
 msgid "Format 0"
@@ -4738,34 +4728,29 @@ msgid "Format 1"
 msgstr "Format 1"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:180
-#, fuzzy
 msgid "MIDI Format"
 msgstr "MIDI-format"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:194
-#, fuzzy
 msgid "Part of parent track"
-msgstr "Kunde inte skriva filen: %s"
+msgstr "Del av föräldraspår"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:198
-#, fuzzy
 msgid "Separate tracks"
-msgstr "Byt spårets namn"
+msgstr "Separera spår"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:205
 #, fuzzy
 msgid "Export lanes as"
-msgstr "Exportera som"
+msgstr "Exportera banor som"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:80
-#, fuzzy
 msgid "Failed to quantize editor selections"
-msgstr "Kunde inte skriva filen: %s"
+msgstr "Kunde inte kvantisera redigerarmarkeringar"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:94
-#, fuzzy
 msgid "Failed to quantize timeline selections"
-msgstr "Slå ihop markeringar"
+msgstr "Kunde inte kvantisera tidslinjemarkeringar"
 
 #: src/gui/widgets/dialogs/quantize_dialog.c:125
 msgid "note length"
@@ -4785,9 +4770,8 @@ msgid "Language"
 msgstr "Språk"
 
 #: src/gui/widgets/dialogs/scripting_dialog.c:110
-#, fuzzy
 msgid "Select the language of the script"
-msgstr "Välj kanal att koppla signalen till"
+msgstr "Välj skriptspråket"
 
 #: src/gui/widgets/dialogs/scripting_dialog.c:253
 msgid "Execute"
@@ -4853,16 +4837,14 @@ msgid "Loop"
 msgstr "Loopa"
 
 #: src/gui/widgets/dialogs/export_dialog.c:1367
-#, fuzzy
 msgctxt "Export time range"
 msgid "Song"
-msgstr "Sång"
+msgstr "Låt"
 
 #: src/gui/widgets/dialogs/export_dialog.c:1368
-#, fuzzy
 msgctxt "Export time range"
 msgid "Custom"
-msgstr "Egen markör"
+msgstr "Egen"
 
 #: src/gui/widgets/dialogs/create_project_dialog.c:84
 msgid "Create New Project"
@@ -4900,7 +4882,7 @@ msgstr "Öppnar katalogen inuti"
 #: src/gui/widgets/dialogs/changelog_dialog.c:26
 #, c-format
 msgid "Running %s version <b>%s</b>%s%s"
-msgstr ""
+msgstr "Kör %s version <b>%s</b>%s%s"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:170
 msgid "Setup Zrythm"
@@ -4908,31 +4890,27 @@ msgstr "Ställ in Zrythm"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:202
 msgid "Initial Configuration"
-msgstr ""
+msgstr "Initial konfiguration"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:215
-#, fuzzy
 msgid "Preferred language"
-msgstr "Prefader-balans"
+msgstr "Föredraget språk"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:225
-#, fuzzy
 msgid "User path"
-msgstr "Markera allt"
+msgstr "Användarsökväg"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:227
 msgid "Location to save user files"
-msgstr ""
+msgstr "Plats för att spara användarfiler"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:230
-#, fuzzy
 msgid "Select a directory"
-msgstr "Välj ett projekt"
+msgstr "Välj en katalog"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:264
-#, fuzzy
 msgid "_Reset"
-msgstr "Återställ"
+msgstr "_Återställ"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:55
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:67
@@ -4941,34 +4919,30 @@ msgid "%s color"
 msgstr "%s färg"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:78
-#, fuzzy
 msgid "Track color"
-msgstr "Spårportar"
+msgstr "Spårfärg"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:130
-#, fuzzy
 msgid "Failed to change color"
-msgstr "Kunde inte återställa schemat %s"
+msgstr "Kunde inte ändra färg"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:47
-#, fuzzy
 msgid "Please enter more details"
-msgstr "Var god ange ett värde"
+msgstr "Var god ange fler detaljer"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:164
-#, fuzzy, c-format
+#, c-format
 msgid "error: %s"
-msgstr "ALSA fel: %s"
+msgstr "fel: %s"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:169
 #: src/gui/widgets/dialogs/bug_report_dialog.c:346
 msgid "Done"
-msgstr ""
+msgstr "Klart"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:185
-#, fuzzy
 msgid "Send Automatically"
-msgstr "Automation"
+msgstr "Skicka Automatiskt"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:200
 #, c-format
@@ -4976,10 +4950,12 @@ msgid ""
 "Click OK to submit. You can verify what will be sent below. By clicking OK, "
 "you agree to our %sPrivacy Policy%s."
 msgstr ""
+"Klicka på OK för att skicka. Du kan verifiera vad som kommer att skickas "
+"nedan. Genom att klicka på OK godkänner du vår %sIntegritetspolicy%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:214
 msgid "<b>Data</b>"
-msgstr ""
+msgstr "<b>Data</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:256
 msgid "<b>Log file</b>"
@@ -4987,12 +4963,11 @@ msgstr "<b>Loggfil</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:290
 msgid "<b>Screenshot</b>"
-msgstr ""
+msgstr "<b>Skärmdump</b>"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:337
-#, fuzzy
 msgid "Sending"
-msgstr "CC-kopplingar"
+msgstr "Skickar"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:345
 msgid "Sending data..."
@@ -5000,16 +4975,15 @@ msgstr "Skickar data..."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:347
 msgid "Failed"
-msgstr ""
+msgstr "Misslyckades"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:351
 msgid "Sending..."
 msgstr "Skickar..."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:373
-#, fuzzy
 msgid "Sent successfully"
-msgstr "Exekvering av skriptet lyckades"
+msgstr "Skickades framgångsrikt"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:414
 msgid "Send via Sourcehut"
@@ -5018,12 +4992,11 @@ msgstr "Skicka via Sourcehut"
 #: src/gui/widgets/dialogs/bug_report_dialog.c:420
 #, c-format
 msgid "Please copy the template below in a %snew issue%s."
-msgstr ""
+msgstr "Var god kopiera mallen nedan till ett%snytt ärende%s."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:513
-#, fuzzy
 msgid "Fatal Error"
-msgstr "Fel"
+msgstr "Fatalt Fel"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:513
 msgid "Error"
@@ -5039,14 +5012,12 @@ msgid "What did you do?"
 msgstr "Vad gjorde du?"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:592
-#, fuzzy
 msgid "Please enter as many details as possible (such as steps to reproduce)"
-msgstr "Var god ange ett värde"
+msgstr "Var god ange så många detaljer som möjligt (såsom steg att återskapa)"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:610
-#, fuzzy
 msgid "Error details"
-msgstr "Detaljer"
+msgstr "Feldetaljer"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:617
 #, fuzzy
@@ -5054,61 +5025,53 @@ msgid "Backtrace"
 msgstr "Fel - Bakåtspår:\n"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:633
-#, fuzzy
 msgid "Log"
-msgstr "Låg"
+msgstr "Logg"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:649
-#, fuzzy
 msgid "System info"
-msgstr "Vy-info"
+msgstr "System info"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:664
-#, fuzzy
 msgid "_Close"
-msgstr "Stäng"
+msgstr "_Stäng"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:665
 msgid "Submit on _SourceHut"
-msgstr ""
+msgstr "Skicka in på _SourceHut"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:666
 msgid "Send via _email (publicly visible)"
-msgstr ""
+msgstr "Skicka via _email (synligt för allmänheten)"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:667
 msgid "Preview and send _automatically (privately)"
-msgstr ""
+msgstr "Förhandsgranska och skicka _automatiskt (privat)"
 
 #: src/gui/widgets/dialogs/about_dialog.c:57
 msgid "a highly automated and intuitive digital audio workstation"
-msgstr "en helautomatiserad och intuitiv digital ljudarbetsstation (DAW)"
+msgstr "en högst automatiserad och intuitiv digital ljudarbetsstation (DAW)"
 
 #: src/gui/widgets/dialogs/project_assistant.c:23
-#, fuzzy
 msgid "<File not found>"
-msgstr "Filen %s fanns ej."
+msgstr "<Filen fanns ej>"
 
 #: src/gui/widgets/dialogs/project_assistant.c:127
 #: resources/ui/project_assistant.ui:105
-#, fuzzy
 msgid "_Open Selected"
-msgstr "_Välj"
+msgstr "_Öppna vald"
 
 #: src/gui/widgets/dialogs/project_assistant.c:133
-#, fuzzy
 msgid "_Create"
-msgstr "Skapa %s"
+msgstr "_Skapa"
 
 #: src/gui/widgets/dialogs/project_assistant.c:429
-#, fuzzy
 msgid "No project selected"
-msgstr "Inget objekt är valt"
+msgstr "Inget projekt är valt"
 
 #: src/gui/widgets/dialogs/project_assistant.c:444
-#, fuzzy
 msgid "Select Project File"
-msgstr "Välj projekt"
+msgstr "Välj Projektfil"
 
 #: src/gui/widgets/dialogs/project_assistant.c:679
 msgid "Blank project"

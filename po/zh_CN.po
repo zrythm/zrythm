@@ -16,13 +16,14 @@
 # Hugel <qihu@nfschina.com>, 2022.
 # Eric <hamburger1024@firemail.cc>, 2022.
 # Eric <hamburger1024@mailbox.org>, 2022.
+# SunRuikang <srk888666@qq.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-11-03 11:10+0900\n"
-"PO-Revision-Date: 2022-10-17 00:10+0000\n"
-"Last-Translator: Eric <hamburger1024@mailbox.org>\n"
+"PO-Revision-Date: 2022-11-26 23:56+0000\n"
+"Last-Translator: SunRuikang <srk888666@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -38,11 +39,11 @@ msgstr "半音阶"
 
 #: inc/schemas/audio/scale.h:94 inc/audio/scale.h:128
 msgid "Major"
-msgstr ""
+msgstr "大调"
 
 #: inc/schemas/audio/scale.h:95 inc/audio/scale.h:129
 msgid "Minor"
-msgstr ""
+msgstr "小调"
 
 #: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
 msgid "Ionian"
@@ -50,27 +51,27 @@ msgstr "自然大调音阶"
 
 #: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
 msgid "Dorian"
-msgstr ""
+msgstr "多利亚音阶"
 
 #: inc/schemas/audio/scale.h:98 inc/audio/scale.h:132
 msgid "Phrygian"
-msgstr ""
+msgstr "弗里吉亚音阶"
 
 #: inc/schemas/audio/scale.h:99 inc/audio/scale.h:133
 msgid "Lydian"
-msgstr ""
+msgstr "利底亚音阶"
 
 #: inc/schemas/audio/scale.h:100 inc/audio/scale.h:134
 msgid "Mixolydian"
-msgstr ""
+msgstr "混合利底亚音阶"
 
 #: inc/schemas/audio/scale.h:101 inc/audio/scale.h:135
 msgid "Aeolian"
-msgstr ""
+msgstr "伊奥利亚音阶"
 
 #: inc/schemas/audio/scale.h:102 inc/audio/scale.h:136
 msgid "Locrian"
-msgstr ""
+msgstr "洛克里亚音阶"
 
 #: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
 msgid "Melodic Minor"
@@ -86,19 +87,19 @@ msgstr "全音音阶"
 
 #: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
 msgid "Major Pentatonic"
-msgstr ""
+msgstr "大调五声音阶"
 
 #: inc/schemas/audio/scale.h:107 inc/audio/scale.h:141
 msgid "Minor Pentatonic"
-msgstr ""
+msgstr "小调五声音阶"
 
 #: inc/schemas/audio/scale.h:108 inc/audio/scale.h:142
 msgid "Octatonic Half Whole"
-msgstr ""
+msgstr "八音半全音"
 
 #: inc/schemas/audio/scale.h:110 inc/audio/scale.h:143
 msgid "Octatonic Whole Half"
-msgstr ""
+msgstr "八分音符整半"
 
 #: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
 msgid "Acoustic"
@@ -2235,9 +2236,8 @@ msgid "Invalid positions - skipping function"
 msgstr ""
 
 #: src/audio/audio_function.c:480
-#, fuzzy
 msgid "Failed to get audio clip from external program"
-msgstr "未能创建音频组轨道"
+msgstr "未能从外部程序获取音频片段"
 
 #: src/audio/audio_function.c:505
 msgid "Failed to apply plugin"
@@ -2384,9 +2384,8 @@ msgid "Failed to create audio track"
 msgstr "未能创建音轨"
 
 #: src/audio/exporter.c:1008
-#, fuzzy
 msgid "Invalid time range"
-msgstr "无效名称"
+msgstr "无效时间范围"
 
 #: src/audio/engine_pulse.c:90
 msgid ""
@@ -3271,9 +3270,8 @@ msgid "Hide unused lanes"
 msgstr "隐藏未用音轨"
 
 #: src/gui/widgets/track.c:1829
-#, fuzzy
 msgid "Operation not implemented"
-msgstr "未实现"
+msgstr "未执行操作"
 
 #: src/gui/widgets/modulator_macro.c:56
 #: src/gui/widgets/track_input_expander.c:327
@@ -4266,9 +4264,8 @@ msgstr "添加文件夹轨道"
 
 #: src/gui/widgets/tracklist.c:229 src/gui/widgets/tracklist.c:272
 #: src/gui/widgets/tracklist.c:292
-#, fuzzy
 msgid "Operation unimplemented"
-msgstr "未实现"
+msgstr "未执行操作"
 
 #: src/gui/widgets/tracklist.c:247
 msgid ""
@@ -4277,9 +4274,8 @@ msgid ""
 msgstr ""
 
 #: src/gui/widgets/tracklist.c:281 src/gui/widgets/tracklist.c:299
-#, fuzzy
 msgid "Dragged item is not supported"
-msgstr "不支持所需的功能 %s"
+msgstr "不支持拖动的项目"
 
 #: src/gui/widgets/chord_pad_panel.c:67
 msgid "From scale"
@@ -5849,9 +5845,8 @@ msgid "Only events inside this time range will be exported."
 msgstr ""
 
 #: resources/ui/export_dialog.ui:111 resources/ui/export_dialog.ui:247
-#, fuzzy
 msgid "Custom time range"
-msgstr "时间范围"
+msgstr "自定义时间范围"
 
 #: resources/ui/export_dialog.ui:129 resources/ui/export_dialog.ui:265
 msgid "Track Selection"
@@ -7373,9 +7368,8 @@ msgid ""
 msgstr "传递到插件用户界面的缩放因子（如设为 0，将使用监视器的缩放因子）。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1115
-#, fuzzy
 msgid "VST2 plugins"
-msgstr "VST 插件"
+msgstr "VST2 插件"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1116
 msgid "VST2 plugin search paths separated by : (or ; on Windows)."
@@ -7398,9 +7392,8 @@ msgid "SF2 instrument search paths separated by : (or ; on Windows)."
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1130
-#, fuzzy
 msgid "JSFX plugin paths"
-msgstr "VST 插件"
+msgstr "JSFX 插件路径"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1131
 msgid "JSFX plugin search paths separated by : (or ; on Windows)."
@@ -7550,9 +7543,8 @@ msgid "Added:"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
-#, fuzzy
 msgid "Show drives in file browser"
-msgstr "显示文件浏览器"
+msgstr "在文件浏览器中显示驱动器"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 msgid "Custom time range export for audio"
@@ -7586,9 +7578,8 @@ msgid ""
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
-#, fuzzy
 msgid "Add more error checking to file export"
-msgstr "实例化 Carla 插件时添加更多错误检查"
+msgstr "为文件导出添加更多的错误检查"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:66
 msgid "Port various dropdowns to AdwComboRow"
@@ -7690,9 +7681,8 @@ msgid "Meson: don't set -mtune=generic if not native build"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:101
-#, fuzzy
 msgid "JACK: handle failure to connect to monitor output gracefully"
-msgstr "JACK: 未能连接监视器输出 [%s]: %s"
+msgstr "JACK: 妥善处理连接到监视器输出的失败"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:102
 msgid ""
@@ -7744,9 +7734,8 @@ msgid "Allow moving chord objects vertically"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:138
-#, fuzzy
 msgid "Add more error checking when writing audio to file"
-msgstr "实例化 Carla 插件时添加更多错误检查"
+msgstr "将音频写入文件时添加更多错误检查"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid "Optimize bar slider drawing (fixes lags in plugin inspector)"

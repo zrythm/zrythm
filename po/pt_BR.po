@@ -9,14 +9,14 @@
 # Pedro Portela <pportela@disroot.org>, 2021.
 # Wilker Santana da Silva <wilker@posteo.com.br>, 2022.
 # Vitor Sabino Cardoso da SIlva <vitorcsilva180396@gmail.com>, 2022.
+# Gabriel fresan <gabrielfrsan@proton.me>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2022-11-03 11:10+0900\n"
-"PO-Revision-Date: 2022-06-02 15:49+0000\n"
-"Last-Translator: Vitor Sabino Cardoso da SIlva <vitorcsilva180396@gmail."
-"com>\n"
+"PO-Revision-Date: 2022-12-02 23:55+0000\n"
+"Last-Translator: Gabriel fresan <gabrielfrsan@proton.me>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -24,11 +24,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.13-dev\n"
+"X-Generator: Weblate 4.15-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
-msgstr ""
+msgstr "Cromática"
 
 #: inc/schemas/audio/scale.h:94 inc/audio/scale.h:128
 msgid "Major"
@@ -36,7 +36,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:95 inc/audio/scale.h:129
 msgid "Minor"
-msgstr ""
+msgstr "Menor"
 
 #: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
 msgid "Ionian"
@@ -68,15 +68,16 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
 msgid "Melodic Minor"
-msgstr ""
+msgstr "Melódico Menor"
 
 #: inc/schemas/audio/scale.h:104 inc/audio/scale.h:138
+#, fuzzy
 msgid "Harmonic Minor"
-msgstr ""
+msgstr "Harmônico Menor"
 
 #: inc/schemas/audio/scale.h:105 inc/audio/scale.h:139
 msgid "Whole Tone"
-msgstr ""
+msgstr "Tom Inteiro"
 
 #: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
 msgid "Major Pentatonic"
@@ -99,8 +100,9 @@ msgid "Acoustic"
 msgstr ""
 
 #: inc/schemas/audio/scale.h:113 inc/audio/scale.h:145
+#, fuzzy
 msgid "Harmonic Major"
-msgstr ""
+msgstr "Major Harmônico"
 
 #: inc/schemas/audio/scale.h:114 inc/audio/scale.h:146
 msgid "Phrygian Dominant"
@@ -116,11 +118,12 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:117 inc/audio/scale.h:149
 msgid "Augmented"
-msgstr ""
+msgstr "Aumentado"
 
 #: inc/schemas/audio/scale.h:118 inc/audio/scale.h:150
+#, fuzzy
 msgid "Double Harmonic"
-msgstr ""
+msgstr "Harmonia Dupla"
 
 #: inc/schemas/audio/scale.h:119 inc/audio/scale.h:151
 #, fuzzy

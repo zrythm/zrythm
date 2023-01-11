@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-10-03 21:09+0900\n"
-"PO-Revision-Date: 2022-08-18 15:52+0000\n"
+"PO-Revision-Date: 2022-11-08 23:56+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ca/>\n"
 "Language: ca\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ca/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.14.2\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -744,7 +745,7 @@ msgid ""
 msgstr ""
 "Zrythm gestionarà les connexions de maquinari per si mateix, de manera que "
 "no s'espera que els usuaris hagin d'utilitzar aquest patchbay per a "
-"encaminar dispositius MIDI/àudio, però aquesta eina es pot utilitzar per "
+"encaminar dispositius MIDI/àudio, però aquesta eina es pot utilitzar per a "
 "encaminar senyals d'altres aplicacions a Zrythm per a gravar la seva sortida "
 "o encaminar la sortida de Zrythm a altres aplicacions JACK."
 
@@ -874,8 +875,8 @@ msgid ""
 "navigate to the corresponding item in the preferences."
 msgstr ""
 "Les preferències es poden cercar. En començar a escriure una paraula clau "
-"els resultats apareixen automàticament. En clicar un dels resultats, anirà a "
-"l'element corresponent a les preferències."
+"els resultats apareixen automàticament. En clicar un dels resultats, anirem "
+"a l'element corresponent."
 
 #: ../../configuration/preferences.rst:42
 msgid "Searching the user preferences"
@@ -960,8 +961,8 @@ msgid ""
 "default value."
 msgstr ""
 "Establir-ho a un nombre molt gran augmentarà la mida dels fitxers del "
-"projecte i pot trigar més a desar/carregar els projectes. Recomanem deixar-"
-"lo al valor predeterminat."
+"projecte i pot trigar més en desar/carregar els projectes. Recomanem deixar-"
+"ho al valor predeterminat."
 
 #: ../../configuration/preferences.rst:91
 msgid "Backup Saving"
@@ -974,9 +975,9 @@ msgid ""
 "--> General`. To disable auto-save, set the interval to 0."
 msgstr ""
 "Zrythm pot desar còpies de seguretat automàticament mentre treballa en un "
-"projecte. Pots especificar l'interval per fer-ho, en minuts, a :"
-"menuselection:`Projects --> General`. Per a desactivar l'emmagatzematge "
-"automàtic, establiu l'interval a 0."
+"projecte. Pots especificar l'interval per fer-ho, en minuts, a "
+":menuselection:`Projects --> General`. Per a desactivar l'emmagatzematge "
+"automàtic, posa l'interval a 0."
 
 #: ../../configuration/preferences.rst:100
 msgid "User Interface Language"
@@ -1174,9 +1175,9 @@ msgid ""
 "`fr` in the URL with your language code)."
 msgstr ""
 "Zrythm conté una terminologia semblant al programari d'àudio existent. És "
-"possible que et resulti útil demanar termes en préstec. Consulta el manual "
-"`Cubase Pro Artist manual <https://steinberg.help/cubase_pro_artist/v9/fr/"
-">`_ per exemple (substituint `fr` a l'URL amb el teu codi d'idioma)."
+"possible que et resulti útil demanar termes en préstec. Consulta el manual `"
+"Cubase Pro Artist manual <https://steinberg.help/cubase_pro_artist/v9/fr/>`_ "
+"per exemple (substituint `fr` a la URL amb el teu codi d'idioma)."
 
 #: ../../contributing/intro.rst:76
 msgid "User Manual"
@@ -4102,7 +4103,7 @@ msgid ""
 "most users, and we provide support for it."
 msgstr ""
 "Aquesta és la manera més fàcil i recomanada d'instal·lar l'última versió per "
-"a la majoria dels usuaris, i li donem suport."
+"a la majoria dels usuaris i li donem suport."
 
 #: ../../getting-started/installation.rst:25
 msgid "The installers also include bundled plugins."
@@ -4125,12 +4126,12 @@ msgid ""
 "If Zrythm is available in your distro's repositories, you can also install "
 "it from there."
 msgstr ""
-"Si Zrythm està disponible als repositoris de la vostra distribució, també "
-"pots instal·lar-lo des d'allà."
+"Si Zrythm està disponible als repositoris de la teva distribució, també pots "
+"instal·lar-lo des d'allà."
 
 #: ../../getting-started/installation.rst:38
 msgid "Building from Source"
-msgstr "Construint des de la Font"
+msgstr "Construint des de la font"
 
 #: ../../getting-started/installation.rst:39
 msgid ""
@@ -4138,9 +4139,9 @@ msgid ""
 "tarball <https://www.zrythm.org/releases/>`_ or `git <https://git.zrythm.org/"
 "zrythm/zrythm/>`_."
 msgstr ""
-"Pots construir Zrythm des de la font, ja sigui utilitzant una `tarball de "
-"distribució de fonts <https://www.zrythm.org/releases/>`_ o `git <https://"
-"git.zrythm.org/zrythm/zrythm/>`_."
+"Pots construir Zrythm des de la font, ja sigui utilitzant un `arxiu .tar de "
+"distribució de fonts <https://www.zrythm.org/releases/>`_ o `git <https://git"
+".zrythm.org/zrythm/zrythm/>`_."
 
 #: ../../getting-started/installation.rst:43
 msgid ""
@@ -4231,7 +4232,7 @@ msgid ""
 "overview>` will show up."
 msgstr ""
 "Finalment, Zrythm et demanarà :doc:`carregar o crear un projecte <../"
-"projects/saving-loading>` i després apareixerà el :doc:`interfície principal "
+"projects/saving-loading>` i després apareixerà la :doc:`interfície principal "
 "<../zrythm-interface/overview>`."
 
 #: ../../getting-started/running-zrythm.rst:59
@@ -4335,7 +4336,7 @@ msgstr ""
 "Quan s'utilitza el rerefons :term:`JACK`, el JACK s'ha d'arrencar i "
 "configurar abans d'executar Zrythm. Trobaràs molta informació en línia sobre "
 "com configurar JACK, com ara `Desmitificar JACK: una guia per a principiants "
-"per començar amb JACK <https://linuxaudio.github.io/libremusicproduction/"
+"per a començar amb JACK <https://linuxaudio.github.io/libremusicproduction/"
 "html/articles/demystifying-jack-1%E22%80%93-beginners-guide-getting-started-"
 "jack.html>`_, de manera que saltarem aquesta part."
 
@@ -4405,7 +4406,7 @@ msgid ""
 "On startup, Zrythm will attempt to increase the maximum limit of files it "
 "can open. You should give your user enough permissions to allow this."
 msgstr ""
-"En iniciar, Zrythm intentarà augmentar el límit màxim de fitxers que pot "
+"En iniciar-se, Zrythm intentarà augmentar el límit màxim de fitxers que pot "
 "obrir. Hauries de donar al teu usuari prou permisos per a permetre-ho."
 
 #: ../../glossary/intro.rst:9
@@ -5009,8 +5010,8 @@ msgid ""
 "`MIDI group tracks <tracks/track-types:MIDI Group Track>` can be created for "
 "grouping signals."
 msgstr ""
-":ref:`Pistes en grup d'àudio <tracks/track-types:Audio Group Track>` i :ref:"
-"`pistes en grup MIDI <tracks/track-types:MIDI Group Track>` es poden crear "
+":ref:`Pistes de grup d'àudio <tracks/track-types:Audio Group Track>` i :ref:`"
+"pistes de grup MIDI <tracks/track-types:MIDI Group Track>` es poden crear "
 "per a agrupar senyals."
 
 #: ../../mixing/routing.rst:16
@@ -5879,8 +5880,8 @@ msgid ""
 "Preferences>`."
 msgstr ""
 "Per defecte, només es mostraran els fitxers que no estiguin ocults a la "
-"llista de fitxers. Per a mostrar també fitxers ocults, habilita :guilabel:"
-"`Show hidden files` :ref:`preferències del navegador de fitxers <plugins-"
+"llista de fitxers. Per a mostrar també fitxers ocults, habilita :guilabel:`"
+"Show hidden files` a :ref:`preferències del navegador de fitxers <plugins-"
 "files/audio-midi-files/file-browser:Preferences>`."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:88
@@ -5888,8 +5889,8 @@ msgid ""
 "Audio and MIDI files can be auditioned by making use of the auditioning "
 "controls at the bottom of the file list."
 msgstr ""
-"Els fitxers d'àudio i MIDI es poden oir fent ús dels controls d'audició a la "
-"part inferior de la llista de fitxers."
+"Els fitxers d'àudio i MIDI es poden sentir fent ús dels controls d'audició a "
+"la part inferior de la llista de fitxers."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:95
 msgid "File auditioning controls"
@@ -5901,7 +5902,7 @@ msgstr "|icon_media-playback-start| Reproduir"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:98
 msgid "Trigger playback of the selected file."
-msgstr "Desencadenar la reproducció del fitxer seleccionat."
+msgstr "Desencadena la reproducció del fitxer seleccionat."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:99
 msgid "|icon_media-playback-stop| Stop"
@@ -5917,7 +5918,7 @@ msgstr "Volum"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:102
 msgid "Control the loudness of the output audio."
-msgstr "Controlar la sonoritat de l'àudio de sortida."
+msgstr "Controla la sonoritat de l'àudio de sortida."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:105
 #: ../../tracks/inspector-page.rst:41 ../../tracks/track-types.rst:46
@@ -5942,7 +5943,7 @@ msgid ""
 "changes) can be enabled in the preferences below."
 msgstr ""
 "La reproducció automàtica (reproduir automàticament el fitxer seleccionat "
-"quan canvia la selecció) es pot habilitar a les preferències següents."
+"quan canvia la selecció) es pot habilitar a preferències."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:119
 msgid ""
@@ -5964,7 +5965,7 @@ msgid ""
 "Information, such as metadata, for the selected file is always shown at the "
 "bottom of the file panel."
 msgstr ""
-"La informació, com ara les metadades, per al fitxer seleccionat sempre es "
+"La informació, com ara les metadades, del fitxer seleccionat sempre es "
 "mostra a la part inferior del quadre de fitxers."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:135
@@ -6242,7 +6243,7 @@ msgid ""
 msgstr ""
 "El nombre de la part superior dreta de cada nom de port mostrarà el nombre "
 "actual de connexions cap a/des d'aquest port. Consulta :ref:`routing/"
-"connections:Connexions` per a més detalls."
+"connections:Connections` per a més detalls."
 
 #: ../../plugins-files/plugins/inspector-page.rst:59
 msgid ":ref:`plugins-files/plugins/plugin-info:Plugin Ports`"
@@ -6295,7 +6296,7 @@ msgstr "Autor"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:30
 msgid "Filter by plugin manufacturer/author."
-msgstr "Filtrar per complement fabricant/autor."
+msgstr "Filtrar per fabricant/autor del complement."
 
 #: ../../plugins-files/plugins/plugin-browser.rst:32
 msgid "Built-in plugins can be found under `Zrythm DAW` here."
@@ -6510,7 +6511,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-info.rst:63
 msgid "Enabled"
-msgstr "Habilitat"
+msgstr "Habilitació"
 
 #: ../../plugins-files/plugins/plugin-info.rst:63
 msgid "Controls whether the plugin is active or bypassed."
@@ -6546,9 +6547,9 @@ msgid ""
 "displayed, if the plugin ships with its own UI. This window may contain "
 "additions by Zrythm (such as `File` and `Presets` menus)."
 msgstr ""
-"Quan s'obren les IU del complement, es mostrarà una finestra com la següent, "
+"Quan s'obre la IU del complement, es mostrarà una finestra com la següent, "
 "si el complement s'envia amb la seva pròpia IU. Aquesta finestra pot "
-"contenir addicions de Zrythm (com els menús`File` i `Presets`)."
+"contenir afegits per Zrythm (com els menús`File` i `Presets`)."
 
 #: ../../plugins-files/plugins/plugin-window.rst:21
 msgid "Generic UIs"
@@ -6635,8 +6636,8 @@ msgid ""
 ":term:`SFZ` and :term:`SF2` instruments are also supported, and they are "
 "scanned as instrument plugins."
 msgstr ""
-"Els instruments :term:`SFZ` i :term:`SF2`, i s'exploren com a complements "
-"d'instrument."
+"També s'admeten els instruments :term:`SFZ` i :term:`SF2` i s'exploren com a "
+"complements d'instrument."
 
 #: ../../plugins-files/plugins/scanning.rst:22
 msgid ""
@@ -6823,9 +6824,9 @@ msgid ""
 "and subdirectories specified in the :ref:`preferences <configuration/"
 "preferences:Preferences>`."
 msgstr ""
-"Els instruments :term:`SFZ` i :term:`SF2`s'escanejaran a tots els directoris "
-"i subdirectoris especificats a :ref:`preferències <configuration/preferences:"
-"Preferences>`."
+"Els instruments :term:`SFZ` i :term:`SF2` s'escanejaran a tots els "
+"directoris i subdirectoris especificats a :ref:`preferences <configuration/"
+"preferences:Preferences>`."
 
 #: ../../plugins-files/plugins/scanning.rst:156
 msgid "About Flatpak"
@@ -6838,8 +6839,8 @@ msgid ""
 "flathub/org.freedesktop.LinuxAudio.BaseExtension>`_)."
 msgstr ""
 "Quan s'utilitzen construccions de Flatpak, només s'han d'utilitzar "
-"complements instal·lats com a Flatpaks (és a dir, complements que utilitzen "
-"l'extensió base d'àudio de Linux <https://github.com/flathub/org.freedesktop."
+"complements instal·lats com a Flatpaks (és a dir, complements que utilitzen `"
+"Linux Audio base extension <https://github.com/flathub/org.freedesktop."
 "LinuxAudio.BaseExtension>`_)."
 
 #: ../../plugins-files/plugins/scanning.rst:162
@@ -7032,7 +7033,7 @@ msgid ""
 "directory to save the project in and a title for the project."
 msgstr ""
 "Després de fer clic a :guilabel:`Create`, Zrythm et demanarà un directori "
-"principal per a desar el projecte i un títol per al projecte."
+"principal per a desar el projecte i el títol del projecte."
 
 #: ../../projects/saving-loading.rst:55
 msgid "New project creation"
@@ -8013,7 +8014,7 @@ msgstr ""
 msgid "To show the automation lanes for a track, click the cusp icon."
 msgstr ""
 "Per a mostrar els carrils d'automatització d'una pista, fes clic a la icona "
-"de la cúspide."
+"cúspide."
 
 #: ../../tracks/automation.rst:25
 msgid "Automation track for Fader Volume"
@@ -8047,7 +8048,7 @@ msgid ""
 "`playback-and-recording/recording:Recording Automation` section)."
 msgstr ""
 "Els modes tàctil / pestell també es poden utilitzar per a gravar "
-"l'automatització en directe (vegeu la secció :ref:`playback-and-recording/"
+"l'automatització en directe (consulta la secció :ref:`playback-and-recording/"
 "recording:Recording Automation`)."
 
 #: ../../tracks/automation.rst:47
@@ -8263,7 +8264,7 @@ msgstr "Commutador mono"
 
 #: ../../tracks/inspector-page.rst:75
 msgid "Duplicate the left signal on both channels"
-msgstr "Duplicar el senyal esquerre en ambdós canals"
+msgstr "Duplica el senyal esquerre en ambdós canals"
 
 #: ../../tracks/inspector-page.rst:77
 msgid "Gain knob"
@@ -8271,7 +8272,7 @@ msgstr "Rodeta de guany"
 
 #: ../../tracks/inspector-page.rst:77
 msgid "Adjust input gain"
-msgstr "Ajustar el guany d'entrada"
+msgstr "Ajusta el guany d'entrada"
 
 #: ../../tracks/inspector-page.rst:80
 msgid "MIDI FX/Inserts"
@@ -8330,7 +8331,7 @@ msgid ""
 "tracks or plugin side-chain inputs. These are generally useful for side-"
 "chaining or applying additional effects to channels, such as reverb."
 msgstr ""
-"Es tracta d'un `enviament aux <https://en.wikipedia.org/wiki/Aux-send>`_ a "
+"Es tracta d'`enviament aux <https://en.wikipedia.org/wiki/Aux-send>`_ a "
 "altres pistes o entrades de la cadena lateral del complement. Aquests són "
 "generalment útils per a l'encadenament lateral o l'aplicació d'efectes "
 "addicionals als canals, com la reverberació."
@@ -8396,8 +8397,8 @@ msgid ""
 "The controls available for controlling the signal flow are covered in :ref:"
 "`tracks/track-controls:Signal Flow`."
 msgstr ""
-"Els controls disponibles per a controlar el flux del senyal estan coberts a :"
-"ref:`tracks/track-controls:Signal Flow`."
+"Els controls disponibles per a controlar el flux del senyal es tracten a "
+":ref:`tracks/track-controls:Signal Flow`."
 
 #: ../../tracks/inspector-page.rst:149
 msgid "MIDI faders use MIDI volume CC."
@@ -8453,8 +8454,8 @@ msgid ""
 "Most types of tracks have a corresponding channel that appears in the :ref:"
 "`Mixer <mixer>`. See :ref:`channels` for more info."
 msgstr ""
-"La majoria dels tipus de pistes tenen un canal corresponent que apareix a :"
-"ref:`Mesclador <mixer>`. Consulta :ref:`channels` per a més informació."
+"La majoria dels tipus de pistes tenen un canal corresponent que apareix al "
+":ref:`Mesclador <mixer>`. Consulta :ref:`channels` per a més informació."
 
 #: ../../tracks/overview.rst:25
 msgid "Channel in mixer"
@@ -8480,7 +8481,7 @@ msgid ""
 "used for putting tracks under the same folder and performing common "
 "operations."
 msgstr ""
-"A Zrythm, les pistes en grup s'utilitzen per a agrupar senyals (encaminament "
+"A Zrythm, les pistes de grup s'utilitzen per a agrupar senyals (encaminament "
 "directe), les pistes de FX/bus s'utilitzen per a efectes / enviaments, i les "
 "pistes en carpeta (aviat) s'utilitzen per a posar pistes sota la mateixa "
 "carpeta i realitzar operacions comunes."
@@ -8541,7 +8542,7 @@ msgstr "Afegir una foto i explicar com afegir icones personalitzades."
 
 #: ../../tracks/overview.rst:75
 msgid "Context Menu"
-msgstr "Menú Contextual"
+msgstr "Menú contextual"
 
 #: ../../tracks/overview.rst:77
 msgid ""
@@ -8641,7 +8642,7 @@ msgstr "Mostrar carrils"
 msgid ""
 "Toggle the visibility of :ref:`track lanes <tracks/track-lanes:Track Lanes>`."
 msgstr ""
-"Commutar la visibilitat de :ref:`carrils de pista <tracks/track-lanes:Track "
+"Commuta la visibilitat de :ref:`carrils de pista <tracks/track-lanes:Track "
 "Lanes>`."
 
 #: ../../tracks/track-controls.rst:47
@@ -8653,7 +8654,7 @@ msgid ""
 "Toggle the visibility of :ref:`automation tracks <tracks/automation:"
 "Automation Tracks>`."
 msgstr ""
-"Commutar la visibilitat de les :ref:`pistes d'automatització <tracks/"
+"Commuta la visibilitat de les :ref:`pistes d'automatització <tracks/"
 "automation:Automation Tracks>`."
 
 #: ../../tracks/track-controls.rst:52
@@ -8695,7 +8696,7 @@ msgid ""
 msgstr ""
 "Rebota la pista a un fitxer d'àudio internament i evita les edicions mentre "
 "està congelada. Això pretén reduir la càrrega de :term:`DSP` a les pistes "
-"lleugeres de DSP."
+"afamades de DSP."
 
 #: ../../tracks/track-lanes.rst:7
 msgid "Track Lanes"
@@ -8709,7 +8710,7 @@ msgid ""
 msgstr ""
 "Algunes pistes poden tenir diversos carrils per a les seves regions. Per "
 "defecte, totes les regions es creen al primer carril. Els carrils "
-"addicionals es crearan i se suprimiran automàticament a mesura que afegiu "
+"addicionals es crearan i se suprimiran automàticament a mesura que afegeixis "
 "regions a cada carril."
 
 #: ../../tracks/track-lanes.rst:18
@@ -8744,11 +8745,11 @@ msgid ""
 "takes`, each time playback loops it will start recording in a new lane and "
 "optionally mute the last recorded region in the previous lane."
 msgstr ""
-"Els carrils també són útils quan es grava. Si s'ajusta el ref:`mode gravació "
-"<playback-and-recording/recording:Recording Modes>` a :guilabel:`Create "
-"takes`, cada vegada que la reproducció faci un bucle començarà a gravar en "
-"un nou carril i, opcionalment , silenciarà l'última regió gravada al carril "
-"anterior."
+"Els carrils també són útils quan es grava. Si s'ajusta el :ref:`mode "
+"gravació <playback-and-recording/recording:Recording Modes>` a :guilabel:`"
+"Create takes`, cada vegada que la reproducció faci un bucle començarà a "
+"gravar en un nou carril i, opcionalment , silenciarà l'última regió gravada "
+"al carril anterior."
 
 #: ../../tracks/track-lanes.rst:41
 msgid "MIDI Export"
@@ -8777,9 +8778,9 @@ msgid ""
 "Track, and dropping it at another location. The drop locations will be "
 "highlighted as you move the Track."
 msgstr ""
-"Les pistes es poden moure en clicar i arrossegar-les a l'espai buit de la "
-"pista i deixant-les anar en una altra ubicació. Les ubicacions deixades anar "
-"es ressaltaran a mesura que moguis la pista."
+"Les pistes es poden moure clicant-les i arrossegant-les a l'espai buit de la "
+"pista i deixant-les anar en una altra ubicació. Les ubicacions on deixar "
+"anar es ressaltaran a mesura que moguis la pista."
 
 #: ../../tracks/track-operations.rst:19
 msgid "Copying Tracks"
@@ -8955,7 +8956,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:119
 msgid "Audio Group Track"
-msgstr "Pista en grup d'àudio"
+msgstr "Pista de grup d'àudio"
 
 #: ../../tracks/track-types.rst:121
 msgid ""
@@ -8964,18 +8965,18 @@ msgid ""
 "\"Drums\" audio group track so you can add effects and control their volume "
 "collectively instead of separately."
 msgstr ""
-"Les pistes en grup d'àudio es poden utilitzar per a agrupar senyals d'àudio "
+"Les pistes de grup d'àudio es poden utilitzar per a agrupar senyals d'àudio "
 "mitjançant encaminament directe. Per exemple, bombos, caixes i xarlestons es "
-"poden encaminar a una pista en grup d'àudio «tambors» perquè puguis afegir "
+"poden encaminar a una pista de grup d'àudio «tambors» perquè puguis afegir "
 "efectes i controlar el seu volum col·lectivament en lloc de per separat."
 
 #: ../../tracks/track-types.rst:131
 msgid "Audio Group track"
-msgstr "Pista en grup d'àudio"
+msgstr "Pista de grup d'àudio"
 
 #: ../../tracks/track-types.rst:133 ../../tracks/track-types.rst:287
 msgid "Group tracks are foldable."
-msgstr "Les pistes en grup es poden encarpetar."
+msgstr "Les pistes de grup es poden encarpetar."
 
 #: ../../tracks/track-types.rst:136
 msgid "Chord Track"
@@ -9055,7 +9056,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:179
 msgid "Audio/MIDI group tracks are also foldable."
-msgstr "Les pistes en grup d'àudio/MIDI també es poden encarpetar."
+msgstr "Les pistes de grup d'àudio/MIDI també es poden encarpetar."
 
 #: ../../tracks/track-types.rst:182
 msgid "Instrument Track"
@@ -9114,8 +9115,8 @@ msgid ""
 "route the resulting audio signal after all the processing is done to the "
 "audio backend."
 msgstr ""
-"La pista mestra és un tipus especial de pista en grup d'àudio que Zrythm "
-"utilitza per encaminar el senyal d'àudio resultant després de fer tot el "
+"La pista mestra és un tipus especial de pista de grup d'àudio que Zrythm "
+"utilitza per a encaminar el senyal d'àudio resultant després de fer tot el "
 "processament al rerefons d'àudio."
 
 #: ../../tracks/track-types.rst:225
@@ -9197,19 +9198,19 @@ msgstr "Pista FX MIDI"
 
 #: ../../tracks/track-types.rst:276
 msgid "MIDI Group Track"
-msgstr "Pista en grup MIDI"
+msgstr "Pista de grup MIDI"
 
 #: ../../tracks/track-types.rst:278
 msgid ""
 "These are similar to Audio Group tracks, except that they act on MIDI "
 "signals instead of audio signals."
 msgstr ""
-"Aquests són semblant a les pistes en grup d'àudio, excepte que actuen sobre "
+"Aquests són semblant a les pistes de grup d'àudio, excepte que actuen sobre "
 "senyals MIDI en lloc de senyals d'àudio."
 
 #: ../../tracks/track-types.rst:285
 msgid "MIDI Group track"
-msgstr "Pista en grup d'àudio"
+msgstr "Pista de grup d'àudio"
 
 #: ../../tracks/track-types.rst:290
 msgid "Tempo Track"
@@ -9535,7 +9536,7 @@ msgstr "Pantalla completa"
 
 #: ../../zrythm-interface/main-toolbar.rst:70
 msgid "Toggles fullscreen mode."
-msgstr "Commuta el mode de pantalla completa."
+msgstr "Commuta al mode pantalla completa."
 
 #: ../../zrythm-interface/main-toolbar.rst:72
 msgid "Toggle Left/Right/Bottom/Main Panels"
@@ -9603,7 +9604,7 @@ msgstr "Es mostren totes les dreceres de teclat disponibles."
 
 #: ../../zrythm-interface/main-toolbar.rst:94
 msgid "Donate"
-msgstr "Donar"
+msgstr "Donacions"
 
 #: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Donate to Zrythm through LiberaPay."
@@ -9656,7 +9657,8 @@ msgstr "Entrada MIDI"
 #: ../../zrythm-interface/main-toolbar.rst:120
 msgid "Shows the :term:`MIDI` activity of auto-connected MIDI devices."
 msgstr ""
-"Mostra la :term:`MIDI` dels dispositius MIDI connectats automàticament."
+"Mostra l'activitat :term:`MIDI` dels dispositius MIDI connectats "
+"automàticament."
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Oscilloscope"
@@ -9703,8 +9705,8 @@ msgid ""
 "Panels contain multiple *views*, each of which is made visible by clicking "
 "on its corresponding tab."
 msgstr ""
-"Els quadres contenen diverses *visualitzacions*, cadascuna de les quals es "
-"fa visible fent clic a la pestanya corresponent."
+"Els quadres contenen diverses *vistes*, cadascuna de les quals es fa visible "
+"fent clic a la pestanya corresponent."
 
 #: ../../zrythm-interface/overview.rst:27
 msgid "Detaching Views"
@@ -9845,8 +9847,8 @@ msgid ""
 "will start clipping."
 msgstr ""
 "Aquest giny mostra el % u d'ús actual de la CPU a la part superior i el % u "
-"d'ús actual del DSP a la part inferior. Si el % e de DSP supera els 100 "
-"(totes les barres s'omplen), l'àudio començarà a retallar-se."
+"d'ús actual del DSP a la part inferior. Si el % e de DSP supera els 100 ("
+"totes les barres s'omplen), l'àudio començarà a escapçar-se."
 
 #~ msgid "`Zrythm DAW` here."
 #~ msgstr "Aquí `Zrythm DAW`."
