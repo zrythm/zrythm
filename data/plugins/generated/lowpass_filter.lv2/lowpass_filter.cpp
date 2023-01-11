@@ -4,7 +4,7 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Lowpass Filter"
 version: "1.0"
-Code generated with Faust 2.40.0 (https://faust.grame.fr)
+Code generated with Faust 2.54.9 (https://faust.grame.fr)
 Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn lowpass_filter -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
@@ -78,18 +78,74 @@ Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn lowpass_filter
 #include <string>
 #include <vector>
 
+/************************************************************************
+ FAUST Architecture File
+ Copyright (C) 2003-2022 GRAME, Centre National de Creation Musicale
+ ---------------------------------------------------------------------
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation; either version 2.1 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ 
+ EXCEPTION : As a special exception, you may create a larger work
+ that contains this FAUST architecture section and distribute
+ that work under terms of your choice, so long as this FAUST
+ architecture section is not modified.
+ ***************************************************************************/
+
+#ifndef __export__
+#define __export__
+
+#define FAUSTVERSION "2.54.9"
+
+// Use FAUST_API for code that is part of the external API but is also compiled in faust and libfaust
+// Use LIBFAUST_API for code that is compiled in faust and libfaust
+
+#ifdef _WIN32
+    #pragma warning (disable: 4251)
+    #ifdef FAUST_EXE
+        #define FAUST_API
+        #define LIBFAUST_API
+    #elif FAUST_LIB
+        #define FAUST_API __declspec(dllexport)
+        #define LIBFAUST_API __declspec(dllexport)
+    #else
+        #define FAUST_API
+        #define LIBFAUST_API 
+    #endif
+#else
+    #ifdef FAUST_EXE
+        #define FAUST_API
+        #define LIBFAUST_API
+    #else
+        #define FAUST_API __attribute__((visibility("default")))
+        #define LIBFAUST_API __attribute__((visibility("default")))
+    #endif
+#endif
+
+#endif
+
 #ifndef FAUSTFLOAT
 #define FAUSTFLOAT float
 #endif
 
-struct UI;
-struct Meta;
+struct FAUST_API UI;
+struct FAUST_API Meta;
 
 /**
  * DSP memory manager.
  */
 
-struct dsp_memory_manager {
+struct FAUST_API dsp_memory_manager {
     
     virtual ~dsp_memory_manager() {}
     
@@ -97,7 +153,7 @@ struct dsp_memory_manager {
      * Inform the Memory Manager with the number of expected memory zones.
      * @param count - the number of expected memory zones
      */
-    virtual void begin(size_t count) {}
+    virtual void begin(size_t /*count*/) {}
     
     /**
      * Give the Memory Manager information on a given memory zone.
@@ -105,8 +161,8 @@ struct dsp_memory_manager {
      * @param reads - the number of Read access to the zone used to compute one frame
      * @param writes - the number of Write access to the zone used to compute one frame
      */
-    virtual void info(size_t size, size_t reads, size_t writes) {}
-    
+    virtual void info(size_t /*size*/, size_t /*reads*/, size_t /*writes*/) {}
+
     /**
      * Inform the Memory Manager that all memory zones have been described,
      * to possibly start a 'compute the best allocation strategy' step.
@@ -131,7 +187,7 @@ struct dsp_memory_manager {
 * Signal processor definition.
 */
 
-class dsp {
+class FAUST_API dsp {
 
     public:
 
@@ -225,7 +281,7 @@ class dsp {
  * Generic DSP decorator.
  */
 
-class decorator_dsp : public dsp {
+class FAUST_API decorator_dsp : public dsp {
 
     protected:
 
@@ -258,7 +314,7 @@ class decorator_dsp : public dsp {
  * to create DSP instances from a compiled DSP program.
  */
 
-class dsp_factory {
+class FAUST_API dsp_factory {
     
     protected:
     
@@ -273,6 +329,7 @@ class dsp_factory {
         virtual std::string getCompileOptions() = 0;
         virtual std::vector<std::string> getLibraryList() = 0;
         virtual std::vector<std::string> getIncludePathnames() = 0;
+        virtual std::vector<std::string> getWarningMessages() = 0;
     
         virtual dsp* createDSPInstance() = 0;
     
@@ -287,18 +344,21 @@ class dsp_factory {
 #include <xmmintrin.h>
 #endif
 
-class ScopedNoDenormals
-{
+class FAUST_API ScopedNoDenormals {
+    
     private:
     
-        intptr_t fpsr;
+        intptr_t fpsr = 0;
         
         void setFpStatusRegister(intptr_t fpsr_aux) noexcept
         {
         #if defined (__arm64__) || defined (__aarch64__)
-           asm volatile("msr fpcr, %0" : : "ri" (fpsr_aux));
+            asm volatile("msr fpcr, %0" : : "ri" (fpsr_aux));
         #elif defined (__SSE__)
-            _mm_setcsr(static_cast<uint32_t>(fpsr_aux));
+            // The volatile keyword here is needed to workaround a bug in AppleClang 13.0
+            // which aggressively optimises away the variable otherwise
+            volatile uint32_t fpsr_w = static_cast<uint32_t>(fpsr_aux);
+            _mm_setcsr(fpsr_w);
         #endif
         }
         
@@ -306,7 +366,7 @@ class ScopedNoDenormals
         {
         #if defined (__arm64__) || defined (__aarch64__)
             asm volatile("mrs %0, fpcr" : "=r" (fpsr));
-        #elif defined ( __SSE__)
+        #elif defined (__SSE__)
             fpsr = static_cast<intptr_t>(_mm_getcsr());
         #endif
         }
@@ -317,16 +377,14 @@ class ScopedNoDenormals
         {
         #if defined (__arm64__) || defined (__aarch64__)
             intptr_t mask = (1 << 24 /* FZ */);
+        #elif defined (__SSE__)
+        #if defined (__SSE2__)
+            intptr_t mask = 0x8040;
         #else
-            #if defined(__SSE__)
-            #if defined(__SSE2__)
-                intptr_t mask = 0x8040;
-            #else
-                intptr_t mask = 0x8000;
-            #endif
-            #else
-                intptr_t mask = 0x0000;
-            #endif
+            intptr_t mask = 0x8000;
+        #endif
+        #else
+            intptr_t mask = 0x0000;
         #endif
             getFpStatusRegister();
             setFpStatusRegister(fpsr | mask);
@@ -339,7 +397,7 @@ class ScopedNoDenormals
 
 };
 
-#define AVOIDDENORMALS ScopedNoDenormals();
+#define AVOIDDENORMALS ScopedNoDenormals ftz_scope;
 
 #endif
 
@@ -371,6 +429,7 @@ class ScopedNoDenormals
 #ifndef __UI_H__
 #define __UI_H__
 
+
 #ifndef FAUSTFLOAT
 #define FAUSTFLOAT float
 #endif
@@ -385,8 +444,8 @@ class ScopedNoDenormals
 struct Soundfile;
 
 template <typename REAL>
-struct UIReal
-{
+struct FAUST_API UIReal {
+    
     UIReal() {}
     virtual ~UIReal() {}
     
@@ -416,14 +475,13 @@ struct UIReal
     
     // -- metadata declarations
     
-    virtual void declare(REAL* zone, const char* key, const char* val) {}
-    
+    virtual void declare(REAL* /*zone*/, const char* /*key*/, const char* /*val*/) {}
+
     // To be used by LLVM client
     virtual int sizeOfFAUSTFLOAT() { return sizeof(FAUSTFLOAT); }
 };
 
-struct UI : public UIReal<FAUSTFLOAT>
-{
+struct FAUST_API UI : public UIReal<FAUSTFLOAT> {
     UI() {}
     virtual ~UI() {}
 };
@@ -510,7 +568,7 @@ public:
 
   virtual void addHorizontalBargraph(const char* label, float* zone, float min, float max);
   virtual void addVerticalBargraph(const char* label, float* zone, float min, float max);
-    
+
   virtual void addSoundfile(const char* label, const char* filename, Soundfile** sf_zone) {}
 
   virtual void openTabBox(const char* label);
@@ -704,8 +762,8 @@ class lowpass_filter : public dsp {
 	
 	int fSampleRate;
 	float fConst1;
-	FAUSTFLOAT fHslider0;
 	float fConst2;
+	FAUSTFLOAT fHslider0;
 	float fRec1_perm[4];
 	float fConst3;
 	float fRec0_perm[4];
@@ -746,9 +804,9 @@ class lowpass_filter : public dsp {
 		m->declare("maths.lib/version", "2.5");
 		m->declare("name", "Lowpass Filter");
 		m->declare("platform.lib/name", "Generic Platform Library");
-		m->declare("platform.lib/version", "0.2");
+		m->declare("platform.lib/version", "0.3");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
-		m->declare("signals.lib/version", "0.1");
+		m->declare("signals.lib/version", "0.3");
 		m->declare("version", "1.0");
 		m->declare("zrythm-utils.lib/copyright", "© 2022 Alexandros Theodotou");
 		m->declare("zrythm-utils.lib/license", "AGPL-3.0-or-later");
@@ -768,14 +826,14 @@ class lowpass_filter : public dsp {
 	
 	virtual void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
-		float fConst0 = std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate)));
-		fConst1 = 44.0999985f / fConst0;
+		float fConst0 = std::min<float>(1.92e+05f, std::max<float>(1.0f, float(fSampleRate)));
+		fConst1 = 44.1f / fConst0;
 		fConst2 = 1.0f - fConst1;
-		fConst3 = 3.14159274f / fConst0;
+		fConst3 = 3.1415927f / fConst0;
 	}
 	
 	virtual void instanceResetUserInterface() {
-		fHslider0 = FAUSTFLOAT(5000.0f);
+		fHslider0 = FAUSTFLOAT(5e+03f);
 	}
 	
 	virtual void instanceClear() {
@@ -813,7 +871,7 @@ class lowpass_filter : public dsp {
 		ui_interface->declare(&fHslider0, "scale", "log");
 		ui_interface->declare(&fHslider0, "tooltip", "Transition frequency");
 		ui_interface->declare(&fHslider0, "unit", "Hz");
-		ui_interface->addHorizontalSlider("Frequency", &fHslider0, FAUSTFLOAT(5000.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(18000.0f), FAUSTFLOAT(1.0f));
+		ui_interface->addHorizontalSlider("Frequency", &fHslider0, FAUSTFLOAT(5e+03f), FAUSTFLOAT(1e+01f), FAUSTFLOAT(1.8e+04f), FAUSTFLOAT(1.0f));
 		ui_interface->closeBox();
 	}
 	
@@ -836,7 +894,7 @@ class lowpass_filter : public dsp {
 		float* fRec2 = &fRec2_tmp[4];
 		int vindex = 0;
 		/* Main loop */
-		for (vindex = 0; vindex <= count - 32; vindex = vindex + 32) {
+		for (vindex = 0; vindex <= (count - 32); vindex = vindex + 32) {
 			FAUSTFLOAT* input0 = &input0_ptr[vindex];
 			FAUSTFLOAT* input1 = &input1_ptr[vindex];
 			FAUSTFLOAT* output0 = &output0_ptr[vindex];
@@ -868,7 +926,7 @@ class lowpass_filter : public dsp {
 			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec2[i] = (fZec1[i] + -1.41421354f) / fZec0[i] + 1.0f;
+				fZec2[i] = (fZec1[i] + 1.4142135f) / fZec0[i] + 1.0f;
 			}
 			/* Vectorizable loop 4 */
 			/* Compute code */
@@ -878,7 +936,7 @@ class lowpass_filter : public dsp {
 			/* Vectorizable loop 5 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec4[i] = (fZec1[i] + 1.41421354f) / fZec0[i] + 1.0f;
+				fZec4[i] = (fZec1[i] + -1.4142135f) / fZec0[i] + 1.0f;
 			}
 			/* Recursive loop 6 */
 			/* Pre code */
@@ -887,7 +945,7 @@ class lowpass_filter : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec0[i] = float(input0[i]) - (fRec0[i - 2] * fZec2[i] + 2.0f * fRec0[i - 1] * fZec3[i]) / fZec4[i];
+				fRec0[i] = float(input0[i]) - (fRec0[i - 2] * fZec4[i] + 2.0f * fRec0[i - 1] * fZec3[i]) / fZec2[i];
 			}
 			/* Post code */
 			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
@@ -900,7 +958,7 @@ class lowpass_filter : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec2[i] = float(input1[i]) - (fZec2[i] * fRec2[i - 2] + 2.0f * fZec3[i] * fRec2[i - 1]) / fZec4[i];
+				fRec2[i] = float(input1[i]) - (fZec4[i] * fRec2[i - 2] + 2.0f * fZec3[i] * fRec2[i - 1]) / fZec2[i];
 			}
 			/* Post code */
 			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
@@ -909,12 +967,12 @@ class lowpass_filter : public dsp {
 			/* Vectorizable loop 8 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output0[i] = FAUSTFLOAT((fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1]) / fZec4[i]);
+				output0[i] = FAUSTFLOAT((fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1]) / fZec2[i]);
 			}
 			/* Vectorizable loop 9 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output1[i] = FAUSTFLOAT((fRec2[i - 2] + fRec2[i] + 2.0f * fRec2[i - 1]) / fZec4[i]);
+				output1[i] = FAUSTFLOAT((fRec2[i - 2] + fRec2[i] + 2.0f * fRec2[i - 1]) / fZec2[i]);
 			}
 		}
 		/* Remaining frames */
@@ -950,7 +1008,7 @@ class lowpass_filter : public dsp {
 			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec2[i] = (fZec1[i] + -1.41421354f) / fZec0[i] + 1.0f;
+				fZec2[i] = (fZec1[i] + 1.4142135f) / fZec0[i] + 1.0f;
 			}
 			/* Vectorizable loop 4 */
 			/* Compute code */
@@ -960,7 +1018,7 @@ class lowpass_filter : public dsp {
 			/* Vectorizable loop 5 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec4[i] = (fZec1[i] + 1.41421354f) / fZec0[i] + 1.0f;
+				fZec4[i] = (fZec1[i] + -1.4142135f) / fZec0[i] + 1.0f;
 			}
 			/* Recursive loop 6 */
 			/* Pre code */
@@ -969,7 +1027,7 @@ class lowpass_filter : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec0[i] = float(input0[i]) - (fRec0[i - 2] * fZec2[i] + 2.0f * fRec0[i - 1] * fZec3[i]) / fZec4[i];
+				fRec0[i] = float(input0[i]) - (fRec0[i - 2] * fZec4[i] + 2.0f * fRec0[i - 1] * fZec3[i]) / fZec2[i];
 			}
 			/* Post code */
 			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
@@ -982,7 +1040,7 @@ class lowpass_filter : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec2[i] = float(input1[i]) - (fZec2[i] * fRec2[i - 2] + 2.0f * fZec3[i] * fRec2[i - 1]) / fZec4[i];
+				fRec2[i] = float(input1[i]) - (fZec4[i] * fRec2[i - 2] + 2.0f * fZec3[i] * fRec2[i - 1]) / fZec2[i];
 			}
 			/* Post code */
 			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
@@ -991,12 +1049,12 @@ class lowpass_filter : public dsp {
 			/* Vectorizable loop 8 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output0[i] = FAUSTFLOAT((fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1]) / fZec4[i]);
+				output0[i] = FAUSTFLOAT((fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1]) / fZec2[i]);
 			}
 			/* Vectorizable loop 9 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output1[i] = FAUSTFLOAT((fRec2[i - 2] + fRec2[i] + 2.0f * fRec2[i - 1]) / fZec4[i]);
+				output1[i] = FAUSTFLOAT((fRec2[i - 2] + fRec2[i] + 2.0f * fRec2[i - 1]) / fZec2[i]);
 			}
 		}
 	}
@@ -2030,7 +2088,7 @@ struct LV2Plugin {
   // This processes just a single MIDI message, so to process an entire series
   // of MIDI events you'll have to loop over the event data in the plugin's
   // MIDI callback. XXXTODO: Sample-accurate processing of MIDI events.
-  
+
   void process_midi(unsigned char *data, int sz)
   {
 #if DEBUG_MIDI
@@ -2675,13 +2733,13 @@ int lv2_dyn_manifest_get_data(LV2_Dyn_Manifest_Handle handle,
             units:symbol \"%s\" ;\n\
             units:render \"%%f %s\"\n\
 	] ;\n", val, val, val);
-	if (!strcmp(key, "scale") && !strcmp(val, "log"))
+	else if (!strcmp(key, "scale") && !strcmp(val, "log"))
 	  fprintf(fp, "\
 	lv2:portProperty epp:logarithmic ;\n");
-	if (!strcmp(key, "tooltip"))
+	else if (!strcmp(key, "tooltip"))
 	  fprintf(fp, "\
 	rdfs:comment \"%s\" ;\n", val);
-	if (strcmp(key, "lv2")) continue;
+	else if (strcmp(key, "lv2")) continue;
 	if (!strcmp(val, "integer"))
 	  fprintf(fp, "\
 	lv2:portProperty lv2:integer ;\n");

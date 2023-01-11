@@ -4,7 +4,7 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Triple Synth"
 version: "1.0"
-Code generated with Faust 2.40.0 (https://faust.grame.fr)
+Code generated with Faust 2.54.9 (https://faust.grame.fr)
 Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn triple_synth -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
@@ -78,18 +78,74 @@ Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn triple_synth -
 #include <string>
 #include <vector>
 
+/************************************************************************
+ FAUST Architecture File
+ Copyright (C) 2003-2022 GRAME, Centre National de Creation Musicale
+ ---------------------------------------------------------------------
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation; either version 2.1 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ 
+ EXCEPTION : As a special exception, you may create a larger work
+ that contains this FAUST architecture section and distribute
+ that work under terms of your choice, so long as this FAUST
+ architecture section is not modified.
+ ***************************************************************************/
+
+#ifndef __export__
+#define __export__
+
+#define FAUSTVERSION "2.54.9"
+
+// Use FAUST_API for code that is part of the external API but is also compiled in faust and libfaust
+// Use LIBFAUST_API for code that is compiled in faust and libfaust
+
+#ifdef _WIN32
+    #pragma warning (disable: 4251)
+    #ifdef FAUST_EXE
+        #define FAUST_API
+        #define LIBFAUST_API
+    #elif FAUST_LIB
+        #define FAUST_API __declspec(dllexport)
+        #define LIBFAUST_API __declspec(dllexport)
+    #else
+        #define FAUST_API
+        #define LIBFAUST_API 
+    #endif
+#else
+    #ifdef FAUST_EXE
+        #define FAUST_API
+        #define LIBFAUST_API
+    #else
+        #define FAUST_API __attribute__((visibility("default")))
+        #define LIBFAUST_API __attribute__((visibility("default")))
+    #endif
+#endif
+
+#endif
+
 #ifndef FAUSTFLOAT
 #define FAUSTFLOAT float
 #endif
 
-struct UI;
-struct Meta;
+struct FAUST_API UI;
+struct FAUST_API Meta;
 
 /**
  * DSP memory manager.
  */
 
-struct dsp_memory_manager {
+struct FAUST_API dsp_memory_manager {
     
     virtual ~dsp_memory_manager() {}
     
@@ -97,7 +153,7 @@ struct dsp_memory_manager {
      * Inform the Memory Manager with the number of expected memory zones.
      * @param count - the number of expected memory zones
      */
-    virtual void begin(size_t count) {}
+    virtual void begin(size_t /*count*/) {}
     
     /**
      * Give the Memory Manager information on a given memory zone.
@@ -105,8 +161,8 @@ struct dsp_memory_manager {
      * @param reads - the number of Read access to the zone used to compute one frame
      * @param writes - the number of Write access to the zone used to compute one frame
      */
-    virtual void info(size_t size, size_t reads, size_t writes) {}
-    
+    virtual void info(size_t /*size*/, size_t /*reads*/, size_t /*writes*/) {}
+
     /**
      * Inform the Memory Manager that all memory zones have been described,
      * to possibly start a 'compute the best allocation strategy' step.
@@ -131,7 +187,7 @@ struct dsp_memory_manager {
 * Signal processor definition.
 */
 
-class dsp {
+class FAUST_API dsp {
 
     public:
 
@@ -225,7 +281,7 @@ class dsp {
  * Generic DSP decorator.
  */
 
-class decorator_dsp : public dsp {
+class FAUST_API decorator_dsp : public dsp {
 
     protected:
 
@@ -258,7 +314,7 @@ class decorator_dsp : public dsp {
  * to create DSP instances from a compiled DSP program.
  */
 
-class dsp_factory {
+class FAUST_API dsp_factory {
     
     protected:
     
@@ -273,6 +329,7 @@ class dsp_factory {
         virtual std::string getCompileOptions() = 0;
         virtual std::vector<std::string> getLibraryList() = 0;
         virtual std::vector<std::string> getIncludePathnames() = 0;
+        virtual std::vector<std::string> getWarningMessages() = 0;
     
         virtual dsp* createDSPInstance() = 0;
     
@@ -287,18 +344,21 @@ class dsp_factory {
 #include <xmmintrin.h>
 #endif
 
-class ScopedNoDenormals
-{
+class FAUST_API ScopedNoDenormals {
+    
     private:
     
-        intptr_t fpsr;
+        intptr_t fpsr = 0;
         
         void setFpStatusRegister(intptr_t fpsr_aux) noexcept
         {
         #if defined (__arm64__) || defined (__aarch64__)
-           asm volatile("msr fpcr, %0" : : "ri" (fpsr_aux));
+            asm volatile("msr fpcr, %0" : : "ri" (fpsr_aux));
         #elif defined (__SSE__)
-            _mm_setcsr(static_cast<uint32_t>(fpsr_aux));
+            // The volatile keyword here is needed to workaround a bug in AppleClang 13.0
+            // which aggressively optimises away the variable otherwise
+            volatile uint32_t fpsr_w = static_cast<uint32_t>(fpsr_aux);
+            _mm_setcsr(fpsr_w);
         #endif
         }
         
@@ -306,7 +366,7 @@ class ScopedNoDenormals
         {
         #if defined (__arm64__) || defined (__aarch64__)
             asm volatile("mrs %0, fpcr" : "=r" (fpsr));
-        #elif defined ( __SSE__)
+        #elif defined (__SSE__)
             fpsr = static_cast<intptr_t>(_mm_getcsr());
         #endif
         }
@@ -317,16 +377,14 @@ class ScopedNoDenormals
         {
         #if defined (__arm64__) || defined (__aarch64__)
             intptr_t mask = (1 << 24 /* FZ */);
+        #elif defined (__SSE__)
+        #if defined (__SSE2__)
+            intptr_t mask = 0x8040;
         #else
-            #if defined(__SSE__)
-            #if defined(__SSE2__)
-                intptr_t mask = 0x8040;
-            #else
-                intptr_t mask = 0x8000;
-            #endif
-            #else
-                intptr_t mask = 0x0000;
-            #endif
+            intptr_t mask = 0x8000;
+        #endif
+        #else
+            intptr_t mask = 0x0000;
         #endif
             getFpStatusRegister();
             setFpStatusRegister(fpsr | mask);
@@ -339,7 +397,7 @@ class ScopedNoDenormals
 
 };
 
-#define AVOIDDENORMALS ScopedNoDenormals();
+#define AVOIDDENORMALS ScopedNoDenormals ftz_scope;
 
 #endif
 
@@ -371,6 +429,7 @@ class ScopedNoDenormals
 #ifndef __UI_H__
 #define __UI_H__
 
+
 #ifndef FAUSTFLOAT
 #define FAUSTFLOAT float
 #endif
@@ -385,8 +444,8 @@ class ScopedNoDenormals
 struct Soundfile;
 
 template <typename REAL>
-struct UIReal
-{
+struct FAUST_API UIReal {
+    
     UIReal() {}
     virtual ~UIReal() {}
     
@@ -416,14 +475,13 @@ struct UIReal
     
     // -- metadata declarations
     
-    virtual void declare(REAL* zone, const char* key, const char* val) {}
-    
+    virtual void declare(REAL* /*zone*/, const char* /*key*/, const char* /*val*/) {}
+
     // To be used by LLVM client
     virtual int sizeOfFAUSTFLOAT() { return sizeof(FAUSTFLOAT); }
 };
 
-struct UI : public UIReal<FAUSTFLOAT>
-{
+struct FAUST_API UI : public UIReal<FAUSTFLOAT> {
     UI() {}
     virtual ~UI() {}
 };
@@ -510,7 +568,7 @@ public:
 
   virtual void addHorizontalBargraph(const char* label, float* zone, float min, float max);
   virtual void addVerticalBargraph(const char* label, float* zone, float min, float max);
-    
+
   virtual void addSoundfile(const char* label, const char* filename, Soundfile** sf_zone) {}
 
   virtual void openTabBox(const char* label);
@@ -723,7 +781,7 @@ class triple_synthSIG0 {
 		for (int i1 = 0; i1 < count; i1 = i1 + 1) {
 			iVec0[0] = 1;
 			iRec11[0] = (iVec0[1] + iRec11[1]) % 65536;
-			table[i1] = std::sin(9.58738019e-05f * float(iRec11[0]));
+			table[i1] = std::sin(9.58738e-05f * float(iRec11[0]));
 			iVec0[1] = iVec0[0];
 			iRec11[1] = iRec11[0];
 		}
@@ -743,15 +801,15 @@ class triple_synth : public dsp {
 	
  private:
 	
+	FAUSTFLOAT fEntry0;
 	int fSampleRate;
 	float fConst0;
 	float fConst1;
-	FAUSTFLOAT fEntry0;
 	float fRec4_perm[4];
 	float fRec5_perm[4];
 	float fConst2;
-	FAUSTFLOAT fHslider0;
 	float fConst3;
+	FAUSTFLOAT fHslider0;
 	float fRec7_perm[4];
 	FAUSTFLOAT fHslider1;
 	float fRec9_perm[4];
@@ -759,17 +817,17 @@ class triple_synth : public dsp {
 	float fRec8_perm[4];
 	FAUSTFLOAT fHslider2;
 	float fRec10_perm[4];
-	float fConst5;
 	FAUSTFLOAT fEntry1;
 	FAUSTFLOAT fEntry2;
+	float fConst5;
 	float fRec6_perm[4];
 	float fRec13_perm[4];
-	float fConst6;
-	int iVec1_perm[4];
 	float fYec0_perm[4];
+	int iVec1_perm[4];
 	float fYec1[4096];
 	int fYec1_idx;
 	int fYec1_idx_save;
+	float fConst6;
 	float fConst7;
 	float fRec12_perm[4];
 	float fRec14_perm[4];
@@ -798,13 +856,13 @@ class triple_synth : public dsp {
 	float fRec28_perm[4];
 	FAUSTFLOAT fHslider8;
 	float fRec29_perm[4];
-	FAUSTFLOAT fEntry3;
 	float fConst8;
 	float fConst9;
+	FAUSTFLOAT fEntry3;
 	float fRec3_perm[4];
+	float fYec4_perm[4];
 	float fConst12;
 	float fConst13;
-	float fYec4_perm[4];
 	float fRec2_perm[4];
 	float fConst14;
 	float fConst15;
@@ -837,7 +895,7 @@ class triple_synth : public dsp {
 	void metadata(Meta* m) { 
 		m->declare("author", "Zrythm DAW");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
-		m->declare("basics.lib/version", "0.5");
+		m->declare("basics.lib/version", "0.9");
 		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn triple_synth -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("description", "Synth with 3 detuned oscillators");
@@ -846,7 +904,7 @@ class triple_synth : public dsp {
 		m->declare("envelopes.lib/copyright", "GRAME");
 		m->declare("envelopes.lib/license", "LGPL with exception");
 		m->declare("envelopes.lib/name", "Faust Envelope Library");
-		m->declare("envelopes.lib/version", "0.1");
+		m->declare("envelopes.lib/version", "0.2");
 		m->declare("filename", "triple_synth.dsp");
 		m->declare("filters.lib/fir:author", "Julius O. Smith III");
 		m->declare("filters.lib/fir:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
@@ -854,7 +912,7 @@ class triple_synth : public dsp {
 		m->declare("filters.lib/iir:author", "Julius O. Smith III");
 		m->declare("filters.lib/iir:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
 		m->declare("filters.lib/iir:license", "MIT-style STK-4.3 license");
-		m->declare("filters.lib/lowpass0_highpass1", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
+		m->declare("filters.lib/lowpass0_highpass1", "MIT-style STK-4.3 license");
 		m->declare("filters.lib/lowpass0_highpass1:author", "Julius O. Smith III");
 		m->declare("filters.lib/lowpass:author", "Julius O. Smith III");
 		m->declare("filters.lib/lowpass:copyright", "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>");
@@ -888,14 +946,20 @@ class triple_synth : public dsp {
 		m->declare("name", "Triple Synth");
 		m->declare("nvoices", "16");
 		m->declare("options", "[midi:on]");
+		m->declare("oscillators.lib/lf_sawpos:author", "Bart Brouns, revised by Stéphane Letz");
+		m->declare("oscillators.lib/lf_sawpos:licence", "STK-4.3");
 		m->declare("oscillators.lib/name", "Faust Oscillator Library");
+		m->declare("oscillators.lib/saw2ptr:author", "Julius O. Smith III");
+		m->declare("oscillators.lib/saw2ptr:license", "STK-4.3");
+		m->declare("oscillators.lib/sawN:author", "Julius O. Smith III");
+		m->declare("oscillators.lib/sawN:license", "STK-4.3");
 		m->declare("oscillators.lib/version", "0.3");
 		m->declare("platform.lib/name", "Generic Platform Library");
-		m->declare("platform.lib/version", "0.2");
+		m->declare("platform.lib/version", "0.3");
 		m->declare("routes.lib/name", "Faust Signal Routing Library");
 		m->declare("routes.lib/version", "0.2");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
-		m->declare("signals.lib/version", "0.1");
+		m->declare("signals.lib/version", "0.3");
 		m->declare("version", "1.0");
 		m->declare("zrythm-utils.lib/copyright", "© 2022 Alexandros Theodotou");
 		m->declare("zrythm-utils.lib/license", "AGPL-3.0-or-later");
@@ -919,40 +983,40 @@ class triple_synth : public dsp {
 	
 	virtual void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
-		fConst0 = std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate)));
-		fConst1 = 10.0f / fConst0;
-		fConst2 = 44.0999985f / fConst0;
+		fConst0 = std::min<float>(1.92e+05f, std::max<float>(1.0f, float(fSampleRate)));
+		fConst1 = 1e+01f / fConst0;
+		fConst2 = 44.1f / fConst0;
 		fConst3 = 1.0f - fConst2;
 		fConst4 = 1.0f / fConst0;
-		fConst5 = 440.0f / fConst0;
-		fConst6 = 0.25f * fConst0;
-		fConst7 = 0.5f * fConst0;
-		fConst8 = 1760.0f / fConst0;
-		fConst9 = 3.14159274f / fConst0;
+		fConst5 = 4.4e+02f / fConst0;
+		fConst6 = 0.5f * fConst0;
+		fConst7 = 0.25f * fConst0;
+		fConst8 = 3.1415927f / fConst0;
+		fConst9 = 1.76e+03f / fConst0;
 		float fConst10 = std::tan(56548.668f / fConst0);
 		float fConst11 = 1.0f / fConst10;
-		fConst12 = 1.0f / (fConst11 + 1.0f);
-		fConst13 = 1.0f - fConst11;
-		fConst14 = 1.0f / ((fConst11 + 1.61803401f) / fConst10 + 1.0f);
-		fConst15 = (fConst11 + -1.61803401f) / fConst10 + 1.0f;
-		fConst16 = 2.0f * (1.0f - 1.0f / triple_synth_faustpower2_f(fConst10));
-		fConst17 = 1.0f / ((fConst11 + 0.618034005f) / fConst10 + 1.0f);
-		fConst18 = (fConst11 + -0.618034005f) / fConst10 + 1.0f;
+		fConst12 = 1.0f - fConst11;
+		fConst13 = 1.0f / (fConst11 + 1.0f);
+		fConst14 = 2.0f * (1.0f - 1.0f / triple_synth_faustpower2_f(fConst10));
+		fConst15 = (fConst11 + -1.618034f) / fConst10 + 1.0f;
+		fConst16 = 1.0f / ((fConst11 + 1.618034f) / fConst10 + 1.0f);
+		fConst17 = (fConst11 + -0.618034f) / fConst10 + 1.0f;
+		fConst18 = 1.0f / ((fConst11 + 0.618034f) / fConst10 + 1.0f);
 	}
 	
 	virtual void instanceResetUserInterface() {
 		fEntry0 = FAUSTFLOAT(3.0f);
 		fHslider0 = FAUSTFLOAT(0.0f);
 		fHslider1 = FAUSTFLOAT(0.0f);
-		fHslider2 = FAUSTFLOAT(0.10000000000000001f);
-		fEntry1 = FAUSTFLOAT(0.0f);
-		fEntry2 = FAUSTFLOAT(200.0f);
+		fHslider2 = FAUSTFLOAT(0.1f);
+		fEntry1 = FAUSTFLOAT(2e+02f);
+		fEntry2 = FAUSTFLOAT(0.0f);
 		fButton0 = FAUSTFLOAT(0.0f);
-		fHslider3 = FAUSTFLOAT(0.029999999999999999f);
+		fHslider3 = FAUSTFLOAT(0.03f);
 		fHslider4 = FAUSTFLOAT(1.0f);
-		fHslider5 = FAUSTFLOAT(0.29999999999999999f);
-		fHslider6 = FAUSTFLOAT(0.40000000000000002f);
-		fHslider7 = FAUSTFLOAT(10000.0f);
+		fHslider5 = FAUSTFLOAT(0.3f);
+		fHslider6 = FAUSTFLOAT(0.4f);
+		fHslider7 = FAUSTFLOAT(1e+04f);
 		fHslider8 = FAUSTFLOAT(1.0f);
 		fEntry3 = FAUSTFLOAT(1.0f);
 		fHslider9 = FAUSTFLOAT(0.0f);
@@ -985,10 +1049,10 @@ class triple_synth : public dsp {
 			fRec13_perm[l9] = 0.0f;
 		}
 		for (int l10 = 0; l10 < 4; l10 = l10 + 1) {
-			iVec1_perm[l10] = 0;
+			fYec0_perm[l10] = 0.0f;
 		}
 		for (int l11 = 0; l11 < 4; l11 = l11 + 1) {
-			fYec0_perm[l11] = 0.0f;
+			iVec1_perm[l11] = 0;
 		}
 		for (int l12 = 0; l12 < 4096; l12 = l12 + 1) {
 			fYec1[l12] = 0.0f;
@@ -1132,8 +1196,8 @@ class triple_synth : public dsp {
 	
 	virtual void buildUserInterface(UI* ui_interface) {
 		ui_interface->openVerticalBox("Synth");
-		ui_interface->declare(&fEntry1, "midi", "pitchwheel");
-		ui_interface->addNumEntry("Pitchwheel", &fEntry1, FAUSTFLOAT(0.0f), FAUSTFLOAT(-2.0f), FAUSTFLOAT(2.0f), FAUSTFLOAT(0.00100000005f));
+		ui_interface->declare(&fEntry2, "midi", "pitchwheel");
+		ui_interface->addNumEntry("Pitchwheel", &fEntry2, FAUSTFLOAT(0.0f), FAUSTFLOAT(-2.0f), FAUSTFLOAT(2.0f), FAUSTFLOAT(0.001f));
 		ui_interface->declare(&fEntry0, "lv2", "scalepoint Saw 3");
 		ui_interface->declare(&fEntry0, "lv2", "scalepoint Sine 0");
 		ui_interface->declare(&fEntry0, "lv2", "scalepoint Square 2");
@@ -1143,57 +1207,57 @@ class triple_synth : public dsp {
 		ui_interface->openHorizontalBox("Envelope");
 		ui_interface->declare(&fHslider3, "0", "");
 		ui_interface->declare(&fHslider3, "unit", "s");
-		ui_interface->addHorizontalSlider("Attack", &fHslider3, FAUSTFLOAT(0.0299999993f), FAUSTFLOAT(0.00100000005f), FAUSTFLOAT(2.0f), FAUSTFLOAT(0.00100000005f));
+		ui_interface->addHorizontalSlider("Attack", &fHslider3, FAUSTFLOAT(0.03f), FAUSTFLOAT(0.001f), FAUSTFLOAT(2.0f), FAUSTFLOAT(0.001f));
 		ui_interface->declare(&fHslider5, "1", "");
 		ui_interface->declare(&fHslider5, "unit", "s");
-		ui_interface->addHorizontalSlider("Decay", &fHslider5, FAUSTFLOAT(0.300000012f), FAUSTFLOAT(0.00100000005f), FAUSTFLOAT(4.0f), FAUSTFLOAT(0.00100000005f));
+		ui_interface->addHorizontalSlider("Decay", &fHslider5, FAUSTFLOAT(0.3f), FAUSTFLOAT(0.001f), FAUSTFLOAT(4.0f), FAUSTFLOAT(0.001f));
 		ui_interface->declare(&fHslider4, "2", "");
-		ui_interface->addHorizontalSlider("Sustain", &fHslider4, FAUSTFLOAT(1.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00999999978f));
+		ui_interface->addHorizontalSlider("Sustain", &fHslider4, FAUSTFLOAT(1.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.01f));
 		ui_interface->declare(&fHslider6, "3", "");
 		ui_interface->declare(&fHslider6, "unit", "s");
-		ui_interface->addHorizontalSlider("Release", &fHslider6, FAUSTFLOAT(0.400000006f), FAUSTFLOAT(0.00100000005f), FAUSTFLOAT(4.0f), FAUSTFLOAT(0.00100000005f));
+		ui_interface->addHorizontalSlider("Release", &fHslider6, FAUSTFLOAT(0.4f), FAUSTFLOAT(0.001f), FAUSTFLOAT(4.0f), FAUSTFLOAT(0.001f));
 		ui_interface->declare(&fEntry3, "4", "");
-		ui_interface->addNumEntry("gain", &fEntry3, FAUSTFLOAT(1.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00999999978f));
+		ui_interface->addNumEntry("gain", &fEntry3, FAUSTFLOAT(1.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.01f));
 		ui_interface->declare(&fButton0, "5", "");
 		ui_interface->addButton("gate", &fButton0);
 		ui_interface->closeBox();
 		ui_interface->declare(&fHslider10, "10", "");
 		ui_interface->declare(&fHslider10, "unit", "Hz");
-		ui_interface->addHorizontalSlider("Tremolo Freq", &fHslider10, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(0.0199999996f));
+		ui_interface->addHorizontalSlider("Tremolo Freq", &fHslider10, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(2e+01f), FAUSTFLOAT(0.02f));
 		ui_interface->declare(&fHslider9, "11", "");
-		ui_interface->addHorizontalSlider("Tremolo Depth", &fHslider9, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00100000005f));
+		ui_interface->addHorizontalSlider("Tremolo Depth", &fHslider9, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.001f));
 		ui_interface->declare(0, "1", "");
 		ui_interface->openHorizontalBox("Filter");
 		ui_interface->declare(&fHslider7, "0", "");
 		ui_interface->declare(&fHslider7, "scale", "log");
 		ui_interface->declare(&fHslider7, "tooltip", "Filter cutoff frequency");
 		ui_interface->declare(&fHslider7, "unit", "Hz");
-		ui_interface->addHorizontalSlider("Cutoff", &fHslider7, FAUSTFLOAT(10000.0f), FAUSTFLOAT(110.0f), FAUSTFLOAT(20000.0f), FAUSTFLOAT(0.00999999978f));
+		ui_interface->addHorizontalSlider("Cutoff", &fHslider7, FAUSTFLOAT(1e+04f), FAUSTFLOAT(1.1e+02f), FAUSTFLOAT(2e+04f), FAUSTFLOAT(0.01f));
 		ui_interface->declare(&fHslider8, "1", "");
-		ui_interface->addHorizontalSlider("Cutoff Q", &fHslider8, FAUSTFLOAT(1.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(0.100000001f));
+		ui_interface->addHorizontalSlider("Cutoff Q", &fHslider8, FAUSTFLOAT(1.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(2e+01f), FAUSTFLOAT(0.1f));
 		ui_interface->closeBox();
 		ui_interface->declare(&fHslider2, "6", "");
-		ui_interface->addHorizontalSlider("Detune", &fHslider2, FAUSTFLOAT(0.100000001f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00100000005f));
+		ui_interface->addHorizontalSlider("Detune", &fHslider2, FAUSTFLOAT(0.1f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.001f));
 		ui_interface->declare(&fHslider1, "8", "");
 		ui_interface->declare(&fHslider1, "unit", "Hz");
-		ui_interface->addHorizontalSlider("Vibrato Freq", &fHslider1, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(20.0f), FAUSTFLOAT(0.0199999996f));
+		ui_interface->addHorizontalSlider("Vibrato Freq", &fHslider1, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(2e+01f), FAUSTFLOAT(0.02f));
 		ui_interface->declare(&fHslider0, "9", "");
-		ui_interface->addHorizontalSlider("Vibrato Depth", &fHslider0, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00100000005f));
-		ui_interface->addNumEntry("freq", &fEntry2, FAUSTFLOAT(200.0f), FAUSTFLOAT(40.0f), FAUSTFLOAT(2000.0f), FAUSTFLOAT(0.00999999978f));
+		ui_interface->addHorizontalSlider("Vibrato Depth", &fHslider0, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.001f));
+		ui_interface->addNumEntry("freq", &fEntry1, FAUSTFLOAT(2e+02f), FAUSTFLOAT(4e+01f), FAUSTFLOAT(2e+03f), FAUSTFLOAT(0.01f));
 		ui_interface->closeBox();
 	}
 	
 	virtual void compute(int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOAT** RESTRICT outputs) {
 		FAUSTFLOAT* output0_ptr = outputs[0];
 		FAUSTFLOAT* output1_ptr = outputs[1];
-		float fZec0[32];
 		float fSlow0 = float(fEntry0);
 		float fSlow1 = float(fSlow0 >= 2.0f);
+		float fZec0[32];
 		float fZec1[32];
 		float fRec4_tmp[36];
 		float* fRec4 = &fRec4_tmp[4];
-		float fZec2[32];
 		float fSlow2 = float(fSlow0 >= 1.0f);
+		float fZec2[32];
 		float fZec3[32];
 		float fRec5_tmp[36];
 		float* fRec5 = &fRec5_tmp[4];
@@ -1209,8 +1273,8 @@ class triple_synth : public dsp {
 		float fSlow5 = fConst2 * float(fHslider2);
 		float fRec10_tmp[36];
 		float* fRec10 = &fRec10_tmp[4];
-		float fSlow6 = float(fEntry1) + 17.3123398f * std::log(0.0022727272f * float(fEntry2));
 		float fZec5[32];
+		float fSlow6 = float(fEntry2) + 17.31234f * std::log(0.0022727272f * float(fEntry1));
 		float fZec6[32];
 		float fZec7[32];
 		float fRec6_tmp[36];
@@ -1221,11 +1285,11 @@ class triple_synth : public dsp {
 		float fZec11[32];
 		float fRec13_tmp[36];
 		float* fRec13 = &fRec13_tmp[4];
+		float fYec0_tmp[36];
+		float* fYec0 = &fYec0_tmp[4];
 		int iVec1_tmp[36];
 		int* iVec1 = &iVec1_tmp[4];
 		float fZec12[32];
-		float fYec0_tmp[36];
-		float* fYec0 = &fYec0_tmp[4];
 		float fZec13[32];
 		int iZec14[32];
 		float fZec15[32];
@@ -1250,8 +1314,8 @@ class triple_synth : public dsp {
 		float fZec26[32];
 		float fRec15_tmp[36];
 		float* fRec15 = &fRec15_tmp[4];
-		float fZec27[32];
 		float fSlow7 = float(fSlow0 >= 3.0f);
+		float fZec27[32];
 		float fZec28[32];
 		float fRec17_tmp[36];
 		float* fRec17 = &fRec17_tmp[4];
@@ -1295,7 +1359,6 @@ class triple_synth : public dsp {
 		float fSlow15 = fConst2 * float(fHslider8);
 		float fRec29_tmp[36];
 		float* fRec29 = &fRec29_tmp[4];
-		float fSlow16 = 0.300000012f * float(fEntry3);
 		float fZec37[32];
 		float fZec38[32];
 		float fZec39[32];
@@ -1309,6 +1372,7 @@ class triple_synth : public dsp {
 		float fZec47[32];
 		float fZec48[32];
 		float fZec49[32];
+		float fSlow16 = 0.3f * float(fEntry3);
 		float fRec3_tmp[36];
 		float* fRec3 = &fRec3_tmp[4];
 		float fYec4_tmp[36];
@@ -1366,7 +1430,7 @@ class triple_synth : public dsp {
 		float* fRec33 = &fRec33_tmp[4];
 		int vindex = 0;
 		/* Main loop */
-		for (vindex = 0; vindex <= count - 32; vindex = vindex + 32) {
+		for (vindex = 0; vindex <= (count - 32); vindex = vindex + 32) {
 			FAUSTFLOAT* output0 = &output0_ptr[vindex];
 			FAUSTFLOAT* output1 = &output1_ptr[vindex];
 			int vsize = 32;
@@ -1413,7 +1477,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec5[i] = fRec7[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec8[i])];
+				fZec5[i] = fRec7[i] * ftbl0triple_synthSIG0[std::max<int>(0, std::min<int>(int(65536.0f * fRec8[i]), 65535))];
 			}
 			/* Recursive loop 4 */
 			/* Pre code */
@@ -1431,70 +1495,70 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 5 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec17[i] = std::pow(2.0f, 0.0833333358f * (fSlow6 + fZec5[i]));
+				fZec17[i] = std::pow(2.0f, 0.083333336f * (fSlow6 + fZec5[i]));
 			}
 			/* Vectorizable loop 6 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec6[i] = std::pow(2.0f, 0.0833333358f * (fSlow6 + fZec5[i] - fRec10[i]));
+				fZec6[i] = std::pow(2.0f, 0.083333336f * (fSlow6 + (fZec5[i] - fRec10[i])));
 			}
 			/* Vectorizable loop 7 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec19[i] = 440.0f * fZec17[i];
+				fZec19[i] = 4.4e+02f * fZec17[i];
 			}
 			/* Vectorizable loop 8 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec52[i] = std::pow(2.0f, 0.0833333358f * (fSlow6 + fRec10[i] + fZec5[i]));
+				fZec52[i] = std::pow(2.0f, 0.083333336f * (fSlow6 + fRec10[i] + fZec5[i]));
 			}
 			/* Vectorizable loop 9 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec8[i] = 440.0f * fZec6[i];
+				fZec8[i] = 4.4e+02f * fZec6[i];
 			}
 			/* Vectorizable loop 10 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec20[i] = std::max<float>(fZec19[i], 23.4489498f);
+				fZec20[i] = std::max<float>(fZec19[i], 23.44895f);
 			}
 			/* Vectorizable loop 11 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec54[i] = 440.0f * fZec52[i];
+				fZec54[i] = 4.4e+02f * fZec52[i];
 			}
 			/* Vectorizable loop 12 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec9[i] = std::max<float>(fZec8[i], 23.4489498f);
+				fZec9[i] = std::max<float>(fZec8[i], 23.44895f);
 			}
 			/* Vectorizable loop 13 */
 			/* Pre code */
-			for (int j16 = 0; j16 < 4; j16 = j16 + 1) {
-				iVec1_tmp[j16] = iVec1_perm[j16];
+			for (int j18 = 0; j18 < 4; j18 = j18 + 1) {
+				iVec1_tmp[j18] = iVec1_perm[j18];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
 				iVec1[i] = 1;
 			}
 			/* Post code */
-			for (int j17 = 0; j17 < 4; j17 = j17 + 1) {
-				iVec1_perm[j17] = iVec1_tmp[vsize + j17];
+			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
+				iVec1_perm[j19] = iVec1_tmp[vsize + j19];
 			}
 			/* Vectorizable loop 14 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec21[i] = std::max<float>(20.0f, std::fabs(fZec20[i]));
+				fZec21[i] = std::max<float>(2e+01f, std::fabs(fZec20[i]));
 			}
 			/* Vectorizable loop 15 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec55[i] = std::max<float>(fZec54[i], 23.4489498f);
+				fZec55[i] = std::max<float>(fZec54[i], 23.44895f);
 			}
 			/* Vectorizable loop 16 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec10[i] = std::max<float>(20.0f, std::fabs(fZec9[i]));
+				fZec10[i] = std::max<float>(2e+01f, std::fabs(fZec9[i]));
 			}
 			/* Recursive loop 17 */
 			/* Pre code */
@@ -1513,7 +1577,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 18 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec56[i] = std::max<float>(20.0f, std::fabs(fZec55[i]));
+				fZec56[i] = std::max<float>(2e+01f, std::fabs(fZec55[i]));
 			}
 			/* Recursive loop 19 */
 			/* Pre code */
@@ -1550,7 +1614,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 22 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec23[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst7 / fZec20[i]));
+				fZec23[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst6 / fZec20[i]));
 			}
 			/* Recursive loop 23 */
 			/* Pre code */
@@ -1568,28 +1632,28 @@ class triple_synth : public dsp {
 			}
 			/* Vectorizable loop 24 */
 			/* Pre code */
-			for (int j18 = 0; j18 < 4; j18 = j18 + 1) {
-				fYec0_tmp[j18] = fYec0_perm[j18];
+			for (int j16 = 0; j16 < 4; j16 = j16 + 1) {
+				fYec0_tmp[j16] = fYec0_perm[j16];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
 				fYec0[i] = triple_synth_faustpower2_f(2.0f * fRec13[i] + -1.0f);
 			}
 			/* Post code */
-			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
-				fYec0_perm[j19] = fYec0_tmp[vsize + j19];
+			for (int j17 = 0; j17 < 4; j17 = j17 + 1) {
+				fYec0_perm[j17] = fYec0_tmp[vsize + j17];
 			}
 			/* Vectorizable loop 25 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec13[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst7 / fZec9[i]));
+				fZec13[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst6 / fZec9[i]));
 			}
 			/* Vectorizable loop 26 */
 			/* Pre code */
 			fYec3_idx = (fYec3_idx + fYec3_idx_save) & 4095;
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec3[(i + fYec3_idx) & 4095] = (fZec12[i] * (fYec2[i] - fYec2[i - 1])) / fZec21[i];
+				fYec3[(i + fYec3_idx) & 4095] = fZec12[i] * (fYec2[i] - fYec2[i - 1]) / fZec21[i];
 			}
 			/* Post code */
 			fYec3_idx_save = vsize;
@@ -1632,7 +1696,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 31 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec58[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst7 / fZec55[i]));
+				fZec58[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst6 / fZec55[i]));
 			}
 			/* Recursive loop 32 */
 			/* Pre code */
@@ -1643,10 +1707,7 @@ class triple_synth : public dsp {
 			for (int i = 0; i < vsize; i = i + 1) {
 				fZec2[i] = fConst1 + fRec5[i - 1];
 				fZec3[i] = fRec5[i - 1] - fConst1;
-				float fElse2 = fZec3[i];
-				float fThen3 = ((fZec3[i] > fSlow2) ? fElse2 : fSlow2);
-				float fElse3 = fZec2[i];
-				fRec5[i] = ((fZec2[i] < fSlow2) ? fElse3 : fThen3);
+				fRec5[i] = ((fZec2[i] < fSlow2) ? fZec2[i] : ((fZec3[i] > fSlow2) ? fZec3[i] : fSlow2));
 			}
 			/* Post code */
 			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
@@ -1657,7 +1718,7 @@ class triple_synth : public dsp {
 			fYec1_idx = (fYec1_idx + fYec1_idx_save) & 4095;
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec1[(i + fYec1_idx) & 4095] = (fZec12[i] * (fYec0[i] - fYec0[i - 1])) / fZec10[i];
+				fYec1[(i + fYec1_idx) & 4095] = fZec12[i] * (fYec0[i] - fYec0[i - 1]) / fZec10[i];
 			}
 			/* Post code */
 			fYec1_idx_save = vsize;
@@ -1674,7 +1735,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 36 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec26[i] = fYec3[(i + fYec3_idx) & 4095] - fYec3[((i + fYec3_idx) - iZec24[i]) & 4095] * (fZec25[i] + 1.0f - fZec23[i]) - (fZec23[i] - fZec25[i]) * fYec3[((i + fYec3_idx) - (iZec24[i] + 1)) & 4095];
+				fZec26[i] = fYec3[(i + fYec3_idx) & 4095] - fYec3[(i + fYec3_idx - iZec24[i]) & 4095] * (fZec25[i] + (1.0f - fZec23[i])) - (fZec23[i] - fZec25[i]) * fYec3[(i + fYec3_idx - (iZec24[i] + 1)) & 4095];
 			}
 			/* Recursive loop 37 */
 			/* Pre code */
@@ -1685,10 +1746,7 @@ class triple_synth : public dsp {
 			for (int i = 0; i < vsize; i = i + 1) {
 				fZec27[i] = fConst1 + fRec17[i - 1];
 				fZec28[i] = fRec17[i - 1] - fConst1;
-				float fElse4 = fZec28[i];
-				float fThen5 = ((fZec28[i] > fSlow7) ? fElse4 : fSlow7);
-				float fElse5 = fZec27[i];
-				fRec17[i] = ((fZec27[i] < fSlow7) ? fElse5 : fThen5);
+				fRec17[i] = ((fZec27[i] < fSlow7) ? fZec27[i] : ((fZec28[i] > fSlow7) ? fZec28[i] : fSlow7));
 			}
 			/* Post code */
 			for (int j31 = 0; j31 < 4; j31 = j31 + 1) {
@@ -1741,14 +1799,14 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 42 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec44[i] = std::tan(fConst9 * std::max<float>(20.0f, std::min<float>(20000.0f, fRec28[i])));
+				fZec37[i] = std::tan(fConst8 * std::max<float>(2e+01f, std::min<float>(2e+04f, fRec28[i])));
 			}
 			/* Vectorizable loop 43 */
 			/* Pre code */
 			fYec6_idx = (fYec6_idx + fYec6_idx_save) & 4095;
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec6[(i + fYec6_idx) & 4095] = (fZec12[i] * (fYec5[i] - fYec5[i - 1])) / fZec56[i];
+				fYec6[(i + fYec6_idx) & 4095] = fZec12[i] * (fYec5[i] - fYec5[i - 1]) / fZec56[i];
 			}
 			/* Post code */
 			fYec6_idx_save = vsize;
@@ -1771,10 +1829,7 @@ class triple_synth : public dsp {
 			for (int i = 0; i < vsize; i = i + 1) {
 				fZec0[i] = fConst1 + fRec4[i - 1];
 				fZec1[i] = fRec4[i - 1] - fConst1;
-				float fElse0 = fZec1[i];
-				float fThen1 = ((fZec1[i] > fSlow1) ? fElse0 : fSlow1);
-				float fElse1 = fZec0[i];
-				fRec4[i] = ((fZec0[i] < fSlow1) ? fElse1 : fThen1);
+				fRec4[i] = ((fZec0[i] < fSlow1) ? fZec0[i] : ((fZec1[i] > fSlow1) ? fZec1[i] : fSlow1));
 			}
 			/* Post code */
 			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
@@ -1783,7 +1838,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 47 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec16[i] = fYec1[(i + fYec1_idx) & 4095] - fYec1[((i + fYec1_idx) - iZec14[i]) & 4095] * (fZec15[i] + 1.0f - fZec13[i]) - (fZec13[i] - fZec15[i]) * fYec1[((i + fYec1_idx) - (iZec14[i] + 1)) & 4095];
+				fZec16[i] = fYec1[(i + fYec1_idx) & 4095] - fYec1[(i + fYec1_idx - iZec14[i]) & 4095] * (fZec15[i] + (1.0f - fZec13[i])) - (fZec13[i] - fZec15[i]) * fYec1[(i + fYec1_idx - (iZec14[i] + 1)) & 4095];
 			}
 			/* Recursive loop 48 */
 			/* Pre code */
@@ -1806,7 +1861,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec15[i] = 0.999000013f * fRec15[i - 1] + fConst6 * fZec26[i];
+				fRec15[i] = 0.999f * fRec15[i - 1] + fConst7 * fZec26[i];
 			}
 			/* Post code */
 			for (int j29 = 0; j29 < 4; j29 = j29 + 1) {
@@ -1827,12 +1882,8 @@ class triple_synth : public dsp {
 				fZec34[i] = fRec20[i - 1] + fConst4 * fZec33[i];
 				fZec35[i] = fZec34[i] + -1.0f;
 				iZec36[i] = fZec35[i] < 0.0f;
-				float fThen8 = fZec35[i];
-				float fElse8 = fZec34[i];
-				fRec20[i] = ((iZec36[i]) ? fElse8 : fThen8);
-				float fThen9 = fZec34[i] + fZec35[i] * (1.0f - fConst0 / fZec33[i]);
-				float fElse9 = fZec34[i];
-				fRec21[i] = ((iZec36[i]) ? fElse9 : fThen9);
+				fRec20[i] = ((iZec36[i]) ? fZec34[i] : fZec35[i]);
+				fRec21[i] = ((iZec36[i]) ? fZec34[i] : fZec34[i] + fZec35[i] * (1.0f - fConst0 / fZec33[i]));
 			}
 			/* Post code */
 			for (int j35 = 0; j35 < 4; j35 = j35 + 1) {
@@ -1906,32 +1957,32 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 57 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec38[i] = 1.0f - fRec5[i];
+				fZec38[i] = 1.0f / fZec37[i];
 			}
 			/* Vectorizable loop 58 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec40[i] = 1.0f - fRec17[i];
+				fZec39[i] = 1.0f / fRec29[i];
 			}
 			/* Vectorizable loop 59 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec42[i] = std::max<float>(1.0f, fConst0 * fRec23[i]);
+				fZec43[i] = std::max<float>(1.0f, fConst0 * fRec23[i]);
 			}
 			/* Vectorizable loop 60 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec45[i] = 1.0f / fZec44[i];
+				fZec45[i] = 1.0f - fRec17[i];
 			}
 			/* Vectorizable loop 61 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec46[i] = 1.0f / fRec29[i];
+				fZec47[i] = 1.0f - fRec5[i];
 			}
 			/* Vectorizable loop 62 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec61[i] = fYec6[(i + fYec6_idx) & 4095] - fYec6[((i + fYec6_idx) - iZec59[i]) & 4095] * (fZec60[i] + 1.0f - fZec58[i]) - (fZec58[i] - fZec60[i]) * fYec6[((i + fYec6_idx) - (iZec59[i] + 1)) & 4095];
+				fZec61[i] = fYec6[(i + fYec6_idx) & 4095] - fYec6[(i + fYec6_idx - iZec59[i]) & 4095] * (fZec60[i] + (1.0f - fZec58[i])) - (fZec58[i] - fZec60[i]) * fYec6[(i + fYec6_idx - (iZec59[i] + 1)) & 4095];
 			}
 			/* Vectorizable loop 63 */
 			/* Compute code */
@@ -1959,7 +2010,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec12[i] = 0.999000013f * fRec12[i - 1] + fConst6 * fZec16[i];
+				fRec12[i] = 0.999f * fRec12[i - 1] + fConst7 * fZec16[i];
 			}
 			/* Post code */
 			for (int j21 = 0; j21 < 4; j21 = j21 + 1) {
@@ -1975,12 +2026,8 @@ class triple_synth : public dsp {
 				fZec30[i] = fRec18[i - 1] + fConst4 * fZec29[i];
 				fZec31[i] = fZec30[i] + -1.0f;
 				iZec32[i] = fZec31[i] < 0.0f;
-				float fThen6 = fZec31[i];
-				float fElse6 = fZec30[i];
-				fRec18[i] = ((iZec32[i]) ? fElse6 : fThen6);
-				float fThen7 = fZec30[i] + fZec31[i] * (1.0f - fConst0 / fZec29[i]);
-				float fElse7 = fZec30[i];
-				fRec19[i] = ((iZec32[i]) ? fElse7 : fThen7);
+				fRec18[i] = ((iZec32[i]) ? fZec30[i] : fZec31[i]);
+				fRec19[i] = ((iZec32[i]) ? fZec30[i] : fZec30[i] + fZec31[i] * (1.0f - fConst0 / fZec29[i]));
 			}
 			/* Post code */
 			for (int j33 = 0; j33 < 4; j33 = j33 + 1) {
@@ -1989,37 +2036,37 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 67 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec37[i] = 1.0f - fRec4[i];
+				fZec40[i] = (fZec39[i] + fZec38[i]) / fZec37[i] + 1.0f;
 			}
 			/* Vectorizable loop 68 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec39[i] = fZec38[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec14[i])] + fConst8 * fRec5[i] * fRec15[i] * fZec17[i];
+				fZec41[i] = 1.0f - 1.0f / triple_synth_faustpower2_f(fZec37[i]);
 			}
 			/* Vectorizable loop 69 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec41[i] = fConst6 * fZec40[i] * fZec26[i] + fRec17[i] * (2.0f * fRec21[i] + -1.0f);
+				fZec42[i] = (fZec38[i] - fZec39[i]) / fZec37[i] + 1.0f;
 			}
 			/* Vectorizable loop 70 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec43[i] = std::max<float>(0.0f, std::min<float>(fRec22[i] / fZec42[i], std::max<float>(((1.0f - fRec24[i]) * (fZec42[i] - fRec22[i])) / std::max<float>(1.0f, fConst0 * fRec25[i]) + 1.0f, fRec24[i])) * (1.0f - float(iRec26[i]) / std::max<float>(1.0f, fConst0 * fRec27[i])));
+				fZec44[i] = std::max<float>(0.0f, std::min<float>(fRec22[i] / fZec43[i], std::max<float>((1.0f - fRec24[i]) * (fZec43[i] - fRec22[i]) / std::max<float>(1.0f, fConst0 * fRec25[i]) + 1.0f, fRec24[i])) * (1.0f - float(iRec26[i]) / std::max<float>(1.0f, fConst0 * fRec27[i])));
 			}
 			/* Vectorizable loop 71 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec47[i] = (fZec45[i] - fZec46[i]) / fZec44[i] + 1.0f;
+				fZec46[i] = fConst7 * fZec45[i] * fZec26[i] + fRec17[i] * (2.0f * fRec21[i] + -1.0f);
 			}
 			/* Vectorizable loop 72 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec48[i] = 1.0f - 1.0f / triple_synth_faustpower2_f(fZec44[i]);
+				fZec48[i] = fZec47[i] * ftbl0triple_synthSIG0[std::max<int>(0, std::min<int>(int(65536.0f * fRec14[i]), 65535))] + fConst9 * fRec5[i] * fRec15[i] * fZec17[i];
 			}
 			/* Vectorizable loop 73 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec49[i] = (fZec46[i] + fZec45[i]) / fZec44[i] + 1.0f;
+				fZec49[i] = 1.0f - fRec4[i];
 			}
 			/* Recursive loop 74 */
 			/* Pre code */
@@ -2042,7 +2089,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec38[i] = 0.999000013f * fRec38[i - 1] + fConst6 * fZec61[i];
+				fRec38[i] = 0.999f * fRec38[i - 1] + fConst7 * fZec61[i];
 			}
 			/* Post code */
 			for (int j77 = 0; j77 < 4; j77 = j77 + 1) {
@@ -2058,12 +2105,8 @@ class triple_synth : public dsp {
 				fZec63[i] = fRec40[i - 1] + fConst4 * fZec62[i];
 				fZec64[i] = fZec63[i] + -1.0f;
 				iZec65[i] = fZec64[i] < 0.0f;
-				float fThen10 = fZec64[i];
-				float fElse10 = fZec63[i];
-				fRec40[i] = ((iZec65[i]) ? fElse10 : fThen10);
-				float fThen11 = fZec63[i] + fZec64[i] * (1.0f - fConst0 / fZec62[i]);
-				float fElse11 = fZec63[i];
-				fRec41[i] = ((iZec65[i]) ? fElse11 : fThen11);
+				fRec40[i] = ((iZec65[i]) ? fZec63[i] : fZec64[i]);
+				fRec41[i] = ((iZec65[i]) ? fZec63[i] : fZec63[i] + fZec64[i] * (1.0f - fConst0 / fZec62[i]));
 			}
 			/* Post code */
 			for (int j79 = 0; j79 < 4; j79 = j79 + 1) {
@@ -2076,7 +2119,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec3[i] = fSlow16 * (fZec37[i] * (fZec38[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec6[i])] + fConst8 * fRec5[i] * fRec12[i] * fZec6[i] + fZec39[i]) + fRec4[i] * (fConst6 * fZec40[i] * fZec16[i] + fRec17[i] * (2.0f * fRec19[i] + -1.0f) + fZec41[i])) * fZec43[i] - (fRec3[i - 2] * fZec47[i] + 2.0f * fRec3[i - 1] * fZec48[i]) / fZec49[i];
+				fRec3[i] = fSlow16 * (fZec49[i] * (fZec47[i] * ftbl0triple_synthSIG0[std::max<int>(0, std::min<int>(int(65536.0f * fRec6[i]), 65535))] + fConst9 * fRec5[i] * fRec12[i] * fZec6[i] + fZec48[i]) + fRec4[i] * (fConst7 * fZec45[i] * fZec16[i] + fRec17[i] * (2.0f * fRec19[i] + -1.0f) + fZec46[i])) * fZec44[i] - (fRec3[i - 2] * fZec42[i] + 2.0f * fRec3[i - 1] * fZec41[i]) / fZec40[i];
 			}
 			/* Post code */
 			for (int j55 = 0; j55 < 4; j55 = j55 + 1) {
@@ -2089,7 +2132,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec36[i] = fSlow16 * fZec43[i] * (fZec37[i] * (fZec39[i] + fZec38[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec37[i])] + fConst8 * fRec5[i] * fRec38[i] * fZec52[i]) + fRec4[i] * (fZec41[i] + fConst6 * fZec40[i] * fZec61[i] + fRec17[i] * (2.0f * fRec41[i] + -1.0f))) - (fZec47[i] * fRec36[i - 2] + 2.0f * fZec48[i] * fRec36[i - 1]) / fZec49[i];
+				fRec36[i] = fSlow16 * fZec44[i] * (fZec49[i] * (fZec48[i] + fZec47[i] * ftbl0triple_synthSIG0[std::max<int>(0, std::min<int>(int(65536.0f * fRec37[i]), 65535))] + fConst9 * fRec5[i] * fRec38[i] * fZec52[i]) + fRec4[i] * (fZec46[i] + fConst7 * fZec45[i] * fZec61[i] + fRec17[i] * (2.0f * fRec41[i] + -1.0f))) - (fZec42[i] * fRec36[i - 2] + 2.0f * fZec41[i] * fRec36[i - 1]) / fZec40[i];
 			}
 			/* Post code */
 			for (int j81 = 0; j81 < 4; j81 = j81 + 1) {
@@ -2102,7 +2145,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec4[i] = (fRec3[i - 2] + fRec3[i] + 2.0f * fRec3[i - 1]) / fZec49[i];
+				fYec4[i] = (fRec3[i - 2] + fRec3[i] + 2.0f * fRec3[i - 1]) / fZec40[i];
 			}
 			/* Post code */
 			for (int j57 = 0; j57 < 4; j57 = j57 + 1) {
@@ -2115,7 +2158,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec7[i] = (fRec36[i - 2] + fRec36[i] + 2.0f * fRec36[i - 1]) / fZec49[i];
+				fYec7[i] = (fRec36[i - 2] + fRec36[i] + 2.0f * fRec36[i - 1]) / fZec40[i];
 			}
 			/* Post code */
 			for (int j83 = 0; j83 < 4; j83 = j83 + 1) {
@@ -2128,7 +2171,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec2[i] = 0.0f - fConst12 * (fConst13 * fRec2[i - 1] - (fYec4[i] + fYec4[i - 1]));
+				fRec2[i] = 0.0f - fConst13 * (fConst12 * fRec2[i - 1] - (fYec4[i] + fYec4[i - 1]));
 			}
 			/* Post code */
 			for (int j59 = 0; j59 < 4; j59 = j59 + 1) {
@@ -2154,7 +2197,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec35[i] = 0.0f - fConst12 * (fConst13 * fRec35[i - 1] - (fYec7[i] + fYec7[i - 1]));
+				fRec35[i] = 0.0f - fConst13 * (fConst12 * fRec35[i - 1] - (fYec7[i] + fYec7[i - 1]));
 			}
 			/* Post code */
 			for (int j85 = 0; j85 < 4; j85 = j85 + 1) {
@@ -2167,7 +2210,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec1[i] = fRec2[i] - fConst14 * (fConst15 * fRec1[i - 2] + fConst16 * fRec1[i - 1]);
+				fRec1[i] = fRec2[i] - fConst16 * (fConst15 * fRec1[i - 2] + fConst14 * fRec1[i - 1]);
 			}
 			/* Post code */
 			for (int j61 = 0; j61 < 4; j61 = j61 + 1) {
@@ -2207,7 +2250,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec34[i] = fRec35[i] - fConst14 * (fConst15 * fRec34[i - 2] + fConst16 * fRec34[i - 1]);
+				fRec34[i] = fRec35[i] - fConst16 * (fConst15 * fRec34[i - 2] + fConst14 * fRec34[i - 1]);
 			}
 			/* Post code */
 			for (int j87 = 0; j87 < 4; j87 = j87 + 1) {
@@ -2220,7 +2263,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec0[i] = fConst14 * (fRec1[i - 2] + fRec1[i] + 2.0f * fRec1[i - 1]) - fConst17 * (fConst18 * fRec0[i - 2] + fConst16 * fRec0[i - 1]);
+				fRec0[i] = fConst16 * (fRec1[i - 2] + fRec1[i] + 2.0f * fRec1[i - 1]) - fConst18 * (fConst17 * fRec0[i - 2] + fConst14 * fRec0[i - 1]);
 			}
 			/* Post code */
 			for (int j63 = 0; j63 < 4; j63 = j63 + 1) {
@@ -2229,7 +2272,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 89 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec51[i] = 0.5f * fRec30[i] * (ftbl0triple_synthSIG0[int(65536.0f * fRec31[i])] + -1.0f) + 1.0f;
+				fZec51[i] = 0.5f * fRec30[i] * (ftbl0triple_synthSIG0[std::max<int>(0, std::min<int>(int(65536.0f * fRec31[i]), 65535))] + -1.0f) + 1.0f;
 			}
 			/* Recursive loop 90 */
 			/* Pre code */
@@ -2238,7 +2281,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec33[i] = fConst14 * (fRec34[i - 2] + fRec34[i] + 2.0f * fRec34[i - 1]) - fConst17 * (fConst18 * fRec33[i - 2] + fConst16 * fRec33[i - 1]);
+				fRec33[i] = fConst16 * (fRec34[i - 2] + fRec34[i] + 2.0f * fRec34[i - 1]) - fConst18 * (fConst17 * fRec33[i - 2] + fConst14 * fRec33[i - 1]);
 			}
 			/* Post code */
 			for (int j89 = 0; j89 < 4; j89 = j89 + 1) {
@@ -2247,12 +2290,12 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 91 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output0[i] = FAUSTFLOAT(fConst17 * (fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1]) * fZec51[i]);
+				output0[i] = FAUSTFLOAT(fConst18 * (fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1]) * fZec51[i]);
 			}
 			/* Vectorizable loop 92 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output1[i] = FAUSTFLOAT(fConst17 * fZec51[i] * (fRec33[i - 2] + fRec33[i] + 2.0f * fRec33[i - 1]));
+				output1[i] = FAUSTFLOAT(fConst18 * fZec51[i] * (fRec33[i - 2] + fRec33[i] + 2.0f * fRec33[i - 1]));
 			}
 		}
 		/* Remaining frames */
@@ -2303,7 +2346,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec5[i] = fRec7[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec8[i])];
+				fZec5[i] = fRec7[i] * ftbl0triple_synthSIG0[std::max<int>(0, std::min<int>(int(65536.0f * fRec8[i]), 65535))];
 			}
 			/* Recursive loop 4 */
 			/* Pre code */
@@ -2321,70 +2364,70 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 5 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec17[i] = std::pow(2.0f, 0.0833333358f * (fSlow6 + fZec5[i]));
+				fZec17[i] = std::pow(2.0f, 0.083333336f * (fSlow6 + fZec5[i]));
 			}
 			/* Vectorizable loop 6 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec6[i] = std::pow(2.0f, 0.0833333358f * (fSlow6 + fZec5[i] - fRec10[i]));
+				fZec6[i] = std::pow(2.0f, 0.083333336f * (fSlow6 + (fZec5[i] - fRec10[i])));
 			}
 			/* Vectorizable loop 7 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec19[i] = 440.0f * fZec17[i];
+				fZec19[i] = 4.4e+02f * fZec17[i];
 			}
 			/* Vectorizable loop 8 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec52[i] = std::pow(2.0f, 0.0833333358f * (fSlow6 + fRec10[i] + fZec5[i]));
+				fZec52[i] = std::pow(2.0f, 0.083333336f * (fSlow6 + fRec10[i] + fZec5[i]));
 			}
 			/* Vectorizable loop 9 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec8[i] = 440.0f * fZec6[i];
+				fZec8[i] = 4.4e+02f * fZec6[i];
 			}
 			/* Vectorizable loop 10 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec20[i] = std::max<float>(fZec19[i], 23.4489498f);
+				fZec20[i] = std::max<float>(fZec19[i], 23.44895f);
 			}
 			/* Vectorizable loop 11 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec54[i] = 440.0f * fZec52[i];
+				fZec54[i] = 4.4e+02f * fZec52[i];
 			}
 			/* Vectorizable loop 12 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec9[i] = std::max<float>(fZec8[i], 23.4489498f);
+				fZec9[i] = std::max<float>(fZec8[i], 23.44895f);
 			}
 			/* Vectorizable loop 13 */
 			/* Pre code */
-			for (int j16 = 0; j16 < 4; j16 = j16 + 1) {
-				iVec1_tmp[j16] = iVec1_perm[j16];
+			for (int j18 = 0; j18 < 4; j18 = j18 + 1) {
+				iVec1_tmp[j18] = iVec1_perm[j18];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
 				iVec1[i] = 1;
 			}
 			/* Post code */
-			for (int j17 = 0; j17 < 4; j17 = j17 + 1) {
-				iVec1_perm[j17] = iVec1_tmp[vsize + j17];
+			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
+				iVec1_perm[j19] = iVec1_tmp[vsize + j19];
 			}
 			/* Vectorizable loop 14 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec21[i] = std::max<float>(20.0f, std::fabs(fZec20[i]));
+				fZec21[i] = std::max<float>(2e+01f, std::fabs(fZec20[i]));
 			}
 			/* Vectorizable loop 15 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec55[i] = std::max<float>(fZec54[i], 23.4489498f);
+				fZec55[i] = std::max<float>(fZec54[i], 23.44895f);
 			}
 			/* Vectorizable loop 16 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec10[i] = std::max<float>(20.0f, std::fabs(fZec9[i]));
+				fZec10[i] = std::max<float>(2e+01f, std::fabs(fZec9[i]));
 			}
 			/* Recursive loop 17 */
 			/* Pre code */
@@ -2403,7 +2446,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 18 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec56[i] = std::max<float>(20.0f, std::fabs(fZec55[i]));
+				fZec56[i] = std::max<float>(2e+01f, std::fabs(fZec55[i]));
 			}
 			/* Recursive loop 19 */
 			/* Pre code */
@@ -2440,7 +2483,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 22 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec23[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst7 / fZec20[i]));
+				fZec23[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst6 / fZec20[i]));
 			}
 			/* Recursive loop 23 */
 			/* Pre code */
@@ -2458,28 +2501,28 @@ class triple_synth : public dsp {
 			}
 			/* Vectorizable loop 24 */
 			/* Pre code */
-			for (int j18 = 0; j18 < 4; j18 = j18 + 1) {
-				fYec0_tmp[j18] = fYec0_perm[j18];
+			for (int j16 = 0; j16 < 4; j16 = j16 + 1) {
+				fYec0_tmp[j16] = fYec0_perm[j16];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
 				fYec0[i] = triple_synth_faustpower2_f(2.0f * fRec13[i] + -1.0f);
 			}
 			/* Post code */
-			for (int j19 = 0; j19 < 4; j19 = j19 + 1) {
-				fYec0_perm[j19] = fYec0_tmp[vsize + j19];
+			for (int j17 = 0; j17 < 4; j17 = j17 + 1) {
+				fYec0_perm[j17] = fYec0_tmp[vsize + j17];
 			}
 			/* Vectorizable loop 25 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec13[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst7 / fZec9[i]));
+				fZec13[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst6 / fZec9[i]));
 			}
 			/* Vectorizable loop 26 */
 			/* Pre code */
 			fYec3_idx = (fYec3_idx + fYec3_idx_save) & 4095;
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec3[(i + fYec3_idx) & 4095] = (fZec12[i] * (fYec2[i] - fYec2[i - 1])) / fZec21[i];
+				fYec3[(i + fYec3_idx) & 4095] = fZec12[i] * (fYec2[i] - fYec2[i - 1]) / fZec21[i];
 			}
 			/* Post code */
 			fYec3_idx_save = vsize;
@@ -2522,7 +2565,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 31 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec58[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst7 / fZec55[i]));
+				fZec58[i] = std::max<float>(0.0f, std::min<float>(2047.0f, fConst6 / fZec55[i]));
 			}
 			/* Recursive loop 32 */
 			/* Pre code */
@@ -2533,10 +2576,7 @@ class triple_synth : public dsp {
 			for (int i = 0; i < vsize; i = i + 1) {
 				fZec2[i] = fConst1 + fRec5[i - 1];
 				fZec3[i] = fRec5[i - 1] - fConst1;
-				float fElse2 = fZec3[i];
-				float fThen3 = ((fZec3[i] > fSlow2) ? fElse2 : fSlow2);
-				float fElse3 = fZec2[i];
-				fRec5[i] = ((fZec2[i] < fSlow2) ? fElse3 : fThen3);
+				fRec5[i] = ((fZec2[i] < fSlow2) ? fZec2[i] : ((fZec3[i] > fSlow2) ? fZec3[i] : fSlow2));
 			}
 			/* Post code */
 			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
@@ -2547,7 +2587,7 @@ class triple_synth : public dsp {
 			fYec1_idx = (fYec1_idx + fYec1_idx_save) & 4095;
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec1[(i + fYec1_idx) & 4095] = (fZec12[i] * (fYec0[i] - fYec0[i - 1])) / fZec10[i];
+				fYec1[(i + fYec1_idx) & 4095] = fZec12[i] * (fYec0[i] - fYec0[i - 1]) / fZec10[i];
 			}
 			/* Post code */
 			fYec1_idx_save = vsize;
@@ -2564,7 +2604,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 36 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec26[i] = fYec3[(i + fYec3_idx) & 4095] - fYec3[((i + fYec3_idx) - iZec24[i]) & 4095] * (fZec25[i] + 1.0f - fZec23[i]) - (fZec23[i] - fZec25[i]) * fYec3[((i + fYec3_idx) - (iZec24[i] + 1)) & 4095];
+				fZec26[i] = fYec3[(i + fYec3_idx) & 4095] - fYec3[(i + fYec3_idx - iZec24[i]) & 4095] * (fZec25[i] + (1.0f - fZec23[i])) - (fZec23[i] - fZec25[i]) * fYec3[(i + fYec3_idx - (iZec24[i] + 1)) & 4095];
 			}
 			/* Recursive loop 37 */
 			/* Pre code */
@@ -2575,10 +2615,7 @@ class triple_synth : public dsp {
 			for (int i = 0; i < vsize; i = i + 1) {
 				fZec27[i] = fConst1 + fRec17[i - 1];
 				fZec28[i] = fRec17[i - 1] - fConst1;
-				float fElse4 = fZec28[i];
-				float fThen5 = ((fZec28[i] > fSlow7) ? fElse4 : fSlow7);
-				float fElse5 = fZec27[i];
-				fRec17[i] = ((fZec27[i] < fSlow7) ? fElse5 : fThen5);
+				fRec17[i] = ((fZec27[i] < fSlow7) ? fZec27[i] : ((fZec28[i] > fSlow7) ? fZec28[i] : fSlow7));
 			}
 			/* Post code */
 			for (int j31 = 0; j31 < 4; j31 = j31 + 1) {
@@ -2631,14 +2668,14 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 42 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec44[i] = std::tan(fConst9 * std::max<float>(20.0f, std::min<float>(20000.0f, fRec28[i])));
+				fZec37[i] = std::tan(fConst8 * std::max<float>(2e+01f, std::min<float>(2e+04f, fRec28[i])));
 			}
 			/* Vectorizable loop 43 */
 			/* Pre code */
 			fYec6_idx = (fYec6_idx + fYec6_idx_save) & 4095;
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec6[(i + fYec6_idx) & 4095] = (fZec12[i] * (fYec5[i] - fYec5[i - 1])) / fZec56[i];
+				fYec6[(i + fYec6_idx) & 4095] = fZec12[i] * (fYec5[i] - fYec5[i - 1]) / fZec56[i];
 			}
 			/* Post code */
 			fYec6_idx_save = vsize;
@@ -2661,10 +2698,7 @@ class triple_synth : public dsp {
 			for (int i = 0; i < vsize; i = i + 1) {
 				fZec0[i] = fConst1 + fRec4[i - 1];
 				fZec1[i] = fRec4[i - 1] - fConst1;
-				float fElse0 = fZec1[i];
-				float fThen1 = ((fZec1[i] > fSlow1) ? fElse0 : fSlow1);
-				float fElse1 = fZec0[i];
-				fRec4[i] = ((fZec0[i] < fSlow1) ? fElse1 : fThen1);
+				fRec4[i] = ((fZec0[i] < fSlow1) ? fZec0[i] : ((fZec1[i] > fSlow1) ? fZec1[i] : fSlow1));
 			}
 			/* Post code */
 			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
@@ -2673,7 +2707,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 47 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec16[i] = fYec1[(i + fYec1_idx) & 4095] - fYec1[((i + fYec1_idx) - iZec14[i]) & 4095] * (fZec15[i] + 1.0f - fZec13[i]) - (fZec13[i] - fZec15[i]) * fYec1[((i + fYec1_idx) - (iZec14[i] + 1)) & 4095];
+				fZec16[i] = fYec1[(i + fYec1_idx) & 4095] - fYec1[(i + fYec1_idx - iZec14[i]) & 4095] * (fZec15[i] + (1.0f - fZec13[i])) - (fZec13[i] - fZec15[i]) * fYec1[(i + fYec1_idx - (iZec14[i] + 1)) & 4095];
 			}
 			/* Recursive loop 48 */
 			/* Pre code */
@@ -2696,7 +2730,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec15[i] = 0.999000013f * fRec15[i - 1] + fConst6 * fZec26[i];
+				fRec15[i] = 0.999f * fRec15[i - 1] + fConst7 * fZec26[i];
 			}
 			/* Post code */
 			for (int j29 = 0; j29 < 4; j29 = j29 + 1) {
@@ -2717,12 +2751,8 @@ class triple_synth : public dsp {
 				fZec34[i] = fRec20[i - 1] + fConst4 * fZec33[i];
 				fZec35[i] = fZec34[i] + -1.0f;
 				iZec36[i] = fZec35[i] < 0.0f;
-				float fThen8 = fZec35[i];
-				float fElse8 = fZec34[i];
-				fRec20[i] = ((iZec36[i]) ? fElse8 : fThen8);
-				float fThen9 = fZec34[i] + fZec35[i] * (1.0f - fConst0 / fZec33[i]);
-				float fElse9 = fZec34[i];
-				fRec21[i] = ((iZec36[i]) ? fElse9 : fThen9);
+				fRec20[i] = ((iZec36[i]) ? fZec34[i] : fZec35[i]);
+				fRec21[i] = ((iZec36[i]) ? fZec34[i] : fZec34[i] + fZec35[i] * (1.0f - fConst0 / fZec33[i]));
 			}
 			/* Post code */
 			for (int j35 = 0; j35 < 4; j35 = j35 + 1) {
@@ -2796,32 +2826,32 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 57 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec38[i] = 1.0f - fRec5[i];
+				fZec38[i] = 1.0f / fZec37[i];
 			}
 			/* Vectorizable loop 58 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec40[i] = 1.0f - fRec17[i];
+				fZec39[i] = 1.0f / fRec29[i];
 			}
 			/* Vectorizable loop 59 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec42[i] = std::max<float>(1.0f, fConst0 * fRec23[i]);
+				fZec43[i] = std::max<float>(1.0f, fConst0 * fRec23[i]);
 			}
 			/* Vectorizable loop 60 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec45[i] = 1.0f / fZec44[i];
+				fZec45[i] = 1.0f - fRec17[i];
 			}
 			/* Vectorizable loop 61 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec46[i] = 1.0f / fRec29[i];
+				fZec47[i] = 1.0f - fRec5[i];
 			}
 			/* Vectorizable loop 62 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec61[i] = fYec6[(i + fYec6_idx) & 4095] - fYec6[((i + fYec6_idx) - iZec59[i]) & 4095] * (fZec60[i] + 1.0f - fZec58[i]) - (fZec58[i] - fZec60[i]) * fYec6[((i + fYec6_idx) - (iZec59[i] + 1)) & 4095];
+				fZec61[i] = fYec6[(i + fYec6_idx) & 4095] - fYec6[(i + fYec6_idx - iZec59[i]) & 4095] * (fZec60[i] + (1.0f - fZec58[i])) - (fZec58[i] - fZec60[i]) * fYec6[(i + fYec6_idx - (iZec59[i] + 1)) & 4095];
 			}
 			/* Vectorizable loop 63 */
 			/* Compute code */
@@ -2849,7 +2879,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec12[i] = 0.999000013f * fRec12[i - 1] + fConst6 * fZec16[i];
+				fRec12[i] = 0.999f * fRec12[i - 1] + fConst7 * fZec16[i];
 			}
 			/* Post code */
 			for (int j21 = 0; j21 < 4; j21 = j21 + 1) {
@@ -2865,12 +2895,8 @@ class triple_synth : public dsp {
 				fZec30[i] = fRec18[i - 1] + fConst4 * fZec29[i];
 				fZec31[i] = fZec30[i] + -1.0f;
 				iZec32[i] = fZec31[i] < 0.0f;
-				float fThen6 = fZec31[i];
-				float fElse6 = fZec30[i];
-				fRec18[i] = ((iZec32[i]) ? fElse6 : fThen6);
-				float fThen7 = fZec30[i] + fZec31[i] * (1.0f - fConst0 / fZec29[i]);
-				float fElse7 = fZec30[i];
-				fRec19[i] = ((iZec32[i]) ? fElse7 : fThen7);
+				fRec18[i] = ((iZec32[i]) ? fZec30[i] : fZec31[i]);
+				fRec19[i] = ((iZec32[i]) ? fZec30[i] : fZec30[i] + fZec31[i] * (1.0f - fConst0 / fZec29[i]));
 			}
 			/* Post code */
 			for (int j33 = 0; j33 < 4; j33 = j33 + 1) {
@@ -2879,37 +2905,37 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 67 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec37[i] = 1.0f - fRec4[i];
+				fZec40[i] = (fZec39[i] + fZec38[i]) / fZec37[i] + 1.0f;
 			}
 			/* Vectorizable loop 68 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec39[i] = fZec38[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec14[i])] + fConst8 * fRec5[i] * fRec15[i] * fZec17[i];
+				fZec41[i] = 1.0f - 1.0f / triple_synth_faustpower2_f(fZec37[i]);
 			}
 			/* Vectorizable loop 69 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec41[i] = fConst6 * fZec40[i] * fZec26[i] + fRec17[i] * (2.0f * fRec21[i] + -1.0f);
+				fZec42[i] = (fZec38[i] - fZec39[i]) / fZec37[i] + 1.0f;
 			}
 			/* Vectorizable loop 70 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec43[i] = std::max<float>(0.0f, std::min<float>(fRec22[i] / fZec42[i], std::max<float>(((1.0f - fRec24[i]) * (fZec42[i] - fRec22[i])) / std::max<float>(1.0f, fConst0 * fRec25[i]) + 1.0f, fRec24[i])) * (1.0f - float(iRec26[i]) / std::max<float>(1.0f, fConst0 * fRec27[i])));
+				fZec44[i] = std::max<float>(0.0f, std::min<float>(fRec22[i] / fZec43[i], std::max<float>((1.0f - fRec24[i]) * (fZec43[i] - fRec22[i]) / std::max<float>(1.0f, fConst0 * fRec25[i]) + 1.0f, fRec24[i])) * (1.0f - float(iRec26[i]) / std::max<float>(1.0f, fConst0 * fRec27[i])));
 			}
 			/* Vectorizable loop 71 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec47[i] = (fZec45[i] - fZec46[i]) / fZec44[i] + 1.0f;
+				fZec46[i] = fConst7 * fZec45[i] * fZec26[i] + fRec17[i] * (2.0f * fRec21[i] + -1.0f);
 			}
 			/* Vectorizable loop 72 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec48[i] = 1.0f - 1.0f / triple_synth_faustpower2_f(fZec44[i]);
+				fZec48[i] = fZec47[i] * ftbl0triple_synthSIG0[std::max<int>(0, std::min<int>(int(65536.0f * fRec14[i]), 65535))] + fConst9 * fRec5[i] * fRec15[i] * fZec17[i];
 			}
 			/* Vectorizable loop 73 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec49[i] = (fZec46[i] + fZec45[i]) / fZec44[i] + 1.0f;
+				fZec49[i] = 1.0f - fRec4[i];
 			}
 			/* Recursive loop 74 */
 			/* Pre code */
@@ -2932,7 +2958,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec38[i] = 0.999000013f * fRec38[i - 1] + fConst6 * fZec61[i];
+				fRec38[i] = 0.999f * fRec38[i - 1] + fConst7 * fZec61[i];
 			}
 			/* Post code */
 			for (int j77 = 0; j77 < 4; j77 = j77 + 1) {
@@ -2948,12 +2974,8 @@ class triple_synth : public dsp {
 				fZec63[i] = fRec40[i - 1] + fConst4 * fZec62[i];
 				fZec64[i] = fZec63[i] + -1.0f;
 				iZec65[i] = fZec64[i] < 0.0f;
-				float fThen10 = fZec64[i];
-				float fElse10 = fZec63[i];
-				fRec40[i] = ((iZec65[i]) ? fElse10 : fThen10);
-				float fThen11 = fZec63[i] + fZec64[i] * (1.0f - fConst0 / fZec62[i]);
-				float fElse11 = fZec63[i];
-				fRec41[i] = ((iZec65[i]) ? fElse11 : fThen11);
+				fRec40[i] = ((iZec65[i]) ? fZec63[i] : fZec64[i]);
+				fRec41[i] = ((iZec65[i]) ? fZec63[i] : fZec63[i] + fZec64[i] * (1.0f - fConst0 / fZec62[i]));
 			}
 			/* Post code */
 			for (int j79 = 0; j79 < 4; j79 = j79 + 1) {
@@ -2966,7 +2988,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec3[i] = fSlow16 * (fZec37[i] * (fZec38[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec6[i])] + fConst8 * fRec5[i] * fRec12[i] * fZec6[i] + fZec39[i]) + fRec4[i] * (fConst6 * fZec40[i] * fZec16[i] + fRec17[i] * (2.0f * fRec19[i] + -1.0f) + fZec41[i])) * fZec43[i] - (fRec3[i - 2] * fZec47[i] + 2.0f * fRec3[i - 1] * fZec48[i]) / fZec49[i];
+				fRec3[i] = fSlow16 * (fZec49[i] * (fZec47[i] * ftbl0triple_synthSIG0[std::max<int>(0, std::min<int>(int(65536.0f * fRec6[i]), 65535))] + fConst9 * fRec5[i] * fRec12[i] * fZec6[i] + fZec48[i]) + fRec4[i] * (fConst7 * fZec45[i] * fZec16[i] + fRec17[i] * (2.0f * fRec19[i] + -1.0f) + fZec46[i])) * fZec44[i] - (fRec3[i - 2] * fZec42[i] + 2.0f * fRec3[i - 1] * fZec41[i]) / fZec40[i];
 			}
 			/* Post code */
 			for (int j55 = 0; j55 < 4; j55 = j55 + 1) {
@@ -2979,7 +3001,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec36[i] = fSlow16 * fZec43[i] * (fZec37[i] * (fZec39[i] + fZec38[i] * ftbl0triple_synthSIG0[int(65536.0f * fRec37[i])] + fConst8 * fRec5[i] * fRec38[i] * fZec52[i]) + fRec4[i] * (fZec41[i] + fConst6 * fZec40[i] * fZec61[i] + fRec17[i] * (2.0f * fRec41[i] + -1.0f))) - (fZec47[i] * fRec36[i - 2] + 2.0f * fZec48[i] * fRec36[i - 1]) / fZec49[i];
+				fRec36[i] = fSlow16 * fZec44[i] * (fZec49[i] * (fZec48[i] + fZec47[i] * ftbl0triple_synthSIG0[std::max<int>(0, std::min<int>(int(65536.0f * fRec37[i]), 65535))] + fConst9 * fRec5[i] * fRec38[i] * fZec52[i]) + fRec4[i] * (fZec46[i] + fConst7 * fZec45[i] * fZec61[i] + fRec17[i] * (2.0f * fRec41[i] + -1.0f))) - (fZec42[i] * fRec36[i - 2] + 2.0f * fZec41[i] * fRec36[i - 1]) / fZec40[i];
 			}
 			/* Post code */
 			for (int j81 = 0; j81 < 4; j81 = j81 + 1) {
@@ -2992,7 +3014,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec4[i] = (fRec3[i - 2] + fRec3[i] + 2.0f * fRec3[i - 1]) / fZec49[i];
+				fYec4[i] = (fRec3[i - 2] + fRec3[i] + 2.0f * fRec3[i - 1]) / fZec40[i];
 			}
 			/* Post code */
 			for (int j57 = 0; j57 < 4; j57 = j57 + 1) {
@@ -3005,7 +3027,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec7[i] = (fRec36[i - 2] + fRec36[i] + 2.0f * fRec36[i - 1]) / fZec49[i];
+				fYec7[i] = (fRec36[i - 2] + fRec36[i] + 2.0f * fRec36[i - 1]) / fZec40[i];
 			}
 			/* Post code */
 			for (int j83 = 0; j83 < 4; j83 = j83 + 1) {
@@ -3018,7 +3040,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec2[i] = 0.0f - fConst12 * (fConst13 * fRec2[i - 1] - (fYec4[i] + fYec4[i - 1]));
+				fRec2[i] = 0.0f - fConst13 * (fConst12 * fRec2[i - 1] - (fYec4[i] + fYec4[i - 1]));
 			}
 			/* Post code */
 			for (int j59 = 0; j59 < 4; j59 = j59 + 1) {
@@ -3044,7 +3066,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec35[i] = 0.0f - fConst12 * (fConst13 * fRec35[i - 1] - (fYec7[i] + fYec7[i - 1]));
+				fRec35[i] = 0.0f - fConst13 * (fConst12 * fRec35[i - 1] - (fYec7[i] + fYec7[i - 1]));
 			}
 			/* Post code */
 			for (int j85 = 0; j85 < 4; j85 = j85 + 1) {
@@ -3057,7 +3079,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec1[i] = fRec2[i] - fConst14 * (fConst15 * fRec1[i - 2] + fConst16 * fRec1[i - 1]);
+				fRec1[i] = fRec2[i] - fConst16 * (fConst15 * fRec1[i - 2] + fConst14 * fRec1[i - 1]);
 			}
 			/* Post code */
 			for (int j61 = 0; j61 < 4; j61 = j61 + 1) {
@@ -3097,7 +3119,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec34[i] = fRec35[i] - fConst14 * (fConst15 * fRec34[i - 2] + fConst16 * fRec34[i - 1]);
+				fRec34[i] = fRec35[i] - fConst16 * (fConst15 * fRec34[i - 2] + fConst14 * fRec34[i - 1]);
 			}
 			/* Post code */
 			for (int j87 = 0; j87 < 4; j87 = j87 + 1) {
@@ -3110,7 +3132,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec0[i] = fConst14 * (fRec1[i - 2] + fRec1[i] + 2.0f * fRec1[i - 1]) - fConst17 * (fConst18 * fRec0[i - 2] + fConst16 * fRec0[i - 1]);
+				fRec0[i] = fConst16 * (fRec1[i - 2] + fRec1[i] + 2.0f * fRec1[i - 1]) - fConst18 * (fConst17 * fRec0[i - 2] + fConst14 * fRec0[i - 1]);
 			}
 			/* Post code */
 			for (int j63 = 0; j63 < 4; j63 = j63 + 1) {
@@ -3119,7 +3141,7 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 89 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec51[i] = 0.5f * fRec30[i] * (ftbl0triple_synthSIG0[int(65536.0f * fRec31[i])] + -1.0f) + 1.0f;
+				fZec51[i] = 0.5f * fRec30[i] * (ftbl0triple_synthSIG0[std::max<int>(0, std::min<int>(int(65536.0f * fRec31[i]), 65535))] + -1.0f) + 1.0f;
 			}
 			/* Recursive loop 90 */
 			/* Pre code */
@@ -3128,7 +3150,7 @@ class triple_synth : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec33[i] = fConst14 * (fRec34[i - 2] + fRec34[i] + 2.0f * fRec34[i - 1]) - fConst17 * (fConst18 * fRec33[i - 2] + fConst16 * fRec33[i - 1]);
+				fRec33[i] = fConst16 * (fRec34[i - 2] + fRec34[i] + 2.0f * fRec34[i - 1]) - fConst18 * (fConst17 * fRec33[i - 2] + fConst14 * fRec33[i - 1]);
 			}
 			/* Post code */
 			for (int j89 = 0; j89 < 4; j89 = j89 + 1) {
@@ -3137,12 +3159,12 @@ class triple_synth : public dsp {
 			/* Vectorizable loop 91 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output0[i] = FAUSTFLOAT(fConst17 * (fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1]) * fZec51[i]);
+				output0[i] = FAUSTFLOAT(fConst18 * (fRec0[i - 2] + fRec0[i] + 2.0f * fRec0[i - 1]) * fZec51[i]);
 			}
 			/* Vectorizable loop 92 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				output1[i] = FAUSTFLOAT(fConst17 * fZec51[i] * (fRec33[i - 2] + fRec33[i] + 2.0f * fRec33[i - 1]));
+				output1[i] = FAUSTFLOAT(fConst18 * fZec51[i] * (fRec33[i - 2] + fRec33[i] + 2.0f * fRec33[i - 1]));
 			}
 		}
 	}
@@ -4176,7 +4198,7 @@ struct LV2Plugin {
   // This processes just a single MIDI message, so to process an entire series
   // of MIDI events you'll have to loop over the event data in the plugin's
   // MIDI callback. XXXTODO: Sample-accurate processing of MIDI events.
-  
+
   void process_midi(unsigned char *data, int sz)
   {
 #if DEBUG_MIDI
@@ -4821,13 +4843,13 @@ int lv2_dyn_manifest_get_data(LV2_Dyn_Manifest_Handle handle,
             units:symbol \"%s\" ;\n\
             units:render \"%%f %s\"\n\
 	] ;\n", val, val, val);
-	if (!strcmp(key, "scale") && !strcmp(val, "log"))
+	else if (!strcmp(key, "scale") && !strcmp(val, "log"))
 	  fprintf(fp, "\
 	lv2:portProperty epp:logarithmic ;\n");
-	if (!strcmp(key, "tooltip"))
+	else if (!strcmp(key, "tooltip"))
 	  fprintf(fp, "\
 	rdfs:comment \"%s\" ;\n", val);
-	if (strcmp(key, "lv2")) continue;
+	else if (strcmp(key, "lv2")) continue;
 	if (!strcmp(val, "integer"))
 	  fprintf(fp, "\
 	lv2:portProperty lv2:integer ;\n");

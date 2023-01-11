@@ -4,7 +4,7 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Cubic Distortion"
 version: "1.0"
-Code generated with Faust 2.40.0 (https://faust.grame.fr)
+Code generated with Faust 2.54.9 (https://faust.grame.fr)
 Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn cubic_distortion -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
@@ -78,18 +78,74 @@ Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn cubic_distorti
 #include <string>
 #include <vector>
 
+/************************************************************************
+ FAUST Architecture File
+ Copyright (C) 2003-2022 GRAME, Centre National de Creation Musicale
+ ---------------------------------------------------------------------
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation; either version 2.1 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ 
+ EXCEPTION : As a special exception, you may create a larger work
+ that contains this FAUST architecture section and distribute
+ that work under terms of your choice, so long as this FAUST
+ architecture section is not modified.
+ ***************************************************************************/
+
+#ifndef __export__
+#define __export__
+
+#define FAUSTVERSION "2.54.9"
+
+// Use FAUST_API for code that is part of the external API but is also compiled in faust and libfaust
+// Use LIBFAUST_API for code that is compiled in faust and libfaust
+
+#ifdef _WIN32
+    #pragma warning (disable: 4251)
+    #ifdef FAUST_EXE
+        #define FAUST_API
+        #define LIBFAUST_API
+    #elif FAUST_LIB
+        #define FAUST_API __declspec(dllexport)
+        #define LIBFAUST_API __declspec(dllexport)
+    #else
+        #define FAUST_API
+        #define LIBFAUST_API 
+    #endif
+#else
+    #ifdef FAUST_EXE
+        #define FAUST_API
+        #define LIBFAUST_API
+    #else
+        #define FAUST_API __attribute__((visibility("default")))
+        #define LIBFAUST_API __attribute__((visibility("default")))
+    #endif
+#endif
+
+#endif
+
 #ifndef FAUSTFLOAT
 #define FAUSTFLOAT float
 #endif
 
-struct UI;
-struct Meta;
+struct FAUST_API UI;
+struct FAUST_API Meta;
 
 /**
  * DSP memory manager.
  */
 
-struct dsp_memory_manager {
+struct FAUST_API dsp_memory_manager {
     
     virtual ~dsp_memory_manager() {}
     
@@ -97,7 +153,7 @@ struct dsp_memory_manager {
      * Inform the Memory Manager with the number of expected memory zones.
      * @param count - the number of expected memory zones
      */
-    virtual void begin(size_t count) {}
+    virtual void begin(size_t /*count*/) {}
     
     /**
      * Give the Memory Manager information on a given memory zone.
@@ -105,8 +161,8 @@ struct dsp_memory_manager {
      * @param reads - the number of Read access to the zone used to compute one frame
      * @param writes - the number of Write access to the zone used to compute one frame
      */
-    virtual void info(size_t size, size_t reads, size_t writes) {}
-    
+    virtual void info(size_t /*size*/, size_t /*reads*/, size_t /*writes*/) {}
+
     /**
      * Inform the Memory Manager that all memory zones have been described,
      * to possibly start a 'compute the best allocation strategy' step.
@@ -131,7 +187,7 @@ struct dsp_memory_manager {
 * Signal processor definition.
 */
 
-class dsp {
+class FAUST_API dsp {
 
     public:
 
@@ -225,7 +281,7 @@ class dsp {
  * Generic DSP decorator.
  */
 
-class decorator_dsp : public dsp {
+class FAUST_API decorator_dsp : public dsp {
 
     protected:
 
@@ -258,7 +314,7 @@ class decorator_dsp : public dsp {
  * to create DSP instances from a compiled DSP program.
  */
 
-class dsp_factory {
+class FAUST_API dsp_factory {
     
     protected:
     
@@ -273,6 +329,7 @@ class dsp_factory {
         virtual std::string getCompileOptions() = 0;
         virtual std::vector<std::string> getLibraryList() = 0;
         virtual std::vector<std::string> getIncludePathnames() = 0;
+        virtual std::vector<std::string> getWarningMessages() = 0;
     
         virtual dsp* createDSPInstance() = 0;
     
@@ -287,18 +344,21 @@ class dsp_factory {
 #include <xmmintrin.h>
 #endif
 
-class ScopedNoDenormals
-{
+class FAUST_API ScopedNoDenormals {
+    
     private:
     
-        intptr_t fpsr;
+        intptr_t fpsr = 0;
         
         void setFpStatusRegister(intptr_t fpsr_aux) noexcept
         {
         #if defined (__arm64__) || defined (__aarch64__)
-           asm volatile("msr fpcr, %0" : : "ri" (fpsr_aux));
+            asm volatile("msr fpcr, %0" : : "ri" (fpsr_aux));
         #elif defined (__SSE__)
-            _mm_setcsr(static_cast<uint32_t>(fpsr_aux));
+            // The volatile keyword here is needed to workaround a bug in AppleClang 13.0
+            // which aggressively optimises away the variable otherwise
+            volatile uint32_t fpsr_w = static_cast<uint32_t>(fpsr_aux);
+            _mm_setcsr(fpsr_w);
         #endif
         }
         
@@ -306,7 +366,7 @@ class ScopedNoDenormals
         {
         #if defined (__arm64__) || defined (__aarch64__)
             asm volatile("mrs %0, fpcr" : "=r" (fpsr));
-        #elif defined ( __SSE__)
+        #elif defined (__SSE__)
             fpsr = static_cast<intptr_t>(_mm_getcsr());
         #endif
         }
@@ -317,16 +377,14 @@ class ScopedNoDenormals
         {
         #if defined (__arm64__) || defined (__aarch64__)
             intptr_t mask = (1 << 24 /* FZ */);
+        #elif defined (__SSE__)
+        #if defined (__SSE2__)
+            intptr_t mask = 0x8040;
         #else
-            #if defined(__SSE__)
-            #if defined(__SSE2__)
-                intptr_t mask = 0x8040;
-            #else
-                intptr_t mask = 0x8000;
-            #endif
-            #else
-                intptr_t mask = 0x0000;
-            #endif
+            intptr_t mask = 0x8000;
+        #endif
+        #else
+            intptr_t mask = 0x0000;
         #endif
             getFpStatusRegister();
             setFpStatusRegister(fpsr | mask);
@@ -339,7 +397,7 @@ class ScopedNoDenormals
 
 };
 
-#define AVOIDDENORMALS ScopedNoDenormals();
+#define AVOIDDENORMALS ScopedNoDenormals ftz_scope;
 
 #endif
 
@@ -371,6 +429,7 @@ class ScopedNoDenormals
 #ifndef __UI_H__
 #define __UI_H__
 
+
 #ifndef FAUSTFLOAT
 #define FAUSTFLOAT float
 #endif
@@ -385,8 +444,8 @@ class ScopedNoDenormals
 struct Soundfile;
 
 template <typename REAL>
-struct UIReal
-{
+struct FAUST_API UIReal {
+    
     UIReal() {}
     virtual ~UIReal() {}
     
@@ -416,14 +475,13 @@ struct UIReal
     
     // -- metadata declarations
     
-    virtual void declare(REAL* zone, const char* key, const char* val) {}
-    
+    virtual void declare(REAL* /*zone*/, const char* /*key*/, const char* /*val*/) {}
+
     // To be used by LLVM client
     virtual int sizeOfFAUSTFLOAT() { return sizeof(FAUSTFLOAT); }
 };
 
-struct UI : public UIReal<FAUSTFLOAT>
-{
+struct FAUST_API UI : public UIReal<FAUSTFLOAT> {
     UI() {}
     virtual ~UI() {}
 };
@@ -510,7 +568,7 @@ public:
 
   virtual void addHorizontalBargraph(const char* label, float* zone, float min, float max);
   virtual void addVerticalBargraph(const char* label, float* zone, float min, float max);
-    
+
   virtual void addSoundfile(const char* label, const char* filename, Soundfile** sf_zone) {}
 
   virtual void openTabBox(const char* label);
@@ -815,10 +873,10 @@ class cubic_distortion : public dsp {
 		ui_interface->openHorizontalBox("0x00");
 		ui_interface->declare(&fHslider1, "1", "");
 		ui_interface->declare(&fHslider1, "tooltip", "Amount of distortion");
-		ui_interface->addHorizontalSlider("Drive", &fHslider1, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00999999978f));
+		ui_interface->addHorizontalSlider("Drive", &fHslider1, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.01f));
 		ui_interface->declare(&fHslider0, "2", "");
 		ui_interface->declare(&fHslider0, "tooltip", "Brings in even harmonics");
-		ui_interface->addHorizontalSlider("Offset", &fHslider0, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.00999999978f));
+		ui_interface->addHorizontalSlider("Offset", &fHslider0, FAUSTFLOAT(0.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(0.01f));
 		ui_interface->closeBox();
 		ui_interface->closeBox();
 	}
@@ -826,10 +884,10 @@ class cubic_distortion : public dsp {
 	virtual void compute(int count, FAUSTFLOAT** RESTRICT inputs, FAUSTFLOAT** RESTRICT outputs) {
 		FAUSTFLOAT* input0_ptr = inputs[0];
 		FAUSTFLOAT* output0_ptr = outputs[0];
-		float fSlow0 = 0.00100000005f * float(fHslider0);
+		float fSlow0 = 0.001f * float(fHslider0);
 		float fRec1_tmp[36];
 		float* fRec1 = &fRec1_tmp[4];
-		float fSlow1 = 0.00100000005f * float(fHslider1);
+		float fSlow1 = 0.001f * float(fHslider1);
 		float fRec2_tmp[36];
 		float* fRec2 = &fRec2_tmp[4];
 		float fZec0[32];
@@ -839,7 +897,7 @@ class cubic_distortion : public dsp {
 		float* fRec0 = &fRec0_tmp[4];
 		int vindex = 0;
 		/* Main loop */
-		for (vindex = 0; vindex <= count - 32; vindex = vindex + 32) {
+		for (vindex = 0; vindex <= (count - 32); vindex = vindex + 32) {
 			FAUSTFLOAT* input0 = &input0_ptr[vindex];
 			FAUSTFLOAT* output0 = &output0_ptr[vindex];
 			int vsize = 32;
@@ -850,7 +908,7 @@ class cubic_distortion : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec1[i] = fSlow0 + 0.999000013f * fRec1[i - 1];
+				fRec1[i] = fSlow0 + 0.999f * fRec1[i - 1];
 			}
 			/* Post code */
 			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
@@ -863,7 +921,7 @@ class cubic_distortion : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec2[i] = fSlow1 + 0.999000013f * fRec2[i - 1];
+				fRec2[i] = fSlow1 + 0.999f * fRec2[i - 1];
 			}
 			/* Post code */
 			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
@@ -872,7 +930,7 @@ class cubic_distortion : public dsp {
 			/* Vectorizable loop 2 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec0[i] = std::max<float>(-1.0f, std::min<float>(1.0f, fRec1[i] + float(input0[i]) * std::pow(10.0f, 2.0f * fRec2[i])));
+				fZec0[i] = std::max<float>(-1.0f, std::min<float>(1.0f, fRec1[i] + float(input0[i]) * std::pow(1e+01f, 2.0f * fRec2[i])));
 			}
 			/* Vectorizable loop 3 */
 			/* Pre code */
@@ -881,7 +939,7 @@ class cubic_distortion : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec0[i] = fZec0[i] * (1.0f - 0.333333343f * cubic_distortion_faustpower2_f(fZec0[i]));
+				fYec0[i] = fZec0[i] * (1.0f - 0.33333334f * cubic_distortion_faustpower2_f(fZec0[i]));
 			}
 			/* Post code */
 			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
@@ -894,7 +952,7 @@ class cubic_distortion : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec0[i] = (0.995000005f * fRec0[i - 1] + fYec0[i]) - fYec0[i - 1];
+				fRec0[i] = 0.995f * fRec0[i - 1] + fYec0[i] - fYec0[i - 1];
 			}
 			/* Post code */
 			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
@@ -918,7 +976,7 @@ class cubic_distortion : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec1[i] = fSlow0 + 0.999000013f * fRec1[i - 1];
+				fRec1[i] = fSlow0 + 0.999f * fRec1[i - 1];
 			}
 			/* Post code */
 			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
@@ -931,7 +989,7 @@ class cubic_distortion : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec2[i] = fSlow1 + 0.999000013f * fRec2[i - 1];
+				fRec2[i] = fSlow1 + 0.999f * fRec2[i - 1];
 			}
 			/* Post code */
 			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
@@ -940,7 +998,7 @@ class cubic_distortion : public dsp {
 			/* Vectorizable loop 2 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec0[i] = std::max<float>(-1.0f, std::min<float>(1.0f, fRec1[i] + float(input0[i]) * std::pow(10.0f, 2.0f * fRec2[i])));
+				fZec0[i] = std::max<float>(-1.0f, std::min<float>(1.0f, fRec1[i] + float(input0[i]) * std::pow(1e+01f, 2.0f * fRec2[i])));
 			}
 			/* Vectorizable loop 3 */
 			/* Pre code */
@@ -949,7 +1007,7 @@ class cubic_distortion : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fYec0[i] = fZec0[i] * (1.0f - 0.333333343f * cubic_distortion_faustpower2_f(fZec0[i]));
+				fYec0[i] = fZec0[i] * (1.0f - 0.33333334f * cubic_distortion_faustpower2_f(fZec0[i]));
 			}
 			/* Post code */
 			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
@@ -962,7 +1020,7 @@ class cubic_distortion : public dsp {
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec0[i] = (0.995000005f * fRec0[i - 1] + fYec0[i]) - fYec0[i - 1];
+				fRec0[i] = 0.995f * fRec0[i - 1] + fYec0[i] - fYec0[i - 1];
 			}
 			/* Post code */
 			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
@@ -2005,7 +2063,7 @@ struct LV2Plugin {
   // This processes just a single MIDI message, so to process an entire series
   // of MIDI events you'll have to loop over the event data in the plugin's
   // MIDI callback. XXXTODO: Sample-accurate processing of MIDI events.
-  
+
   void process_midi(unsigned char *data, int sz)
   {
 #if DEBUG_MIDI
@@ -2650,13 +2708,13 @@ int lv2_dyn_manifest_get_data(LV2_Dyn_Manifest_Handle handle,
             units:symbol \"%s\" ;\n\
             units:render \"%%f %s\"\n\
 	] ;\n", val, val, val);
-	if (!strcmp(key, "scale") && !strcmp(val, "log"))
+	else if (!strcmp(key, "scale") && !strcmp(val, "log"))
 	  fprintf(fp, "\
 	lv2:portProperty epp:logarithmic ;\n");
-	if (!strcmp(key, "tooltip"))
+	else if (!strcmp(key, "tooltip"))
 	  fprintf(fp, "\
 	rdfs:comment \"%s\" ;\n", val);
-	if (strcmp(key, "lv2")) continue;
+	else if (strcmp(key, "lv2")) continue;
 	if (!strcmp(val, "integer"))
 	  fprintf(fp, "\
 	lv2:portProperty lv2:integer ;\n");

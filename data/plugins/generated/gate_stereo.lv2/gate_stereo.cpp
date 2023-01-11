@@ -4,7 +4,7 @@ copyright: "© 2022 Alexandros Theodotou"
 license: "AGPL-3.0-or-later"
 name: "Gate Stereo"
 version: "1.0"
-Code generated with Faust 2.40.0 (https://faust.grame.fr)
+Code generated with Faust 2.54.9 (https://faust.grame.fr)
 Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn gate_stereo -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32
 ------------------------------------------------------------ */
 
@@ -78,18 +78,74 @@ Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn gate_stereo -e
 #include <string>
 #include <vector>
 
+/************************************************************************
+ FAUST Architecture File
+ Copyright (C) 2003-2022 GRAME, Centre National de Creation Musicale
+ ---------------------------------------------------------------------
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation; either version 2.1 of the License, or
+ (at your option) any later version.
+ 
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Lesser General Public License for more details.
+ 
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ 
+ EXCEPTION : As a special exception, you may create a larger work
+ that contains this FAUST architecture section and distribute
+ that work under terms of your choice, so long as this FAUST
+ architecture section is not modified.
+ ***************************************************************************/
+
+#ifndef __export__
+#define __export__
+
+#define FAUSTVERSION "2.54.9"
+
+// Use FAUST_API for code that is part of the external API but is also compiled in faust and libfaust
+// Use LIBFAUST_API for code that is compiled in faust and libfaust
+
+#ifdef _WIN32
+    #pragma warning (disable: 4251)
+    #ifdef FAUST_EXE
+        #define FAUST_API
+        #define LIBFAUST_API
+    #elif FAUST_LIB
+        #define FAUST_API __declspec(dllexport)
+        #define LIBFAUST_API __declspec(dllexport)
+    #else
+        #define FAUST_API
+        #define LIBFAUST_API 
+    #endif
+#else
+    #ifdef FAUST_EXE
+        #define FAUST_API
+        #define LIBFAUST_API
+    #else
+        #define FAUST_API __attribute__((visibility("default")))
+        #define LIBFAUST_API __attribute__((visibility("default")))
+    #endif
+#endif
+
+#endif
+
 #ifndef FAUSTFLOAT
 #define FAUSTFLOAT float
 #endif
 
-struct UI;
-struct Meta;
+struct FAUST_API UI;
+struct FAUST_API Meta;
 
 /**
  * DSP memory manager.
  */
 
-struct dsp_memory_manager {
+struct FAUST_API dsp_memory_manager {
     
     virtual ~dsp_memory_manager() {}
     
@@ -97,7 +153,7 @@ struct dsp_memory_manager {
      * Inform the Memory Manager with the number of expected memory zones.
      * @param count - the number of expected memory zones
      */
-    virtual void begin(size_t count) {}
+    virtual void begin(size_t /*count*/) {}
     
     /**
      * Give the Memory Manager information on a given memory zone.
@@ -105,8 +161,8 @@ struct dsp_memory_manager {
      * @param reads - the number of Read access to the zone used to compute one frame
      * @param writes - the number of Write access to the zone used to compute one frame
      */
-    virtual void info(size_t size, size_t reads, size_t writes) {}
-    
+    virtual void info(size_t /*size*/, size_t /*reads*/, size_t /*writes*/) {}
+
     /**
      * Inform the Memory Manager that all memory zones have been described,
      * to possibly start a 'compute the best allocation strategy' step.
@@ -131,7 +187,7 @@ struct dsp_memory_manager {
 * Signal processor definition.
 */
 
-class dsp {
+class FAUST_API dsp {
 
     public:
 
@@ -225,7 +281,7 @@ class dsp {
  * Generic DSP decorator.
  */
 
-class decorator_dsp : public dsp {
+class FAUST_API decorator_dsp : public dsp {
 
     protected:
 
@@ -258,7 +314,7 @@ class decorator_dsp : public dsp {
  * to create DSP instances from a compiled DSP program.
  */
 
-class dsp_factory {
+class FAUST_API dsp_factory {
     
     protected:
     
@@ -273,6 +329,7 @@ class dsp_factory {
         virtual std::string getCompileOptions() = 0;
         virtual std::vector<std::string> getLibraryList() = 0;
         virtual std::vector<std::string> getIncludePathnames() = 0;
+        virtual std::vector<std::string> getWarningMessages() = 0;
     
         virtual dsp* createDSPInstance() = 0;
     
@@ -287,18 +344,21 @@ class dsp_factory {
 #include <xmmintrin.h>
 #endif
 
-class ScopedNoDenormals
-{
+class FAUST_API ScopedNoDenormals {
+    
     private:
     
-        intptr_t fpsr;
+        intptr_t fpsr = 0;
         
         void setFpStatusRegister(intptr_t fpsr_aux) noexcept
         {
         #if defined (__arm64__) || defined (__aarch64__)
-           asm volatile("msr fpcr, %0" : : "ri" (fpsr_aux));
+            asm volatile("msr fpcr, %0" : : "ri" (fpsr_aux));
         #elif defined (__SSE__)
-            _mm_setcsr(static_cast<uint32_t>(fpsr_aux));
+            // The volatile keyword here is needed to workaround a bug in AppleClang 13.0
+            // which aggressively optimises away the variable otherwise
+            volatile uint32_t fpsr_w = static_cast<uint32_t>(fpsr_aux);
+            _mm_setcsr(fpsr_w);
         #endif
         }
         
@@ -306,7 +366,7 @@ class ScopedNoDenormals
         {
         #if defined (__arm64__) || defined (__aarch64__)
             asm volatile("mrs %0, fpcr" : "=r" (fpsr));
-        #elif defined ( __SSE__)
+        #elif defined (__SSE__)
             fpsr = static_cast<intptr_t>(_mm_getcsr());
         #endif
         }
@@ -317,16 +377,14 @@ class ScopedNoDenormals
         {
         #if defined (__arm64__) || defined (__aarch64__)
             intptr_t mask = (1 << 24 /* FZ */);
+        #elif defined (__SSE__)
+        #if defined (__SSE2__)
+            intptr_t mask = 0x8040;
         #else
-            #if defined(__SSE__)
-            #if defined(__SSE2__)
-                intptr_t mask = 0x8040;
-            #else
-                intptr_t mask = 0x8000;
-            #endif
-            #else
-                intptr_t mask = 0x0000;
-            #endif
+            intptr_t mask = 0x8000;
+        #endif
+        #else
+            intptr_t mask = 0x0000;
         #endif
             getFpStatusRegister();
             setFpStatusRegister(fpsr | mask);
@@ -339,7 +397,7 @@ class ScopedNoDenormals
 
 };
 
-#define AVOIDDENORMALS ScopedNoDenormals();
+#define AVOIDDENORMALS ScopedNoDenormals ftz_scope;
 
 #endif
 
@@ -371,6 +429,7 @@ class ScopedNoDenormals
 #ifndef __UI_H__
 #define __UI_H__
 
+
 #ifndef FAUSTFLOAT
 #define FAUSTFLOAT float
 #endif
@@ -385,8 +444,8 @@ class ScopedNoDenormals
 struct Soundfile;
 
 template <typename REAL>
-struct UIReal
-{
+struct FAUST_API UIReal {
+    
     UIReal() {}
     virtual ~UIReal() {}
     
@@ -416,14 +475,13 @@ struct UIReal
     
     // -- metadata declarations
     
-    virtual void declare(REAL* zone, const char* key, const char* val) {}
-    
+    virtual void declare(REAL* /*zone*/, const char* /*key*/, const char* /*val*/) {}
+
     // To be used by LLVM client
     virtual int sizeOfFAUSTFLOAT() { return sizeof(FAUSTFLOAT); }
 };
 
-struct UI : public UIReal<FAUSTFLOAT>
-{
+struct FAUST_API UI : public UIReal<FAUSTFLOAT> {
     UI() {}
     virtual ~UI() {}
 };
@@ -510,7 +568,7 @@ public:
 
   virtual void addHorizontalBargraph(const char* label, float* zone, float min, float max);
   virtual void addVerticalBargraph(const char* label, float* zone, float min, float max);
-    
+
   virtual void addSoundfile(const char* label, const char* filename, Soundfile** sf_zone) {}
 
   virtual void openTabBox(const char* label);
@@ -703,23 +761,23 @@ class gate_stereo : public dsp {
 	FAUSTFLOAT fHslider1;
 	int fSampleRate;
 	float fConst1;
-	float fRec3_perm[4];
-	float fConst2;
-	FAUSTFLOAT fHslider2;
-	FAUSTFLOAT fHslider3;
-	int iYec0_perm[4];
-	int iRec4_perm[4];
 	float fRec1_perm[4];
+	FAUSTFLOAT fHslider2;
+	int iYec0_perm[4];
+	FAUSTFLOAT fHslider3;
+	float fConst2;
+	int iRec2_perm[4];
 	float fRec0_perm[4];
 	
  public:
 	
 	void metadata(Meta* m) { 
+		m->declare("analyzers.lib/amp_follower_ar:author", "Jonatan Liljedahl, revised by Romain Michon");
 		m->declare("analyzers.lib/name", "Faust Analyzer Library");
-		m->declare("analyzers.lib/version", "0.1");
+		m->declare("analyzers.lib/version", "0.2");
 		m->declare("author", "Zrythm DAW");
 		m->declare("basics.lib/name", "Faust Basic Element Library");
-		m->declare("basics.lib/version", "0.5");
+		m->declare("basics.lib/version", "0.9");
 		m->declare("compile_options", "-a /usr/share/faust/lv2.cpp -lang cpp -i -cn gate_stereo -es 1 -mcd 16 -single -ftz 0 -vec -lv 0 -vs 32");
 		m->declare("copyright", "© 2022 Alexandros Theodotou");
 		m->declare("description", "Stereo gate");
@@ -734,9 +792,11 @@ class gate_stereo : public dsp {
 		m->declare("misceffects.lib/version", "2.0");
 		m->declare("name", "Gate Stereo");
 		m->declare("platform.lib/name", "Generic Platform Library");
-		m->declare("platform.lib/version", "0.2");
+		m->declare("platform.lib/version", "0.3");
 		m->declare("signals.lib/name", "Faust Signal Routing Library");
-		m->declare("signals.lib/version", "0.1");
+		m->declare("signals.lib/onePoleSwitching:author", "Jonatan Liljedahl, revised by Dario Sanfilippo");
+		m->declare("signals.lib/onePoleSwitching:licence", "STK-4.3");
+		m->declare("signals.lib/version", "0.3");
 		m->declare("version", "1.0");
 		m->declare("zrythm-utils.lib/copyright", "© 2022 Alexandros Theodotou");
 		m->declare("zrythm-utils.lib/license", "AGPL-3.0-or-later");
@@ -756,33 +816,30 @@ class gate_stereo : public dsp {
 	
 	virtual void instanceConstants(int sample_rate) {
 		fSampleRate = sample_rate;
-		float fConst0 = std::min<float>(192000.0f, std::max<float>(1.0f, float(fSampleRate)));
+		float fConst0 = std::min<float>(1.92e+05f, std::max<float>(1.0f, float(fSampleRate)));
 		fConst1 = 1.0f / fConst0;
-		fConst2 = 0.00100000005f * fConst0;
+		fConst2 = 0.001f * fConst0;
 	}
 	
 	virtual void instanceResetUserInterface() {
-		fHslider0 = FAUSTFLOAT(10.0f);
-		fHslider1 = FAUSTFLOAT(100.0f);
-		fHslider2 = FAUSTFLOAT(200.0f);
-		fHslider3 = FAUSTFLOAT(-30.0f);
+		fHslider0 = FAUSTFLOAT(1e+01f);
+		fHslider1 = FAUSTFLOAT(1e+02f);
+		fHslider2 = FAUSTFLOAT(-3e+01f);
+		fHslider3 = FAUSTFLOAT(2e+02f);
 	}
 	
 	virtual void instanceClear() {
 		for (int l0 = 0; l0 < 4; l0 = l0 + 1) {
-			fRec3_perm[l0] = 0.0f;
+			fRec1_perm[l0] = 0.0f;
 		}
 		for (int l1 = 0; l1 < 4; l1 = l1 + 1) {
 			iYec0_perm[l1] = 0;
 		}
 		for (int l2 = 0; l2 < 4; l2 = l2 + 1) {
-			iRec4_perm[l2] = 0;
+			iRec2_perm[l2] = 0;
 		}
 		for (int l3 = 0; l3 < 4; l3 = l3 + 1) {
-			fRec1_perm[l3] = 0.0f;
-		}
-		for (int l4 = 0; l4 < 4; l4 = l4 + 1) {
-			fRec0_perm[l4] = 0.0f;
+			fRec0_perm[l3] = 0.0f;
 		}
 	}
 	
@@ -806,21 +863,21 @@ class gate_stereo : public dsp {
 	
 	virtual void buildUserInterface(UI* ui_interface) {
 		ui_interface->openVerticalBox("Gate Stereo");
-		ui_interface->declare(&fHslider3, "1", "");
-		ui_interface->declare(&fHslider3, "unit", "dB");
-		ui_interface->addHorizontalSlider("Threshold", &fHslider3, FAUSTFLOAT(-30.0f), FAUSTFLOAT(-120.0f), FAUSTFLOAT(0.0f), FAUSTFLOAT(0.100000001f));
+		ui_interface->declare(&fHslider2, "1", "");
+		ui_interface->declare(&fHslider2, "unit", "dB");
+		ui_interface->addHorizontalSlider("Threshold", &fHslider2, FAUSTFLOAT(-3e+01f), FAUSTFLOAT(-1.2e+02f), FAUSTFLOAT(0.0f), FAUSTFLOAT(0.1f));
 		ui_interface->declare(&fHslider0, "2", "");
 		ui_interface->declare(&fHslider0, "scale", "log");
 		ui_interface->declare(&fHslider0, "unit", "ms");
-		ui_interface->addHorizontalSlider("Attack", &fHslider0, FAUSTFLOAT(10.0f), FAUSTFLOAT(10.0f), FAUSTFLOAT(10000.0f), FAUSTFLOAT(1.0f));
-		ui_interface->declare(&fHslider2, "3", "");
-		ui_interface->declare(&fHslider2, "scale", "log");
-		ui_interface->declare(&fHslider2, "unit", "ms");
-		ui_interface->addHorizontalSlider("Hold", &fHslider2, FAUSTFLOAT(200.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(1000.0f), FAUSTFLOAT(1.0f));
+		ui_interface->addHorizontalSlider("Attack", &fHslider0, FAUSTFLOAT(1e+01f), FAUSTFLOAT(1e+01f), FAUSTFLOAT(1e+04f), FAUSTFLOAT(1.0f));
+		ui_interface->declare(&fHslider3, "3", "");
+		ui_interface->declare(&fHslider3, "scale", "log");
+		ui_interface->declare(&fHslider3, "unit", "ms");
+		ui_interface->addHorizontalSlider("Hold", &fHslider3, FAUSTFLOAT(2e+02f), FAUSTFLOAT(1.0f), FAUSTFLOAT(1e+03f), FAUSTFLOAT(1.0f));
 		ui_interface->declare(&fHslider1, "4", "");
 		ui_interface->declare(&fHslider1, "scale", "log");
 		ui_interface->declare(&fHslider1, "unit", "ms");
-		ui_interface->addHorizontalSlider("Release", &fHslider1, FAUSTFLOAT(100.0f), FAUSTFLOAT(1.0f), FAUSTFLOAT(1000.0f), FAUSTFLOAT(1.0f));
+		ui_interface->addHorizontalSlider("Release", &fHslider1, FAUSTFLOAT(1e+02f), FAUSTFLOAT(1.0f), FAUSTFLOAT(1e+03f), FAUSTFLOAT(1.0f));
 		ui_interface->closeBox();
 	}
 	
@@ -829,37 +886,31 @@ class gate_stereo : public dsp {
 		FAUSTFLOAT* input1_ptr = inputs[1];
 		FAUSTFLOAT* output0_ptr = outputs[0];
 		FAUSTFLOAT* output1_ptr = outputs[1];
-		float fSlow0 = 0.00100000005f * float(fHslider0);
-		float fSlow1 = 0.00100000005f * float(fHslider1);
+		float fSlow0 = 0.001f * float(fHslider0);
+		float fSlow1 = 0.001f * float(fHslider1);
 		float fSlow2 = std::min<float>(fSlow0, fSlow1);
 		int iSlow3 = std::fabs(fSlow2) < 1.1920929e-07f;
-		float fThen1 = std::exp(0.0f - fConst1 / ((iSlow3) ? 1.0f : fSlow2));
-		float fSlow4 = ((iSlow3) ? 0.0f : fThen1);
+		float fSlow4 = ((iSlow3) ? 0.0f : std::exp(0.0f - fConst1 / ((iSlow3) ? 1.0f : fSlow2)));
 		float fSlow5 = 1.0f - fSlow4;
-		float fRec3_tmp[36];
-		float* fRec3 = &fRec3_tmp[4];
-		float fRec2[32];
-		int iSlow6 = int(fConst2 * float(fHslider2));
-		float fSlow7 = std::pow(10.0f, 0.0500000007f * float(fHslider3));
-		int iYec0_tmp[36];
-		int* iYec0 = &iYec0_tmp[4];
-		int iRec4_tmp[36];
-		int* iRec4 = &iRec4_tmp[4];
-		float fZec0[32];
-		int iSlow8 = std::fabs(fSlow0) < 1.1920929e-07f;
-		float fThen3 = std::exp(0.0f - fConst1 / ((iSlow8) ? 1.0f : fSlow0));
-		float fSlow9 = ((iSlow8) ? 0.0f : fThen3);
-		int iSlow10 = std::fabs(fSlow1) < 1.1920929e-07f;
-		float fThen5 = std::exp(0.0f - fConst1 / ((iSlow10) ? 1.0f : fSlow1));
-		float fSlow11 = ((iSlow10) ? 0.0f : fThen5);
-		float fZec1[32];
 		float fRec1_tmp[36];
 		float* fRec1 = &fRec1_tmp[4];
+		float fSlow6 = std::pow(1e+01f, 0.05f * float(fHslider2));
+		int iYec0_tmp[36];
+		int* iYec0 = &iYec0_tmp[4];
+		int iSlow7 = int(fConst2 * float(fHslider3));
+		int iRec2_tmp[36];
+		int* iRec2 = &iRec2_tmp[4];
+		float fZec0[32];
+		int iSlow8 = std::fabs(fSlow1) < 1.1920929e-07f;
+		float fSlow9 = ((iSlow8) ? 0.0f : std::exp(0.0f - fConst1 / ((iSlow8) ? 1.0f : fSlow1)));
+		int iSlow10 = std::fabs(fSlow0) < 1.1920929e-07f;
+		float fSlow11 = ((iSlow10) ? 0.0f : std::exp(0.0f - fConst1 / ((iSlow10) ? 1.0f : fSlow0)));
+		float fZec1[32];
 		float fRec0_tmp[36];
 		float* fRec0 = &fRec0_tmp[4];
 		int vindex = 0;
 		/* Main loop */
-		for (vindex = 0; vindex <= count - 32; vindex = vindex + 32) {
+		for (vindex = 0; vindex <= (count - 32); vindex = vindex + 32) {
 			FAUSTFLOAT* input0 = &input0_ptr[vindex];
 			FAUSTFLOAT* input1 = &input1_ptr[vindex];
 			FAUSTFLOAT* output0 = &output0_ptr[vindex];
@@ -868,79 +919,67 @@ class gate_stereo : public dsp {
 			/* Recursive loop 0 */
 			/* Pre code */
 			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
-				fRec3_tmp[j0] = fRec3_perm[j0];
+				fRec1_tmp[j0] = fRec1_perm[j0];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec3[i] = std::fabs(std::fabs(float(input1[i])) + std::fabs(float(input0[i]))) * fSlow5 + fSlow4 * fRec3[i - 1];
+				fRec1[i] = std::fabs(std::fabs(float(input1[i])) + std::fabs(float(input0[i]))) * fSlow5 + fRec1[i - 1] * fSlow4;
 			}
 			/* Post code */
 			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
-				fRec3_perm[j1] = fRec3_tmp[vsize + j1];
+				fRec1_perm[j1] = fRec1_tmp[vsize + j1];
 			}
-			/* Recursive loop 1 */
-			/* Compute code */
-			for (int i = 0; i < vsize; i = i + 1) {
-				fRec2[i] = fRec3[i];
-			}
-			/* Vectorizable loop 2 */
+			/* Vectorizable loop 1 */
 			/* Pre code */
 			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
 				iYec0_tmp[j2] = iYec0_perm[j2];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				iYec0[i] = fRec2[i] > fSlow7;
+				iYec0[i] = fRec1[i] > fSlow6;
 			}
 			/* Post code */
 			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
 				iYec0_perm[j3] = iYec0_tmp[vsize + j3];
 			}
-			/* Recursive loop 3 */
+			/* Recursive loop 2 */
 			/* Pre code */
 			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
-				iRec4_tmp[j4] = iRec4_perm[j4];
+				iRec2_tmp[j4] = iRec2_perm[j4];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				iRec4[i] = std::max<int>(int(iSlow6 * (iYec0[i] < iYec0[i - 1])), int(iRec4[i - 1] + -1));
+				iRec2[i] = std::max<int>(iSlow7 * (iYec0[i] < iYec0[i - 1]), iRec2[i - 1] + -1);
 			}
 			/* Post code */
 			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
-				iRec4_perm[j5] = iRec4_tmp[vsize + j5];
+				iRec2_perm[j5] = iRec2_tmp[vsize + j5];
 			}
-			/* Vectorizable loop 4 */
+			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec0[i] = std::fabs(std::max<float>(float(iYec0[i]), float(iRec4[i] > 0)));
+				fZec0[i] = std::fabs(std::max<float>(float(iYec0[i]), float(iRec2[i] > 0)));
 			}
-			/* Recursive loop 5 */
+			/* Recursive loop 4 */
 			/* Pre code */
 			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
-				fRec1_tmp[j6] = fRec1_perm[j6];
-			}
-			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
-				fRec0_tmp[j8] = fRec0_perm[j8];
+				fRec0_tmp[j6] = fRec0_perm[j6];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec1[i] = ((fRec0[i - 1] > fZec0[i]) ? fSlow11 : fSlow9);
-				fRec1[i] = fZec0[i] * (1.0f - fZec1[i]) + fZec1[i] * fRec1[i - 1];
-				fRec0[i] = fRec1[i];
+				fZec1[i] = ((fZec0[i] > fRec0[i - 1]) ? fSlow11 : fSlow9);
+				fRec0[i] = fZec0[i] * (1.0f - fZec1[i]) + fRec0[i - 1] * fZec1[i];
 			}
 			/* Post code */
 			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
-				fRec1_perm[j7] = fRec1_tmp[vsize + j7];
+				fRec0_perm[j7] = fRec0_tmp[vsize + j7];
 			}
-			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
-				fRec0_perm[j9] = fRec0_tmp[vsize + j9];
-			}
-			/* Vectorizable loop 6 */
+			/* Vectorizable loop 5 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
 				output0[i] = FAUSTFLOAT(float(input0[i]) * fRec0[i]);
 			}
-			/* Vectorizable loop 7 */
+			/* Vectorizable loop 6 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
 				output1[i] = FAUSTFLOAT(float(input1[i]) * fRec0[i]);
@@ -956,79 +995,67 @@ class gate_stereo : public dsp {
 			/* Recursive loop 0 */
 			/* Pre code */
 			for (int j0 = 0; j0 < 4; j0 = j0 + 1) {
-				fRec3_tmp[j0] = fRec3_perm[j0];
+				fRec1_tmp[j0] = fRec1_perm[j0];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fRec3[i] = std::fabs(std::fabs(float(input1[i])) + std::fabs(float(input0[i]))) * fSlow5 + fSlow4 * fRec3[i - 1];
+				fRec1[i] = std::fabs(std::fabs(float(input1[i])) + std::fabs(float(input0[i]))) * fSlow5 + fRec1[i - 1] * fSlow4;
 			}
 			/* Post code */
 			for (int j1 = 0; j1 < 4; j1 = j1 + 1) {
-				fRec3_perm[j1] = fRec3_tmp[vsize + j1];
+				fRec1_perm[j1] = fRec1_tmp[vsize + j1];
 			}
-			/* Recursive loop 1 */
-			/* Compute code */
-			for (int i = 0; i < vsize; i = i + 1) {
-				fRec2[i] = fRec3[i];
-			}
-			/* Vectorizable loop 2 */
+			/* Vectorizable loop 1 */
 			/* Pre code */
 			for (int j2 = 0; j2 < 4; j2 = j2 + 1) {
 				iYec0_tmp[j2] = iYec0_perm[j2];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				iYec0[i] = fRec2[i] > fSlow7;
+				iYec0[i] = fRec1[i] > fSlow6;
 			}
 			/* Post code */
 			for (int j3 = 0; j3 < 4; j3 = j3 + 1) {
 				iYec0_perm[j3] = iYec0_tmp[vsize + j3];
 			}
-			/* Recursive loop 3 */
+			/* Recursive loop 2 */
 			/* Pre code */
 			for (int j4 = 0; j4 < 4; j4 = j4 + 1) {
-				iRec4_tmp[j4] = iRec4_perm[j4];
+				iRec2_tmp[j4] = iRec2_perm[j4];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				iRec4[i] = std::max<int>(int(iSlow6 * (iYec0[i] < iYec0[i - 1])), int(iRec4[i - 1] + -1));
+				iRec2[i] = std::max<int>(iSlow7 * (iYec0[i] < iYec0[i - 1]), iRec2[i - 1] + -1);
 			}
 			/* Post code */
 			for (int j5 = 0; j5 < 4; j5 = j5 + 1) {
-				iRec4_perm[j5] = iRec4_tmp[vsize + j5];
+				iRec2_perm[j5] = iRec2_tmp[vsize + j5];
 			}
-			/* Vectorizable loop 4 */
+			/* Vectorizable loop 3 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec0[i] = std::fabs(std::max<float>(float(iYec0[i]), float(iRec4[i] > 0)));
+				fZec0[i] = std::fabs(std::max<float>(float(iYec0[i]), float(iRec2[i] > 0)));
 			}
-			/* Recursive loop 5 */
+			/* Recursive loop 4 */
 			/* Pre code */
 			for (int j6 = 0; j6 < 4; j6 = j6 + 1) {
-				fRec1_tmp[j6] = fRec1_perm[j6];
-			}
-			for (int j8 = 0; j8 < 4; j8 = j8 + 1) {
-				fRec0_tmp[j8] = fRec0_perm[j8];
+				fRec0_tmp[j6] = fRec0_perm[j6];
 			}
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
-				fZec1[i] = ((fRec0[i - 1] > fZec0[i]) ? fSlow11 : fSlow9);
-				fRec1[i] = fZec0[i] * (1.0f - fZec1[i]) + fZec1[i] * fRec1[i - 1];
-				fRec0[i] = fRec1[i];
+				fZec1[i] = ((fZec0[i] > fRec0[i - 1]) ? fSlow11 : fSlow9);
+				fRec0[i] = fZec0[i] * (1.0f - fZec1[i]) + fRec0[i - 1] * fZec1[i];
 			}
 			/* Post code */
 			for (int j7 = 0; j7 < 4; j7 = j7 + 1) {
-				fRec1_perm[j7] = fRec1_tmp[vsize + j7];
+				fRec0_perm[j7] = fRec0_tmp[vsize + j7];
 			}
-			for (int j9 = 0; j9 < 4; j9 = j9 + 1) {
-				fRec0_perm[j9] = fRec0_tmp[vsize + j9];
-			}
-			/* Vectorizable loop 6 */
+			/* Vectorizable loop 5 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
 				output0[i] = FAUSTFLOAT(float(input0[i]) * fRec0[i]);
 			}
-			/* Vectorizable loop 7 */
+			/* Vectorizable loop 6 */
 			/* Compute code */
 			for (int i = 0; i < vsize; i = i + 1) {
 				output1[i] = FAUSTFLOAT(float(input1[i]) * fRec0[i]);
@@ -2065,7 +2092,7 @@ struct LV2Plugin {
   // This processes just a single MIDI message, so to process an entire series
   // of MIDI events you'll have to loop over the event data in the plugin's
   // MIDI callback. XXXTODO: Sample-accurate processing of MIDI events.
-  
+
   void process_midi(unsigned char *data, int sz)
   {
 #if DEBUG_MIDI
@@ -2710,13 +2737,13 @@ int lv2_dyn_manifest_get_data(LV2_Dyn_Manifest_Handle handle,
             units:symbol \"%s\" ;\n\
             units:render \"%%f %s\"\n\
 	] ;\n", val, val, val);
-	if (!strcmp(key, "scale") && !strcmp(val, "log"))
+	else if (!strcmp(key, "scale") && !strcmp(val, "log"))
 	  fprintf(fp, "\
 	lv2:portProperty epp:logarithmic ;\n");
-	if (!strcmp(key, "tooltip"))
+	else if (!strcmp(key, "tooltip"))
 	  fprintf(fp, "\
 	rdfs:comment \"%s\" ;\n", val);
-	if (strcmp(key, "lv2")) continue;
+	else if (strcmp(key, "lv2")) continue;
 	if (!strcmp(val, "integer"))
 	  fprintf(fp, "\
 	lv2:portProperty lv2:integer ;\n");
