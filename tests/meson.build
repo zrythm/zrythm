@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 if get_option ('tests')
@@ -166,6 +166,8 @@ if get_option ('tests')
       name_underscorified + '_BUNDLE_URI',
       'file://' + bundle + '/')
   endforeach
+
+  subdir('presets')
 
   test_lv2apply_wavs = []
   if test_config.has ('HAVE_MVERB')

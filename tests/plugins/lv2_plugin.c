@@ -86,7 +86,7 @@ test_save_state_w_files (void)
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
   char * pset_bundle_path = g_build_filename (
-    TESTS_SRCDIR, "presets",
+    TESTS_BUILDDIR, "presets",
     "LSP_Multi_Sampler_x24_DirectOut_test.preset.lv2", NULL);
   char * pset_bundle_path_uri =
     g_strdup_printf ("file://%s/", pset_bundle_path);
@@ -301,8 +301,8 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/plugins/lv2_plugin/"
 
-#if 0
   /* direct LV2 no longer supported */
+#if 0
   g_test_add_func (
     TEST_PREFIX "test save state with files",
     (GTestFunc) test_save_state_w_files);
