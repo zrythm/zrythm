@@ -18,7 +18,6 @@
 #include "tests/helpers/plugin_manager.h"
 #include "tests/helpers/project.h"
 
-#if defined(HAVE_NO_DELAY_LINE)
 static int num_master_children = 0;
 
 static void
@@ -95,7 +94,7 @@ _test_copy_plugins (
    * plugins */
   if (is_instrument)
     {
-#  if 0
+#if 0
       if (!with_carla)
         {
           g_assert_true (
@@ -120,7 +119,7 @@ _test_copy_plugins (
       undo_manager_undo (UNDO_MANAGER, NULL);
       undo_manager_redo (UNDO_MANAGER, NULL);
       undo_manager_undo (UNDO_MANAGER, NULL);
-#  endif
+#endif
     }
   else
     {
@@ -138,7 +137,6 @@ _test_copy_plugins (
 
   g_usleep (100);
 }
-#endif
 
 static void
 test_copy_plugins (void)
