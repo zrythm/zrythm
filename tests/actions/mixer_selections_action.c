@@ -209,10 +209,6 @@ test_midi_fx_slot_deletion (void)
   test_helper_zrythm_cleanup ();
 }
 
-#if defined(HAVE_LSP_COMPRESSOR) || defined(HAVE_CARLA_RACK) \
-  || (defined(HAVE_CARLA) && defined(HAVE_NOIZEMAKER)) \
-  || defined(HAVE_SHERLOCK_ATOM_INSPECTOR) \
-  || (defined(HAVE_UNLIMITED_MEM) && defined(HAVE_CALF_COMPRESSOR))
 static void
 _test_create_plugins (
   PluginProtocol prot,
@@ -223,7 +219,7 @@ _test_create_plugins (
 {
   PluginSetting * setting = NULL;
 
-#  ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
+#ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
   if (string_is_equal (pl_uri, SHERLOCK_ATOM_INSPECTOR_URI))
     {
       /* expect messages */
@@ -237,7 +233,7 @@ _test_create_plugins (
             "*Failed from water*");
         }
     }
-#  endif
+#endif
 
   switch (prot)
     {
@@ -248,7 +244,7 @@ _test_create_plugins (
       setting = plugin_setting_clone (setting, F_NO_VALIDATE);
       break;
     case PROT_VST:
-#  ifdef HAVE_CARLA
+#ifdef HAVE_CARLA
       {
         PluginDescriptor ** descriptors =
           z_carla_discovery_create_descriptors_from_file (
@@ -256,7 +252,7 @@ _test_create_plugins (
         setting = plugin_setting_new_default (descriptors[0]);
         free (descriptors);
       }
-#  endif
+#endif
       break;
     default:
       break;
@@ -341,7 +337,7 @@ _test_create_plugins (
 
   test_project_save_and_reload ();
 
-#  ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
+#ifdef HAVE_SHERLOCK_ATOM_INSPECTOR
   if (string_is_equal (pl_uri, SHERLOCK_ATOM_INSPECTOR_URI))
     {
       /* assert expected messages */
@@ -353,11 +349,10 @@ _test_create_plugins (
       undo_manager_undo (UNDO_MANAGER, NULL);
       undo_manager_undo (UNDO_MANAGER, NULL);
     }
-#  endif
+#endif
 
   g_message ("done");
 }
-#endif
 
 static void
 test_create_plugins (void)
@@ -1177,8 +1172,6 @@ test_undoing_deletion_of_multiple_inserts (void)
   test_helper_zrythm_cleanup ();
 }
 
-#if defined(HAVE_CARLA_RACK) \
-  || (defined(HAVE_CARLA) && defined(HAVE_NOIZEMAKER))
 static void
 _test_replace_instrument (
   PluginProtocol prot,
@@ -1186,7 +1179,7 @@ _test_replace_instrument (
   const char *   pl_uri,
   bool           with_carla)
 {
-#  ifdef HAVE_LSP_COMPRESSOR
+#ifdef HAVE_LSP_COMPRESSOR
   PluginSetting * setting = NULL;
 
   switch (prot)
@@ -1198,7 +1191,7 @@ _test_replace_instrument (
       setting = plugin_setting_clone (setting, F_NO_VALIDATE);
       break;
     case PROT_VST:
-#    ifdef HAVE_CARLA
+#  ifdef HAVE_CARLA
       {
         PluginDescriptor ** descriptors =
           z_carla_discovery_create_descriptors_from_file (
@@ -1206,7 +1199,7 @@ _test_replace_instrument (
         setting = plugin_setting_new_default (descriptors[0]);
         free (descriptors);
       }
-#    endif
+#  endif
       break;
     default:
       break;
@@ -1434,9 +1427,8 @@ _test_replace_instrument (
   test_project_save_and_reload ();
 
   plugin_setting_free (setting);
-#  endif /* HAVE LSP_COMPRESSOR */
+#endif /* HAVE LSP_COMPRESSOR */
 }
-#endif
 
 static void
 test_replace_instrument (void)
