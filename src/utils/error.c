@@ -26,7 +26,7 @@ error_handle_prv (GError * err, const char * format, ...)
       if (ZRYTHM_HAVE_UI)
         {
           ui_show_message_printf (
-            GTK_MESSAGE_ERROR, true, "%s", str);
+            GTK_MESSAGE_ERROR, false, "%s", str);
         }
       else
         {

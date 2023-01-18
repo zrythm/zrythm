@@ -306,7 +306,6 @@ recording_manager_handle_recording (
           re->local_offset = time_nfo->local_offset;
           re->nframes = time_nfo->nframes;
           re->track_name_hash = tr->name_hash;
-          /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
 
