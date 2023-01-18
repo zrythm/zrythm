@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_selections.h"
@@ -3215,7 +3215,14 @@ arranger_selections_action_stringize (
     case AS_ACTION_MERGE:
       return g_strdup (_ ("Merge arranger selections"));
     case AS_ACTION_RESIZE:
-      return g_strdup (_ ("Resize arranger selections"));
+      {
+        const char * resize_type =
+          arranger_selections_action_resize_type_strings
+            [self->resize_type]
+              .str;
+        return g_strdup_printf (
+          _ ("Resize arranger selections - %s"), resize_type);
+      }
     case AS_ACTION_QUANTIZE:
       return g_strdup (_ ("Quantize arranger selections"));
     default:
