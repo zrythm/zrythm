@@ -1,9 +1,3 @@
-[wrap-file]
-directory = rtaudio-5.2.0
-source_url = https://git.sr.ht/~alextee/rtaudio/archive/5.2.0.tar.gz
-source_filename = 5.2.0.tar.gz
-source_hash = a8d9c738addffd485c3f0bab14cbba72600267e3113f274398c67829bbb49332
-
-[provide]
-dependency_names = rtaudio
-
+[wrap-git]
+url = https://git.sr.ht/~alextee/rtaudio
+revision = 46b01b5b134f33d8ddc3dab76829d4b1350e0522
