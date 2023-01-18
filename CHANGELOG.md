@@ -6,7 +6,19 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-beta.4.5.21] - 2022-01-04
+## [1.0.0-beta.4.5.51] - 2023-01-18
+### Changed
+- Create standard project directories when creating a new blank project
+- Update Chinese (Simplified), Catalan, French, Swedish, Hungarian, Spanish, German, Portuguese (Brazil), Russian, English (Middle), Portuguese translations
+- Re-generate bundled plugins with latest faust
+- Be more specific in some undoable action strings
+- Don't block when showing error messages
+
+### Fixed
+- Fix error when saving a project with a plugin without outputs
+- Fix issues with automation track processing
+
+## [1.0.0-beta.4.5.21] - 2023-01-04
 ### Changed
 - Don't attempt to create plugin state directories when loading projects
 - Add more error checking to various operations
