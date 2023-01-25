@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/wrapped_object_with_change_signal.h"
@@ -48,6 +48,7 @@ project_info_new (const char * name, const char * filename)
           self->modified_str =
             datetime_epoch_to_str (self->modified, NULL);
         }
+      g_return_val_if_fail (self->modified_str, NULL);
     }
   else
     {

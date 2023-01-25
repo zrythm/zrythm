@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2022-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/datetime.h"
@@ -37,7 +37,7 @@ char *
 datetime_epoch_to_str (gint64 epoch, const char * format)
 {
   GDateTime * dt = g_date_time_new_from_unix_local (epoch);
-  g_return_val_if_fail (epoch, NULL);
+  g_return_val_if_fail (dt, NULL);
   char * str = g_date_time_format (
     dt, format ? format : "%Y-%m-%d %H:%M:%S");
   g_date_time_unref (dt);
