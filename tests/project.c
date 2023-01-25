@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
@@ -12,6 +12,7 @@
 
 #include <glib.h>
 
+#include "helpers/jack.h"
 #include "helpers/plugin_manager.h"
 #include "helpers/project.h"
 #include "helpers/zrythm.h"
@@ -364,6 +365,30 @@ test_load_v1_0_0_beta_2_1_1 (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_exposed_ports_after_load (void)
+{
+#ifdef HAVE_PIPEWIRE
+  test_helper_zrythm_init_with_pipewire ();
+
+  Track * track =
+    track_create_empty_with_action (TRACK_TYPE_AUDIO, NULL);
+  Port * port = track->channel->stereo_out->l;
+  char   buf[600];
+  port_get_full_designation (port, buf);
+
+  g_assert_true (port_is_exposed_to_backend (port));
+  assert_jack_port_exists (buf);
+
+  test_project_save_and_reload ();
+
+  g_assert_true (port_is_exposed_to_backend (port));
+  assert_jack_port_exists (buf);
+
+  test_helper_zrythm_cleanup ();
+#endif // HAVE_PIPEWIRE
+}
+
 int
 main (int argc, char * argv[])
 {
@@ -371,6 +396,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/project/"
 
+  g_test_add_func (
+    TEST_PREFIX "test exposed ports after load",
+    (GTestFunc) test_exposed_ports_after_load);
   g_test_add_func (
     TEST_PREFIX "test load with plugin after backup",
     (GTestFunc) test_load_with_plugin_after_backup);

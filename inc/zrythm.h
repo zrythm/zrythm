@@ -325,6 +325,19 @@ typedef struct Zrythm
    * is no UI to choose.
    */
   bool open_newer_backup;
+
+  /**
+   * Whether to use pipewire in tests.
+   *
+   * If this is false, the dummy engine will be used.
+   *
+   * Some tests do sample rate changes so it's more convenient
+   * to use the dummy engine instead.
+   */
+  bool use_pipewire_in_tests;
+
+  /** Process ID for pipewire (used in tests). */
+  GPid pipewire_pid;
 } Zrythm;
 
 /**

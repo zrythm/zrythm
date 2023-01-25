@@ -1368,8 +1368,8 @@ project_load (
   EngineState state;
   engine_wait_for_pause (AUDIO_ENGINE, &state, true);
 
-  /* connect channel inputs to hardware. has to
-   * be done after engine activation */
+  /* connect channel inputs to hardware and re-expose ports to
+   * backend. has to be done after engine activation */
   Channel * ch;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
@@ -1379,6 +1379,7 @@ project_load (
 
       channel_reconnect_ext_input_ports (ch);
     }
+  tracklist_expose_ports_to_backend (TRACKLIST);
 
   /* reconnect graph */
   router_recalc_graph (ROUTER, F_NOT_SOFT);

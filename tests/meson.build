@@ -7,6 +7,8 @@ if get_option ('tests')
   test_lv2_plugin_libs = []
   subdir('lv2plugins')
 
+  pipewire_bin = find_program ('pipewire', required: false)
+
   test_env = environment ()
   test_env.set (
     'G_TEST_SRC_ROOT_DIR', meson_src_root)
@@ -30,6 +32,8 @@ if get_option ('tests')
   test_env.set ('Z_CURL_TIMEOUT', '10')
   test_env.set ('G_MESSAGES_DEBUG', 'zrythm')
   test_env.set ('ZRYTHM_DSP_THREADS', '3')
+  test_env.set ('PIPEWIRE_RUNTIME_DIR', '/tmp/zrythm-pipewire')
+  test_env.set ('PIPEWIRE_DEBUG', 'D')
 
   test_config = configuration_data ()
   test_config.set_quoted (
@@ -41,6 +45,13 @@ if get_option ('tests')
   test_config.set_quoted (
     'MIDILIB_TEST_MIDI_FILES_PATH',
     meson_src_root / 'ext/midilib/MIDIFiles')
+  test_config.set_quoted (
+    'PIPEWIRE_SERVER_NAME', 'zrythm-pipewire-0')
+  test_config.set ('HAVE_PIPEWIRE', pipewire_bin.found ())
+  test_config.set_quoted ('PIPEWIRE_BIN', pipewire_bin.full_path ())
+  test_config.set_quoted (
+    'PIPEWIRE_CONF_PATH',
+    meson.current_source_dir () / 'pipewire-server.conf')
 
   test_c_args = [
     '-DDEBUG_THREADS=1',

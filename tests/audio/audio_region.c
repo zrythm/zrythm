@@ -169,7 +169,8 @@ test_load_project_with_different_sample_rate (void)
       int samplerate_before = samplerates[i];
 
       /* create project @ 48000 Hz */
-      _test_helper_zrythm_init (false, samplerate_before, 0);
+      _test_helper_zrythm_init (
+        false, samplerate_before, 0, false);
 
       Position pos;
       position_set_to_bar (&pos, 2);

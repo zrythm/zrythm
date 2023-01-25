@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -529,7 +529,12 @@ engine_jack_setup (AudioEngine * self)
   const char *   client_name = PROGRAM_NAME;
   const char *   server_name = NULL;
   jack_options_t options = JackNoStartServer;
-  jack_status_t  status;
+  if (ZRYTHM_TESTING)
+    {
+      server_name = "zrythm-pipewire-0";
+      options = options | JackServerName;
+    }
+  jack_status_t status;
 
   /* open a client connection to the JACK server */
   self->client = jack_client_open (
@@ -579,7 +584,10 @@ engine_jack_setup (AudioEngine * self)
     self->block_length);
 
   engine_jack_set_transport_type (
-    self, g_settings_get_enum (S_UI, "jack-transport-type"));
+    self,
+    ZRYTHM_TESTING
+      ? AUDIO_ENGINE_JACK_TRANSPORT_CLIENT
+      : g_settings_get_enum (S_UI, "jack-transport-type"));
 
   g_message ("JACK set up");
   return 0;
@@ -675,6 +683,9 @@ engine_jack_reconnect_monitor (
   bool          left,
   GError **     error)
 {
+  if (ZRYTHM_TESTING)
+    return true;
+
   gchar ** devices = g_settings_get_strv (
     S_MONITOR, left ? "l-devices" : "r-devices");
 

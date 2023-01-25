@@ -669,7 +669,10 @@ init_common (AudioEngine * self)
   AudioBackend ab_code = AUDIO_BACKEND_DUMMY;
   if (ZRYTHM_TESTING)
     {
-      ab_code = AUDIO_BACKEND_DUMMY;
+      ab_code =
+        ZRYTHM->use_pipewire_in_tests
+          ? AUDIO_BACKEND_JACK
+          : AUDIO_BACKEND_DUMMY;
     }
   else if (zrythm_app->audio_backend)
     {
@@ -744,7 +747,10 @@ init_common (AudioEngine * self)
   MidiBackend mb_code = MIDI_BACKEND_DUMMY;
   if (ZRYTHM_TESTING)
     {
-      mb_code = MIDI_BACKEND_DUMMY;
+      mb_code =
+        ZRYTHM->use_pipewire_in_tests
+          ? MIDI_BACKEND_JACK
+          : MIDI_BACKEND_DUMMY;
     }
   else if (zrythm_app->midi_backend)
     {
