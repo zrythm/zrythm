@@ -1550,7 +1550,8 @@ project_autosave_cb (void * data)
 
   /* skip if bad time to save or rolling */
   if (
-    cur_time - PROJECT->last_autosave_time < microsec_to_autosave
+    cur_time - PROJECT->last_successful_autosave_time
+      < microsec_to_autosave
     || TRANSPORT_IS_ROLLING)
     {
       goto post_save_sem_and_continue;
@@ -1575,15 +1576,30 @@ project_autosave_cb (void * data)
       goto post_save_sem_and_continue;
     }
 
+  UndoableAction * last_action =
+    undo_manager_get_last_action (PROJECT->undo_manager);
+  if (
+    PROJECT->last_action_in_last_successful_autosave
+    == last_action)
+    {
+      g_debug (
+        "last action is same as previous backup - skipping "
+        "autosave");
+      goto post_save_sem_and_continue;
+    }
+
   /* ok to save */
   success = project_save (
     PROJECT, PROJECT->dir, F_BACKUP, Z_F_SHOW_NOTIFICATION,
     F_ASYNC, &err);
-  if (!success)
+  if (success)
+    {
+      PROJECT->last_successful_autosave_time = cur_time;
+    }
+  else
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to save project"));
     }
-  PROJECT->last_autosave_time = cur_time;
 
 post_save_sem_and_continue:
   zix_sem_post (&PROJECT->save_sem);
@@ -2144,10 +2160,16 @@ project_save (
   if (ZRYTHM_TESTING)
     tracklist_validate (self->tracklist);
 
-  if (!is_backup)
+  UndoableAction * last_action =
+    undo_manager_get_last_action (self->undo_manager);
+  if (is_backup)
     {
-      self->last_saved_action =
-        undo_manager_get_last_action (self->undo_manager);
+      self->last_action_in_last_successful_autosave =
+        last_action;
+    }
+  else
+    {
+      self->last_saved_action = last_action;
     }
 
   if (engine_paused)

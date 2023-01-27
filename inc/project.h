@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -290,7 +290,15 @@ typedef struct Project
    * changes. */
   UndoableAction * last_saved_action;
 
-  gint64 last_autosave_time;
+  /** Last successful autosave timestamp. */
+  gint64 last_successful_autosave_time;
+
+  /**
+   * Last undoable action in the previous successful autosave.
+   *
+   * This is used to avoid saving unnecessary backups.
+   */
+  UndoableAction * last_action_in_last_successful_autosave;
 } Project;
 
 static const cyaml_schema_field_t project_fields_schema[] = {

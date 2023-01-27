@@ -377,7 +377,8 @@ on_setup_main_window (
     S_P_PROJECTS_GENERAL, "autosave-interval");
   if (autosave_interval > 0)
     {
-      PROJECT->last_autosave_time = g_get_monotonic_time ();
+      PROJECT->last_successful_autosave_time =
+        g_get_monotonic_time ();
       g_timeout_add_seconds (3, project_autosave_cb, NULL);
     }
 
