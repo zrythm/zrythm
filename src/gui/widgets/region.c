@@ -842,9 +842,10 @@ handle_loop (
                  * are lower */
               1.0
                 - automation_point_get_normalized_value_in_curve (
-                  ap, CLAMP (
-                        (k - x_start_in_region) / ac_width,
-                        0.0, 1.0));
+                  ap, NULL,
+                  CLAMP (
+                    (k - x_start_in_region) / ac_width, 0.0,
+                    1.0));
           /*g_debug ("start from %f k %f x start in region %f ratio %f, ac width %f, ap y %f", start_from, k, x_start_in_region, CLAMP ((k - x_start_in_region) / ac_width, 0.0, 1.0), ac_width, ap_y);*/
           ap_y *= ac_height;
 

@@ -257,17 +257,23 @@ automation_point_set_fvalue_with_action (
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
  *
  * @param ap The start point (0, 0).
+ * @param region region The automation region (if known),
+ *   otherwise the non-cached region will be used.
  * @param x Normalized x.
  */
 double
 automation_point_get_normalized_value_in_curve (
   AutomationPoint * self,
+  ZRegion *         region,
   double            x)
 {
   g_return_val_if_fail (self && x >= 0.0 && x <= 1.0, 0.0);
 
-  ZRegion * region =
-    arranger_object_get_region ((ArrangerObject *) self);
+  if (!region)
+    {
+      region =
+        arranger_object_get_region ((ArrangerObject *) self);
+    }
   g_return_val_if_fail (IS_REGION_AND_NONNULL (region), 0.0);
   AutomationPoint * next_ap =
     automation_region_get_next_ap (region, self, true, true);

@@ -154,11 +154,14 @@ automation_point_set_region_and_index (
  * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
  *
  * @param ap The start point (0, 0).
+ * @param region region The automation region (if known),
+ *   otherwise the non-cached region will be used.
  * @param x Normalized x.
  */
 HOT double
 automation_point_get_normalized_value_in_curve (
-  AutomationPoint * ap,
+  AutomationPoint * self,
+  ZRegion *         region,
   double            x);
 
 /**

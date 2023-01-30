@@ -732,7 +732,9 @@ automation_track_get_val_at_pos (
       return port_get_control_value (port, normalized);
     }
 
-  ZRegion * region = arranger_object_get_region (ap_obj);
+  /*ZRegion * region = arranger_object_get_region (ap_obj);*/
+  ZRegion * region = automation_track_get_region_before_pos (
+    self, pos, ends_after, use_snapshots);
   ArrangerObject * r_obj = (ArrangerObject *) region;
 
   /* if region ends before pos, assume pos is the
@@ -790,8 +792,9 @@ automation_track_get_val_at_pos (
     }
   g_return_val_if_fail (ratio >= 0, 0.f);
 
-  float result = (float)
-    automation_point_get_normalized_value_in_curve (ap, ratio);
+  float result =
+    (float) automation_point_get_normalized_value_in_curve (
+      ap, region, ratio);
   result = result * cur_next_diff;
   if (prev_ap_lower)
     result += ap->normalized_val;

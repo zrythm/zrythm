@@ -157,7 +157,7 @@ automation_point_draw (
             /* in pixels, higher values are lower */
             1.0
             - automation_point_get_normalized_value_in_curve (
-              ap,
+              ap, NULL,
               CLAMP ((l + step) / width_for_curve, 0.0, 1.0));
           next_y *= height_for_curve;
 
@@ -167,7 +167,7 @@ automation_point_draw (
                 /* in pixels, higher values are lower */
                 1.0
                 - automation_point_get_normalized_value_in_curve (
-                  ap, 0.0);
+                  ap, NULL, 0.0);
               this_y *= height_for_curve;
               cairo_move_to (
                 cr,
@@ -197,12 +197,12 @@ automation_point_draw (
           this_y =
             1.0
             - automation_point_get_normalized_value_in_curve (
-              ap, 0.0);
+              ap, NULL, 0.0);
           this_y *= height_for_curve;
           double next_y =
             1.0
             - automation_point_get_normalized_value_in_curve (
-              ap, 1.0);
+              ap, NULL, 1.0);
           next_y *= height_for_curve;
           cairo_move_to (
             cr,
@@ -358,7 +358,8 @@ automation_point_is_curve_hit (
   double curve_val =
     1.0
     - automation_point_get_normalized_value_in_curve (
-      self, (x - obj->full_rect.x) / obj->full_rect.width);
+      self, NULL,
+      (x - obj->full_rect.x) / obj->full_rect.width);
   curve_val =
     obj->full_rect.y + curve_val * obj->full_rect.height;
 
