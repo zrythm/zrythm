@@ -73,6 +73,10 @@ main_notebook_widget_init (MainNotebookWidget * self)
   gtk_widget_set_parent (
     GTK_WIDGET (self->panel_frame), GTK_WIDGET (self));
 
+  g_object_set_data (
+    G_OBJECT (g_application_get_default ()),
+    "zrythm-main-panel", self->panel_frame);
+
   self->timeline_plus_event_viewer_paned =
     GTK_PANED (gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
   gtk_paned_set_shrink_start_child (
