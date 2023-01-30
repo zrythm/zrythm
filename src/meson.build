@@ -45,7 +45,7 @@ zrythm_link_libs = [
   weakjack_lib,
   ]
 
-if guile_dep.found ()
+if have_guile
   zrythm_link_libs += guilelib
 endif
 
