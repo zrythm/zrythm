@@ -100,8 +100,7 @@ audio_audec_log_func (
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-bool
+WARN_UNUSED_RESULT bool
 audio_write_raw_file (
   float *      buff,
   size_t       frames_already_written,

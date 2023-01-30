@@ -1470,7 +1470,7 @@ setup_dither (
  * Creates a new export dialog.
  */
 ExportDialogWidget *
-export_dialog_widget_new ()
+export_dialog_widget_new (void)
 {
   ExportDialogWidget * self =
     g_object_new (EXPORT_DIALOG_WIDGET_TYPE, NULL);

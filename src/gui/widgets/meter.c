@@ -130,7 +130,7 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   const float border_width = 1.f;
   GdkRGBA     border_color = { 0.1f, 0.1f, 0.1f, 0.8f };
   float       border_widths[] = {
-          border_width, border_width, border_width, border_width
+    border_width, border_width, border_width, border_width
   };
   GdkRGBA border_colors[] = {
     border_color, border_color, border_color, border_color

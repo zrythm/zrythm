@@ -337,8 +337,7 @@ chord_descriptor_to_new_string (const ChordDescriptor * chord);
 /**
  * Returns the chord in human readable string.
  */
-NONNULL
-void
+NONNULL void
 chord_descriptor_to_string (
   const ChordDescriptor * chord,
   char *                  str);
@@ -347,15 +346,13 @@ chord_descriptor_to_string (
  * Updates the notes array based on the current
  * settings.
  */
-NONNULL
-void
+NONNULL void
 chord_descriptor_update_notes (ChordDescriptor * self);
 
 /**
  * Frees the ChordDescriptor.
  */
-NONNULL
-void
+NONNULL void
 chord_descriptor_free (ChordDescriptor * self);
 
 /**

@@ -222,12 +222,10 @@ snap_grid_get_ticks_from_length_and_type (
 /**
  * Gets a snap point's length in ticks.
  */
-NONNULL
-int
+NONNULL int
 snap_grid_get_snap_ticks (const SnapGrid * self);
 
-NONNULL
-double
+NONNULL double
 snap_grid_get_snap_frames (const SnapGrid * self);
 
 /**
@@ -268,8 +266,7 @@ snap_grid_stringize (SnapGrid * self);
  *
  * @return Whether successful.
  */
-NONNULL
-bool
+NONNULL bool
 snap_grid_get_nearby_snap_point (
   Position *             ret_pos,
   const SnapGrid * const self,

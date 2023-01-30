@@ -117,8 +117,7 @@ region_identifier_is_equal (
          && a->link_group == b->link_group && a->type == b->type;
 }
 
-NONNULL
-static inline void
+NONNULL static inline void
 region_identifier_copy (
   RegionIdentifier *       dest,
   const RegionIdentifier * src)

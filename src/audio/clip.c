@@ -417,7 +417,7 @@ audio_clip_write_to_pool (
         self->name, parts, is_backup, new_path);
       GError * err = NULL;
       bool     success = audio_clip_write_to_file (
-            self, new_path, parts, &err);
+        self, new_path, parts, &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR (
@@ -485,9 +485,9 @@ audio_clip_write_to_file (
     }
   GError * err = NULL;
   bool     success = audio_write_raw_file (
-        &self->frames[offset], ch_offset, nframes,
-        (uint32_t) self->samplerate, self->use_flac,
-        self->bit_depth, self->channels, filepath, &err);
+    &self->frames[offset], ch_offset, nframes,
+    (uint32_t) self->samplerate, self->use_flac,
+    self->bit_depth, self->channels, filepath, &err);
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (

@@ -94,8 +94,8 @@ chord_editor_apply_chords (
     {
       GError * err = NULL;
       bool     ret = chord_action_perform (
-            (const ChordDescriptor **) self->chords, chords, NULL,
-            -1, &err);
+        (const ChordDescriptor **) self->chords, chords, NULL,
+        -1, &err);
       g_return_if_fail (ret);
     }
   else

@@ -150,7 +150,7 @@ save_chord_preset_dialog_widget_init (
   GtkBox * content_area =
     GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (self)));
 
-  GtkGrid *  grid = GTK_GRID (gtk_grid_new ());
+  GtkGrid * grid = GTK_GRID (gtk_grid_new ());
   GtkLabel * pack_lbl = GTK_LABEL (gtk_label_new (_ ("Pack")));
   GtkLabel * preset_name_lbl =
     GTK_LABEL (gtk_label_new (_ ("Preset Name")));

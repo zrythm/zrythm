@@ -105,8 +105,7 @@ lv2_ui_send_event_from_plugin_to_ui (
  *
  * @param lv2_port The port to pass the value of.
  */
-NONNULL
-void
+NONNULL void
 lv2_ui_send_control_val_event_from_plugin_to_ui (
   Lv2Plugin * lv2_plugin,
   Port *      port);

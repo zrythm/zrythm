@@ -197,8 +197,8 @@ do_or_undo (TransportAction * self, bool _do, GError ** error)
         {
           GError * err = NULL;
           bool     success = transport_stretch_regions (
-                TRANSPORT, NULL, true, time_ratio, Z_F_NO_FORCE,
-                &err);
+            TRANSPORT, NULL, true, time_ratio, Z_F_NO_FORCE,
+            &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR_LITERAL (

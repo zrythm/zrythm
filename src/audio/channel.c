@@ -56,8 +56,7 @@
 /**
  * Connect ports in the case of !prev && !next.
  */
-NONNULL
-static void
+NONNULL static void
 connect_no_prev_no_next (Channel * ch, Plugin * pl)
 {
   g_debug ("connect no prev no next");
@@ -90,8 +89,7 @@ connect_no_prev_no_next (Channel * ch, Plugin * pl)
 /**
  * Connect ports in the case of !prev && next.
  */
-NONNULL
-static void
+NONNULL static void
 connect_no_prev_next (Channel * ch, Plugin * pl, Plugin * next_pl)
 {
   g_debug ("connect no prev next");
@@ -126,8 +124,7 @@ connect_no_prev_next (Channel * ch, Plugin * pl, Plugin * next_pl)
 /**
  * Connect ports in the case of prev && !next.
  */
-NONNULL
-static void
+NONNULL static void
 connect_prev_no_next (Channel * ch, Plugin * prev_pl, Plugin * pl)
 {
   g_debug ("connect prev no next");
@@ -158,8 +155,7 @@ connect_prev_no_next (Channel * ch, Plugin * prev_pl, Plugin * pl)
 /**
  * Connect ports in the case of prev && next.
  */
-NONNULL
-static void
+NONNULL static void
 connect_prev_next (
   Channel * ch,
   Plugin *  prev_pl,
@@ -195,8 +191,7 @@ connect_prev_next (
 /**
  * Disconnect ports in the case of !prev && !next.
  */
-NONNULL
-static void
+NONNULL static void
 disconnect_no_prev_no_next (Channel * ch, Plugin * pl)
 {
   Track * track = channel_get_track (ch);
@@ -228,8 +223,7 @@ disconnect_no_prev_no_next (Channel * ch, Plugin * pl)
 /**
  * Disconnect ports in the case of !prev && next.
  */
-NONNULL
-static void
+NONNULL static void
 disconnect_no_prev_next (
   Channel * ch,
   Plugin *  pl,
@@ -266,8 +260,7 @@ disconnect_no_prev_next (
 /**
  * Connect ports in the case of prev && !next.
  */
-NONNULL
-static void
+NONNULL static void
 disconnect_prev_no_next (
   Channel * ch,
   Plugin *  prev_pl,
@@ -300,8 +293,7 @@ disconnect_prev_no_next (
 /**
  * Connect ports in the case of prev && next.
  */
-NONNULL
-static void
+NONNULL static void
 disconnect_prev_next (
   Channel * ch,
   Plugin *  prev_pl,
@@ -1750,8 +1742,7 @@ channel_add_plugin (
  * Updates the track name hash in the channel and
  * all related ports and identifiers.
  */
-NONNULL
-void
+NONNULL void
 channel_update_track_name_hash (
   Channel *    self,
   unsigned int old_name_hash,

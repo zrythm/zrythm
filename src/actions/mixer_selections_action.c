@@ -798,7 +798,7 @@ copy_automation_from_track1_to_track2 (
                   (ArrangerObject *) prev_region);
               GError * err = NULL;
               bool     success = track_add_region (
-                    to_track, new_region, at, -1, 0, 0, &err);
+                to_track, new_region, at, -1, 0, 0, &err);
               if (!success)
                 {
                   PROPAGATE_PREFIXED_ERROR (
@@ -1108,7 +1108,7 @@ do_or_undo_move_or_copy (
            * before, bring it back */
           GError * err = NULL;
           int      ret = revert_deleted_plugin (
-                 self, to_tr, to_slot, &err);
+            self, to_tr, to_slot, &err);
           if (ret != 0)
             {
               PROPAGATE_PREFIXED_ERROR (

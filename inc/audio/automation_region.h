@@ -65,8 +65,7 @@ automation_region_add_ap (
  * Returns the AutomationPoint before the given
  * one.
  */
-NONNULL
-PURE AutomationPoint *
+NONNULL PURE AutomationPoint *
 automation_region_get_prev_ap (
   ZRegion *         self,
   AutomationPoint * ap);
@@ -128,8 +127,7 @@ automation_region_get_ap_around (
   bool       before_only,
   bool       use_snapshots);
 
-NONNULL
-bool
+NONNULL bool
 automation_region_validate (ZRegion * self);
 
 /**
@@ -137,8 +135,7 @@ automation_region_validate (ZRegion * self);
  *
  * Regions should be free'd using region_free.
  */
-NONNULL
-void
+NONNULL void
 automation_region_free_members (ZRegion * self);
 
 /**

@@ -249,21 +249,18 @@
  * @return Newly allocated YAML string, or NULL if
  *   error.
  */
-NONNULL
-char *
+NONNULL char *
 yaml_serialize (
   void *                       data,
   const cyaml_schema_value_t * schema);
 
 NONNULL_ARGS (1, 2)
-void *
-yaml_deserialize (
+void * yaml_deserialize (
   const char *                 yaml,
   const cyaml_schema_value_t * schema,
   GError **                    error);
 
-NONNULL
-void
+NONNULL void
 yaml_print (void * data, const cyaml_schema_value_t * schema);
 
 /**

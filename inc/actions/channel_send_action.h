@@ -106,8 +106,7 @@ channel_send_action_init_loaded (ChannelSendAction * self);
  * @param port_connections_mgr Port connections
  *   manager at the start of the action, if needed.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 channel_send_action_new (
   ChannelSend *                  send,
   ChannelSendActionType          type,
@@ -146,8 +145,7 @@ channel_send_action_new (
     send, CHANNEL_SEND_ACTION_CHANGE_AMOUNT, NULL, NULL, \
     amt, NULL, error)
 
-NONNULL
-ChannelSendAction *
+NONNULL ChannelSendAction *
 channel_send_action_clone (const ChannelSendAction * src);
 
 /**

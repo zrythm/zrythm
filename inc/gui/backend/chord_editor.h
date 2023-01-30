@@ -123,14 +123,12 @@ chord_editor_transpose_chords (
  * number, otherwise NULL if the given note number
  * is not in the proper range.
  */
-NONNULL
-ChordDescriptor *
+NONNULL ChordDescriptor *
 chord_editor_get_chord_from_note_number (
   const ChordEditor * self,
   midi_byte_t         note_number);
 
-NONNULL
-int
+NONNULL int
 chord_editor_get_chord_index (
   const ChordEditor *     self,
   const ChordDescriptor * chord);

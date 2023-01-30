@@ -47,8 +47,8 @@ on_enable_toggled (
 {
   GError * err = NULL;
   bool     ret = port_connection_action_perform_enable (
-        self->connection->src_id, self->connection->dest_id,
-        gtk_toggle_button_get_active (btn), &err);
+    self->connection->src_id, self->connection->dest_id,
+    gtk_toggle_button_get_active (btn), &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -65,7 +65,7 @@ on_del_clicked (GtkButton * btn, PortConnectionRowWidget * self)
 {
   GError * err = NULL;
   bool     ret = port_connection_action_perform_disconnect (
-        self->connection->src_id, self->connection->dest_id, &err);
+    self->connection->src_id, self->connection->dest_id, &err);
   if (!ret)
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to disconnect"));

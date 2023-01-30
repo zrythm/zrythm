@@ -515,8 +515,8 @@ queue_file_or_chord_preset (
         &start_pos, 0, 0, 0);
       GError * err = NULL;
       bool     success = track_add_region (
-            track, ar, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
-            &err);
+        track, ar, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
+        &err);
       if (!success)
         {
           HANDLE_ERROR (

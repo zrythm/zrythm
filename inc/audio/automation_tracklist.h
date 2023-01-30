@@ -279,17 +279,14 @@ automation_tracklist_get_plugin_at (
   const int             port_index,
   const char *          symbol);
 
-WARN_UNUSED_RESULT
-NONNULL
-AutomationTrack *
+WARN_UNUSED_RESULT NONNULL AutomationTrack *
 automation_tracklist_get_first_invisible_at (
   AutomationTracklist * self);
 
 /**
  * Returns the number of visible AutomationTrack's.
  */
-NONNULL
-int
+NONNULL int
 automation_tracklist_get_num_visible (
   AutomationTracklist * self);
 
@@ -299,33 +296,27 @@ automation_tracklist_get_num_visible (
  *
  * @return True if pass.
  */
-NONNULL
-bool
+NONNULL bool
 automation_tracklist_validate (AutomationTracklist * self);
 
 /**
  * Counts the total number of regions in the
  * automation tracklist.
  */
-WARN_UNUSED_RESULT
-NONNULL
-int
+WARN_UNUSED_RESULT NONNULL int
 automation_tracklist_get_num_regions (
   AutomationTracklist * self);
 
-NONNULL
-void
+NONNULL void
 automation_tracklist_print_regions (
   AutomationTracklist * self);
 
-NONNULL
-void
+NONNULL void
 automation_tracklist_set_caches (
   AutomationTracklist * self,
   CacheTypes            types);
 
-NONNULL
-void
+NONNULL void
 automation_tracklist_free_members (AutomationTracklist * self);
 
 /**

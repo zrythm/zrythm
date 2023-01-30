@@ -372,8 +372,7 @@ region_set_track_name_hash (
 }
 #endif
 
-NONNULL
-void
+NONNULL void
 region_print_to_str (
   const ZRegion * self,
   char *          buf,
@@ -382,8 +381,7 @@ region_print_to_str (
 /**
  * Print region info for debugging.
  */
-NONNULL
-void
+NONNULL void
 region_print (const ZRegion * region);
 
 TrackLane *
@@ -407,8 +405,7 @@ region_set_link_group (
   int       group_idx,
   bool      update_identifier);
 
-NONNULL
-bool
+NONNULL bool
 region_has_link_group (ZRegion * region);
 
 /**
@@ -435,8 +432,7 @@ region_find_midi_note (ZRegion * r, MidiNote * _mn);
  *
  * @return The local frames.
  */
-NONNULL
-HOT signed_frame_t
+NONNULL HOT signed_frame_t
 region_timeline_frames_to_local (
   const ZRegion * const self,
   const signed_frame_t  timeline_frames,
@@ -453,8 +449,7 @@ region_timeline_frames_to_local (
  *   are for a loop (if false, the return frames
  *   are for the region's end).
  */
-NONNULL
-void
+NONNULL void
 region_get_frames_till_next_loop_or_end (
   const ZRegion * const self,
   const signed_frame_t  timeline_frames,
@@ -464,8 +459,7 @@ region_get_frames_till_next_loop_or_end (
 /**
  * Sets the track lane.
  */
-NONNULL
-void
+NONNULL void
 region_set_lane (ZRegion * self, const TrackLane * const lane);
 
 /**
@@ -490,25 +484,21 @@ region_gen_name (
  *
  * @return Whether successful.
  */
-NONNULL
-WARN_UNUSED_RESULT
-bool
+NONNULL WARN_UNUSED_RESULT bool
 region_stretch (ZRegion * self, double ratio, GError ** error);
 
 /**
  * To be called every time the identifier changes
  * to update the region's children.
  */
-NONNULL
-void
+NONNULL void
 region_update_identifier (ZRegion * self);
 
 /**
  * Updates all other regions in the region link
  * group, if any.
  */
-NONNULL
-void
+NONNULL void
 region_update_link_group (ZRegion * self);
 
 /**
@@ -577,8 +567,7 @@ region_copy (ZRegion * src, ZRegion * dest);
  * @param inclusive Whether the last frame should
  *   be counted as part of the region.
  */
-NONNULL
-PURE int
+NONNULL PURE int
 region_is_hit (
   const ZRegion *      region,
   const signed_frame_t gframes,
@@ -607,8 +596,7 @@ region_is_hit_by_range (
  * @param pos The position.
  */
 NONNULL_ARGS (3)
-PURE ZRegion *
-region_at_position (
+PURE ZRegion * region_at_position (
   const Track *           track,
   const AutomationTrack * at,
   const Position *        pos);
@@ -671,8 +659,7 @@ region_remove_all_children (ZRegion * region);
 void
 region_copy_children (ZRegion * dest, ZRegion * src);
 
-NONNULL
-bool
+NONNULL bool
 region_is_looped (const ZRegion * const self);
 
 /**

@@ -79,8 +79,7 @@ port_connection_action_init_loaded (
 /**
  * Create a new action.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 port_connection_action_new (
   PortConnectionActionType type,
   PortIdentifier *         src_id,
@@ -110,8 +109,7 @@ port_connection_action_new (
     PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, dest_id, \
     new_multiplier, error)
 
-NONNULL
-PortConnectionAction *
+NONNULL PortConnectionAction *
 port_connection_action_clone (
   const PortConnectionAction * src);
 

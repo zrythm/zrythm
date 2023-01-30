@@ -10,8 +10,7 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-NONNULL
-size_t
+NONNULL size_t
 undo_stack_get_total_cached_actions (UndoStack * self)
 {
   size_t total =

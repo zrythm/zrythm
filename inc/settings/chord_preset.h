@@ -63,8 +63,7 @@ static const cyaml_schema_value_t chord_preset_schema = {
 ChordPreset *
 chord_preset_new (const char * name);
 
-NONNULL
-ChordPreset *
+NONNULL ChordPreset *
 chord_preset_clone (const ChordPreset * src);
 
 /**
@@ -87,8 +86,7 @@ chord_preset_generate_context_menu (const ChordPreset * self);
 /**
  * Frees the plugin setting.
  */
-NONNULL
-void
+NONNULL void
 chord_preset_free (ChordPreset * self);
 
 /**

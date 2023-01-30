@@ -150,8 +150,9 @@ static const cyaml_schema_value_t channel_send_schema = {
 };
 
 NONNULL_ARGS (1)
-void
-channel_send_init_loaded (ChannelSend * self, Track * track);
+void channel_send_init_loaded (
+  ChannelSend * self,
+  Track *       track);
 
 /**
  * Creates a channel send instance.
@@ -165,12 +166,10 @@ channel_send_new (
 /**
  * Gets the owner track.
  */
-NONNULL
-Track *
+NONNULL Track *
 channel_send_get_track (const ChannelSend * self);
 
-NONNULL
-bool
+NONNULL bool
 channel_send_is_enabled (const ChannelSend * self);
 
 #define channel_send_is_empty(x) \
@@ -180,8 +179,7 @@ channel_send_is_enabled (const ChannelSend * self);
  * Returns whether the channel send target is a
  * sidechain port (rather than a target track).
  */
-NONNULL
-bool
+NONNULL bool
 channel_send_is_target_sidechain (ChannelSend * self);
 
 /**
@@ -200,22 +198,19 @@ channel_send_get_target_track (
  *
  * Returned StereoPorts instance must be free'd.
  */
-NONNULL
-StereoPorts *
+NONNULL StereoPorts *
 channel_send_get_target_sidechain (ChannelSend * self);
 
 /**
  * Gets the amount to be used in widgets (0.0-1.0).
  */
-NONNULL
-float
+NONNULL float
 channel_send_get_amount_for_widgets (ChannelSend * self);
 
 /**
  * Sets the amount from a widget amount (0.0-1.0).
  */
-NONNULL
-void
+NONNULL void
 channel_send_set_amount_from_widget (
   ChannelSend * self,
   float         val);
@@ -240,8 +235,7 @@ channel_send_connect_stereo (
 /**
  * Connects a send to a midi port.
  */
-NONNULL
-bool
+NONNULL bool
 channel_send_connect_midi (
   ChannelSend * self,
   Port *        port,
@@ -252,34 +246,28 @@ channel_send_connect_midi (
 /**
  * Removes the connection at the given send.
  */
-NONNULL
-void
+NONNULL void
 channel_send_disconnect (ChannelSend * self, bool recalc_graph);
 
-NONNULL
-void
+NONNULL void
 channel_send_set_amount (ChannelSend * self, float amount);
 
 /**
  * Get the name of the destination, or a placeholder
  * text if empty.
  */
-NONNULL
-void
+NONNULL void
 channel_send_get_dest_name (ChannelSend * self, char * buf);
 
-NONNULL
-void
+NONNULL void
 channel_send_copy_values (
   ChannelSend *       dest,
   const ChannelSend * src);
 
-NONNULL
-ChannelSend *
+NONNULL ChannelSend *
 channel_send_clone (const ChannelSend * src);
 
-NONNULL
-ChannelSendWidget *
+NONNULL ChannelSendWidget *
 channel_send_find_widget (ChannelSend * self);
 
 /**
@@ -329,16 +317,13 @@ channel_send_is_connected_to (
 /**
  * Finds the project send from a given send instance.
  */
-NONNULL
-ChannelSend *
+NONNULL ChannelSend *
 channel_send_find (ChannelSend * self);
 
-NONNULL
-bool
+NONNULL bool
 channel_send_validate (ChannelSend * self);
 
-NONNULL
-void
+NONNULL void
 channel_send_free (ChannelSend * self);
 
 /**

@@ -194,13 +194,11 @@ void
 timeline_selections_set_index_in_prev_lane (
   TimelineSelections * self);
 
-NONNULL
-bool
+NONNULL bool
 timeline_selections_contains_only_regions (
   const TimelineSelections * self);
 
-NONNULL
-bool
+NONNULL bool
 timeline_selections_contains_only_region_types (
   const TimelineSelections * self,
   RegionType                 types);
@@ -208,8 +206,7 @@ timeline_selections_contains_only_region_types (
 /**
  * Exports the selections to the given MIDI file.
  */
-NONNULL
-bool
+NONNULL bool
 timeline_selections_export_to_midi_file (
   const TimelineSelections * self,
   const char *               full_path,

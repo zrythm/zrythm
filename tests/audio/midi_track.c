@@ -84,7 +84,7 @@ test_fill_midi_events (void)
   midi_byte_t pitch1 = 35;
   midi_byte_t vel1 = 91;
   ZRegion *   r = prepare_region_with_note_at_start_to_end (
-      track, pitch1, vel1);
+    track, pitch1, vel1);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   bool             success =
     track_add_region (track, r, NULL, 0, 1, 0, NULL);
@@ -712,8 +712,8 @@ test_fill_midi_events_from_engine (void)
     ins_track, 35, 60);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   bool             success = track_add_region (
-                ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
-                NULL);
+    ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
+    NULL);
   g_assert_true (success);
   engine_set_run (AUDIO_ENGINE, 0); // needed to set caches
   tracklist_set_caches (

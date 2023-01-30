@@ -60,8 +60,8 @@ test_remove_unused (void)
           char *   dir = g_strdup (PROJECT->dir);
           GError * err = NULL;
           bool     success = project_save (
-                PROJECT, PROJECT->dir, F_NOT_BACKUP, 0,
-                F_NO_ASYNC, &err);
+            PROJECT, PROJECT->dir, F_NOT_BACKUP, 0,
+            F_NO_ASYNC, &err);
           g_assert_true (success);
 
           undo_manager_clear_stacks (UNDO_MANAGER, F_FREE);

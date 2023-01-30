@@ -840,7 +840,7 @@ channel_send_is_connected_to (
 {
   GPtrArray * conns = g_ptr_array_new ();
   int         num_conns = channel_send_append_connection (
-            self, PORT_CONNECTIONS_MGR, conns);
+    self, PORT_CONNECTIONS_MGR, conns);
   bool ret = false;
   for (int i = 0; i < num_conns; i++)
     {

@@ -48,8 +48,8 @@ test_route_master_send_to_fx (void)
   /* route master to it */
   GError * err = NULL;
   bool     ret = channel_send_action_perform_connect_audio (
-        P_MASTER_TRACK->channel->sends[0],
-        audio_fx->processor->stereo_in, &err);
+    P_MASTER_TRACK->channel->sends[0],
+    audio_fx->processor->stereo_in, &err);
 
   /* let engine run for a few cycles */
   engine_wait_n_cycles (AUDIO_ENGINE, 3);

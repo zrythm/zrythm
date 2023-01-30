@@ -14,8 +14,7 @@
  * @{
  */
 
-NONNULL
-static inline void
+NONNULL static inline void
 _object_zero_and_free (void ** ptr, size_t sz)
 {
   if (!*ptr)
@@ -30,8 +29,7 @@ _object_zero_and_free (void ** ptr, size_t sz)
  * @note Some objects are created by libcyaml which uses
  *   plain malloc so avoid using this on serializable objects.
  */
-NONNULL
-static inline void
+NONNULL static inline void
 _object_zero_and_free_unresizable (void ** ptr, size_t sz)
 {
   if (!*ptr)

@@ -109,8 +109,7 @@ plugin_identifier_copy (
   PluginIdentifier *       dest,
   const PluginIdentifier * src);
 
-NONNULL
-bool
+NONNULL bool
 plugin_identifier_validate (const PluginIdentifier * self);
 
 /**

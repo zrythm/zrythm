@@ -13,7 +13,7 @@
  * Must be free()'d by caller.
  */
 char *
-datetime_get_current_as_string ()
+datetime_get_current_as_string (void)
 {
 
   time_t t = time (NULL);

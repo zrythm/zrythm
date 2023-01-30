@@ -28,7 +28,7 @@ on_ok_clicked (GtkButton * btn, BindCcDialogWidget * self)
         {
           GError * err = NULL;
           bool     ret = midi_mapping_action_perform_bind (
-                self->cc, NULL, self->port, &err);
+            self->cc, NULL, self->port, &err);
           if (!ret)
             {
               HANDLE_ERROR (

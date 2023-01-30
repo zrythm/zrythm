@@ -271,8 +271,7 @@ static const cyaml_schema_value_t channel_schema = {
   YAML_VALUE_PTR (Channel, channel_fields_schema),
 };
 
-NONNULL
-void
+NONNULL void
 channel_init_loaded (Channel * channel, Track * track);
 
 /**
@@ -285,8 +284,7 @@ channel_init_loaded (Channel * channel, Track * track);
  * @param g_frames_start Global start frames.
  * @param nframes Number of frames to process.
  */
-NONNULL
-void
+NONNULL void
 channel_handle_recording (
   Channel *       self,
   const long      g_frames_start,
@@ -302,15 +300,13 @@ channel_append_ports (
   GPtrArray * ports,
   bool        include_plugins);
 
-NONNULL
-void
+NONNULL void
 channel_set_magic (Channel * self);
 
 /**
  * Exposes the channel's ports to the backend.
  */
-NONNULL
-void
+NONNULL void
 channel_expose_ports_to_backend (Channel * ch);
 
 /**
@@ -321,34 +317,28 @@ channel_expose_ports_to_backend (Channel * ch);
 void
 channel_connect (Channel * ch);
 
-NONNULL
-void
+NONNULL void
 channel_set_phase (void * channel, float phase);
 
-NONNULL
-float
+NONNULL float
 channel_get_phase (void * channel);
 
-NONNULL
-void
+NONNULL void
 channel_set_balance_control (void * _channel, float pan);
 
 /**
  * Adds to (or subtracts from) the pan.
  */
-NONNULL
-void
+NONNULL void
 channel_add_balance_control (void * _channel, float pan);
 
-NONNULL
-float
+NONNULL float
 channel_get_balance_control (void * _channel);
 
 /**
  * Sets fader to 0.0.
  */
-NONNULL
-void
+NONNULL void
 channel_reset_fader (Channel * self, bool fire_events);
 
 /**
@@ -357,16 +347,14 @@ channel_reset_fader (Channel * self, bool fire_events);
  * To be called before the main cycle each time on
  * all channels.
  */
-NONNULL
-void
+NONNULL void
 channel_prepare_process (Channel * channel);
 
 /**
  * Creates a channel of the given type with the
  * given label.
  */
-NONNULL
-Channel *
+NONNULL Channel *
 channel_new (Track * track);
 
 /**
@@ -377,8 +365,7 @@ channel_new (Track * track);
  * Normally, the channel will call the process func on each of its plugins
  * in order.
  */
-NONNULL
-void
+NONNULL void
 channel_process (Channel * channel);
 
 /**
@@ -403,8 +390,7 @@ channel_process (Channel * channel);
  *
  * @return true if plugin added, false if not.
  */
-NONNULL
-bool
+NONNULL bool
 channel_add_plugin (
   Channel *      channel,
   PluginSlotType slot_type,
@@ -416,28 +402,24 @@ channel_add_plugin (
   bool           recalc_graph,
   bool           pub_events);
 
-NONNULL
-Track *
+NONNULL Track *
 channel_get_track (Channel * self);
 
-NONNULL
-Track *
+NONNULL Track *
 channel_get_output_track (Channel * self);
 
 /**
  * Called when the input has changed for Midi,
  * Instrument or Audio tracks.
  */
-NONNULL
-void
+NONNULL void
 channel_reconnect_ext_input_ports (Channel * ch);
 
 /**
  * Convenience function to get the automation track
  * of the given type for the channel.
  */
-NONNULL
-AutomationTrack *
+NONNULL AutomationTrack *
 channel_get_automation_track (
   Channel * channel,
   PortFlags port_flags);
@@ -458,8 +440,7 @@ channel_get_automation_track (
  *   deleted at this time.
  * @param recalc_graph Recalculate mixer graph.
  */
-NONNULL
-void
+NONNULL void
 channel_remove_plugin (
   Channel *      channel,
   PluginSlotType slot_type,
@@ -473,29 +454,25 @@ channel_remove_plugin (
  * Updates the track name hash in the channel and
  * all related ports and identifiers.
  */
-NONNULL
-void
+NONNULL void
 channel_update_track_name_hash (
   Channel *    self,
   unsigned int old_name_hash,
   unsigned int new_name_hash);
 
-NONNULL
-int
+NONNULL int
 channel_get_plugins (Channel * self, Plugin ** pls);
 
 /**
  * Gets whether mono compatibility is enabled.
  */
-NONNULL
-bool
+NONNULL bool
 channel_get_mono_compat_enabled (Channel * self);
 
 /**
  * Sets whether mono compatibility is enabled.
  */
-NONNULL
-void
+NONNULL void
 channel_set_mono_compat_enabled (
   Channel * self,
   bool      enabled,
@@ -504,15 +481,13 @@ channel_set_mono_compat_enabled (
 /**
  * Gets whether mono compatibility is enabled.
  */
-NONNULL
-bool
+NONNULL bool
 channel_get_swap_phase (Channel * self);
 
 /**
  * Sets whether mono compatibility is enabled.
  */
-NONNULL
-void
+NONNULL void
 channel_set_swap_phase (
   Channel * self,
   bool      enabled,
@@ -531,8 +506,7 @@ channel_select_all (
 /**
  * Sets caches for processing.
  */
-NONNULL
-void
+NONNULL void
 channel_set_caches (Channel * self);
 
 /**
@@ -547,8 +521,10 @@ channel_set_caches (Channel * self);
  *   channel.
  */
 NONNULL_ARGS (1, 2)
-Channel *
-channel_clone (Channel * ch, Track * track, GError ** error);
+Channel * channel_clone (
+  Channel * ch,
+  Track *   track,
+  GError ** error);
 
 /**
  * Disconnects the channel from the processing
@@ -563,8 +539,7 @@ channel_clone (Channel * ch, Track * track, GError ** error);
  *   Channel. Useful when deleting the channel.
  * @param recalc_graph Recalculate mixer graph.
  */
-NONNULL
-void
+NONNULL void
 channel_disconnect (Channel * channel, bool remove_pl);
 
 /**
@@ -581,8 +556,7 @@ channel_widget_generate_context_menu_for_track (Track * track);
  * themselves in normal circumstances. Use
  * track_free() to free them.
  */
-NONNULL
-void
+NONNULL void
 channel_free (Channel * channel);
 
 /**

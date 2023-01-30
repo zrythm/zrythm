@@ -565,8 +565,7 @@ port_identifier_port_group_cmp (
  *
  * @note This frees/allocates memory on \ref dest.
  */
-NONNULL
-void
+NONNULL void
 port_identifier_copy (
   PortIdentifier *       dest,
   const PortIdentifier * src);
@@ -577,8 +576,7 @@ port_identifier_copy (
  * @note Does not check insignificant data like
  *   comment.
  */
-WARN_UNUSED_RESULT
-NONNULL static inline bool
+WARN_UNUSED_RESULT NONNULL static inline bool
 port_identifier_is_equal (
   const PortIdentifier * src,
   const PortIdentifier * dest)
@@ -627,35 +625,28 @@ port_identifier_is_equal (
 int
 port_identifier_is_equal_func (const void * a, const void * b);
 
-NONNULL
-void
+NONNULL void
 port_identifier_print_to_str (
   const PortIdentifier * self,
   char *                 buf,
   size_t                 buf_sz);
 
-NONNULL
-void
+NONNULL void
 port_identifier_print (const PortIdentifier * self);
 
-NONNULL
-bool
+NONNULL bool
 port_identifier_validate (PortIdentifier * self);
 
-NONNULL
-uint32_t
+NONNULL uint32_t
 port_identifier_get_hash (const void * self);
 
-NONNULL
-PortIdentifier *
+NONNULL PortIdentifier *
 port_identifier_clone (const PortIdentifier * src);
 
-NONNULL
-void
+NONNULL void
 port_identifier_free_members (PortIdentifier * self);
 
-NONNULL
-void
+NONNULL void
 port_identifier_free (PortIdentifier * self);
 
 /**

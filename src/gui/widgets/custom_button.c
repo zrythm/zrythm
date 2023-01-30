@@ -116,7 +116,7 @@ draw_bg (
       const float border_width = 1.f;
       GdkRGBA border_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.3);
       float   border_widths[] = {
-          border_width, border_width, border_width, border_width
+        border_width, border_width, border_width, border_width
       };
       GdkRGBA border_colors[] = {
         border_color, border_color, border_color, border_color
@@ -155,7 +155,7 @@ draw_bg (
         self, CUSTOM_BUTTON_WIDGET_STATE_TOGGLED, &c);
       const float border_width = 1.f;
       float       border_widths[] = {
-              border_width, border_width, border_width, border_width
+        border_width, border_width, border_width, border_width
       };
       GdkRGBA border_colors[] = { c, c, c, c };
       gtk_snapshot_append_border (

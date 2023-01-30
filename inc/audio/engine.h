@@ -934,8 +934,7 @@ engine_process_events (AudioEngine * self);
  *
  * @return Whether the cycle should be skipped.
  */
-NONNULL
-HOT bool
+NONNULL HOT bool
 engine_process_prepare (AudioEngine * self, nframes_t nframes);
 
 /**
@@ -944,8 +943,7 @@ engine_process_prepare (AudioEngine * self, nframes_t nframes);
  * To be called by each implementation in its
  * callback.
  */
-NONNULL
-HOT int
+NONNULL HOT int
 engine_process (
   AudioEngine *   self,
   const nframes_t total_frames_to_process);
@@ -958,8 +956,7 @@ engine_process (
  * @param nframes Total frames for this processing
  *   cycle.
  */
-NONNULL
-HOT void
+NONNULL HOT void
 engine_post_process (
   AudioEngine *   self,
   const nframes_t roll_nframes,
@@ -969,8 +966,7 @@ engine_post_process (
  * Called to fill in the external buffers at the end
  * of the processing cycle.
  */
-NONNULL
-void
+NONNULL void
 engine_fill_out_bufs (
   AudioEngine *   self,
   const nframes_t nframes);

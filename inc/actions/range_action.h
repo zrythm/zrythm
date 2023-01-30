@@ -101,8 +101,7 @@ range_action_init_loaded (RangeAction * self);
  * @param start_pos Range start.
  * @param end_pos Range end.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 range_action_new (
   RangeActionType type,
   Position *      start_pos,
@@ -116,8 +115,7 @@ range_action_new (
 #define range_action_new_remove(start, end, error) \
   range_action_new (RANGE_ACTION_REMOVE, start, end, error)
 
-NONNULL
-RangeAction *
+NONNULL RangeAction *
 range_action_clone (const RangeAction * src);
 
 bool

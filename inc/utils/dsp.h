@@ -35,8 +35,7 @@ dsp_fill (float * buf, float val, size_t size);
 /**
  * Clamp the buffer to min/max.
  */
-NONNULL
-HOT static inline void
+NONNULL HOT static inline void
 dsp_limit1 (float * buf, float minf, float maxf, size_t size)
 {
 #ifdef HAVE_LSP_DSP
@@ -56,23 +55,19 @@ dsp_limit1 (float * buf, float minf, float maxf, size_t size)
 #endif
 }
 
-NONNULL
-HOT void
+NONNULL HOT void
 dsp_copy (float * dest, const float * src, size_t size);
 
 /**
  * Scale: dst[i] = dst[i] * k.
  */
-NONNULL
-HOT void
+NONNULL HOT void
 dsp_mul_k2 (float * dest, float k, size_t size);
 
 /**
  * Gets the maximum absolute value of the buffer (as amplitude).
  */
-NONNULL
-WARN_UNUSED_RESULT
-static inline float
+NONNULL WARN_UNUSED_RESULT static inline float
 dsp_abs_max (float * buf, size_t size)
 {
 #ifdef HAVE_LSP_DSP
@@ -139,29 +134,25 @@ dsp_abs_max_with_existing_peak (
 /**
  * Gets the minimum of the buffer.
  */
-NONNULL
-float
+NONNULL float
 dsp_min (float * buf, size_t size);
 
 /**
  * Gets the maximum of the buffer.
  */
-NONNULL
-float
+NONNULL float
 dsp_max (float * buf, size_t size);
 
 /**
  * Calculate dst[i] = dst[i] + src[i].
  */
-NONNULL
-HOT void
+NONNULL HOT void
 dsp_add2 (float * dest, const float * src, size_t count);
 
 /**
  * Calculate dest[i] = dest[i] * k1 + src[i] * k2.
  */
-NONNULL
-HOT static inline void
+NONNULL HOT static inline void
 dsp_mix2 (
   float *       dest,
   const float * src,
@@ -189,8 +180,7 @@ dsp_mix2 (
 /**
  * Reverse the order of samples: dst[i] <=> dst[count - i - 1].
  */
-NONNULL
-HOT static inline void
+NONNULL HOT static inline void
 dsp_reverse1 (float * dest, size_t size)
 {
 #ifdef HAVE_LSP_DSP
@@ -213,8 +203,7 @@ dsp_reverse1 (float * dest, size_t size)
 /**
  * Reverse the order of samples: dst[i] <=> src[count - i - 1].
  */
-NONNULL
-HOT static inline void
+NONNULL HOT static inline void
 dsp_reverse2 (float * dest, float * src, size_t size)
 {
 #ifdef HAVE_LSP_DSP
@@ -238,8 +227,7 @@ dsp_reverse2 (float * dest, float * src, size_t size)
  * Calculate normalized values:
  * dst[i] = src[i] / (max { abs(src) }).
  */
-NONNULL
-HOT static inline void
+NONNULL HOT static inline void
 dsp_normalize (float * dest, const float * src, size_t size)
 {
 #ifdef HAVE_LSP_DSP
@@ -262,8 +250,7 @@ dsp_normalize (float * dest, const float * src, size_t size)
  * Calculate
  * dst[i] = dst[i] + src1[i] * k1 + src2[i] * k2.
  */
-NONNULL
-void
+NONNULL void
 dsp_mix_add2 (
   float *       dest,
   const float * src1,
@@ -286,8 +273,7 @@ dsp_mix_add2 (
  * @param fade_from_multiplier Multiplier to fade from (0 to
  *   fade from silence.)
  */
-NONNULL
-void
+NONNULL void
 dsp_linear_fade_in_from (
   float * dest,
   int32_t start_offset,
@@ -306,8 +292,7 @@ dsp_linear_fade_in_from (
  * @param fade_to_multiplier Multiplier to fade to (0 to fade
  *   to silence.)
  */
-NONNULL
-void
+NONNULL void
 dsp_linear_fade_out_to (
   float * dest,
   int32_t start_offset,
@@ -328,8 +313,7 @@ dsp_linear_fade_out_to (
  * equal amplitude sum =
  * (L+R) /2 (-6.02dB)
  */
-NONNULL
-void
+NONNULL void
 dsp_make_mono (
   float * l,
   float * r,

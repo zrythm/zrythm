@@ -71,8 +71,7 @@ audio_encoder_new_from_file (
  *
  * @param show_progress Display a progress dialog.
  */
-NONNULL
-void
+NONNULL void
 audio_encoder_decode (
   AudioEncoder * self,
   int            samplerate,
@@ -81,8 +80,7 @@ audio_encoder_decode (
 /**
  * Free's the AudioEncoder and its members.
  */
-NONNULL
-void
+NONNULL void
 audio_encoder_free (AudioEncoder * self);
 
 /**

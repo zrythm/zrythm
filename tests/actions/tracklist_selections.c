@@ -1013,8 +1013,8 @@ _test_move_tracks (
   StereoPorts * stereo_in = fx_track->processor->stereo_in;
   GError *      err = NULL;
   bool          ret = channel_send_connect_stereo (
-             send, fx_track->processor->stereo_in, NULL, NULL, false,
-             F_VALIDATE, F_NO_RECALC_GRAPH, &err);
+    send, fx_track->processor->stereo_in, NULL, NULL, false,
+    F_VALIDATE, F_NO_RECALC_GRAPH, &err);
   g_assert_true (ret);
 
   /* check that the sends are correct */

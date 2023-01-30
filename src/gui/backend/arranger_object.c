@@ -1211,9 +1211,9 @@ arranger_object_update_positions (
                 * AUDIO_ENGINE->ticks_per_frame;
               GError * err = NULL;
               bool     success = arranger_object_resize (
-                    self, false,
-                    ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE,
-                    ticks, false, &err);
+                self, false,
+                ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE,
+                ticks, false, &err);
               if (!success)
                 {
                   HANDLE_ERROR_LITERAL (
@@ -1254,9 +1254,9 @@ arranger_object_update_positions (
               g_debug ("ticks %f", ticks);
               GError * err = NULL;
               bool     success = arranger_object_resize (
-                    self, false,
-                    ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE,
-                    ticks, false, &err);
+                self, false,
+                ARRANGER_OBJECT_RESIZE_STRETCH_BPM_CHANGE,
+                ticks, false, &err);
               if (!success)
                 {
                   HANDLE_ERROR_LITERAL (
@@ -1662,7 +1662,7 @@ arranger_object_resize (
                         new_length / before_length;
                       GError * err = NULL;
                       bool     success = region_stretch (
-                            region, stretch_ratio, &err);
+                        region, stretch_ratio, &err);
                       if (!success)
                         {
                           PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -2595,8 +2595,8 @@ clone_midi_note (const MidiNote * src)
 {
   ArrangerObject * src_obj = (ArrangerObject *) src;
   MidiNote *       mn = midi_note_new (
-          &src_obj->region_id, &src_obj->pos, &src_obj->end_pos,
-          src->val, src->vel->vel);
+    &src_obj->region_id, &src_obj->pos, &src_obj->end_pos,
+    src->val, src->vel->vel);
   mn->currently_listened = src->currently_listened;
   mn->last_listened_val = src->last_listened_val;
   mn->pos = src->pos;
@@ -2610,7 +2610,7 @@ clone_chord_object (const ChordObject * src)
 {
   ArrangerObject * src_obj = (ArrangerObject *) src;
   ChordObject *    chord = chord_object_new (
-       &src_obj->region_id, src->chord_index, src->index);
+    &src_obj->region_id, src->chord_index, src->index);
 
   return (ArrangerObject *) chord;
 }
@@ -3033,8 +3033,8 @@ arranger_object_split (
           }
         GError * err = NULL;
         bool     success = track_add_region (
-              track, region1, at, src_region->id.lane_pos,
-              F_GEN_NAME, F_PUBLISH_EVENTS, &err);
+          track, region1, at, src_region->id.lane_pos,
+          F_GEN_NAME, F_PUBLISH_EVENTS, &err);
         if (!success)
           {
             PROPAGATE_PREFIXED_ERROR (
@@ -3193,9 +3193,9 @@ arranger_object_unsplit (
           }
         GError * err = NULL;
         bool     success = track_add_region (
-              arranger_object_get_track (r1), (ZRegion *) *obj,
-              at, ((ZRegion *) r1)->id.lane_pos, F_GEN_NAME,
-              fire_events, &err);
+          arranger_object_get_track (r1), (ZRegion *) *obj,
+          at, ((ZRegion *) r1)->id.lane_pos, F_GEN_NAME,
+          fire_events, &err);
         if (!success)
           {
             PROPAGATE_PREFIXED_ERROR (
@@ -3356,8 +3356,8 @@ arranger_object_set_name_with_action (
 
   GError * err = NULL;
   bool     ret = arranger_selections_action_perform_edit (
-        before, after, ARRANGER_SELECTIONS_ACTION_EDIT_NAME,
-        F_NOT_ALREADY_EDITED, &err);
+    before, after, ARRANGER_SELECTIONS_ACTION_EDIT_NAME,
+    F_NOT_ALREADY_EDITED, &err);
   if (!ret)
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to rename object"));

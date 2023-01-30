@@ -322,8 +322,7 @@ static const cyaml_schema_value_t plugin_schema = {
 };
 
 NONNULL_ARGS (1)
-void
-plugin_init_loaded (
+void plugin_init_loaded (
   Plugin *          self,
   Track *           track,
   MixerSelections * ms);
@@ -331,8 +330,7 @@ plugin_init_loaded (
 /**
  * Adds an AutomationTrack to the Plugin.
  */
-NONNULL
-void
+NONNULL void
 plugin_add_automation_track (
   Plugin *          self,
   AutomationTrack * at);
@@ -340,15 +338,13 @@ plugin_add_automation_track (
 /**
  * Adds an in port to the plugin's list.
  */
-NONNULL
-void
+NONNULL void
 plugin_add_in_port (Plugin * pl, Port * port);
 
 /**
  * Adds an out port to the plugin's list.
  */
-NONNULL
-void
+NONNULL void
 plugin_add_out_port (Plugin * pl, Port * port);
 
 /**
@@ -362,8 +358,7 @@ plugin_add_out_port (Plugin * pl, Port * port);
  *   be in.
  */
 NONNULL_ARGS (1)
-Plugin *
-plugin_new_from_setting (
+Plugin * plugin_new_from_setting (
   PluginSetting * setting,
   unsigned int    track_name_hash,
   PluginSlotType  slot_type,
@@ -382,22 +377,19 @@ plugin_new_dummy (
 /**
  * Sets the UI refresh rate on the Plugin.
  */
-NONNULL
-void
+NONNULL void
 plugin_set_ui_refresh_rate (Plugin * self);
 
 /**
  * Gets the enable/disable port for this plugin.
  */
-NONNULL
-Port *
+NONNULL Port *
 plugin_get_enabled_port (Plugin * self);
 
 /**
  * Verifies that the plugin identifiers are valid.
  */
-NONNULL
-bool
+NONNULL bool
 plugin_validate (Plugin * self);
 
 /**
@@ -416,8 +408,7 @@ plugin_print (Plugin * self, char * buf, size_t buf_sz);
  *
  * @param free_ats Also free the ats.
  */
-NONNULL
-void
+NONNULL void
 plugin_remove_ats_from_automation_tracklist (
   Plugin * pl,
   bool     free_ats,
@@ -432,8 +423,7 @@ plugin_remove_ats_from_automation_tracklist (
  *   occurred.
  */
 NONNULL_ARGS (1)
-Plugin *
-plugin_clone (Plugin * src, GError ** error);
+Plugin * plugin_clone (Plugin * src, GError ** error);
 
 void
 plugin_get_full_port_group_designation (
@@ -441,8 +431,7 @@ plugin_get_full_port_group_designation (
   const char * port_group,
   char *       buf);
 
-NONNULL
-Port *
+NONNULL Port *
 plugin_get_port_in_group (
   Plugin *     self,
   const char * port_group,
@@ -453,8 +442,7 @@ plugin_get_port_in_group (
  * (eg, if this is left, find right and vice
  * versa).
  */
-NONNULL
-Port *
+NONNULL Port *
 plugin_get_port_in_same_group (Plugin * self, Port * port);
 
 /**
@@ -463,8 +451,7 @@ plugin_get_port_in_same_group (Plugin * self, Port * port);
  * @param activate True to activate, false to
  *   deactivate.
  */
-NONNULL
-int
+NONNULL int
 plugin_activate (Plugin * pl, bool activate);
 
 /**
@@ -474,8 +461,7 @@ plugin_activate (Plugin * pl, bool activate);
  * If a plugin already exists, it deletes it and
  * replaces it.
  */
-NONNULL
-void
+NONNULL void
 plugin_move (
   Plugin *       pl,
   Track *        track,
@@ -487,8 +473,7 @@ plugin_move (
  * Sets the channel and slot on the plugin and
  * its ports.
  */
-NONNULL
-void
+NONNULL void
 plugin_set_track_and_slot (
   Plugin *       pl,
   unsigned int   track_name_hash,
@@ -499,8 +484,7 @@ plugin_set_track_and_slot (
  * Moves the Plugin's automation from one Channel
  * to another.
  */
-NONNULL
-void
+NONNULL void
 plugin_move_automation (
   Plugin *       pl,
   Track *        prev_track,
@@ -508,8 +492,7 @@ plugin_move_automation (
   PluginSlotType new_slot_type,
   int            new_slot);
 
-NONNULL
-void
+NONNULL void
 plugin_append_ports (Plugin * self, GPtrArray * ports);
 
 /**
@@ -519,8 +502,7 @@ plugin_append_ports (Plugin * self, GPtrArray * ports);
  * @param inputs Expose/unexpose inputs.
  * @param outputs Expose/unexpose outputs.
  */
-NONNULL
-void
+NONNULL void
 plugin_expose_ports (
   Plugin * pl,
   bool     expose,
@@ -532,8 +514,7 @@ plugin_expose_ports (
  *
  * Only works for LV2 plugins.
  */
-NONNULL
-Port *
+NONNULL Port *
 plugin_get_port_by_symbol (Plugin * pl, const char * sym);
 
 /**
@@ -541,16 +522,13 @@ plugin_get_port_by_symbol (Plugin * pl, const char * sym);
  *
  * Only works for LV2 plugins.
  */
-NONNULL
-Port *
+NONNULL Port *
 plugin_get_port_by_param_uri (Plugin * pl, const char * uri);
 
 /**
  * Returns the escaped name of the plugin.
  */
-NONNULL
-MALLOC
-char *
+NONNULL MALLOC char *
 plugin_get_escaped_name (Plugin * pl);
 
 /**
@@ -576,9 +554,7 @@ plugin_copy_state_dir (
 /**
  * Returns the state dir as an absolute path.
  */
-NONNULL
-MALLOC
-char *
+NONNULL MALLOC char *
 plugin_get_abs_state_dir (
   Plugin * self,
   bool     is_backup,
@@ -587,9 +563,7 @@ plugin_get_abs_state_dir (
 /**
  * Ensures the state dir exists or creates it.
  */
-NONNULL
-WARN_UNUSED_RESULT
-bool
+NONNULL WARN_UNUSED_RESULT bool
 plugin_ensure_state_dir (
   Plugin *  self,
   bool      is_backup,
@@ -598,23 +572,19 @@ plugin_ensure_state_dir (
 /**
  * Returns all plugins in the current project.
  */
-NONNULL
-void
+NONNULL void
 plugin_get_all (
   Project *   prj,
   GPtrArray * arr,
   bool        check_undo_manager);
 
-NONNULL
-Channel *
+NONNULL Channel *
 plugin_get_channel (Plugin * self);
 
-NONNULL
-Track *
+NONNULL Track *
 plugin_get_track (Plugin * self);
 
-NONNULL
-Plugin *
+NONNULL Plugin *
 plugin_find (PluginIdentifier * id);
 
 /**
@@ -622,15 +592,13 @@ plugin_find (PluginIdentifier * id);
  * identifier were made, so we can update all
  * children recursively.
  */
-NONNULL
-void
+NONNULL void
 plugin_update_identifier (Plugin * self);
 
 /**
  * Updates the plugin's latency.
  */
-NONNULL
-void
+NONNULL void
 plugin_update_latency (Plugin * pl);
 
 /**
@@ -643,8 +611,7 @@ plugin_update_latency (Plugin * pl);
  *   in the project yet so we can't fetch it
  *   through indices.
  */
-NONNULL
-void
+NONNULL void
 plugin_generate_automation_tracks (
   Plugin * plugin,
   Track *  track);
@@ -660,8 +627,7 @@ plugin_prepare_process (Plugin * self);
  * channel)
  */
 NONNULL_ARGS (1)
-int
-plugin_instantiate (
+int plugin_instantiate (
   Plugin *    self,
   LilvState * state,
   GError **   error);
@@ -669,8 +635,7 @@ plugin_instantiate (
 /**
  * Sets the track name hash on the plugin.
  */
-NONNULL
-void
+NONNULL void
 plugin_set_track_name_hash (
   Plugin *     pl,
   unsigned int track_name_hash);
@@ -678,29 +643,24 @@ plugin_set_track_name_hash (
 /**
  * Process plugin.
  */
-NONNULL
-HOT void
+NONNULL HOT void
 plugin_process (
   Plugin *                            plugin,
   const EngineProcessTimeInfo * const time_nfo);
 
-NONNULL
-MALLOC
-char *
+NONNULL MALLOC char *
 plugin_generate_window_title (Plugin * plugin);
 
 /**
  * Process show ui
  */
-NONNULL
-void
+NONNULL void
 plugin_open_ui (Plugin * plugin);
 
 /**
  * Returns if Plugin exists in MixerSelections.
  */
-NONNULL
-bool
+NONNULL bool
 plugin_is_selected (Plugin * pl);
 
 /**
@@ -710,8 +670,7 @@ plugin_is_selected (Plugin * pl);
  * @param exclusive Whether to make this the only
  *   selected plugin or add it to the selections.
  */
-NONNULL
-void
+NONNULL void
 plugin_select (Plugin * self, bool select, bool exclusive);
 
 /**
@@ -720,12 +679,10 @@ plugin_select (Plugin * self, bool select, bool exclusive);
  * @param check_track Whether to check if the track
  *   is enabled as well.
  */
-NONNULL
-bool
+NONNULL bool
 plugin_is_enabled (Plugin * self, bool check_track);
 
-NONNULL
-void
+NONNULL void
 plugin_set_enabled (
   Plugin * self,
   bool     enabled,
@@ -750,22 +707,19 @@ plugin_process_passthrough (
  *
  * @return The number of ports in the array.
  */
-NONNULL
-int
+NONNULL int
 plugin_get_event_ports (Plugin * pl, Port ** ports, int input);
 
 /**
  * Process hide ui
  */
-NONNULL
-void
+NONNULL void
 plugin_close_ui (Plugin * plugin);
 
 /**
  * (re)Generates automatables for the plugin.
  */
-NONNULL
-void
+NONNULL void
 plugin_update_automatables (Plugin * plugin);
 
 PluginBank *
@@ -774,23 +728,19 @@ plugin_add_bank_if_not_exists (
   const char * uri,
   const char * name);
 
-NONNULL
-void
+NONNULL void
 plugin_add_preset_to_bank (
   Plugin *       self,
   PluginBank *   bank,
   PluginPreset * preset);
 
-NONNULL
-void
+NONNULL void
 plugin_set_selected_bank_from_index (Plugin * self, int idx);
 
-NONNULL
-void
+NONNULL void
 plugin_set_selected_preset_from_index (Plugin * self, int idx);
 
-NONNULL
-void
+NONNULL void
 plugin_set_selected_preset_by_name (
   Plugin *     self,
   const char * name);
@@ -798,8 +748,7 @@ plugin_set_selected_preset_by_name (
 /**
  * Sets caches for processing.
  */
-NONNULL
-void
+NONNULL void
 plugin_set_caches (Plugin * self);
 
 /**
@@ -810,8 +759,7 @@ plugin_set_caches (Plugin * self);
  * Used when automatically connecting a Plugin
  * in the Channel strip to the next Plugin.
  */
-NONNULL
-void
+NONNULL void
 plugin_connect_to_plugin (Plugin * src, Plugin * dest);
 
 /**
@@ -819,8 +767,7 @@ plugin_connect_to_plugin (Plugin * src, Plugin * dest);
  * given source Plugin to the given destination
  * Plugin.
  */
-NONNULL
-void
+NONNULL void
 plugin_disconnect_from_plugin (Plugin * src, Plugin * dest);
 
 /**
@@ -829,8 +776,7 @@ plugin_disconnect_from_plugin (Plugin * src, Plugin * dest);
  *
  * Used when doing automatic connections.
  */
-NONNULL
-void
+NONNULL void
 plugin_connect_to_prefader (Plugin * pl, Channel * ch);
 
 /**
@@ -838,8 +784,7 @@ plugin_connect_to_prefader (Plugin * pl, Channel * ch);
  * Plugin to the Channel's prefader (if last
  * Plugin).
  */
-NONNULL
-void
+NONNULL void
 plugin_disconnect_from_prefader (Plugin * pl, Channel * ch);
 
 /**
@@ -849,8 +794,7 @@ plugin_disconnect_from_prefader (Plugin * pl, Channel * ch);
  * A call to plugin_free can be made at any point
  * later just to free the resources.
  */
-NONNULL
-void
+NONNULL void
 plugin_disconnect (Plugin * plugin);
 
 /**
@@ -861,24 +805,21 @@ plugin_disconnect (Plugin * plugin);
  * removed from the project (including undo stacks)
  * to remove any files not needed anymore.
  */
-NONNULL
-void
+NONNULL void
 plugin_delete_state_files (Plugin * self);
 
 /**
  * Cleans up an instantiated but not activated
  * plugin.
  */
-NONNULL
-int
+NONNULL int
 plugin_cleanup (Plugin * self);
 
 /**
  * Frees given plugin, breaks all its port connections, and frees its ports
  * and other internal pointers
  */
-NONNULL
-void
+NONNULL void
 plugin_free (Plugin * plugin);
 
 /**

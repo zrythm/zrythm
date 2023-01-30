@@ -81,7 +81,7 @@ resize_selection_l (
   /** update zoom level */
   double ratio = new_selection_width / old_selection_width;
   int    zoom_level_set = ruler_widget_set_zoom_level (
-       Z_RULER_WIDGET (MW_RULER), self->start_zoom_level / ratio);
+    Z_RULER_WIDGET (MW_RULER), self->start_zoom_level / ratio);
   /*zoom_level_set =*/
   /*ruler_widget_set_zoom_level (*/
   /*Z_RULER_WIDGET (EDITOR_RULER),*/
@@ -117,7 +117,7 @@ resize_selection_r (
   /** update zoom level */
   double ratio = new_selection_width / old_selection_width;
   int    zoom_level_set = ruler_widget_set_zoom_level (
-       Z_RULER_WIDGET (MW_RULER), self->start_zoom_level / ratio);
+    Z_RULER_WIDGET (MW_RULER), self->start_zoom_level / ratio);
   /*zoom_level_set =*/
   /*ruler_widget_set_zoom_level (*/
   /*Z_RULER_WIDGET (EDITOR_RULER),*/

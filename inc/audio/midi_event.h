@@ -118,8 +118,7 @@ midi_event_copy (MidiEvent * dest, MidiEvent * src)
   memcpy (dest, src, sizeof (MidiEvent));
 }
 
-NONNULL
-void
+NONNULL void
 midi_event_set_velocity (MidiEvent * ev, midi_byte_t vel);
 
 void
@@ -335,19 +334,16 @@ midi_events_add_all_notes_off (
 /**
  * Adds a note off message to every MIDI channel.
  */
-NONNULL
-void
+NONNULL void
 midi_events_panic_without_lock (MidiEvents * self, bool queued);
 
 /**
  * Must only be called from the UI thread.
  */
-NONNULL
-void
+NONNULL void
 midi_events_panic (MidiEvents * self, bool queued);
 
-NONNULL
-void
+NONNULL void
 midi_events_write_to_midi_file (
   const MidiEvents * self,
   MIDI_FILE *        mf,

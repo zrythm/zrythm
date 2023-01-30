@@ -1988,7 +1988,7 @@ carla_native_plugin_instantiate (
       /* load the state */
       GError * err = NULL;
       bool     state_loaded = carla_native_plugin_load_state (
-            self->plugin->carla, NULL, &err);
+        self->plugin->carla, NULL, &err);
       if (!state_loaded)
         {
           HANDLE_ERROR (

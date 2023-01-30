@@ -152,11 +152,11 @@ send_data (AutomaticReportData * data)
 {
   GError * err = NULL;
   int      ret = z_curl_post_json_no_auth (
-         BUG_REPORT_API_ENDPOINT, data->json, 7, &err,
-         /* screenshot */
-         "screenshot", data->screenshot_path, "image/jpeg",
-         /* log */
-         "log_file", data->log_file_path, "application/zstd", NULL);
+    BUG_REPORT_API_ENDPOINT, data->json, 7, &err,
+    /* screenshot */
+    "screenshot", data->screenshot_path, "image/jpeg",
+    /* log */
+    "log_file", data->log_file_path, "application/zstd", NULL);
   if (ret != 0)
     {
       progress_info_mark_completed (
@@ -263,7 +263,7 @@ on_preview_and_send_automatically_response (
       /* create a zstd-compressed log file */
       GError * err = NULL;
       bool     ret = log_generate_compressed_file (
-            LOG, &log_file_tmpdir, &log_file_path, &err);
+        LOG, &log_file_tmpdir, &log_file_path, &err);
       if (!ret)
         {
           g_warning (

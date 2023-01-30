@@ -614,8 +614,8 @@ mixer_selections_paste_to_slot (
 {
   GError * err = NULL;
   bool     ret = mixer_selections_action_perform_paste (
-        ms, PORT_CONNECTIONS_MGR, type,
-        track_get_name_hash (ch->track), slot, &err);
+    ms, PORT_CONNECTIONS_MGR, type,
+    track_get_name_hash (ch->track), slot, &err);
   if (!ret)
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to paste plugins"));

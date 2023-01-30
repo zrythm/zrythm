@@ -87,8 +87,7 @@ typedef struct Metronome
 Metronome *
 metronome_new (void);
 
-NONNULL
-void
+NONNULL void
 metronome_set_volume (Metronome * self, float volume);
 
 /**
@@ -97,15 +96,13 @@ metronome_set_volume (Metronome * self, float volume);
  *
  * @param loffset Local offset in this cycle.
  */
-NONNULL
-void
+NONNULL void
 metronome_queue_events (
   AudioEngine *   self,
   const nframes_t loffset,
   const nframes_t nframes);
 
-NONNULL
-void
+NONNULL void
 metronome_free (Metronome * self);
 
 /**

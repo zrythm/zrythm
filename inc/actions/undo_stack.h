@@ -150,8 +150,7 @@ undo_stack_init_loaded (UndoStack * self);
 UndoStack *
 undo_stack_new (void);
 
-NONNULL
-UndoStack *
+NONNULL UndoStack *
 undo_stack_clone (const UndoStack * src);
 
 /**
@@ -165,8 +164,7 @@ undo_stack_get_as_string (UndoStack * self, int limit);
  *
  * Used when loading projects and for error checking.
  */
-NONNULL
-size_t
+NONNULL size_t
 undo_stack_get_total_cached_actions (UndoStack * self);
 
 /* --- start wrappers --- */
@@ -212,8 +210,7 @@ undo_stack_contains_action (
 /**
  * Returns the plugins referred to in the undo stack.
  */
-NONNULL
-void
+NONNULL void
 undo_stack_get_plugins (UndoStack * self, GPtrArray * arr);
 
 /**

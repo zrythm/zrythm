@@ -289,7 +289,7 @@ on_map_event (
 }
 
 FileBrowserWidget *
-file_browser_widget_new ()
+file_browser_widget_new (void)
 {
   FileBrowserWidget * self =
     g_object_new (FILE_BROWSER_WIDGET_TYPE, NULL);

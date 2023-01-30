@@ -279,8 +279,8 @@ val_change_finished (InspectorPortWidget * self, float val)
 
       GError * err = NULL;
       bool     ret = port_action_perform (
-            PORT_ACTION_SET_CONTROL_VAL, &self->port->id, val,
-            F_NORMALIZED, &err);
+        PORT_ACTION_SET_CONTROL_VAL, &self->port->id, val,
+        F_NORMALIZED, &err);
       if (!ret)
         {
           HANDLE_ERROR (

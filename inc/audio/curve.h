@@ -136,8 +136,7 @@ typedef struct CurveFadePreset
   CurveOptions opts;
 } CurveFadePreset;
 
-NONNULL
-void
+NONNULL void
 curve_opts_init (CurveOptions * opts);
 
 /**

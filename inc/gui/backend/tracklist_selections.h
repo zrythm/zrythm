@@ -86,8 +86,7 @@ tracklist_selections_new (bool is_project);
  * Clone the struct for copying, undoing, etc.
  */
 NONNULL_ARGS (1)
-TracklistSelections *
-tracklist_selections_clone (
+TracklistSelections * tracklist_selections_clone (
   TracklistSelections * src,
   GError **             error);
 
@@ -301,8 +300,7 @@ tracklist_selections_sort (
   TracklistSelections * self,
   bool                  asc);
 
-NONNULL
-void
+NONNULL void
 tracklist_selections_get_plugins (
   TracklistSelections * self,
   GPtrArray *           arr);

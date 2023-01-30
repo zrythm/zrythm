@@ -810,8 +810,8 @@ create_track (
             &start_pos, track_get_name_hash (track), 0, 0);
           GError * err = NULL;
           bool     success = track_add_region (
-                track, ar, NULL, 0, F_GEN_NAME,
-                F_NO_PUBLISH_EVENTS, &err);
+            track, ar, NULL, 0, F_GEN_NAME,
+            F_NO_PUBLISH_EVENTS, &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR (

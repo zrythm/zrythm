@@ -71,8 +71,7 @@ G_DEFINE_QUARK (
  * To be called when struct is deserialized or
  * when creating a new plugin.
  */
-NONNULL
-static void
+NONNULL static void
 init_port_arrays (Plugin * self)
 {
   /* create cache arrays */
@@ -83,8 +82,7 @@ init_port_arrays (Plugin * self)
   self->midi_in_ports = g_ptr_array_new_full (def_sz, NULL);
 }
 
-NONNULL
-static void
+NONNULL static void
 set_stereo_outs_and_midi_in (Plugin * pl)
 {
   g_return_if_fail (pl->setting && pl->setting->descr);
@@ -1543,7 +1541,7 @@ plugin_instantiate (
 #ifdef HAVE_CARLA
       GError * err = NULL;
       int      ret = carla_native_plugin_instantiate (
-             self->carla, !PROJECT->loaded,
+        self->carla, !PROJECT->loaded,
         self->state_dir ? true : false, &err);
       if (ret != 0)
         {
@@ -1576,8 +1574,8 @@ plugin_instantiate (
             self->lv2->plugin = self;
             GError * err = NULL;
             int      ret = lv2_plugin_instantiate (
-                   self->lv2, self->state_dir ? true : false, NULL,
-                   state, &err);
+              self->lv2, self->state_dir ? true : false, NULL,
+              state, &err);
             if (ret != 0)
               {
                 PROPAGATE_PREFIXED_ERROR (
@@ -1989,8 +1987,8 @@ plugin_copy_state_dir (
 
   GError * err = NULL;
   bool     success = io_copy_dir (
-        dir_to_use, src_dir_to_use, F_FOLLOW_SYMLINKS,
-        F_RECURSIVE, &err);
+    dir_to_use, src_dir_to_use, F_FOLLOW_SYMLINKS,
+    F_RECURSIVE, &err);
   if (!success)
     {
       HANDLE_ERROR_LITERAL (
@@ -2168,7 +2166,7 @@ plugin_clone (Plugin * src, GError ** error)
 #ifdef HAVE_CARLA
           GError * err = NULL;
           bool     success = carla_native_plugin_save_state (
-                src->carla, F_NOT_BACKUP, NULL, &err);
+            src->carla, F_NOT_BACKUP, NULL, &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR_LITERAL (

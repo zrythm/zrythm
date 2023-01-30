@@ -1349,8 +1349,8 @@ project_load (
     {
       GError * err = NULL;
       bool     success = project_save (
-            PROJECT, PROJECT->dir, F_NOT_BACKUP,
-            Z_F_NO_SHOW_NOTIFICATION, F_NO_ASYNC, &err);
+        PROJECT, PROJECT->dir, F_NOT_BACKUP,
+        Z_F_NO_SHOW_NOTIFICATION, F_NO_ASYNC, &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR (

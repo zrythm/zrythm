@@ -403,8 +403,7 @@ arranger_selections_action_init_loaded (
  *
  * @param create 1 to create 0 to delete.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_create_or_delete (
   ArrangerSelections * sel,
   const bool           create,
@@ -418,8 +417,7 @@ arranger_selections_action_new_create_or_delete (
   arranger_selections_action_new_create_or_delete ( \
     (ArrangerSelections *) sel, false, error)
 
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_record (
   ArrangerSelections * sel_before,
   ArrangerSelections * sel_after,
@@ -437,8 +435,7 @@ arranger_selections_action_new_record (
  *   normalized amount, such as automation point
  *   normalized value.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_move_or_duplicate (
   ArrangerSelections *   sel,
   const bool             move,
@@ -518,8 +515,7 @@ arranger_selections_action_new_move_or_duplicate (
  * @param sel_before Original selections.
  * @param sel_after Selections after duplication.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_link (
   ArrangerSelections * sel_before,
   ArrangerSelections * sel_after,
@@ -539,8 +535,7 @@ arranger_selections_action_new_link (
  *   change.
  * @param type Indication of which field has changed.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_edit (
   ArrangerSelections *             sel_before,
   ArrangerSelections *             sel_after,
@@ -548,8 +543,7 @@ arranger_selections_action_new_edit (
   bool                             already_edited,
   GError **                        error);
 
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_edit_single_obj (
   const ArrangerObject *           obj_before,
   const ArrangerObject *           obj_after,
@@ -562,8 +556,7 @@ arranger_selections_action_new_edit_single_obj (
  * arranger_selections_action_new_edit() for MIDI
  * functions.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_edit_midi_function (
   ArrangerSelections * sel_before,
   MidiFunctionType     midi_func_type,
@@ -574,8 +567,7 @@ arranger_selections_action_new_edit_midi_function (
  * arranger_selections_action_new_edit() for
  * automation functions.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_edit_automation_function (
   ArrangerSelections *   sel_before,
   AutomationFunctionType automation_func_type,
@@ -586,8 +578,7 @@ arranger_selections_action_new_edit_automation_function (
  * arranger_selections_action_new_edit() for
  * automation functions.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_edit_audio_function (
   ArrangerSelections * sel_before,
   AudioFunctionType    audio_func_type,
@@ -604,8 +595,7 @@ arranger_selections_action_new_edit_audio_function (
  * @param already_changed Whether the change was
  *   already made.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_automation_fill (
   ZRegion * region_before,
   ZRegion * region_after,
@@ -618,8 +608,7 @@ arranger_selections_action_new_automation_fill (
  *
  * @param pos Global position to split at.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_split (
   ArrangerSelections * sel,
   const Position *     pos,
@@ -629,8 +618,7 @@ arranger_selections_action_new_split (
  * Creates a new action for merging
  * ArrangerObject's.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_merge (
   ArrangerSelections * sel,
   GError **            error);
@@ -642,8 +630,7 @@ arranger_selections_action_new_merge (
  * @param ticks How many ticks to add to the resizing
  *   edge.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_resize (
   ArrangerSelections *               sel,
   ArrangerSelectionsActionResizeType type,
@@ -657,15 +644,13 @@ arranger_selections_action_new_resize (
  *
  * @param opts Quantize options.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_quantize (
   ArrangerSelections * sel,
   QuantizeOptions *    opts,
   GError **            error);
 
-NONNULL
-ArrangerSelectionsAction *
+NONNULL ArrangerSelectionsAction *
 arranger_selections_action_clone (
   const ArrangerSelectionsAction * src);
 

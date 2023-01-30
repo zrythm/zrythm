@@ -94,7 +94,7 @@ create_list_store (void)
   char *  icon_name;
   for (int i = 0; (icon_name = list[i]) != NULL; i++)
     {
-      int                size = 16;
+      int size = 16;
       GtkIconPaintable * paintable = gtk_icon_theme_lookup_icon (
         icon_theme, icon_name, NULL, size, 1,
         GTK_TEXT_DIR_NONE, GTK_ICON_LOOKUP_FORCE_SYMBOLIC);

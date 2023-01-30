@@ -186,8 +186,7 @@ mixer_selections_action_init_loaded (
  * @param num_plugins The number of plugins to create,
  *   if creating plugins.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 mixer_selections_action_new (
   MixerSelections *              ms,
   const PortConnectionsManager * connections_mgr,
@@ -229,8 +228,7 @@ mixer_selections_action_new (
     ms, port_connections_mgr, \
     MIXER_SELECTIONS_ACTION_DELETE, 0, 0, 0, NULL, 0, error)
 
-NONNULL
-MixerSelectionsAction *
+NONNULL MixerSelectionsAction *
 mixer_selections_action_clone (
   const MixerSelectionsAction * src);
 

@@ -77,7 +77,7 @@ on_toggled (GtkCheckButton * self, gpointer user_data)
           midi_mapping_get_index (MIDI_MAPPINGS, mapping);
         GError * err = NULL;
         bool     ret = midi_mapping_action_perform_enable (
-              mapping_idx, active, &err);
+          mapping_idx, active, &err);
         if (!ret)
           {
             HANDLE_ERROR (

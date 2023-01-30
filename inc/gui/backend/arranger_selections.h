@@ -114,8 +114,7 @@ arranger_selections_cast (void * sel)
  *   undoable action.
  */
 NONNULL_ARGS (1)
-void
-arranger_selections_init_loaded (
+void arranger_selections_init_loaded (
   ArrangerSelections * self,
   bool                 project,
   UndoableAction *     action);
@@ -123,8 +122,7 @@ arranger_selections_init_loaded (
 /**
  * Initializes the selections.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_init (
   ArrangerSelections *   self,
   ArrangerSelectionsType type);
@@ -138,15 +136,13 @@ arranger_selections_new (ArrangerSelectionsType type);
 /**
  * Verify that the objects are not invalid.
  */
-NONNULL
-bool
+NONNULL bool
 arranger_selections_verify (ArrangerSelections * self);
 
 /**
  * Appends the given object to the selections.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_add_object (
   ArrangerSelections * self,
   ArrangerObject *     obj);
@@ -155,8 +151,7 @@ arranger_selections_add_object (
  * Sets the values of each object in the dest
  * selections to the values in the src selections.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_set_from_selections (
   ArrangerSelections * dest,
   ArrangerSelections * src);
@@ -170,8 +165,7 @@ arranger_selections_set_from_selections (
  *
  * @param desc Descending or not.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_sort_by_indices (
   ArrangerSelections * sel,
   int                  desc);
@@ -179,15 +173,13 @@ arranger_selections_sort_by_indices (
 /**
  * Clone the struct for copying, undoing, etc.
  */
-NONNULL
-ArrangerSelections *
+NONNULL ArrangerSelections *
 arranger_selections_clone (const ArrangerSelections * self);
 
 /**
  * Returns if there are any selections.
  */
-NONNULL
-bool
+NONNULL bool
 arranger_selections_has_any (ArrangerSelections * self);
 
 /**
@@ -199,8 +191,7 @@ arranger_selections_has_any (ArrangerSelections * self);
  *   otherwise returns the local (from the start
  *   of the Region) Position.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_get_start_pos (
   const ArrangerSelections * self,
   Position *                 pos,
@@ -214,8 +205,7 @@ arranger_selections_get_start_pos (
  *   otherwise returns the local (from the start
  *   of the Region) Position.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_get_end_pos (
   ArrangerSelections * self,
   Position *           pos,
@@ -224,24 +214,21 @@ arranger_selections_get_end_pos (
 /**
  * Returns the number of selected objects.
  */
-NONNULL
-int
+NONNULL int
 arranger_selections_get_num_objects (
   const ArrangerSelections * self);
 
 /**
  * Gets first object.
  */
-NONNULL
-ArrangerObject *
+NONNULL ArrangerObject *
 arranger_selections_get_first_object (
   const ArrangerSelections * self);
 
 /**
  * Gets last object.
  */
-NONNULL
-ArrangerObject *
+NONNULL ArrangerObject *
 arranger_selections_get_last_object (
   const ArrangerSelections * self);
 
@@ -249,8 +236,7 @@ arranger_selections_get_last_object (
  * Pastes the given selections to the given
  * Position.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_paste_to_pos (
   ArrangerSelections * self,
   Position *           pos,
@@ -259,8 +245,7 @@ arranger_selections_paste_to_pos (
 /**
  * Appends all objects in the given array.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_get_all_objects (
   const ArrangerSelections * self,
   GPtrArray *                arr);
@@ -294,8 +279,7 @@ arranger_selections_add_to_region (
  *
  * @param ticks Ticks to add.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_add_ticks (
   ArrangerSelections * self,
   const double         ticks);
@@ -304,16 +288,14 @@ arranger_selections_add_ticks (
  * Returns whether all the selections are on the
  * same lane (track lane or automation lane).
  */
-NONNULL
-bool
+NONNULL bool
 arranger_selections_all_on_same_lane (
   ArrangerSelections * self);
 
 /**
  * Selects all possible objects from the project.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_select_all (
   ArrangerSelections * self,
   bool                 fire_events);
@@ -321,8 +303,7 @@ arranger_selections_select_all (
 /**
  * Clears selections.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_clear (
   ArrangerSelections * self,
   bool                 free,
@@ -331,28 +312,24 @@ arranger_selections_clear (
 /**
  * Code to run after deserializing.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_post_deserialize (
   ArrangerSelections * self);
 
-NONNULL
-bool
+NONNULL bool
 arranger_selections_validate (ArrangerSelections * self);
 
 /**
  * Frees anything allocated by the selections
  * but not the objects or @ref self itself.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_free_members (ArrangerSelections * self);
 
 /**
  * Frees the selections but not the objects.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_free (ArrangerSelections * self);
 
 /**
@@ -361,8 +338,7 @@ arranger_selections_free (ArrangerSelections * self);
  * To be used in actions where the selections are
  * all clones.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_free_full (ArrangerSelections * self);
 
 /**
@@ -372,8 +348,7 @@ arranger_selections_free_full (ArrangerSelections * self);
  * The object must be the main object (see
  * ArrangerObjectInfo).
  */
-NONNULL
-int
+NONNULL int
 arranger_selections_contains_object (
   ArrangerSelections * self,
   ArrangerObject *     obj);
@@ -382,8 +357,7 @@ arranger_selections_contains_object (
  * Returns if the selections contain an undeletable
  * object (such as the start marker).
  */
-NONNULL
-bool
+NONNULL bool
 arranger_selections_contains_undeletable_object (
   const ArrangerSelections * self);
 
@@ -391,13 +365,11 @@ arranger_selections_contains_undeletable_object (
  * Returns if the selections contain an unclonable
  * object (such as the start marker).
  */
-NONNULL
-bool
+NONNULL bool
 arranger_selections_contains_unclonable_object (
   const ArrangerSelections * self);
 
-NONNULL
-bool
+NONNULL bool
 arranger_selections_contains_unrenamable_object (
   const ArrangerSelections * self);
 
@@ -410,8 +382,7 @@ arranger_selections_contains_unrenamable_object (
  * argument must have the value to be checked
  * against.
  */
-NONNULL
-bool
+NONNULL bool
 arranger_selections_contains_object_with_property (
   ArrangerSelections *       self,
   ArrangerSelectionsProperty property,
@@ -420,8 +391,7 @@ arranger_selections_contains_object_with_property (
 /**
  * Removes the arranger object from the selections.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_remove_object (
   ArrangerSelections * self,
   ArrangerObject *     obj);
@@ -431,45 +401,37 @@ arranger_selections_remove_object (
  *
  * @note All selections must be on the same lane.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_merge (ArrangerSelections * self);
 
 /**
  * Returns if the selections can be pasted.
  */
-NONNULL
-bool
+NONNULL bool
 arranger_selections_can_be_pasted (ArrangerSelections * self);
 
-NONNULL
-bool
+NONNULL bool
 arranger_selections_contains_looped (
   ArrangerSelections * self);
 
-NONNULL
-bool
+NONNULL bool
 arranger_selections_can_be_merged (ArrangerSelections * self);
 
-NONNULL
-double
+NONNULL double
 arranger_selections_get_length_in_ticks (
   ArrangerSelections * self);
 
-NONNULL
-bool
+NONNULL bool
 arranger_selections_contains_clip (
   ArrangerSelections * self,
   AudioClip *          clip);
 
-NONNULL
-bool
+NONNULL bool
 arranger_selections_can_split_at_pos (
   const ArrangerSelections * self,
   const Position *           pos);
 
-NONNULL
-ArrangerSelections *
+NONNULL ArrangerSelections *
 arranger_selections_get_for_type (ArrangerSelectionsType type);
 
 /**

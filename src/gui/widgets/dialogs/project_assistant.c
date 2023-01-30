@@ -238,8 +238,8 @@ post_finish (
         {
           GError * err = NULL;
           bool     success = project_load (
-                ZRYTHM->open_filename, ZRYTHM->opening_template,
-                &err);
+            ZRYTHM->open_filename, ZRYTHM->opening_template,
+            &err);
           if (!success)
             {
               HANDLE_ERROR (

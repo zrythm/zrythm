@@ -26,8 +26,7 @@
  *
  * @param filename Filename containing directory.
  */
-NONNULL
-char *
+NONNULL char *
 io_get_dir (const char * filename);
 
 /**
@@ -36,16 +35,13 @@ io_get_dir (const char * filename);
  * @return True if the directory exists or was successfully
  *   created, false if error was occurred and errno is set.
  */
-WARN_UNUSED_RESULT
-NONNULL_ARGS (1)
-bool
-io_mkdir (const char * dir, GError ** error);
+WARN_UNUSED_RESULT NONNULL_ARGS (
+  1) bool io_mkdir (const char * dir, GError ** error);
 
 /**
  * Creates the file if doesn't exist
  */
-NONNULL
-FILE *
+NONNULL FILE *
 io_create_file (const char * filename);
 
 /**
@@ -54,22 +50,19 @@ io_create_file (const char * filename);
 void
 io_touch_file (const char * filename);
 
-NONNULL
-char *
+NONNULL char *
 io_path_get_parent_dir (const char * path);
 
 /**
  * Strips extensions from given filename.
  */
-NONNULL
-char *
+NONNULL char *
 io_file_strip_ext (const char * filename);
 
 /**
  * Returns file extension or NULL.
  */
-NONNULL
-const char *
+NONNULL const char *
 io_file_get_ext (const char * file);
 
 #define io_path_get_basename(filename) \
@@ -80,32 +73,27 @@ io_file_get_ext (const char * file);
  *
  * MUST be freed.
  */
-NONNULL
-char *
+NONNULL char *
 io_path_get_basename_without_ext (const char * filename);
 
-NONNULL
-char *
+NONNULL char *
 io_file_get_creation_datetime (const char * filename);
 
 /**
  * Returns the number of seconds since the epoch, or
  * -1 if failed.
  */
-NONNULL
-gint64
+NONNULL gint64
 io_file_get_last_modified_datetime (const char * filename);
 
-NONNULL
-char *
+NONNULL char *
 io_file_get_last_modified_datetime_as_str (
   const char * filename);
 
 /**
  * Removes the given file.
  */
-NONNULL
-int
+NONNULL int
 io_remove (const char * path);
 
 /**
@@ -115,8 +103,7 @@ io_remove (const char * path);
  * absolute path with length greater than 20 if
  * forced.
  */
-NONNULL
-int
+NONNULL int
 io_rmdir (const char * path, bool force);
 
 char **
@@ -164,8 +151,7 @@ io_get_files_in_dir_ending_in (
  *
  * @see https://stackoverflow.com/questions/16453739/how-do-i-recursively-copy-a-directory-using-vala
  */
-WARN_UNUSED_RESULT
-bool
+WARN_UNUSED_RESULT bool
 io_copy_dir (
   const char * destdir_str,
   const char * srcdir_str,
@@ -181,24 +167,21 @@ io_copy_dir (
  *
  * Example: "myfile" -> "myfile (1)"
  */
-NONNULL
-char *
+NONNULL char *
 io_get_next_available_filepath (const char * filepath);
 
 /**
  * Opens the given directory using the default
  * program.
  */
-NONNULL
-void
+NONNULL void
 io_open_directory (const char * path);
 
 /**
  * Returns a clone of the given string after
  * removing forbidden characters.
  */
-NONNULL
-void
+NONNULL void
 io_escape_dir_name (char * dest, const char * dir);
 
 #define io_write_file g_file_set_contents
@@ -214,8 +197,7 @@ io_get_registry_string_val (const char * path);
  *
  * @return Non-zero on fail.
  */
-NONNULL
-int
+NONNULL int
 io_get_bundle_path (char * bundle_path);
 #endif
 
@@ -223,8 +205,7 @@ io_get_bundle_path (char * bundle_path);
  * Returns the new path after traversing any symlinks (using
  * readlink()).
  */
-NONNULL
-char *
+NONNULL char *
 io_traverse_path (const char * abs_path);
 
 /**

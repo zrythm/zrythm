@@ -712,8 +712,8 @@ activate_save (
 
   GError * err = NULL;
   bool     success = project_save (
-        PROJECT, PROJECT->dir, F_NOT_BACKUP, ZRYTHM_F_NOTIFY,
-        F_NO_ASYNC, &err);
+    PROJECT, PROJECT->dir, F_NOT_BACKUP, ZRYTHM_F_NOTIFY,
+    F_NO_ASYNC, &err);
   if (!success)
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to save project"));
@@ -753,8 +753,8 @@ activate_save_as (
       filename = z_gtk_file_chooser_get_filename (chooser);
       GError * err = NULL;
       bool     success = project_save (
-            PROJECT, filename, F_NOT_BACKUP, ZRYTHM_F_NO_NOTIFY,
-            F_NO_ASYNC, &err);
+        PROJECT, filename, F_NOT_BACKUP, ZRYTHM_F_NO_NOTIFY,
+        F_NO_ASYNC, &err);
       if (!success)
         {
           HANDLE_ERROR_LITERAL (
@@ -1653,8 +1653,8 @@ DEFINE_SIMPLE (activate_duplicate_selected_tracks)
 
   GError * err = NULL;
   bool     ret = tracklist_selections_action_perform_copy (
-        TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
-        TRACKLIST_SELECTIONS->tracks[0]->pos + 1, &err);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
+    TRACKLIST_SELECTIONS->tracks[0]->pos + 1, &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -1776,7 +1776,7 @@ activate_delete_selected_tracks (
 
   GError * err = NULL;
   bool     ret = tracklist_selections_action_perform_delete (
-        TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, &err);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, &err);
   if (ret)
     {
       EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE, NULL);
@@ -2121,8 +2121,8 @@ activate_mute_selection (
     {
       GError * err = NULL;
       bool     ret = arranger_selections_action_perform_edit (
-            sel, NULL, ARRANGER_SELECTIONS_ACTION_EDIT_MUTE,
-            F_NOT_ALREADY_EDITED, &err);
+        sel, NULL, ARRANGER_SELECTIONS_ACTION_EDIT_MUTE,
+        F_NOT_ALREADY_EDITED, &err);
       if (!ret)
         {
           HANDLE_ERROR (
@@ -2164,7 +2164,7 @@ DEFINE_SIMPLE (activate_merge_selection)
 
   GError * err = NULL;
   bool     ret = arranger_selections_action_perform_merge (
-        (ArrangerSelections *) TL_SELECTIONS, &err);
+    (ArrangerSelections *) TL_SELECTIONS, &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -2689,8 +2689,8 @@ on_region_color_dialog_response (
       /* perform action */
       GError * err = NULL;
       bool     ret = arranger_selections_action_perform_edit (
-            sel_before, (ArrangerSelections *) TL_SELECTIONS,
-            ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true, &err);
+        sel_before, (ArrangerSelections *) TL_SELECTIONS,
+        ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true, &err);
       if (!ret)
         {
           HANDLE_ERROR (
@@ -2754,8 +2754,8 @@ DEFINE_SIMPLE (activate_reset_region_color)
   /* perform action */
   GError * err = NULL;
   bool     ret = arranger_selections_action_perform_edit (
-        sel_before, (ArrangerSelections *) TL_SELECTIONS,
-        ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true, &err);
+    sel_before, (ArrangerSelections *) TL_SELECTIONS,
+    ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true, &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -2865,8 +2865,8 @@ DEFINE_SIMPLE (activate_nudge_selection)
 
   GError * err = NULL;
   bool     ret = arranger_selections_action_perform_move (
-        sel, ticks, 0, 0, 0, 0, 0, NULL, F_NOT_ALREADY_MOVED,
-        &err);
+    sel, ticks, 0, 0, 0, 0, 0, NULL, F_NOT_ALREADY_MOVED,
+    &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -3052,8 +3052,8 @@ DEFINE_SIMPLE (activate_set_curve_algorithm)
   /* perform action */
   GError * err = NULL;
   bool     ret = arranger_selections_action_perform_edit (
-        sel_before, (ArrangerSelections *) AUTOMATION_SELECTIONS,
-        ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true, &err);
+    sel_before, (ArrangerSelections *) AUTOMATION_SELECTIONS,
+    ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true, &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -3104,8 +3104,8 @@ handle_region_fade_algo_preset (
 
   GError * err = NULL;
   bool     ret = arranger_selections_action_perform_edit (
-        sel_before, (ArrangerSelections *) TL_SELECTIONS,
-        ARRANGER_SELECTIONS_ACTION_EDIT_FADES, true, &err);
+    sel_before, (ArrangerSelections *) TL_SELECTIONS,
+    ARRANGER_SELECTIONS_ACTION_EDIT_FADES, true, &err);
   if (!ret)
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to edit fades"));
@@ -3380,7 +3380,7 @@ delete_plugins (bool clear_stacks)
 {
   GError * err = NULL;
   bool     success = mixer_selections_action_perform_delete (
-        MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, &err);
+    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, &err);
   if (success && clear_stacks)
     {
       undo_manager_clear_stacks (UNDO_MANAGER, F_FREE);
@@ -3496,8 +3496,8 @@ DEFINE_SIMPLE (activate_port_connection_remove)
 {
   GError * err = NULL;
   bool     ret = port_connection_action_perform_disconnect (
-        &MW_PORT_CONNECTIONS_TREE->src_port->id,
-        &MW_PORT_CONNECTIONS_TREE->dest_port->id, &err);
+    &MW_PORT_CONNECTIONS_TREE->src_port->id,
+    &MW_PORT_CONNECTIONS_TREE->dest_port->id, &err);
   if (!ret)
     {
       HANDLE_ERROR (

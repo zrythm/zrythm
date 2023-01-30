@@ -533,8 +533,7 @@ ui_is_point_in_rect_hit (
  *   The bigger the padding the more space the
  *   child will have to get hit.
  */
-NONNULL
-int
+NONNULL int
 ui_is_child_hit (
   GtkWidget *  parent,
   GtkWidget *  child,
@@ -573,8 +572,7 @@ ui_get_detail_level (void);
  * @param has_padding Whether @ref px contains
  *   padding.
  */
-NONNULL
-void
+NONNULL void
 ui_px_to_pos_timeline (
   double     px,
   Position * pos,
@@ -606,16 +604,14 @@ ui_px_to_frames_editor (double px, int has_padding);
  * Converts position to px, optionally adding the
  * ruler padding.
  */
-NONNULL
-int
+NONNULL int
 ui_pos_to_px_timeline (Position * pos, int use_padding);
 
 /**
  * Converts position to px, optionally adding the ruler
  * padding.
  */
-NONNULL
-int
+NONNULL int
 ui_pos_to_px_editor (Position * pos, bool use_padding);
 
 /**
@@ -629,8 +625,7 @@ ui_pos_to_px_editor (Position * pos, bool use_padding);
  * @param has_padding Whether @ref px contains
  *   padding.
  */
-NONNULL
-void
+NONNULL void
 ui_px_to_pos_editor (
   double     px,
   Position * pos,
@@ -764,8 +759,7 @@ ui_get_mid_color (
 /**
  * Returns if the 2 rectangles overlay.
  */
-NONNULL
-PURE static inline bool
+NONNULL PURE static inline bool
 ui_rectangle_overlap (
   const GdkRectangle * const rect1,
   const GdkRectangle * const rect2)

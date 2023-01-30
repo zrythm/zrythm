@@ -156,8 +156,7 @@ supported_file_get_type (const char * file);
  * Returns whether the given file should auto-play
  * (shorter than 1 min).
  */
-NONNULL
-bool
+NONNULL bool
 supported_file_should_autoplay (const SupportedFile * self);
 
 /**
@@ -171,8 +170,7 @@ supported_file_get_icon_name (
 /**
  * Returns a pango markup to be used in GTK labels.
  */
-NONNULL
-char *
+NONNULL char *
 supported_file_get_info_text_for_label (
   const SupportedFile * self);
 

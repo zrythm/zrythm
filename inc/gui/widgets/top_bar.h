@@ -32,11 +32,11 @@ G_DECLARE_FINAL_TYPE (
 
 #define TOP_BAR MW->top_bar
 
-typedef struct _DigitalMeterWidget      DigitalMeterWidget;
+typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct _TransportControlsWidget TransportControlsWidget;
-typedef struct _CpuWidget               CpuWidget;
-typedef struct _MidiActivityBarWidget   MidiActivityBarWidget;
-typedef struct _LiveWaveformWidget      LiveWaveformWidget;
+typedef struct _CpuWidget             CpuWidget;
+typedef struct _MidiActivityBarWidget MidiActivityBarWidget;
+typedef struct _LiveWaveformWidget    LiveWaveformWidget;
 
 typedef struct _TopBarWidget
 {

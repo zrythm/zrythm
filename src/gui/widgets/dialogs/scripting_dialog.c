@@ -189,7 +189,7 @@ scripting_dialog_widget_init (ScriptingDialogWidget * self)
   char *   script_contents = NULL;
   GError * err = NULL;
   bool     ret = g_file_get_contents (
-        full_path, &script_contents, NULL, &err);
+    full_path, &script_contents, NULL, &err);
   if (!ret)
     {
       g_critical (

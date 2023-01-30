@@ -219,7 +219,7 @@ audio_region_replace_frames (
       int      prev_id = clip->pool_id;
       GError * err = NULL;
       int      id = audio_pool_duplicate_clip (
-             AUDIO_POOL, clip->pool_id, F_NO_WRITE_FILE, &err);
+        AUDIO_POOL, clip->pool_id, F_NO_WRITE_FILE, &err);
       if (id != prev_id || id < 0)
         {
           PROPAGATE_PREFIXED_ERROR (
@@ -240,7 +240,7 @@ audio_region_replace_frames (
 
   GError * err = NULL;
   bool     success = audio_clip_write_to_pool (
-        clip, false, F_NOT_BACKUP, &err);
+    clip, false, F_NOT_BACKUP, &err);
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (

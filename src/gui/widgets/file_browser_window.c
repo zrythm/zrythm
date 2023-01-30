@@ -14,7 +14,7 @@ G_DEFINE_TYPE (
   GTK_TYPE_WINDOW)
 
 FileBrowserWindowWidget *
-file_browser_window_widget_new ()
+file_browser_window_widget_new (void)
 {
   FileBrowserWindowWidget * self = g_object_new (
     FILE_BROWSER_WINDOW_WIDGET_TYPE, "title",

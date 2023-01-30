@@ -34,7 +34,7 @@ timeline_minimap_selection_snapshot (
   const float border_width = 2.f;
   GdkRGBA border_color = Z_GDK_RGBA_INIT (0.9, 0.9, 0.9, 0.9);
   float   border_widths[] = {
-      border_width, border_width, border_width, border_width
+    border_width, border_width, border_width, border_width
   };
   GdkRGBA border_colors[] = {
     border_color, border_color, border_color, border_color

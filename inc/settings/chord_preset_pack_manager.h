@@ -54,8 +54,7 @@ chord_preset_pack_manager_get_pack_at (
   const ChordPresetPackManager * self,
   int                            idx);
 
-NONNULL
-ChordPresetPack *
+NONNULL ChordPresetPack *
 chord_preset_pack_manager_get_pack_for_preset (
   ChordPresetPackManager * self,
   const ChordPreset *      pset);
@@ -109,8 +108,7 @@ chord_preset_pack_manager_delete_preset (
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-bool
+WARN_UNUSED_RESULT bool
 chord_preset_pack_manager_serialize (
   ChordPresetPackManager * self,
   GError **                error);

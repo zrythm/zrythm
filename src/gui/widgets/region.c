@@ -1733,7 +1733,7 @@ region_draw (
       const float border_width = 1.f;
       GdkRGBA     border_color = { 0.5f, 0.5f, 0.5f, 0.4f };
       float       border_widths[] = {
-              border_width, border_width, border_width, border_width
+        border_width, border_width, border_width, border_width
       };
       GdkRGBA border_colors[] = {
         border_color, border_color, border_color, border_color

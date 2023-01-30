@@ -70,7 +70,7 @@ on_delete_clicked (GtkButton * btn, ModulatorInnerWidget * self)
 
   GError * err = NULL;
   bool     ret = mixer_selections_action_perform_delete (
-        sel, PORT_CONNECTIONS_MGR, &err);
+    sel, PORT_CONNECTIONS_MGR, &err);
   if (!ret)
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to delete plugins"));

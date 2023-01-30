@@ -119,8 +119,7 @@ control_room_set_dim_output (
 /**
  * Used during serialization.
  */
-NONNULL
-ControlRoom *
+NONNULL ControlRoom *
 control_room_clone (const ControlRoom * src);
 
 void

@@ -27,27 +27,27 @@
 
 #define MAX_REGIONS 300
 
-typedef struct AutomationTracklist    AutomationTracklist;
-typedef struct ZRegion                ZRegion;
-typedef struct Position               Position;
-typedef struct _TrackWidget           TrackWidget;
-typedef struct _FolderChannelWidget   FolderChannelWidget;
-typedef struct Channel                Channel;
-typedef struct MidiEvents             MidiEvents;
-typedef struct AutomationTrack        AutomationTrack;
-typedef struct Automatable            Automatable;
-typedef struct AutomationPoint        AutomationPoint;
-typedef struct ChordObject            ChordObject;
-typedef struct MusicalScale           MusicalScale;
-typedef struct Modulator              Modulator;
-typedef struct Marker                 Marker;
-typedef struct PluginDescriptor       PluginDescriptor;
-typedef struct Tracklist              Tracklist;
-typedef struct SupportedFile          SupportedFile;
-typedef struct TracklistSelections    TracklistSelections;
+typedef struct AutomationTracklist  AutomationTracklist;
+typedef struct ZRegion              ZRegion;
+typedef struct Position             Position;
+typedef struct _TrackWidget         TrackWidget;
+typedef struct _FolderChannelWidget FolderChannelWidget;
+typedef struct Channel              Channel;
+typedef struct MidiEvents           MidiEvents;
+typedef struct AutomationTrack      AutomationTrack;
+typedef struct Automatable          Automatable;
+typedef struct AutomationPoint      AutomationPoint;
+typedef struct ChordObject          ChordObject;
+typedef struct MusicalScale         MusicalScale;
+typedef struct Modulator            Modulator;
+typedef struct Marker               Marker;
+typedef struct PluginDescriptor     PluginDescriptor;
+typedef struct Tracklist            Tracklist;
+typedef struct SupportedFile        SupportedFile;
+typedef struct TracklistSelections  TracklistSelections;
 typedef enum PassthroughProcessorType PassthroughProcessorType;
-typedef enum FaderType                FaderType;
-typedef void                          MIDI_FILE;
+typedef enum FaderType FaderType;
+typedef void           MIDI_FILE;
 typedef struct _WrappedObjectWithChangeSignal
   WrappedObjectWithChangeSignal;
 
@@ -673,8 +673,7 @@ track_new (
  * @param error To be filled if an error occurred.
  */
 NONNULL_ARGS (1)
-Track *
-track_clone (Track * track, GError ** error);
+Track * track_clone (Track * track, GError ** error);
 
 /**
  * Returns if the given TrackType is a type of
@@ -728,8 +727,7 @@ track_type_is_copyable (TrackType type)
 /**
  * Sets magic on objects recursively.
  */
-NONNULL
-void
+NONNULL void
 track_set_magic (Track * self);
 
 #define track_get_name_hash(self) g_str_hash (self->name)
@@ -738,8 +736,7 @@ track_set_magic (Track * self);
  * Sets track muted and optionally adds the action
  * to the undo stack.
  */
-NONNULL
-void
+NONNULL void
 track_set_muted (
   Track * track,
   bool    mute,
@@ -751,8 +748,7 @@ track_set_muted (
  * Sets track folded and optionally adds the action
  * to the undo stack.
  */
-NONNULL
-void
+NONNULL void
 track_set_folded (
   Track * self,
   bool    folded,
@@ -760,8 +756,7 @@ track_set_folded (
   bool    auto_select,
   bool    fire_events);
 
-NONNULL
-TrackType
+NONNULL TrackType
 track_get_type_from_plugin_descriptor (
   PluginDescriptor * descr);
 
@@ -769,12 +764,10 @@ track_get_type_from_plugin_descriptor (
  * Returns whether the track type is deletable
  * by the user.
  */
-NONNULL
-bool
+NONNULL bool
 track_type_is_deletable (TrackType type);
 
-NONNULL
-Tracklist *
+NONNULL Tracklist *
 track_get_tracklist (Track * self);
 
 /**
@@ -783,8 +776,7 @@ track_get_tracklist (Track * self);
  * Takes into account Track.visible and whether
  * any of the track's foldable parents are folded.
  */
-NONNULL
-bool
+NONNULL bool
 track_get_should_be_visible (const Track * self);
 
 /**
@@ -792,8 +784,7 @@ track_get_should_be_visible (const Track * self);
  * height of all visible automation tracks + height
  * of all visible lanes).
  */
-NONNULL
-double
+NONNULL double
 track_get_full_visible_height (Track * const self);
 
 bool
@@ -814,36 +805,31 @@ track_get_soloed (Track * self);
  * own but its direct out (or its direct out's direct
  * out, etc.) is soloed.
  */
-NONNULL
-bool
+NONNULL bool
 track_get_implied_soloed (Track * self);
 
 /**
  * Returns if the track is muted.
  */
-NONNULL
-bool
+NONNULL bool
 track_get_muted (Track * self);
 
 /**
  * Returns if the track is listened.
  */
-NONNULL
-bool
+NONNULL bool
 track_get_listened (Track * self);
 
 /**
  * Returns whether monitor audio is on.
  */
-NONNULL
-bool
+NONNULL bool
 track_get_monitor_audio (Track * self);
 
 /**
  * Sets whether monitor audio is on.
  */
-NONNULL
-void
+NONNULL void
 track_set_monitor_audio (
   Track * self,
   bool    monitor,
@@ -861,8 +847,7 @@ track_set_monitor_audio (
  *   undoable action.
  * @param fire_events Fire UI events.
  */
-NONNULL
-void
+NONNULL void
 track_set_listened (
   Track * self,
   bool    listen,
@@ -877,8 +862,7 @@ track_get_recording (const Track * const track);
  * Sets recording and connects/disconnects the
  * JACK ports.
  */
-NONNULL
-void
+NONNULL void
 track_set_recording (
   Track * track,
   bool    recording,
@@ -895,8 +879,7 @@ track_set_recording (
  *   undoable action.
  * @param fire_events Fire UI events.
  */
-NONNULL
-void
+NONNULL void
 track_set_soloed (
   Track * self,
   bool    solo,
@@ -907,15 +890,13 @@ track_set_soloed (
 /**
  * Returns whether the track has any soloed lanes.
  */
-NONNULL
-bool
+NONNULL bool
 track_has_soloed_lanes (const Track * const self);
 
 /**
  * Returns if Track is in TracklistSelections.
  */
-NONNULL
-int
+NONNULL int
 track_is_selected (Track * self);
 
 /**
@@ -986,8 +967,7 @@ track_insert_region (
  *   as tracks or using track position.
  */
 NONNULL_ARGS (1, 2)
-void
-track_write_to_midi_file (
+void track_write_to_midi_file (
   const Track * self,
   MIDI_FILE *   mf,
   MidiEvents *  events,
@@ -1001,8 +981,7 @@ track_write_to_midi_file (
  * @param fire_events Fire events to update the
  *   UI.
  */
-NONNULL
-void
+NONNULL void
 track_select (
   Track * self,
   bool    select,
@@ -1012,20 +991,17 @@ track_select (
 /**
  * Unselects all arranger objects in the track.
  */
-NONNULL
-void
+NONNULL void
 track_unselect_all (Track * self);
 
-NONNULL
-bool
+NONNULL bool
 track_contains_uninstantiated_plugin (
   const Track * const self);
 
 /**
  * Removes all objects recursively from the track.
  */
-NONNULL
-void
+NONNULL void
 track_clear (Track * self);
 
 /**
@@ -1033,8 +1009,7 @@ track_clear (Track * self);
  *
  * @pararm free Also free the Region.
  */
-NONNULL
-void
+NONNULL void
 track_remove_region (
   Track *   self,
   ZRegion * region,
@@ -1193,8 +1168,7 @@ track_get_automation_tracklist (Track * const track);
  * Returns the channel of the track, if the track
  * type has a channel, or NULL if it doesn't.
  */
-NONNULL
-static inline Channel *
+NONNULL static inline Channel *
 track_get_channel (const Track * const track)
 {
   switch (track->type)
@@ -1276,8 +1250,7 @@ track_get_name (Track * track);
  * Internally called by
  * track_set_name_with_action().
  */
-NONNULL
-bool
+NONNULL bool
 track_set_name_with_action_full (
   Track *      track,
   const char * name);
@@ -1568,12 +1541,10 @@ track_disconnect (
   bool    remove_pl,
   bool    recalc_graph);
 
-NONNULL
-bool
+NONNULL bool
 track_is_enabled (Track * self);
 
-NONNULL
-void
+NONNULL void
 track_set_enabled (
   Track * self,
   bool    enabled,

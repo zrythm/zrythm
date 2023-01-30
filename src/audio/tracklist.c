@@ -459,8 +459,7 @@ tracklist_find_track_by_name (
  * Returns the Track matching the given name, if
  * any.
  */
-NONNULL
-Track *
+NONNULL Track *
 tracklist_find_track_by_name_hash (
   Tracklist *  self,
   unsigned int hash)
@@ -1072,8 +1071,7 @@ tracklist_has_soloed (const Tracklist * self)
 /**
  * Returns if the tracklist has listened tracks.
  */
-NONNULL
-bool
+NONNULL bool
 tracklist_has_listened (const Tracklist * self)
 {
   Track * track;
@@ -1433,8 +1431,8 @@ tracklist_import_files (
                 {
                   GError * err = NULL;
                   bool     success = track_add_region (
-                        track, region, NULL, lane_pos, F_GEN_NAME,
-                        F_PUBLISH_EVENTS, &err);
+                    track, region, NULL, lane_pos, F_GEN_NAME,
+                    F_PUBLISH_EVENTS, &err);
                   if (!success)
                     {
                       PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -1471,8 +1469,8 @@ tracklist_import_files (
             {
               GError * err = NULL;
               bool     ret = track_create_with_action (
-                    track_type, NULL, file, pos, self->num_tracks,
-                    1, &err);
+                track_type, NULL, file, pos, self->num_tracks,
+                1, &err);
               if (ret)
                 {
                   UndoableAction * ua =
@@ -1518,10 +1516,10 @@ move_after_copying_or_moving_inside (
 
   GError * err = NULL;
   bool     ret = tracklist_selections_action_perform_move (
-        after_tls, PORT_CONNECTIONS_MGR,
-        lowest_cloned_track_pos
-          + diff_between_track_below_and_parent,
-        &err);
+    after_tls, PORT_CONNECTIONS_MGR,
+    lowest_cloned_track_pos
+      + diff_between_track_below_and_parent,
+    &err);
   object_free_w_func_and_null (
     tracklist_selections_free, after_tls);
   if (!ret)

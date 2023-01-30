@@ -89,7 +89,7 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
     &rounded_rect.bounds);
   const float border_width = 2.f;
   float       border_widths[] = {
-          border_width, border_width, border_width, border_width
+    border_width, border_width, border_width, border_width
   };
   GdkRGBA border_colors[] = { color, color, color, color };
   gtk_snapshot_append_border (

@@ -77,7 +77,7 @@ on_fc_file_set (
 }
 
 CreateProjectDialogWidget *
-create_project_dialog_widget_new ()
+create_project_dialog_widget_new (void)
 {
   CreateProjectDialogWidget * self = g_object_new (
     CREATE_PROJECT_DIALOG_WIDGET_TYPE, "title",

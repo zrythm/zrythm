@@ -308,7 +308,7 @@ midi_mappings_apply (MidiMappings * self, midi_byte_t * buf)
  * Returns a newly allocated MidiMappings.
  */
 MidiMappings *
-midi_mappings_new ()
+midi_mappings_new (void)
 {
   MidiMappings * self = object_new (MidiMappings);
   self->schema_version = MIDI_MAPPINGS_SCHEMA_VERSION;

@@ -50,8 +50,7 @@ static int returned = 0;
  * identifiers (to be used for creating the undoable
  * action when recording stops.
  */
-NONNULL
-static void
+NONNULL static void
 add_recorded_id (RecordingManager * self, ZRegion * region)
 {
   /*region_identifier_print (&region->id);*/
@@ -137,8 +136,8 @@ handle_stop_recording (
   /* perform the create action */
   GError * err = NULL;
   bool     ret = arranger_selections_action_perform_record (
-        self->selections_before_start,
-        (ArrangerSelections *) TL_SELECTIONS, true, &err);
+    self->selections_before_start,
+    (ArrangerSelections *) TL_SELECTIONS, true, &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -154,7 +153,7 @@ handle_stop_recording (
         {
           AudioClip * clip = audio_region_get_clip (r);
           bool        success = audio_clip_write_to_pool (
-                   clip, true, F_NOT_BACKUP, &err);
+            clip, true, F_NOT_BACKUP, &err);
           if (!success)
             {
               HANDLE_ERROR (
@@ -786,8 +785,8 @@ handle_resume_event (
           g_return_val_if_fail (new_region, false);
           GError * err = NULL;
           bool     success = track_add_region (
-                tr, new_region, NULL, new_lane_pos, F_GEN_NAME,
-                F_PUBLISH_EVENTS, &err);
+            tr, new_region, NULL, new_lane_pos, F_GEN_NAME,
+            F_PUBLISH_EVENTS, &err);
           if (!success)
             {
               HANDLE_ERROR_LITERAL (
@@ -854,8 +853,8 @@ handle_resume_event (
           g_return_val_if_fail (new_region, false);
           GError * err = NULL;
           bool     success = track_add_region (
-                tr, new_region, at, -1, F_GEN_NAME,
-                F_PUBLISH_EVENTS, &err);
+            tr, new_region, at, -1, F_GEN_NAME,
+            F_PUBLISH_EVENTS, &err);
           if (!success)
             {
               HANDLE_ERROR_LITERAL (
@@ -902,7 +901,7 @@ handle_audio_event (RecordingManager * self, RecordingEvent * ev)
   nframes_t        nframes = ev->nframes;
   nframes_t        local_offset = ev->local_offset;
   Track *          tr = tracklist_find_track_by_name_hash (
-             TRACKLIST, ev->track_name_hash);
+    TRACKLIST, ev->track_name_hash);
 
   /* get end position */
   unsigned_frame_t start_frames =
@@ -999,7 +998,7 @@ handle_audio_event (RecordingManager * self, RecordingEvent * ev)
     {
       GError * err = NULL;
       bool     success = audio_clip_write_to_pool (
-            clip, true, F_NOT_BACKUP, &err);
+        clip, true, F_NOT_BACKUP, &err);
       if (!success)
         {
           HANDLE_ERROR (
@@ -1025,7 +1024,7 @@ handle_midi_event (RecordingManager * self, RecordingEvent * ev)
   unsigned_frame_t g_start_frames = ev->g_start_frame;
   nframes_t        nframes = ev->nframes;
   Track *          tr = tracklist_find_track_by_name_hash (
-             TRACKLIST, ev->track_name_hash);
+    TRACKLIST, ev->track_name_hash);
 
   g_return_if_fail (tr->recording_region);
 
@@ -1245,8 +1244,8 @@ handle_automation_event (
       g_return_if_fail (region);
       GError * err = NULL;
       bool     success = track_add_region (
-            tr, region, at, -1, F_GEN_NAME, F_PUBLISH_EVENTS,
-            &err);
+        tr, region, at, -1, F_GEN_NAME, F_PUBLISH_EVENTS,
+        &err);
       if (!success)
         {
           HANDLE_ERROR_LITERAL (err, "Failed to add region");
@@ -1402,8 +1401,8 @@ handle_start_recording (
           g_return_if_fail (region);
           GError * err = NULL;
           bool     success = track_add_region (
-                tr, region, NULL, new_lane_pos, F_GEN_NAME,
-                F_PUBLISH_EVENTS, &err);
+            tr, region, NULL, new_lane_pos, F_GEN_NAME,
+            F_PUBLISH_EVENTS, &err);
           if (!success)
             {
               HANDLE_ERROR_LITERAL (
@@ -1421,8 +1420,8 @@ handle_start_recording (
           g_return_if_fail (region);
           GError * err = NULL;
           bool     success = track_add_region (
-                tr, region, NULL, -1, F_GEN_NAME,
-                F_PUBLISH_EVENTS, &err);
+            tr, region, NULL, -1, F_GEN_NAME,
+            F_PUBLISH_EVENTS, &err);
           if (!success)
             {
               HANDLE_ERROR_LITERAL (
@@ -1436,7 +1435,7 @@ handle_start_recording (
       else if (tr->type == TRACK_TYPE_AUDIO)
         {
           /* create region */
-          int    new_lane_pos = tr->num_lanes - 1;
+          int new_lane_pos = tr->num_lanes - 1;
           char * name = audio_pool_gen_name_for_recording_clip (
             AUDIO_POOL, tr, new_lane_pos);
           ZRegion * region = audio_region_new (
@@ -1447,8 +1446,8 @@ handle_start_recording (
           g_return_if_fail (region);
           GError * err = NULL;
           bool     success = track_add_region (
-                tr, region, NULL, new_lane_pos, F_GEN_NAME,
-                F_PUBLISH_EVENTS, &err);
+            tr, region, NULL, new_lane_pos, F_GEN_NAME,
+            F_PUBLISH_EVENTS, &err);
           if (!success)
             {
               HANDLE_ERROR_LITERAL (
@@ -1486,7 +1485,7 @@ recording_manager_process_events (RecordingManager * self)
   /*gint64 curr_time = g_get_monotonic_time ();*/
   /*g_message ("~~~~~~~~~~~~~~~~starting processing");*/
   zix_sem_wait (&self->processing_sem);
-  int i = 0;
+  /*int i = 0;*/
   g_return_val_if_fail (
     !self->currently_processing, G_SOURCE_REMOVE);
   self->currently_processing = true;
@@ -1498,7 +1497,7 @@ recording_manager_process_events (RecordingManager * self)
         {
           goto return_to_pool;
         }
-      i++;
+      /*i++;*/
 
       /*g_message ("event type %d", ev->type);*/
 

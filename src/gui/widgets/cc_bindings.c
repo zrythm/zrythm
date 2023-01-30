@@ -25,7 +25,7 @@ cc_bindings_widget_refresh (CcBindingsWidget * self)
 }
 
 CcBindingsWidget *
-cc_bindings_widget_new ()
+cc_bindings_widget_new (void)
 {
   CcBindingsWidget * self =
     g_object_new (CC_BINDINGS_WIDGET_TYPE, NULL);

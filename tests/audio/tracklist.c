@@ -109,8 +109,8 @@ test_handle_drop_empty_midi_file (void)
 
   GError * err = NULL;
   bool     success = tracklist_import_files (
-        TRACKLIST, NULL, file, NULL, NULL, PLAYHEAD,
-        Z_F_NO_PROGRESS, true, &err);
+    TRACKLIST, NULL, file, NULL, NULL, PLAYHEAD,
+    Z_F_NO_PROGRESS, true, &err);
   g_assert_false (success);
 
   test_helper_zrythm_cleanup ();

@@ -303,7 +303,7 @@ draw_regions (
   /* draw the other regions */
   ZRegion * other_regions[1000];
   int       num_other_regions = track_get_regions_in_range (
-          track, NULL, NULL, other_regions);
+    track, NULL, NULL, other_regions);
   for (int i = 0; i < num_other_regions; i++)
     {
       ZRegion * other_region = other_regions[i];

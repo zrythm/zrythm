@@ -420,142 +420,142 @@ main_window_widget_init (MainWindowWidget * self)
   GActionEntry actions[] = {
 
   /* file menu */
-    {"new",                                  activate_new },
-    { "open",                                     activate_open },
-    { "save",activate_save },
-    { "save-as",                                activate_save_as },
-    { "export-as",                                     activate_export_as },
-    { "export-graph",activate_export_graph },
-    { "properties",                           activate_properties },
+    { "new", activate_new },
+    { "open", activate_open },
+    { "save", activate_save },
+    { "save-as", activate_save_as },
+    { "export-as", activate_export_as },
+    { "export-graph", activate_export_graph },
+    { "properties", activate_properties },
 
  /* edit menu */
-    { "undo",                                     activate_undo },
-    { "redo",                           activate_redo },
-    { "undo_n",                          activate_undo_n, "i" },
-    { "redo_n",                                     activate_redo_n, "i" },
-    { "cut",activate_cut },
-    { "copy",                                activate_copy },
-    { "paste",                                     activate_paste },
-    { "delete",activate_delete },
-    { "duplicate",                                     activate_duplicate },
-    { "clear-selection",activate_clear_selection },
-    { "select-all",                                     activate_select_all },
+    { "undo", activate_undo },
+    { "redo", activate_redo },
+    { "undo_n", activate_undo_n, "i" },
+    { "redo_n", activate_redo_n, "i" },
+    { "cut", activate_cut },
+    { "copy", activate_copy },
+    { "paste", activate_paste },
+    { "delete", activate_delete },
+    { "duplicate", activate_duplicate },
+    { "clear-selection", activate_clear_selection },
+    { "select-all", activate_select_all },
  /* selection submenu */
-    { "loop-selection",                                      activate_loop_selection },
-    { "mute-selection",                                activate_mute_selection, "s" },
+    { "loop-selection", activate_loop_selection },
+    { "mute-selection", activate_mute_selection, "s" },
 
  /* view menu */
-    { "toggle-left-panel",                                     activate_toggle_left_panel },
-    { "toggle-right-panel",activate_toggle_right_panel },
-    { "toggle-bot-panel",                              activate_toggle_bot_panel },
-    { "toggle-top-panel",                                     activate_toggle_top_panel },
-    { "toggle-status-bar",activate_toggle_status_bar },
-    { "zoom-in",                     activate_zoom_in, "s" },
-    { "zoom-out",                                     activate_zoom_out, "s" },
-    { "original-size",activate_original_size, "s" },
-    { "best-fit",                      activate_best_fit, "s" },
+    { "toggle-left-panel", activate_toggle_left_panel },
+    { "toggle-right-panel", activate_toggle_right_panel },
+    { "toggle-bot-panel", activate_toggle_bot_panel },
+    { "toggle-top-panel", activate_toggle_top_panel },
+    { "toggle-status-bar", activate_toggle_status_bar },
+    { "zoom-in", activate_zoom_in, "s" },
+    { "zoom-out", activate_zoom_out, "s" },
+    { "original-size", activate_original_size, "s" },
+    { "best-fit", activate_best_fit, "s" },
 
  /* snapping, quantize */
-    { "snap-to-grid",                                     activate_snap_to_grid, "s" },
-    { "snap-keep-offset",activate_snap_keep_offset, "s" },
-    { "snap-events",                                     activate_snap_events, "s" },
-    { "quick-quantize",activate_quick_quantize, "s" },
-    { "quantize-options",                  activate_quantize_options, "s" },
+    { "snap-to-grid", activate_snap_to_grid, "s" },
+    { "snap-keep-offset", activate_snap_keep_offset, "s" },
+    { "snap-events", activate_snap_events, "s" },
+    { "quick-quantize", activate_quick_quantize, "s" },
+    { "quantize-options", activate_quantize_options, "s" },
 
  /* range actions */
-    { "insert-silence",                                     activate_insert_silence },
-    { "remove-range",activate_remove_range },
+    { "insert-silence", activate_insert_silence },
+    { "remove-range", activate_remove_range },
 
  /* playhead actions */
-    { "timeline-playhead-scroll-edges",                    NULL, NULL,
+    { "timeline-playhead-scroll-edges", NULL, NULL,
      g_settings_get_boolean (
         S_UI, "timeline-playhead-scroll-edges")
         ? "true"
         : "false",
      change_state_timeline_playhead_scroll_edges },
-    { "timeline-playhead-follow",                                     NULL, NULL,
+    { "timeline-playhead-follow", NULL, NULL,
      g_settings_get_boolean (S_UI, "timeline-playhead-follow")
         ? "true"
         : "false",
      change_state_timeline_playhead_follow },
-    { "editor-playhead-scroll-edges",                             NULL, NULL,
+    { "editor-playhead-scroll-edges", NULL, NULL,
      g_settings_get_boolean (
         S_UI, "editor-playhead-scroll-edges")
         ? "true"
         : "false",
      change_state_editor_playhead_scroll_edges },
-    { "editor-playhead-follow",                             NULL, NULL,
+    { "editor-playhead-follow", NULL, NULL,
      g_settings_get_boolean (S_UI, "editor-playhead-follow")
         ? "true"
         : "false",
      change_state_editor_playhead_follow },
 
  /* merge actions */
-    { "merge-selection",                                   activate_merge_selection },
+    { "merge-selection", activate_merge_selection },
 
  /* musical mode */
-    { "toggle-musical-mode",                            NULL, NULL,
+    { "toggle-musical-mode", NULL, NULL,
      g_settings_get_boolean (S_UI, "musical-mode")
         ? "true"
         : "false",
      change_state_musical_mode },
 
  /* track actions */
-    { "create-audio-track",                                   activate_create_audio_track },
+    { "create-audio-track", activate_create_audio_track },
     { "create-audio-bus-track",
      activate_create_audio_bus_track },
-    { "create-midi-bus-track",                                   activate_create_midi_bus_track },
-    { "create-midi-track",                            activate_create_midi_track },
+    { "create-midi-bus-track", activate_create_midi_bus_track },
+    { "create-midi-track", activate_create_midi_track },
     { "create-audio-group-track",
      activate_create_audio_group_track },
     { "create-midi-group-track",
      activate_create_midi_group_track },
-    { "create-folder-track",                                   activate_create_folder_track },
-    { "add-region",                    activate_add_region },
+    { "create-folder-track", activate_create_folder_track },
+    { "add-region", activate_add_region },
 
  /* modes */
-    { "select-mode",                                   activate_select_mode },
-    { "edit-mode",                         activate_edit_mode },
-    { "cut-mode",                                   activate_cut_mode },
-    { "eraser-mode",                      activate_eraser_mode },
-    { "ramp-mode",                                   activate_ramp_mode },
-    { "audition-mode",                    activate_audition_mode },
+    { "select-mode", activate_select_mode },
+    { "edit-mode", activate_edit_mode },
+    { "cut-mode", activate_cut_mode },
+    { "eraser-mode", activate_eraser_mode },
+    { "ramp-mode", activate_ramp_mode },
+    { "audition-mode", activate_audition_mode },
 
  /* transport */
-    { "toggle-metronome",                                   NULL, NULL,
+    { "toggle-metronome", NULL, NULL,
      g_settings_get_boolean (S_TRANSPORT, "metronome-enabled")
         ? "true"
         : "false",
      change_state_metronome },
-    { "toggle-loop",                      NULL, NULL,
+    { "toggle-loop", NULL, NULL,
      g_settings_get_boolean (S_TRANSPORT, "loop")
         ? "true"
         : "false",
      change_state_loop },
-    { "goto-prev-marker",                                     activate_goto_prev_marker },
-    { "goto-next-marker",                                  activate_goto_next_marker },
-    { "play-pause",      activate_play_pause },
-    { "record-play",                                  activate_record_play },
-    { "go-to-start",                      activate_go_to_start },
-    { "input-bpm",                                     activate_input_bpm },
-    { "tap-bpm",activate_tap_bpm },
+    { "goto-prev-marker", activate_goto_prev_marker },
+    { "goto-next-marker", activate_goto_next_marker },
+    { "play-pause", activate_play_pause },
+    { "record-play", activate_record_play },
+    { "go-to-start", activate_go_to_start },
+    { "input-bpm", activate_input_bpm },
+    { "tap-bpm", activate_tap_bpm },
 
  /* transport - jack */
-    { "set-timebase-master",           activate_set_timebase_master },
-    { "set-transport-client",  activate_set_transport_client },
-    { "unlink-jack-transport",        activate_unlink_jack_transport },
+    { "set-timebase-master", activate_set_timebase_master },
+    { "set-transport-client", activate_set_transport_client },
+    { "unlink-jack-transport", activate_unlink_jack_transport },
 
  /* tracks */
     { "delete-selected-tracks",
      activate_delete_selected_tracks },
     { "duplicate-selected-tracks",
      activate_duplicate_selected_tracks },
-    { "hide-selected-tracks",                                     activate_hide_selected_tracks },
-    { "pin-selected-tracks",      activate_pin_selected_tracks },
-    { "solo-selected-tracks",           activate_solo_selected_tracks },
+    { "hide-selected-tracks", activate_hide_selected_tracks },
+    { "pin-selected-tracks", activate_pin_selected_tracks },
+    { "solo-selected-tracks", activate_solo_selected_tracks },
     { "unsolo-selected-tracks",
      activate_unsolo_selected_tracks },
-    { "mute-selected-tracks",                     activate_mute_selected_tracks },
+    { "mute-selected-tracks", activate_mute_selected_tracks },
     { "unmute-selected-tracks",
      activate_unmute_selected_tracks },
     { "listen-selected-tracks",
@@ -566,7 +566,7 @@ main_window_widget_init (MainWindowWidget * self)
      activate_enable_selected_tracks },
     { "disable-selected-tracks",
      activate_disable_selected_tracks },
-    { "change-track-color",                                     activate_change_track_color },
+    { "change-track-color", activate_change_track_color },
     { "track-set-midi-channel",
      activate_track_set_midi_channel, "s" },
     { "quick-bounce-selected-tracks",
@@ -576,46 +576,46 @@ main_window_widget_init (MainWindowWidget * self)
     { "selected-tracks-direct-out-to",
      activate_selected_tracks_direct_out_to, "i" },
     {
-     "selected-tracks-direct-out-new",            activate_selected_tracks_direct_out_new,
+     "selected-tracks-direct-out-new", activate_selected_tracks_direct_out_new,
      },
     {
-     "toggle-track-passthrough-input",                                     activate_toggle_track_passthrough_input,
+     "toggle-track-passthrough-input", activate_toggle_track_passthrough_input,
      },
     {
-     "show-used-automation-lanes-on-selected-tracks",       activate_show_used_automation_lanes_on_selected_tracks,
+     "show-used-automation-lanes-on-selected-tracks", activate_show_used_automation_lanes_on_selected_tracks,
      },
     {
-     "hide-unused-automation-lanes-on-selected-tracks",                 activate_hide_unused_automation_lanes_on_selected_tracks,
+     "hide-unused-automation-lanes-on-selected-tracks", activate_hide_unused_automation_lanes_on_selected_tracks,
      },
 
  /* piano roll */
-    { "toggle-drum-mode",                                     activate_toggle_drum_mode },
-    { "toggle-listen-notes",NULL, NULL,
+    { "toggle-drum-mode", activate_toggle_drum_mode },
+    { "toggle-listen-notes", NULL, NULL,
      g_settings_get_boolean (S_UI, "listen-notes")
         ? "true"
         : "false",
      change_state_listen_notes },
     { "midi-editor.highlighting",
      activate_midi_editor_highlighting, "s" },
-    { "toggle-ghost-notes",                                     NULL, NULL,
+    { "toggle-ghost-notes", NULL, NULL,
      g_settings_get_boolean (S_UI, "ghost-notes")
         ? "true"
         : "false",
      change_state_ghost_notes },
 
  /* automation */
-    { "show-automation-values",NULL, NULL,
+    { "show-automation-values", NULL, NULL,
      g_settings_get_boolean (S_UI, "show-automation-values")
         ? "true"
         : "false",
      change_state_show_automation_values },
 
  /* control room */
-    { "toggle-dim-output",                            NULL, NULL, "true",
+    { "toggle-dim-output", NULL, NULL, "true",
      change_state_dim_output },
 
  /* file browser */
-    { "show-file-browser",                                     activate_show_file_browser },
+    { "show-file-browser", activate_show_file_browser },
 
  /* show/hide event viewers */
     { "toggle-timeline-event-viewer",
@@ -624,79 +624,79 @@ main_window_widget_init (MainWindowWidget * self)
      activate_toggle_editor_event_viewer },
 
  /* editor functions */
-    { "editor-function",                                     activate_editor_function, "s" },
-    { "editor-function-lv2",activate_editor_function_lv2,
+    { "editor-function", activate_editor_function, "s" },
+    { "editor-function-lv2", activate_editor_function_lv2,
      "s" },
 
  /* rename track/region */
-    { "rename-track",                    activate_rename_track },
+    { "rename-track", activate_rename_track },
     { "rename-arranger-object",
      activate_rename_arranger_object },
 
  /* arranger selections */
-    { "nudge-selection",                      activate_nudge_selection, "s" },
-    { "detect-bpm",                                     activate_detect_bpm, "s" },
-    { "timeline-function",             activate_timeline_function, "i" },
+    { "nudge-selection", activate_nudge_selection, "s" },
+    { "detect-bpm", activate_detect_bpm, "s" },
+    { "timeline-function", activate_timeline_function, "i" },
     { "quick-bounce-selections",
      activate_quick_bounce_selections },
-    { "bounce-selections",                      activate_bounce_selections },
+    { "bounce-selections", activate_bounce_selections },
     {
-     "set-curve-algorithm",                    activate_set_curve_algorithm,
+     "set-curve-algorithm", activate_set_curve_algorithm,
      "i", },
     {
-     "set-region-fade-in-algorithm-preset",                                     activate_set_region_fade_in_algorithm_preset,
+     "set-region-fade-in-algorithm-preset", activate_set_region_fade_in_algorithm_preset,
      "s", },
     {
-     "set-region-fade-out-algorithm-preset",activate_set_region_fade_out_algorithm_preset,
+     "set-region-fade-out-algorithm-preset", activate_set_region_fade_out_algorithm_preset,
      "s", },
     { "arranger-object-view-info",
      activate_arranger_object_view_info, "s" },
-    { "export-midi-regions",                                     activate_export_midi_regions },
-    { "create-arranger-obj",activate_create_arranger_object,
+    { "export-midi-regions", activate_export_midi_regions },
+    { "create-arranger-obj", activate_create_arranger_object,
      "(sdd)" },
-    { "change-region-color",                         activate_change_region_color },
-    { "reset-region-color",                                     activate_reset_region_color },
+    { "change-region-color", activate_change_region_color },
+    { "reset-region-color", activate_reset_region_color },
     { "move-automation-regions",
      activate_move_automation_regions, "s" },
 
  /* chord presets */
     {
-     "save-chord-preset",                             activate_save_chord_preset,
+     "save-chord-preset", activate_save_chord_preset,
      },
-    { "load-chord-preset",                                     activate_load_chord_preset, "s" },
+    { "load-chord-preset", activate_load_chord_preset, "s" },
     { "load-chord-preset-from-scale",
      activate_load_chord_preset_from_scale, "s" },
-    { "transpose-chord-pad",                activate_transpose_chord_pad,
+    { "transpose-chord-pad", activate_transpose_chord_pad,
      "s" },
     {
-     "add-chord-preset-pack",                                     activate_add_chord_preset_pack,
+     "add-chord-preset-pack", activate_add_chord_preset_pack,
      },
     { "delete-chord-preset-pack",
      activate_delete_chord_preset_pack, "s" },
     { "rename-chord-preset-pack",
      activate_rename_chord_preset_pack, "s" },
-    { "delete-chord-preset",                                     activate_delete_chord_preset,
+    { "delete-chord-preset", activate_delete_chord_preset,
      "s" },
-    { "rename-chord-preset",     activate_rename_chord_preset,
+    { "rename-chord-preset", activate_rename_chord_preset,
      "s" },
 
  /* cc bindings */
-    { "bind-midi-cc",                activate_bind_midi_cc, "s" },
-    { "delete-cc-binding",                                     activate_delete_cc_binding, "i" },
+    { "bind-midi-cc", activate_bind_midi_cc, "s" },
+    { "delete-cc-binding", activate_delete_cc_binding, "i" },
 
  /* port actions */
-    { "reset-stereo-balance",     activate_reset_stereo_balance,
+    { "reset-stereo-balance", activate_reset_stereo_balance,
      "s" },
-    { "reset-fader",                activate_reset_fader, "s" },
-    { "reset-control",                                     activate_reset_control, "s" },
-    { "port-view-info",        activate_port_view_info, "s" },
+    { "reset-fader", activate_reset_fader, "s" },
+    { "reset-control", activate_reset_control, "s" },
+    { "port-view-info", activate_port_view_info, "s" },
     { "port-connection-remove",
      activate_port_connection_remove },
 
  /* plugin actions */
-    { "plugin-toggle-enabled",                                     activate_plugin_toggle_enabled,
+    { "plugin-toggle-enabled", activate_plugin_toggle_enabled,
      "s" },
-    { "plugin-inspect",        activate_plugin_inspect },
+    { "plugin-inspect", activate_plugin_inspect },
     { "mixer-selections-delete",
      activate_mixer_selections_delete },
 
@@ -715,19 +715,19 @@ main_window_widget_init (MainWindowWidget * self)
      activate_plugin_browser_add_to_project_bridged_ui, "s" },
     { "plugin-browser-add-to-project-bridged-full",
      activate_plugin_browser_add_to_project_bridged_full, "s" },
-    { "plugin-browser-toggle-generic-ui",                                     NULL, NULL, "false",
+    { "plugin-browser-toggle-generic-ui", NULL, NULL, "false",
      change_state_plugin_browser_toggle_generic_ui },
     { "plugin-browser-add-to-collection",
      activate_plugin_browser_add_to_collection, "s" },
     { "plugin-browser-remove-from-collection",
      activate_plugin_browser_remove_from_collection, "s" },
-    { "plugin-browser-reset",  activate_plugin_browser_reset,
+    { "plugin-browser-reset", activate_plugin_browser_reset,
      "s" },
     {
-     "plugin-collection-add",              activate_plugin_collection_add,
+     "plugin-collection-add", activate_plugin_collection_add,
      },
     {
-     "plugin-collection-rename",                                     activate_plugin_collection_rename,
+     "plugin-collection-rename", activate_plugin_collection_rename,
      },
     {
      "plugin-collection-remove", activate_plugin_collection_remove,

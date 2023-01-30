@@ -263,7 +263,7 @@ zrythm_get_system_info (void)
 
   char * content = NULL;
   bool   ret = g_file_get_contents (
-      "/etc/os-release", &content, NULL, NULL);
+    "/etc/os-release", &content, NULL, NULL);
   if (ret)
     {
       g_string_append_printf (gstr, "%s\n", content);

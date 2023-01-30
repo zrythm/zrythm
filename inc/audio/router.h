@@ -127,8 +127,7 @@ router_get_max_route_playback_latency (Router * router);
  * Returns if the current thread is a
  * processing thread.
  */
-WARN_UNUSED_RESULT
-HOT NONNULL
+WARN_UNUSED_RESULT HOT NONNULL
   ACCESS_READ_ONLY (1) bool router_is_processing_thread (
     const Router * const router);
 
@@ -137,8 +136,7 @@ HOT NONNULL
  * off processing (thread that calls
  * router_start_cycle()).
  */
-WARN_UNUSED_RESULT
-HOT NONNULL
+WARN_UNUSED_RESULT HOT NONNULL
   ACCESS_READ_ONLY (1) bool router_is_processing_kickoff_thread (
     const Router * const self);
 
@@ -149,8 +147,7 @@ HOT NONNULL
  * Currently only applies to BPM/time signature
  * changes.
  */
-NONNULL
-void
+NONNULL void
 router_queue_control_port_change (
   Router *                  self,
   const ControlPortChange * change);

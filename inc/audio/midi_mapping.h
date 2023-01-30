@@ -185,8 +185,7 @@ midi_mapping_get_index (
   MidiMappings * self,
   MidiMapping *  mapping);
 
-NONNULL
-MidiMapping *
+NONNULL MidiMapping *
 midi_mapping_clone (const MidiMapping * src);
 
 void

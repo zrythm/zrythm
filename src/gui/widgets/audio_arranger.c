@@ -112,8 +112,7 @@ audio_arranger_widget_is_cursor_in_fade (
   return false;
 }
 
-NONNULL
-static double
+NONNULL static double
 get_region_gain_y (ArrangerWidget * self, ZRegion * region)
 {
   int height =
@@ -314,8 +313,8 @@ audio_arranger_widget_snap_fade (
           fade_in ? &r_obj->fade_in_pos : &r_obj->fade_out_pos);
       GError * err = NULL;
       bool     success = arranger_object_resize (
-            r_obj, fade_in, ARRANGER_OBJECT_RESIZE_FADE, diff,
-            true, &err);
+        r_obj, fade_in, ARRANGER_OBJECT_RESIZE_FADE, diff,
+        true, &err);
       if (!success)
         {
           HANDLE_ERROR_LITERAL (

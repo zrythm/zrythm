@@ -31,7 +31,7 @@ test_region_length_in_ticks (
   ArrangerObject * r_obj = (ArrangerObject *) r;
   GError *         err = NULL;
   bool             success = track_add_region (
-                track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
   g_assert_true (success);
 
   arranger_object_select (
@@ -74,7 +74,7 @@ test_get_last_object (void)
     &p1, &p2, track_get_name_hash (track), 0, 0);
   GError * err = NULL;
   bool     success = track_add_region (
-        track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
   g_assert_true (success);
 
   position_from_frames (&p1, -40000);
@@ -110,7 +110,7 @@ test_contains_object_with_property (void)
     &p1, &p2, track_get_name_hash (track), 0, 0);
   GError * err = NULL;
   bool     success = track_add_region (
-        track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
   g_assert_true (success);
 
   position_from_frames (&p1, -40000);

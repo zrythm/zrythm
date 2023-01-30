@@ -26,12 +26,10 @@
  * @param cr Arranger's cairo context.
  * @param arr_rect Arranger's rectangle.
  */
-NONNULL
-void
+NONNULL void
 midi_note_draw (MidiNote * self, GtkSnapshot * snapshot);
 
-NONNULL
-void
+NONNULL void
 midi_note_get_adjusted_color (MidiNote * self, GdkRGBA * color);
 
 /**

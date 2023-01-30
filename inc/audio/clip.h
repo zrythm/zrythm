@@ -178,8 +178,7 @@ audio_clip_new_recording (
  * @param start_from Frames to start from (per
  *   channel. The previous frames will be kept.
  */
-NONNULL
-void
+NONNULL void
 audio_clip_update_channel_caches (
   AudioClip * self,
   size_t      start_from);
@@ -198,8 +197,7 @@ audio_clip_update_channel_caches (
  * @return A new instance of AudioClip if successful,
  *   NULL, if not.
  */
-NONNULL
-AudioClip *
+NONNULL AudioClip *
 audio_clip_edit_in_ext_program (
   AudioClip * self,
   GError **   error);
@@ -212,9 +210,7 @@ audio_clip_edit_in_ext_program (
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-NONNULL
-bool
+WARN_UNUSED_RESULT NONNULL bool
 audio_clip_write_to_file (
   AudioClip *  self,
   const char * filepath,
@@ -231,9 +227,7 @@ audio_clip_write_to_file (
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-NONNULL
-bool
+WARN_UNUSED_RESULT NONNULL bool
 audio_clip_write_to_pool (
   AudioClip * self,
   bool        parts,
@@ -249,8 +243,7 @@ audio_clip_write_to_pool (
  * @param is_backup Whether writing to a backup
  *   project.
  */
-NONNULL
-char *
+NONNULL char *
 audio_clip_get_path_in_pool_from_name (
   const char * name,
   bool         use_flac,
@@ -262,8 +255,7 @@ audio_clip_get_path_in_pool_from_name (
  * @param is_backup Whether writing to a backup
  *   project.
  */
-NONNULL
-char *
+NONNULL char *
 audio_clip_get_path_in_pool (AudioClip * self, bool is_backup);
 
 /**
@@ -274,8 +266,7 @@ audio_clip_get_path_in_pool (AudioClip * self, bool is_backup);
  *   project regions and the undo stack. If false,
  *   this only checks actual project regions only.
  */
-NONNULL
-bool
+NONNULL bool
 audio_clip_is_in_use (AudioClip * self, bool check_undo_stack);
 
 /**
@@ -287,19 +278,16 @@ audio_clip_is_in_use (AudioClip * self, bool check_undo_stack);
  * @param backup Whether to remove from backup
  *   directory.
  */
-NONNULL
-void
+NONNULL void
 audio_clip_remove_and_free (AudioClip * self, bool backup);
 
-NONNULL
-AudioClip *
+NONNULL AudioClip *
 audio_clip_clone (AudioClip * src);
 
 /**
  * Frees the audio clip.
  */
-NONNULL
-void
+NONNULL void
 audio_clip_free (AudioClip * self);
 
 /**

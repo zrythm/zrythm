@@ -426,17 +426,17 @@ setup_record_btn (TransportControlsWidget * self)
     "'four'",
   };
   GActionEntry actions[] = {
-    {"punch-mode",           NULL,                    NULL,
+    { "punch-mode", NULL, NULL,
      (TRANSPORT->punch_mode ? "true" : "false"),
-     change_state_punch_mode                                       },
-    { "start-on-midi-input", NULL,                    NULL,
+     change_state_punch_mode },
+    { "start-on-midi-input", NULL, NULL,
      (TRANSPORT->start_playback_on_midi_input ? "true" : "false"),
-     change_start_on_midi_input                                    },
-    { "recording-mode",      activate_recording_mode, "s",
-     recording_modes[TRANSPORT->recording_mode]                  },
-    { "preroll",      activate_preroll,                     "s",
+     change_start_on_midi_input },
+    { "recording-mode", activate_recording_mode, "s",
+     recording_modes[TRANSPORT->recording_mode] },
+    { "preroll", activate_preroll, "s",
      preroll_types[g_settings_get_enum (
-        S_TRANSPORT,                        "recording-preroll")]},
+        S_TRANSPORT, "recording-preroll")] },
   };
   g_action_map_add_action_entries (
     G_ACTION_MAP (action_group), actions,

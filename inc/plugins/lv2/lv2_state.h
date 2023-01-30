@@ -87,17 +87,14 @@ lv2_state_make_path_save (
   const char*                path);
 #endif
 
-NONNULL
-void
+NONNULL void
 lv2_state_apply_state (Lv2Plugin * plugin, LilvState * state);
 
 /**
  * Saves the plugin state to the filesystem and
  * returns the state.
  */
-WARN_UNUSED_RESULT
-NONNULL
-LilvState *
+WARN_UNUSED_RESULT NONNULL LilvState *
 lv2_state_save_to_file (Lv2Plugin * pl, bool is_backup);
 
 /**

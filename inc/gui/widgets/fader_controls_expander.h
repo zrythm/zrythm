@@ -39,7 +39,7 @@ G_DECLARE_FINAL_TYPE (
   FADER_CONTROLS_EXPANDER_WIDGET,
   ExpanderBoxWidget);
 
-typedef struct Track                    Track;
+typedef struct Track Track;
 typedef struct _FaderControlsGridWidget FaderControlsGridWidget;
 
 /**

@@ -520,8 +520,7 @@ arranger_object_select (
  *   for intersection with \ref start.
  */
 NONNULL_ARGS (1)
-PURE WARN_UNUSED_RESULT bool
-arranger_object_is_hit (
+PURE WARN_UNUSED_RESULT bool arranger_object_is_hit (
   const ArrangerObject * self,
   const Position *       start,
   const Position *       end);
@@ -545,8 +544,7 @@ arranger_object_is_selected (ArrangerObject * self);
  * Prints debug information about the given
  * object.
  */
-NONNULL
-void
+NONNULL void
 arranger_object_print (const ArrangerObject * self);
 
 /**
@@ -559,8 +557,7 @@ arranger_object_print (const ArrangerObject * self);
  *   status of other lanes if true and if @ref self
  *   is a region that can have lanes.
  */
-NONNULL
-bool
+NONNULL bool
 arranger_object_get_muted (
   ArrangerObject * self,
   bool             check_parent);
@@ -781,9 +778,7 @@ arranger_object_move (
  *
  * (End Position - start Position).
  */
-NONNULL
-WARN_UNUSED_RESULT
-static inline double
+NONNULL WARN_UNUSED_RESULT static inline double
 arranger_object_get_length_in_ticks (
   const ArrangerObject * const self)
 {
@@ -799,9 +794,7 @@ arranger_object_get_length_in_ticks (
  *
  * (End Position - start Position).
  */
-NONNULL
-WARN_UNUSED_RESULT
-static inline signed_frame_t
+NONNULL WARN_UNUSED_RESULT static inline signed_frame_t
 arranger_object_get_length_in_frames (
   const ArrangerObject * const self)
 {
@@ -814,8 +807,7 @@ arranger_object_get_length_in_frames (
 /**
  * Returns the length of the loop in ticks.
  */
-NONNULL
-static inline double
+NONNULL static inline double
 arranger_object_get_loop_length_in_ticks (
   const ArrangerObject * const self)
 {
@@ -828,8 +820,7 @@ arranger_object_get_loop_length_in_ticks (
 /**
  * Returns the length of the loop in frames.
  */
-NONNULL
-HOT static inline signed_frame_t
+NONNULL HOT static inline signed_frame_t
 arranger_object_get_loop_length_in_frames (
   const ArrangerObject * const self)
 {
@@ -875,8 +866,7 @@ arranger_object_free (ArrangerObject * self);
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-bool
+WARN_UNUSED_RESULT bool
 arranger_object_resize (
   ArrangerObject *         self,
   const bool               left,
@@ -996,8 +986,7 @@ arranger_object_clone (const ArrangerObject * self);
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-bool
+WARN_UNUSED_RESULT bool
 arranger_object_split (
   ArrangerObject *  self,
   const Position *  pos,
@@ -1012,10 +1001,7 @@ arranger_object_split (
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-NONNULL_ARGS (1, 2)
-bool
-arranger_object_unsplit (
+WARN_UNUSED_RESULT NONNULL_ARGS (1, 2) bool arranger_object_unsplit (
   ArrangerObject *  r1,
   ArrangerObject *  r2,
   ArrangerObject ** obj,
@@ -1070,10 +1056,7 @@ arranger_object_set_end_pos_full_size (
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-NONNULL_ARGS (1)
-bool
-arranger_object_add_to_project (
+WARN_UNUSED_RESULT NONNULL_ARGS (1) bool arranger_object_add_to_project (
   ArrangerObject * obj,
   bool             fire_events,
   GError **        error);
@@ -1089,8 +1072,7 @@ arranger_object_add_to_project (
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-bool
+WARN_UNUSED_RESULT bool
 arranger_object_insert_to_project (
   ArrangerObject * obj,
   GError **        error);

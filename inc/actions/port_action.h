@@ -65,8 +65,7 @@ port_action_init_loaded (PortAction * self);
 /**
  * Create a new action.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 port_action_new (
   PortActionType   type,
   PortIdentifier * port_id,
@@ -77,14 +76,12 @@ port_action_new (
 /**
  * Create a new action.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 port_action_new_reset_control (
   PortIdentifier * port_id,
   GError **        error);
 
-NONNULL
-PortAction *
+NONNULL PortAction *
 port_action_clone (const PortAction * src);
 
 bool

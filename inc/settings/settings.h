@@ -162,8 +162,7 @@ settings_print (int pretty_print);
  * Returns whether the "as" key contains the given
  * string.
  */
-NONNULL
-bool
+NONNULL bool
 settings_strv_contains_str (
   GSettings *  settings,
   const char * key,
@@ -172,8 +171,7 @@ settings_strv_contains_str (
 /**
  * Appends the given string to a key of type "as".
  */
-NONNULL
-void
+NONNULL void
 settings_append_to_strv (
   GSettings *  settings,
   const char * key,

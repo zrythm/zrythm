@@ -33,7 +33,7 @@ perform_create_region_action (void)
     track_get_automation_tracklist (track);
   AutomationTrack * at = atl->ats[0];
   bool              success = track_add_region (
-                 track, r, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
+    track, r, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
   arranger_object_select (
     r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);

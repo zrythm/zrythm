@@ -121,8 +121,7 @@ string_convert_to_filename (const char * str);
  * string.
  */
 MALLOC
-NONNULL
-char *
+NONNULL char *
 string_get_substr_before_suffix (
   const char * str,
   const char * suffix);

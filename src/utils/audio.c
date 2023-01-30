@@ -104,8 +104,7 @@ audio_audec_log_func (
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-bool
+WARN_UNUSED_RESULT bool
 audio_write_raw_file (
   float *      buff,
   size_t       frames_already_written,
@@ -417,7 +416,7 @@ audio_detect_bpm (
  * Returns the number of CPU cores.
  */
 int
-audio_get_num_cores ()
+audio_get_num_cores (void)
 {
   if (num_cores > 0)
     return num_cores;

@@ -245,8 +245,7 @@ position_from_frames (
 HOT NONNULL void
 position_from_ticks (Position * pos, double ticks);
 
-NONNULL
-void
+NONNULL void
 position_from_bars (Position * pos, int bars);
 
 HOT NONNULL void
@@ -291,8 +290,7 @@ position_add_seconds (
  * @param sg SnapGrid options.
  */
 NONNULL_ARGS (2)
-void
-position_snap (
+void position_snap (
   const Position * start_pos,
   Position *       pos,
   Track *          track,
@@ -400,12 +398,10 @@ position_get_ticks_diff (
  *
  * Must be free'd by caller.
  */
-NONNULL
-char *
+NONNULL char *
 position_to_string_alloc (const Position * pos);
 
-NONNULL
-void
+NONNULL void
 position_to_string_full (
   const Position * pos,
   char *           buf,
@@ -415,8 +411,7 @@ position_to_string_full (
  * Creates a string in the form of "0.0.0.0" from
  * the given position.
  */
-NONNULL
-void
+NONNULL void
 position_to_string (const Position * pos, char * buf);
 
 /**
@@ -424,20 +419,16 @@ position_to_string (const Position * pos, char * buf);
  *
  * @return Whether successful.
  */
-NONNULL
-WARN_UNUSED_RESULT
-bool
+NONNULL WARN_UNUSED_RESULT bool
 position_parse (Position * pos, const char * str);
 
 /**
  * Prints the Position in the "0.0.0.0" form.
  */
-NONNULL
-void
+NONNULL void
 position_print (const Position * pos);
 
-NONNULL
-void
+NONNULL void
 position_print_range (
   const Position * pos,
   const Position * pos2);
@@ -448,8 +439,7 @@ position_print_range (
  * @param include_current Whether to count the
  *   current beat if it is at the beat start.
  */
-NONNULL
-int
+NONNULL int
 position_get_total_bars (
   const Position * pos,
   bool             include_current);
@@ -460,8 +450,7 @@ position_get_total_bars (
  * @param include_current Whether to count the
  *   current beat if it is at the beat start.
  */
-NONNULL
-int
+NONNULL int
 position_get_total_beats (
   const Position * pos,
   bool             include_current);
@@ -470,8 +459,7 @@ position_get_total_beats (
  * Returns the total number of sixteenths not
  * including the current one.
  */
-NONNULL
-int
+NONNULL int
 position_get_total_sixteenths (
   const Position * pos,
   bool             include_current);
@@ -481,8 +469,7 @@ position_get_total_sixteenths (
  *
  * For example, 4.2.1.21 would become -4.2.1.21.
  */
-NONNULL
-void
+NONNULL void
 position_change_sign (Position * pos);
 
 /**
@@ -494,8 +481,7 @@ position_change_sign (Position * pos);
  * @param start_at_one Start at 1 or -1 instead of
  *   0.
  */
-NONNULL
-int
+NONNULL int
 position_get_bars (const Position * pos, bool start_at_one);
 
 /**
@@ -507,8 +493,7 @@ position_get_bars (const Position * pos, bool start_at_one);
  * @param start_at_one Start at 1 or -1 instead of
  *   0.
  */
-NONNULL
-int
+NONNULL int
 position_get_beats (const Position * pos, bool start_at_one);
 
 /**
@@ -520,8 +505,7 @@ position_get_beats (const Position * pos, bool start_at_one);
  * @param start_at_one Start at 1 or -1 instead of
  *   0.
  */
-NONNULL
-int
+NONNULL int
 position_get_sixteenths (
   const Position * pos,
   bool             start_at_one);
@@ -532,12 +516,10 @@ position_get_sixteenths (
  * Ie, if the position is equivalent to 4.1.2.42,
  * this will return 42.
  */
-NONNULL
-double
+NONNULL double
 position_get_ticks (const Position * pos);
 
-NONNULL
-bool
+NONNULL bool
 position_validate (const Position * pos);
 
 /**

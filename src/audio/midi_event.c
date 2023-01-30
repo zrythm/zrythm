@@ -448,8 +448,7 @@ midi_events_has_note_on (
  * Copies the queue contents to the original struct
  */
 REALTIME
-NONNULL
-void
+NONNULL void
 midi_events_dequeue (MidiEvents * self)
 {
   /*g_message ("waiting dequeue");*/

@@ -625,7 +625,7 @@ export_midi (ExportSettings * info)
  * It must be free'd with export_settings_free().
  */
 ExportSettings *
-export_settings_new ()
+export_settings_new (void)
 {
   ExportSettings * self =
     object_new_unresizable (ExportSettings);
@@ -996,7 +996,7 @@ exporter_create_audio_track_after_bounce (
     }
 
   g_return_if_fail (last_track);
-  GError *         err = NULL;
+  GError * err = NULL;
   UndoableAction * ua = tracklist_selections_action_new_create (
     TRACK_TYPE_AUDIO, NULL, descr, last_track->pos + 1, pos,
     1, track_to_disable ? track_to_disable->pos : -1, &err);

@@ -414,7 +414,7 @@ on_load_project (
     ZRYTHM->open_filename, ZRYTHM->opening_template);
   GError * err = NULL;
   bool     success = project_load (
-        ZRYTHM->open_filename, ZRYTHM->opening_template, &err);
+    ZRYTHM->open_filename, ZRYTHM->opening_template, &err);
 
   if (!success)
     {
@@ -1670,59 +1670,59 @@ static void
 add_option_entries (ZrythmApp * self)
 {
   GOptionEntry entries[] = {
-    {"version",             'v', G_OPTION_FLAG_NO_ARG,
+    { "version", 'v', G_OPTION_FLAG_NO_ARG,
      G_OPTION_ARG_CALLBACK, print_version,
      _ ("Print version information"), NULL },
     { "zpj-to-yaml", 0, G_OPTION_FLAG_NONE,
      G_OPTION_ARG_FILENAME, NULL,
      _ ("Convert ZPJ-FILE to YAML"), "ZPJ-FILE" },
-    { "yaml-to-zpj",        0, G_OPTION_FLAG_NONE,
+    { "yaml-to-zpj", 0, G_OPTION_FLAG_NONE,
      G_OPTION_ARG_FILENAME, NULL,
      _ ("Convert YAML-PROJECT-FILE to the .zpj format"),
      "YAML-PROJECT-FILE" },
-    { "gen-project",                 0, G_OPTION_FLAG_NONE,
+    { "gen-project", 0, G_OPTION_FLAG_NONE,
      G_OPTION_ARG_FILENAME, NULL,
      _ ("Generate a project from SCRIPT-FILE"),
      "SCRIPT-FILE" },
-    { "pretty",        0, G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE,
+    { "pretty", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE,
      &self->pretty_print,
      _ ("Print output in user-friendly way"), NULL },
-    { "print-settings",   'p', G_OPTION_FLAG_NONE,
+    { "print-settings", 'p', G_OPTION_FLAG_NONE,
      G_OPTION_ARG_NONE, NULL, _ ("Print current settings"),
      NULL },
-    { "reset-to-factory",                 0, G_OPTION_FLAG_NONE,
+    { "reset-to-factory", 0, G_OPTION_FLAG_NONE,
      G_OPTION_ARG_NONE, NULL,
      _ ("Reset to factory settings"), NULL },
-    { "audio-backend",           0, G_OPTION_FLAG_NONE,
+    { "audio-backend", 0, G_OPTION_FLAG_NONE,
      G_OPTION_ARG_STRING, &self->audio_backend,
      _ ("Override the audio backend to use"), "BACKEND" },
-    { "midi-backend",        0, G_OPTION_FLAG_NONE,
+    { "midi-backend", 0, G_OPTION_FLAG_NONE,
      G_OPTION_ARG_STRING, &self->midi_backend,
      _ ("Override the MIDI backend to use"), "BACKEND" },
-    { "dummy",   0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
+    { "dummy", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
      set_dummy, _ ("Shorthand for --midi-backend=none "
          "--audio-backend=none"),
      NULL },
-    { "buf-size",                 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_INT,
+    { "buf-size", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_INT,
      &self->buf_size,
      "Override the buffer size to use for the "
       "audio backend, if applicable", "BUF_SIZE" },
-    { "samplerate",   0, G_OPTION_FLAG_NONE, G_OPTION_ARG_INT,
+    { "samplerate", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_INT,
      &self->samplerate,
      "Override the samplerate to use for the "
       "audio backend, if applicable", "SAMPLERATE" },
-    { "output",        'o', G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING,
+    { "output", 'o', G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING,
      &self->output_file, "File or directory to output to",
      "FILE" },
-    { "cyaml-log-level",   0, G_OPTION_FLAG_NONE,
+    { "cyaml-log-level", 0, G_OPTION_FLAG_NONE,
      G_OPTION_ARG_STRING, NULL, "Cyaml log level",
      "LOG-LEVEL" },
 #ifdef APPIMAGE_BUILD
-    { "appimage-runtime-path",                 0, G_OPTION_FLAG_NONE,
+    { "appimage-runtime-path", 0, G_OPTION_FLAG_NONE,
      G_OPTION_ARG_STRING, NULL, "AppImage runtime path",
      "PATH" },
 #endif
-    { 0        },
+    { 0 },
   };
 
   g_application_add_main_option_entries (

@@ -243,8 +243,7 @@ ui_get_hit_child (
   return NULL;
 }
 
-NONNULL
-static void
+NONNULL static void
 px_to_pos (
   double        px,
   Position *    pos,
@@ -1271,7 +1270,7 @@ ui_get_detail_level (void)
 }
 
 UiCaches *
-ui_caches_new ()
+ui_caches_new (void)
 {
   UiCaches * self = object_new (UiCaches);
 

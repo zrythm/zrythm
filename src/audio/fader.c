@@ -380,7 +380,7 @@ fader_find_from_port_identifier (const PortIdentifier * id)
 {
   PortFlags2 flag2 = id->flags2;
   Track *    tr = tracklist_find_track_by_name_hash (
-       TRACKLIST, id->track_name_hash);
+    TRACKLIST, id->track_name_hash);
   if (!tr && flag2 & PORT_FLAG2_SAMPLE_PROCESSOR_TRACK)
     {
       tr = tracklist_find_track_by_name_hash (

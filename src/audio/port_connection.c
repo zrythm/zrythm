@@ -92,8 +92,7 @@ port_connection_print (const PortConnection * self)
 /**
  * To be used during serialization.
  */
-NONNULL
-PortConnection *
+NONNULL PortConnection *
 port_connection_clone (const PortConnection * src)
 {
   PortConnection * self = port_connection_new (
@@ -105,8 +104,7 @@ port_connection_clone (const PortConnection * src)
 /**
  * Deletes port, doing required cleanup and updating counters.
  */
-NONNULL
-void
+NONNULL void
 port_connection_free (PortConnection * self)
 {
   port_identifier_free (self->src_id);

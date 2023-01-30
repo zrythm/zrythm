@@ -89,8 +89,7 @@ automation_track_new (Port * port)
   return self;
 }
 
-NONNULL
-bool
+NONNULL bool
 automation_track_validate (AutomationTrack * self)
 {
   g_return_val_if_fail (

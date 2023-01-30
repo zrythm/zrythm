@@ -13,10 +13,10 @@
 #include <gtk/gtk.h>
 #include <libpanel.h>
 
-typedef struct _DigitalMeterWidget      DigitalMeterWidget;
+typedef struct _DigitalMeterWidget DigitalMeterWidget;
 typedef struct _TransportControlsWidget TransportControlsWidget;
-typedef struct _CpuWidget               CpuWidget;
-typedef struct _ButtonWithMenuWidget    ButtonWithMenuWidget;
+typedef struct _CpuWidget            CpuWidget;
+typedef struct _ButtonWithMenuWidget ButtonWithMenuWidget;
 
 /**
  * @addtogroup widgets

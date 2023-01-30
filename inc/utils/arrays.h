@@ -80,8 +80,7 @@
  *   be written to it.
  * @param el_sz The size of one element in the array.
  */
-NONNULL
-void
+NONNULL void
 _array_double_size_if_full (
   void **  arr_ptr,
   size_t   count,
@@ -260,8 +259,7 @@ array_shuffle (void * array, size_t n, size_t size);
  *
  * The element exists if the pointers are equal.
  */
-NONNULL
-PURE WARN_UNUSED_RESULT int
+NONNULL PURE WARN_UNUSED_RESULT int
 _array_contains (void ** array, int size, void * element);
 
 /**

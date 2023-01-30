@@ -59,7 +59,7 @@ midi_activity_bar_snapshot (
       const float border_width = 1.f;
       GdkRGBA border_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.2);
       float   border_widths[] = {
-          border_width, border_width, border_width, border_width
+        border_width, border_width, border_width, border_width
       };
       GdkRGBA border_colors[] = {
         border_color, border_color, border_color, border_color

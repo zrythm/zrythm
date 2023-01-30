@@ -98,22 +98,18 @@ region_link_group_manager_remove_group (
   RegionLinkGroupManager * self,
   int                      group_id);
 
-NONNULL
-bool
+NONNULL bool
 region_link_group_manager_validate (
   RegionLinkGroupManager * self);
 
-NONNULL
-void
+NONNULL void
 region_link_group_manager_print (
   RegionLinkGroupManager * self);
 
-NONNULL
-RegionLinkGroupManager *
+NONNULL RegionLinkGroupManager *
 region_link_group_manager_clone (RegionLinkGroupManager * src);
 
-NONNULL
-void
+NONNULL void
 region_link_group_manager_free (RegionLinkGroupManager * self);
 
 /**

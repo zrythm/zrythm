@@ -63,8 +63,8 @@ test_midi_fx_routing (void)
   g_assert_nonnull (setting);
   GError * err = NULL;
   bool     ret = mixer_selections_action_perform_create (
-        PLUGIN_SLOT_MIDI_FX, track->name_hash, 0, setting, 1,
-        &err);
+    PLUGIN_SLOT_MIDI_FX, track->name_hash, 0, setting, 1,
+    &err);
   g_assert_true (ret);
 
   num_dests = port_connections_manager_get_sources_or_dests (

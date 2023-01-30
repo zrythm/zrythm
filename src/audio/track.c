@@ -172,8 +172,7 @@ track_init_loaded (
 /**
  * Adds a new TrackLane to the Track.
  */
-NONNULL
-static void
+NONNULL static void
 track_add_lane (Track * self, int fire_events)
 {
   g_return_if_fail (IS_TRACK (self));
@@ -1244,8 +1243,7 @@ track_type_can_host_region_type (
  * Takes into account Track.visible and whether
  * any of the track's foldable parents are folded.
  */
-NONNULL
-bool
+NONNULL bool
 track_get_should_be_visible (const Track * self)
 {
   if (!self->visible || self->filtered)
@@ -1871,7 +1869,7 @@ track_insert_region (
       AudioClip * clip = audio_region_get_clip (region);
       GError *    err = NULL;
       bool        success = audio_clip_write_to_pool (
-               clip, false, F_NOT_BACKUP, &err);
+        clip, false, F_NOT_BACKUP, &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR (
@@ -2054,7 +2052,7 @@ track_freeze (Track * self, bool freeze, GError ** error)
           audio_pool_add_clip (AUDIO_POOL, clip);
           GError * err = NULL;
           bool     success = audio_clip_write_to_pool (
-                clip, F_NO_PARTS, F_NOT_BACKUP, &err);
+            clip, F_NO_PARTS, F_NOT_BACKUP, &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR (
@@ -3023,7 +3021,7 @@ track_get_unique_name (Track * track_to_skip, const char * _name)
     {
       char name_without_num[strlen (name) + 1];
       int  ending_num = string_get_int_after_last_space (
-         name, name_without_num);
+        name, name_without_num);
       if (ending_num == -1)
         {
           /* append 1 at the end */
@@ -3648,8 +3646,8 @@ track_create_with_action (
 {
   GError * err = NULL;
   bool     ret = tracklist_selections_action_perform_create (
-        type, pl_setting, file_descr, index, pos, num_tracks, -1,
-        &err);
+    type, pl_setting, file_descr, index, pos, num_tracks, -1,
+    &err);
   if (!ret)
     {
       PROPAGATE_PREFIXED_ERROR (

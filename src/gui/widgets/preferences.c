@@ -1001,7 +1001,7 @@ on_window_closed (GtkWidget * object, PreferencesWidget * self)
  * Sets up the preferences widget.
  */
 PreferencesWidget *
-preferences_widget_new ()
+preferences_widget_new (void)
 {
   PreferencesWidget * self = g_object_new (
     PREFERENCES_WIDGET_TYPE, "title", _ ("Preferences"), NULL);

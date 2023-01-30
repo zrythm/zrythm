@@ -609,8 +609,7 @@ arranger_widget_select_all (
  * Useful to know if we need transient widgets or
  * not.
  */
-NONNULL
-PURE bool
+NONNULL PURE bool
 arranger_widget_is_in_moving_operation (ArrangerWidget * self);
 
 /**
@@ -658,8 +657,7 @@ arranger_widget_on_key_release (
  * @param up Whether scrolling up or down.
  * @param padding Padding pixels.
  */
-NONNULL
-void
+NONNULL void
 arranger_widget_scroll_until_obj (
   ArrangerWidget * self,
   ArrangerObject * obj,
@@ -717,8 +715,7 @@ arranger_widget_get_editor_setting_values (
 bool
 arranger_widget_is_playhead_visible (ArrangerWidget * self);
 
-NONNULL
-void
+NONNULL void
 arranger_widget_handle_playhead_auto_scroll (
   ArrangerWidget * self,
   bool             force);
@@ -729,12 +726,10 @@ typedef void (*ArrangerWidgetForeachFunc) (
 /**
  * Runs the given function for each arranger.
  */
-NONNULL
-void
+NONNULL void
 arranger_widget_foreach (ArrangerWidgetForeachFunc func);
 
-NONNULL
-PURE RulerWidget *
+NONNULL PURE RulerWidget *
 arranger_widget_get_ruler (ArrangerWidget * self);
 
 /**
@@ -768,8 +763,7 @@ arranger_widget_get_drum_mode_enabled (ArrangerWidget * self);
  * @param autofilling Whether this is part of an
  *   autofill action.
  */
-NONNULL
-void
+NONNULL void
 arranger_widget_create_item (
   ArrangerWidget * self,
   double           start_x,
@@ -783,8 +777,7 @@ arranger_widget_create_item (
  *
  * @return Whether an action was performed.
  */
-NONNULL
-bool
+NONNULL bool
 arranger_widget_finish_creating_item_from_action (
   ArrangerWidget * self,
   double           x,

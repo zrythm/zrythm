@@ -400,8 +400,7 @@ static const cyaml_schema_value_t transport_schema = {
 /**
  * Initialize transport
  */
-NONNULL
-Transport *
+NONNULL Transport *
 transport_new (AudioEngine * engine);
 
 /**

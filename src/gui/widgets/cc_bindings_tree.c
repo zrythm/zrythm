@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/midi_mapping_action.h"
@@ -214,7 +214,7 @@ generate_column_view (CcBindingsTreeWidget * self)
 }
 
 CcBindingsTreeWidget *
-cc_bindings_tree_widget_new ()
+cc_bindings_tree_widget_new (void)
 {
   CcBindingsTreeWidget * self =
     g_object_new (CC_BINDINGS_TREE_WIDGET_TYPE, NULL);

@@ -315,8 +315,7 @@ fader_create_swap_phase_port (Fader * self, bool passthrough);
  * Appends the ports owned by fader to the given
  * array.
  */
-NONNULL
-void
+NONNULL void
 fader_append_ports (const Fader * self, GPtrArray * ports);
 
 /**
@@ -345,8 +344,7 @@ fader_set_amp_with_action (
 void
 fader_add_amp (void * self, float amp);
 
-NONNULL
-void
+NONNULL void
 fader_set_midi_mode (
   Fader *       self,
   MidiFaderMode mode,
@@ -363,8 +361,7 @@ fader_set_muted (Fader * self, bool mute, bool fire_events);
 /**
  * Returns if the fader is muted.
  */
-NONNULL
-PURE bool
+NONNULL PURE bool
 fader_get_muted (const Fader * const self);
 
 /**
@@ -406,8 +403,7 @@ fader_set_soloed (Fader * self, bool solo, bool fire_events);
  * Gets the fader amplitude (not db)
  * FIXME is void * necessary? do it in the caller.
  */
-NONNULL
-PURE float
+NONNULL PURE float
 fader_get_amp (void * self);
 
 /**
@@ -452,8 +448,7 @@ fader_db_string_getter (void * obj, char * buf);
 Channel *
 fader_get_channel (Fader * self);
 
-NONNULL
-Track *
+NONNULL Track *
 fader_get_track (Fader * self);
 
 void
@@ -489,8 +484,7 @@ fader_copy_values (Fader * src, Fader * dest);
 /**
  * Process the Fader.
  */
-NONNULL
-HOT void
+NONNULL HOT void
 fader_process (
   Fader *                             self,
   const EngineProcessTimeInfo * const time_nfo);

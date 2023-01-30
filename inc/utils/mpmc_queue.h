@@ -80,16 +80,13 @@ typedef struct MPMCQueue
 MPMCQueue *
 mpmc_queue_new (void);
 
-NONNULL
-void
+NONNULL void
 mpmc_queue_reserve (MPMCQueue * self, size_t buffer_size);
 
-NONNULL
-void
+NONNULL void
 mpmc_queue_free (MPMCQueue * self);
 
-NONNULL
-void
+NONNULL void
 mpmc_queue_clear (MPMCQueue * self);
 
 HOT NONNULL int

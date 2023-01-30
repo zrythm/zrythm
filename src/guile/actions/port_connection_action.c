@@ -44,7 +44,7 @@ SCM_DEFINE (
 
   GError * err = NULL;
   bool     ret = port_connection_action_perform_connect (
-        src_id, dest_id, &err);
+    src_id, dest_id, &err);
   if (!ret)
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to connect ports"));

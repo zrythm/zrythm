@@ -172,8 +172,7 @@ set_selections (
  * Optionally clones the given objects and saves
  * them to self->r1 and self->r2.
  */
-NONNULL
-static void
+NONNULL static void
 set_split_objects (
   ArrangerSelectionsAction * self,
   int                        i,
@@ -592,7 +591,7 @@ arranger_selections_action_new_edit_automation_function (
 
   GError * err = NULL;
   int      ret = automation_function_apply (
-         sel_after, automation_func_type, &err);
+    sel_after, automation_func_type, &err);
   if (ret != 0)
     {
       PROPAGATE_PREFIXED_ERROR (
@@ -631,7 +630,7 @@ arranger_selections_action_new_edit_audio_function (
   g_debug ("saving file before applying audio func...");
   GError * err = NULL;
   int      ret = audio_function_apply (
-         sel_before_clone, AUDIO_FUNCTION_INVALID, NULL, &err);
+    sel_before_clone, AUDIO_FUNCTION_INVALID, NULL, &err);
   if (ret != 0)
     {
       PROPAGATE_PREFIXED_ERROR (
@@ -1676,7 +1675,7 @@ do_or_undo_duplicate_or_link (
           /* add to track. */
           GError * err = NULL;
           bool     success = arranger_object_add_to_project (
-                obj, F_NO_PUBLISH_EVENTS, &err);
+            obj, F_NO_PUBLISH_EVENTS, &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -2410,8 +2409,8 @@ do_or_undo_edit (
           /* replace the frames in the region */
           GError * err = NULL;
           bool     success = audio_region_replace_frames (
-                r, src_clip->frames, (size_t) start.frames,
-                num_frames, F_NO_DUPLICATE_CLIP, &err);
+            r, src_clip->frames, (size_t) start.frames,
+            num_frames, F_NO_DUPLICATE_CLIP, &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR (
@@ -2639,7 +2638,7 @@ do_or_undo_automation_fill (
       /* add it to the project */
       GError * err = NULL;
       bool     success = arranger_object_add_to_project (
-            obj, F_NO_PUBLISH_EVENTS, &err);
+        obj, F_NO_PUBLISH_EVENTS, &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -2693,8 +2692,8 @@ do_or_undo_split (
           /* split */
           GError * err = NULL;
           bool     success = arranger_object_split (
-                obj, &self->pos, 0, &self->r1[i], &self->r2[i],
-                true, &err);
+            obj, &self->pos, 0, &self->r1[i], &self->r2[i],
+            true, &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -2720,7 +2719,7 @@ do_or_undo_split (
           /* unsplit */
           GError * err = NULL;
           bool     success = arranger_object_unsplit (
-                r1, r2, &obj, F_NO_PUBLISH_EVENTS, &err);
+            r1, r2, &obj, F_NO_PUBLISH_EVENTS, &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -2828,7 +2827,7 @@ do_or_undo_merge (
 
       GError * err = NULL;
       bool     success = arranger_object_add_to_project (
-            clone_obj, F_NO_PUBLISH_EVENTS, &err);
+        clone_obj, F_NO_PUBLISH_EVENTS, &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -2920,7 +2919,7 @@ do_or_undo_resize (
             }
           GError * err = NULL;
           bool     success = arranger_object_resize (
-                obj, left, type, ticks, false, &err);
+            obj, left, type, ticks, false, &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR_LITERAL (

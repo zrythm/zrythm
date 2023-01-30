@@ -187,16 +187,14 @@ track_lane_rename_with_action (
  *   undoable action.
  * @param fire_events Fire UI events.
  */
-NONNULL
-void
+NONNULL void
 track_lane_set_soloed (
   TrackLane * self,
   bool        solo,
   bool        trigger_undo,
   bool        fire_events);
 
-NONNULL
-bool
+NONNULL bool
 track_lane_get_soloed (const TrackLane * const self);
 
 /**
@@ -207,16 +205,14 @@ track_lane_get_soloed (const TrackLane * const self);
  *   undoable action.
  * @param fire_events Fire UI events.
  */
-NONNULL
-void
+NONNULL void
 track_lane_set_muted (
   TrackLane * self,
   bool        mute,
   bool        trigger_undo,
   bool        fire_events);
 
-NONNULL
-bool
+NONNULL bool
 track_lane_get_muted (const TrackLane * const self);
 
 const char *
@@ -263,27 +259,23 @@ track_lane_clone (const TrackLane * src, Track * track);
  *   as tracks.
  */
 NONNULL_ARGS (1, 2)
-void
-track_lane_write_to_midi_file (
+void track_lane_write_to_midi_file (
   TrackLane *  self,
   MIDI_FILE *  mf,
   MidiEvents * events,
   bool         lanes_as_tracks,
   bool         use_track_or_lane_pos);
 
-NONNULL
-Tracklist *
+NONNULL Tracklist *
 track_lane_get_tracklist (const TrackLane * self);
 
-NONNULL
-Track *
+NONNULL Track *
 track_lane_get_track (const TrackLane * self);
 
 /**
  * Calculates a unique index for this lane.
  */
-NONNULL
-int
+NONNULL int
 track_lane_calculate_lane_idx (const TrackLane * self);
 
 /**
@@ -295,8 +287,7 @@ track_lane_gen_snapshot (const TrackLane * self);
 /**
  * Frees the TrackLane.
  */
-NONNULL
-void
+NONNULL void
 track_lane_free (TrackLane * lane);
 
 /**

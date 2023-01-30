@@ -43,8 +43,8 @@ on_close_request (
 
   GError * err = NULL;
   bool     ret = arranger_selections_action_perform_edit (
-        before, after, ARRANGER_SELECTIONS_ACTION_EDIT_SCALE,
-        F_NOT_ALREADY_EDITED, &err);
+    before, after, ARRANGER_SELECTIONS_ACTION_EDIT_SCALE,
+    F_NOT_ALREADY_EDITED, &err);
   if (!ret)
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to edit scale"));

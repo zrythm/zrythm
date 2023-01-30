@@ -1209,8 +1209,7 @@ log_get_last_n_lines (Log * self, int n)
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-bool
+WARN_UNUSED_RESULT bool
 log_init_with_file (
   Log *        self,
   const char * filepath,

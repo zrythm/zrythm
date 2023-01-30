@@ -384,8 +384,7 @@ tracklist_selections_action_init_loaded (
  *   if @ref tls_before and @ref tls_after are NULL.
  * @param error To be filled in if an error occurred.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 tracklist_selections_action_new (
   TracklistSelectionsActionType  type,
   TracklistSelections *          tls_before,
@@ -719,8 +718,7 @@ tracklist_selections_action_new (
     port_connections_mgr, NULL, 0, NULL, NULL, -1, -1, NULL, \
     -1, 0, false, NULL, 0.f, 0.f, NULL, false, err)
 
-NONNULL
-TracklistSelectionsAction *
+NONNULL TracklistSelectionsAction *
 tracklist_selections_action_clone (
   const TracklistSelectionsAction * src);
 

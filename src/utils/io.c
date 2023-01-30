@@ -88,8 +88,7 @@ io_get_dir (const char * filename)
  * @return True if the directory exists or was successfully
  *   created, false if error was occurred and errno is set.
  */
-NONNULL
-bool
+NONNULL bool
 io_mkdir (const char * dir, GError ** error)
 {
   g_return_val_if_fail (
@@ -667,7 +666,7 @@ io_get_bundle_path (char * bundle_path)
   CFBundleRef bundle = CFBundleGetMainBundle ();
   CFURLRef    bundleURL = CFBundleCopyBundleURL (bundle);
   Boolean     success = CFURLGetFileSystemRepresentation (
-        bundleURL, TRUE, (UInt8 *) bundle_path, PATH_MAX);
+    bundleURL, TRUE, (UInt8 *) bundle_path, PATH_MAX);
   g_return_val_if_fail (success, -1);
   CFRelease (bundleURL);
   g_message ("bundle path: %s", bundle_path);

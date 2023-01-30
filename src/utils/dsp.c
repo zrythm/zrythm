@@ -252,8 +252,7 @@ dsp_linear_fade_in_from (
  * @param fade_to_multiplier Multiplier to fade to (0 to fade
  *   to silence.)
  */
-NONNULL
-void
+NONNULL void
 dsp_linear_fade_out_to (
   float * dest,
   int32_t start_offset,

@@ -166,8 +166,7 @@ tracklist_new (
  *   selected (there must always be >= 1 tracks
  *   selected).
  */
-NONNULL
-void
+NONNULL void
 tracklist_select_all (
   Tracklist * self,
   bool        select,
@@ -195,26 +194,21 @@ tracklist_find_track_by_name (
  * Returns the Track matching the given name, if
  * any.
  */
-NONNULL
-OPTIMIZE_O3
-Track *
+NONNULL OPTIMIZE_O3 Track *
 tracklist_find_track_by_name_hash (
   Tracklist *  self,
   unsigned int hash);
 
-NONNULL
-int
+NONNULL int
 tracklist_contains_master_track (Tracklist * self);
 
-NONNULL
-int
+NONNULL int
 tracklist_contains_chord_track (Tracklist * self);
 
 /**
  * Prints the tracks (for debugging).
  */
-NONNULL
-void
+NONNULL void
 tracklist_print_tracks (Tracklist * self);
 
 /**
@@ -223,8 +217,7 @@ tracklist_print_tracks (Tracklist * self);
  * @param publish_events Publish UI events.
  * @param recalc_graph Recalculate routing graph.
  */
-NONNULL
-void
+NONNULL void
 tracklist_insert_track (
   Tracklist * self,
   Track *     track,
@@ -244,8 +237,7 @@ tracklist_insert_track (
  *   to the UI.
  * @param recalc_graph Recalculate the mixer graph.
  */
-NONNULL
-void
+NONNULL void
 tracklist_remove_track (
   Tracklist * self,
   Track *     track,
@@ -300,8 +292,7 @@ tracklist_set_track_pinned (
   int         publish_events,
   int         recalc_graph);
 
-NONNULL
-bool
+NONNULL bool
 tracklist_validate (Tracklist * self);
 
 /**
@@ -310,8 +301,7 @@ tracklist_validate (Tracklist * self);
  *
  * Not to be used in real-time code.
  */
-NONNULL
-HOT Track *
+NONNULL HOT Track *
 tracklist_get_track (Tracklist * self, int idx);
 
 /**
@@ -485,27 +475,22 @@ tracklist_track_name_is_unique (
 /**
  * Returns if the tracklist has soloed tracks.
  */
-NONNULL
-bool
+NONNULL bool
 tracklist_has_soloed (const Tracklist * self);
 
 /**
  * Returns if the tracklist has listened tracks.
  */
-NONNULL
-bool
+NONNULL bool
 tracklist_has_listened (const Tracklist * self);
 
-NONNULL
-int
+NONNULL int
 tracklist_get_num_muted_tracks (const Tracklist * self);
 
-NONNULL
-int
+NONNULL int
 tracklist_get_num_soloed_tracks (const Tracklist * self);
 
-NONNULL
-int
+NONNULL int
 tracklist_get_num_listened_tracks (const Tracklist * self);
 
 /**
@@ -562,8 +547,7 @@ tracklist_get_total_bars (Tracklist * self, int * total_bars);
  * Set various caches (snapshots, track name hashes, plugin
  * input/output ports, etc).
  */
-NONNULL
-void
+NONNULL void
 tracklist_set_caches (Tracklist * self, CacheTypes types);
 
 /**

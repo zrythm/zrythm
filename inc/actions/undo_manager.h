@@ -70,31 +70,27 @@ static const cyaml_schema_value_t undo_manager_schema = {
  * Inits the undo manager by populating the
  * undo/redo stacks.
  */
-NONNULL
-void
+NONNULL void
 undo_manager_init_loaded (UndoManager * self);
 
 /**
  * Inits the undo manager by creating the undo/redo
  * stacks.
  */
-WARN_UNUSED_RESULT
-UndoManager *
+WARN_UNUSED_RESULT UndoManager *
 undo_manager_new (void);
 
 /**
  * Undo last action.
  */
 NONNULL_ARGS (1)
-int
-undo_manager_undo (UndoManager * self, GError ** error);
+int undo_manager_undo (UndoManager * self, GError ** error);
 
 /**
  * Redo last undone action.
  */
 NONNULL_ARGS (1)
-int
-undo_manager_redo (UndoManager * self, GError ** error);
+int undo_manager_redo (UndoManager * self, GError ** error);
 
 /**
  * Performs the action and pushes it to the undo
@@ -103,8 +99,7 @@ undo_manager_redo (UndoManager * self, GError ** error);
  * @return Non-zero if error.
  */
 NONNULL_ARGS (1, 2)
-int
-undo_manager_perform (
+int undo_manager_perform (
   UndoManager *    self,
   UndoableAction * action,
   GError **        error);
@@ -133,8 +128,7 @@ undo_manager_perform (
  * Returns whether the given clip is used by any
  * stack.
  */
-NONNULL
-bool
+NONNULL bool
 undo_manager_contains_clip (
   UndoManager * self,
   AudioClip *   clip);
@@ -144,31 +138,26 @@ undo_manager_contains_clip (
  *
  * Used when cleaning up state dirs.
  */
-NONNULL
-void
+NONNULL void
 undo_manager_get_plugins (UndoManager * self, GPtrArray * arr);
 
 /**
  * Returns the last performed action, or NULL if
  * the stack is empty.
  */
-NONNULL
-UndoableAction *
+NONNULL UndoableAction *
 undo_manager_get_last_action (UndoManager * self);
 
 /**
  * Clears the undo and redo stacks.
  */
-NONNULL
-void
+NONNULL void
 undo_manager_clear_stacks (UndoManager * self, bool free);
 
-NONNULL
-UndoManager *
+NONNULL UndoManager *
 undo_manager_clone (const UndoManager * src);
 
-NONNULL
-void
+NONNULL void
 undo_manager_free (UndoManager * self);
 
 /**

@@ -214,8 +214,7 @@ ext_port_matches_backend (ExtPort * self);
  * with backend type).
  */
 MALLOC
-NONNULL
-char *
+NONNULL char *
 ext_port_get_id (ExtPort * ext_port);
 
 /**

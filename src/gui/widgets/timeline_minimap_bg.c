@@ -125,7 +125,7 @@ timeline_minimap_bg_tick_cb (
 }
 
 TimelineMinimapBgWidget *
-timeline_minimap_bg_widget_new ()
+timeline_minimap_bg_widget_new (void)
 {
   TimelineMinimapBgWidget * self =
     g_object_new (TIMELINE_MINIMAP_BG_WIDGET_TYPE, NULL);

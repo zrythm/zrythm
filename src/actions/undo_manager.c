@@ -279,7 +279,7 @@ undo_manager_perform (
   /* if error return */
   GError * err = NULL;
   int      ret = do_or_undo_action (
-         self, action, self->redo_stack, self->undo_stack, &err);
+    self, action, self->redo_stack, self->undo_stack, &err);
   if (ret != 0)
     {
       PROPAGATE_PREFIXED_ERROR (
@@ -327,8 +327,7 @@ undo_manager_contains_clip (UndoManager * self, AudioClip * clip)
  *
  * Used when cleaning up state dirs.
  */
-NONNULL
-void
+NONNULL void
 undo_manager_get_plugins (UndoManager * self, GPtrArray * arr)
 {
   undo_stack_get_plugins (self->undo_stack, arr);

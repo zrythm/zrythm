@@ -178,8 +178,8 @@ test_midi_fx_slot_deletion (void)
   int     track_pos = TRACKLIST->num_tracks - 1;
   Track * track = TRACKLIST->tracks[track_pos];
   bool    ret = mixer_selections_action_perform_create (
-       PLUGIN_SLOT_MIDI_FX, track_get_name_hash (track), slot,
-       setting, 1, NULL);
+    PLUGIN_SLOT_MIDI_FX, track_get_name_hash (track), slot,
+    setting, 1, NULL);
   g_assert_true (ret);
 
   Plugin * pl = track->channel->midi_fx[slot];
@@ -275,8 +275,8 @@ _test_create_plugins (
       int     track_pos = TRACKLIST->num_tracks - 1;
       Track * track = TRACKLIST->tracks[track_pos];
       bool    ret = mixer_selections_action_perform_create (
-           PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0,
-           setting, 1, NULL);
+        PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0,
+        setting, 1, NULL);
       g_assert_true (ret);
 
       if (

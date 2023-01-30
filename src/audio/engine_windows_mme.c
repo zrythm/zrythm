@@ -99,7 +99,7 @@ engine_windows_mme_print_error (MMRESULT error_code, int input)
 
   char msg[600];
   int  ret = engine_windows_mme_get_error (
-     error_code, input, msg, 600);
+    error_code, input, msg, 600);
   if (!ret)
     {
       ui_show_error_message_printf (

@@ -55,8 +55,7 @@
  * To be called only where necessary to save
  * RAM.
  */
-NONNULL
-void
+NONNULL void
 port_allocate_bufs (Port * self)
 {
 #if 0
@@ -1105,8 +1104,7 @@ port_get_all (GPtrArray * ports)
 /**
  * Sets the owner plugin & its slot.
  */
-NONNULL
-static void
+NONNULL static void
 set_owner_plugin (Port * port, Plugin * pl)
 {
   plugin_identifier_copy (&port->id.plugin_id, &pl->id);
@@ -1122,8 +1120,7 @@ set_owner_plugin (Port * port, Plugin * pl)
 /**
  * Sets the owner track & its ID.
  */
-NONNULL
-static void
+NONNULL static void
 set_owner_track_processor (
   Port *           port,
   TrackProcessor * track_processor)
@@ -1186,8 +1183,7 @@ set_owner_fader (Port * self, Fader * fader)
 /**
  * Sets the owner track & its ID.
  */
-NONNULL
-static void
+NONNULL static void
 set_owner_track (Port * port, Track * track)
 {
   g_return_if_fail (track->name);
@@ -1198,8 +1194,7 @@ set_owner_track (Port * port, Track * track)
 /**
  * Sets the channel send as the port's owner.
  */
-NONNULL
-static void
+NONNULL static void
 set_owner_channel_send (Port * self, ChannelSend * send)
 {
   self->id.track_name_hash = send->track_name_hash;
@@ -1221,8 +1216,7 @@ set_owner_channel_send (Port * self, ChannelSend * send)
     }
 }
 
-NONNULL
-static void
+NONNULL static void
 set_owner_channel (Port * port, Channel * ch)
 {
   Track * track = ch->track;
@@ -1231,16 +1225,14 @@ set_owner_channel (Port * port, Channel * ch)
   port->id.owner_type = PORT_OWNER_TYPE_CHANNEL;
 }
 
-NONNULL
-static void
+NONNULL static void
 set_owner_transport (Port * self, Transport * transport)
 {
   self->transport = transport;
   self->id.owner_type = PORT_OWNER_TYPE_TRANSPORT;
 }
 
-NONNULL
-static void
+NONNULL static void
 set_owner_modulator_macro_processor (
   Port *                    self,
   ModulatorMacroProcessor * mmp)
@@ -1253,24 +1245,21 @@ set_owner_modulator_macro_processor (
   self->track = mmp->track;
 }
 
-NONNULL
-static void
+NONNULL static void
 set_owner_audio_engine (Port * self, AudioEngine * engine)
 {
   self->engine = engine;
   self->id.owner_type = PORT_OWNER_TYPE_AUDIO_ENGINE;
 }
 
-NONNULL
-static void
+NONNULL static void
 set_owner_ext_port (Port * self, ExtPort * ext_port)
 {
   self->ext_port = ext_port;
   self->id.owner_type = PORT_OWNER_TYPE_HW;
 }
 
-NONNULL
-void
+NONNULL void
 port_set_owner (
   Port *        self,
   PortOwnerType owner_type,

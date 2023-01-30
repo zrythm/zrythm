@@ -70,7 +70,7 @@ draw_selections (ArrangerWidget * self, GtkSnapshot * snapshot)
   const float border_width = 2.f;
   GdkRGBA     border_color = { 0.9f, 0.9f, 0.9f, 0.9f };
   float       border_widths[] = {
-          border_width, border_width, border_width, border_width
+    border_width, border_width, border_width, border_width
   };
   GdkRGBA border_colors[] = {
     border_color, border_color, border_color, border_color
@@ -659,8 +659,8 @@ draw_audio_bg (
   /* draw audio part */
   GdkRGBA * color = &track->color;
   GdkRGBA   audio_lines_color = {
-      color->red + 0.3f, color->green + 0.3f,
-      color->blue + 0.3f, 0.9f
+    color->red + 0.3f, color->green + 0.3f,
+    color->blue + 0.3f, 0.9f
   };
   float prev_min = 0.5f, prev_max = 0.5f;
   for (double i = local_start_x; i < local_end_x;

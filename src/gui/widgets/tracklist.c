@@ -37,7 +37,7 @@
 G_DEFINE_TYPE (TracklistWidget, tracklist_widget, GTK_TYPE_BOX)
 
 GMenu *
-tracklist_widget_generate_add_track_menu ()
+tracklist_widget_generate_add_track_menu (void)
 {
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;

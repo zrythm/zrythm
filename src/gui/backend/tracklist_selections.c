@@ -682,8 +682,7 @@ tracklist_selections_toggle_pinned (
  * Clone the struct for copying, undoing, etc.
  */
 NONNULL_ARGS (1)
-TracklistSelections *
-tracklist_selections_clone (
+TracklistSelections * tracklist_selections_clone (
   TracklistSelections * src,
   GError **             error)
 {
@@ -738,7 +737,7 @@ tracklist_selections_paste_to_pos (
 {
   GError * err = NULL;
   bool     ret = tracklist_selections_action_perform_copy (
-        ts, PORT_CONNECTIONS_MGR, pos, &err);
+    ts, PORT_CONNECTIONS_MGR, pos, &err);
   if (!ret)
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to paste tracks"));

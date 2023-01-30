@@ -130,8 +130,8 @@ SCM_DEFINE (
 {
   GError * err = NULL;
   bool     success = track_add_region (
-        scm_to_pointer (track), scm_to_pointer (region), NULL,
-        scm_to_int (lane_pos), true, true, &err);
+    scm_to_pointer (track), scm_to_pointer (region), NULL,
+    scm_to_int (lane_pos), true, true, &err);
   if (!success)
     {
       HANDLE_ERROR (err, "%s", "Failed to add region");

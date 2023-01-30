@@ -68,7 +68,7 @@ on_enabled_toggled (
   /* perform an undoable action */
   GError * err = NULL;
   bool     ret = port_connection_action_perform_enable (
-        &src_port->id, &dest_port->id, enabled, &err);
+    &src_port->id, &dest_port->id, enabled, &err);
   if (!ret)
     {
       HANDLE_ERROR (
@@ -285,7 +285,7 @@ port_connections_tree_widget_refresh (
 }
 
 PortConnectionsTreeWidget *
-port_connections_tree_widget_new ()
+port_connections_tree_widget_new (void)
 {
   PortConnectionsTreeWidget * self =
     g_object_new (PORT_CONNECTIONS_TREE_WIDGET_TYPE, NULL);

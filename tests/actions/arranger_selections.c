@@ -573,7 +573,7 @@ test_move_audio_region_and_lower_samplerate (void)
       /* save the project */
       GError * err = NULL;
       bool     success = project_save (
-            PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, &err);
+        PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, &err);
       g_assert_true (success);
       char * prj_file =
         g_build_filename (PROJECT->dir, PROJECT_FILE, NULL);
@@ -1482,8 +1482,8 @@ test_split (void)
   ArrangerObject * r_obj = (ArrangerObject *) r;
   GError *         err = NULL;
   bool             success = track_add_region (
-                P_CHORD_TRACK, r, NULL, -1, F_GEN_NAME,
-                F_NO_PUBLISH_EVENTS, &err);
+    P_CHORD_TRACK, r, NULL, -1, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS, &err);
   g_assert_true (success);
   arranger_object_select (
     r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
@@ -1575,7 +1575,7 @@ test_split_large_audio_file (void)
   g_assert_cmpuint (clip->num_frames, ==, 79380000);
   GError * err = NULL;
   bool     success = track_add_region (
-        track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
   g_assert_true (success);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
@@ -1754,8 +1754,8 @@ test_duplicate_midi_regions_to_track_below (void)
     lane->num_regions);
   GError * err = NULL;
   bool     success = track_add_region (
-        midi_track, r1, NULL, lane->pos, F_GEN_NAME,
-        F_NO_PUBLISH_EVENTS, &err);
+    midi_track, r1, NULL, lane->pos, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS, &err);
   g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) r1, F_SELECT, F_NO_APPEND,
@@ -1847,8 +1847,8 @@ test_midi_region_split (void)
     lane->num_regions);
   GError * err = NULL;
   bool     success = track_add_region (
-        midi_track, r, NULL, lane->pos, F_GEN_NAME,
-        F_NO_PUBLISH_EVENTS, &err);
+    midi_track, r, NULL, lane->pos, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS, &err);
   g_assert_true (success);
   arranger_object_select (
     (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
@@ -2219,7 +2219,7 @@ test_delete_chord_objects (void)
   ZRegion * r = chord_region_new (&pos1, &pos2, 0);
   GError *  err = NULL;
   bool      success = track_add_region (
-         P_CHORD_TRACK, r, NULL, 0, F_GEN_NAME, 0, &err);
+    P_CHORD_TRACK, r, NULL, 0, F_GEN_NAME, 0, &err);
   g_assert_true (success);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
@@ -2289,7 +2289,7 @@ test_delete_automation_points (void)
     at->index, 0);
   GError * err = NULL;
   bool     success = track_add_region (
-        P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0, &err);
+    P_MASTER_TRACK, r, at, 0, F_GEN_NAME, 0, &err);
   g_assert_true (success);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,
@@ -3063,8 +3063,8 @@ test_delete_midi_notes (void)
   ArrangerObject * r_obj = (ArrangerObject *) r;
   GError *         err = NULL;
   bool             success = track_add_region (
-                midi_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
-                &err);
+    midi_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
+    &err);
   g_assert_true (success);
   arranger_object_select (
     r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
@@ -3221,7 +3221,7 @@ test_copy_and_move_automation_regions (void)
     fader_at->index, 0);
   GError * err = NULL;
   bool     success = track_add_region (
-        P_MASTER_TRACK, r, fader_at, 0, F_GEN_NAME, 0, &err);
+    P_MASTER_TRACK, r, fader_at, 0, F_GEN_NAME, 0, &err);
   g_assert_true (success);
   arranger_selections_add_object (
     (ArrangerSelections *) TL_SELECTIONS,

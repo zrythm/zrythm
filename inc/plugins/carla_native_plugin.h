@@ -124,8 +124,7 @@ typedef struct CarlaNativePlugin
 
 #  ifdef HAVE_CARLA
 
-NONNULL
-void
+NONNULL void
 carla_native_plugin_init_loaded (CarlaNativePlugin * self);
 
 /**
@@ -138,8 +137,7 @@ carla_native_plugin_init_loaded (CarlaNativePlugin * self);
  * @return Non-zero if fail.
  */
 NONNULL_ARGS (1)
-int
-carla_native_plugin_new_from_setting (
+int carla_native_plugin_new_from_setting (
   Plugin *  plugin,
   GError ** error);
 
@@ -147,8 +145,7 @@ carla_native_plugin_new_from_setting (
  * Returns a filled in descriptor from the
  * CarlaCachedPluginInfo.
  */
-NONNULL
-PluginDescriptor *
+NONNULL PluginDescriptor *
 carla_native_plugin_get_descriptor_from_cached (
   const CarlaCachedPluginInfo * info,
   PluginType                    type);
@@ -164,8 +161,7 @@ carla_native_plugin_get_descriptor_from_cached (
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-bool
+WARN_UNUSED_RESULT bool
 carla_native_plugin_save_state (
   CarlaNativePlugin * self,
   bool                is_backup,
@@ -184,12 +180,10 @@ carla_native_plugin_load_state (
   const char *        abs_path,
   GError **           error);
 
-NONNULL
-void
+NONNULL void
 carla_native_plugin_populate_banks (CarlaNativePlugin * self);
 
-NONNULL
-void
+NONNULL void
 carla_native_plugin_update_buffer_size_and_sample_rate (
   CarlaNativePlugin * self);
 
@@ -204,8 +198,7 @@ carla_native_plugin_update_buffer_size_and_sample_rate (
  * @return 0 if no errors, non-zero if errors.
  */
 NONNULL_ARGS (1)
-int
-carla_native_plugin_instantiate (
+int carla_native_plugin_instantiate (
   CarlaNativePlugin * self,
   bool                loading,
   bool                use_state_file,
@@ -231,8 +224,7 @@ carla_native_plugin_process (
 /**
  * Shows or hides the UI.
  */
-NONNULL
-void
+NONNULL void
 carla_native_plugin_open_ui (
   CarlaNativePlugin * self,
   bool                show);
@@ -241,8 +233,7 @@ carla_native_plugin_open_ui (
  * Returns the plugin Port corresponding to the
  * given parameter.
  */
-NONNULL
-Port *
+NONNULL Port *
 carla_native_plugin_get_port_from_param_id (
   CarlaNativePlugin * self,
   const uint32_t      id);
@@ -250,13 +241,11 @@ carla_native_plugin_get_port_from_param_id (
 /**
  * Returns the MIDI out port.
  */
-NONNULL
-Port *
+NONNULL Port *
 carla_native_plugin_get_midi_out_port (
   CarlaNativePlugin * self);
 
-NONNULL
-float
+NONNULL float
 carla_native_plugin_get_param_value (
   CarlaNativePlugin * self,
   const uint32_t      id);
@@ -267,21 +256,18 @@ carla_native_plugin_get_param_value (
  *
  * @param val Real value (ie, not normalized).
  */
-NONNULL
-void
+NONNULL void
 carla_native_plugin_set_param_value (
   CarlaNativePlugin * self,
   const uint32_t      id,
   float               val);
 
-NONNULL
-int
+NONNULL int
 carla_native_plugin_activate (
   CarlaNativePlugin * self,
   bool                activate);
 
-NONNULL
-void
+NONNULL void
 carla_native_plugin_close (CarlaNativePlugin * self);
 
 bool
@@ -291,15 +277,13 @@ carla_native_plugin_has_custom_ui (
 /**
  * Returns the latency in samples.
  */
-NONNULL
-nframes_t
+NONNULL nframes_t
 carla_native_plugin_get_latency (CarlaNativePlugin * self);
 
 /**
  * Deactivates, cleanups and frees the instance.
  */
-NONNULL
-void
+NONNULL void
 carla_native_plugin_free (CarlaNativePlugin * self);
 
 #  endif /* HAVE_CARLA */

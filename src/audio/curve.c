@@ -1,9 +1,10 @@
+// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
  * This file incorporates work covered by the following copyright and
  * permission notices:
+ *
+ * ---
  *
  * Copyright (C) 2005-2006 Taybin Rutkin <taybin@taybin.com>
  * Copyright (C) 2007-2013 Paul Davis <paul@linuxaudiosystems.com>
@@ -23,6 +24,7 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+ * ---
  */
 
 #include <math.h>

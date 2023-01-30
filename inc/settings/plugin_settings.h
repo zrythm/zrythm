@@ -131,14 +131,12 @@ plugin_setting_is_equal (
  * this will set \ref PluginSetting.open_with_carla
  * to true.
  */
-NONNULL
-void
+NONNULL void
 plugin_setting_validate (
   PluginSetting * self,
   bool            print_result);
 
-NONNULL
-void
+NONNULL void
 plugin_setting_print (const PluginSetting * self);
 
 /**
@@ -147,8 +145,7 @@ plugin_setting_print (const PluginSetting * self);
  * This may happen asynchronously so the caller should not
  * expect the setting to be activated on return.
  */
-NONNULL
-void
+NONNULL void
 plugin_setting_activate (const PluginSetting * self);
 
 /**
@@ -157,16 +154,14 @@ plugin_setting_activate (const PluginSetting * self);
  *
  * @note This also serializes all plugin settings.
  */
-NONNULL
-void
+NONNULL void
 plugin_setting_increment_num_instantiations (
   PluginSetting * self);
 
 /**
  * Frees the plugin setting.
  */
-NONNULL
-void
+NONNULL void
 plugin_setting_free (PluginSetting * self);
 
 void
@@ -181,8 +176,7 @@ plugin_settings_new (void);
 /**
  * Serializes the current settings.
  */
-NONNULL
-void
+NONNULL void
 plugin_settings_serialize_to_file (PluginSettings * self);
 
 /**
@@ -190,8 +184,7 @@ plugin_settings_serialize_to_file (PluginSettings * self);
  *
  * @return The found setting or NULL.
  */
-NONNULL
-PluginSetting *
+NONNULL PluginSetting *
 plugin_settings_find (
   PluginSettings *         self,
   const PluginDescriptor * descr);
@@ -205,15 +198,13 @@ plugin_settings_find (
  * @param serialize Whether to serialize the updated
  *   cache now.
  */
-NONNULL
-void
+NONNULL void
 plugin_settings_set (
   PluginSettings * self,
   PluginSetting *  setting,
   bool             _serialize);
 
-NONNULL
-void
+NONNULL void
 plugin_settings_free (PluginSettings * self);
 
 /**

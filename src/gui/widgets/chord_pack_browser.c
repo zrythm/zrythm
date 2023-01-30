@@ -367,7 +367,7 @@ on_pack_right_click (
 }
 
 ChordPackBrowserWidget *
-chord_pack_browser_widget_new ()
+chord_pack_browser_widget_new (void)
 {
   ChordPackBrowserWidget * self =
     g_object_new (CHORD_PACK_BROWSER_WIDGET_TYPE, NULL);

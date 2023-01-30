@@ -18,7 +18,7 @@
 #include <lilv/lilv.h>
 
 typedef struct CachedPluginDescriptors CachedPluginDescriptors;
-typedef struct PluginCollections       PluginCollections;
+typedef struct PluginCollections PluginCollections;
 
 /**
  * @addtogroup plugins

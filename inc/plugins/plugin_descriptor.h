@@ -294,8 +294,7 @@ plugin_protocol_to_str (PluginProtocol prot);
 /**
  * Clones the plugin descriptor.
  */
-NONNULL
-void
+NONNULL void
 plugin_descriptor_copy (
   PluginDescriptor *       dest,
   const PluginDescriptor * src);
@@ -303,39 +302,34 @@ plugin_descriptor_copy (
 /**
  * Clones the plugin descriptor.
  */
-NONNULL
-PluginDescriptor *
+NONNULL PluginDescriptor *
 plugin_descriptor_clone (const PluginDescriptor * src);
 
 /**
  * Returns if the Plugin is an instrument or not.
  */
-NONNULL
-bool
+NONNULL bool
 plugin_descriptor_is_instrument (
   const PluginDescriptor * const descr);
 
 /**
  * Returns if the Plugin is an effect or not.
  */
-NONNULL
-bool
+NONNULL bool
 plugin_descriptor_is_effect (
   const PluginDescriptor * const descr);
 
 /**
  * Returns if the Plugin is a modulator or not.
  */
-NONNULL
-int
+NONNULL int
 plugin_descriptor_is_modulator (
   const PluginDescriptor * const descr);
 
 /**
  * Returns if the Plugin is a midi modifier or not.
  */
-NONNULL
-int
+NONNULL int
 plugin_descriptor_is_midi_modifier (
   const PluginDescriptor * const descr);
 
@@ -343,8 +337,7 @@ plugin_descriptor_is_midi_modifier (
  * Returns the ZPluginCategory matching the given
  * string.
  */
-NONNULL
-ZPluginCategory
+NONNULL ZPluginCategory
 plugin_descriptor_string_to_category (const char * str);
 
 char *
@@ -373,8 +366,7 @@ plugin_descriptor_is_valid_for_slot_type (
  * Returns whether the two descriptors describe
  * the same plugin, ignoring irrelevant fields.
  */
-NONNULL
-bool
+NONNULL bool
 plugin_descriptor_is_same_plugin (
   const PluginDescriptor * a,
   const PluginDescriptor * b);
@@ -383,8 +375,7 @@ plugin_descriptor_is_same_plugin (
  * Returns if the Plugin has a supported custom
  * UI.
  */
-NONNULL
-bool
+NONNULL bool
 plugin_descriptor_has_custom_ui (
   const PluginDescriptor * self);
 
@@ -392,8 +383,7 @@ plugin_descriptor_has_custom_ui (
  * Returns the minimum bridge mode required for this
  * plugin.
  */
-NONNULL
-CarlaBridgeMode
+NONNULL CarlaBridgeMode
 plugin_descriptor_get_min_bridge_mode (
   const PluginDescriptor * self);
 
@@ -407,22 +397,18 @@ plugin_descriptor_get_min_bridge_mode (
  * These must all be free-software plugins so that they can
  * be debugged if issues arise.
  */
-NONNULL
-bool
+NONNULL bool
 plugin_descriptor_is_whitelisted (
   const PluginDescriptor * self);
 
-NONNULL
-GMenuModel *
+NONNULL GMenuModel *
 plugin_descriptor_generate_context_menu (
   const PluginDescriptor * self);
 
-NONNULL
-void
+NONNULL void
 plugin_descriptor_free (PluginDescriptor * self);
 
-NONNULL
-void
+NONNULL void
 plugin_descriptor_free_closure (
   void *     data,
   GClosure * closure);

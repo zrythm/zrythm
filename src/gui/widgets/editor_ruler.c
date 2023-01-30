@@ -230,9 +230,9 @@ editor_ruler_on_drag_end (RulerWidget * self)
   r_clone_obj_before->pos_member = self->drag_start_pos; \
   GError * err = NULL; \
   bool     ret = arranger_selections_action_perform_edit ( \
-        before_sel, after_sel, \
-        ARRANGER_SELECTIONS_ACTION_EDIT_POS, \
-        F_NOT_ALREADY_EDITED, &err); \
+    before_sel, after_sel, \
+    ARRANGER_SELECTIONS_ACTION_EDIT_POS, \
+    F_NOT_ALREADY_EDITED, &err); \
   if (!ret) \
     { \
       HANDLE_ERROR ( \

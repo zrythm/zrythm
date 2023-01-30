@@ -1073,8 +1073,7 @@ lv2_plugin_get_parameters (
  * Create port structures from data (via
  * create_port()) for all ports.
  */
-NONNULL
-static int
+NONNULL static int
 lv2_create_or_init_ports_and_parameters (Lv2Plugin * self)
 {
   g_return_val_if_fail (
@@ -1337,8 +1336,7 @@ run (Lv2Plugin * plugin, const nframes_t nframes)
 /**
  * Connect the port to its buffer.
  */
-NONNULL
-static void
+NONNULL static void
 connect_port (Lv2Plugin * lv2_plugin, uint32_t port_index)
 {
   Plugin * pl = lv2_plugin->plugin;
@@ -1450,8 +1448,7 @@ set_features (Lv2Plugin * self)
  * Returns whether the plugin contains a port
  * that reports latency.
  */
-NONNULL
-static bool
+NONNULL static bool
 reports_latency (Lv2Plugin * self)
 {
   Plugin * pl = self->plugin;
@@ -1795,7 +1792,7 @@ lv2_plugin_has_deprecated_ui (const char * uri)
   const LilvNode * ui_type;
   LilvUIs *        uis = lilv_plugin_get_uis (lilv_plugin);
   bool             ui_picked = lv2_plugin_pick_ui (
-                uis, LV2_PLUGIN_UI_WRAPPABLE, &ui, &ui_type);
+    uis, LV2_PLUGIN_UI_WRAPPABLE, &ui, &ui_type);
   if (!ui_picked)
     {
       ui_picked = lv2_plugin_pick_ui (

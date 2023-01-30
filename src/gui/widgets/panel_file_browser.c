@@ -451,8 +451,8 @@ on_file_row_activated (
 
       GError * err = NULL;
       bool     ret = track_create_with_action (
-            TRACK_TYPE_AUDIO, NULL, descr, PLAYHEAD,
-            TRACKLIST->num_tracks, 1, &err);
+        TRACK_TYPE_AUDIO, NULL, descr, PLAYHEAD,
+        TRACKLIST->num_tracks, 1, &err);
       if (!ret)
         {
           HANDLE_ERROR (
@@ -467,8 +467,8 @@ on_file_row_activated (
 
       GError * err = NULL;
       bool     ret = track_create_with_action (
-            TRACK_TYPE_MIDI, NULL, descr, PLAYHEAD,
-            TRACKLIST->num_tracks, 1, &err);
+        TRACK_TYPE_MIDI, NULL, descr, PLAYHEAD,
+        TRACKLIST->num_tracks, 1, &err);
       if (!ret)
         {
           HANDLE_ERROR (
@@ -587,7 +587,7 @@ on_file_filter_option_changed (
 }
 
 PanelFileBrowserWidget *
-panel_file_browser_widget_new ()
+panel_file_browser_widget_new (void)
 {
   PanelFileBrowserWidget * self =
     g_object_new (PANEL_FILE_BROWSER_WIDGET_TYPE, NULL);

@@ -377,7 +377,7 @@ stretcher_stretch_interleaved (
       float   tmp_out_r[avail];
       float * tmp_out_arrays[2] = { tmp_out_l, tmp_out_r };
       size_t  out_chunk_size = rubberband_retrieve (
-         self->rubberband_state, tmp_out_arrays, avail);
+        self->rubberband_state, tmp_out_arrays, avail);
 
       /* save the result */
       for (size_t i = 0; i < channels; i++)

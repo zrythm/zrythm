@@ -100,8 +100,7 @@ chord_action_init_loaded (ChordAction * self);
  * @param chords_before Chord descriptors, if
  *   changing all chords.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 chord_action_new (
   const ChordDescriptor ** chords_before,
   const ChordDescriptor ** chords_after,
@@ -109,8 +108,7 @@ chord_action_new (
   const int                chord_idx,
   GError **                error);
 
-NONNULL
-ChordAction *
+NONNULL ChordAction *
 chord_action_clone (const ChordAction * src);
 
 /**

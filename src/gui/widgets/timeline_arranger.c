@@ -541,7 +541,7 @@ snap_region_l (
         {
           GError * err = NULL;
           bool     success = arranger_object_resize (
-                r_obj, true, type, diff, true, &err);
+            r_obj, true, type, diff, true, &err);
           if (!success)
             {
               HANDLE_ERROR_LITERAL (
@@ -715,8 +715,8 @@ snap_region_r (
         {
           GError * err = NULL;
           bool     success = arranger_object_resize (
-                r_obj, Z_F_NOT_LEFT, type, diff,
-                Z_F_DURING_UI_ACTION, &err);
+            r_obj, Z_F_NOT_LEFT, type, diff,
+            Z_F_DURING_UI_ACTION, &err);
           if (!success)
             {
               HANDLE_ERROR_LITERAL (
@@ -1405,8 +1405,8 @@ on_dnd_drop (
         idx_in_lane);
       GError * err = NULL;
       bool     success = track_add_region (
-            track, region, NULL, lane_pos, F_GEN_NAME,
-            F_PUBLISH_EVENTS, &err);
+        track, region, NULL, lane_pos, F_GEN_NAME,
+        F_PUBLISH_EVENTS, &err);
       if (!success)
         {
           HANDLE_ERROR (
@@ -1464,8 +1464,8 @@ on_dnd_drop (
 
       GError * err = NULL;
       bool     success = tracklist_import_files (
-            TRACKLIST, uris, file, track, lane, &pos,
-            Z_F_PROGRESS, true, &err);
+        TRACKLIST, uris, file, track, lane, &pos,
+        Z_F_PROGRESS, true, &err);
       if (!success)
         {
           HANDLE_ERROR_LITERAL (

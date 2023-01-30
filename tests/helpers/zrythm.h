@@ -551,19 +551,19 @@ _test_helper_zrythm_init (
  * Zrythm to default values.
  */
 void
-test_helper_zrythm_init ()
+test_helper_zrythm_init (void)
 {
   _test_helper_zrythm_init (false, 0, 0, false);
 }
 
 void
-test_helper_zrythm_init_with_pipewire ()
+test_helper_zrythm_init_with_pipewire (void)
 {
   _test_helper_zrythm_init (false, 0, 0, true);
 }
 
 void
-test_helper_zrythm_init_optimized ()
+test_helper_zrythm_init_optimized (void)
 {
   _test_helper_zrythm_init (true, 0, 0, false);
 }
@@ -573,7 +573,7 @@ test_helper_zrythm_init_optimized ()
  * clean up.
  */
 void
-test_helper_zrythm_cleanup ()
+test_helper_zrythm_cleanup (void)
 {
   g_assert_nonnull (ZRYTHM->testing_dir);
   io_rmdir (ZRYTHM->testing_dir, true);

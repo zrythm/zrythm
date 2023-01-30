@@ -50,7 +50,7 @@ A_DESCRIPTOR (route_4_4)
 
 #undef LV2_SYMBOL_EXPORT
 #ifdef _WIN32
-#  define LV2_SYMBOL_EXPORT __declspec(dllexport)
+#  define LV2_SYMBOL_EXPORT __declspec (dllexport)
 #else
 #  define LV2_SYMBOL_EXPORT \
     __attribute__ ((visibility ("default")))

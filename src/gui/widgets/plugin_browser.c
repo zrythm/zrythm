@@ -1420,7 +1420,7 @@ finalize (PluginBrowserWidget * self)
 }
 
 PluginBrowserWidget *
-plugin_browser_widget_new ()
+plugin_browser_widget_new (void)
 {
   PluginBrowserWidget * self =
     g_object_new (PLUGIN_BROWSER_WIDGET_TYPE, NULL);

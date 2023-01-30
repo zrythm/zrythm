@@ -88,16 +88,14 @@ static const cyaml_schema_value_t transport_action_schema = {
 void
 transport_action_init_loaded (TransportAction * self);
 
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 transport_action_new_bpm_change (
   bpm_t     bpm_before,
   bpm_t     bpm_after,
   bool      already_done,
   GError ** error);
 
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 transport_action_new_time_sig_change (
   TransportActionType type,
   int                 before,
@@ -105,8 +103,7 @@ transport_action_new_time_sig_change (
   bool                already_done,
   GError **           error);
 
-NONNULL
-TransportAction *
+NONNULL TransportAction *
 transport_action_clone (const TransportAction * src);
 
 bool

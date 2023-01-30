@@ -179,7 +179,7 @@ tempo_track_set_bpm (
     {
       GError * err = NULL;
       bool     ret = transport_action_perform_bpm_change (
-            start_bpm, bpm, false, &err);
+        start_bpm, bpm, false, &err);
       if (!ret)
         {
           HANDLE_ERROR (err, "%s", _ ("Failed to change BPM"));

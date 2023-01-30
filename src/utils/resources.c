@@ -106,7 +106,7 @@ resources_get_gl_shader_data (const char * path)
 {
   GError * err = NULL;
   char *   str = g_strdup_printf (
-      "%s/%s", RESOURCES_GL_SHADERS_PATH, path);
+    "%s/%s", RESOURCES_GL_SHADERS_PATH, path);
   GBytes * data = g_resources_lookup_data (str, 0, &err);
 
   if (err)

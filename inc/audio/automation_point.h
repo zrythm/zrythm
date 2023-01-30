@@ -196,8 +196,7 @@ automation_point_is_equal (
  * Returns if the curve of the AutomationPoint
  * curves upwards as you move right on the x axis.
  */
-NONNULL
-bool
+NONNULL bool
 automation_point_curves_up (AutomationPoint * self);
 
 /**

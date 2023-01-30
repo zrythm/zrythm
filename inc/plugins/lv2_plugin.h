@@ -352,8 +352,7 @@ static const cyaml_schema_value_t
 };
 #endif
 
-NONNULL
-void
+NONNULL void
 lv2_plugin_init_loaded (Lv2Plugin * self);
 
 /**
@@ -361,8 +360,7 @@ lv2_plugin_init_loaded (Lv2Plugin * self);
  * the given LilvPlugin
  * if it can be hosted, otherwise NULL.
  */
-NONNULL
-PluginDescriptor *
+NONNULL PluginDescriptor *
 lv2_plugin_create_descriptor_from_lilv (const LilvPlugin * lp);
 
 /**
@@ -375,8 +373,7 @@ lv2_plugin_create_descriptor_from_lilv (const LilvPlugin * lp);
  * @param uri The URI.
  */
 NONNULL_ARGS (1, 2)
-Lv2Plugin *
-lv2_plugin_new_from_uri (
+Lv2Plugin * lv2_plugin_new_from_uri (
   Plugin *     plugin,
   const char * uri,
   GError **    error);
@@ -401,8 +398,7 @@ lv2_plugin_new_from_uri (
  * @return 0 if OK, non-zero if error.
  */
 NONNULL_ARGS (1)
-int
-lv2_plugin_instantiate (
+int lv2_plugin_instantiate (
   Lv2Plugin * self,
   bool        use_state_file,
   char *      preset_uri,
@@ -418,15 +414,13 @@ lv2_plugin_instantiate (
  *
  * @param plugin A newly allocated Plugin instance.
  */
-NONNULL
-Lv2Plugin *
+NONNULL Lv2Plugin *
 lv2_plugin_new (Plugin * plugin);
 
 /**
  * Processes the plugin for this cycle.
  */
-NONNULL
-void
+NONNULL void
 lv2_plugin_process (
   Lv2Plugin *                         self,
   const EngineProcessTimeInfo * const time_nfo);
@@ -437,8 +431,7 @@ lv2_plugin_process (
  * This will be 0 if the plugin does not report
  * latency.
  */
-NONNULL
-nframes_t
+NONNULL nframes_t
 lv2_plugin_get_latency (Lv2Plugin * pl);
 
 /**
@@ -463,15 +456,13 @@ typedef enum Lv2PluginPickUiFlag
  * @return If the plugin has a deprecated UI,
  *   returns the UI URI, otherwise NULL.
  */
-NONNULL
-char *
+NONNULL char *
 lv2_plugin_has_deprecated_ui (const char * uri);
 
 /**
  * Returns whether the given UI uri is supported.
  */
-NONNULL
-bool
+NONNULL bool
 lv2_plugin_is_ui_supported (
   const char * pl_uri,
   const char * ui_uri);
@@ -501,8 +492,7 @@ lv2_plugin_pick_ui (
   const LilvUI **     out_ui,
   const LilvNode **   out_ui_type);
 
-NONNULL
-char *
+NONNULL char *
 lv2_plugin_get_ui_class (
   const char * pl_uri,
   const char * ui_uri);
@@ -510,8 +500,7 @@ lv2_plugin_get_ui_class (
 /**
  * Returns the bundle path of the UI as a URI.
  */
-NONNULL
-char *
+NONNULL char *
 lv2_plugin_get_ui_bundle_uri (
   const char * pl_uri,
   const char * ui_uri);
@@ -519,8 +508,7 @@ lv2_plugin_get_ui_bundle_uri (
 /**
  * Returns the binary path of the UI as a URI.
  */
-NONNULL
-char *
+NONNULL char *
 lv2_plugin_get_ui_binary_uri (
   const char * pl_uri,
   const char * ui_uri);
@@ -545,12 +533,10 @@ lv2_plugin_pick_most_preferable_ui (
   bool         print_result);
 
 /* FIXME remove */
-NONNULL
-bool
+NONNULL bool
 lv2_plugin_ui_type_is_external (const LilvNode * ui_type);
 
-NONNULL
-bool
+NONNULL bool
 lv2_plugin_is_ui_external (
   const char * uri,
   const char * ui_uri,
@@ -570,8 +556,7 @@ lv2_plugin_set_control (
  * Returns the property port matching the given
  * property URID.
  */
-NONNULL
-Port *
+NONNULL Port *
 lv2_plugin_get_property_port (
   Lv2Plugin * self,
   LV2_URID    property);
@@ -590,12 +575,10 @@ lv2_plugin_get_port_value (
   uint32_t *   size,
   uint32_t *   type);
 
-NONNULL
-char *
+NONNULL char *
 lv2_plugin_get_library_path (Lv2Plugin * self);
 
-NONNULL
-char *
+NONNULL char *
 lv2_plugin_get_abs_state_file_path (
   Lv2Plugin * self,
   bool        is_backup);
@@ -603,39 +586,33 @@ lv2_plugin_get_abs_state_file_path (
 /**
  * Allocate port buffers (only necessary for MIDI).
  */
-NONNULL
-void
+NONNULL void
 lv2_plugin_allocate_port_buffers (Lv2Plugin * plugin);
 
-NONNULL
-int
+NONNULL int
 lv2_plugin_activate (Lv2Plugin * self, bool activate);
 
 /**
  * Returns whether the plugin can be cleaned up
  * (some plugins crash on cleanup).
  */
-NONNULL
-bool
+NONNULL bool
 lv2_plugin_can_cleanup (const char * uri);
 
 /**
  * Populates the banks in the plugin instance.
  */
 
-NONNULL
-void
+NONNULL void
 lv2_plugin_populate_banks (Lv2Plugin * self);
 
-NONNULL
-int
+NONNULL int
 lv2_plugin_cleanup (Lv2Plugin * self);
 
 /**
  * Frees the Lv2Plugin and all its components.
  */
-NONNULL
-void
+NONNULL void
 lv2_plugin_free (Lv2Plugin * self);
 
 /**

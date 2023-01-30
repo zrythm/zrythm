@@ -756,8 +756,7 @@ arranger_selections_has_any (ArrangerSelections * self)
 /**
  * Add owner region's ticks to the given position.
  */
-NONNULL
-static void
+NONNULL static void
 add_region_ticks (
   const ArrangerSelections * self,
   Position *                 pos)
@@ -2395,8 +2394,8 @@ arranger_selections_paste_to_pos (
 
           GError * err = NULL;
           bool     success = track_add_region (
-                track, r, NULL, r->id.lane_pos, F_NO_GEN_NAME,
-                F_NO_PUBLISH_EVENTS, &err);
+            track, r, NULL, r->id.lane_pos, F_NO_GEN_NAME,
+            F_NO_PUBLISH_EVENTS, &err);
           if (!success)
             {
               HANDLE_ERROR (
@@ -2447,8 +2446,7 @@ arranger_selections_paste_to_pos (
 /**
  * Appends all objects in the given array.
  */
-NONNULL
-void
+NONNULL void
 arranger_selections_get_all_objects (
   const ArrangerSelections * self,
   GPtrArray *                arr)

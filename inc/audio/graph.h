@@ -39,17 +39,17 @@
 #include "zix/sem.h"
 #include <pthread.h>
 
-typedef struct GraphNode               GraphNode;
-typedef struct Graph                   Graph;
-typedef struct MPMCQueue               MPMCQueue;
-typedef struct Port                    Port;
-typedef struct Fader                   Fader;
-typedef struct Track                   Track;
-typedef struct SampleProcessor         SampleProcessor;
-typedef struct Plugin                  Plugin;
-typedef struct Position                Position;
-typedef struct GraphThread             GraphThread;
-typedef struct Router                  Router;
+typedef struct GraphNode       GraphNode;
+typedef struct Graph           Graph;
+typedef struct MPMCQueue       MPMCQueue;
+typedef struct Port            Port;
+typedef struct Fader           Fader;
+typedef struct Track           Track;
+typedef struct SampleProcessor SampleProcessor;
+typedef struct Plugin          Plugin;
+typedef struct Position        Position;
+typedef struct GraphThread     GraphThread;
+typedef struct Router          Router;
 typedef struct ModulatorMacroProcessor ModulatorMacroProcessor;
 
 /**
@@ -223,8 +223,7 @@ graph_find_hw_processor_node (
  * Creates a new node, adds it to the graph and
  * returns it.
  */
-NONNULL
-GraphNode *
+NONNULL GraphNode *
 graph_create_node (
   Graph *       self,
   GraphNodeType type,

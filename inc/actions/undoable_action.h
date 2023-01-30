@@ -137,15 +137,13 @@ static const cyaml_schema_value_t undoable_action_schema = {
     undoable_action_fields_schema),
 };
 
-NONNULL
-void
+NONNULL void
 undoable_action_init_loaded (UndoableAction * self);
 
 /**
  * Initializer to be used by implementing actions.
  */
-NONNULL
-void
+NONNULL void
 undoable_action_init (
   UndoableAction *   self,
   UndoableActionType type);
@@ -154,8 +152,7 @@ undoable_action_init (
  * Returns whether the action requires pausing
  * the engine.
  */
-NONNULL
-bool
+NONNULL bool
 undoable_action_needs_pause (UndoableAction * self);
 
 /**
@@ -166,22 +163,19 @@ undoable_action_needs_pause (UndoableAction * self);
  * the pool for actions that can't contain audio
  * clips.
  */
-NONNULL
-bool
+NONNULL bool
 undoable_action_can_contain_clip (UndoableAction * self);
 
 /**
  * Checks whether the action actually contains or
  * refers to the given audio clip.
  */
-NONNULL
-bool
+NONNULL bool
 undoable_action_contains_clip (
   UndoableAction * self,
   AudioClip *      clip);
 
-NONNULL
-void
+NONNULL void
 undoable_action_get_plugins (
   UndoableAction * self,
   GPtrArray *      arr);
@@ -192,8 +186,7 @@ undoable_action_get_plugins (
  * This should be set on the last action to be
  * performed.
  */
-NONNULL
-void
+NONNULL void
 undoable_action_set_num_actions (
   UndoableAction * self,
   int              num_actions);
@@ -208,8 +201,7 @@ undoable_action_set_num_actions (
  * @param after Pointer to the connections after.
  */
 NONNULL_ARGS (1)
-void
-undoable_action_save_or_load_port_connections (
+void undoable_action_save_or_load_port_connections (
   UndoableAction *          self,
   bool                      _do,
   PortConnectionsManager ** before,
@@ -223,8 +215,7 @@ undoable_action_save_or_load_port_connections (
  * @return Non-zero if errors occurred.
  */
 NONNULL_ARGS (1)
-int
-undoable_action_do (UndoableAction * self, GError ** error);
+int undoable_action_do (UndoableAction * self, GError ** error);
 
 /**
  * Undoes the action.
@@ -232,8 +223,9 @@ undoable_action_do (UndoableAction * self, GError ** error);
  * @return Non-zero if errors occurred.
  */
 NONNULL_ARGS (1)
-int
-undoable_action_undo (UndoableAction * self, GError ** error);
+int undoable_action_undo (
+  UndoableAction * self,
+  GError **        error);
 
 void
 undoable_action_free (UndoableAction * self);
@@ -244,8 +236,7 @@ undoable_action_free (UndoableAction * self);
  *
  * The string MUST be free'd using g_free().
  */
-NONNULL
-char *
+NONNULL char *
 undoable_action_to_string (UndoableAction * ua);
 
 /**

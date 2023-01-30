@@ -89,8 +89,7 @@ midi_mapping_action_init_loaded (MidiMappingAction * self);
 /**
  * Creates a new action.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 midi_mapping_action_new_enable (
   int       idx,
   bool      enable,
@@ -99,8 +98,7 @@ midi_mapping_action_new_enable (
 /**
  * Creates a new action.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 midi_mapping_action_new_bind (
   midi_byte_t * buf,
   ExtPort *     device_port,
@@ -110,12 +108,10 @@ midi_mapping_action_new_bind (
 /**
  * Creates a new action.
  */
-WARN_UNUSED_RESULT
-UndoableAction *
+WARN_UNUSED_RESULT UndoableAction *
 midi_mapping_action_new_unbind (int idx, GError ** error);
 
-NONNULL
-MidiMappingAction *
+NONNULL MidiMappingAction *
 midi_mapping_action_clone (const MidiMappingAction * src);
 
 /**

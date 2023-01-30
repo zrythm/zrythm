@@ -207,12 +207,10 @@ COLD NONNULL_ARGS (1) void automation_track_init_loaded (
  * Creates an automation track for the given
  * Port.
  */
-NONNULL
-AutomationTrack *
+NONNULL AutomationTrack *
 automation_track_new (Port * port);
 
-NONNULL
-bool
+NONNULL bool
 automation_track_validate (AutomationTrack * self);
 
 /**
@@ -237,8 +235,7 @@ automation_record_mode_get_localized (
  * @param basic_search If true, only basic port
  *   identifier members are checked.
  */
-NONNULL
-AutomationTrack *
+NONNULL AutomationTrack *
 automation_track_find_from_port_id (
   PortIdentifier * id,
   bool             basic_search);
@@ -262,16 +259,14 @@ automation_track_set_automation_mode (
   AutomationMode    mode,
   bool              fire_events);
 
-NONNULL
-static inline void
+NONNULL static inline void
 automation_track_swap_record_mode (AutomationTrack * self)
 {
   self->record_mode =
     (self->record_mode + 1) % NUM_AUTOMATION_RECORD_MODES;
 }
 
-NONNULL
-AutomationTracklist *
+NONNULL AutomationTracklist *
 automation_track_get_automation_tracklist (
   AutomationTrack * self);
 
@@ -322,8 +317,7 @@ automation_track_should_be_recording (
  * @note This must not be used directly. Use
  *   track_add_region() instead.
  */
-NONNULL
-void
+NONNULL void
 automation_track_add_region (
   AutomationTrack * self,
   ZRegion *         region);
@@ -335,8 +329,7 @@ automation_track_add_region (
  * @note This must not be used directly. Use
  *   track_insert_region() instead.
  */
-NONNULL
-void
+NONNULL void
 automation_track_insert_region (
   AutomationTrack * self,
   ZRegion *         region,
@@ -358,8 +351,7 @@ automation_track_insert_region (
  *   positions based on ticks (true) or frames
  *   (false).
  */
-NONNULL
-void
+NONNULL void
 automation_track_update_positions (
   AutomationTrack * self,
   bool              from_ticks,
@@ -369,19 +361,16 @@ automation_track_update_positions (
  * Sets the index of the AutomationTrack in the
  * AutomationTracklist.
  */
-NONNULL
-void
+NONNULL void
 automation_track_set_index (AutomationTrack * self, int index);
 
 /**
  * Clones the AutomationTrack.
  */
-NONNULL
-AutomationTrack *
+NONNULL AutomationTrack *
 automation_track_clone (AutomationTrack * src);
 
-NONNULL
-Track *
+NONNULL Track *
 automation_track_get_track (AutomationTrack * self);
 
 /**
@@ -393,8 +382,7 @@ automation_track_get_track (AutomationTrack * self);
  *   the region surrounds \ref pos), otherwise
  *   check in the region that ends last.
  */
-NONNULL
-AutomationPoint *
+NONNULL AutomationPoint *
 automation_track_get_ap_before_pos (
   const AutomationTrack * self,
   const Position *        pos,
@@ -420,15 +408,13 @@ automation_track_get_region_before_pos (
 /**
  * Unselects all arranger objects.
  */
-NONNULL
-void
+NONNULL void
 automation_track_unselect_all (AutomationTrack * self);
 
 /**
  * Removes a region from the automation track.
  */
-NONNULL
-void
+NONNULL void
 automation_track_remove_region (
   AutomationTrack * self,
   ZRegion *         region);
@@ -437,8 +423,7 @@ automation_track_remove_region (
  * Removes and frees all arranger objects
  * recursively.
  */
-NONNULL
-void
+NONNULL void
 automation_track_clear (AutomationTrack * self);
 
 /**
@@ -456,8 +441,7 @@ automation_track_clear (AutomationTrack * self);
  *   snapshotted (cached) regions. This should be set to true
  *   when called during dsp playback. TODO unimplemented
  */
-NONNULL
-float
+NONNULL float
 automation_track_get_val_at_pos (
   AutomationTrack * self,
   Position *        pos,
@@ -469,8 +453,7 @@ automation_track_get_val_at_pos (
  * Returns the y pixels from the value based on the
  * allocation of the automation track.
  */
-NONNULL
-int
+NONNULL int
 automation_track_get_y_px_from_normalized_val (
   AutomationTrack * self,
   float             normalized_val);
@@ -485,30 +468,25 @@ automation_track_get_port (
 /**
  * Gets the last ZRegion in the AutomationTrack.
  */
-NONNULL
-ZRegion *
+NONNULL ZRegion *
 automation_track_get_last_region (AutomationTrack * self);
 
-NONNULL
-void
+NONNULL void
 automation_track_set_caches (
   AutomationTrack * self,
   CacheTypes        types);
 
-NONNULL
-bool
+NONNULL bool
 automation_track_contains_automation (
   const AutomationTrack * self);
 
-NONNULL
-bool
+NONNULL bool
 automation_track_verify (AutomationTrack * self);
 
 /**
  * Frees the automation track.
  */
-NONNULL
-void
+NONNULL void
 automation_track_free (AutomationTrack * at);
 
 #endif // __AUDIO_AUTOMATION_TRACK_H__

@@ -34,29 +34,29 @@
 #  include <rtaudio_c.h>
 #endif
 
-typedef struct Plugin                  Plugin;
-typedef struct MidiEvents              MidiEvents;
-typedef struct Fader                   Fader;
-typedef struct ZixRingImpl             ZixRing;
-typedef struct WindowsMmeDevice        WindowsMmeDevice;
-typedef struct Channel                 Channel;
-typedef struct AudioEngine             AudioEngine;
-typedef struct Track                   Track;
-typedef struct PortConnection          PortConnection;
-typedef struct TrackProcessor          TrackProcessor;
+typedef struct Plugin           Plugin;
+typedef struct MidiEvents       MidiEvents;
+typedef struct Fader            Fader;
+typedef struct ZixRingImpl      ZixRing;
+typedef struct WindowsMmeDevice WindowsMmeDevice;
+typedef struct Channel          Channel;
+typedef struct AudioEngine      AudioEngine;
+typedef struct Track            Track;
+typedef struct PortConnection   PortConnection;
+typedef struct TrackProcessor   TrackProcessor;
 typedef struct ModulatorMacroProcessor ModulatorMacroProcessor;
-typedef struct RtMidiDevice            RtMidiDevice;
-typedef struct RtAudioDevice           RtAudioDevice;
-typedef struct AutomationTrack         AutomationTrack;
-typedef struct TruePeakDsp             TruePeakDsp;
-typedef struct ExtPort                 ExtPort;
-typedef struct AudioClip               AudioClip;
-typedef struct ChannelSend             ChannelSend;
-typedef struct Transport               Transport;
-typedef struct PluginGtkController     PluginGtkController;
-typedef struct EngineProcessTimeInfo   EngineProcessTimeInfo;
-typedef enum PanAlgorithm              PanAlgorithm;
-typedef enum PanLaw                    PanLaw;
+typedef struct RtMidiDevice          RtMidiDevice;
+typedef struct RtAudioDevice         RtAudioDevice;
+typedef struct AutomationTrack       AutomationTrack;
+typedef struct TruePeakDsp           TruePeakDsp;
+typedef struct ExtPort               ExtPort;
+typedef struct AudioClip             AudioClip;
+typedef struct ChannelSend           ChannelSend;
+typedef struct Transport             Transport;
+typedef struct PluginGtkController   PluginGtkController;
+typedef struct EngineProcessTimeInfo EngineProcessTimeInfo;
+typedef enum PanAlgorithm            PanAlgorithm;
+typedef enum PanLaw                  PanLaw;
 
 /**
  * @addtogroup audio
@@ -137,12 +137,10 @@ typedef struct PortScalePoint
 PURE int
 port_scale_point_cmp (const void * _a, const void * _b);
 
-NONNULL
-PortScalePoint *
+NONNULL PortScalePoint *
 port_scale_point_new (const float val, const char * label);
 
-NONNULL
-void
+NONNULL void
 port_scale_point_free (PortScalePoint * self);
 
 /**
@@ -598,8 +596,7 @@ static const cyaml_schema_value_t stereo_ports_schema = {
  * Should be called after the ports are loaded from
  * yml.
  */
-NONNULL
-void
+NONNULL void
 port_init_loaded (Port * self, void * owner);
 
 void
@@ -608,12 +605,10 @@ port_set_owner (
   PortOwnerType owner_type,
   void *        owner);
 
-NONNULL
-Port *
+NONNULL Port *
 port_find_from_identifier (const PortIdentifier * const id);
 
-NONNULL
-static inline void
+NONNULL static inline void
 stereo_ports_init_loaded (StereoPorts * sp, void * owner)
 {
   port_init_loaded (sp->l, owner);
@@ -621,8 +616,7 @@ stereo_ports_init_loaded (StereoPorts * sp, void * owner)
 }
 
 NONNULL_ARGS (1)
-static inline void
-stereo_ports_set_owner (
+static inline void stereo_ports_set_owner (
   StereoPorts * sp,
   PortOwnerType owner_type,
   void *        owner)
@@ -634,17 +628,13 @@ stereo_ports_set_owner (
 /**
  * Creates port.
  */
-WARN_UNUSED_RESULT
-NONNULL
-Port *
+WARN_UNUSED_RESULT NONNULL Port *
 port_new_with_type (
   PortType     type,
   PortFlow     flow,
   const char * label);
 
-WARN_UNUSED_RESULT
-NONNULL
-Port *
+WARN_UNUSED_RESULT NONNULL Port *
 port_new_with_type_and_owner (
   PortType      type,
   PortFlow      flow,
@@ -658,8 +648,7 @@ port_new_with_type_and_owner (
  * To be called only where necessary to save
  * RAM.
  */
-NONNULL
-void
+NONNULL void
 port_allocate_bufs (Port * self);
 
 /**
@@ -668,15 +657,13 @@ port_allocate_bufs (Port * self);
  * To be used when removing ports from the
  * project/graph.
  */
-NONNULL
-void
+NONNULL void
 port_free_bufs (Port * self);
 
 /**
  * Creates blank stereo ports.
  */
-NONNULL
-StereoPorts *
+NONNULL StereoPorts *
 stereo_ports_new_from_existing (Port * l, Port * r);
 
 /**
@@ -702,22 +689,19 @@ stereo_ports_new_generic (
  *
  * @return Non-zero if error.
  */
-NONNULL
-void
+NONNULL void
 stereo_ports_connect (
   StereoPorts * src,
   StereoPorts * dest,
   int           locked);
 
-NONNULL
-void
+NONNULL void
 stereo_ports_disconnect (StereoPorts * self);
 
 StereoPorts *
 stereo_ports_clone (const StereoPorts * src);
 
-NONNULL
-void
+NONNULL void
 stereo_ports_free (StereoPorts * self);
 
 /**
@@ -740,8 +724,7 @@ port_get_value_from_symbol (
  * Receives MIDI data from the port's exposed
  * JACK port (if any) into the port.
  */
-NONNULL
-void
+NONNULL void
 port_receive_midi_events_from_jack (
   Port *          self,
   const nframes_t start_frames,
@@ -751,8 +734,7 @@ port_receive_midi_events_from_jack (
  * Receives audio data from the port's exposed
  * JACK port (if any) into the port.
  */
-NONNULL
-void
+NONNULL void
 port_receive_audio_data_from_jack (
   Port *          self,
   const nframes_t start_frames,
@@ -764,8 +746,7 @@ port_receive_audio_data_from_jack (
  * if audio port, returns if there is sound in the
  * buffer.
  */
-NONNULL
-bool
+NONNULL bool
 port_has_sound (Port * self);
 
 /**
@@ -773,12 +754,10 @@ port_has_sound (Port * self);
  * format "Track/Port" or "Track/Plugin/Port" in
  * \p buf.
  */
-NONNULL
-void
+NONNULL void
 port_get_full_designation (Port * const self, char * buf);
 
-NONNULL
-void
+NONNULL void
 port_print_full_designation (Port * const self);
 
 /**
@@ -788,12 +767,10 @@ port_print_full_designation (Port * const self);
 void
 port_get_all (GPtrArray * ports);
 
-NONNULL
-Track *
+NONNULL Track *
 port_get_track (const Port * const self, int warn_if_fail);
 
-NONNULL
-Plugin *
+NONNULL Plugin *
 port_get_plugin (Port * const self, const bool warn_if_fail);
 
 /**
@@ -820,16 +797,14 @@ port_update_identifier (
  * Dequeue the midi events from the ring
  * buffers into \ref RtMidiDevice.events.
  */
-NONNULL
-void
+NONNULL void
 port_prepare_rtmidi_events (Port * self);
 
 /**
  * Sums the inputs coming in from RtMidi
  * before the port is processed.
  */
-NONNULL
-void
+NONNULL void
 port_sum_data_from_rtmidi (
   Port *          self,
   const nframes_t start_frame,
@@ -841,16 +816,14 @@ port_sum_data_from_rtmidi (
  * Dequeue the audio data from the ring
  * buffers into \ref RtAudioDevice.buf.
  */
-NONNULL
-void
+NONNULL void
 port_prepare_rtaudio_data (Port * self);
 
 /**
  * Sums the inputs coming in from RtAudio
  * before the port is processed.
  */
-NONNULL
-void
+NONNULL void
 port_sum_data_from_rtaudio (
   Port *          self,
   const nframes_t start_frame,
@@ -860,8 +833,7 @@ port_sum_data_from_rtaudio (
 /**
  * Disconnects all hardware inputs from the port.
  */
-NONNULL
-void
+NONNULL void
 port_disconnect_hw_inputs (Port * self);
 
 /**
@@ -871,22 +843,19 @@ port_disconnect_hw_inputs (Port * self);
  * It checks what the backend is using the engine's
  * audio backend or midi backend settings.
  */
-NONNULL
-void
+NONNULL void
 port_set_expose_to_backend (Port * self, int expose);
 
 /**
  * Returns if the port is exposed to the backend.
  */
-NONNULL
-PURE int
+NONNULL PURE int
 port_is_exposed_to_backend (const Port * self);
 
 /**
  * Renames the port on the backend side.
  */
-NONNULL
-void
+NONNULL void
 port_rename_backend (Port * self);
 
 #ifdef HAVE_ALSA
@@ -916,8 +885,7 @@ port_find_by_alsa_seq_id (const int id);
  *   from within Zrythm, this should be true to
  *   notify the plugin of the change.
  */
-NONNULL
-void
+NONNULL void
 port_set_control_value (
   Port *      self,
   const float val,
@@ -931,8 +899,7 @@ port_set_control_value (
  * @param normalize Whether to get the value
  *   normalized or not.
  */
-NONNULL
-HOT float
+NONNULL HOT float
 port_get_control_value (Port * self, const bool normalize);
 
 /**
@@ -957,16 +924,14 @@ port_get_control_value (Port * self, const bool normalize);
  * Returns the number of unlocked (user-editable)
  * sources.
  */
-NONNULL
-int
+NONNULL int
 port_get_num_unlocked_srcs (const Port * self);
 
 /**
  * Returns the number of unlocked (user-editable)
  * destinations.
  */
-NONNULL
-int
+NONNULL int
 port_get_num_unlocked_dests (const Port * self);
 
 /**
@@ -989,8 +954,7 @@ port_update_track_name_hash (
  *   0 in this cycle.
  * @param nframes The number of frames to process.
  */
-NONNULL
-static inline void
+NONNULL static inline void
 port_apply_fader (
   Port *          port,
   float           amp,
@@ -1027,15 +991,13 @@ port_process (
  * the connection will be valid and won't break the
  * acyclicity of the graph).
  */
-NONNULL
-bool
+NONNULL bool
 ports_can_be_connected (const Port * src, const Port * dest);
 
 /**
  * Disconnects all the given ports.
  */
-NONNULL
-void
+NONNULL void
 ports_disconnect (Port ** ports, int num_ports, int deleting);
 
 /**
@@ -1045,8 +1007,7 @@ ports_disconnect (Port ** ports, int num_ports, int deleting);
  * Used when doing delete actions so that ports
  * can be restored on undo.
  */
-NONNULL
-void
+NONNULL void
 port_copy_metadata_from_project (
   Port * self,
   Port * project_port);
@@ -1058,8 +1019,7 @@ port_copy_metadata_from_project (
  * @param self
  * @param other
  */
-NONNULL
-void
+NONNULL void
 port_copy_values (Port * self, const Port * other);
 
 /**
@@ -1072,8 +1032,7 @@ port_copy_values (Port * self, const Port * other);
  * @param self Project port.
  * @param non_project Non-project port.
  */
-NONNULL
-void
+NONNULL void
 port_restore_from_non_project (Port * self, Port * non_project);
 
 /**
@@ -1097,15 +1056,13 @@ port_clear_buffer (Port * port);
 /**
  * Disconnects all srcs and dests from port.
  */
-NONNULL
-int
+NONNULL int
 port_disconnect_all (Port * port);
 
 /**
  * Applies the pan to the given L/R ports.
  */
-NONNULL
-void
+NONNULL void
 port_apply_pan_stereo (
   Port *       l,
   Port *       r,
@@ -1120,8 +1077,7 @@ port_apply_pan_stereo (
  *   0 in this cycle.
  * @param nframes The number of frames to process.
  */
-NONNULL
-void
+NONNULL void
 port_apply_pan (
   Port *          port,
   float           pan,
@@ -1133,8 +1089,7 @@ port_apply_pan (
 /**
  * Generates a hash for a given port.
  */
-NONNULL
-uint32_t
+NONNULL uint32_t
 port_get_hash (const void * ptr);
 
 /**
@@ -1146,8 +1101,7 @@ port_clone (const Port * src);
 /**
  * Deletes port, doing required cleanup and updating counters.
  */
-NONNULL
-void
+NONNULL void
 port_free (Port * port);
 
 /**

@@ -114,7 +114,7 @@ test_project_save (void)
   /* save the project */
   GError * err = NULL;
   bool     success = project_save (
-        PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, &err);
+    PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, &err);
   g_assert_true (success);
   char * prj_file =
     g_build_filename (PROJECT->dir, PROJECT_FILE, NULL);
@@ -308,10 +308,10 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   unsigned int track_name_hash = track_get_name_hash (track);
   ZRegion *    r = midi_region_new (
-       p1, p2, track_get_name_hash (track), MIDI_REGION_LANE, 0);
+    p1, p2, track_get_name_hash (track), MIDI_REGION_LANE, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   bool             success = track_add_region (
-                track, r, NULL, MIDI_REGION_LANE, 1, 0, &err);
+    track, r, NULL, MIDI_REGION_LANE, 1, 0, &err);
   g_assert_true (success);
   arranger_object_set_name (
     r_obj, MIDI_REGION_NAME, F_NO_PUBLISH_EVENTS);

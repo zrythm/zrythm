@@ -39,8 +39,8 @@ SCM_DEFINE (
 {
   GError * err = NULL;
   bool     ret = channel_send_action_perform_connect_audio (
-        scm_to_pointer (send), scm_to_pointer (stereo_ports),
-        &err);
+    scm_to_pointer (send), scm_to_pointer (stereo_ports),
+    &err);
   if (!ret)
     {
       HANDLE_ERROR (

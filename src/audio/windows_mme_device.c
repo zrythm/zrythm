@@ -109,8 +109,8 @@ windows_mme_device_dequeue_midi_event_struct (
   uint64_t timestamp;
   size_t   data_size;
   int      ret = windows_mme_device_dequeue_midi_event (
-         self, timestamp_start, timestamp_end, &timestamp,
-         ev->raw_buffer, &data_size);
+    self, timestamp_start, timestamp_end, &timestamp,
+    ev->raw_buffer, &data_size);
   if (!ret)
     return 0;
 

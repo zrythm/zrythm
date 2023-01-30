@@ -86,8 +86,7 @@ arranger_object_is_fade (
  *
  * @param x X in local coordinates.
  */
-NONNULL
-PURE bool
+NONNULL PURE bool
 arranger_object_is_resize_l (
   ArrangerObject * self,
   const int        x);
@@ -98,8 +97,7 @@ arranger_object_is_resize_l (
  *
  * @param x X in local coordinates.
  */
-NONNULL
-bool
+NONNULL bool
 arranger_object_is_resize_r (
   ArrangerObject * self,
   const int        x);
@@ -135,8 +133,7 @@ arranger_object_is_resize_loop (
  * @param x X in local coordinates.
  * @param y Y in local coordinates.
  */
-NONNULL
-bool
+NONNULL bool
 arranger_object_is_rename (
   ArrangerObject * self,
   const int        x,
@@ -219,9 +216,7 @@ arranger_object_draw (
  *   to speed up calculation.
  */
 NONNULL_ARGS (1)
-OPTIMIZE_O3
-bool
-arranger_object_should_orig_be_visible (
+OPTIMIZE_O3 bool arranger_object_should_orig_be_visible (
   ArrangerObject * self,
   ArrangerWidget * arranger);
 

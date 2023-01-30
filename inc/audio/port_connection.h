@@ -95,41 +95,35 @@ port_connection_new (
   bool                   locked,
   bool                   enabled);
 
-NONNULL
-void
+NONNULL void
 port_connection_update (
   PortConnection * self,
   float            multiplier,
   bool             locked,
   bool             enabled);
 
-NONNULL
-PURE bool
+NONNULL PURE bool
 port_connection_is_send (const PortConnection * self);
 
-NONNULL
-void
+NONNULL void
 port_connection_print_to_str (
   const PortConnection * self,
   char *                 buf,
   size_t                 buf_sz);
 
-NONNULL
-void
+NONNULL void
 port_connection_print (const PortConnection * self);
 
 /**
  * To be used during serialization.
  */
-NONNULL
-PortConnection *
+NONNULL PortConnection *
 port_connection_clone (const PortConnection * src);
 
 /**
  * Deletes port, doing required cleanup and updating counters.
  */
-NONNULL
-void
+NONNULL void
 port_connection_free (PortConnection * self);
 
 /**

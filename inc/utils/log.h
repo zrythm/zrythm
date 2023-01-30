@@ -87,15 +87,13 @@ extern Log * zlog;
  *
  * @param secs Number of timeout seconds.
  */
-NONNULL
-void
+NONNULL void
 log_init_writer_idle (Log * self, unsigned int secs);
 
 /**
  * Idle callback.
  */
-NONNULL
-int
+NONNULL int
 log_idle_cb (Log * self);
 
 /**
@@ -107,8 +105,7 @@ log_idle_cb (Log * self);
  *
  * @param n Number of lines.
  */
-NONNULL
-char *
+NONNULL char *
 log_get_last_n_lines (Log * self, int n);
 
 /**
@@ -118,8 +115,7 @@ log_get_last_n_lines (Log * self, int n);
  * @return Whether successful.
  */
 NONNULL_ARGS (1, 2, 3)
-bool
-log_generate_compressed_file (
+bool log_generate_compressed_file (
   Log *     self,
   char **   ret_dir,
   char **   ret_path,
@@ -135,8 +131,7 @@ log_generate_compressed_file (
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-bool
+WARN_UNUSED_RESULT bool
 log_init_with_file (
   Log *        self,
   const char * filepath,
@@ -146,8 +141,7 @@ log_init_with_file (
  * Returns a pointer to the global zlog.
  */
 CONST
-WARN_UNUSED_RESULT
-Log **
+WARN_UNUSED_RESULT Log **
 log_get (void);
 
 /**
@@ -161,8 +155,7 @@ log_new (void);
 /**
  * Stops logging and frees any allocated memory.
  */
-NONNULL
-void
+NONNULL void
 log_free (Log * self);
 
 /**

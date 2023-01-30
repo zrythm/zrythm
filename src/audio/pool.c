@@ -41,7 +41,7 @@ audio_pool_init_loaded (AudioPool * self)
  * Creates a new audio pool.
  */
 AudioPool *
-audio_pool_new ()
+audio_pool_new (void)
 {
   AudioPool * self = object_new (AudioPool);
 
@@ -248,7 +248,7 @@ audio_pool_duplicate_clip (
     {
       GError * err = NULL;
       bool     success = audio_clip_write_to_pool (
-            new_clip, F_NO_PARTS, F_NOT_BACKUP, &err);
+        new_clip, F_NO_PARTS, F_NOT_BACKUP, &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR (

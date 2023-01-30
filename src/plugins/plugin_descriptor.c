@@ -425,8 +425,8 @@ plugin_descriptor_get_min_bridge_mode (
       const LilvUI * picked_ui;
       const LilvNode * picked_ui_type;
       bool             needs_bridging = lv2_plugin_pick_ui (
-                    uis, LV2_PLUGIN_UI_FOR_BRIDGING, &picked_ui,
-                    &picked_ui_type);
+        uis, LV2_PLUGIN_UI_FOR_BRIDGING, &picked_ui,
+        &picked_ui_type);
 
       if (needs_bridging)
         {

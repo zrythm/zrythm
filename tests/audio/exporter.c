@@ -337,8 +337,8 @@ test_bounce_region_with_first_note (void)
     idx_in_lane, 0);
   ArrangerObject * r_obj = (ArrangerObject *) region;
   bool             success = track_add_region (
-                track, region, NULL, lane_pos, F_GEN_NAME,
-                F_NO_PUBLISH_EVENTS, NULL);
+    track, region, NULL, lane_pos, F_GEN_NAME,
+    F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
   arranger_object_select (
     r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);

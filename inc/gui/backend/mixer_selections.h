@@ -133,8 +133,7 @@ mixer_selections_post_deserialize (MixerSelections * self);
  * Returns whether the selections can be pasted to
  * MixerWidget.paste_slot.
  */
-NONNULL
-bool
+NONNULL bool
 mixer_selections_can_be_pasted (
   MixerSelections * self,
   Channel *         ch,
@@ -145,8 +144,7 @@ mixer_selections_can_be_pasted (
  * Paste the selections starting at the slot in the
  * given channel.
  */
-NONNULL
-void
+NONNULL void
 mixer_selections_paste_to_slot (
   MixerSelections * ms,
   Channel *         ch,
@@ -206,8 +204,7 @@ mixer_selections_add_slot (
  * Assumes that the channel is the one already
  * selected.
  */
-NONNULL
-void
+NONNULL void
 mixer_selections_remove_slot (
   MixerSelections * ms,
   int               slot,
@@ -219,16 +216,14 @@ mixer_selections_remove_slot (
  *
  * @param asc Ascending or not.
  */
-NONNULL
-void
+NONNULL void
 mixer_selections_sort (MixerSelections * self, bool asc);
 
 /**
  * Returns the first selected plugin if any is
  * selected, otherwise NULL.
  */
-NONNULL
-Plugin *
+NONNULL Plugin *
 mixer_selections_get_first_plugin (MixerSelections * self);
 
 /**
@@ -241,21 +236,18 @@ mixer_selections_get_plugins (
   GPtrArray *                   arr,
   bool                          from_cache);
 
-NONNULL
-bool
+NONNULL bool
 mixer_selections_validate (MixerSelections * self);
 
 /**
  * Clears selections.
  */
-NONNULL
-void
+NONNULL void
 mixer_selections_clear (
   MixerSelections * ms,
   const int         pub_events);
 
-NONNULL
-void
+NONNULL void
 mixer_selections_free (MixerSelections * self);
 
 /**

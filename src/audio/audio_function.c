@@ -46,7 +46,7 @@ audio_function_get_action_target_for_type (
   AudioFunctionType type)
 {
   const char * type_str = audio_function_type_to_string (type);
-  char *       type_str_lower = g_strdup (type_str);
+  char * type_str_lower = g_strdup (type_str);
   string_to_lower (type_str, type_str_lower);
   char * substituted =
     string_replace (type_str_lower, " ", "-");
@@ -516,7 +516,7 @@ audio_function_apply (
         g_return_val_if_fail (uri, -1);
         GError * err = NULL;
         int      ret = apply_plugin (
-               uri, dest_frames, num_frames, channels, &err);
+          uri, dest_frames, num_frames, channels, &err);
         if (ret != 0)
           {
             PROPAGATE_PREFIXED_ERROR (
@@ -566,7 +566,7 @@ audio_function_apply (
     "writing %s to pool (id %d)", clip->name, clip->pool_id);
   GError * err = NULL;
   bool     success = audio_clip_write_to_pool (
-        clip, false, F_NOT_BACKUP, &err);
+    clip, false, F_NOT_BACKUP, &err);
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (

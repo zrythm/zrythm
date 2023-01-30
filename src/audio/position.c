@@ -524,7 +524,7 @@ position_snap (
       /* get closest snap point */
       Position closest_sp;
       bool     have_closest_sp = get_closest_snap_point (
-            pos, track, region, sg, &closest_sp);
+        pos, track, region, sg, &closest_sp);
       if (have_closest_sp)
         {
           /* move to closest snap point */
@@ -715,7 +715,7 @@ position_parse (Position * pos, const char * str)
   int   bars, beats, sixteenths;
   float ticksf;
   int   res = sscanf (
-      str, "%d.%d.%d.%f", &bars, &beats, &sixteenths, &ticksf);
+    str, "%d.%d.%d.%f", &bars, &beats, &sixteenths, &ticksf);
   if (res != 4 || res == EOF)
     return false;
 

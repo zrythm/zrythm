@@ -56,7 +56,7 @@ _test (
     pl_bundle, pl_uri, is_instrument, with_carla, 1);
 
   Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
-  int     orig_track_pos = track->pos;
+  int orig_track_pos = track->pos;
 
   PluginSetting * setting =
     test_plugin_manager_get_plugin_setting (

@@ -398,8 +398,8 @@ file_manager_remove_location_and_save (
 
   unsigned int idx;
   bool         ret = g_ptr_array_find_with_equal_func (
-            self->locations, loc,
-            (GEqualFunc) file_browser_location_equal_func, &idx);
+    self->locations, loc,
+    (GEqualFunc) file_browser_location_equal_func, &idx);
   if (ret)
     {
       FileBrowserLocation * existing_loc =

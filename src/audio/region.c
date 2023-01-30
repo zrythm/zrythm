@@ -396,7 +396,7 @@ region_stretch (ZRegion * self, double ratio, GError ** error)
         AudioClip * clip = audio_region_get_clip (self);
         GError *    err = NULL;
         int         new_clip_id = audio_pool_duplicate_clip (
-                  AUDIO_POOL, clip->pool_id, F_NO_WRITE_FILE, &err);
+          AUDIO_POOL, clip->pool_id, F_NO_WRITE_FILE, &err);
         if (new_clip_id < 0)
           {
             PROPAGATE_PREFIXED_ERROR_LITERAL (

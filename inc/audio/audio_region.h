@@ -118,8 +118,7 @@ audio_region_set_clip_id (ZRegion * self, int clip_id);
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-bool
+WARN_UNUSED_RESULT bool
 audio_region_replace_frames (
   ZRegion *        self,
   float *          frames,

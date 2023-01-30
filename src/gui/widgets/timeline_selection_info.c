@@ -202,7 +202,7 @@ timeline_selection_info_widget_refresh (
   GtkWidget * fo =
     timeline_selections_get_first_object (ts, 0);
   GtkWidget * lo = timeline_selections_get_last_object (ts, 0);
-  int         only_object = fo == lo;
+  int only_object = fo == lo;
 
   selection_info_widget_clear (self->selection_info);
   gtk_stack_set_visible_child (

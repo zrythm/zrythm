@@ -457,8 +457,7 @@ zrythm_get_user_dir (bool force_default);
  *
  * @return Whether successful.
  */
-NONNULL
-bool
+NONNULL bool
 zrythm_init_user_dirs_and_files (
   Zrythm *  self,
   GError ** error);
@@ -466,8 +465,7 @@ zrythm_init_user_dirs_and_files (
 /**
  * Initializes the array of project templates.
  */
-NONNULL
-void
+NONNULL void
 zrythm_init_templates (Zrythm * self);
 
 /**

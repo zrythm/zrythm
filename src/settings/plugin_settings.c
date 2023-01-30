@@ -322,7 +322,7 @@ activate_finish (
       /* create group */
       GError * err = NULL;
       bool     ret = track_create_empty_with_action (
-            TRACK_TYPE_AUDIO_GROUP, &err);
+        TRACK_TYPE_AUDIO_GROUP, &err);
       if (!ret)
         {
           HANDLE_ERROR (
@@ -529,7 +529,7 @@ activate_finish (
     {
       GError * err = NULL;
       bool     ret = track_create_for_plugin_at_idx_w_action (
-            type, self, TRACKLIST->num_tracks, &err);
+        type, self, TRACKLIST->num_tracks, &err);
       if (!ret)
         {
           HANDLE_ERROR (

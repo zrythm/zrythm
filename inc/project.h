@@ -464,8 +464,7 @@ project_create_default (
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-COLD bool
+WARN_UNUSED_RESULT COLD bool
 project_load (
   const char * filename,
   const bool   is_template,
@@ -484,8 +483,7 @@ project_load (
  *
  * @return Whether successful.
  */
-WARN_UNUSED_RESULT
-bool
+WARN_UNUSED_RESULT bool
 project_save (
   Project *    self,
   const char * _dir,
@@ -514,8 +512,7 @@ project_autosave_cb (void * data);
  *   current backup instead of the main project.
  */
 MALLOC
-NONNULL
-char *
+NONNULL char *
 project_get_path (Project * self, ProjectPath path, bool backup);
 
 /**
@@ -583,8 +580,7 @@ project_get_existing_yaml (
  * @param for_backup Whether the resulting project
  *   is for a backup.
  */
-NONNULL
-Project *
+NONNULL Project *
 project_clone (
   const Project * src,
   bool            for_backup,

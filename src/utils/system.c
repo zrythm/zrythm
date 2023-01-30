@@ -194,8 +194,8 @@ system_get_cmd_output (
   int      out, err;
   GError * g_err = NULL;
   bool     ret = g_spawn_async_with_pipes (
-        NULL, argv, NULL, G_SPAWN_DEFAULT, NULL, NULL, &pid, NULL,
-        &out, &err, &g_err);
+    NULL, argv, NULL, G_SPAWN_DEFAULT, NULL, NULL, &pid, NULL,
+    &out, &err, &g_err);
   if (!ret)
     {
       g_warning (

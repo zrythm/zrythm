@@ -66,8 +66,7 @@ typedef struct ControlPortChange
  *   \ref port_get_control_value() and should be
  *   used in widgets.
  */
-NONNULL
-PURE float
+NONNULL PURE float
 control_port_normalized_val_to_real (
   const Port * const self,
   float              normalized_val);
@@ -81,8 +80,7 @@ control_port_normalized_val_to_real (
  *   \ref port_get_control_value() and should be
  *   used in widgets.
  */
-NONNULL
-PURE float
+NONNULL PURE float
 control_port_real_val_to_normalized (
   const Port * const self,
   float              real_val);

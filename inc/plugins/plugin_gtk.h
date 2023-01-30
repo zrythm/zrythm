@@ -92,8 +92,7 @@ plugin_gtk_open_generic_ui (Plugin * plugin, bool fire_events);
  *
  * @note This is a GSourceFunc.
  */
-NONNULL
-int
+NONNULL int
 plugin_gtk_update_plugin_ui (Plugin * pl);
 
 /**

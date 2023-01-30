@@ -112,8 +112,7 @@ file_manager_load_files (FileManager * self);
  * @param save_to_settings Whether to save this
  *   location to GSettings.
  */
-NONNULL
-void
+NONNULL void
 file_manager_set_selection (
   FileManager *         self,
   FileBrowserLocation * sel,
@@ -156,8 +155,7 @@ file_manager_remove_location_and_save (
   const char *  location,
   bool          skip_if_standard);
 
-NONNULL
-void
+NONNULL void
 file_browser_location_free (FileBrowserLocation * loc);
 
 /**

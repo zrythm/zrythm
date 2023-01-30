@@ -384,7 +384,7 @@ plugin_gtk_on_save_preset_activate (
             g_build_filename (dirname, bundle, NULL);
           GError * err = NULL;
           bool     success = carla_native_plugin_save_state (
-                plugin->carla, false, dir, &err);
+            plugin->carla, false, dir, &err);
           if (!success)
             {
               HANDLE_ERROR_LITERAL (
@@ -1267,7 +1267,7 @@ build_control_widget (Plugin * pl, GtkWindow * window)
         {
           const char * group_name = group;
           GtkWidget *  group_label = plugin_gtk_new_label (
-             group_name, true, false, 0.0f, 1.0f);
+            group_name, true, false, 0.0f, 1.0f);
           gtk_grid_attach (
             GTK_GRID (port_table), group_label, 0, n_rows, 2,
             1);
