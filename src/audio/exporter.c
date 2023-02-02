@@ -851,6 +851,13 @@ exporter_post_export (
       router_recalc_graph (ROUTER, F_NOT_SOFT);
     }
 
+  /* reset "bounce to master" on each track */
+  for (int j = 0; j < TRACKLIST->num_tracks; j++)
+    {
+      Track * track = TRACKLIST->tracks[j];
+      track->bounce_to_master = false;
+    }
+
   /* restart engine */
   AUDIO_ENGINE->exporting = false;
   engine_resume (AUDIO_ENGINE, engine_state);

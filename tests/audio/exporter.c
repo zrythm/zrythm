@@ -113,6 +113,8 @@ test_export_wav (void)
 
           z_chromaprint_check_fingerprint_similarity (
             filepath, settings->file_uri, 83, 6);
+          g_assert_true (audio_files_equal (
+            filepath, settings->file_uri, 151199, 0.0001f));
 
           io_remove (settings->file_uri);
           g_free (filename);
@@ -478,6 +480,8 @@ _test_bounce_midi_track_routed_to_instrument_track (
         NULL);
       z_chromaprint_check_fingerprint_similarity (
         filepath, settings->file_uri, 97, 34);
+      g_assert_true (audio_files_equal (
+        filepath, settings->file_uri, 120000, 0.01f));
       g_free (filepath);
     }
   else
@@ -508,6 +512,7 @@ _test_bounce_instrument_track (
   BounceStep bounce_step,
   bool       with_parents)
 {
+  g_message ("=== Bounce instrument track start ===");
 #if defined(HAVE_GEONKICK) && defined(HAVE_MVERB)
   test_helper_zrythm_init ();
 
@@ -590,8 +595,16 @@ _test_bounce_instrument_track (
 
 #  define CHECK_SAME_AS_FILE(dirname, x, match_rate) \
     char * filepath = g_build_filename (dirname, x, NULL); \
-    z_chromaprint_check_fingerprint_similarity ( \
-      filepath, settings->file_uri, match_rate, 34); \
+    if (match_rate == 100) \
+      { \
+        g_assert_true (audio_files_equal ( \
+          filepath, settings->file_uri, 151199, 0.01f)); \
+      } \
+    else \
+      { \
+        z_chromaprint_check_fingerprint_similarity ( \
+          filepath, settings->file_uri, match_rate, 34); \
+      } \
     g_free (filepath)
 
   if (with_parents || bounce_step == BOUNCE_STEP_POST_FADER)
@@ -607,7 +620,7 @@ _test_bounce_instrument_track (
       CHECK_SAME_AS_FILE (
         TESTS_SRCDIR,
         "test_mixdown_midi_routed_to_instrument_track.ogg",
-        97);
+        100);
     }
   else if (bounce_step == BOUNCE_STEP_PRE_FADER)
     {
@@ -702,6 +715,7 @@ _test_bounce_instrument_track (
 
   test_helper_zrythm_cleanup ();
 #endif
+  g_message ("=== Bounce instrument track end ===");
 }
 
 static void
@@ -1095,6 +1109,12 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/exporter/"
 
   g_test_add_func (
+    TEST_PREFIX "test bounce instrument track",
+    (GTestFunc) test_bounce_instrument_track);
+  g_test_add_func (
+    TEST_PREFIX "test export wav",
+    (GTestFunc) test_export_wav);
+  g_test_add_func (
     TEST_PREFIX "test mixdown midi routed to instrument track",
     (GTestFunc) test_mixdown_midi_routed_to_instrument_track);
   g_test_add_func (
@@ -1109,12 +1129,6 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test chord routed to instrument",
     (GTestFunc) test_chord_routed_to_instrument);
-  g_test_add_func (
-    TEST_PREFIX "test export wav",
-    (GTestFunc) test_export_wav);
-  g_test_add_func (
-    TEST_PREFIX "test bounce instrument track",
-    (GTestFunc) test_bounce_instrument_track);
   g_test_add_func (
     TEST_PREFIX
     "test bounce midi track routed to instrument track",

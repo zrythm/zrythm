@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/chord_track.h"
@@ -764,6 +764,10 @@ tracklist_selections_mark_for_bounce (
   for (int i = 0; i < ts->num_tracks; i++)
     {
       Track * track = ts->tracks[i];
+      if (!with_parents)
+        {
+          track->bounce_to_master = true;
+        }
       track_mark_for_bounce (
         track, F_BOUNCE, F_MARK_REGIONS, F_MARK_CHILDREN,
         with_parents);

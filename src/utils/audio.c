@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
@@ -282,6 +282,68 @@ audio_frames_equal (
         }
     }
   return true;
+}
+
+/**
+ * Returns whether the file contents are equal.
+ *
+ * @param num_frames Maximum number of frames to check. Passing
+ *   0 will check all frames.
+ */
+bool
+audio_files_equal (
+  const char * f1,
+  const char * f2,
+  size_t       num_frames,
+  float        epsilon)
+{
+  AudioClip * c1 = audio_clip_new_from_file (f1);
+  if (!c1)
+    {
+      g_warning ("failed to create clip 1");
+      return false;
+    }
+  AudioClip * c2 = audio_clip_new_from_file (f2);
+  if (!c2)
+    {
+      g_warning ("failed to create clip 2");
+      return false;
+    }
+
+  bool ret = false;
+  if (num_frames == 0)
+    {
+      if (c1->num_frames == c2->num_frames)
+        {
+          num_frames = c1->num_frames;
+        }
+      else
+        {
+          goto cleanup_clips;
+        }
+    }
+  g_return_val_if_fail (num_frames > 0, false);
+
+  ret = c1->channels == c2->channels;
+  if (!ret)
+    goto cleanup_clips;
+
+  for (size_t i = 0; i < c1->channels; i++)
+    {
+      ret = audio_frames_equal (
+        c1->ch_frames[i], c2->ch_frames[i], num_frames,
+        epsilon);
+      if (!ret)
+        {
+          goto cleanup_clips;
+        }
+    }
+
+cleanup_clips:
+  audio_clip_free (c1);
+  audio_clip_free (c2);
+
+  return ret;
 }
 
 /**

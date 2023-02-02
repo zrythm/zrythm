@@ -82,7 +82,7 @@ audio_encoder_decode (
   int            samplerate,
   bool           show_progress)
 {
-  g_message ("--audio decoding start--");
+  g_message ("--audio decoding start %s--", self->file);
 
   g_debug (
     "source file samplerate: %u", self->nfo.sample_rate);
@@ -101,7 +101,7 @@ audio_encoder_decode (
   g_message ("num out frames %" PRIu64, self->num_out_frames);
   self->channels = self->nfo.channels;
   audec_close (self->audec_handle);
-  g_message ("--audio decoding end--");
+  g_message ("--audio decoding end %s--", self->file);
 }
 
 /**

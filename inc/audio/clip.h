@@ -27,8 +27,7 @@
 /**
  * Audio clips for the pool.
  *
- * These should be loaded in the project's sample
- * rate.
+ * These should be loaded in the project's sample rate.
  */
 typedef struct AudioClip
 {

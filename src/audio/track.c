@@ -2008,6 +2008,7 @@ track_freeze (Track * self, bool freeze, GError ** error)
   if (freeze)
     {
       ExportSettings * settings = export_settings_new ();
+      self->bounce_to_master = true;
       track_mark_for_bounce (
         self, F_BOUNCE, F_MARK_REGIONS, F_NO_MARK_CHILDREN,
         F_NO_MARK_PARENTS);
@@ -3394,11 +3395,13 @@ track_get_plugin_at_slot (
 /**
  * Marks the track for bouncing.
  *
- * @param mark_children Whether to mark all
- *   children tracks as well. Used when exporting
- *   stems on the specific track stem only.
- * @param mark_parents Whether to mark all parent
- *   tracks as well.
+ * @param mark_children Whether to mark all children tracks
+ *   as well. Used when exporting stems on the specific track
+ *   stem only.
+ *   IMPORTANT: Track.bounce_to_master must be set beforehand
+ *   if this is true.
+ * @param mark_parents Whether to mark all parent tracks as
+ *   well.
  */
 void
 track_mark_for_bounce (
@@ -3418,10 +3421,6 @@ track_mark_for_bounce (
     bounce, mark_regions);
 
   self->bounce = bounce;
-
-  /* bounce directly to master if not marking
-   * parents*/
-  self->bounce_to_master = !mark_parents;
 
   if (mark_regions)
     {
@@ -3466,6 +3465,7 @@ track_mark_for_bounce (
           Track * child = tracklist_find_track_by_name_hash (
             TRACKLIST, self->children[i]);
 
+          child->bounce_to_master = self->bounce_to_master;
           track_mark_for_bounce (
             child, bounce, mark_regions, F_MARK_CHILDREN,
             F_NO_MARK_PARENTS);

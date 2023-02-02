@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -128,6 +128,19 @@ audio_frames_equal (
   float * src2,
   size_t  num_frames,
   float   epsilon);
+
+/**
+ * Returns whether the file contents are equal.
+ *
+ * @param num_frames Maximum number of frames to check. Passing
+ *   0 will check all frames.
+ */
+bool
+audio_files_equal (
+  const char * f1,
+  const char * f2,
+  size_t       num_frames,
+  float        epsilon);
 
 /**
  * Returns whether the frame buffer is empty (zero).

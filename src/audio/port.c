@@ -2905,10 +2905,9 @@ port_process (
             }
         }
 
-      /* if bouncing tracks directly to
-         * master (e.g., when bouncing the
-         * track on its own without parents),
-         * clear master input */
+      /* if bouncing tracks directly to master (e.g., when
+       * bouncing the track on its own without parents),
+       * clear master input */
       if (G_UNLIKELY (
               AUDIO_ENGINE->bounce_mode > BOUNCE_OFF
               && !AUDIO_ENGINE->bounce_with_parents
@@ -2926,10 +2925,9 @@ port_process (
             AUDIO_ENGINE->denormal_prevention_val, nframes);
         }
 
-      /* if bouncing track directly to
-         * master (e.g., when bouncing the
-         * track on its own without parents),
-         * add the buffer to master output */
+      /* if bouncing track directly to master (e.g., when
+       * bouncing the track on its own without parents), add
+       * the buffer to master output */
       if (G_UNLIKELY (
               AUDIO_ENGINE->bounce_mode >
                 BOUNCE_OFF &&

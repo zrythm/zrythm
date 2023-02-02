@@ -490,9 +490,8 @@ typedef struct Track
   bool bounce;
 
   /**
-   * Whether to temporarily route the output to
-   * master (e.g., when bouncing the track on its
-   * own without its parents).
+   * Whether to temporarily route the output to master (e.g.,
+   * when bouncing the track on its own without its parents).
    */
   bool bounce_to_master;
 
@@ -1446,11 +1445,13 @@ track_get_plugin_at_slot (
 /**
  * Marks the track for bouncing.
  *
- * @param mark_children Whether to mark all
- *   children tracks as well. Used when exporting
- *   stems on the specific track stem only.
- * @param mark_parents Whether to mark all parent
- *   tracks as well.
+ * @param mark_children Whether to mark all children tracks
+ *   as well. Used when exporting stems on the specific track
+ *   stem only.
+ *   IMPORTANT: Track.bounce_to_master must be set beforehand
+ *   if this is true.
+ * @param mark_parents Whether to mark all parent tracks as
+ *   well.
  */
 void
 track_mark_for_bounce (
