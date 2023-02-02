@@ -6,6 +6,18 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.5.62] - 2023-02-03
+### Changed
+- Avoid making a backup when the last performed action hasn't changed
+- Meson: use libpanel fork with detach support when building as a subproject
+
+### Fixed
+- Fix error when generating a string from the current datetime
+- Fix some channel ports not being exposed to JACK when loading a project
+- Fix automation curve calculation not taking caches into account
+- Fix build without Guile
+- Fix too loud/silent audio when bouncing/exporting
+
 ## [1.0.0-beta.4.5.51] - 2023-01-18
 ### Changed
 - Create standard project directories when creating a new blank project
