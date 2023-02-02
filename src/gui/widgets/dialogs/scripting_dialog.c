@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -90,7 +90,7 @@ on_lang_selection_changed (
  * Creates a bounce dialog.
  */
 ScriptingDialogWidget *
-scripting_dialog_widget_new ()
+scripting_dialog_widget_new (void)
 {
   ScriptingDialogWidget * self = g_object_new (
     SCRIPTING_DIALOG_WIDGET_TYPE, "title",
