@@ -4,22 +4,22 @@
 # Weblate <noreply@weblate.org>, 2019.
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
 # 이정희 <daemul72@gmail.com>, 2022.
-# Hoseok Seo <ddinghoya@gmail.com>, 2022.
+# Hoseok Seo <ddinghoya@gmail.com>, 2022, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-01-11 23:38+0900\n"
-"PO-Revision-Date: 2022-10-18 23:55+0000\n"
+"PO-Revision-Date: 2023-02-04 05:21+0000\n"
 "Last-Translator: Hoseok Seo <ddinghoya@gmail.com>\n"
-"Language-Team: Korean <https://hosted.weblate.org/projects/zrythm/zrythm/ko/"
-">\n"
+"Language-Team: Korean <https://hosted.weblate.org/projects/zrythm/zrythm/ko/>"
+"\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -6430,11 +6430,11 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:271
 msgid "Original size"
-msgstr ""
+msgstr "원본 크기"
 
 #: resources/gtk/help-overlay.ui:280
 msgid "Quantizing"
-msgstr ""
+msgstr "양자화"
 
 #: resources/gtk/help-overlay.ui:292
 msgid "Quantize"
