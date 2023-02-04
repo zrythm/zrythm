@@ -34,7 +34,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-10-03 21:09+0900\n"
-"PO-Revision-Date: 2023-01-05 23:59+0000\n"
+"PO-Revision-Date: 2023-01-23 23:56+0000\n"
 "Last-Translator: Ivar <ivar.bjerling@protonmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/sv/>\n"
@@ -43,7 +43,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -4782,11 +4782,11 @@ msgstr ""
 
 #: ../../playback-and-recording/transport-controls.rst:34
 msgid "Metronome options"
-msgstr "Metronomval"
+msgstr "Metronomalternativ"
 
 #: ../../playback-and-recording/transport-controls.rst:35
 msgid "Sets the volume of the metronome"
-msgstr ""
+msgstr "Anger volymen av metronomen"
 
 #: ../../playback-and-recording/transport-controls.rst:38
 msgid "Return to cue point on stop"
