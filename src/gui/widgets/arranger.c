@@ -1,5 +1,31 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+/*
+ * This file incorporates work covered by the following copyright and
+ * permission notice:
+ *
+ * ---
+ *
+ * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
+ * file for a list of people on the GTK+ Team.  See the ChangeLog
+ * files for a list of changes.  These files are distributed with
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
+ */
 
 #include "actions/actions.h"
 #include "actions/arranger_selections.h"
@@ -86,6 +112,8 @@ G_DEFINE_TYPE (ArrangerWidget, arranger_widget, GTK_TYPE_WIDGET)
 #define TYPE_IS(x) (self->type == TYPE (x))
 
 #define SCROLL_PADDING 8
+
+#define MAGIC_SCROLL_FACTOR 2.5
 
 /**
  * Returns if the arranger can scroll vertically.
@@ -5163,6 +5191,26 @@ on_scroll (
 {
   ArrangerWidget * self = Z_ARRANGER_WIDGET (user_data);
 
+#if 0
+  GdkEvent * event = gtk_event_controller_get_current_event (GTK_EVENT_CONTROLLER (scroll_controller));
+  GdkDevice * source_device = gdk_event_get_device (event);
+  GdkInputSource input_source = gdk_device_get_source (source_device);
+  /* adjust for scroll unit */
+  /* TODO */
+  GdkScrollUnit scroll_unit = gtk_event_controller_scroll_get_unit (scroll_controller);
+  if (scroll_unit == GDK_SCROLL_UNIT_WHEEL)
+    {
+      g_debug ("wheel");
+      /*double page_size =*/
+      /*double scroll_step = pow (page_size, 2.0 / 3.0);*/
+    }
+  else if (scroll_unit == GDK_SCROLL_UNIT_SURFACE)
+    {
+      g_debug ("unit interface");
+      dx *= MAGIC_SCROLL_FACTOR;
+    }
+#endif
+
   double x = self->hover_x;
   double y = self->hover_y;
 
@@ -5249,7 +5297,13 @@ on_scroll (
       const int scroll_amt = RW_SCROLL_SPEED;
       int       scroll_x = 0;
       int       scroll_y = 0;
-      if (modifier_type & GDK_SHIFT_MASK)
+
+      /* if scrolling on x-axis from a touch pad */
+      if (!math_doubles_equal (dx, 0.0))
+        {
+          scroll_x = (int) dx;
+        }
+      else if (modifier_type & GDK_SHIFT_MASK)
         {
           scroll_x = (int) dy;
           scroll_y = 0;
