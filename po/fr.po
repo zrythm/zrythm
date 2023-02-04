@@ -7,7 +7,7 @@
 # JEHANNIN <sahaa.thyva@laposte.net>, 2020.
 # Sahaathyva <sahaa.thyva@laposte.net>, 2020, 2021, 2022.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
-# Olivier Humbert <trebmuh@tuxfamily.org>, 2020, 2021, 2022.
+# Olivier Humbert <trebmuh@tuxfamily.org>, 2020, 2021, 2022, 2023.
 # Romain Alb <romain.alb@lilo.org>, 2021, 2022.
 # J. Lavoie <j.lavoie@net-c.ca>, 2021.
 # Panos Alevropoulos <panosalevropoulos@protonmail.com>, 2021.
@@ -18,16 +18,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-01-11 23:38+0900\n"
-"PO-Revision-Date: 2022-11-20 23:54+0000\n"
+"PO-Revision-Date: 2023-02-02 08:46+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -485,14 +485,12 @@ msgid "Folder"
 msgstr "Dossier"
 
 #: inc/audio/snap_grid.h:51
-#, fuzzy
 msgid "bar"
-msgstr "1 mesure"
+msgstr "mesure"
 
 #: inc/audio/snap_grid.h:52
-#, fuzzy
 msgid "beat"
-msgstr "Eurobeat"
+msgstr "pulsation"
 
 #: inc/audio/snap_grid.h:72 src/gui/widgets/digital_meter.c:506
 msgid "normal"
@@ -703,19 +701,19 @@ msgid "Sine"
 msgstr "Sinusoidal"
 
 #: src/project.c:403
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create backup directory %s"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la création du répertoire de sauvegarde %s"
 
 #: src/project.c:811
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to read file at %s"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de lire le fichier à %s"
 
 #: src/project.c:829
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to decompress project file at %s"
-msgstr "Échec de la décompression du fichier du projet"
+msgstr "Échec de la décompression du fichier du projet à %s"
 
 #: src/project.c:895
 #, c-format
@@ -733,19 +731,16 @@ msgid "Backup found"
 msgstr "Sauvegarde trouvée"
 
 #: src/project.c:938
-#, fuzzy
 msgid "Failed to get existing yaml"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la récupération du yaml existant"
 
 #: src/project.c:947
-#, fuzzy
 msgid "Invalid project: missing version"
-msgstr "Nom d'objet invalide %s"
+msgstr "Projet invalide : version manquante"
 
 #: src/project.c:975
-#, fuzzy
 msgid "Failed to deserialize project YAML"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la désérialisation du projet YAML"
 
 #: src/project.c:988
 #, c-format
@@ -778,6 +773,9 @@ msgid ""
 "project will overwrite the old one. If you would like to keep both, please "
 "use 'Save As...'."
 msgstr ""
+"Ce projet a été automatiquement mis à jour de la version %d à la version %d. "
+"La sauvegarde de ce projet écrasera l'ancien. Si vous souhaitez conserver "
+"les deux, veuillez utiliser \"Sauvegarder sous...\"."
 
 #: src/project.c:1304
 msgid "Failed to load project. Will create a new one instead."
@@ -785,19 +783,16 @@ msgstr "Impossible de charger le projet. Création d'un nouveau à la place."
 
 #: src/project.c:1357 src/project.c:1583 src/actions/actions.c:719
 #: src/actions/actions.c:761 src/gui/widgets/main_window.c:169
-#, fuzzy
 msgid "Failed to save project"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de la sauvegarde du projet"
 
 #: src/project.c:1416
-#, fuzzy
 msgid "Failed to deserialize v1 project file"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la désérialisation du fichier de projet v1"
 
 #: src/project.c:1448
-#, fuzzy
 msgid "Failed to deserialize v2/3 project file"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la désérialisation du fichier de projet v2/3"
 
 #: src/project.c:1754
 msgid "Failed to compress project file"
@@ -812,14 +807,12 @@ msgid "Project saved."
 msgstr "Projet sauvegardé."
 
 #: src/project.c:1999
-#, fuzzy
 msgid "Failed to write audio pool to disk"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de l'écriture du pool audio sur le disque"
 
 #: src/project.c:2012
-#, fuzzy
 msgid "Failed to clone project"
-msgstr "Échec de clonage d'une piste"
+msgstr "Échec de clonage du projet"
 
 #: src/zrythm_app.c:125
 msgid "Error - Backtrace:\n"
@@ -864,10 +857,12 @@ msgid "Loading project"
 msgstr "Chargement du projet"
 
 #: src/zrythm_app.c:423
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "No project has been selected or project failed to load. %s will now close."
-msgstr "Aucun projet n'a été sélectionné.%s va maintenant se fermer."
+msgstr ""
+"Aucun projet n'a été sélectionné ou échec de l'ouverture du projet. %s va "
+"maintenant se fermer."
 
 #: src/zrythm_app.c:442
 msgid "Initializing settings"
@@ -917,9 +912,9 @@ msgstr ""
 "Impossible d'obtenir la limite de verrouillage de la mémoire du système (%s)"
 
 #: src/zrythm_app.c:891
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot lock down memory: %s"
-msgstr "Pistes actuellement en solo"
+msgstr "Impossible de verrouiller la mémoire : %s"
 
 #: src/zrythm_app.c:1026
 #, c-format
@@ -1055,14 +1050,12 @@ msgid "Delete range"
 msgstr "Supprimer l'intervalle"
 
 #: src/actions/undo_manager.c:189 src/actions/actions.c:916
-#, fuzzy
 msgid "Failed to undo action"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de l'annulation de l'action"
 
 #: src/actions/undo_manager.c:240 src/actions/actions.c:911
-#, fuzzy
 msgid "Failed to redo action"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Impossible de refaire l'action"
 
 #: src/actions/undo_manager.c:286
 msgid "Failed to perform action"
@@ -1141,9 +1134,8 @@ msgstr ""
 
 #: src/actions/actions.c:667 src/actions/actions.c:691
 #: src/gui/widgets/dialogs/project_assistant.c:245
-#, fuzzy
 msgid "Failed to load project"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de l'ouverture du projet"
 
 #: src/actions/actions.c:735
 msgid "Save Project"
@@ -1214,29 +1206,25 @@ msgstr "Échec de l'action refaire"
 
 #: src/actions/actions.c:994 src/actions/actions.c:1008
 #: src/actions/actions.c:1232
-#, fuzzy
 msgid "Failed to delete selections"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la suppression des sélections"
 
 #: src/actions/actions.c:1186
 msgid "Can't paste incompatible data"
 msgstr "Impossible de coller des données incompatibles"
 
 #: src/actions/actions.c:1264
-#, fuzzy
 msgid "Failed to duplicate selections"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la duplication des sélections"
 
 #: src/actions/actions.c:1488
-#, fuzzy
 msgid "Failed to unbind"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Échec de la déliaison"
 
 #: src/actions/actions.c:1529 src/actions/actions.c:2010
 #: src/actions/actions.c:2040
-#, fuzzy
 msgid "Failed to quantize"
-msgstr "Active ou désactive le greffon"
+msgstr "Échec de la quantification"
 
 #: src/actions/actions.c:1607 src/audio/track.c:3656 src/audio/tracklist.c:1485
 #: src/gui/widgets/panel_file_browser.c:459
@@ -1247,9 +1235,8 @@ msgid "Failed to create track"
 msgstr "Échec de la création d'une piste"
 
 #: src/actions/actions.c:1661
-#, fuzzy
 msgid "Failed to duplicate tracks"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la duplication des pistes"
 
 #: src/actions/actions.c:1731 src/actions/actions.c:1786
 msgid "Failed to delete tracks"
@@ -1265,37 +1252,32 @@ msgstr ""
 "effacé. Poursuivre la suppression ?"
 
 #: src/actions/actions.c:1820
-#, fuzzy
 msgid "Failed to pin/unpin tracks"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Échec de l'épinglage/dépinglage des pistes"
 
 #: src/actions/actions.c:1831
 msgid "Failed to solo tracks"
 msgstr "Échec de la mise en solo des pistes"
 
 #: src/actions/actions.c:1842
-#, fuzzy
 msgid "Failed to unsolo tracks"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de dé-soloïsation des pistes"
 
 #: src/actions/actions.c:1853
 msgid "Failed to mute tracks"
 msgstr "Échec de la mise en sourdine des pistes"
 
 #: src/actions/actions.c:1864
-#, fuzzy
 msgid "Failed to unmute tracks"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la mise en sourdine des pistes"
 
 #: src/actions/actions.c:1875
-#, fuzzy
 msgid "Failed to listen tracks"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de l'écoute des pistes"
 
 #: src/actions/actions.c:1887
-#, fuzzy
 msgid "Failed to unlisten tracks"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la désécoute des pistes"
 
 #: src/actions/actions.c:1898
 msgid "Failed to enable tracks"
@@ -1331,9 +1313,8 @@ msgid "Cannot merge looped regions"
 msgstr "Impossible de fusionner les régions bouclées"
 
 #: src/actions/actions.c:2171
-#, fuzzy
 msgid "Failed to merge selections"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de la fusion des sélections"
 
 #: src/actions/actions.c:2276
 msgid "Failed to insert silence"
@@ -1344,9 +1325,8 @@ msgid "Failed to remove range"
 msgstr "Échec de la suppression de l'intervalle"
 
 #: src/actions/actions.c:2367 src/actions/arranger_selections.c:564
-#, fuzzy
 msgid "Failed to apply MIDI function"
-msgstr "Dernière fonction audio utilisée"
+msgstr "Impossible d'appliquer la fonction MIDI"
 
 #: src/actions/actions.c:2393 src/actions/actions.c:2432
 #: src/actions/arranger_selections.c:600
@@ -3218,6 +3198,8 @@ msgstr "Grille adaptative"
 msgid ""
 "Adapt snapping behavior to the current zoom level based on the note type"
 msgstr ""
+"Adapter le comportement d'accrochage au niveau de zoom actuel en fonction du "
+"type de note"
 
 #: src/gui/widgets/snap_grid_popover.c:268
 #, fuzzy
@@ -3244,6 +3226,8 @@ msgstr "Maintenir le décalage"
 msgid ""
 "Keep offset of objects from the snap point when moving to a new position"
 msgstr ""
+"Conserver le décalage des objets par rapport au point d'accrochage lors du "
+"déplacement vers une nouvelle position"
 
 #: src/gui/widgets/snap_grid_popover.c:326
 #, fuzzy
@@ -3281,6 +3265,8 @@ msgid ""
 "Link to snap settings, use the length of the last created object, or specify "
 "a custom length"
 msgstr ""
+"Lien vers les paramètres d'accrochage, utilisation de la longueur du dernier "
+"objet créé ou spécification d'une longueur personnalisée"
 
 #: src/gui/widgets/snap_grid_popover.c:373
 #: resources/ui/snap_grid_popover.ui:239 resources/ui/inspector_master.ui:71
@@ -3482,7 +3468,7 @@ msgstr "Compatibilité mono"
 
 #: src/gui/widgets/track.c:348 resources/ui/fader_buttons.ui:79
 msgid "Swap phase"
-msgstr ""
+msgstr "Phase d'échange"
 
 #: src/gui/widgets/track.c:354
 msgid "Disarm"
@@ -3611,10 +3597,9 @@ msgstr "Nouvelle sortie directe"
 
 #: src/gui/widgets/track.c:866
 msgid "Route Target"
-msgstr ""
+msgstr "Cible de routage"
 
 #: src/gui/widgets/track.c:873
-#, fuzzy
 msgid "Direct Output"
 msgstr "Sortie directe"
 
@@ -5688,7 +5673,7 @@ msgstr ""
 
 #: src/plugins/carla_native_plugin.c:2413
 msgid "Plugin doesn't have a state directory"
-msgstr ""
+msgstr "Le greffon n'a pas de répertoire d'état"
 
 #: src/plugins/carla_native_plugin.c:2431
 #, c-format
@@ -8261,16 +8246,16 @@ msgstr "Modifié :"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
 msgid "Don't attempt to create plugin state directories when loading projects"
 msgstr ""
+"Ne pas tenter de créer des répertoires d'état du greffon lors du chargement "
+"des projets"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-#, fuzzy
 msgid "Add more error checking to various operations"
-msgstr ""
-"Toujours afficher l'interface du greffon lors de l'instanciation d'un greffon"
+msgstr "Ajout d'un contrôle d'erreur supplémentaire pour diverses opérations"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Include Carla and GTK versions in debug info"
-msgstr ""
+msgstr "Inclure les versions de Carla et GTK dans les infos de débogage"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
@@ -8280,7 +8265,7 @@ msgstr "Corrigé :"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
 msgid "Fix being unable to export stems"
-msgstr ""
+msgstr "Correction de l'impossibilité d'exporter des stems"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
 #, fuzzy
@@ -8289,7 +8274,7 @@ msgstr "Profondeur de bits à utiliser lors de l'exportation"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
 msgid "Fix removing inserts not being undoable"
-msgstr ""
+msgstr "Correction de l'impossibilité de retirer les inserts"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
 #, fuzzy
@@ -8302,12 +8287,16 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:66
 msgid "Fix error when enabling/disabling MIDI bindings"
 msgstr ""
+"Correction d'une erreur lors de l'activation/désactivation des cartographies "
+"MIDI"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
 msgid ""
 "Fix incorrectly throwing an error sometimes when processing the sample "
 "processor"
 msgstr ""
+"Correction de l'apparition d'une erreur parfois lors du traitement du "
+"processeur d'échantillons"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:68
 #, fuzzy
@@ -8321,44 +8310,53 @@ msgstr "Ajouté :"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid "Implement best-fit zoom in editor"
-msgstr ""
+msgstr "Implémenter le zoom le-plus-adapté dans l'éditeur"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:78
 msgid "Add \"Rename\" context menu option on applicable timeline objects"
 msgstr ""
+"Ajout d'une option de menu contextuel \"Renommer\" sur les objets pertinents "
+"de la ligne temporelle"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:79
 msgid "Implement Ableton-style panning/zooming in the ruler"
 msgstr ""
+"Implémentation de la fonction panoramique/zoom de style Ableton dans la règle"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:80
 msgid "Implement middle-click (or alt-click) panning in arrangers"
 msgstr ""
+"Implémentation du panoramique par le clic du milieu (ou alt-clic) dans les "
+"arrangeurs"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:84
 msgid "Minor UI improvements (widget paddings and sizes)"
 msgstr ""
+"Améliorations mineures de l'interface utilisateur (espacements et tailles "
+"des widgets)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:85
 msgid "File browser: allow browsing volumes without associated drives"
 msgstr ""
+"Navigateur de fichier : permet de parcourir des volumes sans lecteur associé"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:86
-#, fuzzy
 msgid "Minor optimizations"
-msgstr "Pentatonique mineure"
+msgstr "Optimisations mineures"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:87
 msgid "Redesign snap/grid menu"
-msgstr ""
+msgstr "Refonte du menu snap/grille"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:88
 msgid "Require C11 thread support on GNU/Linux"
-msgstr ""
+msgstr "Nécessite la prise en charge des thread C11 sur GNU/Linux"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:92
 msgid "Fix arrangers sometimes not taking off-screen objects into account"
 msgstr ""
+"Correction du fait que les arrangeurs ne prenaient parfois pas en compte les "
+"objets hors écran."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:93
 #, fuzzy
@@ -8370,52 +8368,73 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:94
 msgid "Fix error when undoing duplication of automation points"
 msgstr ""
+"Correction d'une erreur lors de l'annulation de la duplication des points "
+"d'automatisation"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:95
 msgid ""
 "Fix some functions that were supposed to be optimized not getting optimized"
 msgstr ""
+"Correction de certaines fonctions qui devaient être optimisées mais qui ne "
+"l'étaient pas"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:104
 msgid "Use list view for control ports in the plugin inspector (fixes lags)"
 msgstr ""
+"Utilisation d'une vue en liste pour les ports de contrôle dans l'inspecteur "
+"de greffon (corrige des problèmes de décalage)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid ""
 "Don't use cairo to draw automation regions (fixes lags on large projects)"
 msgstr ""
+"Ne pas utiliser cairo pour dessiner les régions d'automatisation (corrige "
+"les décalages sur les gros projets)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid "Don't use demo template on Windows on first run (currently broken)"
 msgstr ""
+"Ne pas utiliser le modèle de démonstration sur Windows lors de la première "
+"exécution (actuellement cassé)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:107
 msgid "Don't save undo history with backups (makes saving faster)"
 msgstr ""
+"Ne pas sauvegarder l'historique d'annulation avec les sauvegardes (rend la "
+"sauvegarde plus rapide)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:108
 msgid ""
 "Write audio pool files in parallel (makes saving faster on projects with "
 "lots of audio files)"
 msgstr ""
+"Écriture de fichiers groupés audio en parallèle (accélère la sauvegarde sur "
+"les projets comportant de nombreux fichiers audio)."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:117
 msgid "Add \"View Info\" context menu option to timeline and automation editor"
 msgstr ""
+"Ajout de l'option de menu contextuel \"Voir les infos\" à l'éditeur de ligne "
+"de temps et d'automatisation"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:121
 msgid "Reorganize Direct Out submenu in track context menu"
 msgstr ""
+"Réorganise le sous-menu Sortie Directe dans le menu contextuel de la piste"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:122
 msgid ""
 "Only allow pasting all the copied info into the selected track instead of "
 "spreading the paste across multiple tracks"
 msgstr ""
+"Permet uniquement de coller toutes les informations copiées dans la piste "
+"sélectionnée au lieu de répartir le collage sur plusieurs pistes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 msgid "Fix \"View Info\" in piano roll doing \"Duplicate\" instead"
 msgstr ""
+"Correction de la \"Vue des infos\" dans le piano-roll qui faisait une "
+"\"duplication\" à la place"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:127
 #, fuzzy
@@ -8431,16 +8450,15 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:129
 msgid "Fix copy-paste being broken in arrangers"
-msgstr ""
+msgstr "Correction d'un problème de copier-coller dans les arrangeurs"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:130
-#, fuzzy
 msgid ""
 "Fix incorrectly allowing to copy-paste unclonable objects like the start/end "
 "markers"
 msgstr ""
-"Correction d'une erreur qu permettait de supprimer/cloner la piste "
-"principale lorsqu'elle se trouvait dans une piste pliable"
+"Correction d'une erreur qui permettait de couper/coller des objets non "
+"clonables comme les marqueurs de début/fin"
 
 #~ msgid "Direct out"
 #~ msgstr "Sortie directe"
