@@ -1,60 +1,62 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# phlostically <phlostically@mailinator.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-01-11 23:38+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2023-01-19 23:59+0000\n"
+"Last-Translator: phlostically <phlostically@mailinator.com>\n"
+"Language-Team: Esperanto <https://hosted.weblate.org/projects/zrythm/zrythm/"
+"eo/>\n"
 "Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.15.1\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
-msgstr ""
+msgstr "Kromata"
 
 #: inc/schemas/audio/scale.h:94 inc/audio/scale.h:128
 msgid "Major"
-msgstr ""
+msgstr "Maĵora"
 
 #: inc/schemas/audio/scale.h:95 inc/audio/scale.h:129
 msgid "Minor"
-msgstr ""
+msgstr "Minora"
 
 #: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
 msgid "Ionian"
-msgstr ""
+msgstr "Iona"
 
 #: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
 msgid "Dorian"
-msgstr ""
+msgstr "Dora"
 
 #: inc/schemas/audio/scale.h:98 inc/audio/scale.h:132
 msgid "Phrygian"
-msgstr ""
+msgstr "Friga"
 
 #: inc/schemas/audio/scale.h:99 inc/audio/scale.h:133
 msgid "Lydian"
-msgstr ""
+msgstr "Lida"
 
 #: inc/schemas/audio/scale.h:100 inc/audio/scale.h:134
 msgid "Mixolydian"
-msgstr ""
+msgstr "Mezlida"
 
 #: inc/schemas/audio/scale.h:101 inc/audio/scale.h:135
 msgid "Aeolian"
-msgstr ""
+msgstr "Eola"
 
 #: inc/schemas/audio/scale.h:102 inc/audio/scale.h:136
 msgid "Locrian"
-msgstr ""
+msgstr "Lokra"
 
 #: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
 msgid "Melodic Minor"
@@ -86,7 +88,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
 msgid "Acoustic"
-msgstr ""
+msgstr "Akustika"
 
 #: inc/schemas/audio/scale.h:113 inc/audio/scale.h:145
 msgid "Harmonic Major"
@@ -102,7 +104,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:116 inc/audio/scale.h:148
 msgid "Algerian"
-msgstr ""
+msgstr "Alĝeria"
 
 #: inc/schemas/audio/scale.h:117 inc/audio/scale.h:149
 msgid "Augmented"
@@ -114,7 +116,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:119 inc/audio/scale.h:151
 msgid "Chinese"
-msgstr ""
+msgstr "Ĉina"
 
 #: inc/schemas/audio/scale.h:120 inc/audio/scale.h:152
 msgid "Diminished"
@@ -126,7 +128,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:122 inc/audio/scale.h:154
 msgid "Egyptian"
-msgstr ""
+msgstr "Egipta"
 
 #: inc/schemas/audio/scale.h:123 inc/audio/scale.h:155
 msgid "Eight Tone Spanish"
@@ -142,7 +144,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:126 inc/audio/scale.h:158
 msgid "Hindu"
-msgstr ""
+msgstr "Hindua"
 
 #: inc/schemas/audio/scale.h:127 inc/audio/scale.h:159
 msgid "Hirajoshi"
@@ -150,7 +152,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:128 inc/audio/scale.h:160
 msgid "Hungarian Gypsy"
-msgstr ""
+msgstr "Hungara cigana"
 
 #: inc/schemas/audio/scale.h:129 inc/audio/scale.h:161
 msgid "Insen"
@@ -166,7 +168,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:132 inc/audio/scale.h:164
 msgid "Oriental"
-msgstr ""
+msgstr "Orienta"
 
 #: inc/schemas/audio/scale.h:133 inc/audio/scale.h:165
 msgid "Romanian Minor"
@@ -218,7 +220,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:145 inc/audio/scale.h:177
 msgid "Persian"
-msgstr ""
+msgstr "Persa"
 
 #: inc/schemas/audio/scale.h:146 inc/audio/scale.h:178
 msgid "Iwato"
@@ -254,11 +256,11 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:155 inc/audio/scale.h:186
 msgid "Japanese 1"
-msgstr ""
+msgstr "Japana 1"
 
 #: inc/schemas/audio/scale.h:156 inc/audio/scale.h:187
 msgid "Japanese 2"
-msgstr ""
+msgstr "Japana 2"
 
 #: inc/schemas/audio/curve.h:28 inc/audio/curve.h:95 src/audio/curve.c:54
 #, c-format
@@ -283,7 +285,7 @@ msgstr ""
 #: src/audio/curve.c:316
 #, c-format
 msgid "Logarithmic"
-msgstr ""
+msgstr "Logaritma"
 
 #: inc/schemas/gui/backend/arranger_object.h:35 inc/audio/transport.h:53
 #: inc/gui/backend/arranger_object.h:84
@@ -293,19 +295,19 @@ msgstr ""
 #: src/gui/widgets/route_target_selector_popover.c:134
 #: src/gui/widgets/channel_send_selector.c:256
 msgid "None"
-msgstr ""
+msgstr "Nenio"
 
 #: inc/schemas/gui/backend/arranger_object.h:36
 #: inc/gui/backend/arranger_object.h:85
 #: resources/ui/chord_selector_window.ui:489
 msgid "All"
-msgstr ""
+msgstr "Ĉio"
 
 #: inc/schemas/gui/backend/arranger_object.h:37
 #: inc/gui/backend/arranger_object.h:86 resources/ui/inspector_master.ui:7
 #: resources/ui/inspector_ap.ui:7 resources/ui/inspector_midi.ui:7
 msgid "Region"
-msgstr ""
+msgstr "Regiono"
 
 #: inc/schemas/gui/backend/arranger_object.h:38
 #: inc/gui/backend/arranger_object.h:87
@@ -345,20 +347,20 @@ msgstr ""
 
 #: inc/utils/gtk.h:47
 msgid "Cu_t"
-msgstr ""
+msgstr "El_tondi"
 
 #: inc/utils/gtk.h:50
 msgid "_Copy"
-msgstr ""
+msgstr "_Kopii"
 
 #: inc/utils/gtk.h:53
 msgid "_Paste"
-msgstr ""
+msgstr "_Alglui"
 
 #: inc/utils/gtk.h:57 src/settings/chord_preset.c:110
 #: src/settings/chord_preset_pack.c:147
 msgid "_Delete"
-msgstr ""
+msgstr "_Forigi"
 
 #. TRANSLATORS: deselects everything
 #: inc/utils/gtk.h:61
@@ -378,12 +380,12 @@ msgstr ""
 #: src/gui/widgets/channel.c:676 resources/ui/fader_buttons.ui:53
 #: build/data/org.zrythm.Zrythm.gschema.xml:315
 msgid "Mute"
-msgstr ""
+msgstr "Mutigi"
 
 #: inc/utils/gtk.h:76 src/gui/widgets/track.c:320 src/gui/widgets/track.c:808
 #: src/gui/widgets/channel.c:683
 msgid "Unmute"
-msgstr ""
+msgstr "Malmutigi"
 
 #: inc/utils/ui.h:59
 msgid "High"
@@ -432,7 +434,7 @@ msgstr ""
 
 #: inc/audio/track.h:169 src/audio/region.c:514
 msgid "Chord"
-msgstr ""
+msgstr "Akordo"
 
 #: inc/audio/track.h:171 src/audio/tempo_track.c:94
 #: src/gui/widgets/automatable_selector_popover.c:320
@@ -466,7 +468,7 @@ msgstr ""
 
 #: inc/audio/track.h:178
 msgid "Folder"
-msgstr ""
+msgstr "Dosierujo"
 
 #: inc/audio/snap_grid.h:51
 msgid "bar"
@@ -490,43 +492,43 @@ msgstr ""
 
 #: inc/audio/engine.h:175
 msgid "1,024"
-msgstr ""
+msgstr "1024"
 
 #: inc/audio/engine.h:175
 msgid "2,048"
-msgstr ""
+msgstr "2048"
 
 #: inc/audio/engine.h:175
 msgid "4,096"
-msgstr ""
+msgstr "4096"
 
 #: inc/audio/engine.h:200
 msgid "22,050"
-msgstr ""
+msgstr "22050"
 
 #: inc/audio/engine.h:200
 msgid "32,000"
-msgstr ""
+msgstr "32000"
 
 #: inc/audio/engine.h:200
 msgid "44,100"
-msgstr ""
+msgstr "44100"
 
 #: inc/audio/engine.h:200
 msgid "48,000"
-msgstr ""
+msgstr "48000"
 
 #: inc/audio/engine.h:201
 msgid "88,200"
-msgstr ""
+msgstr "88200"
 
 #: inc/audio/engine.h:201
 msgid "96,000"
-msgstr ""
+msgstr "96000"
 
 #: inc/audio/engine.h:201
 msgid "192,000"
-msgstr ""
+msgstr "192000"
 
 #. TRANSLATORS: Dummy backend
 #: inc/audio/engine.h:253 inc/audio/engine.h:309
@@ -548,7 +550,7 @@ msgstr ""
 
 #: inc/audio/audio_function.h:52
 msgid "Invert"
-msgstr ""
+msgstr "Inversigi"
 
 #: inc/audio/audio_function.h:53
 msgid "Normalize peak"
@@ -580,27 +582,27 @@ msgstr ""
 
 #: inc/audio/audio_function.h:60
 msgid "Reverse"
-msgstr ""
+msgstr "Renversi"
 
 #: inc/audio/audio_function.h:61
 msgid "External program"
-msgstr ""
+msgstr "Ekstera programo"
 
 #: inc/audio/audio_function.h:62
 msgid "Guile script"
-msgstr ""
+msgstr "Guile-programo"
 
 #: inc/audio/audio_function.h:63
 msgid "Custom plugin"
-msgstr ""
+msgstr "Propra kromprogramo"
 
 #: inc/audio/audio_function.h:64
 msgid "Invalid"
-msgstr ""
+msgstr "Nevalida"
 
 #: inc/audio/midi_function.h:38 resources/ui/editor_toolbar.ui:166
 msgid "Crescendo"
-msgstr ""
+msgstr "Kreskante"
 
 #: inc/audio/midi_function.h:39 resources/ui/editor_toolbar.ui:172
 msgid "Flam"
@@ -624,7 +626,7 @@ msgstr ""
 
 #: inc/audio/midi_function.h:44 resources/ui/editor_toolbar.ui:205
 msgid "Staccato"
-msgstr ""
+msgstr "Stakate"
 
 #: inc/audio/midi_function.h:45 resources/ui/editor_toolbar.ui:211
 msgid "Strum"
@@ -661,20 +663,20 @@ msgstr ""
 #. TRANSLATORS: decibels
 #: inc/audio/pan.h:35
 msgid "0dB"
-msgstr ""
+msgstr "0 dB"
 
 #: inc/audio/pan.h:36
 msgid "-3dB"
-msgstr ""
+msgstr "−3 dB"
 
 #: inc/audio/pan.h:37
 msgid "-6dB"
-msgstr ""
+msgstr "−6 dB"
 
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:57 src/utils/ui.c:628 src/audio/curve.c:302
 msgid "Linear"
-msgstr ""
+msgstr "Lineara"
 
 #: inc/audio/pan.h:58 src/utils/ui.c:629
 msgid "Square Root"
@@ -682,7 +684,7 @@ msgstr ""
 
 #: inc/audio/pan.h:59
 msgid "Sine"
-msgstr ""
+msgstr "Sinusa"
 
 #: src/project.c:403
 #, c-format
@@ -1060,11 +1062,11 @@ msgstr ""
 
 #: src/actions/actions.c:635
 msgid "Yes"
-msgstr ""
+msgstr "Jes"
 
 #: src/actions/actions.c:635
 msgid "No"
-msgstr ""
+msgstr "Ne"
 
 #: src/actions/actions.c:638
 msgid "Any unsaved changes to the current project will be lost. Continue?"
@@ -1096,14 +1098,14 @@ msgstr ""
 #: resources/ui/port_selector_dialog.ui:120
 #: resources/ui/string_entry_dialog.ui:47
 msgid "_Cancel"
-msgstr ""
+msgstr "_Nuligi"
 
 #: src/actions/actions.c:736
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:146
 #: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:301
 #: src/plugins/lv2/lv2_gtk.c:62
 msgid "_Save"
-msgstr ""
+msgstr "_Konservi"
 
 #: src/actions/actions.c:802
 msgid "Export routing graph"
@@ -1992,7 +1994,7 @@ msgstr ""
 
 #: src/utils/dialogs.c:41 src/gui/widgets/dialogs/project_assistant.c:480
 msgid "_Open"
-msgstr ""
+msgstr "_Malfermi"
 
 #: src/utils/dialogs.c:59
 msgid "Overwrite Plugin"
@@ -2005,7 +2007,7 @@ msgstr ""
 #: src/plugins/lv2/lv2_gtk.c:247 resources/ui/port_selector_dialog.ui:126
 #: resources/ui/string_entry_dialog.ui:55
 msgid "_OK"
-msgstr ""
+msgstr "_Bone"
 
 #: src/utils/dialogs.c:65
 msgid "A plugin already exists at the selected slot. Overwrite it?"
@@ -2448,7 +2450,7 @@ msgstr ""
 #: src/audio/chord_track.c:40 src/settings/chord_preset.c:47
 #: resources/ui/inspector_chord.ui:7
 msgid "Chords"
-msgstr ""
+msgstr "Akordoj"
 
 #: src/audio/clip.c:425
 #, c-format
@@ -2681,7 +2683,7 @@ msgstr ""
 #. TRANSLATORS: Desktop directory
 #: src/gui/backend/file_manager.c:93
 msgid "Desktop"
-msgstr ""
+msgstr "Labortablo"
 
 #: src/gui/backend/tracklist_selections.c:706
 #, c-format
@@ -2759,11 +2761,11 @@ msgstr ""
 
 #: src/gui/widgets/inspector_port.c:352 src/gui/widgets/cc_bindings_tree.c:187
 msgid "Min"
-msgstr ""
+msgstr "Minimumo"
 
 #: src/gui/widgets/inspector_port.c:352 src/gui/widgets/cc_bindings_tree.c:197
 msgid "Max"
-msgstr ""
+msgstr "Maksimumo"
 
 #: src/gui/widgets/inspector_port.c:462
 msgid "Expose port to JACK"
@@ -2891,7 +2893,7 @@ msgstr ""
 #: resources/ui/file_auditioner_controls.ui:34 resources/gtk/menus.ui:40
 #: resources/gtk/help-overlay.ui:39
 msgid "Preferences"
-msgstr ""
+msgstr "Agordoj"
 
 #: src/gui/widgets/main_window.c:772
 msgid "Log viewer"
@@ -2954,7 +2956,7 @@ msgstr ""
 
 #: src/gui/widgets/help_toolbar.c:43
 msgid "Donate"
-msgstr ""
+msgstr "Donaci"
 
 #: src/gui/widgets/help_toolbar.c:44
 msgid "Report a Bug"
@@ -3064,7 +3066,7 @@ msgstr ""
 #: resources/ui/arranger_object_info_dialog.ui:18
 #: resources/ui/port_info_dialog.ui:18
 msgid "Name"
-msgstr ""
+msgstr "Nomo"
 
 #: src/gui/widgets/event_viewer.c:547
 #: src/gui/widgets/plugin_properties_expander.c:231
@@ -3072,7 +3074,7 @@ msgstr ""
 #: resources/ui/arranger_object_info_dialog.ui:54
 #: resources/ui/port_info_dialog.ui:111
 msgid "Type"
-msgstr ""
+msgstr "Tipo"
 
 #: src/gui/widgets/event_viewer.c:558 src/gui/widgets/event_viewer.c:671
 #: src/gui/widgets/event_viewer.c:775 src/gui/widgets/item_factory.c:213
@@ -3136,7 +3138,7 @@ msgstr ""
 #: src/gui/widgets/event_viewer.c:746 src/gui/widgets/item_factory.c:313
 #: src/gui/widgets/item_factory.c:823
 msgid "Value"
-msgstr ""
+msgstr "Valoro"
 
 #: src/gui/widgets/event_viewer.c:756 src/gui/widgets/item_factory.c:830
 msgid "Curve type"
@@ -3211,13 +3213,13 @@ msgstr ""
 #: src/gui/widgets/track.c:331 src/gui/widgets/track.c:825
 #: src/gui/widgets/channel.c:700
 msgid "Unlisten"
-msgstr ""
+msgstr "Malaŭskulti"
 
 #: src/gui/widgets/track.c:335 src/gui/widgets/track.c:817
 #: src/gui/widgets/monitor_section.c:45 src/gui/widgets/channel.c:692
 #: resources/ui/fader_buttons.ui:66
 msgid "Listen"
-msgstr ""
+msgstr "Aŭskulti"
 
 #: src/gui/widgets/track.c:344 resources/ui/fader_buttons.ui:14
 msgid "Mono compatibility"
@@ -3434,7 +3436,7 @@ msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:108
 msgid "_Load"
-msgstr ""
+msgstr "Ŝ_argi"
 
 #: src/gui/widgets/plugin_properties_expander.c:153 src/plugins/plugin.c:478
 #: src/plugins/plugin_gtk.c:156
@@ -3458,7 +3460,7 @@ msgstr ""
 #: src/gui/widgets/project_toolbar.c:40
 #: src/gui/widgets/file_chooser_entry.c:123
 msgid "Save"
-msgstr ""
+msgstr "Konservi"
 
 #: src/gui/widgets/plugin_properties_expander.c:280
 msgid "Save preset"
@@ -3466,7 +3468,7 @@ msgstr ""
 
 #: src/gui/widgets/plugin_properties_expander.c:282
 msgid "Load"
-msgstr ""
+msgstr "Ŝargi"
 
 #: src/gui/widgets/plugin_properties_expander.c:285
 msgid "Load preset"
@@ -3478,7 +3480,7 @@ msgstr ""
 
 #: src/gui/widgets/arranger.c:1378
 msgid "Create"
-msgstr ""
+msgstr "Krei"
 
 #: src/gui/widgets/arranger.c:1698 src/gui/widgets/arranger.c:1716
 #: src/gui/widgets/arranger.c:1761 src/gui/widgets/arranger.c:1827
@@ -3630,7 +3632,7 @@ msgstr ""
 #: src/gui/widgets/active_hardware_mb.c:30
 #: src/gui/widgets/active_hardware_mb.c:126
 msgid "Select..."
-msgstr ""
+msgstr "Elekti…"
 
 #: src/gui/widgets/active_hardware_mb.c:95
 msgid "Click to enable inputs"
@@ -3696,7 +3698,7 @@ msgstr ""
 
 #: src/gui/widgets/channel_slot.c:707 src/gui/widgets/file_chooser_entry.c:118
 msgid "Select"
-msgstr ""
+msgstr "Elekti"
 
 #: src/gui/widgets/channel_slot.c:916
 msgid "empty slot"
@@ -3729,7 +3731,7 @@ msgstr ""
 #: src/gui/widgets/transport_controls.c:380 resources/ui/export_dialog.ui:60
 #: resources/ui/export_dialog.ui:193
 msgid "Options"
-msgstr ""
+msgstr "Opcioj"
 
 #: src/gui/widgets/transport_controls.c:384
 msgid "Overwrite events"
@@ -3766,24 +3768,24 @@ msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:45
 msgid "Redo"
-msgstr ""
+msgstr "Refari"
 
 #: src/gui/widgets/home_toolbar.c:45
 #: build/data/org.zrythm.Zrythm.gschema.xml:1168
 msgid "Undo"
-msgstr ""
+msgstr "Malfari"
 
 #: src/gui/widgets/home_toolbar.c:134
 msgid "Cut"
-msgstr ""
+msgstr "Eltondi"
 
 #: src/gui/widgets/home_toolbar.c:135
 msgid "Copy"
-msgstr ""
+msgstr "Kopii"
 
 #: src/gui/widgets/home_toolbar.c:136
 msgid "Paste"
-msgstr ""
+msgstr "Alglui"
 
 #: src/gui/widgets/home_toolbar.c:139
 msgid "Clear selection"
@@ -3816,15 +3818,15 @@ msgstr ""
 
 #: src/gui/widgets/port_connections_tree.c:224
 msgid "Source"
-msgstr ""
+msgstr "Fonto"
 
 #: src/gui/widgets/port_connections_tree.c:254
 msgid "Multiplier"
-msgstr ""
+msgstr "Multiplikanto"
 
 #: src/gui/widgets/track_canvas.c:776
 msgid "Scales"
-msgstr ""
+msgstr "Skaloj"
 
 #: src/gui/widgets/track_input_expander.c:266
 msgid "All MIDI Inputs"
@@ -3855,12 +3857,12 @@ msgstr ""
 #: src/gui/widgets/track_input_expander.c:323
 #: resources/ui/monitor_section.ui:153
 msgid "L"
-msgstr ""
+msgstr "M"
 
 #: src/gui/widgets/track_input_expander.c:323
 #: resources/ui/automation_track.ui:64 resources/ui/monitor_section.ui:174
 msgid "R"
-msgstr ""
+msgstr "D"
 
 #: src/gui/widgets/track_input_expander.c:390
 msgid "All Channels"
@@ -4089,7 +4091,7 @@ msgstr ""
 
 #: src/gui/widgets/file_chooser_entry.c:459
 msgid "Browse…"
-msgstr ""
+msgstr "Foliumi…"
 
 #: src/gui/widgets/balance_control.c:250
 msgid "Failed to change balance"
@@ -4237,7 +4239,7 @@ msgstr ""
 #: src/gui/widgets/dialogs/add_tracks_to_group_dialog.c:84
 #: resources/ui/bind_cc_dialog.ui:43 resources/ui/generic_progress_dialog.ui:43
 msgid "OK"
-msgstr ""
+msgstr "Bone"
 
 #: src/gui/widgets/main_notebook.c:128
 msgid "Scenes (Live View)"
@@ -4372,7 +4374,7 @@ msgstr ""
 
 #: src/gui/widgets/bot_bar.c:457
 msgid "Status"
-msgstr ""
+msgstr "Stato"
 
 #. TRANSLATORS: buffer size, please keep the
 #. * translation short
@@ -4401,7 +4403,7 @@ msgstr ""
 #. volume
 #: src/gui/widgets/bot_bar.c:515 resources/ui/file_auditioner_controls.ui:29
 msgid "Volume"
-msgstr ""
+msgstr "Laŭto"
 
 #. countin
 #: src/gui/widgets/bot_bar.c:530
@@ -4587,7 +4589,7 @@ msgstr ""
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:121
 #: src/gui/widgets/dialogs/export_dialog.c:1536
 msgid "_Export"
-msgstr ""
+msgstr "_Elporti"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:131
 msgid "Base region"
@@ -4648,7 +4650,7 @@ msgstr ""
 #: src/gui/widgets/dialogs/scripting_dialog.c:107
 #: src/gui/widgets/dialogs/first_run_dialog.c:224
 msgid "Language"
-msgstr ""
+msgstr "Lingvo"
 
 #: src/gui/widgets/dialogs/scripting_dialog.c:110
 msgid "Select the language of the script"
@@ -4664,7 +4666,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:257
 msgid "none"
-msgstr ""
+msgstr "nenio"
 
 #: src/gui/widgets/dialogs/export_dialog.c:335
 msgid ""
@@ -4697,11 +4699,11 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/export_dialog.c:1304
 msgid "<name>.<format>"
-msgstr ""
+msgstr "<name>.<format>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:1305
 msgid "<date>_<name>.<format>"
-msgstr ""
+msgstr "<date>_<name>.<format>"
 
 #: src/gui/widgets/dialogs/export_dialog.c:1339
 msgid "Mixdown"
@@ -4719,7 +4721,7 @@ msgstr ""
 #: src/gui/widgets/dialogs/export_dialog.c:1390
 msgctxt "Export time range"
 msgid "Song"
-msgstr ""
+msgstr "Kanto"
 
 #: src/gui/widgets/dialogs/export_dialog.c:1391
 msgctxt "Export time range"
@@ -4745,7 +4747,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/export_progress_dialog.c:64
 msgid "Exporting..."
-msgstr ""
+msgstr "Elportante…"
 
 #: src/gui/widgets/dialogs/export_progress_dialog.c:72
 msgid "Open Directory"
@@ -4835,11 +4837,11 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:338
 msgid "Sending"
-msgstr ""
+msgstr "Sendante"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:352
 msgid "Sending..."
-msgstr ""
+msgstr "Sendante…"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:353
 msgid "Sending data..."
@@ -4860,7 +4862,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:514
 msgid "Error"
-msgstr ""
+msgstr "Eraro"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:517
 #, c-format
@@ -4893,7 +4895,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:665
 msgid "_Close"
-msgstr ""
+msgstr "_Fermi"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:666
 msgid "Submit on _SourceHut"
@@ -4922,7 +4924,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/project_assistant.c:134
 msgid "_Create"
-msgstr ""
+msgstr "_Krei"
 
 #: src/gui/widgets/dialogs/project_assistant.c:464
 msgid "No project selected"
@@ -4979,7 +4981,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:171
 msgid "_Select"
-msgstr ""
+msgstr "_Elekti"
 
 #: src/gui/widgets/dialogs/string_entry_dialog.c:81
 msgid "Please enter a value"
@@ -5417,7 +5419,7 @@ msgstr ""
 #. --- rock ---
 #: src/settings/chord_preset_pack_manager.c:374
 msgid "Rock"
-msgstr ""
+msgstr "Roko"
 
 #: src/settings/settings.c:134
 #, c-format
@@ -5488,81 +5490,81 @@ msgstr ""
 #: resources/ui/chord_selector_window.ui:358
 #: resources/ui/scale_selector_window.ui:38
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #: resources/ui/chord_selector_window.ui:47
 #: resources/ui/chord_selector_window.ui:368
 #: resources/ui/scale_selector_window.ui:48
 msgid "D♭"
-msgstr ""
+msgstr "D♭"
 
 #: resources/ui/chord_selector_window.ui:57
 #: resources/ui/chord_selector_window.ui:378
 #: resources/ui/scale_selector_window.ui:58
 msgid "D"
-msgstr ""
+msgstr "D"
 
 #: resources/ui/chord_selector_window.ui:67
 #: resources/ui/chord_selector_window.ui:388
 #: resources/ui/scale_selector_window.ui:68
 msgid "E♭"
-msgstr ""
+msgstr "E♭"
 
 #: resources/ui/chord_selector_window.ui:77
 #: resources/ui/chord_selector_window.ui:398
 #: resources/ui/scale_selector_window.ui:78
 msgid "E"
-msgstr ""
+msgstr "E"
 
 #: resources/ui/chord_selector_window.ui:87
 #: resources/ui/chord_selector_window.ui:408
 #: resources/ui/scale_selector_window.ui:88
 msgid "F"
-msgstr ""
+msgstr "F"
 
 #: resources/ui/chord_selector_window.ui:97
 #: resources/ui/chord_selector_window.ui:418
 #: resources/ui/scale_selector_window.ui:98
 msgid "F♯"
-msgstr ""
+msgstr "F♯"
 
 #: resources/ui/chord_selector_window.ui:107
 #: resources/ui/chord_selector_window.ui:428
 #: resources/ui/scale_selector_window.ui:108
 msgid "G"
-msgstr ""
+msgstr "G"
 
 #: resources/ui/chord_selector_window.ui:117
 #: resources/ui/chord_selector_window.ui:438
 #: resources/ui/scale_selector_window.ui:118
 msgid "A♭"
-msgstr ""
+msgstr "A♭"
 
 #: resources/ui/chord_selector_window.ui:127
 #: resources/ui/chord_selector_window.ui:448
 #: resources/ui/scale_selector_window.ui:128
 msgid "A"
-msgstr ""
+msgstr "A"
 
 #: resources/ui/chord_selector_window.ui:137
 #: resources/ui/chord_selector_window.ui:458
 #: resources/ui/scale_selector_window.ui:138
 msgid "B♭"
-msgstr ""
+msgstr "B♭"
 
 #: resources/ui/chord_selector_window.ui:147
 #: resources/ui/chord_selector_window.ui:468
 #: resources/ui/scale_selector_window.ui:148
 msgid "B"
-msgstr ""
+msgstr "B"
 
 #: resources/ui/chord_selector_window.ui:173
 msgid "maj"
-msgstr ""
+msgstr "maĵ"
 
 #: resources/ui/chord_selector_window.ui:183
 msgid "min"
-msgstr ""
+msgstr "min"
 
 #: resources/ui/chord_selector_window.ui:193
 msgid "dim"
@@ -5603,7 +5605,7 @@ msgstr ""
 #: resources/ui/chord_selector_window.ui:506
 #: resources/ui/scale_selector_window.ui:193
 msgid "Creator"
-msgstr ""
+msgstr "Kreinto"
 
 #: resources/ui/chord_selector_window.ui:599
 msgid "Diatonic"
@@ -5765,7 +5767,7 @@ msgstr ""
 
 #: resources/ui/header.ui:23 resources/gtk/help-overlay.ui:98
 msgid "Project"
-msgstr ""
+msgstr "Projekto"
 
 #: resources/ui/header.ui:34
 msgid "View"
@@ -5889,7 +5891,7 @@ msgstr ""
 
 #: resources/ui/automation_track.ui:81
 msgid "0.0"
-msgstr ""
+msgstr "0,0"
 
 #: resources/ui/automation_track.ui:95
 msgid "Remove automation track"
@@ -5937,19 +5939,19 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:855
 #: build/data/org.zrythm.Zrythm.gschema.xml:904
 msgid "Title"
-msgstr ""
+msgstr "Titolo"
 
 #: resources/ui/export_dialog.ui:48 resources/ui/export_dialog.ui:181
 #: build/data/org.zrythm.Zrythm.gschema.xml:850
 #: build/data/org.zrythm.Zrythm.gschema.xml:899
 msgid "Artist"
-msgstr ""
+msgstr "Muzikisto"
 
 #: resources/ui/export_dialog.ui:53 resources/ui/export_dialog.ui:186
 #: build/data/org.zrythm.Zrythm.gschema.xml:845
 #: build/data/org.zrythm.Zrythm.gschema.xml:894
 msgid "Genre"
-msgstr ""
+msgstr "Ĝenro"
 
 #: resources/ui/export_dialog.ui:63 resources/ui/export_dialog.ui:196
 #: build/data/org.zrythm.Zrythm.gschema.xml:865
@@ -6008,11 +6010,11 @@ msgstr ""
 
 #: resources/ui/port_selector_dialog.ui:10
 msgid "Select a port..."
-msgstr ""
+msgstr "Elektu pordon…"
 
 #: resources/ui/port_selector_dialog.ui:94
 msgid "Port"
-msgstr ""
+msgstr "Pordo"
 
 #: resources/ui/inspector_master.ui:18 resources/ui/inspector_ap.ui:18
 #: resources/ui/inspector_midi.ui:18
@@ -6027,7 +6029,7 @@ msgstr ""
 #: resources/ui/inspector_master.ui:40 resources/ui/inspector_ap.ui:40
 #: resources/ui/inspector_midi.ui:40
 msgid "Color"
-msgstr ""
+msgstr "Koloro"
 
 #: resources/ui/inspector_master.ui:82 resources/ui/inspector_ap.ui:82
 #: resources/ui/inspector_midi.ui:82
@@ -6048,7 +6050,7 @@ msgstr ""
 
 #: resources/ui/port_info_dialog.ui:90
 msgid "Flags"
-msgstr ""
+msgstr "Flagoj"
 
 #: resources/ui/port_info_dialog.ui:141
 msgid "Default value"
@@ -6171,7 +6173,7 @@ msgstr ""
 
 #: resources/ui/clip_editor_inner.ui:29
 msgid "Select a region..."
-msgstr ""
+msgstr "Elektu regionon…"
 
 #: resources/ui/splash.ui:10
 msgid "Splash"
@@ -6298,15 +6300,15 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:245
 msgid "Zooming"
-msgstr ""
+msgstr "Zomado"
 
 #: resources/gtk/help-overlay.ui:250
 msgid "Zoom in"
-msgstr ""
+msgstr "Enzomi"
 
 #: resources/gtk/help-overlay.ui:257
 msgid "Zoom out"
-msgstr ""
+msgstr "Elzomi"
 
 #: resources/gtk/help-overlay.ui:264
 msgid "Best fit"
@@ -6903,7 +6905,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:614
 msgid "Last location"
-msgstr ""
+msgstr "Lasta loko"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:615
 msgid "Last visited location."
@@ -7543,7 +7545,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:1153
 #: build/data/org.zrythm.Zrythm.gschema.xml:1167
 msgid "Editing"
-msgstr ""
+msgstr "Redaktado"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1144
 msgid "Fade algorithm"
