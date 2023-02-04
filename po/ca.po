@@ -1,13 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# Maite Guix <maite.guix@gmail.com>, 2022.
+# Maite Guix <maite.guix@gmail.com>, 2022, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-01-11 23:38+0900\n"
-"PO-Revision-Date: 2022-11-21 23:54+0000\n"
+"PO-Revision-Date: 2023-01-15 23:59+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.15.1-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -471,14 +471,12 @@ msgid "Folder"
 msgstr "Carpeta"
 
 #: inc/audio/snap_grid.h:51
-#, fuzzy
 msgid "bar"
-msgstr "1 barra"
+msgstr "barra"
 
 #: inc/audio/snap_grid.h:52
-#, fuzzy
 msgid "beat"
-msgstr "Eurobeat"
+msgstr "beat"
 
 #: inc/audio/snap_grid.h:72 src/gui/widgets/digital_meter.c:506
 msgid "normal"
@@ -689,9 +687,9 @@ msgid "Sine"
 msgstr "Sinusoïdal"
 
 #: src/project.c:403
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create backup directory %s"
-msgstr "Error en crear l'enviament d'àudio"
+msgstr "Error en crear el directori de còpia de seguretat %s"
 
 #: src/project.c:811
 #, c-format
@@ -760,6 +758,9 @@ msgid ""
 "project will overwrite the old one. If you would like to keep both, please "
 "use 'Save As...'."
 msgstr ""
+"Aquest projecte s'ha actualitzat automàticament de v%d a v%d. Si deses "
+"aquest projecte, es sobreescriurà l'antic. Si vols conservar tots dos, "
+"utilitza «Desar com a...»."
 
 #: src/project.c:1304
 msgid "Failed to load project. Will create a new one instead."
@@ -767,18 +768,16 @@ msgstr "Error en carregar el projecte. Se'n crearà un de nou."
 
 #: src/project.c:1357 src/project.c:1583 src/actions/actions.c:719
 #: src/actions/actions.c:761 src/gui/widgets/main_window.c:169
-#, fuzzy
 msgid "Failed to save project"
-msgstr "Error en moure objectes"
+msgstr "Error en salvar el projecte"
 
 #: src/project.c:1416
 msgid "Failed to deserialize v1 project file"
 msgstr "Error en deserialitzar el fitxer de projecte v1"
 
 #: src/project.c:1448
-#, fuzzy
 msgid "Failed to deserialize v2/3 project file"
-msgstr "Error en deserialitzar el fitxer de projecte v1"
+msgstr "Error en deserialitzar el fitxer del projecte v2/3"
 
 #: src/project.c:1754
 msgid "Failed to compress project file"
@@ -793,14 +792,12 @@ msgid "Project saved."
 msgstr "Projecte desat."
 
 #: src/project.c:1999
-#, fuzzy
 msgid "Failed to write audio pool to disk"
-msgstr "Error en crear pistes d'àudio"
+msgstr "Error en escriure la piscina d'àudio al disc"
 
 #: src/project.c:2012
-#, fuzzy
 msgid "Failed to clone project"
-msgstr "Error en clonar la pista"
+msgstr "Error en clonar el projecte"
 
 #: src/zrythm_app.c:125
 msgid "Error - Backtrace:\n"
@@ -845,10 +842,12 @@ msgid "Loading project"
 msgstr "Carregant el projecte"
 
 #: src/zrythm_app.c:423
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "No project has been selected or project failed to load. %s will now close."
-msgstr "No s'ha seleccionat cap projecte. %s es tancarà."
+msgstr ""
+"No s'ha seleccionat cap projecte o no s'ha pogut carregar cap projecte. %s "
+"ara es tancarà."
 
 #: src/zrythm_app.c:442
 msgid "Initializing settings"
@@ -1117,9 +1116,8 @@ msgstr ""
 
 #: src/actions/actions.c:667 src/actions/actions.c:691
 #: src/gui/widgets/dialogs/project_assistant.c:245
-#, fuzzy
 msgid "Failed to load project"
-msgstr "Error en editar objectes"
+msgstr "Error en carregar el projecte"
 
 #: src/actions/actions.c:735
 msgid "Save Project"
@@ -1329,19 +1327,16 @@ msgid "An object cannot be created at the selected location."
 msgstr "No es pot crear un objecte a la ubicació seleccionada."
 
 #: src/actions/actions.c:2697
-#, fuzzy
 msgid "Failed to set region color"
-msgstr "Error en establir l'algorisme de corba"
+msgstr "Error en establir el color de la regió"
 
 #: src/actions/actions.c:2727
-#, fuzzy
 msgid "Region Color"
-msgstr "Contingut de la regió"
+msgstr "Color de la regió"
 
 #: src/actions/actions.c:2762
-#, fuzzy
 msgid "Failed to reset region color"
-msgstr "Error en canviar la mida la selecció"
+msgstr "Error en restablir el color de la regió"
 
 #: src/actions/actions.c:2804
 msgid "Please enter a BPM"
@@ -1993,14 +1988,14 @@ msgid "32 bit"
 msgstr "32 bit"
 
 #: src/utils/audio.c:179
-#, fuzzy, c-format
+#, c-format
 msgid "Error opening sndfile: %s"
-msgstr "Error en carregar el directori del paquet LV2: "
+msgstr "Error en obrir sndfile: %s"
 
 #: src/utils/audio.c:205
-#, fuzzy, c-format
+#, c-format
 msgid "Seek error %d: %s"
-msgstr "error: %s"
+msgstr "Cerca error %d: %s"
 
 #: src/utils/gtk.c:1213
 msgid "Mixer"
@@ -2124,14 +2119,12 @@ msgid "Adaptive"
 msgstr "Adaptativa"
 
 #: src/audio/fader.c:97
-#, fuzzy
 msgid "Prefader Swap Phase"
-msgstr "Balanç preatenuador"
+msgstr "Fase d'intercanvi de preatenuador"
 
 #: src/audio/fader.c:98
-#, fuzzy
 msgid "Fader Swap Phase"
-msgstr "Balanç atenuador"
+msgstr "Fase d'intercanvi d'atenuador"
 
 #: src/audio/fader.c:140
 msgid "Prefader Volume"
@@ -2557,14 +2550,13 @@ msgid "Chords"
 msgstr "Acords"
 
 #: src/audio/clip.c:425
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write audio clip to file: %s"
-msgstr "Error en crear la pista al fitxer «%s»"
+msgstr "Error en escriure el clip d'àudio al fitxer: %s"
 
 #: src/audio/clip.c:494
-#, fuzzy
 msgid "Failed to write audio file"
-msgstr "Error en crear l'enviament d'àudio"
+msgstr "Error en escriure el fitxer d'àudio"
 
 #: src/audio/clip.c:659
 msgid "Edit in external app"
@@ -2605,14 +2597,13 @@ msgid "Failed to create recorded regions"
 msgstr "Error en crear les regions enregistrades"
 
 #: src/audio/pool.c:520
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write clip %s"
-msgstr "Error en crear el complement %s"
+msgstr "Error en escriure el clip %s"
 
 #: src/audio/audio_region.c:227
-#, fuzzy
 msgid "Failed to duplicate audio clip"
-msgstr "Error en duplicar automatització"
+msgstr "Error en duplicar el clip d'àudio"
 
 #: src/audio/engine_alsa.c:328
 #, c-format
@@ -2816,9 +2807,8 @@ msgid "Plugin preset loaded."
 msgstr "S'ha carregat el complement predefinit."
 
 #: src/gui/backend/arranger_selections.c:2403
-#, fuzzy
 msgid "Failed to add region"
-msgstr "Error en tornar a fer"
+msgstr "Error en afegir la regió"
 
 #: src/gui/backend/arranger_selections.c:2440
 msgid "Failed to paste selections"
@@ -2944,9 +2934,8 @@ msgid "%s - Last object"
 msgstr "%s - Últim objecte"
 
 #: src/gui/widgets/snap_grid.c:100
-#, fuzzy
 msgid "Snap/Grid Settings"
-msgstr "Opcions d'ajust/quadrícula"
+msgstr "Configuració d'ajust/quadrícula"
 
 #: src/gui/widgets/bounce_step_selector.c:156
 msgid "Bounce step selector"
@@ -3080,37 +3069,34 @@ msgid "Failed to move or copy track(s)"
 msgstr "Error en moure o copiar pistes"
 
 #: src/gui/widgets/snap_grid_popover.c:226
-#, fuzzy
 msgid "Position Snap"
-msgstr "Posició"
+msgstr "Ajust de posició"
 
 #: src/gui/widgets/snap_grid_popover.c:249
-#, fuzzy
 msgid "Adaptive Snap"
-msgstr "Adaptativa"
+msgstr "Ajust adaptatiu"
 
 #: src/gui/widgets/snap_grid_popover.c:252
 msgid ""
 "Adapt snapping behavior to the current zoom level based on the note type"
 msgstr ""
+"Adapta el comportament d'ajustament al nivell de zoom actual en funció del "
+"tipus de nota"
 
 #: src/gui/widgets/snap_grid_popover.c:268
-#, fuzzy
 msgid "Snap to"
-msgstr "Ajustar a la quadrícula"
+msgstr "Ajustar a"
 
 #: src/gui/widgets/snap_grid_popover.c:271
 msgid "Note size to snap to"
-msgstr ""
+msgstr "Mida de la nota per a ajustar-se"
 
 #: src/gui/widgets/snap_grid_popover.c:284
 #: src/gui/widgets/snap_grid_popover.c:389
-#, fuzzy
 msgid "Note Type"
-msgstr "tipus de nota"
+msgstr "Tipus de nota"
 
 #: src/gui/widgets/snap_grid_popover.c:302
-#, fuzzy
 msgid "Keep Offset"
 msgstr "Mantenir el desplaçament"
 
@@ -3118,21 +3104,20 @@ msgstr "Mantenir el desplaçament"
 msgid ""
 "Keep offset of objects from the snap point when moving to a new position"
 msgstr ""
+"Manté el desplaçament dels objectes des del punt d'ajust quan mous a una "
+"posició nova"
 
 #: src/gui/widgets/snap_grid_popover.c:326
-#, fuzzy
 msgid "Snap to Events"
 msgstr "Ajustar als esdeveniments"
 
 #: src/gui/widgets/snap_grid_popover.c:337
-#, fuzzy
 msgid "Default Object Length"
-msgstr "Durada de l'objecte de la línia de temps"
+msgstr "Durada de l'objecte per defecte"
 
 #: src/gui/widgets/snap_grid_popover.c:341
-#, fuzzy
 msgid "Link to snap"
-msgstr "Durada de l'enllaç per a configurar l'ajust"
+msgstr "Enllaç a ajusts"
 
 #: src/gui/widgets/snap_grid_popover.c:342
 #: resources/ui/snap_grid_popover.ui:224
@@ -3146,15 +3131,16 @@ msgid "Custom"
 msgstr "Personalitzat"
 
 #: src/gui/widgets/snap_grid_popover.c:355
-#, fuzzy
 msgid "Object Length Lype"
-msgstr "Tipus de durada d'objecte editor"
+msgstr "Durada de l'objecte Lype"
 
 #: src/gui/widgets/snap_grid_popover.c:358
 msgid ""
 "Link to snap settings, use the length of the last created object, or specify "
 "a custom length"
 msgstr ""
+"Enllaç a la configuració d'ajustament, utilitza la durada de l'últim objecte "
+"creat o especifica una durada personalitzada"
 
 #: src/gui/widgets/snap_grid_popover.c:373
 #: resources/ui/snap_grid_popover.ui:239 resources/ui/inspector_master.ui:71
@@ -3308,9 +3294,8 @@ msgid "Search..."
 msgstr "Cercar…"
 
 #: src/gui/widgets/drag_dest_box.c:289 src/gui/widgets/timeline_arranger.c:1472
-#, fuzzy
 msgid "Failed to import files"
-msgstr "Error en editar atenuacions"
+msgstr "Error en importar fitxers"
 
 #: src/gui/widgets/drag_dest_box.c:357 src/gui/widgets/track.c:1889
 msgid "Failed to move or copy plugin"
@@ -3350,7 +3335,7 @@ msgstr "Compatibilitat mono"
 
 #: src/gui/widgets/track.c:348 resources/ui/fader_buttons.ui:79
 msgid "Swap phase"
-msgstr ""
+msgstr "Fase d'intercanvi"
 
 #: src/gui/widgets/track.c:354
 msgid "Disarm"
@@ -3478,10 +3463,9 @@ msgstr "Sortida directa nova"
 
 #: src/gui/widgets/track.c:866
 msgid "Route Target"
-msgstr ""
+msgstr "Destí d'encaminament"
 
 #: src/gui/widgets/track.c:873
-#, fuzzy
 msgid "Direct Output"
 msgstr "Sortida directa"
 
@@ -3599,14 +3583,12 @@ msgid "Load preset"
 msgstr "Carregar preconfiguració"
 
 #: src/gui/widgets/arranger.c:1374
-#, fuzzy
 msgid "Create Object"
 msgstr "Crear objecte"
 
 #: src/gui/widgets/arranger.c:1378
-#, fuzzy
 msgid "Create"
-msgstr "_Crear"
+msgstr "Crear"
 
 #: src/gui/widgets/arranger.c:1698 src/gui/widgets/arranger.c:1716
 #: src/gui/widgets/arranger.c:1761 src/gui/widgets/arranger.c:1827
@@ -3619,9 +3601,8 @@ msgid "Failed to move chords"
 msgstr "Error en moure acords"
 
 #: src/gui/widgets/arranger.c:2094 src/gui/widgets/timeline_arranger.c:342
-#, fuzzy
 msgid "Failed to create region"
-msgstr "Error en crear complement"
+msgstr "Error en crear la regió"
 
 #: src/gui/widgets/arranger.c:2429
 msgid "Automation value"
@@ -4398,23 +4379,20 @@ msgid "Rename"
 msgstr "Canviar el nom"
 
 #: src/gui/widgets/timeline_arranger.c:1070
-#, fuzzy
 msgid "Change Color..."
 msgstr "Canviar color..."
 
 #: src/gui/widgets/timeline_arranger.c:1075
-#, fuzzy
 msgid "Reset Color"
-msgstr "%s color"
+msgstr "Restablir el color"
 
 #: src/gui/widgets/timeline_arranger.c:1090
 msgid "Detect BPM"
 msgstr "Detectar BPM"
 
 #: src/gui/widgets/timeline_arranger.c:1140
-#, fuzzy
 msgid "Functions"
-msgstr "Funcions regionals"
+msgstr "Funcions"
 
 #: src/gui/widgets/timeline_arranger.c:1143
 msgid "Audio Regions"
@@ -4429,29 +4407,24 @@ msgid "MIDI Regions"
 msgstr "Regions MIDI"
 
 #: src/gui/widgets/timeline_arranger.c:1208
-#, fuzzy
 msgid "Move to Lane"
-msgstr "Posar el carril en solo"
+msgstr "Moure al carril"
 
 #: src/gui/widgets/timeline_arranger.c:1211
-#, fuzzy
 msgid "Automation Region"
-msgstr "Punt d'automatització"
+msgstr "Regió d'automatització"
 
 #: src/gui/widgets/timeline_arranger.c:1218
-#, fuzzy
 msgid "Quick Bounce"
 msgstr "Rebot ràpid"
 
 #: src/gui/widgets/timeline_arranger.c:1227
-#, fuzzy
 msgid "Bounce to Audio"
-msgstr "Cua de rebot"
+msgstr "Rebot a l'àudio"
 
 #: src/gui/widgets/timeline_arranger.c:1413
-#, fuzzy
 msgid "Failed to add region to track"
-msgstr "Error en crear pista"
+msgstr "Error en afegir la regió al seguiment"
 
 #: src/gui/widgets/timeline_arranger.c:1425
 msgid "Failed to create selections"
@@ -5338,9 +5311,8 @@ msgid "Carla plugin instantiation failed"
 msgstr "Error en instanciar al complement Carla"
 
 #: src/plugins/plugin.c:1563 src/plugins/plugin.c:2176
-#, fuzzy
 msgid "Failed saving Carla plugin state"
-msgstr "Error en obtenir el complement Carla"
+msgstr "Error en desar l'estat del complement de Carla"
 
 #: src/plugins/plugin.c:1585
 msgid "LV2 plugin instantiation failed"
@@ -5470,7 +5442,7 @@ msgstr ""
 
 #: src/plugins/carla_native_plugin.c:2413
 msgid "Plugin doesn't have a state directory"
-msgstr ""
+msgstr "El complement no té un directori d'estat"
 
 #: src/plugins/carla_native_plugin.c:2431
 #, c-format
@@ -5772,7 +5744,7 @@ msgstr "j7"
 
 #: resources/ui/chord_selector_window.ui:341
 msgid "Bass Note"
-msgstr "Nota baixa"
+msgstr "Nota greu"
 
 #: resources/ui/chord_selector_window.ui:494
 msgid "In scale"
@@ -6651,7 +6623,7 @@ msgstr "Dispositius de sortida esquerra"
 #: build/data/org.zrythm.Zrythm.gschema.xml:321
 msgid "A list of output devices to route the left monitor output to."
 msgstr ""
-"Una llista de dispositius de sortida on dirigir la sortida del monitor "
+"Una llista de dispositius de sortida on encaminar la sortida del monitor "
 "esquerre."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:326
@@ -7928,15 +7900,15 @@ msgstr "Canviat:"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
 msgid "Don't attempt to create plugin state directories when loading projects"
 msgstr ""
+"No intentis crear directoris d'estat de complements quan carregues projectes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-#, fuzzy
 msgid "Add more error checking to various operations"
-msgstr "Fer més comprovacions d'errors en exportar fitxers"
+msgstr "Afegir més comprovació d'errors a diverses operacions"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Include Carla and GTK versions in debug info"
-msgstr ""
+msgstr "Inclou les versions Carla i GTK a la informació de depuració"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
@@ -7946,39 +7918,40 @@ msgstr "Solucionat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
 msgid "Fix being unable to export stems"
-msgstr ""
+msgstr "Arregla la impossibilitat d'exportar pliques"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
-#, fuzzy
 msgid "Fix multiple popups being shown when exporting stems"
-msgstr "Títol a utilitzar en exportar."
+msgstr ""
+"Soluciona diverses finestres emergents que es mostren quan s'exporten les "
+"pliques"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
 msgid "Fix removing inserts not being undoable"
-msgstr ""
+msgstr "Arregla l'eliminació d'insercions que no es podia desfer"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
-#, fuzzy
 msgid ""
 "Fix plugin states being deleted from the main project when saving backups"
 msgstr ""
-"Soluciona el desament d'una còpia de seguretat eliminant fitxers del grup "
-"d'àudio del projecte principal en lloc de la còpia de seguretat"
+"Soluciona els estats del complement que s'eliminen del projecte principal en "
+"desar còpies de seguretat"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:66
 msgid "Fix error when enabling/disabling MIDI bindings"
-msgstr ""
+msgstr "Corregeix un error en activar/desactivar les vinculacions MIDI"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
 msgid ""
 "Fix incorrectly throwing an error sometimes when processing the sample "
 "processor"
 msgstr ""
+"Soluciona el llançament incorrecte d'un error de vegades en processar el "
+"processador de mostres"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:68
-#, fuzzy
 msgid "Fix error when moving a region from the last lane"
-msgstr "Soluciona un error en crear una regió a la 3a pista d'automatització"
+msgstr "Soluciona un error en moure una regió des de l'últim carril"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:115
@@ -7987,124 +7960,143 @@ msgstr "Afegit:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid "Implement best-fit zoom in editor"
-msgstr ""
+msgstr "Implementar el zoom més adequat a l'editor"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:78
 msgid "Add \"Rename\" context menu option on applicable timeline objects"
 msgstr ""
+"Afegir l'opció de menú contextual «Canviar el nom» als objectes aplicables "
+"de la línia de temps"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:79
 msgid "Implement Ableton-style panning/zooming in the ruler"
-msgstr ""
+msgstr "Implementació de panoràmica/zooming a l'estil Ableton al regle"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:80
 msgid "Implement middle-click (or alt-click) panning in arrangers"
 msgstr ""
+"Implementació de la panoràmica amb el clic mitjà (o el clic alt) als "
+"arranjadors"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:84
 msgid "Minor UI improvements (widget paddings and sizes)"
-msgstr ""
+msgstr "Millores menors de la IU (encoixinats i mides dels ginys)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:85
 msgid "File browser: allow browsing volumes without associated drives"
 msgstr ""
+"Navegador de fitxers: permet navegar per volums sense una unitat associada"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:86
-#, fuzzy
 msgid "Minor optimizations"
-msgstr "Pentatònic menor"
+msgstr "Optimitzacions menors"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:87
 msgid "Redesign snap/grid menu"
-msgstr ""
+msgstr "Redissenya el menú de quadrícula/ajust"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:88
 msgid "Require C11 thread support on GNU/Linux"
-msgstr ""
+msgstr "Requereix suport de fil C11 a GNU/Linux"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:92
 msgid "Fix arrangers sometimes not taking off-screen objects into account"
 msgstr ""
+"Soluciona que els organitzadors de vegades no tenien en compte els objectes "
+"fora de la pantalla"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:93
-#, fuzzy
 msgid "Fix minor memory leak"
-msgstr "Soluciona algunes fuites de memòria"
+msgstr "Soluciona una petita fuga de memòria"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:94
 msgid "Fix error when undoing duplication of automation points"
-msgstr ""
+msgstr "Soluciona un error en desfer la duplicació de punts d'automatització"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:95
 msgid ""
 "Fix some functions that were supposed to be optimized not getting optimized"
 msgstr ""
+"Soluciona algunes funcions que se suposava que s'havien d'optimitzar no "
+"s'optimitzaven"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:104
 msgid "Use list view for control ports in the plugin inspector (fixes lags)"
 msgstr ""
+"Utilitza la vista de llista per als ports de control a l'inspector de "
+"complements (corregeix els retards)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid ""
 "Don't use cairo to draw automation regions (fixes lags on large projects)"
 msgstr ""
+"No utilitzar Cairo per a dibuixar regions d'automatització (corregeix els "
+"desplaçaments en projectes grans)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid "Don't use demo template on Windows on first run (currently broken)"
 msgstr ""
+"No utilitzis el model de demostració a Windows a la primera execució ("
+"actualment trencat)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:107
 msgid "Don't save undo history with backups (makes saving faster)"
 msgstr ""
+"No deseu l'historial de desfer amb còpies de seguretat (fa que el desat "
+"sigui més ràpid)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:108
 msgid ""
 "Write audio pool files in parallel (makes saving faster on projects with "
 "lots of audio files)"
 msgstr ""
+"Escriptura de fitxers d'agrupació d'àudio en paral·lel (fa que el desat "
+"sigui més ràpid en projectes amb molts fitxers d'àudio)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:117
 msgid "Add \"View Info\" context menu option to timeline and automation editor"
 msgstr ""
+"Afegir l'opció de menú contextual «Veure informació» a la línia de temps i a "
+"l'editor d'automatització"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:121
 msgid "Reorganize Direct Out submenu in track context menu"
-msgstr ""
+msgstr "Reorganitza el submenú Sortida directa al menú contextual de la pista"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:122
 msgid ""
 "Only allow pasting all the copied info into the selected track instead of "
 "spreading the paste across multiple tracks"
 msgstr ""
+"Només permet enganxar tota la informació copiada a la pista seleccionada en "
+"lloc d'estendre l'enganxament a través de diverses pistes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 msgid "Fix \"View Info\" in piano roll doing \"Duplicate\" instead"
-msgstr ""
+msgstr "Soluciona la «Veure informació» al rotlle de pianola fent «Duplicar»"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:127
-#, fuzzy
 msgid "Fix object info dialog contents being invisible"
-msgstr "Corregir la invisibilitat dels marcadors"
+msgstr ""
+"Soluciona que el contingut del diàleg d'informació de l'objecte fos invisible"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:128
-#, fuzzy
 msgid "Fix incorrectly allowing to set a track's output to itself"
 msgstr ""
-"Corregir la incorrecta possibilitat de clonar/canviar el nom dels marcadors "
-"d'inici/finalització"
+"Soluciona el que permetia configurar incorrectament la sortida d'una pista a "
+"si mateixa"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:129
 msgid "Fix copy-paste being broken in arrangers"
-msgstr ""
+msgstr "Soluciona l'error de copiar i enganxar als arranjadors"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:130
-#, fuzzy
 msgid ""
 "Fix incorrectly allowing to copy-paste unclonable objects like the start/end "
 "markers"
 msgstr ""
-"Corregir la incorrecta possibilitat de clonar/canviar el nom dels marcadors "
-"d'inici/finalització"
+"Soluciona el que permetia incorrectament copiar i enganxar objectes no "
+"clonables com els marcadors d'inici/final"
 
 #~ msgid "Direct out"
 #~ msgstr "Sortida directa"
