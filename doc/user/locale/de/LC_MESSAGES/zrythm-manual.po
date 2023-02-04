@@ -42,8 +42,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-10-03 21:09+0900\n"
-"PO-Revision-Date: 2022-12-01 23:54+0000\n"
-"Last-Translator: Ludwig <ludwig-o@freenet.de>\n"
+"PO-Revision-Date: 2023-02-02 08:46+0000\n"
+"Last-Translator: Hartmut Wagener <hartmut.w.wagener@t-online.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/de/>\n"
 "Language: de\n"
@@ -51,7 +51,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 "Generated-By: Babel 2.10.3\n"
 
 #: ../../appendix/environment.rst:11
@@ -1343,7 +1343,7 @@ msgstr "Weitere Beitragende"
 #: ../../editing/clip-editors/audio-editor.rst:9
 #: ../../editing/clip-editors/toolbar.rst:54
 msgid "Audio Editor"
-msgstr "Audio Editor"
+msgstr "Audio-Editor"
 
 #: ../../editing/clip-editors/audio-editor.rst:10
 msgid "The audio editor is displayed when an audio region is selected."
@@ -1833,7 +1833,7 @@ msgstr "Werkzeugleiste"
 
 #: ../../editing/clip-editors/piano-roll.rst:39
 msgid "Drum View"
-msgstr "Schlagzeugansicht"
+msgstr "Schlagzeug-Ansicht"
 
 #: ../../editing/clip-editors/piano-roll.rst:31
 msgid ""
@@ -3364,7 +3364,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:170
 msgid "Looping"
-msgstr "Wiederholen"
+msgstr "Schleifen setzen"
 
 #: ../../editing/timeline/arranger.rst:171
 msgid ""
@@ -5833,7 +5833,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:9
 msgid "File Browser"
-msgstr "Dateibrowser"
+msgstr "Datei-Browser"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:11
 msgid ""
@@ -7330,13 +7330,8 @@ msgid "See :ref:`export-routing-graph` for details."
 msgstr ""
 
 #: ../../routing/monitor-section.rst:7
-#, fuzzy
 msgid "Monitor Section"
-msgstr ""
-"#-#-#-#-#  editing.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Sammlung"
+msgstr "Monitor-Bereich"
 
 #: ../../routing/monitor-section.rst:8
 msgid ""
@@ -7790,7 +7785,7 @@ msgstr ""
 
 #: ../../scripting/intro.rst:9
 msgid "Scripting"
-msgstr "Skripting"
+msgstr "Scripting (Code)"
 
 #: ../../scripting/overview.rst:9
 msgid ""
@@ -8344,7 +8339,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:106
 msgid "Aux Sends"
-msgstr ""
+msgstr "Aux-Sends"
 
 #: ../../tracks/inspector-page.rst:108
 msgid ""
@@ -8685,9 +8680,8 @@ msgid ""
 msgstr ""
 
 #: ../../tracks/track-lanes.rst:7
-#, fuzzy
 msgid "Track Lanes"
-msgstr "Spuren"
+msgstr "Nebenspuren"
 
 #: ../../tracks/track-lanes.rst:9
 msgid ""
