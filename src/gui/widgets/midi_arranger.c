@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_selections.h"
@@ -483,24 +483,15 @@ midi_arranger_widget_gen_context_menu (
 }
 
 /**
- * Handle ctrl+shift+scroll.
+ * @param hover_y Current hover y-value, or -1 to use the
+ *   topmost visible value.
  */
-void
-midi_arranger_handle_vertical_zoom_scroll (
-  ArrangerWidget *           self,
-  GtkEventControllerScroll * scroll_controller,
-  double                     dy)
+static void
+do_vertical_zoom (
+  ArrangerWidget * self,
+  double           hover_y,
+  double           delta_y)
 {
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (scroll_controller));
-
-  if (!(state & GDK_CONTROL_MASK && state & GDK_SHIFT_MASK))
-    return;
-
-  double y = self->hover_y;
-  double delta_y = dy;
-
   /* get current adjustment so we can get the
    * difference from the cursor */
   EditorSettings * settings =
@@ -508,11 +499,15 @@ midi_arranger_handle_vertical_zoom_scroll (
   double adj_val = settings->scroll_start_y;
   double size_before = gtk_widget_get_allocated_height (
     GTK_WIDGET (MW_PIANO_ROLL_KEYS));
-  double adj_perc = y / size_before;
+  if (hover_y < 0)
+    {
+      hover_y = adj_val;
+    }
+  double adj_perc = hover_y / size_before;
 
   /* get px diff so we can calculate the new
    * adjustment later */
-  double diff = y - adj_val;
+  double diff = hover_y - adj_val;
 
   /* scroll down, zoom out */
   double size_after;
@@ -538,4 +533,34 @@ midi_arranger_handle_vertical_zoom_scroll (
   editor_settings_set_scroll_start_y (
     settings, (int) (adj_perc * size_after - diff),
     F_NO_VALIDATE);
+}
+
+void
+midi_arranger_handle_vertical_zoom_action (
+  ArrangerWidget * self,
+  bool             zoom_in)
+{
+  do_vertical_zoom (self, -1, zoom_in ? -1 : 1);
+}
+
+/**
+ * Handle ctrl+shift+scroll.
+ */
+void
+midi_arranger_handle_vertical_zoom_scroll (
+  ArrangerWidget *           self,
+  GtkEventControllerScroll * scroll_controller,
+  double                     dy)
+{
+  GdkModifierType state =
+    gtk_event_controller_get_current_event_state (
+      GTK_EVENT_CONTROLLER (scroll_controller));
+
+  if (!(state & GDK_CONTROL_MASK && state & GDK_SHIFT_MASK))
+    return;
+
+  double y = self->hover_y;
+  double delta_y = dy;
+
+  do_vertical_zoom (self, y, delta_y);
 }

@@ -114,6 +114,10 @@
                   <class name="toolbar"/>
                 </style>
                 <property name="orientation">vertical</property>
+                <child>
+                  <object class="ZoomButtonsWidget" id="zoom_buttons">
+                  </object>
+                </child>
               </object>
             </child>
           </object>

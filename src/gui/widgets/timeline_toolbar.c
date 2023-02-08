@@ -64,7 +64,8 @@ timeline_toolbar_widget_init (TimelineToolbarWidget * self)
 
 #undef SET_TOOLTIP
 
-  zoom_buttons_widget_setup (self->zoom_buttons, true);
+  zoom_buttons_widget_setup (
+    self->zoom_buttons, true, GTK_ORIENTATION_HORIZONTAL);
 }
 
 static void

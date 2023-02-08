@@ -5192,11 +5192,9 @@ on_scroll (
   ArrangerWidget * self = Z_ARRANGER_WIDGET (user_data);
 
 #if 0
-  event = gtk_event_controller_get_current_event (controller);
-
-  source_device = gdk_event_get_device (event);
-  input_source = gdk_device_get_source (source_device);
-
+  GdkEvent * event = gtk_event_controller_get_current_event (GTK_EVENT_CONTROLLER (scroll_controller));
+  GdkDevice * source_device = gdk_event_get_device (event);
+  GdkInputSource input_source = gdk_device_get_source (source_device);
   /* adjust for scroll unit */
   /* TODO */
   GdkScrollUnit scroll_unit = gtk_event_controller_scroll_get_unit (scroll_controller);

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/channel.h"
@@ -25,6 +25,7 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
 #include "gui/widgets/ruler.h"
+#include "gui/widgets/zoom_buttons.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -284,6 +285,13 @@ clip_editor_inner_widget_init (ClipEditorInnerWidget * self)
   GdkRGBA color;
   gdk_rgba_parse (&color, "gray");
   color_area_widget_set_color (self->color_bar, &color);
+
+  zoom_buttons_widget_setup (
+    self->zoom_buttons, false, GTK_ORIENTATION_VERTICAL);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->zoom_buttons->original_size), false);
+  gtk_widget_set_visible (
+    GTK_WIDGET (self->zoom_buttons->best_fit), false);
 }
 
 static void
@@ -310,6 +318,7 @@ clip_editor_inner_widget_class_init (
   BIND_CHILD (audio_editor_space);
   BIND_CHILD (chord_editor_space);
   BIND_CHILD (automation_editor_space);
+  BIND_CHILD (zoom_buttons);
 
 #undef BIND_CHILD
 
