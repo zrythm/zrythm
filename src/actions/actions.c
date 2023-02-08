@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -76,6 +76,7 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/mixer.h"
 #include "gui/widgets/panel_file_browser.h"
+#include "gui/widgets/piano_roll_keys.h"
 #include "gui/widgets/plugin_browser.h"
 #include "gui/widgets/port_connections.h"
 #include "gui/widgets/port_connections_tree.h"
@@ -107,6 +108,7 @@
 #include "utils/io.h"
 #include "utils/localization.h"
 #include "utils/log.h"
+#include "utils/math.h"
 #include "utils/progress_info.h"
 #include "utils/resources.h"
 #include "utils/stack.h"
@@ -403,34 +405,58 @@ DEFINE_SIMPLE (activate_zoom_in)
   size_t       size;
   const char * str = g_variant_get_string (variant, &size);
 
-  RulerWidget * ruler = NULL;
-  if (string_is_equal (str, "timeline"))
+  /* if ends with v, this is a vertical zoom */
+  if (g_str_has_suffix (str, "v"))
     {
-      ruler = MW_RULER;
-    }
-  else if (string_is_equal (str, "editor"))
-    {
-      ruler = EDITOR_RULER;
+      if (g_str_has_prefix (str, "editor"))
+        {
+          ArrangerWidget * arranger =
+            clip_editor_inner_widget_get_visible_arranger (
+              MW_CLIP_EDITOR_INNER);
+
+          switch (arranger->type)
+            {
+            case ARRANGER_WIDGET_TYPE_MIDI:
+              midi_arranger_handle_vertical_zoom_action (
+                arranger, true);
+              break;
+            default:
+              g_warning ("unimplemented");
+              break;
+            }
+        }
     }
   else
     {
-      switch (PROJECT->last_selection)
+      RulerWidget * ruler = NULL;
+      if (string_is_equal (str, "timeline"))
         {
-        case SELECTION_TYPE_EDITOR:
-          ruler = EDITOR_RULER;
-          break;
-        default:
           ruler = MW_RULER;
-          break;
         }
+      else if (string_is_equal (str, "editor"))
+        {
+          ruler = EDITOR_RULER;
+        }
+      else
+        {
+          switch (PROJECT->last_selection)
+            {
+            case SELECTION_TYPE_EDITOR:
+              ruler = EDITOR_RULER;
+              break;
+            default:
+              ruler = MW_RULER;
+              break;
+            }
+        }
+
+      ruler_widget_set_zoom_level (
+        ruler,
+        ruler_widget_get_zoom_level (ruler)
+          * RULER_ZOOM_LEVEL_MULTIPLIER);
+
+      EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, ruler);
     }
-
-  ruler_widget_set_zoom_level (
-    ruler,
-    ruler_widget_get_zoom_level (ruler)
-      * RULER_ZOOM_LEVEL_MULTIPLIER);
-
-  EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, ruler);
 }
 
 DEFINE_SIMPLE (activate_zoom_out)
@@ -438,34 +464,58 @@ DEFINE_SIMPLE (activate_zoom_out)
   size_t       size;
   const char * str = g_variant_get_string (variant, &size);
 
-  RulerWidget * ruler = NULL;
-  if (string_is_equal (str, "timeline"))
+  /* if ends with v, this is a vertical zoom */
+  if (g_str_has_suffix (str, "v"))
     {
-      ruler = MW_RULER;
-    }
-  else if (string_is_equal (str, "editor"))
-    {
-      ruler = EDITOR_RULER;
+      if (g_str_has_prefix (str, "editor"))
+        {
+          ArrangerWidget * arranger =
+            clip_editor_inner_widget_get_visible_arranger (
+              MW_CLIP_EDITOR_INNER);
+
+          switch (arranger->type)
+            {
+            case ARRANGER_WIDGET_TYPE_MIDI:
+              midi_arranger_handle_vertical_zoom_action (
+                arranger, false);
+              break;
+            default:
+              g_warning ("unimplemented");
+              break;
+            }
+        }
     }
   else
     {
-      switch (PROJECT->last_selection)
+      RulerWidget * ruler = NULL;
+      if (string_is_equal (str, "timeline"))
         {
-        case SELECTION_TYPE_EDITOR:
-          ruler = EDITOR_RULER;
-          break;
-        default:
           ruler = MW_RULER;
-          break;
         }
+      else if (string_is_equal (str, "editor"))
+        {
+          ruler = EDITOR_RULER;
+        }
+      else
+        {
+          switch (PROJECT->last_selection)
+            {
+            case SELECTION_TYPE_EDITOR:
+              ruler = EDITOR_RULER;
+              break;
+            default:
+              ruler = MW_RULER;
+              break;
+            }
+        }
+
+      double zoom_level =
+        ruler_widget_get_zoom_level (ruler)
+        / RULER_ZOOM_LEVEL_MULTIPLIER;
+      ruler_widget_set_zoom_level (ruler, zoom_level);
+
+      EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, ruler);
     }
-
-  double zoom_level =
-    ruler_widget_get_zoom_level (ruler)
-    / RULER_ZOOM_LEVEL_MULTIPLIER;
-  ruler_widget_set_zoom_level (ruler, zoom_level);
-
-  EVENTS_PUSH (ET_RULER_VIEWPORT_CHANGED, ruler);
 }
 
 DEFINE_SIMPLE (activate_best_fit)

@@ -134,6 +134,11 @@ midi_arranger_widget_gen_context_menu (
   double           x,
   double           y);
 
+void
+midi_arranger_handle_vertical_zoom_action (
+  ArrangerWidget * self,
+  bool             zoom_in);
+
 /**
  * Handle ctrl+shift+scroll.
  */

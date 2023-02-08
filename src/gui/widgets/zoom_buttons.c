@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2022-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/zoom_buttons.h"
 #include "utils/gtk.h"
@@ -28,17 +12,24 @@ G_DEFINE_TYPE (
   zoom_buttons_widget,
   GTK_TYPE_BOX)
 
+/**
+ * @param orientation Orientation the zoom buttons will zoom
+ *   in.
+ */
 void
 zoom_buttons_widget_setup (
   ZoomButtonsWidget * self,
-  bool                timeline)
+  bool                timeline,
+  GtkOrientation      orientation)
 {
   const char * type = timeline ? "timeline" : "editor";
 
   char detailed_action[700];
 
 #define SET_ACTION(name, widget) \
-  sprintf (detailed_action, "app." name "::%s", type); \
+  sprintf ( \
+    detailed_action, "app." name "::%s%s", type, \
+    orientation == GTK_ORIENTATION_HORIZONTAL ? "" : "v"); \
   gtk_actionable_set_detailed_action_name ( \
     GTK_ACTIONABLE (self->widget), detailed_action)
 
@@ -48,6 +39,9 @@ zoom_buttons_widget_setup (
   SET_ACTION ("best-fit", best_fit);
 
 #undef SET_ACTION
+
+  gtk_orientable_set_orientation (
+    GTK_ORIENTABLE (self), orientation);
 }
 
 static void

@@ -382,7 +382,8 @@ editor_toolbar_widget_init (EditorToolbarWidget * self)
   gtk_menu_button_set_use_popover (menu_btn, false);
 #endif
 
-  zoom_buttons_widget_setup (self->zoom_buttons, false);
+  zoom_buttons_widget_setup (
+    self->zoom_buttons, false, GTK_ORIENTATION_HORIZONTAL);
 }
 
 static void

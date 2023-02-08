@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -29,6 +29,7 @@ typedef struct _ChordEditorSpaceWidget ChordEditorSpaceWidget;
 typedef struct _AutomationEditorSpaceWidget
                                AutomationEditorSpaceWidget;
 typedef struct _ArrangerWidget ArrangerWidget;
+TYPEDEF_STRUCT_UNDERSCORED (ZoomButtonsWidget);
 
 /**
  * @addtogroup widgets
@@ -92,6 +93,10 @@ typedef struct _ClipEditorInnerWidget
   AudioEditorSpaceWidget * audio_editor_space;
 
   /* ==== End Audio Editor ==== */
+
+  /* === Right toolbar === */
+
+  ZoomButtonsWidget * zoom_buttons;
 
   /** Size group for keeping the whole ruler and
    * each timeline the same width. */
