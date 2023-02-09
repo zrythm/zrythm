@@ -7,18 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-03 21:09+0900\n"
+"POT-Creation-Date: 2023-02-09 19:06+0900\n"
 "PO-Revision-Date: 2023-01-15 23:59+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/ca/>\n"
 "Language: ca\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/ca/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
-"Generated-By: Babel 2.10.3\n"
+"Generated-By: Babel 2.11.0\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
@@ -975,8 +974,8 @@ msgid ""
 "--> General`. To disable auto-save, set the interval to 0."
 msgstr ""
 "Zrythm pot desar còpies de seguretat automàticament mentre treballa en un "
-"projecte. Pots especificar l'interval per fer-ho, en minuts, a "
-":menuselection:`Projects --> General`. Per a desactivar l'emmagatzematge "
+"projecte. Pots especificar l'interval per fer-ho, en minuts, a :"
+"menuselection:`Projects --> General`. Per a desactivar l'emmagatzematge "
 "automàtic, posa l'interval a 0."
 
 #: ../../configuration/preferences.rst:100
@@ -1175,9 +1174,9 @@ msgid ""
 "`fr` in the URL with your language code)."
 msgstr ""
 "Zrythm conté una terminologia semblant al programari d'àudio existent. És "
-"possible que et resulti útil demanar termes en préstec. Consulta el manual `"
-"Cubase Pro Artist manual <https://steinberg.help/cubase_pro_artist/v9/fr/>`_ "
-"per exemple (substituint `fr` a la URL amb el teu codi d'idioma)."
+"possible que et resulti útil demanar termes en préstec. Consulta el manual "
+"`Cubase Pro Artist manual <https://steinberg.help/cubase_pro_artist/v9/fr/"
+">`_ per exemple (substituint `fr` a la URL amb el teu codi d'idioma)."
 
 #: ../../contributing/intro.rst:76
 msgid "User Manual"
@@ -3899,6 +3898,77 @@ msgstr ""
 "Per a projectes grans, pot trigar un temps a generar el gràfic PNG i la "
 "imatge resultant serà extremadament gran."
 
+#: ../../getting-started/faq.rst:9
+msgid "Frequently Asked Questions"
+msgstr ""
+
+#: ../../getting-started/faq.rst:12 ../../zrythm-interface/main-toolbar.rst:84
+msgid "About"
+msgstr "Sobre"
+
+#: ../../getting-started/faq.rst:15
+msgid "What is Zrythm?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:17
+msgid ""
+"Zrythm is software for composing, recording, editing, arranging, mixing and "
+"mastering audio and MIDI data. Such software is commonly referred to as "
+"digital audio workstations (DAWs). Zrythm provides all the tools needed to "
+"create entire tracks."
+msgstr ""
+
+#: ../../getting-started/faq.rst:61
+msgid "Is it free?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:63
+msgid ""
+"Zrythm is free as in *freedom* (:term:`Free software`). If you purchase a "
+"binary from us, there is a cost involved but you can also get Zrythm for "
+"free as in *free beer* if you build it yourself or get it from a "
+"distribution."
+msgstr ""
+
+#: ../../getting-started/faq.rst:69
+msgid "When will v1 be released?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:71
+msgid "When all bugs and features marked as `v1rc` are completed:"
+msgstr ""
+
+#: ../../getting-started/faq.rst:73
+msgid "https://todo.sr.ht/~alextee/zrythm-feature"
+msgstr ""
+
+#: ../../getting-started/faq.rst:74
+msgid "https://todo.sr.ht/~alextee/zrythm-bug"
+msgstr ""
+
+#: ../../getting-started/faq.rst:77
+#, fuzzy
+msgid "Usage"
+msgstr "Idioma"
+
+#: ../../getting-started/faq.rst:80
+msgid "How do I add external plugins?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:82
+msgid ""
+"See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and :ref:"
+"`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
+msgstr ""
+
+#: ../../getting-started/faq.rst:86
+msgid "How do I import an audio/MIDI file?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:88
+msgid "See :ref:`plugins-files/audio-midi-files/file-browser:Importing Files`."
+msgstr ""
+
 #: ../../getting-started/getting-plugins.rst:9
 msgid "Getting Plugins, Instruments and Samples"
 msgstr "Obtenció de complements, instruments i mostres"
@@ -4110,18 +4180,30 @@ msgid "The installers also include bundled plugins."
 msgstr "Els instal·ladors també inclouen complements empaquetats."
 
 #: ../../getting-started/installation.rst:28
+#: ../../plugins-files/plugins/scanning.rst:79
+msgid "Windows"
+msgstr "Windows"
+
+#: ../../getting-started/installation.rst:31
+msgid ""
+"On Windows, Zrythm will only work when installed in the default path. "
+"Installing Zrythm to external hard drives or setting the Zrythm user path to "
+"external hard drives is not supported."
+msgstr ""
+
+#: ../../getting-started/installation.rst:36
 msgid "Flatpak"
 msgstr "Flatpak"
 
-#: ../../getting-started/installation.rst:29
+#: ../../getting-started/installation.rst:37
 msgid "Zrythm is available on `Flathub`_ under the ID `org.zrythm.Zrythm`_."
 msgstr "Zrythm està disponible a `Flathub`_ amb ID `org.zrythm.Zrythm`_."
 
-#: ../../getting-started/installation.rst:33
+#: ../../getting-started/installation.rst:41
 msgid "Distribution Repositories"
 msgstr "Repositoris de distribució"
 
-#: ../../getting-started/installation.rst:34
+#: ../../getting-started/installation.rst:42
 msgid ""
 "If Zrythm is available in your distro's repositories, you can also install "
 "it from there."
@@ -4129,21 +4211,21 @@ msgstr ""
 "Si Zrythm està disponible als repositoris de la teva distribució, també pots "
 "instal·lar-lo des d'allà."
 
-#: ../../getting-started/installation.rst:38
+#: ../../getting-started/installation.rst:46
 msgid "Building from Source"
 msgstr "Construint des de la font"
 
-#: ../../getting-started/installation.rst:39
+#: ../../getting-started/installation.rst:47
 msgid ""
 "You can build Zrythm from source, either using a `source distribution "
 "tarball <https://www.zrythm.org/releases/>`_ or `git <https://git.zrythm.org/"
 "zrythm/zrythm/>`_."
 msgstr ""
 "Pots construir Zrythm des de la font, ja sigui utilitzant un `arxiu .tar de "
-"distribució de fonts <https://www.zrythm.org/releases/>`_ o `git <https://git"
-".zrythm.org/zrythm/zrythm/>`_."
+"distribució de fonts <https://www.zrythm.org/releases/>`_ o `git <https://"
+"git.zrythm.org/zrythm/zrythm/>`_."
 
-#: ../../getting-started/installation.rst:43
+#: ../../getting-started/installation.rst:51
 msgid ""
 "See ``INSTALL.rst`` in the source distribution for installation instructions."
 msgstr ""
@@ -5010,8 +5092,8 @@ msgid ""
 "`MIDI group tracks <tracks/track-types:MIDI Group Track>` can be created for "
 "grouping signals."
 msgstr ""
-":ref:`Pistes de grup d'àudio <tracks/track-types:Audio Group Track>` i :ref:`"
-"pistes de grup MIDI <tracks/track-types:MIDI Group Track>` es poden crear "
+":ref:`Pistes de grup d'àudio <tracks/track-types:Audio Group Track>` i :ref:"
+"`pistes de grup MIDI <tracks/track-types:MIDI Group Track>` es poden crear "
 "per a agrupar senyals."
 
 #: ../../mixing/routing.rst:16
@@ -5880,8 +5962,8 @@ msgid ""
 "Preferences>`."
 msgstr ""
 "Per defecte, només es mostraran els fitxers que no estiguin ocults a la "
-"llista de fitxers. Per a mostrar també fitxers ocults, habilita :guilabel:`"
-"Show hidden files` a :ref:`preferències del navegador de fitxers <plugins-"
+"llista de fitxers. Per a mostrar també fitxers ocults, habilita :guilabel:"
+"`Show hidden files` a :ref:`preferències del navegador de fitxers <plugins-"
 "files/audio-midi-files/file-browser:Preferences>`."
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:88
@@ -6712,10 +6794,6 @@ msgstr ""
 "Pots evitar aquest comportament indicant :envvar:`VST_PATH` i :envvar:"
 "`VST3_PATH`, respectivament."
 
-#: ../../plugins-files/plugins/scanning.rst:79
-msgid "Windows"
-msgstr "Windows"
-
 #: ../../plugins-files/plugins/scanning.rst:80
 msgid ""
 "Zrythm will scan for VST plugins in the paths specified in the :ref:"
@@ -6839,8 +6917,8 @@ msgid ""
 "flathub/org.freedesktop.LinuxAudio.BaseExtension>`_)."
 msgstr ""
 "Quan s'utilitzen construccions de Flatpak, només s'han d'utilitzar "
-"complements instal·lats com a Flatpaks (és a dir, complements que utilitzen `"
-"Linux Audio base extension <https://github.com/flathub/org.freedesktop."
+"complements instal·lats com a Flatpaks (és a dir, complements que utilitzen "
+"`Linux Audio base extension <https://github.com/flathub/org.freedesktop."
 "LinuxAudio.BaseExtension>`_)."
 
 #: ../../plugins-files/plugins/scanning.rst:162
@@ -8397,8 +8475,8 @@ msgid ""
 "The controls available for controlling the signal flow are covered in :ref:"
 "`tracks/track-controls:Signal Flow`."
 msgstr ""
-"Els controls disponibles per a controlar el flux del senyal es tracten a "
-":ref:`tracks/track-controls:Signal Flow`."
+"Els controls disponibles per a controlar el flux del senyal es tracten a :"
+"ref:`tracks/track-controls:Signal Flow`."
 
 #: ../../tracks/inspector-page.rst:149
 msgid "MIDI faders use MIDI volume CC."
@@ -8454,8 +8532,8 @@ msgid ""
 "Most types of tracks have a corresponding channel that appears in the :ref:"
 "`Mixer <mixer>`. See :ref:`channels` for more info."
 msgstr ""
-"La majoria dels tipus de pistes tenen un canal corresponent que apareix al "
-":ref:`Mesclador <mixer>`. Consulta :ref:`channels` per a més informació."
+"La majoria dels tipus de pistes tenen un canal corresponent que apareix al :"
+"ref:`Mesclador <mixer>`. Consulta :ref:`channels` per a més informació."
 
 #: ../../tracks/overview.rst:25
 msgid "Channel in mixer"
@@ -8746,8 +8824,8 @@ msgid ""
 "optionally mute the last recorded region in the previous lane."
 msgstr ""
 "Els carrils també són útils quan es grava. Si s'ajusta el :ref:`mode "
-"gravació <playback-and-recording/recording:Recording Modes>` a :guilabel:`"
-"Create takes`, cada vegada que la reproducció faci un bucle començarà a "
+"gravació <playback-and-recording/recording:Recording Modes>` a :guilabel:"
+"`Create takes`, cada vegada que la reproducció faci un bucle començarà a "
 "gravar en un nou carril i, opcionalment , silenciarà l'última regió gravada "
 "al carril anterior."
 
@@ -9558,10 +9636,6 @@ msgstr ""
 "El menú Ajuda conté enllaços per a informar d'errors, fer donatius, xatejar "
 "i altres enllaços útils."
 
-#: ../../zrythm-interface/main-toolbar.rst:84
-msgid "About"
-msgstr "Sobre"
-
 #: ../../zrythm-interface/main-toolbar.rst:80
 msgid ""
 "View information about the running instance of Zrythm, such as version "
@@ -9847,8 +9921,8 @@ msgid ""
 "will start clipping."
 msgstr ""
 "Aquest giny mostra el % u d'ús actual de la CPU a la part superior i el % u "
-"d'ús actual del DSP a la part inferior. Si el % e de DSP supera els 100 ("
-"totes les barres s'omplen), l'àudio començarà a escapçar-se."
+"d'ús actual del DSP a la part inferior. Si el % e de DSP supera els 100 "
+"(totes les barres s'omplen), l'àudio començarà a escapçar-se."
 
 #~ msgid "`Zrythm DAW` here."
 #~ msgstr "Aquí `Zrythm DAW`."

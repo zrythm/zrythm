@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2023-01-11 23:38+0900\n"
+"POT-Creation-Date: 2023-02-09 19:08+0900\n"
 "PO-Revision-Date: 2022-10-17 00:10+0000\n"
 "Last-Translator: Tymofii Lytvynenko <till.svit@gmail.com>\n"
 "Language-Team: Ukrainian <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -265,27 +265,27 @@ msgstr "Японська 1"
 msgid "Japanese 2"
 msgstr "Японська 2"
 
-#: inc/schemas/audio/curve.h:28 inc/audio/curve.h:95 src/audio/curve.c:54
+#: inc/schemas/audio/curve.h:28 inc/audio/curve.h:95 src/audio/curve.c:56
 #, c-format
 msgid "Exponent"
 msgstr "Експонента"
 
-#: inc/schemas/audio/curve.h:29 inc/audio/curve.h:96 src/audio/curve.c:57
+#: inc/schemas/audio/curve.h:29 inc/audio/curve.h:96 src/audio/curve.c:59
 #, c-format
 msgid "Superellipse"
 msgstr "Супереліпс"
 
-#: inc/schemas/audio/curve.h:30 inc/audio/curve.h:97 src/audio/curve.c:321
+#: inc/schemas/audio/curve.h:30 inc/audio/curve.h:97 src/audio/curve.c:323
 msgid "Vital"
 msgstr "Життєво важливий"
 
-#: inc/schemas/audio/curve.h:31 inc/audio/curve.h:98 src/audio/curve.c:63
+#: inc/schemas/audio/curve.h:31 inc/audio/curve.h:98 src/audio/curve.c:65
 #, c-format
 msgid "Pulse"
 msgstr "Пульс"
 
-#: inc/schemas/audio/curve.h:32 inc/audio/curve.h:99 src/audio/curve.c:66
-#: src/audio/curve.c:316
+#: inc/schemas/audio/curve.h:32 inc/audio/curve.h:99 src/audio/curve.c:68
+#: src/audio/curve.c:318
 #, c-format
 msgid "Logarithmic"
 msgstr "Логаритмічний"
@@ -652,12 +652,12 @@ msgstr "4 такти (4 bar)"
 msgid "Inherit"
 msgstr "Успадковувати"
 
-#: inc/audio/region.h:66 src/audio/automation_track.c:167
+#: inc/audio/region.h:66 src/audio/automation_track.c:166
 #: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:459
 msgid "Off"
 msgstr "ВИМК."
 
-#: inc/audio/region.h:67 src/audio/automation_track.c:161
+#: inc/audio/region.h:67 src/audio/automation_track.c:160
 #: src/gui/widgets/cc_bindings_tree.c:158
 #: src/gui/widgets/port_connections_tree.c:214
 #: src/gui/widgets/item_factory.c:598 src/gui/widgets/bot_bar.c:459
@@ -678,11 +678,11 @@ msgid "-6dB"
 msgstr "-6 дБ"
 
 #. TRANSLATORS: Pan algorithm
-#: inc/audio/pan.h:57 src/utils/ui.c:628 src/audio/curve.c:302
+#: inc/audio/pan.h:57 src/utils/ui.c:627 src/audio/curve.c:304
 msgid "Linear"
 msgstr "Лінійний"
 
-#: inc/audio/pan.h:58 src/utils/ui.c:629
+#: inc/audio/pan.h:58 src/utils/ui.c:628
 msgid "Square Root"
 msgstr "Квадратний корінь"
 
@@ -768,41 +768,41 @@ msgstr ""
 msgid "Failed to load project. Will create a new one instead."
 msgstr "Не вдалося завантажити проєкт. Натомість створіть новий."
 
-#: src/project.c:1357 src/project.c:1583 src/actions/actions.c:719
-#: src/actions/actions.c:761 src/gui/widgets/main_window.c:169
+#: src/project.c:1357 src/project.c:1601 src/actions/actions.c:769
+#: src/actions/actions.c:811 src/gui/widgets/main_window.c:169
 #, fuzzy
 msgid "Failed to save project"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/project.c:1416
+#: src/project.c:1417
 #, fuzzy
 msgid "Failed to deserialize v1 project file"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/project.c:1448
+#: src/project.c:1449
 #, fuzzy
 msgid "Failed to deserialize v2/3 project file"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/project.c:1754
+#: src/project.c:1771
 #, fuzzy
 msgid "Failed to compress project file"
 msgstr "Не вдалося розпакувати файл проєкту: %s"
 
-#: src/project.c:1798 src/project.c:1801
+#: src/project.c:1815 src/project.c:1818
 msgid "Backup saved."
 msgstr "Резервну копію збережено."
 
-#: src/project.c:1812
+#: src/project.c:1829
 msgid "Project saved."
 msgstr "Проєкт збережено."
 
-#: src/project.c:1999
+#: src/project.c:2016
 #, fuzzy
 msgid "Failed to write audio pool to disk"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/project.c:2012
+#: src/project.c:2029
 #, fuzzy
 msgid "Failed to clone project"
 msgstr "Не вдалося відкрити файл: %s"
@@ -845,46 +845,46 @@ msgstr ""
 msgid "Setting up main window"
 msgstr "Налаштування головного вікна"
 
-#: src/zrythm_app.c:408
+#: src/zrythm_app.c:409
 msgid "Loading project"
 msgstr "Завантаження проєкту"
 
-#: src/zrythm_app.c:423
+#: src/zrythm_app.c:424
 #, fuzzy, c-format
 msgid ""
 "No project has been selected or project failed to load. %s will now close."
 msgstr "Жоден проєкт не вибрано. %s тепер закриється."
 
-#: src/zrythm_app.c:442
+#: src/zrythm_app.c:443
 msgid "Initializing settings"
 msgstr "Ініціалізація налаштувань"
 
-#: src/zrythm_app.c:448
+#: src/zrythm_app.c:449
 #, c-format
 msgid "Initializing %s directories"
 msgstr "Ініціалізація %s каталогів"
 
-#: src/zrythm_app.c:465
+#: src/zrythm_app.c:466
 msgid "Initializing logging system"
 msgstr "Ініціалізація системи реєстрації"
 
-#: src/zrythm_app.c:487
+#: src/zrythm_app.c:488
 msgid "Initializing caches"
 msgstr "Ініціалізація кеш-пам’яті"
 
-#: src/zrythm_app.c:491
+#: src/zrythm_app.c:492
 msgid "Initializing file manager"
 msgstr "Ініціалізація файлового менеджера"
 
-#: src/zrythm_app.c:497
+#: src/zrythm_app.c:498
 msgid "Scanning plugins"
 msgstr "Сканування плагінів"
 
-#: src/zrythm_app.c:617
+#: src/zrythm_app.c:618
 msgid "Waiting for project"
 msgstr "Чекаю на проєкт"
 
-#: src/zrythm_app.c:852
+#: src/zrythm_app.c:853
 #, c-format
 msgid ""
 "Your user does not have enough privileges to allow %s to lock unlimited "
@@ -892,17 +892,17 @@ msgid ""
 "section in the user manual for details."
 msgstr ""
 
-#: src/zrythm_app.c:870
+#: src/zrythm_app.c:871
 #, c-format
 msgid "Could not get system memory lock limit (%s)"
 msgstr ""
 
-#: src/zrythm_app.c:891
+#: src/zrythm_app.c:892
 #, fuzzy, c-format
 msgid "Cannot lock down memory: %s"
 msgstr "Сольні наразі доріжки"
 
-#: src/zrythm_app.c:1026
+#: src/zrythm_app.c:1027
 #, fuzzy, c-format
 msgid ""
 "%s-%s\n"
@@ -928,75 +928,75 @@ msgstr ""
 "Підтримайте цей проєкт на https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1419
+#: src/zrythm_app.c:1420
 #, c-format
 msgid "File %s not found."
 msgstr "Файл %s не знайдено."
 
-#: src/zrythm_app.c:1438
+#: src/zrythm_app.c:1439
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr ""
 "Вихідний файл не вказано. Будь ласка, передайте один з `--output [FILE]`."
 
-#: src/zrythm_app.c:1493
+#: src/zrythm_app.c:1494
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "Не вдалося розпакувати проєкт: %s\n"
 
-#: src/zrythm_app.c:1510
+#: src/zrythm_app.c:1511
 msgid "Unknown operation"
 msgstr "Невідома операція"
 
-#: src/zrythm_app.c:1527
+#: src/zrythm_app.c:1528
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "для цього параметра потрібен libguile\n"
 
-#: src/zrythm_app.c:1674
+#: src/zrythm_app.c:1675
 msgid "Print version information"
 msgstr "Відомості про ліцензію"
 
-#: src/zrythm_app.c:1677
+#: src/zrythm_app.c:1678
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "Перетворити ZPJ-FILE на YAML"
 
-#: src/zrythm_app.c:1680
+#: src/zrythm_app.c:1681
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "Перетворити YAML-PROJECT-FILE у формат .zpj"
 
-#: src/zrythm_app.c:1684
+#: src/zrythm_app.c:1685
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "Утворити проєкт із SCRIPT-FILE"
 
-#: src/zrythm_app.c:1688
+#: src/zrythm_app.c:1689
 msgid "Print output in user-friendly way"
 msgstr "Показ виводу зручним для користувача способом"
 
-#: src/zrythm_app.c:1690
+#: src/zrythm_app.c:1691
 msgid "Print current settings"
 msgstr "Показ поточних налаштувань"
 
-#: src/zrythm_app.c:1694 src/gui/widgets/preferences.c:773
+#: src/zrythm_app.c:1695 src/gui/widgets/preferences.c:773
 msgid "Reset to factory settings"
 msgstr "Скидання до заводських налаштувань"
 
-#: src/zrythm_app.c:1697
+#: src/zrythm_app.c:1698
 msgid "Override the audio backend to use"
 msgstr "Перевизначити аудіобекенд для використання"
 
-#: src/zrythm_app.c:1700
+#: src/zrythm_app.c:1701
 msgid "Override the MIDI backend to use"
 msgstr "Перевизначити MIDI-бекенд для використання"
 
-#: src/zrythm_app.c:1702
+#: src/zrythm_app.c:1703
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "Скорочення для --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1730
+#: src/zrythm_app.c:1731
 msgid "[PROJECT-FILE]"
 msgstr "[ПРОЄКТ-ФАЙЛ]"
 
-#: src/zrythm_app.c:1736
+#: src/zrythm_app.c:1737
 #, c-format
 msgid ""
 "Examples:\n"
@@ -1015,12 +1015,12 @@ msgstr ""
 "\n"
 "Будь ласка, повідомляйте про проблеми за адресою %s\n"
 
-#: src/zrythm_app.c:1748
+#: src/zrythm_app.c:1749
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "Запустити %s, опціонально передавши файл проєкту."
 
-#: src/zrythm_app.c:1779
+#: src/zrythm_app.c:1780
 #, c-format
 msgid "This version of Zrythm does not support creating more than %d tracks."
 msgstr ""
@@ -1033,12 +1033,12 @@ msgstr ""
 msgid "Delete range"
 msgstr ""
 
-#: src/actions/undo_manager.c:189 src/actions/actions.c:916
+#: src/actions/undo_manager.c:189 src/actions/actions.c:966
 #, fuzzy
 msgid "Failed to undo action"
 msgstr "Не вдалося відкрити інтерфейс LV2 для %s"
 
-#: src/actions/undo_manager.c:240 src/actions/actions.c:911
+#: src/actions/undo_manager.c:240 src/actions/actions.c:961
 #, fuzzy
 msgid "Failed to redo action"
 msgstr "Не вдалося відкрити інтерфейс LV2 для %s"
@@ -1093,40 +1093,40 @@ msgstr ""
 msgid "Set control value"
 msgstr ""
 
-#: src/actions/actions.c:309
+#: src/actions/actions.c:311
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
 "your %s installation."
 msgstr ""
 
-#: src/actions/actions.c:633 resources/gtk/help-overlay.ui:103
+#: src/actions/actions.c:683 resources/gtk/help-overlay.ui:103
 msgid "Create new project"
 msgstr ""
 
-#: src/actions/actions.c:635
+#: src/actions/actions.c:685
 msgid "Yes"
 msgstr ""
 
-#: src/actions/actions.c:635
+#: src/actions/actions.c:685
 msgid "No"
 msgstr ""
 
-#: src/actions/actions.c:638
+#: src/actions/actions.c:688
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr ""
 
-#: src/actions/actions.c:667 src/actions/actions.c:691
-#: src/gui/widgets/dialogs/project_assistant.c:245
+#: src/actions/actions.c:717 src/actions/actions.c:741
+#: src/gui/widgets/dialogs/project_assistant.c:246
 #, fuzzy
 msgid "Failed to load project"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/actions/actions.c:735
+#: src/actions/actions.c:785
 msgid "Save Project"
 msgstr ""
 
-#: src/actions/actions.c:736 src/utils/dialogs.c:41 src/utils/dialogs.c:60
+#: src/actions/actions.c:786 src/utils/dialogs.c:41 src/utils/dialogs.c:60
 #: src/audio/clip.c:661 src/gui/widgets/main_window.c:138
 #: src/gui/widgets/plugin_properties_expander.c:107
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:122
@@ -1134,7 +1134,7 @@ msgstr ""
 #: src/gui/widgets/dialogs/create_project_dialog.c:122
 #: src/gui/widgets/dialogs/first_run_dialog.c:273
 #: src/gui/widgets/dialogs/bug_report_dialog.c:187
-#: src/gui/widgets/dialogs/project_assistant.c:481
+#: src/gui/widgets/dialogs/project_assistant.c:482
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:171
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:148
 #: src/plugins/plugin_gtk.c:86 src/plugins/plugin_gtk.c:300
@@ -1145,77 +1145,77 @@ msgstr ""
 msgid "_Cancel"
 msgstr "_Скасувати"
 
-#: src/actions/actions.c:736
+#: src/actions/actions.c:786
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:146
 #: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:301
 #: src/plugins/lv2/lv2_gtk.c:62
 msgid "_Save"
 msgstr "_Зберегти"
 
-#: src/actions/actions.c:802
+#: src/actions/actions.c:852
 msgid "Export routing graph"
 msgstr ""
 
-#: src/actions/actions.c:803
+#: src/actions/actions.c:853
 msgid "Image (PNG)"
 msgstr ""
 
-#: src/actions/actions.c:803
+#: src/actions/actions.c:853
 msgid "Image (SVG)"
 msgstr ""
 
-#: src/actions/actions.c:804
+#: src/actions/actions.c:854
 msgid "Dot graph"
 msgstr ""
 
-#: src/actions/actions.c:810
+#: src/actions/actions.c:860
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
 "Please select a format to export as"
 msgstr ""
 
-#: src/actions/actions.c:858
+#: src/actions/actions.c:908
 msgid "Graph exported"
 msgstr ""
 
-#: src/actions/actions.c:886 src/guile/actions/undo_manager.c:67
+#: src/actions/actions.c:936 src/guile/actions/undo_manager.c:67
 #, fuzzy
 msgid "Failed to undo"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:951 src/guile/actions/undo_manager.c:91
+#: src/actions/actions.c:1001 src/guile/actions/undo_manager.c:91
 #, fuzzy
 msgid "Failed to redo"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:994 src/actions/actions.c:1008
-#: src/actions/actions.c:1232
+#: src/actions/actions.c:1044 src/actions/actions.c:1058
+#: src/actions/actions.c:1282
 #, fuzzy
 msgid "Failed to delete selections"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:1186
+#: src/actions/actions.c:1236
 msgid "Can't paste incompatible data"
 msgstr ""
 
-#: src/actions/actions.c:1264
+#: src/actions/actions.c:1314
 #, fuzzy
 msgid "Failed to duplicate selections"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/actions/actions.c:1488
+#: src/actions/actions.c:1538
 #, fuzzy
 msgid "Failed to unbind"
 msgstr "Не вдалося знайти розширення за URI: %s"
 
-#: src/actions/actions.c:1529 src/actions/actions.c:2010
-#: src/actions/actions.c:2040
+#: src/actions/actions.c:1579 src/actions/actions.c:2060
+#: src/actions/actions.c:2090
 #, fuzzy
 msgid "Failed to quantize"
 msgstr "Вмикає або вимикає розширення"
 
-#: src/actions/actions.c:1607 src/audio/track.c:3656 src/audio/tracklist.c:1485
+#: src/actions/actions.c:1657 src/audio/track.c:3654 src/audio/tracklist.c:1483
 #: src/gui/widgets/panel_file_browser.c:459
 #: src/gui/widgets/panel_file_browser.c:475 src/settings/plugin_settings.c:329
 #: src/settings/plugin_settings.c:344 src/settings/plugin_settings.c:416
@@ -1224,242 +1224,242 @@ msgstr "Вмикає або вимикає розширення"
 msgid "Failed to create track"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/actions/actions.c:1661
+#: src/actions/actions.c:1711
 #, fuzzy
 msgid "Failed to duplicate tracks"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:1731 src/actions/actions.c:1786
+#: src/actions/actions.c:1781 src/actions/actions.c:1836
 #, fuzzy
 msgid "Failed to delete tracks"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:1763
+#: src/actions/actions.c:1813
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
 
-#: src/actions/actions.c:1820
+#: src/actions/actions.c:1870
 #, fuzzy
 msgid "Failed to pin/unpin tracks"
 msgstr "Не вдалося знайти розширення за URI: %s"
 
-#: src/actions/actions.c:1831
+#: src/actions/actions.c:1881
 #, fuzzy
 msgid "Failed to solo tracks"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/actions/actions.c:1842
+#: src/actions/actions.c:1892
 #, fuzzy
 msgid "Failed to unsolo tracks"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/actions/actions.c:1853
+#: src/actions/actions.c:1903
 #, fuzzy
 msgid "Failed to mute tracks"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:1864
+#: src/actions/actions.c:1914
 #, fuzzy
 msgid "Failed to unmute tracks"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:1875
+#: src/actions/actions.c:1925
 #, fuzzy
 msgid "Failed to listen tracks"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:1887
+#: src/actions/actions.c:1937
 #, fuzzy
 msgid "Failed to unlisten tracks"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:1898
+#: src/actions/actions.c:1948
 #, fuzzy
 msgid "Failed to enable tracks"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:1909
+#: src/actions/actions.c:1959
 #, fuzzy
 msgid "Failed to disable tracks"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:2057
+#: src/actions/actions.c:2107
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
 msgstr ""
 
-#: src/actions/actions.c:2129
+#: src/actions/actions.c:2179
 #, fuzzy
 msgid "Failed to mute selections"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/actions/actions.c:2142
+#: src/actions/actions.c:2192
 msgid "No regions selected"
 msgstr ""
 
-#: src/actions/actions.c:2149
+#: src/actions/actions.c:2199
 msgid "Selections must be on the same lane"
 msgstr ""
 
-#: src/actions/actions.c:2156
+#: src/actions/actions.c:2206
 msgid "Cannot merge looped regions"
 msgstr ""
 
-#: src/actions/actions.c:2171
+#: src/actions/actions.c:2221
 #, fuzzy
 msgid "Failed to merge selections"
 msgstr "Не вдалося відкрити інтерфейс LV2 для %s"
 
-#: src/actions/actions.c:2276
+#: src/actions/actions.c:2326
 #, fuzzy
 msgid "Failed to insert silence"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:2293
+#: src/actions/actions.c:2343
 #, fuzzy
 msgid "Failed to remove range"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/actions/actions.c:2367 src/actions/arranger_selections.c:564
+#: src/actions/actions.c:2417 src/actions/arranger_selections.c:563
 #, fuzzy
 msgid "Failed to apply MIDI function"
 msgstr "Не вдалося знайти розширення за URI: %s"
 
-#: src/actions/actions.c:2393 src/actions/actions.c:2432
-#: src/actions/arranger_selections.c:600
+#: src/actions/actions.c:2443 src/actions/actions.c:2482
+#: src/actions/arranger_selections.c:599
 #, fuzzy
 msgid "Failed to apply automation function"
 msgstr "Не вдалося знайти розширення за URI: %s"
 
-#: src/actions/actions.c:2605 src/gui/widgets/track_filter_popover.c:268
+#: src/actions/actions.c:2655 src/gui/widgets/track_filter_popover.c:268
 #, fuzzy
 msgid "Track name"
 msgstr "Назва доріжки"
 
-#: src/actions/actions.c:2627
+#: src/actions/actions.c:2677
 #, fuzzy
 msgid "Object name"
 msgstr "Назва колекції"
 
-#: src/actions/actions.c:2660
+#: src/actions/actions.c:2710
 msgid "An object cannot be created at the selected location."
 msgstr ""
 
-#: src/actions/actions.c:2697
+#: src/actions/actions.c:2747
 #, fuzzy
 msgid "Failed to set region color"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:2727
+#: src/actions/actions.c:2777
 #, fuzzy
 msgid "Region Color"
 msgstr "Колір регіону"
 
-#: src/actions/actions.c:2762
+#: src/actions/actions.c:2812
 #, fuzzy
 msgid "Failed to reset region color"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/actions/actions.c:2804
+#: src/actions/actions.c:2854
 #, fuzzy
 msgid "Please enter a BPM"
 msgstr "Уведіть значення"
 
-#: src/actions/actions.c:2873
+#: src/actions/actions.c:2923
 #, fuzzy
 msgid "Failed to move selections"
 msgstr "Не вдалося відкрити інтерфейс LV2 для %s"
 
-#: src/actions/actions.c:2890
+#: src/actions/actions.c:2940
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr ""
 
-#: src/actions/actions.c:2892
+#: src/actions/actions.c:2942
 msgid "Candidates:"
 msgstr ""
 
-#: src/actions/actions.c:2939 src/actions/arranger_selections.c:639
-#: src/actions/arranger_selections.c:653
+#: src/actions/actions.c:2989 src/actions/arranger_selections.c:638
+#: src/actions/arranger_selections.c:652
 msgid "Failed to apply audio function"
 msgstr ""
 
-#: src/actions/actions.c:3060
+#: src/actions/actions.c:3110
 #, fuzzy
 msgid "Failed to set curve algorithm"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:3111
+#: src/actions/actions.c:3161
 #, fuzzy
 msgid "Failed to edit fades"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/actions/actions.c:3175
+#: src/actions/actions.c:3225
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
 msgstr ""
 
-#: src/actions/actions.c:3262 src/actions/actions.c:3303
+#: src/actions/actions.c:3312 src/actions/actions.c:3353
 #, fuzzy
 msgid "Preset Pack Name"
 msgstr "Назва доріжки"
 
-#: src/actions/actions.c:3283 src/actions/actions.c:3321
+#: src/actions/actions.c:3333 src/actions/actions.c:3371
 #, fuzzy
 msgid "Are you sure you want to remove this chord preset pack?"
 msgstr "Ви впевнені, що хочете видалити цю закладку?"
 
-#: src/actions/actions.c:3341
+#: src/actions/actions.c:3391
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:156
 #, fuzzy
 msgid "Preset Name"
 msgstr "Переднабори/Presets"
 
-#: src/actions/actions.c:3391 src/gui/widgets/modulator_inner.c:76
+#: src/actions/actions.c:3441 src/gui/widgets/modulator_inner.c:76
 #, fuzzy
 msgid "Failed to delete plugins"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/actions/actions.c:3428
+#: src/actions/actions.c:3478
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
 
-#: src/actions/actions.c:3478
+#: src/actions/actions.c:3528
 #, fuzzy, c-format
 msgid "Failed to reset %s"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/actions/actions.c:3504
+#: src/actions/actions.c:3554
 #, fuzzy, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/actions/actions.c:3533
+#: src/actions/actions.c:3583
 msgid "Cannot delete standard bookmark"
 msgstr "Не вдається видалити стандартну закладку"
 
-#: src/actions/actions.c:3541
+#: src/actions/actions.c:3591
 msgid "Are you sure you want to remove this bookmark?"
 msgstr "Ви впевнені, що хочете видалити цю закладку?"
 
-#: src/actions/actions.c:3740 src/actions/actions.c:3769
+#: src/actions/actions.c:3790 src/actions/actions.c:3819
 msgid "Collection name"
 msgstr "Назва колекції"
 
-#: src/actions/actions.c:3791
+#: src/actions/actions.c:3841
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr "Ця колекція містить %d розширень. Ви впевнені, що хочете її видалити?"
 
-#: src/actions/actions.c:3967
+#: src/actions/actions.c:4017
 #, fuzzy
 msgid "Failed to change direct output"
 msgstr "Не вдалося скинути схему %s"
@@ -1486,8 +1486,8 @@ msgstr "Порт не вибрано"
 msgid "Failed to clone tracklist selections"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:365 src/audio/tracklist.c:1669
-#: src/audio/tracklist.c:1797
+#: src/actions/tracklist_selections.c:365 src/audio/tracklist.c:1667
+#: src/audio/tracklist.c:1795
 #, fuzzy
 msgid "Failed to clone track"
 msgstr "Не вдалося відкрити файл: %s"
@@ -1757,112 +1757,116 @@ msgstr ""
 msgid "Unpin %d Tracks"
 msgstr ""
 
-#: src/actions/transport_action.c:270
-msgid "Change BPM"
+#: src/actions/transport_action.c:271
+#, c-format
+msgid "Change BPM from %.2f to %.2f"
 msgstr ""
 
-#: src/actions/transport_action.c:272
-msgid "Beats per bar change"
+#: src/actions/transport_action.c:275
+#, c-format
+msgid "Change beats per bar from %d to %d"
 msgstr ""
 
-#: src/actions/transport_action.c:274
-msgid "Beat unit change"
+#: src/actions/transport_action.c:279
+#, c-format
+msgid "Change beat unit from %d to %d"
 msgstr ""
 
-#: src/actions/arranger_selections.c:298
+#: src/actions/arranger_selections.c:297
 msgid "Arranger selections contain an object that cannot be duplicated"
 msgstr ""
 
-#: src/actions/arranger_selections.c:393
+#: src/actions/arranger_selections.c:392
 msgid "Arranger selections contain an undeletable object"
 msgstr ""
 
-#: src/actions/arranger_selections.c:459 src/actions/arranger_selections.c:516
+#: src/actions/arranger_selections.c:458 src/actions/arranger_selections.c:515
 msgid "Cannot rename selected object(s)"
 msgstr ""
 
-#: src/actions/arranger_selections.c:777
+#: src/actions/arranger_selections.c:776
 msgid "Attempted to resize unresizable objects"
 msgstr ""
 
-#: src/actions/arranger_selections.c:792
+#: src/actions/arranger_selections.c:791
 #, c-format
 msgid "Cannot perform %s resize - selections contain looped objects"
 msgstr ""
 
-#: src/actions/arranger_selections.c:809
+#: src/actions/arranger_selections.c:808
 #, c-format
 msgid "Cannot perform %s resize - selections contain unloopable objects"
 msgstr ""
 
-#: src/actions/arranger_selections.c:3187
+#: src/actions/arranger_selections.c:3186
 msgid "Create timeline selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:3189
+#: src/actions/arranger_selections.c:3188
 #, fuzzy
 msgid "Create audio selections"
 msgstr "Очистити вибір"
 
-#: src/actions/arranger_selections.c:3191
+#: src/actions/arranger_selections.c:3190
 #, fuzzy
 msgid "Create automation selections"
 msgstr "Показ смуги автоматизації"
 
-#: src/actions/arranger_selections.c:3193
+#: src/actions/arranger_selections.c:3192
 #, fuzzy
 msgid "Create chord selections"
 msgstr "Очистити вибір"
 
-#: src/actions/arranger_selections.c:3195
+#: src/actions/arranger_selections.c:3194
 #, fuzzy
 msgid "Create MIDI selections"
 msgstr "Очистити вибір"
 
-#: src/actions/arranger_selections.c:3200
+#: src/actions/arranger_selections.c:3199
 #, fuzzy
 msgid "Delete arranger selections"
 msgstr "Очистити вибір"
 
-#: src/actions/arranger_selections.c:3202
+#: src/actions/arranger_selections.c:3201
 msgid "Duplicate arranger selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:3204
+#: src/actions/arranger_selections.c:3203
 #, fuzzy
 msgid "Move arranger selections"
 msgstr "Очистити вибір"
 
-#: src/actions/arranger_selections.c:3206
+#: src/actions/arranger_selections.c:3205
 msgid "Link arranger selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:3208
+#: src/actions/arranger_selections.c:3207
 msgid "Record arranger selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:3210
+#: src/actions/arranger_selections.c:3209
 msgid "Edit arranger selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:3212
+#: src/actions/arranger_selections.c:3211
 #, fuzzy
 msgid "Automation fill"
 msgstr "Точка автоматизації"
 
-#: src/actions/arranger_selections.c:3214
+#: src/actions/arranger_selections.c:3213
 msgid "Split arranger selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:3216
+#: src/actions/arranger_selections.c:3215
 msgid "Merge arranger selections"
 msgstr ""
 
-#: src/actions/arranger_selections.c:3218
-msgid "Resize arranger selections"
-msgstr ""
+#: src/actions/arranger_selections.c:3223
+#, fuzzy, c-format
+msgid "Resize arranger selections - %s"
+msgstr "Очистити вибір"
 
-#: src/actions/arranger_selections.c:3220
+#: src/actions/arranger_selections.c:3226
 msgid "Quantize arranger selections"
 msgstr ""
 
@@ -1915,7 +1919,7 @@ msgstr ""
 msgid "Failed to clone mixer selections"
 msgstr "Не вдалося знайти розширення за URI: %s"
 
-#: src/actions/mixer_selections_action.c:431 src/audio/channel.c:1854
+#: src/actions/mixer_selections_action.c:431 src/audio/channel.c:1845
 #, fuzzy
 msgid "Failed to clone plugin"
 msgstr "Не вдалося знайти розширення за URI: %s"
@@ -1925,7 +1929,7 @@ msgid "Could not create plugin"
 msgstr ""
 
 #: src/actions/mixer_selections_action.c:537 src/audio/audio_function.c:141
-#: src/audio/track.c:2136 src/audio/track.c:3205
+#: src/audio/track.c:2135 src/audio/track.c:3204
 #, fuzzy
 msgid "Failed to instantiate plugin"
 msgstr "Вмикає або вимикає розширення"
@@ -1985,11 +1989,11 @@ msgstr "_Вставити"
 msgid "Paste %d Plugins"
 msgstr "Розширення"
 
-#: src/utils/ui.c:630
+#: src/utils/ui.c:629
 msgid "Sine (Equal Power)"
 msgstr "Синус (рівна потужність)"
 
-#: src/utils/ui.c:942
+#: src/utils/ui.c:941
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
@@ -1998,7 +2002,7 @@ msgstr ""
 "Локаль для вибраної вами мови (%s) недоступна. Спочатку встановіть один і "
 "перезапустіть %s"
 
-#: src/utils/ui.c:948
+#: src/utils/ui.c:947
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -2035,12 +2039,12 @@ msgstr ""
 msgid "32 bit"
 msgstr ""
 
-#: src/utils/audio.c:179
+#: src/utils/audio.c:178
 #, fuzzy, c-format
 msgid "Error opening sndfile: %s"
 msgstr "Помилка завантаження каталогу LV2: "
 
-#: src/utils/audio.c:205
+#: src/utils/audio.c:204
 #, c-format
 msgid "Seek error %d: %s"
 msgstr ""
@@ -2091,16 +2095,16 @@ msgstr ""
 msgid "Monitor"
 msgstr "Монітор"
 
-#: src/utils/gtk.c:1242 src/gui/widgets/main_notebook.c:119
+#: src/utils/gtk.c:1242 src/gui/widgets/main_notebook.c:123
 msgid "Timeline"
 msgstr ""
 
-#: src/utils/gtk.c:1244 src/gui/widgets/main_notebook.c:125
+#: src/utils/gtk.c:1244 src/gui/widgets/main_notebook.c:129
 #, fuzzy
 msgid "MIDI CC Bindings"
 msgstr "MIDI в"
 
-#: src/utils/gtk.c:1248 src/gui/widgets/main_notebook.c:122
+#: src/utils/gtk.c:1248 src/gui/widgets/main_notebook.c:126
 #, fuzzy
 msgid "Port Connections"
 msgstr "Портові з'єднання"
@@ -2114,7 +2118,7 @@ msgstr ""
 msgid "Open Project"
 msgstr "Відкрити проєкт"
 
-#: src/utils/dialogs.c:41 src/gui/widgets/dialogs/project_assistant.c:480
+#: src/utils/dialogs.c:41 src/gui/widgets/dialogs/project_assistant.c:481
 msgid "_Open"
 msgstr "_Відкрити"
 
@@ -2311,91 +2315,91 @@ msgid "JACK has shut down"
 msgstr ""
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:600
+#: src/audio/engine_jack.c:608
 msgid "Overall operation failed"
 msgstr ""
 
-#: src/audio/engine_jack.c:606
+#: src/audio/engine_jack.c:614
 msgid "The operation contained an invalid or unsupported option"
 msgstr ""
 
-#: src/audio/engine_jack.c:612
+#: src/audio/engine_jack.c:620
 msgid "The desired client name was not unique"
 msgstr ""
 
-#: src/audio/engine_jack.c:616
+#: src/audio/engine_jack.c:624
 msgid "Unable to connect to the JACK server"
 msgstr ""
 
-#: src/audio/engine_jack.c:621
+#: src/audio/engine_jack.c:629
 msgid "Communication error with the JACK server"
 msgstr ""
 
-#: src/audio/engine_jack.c:625
+#: src/audio/engine_jack.c:633
 msgid "Requested client does not exist"
 msgstr ""
 
-#: src/audio/engine_jack.c:629
+#: src/audio/engine_jack.c:637
 msgid "Unable to load internal client"
 msgstr ""
 
-#: src/audio/engine_jack.c:633
+#: src/audio/engine_jack.c:641
 msgid "Unable to initialize client"
 msgstr ""
 
-#: src/audio/engine_jack.c:637
+#: src/audio/engine_jack.c:645
 msgid "Unable to access shared memory"
 msgstr ""
 
-#: src/audio/engine_jack.c:642
+#: src/audio/engine_jack.c:650
 msgid "Client's protocol version does not match"
 msgstr ""
 
-#: src/audio/engine_jack.c:646
+#: src/audio/engine_jack.c:654
 msgid "Backend error"
 msgstr ""
 
-#: src/audio/engine_jack.c:650
+#: src/audio/engine_jack.c:658
 msgid "Client zombie"
 msgstr ""
 
-#: src/audio/engine_jack.c:694
+#: src/audio/engine_jack.c:705
 #, fuzzy, c-format
 msgid "JACK: Failed to disconnect monitor out: %s"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/audio/engine_jack.c:743
+#: src/audio/engine_jack.c:754
 msgid "JACK: No physical playback ports found"
 msgstr ""
 
-#: src/audio/engine_jack.c:757
+#: src/audio/engine_jack.c:768
 #, fuzzy, c-format
 msgid "JACK: Failed to connect monitor output [%s]: %s"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/audio/engine_jack.c:758
+#: src/audio/engine_jack.c:769
 msgid "left"
 msgstr ""
 
-#: src/audio/engine_jack.c:758
+#: src/audio/engine_jack.c:769
 msgid "right"
 msgstr ""
 
-#: src/audio/engine_jack.c:816 src/gui/widgets/monitor_section.c:237
+#: src/audio/engine_jack.c:827 src/gui/widgets/monitor_section.c:237
 #, fuzzy
 msgid "Failed to connect to left monitor output port"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/audio/engine_jack.c:824 src/gui/widgets/monitor_section.c:246
+#: src/audio/engine_jack.c:835 src/gui/widgets/monitor_section.c:246
 #, fuzzy
 msgid "Failed to connect to right monitor output port"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/audio/curve.c:306
+#: src/audio/curve.c:308
 msgid "Exponential"
 msgstr "Експоненціально"
 
-#: src/audio/curve.c:311
+#: src/audio/curve.c:313
 msgid "Elliptic"
 msgstr "Еліптично"
 
@@ -2426,71 +2430,71 @@ msgid ""
 "user manual for details."
 msgstr ""
 
-#: src/audio/track.c:327
+#: src/audio/track.c:326
 #, fuzzy
 msgid "Track record"
 msgstr "Порти доріжки"
 
-#: src/audio/track.c:446
+#: src/audio/track.c:445
 #, fuzzy
 msgid "Failed to clone modulator plugin"
 msgstr "Не вдалося знайти розширення за URI: %s"
 
-#: src/audio/track.c:475
+#: src/audio/track.c:474
 #, fuzzy
 msgid "Failed to clone channel"
 msgstr "Не вдалося переглянути схему %s"
 
-#: src/audio/track.c:854
+#: src/audio/track.c:853
 #, fuzzy
 msgid "Cannot set track muted"
 msgstr "Неможливо спрямувати/Cannot be routed"
 
-#: src/audio/track.c:898
+#: src/audio/track.c:897
 #, fuzzy
 msgid "Cannot set track folded"
 msgstr "Неможливо спрямувати/Cannot be routed"
 
-#: src/audio/track.c:1411
+#: src/audio/track.c:1409
 #, fuzzy
 msgid "Cannot set track soloed"
 msgstr "Неможливо спрямувати/Cannot be routed"
 
-#: src/audio/track.c:1461
+#: src/audio/track.c:1459
 #, fuzzy
 msgid "Cannot set track listened"
 msgstr "Неможливо спрямувати/Cannot be routed"
 
-#: src/audio/track.c:2893 src/settings/plugin_settings.c:392
+#: src/audio/track.c:2892 src/settings/plugin_settings.c:392
 #: src/settings/plugin_settings.c:434
 #, fuzzy
 msgid "Failed to rename track"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/audio/track.c:3253 src/audio/track.c:3298
+#: src/audio/track.c:3252 src/audio/track.c:3297
 #, fuzzy
 msgid "Cannot set track comment"
 msgstr "Неможливо спрямувати/Cannot be routed"
 
-#: src/audio/track.c:3334
+#: src/audio/track.c:3333
 #, fuzzy
 msgid "Cannot set track icon"
 msgstr "Неможливо спрямувати/Cannot be routed"
 
-#: src/audio/track.c:3569
+#: src/audio/track.c:3567
 #, fuzzy
 msgid "Cannot set track enabled"
 msgstr "Неможливо спрямувати/Cannot be routed"
 
-#: src/audio/automation_track.c:164
+#: src/audio/automation_track.c:163
 msgid "Rec"
 msgstr "Запис"
 
-#: src/audio/automation_track.c:185
+#: src/audio/automation_track.c:184
 msgid "Touch"
 msgstr "Дотик/Touch"
 
-#: src/audio/automation_track.c:188
+#: src/audio/automation_track.c:187
 msgid "Latch"
 msgstr "Фіксація/Latch"
 
@@ -2532,7 +2536,7 @@ msgid ""
 "use JACK, please select JACK as both your audio and MIDI backend."
 msgstr ""
 
-#: src/audio/engine.c:807
+#: src/audio/engine.c:813
 #, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
@@ -2572,12 +2576,12 @@ msgid ""
 "The exported audio contains segments louder than 0 dB (max detected %.1f dB)."
 msgstr ""
 
-#: src/audio/exporter.c:1013 src/audio/exporter.c:1020
+#: src/audio/exporter.c:1020 src/audio/exporter.c:1027
 #, fuzzy
 msgid "Failed to create audio track"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/audio/exporter.c:1052
+#: src/audio/exporter.c:1059
 #, fuzzy
 msgid "Invalid time range"
 msgstr "Хибно"
@@ -2657,7 +2661,7 @@ msgstr "Не вдалося відкрити файл: %s"
 msgid "Invalid value"
 msgstr "Хибно"
 
-#: src/audio/recording_manager.c:145
+#: src/audio/recording_manager.c:144
 #, fuzzy
 msgid "Failed to create recorded regions"
 msgstr "Не вдалося записати файл: %s"
@@ -2756,29 +2760,29 @@ msgstr "Вхід %s"
 msgid "PortAudio Error: %s"
 msgstr "Помилка Портаудіо: %s"
 
-#: src/audio/tracklist.c:1297
+#: src/audio/tracklist.c:1295
 msgid "No file was found"
 msgstr "Файл не знайдено"
 
-#: src/audio/tracklist.c:1324
+#: src/audio/tracklist.c:1322
 #, c-format
 msgid "Unsupported file type %s"
 msgstr "Непідтримуваний тип файлу %s"
 
-#: src/audio/tracklist.c:1340
+#: src/audio/tracklist.c:1338
 msgid "This MIDI file contains no data"
 msgstr ""
 
-#: src/audio/tracklist.c:1357
+#: src/audio/tracklist.c:1355
 #, fuzzy
 msgid "Can only drop 1 file at a time on existing tracks"
 msgstr "Можливо лише скидання аудіофайлів на аудіодоріжки"
 
-#: src/audio/tracklist.c:1371
+#: src/audio/tracklist.c:1369
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
 msgstr "Можна скидати MIDI-файли лише на MIDI / інструментальні доріжки"
 
-#: src/audio/tracklist.c:1381
+#: src/audio/tracklist.c:1379
 #, c-format
 msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
@@ -2786,45 +2790,45 @@ msgid ""
 msgstr ""
 "Цей MIDI-файл містить %d доріжки. Його не можна скинути в наявну доріжку"
 
-#: src/audio/tracklist.c:1396
+#: src/audio/tracklist.c:1394
 msgid "Can only drop audio files on audio tracks"
 msgstr "Можливо лише скидання аудіофайлів на аудіодоріжки"
 
-#: src/audio/tracklist.c:1457
+#: src/audio/tracklist.c:1455
 #, fuzzy
 msgid "Failed to create arranger objects"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/audio/tracklist.c:1531
+#: src/audio/tracklist.c:1529
 #, fuzzy
 msgid "Failed to move tracks after copying or moving inside folder"
 msgstr "Додати групову доріжку"
 
-#: src/audio/tracklist.c:1609
+#: src/audio/tracklist.c:1607
 #, fuzzy
 msgid "Failed to copy tracks inside"
 msgstr "Додати групову доріжку"
 
-#: src/audio/tracklist.c:1651
+#: src/audio/tracklist.c:1649
 #, fuzzy
 msgid "Failed to copy track inside"
 msgstr "Додати групову доріжку"
 
-#: src/audio/tracklist.c:1692
+#: src/audio/tracklist.c:1690
 #, fuzzy
 msgid "Failed to copy tracks"
 msgstr "Додати групову доріжку"
 
-#: src/audio/tracklist.c:1717
+#: src/audio/tracklist.c:1715
 msgid "Cannot drag folder into itself"
 msgstr ""
 
-#: src/audio/tracklist.c:1735 src/audio/tracklist.c:1779
+#: src/audio/tracklist.c:1733 src/audio/tracklist.c:1777
 #, fuzzy
 msgid "Failed to move track inside folder"
 msgstr "Додати групову доріжку"
 
-#: src/audio/tracklist.c:1820
+#: src/audio/tracklist.c:1818
 #, fuzzy
 msgid "Failed to move tracks"
 msgstr "Не вдалося відкрити файл: %s"
@@ -2844,7 +2848,7 @@ msgstr "Макро CV у %d"
 msgid "Macro CV Out %d"
 msgstr "Макро CV з %d"
 
-#: src/audio/channel.c:1203 src/plugins/carla_native_plugin.c:1154
+#: src/audio/channel.c:1195 src/plugins/carla_native_plugin.c:1154
 msgid "MIDI out"
 msgstr "Вихід MIDI"
 
@@ -2863,12 +2867,12 @@ msgstr "Домівка"
 msgid "Desktop"
 msgstr "Стільниця"
 
-#: src/gui/backend/tracklist_selections.c:706
+#: src/gui/backend/tracklist_selections.c:705
 #, fuzzy, c-format
 msgid "Failed to clone track '%s'"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/gui/backend/tracklist_selections.c:744
+#: src/gui/backend/tracklist_selections.c:743
 #, fuzzy
 msgid "Failed to paste tracks"
 msgstr "Не вдалося скинути схему %s"
@@ -2888,12 +2892,12 @@ msgstr "Оглядач розширень/Plugin Browser"
 msgid "Plugin preset loaded."
 msgstr "Інспектор розширень"
 
-#: src/gui/backend/arranger_selections.c:2403
+#: src/gui/backend/arranger_selections.c:2402
 #, fuzzy
 msgid "Failed to add region"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/gui/backend/arranger_selections.c:2440
+#: src/gui/backend/arranger_selections.c:2439
 #, fuzzy
 msgid "Failed to paste selections"
 msgstr "Не вдалося записати файл: %s"
@@ -3256,7 +3260,7 @@ msgstr "Вихід стерео/Stereo Out"
 #: src/gui/widgets/track_filter_popover.c:176
 #: src/gui/widgets/item_factory.c:256 src/gui/widgets/item_factory.c:792
 #: src/gui/widgets/item_factory.c:852 src/gui/widgets/item_factory.c:876
-#: src/gui/widgets/dialogs/project_assistant.c:598
+#: src/gui/widgets/dialogs/project_assistant.c:599
 #: resources/ui/create_project_dialog.ui:31
 #: resources/ui/arranger_object_info_dialog.ui:18
 #: resources/ui/port_info_dialog.ui:18
@@ -3480,7 +3484,7 @@ msgstr ""
 msgid "Unfold"
 msgstr ""
 
-#: src/gui/widgets/track.c:665 src/gui/widgets/arranger.c:2399
+#: src/gui/widgets/track.c:665 src/gui/widgets/arranger.c:2425
 #: resources/ui/string_entry_dialog.ui:23
 msgid "Marker name"
 msgstr "Назва маркера"
@@ -3650,7 +3654,7 @@ msgstr "Переднабір згасання"
 msgid "_Load"
 msgstr ""
 
-#: src/gui/widgets/plugin_properties_expander.c:153 src/plugins/plugin.c:478
+#: src/gui/widgets/plugin_properties_expander.c:153 src/plugins/plugin.c:476
 #: src/plugins/plugin_gtk.c:156
 #, fuzzy
 msgid "Failed to apply preset"
@@ -3689,157 +3693,157 @@ msgstr ""
 msgid "Load preset"
 msgstr "Переднабір згасання"
 
-#: src/gui/widgets/arranger.c:1374
+#: src/gui/widgets/arranger.c:1402
 #, fuzzy
 msgid "Create Object"
 msgstr "Створити новий проєкт"
 
-#: src/gui/widgets/arranger.c:1378
+#: src/gui/widgets/arranger.c:1406
 #, fuzzy
 msgid "Create"
 msgstr "Створити дублі"
 
-#: src/gui/widgets/arranger.c:1698 src/gui/widgets/arranger.c:1716
-#: src/gui/widgets/arranger.c:1761 src/gui/widgets/arranger.c:1827
-#: src/gui/widgets/arranger.c:1846
+#: src/gui/widgets/arranger.c:1726 src/gui/widgets/arranger.c:1744
+#: src/gui/widgets/arranger.c:1789 src/gui/widgets/arranger.c:1855
+#: src/gui/widgets/arranger.c:1874
 #, fuzzy
 msgid "Failed to move selection"
 msgstr "Не вдалося відкрити інтерфейс LV2 для %s"
 
-#: src/gui/widgets/arranger.c:1780 src/gui/widgets/arranger.c:4154
+#: src/gui/widgets/arranger.c:1808 src/gui/widgets/arranger.c:4178
 #, fuzzy
 msgid "Failed to move chords"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/gui/widgets/arranger.c:2094 src/gui/widgets/timeline_arranger.c:342
+#: src/gui/widgets/arranger.c:2122 src/gui/widgets/timeline_arranger.c:342
 #, fuzzy
 msgid "Failed to create region"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/gui/widgets/arranger.c:2429
+#: src/gui/widgets/arranger.c:2455
 #, fuzzy
 msgid "Automation value"
 msgstr "Показ смуги автоматизації"
 
-#: src/gui/widgets/arranger.c:2454
+#: src/gui/widgets/arranger.c:2480
 msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:2479
+#: src/gui/widgets/arranger.c:2505
 msgid ""
 "Cannot resize because the selection contains a mix of looped and unloopable "
 "objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3702
+#: src/gui/widgets/arranger.c:3726
 #, fuzzy
 msgid "Failed to delete selection"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/gui/widgets/arranger.c:3726 src/gui/widgets/arranger.c:4324
+#: src/gui/widgets/arranger.c:3750 src/gui/widgets/arranger.c:4348
 #, fuzzy
 msgid "Failed to edit selection"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/gui/widgets/arranger.c:3775
+#: src/gui/widgets/arranger.c:3799
 #, fuzzy
 msgid "Failed to move automation"
 msgstr "Не вдалося відкрити інтерфейс LV2 для %s"
 
-#: src/gui/widgets/arranger.c:3798
+#: src/gui/widgets/arranger.c:3822
 #, fuzzy
 msgid "Failed to duplicate automation"
 msgstr "Не вдалося відкрити інтерфейс LV2 для %s"
 
-#: src/gui/widgets/arranger.c:3819 src/gui/widgets/arranger.c:4197
-#: src/gui/widgets/arranger.c:4642
+#: src/gui/widgets/arranger.c:3843 src/gui/widgets/arranger.c:4221
+#: src/gui/widgets/arranger.c:4665
 #, fuzzy
 msgid "Failed to create objects"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/gui/widgets/arranger.c:3839
+#: src/gui/widgets/arranger.c:3863
 #, fuzzy
 msgid "Failed to fill automation"
 msgstr "Не вдалося відкрити інтерфейс LV2 для %s"
 
-#: src/gui/widgets/arranger.c:3869 src/gui/widgets/arranger.c:3914
-#: src/gui/widgets/arranger.c:3935 src/gui/widgets/timeline_arranger.c:922
+#: src/gui/widgets/arranger.c:3893 src/gui/widgets/arranger.c:3938
+#: src/gui/widgets/arranger.c:3959 src/gui/widgets/timeline_arranger.c:922
 #, fuzzy
 msgid "Failed to edit selections"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/gui/widgets/arranger.c:3966 src/gui/widgets/arranger.c:3988
+#: src/gui/widgets/arranger.c:3990 src/gui/widgets/arranger.c:4012
 #, fuzzy
 msgid "Failed to resize objects"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/gui/widgets/arranger.c:3998 src/gui/widgets/arranger.c:4044
+#: src/gui/widgets/arranger.c:4022 src/gui/widgets/arranger.c:4068
 #, fuzzy
 msgid "Failed to move MIDI notes"
 msgstr "Не вдалося відкрити інтерфейс LV2 для %s"
 
-#: src/gui/widgets/arranger.c:4067
+#: src/gui/widgets/arranger.c:4091
 #, fuzzy
 msgid "Failed to duplicate MIDI notes"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/gui/widgets/arranger.c:4088
+#: src/gui/widgets/arranger.c:4112
 #, fuzzy
 msgid "Failed to create MIDI notes"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/gui/widgets/arranger.c:4177
+#: src/gui/widgets/arranger.c:4201
 #, fuzzy
 msgid "Failed to duplicate chords"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/gui/widgets/arranger.c:4264 src/gui/widgets/arranger.c:4528
+#: src/gui/widgets/arranger.c:4288 src/gui/widgets/arranger.c:4551
 #, fuzzy
 msgid "Failed resizing selection"
 msgstr "Не вдалося прочитати значення"
 
-#: src/gui/widgets/arranger.c:4357
+#: src/gui/widgets/arranger.c:4380
 #, fuzzy
 msgid "Failed to edit timeline objects"
 msgstr "Не вдалося скинути схему %s"
 
-#: src/gui/widgets/arranger.c:4378 src/gui/widgets/arranger.c:4399
+#: src/gui/widgets/arranger.c:4401 src/gui/widgets/arranger.c:4422
 #, fuzzy
 msgid "Failed to resize timeline objects"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/gui/widgets/arranger.c:4419
+#: src/gui/widgets/arranger.c:4442
 #, fuzzy
 msgid "Failed to resize selection"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/gui/widgets/arranger.c:4440
+#: src/gui/widgets/arranger.c:4463
 #, fuzzy
 msgid "Failed setting fade in position"
 msgstr "Не вдалося відкрити інтерфейс LV2 для %s"
 
-#: src/gui/widgets/arranger.c:4461 src/gui/widgets/arranger.c:4489
-#: src/gui/widgets/arranger.c:4508
+#: src/gui/widgets/arranger.c:4484 src/gui/widgets/arranger.c:4512
+#: src/gui/widgets/arranger.c:4531
 #, fuzzy
 msgid "Failed resizing selections"
 msgstr "Очистити вибір"
 
-#: src/gui/widgets/arranger.c:4584
+#: src/gui/widgets/arranger.c:4607
 #, fuzzy
 msgid "Failed to move objects"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/gui/widgets/arranger.c:4621
+#: src/gui/widgets/arranger.c:4644
 #, fuzzy
 msgid "Failed to link or copy selection"
 msgstr "Не вдалося відкрити інтерфейс LV2 для %s"
 
-#: src/gui/widgets/arranger.c:4679
+#: src/gui/widgets/arranger.c:4702
 #, fuzzy
 msgid "Failed to split selection"
 msgstr "Не вдалося відкрити інтерфейс LV2 для %s"
 
-#: src/gui/widgets/arranger.c:4690
+#: src/gui/widgets/arranger.c:4713
 #, c-format
 msgid "%s name"
 msgstr "назва %s"
@@ -4136,7 +4140,7 @@ msgstr "MIDI-канал для фільтрування"
 msgid "Mono"
 msgstr "Моно"
 
-#: src/gui/widgets/track_input_expander.c:643 src/plugins/plugin.c:298
+#: src/gui/widgets/track_input_expander.c:643 src/plugins/plugin.c:296
 msgid "Gain"
 msgstr "Підсилення (gain)"
 
@@ -4218,19 +4222,19 @@ msgstr "Пошук"
 msgid "Peak"
 msgstr "Пік"
 
-#: src/gui/widgets/zoom_buttons.c:62
+#: src/gui/widgets/zoom_buttons.c:56
 msgid "Zoom In"
 msgstr "Збільшити"
 
-#: src/gui/widgets/zoom_buttons.c:63
+#: src/gui/widgets/zoom_buttons.c:57
 msgid "Zoom Out"
 msgstr "Зменшити"
 
-#: src/gui/widgets/zoom_buttons.c:65
+#: src/gui/widgets/zoom_buttons.c:59
 msgid "Original Size"
 msgstr "Початковий розмір"
 
-#: src/gui/widgets/zoom_buttons.c:66
+#: src/gui/widgets/zoom_buttons.c:60
 msgid "Best Fit"
 msgstr "Оптимальний розмір"
 
@@ -4479,18 +4483,18 @@ msgid "N/A"
 msgstr "Н/Д"
 
 #: src/gui/widgets/item_factory.c:854
-#: src/gui/widgets/dialogs/project_assistant.c:599
+#: src/gui/widgets/dialogs/project_assistant.c:600
 #, fuzzy
 msgid "Template Name"
 msgstr "Назва доріжки"
 
 #: src/gui/widgets/item_factory.c:859
-#: src/gui/widgets/dialogs/project_assistant.c:608
+#: src/gui/widgets/dialogs/project_assistant.c:609
 msgid "Path"
 msgstr "Шлях"
 
 #: src/gui/widgets/item_factory.c:865
-#: src/gui/widgets/dialogs/project_assistant.c:618
+#: src/gui/widgets/dialogs/project_assistant.c:619
 msgid "Last Modified"
 msgstr "Востаннє змінено"
 
@@ -4512,7 +4516,7 @@ msgstr "Не вдалося знайти розширення за URI: %s"
 msgid "OK"
 msgstr "Гаразд"
 
-#: src/gui/widgets/main_notebook.c:128
+#: src/gui/widgets/main_notebook.c:132
 msgid "Scenes (Live View)"
 msgstr ""
 
@@ -5247,28 +5251,28 @@ msgstr ""
 msgid "<File not found>"
 msgstr "Файл %s не знайдено."
 
-#: src/gui/widgets/dialogs/project_assistant.c:128
+#: src/gui/widgets/dialogs/project_assistant.c:129
 #: resources/ui/project_assistant.ui:105
 #, fuzzy
 msgid "_Open Selected"
 msgstr "_Обрати"
 
-#: src/gui/widgets/dialogs/project_assistant.c:134
+#: src/gui/widgets/dialogs/project_assistant.c:135
 #, fuzzy
 msgid "_Create"
 msgstr "Створити дублі"
 
-#: src/gui/widgets/dialogs/project_assistant.c:464
+#: src/gui/widgets/dialogs/project_assistant.c:465
 #, fuzzy
 msgid "No project selected"
 msgstr "Немає виділених об’єктів."
 
-#: src/gui/widgets/dialogs/project_assistant.c:479
+#: src/gui/widgets/dialogs/project_assistant.c:480
 #, fuzzy
 msgid "Select Project File"
 msgstr "Вибір файлу"
 
-#: src/gui/widgets/dialogs/project_assistant.c:714
+#: src/gui/widgets/dialogs/project_assistant.c:715
 msgid "Blank project"
 msgstr "Порожній проєкт"
 
@@ -5398,47 +5402,47 @@ msgstr "Відсканований плагін AU"
 msgid "Skipped AU plugin at %u"
 msgstr "Пропущений плагін AU на %u"
 
-#: src/plugins/lv2_plugin.c:1736
+#: src/plugins/lv2_plugin.c:1733
 #, fuzzy, c-format
 msgid "Failed to get LV2 plugin from URI <%s>"
 msgstr "Не вдалося знайти розширення за URI: %s"
 
-#: src/plugins/lv2_plugin.c:1989
+#: src/plugins/lv2_plugin.c:1986
 #, c-format
 msgid "Could not find UI by URI <%s>"
 msgstr ""
 
-#: src/plugins/lv2_plugin.c:2317
+#: src/plugins/lv2_plugin.c:2314
 #, fuzzy
 msgid "Failed to make temporary dir"
 msgstr "Не вдалося переглянути схему %s"
 
-#: src/plugins/lv2_plugin.c:2357
+#: src/plugins/lv2_plugin.c:2354
 #, fuzzy, c-format
 msgid "Failed to find preset with URI <%s>"
 msgstr "Не вдалося знайти розширення за URI: %s"
 
-#: src/plugins/lv2_plugin.c:2375
+#: src/plugins/lv2_plugin.c:2372
 #, fuzzy, c-format
 msgid "Failed to load state from %s"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/plugins/lv2_plugin.c:2403
+#: src/plugins/lv2_plugin.c:2400
 #, fuzzy, c-format
 msgid "Failed to find plugin with URI <%s>"
 msgstr "Не вдалося знайти розширення за URI: %s"
 
-#: src/plugins/lv2_plugin.c:2425
+#: src/plugins/lv2_plugin.c:2422
 #, fuzzy, c-format
 msgid "Failed to dlopen %s: %s"
 msgstr "Не вдалося відкрити файл: %s"
 
-#: src/plugins/lv2_plugin.c:2436
+#: src/plugins/lv2_plugin.c:2433
 #, fuzzy, c-format
 msgid "Failed to get dlinfo for %s"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/plugins/lv2_plugin.c:2458
+#: src/plugins/lv2_plugin.c:2455
 #, c-format
 msgid ""
 "%s <%s> contains a reference to %s, which may cause issues.\n"
@@ -5451,94 +5455,94 @@ msgstr ""
 "та повідомте про це розповсюджувачу розширення та / або автору:\n"
 "%s <%s>"
 
-#: src/plugins/lv2_plugin.c:2486
+#: src/plugins/lv2_plugin.c:2483
 #, fuzzy
 msgid "Failed to create or init ports and parameters"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/plugins/lv2_plugin.c:2511
+#: src/plugins/lv2_plugin.c:2508
 #, fuzzy, c-format
 msgid "Required feature %s is not supported"
 msgstr "Формат %s ще не підтримується"
 
-#: src/plugins/lv2_plugin.c:2588
+#: src/plugins/lv2_plugin.c:2585
 msgid "Failed checking whether lv2 plugin UI is external"
 msgstr ""
 
-#: src/plugins/lv2_plugin.c:2716
+#: src/plugins/lv2_plugin.c:2713
 #, fuzzy, c-format
 msgid "Required option %s is not supported"
 msgstr "Бекенд-сполучення не підтримується"
 
-#: src/plugins/lv2_plugin.c:2769
+#: src/plugins/lv2_plugin.c:2766
 #, fuzzy
 msgid "lilv_plugin_instantiate() failed"
 msgstr "Помилка вбудування розширення. Дивіться журнали для подробиць"
 
-#: src/plugins/lv2_plugin.c:3271 src/plugins/carla_native_plugin.c:623
+#: src/plugins/lv2_plugin.c:3268 src/plugins/carla_native_plugin.c:623
 msgid "Default bank"
 msgstr "Банк за замовчуванням"
 
-#: src/plugins/lv2_plugin.c:3274 src/plugins/carla_native_plugin.c:626
+#: src/plugins/lv2_plugin.c:3271 src/plugins/carla_native_plugin.c:626
 msgid "Init"
 msgstr "Init"
 
-#: src/plugins/lv2_plugin.c:3304
+#: src/plugins/lv2_plugin.c:3301
 msgid "Unnamed bank"
 msgstr "Банк без назви"
 
-#: src/plugins/plugin.c:235
+#: src/plugins/plugin.c:233
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "Помилка інстанціації для плагіна '%s'. Вимкнення..."
 
-#: src/plugins/plugin.c:277
+#: src/plugins/plugin.c:275
 #, fuzzy
 msgid "Enabled"
 msgstr "Увімкнути"
 
-#: src/plugins/plugin.c:280
+#: src/plugins/plugin.c:278
 msgid "Enables or disables the plugin"
 msgstr "Вмикає або вимикає розширення"
 
-#: src/plugins/plugin.c:300
+#: src/plugins/plugin.c:298
 msgid "Plugin gain"
 msgstr "Інспектор розширень"
 
-#: src/plugins/plugin.c:547
+#: src/plugins/plugin.c:545
 msgid "Failed to get Carla plugin"
 msgstr ""
 
-#: src/plugins/plugin.c:562
+#: src/plugins/plugin.c:560
 #, fuzzy
 msgid "Failed to get LV2 plugin"
 msgstr "Відсканований плагін LV2"
 
-#: src/plugins/plugin.c:1035
+#: src/plugins/plugin.c:1033
 #, c-format
 msgid " - bridge: %s"
 msgstr " - міст: %s"
 
-#: src/plugins/plugin.c:1043
+#: src/plugins/plugin.c:1041
 msgid "instrument"
 msgstr "Інструмент"
 
-#: src/plugins/plugin.c:1552
+#: src/plugins/plugin.c:1550
 #, fuzzy
 msgid "Carla plugin instantiation failed"
 msgstr "Помилка вбудування розширення. Дивіться журнали для подробиць"
 
-#: src/plugins/plugin.c:1563 src/plugins/plugin.c:2176
+#: src/plugins/plugin.c:1561 src/plugins/plugin.c:2174
 #, fuzzy
 msgid "Failed saving Carla plugin state"
 msgstr "Не вдалося записати файл: %s"
 
-#: src/plugins/plugin.c:1585
+#: src/plugins/plugin.c:1583
 #, fuzzy
 msgid "LV2 plugin instantiation failed"
 msgstr "Помилка вбудування розширення. Дивіться журнали для подробиць"
 
-#: src/plugins/plugin.c:1853
+#: src/plugins/plugin.c:1851
 #, c-format
 msgid ""
 "%s <%s> has a deprecated UI type:\n"
@@ -5553,7 +5557,7 @@ msgstr ""
 "розширення в режимі full-bridged і повідомте про це автору:\n"
 "  %s <%s>"
 
-#: src/plugins/plugin.c:2205
+#: src/plugins/plugin.c:2203
 #, fuzzy, c-format
 msgid "Failed to create plugin clone for %s"
 msgstr "Не вдалося записати файл: %s"
@@ -8112,180 +8116,174 @@ msgid "DAW"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
 #, fuzzy
 msgid "Changed:"
 msgstr "змінити"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
-msgid "Don't attempt to create plugin state directories when loading projects"
+msgid "Create standard project directories when creating a new blank project"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+msgid ""
+"Update Chinese (Simplified), Catalan, French, Swedish, Hungarian, Spanish, "
+"German, Portuguese (Brazil), Russian, English (Middle), Portuguese "
+"translations"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+msgid "Re-generate bundled plugins with latest faust"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
+msgid "Be more specific in some undoable action strings"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+msgid "Don't block when showing error messages"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
+msgid "Fixed:"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+msgid "Fix error when saving a project with a plugin without outputs"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+msgid "Fix issues with automation track processing"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+msgid "Don't attempt to create plugin state directories when loading projects"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 #, fuzzy
 msgid "Add more error checking to various operations"
 msgstr ""
 "Помилка встановлення розширення. Будь ласка, дивіться журнал для подробиць."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
 msgid "Include Carla and GTK versions in debug info"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
-msgid "Fixed:"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
 msgid "Fix being unable to export stems"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
 msgid "Fix multiple popups being shown when exporting stems"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
 msgid "Fix removing inserts not being undoable"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
 msgid ""
 "Fix plugin states being deleted from the main project when saving backups"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
 msgid "Fix error when enabling/disabling MIDI bindings"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
 msgid ""
 "Fix incorrectly throwing an error sometimes when processing the sample "
 "processor"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
 msgid "Fix error when moving a region from the last lane"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
 msgid "Added:"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
 msgid "Implement best-fit zoom in editor"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
 msgid "Add \"Rename\" context menu option on applicable timeline objects"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
 msgid "Implement Ableton-style panning/zooming in the ruler"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
 msgid "Implement middle-click (or alt-click) panning in arrangers"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
 msgid "Minor UI improvements (widget paddings and sizes)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
 msgid "File browser: allow browsing volumes without associated drives"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
 #, fuzzy
 msgid "Minor optimizations"
 msgstr "Мінорна пентатоніка"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid "Redesign snap/grid menu"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid "Require C11 thread support on GNU/Linux"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
 msgid "Fix arrangers sometimes not taking off-screen objects into account"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
 msgid "Fix minor memory leak"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
 msgid "Fix error when undoing duplication of automation points"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
 msgid ""
 "Fix some functions that were supposed to be optimized not getting optimized"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
 msgid "Use list view for control ports in the plugin inspector (fixes lags)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
 msgid ""
 "Don't use cairo to draw automation regions (fixes lags on large projects)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
 msgid "Don't use demo template on Windows on first run (currently broken)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
 msgid "Don't save undo history with backups (makes saving faster)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 msgid ""
 "Write audio pool files in parallel (makes saving faster on projects with "
 "lots of audio files)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
-msgid "Add \"View Info\" context menu option to timeline and automation editor"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
-msgid "Reorganize Direct Out submenu in track context menu"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
-msgid ""
-"Only allow pasting all the copied info into the selected track instead of "
-"spreading the paste across multiple tracks"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
-msgid "Fix \"View Info\" in piano roll doing \"Duplicate\" instead"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
-msgid "Fix object info dialog contents being invisible"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
-msgid "Fix incorrectly allowing to set a track's output to itself"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
-msgid "Fix copy-paste being broken in arrangers"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
-msgid ""
-"Fix incorrectly allowing to copy-paste unclonable objects like the start/end "
-"markers"
 msgstr ""
 
 #, fuzzy

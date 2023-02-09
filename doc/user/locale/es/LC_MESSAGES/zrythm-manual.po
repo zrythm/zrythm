@@ -16,18 +16,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-10-03 21:09+0900\n"
+"POT-Creation-Date: 2023-02-09 19:06+0900\n"
 "PO-Revision-Date: 2022-10-12 11:56+0000\n"
 "Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/es/>\n"
 "Language: es\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/es/>\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
-"Generated-By: Babel 2.10.3\n"
+"Generated-By: Babel 2.11.0\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
@@ -3897,6 +3896,77 @@ msgid ""
 "resulting image will be extremely large."
 msgstr ""
 
+#: ../../getting-started/faq.rst:9
+msgid "Frequently Asked Questions"
+msgstr ""
+
+#: ../../getting-started/faq.rst:12 ../../zrythm-interface/main-toolbar.rst:84
+msgid "About"
+msgstr "Acerca de"
+
+#: ../../getting-started/faq.rst:15
+msgid "What is Zrythm?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:17
+msgid ""
+"Zrythm is software for composing, recording, editing, arranging, mixing and "
+"mastering audio and MIDI data. Such software is commonly referred to as "
+"digital audio workstations (DAWs). Zrythm provides all the tools needed to "
+"create entire tracks."
+msgstr ""
+
+#: ../../getting-started/faq.rst:61
+msgid "Is it free?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:63
+msgid ""
+"Zrythm is free as in *freedom* (:term:`Free software`). If you purchase a "
+"binary from us, there is a cost involved but you can also get Zrythm for "
+"free as in *free beer* if you build it yourself or get it from a "
+"distribution."
+msgstr ""
+
+#: ../../getting-started/faq.rst:69
+msgid "When will v1 be released?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:71
+msgid "When all bugs and features marked as `v1rc` are completed:"
+msgstr ""
+
+#: ../../getting-started/faq.rst:73
+msgid "https://todo.sr.ht/~alextee/zrythm-feature"
+msgstr ""
+
+#: ../../getting-started/faq.rst:74
+msgid "https://todo.sr.ht/~alextee/zrythm-bug"
+msgstr ""
+
+#: ../../getting-started/faq.rst:77
+#, fuzzy
+msgid "Usage"
+msgstr "Idioma"
+
+#: ../../getting-started/faq.rst:80
+msgid "How do I add external plugins?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:82
+msgid ""
+"See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and :ref:"
+"`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
+msgstr ""
+
+#: ../../getting-started/faq.rst:86
+msgid "How do I import an audio/MIDI file?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:88
+msgid "See :ref:`plugins-files/audio-midi-files/file-browser:Importing Files`."
+msgstr ""
+
 #: ../../getting-started/getting-plugins.rst:9
 msgid "Getting Plugins, Instruments and Samples"
 msgstr "Conseguir complementos, instrumentos y muestras"
@@ -4114,18 +4184,30 @@ msgid "The installers also include bundled plugins."
 msgstr "Los instaladores también incluyen complementos incorporados."
 
 #: ../../getting-started/installation.rst:28
+#: ../../plugins-files/plugins/scanning.rst:79
+msgid "Windows"
+msgstr "Windows"
+
+#: ../../getting-started/installation.rst:31
+msgid ""
+"On Windows, Zrythm will only work when installed in the default path. "
+"Installing Zrythm to external hard drives or setting the Zrythm user path to "
+"external hard drives is not supported."
+msgstr ""
+
+#: ../../getting-started/installation.rst:36
 msgid "Flatpak"
 msgstr "Flatpak"
 
-#: ../../getting-started/installation.rst:29
+#: ../../getting-started/installation.rst:37
 msgid "Zrythm is available on `Flathub`_ under the ID `org.zrythm.Zrythm`_."
 msgstr ""
 
-#: ../../getting-started/installation.rst:33
+#: ../../getting-started/installation.rst:41
 msgid "Distribution Repositories"
 msgstr "Repositorios de la distribución"
 
-#: ../../getting-started/installation.rst:34
+#: ../../getting-started/installation.rst:42
 msgid ""
 "If Zrythm is available in your distro's repositories, you can also install "
 "it from there."
@@ -4133,11 +4215,11 @@ msgstr ""
 "Si Zrythm está disponible en los repositorios de la distribución, también "
 "puede instalarlo desde allí."
 
-#: ../../getting-started/installation.rst:38
+#: ../../getting-started/installation.rst:46
 msgid "Building from Source"
 msgstr "Compilar a partir del código fuente"
 
-#: ../../getting-started/installation.rst:39
+#: ../../getting-started/installation.rst:47
 #, fuzzy
 msgid ""
 "You can build Zrythm from source, either using a `source distribution "
@@ -4148,7 +4230,7 @@ msgstr ""
 "ya sea usando un `tarball de distribución de fuente <https://www.zrythm.org/"
 "releases/>`_ o `git <https://git.zrythm.org/cgit/zrythm/>`_."
 
-#: ../../getting-started/installation.rst:43
+#: ../../getting-started/installation.rst:51
 #, fuzzy
 msgid ""
 "See ``INSTALL.rst`` in the source distribution for installation instructions."
@@ -5115,9 +5197,9 @@ msgid ""
 "g., from 140.24 to 141.24) and clicking and dragging on the decimal "
 "counterpart will change the decimal value (e.g., from 140.24 to 140.25)."
 msgstr ""
-"Es posible cambiar el valor entero al pulsar y arrastrar la parte entera (p. "
-"ej., de 140,24 a 141,24); del mismo modo, se puede cambiar el valor decimal "
-"pulsándolo y arrastrándolo (p. ej., de 140,24 a 140,25)."
+"Es posible cambiar el valor entero al pulsar y arrastrar la parte entera "
+"(p. ej., de 140,24 a 141,24); del mismo modo, se puede cambiar el valor "
+"decimal pulsándolo y arrastrándolo (p. ej., de 140,24 a 140,25)."
 
 #: ../../playback-and-recording/bpm-and-time-signatures.rst:26
 msgid "Time Signature"
@@ -6531,10 +6613,6 @@ msgid ""
 msgstr ""
 "Puedes omitir este comportamiento al pasar :envvar:`VST_PATH` y :envvar:"
 "`VST3_PATH`."
-
-#: ../../plugins-files/plugins/scanning.rst:79
-msgid "Windows"
-msgstr "Windows"
 
 #: ../../plugins-files/plugins/scanning.rst:80
 #, fuzzy
@@ -9133,10 +9211,6 @@ msgid ""
 msgstr ""
 "El menú de Ayuda contiene enlaces para informar de errores, donar, chatear, "
 "etcétera."
-
-#: ../../zrythm-interface/main-toolbar.rst:84
-msgid "About"
-msgstr "Acerca de"
 
 #: ../../zrythm-interface/main-toolbar.rst:80
 msgid ""

@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2023-01-11 23:38+0900\n"
+"POT-Creation-Date: 2023-02-09 19:08+0900\n"
 "PO-Revision-Date: 2022-11-26 23:56+0000\n"
 "Last-Translator: SunRuikang <srk888666@qq.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
@@ -277,27 +277,27 @@ msgstr "日本 1"
 msgid "Japanese 2"
 msgstr "日本 2"
 
-#: inc/schemas/audio/curve.h:28 inc/audio/curve.h:95 src/audio/curve.c:54
+#: inc/schemas/audio/curve.h:28 inc/audio/curve.h:95 src/audio/curve.c:56
 #, c-format
 msgid "Exponent"
 msgstr "指数"
 
-#: inc/schemas/audio/curve.h:29 inc/audio/curve.h:96 src/audio/curve.c:57
+#: inc/schemas/audio/curve.h:29 inc/audio/curve.h:96 src/audio/curve.c:59
 #, c-format
 msgid "Superellipse"
 msgstr "超椭圆"
 
-#: inc/schemas/audio/curve.h:30 inc/audio/curve.h:97 src/audio/curve.c:321
+#: inc/schemas/audio/curve.h:30 inc/audio/curve.h:97 src/audio/curve.c:323
 msgid "Vital"
 msgstr "Vital"
 
-#: inc/schemas/audio/curve.h:31 inc/audio/curve.h:98 src/audio/curve.c:63
+#: inc/schemas/audio/curve.h:31 inc/audio/curve.h:98 src/audio/curve.c:65
 #, c-format
 msgid "Pulse"
 msgstr "Pulse"
 
-#: inc/schemas/audio/curve.h:32 inc/audio/curve.h:99 src/audio/curve.c:66
-#: src/audio/curve.c:316
+#: inc/schemas/audio/curve.h:32 inc/audio/curve.h:99 src/audio/curve.c:68
+#: src/audio/curve.c:318
 #, c-format
 msgid "Logarithmic"
 msgstr ""
@@ -665,12 +665,12 @@ msgstr ""
 msgid "Inherit"
 msgstr "继承"
 
-#: inc/audio/region.h:66 src/audio/automation_track.c:167
+#: inc/audio/region.h:66 src/audio/automation_track.c:166
 #: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:459
 msgid "Off"
 msgstr "关闭"
 
-#: inc/audio/region.h:67 src/audio/automation_track.c:161
+#: inc/audio/region.h:67 src/audio/automation_track.c:160
 #: src/gui/widgets/cc_bindings_tree.c:158
 #: src/gui/widgets/port_connections_tree.c:214
 #: src/gui/widgets/item_factory.c:598 src/gui/widgets/bot_bar.c:459
@@ -691,11 +691,11 @@ msgid "-6dB"
 msgstr "-6dB"
 
 #. TRANSLATORS: Pan algorithm
-#: inc/audio/pan.h:57 src/utils/ui.c:628 src/audio/curve.c:302
+#: inc/audio/pan.h:57 src/utils/ui.c:627 src/audio/curve.c:304
 msgid "Linear"
 msgstr "线性"
 
-#: inc/audio/pan.h:58 src/utils/ui.c:629
+#: inc/audio/pan.h:58 src/utils/ui.c:628
 msgid "Square Root"
 msgstr "平方根"
 
@@ -775,39 +775,39 @@ msgstr ""
 msgid "Failed to load project. Will create a new one instead."
 msgstr "无法加载项目。将创建一个新项目。"
 
-#: src/project.c:1357 src/project.c:1583 src/actions/actions.c:719
-#: src/actions/actions.c:761 src/gui/widgets/main_window.c:169
+#: src/project.c:1357 src/project.c:1601 src/actions/actions.c:769
+#: src/actions/actions.c:811 src/gui/widgets/main_window.c:169
 #, fuzzy
 msgid "Failed to save project"
 msgstr "未能移动对象"
 
-#: src/project.c:1416
+#: src/project.c:1417
 msgid "Failed to deserialize v1 project file"
 msgstr "反序列化 v1 项目文件失败"
 
-#: src/project.c:1448
+#: src/project.c:1449
 #, fuzzy
 msgid "Failed to deserialize v2/3 project file"
 msgstr "反序列化 v1 项目文件失败"
 
-#: src/project.c:1754
+#: src/project.c:1771
 msgid "Failed to compress project file"
 msgstr "未能解压缩工程文件"
 
-#: src/project.c:1798 src/project.c:1801
+#: src/project.c:1815 src/project.c:1818
 msgid "Backup saved."
 msgstr "备份已保存。"
 
-#: src/project.c:1812
+#: src/project.c:1829
 msgid "Project saved."
 msgstr "项目已保存。"
 
-#: src/project.c:1999
+#: src/project.c:2016
 #, fuzzy
 msgid "Failed to write audio pool to disk"
 msgstr "未能创建音轨"
 
-#: src/project.c:2012
+#: src/project.c:2029
 #, fuzzy
 msgid "Failed to clone project"
 msgstr "未能克隆音轨"
@@ -847,46 +847,46 @@ msgstr ""
 msgid "Setting up main window"
 msgstr "设置主窗口"
 
-#: src/zrythm_app.c:408
+#: src/zrythm_app.c:409
 msgid "Loading project"
 msgstr "加载项目"
 
-#: src/zrythm_app.c:423
+#: src/zrythm_app.c:424
 #, fuzzy, c-format
 msgid ""
 "No project has been selected or project failed to load. %s will now close."
 msgstr "没有选择任何项目。%s现在将关闭。"
 
-#: src/zrythm_app.c:442
+#: src/zrythm_app.c:443
 msgid "Initializing settings"
 msgstr "初始化设置"
 
-#: src/zrythm_app.c:448
+#: src/zrythm_app.c:449
 #, c-format
 msgid "Initializing %s directories"
 msgstr "初始化%s目录"
 
-#: src/zrythm_app.c:465
+#: src/zrythm_app.c:466
 msgid "Initializing logging system"
 msgstr "初始化日志记录系统"
 
-#: src/zrythm_app.c:487
+#: src/zrythm_app.c:488
 msgid "Initializing caches"
 msgstr "初始化缓存"
 
-#: src/zrythm_app.c:491
+#: src/zrythm_app.c:492
 msgid "Initializing file manager"
 msgstr "初始化文件管理器"
 
-#: src/zrythm_app.c:497
+#: src/zrythm_app.c:498
 msgid "Scanning plugins"
 msgstr "扫描插件"
 
-#: src/zrythm_app.c:617
+#: src/zrythm_app.c:618
 msgid "Waiting for project"
 msgstr "等待项目"
 
-#: src/zrythm_app.c:852
+#: src/zrythm_app.c:853
 #, c-format
 msgid ""
 "Your user does not have enough privileges to allow %s to lock unlimited "
@@ -894,17 +894,17 @@ msgid ""
 "section in the user manual for details."
 msgstr ""
 
-#: src/zrythm_app.c:870
+#: src/zrythm_app.c:871
 #, c-format
 msgid "Could not get system memory lock limit (%s)"
 msgstr ""
 
-#: src/zrythm_app.c:891
+#: src/zrythm_app.c:892
 #, c-format
 msgid "Cannot lock down memory: %s"
 msgstr "无法锁定内存：%s"
 
-#: src/zrythm_app.c:1026
+#: src/zrythm_app.c:1027
 #, c-format
 msgid ""
 "%s-%s\n"
@@ -931,74 +931,74 @@ msgstr ""
 "要支持此项目，请前往https://liberapay.com/Zrythm\n"
 "\n"
 
-#: src/zrythm_app.c:1419
+#: src/zrythm_app.c:1420
 #, c-format
 msgid "File %s not found."
 msgstr "文件%s未找到。"
 
-#: src/zrythm_app.c:1438
+#: src/zrythm_app.c:1439
 msgid "An output file was not specified. Please pass one with `--output=FILE`."
 msgstr "未指定输出文件。请通过`--output=FILE`传递一个。"
 
-#: src/zrythm_app.c:1493
+#: src/zrythm_app.c:1494
 #, c-format
 msgid "Project failed to decompress: %s\n"
 msgstr "项目解压缩失败:%s\n"
 
-#: src/zrythm_app.c:1510
+#: src/zrythm_app.c:1511
 msgid "Unknown operation"
 msgstr "未知操作"
 
-#: src/zrythm_app.c:1527
+#: src/zrythm_app.c:1528
 #, c-format
 msgid "libguile is required for this option\n"
 msgstr "该选项需要 libguile\n"
 
-#: src/zrythm_app.c:1674
+#: src/zrythm_app.c:1675
 msgid "Print version information"
 msgstr "打印版本信息"
 
-#: src/zrythm_app.c:1677
+#: src/zrythm_app.c:1678
 msgid "Convert ZPJ-FILE to YAML"
 msgstr "转换 ZPJ-FILE 为 YAML"
 
-#: src/zrythm_app.c:1680
+#: src/zrythm_app.c:1681
 msgid "Convert YAML-PROJECT-FILE to the .zpj format"
 msgstr "转换 YAML-PROJECT-FILE 为 .zpj 格式"
 
-#: src/zrythm_app.c:1684
+#: src/zrythm_app.c:1685
 msgid "Generate a project from SCRIPT-FILE"
 msgstr "从脚本文件中生成工程"
 
-#: src/zrythm_app.c:1688
+#: src/zrythm_app.c:1689
 msgid "Print output in user-friendly way"
 msgstr "以用户友好的方式打印输出"
 
-#: src/zrythm_app.c:1690
+#: src/zrythm_app.c:1691
 msgid "Print current settings"
 msgstr "打印当前设定"
 
-#: src/zrythm_app.c:1694 src/gui/widgets/preferences.c:773
+#: src/zrythm_app.c:1695 src/gui/widgets/preferences.c:773
 msgid "Reset to factory settings"
 msgstr "重置到出厂设置"
 
-#: src/zrythm_app.c:1697
+#: src/zrythm_app.c:1698
 msgid "Override the audio backend to use"
 msgstr "覆盖要使用的音频后端"
 
-#: src/zrythm_app.c:1700
+#: src/zrythm_app.c:1701
 msgid "Override the MIDI backend to use"
 msgstr "覆盖要使用的MIDI后端"
 
-#: src/zrythm_app.c:1702
+#: src/zrythm_app.c:1703
 msgid "Shorthand for --midi-backend=none --audio-backend=none"
 msgstr "为以下简写： --midi-backend=none --audio-backend=none"
 
-#: src/zrythm_app.c:1730
+#: src/zrythm_app.c:1731
 msgid "[PROJECT-FILE]"
 msgstr "[PROJECT-FILE]"
 
-#: src/zrythm_app.c:1736
+#: src/zrythm_app.c:1737
 #, c-format
 msgid ""
 "Examples:\n"
@@ -1016,12 +1016,12 @@ msgstr ""
 "\n"
 "请报告问题至 %s\n"
 
-#: src/zrythm_app.c:1748
+#: src/zrythm_app.c:1749
 #, c-format
 msgid "Run %s, optionally passing a project file."
 msgstr "运行 %s, 可选地传递一个工程文件。"
 
-#: src/zrythm_app.c:1779
+#: src/zrythm_app.c:1780
 #, c-format
 msgid "This version of Zrythm does not support creating more than %d tracks."
 msgstr ""
@@ -1034,11 +1034,11 @@ msgstr "插入静默"
 msgid "Delete range"
 msgstr "删除区间"
 
-#: src/actions/undo_manager.c:189 src/actions/actions.c:916
+#: src/actions/undo_manager.c:189 src/actions/actions.c:966
 msgid "Failed to undo action"
 msgstr "未能撤销操作"
 
-#: src/actions/undo_manager.c:240 src/actions/actions.c:911
+#: src/actions/undo_manager.c:240 src/actions/actions.c:961
 msgid "Failed to redo action"
 msgstr "未能重做操作"
 
@@ -1090,40 +1090,40 @@ msgstr "MIDI 映射解绑"
 msgid "Set control value"
 msgstr "设置控件值"
 
-#: src/actions/actions.c:309
+#: src/actions/actions.c:311
 #, c-format
 msgid ""
 "Scripting extensibility with <a href=\"%s\">GNU Guile</a> is not enabled in "
 "your %s installation."
 msgstr "您的%s安装中未启用使用<a href=\"%s\">GNU Guile</a>的脚本扩展性。"
 
-#: src/actions/actions.c:633 resources/gtk/help-overlay.ui:103
+#: src/actions/actions.c:683 resources/gtk/help-overlay.ui:103
 msgid "Create new project"
 msgstr "创建新项目"
 
-#: src/actions/actions.c:635
+#: src/actions/actions.c:685
 msgid "Yes"
 msgstr "是"
 
-#: src/actions/actions.c:635
+#: src/actions/actions.c:685
 msgid "No"
 msgstr "否"
 
-#: src/actions/actions.c:638
+#: src/actions/actions.c:688
 msgid "Any unsaved changes to the current project will be lost. Continue?"
 msgstr "任何未保存的对当前项目的更改都将丢失。是否继续？"
 
-#: src/actions/actions.c:667 src/actions/actions.c:691
-#: src/gui/widgets/dialogs/project_assistant.c:245
+#: src/actions/actions.c:717 src/actions/actions.c:741
+#: src/gui/widgets/dialogs/project_assistant.c:246
 #, fuzzy
 msgid "Failed to load project"
 msgstr "未能编辑对象"
 
-#: src/actions/actions.c:735
+#: src/actions/actions.c:785
 msgid "Save Project"
 msgstr "保存项目"
 
-#: src/actions/actions.c:736 src/utils/dialogs.c:41 src/utils/dialogs.c:60
+#: src/actions/actions.c:786 src/utils/dialogs.c:41 src/utils/dialogs.c:60
 #: src/audio/clip.c:661 src/gui/widgets/main_window.c:138
 #: src/gui/widgets/plugin_properties_expander.c:107
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:122
@@ -1131,7 +1131,7 @@ msgstr "保存项目"
 #: src/gui/widgets/dialogs/create_project_dialog.c:122
 #: src/gui/widgets/dialogs/first_run_dialog.c:273
 #: src/gui/widgets/dialogs/bug_report_dialog.c:187
-#: src/gui/widgets/dialogs/project_assistant.c:481
+#: src/gui/widgets/dialogs/project_assistant.c:482
 #: src/gui/widgets/dialogs/track_icon_chooser_dialog.c:171
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:148
 #: src/plugins/plugin_gtk.c:86 src/plugins/plugin_gtk.c:300
@@ -1142,30 +1142,30 @@ msgstr "保存项目"
 msgid "_Cancel"
 msgstr "取消（_C）"
 
-#: src/actions/actions.c:736
+#: src/actions/actions.c:786
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:146
 #: src/plugins/plugin_gtk.c:87 src/plugins/plugin_gtk.c:301
 #: src/plugins/lv2/lv2_gtk.c:62
 msgid "_Save"
 msgstr "保存（_S）"
 
-#: src/actions/actions.c:802
+#: src/actions/actions.c:852
 msgid "Export routing graph"
 msgstr "导出路由图"
 
-#: src/actions/actions.c:803
+#: src/actions/actions.c:853
 msgid "Image (PNG)"
 msgstr "图像(PNG)"
 
-#: src/actions/actions.c:803
+#: src/actions/actions.c:853
 msgid "Image (SVG)"
 msgstr "图像(SVG)"
 
-#: src/actions/actions.c:804
+#: src/actions/actions.c:854
 msgid "Dot graph"
 msgstr "dot图"
 
-#: src/actions/actions.c:810
+#: src/actions/actions.c:860
 #, c-format
 msgid ""
 "The graph will be exported to <a href=\"%s\">%s</a>\n"
@@ -1174,41 +1174,41 @@ msgstr ""
 "图形将导出到<a href=\"%s\">%s</a>\n"
 "请选择导出格式"
 
-#: src/actions/actions.c:858
+#: src/actions/actions.c:908
 msgid "Graph exported"
 msgstr "图形导出"
 
-#: src/actions/actions.c:886 src/guile/actions/undo_manager.c:67
+#: src/actions/actions.c:936 src/guile/actions/undo_manager.c:67
 msgid "Failed to undo"
 msgstr "撤销失败"
 
-#: src/actions/actions.c:951 src/guile/actions/undo_manager.c:91
+#: src/actions/actions.c:1001 src/guile/actions/undo_manager.c:91
 msgid "Failed to redo"
 msgstr "未能重做"
 
-#: src/actions/actions.c:994 src/actions/actions.c:1008
-#: src/actions/actions.c:1232
+#: src/actions/actions.c:1044 src/actions/actions.c:1058
+#: src/actions/actions.c:1282
 msgid "Failed to delete selections"
 msgstr "删除所选失败"
 
-#: src/actions/actions.c:1186
+#: src/actions/actions.c:1236
 msgid "Can't paste incompatible data"
 msgstr "无法粘贴不兼容的数据"
 
-#: src/actions/actions.c:1264
+#: src/actions/actions.c:1314
 msgid "Failed to duplicate selections"
 msgstr "未能复制所选"
 
-#: src/actions/actions.c:1488
+#: src/actions/actions.c:1538
 msgid "Failed to unbind"
 msgstr "未能解绑"
 
-#: src/actions/actions.c:1529 src/actions/actions.c:2010
-#: src/actions/actions.c:2040
+#: src/actions/actions.c:1579 src/actions/actions.c:2060
+#: src/actions/actions.c:2090
 msgid "Failed to quantize"
 msgstr "量化失败"
 
-#: src/actions/actions.c:1607 src/audio/track.c:3656 src/audio/tracklist.c:1485
+#: src/actions/actions.c:1657 src/audio/track.c:3654 src/audio/tracklist.c:1483
 #: src/gui/widgets/panel_file_browser.c:459
 #: src/gui/widgets/panel_file_browser.c:475 src/settings/plugin_settings.c:329
 #: src/settings/plugin_settings.c:344 src/settings/plugin_settings.c:416
@@ -1216,215 +1216,215 @@ msgstr "量化失败"
 msgid "Failed to create track"
 msgstr "未能创建音轨"
 
-#: src/actions/actions.c:1661
+#: src/actions/actions.c:1711
 msgid "Failed to duplicate tracks"
 msgstr "复制音轨失败"
 
-#: src/actions/actions.c:1731 src/actions/actions.c:1786
+#: src/actions/actions.c:1781 src/actions/actions.c:1836
 msgid "Failed to delete tracks"
 msgstr "删除音轨失败"
 
-#: src/actions/actions.c:1763
+#: src/actions/actions.c:1813
 msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
 
-#: src/actions/actions.c:1820
+#: src/actions/actions.c:1870
 msgid "Failed to pin/unpin tracks"
 msgstr "未能固定/取消固定音轨"
 
-#: src/actions/actions.c:1831
+#: src/actions/actions.c:1881
 msgid "Failed to solo tracks"
 msgstr "未能 solo 音轨"
 
-#: src/actions/actions.c:1842
+#: src/actions/actions.c:1892
 msgid "Failed to unsolo tracks"
 msgstr "未能取消 solo 音轨"
 
-#: src/actions/actions.c:1853
+#: src/actions/actions.c:1903
 msgid "Failed to mute tracks"
 msgstr "未能将音轨静音"
 
-#: src/actions/actions.c:1864
+#: src/actions/actions.c:1914
 msgid "Failed to unmute tracks"
 msgstr "未能取消音轨静音"
 
-#: src/actions/actions.c:1875
+#: src/actions/actions.c:1925
 msgid "Failed to listen tracks"
 msgstr "倾听音轨失败"
 
-#: src/actions/actions.c:1887
+#: src/actions/actions.c:1937
 msgid "Failed to unlisten tracks"
 msgstr "未能取消倾听音轨"
 
-#: src/actions/actions.c:1898
+#: src/actions/actions.c:1948
 msgid "Failed to enable tracks"
 msgstr "启用音轨失败"
 
-#: src/actions/actions.c:1909
+#: src/actions/actions.c:1959
 msgid "Failed to disable tracks"
 msgstr "禁用音轨失败"
 
-#: src/actions/actions.c:2057
+#: src/actions/actions.c:2107
 #, c-format
 msgid ""
 "Must select either the timeline or the editor first. The current selection "
 "is %s"
 msgstr ""
 
-#: src/actions/actions.c:2129
+#: src/actions/actions.c:2179
 msgid "Failed to mute selections"
 msgstr "未能将选区静音"
 
-#: src/actions/actions.c:2142
+#: src/actions/actions.c:2192
 msgid "No regions selected"
 msgstr "未选择区域"
 
-#: src/actions/actions.c:2149
+#: src/actions/actions.c:2199
 msgid "Selections must be on the same lane"
 msgstr ""
 
-#: src/actions/actions.c:2156
+#: src/actions/actions.c:2206
 msgid "Cannot merge looped regions"
 msgstr ""
 
-#: src/actions/actions.c:2171
+#: src/actions/actions.c:2221
 msgid "Failed to merge selections"
 msgstr "未能合并选区"
 
-#: src/actions/actions.c:2276
+#: src/actions/actions.c:2326
 msgid "Failed to insert silence"
 msgstr "未能插入静音"
 
-#: src/actions/actions.c:2293
+#: src/actions/actions.c:2343
 msgid "Failed to remove range"
 msgstr "无法移除区间"
 
-#: src/actions/actions.c:2367 src/actions/arranger_selections.c:564
+#: src/actions/actions.c:2417 src/actions/arranger_selections.c:563
 msgid "Failed to apply MIDI function"
 msgstr "未能应用 MIDI 功能"
 
-#: src/actions/actions.c:2393 src/actions/actions.c:2432
-#: src/actions/arranger_selections.c:600
+#: src/actions/actions.c:2443 src/actions/actions.c:2482
+#: src/actions/arranger_selections.c:599
 msgid "Failed to apply automation function"
 msgstr "未能应用包络线功能"
 
-#: src/actions/actions.c:2605 src/gui/widgets/track_filter_popover.c:268
+#: src/actions/actions.c:2655 src/gui/widgets/track_filter_popover.c:268
 msgid "Track name"
 msgstr "曲目名称"
 
-#: src/actions/actions.c:2627
+#: src/actions/actions.c:2677
 msgid "Object name"
 msgstr "对象名称"
 
-#: src/actions/actions.c:2660
+#: src/actions/actions.c:2710
 msgid "An object cannot be created at the selected location."
 msgstr ""
 
-#: src/actions/actions.c:2697
+#: src/actions/actions.c:2747
 #, fuzzy
 msgid "Failed to set region color"
 msgstr "曲线算法设置失败"
 
-#: src/actions/actions.c:2727
+#: src/actions/actions.c:2777
 #, fuzzy
 msgid "Region Color"
 msgstr "区域颜色"
 
-#: src/actions/actions.c:2762
+#: src/actions/actions.c:2812
 #, fuzzy
 msgid "Failed to reset region color"
 msgstr "未能创建插件克隆"
 
-#: src/actions/actions.c:2804
+#: src/actions/actions.c:2854
 msgid "Please enter a BPM"
 msgstr "请输入 BPM"
 
-#: src/actions/actions.c:2873
+#: src/actions/actions.c:2923
 msgid "Failed to move selections"
 msgstr "未能移动选区"
 
-#: src/actions/actions.c:2890
+#: src/actions/actions.c:2940
 #, c-format
 msgid "Detected BPM: %.2f"
 msgstr ""
 
-#: src/actions/actions.c:2892
+#: src/actions/actions.c:2942
 msgid "Candidates:"
 msgstr ""
 
-#: src/actions/actions.c:2939 src/actions/arranger_selections.c:639
-#: src/actions/arranger_selections.c:653
+#: src/actions/actions.c:2989 src/actions/arranger_selections.c:638
+#: src/actions/arranger_selections.c:652
 msgid "Failed to apply audio function"
 msgstr "应用音频功能失败"
 
-#: src/actions/actions.c:3060
+#: src/actions/actions.c:3110
 msgid "Failed to set curve algorithm"
 msgstr "曲线算法设置失败"
 
-#: src/actions/actions.c:3111
+#: src/actions/actions.c:3161
 msgid "Failed to edit fades"
 msgstr "编辑淡入淡出失败"
 
-#: src/actions/actions.c:3175
+#: src/actions/actions.c:3225
 msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
 msgstr ""
 
-#: src/actions/actions.c:3262 src/actions/actions.c:3303
+#: src/actions/actions.c:3312 src/actions/actions.c:3353
 msgid "Preset Pack Name"
 msgstr "预设包名"
 
-#: src/actions/actions.c:3283 src/actions/actions.c:3321
+#: src/actions/actions.c:3333 src/actions/actions.c:3371
 msgid "Are you sure you want to remove this chord preset pack?"
 msgstr ""
 
-#: src/actions/actions.c:3341
+#: src/actions/actions.c:3391
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:156
 msgid "Preset Name"
 msgstr "预设名"
 
-#: src/actions/actions.c:3391 src/gui/widgets/modulator_inner.c:76
+#: src/actions/actions.c:3441 src/gui/widgets/modulator_inner.c:76
 msgid "Failed to delete plugins"
 msgstr "未能删除插件"
 
-#: src/actions/actions.c:3428
+#: src/actions/actions.c:3478
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
 
-#: src/actions/actions.c:3478
+#: src/actions/actions.c:3528
 #, c-format
 msgid "Failed to reset %s"
 msgstr "未能重设 %s"
 
-#: src/actions/actions.c:3504
+#: src/actions/actions.c:3554
 #, c-format
 msgid "Failed to disconnect %s from %s"
 msgstr "未能将 %s 与 %s 断开"
 
-#: src/actions/actions.c:3533
+#: src/actions/actions.c:3583
 msgid "Cannot delete standard bookmark"
 msgstr ""
 
-#: src/actions/actions.c:3541
+#: src/actions/actions.c:3591
 msgid "Are you sure you want to remove this bookmark?"
 msgstr ""
 
-#: src/actions/actions.c:3740 src/actions/actions.c:3769
+#: src/actions/actions.c:3790 src/actions/actions.c:3819
 msgid "Collection name"
 msgstr "集锦名称"
 
-#: src/actions/actions.c:3791
+#: src/actions/actions.c:3841
 #, c-format
 msgid ""
 "This collection contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
 
-#: src/actions/actions.c:3967
+#: src/actions/actions.c:4017
 msgid "Failed to change direct output"
 msgstr "设置直接输出失败"
 
@@ -1449,8 +1449,8 @@ msgstr "未选择音轨"
 msgid "Failed to clone tracklist selections"
 msgstr ""
 
-#: src/actions/tracklist_selections.c:365 src/audio/tracklist.c:1669
-#: src/audio/tracklist.c:1797
+#: src/actions/tracklist_selections.c:365 src/audio/tracklist.c:1667
+#: src/audio/tracklist.c:1795
 msgid "Failed to clone track"
 msgstr "未能克隆音轨"
 
@@ -1709,105 +1709,109 @@ msgstr "取消固定音轨"
 msgid "Unpin %d Tracks"
 msgstr "取消固定 %d 道音轨"
 
-#: src/actions/transport_action.c:270
-msgid "Change BPM"
-msgstr "更改BPM"
-
-#: src/actions/transport_action.c:272
-msgid "Beats per bar change"
+#: src/actions/transport_action.c:271
+#, c-format
+msgid "Change BPM from %.2f to %.2f"
 msgstr ""
 
-#: src/actions/transport_action.c:274
-msgid "Beat unit change"
+#: src/actions/transport_action.c:275
+#, c-format
+msgid "Change beats per bar from %d to %d"
 msgstr ""
 
-#: src/actions/arranger_selections.c:298
+#: src/actions/transport_action.c:279
+#, c-format
+msgid "Change beat unit from %d to %d"
+msgstr ""
+
+#: src/actions/arranger_selections.c:297
 msgid "Arranger selections contain an object that cannot be duplicated"
 msgstr ""
 
-#: src/actions/arranger_selections.c:393
+#: src/actions/arranger_selections.c:392
 msgid "Arranger selections contain an undeletable object"
 msgstr ""
 
-#: src/actions/arranger_selections.c:459 src/actions/arranger_selections.c:516
+#: src/actions/arranger_selections.c:458 src/actions/arranger_selections.c:515
 msgid "Cannot rename selected object(s)"
 msgstr ""
 
-#: src/actions/arranger_selections.c:777
+#: src/actions/arranger_selections.c:776
 msgid "Attempted to resize unresizable objects"
 msgstr ""
 
-#: src/actions/arranger_selections.c:792
+#: src/actions/arranger_selections.c:791
 #, c-format
 msgid "Cannot perform %s resize - selections contain looped objects"
 msgstr ""
 
-#: src/actions/arranger_selections.c:809
+#: src/actions/arranger_selections.c:808
 #, c-format
 msgid "Cannot perform %s resize - selections contain unloopable objects"
 msgstr ""
 
-#: src/actions/arranger_selections.c:3187
+#: src/actions/arranger_selections.c:3186
 msgid "Create timeline selections"
 msgstr "创建时间轴选区"
 
-#: src/actions/arranger_selections.c:3189
+#: src/actions/arranger_selections.c:3188
 msgid "Create audio selections"
 msgstr "创建音频选区"
 
-#: src/actions/arranger_selections.c:3191
+#: src/actions/arranger_selections.c:3190
 msgid "Create automation selections"
 msgstr "创建自动选区"
 
-#: src/actions/arranger_selections.c:3193
+#: src/actions/arranger_selections.c:3192
 msgid "Create chord selections"
 msgstr "创建和弦选区"
 
-#: src/actions/arranger_selections.c:3195
+#: src/actions/arranger_selections.c:3194
 msgid "Create MIDI selections"
 msgstr "创建 MIDI 选区"
 
-#: src/actions/arranger_selections.c:3200
+#: src/actions/arranger_selections.c:3199
 msgid "Delete arranger selections"
 msgstr "删除编曲者选集"
 
-#: src/actions/arranger_selections.c:3202
+#: src/actions/arranger_selections.c:3201
 msgid "Duplicate arranger selections"
 msgstr "复制编曲者选集"
 
-#: src/actions/arranger_selections.c:3204
+#: src/actions/arranger_selections.c:3203
 msgid "Move arranger selections"
 msgstr "移动编曲者选集"
 
-#: src/actions/arranger_selections.c:3206
+#: src/actions/arranger_selections.c:3205
 msgid "Link arranger selections"
 msgstr "连接编曲者选集"
 
-#: src/actions/arranger_selections.c:3208
+#: src/actions/arranger_selections.c:3207
 msgid "Record arranger selections"
 msgstr "记录编曲者选集"
 
-#: src/actions/arranger_selections.c:3210
+#: src/actions/arranger_selections.c:3209
 msgid "Edit arranger selections"
 msgstr "编辑编曲者选集"
 
-#: src/actions/arranger_selections.c:3212
+#: src/actions/arranger_selections.c:3211
 msgid "Automation fill"
 msgstr "自动填充"
 
-#: src/actions/arranger_selections.c:3214
+#: src/actions/arranger_selections.c:3213
 msgid "Split arranger selections"
 msgstr "分割编曲者选集"
 
-#: src/actions/arranger_selections.c:3216
+#: src/actions/arranger_selections.c:3215
 msgid "Merge arranger selections"
 msgstr "合并编曲者选集"
 
-#: src/actions/arranger_selections.c:3218
-msgid "Resize arranger selections"
+#: src/actions/arranger_selections.c:3223
+#, fuzzy, c-format
+msgid "Resize arranger selections - %s"
 msgstr "调整编曲者选集尺寸"
 
-#: src/actions/arranger_selections.c:3220
+#: src/actions/arranger_selections.c:3226
 msgid "Quantize arranger selections"
 msgstr "量化编曲者选集"
 
@@ -1858,7 +1862,7 @@ msgstr "通道发送连接"
 msgid "Failed to clone mixer selections"
 msgstr "未能克隆混音器选区"
 
-#: src/actions/mixer_selections_action.c:431 src/audio/channel.c:1854
+#: src/actions/mixer_selections_action.c:431 src/audio/channel.c:1845
 msgid "Failed to clone plugin"
 msgstr "未能克隆插件"
 
@@ -1867,7 +1871,7 @@ msgid "Could not create plugin"
 msgstr ""
 
 #: src/actions/mixer_selections_action.c:537 src/audio/audio_function.c:141
-#: src/audio/track.c:2136 src/audio/track.c:3205
+#: src/audio/track.c:2135 src/audio/track.c:3204
 msgid "Failed to instantiate plugin"
 msgstr "未能实例化插件"
 
@@ -1925,18 +1929,18 @@ msgstr "粘帖 %s"
 msgid "Paste %d Plugins"
 msgstr "粘贴 %d 个插件"
 
-#: src/utils/ui.c:630
+#: src/utils/ui.c:629
 msgid "Sine (Equal Power)"
 msgstr "正弦（等功率）"
 
-#: src/utils/ui.c:942
+#: src/utils/ui.c:941
 #, c-format
 msgid ""
 "A locale for the language you have selected (%s) is not available. Please "
 "install one first and restart %s"
 msgstr "您选择的语言（%s）的区域设置不可用。请先安装一个，然后重新启动%s"
 
-#: src/utils/ui.c:948
+#: src/utils/ui.c:947
 #, c-format
 msgid ""
 "A locale for the language you have selected is not available. Please enable "
@@ -1972,12 +1976,12 @@ msgstr ""
 msgid "32 bit"
 msgstr ""
 
-#: src/utils/audio.c:179
+#: src/utils/audio.c:178
 #, fuzzy, c-format
 msgid "Error opening sndfile: %s"
 msgstr "加载 LV2 包目录时出错: "
 
-#: src/utils/audio.c:205
+#: src/utils/audio.c:204
 #, fuzzy, c-format
 msgid "Seek error %d: %s"
 msgstr "错误：%s"
@@ -2026,15 +2030,15 @@ msgstr ""
 msgid "Monitor"
 msgstr "监视器"
 
-#: src/utils/gtk.c:1242 src/gui/widgets/main_notebook.c:119
+#: src/utils/gtk.c:1242 src/gui/widgets/main_notebook.c:123
 msgid "Timeline"
 msgstr "时间线"
 
-#: src/utils/gtk.c:1244 src/gui/widgets/main_notebook.c:125
+#: src/utils/gtk.c:1244 src/gui/widgets/main_notebook.c:129
 msgid "MIDI CC Bindings"
 msgstr "MIDI CC 绑定"
 
-#: src/utils/gtk.c:1248 src/gui/widgets/main_notebook.c:122
+#: src/utils/gtk.c:1248 src/gui/widgets/main_notebook.c:126
 msgid "Port Connections"
 msgstr "端口连接"
 
@@ -2047,7 +2051,7 @@ msgstr ""
 msgid "Open Project"
 msgstr "开放项目"
 
-#: src/utils/dialogs.c:41 src/gui/widgets/dialogs/project_assistant.c:480
+#: src/utils/dialogs.c:41 src/gui/widgets/dialogs/project_assistant.c:481
 msgid "_Open"
 msgstr "_Open"
 
@@ -2238,89 +2242,89 @@ msgid "JACK has shut down"
 msgstr ""
 
 #. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:600
+#: src/audio/engine_jack.c:608
 msgid "Overall operation failed"
 msgstr "整体操作失败"
 
-#: src/audio/engine_jack.c:606
+#: src/audio/engine_jack.c:614
 msgid "The operation contained an invalid or unsupported option"
 msgstr "操作包含无效或不支持的选项"
 
-#: src/audio/engine_jack.c:612
+#: src/audio/engine_jack.c:620
 msgid "The desired client name was not unique"
 msgstr "所需的客户端名称不唯一"
 
-#: src/audio/engine_jack.c:616
+#: src/audio/engine_jack.c:624
 msgid "Unable to connect to the JACK server"
 msgstr "无法连接到JACK服务器"
 
-#: src/audio/engine_jack.c:621
+#: src/audio/engine_jack.c:629
 msgid "Communication error with the JACK server"
 msgstr "与JACK服务器的通信错误"
 
-#: src/audio/engine_jack.c:625
+#: src/audio/engine_jack.c:633
 msgid "Requested client does not exist"
 msgstr "请求的客户端不存在"
 
-#: src/audio/engine_jack.c:629
+#: src/audio/engine_jack.c:637
 msgid "Unable to load internal client"
 msgstr "无法加载内部客户端"
 
-#: src/audio/engine_jack.c:633
+#: src/audio/engine_jack.c:641
 msgid "Unable to initialize client"
 msgstr "无法初始化客户端"
 
-#: src/audio/engine_jack.c:637
+#: src/audio/engine_jack.c:645
 msgid "Unable to access shared memory"
 msgstr "无法访问共享内存"
 
-#: src/audio/engine_jack.c:642
+#: src/audio/engine_jack.c:650
 msgid "Client's protocol version does not match"
 msgstr "客户端的协议版本不匹配"
 
-#: src/audio/engine_jack.c:646
+#: src/audio/engine_jack.c:654
 msgid "Backend error"
 msgstr "后端错误"
 
-#: src/audio/engine_jack.c:650
+#: src/audio/engine_jack.c:658
 msgid "Client zombie"
 msgstr "客户端瘫痪"
 
-#: src/audio/engine_jack.c:694
+#: src/audio/engine_jack.c:705
 #, c-format
 msgid "JACK: Failed to disconnect monitor out: %s"
 msgstr "JACK: 未能断开监视器输出: %s"
 
-#: src/audio/engine_jack.c:743
+#: src/audio/engine_jack.c:754
 msgid "JACK: No physical playback ports found"
 msgstr ""
 
-#: src/audio/engine_jack.c:757
+#: src/audio/engine_jack.c:768
 #, c-format
 msgid "JACK: Failed to connect monitor output [%s]: %s"
 msgstr "JACK: 未能连接监视器输出 [%s]: %s"
 
-#: src/audio/engine_jack.c:758
+#: src/audio/engine_jack.c:769
 msgid "left"
 msgstr ""
 
-#: src/audio/engine_jack.c:758
+#: src/audio/engine_jack.c:769
 msgid "right"
 msgstr ""
 
-#: src/audio/engine_jack.c:816 src/gui/widgets/monitor_section.c:237
+#: src/audio/engine_jack.c:827 src/gui/widgets/monitor_section.c:237
 msgid "Failed to connect to left monitor output port"
 msgstr "未能连接到左监视器输出端口"
 
-#: src/audio/engine_jack.c:824 src/gui/widgets/monitor_section.c:246
+#: src/audio/engine_jack.c:835 src/gui/widgets/monitor_section.c:246
 msgid "Failed to connect to right monitor output port"
 msgstr "未能连接到右监视器输出端口"
 
-#: src/audio/curve.c:306
+#: src/audio/curve.c:308
 msgid "Exponential"
 msgstr "指数的"
 
-#: src/audio/curve.c:311
+#: src/audio/curve.c:313
 msgid "Elliptic"
 msgstr "椭圆"
 
@@ -2348,60 +2352,60 @@ msgid ""
 "user manual for details."
 msgstr ""
 
-#: src/audio/track.c:327
+#: src/audio/track.c:326
 msgid "Track record"
 msgstr "音轨录制"
 
-#: src/audio/track.c:446
+#: src/audio/track.c:445
 msgid "Failed to clone modulator plugin"
 msgstr "未能克隆调制器插件"
 
-#: src/audio/track.c:475
+#: src/audio/track.c:474
 msgid "Failed to clone channel"
 msgstr "未能克隆声道"
 
-#: src/audio/track.c:854
+#: src/audio/track.c:853
 msgid "Cannot set track muted"
 msgstr "无法将音轨设为静音"
 
-#: src/audio/track.c:898
+#: src/audio/track.c:897
 msgid "Cannot set track folded"
 msgstr "无法折叠音轨"
 
-#: src/audio/track.c:1411
+#: src/audio/track.c:1409
 msgid "Cannot set track soloed"
 msgstr "无法将音轨状态设为 soloed"
 
-#: src/audio/track.c:1461
+#: src/audio/track.c:1459
 msgid "Cannot set track listened"
 msgstr "无法将音轨状态设为 listened"
 
-#: src/audio/track.c:2893 src/settings/plugin_settings.c:392
+#: src/audio/track.c:2892 src/settings/plugin_settings.c:392
 #: src/settings/plugin_settings.c:434
 msgid "Failed to rename track"
 msgstr "未能重命名音轨"
 
-#: src/audio/track.c:3253 src/audio/track.c:3298
+#: src/audio/track.c:3252 src/audio/track.c:3297
 msgid "Cannot set track comment"
 msgstr "无法设置音轨注释"
 
-#: src/audio/track.c:3334
+#: src/audio/track.c:3333
 msgid "Cannot set track icon"
 msgstr "无法设置音轨图标"
 
-#: src/audio/track.c:3569
+#: src/audio/track.c:3567
 msgid "Cannot set track enabled"
 msgstr "无法将音轨状态设为启用"
 
-#: src/audio/automation_track.c:164
+#: src/audio/automation_track.c:163
 msgid "Rec"
 msgstr "录制"
 
-#: src/audio/automation_track.c:185
+#: src/audio/automation_track.c:184
 msgid "Touch"
 msgstr "触摸"
 
-#: src/audio/automation_track.c:188
+#: src/audio/automation_track.c:187
 msgid "Latch"
 msgstr "锁存器"
 
@@ -2439,7 +2443,7 @@ msgstr ""
 "您选择的后端组合可能无法正常工作。若您希望使用 JACK，请同时将 JACK 作为您的音"
 "频和 MIDI 后端。"
 
-#: src/audio/engine.c:807
+#: src/audio/engine.c:813
 #, c-format
 msgid ""
 "The selected MIDI/audio backend was not found in the version of %s you have "
@@ -2476,11 +2480,11 @@ msgid ""
 "The exported audio contains segments louder than 0 dB (max detected %.1f dB)."
 msgstr ""
 
-#: src/audio/exporter.c:1013 src/audio/exporter.c:1020
+#: src/audio/exporter.c:1020 src/audio/exporter.c:1027
 msgid "Failed to create audio track"
 msgstr "未能创建音轨"
 
-#: src/audio/exporter.c:1052
+#: src/audio/exporter.c:1059
 msgid "Invalid time range"
 msgstr "无效时间范围"
 
@@ -2557,7 +2561,7 @@ msgstr "未能更改 BPM"
 msgid "Invalid value"
 msgstr "无效值"
 
-#: src/audio/recording_manager.c:145
+#: src/audio/recording_manager.c:144
 msgid "Failed to create recorded regions"
 msgstr "未能创建已录制区域"
 
@@ -2651,67 +2655,67 @@ msgstr "%s输入"
 msgid "PortAudio Error: %s"
 msgstr "Portaudio错误:%s"
 
-#: src/audio/tracklist.c:1297
+#: src/audio/tracklist.c:1295
 msgid "No file was found"
 msgstr "未找到文件"
 
-#: src/audio/tracklist.c:1324
+#: src/audio/tracklist.c:1322
 #, c-format
 msgid "Unsupported file type %s"
 msgstr "不支持的文件类型%s"
 
-#: src/audio/tracklist.c:1340
+#: src/audio/tracklist.c:1338
 msgid "This MIDI file contains no data"
 msgstr ""
 
-#: src/audio/tracklist.c:1357
+#: src/audio/tracklist.c:1355
 msgid "Can only drop 1 file at a time on existing tracks"
 msgstr "一次只能在现有轨道上放置 1 个文件"
 
-#: src/audio/tracklist.c:1371
+#: src/audio/tracklist.c:1369
 msgid "Can only drop MIDI files on MIDI/instrument tracks"
 msgstr "只能在 MIDI/乐器轨道上放下 MIDI 文件"
 
-#: src/audio/tracklist.c:1381
+#: src/audio/tracklist.c:1379
 #, c-format
 msgid ""
 "This MIDI file contains %d tracks. It cannot be dropped into an existing "
 "track"
 msgstr ""
 
-#: src/audio/tracklist.c:1396
+#: src/audio/tracklist.c:1394
 msgid "Can only drop audio files on audio tracks"
 msgstr "只能将音频文件拖放到音频轨道上"
 
-#: src/audio/tracklist.c:1457
+#: src/audio/tracklist.c:1455
 msgid "Failed to create arranger objects"
 msgstr "未能创建编曲对象"
 
-#: src/audio/tracklist.c:1531
+#: src/audio/tracklist.c:1529
 msgid "Failed to move tracks after copying or moving inside folder"
 msgstr "在将音轨复制或移入文件夹后，未能移动它们"
 
-#: src/audio/tracklist.c:1609
+#: src/audio/tracklist.c:1607
 msgid "Failed to copy tracks inside"
 msgstr "未能将音轨复制进去"
 
-#: src/audio/tracklist.c:1651
+#: src/audio/tracklist.c:1649
 msgid "Failed to copy track inside"
 msgstr "未能复制内部音轨"
 
-#: src/audio/tracklist.c:1692
+#: src/audio/tracklist.c:1690
 msgid "Failed to copy tracks"
 msgstr "未能复制音轨"
 
-#: src/audio/tracklist.c:1717
+#: src/audio/tracklist.c:1715
 msgid "Cannot drag folder into itself"
 msgstr ""
 
-#: src/audio/tracklist.c:1735 src/audio/tracklist.c:1779
+#: src/audio/tracklist.c:1733 src/audio/tracklist.c:1777
 msgid "Failed to move track inside folder"
 msgstr "未能将音轨移入文件夹"
 
-#: src/audio/tracklist.c:1820
+#: src/audio/tracklist.c:1818
 msgid "Failed to move tracks"
 msgstr "未能移动音轨"
 
@@ -2730,7 +2734,7 @@ msgstr ""
 msgid "Macro CV Out %d"
 msgstr ""
 
-#: src/audio/channel.c:1203 src/plugins/carla_native_plugin.c:1154
+#: src/audio/channel.c:1195 src/plugins/carla_native_plugin.c:1154
 msgid "MIDI out"
 msgstr "MIDI Out"
 
@@ -2748,12 +2752,12 @@ msgstr "主页"
 msgid "Desktop"
 msgstr "桌面"
 
-#: src/gui/backend/tracklist_selections.c:706
+#: src/gui/backend/tracklist_selections.c:705
 #, c-format
 msgid "Failed to clone track '%s'"
 msgstr "未能克隆音轨 '%s'"
 
-#: src/gui/backend/tracklist_selections.c:744
+#: src/gui/backend/tracklist_selections.c:743
 msgid "Failed to paste tracks"
 msgstr "粘贴音轨失败"
 
@@ -2770,12 +2774,12 @@ msgstr "已保存插件预设。"
 msgid "Plugin preset loaded."
 msgstr "已加载插件预设。"
 
-#: src/gui/backend/arranger_selections.c:2403
+#: src/gui/backend/arranger_selections.c:2402
 #, fuzzy
 msgid "Failed to add region"
 msgstr "未能重做"
 
-#: src/gui/backend/arranger_selections.c:2440
+#: src/gui/backend/arranger_selections.c:2439
 msgid "Failed to paste selections"
 msgstr "无法粘贴所选"
 
@@ -3132,7 +3136,7 @@ msgstr "立体声输出"
 #: src/gui/widgets/track_filter_popover.c:176
 #: src/gui/widgets/item_factory.c:256 src/gui/widgets/item_factory.c:792
 #: src/gui/widgets/item_factory.c:852 src/gui/widgets/item_factory.c:876
-#: src/gui/widgets/dialogs/project_assistant.c:598
+#: src/gui/widgets/dialogs/project_assistant.c:599
 #: resources/ui/create_project_dialog.ui:31
 #: resources/ui/arranger_object_info_dialog.ui:18
 #: resources/ui/port_info_dialog.ui:18
@@ -3350,7 +3354,7 @@ msgstr ""
 msgid "Unfold"
 msgstr ""
 
-#: src/gui/widgets/track.c:665 src/gui/widgets/arranger.c:2399
+#: src/gui/widgets/track.c:665 src/gui/widgets/arranger.c:2425
 #: resources/ui/string_entry_dialog.ui:23
 msgid "Marker name"
 msgstr "标记名称"
@@ -3511,7 +3515,7 @@ msgstr "加载预设"
 msgid "_Load"
 msgstr ""
 
-#: src/gui/widgets/plugin_properties_expander.c:153 src/plugins/plugin.c:478
+#: src/gui/widgets/plugin_properties_expander.c:153 src/plugins/plugin.c:476
 #: src/plugins/plugin_gtk.c:156
 msgid "Failed to apply preset"
 msgstr "未能应用预设"
@@ -3547,133 +3551,133 @@ msgstr ""
 msgid "Load preset"
 msgstr "加载预设"
 
-#: src/gui/widgets/arranger.c:1374
+#: src/gui/widgets/arranger.c:1402
 #, fuzzy
 msgid "Create Object"
 msgstr "创建项目"
 
-#: src/gui/widgets/arranger.c:1378
+#: src/gui/widgets/arranger.c:1406
 #, fuzzy
 msgid "Create"
 msgstr "创建(_C)"
 
-#: src/gui/widgets/arranger.c:1698 src/gui/widgets/arranger.c:1716
-#: src/gui/widgets/arranger.c:1761 src/gui/widgets/arranger.c:1827
-#: src/gui/widgets/arranger.c:1846
+#: src/gui/widgets/arranger.c:1726 src/gui/widgets/arranger.c:1744
+#: src/gui/widgets/arranger.c:1789 src/gui/widgets/arranger.c:1855
+#: src/gui/widgets/arranger.c:1874
 msgid "Failed to move selection"
 msgstr "未能移动所选"
 
-#: src/gui/widgets/arranger.c:1780 src/gui/widgets/arranger.c:4154
+#: src/gui/widgets/arranger.c:1808 src/gui/widgets/arranger.c:4178
 msgid "Failed to move chords"
 msgstr "未能移动和弦"
 
-#: src/gui/widgets/arranger.c:2094 src/gui/widgets/timeline_arranger.c:342
+#: src/gui/widgets/arranger.c:2122 src/gui/widgets/timeline_arranger.c:342
 #, fuzzy
 msgid "Failed to create region"
 msgstr "未能创建插件"
 
-#: src/gui/widgets/arranger.c:2429
+#: src/gui/widgets/arranger.c:2455
 msgid "Automation value"
 msgstr "自动值"
 
-#: src/gui/widgets/arranger.c:2454
+#: src/gui/widgets/arranger.c:2480
 msgid "Cannot resize because the selection contains objects without length"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:2479
+#: src/gui/widgets/arranger.c:2505
 msgid ""
 "Cannot resize because the selection contains a mix of looped and unloopable "
 "objects"
 msgstr ""
 
-#: src/gui/widgets/arranger.c:3702
+#: src/gui/widgets/arranger.c:3726
 msgid "Failed to delete selection"
 msgstr "未能删除所选"
 
-#: src/gui/widgets/arranger.c:3726 src/gui/widgets/arranger.c:4324
+#: src/gui/widgets/arranger.c:3750 src/gui/widgets/arranger.c:4348
 msgid "Failed to edit selection"
 msgstr "未能编辑所选"
 
-#: src/gui/widgets/arranger.c:3775
+#: src/gui/widgets/arranger.c:3799
 msgid "Failed to move automation"
 msgstr "未能移动包络线"
 
-#: src/gui/widgets/arranger.c:3798
+#: src/gui/widgets/arranger.c:3822
 msgid "Failed to duplicate automation"
 msgstr "未能重复包络线"
 
-#: src/gui/widgets/arranger.c:3819 src/gui/widgets/arranger.c:4197
-#: src/gui/widgets/arranger.c:4642
+#: src/gui/widgets/arranger.c:3843 src/gui/widgets/arranger.c:4221
+#: src/gui/widgets/arranger.c:4665
 msgid "Failed to create objects"
 msgstr "未能创建对象"
 
-#: src/gui/widgets/arranger.c:3839
+#: src/gui/widgets/arranger.c:3863
 msgid "Failed to fill automation"
 msgstr "未能填充包络线"
 
-#: src/gui/widgets/arranger.c:3869 src/gui/widgets/arranger.c:3914
-#: src/gui/widgets/arranger.c:3935 src/gui/widgets/timeline_arranger.c:922
+#: src/gui/widgets/arranger.c:3893 src/gui/widgets/arranger.c:3938
+#: src/gui/widgets/arranger.c:3959 src/gui/widgets/timeline_arranger.c:922
 msgid "Failed to edit selections"
 msgstr "未能编辑所选"
 
-#: src/gui/widgets/arranger.c:3966 src/gui/widgets/arranger.c:3988
+#: src/gui/widgets/arranger.c:3990 src/gui/widgets/arranger.c:4012
 msgid "Failed to resize objects"
 msgstr "未能调整对象大小"
 
-#: src/gui/widgets/arranger.c:3998 src/gui/widgets/arranger.c:4044
+#: src/gui/widgets/arranger.c:4022 src/gui/widgets/arranger.c:4068
 msgid "Failed to move MIDI notes"
 msgstr "未能移动 MIDI 音符"
 
-#: src/gui/widgets/arranger.c:4067
+#: src/gui/widgets/arranger.c:4091
 msgid "Failed to duplicate MIDI notes"
 msgstr "未能重复 MIDI 音符"
 
-#: src/gui/widgets/arranger.c:4088
+#: src/gui/widgets/arranger.c:4112
 msgid "Failed to create MIDI notes"
 msgstr "未能创建 MIDI 音符"
 
-#: src/gui/widgets/arranger.c:4177
+#: src/gui/widgets/arranger.c:4201
 msgid "Failed to duplicate chords"
 msgstr "未能重复和弦"
 
-#: src/gui/widgets/arranger.c:4264 src/gui/widgets/arranger.c:4528
+#: src/gui/widgets/arranger.c:4288 src/gui/widgets/arranger.c:4551
 msgid "Failed resizing selection"
 msgstr "未能调整选择大小"
 
-#: src/gui/widgets/arranger.c:4357
+#: src/gui/widgets/arranger.c:4380
 msgid "Failed to edit timeline objects"
 msgstr "未能编辑时间线对象"
 
-#: src/gui/widgets/arranger.c:4378 src/gui/widgets/arranger.c:4399
+#: src/gui/widgets/arranger.c:4401 src/gui/widgets/arranger.c:4422
 msgid "Failed to resize timeline objects"
 msgstr "未能调整时间线对象的大小"
 
-#: src/gui/widgets/arranger.c:4419
+#: src/gui/widgets/arranger.c:4442
 msgid "Failed to resize selection"
 msgstr "未能调整选择的大小"
 
-#: src/gui/widgets/arranger.c:4440
+#: src/gui/widgets/arranger.c:4463
 msgid "Failed setting fade in position"
 msgstr "设置淡入位置失败"
 
-#: src/gui/widgets/arranger.c:4461 src/gui/widgets/arranger.c:4489
-#: src/gui/widgets/arranger.c:4508
+#: src/gui/widgets/arranger.c:4484 src/gui/widgets/arranger.c:4512
+#: src/gui/widgets/arranger.c:4531
 msgid "Failed resizing selections"
 msgstr "未能调整对象大小"
 
-#: src/gui/widgets/arranger.c:4584
+#: src/gui/widgets/arranger.c:4607
 msgid "Failed to move objects"
 msgstr "未能移动对象"
 
-#: src/gui/widgets/arranger.c:4621
+#: src/gui/widgets/arranger.c:4644
 msgid "Failed to link or copy selection"
 msgstr "未能链接或复制所选"
 
-#: src/gui/widgets/arranger.c:4679
+#: src/gui/widgets/arranger.c:4702
 msgid "Failed to split selection"
 msgstr "未能分割所选"
 
-#: src/gui/widgets/arranger.c:4690
+#: src/gui/widgets/arranger.c:4713
 #, c-format
 msgid "%s name"
 msgstr ""
@@ -3962,7 +3966,7 @@ msgstr "筛选到的MIDI通道"
 msgid "Mono"
 msgstr ""
 
-#: src/gui/widgets/track_input_expander.c:643 src/plugins/plugin.c:298
+#: src/gui/widgets/track_input_expander.c:643 src/plugins/plugin.c:296
 msgid "Gain"
 msgstr "增益"
 
@@ -4041,19 +4045,19 @@ msgstr ""
 msgid "Peak"
 msgstr "峰值"
 
-#: src/gui/widgets/zoom_buttons.c:62
+#: src/gui/widgets/zoom_buttons.c:56
 msgid "Zoom In"
 msgstr "放大"
 
-#: src/gui/widgets/zoom_buttons.c:63
+#: src/gui/widgets/zoom_buttons.c:57
 msgid "Zoom Out"
 msgstr "缩小"
 
-#: src/gui/widgets/zoom_buttons.c:65
+#: src/gui/widgets/zoom_buttons.c:59
 msgid "Original Size"
 msgstr "原始大小"
 
-#: src/gui/widgets/zoom_buttons.c:66
+#: src/gui/widgets/zoom_buttons.c:60
 msgid "Best Fit"
 msgstr "最佳匹配"
 
@@ -4287,17 +4291,17 @@ msgid "N/A"
 msgstr "N/A"
 
 #: src/gui/widgets/item_factory.c:854
-#: src/gui/widgets/dialogs/project_assistant.c:599
+#: src/gui/widgets/dialogs/project_assistant.c:600
 msgid "Template Name"
 msgstr "模板名称"
 
 #: src/gui/widgets/item_factory.c:859
-#: src/gui/widgets/dialogs/project_assistant.c:608
+#: src/gui/widgets/dialogs/project_assistant.c:609
 msgid "Path"
 msgstr "路径"
 
 #: src/gui/widgets/item_factory.c:865
-#: src/gui/widgets/dialogs/project_assistant.c:618
+#: src/gui/widgets/dialogs/project_assistant.c:619
 msgid "Last Modified"
 msgstr "上次修改"
 
@@ -4317,7 +4321,7 @@ msgstr "未能连接 send"
 msgid "OK"
 msgstr "OK"
 
-#: src/gui/widgets/main_notebook.c:128
+#: src/gui/widgets/main_notebook.c:132
 msgid "Scenes (Live View)"
 msgstr ""
 
@@ -5001,24 +5005,24 @@ msgstr "一个高度自动化且直观的数字音频工作站"
 msgid "<File not found>"
 msgstr "<未找到文件>"
 
-#: src/gui/widgets/dialogs/project_assistant.c:128
+#: src/gui/widgets/dialogs/project_assistant.c:129
 #: resources/ui/project_assistant.ui:105
 msgid "_Open Selected"
 msgstr "打开所选(_O)"
 
-#: src/gui/widgets/dialogs/project_assistant.c:134
+#: src/gui/widgets/dialogs/project_assistant.c:135
 msgid "_Create"
 msgstr "创建(_C)"
 
-#: src/gui/widgets/dialogs/project_assistant.c:464
+#: src/gui/widgets/dialogs/project_assistant.c:465
 msgid "No project selected"
 msgstr "未选中项目"
 
-#: src/gui/widgets/dialogs/project_assistant.c:479
+#: src/gui/widgets/dialogs/project_assistant.c:480
 msgid "Select Project File"
 msgstr "选择项目文件"
 
-#: src/gui/widgets/dialogs/project_assistant.c:714
+#: src/gui/widgets/dialogs/project_assistant.c:715
 msgid "Blank project"
 msgstr "空白项目"
 
@@ -5139,46 +5143,46 @@ msgstr "已扫描AU插件"
 msgid "Skipped AU plugin at %u"
 msgstr "跳过%u处的AU插件"
 
-#: src/plugins/lv2_plugin.c:1736
+#: src/plugins/lv2_plugin.c:1733
 #, c-format
 msgid "Failed to get LV2 plugin from URI <%s>"
 msgstr "无法从 URI <%s> 获得 LV2 插件"
 
-#: src/plugins/lv2_plugin.c:1989
+#: src/plugins/lv2_plugin.c:1986
 #, c-format
 msgid "Could not find UI by URI <%s>"
 msgstr ""
 
-#: src/plugins/lv2_plugin.c:2317
+#: src/plugins/lv2_plugin.c:2314
 msgid "Failed to make temporary dir"
 msgstr "未能创建临时目录"
 
-#: src/plugins/lv2_plugin.c:2357
+#: src/plugins/lv2_plugin.c:2354
 #, c-format
 msgid "Failed to find preset with URI <%s>"
 msgstr "未能通过 URI <%s>找到预设"
 
-#: src/plugins/lv2_plugin.c:2375
+#: src/plugins/lv2_plugin.c:2372
 #, c-format
 msgid "Failed to load state from %s"
 msgstr "未能从 %s 加载状态"
 
-#: src/plugins/lv2_plugin.c:2403
+#: src/plugins/lv2_plugin.c:2400
 #, c-format
 msgid "Failed to find plugin with URI <%s>"
 msgstr "无法通过 URI <%s>找到插件"
 
-#: src/plugins/lv2_plugin.c:2425
+#: src/plugins/lv2_plugin.c:2422
 #, c-format
 msgid "Failed to dlopen %s: %s"
 msgstr "dlopen %s 失败：%s"
 
-#: src/plugins/lv2_plugin.c:2436
+#: src/plugins/lv2_plugin.c:2433
 #, c-format
 msgid "Failed to get dlinfo for %s"
 msgstr "未能获取 %s 的 dlinfo"
 
-#: src/plugins/lv2_plugin.c:2458
+#: src/plugins/lv2_plugin.c:2455
 #, c-format
 msgid ""
 "%s <%s> contains a reference to %s, which may cause issues.\n"
@@ -5187,88 +5191,88 @@ msgid ""
 "%s <%s>"
 msgstr ""
 
-#: src/plugins/lv2_plugin.c:2486
+#: src/plugins/lv2_plugin.c:2483
 msgid "Failed to create or init ports and parameters"
 msgstr "未能创建或初始化端口和参数"
 
-#: src/plugins/lv2_plugin.c:2511
+#: src/plugins/lv2_plugin.c:2508
 #, c-format
 msgid "Required feature %s is not supported"
 msgstr "不支持所需的功能 %s"
 
-#: src/plugins/lv2_plugin.c:2588
+#: src/plugins/lv2_plugin.c:2585
 msgid "Failed checking whether lv2 plugin UI is external"
 msgstr ""
 
-#: src/plugins/lv2_plugin.c:2716
+#: src/plugins/lv2_plugin.c:2713
 #, c-format
 msgid "Required option %s is not supported"
 msgstr "不支持所需的选项 %s"
 
-#: src/plugins/lv2_plugin.c:2769
+#: src/plugins/lv2_plugin.c:2766
 msgid "lilv_plugin_instantiate() failed"
 msgstr "lilv_plugin_instantiate() 失败"
 
-#: src/plugins/lv2_plugin.c:3271 src/plugins/carla_native_plugin.c:623
+#: src/plugins/lv2_plugin.c:3268 src/plugins/carla_native_plugin.c:623
 msgid "Default bank"
 msgstr "默认bank"
 
-#: src/plugins/lv2_plugin.c:3274 src/plugins/carla_native_plugin.c:626
+#: src/plugins/lv2_plugin.c:3271 src/plugins/carla_native_plugin.c:626
 msgid "Init"
 msgstr "初始化"
 
-#: src/plugins/lv2_plugin.c:3304
+#: src/plugins/lv2_plugin.c:3301
 msgid "Unnamed bank"
 msgstr "未命名bank"
 
-#: src/plugins/plugin.c:235
+#: src/plugins/plugin.c:233
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
 msgstr "插件 '%s' 实例化失败。禁用中..."
 
-#: src/plugins/plugin.c:277
+#: src/plugins/plugin.c:275
 msgid "Enabled"
 msgstr "已启用"
 
-#: src/plugins/plugin.c:280
+#: src/plugins/plugin.c:278
 msgid "Enables or disables the plugin"
 msgstr "启用/禁用插件"
 
-#: src/plugins/plugin.c:300
+#: src/plugins/plugin.c:298
 msgid "Plugin gain"
 msgstr "插件增益"
 
-#: src/plugins/plugin.c:547
+#: src/plugins/plugin.c:545
 msgid "Failed to get Carla plugin"
 msgstr ""
 
-#: src/plugins/plugin.c:562
+#: src/plugins/plugin.c:560
 msgid "Failed to get LV2 plugin"
 msgstr "获取 LV2 插件失败"
 
-#: src/plugins/plugin.c:1035
+#: src/plugins/plugin.c:1033
 #, c-format
 msgid " - bridge: %s"
 msgstr ""
 
-#: src/plugins/plugin.c:1043
+#: src/plugins/plugin.c:1041
 msgid "instrument"
 msgstr "乐器"
 
-#: src/plugins/plugin.c:1552
+#: src/plugins/plugin.c:1550
 msgid "Carla plugin instantiation failed"
 msgstr "Carla 插件实例化失败"
 
-#: src/plugins/plugin.c:1563 src/plugins/plugin.c:2176
+#: src/plugins/plugin.c:1561 src/plugins/plugin.c:2174
 #, fuzzy
 msgid "Failed saving Carla plugin state"
 msgstr "未能加载 Carla 插件状态"
 
-#: src/plugins/plugin.c:1585
+#: src/plugins/plugin.c:1583
 msgid "LV2 plugin instantiation failed"
 msgstr "LV2 插件实例化失败"
 
-#: src/plugins/plugin.c:1853
+#: src/plugins/plugin.c:1851
 #, c-format
 msgid ""
 "%s <%s> has a deprecated UI type:\n"
@@ -5278,7 +5282,7 @@ msgid ""
 "  %s <%s>"
 msgstr ""
 
-#: src/plugins/plugin.c:2205
+#: src/plugins/plugin.c:2203
 #, c-format
 msgid "Failed to create plugin clone for %s"
 msgstr "未能为 %s 创建插件克隆"
@@ -7770,180 +7774,177 @@ msgid "DAW"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:54
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
 msgid "Changed:"
 msgstr "已更改："
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
-msgid "Don't attempt to create plugin state directories when loading projects"
+msgid "Create standard project directories when creating a new blank project"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+msgid ""
+"Update Chinese (Simplified), Catalan, French, Swedish, Hungarian, Spanish, "
+"German, Portuguese (Brazil), Russian, English (Middle), Portuguese "
+"translations"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+msgid "Re-generate bundled plugins with latest faust"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
+msgid "Be more specific in some undoable action strings"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+msgid "Don't block when showing error messages"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
+msgid "Fixed:"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+msgid "Fix error when saving a project with a plugin without outputs"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+msgid "Fix issues with automation track processing"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+msgid "Don't attempt to create plugin state directories when loading projects"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 #, fuzzy
 msgid "Add more error checking to various operations"
 msgstr "为文件导出添加更多的错误检查"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
 msgid "Include Carla and GTK versions in debug info"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
-msgid "Fixed:"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
 msgid "Fix being unable to export stems"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
 #, fuzzy
 msgid "Fix multiple popups being shown when exporting stems"
 msgstr "导出时使用的标题。"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
 msgid "Fix removing inserts not being undoable"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
 msgid ""
 "Fix plugin states being deleted from the main project when saving backups"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
 msgid "Fix error when enabling/disabling MIDI bindings"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
 msgid ""
 "Fix incorrectly throwing an error sometimes when processing the sample "
 "processor"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
 msgid "Fix error when moving a region from the last lane"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
 msgid "Added:"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
 msgid "Implement best-fit zoom in editor"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
 msgid "Add \"Rename\" context menu option on applicable timeline objects"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
 msgid "Implement Ableton-style panning/zooming in the ruler"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
 msgid "Implement middle-click (or alt-click) panning in arrangers"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
 msgid "Minor UI improvements (widget paddings and sizes)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
 msgid "File browser: allow browsing volumes without associated drives"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
 #, fuzzy
 msgid "Minor optimizations"
 msgstr "小调五声音阶"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid "Redesign snap/grid menu"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid "Require C11 thread support on GNU/Linux"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
 msgid "Fix arrangers sometimes not taking off-screen objects into account"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
 msgid "Fix minor memory leak"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
 msgid "Fix error when undoing duplication of automation points"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
 msgid ""
 "Fix some functions that were supposed to be optimized not getting optimized"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
 msgid "Use list view for control ports in the plugin inspector (fixes lags)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
 msgid ""
 "Don't use cairo to draw automation regions (fixes lags on large projects)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
 msgid "Don't use demo template on Windows on first run (currently broken)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
 msgid "Don't save undo history with backups (makes saving faster)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 msgid ""
 "Write audio pool files in parallel (makes saving faster on projects with "
 "lots of audio files)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
-msgid "Add \"View Info\" context menu option to timeline and automation editor"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
-msgid "Reorganize Direct Out submenu in track context menu"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
-msgid ""
-"Only allow pasting all the copied info into the selected track instead of "
-"spreading the paste across multiple tracks"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
-msgid "Fix \"View Info\" in piano roll doing \"Duplicate\" instead"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
-msgid "Fix object info dialog contents being invisible"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
-msgid "Fix incorrectly allowing to set a track's output to itself"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
-msgid "Fix copy-paste being broken in arrangers"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
-msgid ""
-"Fix incorrectly allowing to copy-paste unclonable objects like the start/end "
-"markers"
-msgstr ""
+#~ msgid "Change BPM"
+#~ msgstr "更改BPM"
 
 #~ msgid "Direct out"
 #~ msgstr "直接输出"

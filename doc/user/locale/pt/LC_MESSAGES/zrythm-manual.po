@@ -12,18 +12,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-10-03 21:09+0900\n"
+"POT-Creation-Date: 2023-02-09 19:06+0900\n"
 "PO-Revision-Date: 2023-01-10 23:59+0000\n"
 "Last-Translator: ssantos <ssantos@web.de>\n"
-"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/pt/>\n"
 "Language: pt\n"
+"Language-Team: Portuguese <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/pt/>\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
-"Generated-By: Babel 2.10.3\n"
+"Generated-By: Babel 2.11.0\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
@@ -3825,6 +3824,77 @@ msgstr ""
 "Para projetos grandes, pode demorar um pouco para gerar o gráfico PNG e a "
 "imagem resultante será extremamente grande."
 
+#: ../../getting-started/faq.rst:9
+msgid "Frequently Asked Questions"
+msgstr ""
+
+#: ../../getting-started/faq.rst:12 ../../zrythm-interface/main-toolbar.rst:84
+msgid "About"
+msgstr ""
+
+#: ../../getting-started/faq.rst:15
+msgid "What is Zrythm?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:17
+msgid ""
+"Zrythm is software for composing, recording, editing, arranging, mixing and "
+"mastering audio and MIDI data. Such software is commonly referred to as "
+"digital audio workstations (DAWs). Zrythm provides all the tools needed to "
+"create entire tracks."
+msgstr ""
+
+#: ../../getting-started/faq.rst:61
+msgid "Is it free?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:63
+msgid ""
+"Zrythm is free as in *freedom* (:term:`Free software`). If you purchase a "
+"binary from us, there is a cost involved but you can also get Zrythm for "
+"free as in *free beer* if you build it yourself or get it from a "
+"distribution."
+msgstr ""
+
+#: ../../getting-started/faq.rst:69
+msgid "When will v1 be released?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:71
+msgid "When all bugs and features marked as `v1rc` are completed:"
+msgstr ""
+
+#: ../../getting-started/faq.rst:73
+msgid "https://todo.sr.ht/~alextee/zrythm-feature"
+msgstr ""
+
+#: ../../getting-started/faq.rst:74
+msgid "https://todo.sr.ht/~alextee/zrythm-bug"
+msgstr ""
+
+#: ../../getting-started/faq.rst:77
+#, fuzzy
+msgid "Usage"
+msgstr "Intervalo"
+
+#: ../../getting-started/faq.rst:80
+msgid "How do I add external plugins?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:82
+msgid ""
+"See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and :ref:"
+"`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
+msgstr ""
+
+#: ../../getting-started/faq.rst:86
+msgid "How do I import an audio/MIDI file?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:88
+msgid "See :ref:`plugins-files/audio-midi-files/file-browser:Importing Files`."
+msgstr ""
+
 #: ../../getting-started/getting-plugins.rst:9
 msgid "Getting Plugins, Instruments and Samples"
 msgstr "Obter Suplementos, Instrumentos e Amostras"
@@ -4043,18 +4113,30 @@ msgid "The installers also include bundled plugins."
 msgstr "Os instaladores também incluem suplementos empacotados."
 
 #: ../../getting-started/installation.rst:28
+#: ../../plugins-files/plugins/scanning.rst:79
+msgid "Windows"
+msgstr "Windows"
+
+#: ../../getting-started/installation.rst:31
+msgid ""
+"On Windows, Zrythm will only work when installed in the default path. "
+"Installing Zrythm to external hard drives or setting the Zrythm user path to "
+"external hard drives is not supported."
+msgstr ""
+
+#: ../../getting-started/installation.rst:36
 msgid "Flatpak"
 msgstr "Flatpak"
 
-#: ../../getting-started/installation.rst:29
+#: ../../getting-started/installation.rst:37
 msgid "Zrythm is available on `Flathub`_ under the ID `org.zrythm.Zrythm`_."
 msgstr ""
 
-#: ../../getting-started/installation.rst:33
+#: ../../getting-started/installation.rst:41
 msgid "Distribution Repositories"
 msgstr ""
 
-#: ../../getting-started/installation.rst:34
+#: ../../getting-started/installation.rst:42
 #, fuzzy
 msgid ""
 "If Zrythm is available in your distro's repositories, you can also install "
@@ -4062,11 +4144,11 @@ msgid ""
 msgstr ""
 "Se a sua distribuição fornece um pacote Zrythm, também pode instalá-lo de lá."
 
-#: ../../getting-started/installation.rst:38
+#: ../../getting-started/installation.rst:46
 msgid "Building from Source"
 msgstr ""
 
-#: ../../getting-started/installation.rst:39
+#: ../../getting-started/installation.rst:47
 #, fuzzy
 msgid ""
 "You can build Zrythm from source, either using a `source distribution "
@@ -4077,7 +4159,7 @@ msgstr ""
 "fonte, utilizando um tarball de distribuição de código fonte <https://www."
 "zrythm.org/releases/>`_ ou `git <https://git.zrythm.org/cgit/zrythm/>`_."
 
-#: ../../getting-started/installation.rst:43
+#: ../../getting-started/installation.rst:51
 #, fuzzy
 msgid ""
 "See ``INSTALL.rst`` in the source distribution for installation instructions."
@@ -6527,10 +6609,6 @@ msgid ""
 msgstr ""
 "Pode ignorar este comportamento a passar :envvar:`VST_PATH` e :envvar:"
 "`VST3_PATH`."
-
-#: ../../plugins-files/plugins/scanning.rst:79
-msgid "Windows"
-msgstr "Windows"
 
 #: ../../plugins-files/plugins/scanning.rst:80
 #, fuzzy
@@ -9338,10 +9416,6 @@ msgid ""
 msgstr ""
 "O menu Ajuda contém ligações para reportar bugs, doar, conversar e outras "
 "ligações úteis."
-
-#: ../../zrythm-interface/main-toolbar.rst:84
-msgid "About"
-msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:80
 msgid ""
