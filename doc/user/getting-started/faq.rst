@@ -16,7 +16,7 @@ What is Zrythm?
 
 Zrythm is software for composing, recording, editing, arranging,
 mixing and mastering audio and MIDI data. Such software is
-commonly referred to as digital audio workstations (DAWs).
+commonly referred to as a digital audio workstation (DAW).
 Zrythm provides all the tools needed to create entire tracks.
 
 ..
