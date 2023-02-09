@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 copy_files = [
+  'faq.rst',
   'getting-plugins.rst',
   'intro.rst',
   'installation.rst',
