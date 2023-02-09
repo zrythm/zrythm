@@ -1,40 +1,40 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the zrythm package.
-# gnu-ewm <gnu.ewm@protonmail.com>, 2021, 2022.
+# gnu-ewm <gnu.ewm@protonmail.com>, 2021, 2022, 2023.
 # kakiremora <piotrek.pastuszak2003@gmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-01-11 23:38+0900\n"
-"PO-Revision-Date: 2022-05-14 15:17+0000\n"
+"PO-Revision-Date: 2023-02-04 05:21+0000\n"
 "Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/zrythm/pl/"
-">\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/zrythm/pl/>"
+"\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.13-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
-msgstr ""
+msgstr "Chromatyczne"
 
 #: inc/schemas/audio/scale.h:94 inc/audio/scale.h:128
 msgid "Major"
-msgstr ""
+msgstr "Dur"
 
 #: inc/schemas/audio/scale.h:95 inc/audio/scale.h:129
 msgid "Minor"
-msgstr ""
+msgstr "Minor"
 
 #: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
 msgid "Ionian"
-msgstr ""
+msgstr "Jońska"
 
 #: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
 msgid "Dorian"
@@ -383,7 +383,7 @@ msgstr ""
 #: src/gui/widgets/channel.c:676 resources/ui/fader_buttons.ui:53
 #: build/data/org.zrythm.Zrythm.gschema.xml:315
 msgid "Mute"
-msgstr ""
+msgstr "Wycisz"
 
 #: inc/utils/gtk.h:76 src/gui/widgets/track.c:320 src/gui/widgets/track.c:808
 #: src/gui/widgets/channel.c:683
@@ -422,13 +422,13 @@ msgstr ""
 #: src/gui/widgets/track_properties_expander.c:124
 #: build/data/org.zrythm.Zrythm.gschema.xml:619
 msgid "Instrument"
-msgstr ""
+msgstr "Instrument"
 
 #: inc/audio/track.h:167 src/audio/region.c:508 src/gui/widgets/bot_bar.c:452
 #: resources/ui/file_browser_filters.ui:10
 #: build/data/org.zrythm.Zrythm.gschema.xml:1140
 msgid "Audio"
-msgstr ""
+msgstr "Dźwięk"
 
 #: inc/audio/track.h:168 src/project.c:685
 #: src/gui/widgets/route_target_selector_popover.c:142
@@ -437,7 +437,7 @@ msgstr ""
 
 #: inc/audio/track.h:169 src/audio/region.c:514
 msgid "Chord"
-msgstr ""
+msgstr "Akord"
 
 #: inc/audio/track.h:171 src/audio/tempo_track.c:94
 #: src/gui/widgets/automatable_selector_popover.c:320
@@ -682,7 +682,7 @@ msgstr ""
 #. TRANSLATORS: Pan algorithm
 #: inc/audio/pan.h:57 src/utils/ui.c:628 src/audio/curve.c:302
 msgid "Linear"
-msgstr ""
+msgstr "Liniowy"
 
 #: inc/audio/pan.h:58 src/utils/ui.c:629
 msgid "Square Root"
@@ -1990,13 +1990,13 @@ msgstr ""
 
 #: src/utils/gtk.c:1230 src/gui/widgets/right_dock_edge.c:100
 msgid "Plugin Browser"
-msgstr ""
+msgstr "Przeglądarka wtyczek"
 
 #: src/utils/gtk.c:1232 src/gui/widgets/right_dock_edge.c:109
 #: src/gui/widgets/right_dock_edge.c:138
 #: src/gui/widgets/file_browser_window.c:21
 msgid "File Browser"
-msgstr ""
+msgstr "Przeglądarka plików"
 
 #: src/utils/gtk.c:1236 src/gui/widgets/right_dock_edge.c:127
 msgid "Chord Preset Browser"
@@ -2027,15 +2027,15 @@ msgstr ""
 #: src/utils/dialogs.c:40 src/gui/widgets/project_toolbar.c:42
 #: resources/ui/project_assistant.ui:32
 msgid "Open Project"
-msgstr ""
+msgstr "Otwórz projekt"
 
 #: src/utils/dialogs.c:41 src/gui/widgets/dialogs/project_assistant.c:480
 msgid "_Open"
-msgstr ""
+msgstr "_Otwórz"
 
 #: src/utils/dialogs.c:59
 msgid "Overwrite Plugin"
-msgstr ""
+msgstr "Zastąpienie wtyczki"
 
 #: src/utils/dialogs.c:60 src/audio/clip.c:661
 #: src/gui/widgets/dialogs/create_project_dialog.c:124
@@ -2048,7 +2048,7 @@ msgstr "_OK"
 
 #: src/utils/dialogs.c:65
 msgid "A plugin already exists at the selected slot. Overwrite it?"
-msgstr ""
+msgstr "Wtyczka już istnieje w wybranym gnieździe. Czy chcesz ją zastąpić?"
 
 #: src/utils/dialogs.c:82
 msgid "Error instantiating plugin. Please see log for details."
@@ -2197,7 +2197,7 @@ msgstr ""
 
 #: src/audio/marker_track.c:42
 msgid "Markers"
-msgstr ""
+msgstr "Znaczniki"
 
 #: src/audio/marker_track.c:60 src/gui/widgets/timeline_selection_info.c:228
 #: resources/ui/quantize_dialog.ui:62
@@ -2491,7 +2491,7 @@ msgstr ""
 #: src/audio/chord_track.c:40 src/settings/chord_preset.c:47
 #: resources/ui/inspector_chord.ui:7
 msgid "Chords"
-msgstr ""
+msgstr "Akordy"
 
 #: src/audio/clip.c:425
 #, fuzzy, c-format
@@ -2630,7 +2630,7 @@ msgstr ""
 #: src/audio/engine_pa.c:226
 #, c-format
 msgid "PortAudio Error: %s"
-msgstr ""
+msgstr "Błąd PortAudio: %s"
 
 #: src/audio/tracklist.c:1297
 msgid "No file was found"
@@ -2871,7 +2871,7 @@ msgstr ""
 
 #: src/gui/widgets/ruler_marker.c:161 src/gui/widgets/bot_bar.c:38
 msgid "Playhead"
-msgstr ""
+msgstr "Głowica odtwarzania"
 
 #: src/gui/widgets/velocity_settings.c:78
 #, fuzzy
@@ -3107,11 +3107,11 @@ msgstr ""
 
 #: src/gui/widgets/route_target_selector.c:81
 msgid "Select channel to route signal to"
-msgstr ""
+msgstr "Wybierz kanał, do którego chcesz skierować sygnał"
 
 #: src/gui/widgets/route_target_selector.c:158
 msgid "Stereo Out"
-msgstr ""
+msgstr "Wyjście stereo"
 
 #: src/gui/widgets/event_viewer.c:538 src/gui/widgets/event_viewer.c:698
 #: src/gui/widgets/plugin_properties_expander.c:219
@@ -3259,7 +3259,7 @@ msgstr ""
 #: src/gui/widgets/track.c:303 src/gui/widgets/track.c:783
 #: src/gui/widgets/channel.c:660 resources/ui/fader_buttons.ui:40
 msgid "Solo"
-msgstr ""
+msgstr "Solo"
 
 #: src/gui/widgets/track.c:309
 msgid "Hide instrument UI"
@@ -3344,7 +3344,7 @@ msgstr ""
 
 #: src/gui/widgets/track.c:699 src/gui/widgets/channel.c:616
 msgid "_Delete Track"
-msgstr ""
+msgstr "_Usuń ścieżkę"
 
 #: src/gui/widgets/track.c:701 src/gui/widgets/channel.c:618
 msgid "_Delete Tracks"
@@ -3352,7 +3352,7 @@ msgstr ""
 
 #: src/gui/widgets/track.c:709 src/gui/widgets/channel.c:625
 msgid "_Duplicate Track"
-msgstr ""
+msgstr "_Duplikuj ścieżkę"
 
 #: src/gui/widgets/track.c:711 src/gui/widgets/channel.c:627
 msgid "_Duplicate Tracks"
@@ -3360,7 +3360,7 @@ msgstr ""
 
 #: src/gui/widgets/track.c:722
 msgid "Add Region"
-msgstr ""
+msgstr "Dodaj region"
 
 #: src/gui/widgets/track.c:727 src/gui/widgets/channel.c:634
 msgid "Hide Track"
@@ -3691,12 +3691,12 @@ msgstr ""
 #: src/gui/widgets/route_target_selector_popover.c:202
 #: src/gui/widgets/route_target_selector_popover.c:379
 msgid "No output selected"
-msgstr ""
+msgstr "Nie wybrano wyjścia"
 
 #: src/gui/widgets/route_target_selector_popover.c:215
 #, c-format
 msgid "Routing to %s"
-msgstr ""
+msgstr "Przekierowanie do %s"
 
 #: src/gui/widgets/route_target_selector_popover.c:294
 msgid "Failed to change direct out"
@@ -3708,7 +3708,7 @@ msgstr ""
 
 #: src/gui/widgets/plugin_strip_expander.c:167
 msgid "Inserts"
-msgstr ""
+msgstr "Wstawia"
 
 #: src/gui/widgets/active_hardware_mb.c:30
 #: src/gui/widgets/active_hardware_mb.c:126
@@ -3844,7 +3844,7 @@ msgstr ""
 
 #: src/gui/widgets/transport_controls.c:451 resources/ui/fader_buttons.ui:27
 msgid "Record"
-msgstr ""
+msgstr "Rejestruj"
 
 #: src/gui/widgets/transport_controls.c:452
 msgid "Record options"
@@ -3852,12 +3852,12 @@ msgstr ""
 
 #: src/gui/widgets/home_toolbar.c:45
 msgid "Redo"
-msgstr ""
+msgstr "Ponów"
 
 #: src/gui/widgets/home_toolbar.c:45
 #: build/data/org.zrythm.Zrythm.gschema.xml:1168
 msgid "Undo"
-msgstr ""
+msgstr "Cofnij"
 
 #: src/gui/widgets/home_toolbar.c:134
 msgid "Cut"
@@ -4073,7 +4073,7 @@ msgstr ""
 #: src/gui/widgets/editor_selection_info.c:60
 #: src/gui/widgets/timeline_selection_info.c:357
 msgid "No object selected"
-msgstr ""
+msgstr "Nie wybrano żadnego obiektu"
 
 #: src/gui/widgets/ports_expander.c:228 src/gui/widgets/ports_expander.c:543
 msgid "Controls"
@@ -4085,19 +4085,19 @@ msgstr ""
 
 #: src/gui/widgets/ports_expander.c:232
 msgid "Audio Ins"
-msgstr ""
+msgstr "Wejścia audio"
 
 #: src/gui/widgets/ports_expander.c:234
 msgid "Audio Outs"
-msgstr ""
+msgstr "Wyjścia audio"
 
 #: src/gui/widgets/ports_expander.c:236
 msgid "MIDI Ins"
-msgstr ""
+msgstr "Wejścia MIDI"
 
 #: src/gui/widgets/ports_expander.c:238
 msgid "MIDI Outs"
-msgstr ""
+msgstr "Wyjścia MIDI"
 
 #: src/gui/widgets/ports_expander.c:240
 msgid "CV Ins"
@@ -4646,7 +4646,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/port_selector_dialog.c:322
 msgid "Track Ports"
-msgstr ""
+msgstr "Porty ścieżek"
 
 #: src/gui/widgets/dialogs/project_progress_dialog.c:49
 #, fuzzy
@@ -6303,7 +6303,7 @@ msgstr ""
 
 #: resources/ui/clip_editor_inner.ui:29
 msgid "Select a region..."
-msgstr ""
+msgstr "Wybierz region..."
 
 #: resources/ui/splash.ui:10
 msgid "Splash"

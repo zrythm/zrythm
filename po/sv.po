@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-01-11 23:38+0900\n"
-"PO-Revision-Date: 2023-01-06 23:59+0000\n"
+"PO-Revision-Date: 2023-01-23 23:56+0000\n"
 "Last-Translator: Ivar <ivar.bjerling@protonmail.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/zrythm/sv/"
 ">\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -157,7 +157,7 @@ msgstr "Hirajoshi"
 
 #: inc/schemas/audio/scale.h:128 inc/audio/scale.h:160
 msgid "Hungarian Gypsy"
-msgstr "Ungersk Zigernare"
+msgstr "Ungersk Zigenare"
 
 #: inc/schemas/audio/scale.h:129 inc/audio/scale.h:161
 msgid "Insen"
@@ -4752,7 +4752,7 @@ msgstr "Metronom"
 
 #: src/gui/widgets/bot_bar.c:505
 msgid "Metronome options"
-msgstr "Metronomval"
+msgstr "Metronomalternativ"
 
 #. volume
 #: src/gui/widgets/bot_bar.c:515 resources/ui/file_auditioner_controls.ui:29
@@ -4867,8 +4867,8 @@ msgid ""
 "enjoy the software, please consider %sdonating%s or %sbuying an installer%s."
 msgstr ""
 "%sZrythm förlitar sig på donationer och inköp för att upprätthålla "
-"utvecklingen%s. Om du tycker om programmet kan du överväga att %s donera%s "
-"eller %s köpa ett installationsprogram%s."
+"utvecklingen%s. Om du tycker om programmet kan du överväga att %sdonera%s "
+"eller %sköpa ett installationsprogram%s."
 
 #: src/gui/widgets/dialogs/welcome_message_dialog.c:47
 msgid "Flatpak users"
@@ -5296,7 +5296,7 @@ msgstr "<Filen fanns ej>"
 #: src/gui/widgets/dialogs/project_assistant.c:128
 #: resources/ui/project_assistant.ui:105
 msgid "_Open Selected"
-msgstr "_Öppna vald"
+msgstr "_Öppna Vald"
 
 #: src/gui/widgets/dialogs/project_assistant.c:134
 msgid "_Create"
