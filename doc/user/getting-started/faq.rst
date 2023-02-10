@@ -1,5 +1,11 @@
 .. SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
    SPDX-License-Identifier: GFDL-1.3-invariants-or-later
+
+   This file incorporates work by the Audacity Team covered by
+   the Creative Commons Attribution 3.0 license (specifically,
+   the ASIO section).
+   SPDX-License-Identifier: CC-BY-3.0
+
 .. This is part of the Zrythm Manual.
    See the file index.rst for copying conditions.
 
@@ -75,6 +81,34 @@ When all bugs and features marked as `v1rc` are completed:
 
 Usage
 +++++
+
+Can I use ASIO?
+---------------
+
+*Short answer: Yes, but you have to do it yourself and you may
+not distribute the build to anyone else.*
+
+The ASIO technology was developed by German company Steinberg
+and is protected by a licensing agreement which prevents
+redistribution of its source code.
+
+Zrythm contains code under AGPL/GPL which requires all source
+code (including source code of used libraries) to be
+disclosed, and therefore it is illegal to provide
+builds with ASIO support.
+
+However, Zrythm supports the JACK and RtAudio backends, which
+optionally support ASIO. As we cannot distribute these libraries
+with ASIO support along with Zrythm, you must obtain them
+yourself (for example by building them from source with ASIO
+support) and make Zrythm use those.
+
+.. warning:: Zrythm with ASIO support is NON-DISTRIBUTABLE.
+   You may NOT copy or distribute builds including ASIO support
+   to anyone else. The build is strictly for your own personal
+   (private or commercial) use. For the same reasons, the
+   Zrythm team cannot distribute builds of Zrythm including
+   ASIO support.
 
 How do I add external plugins?
 ------------------------------
