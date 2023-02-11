@@ -16,6 +16,7 @@ project (
     'cpp_std=gnu++11',
     'b_lto=true',
     'b_lto_threads=2',
+    'wrap_mode=nofallback',
     ],
   )
 
