@@ -25,6 +25,11 @@ mixing and mastering audio and MIDI data. Such software is
 commonly referred to as a digital audio workstation (DAW).
 Zrythm provides all the tools needed to create entire tracks.
 
+How do I pronounce it?
+----------------------
+
+Zee-rhythm.
+
 ..
   How does Zrythm compare to other DAWs?
   --------------------------------------
