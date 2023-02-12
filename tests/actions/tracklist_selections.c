@@ -791,6 +791,46 @@ test_track_deletion_with_lv2_worker (void)
 }
 
 static void
+test_track_deletion_with_plugin (void)
+{
+  test_helper_zrythm_init ();
+
+  test_plugin_manager_create_tracks_from_plugin (
+    COMPRESSOR_BUNDLE, COMPRESSOR_URI, false, true, 1);
+
+  bool success;
+  success = project_save (
+    PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, NULL);
+  g_assert_true (success);
+
+  /* delete track and undo */
+  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (
+    track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+
+  tracklist_selections_action_perform_delete (
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, NULL);
+
+  success = project_save (
+    PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, NULL);
+  g_assert_true (success);
+
+  undo_manager_undo (UNDO_MANAGER, NULL);
+
+  success = project_save (
+    PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, NULL);
+  g_assert_true (success);
+
+  undo_manager_redo (UNDO_MANAGER, NULL);
+
+  success = project_save (
+    PROJECT, PROJECT->dir, 0, 0, F_NO_ASYNC, NULL);
+  g_assert_true (success);
+
+  test_helper_zrythm_cleanup ();
+}
+
+static void
 test_ins_track_deletion_w_automation (void)
 {
 #if defined(HAVE_TAL_FILTER) && defined(HAVE_NOIZE_MAKER)
@@ -2868,6 +2908,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test track deletion with plugin",
+    (GTestFunc) test_track_deletion_with_plugin);
   g_test_add_func (
     TEST_PREFIX "test no visible tracks after track deletion",
     (GTestFunc) test_no_visible_tracks_after_track_deletion);

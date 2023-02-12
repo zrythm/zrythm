@@ -1847,11 +1847,11 @@ project_idle_saved_cb (ProjectSaveData * data)
 static void
 cleanup_plugin_state_dirs (ProjectSaveData * data)
 {
-  g_debug ("cleaning plugin state dirs...");
+  g_debug (
+    "cleaning plugin state dirs%s...",
+    data->is_backup ? " for backup" : "");
 
-  GPtrArray * arr = g_ptr_array_new ();
-  plugin_get_all (
-    /* if saving backup, the temporary state dirs
+  /* if saving backup, the temporary state dirs
      * created during clone() are not needed by
      * the main project so we just check what is
      * needed from the main project and delete the
@@ -1859,8 +1859,21 @@ cleanup_plugin_state_dirs (ProjectSaveData * data)
      * if saving the main project, the newly copied
      * state dirs are used instead of the old ones,
      * so we check the cloned project and delete
-     * the rest */
-    data->is_backup ? PROJECT : data->project, arr, true);
+     * the rest
+     *
+     * that said, there is still an issue
+     * (see https://todo.sr.ht/~alextee/zrythm-bug/1047)
+     * so just don't delete any plugins in either the clone
+     * or the current/main project
+     * */
+  GPtrArray * arr = g_ptr_array_new ();
+  plugin_get_all (PROJECT, arr, true);
+  plugin_get_all (data->project, arr, true);
+  for (size_t i = 0; i < arr->len; i++)
+    {
+      Plugin * pl = (Plugin *) g_ptr_array_index (arr, i);
+      g_debug ("plugin %zu: %s", i, pl->state_dir);
+    }
 
   char * plugin_states_path = project_get_path (
     PROJECT, PROJECT_PATH_PLUGIN_STATES, F_NOT_BACKUP);
@@ -1883,16 +1896,18 @@ cleanup_plugin_state_dirs (ProjectSaveData * data)
           continue;
         }
 
+      /*g_debug ("filename to check: %s", filename);*/
+
       /* if not found in the current plugins,
        * remove the dir */
       bool found = false;
       for (size_t i = 0; i < arr->len; i++)
         {
           Plugin * pl = (Plugin *) g_ptr_array_index (arr, i);
-
           if (string_is_equal (filename, pl->state_dir))
             {
               found = true;
+              /*g_debug ("found");*/
               break;
             }
         }
