@@ -72,6 +72,8 @@ Required
 `libpanel (LGPLv3+) <https://gitlab.gnome.org/chergert/libpanel/>`_
   Dock and panel widgets
 
+Note: if you want detach support use `our fork <https://git.sr.ht/~alextee/libpanel-detach>`_ (``zrythm_detach`` branch).
+
 `lilv (ISC) <https://drobilla.net/software/lilv>`_
   LV2 host support
 
