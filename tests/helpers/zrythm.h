@@ -246,7 +246,7 @@ watch_parent (gint fd)
             {
               pid = g_array_index (pids_to_kill, guint, n);
               g_printerr ("cleaning up pid %d\n", pid);
-              kill (pid, SIGTERM);
+              kill ((__pid_t) pid, SIGTERM);
             }
 
           g_array_unref (pids_to_kill);

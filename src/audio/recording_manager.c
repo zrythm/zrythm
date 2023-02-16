@@ -895,6 +895,7 @@ static void
 handle_audio_event (RecordingManager * self, RecordingEvent * ev)
 {
   bool handled_resume = handle_resume_event (self, ev);
+  (void) handled_resume;
   /*g_debug ("handled resume %d", handled_resume);*/
 
   unsigned_frame_t g_start_frames = ev->g_start_frame;
