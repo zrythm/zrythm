@@ -665,7 +665,7 @@ bug_report_dialog_widget_init (BugReportDialogWidget * self)
     GTK_DIALOG (self), _ ("_Close"), GTK_RESPONSE_CLOSE,
     _ ("Submit on _SourceHut"), SOURCEHUT_RESPONSE,
     _ ("Send via _email (publicly visible)"), EMAIL_RESPONSE,
-    _ ("Preview and send _automatically (privately)"),
+    _ ("Preview and send _automatically (privately/recommended)"),
     PREVIEW_AND_SEND_AUTOMATICALLY_RESPONSE, NULL);
 
   g_signal_connect (
