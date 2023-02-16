@@ -1547,6 +1547,8 @@ project_autosave_cb (void * data)
 
   GError * err = NULL;
   bool     success;
+  UndoableAction * last_action =
+    undo_manager_get_last_action (PROJECT->undo_manager);
 
   /* skip if bad time to save or rolling */
   if (
@@ -1576,8 +1578,6 @@ project_autosave_cb (void * data)
       goto post_save_sem_and_continue;
     }
 
-  UndoableAction * last_action =
-    undo_manager_get_last_action (PROJECT->undo_manager);
   if (
     PROJECT->last_action_in_last_successful_autosave
     == last_action)
