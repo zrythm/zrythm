@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 scripts_conf = {
@@ -8,6 +8,7 @@ scripts_conf = {
   'HOMEPAGE_URL': 'https://www.zrythm.org/en/index.html',
   'DONATION_URL': 'https://www.zrythm.org/en/community.html#donate',
   'BUG_REPORT_URL': 'https://todo.sr.ht/~alextee/zrythm-bug',
+  'FAQ_URL': 'https://manual.zrythm.org/en/getting-started/faq.html',
   'USER_MANUAL_URL': 'https://manual.zrythm.org/en/index.html',
   'TRANSLATE_URL': 'https://hosted.weblate.org/engage/zrythm/',
   'CONTACT_URL': 'https://www.zrythm.org/en/community.html#contact',

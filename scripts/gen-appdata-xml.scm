@@ -1,4 +1,4 @@
-;;; SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+;;; SPDX-FileCopyrightText: © 2022-2023 Alexandros Theodotou <alex@zrythm.org>
 ;;; SPDX-License-Identifier: LicenseRef-ZrythmLicense
 ;;;
 ;;; Generate appdata.xml
@@ -159,7 +159,9 @@ various plugin and file formats.")
                  (url
                    (@ (type "bugtracker"))
                    "@BUG_REPORT_URL@")
-                 ;; TODO faq
+                 (url
+                   (@ (type "faq"))
+                   "@FAQ_URL@")
                  (url
                    (@ (type "help"))
                    "@USER_MANUAL_URL@")
