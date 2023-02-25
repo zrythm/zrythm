@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-02-09 19:08+0900\n"
-"PO-Revision-Date: 2023-01-15 23:59+0000\n"
+"PO-Revision-Date: 2023-02-16 16:35+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -1717,17 +1717,17 @@ msgstr "Desancorar %d pistes"
 #: src/actions/transport_action.c:271
 #, c-format
 msgid "Change BPM from %.2f to %.2f"
-msgstr ""
+msgstr "Canviar BPM de %.2f a %.2f"
 
 #: src/actions/transport_action.c:275
 #, c-format
 msgid "Change beats per bar from %d to %d"
-msgstr ""
+msgstr "Canviar beats per barra de %d a %d"
 
 #: src/actions/transport_action.c:279
 #, c-format
 msgid "Change beat unit from %d to %d"
-msgstr ""
+msgstr "Canviar la unitat de beat de %d a %d"
 
 #: src/actions/arranger_selections.c:297
 msgid "Arranger selections contain an object that cannot be duplicated"
@@ -1817,9 +1817,9 @@ msgid "Merge arranger selections"
 msgstr "Combinar les seleccions d'arranjador"
 
 #: src/actions/arranger_selections.c:3223
-#, fuzzy, c-format
+#, c-format
 msgid "Resize arranger selections - %s"
-msgstr "Canviar la mida de les seleccions d'arranjador"
+msgstr "Canviar la mida de les seleccions d'arranjadors - %s"
 
 #: src/actions/arranger_selections.c:3226
 msgid "Quantize arranger selections"
@@ -3282,7 +3282,7 @@ msgstr "Tempo / BPM"
 
 #: src/gui/widgets/digital_meter.c:133
 msgid "Time Signature - Beats per bar / Beat unit"
-msgstr "Indicació de compàs - Pulsacions per barra / Unitat de beat"
+msgstr "Indicació de compàs - Beats per barra / Unitat de beat"
 
 #: src/gui/widgets/digital_meter.c:780 src/gui/widgets/digital_meter.c:795
 msgid "Failed to change time signature"
@@ -7904,28 +7904,29 @@ msgstr "Canviat:"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
 msgid "Create standard project directories when creating a new blank project"
 msgstr ""
+"Crear directoris de projecte estàndard en crear un projecte en blanc nou"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-#, fuzzy
 msgid ""
 "Update Chinese (Simplified), Catalan, French, Swedish, Hungarian, Spanish, "
 "German, Portuguese (Brazil), Russian, English (Middle), Portuguese "
 "translations"
 msgstr ""
-"Actualització de traduccions xinès (simplificat), indonesi, català, "
-"espanyol, ucraïnès, alemany, vietnamita"
+"Actualització de les traduccions del xinès (simplificat), català, francès, "
+"suec, hongarès, espanyol, alemany, portuguès (Brasil), rus, anglès (mitjà), "
+"portuguès"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Re-generate bundled plugins with latest faust"
-msgstr ""
+msgstr "Tornar a generar complements empaquetats amb l'última versió"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
 msgid "Be more specific in some undoable action strings"
-msgstr ""
+msgstr "Sigues més específic en algunes cadenes d'acció indomables"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 msgid "Don't block when showing error messages"
-msgstr ""
+msgstr "No bloquejar quan es mostrin missatges d'error"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:78
@@ -7936,10 +7937,11 @@ msgstr "Solucionat:"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
 msgid "Fix error when saving a project with a plugin without outputs"
 msgstr ""
+"Soluciona un error en desar un projecte amb un complement sense sortides"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
 msgid "Fix issues with automation track processing"
-msgstr ""
+msgstr "Soluciona problemes amb el processament de pistes d'automatització"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:74
 msgid "Don't attempt to create plugin state directories when loading projects"
