@@ -6,7 +6,7 @@
  *
  * ---
  *
- * SPDX-FileCopyrightText: © Patrick Desaulniers
+ * SPDX-FileCopyrightText: © 2023 Patrick Desaulniers
  * SPDX-License-Identifier: GPL-3.0-or-later
  *
  * ---
