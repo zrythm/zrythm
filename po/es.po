@@ -18,13 +18,14 @@
 # Jesus Meneses <jesusm0812@gmail.com>, 2021.
 # Yokox1 <mryokox@outlook.com>, 2021.
 # Adolfo Jayme Barrientos <fitojb@ubuntu.com>, 2022.
+# Juan <benitesjn@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-02-09 19:08+0900\n"
-"PO-Revision-Date: 2022-11-30 23:54+0000\n"
-"Last-Translator: Adolfo Jayme Barrientos <fitojb@ubuntu.com>\n"
+"PO-Revision-Date: 2023-02-13 10:35+0000\n"
+"Last-Translator: Juan <benitesjn@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -32,7 +33,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.16-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -3961,9 +3962,8 @@ msgid "Plugin"
 msgstr "Complemento"
 
 #: src/gui/widgets/channel_slot.c:707 src/gui/widgets/file_chooser_entry.c:118
-#, fuzzy
 msgid "Select"
-msgstr "_Seleccionar"
+msgstr "Seleccionar"
 
 #: src/gui/widgets/channel_slot.c:916
 msgid "empty slot"
@@ -6711,7 +6711,7 @@ msgstr "Cuantizar"
 
 #: resources/gtk/help-overlay.ui:301
 msgid "Looping"
-msgstr "Puesta en bucle"
+msgstr "Bucle"
 
 #: data/zrythm.desktop.in:6
 msgid "@DESKTOP_ENTRY_NAME@"
