@@ -64,6 +64,7 @@ audio_srcs = files([
   'midi_track.c',
   'modulator_macro_processor.c',
   'modulator_track.c',
+  'peak_fall_smooth.c',
   'pool.c',
   'port.c',
   'port_connection.c',

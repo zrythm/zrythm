@@ -93,6 +93,16 @@
             <property name="margin_end">4</property>
           </object>
         </child>
+        <child>
+          <object class="SpectrumAnalyzerWidget" id="spectrum_analyzer">
+            <property name="visible">True</property>
+            <property name="width-request">128</property>
+            <property name="margin_top">4</property>
+            <property name="margin_bottom">4</property>
+            <property name="margin_start">4</property>
+            <property name="margin_end">4</property>
+          </object>
+        </child>
       </object>
     </child>
   </template>

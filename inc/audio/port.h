@@ -401,32 +401,30 @@ typedef struct Port
   int deleting;
 
   /**
-   * Flag to indicate if the ring buffers below
-   * should be filled or not.
+   * Flag to indicate if the ring buffers below should be
+   * filled or not.
    *
-   * If a UI element that needs them becomes
-   * mapped (visible), this should be set to
-   * 1, and when unmapped (invisible) it should
-   * be set to 0.
+   * If a UI element that needs them becomes mapped
+   * (visible), this should be set to true, and when unmapped
+   * (invisible) it should be set to false.
    */
   bool write_ring_buffers;
 
-  /** Whether the port has midi events not yet
-   * processed by the UI. */
+  /** Whether the port has midi events not yet processed by
+   * the UI. */
   volatile int has_midi_events;
 
-  /** Used by the UI to detect when unprocessed
-   * MIDI events exist. */
+  /** Used by the UI to detect when unprocessed MIDI events
+   * exist. */
   gint64 last_midi_event_time;
 
   /**
-   * Ring buffer for saving the contents of the
-   * audio buffer to be used in the UI instead of
-   * directly accessing the buffer.
+   * Ring buffer for saving the contents of the audio buffer
+   * to be used in the UI instead of directly accessing the
+   * buffer.
    *
-   * This should contain blocks of block_length
-   * samples and should maintain at least 10
-   * cycles' worth of buffers.
+   * This should contain blocks of block_length samples and
+   * should maintain at least 10 cycles' worth of buffers.
    *
    * This is also used for CV.
    */

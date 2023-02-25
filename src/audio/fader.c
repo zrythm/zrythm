@@ -1201,15 +1201,7 @@ fader_process (
             &self->stereo_out->r->buf[time_nfo->local_offset],
             amp * calc_r, time_nfo->nframes);
 
-          /* make mono if mono compat
-           * enabled. equal amplitude is
-           * more suitable for mono
-           * compatibility checking */
-          /* for reference:
-           * equal power sum =
-           * (L+R) * 0.7079 (-3dB)
-           * equal amplitude sum =
-           * (L+R) /2 (-6.02dB) */
+          /* make mono if mono compat enabled */
           if (control_port_is_toggled (
                 self->mono_compat_enabled))
             {

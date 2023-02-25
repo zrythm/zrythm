@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+ * SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
  * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  */
 
@@ -506,4 +506,11 @@ volume {
 fader-buttons button {
   padding-left: 5px;
   padding-right: 5px;
+}
+
+.signal-preview {
+  border-color: gtkalpha(white,0.2);
+  border-style: solid;
+  border-radius: 4px;
+  border-width: 1px;
 }

@@ -287,15 +287,13 @@ dsp_linear_fade_out_to (
 /**
  * Makes the two signals mono.
  *
- * @param equal_power True for equal power, false
- *   for equal amplitude.
+ * @param equal_power True for equal power, false for equal
+ *   amplitude.
  *
  * @note Equal amplitude is more suitable for mono
  * compatibility checking. For reference:
- * equal power sum =
- * (L+R) * 0.7079 (-3dB)
- * equal amplitude sum =
- * (L+R) /2 (-6.02dB)
+ * - equal power sum = (L+R) * 0.7079 (-3dB)
+ * - equal amplitude sum = (L+R) /2 (-6.02dB)
  */
 void
 dsp_make_mono (float * l, float * r, size_t size, bool equal_power)

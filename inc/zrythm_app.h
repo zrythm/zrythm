@@ -12,7 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#include "zix/sem.h"
+#include <zix/sem.h>
 
 #define ZRYTHM_APP_TYPE (zrythm_app_get_type ())
 G_DECLARE_FINAL_TYPE (

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -12,6 +12,7 @@
 #include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/project_toolbar.h"
 #include "gui/widgets/snap_grid.h"
+#include "gui/widgets/spectrum_analyzer.h"
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/view_toolbar.h"
 #include "utils/gtk.h"
@@ -66,6 +67,7 @@ header_widget_init (HeaderWidget * self)
   g_type_ensure (LIVE_WAVEFORM_WIDGET_TYPE);
   g_type_ensure (MIDI_ACTIVITY_BAR_WIDGET_TYPE);
   g_type_ensure (GTK_TYPE_FLIPPER);
+  g_type_ensure (SPECTRUM_ANALYZER_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
@@ -74,6 +76,8 @@ header_widget_init (HeaderWidget * self)
   gtk_style_context_add_class (context, "header");
 
   live_waveform_widget_setup_engine (self->live_waveform);
+  spectrum_analyzer_widget_setup_engine (
+    self->spectrum_analyzer);
   midi_activity_bar_widget_setup_engine (self->midi_activity);
   midi_activity_bar_widget_set_animation (
     self->midi_activity, MAB_ANIMATION_FLASH);
@@ -101,6 +105,7 @@ header_widget_class_init (HeaderWidgetClass * _klass)
   BIND_CHILD (view_toolbar);
   BIND_CHILD (help_toolbar);
   BIND_CHILD (live_waveform);
+  BIND_CHILD (spectrum_analyzer);
   BIND_CHILD (midi_activity);
 
 #undef BIND_CHILD

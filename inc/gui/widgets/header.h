@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_HEADER_H__
@@ -25,12 +25,13 @@ G_DECLARE_FINAL_TYPE (
 
 #define MW_HEADER MAIN_WINDOW->header
 
-typedef struct _HomeToolbarWidget     HomeToolbarWidget;
-typedef struct _ProjectToolbarWidget  ProjectToolbarWidget;
-typedef struct _ViewToolbarWidget     ViewToolbarWidget;
-typedef struct _HelpToolbarWidget     HelpToolbarWidget;
-typedef struct _MidiActivityBarWidget MidiActivityBarWidget;
-typedef struct _LiveWaveformWidget    LiveWaveformWidget;
+typedef struct _HomeToolbarWidget      HomeToolbarWidget;
+typedef struct _ProjectToolbarWidget   ProjectToolbarWidget;
+typedef struct _ViewToolbarWidget      ViewToolbarWidget;
+typedef struct _HelpToolbarWidget      HelpToolbarWidget;
+typedef struct _MidiActivityBarWidget  MidiActivityBarWidget;
+typedef struct _LiveWaveformWidget     LiveWaveformWidget;
+typedef struct _SpectrumAnalyzerWidget SpectrumAnalyzerWidget;
 
 /**
  * Header notebook to be used at the very top of the
@@ -49,9 +50,10 @@ typedef struct _HeaderWidget
   AdwViewStack * stack;
   GtkBox *       end_box;
 
-  LiveWaveformWidget *    live_waveform;
-  MidiActivityBarWidget * midi_activity;
-  GtkLabel *              midi_in_lbl;
+  LiveWaveformWidget *     live_waveform;
+  SpectrumAnalyzerWidget * spectrum_analyzer;
+  MidiActivityBarWidget *  midi_activity;
+  GtkLabel *               midi_in_lbl;
 } HeaderWidget;
 
 void

@@ -1545,8 +1545,8 @@ project_autosave_cb (void * data)
       return G_SOURCE_CONTINUE;
     }
 
-  GError * err = NULL;
-  bool     success;
+  GError *         err = NULL;
+  bool             success;
   UndoableAction * last_action =
     undo_manager_get_last_action (PROJECT->undo_manager);
 

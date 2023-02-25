@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/engine.h"
@@ -41,7 +41,7 @@ draw_lines (
 
   /* draw */
   gdk_cairo_set_source_rgba (cr, &self->color_green);
-  float        half_height = (float) height / 2.0f;
+  float        half_height = (float) (height - 1) / 2.0f;
   uint32_t     nframes = AUDIO_ENGINE->block_length;
   float        val;
   unsigned int step =
@@ -95,16 +95,6 @@ live_waveform_draw_cb (
     gtk_widget_get_style_context (widget);
 
   gtk_render_background (context, cr, 0, 0, width, height);
-
-  /* draw border */
-  if (self->draw_border)
-    {
-      self->color_white.alpha = 0.2f;
-      gdk_cairo_set_source_rgba (cr, &self->color_white);
-      z_cairo_rounded_rectangle (
-        cr, 0, 0, width, height, 1.0, 4.0);
-      cairo_stroke (cr);
-    }
 
   uint32_t block_size_in_bytes =
     sizeof (float) * (uint32_t) AUDIO_ENGINE->block_length;
@@ -283,8 +273,11 @@ live_waveform_widget_init (LiveWaveformWidget * self)
 {
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self), _ ("Live waveform indicator"));
-  gdk_rgba_parse (&self->color_white, "white");
   gdk_rgba_parse (&self->color_green, "#11FF44");
+  gtk_widget_add_css_class (
+    GTK_WIDGET (self), "signal-preview");
+  gtk_widget_set_overflow (
+    GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 }
 
 static void

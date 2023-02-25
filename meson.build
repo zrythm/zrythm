@@ -213,6 +213,7 @@ have_custom_logo_and_splash = get_option ('custom_logo_and_splash')
 root_inc = include_directories ('.')
 inc_inc = include_directories ('inc')
 ext_inc = include_directories ('ext')
+kissfft_inc = include_directories ('ext/kissfft')
 midilib_inc = include_directories ('ext/midilib')
 whereami_inc = include_directories ('ext/whereami')
 weakjack_inc = include_directories ('ext/weakjack')
@@ -221,6 +222,7 @@ all_inc = [
   root_inc,
   inc_inc,
   ext_inc,
+  kissfft_inc,
   midilib_inc,
   whereami_inc,
   weakjack_inc,
