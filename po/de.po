@@ -13,15 +13,16 @@
 # leochras <leo@traussnigg.com>, 2022.
 # Ludwig <ludwig-o@freenet.de>, 2022.
 # Hartmut Wagener <hartmut.w.wagener@t-online.de>, 2023.
+# CyCode <cycode@cycode.eu>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-02-09 19:08+0900\n"
-"PO-Revision-Date: 2023-02-02 08:46+0000\n"
-"Last-Translator: Hartmut Wagener <hartmut.w.wagener@t-online.de>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"PO-Revision-Date: 2023-02-25 23:41+0000\n"
+"Last-Translator: CyCode <cycode@cycode.eu>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -6047,15 +6048,15 @@ msgstr "Protokoll"
 
 #: resources/ui/plugin_browser.ui:148
 msgid "Sort alphabetically"
-msgstr ""
+msgstr "Alphabetisch Sortieren"
 
 #: resources/ui/plugin_browser.ui:154
 msgid "Sort by recently used"
-msgstr ""
+msgstr "Sortieren nach zuletzt verwendet"
 
 #: resources/ui/plugin_browser.ui:160
 msgid "Sort by most used"
-msgstr ""
+msgstr "Sortieren nach meistgenutzt"
 
 #: resources/ui/header.ui:23 resources/gtk/help-overlay.ui:98
 msgid "Project"
@@ -6231,7 +6232,7 @@ msgstr "Exportiere als…"
 
 #: resources/ui/export_dialog.ui:40 resources/ui/export_dialog.ui:173
 msgid "Metadata"
-msgstr ""
+msgstr "Metadaten"
 
 #: resources/ui/export_dialog.ui:43 resources/ui/export_dialog.ui:176
 #: build/data/org.zrythm.Zrythm.gschema.xml:855
@@ -6281,6 +6282,8 @@ msgid ""
 "Whether to export the selected tracks as a single mixdown file or each track "
 "in its own file."
 msgstr ""
+"Festlegen of die ausgewählten Spuren als eine einzige mixdown Datei oder "
+"jede Spur als eigene Datei exportiert werden soll."
 
 #: resources/ui/export_dialog.ui:106 resources/ui/export_dialog.ui:242
 #: build/data/org.zrythm.Zrythm.gschema.xml:860
@@ -6290,7 +6293,7 @@ msgstr "Zeitbereich"
 
 #: resources/ui/export_dialog.ui:107 resources/ui/export_dialog.ui:243
 msgid "Only events inside this time range will be exported."
-msgstr ""
+msgstr "Nur Ereignisse innerhalb dieses Zeitraums werden exportiert."
 
 #: resources/ui/export_dialog.ui:112 resources/ui/export_dialog.ui:248
 #, fuzzy
@@ -6375,7 +6378,7 @@ msgstr "Bereich entfernen"
 #: resources/ui/timeline_toolbar.ui:39
 #: build/data/org.zrythm.Zrythm.gschema.xml:401
 msgid "Musical mode"
-msgstr ""
+msgstr "Musikalischer Modus"
 
 #: resources/ui/timeline_toolbar.ui:78
 msgid "Merge selections"
@@ -6393,7 +6396,7 @@ msgstr "Höhe des oberen Teils des Erweiterungs-/Dateibrowsers."
 
 #: resources/ui/log_viewer.ui:17
 msgid "Log Level"
-msgstr ""
+msgstr "Log Level"
 
 #: resources/ui/log_viewer.ui:40
 msgid "Save As..."
