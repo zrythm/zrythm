@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-02-09 19:06+0900\n"
-"PO-Revision-Date: 2022-11-06 23:55+0000\n"
+"PO-Revision-Date: 2023-02-13 10:35+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/fr/>\n"
 "Language: fr\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/fr/>\n"
-"Plural-Forms: nplurals=2; plural=n > 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.16-dev\n"
 "Generated-By: Babel 2.11.0\n"
 
 #: ../../appendix/environment.rst:11
@@ -6176,7 +6177,7 @@ msgstr ""
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:9
 msgid "File Browser"
-msgstr "Navigateur de fichier"
+msgstr "Navigateur de fichiers"
 
 #: ../../plugins-files/audio-midi-files/file-browser.rst:11
 msgid ""

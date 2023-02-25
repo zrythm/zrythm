@@ -18,10 +18,10 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-02-09 19:08+0900\n"
-"PO-Revision-Date: 2023-02-02 08:46+0000\n"
+"PO-Revision-Date: 2023-02-20 14:39+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1330,9 +1330,8 @@ msgstr "Impossible d'appliquer la fonction MIDI"
 
 #: src/actions/actions.c:2443 src/actions/actions.c:2482
 #: src/actions/arranger_selections.c:599
-#, fuzzy
 msgid "Failed to apply automation function"
-msgstr "Dernière fonction audio utilisée"
+msgstr "Échec de l'application de la fonction d'automatisation"
 
 #: src/actions/actions.c:2655 src/gui/widgets/track_filter_popover.c:268
 msgid "Track name"
@@ -1347,24 +1346,20 @@ msgid "An object cannot be created at the selected location."
 msgstr "Un objet ne peut pas être créé à l'emplacement sélectionné."
 
 #: src/actions/actions.c:2747
-#, fuzzy
 msgid "Failed to set region color"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec du paramétrage de la couleur de région"
 
 #: src/actions/actions.c:2777
-#, fuzzy
 msgid "Region Color"
 msgstr "Couleur de la région"
 
 #: src/actions/actions.c:2812
-#, fuzzy
 msgid "Failed to reset region color"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la réinitialisation de la couleur de la région"
 
 #: src/actions/actions.c:2854
-#, fuzzy
 msgid "Please enter a BPM"
-msgstr "Entrer une valeur"
+msgstr "Veuillez entrer un BPM"
 
 #: src/actions/actions.c:2923
 msgid "Failed to move selections"
@@ -1385,14 +1380,12 @@ msgid "Failed to apply audio function"
 msgstr "Échec lors de l'application de la fonction audio"
 
 #: src/actions/actions.c:3110
-#, fuzzy
 msgid "Failed to set curve algorithm"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec du paramétrage de l'algorithme de courbe"
 
 #: src/actions/actions.c:3161
-#, fuzzy
 msgid "Failed to edit fades"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de l'édition des fondus"
 
 #: src/actions/actions.c:3225
 msgid ""
@@ -1404,20 +1397,17 @@ msgstr ""
 "d'accords."
 
 #: src/actions/actions.c:3312 src/actions/actions.c:3353
-#, fuzzy
 msgid "Preset Pack Name"
-msgstr "Nom de piste"
+msgstr "Nom du pack de préréglages"
 
 #: src/actions/actions.c:3333 src/actions/actions.c:3371
-#, fuzzy
 msgid "Are you sure you want to remove this chord preset pack?"
-msgstr "Êtes vous sûr de vouloir effacer ce marque-page ?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce pack de présélections d'accords ?"
 
 #: src/actions/actions.c:3391
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:156
-#, fuzzy
 msgid "Preset Name"
-msgstr "Pré-réglages"
+msgstr "Nom du préréglage"
 
 #: src/actions/actions.c:3441 src/gui/widgets/modulator_inner.c:76
 msgid "Failed to delete plugins"
@@ -1438,9 +1428,9 @@ msgid "Failed to reset %s"
 msgstr "Échec de la réinitialisation de %s"
 
 #: src/actions/actions.c:3554
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to disconnect %s from %s"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de la déconnexion de %s de %s"
 
 #: src/actions/actions.c:3583
 msgid "Cannot delete standard bookmark"
@@ -1462,28 +1452,25 @@ msgstr ""
 "Cette collection contient %d greffons. Êtes-vous sur de vouloir la retirer ?"
 
 #: src/actions/actions.c:4017
-#, fuzzy
 msgid "Failed to change direct output"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la modification de la sortie directe"
 
 #: src/actions/tracklist_selections.c:205
-#, fuzzy
 msgid "Cannot duplicate tracks: selection contains an uncopyable track"
 msgstr ""
-"Impossible de redimensionner %s - les sélections contiennent des objets non "
-"bouclables"
+"Impossible de dupliquer les pistes : la sélection contient une piste non "
+"copiable"
 
 #: src/actions/tracklist_selections.c:217
-#, fuzzy
 msgid "Cannot delete tracks: selection contains an undeletable track"
 msgstr ""
-"Impossible de redimensionner %s - les sélections contiennent des objets non "
-"bouclables"
+"Impossible de supprimer des pistes : la sélection contient une piste non "
+"supprimable"
 
 #: src/actions/tracklist_selections.c:296
-#, fuzzy, c-format
+#, c-format
 msgid "Failed getting contents for %s"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de la récupération du contenu de %s"
 
 #: src/actions/tracklist_selections.c:331
 msgid "No tracks selected"
@@ -1509,16 +1496,14 @@ msgstr "%s Piste"
 
 #: src/actions/tracklist_selections.c:759 src/audio/sample_processor.c:552
 #: src/gui/widgets/channel_slot.c:335
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create plugin %s"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la création du greffon %s"
 
 #: src/actions/tracklist_selections.c:769
-#, fuzzy, c-format
+#, c-format
 msgid "Error instantiating plugin %s"
-msgstr ""
-"Erreur lors de l'instanciation du greffon %s. Veuillez consulter le journal "
-"pour plus de détails."
+msgstr "Erreur d'instanciation du greffon %s"
 
 #: src/actions/tracklist_selections.c:848
 #, c-format
@@ -1526,15 +1511,15 @@ msgid "Failed saving file %s"
 msgstr "Échec de la sauvegarde du fichier %s"
 
 #: src/actions/tracklist_selections.c:944
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create track at %d"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la création de la piste à %d"
 
 #: src/actions/tracklist_selections.c:984
 #: src/actions/tracklist_selections.c:1432
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to clone track: %s"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec du clonage de la piste : %s"
 
 #: src/actions/tracklist_selections.c:1998
 msgid "Copy Track inside"
@@ -1582,14 +1567,12 @@ msgid "Unsolo Track"
 msgstr "Enlever le Solo de la piste"
 
 #: src/actions/tracklist_selections.c:2054
-#, fuzzy
 msgid "Solo Lane"
-msgstr "Mettre la piste en Solo"
+msgstr "Mettre la ligne en solo"
 
 #: src/actions/tracklist_selections.c:2056
-#, fuzzy
 msgid "Unsolo Lane"
-msgstr "Enlever le solo"
+msgstr "Enlever le solo de la ligne"
 
 #: src/actions/tracklist_selections.c:2059
 msgid "Mute Track"
@@ -1600,23 +1583,20 @@ msgid "Unmute Track"
 msgstr "Activer la piste muette"
 
 #: src/actions/tracklist_selections.c:2064
-#, fuzzy
 msgid "Mute Lane"
-msgstr "Rendre la piste muette"
+msgstr "Silencer la ligne"
 
 #: src/actions/tracklist_selections.c:2066
-#, fuzzy
 msgid "Unmute Lane"
-msgstr "Désilencer"
+msgstr "Désilencer la ligne"
 
 #: src/actions/tracklist_selections.c:2069
 msgid "Listen Track"
 msgstr "Piste d'écoute"
 
 #: src/actions/tracklist_selections.c:2071
-#, fuzzy
 msgid "Unlisten Track"
-msgstr "Détacher la piste"
+msgstr "Piste non écoutée"
 
 #: src/actions/tracklist_selections.c:2074
 msgid "Enable Track"
@@ -1627,14 +1607,12 @@ msgid "Disable Track"
 msgstr "Désactiver la piste"
 
 #: src/actions/tracklist_selections.c:2079
-#, fuzzy
 msgid "Fold Track"
-msgstr "Mettre la piste en Solo"
+msgstr "Plier la piste"
 
 #: src/actions/tracklist_selections.c:2081
-#, fuzzy
 msgid "Unfold Track"
-msgstr "Enlever le Solo de la piste"
+msgstr "Déplier la piste"
 
 #: src/actions/tracklist_selections.c:2083
 msgid "Change Fader"
@@ -1654,9 +1632,8 @@ msgid "Rename track"
 msgstr "Renommer la piste"
 
 #: src/actions/tracklist_selections.c:2091
-#, fuzzy
 msgid "Rename lane"
-msgstr "Renommer"
+msgstr "Renommer la ligne"
 
 #: src/actions/tracklist_selections.c:2093
 #: src/actions/tracklist_selections.c:2144
@@ -1677,19 +1654,19 @@ msgid "Change MIDI fader mode"
 msgstr "Changer le mode de chariot MIDI"
 
 #: src/actions/tracklist_selections.c:2111
-#, fuzzy, c-format
+#, c-format
 msgid "Solo %d Tracks"
-msgstr "Mettre la piste en Solo"
+msgstr "Mettre les %d pistes en solo"
 
 #: src/actions/tracklist_selections.c:2114
-#, fuzzy, c-format
+#, c-format
 msgid "Unsolo %d Tracks"
-msgstr "Enlever le Solo de la piste"
+msgstr "Enlever le solo de %d pistes"
 
 #: src/actions/tracklist_selections.c:2118
-#, fuzzy, c-format
+#, c-format
 msgid "Mute %d Tracks"
-msgstr "Déplacer %d Pistes"
+msgstr "Silencer %d pistes"
 
 #: src/actions/tracklist_selections.c:2121
 #, fuzzy, c-format
@@ -1766,17 +1743,17 @@ msgstr "Détacher les pistes %d"
 #: src/actions/transport_action.c:271
 #, c-format
 msgid "Change BPM from %.2f to %.2f"
-msgstr ""
+msgstr "Changer le BPM de %.2f pour %.2f"
 
 #: src/actions/transport_action.c:275
 #, c-format
 msgid "Change beats per bar from %d to %d"
-msgstr ""
+msgstr "Changer les battements par mesure de %d pour %d"
 
 #: src/actions/transport_action.c:279
 #, c-format
 msgid "Change beat unit from %d to %d"
-msgstr ""
+msgstr "Changez l'unité de battement de %d pour %d"
 
 #: src/actions/arranger_selections.c:297
 #, fuzzy
@@ -2087,7 +2064,7 @@ msgstr "Navigateur de greffon"
 #: src/gui/widgets/right_dock_edge.c:138
 #: src/gui/widgets/file_browser_window.c:21
 msgid "File Browser"
-msgstr "Navigateur de fichier"
+msgstr "Navigateur de fichiers"
 
 #: src/utils/gtk.c:1236 src/gui/widgets/right_dock_edge.c:127
 msgid "Chord Preset Browser"
@@ -8250,28 +8227,30 @@ msgstr "Modifié :"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:56
 msgid "Create standard project directories when creating a new blank project"
 msgstr ""
+"Créer des répertoires de projet standard lors de la création d'un nouveau "
+"projet vierge"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-#, fuzzy
 msgid ""
 "Update Chinese (Simplified), Catalan, French, Swedish, Hungarian, Spanish, "
 "German, Portuguese (Brazil), Russian, English (Middle), Portuguese "
 "translations"
 msgstr ""
-"Mise à jour des traductions en allemand, français, japonais, chinois "
-"(simplifié) et turc"
+"Mise à jour des traductions en chinois (simplifié), catalan, français, "
+"suédois, hongrois, espagnol, allemand, portugais (Brésil), russe, anglais "
+"(moyen) et portugais"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Re-generate bundled plugins with latest faust"
-msgstr ""
+msgstr "Régénérer les greffons embarqués avec la dernière version de faust"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
 msgid "Be more specific in some undoable action strings"
-msgstr ""
+msgstr "Soyez plus précis dans certaines chaînes d'actions irréalisables"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 msgid "Don't block when showing error messages"
-msgstr ""
+msgstr "Ne pas bloquer lors de l'affichage des messages d'erreur"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:78
@@ -8282,10 +8261,12 @@ msgstr "Corrigé :"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
 msgid "Fix error when saving a project with a plugin without outputs"
 msgstr ""
+"Correction d'une erreur lors de la sauvegarde d'un projet avec un greffon "
+"sans sorties"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
 msgid "Fix issues with automation track processing"
-msgstr ""
+msgstr "Correction des problèmes de traitement des pistes d'automatisation"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:74
 msgid "Don't attempt to create plugin state directories when loading projects"
