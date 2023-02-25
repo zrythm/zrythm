@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2023-02-09 19:08+0900\n"
+"POT-Creation-Date: 2023-02-26 08:43+0900\n"
 "PO-Revision-Date: 2022-10-10 17:53+0000\n"
 "Last-Translator: Vitor Sabino Cardoso da SIlva <vitorcsilva180396@gmail."
 "com>\n"
@@ -816,12 +816,12 @@ msgstr "Cópia de segurança guardada."
 msgid "Project saved."
 msgstr "Projeto guardado."
 
-#: src/project.c:2016
+#: src/project.c:2031
 #, fuzzy
 msgid "Failed to write audio pool to disk"
 msgstr "Falha ao escrever o ficheiro: %s"
 
-#: src/project.c:2029
+#: src/project.c:2044
 #, fuzzy
 msgid "Failed to clone project"
 msgstr "Falha ao abrir o ficheiro: %s"
@@ -3026,7 +3026,7 @@ msgstr "Max"
 msgid "Expose port to JACK"
 msgstr "Expor a porta para JACK"
 
-#: src/gui/widgets/live_waveform.c:285
+#: src/gui/widgets/live_waveform.c:275
 msgid "Live waveform indicator"
 msgstr "Indicador de forma de onda ao vivo"
 
@@ -3168,7 +3168,7 @@ msgstr "Interface de script"
 msgid "Monitor Section"
 msgstr "Entrada de fader monitor"
 
-#: src/gui/widgets/header.c:83
+#: src/gui/widgets/header.c:87
 #, c-format
 msgid "About %s"
 msgstr "Sobre %s"
@@ -3693,7 +3693,7 @@ msgid "Operation not implemented"
 msgstr "Não implementado"
 
 #: src/gui/widgets/modulator_macro.c:56
-#: src/gui/widgets/track_input_expander.c:311
+#: src/gui/widgets/track_input_expander.c:312
 msgid "No inputs"
 msgstr "Sem entradas"
 
@@ -4127,69 +4127,69 @@ msgstr "Multiplicador"
 msgid "Scales"
 msgstr "Escala"
 
-#: src/gui/widgets/track_input_expander.c:266
+#: src/gui/widgets/track_input_expander.c:267
 msgid "All MIDI Inputs"
 msgstr "Todas as Entradas MIDI"
 
-#: src/gui/widgets/track_input_expander.c:269
+#: src/gui/widgets/track_input_expander.c:270
 msgid "All Audio Inputs"
 msgstr "Todas as Entradas de Áudio"
 
-#: src/gui/widgets/track_input_expander.c:313
+#: src/gui/widgets/track_input_expander.c:314
 msgid "MIDI inputs for recording"
 msgstr "Entradas MIDI para gravação"
 
-#: src/gui/widgets/track_input_expander.c:319
+#: src/gui/widgets/track_input_expander.c:320
 msgid "No left input"
 msgstr "Nenhuma entrada da esquerda"
 
-#: src/gui/widgets/track_input_expander.c:319
+#: src/gui/widgets/track_input_expander.c:320
 msgid "No right input"
 msgstr "Nenhuma entrada da direita"
 
-#: src/gui/widgets/track_input_expander.c:321
+#: src/gui/widgets/track_input_expander.c:322
 #, c-format
 msgid "Audio input (%s) for recording"
 msgstr "Entrada de áudio (%s) para gravação"
 
 #. TRANSLATORS: Left and Right
-#: src/gui/widgets/track_input_expander.c:323
+#: src/gui/widgets/track_input_expander.c:324
 #: resources/ui/monitor_section.ui:153
 msgid "L"
 msgstr "E"
 
-#: src/gui/widgets/track_input_expander.c:323
+#: src/gui/widgets/track_input_expander.c:324
 #: resources/ui/automation_track.ui:64 resources/ui/monitor_section.ui:174
 msgid "R"
 msgstr "R"
 
-#: src/gui/widgets/track_input_expander.c:390
+#: src/gui/widgets/track_input_expander.c:391
 msgid "All Channels"
 msgstr "Todos os Canais"
 
-#: src/gui/widgets/track_input_expander.c:398
+#: src/gui/widgets/track_input_expander.c:399
 #, c-format
 msgid "Channel %s"
 msgstr "Canal %s"
 
-#: src/gui/widgets/track_input_expander.c:410
+#: src/gui/widgets/track_input_expander.c:411
 msgid "No channel"
 msgstr "Nenhum canal"
 
-#: src/gui/widgets/track_input_expander.c:443
+#: src/gui/widgets/track_input_expander.c:444
 msgid "MIDI channel to filter to"
 msgstr "Canal MIDI por qual filtrar"
 
-#: src/gui/widgets/track_input_expander.c:615
+#: src/gui/widgets/track_input_expander.c:616
 #: src/gui/widgets/monitor_section.c:310
 msgid "Mono"
 msgstr "Mono"
 
-#: src/gui/widgets/track_input_expander.c:643 src/plugins/plugin.c:296
+#: src/gui/widgets/track_input_expander.c:644 src/plugins/plugin.c:296
 msgid "Gain"
 msgstr "Ganho"
 
-#: src/gui/widgets/track_input_expander.c:654
+#: src/gui/widgets/track_input_expander.c:655
 msgid "Inputs"
 msgstr "Entradas"
 
@@ -5278,7 +5278,7 @@ msgid "Send via _email (publicly visible)"
 msgstr ""
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:668
-msgid "Preview and send _automatically (privately)"
+msgid "Preview and send _automatically (privately/recommended)"
 msgstr ""
 
 #: src/gui/widgets/dialogs/about_dialog.c:57
@@ -8267,7 +8267,7 @@ msgid "Default script to use in the scripting window."
 msgstr "O script padrão a ser utilizado na janela de script."
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:6
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:38
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:39
 msgid "Zrythm"
 msgstr "Zrythm"
 
@@ -8294,184 +8294,191 @@ msgid ""
 "Zrythm can be extended with user scripts written in Scheme or ECMAScript."
 msgstr "Zrythm pode ser estendido a usar o GNU Guile."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:33
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:34
 #, fuzzy
 msgid "Main window with plugins"
 msgstr "Procurar suplementos"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:39
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:40
 msgid "DAW"
 msgstr "DAW"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:54
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:55
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
 #, fuzzy
 msgid "Changed:"
 msgstr "alterar"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:56
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+msgid "Avoid making a backup when the last performed action hasn't changed"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+msgid ""
+"Meson: use libpanel fork with detach support when building as a subproject"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
+msgid "Fixed:"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+msgid "Fix error when generating a string from the current datetime"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+msgid "Fix some channel ports not being exposed to JACK when loading a project"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+msgid "Fix automation curve calculation not taking caches into account"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+msgid "Fix build without Guile"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+msgid "Fix too loud/silent audio when bouncing/exporting"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 msgid "Create standard project directories when creating a new blank project"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:57
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
 msgid ""
 "Update Chinese (Simplified), Catalan, French, Swedish, Hungarian, Spanish, "
 "German, Portuguese (Brazil), Russian, English (Middle), Portuguese "
 "translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid "Re-generate bundled plugins with latest faust"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
 msgid "Be more specific in some undoable action strings"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
 msgid "Don't block when showing error messages"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:78
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
-msgid "Fixed:"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
 msgid "Fix error when saving a project with a plugin without outputs"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
 msgid "Fix issues with automation track processing"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
 msgid "Don't attempt to create plugin state directories when loading projects"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
 #, fuzzy
 msgid "Add more error checking to various operations"
 msgstr "Mostrar sempre o plugin UI ao instanciar um plugin"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
 msgid "Include Carla and GTK versions in debug info"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
 msgid "Fix being unable to export stems"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:81
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
 #, fuzzy
 msgid "Fix multiple popups being shown when exporting stems"
 msgstr "Profundidade de bits a utilizar na exportação"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:82
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
 msgid "Fix removing inserts not being undoable"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:83
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
 msgid ""
 "Fix plugin states being deleted from the main project when saving backups"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
 msgid "Fix error when enabling/disabling MIDI bindings"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:85
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
 msgid ""
 "Fix incorrectly throwing an error sometimes when processing the sample "
 "processor"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid "Fix error when moving a region from the last lane"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
 msgid "Added:"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
 msgid "Implement best-fit zoom in editor"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:115
 msgid "Add \"Rename\" context menu option on applicable timeline objects"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
 msgid "Implement Ableton-style panning/zooming in the ruler"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
 msgid "Implement middle-click (or alt-click) panning in arrangers"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
 msgid "Minor UI improvements (widget paddings and sizes)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
 msgid "File browser: allow browsing volumes without associated drives"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
 #, fuzzy
 msgid "Minor optimizations"
 msgstr "Randomização"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
 msgid "Redesign snap/grid menu"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
 msgid "Require C11 thread support on GNU/Linux"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:110
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
 msgid "Fix arrangers sometimes not taking off-screen objects into account"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:111
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
 msgid "Fix minor memory leak"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:112
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
 msgid "Fix error when undoing duplication of automation points"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:113
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:132
 msgid ""
 "Fix some functions that were supposed to be optimized not getting optimized"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:122
-msgid "Use list view for control ports in the plugin inspector (fixes lags)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
-msgid ""
-"Don't use cairo to draw automation regions (fixes lags on large projects)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
-msgid "Don't use demo template on Windows on first run (currently broken)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
-msgid "Don't save undo history with backups (makes saving faster)"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
-msgid ""
-"Write audio pool files in parallel (makes saving faster on projects with "
-"lots of audio files)"
 msgstr ""
 
 #~ msgid "Change BPM"

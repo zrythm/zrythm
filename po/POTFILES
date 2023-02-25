@@ -167,6 +167,7 @@ inc/audio/balance_control.h
 inc/audio/audio_function.h
 inc/audio/graph_node.h
 inc/audio/peak_dsp.h
+inc/audio/peak_fall_smooth.h
 inc/audio/encoder.h
 inc/audio/engine_sdl.h
 inc/audio/chord_track.h
@@ -355,6 +356,7 @@ inc/gui/widgets/quantize_box.h
 inc/gui/widgets/snap_grid_popover.h
 inc/gui/widgets/modulator_view.h
 inc/gui/widgets/route_target_selector_popover.h
+inc/gui/widgets/spectrum_analyzer.h
 inc/gui/widgets/automation_region.h
 inc/gui/widgets/chord_object.h
 inc/gui/widgets/chord_pack_browser.h
@@ -597,6 +599,7 @@ src/audio/midi_note.c
 src/audio/encoder.c
 src/audio/velocity.c
 src/audio/marker_track.c
+src/audio/peak_fall_smooth.c
 src/audio/engine_windows_mme.c
 src/audio/midi_event.c
 src/audio/audio_track.c
@@ -831,6 +834,7 @@ src/gui/widgets/track_filter_popover.c
 src/gui/widgets/color_area.c
 src/gui/widgets/timeline_selection_info.c
 src/gui/widgets/item_factory.c
+src/gui/widgets/spectrum_analyzer.c
 src/gui/widgets/channel_send_selector.c
 src/gui/widgets/main_notebook.c
 src/gui/widgets/chord_arranger.c
