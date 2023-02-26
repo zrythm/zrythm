@@ -6,7 +6,7 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-beta.4.6.1] - 2023-02-26
+## [1.0.0-beta.4.6.3] - 2023-02-26
 ### Added
 - Add spectrum analyzer
 - Add vertical zoom buttons to editor
