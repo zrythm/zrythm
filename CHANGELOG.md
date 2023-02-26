@@ -6,6 +6,22 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.6.1] - 2023-02-26
+### Added
+- Add spectrum analyzer
+- Add vertical zoom buttons to editor
+- User manual: add FAQ section
+
+### Changed
+- Update French, Catalan, Esperanto, Swedish, German, Korean, Polish, Spanish translations
+- Meson: disable fallbacks by default
+
+### Fixed
+- Fix scrolling horizontally with 2 fingers on touch pads
+- Fix project plugin states being deleted while in use
+- Work around a bug in Pipewire where it doesn't notify clients of buffer size changes
+- Fix occasional deadlock when changing engine buffer sizes
+
 ## [1.0.0-beta.4.5.62] - 2023-02-03
 ### Changed
 - Avoid making a backup when the last performed action hasn't changed
