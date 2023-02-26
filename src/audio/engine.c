@@ -274,7 +274,7 @@ engine_process_events (AudioEngine * self)
   if (self->activated && num_events > 0)
     {
       /* pause engine */
-      engine_wait_for_pause (self, &state, Z_F_FORCE);
+      engine_wait_for_pause (self, &state, Z_F_FORCE, true);
       need_resume = true;
     }
 
@@ -981,25 +981,40 @@ void
 engine_wait_for_pause (
   AudioEngine * self,
   EngineState * state,
-  bool          force_pause)
+  bool          force_pause,
+  bool          with_fadeout)
 {
   state->running = g_atomic_int_get (&self->run);
   state->playing = TRANSPORT_IS_ROLLING;
   state->looping = TRANSPORT->loop;
 
-  if (state->running && !self->stop_dummy_audio_thread)
+  if (
+    with_fadeout && state->running
+    && !self->stop_dummy_audio_thread
+    && engine_has_handled_buffer_size_change (self))
     {
       g_message (
         "setting fade out samples and waiting for remaining samples to become 0");
       g_atomic_int_set (
         &MONITOR_FADER->fade_out_samples,
         FADER_DEFAULT_FADE_FRAMES);
+      const gint64 start_time = g_get_monotonic_time ();
+      const gint64 max_time_to_wait = 2 * 1000 * 1000; // 2sec
       g_atomic_int_set (&MONITOR_FADER->fading_out, 1);
       while (
         g_atomic_int_get (&MONITOR_FADER->fade_out_samples)
         > 0)
         {
           g_usleep (100);
+          gint64 cur_time = g_get_monotonic_time ();
+          if (cur_time - start_time > max_time_to_wait)
+            {
+              /* abort */
+              g_atomic_int_set (&MONITOR_FADER->fading_out, 0);
+              g_atomic_int_set (
+                &MONITOR_FADER->fade_out_samples, 0);
+              break;
+            }
         }
     }
 
@@ -1152,7 +1167,7 @@ engine_activate (AudioEngine * self, bool activate)
 
       /* wait to finish */
       EngineState state;
-      engine_wait_for_pause (self, &state, true);
+      engine_wait_for_pause (self, &state, true, true);
 
       self->activated = false;
     }
@@ -1519,14 +1534,36 @@ engine_process (
     self->timestamp_start
     + (total_frames_to_process * 1000000) / self->sample_rate;
 
-  if (G_UNLIKELY (!engine_get_run (self)))
+  if (
+    G_UNLIKELY (!engine_get_run (self))
+    || G_UNLIKELY (
+      !engine_has_handled_buffer_size_change (self)))
     {
-      /*g_message ("ENGINE NOT RUNNING");*/
       /*g_message ("skipping processing...");*/
       clear_output_buffers (self, total_frames_to_process);
       g_atomic_int_set (&self->cycle_running, 0);
       return 0;
     }
+
+   /* Work around a bug in Pipewire that doesn't inform the
+    * host about buffer size (block length) changes */
+#ifdef HAVE_JACK
+  if (
+    self->audio_backend == AUDIO_BACKEND_JACK
+    && engine_get_run (self)
+    && self->block_length != jack_get_buffer_size (self->client))
+    {
+      clear_output_buffers (self, total_frames_to_process);
+      g_atomic_int_set (&self->cycle_running, 0);
+      g_warning (
+        "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! JACK buffer size changed from %u to %u without notifying us (likely pipewire bug #1591). Attempting workaround...",
+        self->block_length,
+        jack_get_buffer_size (self->client));
+      engine_jack_buffer_size_cb (
+        jack_get_buffer_size (self->client), self);
+      return 0;
+    }
+#endif
 
   /*count++;*/
   /*self->cycle = count;*/

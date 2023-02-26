@@ -25,13 +25,18 @@ peak_fall_smooth_new (void)
 }
 
 void
-peak_fall_smooth_calculate_coeff (PeakFallSmooth * self, const float frequency, const float sample_rate)
+peak_fall_smooth_calculate_coeff (
+  PeakFallSmooth * self,
+  const float      frequency,
+  const float      sample_rate)
 {
-  self->coeff = expf(-2.f * M_PI * frequency / sample_rate);
+  self->coeff = expf (-2.f * M_PI * frequency / sample_rate);
 }
 
 void
-peak_fall_smooth_set_value (PeakFallSmooth * self, const float val)
+peak_fall_smooth_set_value (
+  PeakFallSmooth * self,
+  const float      val)
 {
   if (self->history < val)
     {
@@ -44,7 +49,8 @@ peak_fall_smooth_set_value (PeakFallSmooth * self, const float val)
 float
 peak_fall_smooth_get_smoothed_value (PeakFallSmooth * self)
 {
-  float result = self->value + self->coeff * (self->history - self->value);
+  float result =
+    self->value + self->coeff * (self->history - self->value);
   self->history = result;
 
   return result;

@@ -95,7 +95,7 @@ on_instrument_changed (
     return;
 
   EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, false);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, false, true);
 
   /* clear previous instrument setting */
   if (SAMPLE_PROCESSOR->instrument_setting)

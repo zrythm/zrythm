@@ -165,16 +165,39 @@ engine_jack_handle_buf_size_change (
     "JACK: Block length changed to %d, "
     "midi buf size to %zu",
     AUDIO_ENGINE->block_length, AUDIO_ENGINE->midi_buf_size);
+  g_atomic_int_set (
+    &AUDIO_ENGINE->handled_jack_buffer_size_change, 1);
 }
 
 /** Jack buffer size callback. */
-static int
-buffer_size_cb (uint32_t nframes, AudioEngine * self)
+int
+engine_jack_buffer_size_cb (uint32_t nframes, AudioEngine * self)
 {
+  g_message ("JACK buffer size changed: %u", nframes);
+  g_atomic_int_set (
+    &AUDIO_ENGINE->handled_jack_buffer_size_change, 0);
   ENGINE_EVENTS_PUSH (
     AUDIO_ENGINE_EVENT_BUFFER_SIZE_CHANGE, NULL, nframes, 0.f);
 
-  process_change_request (self);
+  /* process immediately if gtk thread */
+  if (g_thread_self () == zrythm_app->gtk_thread)
+    {
+      engine_process_events (self);
+    }
+  /* otherwise if activated wait for gtk thread
+   * to process all events */
+  else if (self->activated && engine_get_run (self))
+    {
+      while (
+        g_atomic_int_get (
+          &AUDIO_ENGINE->handled_jack_buffer_size_change)
+        == 0)
+        {
+          g_message (
+            "-- waiting for engine to handle JACK buffer size change on GUI thread... (engine_process_events)");
+          g_usleep (1000000);
+        }
+    }
 
   return 0;
 }
@@ -555,8 +578,8 @@ engine_jack_setup (AudioEngine * self)
   int ret;
   jack_set_process_callback (self->client, process_cb, self);
   jack_set_buffer_size_callback (
-    self->client, (JackBufferSizeCallback) buffer_size_cb,
-    self);
+    self->client,
+    (JackBufferSizeCallback) engine_jack_buffer_size_cb, self);
   jack_set_sample_rate_callback (
     self->client, (JackSampleRateCallback) sample_rate_cb,
     self);

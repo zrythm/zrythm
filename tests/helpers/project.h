@@ -281,7 +281,7 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
 
   /* pause engine */
   EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, false);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, false, true);
 
   /* remove any previous work */
   chord_track_clear (P_CHORD_TRACK);

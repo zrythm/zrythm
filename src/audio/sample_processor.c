@@ -460,7 +460,7 @@ queue_file_or_chord_preset (
   const ChordPreset *   chord_pset)
 {
   EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, false);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, false, true);
 
   /* clear tracks */
   for (int i = self->tracklist->num_tracks - 1; i >= 0; i--)
@@ -752,7 +752,7 @@ void
 sample_processor_stop_file_playback (SampleProcessor * self)
 {
   EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, false);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, false, true);
 
   self->roll = false;
   position_set_to_bar (&self->playhead, 1);

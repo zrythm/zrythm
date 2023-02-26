@@ -736,7 +736,7 @@ exporter_prepare_tracks_for_export (
   AUDIO_ENGINE->preparing_to_export = true;
 
   engine_wait_for_pause (
-    AUDIO_ENGINE, engine_state, Z_F_NO_FORCE);
+    AUDIO_ENGINE, engine_state, Z_F_NO_FORCE, true);
   g_message ("engine paused");
 
   TRANSPORT->play_state = PLAYSTATE_ROLLING;

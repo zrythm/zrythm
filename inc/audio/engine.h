@@ -95,6 +95,11 @@ typedef struct MPMCQueue         MPMCQueue;
 #define engine_get_run(engine) \
   g_atomic_int_get (&(engine)->run)
 
+#define engine_has_handled_buffer_size_change(engine) \
+  ((engine)->audio_backend != AUDIO_BACKEND_JACK || \
+  ((engine)->audio_backend == AUDIO_BACKEND_JACK && \
+   g_atomic_int_get (&(engine)->handled_jack_buffer_size_change) == 1))
+
 #define ENGINE_MAX_EVENTS 100
 
 #define engine_queue_push_back_event(q, x) \
@@ -122,8 +127,9 @@ typedef struct MPMCQueue         MPMCQueue;
         { \
           _ev->backtrace = backtrace_get ("", 40, false); \
           g_debug ( \
-            "pushing engine event " #et " (%s:%d)", \
-            __func__, __LINE__); \
+            "pushing engine event " #et \
+            " (%s:%d) uint: %u | float: %f", \
+            __func__, __LINE__, _uint_arg, _float_arg); \
         } \
       engine_queue_push_back_event ( \
         AUDIO_ENGINE->ev_queue, _ev); \
@@ -349,6 +355,15 @@ typedef struct AudioEngine
 #else
   void *   client;
 #endif
+
+  /**
+   * Whether pending jack buffer change was handled (buffers
+   * reallocated).
+   *
+   * To be set to zero when a change starts and 1 when the
+   * change is fully processed.
+   */
+  gint handled_jack_buffer_size_change;
 
   /**
    * Whether transport master/client or no
@@ -858,7 +873,8 @@ void
 engine_wait_for_pause (
   AudioEngine * self,
   EngineState * state,
-  bool          force_pause);
+  bool          force_pause,
+  bool          with_fadeout);
 
 void
 engine_resume (AudioEngine * self, EngineState * state);

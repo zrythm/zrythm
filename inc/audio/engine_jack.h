@@ -124,6 +124,12 @@ CONST
 const char *
 engine_jack_get_jack_type (PortType type);
 
+/** Jack buffer size callback. */
+int
+engine_jack_buffer_size_cb (
+  uint32_t      nframes,
+  AudioEngine * self);
+
 /**
  * Returns if this is a pipewire session.
  */

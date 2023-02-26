@@ -218,7 +218,7 @@ undoable_action_do (UndoableAction * self, GError ** error)
       /* stop engine and give it some time to stop
        * running */
       engine_wait_for_pause (
-        AUDIO_ENGINE, &state, Z_F_NO_FORCE);
+        AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
     }
 
   int ret = 0;
@@ -304,7 +304,7 @@ undoable_action_undo (UndoableAction * self, GError ** error)
       /* stop engine and give it some time to stop
        * running */
       engine_wait_for_pause (
-        AUDIO_ENGINE, &state, Z_F_NO_FORCE);
+        AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
     }
 
   int ret = 0;

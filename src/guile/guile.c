@@ -211,7 +211,8 @@ guile_run_script (const char * script, GuileScriptLanguage lang)
 {
   /* pause engine */
   EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE);
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
 
   ExecutionInfo nfo = { .script = script, .lang = lang };
 

@@ -57,7 +57,8 @@ test_save_load_with_data (void)
 
   /* stop the engine */
   EngineState state;
-  engine_wait_for_pause (PROJECT->audio_engine, &state, true);
+  engine_wait_for_pause (
+    PROJECT->audio_engine, &state, true, true);
 
   /* remove objects */
   chord_track_clear (P_CHORD_TRACK);

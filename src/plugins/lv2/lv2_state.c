@@ -360,7 +360,7 @@ lv2_state_apply_state (Lv2Plugin * plugin, LilvState * state)
         "restore, pausing engine",
         pl_str);
       engine_wait_for_pause (
-        AUDIO_ENGINE, &engine_state, Z_F_NO_FORCE);
+        AUDIO_ENGINE, &engine_state, Z_F_NO_FORCE, true);
       g_return_if_fail (!AUDIO_ENGINE->run);
       engine_paused = true;
     }

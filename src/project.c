@@ -1366,7 +1366,7 @@ project_load (
 
   /* pause engine */
   EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, true);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, true, false);
 
   /* connect channel inputs to hardware and re-expose ports to
    * backend. has to be done after engine activation */
@@ -1958,7 +1958,7 @@ project_save (
   if (AUDIO_ENGINE->activated)
     {
       engine_wait_for_pause (
-        AUDIO_ENGINE, &state, Z_F_NO_FORCE);
+        AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
       engine_paused = true;
     }
 

@@ -33,7 +33,8 @@ test_lilv_instance_activation (void)
       g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
       EngineState state;
-      engine_wait_for_pause (AUDIO_ENGINE, &state, false);
+      engine_wait_for_pause (
+        AUDIO_ENGINE, &state, false, true);
 
       lilv_instance_deactivate (pl->lv2->instance);
       lilv_instance_activate (pl->lv2->instance);

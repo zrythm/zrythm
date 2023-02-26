@@ -1249,7 +1249,8 @@ graph_validate_with_connection (
   g_return_val_if_fail (src && dest, 0);
 
   EngineState state;
-  engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE);
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
 
   g_message (
     "validating for %s to %s", src->id.label, dest->id.label);
