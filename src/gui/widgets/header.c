@@ -3,18 +3,22 @@
 
 #include "zrythm-config.h"
 
+#include "audio/master_track.h"
+#include "audio/tracklist.h"
 #include "gui/accel.h"
 #include "gui/widgets/gtk_flipper.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/help_toolbar.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/live_waveform.h"
+#include "gui/widgets/meter.h"
 #include "gui/widgets/midi_activity_bar.h"
 #include "gui/widgets/project_toolbar.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/spectrum_analyzer.h"
 #include "gui/widgets/toolbox.h"
 #include "gui/widgets/view_toolbar.h"
+#include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
 
@@ -82,6 +86,13 @@ header_widget_init (HeaderWidget * self)
   midi_activity_bar_widget_set_animation (
     self->midi_activity, MAB_ANIMATION_FLASH);
 
+  MeterWidget * l = meter_widget_new (
+    P_MASTER_TRACK->channel->stereo_out->l, 8);
+  MeterWidget * r = meter_widget_new (
+    P_MASTER_TRACK->channel->stereo_out->r, 8);
+  gtk_box_append (self->meter_box, GTK_WIDGET (l));
+  gtk_box_append (self->meter_box, GTK_WIDGET (r));
+
   /* set tooltips */
   char about_tooltip[500];
   sprintf (about_tooltip, _ ("About %s"), PROGRAM_NAME);
@@ -107,6 +118,7 @@ header_widget_class_init (HeaderWidgetClass * _klass)
   BIND_CHILD (live_waveform);
   BIND_CHILD (spectrum_analyzer);
   BIND_CHILD (midi_activity);
+  BIND_CHILD (meter_box);
 
 #undef BIND_CHILD
 

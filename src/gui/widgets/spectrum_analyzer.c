@@ -428,8 +428,6 @@ spectrum_analyzer_widget_init (SpectrumAnalyzerWidget * self)
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) update_activity,
     self, NULL);
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self), "signal-preview");
   gtk_widget_set_overflow (
     GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 }

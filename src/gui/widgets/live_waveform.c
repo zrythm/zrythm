@@ -271,11 +271,7 @@ finalize (LiveWaveformWidget * self)
 static void
 live_waveform_widget_init (LiveWaveformWidget * self)
 {
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self), _ ("Live waveform indicator"));
   gdk_rgba_parse (&self->color_green, "#11FF44");
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self), "signal-preview");
   gtk_widget_set_overflow (
     GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 }

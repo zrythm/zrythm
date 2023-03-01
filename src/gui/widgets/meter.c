@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/channel.h"
@@ -225,8 +225,7 @@ meter_timeout (
 #endif
 
 /**
- * Creates a new Meter widget and binds it to the
- * given value.
+ * Sets up an existing meter and binds it to the given port.
  *
  * @param port Port this meter is for.
  */
@@ -261,6 +260,21 @@ meter_widget_setup (MeterWidget * self, Port * port, int width)
   char buf[1200];
   port_get_full_designation (port, buf);
   g_message ("meter widget set up for %s", buf);
+}
+
+/**
+ * Creates a new MeterWidget and binds it to the given port.
+ *
+ * @param port Port this meter is for.
+ */
+MeterWidget *
+meter_widget_new (Port * port, int width)
+{
+  MeterWidget * self = g_object_new (METER_WIDGET_TYPE, NULL);
+
+  meter_widget_setup (self, port, width);
+
+  return self;
 }
 
 static void

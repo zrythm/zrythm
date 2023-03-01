@@ -78,29 +78,43 @@
             </child>
             <child>
               <object class="MidiActivityBarWidget" id="midi_activity">
-                <property name="visible">1</property>
               </object>
             </child>
           </object>
         </child>
         <child>
           <object class="LiveWaveformWidget" id="live_waveform">
-            <property name="visible">True</property>
             <property name="width-request">48</property>
             <property name="margin_top">4</property>
             <property name="margin_bottom">4</property>
             <property name="margin_start">4</property>
             <property name="margin_end">4</property>
+            <property name="tooltip-text" translatable="yes">Live Waveform Indicator</property>
+            <style>
+              <class name="signal-preview"/>
+            </style>
           </object>
         </child>
         <child>
           <object class="SpectrumAnalyzerWidget" id="spectrum_analyzer">
-            <property name="visible">True</property>
             <property name="width-request">128</property>
             <property name="margin_top">4</property>
             <property name="margin_bottom">4</property>
             <property name="margin_start">4</property>
             <property name="margin_end">4</property>
+            <property name="tooltip-text" translatable="yes">Spectrum Analyzer</property>
+            <style>
+              <class name="signal-preview"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="meter_box">
+            <property name="margin_top">4</property>
+            <property name="margin_bottom">4</property>
+            <property name="margin_start">4</property>
+            <property name="margin_end">4</property>
+            <property name="tooltip-text" translatable="yes">Peak Meter</property>
           </object>
         </child>
       </object>

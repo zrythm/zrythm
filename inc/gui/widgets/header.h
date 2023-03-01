@@ -54,6 +54,7 @@ typedef struct _HeaderWidget
   SpectrumAnalyzerWidget * spectrum_analyzer;
   MidiActivityBarWidget *  midi_activity;
   GtkLabel *               midi_in_lbl;
+  GtkBox *                 meter_box;
 } HeaderWidget;
 
 void

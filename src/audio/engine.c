@@ -1545,8 +1545,8 @@ engine_process (
       return 0;
     }
 
-   /* Work around a bug in Pipewire that doesn't inform the
-    * host about buffer size (block length) changes */
+    /* Work around a bug in Pipewire that doesn't inform the
+     * host about buffer size (block length) changes */
 #ifdef HAVE_JACK
   if (
     self->audio_backend == AUDIO_BACKEND_JACK

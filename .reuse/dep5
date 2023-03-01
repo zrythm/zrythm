@@ -523,7 +523,7 @@ Files:
   resources/ui/*.ui
   resources/gtk/help-overlay.ui
   resources/gtk/menus.ui
-Copyright: 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+Copyright: 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 License: LicenseRef-ZrythmLicense
 Comment: UI XML files
 

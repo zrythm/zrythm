@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /** \file
@@ -51,12 +51,19 @@ typedef struct _MeterWidget
 } MeterWidget;
 
 /**
- * Creates a new Meter widget and binds it to the
- * given value.
+ * Sets up an existing meter and binds it to the given port.
  *
  * @param port Port this meter is for.
  */
 void
 meter_widget_setup (MeterWidget * self, Port * port, int width);
+
+/**
+ * Creates a new MeterWidget and binds it to the given port.
+ *
+ * @param port Port this meter is for.
+ */
+MeterWidget *
+meter_widget_new (Port * port, int width);
 
 #endif
