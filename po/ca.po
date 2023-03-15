@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-02-26 08:43+0900\n"
-"PO-Revision-Date: 2023-02-16 16:35+0000\n"
+"PO-Revision-Date: 2023-02-27 18:36+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -5040,9 +5040,8 @@ msgid "Send via _email (publicly visible)"
 msgstr "Envia per _correu electrònic (visible públicament)"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:668
-#, fuzzy
 msgid "Preview and send _automatically (privately/recommended)"
-msgstr "Previsualitza i envia _automàticament (de manera privada)"
+msgstr "Previsualitza i envia _automàticament (de manera privada/recomanat)"
 
 #: src/gui/widgets/dialogs/about_dialog.c:57
 msgid "a highly automated and intuitive digital audio workstation"
@@ -7905,6 +7904,8 @@ msgstr "Canviat:"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 msgid "Avoid making a backup when the last performed action hasn't changed"
 msgstr ""
+"Evitar fer una còpia de seguretat quan l'última acció realitzada no hagi "
+"canviat"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid ""
@@ -7919,28 +7920,29 @@ msgid "Fixed:"
 msgstr "Solucionat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-#, fuzzy
 msgid "Fix error when generating a string from the current datetime"
-msgstr "Soluciona un error en moure una regió des de l'últim carril"
+msgstr ""
+"Soluciona un error en generar una cadena a partir de la data i hora actual"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
 msgid "Fix some channel ports not being exposed to JACK when loading a project"
 msgstr ""
+"Soluciona que alguns ports del canal no estiguin exposats a JACK en carregar "
+"un projecte"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
-#, fuzzy
 msgid "Fix automation curve calculation not taking caches into account"
 msgstr ""
-"Soluciona que els organitzadors de vegades no tenien en compte els objectes "
-"fora de la pantalla"
+"Soluciona el càlcul de la corba d'automatització que no tenia en compte les "
+"memòries cau"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
 msgid "Fix build without Guile"
-msgstr ""
+msgstr "Soluciona la construcció sense Guile"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:66
 msgid "Fix too loud/silent audio when bouncing/exporting"
-msgstr ""
+msgstr "Soluciona l'àudio massa alt/silenciós quan es rebota/exporta"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 msgid "Create standard project directories when creating a new blank project"
