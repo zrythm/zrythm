@@ -38,16 +38,17 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-02-09 19:06+0900\n"
-"PO-Revision-Date: 2022-12-22 23:59+0000\n"
-"Last-Translator: Karimullin Arthur <KarimullinArthur@riseup.net>\n"
+"PO-Revision-Date: 2023-03-07 02:29+0000\n"
+"Last-Translator: Artemy Fedotov <catlovescpp@gmail.com>\n"
+"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ru/>\n"
 "Language: ru\n"
-"Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ru/>\n"
-"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 "Generated-By: Babel 2.11.0\n"
 
 #: ../../appendix/environment.rst:11
@@ -788,7 +789,7 @@ msgstr "Конфигурация"
 #: ../../plugins-files/audio-midi-files/file-browser.rst:117
 #: ../../zrythm-interface/main-toolbar.rst:111
 msgid "Preferences"
-msgstr "Настройки (Preferences)"
+msgstr "Настройки"
 
 #: ../../configuration/preferences.rst:13
 msgid ""
@@ -3942,7 +3943,7 @@ msgstr "Реализовать."
 
 #: ../../exporting/audio-and-midi.rst:42
 msgid "Bit Depth"
-msgstr "Битовая глубина (Bit Depth)"
+msgstr "Битовая глубина"
 
 #: ../../exporting/audio-and-midi.rst:43
 msgid ""
@@ -4444,7 +4445,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:34
 msgid "Path"
-msgstr "Путь (Path)"
+msgstr "Путь"
 
 #: ../../getting-started/running-zrythm.rst:34
 msgid "This is the :term:`Zrythm user path`."
@@ -9756,7 +9757,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:67
 msgid "Toggle Status Bar"
-msgstr ""
+msgstr "Переключить строку состояния"
 
 #: ../../zrythm-interface/main-toolbar.rst:68
 #, fuzzy

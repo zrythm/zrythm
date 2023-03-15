@@ -7,13 +7,14 @@
 # Nikita Saschenko <neketa777@gmail.com>, 2021.
 # Seio Inoue <sei0okun@gmail.com>, 2022.
 # KokiOgawa <mupimupicandy@gmail.com>, 2022.
+# Artemy Fedotov <catlovescpp@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-02-26 08:43+0900\n"
-"PO-Revision-Date: 2022-09-01 15:40+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2023-03-07 02:29+0000\n"
+"Last-Translator: Artemy Fedotov <catlovescpp@gmail.com>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -21,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.14.1-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -36,9 +37,8 @@ msgid "Minor"
 msgstr "短音階"
 
 #: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
-#, fuzzy
 msgid "Ionian"
-msgstr "アイオニアン（長音階）"
+msgstr "アイオニアン"
 
 #: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
 msgid "Dorian"
@@ -3436,9 +3436,8 @@ msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "拍子 - 小節あたりの拍数/拍単位"
 
 #: src/gui/widgets/digital_meter.c:780 src/gui/widgets/digital_meter.c:795
-#, fuzzy
 msgid "Failed to change time signature"
-msgstr "拍子記号を変更"
+msgstr "拍子記号の変更に失敗しました"
 
 #: src/gui/widgets/panel_file_browser.c:252 src/gui/widgets/file_browser.c:57
 msgid "No file selected"
@@ -5164,18 +5163,16 @@ msgid "Preferred language"
 msgstr "プリフェーダーバランス"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:235
-#, fuzzy
 msgid "User path"
-msgstr "すべてを選択"
+msgstr "ユーザーパス"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:237
 msgid "Location to save user files"
 msgstr "ユーザーファイルの保存場所"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:240
-#, fuzzy
 msgid "Select a directory"
-msgstr "プロジェクトを選択"
+msgstr "ディレクトリを選択"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:274
 #, fuzzy
@@ -5193,9 +5190,8 @@ msgid "Track color"
 msgstr "トラックの色"
 
 #: src/gui/widgets/dialogs/object_color_chooser_dialog.c:130
-#, fuzzy
 msgid "Failed to change color"
-msgstr "スキーマ %s をリセットできませんでした"
+msgstr "色の変更に失敗しました"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:47
 #, fuzzy
@@ -5285,9 +5281,8 @@ msgid "Error details"
 msgstr "詳細レベル"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:618
-#, fuzzy
 msgid "Backtrace"
-msgstr "エラー - バックトレース:\n"
+msgstr "バックトレース"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:634
 #, fuzzy
@@ -5295,9 +5290,8 @@ msgid "Log"
 msgstr "低"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:650
-#, fuzzy
 msgid "System info"
-msgstr "詳細を見る"
+msgstr "システム情報"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:665
 #, fuzzy
@@ -5343,9 +5337,8 @@ msgid "No project selected"
 msgstr "オブジェクトが選択されていません"
 
 #: src/gui/widgets/dialogs/project_assistant.c:480
-#, fuzzy
 msgid "Select Project File"
-msgstr "プロジェクトを選択"
+msgstr "プロジェクトファイルを選択"
 
 #: src/gui/widgets/dialogs/project_assistant.c:715
 msgid "Blank project"
@@ -5414,9 +5407,8 @@ msgid "Name '%s' is taken. Please enter a different name"
 msgstr "「%s」が使用中です。別の名前を入力してください"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:129
-#, fuzzy
 msgid "Save Chord Preset"
-msgstr "プリセットを保存"
+msgstr "コードプリセットを保存"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:154
 msgid "Pack"
@@ -6426,7 +6418,6 @@ msgid "Format"
 msgstr "フォーマット"
 
 #: resources/ui/export_dialog.ui:68
-#, fuzzy
 msgid "Bit Depth"
 msgstr "ビット深度"
 
@@ -6473,9 +6464,8 @@ msgid "Track Selection"
 msgstr "選択範囲"
 
 #: resources/ui/export_dialog.ui:147 resources/ui/export_dialog.ui:283
-#, fuzzy
 msgid "Output"
-msgstr "ディム出力"
+msgstr "出力"
 
 #: resources/ui/export_dialog.ui:209
 #, fuzzy
@@ -7051,9 +7041,8 @@ msgstr ""
 "C#など）"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:391
-#, fuzzy
 msgid "Default velocity"
-msgstr "デフォルトのスクリプト"
+msgstr "デフォルトのベロシティ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:392
 #, fuzzy
@@ -8104,9 +8093,8 @@ msgstr ""
 "す。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1115
-#, fuzzy
 msgid "VST2 plugins"
-msgstr "VSTプラグイン"
+msgstr "VST2プラグイン"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1116
 msgid "VST2 plugin search paths separated by : (or ; on Windows)."
@@ -8198,9 +8186,8 @@ msgid "Font scale"
 msgstr "フォントのスケール"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1209
-#, fuzzy
 msgid "Font scaling."
-msgstr "フォントのスケール"
+msgstr "フォントのスケール。"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1213
 msgid "User interface language"
