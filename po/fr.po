@@ -18,16 +18,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-02-26 08:43+0900\n"
-"PO-Revision-Date: 2023-02-20 14:39+0000\n"
+"PO-Revision-Date: 2023-03-13 03:50+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -174,11 +174,11 @@ msgstr "Inserts"
 
 #: inc/schemas/audio/scale.h:130 inc/audio/scale.h:162
 msgid "Neapolitan Major"
-msgstr "Ionien (majeur)"
+msgstr "Napolitain majeur"
 
 #: inc/schemas/audio/scale.h:131 inc/audio/scale.h:163
 msgid "Neapolitan Minor"
-msgstr "Aeolien (mineur naturel)"
+msgstr "Napolitain mineur"
 
 #: inc/schemas/audio/scale.h:132 inc/audio/scale.h:164
 msgid "Oriental"
@@ -186,11 +186,11 @@ msgstr "Oriental"
 
 #: inc/schemas/audio/scale.h:133 inc/audio/scale.h:165
 msgid "Romanian Minor"
-msgstr "Mineur harmonique"
+msgstr "Roumain mineur"
 
 #: inc/schemas/audio/scale.h:134 inc/audio/scale.h:166
 msgid "Altered"
-msgstr "altéré"
+msgstr "Altéré"
 
 #: inc/schemas/audio/scale.h:135 inc/audio/scale.h:167
 msgid "Maqam"
@@ -1670,24 +1670,24 @@ msgid "Mute %d Tracks"
 msgstr "Silencer %d pistes"
 
 #: src/actions/tracklist_selections.c:2121
-#, fuzzy, c-format
+#, c-format
 msgid "Unmute %d Tracks"
-msgstr "Activer la piste muette"
+msgstr "Désilencer %d pistes"
 
 #: src/actions/tracklist_selections.c:2125
-#, fuzzy, c-format
+#, c-format
 msgid "Listen %d Tracks"
-msgstr "Attacher les pistes %d"
+msgstr "Écouter %d pistes"
 
 #: src/actions/tracklist_selections.c:2128
-#, fuzzy, c-format
+#, c-format
 msgid "Unlisten %d Tracks"
-msgstr "Détacher les pistes %d"
+msgstr "Ne pas écouter %d pistes"
 
 #: src/actions/tracklist_selections.c:2132
-#, fuzzy, c-format
+#, c-format
 msgid "Enable %d Tracks"
-msgstr "Détacher les pistes %d"
+msgstr "Activer %d pistes"
 
 #: src/actions/tracklist_selections.c:2135
 #, c-format
@@ -1695,28 +1695,27 @@ msgid "Disable %d Tracks"
 msgstr "Désactiver %d pistes"
 
 #: src/actions/tracklist_selections.c:2139
-#, fuzzy, c-format
+#, c-format
 msgid "Fold %d Tracks"
-msgstr "Mettre la piste en Solo"
+msgstr "Plier %d pistes"
 
 #: src/actions/tracklist_selections.c:2142
-#, fuzzy, c-format
+#, c-format
 msgid "Unfold %d Tracks"
-msgstr "Enlever le Solo de la piste"
+msgstr "Déplier %d pistes"
 
 #: src/actions/tracklist_selections.c:2159
-#, fuzzy
 msgid "Move Track inside"
-msgstr "Déplacer la piste"
+msgstr "Déplacer la piste dedans"
 
 #: src/actions/tracklist_selections.c:2163
 msgid "Move Track"
 msgstr "Déplacer la piste"
 
 #: src/actions/tracklist_selections.c:2171
-#, fuzzy, c-format
+#, c-format
 msgid "Move %d Tracks inside"
-msgstr "Déplacer %d Pistes"
+msgstr "Déplacer %d pistes dedans"
 
 #: src/actions/tracklist_selections.c:2177
 #, c-format
@@ -1757,10 +1756,9 @@ msgid "Change beat unit from %d to %d"
 msgstr "Changez l'unité de battement de %d pour %d"
 
 #: src/actions/arranger_selections.c:297
-#, fuzzy
 msgid "Arranger selections contain an object that cannot be duplicated"
 msgstr ""
-"La sélection de piste contient une piste qui ne peut pas être supprimée"
+"Les sélections d'arrangeur contiennent un objet qui ne peut pas être dupliqué"
 
 #: src/actions/arranger_selections.c:392
 msgid "Arranger selections contain an undeletable object"
@@ -1845,28 +1843,26 @@ msgid "Merge arranger selections"
 msgstr "Fusionner les sélections d'arrangeurs"
 
 #: src/actions/arranger_selections.c:3223
-#, fuzzy, c-format
+#, c-format
 msgid "Resize arranger selections - %s"
-msgstr "Redimensionner les sélections d'arrangeurs"
+msgstr "Redimensionner les sélections d'arrangeurs - %s"
 
 #: src/actions/arranger_selections.c:3226
 msgid "Quantize arranger selections"
 msgstr "Quantifier les sélections d'arrangeurs"
 
 #: src/actions/channel_send_action.c:142
-#, fuzzy
 msgid "Failed to connect MIDI send"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Échec de la connexion de l'envoi MIDI"
 
 #: src/actions/channel_send_action.c:164
-#, fuzzy
 msgid "Failed to connect audio send"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Échec de la connexion de l'envoi audio"
 
 #: src/actions/channel_send_action.c:228 src/actions/channel_send_action.c:293
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to perform channel send action: %s"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de l'action d'envoi du canal : %s"
 
 #: src/actions/channel_send_action.c:321
 msgid "Connect sidechain"
@@ -1897,9 +1893,8 @@ msgid "Channel send connection"
 msgstr "Connexion d'envoi du canal"
 
 #: src/actions/mixer_selections_action.c:167
-#, fuzzy
 msgid "Failed to clone mixer selections"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Échec du clonage des sélections du mixeur"
 
 #: src/actions/mixer_selections_action.c:431 src/audio/channel.c:1845
 msgid "Failed to clone plugin"
@@ -2023,14 +2018,14 @@ msgid "32 bit"
 msgstr "32 bits"
 
 #: src/utils/audio.c:178
-#, fuzzy, c-format
+#, c-format
 msgid "Error opening sndfile: %s"
-msgstr "Erreur lors du chargement du répertoire bundle LV2 : "
+msgstr "Erreur d'ouverture du fichier audio : %s"
 
 #: src/utils/audio.c:204
-#, fuzzy, c-format
+#, c-format
 msgid "Seek error %d: %s"
-msgstr "erreur : %s"
+msgstr "Erreur de recherche %d : %s"
 
 #: src/utils/gtk.c:1213
 msgid "Mixer"
@@ -2081,9 +2076,8 @@ msgid "Timeline"
 msgstr "Ligne temporelle"
 
 #: src/utils/gtk.c:1244 src/gui/widgets/main_notebook.c:129
-#, fuzzy
 msgid "MIDI CC Bindings"
-msgstr "Mappage CC MIDI"
+msgstr "Cartographies CC MIDI"
 
 #: src/utils/gtk.c:1248 src/gui/widgets/main_notebook.c:126
 msgid "Port Connections"
@@ -2155,14 +2149,12 @@ msgid "Adaptive"
 msgstr "Grille adaptative"
 
 #: src/audio/fader.c:97
-#, fuzzy
 msgid "Prefader Swap Phase"
-msgstr "Balance pré-fader"
+msgstr "Phase de permutation des préfaders"
 
 #: src/audio/fader.c:98
-#, fuzzy
 msgid "Fader Swap Phase"
-msgstr "Contrôle de la balance"
+msgstr "Phase de permutation des faders"
 
 #: src/audio/fader.c:140
 msgid "Prefader Volume"
@@ -2205,14 +2197,12 @@ msgid "Fader Listen"
 msgstr "Fader d'écoute"
 
 #: src/audio/fader.c:238
-#, fuzzy
 msgid "Prefader Mono Compat"
-msgstr "sourdine pré-fader"
+msgstr "Compatibilité mono des préfaders"
 
 #: src/audio/fader.c:239
-#, fuzzy
 msgid "Fader Mono Compat"
-msgstr "Fader Mono Compat"
+msgstr "Compatibilité mono des faders"
 
 #: src/audio/fader.c:271
 msgid "Ch Pre-Fader in"
@@ -2223,9 +2213,8 @@ msgid "Ch Fader in"
 msgstr "Entrée fader"
 
 #: src/audio/fader.c:282
-#, fuzzy
 msgid "Sample Processor Fader in"
-msgstr "Processeur d'échantillon"
+msgstr "Fader en entrée du processeur d'échantillons"
 
 #: src/audio/fader.c:287
 msgid "Monitor Fader in"
@@ -2240,9 +2229,8 @@ msgid "Ch Fader out"
 msgstr "Sortie fader"
 
 #: src/audio/fader.c:316
-#, fuzzy
 msgid "Sample Processor Fader out"
-msgstr "Processeur d'échantillon"
+msgstr "Fader en sortie du processeur d'échantillons"
 
 #: src/audio/fader.c:321
 msgid "Monitor Fader out"
@@ -2265,16 +2253,12 @@ msgid "Ch MIDI Fader out"
 msgstr "Sortie MIDI"
 
 #: src/audio/fader.c:594
-#, fuzzy
 msgid "Failed to change volume"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de la modification du volume"
 
 #: src/audio/fader.c:643
-#, fuzzy
 msgid "Failed to set MIDI mode"
-msgstr ""
-"Impossible d'ouvrir SNDFILE %s :\n"
-"%d : %s"
+msgstr "Impossible de paramétrer le mode MIDI"
 
 #: src/audio/encoder.c:58
 #, c-format
@@ -2353,37 +2337,34 @@ msgid "Client zombie"
 msgstr "Client zombie"
 
 #: src/audio/engine_jack.c:705
-#, fuzzy, c-format
+#, c-format
 msgid "JACK: Failed to disconnect monitor out: %s"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "JACK : échec de la déconnexion de la sortie du moniteur : %s"
 
 #: src/audio/engine_jack.c:754
 msgid "JACK: No physical playback ports found"
 msgstr "JACK : aucun port de lecture physique trouvé"
 
 #: src/audio/engine_jack.c:768
-#, fuzzy, c-format
+#, c-format
 msgid "JACK: Failed to connect monitor output [%s]: %s"
-msgstr "Échec de la connexion des ports"
+msgstr "JACK : échec de la connexion de la sortie du moniteur [%s] : %s"
 
 #: src/audio/engine_jack.c:769
 msgid "left"
 msgstr "gauche"
 
 #: src/audio/engine_jack.c:769
-#, fuzzy
 msgid "right"
-msgstr "Droite"
+msgstr "droite"
 
 #: src/audio/engine_jack.c:827 src/gui/widgets/monitor_section.c:237
-#, fuzzy
 msgid "Failed to connect to left monitor output port"
-msgstr "Échec de la connexion des ports"
+msgstr "Échec de la connexion au port de sortie du moniteur gauche"
 
 #: src/audio/engine_jack.c:835 src/gui/widgets/monitor_section.c:246
-#, fuzzy
 msgid "Failed to connect to right monitor output port"
-msgstr "Échec de la connexion des ports"
+msgstr "Échec de la connexion au port de sortie du moniteur droit"
 
 #: src/audio/curve.c:308
 msgid "Exponential"
@@ -2402,9 +2383,8 @@ msgid "Invalid positions - skipping function"
 msgstr "Positions non valides - fonction ignorée"
 
 #: src/audio/audio_function.c:498
-#, fuzzy
 msgid "Failed to get audio clip from external program"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de l'obtention d'un clip audio à partir d'un programme externe"
 
 #: src/audio/audio_function.c:523
 msgid "Failed to apply plugin"
@@ -2423,60 +2403,49 @@ msgstr ""
 "plus de détails."
 
 #: src/audio/track.c:326
-#, fuzzy
 msgid "Track record"
-msgstr "Enregistrer la piste"
+msgstr "Enregistrement de la piste"
 
 #: src/audio/track.c:445
-#, fuzzy
 msgid "Failed to clone modulator plugin"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Échec du clonage du greffon du modulateur"
 
 #: src/audio/track.c:474
-#, fuzzy
 msgid "Failed to clone channel"
-msgstr "Impossible de voir le schéma %s"
+msgstr "Échec du clonage du canal"
 
 #: src/audio/track.c:853
-#, fuzzy
 msgid "Cannot set track muted"
-msgstr "Ne peut pas être routé"
+msgstr "Impossible de mettre la piste en sourdine"
 
 #: src/audio/track.c:897
-#, fuzzy
 msgid "Cannot set track folded"
-msgstr "Ne peut pas être routé"
+msgstr "Impossible de régler la piste pliée"
 
 #: src/audio/track.c:1409
-#, fuzzy
 msgid "Cannot set track soloed"
-msgstr "Ne peut pas être routé"
+msgstr "Impossible de mettre la piste en solo"
 
 #: src/audio/track.c:1459
-#, fuzzy
 msgid "Cannot set track listened"
-msgstr "Ne peut pas être routé"
+msgstr "Impossible de définir la piste écoutée"
 
 #: src/audio/track.c:2892 src/settings/plugin_settings.c:392
 #: src/settings/plugin_settings.c:434
-#, fuzzy
 msgid "Failed to rename track"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Impossible de renommer la piste"
 
 #: src/audio/track.c:3252 src/audio/track.c:3297
-#, fuzzy
 msgid "Cannot set track comment"
-msgstr "Ne peut pas être routé"
+msgstr "Impossible de paramétrer le commentaire de piste"
 
 #: src/audio/track.c:3333
-#, fuzzy
 msgid "Cannot set track icon"
-msgstr "Ne peut pas être routé"
+msgstr "Impossible de paramétrer l'icône de piste"
 
 #: src/audio/track.c:3567
-#, fuzzy
 msgid "Cannot set track enabled"
-msgstr "Ne peut pas être routé"
+msgstr "Impossible de paramétrer la piste activée"
 
 #: src/audio/automation_track.c:163
 msgid "Rec"
@@ -2577,14 +2546,12 @@ msgstr ""
 "dB)."
 
 #: src/audio/exporter.c:1020 src/audio/exporter.c:1027
-#, fuzzy
 msgid "Failed to create audio track"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Impossible de créer une piste audio"
 
 #: src/audio/exporter.c:1059
-#, fuzzy
 msgid "Invalid time range"
-msgstr "Nom invalide"
+msgstr "Plage de temps non valide"
 
 #: src/audio/engine_pulse.c:88
 msgid ""
@@ -2619,14 +2586,13 @@ msgid "Chords"
 msgstr "Accords"
 
 #: src/audio/clip.c:425
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write audio clip to file: %s"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de l'écriture du clip audio dans le fichier : %s"
 
 #: src/audio/clip.c:494
-#, fuzzy
 msgid "Failed to write audio file"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de l'écriture du fichier audio"
 
 #: src/audio/clip.c:659
 msgid "Edit in external app"
@@ -2654,9 +2620,8 @@ msgid "Beat unit"
 msgstr "Unité de battement"
 
 #: src/audio/tempo_track.c:185
-#, fuzzy
 msgid "Failed to change BPM"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de modification du BPM"
 
 #: src/audio/automation_point.c:241 src/gui/widgets/item_factory.c:325
 #: src/gui/widgets/item_factory.c:349
@@ -2664,19 +2629,17 @@ msgid "Invalid value"
 msgstr "Valeur invalide"
 
 #: src/audio/recording_manager.c:144
-#, fuzzy
 msgid "Failed to create recorded regions"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la création de régions enregistrées"
 
 #: src/audio/pool.c:520
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write clip %s"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de l'écriture du clip %s"
 
 #: src/audio/audio_region.c:227
-#, fuzzy
 msgid "Failed to duplicate audio clip"
-msgstr "Échec de la duplication de l'automatisation"
+msgstr "Échec de la duplication du clip audio"
 
 #: src/audio/engine_alsa.c:328
 #, c-format
@@ -2689,24 +2652,21 @@ msgid "Lane %d"
 msgstr "Voie %d"
 
 #: src/audio/track_lane.c:95
-#, fuzzy
 msgid "Failed to rename lane"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec de renommage de la ligne"
 
 #: src/audio/track_lane.c:142
-#, fuzzy
 msgid "Cannot set track lane soloed"
-msgstr "Ne peut pas être routé"
+msgstr "Impossible de définir la ligne de piste en solo"
 
 #: src/audio/track_lane.c:190
-#, fuzzy
 msgid "Cannot set track lane muted"
-msgstr "Ne peut pas être routé"
+msgstr "Impossible de définir la ligne de piste en sourdine"
 
 #: src/audio/sample_processor.c:560
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to instantiate plugin %s"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Échec de l'instanciation du greffon %s"
 
 #: src/audio/channel_send.c:84
 #, c-format
@@ -2739,7 +2699,6 @@ msgid "Channel Send %d MIDI out"
 msgstr "Le canal à envoyé %d MIDI en sortie"
 
 #: src/audio/channel_send.c:420 src/audio/channel_send.c:477
-#, fuzzy
 msgid "Ports cannot be connected"
 msgstr "Ces ports ne peuvent pas être connectés"
 
@@ -2800,43 +2759,38 @@ msgid "Can only drop audio files on audio tracks"
 msgstr "Seul des fichiers audio peuvent être déposés dans les pistes audio"
 
 #: src/audio/tracklist.c:1455
-#, fuzzy
 msgid "Failed to create arranger objects"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la création d'objets de l'arrangeur"
 
 #: src/audio/tracklist.c:1529
-#, fuzzy
 msgid "Failed to move tracks after copying or moving inside folder"
-msgstr "Copier la piste à l'intérieur"
+msgstr ""
+"Échec du déplacement des pistes après une copie ou un déplacement dans un "
+"dossier"
 
 #: src/audio/tracklist.c:1607
-#, fuzzy
 msgid "Failed to copy tracks inside"
-msgstr "Copier la piste à l'intérieur"
+msgstr "Échec de la copie des pistes à l'intérieur"
 
 #: src/audio/tracklist.c:1649
-#, fuzzy
 msgid "Failed to copy track inside"
-msgstr "Copier la piste à l'intérieur"
+msgstr "Échec de la copie de la piste à l'intérieur"
 
 #: src/audio/tracklist.c:1690
-#, fuzzy
 msgid "Failed to copy tracks"
-msgstr "Copier la piste à l'intérieur"
+msgstr "Échec de la copie des pistes"
 
 #: src/audio/tracklist.c:1715
 msgid "Cannot drag folder into itself"
 msgstr "Impossible de déplacer un dossier dans lui-même"
 
 #: src/audio/tracklist.c:1733 src/audio/tracklist.c:1777
-#, fuzzy
 msgid "Failed to move track inside folder"
-msgstr "Copier la piste à l'intérieur"
+msgstr "Échec du déplacement de la piste dans le dossier"
 
 #: src/audio/tracklist.c:1818
-#, fuzzy
 msgid "Failed to move tracks"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec du déplacement des pistes"
 
 #: src/audio/modulator_macro_processor.c:87
 #, c-format
@@ -2858,9 +2812,8 @@ msgid "MIDI out"
 msgstr "Sortie MIDI"
 
 #: src/gui/backend/mixer_selections.c:621
-#, fuzzy
 msgid "Failed to paste plugins"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec du collage des greffons"
 
 #. TRANSLATORS: Home directory
 #: src/gui/backend/file_manager.c:84
@@ -2873,14 +2826,13 @@ msgid "Desktop"
 msgstr "Bureau"
 
 #: src/gui/backend/tracklist_selections.c:705
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to clone track '%s'"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec du clonage de la piste '%s'"
 
 #: src/gui/backend/tracklist_selections.c:743
-#, fuzzy
 msgid "Failed to paste tracks"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec du collage des pistes"
 
 #: src/gui/backend/event_manager.c:281
 #, c-format
@@ -2896,19 +2848,16 @@ msgid "Plugin preset loaded."
 msgstr "Préréglage du greffon chargé."
 
 #: src/gui/backend/arranger_selections.c:2402
-#, fuzzy
 msgid "Failed to add region"
-msgstr "Échec de l'action refaire"
+msgstr "Échec de l'ajout de la région"
 
 #: src/gui/backend/arranger_selections.c:2439
-#, fuzzy
 msgid "Failed to paste selections"
-msgstr "Collage des sélections impossible"
+msgstr "Échec du collage des sélections"
 
 #: src/gui/backend/arranger_object.c:1802
-#, fuzzy
 msgid "Failed to edit object"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de l'édition d'objet"
 
 #: src/gui/backend/arranger_object.c:3332
 #, c-format
@@ -2916,9 +2865,8 @@ msgid "Invalid object name %s"
 msgstr "Nom d'objet invalide %s"
 
 #: src/gui/backend/arranger_object.c:3363
-#, fuzzy
 msgid "Failed to rename object"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec du renommage de l'objet"
 
 #: src/gui/widgets/inspector_port.c:121 src/gui/widgets/fader.c:275
 #: src/gui/widgets/preferences.c:343 src/gui/widgets/modulator_inner.c:138
@@ -2935,9 +2883,9 @@ msgid "View info"
 msgstr "Voir les infos"
 
 #: src/gui/widgets/inspector_port.c:287
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set control %s to %f"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de l'attribution du contrôle %s à %f"
 
 #: src/gui/widgets/inspector_port.c:335
 msgid "Incoming signals"
@@ -3027,9 +2975,8 @@ msgid "%s - Last object"
 msgstr "%s - Dernier objet"
 
 #: src/gui/widgets/snap_grid.c:100
-#, fuzzy
 msgid "Snap/Grid Settings"
-msgstr "Accrocher/options de la grille"
+msgstr "Paramètres accrochage/grille"
 
 #: src/gui/widgets/bounce_step_selector.c:156
 msgid "Bounce step selector"
@@ -3128,9 +3075,8 @@ msgid "Other"
 msgstr "Autre"
 
 #: src/gui/widgets/preferences.c:775
-#, fuzzy
 msgid "Reset all preferences to initial values."
-msgstr "Remettre toutes les préférences aux valeurs initiales"
+msgstr "Réinitialisation de toutes les préférences aux valeurs initiales."
 
 #: src/gui/widgets/preferences.c:993
 #, c-format
@@ -3162,19 +3108,16 @@ msgid "Report a Bug"
 msgstr "Rapporter un bogue"
 
 #: src/gui/widgets/folder_channel.c:165
-#, fuzzy
 msgid "Failed to move or copy track(s)"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec du déplacement ou de la copie de piste(s)"
 
 #: src/gui/widgets/snap_grid_popover.c:226
-#, fuzzy
 msgid "Position Snap"
-msgstr "Position"
+msgstr "Position d'accrochage"
 
 #: src/gui/widgets/snap_grid_popover.c:249
-#, fuzzy
 msgid "Adaptive Snap"
-msgstr "Grille adaptative"
+msgstr "Accrochage adaptatif"
 
 #: src/gui/widgets/snap_grid_popover.c:252
 msgid ""
@@ -3184,23 +3127,19 @@ msgstr ""
 "type de note"
 
 #: src/gui/widgets/snap_grid_popover.c:268
-#, fuzzy
 msgid "Snap to"
-msgstr "Accrocher à la grille"
+msgstr "Accrocher à"
 
 #: src/gui/widgets/snap_grid_popover.c:271
-#, fuzzy
 msgid "Note size to snap to"
-msgstr "Longueur de la note à quantifier à"
+msgstr "Longueur de la note à laquelle s'accrocher"
 
 #: src/gui/widgets/snap_grid_popover.c:284
 #: src/gui/widgets/snap_grid_popover.c:389
-#, fuzzy
 msgid "Note Type"
 msgstr "Type de note"
 
 #: src/gui/widgets/snap_grid_popover.c:302
-#, fuzzy
 msgid "Keep Offset"
 msgstr "Maintenir le décalage"
 
@@ -3212,14 +3151,12 @@ msgstr ""
 "déplacement vers une nouvelle position"
 
 #: src/gui/widgets/snap_grid_popover.c:326
-#, fuzzy
 msgid "Snap to Events"
 msgstr "Accrocher aux évènements"
 
 #: src/gui/widgets/snap_grid_popover.c:337
-#, fuzzy
 msgid "Default Object Length"
-msgstr "Longueur d'objet de ligne temporelle"
+msgstr "Longueur d'objet par défaut"
 
 #: src/gui/widgets/snap_grid_popover.c:341
 #, fuzzy
