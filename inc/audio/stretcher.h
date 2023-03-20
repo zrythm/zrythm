@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2020 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -69,8 +53,7 @@ typedef struct Stretcher
   bool is_realtime;
 
   /**
-   * Size of the block to process in each
-   * iteration.
+   * Size of the block to process in each iteration.
    *
    * Somewhere around 6k should be fine.
    */
@@ -78,17 +61,15 @@ typedef struct Stretcher
 } Stretcher;
 
 /**
- * Create a new Stretcher using the rubberband
- * backend.
+ * Create a new Stretcher using the rubberband backend.
  *
  * @param samplerate The new samplerate.
- * @param time_ratio The ratio to multiply time by
- *   (eg if the BPM is doubled, this will be 0.5).
- * @param pitch_ratio The ratio to pitch by. This
- *   will normally be 1.0 when time-stretching).
- * @param realtime Whether to perform realtime
- *   stretching (lower quality but fast enough to
- *   be used real-time).
+ * @param time_ratio The ratio to multiply time by (eg if the
+ *   BPM is doubled, this will be 0.5).
+ * @param pitch_ratio The ratio to pitch by. This will normally
+ *   be 1.0 when time-stretching).
+ * @param realtime Whether to perform realtime stretching
+ *   (lower quality but fast enough to be used real-time).
  */
 Stretcher *
 stretcher_new_rubberband (

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <inttypes.h>
@@ -26,6 +26,8 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
+
+#include <rubberband/rubberband-c.h>
 
 typedef enum
 {
@@ -82,6 +84,8 @@ audio_function_get_icon_name_for_type (AudioFunctionType type)
     case AUDIO_FUNCTION_INVERT:
       return "edit-select-invert";
     case AUDIO_FUNCTION_REVERSE:
+      return "path-reverse";
+    case AUDIO_FUNCTION_PITCH_SHIFT:
       return "path-reverse";
     case AUDIO_FUNCTION_NORMALIZE_PEAK:
       return "kt-set-max-upload-speed";
@@ -319,22 +323,22 @@ apply_plugin (
 /**
  * Applies the given action to the given selections.
  *
- * This will save a file in the pool and store the
- * pool ID in the selections.
+ * This will save a file in the pool and store the pool ID in
+ * the selections.
  *
  * @param sel Selections to edit.
- * @param type Function type. If invalid is passed,
- *   this will simply add the audio file in the pool
- *   for the unchanged audio material (used in
- *   audio selection actions for the selections
- *   before the change).
+ * @param type Function type. If invalid is passed, this will
+ *   simply add the audio file in the pool for the unchanged
+ *   audio material (used in audio selection actions for the
+ *   selections before the change).
  *
- * @return Non-zero if error.
+ * @return Whether successful.
  */
-int
+bool
 audio_function_apply (
   ArrangerSelections * sel,
   AudioFunctionType    type,
+  AudioFunctionOpts    opts,
   const char *         uri,
   GError **            error)
 {
@@ -344,12 +348,12 @@ audio_function_apply (
   AudioSelections * audio_sel = (AudioSelections *) sel;
 
   ZRegion * r = region_find (&audio_sel->region_id);
-  g_return_val_if_fail (r, -1);
+  g_return_val_if_fail (r, false);
   Track * tr =
     arranger_object_get_track ((ArrangerObject *) r);
-  g_return_val_if_fail (tr, -1);
+  g_return_val_if_fail (tr, false);
   AudioClip * orig_clip = audio_region_get_clip (r);
-  g_return_val_if_fail (orig_clip, -1);
+  g_return_val_if_fail (orig_clip, false);
 
   Position init_pos;
   position_init (&init_pos);
@@ -364,7 +368,7 @@ audio_function_apply (
         error, Z_AUDIO_AUDIO_FUNCTION_ERROR,
         Z_AUDIO_AUDIO_FUNCTION_ERROR_INVALID_POSITIONS,
         _ ("Invalid positions - skipping function"));
-      return -1;
+      return false;
     }
 
   /* adjust the positions */
@@ -420,7 +424,7 @@ audio_function_apply (
     ", "
     "nudge_frames %" PRIu64,
     num_frames, nudge_frames);
-  z_return_val_if_fail_cmp (nudge_frames, >, 0, -1);
+  z_return_val_if_fail_cmp (nudge_frames, >, 0, false);
 
   switch (type)
     {
@@ -452,7 +456,7 @@ audio_function_apply (
         num_frames * channels, 0.f);
       break;
     case AUDIO_FUNCTION_NUDGE_LEFT:
-      g_return_val_if_fail (num_frames > nudge_frames, -1);
+      g_return_val_if_fail (num_frames > nudge_frames, false);
       num_frames_excl_nudge =
         num_frames - (size_t) nudge_frames;
       dsp_copy (
@@ -464,7 +468,7 @@ audio_function_apply (
         nudge_frames_all_channels);
       break;
     case AUDIO_FUNCTION_NUDGE_RIGHT:
-      g_return_val_if_fail (num_frames > nudge_frames, -1);
+      g_return_val_if_fail (num_frames > nudge_frames, false);
       num_frames_excl_nudge =
         num_frames - (size_t) nudge_frames;
       dsp_copy (
@@ -482,6 +486,120 @@ audio_function_apply (
             num_frames);
         }
       break;
+    case AUDIO_FUNCTION_PITCH_SHIFT:
+      {
+        use_interleaved = false;
+        RubberBandState   rubberband_state;
+        RubberBandOptions rubberband_opts =
+          RubberBandOptionProcessOffline
+        /* use finer engine if rubberband v3 */
+#if RUBBERBAND_API_MAJOR_VERSION > 2 \
+  || (RUBBERBAND_API_MAJOR_VERSION == 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
+          | RubberBandOptionEngineFiner
+#endif
+          | RubberBandOptionPitchHighQuality
+          | RubberBandOptionFormantPreserved
+          | RubberBandOptionThreadingAlways
+          | RubberBandOptionChannelsApart;
+        rubberband_state = rubberband_new (
+          AUDIO_ENGINE->sample_rate, channels,
+          rubberband_opts, 1.0, opts.amount);
+        const size_t max_process_size = 8192;
+        rubberband_set_debug_level (rubberband_state, 2);
+        rubberband_set_max_process_size (
+          rubberband_state, max_process_size);
+        rubberband_set_expected_input_duration (
+          rubberband_state, num_frames);
+        rubberband_study (
+          rubberband_state,
+          (const float * const *) ch_src_frames, num_frames,
+          true);
+        size_t samples_fed = 0;
+        size_t frames_read = 0;
+        while (frames_read < num_frames)
+          {
+            unsigned int samples_required = MIN (
+              num_frames - samples_fed, max_process_size);
+            /*rubberband_get_samples_required (*/
+            /*rubberband_state));*/
+            float * tmp_in_arrays[2] = {
+              &ch_src_frames[0][samples_fed],
+              &ch_src_frames[1][samples_fed]
+            };
+            samples_fed += samples_required;
+            g_message (
+              "samples required: %u (total fed %zu), latency: %u",
+              samples_required, samples_fed,
+              rubberband_get_latency (rubberband_state));
+            if (samples_required > 0)
+              {
+                rubberband_process (
+                  rubberband_state,
+                  (const float * const *) tmp_in_arrays,
+                  samples_required, samples_fed == num_frames);
+              }
+            for (;;)
+              {
+                int avail =
+                  rubberband_available (rubberband_state);
+                if (avail == 0)
+                  {
+                    g_message ("avail == 0");
+                    break;
+                  }
+                else if (avail == -1)
+                  {
+                    g_message ("avail == -1");
+                    /* FIXME for some reason rubberband
+                     * skips the last few samples when the
+                     * pitch ratio is < 1.0
+                     * this workaround just keeps the copied
+                     * original samples at the end and should
+                     * be fixed eventually */
+                    frames_read = num_frames;
+                    break;
+#if 0
+                    g_set_error_literal (
+                      error, Z_AUDIO_AUDIO_FUNCTION_ERROR,
+                      Z_AUDIO_AUDIO_FUNCTION_ERROR_FAILED,
+                      "rubberband: finished prematurely");
+                    return false;
+#endif
+                  }
+                float * tmp_out_arrays[2] = {
+                  &ch_dest_frames[0][frames_read],
+                  &ch_dest_frames[1][frames_read]
+                };
+                size_t retrieved_out_samples =
+                  rubberband_retrieve (
+                    rubberband_state, tmp_out_arrays,
+                    (unsigned int) avail);
+                if ((int) retrieved_out_samples != avail)
+                  {
+                    g_set_error (
+                      error, Z_AUDIO_AUDIO_FUNCTION_ERROR,
+                      Z_AUDIO_AUDIO_FUNCTION_ERROR_FAILED,
+                      "rubberband: retrieved out samples (%zu) != available samples (%d)",
+                      retrieved_out_samples, avail);
+                    return false;
+                  }
+                frames_read += retrieved_out_samples;
+                g_message (
+                  "retrieved out samples %zu, frames read %zu",
+                  retrieved_out_samples, frames_read);
+              }
+          }
+        if (frames_read != num_frames)
+          {
+            g_set_error (
+              error, Z_AUDIO_AUDIO_FUNCTION_ERROR,
+              Z_AUDIO_AUDIO_FUNCTION_ERROR_FAILED,
+              "rubberband: expected %zu frames but read %zu",
+              num_frames, frames_read);
+            return false;
+          }
+      }
+      break;
     case AUDIO_FUNCTION_EXT_PROGRAM:
       {
         AudioClip * tmp_clip = audio_clip_new_from_float_array (
@@ -496,7 +614,7 @@ audio_function_apply (
             PROPAGATE_PREFIXED_ERROR (
               error, err, "%s",
               _ ("Failed to get audio clip from external program"));
-            return -1;
+            return false;
           }
         dsp_copy (
           &dest_frames[0], &tmp_clip->frames[0],
@@ -513,7 +631,7 @@ audio_function_apply (
       break;
     case AUDIO_FUNCTION_CUSTOM_PLUGIN:
       {
-        g_return_val_if_fail (uri, -1);
+        g_return_val_if_fail (uri, false);
         GError * err = NULL;
         int      ret = apply_plugin (
           uri, dest_frames, num_frames, channels, &err);
@@ -521,7 +639,7 @@ audio_function_apply (
           {
             PROPAGATE_PREFIXED_ERROR (
               error, err, "%s", _ ("Failed to apply plugin"));
-            return ret;
+            return false;
           }
       }
       break;
@@ -572,7 +690,7 @@ audio_function_apply (
       PROPAGATE_PREFIXED_ERROR (
         error, err, "%s",
         "Failed to write audio clip to pool");
-      return -1;
+      return false;
     }
 
   audio_sel->pool_id = clip->pool_id;
@@ -588,7 +706,7 @@ audio_function_apply (
           PROPAGATE_PREFIXED_ERROR (
             error, err, "%s",
             "Failed to replace region frames");
-          return -1;
+          return false;
         }
     }
 
@@ -598,6 +716,12 @@ audio_function_apply (
     {
       /* set last action */
       g_settings_set_int (S_UI, "audio-function", type);
+      if (type == AUDIO_FUNCTION_PITCH_SHIFT)
+        {
+          g_settings_set_double (
+            S_UI, "audio-function-pitch-shift-ratio",
+            opts.amount);
+        }
     }
 
   /* free allocated memory */
@@ -611,5 +735,5 @@ audio_function_apply (
 
   EVENTS_PUSH (ET_EDITOR_FUNCTION_APPLIED, NULL);
 
-  return 0;
+  return true;
 }

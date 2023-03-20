@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -34,6 +34,7 @@ typedef enum AudioFunctionType
   AUDIO_FUNCTION_NUDGE_LEFT,
   AUDIO_FUNCTION_NUDGE_RIGHT,
   AUDIO_FUNCTION_REVERSE,
+  AUDIO_FUNCTION_PITCH_SHIFT,
 
   /** External program. */
   AUDIO_FUNCTION_EXT_PROGRAM,
@@ -58,11 +59,21 @@ static const cyaml_strval_t audio_function_type_strings[] = {
   { __ ("Nudge left"),       AUDIO_FUNCTION_NUDGE_LEFT     },
   { __ ("Nudge right"),      AUDIO_FUNCTION_NUDGE_RIGHT    },
   { __ ("Reverse"),          AUDIO_FUNCTION_REVERSE        },
+  { __ ("Pitch shift"),      AUDIO_FUNCTION_PITCH_SHIFT    },
   { __ ("External program"), AUDIO_FUNCTION_EXT_PROGRAM    },
   { __ ("Guile script"),     AUDIO_FUNCTION_GUILE_SCRIPT   },
   { __ ("Custom plugin"),    AUDIO_FUNCTION_CUSTOM_PLUGIN  },
   { __ ("Invalid"),          AUDIO_FUNCTION_INVALID        },
 };
+
+typedef struct AudioFunctionOpts
+{
+  /**
+   * Amount related to the current function (e.g. pitch shift).
+   */
+  double amount;
+
+} AudioFunctionOpts;
 
 static inline const char *
 audio_function_type_to_string (AudioFunctionType type)
@@ -94,8 +105,8 @@ const char *
 audio_function_get_icon_name_for_type (AudioFunctionType type);
 
 /**
- * Returns the URI of the plugin responsible for
- * handling the type, if any.
+ * Returns the URI of the plugin responsible for handling the
+ * type, if any.
  */
 static inline const char *
 audio_function_get_plugin_uri_for_type (AudioFunctionType type)
@@ -112,22 +123,22 @@ audio_function_get_plugin_uri_for_type (AudioFunctionType type)
 /**
  * Applies the given action to the given selections.
  *
- * This will save a file in the pool and store the
- * pool ID in the selections.
+ * This will save a file in the pool and store the pool ID in
+ * the selections.
  *
  * @param sel Selections to edit.
- * @param type Function type. If invalid is passed,
- *   this will simply add the audio file in the pool
- *   for the unchanged audio material (used in
- *   audio selection actions for the selections
- *   before the change).
+ * @param type Function type. If invalid is passed, this will
+ *   simply add the audio file in the pool for the unchanged
+ *   audio material (used in audio selection actions for the
+ *   selections before the change).
  *
- * @return Non-zero if error.
+ * @return Whether successful.
  */
-int
+bool
 audio_function_apply (
   ArrangerSelections * sel,
   AudioFunctionType    type,
+  AudioFunctionOpts    opts,
   const char *         uri,
   GError **            error);
 

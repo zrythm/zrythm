@@ -215,7 +215,6 @@ audio_region_replace_frames (
     {
       g_warn_if_reached ();
 
-      /* TODO delete */
       int      prev_id = clip->pool_id;
       GError * err = NULL;
       int      id = audio_pool_duplicate_clip (

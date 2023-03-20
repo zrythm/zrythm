@@ -82,17 +82,17 @@ typedef void (*GenericFloatSetter) (void * object, float val);
 typedef const char * (*GenericStringGetter) (void * object);
 
 /**
+ * Setter prototype for float values.
+ */
+typedef void (
+  *GenericStringSetter) (void * object, const char * val);
+
+/**
  * Getter prototype for strings to be saved in the
  * given buffer.
  */
 typedef void (
   *GenericStringCopyGetter) (void * object, char * buf);
-
-/**
- * Setter prototype for float values.
- */
-typedef void (
-  *GenericStringSetter) (void * object, const char * val);
 
 /**
  * Generic callback.

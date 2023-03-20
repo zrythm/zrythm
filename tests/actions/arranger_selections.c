@@ -1668,13 +1668,16 @@ test_audio_functions (void)
   verify_audio_function (orig_frames, frames_per_channel);
 
   /* invert */
+  AudioFunctionOpts opts = {};
   arranger_selections_action_perform_edit_audio_function (
     (ArrangerSelections *) AUDIO_SELECTIONS,
-    AUDIO_FUNCTION_INVERT, NULL, NULL);
+    AUDIO_FUNCTION_INVERT, opts, NULL, NULL);
 
   verify_audio_function (inverted_frames, frames_per_channel);
 
   test_project_save_and_reload ();
+
+  verify_audio_function (inverted_frames, frames_per_channel);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
 
@@ -3409,6 +3412,9 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test audio functions",
+    (GTestFunc) test_audio_functions);
+  g_test_add_func (
     TEST_PREFIX "test delete automation points",
     (GTestFunc) test_delete_automation_points);
   g_test_add_func (
@@ -3417,9 +3423,6 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test copy and move automation regions",
     (GTestFunc) test_copy_and_move_automation_regions);
-  g_test_add_func (
-    TEST_PREFIX "test audio functions",
-    (GTestFunc) test_audio_functions);
   g_test_add_func (
     TEST_PREFIX "test move audio_region_and lower samplerate",
     (GTestFunc) test_move_audio_region_and_lower_samplerate);

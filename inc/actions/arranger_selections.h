@@ -582,6 +582,7 @@ WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_edit_audio_function (
   ArrangerSelections * sel_before,
   AudioFunctionType    audio_func_type,
+  AudioFunctionOpts    opts,
   const char *         uri,
   GError **            error);
 
@@ -789,6 +790,7 @@ bool
 arranger_selections_action_perform_edit_audio_function (
   ArrangerSelections * sel_before,
   AudioFunctionType    audio_func_type,
+  AudioFunctionOpts    opts,
   const char *         uri,
   GError **            error);
 

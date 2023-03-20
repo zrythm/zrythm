@@ -585,6 +585,11 @@ Args:
                  "audio-function" "i" "0"
                  "Last used audio function"
                  "Last used audio function (index corresponding to enum in audio function action).")
+               (make-schema-key-with-range
+                 "audio-function-pitch-shift-ratio" "d"
+                 "0.001" "100.0" "1.0"
+                 "Last used pitch shift ratio"
+                 "Last used pitch shift ratio.")
                (make-schema-key
                  "timeline-playhead-scroll-edges" "b"
                  "true"

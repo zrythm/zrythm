@@ -109,6 +109,7 @@
 #include "utils/localization.h"
 #include "utils/log.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "utils/progress_info.h"
 #include "utils/resources.h"
 #include "utils/stack.h"
@@ -2451,7 +2452,10 @@ do_automation_func (AutomationFunctionType type)
  * @param uri Plugin URI, if applying plugin.
  */
 static void
-do_audio_func (const AudioFunctionType type, const char * uri)
+do_audio_func (
+  const AudioFunctionType type,
+  const AudioFunctionOpts opts,
+  const char *            uri)
 {
   g_return_if_fail (region_find (&CLIP_EDITOR->region_id));
   AUDIO_SELECTIONS->region_id = CLIP_EDITOR->region_id;
@@ -2475,17 +2479,48 @@ do_audio_func (const AudioFunctionType type, const char * uri)
   zix_sem_wait (&PROJECT->save_sem);
 
   ret = arranger_selections_action_perform_edit_audio_function (
-    sel, type, uri, &err);
+    sel, type, opts, uri, &err);
   if (!ret)
     {
       HANDLE_ERROR (
-        err, "%s", _ ("Failed to apply automation function"));
+        err, "%s", _ ("Failed to apply audio function"));
     }
 
   zix_sem_post (&PROJECT->save_sem);
 
 free_audio_sel_and_return:
   arranger_selections_free (sel);
+}
+
+static void
+set_pitch_ratio (void * object, const char * ratio_str)
+{
+  double ratio = strtod (ratio_str, NULL);
+  if (ratio < 0.0001 || ratio > 100.0)
+    {
+      ui_show_error_message (
+        false, _ ("Please enter a valid ratio."));
+      return;
+    }
+
+  AudioFunctionOpts opts;
+  opts.amount = ratio;
+  do_audio_func (AUDIO_FUNCTION_PITCH_SHIFT, opts, NULL);
+}
+
+static const char *
+get_pitch_ratio (void * object)
+{
+  static char * pitch_ratio = NULL;
+  if (pitch_ratio == NULL)
+    {
+      g_free_and_null (pitch_ratio);
+    }
+  pitch_ratio = g_strdup_printf (
+    "%f",
+    g_settings_get_double (
+      S_UI, "audio-function-pitch-shift-ratio"));
+  return pitch_ratio;
 }
 
 DEFINE_SIMPLE (activate_editor_function)
@@ -2572,19 +2607,48 @@ DEFINE_SIMPLE (activate_editor_function)
         bool done = false;
         if (string_is_equal (str, "current"))
           {
-            do_audio_func (
-              g_settings_get_int (S_UI, "audio-function"),
-              NULL);
+            AudioFunctionOpts opts;
+            AudioFunctionType type =
+              g_settings_get_int (S_UI, "audio-function");
+            switch (type)
+              {
+              case AUDIO_FUNCTION_PITCH_SHIFT:
+                opts.amount = g_settings_get_double (
+                  S_UI, "audio-function-pitch-shift-ratio");
+                break;
+              default:
+                break;
+              }
+            do_audio_func (type, opts, NULL);
             done = true;
           }
 
-        for (int i = AUDIO_FUNCTION_INVERT;
+        for (AudioFunctionType i = AUDIO_FUNCTION_INVERT;
              i < AUDIO_FUNCTION_CUSTOM_PLUGIN; i++)
           {
             char * audio_func_target =
               audio_function_get_action_target_for_type (i);
             if (string_is_equal (str, audio_func_target))
-              do_audio_func (i, NULL);
+              {
+                switch (i)
+                  {
+                  case AUDIO_FUNCTION_PITCH_SHIFT:
+                    {
+                      StringEntryDialogWidget * dialog =
+                        string_entry_dialog_widget_new (
+                          _ ("Pitch Ratio"), NULL,
+                          (GenericStringGetter) get_pitch_ratio,
+                          (GenericStringSetter) set_pitch_ratio);
+                      gtk_window_present (GTK_WINDOW (dialog));
+                      g_free (audio_func_target);
+                    }
+                    return;
+                  default:
+                    AudioFunctionOpts opts = {};
+                    do_audio_func (i, opts, NULL);
+                    break;
+                  }
+              }
             g_free (audio_func_target);
             done = true;
           }
@@ -2618,7 +2682,9 @@ DEFINE_SIMPLE (activate_editor_function_lv2)
       break;
     case REGION_TYPE_AUDIO:
       {
-        do_audio_func (AUDIO_FUNCTION_CUSTOM_PLUGIN, str);
+        AudioFunctionOpts opts = {};
+        do_audio_func (
+          AUDIO_FUNCTION_CUSTOM_PLUGIN, opts, str);
       }
       break;
     default:
@@ -2897,10 +2963,11 @@ DEFINE_SIMPLE (activate_nudge_selection)
 
   if (sel->type == ARRANGER_SELECTIONS_TYPE_AUDIO)
     {
+      AudioFunctionOpts opts = {};
       do_audio_func (
         left ? AUDIO_FUNCTION_NUDGE_LEFT
              : AUDIO_FUNCTION_NUDGE_RIGHT,
-        NULL);
+        opts, NULL);
       return;
     }
 
@@ -2954,6 +3021,19 @@ DEFINE_SIMPLE (activate_timeline_function)
 {
   AudioFunctionType type =
     (AudioFunctionType) g_variant_get_int32 (variant);
+  AudioFunctionOpts opts;
+  /* FIXME need to show a dialog here too to ask for the
+   * pitch shift amount
+   * TODO refactor code to avoid duplicating the code here */
+  switch (type)
+    {
+    case AUDIO_FUNCTION_PITCH_SHIFT:
+      opts.amount = g_settings_get_double (
+        S_UI, "audio-function-pitch-shift-ratio");
+      break;
+    default:
+      break;
+    }
 
   for (int i = 0; i < TL_SELECTIONS->num_regions; i++)
     {
@@ -2982,7 +3062,7 @@ DEFINE_SIMPLE (activate_timeline_function)
       GError * err = NULL;
       bool     ret =
         arranger_selections_action_perform_edit_audio_function (
-          (ArrangerSelections *) sel, type, NULL, &err);
+          (ArrangerSelections *) sel, type, opts, NULL, &err);
       if (!ret)
         {
           HANDLE_ERROR (

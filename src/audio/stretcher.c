@@ -36,17 +36,15 @@
 #include <gtk/gtk.h>
 
 /**
- * Create a new Stretcher using the rubberband
- * backend.
+ * Create a new Stretcher using the rubberband backend.
  *
  * @param samplerate The new samplerate.
- * @param time_ratio The ratio to multiply time by
- *   (eg if the BPM is doubled, this will be 0.5).
- * @param pitch_ratio The ratio to pitch by. This
- *   will normally be 1.0 when time-stretching).
- * @param realtime Whether to perform realtime
- *   stretching (lower quality but fast enough to
- *   be used real-time).
+ * @param time_ratio The ratio to multiply time by (eg if the
+ *   BPM is doubled, this will be 0.5).
+ * @param pitch_ratio The ratio to pitch by. This will normally
+ *   be 1.0 when time-stretching).
+ * @param realtime Whether to perform realtime stretching
+ *   (lower quality but fast enough to be used real-time).
  */
 Stretcher *
 stretcher_new_rubberband (

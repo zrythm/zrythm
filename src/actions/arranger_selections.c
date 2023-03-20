@@ -620,6 +620,7 @@ UndoableAction *
 arranger_selections_action_new_edit_audio_function (
   ArrangerSelections * sel_before,
   AudioFunctionType    audio_func_type,
+  AudioFunctionOpts    opts,
   const char *         uri,
   GError **            error)
 {
@@ -629,9 +630,10 @@ arranger_selections_action_new_edit_audio_function (
 
   g_debug ("saving file before applying audio func...");
   GError * err = NULL;
-  int      ret = audio_function_apply (
-    sel_before_clone, AUDIO_FUNCTION_INVALID, NULL, &err);
-  if (ret != 0)
+  bool     success = audio_function_apply (
+    sel_before_clone, AUDIO_FUNCTION_INVALID, opts, NULL,
+    &err);
+  if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (
         error, err, "%s",
@@ -643,9 +645,9 @@ arranger_selections_action_new_edit_audio_function (
   ArrangerSelections * sel_after =
     arranger_selections_clone (sel_before);
   g_debug ("applying actual audio func...");
-  ret = audio_function_apply (
-    sel_after, audio_func_type, uri, &err);
-  if (ret != 0)
+  success = audio_function_apply (
+    sel_after, audio_func_type, opts, uri, &err);
+  if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (
         error, err, "%s",
@@ -1068,12 +1070,13 @@ bool
 arranger_selections_action_perform_edit_audio_function (
   ArrangerSelections * sel_before,
   AudioFunctionType    audio_func_type,
+  AudioFunctionOpts    opts,
   const char *         uri,
   GError **            error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
     arranger_selections_action_new_edit_audio_function, error,
-    sel_before, audio_func_type, uri, error);
+    sel_before, audio_func_type, opts, uri, error);
 }
 
 bool
