@@ -36,7 +36,7 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
     return;
 
   memset (*ptr, 0, sz);
-  g_slice_free1 (sz, *ptr);
+  free (*ptr);
   *ptr = NULL;
 }
 
@@ -52,8 +52,11 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
  * support resizing.
  *
  * Must be free'd with object_free_unresizable().
+ *
+ * @note g_slice_*() API was removed from glib so use the
+ * same mechanism as above for now.
  */
-#define object_new_unresizable(type) g_slice_new0 (type)
+#define object_new_unresizable(type) object_new (type)
 
 /**
  * Calloc equivalent.
@@ -92,8 +95,7 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
  *
  * @note Prefer object_zero_and_free_unresizable().
  */
-#define object_free_unresizable(type, obj) \
-  g_slice_free (type, obj)
+#define object_free_unresizable(type, obj) free (obj)
 
 /**
  * Zero's out a struct pointed to by \ref ptr and
