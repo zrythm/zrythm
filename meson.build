@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 project (
@@ -157,6 +157,7 @@ language_mappings = {
   'ja': '日本語',
   'ko': '한국어',
   'nb_NO': 'Bokmål',
+  'mk': 'македонски',
   'nl': 'Nederlands',
   'pl': 'Polski',
   'pt': 'Português',

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-02-09 19:06+0900\n"
+"POT-Creation-Date: 2023-03-20 21:11+0900\n"
 "PO-Revision-Date: 2022-03-06 09:46+0000\n"
 "Last-Translator: Anthony V. <batmanplayer123@gmail.com>\n"
 "Language: el\n"
@@ -3916,31 +3916,40 @@ msgstr ""
 "Για μεγάλα έργα, μπορεί να πάρει λίγη ώρα για να παράξει το γράφημα PNG και "
 "η συνεπαγόμενη εικόνα θα είναι πάρα πολύ μεγάλη."
 
-#: ../../getting-started/faq.rst:9
+#: ../../getting-started/faq.rst:15
 msgid "Frequently Asked Questions"
 msgstr ""
 
-#: ../../getting-started/faq.rst:12 ../../zrythm-interface/main-toolbar.rst:84
+#: ../../getting-started/faq.rst:18 ../../zrythm-interface/main-toolbar.rst:84
 msgid "About"
 msgstr ""
 
-#: ../../getting-started/faq.rst:15
+#: ../../getting-started/faq.rst:21
 msgid "What is Zrythm?"
 msgstr ""
 
-#: ../../getting-started/faq.rst:17
+#: ../../getting-started/faq.rst:23
 msgid ""
 "Zrythm is software for composing, recording, editing, arranging, mixing and "
-"mastering audio and MIDI data. Such software is commonly referred to as "
-"digital audio workstations (DAWs). Zrythm provides all the tools needed to "
+"mastering audio and MIDI data. Such software is commonly referred to as a "
+"digital audio workstation (DAW). Zrythm provides all the tools needed to "
 "create entire tracks."
 msgstr ""
 
-#: ../../getting-started/faq.rst:61
+#: ../../getting-started/faq.rst:29
+msgid "How do I pronounce it?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:31
+#, fuzzy
+msgid "Zee-rhythm."
+msgstr "zrythm"
+
+#: ../../getting-started/faq.rst:72
 msgid "Is it free?"
 msgstr ""
 
-#: ../../getting-started/faq.rst:63
+#: ../../getting-started/faq.rst:74
 msgid ""
 "Zrythm is free as in *freedom* (:term:`Free software`). If you purchase a "
 "binary from us, there is a cost involved but you can also get Zrythm for "
@@ -3948,42 +3957,83 @@ msgid ""
 "distribution."
 msgstr ""
 
-#: ../../getting-started/faq.rst:69
+#: ../../getting-started/faq.rst:80
 msgid "When will v1 be released?"
 msgstr ""
 
-#: ../../getting-started/faq.rst:71
+#: ../../getting-started/faq.rst:82
 msgid "When all bugs and features marked as `v1rc` are completed:"
 msgstr ""
 
-#: ../../getting-started/faq.rst:73
+#: ../../getting-started/faq.rst:84
 msgid "https://todo.sr.ht/~alextee/zrythm-feature"
 msgstr ""
 
-#: ../../getting-started/faq.rst:74
+#: ../../getting-started/faq.rst:85
 msgid "https://todo.sr.ht/~alextee/zrythm-bug"
 msgstr ""
 
-#: ../../getting-started/faq.rst:77
+#: ../../getting-started/faq.rst:88
 #, fuzzy
 msgid "Usage"
 msgstr "Εύρος"
 
-#: ../../getting-started/faq.rst:80
+#: ../../getting-started/faq.rst:91
+msgid "Can I use ASIO?"
+msgstr ""
+
+#: ../../getting-started/faq.rst:93
+msgid ""
+"*Short answer: Yes, but you have to do it yourself and you may not "
+"distribute the build to anyone else.*"
+msgstr ""
+
+#: ../../getting-started/faq.rst:96
+msgid ""
+"The ASIO technology was developed by German company Steinberg and is "
+"protected by a licensing agreement which prevents redistribution of its "
+"source code."
+msgstr ""
+
+#: ../../getting-started/faq.rst:100
+msgid ""
+"Zrythm contains code under AGPL/GPL which requires all source code "
+"(including source code of used libraries) to be disclosed, and therefore it "
+"is illegal to provide builds with ASIO support."
+msgstr ""
+
+#: ../../getting-started/faq.rst:105
+msgid ""
+"However, Zrythm supports the JACK and RtAudio backends, which optionally "
+"support ASIO. As we cannot distribute these libraries with ASIO support "
+"along with Zrythm, you must obtain them yourself (for example by building "
+"them from source with ASIO support) and make Zrythm use those."
+msgstr ""
+
+#: ../../getting-started/faq.rst:111
+msgid ""
+"Zrythm with ASIO support is NON-DISTRIBUTABLE. You may NOT copy or "
+"distribute builds including ASIO support to anyone else. The build is "
+"strictly for your own personal (private or commercial) use. For the same "
+"reasons, the Zrythm team cannot distribute builds of Zrythm including ASIO "
+"support."
+msgstr ""
+
+#: ../../getting-started/faq.rst:119
 msgid "How do I add external plugins?"
 msgstr ""
 
-#: ../../getting-started/faq.rst:82
+#: ../../getting-started/faq.rst:121
 msgid ""
 "See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and :ref:"
 "`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
 msgstr ""
 
-#: ../../getting-started/faq.rst:86
+#: ../../getting-started/faq.rst:125
 msgid "How do I import an audio/MIDI file?"
 msgstr ""
 
-#: ../../getting-started/faq.rst:88
+#: ../../getting-started/faq.rst:127
 msgid "See :ref:`plugins-files/audio-midi-files/file-browser:Importing Files`."
 msgstr ""
 

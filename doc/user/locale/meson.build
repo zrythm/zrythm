@@ -4,8 +4,8 @@
 # copy locales to builddir
 copy_locales_targets = []
 
-# note: if this fails, run the manual_gettext
-# target to generate missing .po files
+# note: if this fails (such as when adding a new language),
+# run the manual_gettext target to generate missing .po files
 foreach lang, lang_str : locales
   if msgfmt.found () and lang != 'en'
     po_file = 'zrythm-manual.po'

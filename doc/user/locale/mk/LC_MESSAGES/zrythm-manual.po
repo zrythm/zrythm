@@ -1,10 +1,13 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2019, Alexandros Theodotou
+# Copyright (C) 2018-2022 The Zrythm contributors
 # This file is distributed under the same license as the Zrythm package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"Project-Id-Version: Zrythm 1.0.0-beta.4\n"
+"Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-20 21:11+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"

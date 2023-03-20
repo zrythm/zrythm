@@ -208,6 +208,7 @@ localization_locale_exists (LocalizationLanguage lang)
       IS_MATCH (IT, "it_");
       IS_MATCH (JA, "ja_");
       IS_MATCH (KO, "ko_");
+      IS_MATCH (MK, "mk_");
       IS_MATCH (NB_NO, "nb_NO");
       IS_MATCH (NL, "nl_");
       IS_MATCH (PL, "pl_");
