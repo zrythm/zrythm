@@ -232,6 +232,10 @@ audio_region_replace_frames (
       self->pool_id = clip->pool_id;
     }
 
+  /* this is needed because if the file hash doesn't change
+   * the actual file write is skipped to save time */
+  g_free_and_null (clip->file_hash);
+
   dsp_copy (
     &clip->frames[start_frame * clip->channels], frames,
     num_frames * clip->channels);
