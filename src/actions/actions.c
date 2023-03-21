@@ -2644,9 +2644,11 @@ DEFINE_SIMPLE (activate_editor_function)
                     }
                     return;
                   default:
-                    AudioFunctionOpts opts = {};
-                    do_audio_func (i, opts, NULL);
-                    break;
+                    {
+                      AudioFunctionOpts opts = {};
+                      do_audio_func (i, opts, NULL);
+                      break;
+                    }
                   }
               }
             g_free (audio_func_target);
