@@ -53,6 +53,28 @@ left_dock_edge_widget_refresh_with_page (
 {
   g_settings_set_int (S_UI, "left-panel-tab", (int) page);
   left_dock_edge_widget_refresh (self);
+
+  PanelWidget * panel_widget = NULL;
+  switch (page)
+    {
+    case LEFT_DOCK_EDGE_TAB_TRACK:
+      panel_widget = PANEL_WIDGET (gtk_widget_get_ancestor (
+        GTK_WIDGET (self->track_inspector),
+        PANEL_TYPE_WIDGET));
+      break;
+    case LEFT_DOCK_EDGE_TAB_PLUGIN:
+      panel_widget = PANEL_WIDGET (gtk_widget_get_ancestor (
+        GTK_WIDGET (self->plugin_inspector),
+        PANEL_TYPE_WIDGET));
+      break;
+    default:
+      break;
+    }
+
+  if (panel_widget)
+    {
+      panel_widget_raise (panel_widget);
+    }
 }
 
 void
@@ -67,8 +89,8 @@ left_dock_edge_widget_refresh (LeftDockEdgeWidget * self)
 
   /* TODO load from workspaces */
 #if 0
-  int page_num =
-    g_settings_get_int (S_UI, "left-panel-tab");
+  LeftDockEdgeTab      page =
+    (LeftDockEdge) g_settings_get_int (S_UI, "left-panel-tab");
   GtkNotebook * notebook =
     foldable_notebook_widget_get_notebook (
       self->inspector_notebook);
