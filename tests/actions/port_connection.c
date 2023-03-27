@@ -282,6 +282,32 @@ test_port_connection (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_cv_to_control_connection (void)
+{
+#if defined(HAVE_AMS_LFO)
+  test_helper_zrythm_init ();
+
+  test_plugin_manager_create_tracks_from_plugin (
+    LOWPASS_FILTER_BUNDLE, LOWPASS_FILTER_URI, false, true, 1);
+  test_plugin_manager_create_tracks_from_plugin (
+    AMS_LFO_BUNDLE, AMS_LFO_URI, false, true, 1);
+  Track * lp_filter_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
+  Track * ams_lfo_track =
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Plugin * lp_filter = lp_filter_track->channel->inserts[0];
+  Plugin * ams_lfo = ams_lfo_track->channel->inserts[0];
+
+  Port * cv_out_port = ams_lfo->out_ports[3];
+  Port * freq_port = lp_filter->in_ports[4];
+  port_connection_action_perform_connect (
+    &cv_out_port->id, &freq_port->id, NULL);
+
+  test_helper_zrythm_cleanup ();
+#endif // HAVE_AMS_LFO
+}
+
 int
 main (int argc, char * argv[])
 {
@@ -292,6 +318,9 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test_port_connection",
     (GTestFunc) test_port_connection);
+  g_test_add_func (
+    TEST_PREFIX "test_cv_to_control_connection",
+    (GTestFunc) test_cv_to_control_connection);
 
   return g_test_run ();
 }

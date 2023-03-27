@@ -583,8 +583,9 @@ port_identifier_is_equal (
 {
   bool eq =
     dest->owner_type == src->owner_type
-    && dest->type == src->type && dest->flow == src->flow
-    && dest->flags == src->flags && dest->flags2 == src->flags2
+    && dest->unit == src->unit && dest->type == src->type
+    && dest->flow == src->flow && dest->flags == src->flags
+    && dest->flags2 == src->flags2
     && dest->track_name_hash == src->track_name_hash;
   if (!eq)
     return false;

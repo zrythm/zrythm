@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/plugin_identifier.h"
@@ -50,4 +50,14 @@ plugin_identifier_copy (
   dest->slot_type = src->slot_type;
   dest->track_name_hash = src->track_name_hash;
   dest->slot = src->slot;
+}
+
+void
+plugin_identifier_print (
+  const PluginIdentifier * self,
+  char *                   str)
+{
+  sprintf (
+    str, "slot_type: %d, track_name hash: %u, slot: %d",
+    self->slot_type, self->track_name_hash, self->slot);
 }

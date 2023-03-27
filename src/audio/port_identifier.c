@@ -81,6 +81,7 @@ port_identifier_copy (
   dest->flow = src->flow;
   dest->flags = src->flags;
   dest->flags2 = src->flags2;
+  dest->unit = src->unit;
   plugin_identifier_copy (&dest->plugin_id, &src->plugin_id);
   string_copy_w_realloc (&dest->ext_port_id, src->ext_port_id);
   string_copy_w_realloc (&dest->port_group, src->port_group);
@@ -94,8 +95,9 @@ port_identifier_copy (
 int
 port_identifier_is_equal_func (const void * a, const void * b)
 {
-  return port_identifier_is_equal (
+  bool is_equal = port_identifier_is_equal (
     (const PortIdentifier *) a, (const PortIdentifier *) b);
+  return is_equal;
 }
 
 void
@@ -104,19 +106,27 @@ port_identifier_print_to_str (
   char *                 buf,
   size_t                 buf_sz)
 {
+  char pl_buf[800];
+  strcpy (pl_buf, "{none}");
+  if (self->owner_type == PORT_OWNER_TYPE_PLUGIN)
+    {
+      plugin_identifier_print (&self->plugin_id, pl_buf);
+    }
   snprintf (
     buf, buf_sz,
-    "[PortIdentifier %p]\nlabel: %s\n"
+    "[PortIdentifier %p | hash %u]\nlabel: %s\n"
     "sym: %s\nuri: %s\ncomment: %s\nowner type: %s\n"
-    "type: %s\nflow: %s\nflags: %d %d\n"
+    "type: %s\nflow: %s\nflags: %d %d\nunit: %d\n"
     "port group: %s\next port id: %s\n"
-    "track name hash: %u\nport idx: %d",
-    self, self->label, self->sym, self->uri, self->comment,
+    "track name hash: %u\nport idx: %d\nplugin: %s",
+    self, port_identifier_get_hash (self), self->label,
+    self->sym, self->uri, self->comment,
     port_owner_type_strings[self->owner_type].str,
     port_type_strings[self->type].str,
     port_flow_strings[self->flow].str, self->flags,
-    self->flags2, self->port_group, self->ext_port_id,
-    self->track_name_hash, self->port_index);
+    self->flags2, self->unit, self->port_group,
+    self->ext_port_id, self->track_name_hash,
+    self->port_index, pl_buf);
 }
 
 void

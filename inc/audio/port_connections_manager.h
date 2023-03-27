@@ -48,8 +48,7 @@ typedef struct PortConnectionsManager
   size_t            connections_size;
 
   /**
-   * Hashtable to speedup lookup by source port
-   * identifier.
+   * Hashtable to speedup lookup by source port identifier.
    *
    * Key: hash of source port identifier
    * Value: A pointer to a PortConnection from
@@ -58,8 +57,7 @@ typedef struct PortConnectionsManager
   GHashTable * src_ht;
 
   /**
-   * Hashtable to speedup lookup by destination port
-   * identifier.
+   * Hashtable to speedup lookup by destination port identifier.
    *
    * Key: hash of destination port identifier
    * Value: A pointer to a PortConnection from

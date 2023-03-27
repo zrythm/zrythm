@@ -409,27 +409,24 @@ add_port (
   port->num_dests = num_dests;
   g_ptr_array_unref (dests);
 
-  if (drop_if_unnecessary)
+  /* skip unnecessary control ports */
+  if (
+    drop_if_unnecessary && port->id.type == TYPE_CONTROL
+    && port->id.flags & PORT_FLAG_AUTOMATABLE)
     {
-      /* skip unnecessary control ports */
-      if (
-        port->id.type == TYPE_CONTROL
-        && port->id.flags & PORT_FLAG_AUTOMATABLE)
+      AutomationTrack * found_at = port->at;
+      if (!found_at)
         {
-          AutomationTrack * found_at = port->at;
-          if (!found_at)
-            {
 #if 0
               found_at =
                 automation_track_find_from_port (
                   port, port->track, true);
 #endif
-            }
-          g_return_val_if_fail (found_at, NULL);
-          if (found_at->num_regions == 0 && port->num_srcs == 0)
-            {
-              return NULL;
-            }
+        }
+      g_return_val_if_fail (found_at, NULL);
+      if (found_at->num_regions == 0 && port->num_srcs == 0)
+        {
+          return NULL;
         }
     }
 

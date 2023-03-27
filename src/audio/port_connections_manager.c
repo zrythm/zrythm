@@ -198,7 +198,9 @@ port_connections_manager_get_sources_or_dests (
     (sources ? self->dest_ht : self->src_ht), id);
 
   if (!res)
-    return 0;
+    {
+      return 0;
+    }
 
   /* append to the given array */
   if (arr)

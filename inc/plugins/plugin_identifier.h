@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -121,13 +121,10 @@ plugin_identifier_validate_slot_type_slot_combo (
   PluginSlotType slot_type,
   int            slot);
 
-static inline void
-plugin_identifier_print (PluginIdentifier * self, char * str)
-{
-  sprintf (
-    str, "slot_type: %d, track_name hash: %u, slot: %d",
-    self->slot_type, self->track_name_hash, self->slot);
-}
+void
+plugin_identifier_print (
+  const PluginIdentifier * self,
+  char *                   str);
 
 /**
  * @}

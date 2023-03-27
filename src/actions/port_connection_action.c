@@ -110,12 +110,25 @@ port_connection_action_do_or_undo (
           port_connections_manager_ensure_connect (
             PORT_CONNECTIONS_MGR, &src->id, &dest->id, 1.f,
             F_NOT_LOCKED, F_ENABLE);
+          if (ZRYTHM_TESTING)
+            {
+              int num_dests =
+                port_connections_manager_get_sources_or_dests (
+                  PORT_CONNECTIONS_MGR, NULL, &src->id, false);
+              g_return_val_if_fail (num_dests > 0, -1);
+              int num_srcs =
+                port_connections_manager_get_sources_or_dests (
+                  PORT_CONNECTIONS_MGR, NULL, &dest->id, true);
+              g_return_val_if_fail (num_srcs > 0, -1);
+            }
 
           /* set base value if cv -> control */
           if (
             src->id.type == TYPE_CV
             && dest->id.type == TYPE_CONTROL)
-            dest->base_value = dest->control;
+            {
+              dest->base_value = dest->control;
+            }
         }
       else
         {
