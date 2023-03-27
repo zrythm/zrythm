@@ -3776,20 +3776,17 @@ DEFINE_SIMPLE (
 
 DEFINE_SIMPLE (change_state_plugin_browser_toggle_generic_ui)
 {
-  /*const PluginDescriptor * descr =*/
-  /*MW_PLUGIN_BROWSER->current_descriptors[0];*/
 }
 
 DEFINE_SIMPLE (activate_plugin_browser_add_to_collection)
 {
-  const PluginDescriptor * descr =
-    MW_PLUGIN_BROWSER->current_descriptors[0];
-
   gsize        size;
   const char * str = g_variant_get_string (variant, &size);
-  PluginCollection * collection = NULL;
-  sscanf (str, "%p", &collection);
+  PluginCollection *       collection = NULL;
+  const PluginDescriptor * descr = NULL;
+  sscanf (str, "%p,%p", &collection, &descr);
   g_return_if_fail (collection != NULL);
+  g_return_if_fail (descr != NULL);
 
   plugin_collection_add_descriptor (collection, descr);
   plugin_collections_serialize_to_file (
@@ -3800,14 +3797,13 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_collection)
 
 DEFINE_SIMPLE (activate_plugin_browser_remove_from_collection)
 {
-  const PluginDescriptor * descr =
-    MW_PLUGIN_BROWSER->current_descriptors[0];
-
   gsize        size;
   const char * str = g_variant_get_string (variant, &size);
-  PluginCollection * collection = NULL;
-  sscanf (str, "%p", &collection);
+  PluginCollection *       collection = NULL;
+  const PluginDescriptor * descr = NULL;
+  sscanf (str, "%p,%p", &collection, &descr);
   g_return_if_fail (collection != NULL);
+  g_return_if_fail (descr != NULL);
 
   plugin_collection_remove_descriptor (collection, descr);
   plugin_collections_serialize_to_file (

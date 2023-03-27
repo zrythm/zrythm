@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdlib.h>
@@ -681,7 +681,8 @@ plugin_descriptor_generate_context_menu (
         }
 
       sprintf (
-        tmp, "app.plugin-browser-add-to-collection::%p", coll);
+        tmp, "app.plugin-browser-add-to-collection::%p,%p",
+        coll, self);
       menuitem =
         z_gtk_create_menu_item (coll->name, NULL, tmp);
       g_menu_append_item (add_collections_submenu, menuitem);
@@ -713,8 +714,9 @@ plugin_descriptor_generate_context_menu (
         }
 
       sprintf (
-        tmp, "app.plugin-browser-remove-from-collection::%p",
-        coll);
+        tmp,
+        "app.plugin-browser-remove-from-collection::%p,%p",
+        coll, self);
       menuitem =
         z_gtk_create_menu_item (coll->name, NULL, tmp);
       g_menu_append_item (

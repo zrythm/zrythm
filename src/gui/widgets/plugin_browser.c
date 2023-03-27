@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -248,8 +248,6 @@ on_plugin_row_activated (
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
   PluginDescriptor * descr =
     (PluginDescriptor *) wrapped_obj->obj;
-  self->current_descriptors[0] = descr;
-  self->num_current_descriptors = 1;
 
   char tmp[600];
   sprintf (tmp, "%p", descr);
@@ -841,16 +839,6 @@ on_plugin_selection_changed (
     GTK_SINGLE_SELECTION (self->plugin_selection_model));
   if (!gobj)
     return;
-
-  /* get wrapped object */
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
-  PluginDescriptor * descr =
-    (PluginDescriptor *) wrapped_obj->obj;
-
-  /* set as current descriptor */
-  self->current_descriptors[0] = descr;
-  self->num_current_descriptors = 1;
 
   /* update status label */
   update_plugin_info_label (self);
@@ -1669,8 +1657,6 @@ plugin_browser_widget_init (PluginBrowserWidget * self)
 
   self->current_collections =
     calloc (40000, sizeof (PluginCollection *));
-  self->current_descriptors =
-    calloc (40000, sizeof (PluginDescriptor *));
 
   gtk_widget_add_css_class (
     GTK_WIDGET (self), "plugin-browser");

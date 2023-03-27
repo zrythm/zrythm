@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -160,20 +160,6 @@ typedef struct _PluginBrowserWidget
    */
   PluginCollection ** current_collections;
   int                 num_current_collections;
-
-  /**
-   * The currently selected plugin descriptors.
-   *
-   * Used temporarily when right-clicking on
-   * plugins.
-   *
-   * These are pointers to the actual descriptors and
-   * must not be deleted.
-   */
-  /* FIXME remove this, add a getter instead that gets the
-   * selection from the widget directly via GTK API */
-  PluginDescriptor ** current_descriptors;
-  int                 num_current_descriptors;
 
   /**
    * A little hack to get the paned position to
