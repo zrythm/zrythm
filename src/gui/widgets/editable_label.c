@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/editable_label.h"
@@ -36,7 +36,10 @@ on_popover_closed (
 static gboolean
 select_region (gpointer user_data)
 {
-  gtk_editable_select_region (GTK_EDITABLE (user_data), 0, -1);
+  EditableLabelWidget * self =
+    Z_EDITABLE_LABEL_WIDGET (user_data);
+  gtk_editable_select_region (
+    GTK_EDITABLE (self->entry), 0, -1);
 
   return G_SOURCE_REMOVE;
 }
@@ -54,7 +57,11 @@ editable_label_widget_show_popover (EditableLabelWidget * self)
 
   /* workaround because selecting a region doesn't
    * work 100% of the time if done here */
-  g_idle_add (select_region, self->entry);
+  if (self->select_region_source_id != 0)
+    {
+      self->select_region_source_id =
+        g_idle_add (select_region, self);
+    }
 }
 
 /**
@@ -104,7 +111,11 @@ editable_label_widget_show_popover_for_widget (
 
   /* workaround because selecting a region doesn't
    * work 100% of the time if done here */
-  g_idle_add (select_region, self->entry);
+  if (self->select_region_source_id != 0)
+    {
+      self->select_region_source_id =
+        g_idle_add (select_region, self);
+    }
 }
 
 /**
@@ -180,6 +191,12 @@ editable_label_widget_new (
 static void
 dispose (EditableLabelWidget * self)
 {
+  if (self->select_region_source_id != 0)
+    {
+      g_source_remove (self->select_region_source_id);
+      self->select_region_source_id = 0;
+    }
+
   gtk_widget_unparent (GTK_WIDGET (self->popover));
   gtk_widget_unparent (GTK_WIDGET (self->label));
 
