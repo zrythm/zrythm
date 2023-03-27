@@ -1953,6 +1953,7 @@ do_or_undo_duplicate_or_link (
                 cached_ap, region, prj_ap->index);
             }
         }
+      g_free (keys_arr);
     }
 
   /* validate */
