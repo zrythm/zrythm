@@ -11,16 +11,15 @@ $accent_bg_color: $bright_orange;
 @define-color accent_color #{$accent_color};
 @define-color accent_bg_color #{$accent_bg_color};
 
-paned {
-  > separator {
-    min-height: 4px;
-  }
-}
-
-.plugin-browser separator:hover,
-.file-browser separator:hover
+panelresizer > widget > separator,
+paned > separator
 {
-  background-color: $hover_color;
+  &:hover {
+    color: $hover_color;
+    //background-color: gtkalpha(white, 0.08);
+  }
+  min-height: 4px;
+  min-width: 4px;
 }
 
 .plugin-browser separator,
@@ -311,14 +310,6 @@ channel button.flat
 .splash label,
 statusbar {
   font-size: 10.5pt;
-}
-
-center-dock > paned > paned > paned > separator {
-  background-color: gtkalpha(white, 0.08);
-
-  &:hover {
-    background-color: gtkalpha(white, 0.12);
-  }
 }
 
 /* use .spacer instead in toolbars */
