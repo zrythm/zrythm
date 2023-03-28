@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/actions.h"
@@ -14,7 +14,6 @@
 #include "gui/widgets/playhead_scroll_buttons.h"
 #include "gui/widgets/quantize_box.h"
 #include "gui/widgets/snap_grid.h"
-#include "gui/widgets/velocity_settings.h"
 #include "gui/widgets/zoom_buttons.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
@@ -171,10 +170,6 @@ editor_toolbar_widget_refresh (EditorToolbarWidget * self)
     GTK_WIDGET (self->ghost_notes_btn), false);
   gtk_widget_set_visible (
     GTK_WIDGET (self->sep_after_ghost_notes), false);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->velocity_settings), false);
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->sep_after_velocity_settings), false);
 
   switch (region->id.type)
     {
@@ -206,11 +201,6 @@ editor_toolbar_widget_refresh (EditorToolbarWidget * self)
           GTK_WIDGET (self->ghost_notes_btn), true);
         gtk_widget_set_visible (
           GTK_WIDGET (self->sep_after_ghost_notes), true);
-        gtk_widget_set_visible (
-          GTK_WIDGET (self->velocity_settings), true);
-        gtk_widget_set_visible (
-          GTK_WIDGET (self->sep_after_velocity_settings),
-          true);
       }
       break;
     case REGION_TYPE_AUTOMATION:
@@ -335,7 +325,6 @@ editor_toolbar_widget_init (EditorToolbarWidget * self)
 {
   g_type_ensure (PLAYHEAD_SCROLL_BUTTONS_WIDGET_TYPE);
   g_type_ensure (SNAP_GRID_WIDGET_TYPE);
-  g_type_ensure (VELOCITY_SETTINGS_WIDGET_TYPE);
   g_type_ensure (ZOOM_BUTTONS_WIDGET_TYPE);
 
   gtk_widget_init_template (GTK_WIDGET (self));
@@ -415,8 +404,6 @@ editor_toolbar_widget_class_init (
   BIND_CHILD (audio_functions_btn);
   BIND_CHILD (midi_functions_btn);
   BIND_CHILD (automation_functions_btn);
-  BIND_CHILD (velocity_settings);
-  BIND_CHILD (sep_after_velocity_settings);
   BIND_CHILD (playhead_scroll);
   BIND_CHILD (zoom_buttons);
 

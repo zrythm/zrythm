@@ -98,18 +98,6 @@
               </object>
             </child>
             <child>
-              <object class="VelocitySettingsWidget" id="velocity_settings">
-              </object>
-            </child>
-            <child>
-              <object class="GtkSeparator" id="sep_after_velocity_settings">
-                <style>
-                  <class name="spacer"/>
-                </style>
-                <property name="orientation">vertical</property>
-              </object>
-            </child>
-            <child>
               <object class="PlayheadScrollButtonsWidget" id="playhead_scroll">
               </object>
             </child>

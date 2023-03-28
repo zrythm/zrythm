@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -27,7 +27,6 @@ TYPEDEF_STRUCT_UNDERSCORED (QuantizeMbWidget);
 TYPEDEF_STRUCT_UNDERSCORED (QuantizeBoxWidget);
 TYPEDEF_STRUCT_UNDERSCORED (SnapGridWidget);
 TYPEDEF_STRUCT_UNDERSCORED (PlayheadScrollButtonsWidget);
-TYPEDEF_STRUCT_UNDERSCORED (VelocitySettingsWidget);
 TYPEDEF_STRUCT_UNDERSCORED (ZoomButtonsWidget);
 
 /**
@@ -53,9 +52,6 @@ typedef struct _EditorToolbarWidget
 
   GtkToggleButton * ghost_notes_btn;
   GtkSeparator *    sep_after_ghost_notes;
-
-  VelocitySettingsWidget * velocity_settings;
-  GtkSeparator *           sep_after_velocity_settings;
 
   PlayheadScrollButtonsWidget * playhead_scroll;
   ZoomButtonsWidget *           zoom_buttons;

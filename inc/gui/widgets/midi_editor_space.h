@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2019, 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -23,6 +23,7 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _ArrangerWidget      ArrangerWidget;
 typedef struct _PianoRollKeysWidget PianoRollKeysWidget;
+TYPEDEF_STRUCT_UNDERSCORED (VelocitySettingsWidget);
 
 /**
  * @addtogroup widgets
@@ -55,8 +56,9 @@ typedef struct _MidiEditorSpaceWidget
   ArrangerWidget * arranger;
   ArrangerWidget * modifier_arranger;
 
-  GtkBox *          midi_vel_chooser_box;
-  GtkComboBoxText * midi_modifier_chooser;
+  VelocitySettingsWidget * velocity_settings;
+  GtkBox *                 midi_vel_chooser_box;
+  GtkComboBoxText *        midi_modifier_chooser;
 
   /** Vertical size goup for the keys and the
    * arranger. */

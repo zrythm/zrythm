@@ -69,7 +69,24 @@
               </object>
             </child>
             <child>
-              <object class="ArrangerWidget" id="modifier_arranger">
+              <object class="GtkBox" id="midi_modifier_toolbar_and_arranger_box">
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkBox" id="midi_modifier_toolbar">
+                    <style>
+                      <class name="toolbar"/>
+                    </style>
+                    <child>
+                      <object class="VelocitySettingsWidget" id="velocity_settings">
+                      </object>
+                    </child>
+                  </object>
+                </child>
+                <child>
+                  <object class="ArrangerWidget" id="modifier_arranger">
+                    <property name="vexpand">1</property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
