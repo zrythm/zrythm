@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/mixer_selections_action.h"
@@ -358,42 +358,44 @@ on_dnd_drop (
 }
 
 /**
- * Control not pressed, no plugin exists,
- * not same channel */
+ * Control not pressed, no plugin exists, not same channel */
 static inline void
-select_no_ctrl_no_pl_no_ch (ChannelSlotWidget * self)
+select_no_ctrl_no_pl_no_ch (
+  ChannelSlotWidget * self,
+  bool                fire_events)
 {
-  mixer_selections_clear (MIXER_SELECTIONS, F_PUBLISH_EVENTS);
+  mixer_selections_clear (MIXER_SELECTIONS, fire_events);
 }
 
 /**
- * Control not pressed, no plugin exists,
- * same channel */
+ * Control not pressed, no plugin exists, same channel */
 static inline void
-select_no_ctrl_no_pl_ch (ChannelSlotWidget * self)
+select_no_ctrl_no_pl_ch (
+  ChannelSlotWidget * self,
+  bool                fire_events)
 {
-  mixer_selections_clear (MIXER_SELECTIONS, F_PUBLISH_EVENTS);
+  mixer_selections_clear (MIXER_SELECTIONS, fire_events);
 }
 
 /**
- * Control not pressed, plugin exists,
- * not same channel */
+ * Control not pressed, plugin exists, not same channel */
 static inline void
-select_no_ctrl_pl_no_ch (ChannelSlotWidget * self)
+select_no_ctrl_pl_no_ch (
+  ChannelSlotWidget * self,
+  bool                fire_events)
 {
   mixer_selections_clear (
     MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
 
   mixer_selections_add_slot (
     MIXER_SELECTIONS, self->track, self->type,
-    self->slot_index, F_NO_CLONE);
+    self->slot_index, F_NO_CLONE, fire_events);
 }
 
 /**
- * Control not pressed, plugin exists,
- * same channel */
+ * Control not pressed, plugin exists, same channel */
 static inline void
-select_no_ctrl_pl_ch (ChannelSlotWidget * self)
+select_no_ctrl_pl_ch (ChannelSlotWidget * self, bool fire_events)
 {
   /* if plugin is not selected, make it the only
    * selection otherwise do nothing */
@@ -405,46 +407,45 @@ select_no_ctrl_pl_ch (ChannelSlotWidget * self)
 
       mixer_selections_add_slot (
         MIXER_SELECTIONS, self->track, self->type,
-        self->slot_index, F_NO_CLONE);
+        self->slot_index, F_NO_CLONE, fire_events);
     }
 }
 
 /**
- * Control pressed, no plugin exists, not
- * same channel */
+ * Control pressed, no plugin exists, not same channel */
 static inline void
-select_ctrl_no_pl_no_ch (ChannelSlotWidget * self)
+select_ctrl_no_pl_no_ch (
+  ChannelSlotWidget * self,
+  bool                fire_events)
 {
-  mixer_selections_clear (MIXER_SELECTIONS, F_PUBLISH_EVENTS);
+  mixer_selections_clear (MIXER_SELECTIONS, fire_events);
 }
 
 /**
- * Control pressed, no plugin exists,
- * same channel */
+ * Control pressed, no plugin exists, same channel */
 static inline void
-select_ctrl_no_pl_ch (ChannelSlotWidget * self)
+select_ctrl_no_pl_ch (ChannelSlotWidget * self, bool fire_events)
 {
-  mixer_selections_clear (MIXER_SELECTIONS, F_PUBLISH_EVENTS);
+  mixer_selections_clear (MIXER_SELECTIONS, fire_events);
 }
 
 /**
- * Control pressed, plugin exists,
- * not same channel */
+ * Control pressed, plugin exists, not same channel */
 static inline void
-select_ctrl_pl_no_ch (ChannelSlotWidget * self)
+select_ctrl_pl_no_ch (ChannelSlotWidget * self, bool fire_events)
 {
   /* make it the only selection */
   mixer_selections_clear (
     MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
     MIXER_SELECTIONS, self->track, self->type,
-    self->slot_index, F_NO_CLONE);
+    self->slot_index, F_NO_CLONE, fire_events);
 }
 
 /**
  * Control pressed, plugin exists, same channel */
 static inline void
-select_ctrl_pl_ch (ChannelSlotWidget * self)
+select_ctrl_pl_ch (ChannelSlotWidget * self, bool fire_events)
 {
   /* if already selected, deselect it, otherwise
    * add it to selections */
@@ -453,14 +454,14 @@ select_ctrl_pl_ch (ChannelSlotWidget * self)
     {
       mixer_selections_remove_slot (
         MIXER_SELECTIONS, self->slot_index, self->type,
-        F_PUBLISH_EVENTS);
+        fire_events);
       /*self->deselected = 1;*/
     }
   else
     {
       mixer_selections_add_slot (
         MIXER_SELECTIONS, self->track, self->type,
-        self->slot_index, F_NO_CLONE);
+        self->slot_index, F_NO_CLONE, fire_events);
     }
 }
 
@@ -503,21 +504,21 @@ select_plugin (
     ch = true;
 
   if (!ctrl && !pl && !ch)
-    select_no_ctrl_no_pl_no_ch (self);
+    select_no_ctrl_no_pl_no_ch (self, fire_events);
   else if (!ctrl && !pl && ch)
-    select_no_ctrl_no_pl_ch (self);
+    select_no_ctrl_no_pl_ch (self, fire_events);
   else if (!ctrl && pl && !ch)
-    select_no_ctrl_pl_no_ch (self);
+    select_no_ctrl_pl_no_ch (self, fire_events);
   else if (!ctrl && pl && ch)
-    select_no_ctrl_pl_ch (self);
+    select_no_ctrl_pl_ch (self, fire_events);
   else if (ctrl && !pl && !ch)
-    select_ctrl_no_pl_no_ch (self);
+    select_ctrl_no_pl_no_ch (self, fire_events);
   else if (ctrl && !pl && ch)
-    select_ctrl_no_pl_ch (self);
+    select_ctrl_no_pl_ch (self, fire_events);
   else if (ctrl && pl && !ch)
-    select_ctrl_pl_no_ch (self);
+    select_ctrl_pl_no_ch (self, fire_events);
   else if (ctrl && pl && ch)
-    select_ctrl_pl_ch (self);
+    select_ctrl_pl_ch (self, fire_events);
 
   /* select channel */
   if (self->track)

@@ -153,7 +153,7 @@ tracklist_selections_add_tracks_in_range (
   g_message (
     "selecting tracks from %d to %d...", min_pos, max_pos);
 
-  tracklist_selections_clear (self);
+  tracklist_selections_clear (self, fire_events);
 
   for (int i = min_pos; i <= max_pos; i++)
     {
@@ -169,14 +169,16 @@ tracklist_selections_add_tracks_in_range (
  * Clears the selections.
  */
 void
-tracklist_selections_clear (TracklistSelections * self)
+tracklist_selections_clear (
+  TracklistSelections * self,
+  const bool            fire_events)
 {
   g_message ("clearing tracklist selections...");
 
   for (int i = self->num_tracks - 1; i >= 0; i--)
     {
       Track * track = self->tracks[i];
-      tracklist_selections_remove_track (self, track, 0);
+      tracklist_selections_remove_track (self, track, false);
 
       if (track_is_in_active_project (track))
         {
@@ -190,7 +192,9 @@ tracklist_selections_clear (TracklistSelections * self)
         }
     }
 
-  if (self->is_project && ZRYTHM_HAVE_UI && PROJECT->loaded)
+  if (
+    fire_events && self->is_project && ZRYTHM_HAVE_UI
+    && PROJECT->loaded)
     {
       EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
     }
@@ -576,9 +580,9 @@ tracklist_selections_select_single (
   Track *               track,
   bool                  fire_events)
 {
-  tracklist_selections_clear (ts);
+  tracklist_selections_clear (ts, false);
 
-  tracklist_selections_add_track (ts, track, 0);
+  tracklist_selections_add_track (ts, track, false);
 
   if (fire_events)
     {

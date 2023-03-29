@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -127,7 +127,9 @@ tracklist_selections_add_tracks_in_range (
  * Clears the selections.
  */
 void
-tracklist_selections_clear (TracklistSelections * self);
+tracklist_selections_clear (
+  TracklistSelections * self,
+  const bool            fire_events);
 
 /**
  * Make sure all children of foldable tracks in

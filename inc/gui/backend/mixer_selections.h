@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -196,7 +196,8 @@ mixer_selections_add_slot (
   Track *           track,
   PluginSlotType    type,
   int               slot,
-  bool              clone_pl);
+  bool              clone_pl,
+  const bool        fire_events);
 
 /**
  * Removes a slot from the selections.

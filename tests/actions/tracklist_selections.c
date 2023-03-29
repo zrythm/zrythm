@@ -1546,7 +1546,7 @@ test_track_deletion_w_mixer_selections (void)
 
   mixer_selections_add_slot (
     MIXER_SELECTIONS, pl_track, PLUGIN_SLOT_INSERT, 0,
-    F_NO_CLONE);
+    F_NO_CLONE, F_NO_PUBLISH_EVENTS);
   g_assert_true (MIXER_SELECTIONS->has_any);
   g_assert_cmpuint (
     MIXER_SELECTIONS->track_name_hash, ==,

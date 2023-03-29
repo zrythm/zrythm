@@ -1414,7 +1414,8 @@ do_or_undo_move_or_copy (
                 }
             }
 
-          tracklist_selections_clear (TRACKLIST_SELECTIONS);
+          tracklist_selections_clear (
+            TRACKLIST_SELECTIONS, F_NO_PUBLISH_EVENTS);
 
           /* create new tracks routed to master */
           Track * new_tracks[num_tracks];

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/mixer_selections_action.h"
@@ -370,7 +370,8 @@ save_existing_plugin (
     && (from_tr != to_tr || from_slot_type != to_slot_type || from_slot != to_slot))
     {
       mixer_selections_add_slot (
-        tmp_ms, to_tr, to_slot_type, to_slot, F_CLONE);
+        tmp_ms, to_tr, to_slot_type, to_slot, F_CLONE,
+        F_NO_PUBLISH_EVENTS);
       clone_ats (self, tmp_ms, true, tmp_ms->num_slots - 1);
     }
   else
@@ -590,7 +591,7 @@ do_or_undo_create_or_delete (
           /* select the plugin */
           mixer_selections_add_slot (
             MIXER_SELECTIONS, track, slot_type, pl->id.slot,
-            F_NO_CLONE);
+            F_NO_CLONE, F_PUBLISH_EVENTS);
 
           /* set visibility */
           if (create)
@@ -1002,7 +1003,7 @@ do_or_undo_move_or_copy (
         /* select it */
         mixer_selections_add_slot (
           MIXER_SELECTIONS, to_tr, to_slot_type, to_slot,
-          F_NO_CLONE);
+          F_NO_CLONE, F_PUBLISH_EVENTS);
 
         /* if new plugin (copy), instantiate it,
            * activate it and set visibility */
@@ -1128,7 +1129,7 @@ do_or_undo_move_or_copy (
           g_warn_if_fail (IS_PLUGIN_AND_NONNULL (pl));
           mixer_selections_add_slot (
             MIXER_SELECTIONS, from_tr, from_slot_type,
-            from_slot, F_NO_CLONE);
+            from_slot, F_NO_CLONE, F_PUBLISH_EVENTS);
         }
 
       /* if a new track was created delete it */

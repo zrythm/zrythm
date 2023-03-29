@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/mixer_selections_action.h"
@@ -66,7 +66,7 @@ on_delete_clicked (GtkButton * btn, ModulatorInnerWidget * self)
   Plugin *          modulator = get_modulator (self);
   mixer_selections_add_slot (
     sel, P_MODULATOR_TRACK, PLUGIN_SLOT_MODULATOR,
-    modulator->id.slot, F_NO_CLONE);
+    modulator->id.slot, F_NO_CLONE, F_PUBLISH_EVENTS);
 
   GError * err = NULL;
   bool     ret = mixer_selections_action_perform_delete (

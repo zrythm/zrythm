@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/event.h"
@@ -179,7 +179,8 @@ mixer_selections_add_slot (
   Track *           track,
   PluginSlotType    type,
   int               slot,
-  bool              clone_pl)
+  bool              clone_pl,
+  const bool        fire_events)
 {
   unsigned int name_hash = track_get_name_hash (track);
 
@@ -504,7 +505,7 @@ mixer_selections_clear (
   for (i = self->num_slots - 1; i >= 0; i--)
     {
       mixer_selections_remove_slot (
-        self, self->slots[i], self->type, 0);
+        self, self->slots[i], self->type, F_NO_PUBLISH_EVENTS);
     }
 
   self->has_any = false;

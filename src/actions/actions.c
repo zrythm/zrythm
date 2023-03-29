@@ -4074,7 +4074,8 @@ handle_direct_out_change (int direct_out_idx, bool new_group)
   if (new_group)
     {
       /* reset the selections */
-      tracklist_selections_clear (TRACKLIST_SELECTIONS);
+      tracklist_selections_clear (
+        TRACKLIST_SELECTIONS, F_PUBLISH_EVENTS);
       for (int i = 0; i < sel_before->num_tracks; i++)
         {
           Track * cur_track =

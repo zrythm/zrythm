@@ -1938,7 +1938,7 @@ plugin_select (Plugin * self, bool select, bool exclusive)
     {
       mixer_selections_add_slot (
         MIXER_SELECTIONS, track, self->id.slot_type,
-        self->id.slot, F_NO_CLONE);
+        self->id.slot, F_NO_CLONE, F_PUBLISH_EVENTS);
     }
   else
     {
