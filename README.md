@@ -72,8 +72,8 @@ stable and we are working towards a v1 release.
 
 |  Backend  |  Status  |
 | ---- | ---- |
-|  JACK  |  Fully supported |
-|  JACK (via PipeWire)  |  Has known issues  |
+|  JACK  |  Supported and recommended |
+|  JACK (via PipeWire)  |  Supported  |
 |  PulseAudio (RtAudio)  |  Supported  |
 |  PulseAudio |  Has known issues |
 |  SDL2 |  Has known issues |
@@ -86,8 +86,8 @@ stable and we are working towards a v1 release.
 
 |  Backend  |  Status  |
 | ---- | ---- |
-|  JACK MIDI |  Fully supported |
-|  JACK MIDI (via PipeWire) |  Has known issues |
+|  JACK MIDI |  Supported and recommended |
+|  JACK MIDI (via PipeWire) |  Supported |
 |  WindowsMME |  Has known issues  |
 |  ALSA Sequencer (RtMidi) |  Supported |
 |  WindowsMME (RtMidi) |  Supported |
