@@ -6,6 +6,30 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.7.1] - 2023-03-29
+### Added
+- Add monitor output meters in the header
+- Add Macedonian translations
+- Add pitch shift audio function
+- Auto-scroll in the tracklist when dragging tracks and hovering towards the edges
+
+### Changed
+- Update Catalan, Japanese, Russian, French translations
+- Stop using `g_slice_*()` (deprecated in GLib)
+- Simplify CSS for separators
+- Move velocity settings to new toolbar in the bottom of the piano roll (fixes being unable to drag velocity bars when set to high values)
+
+### Fixed
+- Fix audio files not being saved properly when saving the project after applying an audio function
+- Fix error when routing to/from a port that has display unit info
+- Fix minor memory leak
+- Fix track/plugin inspect not immediately displaying the track/plugin properties
+- Fix occasional crash when exporting the project (fix not deleting the source function after disposing an EditableLabelWidget)
+- Fix occasional crash when adding a plugin to a collection
+- Fix no sound when using Pipewire (regression from previous release)
+- Fix right-clicking on inserts not working on Windows
+- Fix error when attempting to paste an empty selection
+
 ## [1.0.0-beta.4.6.3] - 2023-02-26
 ### Added
 - Add spectrum analyzer
