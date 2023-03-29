@@ -577,8 +577,7 @@ engine_jack_setup (AudioEngine * self)
   /* set jack callbacks */
   int ret;
   jack_set_process_callback (self->client, process_cb, self);
-  g_atomic_int_set (
-    &self->handled_jack_buffer_size_change, 1);
+  g_atomic_int_set (&self->handled_jack_buffer_size_change, 1);
   jack_set_buffer_size_callback (
     self->client,
     (JackBufferSizeCallback) engine_jack_buffer_size_cb, self);
