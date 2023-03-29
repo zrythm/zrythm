@@ -2354,6 +2354,12 @@ arranger_selections_paste_to_pos (
 {
   g_return_if_fail (IS_ARRANGER_SELECTIONS (self));
 
+  if (!arranger_selections_has_any (self))
+    {
+      g_message ("nothing to paste");
+      return;
+    }
+
   /* note: the objects in these selections will become the
    * actual project objects so they should not be free'd
    * here */
