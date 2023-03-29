@@ -482,7 +482,10 @@ select_ctrl_pl_ch (ChannelSlotWidget * self)
  * @param ctrl Whether Control is held down or not.
  */
 static void
-select_plugin (ChannelSlotWidget * self, int ctrl)
+select_plugin (
+  ChannelSlotWidget * self,
+  bool                ctrl,
+  bool                fire_events)
 {
   bool pl = false, ch = false;
 
@@ -520,7 +523,7 @@ select_plugin (ChannelSlotWidget * self, int ctrl)
   if (self->track)
     {
       tracklist_selections_select_single (
-        TRACKLIST_SELECTIONS, self->track, F_PUBLISH_EVENTS);
+        TRACKLIST_SELECTIONS, self->track, fire_events);
     }
 }
 
@@ -553,7 +556,7 @@ drag_end (
       if (state & GDK_CONTROL_MASK)
         ctrl = 1;
 
-      select_plugin (self, ctrl);
+      select_plugin (self, ctrl, F_PUBLISH_EVENTS);
 
       /*self->deselected = 0;*/
       /*self->reselected = 0;*/
@@ -726,7 +729,8 @@ on_right_click (
     gtk_event_controller_get_current_event_state (
       GTK_EVENT_CONTROLLER (gesture));
 
-  select_plugin (self, state & GDK_CONTROL_MASK);
+  select_plugin (
+    self, state & GDK_CONTROL_MASK, F_NO_PUBLISH_EVENTS);
 
   show_context_menu (self, x, y);
 }
