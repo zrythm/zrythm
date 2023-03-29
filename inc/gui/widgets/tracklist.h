@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_TRACKLIST_H__
@@ -48,6 +48,11 @@ typedef struct _TracklistWidget
   GtkScrolledWindow * unpinned_scroll;
 
   gulong unpinned_scroll_vall_changed_handler_id;
+
+  /** For DND autoscroll. */
+  gulong unpinned_scroll_scroll_up_id;
+  gulong unpinned_scroll_scroll_down_id;
+  double scroll_speed;
 
   /** Box to hold pinned tracks. */
   GtkBox * pinned_box;

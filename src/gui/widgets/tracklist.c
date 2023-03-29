@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/tracklist_selections.h"
@@ -35,6 +35,26 @@
 #include <glib/gi18n.h>
 
 G_DEFINE_TYPE (TracklistWidget, tracklist_widget, GTK_TYPE_BOX)
+
+#define DEFAULT_SCROLL_SPEED 4.0
+#define SCROLL_SPEED_ACCELERATION 1.3
+#define SCROLL_THRESHOLD_PX 24
+
+static void
+remove_scroll_sources (TracklistWidget * self)
+{
+  if (self->unpinned_scroll_scroll_up_id != 0)
+    {
+      g_source_remove (self->unpinned_scroll_scroll_up_id);
+      self->unpinned_scroll_scroll_up_id = 0;
+    }
+  if (self->unpinned_scroll_scroll_down_id != 0)
+    {
+      g_source_remove (self->unpinned_scroll_scroll_down_id);
+      self->unpinned_scroll_scroll_down_id = 0;
+    }
+  self->scroll_speed = DEFAULT_SCROLL_SPEED;
+}
 
 GMenu *
 tracklist_widget_generate_add_track_menu (void)
@@ -86,6 +106,8 @@ on_dnd_leave (
   GtkDropTarget *   drop_target,
   TracklistWidget * self)
 {
+  remove_scroll_sources (self);
+
   Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
     {
@@ -95,6 +117,38 @@ on_dnd_leave (
           track_widget_do_highlight (track->widget, 0, 0, 0);
         }
     }
+}
+
+static gboolean
+scroll_down_source (gpointer data)
+{
+  TracklistWidget * self = Z_TRACKLIST_WIDGET (data);
+  GtkAdjustment * vadj = gtk_scrolled_window_get_vadjustment (
+    self->unpinned_scroll);
+  gtk_adjustment_set_value (
+    vadj,
+    MIN (
+      gtk_adjustment_get_value (vadj) + self->scroll_speed,
+      gtk_adjustment_get_upper (vadj)));
+  self->scroll_speed *= SCROLL_SPEED_ACCELERATION;
+
+  return G_SOURCE_CONTINUE;
+}
+
+static gboolean
+scroll_up_source (gpointer data)
+{
+  TracklistWidget * self = Z_TRACKLIST_WIDGET (data);
+  GtkAdjustment * vadj = gtk_scrolled_window_get_vadjustment (
+    self->unpinned_scroll);
+  gtk_adjustment_set_value (
+    vadj,
+    MAX (
+      gtk_adjustment_get_value (vadj) - self->scroll_speed,
+      gtk_adjustment_get_lower (vadj)));
+  self->scroll_speed *= SCROLL_SPEED_ACCELERATION;
+
+  return G_SOURCE_CONTINUE;
 }
 
 static GdkDragAction
@@ -142,6 +196,68 @@ on_dnd_motion (
         hit_tw, (int) wx, (int) wy, 1);
     }
 
+  int height = gtk_widget_get_allocated_height (
+    GTK_WIDGET (self->unpinned_scroll));
+  if (
+    height > SCROLL_THRESHOLD_PX * 2 + SCROLL_THRESHOLD_PX
+    && ui_is_child_hit (
+      GTK_WIDGET (self), GTK_WIDGET (self->unpinned_scroll),
+      1, 1, x, y, 0, 1))
+    {
+      double wx, wy;
+      gtk_widget_translate_coordinates (
+        GTK_WIDGET (self), GTK_WIDGET (self->unpinned_scroll),
+        (int) x, (int) y, &wx, &wy);
+
+      /* autoscroll */
+      if (height - wy < SCROLL_THRESHOLD_PX)
+        {
+          if (self->unpinned_scroll_scroll_down_id == 0)
+            {
+              g_message (
+                "begin autoscroll tracklist down: height %d y %f",
+                height, wy);
+              self->scroll_speed = DEFAULT_SCROLL_SPEED;
+              self->unpinned_scroll_scroll_down_id =
+                g_timeout_add (100, scroll_down_source, self);
+            }
+          if (self->unpinned_scroll_scroll_up_id != 0)
+            {
+              g_source_remove (
+                self->unpinned_scroll_scroll_up_id);
+              self->unpinned_scroll_scroll_up_id = 0;
+              self->scroll_speed = DEFAULT_SCROLL_SPEED;
+            }
+        }
+      else if (wy < SCROLL_THRESHOLD_PX)
+        {
+          if (self->unpinned_scroll_scroll_up_id == 0)
+            {
+              g_message (
+                "begin autoscroll tracklist up: height %d y %f",
+                height, wy);
+              self->scroll_speed = DEFAULT_SCROLL_SPEED;
+              self->unpinned_scroll_scroll_up_id =
+                g_timeout_add (100, scroll_up_source, self);
+            }
+          if (self->unpinned_scroll_scroll_down_id != 0)
+            {
+              g_source_remove (
+                self->unpinned_scroll_scroll_down_id);
+              self->unpinned_scroll_scroll_down_id = 0;
+              self->scroll_speed = DEFAULT_SCROLL_SPEED;
+            }
+        }
+      else
+        {
+          remove_scroll_sources (self);
+        }
+    }
+  else
+    {
+      remove_scroll_sources (self);
+    }
+
   return GDK_ACTION_MOVE;
 }
 
@@ -183,6 +299,8 @@ on_dnd_drop (
 {
   TracklistWidget * self = Z_TRACKLIST_WIDGET (user_data);
   g_message ("dnd data received on tracklist");
+
+  remove_scroll_sources (self);
 
   /* get track widget at the x,y point */
   TrackWidget * hit_tw = NULL;
@@ -678,6 +796,15 @@ tracklist_tick_cb (
 }
 
 static void
+dispose (TracklistWidget * self)
+{
+  remove_scroll_sources (self);
+
+  G_OBJECT_CLASS (tracklist_widget_parent_class)
+    ->dispose (G_OBJECT (self));
+}
+
+static void
 tracklist_widget_init (TracklistWidget * self)
 {
   gtk_box_set_spacing (GTK_BOX (self), 1);
@@ -788,4 +915,7 @@ tracklist_widget_class_init (TracklistWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (klass, "tracklist");
+
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }
