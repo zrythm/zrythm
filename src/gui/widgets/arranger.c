@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -2041,7 +2041,9 @@ arranger_widget_create_item (
     }
 
   /* snap it */
-  if (!self->shift_held && SNAP_GRID_ANY_SNAP (self->snap_grid))
+  if (
+    autofilling
+    || (!self->shift_held && SNAP_GRID_ANY_SNAP (self->snap_grid)))
     {
       Track * track_for_snap = NULL;
       if (self->type == TYPE (TIMELINE))
@@ -2050,9 +2052,19 @@ arranger_widget_create_item (
             timeline_arranger_widget_get_track_at_y (
               self, start_y);
         }
+
+      SnapGrid * sg = snap_grid_clone (self->snap_grid);
+      /* if autofilling, make sure that snapping is enabled */
+      if (autofilling)
+        {
+          sg->snap_to_grid = true;
+        }
+
       position_snap (
         &self->earliest_obj_start_pos, &pos, track_for_snap,
-        NULL, self->snap_grid);
+        NULL, sg);
+
+      snap_grid_free (sg);
     }
 
   g_message ("creating item at %f,%f", start_x, start_y);
@@ -2177,15 +2189,15 @@ arranger_widget_create_item (
 /**
  * Called to autofill at the given position.
  *
- * In the case of velocities, this will set the
- * velocity wherever hit.
+ * In the case of velocities, this will set the velocity
+ * wherever hit.
  *
- * In the case of automation, this will create or
- * edit the automation point at the given position.
+ * In the case of automation, this will create or edit the
+ * automation point at the given position.
  *
- * In other cases, this will create an object with
- * the default length at the given position, unless
- * an object already exists there.
+ * In other cases, this will create an object with the default
+ * length at the given position, unless an object already
+ * exists there.
  */
 NONNULL static void
 autofill (ArrangerWidget * self, double x, double y)
