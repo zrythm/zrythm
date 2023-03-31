@@ -1249,6 +1249,10 @@ do_or_undo_move_or_copy (
   bool pin = self->type == TRACKLIST_SELECTIONS_ACTION_PIN;
   bool unpin = self->type == TRACKLIST_SELECTIONS_ACTION_UNPIN;
 
+  /* if moving, this will be set back */
+  ZRegion * prev_clip_editor_region =
+    clip_editor_get_region (CLIP_EDITOR);
+
   if (_do)
     {
       Track * foldable_tr = NULL;
@@ -1636,6 +1640,13 @@ do_or_undo_move_or_copy (
     {
       TRACKLIST->pinned_tracks_cutoff -=
         self->tls_before->num_tracks;
+    }
+
+  if (move)
+    {
+      clip_editor_set_region (
+        CLIP_EDITOR, prev_clip_editor_region,
+        F_NO_PUBLISH_EVENTS);
     }
 
   /* restore connections */

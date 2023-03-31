@@ -58,6 +58,10 @@ clip_editor_set_region (
       g_return_if_fail (IS_REGION (region));
     }
 
+  g_message (
+    "clip editor: setting region to %p (%s)", region,
+    region ? region->name : NULL);
+
   /* if first time showing a region, show the
    * event viewer as necessary */
   if (fire_events && !self->has_region && region)

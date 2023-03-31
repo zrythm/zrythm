@@ -2901,6 +2901,44 @@ test_copy_after_uninstalling_plugin (void)
 #endif
 }
 
+static void
+test_move_track_w_clip_editor_region (void)
+{
+  test_helper_zrythm_init ();
+
+  char * midi_file = g_build_filename (
+    TESTS_SRCDIR, "1_empty_track_1_track_with_data.mid", NULL);
+  SupportedFile * file =
+    supported_file_new_from_path (midi_file);
+  g_free (midi_file);
+  int  num_tracks_before = TRACKLIST->num_tracks;
+  bool success = track_create_with_action (
+    TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, num_tracks_before,
+    1, NULL);
+  g_assert_true (success);
+  Track * first_track = TRACKLIST->tracks[num_tracks_before];
+  track_select (
+    first_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  ZRegion * r = first_track->lanes[0]->regions[0];
+  arranger_object_select (
+    (ArrangerObject *) r, F_SELECT, F_NO_APPEND,
+    F_NO_PUBLISH_EVENTS);
+  clip_editor_set_region (CLIP_EDITOR, r, F_NO_PUBLISH_EVENTS);
+  ZRegion * clip_editor_region =
+    clip_editor_get_region (CLIP_EDITOR);
+  g_assert_nonnull (clip_editor_region);
+  tracklist_selections_action_perform_move (
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
+    TRACKLIST->num_tracks, NULL);
+  clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
+  g_assert_nonnull (clip_editor_region);
+  undo_manager_undo (UNDO_MANAGER, NULL);
+  clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
+  g_assert_nonnull (clip_editor_region);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char * argv[])
 {
@@ -2908,6 +2946,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
+  g_test_add_func (
+    TEST_PREFIX "test move track w clip editor region",
+    (GTestFunc) test_move_track_w_clip_editor_region);
   g_test_add_func (
     TEST_PREFIX "test track deletion with plugin",
     (GTestFunc) test_track_deletion_with_plugin);
