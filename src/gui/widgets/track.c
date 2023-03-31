@@ -33,6 +33,7 @@
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/dialogs/track_icon_chooser_dialog.h"
 #include "gui/widgets/editable_label.h"
+#include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/meter.h"
@@ -1310,11 +1311,23 @@ click_released (
     }
   else if (n_press == 2)
     {
-      TrackLane * lane = get_lane_at_y (self, y);
+      /* if pressed closed to the name, attempt rename,
+       * otherwise just show the track info in the inspector */
+      if (x < 60 && y < 17)
+        {
+          TrackLane * lane = get_lane_at_y (self, y);
 
-      /* show popup to edit the name */
-      show_edit_name_popover (self, lane);
+          /* show popup to edit the name */
+          show_edit_name_popover (self, lane);
+        }
+      else
+        {
+          left_dock_edge_widget_refresh_with_page (
+            MW_LEFT_DOCK_EDGE, LEFT_DOCK_EDGE_TAB_TRACK);
+        }
     }
+
+  g_debug ("npress %d", n_press);
 
   self->button_pressed = 0;
   self->clicked_button = NULL;
