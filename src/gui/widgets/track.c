@@ -1447,31 +1447,43 @@ on_drag_update (
     }
   else
     {
-      /* start dnd */
-      WrappedObjectWithChangeSignal * wrapped_track =
-        wrapped_object_with_change_signal_new (
-          self->track, WRAPPED_OBJECT_TYPE_TRACK);
-      GdkContentProvider * content_providers[] = {
-        gdk_content_provider_new_typed (
-          WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
-          wrapped_track),
-      };
-      GdkContentProvider * provider =
-        gdk_content_provider_new_union (
-          content_providers, G_N_ELEMENTS (content_providers));
+      int drag_threshold;
+      g_object_get (
+        zrythm_app->default_settings,
+        "gtk-dnd-drag-threshold", &drag_threshold, NULL);
+      if (
+        fabs (offset_x) > drag_threshold
+        || fabs (offset_y) > drag_threshold)
+        {
+          /* start dnd */
+          WrappedObjectWithChangeSignal * wrapped_track =
+            wrapped_object_with_change_signal_new (
+              self->track, WRAPPED_OBJECT_TYPE_TRACK);
+          GdkContentProvider * content_providers[] = {
+            gdk_content_provider_new_typed (
+              WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
+              wrapped_track),
+          };
+          GdkContentProvider * provider =
+            gdk_content_provider_new_union (
+              content_providers,
+              G_N_ELEMENTS (content_providers));
 
-      GtkNative * native =
-        gtk_widget_get_native (GTK_WIDGET (self));
-      g_return_if_fail (native);
-      GdkSurface * surface = gtk_native_get_surface (native);
+          GtkNative * native =
+            gtk_widget_get_native (GTK_WIDGET (self));
+          g_return_if_fail (native);
+          GdkSurface * surface =
+            gtk_native_get_surface (native);
 
-      GdkDevice * device =
-        gtk_gesture_get_device (GTK_GESTURE (gesture));
+          GdkDevice * device =
+            gtk_gesture_get_device (GTK_GESTURE (gesture));
 
-      /* begin drag */
-      gdk_drag_begin (
-        surface, device, provider,
-        GDK_ACTION_MOVE | GDK_ACTION_COPY, offset_x, offset_y);
+          /* begin drag */
+          gdk_drag_begin (
+            surface, device, provider,
+            GDK_ACTION_MOVE | GDK_ACTION_COPY, offset_x,
+            offset_y);
+        }
     }
 
   self->last_offset_y = offset_y;
