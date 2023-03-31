@@ -136,6 +136,8 @@ midi_arranger_widget_create_note (
   arranger_object_select (
     midi_note_obj, F_SELECT,
     autofilling ? F_APPEND : F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+
+  midi_note_listen (midi_note, true);
 }
 
 /**
@@ -368,12 +370,11 @@ midi_arranger_calc_deltamax_for_note_movement (int y_delta)
 /**
  * Listen to the currently selected notes.
  *
- * This function either turns on the notes if they
- * are not playing, changes the notes if the pitch
- * changed, or otherwise does nothing.
+ * This function either turns on the notes if they are not
+ * playing, changes the notes if the pitch changed, or
+ * otherwise does nothing.
  *
- * @param listen Turn notes on if 1, or turn them
- *   off if 0.
+ * @param listen Turn notes on if 1, or turn them off if 0.
  */
 void
 midi_arranger_listen_notes (ArrangerWidget * self, bool listen)

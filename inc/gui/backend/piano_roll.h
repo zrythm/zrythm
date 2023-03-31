@@ -168,8 +168,7 @@ typedef struct PianoRoll
   /** Selected MidiModifier. */
   MidiModifier midi_modifier;
 
-  /** Currently pressed notes (used only at
-   * runtime). */
+  /** Currently pressed notes (used only at runtime). */
   int current_notes[128];
   int num_current_notes;
 

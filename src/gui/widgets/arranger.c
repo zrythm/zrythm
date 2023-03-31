@@ -2848,6 +2848,11 @@ drag_begin (
       ArrangerSelections * sel =
         arranger_widget_get_selections (self);
       self->sel_at_start = arranger_selections_clone (sel);
+
+      if (self->type == TYPE (MIDI))
+        {
+          midi_arranger_listen_notes (self, true);
+        }
     }
   /* if nothing hit */
   else

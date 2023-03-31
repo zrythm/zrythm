@@ -57,16 +57,14 @@ typedef struct _PianoRollKeysWidget
   /**
    * Note pressed.
    *
-   * Used for note presses (see
-   * MidiEditorSpaceKeyWidget).
+   * Used for note presses.
    */
   int note_pressed;
 
   /**
    * Note released.
    *
-   * Used for note presses (see
-   * MidiEditorSpaceKeyWidget).
+   * Used for note presses.
    */
   int note_released;
 
