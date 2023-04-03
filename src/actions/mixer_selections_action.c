@@ -523,8 +523,8 @@ do_or_undo_create_or_delete (
                 }
               if (!IS_PLUGIN_AND_NONNULL (pl))
                 {
-                  HANDLE_ERROR (
-                    err, "%s", _ ("Could not create plugin"));
+                  PROPAGATE_PREFIXED_ERROR_LITERAL (
+                    error, err, _ ("Could not create plugin"));
                   return -1;
                 }
 
@@ -533,8 +533,8 @@ do_or_undo_create_or_delete (
               int ret = plugin_instantiate (pl, NULL, &err);
               if (ret != 0)
                 {
-                  HANDLE_ERROR (
-                    err, "%s",
+                  PROPAGATE_PREFIXED_ERROR_LITERAL (
+                    error, err,
                     _ ("Failed to instantiate "
                        "plugin"));
                   return -1;

@@ -980,9 +980,8 @@ do_or_undo_create_or_delete (
               Track *  track = track_clone (own_track, &err);
               if (!track)
                 {
-                  HANDLE_ERROR (
-                    err, _ ("Failed to clone track: %s"),
-                    err->message);
+                  PROPAGATE_PREFIXED_ERROR_LITERAL (
+                    error, err, _ ("Failed to clone track"));
                   return -1;
                 }
 
@@ -1433,9 +1432,8 @@ do_or_undo_move_or_copy (
               Track *  track = track_clone (own_track, &err);
               if (!track)
                 {
-                  HANDLE_ERROR (
-                    err, _ ("Failed to clone track: %s"),
-                    err->message);
+                  PROPAGATE_PREFIXED_ERROR_LITERAL (
+                    error, err, _ ("Failed to clone track"));
                   return -1;
                 }
               new_tracks[i] = track;
