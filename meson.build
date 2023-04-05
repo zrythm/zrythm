@@ -518,6 +518,7 @@ test_cflags = [
   '-DOPTIMIZE_O1=OPTIMIZE(O1)',
   '-DOPTIMIZE_O2=OPTIMIZE(O2)',
   '-DOPTIMIZE_O3=OPTIMIZE(O3)',
+  '-DNOINLINE=__attribute__((noinline))',
   '-DNONNULL_ARGS(...)=__attribute__((nonnull(__VA_ARGS__)))',
   '-DACCESS(...)=' + (is_gcc ? '__attribute__((access(__VA_ARGS__)))' : ''),
   '-DACCESS_READ_ONLY(...)=' + (is_gcc ? 'ACCESS(read_only,__VA_ARGS__)' : ''),

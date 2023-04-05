@@ -567,7 +567,6 @@ draw_chord_region (
  *
  * @return Whether to break.
  */
-OPTIMIZE_O3
 static inline bool
 handle_loop (
   ZRegion *         self,

@@ -1017,6 +1017,7 @@ zrythm_app_startup (GApplication * app)
 
   ZRYTHM = zrythm_new (
     exe_path ? exe_path : self->argv[0], true, false, true);
+  g_return_if_fail (ZRYTHM);
 
   const char * copyright_line =
     "Copyright (C) " COPYRIGHT_YEARS " " COPYRIGHT_NAME;

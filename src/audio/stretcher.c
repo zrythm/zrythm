@@ -382,6 +382,7 @@ stretcher_stretch_interleaved (
         {
           for (size_t j = 0; j < out_chunk_size; j++)
             {
+              g_return_val_if_fail (out_samples[i], -1);
               out_samples[i][j + total_out_frames] =
                 tmp_out_arrays[i][j];
             }

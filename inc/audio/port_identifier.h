@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -576,49 +576,10 @@ port_identifier_copy (
  * @note Does not check insignificant data like
  *   comment.
  */
-WARN_UNUSED_RESULT NONNULL static inline bool
+WARN_UNUSED_RESULT NONNULL bool
 port_identifier_is_equal (
   const PortIdentifier * src,
-  const PortIdentifier * dest)
-{
-  bool eq =
-    dest->owner_type == src->owner_type
-    && dest->unit == src->unit && dest->type == src->type
-    && dest->flow == src->flow && dest->flags == src->flags
-    && dest->flags2 == src->flags2
-    && dest->track_name_hash == src->track_name_hash;
-  if (!eq)
-    return false;
-
-  if (dest->owner_type == PORT_OWNER_TYPE_PLUGIN)
-    {
-      eq =
-        eq
-        && plugin_identifier_is_equal (
-          &dest->plugin_id, &src->plugin_id);
-    }
-
-  /* if LV2 (has symbol) check symbol match,
-   * otherwise check index match and label match */
-  if (dest->sym)
-    {
-      eq = eq && string_is_equal (dest->sym, src->sym);
-    }
-  else
-    {
-      eq =
-        eq && dest->port_index == src->port_index
-        && string_is_equal (dest->label, src->label);
-    }
-
-  /* do string comparisons at the end */
-  eq =
-    eq && string_is_equal (dest->uri, src->uri)
-    && string_is_equal (dest->port_group, src->port_group)
-    && string_is_equal (dest->ext_port_id, src->ext_port_id);
-
-  return eq;
-}
+  const PortIdentifier * dest);
 
 /**
  * To be used as GEqualFunc.

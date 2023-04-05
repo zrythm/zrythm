@@ -535,7 +535,7 @@ transport_request_roll (Transport * self, bool with_wait)
       zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
     }
 
-  if (!ZRYTHM_TESTING)
+  if (ZRYTHM && !ZRYTHM_TESTING)
     {
       /* handle countin */
       PrerollCountBars bars = g_settings_get_enum (
@@ -895,7 +895,7 @@ transport_set_loop (
 
   self->loop = enabled;
 
-  if (!ZRYTHM_TESTING)
+  if (ZRYTHM && !ZRYTHM_TESTING)
     {
       g_settings_set_boolean (S_TRANSPORT, "loop", enabled);
     }

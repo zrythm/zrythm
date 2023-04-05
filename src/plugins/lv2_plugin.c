@@ -970,8 +970,7 @@ lv2_plugin_get_parameters (
             lilv_node_as_string (symbol);
           strncpy (
             param.symbol, symbol_str,
-            MIN (
-              strlen (symbol_str) + 1, LV2_PARAM_MAX_STR_LEN));
+            LV2_PARAM_MAX_STR_LEN - 1);
           lilv_node_free (symbol);
 
           LilvNode * label = lilv_world_get (
@@ -983,9 +982,8 @@ lv2_plugin_get_parameters (
                 lilv_node_as_string (label);
               strncpy (
                 param.label, label_str,
-                MIN (
-                  strlen (label_str) + 1,
-                  LV2_PARAM_MAX_STR_LEN));
+
+                LV2_PARAM_MAX_STR_LEN - 1);
               lilv_node_free (label);
             }
 
@@ -998,9 +996,7 @@ lv2_plugin_get_parameters (
                 lilv_node_as_string (comment);
               strncpy (
                 param.comment, comment_str,
-                MIN (
-                  strlen (comment_str) + 1,
-                  LV2_PARAM_MAX_STR_LEN));
+                LV2_PARAM_MAX_STR_LEN - 1);
               lilv_node_free (comment);
             }
 

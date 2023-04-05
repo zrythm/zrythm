@@ -75,7 +75,7 @@ clip_editor_set_region (
    * avoid potentially sending the events to
    * multiple tracks
    */
-  if (ROUTER && engine_get_run (AUDIO_ENGINE))
+  if (ZRYTHM && ROUTER && engine_get_run (AUDIO_ENGINE))
     {
       g_debug (
         "clip editor region changed, waiting for "

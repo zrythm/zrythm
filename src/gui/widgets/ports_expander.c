@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/engine.h"
@@ -223,6 +223,7 @@ ports_expander_widget_setup_plugin (
 
   /* set name and icon */
   char fullstr[200];
+  strcpy (fullstr, "");
 
   if (type == TYPE_CONTROL && flow == FLOW_INPUT)
     strcpy (fullstr, _ ("Controls"));
