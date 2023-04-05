@@ -108,6 +108,12 @@ int
 midi_arranger_calc_deltamax_for_note_movement (int y_delta);
 
 /**
+ * To be used as a source function to unlisten notes.
+ */
+gboolean
+midi_arranger_unlisten_notes_source_func (gpointer user_data);
+
+/**
  * Listen to the currently selected notes.
  *
  * This function either turns on the notes if they are not

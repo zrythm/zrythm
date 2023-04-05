@@ -1700,8 +1700,10 @@ arranger_widget_on_key_press (
             }
 
           /* check arrow movement */
+          bool have_arrow_movement = false;
           if (keyval == GDK_KEY_Left)
             {
+              have_arrow_movement = true;
               Position min_possible_pos;
               arranger_widget_get_min_possible_position (
                 self, &min_possible_pos);
@@ -1733,6 +1735,7 @@ arranger_widget_on_key_press (
             }
           else if (keyval == GDK_KEY_Right)
             {
+              have_arrow_movement = true;
               GError * err = NULL;
               bool     ret =
                 arranger_selections_action_perform_move (
@@ -1754,6 +1757,7 @@ arranger_widget_on_key_press (
             }
           else if (keyval == GDK_KEY_Down)
             {
+              have_arrow_movement = true;
               if (
                 self == MW_MIDI_ARRANGER
                 || self == MW_MIDI_MODIFIER_ARRANGER)
@@ -1820,6 +1824,7 @@ arranger_widget_on_key_press (
             }
           else if (keyval == GDK_KEY_Up)
             {
+              have_arrow_movement = true;
               if (
                 self == MW_MIDI_ARRANGER
                 || self == MW_MIDI_MODIFIER_ARRANGER)
@@ -1884,7 +1889,18 @@ arranger_widget_on_key_press (
                   /*undo_manager_perform (*/
                   /*UNDO_MANAGER, action);*/
                 }
+            } /* endif key up */
+
+          if (have_arrow_movement && self->type == TYPE (MIDI))
+            {
+              midi_arranger_listen_notes (self, true);
+              /* FIXME remember the ID just in case the
+               * arranger gets deleted before this is caleld */
+              g_timeout_add (
+                400, midi_arranger_unlisten_notes_source_func,
+                self);
             }
+
         } /* arranger selections has any */
     }
 
