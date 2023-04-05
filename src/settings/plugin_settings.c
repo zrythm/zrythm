@@ -312,6 +312,12 @@ activate_finish (
   TrackType type =
     track_get_type_from_plugin_descriptor (self->descr);
 
+  /* stop the engine so it doesn't restart all the time
+   * until all the actions are performed */
+  EngineState state;
+  engine_wait_for_pause (
+    AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
+
   if (autoroute_multiout)
     {
       int num_pairs = self->descr->num_audio_outs;
@@ -537,6 +543,8 @@ activate_finish (
           has_errors = true;
         }
     }
+
+  engine_resume (AUDIO_ENGINE, &state);
 
   if (!has_errors)
     {
