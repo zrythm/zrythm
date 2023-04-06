@@ -70,8 +70,14 @@ update_meter_reading (
 
   if (math_doubles_equal (peak_val, prev))
     return G_SOURCE_CONTINUE;
+
+  char db_str[60];
+  ui_get_db_value_as_string ((float) peak_val, db_str);
+
   if (peak_val < -98.)
-    gtk_label_set_text (widget->meter_readings, "-∞");
+    {
+      gtk_label_set_text (widget->meter_readings, db_str);
+    }
   else
     {
       char str[800];
@@ -80,7 +86,7 @@ update_meter_reading (
       char peak_str[400];
       if (peak_val < -10.)
         {
-          sprintf (peak_str, "%.0fdb</small>", peak_val);
+          sprintf (peak_str, "%sdb</small>", db_str);
         }
       else
         {
@@ -89,12 +95,12 @@ update_meter_reading (
               sprintf (
                 peak_str,
                 "<span foreground=\"#FF0A05\">"
-                "%.1fdb</span></small>",
-                peak_val);
+                "%sdb</span></small>",
+                db_str);
             }
           else
             {
-              sprintf (peak_str, "%.1fdb</small>", peak_val);
+              sprintf (peak_str, "%sdb</small>", db_str);
             }
         }
       strcat (str, peak_str);

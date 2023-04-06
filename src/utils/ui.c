@@ -1269,6 +1269,30 @@ ui_get_detail_level (void)
   return UI_CACHES->detail_level;
 }
 
+/**
+ * Returns an appropriate string representation of the given
+ * dB value.
+ */
+void
+ui_get_db_value_as_string (float val, char * buf)
+{
+  if (val < -98.f)
+    {
+      strcpy (buf, "-∞");
+    }
+  else
+    {
+      if (val < -10.)
+        {
+          sprintf (buf, "%.0f", val);
+        }
+      else
+        {
+          sprintf (buf, "%.1f", val);
+        }
+    }
+}
+
 UiCaches *
 ui_caches_new (void)
 {

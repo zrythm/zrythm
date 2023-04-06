@@ -813,6 +813,13 @@ ui_get_normalized_draggable_value (
   double     multiplier,
   UiDragMode mode);
 
+/**
+ * Returns an appropriate string representation of the given
+ * dB value.
+ */
+void
+ui_get_db_value_as_string (float val, char * buf);
+
 UiCaches *
 ui_caches_new (void);
 

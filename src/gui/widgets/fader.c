@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdlib.h>
@@ -14,6 +14,7 @@
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/fader.h"
 #include "project.h"
+#include "utils/cairo.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
@@ -142,6 +143,28 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       ((float) height - value_px)
         - (float) inner_line_width / 2.f,
       (float) width - border_width * 2.f, inner_line_width));
+
+  /* draw value */
+  if (self->hover)
+    {
+      char val_str[60];
+      ui_get_db_value_as_string (self->fader->volume, val_str);
+      pango_layout_set_text (self->layout, val_str, -1);
+      int x_px, y_px;
+      pango_layout_get_pixel_size (self->layout, &x_px, &y_px);
+      float start_x = (float) width / 2.f - x_px / 2.f;
+      bool  show_text_at_bottom = y_px > (height - value_px);
+      float start_y =
+        show_text_at_bottom ? height / 2.f - y_px / 2.f : 0;
+      GdkRGBA text_color =
+        show_text_at_bottom
+          ? Z_GDK_RGBA_INIT (1, 1, 1, 1)
+          : Z_GDK_RGBA_INIT (1, 1, 1, 1);
+      gtk_snapshot_translate (
+        snapshot, &GRAPHENE_POINT_INIT (start_x, start_y));
+      gtk_snapshot_append_layout (
+        snapshot, self->layout, &text_color);
+    }
 }
 
 static void
@@ -381,6 +404,8 @@ dispose (FaderWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
+  g_object_unref (self->layout);
+
   G_OBJECT_CLASS (fader_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
@@ -399,6 +424,9 @@ fader_widget_init (FaderWidget * self)
     GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   gtk_widget_set_tooltip_text (GTK_WIDGET (self), _ ("Fader"));
+
+  self->layout =
+    z_cairo_create_default_pango_layout (GTK_WIDGET (self));
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
