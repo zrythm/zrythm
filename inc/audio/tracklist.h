@@ -70,12 +70,11 @@ typedef struct Tracklist
   /**
    * All tracks that exist.
    *
-   * These should always be sorted in the same way
-   * they should appear in the GUI and include
-   * hidden tracks.
+   * These should always be sorted in the same way they should
+   * appear in the GUI and include hidden tracks.
    *
-   * Pinned tracks should have lower indices. Ie,
-   * the sequence must be:
+   * Pinned tracks should have lower indices. Ie, the sequence
+   * must be:
    * {
    *   pinned track,
    *   pinned track,
@@ -112,16 +111,14 @@ typedef struct Tracklist
   PinnedTracklistWidget * pinned_widget;
 
   /**
-   * Index starting from which tracks are
-   * unpinned.
+   * Index starting from which tracks are unpinned.
    *
-   * Tracks before this position will be considered
-   * as pinned.
+   * Tracks before this position will be considered as pinned.
    */
   int pinned_tracks_cutoff;
 
-  /** When this is true, some tracks may temporarily
-   * be moved beyond num_tracks. */
+  /** When this is true, some tracks may temporarily be moved
+   * beyond num_tracks. */
   bool swapping_tracks;
 
   /** Pointer to owner sample processor, if any. */

@@ -147,8 +147,11 @@ typedef enum ProjectCompressionFlag
 #define PROJECT_DECOMPRESS_DATA PROJECT_COMPRESS_DATA
 
 /**
- * Contains all of the info that will be serialized
- * into a project file.
+ * Contains all of the info that will be serialized into a
+ * project file.
+ *
+ * TODO create a UserInterface struct and move things that are
+ * only relevant to the UI there.
  */
 typedef struct Project
 {
@@ -241,7 +244,7 @@ typedef struct Project
   PortConnectionsManager * port_connections_manager;
 
   /**
-   * The audio backend
+   * The audio backend.
    */
   AudioEngine * audio_engine;
 
