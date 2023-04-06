@@ -46,6 +46,7 @@ packages:
   - gettext-runtime
   - gtk3
   - pango
+  - pipewire
   - python3
   - py39-pip
   - reproc
