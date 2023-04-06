@@ -39,6 +39,7 @@ packages:
   - libyaml
   - lsp-plugins-lv2
   - gettext-runtime
+  - gtksourceview5
   - cairo
   - glib
   - gdk-pixbuf2
@@ -65,7 +66,7 @@ tasks:
   - setup: |
       #sudo pkg install -y py37-pip
       cd zrythm
-      CFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ../meson/meson.py build -Dtests=true -Dmanpage=true -Db_lto=false -Dforce_fallback_for=gtk4,libadwaita,libpanel,lilv,sord,serd,sratom,lv2,zix,libcyaml,libaudec
+      CFLAGS=-I/usr/local/include LDFLAGS=-L/usr/local/lib ../meson/meson.py setup build -Dtests=true -Dmanpage=true -Db_lto=false -Dforce_fallback_for=gtk4,libadwaita,libpanel,lilv,sord,serd,sratom,lv2,zix,libcyaml,libaudec
   - build: |
       cd zrythm
       ninja -C build
