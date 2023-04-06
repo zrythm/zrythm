@@ -259,10 +259,10 @@ typedef struct Transport
   /** Metronome enabled or not. */
   bool metronome_enabled;
 
-  /** Preroll frames remaining. */
+  /** Recording preroll frames remaining. */
   signed_frame_t preroll_frames_remaining;
 
-  /** Countin frames remaining. */
+  /** Metronome countin frames remaining. */
   signed_frame_t countin_frames_remaining;
 
   /** Whether to start playback on MIDI input. */
