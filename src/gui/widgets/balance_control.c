@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
@@ -35,6 +35,24 @@ G_DEFINE_TYPE (
 #define TEXT_FONT "Bold 8"
 #define TEXT_PADDING 3.0
 #define LINE_WIDTH 3.0
+
+/**
+ * Returns the pan string.
+ *
+ * Must be free'd.
+ */
+static char *
+get_pan_string (BalanceControlWidget * self)
+{
+  /* make it from -0.5 to 0.5 */
+  float pan_val = GET_VAL - 0.5f;
+
+  /* get as percentage */
+  pan_val = (fabsf (pan_val) / 0.5f) * 100.f;
+
+  return g_strdup_printf (
+    "%s%.0f%%", GET_VAL < 0.5f ? "-" : "", (double) pan_val);
+}
 
 static void
 balance_control_snapshot (
@@ -126,24 +144,23 @@ balance_control_snapshot (
       (float) height / 2.f - (float) pangorect.height / 2.f));
   gtk_snapshot_append_layout (snapshot, layout, &color);
   gtk_snapshot_restore (snapshot);
-}
 
-/**
- * Returns the pan string.
- *
- * Must be free'd.
- */
-static char *
-get_pan_string (BalanceControlWidget * self)
-{
-  /* make it from -0.5 to 0.5 */
-  float pan_val = GET_VAL - 0.5f;
-
-  /* get as percentage */
-  pan_val = (fabsf (pan_val) / 0.5f) * 100.f;
-
-  return g_strdup_printf (
-    "%s%.0f%%", GET_VAL < 0.5f ? "-" : "", (double) pan_val);
+  /* draw value if hovered */
+  if (self->hovered)
+    {
+      char * val_str = get_pan_string (self);
+      pango_layout_set_text (self->layout, val_str, -1);
+      g_free (val_str);
+      int x_px, y_px;
+      pango_layout_get_pixel_size (self->layout, &x_px, &y_px);
+      float   start_x = (float) width / 2.f - x_px / 2.f;
+      float   start_y = height / 2.f - y_px / 2.f;
+      GdkRGBA text_color = Z_GDK_RGBA_INIT (1, 1, 1, 1);
+      gtk_snapshot_translate (
+        snapshot, &GRAPHENE_POINT_INIT (start_x, start_y));
+      gtk_snapshot_append_layout (
+        snapshot, self->layout, &text_color);
+    }
 }
 
 static void
@@ -210,12 +227,12 @@ on_drag_update (
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
-  char * str = get_pan_string (self);
-  /*gtk_label_set_text (*/
-  /*self->tooltip_label, str);*/
+  char * pan_str = get_pan_string (self);
+  char * str =
+    g_strdup_printf ("%s: %s", _ ("Balance"), pan_str);
   gtk_widget_set_tooltip_text (GTK_WIDGET (self), str);
+  g_free (pan_str);
   g_free (str);
-  /*gtk_window_present (self->tooltip_win);*/
 
   self->dragged = 1;
 }
@@ -379,6 +396,8 @@ static void
 dispose (BalanceControlWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
+
+  g_object_unref (self->layout);
 
   G_OBJECT_CLASS (balance_control_widget_parent_class)
     ->dispose (G_OBJECT (self));
