@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
+# SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex at zrythm dot org>
 # SPDX-License-Identifier: FSFAP
 image: archlinux
 packages:
@@ -38,6 +38,7 @@ packages:
   - ninja
   - npm
   - pcre2
+  - pipewire
   - python
   - python-sphinx
   - python-pip
