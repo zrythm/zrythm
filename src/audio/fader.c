@@ -587,7 +587,7 @@ fader_set_amp_with_action (
       bool     ret =
         tracklist_selections_action_perform_edit_single_float (
           EDIT_TRACK_ACTION_TYPE_VOLUME, track, amp_from,
-          amp_to, true, &err);
+          amp_to, F_NOT_ALREADY_EDITED, &err);
       if (!ret)
         {
           HANDLE_ERROR (
