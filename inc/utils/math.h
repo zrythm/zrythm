@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -261,6 +261,14 @@ math_dbfs_to_fader_val (sample_t dbfs)
  */
 bool
 math_assert_nonnann (float x);
+
+/**
+ * Returns whether the given string is a valid float.
+ *
+ * @param ret If non-NULL, the result will be placed here.
+ */
+NONNULL_ARGS (1)
+bool math_is_string_valid_float (const char * str, float * ret);
 
 /**
  * @}

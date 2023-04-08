@@ -12,6 +12,7 @@
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
+#include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/fader.h"
 #include "project.h"
 #include "utils/cairo.h"
@@ -320,6 +321,61 @@ on_right_click (
     }
 }
 
+static void
+set_fader_val_with_action_from_db (
+  void *       object,
+  const char * str)
+{
+  Fader * fader = (Fader *) object;
+  bool    is_valid = false;
+  float   val;
+  if (math_is_string_valid_float (str, &val))
+    {
+      if (val <= 6.f)
+        {
+          is_valid = true;
+        }
+    }
+
+  if (is_valid)
+    {
+      fader_set_amp_with_action (
+        fader, fader_get_amp (object), math_dbfs_to_amp (val),
+        true);
+    }
+  else
+    {
+      ui_show_error_message (false, _ ("Invalid value"));
+    }
+}
+
+static const char *
+get_fader_db_val_as_string (void * object)
+{
+  static char db_str[60];
+  fader_db_string_getter (object, db_str);
+  return db_str;
+}
+
+static void
+on_click (
+  GtkGestureClick * gesture,
+  gint              n_press,
+  gdouble           x,
+  gdouble           y,
+  FaderWidget *     self)
+{
+  if (n_press == 2)
+    {
+      StringEntryDialogWidget * dialog =
+        string_entry_dialog_widget_new (
+          _ ("Fader Value"), self->fader,
+          get_fader_db_val_as_string,
+          set_fader_val_with_action_from_db);
+      gtk_window_present (GTK_WINDOW (dialog));
+    }
+}
+
 static gboolean
 on_scroll (
   GtkEventControllerScroll * scroll_controller,
@@ -466,6 +522,16 @@ fader_widget_init (FaderWidget * self)
     G_CALLBACK (on_right_click), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (right_click));
+
+  GtkGestureClick * double_click =
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (double_click), GDK_BUTTON_PRIMARY);
+  g_signal_connect (
+    G_OBJECT (double_click), "pressed", G_CALLBACK (on_click),
+    self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (double_click));
 
   GtkEventControllerMotion * motion_controller =
     GTK_EVENT_CONTROLLER_MOTION (

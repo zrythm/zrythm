@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
@@ -64,4 +64,28 @@ math_assert_nonnann (float x)
       return false;
     }
   return true;
+}
+
+/**
+ * Returns whether the given string is a valid float.
+ *
+ * @param ret If non-NULL, the result will be placed here.
+ */
+bool
+math_is_string_valid_float (const char * str, float * ret)
+{
+  int   len;
+  float dummy = 0.0;
+  if (
+    sscanf (str, "%f %n", &dummy, &len) == 1
+    && len == (int) strlen (str))
+    {
+      if (ret)
+        {
+          *ret = dummy;
+        }
+      return true;
+    }
+  else
+    return false;
 }
