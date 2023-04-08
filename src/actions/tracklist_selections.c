@@ -2090,9 +2090,13 @@ tracklist_selections_action_stringize (
               else
                 return g_strdup (_ ("Unfold Track"));
             case EDIT_TRACK_ACTION_TYPE_VOLUME:
-              return g_strdup (_ ("Change Fader"));
+              return g_strdup_printf (
+                _ ("Change Fader from %.1f to %.1f"),
+                self->val_before, self->val_after);
             case EDIT_TRACK_ACTION_TYPE_PAN:
-              return g_strdup (_ ("Change Pan"));
+              return g_strdup_printf (
+                _ ("Change Pan from %.1f to %.1f"),
+                self->val_before, self->val_after);
             case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
               return g_strdup (_ ("Change direct out"));
             case EDIT_TRACK_ACTION_TYPE_RENAME:
