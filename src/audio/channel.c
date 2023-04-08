@@ -704,7 +704,8 @@ channel_add_balance_control (void * _channel, float pan)
 void
 channel_reset_fader (Channel * self, bool fire_events)
 {
-  fader_set_amp (self->fader, 1.0f);
+  fader_set_amp_with_action (
+    self->fader, self->fader->amp->control, 1.0f, true);
 
   if (fire_events)
     {
