@@ -10,6 +10,7 @@
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
+#include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "project.h"
@@ -42,7 +43,7 @@ G_DEFINE_TYPE (
  * Must be free'd.
  */
 static char *
-get_pan_string (BalanceControlWidget * self)
+get_pan_string (BalanceControlWidget * self, bool with_perc)
 {
   /* make it from -0.5 to 0.5 */
   float pan_val = GET_VAL - 0.5f;
@@ -51,7 +52,8 @@ get_pan_string (BalanceControlWidget * self)
   pan_val = (fabsf (pan_val) / 0.5f) * 100.f;
 
   return g_strdup_printf (
-    "%s%.0f%%", GET_VAL < 0.5f ? "-" : "", (double) pan_val);
+    "%s%.0f%s", GET_VAL < 0.5f ? "-" : "", (double) pan_val,
+    with_perc ? "%" : "");
 }
 
 static void
@@ -148,7 +150,7 @@ balance_control_snapshot (
   /* draw value if hovered */
   if (self->hovered)
     {
-      char * val_str = get_pan_string (self);
+      char * val_str = get_pan_string (self, true);
       pango_layout_set_text (self->layout, val_str, -1);
       g_free (val_str);
       int x_px, y_px;
@@ -227,7 +229,7 @@ on_drag_update (
   self->last_y = offset_y;
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
-  char * pan_str = get_pan_string (self);
+  char * pan_str = get_pan_string (self, true);
   char * str =
     g_strdup_printf ("%s: %s", _ ("Balance"), pan_str);
   gtk_widget_set_tooltip_text (GTK_WIDGET (self), str);
@@ -263,8 +265,8 @@ on_drag_end (
           self->balance_at_start, GET_VAL, true, &err);
       if (!ret)
         {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to change balance"));
+          HANDLE_ERROR_LITERAL (
+            err, _ ("Failed to change balance"));
         }
     }
 }
@@ -304,6 +306,76 @@ on_right_click (
   if (n_press == 1)
     {
       show_context_menu (self, x, y);
+    }
+}
+
+static void
+set_val_with_action (void * object, const char * str)
+{
+  BalanceControlWidget * self =
+    (BalanceControlWidget *) object;
+  bool  is_valid = false;
+  float val;
+  if (math_is_string_valid_float (str, &val))
+    {
+      if (val <= 100.f && val >= -100.f)
+        {
+          is_valid = true;
+        }
+    }
+
+  val = (val + 100.f) / 200.f;
+
+  if (is_valid)
+    {
+      if (!math_floats_equal_epsilon (val, GET_VAL, 0.0001f))
+        {
+          Track * track =
+            channel_get_track ((Channel *) self->object);
+          GError * err = NULL;
+          bool     ret =
+            tracklist_selections_action_perform_edit_single_float (
+              EDIT_TRACK_ACTION_TYPE_PAN, track, GET_VAL, val,
+              false, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR_LITERAL (
+                err, _ ("Failed to change balance"));
+            }
+        }
+    }
+  else /* else if not valid */
+    {
+      ui_show_error_message (false, _ ("Invalid value"));
+    }
+}
+
+static const char *
+get_val_as_string (void * object)
+{
+  static char str[60];
+  char *      pan_str =
+    get_pan_string ((BalanceControlWidget *) object, false);
+  strcpy (str, pan_str);
+  g_free (pan_str);
+  return str;
+}
+
+static void
+on_click (
+  GtkGestureClick *      gesture,
+  gint                   n_press,
+  gdouble                x,
+  gdouble                y,
+  BalanceControlWidget * self)
+{
+  if (n_press == 2)
+    {
+      StringEntryDialogWidget * dialog =
+        string_entry_dialog_widget_new (
+          _ ("Balance Value"), self, get_val_as_string,
+          set_val_with_action);
+      gtk_window_present (GTK_WINDOW (dialog));
     }
 }
 
@@ -353,6 +425,16 @@ balance_control_widget_new (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (right_mouse_mp));
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (right_mouse_mp), GDK_BUTTON_SECONDARY);
+
+  GtkGestureClick * double_click =
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (double_click), GDK_BUTTON_PRIMARY);
+  g_signal_connect (
+    G_OBJECT (double_click), "pressed", G_CALLBACK (on_click),
+    self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (double_click));
 
   GtkEventController * motion_controller =
     gtk_event_controller_motion_new ();
@@ -418,24 +500,6 @@ balance_control_widget_init (BalanceControlWidget * self)
 
   gtk_widget_set_margin_start (GTK_WIDGET (self), 2);
   gtk_widget_set_margin_end (GTK_WIDGET (self), 2);
-
-  /* TODO port to gtk_tooltip_set_custom() */
-#if 0
-  self->tooltip_win =
-    GTK_WINDOW (gtk_window_new (GTK_WINDOW_POPUP));
-  gtk_window_set_type_hint (
-    self->tooltip_win,
-    GDK_WINDOW_TYPE_HINT_TOOLTIP);
-  self->tooltip_label =
-    GTK_LABEL (gtk_label_new ("label"));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->tooltip_label), 1);
-  gtk_container_add (
-    GTK_CONTAINER (self->tooltip_win),
-    GTK_WIDGET (self->tooltip_label));
-  gtk_window_set_position (
-    self->tooltip_win, GTK_WIN_POS_MOUSE);
-#endif
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   gtk_widget_add_controller (
