@@ -3486,7 +3486,16 @@ DEFINE_SIMPLE (activate_reset_stereo_balance)
 
   Track * track = port_get_track (port, true);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
-  channel_set_balance_control (track->channel, 0.5);
+  GError * err = NULL;
+  bool     ret =
+    tracklist_selections_action_perform_edit_single_float (
+      EDIT_TRACK_ACTION_TYPE_PAN, track, port->control, 0.5f,
+      false, &err);
+  if (!ret)
+    {
+      HANDLE_ERROR_LITERAL (
+        err, _ ("Failed to change balance"));
+    }
 }
 
 DEFINE_SIMPLE (activate_plugin_toggle_enabled)
