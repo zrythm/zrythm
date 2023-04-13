@@ -2590,7 +2590,9 @@ on_drag_begin_handle_hit_object (
           break;
         case TOOL_SELECT_NORMAL:
         case TOOL_SELECT_STRETCH:
-          if (is_fade_in_point)
+          if (show_cut_lines)
+            SET_ACTION (CUTTING);
+          else if (is_fade_in_point)
             SET_ACTION (RESIZING_L_FADE);
           else if (is_fade_out_point)
             SET_ACTION (RESIZING_R_FADE);
@@ -2622,8 +2624,6 @@ on_drag_begin_handle_hit_object (
             }
           else if (is_rename)
             SET_ACTION (RENAMING);
-          else if (show_cut_lines)
-            SET_ACTION (CUTTING);
           else if (is_fade_in_outer)
             SET_ACTION (RESIZING_UP_FADE_IN);
           else if (is_fade_out_outer)
