@@ -369,7 +369,29 @@ on_click (
   gdouble                y,
   BalanceControlWidget * self)
 {
-  if (n_press == 2)
+
+  if (n_press == 1)
+    {
+      GdkModifierType state =
+        gtk_event_controller_get_current_event_state (
+          GTK_EVENT_CONTROLLER (gesture));
+      if (state & GDK_CONTROL_MASK)
+        {
+          Track * track =
+            channel_get_track ((Channel *) self->object);
+          GError * err = NULL;
+          bool     ret =
+            tracklist_selections_action_perform_edit_single_float (
+              EDIT_TRACK_ACTION_TYPE_PAN, track, GET_VAL,
+              0.5f, false, &err);
+          if (!ret)
+            {
+              HANDLE_ERROR_LITERAL (
+                err, _ ("Failed to change balance"));
+            }
+        }
+    }
+  else if (n_press == 2)
     {
       StringEntryDialogWidget * dialog =
         string_entry_dialog_widget_new (
