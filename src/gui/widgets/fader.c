@@ -199,12 +199,6 @@ drag_begin (
 {
   g_return_if_fail (IS_FADER (self->fader));
 
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (gesture));
-  if (state & GDK_CONTROL_MASK)
-    fader_set_amp ((void *) self->fader, 1.0);
-
 #if 0
   char * string =
     g_strdup_printf (
@@ -365,7 +359,19 @@ on_click (
   gdouble           y,
   FaderWidget *     self)
 {
-  if (n_press == 2)
+  if (n_press == 1)
+    {
+      GdkModifierType state =
+        gtk_event_controller_get_current_event_state (
+          GTK_EVENT_CONTROLLER (gesture));
+      if (state & GDK_CONTROL_MASK)
+        {
+          fader_set_amp_with_action (
+            self->fader, fader_get_amp (self->fader), 1.f,
+            true);
+        }
+    }
+  else if (n_press == 2)
     {
       StringEntryDialogWidget * dialog =
         string_entry_dialog_widget_new (
