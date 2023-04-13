@@ -75,6 +75,17 @@ clip_editor_widget_on_region_changed (ClipEditorWidget * self)
 
       /* update the toolbar */
       editor_toolbar_widget_refresh (self->editor_toolbar);
+
+      if (r->id.type == REGION_TYPE_MIDI)
+        {
+          /* FIXME remember ID and remove the source function
+           * when this widget is disposed to avoid calling on
+           * a free'd object */
+          g_idle_add (
+            (GSourceFunc)
+              midi_editor_space_widget_scroll_to_middle,
+            self->clip_editor_inner->midi_editor_space);
+        }
     }
   else
     {

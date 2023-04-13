@@ -64,6 +64,34 @@ on_scroll (
   return TRUE;
 }
 
+/**
+ * To be used as a source func when first showing a MIDI
+ * region.
+ */
+gboolean
+midi_editor_space_widget_scroll_to_middle (
+  MidiEditorSpaceWidget * self)
+{
+  /* scroll to the middle on first show */
+  if (!self->scrolled_on_first_refresh)
+    {
+      GtkAdjustment * adj =
+        gtk_scrolled_window_get_vadjustment (
+          self->piano_roll_keys_scroll);
+      int adj_upper = (int) gtk_adjustment_get_upper (adj);
+      if (adj_upper > 1)
+        {
+          editor_settings_set_scroll_start_y (
+            &PIANO_ROLL->editor_settings, adj_upper / 2,
+            F_VALIDATE);
+          self->scrolled_on_first_refresh = true;
+          return G_SOURCE_REMOVE;
+        }
+      return G_SOURCE_CONTINUE;
+    }
+  return G_SOURCE_REMOVE;
+}
+
 void
 midi_editor_space_widget_refresh (MidiEditorSpaceWidget * self)
 {
@@ -135,10 +163,10 @@ midi_editor_space_widget_setup (MidiEditorSpaceWidget * self)
 
   /* add a signal handler to update the editor settings on
    * scroll */
-  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
+  GtkAdjustment * vadj = gtk_scrolled_window_get_vadjustment (
     self->piano_roll_keys_scroll);
   g_signal_connect (
-    hadj, "value-changed",
+    vadj, "value-changed",
     G_CALLBACK (on_piano_keys_scroll_hadj_changed), self);
 
   midi_editor_space_widget_refresh (self);

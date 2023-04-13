@@ -63,6 +63,12 @@ typedef struct _MidiEditorSpaceWidget
   /** Vertical size goup for the keys and the
    * arranger. */
   GtkSizeGroup * arranger_and_keys_vsize_group;
+
+  /**
+   * Whether we scrolled to the middle already (should happen
+   * once per run).
+   */
+  bool scrolled_on_first_refresh;
 } MidiEditorSpaceWidget;
 
 void
@@ -83,6 +89,14 @@ void
 midi_editor_space_widget_set_piano_keys_scroll_start_y (
   MidiEditorSpaceWidget * self,
   int                     y);
+
+/**
+ * To be used as a source func when first showing a MIDI
+ * region.
+ */
+gboolean
+midi_editor_space_widget_scroll_to_middle (
+  MidiEditorSpaceWidget * self);
 
 void
 midi_editor_space_widget_refresh (
