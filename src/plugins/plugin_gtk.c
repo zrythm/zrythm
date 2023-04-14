@@ -1393,6 +1393,17 @@ plugin_gtk_generic_set_widget_value (
   else
     {
       fvalue = (double) *(const float *) body;
+
+      /* skip setting a value if it's already set */
+      g_return_if_fail (
+        IS_PORT_AND_NONNULL (controller->port));
+      if (math_floats_equal (
+            controller->port->control,
+            controller->last_set_control_val))
+        return;
+
+      controller->last_set_control_val =
+        controller->port->control;
     }
 
   if (!is_nan)
@@ -1440,7 +1451,7 @@ plugin_gtk_generic_set_widget_value (
 
       if (controller->spin)
         {
-          // Update spinner for numeric control
+          /* Update spinner for numeric control */
           gtk_spin_button_set_value (
             GTK_SPIN_BUTTON (controller->spin), fvalue);
         }
