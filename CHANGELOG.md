@@ -6,6 +6,29 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.8.1] - 2023-04-15
+### Added
+- Audition notes when moved with arrow keys
+- Show value when hovering faders and balance controls
+- Double click on faders and balance controls to set precise values
+- Control-click on balance controls to reset their value
+
+### Changed
+- Audition notes on draw and on click instead of on move
+- Show track inspector when double clicking on a track in places other than the track name
+- Don't start DnD on tracks until minimum movement threshold is reached
+- Minimize waiting time when creating tracks and connections for multi-out plugins
+- Scroll to middle of piano roll when first shown
+
+### Fixed
+- Fix incorrectly allowing bypassing snapping in autofill mode
+- Fix editor region being unset when moving tracks
+- Fix not propagating errors when performing some actions
+- Fix incorrectly allowing auto-save to continue while pre-rolling or counting in
+- Fix resetting faders and balance controls not being undoable
+- Fix not being able to cut regions near the edges with alt-click
+- Fix not being able to change parameter values for VST plugins in generic UI text fields
+
 ## [1.0.0-beta.4.7.1] - 2023-03-29
 ### Added
 - Add monitor output meters in the header
