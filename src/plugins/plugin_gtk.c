@@ -1052,6 +1052,7 @@ make_log_slider (Port * port, float value)
   gtk_widget_set_size_request (scale, MIN_SCALE_WIDTH, -1);
   GtkWidget * spin =
     gtk_spin_button_new_with_range (min, max, 0.000001);
+  gtk_widget_set_size_request (GTK_WIDGET (spin), 140, -1);
 
   bool is_input = port->id.flow == FLOW_INPUT;
   gtk_widget_set_sensitive (scale, is_input);
@@ -1089,6 +1090,7 @@ make_slider (Port * port, float value)
   gtk_widget_set_size_request (scale, MIN_SCALE_WIDTH, -1);
   GtkWidget * spin =
     gtk_spin_button_new_with_range (min, max, step);
+  gtk_widget_set_size_request (GTK_WIDGET (spin), 140, -1);
 
   bool is_input = port->id.flow == FLOW_INPUT;
   gtk_widget_set_sensitive (scale, is_input);
