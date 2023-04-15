@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2020 Ryan Gonzalez <rymg19 at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
@@ -960,6 +960,21 @@ root privileges)\n\
 #undef _TEMPLATE
 
   return str;
+}
+
+void
+ui_show_warning_for_tempo_track_experimental_feature (void)
+{
+  static bool shown = false;
+  if (!shown)
+    {
+      ui_show_message_literal (
+        GTK_MESSAGE_WARNING, false,
+        _ ("BPM and time signature automation is an "
+           "experimental feature. Using it may corrupt your "
+           "project."));
+      shown = true;
+    }
 }
 
 /**

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/audio_bus_track.h"
@@ -1638,6 +1638,11 @@ track_widget_on_show_automation_toggled (TrackWidget * self)
   /* set visibility flag */
   track_set_automation_visible (
     track, !track->automation_visible);
+
+  if (track->type == TRACK_TYPE_TEMPO && track->automation_visible)
+    {
+      ui_show_warning_for_tempo_track_experimental_feature ();
+    }
 }
 
 void

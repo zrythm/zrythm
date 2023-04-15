@@ -4167,6 +4167,11 @@ DEFINE_SIMPLE (
         {
           automation_vis_changed = true;
           track->automation_visible = true;
+
+          if (track->type == TRACK_TYPE_TEMPO)
+            {
+              ui_show_warning_for_tempo_track_experimental_feature ();
+            }
         }
 
       if (automation_vis_changed)

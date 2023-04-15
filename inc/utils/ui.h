@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -731,6 +731,9 @@ ui_update_vst_paths_from_entry (GtkEntry * entry);
  */
 char *
 ui_get_locale_not_available_string (LocalizationLanguage lang);
+
+void
+ui_show_warning_for_tempo_track_experimental_feature (void);
 
 /**
  * Returns the contrasting color (variation of
