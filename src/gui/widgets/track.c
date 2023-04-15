@@ -372,13 +372,20 @@ set_tooltip_from_button (
     }
   else if (TRACK_CB_ICON_IS (SHOW_AUTOMATION_LANES))
     {
-      if (self->track->automation_visible)
+      if (cb->owner_type == CUSTOM_BUTTON_WIDGET_OWNER_AT)
         {
-          SET_TOOLTIP (_ ("Hide automation"));
+          SET_TOOLTIP (_ ("Change automatable"));
         }
-      else
+      else if (cb->owner_type == CUSTOM_BUTTON_WIDGET_OWNER_TRACK)
         {
-          SET_TOOLTIP (_ ("Show automation"));
+          if (self->track->automation_visible)
+            {
+              SET_TOOLTIP (_ ("Hide automation"));
+            }
+          else
+            {
+              SET_TOOLTIP (_ ("Show automation"));
+            }
         }
     }
   else if (TRACK_CB_ICON_IS (PLUS))
