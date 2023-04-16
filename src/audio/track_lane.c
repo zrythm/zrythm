@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdlib.h>
@@ -597,12 +597,10 @@ track_lane_free (TrackLane * self)
 
   object_zero_and_free_if_nonnull (self->regions);
 
-  /* FIXME this is bad design - this object should
-   * not care about widgets */
   for (int j = 0; j < self->num_buttons; j++)
     {
-      if (self->buttons[j])
-        custom_button_widget_free (self->buttons[j]);
+      object_free_w_func_and_null (
+        custom_button_widget_free, self->buttons[j]);
     }
 
   object_zero_and_free (self);

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/control_port.h"
@@ -75,11 +75,21 @@ update_pango_layouts (TrackCanvasWidget * self, int w, int h)
       pango_font_description_free (desc);
     }
 
+  if (!self->lane_layout)
+    {
+      self->lane_layout = gtk_widget_create_pango_layout (
+        GTK_WIDGET (self), NULL);
+      pango_layout_set_ellipsize (
+        self->lane_layout, PANGO_ELLIPSIZE_END);
+    }
+
   pango_layout_set_width (
     self->layout, pango_units_from_double (w));
   pango_layout_set_width (
     self->automation_value_layout,
     pango_units_from_double (w));
+  pango_layout_set_width (
+    self->lane_layout, pango_units_from_double (w));
 }
 
 /**
@@ -376,7 +386,7 @@ draw_lanes (
             + TRACK_BUTTON_PADDING_FROM_EDGE,
           (float) total_height
             + TRACK_BUTTON_PADDING_FROM_EDGE));
-      PangoLayout * layout = self->layout;
+      PangoLayout * layout = self->lane_layout;
       pango_layout_set_text (layout, lane->name, -1);
       gtk_snapshot_append_layout (
         snapshot, layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
@@ -832,6 +842,10 @@ finalize (TrackCanvasWidget * self)
   object_free_w_func_and_null (
     g_object_unref, self->track_icon);
   object_free_w_func_and_null (g_object_unref, self->layout);
+  object_free_w_func_and_null (
+    g_object_unref, self->automation_value_layout);
+  object_free_w_func_and_null (
+    g_object_unref, self->lane_layout);
   object_free_w_func_and_null (
     g_free, self->last_track_icon_name);
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -77,6 +77,8 @@ typedef struct TrackLane
    */
   uint8_t midi_ch;
 
+  /* FIXME this is bad design - this object should not care
+   * about widgets */
   /** Buttons used by the track widget. */
   CustomButtonWidget * buttons[8];
   int                  num_buttons;

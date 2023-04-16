@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_TRACK_CANVAS_H__
@@ -34,6 +34,9 @@ typedef struct _TrackCanvasWidget
 
   /** Layout for automation value. */
   PangoLayout * automation_value_layout;
+
+  /** Layout for lanes. */
+  PangoLayout * lane_layout;
 
   /** Used for recreating the pango layout. */
   int last_width;
