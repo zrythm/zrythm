@@ -940,7 +940,7 @@ channel_slot_widget_init (ChannelSlotWidget * self)
     GTK_GESTURE_SINGLE (self->right_mouse_mp),
     GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    G_OBJECT (self->right_mouse_mp), "pressed",
+    G_OBJECT (self->right_mouse_mp), "released",
     G_CALLBACK (on_right_click), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self),
