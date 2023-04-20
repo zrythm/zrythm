@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <inttypes.h>
@@ -2536,7 +2536,8 @@ arranger_object_gen_human_readable_name (
       {
         const MidiNote * mn = (const MidiNote *) self;
         char             str[40];
-        midi_note_get_val_as_string (mn, str, 0);
+        midi_note_get_val_as_string (
+          mn, str, PIANO_ROLL_NOTE_NOTATION_MUSICAL, 0);
         return g_strdup (str);
       }
       break;

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/chord_object.h"
@@ -19,10 +19,12 @@
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/piano_roll_keys.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/cairo.h"
 #include "utils/color.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
+#include "utils/objects.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
 
@@ -118,11 +120,25 @@ piano_roll_keys_snapshot (
 
       int fontsize =
         piano_roll_keys_widget_get_font_size (self);
+      const char * note_name_to_use =
+        drum_mode ? descr->custom_name : descr->note_name_pango;
+      char note_name_inner[60];
       char note_name[120];
+      if (
+        g_settings_get_enum (S_UI, "piano-roll-note-notation")
+        == PIANO_ROLL_NOTE_NOTATION_MUSICAL)
+        {
+          strcpy (note_name_inner, note_name_to_use);
+        }
+      else
+        {
+          sprintf (
+            note_name_inner, "%s (%d)", note_name_to_use,
+            descr->value);
+        }
       sprintf (
         note_name, "<span size=\"%d\">%s</span>",
-        fontsize * 1000 - 4000,
-        drum_mode ? descr->custom_name : descr->note_name_pango);
+        fontsize * 1000 - 4000, note_name_inner);
 
       if (drum_mode)
         {
@@ -433,6 +449,69 @@ piano_roll_keys_widget_redraw_full (PianoRollKeysWidget * self)
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 
+static void
+activate_notation_mode (
+  GSimpleAction * action,
+  GVariant *      _variant,
+  gpointer        user_data)
+{
+  g_return_if_fail (_variant);
+
+  gsize        size;
+  const char * variant =
+    g_variant_get_string (_variant, &size);
+  g_simple_action_set_state (action, _variant);
+  if (string_is_equal (variant, "musical"))
+    {
+      g_settings_set_enum (
+        S_UI, "piano-roll-note-notation",
+        PIANO_ROLL_NOTE_NOTATION_MUSICAL);
+    }
+  else if (string_is_equal (variant, "pitch"))
+    {
+      g_settings_set_enum (
+        S_UI, "piano-roll-note-notation",
+        PIANO_ROLL_NOTE_NOTATION_PITCH);
+    }
+  else
+    {
+      g_return_if_reached ();
+    }
+
+  PianoRollKeysWidget * self =
+    Z_PIANO_ROLL_KEYS_WIDGET (user_data);
+  piano_roll_keys_widget_redraw_full (self);
+}
+
+static void
+on_right_click (
+  GtkGestureClick *     gesture,
+  gint                  n_press,
+  gdouble               x,
+  gdouble               y,
+  PianoRollKeysWidget * self)
+{
+  if (n_press != 1)
+    return;
+
+  GMenu * menu = g_menu_new ();
+  GMenu * note_notation_section = g_menu_new ();
+  g_menu_append (
+    note_notation_section, _ ("Musical"),
+    "piano-roll-keys.notation-mode::musical");
+  g_menu_append (
+    note_notation_section, _ ("Pitch"),
+    "piano-roll-keys.notation-mode::pitch");
+  g_menu_append_section (
+    menu, _ ("Note Notation"),
+    G_MENU_MODEL (note_notation_section));
+  gtk_popover_menu_set_menu_model (
+    self->popover_menu, G_MENU_MODEL (menu));
+
+  z_gtk_show_context_menu_from_g_menu (
+    self->popover_menu, x, y, menu);
+}
+
 static guint
 piano_roll_keys_tick_cb (
   GtkWidget *     widget,
@@ -448,6 +527,24 @@ piano_roll_keys_tick_cb (
 void
 piano_roll_keys_widget_setup (PianoRollKeysWidget * self)
 {
+}
+
+static void
+finalize (PianoRollKeysWidget * self)
+{
+  object_free_w_func_and_null (g_object_unref, self->layout);
+
+  G_OBJECT_CLASS (piano_roll_keys_widget_parent_class)
+    ->finalize (G_OBJECT (self));
+}
+
+static void
+dispose (PianoRollKeysWidget * self)
+{
+  gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (piano_roll_keys_widget_parent_class)
+    ->dispose (G_OBJECT (self));
 }
 
 static void
@@ -475,30 +572,68 @@ piano_roll_keys_widget_init (PianoRollKeysWidget * self)
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (motion_controller));
 
-  self->multipress =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  self->click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (self->click), GDK_BUTTON_PRIMARY);
   g_signal_connect (
-    G_OBJECT (self->multipress), "pressed",
+    G_OBJECT (self->click), "pressed",
     G_CALLBACK (on_pressed), self);
   g_signal_connect (
-    G_OBJECT (self->multipress), "released",
+    G_OBJECT (self->click), "released",
     G_CALLBACK (on_released), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->multipress));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->click));
+
+  GtkGestureClick * right_click =
+    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  gtk_gesture_single_set_button (
+    GTK_GESTURE_SINGLE (right_click), GDK_BUTTON_SECONDARY);
+  g_signal_connect (
+    G_OBJECT (right_click), "released",
+    G_CALLBACK (on_right_click), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (right_click));
+
+  self->popover_menu =
+    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self),
     (GtkTickCallback) piano_roll_keys_tick_cb, self, NULL);
+
+  /* set menu */
+  GSimpleActionGroup * action_group =
+    g_simple_action_group_new ();
+  const char * notation_modes[] = {
+    "'musical'",
+    "'pitch'",
+  };
+  GActionEntry actions[] = {
+    {"notation-mode", activate_notation_mode, "s",
+     notation_modes[g_settings_get_enum (
+        S_UI, "piano-roll-note-notation")]},
+  };
+  g_action_map_add_action_entries (
+    G_ACTION_MAP (action_group), actions,
+    G_N_ELEMENTS (actions), self);
+  gtk_widget_insert_action_group (
+    GTK_WIDGET (self), "piano-roll-keys",
+    G_ACTION_GROUP (action_group));
 }
 
 static void
 piano_roll_keys_widget_class_init (
-  PianoRollKeysWidgetClass * _klass)
+  PianoRollKeysWidgetClass * klass)
 {
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = piano_roll_keys_snapshot;
 
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BIN_LAYOUT);
+
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
 }

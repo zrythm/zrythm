@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -101,14 +101,18 @@ typedef enum PianoRollHighlighting
   PR_HIGHLIGHT_BOTH,
 } PianoRollHighlighting;
 
+typedef enum PianoRollNoteNotation
+{
+  PIANO_ROLL_NOTE_NOTATION_MUSICAL,
+  PIANO_ROLL_NOTE_NOTATION_PITCH,
+} PianoRollNoteNotation;
+
 typedef struct ZRegion ZRegion;
 
 /**
- * A descriptor for a MidiNote, used by the piano
- * roll.
+ * A descriptor for a MidiNote, used by the piano roll.
  *
- * Notes will only be draggable and reorderable in
- * drum mode.
+ * Notes will only be draggable and reorderable in drum mode.
  *
  * In normal mode, only visibility can be changed.
  */

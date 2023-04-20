@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -17,12 +17,13 @@
 #include "audio/velocity.h"
 #include "gui/backend/arranger_object.h"
 
-typedef struct _MidiNoteWidget MidiNoteWidget;
-typedef struct Channel         Channel;
-typedef struct Track           Track;
-typedef struct MidiEvents      MidiEvents;
-typedef struct Position        Position;
-typedef struct Velocity        Velocity;
+typedef struct _MidiNoteWidget     MidiNoteWidget;
+typedef struct Channel             Channel;
+typedef struct Track               Track;
+typedef struct MidiEvents          MidiEvents;
+typedef struct Position            Position;
+typedef struct Velocity            Velocity;
+typedef enum PianoRollNoteNotation PianoRollNoteNotation;
 
 /**
  * @addtogroup audio
@@ -140,17 +141,17 @@ NONNULL PURE int
 midi_note_is_equal (MidiNote * src, MidiNote * dest);
 
 /**
- * Gets the MIDI note's value as a string (eg
- * "C#4").
+ * Gets the MIDI note's value as a string (eg "C#4").
  *
- * @param use_markup Use markup to show the octave
- *   as a superscript.
+ * @param use_markup Use markup to show the octave as a
+ *   superscript.
  */
 void
 midi_note_get_val_as_string (
-  const MidiNote * self,
-  char *           buf,
-  const int        use_markup);
+  const MidiNote *      self,
+  char *                buf,
+  PianoRollNoteNotation notation,
+  const int             use_markup);
 
 /**
  * For debugging.

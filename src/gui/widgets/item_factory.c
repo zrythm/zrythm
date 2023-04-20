@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/midi_mapping.h"
@@ -690,7 +690,9 @@ item_factory_bind_cb (
                     self->column_name, _ ("Note")))
                 {
                   MidiNote * mn = (MidiNote *) arr_obj;
-                  midi_note_get_val_as_string (mn, str, 0);
+                  midi_note_get_val_as_string (
+                    mn, str, PIANO_ROLL_NOTE_NOTATION_MUSICAL,
+                    0);
                 }
               else if (string_is_equal (
                          self->column_name, _ ("Pitch")))

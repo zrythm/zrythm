@@ -268,7 +268,7 @@ Args:
            '("velocity" "aftertouch"))
          (print-enum
            "note-notation"
-           '("notes" "numbers"))
+           '("musical" "pitch"))
          (print-enum
            "plugin-browser-tab"
            '("collection" "author" "category"
@@ -473,9 +473,9 @@ Args:
                  "The length of the last created editor object (in ticks).")
                (make-schema-key-with-enum
                  "piano-roll-note-notation"
-                 "note-notation" "notes"
+                 "note-notation" "musical"
                  "Note notation"
-                 "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, etc.)")
+                 "The note notation used in the piano roll - MIDI pitch index or musical (C, C#, etc.)")
                (make-schema-key-with-enum
                  "piano-roll-default-velocity"
                  "default-velocity" "last-note"

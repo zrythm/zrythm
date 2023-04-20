@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -75,10 +75,13 @@ typedef struct _PianoRollKeysWidget
   /** Pixel height of all keys combined. */
   double total_key_px;
 
-  GtkGestureClick * multipress;
+  GtkGestureClick * click;
 
   /** Cache layout for drawing the name. */
   PangoLayout * layout;
+
+  /** Popover to be reused for context menus. */
+  GtkPopoverMenu * popover_menu;
 } PianoRollKeysWidget;
 
 /**

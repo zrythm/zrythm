@@ -108,7 +108,11 @@ midi_note_draw (MidiNote * self, GtkSnapshot * snapshot)
 
   /* draw text */
   char str[30];
-  midi_note_get_val_as_string (self, str, 1);
+  midi_note_get_val_as_string (
+    self, str,
+    (PianoRollNoteNotation) g_settings_get_enum (
+      S_UI, "piano-roll-note-notation"),
+    1);
   int fontsize =
     piano_roll_keys_widget_get_font_size (MW_PIANO_ROLL_KEYS);
   if ((DEBUGGING || !drum_mode) && fontsize > 10)

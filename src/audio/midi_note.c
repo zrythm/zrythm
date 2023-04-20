@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
@@ -193,20 +193,30 @@ midi_note_get_global_start_pos (MidiNote * self, Position * pos)
 }
 
 /**
- * Gets the MIDI note's value as a string (eg
- * "C#4").
+ * Gets the MIDI note's value as a string (eg "C#4").
  *
- * @param use_markup Use markup to show the octave
- *   as a superscript.
+ * @param use_markup Use markup to show the octave as a
+ *   superscript.
  */
 void
 midi_note_get_val_as_string (
-  const MidiNote * self,
-  char *           buf,
-  const int        use_markup)
+  const MidiNote *      self,
+  char *                buf,
+  PianoRollNoteNotation notation,
+  const int             use_markup)
 {
-  const char * note_str =
+  const char * note_str_musical =
     chord_descriptor_note_to_string (self->val % 12);
+  char note_str[20];
+  if (notation == PIANO_ROLL_NOTE_NOTATION_MUSICAL)
+    {
+      strcpy (note_str, note_str_musical);
+    }
+  else
+    {
+      sprintf (note_str, "%d", self->val);
+    }
+
   const int note_val = self->val / 12 - 1;
   if (use_markup)
     {
