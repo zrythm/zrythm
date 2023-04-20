@@ -1506,11 +1506,10 @@ project_upgrade_schema (char ** yaml, int src_ver)
 /**
  * Autosave callback.
  *
- * This will keep getting called at regular short
- * intervals, and if enough time has passed and
- * it's okay to save it will autosave, otherwise it
- * will wait until the next interval and check
- * again.
+ * This will keep getting called at regular short intervals,
+ * and if enough time has passed and it's okay to save it will
+ * autosave, otherwise it will wait until the next interval and
+ * check again.
  */
 int
 project_autosave_cb (void * data)
@@ -1590,6 +1589,30 @@ project_autosave_cb (void * data)
         "last action is same as previous backup - skipping "
         "autosave");
       goto post_save_sem_and_continue;
+    }
+
+  /* skip if any modal window is open */
+  if (ZRYTHM_HAVE_UI)
+    {
+      GListModel * toplevels = gtk_window_get_toplevels ();
+      guint        num_toplevels =
+        g_list_model_get_n_items (toplevels);
+      for (guint i = 0; i < num_toplevels; i++)
+        {
+
+          GtkWindow * window =
+            GTK_WINDOW (g_list_model_get_item (toplevels, i));
+          if (
+            gtk_widget_get_visible (GTK_WIDGET (window))
+            && (gtk_window_get_modal (window) || gtk_window_get_transient_for (window) == MAIN_WINDOW))
+            {
+              g_debug (
+                "modal/transient windows exist - skipping autosave");
+              z_gtk_widget_print_hierarchy (
+                GTK_WIDGET (window));
+              goto post_save_sem_and_continue;
+            }
+        }
     }
 
   /* ok to save */
