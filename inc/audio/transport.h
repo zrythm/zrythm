@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -564,11 +564,11 @@ transport_can_user_move_playhead (const Transport * self);
  */
 void
 transport_move_playhead (
-  Transport * self,
-  Position *  target,
-  bool        panic,
-  bool        set_cue_point,
-  bool        fire_events);
+  Transport *      self,
+  const Position * target,
+  bool             panic,
+  bool             set_cue_point,
+  bool             fire_events);
 
 /**
  * Enables or disables loop.
@@ -578,6 +578,18 @@ transport_set_loop (
   Transport * self,
   bool        enabled,
   bool        with_wait);
+
+/**
+ * Moves the playhead to the start Marker.
+ */
+void
+transport_goto_start_marker (Transport * self);
+
+/**
+ * Moves the playhead to the end Marker.
+ */
+void
+transport_goto_end_marker (Transport * self);
 
 /**
  * Moves the playhead to the prev Marker.

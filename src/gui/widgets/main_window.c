@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -532,6 +532,8 @@ main_window_widget_init (MainWindowWidget * self)
         ? "true"
         : "false",
      change_state_loop },
+    { "goto-start-marker", activate_goto_start_marker },
+    { "goto-end-marker", activate_goto_end_marker },
     { "goto-prev-marker", activate_goto_prev_marker },
     { "goto-next-marker", activate_goto_next_marker },
     { "play-pause", activate_play_pause },

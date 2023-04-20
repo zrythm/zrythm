@@ -1720,6 +1720,16 @@ DEFINE_SIMPLE (activate_change_track_color)
     NULL);
 }
 
+DEFINE_SIMPLE (activate_goto_start_marker)
+{
+  transport_goto_start_marker (TRANSPORT);
+}
+
+DEFINE_SIMPLE (activate_goto_end_marker)
+{
+  transport_goto_end_marker (TRANSPORT);
+}
+
 DEFINE_SIMPLE (activate_goto_prev_marker)
 {
   transport_goto_prev_marker (TRANSPORT);

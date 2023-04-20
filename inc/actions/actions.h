@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -293,17 +293,10 @@ activate_snap_events (
   GVariant *      variant,
   gpointer        user_data);
 
-void
-activate_goto_prev_marker (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
-
-void
-activate_goto_next_marker (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
+DECLARE_SIMPLE (activate_goto_start_marker);
+DECLARE_SIMPLE (activate_goto_end_marker);
+DECLARE_SIMPLE (activate_goto_prev_marker);
+DECLARE_SIMPLE (activate_goto_next_marker);
 
 DECLARE_SIMPLE (activate_play_pause);
 DECLARE_SIMPLE (activate_record_play);

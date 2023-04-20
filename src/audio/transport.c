@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -660,11 +660,11 @@ transport_can_user_move_playhead (const Transport * self)
  */
 void
 transport_move_playhead (
-  Transport * self,
-  Position *  target,
-  bool        panic,
-  bool        set_cue_point,
-  bool        fire_events)
+  Transport *      self,
+  const Position * target,
+  bool             panic,
+  bool             set_cue_point,
+  bool             fire_events)
 {
   /* if currently recording, do nothing */
   if (!transport_can_user_move_playhead (self))
@@ -811,6 +811,52 @@ foreach_arranger_handle_playhead_auto_scroll (
 }
 
 /**
+ * One of @param marker or @param pos must be non-NULL.
+ */
+static void
+move_to_marker_or_pos_and_fire_events (
+  Transport *      self,
+  const Marker *   marker,
+  const Position * pos)
+{
+  transport_move_playhead (
+    self, marker ? &marker->base.pos : pos, F_PANIC,
+    F_SET_CUE_POINT, F_PUBLISH_EVENTS);
+
+  if (ZRYTHM_HAVE_UI)
+    {
+      arranger_widget_foreach (
+        foreach_arranger_handle_playhead_auto_scroll);
+    }
+}
+
+/**
+ * Moves the playhead to the start Marker.
+ */
+void
+transport_goto_start_marker (Transport * self)
+{
+  Marker * start_marker =
+    marker_track_get_start_marker (P_MARKER_TRACK);
+  g_return_if_fail (start_marker);
+  move_to_marker_or_pos_and_fire_events (
+    self, start_marker, NULL);
+}
+
+/**
+ * Moves the playhead to the end Marker.
+ */
+void
+transport_goto_end_marker (Transport * self)
+{
+  Marker * end_marker =
+    marker_track_get_end_marker (P_MARKER_TRACK);
+  g_return_if_fail (end_marker);
+  move_to_marker_or_pos_and_fire_events (
+    self, end_marker, NULL);
+}
+
+/**
  * Moves the playhead to the prev Marker.
  */
 void
@@ -827,25 +873,17 @@ transport_goto_prev_marker (Transport * self)
             - position_to_ms (&markers[i]))
              < 180)
         {
-          transport_move_playhead (
-            self, &markers[i - 1], F_PANIC, F_SET_CUE_POINT,
-            F_PUBLISH_EVENTS);
+          move_to_marker_or_pos_and_fire_events (
+            self, NULL, &markers[i - 1]);
           break;
         }
       else if (position_is_before (
                  &markers[i], &self->playhead_pos))
         {
-          transport_move_playhead (
-            self, &markers[i], F_PANIC, F_SET_CUE_POINT,
-            F_PUBLISH_EVENTS);
+          move_to_marker_or_pos_and_fire_events (
+            self, NULL, &markers[i]);
           break;
         }
-    }
-
-  if (ZRYTHM_HAVE_UI)
-    {
-      arranger_widget_foreach (
-        foreach_arranger_handle_playhead_auto_scroll);
     }
 }
 
@@ -861,17 +899,10 @@ transport_goto_next_marker (Transport * self)
     {
       if (position_is_after (&markers[i], &self->playhead_pos))
         {
-          transport_move_playhead (
-            self, &markers[i], F_PANIC, F_SET_CUE_POINT,
-            F_PUBLISH_EVENTS);
+          move_to_marker_or_pos_and_fire_events (
+            self, NULL, &markers[i]);
           break;
         }
-    }
-
-  if (ZRYTHM_HAVE_UI)
-    {
-      arranger_widget_foreach (
-        foreach_arranger_handle_playhead_auto_scroll);
     }
 }
 

@@ -1367,6 +1367,8 @@ zrythm_app_startup (GApplication * app)
   INSTALL_ACCEL (
     "<Control>bracketleft", "app.best-fit::global");
   INSTALL_ACCEL ("<Control>l", "app.loop-selection");
+  INSTALL_ACCEL ("Home", "app.goto-start-marker");
+  INSTALL_ACCEL ("End", "app.goto-end-marker");
   INSTALL_ACCEL_WITH_SECONDARY (
     "<Control>KP_4", "<Control>BackSpace",
     "app.goto-prev-marker");
