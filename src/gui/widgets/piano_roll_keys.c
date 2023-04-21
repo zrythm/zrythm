@@ -22,6 +22,7 @@
 #include "settings/settings.h"
 #include "utils/cairo.h"
 #include "utils/color.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/math.h"
 #include "utils/objects.h"
@@ -450,6 +451,52 @@ piano_roll_keys_widget_redraw_full (PianoRollKeysWidget * self)
 }
 
 static void
+select_notes_in_pitch (int pitch, bool append)
+{
+  if (!append)
+    {
+      arranger_selections_clear (
+        (ArrangerSelections *) MA_SELECTIONS, F_NO_FREE,
+        F_PUBLISH_EVENTS);
+    }
+  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  g_return_if_fail (r);
+
+  for (int i = 0; i < r->num_midi_notes; i++)
+    {
+      MidiNote * mn = r->midi_notes[i];
+      if (mn->val == pitch)
+        {
+          arranger_object_select (
+            (ArrangerObject *) mn, F_SELECT, F_APPEND,
+            F_NO_PUBLISH_EVENTS);
+        }
+    }
+}
+
+static void
+activate_select_notes_in_pitch (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
+{
+  int pitch = (int) g_variant_get_int32 (variant);
+
+  select_notes_in_pitch (pitch, F_NO_APPEND);
+}
+
+static void
+activate_append_notes_in_pitch (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
+{
+  int pitch = (int) g_variant_get_int32 (variant);
+
+  select_notes_in_pitch (pitch, F_APPEND);
+}
+
+static void
 activate_notation_mode (
   GSimpleAction * action,
   GVariant *      _variant,
@@ -494,7 +541,10 @@ on_right_click (
   if (n_press != 1)
     return;
 
+  int pitch = piano_roll_keys_widget_get_key_from_y (self, y);
+
   GMenu * menu = g_menu_new ();
+
   GMenu * note_notation_section = g_menu_new ();
   g_menu_append (
     note_notation_section, _ ("Musical"),
@@ -505,6 +555,24 @@ on_right_click (
   g_menu_append_section (
     menu, _ ("Note Notation"),
     G_MENU_MODEL (note_notation_section));
+
+  GMenu *     selection_section = g_menu_new ();
+  GMenuItem * menuitem;
+  menuitem =
+    g_menu_item_new (_ ("Select notes in pitch"), NULL);
+  g_menu_item_set_action_and_target_value (
+    menuitem, "piano-roll-keys.select-notes-in-pitch",
+    g_variant_new_int32 (pitch));
+  g_menu_append_item (selection_section, menuitem);
+  menuitem = g_menu_item_new (
+    _ ("Append notes in pitch to selection"), NULL);
+  g_menu_item_set_action_and_target_value (
+    menuitem, "piano-roll-keys.append-notes-in-pitch",
+    g_variant_new_int32 (pitch));
+  g_menu_append_item (selection_section, menuitem);
+  g_menu_append_section (
+    menu, _ ("Selection"), G_MENU_MODEL (selection_section));
+
   gtk_popover_menu_set_menu_model (
     self->popover_menu, G_MENU_MODEL (menu));
 
@@ -611,9 +679,13 @@ piano_roll_keys_widget_init (PianoRollKeysWidget * self)
     "'pitch'",
   };
   GActionEntry actions[] = {
-    {"notation-mode", activate_notation_mode, "s",
+    { "notation-mode", activate_notation_mode, "s",
      notation_modes[g_settings_get_enum (
-        S_UI, "piano-roll-note-notation")]},
+        S_UI, "piano-roll-note-notation")] },
+    { "select-notes-in-pitch", activate_select_notes_in_pitch,
+     "i" },
+    { "append-notes-in-pitch", activate_append_notes_in_pitch,
+     "i" },
   };
   g_action_map_add_action_entries (
     G_ACTION_MAP (action_group), actions,
