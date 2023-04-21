@@ -803,3 +803,15 @@ Copyright: GNOME Design Team
 License: CC0-1.0
 Comment:
   See https://gitlab.gnome.org/Teams/Design/icon-development-kit
+
+Files:
+  ext/kissfft/Makefile
+  ext/kissfft/TIPS
+  ext/kissfft/.gitignore
+  ext/kissfft/CHANGELOG
+  ext/kissfft/README.md
+  ext/kissfft/README.simd
+  ext/kissfft/kissfft.pc.in
+  ext/kissfft/kissfft_i32.hh
+Copyright: Mark Borgerding
+License: BSD-3-Clause
