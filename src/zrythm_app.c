@@ -1363,7 +1363,9 @@ zrythm_app_startup (GApplication * app)
   INSTALL_ACCEL ("<Control><Shift>2", "app.toggle-bot-panel");
   INSTALL_ACCEL ("<Control>equal", "app.zoom-in::global");
   INSTALL_ACCEL ("<Control>minus", "app.zoom-out::global");
-  INSTALL_ACCEL ("<Control>plus", "app.original-size::global");
+  INSTALL_ACCEL_WITH_SECONDARY (
+    "<Control>plus", "<Control>0",
+    "app.original-size::global");
   INSTALL_ACCEL (
     "<Control>bracketleft", "app.best-fit::global");
   INSTALL_ACCEL ("<Control>l", "app.loop-selection");
