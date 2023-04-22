@@ -3,7 +3,7 @@
 # This file is distributed under the same license as the zrythm package.
 # Weblate Admin <weblate.admin@zrythm.org>, 2019.
 # Acid Chicken (硫酸鶏) <root@acid-chicken.com>, 2020.
-# Alexandros Theodotou <alex@zrythm.org>, 2019, 2020, 2021, 2022.
+# Alexandros Theodotou <alex@zrythm.org>, 2019, 2020, 2021, 2022, 2023.
 # Nikita Saschenko <neketa777@gmail.com>, 2021.
 # Seio Inoue <sei0okun@gmail.com>, 2022.
 # KokiOgawa <mupimupicandy@gmail.com>, 2022.
@@ -13,8 +13,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-03-20 21:10+0900\n"
-"PO-Revision-Date: 2023-03-07 02:29+0000\n"
-"Last-Translator: Artemy Fedotov <catlovescpp@gmail.com>\n"
+"PO-Revision-Date: 2023-04-21 04:48+0000\n"
+"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -65,18 +65,16 @@ msgid "Locrian"
 msgstr "ロクリアン"
 
 #: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
-#, fuzzy
 msgid "Melodic Minor"
-msgstr "和声的短音階"
+msgstr "メロディックマイナー"
 
 #: inc/schemas/audio/scale.h:104 inc/audio/scale.h:138
 msgid "Harmonic Minor"
 msgstr "和声的短音階"
 
 #: inc/schemas/audio/scale.h:105 inc/audio/scale.h:139
-#, fuzzy
 msgid "Whole Tone"
-msgstr "上部パネルの表示を切り替える"
+msgstr "全音"
 
 #: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
 msgid "Major Pentatonic"
@@ -573,8 +571,9 @@ msgid "ALSA Sequencer (rtmidi)"
 msgstr "ALSAシーケンサー (rtmidi)"
 
 #: inc/audio/audio_function.h:53
+#, fuzzy
 msgid "Invert"
-msgstr "転化"
+msgstr "反転"
 
 #: inc/audio/audio_function.h:54
 msgid "Normalize peak"
@@ -605,8 +604,9 @@ msgid "Nudge right"
 msgstr "右へナッジ (Nudge)"
 
 #: inc/audio/audio_function.h:61
+#, fuzzy
 msgid "Reverse"
-msgstr "反転"
+msgstr "逆順"
 
 #: inc/audio/audio_function.h:62
 #, fuzzy
@@ -6267,8 +6267,9 @@ msgid "Toggle event viewer"
 msgstr "イベント ビューアの表示を切り替える"
 
 #: resources/ui/editor_toolbar.ui:178 resources/ui/editor_toolbar.ui:221
+#, fuzzy
 msgid "Flip"
-msgstr "フリップ"
+msgstr "裏返す"
 
 #: resources/ui/editor_toolbar.ui:180 resources/ui/editor_toolbar.ui:223
 msgid "Horizontal"

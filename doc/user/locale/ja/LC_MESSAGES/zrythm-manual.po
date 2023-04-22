@@ -13,15 +13,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-03-20 21:11+0900\n"
-"PO-Revision-Date: 2022-09-01 15:40+0000\n"
+"PO-Revision-Date: 2023-04-21 04:48+0000\n"
 "Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ja/>\n"
 "Language: ja\n"
-"Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ja/>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 4.18-dev\n"
 "Generated-By: Babel 2.11.0\n"
 
 #: ../../appendix/environment.rst:11
@@ -673,7 +674,7 @@ msgstr ""
 
 #: ../../configuration/device-setup.rst:23
 msgid "JACK/PipeWire"
-msgstr ""
+msgstr "JACK/PipeWire"
 
 #: ../../configuration/device-setup.rst:25
 #, fuzzy
@@ -803,7 +804,7 @@ msgstr ""
 
 #: ../../configuration/preferences.rst:31
 msgid "Searching"
-msgstr ""
+msgstr "検索"
 
 #: ../../configuration/preferences.rst:33
 msgid ""
@@ -1261,7 +1262,7 @@ msgstr "ピアノロールには、以下の追加コントロールが含まれ
 
 #: ../../editing/clip-editors/audio-editor.rst:31
 msgid "Waveform"
-msgstr ""
+msgstr "波形"
 
 #: ../../editing/clip-editors/audio-editor.rst:32
 msgid "Fades"
@@ -1354,7 +1355,7 @@ msgstr "以下のトグルが用意されています。"
 #: ../../editing/clip-editors/audio-editor.rst:75
 #, fuzzy
 msgid "Invert"
-msgstr "リニア (Linear)"
+msgstr "反転"
 
 #: ../../editing/clip-editors/audio-editor.rst:76
 msgid "Invert the polarity of the audio."
@@ -1385,9 +1386,8 @@ msgid "Fade the audio from full amplitude to silence."
 msgstr ""
 
 #: ../../editing/clip-editors/audio-editor.rst:83
-#, fuzzy
 msgid "Nudge"
-msgstr "言語"
+msgstr "ナッジ"
 
 #: ../../editing/clip-editors/audio-editor.rst:84
 msgid "Shift the audio by 1 sample backward or forward."
@@ -1396,7 +1396,7 @@ msgstr ""
 #: ../../editing/clip-editors/audio-editor.rst:85
 #, fuzzy
 msgid "Reverse"
-msgstr "メーター"
+msgstr "逆順"
 
 #: ../../editing/clip-editors/audio-editor.rst:86
 msgid "Reverse the audio (play back backwards)."
@@ -1568,7 +1568,7 @@ msgstr ""
 #: ../../editing/clip-editors/piano-roll.rst:134
 #, fuzzy
 msgid "Flip"
-msgstr "クリップ"
+msgstr "裏返す"
 
 #: ../../editing/clip-editors/automation-editor.rst:67
 msgid "Reverse/flip the selected automation horizontally or vertically."
@@ -1861,7 +1861,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:127
 msgid "Crescendo"
-msgstr ""
+msgstr "クレッシェンド"
 
 #: ../../editing/clip-editors/piano-roll.rst:127
 msgid ""
@@ -1871,7 +1871,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:131
 msgid "Flam"
-msgstr ""
+msgstr "フラム"
 
 #: ../../editing/clip-editors/piano-roll.rst:130
 msgid ""
@@ -1885,25 +1885,23 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:137
 msgid "Legato"
-msgstr ""
+msgstr "レガート"
 
 #: ../../editing/clip-editors/piano-roll.rst:137
 msgid "Connect all selected notes so that they play smoothly."
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:140
-#, fuzzy
 msgid "Portato"
-msgstr "フォーマット"
+msgstr "ポルタート"
 
 #: ../../editing/clip-editors/piano-roll.rst:140
 msgid "Similar to legato, but leaves some space between the notes."
 msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:142
-#, fuzzy
 msgid "Staccato"
-msgstr "インストール"
+msgstr "スタッカート"
 
 #: ../../editing/clip-editors/piano-roll.rst:143
 msgid "Make the selected notes short and punctuated."
@@ -2290,9 +2288,8 @@ msgid "Place the loop markers around the selection (:kbd:`Control-l`)."
 msgstr "ループマーカーを選択範囲の周囲に配置します(:kbd:`Control-l`)。"
 
 #: ../../editing/common-operations.rst:100
-#, fuzzy
 msgid "Zooming"
-msgstr "ループ"
+msgstr "ズーム"
 
 #: ../../editing/common-operations.rst:102
 msgid ""
@@ -2663,9 +2660,8 @@ msgid ""
 msgstr ""
 
 #: ../../editing/event-viewers.rst:22
-#, fuzzy
 msgid "Sorting"
-msgstr "エクスポート"
+msgstr "並び替え"
 
 #: ../../editing/event-viewers.rst:24
 msgid ""
@@ -2884,7 +2880,7 @@ msgstr "元に戻すオプション。"
 
 #: ../../editing/snapping-grid-options.rst:47
 msgid "Snap"
-msgstr ""
+msgstr "スナップ"
 
 #: ../../editing/snapping-grid-options.rst:48
 msgid ""
@@ -2918,9 +2914,8 @@ msgid "Use dotted note (3/2nds, or 1.5 times the selected note length)"
 msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:60
-#, fuzzy
 msgid "Adaptive"
-msgstr "適応型グリッド"
+msgstr "適応的"
 
 #: ../../editing/snapping-grid-options.rst:60
 msgid "Adapt snapping to the current zoom level"
@@ -2935,9 +2930,8 @@ msgid "The Length section controls the default length of objects."
 msgstr ""
 
 #: ../../editing/snapping-grid-options.rst:67
-#, fuzzy
 msgid "Link"
-msgstr "プラグイン"
+msgstr "リンク"
 
 #: ../../editing/snapping-grid-options.rst:68
 msgid "Use the same options as Snap"
@@ -3752,7 +3746,7 @@ msgstr ""
 
 #: ../../getting-started/faq.rst:18 ../../zrythm-interface/main-toolbar.rst:84
 msgid "About"
-msgstr ""
+msgstr "Zrythmについて"
 
 #: ../../getting-started/faq.rst:21
 msgid "What is Zrythm?"
@@ -4710,7 +4704,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:162
 msgid "XRUN"
-msgstr ""
+msgstr "XRUN"
 
 #: ../../glossary/intro.rst:164
 msgid ""
@@ -9323,7 +9317,7 @@ msgstr "レーンの表示/非表示を切り替えます。"
 
 #: ../../zrythm-interface/main-toolbar.rst:69
 msgid "Fullscreen"
-msgstr ""
+msgstr "全画面表示"
 
 #: ../../zrythm-interface/main-toolbar.rst:70
 msgid "Toggles fullscreen mode."
@@ -9452,7 +9446,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:122
 msgid "Oscilloscope"
-msgstr ""
+msgstr "オシロスコープ"
 
 #: ../../zrythm-interface/main-toolbar.rst:123
 msgid "Shows the audio waveform from the master output."

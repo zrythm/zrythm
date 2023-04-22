@@ -8,9 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.14\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-16 08:25+0000\n"
-"PO-Revision-Date: 2022-05-06 15:13+0000\n"
-"Last-Translator: Vitor Sabino Cardoso da SIlva <vitorcsilva180396@gmail.com>"
-"\n"
+"PO-Revision-Date: 2023-04-21 04:48+0000\n"
+"Last-Translator: Filipe Motta <luiz_filipe_motta@hotmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual-sphinx/pt_BR/>\n"
 "Language: pt_BR\n"
@@ -18,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.12.1\n"
+"X-Generator: Weblate 4.18-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../_templates/page.html:61
@@ -31,7 +30,7 @@ msgstr ""
 
 #: ../../_templates/page.html:76
 msgid "Home"
-msgstr ""
+msgstr "Principal"
 
 #: ../../_templates/page.html:88
 #, python-format

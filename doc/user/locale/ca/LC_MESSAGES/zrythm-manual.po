@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-03-20 21:11+0900\n"
-"PO-Revision-Date: 2023-02-16 16:35+0000\n"
+"PO-Revision-Date: 2023-03-21 03:49+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ca/>\n"
 "Language: ca\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ca/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.16.2-dev\n"
 "Generated-By: Babel 2.11.0\n"
 
 #: ../../appendix/environment.rst:11
@@ -3911,7 +3912,6 @@ msgid "What is Zrythm?"
 msgstr "Què és Zrythm?"
 
 #: ../../getting-started/faq.rst:23
-#, fuzzy
 msgid ""
 "Zrythm is software for composing, recording, editing, arranging, mixing and "
 "mastering audio and MIDI data. Such software is commonly referred to as a "
@@ -3925,12 +3925,11 @@ msgstr ""
 
 #: ../../getting-started/faq.rst:29
 msgid "How do I pronounce it?"
-msgstr ""
+msgstr "Com ho pronuncio?"
 
 #: ../../getting-started/faq.rst:31
-#, fuzzy
 msgid "Zee-rhythm."
-msgstr "zrythm"
+msgstr "Zee-rhythm."
 
 #: ../../getting-started/faq.rst:72
 msgid "Is it free?"
@@ -3971,13 +3970,15 @@ msgstr "Ús"
 
 #: ../../getting-started/faq.rst:91
 msgid "Can I use ASIO?"
-msgstr ""
+msgstr "Puc utilitzar ASIO?"
 
 #: ../../getting-started/faq.rst:93
 msgid ""
 "*Short answer: Yes, but you have to do it yourself and you may not "
 "distribute the build to anyone else.*"
 msgstr ""
+"*Resposta breu: Sí, però has de fer-ho tu mateix i no pots distribuir la "
+"compilació a ningú més.*"
 
 #: ../../getting-started/faq.rst:96
 msgid ""
@@ -3985,6 +3986,9 @@ msgid ""
 "protected by a licensing agreement which prevents redistribution of its "
 "source code."
 msgstr ""
+"La tecnologia ASIO ha estat desenvolupada per l'empresa alemanya Steinberg i "
+"està protegida per un acord de llicència que impedeix la redistribució del "
+"seu codi font."
 
 #: ../../getting-started/faq.rst:100
 msgid ""
@@ -3992,6 +3996,9 @@ msgid ""
 "(including source code of used libraries) to be disclosed, and therefore it "
 "is illegal to provide builds with ASIO support."
 msgstr ""
+"Zrythm conté codi sota AGPL/GPL que requereix que es divulgui tot el codi "
+"font (inclòs el codi font de les biblioteques usades) i, per tant, és il·"
+"legal proporcionar compilacions amb suport ASIO."
 
 #: ../../getting-started/faq.rst:105
 msgid ""
@@ -4000,6 +4007,11 @@ msgid ""
 "along with Zrythm, you must obtain them yourself (for example by building "
 "them from source with ASIO support) and make Zrythm use those."
 msgstr ""
+"Tanmateix, Zrythm admet els rerefons jack i RtAudio, que opcionalment "
+"admeten ASIO. Com que no podem distribuir aquestes biblioteques amb suport "
+"ASIO juntament amb Zrythm, has d'obtenir-les tu mateix (per exemple "
+"construint-les des del codi font amb suport ASIO) i fer que Zrythm les "
+"utilitzi."
 
 #: ../../getting-started/faq.rst:111
 msgid ""
@@ -4009,6 +4021,11 @@ msgid ""
 "reasons, the Zrythm team cannot distribute builds of Zrythm including ASIO "
 "support."
 msgstr ""
+"Zrythm amb suport ASIO no és DISTRIBUÏBLE. NO pots copiar ni distribuir "
+"compilacions, inclòs el suport d'ASIO a ningú més. La construcció és "
+"estrictament per al teu ús personal (privat o comercial). Per les mateixes "
+"raons, l'equip de Zrythm no pot distribuir compilacions de Zrythm, inclòs el "
+"suport d'ASIO."
 
 #: ../../getting-started/faq.rst:119
 msgid "How do I add external plugins?"
