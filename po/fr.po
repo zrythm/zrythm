@@ -18,16 +18,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-03-20 21:10+0900\n"
-"PO-Revision-Date: 2023-03-13 03:50+0000\n"
+"PO-Revision-Date: 2023-04-22 13:42+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.16.2-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -599,9 +599,8 @@ msgid "Reverse"
 msgstr "Inversion"
 
 #: inc/audio/audio_function.h:62
-#, fuzzy
 msgid "Pitch shift"
-msgstr "Molette de hauteur"
+msgstr "Décalage de hauteur"
 
 #: inc/audio/audio_function.h:63
 msgid "External program"
@@ -1343,14 +1342,12 @@ msgid "Failed to apply audio function"
 msgstr "Échec lors de l'application de la fonction audio"
 
 #: src/actions/actions.c:2502
-#, fuzzy
 msgid "Please enter a valid ratio."
-msgstr "Entrer une valeur"
+msgstr "Veuillez saisir un ratio valide."
 
 #: src/actions/actions.c:2639
-#, fuzzy
 msgid "Pitch Ratio"
-msgstr "Hauteur"
+msgstr "Ratio de hauteur"
 
 #: src/actions/actions.c:2721 src/gui/widgets/track_filter_popover.c:268
 msgid "Track name"
@@ -3185,9 +3182,8 @@ msgid "Custom"
 msgstr "Personnalisé"
 
 #: src/gui/widgets/snap_grid_popover.c:355
-#, fuzzy
 msgid "Object Length Lype"
-msgstr "Type de longueur d'objet de l'éditeur"
+msgstr "Type de longueur d'objet"
 
 #: src/gui/widgets/snap_grid_popover.c:358
 msgid ""
@@ -3263,15 +3259,13 @@ msgstr "Fin de boucle"
 
 #: src/gui/widgets/event_viewer.c:602 src/gui/widgets/item_factory.c:244
 #: src/gui/widgets/item_factory.c:766
-#, fuzzy
 msgid "Fade in"
-msgstr "Entrée fader"
+msgstr "Fondu à l'ouverture"
 
 #: src/gui/widgets/event_viewer.c:613 src/gui/widgets/item_factory.c:250
 #: src/gui/widgets/item_factory.c:779
-#, fuzzy
 msgid "Fade out"
-msgstr "Sortie fader"
+msgstr "Fondu à la fermeture"
 
 #: src/gui/widgets/event_viewer.c:624 src/gui/widgets/event_viewer.c:682
 #: src/gui/widgets/event_viewer.c:781 src/gui/widgets/item_factory.c:220
@@ -3338,9 +3332,8 @@ msgid "Time Signature - Beats per bar / Beat unit"
 msgstr "Signature temporelle - Battements par barre / unité de battement"
 
 #: src/gui/widgets/digital_meter.c:780 src/gui/widgets/digital_meter.c:795
-#, fuzzy
 msgid "Failed to change time signature"
-msgstr "Modifier la signature temporelle"
+msgstr "Échec de la modification de la signature temporelle"
 
 #: src/gui/widgets/panel_file_browser.c:252 src/gui/widgets/file_browser.c:57
 msgid "No file selected"
@@ -3352,19 +3345,16 @@ msgid "Search..."
 msgstr "Rechercher..."
 
 #: src/gui/widgets/drag_dest_box.c:289 src/gui/widgets/timeline_arranger.c:1472
-#, fuzzy
 msgid "Failed to import files"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de l'importation des fichiers"
 
 #: src/gui/widgets/drag_dest_box.c:357 src/gui/widgets/track.c:1889
-#, fuzzy
 msgid "Failed to move or copy plugin"
-msgstr "Impossible de trouver le greffon avec l'URI:%s"
+msgstr "Échec du déplacement ou de la copie du greffon"
 
 #: src/gui/widgets/drag_dest_box.c:402
-#, fuzzy
 msgid "Failed to move or copy track"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec du déplacement ou de la copie de la piste"
 
 #: src/gui/widgets/track.c:303 src/gui/widgets/track.c:783
 #: src/gui/widgets/channel.c:660 resources/ui/fader_buttons.ui:40
@@ -3494,9 +3484,8 @@ msgid "Change color..."
 msgstr "Modifier la couleur..."
 
 #: src/gui/widgets/track.c:746
-#, fuzzy
 msgid "Rename..."
-msgstr "Renommer"
+msgstr "Renommer..."
 
 #: src/gui/widgets/track.c:751 src/gui/widgets/automation_arranger.c:217
 #: src/gui/widgets/channel_slot.c:693 src/gui/widgets/timeline_arranger.c:1052
@@ -3543,9 +3532,8 @@ msgid "Enable"
 msgstr "Activer"
 
 #: src/gui/widgets/track.c:901
-#, fuzzy
 msgid "Rename lane..."
-msgstr "Renommer la piste"
+msgstr "Renommer la piste..."
 
 #: src/gui/widgets/track.c:917
 msgid "Passthrough input"
@@ -3557,33 +3545,28 @@ msgid "MIDI Channel %d"
 msgstr "Canal MIDI%d"
 
 #: src/gui/widgets/track.c:936
-#, fuzzy
 msgid "Track MIDI Channel"
-msgstr "Piste MIDI Ca"
+msgstr "Canal MIDI de la piste"
 
 #: src/gui/widgets/track.c:962
-#, fuzzy
 msgid "Lane MIDI Channel"
-msgstr "Canal MIDI%d"
+msgstr "Canal MIDI de la ligne"
 
 #: src/gui/widgets/track.c:967
 msgid "Piano Roll"
 msgstr "Rouleau de piano"
 
 #: src/gui/widgets/track.c:979
-#, fuzzy
 msgid "Show used lanes"
-msgstr "Afficher les lignes"
+msgstr "Afficher les lignes utilisées"
 
 #: src/gui/widgets/track.c:984
-#, fuzzy
 msgid "Hide unused lanes"
-msgstr "Cacher les lignes"
+msgstr "Cacher les lignes inutilisées"
 
 #: src/gui/widgets/track.c:1853
-#, fuzzy
 msgid "Operation not implemented"
-msgstr "Non-implémenté"
+msgstr "Opération non-implémentée"
 
 #: src/gui/widgets/modulator_macro.c:56
 #: src/gui/widgets/track_input_expander.c:312
@@ -3652,14 +3635,12 @@ msgid "Load preset"
 msgstr "Charger un pré-réglage"
 
 #: src/gui/widgets/arranger.c:1402
-#, fuzzy
 msgid "Create Object"
-msgstr "Créer un nouveau projet"
+msgstr "Créer un objet"
 
 #: src/gui/widgets/arranger.c:1406
-#, fuzzy
 msgid "Create"
-msgstr "_Créer"
+msgstr "Créer"
 
 #: src/gui/widgets/arranger.c:1726 src/gui/widgets/arranger.c:1744
 #: src/gui/widgets/arranger.c:1789 src/gui/widgets/arranger.c:1855
@@ -3668,19 +3649,16 @@ msgid "Failed to move selection"
 msgstr "Échec du déplacement de la sélection"
 
 #: src/gui/widgets/arranger.c:1808 src/gui/widgets/arranger.c:4178
-#, fuzzy
 msgid "Failed to move chords"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Impossible de déplacer des accords"
 
 #: src/gui/widgets/arranger.c:2122 src/gui/widgets/timeline_arranger.c:342
-#, fuzzy
 msgid "Failed to create region"
-msgstr "Échec de la création du greffon"
+msgstr "Échec de la création d'une région"
 
 #: src/gui/widgets/arranger.c:2455
-#, fuzzy
 msgid "Automation value"
-msgstr "Afficher les valeurs d'automatisation"
+msgstr "Valeur d'automatisation"
 
 #: src/gui/widgets/arranger.c:2480
 msgid "Cannot resize because the selection contains objects without length"
@@ -3705,9 +3683,8 @@ msgid "Failed to edit selection"
 msgstr "Échec de la modification de la sélection"
 
 #: src/gui/widgets/arranger.c:3799
-#, fuzzy
 msgid "Failed to move automation"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec du déplacement de l'automatisation"
 
 #: src/gui/widgets/arranger.c:3822
 msgid "Failed to duplicate automation"
@@ -3719,60 +3696,49 @@ msgid "Failed to create objects"
 msgstr "Échec de la création d'objets"
 
 #: src/gui/widgets/arranger.c:3863
-#, fuzzy
 msgid "Failed to fill automation"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec du remplissage de l'automatisation"
 
 #: src/gui/widgets/arranger.c:3893 src/gui/widgets/arranger.c:3938
 #: src/gui/widgets/arranger.c:3959 src/gui/widgets/timeline_arranger.c:922
-#, fuzzy
 msgid "Failed to edit selections"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de l'édition des sélections"
 
 #: src/gui/widgets/arranger.c:3990 src/gui/widgets/arranger.c:4012
-#, fuzzy
 msgid "Failed to resize objects"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec du redimensionnement des objets"
 
 #: src/gui/widgets/arranger.c:4022 src/gui/widgets/arranger.c:4068
-#, fuzzy
 msgid "Failed to move MIDI notes"
-msgstr "Échec de l'ouverture du fichier : %s"
+msgstr "Échec du déplacement de notes MIDI"
 
 #: src/gui/widgets/arranger.c:4091
-#, fuzzy
 msgid "Failed to duplicate MIDI notes"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la duplication de notes MIDI"
 
 #: src/gui/widgets/arranger.c:4112
-#, fuzzy
 msgid "Failed to create MIDI notes"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la création de notes MIDI"
 
 #: src/gui/widgets/arranger.c:4201
-#, fuzzy
 msgid "Failed to duplicate chords"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la duplication des accords"
 
 #: src/gui/widgets/arranger.c:4288 src/gui/widgets/arranger.c:4551
-#, fuzzy
 msgid "Failed resizing selection"
-msgstr "Échec de lecteur de la valeur"
+msgstr "Échec du redimensionnement de la sélection"
 
 #: src/gui/widgets/arranger.c:4380
-#, fuzzy
 msgid "Failed to edit timeline objects"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de l'édition des objets de la ligne temporelle"
 
 #: src/gui/widgets/arranger.c:4401 src/gui/widgets/arranger.c:4422
-#, fuzzy
 msgid "Failed to resize timeline objects"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec du redimensionnement des objets de la ligne temporelle"
 
 #: src/gui/widgets/arranger.c:4442
-#, fuzzy
 msgid "Failed to resize selection"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec du redimensionnement de la sélection"
 
 #: src/gui/widgets/arranger.c:4463
 #, fuzzy
@@ -6105,11 +6071,11 @@ msgstr "Indicateur de forme d'onde en direct"
 
 #: resources/ui/header.ui:105
 msgid "Spectrum Analyzer"
-msgstr ""
+msgstr "Analyseur de spectre"
 
 #: resources/ui/header.ui:117
 msgid "Peak Meter"
-msgstr ""
+msgstr "Indicateur de crête"
 
 #: resources/ui/editor_toolbar.ui:140
 #, fuzzy
@@ -8199,11 +8165,15 @@ msgstr "Modifié :"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 msgid "Avoid making a backup when the last performed action hasn't changed"
 msgstr ""
+"Éviter de faire une sauvegarde lorsque la dernière action effectuée n'a pas "
+"changé"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid ""
 "Meson: use libpanel fork with detach support when building as a subproject"
 msgstr ""
+"Meson : utilisation du fork de libpanel avec support du détachement lors de "
+"la construction en tant que sous-projet"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:81
@@ -8220,6 +8190,8 @@ msgstr "Correction d'une erreur lors d'un clic-droit dans l'éditeur audio"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
 msgid "Fix some channel ports not being exposed to JACK when loading a project"
 msgstr ""
+"Correction de certains ports de canaux qui n'étaient pas exposés à JACK lors "
+"du chargement d'un projet"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
 #, fuzzy
@@ -8230,11 +8202,11 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
 msgid "Fix build without Guile"
-msgstr ""
+msgstr "Correction de la compilation sans Guile"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:66
 msgid "Fix too loud/silent audio when bouncing/exporting"
-msgstr ""
+msgstr "Correction d'un son trop fort/silencieux lors d'un bounce/exportation"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 msgid "Create standard project directories when creating a new blank project"
