@@ -4105,6 +4105,9 @@ handle_direct_out_change (int direct_out_idx, bool new_group)
         }
     }
 
+  UndoableAction * prev_action =
+    undo_manager_get_last_action (UNDO_MANAGER);
+
   GError * err = NULL;
   bool ret = tracklist_selections_action_perform_set_direct_out (
     TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, direct_out,
@@ -4119,7 +4122,10 @@ handle_direct_out_change (int direct_out_idx, bool new_group)
       UndoableAction * ua =
         undo_manager_get_last_action (UNDO_MANAGER);
       if (new_group)
-        ua->num_actions = 3;
+        {
+          /* see add_tracks_to_group_dialog for prev action */
+          ua->num_actions = prev_action->num_actions + 1;
+        }
     }
 
   /* free previous selections */

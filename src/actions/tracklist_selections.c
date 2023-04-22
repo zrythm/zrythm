@@ -1829,8 +1829,8 @@ do_or_undo_edit (
             /* reconnect to the new track */
             if (target_pos != -1)
               {
-                g_return_val_if_fail (
-                  target_pos != ch->track->pos, -1);
+                z_return_val_if_fail_cmp (
+                  target_pos, !=, ch->track->pos, -1);
                 group_target_track_add_child (
                   TRACKLIST->tracks[target_pos],
                   track_get_name_hash (ch->track), F_CONNECT,

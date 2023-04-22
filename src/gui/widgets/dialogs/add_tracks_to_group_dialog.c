@@ -1,26 +1,11 @@
-/*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/engine.h"
 #include "gui/widgets/dialogs/add_tracks_to_group_dialog.h"
 #include "project.h"
 #include "utils/error.h"
+#include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/midi.h"
@@ -37,11 +22,10 @@ G_DEFINE_TYPE (
   GTK_TYPE_DIALOG)
 
 /**
- * Creates an add_tracks_to_group dialog widget and
- * displays it.
+ * Creates an add_tracks_to_group dialog widget and displays it.
  *
- * @return The new group track, after a create tracks
- *   action has been executed, or NULL if failure.
+ * @return The new group track, after a create tracks action
+ *   has been executed, or NULL if failure.
  */
 Track *
 add_tracks_to_group_dialog_widget_get_track (
@@ -99,7 +83,9 @@ add_tracks_to_group_dialog_widget_get_track (
   gtk_grid_attach (GTK_GRID (grid), checkbox, 0, 1, 2, 1);
   gtk_box_append (GTK_BOX (contents), grid);
 
-  int result = z_gtk_dialog_run (GTK_DIALOG (self), false);
+  int  result = z_gtk_dialog_run (GTK_DIALOG (self), false);
+  bool move_inside =
+    gtk_check_button_get_active (GTK_CHECK_BUTTON (checkbox));
   track_name = g_strdup (
     gtk_editable_get_text (GTK_EDITABLE (group_entry)));
   gtk_window_destroy (GTK_WINDOW (self));
@@ -157,9 +143,29 @@ add_tracks_to_group_dialog_widget_get_track (
     track_set_name_with_action_full (track, track_name);
   if (ret)
     {
+      int move_to_new_track_num_actions = 0;
+      if (move_inside)
+        {
+          GError * err = NULL;
+          bool     success =
+            tracklist_selections_action_perform_move_inside (
+              sel, PORT_CONNECTIONS_MGR, track->pos, &err);
+          if (success)
+            {
+              move_to_new_track_num_actions++;
+
+              /* adjust positions in previous selections */
+              for (int i = 0; i < sel->num_tracks; i++)
+                {
+                  Track * cur_track = sel->tracks[i];
+                  cur_track->pos++;
+                }
+            }
+        }
+
       UndoableAction * ua =
         undo_manager_get_last_action (UNDO_MANAGER);
-      ua->num_actions = 2;
+      ua->num_actions = 2 + move_to_new_track_num_actions;
     }
 
   return track;
