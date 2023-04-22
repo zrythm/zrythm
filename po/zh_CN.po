@@ -17,13 +17,14 @@
 # Eric <hamburger1024@firemail.cc>, 2022.
 # Eric <hamburger1024@mailbox.org>, 2022.
 # SunRuikang <srk888666@qq.com>, 2022.
+# Martin LYU <my2605070493@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-03-20 21:10+0900\n"
-"PO-Revision-Date: 2022-11-26 23:56+0000\n"
-"Last-Translator: SunRuikang <srk888666@qq.com>\n"
+"PO-Revision-Date: 2023-04-09 04:48+0000\n"
+"Last-Translator: Martin LYU <my2605070493@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -31,7 +32,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.15-dev\n"
+"X-Generator: Weblate 4.17-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -103,7 +104,7 @@ msgstr "八分音符整半"
 
 #: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
 msgid "Acoustic"
-msgstr ""
+msgstr "乐器原声的"
 
 #: inc/schemas/audio/scale.h:113 inc/audio/scale.h:145
 msgid "Harmonic Major"
