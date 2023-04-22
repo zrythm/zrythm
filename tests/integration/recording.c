@@ -51,6 +51,11 @@ prepare (void)
     PORT_OWNER_TYPE_AUDIO_ENGINE, AUDIO_ENGINE);
   port_allocate_bufs (AUDIO_ENGINE->dummy_input->l);
   port_allocate_bufs (AUDIO_ENGINE->dummy_input->r);
+
+  /* sleep for a bit because Port's last_change interferes
+   * with touch automation recording if it's too close to the
+   * current time */
+  g_usleep (1000000); // 1 sec
 }
 
 static void
@@ -286,6 +291,8 @@ do_takes_no_loop_no_punch (
   SET_CACHES_AND_PROCESS;
   transport_request_pause (TRANSPORT, true);
   recording_manager_process_events (RECORDING_MANAGER);
+
+  g_assert_cmpint (RECORDING_MANAGER->num_active_recordings, ==, 0);
 
   g_message ("process 3 ended");
 
@@ -621,11 +628,13 @@ test_recording_takes (
   int ins_track_pos = ins_track->pos;
   int audio_track_pos = audio_track->pos;
   int master_track_pos = master_track->pos;
+  g_assert_cmpint (audio_track_pos, <, TRACKLIST->num_tracks);
 
   prepare ();
   do_takes_no_loop_no_punch (
     ins_track, audio_track, master_track);
 
+  g_assert_cmpint (audio_track_pos, <, TRACKLIST->num_tracks);
   ins_track = TRACKLIST->tracks[ins_track_pos];
   audio_track = TRACKLIST->tracks[audio_track_pos];
   master_track = TRACKLIST->tracks[master_track_pos];
@@ -653,6 +662,7 @@ test_recording (void)
   /* create an audio track */
   Track * audio_track =
     track_create_empty_with_action (TRACK_TYPE_AUDIO, NULL);
+  g_assert_true (IS_TRACK_AND_NONNULL (audio_track));
 
   /* get master track */
   Track * master_track = P_MASTER_TRACK;
