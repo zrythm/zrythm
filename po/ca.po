@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-03-20 21:10+0900\n"
-"PO-Revision-Date: 2023-02-27 18:36+0000\n"
+"PO-Revision-Date: 2023-04-22 04:47+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -585,9 +585,8 @@ msgid "Reverse"
 msgstr "Invertir"
 
 #: inc/audio/audio_function.h:62
-#, fuzzy
 msgid "Pitch shift"
-msgstr "Roda d'altura"
+msgstr "Canvi de to"
 
 #: inc/audio/audio_function.h:63
 msgid "External program"
@@ -1324,14 +1323,12 @@ msgid "Failed to apply audio function"
 msgstr "Error en aplicar la funció d'àudio"
 
 #: src/actions/actions.c:2502
-#, fuzzy
 msgid "Please enter a valid ratio."
-msgstr "Introdueix un valor vàlid."
+msgstr "Introdueix una ràtio vàlida."
 
 #: src/actions/actions.c:2639
-#, fuzzy
 msgid "Pitch Ratio"
-msgstr "Altura"
+msgstr "Ràtio de to"
 
 #: src/actions/actions.c:2721 src/gui/widgets/track_filter_popover.c:268
 msgid "Track name"
@@ -3145,8 +3142,9 @@ msgid "Custom"
 msgstr "Personalitzat"
 
 #: src/gui/widgets/snap_grid_popover.c:355
+#, fuzzy
 msgid "Object Length Lype"
-msgstr "Durada de l'objecte Lype"
+msgstr "Tipus de durada de l'objecte"
 
 #: src/gui/widgets/snap_grid_popover.c:358
 msgid ""
@@ -3244,7 +3242,7 @@ msgstr "Nota"
 #: src/gui/widgets/event_viewer.c:650 src/gui/widgets/item_factory.c:292
 #: src/gui/widgets/item_factory.c:696
 msgid "Pitch"
-msgstr "Altura"
+msgstr "To"
 
 #: src/gui/widgets/event_viewer.c:709 src/gui/widgets/event_viewer.c:737
 #: src/gui/widgets/digital_meter.c:110 src/gui/widgets/item_factory.c:214
@@ -4322,7 +4320,7 @@ msgstr "Velocitat no vàlida"
 
 #: src/gui/widgets/item_factory.c:299
 msgid "Invalid pitch"
-msgstr "Altura no vàlida"
+msgstr "To no vàlid"
 
 #: src/gui/widgets/item_factory.c:535
 msgid "Add Bookmark"
@@ -5944,17 +5942,16 @@ msgid "MIDI in activity"
 msgstr "MIDI en activitat"
 
 #: resources/ui/header.ui:92
-#, fuzzy
 msgid "Live Waveform Indicator"
 msgstr "Indicador de forma d'ona en directe"
 
 #: resources/ui/header.ui:105
 msgid "Spectrum Analyzer"
-msgstr ""
+msgstr "Analitzador d'espectre"
 
 #: resources/ui/header.ui:117
 msgid "Peak Meter"
-msgstr ""
+msgstr "Vúmetre de pic"
 
 #: resources/ui/editor_toolbar.ui:140
 msgid "Toggle ghost note visibility"
@@ -6274,7 +6271,7 @@ msgstr "Desar com a..."
 
 #: resources/ui/midi_editor_space.ui:63
 msgid "Pitch Wheel"
-msgstr "Roda d'altura"
+msgstr "Roda de to"
 
 #: resources/ui/midi_editor_space.ui:64
 msgid "Mod Wheel"
@@ -6751,7 +6748,7 @@ msgid ""
 "The note notation used in the piano roll - MIDI pitch index or notes (C, C#, "
 "etc.)"
 msgstr ""
-"La notació de notes utilitzada al rotlle de pianola - índex d'altura MIDI o "
+"La notació de notes utilitzada al rotlle de pianola - índex de to MIDI o "
 "notes (Do, Do#, etc.)"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:392
@@ -6969,14 +6966,12 @@ msgstr ""
 "l'acció de la funció d'àudio)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:513
-#, fuzzy
 msgid "Last used pitch shift ratio"
-msgstr "Última funció d'àudio utilitzada"
+msgstr "Última ràtio de canvi de to utilitzada"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:514
-#, fuzzy
 msgid "Last used pitch shift ratio."
-msgstr "Última funció d'àudio utilitzada"
+msgstr "Última ràtio de canvi de to utilitzada."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:518
 msgid "Playhead scroll edges (timeline)"
@@ -7944,6 +7939,8 @@ msgstr ""
 msgid ""
 "Meson: use libpanel fork with detach support when building as a subproject"
 msgstr ""
+"Mesó: utilitza la forquilla libpanel amb suport separat quan es construeixi "
+"com a subprojecte"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:81
