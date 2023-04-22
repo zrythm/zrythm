@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/snap_grid.h"
@@ -352,7 +352,7 @@ snap_grid_popover_widget_new (SnapGridWidget * owner)
     self->object_length_type, sg->length_type);
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (self->object_length_type),
-    _ ("Object Length Lype"));
+    _ ("Object Length Type"));
   adw_action_row_set_subtitle (
     ADW_ACTION_ROW (self->object_length_type),
     _ ("Link to snap settings, use the length of the last created object, or specify a custom length"));
