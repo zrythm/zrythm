@@ -2899,7 +2899,9 @@ arranger_object_split (
           AudioClip * prev_r1_clip =
             audio_region_get_clip (prev_r1);
           g_return_val_if_fail (prev_r1_clip, false);
-          float frames[localp.frames * prev_r1_clip->channels];
+          float * frames = object_new_n (
+            (size_t) localp.frames * prev_r1_clip->channels,
+            float);
           dsp_copy (
             &frames[0], &prev_r1_clip->frames[0],
             (size_t) localp.frames * prev_r1_clip->channels);
@@ -2916,6 +2918,7 @@ arranger_object_split (
             new_r1->pool_id != prev_r1->pool_id, false);
           arranger_object_free ((ArrangerObject *) prev_r1);
           *r1 = (ArrangerObject *) new_r1;
+          free (frames);
         }
     }
 
