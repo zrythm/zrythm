@@ -298,7 +298,8 @@ activate_scripting_interface (
   GVariant *      variant,
   gpointer        user_data)
 {
-#ifdef HAVE_GUILE
+  /* see https://todo.sr.ht/~alextee/zrythm-bug/504 for Mac */
+#if defined(HAVE_GUILE) && !defined(__APPLE__)
   ScriptingDialogWidget * widget =
     scripting_dialog_widget_new ();
   gtk_window_set_transient_for (
