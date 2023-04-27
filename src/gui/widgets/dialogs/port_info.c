@@ -1,24 +1,5 @@
-/*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
-
-/* FIXME don't need a template, add rows
- * dynamically */
+// SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/port.h"
 #include "gui/widgets/dialogs/port_info.h"
@@ -33,48 +14,91 @@
 G_DEFINE_TYPE (
   PortInfoDialogWidget,
   port_info_dialog_widget,
-  GTK_TYPE_DIALOG)
+  GTK_TYPE_WINDOW)
 
 static void
-set_values (PortInfoDialogWidget * self, Port * port)
+set_values (
+  PortInfoDialogWidget * self,
+  AdwPreferencesPage *   pref_page,
+  Port *                 port)
 {
   self->port = port;
 
   PortIdentifier * id = &port->id;
 
-  char tmp[600];
-  gtk_label_set_text (self->name_lbl, id->label);
-  gtk_label_set_text (self->group_lbl, id->port_group);
+  AdwPreferencesGroup * pref_group =
+    ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
+  adw_preferences_group_set_title (
+    pref_group, _ ("Port Info"));
+  adw_preferences_page_add (pref_page, pref_group);
+
+  AdwActionRow * row;
+  GtkLabel *     lbl;
+  char           tmp[600];
+
+#define PREPARE_ROW(title) \
+  row = ADW_ACTION_ROW (adw_action_row_new ()); \
+  adw_preferences_row_set_title ( \
+    ADW_PREFERENCES_ROW (row), title); \
+  lbl = GTK_LABEL (gtk_label_new (NULL))
+
+#define ADD_ROW \
+  adw_action_row_add_suffix (row, GTK_WIDGET (lbl)); \
+  adw_preferences_group_add (pref_group, GTK_WIDGET (row))
+
+  PREPARE_ROW (_ ("Name"));
+  gtk_label_set_text (lbl, id->label);
+  ADD_ROW;
+
+  PREPARE_ROW (_ ("Group"));
+  gtk_label_set_text (lbl, id->port_group);
+  ADD_ROW;
+
+  PREPARE_ROW (_ ("Designation"));
   port_get_full_designation (port, tmp);
-  gtk_label_set_text (self->full_designation_lbl, tmp);
-  gtk_label_set_text (
-    self->type_lbl, port_type_strings[id->type].str);
+  gtk_label_set_text (lbl, tmp);
+  ADD_ROW;
+
+  PREPARE_ROW (_ ("Type"));
+  gtk_label_set_text (lbl, port_type_strings[id->type].str);
+  ADD_ROW;
+
+  PREPARE_ROW (_ ("Range"));
   sprintf (
     tmp, _ ("%.1f to %.1f"), (double) port->minf,
     (double) port->maxf);
-  gtk_label_set_text (self->range_lbl, tmp);
+  gtk_label_set_text (lbl, tmp);
+  ADD_ROW;
+
+  PREPARE_ROW (_ ("Default Value"));
   sprintf (tmp, "%.1f", (double) port->deff);
-  gtk_label_set_text (self->default_value_lbl, tmp);
+  gtk_label_set_text (lbl, tmp);
+  ADD_ROW;
+
+  PREPARE_ROW (_ ("Current Value"));
   if (id->type == TYPE_CONTROL)
     {
       sprintf (tmp, "%f", (double) port->control);
-      gtk_label_set_text (self->current_val_lbl, tmp);
+      gtk_label_set_text (lbl, tmp);
     }
   else
     {
-      gtk_label_set_text (self->current_val_lbl, _ ("N/A"));
+      gtk_label_set_text (lbl, _ ("N/A"));
     }
+  ADD_ROW;
+
+  PREPARE_ROW (_ ("Flags"));
+  GtkFlowBox * flags_box = GTK_FLOW_BOX (gtk_flow_box_new ());
   for (int i = 0;
        i < (int) CYAML_ARRAY_LEN (port_flags_bitvals); i++)
     {
       if (!(id->flags & (1 << i)))
         continue;
 
-      GtkWidget * lbl =
+      GtkWidget * lbl_ =
         gtk_label_new (port_flags_bitvals[i].name);
-      gtk_widget_set_visible (lbl, 1);
-      gtk_widget_set_hexpand (lbl, 1);
-      gtk_box_append (GTK_BOX (self->flags_box), lbl);
+      gtk_widget_set_hexpand (lbl_, 1);
+      gtk_flow_box_append (GTK_FLOW_BOX (flags_box), lbl_);
     }
   for (int i = 0;
        i < (int) CYAML_ARRAY_LEN (port_flags2_bitvals); i++)
@@ -82,12 +106,13 @@ set_values (PortInfoDialogWidget * self, Port * port)
       if (!(id->flags2 & (unsigned int) (1 << i)))
         continue;
 
-      GtkWidget * lbl =
+      GtkWidget * lbl_ =
         gtk_label_new (port_flags2_bitvals[i].name);
-      gtk_widget_set_visible (lbl, 1);
-      gtk_widget_set_hexpand (lbl, 1);
-      gtk_box_append (GTK_BOX (self->flags_box), lbl);
+      gtk_widget_set_hexpand (lbl_, 1);
+      gtk_flow_box_append (GTK_FLOW_BOX (flags_box), lbl_);
     }
+  adw_action_row_add_suffix (row, GTK_WIDGET (flags_box));
+  adw_preferences_group_add (pref_group, GTK_WIDGET (row));
 
   /* TODO scale points */
 }
@@ -101,7 +126,11 @@ port_info_dialog_widget_new (Port * port)
   PortInfoDialogWidget * self =
     g_object_new (PORT_INFO_DIALOG_WIDGET_TYPE, NULL);
 
-  set_values (self, port);
+  AdwPreferencesPage * pref_page =
+    ADW_PREFERENCES_PAGE (adw_preferences_page_new ());
+  gtk_window_set_child (
+    GTK_WINDOW (self), GTK_WIDGET (pref_page));
+  set_values (self, pref_page, port);
 
   return self;
 }
@@ -110,30 +139,12 @@ static void
 port_info_dialog_widget_class_init (
   PortInfoDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass, "port_info_dialog.ui");
-
-#define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, PortInfoDialogWidget, x)
-
-  BIND_CHILD (name_lbl);
-  BIND_CHILD (group_lbl);
-  BIND_CHILD (full_designation_lbl);
-  BIND_CHILD (type_lbl);
-  BIND_CHILD (range_lbl);
-  BIND_CHILD (default_value_lbl);
-  BIND_CHILD (current_val_lbl);
-  BIND_CHILD (flags_box);
-  /* TODO */
-  /*BIND_CHILD (scale_points_box);*/
 }
 
 static void
 port_info_dialog_widget_init (PortInfoDialogWidget * self)
 {
-  gtk_widget_init_template (GTK_WIDGET (self));
-
-  gtk_window_set_title (GTK_WINDOW (self), _ ("Port info"));
+  gtk_window_set_title (GTK_WINDOW (self), _ ("Port Info"));
   gtk_window_set_icon_name (GTK_WINDOW (self), "zrythm");
+  gtk_window_set_default_size (GTK_WINDOW (self), 480, -1);
 }

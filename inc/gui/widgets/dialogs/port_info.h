@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -35,7 +19,7 @@ G_DECLARE_FINAL_TYPE (
   port_info_dialog_widget,
   Z,
   PORT_INFO_DIALOG_WIDGET,
-  GtkDialog)
+  GtkWindow)
 
 typedef struct Port Port;
 
@@ -50,17 +34,7 @@ typedef struct Port Port;
  */
 typedef struct _PortInfoDialogWidget
 {
-  GtkDialog parent_instance;
-
-  GtkLabel * name_lbl;
-  GtkLabel * group_lbl;
-  GtkLabel * full_designation_lbl;
-  GtkLabel * type_lbl;
-  GtkLabel * range_lbl;
-  GtkLabel * current_val_lbl;
-  GtkLabel * default_value_lbl;
-
-  GtkBox * flags_box;
+  GtkWindow parent_instance;
 
   /* TODO */
   GtkBox * scale_points_box;

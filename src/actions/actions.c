@@ -3281,7 +3281,7 @@ DEFINE_SIMPLE (activate_arranger_object_view_info)
 
   ArrangerObjectInfoDialogWidget * dialog =
     arranger_object_info_dialog_widget_new (obj);
-  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+  gtk_window_present (GTK_WINDOW (dialog));
 }
 
 DEFINE_SIMPLE (activate_save_chord_preset)
@@ -3640,7 +3640,7 @@ DEFINE_SIMPLE (activate_port_view_info)
 
   PortInfoDialogWidget * dialog =
     port_info_dialog_widget_new (port);
-  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+  gtk_window_present (GTK_WINDOW (dialog));
 }
 
 DEFINE_SIMPLE (activate_port_connection_remove)

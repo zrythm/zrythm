@@ -292,7 +292,8 @@ do_takes_no_loop_no_punch (
   transport_request_pause (TRANSPORT, true);
   recording_manager_process_events (RECORDING_MANAGER);
 
-  g_assert_cmpint (RECORDING_MANAGER->num_active_recordings, ==, 0);
+  g_assert_cmpint (
+    RECORDING_MANAGER->num_active_recordings, ==, 0);
 
   g_message ("process 3 ended");
 

@@ -1,8 +1,7 @@
-# SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 resource_files += files ([
-  'arranger_object_info_dialog.ui',
   'audio_editor_space.ui',
   'automatable_selector.ui',
   'automation_editor_space.ui',
@@ -48,7 +47,6 @@ resource_files += files ([
   'modulator_view.ui',
   'panel_file_browser.ui',
   'plugin_browser.ui',
-  'port_info_dialog.ui',
   'port_selector_dialog.ui',
   'project_assistant.ui',
   'project_scale_popover.ui',

@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/arranger_object.h"
 #include "gui/widgets/dialogs/arranger_object_info.h"
@@ -30,38 +14,65 @@
 G_DEFINE_TYPE (
   ArrangerObjectInfoDialogWidget,
   arranger_object_info_dialog_widget,
-  GTK_TYPE_DIALOG)
+  GTK_TYPE_WINDOW)
 
 static void
-set_values (
+set_basic_info (
   ArrangerObjectInfoDialogWidget * self,
+  AdwPreferencesPage *             pref_page,
   ArrangerObject *                 obj)
 {
   self->obj = obj;
 
+  AdwPreferencesGroup * pref_group =
+    ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
+  adw_preferences_group_set_title (
+    pref_group, _ ("Basic Info"));
+  adw_preferences_page_add (pref_page, pref_group);
+
+  AdwActionRow * row;
+  GtkLabel *     lbl;
+
+  /* name */
+  row = ADW_ACTION_ROW (adw_action_row_new ());
+  adw_preferences_row_set_title (
+    ADW_PREFERENCES_ROW (row), _ ("Name"));
+  lbl = GTK_LABEL (gtk_label_new (NULL));
   char         tmp[600];
   const char * name = arranger_object_get_name (obj);
   if (name)
     {
-      gtk_label_set_text (self->name_lbl, name);
+      gtk_label_set_text (lbl, name);
     }
   else
     {
-      gtk_label_set_text (self->name_lbl, "");
+      gtk_label_set_text (lbl, "");
     }
-  ZRegion * region = arranger_object_get_region (obj);
-  if (region)
+  adw_action_row_add_suffix (row, GTK_WIDGET (lbl));
+  adw_preferences_group_add (pref_group, GTK_WIDGET (row));
+
+  row = ADW_ACTION_ROW (adw_action_row_new ());
+  adw_preferences_row_set_title (
+    ADW_PREFERENCES_ROW (row), _ ("Owner"));
+  lbl = GTK_LABEL (gtk_label_new (NULL));
+  if (arranger_object_owned_by_region (obj))
     {
+      ZRegion * region = arranger_object_get_region (obj);
+      g_return_if_fail (region);
       sprintf (
         tmp, "%s [tr %u, ln %d, at %d, idx %d]", region->name,
         region->id.track_name_hash, region->id.lane_pos,
         region->id.at_idx, region->id.idx);
-      gtk_label_set_text (self->owner_lbl, tmp);
+      gtk_label_set_text (lbl, tmp);
     }
   else
     {
-      gtk_label_set_text (self->owner_lbl, "");
+      Track * track = arranger_object_get_track (obj);
+      g_return_if_fail (IS_TRACK_AND_NONNULL (track));
+      gtk_label_set_text (lbl, track->name);
     }
+  adw_action_row_add_suffix (row, GTK_WIDGET (lbl));
+  adw_preferences_group_add (pref_group, GTK_WIDGET (row));
 }
 
 /**
@@ -74,7 +85,11 @@ arranger_object_info_dialog_widget_new (
   ArrangerObjectInfoDialogWidget * self = g_object_new (
     ARRANGER_OBJECT_INFO_DIALOG_WIDGET_TYPE, NULL);
 
-  set_values (self, object);
+  AdwPreferencesPage * pref_page =
+    ADW_PREFERENCES_PAGE (adw_preferences_page_new ());
+  gtk_window_set_child (
+    GTK_WINDOW (self), GTK_WIDGET (pref_page));
+  set_basic_info (self, pref_page, object);
 
   return self;
 }
@@ -83,26 +98,13 @@ static void
 arranger_object_info_dialog_widget_class_init (
   ArrangerObjectInfoDialogWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "arranger_object_info_dialog.ui");
-
-#define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, ArrangerObjectInfoDialogWidget, x)
-
-  BIND_CHILD (name_lbl);
-  BIND_CHILD (type_lbl);
-  BIND_CHILD (owner_lbl);
 }
 
 static void
 arranger_object_info_dialog_widget_init (
   ArrangerObjectInfoDialogWidget * self)
 {
-  gtk_widget_init_template (GTK_WIDGET (self));
-
   gtk_window_set_title (
-    GTK_WINDOW (self), _ ("Arranger object info"));
+    GTK_WINDOW (self), _ ("Arranger Object Info"));
   gtk_window_set_icon_name (GTK_WINDOW (self), "zrythm");
 }
