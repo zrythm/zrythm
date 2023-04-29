@@ -1470,19 +1470,22 @@ track_set_listened (
 /**
  * Writes the track to the given MIDI file.
  *
- * @param use_track_pos Whether to use the track
- *   position in the MIDI data. The track will be
- *   set to 1 if false.
- * @param events Track events, if not using lanes
- *   as tracks or using track position.
+ * @param use_track_pos Whether to use the track position in
+ *   the MIDI data. The track will be set to 1 if false.
+ * @param events Track events, if not using lanes as tracks or
+ *   using track position.
+ * @param start Events before this position will be skipped.
+ * @param end Events after this position will be skipped.
  */
 void
 track_write_to_midi_file (
-  const Track * self,
-  MIDI_FILE *   mf,
-  MidiEvents *  events,
-  bool          lanes_as_tracks,
-  bool          use_track_pos)
+  const Track *    self,
+  MIDI_FILE *      mf,
+  MidiEvents *     events,
+  const Position * start,
+  const Position * end,
+  bool             lanes_as_tracks,
+  bool             use_track_pos)
 {
   g_return_if_fail (track_type_has_piano_roll (self->type));
 
@@ -1502,7 +1505,8 @@ track_write_to_midi_file (
       TrackLane * lane = self->lanes[i];
 
       track_lane_write_to_midi_file (
-        lane, mf, events, lanes_as_tracks, use_track_pos);
+        lane, mf, events, start, end, lanes_as_tracks,
+        use_track_pos);
     }
 
   if (own_events)
@@ -3644,6 +3648,8 @@ track_create_with_action (
   int                   num_tracks,
   GError **             error)
 {
+  z_return_val_if_fail_cmp (num_tracks, >, 0, NULL);
+
   GError * err = NULL;
   bool     ret = tracklist_selections_action_perform_create (
     type, pl_setting, file_descr, index, pos, num_tracks, -1,

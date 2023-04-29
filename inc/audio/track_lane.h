@@ -259,14 +259,18 @@ track_lane_clone (const TrackLane * src, Track * track);
  *   The MIDI track will be set to 1 if false.
  * @param events Track events, if not using lanes
  *   as tracks.
+ * @param start Events before this position will be skipped.
+ * @param end Events after this position will be skipped.
  */
 NONNULL_ARGS (1, 2)
 void track_lane_write_to_midi_file (
-  TrackLane *  self,
-  MIDI_FILE *  mf,
-  MidiEvents * events,
-  bool         lanes_as_tracks,
-  bool         use_track_or_lane_pos);
+  TrackLane *      self,
+  MIDI_FILE *      mf,
+  MidiEvents *     events,
+  const Position * start,
+  const Position * end,
+  bool             lanes_as_tracks,
+  bool             use_track_or_lane_pos);
 
 NONNULL Tracklist *
 track_lane_get_tracklist (const TrackLane * self);

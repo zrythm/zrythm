@@ -506,14 +506,18 @@ track_lane_calculate_lane_idx (const TrackLane * self)
  *   The MIDI track will be set to 1 if false.
  * @param events Track events, if not using lanes
  *   as tracks.
+ * @param start Events before this position will be skipped.
+ * @param end Events after this position will be skipped.
  */
 void
 track_lane_write_to_midi_file (
-  TrackLane *  self,
-  MIDI_FILE *  mf,
-  MidiEvents * events,
-  bool         lanes_as_tracks,
-  bool         use_track_or_lane_pos)
+  TrackLane *      self,
+  MIDI_FILE *      mf,
+  MidiEvents *     events,
+  const Position * start,
+  const Position * end,
+  bool             lanes_as_tracks,
+  bool             use_track_or_lane_pos)
 {
   Track * track = track_lane_get_track (self);
   g_return_if_fail (track);
@@ -537,13 +541,11 @@ track_lane_write_to_midi_file (
       g_return_if_fail (events);
     }
 
-  /* All data is written out to tracks not
-   * channels. We therefore
-   * set the current channel before writing
-   * data out. Channel assignments
-   * can change any number of times during the
-   * file, and affect all
-   * tracks messages until it is changed. */
+  /* All data is written out to tracks not channels. We
+   * therefore set the current channel before writing data
+   * out. Channel assignments can change any number of times
+   * during the file, and affect all tracks messages until it
+   * is changed. */
   midiFileSetTracksDefaultChannel (
     mf, midi_track_pos, MIDI_CHANNEL_1);
 
@@ -559,8 +561,24 @@ track_lane_write_to_midi_file (
 
   for (int i = 0; i < self->num_regions; i++)
     {
-      const ZRegion * region = self->regions[i];
-      midi_region_add_events (region, events, true, true);
+      const ZRegion *        region = self->regions[i];
+      const ArrangerObject * r_obj =
+        (const ArrangerObject *) region;
+
+      /* skip regions not inside the given range */
+      if (start)
+        {
+          if (position_is_before (&r_obj->end_pos, start))
+            continue;
+        }
+      if (end)
+        {
+          if (position_is_after (&r_obj->pos, end))
+            continue;
+        }
+
+      midi_region_add_events (
+        region, events, start, end, true, true);
     }
 
   if (own_events)

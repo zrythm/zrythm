@@ -1101,6 +1101,83 @@ test_mixdown_midi (void)
   test_helper_zrythm_cleanup ();
 }
 
+static void
+test_export_midi_range (void)
+{
+  test_helper_zrythm_init ();
+
+  /* create a MIDI track with 1 region with 1 MIDI note */
+  Track * track =
+    track_create_empty_with_action (TRACK_TYPE_MIDI, NULL);
+  track_select (
+    track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+
+  Position start, end;
+  position_set_to_bar (&start, 2);
+  position_set_to_bar (&end, 4);
+  ZRegion * r =
+    midi_region_new (&start, &end, track->name_hash, 0, 0);
+  bool success = track_add_region (
+    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
+  g_assert_true (success);
+
+  /* midi note 1 */
+  position_init (&start);
+  position_set_to_bar (&end, 2);
+  MidiNote * mn = midi_note_new (&r->id, &start, &end, 70, 70);
+  midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
+
+  /* bounce */
+  ExportSettings * settings = export_settings_new ();
+  settings->mode = EXPORT_MODE_FULL;
+  export_settings_set_bounce_defaults (
+    settings, EXPORT_FORMAT_MIDI1, NULL, __func__);
+  settings->time_range = TIME_RANGE_CUSTOM;
+  position_set_to_bar (&settings->custom_start, 2);
+  position_set_to_bar (&settings->custom_end, 4);
+
+  EngineState state;
+  GPtrArray * conns =
+    exporter_prepare_tracks_for_export (settings, &state);
+
+  /* start exporting in a new thread */
+  GThread * thread = g_thread_new (
+    "bounce_thread",
+    (GThreadFunc) exporter_generic_export_thread, settings);
+
+  print_progress_and_sleep (settings->progress_info);
+
+  g_thread_join (thread);
+
+  exporter_post_export (settings, conns, &state);
+
+  /* create a MIDI track from the MIDI file */
+  SupportedFile * file =
+    supported_file_new_from_path (settings->file_uri);
+  Track * exported_track = track_create_with_action (
+    TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
+    TRACKLIST->num_tracks, 1, NULL);
+
+  /* verify correct data */
+  g_assert_cmpint (exported_track->num_lanes, ==, 2);
+  g_assert_cmpint (
+    exported_track->lanes[0]->num_regions, ==, 1);
+  g_assert_cmpint (
+    exported_track->lanes[1]->num_regions, ==, 0);
+  r = exported_track->lanes[0]->regions[0];
+  g_assert_cmpint (r->num_midi_notes, ==, 1);
+  mn = r->midi_notes[0];
+  ArrangerObject * mn_obj = (ArrangerObject *) mn;
+  position_set_to_bar (&start, 1);
+  position_set_to_bar (&end, 2);
+  g_assert_cmppos (&mn_obj->pos, &start);
+  g_assert_cmppos (&mn_obj->end_pos, &end);
+
+  export_settings_free (settings);
+
+  test_helper_zrythm_cleanup ();
+}
+
 int
 main (int argc, char * argv[])
 {
@@ -1108,6 +1185,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/audio/exporter/"
 
+  g_test_add_func (
+    TEST_PREFIX "test export midi range",
+    (GTestFunc) test_export_midi_range);
   g_test_add_func (
     TEST_PREFIX "test bounce instrument track",
     (GTestFunc) test_bounce_instrument_track);

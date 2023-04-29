@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2022 Robert Panovics <robert.panovics at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
@@ -770,7 +770,7 @@ midi_region_write_to_midi_file (
 {
   MidiEvents * events = midi_events_new ();
   midi_region_add_events (
-    self, events, add_region_start, export_full);
+    self, events, NULL, NULL, add_region_start, export_full);
 
   midiFileSetTracksDefaultChannel (mf, 1, MIDI_CHANNEL_1);
   midiTrackAddText (mf, 1, textTrackName, self->name);
@@ -961,22 +961,27 @@ is_note_export_start_pos_in_full_region (
 }
 
 /**
- * Adds the contents of the region converted into
- * events.
+ * Adds the contents of the region converted into events.
  *
- * @param add_region_start Add the region start
- *   offset to the positions.
- * @param export_full Traverse loops and export the
- *   MIDI file as it would be played inside Zrythm.
- *   If this is 0, only the original region (from
- *   true start to true end) is exported.
+ * @param add_region_start Add the region start offset to the
+ *   positions.
+ * @param export_full Traverse loops and export the MIDI file
+ *   as it would be played inside Zrythm. If this is 0, only
+ *   the original region (from true start to true end) is
+ *   exported.
+ * @param start Events before this (global) position will be
+ *   skipped.
+ * @param end Events after this (global) position will be
+ *   skipped.
  */
 void
 midi_region_add_events (
-  const ZRegion * self,
-  MidiEvents *    events,
-  const bool      add_region_start,
-  const bool      full)
+  const ZRegion *  self,
+  MidiEvents *     events,
+  const Position * start,
+  const Position * end,
+  const bool       add_region_start,
+  const bool       full)
 {
   ArrangerObject * self_obj = (ArrangerObject *) self;
 
@@ -1029,14 +1034,32 @@ midi_region_add_events (
                 }
             }
 
-          midi_events_add_note_on (
-            events, 1, mn->val, mn->vel->vel,
-            (midi_time_t) (position_to_ticks (&mn_pos) + region_start),
-            F_NOT_QUEUED);
-          midi_events_add_note_off (
-            events, 1, mn->val,
-            (midi_time_t) (position_to_ticks (&mn_end_pos) + region_start),
-            F_NOT_QUEUED);
+          double note_global_start_ticks =
+            position_to_ticks (&mn_pos) + region_start;
+          double note_global_end_ticks =
+            position_to_ticks (&mn_end_pos) + region_start;
+          bool write_note = true;
+          if (start && note_global_end_ticks < start->ticks)
+            write_note = false;
+          if (end && note_global_start_ticks > end->ticks)
+            write_note = false;
+
+          if (write_note)
+            {
+              if (start)
+                {
+                  note_global_start_ticks -= start->ticks;
+                  note_global_end_ticks -= start->ticks;
+                }
+              midi_events_add_note_on (
+                events, 1, mn->val, mn->vel->vel,
+                (midi_time_t) (note_global_start_ticks),
+                F_NOT_QUEUED);
+              midi_events_add_note_off (
+                events, 1, mn->val,
+                (midi_time_t) (note_global_end_ticks),
+                F_NOT_QUEUED);
+            }
         }
       while (
         ++repeat_counter < number_of_loop_repeats

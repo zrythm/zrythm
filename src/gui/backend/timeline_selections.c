@@ -868,7 +868,7 @@ timeline_selections_export_to_midi_file (
 
           /* append to the current events */
           midi_region_add_events (
-            r, events, true, export_full_regions);
+            r, events, NULL, NULL, true, export_full_regions);
           last_midi_track_pos = midi_track_pos;
         }
 

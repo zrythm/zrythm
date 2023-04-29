@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -279,22 +279,27 @@ midi_region_is_note_playable (
   const MidiNote * midi_note);
 
 /**
- * Adds the contents of the region converted into
- * events.
+ * Adds the contents of the region converted into events.
  *
- * @param add_region_start Add the region start
- *   offset to the positions.
- * @param export_full Traverse loops and export the
- *   MIDI file as it would be played inside Zrythm.
- *   If this is 0, only the original region (from
- *   true start to true end) is exported.
+ * @param add_region_start Add the region start offset to the
+ *   positions.
+ * @param export_full Traverse loops and export the MIDI file
+ *   as it would be played inside Zrythm. If this is 0, only
+ *   the original region (from true start to true end) is
+ *   exported.
+ * @param start Events before this (global) position will be
+ *   skipped.
+ * @param end Events after this (global) position will be
+ *   skipped.
  */
 void
 midi_region_add_events (
-  const ZRegion * self,
-  MidiEvents *    events,
-  const bool      add_region_start,
-  const bool      full);
+  const ZRegion *  self,
+  MidiEvents *     events,
+  const Position * start,
+  const Position * end,
+  const bool       add_region_start,
+  const bool       full);
 
 /**
  * Fills in the array with all the velocities in

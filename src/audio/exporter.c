@@ -82,6 +82,35 @@ export_format_from_pretty_str (const char * pretty_str)
   g_return_val_if_reached (EXPORT_FORMAT_FLAC);
 }
 
+NONNULL_ARGS (1)
+static void get_export_time_range (
+  const ExportSettings * info,
+  Position *             start_pos,
+  Position *             end_pos)
+{
+  switch (info->time_range)
+    {
+    case TIME_RANGE_SONG:
+      {
+        ArrangerObject * start = (ArrangerObject *)
+          marker_track_get_start_marker (P_MARKER_TRACK);
+        ArrangerObject * end = (ArrangerObject *)
+          marker_track_get_end_marker (P_MARKER_TRACK);
+        *start_pos = start->pos;
+        *end_pos = end->pos;
+      }
+      break;
+    case TIME_RANGE_LOOP:
+      *start_pos = TRANSPORT->loop_start_pos;
+      *end_pos = TRANSPORT->loop_end_pos;
+      break;
+    case TIME_RANGE_CUSTOM:
+      *start_pos = info->custom_start;
+      *end_pos = info->custom_end;
+      break;
+    }
+}
+
 static int
 export_audio (ExportSettings * info)
 {
@@ -168,30 +197,13 @@ export_audio (ExportSettings * info)
 
   sfinfo.format = type_major | type_minor;
 
-  switch (info->time_range)
-    {
-    case TIME_RANGE_SONG:
-      {
-        ArrangerObject * start = (ArrangerObject *)
-          marker_track_get_start_marker (P_MARKER_TRACK);
-        ArrangerObject * end = (ArrangerObject *)
-          marker_track_get_end_marker (P_MARKER_TRACK);
-        sfinfo.frames =
-          position_to_frames (&end->pos)
-          - position_to_frames (&start->pos);
-      }
-      break;
-    case TIME_RANGE_LOOP:
-      sfinfo.frames =
-        position_to_frames (&TRANSPORT->loop_end_pos)
-        - position_to_frames (&TRANSPORT->loop_start_pos);
-      break;
-    case TIME_RANGE_CUSTOM:
-      sfinfo.frames =
-        position_to_frames (&info->custom_end)
-        - position_to_frames (&info->custom_start);
-      break;
-    }
+  Position start_pos, end_pos;
+  position_init (&start_pos);
+  position_init (&end_pos);
+  get_export_time_range (info, &start_pos, &end_pos);
+  sfinfo.frames =
+    position_to_frames (&end_pos)
+    - position_to_frames (&start_pos);
 
   g_return_val_if_fail (sfinfo.frames > 0, -1);
 
@@ -269,41 +281,15 @@ export_audio (ExportSettings * info)
   sf_set_string (sndfile, SF_STR_GENRE, info->genre);
 
   Position prev_playhead_pos;
-  /* position to start at */
-  POSITION_INIT_ON_STACK (start_pos);
-  /* position to stop at */
-  POSITION_INIT_ON_STACK (stop_pos);
   position_set_to_pos (
     &prev_playhead_pos, &TRANSPORT->playhead_pos);
-  switch (info->time_range)
-    {
-    case TIME_RANGE_SONG:
-      {
-        ArrangerObject * start = (ArrangerObject *)
-          marker_track_get_start_marker (P_MARKER_TRACK);
-        ArrangerObject * end = (ArrangerObject *)
-          marker_track_get_end_marker (P_MARKER_TRACK);
-        transport_set_playhead_pos (TRANSPORT, &start->pos);
-        position_set_to_pos (&start_pos, &start->pos);
-        position_set_to_pos (&stop_pos, &end->pos);
-      }
-      break;
-    case TIME_RANGE_LOOP:
-      transport_set_playhead_pos (
-        TRANSPORT, &TRANSPORT->loop_start_pos);
-      position_set_to_pos (
-        &start_pos, &TRANSPORT->loop_start_pos);
-      position_set_to_pos (
-        &stop_pos, &TRANSPORT->loop_end_pos);
-      break;
-    case TIME_RANGE_CUSTOM:
-      transport_move_playhead (
+  transport_set_playhead_pos (TRANSPORT, &start_pos);
+  /* note - for custom ranges, the old code used :
+    transport_move_playhead (
         TRANSPORT, &info->custom_start, F_PANIC,
         F_NO_SET_CUE_POINT, F_NO_PUBLISH_EVENTS);
-      position_set_to_pos (&start_pos, &info->custom_start);
-      position_set_to_pos (&stop_pos, &info->custom_end);
-      break;
-    }
+    not sure why
+  */
   AUDIO_ENGINE->bounce_mode =
     info->mode == EXPORT_MODE_FULL ? BOUNCE_OFF : BOUNCE_ON;
   AUDIO_ENGINE->bounce_step = info->bounce_step;
@@ -344,13 +330,12 @@ export_audio (ExportSettings * info)
 
   nframes_t nframes;
   g_return_val_if_fail (
-    stop_pos.frames >= 1 || start_pos.frames >= 0, -1);
+    end_pos.frames >= 1 || start_pos.frames >= 0, -1);
   /*const unsigned long total_frames =*/
   /*(unsigned long)*/
-  /*((stop_pos.frames - 1) -*/
+  /*((end_pos.frames - 1) -*/
   /*start_pos.frames);*/
-  const double total_ticks =
-    (stop_pos.ticks - start_pos.ticks);
+  const double total_ticks = (end_pos.ticks - start_pos.ticks);
   sf_count_t covered_frames = 0;
   double     covered_ticks = 0;
   /*sf_count_t last_playhead_frames = start_pos.frames;*/
@@ -364,7 +349,7 @@ export_audio (ExportSettings * info)
       /* calculate number of frames to process
        * this time */
       double nticks =
-        stop_pos.ticks - TRANSPORT->playhead_pos.ticks;
+        end_pos.ticks - TRANSPORT->playhead_pos.ticks;
       nframes = (nframes_t) MIN (
         (long) ceil (AUDIO_ENGINE->frames_per_tick * nticks),
         (long) AUDIO_ENGINE->block_length);
@@ -470,7 +455,7 @@ export_audio (ExportSettings * info)
         NULL);
     }
   while (
-    TRANSPORT->playhead_pos.ticks < stop_pos.ticks
+    TRANSPORT->playhead_pos.ticks < end_pos.ticks
     && !progress_info_pending_cancellation (pinfo));
 
   if (!progress_info_pending_cancellation (pinfo))
@@ -551,6 +536,9 @@ export_midi (ExportSettings * info)
 {
   MIDI_FILE * mf;
 
+  Position start_pos, end_pos;
+  get_export_time_range (info, &start_pos, &end_pos);
+
   if ((mf = midiFileCreate (info->file_uri, TRUE)))
     {
       /* Write tempo information out to track 1 */
@@ -594,6 +582,7 @@ export_midi (ExportSettings * info)
               /* write track to midi file */
               track_write_to_midi_file (
                 track, mf, midi_version == 0 ? events : NULL,
+                &start_pos, &end_pos,
                 midi_version == 0 ? false : info->lanes_as_tracks,
                 midi_version == 0 ? false : true);
 
