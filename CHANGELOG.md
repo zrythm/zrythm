@@ -6,6 +6,28 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.9.1] - 2023-04-29
+### Added
+- Home/End key shortcut for moving to the start/end of the project
+- Option to select note notation in the piano roll
+- Ability to select notes in a given pitch in the piano roll
+- Ctrl+0 shortcut for zooming to default level
+
+### Changed
+- Show message that BPM/time signature automation is experimental
+- Show channel slot context menu on mouse release instead of mouse press
+- Skip autosave if any toplevel window is on top
+- Update Catalan, French, Japanese, Chinese (Simplified), Czech, Portuguese (Brazil) translations
+- Redesign port/arranger object info dialogs
+- Disable Guile scripting interface on MacOS
+
+### Fixed
+- Fix wrong tooltip message on automatable selector in track lanes
+- Fix track lane names getting ellipsized despite there being enough space
+- Fix crash when splitting large audio clips
+- Fix "Move Tracks Under Group" option not working when setting the direct output of selected tracks to a new group
+- Fix given time range not being taken into account when exporting MIDI
+
 ## [1.0.0-beta.4.8.1] - 2023-04-15
 ### Added
 - Audition notes when moved with arrow keys
