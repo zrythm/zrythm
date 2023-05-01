@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -166,6 +166,15 @@ typedef struct _DigitalMeterWidget
   bool initialized;
 
   GtkPopoverMenu * popover_menu;
+
+  /**
+   * Last time a scroll event was received.
+   *
+   * Used to check if an action should be performed.
+   */
+  gint64 last_scroll_time;
+
+  bool scroll_started;
 } DigitalMeterWidget;
 
 /**

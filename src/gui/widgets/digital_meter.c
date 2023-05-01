@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
@@ -579,6 +579,7 @@ digital_meter_snapshot (
 static void
 update_flags (DigitalMeterWidget * self, double x, double y)
 {
+  g_debug ("update flags %f %f", x, y);
   int width =
     gtk_widget_get_allocated_width (GTK_WIDGET (self));
   switch (self->type)
@@ -681,6 +682,7 @@ update_flags (DigitalMeterWidget * self, double x, double y)
 static void
 on_change_started (DigitalMeterWidget * self)
 {
+  g_debug ("change started");
   switch (self->type)
     {
     case DIGITAL_METER_TYPE_NOTE_LENGTH:
@@ -719,6 +721,7 @@ on_change_started (DigitalMeterWidget * self)
 static void
 on_change_finished (DigitalMeterWidget * self)
 {
+  g_debug ("change finished");
   self->last_x = 0;
   self->last_y = 0;
   self->update_num = 0;
@@ -863,7 +866,13 @@ on_scroll (
       : -1;
 
   update_flags (self, self->hover_x, self->hover_y);
-  on_change_started (self);
+
+  if (!self->scroll_started)
+    {
+      on_change_started (self);
+      self->scroll_started = true;
+    }
+  self->last_scroll_time = g_get_monotonic_time ();
 
   ControlPortChange change = { 0 };
   Position          pos;
@@ -996,7 +1005,6 @@ on_scroll (
         }
       break;
     }
-  on_change_finished (self);
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
   return true;
@@ -1251,6 +1259,27 @@ button_press_cb (
   update_flags (self, x, y);
 }
 
+static gboolean
+tick_cb (
+  GtkWidget *     widget,
+  GdkFrameClock * frame_clock,
+  gpointer        user_data)
+{
+  DigitalMeterWidget * self = Z_DIGITAL_METER_WIDGET (widget);
+
+  gint64    cur_time = g_get_monotonic_time ();
+  const int SCROLL_INTERVAL_USEC = 600 * 1000;
+  if (
+    self->scroll_started
+    && cur_time - self->last_scroll_time > SCROLL_INTERVAL_USEC)
+    {
+      on_change_finished (self);
+      self->scroll_started = false;
+    }
+
+  return G_SOURCE_CONTINUE;
+}
+
 /**
  * Creates a digital meter with the given type (bpm or position).
  */
@@ -1396,4 +1425,6 @@ digital_meter_widget_init (DigitalMeterWidget * self)
     GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
   gtk_widget_set_parent (
     GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), tick_cb, self, NULL);
 }
