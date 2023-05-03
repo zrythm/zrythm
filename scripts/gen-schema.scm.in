@@ -1,4 +1,4 @@
-;;; SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+;;; SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 ;;; SPDX-FileCopyrightText: © 2020 Ryan Gonzalez <rymg19 at gmail dot com>
 ;;; SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
@@ -620,6 +620,11 @@ Args:
                  "[]"
                  "Track filter type"
                  "Track types to filter tracks with.")
+               (make-schema-key
+                 "track-filter-show-disabled" "b"
+                 "true"
+                 "Show disabled tracks"
+                 "Whether to show disabled tracks when filtering.")
              ))) ;; ui
 
          (schema-print

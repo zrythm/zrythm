@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <string.h>
@@ -69,6 +69,22 @@ on_track_name_changed (
     GTK_FILTER_CHANGE_DIFFERENT);
 }
 
+static void
+on_show_disabled_tracks_active_changed (
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
+{
+  TrackFilterPopoverWidget * self =
+    Z_TRACK_FILTER_POPOVER_WIDGET (user_data);
+  bool active = gtk_switch_get_active (GTK_SWITCH (gobject));
+  g_settings_set_boolean (
+    S_UI, "track-filter-show-disabled", active);
+  gtk_filter_changed (
+    GTK_FILTER (self->custom_filter),
+    GTK_FILTER_CHANGE_DIFFERENT);
+}
+
 static int
 filter_func (void * gobj, void * user_data)
 {
@@ -110,6 +126,17 @@ filter_func (void * gobj, void * user_data)
       g_variant_unref (variant);
 
       filtered = !track_type_matched;
+    }
+
+  if (!filtered)
+    {
+      if (
+        !track->enabled
+        && !g_settings_get_boolean (
+          S_UI, "track-filter-show-disabled"))
+        {
+          filtered = true;
+        }
     }
 
   if (track->filtered == !filtered)
@@ -288,6 +315,29 @@ track_filter_popover_widget_init (
     exp_row, GTK_WIDGET (list_box_row));
   adw_expander_row_set_expanded (exp_row, true);
   adw_preferences_group_add (pgroup, GTK_WIDGET (exp_row));
+
+  AdwActionRow * show_disabled_tracks_row =
+    ADW_ACTION_ROW (adw_action_row_new ());
+  adw_preferences_row_set_title (
+    ADW_PREFERENCES_ROW (show_disabled_tracks_row),
+    _ ("Disabled Tracks"));
+  GtkSwitch * show_disabled_tracks_switch =
+    GTK_SWITCH (gtk_switch_new ());
+  gtk_switch_set_active (
+    show_disabled_tracks_switch,
+    g_settings_get_boolean (
+      S_UI, "track-filter-show-disabled"));
+  gtk_widget_set_valign (
+    GTK_WIDGET (show_disabled_tracks_switch),
+    GTK_ALIGN_CENTER);
+  adw_action_row_add_suffix (
+    show_disabled_tracks_row,
+    GTK_WIDGET (show_disabled_tracks_switch));
+  g_signal_connect (
+    show_disabled_tracks_switch, "notify::active",
+    G_CALLBACK (on_show_disabled_tracks_active_changed), self);
+  adw_preferences_group_add (
+    pgroup, GTK_WIDGET (show_disabled_tracks_row));
 
   pgroup =
     ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
