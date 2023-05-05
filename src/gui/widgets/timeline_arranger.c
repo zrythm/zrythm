@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/undo_manager.h"
@@ -166,27 +166,11 @@ timeline_arranger_widget_get_at_at_y (
   if (!track)
     return NULL;
 
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (track);
-  if (!atl || !track->automation_visible)
-    return NULL;
-
   /* y local to track */
   int y_local =
     track_widget_get_local_y (track->widget, self, (int) y);
 
-  for (int j = 0; j < atl->num_ats; j++)
-    {
-      AutomationTrack * at = atl->ats[j];
-
-      if (!at->created || !at->visible)
-        continue;
-
-      if (y_local >= at->y && y_local < at->y + at->height)
-        return at;
-    }
-
-  return NULL;
+  return track_widget_get_at_at_y (track->widget, y_local);
 }
 
 /**

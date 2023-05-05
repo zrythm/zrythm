@@ -4232,6 +4232,60 @@ DEFINE_SIMPLE (
     }
 }
 
+DEFINE_SIMPLE (activate_append_track_objects_to_selection)
+{
+  int track_pos = g_variant_get_int32 (variant);
+
+  Track * track = tracklist_get_track (TRACKLIST, track_pos);
+
+  for (int i = 0; i < track->num_lanes; i++)
+    {
+      TrackLane * lane = track->lanes[i];
+      for (int j = 0; j < lane->num_regions; j++)
+        {
+          ZRegion * r = lane->regions[j];
+          arranger_object_select (
+            (ArrangerObject *) r, F_SELECT, F_APPEND,
+            F_NO_PUBLISH_EVENTS);
+        }
+    }
+}
+
+DEFINE_SIMPLE (activate_append_lane_objects_to_selection)
+{
+  int track_pos, lane_pos;
+  g_variant_get (variant, "(ii)", &track_pos, &lane_pos);
+
+  Track * track = tracklist_get_track (TRACKLIST, track_pos);
+  TrackLane * lane = track->lanes[lane_pos];
+
+  for (int j = 0; j < lane->num_regions; j++)
+    {
+      ZRegion * r = lane->regions[j];
+      arranger_object_select (
+        (ArrangerObject *) r, F_SELECT, F_APPEND,
+        F_NO_PUBLISH_EVENTS);
+    }
+}
+
+DEFINE_SIMPLE (
+  activate_append_lane_automation_regions_to_selection)
+{
+  int track_pos, at_index;
+  g_variant_get (variant, "(ii)", &track_pos, &at_index);
+  Track * track = tracklist_get_track (TRACKLIST, track_pos);
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  AutomationTrack * at = atl->ats[at_index];
+  for (int j = 0; j < at->num_regions; j++)
+    {
+      ZRegion * r = at->regions[j];
+      arranger_object_select (
+        (ArrangerObject *) r, F_SELECT, F_APPEND,
+        F_NO_PUBLISH_EVENTS);
+    }
+}
+
 /**
  * Used as a workaround for GTK bug 4422.
  */

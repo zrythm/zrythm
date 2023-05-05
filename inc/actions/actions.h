@@ -286,6 +286,10 @@ DECLARE_SIMPLE (
   activate_show_used_automation_lanes_on_selected_tracks);
 DECLARE_SIMPLE (
   activate_hide_unused_automation_lanes_on_selected_tracks);
+DECLARE_SIMPLE (activate_append_track_objects_to_selection);
+DECLARE_SIMPLE (activate_append_lane_objects_to_selection);
+DECLARE_SIMPLE (
+  activate_append_lane_automation_regions_to_selection);
 
 void
 activate_snap_events (

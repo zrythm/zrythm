@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -384,6 +384,9 @@ track_widget_get_hovered_am_widget (
   TrackWidget * self,
   int           x,
   int           y);
+
+AutomationTrack *
+track_widget_get_at_at_y (TrackWidget * self, double y);
 
 /**
  * @}

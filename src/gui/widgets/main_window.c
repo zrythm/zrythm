@@ -589,6 +589,12 @@ main_window_widget_init (MainWindowWidget * self)
     {
      "hide-unused-automation-lanes-on-selected-tracks", activate_hide_unused_automation_lanes_on_selected_tracks,
      },
+    { "append-track-objects-to-selection",
+     activate_append_track_objects_to_selection, "i" },
+    { "append-lane-objects-to-selection",
+     activate_append_lane_objects_to_selection, "(ii)" },
+    { "append-lane-automation-regions-to-selection",
+     activate_append_lane_automation_regions_to_selection, "(ii)" },
 
  /* piano roll */
     { "toggle-drum-mode", activate_toggle_drum_mode },

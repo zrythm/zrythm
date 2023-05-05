@@ -74,6 +74,29 @@ G_DEFINE_TYPE (TrackWidget, track_widget, GTK_TYPE_WIDGET)
  * at. */
 #define RESIZE_PX 12
 
+AutomationTrack *
+track_widget_get_at_at_y (TrackWidget * self, double y)
+{
+  Track *               track = self->track;
+  AutomationTracklist * atl =
+    track_get_automation_tracklist (track);
+  if (!atl || !track->automation_visible)
+    return NULL;
+
+  for (int j = 0; j < atl->num_ats; j++)
+    {
+      AutomationTrack * at = atl->ats[j];
+
+      if (!at->created || !at->visible)
+        continue;
+
+      if (y >= at->y && y < at->y + at->height)
+        return at;
+    }
+
+  return NULL;
+}
+
 const char *
 track_widget_highlight_to_str (TrackWidgetHighlight highlight)
 {
@@ -688,11 +711,49 @@ show_context_menu (TrackWidget * self, double x, double y)
   Track *     track = self->track;
   TrackLane * lane = get_lane_at_y (self, y);
 
+  AutomationTrack * at = track_widget_get_at_at_y (self, y);
+
   int num_selected = TRACKLIST_SELECTIONS->num_tracks;
 
   if (num_selected > 0)
     {
       char * str;
+
+      GMenu * select_submenu = g_menu_new ();
+
+      str = g_strdup ("app.append-track-objects-to-selection");
+      menuitem = z_gtk_create_menu_item (
+        _ ("Append Track Objects to Selection"), NULL, str);
+      g_menu_item_set_action_and_target_value (
+        menuitem, str, g_variant_new_int32 (track->pos));
+      g_free (str);
+      g_menu_append_item (select_submenu, menuitem);
+
+      if (lane)
+        {
+          str = g_strdup_printf (
+            "app.append-lane-objects-to-selection((%d,%d))",
+            track->pos, lane->pos);
+          menuitem = z_gtk_create_menu_item (
+            _ ("Append Lane Objects to Selection"), NULL, str);
+          g_free (str);
+          g_menu_append_item (select_submenu, menuitem);
+        }
+
+      if (at)
+        {
+          str = g_strdup_printf (
+            "app.append-lane-automation-regions-to-selection((%d,%d))",
+            track->pos, at->index);
+          menuitem = z_gtk_create_menu_item (
+            _ ("Append Lane Automation Regions to Selection"),
+            NULL, str);
+          g_free (str);
+          g_menu_append_item (select_submenu, menuitem);
+        }
+
+      g_menu_append_section (
+        menu, _ ("Selection"), G_MENU_MODEL (select_submenu));
 
       GMenu * edit_submenu = g_menu_new ();
 
