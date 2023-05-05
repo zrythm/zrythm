@@ -1042,6 +1042,10 @@ timeline_arranger_widget_gen_context_menu (
           g_menu_append_item (edit_submenu, menuitem);
         }
 
+      menuitem = z_gtk_create_menu_item (
+        _ ("Loop Selection"), NULL, "app.loop-selection");
+      g_menu_append_item (edit_submenu, menuitem);
+
       char str[100];
       sprintf (str, "app.arranger-object-view-info::%p", obj);
       menuitem =
