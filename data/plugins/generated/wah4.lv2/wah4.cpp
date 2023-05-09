@@ -77,6 +77,7 @@ Compilation options: -a /usr/share/faust/lv2.cpp -lang cpp -i -cn wah4 -es 1 -mc
 
 #include <string>
 #include <vector>
+#include <cstdint>
 
 /************************************************************************
  FAUST Architecture File
