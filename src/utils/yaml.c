@@ -80,7 +80,7 @@ char *
 yaml_serialize (void * data, const cyaml_schema_value_t * schema)
 {
   cyaml_err_t    err;
-  cyaml_config_t cyaml_config;
+  cyaml_config_t cyaml_config = {};
   yaml_get_cyaml_config (&cyaml_config);
   char * output;
   size_t output_len;

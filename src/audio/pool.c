@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdlib.h>
@@ -111,7 +111,7 @@ audio_pool_ensure_unique_clip_name (
           size_t tmp_len = len + 1;
           char   tmp[tmp_len];
           memset (tmp, 0, tmp_len * sizeof (char));
-          memcpy (tmp, new_name, len - 1);
+          memcpy (tmp, new_name, len == 0 ? 0 : len - 1);
           new_name =
             g_strdup_printf ("%s (%d)", tmp, cur_val + 1);
         }

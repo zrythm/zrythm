@@ -734,6 +734,7 @@ automation_track_get_val_at_pos (
   /*ZRegion * region = arranger_object_get_region (ap_obj);*/
   ZRegion * region = automation_track_get_region_before_pos (
     self, pos, ends_after, use_snapshots);
+  g_return_val_if_fail (IS_REGION_AND_NONNULL (region), 0.f);
   ArrangerObject * r_obj = (ArrangerObject *) region;
 
   /* if region ends before pos, assume pos is the

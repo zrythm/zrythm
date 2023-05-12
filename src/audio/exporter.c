@@ -328,7 +328,6 @@ export_audio (ExportSettings * info)
         &ditherer, audio_bit_depth_enum_to_int (info->depth));
     }
 
-  nframes_t nframes;
   g_return_val_if_fail (
     end_pos.frames >= 1 || start_pos.frames >= 0, -1);
   /*const unsigned long total_frames =*/
@@ -348,9 +347,9 @@ export_audio (ExportSettings * info)
     {
       /* calculate number of frames to process
        * this time */
-      double nticks =
+      const double nticks =
         end_pos.ticks - TRANSPORT->playhead_pos.ticks;
-      nframes = (nframes_t) MIN (
+      const nframes_t nframes = (nframes_t) MIN (
         (long) ceil (AUDIO_ENGINE->frames_per_tick * nticks),
         (long) AUDIO_ENGINE->block_length);
       g_return_val_if_fail (nframes > 0, -1);
@@ -365,11 +364,17 @@ export_audio (ExportSettings * info)
       router_start_cycle (ROUTER, time_nfo);
       engine_post_process (AUDIO_ENGINE, nframes, nframes);
 
-      /* by this time, the Master channel should
-       * have its Stereo Out ports filled.
-       * pass its buffers to the output */
+      /* by this time, the Master channel should have its
+       * Stereo Out ports filled. pass its buffers to the
+       * output */
       float tmp_l[nframes];
       float tmp_r[nframes];
+      /*
+       * bypass gcc analyzer bug
+       * https://gcc.gnu.org/bugzilla/show_bug.cgi?id=109789
+       */
+      dsp_fill (tmp_l, 0.f, nframes);
+      dsp_fill (tmp_r, 0.f, nframes);
       for (nframes_t i = 0; i < nframes; i++)
         {
           tmp_l[i] =

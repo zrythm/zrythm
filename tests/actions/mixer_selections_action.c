@@ -842,6 +842,7 @@ test_move_two_plugins_one_slot_up (void)
   /* add plugin to slot 0 (replacing current) */
   setting = test_plugin_manager_get_plugin_setting (
     MIDI_CC_MAP_BUNDLE, MIDI_CC_MAP_URI, false);
+  g_return_if_fail (setting);
   ret = mixer_selections_action_perform_create (
     PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0,
     setting, 1, NULL);
@@ -1205,6 +1206,7 @@ _test_replace_instrument (
     default:
       break;
     }
+  g_return_if_fail (setting);
 
   /* create an fx track from a plugin */
   test_plugin_manager_create_tracks_from_plugin (
