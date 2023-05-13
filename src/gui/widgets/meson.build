@@ -3,14 +3,12 @@
 
 widget_srcs = files([
   'active_hardware_mb.c',
-  'active_hardware_popover.c',
   'add_track_menu_button.c',
   'arranger.c',
   'arranger_draw.c',
   'arranger_object.c',
   'audio_editor_space.c',
   'audio_arranger.c',
-  'automatable_selector_popover.c',
   'automation_arranger.c',
   'automation_editor_space.c',
   'automation_mode.c',
@@ -104,10 +102,8 @@ widget_srcs = files([
   'plugin_browser.c',
   'plugin_properties_expander.c',
   'plugin_strip_expander.c',
-  'popover_menu_bin.c',
   'port_connection_row.c',
   'port_connections.c',
-  'port_connections_popover.c',
   'port_connections_tree.c',
   'ports_expander.c',
   'preferences.c',
@@ -118,14 +114,12 @@ widget_srcs = files([
   'region.c',
   'right_dock_edge.c',
   'route_target_selector.c',
-  'route_target_selector_popover.c',
   'ruler.c',
   'scale_object.c',
   'scale_selector_window.c',
   'selection_info.c',
   'slider_bar.c',
   'snap_grid.c',
-  'snap_grid_popover.c',
   'spectrum_analyzer.c',
   'splash.c',
   'text_expander.c',
@@ -142,7 +136,6 @@ widget_srcs = files([
   'top_bar.c',
   'track.c',
   'track_canvas.c',
-  'track_filter_popover.c',
   'track_input_expander.c',
   'track_properties_expander.c',
   'tracklist.c',
@@ -157,6 +150,7 @@ widget_srcs = files([
   ])
 
 subdir ('dialogs')
+subdir ('popovers')
 
 widgets_lib = static_library (
   'zrythm-widgets-lib',

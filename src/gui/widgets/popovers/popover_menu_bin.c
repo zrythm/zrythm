@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "gui/widgets/popover_menu_bin.h"
+#include "gui/widgets/popovers/popover_menu_bin.h"
 #include "utils/gtk.h"
 
 G_DEFINE_TYPE (

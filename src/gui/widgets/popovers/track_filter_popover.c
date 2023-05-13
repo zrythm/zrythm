@@ -10,7 +10,7 @@
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/item_factory.h"
 #include "gui/widgets/multi_selection.h"
-#include "gui/widgets/track_filter_popover.h"
+#include "gui/widgets/popovers/track_filter_popover.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/flags.h"

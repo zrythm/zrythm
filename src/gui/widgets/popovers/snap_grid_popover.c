@@ -3,8 +3,8 @@
 
 #include "audio/snap_grid.h"
 #include "gui/widgets/digital_meter.h"
+#include "gui/widgets/popovers/snap_grid_popover.h"
 #include "gui/widgets/snap_grid.h"
-#include "gui/widgets/snap_grid_popover.h"
 #include "project.h"
 #include "utils/gtk.h"
 

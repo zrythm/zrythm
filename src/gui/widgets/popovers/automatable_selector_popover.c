@@ -6,7 +6,7 @@
 #include "audio/engine.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/widgets/automatable_selector_popover.h"
+#include "gui/widgets/popovers/automatable_selector_popover.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/flags.h"

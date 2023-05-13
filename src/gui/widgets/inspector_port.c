@@ -13,7 +13,7 @@
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/dialogs/port_info.h"
 #include "gui/widgets/inspector_port.h"
-#include "gui/widgets/port_connections_popover.h"
+#include "gui/widgets/popovers/port_connections_popover.h"
 #include "project.h"
 #include "utils/error.h"
 #include "utils/flags.h"

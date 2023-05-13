@@ -7,7 +7,7 @@
 #include "audio/ext_port.h"
 #include "audio/hardware_processor.h"
 #include "gui/widgets/active_hardware_mb.h"
-#include "gui/widgets/active_hardware_popover.h"
+#include "gui/widgets/popovers/active_hardware_popover.h"
 #include "project.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"

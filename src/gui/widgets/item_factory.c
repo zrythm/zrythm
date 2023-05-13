@@ -9,7 +9,7 @@
 #include "gui/widgets/dialogs/project_assistant.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/item_factory.h"
-#include "gui/widgets/popover_menu_bin.h"
+#include "gui/widgets/popovers/popover_menu_bin.h"
 #include "plugins/collection.h"
 #include "plugins/collections.h"
 #include "plugins/plugin_manager.h"

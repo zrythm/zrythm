@@ -15,7 +15,7 @@
 #include "gui/widgets/live_waveform.h"
 #include "gui/widgets/modulator.h"
 #include "gui/widgets/modulator_inner.h"
-#include "gui/widgets/port_connections_popover.h"
+#include "gui/widgets/popovers/port_connections_popover.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/error.h"

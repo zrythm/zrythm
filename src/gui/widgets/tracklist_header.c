@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: © 2018-2019, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2022-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/tracklist.h"
-#include "gui/widgets/track_filter_popover.h"
+#include "gui/widgets/popovers/track_filter_popover.h"
 #include "gui/widgets/tracklist_header.h"
 #include "project.h"
 #include "utils/resources.h"

@@ -11,7 +11,7 @@
 #include "gui/widgets/knob_with_name.h"
 #include "gui/widgets/live_waveform.h"
 #include "gui/widgets/modulator_macro.h"
-#include "gui/widgets/port_connections_popover.h"
+#include "gui/widgets/popovers/port_connections_popover.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/arrays.h"

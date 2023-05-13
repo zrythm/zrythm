@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/active_hardware_mb.h"
-#include "gui/widgets/active_hardware_popover.h"
+#include "gui/widgets/popovers/active_hardware_popover.h"
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>

@@ -9,7 +9,7 @@
 #include "audio/tracklist.h"
 #include "gui/widgets/dialogs/port_selector_dialog.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/port_connections_popover.h"
+#include "gui/widgets/popovers/port_connections_popover.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "utils/error.h"
