@@ -13,6 +13,7 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/track.h"
 #include "project.h"
+#include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/error.h"
 #include "utils/flags.h"
@@ -133,9 +134,11 @@ tracklist_selections_add_track (
       && track_get_recording (track),
     track->channel != NULL);
 
-  /* if recording is not already on, turn these on */
+  /* if recording is not already on, auto-arm */
   if (
-    track_type_can_record (track->type)
+    ZRYTHM_HAVE_UI
+    && g_settings_get_boolean (S_UI, "track-autoarm")
+    && track_type_can_record (track->type)
     && !track_get_recording (track) && track->channel)
     {
       track_set_recording (track, true, fire_events);

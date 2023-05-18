@@ -3,6 +3,7 @@
 
 #include "audio/tracklist.h"
 #include "gui/widgets/popovers/track_filter_popover.h"
+#include "gui/widgets/popovers/tracklist_preferences_popover.h"
 #include "gui/widgets/tracklist_header.h"
 #include "project.h"
 #include "utils/resources.h"
@@ -42,12 +43,26 @@ create_filter_popup (
 }
 
 static void
+create_tracklist_preferences_popup (
+  GtkMenuButton * menu_btn,
+  gpointer        user_data)
+{
+  TracklistPreferencesPopoverWidget * tracklist_pref_popover =
+    tracklist_preferences_popover_widget_new ();
+  gtk_menu_button_set_popover (
+    menu_btn, GTK_WIDGET (tracklist_pref_popover));
+}
+
+static void
 tracklist_header_widget_init (TracklistHeaderWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_menu_button_set_create_popup_func (
     self->filter_menu_btn, create_filter_popup, self, NULL);
+  gtk_menu_button_set_create_popup_func (
+    self->tracklist_pref_btn,
+    create_tracklist_preferences_popup, self, NULL);
 
   /* hack - this will cause the tracklist to get filtered */
   TrackFilterPopoverWidget * track_filter_popover =
@@ -73,6 +88,7 @@ tracklist_header_widget_class_init (
 
   BIND_CHILD (track_count_lbl);
   BIND_CHILD (filter_menu_btn);
+  BIND_CHILD (tracklist_pref_btn);
 
 #undef BIND_CHILD
 }

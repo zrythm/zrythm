@@ -47,6 +47,12 @@
             </child>
           </object>
         </child>
+        <child>
+          <object class="GtkMenuButton" id="tracklist_pref_btn">
+            <property name="icon-name">gnome-icon-library-settings-symbolic</property>
+            <property name="tooltip-text" translatable="yes">Tracklist Settings</property>
+          </object>
+        </child>
       </object>
     </child>
   </template>

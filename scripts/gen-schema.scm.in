@@ -625,6 +625,10 @@ Args:
                  "true"
                  "Show disabled tracks"
                  "Whether to show disabled tracks when filtering.")
+               (make-schema-key
+                 "track-autoarm" "b" "true"
+                 "Auto-arm tracks"
+                 "Whether to automatically arm tracks for recording.")
              ))) ;; ui
 
          (schema-print

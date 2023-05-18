@@ -9,4 +9,5 @@ widget_srcs += files([
   'route_target_selector_popover.c',
   'snap_grid_popover.c',
   'track_filter_popover.c',
+  'tracklist_preferences_popover.c',
   ])

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2019, 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2019, 2022-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -32,10 +32,10 @@ G_DECLARE_FINAL_TYPE (
 
 typedef struct _TracklistHeaderWidget
 {
-  GtkWidget  parent_instance;
-  GtkLabel * track_count_lbl;
-
+  GtkWidget       parent_instance;
+  GtkLabel *      track_count_lbl;
   GtkMenuButton * filter_menu_btn;
+  GtkMenuButton * tracklist_pref_btn;
 } TracklistHeaderWidget;
 
 void

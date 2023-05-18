@@ -1282,9 +1282,9 @@ plugin_move_automation (
     {
       AutomationTrack * at = prev_atl->ats[i];
       Port * port = port_find_from_identifier (&at->port_id);
-      g_return_if_fail (IS_PORT (port));
       if (!port)
         continue;
+      g_return_if_fail (IS_PORT (port));
       if (port->id.owner_type == PORT_OWNER_TYPE_PLUGIN)
         {
           Plugin * port_pl = port_get_plugin (port, 1);

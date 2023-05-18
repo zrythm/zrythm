@@ -725,6 +725,7 @@ test_strict_cflags += [
   '-Werror=analyzer-file-leak',
   '-Werror=analyzer-use-of-uninitialized-value',
   '-Werror=analyzer-out-of-bounds',
+  '-Werror=analyzer-deref-before-check',
   '-Werror=nonnull',
   '-Werror=nonnull-compare',
   '-Werror=pointer-size',
@@ -870,8 +871,9 @@ gtk_dep = dependency (
     'introspection=disabled'],
   static: all_static)
 
+# note: 1.4 is currently unreleased
 libadwaita_dep = dependency (
-  'libadwaita-1', version: '>=1.2',
+  'libadwaita-1', version: '>=1.4',
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
     'vapi=false', 'tests=false',
