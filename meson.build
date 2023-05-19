@@ -871,9 +871,8 @@ gtk_dep = dependency (
     'introspection=disabled'],
   static: all_static)
 
-# note: 1.4 is currently unreleased
 libadwaita_dep = dependency (
-  'libadwaita-1', version: '>=1.4',
+  'libadwaita-1', version: '>=1.2',
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
     'vapi=false', 'tests=false',
