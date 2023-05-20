@@ -102,8 +102,29 @@ midi_note_draw (MidiNote * self, GtkSnapshot * snapshot)
     }
   else
     {
-      gtk_snapshot_append_color (
-        snapshot, &color, &graphene_rect);
+      /* TODO add option */
+      const bool draw_with_velocities = false;
+      if (draw_with_velocities)
+        {
+          /* draw full part */
+          GdkRGBA transparent_color = color;
+          transparent_color.alpha = 0.5f;
+          gtk_snapshot_append_color (
+            snapshot, &transparent_color, &graphene_rect);
+          /* draw velocity-filled part */
+          graphene_rect_t graphene_vel_rect = GRAPHENE_RECT_INIT (
+            (float) full_rect.x, (float) full_rect.y,
+            (float) full_rect.width
+              * ((float) self->vel->vel / 128.f),
+            (float) full_rect.height);
+          gtk_snapshot_append_color (
+            snapshot, &color, &graphene_vel_rect);
+        }
+      else
+        {
+          gtk_snapshot_append_color (
+            snapshot, &color, &graphene_rect);
+        }
     }
 
   /* draw text */
