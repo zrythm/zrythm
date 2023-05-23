@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -105,12 +105,12 @@ static const cyaml_strval_t curve_algorithm_strings[] = {
 typedef struct CurveOptions
 {
   int schema_version;
+
   /** Curve algorithm to use. */
   CurveAlgorithm algo;
 
-  /** Curviness between -1 and 1, where < 0 tils
-   * downwards, > 0 tilts upwards and 0 is a
-   * straight line. */
+  /** Curviness between -1 and 1, where < 0 tils downwards, > 0
+   * tilts upwards and 0 is a straight line. */
   double curviness;
 } CurveOptions;
 
@@ -154,6 +154,18 @@ void
 curve_algorithm_get_localized_name (
   CurveAlgorithm algo,
   char *         buf);
+
+gboolean
+curve_algorithm_get_g_settings_mapping (
+  GValue *   value,
+  GVariant * variant,
+  gpointer   user_data);
+
+GVariant *
+curve_algorithm_set_g_settings_mapping (
+  const GValue *       value,
+  const GVariantType * expected_type,
+  gpointer             user_data);
 
 /**
  * Returns the Y value on a curve specified by

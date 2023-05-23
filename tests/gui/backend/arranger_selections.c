@@ -88,7 +88,7 @@ test_get_last_object (void)
 
   ArrangerObject * last_obj =
     arranger_selections_get_last_object (
-      (ArrangerSelections *) MA_SELECTIONS);
+      (ArrangerSelections *) MA_SELECTIONS, true);
   g_assert_nonnull (last_obj);
   g_assert_true (last_obj == mn_obj);
 

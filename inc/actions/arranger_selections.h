@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -560,6 +560,7 @@ WARN_UNUSED_RESULT UndoableAction *
 arranger_selections_action_new_edit_midi_function (
   ArrangerSelections * sel_before,
   MidiFunctionType     midi_func_type,
+  MidiFunctionOpts     opts,
   GError **            error);
 
 /**
@@ -778,6 +779,7 @@ bool
 arranger_selections_action_perform_edit_midi_function (
   ArrangerSelections * sel_before,
   MidiFunctionType     midi_func_type,
+  MidiFunctionOpts     opts,
   GError **            error);
 
 bool

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -12,6 +12,8 @@
 #ifndef __AUDIO_MIDI_FUNCTION_H__
 #define __AUDIO_MIDI_FUNCTION_H__
 
+#include "audio/curve.h"
+#include "utils/types.h"
 #include "utils/yaml.h"
 
 typedef struct ArrangerSelections ArrangerSelections;
@@ -45,11 +47,35 @@ static const cyaml_strval_t midi_function_type_strings[] = {
   { __ ("Strum"),    MIDI_FUNCTION_STRUM          },
 };
 
+typedef struct MidiFunctionOpts
+{
+  midi_byte_t start_vel;
+  midi_byte_t end_vel;
+
+  double amount;
+
+  CurveAlgorithm curve_algo;
+  double         curviness;
+
+} MidiFunctionOpts;
+
 static inline const char *
 midi_function_type_to_string (MidiFunctionType type)
 {
   return midi_function_type_strings[type].str;
 }
+
+/**
+ * Returns a string identifier for the type.
+ */
+char *
+midi_function_type_to_string_id (MidiFunctionType type);
+
+/**
+ * Returns a string identifier for the type.
+ */
+MidiFunctionType
+midi_function_string_id_to_type (const char * id);
 
 /**
  * Applies the given action to the given selections.
@@ -61,6 +87,7 @@ int
 midi_function_apply (
   ArrangerSelections * sel,
   MidiFunctionType     type,
+  MidiFunctionOpts     opts,
   GError **            error);
 
 /**

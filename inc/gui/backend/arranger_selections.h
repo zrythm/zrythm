@@ -227,10 +227,14 @@ arranger_selections_get_first_object (
 
 /**
  * Gets last object.
+ *
+ * @param ends_last Whether to get the object that ends last,
+ *   otherwise the object that starts last.
  */
 NONNULL ArrangerObject *
 arranger_selections_get_last_object (
-  const ArrangerSelections * self);
+  const ArrangerSelections * self,
+  bool                       ends_last);
 
 /**
  * Pastes the given selections to the given

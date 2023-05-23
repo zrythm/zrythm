@@ -633,6 +633,28 @@ Args:
 
          (schema-print
            (make-schema
+             "ui.midi-functions.crescendo"
+             (list
+               (make-schema-key
+                 "start-velocity" "i" "1"
+                 "Start velocity"
+                 "Start velocity.")
+               (make-schema-key
+                 "end-velocity" "i" "127"
+                 "End velocity"
+                 "End velocity.")
+               (make-schema-key-with-enum
+                 "curve-algo" "curve-algorithm"
+                 "superellipse" "Curve algorithm"
+                 "Curve algorithm.")
+               (make-schema-key
+                 "curviness" "i" "50"
+                 "Curviness"
+                 "Curviness percentage.")
+             ))) ;; ui.midi-functions.crescendo
+
+         (schema-print
+           (make-schema
              "ui.plugin-browser"
              (list
                (make-schema-key-with-enum

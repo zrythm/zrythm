@@ -1117,10 +1117,14 @@ arranger_selections_get_first_object (
 
 /**
  * Gets last object.
+ *
+ * @param ends_last Whether to get the object that ends last,
+ *   otherwise the object that starts last.
  */
 ArrangerObject *
 arranger_selections_get_last_object (
-  const ArrangerSelections * self)
+  const ArrangerSelections * self,
+  bool                       ends_last)
 {
   int i;
 
@@ -1134,7 +1138,9 @@ arranger_selections_get_last_object (
       cc *             sc = (sel)->sc##s[i]; \
       ArrangerObject * obj = (ArrangerObject *) sc; \
       g_warn_if_fail (obj); \
-      if (arranger_object_type_has_length (obj->type)) \
+      if ( \
+        arranger_object_type_has_length (obj->type) \
+        && ends_last) \
         { \
           if (position_is_after (&obj->end_pos, &pos)) \
             { \

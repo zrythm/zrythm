@@ -1749,7 +1749,7 @@ arranger_widget_on_key_press (
 
               /* get latest object */
               ArrangerObject * obj =
-                arranger_selections_get_last_object (sel);
+                arranger_selections_get_last_object (sel, true);
 
               /* scroll right if needed */
               arranger_widget_scroll_until_obj (

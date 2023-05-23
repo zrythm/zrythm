@@ -56,6 +56,7 @@
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/dialogs/export_midi_file_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
+#include "gui/widgets/dialogs/midi_function_dialog.h"
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "gui/widgets/dialogs/port_info.h"
 #include "gui/widgets/dialogs/project_assistant.h"
@@ -2409,7 +2410,9 @@ DEFINE_SIMPLE (change_state_editor_playhead_follow)
  * functions.
  */
 static void
-do_midi_func (MidiFunctionType type)
+do_midi_func (
+  const MidiFunctionType type,
+  const MidiFunctionOpts opts)
 {
   ArrangerSelections * sel =
     (ArrangerSelections *) MA_SELECTIONS;
@@ -2419,15 +2422,10 @@ do_midi_func (MidiFunctionType type)
       return;
     }
 
-  GError * err = NULL;
-  bool     ret =
-    arranger_selections_action_perform_edit_midi_function (
-      sel, type, &err);
-  if (!ret)
-    {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to apply MIDI function"));
-    }
+  MidiFunctionDialogWidget * dialog =
+    midi_function_dialog_widget_new (
+      GTK_WINDOW (MAIN_WINDOW), type);
+  gtk_window_present (GTK_WINDOW (dialog));
 }
 
 /**
@@ -2543,46 +2541,50 @@ DEFINE_SIMPLE (activate_editor_function)
   if (!region)
     return;
 
+  MidiFunctionOpts mopts = {};
+
   switch (region->id.type)
     {
     case REGION_TYPE_MIDI:
       {
         if (string_is_equal (str, "crescendo"))
           {
-            do_midi_func (MIDI_FUNCTION_CRESCENDO);
+            do_midi_func (MIDI_FUNCTION_CRESCENDO, mopts);
           }
         else if (string_is_equal (str, "current"))
           {
             do_midi_func (
-              g_settings_get_int (S_UI, "midi-function"));
+              g_settings_get_int (S_UI, "midi-function"),
+              mopts);
           }
         else if (string_is_equal (str, "flam"))
           {
-            do_midi_func (MIDI_FUNCTION_FLAM);
+            do_midi_func (MIDI_FUNCTION_FLAM, mopts);
           }
         else if (string_is_equal (str, "flip-horizontal"))
           {
-            do_midi_func (MIDI_FUNCTION_FLIP_HORIZONTAL);
+            do_midi_func (
+              MIDI_FUNCTION_FLIP_HORIZONTAL, mopts);
           }
         else if (string_is_equal (str, "flip-vertical"))
           {
-            do_midi_func (MIDI_FUNCTION_FLIP_VERTICAL);
+            do_midi_func (MIDI_FUNCTION_FLIP_VERTICAL, mopts);
           }
         else if (string_is_equal (str, "legato"))
           {
-            do_midi_func (MIDI_FUNCTION_LEGATO);
+            do_midi_func (MIDI_FUNCTION_LEGATO, mopts);
           }
         else if (string_is_equal (str, "portato"))
           {
-            do_midi_func (MIDI_FUNCTION_PORTATO);
+            do_midi_func (MIDI_FUNCTION_PORTATO, mopts);
           }
         else if (string_is_equal (str, "staccato"))
           {
-            do_midi_func (MIDI_FUNCTION_STACCATO);
+            do_midi_func (MIDI_FUNCTION_STACCATO, mopts);
           }
         else if (string_is_equal (str, "strum"))
           {
-            do_midi_func (MIDI_FUNCTION_STRUM);
+            do_midi_func (MIDI_FUNCTION_STRUM, mopts);
           }
         else
           {
@@ -2618,19 +2620,19 @@ DEFINE_SIMPLE (activate_editor_function)
         bool done = false;
         if (string_is_equal (str, "current"))
           {
-            AudioFunctionOpts opts;
+            AudioFunctionOpts aopts;
             AudioFunctionType type =
               g_settings_get_int (S_UI, "audio-function");
             switch (type)
               {
               case AUDIO_FUNCTION_PITCH_SHIFT:
-                opts.amount = g_settings_get_double (
+                aopts.amount = g_settings_get_double (
                   S_UI, "audio-function-pitch-shift-ratio");
                 break;
               default:
                 break;
               }
-            do_audio_func (type, opts, NULL);
+            do_audio_func (type, aopts, NULL);
             done = true;
           }
 
@@ -2656,8 +2658,8 @@ DEFINE_SIMPLE (activate_editor_function)
                     return;
                   default:
                     {
-                      AudioFunctionOpts opts = {};
-                      do_audio_func (i, opts, NULL);
+                      AudioFunctionOpts aopts = {};
+                      do_audio_func (i, aopts, NULL);
                       break;
                     }
                   }
@@ -2695,9 +2697,9 @@ DEFINE_SIMPLE (activate_editor_function_lv2)
       break;
     case REGION_TYPE_AUDIO:
       {
-        AudioFunctionOpts opts = {};
+        AudioFunctionOpts aopts = {};
         do_audio_func (
-          AUDIO_FUNCTION_CUSTOM_PLUGIN, opts, str);
+          AUDIO_FUNCTION_CUSTOM_PLUGIN, aopts, str);
       }
       break;
     default:
@@ -2976,11 +2978,11 @@ DEFINE_SIMPLE (activate_nudge_selection)
 
   if (sel->type == ARRANGER_SELECTIONS_TYPE_AUDIO)
     {
-      AudioFunctionOpts opts = {};
+      AudioFunctionOpts aopts = {};
       do_audio_func (
         left ? AUDIO_FUNCTION_NUDGE_LEFT
              : AUDIO_FUNCTION_NUDGE_RIGHT,
-        opts, NULL);
+        aopts, NULL);
       return;
     }
 
@@ -3034,14 +3036,14 @@ DEFINE_SIMPLE (activate_timeline_function)
 {
   AudioFunctionType type =
     (AudioFunctionType) g_variant_get_int32 (variant);
-  AudioFunctionOpts opts;
+  AudioFunctionOpts aopts;
   /* FIXME need to show a dialog here too to ask for the
    * pitch shift amount
    * TODO refactor code to avoid duplicating the code here */
   switch (type)
     {
     case AUDIO_FUNCTION_PITCH_SHIFT:
-      opts.amount = g_settings_get_double (
+      aopts.amount = g_settings_get_double (
         S_UI, "audio-function-pitch-shift-ratio");
       break;
     default:
@@ -3075,7 +3077,7 @@ DEFINE_SIMPLE (activate_timeline_function)
       GError * err = NULL;
       bool     ret =
         arranger_selections_action_perform_edit_audio_function (
-          (ArrangerSelections *) sel, type, opts, NULL, &err);
+          (ArrangerSelections *) sel, type, aopts, NULL, &err);
       if (!ret)
         {
           HANDLE_ERROR (

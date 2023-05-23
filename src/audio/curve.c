@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -30,8 +30,10 @@
 #include <math.h>
 
 #include "audio/curve.h"
+#include "utils/debug.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/string.h"
 
 #include <glib/gi18n.h>
 
@@ -73,6 +75,70 @@ curve_algorithm_get_localized_name (
   return;
 }
 
+static const char *
+curve_algorithm_get_string_id (CurveAlgorithm algo)
+{
+  switch (algo)
+    {
+    case CURVE_ALGORITHM_EXPONENT:
+      return "exponent";
+    case CURVE_ALGORITHM_SUPERELLIPSE:
+      return "superellipse";
+    case CURVE_ALGORITHM_VITAL:
+      return "vital";
+    case CURVE_ALGORITHM_PULSE:
+      return "pulse";
+    case CURVE_ALGORITHM_LOGARITHMIC:
+      return "logarithmic";
+    default:
+      return "invalid";
+    }
+}
+
+static CurveAlgorithm
+curve_algorithm_get_from_string_id (const char * str)
+{
+  if (string_is_equal (str, "exponent"))
+    return CURVE_ALGORITHM_EXPONENT;
+  else if (string_is_equal (str, "superellipse"))
+    return CURVE_ALGORITHM_SUPERELLIPSE;
+  else if (string_is_equal (str, "vital"))
+    return CURVE_ALGORITHM_VITAL;
+  else if (string_is_equal (str, "pulse"))
+    return CURVE_ALGORITHM_PULSE;
+  else if (string_is_equal (str, "logarithmic"))
+    return CURVE_ALGORITHM_LOGARITHMIC;
+
+  g_return_val_if_reached (CURVE_ALGORITHM_SUPERELLIPSE);
+}
+
+gboolean
+curve_algorithm_get_g_settings_mapping (
+  GValue *   value,
+  GVariant * variant,
+  gpointer   user_data)
+{
+  const char * str = g_variant_get_string (variant, NULL);
+
+  guint val = curve_algorithm_get_from_string_id (str);
+  g_value_set_uint (value, val);
+
+  return true;
+}
+
+GVariant *
+curve_algorithm_set_g_settings_mapping (
+  const GValue *       value,
+  const GVariantType * expected_type,
+  gpointer             user_data)
+{
+  guint val = g_value_get_uint (value);
+
+  const char * str = curve_algorithm_get_string_id (val);
+
+  return g_variant_new_string (str);
+}
+
 /**
  * Returns the Y value on a curve specified by
  * \ref algo.
@@ -87,7 +153,8 @@ curve_get_normalized_y (
   CurveOptions * opts,
   int            start_higher)
 {
-  g_return_val_if_fail (x >= 0.0 && x <= 1.0, 0.0);
+  z_return_val_if_fail_cmp (x, >=, 0.0, 0.0);
+  z_return_val_if_fail_cmp (x, <=, 1.0, 0.0);
 
   int curve_up = opts->curviness >= 0;
 

@@ -549,14 +549,15 @@ UndoableAction *
 arranger_selections_action_new_edit_midi_function (
   ArrangerSelections * sel_before,
   MidiFunctionType     midi_func_type,
+  MidiFunctionOpts     opts,
   GError **            error)
 {
   ArrangerSelections * sel_after =
     arranger_selections_clone (sel_before);
 
   GError * err = NULL;
-  int      ret =
-    midi_function_apply (sel_after, midi_func_type, &err);
+  int      ret = midi_function_apply (
+    sel_after, midi_func_type, opts, &err);
   if (ret != 0)
     {
       PROPAGATE_PREFIXED_ERROR (
@@ -1048,11 +1049,12 @@ bool
 arranger_selections_action_perform_edit_midi_function (
   ArrangerSelections * sel_before,
   MidiFunctionType     midi_func_type,
+  MidiFunctionOpts     opts,
   GError **            error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
     arranger_selections_action_new_edit_midi_function, error,
-    sel_before, midi_func_type, error);
+    sel_before, midi_func_type, opts, error);
 }
 
 bool
