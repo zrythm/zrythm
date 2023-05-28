@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 copy_files = [
@@ -7,6 +7,7 @@ copy_files = [
   'intro.rst',
   'preferences.rst',
   'shortcuts.rst',
+  'ui-scaling-and-wayland.rst',
   ]
 
 foreach f : copy_files

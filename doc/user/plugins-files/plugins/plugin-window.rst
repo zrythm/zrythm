@@ -8,10 +8,9 @@ Plugin Window
 
 Custom UIs
 ----------
-When Plugin UIs are opened, a window such
-as the following will be displayed, if the
-plugin ships with its own UI. This window may
-contain additions by Zrythm (such as
+When Plugin UIs are opened, a window such as the following
+will be displayed, if the plugin ships with its own UI. This
+window may contain additions by Zrythm (such as
 `File` and `Presets` menus).
 
 .. image:: /_static/img/della_plugin_window.png
@@ -19,21 +18,18 @@ contain additions by Zrythm (such as
 
 Generic UIs
 -----------
-If the plugin does not ship with its own UI,
-the following generic UI will be generated
-for it.
+If the plugin does not ship with its own UI, the following
+generic UI will be generated for it.
 
 .. image:: /_static/img/haas_plugin_window.png
    :align: center
 
 Bridging
 --------
-Most plugins are instantiated in the same process
-as Zrythm. This has the advantage that :term:`DSP`
-is very fast, however, some plugin UIs are not
-compatible with Zrythm
-and need to be bridged (ie, run as separate
-processes).
+Most plugins are instantiated in the same process as Zrythm.
+This has the advantage that :term:`DSP` is very fast, however,
+some plugin UIs are not compatible with Zrythm and need to be
+bridged (ie, run as separate processes).
 
 .. note:: When it is possible to bridge only the UI,
   Zrythm will do so, and this will not have any
