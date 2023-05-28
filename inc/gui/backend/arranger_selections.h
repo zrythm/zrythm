@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -168,6 +168,11 @@ arranger_selections_set_from_selections (
 NONNULL void
 arranger_selections_sort_by_indices (
   ArrangerSelections * sel,
+  int                  desc);
+
+NONNULL void
+arranger_selections_sort_by_positions (
+  ArrangerSelections * self,
   int                  desc);
 
 /**

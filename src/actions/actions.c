@@ -2422,10 +2422,31 @@ do_midi_func (
       return;
     }
 
-  MidiFunctionDialogWidget * dialog =
-    midi_function_dialog_widget_new (
-      GTK_WINDOW (MAIN_WINDOW), type);
-  gtk_window_present (GTK_WINDOW (dialog));
+  switch (type)
+    {
+      /* no options needed for these */
+    case MIDI_FUNCTION_FLIP_HORIZONTAL:
+    case MIDI_FUNCTION_FLIP_VERTICAL:
+      {
+        GError * err = NULL;
+        bool     ret =
+          arranger_selections_action_perform_edit_midi_function (
+            sel, type, opts, &err);
+        if (!ret)
+          {
+            HANDLE_ERROR (
+              err, "%s", _ ("Failed to apply MIDI function"));
+          }
+      }
+      break;
+    default:
+      {
+        MidiFunctionDialogWidget * dialog =
+          midi_function_dialog_widget_new (
+            GTK_WINDOW (MAIN_WINDOW), type);
+        gtk_window_present (GTK_WINDOW (dialog));
+      }
+    }
 }
 
 /**

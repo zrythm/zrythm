@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -246,6 +246,9 @@ HOT NONNULL void
 position_from_ticks (Position * pos, double ticks);
 
 NONNULL void
+position_from_ms (Position * pos, const signed_ms_t ms);
+
+NONNULL void
 position_from_bars (Position * pos, int bars);
 
 HOT NONNULL void
@@ -258,10 +261,13 @@ signed_ms_t
 position_to_ms (const Position * pos);
 
 signed_frame_t
-position_ms_to_frames (const signed_ms_t ms);
+position_ms_to_frames (const double ms);
+
+double
+position_ms_to_ticks (const double ms);
 
 void
-position_add_ms (Position * pos, const signed_ms_t ms);
+position_add_ms (Position * pos, const double ms);
 
 void
 position_add_minutes (Position * pos, int mins);

@@ -2521,11 +2521,20 @@ do_or_undo_edit (
                     }
                   break;
                 case ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION:
+                  obj->pos = own_dest_obj->pos;
+                  obj->end_pos = own_dest_obj->end_pos;
+                  obj->clip_start_pos =
+                    own_dest_obj->clip_start_pos;
+                  obj->loop_start_pos =
+                    own_dest_obj->loop_start_pos;
+                  obj->loop_end_pos =
+                    own_dest_obj->loop_end_pos;
                   switch (obj->type)
                     {
                     case ARRANGER_OBJECT_TYPE_MIDI_NOTE:
                       {
                         SET_PRIMITIVE (MidiNote, muted);
+                        SET_PRIMITIVE (MidiNote, val);
 
                         /* set velocity and cache vel */
                         MidiNote * mn = (MidiNote *) obj;

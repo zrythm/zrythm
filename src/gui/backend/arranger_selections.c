@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
@@ -708,6 +708,74 @@ arranger_selections_sort_by_indices (
         cs->chord_objects, (size_t) cs->num_chord_objects,
         sizeof (ChordObject *),
         desc ? sort_chords_desc : sort_chords);
+      break;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+}
+
+static int
+sort_by_pos_func (const void * _a, const void * _b)
+{
+  ArrangerObject * a = *(ArrangerObject * const *) _a;
+  ArrangerObject * b = *(ArrangerObject * const *) _b;
+  return a->pos.ticks - b->pos.ticks >= 0.0;
+}
+
+static int
+sort_by_pos_desc_func (const void * _a, const void * _b)
+{
+  return -sort_by_pos_func (_a, _b);
+}
+
+void
+arranger_selections_sort_by_positions (
+  ArrangerSelections * self,
+  int                  desc)
+{
+  TimelineSelections *     ts;
+  ChordSelections *        cs;
+  MidiArrangerSelections * mas;
+  AutomationSelections *   as;
+  switch (self->type)
+    {
+    case TYPE (TIMELINE):
+      ts = (TimelineSelections *) self;
+      qsort (
+        ts->regions, (size_t) ts->num_regions,
+        sizeof (ZRegion *),
+        desc ? sort_by_pos_desc_func : sort_by_pos_func);
+      qsort (
+        ts->scale_objects, (size_t) ts->num_scale_objects,
+        sizeof (ScaleObject *),
+        desc ? sort_by_pos_desc_func : sort_by_pos_func);
+      qsort (
+        ts->markers, (size_t) ts->num_markers,
+        sizeof (Marker *),
+        desc ? sort_by_pos_desc_func : sort_by_pos_func);
+      break;
+    case TYPE (MIDI):
+      mas = (MidiArrangerSelections *) self;
+      qsort (
+        mas->midi_notes, (size_t) mas->num_midi_notes,
+        sizeof (MidiNote *),
+        desc ? sort_by_pos_desc_func : sort_by_pos_func);
+      break;
+    case TYPE (AUTOMATION):
+      as = (AutomationSelections *) self;
+      qsort (
+        as->automation_points,
+        (size_t) as->num_automation_points,
+        sizeof (AutomationPoint *),
+        desc ? sort_by_pos_desc_func : sort_by_pos_func);
+      break;
+    case TYPE (CHORD):
+      cs = (ChordSelections *) self;
+      qsort (
+        cs->chord_objects, (size_t) cs->num_chord_objects,
+        sizeof (ChordObject *),
+        desc ? sort_by_pos_desc_func : sort_by_pos_func);
       break;
     default:
       g_warn_if_reached ();

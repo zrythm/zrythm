@@ -51,7 +51,9 @@ typedef struct MidiFunctionOpts
 {
   midi_byte_t start_vel;
   midi_byte_t end_vel;
+  midi_byte_t vel;
 
+  double time;
   double amount;
 
   CurveAlgorithm curve_algo;

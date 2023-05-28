@@ -655,6 +655,20 @@ Args:
 
          (schema-print
            (make-schema
+             "ui.midi-functions.flam"
+             (list
+               (make-schema-key
+                 "time" "d" "10"
+                 "Time"
+                 "Time (ms).")
+               (make-schema-key
+                 "velocity" "i" "127"
+                 "velocity"
+                 "Velocity of the added note.")
+             ))) ;; ui.midi-functions.flam
+
+         (schema-print
+           (make-schema
              "ui.plugin-browser"
              (list
                (make-schema-key-with-enum

@@ -56,6 +56,12 @@ midi_function_dialog_widget_get_opts (
           * 2.0
         - 1.0;
       break;
+    case MIDI_FUNCTION_FLAM:
+      opts->time =
+        g_settings_get_double (self->settings, "time");
+      opts->vel =
+        g_settings_get_int (self->settings, "velocity");
+      break;
     default:
       g_warning ("unimplemented");
       break;
@@ -152,6 +158,48 @@ init_fields (MidiFunctionDialogWidget * self)
           g_settings_get_int (self->settings, "curviness"));
         g_settings_bind (
           self->settings, "curviness", spin_btn, "value",
+          G_SETTINGS_BIND_DEFAULT);
+        gtk_widget_set_valign (
+          GTK_WIDGET (spin_btn), GTK_ALIGN_CENTER);
+        adw_action_row_add_suffix (
+          ADW_ACTION_ROW (row), GTK_WIDGET (spin_btn));
+        adw_preferences_group_add (pgroup, GTK_WIDGET (row));
+      }
+      break;
+    case MIDI_FUNCTION_FLAM:
+      {
+        adw_preferences_group_set_description (
+          pgroup, _ ("Note: Flam is currently unimplemented"));
+
+        row = ADW_ACTION_ROW (adw_action_row_new ());
+        adw_preferences_row_set_title (
+          ADW_PREFERENCES_ROW (row), _ ("Time"));
+        GtkSpinButton * spin_btn = GTK_SPIN_BUTTON (
+          gtk_spin_button_new_with_range (-100, 100, 1));
+        gtk_spin_button_set_digits (spin_btn, 0);
+        gtk_spin_button_set_value (
+          spin_btn,
+          g_settings_get_double (self->settings, "time"));
+        g_settings_bind (
+          self->settings, "time", spin_btn, "value",
+          G_SETTINGS_BIND_DEFAULT);
+        gtk_widget_set_valign (
+          GTK_WIDGET (spin_btn), GTK_ALIGN_CENTER);
+        adw_action_row_add_suffix (
+          ADW_ACTION_ROW (row), GTK_WIDGET (spin_btn));
+        adw_preferences_group_add (pgroup, GTK_WIDGET (row));
+
+        row = ADW_ACTION_ROW (adw_action_row_new ());
+        adw_preferences_row_set_title (
+          ADW_PREFERENCES_ROW (row), _ ("Velocity"));
+        spin_btn = GTK_SPIN_BUTTON (
+          gtk_spin_button_new_with_range (1, 127, 1));
+        gtk_spin_button_set_digits (spin_btn, 0);
+        gtk_spin_button_set_value (
+          spin_btn,
+          g_settings_get_int (self->settings, "velocity"));
+        g_settings_bind (
+          self->settings, "velocity", spin_btn, "value",
           G_SETTINGS_BIND_DEFAULT);
         gtk_widget_set_valign (
           GTK_WIDGET (spin_btn), GTK_ALIGN_CENTER);

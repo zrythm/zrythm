@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <inttypes.h>
@@ -152,15 +152,25 @@ position_to_ms (const Position * pos)
 }
 
 signed_frame_t
-position_ms_to_frames (const signed_ms_t ms)
+position_ms_to_frames (const double ms)
 {
   return math_round_double_to_signed_frame_t (
-    ((double) ms / 1000.0)
-    * (double) AUDIO_ENGINE->sample_rate);
+    (ms / 1000.0) * (double) AUDIO_ENGINE->sample_rate);
+}
+
+double
+position_ms_to_ticks (const double ms)
+{
+  /* FIXME simplify - this is a roundabout way not suitable
+   * for realtime calculations */
+  const signed_frame_t frames = position_ms_to_frames (ms);
+  Position             pos;
+  position_from_frames (&pos, frames);
+  return pos.ticks;
 }
 
 void
-position_add_ms (Position * pos, const signed_ms_t ms)
+position_add_ms (Position * pos, const double ms)
 {
   signed_frame_t frames = position_ms_to_frames (ms);
   position_add_frames (pos, frames);
@@ -585,6 +595,13 @@ position_from_frames (
   pos->schema_version = POSITION_SCHEMA_VERSION;
   pos->frames = frames;
   position_update_ticks_from_frames (pos, 0.0);
+}
+
+void
+position_from_ms (Position * pos, const signed_ms_t ms)
+{
+  position_init (pos);
+  position_add_ms (pos, ms);
 }
 
 void
