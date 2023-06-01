@@ -208,6 +208,24 @@ midi_function_apply (
           }
       }
       break;
+    case MIDI_FUNCTION_LEGATO:
+      {
+        arranger_selections_sort_by_positions (sel, false);
+        for (int i = 0; i < mas->num_midi_notes - 1; i++)
+          {
+            MidiNote *       mn = mas->midi_notes[i];
+            ArrangerObject * mn_obj = (ArrangerObject *) mn;
+            MidiNote *       next_mn = mas->midi_notes[i + 1];
+            position_set_to_pos (
+              &mn->base.end_pos, &next_mn->base.pos);
+            /* make sure the note has a length */
+            if (mn_obj->end_pos.ticks - mn_obj->pos.ticks < 1.0)
+              {
+                position_add_ticks (&mn_obj->end_pos, 1.0);
+              }
+          }
+      }
+      break;
     default:
       break;
     }

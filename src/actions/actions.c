@@ -2427,6 +2427,7 @@ do_midi_func (
       /* no options needed for these */
     case MIDI_FUNCTION_FLIP_HORIZONTAL:
     case MIDI_FUNCTION_FLIP_VERTICAL:
+    case MIDI_FUNCTION_LEGATO:
       {
         GError * err = NULL;
         bool     ret =
