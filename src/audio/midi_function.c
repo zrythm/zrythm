@@ -217,12 +217,47 @@ midi_function_apply (
             ArrangerObject * mn_obj = (ArrangerObject *) mn;
             MidiNote *       next_mn = mas->midi_notes[i + 1];
             position_set_to_pos (
-              &mn->base.end_pos, &next_mn->base.pos);
+              &mn_obj->end_pos, &next_mn->base.pos);
             /* make sure the note has a length */
             if (mn_obj->end_pos.ticks - mn_obj->pos.ticks < 1.0)
               {
-                position_add_ticks (&mn_obj->end_pos, 1.0);
+                position_add_ms (&mn_obj->end_pos, 40.0);
               }
+          }
+      }
+      break;
+    case MIDI_FUNCTION_PORTATO:
+      {
+        /* do the same as legato but leave some space between
+         * the notes */
+        arranger_selections_sort_by_positions (sel, false);
+        for (int i = 0; i < mas->num_midi_notes - 1; i++)
+          {
+            MidiNote *       mn = mas->midi_notes[i];
+            ArrangerObject * mn_obj = (ArrangerObject *) mn;
+            MidiNote *       next_mn = mas->midi_notes[i + 1];
+            position_set_to_pos (
+              &mn_obj->end_pos, &next_mn->base.pos);
+            position_add_ms (&mn_obj->end_pos, -80.0);
+            /* make sure the note has a length */
+            if (mn_obj->end_pos.ticks - mn_obj->pos.ticks < 1.0)
+              {
+                position_set_to_pos (
+                  &mn_obj->end_pos, &next_mn->base.pos);
+                position_add_ms (&mn_obj->end_pos, 40.0);
+              }
+          }
+      }
+      break;
+    case MIDI_FUNCTION_STACCATO:
+      {
+        for (int i = 0; i < mas->num_midi_notes - 1; i++)
+          {
+            MidiNote *       mn = mas->midi_notes[i];
+            ArrangerObject * mn_obj = (ArrangerObject *) mn;
+            position_set_to_pos (
+              &mn_obj->end_pos, &mn_obj->pos);
+            position_add_ms (&mn_obj->end_pos, 140.0);
           }
       }
       break;

@@ -2428,6 +2428,8 @@ do_midi_func (
     case MIDI_FUNCTION_FLIP_HORIZONTAL:
     case MIDI_FUNCTION_FLIP_VERTICAL:
     case MIDI_FUNCTION_LEGATO:
+    case MIDI_FUNCTION_PORTATO:
+    case MIDI_FUNCTION_STACCATO:
       {
         GError * err = NULL;
         bool     ret =
