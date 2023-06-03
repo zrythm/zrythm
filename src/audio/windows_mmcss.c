@@ -156,10 +156,10 @@ windows_mmcss_set_thread_characteristics (
 
       switch (error)
         {
-        case ERROR_INVALID_TASK_INDEX:
+        case MMCSS_ERROR_INVALID_TASK_INDEX:
           g_critical ("MMCSS: Invalid Task Index");
           break;
-        case ERROR_INVALID_TASK_NAME:
+        case MMCSS_ERROR_INVALID_TASK_NAME:
           g_critical ("MMCSS: Invalid Task Name");
           break;
         case ERROR_PRIVILEGE_NOT_HELD:
