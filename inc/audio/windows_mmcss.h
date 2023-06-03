@@ -42,7 +42,7 @@ typedef enum WindowsMMCSSErrorCode
 {
   ERROR_INVALID_TASK_NAME = 1550,
   ERROR_INVALID_TASK_INDEX = 1551
-};
+} WindowsMMCSSErrorCode;
 
 int
 windows_mmcss_initialize (void);
