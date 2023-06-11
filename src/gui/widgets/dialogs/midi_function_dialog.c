@@ -62,6 +62,20 @@ midi_function_dialog_widget_get_opts (
       opts->vel =
         g_settings_get_int (self->settings, "velocity");
       break;
+    case MIDI_FUNCTION_STRUM:
+      opts->ascending =
+        g_settings_get_boolean (self->settings, "ascending");
+      opts->time =
+        g_settings_get_double (self->settings, "total-time");
+      opts->curve_algo =
+        g_settings_get_enum (self->settings, "curve-algo");
+      opts->curviness =
+        ((double) g_settings_get_int (
+           self->settings, "curviness")
+         / 100.0)
+          * 2.0
+        - 1.0;
+      break;
     default:
       g_warning ("unimplemented");
       break;
@@ -200,6 +214,89 @@ init_fields (MidiFunctionDialogWidget * self)
           g_settings_get_int (self->settings, "velocity"));
         g_settings_bind (
           self->settings, "velocity", spin_btn, "value",
+          G_SETTINGS_BIND_DEFAULT);
+        gtk_widget_set_valign (
+          GTK_WIDGET (spin_btn), GTK_ALIGN_CENTER);
+        adw_action_row_add_suffix (
+          ADW_ACTION_ROW (row), GTK_WIDGET (spin_btn));
+        adw_preferences_group_add (pgroup, GTK_WIDGET (row));
+      }
+      break;
+    case MIDI_FUNCTION_STRUM:
+      {
+        row = ADW_ACTION_ROW (adw_action_row_new ());
+        adw_preferences_row_set_title (
+          ADW_PREFERENCES_ROW (row), _ ("Ascending"));
+        GtkSwitch * s = GTK_SWITCH (gtk_switch_new ());
+        gtk_switch_set_active (
+          s,
+          g_settings_get_boolean (self->settings, "ascending"));
+        g_settings_bind (
+          self->settings, "ascending", s, "active",
+          G_SETTINGS_BIND_DEFAULT);
+        gtk_widget_set_valign (
+          GTK_WIDGET (s), GTK_ALIGN_CENTER);
+        adw_action_row_add_suffix (
+          ADW_ACTION_ROW (row), GTK_WIDGET (s));
+        adw_preferences_group_add (pgroup, GTK_WIDGET (row));
+
+        row = ADW_ACTION_ROW (adw_combo_row_new ());
+        adw_preferences_row_set_title (
+          ADW_PREFERENCES_ROW (row), _ ("Curve"));
+        GtkStringList * slist = gtk_string_list_new (NULL);
+        for (CurveAlgorithm i = CURVE_ALGORITHM_EXPONENT;
+             i < NUM_CURVE_ALGORITHMS; i++)
+          {
+            CurveAlgorithm algo = i;
+            char           buf[600];
+            curve_algorithm_get_localized_name (algo, buf);
+            gtk_string_list_append (slist, buf);
+          }
+        adw_combo_row_set_model (
+          ADW_COMBO_ROW (row), G_LIST_MODEL (slist));
+        adw_combo_row_set_selected (
+          ADW_COMBO_ROW (row),
+          (guint) g_settings_get_enum (
+            self->settings, "curve-algo"));
+        g_settings_bind_with_mapping (
+          self->settings, "curve-algo", row, "selected",
+          G_SETTINGS_BIND_DEFAULT,
+          (GSettingsBindGetMapping)
+            curve_algorithm_get_g_settings_mapping,
+          (GSettingsBindSetMapping)
+            curve_algorithm_set_g_settings_mapping,
+          NULL, NULL);
+        adw_preferences_group_add (pgroup, GTK_WIDGET (row));
+
+        row = ADW_ACTION_ROW (adw_action_row_new ());
+        adw_preferences_row_set_title (
+          ADW_PREFERENCES_ROW (row), _ ("Curviness %"));
+        GtkSpinButton * spin_btn = GTK_SPIN_BUTTON (
+          gtk_spin_button_new_with_range (0, 100, 1));
+        gtk_spin_button_set_digits (spin_btn, 0);
+        gtk_spin_button_set_value (
+          spin_btn,
+          g_settings_get_int (self->settings, "curviness"));
+        g_settings_bind (
+          self->settings, "curviness", spin_btn, "value",
+          G_SETTINGS_BIND_DEFAULT);
+        gtk_widget_set_valign (
+          GTK_WIDGET (spin_btn), GTK_ALIGN_CENTER);
+        adw_action_row_add_suffix (
+          ADW_ACTION_ROW (row), GTK_WIDGET (spin_btn));
+        adw_preferences_group_add (pgroup, GTK_WIDGET (row));
+
+        row = ADW_ACTION_ROW (adw_action_row_new ());
+        adw_preferences_row_set_title (
+          ADW_PREFERENCES_ROW (row), _ ("Time"));
+        spin_btn = GTK_SPIN_BUTTON (
+          gtk_spin_button_new_with_range (1, 200, 1));
+        gtk_spin_button_set_digits (spin_btn, 0);
+        gtk_spin_button_set_value (
+          spin_btn,
+          g_settings_get_double (self->settings, "total-time"));
+        g_settings_bind (
+          self->settings, "total-time", spin_btn, "value",
           G_SETTINGS_BIND_DEFAULT);
         gtk_widget_set_valign (
           GTK_WIDGET (spin_btn), GTK_ALIGN_CENTER);

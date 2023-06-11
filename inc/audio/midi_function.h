@@ -53,6 +53,7 @@ typedef struct MidiFunctionOpts
   midi_byte_t end_vel;
   midi_byte_t vel;
 
+  bool   ascending;
   double time;
   double amount;
 

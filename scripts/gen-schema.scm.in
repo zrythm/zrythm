@@ -669,6 +669,28 @@ Args:
 
          (schema-print
            (make-schema
+             "ui.midi-functions.strum"
+             (list
+               (make-schema-key
+                 "ascending" "b" "true"
+                 "Ascending"
+                 "Whether to strum in ascending order.")
+               (make-schema-key-with-enum
+                 "curve-algo" "curve-algorithm"
+                 "superellipse" "Curve algorithm"
+                 "Curve algorithm.")
+               (make-schema-key
+                 "curviness" "i" "50"
+                 "Curviness"
+                 "Curviness percentage.")
+               (make-schema-key
+                 "total-time" "d" "50.0"
+                 "Total time"
+                 "Total time per chord in ms.")
+             ))) ;; ui.midi-functions.strum
+
+         (schema-print
+           (make-schema
              "ui.plugin-browser"
              (list
                (make-schema-key-with-enum

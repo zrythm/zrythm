@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -93,6 +93,11 @@ midi_arranger_selections_can_be_pasted (
   MidiArrangerSelections * ts,
   Position *               pos,
   ZRegion *                region);
+
+NONNULL void
+midi_arranger_selections_sort_by_pitch (
+  MidiArrangerSelections * self,
+  bool                     desc);
 
 /**
 * @}

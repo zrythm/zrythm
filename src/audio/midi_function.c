@@ -261,6 +261,37 @@ midi_function_apply (
           }
       }
       break;
+    case MIDI_FUNCTION_STRUM:
+      {
+        CurveOptions curve_opts;
+        curve_opts_init (&curve_opts);
+        curve_opts.algo = opts.curve_algo;
+        curve_opts.curviness = opts.curviness;
+
+        midi_arranger_selections_sort_by_pitch (
+          mas, !opts.ascending);
+        for (int i = 0; i < mas->num_midi_notes; i++)
+          {
+            MidiNote * first_mn = mas->midi_notes[0];
+            MidiNote * mn = mas->midi_notes[i];
+            double ms_multiplier = curve_get_normalized_y (
+              (double) i / (double) mas->num_midi_notes,
+              &curve_opts, !opts.ascending);
+            double ms_to_add = ms_multiplier * opts.time;
+            g_message (
+              "multi %f, ms %f", ms_multiplier, ms_to_add);
+            ArrangerObject * mn_obj = (ArrangerObject *) mn;
+            double           len_ticks =
+              arranger_object_get_length_in_ticks (mn_obj);
+            position_set_to_pos (
+              &mn_obj->pos, &first_mn->base.pos);
+            position_add_ms (&mn_obj->pos, ms_to_add);
+            position_set_to_pos (
+              &mn_obj->end_pos, &mn_obj->pos);
+            position_add_ticks (&mn_obj->end_pos, len_ticks);
+          }
+      }
+      break;
     default:
       break;
     }

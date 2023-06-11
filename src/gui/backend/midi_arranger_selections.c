@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "audio/engine.h"
 #include "audio/position.h"
@@ -117,4 +101,30 @@ midi_arranger_selections_can_be_pasted (
     return 0;
 
   return 1;
+}
+
+static int
+sort_by_pitch_func (const void * _a, const void * _b)
+{
+  MidiNote * a = *(MidiNote * const *) _a;
+  MidiNote * b = *(MidiNote * const *) _b;
+
+  return a->pos - b->pos;
+}
+
+static int
+sort_by_pitch_desc_func (const void * a, const void * b)
+{
+  return -sort_by_pitch_func (a, b);
+}
+
+void
+midi_arranger_selections_sort_by_pitch (
+  MidiArrangerSelections * self,
+  bool                     desc)
+{
+  qsort (
+    self->midi_notes, (size_t) self->num_midi_notes,
+    sizeof (MidiNote *),
+    desc ? sort_by_pitch_desc_func : sort_by_pitch_func);
 }
