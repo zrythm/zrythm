@@ -754,6 +754,7 @@ port_receive_midi_events_from_jack (
           if (
             self->id.owner_type
               == PORT_OWNER_TYPE_TRACK_PROCESSOR
+            && track
             && (track->type == TRACK_TYPE_MIDI || track->type == TRACK_TYPE_INSTRUMENT)
             && !track->channel->all_midi_channels
             && !track->channel->midi_channels[channel])
@@ -1713,6 +1714,7 @@ port_sum_data_from_rtmidi (
               if (
                 self->id.owner_type
                   == PORT_OWNER_TYPE_TRACK_PROCESSOR
+                && track
                 && (track->type == TRACK_TYPE_MIDI || track->type == TRACK_TYPE_INSTRUMENT)
                 && !track->channel->all_midi_channels
                 && !track->channel->midi_channels[channel])

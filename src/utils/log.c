@@ -1144,6 +1144,7 @@ log_get_last_n_lines (Log * self, int n)
   log_idle_cb (self);
 
   FILE * fp = fopen (self->log_filepath, "r");
+  g_return_val_if_fail (fp, g_strdup (""));
 
   /* the following algorithm is from
    * https://stackoverflow.com/questions/54834969/print-last-few-lines-of-a-text-file
