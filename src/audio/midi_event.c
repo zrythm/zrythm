@@ -57,6 +57,7 @@ typedef enum MidiEventType
   MIDI_EVENT_TYPE_START,
   MIDI_EVENT_TYPE_CONTINUE,
   MIDI_EVENT_TYPE_SONG_POS,
+  MIDI_EVENT_TYPE_CLOCK,
   MIDI_EVENT_TYPE_STOP,
 
   /** Unknown type. */
@@ -784,6 +785,8 @@ get_event_type (const midi_byte_t short_msg[3])
     return MIDI_EVENT_TYPE_STOP;
   else if (midi_is_continue (short_msg))
     return MIDI_EVENT_TYPE_CONTINUE;
+  else if (midi_is_clock (short_msg))
+    return MIDI_EVENT_TYPE_CLOCK;
   else
     return MIDI_EVENT_TYPE_RAW;
 }

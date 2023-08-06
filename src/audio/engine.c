@@ -1351,29 +1351,36 @@ clear_output_buffers (AudioEngine * self, nframes_t nframes)
 static void
 update_pos_nfo (
   AudioEngine *             self,
-  AudioEnginePositionInfo * pos_nfo)
+  AudioEnginePositionInfo * pos_nfo,
+  nframes_t                 frames_to_add)
 {
+  Position playhead;
+  position_set_to_pos (&playhead, PLAYHEAD);
+  position_add_frames (&playhead, frames_to_add);
   pos_nfo->is_rolling = TRANSPORT_IS_ROLLING;
   pos_nfo->bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
-  pos_nfo->bar = position_get_bars (PLAYHEAD, true);
-  pos_nfo->beat = position_get_beats (PLAYHEAD, true);
+  pos_nfo->bar = position_get_bars (&playhead, true);
+  pos_nfo->beat = position_get_beats (&playhead, true);
   pos_nfo->sixteenth =
-    position_get_sixteenths (PLAYHEAD, true);
+    position_get_sixteenths (&playhead, true);
   pos_nfo->sixteenth_within_bar =
     pos_nfo->sixteenth
     + (pos_nfo->beat - 1) * TRANSPORT->sixteenths_per_beat;
   pos_nfo->sixteenth_within_song =
-    position_get_total_sixteenths (PLAYHEAD, false);
+    position_get_total_sixteenths (&playhead, false);
   Position bar_start;
   position_set_to_bar (
-    &bar_start, position_get_bars (PLAYHEAD, true));
+    &bar_start, position_get_bars (&playhead, true));
   Position beat_start;
   position_set_to_pos (&beat_start, &bar_start);
   position_add_beats (&beat_start, pos_nfo->beat - 1);
   pos_nfo->tick_within_beat =
-    (double) (PLAYHEAD->ticks - beat_start.ticks);
+    (double) (playhead.ticks - beat_start.ticks);
   pos_nfo->tick_within_bar =
-    (double) (PLAYHEAD->ticks - bar_start.ticks);
+    (double) (playhead.ticks - bar_start.ticks);
+  pos_nfo->playhead_ticks = playhead.ticks;
+  pos_nfo->ninetysixth_notes = (int32_t) floor (
+    playhead.ticks / TICKS_PER_NINETYSIXTH_NOTE_DBL);
 }
 
 /**
@@ -1473,7 +1480,20 @@ engine_process_prepare (AudioEngine * self, nframes_t nframes)
       return true;
     }
 
-  update_pos_nfo (self, &self->pos_nfo_current);
+  update_pos_nfo (self, &self->pos_nfo_current, 0);
+  {
+    nframes_t frames_to_add = 0;
+    if (TRANSPORT_IS_ROLLING)
+      {
+        if (self->remaining_latency_preroll < nframes)
+          {
+            frames_to_add =
+              nframes - self->remaining_latency_preroll;
+          }
+      }
+    update_pos_nfo (
+      self, &self->pos_nfo_at_end, frames_to_add);
+  }
 
   /* reset all buffers */
   fader_clear_buffers (MONITOR_FADER);
@@ -1825,7 +1845,7 @@ engine_post_process (
     }
 
   /* remember current position info */
-  update_pos_nfo (self, &self->pos_nfo_before);
+  update_pos_nfo (self, &self->pos_nfo_before, 0);
 
   /* move the playhead if rolling and not pre-rolling */
   if (TRANSPORT_IS_ROLLING && self->remaining_latency_preroll == 0)

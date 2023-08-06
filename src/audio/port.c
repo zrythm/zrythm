@@ -2665,14 +2665,52 @@ port_process (
           int32_t sixteenth_within_song =
             position_get_total_sixteenths (PLAYHEAD, false);
           if (
-            sixteenth_within_song
-              != AUDIO_ENGINE->pos_nfo_before.sixteenth_within_song
+            AUDIO_ENGINE->pos_nfo_at_end.sixteenth_within_song
+              != AUDIO_ENGINE->pos_nfo_current.sixteenth_within_song
             || start)
             {
+              /* TODO interpolate */
               midi_events_add_song_pos (
                 port->midi_events, sixteenth_within_song, 0,
                 false);
             }
+
+          /* clock beat */
+          if (
+            AUDIO_ENGINE->pos_nfo_at_end.ninetysixth_notes
+            > AUDIO_ENGINE->pos_nfo_current.ninetysixth_notes)
+            {
+              for (
+                int32_t i =
+                  AUDIO_ENGINE->pos_nfo_current.ninetysixth_notes
+                  + 1;
+                i
+                <= AUDIO_ENGINE->pos_nfo_at_end.ninetysixth_notes;
+                i++)
+                {
+                  double ninetysixth_ticks =
+                    i * TICKS_PER_NINETYSIXTH_NOTE_DBL;
+                  double ratio = (ninetysixth_ticks - AUDIO_ENGINE->pos_nfo_current.playhead_ticks) / (AUDIO_ENGINE->pos_nfo_at_end.playhead_ticks - AUDIO_ENGINE->pos_nfo_current.playhead_ticks);
+                  midi_time_t midi_time = (midi_time_t) floor (
+                    ratio
+                    * (double) AUDIO_ENGINE->block_length);
+                  if (
+                    midi_time >= local_offset
+                    && midi_time < local_offset + nframes)
+                    {
+                      uint8_t beat_msg = MIDI_CLOCK_BEAT;
+                      midi_events_add_raw (
+                        port->midi_events, &beat_msg, 1,
+                        midi_time, false);
+#if 0
+                      g_debug (
+                        "(i = %d) time %u / %u", i, midi_time,
+                        local_offset + nframes);
+#endif
+                    }
+                }
+            }
+
           midi_events_sort (port->midi_events, false);
         }
 

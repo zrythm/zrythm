@@ -337,6 +337,11 @@ typedef struct AudioEnginePositionInfo
   /** BPM. */
   float bpm;
 
+  /** Exact playhead position (in ticks). */
+  double playhead_ticks;
+
+  /* - below are used as cache to avoid re-calculations - */
+
   /** Current bar. */
   int32_t bar;
 
@@ -358,6 +363,9 @@ typedef struct AudioEnginePositionInfo
 
   /** Current tick (within bar). */
   double tick_within_bar;
+
+  /** Total 1/96th notes completed up to current pos. */
+  int32_t ninetysixth_notes;
 } AudioEnginePositionInfo;
 
 /**
@@ -798,6 +806,11 @@ typedef struct AudioEngine
    * Position info at the start of the current cycle.
    */
   AudioEnginePositionInfo pos_nfo_current;
+
+  /**
+   * Expected position info at the end of the current cycle.
+   */
+  AudioEnginePositionInfo pos_nfo_at_end;
 
 } AudioEngine;
 

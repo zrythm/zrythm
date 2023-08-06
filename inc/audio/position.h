@@ -27,6 +27,7 @@
 #define TICKS_PER_SIXTEENTH_NOTE 240
 #define TICKS_PER_QUARTER_NOTE_DBL 960.0
 #define TICKS_PER_SIXTEENTH_NOTE_DBL 240.0
+#define TICKS_PER_NINETYSIXTH_NOTE_DBL 40.0
 #define position_add_sixteenths(_pos, _s) \
   position_add_ticks ((_pos), (_s) *TICKS_PER_SIXTEENTH_NOTE)
 #define position_add_beats(_pos, _b) \

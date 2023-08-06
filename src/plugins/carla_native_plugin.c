@@ -709,6 +709,8 @@ carla_native_plugin_process (
   const EngineProcessTimeInfo * const time_nfo)
 {
   self->time_info.playing = TRANSPORT_IS_ROLLING;
+  /* FIXME timings are from start of backend's cycle, not
+   * start of current split */
   self->time_info.frame = (uint64_t) time_nfo->g_start_frame;
   self->time_info.bbt.bar = AUDIO_ENGINE->pos_nfo_current.bar;
   self->time_info.bbt.beat =
