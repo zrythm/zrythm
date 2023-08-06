@@ -414,6 +414,9 @@ engine_append_ports (AudioEngine * self, GPtrArray * ports)
       _ADD (self->hw_out_processor->midi_ports[i]);
     }
 
+  /* midi clock */
+  _ADD (self->midi_clock_out);
+
 #undef _ADD
 }
 
@@ -635,6 +638,7 @@ engine_setup (AudioEngine * self)
   port_set_expose_to_backend (self->midi_in, true);
   port_set_expose_to_backend (self->monitor_out->l, true);
   port_set_expose_to_backend (self->monitor_out->r, true);
+  port_set_expose_to_backend (self->midi_clock_out, true);
 
   /* process any events now */
   g_message ("processing engine events");
@@ -846,6 +850,12 @@ init_common (AudioEngine * self)
   mpmc_queue_reserve (
     self->ev_queue,
     (size_t) ENGINE_MAX_EVENTS * sizeof (AudioEngineEvent *));
+
+  self->midi_clock_out = port_new_with_type_and_owner (
+    TYPE_EVENT, FLOW_OUTPUT, "MIDI Clock Out",
+    PORT_OWNER_TYPE_AUDIO_ENGINE, self);
+  self->midi_clock_out->midi_events = midi_events_new ();
+  self->midi_clock_out->id.flags2 |= PORT_FLAG2_MIDI_CLOCK;
 }
 
 void
@@ -1320,6 +1330,7 @@ clear_output_buffers (AudioEngine * self, nframes_t nframes)
   /* clear the monitor output (used by rtaudio) */
   port_clear_buffer (self->monitor_out->l);
   port_clear_buffer (self->monitor_out->r);
+  port_clear_buffer (self->midi_clock_out);
 
   /* if not running, do not attempt to access any
    * possibly deleted ports */
@@ -1466,10 +1477,8 @@ engine_process_prepare (AudioEngine * self, nframes_t nframes)
       break;
     }
 
-  /* clear monitor out before in case we need to
-   * return early */
-  port_clear_buffer (self->monitor_out->l);
-  port_clear_buffer (self->monitor_out->r);
+  /* clear outputs in case we need to return early */
+  clear_output_buffers (self, nframes);
 
   bool lock_acquired =
     zix_sem_try_wait (&self->port_operation_lock)
@@ -2169,6 +2178,7 @@ engine_clone (const AudioEngine * src)
     hardware_processor_clone (src->hw_in_processor);
   self->hw_out_processor =
     hardware_processor_clone (src->hw_out_processor);
+  self->midi_clock_out = port_clone (src->midi_clock_out);
 
   return self;
 }
@@ -2255,6 +2265,9 @@ engine_free (AudioEngine * self)
     hardware_processor_free, self->hw_in_processor);
   object_free_w_func_and_null (
     hardware_processor_free, self->hw_out_processor);
+
+  object_free_w_func_and_null (
+    port_free, self->midi_clock_out);
 
   object_zero_and_free (self);
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -55,6 +55,11 @@
 #define MIDI_ALL_NOTES_OFF 0x7B
 #define MIDI_ALL_SOUND_OFF 0x78
 #define MIDI_SYSTEM_MESSAGE 0xF0
+#define MIDI_SONG_POSITION 0xF2
+#define MIDI_CLOCK_START 0xFA
+#define MIDI_CLOCK_CONTINUE 0xFB
+#define MIDI_CLOCK_BEAT 0xF8
+#define MIDI_CLOCK_STOP 0xFC
 #define MIDI_META_EVENT 0xFF
 
 /**

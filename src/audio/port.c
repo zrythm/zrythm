@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -830,6 +830,11 @@ send_midi_events_to_jack (
   midi_events_copy_to_jack (port->midi_events, buf);
 }
 
+/**
+ * Pastes the audio data in the port starting at
+ * @ref start_frames to the JACK port starting at
+ * @ref start_frames.
+ */
 static void
 send_audio_data_to_jack (
   Port *          port,
@@ -2618,6 +2623,50 @@ port_process (
             }
         }
 
+      /* handle MIDI clock */
+      if (
+        port->id.flags2 & PORT_FLAG2_MIDI_CLOCK
+        && port->id.flow == FLOW_OUTPUT)
+        {
+          /* continue or start */
+          bool start =
+            TRANSPORT_IS_ROLLING
+            && !AUDIO_ENGINE->pos_nfo_before.is_rolling;
+          if (start)
+            {
+              uint8_t start_msg = MIDI_CLOCK_CONTINUE;
+              if (PLAYHEAD->frames == 0)
+                {
+                  start_msg = MIDI_CLOCK_START;
+                }
+              midi_events_add_raw (
+                port->midi_events, &start_msg, 1, 0, false);
+            }
+          else if (
+            !TRANSPORT_IS_ROLLING
+            && AUDIO_ENGINE->pos_nfo_before.is_rolling)
+            {
+              uint8_t stop_msg = MIDI_CLOCK_STOP;
+              midi_events_add_raw (
+                port->midi_events, &stop_msg, 1, 0, false);
+            }
+
+          /* song position */
+          int32_t sixteenth_within_song =
+            position_get_total_sixteenths (PLAYHEAD, false);
+          if (
+            sixteenth_within_song
+              != AUDIO_ENGINE->pos_nfo_before.sixteenth_within_song
+            || start)
+            {
+              midi_events_add_song_pos (
+                port->midi_events, sixteenth_within_song, 0,
+                false);
+            }
+          midi_events_sort (port->midi_events, false);
+        }
+
+      /* append data from each source */
       for (int k = 0; k < port->num_srcs; k++)
         {
           Port *                 src_port = port->srcs[k];
@@ -3405,6 +3454,9 @@ port_print_full_designation (Port * const self)
 
 /**
  * Clears the audio/cv port buffer.
+ *
+ * @note Only the Zrythm buffer is cleared. Use
+ * port_clear_external_buffer() to clear backend buffers.
  */
 void
 port_clear_audio_cv_buffer (Port * port)
@@ -3419,6 +3471,9 @@ port_clear_audio_cv_buffer (Port * port)
 
 /**
  * Clears the MIDI port buffer.
+ *
+ * @note Only the Zrythm buffer is cleared. Use
+ * port_clear_external_buffer() to clear backend buffers.
  */
 void
 port_clear_midi_buffer (Port * port)
@@ -3429,6 +3484,9 @@ port_clear_midi_buffer (Port * port)
 
 /**
  * Clears the port buffer.
+ *
+ * @note Only the Zrythm buffer is cleared. Use
+ * port_clear_external_buffer() to clear backend buffers.
  */
 void
 port_clear_buffer (Port * port)
@@ -3442,6 +3500,46 @@ port_clear_buffer (Port * port)
     {
       port_clear_midi_buffer (port);
     }
+}
+
+/**
+ * Clears the backend's port buffer.
+ */
+void
+port_clear_external_buffer (Port * port)
+{
+  if (!port_is_exposed_to_backend (port))
+    {
+      return;
+    }
+
+#ifdef HAVE_JACK
+  if (port->internal_type != INTERNAL_JACK_PORT)
+    {
+      return;
+    }
+
+  jack_port_t * jport = JACK_PORT_T (port->data);
+  g_return_if_fail (jport);
+  void * buf =
+    jack_port_get_buffer (jport, AUDIO_ENGINE->block_length);
+  g_return_if_fail (buf);
+  if (
+    port->id.type == TYPE_AUDIO
+    && AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
+    {
+      float * fbuf = (float *) buf;
+      dsp_fill (
+        &fbuf[0], DENORMAL_PREVENTION_VAL,
+        AUDIO_ENGINE->block_length);
+    }
+  else if (
+    port->id.type == TYPE_EVENT
+    && AUDIO_ENGINE->midi_backend == MIDI_BACKEND_JACK)
+    {
+      jack_midi_clear_buffer (buf);
+    }
+#endif
 }
 
 Track *

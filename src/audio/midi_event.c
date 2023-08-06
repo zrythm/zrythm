@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+ * SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
  * SPDX-License-Identifier: LicenseRef-ZrythmLicense
  *
  * This file incorporates work covered by the following copyright and
@@ -54,6 +54,10 @@ typedef enum MidiEventType
   MIDI_EVENT_TYPE_ALL_NOTES_OFF,
   MIDI_EVENT_TYPE_CONTROLLER,
   MIDI_EVENT_TYPE_PITCHBEND,
+  MIDI_EVENT_TYPE_START,
+  MIDI_EVENT_TYPE_CONTINUE,
+  MIDI_EVENT_TYPE_SONG_POS,
+  MIDI_EVENT_TYPE_STOP,
 
   /** Unknown type. */
   MIDI_EVENT_TYPE_RAW,
@@ -626,6 +630,25 @@ midi_events_add_note_off (
     self->num_events++;
 }
 
+/**
+ * Adds a song position event to the queue.
+ *
+ * @param total_sixteenths Total sixteenths.
+ */
+void
+midi_events_add_song_pos (
+  MidiEvents * self,
+  int64_t      total_sixteenths,
+  midi_time_t  time,
+  bool         queued)
+{
+  uint8_t buf[3];
+  buf[0] = MIDI_SONG_POSITION;
+  buf[1] = total_sixteenths & 0x7f;        // LSB
+  buf[2] = (total_sixteenths >> 7) & 0x7f; // MSB
+  midi_events_add_raw (self, buf, 3, time, queued);
+}
+
 void
 midi_events_add_raw (
   MidiEvents * self,
@@ -651,6 +674,7 @@ midi_events_add_raw (
     {
       ev->raw_buffer[i] = buf[i];
     }
+  ev->raw_buffer_sz = buf_sz;
 
   if (queued)
     self->num_queued_events++;
@@ -741,6 +765,14 @@ get_event_type (const midi_byte_t short_msg[3])
     return MIDI_EVENT_TYPE_PITCHBEND;
   else if (midi_is_controller (short_msg))
     return MIDI_EVENT_TYPE_CONTROLLER;
+  else if (midi_is_song_position_pointer (short_msg))
+    return MIDI_EVENT_TYPE_SONG_POS;
+  else if (midi_is_start (short_msg))
+    return MIDI_EVENT_TYPE_START;
+  else if (midi_is_stop (short_msg))
+    return MIDI_EVENT_TYPE_STOP;
+  else if (midi_is_continue (short_msg))
+    return MIDI_EVENT_TYPE_CONTINUE;
   else
     return MIDI_EVENT_TYPE_RAW;
 }

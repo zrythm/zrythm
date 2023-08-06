@@ -226,10 +226,8 @@ typedef enum PortFlags
   /**
    * Port has an automation track.
    *
-   * If this is set, it is assumed that the
-   * automation track at
-   * \ref PortIdentifier.port_index is for this
-   * port.
+   * If this is set, it is assumed that the automation track at
+   * \ref PortIdentifier.port_index is for this port.
    */
   PORT_FLAG_AUTOMATABLE = 1 << 19,
 
@@ -409,6 +407,9 @@ typedef enum PortFlags2
 
   /** Fader swap phase. */
   PORT_FLAG2_FADER_SWAP_PHASE = 1 << 29,
+
+  /** MIDI clock. */
+  PORT_FLAG2_MIDI_CLOCK = 1 << 30,
 } PortFlags2;
 
 static const cyaml_bitdef_t port_flags2_bitvals[] = {
@@ -442,6 +443,7 @@ static const cyaml_bitdef_t port_flags2_bitvals[] = {
   YAML_BITVAL ("sample_processor_fader", 27),
   YAML_BITVAL ("sample_processor_track", 28),
   YAML_BITVAL ("fader_swap_phase", 29),
+  YAML_BITVAL ("midi_clock", 30),
 };
 
 /**

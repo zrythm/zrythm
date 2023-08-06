@@ -1035,21 +1035,36 @@ port_restore_from_non_project (Port * self, Port * non_project);
 
 /**
  * Clears the audio/cv port buffer.
+ *
+ * @note Only the Zrythm buffer is cleared. Use
+ * port_clear_external_buffer() to clear backend buffers.
  */
 HOT NONNULL OPTIMIZE_O3 void
 port_clear_audio_cv_buffer (Port * port);
 
 /**
  * Clears the MIDI port buffer.
+ *
+ * @note Only the Zrythm buffer is cleared. Use
+ * port_clear_external_buffer() to clear backend buffers.
  */
 HOT NONNULL OPTIMIZE_O3 void
 port_clear_midi_buffer (Port * port);
 
 /**
  * Clears the port buffer.
+ *
+ * @note Only the Zrythm buffer is cleared. Use
+ * port_clear_external_buffer() to clear backend buffers.
  */
 HOT NONNULL OPTIMIZE_O3 void
 port_clear_buffer (Port * port);
+
+/**
+ * Clears the backend's port buffer.
+ */
+HOT NONNULL OPTIMIZE_O3 void
+port_clear_external_buffer (Port * port);
 
 /**
  * Disconnects all srcs and dests from port.

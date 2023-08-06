@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -711,14 +711,12 @@ graph_setup (
             continue;
         }
 
-#ifdef HAVE_JACK
       if (
         port->id.flow == FLOW_OUTPUT
-        && port->internal_type == INTERNAL_JACK_PORT)
+        && port_is_exposed_to_backend (port))
         {
           g_ptr_array_add (self->external_out_ports, port);
         }
-#endif
 
       GraphNode * port_node =
         add_port (self, port, drop_unnecessary_ports);

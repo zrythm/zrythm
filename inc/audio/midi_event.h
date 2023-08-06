@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -297,6 +297,18 @@ midi_events_add_control_change (
   midi_byte_t  control,
   midi_time_t  time,
   int          queued);
+
+/**
+ * Adds a song position event to the queue.
+ *
+ * @param total_sixteenths Total sixteenths.
+ */
+void
+midi_events_add_song_pos (
+  MidiEvents * self,
+  int64_t      total_sixteenths,
+  midi_time_t  time,
+  bool         queued);
 
 void
 midi_events_add_raw (

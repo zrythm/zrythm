@@ -432,39 +432,19 @@ typedef struct AudioEngine
   /** Output device processor. */
   HardwareProcessor * hw_out_processor;
 
-#if 0
   /**
-   * Audio intefrace outputs (only 2 are used).
+   * MIDI Clock input TODO.
    *
-   * These should be initialized at the start and
-   * only used at runtime for getting the buffers.
-   *
-   * They should eventually be stored in GSettings
-   * since they are user settings and not project
-   * related.
+   * This port is exposed to the backend.
    */
-  ExtPort *         hw_stereo_outs[EXT_PORTS_MAX];
-  int               num_hw_stereo_outs;
-
-  /**
-   * Audio intefrace inputs (only 2 are used).
-   *
-   * These should be initialized at the start and
-   * only used at runtime for getting the buffers.
-   *
-   * They should eventually be stored in GSettings
-   * since they are user settings and not project
-   * related.
-   *
-   * They should only be used in audio tracks as
-   * default recording input.
-   */
-  ExtPort *         hw_stereo_ins[EXT_PORTS_MAX];
-  int               num_hw_stereo_ins;
-#endif
-
-  /** MIDI Clock in TODO. */
   Port * midi_clock_in;
+
+  /**
+   * MIDI Clock output.
+   *
+   * This port is exposed to the backend.
+   */
+  Port * midi_clock_out;
 
   /** The ControlRoom. */
   ControlRoom * control_room;
