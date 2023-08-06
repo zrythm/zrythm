@@ -38,8 +38,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-03-20 21:11+0900\n"
-"PO-Revision-Date: 2023-07-26 20:45+0000\n"
-"Last-Translator: Yury Verpatov <inaunius@gmail.com>\n"
+"PO-Revision-Date: 2023-07-29 20:45+0000\n"
+"Last-Translator: Deleted User <noreply+66401@weblate.org>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/ru/>\n"
 "Language: ru\n"
@@ -126,7 +126,7 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
-msgstr ""
+msgstr "Установленные файлы"
 
 #: ../../appendix/files-and-directories.rst:17
 msgid "When Zrythm is installed, it installs the following files by default."
