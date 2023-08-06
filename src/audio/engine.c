@@ -1337,35 +1337,15 @@ clear_output_buffers (AudioEngine * self, nframes_t nframes)
   if (G_UNLIKELY (!engine_get_run (self)))
     return;
 
-    /* clear outputs exposed to jack */
-#ifdef HAVE_JACK
+  /* clear outputs exposed to the backend */
   for (size_t i = 0;
        i < ROUTER->graph->external_out_ports->len; i++)
     {
       Port * port = g_ptr_array_index (
         ROUTER->graph->external_out_ports, i);
 
-      if (
-        port->internal_type == INTERNAL_JACK_PORT
-        && port->id.type == TYPE_AUDIO
-        && self->audio_backend == AUDIO_BACKEND_JACK)
-        {
-          jack_port_t * jport = JACK_PORT_T (port->data);
-          float *       out =
-            (float *) jack_port_get_buffer (jport, nframes);
-          dsp_fill (&out[0], DENORMAL_PREVENTION_VAL, nframes);
-        }
-      else if (
-        port->internal_type == INTERNAL_JACK_PORT
-        && port->id.type == TYPE_EVENT
-        && self->midi_backend == MIDI_BACKEND_JACK)
-        {
-          jack_port_t * jport = JACK_PORT_T (port->data);
-          void * buf = jack_port_get_buffer (jport, nframes);
-          jack_midi_clear_buffer (buf);
-        }
+      port_clear_external_buffer (port);
     }
-#endif
 }
 
 static void
