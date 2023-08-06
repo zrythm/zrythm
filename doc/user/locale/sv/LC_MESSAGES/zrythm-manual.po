@@ -34,15 +34,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-03-20 21:11+0900\n"
-"PO-Revision-Date: 2023-01-23 23:56+0000\n"
-"Last-Translator: Ivar <ivar.bjerling@protonmail.com>\n"
+"PO-Revision-Date: 2023-08-06 20:45+0000\n"
+"Last-Translator: Ivar <ivar@ivarbjerling.com>\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/sv/>\n"
 "Language: sv\n"
-"Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/sv/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0-dev\n"
 "Generated-By: Babel 2.11.0\n"
 
 #: ../../appendix/environment.rst:11
@@ -57,10 +58,14 @@ msgid ""
 "program:`zrythm` or :program:`zrythm_launch`, like: ``LV2_PATH=/my/custom/"
 "path zrythm_launch``"
 msgstr ""
+"Zrythm förstår följande miljövariabler. De kan konfigureras i :file:`.bashrc`"
+" eller en liknande skalkonfigurationsfil, operativsystemets inställningar, "
+"eller så kan de skickas direkt när du kör :program:`zrythm` eller "
+":program:`zrythm_launch`, som: ``LV2_PATH=/my/custom/path zrythm_launch``"
 
 #: ../../appendix/environment.rst:23
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
-msgstr ""
+msgstr "Ställ in detta till platserna för att skanna efter:term: 'LV2' plugins."
 
 #: ../../appendix/environment.rst:26
 msgid "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
@@ -68,19 +73,21 @@ msgstr "Exempel: ``LV2_PATH=$HOME/custom-lv2-dir``"
 
 #: ../../appendix/environment.rst:31
 msgid "Set to 1 to disable plugin scanning."
-msgstr ""
+msgstr "Sätt till 1 för att inaktivera plugin scanning."
 
 #: ../../appendix/environment.rst:33
 msgid "Example: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
 msgstr "Exempel: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
 
 #: ../../appendix/environment.rst:38
+#, fuzzy
 msgid "Set this to the locations to scan for :term:`VST2` plugins."
-msgstr ""
+msgstr "Ställ in detta till platserna för att skanna efter:term: 'LV2' plugins."
 
 #: ../../appendix/environment.rst:43
 msgid "Set this to the locations to scan for :term:`VST3` plugins."
 msgstr ""
+"Ställ in detta till platserna för att skanna efter:term: 'VST3' plugins."
 
 #: ../../appendix/environment.rst:48
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
@@ -3648,7 +3655,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:36
 msgid "Flatpak"
-msgstr ""
+msgstr "Flatpak"
 
 #: ../../getting-started/installation.rst:37
 msgid "Zrythm is available on `Flathub`_ under the ID `org.zrythm.Zrythm`_."
@@ -3705,7 +3712,7 @@ msgstr ""
 
 #: ../../getting-started/running-zrythm.rst:31
 msgid "Language"
-msgstr ""
+msgstr "Språk"
 
 #: ../../getting-started/running-zrythm.rst:26
 msgid ""
