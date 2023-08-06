@@ -15,3 +15,4 @@ Type=Application
 StartupNotify=true
 Categories=AudioVideo;Audio;Sequencer;X-Sound;Midi;X-Jack;
 MimeType=application/x-zrythm-project;
+StartupWMClass=zrythm
