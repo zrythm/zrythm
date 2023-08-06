@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2020 Ryan Gonzalez <rymg19 at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
@@ -214,12 +214,6 @@ engine_sample_rate_to_string (
   return sample_rate_str[sample_rate];
 }
 
-//typedef struct MIDI_Controller
-//{
-//jack_midi_event_t    in_event[30];
-//int                  num_events;
-//} MIDI_Controller;
-
 typedef enum AudioBackend
 {
   AUDIO_BACKEND_DUMMY,
@@ -334,6 +328,37 @@ static const cyaml_strval_t jack_transport_type_strings[] = {
   { "Transport client",  AUDIO_ENGINE_JACK_TRANSPORT_CLIENT},
   { "No JACK transport", AUDIO_ENGINE_NO_JACK_TRANSPORT    },
 };
+
+typedef struct AudioEnginePositionInfo
+{
+  /** Transport is rolling. */
+  bool is_rolling;
+
+  /** BPM. */
+  float bpm;
+
+  /** Current bar. */
+  int32_t bar;
+
+  /** Current beat (within bar). */
+  int32_t beat;
+
+  /** Current sixteenth (within beat). */
+  int32_t sixteenth;
+
+  /** Current sixteenth (within bar). */
+  int32_t sixteenth_within_bar;
+
+  /** Current sixteenth (within song, ie, total
+   * sixteenths). */
+  int32_t sixteenth_within_song;
+
+  /** Current tick-within-beat. */
+  double tick_within_beat;
+
+  /** Current tick (within bar). */
+  double tick_within_bar;
+} AudioEnginePositionInfo;
 
 /**
  * The audio engine.
@@ -782,6 +807,18 @@ typedef struct AudioEngine
    * See engine_update_frames_per_tick().
    */
   bool updating_frames_per_tick;
+
+  /**
+   * Position info at the end of the previous cycle before
+   * moving the transport.
+   */
+  AudioEnginePositionInfo pos_nfo_before;
+
+  /**
+   * Position info at the start of the current cycle.
+   */
+  AudioEnginePositionInfo pos_nfo_current;
+
 } AudioEngine;
 
 static const cyaml_schema_field_t engine_fields_schema[] = {

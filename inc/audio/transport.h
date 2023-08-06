@@ -80,13 +80,13 @@ transport_preroll_count_bars_enum_to_int (
   return -1;
 }
 
-typedef enum
+typedef enum PlayState
 {
   PLAYSTATE_ROLL_REQUESTED,
   PLAYSTATE_ROLLING,
   PLAYSTATE_PAUSE_REQUESTED,
   PLAYSTATE_PAUSED
-} Play_State;
+} PlayState;
 
 /**
  * Corrseponts to "transport-display" in the
@@ -292,16 +292,14 @@ typedef struct Transport
   /**
    * Roll/play MIDI port.
    *
-   * Any event received on this port will request
-   * a roll.
+   * Any event received on this port will request a roll.
    */
   Port * roll;
 
   /**
    * Stop MIDI port.
    *
-   * Any event received on this port will request
-   * a stop/pause.
+   * Any event received on this port will request a stop/pause.
    */
   Port * stop;
 
@@ -318,7 +316,7 @@ typedef struct Transport
   Port * rec_toggle;
 
   /** Play state. */
-  Play_State play_state;
+  PlayState play_state;
 
   /** Last timestamp the playhead position was
    * changed manually. */

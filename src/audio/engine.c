@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2020 Ryan Gonzalez <rymg19 at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
@@ -1357,6 +1357,34 @@ clear_output_buffers (AudioEngine * self, nframes_t nframes)
 #endif
 }
 
+static void
+update_pos_nfo (
+  AudioEngine *             self,
+  AudioEnginePositionInfo * pos_nfo)
+{
+  pos_nfo->is_rolling = TRANSPORT_IS_ROLLING;
+  pos_nfo->bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
+  pos_nfo->bar = position_get_bars (PLAYHEAD, true);
+  pos_nfo->beat = position_get_beats (PLAYHEAD, true);
+  pos_nfo->sixteenth =
+    position_get_sixteenths (PLAYHEAD, true);
+  pos_nfo->sixteenth_within_bar =
+    pos_nfo->sixteenth
+    + (pos_nfo->beat - 1) * TRANSPORT->sixteenths_per_beat;
+  pos_nfo->sixteenth_within_song =
+    position_get_total_sixteenths (PLAYHEAD, false);
+  Position bar_start;
+  position_set_to_bar (
+    &bar_start, position_get_bars (PLAYHEAD, true));
+  Position beat_start;
+  position_set_to_pos (&beat_start, &bar_start);
+  position_add_beats (&beat_start, pos_nfo->beat - 1);
+  pos_nfo->tick_within_beat =
+    (double) (PLAYHEAD->ticks - beat_start.ticks);
+  pos_nfo->tick_within_bar =
+    (double) (PLAYHEAD->ticks - bar_start.ticks);
+}
+
 /**
  * To be called by each implementation to prepare
  * the structures before processing.
@@ -1387,7 +1415,9 @@ engine_process_prepare (AudioEngine * self, nframes_t nframes)
   if (self->transport->play_state == PLAYSTATE_PAUSE_REQUESTED)
     {
       if (ZRYTHM_TESTING)
-        g_message ("pause requested handled");
+        {
+          g_message ("pause requested handled");
+        }
       self->transport->play_state = PLAYSTATE_PAUSED;
       /*zix_sem_post (&TRANSPORT->paused);*/
 #ifdef HAVE_JACK
@@ -1453,6 +1483,8 @@ engine_process_prepare (AudioEngine * self, nframes_t nframes)
           "cycle...");
       return true;
     }
+
+  update_pos_nfo (self, &self->pos_nfo_current);
 
   /* reset all buffers */
   fader_clear_buffers (MONITOR_FADER);
@@ -1803,8 +1835,10 @@ engine_post_process (
       self->panic = 0;
     }
 
-  /* move the playhead if rolling and not
-   * pre-rolling */
+  /* remember current position info */
+  update_pos_nfo (self, &self->pos_nfo_before);
+
+  /* move the playhead if rolling and not pre-rolling */
   if (TRANSPORT_IS_ROLLING && self->remaining_latency_preroll == 0)
     {
       transport_add_to_playhead (
@@ -1822,8 +1856,10 @@ engine_post_process (
   AUDIO_ENGINE->last_time_taken =
     g_get_monotonic_time () - AUDIO_ENGINE->last_time_taken;
   if (AUDIO_ENGINE->max_time_taken < AUDIO_ENGINE->last_time_taken)
-    AUDIO_ENGINE->max_time_taken =
-      AUDIO_ENGINE->last_time_taken;
+    {
+      AUDIO_ENGINE->max_time_taken =
+        AUDIO_ENGINE->last_time_taken;
+    }
 
   zix_sem_post (&self->port_operation_lock);
 }

@@ -710,20 +710,13 @@ carla_native_plugin_process (
 {
   self->time_info.playing = TRANSPORT_IS_ROLLING;
   self->time_info.frame = (uint64_t) time_nfo->g_start_frame;
-  /* TODO pre-calculate these at the start of the
-   * processing cycle */
-  self->time_info.bbt.bar = position_get_bars (PLAYHEAD, true);
+  self->time_info.bbt.bar = AUDIO_ENGINE->pos_nfo_current.bar;
   self->time_info.bbt.beat =
-    position_get_beats (PLAYHEAD, true);
-  self->time_info.bbt.tick =
-    position_get_sixteenths (PLAYHEAD, true)
-      * TICKS_PER_SIXTEENTH_NOTE
-    + (int) floor (position_get_ticks (PLAYHEAD));
-  Position bar_start;
-  position_set_to_bar (
-    &bar_start, position_get_bars (PLAYHEAD, true));
+    AUDIO_ENGINE->pos_nfo_current.beat; // within bar
+  self->time_info.bbt.tick =            // within beat
+    AUDIO_ENGINE->pos_nfo_current.tick_within_beat;
   self->time_info.bbt.barStartTick =
-    (double) (PLAYHEAD->ticks - bar_start.ticks);
+    AUDIO_ENGINE->pos_nfo_current.tick_within_bar;
   int beats_per_bar =
     tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
   int beat_unit = tempo_track_get_beat_unit (P_TEMPO_TRACK);
