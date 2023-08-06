@@ -807,6 +807,13 @@ port_receive_audio_data_from_jack (
     &self->buf[start_frames], &in[start_frames], nframes);
 }
 
+/**
+ * Pastes the MIDI data in the port to the JACK port.
+ *
+ * @note MIDI timings are assumed to be at the correct
+ *   positions in the current cycle (ie, already added
+ *   the start_frames in this cycle).
+ */
 static void
 send_midi_events_to_jack (
   Port *          port,
@@ -827,7 +834,8 @@ send_midi_events_to_jack (
 
   void * buf =
     jack_port_get_buffer (jport, AUDIO_ENGINE->nframes);
-  midi_events_copy_to_jack (port->midi_events, buf);
+  midi_events_copy_to_jack (
+    port->midi_events, start_frames, nframes, buf);
 }
 
 /**

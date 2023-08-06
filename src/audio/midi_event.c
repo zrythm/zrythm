@@ -569,15 +569,26 @@ midi_events_write_to_midi_file (
  * Writes the events to the given JACK buffer.
  */
 void
-midi_events_copy_to_jack (MidiEvents * self, void * buff)
+midi_events_copy_to_jack (
+  MidiEvents *    self,
+  const nframes_t local_start_frames,
+  const nframes_t nframes,
+  void *          buff)
 {
-  jack_midi_clear_buffer (buff);
+  /*jack_midi_clear_buffer (buff);*/
 
   MidiEvent *      ev;
   jack_midi_data_t midi_data[3];
   for (int i = 0; i < self->num_events; i++)
     {
       ev = &self->events[i];
+
+      if (
+        ev->time < local_start_frames
+        || ev->time >= local_start_frames + nframes)
+        {
+          continue;
+        }
 
       for (size_t j = 0; j < ev->raw_buffer_sz; j++)
         {

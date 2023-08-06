@@ -411,7 +411,11 @@ midi_events_delete_note_on (
  * Writes the events to the given JACK buffer.
  */
 void
-midi_events_copy_to_jack (MidiEvents * self, void * buff);
+midi_events_copy_to_jack (
+  MidiEvents *    self,
+  const nframes_t local_start_frames,
+  const nframes_t nframes,
+  void *          buff);
 #endif
 
 /**
