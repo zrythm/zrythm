@@ -2654,16 +2654,15 @@ track_update_positions (
 }
 
 /**
- * Wrapper for audio and MIDI/instrument tracks
- * to fill in MidiEvents or StereoPorts from the
- * timeline data.
+ * Wrapper for audio and MIDI/instrument tracks to fill in
+ * MidiEvents or StereoPorts from the timeline data.
  *
- * @note The engine splits the cycle so transport
- *   loop related logic is not needed.
+ * @note The engine splits the cycle so transport loop
+ *   related logic is not needed.
  *
  * @param stereo_ports StereoPorts to fill.
- * @param midi_events MidiEvents to fill (from
- *   Piano Roll Port for example).
+ * @param midi_events MidiEvents to fill (from Piano Roll Port
+ *   for example).
  */
 void
 track_fill_events (

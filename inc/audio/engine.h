@@ -461,18 +461,18 @@ typedef struct AudioEngine
   StereoPorts * dummy_input;
 
   /**
-   * Monitor - these should be the last ports in
-   * the signal chain.
+   * Monitor - these should be the last ports in the signal
+   * chain.
+   *
+   * The L/R ports are exposed to the backend.
    */
   StereoPorts * monitor_out;
 
   /**
-   * Flag to tell the UI that this channel had
-   * MIDI activity.
+   * Flag to tell the UI that this channel had MIDI activity.
    *
-   * When processing this and setting it to 0,
-   * the UI should create a separate event using
-   * EVENTS_PUSH.
+   * When processing this and setting it to 0, the UI should
+   * create a separate event using EVENTS_PUSH.
    */
   int trigger_midi_activity;
 
@@ -488,21 +488,21 @@ typedef struct AudioEngine
   /**
    * Manual note press events from the piano roll.
    *
-   * The events from here should be read by the
-   * corresponding track processor's MIDI in port
-   * (TrackProcessor.midi_in). To avoid having to
-   * recalculate the graph to reattach this port
-   * to the correct track processor, only connect
-   * this port to the initial processor in the
-   * routing graph and fetch the events manually
-   * when processing the corresponding track
-   * processor.
+   * The events from here should be read by the corresponding
+   * track processor's MIDI in port (TrackProcessor.midi_in).
+   * To avoid having to recalculate the graph to reattach
+   * this port to the correct track processor, only connect
+   * this port to the initial processor in the routing graph
+   * and fetch the events manually when processing the
+   * corresponding track processor.
    */
   Port * midi_editor_manual_press;
 
   /**
-   * Port used for receiving MIDI in messages for
-   * binding CC and other non-recording purposes.
+   * Port used for receiving MIDI in messages for binding CC
+   * and other non-recording purposes.
+   *
+   * This port is exposed to the backend.
    */
   Port * midi_in;
 

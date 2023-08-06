@@ -200,12 +200,6 @@ typedef struct Track
    */
   int pos;
 
-  /**
-   * Used to remember the position before pinned,
-   * so it can be moved back there when unpinned.
-   */
-  //int                 pos_before_pinned;
-
   /** The type of track this is. */
   TrackType type;
 
@@ -1019,16 +1013,15 @@ track_remove_region (
   bool      free);
 
 /**
- * Wrapper for audio and MIDI/instrument tracks
- * to fill in MidiEvents or StereoPorts from the
- * timeline data.
+ * Wrapper for audio and MIDI/instrument tracks to fill in
+ * MidiEvents or StereoPorts from the timeline data.
  *
- * @note The engine splits the cycle so transport
- *   loop related logic is not needed.
+ * @note The engine splits the cycle so transport loop
+ *   related logic is not needed.
  *
  * @param stereo_ports StereoPorts to fill.
- * @param midi_events MidiEvents to fill (from
- *   Piano Roll Port for example).
+ * @param midi_events MidiEvents to fill (from Piano Roll Port
+ *   for example).
  */
 void
 track_fill_events (
