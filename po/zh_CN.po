@@ -18,13 +18,14 @@
 # Eric <hamburger1024@mailbox.org>, 2022.
 # SunRuikang <srk888666@qq.com>, 2022.
 # Martin LYU <my2605070493@gmail.com>, 2023.
+# TheInterestingSoul <wangpy01@outlook.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-04-22 22:44+0900\n"
-"PO-Revision-Date: 2023-04-09 04:48+0000\n"
-"Last-Translator: Martin LYU <my2605070493@gmail.com>\n"
+"PO-Revision-Date: 2023-05-01 04:47+0000\n"
+"Last-Translator: TheInterestingSoul <wangpy01@outlook.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -32,7 +33,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.17-dev\n"
+"X-Generator: Weblate 4.18-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -112,23 +113,23 @@ msgstr "和声大调音阶"
 
 #: inc/schemas/audio/scale.h:114 inc/audio/scale.h:146
 msgid "Phrygian Dominant"
-msgstr ""
+msgstr "属弗里吉亚调"
 
 #: inc/schemas/audio/scale.h:115 inc/audio/scale.h:147
 msgid "Major Locrian"
-msgstr ""
+msgstr "洛克里亚调式"
 
 #: inc/schemas/audio/scale.h:116 inc/audio/scale.h:148
 msgid "Algerian"
-msgstr ""
+msgstr "阿尔及利亚调式"
 
 #: inc/schemas/audio/scale.h:117 inc/audio/scale.h:149
 msgid "Augmented"
-msgstr ""
+msgstr "增音阶"
 
 #: inc/schemas/audio/scale.h:118 inc/audio/scale.h:150
 msgid "Double Harmonic"
-msgstr ""
+msgstr "双和声式"
 
 #: inc/schemas/audio/scale.h:119 inc/audio/scale.h:151
 msgid "Chinese"
@@ -160,7 +161,7 @@ msgstr ""
 
 #: inc/schemas/audio/scale.h:126 inc/audio/scale.h:158
 msgid "Hindu"
-msgstr ""
+msgstr "印度调式"
 
 #: inc/schemas/audio/scale.h:127 inc/audio/scale.h:159
 msgid "Hirajoshi"
@@ -489,11 +490,11 @@ msgstr "文件夹"
 
 #: inc/audio/snap_grid.h:51
 msgid "bar"
-msgstr ""
+msgstr "小节"
 
 #: inc/audio/snap_grid.h:52
 msgid "beat"
-msgstr ""
+msgstr "拍"
 
 #: inc/audio/snap_grid.h:72 src/gui/widgets/digital_meter.c:506
 msgid "normal"
@@ -657,15 +658,15 @@ msgstr "扫弦"
 
 #: inc/audio/transport.h:54
 msgid "1 bar"
-msgstr ""
+msgstr "1 小节"
 
 #: inc/audio/transport.h:55
 msgid "2 bars"
-msgstr ""
+msgstr "2 小节"
 
 #: inc/audio/transport.h:56
 msgid "4 bars"
-msgstr ""
+msgstr "4 小节"
 
 #: inc/audio/region.h:65 src/gui/widgets/track.c:955
 msgid "Inherit"
@@ -710,9 +711,9 @@ msgid "Sine"
 msgstr "正弦"
 
 #: src/project.c:403
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create backup directory %s"
-msgstr "未能创建音频 send"
+msgstr "未能备份文件夹 %s"
 
 #: src/project.c:811
 #, c-format
@@ -783,9 +784,8 @@ msgstr "无法加载项目。将创建一个新项目。"
 
 #: src/project.c:1357 src/project.c:1628 src/actions/actions.c:770
 #: src/actions/actions.c:812 src/gui/widgets/main_window.c:169
-#, fuzzy
 msgid "Failed to save project"
-msgstr "未能移动对象"
+msgstr "未能保存项目"
 
 #: src/project.c:1417
 msgid "Failed to deserialize v1 project file"
