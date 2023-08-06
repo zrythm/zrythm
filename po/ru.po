@@ -16,13 +16,14 @@
 # kitamiq <i4v.mail@ya.ru>, 2022.
 # Artemy Fedotov <catlovescpp@gmail.com>, 2023.
 # Vin <k3kelm4vw@mozmail.com>, 2023.
+# Yury Verpatov <inaunius@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-04-22 22:44+0900\n"
-"PO-Revision-Date: 2023-05-09 04:47+0000\n"
-"Last-Translator: Vin <k3kelm4vw@mozmail.com>\n"
+"PO-Revision-Date: 2023-07-26 20:45+0000\n"
+"Last-Translator: Yury Verpatov <inaunius@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
 ">\n"
 "Language: ru\n"
@@ -31,7 +32,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -5042,9 +5043,8 @@ msgid "Preferred language"
 msgstr "Баланс префейдера"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:235
-#, fuzzy
 msgid "User path"
-msgstr "Выбрать все (Select all)"
+msgstr "Путь пользователя"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:237
 msgid "Location to save user files"
