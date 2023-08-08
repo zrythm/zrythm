@@ -121,6 +121,7 @@ draw_loop_points (
   GdkRectangle * draw_rect)
 {
   double dashes[] = { 5 };
+  float dashesf[] = { 5.f };
 
   ArrangerObject * obj = (ArrangerObject *) self;
 
@@ -148,7 +149,7 @@ draw_loop_points (
   const int padding = 1;
   const int line_width = 1;
 
-  GskRenderNode * loop_line_node = NULL;
+  /*GskRenderNode * loop_line_node = NULL;*/
   if (!arranger->loop_line_node)
     {
       arranger->loop_line_node = gsk_cairo_node_new (
@@ -164,7 +165,7 @@ draw_loop_points (
       cairo_stroke (cr);
       cairo_destroy (cr);
     }
-  loop_line_node = arranger->loop_line_node;
+  /*loop_line_node = arranger->loop_line_node;*/
 
   GskRenderNode * clip_start_line_node = NULL;
   if (!arranger->clip_start_line_node)
@@ -227,20 +228,23 @@ draw_loop_points (
         /* if px is inside region */
         x_px >= 0 && x_px < full_width)
         {
-          gtk_snapshot_save (snapshot);
-          gtk_snapshot_translate (
-            snapshot,
-            &GRAPHENE_POINT_INIT (
-              (float) x_px - (float) padding, 0.f));
-          gtk_snapshot_push_clip (
-            snapshot,
+          GskPathBuilder * builder = gsk_path_builder_new ();
+          gsk_path_builder_move_to (builder, (float) x_px, 0.f);
+          gsk_path_builder_line_to (builder,
+            (float) x_px, (float) full_height);
+          GskPath * path = gsk_path_builder_free_to_path (builder);
+          GskStroke * stroke = gsk_stroke_new ((float) line_width);
+          gsk_stroke_set_dash (stroke, dashesf, 1);
+          gtk_snapshot_push_stroke (snapshot, path, stroke);
+          const GdkRGBA color = { 0, 0, 0, 1 };
+          gtk_snapshot_append_color (
+            snapshot, &color,
             &GRAPHENE_RECT_INIT (
-              0.f, 0.f,
-              (float) line_width + (float) padding * 2.f,
+              (float) x_px, 0.f,
+
+              (float) line_width,
               (float) full_height));
-          gtk_snapshot_append_node (snapshot, loop_line_node);
-          gtk_snapshot_pop (snapshot);
-          gtk_snapshot_restore (snapshot);
+          gtk_snapshot_pop (snapshot); // stroke
         }
     }
 }
@@ -717,18 +721,6 @@ handle_loop (
   /* draw curve */
   if (next_ap)
     {
-      /* use cairo if normal detail or higher */
-      bool     use_cairo = false;
-      UiDetail detail = ui_get_detail_level ();
-      if (detail < UI_DETAIL_LOW)
-        {
-          use_cairo = true;
-        }
-
-      /* disable cairo completely for now -- too slow on large
-       * projects */
-      use_cairo = false;
-
       const int line_width = 2;
 
       /* automation curve width */
@@ -747,8 +739,8 @@ handle_loop (
         gtk_widget_get_allocated_width (GTK_WIDGET (arranger)),
         full_rect->height);
 
-      GskRenderNode * cr_node = NULL;
-      cairo_t *       cr = NULL;
+      /* rectangle for the loop part, where the region start
+       * is (0,0) */
       GdkRectangle ap_loop_part_rect = Z_GDK_RECTANGLE_INIT (
         (int) x_start_in_region, 0,
         /* add the line width otherwise the end of the
@@ -771,66 +763,18 @@ handle_loop (
           ap_loop_part_rect.width -= (int) clipoff;
         }
 
-      /* don't use cairo if it will result in a too large
-       * surface */
-      if (ap_loop_part_rect.width > 16000)
-        {
-          use_cairo = false;
-        }
-      /*z_gdk_rectangle_print (&ap_loop_part_rect);*/
-
-      if (use_cairo)
-        {
-          if (
-            automation_point_settings_changed (
-              ap, &ap_loop_part_rect, true)
-            || ap->cairo_node_tl == NULL)
-            {
-              cr_node = gsk_cairo_node_new (&GRAPHENE_RECT_INIT (
-                0.f, 0.f, (float) ap_loop_part_rect.width,
-                (float) ap_loop_part_rect.height));
-              g_return_val_if_fail (
-                cr_node && GSK_IS_RENDER_NODE (cr_node), true);
-              object_free_w_func_and_null (
-                gsk_render_node_unref, ap->cairo_node_tl);
-            }
-          else
-            {
-              cr_node = ap->cairo_node_tl;
-              g_return_val_if_fail (
-                cr_node && GSK_IS_RENDER_NODE (cr_node), true);
-              gtk_snapshot_save (snapshot);
-              gtk_snapshot_translate (
-                snapshot,
-                &GRAPHENE_POINT_INIT (
-                  (float) ap_loop_part_rect.x,
-                  (float) ap_loop_part_rect.y));
-              gtk_snapshot_append_node (snapshot, cr_node);
-              gtk_snapshot_restore (snapshot);
-              return false;
-            }
-
-          cr = gsk_cairo_node_get_draw_context (cr_node);
-          cairo_save (cr);
-          cairo_translate (
-            cr, -(ap_loop_part_rect.x),
-            -(ap_loop_part_rect.y));
-          gdk_cairo_set_source_rgba (cr, &color);
-          cairo_set_line_width (cr, (double) line_width);
-        } /* endif use_cairo */
+      GskPathBuilder * builder = gsk_path_builder_new ();
 
       double ac_height =
         fabs (y_end_ratio - y_start_ratio) * full_rect->height;
-      double step = use_cairo ? 0.1 : 1.0;
+      double step = 0.5;
       double start_from =
-        use_cairo
-          ? ap_loop_part_rect.x
-          : MAX (vis_rect.x, ap_loop_part_rect.x);
+          MAX (vis_rect.x, ap_loop_part_rect.x);
       start_from = MAX (start_from, 0.0);
       double until =
         ap_loop_part_rect.x + ap_loop_part_rect.width;
-      if (!use_cairo)
-        until = MIN (vis_rect.x + vis_rect.width, until);
+      until = MIN (vis_rect.x + vis_rect.width, until);
+      bool first_call = true;
       for (double k = start_from; k < until + step; k += step)
         {
           double ap_y =
@@ -855,58 +799,36 @@ handle_loop (
           else
             new_y = ap_y + y_start;
 
+          /* FIXME memory leak - check above too */
           if (new_x >= full_rect->width)
             return true;
 
-          if (math_doubles_equal (k, 0.0))
+          if (G_UNLIKELY (first_call))
             {
-              if (use_cairo)
-                {
-                  cairo_move_to (cr, new_x, new_y);
-                }
-              else
-                {
-                  gtk_snapshot_append_color (
-                    snapshot, &color,
-                    &GRAPHENE_RECT_INIT (
-                      (float) new_x, (float) new_y, 1,
-                      line_width));
-                }
+              gsk_path_builder_move_to (builder,
+                (float) new_x, (float) new_y);
+              first_call = false;
             }
 
-          if (use_cairo)
-            {
-              cairo_line_to (cr, new_x, new_y);
-            }
-          else
-            {
-              gtk_snapshot_append_color (
-                snapshot, &color,
-                &GRAPHENE_RECT_INIT (
-                  (float) new_x, (float) new_y, 1, line_width));
-            }
+          gsk_path_builder_line_to (builder,
+            (float) new_x, (float) new_y);
         } /* end foreach draw step */
 
-      if (use_cairo)
-        {
-          cairo_stroke (cr);
-          cairo_destroy (cr);
+      GskPath * path = gsk_path_builder_free_to_path (builder);
+      GskStroke * stroke = gsk_stroke_new ((float) line_width);
+      gtk_snapshot_push_stroke (snapshot, path, stroke);
+      gtk_snapshot_append_color (
+        snapshot, &color,
+        &GRAPHENE_RECT_INIT (
+          (float) ap_loop_part_rect.x,
+          (float) ap_loop_part_rect.y,
+          (float) ap_loop_part_rect.width,
+          (float) ap_loop_part_rect.height));
+      gtk_snapshot_pop (snapshot); // stroke
 
-          gtk_snapshot_save (snapshot);
-          gtk_snapshot_translate (
-            snapshot,
-            &GRAPHENE_POINT_INIT (
-              (float) ap_loop_part_rect.x - 1.f,
-              (float) ap_loop_part_rect.y - 1.f));
-          gtk_snapshot_append_node (snapshot, cr_node);
-          gtk_snapshot_restore (snapshot);
-
-          ap->last_settings_tl.fvalue = ap->fvalue;
-          ap->last_settings_tl.curve_opts = ap->curve_opts;
-          ap->last_settings_tl.draw_rect = ap_loop_part_rect;
-          ap->cairo_node_tl = cr_node;
-
-        } /* endif use_cairo */
+      ap->last_settings_tl.fvalue = ap->fvalue;
+      ap->last_settings_tl.curve_opts = ap->curve_opts;
+      ap->last_settings_tl.draw_rect = ap_loop_part_rect;
 
     } /* endif have next ap */
 
