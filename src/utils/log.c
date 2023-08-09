@@ -577,7 +577,8 @@ log_writer_format_fields (
   /* EDIT: append file, func and line */
   g_string_append_printf (
     gstring, "%s(%s:%s)%s: ", use_color ? "\033[90m" : "",
-    func, line, color_reset (use_color));
+    func ? func : "?", line ? line : "?",
+    color_reset (use_color));
 
   if (message == NULL)
     {
