@@ -553,6 +553,17 @@ get_hit_objects (
 {
   g_return_if_fail (self && arr);
 
+  if (!math_doubles_equal (x, -1) && x < 0.0)
+    {
+      g_critical ("invalid x: %f", x);
+      return;
+    }
+  if (!math_doubles_equal (y, -1) && y < 0.0)
+    {
+      g_critical ("invalid y: %f", y);
+      return;
+    }
+
   ArrangerObject * obj = NULL;
 
   /* skip if haven't drawn yet */
