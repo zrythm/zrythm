@@ -520,6 +520,15 @@ channel_reconnect_ext_input_ports (Channel * self)
   if (track_is_auditioner (track))
     return;
 
+  if (track->disconnecting)
+    {
+      g_critical (
+        "attempted to reconnect ext input ports on "
+        "track %s while it is disconnecting",
+        track->name);
+      return;
+    }
+
   g_return_if_fail (channel_is_in_active_project (self));
 
   g_debug ("reconnecting ext inputs for %s", track->name);
@@ -2000,6 +2009,7 @@ channel_get_plugins (Channel * ch, Plugin ** pls)
 void
 channel_disconnect (Channel * self, bool remove_pl)
 {
+  g_debug ("disconnecting channel %s", self->track->name);
   if (remove_pl)
     {
       FOREACH_STRIP

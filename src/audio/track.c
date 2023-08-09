@@ -2156,6 +2156,7 @@ track_remove_plugin (
   bool           deleting_track,
   bool           recalc_graph)
 {
+  g_debug ("removing plugin from track %s", self->name);
   if (slot_type == PLUGIN_SLOT_MODULATOR)
     {
       modulator_track_remove_modulator (
@@ -2245,7 +2246,7 @@ track_disconnect (Track * self, bool remove_pl, bool recalc_graph)
 
   self->disconnecting = false;
 
-  g_debug ("done");
+  g_debug ("done disconnecting");
 }
 
 /**

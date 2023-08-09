@@ -108,6 +108,9 @@ inspector_track_widget_show_tracks (
       track = tls->tracks[0];
       g_debug ("track %s", track->name);
 
+      /* don't attempt to show tracks during disconnect */
+      g_return_if_fail (track->disconnecting);
+
       setup_color (self, track);
 
       track_properties_expander_widget_refresh (
