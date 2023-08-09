@@ -2052,11 +2052,20 @@ track_freeze (Track * self, bool freeze, GError ** error)
         == PROGRESS_COMPLETED_SUCCESS)
         {
           /* move the temporary file to the pool */
-          AudioClip * clip =
-            audio_clip_new_from_file (settings->file_uri);
+          GError *    err = NULL;
+          AudioClip * clip = audio_clip_new_from_file (
+            settings->file_uri, &err);
+          if (!clip)
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err,
+                _ ("Failed creating audio clip from file at %s"),
+                settings->file_uri);
+              return false;
+            }
           audio_pool_add_clip (AUDIO_POOL, clip);
-          GError * err = NULL;
-          bool     success = audio_clip_write_to_pool (
+          err = NULL;
+          bool success = audio_clip_write_to_pool (
             clip, F_NO_PARTS, F_NOT_BACKUP, &err);
           if (!success)
             {

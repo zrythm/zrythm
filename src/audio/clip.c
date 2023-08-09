@@ -79,19 +79,26 @@ audio_clip_update_channel_caches (
     }
 }
 
-static void
+static bool
 audio_clip_init_from_file (
   AudioClip *  self,
-  const char * full_path)
+  const char * full_path,
+  GError **    error)
 {
-  g_return_if_fail (self);
+  g_return_val_if_fail (self, false);
 
   self->samplerate = (int) AUDIO_ENGINE->sample_rate;
-  g_return_if_fail (self->samplerate > 0);
+  g_return_val_if_fail (self->samplerate > 0, false);
 
+  GError *       err = NULL;
   AudioEncoder * enc =
-    audio_encoder_new_from_file (full_path, NULL);
-  g_return_if_fail (enc);
+    audio_encoder_new_from_file (full_path, &err);
+  if (!enc)
+    {
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, "Error creating encoder");
+      return false;
+    }
   audio_encoder_decode (
     enc, self->samplerate, F_SHOW_PROGRESS);
 
@@ -128,6 +135,8 @@ audio_clip_init_from_file (
   audio_clip_update_channel_caches (self, 0);
 
   audio_encoder_free (enc);
+
+  return true;
 }
 
 /**
@@ -141,8 +150,15 @@ audio_clip_init_loaded (AudioClip * self)
   char * filepath = audio_clip_get_path_in_pool_from_name (
     self->name, self->use_flac, F_NOT_BACKUP);
 
-  bpm_t bpm = self->bpm;
-  audio_clip_init_from_file (self, filepath);
+  bpm_t    bpm = self->bpm;
+  GError * err = NULL;
+  bool     success =
+    audio_clip_init_from_file (self, filepath, &err);
+  if (!success)
+    {
+      HANDLE_ERROR_LITERAL (
+        err, _ ("Failed to initialize audio file"));
+    }
   self->bpm = bpm;
 
   g_free (filepath);
@@ -154,11 +170,23 @@ audio_clip_init_loaded (AudioClip * self)
  * The name used is the basename of the file.
  */
 AudioClip *
-audio_clip_new_from_file (const char * full_path)
+audio_clip_new_from_file (
+  const char * full_path,
+  GError **    error)
 {
   AudioClip * self = _create ();
 
-  audio_clip_init_from_file (self, full_path);
+  GError * err = NULL;
+  bool     success =
+    audio_clip_init_from_file (self, full_path, &err);
+  if (!success)
+    {
+      audio_clip_free (self);
+      HANDLE_ERROR (
+        err, _ ("Failed to initialize audio file at %s"),
+        full_path);
+      return NULL;
+    }
 
   self->pool_id = -1;
   self->bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
@@ -490,8 +518,8 @@ audio_clip_write_to_file (
     self->bit_depth, self->channels, filepath, &err);
   if (!success)
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", _ ("Failed to write audio file"));
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, _ ("Failed to write audio file"));
       return false;
     }
   audio_clip_update_channel_caches (self, before_frames);
@@ -506,8 +534,17 @@ audio_clip_write_to_file (
    * function */
   if (ZRYTHM_TESTING)
     {
+      err = NULL;
       AudioClip * new_clip =
-        audio_clip_new_from_file (filepath);
+        audio_clip_new_from_file (filepath, &err);
+      if (!new_clip)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err,
+            _ ("Failed to create audio clip from file"));
+          return false;
+        }
+
       if (self->num_frames != new_clip->num_frames)
         {
           g_warning (
@@ -707,8 +744,16 @@ audio_clip_edit_in_ext_program (
     }
 
   /* ok - reload from file */
-  self = audio_clip_new_from_file (abs_path);
-  g_return_val_if_fail (self, false);
+  err = NULL;
+  self = audio_clip_new_from_file (abs_path, &err);
+  if (!self)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err,
+        _ ("Failed to create audio clip from file at %s"),
+        abs_path);
+      return NULL;
+    }
 
   return self;
 }

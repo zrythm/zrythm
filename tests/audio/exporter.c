@@ -388,7 +388,7 @@ test_bounce_region_with_first_note (void)
 
   /* assert non silent */
   AudioClip * clip =
-    audio_clip_new_from_file (settings->file_uri);
+    audio_clip_new_from_file (settings->file_uri, NULL);
   bool has_audio = false;
   for (unsigned_frame_t i = 0; i < clip->num_frames; i++)
     {

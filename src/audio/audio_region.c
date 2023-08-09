@@ -81,7 +81,17 @@ audio_region_new (
     {
       if (filename)
         {
-          clip = audio_clip_new_from_file (filename);
+          GError * err = NULL;
+          clip = audio_clip_new_from_file (filename, &err);
+          if (!clip)
+            {
+              HANDLE_ERROR (
+                err,
+                _ ("Failed to create audio clip from file at %s"),
+                filename);
+              /* TODO FIXME create a dummy clip here */
+              /*clip = audio_clip_new_from_float_array (..) */
+            }
         }
       else if (frames)
         {

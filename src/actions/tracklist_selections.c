@@ -301,8 +301,17 @@ tracklist_selections_action_new (
         }
       else if (track_type == TRACK_TYPE_AUDIO)
         {
-          AudioClip * clip =
-            audio_clip_new_from_file (file_descr->abs_path);
+          GError *    err = NULL;
+          AudioClip * clip = audio_clip_new_from_file (
+            file_descr->abs_path, &err);
+          if (!clip)
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err,
+                _ ("Failed creating audio clip from file at %s"),
+                file_descr->abs_path);
+              return NULL;
+            }
           self->pool_id =
             audio_pool_add_clip (AUDIO_POOL, clip);
         }

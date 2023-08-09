@@ -6,6 +6,7 @@
 #include "audio/engine.h"
 #include "project.h"
 #include "utils/audio.h"
+#include "utils/error.h"
 #include "utils/math.h"
 #include "utils/string.h"
 #include "utils/vamp.h"
@@ -297,16 +298,18 @@ audio_files_equal (
   size_t       num_frames,
   float        epsilon)
 {
-  AudioClip * c1 = audio_clip_new_from_file (f1);
+  GError *    err = NULL;
+  AudioClip * c1 = audio_clip_new_from_file (f1, &err);
   if (!c1)
     {
-      g_warning ("failed to create clip 1");
+      HANDLE_ERROR_LITERAL (err, "Failed to create clip 1");
       return false;
     }
-  AudioClip * c2 = audio_clip_new_from_file (f2);
+  err = NULL;
+  AudioClip * c2 = audio_clip_new_from_file (f2, &err);
   if (!c2)
     {
-      g_warning ("failed to create clip 2");
+      HANDLE_ERROR_LITERAL (err, "Failed to create clip 2");
       return false;
     }
 

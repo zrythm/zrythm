@@ -914,7 +914,8 @@ test_long_audio_recording (void)
   /* enable recording for audio track */
   track_set_recording (audio_track, true, false);
 
-  AudioClip * clip = audio_clip_new_from_file (TEST_WAV2);
+  AudioClip * clip =
+    audio_clip_new_from_file (TEST_WAV2, NULL);
   unsigned_frame_t processed_ch_frames = 0;
 
   double total_secs_to_process =
@@ -974,7 +975,8 @@ test_long_audio_recording (void)
       /* load the region file and check that
        * frames are correct */
       AudioClip * new_clip = audio_clip_new_from_file (
-        audio_clip_get_path_in_pool (r_clip, F_NOT_BACKUP));
+        audio_clip_get_path_in_pool (r_clip, F_NOT_BACKUP),
+        NULL);
       if (r_clip->num_frames < new_clip->num_frames)
         {
           g_warning (
@@ -1012,7 +1014,7 @@ test_long_audio_recording (void)
   audio_r_obj = (ArrangerObject *) audio_r;
   AudioClip * r_clip = audio_region_get_clip (audio_r);
   AudioClip * new_clip = audio_clip_new_from_file (
-    audio_clip_get_path_in_pool (r_clip, F_NOT_BACKUP));
+    audio_clip_get_path_in_pool (r_clip, F_NOT_BACKUP), NULL);
   g_warn_if_fail (audio_frames_equal (
     r_clip->frames, new_clip->frames,
     (size_t) MIN (new_clip->num_frames, r_clip->num_frames),
@@ -1066,7 +1068,8 @@ test_2nd_audio_recording (void)
   /* enable recording for audio track */
   track_set_recording (audio_track, true, false);
 
-  AudioClip * clip = audio_clip_new_from_file (TEST_WAV2);
+  AudioClip * clip =
+    audio_clip_new_from_file (TEST_WAV2, NULL);
   unsigned_frame_t processed_ch_frames = 0;
 
   double total_secs_to_process =
