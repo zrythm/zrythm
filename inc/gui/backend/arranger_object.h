@@ -723,21 +723,22 @@ arranger_object_is_position_valid (
   arranger_object_is_position_valid
 
 /**
- * Sets the Position  all of the object's linked
- * objects (see ArrangerObjectInfo)
+ * Sets the given position on the object, optionally attempting
+ * to validate before.
  *
  * @param pos The position to set to.
  * @param pos_type The type of Position to set in the
  *   ArrangerObject.
- * @param validate Validate the Position before
- *   setting it.
+ * @param validate Validate the Position before setting it.
+ *
+ * @return Whether the position was set (false if invalid).
  */
-void
+bool
 arranger_object_set_position (
   ArrangerObject *           self,
   const Position *           pos,
   ArrangerObjectPositionType pos_type,
-  const int                  validate);
+  const bool                 validate);
 
 /**
  * Returns the type as a string.

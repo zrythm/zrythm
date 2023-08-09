@@ -662,35 +662,38 @@ arranger_object_copy_identifier (
 }
 
 /**
- * Sets the Position  all of the object's linked
- * objects (see ArrangerObjectInfo)
+ * Sets the given position on the object, optionally attempting
+ * to validate before.
  *
  * @param pos The position to set to.
  * @param pos_type The type of Position to set in the
  *   ArrangerObject.
- * @param validate Validate the Position before
- *   setting it.
+ * @param validate Validate the Position before setting it.
+ *
+ * @return Whether the position was set (false if invalid).
  */
-void
+bool
 arranger_object_set_position (
   ArrangerObject *           self,
   const Position *           pos,
   ArrangerObjectPositionType pos_type,
-  const int                  validate)
+  const bool                 validate)
 {
-  g_return_if_fail (self && pos);
+  g_return_val_if_fail (self && pos, false);
 
   /* return if validate is on and position is
    * invalid */
   if (
     validate
     && !arranger_object_is_position_valid (self, pos, pos_type))
-    return;
+    return false;
 
   Position * pos_ptr;
   pos_ptr = get_position_ptr (self, pos_type);
   g_return_if_fail (pos_ptr);
   position_set_to_pos (pos_ptr, pos);
+
+  return true;
 }
 
 /**
@@ -1815,18 +1818,25 @@ arranger_object_edit_position_finish (
 }
 
 /**
- * The setter is for use in e.g. the digital meters
- * whereas the set_pos func is used during
- * arranger actions.
+ * The setter is for use in e.g. the digital meters whereas
+ * the set_pos func is used during arranger actions.
+ *
+ * Note that this validates the position.
  */
 void
 arranger_object_pos_setter (
   ArrangerObject * self,
   const Position * pos)
 {
-  arranger_object_set_position (
+  bool success = arranger_object_set_position (
     self, pos, ARRANGER_OBJECT_POSITION_TYPE_START,
     F_VALIDATE);
+  if (!success)
+    {
+      char buf[500];
+      position_to_string (pos, buf);
+      g_debug ("failed to set position [%s]: (invalid)", buf);
+    }
 }
 
 /**
