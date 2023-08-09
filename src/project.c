@@ -1604,7 +1604,7 @@ project_autosave_cb (void * data)
             GTK_WINDOW (g_list_model_get_item (toplevels, i));
           if (
             gtk_widget_get_visible (GTK_WIDGET (window))
-            && (gtk_window_get_modal (window) || gtk_window_get_transient_for (window) == MAIN_WINDOW))
+            && (gtk_window_get_modal (window) || gtk_window_get_transient_for (window) == GTK_WINDOW (MAIN_WINDOW)))
             {
               g_debug (
                 "modal/transient windows exist - skipping autosave");
