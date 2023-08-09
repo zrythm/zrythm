@@ -1193,7 +1193,17 @@ create_ports (CarlaNativePlugin * self, bool loading)
         {
           port = carla_native_plugin_get_port_from_param_id (
             self, i);
-          g_return_if_fail (IS_PORT_AND_NONNULL (port));
+          if (!IS_PORT_AND_NONNULL (port))
+            {
+              const CarlaParameterInfo * param_info =
+                carla_get_parameter_info (
+                  self->host_handle, 0, i);
+              g_critical (
+                "port '%s' at param ID %u could not be retrieved [%s]",
+                param_info->name, i,
+                self->plugin->setting->descr->name);
+              return;
+            }
         }
       /* else if not loading (create new ports) */
       else
@@ -1202,7 +1212,14 @@ create_ports (CarlaNativePlugin * self, bool loading)
             carla_get_parameter_info (self->host_handle, 0, i);
           port = port_new_with_type (
             TYPE_CONTROL, FLOW_INPUT, param_info->name);
-          g_return_if_fail (IS_PORT_AND_NONNULL (port));
+          if (!IS_PORT_AND_NONNULL (port))
+            {
+              g_critical (
+                "failed to create port '%s' at param ID %u [%s]",
+                param_info->name, i,
+                self->plugin->setting->descr->name);
+              return;
+            }
           if (
             param_info->symbol
             && strlen (param_info->symbol) > 0)
