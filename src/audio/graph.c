@@ -960,7 +960,13 @@ graph_setup (
                         {
                           continue;
                         }
-                      g_return_if_fail (port_node);
+                      if (!port_node)
+                        {
+                          g_critical (
+                            "failed to find node for port %s",
+                            pl_port->id.label);
+                          return;
+                        }
                       graph_node_connect (node, port_node);
                     }
                 }
