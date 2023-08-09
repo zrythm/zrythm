@@ -215,7 +215,7 @@ host_ui_parameter_changed (
   uint32_t         index,
   float            value)
 {
-  g_debug ("handle ui param changed");
+  /*g_debug ("handle ui param changed");*/
   CarlaNativePlugin * self = (CarlaNativePlugin *) handle;
   Port *              port =
     carla_native_plugin_get_port_from_param_id (self, index);
