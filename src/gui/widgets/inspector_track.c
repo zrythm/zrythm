@@ -109,7 +109,7 @@ inspector_track_widget_show_tracks (
       g_debug ("track %s", track->name);
 
       /* don't attempt to show tracks during disconnect */
-      g_return_if_fail (track->disconnecting);
+      g_return_if_fail (!track->disconnecting);
 
       setup_color (self, track);
 
