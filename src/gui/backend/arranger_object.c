@@ -690,7 +690,7 @@ arranger_object_set_position (
 
   Position * pos_ptr;
   pos_ptr = get_position_ptr (self, pos_type);
-  g_return_if_fail (pos_ptr);
+  g_return_val_if_fail (pos_ptr, false);
   position_set_to_pos (pos_ptr, pos);
 
   return true;
