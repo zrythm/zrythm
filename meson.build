@@ -1167,6 +1167,9 @@ rtaudio_dep = dependency (
     'asio=disabled',])
 if rtaudio_dep.found ()
   cdata.set('HAVE_RTAUDIO', 1)
+  rtaudio_ver_arr = rtaudio_dep.version().split('.')
+  cdata.set('RTAUDIO_MAJOR_VER', rtaudio_ver_arr[0])
+  cdata.set('RTAUDIO_MINOR_VER', rtaudio_ver_arr[1])
 endif
 
 sdl_dep = dependency (

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -638,7 +638,7 @@ get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
       for (unsigned int i = 0; i < (unsigned int) num_devs; i++)
         {
           rtaudio_device_info_t dev_nfo =
-            rtaudio_get_device_info (rtaudio, (int) i);
+            rtaudio_get_device_info (rtaudio, i);
           if (dev_nfo.input_channels > 0)
             {
               for (unsigned int j = 0;
@@ -689,7 +689,7 @@ get_ext_ports_from_rtaudio (PortFlow flow, GPtrArray * ports)
       for (unsigned int i = 0; i < (unsigned int) num_devs; i++)
         {
           rtaudio_device_info_t dev_nfo =
-            rtaudio_get_device_info (rtaudio, (int) i);
+            rtaudio_get_device_info (rtaudio, i);
           if (dev_nfo.output_channels > 0)
             {
               for (unsigned int j = 0;

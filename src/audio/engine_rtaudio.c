@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -155,7 +155,9 @@ print_dev_info (rtaudio_device_info_t * nfo, char * buf)
   sprintf (
     buf,
     "name: %s\n"
+#  if RTAUDIO_MAJOR_VER == 5
     "probed: %d\n"
+#  endif
     "output channels: %u\n"
     "input channels: %u\n"
     "duplex channels: %u\n"
@@ -164,10 +166,13 @@ print_dev_info (rtaudio_device_info_t * nfo, char * buf)
     "formats: TODO\n"
     "preferred sample rate: %u\n"
     "sample rates: TODO",
-    nfo->name, nfo->probed, nfo->output_channels,
-    nfo->input_channels, nfo->duplex_channels,
-    nfo->is_default_output, nfo->is_default_input,
-    nfo->preferred_sample_rate);
+    nfo->name,
+#  if RTAUDIO_MAJOR_VER == 5
+    nfo->probed,
+#  endif
+    nfo->output_channels, nfo->input_channels,
+    nfo->duplex_channels, nfo->is_default_output,
+    nfo->is_default_input, nfo->preferred_sample_rate);
 }
 
 /**
@@ -186,6 +191,7 @@ engine_rtaudio_setup (AudioEngine * self)
     }
 
   int dev_count = rtaudio_device_count (self->rtaudio);
+  g_return_val_if_fail (dev_count >= 0, -1);
   if (dev_count == 0)
     {
       g_warning ("No devices found");
@@ -197,8 +203,8 @@ engine_rtaudio_setup (AudioEngine * self)
    * to open */
   char * out_device = g_settings_get_string (
     S_P_GENERAL_ENGINE, "rtaudio-audio-device-name");
-  int out_device_id = -1;
-  for (int i = 0; i < dev_count; i++)
+  unsigned int out_device_id = UINT_MAX;
+  for (unsigned int i = 0; i < (unsigned int) dev_count; i++)
     {
       rtaudio_device_info_t dev_nfo =
         rtaudio_get_device_info (self->rtaudio, i);
@@ -213,10 +219,10 @@ engine_rtaudio_setup (AudioEngine * self)
           out_device_id = i;
         }
     }
-  if (out_device_id == -1)
+  if (out_device_id == UINT_MAX)
     {
       g_message ("selected device not found, using default");
-      out_device_id = (int)
+      out_device_id =
         rtaudio_get_default_output_device (self->rtaudio);
       rtaudio_device_info_t dev_nfo =
         rtaudio_get_device_info (self->rtaudio, out_device_id);
@@ -225,7 +231,7 @@ engine_rtaudio_setup (AudioEngine * self)
 
   /* prepare params */
   struct rtaudio_stream_parameters out_stream_params = {
-    .device_id = (unsigned int) out_device_id,
+    .device_id = out_device_id,
     .num_channels = 2,
     .first_channel = 0,
   };
@@ -329,8 +335,9 @@ engine_rtaudio_get_device_names (
       return;
     }
   int num_devs = rtaudio_device_count (rtaudio);
+  g_return_if_fail (num_devs >= 0);
   *num_names = 0;
-  for (int i = 0; i < num_devs; i++)
+  for (unsigned int i = 0; i < (unsigned int) num_devs; i++)
     {
       rtaudio_device_info_t dev_nfo =
         rtaudio_get_device_info (rtaudio, i);

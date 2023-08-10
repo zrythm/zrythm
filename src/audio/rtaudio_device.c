@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -90,7 +90,9 @@ rtaudio_device_new (
   if (device_name)
     {
       int dev_count = rtaudio_device_count (self->handle);
-      for (int i = 0; i < dev_count; i++)
+      g_return_val_if_fail (dev_count >= 0, NULL);
+      for (unsigned int i = 0; i < (unsigned int) dev_count;
+           i++)
         {
           rtaudio_device_info_t cur_dev_nfo =
             rtaudio_get_device_info (self->handle, i);
@@ -103,8 +105,8 @@ rtaudio_device_new (
     }
   else
     {
-      dev_nfo = rtaudio_get_device_info (
-        self->handle, (int) device_id);
+      dev_nfo =
+        rtaudio_get_device_info (self->handle, device_id);
     }
   self->name = g_strdup (dev_nfo.name);
 
@@ -131,12 +133,12 @@ rtaudio_device_open (RtAudioDevice * self, int start)
   g_message ("opening rtaudio device");
 
   rtaudio_device_info_t dev_nfo =
-    rtaudio_get_device_info (self->handle, (int) self->id);
+    rtaudio_get_device_info (self->handle, self->id);
   g_message ("RtAudio device %d: %s", self->id, dev_nfo.name);
 
   /* prepare params */
   struct rtaudio_stream_parameters stream_params = {
-    .device_id = (unsigned int) self->id,
+    .device_id = self->id,
     .num_channels = 1,
     .first_channel = self->channel_idx,
   };
@@ -189,7 +191,7 @@ rtaudio_device_start (RtAudioDevice * self)
       return ret;
     }
   rtaudio_device_info_t dev_nfo =
-    rtaudio_get_device_info (self->handle, (int) self->id);
+    rtaudio_get_device_info (self->handle, self->id);
   g_message ("RtAudio device %s started", dev_nfo.name);
   self->started = 1;
 
@@ -209,7 +211,7 @@ rtaudio_device_stop (RtAudioDevice * self)
       return ret;
     }
   rtaudio_device_info_t dev_nfo =
-    rtaudio_get_device_info (self->handle, (int) self->id);
+    rtaudio_get_device_info (self->handle, self->id);
   g_message ("RtAudio device %s stopped", dev_nfo.name);
   self->started = 0;
 

@@ -1,3 +1,4 @@
 [wrap-git]
-url = https://git.sr.ht/~alextee/rtaudio
-revision = 46b01b5b134f33d8ddc3dab76829d4b1350e0522
+url = https://github.com/thestk/rtaudio
+# 6.0.1
+revision = b4f04903312e0e0efffbe77655172e0f060dc085
