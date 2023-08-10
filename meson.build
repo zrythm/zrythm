@@ -103,7 +103,7 @@ meson_build_root = meson.current_build_dir ()
 prog_name = get_option ('program_name')
 prog_name_lowercase = prog_name.to_lower()
 copyright_name = 'The ' + prog_name + ' contributors'
-copyright_years = '2018-2022'
+copyright_years = '2018-2023'
 
 prefix = get_option ('prefix')
 bindir = prefix / get_option ('bindir')

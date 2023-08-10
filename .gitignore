@@ -169,3 +169,6 @@ subprojects/*sass*.wrap
 
 #VS Code config
 .vscode
+
+# Python related files
+venv

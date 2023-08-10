@@ -317,6 +317,22 @@ git-packaging-hooks for more information.
     git fetch <name>
     git merge <name>/<branch-name>
 
+# Building User and Dev Docs
+
+    # Create a virtual environment (if not already created)
+    # This will create a new directory called venv
+    # Skip this step if an environment is already there
+    python -m venv venv
+
+    # Enable the virtual environment
+    . ./venv/bin/activate
+
+    # Install required python libraries in the environment
+    install -r requirements.txt
+
+    # Build the user docs (bundled manual)
+    ninja -C build manual_bundle
+
 # Coding Guidelines
 ## Commenting
 Please document everything specified in header files
