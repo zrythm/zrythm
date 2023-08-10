@@ -109,7 +109,6 @@ if get_option ('tests')
         'LV2_PATH': meson_build_root / 'data/plugins',
         },
       ).stdout ().strip ()
-    warning(plugin_bundle_uri)
     # C
     test_config.set (
       'HAVE_' + name.to_upper(), 1)
