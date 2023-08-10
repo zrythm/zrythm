@@ -6,13 +6,14 @@
 # Henrik Mattsson-Mårn <h@archkive.org>, 2021.
 # tygyh <jonis9898@hotmail.com>, 2022.
 # Ivar <ivar.bjerling@protonmail.com>, 2023.
+# Ivar <ivar@ivarbjerling.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-04-22 22:44+0900\n"
-"PO-Revision-Date: 2023-01-23 23:56+0000\n"
-"Last-Translator: Ivar <ivar.bjerling@protonmail.com>\n"
+"PO-Revision-Date: 2023-08-06 20:45+0000\n"
+"Last-Translator: Ivar <ivar@ivarbjerling.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/zrythm/sv/"
 ">\n"
 "Language: sv\n"
@@ -20,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -41,7 +42,7 @@ msgstr "Jonisk (dur)"
 
 #: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
 msgid "Dorian"
-msgstr ""
+msgstr "Doriskt"
 
 #: inc/schemas/audio/scale.h:98 inc/audio/scale.h:132
 msgid "Phrygian"

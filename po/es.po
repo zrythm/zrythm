@@ -19,13 +19,14 @@
 # Yokox1 <mryokox@outlook.com>, 2021.
 # Adolfo Jayme Barrientos <fitojb@ubuntu.com>, 2022.
 # Juan <benitesjn@gmail.com>, 2023.
+# Daniel “Gula” GoodAir <danielcebeats97@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-04-22 22:44+0900\n"
-"PO-Revision-Date: 2023-02-13 10:35+0000\n"
-"Last-Translator: Juan <benitesjn@gmail.com>\n"
+"PO-Revision-Date: 2023-07-04 02:51+0000\n"
+"Last-Translator: Daniel “Gula” GoodAir <danielcebeats97@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -33,7 +34,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -69,45 +70,43 @@ msgstr "Mixolidia"
 
 #: inc/schemas/audio/scale.h:101 inc/audio/scale.h:135
 msgid "Aeolian"
-msgstr ""
+msgstr "Eolio"
 
 #: inc/schemas/audio/scale.h:102 inc/audio/scale.h:136
 msgid "Locrian"
-msgstr ""
+msgstr "Locrio"
 
 #: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
-#, fuzzy
 msgid "Melodic Minor"
-msgstr "Menor armónica"
+msgstr "Menor melódica"
 
 #: inc/schemas/audio/scale.h:104 inc/audio/scale.h:138
 msgid "Harmonic Minor"
 msgstr "Menor armónica"
 
 #: inc/schemas/audio/scale.h:105 inc/audio/scale.h:139
-#, fuzzy
 msgid "Whole Tone"
-msgstr "Conmutar panel superior"
+msgstr "Tono entero"
 
 #: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
 msgid "Major Pentatonic"
-msgstr ""
+msgstr "Pentatónica mayor"
 
 #: inc/schemas/audio/scale.h:107 inc/audio/scale.h:141
 msgid "Minor Pentatonic"
-msgstr ""
+msgstr "Pentatónica menor"
 
 #: inc/schemas/audio/scale.h:108 inc/audio/scale.h:142
 msgid "Octatonic Half Whole"
-msgstr ""
+msgstr "Mitad Octatónica Entera"
 
 #: inc/schemas/audio/scale.h:110 inc/audio/scale.h:143
 msgid "Octatonic Whole Half"
-msgstr ""
+msgstr "Mitad entera octatónica"
 
 #: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
 msgid "Acoustic"
-msgstr ""
+msgstr "Acústica"
 
 #: inc/schemas/audio/scale.h:113 inc/audio/scale.h:145
 #, fuzzy

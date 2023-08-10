@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-04-22 22:44+0900\n"
-"PO-Revision-Date: 2023-04-22 04:47+0000\n"
+"PO-Revision-Date: 2023-04-24 04:48+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -1602,14 +1602,14 @@ msgid "Unfold Track"
 msgstr "Treure de la carpeta la pista"
 
 #: src/actions/tracklist_selections.c:2094
-#, fuzzy, c-format
+#, c-format
 msgid "Change Fader from %.1f to %.1f"
-msgstr "Canviar BPM de %.2f a %.2f"
+msgstr "Canviar atenuador de %.1f a %.1f"
 
 #: src/actions/tracklist_selections.c:2098
-#, fuzzy, c-format
+#, c-format
 msgid "Change Pan from %.1f to %.1f"
-msgstr "Canviar BPM de %.2f a %.2f"
+msgstr "Canviar la panoràmica de %.1f a %.1f"
 
 #: src/actions/tracklist_selections.c:2101
 #: src/actions/tracklist_selections.c:2162
@@ -1987,6 +1987,8 @@ msgid ""
 "BPM and time signature automation is an experimental feature. Using it may "
 "corrupt your project."
 msgstr ""
+"L'automatització de BPM i indicació de compàs és una funcionalitat "
+"experimental. El seu ús pot corrompre el teu projecte."
 
 #: src/utils/error.c:24
 #, c-format
@@ -2988,9 +2990,8 @@ msgid "Destination"
 msgstr "Destinació"
 
 #: src/gui/widgets/fader.c:378
-#, fuzzy
 msgid "Fader Value"
-msgstr "Volum de l'atenuador"
+msgstr "Valor de l'atenuador"
 
 #: src/gui/widgets/fader.c:488 src/gui/widgets/fader_controls_expander.c:41
 msgid "Fader"
@@ -3157,7 +3158,6 @@ msgid "Custom"
 msgstr "Personalitzat"
 
 #: src/gui/widgets/snap_grid_popover.c:355
-#, fuzzy
 msgid "Object Length Type"
 msgstr "Tipus de durada de l'objecte"
 
@@ -3381,9 +3381,8 @@ msgid "Show lanes"
 msgstr "Mostrar carrils"
 
 #: src/gui/widgets/track.c:377
-#, fuzzy
 msgid "Change automatable"
-msgstr "Canviar quantitat"
+msgstr "Canvi automatitzat"
 
 #: src/gui/widgets/track.c:383
 msgid "Hide automation"
@@ -4219,24 +4218,20 @@ msgid "chord"
 msgstr "acord"
 
 #: src/gui/widgets/piano_roll_keys.c:550
-#, fuzzy
 msgid "Musical"
-msgstr "Mode musical"
+msgstr "Musical"
 
 #: src/gui/widgets/piano_roll_keys.c:556
-#, fuzzy
 msgid "Note Notation"
 msgstr "Notació de nota"
 
 #: src/gui/widgets/piano_roll_keys.c:562
-#, fuzzy
 msgid "Select notes in pitch"
-msgstr "Seleccionar camí"
+msgstr "Seleccionar notes en to"
 
 #: src/gui/widgets/piano_roll_keys.c:568
-#, fuzzy
 msgid "Append notes in pitch to selection"
-msgstr "Error en dividir la selecció"
+msgstr "Afegir notes en to a la selecció"
 
 #: src/gui/widgets/piano_roll_keys.c:574 src/gui/widgets/midi_arranger.c:492
 #: resources/ui/export_dialog.ui:103 resources/ui/export_dialog.ui:239
@@ -4262,13 +4257,12 @@ msgid "Browse…"
 msgstr "Navegar…"
 
 #: src/gui/widgets/balance_control.c:234
-#, fuzzy
 msgid "Balance"
-msgstr "Balanç atenuador"
+msgstr "Balanç"
 
 #: src/gui/widgets/balance_control.c:398
 msgid "Balance Value"
-msgstr ""
+msgstr "Valor del balanç"
 
 #: src/gui/widgets/file_browser.c:112
 #, c-format
@@ -6789,7 +6783,6 @@ msgid "Note notation"
 msgstr "Notació de nota"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:388
-#, fuzzy
 msgid ""
 "The note notation used in the piano roll - MIDI pitch index or musical (C, "
 "C#, etc.)"
@@ -7975,23 +7968,23 @@ msgstr "Afegit:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 msgid "Add monitor output meters in the header"
-msgstr ""
+msgstr "Afegir comptadors de sortida del monitor a la capçalera"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
-#, fuzzy
 msgid "Add Macedonian translations"
-msgstr "Actualitza les traduccions a l'ucraïnès"
+msgstr "Actualitza les traduccions al macedoni"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
-#, fuzzy
 msgid "Add pitch shift audio function"
-msgstr "Última funció d'àudio utilitzada"
+msgstr "Afegeix la funció d'àudio de canvi de to"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 msgid ""
 "Auto-scroll in the tracklist when dragging tracks and hovering towards the "
 "edges"
 msgstr ""
+"Desplaçament automàtic per la llista de pistes quan arrosseguas pistes i "
+"passes el cursor cap a les vores"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:92
@@ -8001,23 +7994,25 @@ msgid "Changed:"
 msgstr "Canviat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:64
-#, fuzzy
 msgid "Update Catalan, Japanese, Russian, French translations"
-msgstr "Actualitza les traduccions a l'ucraïnès"
+msgstr "Actualitzar traduccions català, japonès, rus i francès"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
 msgid "Stop using `g_slice_*()` (deprecated in GLib)"
-msgstr ""
+msgstr "Deixar d'utilitzar `g_slice_*()` (obsolet a la GLib)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:66
 msgid "Simplify CSS for separators"
-msgstr ""
+msgstr "Simplificar CSS per separadors"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:67
 msgid ""
 "Move velocity settings to new toolbar in the bottom of the piano roll (fixes "
 "being unable to drag velocity bars when set to high values)"
 msgstr ""
+"Mou la configuració de velocitat a la nova barra d'eines a la part inferior "
+"del rotlle de pianola (es soluciona que no es poden arrossegar les barres de "
+"velocitat quan s'estableixen valors alts)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:69
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:97
@@ -8031,11 +8026,14 @@ msgid ""
 "Fix audio files not being saved properly when saving the project after "
 "applying an audio function"
 msgstr ""
+"Soluciona els fitxers d'àudio que no es desen correctament en desar el "
+"projecte després d'aplicar una funció d'àudio"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:72
-#, fuzzy
 msgid "Fix error when routing to/from a port that has display unit info"
-msgstr "Soluciona un error en moure una regió des de l'últim carril"
+msgstr ""
+"Solucionar l'error en encaminar-se cap a/des d'un port que té informació de "
+"la unitat de visualització"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:73
 msgid "Fix minor memory leak"
@@ -8046,80 +8044,83 @@ msgid ""
 "Fix track/plugin inspect not immediately displaying the track/plugin "
 "properties"
 msgstr ""
+"Soluciona la inspecció de la pista/complement que no mostra immediatament "
+"les propietats de la pista/complement"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
 msgid ""
 "Fix occasional crash when exporting the project (fix not deleting the source "
 "function after disposing an EditableLabelWidget)"
 msgstr ""
+"Soluciona un bloqueig ocasional en exportar el projecte (soluciona no "
+"suprimir la funció d'origen després d'eliminar un EditableLabelWidget)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:76
-#, fuzzy
 msgid "Fix occasional crash when adding a plugin to a collection"
 msgstr ""
-"Correcció d'errors d'una falla de segment quan s'intenta afegir un "
-"complement a una col·lecció"
+"Soluciona un bloqueig ocasional en afegir un complement a una col·lecció"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid "Fix no sound when using Pipewire (regression from previous release)"
 msgstr ""
+"Soluciona el sense so quan utilitzes Pipewire (regressió de la versió "
+"anterior)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:78
-#, fuzzy
 msgid "Fix right-clicking on inserts not working on Windows"
-msgstr "Arregla l'eliminació d'insercions que no es podia desfer"
+msgstr "Soluciona el clic dret a les insercions que no funcionen a Windows"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:79
-#, fuzzy
 msgid "Fix error when attempting to paste an empty selection"
 msgstr "Soluciona l'error en intentar canviar la mida de la memòria intermèdia"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:88
-#, fuzzy
 msgid "Add spectrum analyzer"
-msgstr "Analitzador d'espectre"
+msgstr "Afegeix un analitzador d'espectre"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:89
-#, fuzzy
 msgid "Add vertical zoom buttons to editor"
-msgstr "Afegir una mica de farciment vertical a l'editor d'automatització"
+msgstr "Afegeix botons de zoom verticals a l'editor"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
-#, fuzzy
 msgid "User manual: add FAQ section"
-msgstr "Manual d'usuari: actualitzar algunes seccions"
+msgstr "Manual d'usuari: afegeix la secció de preguntes freqüents"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:94
 msgid ""
 "Update French, Catalan, Esperanto, Swedish, German, Korean, Polish, Spanish "
 "translations"
 msgstr ""
+"Actualitza les traduccions francès, català, esperanto, suec, alemany, coreà, "
+"polonès, espanyol"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:95
 msgid "Meson: disable fallbacks by default"
-msgstr ""
+msgstr "Mesó: inhabilita els retrocessos per defecte"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:99
 msgid "Fix scrolling horizontally with 2 fingers on touch pads"
-msgstr ""
+msgstr "Soluciona el desplaçament horitzontal amb 2 dits a les tecles tàctils"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:100
-#, fuzzy
 msgid "Fix project plugin states being deleted while in use"
 msgstr ""
-"Soluciona els estats del complement que s'eliminen del projecte principal en "
-"desar còpies de seguretat"
+"Soluciona els estats del complement del projecte que s'esborren mentre "
+"s'utilitza"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:101
 msgid ""
 "Work around a bug in Pipewire where it doesn't notify clients of buffer size "
 "changes"
 msgstr ""
+"Treballa al voltant d'un error a Pipewire on no notifica als clients els "
+"canvis de mida de la memòria intermèdia"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:102
-#, fuzzy
 msgid "Fix occasional deadlock when changing engine buffer sizes"
-msgstr "Soluciona errors ocasionals en tancar un projecte"
+msgstr ""
+"Soluciona un punt mort ocasional quan canvieu les mides de la memòria "
+"intermèdia del motor"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:111
 msgid "Avoid making a backup when the last performed action hasn't changed"

@@ -28,23 +28,26 @@
 # #-#-#-#-#  zrythm-interface.po (Zrythm 1.0.0-alpha.0)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#
 # #-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-03-20 21:11+0900\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2023-06-06 04:48+0000\n"
+"Last-Translator: Ewan Arends <ewan.arends10@gmail.com>\n"
+"Language-Team: Dutch <https://hosted.weblate.org/projects/zrythm/user-manual/"
+"nl/>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 4.18-dev\n"
 "Generated-By: Babel 2.11.0\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
-msgstr ""
+msgstr "Omgevingsvariabelen"
 
 #: ../../appendix/environment.rst:13
 msgid ""
@@ -54,6 +57,11 @@ msgid ""
 "program:`zrythm` or :program:`zrythm_launch`, like: ``LV2_PATH=/my/custom/"
 "path zrythm_launch``"
 msgstr ""
+"Zrythm begrijpt de volgende omgevingsvariabelen. Ze kunnen geconfigureerd "
+"worden in :file:`.bashrc` of een dergelijk shell-configuratie bestand, de "
+"instellingen van het operatiesysteem, of ze kunnen direct worden meegegeven "
+"bij het uitvoeren van :program:`zrythm` of :program:`zrythm_launch`, zoals: `"
+".bashrc`"
 
 #: ../../appendix/environment.rst:23
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
@@ -3601,7 +3609,7 @@ msgstr ""
 #: ../../getting-started/installation.rst:28
 #: ../../plugins-files/plugins/scanning.rst:79
 msgid "Windows"
-msgstr ""
+msgstr "Windows"
 
 #: ../../getting-started/installation.rst:31
 msgid ""
@@ -3612,7 +3620,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:36
 msgid "Flatpak"
-msgstr ""
+msgstr "Flatpak"
 
 #: ../../getting-started/installation.rst:37
 msgid "Zrythm is available on `Flathub`_ under the ID `org.zrythm.Zrythm`_."
@@ -5791,7 +5799,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/scanning.rst:85
 msgid "MacOS"
-msgstr ""
+msgstr "MacOS"
 
 #: ../../plugins-files/plugins/scanning.rst:86
 msgid ""

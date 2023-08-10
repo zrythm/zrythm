@@ -17,15 +17,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-03-20 21:11+0900\n"
-"PO-Revision-Date: 2023-02-13 10:35+0000\n"
-"Last-Translator: Juan <benitesjn@gmail.com>\n"
+"PO-Revision-Date: 2023-07-04 02:51+0000\n"
+"Last-Translator: Daniel “Gula” GoodAir <danielcebeats97@gmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0-dev\n"
 "Generated-By: Babel 2.11.0\n"
 
 #: ../../appendix/environment.rst:11
@@ -55,9 +56,8 @@ msgid "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
 msgstr "Ejemplo: ``LV2_PATH=$HOME/custom-lv2-dir``"
 
 #: ../../appendix/environment.rst:31
-#, fuzzy
 msgid "Set to 1 to disable plugin scanning."
-msgstr "Establezca 1 para desactivar el escaneo de plugins."
+msgstr "Establézcalo en 1 para deshabilitar el escaneo de complementos."
 
 #: ../../appendix/environment.rst:33
 msgid "Example: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
@@ -68,9 +68,9 @@ msgid "Set this to the locations to scan for :term:`VST2` plugins."
 msgstr "Establece las ubicaciones para buscar plugins :term:`VST2`."
 
 #: ../../appendix/environment.rst:43
-#, fuzzy
 msgid "Set this to the locations to scan for :term:`VST3` plugins."
-msgstr "Establece las ubicaciones para buscar plugins :term:`VST3`."
+msgstr ""
+"Configure esto en las ubicaciones para buscar complementos :term:`VST3`."
 
 #: ../../appendix/environment.rst:48
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."

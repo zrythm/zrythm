@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.14\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-16 08:25+0000\n"
-"PO-Revision-Date: 2023-01-05 23:59+0000\n"
-"Last-Translator: Ivar <ivar.bjerling@protonmail.com>\n"
+"PO-Revision-Date: 2023-08-06 20:45+0000\n"
+"Last-Translator: Ivar <ivar@ivarbjerling.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/"
 "user-manual-sphinx/sv/>\n"
 "Language: sv\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.15.1-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../_templates/page.html:61
@@ -35,17 +35,17 @@ msgstr "Hem"
 #: ../../_templates/page.html:88
 #, python-format
 msgid "<a href=\"%(path)s\">Copyright</a> &#169; %(copyright)s."
-msgstr ""
+msgstr "<a href=\"%(path)s\">Upphovsrätt </a> &#169; %(copyright)s."
 
 #: ../../_templates/page.html:92
 #, python-format
 msgid "Copyright &#169; %(copyright)s"
-msgstr ""
+msgstr "Upphovsrätt &#169; %(copyright)s"
 
 #: ../../_templates/page.html:99
 #, python-format
 msgid "Last updated on %(last_updated)s."
-msgstr ""
+msgstr "Senast uppdaterad vid %(last_updated)s."
 
 #: ../../_templates/page.html:105
 msgid ""
@@ -55,6 +55,10 @@ msgid ""
 "\">@pradyunsg</a>'s\n"
 "              <a href=\"https://github.com/pradyunsg/furo\">Furo theme</a>."
 msgstr ""
+"Byggd med <a href=\"https://www.sphinx-doc.org/\">Sphinx </a>\n"
+"och\n"
+"<a class=\"muted-link\" href=\"https://pradyunsg.me\">@pradyunsg </a>\n"
+"<a href=\"https://github.com/pradyunsg/furo\">Furo theme </a>."
 
 #: ../../_templates/page.html:116
 msgid "Show Source"
