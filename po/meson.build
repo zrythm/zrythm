@@ -75,6 +75,7 @@ foreach lang, lang_str : locales
   if msgfmt.found () and lang != 'en' and fs.is_file (lang + '.po')
     test (
       lang + '-po', msgfmt,
+      suite: 'i18n',
       args: [ '-v', '-c', files (lang + '.po') ])
     if os_gnu
       foreach illegal_char : illegal_chars

@@ -266,7 +266,6 @@ inc/gui/widgets/chord_arranger.h
 inc/gui/widgets/arranger_object.h
 inc/gui/widgets/editor_selection_info.h
 inc/gui/widgets/digital_meter.h
-inc/gui/widgets/popover_menu_bin.h
 inc/gui/widgets/channel.h
 inc/gui/widgets/item_factory.h
 inc/gui/widgets/center_dock.h
@@ -321,7 +320,6 @@ inc/gui/widgets/slider_bar.h
 inc/gui/widgets/help_toolbar.h
 inc/gui/widgets/midi_activity_bar.h
 inc/gui/widgets/pinned_tracklist.h
-inc/gui/widgets/automatable_selector_popover.h
 inc/gui/widgets/ruler_range.h
 inc/gui/widgets/dir.h
 inc/gui/widgets/bounce_step_selector.h
@@ -332,8 +330,6 @@ inc/gui/widgets/color_area.h
 inc/gui/widgets/port_connection_row.h
 inc/gui/widgets/splash.h
 inc/gui/widgets/project_toolbar.h
-inc/gui/widgets/track_filter_popover.h
-inc/gui/widgets/active_hardware_popover.h
 inc/gui/widgets/timeline_ruler.h
 inc/gui/widgets/fader_buttons.h
 inc/gui/widgets/editor_ruler.h
@@ -344,7 +340,6 @@ inc/gui/widgets/editable_label.h
 inc/gui/widgets/region.h
 inc/gui/widgets/piano_keyboard.h
 inc/gui/widgets/mixer.h
-inc/gui/widgets/port_connections_popover.h
 inc/gui/widgets/plugin_strip_expander.h
 inc/gui/widgets/active_hardware_mb.h
 inc/gui/widgets/top_bar.h
@@ -353,9 +348,7 @@ inc/gui/widgets/fader.h
 inc/gui/widgets/modulator_macro.h
 inc/gui/widgets/midi_arranger.h
 inc/gui/widgets/quantize_box.h
-inc/gui/widgets/snap_grid_popover.h
 inc/gui/widgets/modulator_view.h
-inc/gui/widgets/route_target_selector_popover.h
 inc/gui/widgets/spectrum_analyzer.h
 inc/gui/widgets/automation_region.h
 inc/gui/widgets/chord_object.h
@@ -445,7 +438,16 @@ inc/gui/widgets/dialogs/first_run_dialog.h
 inc/gui/widgets/dialogs/port_selector_dialog.h
 inc/gui/widgets/dialogs/string_entry_dialog.h
 inc/gui/widgets/dialogs/arranger_object_info.h
+inc/gui/widgets/dialogs/midi_function_dialog.h
 inc/gui/widgets/dialogs/bounce_dialog.h
+inc/gui/widgets/popovers/popover_menu_bin.h
+inc/gui/widgets/popovers/automatable_selector_popover.h
+inc/gui/widgets/popovers/track_filter_popover.h
+inc/gui/widgets/popovers/active_hardware_popover.h
+inc/gui/widgets/popovers/tracklist_preferences_popover.h
+inc/gui/widgets/popovers/port_connections_popover.h
+inc/gui/widgets/popovers/snap_grid_popover.h
+inc/gui/widgets/popovers/route_target_selector_popover.h
 inc/guile/project_generator.h
 inc/guile/modules.h
 inc/guile/guile.h
@@ -705,7 +707,6 @@ src/gui/widgets/arranger_draw.c
 src/gui/widgets/inspector_port.c
 src/gui/widgets/live_waveform.c
 src/gui/widgets/timeline_bg.c
-src/gui/widgets/automatable_selector_popover.c
 src/gui/widgets/inspector_track.c
 src/gui/widgets/ruler_marker.c
 src/gui/widgets/timeline_minimap_selection.c
@@ -733,11 +734,9 @@ src/gui/widgets/help_toolbar.c
 src/gui/widgets/cc_bindings.c
 src/gui/widgets/toolbox.c
 src/gui/widgets/folder_channel.c
-src/gui/widgets/snap_grid_popover.c
 src/gui/widgets/route_target_selector.c
 src/gui/widgets/midi_modifier_arranger.c
 src/gui/widgets/event_viewer.c
-src/gui/widgets/active_hardware_popover.c
 src/gui/widgets/file_auditioner_controls.c
 src/gui/widgets/digital_meter.c
 src/gui/widgets/panel_file_browser.c
@@ -761,13 +760,11 @@ src/gui/widgets/slider_bar.c
 src/gui/widgets/piano_keyboard.c
 src/gui/widgets/automation_region.c
 src/gui/widgets/meter.c
-src/gui/widgets/port_connections_popover.c
 src/gui/widgets/plugin_properties_expander.c
 src/gui/widgets/arranger.c
 src/gui/widgets/knob_with_name.c
 src/gui/widgets/custom_image.c
 src/gui/widgets/center_dock.c
-src/gui/widgets/route_target_selector_popover.c
 src/gui/widgets/tracklist_header.c
 src/gui/widgets/plugin_strip_expander.c
 src/gui/widgets/audio_editor_space.c
@@ -819,7 +816,6 @@ src/gui/widgets/chord_pack_browser.c
 src/gui/widgets/text_expander.c
 src/gui/widgets/piano_roll_keys.c
 src/gui/widgets/arranger_object.c
-src/gui/widgets/popover_menu_bin.c
 src/gui/widgets/chord_editor_space.c
 src/gui/widgets/editor_ruler.c
 src/gui/widgets/file_chooser_entry.c
@@ -830,7 +826,6 @@ src/gui/widgets/file_browser.c
 src/gui/widgets/scale_selector_window.c
 src/gui/widgets/editor_toolbar.c
 src/gui/widgets/chord_object.c
-src/gui/widgets/track_filter_popover.c
 src/gui/widgets/color_area.c
 src/gui/widgets/timeline_selection_info.c
 src/gui/widgets/item_factory.c
@@ -859,6 +854,7 @@ src/gui/widgets/track_properties_expander.c
 src/gui/widgets/chord_key.c
 src/gui/widgets/channel.c
 src/gui/widgets/dialogs/welcome_message_dialog.c
+src/gui/widgets/dialogs/midi_function_dialog.c
 src/gui/widgets/dialogs/port_selector_dialog.c
 src/gui/widgets/dialogs/project_progress_dialog.c
 src/gui/widgets/dialogs/port_info.c
@@ -882,6 +878,14 @@ src/gui/widgets/dialogs/track_icon_chooser_dialog.c
 src/gui/widgets/dialogs/string_entry_dialog.c
 src/gui/widgets/dialogs/save_chord_preset_dialog.c
 src/gui/widgets/dialogs/generic_progress_dialog.c
+src/gui/widgets/popovers/automatable_selector_popover.c
+src/gui/widgets/popovers/snap_grid_popover.c
+src/gui/widgets/popovers/active_hardware_popover.c
+src/gui/widgets/popovers/port_connections_popover.c
+src/gui/widgets/popovers/route_target_selector_popover.c
+src/gui/widgets/popovers/tracklist_preferences_popover.c
+src/gui/widgets/popovers/popover_menu_bin.c
+src/gui/widgets/popovers/track_filter_popover.c
 src/guile/project_generator.c
 src/guile/project.c
 src/guile/guile.c
@@ -965,7 +969,6 @@ resources/ui/project_assistant.ui
 resources/ui/modulator_inner.ui
 resources/ui/automation_track.ui
 resources/ui/inspector_track.ui
-resources/ui/arranger_object_info_dialog.ui
 resources/ui/chord_pad_panel.ui
 resources/ui/center_dock.ui
 resources/ui/route_target_selector.ui
@@ -976,7 +979,6 @@ resources/ui/inspector_master.ui
 resources/ui/view_toolbar.ui
 resources/ui/automatable_selector.ui
 resources/ui/string_entry_dialog.ui
-resources/ui/port_info_dialog.ui
 resources/ui/range_action_buttons.ui
 resources/ui/right_dock_edge.ui
 resources/ui/timeline_toolbar.ui

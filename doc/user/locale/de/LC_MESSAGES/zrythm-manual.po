@@ -41,7 +41,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-03-20 21:11+0900\n"
+"POT-Creation-Date: 2023-08-10 18:17+0900\n"
 "PO-Revision-Date: 2023-02-02 08:46+0000\n"
 "Last-Translator: Hartmut Wagener <hartmut.w.wagener@t-online.de>\n"
 "Language: de\n"
@@ -51,7 +51,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.11.0\n"
+"Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
 msgid "Environment Variables"
@@ -10247,13 +10247,6 @@ msgstr ""
 #~ msgid "UIs"
 #~ msgstr "Benutzeroberflächen"
 
-#~ msgid "Plugin UIs."
-#~ msgstr ""
-#~ "#-#-#-#-#  configuration.po (Zrythm 0.4)  #-#-#-#-#\n"
-#~ "#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-#~ "#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-#~ "Arten von Erweiterungen"
-
 #~ msgid "Open UI on instantiation"
 #~ msgstr "Beim Einrichten die Benutzeroberfläche öffnen"
 
@@ -10756,9 +10749,6 @@ msgstr ""
 
 #~ msgid "We recommend running a fairly modern machine."
 #~ msgstr "Wir empfehlen den Betrieb einer ziemlich modernen Maschine."
-
-#~ msgid "Audio Interface"
-#~ msgstr "Audiointerface"
 
 #~ msgid ""
 #~ "An Audio Interface is recommended as it offers low latency and better "
@@ -11607,9 +11597,6 @@ msgstr ""
 #~ "Ältere Versionen von Zrythm finden Sie unter `Savannah Downloads <https://"
 #~ "download.savannah.nongnu.org/releases/zrythm/>``_"
 
-#~ msgid "Getting Plugins"
-#~ msgstr "Erweiterungen bekommen"
-
 #~ msgid "If you are not sure where to start, please read on."
 #~ msgstr ""
 #~ "Falls du dir nicht sicher bist, wo du anfangen sollst, lies bitte weiter."
@@ -11743,9 +11730,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Willkommen beim Zrythm-Handbuch. Bitte folge den unten stehenden "
 #~ "Abschnitten um zu starten."
-
-#~ msgid "Zrythm Manual"
-#~ msgstr "Zrythm-Handbuch"
 
 #~ msgid "Channel Overview"
 #~ msgstr "Kanalübersicht"
