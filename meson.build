@@ -726,6 +726,11 @@ test_strict_cflags += [
   '-Werror=analyzer-use-of-uninitialized-value',
   '-Werror=analyzer-out-of-bounds',
   '-Werror=analyzer-deref-before-check',
+  '-Werror=analyzer-allocation-size',
+  '-Werror=analyzer-exposure-through-uninit-copy',
+  #'-Werror=analyzer-imprecise-fp-arithmetic',
+  '-Werror=analyzer-infinite-recursion',
+  '-Werror=analyzer-jump-through-null',
   '-Werror=nonnull',
   '-Werror=nonnull-compare',
   '-Werror=pointer-size',
@@ -742,6 +747,7 @@ test_strict_cflags += [
   '-Werror=sizeof-array-argument',
   '-Werror=lto-type-mismatch',
   '-Werror=odr',
+  '-Werror=enum-int-mismatch',
   ]
 
 if is_gcc
