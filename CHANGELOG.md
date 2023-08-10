@@ -6,6 +6,31 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.10.1] - 2023-08-10
+### Added
+- Add toggle to hide deactivated tracks in track filter menu
+- Add right-click option to loop selection in timeline
+- Add option to append all track/lane objects to the current selection
+- Add tracklist preferences button with option to disable auto-arm
+- Add Crescendo, Flam, Flip H/V, Portato, Staccato, Legato, Strum MIDI functions
+- Implement MIDI clock (output) for syncing to Zrythm
+- Build: add requirements.txt for managing Python dependencies (for building docs, etc.)
+
+### Changed
+- Link scroll events on digital meter widgets (changes are only applied at the end of scrolls)
+- Build: re-enable some GCC analyzer checks and add new checks
+- Change order in track context menu
+- Subprojects: bump GTK and RtAudio versions
+- Cache previous and current transport info during processing
+- Various internal refactorings
+- Update Catalan, French, Japanese, Chinese (Simplified), Russian, Dutch, Hungarian, Italian, Indonesian, Spanish, Portuguese, Swedish translations
+- Log: print `(?:?)` instead of `((null):(null))` when function and line number are unknown
+- Add more error checking and print more debug info in the log
+
+### Fixed
+- Build: fix bundled plugin build with GCC 13
+- Fix app icon not showing on Wayland (StartupWMClass)
+
 ## [1.0.0-beta.4.9.1] - 2023-04-29
 ### Added
 - Home/End key shortcut for moving to the start/end of the project
