@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-08-10 18:23+0900\n"
-"PO-Revision-Date: 2023-08-06 20:45+0000\n"
-"Last-Translator: Ivar <ivar@ivarbjerling.com>\n"
+"PO-Revision-Date: 2023-08-10 20:45+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/zrythm/sv/"
 ">\n"
 "Language: sv\n"
@@ -5569,7 +5569,7 @@ msgstr "Kunde inte återställa schemat %s"
 
 #: src/gui/widgets/popovers/tracklist_preferences_popover.c:65
 msgid "Behavior"
-msgstr ""
+msgstr "Beteende"
 
 #: src/gui/widgets/popovers/tracklist_preferences_popover.c:73
 #, fuzzy

@@ -13,8 +13,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-08-10 18:23+0900\n"
-"PO-Revision-Date: 2023-04-21 04:48+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2023-08-10 20:45+0000\n"
+"Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
 "ja/>\n"
 "Language: ja\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -5589,7 +5589,7 @@ msgstr "スキーマ %s をリセットできませんでした"
 
 #: src/gui/widgets/popovers/tracklist_preferences_popover.c:65
 msgid "Behavior"
-msgstr ""
+msgstr "動作"
 
 #: src/gui/widgets/popovers/tracklist_preferences_popover.c:73
 #, fuzzy
