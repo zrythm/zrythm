@@ -252,7 +252,7 @@ illegal_char_test_args = [
   ]
 
 # GTK/GLIB versions
-gtk_req = '4.8.0'
+gtk_req = '4.10.0'
 glib_req = '2.70.0'
 
 # --- Add extra languages ---
@@ -706,7 +706,8 @@ test_strict_cflags += [
   '-Werror=misleading-indentation',
   '-Werror=int-in-bool-context',
   '-Werror=type-limits',
-  '-Werror=deprecated-declarations',
+  # TODO re-enable after porting gtk widgets
+  #'-Werror=deprecated-declarations',
   '-Werror=endif-labels',
   '-Werror=logical-not-parentheses',
   '-Werror=parentheses',
@@ -714,6 +715,7 @@ test_strict_cflags += [
   '-Werror=sizeof-pointer-div',
   '-Werror=shift-count-overflow',
   '-Werror=free-nonheap-object',
+  '-Werror=use-after-free',
   '-fanalyzer',
   '-Werror=analyzer-possible-null-dereference',
   '-Werror=analyzer-malloc-leak',

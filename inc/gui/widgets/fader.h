@@ -50,6 +50,11 @@ typedef struct _FaderWidget
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
+
+  /* --- accessibility --- */
+
+  /** Last reported amplitude to the accessibility layer. */
+  double last_reported_amp;
 } FaderWidget;
 
 /**

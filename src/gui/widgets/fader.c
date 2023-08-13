@@ -25,7 +25,35 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (FaderWidget, fader_widget, GTK_TYPE_WIDGET)
+static void
+accessible_range_init (GtkAccessibleRangeInterface * iface);
+G_DEFINE_TYPE_WITH_CODE (
+  FaderWidget,
+  fader_widget,
+  GTK_TYPE_WIDGET,
+  G_IMPLEMENT_INTERFACE (
+    GTK_TYPE_ACCESSIBLE_RANGE,
+    accessible_range_init))
+
+static gboolean
+accessible_range_set_current_value (
+  GtkAccessibleRange * accessible_range,
+  double               value)
+{
+  FaderWidget * self = Z_FADER_WIDGET (accessible_range);
+  float         cur_amp = fader_get_amp (self->fader);
+  fader_set_amp_with_action (
+    self->fader, cur_amp, (float) value, true);
+
+  return TRUE;
+}
+
+static void
+accessible_range_init (GtkAccessibleRangeInterface * iface)
+{
+  iface->set_current_value =
+    accessible_range_set_current_value;
+}
 
 static void
 fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
@@ -436,6 +464,16 @@ fader_tick_cb (
       return G_SOURCE_CONTINUE;
     }
 
+  /* let accessibility layer know if value changed */
+  FaderWidget * self = Z_FADER_WIDGET (widget);
+  double        cur_amp = fader_get_amp (self->fader);
+  if (!math_doubles_equal (cur_amp, self->last_reported_amp))
+    {
+      gtk_accessible_update_property (
+        GTK_ACCESSIBLE (self),
+        GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, cur_amp, -1);
+    }
+
   gtk_widget_queue_draw (widget);
 
   return G_SOURCE_CONTINUE;
@@ -563,6 +601,11 @@ fader_widget_init (FaderWidget * self)
     GTK_WIDGET (self),
     GTK_EVENT_CONTROLLER (scroll_controller));
 
+  gtk_accessible_update_property (
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_VALUE_MAX,
+    2.0, GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, 0.0,
+    GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, 1.0, -1);
+
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), fader_tick_cb, self, NULL);
 }
@@ -576,6 +619,8 @@ fader_widget_class_init (FaderWidgetClass * klass)
 
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_accessible_role (
+    wklass, GTK_ACCESSIBLE_ROLE_SLIDER);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;
