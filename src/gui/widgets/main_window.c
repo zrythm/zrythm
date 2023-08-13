@@ -344,6 +344,26 @@ main_window_widget_set_project_title (
   adw_window_title_set_subtitle (self->window_title, prj->dir);
 }
 
+static void
+on_focus_widget_changed (
+  GObject *    gobject,
+  GParamSpec * pspec,
+  gpointer     user_data)
+{
+  /* below is for debugging */
+#if 0
+  GtkWidget * focus_widget = gtk_window_get_focus (GTK_WINDOW (gobject));
+  if (focus_widget)
+    {
+      z_gtk_widget_print_hierarchy (focus_widget);
+    }
+  else
+    {
+      g_debug ("nothing focused");
+    }
+#endif
+}
+
 /**
  * Prepare for finalization.
  */
@@ -815,6 +835,10 @@ main_window_widget_init (MainWindowWidget * self)
   g_signal_connect (
     G_OBJECT (self), "close-request",
     G_CALLBACK (on_close_request), self);
+
+  g_signal_connect (
+    G_OBJECT (self), "notify::focus-widget",
+    G_CALLBACK (on_focus_widget_changed), self);
 
   g_message ("done");
 }
