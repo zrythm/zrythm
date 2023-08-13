@@ -291,6 +291,10 @@ meter_widget_init (MeterWidget * self)
 {
   self->start_color = UI_COLORS->z_yellow;
   self->end_color = UI_COLORS->bright_green;
+  gtk_accessible_update_property (
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_VALUE_MAX,
+    2.0, GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, 0.0,
+    GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, 1.0, -1);
 }
 
 static void
@@ -299,6 +303,8 @@ meter_widget_class_init (MeterWidgetClass * _klass)
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
   wklass->snapshot = meter_snapshot;
   gtk_widget_class_set_css_name (wklass, "meter");
+  gtk_widget_class_set_accessible_role (
+    wklass, GTK_ACCESSIBLE_ROLE_METER);
 
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;
