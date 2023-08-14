@@ -21,7 +21,6 @@
     </child>
     <child>
       <object class="QuantizeBoxWidget" id="quantize_box">
-        <property name="visible">1</property>
       </object>
     </child>
     <child>

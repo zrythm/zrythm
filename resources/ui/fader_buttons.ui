@@ -13,7 +13,7 @@
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Mono compatibility</property>
         <child>
-          <object class="GtkImage">
+          <object class="AdwButtonContent">
             <property name="icon_name">mono</property>
           </object>
         </child>
@@ -26,7 +26,7 @@
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Record</property>
         <child>
-          <object class="GtkImage">
+          <object class="AdwButtonContent">
             <property name="icon_name">media-record</property>
           </object>
         </child>
@@ -39,7 +39,7 @@
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Solo</property>
         <child>
-          <object class="GtkImage">
+          <object class="AdwButtonContent">
             <property name="icon_name">solo</property>
           </object>
         </child>
@@ -52,7 +52,7 @@
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Mute</property>
         <child>
-          <object class="GtkImage">
+          <object class="AdwButtonContent">
             <property name="icon_name">mute</property>
           </object>
         </child>
@@ -65,7 +65,7 @@
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Listen</property>
         <child>
-          <object class="GtkImage">
+          <object class="AdwButtonContent">
             <property name="icon_name">listen</property>
           </object>
         </child>
@@ -78,7 +78,7 @@
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Swap phase</property>
         <child>
-          <object class="GtkImage">
+          <object class="AdwButtonContent">
             <property name="icon_name">phase</property>
           </object>
         </child>
@@ -91,7 +91,7 @@
         <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="yes">Channel settings</property>
         <child>
-          <object class="GtkImage">
+          <object class="AdwButtonContent">
             <property name="icon_name">gnome-builder-lang-enum-value-symbolic-light</property>
           </object>
         </child>
