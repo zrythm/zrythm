@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/clip_editor.h"
@@ -149,16 +149,8 @@ bot_dock_edge_widget_show_clip_editor (
 
   if (navigate_to_region_start && CLIP_EDITOR->has_region)
     {
-      ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
-      g_return_if_fail (IS_REGION_AND_NONNULL (r));
-      ArrangerObject * r_obj = (ArrangerObject *) r;
-      int px = ui_pos_to_px_editor (&r_obj->pos, false);
-      ArrangerWidget * arranger =
-        region_get_arranger_for_children (r);
-      EditorSettings * settings =
-        arranger_widget_get_editor_settings (arranger);
-      editor_settings_set_scroll_start_x (
-        settings, px, F_NO_VALIDATE);
+      clip_editor_widget_navigate_to_region_start (
+        MW_CLIP_EDITOR, true);
     }
 }
 

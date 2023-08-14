@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -58,6 +58,18 @@ clip_editor_widget_setup (ClipEditorWidget * self);
  */
 void
 clip_editor_widget_on_region_changed (ClipEditorWidget * self);
+
+/**
+ * Navigates to the region start point.
+ *
+ * If already at start point and @p
+ * center_contents_if_already_at_start is true, the region's
+ * contents will be centered.
+ */
+void
+clip_editor_widget_navigate_to_region_start (
+  ClipEditorWidget * self,
+  bool center_contents_if_already_at_start);
 
 ClipEditorWidget *
 clip_editor_widget_new (void);

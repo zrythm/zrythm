@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/clip_editor.h"
@@ -19,6 +19,7 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/ruler.h"
 #include "project.h"
+#include "utils/flags.h"
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
@@ -92,6 +93,41 @@ clip_editor_widget_on_region_changed (ClipEditorWidget * self)
       gtk_stack_set_visible_child (
         GTK_STACK (self->stack),
         GTK_WIDGET (self->no_selection_page));
+    }
+}
+
+/**
+ * Navigates to the region start point.
+ *
+ * If already at start point and @p
+ * center_contents_if_already_at_start is true, the region's
+ * contents will be centered.
+ */
+void
+clip_editor_widget_navigate_to_region_start (
+  ClipEditorWidget * self,
+  bool center_contents_if_already_at_start)
+{
+  ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+  g_return_if_fail (IS_REGION_AND_NONNULL (r));
+  ArrangerObject * r_obj = (ArrangerObject *) r;
+  int px = ui_pos_to_px_editor (&r_obj->pos, false);
+  ArrangerWidget * arranger =
+    region_get_arranger_for_children (r);
+  EditorSettings * settings =
+    arranger_widget_get_editor_settings (arranger);
+  if (px == settings->scroll_start_x)
+    {
+      /* execute the best fit action to center contents */
+      GAction * action = g_action_map_lookup_action (
+        G_ACTION_MAP (zrythm_app), "best-fit");
+      GVariant * var = g_variant_new_string ("editor");
+      g_action_activate (action, var);
+    }
+  else
+    {
+      editor_settings_set_scroll_start_x (
+        settings, px, F_NO_VALIDATE);
     }
 }
 

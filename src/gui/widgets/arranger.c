@@ -6359,7 +6359,6 @@ arranger_widget_toggle_selections_muted (
     G_ACTION_MAP (MAIN_WINDOW), "mute-selection");
   GVariant * var = g_variant_new_string ("timeline");
   g_action_activate (action, var);
-  g_free (var);
 }
 
 /**
