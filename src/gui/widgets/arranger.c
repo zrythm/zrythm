@@ -1922,8 +1922,7 @@ arranger_widget_on_key_press (
 
   arranger_widget_refresh_cursor (self);
 
-  /* if space pressed, allow the shortcut func
-   * to be called */
+  /* if space pressed, allow the shortcut func to be called */
   /* FIXME this whole function should not check
    * for keyvals and return false always */
   if (
@@ -1934,7 +1933,8 @@ arranger_widget_on_key_press (
     || keyval == GDK_KEY_Q || keyval == GDK_KEY_q
     || keyval == GDK_KEY_less || keyval == GDK_KEY_Delete
     || keyval == GDK_KEY_greater || keyval == GDK_KEY_F2
-    || keyval == GDK_KEY_KP_4 || keyval == GDK_KEY_KP_6)
+    || keyval == GDK_KEY_KP_4 || keyval == GDK_KEY_KP_6
+    || keyval == GDK_KEY_Tab)
     {
       g_debug ("ignoring keyval used for shortcuts");
       return false;

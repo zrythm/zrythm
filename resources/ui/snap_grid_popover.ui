@@ -82,8 +82,6 @@
                     <child>
                       <object class="GtkToggleButton" id="snap_triplet_toggle">
                         <property name="label" translatable="yes">t</property>
-                        <property name="focusable">1</property>
-                        <property name="receives_default">1</property>
                         <property name="tooltip_text" translatable="yes">Triplet</property>
                         <style>
                           <class name="note-type"/>
@@ -92,8 +90,6 @@
                     </child>
                     <child>
                       <object class="GtkToggleButton" id="snap_dotted_toggle">
-                        <property name="focusable">1</property>
-                        <property name="receives_default">1</property>
                         <property name="tooltip_text" translatable="yes">Dotted</property>
                         <child>
                           <object class="GtkImage">
@@ -114,7 +110,6 @@
                 <child>
                   <object class="GtkCheckButton" id="snap_adaptive">
                     <property name="label" translatable="yes">Adaptive</property>
-                    <property name="focusable">1</property>
                     <property name="tooltip_text" translatable="yes">Adaptive length</property>
                     <layout>
                       <property name="column">0</property>
@@ -165,8 +160,6 @@
                     <child>
                       <object class="GtkToggleButton" id="default_triplet_toggle">
                         <property name="label" translatable="yes">t</property>
-                        <property name="focusable">1</property>
-                        <property name="receives_default">1</property>
                         <property name="tooltip_text" translatable="yes">Triplet</property>
                         <style>
                           <class name="note-type"/>
@@ -175,8 +168,6 @@
                     </child>
                     <child>
                       <object class="GtkToggleButton" id="default_dotted_toggle">
-                        <property name="focusable">1</property>
-                        <property name="receives_default">1</property>
                         <property name="tooltip_text" translatable="yes">Dotted</property>
                         <child>
                           <object class="GtkImage">
@@ -197,7 +188,6 @@
                 <child>
                   <object class="GtkCheckButton" id="default_adaptive">
                     <property name="label" translatable="yes">Adaptive</property>
-                    <property name="focusable">1</property>
                     <property name="tooltip_text" translatable="yes">Adaptive length</property>
                     <layout>
                       <property name="column">0</property>
@@ -210,8 +200,6 @@
                   <object class="GtkToggleButton" id="link_toggle">
                     <property name="label" translatable="yes">Link</property>
                     <property name="tooltip_text" translatable="yes">Link length to snap setting</property>
-                    <property name="focusable">1</property>
-                    <property name="receives_default">1</property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">2</property>
@@ -223,8 +211,6 @@
                   <object class="GtkToggleButton" id="last_object_toggle">
                     <property name="label" translatable="yes">Last object</property>
                     <property name="tooltip_text" translatable="yes">Use last created object&apos;s length</property>
-                    <property name="focusable">1</property>
-                    <property name="receives_default">1</property>
                     <layout>
                       <property name="column">0</property>
                       <property name="row">3</property>

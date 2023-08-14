@@ -208,7 +208,7 @@ on_key_pressed (
   GdkModifierType         state,
   gpointer                user_data)
 {
-  g_debug ("main window key press");
+  /*g_debug ("main window key press");*/
   MainWindowWidget * self = Z_MAIN_WINDOW_WIDGET (user_data);
 
   /* if pressed space and currently not inside a GtkEditable,

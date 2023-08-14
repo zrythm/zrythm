@@ -21,7 +21,6 @@
         </child>
         <child>
           <object class="GtkMenuButton" id="filter_menu_btn">
-            <property name="focusable">1</property>
             <property name="direction">right</property>
             <property name="tooltip-text" translatable="yes">Track filters &amp; visibility</property>
             <child>

@@ -4,8 +4,6 @@
   <template class="TransportControlsWidget" parent="GtkBox">
     <child>
       <object class="GtkToggleButton" id="return_to_cue_toggle">
-        <property name="focusable">1</property>
-        <property name="receives-default">1</property>
         <property name="tooltip_text" translatable="yes">Return to cue point on stop</property>
         <child>
           <object class="GtkImage">
@@ -21,8 +19,6 @@
     </child>
     <child>
       <object class="GtkButton" id="play">
-        <property name="focusable">1</property>
-        <property name="receives-default">1</property>
         <property name="tooltip_text" translatable="yes">Play</property>
         <child>
           <object class="GtkImage">
@@ -33,8 +29,6 @@
     </child>
     <child>
       <object class="GtkButton" id="stop">
-        <property name="focusable">1</property>
-        <property name="receives-default">1</property>
         <property name="tooltip_text" translatable="yes">Stop</property>
         <child>
           <object class="GtkImage">
@@ -45,8 +39,6 @@
     </child>
     <child>
       <object class="GtkButton" id="backward">
-        <property name="focusable">1</property>
-        <property name="receives-default">1</property>
         <property name="tooltip_text" translatable="yes">Backward</property>
         <child>
           <object class="GtkImage">
@@ -57,8 +49,6 @@
     </child>
     <child>
       <object class="GtkButton" id="forward">
-        <property name="focusable">1</property>
-        <property name="receives-default">1</property>
         <property name="tooltip_text" translatable="yes">Forward</property>
         <child>
           <object class="GtkImage">
@@ -69,8 +59,6 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="loop">
-        <property name="focusable">1</property>
-        <property name="receives-default">1</property>
         <property name="tooltip_text" translatable="yes">Loop</property>
         <property name="action_name">app.toggle-loop</property>
         <child>

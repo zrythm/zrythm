@@ -7,8 +7,6 @@
     </style>
     <child>
       <object class="GtkToggleButton" id="select_mode">
-        <property name="focusable">1</property>
-        <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="true">Select mode</property>
         <child>
           <object class="GtkImage" id="select_img">
@@ -19,8 +17,6 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="edit_mode">
-        <property name="focusable">1</property>
-        <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="true">Edit mode</property>
         <child>
           <object class="GtkImage">
@@ -31,8 +27,6 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="cut_mode">
-        <property name="focusable">1</property>
-        <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="true">Cut mode</property>
         <child>
           <object class="GtkImage">
@@ -43,8 +37,6 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="erase_mode">
-        <property name="focusable">1</property>
-        <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="true">Erase mode</property>
         <child>
           <object class="GtkImage">
@@ -55,8 +47,6 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="ramp_mode">
-        <property name="focusable">1</property>
-        <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="true">Ramp mode</property>
         <child>
           <object class="GtkImage">
@@ -67,8 +57,6 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="audition_mode">
-        <property name="focusable">1</property>
-        <property name="receives_default">1</property>
         <property name="tooltip-text" translatable="true">Audition mode</property>
         <child>
           <object class="GtkImage">

@@ -8,8 +8,6 @@
     <property name="homogeneous">False</property>
     <child>
       <object class="GtkToggleButton" id="snap_to_grid">
-        <property name="focusable">1</property>
-        <property name="receives_default">1</property>
         <property name="action_name">app.snap-to-grid</property>
         <property name="action_target">&quot;timeline&quot;</property>
         <property name="tooltip-text" translatable="yes">Snap to grid</property>
@@ -22,8 +20,6 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="snap_to_grid_keep_offset">
-        <property name="focusable">1</property>
-        <property name="receives_default">1</property>
         <property name="action_name">app.snap-keep-offset</property>
         <property name="action_target">&quot;timeline&quot;</property>
         <property name="tooltip-text" translatable="yes">Keep offset</property>
@@ -36,8 +32,6 @@
     </child>
     <child>
       <object class="GtkToggleButton" id="snap_to_events">
-        <property name="focusable">1</property>
-        <property name="receives_default">1</property>
         <property name="action_name">app.snap-events</property>
         <property name="action_target">&quot;timeline&quot;</property>
         <property name="tooltip-text" translatable="yes">Snap to events</property>
