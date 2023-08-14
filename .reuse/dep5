@@ -5,8 +5,7 @@ Source: https://git.sr.ht/~alextee/zrythm
 License: LicenseRef-ZrythmLicense
 
 Files: data/fonts/DSEG14-Classic-MINI/*
-Copyright: 2017, keshikan (http://www.keshikan.net),
-with Reserved Font Name "DSEG".
+Copyright: 2017, keshikan (http://www.keshikan.net), with Reserved Font Name "DSEG".
 License: OFL-1.1
 
 Files:
@@ -283,6 +282,11 @@ Files: data/scripts/*.scm
 Copyright: Alexandros Theodotou <alex@zrythm.org>
 License: CC0-1.0
 Comment: Example Guile scripts
+
+Files: requirements.txt
+Copyright: Alexandros Theodotou <alex@zrythm.org>
+License: CC0-1.0
+Comment: Python dependencies
 
 Files:
   doc/user/_static/img/zchan-concept.png
@@ -701,7 +705,7 @@ Files:
 Copyright: Filipe Coelho (aka falkTX) <falktx@falktx.com>
 License: CC0-1.0
 
-Files
+Files:
   git-packaging-hooks/README.md
   git-packaging-hooks/README.md.orig
   git-packaging-hooks/project-defs.sh.inc.example
