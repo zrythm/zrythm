@@ -545,6 +545,8 @@ balance_control_widget_class_init (
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = balance_control_snapshot;
   gtk_widget_class_set_css_name (wklass, "balance-control");
+  gtk_widget_class_set_accessible_role (
+    wklass, GTK_ACCESSIBLE_ROLE_SLIDER);
 
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BIN_LAYOUT);
