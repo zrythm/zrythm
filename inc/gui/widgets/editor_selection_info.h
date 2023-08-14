@@ -26,7 +26,7 @@
 #ifndef __GUI_WIDGETS_PIANO_ROLL_SELECTION_INFO_H__
 #define __GUI_WIDGETS_PIANO_ROLL_SELECTION_INFO_H__
 
-#include "audio/region.h"
+#include "dsp/region.h"
 #include "gui/widgets/region.h"
 #include "utils/ui.h"
 

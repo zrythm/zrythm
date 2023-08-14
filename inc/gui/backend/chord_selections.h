@@ -10,7 +10,7 @@
 #ifndef __GUI_BACKEND_CHORD_SELECTIONS_H__
 #define __GUI_BACKEND_CHORD_SELECTIONS_H__
 
-#include "audio/chord_object.h"
+#include "dsp/chord_object.h"
 #include "gui/backend/arranger_selections.h"
 #include "utils/yaml.h"
 

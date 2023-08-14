@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/mixer_selections_action.h"
-#include "audio/channel.h"
-#include "audio/modulator_track.h"
-#include "audio/router.h"
-#include "audio/track.h"
+#include "dsp/channel.h"
+#include "dsp/modulator_track.h"
+#include "dsp/router.h"
+#include "dsp/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/mixer_selections.h"

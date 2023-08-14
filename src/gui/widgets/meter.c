@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/channel.h"
-#include "audio/engine.h"
-#include "audio/meter.h"
+#include "dsp/channel.h"
+#include "dsp/engine.h"
+#include "dsp/meter.h"
 #include "gui/widgets/fader.h"
 #include "gui/widgets/meter.h"
 #include "project.h"

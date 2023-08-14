@@ -4,13 +4,13 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "audio/control_port.h"
-#include "audio/position.h"
-#include "audio/quantize_options.h"
-#include "audio/router.h"
-#include "audio/snap_grid.h"
-#include "audio/tempo_track.h"
-#include "audio/transport.h"
+#include "dsp/control_port.h"
+#include "dsp/position.h"
+#include "dsp/quantize_options.h"
+#include "dsp/router.h"
+#include "dsp/snap_grid.h"
+#include "dsp/tempo_track.h"
+#include "dsp/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_dock_edge.h"

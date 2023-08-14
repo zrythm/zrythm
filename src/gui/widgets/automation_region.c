@@ -3,11 +3,11 @@
 
 #include <math.h>
 
-#include "audio/automation_region.h"
-#include "audio/channel.h"
-#include "audio/instrument_track.h"
-#include "audio/midi_note.h"
-#include "audio/track.h"
+#include "dsp/automation_region.h"
+#include "dsp/channel.h"
+#include "dsp/instrument_track.h"
+#include "dsp/midi_note.h"
+#include "dsp/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_region.h"
 #include "gui/widgets/center_dock.h"

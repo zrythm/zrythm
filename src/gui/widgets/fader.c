@@ -5,9 +5,9 @@
 
 #include "actions/midi_mapping_action.h"
 #include "actions/tracklist_selections.h"
-#include "audio/channel.h"
-#include "audio/fader.h"
-#include "audio/midi_mapping.h"
+#include "dsp/channel.h"
+#include "dsp/fader.h"
+#include "dsp/midi_mapping.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_bar.h"

@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_TIMELINE_ARRANGER_H__
 #define __GUI_WIDGETS_TIMELINE_ARRANGER_H__
 
-#include "audio/position.h"
+#include "dsp/position.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"

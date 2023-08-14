@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/midi_event.h"
-#include "audio/transport.h"
+#include "dsp/midi_event.h"
+#include "dsp/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/button_with_menu.h"

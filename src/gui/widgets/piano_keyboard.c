@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-#include "audio/chord_descriptor.h"
+#include "dsp/chord_descriptor.h"
 #include "gui/backend/chord_editor.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/piano_roll.h"

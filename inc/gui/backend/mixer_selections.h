@@ -10,10 +10,10 @@
 #ifndef __GUI_BACKEND_MIXER_SELECTIONS_H__
 #define __GUI_BACKEND_MIXER_SELECTIONS_H__
 
-#include "audio/automation_point.h"
-#include "audio/channel.h"
-#include "audio/midi_region.h"
-#include "audio/region.h"
+#include "dsp/automation_point.h"
+#include "dsp/channel.h"
+#include "dsp/midi_region.h"
+#include "dsp/region.h"
 #include "utils/yaml.h"
 
 typedef struct Plugin Plugin;

@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/audio_region.h"
-#include "audio/engine.h"
-#include "audio/instrument_track.h"
-#include "audio/track.h"
-#include "audio/tracklist.h"
+#include "dsp/audio_region.h"
+#include "dsp/engine.h"
+#include "dsp/instrument_track.h"
+#include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/bot_dock_edge.h"

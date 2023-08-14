@@ -17,9 +17,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/engine.h"
-#include "audio/track.h"
-#include "audio/tracklist.h"
+#include "dsp/engine.h"
+#include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"

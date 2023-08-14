@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/position.h"
-#include "audio/snap_grid.h"
+#include "dsp/position.h"
+#include "dsp/snap_grid.h"
 #include "gui/backend/audio_selections.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

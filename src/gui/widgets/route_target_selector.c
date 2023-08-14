@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/channel.h"
-#include "audio/track.h"
+#include "dsp/channel.h"
+#include "dsp/track.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/popovers/route_target_selector_popover.h"
 #include "gui/widgets/route_target_selector.h"

@@ -3,9 +3,9 @@
 
 #include <string.h>
 
-#include "audio/channel.h"
-#include "audio/ext_port.h"
-#include "audio/hardware_processor.h"
+#include "dsp/channel.h"
+#include "dsp/ext_port.h"
+#include "dsp/hardware_processor.h"
 #include "gui/widgets/active_hardware_mb.h"
 #include "gui/widgets/popovers/active_hardware_popover.h"
 #include "project.h"

@@ -24,7 +24,7 @@
  *
  */
 
-#include "audio/engine.h"
+#include "dsp/engine.h"
 #include "plugins/lv2/lv2_worker.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"

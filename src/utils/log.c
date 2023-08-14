@@ -38,7 +38,7 @@
 #  include <process.h>
 #endif
 
-#include "audio/engine.h"
+#include "dsp/engine.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/dialogs/bug_report_dialog.h"

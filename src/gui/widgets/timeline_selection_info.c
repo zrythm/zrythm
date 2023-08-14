@@ -18,7 +18,7 @@
  */
 
 #include "actions/arranger_selections.h"
-#include "audio/position.h"
+#include "dsp/position.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/chord_object.h"

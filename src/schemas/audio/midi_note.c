@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/midi_note.h"
+#include "dsp/midi_note.h"
 #include "utils/objects.h"
 
 #include "schemas/audio/midi_note.h"

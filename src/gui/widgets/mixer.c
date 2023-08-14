@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/channel.h"
-#include "audio/track.h"
+#include "dsp/channel.h"
+#include "dsp/track.h"
 #include "gui/widgets/add_track_menu_button.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"

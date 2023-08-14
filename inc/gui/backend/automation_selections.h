@@ -26,7 +26,7 @@
 #ifndef __GUI_BACKEND_AUTOMATION_SELECTIONS_H__
 #define __GUI_BACKEND_AUTOMATION_SELECTIONS_H__
 
-#include "audio/automation_point.h"
+#include "dsp/automation_point.h"
 #include "gui/backend/arranger_selections.h"
 #include "utils/yaml.h"
 

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/chord_object.h"
+#include "dsp/chord_object.h"
 #include "utils/objects.h"
 
 #include "schemas/audio/chord_object.h"

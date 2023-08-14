@@ -4,8 +4,8 @@
 #include "zrythm-test-config.h"
 
 #include "actions/transport_action.h"
-#include "audio/control_port.h"
-#include "audio/transport.h"
+#include "dsp/control_port.h"
+#include "dsp/transport.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"

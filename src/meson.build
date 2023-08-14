@@ -24,7 +24,7 @@ translators_c_h = configure_file (
 zrythm_srcs += translators_c_h
 
 subdir('actions')
-subdir('audio')
+subdir('dsp')
 subdir('gui')
 subdir('guile')
 subdir('plugins')

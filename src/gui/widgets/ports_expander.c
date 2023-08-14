@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/engine.h"
-#include "audio/port.h"
-#include "audio/track.h"
+#include "dsp/engine.h"
+#include "dsp/port.h"
+#include "dsp/track.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/inspector_port.h"

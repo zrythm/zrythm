@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_MIDI_NOTE_H__
 #define __GUI_WIDGETS_MIDI_NOTE_H__
 
-#include "audio/midi_note.h"
+#include "dsp/midi_note.h"
 #include "gui/widgets/arranger_object.h"
 #include "utils/ui.h"
 

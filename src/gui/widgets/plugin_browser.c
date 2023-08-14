@@ -4,7 +4,7 @@
 #include "zrythm-config.h"
 
 #include "actions/tracklist_selections.h"
-#include "audio/engine.h"
+#include "dsp/engine.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"

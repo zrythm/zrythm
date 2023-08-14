@@ -3,8 +3,8 @@
 
 #include <string.h>
 
-#include "audio/track.h"
-#include "audio/tracklist.h"
+#include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"

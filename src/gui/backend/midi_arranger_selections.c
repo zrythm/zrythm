@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/engine.h"
-#include "audio/position.h"
-#include "audio/track.h"
-#include "audio/transport.h"
+#include "dsp/engine.h"
+#include "dsp/position.h"
+#include "dsp/track.h"
+#include "dsp/transport.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/midi_note.h"
 #include "project.h"

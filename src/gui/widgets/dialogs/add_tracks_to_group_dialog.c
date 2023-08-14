@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/engine.h"
+#include "dsp/engine.h"
 #include "gui/widgets/dialogs/add_tracks_to_group_dialog.h"
 #include "project.h"
 #include "utils/error.h"

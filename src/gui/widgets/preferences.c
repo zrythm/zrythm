@@ -3,7 +3,7 @@
 
 #include "zrythm-config.h"
 
-#include "audio/engine.h"
+#include "dsp/engine.h"
 #include "gui/widgets/active_hardware_mb.h"
 #include "gui/widgets/file_chooser_entry.h"
 #include "gui/widgets/main_window.h"

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/track.h"
+#include "dsp/track.h"
 #include "gui/widgets/color_area.h"
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "gui/widgets/main_window.h"

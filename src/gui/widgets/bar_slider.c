@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "audio/port.h"
-#include "audio/port_connection.h"
+#include "dsp/port.h"
+#include "dsp/port_connection.h"
 #include "gui/widgets/bar_slider.h"
 #include "utils/cairo.h"
 #include "utils/gtk.h"

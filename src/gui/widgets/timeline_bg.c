@@ -23,14 +23,14 @@
  * Timeline background inheriting from arranger_bg.
  */
 
-#include "audio/automation_track.h"
-#include "audio/automation_tracklist.h"
-#include "audio/channel.h"
-#include "audio/instrument_track.h"
-#include "audio/router.h"
-#include "audio/track.h"
-#include "audio/tracklist.h"
-#include "audio/transport.h"
+#include "dsp/automation_track.h"
+#include "dsp/automation_tracklist.h"
+#include "dsp/channel.h"
+#include "dsp/instrument_track.h"
+#include "dsp/router.h"
+#include "dsp/track.h"
+#include "dsp/tracklist.h"
+#include "dsp/transport.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_point.h"
 #include "gui/widgets/center_dock.h"

@@ -10,10 +10,10 @@
 #ifndef __GUI_BACKEND_TL_SELECTIONS_H__
 #define __GUI_BACKEND_TL_SELECTIONS_H__
 
-#include "audio/marker.h"
-#include "audio/midi_region.h"
-#include "audio/region.h"
-#include "audio/scale_object.h"
+#include "dsp/marker.h"
+#include "dsp/midi_region.h"
+#include "dsp/region.h"
+#include "dsp/scale_object.h"
 #include "gui/backend/arranger_selections.h"
 #include "utils/yaml.h"
 

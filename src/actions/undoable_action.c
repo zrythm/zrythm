@@ -7,7 +7,7 @@
 #include "actions/tracklist_selections.h"
 #include "actions/transport_action.h"
 #include "actions/undoable_action.h"
-#include "audio/engine.h"
+#include "dsp/engine.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm_app.h"

@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: © 2018-2019 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/audio_bus_track.h"
-#include "audio/channel.h"
-#include "audio/chord_region.h"
-#include "audio/instrument_track.h"
-#include "audio/midi_note.h"
-#include "audio/track.h"
+#include "dsp/audio_bus_track.h"
+#include "dsp/channel.h"
+#include "dsp/chord_region.h"
+#include "dsp/instrument_track.h"
+#include "dsp/midi_note.h"
+#include "dsp/track.h"
 #include "gui/backend/chord_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/center_dock.h"

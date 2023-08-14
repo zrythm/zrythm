@@ -17,7 +17,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/exporter.h"
+#include "dsp/exporter.h"
 #include "gui/widgets/preroll_count_selector.h"
 #include "project.h"
 #include "settings/settings.h"

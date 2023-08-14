@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_AUTOMATION_POINT_H__
 #define __GUI_WIDGETS_AUTOMATION_POINT_H__
 
-#include "audio/automation_point.h"
+#include "dsp/automation_point.h"
 #include "utils/ui.h"
 
 #include <gtk/gtk.h>

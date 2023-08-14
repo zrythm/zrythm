@@ -27,7 +27,7 @@
 #ifndef __GUI_WIDGETS_CHORD_REGION_H__
 #define __GUI_WIDGETS_CHORD_REGION_H__
 
-#include "audio/region.h"
+#include "dsp/region.h"
 #include "gui/widgets/region.h"
 #include "utils/ui.h"
 

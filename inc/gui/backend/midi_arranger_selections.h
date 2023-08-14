@@ -10,7 +10,7 @@
 #ifndef __GUI_BACKEND_MA_SELECTIONS_H__
 #define __GUI_BACKEND_MA_SELECTIONS_H__
 
-#include "audio/midi_note.h"
+#include "dsp/midi_note.h"
 #include "gui/backend/arranger_selections.h"
 #include "utils/yaml.h"
 

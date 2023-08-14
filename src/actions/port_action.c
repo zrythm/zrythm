@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/port_action.h"
-#include "audio/control_port.h"
-#include "audio/port.h"
-#include "audio/router.h"
+#include "dsp/control_port.h"
+#include "dsp/port.h"
+#include "dsp/router.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "project.h"

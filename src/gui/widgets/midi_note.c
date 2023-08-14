@@ -6,12 +6,12 @@
  *
  */
 
-#include "audio/audio_bus_track.h"
-#include "audio/channel.h"
-#include "audio/chord_track.h"
-#include "audio/instrument_track.h"
-#include "audio/region.h"
-#include "audio/track.h"
+#include "dsp/audio_bus_track.h"
+#include "dsp/channel.h"
+#include "dsp/chord_track.h"
+#include "dsp/instrument_track.h"
+#include "dsp/region.h"
+#include "dsp/track.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_bar.h"

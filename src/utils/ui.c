@@ -6,11 +6,11 @@
 
 #include <math.h>
 
-#include "audio/engine.h"
-#include "audio/engine_rtaudio.h"
-#include "audio/engine_sdl.h"
-#include "audio/pan.h"
-#include "audio/port.h"
+#include "dsp/engine.h"
+#include "dsp/engine_rtaudio.h"
+#include "dsp/engine_sdl.h"
+#include "dsp/pan.h"
+#include "dsp/port.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"

@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_EVENT_VIEWER_H__
 #define __GUI_WIDGETS_EVENT_VIEWER_H__
 
-#include "audio/region_identifier.h"
+#include "dsp/region_identifier.h"
 
 #include <gtk/gtk.h>
 

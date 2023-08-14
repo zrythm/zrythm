@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/automation_region.h"
-#include "audio/chord_track.h"
-#include "audio/fade.h"
-#include "audio/marker_track.h"
+#include "dsp/automation_region.h"
+#include "dsp/chord_track.h"
+#include "dsp/fade.h"
+#include "dsp/marker_track.h"
 #include "gui/backend/arranger_object.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_object.h"

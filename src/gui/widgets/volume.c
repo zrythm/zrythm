@@ -19,8 +19,8 @@
 
 #include <math.h>
 
-#include "audio/control_port.h"
-#include "audio/port.h"
+#include "dsp/control_port.h"
+#include "dsp/port.h"
 #include "gui/widgets/volume.h"
 #include "utils/ui.h"
 

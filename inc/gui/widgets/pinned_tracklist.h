@@ -28,7 +28,7 @@
 #ifndef __GUI_WIDGETS_PINNED_TRACKLIST_H__
 #define __GUI_WIDGETS_PINNED_TRACKLIST_H__
 
-#include "audio/region.h"
+#include "dsp/region.h"
 #include "gui/widgets/region.h"
 #include "utils/ui.h"
 

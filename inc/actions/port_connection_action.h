@@ -5,7 +5,7 @@
 #define __ACTION_PORT_CONNECTION_ACTION_H__
 
 #include "actions/undoable_action.h"
-#include "audio/port_connection.h"
+#include "dsp/port_connection.h"
 
 /**
  * @addtogroup actions

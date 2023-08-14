@@ -25,11 +25,11 @@
 #include <signal.h>
 #include <stdlib.h>
 
-#include "audio/channel.h"
-#include "audio/engine.h"
-#include "audio/midi_event.h"
-#include "audio/router.h"
-#include "audio/transport.h"
+#include "dsp/channel.h"
+#include "dsp/engine.h"
+#include "dsp/midi_event.h"
+#include "dsp/router.h"
+#include "dsp/transport.h"
 #include "project.h"
 #include "utils/midi.h"
 #include "utils/objects.h"

@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_AUTOMATION_MODE_H__
 #define __GUI_WIDGETS_AUTOMATION_MODE_H__
 
-#include "audio/automation_track.h"
+#include "dsp/automation_track.h"
 #include "gui/widgets/custom_button.h"
 
 #include <gtk/gtk.h>

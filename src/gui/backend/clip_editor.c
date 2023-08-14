@@ -12,9 +12,9 @@
 
 #include <stdlib.h>
 
-#include "audio/channel.h"
-#include "audio/router.h"
-#include "audio/track.h"
+#include "dsp/channel.h"
+#include "dsp/router.h"
+#include "dsp/track.h"
 #include "gui/backend/clip_editor.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

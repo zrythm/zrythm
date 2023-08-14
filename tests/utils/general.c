@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 
-#include "audio/port_identifier.h"
+#include "dsp/port_identifier.h"
 #include "utils/general.h"
 
 #include <glib.h>

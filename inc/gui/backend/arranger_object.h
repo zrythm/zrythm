@@ -12,9 +12,9 @@
 
 #include <stdbool.h>
 
-#include "audio/curve.h"
-#include "audio/position.h"
-#include "audio/region_identifier.h"
+#include "dsp/curve.h"
+#include "dsp/position.h"
+#include "dsp/region_identifier.h"
 #include "utils/yaml.h"
 
 typedef struct ArrangerObject        ArrangerObject;

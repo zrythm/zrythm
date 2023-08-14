@@ -13,7 +13,7 @@
 #include <stdbool.h>
 
 #include "actions/undoable_action.h"
-#include "audio/transport.h"
+#include "dsp/transport.h"
 #include "utils/types.h"
 #include "utils/yaml.h"
 

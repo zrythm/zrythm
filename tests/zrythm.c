@@ -3,8 +3,8 @@
 
 #include "zrythm-test-config.h"
 
-#include "audio/tempo_track.h"
-#include "audio/track.h"
+#include "dsp/tempo_track.h"
+#include "dsp/track.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "zrythm.h"

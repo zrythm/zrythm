@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/midi_mapping.h"
+#include "dsp/midi_mapping.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"

@@ -6,11 +6,11 @@
  *
  */
 
-#include "audio/engine.h"
-#include "audio/engine_alsa.h"
-#include "audio/engine_jack.h"
-#include "audio/engine_pa.h"
-#include "audio/engine_pulse.h"
+#include "dsp/engine.h"
+#include "dsp/engine_alsa.h"
+#include "dsp/engine_jack.h"
+#include "dsp/engine_pa.h"
+#include "dsp/engine_pulse.h"
 #include "gui/widgets/active_hardware_mb.h"
 #include "gui/widgets/dialogs/first_run_dialog.h"
 #include "gui/widgets/file_chooser_entry.h"

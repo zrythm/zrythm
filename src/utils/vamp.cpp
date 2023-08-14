@@ -19,8 +19,8 @@
 
 #include <stddef.h>
 
-#include "audio/vamp-ports/BeatTrack.h"
-#include "audio/vamp-ports/FixedTempoEstimator.h"
+#include "dsp/vamp-ports/BeatTrack.h"
+#include "dsp/vamp-ports/FixedTempoEstimator.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "utils/vamp.h"

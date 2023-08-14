@@ -26,7 +26,7 @@
 #ifndef __GUI_WIDGETS_MODULATOR_H__
 #define __GUI_WIDGETS_MODULATOR_H__
 
-#include "audio/track.h"
+#include "dsp/track.h"
 #include "gui/widgets/two_col_expander_box.h"
 
 #include <gtk/gtk.h>

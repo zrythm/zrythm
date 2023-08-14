@@ -31,7 +31,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include "audio/transport.h"
+#include "dsp/transport.h"
 #include "plugins/lv2/lv2_state.h"
 #include "plugins/lv2/lv2_ui.h"
 #include "plugins/lv2_plugin.h"

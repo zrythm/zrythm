@@ -20,8 +20,8 @@
 /** \file
  */
 
-#include "audio/engine.h"
-#include "audio/transport.h"
+#include "dsp/engine.h"
+#include "dsp/transport.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/main_window.h"

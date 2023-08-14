@@ -43,10 +43,10 @@
 
 #include <signal.h>
 
-#include "audio/chord_track.h"
-#include "audio/engine_dummy.h"
-#include "audio/marker_track.h"
-#include "audio/tracklist.h"
+#include "dsp/chord_track.h"
+#include "dsp/engine_dummy.h"
+#include "dsp/marker_track.h"
+#include "dsp/tracklist.h"
 #include "plugins/plugin_manager.h"
 #include "utils/backtrace.h"
 #include "utils/cairo.h"

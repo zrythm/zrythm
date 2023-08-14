@@ -9,10 +9,10 @@
 #  include <math.h>
 #  include <stdlib.h>
 
-#  include "audio/engine.h"
-#  include "audio/midi_event.h"
-#  include "audio/tempo_track.h"
-#  include "audio/transport.h"
+#  include "dsp/engine.h"
+#  include "dsp/midi_event.h"
+#  include "dsp/tempo_track.h"
+#  include "dsp/transport.h"
 #  include "gui/backend/event.h"
 #  include "gui/backend/event_manager.h"
 #  include "gui/widgets/main_window.h"

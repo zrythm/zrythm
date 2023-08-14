@@ -3,7 +3,7 @@
 
 #include "actions/port_connection_action.h"
 #include "actions/tracklist_selections.h"
-#include "audio/tracklist.h"
+#include "dsp/tracklist.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/carla/carla_discovery.h"
 #include "plugins/lv2_plugin.h"

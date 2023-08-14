@@ -5,7 +5,7 @@
 
 #include <math.h>
 
-#include "audio/midi_region.h"
+#include "dsp/midi_region.h"
 #include "gui/backend/arranger_selections.h"
 #include "project.h"
 #include "utils/flags.h"

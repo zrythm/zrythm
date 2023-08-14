@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/track_lane.h"
+#include "dsp/track_lane.h"
 #include "utils/objects.h"
 
 #include "schemas/audio/track_lane.h"

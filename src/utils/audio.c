@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-#include "audio/engine.h"
+#include "dsp/engine.h"
 #include "project.h"
 #include "utils/audio.h"
 #include "utils/error.h"

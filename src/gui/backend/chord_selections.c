@@ -17,12 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/chord_region.h"
-#include "audio/chord_track.h"
-#include "audio/engine.h"
-#include "audio/position.h"
-#include "audio/track.h"
-#include "audio/transport.h"
+#include "dsp/chord_region.h"
+#include "dsp/chord_track.h"
+#include "dsp/engine.h"
+#include "dsp/position.h"
+#include "dsp/track.h"
+#include "dsp/transport.h"
 #include "gui/backend/chord_selections.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/midi_region.h"

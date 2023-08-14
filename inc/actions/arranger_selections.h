@@ -14,12 +14,12 @@
 #include <stdint.h>
 
 #include "actions/undoable_action.h"
-#include "audio/audio_function.h"
-#include "audio/automation_function.h"
-#include "audio/midi_function.h"
-#include "audio/port_identifier.h"
-#include "audio/position.h"
-#include "audio/quantize_options.h"
+#include "dsp/audio_function.h"
+#include "dsp/automation_function.h"
+#include "dsp/midi_function.h"
+#include "dsp/port_identifier.h"
+#include "dsp/position.h"
+#include "dsp/quantize_options.h"
 #include "gui/backend/audio_selections.h"
 #include "gui/backend/automation_selections.h"
 #include "gui/backend/chord_selections.h"

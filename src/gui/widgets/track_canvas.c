@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/control_port.h"
-#include "audio/instrument_track.h"
-#include "audio/track.h"
+#include "dsp/control_port.h"
+#include "dsp/instrument_track.h"
+#include "dsp/track.h"
 #include "gui/widgets/automation_mode.h"
 #include "gui/widgets/custom_button.h"
 #include "gui/widgets/track.h"

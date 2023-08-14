@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/control_port.h"
-#include "audio/modulator_track.h"
-#include "audio/track.h"
-#include "audio/tracklist.h"
+#include "dsp/control_port.h"
+#include "dsp/modulator_track.h"
+#include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "gui/widgets/dialogs/port_info.h"
 #include "gui/widgets/knob.h"

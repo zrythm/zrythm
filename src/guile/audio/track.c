@@ -4,7 +4,7 @@
 #include "guile/modules.h"
 
 #ifndef SNARF_MODE
-#  include "audio/track.h"
+#  include "dsp/track.h"
 #  include "project.h"
 #  include "utils/error.h"
 #  include "utils/flags.h"

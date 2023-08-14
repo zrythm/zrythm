@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/exporter.h"
+#include "dsp/exporter.h"
 #include "gui/widgets/bounce_step_selector.h"
 #include "project.h"
 #include "settings/settings.h"

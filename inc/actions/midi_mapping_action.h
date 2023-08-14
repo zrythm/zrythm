@@ -5,9 +5,9 @@
 #define __UNDO_MIDI_MAPPING_ACTION_H__
 
 #include "actions/undoable_action.h"
-#include "audio/ext_port.h"
-#include "audio/midi_mapping.h"
-#include "audio/port_identifier.h"
+#include "dsp/ext_port.h"
+#include "dsp/midi_mapping.h"
+#include "dsp/port_identifier.h"
 #include "utils/types.h"
 
 /**

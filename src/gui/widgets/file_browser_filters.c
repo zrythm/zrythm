@@ -7,8 +7,8 @@
  * File browser.
  */
 
-#include "audio/engine.h"
-#include "audio/sample_processor.h"
+#include "dsp/engine.h"
+#include "dsp/sample_processor.h"
 #include "gui/widgets/file_browser_filters.h"
 #include "gui/widgets/volume.h"
 #include "plugins/plugin_manager.h"

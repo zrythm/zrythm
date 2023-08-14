@@ -4,7 +4,7 @@
 #ifndef __GUI_WIDGETS_PANEL_FILE_BROWSER_H__
 #define __GUI_WIDGETS_PANEL_FILE_BROWSER_H__
 
-#include "audio/supported_file.h"
+#include "dsp/supported_file.h"
 
 #include <gtk/gtk.h>
 

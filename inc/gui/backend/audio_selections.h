@@ -10,8 +10,8 @@
 #ifndef __GUI_BACKEND_AUDIO_SELECTIONS_H__
 #define __GUI_BACKEND_AUDIO_SELECTIONS_H__
 
-#include "audio/position.h"
-#include "audio/region_identifier.h"
+#include "dsp/position.h"
+#include "dsp/region_identifier.h"
 #include "gui/backend/arranger_selections.h"
 #include "utils/yaml.h"
 

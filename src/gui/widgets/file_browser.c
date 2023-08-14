@@ -4,7 +4,7 @@
 #include "zrythm-config.h"
 
 #include "actions/tracklist_selections.h"
-#include "audio/supported_file.h"
+#include "dsp/supported_file.h"
 #include "gui/backend/file_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/arranger.h"

@@ -39,7 +39,7 @@
 #include <gtk/gtk.h>
 
 /**
- * @addtogroup audio
+ * @addtogroup dsp
  *
  * @{
  */

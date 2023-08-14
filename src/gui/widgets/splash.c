@@ -3,7 +3,7 @@
 
 #include "zrythm-config.h"
 
-#include "audio/engine.h"
+#include "dsp/engine.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/custom_image.h"

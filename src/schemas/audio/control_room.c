@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/control_room.h"
+#include "dsp/control_room.h"
 #include "utils/objects.h"
 
 #include "schemas/audio/control_room.h"

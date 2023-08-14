@@ -20,7 +20,7 @@
 #include "guile/modules.h"
 
 #ifndef SNARF_MODE
-#  include "audio/tracklist.h"
+#  include "dsp/tracklist.h"
 #  include "project.h"
 #  include "zrythm_app.h"
 #endif

@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/engine.h"
-#include "audio/exporter.h"
-#include "audio/master_track.h"
-#include "audio/router.h"
+#include "dsp/engine.h"
+#include "dsp/exporter.h"
+#include "dsp/master_track.h"
+#include "dsp/router.h"
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/digital_meter.h"

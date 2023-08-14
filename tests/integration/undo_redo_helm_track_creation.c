@@ -21,7 +21,7 @@
 
 #include "actions/tracklist_selections.h"
 #include "actions/undo_manager.h"
-#include "audio/engine_dummy.h"
+#include "dsp/engine_dummy.h"
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "utils/arrays.h"

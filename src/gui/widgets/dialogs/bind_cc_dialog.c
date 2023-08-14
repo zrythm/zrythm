@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/engine.h"
+#include "dsp/engine.h"
 #include "gui/widgets/dialogs/bind_cc_dialog.h"
 #include "project.h"
 #include "utils/error.h"

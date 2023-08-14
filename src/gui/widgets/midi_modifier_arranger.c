@@ -18,8 +18,8 @@
  */
 
 #include "actions/arranger_selections.h"
-#include "audio/midi_note.h"
-#include "audio/velocity.h"
+#include "dsp/midi_note.h"
+#include "dsp/velocity.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"

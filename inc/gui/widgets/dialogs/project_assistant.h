@@ -29,7 +29,7 @@
 #ifndef __GUI_WIDGETS_PROJECT_ASSISTANT_H__
 #define __GUI_WIDGETS_PROJECT_ASSISTANT_H__
 
-#include "audio/channel.h"
+#include "dsp/channel.h"
 #include "gui/widgets/meter.h"
 
 #include <adwaita.h>

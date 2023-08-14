@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/engine.h"
-#include "audio/track.h"
+#include "dsp/engine.h"
+#include "dsp/track.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/editable_label.h"
 #include "gui/widgets/route_target_selector.h"

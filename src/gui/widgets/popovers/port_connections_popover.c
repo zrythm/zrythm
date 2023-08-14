@@ -17,9 +17,9 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/automation_track.h"
-#include "audio/channel_track.h"
-#include "audio/port_connections_manager.h"
+#include "dsp/automation_track.h"
+#include "dsp/channel_track.h"
+#include "dsp/port_connections_manager.h"
 #include "gui/widgets/dialogs/port_selector_dialog.h"
 #include "gui/widgets/inspector_port.h"
 #include "gui/widgets/popovers/port_connections_popover.h"

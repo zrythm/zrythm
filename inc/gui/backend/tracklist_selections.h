@@ -10,7 +10,7 @@
 #ifndef __ACTIONS_TRACKLIST_SELECTIONS_H__
 #define __ACTIONS_TRACKLIST_SELECTIONS_H__
 
-#include "audio/track.h"
+#include "dsp/track.h"
 #include "utils/yaml.h"
 
 typedef enum TracklistSelectionsActionType

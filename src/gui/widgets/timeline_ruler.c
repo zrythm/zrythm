@@ -3,9 +3,9 @@
 
 #include <math.h>
 
-#include "audio/engine.h"
-#include "audio/position.h"
-#include "audio/transport.h"
+#include "dsp/engine.h"
+#include "dsp/position.h"
+#include "dsp/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/arranger.h"

@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_DIALOGS_MIDI_FUNCTION_H__
 #define __GUI_WIDGETS_DIALOGS_MIDI_FUNCTION_H__
 
-#include "audio/midi_function.h"
+#include "dsp/midi_function.h"
 
 #include <adwaita.h>
 

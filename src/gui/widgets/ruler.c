@@ -4,9 +4,9 @@
 #include <math.h>
 
 #include "actions/actions.h"
-#include "audio/position.h"
-#include "audio/tempo_track.h"
-#include "audio/transport.h"
+#include "dsp/position.h"
+#include "dsp/tempo_track.h"
+#include "dsp/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/timeline.h"

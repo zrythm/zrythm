@@ -19,8 +19,8 @@
 
 #include <stdlib.h>
 
-#include "audio/channel.h"
-#include "audio/track.h"
+#include "dsp/channel.h"
+#include "dsp/track.h"
 #include "gui/backend/audio_clip_editor.h"
 #include "project.h"
 #include "utils/objects.h"

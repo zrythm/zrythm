@@ -6,10 +6,10 @@
  *
  */
 
-#include "audio/engine.h"
-#include "audio/engine_alsa.h"
-#include "audio/engine_jack.h"
-#include "audio/engine_pa.h"
+#include "dsp/engine.h"
+#include "dsp/engine_alsa.h"
+#include "dsp/engine_jack.h"
+#include "dsp/engine_pa.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/widgets/dialogs/export_midi_file_dialog.h"
 #include "gui/widgets/main_window.h"
@@ -193,7 +193,7 @@ export_midi_file_dialog_widget_run (
 
   /* add MIDI file filter */
   GtkFileFilter * filter = gtk_file_filter_new ();
-  gtk_file_filter_add_mime_type (filter, "audio/midi");
+  gtk_file_filter_add_mime_type (filter, "dsp/midi");
   gtk_file_filter_add_suffix (filter, "mid");
   gtk_file_filter_add_suffix (filter, "midi");
   gtk_file_chooser_add_filter (

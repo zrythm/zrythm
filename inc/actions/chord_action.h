@@ -5,7 +5,7 @@
 #define __UNDO_CHORD_ACTION_H__
 
 #include "actions/undoable_action.h"
-#include "audio/chord_descriptor.h"
+#include "dsp/chord_descriptor.h"
 #include "gui/backend/chord_editor.h"
 
 /**

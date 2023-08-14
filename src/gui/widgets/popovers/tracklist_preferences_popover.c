@@ -3,8 +3,8 @@
 
 #include <string.h>
 
-#include "audio/track.h"
-#include "audio/tracklist.h"
+#include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/widgets/popovers/tracklist_preferences_popover.h"
 #include "project.h"
 #include "settings/settings.h"

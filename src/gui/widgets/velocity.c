@@ -3,11 +3,11 @@
 
 #include <math.h>
 
-#include "audio/channel.h"
-#include "audio/channel_track.h"
-#include "audio/chord_track.h"
-#include "audio/midi_note.h"
-#include "audio/region.h"
+#include "dsp/channel.h"
+#include "dsp/channel_track.h"
+#include "dsp/chord_track.h"
+#include "dsp/midi_note.h"
+#include "dsp/region.h"
 #include "gui/backend/midi_arranger_selections.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_bar.h"

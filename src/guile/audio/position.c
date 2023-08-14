@@ -4,9 +4,9 @@
 #include "guile/modules.h"
 
 #ifndef SNARF_MODE
-#  include "audio/engine.h"
-#  include "audio/position.h"
-#  include "audio/transport.h"
+#  include "dsp/engine.h"
+#  include "dsp/position.h"
+#  include "dsp/transport.h"
 #  include "project.h"
 #endif
 

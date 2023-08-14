@@ -12,7 +12,7 @@
 
 #include <stdint.h>
 
-#include "audio/position.h"
+#include "dsp/position.h"
 #include "utils/yaml.h"
 
 typedef enum MusicalNote_v1

@@ -19,9 +19,9 @@
 
 #include "zrythm-config.h"
 
-#include "audio/engine.h"
-#include "audio/engine_jack.h"
-#include "audio/transport.h"
+#include "dsp/engine.h"
+#include "dsp/engine_jack.h"
+#include "dsp/transport.h"
 #include "gui/widgets/cpu.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/live_waveform.h"

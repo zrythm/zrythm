@@ -5,7 +5,7 @@
 #define __ACTION_PORT_ACTION_H__
 
 #include "actions/undoable_action.h"
-#include "audio/port_identifier.h"
+#include "dsp/port_identifier.h"
 
 /**
  * @addtogroup actions

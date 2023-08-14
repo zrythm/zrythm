@@ -19,7 +19,7 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/automation_point.h"
+#include "dsp/automation_point.h"
 #include "gui/widgets/inspector_ap.h"
 
 #include <gtk/gtk.h>

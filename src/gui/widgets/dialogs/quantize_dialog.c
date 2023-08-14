@@ -18,7 +18,7 @@
  */
 
 #include "actions/arranger_selections.h"
-#include "audio/quantize_options.h"
+#include "dsp/quantize_options.h"
 #include "gui/widgets/bar_slider.h"
 #include "gui/widgets/dialogs/quantize_dialog.h"
 #include "gui/widgets/digital_meter.h"

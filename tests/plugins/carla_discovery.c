@@ -3,8 +3,8 @@
 
 #include "zrythm-test-config.h"
 
-#include "audio/fader.h"
-#include "audio/router.h"
+#include "dsp/fader.h"
+#include "dsp/router.h"
 #include "plugins/carla/carla_discovery.h"
 #include "utils/math.h"
 

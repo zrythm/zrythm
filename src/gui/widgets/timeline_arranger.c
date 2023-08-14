@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/undo_manager.h"
-#include "audio/audio_region.h"
-#include "audio/automation_region.h"
-#include "audio/chord_region.h"
-#include "audio/chord_track.h"
-#include "audio/exporter.h"
-#include "audio/marker_track.h"
+#include "dsp/audio_region.h"
+#include "dsp/automation_region.h"
+#include "dsp/chord_region.h"
+#include "dsp/chord_track.h"
+#include "dsp/exporter.h"
+#include "dsp/marker_track.h"
 #include "gui/backend/arranger_object.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

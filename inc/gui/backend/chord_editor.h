@@ -10,8 +10,8 @@
 #ifndef __GUI_BACKEND_CHORD_EDITOR_H__
 #define __GUI_BACKEND_CHORD_EDITOR_H__
 
-#include "audio/chord_descriptor.h"
-#include "audio/scale.h"
+#include "dsp/chord_descriptor.h"
+#include "dsp/scale.h"
 #include "gui/backend/editor_settings.h"
 #include "utils/yaml.h"
 

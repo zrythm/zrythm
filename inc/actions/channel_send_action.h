@@ -5,8 +5,8 @@
 #define __UNDO_CHANNEL_SEND_ACTION_H__
 
 #include "actions/undoable_action.h"
-#include "audio/channel_send.h"
-#include "audio/port_connections_manager.h"
+#include "dsp/channel_send.h"
+#include "dsp/port_connections_manager.h"
 
 /**
  * @addtogroup actions

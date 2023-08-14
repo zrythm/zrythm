@@ -14,7 +14,7 @@
 
 #include <stdbool.h>
 
-#include "audio/chord_descriptor.h"
+#include "dsp/chord_descriptor.h"
 #include "utils/yaml.h"
 
 typedef struct ChordPresetPack ChordPresetPack;

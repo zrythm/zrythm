@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/channel_send_action.h"
-#include "audio/channel_send.h"
-#include "audio/track.h"
-#include "audio/tracklist.h"
+#include "dsp/channel_send.h"
+#include "dsp/track.h"
+#include "dsp/tracklist.h"
 #include "gui/widgets/channel_send.h"
 #include "gui/widgets/channel_send_selector.h"
 #include "plugins/plugin_identifier.h"

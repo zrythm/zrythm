@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/port_connection_action.h"
-#include "audio/port_connections_manager.h"
+#include "dsp/port_connections_manager.h"
 #include "gui/widgets/port_connections_tree.h"
 #include "project.h"
 #include "utils/error.h"

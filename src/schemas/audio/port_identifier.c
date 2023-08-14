@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/port_identifier.h"
+#include "dsp/port_identifier.h"
 #include "utils/objects.h"
 
 #include "schemas/audio/port_identifier.h"

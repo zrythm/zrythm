@@ -19,9 +19,9 @@
 
 #include <stdio.h>
 
-#include "audio/engine.h"
-#include "audio/master_track.h"
-#include "audio/peak_fall_smooth.h"
+#include "dsp/engine.h"
+#include "dsp/master_track.h"
+#include "dsp/peak_fall_smooth.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/spectrum_analyzer.h"
 #include "project.h"

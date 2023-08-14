@@ -12,7 +12,7 @@
 
 #include "zrythm-config.h"
 
-#include "audio/port.h"
+#include "dsp/port.h"
 #include "plugins/plugin_descriptor.h"
 #include "plugins/plugin_identifier.h"
 #include "plugins/plugin_preset.h"

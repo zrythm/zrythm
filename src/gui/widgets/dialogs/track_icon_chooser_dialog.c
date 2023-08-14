@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/region.h"
-#include "audio/track.h"
+#include "dsp/region.h"
+#include "dsp/track.h"
 #include "gui/widgets/dialogs/track_icon_chooser_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"

@@ -18,7 +18,7 @@
  */
 
 #include "actions/arranger_selections.h"
-#include "audio/marker.h"
+#include "dsp/marker.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/main_window.h"

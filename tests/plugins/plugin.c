@@ -3,9 +3,9 @@
 
 #include "zrythm-test-config.h"
 
-#include "audio/fader.h"
-#include "audio/midi_event.h"
-#include "audio/router.h"
+#include "dsp/fader.h"
+#include "dsp/midi_event.h"
+#include "dsp/router.h"
 #include "utils/math.h"
 
 #include <glib.h>

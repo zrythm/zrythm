@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/chord_track.h"
-#include "audio/engine.h"
-#include "audio/master_track.h"
-#include "audio/position.h"
-#include "audio/track.h"
-#include "audio/transport.h"
+#include "dsp/chord_track.h"
+#include "dsp/engine.h"
+#include "dsp/master_track.h"
+#include "dsp/position.h"
+#include "dsp/track.h"
+#include "dsp/transport.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/tracklist_selections.h"

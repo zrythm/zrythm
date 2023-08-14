@@ -42,8 +42,8 @@
 #  include <unistd.h>
 #endif
 
-#include "audio/port.h"
-#include "audio/position.h"
+#include "dsp/port.h"
+#include "dsp/position.h"
 #include "plugins/lv2/ext/host_info.h"
 #include "plugins/lv2/lv2_evbuf.h"
 #include "plugins/lv2/lv2_external_ui.h"

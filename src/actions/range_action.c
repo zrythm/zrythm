@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/range_action.h"
-#include "audio/channel.h"
-#include "audio/router.h"
+#include "dsp/channel.h"
+#include "dsp/router.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"

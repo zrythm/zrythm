@@ -19,7 +19,7 @@
 
 #include <stdlib.h>
 
-#include "audio/chord_descriptor.h"
+#include "dsp/chord_descriptor.h"
 #include "gui/backend/chord_editor.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

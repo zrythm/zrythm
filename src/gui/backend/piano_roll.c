@@ -27,8 +27,8 @@
 
 #include <stdlib.h>
 
-#include "audio/channel.h"
-#include "audio/track.h"
+#include "dsp/channel.h"
+#include "dsp/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/piano_roll.h"

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/hardware_processor.h"
+#include "dsp/hardware_processor.h"
 #include "utils/objects.h"
 
 #include "schemas/audio/hardware_processor.h"

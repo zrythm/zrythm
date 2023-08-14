@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 
-#include "audio/engine.h"
+#include "dsp/engine.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/cpu.h"
 #include "project.h"

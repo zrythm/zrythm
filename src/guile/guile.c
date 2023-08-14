@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include "audio/engine.h"
+#include "dsp/engine.h"
 #include "project.h"
 #include "utils/flags.h"
 #include "utils/io.h"

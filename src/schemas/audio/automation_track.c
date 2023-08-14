@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/automation_track.h"
+#include "dsp/automation_track.h"
 #include "utils/objects.h"
 
 #include "schemas/audio/automation_track.h"

@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/automation_track.h"
-#include "audio/channel_track.h"
-#include "audio/engine.h"
+#include "dsp/automation_track.h"
+#include "dsp/channel_track.h"
+#include "dsp/engine.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/popovers/automatable_selector_popover.h"

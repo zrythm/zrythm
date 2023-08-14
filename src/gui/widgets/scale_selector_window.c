@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_selections.h"
-#include "audio/scale.h"
-#include "audio/scale_object.h"
+#include "dsp/scale.h"
+#include "dsp/scale_object.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/scale_selector_window.h"
 #include "gui/widgets/timeline_arranger.h"

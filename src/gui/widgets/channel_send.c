@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/channel_send.h"
+#include "dsp/channel_send.h"
 #include "gui/widgets/channel_send.h"
 #include "gui/widgets/channel_send_selector.h"
 #include "gui/widgets/main_window.h"

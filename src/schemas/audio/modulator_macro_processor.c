@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/modulator_macro_processor.h"
+#include "dsp/modulator_macro_processor.h"
 #include "utils/objects.h"
 
 #include "schemas/audio/modulator_macro_processor.h"

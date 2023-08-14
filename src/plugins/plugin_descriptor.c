@@ -3,7 +3,7 @@
 
 #include <stdlib.h>
 
-#include "audio/track.h"
+#include "dsp/track.h"
 #include "plugins/carla_native_plugin.h"
 #include "plugins/collection.h"
 #include "plugins/collections.h"

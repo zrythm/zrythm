@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_TIMELINE_MINIMAP_H__
 #define __GUI_WIDGETS_TIMELINE_MINIMAP_H__
 
-#include "audio/position.h"
+#include "dsp/position.h"
 
 #include <gtk/gtk.h>
 

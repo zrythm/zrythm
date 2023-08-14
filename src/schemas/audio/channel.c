@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/channel.h"
+#include "dsp/channel.h"
 #include "utils/objects.h"
 
 #include "schemas/audio/channel.h"

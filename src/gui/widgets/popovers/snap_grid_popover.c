@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/snap_grid.h"
+#include "dsp/snap_grid.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/popovers/snap_grid_popover.h"
 #include "gui/widgets/snap_grid.h"

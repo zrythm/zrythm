@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/engine.h"
-#include "audio/master_track.h"
-#include "audio/track.h"
+#include "dsp/engine.h"
+#include "dsp/master_track.h"
+#include "dsp/track.h"
 #include "gui/widgets/live_waveform.h"
 #include "gui/widgets/track.h"
 #include "project.h"

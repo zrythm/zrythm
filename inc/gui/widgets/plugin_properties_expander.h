@@ -26,7 +26,7 @@
 #ifndef __GUI_WIDGETS_PLUGIN_PROPERTIES_EXPANDER_H__
 #define __GUI_WIDGETS_PLUGIN_PROPERTIES_EXPANDER_H__
 
-#include "audio/port.h"
+#include "dsp/port.h"
 #include "gui/widgets/two_col_expander_box.h"
 
 #include <gtk/gtk.h>

@@ -5,8 +5,8 @@
 #define __UNDO_MIXER_SELECTIONS_ACTION_H__
 
 #include "actions/undoable_action.h"
-#include "audio/automation_track.h"
-#include "audio/port_connections_manager.h"
+#include "dsp/automation_track.h"
+#include "dsp/port_connections_manager.h"
 #include "gui/backend/mixer_selections.h"
 #include "utils/yaml.h"
 

@@ -873,7 +873,7 @@ gtk_dep = dependency (
   'gtk4', version: '>=' + gtk_req,
   fallback: ['gtk4', 'libgtk_dep'],
   default_options: [
-    'demos=false', 'build-examples=false',
+    'build-demos=false', 'build-examples=false',
     'build-tests=false',
     'media-gstreamer=disabled',
     'introspection=disabled'],

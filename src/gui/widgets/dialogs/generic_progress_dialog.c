@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 
-#include "audio/engine.h"
+#include "dsp/engine.h"
 #include "gui/widgets/dialogs/generic_progress_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"

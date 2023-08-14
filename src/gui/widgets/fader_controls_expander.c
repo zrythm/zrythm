@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/channel.h"
-#include "audio/track.h"
+#include "dsp/channel.h"
+#include "dsp/track.h"
 #include "gui/widgets/channel_slot.h"
 #include "gui/widgets/fader_controls_expander.h"
 #include "gui/widgets/fader_controls_grid.h"

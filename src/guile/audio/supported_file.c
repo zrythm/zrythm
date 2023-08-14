@@ -20,7 +20,7 @@
 #include "guile/modules.h"
 
 #ifndef SNARF_MODE
-#  include "audio/supported_file.h"
+#  include "dsp/supported_file.h"
 #  include "project.h"
 #endif
 

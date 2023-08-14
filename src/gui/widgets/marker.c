@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/marker.h"
-#include "audio/marker_track.h"
+#include "dsp/marker.h"
+#include "dsp/marker_track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/bot_bar.h"

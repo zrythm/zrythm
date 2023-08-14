@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/engine.h"
-#include "audio/exporter.h"
-#include "audio/marker_track.h"
+#include "dsp/engine.h"
+#include "dsp/exporter.h"
+#include "dsp/marker_track.h"
 #include "gui/backend/timeline_selections.h"
 #include "gui/backend/tracklist_selections.h"
 #include "gui/widgets/bounce_step_selector.h"

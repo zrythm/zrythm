@@ -13,7 +13,7 @@
 
 #include <stdbool.h>
 
-#include "audio/transport.h"
+#include "dsp/transport.h"
 #include "utils/types.h"
 
 #include <gtk/gtk.h>

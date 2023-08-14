@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/marker.h"
+#include "dsp/marker.h"
 #include "utils/objects.h"
 
 #include "schemas/audio/marker.h"

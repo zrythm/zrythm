@@ -10,8 +10,8 @@
 #ifndef __GUI_WIDGETS_ARRANGER_H__
 #define __GUI_WIDGETS_ARRANGER_H__
 
-#include "audio/position.h"
-#include "audio/transport.h"
+#include "dsp/position.h"
+#include "dsp/transport.h"
 #include "gui/widgets/main_window.h"
 #include "utils/ui.h"
 

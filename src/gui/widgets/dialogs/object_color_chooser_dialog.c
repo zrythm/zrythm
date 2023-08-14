@@ -17,8 +17,8 @@
  * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "audio/region.h"
-#include "audio/track.h"
+#include "dsp/region.h"
+#include "dsp/track.h"
 #include "gui/widgets/dialogs/object_color_chooser_dialog.h"
 #include "project.h"
 #include "utils/color.h"

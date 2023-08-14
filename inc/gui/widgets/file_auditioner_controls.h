@@ -28,7 +28,7 @@
 
 #include "zrythm-config.h"
 
-#include "audio/supported_file.h"
+#include "dsp/supported_file.h"
 
 #include <gtk/gtk.h>
 

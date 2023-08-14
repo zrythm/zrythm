@@ -7,8 +7,8 @@
  * File browser.
  */
 
-#include "audio/engine.h"
-#include "audio/sample_processor.h"
+#include "dsp/engine.h"
+#include "dsp/sample_processor.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"

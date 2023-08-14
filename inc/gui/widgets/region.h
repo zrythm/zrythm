@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_REGION_H__
 #define __GUI_WIDGETS_REGION_H__
 
-#include "audio/region.h"
+#include "dsp/region.h"
 #include "gui/widgets/arranger_object.h"
 #include "utils/ui.h"
 

@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/channel.h"
-#include "audio/region.h"
-#include "audio/track.h"
+#include "dsp/channel.h"
+#include "dsp/region.h"
+#include "dsp/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/automation_arranger.h"
 #include "gui/widgets/automation_editor_space.h"

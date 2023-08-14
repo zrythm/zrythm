@@ -6,7 +6,7 @@
 
 #include "actions/tracklist_selections.h"
 #include "actions/undo_manager.h"
-#include "audio/midi_mapping.h"
+#include "dsp/midi_mapping.h"
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/dialogs/bind_cc_dialog.h"

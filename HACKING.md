@@ -50,10 +50,10 @@ Hacking Zrythm
     ├── git-packaging-hooks               # Git hooks for packaging
     ├── inc                               # Include dir
     │   ├── actions                       # Actions (undo, quit, etc.)
-    │   ├── audio                         # Audio-related headers
-    │   ├── gui                           # Gui-related headers
+    │   ├── dsp                           # DSP-related headers
+    │   ├── gui                           # GUI-related headers
     │   │   ├── backend                   # Backend for serialization
-    │   │   └── widgets                   # Gui widgets
+    │   │   └── widgets                   # GUI widgets
     │   ├── guile                         # Guile scripting interface
     │   ├── plugins                       # Plugin handling
     │   │   ├── carla                     # Carla plugin handling
@@ -85,21 +85,18 @@ with the following options:
 
     -Db_lto=false -Dstrict_flags=true -Ddebug=true -Doptimization=0 -Dtests=true -Db_sanitize=address
 
-After installing Zrythm once, for example in
-`~/.local`, use
+After installing Zrythm once, for example in `~/.local`, use
 
     G_MESSAGES_DEBUG=zrythm G_DEBUG=fatal_criticals GSETTINGS_SCHEMA_DIR=~/.local/share/glib-2.0/schemas GDK_SYNCHRONIZE=1 ZRYTHM_DEBUG=1 gdb -ex "handle SIG32 noprint nostop" -ex run --args build/src/zrythm
 
-Command-line options can be passed at the end. For
-example,
+Command-line options can be passed at the end. For example,
 
     ... -ex run --args build/src/zrythm --dummy
 
-- `G_MESSAGES_DEBUG=zrythm` will enable debug
-messages.
-- `G_DEBUG=fatal_criticals` will trigger
-breakpoints at critical messages. `fatal_warnings`
-is similar and also includes warnings.
+- `G_MESSAGES_DEBUG=zrythm` will enable debug messages.
+- `G_DEBUG=fatal_criticals` will trigger breakpoints at
+critical messages. `fatal_warnings` is similar and also
+includes warnings.
 - `GSETTINGS_SCHEMA_DIR` specifies the path to look
 for GSettings schemas. Zrythm will install its
 schema under `share/glib-2.0/schemas` in the install

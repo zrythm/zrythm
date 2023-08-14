@@ -4,7 +4,7 @@
 #ifndef __GUI_WIDGETS_CHORD_ARRANGER_H__
 #define __GUI_WIDGETS_CHORD_ARRANGER_H__
 
-#include "audio/position.h"
+#include "dsp/position.h"
 #include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/main_window.h"

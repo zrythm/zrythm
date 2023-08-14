@@ -26,7 +26,7 @@
 #ifndef __GUI_WIDGETS_VELOCITY_H__
 #define __GUI_WIDGETS_VELOCITY_H__
 
-#include "audio/velocity.h"
+#include "dsp/velocity.h"
 #include "gui/widgets/arranger_object.h"
 #include "utils/ui.h"
 

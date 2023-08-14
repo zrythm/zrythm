@@ -3,10 +3,10 @@
 
 #include "zrythm-test-config.h"
 
-#include "audio/engine_dummy.h"
-#include "audio/midi_event.h"
-#include "audio/midi_track.h"
-#include "audio/track.h"
+#include "dsp/engine_dummy.h"
+#include "dsp/midi_event.h"
+#include "dsp/midi_track.h"
+#include "dsp/track.h"
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/flags.h"

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/track.h"
+#include "dsp/track.h"
 #include "gui/widgets/balance_control.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/fader.h"

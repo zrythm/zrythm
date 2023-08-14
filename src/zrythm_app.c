@@ -43,11 +43,11 @@
 
 #include "actions/actions.h"
 #include "actions/undo_manager.h"
-#include "audio/engine.h"
-#include "audio/quantize_options.h"
-#include "audio/router.h"
-#include "audio/track.h"
-#include "audio/tracklist.h"
+#include "dsp/engine.h"
+#include "dsp/quantize_options.h"
+#include "dsp/router.h"
+#include "dsp/track.h"
+#include "dsp/tracklist.h"
 #ifdef HAVE_GUILE
 #  include "guile/guile.h"
 #  include "guile/project_generator.h"

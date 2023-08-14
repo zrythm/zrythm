@@ -9,8 +9,8 @@
 
 #include <stdio.h>
 
-#include "audio/engine.h"
-#include "audio/exporter.h"
+#include "dsp/engine.h"
+#include "dsp/exporter.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"

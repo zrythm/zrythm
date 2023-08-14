@@ -5,8 +5,8 @@
 #define __UNDO_RANGE_ACTION_H__
 
 #include "actions/undoable_action.h"
-#include "audio/position.h"
-#include "audio/transport.h"
+#include "dsp/position.h"
+#include "dsp/transport.h"
 #include "gui/backend/timeline_selections.h"
 
 /**

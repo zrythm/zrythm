@@ -9,10 +9,10 @@
 
 #include "zrythm-config.h"
 
-#include "audio/engine.h"
-#include "audio/engine_jack.h"
-#include "audio/metronome.h"
-#include "audio/transport.h"
+#include "dsp/engine.h"
+#include "dsp/engine_jack.h"
+#include "dsp/metronome.h"
+#include "dsp/transport.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/button_with_menu.h"
 #include "gui/widgets/cpu.h"

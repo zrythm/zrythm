@@ -5,14 +5,14 @@
 
 #include <math.h>
 
-#include "audio/audio_bus_track.h"
-#include "audio/audio_region.h"
-#include "audio/automation_region.h"
-#include "audio/channel.h"
-#include "audio/fade.h"
-#include "audio/instrument_track.h"
-#include "audio/tempo_track.h"
-#include "audio/track.h"
+#include "dsp/audio_bus_track.h"
+#include "dsp/audio_region.h"
+#include "dsp/automation_region.h"
+#include "dsp/channel.h"
+#include "dsp/fade.h"
+#include "dsp/instrument_track.h"
+#include "dsp/tempo_track.h"
+#include "dsp/track.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/arranger_object.h"
 #include "gui/widgets/automation_point.h"

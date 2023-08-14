@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "audio/supported_file.h"
+#include "dsp/supported_file.h"
 #include "gui/backend/file_manager.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"

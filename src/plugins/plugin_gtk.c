@@ -29,8 +29,8 @@
 
 #include <math.h>
 
-#include "audio/engine.h"
-#include "audio/track.h"
+#include "dsp/engine.h"
+#include "dsp/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/file_chooser_button.h"

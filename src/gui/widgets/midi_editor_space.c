@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: © 2019, 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/channel.h"
-#include "audio/chord_track.h"
-#include "audio/region.h"
-#include "audio/track.h"
+#include "dsp/channel.h"
+#include "dsp/chord_track.h"
+#include "dsp/region.h"
+#include "dsp/track.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_dock_edge.h"

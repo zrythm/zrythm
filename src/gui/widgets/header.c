@@ -3,8 +3,8 @@
 
 #include "zrythm-config.h"
 
-#include "audio/master_track.h"
-#include "audio/tracklist.h"
+#include "dsp/master_track.h"
+#include "dsp/tracklist.h"
 #include "gui/accel.h"
 #include "gui/widgets/gtk_flipper.h"
 #include "gui/widgets/header.h"

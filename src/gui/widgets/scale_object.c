@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "audio/chord_track.h"
-#include "audio/scale_object.h"
+#include "dsp/chord_track.h"
+#include "dsp/scale_object.h"
 #include "gui/widgets/arranger.h"
 #include "gui/widgets/bot_bar.h"
 #include "gui/widgets/scale_object.h"

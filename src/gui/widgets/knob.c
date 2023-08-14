@@ -30,8 +30,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "audio/port.h"
-#include "audio/port_connection.h"
+#include "dsp/port.h"
+#include "dsp/port_connection.h"
 #include "gui/widgets/knob.h"
 #include "utils/cairo.h"
 #include "utils/gtk.h"

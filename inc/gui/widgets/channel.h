@@ -4,7 +4,7 @@
 #ifndef __GUI_WIDGETS_CHANNEL_H__
 #define __GUI_WIDGETS_CHANNEL_H__
 
-#include "audio/channel.h"
+#include "dsp/channel.h"
 #include "gui/widgets/meter.h"
 
 #include <gtk/gtk.h>
