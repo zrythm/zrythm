@@ -46,6 +46,8 @@
  * Type of MIDI event.
  *
  * These are in order of precedence when sorting.
+ *
+ * See libs/ardour/midi_buffer.cc for more.
  */
 typedef enum MidiEventType
 {
