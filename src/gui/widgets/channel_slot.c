@@ -110,12 +110,6 @@ channel_slot_snapshot (
   int width = gtk_widget_get_allocated_width (widget);
   int height = gtk_widget_get_allocated_height (widget);
 
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
-  gtk_snapshot_render_background (
-    snapshot, context, 0, 0, width, height);
-
   int      padding = 2;
   Plugin * plugin = get_plugin (self);
   GdkRGBA  bg;
@@ -175,9 +169,16 @@ channel_slot_snapshot (
       z_cairo_get_text_extents_for_widget (
         widget, self->txt_layout, txt, &w, &h);
       pango_layout_set_markup (self->txt_layout, txt, -1);
-      gtk_snapshot_render_layout (
-        snapshot, context, width / 2 - w / 2,
-        height / 2 - h / 2, self->txt_layout);
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          (float) width / 2.f - (float) w / 2.f,
+          (float) height / 2.f - (float) h / 2.f));
+      gtk_snapshot_append_layout (
+        snapshot, self->txt_layout,
+        &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+      gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
       if (
@@ -190,7 +191,7 @@ channel_slot_snapshot (
           gtk_widget_set_tooltip_text (widget, self->pl_name);
         }
     }
-  else
+  else /* else if no plugin */
     {
       /* fill text */
       int w, h;
@@ -207,9 +208,16 @@ channel_slot_snapshot (
       z_cairo_get_text_extents_for_widget (
         widget, self->txt_layout, txt, &w, &h);
       pango_layout_set_markup (self->txt_layout, txt, -1);
-      gtk_snapshot_render_layout (
-        snapshot, context, width / 2 - w / 2,
-        height / 2 - h / 2, self->txt_layout);
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          (float) width / 2.f - (float) w / 2.f,
+          (float) height / 2.f - (float) h / 2.f));
+      gtk_snapshot_append_layout (
+        snapshot, self->txt_layout,
+        &Z_GDK_RGBA_INIT (1, 1, 1, 0.55));
+      gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
       if (self->pl_name)
@@ -910,6 +918,15 @@ channel_slot_widget_new_instrument (void)
 }
 
 static void
+dispose (ChannelSlotWidget * self)
+{
+  gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (channel_slot_widget_parent_class)
+    ->dispose (G_OBJECT (self));
+}
+
+static void
 channel_slot_widget_init (ChannelSlotWidget * self)
 {
   gtk_widget_set_size_request (GTK_WIDGET (self), -1, 20);
@@ -968,15 +985,6 @@ channel_slot_widget_init (ChannelSlotWidget * self)
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
-}
-
-static void
-dispose (ChannelSlotWidget * self)
-{
-  gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
-
-  G_OBJECT_CLASS (channel_slot_widget_parent_class)
-    ->dispose (G_OBJECT (self));
 }
 
 static void
