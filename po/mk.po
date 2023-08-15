@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2023-08-10 18:23+0900\n"
+"POT-Creation-Date: 2023-08-15 16:37+0900\n"
 "PO-Revision-Date: 2023-03-15 03:55+0000\n"
 "Last-Translator: AND <andrejdam@protonmail.com>\n"
 "Language-Team: Macedonian <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -18,276 +18,246 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n==1 || n%10==1 ? 0 : 1;\n"
 "X-Generator: Weblate 4.16.2-dev\n"
 
-#: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
-msgid "Chromatic"
-msgstr "Хроматика"
-
-#: inc/schemas/audio/scale.h:94 inc/audio/scale.h:128
-msgid "Major"
-msgstr "Дурска"
-
-#: inc/schemas/audio/scale.h:95 inc/audio/scale.h:129
-msgid "Minor"
-msgstr "Молска"
-
-#: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
-msgid "Ionian"
-msgstr "Јонска"
-
-#: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
-msgid "Dorian"
-msgstr "Дорска"
-
-#: inc/schemas/audio/scale.h:98 inc/audio/scale.h:132
-msgid "Phrygian"
-msgstr "Фригиска"
-
-#: inc/schemas/audio/scale.h:99 inc/audio/scale.h:133
-msgid "Lydian"
-msgstr "Лидијска"
-
-#: inc/schemas/audio/scale.h:100 inc/audio/scale.h:134
-msgid "Mixolydian"
-msgstr "Миксолидијска"
-
-#: inc/schemas/audio/scale.h:101 inc/audio/scale.h:135
-msgid "Aeolian"
-msgstr "Еолска"
-
-#: inc/schemas/audio/scale.h:102 inc/audio/scale.h:136
-msgid "Locrian"
-msgstr "Локријанска"
-
-#: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
-msgid "Melodic Minor"
-msgstr "Мелодична молска"
-
-#: inc/schemas/audio/scale.h:104 inc/audio/scale.h:138
-msgid "Harmonic Minor"
-msgstr "Хармонична молска"
-
-#: inc/schemas/audio/scale.h:105 inc/audio/scale.h:139
-msgid "Whole Tone"
-msgstr "Целотонална (целостепена)"
-
-#: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
-msgid "Major Pentatonic"
-msgstr "Дурска пентатоника"
-
-#: inc/schemas/audio/scale.h:107 inc/audio/scale.h:141
-msgid "Minor Pentatonic"
-msgstr "Молска пентатоника"
-
-#: inc/schemas/audio/scale.h:108 inc/audio/scale.h:142
-msgid "Octatonic Half Whole"
-msgstr "Октатоника полу-цела"
-
-#: inc/schemas/audio/scale.h:110 inc/audio/scale.h:143
-msgid "Octatonic Whole Half"
-msgstr "Октатоника цела-пола"
-
-#: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
-msgid "Acoustic"
-msgstr "Акустична"
-
-#: inc/schemas/audio/scale.h:113 inc/audio/scale.h:145
-msgid "Harmonic Major"
-msgstr "Хармонична дурска"
-
-#: inc/schemas/audio/scale.h:114 inc/audio/scale.h:146
-msgid "Phrygian Dominant"
-msgstr "Фригиска доминанта"
-
-#: inc/schemas/audio/scale.h:115 inc/audio/scale.h:147
-msgid "Major Locrian"
-msgstr "Дурска локријска"
-
-#: inc/schemas/audio/scale.h:116 inc/audio/scale.h:148
-msgid "Algerian"
-msgstr "Алжирска"
-
-#: inc/schemas/audio/scale.h:117 inc/audio/scale.h:149
-msgid "Augmented"
-msgstr "Повишена"
-
-#: inc/schemas/audio/scale.h:118 inc/audio/scale.h:150
-msgid "Double Harmonic"
-msgstr "Двојна хармонична"
-
-#: inc/schemas/audio/scale.h:119 inc/audio/scale.h:151
-msgid "Chinese"
-msgstr "Кинеска"
-
-#: inc/schemas/audio/scale.h:120 inc/audio/scale.h:152
-msgid "Diminished"
-msgstr "Спуштена"
-
-#: inc/schemas/audio/scale.h:121 inc/audio/scale.h:153
-msgid "Dominant Diminished"
-msgstr "Спуштена доминанта"
-
-#: inc/schemas/audio/scale.h:122 inc/audio/scale.h:154
-msgid "Egyptian"
-msgstr "Египетска"
-
-#: inc/schemas/audio/scale.h:123 inc/audio/scale.h:155
-msgid "Eight Tone Spanish"
-msgstr "Шпанска осумтонска"
-
-#: inc/schemas/audio/scale.h:124 inc/audio/scale.h:156
-msgid "Enigmatic"
-msgstr "Енигматична"
-
-#: inc/schemas/audio/scale.h:125 inc/audio/scale.h:157
-msgid "Geez"
-msgstr "Гез (Етиопска)"
-
-#: inc/schemas/audio/scale.h:126 inc/audio/scale.h:158
-msgid "Hindu"
-msgstr "Хинду"
-
-#: inc/schemas/audio/scale.h:127 inc/audio/scale.h:159
-msgid "Hirajoshi"
-msgstr "Хиџароши"
-
-#: inc/schemas/audio/scale.h:128 inc/audio/scale.h:160
-msgid "Hungarian Gypsy"
-msgstr "Унгарска циганска"
-
-#: inc/schemas/audio/scale.h:129 inc/audio/scale.h:161
-msgid "Insen"
-msgstr "Инсен"
-
-#: inc/schemas/audio/scale.h:130 inc/audio/scale.h:162
-msgid "Neapolitan Major"
-msgstr "Наполитанска дурска"
-
-#: inc/schemas/audio/scale.h:131 inc/audio/scale.h:163
-msgid "Neapolitan Minor"
-msgstr "Наполитанска молска"
-
-#: inc/schemas/audio/scale.h:132 inc/audio/scale.h:164
-msgid "Oriental"
-msgstr "Ориентална"
-
-#: inc/schemas/audio/scale.h:133 inc/audio/scale.h:165
-msgid "Romanian Minor"
-msgstr "Романска молска"
-
-#: inc/schemas/audio/scale.h:134 inc/audio/scale.h:166
-msgid "Altered"
-msgstr "Изменета"
-
-#: inc/schemas/audio/scale.h:135 inc/audio/scale.h:167
-msgid "Maqam"
-msgstr "Макам"
-
-#: inc/schemas/audio/scale.h:136 inc/audio/scale.h:168
-msgid "Yo"
-msgstr "Јо"
-
-#: inc/schemas/audio/scale.h:137 inc/audio/scale.h:169
-msgid "Bebop Locrian"
-msgstr "Бебоп локриска"
-
-#: inc/schemas/audio/scale.h:138 inc/audio/scale.h:170
-msgid "Bebop Dominant"
-msgstr "Бебом доминанта"
-
-#: inc/schemas/audio/scale.h:139 inc/audio/scale.h:171
-msgid "Bebop Major"
-msgstr "Бебоп дурска"
-
-#: inc/schemas/audio/scale.h:140 inc/audio/scale.h:172
-msgid "Super Locrian"
-msgstr "Супер локриска"
-
-#: inc/schemas/audio/scale.h:141 inc/audio/scale.h:173
-msgid "Enigmatic Minor"
-msgstr "Енигматска молска"
-
-#: inc/schemas/audio/scale.h:142 inc/audio/scale.h:174
-msgid "Composite"
-msgstr "Композитна"
-
-#: inc/schemas/audio/scale.h:143 inc/audio/scale.h:175
-msgid "Bhairav"
-msgstr "Бхаирав"
-
-#: inc/schemas/audio/scale.h:144 inc/audio/scale.h:176
-msgid "Hungarian Minor"
-msgstr "Унгарска молска"
-
-#: inc/schemas/audio/scale.h:145 inc/audio/scale.h:177
-msgid "Persian"
-msgstr "Персиска"
-
-#: inc/schemas/audio/scale.h:146 inc/audio/scale.h:178
-msgid "Iwato"
-msgstr "Ивато"
-
-#: inc/schemas/audio/scale.h:147 inc/audio/scale.h:179
-msgid "Kumoi"
-msgstr "Кумои"
-
-#: inc/schemas/audio/scale.h:148 inc/audio/scale.h:180
-msgid "Pelog"
-msgstr "Пелог"
-
-#: inc/schemas/audio/scale.h:149 inc/audio/scale.h:181
-msgid "Prometheus"
-msgstr "Прометеј"
-
-#: inc/schemas/audio/scale.h:150 inc/audio/scale.h:182
-msgid "Prometheus Neapolitan"
-msgstr "Прометеј наполитанска"
-
-#: inc/schemas/audio/scale.h:152 inc/audio/scale.h:183
-msgid "Prometheus Liszt"
-msgstr "Прометеј Лист"
-
-#: inc/schemas/audio/scale.h:153 inc/audio/scale.h:184
-msgid "Balinese"
-msgstr "Балинезиска"
-
-#: inc/schemas/audio/scale.h:154 inc/audio/scale.h:185
-msgid "RagaTodi"
-msgstr "РагаТоди"
-
-#: inc/schemas/audio/scale.h:155 inc/audio/scale.h:186
-msgid "Japanese 1"
-msgstr "Јапонска 1"
-
-#: inc/schemas/audio/scale.h:156 inc/audio/scale.h:187
-msgid "Japanese 2"
-msgstr "Јапонска 2"
-
-#: inc/schemas/audio/curve.h:28 inc/audio/curve.h:95 src/audio/curve.c:58
-#, c-format
-msgid "Exponent"
-msgstr "Експонент"
-
-#: inc/schemas/audio/curve.h:29 inc/audio/curve.h:96 src/audio/curve.c:61
-#, c-format
-msgid "Superellipse"
-msgstr "Суперелипса"
-
-#: inc/schemas/audio/curve.h:30 inc/audio/curve.h:97 src/audio/curve.c:390
-msgid "Vital"
-msgstr "Витал"
-
-#: inc/schemas/audio/curve.h:31 inc/audio/curve.h:98 src/audio/curve.c:67
-#, c-format
-msgid "Pulse"
-msgstr "Пулс"
-
-#: inc/schemas/audio/curve.h:32 inc/audio/curve.h:99 src/audio/curve.c:70
-#: src/audio/curve.c:385
-#, c-format
-msgid "Logarithmic"
-msgstr "Логаритмички"
-
-#: inc/schemas/gui/backend/arranger_object.h:35 inc/audio/transport.h:53
+#: inc/dsp/exporter.h:125
+msgid "Before inserts"
+msgstr "Пред влезните ефекти"
+
+#: inc/dsp/exporter.h:126
+msgid "Pre-fader"
+msgstr "Пред потенциометарот"
+
+#: inc/dsp/exporter.h:127
+msgid "Post fader"
+msgstr "После потенциометарот"
+
+#: inc/dsp/track.h:166 src/gui/widgets/track_properties_expander.c:124
+#: src/gui/widgets/popovers/route_target_selector_popover.c:160
+#: build/data/org.zrythm.Zrythm.gschema.xml:698
+msgid "Instrument"
+msgstr "Инструмент"
+
+#: inc/dsp/track.h:167 src/dsp/region.c:508 src/gui/widgets/bot_bar.c:452
+#: resources/ui/file_browser_filters.ui:10
+#: build/data/org.zrythm.Zrythm.gschema.xml:1219
+msgid "Audio"
+msgstr "Аудио"
+
+#: inc/dsp/track.h:168 src/project.c:685
+#: src/gui/widgets/popovers/route_target_selector_popover.c:142
+msgid "Master"
+msgstr "Главен (мастер)"
+
+#: inc/dsp/track.h:169 src/dsp/region.c:514
+msgid "Chord"
+msgstr "Акорд"
+
+#: inc/dsp/track.h:170 inc/schemas/gui/backend/arranger_object.h:41
+#: inc/gui/backend/arranger_object.h:90
+msgid "Marker"
+msgstr "Ознака"
+
+#: inc/dsp/track.h:171 src/dsp/tempo_track.c:94
+#: src/gui/widgets/popovers/automatable_selector_popover.c:320
+msgid "Tempo"
+msgstr "Темпо"
+
+#: inc/dsp/track.h:172
+msgid "Modulator"
+msgstr "Изменувач (модулатор)"
+
+#: inc/dsp/track.h:173
+msgid "Audio FX"
+msgstr "Аудио ефекти"
+
+#: inc/dsp/track.h:174
+msgid "Audio Group"
+msgstr "Аудио збир (група)"
+
+#: inc/dsp/track.h:175 src/dsp/region.c:505
+#: resources/ui/file_browser_filters.ui:18
+msgid "MIDI"
+msgstr "МИДИ"
+
+#: inc/dsp/track.h:176
+msgid "MIDI FX"
+msgstr "МИДИ ефекти"
+
+#: inc/dsp/track.h:177
+msgid "MIDI Group"
+msgstr "МИДИ група"
+
+#: inc/dsp/track.h:178
+msgid "Folder"
+msgstr "Папка"
+
+#: inc/dsp/snap_grid.h:51
+msgid "bar"
+msgstr "целина"
+
+#: inc/dsp/snap_grid.h:52
+msgid "beat"
+msgstr "удар"
+
+#: inc/dsp/snap_grid.h:72 src/gui/widgets/digital_meter.c:506
+msgid "normal"
+msgstr "нормално"
+
+#: inc/dsp/snap_grid.h:73 src/gui/widgets/digital_meter.c:509
+msgid "dotted"
+msgstr "по точки"
+
+#: inc/dsp/snap_grid.h:74 src/gui/widgets/digital_meter.c:512
+msgid "triplet"
+msgstr "триплети"
+
+#: inc/dsp/engine.h:181
+msgid "1,024"
+msgstr "1.024"
+
+#: inc/dsp/engine.h:181
+msgid "2,048"
+msgstr "2.048"
+
+#: inc/dsp/engine.h:181
+msgid "4,096"
+msgstr "4.096"
+
+#: inc/dsp/engine.h:206
+msgid "22,050"
+msgstr "22.050"
+
+#: inc/dsp/engine.h:206
+msgid "32,000"
+msgstr "32.000"
+
+#: inc/dsp/engine.h:206
+msgid "44,100"
+msgstr "44.100"
+
+#: inc/dsp/engine.h:206
+msgid "48,000"
+msgstr "48.000"
+
+#: inc/dsp/engine.h:207
+msgid "88,200"
+msgstr "88.200"
+
+#: inc/dsp/engine.h:207
+msgid "96,000"
+msgstr "96.000"
+
+#: inc/dsp/engine.h:207
+msgid "192,000"
+msgstr "192.000"
+
+#. TRANSLATORS: Dummy backend
+#: inc/dsp/engine.h:253 inc/dsp/engine.h:309
+#: inc/plugins/plugin_descriptor.h:141
+msgid "Dummy"
+msgstr "пробно"
+
+#: inc/dsp/engine.h:253
+msgid "Dummy (libsoundio)"
+msgstr "пробно (libsoundio)"
+
+#: inc/dsp/engine.h:310
+msgid "ALSA Sequencer (not working)"
+msgstr "ALSA редар (не работи)"
+
+#: inc/dsp/engine.h:311
+msgid "ALSA Sequencer (rtmidi)"
+msgstr "ALSA редар (rtmidi)"
+
+#: inc/dsp/audio_function.h:53
+msgid "Invert"
+msgstr "Преврти"
+
+#: inc/dsp/audio_function.h:54
+msgid "Normalize peak"
+msgstr "Нормализирај ги врвовите"
+
+#: inc/dsp/audio_function.h:55
+msgid "Normalize RMS"
+msgstr "Нормализирај по корен од просечната вредност на квадрат (RMS)"
+
+#: inc/dsp/audio_function.h:56
+msgid "Normalize LUFS"
+msgstr "Нормализирај по единици на гласност релативни на целата скала (LUFS)"
+
+#: inc/dsp/audio_function.h:57
+msgid "Linear fade in"
+msgstr "Линеарно појачување"
+
+#: inc/dsp/audio_function.h:58
+msgid "Linear fade out"
+msgstr "Линеарно затишување"
+
+#: inc/dsp/audio_function.h:59 src/gui/widgets/home_toolbar.c:142
+msgid "Nudge left"
+msgstr "Помести лево"
+
+#: inc/dsp/audio_function.h:60 src/gui/widgets/home_toolbar.c:143
+msgid "Nudge right"
+msgstr "Помести десно"
+
+#: inc/dsp/audio_function.h:61
+msgid "Reverse"
+msgstr "Преврти"
+
+#: inc/dsp/audio_function.h:62
+#, fuzzy
+msgid "Pitch shift"
+msgstr "Тркало на нотни висини"
+
+#: inc/dsp/audio_function.h:63
+msgid "External program"
+msgstr "Надворешна програма"
+
+#: inc/dsp/audio_function.h:64
+msgid "Guile script"
+msgstr "Guile скрипта"
+
+#: inc/dsp/audio_function.h:65
+msgid "Custom plugin"
+msgstr "Сопствен приклучок"
+
+#: inc/dsp/audio_function.h:66
+msgid "Invalid"
+msgstr "Невалидно"
+
+#: inc/dsp/midi_function.h:40 resources/ui/editor_toolbar.ui:154
+msgid "Crescendo"
+msgstr "Крешендо"
+
+#: inc/dsp/midi_function.h:41 resources/ui/editor_toolbar.ui:160
+msgid "Flam"
+msgstr "Форшлаг"
+
+#: inc/dsp/midi_function.h:42 inc/dsp/automation_function.h:32
+msgid "Flip H"
+msgstr "Хоризонтално превртување"
+
+#: inc/dsp/midi_function.h:43 inc/dsp/automation_function.h:33
+msgid "Flip V"
+msgstr "Вертикално превртување"
+
+#: inc/dsp/midi_function.h:44 resources/ui/editor_toolbar.ui:181
+msgid "Legato"
+msgstr "Легато (врзано)"
+
+#: inc/dsp/midi_function.h:45 resources/ui/editor_toolbar.ui:187
+msgid "Portato"
+msgstr "Портато (носено; артикулирано легато)"
+
+#: inc/dsp/midi_function.h:46 resources/ui/editor_toolbar.ui:193
+msgid "Staccato"
+msgstr "Стакато (одсечно)"
+
+#: inc/dsp/midi_function.h:47 resources/ui/editor_toolbar.ui:199
+msgid "Strum"
+msgstr "Струнење"
+
+#: inc/dsp/transport.h:53 inc/schemas/gui/backend/arranger_object.h:35
 #: inc/gui/backend/arranger_object.h:84
 #: src/gui/widgets/route_target_selector.c:37
 #: src/gui/widgets/plugin_properties_expander.c:181
@@ -296,6 +266,329 @@ msgstr "Логаритмички"
 #: src/gui/widgets/popovers/route_target_selector_popover.c:134
 msgid "None"
 msgstr "Ништо"
+
+#: inc/dsp/transport.h:54
+msgid "1 bar"
+msgstr "1 целина"
+
+#: inc/dsp/transport.h:55
+msgid "2 bars"
+msgstr "2 целини"
+
+#: inc/dsp/transport.h:56
+msgid "4 bars"
+msgstr "4 целини"
+
+#: inc/dsp/region.h:65 src/gui/widgets/track.c:1016
+msgid "Inherit"
+msgstr "Наследи"
+
+#: inc/dsp/region.h:66 src/dsp/automation_track.c:166
+#: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:459
+msgid "Off"
+msgstr "Исклучено"
+
+#: inc/dsp/region.h:67 src/dsp/automation_track.c:160
+#: src/gui/widgets/cc_bindings_tree.c:158
+#: src/gui/widgets/port_connections_tree.c:214
+#: src/gui/widgets/item_factory.c:598 src/gui/widgets/bot_bar.c:459
+msgid "On"
+msgstr "Вклучено"
+
+#: inc/dsp/scale.h:127 inc/schemas/audio/scale.h:93
+msgid "Chromatic"
+msgstr "Хроматика"
+
+#: inc/dsp/scale.h:128 inc/schemas/audio/scale.h:94
+msgid "Major"
+msgstr "Дурска"
+
+#: inc/dsp/scale.h:129 inc/schemas/audio/scale.h:95
+msgid "Minor"
+msgstr "Молска"
+
+#: inc/dsp/scale.h:130 inc/schemas/audio/scale.h:96
+msgid "Ionian"
+msgstr "Јонска"
+
+#: inc/dsp/scale.h:131 inc/schemas/audio/scale.h:97
+msgid "Dorian"
+msgstr "Дорска"
+
+#: inc/dsp/scale.h:132 inc/schemas/audio/scale.h:98
+msgid "Phrygian"
+msgstr "Фригиска"
+
+#: inc/dsp/scale.h:133 inc/schemas/audio/scale.h:99
+msgid "Lydian"
+msgstr "Лидијска"
+
+#: inc/dsp/scale.h:134 inc/schemas/audio/scale.h:100
+msgid "Mixolydian"
+msgstr "Миксолидијска"
+
+#: inc/dsp/scale.h:135 inc/schemas/audio/scale.h:101
+msgid "Aeolian"
+msgstr "Еолска"
+
+#: inc/dsp/scale.h:136 inc/schemas/audio/scale.h:102
+msgid "Locrian"
+msgstr "Локријанска"
+
+#: inc/dsp/scale.h:137 inc/schemas/audio/scale.h:103
+msgid "Melodic Minor"
+msgstr "Мелодична молска"
+
+#: inc/dsp/scale.h:138 inc/schemas/audio/scale.h:104
+msgid "Harmonic Minor"
+msgstr "Хармонична молска"
+
+#: inc/dsp/scale.h:139 inc/schemas/audio/scale.h:105
+msgid "Whole Tone"
+msgstr "Целотонална (целостепена)"
+
+#: inc/dsp/scale.h:140 inc/schemas/audio/scale.h:106
+msgid "Major Pentatonic"
+msgstr "Дурска пентатоника"
+
+#: inc/dsp/scale.h:141 inc/schemas/audio/scale.h:107
+msgid "Minor Pentatonic"
+msgstr "Молска пентатоника"
+
+#: inc/dsp/scale.h:142 inc/schemas/audio/scale.h:108
+msgid "Octatonic Half Whole"
+msgstr "Октатоника полу-цела"
+
+#: inc/dsp/scale.h:143 inc/schemas/audio/scale.h:110
+msgid "Octatonic Whole Half"
+msgstr "Октатоника цела-пола"
+
+#: inc/dsp/scale.h:144 inc/schemas/audio/scale.h:112
+msgid "Acoustic"
+msgstr "Акустична"
+
+#: inc/dsp/scale.h:145 inc/schemas/audio/scale.h:113
+msgid "Harmonic Major"
+msgstr "Хармонична дурска"
+
+#: inc/dsp/scale.h:146 inc/schemas/audio/scale.h:114
+msgid "Phrygian Dominant"
+msgstr "Фригиска доминанта"
+
+#: inc/dsp/scale.h:147 inc/schemas/audio/scale.h:115
+msgid "Major Locrian"
+msgstr "Дурска локријска"
+
+#: inc/dsp/scale.h:148 inc/schemas/audio/scale.h:116
+msgid "Algerian"
+msgstr "Алжирска"
+
+#: inc/dsp/scale.h:149 inc/schemas/audio/scale.h:117
+msgid "Augmented"
+msgstr "Повишена"
+
+#: inc/dsp/scale.h:150 inc/schemas/audio/scale.h:118
+msgid "Double Harmonic"
+msgstr "Двојна хармонична"
+
+#: inc/dsp/scale.h:151 inc/schemas/audio/scale.h:119
+msgid "Chinese"
+msgstr "Кинеска"
+
+#: inc/dsp/scale.h:152 inc/schemas/audio/scale.h:120
+msgid "Diminished"
+msgstr "Спуштена"
+
+#: inc/dsp/scale.h:153 inc/schemas/audio/scale.h:121
+msgid "Dominant Diminished"
+msgstr "Спуштена доминанта"
+
+#: inc/dsp/scale.h:154 inc/schemas/audio/scale.h:122
+msgid "Egyptian"
+msgstr "Египетска"
+
+#: inc/dsp/scale.h:155 inc/schemas/audio/scale.h:123
+msgid "Eight Tone Spanish"
+msgstr "Шпанска осумтонска"
+
+#: inc/dsp/scale.h:156 inc/schemas/audio/scale.h:124
+msgid "Enigmatic"
+msgstr "Енигматична"
+
+#: inc/dsp/scale.h:157 inc/schemas/audio/scale.h:125
+msgid "Geez"
+msgstr "Гез (Етиопска)"
+
+#: inc/dsp/scale.h:158 inc/schemas/audio/scale.h:126
+msgid "Hindu"
+msgstr "Хинду"
+
+#: inc/dsp/scale.h:159 inc/schemas/audio/scale.h:127
+msgid "Hirajoshi"
+msgstr "Хиџароши"
+
+#: inc/dsp/scale.h:160 inc/schemas/audio/scale.h:128
+msgid "Hungarian Gypsy"
+msgstr "Унгарска циганска"
+
+#: inc/dsp/scale.h:161 inc/schemas/audio/scale.h:129
+msgid "Insen"
+msgstr "Инсен"
+
+#: inc/dsp/scale.h:162 inc/schemas/audio/scale.h:130
+msgid "Neapolitan Major"
+msgstr "Наполитанска дурска"
+
+#: inc/dsp/scale.h:163 inc/schemas/audio/scale.h:131
+msgid "Neapolitan Minor"
+msgstr "Наполитанска молска"
+
+#: inc/dsp/scale.h:164 inc/schemas/audio/scale.h:132
+msgid "Oriental"
+msgstr "Ориентална"
+
+#: inc/dsp/scale.h:165 inc/schemas/audio/scale.h:133
+msgid "Romanian Minor"
+msgstr "Романска молска"
+
+#: inc/dsp/scale.h:166 inc/schemas/audio/scale.h:134
+msgid "Altered"
+msgstr "Изменета"
+
+#: inc/dsp/scale.h:167 inc/schemas/audio/scale.h:135
+msgid "Maqam"
+msgstr "Макам"
+
+#: inc/dsp/scale.h:168 inc/schemas/audio/scale.h:136
+msgid "Yo"
+msgstr "Јо"
+
+#: inc/dsp/scale.h:169 inc/schemas/audio/scale.h:137
+msgid "Bebop Locrian"
+msgstr "Бебоп локриска"
+
+#: inc/dsp/scale.h:170 inc/schemas/audio/scale.h:138
+msgid "Bebop Dominant"
+msgstr "Бебом доминанта"
+
+#: inc/dsp/scale.h:171 inc/schemas/audio/scale.h:139
+msgid "Bebop Major"
+msgstr "Бебоп дурска"
+
+#: inc/dsp/scale.h:172 inc/schemas/audio/scale.h:140
+msgid "Super Locrian"
+msgstr "Супер локриска"
+
+#: inc/dsp/scale.h:173 inc/schemas/audio/scale.h:141
+msgid "Enigmatic Minor"
+msgstr "Енигматска молска"
+
+#: inc/dsp/scale.h:174 inc/schemas/audio/scale.h:142
+msgid "Composite"
+msgstr "Композитна"
+
+#: inc/dsp/scale.h:175 inc/schemas/audio/scale.h:143
+msgid "Bhairav"
+msgstr "Бхаирав"
+
+#: inc/dsp/scale.h:176 inc/schemas/audio/scale.h:144
+msgid "Hungarian Minor"
+msgstr "Унгарска молска"
+
+#: inc/dsp/scale.h:177 inc/schemas/audio/scale.h:145
+msgid "Persian"
+msgstr "Персиска"
+
+#: inc/dsp/scale.h:178 inc/schemas/audio/scale.h:146
+msgid "Iwato"
+msgstr "Ивато"
+
+#: inc/dsp/scale.h:179 inc/schemas/audio/scale.h:147
+msgid "Kumoi"
+msgstr "Кумои"
+
+#: inc/dsp/scale.h:180 inc/schemas/audio/scale.h:148
+msgid "Pelog"
+msgstr "Пелог"
+
+#: inc/dsp/scale.h:181 inc/schemas/audio/scale.h:149
+msgid "Prometheus"
+msgstr "Прометеј"
+
+#: inc/dsp/scale.h:182 inc/schemas/audio/scale.h:150
+msgid "Prometheus Neapolitan"
+msgstr "Прометеј наполитанска"
+
+#: inc/dsp/scale.h:183 inc/schemas/audio/scale.h:152
+msgid "Prometheus Liszt"
+msgstr "Прометеј Лист"
+
+#: inc/dsp/scale.h:184 inc/schemas/audio/scale.h:153
+msgid "Balinese"
+msgstr "Балинезиска"
+
+#: inc/dsp/scale.h:185 inc/schemas/audio/scale.h:154
+msgid "RagaTodi"
+msgstr "РагаТоди"
+
+#: inc/dsp/scale.h:186 inc/schemas/audio/scale.h:155
+msgid "Japanese 1"
+msgstr "Јапонска 1"
+
+#: inc/dsp/scale.h:187 inc/schemas/audio/scale.h:156
+msgid "Japanese 2"
+msgstr "Јапонска 2"
+
+#. TRANSLATORS: decibels
+#: inc/dsp/pan.h:35
+msgid "0dB"
+msgstr "0дБ"
+
+#: inc/dsp/pan.h:36
+msgid "-3dB"
+msgstr "-3дБ"
+
+#: inc/dsp/pan.h:37
+msgid "-6dB"
+msgstr "-6дБ"
+
+#. TRANSLATORS: Pan algorithm
+#: inc/dsp/pan.h:57 src/dsp/curve.c:371 src/utils/ui.c:627
+msgid "Linear"
+msgstr "Линеарен"
+
+#: inc/dsp/pan.h:58 src/utils/ui.c:628
+msgid "Square Root"
+msgstr "Квадратен корен"
+
+#: inc/dsp/pan.h:59
+msgid "Sine"
+msgstr "Синусоиден"
+
+#: inc/dsp/curve.h:95 inc/schemas/audio/curve.h:28 src/dsp/curve.c:58
+#, c-format
+msgid "Exponent"
+msgstr "Експонент"
+
+#: inc/dsp/curve.h:96 inc/schemas/audio/curve.h:29 src/dsp/curve.c:61
+#, c-format
+msgid "Superellipse"
+msgstr "Суперелипса"
+
+#: inc/dsp/curve.h:97 inc/schemas/audio/curve.h:30 src/dsp/curve.c:390
+msgid "Vital"
+msgstr "Витал"
+
+#: inc/dsp/curve.h:98 inc/schemas/audio/curve.h:31 src/dsp/curve.c:67
+#, c-format
+msgid "Pulse"
+msgstr "Пулс"
+
+#: inc/dsp/curve.h:99 inc/schemas/audio/curve.h:32 src/dsp/curve.c:70
+#: src/dsp/curve.c:385
+#, c-format
+msgid "Logarithmic"
+msgstr "Логаритмички"
 
 #: inc/schemas/gui/backend/arranger_object.h:36
 #: inc/gui/backend/arranger_object.h:85
@@ -323,11 +616,6 @@ msgstr "Акордски објект"
 #: inc/gui/backend/arranger_object.h:89
 msgid "Scale Object"
 msgstr "Скаларен објект"
-
-#: inc/schemas/gui/backend/arranger_object.h:41 inc/audio/track.h:170
-#: inc/gui/backend/arranger_object.h:90
-msgid "Marker"
-msgstr "Ознака"
 
 #: inc/schemas/gui/backend/arranger_object.h:42
 #: inc/gui/backend/arranger_object.h:91
@@ -404,294 +692,6 @@ msgstr "Ниско"
 #: inc/utils/ui.h:62
 msgid "Ultra Low"
 msgstr "Суперниско"
-
-#: inc/audio/exporter.h:125
-msgid "Before inserts"
-msgstr "Пред влезните ефекти"
-
-#: inc/audio/exporter.h:126
-msgid "Pre-fader"
-msgstr "Пред потенциометарот"
-
-#: inc/audio/exporter.h:127
-msgid "Post fader"
-msgstr "После потенциометарот"
-
-#: inc/audio/track.h:166 src/gui/widgets/track_properties_expander.c:124
-#: src/gui/widgets/popovers/route_target_selector_popover.c:160
-#: build/data/org.zrythm.Zrythm.gschema.xml:698
-msgid "Instrument"
-msgstr "Инструмент"
-
-#: inc/audio/track.h:167 src/audio/region.c:508 src/gui/widgets/bot_bar.c:452
-#: resources/ui/file_browser_filters.ui:10
-#: build/data/org.zrythm.Zrythm.gschema.xml:1219
-msgid "Audio"
-msgstr "Аудио"
-
-#: inc/audio/track.h:168 src/project.c:685
-#: src/gui/widgets/popovers/route_target_selector_popover.c:142
-msgid "Master"
-msgstr "Главен (мастер)"
-
-#: inc/audio/track.h:169 src/audio/region.c:514
-msgid "Chord"
-msgstr "Акорд"
-
-#: inc/audio/track.h:171 src/audio/tempo_track.c:94
-#: src/gui/widgets/popovers/automatable_selector_popover.c:320
-msgid "Tempo"
-msgstr "Темпо"
-
-#: inc/audio/track.h:172
-msgid "Modulator"
-msgstr "Изменувач (модулатор)"
-
-#: inc/audio/track.h:173
-msgid "Audio FX"
-msgstr "Аудио ефекти"
-
-#: inc/audio/track.h:174
-msgid "Audio Group"
-msgstr "Аудио збир (група)"
-
-#: inc/audio/track.h:175 src/audio/region.c:505
-#: resources/ui/file_browser_filters.ui:18
-msgid "MIDI"
-msgstr "МИДИ"
-
-#: inc/audio/track.h:176
-msgid "MIDI FX"
-msgstr "МИДИ ефекти"
-
-#: inc/audio/track.h:177
-msgid "MIDI Group"
-msgstr "МИДИ група"
-
-#: inc/audio/track.h:178
-msgid "Folder"
-msgstr "Папка"
-
-#: inc/audio/snap_grid.h:51
-msgid "bar"
-msgstr "целина"
-
-#: inc/audio/snap_grid.h:52
-msgid "beat"
-msgstr "удар"
-
-#: inc/audio/snap_grid.h:72 src/gui/widgets/digital_meter.c:506
-msgid "normal"
-msgstr "нормално"
-
-#: inc/audio/snap_grid.h:73 src/gui/widgets/digital_meter.c:509
-msgid "dotted"
-msgstr "по точки"
-
-#: inc/audio/snap_grid.h:74 src/gui/widgets/digital_meter.c:512
-msgid "triplet"
-msgstr "триплети"
-
-#: inc/audio/engine.h:181
-msgid "1,024"
-msgstr "1.024"
-
-#: inc/audio/engine.h:181
-msgid "2,048"
-msgstr "2.048"
-
-#: inc/audio/engine.h:181
-msgid "4,096"
-msgstr "4.096"
-
-#: inc/audio/engine.h:206
-msgid "22,050"
-msgstr "22.050"
-
-#: inc/audio/engine.h:206
-msgid "32,000"
-msgstr "32.000"
-
-#: inc/audio/engine.h:206
-msgid "44,100"
-msgstr "44.100"
-
-#: inc/audio/engine.h:206
-msgid "48,000"
-msgstr "48.000"
-
-#: inc/audio/engine.h:207
-msgid "88,200"
-msgstr "88.200"
-
-#: inc/audio/engine.h:207
-msgid "96,000"
-msgstr "96.000"
-
-#: inc/audio/engine.h:207
-msgid "192,000"
-msgstr "192.000"
-
-#. TRANSLATORS: Dummy backend
-#: inc/audio/engine.h:253 inc/audio/engine.h:309
-#: inc/plugins/plugin_descriptor.h:141
-msgid "Dummy"
-msgstr "пробно"
-
-#: inc/audio/engine.h:253
-msgid "Dummy (libsoundio)"
-msgstr "пробно (libsoundio)"
-
-#: inc/audio/engine.h:310
-msgid "ALSA Sequencer (not working)"
-msgstr "ALSA редар (не работи)"
-
-#: inc/audio/engine.h:311
-msgid "ALSA Sequencer (rtmidi)"
-msgstr "ALSA редар (rtmidi)"
-
-#: inc/audio/audio_function.h:53
-msgid "Invert"
-msgstr "Преврти"
-
-#: inc/audio/audio_function.h:54
-msgid "Normalize peak"
-msgstr "Нормализирај ги врвовите"
-
-#: inc/audio/audio_function.h:55
-msgid "Normalize RMS"
-msgstr "Нормализирај по корен од просечната вредност на квадрат (RMS)"
-
-#: inc/audio/audio_function.h:56
-msgid "Normalize LUFS"
-msgstr "Нормализирај по единици на гласност релативни на целата скала (LUFS)"
-
-#: inc/audio/audio_function.h:57
-msgid "Linear fade in"
-msgstr "Линеарно појачување"
-
-#: inc/audio/audio_function.h:58
-msgid "Linear fade out"
-msgstr "Линеарно затишување"
-
-#: inc/audio/audio_function.h:59 src/gui/widgets/home_toolbar.c:142
-msgid "Nudge left"
-msgstr "Помести лево"
-
-#: inc/audio/audio_function.h:60 src/gui/widgets/home_toolbar.c:143
-msgid "Nudge right"
-msgstr "Помести десно"
-
-#: inc/audio/audio_function.h:61
-msgid "Reverse"
-msgstr "Преврти"
-
-#: inc/audio/audio_function.h:62
-#, fuzzy
-msgid "Pitch shift"
-msgstr "Тркало на нотни висини"
-
-#: inc/audio/audio_function.h:63
-msgid "External program"
-msgstr "Надворешна програма"
-
-#: inc/audio/audio_function.h:64
-msgid "Guile script"
-msgstr "Guile скрипта"
-
-#: inc/audio/audio_function.h:65
-msgid "Custom plugin"
-msgstr "Сопствен приклучок"
-
-#: inc/audio/audio_function.h:66
-msgid "Invalid"
-msgstr "Невалидно"
-
-#: inc/audio/midi_function.h:40 resources/ui/editor_toolbar.ui:154
-msgid "Crescendo"
-msgstr "Крешендо"
-
-#: inc/audio/midi_function.h:41 resources/ui/editor_toolbar.ui:160
-msgid "Flam"
-msgstr "Форшлаг"
-
-#: inc/audio/midi_function.h:42 inc/audio/automation_function.h:32
-msgid "Flip H"
-msgstr "Хоризонтално превртување"
-
-#: inc/audio/midi_function.h:43 inc/audio/automation_function.h:33
-msgid "Flip V"
-msgstr "Вертикално превртување"
-
-#: inc/audio/midi_function.h:44 resources/ui/editor_toolbar.ui:181
-msgid "Legato"
-msgstr "Легато (врзано)"
-
-#: inc/audio/midi_function.h:45 resources/ui/editor_toolbar.ui:187
-msgid "Portato"
-msgstr "Портато (носено; артикулирано легато)"
-
-#: inc/audio/midi_function.h:46 resources/ui/editor_toolbar.ui:193
-msgid "Staccato"
-msgstr "Стакато (одсечно)"
-
-#: inc/audio/midi_function.h:47 resources/ui/editor_toolbar.ui:199
-msgid "Strum"
-msgstr "Струнење"
-
-#: inc/audio/transport.h:54
-msgid "1 bar"
-msgstr "1 целина"
-
-#: inc/audio/transport.h:55
-msgid "2 bars"
-msgstr "2 целини"
-
-#: inc/audio/transport.h:56
-msgid "4 bars"
-msgstr "4 целини"
-
-#: inc/audio/region.h:65 src/gui/widgets/track.c:1016
-msgid "Inherit"
-msgstr "Наследи"
-
-#: inc/audio/region.h:66 src/audio/automation_track.c:166
-#: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:459
-msgid "Off"
-msgstr "Исклучено"
-
-#: inc/audio/region.h:67 src/audio/automation_track.c:160
-#: src/gui/widgets/cc_bindings_tree.c:158
-#: src/gui/widgets/port_connections_tree.c:214
-#: src/gui/widgets/item_factory.c:598 src/gui/widgets/bot_bar.c:459
-msgid "On"
-msgstr "Вклучено"
-
-#. TRANSLATORS: decibels
-#: inc/audio/pan.h:35
-msgid "0dB"
-msgstr "0дБ"
-
-#: inc/audio/pan.h:36
-msgid "-3dB"
-msgstr "-3дБ"
-
-#: inc/audio/pan.h:37
-msgid "-6dB"
-msgstr "-6дБ"
-
-#. TRANSLATORS: Pan algorithm
-#: inc/audio/pan.h:57 src/utils/ui.c:627 src/audio/curve.c:371
-msgid "Linear"
-msgstr "Линеарен"
-
-#: inc/audio/pan.h:58 src/utils/ui.c:628
-msgid "Square Root"
-msgstr "Квадратен корен"
-
-#: inc/audio/pan.h:59
-msgid "Sine"
-msgstr "Синусоиден"
 
 #: src/project.c:403
 #, c-format
@@ -1133,8 +1133,8 @@ msgstr "Неуспешно вчитување на проект"
 msgid "Save Project"
 msgstr "Зачувај проект"
 
-#: src/actions/actions.c:789 src/utils/dialogs.c:41 src/utils/dialogs.c:60
-#: src/audio/clip.c:698 src/gui/widgets/main_window.c:138
+#: src/actions/actions.c:789 src/dsp/clip.c:698 src/utils/dialogs.c:41
+#: src/utils/dialogs.c:60 src/gui/widgets/main_window.c:138
 #: src/gui/widgets/plugin_properties_expander.c:107
 #: src/gui/widgets/dialogs/midi_function_dialog.c:412
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:122
@@ -1219,7 +1219,7 @@ msgstr "Неуспешно одврзување"
 msgid "Failed to quantize"
 msgstr "Неуспешно подредување (квантизација)"
 
-#: src/actions/actions.c:1660 src/audio/track.c:3669 src/audio/tracklist.c:1483
+#: src/actions/actions.c:1660 src/dsp/track.c:3669 src/dsp/tracklist.c:1483
 #: src/gui/widgets/panel_file_browser.c:459
 #: src/gui/widgets/panel_file_browser.c:475 src/settings/plugin_settings.c:335
 #: src/settings/plugin_settings.c:350 src/settings/plugin_settings.c:422
@@ -1480,7 +1480,7 @@ msgstr ""
 msgid "Failed getting contents for %s"
 msgstr "Неуспешно прибавување на содржина за %s"
 
-#: src/actions/tracklist_selections.c:311 src/audio/track.c:2062
+#: src/actions/tracklist_selections.c:311 src/dsp/track.c:2062
 #, fuzzy, c-format
 msgid "Failed creating audio clip from file at %s"
 msgstr "Неуспенен запис на аудио парче во датотеката: %s"
@@ -1495,8 +1495,8 @@ msgstr "Неуспешно клонирање на изборот од лент�
 
 #: src/actions/tracklist_selections.c:374
 #: src/actions/tracklist_selections.c:993
-#: src/actions/tracklist_selections.c:1445 src/audio/tracklist.c:1667
-#: src/audio/tracklist.c:1795
+#: src/actions/tracklist_selections.c:1445 src/dsp/tracklist.c:1667
+#: src/dsp/tracklist.c:1795
 msgid "Failed to clone track"
 msgstr "Неуспешно клонирање на лента"
 
@@ -1509,7 +1509,7 @@ msgstr "Неуспешно клонирање на изборот од лент�
 msgid "%s Track"
 msgstr "%s Лента"
 
-#: src/actions/tracklist_selections.c:768 src/audio/sample_processor.c:552
+#: src/actions/tracklist_selections.c:768 src/dsp/sample_processor.c:552
 #: src/gui/widgets/channel_slot.c:335
 #, c-format
 msgid "Failed to create plugin %s"
@@ -1903,7 +1903,7 @@ msgstr "Канална врска на препраќање"
 msgid "Failed to clone mixer selections"
 msgstr "Неуспешно клонирање на избраното во миксетата"
 
-#: src/actions/mixer_selections_action.c:432 src/audio/channel.c:1855
+#: src/actions/mixer_selections_action.c:432 src/dsp/channel.c:1855
 msgid "Failed to clone plugin"
 msgstr "Неуспешно клонирање на приклучокот"
 
@@ -1911,8 +1911,8 @@ msgstr "Неуспешно клонирање на приклучокот"
 msgid "Could not create plugin"
 msgstr "Неуспешно создавање на приклучок"
 
-#: src/actions/mixer_selections_action.c:538 src/audio/audio_function.c:145
-#: src/audio/track.c:2148 src/audio/track.c:3217
+#: src/actions/mixer_selections_action.c:538 src/dsp/audio_function.c:145
+#: src/dsp/track.c:2148 src/dsp/track.c:3217
 msgid "Failed to instantiate plugin"
 msgstr "Неуспешна иницијализација на приклучок"
 
@@ -1969,6 +1969,724 @@ msgstr "Залепи %s"
 #, c-format
 msgid "Paste %d Plugins"
 msgstr "Залепи ги приклучоците %d"
+
+#: src/dsp/modulator_track.c:59 src/utils/gtk.c:1215
+#: src/gui/widgets/bot_dock_edge.c:254
+msgid "Modulators"
+msgstr "Модулатори"
+
+#: src/dsp/supported_file.c:269
+msgid "Failed opening file"
+msgstr "Неуспех при отворање на датотека"
+
+#: src/dsp/supported_file.c:274
+#, c-format
+msgid ""
+"<b>%s</b>\n"
+"Sample rate: %d\n"
+"Length: %<PRId64>s %<PRId64> ms | BPM: %.1f\n"
+"Channel(s): %u | Bitrate: %'d.%d kb/s\n"
+"Bit depth: %d bits"
+msgstr ""
+"<b>%s</b>\n"
+"Стапка на примероци: %d\n"
+"Должина: %<PRId64>s %<PRId64> мс | УВМ: %.1f\n"
+"Канал(и): %u | Стапка на битови: %'d.%d кб/с\n"
+"Длабочина на битови: %d битна"
+
+#: src/dsp/snap_grid.c:253 resources/ui/snap_grid_popover.ui:112
+#: resources/ui/snap_grid_popover.ui:190
+msgid "Adaptive"
+msgstr "Прилагодливо"
+
+#: src/dsp/fader.c:97
+msgid "Prefader Swap Phase"
+msgstr "Фаза на размена пред потенциометар"
+
+#: src/dsp/fader.c:98
+msgid "Fader Swap Phase"
+msgstr "Фаза на размена по потенциометар"
+
+#: src/dsp/fader.c:140
+msgid "Prefader Volume"
+msgstr "Гласнина пред потенциометар"
+
+#: src/dsp/fader.c:140
+msgid "Fader Volume"
+msgstr "Гласнина по потенциометар"
+
+#: src/dsp/fader.c:169
+msgid "Prefader Balance"
+msgstr "Стерео рамнотежа пред потенциометар"
+
+#: src/dsp/fader.c:169
+msgid "Fader Balance"
+msgstr "Стерео рамнотежа по потенциометар"
+
+#: src/dsp/fader.c:188
+msgid "Prefader Mute"
+msgstr "Занеменост пред потенциометар"
+
+#: src/dsp/fader.c:188
+msgid "Fader Mute"
+msgstr "Занеменост по потенциометар"
+
+#: src/dsp/fader.c:209
+msgid "Prefader Solo"
+msgstr "Солирање пред потенциометар"
+
+#: src/dsp/fader.c:209
+msgid "Fader Solo"
+msgstr "Солирање по потенциометар"
+
+#: src/dsp/fader.c:223
+msgid "Prefader Listen"
+msgstr "Преслушување пред потенциометар"
+
+#: src/dsp/fader.c:223
+msgid "Fader Listen"
+msgstr "Преслушување по потенциометар"
+
+#: src/dsp/fader.c:238
+msgid "Prefader Mono Compat"
+msgstr "Моно соодветност пред потенциометар"
+
+#: src/dsp/fader.c:239
+msgid "Fader Mono Compat"
+msgstr "Моно соодветност по потенциометар"
+
+#: src/dsp/fader.c:271
+msgid "Ch Pre-Fader in"
+msgstr "Канален влез пред потенциометар"
+
+#: src/dsp/fader.c:276
+msgid "Ch Fader in"
+msgstr "Канален влез по потенциометар"
+
+#: src/dsp/fader.c:282
+msgid "Sample Processor Fader in"
+msgstr "Влез од процесор на примероци по потенциометар"
+
+#: src/dsp/fader.c:287
+msgid "Monitor Fader in"
+msgstr "Влез на монитор по потенциометар"
+
+#: src/dsp/fader.c:305
+msgid "Ch Pre-Fader out"
+msgstr "Канален излез пред потенциометар"
+
+#: src/dsp/fader.c:310
+msgid "Ch Fader out"
+msgstr "Канален излез по потенциометар"
+
+#: src/dsp/fader.c:316
+msgid "Sample Processor Fader out"
+msgstr "Излез од процесор на примероци по потенциометар"
+
+#: src/dsp/fader.c:321
+msgid "Monitor Fader out"
+msgstr "Мониторен излез по потенциометар"
+
+#: src/dsp/fader.c:343
+msgid "Ch MIDI Pre-Fader in"
+msgstr "Влез на канален МИДИ пред потенциометар"
+
+#: src/dsp/fader.c:348
+msgid "Ch MIDI Fader in"
+msgstr "Влез на канален МИДИ по потенциометар"
+
+#: src/dsp/fader.c:360
+msgid "Ch MIDI Pre-Fader out"
+msgstr "Излез на канален МИДИ пред потенциометар"
+
+#: src/dsp/fader.c:365
+msgid "Ch MIDI Fader out"
+msgstr "Излез на канален МИДИ по потенциометар"
+
+#: src/dsp/fader.c:594
+msgid "Failed to change volume"
+msgstr "Неуспех при промена на гласност"
+
+#: src/dsp/fader.c:643
+msgid "Failed to set MIDI mode"
+msgstr "Неуспех да се намести МИДИ модус"
+
+#: src/dsp/encoder.c:58
+#, c-format
+msgid "An error has occurred opening the audio file '%s'"
+msgstr "Се појави грешка при отворање на аудио датотеката „%s“"
+
+#: src/dsp/marker_track.c:42
+msgid "Markers"
+msgstr "Означувачи"
+
+#: src/dsp/marker_track.c:60 src/gui/widgets/timeline_selection_info.c:228
+#: resources/ui/quantize_dialog.ui:62
+msgid "start"
+msgstr "почеток"
+
+#: src/dsp/marker_track.c:67 src/gui/widgets/timeline_selection_info.c:234
+#: resources/ui/quantize_dialog.ui:70
+msgid "end"
+msgstr "крај"
+
+#: src/dsp/engine_jack.c:311
+msgid "XRUN occurred - check your JACK configuration"
+msgstr "Се појави XRUN грешка - провери ги твоите нагодувања при JACK"
+
+#: src/dsp/engine_jack.c:369
+msgid "JACK has shut down"
+msgstr "JACK се исклучи"
+
+#. TRANSLATORS: JACK failure messages
+#: src/dsp/engine_jack.c:632
+msgid "Overall operation failed"
+msgstr "Пропадна општата операција"
+
+#: src/dsp/engine_jack.c:638
+msgid "The operation contained an invalid or unsupported option"
+msgstr "Операцијата содржеше невалиден или неподдржан избор"
+
+#: src/dsp/engine_jack.c:644
+msgid "The desired client name was not unique"
+msgstr "Посакуваното име на муштеријата не беше единствено"
+
+#: src/dsp/engine_jack.c:648
+msgid "Unable to connect to the JACK server"
+msgstr "Неможност да се поврзе со JACK серверот"
+
+#: src/dsp/engine_jack.c:653
+msgid "Communication error with the JACK server"
+msgstr "Комуникациска грешка со JACK серверот"
+
+#: src/dsp/engine_jack.c:657
+msgid "Requested client does not exist"
+msgstr "Бараниот клиент не постои"
+
+#: src/dsp/engine_jack.c:661
+msgid "Unable to load internal client"
+msgstr "Неуспешно вчитување на внатрешен клиент"
+
+#: src/dsp/engine_jack.c:665
+msgid "Unable to initialize client"
+msgstr "Неможност да се иницијализира клиентот"
+
+#: src/dsp/engine_jack.c:669
+msgid "Unable to access shared memory"
+msgstr "Не може да се пристапи на заедничката меморија"
+
+#: src/dsp/engine_jack.c:674
+msgid "Client's protocol version does not match"
+msgstr "Протоколарната верзија на клиентот не се совпаѓа"
+
+#: src/dsp/engine_jack.c:678
+msgid "Backend error"
+msgstr "Грешка во позадинскиот систем"
+
+#: src/dsp/engine_jack.c:682
+msgid "Client zombie"
+msgstr "Зомби клиент"
+
+#: src/dsp/engine_jack.c:729
+#, c-format
+msgid "JACK: Failed to disconnect monitor out: %s"
+msgstr "JACK: Неуспех при исклучување на мониторот: %s"
+
+#: src/dsp/engine_jack.c:778
+msgid "JACK: No physical playback ports found"
+msgstr "JACK: Не се пронајдени физички порти за репродукција / излез"
+
+#: src/dsp/engine_jack.c:792
+#, c-format
+msgid "JACK: Failed to connect monitor output [%s]: %s"
+msgstr "JACK: Неуспешно поврзување на мониторскиот излез [%s]: %s"
+
+#: src/dsp/engine_jack.c:793
+msgid "left"
+msgstr "лево"
+
+#: src/dsp/engine_jack.c:793
+msgid "right"
+msgstr "десно"
+
+#: src/dsp/engine_jack.c:851 src/gui/widgets/monitor_section.c:237
+msgid "Failed to connect to left monitor output port"
+msgstr "Неуспешно поврзување со излезната порта на левиот монитор"
+
+#: src/dsp/engine_jack.c:859 src/gui/widgets/monitor_section.c:246
+msgid "Failed to connect to right monitor output port"
+msgstr "Неуспешно поврзување со излезната порта на десниот монитор"
+
+#: src/dsp/curve.c:375
+msgid "Exponential"
+msgstr "Експоненцијално"
+
+#: src/dsp/curve.c:380
+msgid "Elliptic"
+msgstr "Елиптично"
+
+#: src/dsp/audio_function.c:137 src/gui/widgets/drag_dest_box.c:324
+msgid "Failed to create plugin"
+msgstr "Неуспех при создавање на приклучок"
+
+#: src/dsp/audio_function.c:370
+msgid "Invalid positions - skipping function"
+msgstr "Невалидни позиции - функција на прескокнување"
+
+#: src/dsp/audio_function.c:616
+msgid "Failed to get audio clip from external program"
+msgstr "Неуспешно прибавување на аудио исечок од надворешна програма"
+
+#: src/dsp/audio_function.c:641
+msgid "Failed to apply plugin"
+msgstr "Неуспешна примена на приклучок"
+
+#: src/dsp/graph_thread.c:572
+#, c-format
+msgid ""
+"Your user does not have enough privileges to allow %s to set the scheduling "
+"priority of threads. Please refer to the 'Getting Started' section in the "
+"user manual for details."
+msgstr ""
+"Твојот корисник нема доволно привилегии да дозволи на %s да ги одреди "
+"распоредното приоритизирање на нишките. Ве молиме прегледајте го одделот "
+"„Започнување“ („Getting Started“) во корисничкото упатство за детали."
+
+#: src/dsp/track.c:326
+msgid "Track record"
+msgstr "Снимање на лента"
+
+#: src/dsp/track.c:445
+msgid "Failed to clone modulator plugin"
+msgstr "Неуспешно клонирање на модулирачки приклучок"
+
+#: src/dsp/track.c:474
+msgid "Failed to clone channel"
+msgstr "Неуспешно клонирање на канал"
+
+#: src/dsp/track.c:853
+msgid "Cannot set track muted"
+msgstr "Лентата не може да се занеми"
+
+#: src/dsp/track.c:897
+msgid "Cannot set track folded"
+msgstr "Лентата не може да се склопи"
+
+#: src/dsp/track.c:1409
+msgid "Cannot set track soloed"
+msgstr "Лентата не може да се солира"
+
+#: src/dsp/track.c:1459
+msgid "Cannot set track listened"
+msgstr "Лентата не може да се преслушува"
+
+#: src/dsp/track.c:2905 src/settings/plugin_settings.c:398
+#: src/settings/plugin_settings.c:440
+msgid "Failed to rename track"
+msgstr "Лентата не може да се преименува"
+
+#: src/dsp/track.c:3265 src/dsp/track.c:3310
+msgid "Cannot set track comment"
+msgstr "Не може да се постави коментар на лентата"
+
+#: src/dsp/track.c:3346
+msgid "Cannot set track icon"
+msgstr "Не може да се постави икона на лентата"
+
+#: src/dsp/track.c:3580
+msgid "Cannot set track enabled"
+msgstr "Лентата не може да се овозможи"
+
+#: src/dsp/automation_track.c:163
+msgid "Rec"
+msgstr "Снимање"
+
+#: src/dsp/automation_track.c:184
+msgid "Touch"
+msgstr "Допир(ање)"
+
+#: src/dsp/automation_track.c:187
+msgid "Latch"
+msgstr "Закачување"
+
+#: src/dsp/region.c:511 src/gui/widgets/track.c:1059
+#: build/data/org.zrythm.Zrythm.gschema.xml:1233
+msgid "Automation"
+msgstr "Автомација"
+
+#: src/dsp/engine.c:499
+#, c-format
+msgid ""
+"Failed to initialize the %s audio backend. Will use the dummy backend "
+"instead. Please check your backend settings in the Preferences."
+msgstr ""
+"Неуспешна иницијализација на заднинскиот аудио систем на %s. Наместо него, "
+"ќе го користам симулативниот. Ве молиме проверете ги вашите поставки за "
+"заднински аудио систем во Поставките."
+
+#: src/dsp/engine.c:540
+#, c-format
+msgid ""
+"The JACK MIDI backend can only be used with the JACK audio backend (your "
+"current audio backend is %s). Will use the dummy MIDI backend instead."
+msgstr ""
+"JACK МИДИ заднинскиот систем може да се користи само со JACK заднинскиот "
+"аудио систем (моментално, твојот заднински аудио систем е: %s). Наместо ова, "
+"ќе го користам симулативниот МИДИ задниски систем."
+
+#: src/dsp/engine.c:575
+#, c-format
+msgid ""
+"Failed to initialize the %s MIDI backend. Will use the dummy backend "
+"instead. Please check your backend settings in the Preferences."
+msgstr ""
+"Неуспешна иницијализација на МИДИ заднинскиот систем на %s. Наместо него, ќе "
+"го користам симулативниот заднински МИДИ систем. Ве молиме проверете ги "
+"поставките за заднински систем во Поставките."
+
+#: src/dsp/engine.c:616
+msgid ""
+"Your selected combination of backends may not work properly. If you want to "
+"use JACK, please select JACK as both your audio and MIDI backend."
+msgstr ""
+"Одбраната комбинација на заднински системи можно е да не работи исправно. "
+"Ако сакате да го користите JACK, ве молиме одберете го JACK воедно како и "
+"аудио и МИДИ заднински систем."
+
+#: src/dsp/engine.c:817
+#, c-format
+msgid ""
+"The selected MIDI/audio backend was not found in the version of %s you have "
+"installed. The audio and MIDI backends were set to \"Dummy\". Please set "
+"your preferred backend from the preferences."
+msgstr ""
+"Одбраниот МИДИ / аудио заднински систем не е пронајден во верзијата на %s "
+"која ја имаш инсталирано. Ги поставив аудио и МИДИ заднинските системи на "
+"„Симулирани“. Ве молиме одберете го предпочитаниот заднински систем во "
+"Поставките."
+
+#: src/dsp/exporter.c:160
+#, c-format
+msgid "Format %s not supported yet"
+msgstr "Форматот %s `сѐ уште неподдржан"
+
+#: src/dsp/exporter.c:227
+msgid "SF INFO invalid"
+msgstr "Невалиден SF INFO"
+
+#: src/dsp/exporter.c:256
+#, c-format
+msgid ""
+"Couldn't open SNDFILE %s:\n"
+"%d: %s"
+msgstr ""
+"Неуспешно отворање на SNDFILE %s:\n"
+"%d: %s"
+
+#: src/dsp/exporter.c:267
+#, c-format
+msgid "Invalid SNDFILE format %s: 0x%08X != 0x%08X"
+msgstr "Невалидна SNDFILE форма %s: 0x%08X != 0x%08X"
+
+#: src/dsp/exporter.c:524
+#, c-format
+msgid ""
+"The exported audio contains segments louder than 0 dB (max detected %.1f dB)."
+msgstr ""
+"Извезеното аудио содржи делови кои се погласни од 0 дБ (најгласното е %.1f "
+"дБ)."
+
+#: src/dsp/exporter.c:1014 src/dsp/exporter.c:1021
+msgid "Failed to create audio track"
+msgstr "Неуспешно создавање на аудио лента"
+
+#: src/dsp/exporter.c:1053
+msgid "Invalid time range"
+msgstr "Невалиден временски опсег"
+
+#: src/dsp/engine_pulse.c:88
+msgid ""
+"A buffer underflow has occurred. Try increasing the buffer size in the "
+"settings to avoid audio glitches."
+msgstr ""
+"Настана преполнување на пуферот. За да избегнете аудио дефекти, обидете се "
+"да ја зголемите величината на пуферот во Поставките."
+
+#: src/dsp/engine_pulse.c:202
+msgid "PulseAudio error: Failed to create main loop"
+msgstr "Грешка во PulseAudio: неуспех при создавање на главната јамка"
+
+#: src/dsp/engine_pulse.c:222
+#, c-format
+msgid "PulseAudio Error: %s"
+msgstr "Грешка во PulseAudio: %s"
+
+#: src/dsp/engine_pulse.c:239
+msgid "PulseAudio Error: Failed to connect"
+msgstr "Грешка во PulseAudio: Неуспешно поврзување"
+
+#. TODO
+#: src/dsp/scale.c:543
+msgid "Unimplemented"
+msgstr "Сѐ уште неспроведено"
+
+#: src/dsp/chord_track.c:40 src/settings/chord_preset.c:47
+#: resources/ui/inspector_chord.ui:7
+msgid "Chords"
+msgstr "Акорди"
+
+#: src/dsp/clip.c:160
+#, fuzzy
+msgid "Failed to initialize audio file"
+msgstr "Неуспешен запис на аудио датотека"
+
+#: src/dsp/clip.c:186
+#, fuzzy, c-format
+msgid "Failed to initialize audio file at %s"
+msgstr "Неуспешен запис на аудио датотека"
+
+#: src/dsp/clip.c:453
+#, c-format
+msgid "Failed to write audio clip to file: %s"
+msgstr "Неуспенен запис на аудио парче во датотеката: %s"
+
+#: src/dsp/clip.c:522
+msgid "Failed to write audio file"
+msgstr "Неуспешен запис на аудио датотека"
+
+#: src/dsp/clip.c:544
+#, fuzzy
+msgid "Failed to create audio clip from file"
+msgstr "Неуспенен запис на аудио парче во датотеката: %s"
+
+#: src/dsp/clip.c:696
+msgid "Edit in external app"
+msgstr "Уреди во надворешна програма"
+
+#: src/dsp/clip.c:698 src/utils/dialogs.c:60
+#: src/gui/widgets/dialogs/create_project_dialog.c:124
+#: src/gui/widgets/dialogs/first_run_dialog.c:274
+#: src/gui/widgets/dialogs/bug_report_dialog.c:187
+#: src/plugins/lv2/lv2_gtk.c:247 resources/ui/port_selector_dialog.ui:126
+#: resources/ui/string_entry_dialog.ui:55
+msgid "_OK"
+msgstr "_Во ред"
+
+#: src/dsp/clip.c:715
+#, c-format
+msgid "Edit the file at <u>%s</u>, then press OK"
+msgstr "Уреди ја датотеката при <u>%s</u>, а потоа стисни Во ред (ОК)"
+
+#: src/dsp/clip.c:727
+msgid "Launch"
+msgstr "Покрени"
+
+#: src/dsp/clip.c:753 src/dsp/audio_region.c:90
+#, fuzzy, c-format
+msgid "Failed to create audio clip from file at %s"
+msgstr "Неуспенен запис на аудио парче во датотеката: %s"
+
+#: src/dsp/tempo_track.c:38
+msgid "BPM"
+msgstr "УВМ"
+
+#: src/dsp/tempo_track.c:51
+msgid "Beats per bar"
+msgstr "Удари по целина"
+
+#: src/dsp/tempo_track.c:70
+msgid "Beat unit"
+msgstr "Единица на удар"
+
+#: src/dsp/tempo_track.c:185
+msgid "Failed to change BPM"
+msgstr "Неуспешна промена на УВМ"
+
+#: src/dsp/automation_point.c:241 src/gui/widgets/fader.c:370
+#: src/gui/widgets/balance_control.c:349 src/gui/widgets/item_factory.c:325
+#: src/gui/widgets/item_factory.c:349
+msgid "Invalid value"
+msgstr "Невалидна вредност"
+
+#: src/dsp/recording_manager.c:144
+msgid "Failed to create recorded regions"
+msgstr "Неуспешно создавање на снимени региони"
+
+#: src/dsp/pool.c:520
+#, c-format
+msgid "Failed to write clip %s"
+msgstr "Неуспешен запис на парче %s"
+
+#: src/dsp/audio_region.c:236
+msgid "Failed to duplicate audio clip"
+msgstr "Неуспешна дупликација на аудио парче"
+
+#: src/dsp/engine_alsa.c:328
+#, c-format
+msgid "ALSA Error: %s"
+msgstr "ALSA грешка: %s"
+
+#: src/dsp/track_lane.c:64
+#, c-format
+msgid "Lane %d"
+msgstr "Патека %d"
+
+#: src/dsp/track_lane.c:95
+msgid "Failed to rename lane"
+msgstr "Неуспешно преименување на патека"
+
+#: src/dsp/track_lane.c:142
+msgid "Cannot set track lane soloed"
+msgstr "Неможност да се солира патеката"
+
+#: src/dsp/track_lane.c:190
+msgid "Cannot set track lane muted"
+msgstr "Неможност да се занеми патеката"
+
+#: src/dsp/sample_processor.c:560
+#, c-format
+msgid "Failed to instantiate plugin %s"
+msgstr "Неуспешна иницијализација на приклучокот %s"
+
+#: src/dsp/channel_send.c:84
+#, c-format
+msgid "Channel Send %d enabled"
+msgstr "Препраќањето на каналот %d овоможено"
+
+#: src/dsp/channel_send.c:95
+#, c-format
+msgid "Channel Send %d amount"
+msgstr "Препраќање на каналот %d количина"
+
+#: src/dsp/channel_send.c:107
+#, c-format
+msgid "Channel Send %d audio in"
+msgstr "Препраќање на канал %d аудио влез"
+
+#: src/dsp/channel_send.c:114
+#, c-format
+msgid "Channel Send %d MIDI in"
+msgstr "Препраќање на канал %d МИДИ влез"
+
+#: src/dsp/channel_send.c:121
+#, c-format
+msgid "Channel Send %d audio out"
+msgstr "Препраќање на канал %d аудио излез"
+
+#: src/dsp/channel_send.c:129
+#, c-format
+msgid "Channel Send %d MIDI out"
+msgstr "Препраќање на канал %d МИДИ излез"
+
+#: src/dsp/channel_send.c:420 src/dsp/channel_send.c:477
+msgid "Ports cannot be connected"
+msgstr "Неможност да се поврзат портите"
+
+#: src/dsp/channel_send.c:582
+msgid "Pre-fader send"
+msgstr "Препраќање од пред потенциометар"
+
+#: src/dsp/channel_send.c:584
+msgid "Post-fader send"
+msgstr "Препраќање од после потенциометар"
+
+#: src/dsp/channel_send.c:615
+#, c-format
+msgid "%s input"
+msgstr "%s влез"
+
+#: src/dsp/engine_pa.c:206 src/dsp/engine_pa.c:218 src/dsp/engine_pa.c:226
+#, c-format
+msgid "PortAudio Error: %s"
+msgstr "Грешка во PortAudio: %s"
+
+#: src/dsp/tracklist.c:1295
+msgid "No file was found"
+msgstr "Не е пронајдена датотека"
+
+#: src/dsp/tracklist.c:1322
+#, c-format
+msgid "Unsupported file type %s"
+msgstr "Неподдржан вид на датотека %s"
+
+#: src/dsp/tracklist.c:1338
+msgid "This MIDI file contains no data"
+msgstr "Оваа МИДИ датотека не содржи никакви податоци"
+
+#: src/dsp/tracklist.c:1355
+msgid "Can only drop 1 file at a time on existing tracks"
+msgstr ""
+"Можно е да се остави едновремено само една датотека врз постоечките ленти"
+
+#: src/dsp/tracklist.c:1369
+msgid "Can only drop MIDI files on MIDI/instrument tracks"
+msgstr ""
+"МИДИ датотеките можат да се остават само врз МИДИ / инструменталните ленти"
+
+#: src/dsp/tracklist.c:1379
+#, c-format
+msgid ""
+"This MIDI file contains %d tracks. It cannot be dropped into an existing "
+"track"
+msgstr ""
+"Оваа МИДИ датотека содржи %d ленти. Затоа не може да се остави врз постоечка "
+"лента"
+
+#: src/dsp/tracklist.c:1394
+msgid "Can only drop audio files on audio tracks"
+msgstr "Аудио датотека може да се остави само врз аудио ленти"
+
+#: src/dsp/tracklist.c:1455
+msgid "Failed to create arranger objects"
+msgstr "Неуспешно создавање на објекти во аранжерот"
+
+#: src/dsp/tracklist.c:1529
+msgid "Failed to move tracks after copying or moving inside folder"
+msgstr ""
+"Неуспешно преместување на ленти при копирање или преместување внатре во папка"
+
+#: src/dsp/tracklist.c:1607
+msgid "Failed to copy tracks inside"
+msgstr "Неуспешно копирање на ленти навнатре"
+
+#: src/dsp/tracklist.c:1649
+msgid "Failed to copy track inside"
+msgstr "Неуспешно копирање на лента навнатре"
+
+#: src/dsp/tracklist.c:1690
+msgid "Failed to copy tracks"
+msgstr "Неуспешно копирање на ленти"
+
+#: src/dsp/tracklist.c:1715
+msgid "Cannot drag folder into itself"
+msgstr "Не е можно да се влече папка во самата себе"
+
+#: src/dsp/tracklist.c:1733 src/dsp/tracklist.c:1777
+msgid "Failed to move track inside folder"
+msgstr "Неуспешно преместување на лентата внатре во папката"
+
+#: src/dsp/tracklist.c:1818
+msgid "Failed to move tracks"
+msgstr "Неуспешно преместување на ленти"
+
+#: src/dsp/modulator_macro_processor.c:87
+#, c-format
+msgid "Macro %d"
+msgstr "Макро %d"
+
+#: src/dsp/modulator_macro_processor.c:102
+#, c-format
+msgid "Macro CV In %d"
+msgstr "Макро CV влез %d"
+
+#: src/dsp/modulator_macro_processor.c:112
+#, c-format
+msgid "Macro CV Out %d"
+msgstr "Макро CV излез %d"
+
+#: src/dsp/channel.c:1205 src/plugins/carla_native_plugin.c:1149
+msgid "MIDI out"
+msgstr "МИДИ излез"
 
 #: src/utils/ui.c:629
 msgid "Sine (Equal Power)"
@@ -2045,11 +2763,6 @@ msgstr "Грешка при претрага %d: %s"
 msgid "Mixer"
 msgstr "Миксета"
 
-#: src/utils/gtk.c:1215 src/audio/modulator_track.c:59
-#: src/gui/widgets/bot_dock_edge.c:262
-msgid "Modulators"
-msgstr "Модулатори"
-
 #: src/utils/gtk.c:1218
 msgid "Chord Pad"
 msgstr "Површина со акорди"
@@ -2114,15 +2827,6 @@ msgstr "_Отвори"
 msgid "Overwrite Plugin"
 msgstr "Препиши врз постоечки приклучок"
 
-#: src/utils/dialogs.c:60 src/audio/clip.c:698
-#: src/gui/widgets/dialogs/create_project_dialog.c:124
-#: src/gui/widgets/dialogs/first_run_dialog.c:274
-#: src/gui/widgets/dialogs/bug_report_dialog.c:187
-#: src/plugins/lv2/lv2_gtk.c:247 resources/ui/port_selector_dialog.ui:126
-#: resources/ui/string_entry_dialog.ui:55
-msgid "_OK"
-msgstr "_Во ред"
-
 #: src/utils/dialogs.c:65
 msgid "A plugin already exists at the selected slot. Overwrite it?"
 msgstr "На одбраното место веќе постои приклучок. Да препишам преку него?"
@@ -2137,711 +2841,6 @@ msgstr ""
 #, c-format
 msgid "%s has encountered an error\n"
 msgstr "%s пресретна грешка\n"
-
-#: src/audio/supported_file.c:269
-msgid "Failed opening file"
-msgstr "Неуспех при отворање на датотека"
-
-#: src/audio/supported_file.c:274
-#, c-format
-msgid ""
-"<b>%s</b>\n"
-"Sample rate: %d\n"
-"Length: %<PRId64>s %<PRId64> ms | BPM: %.1f\n"
-"Channel(s): %u | Bitrate: %'d.%d kb/s\n"
-"Bit depth: %d bits"
-msgstr ""
-"<b>%s</b>\n"
-"Стапка на примероци: %d\n"
-"Должина: %<PRId64>s %<PRId64> мс | УВМ: %.1f\n"
-"Канал(и): %u | Стапка на битови: %'d.%d кб/с\n"
-"Длабочина на битови: %d битна"
-
-#: src/audio/snap_grid.c:253 resources/ui/snap_grid_popover.ui:116
-#: resources/ui/snap_grid_popover.ui:199
-msgid "Adaptive"
-msgstr "Прилагодливо"
-
-#: src/audio/fader.c:97
-msgid "Prefader Swap Phase"
-msgstr "Фаза на размена пред потенциометар"
-
-#: src/audio/fader.c:98
-msgid "Fader Swap Phase"
-msgstr "Фаза на размена по потенциометар"
-
-#: src/audio/fader.c:140
-msgid "Prefader Volume"
-msgstr "Гласнина пред потенциометар"
-
-#: src/audio/fader.c:140
-msgid "Fader Volume"
-msgstr "Гласнина по потенциометар"
-
-#: src/audio/fader.c:169
-msgid "Prefader Balance"
-msgstr "Стерео рамнотежа пред потенциометар"
-
-#: src/audio/fader.c:169
-msgid "Fader Balance"
-msgstr "Стерео рамнотежа по потенциометар"
-
-#: src/audio/fader.c:188
-msgid "Prefader Mute"
-msgstr "Занеменост пред потенциометар"
-
-#: src/audio/fader.c:188
-msgid "Fader Mute"
-msgstr "Занеменост по потенциометар"
-
-#: src/audio/fader.c:209
-msgid "Prefader Solo"
-msgstr "Солирање пред потенциометар"
-
-#: src/audio/fader.c:209
-msgid "Fader Solo"
-msgstr "Солирање по потенциометар"
-
-#: src/audio/fader.c:223
-msgid "Prefader Listen"
-msgstr "Преслушување пред потенциометар"
-
-#: src/audio/fader.c:223
-msgid "Fader Listen"
-msgstr "Преслушување по потенциометар"
-
-#: src/audio/fader.c:238
-msgid "Prefader Mono Compat"
-msgstr "Моно соодветност пред потенциометар"
-
-#: src/audio/fader.c:239
-msgid "Fader Mono Compat"
-msgstr "Моно соодветност по потенциометар"
-
-#: src/audio/fader.c:271
-msgid "Ch Pre-Fader in"
-msgstr "Канален влез пред потенциометар"
-
-#: src/audio/fader.c:276
-msgid "Ch Fader in"
-msgstr "Канален влез по потенциометар"
-
-#: src/audio/fader.c:282
-msgid "Sample Processor Fader in"
-msgstr "Влез од процесор на примероци по потенциометар"
-
-#: src/audio/fader.c:287
-msgid "Monitor Fader in"
-msgstr "Влез на монитор по потенциометар"
-
-#: src/audio/fader.c:305
-msgid "Ch Pre-Fader out"
-msgstr "Канален излез пред потенциометар"
-
-#: src/audio/fader.c:310
-msgid "Ch Fader out"
-msgstr "Канален излез по потенциометар"
-
-#: src/audio/fader.c:316
-msgid "Sample Processor Fader out"
-msgstr "Излез од процесор на примероци по потенциометар"
-
-#: src/audio/fader.c:321
-msgid "Monitor Fader out"
-msgstr "Мониторен излез по потенциометар"
-
-#: src/audio/fader.c:343
-msgid "Ch MIDI Pre-Fader in"
-msgstr "Влез на канален МИДИ пред потенциометар"
-
-#: src/audio/fader.c:348
-msgid "Ch MIDI Fader in"
-msgstr "Влез на канален МИДИ по потенциометар"
-
-#: src/audio/fader.c:360
-msgid "Ch MIDI Pre-Fader out"
-msgstr "Излез на канален МИДИ пред потенциометар"
-
-#: src/audio/fader.c:365
-msgid "Ch MIDI Fader out"
-msgstr "Излез на канален МИДИ по потенциометар"
-
-#: src/audio/fader.c:594
-msgid "Failed to change volume"
-msgstr "Неуспех при промена на гласност"
-
-#: src/audio/fader.c:643
-msgid "Failed to set MIDI mode"
-msgstr "Неуспех да се намести МИДИ модус"
-
-#: src/audio/encoder.c:58
-#, c-format
-msgid "An error has occurred opening the audio file '%s'"
-msgstr "Се појави грешка при отворање на аудио датотеката „%s“"
-
-#: src/audio/marker_track.c:42
-msgid "Markers"
-msgstr "Означувачи"
-
-#: src/audio/marker_track.c:60 src/gui/widgets/timeline_selection_info.c:228
-#: resources/ui/quantize_dialog.ui:62
-msgid "start"
-msgstr "почеток"
-
-#: src/audio/marker_track.c:67 src/gui/widgets/timeline_selection_info.c:234
-#: resources/ui/quantize_dialog.ui:70
-msgid "end"
-msgstr "крај"
-
-#: src/audio/engine_jack.c:311
-msgid "XRUN occurred - check your JACK configuration"
-msgstr "Се појави XRUN грешка - провери ги твоите нагодувања при JACK"
-
-#: src/audio/engine_jack.c:369
-msgid "JACK has shut down"
-msgstr "JACK се исклучи"
-
-#. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:632
-msgid "Overall operation failed"
-msgstr "Пропадна општата операција"
-
-#: src/audio/engine_jack.c:638
-msgid "The operation contained an invalid or unsupported option"
-msgstr "Операцијата содржеше невалиден или неподдржан избор"
-
-#: src/audio/engine_jack.c:644
-msgid "The desired client name was not unique"
-msgstr "Посакуваното име на муштеријата не беше единствено"
-
-#: src/audio/engine_jack.c:648
-msgid "Unable to connect to the JACK server"
-msgstr "Неможност да се поврзе со JACK серверот"
-
-#: src/audio/engine_jack.c:653
-msgid "Communication error with the JACK server"
-msgstr "Комуникациска грешка со JACK серверот"
-
-#: src/audio/engine_jack.c:657
-msgid "Requested client does not exist"
-msgstr "Бараниот клиент не постои"
-
-#: src/audio/engine_jack.c:661
-msgid "Unable to load internal client"
-msgstr "Неуспешно вчитување на внатрешен клиент"
-
-#: src/audio/engine_jack.c:665
-msgid "Unable to initialize client"
-msgstr "Неможност да се иницијализира клиентот"
-
-#: src/audio/engine_jack.c:669
-msgid "Unable to access shared memory"
-msgstr "Не може да се пристапи на заедничката меморија"
-
-#: src/audio/engine_jack.c:674
-msgid "Client's protocol version does not match"
-msgstr "Протоколарната верзија на клиентот не се совпаѓа"
-
-#: src/audio/engine_jack.c:678
-msgid "Backend error"
-msgstr "Грешка во позадинскиот систем"
-
-#: src/audio/engine_jack.c:682
-msgid "Client zombie"
-msgstr "Зомби клиент"
-
-#: src/audio/engine_jack.c:729
-#, c-format
-msgid "JACK: Failed to disconnect monitor out: %s"
-msgstr "JACK: Неуспех при исклучување на мониторот: %s"
-
-#: src/audio/engine_jack.c:778
-msgid "JACK: No physical playback ports found"
-msgstr "JACK: Не се пронајдени физички порти за репродукција / излез"
-
-#: src/audio/engine_jack.c:792
-#, c-format
-msgid "JACK: Failed to connect monitor output [%s]: %s"
-msgstr "JACK: Неуспешно поврзување на мониторскиот излез [%s]: %s"
-
-#: src/audio/engine_jack.c:793
-msgid "left"
-msgstr "лево"
-
-#: src/audio/engine_jack.c:793
-msgid "right"
-msgstr "десно"
-
-#: src/audio/engine_jack.c:851 src/gui/widgets/monitor_section.c:237
-msgid "Failed to connect to left monitor output port"
-msgstr "Неуспешно поврзување со излезната порта на левиот монитор"
-
-#: src/audio/engine_jack.c:859 src/gui/widgets/monitor_section.c:246
-msgid "Failed to connect to right monitor output port"
-msgstr "Неуспешно поврзување со излезната порта на десниот монитор"
-
-#: src/audio/curve.c:375
-msgid "Exponential"
-msgstr "Експоненцијално"
-
-#: src/audio/curve.c:380
-msgid "Elliptic"
-msgstr "Елиптично"
-
-#: src/audio/audio_function.c:137 src/gui/widgets/drag_dest_box.c:324
-msgid "Failed to create plugin"
-msgstr "Неуспех при создавање на приклучок"
-
-#: src/audio/audio_function.c:370
-msgid "Invalid positions - skipping function"
-msgstr "Невалидни позиции - функција на прескокнување"
-
-#: src/audio/audio_function.c:616
-msgid "Failed to get audio clip from external program"
-msgstr "Неуспешно прибавување на аудио исечок од надворешна програма"
-
-#: src/audio/audio_function.c:641
-msgid "Failed to apply plugin"
-msgstr "Неуспешна примена на приклучок"
-
-#: src/audio/graph_thread.c:572
-#, c-format
-msgid ""
-"Your user does not have enough privileges to allow %s to set the scheduling "
-"priority of threads. Please refer to the 'Getting Started' section in the "
-"user manual for details."
-msgstr ""
-"Твојот корисник нема доволно привилегии да дозволи на %s да ги одреди "
-"распоредното приоритизирање на нишките. Ве молиме прегледајте го одделот "
-"„Започнување“ („Getting Started“) во корисничкото упатство за детали."
-
-#: src/audio/track.c:326
-msgid "Track record"
-msgstr "Снимање на лента"
-
-#: src/audio/track.c:445
-msgid "Failed to clone modulator plugin"
-msgstr "Неуспешно клонирање на модулирачки приклучок"
-
-#: src/audio/track.c:474
-msgid "Failed to clone channel"
-msgstr "Неуспешно клонирање на канал"
-
-#: src/audio/track.c:853
-msgid "Cannot set track muted"
-msgstr "Лентата не може да се занеми"
-
-#: src/audio/track.c:897
-msgid "Cannot set track folded"
-msgstr "Лентата не може да се склопи"
-
-#: src/audio/track.c:1409
-msgid "Cannot set track soloed"
-msgstr "Лентата не може да се солира"
-
-#: src/audio/track.c:1459
-msgid "Cannot set track listened"
-msgstr "Лентата не може да се преслушува"
-
-#: src/audio/track.c:2905 src/settings/plugin_settings.c:398
-#: src/settings/plugin_settings.c:440
-msgid "Failed to rename track"
-msgstr "Лентата не може да се преименува"
-
-#: src/audio/track.c:3265 src/audio/track.c:3310
-msgid "Cannot set track comment"
-msgstr "Не може да се постави коментар на лентата"
-
-#: src/audio/track.c:3346
-msgid "Cannot set track icon"
-msgstr "Не може да се постави икона на лентата"
-
-#: src/audio/track.c:3580
-msgid "Cannot set track enabled"
-msgstr "Лентата не може да се овозможи"
-
-#: src/audio/automation_track.c:163
-msgid "Rec"
-msgstr "Снимање"
-
-#: src/audio/automation_track.c:184
-msgid "Touch"
-msgstr "Допир(ање)"
-
-#: src/audio/automation_track.c:187
-msgid "Latch"
-msgstr "Закачување"
-
-#: src/audio/region.c:511 src/gui/widgets/track.c:1059
-#: build/data/org.zrythm.Zrythm.gschema.xml:1233
-msgid "Automation"
-msgstr "Автомација"
-
-#: src/audio/engine.c:499
-#, c-format
-msgid ""
-"Failed to initialize the %s audio backend. Will use the dummy backend "
-"instead. Please check your backend settings in the Preferences."
-msgstr ""
-"Неуспешна иницијализација на заднинскиот аудио систем на %s. Наместо него, "
-"ќе го користам симулативниот. Ве молиме проверете ги вашите поставки за "
-"заднински аудио систем во Поставките."
-
-#: src/audio/engine.c:540
-#, c-format
-msgid ""
-"The JACK MIDI backend can only be used with the JACK audio backend (your "
-"current audio backend is %s). Will use the dummy MIDI backend instead."
-msgstr ""
-"JACK МИДИ заднинскиот систем може да се користи само со JACK заднинскиот "
-"аудио систем (моментално, твојот заднински аудио систем е: %s). Наместо ова, "
-"ќе го користам симулативниот МИДИ задниски систем."
-
-#: src/audio/engine.c:575
-#, c-format
-msgid ""
-"Failed to initialize the %s MIDI backend. Will use the dummy backend "
-"instead. Please check your backend settings in the Preferences."
-msgstr ""
-"Неуспешна иницијализација на МИДИ заднинскиот систем на %s. Наместо него, ќе "
-"го користам симулативниот заднински МИДИ систем. Ве молиме проверете ги "
-"поставките за заднински систем во Поставките."
-
-#: src/audio/engine.c:616
-msgid ""
-"Your selected combination of backends may not work properly. If you want to "
-"use JACK, please select JACK as both your audio and MIDI backend."
-msgstr ""
-"Одбраната комбинација на заднински системи можно е да не работи исправно. "
-"Ако сакате да го користите JACK, ве молиме одберете го JACK воедно како и "
-"аудио и МИДИ заднински систем."
-
-#: src/audio/engine.c:817
-#, c-format
-msgid ""
-"The selected MIDI/audio backend was not found in the version of %s you have "
-"installed. The audio and MIDI backends were set to \"Dummy\". Please set "
-"your preferred backend from the preferences."
-msgstr ""
-"Одбраниот МИДИ / аудио заднински систем не е пронајден во верзијата на %s "
-"која ја имаш инсталирано. Ги поставив аудио и МИДИ заднинските системи на "
-"„Симулирани“. Ве молиме одберете го предпочитаниот заднински систем во "
-"Поставките."
-
-#: src/audio/exporter.c:160
-#, c-format
-msgid "Format %s not supported yet"
-msgstr "Форматот %s `сѐ уште неподдржан"
-
-#: src/audio/exporter.c:227
-msgid "SF INFO invalid"
-msgstr "Невалиден SF INFO"
-
-#: src/audio/exporter.c:256
-#, c-format
-msgid ""
-"Couldn't open SNDFILE %s:\n"
-"%d: %s"
-msgstr ""
-"Неуспешно отворање на SNDFILE %s:\n"
-"%d: %s"
-
-#: src/audio/exporter.c:267
-#, c-format
-msgid "Invalid SNDFILE format %s: 0x%08X != 0x%08X"
-msgstr "Невалидна SNDFILE форма %s: 0x%08X != 0x%08X"
-
-#: src/audio/exporter.c:524
-#, c-format
-msgid ""
-"The exported audio contains segments louder than 0 dB (max detected %.1f dB)."
-msgstr ""
-"Извезеното аудио содржи делови кои се погласни од 0 дБ (најгласното е %.1f "
-"дБ)."
-
-#: src/audio/exporter.c:1014 src/audio/exporter.c:1021
-msgid "Failed to create audio track"
-msgstr "Неуспешно создавање на аудио лента"
-
-#: src/audio/exporter.c:1053
-msgid "Invalid time range"
-msgstr "Невалиден временски опсег"
-
-#: src/audio/engine_pulse.c:88
-msgid ""
-"A buffer underflow has occurred. Try increasing the buffer size in the "
-"settings to avoid audio glitches."
-msgstr ""
-"Настана преполнување на пуферот. За да избегнете аудио дефекти, обидете се "
-"да ја зголемите величината на пуферот во Поставките."
-
-#: src/audio/engine_pulse.c:202
-msgid "PulseAudio error: Failed to create main loop"
-msgstr "Грешка во PulseAudio: неуспех при создавање на главната јамка"
-
-#: src/audio/engine_pulse.c:222
-#, c-format
-msgid "PulseAudio Error: %s"
-msgstr "Грешка во PulseAudio: %s"
-
-#: src/audio/engine_pulse.c:239
-msgid "PulseAudio Error: Failed to connect"
-msgstr "Грешка во PulseAudio: Неуспешно поврзување"
-
-#. TODO
-#: src/audio/scale.c:543
-msgid "Unimplemented"
-msgstr "Сѐ уште неспроведено"
-
-#: src/audio/chord_track.c:40 src/settings/chord_preset.c:47
-#: resources/ui/inspector_chord.ui:7
-msgid "Chords"
-msgstr "Акорди"
-
-#: src/audio/clip.c:160
-#, fuzzy
-msgid "Failed to initialize audio file"
-msgstr "Неуспешен запис на аудио датотека"
-
-#: src/audio/clip.c:186
-#, fuzzy, c-format
-msgid "Failed to initialize audio file at %s"
-msgstr "Неуспешен запис на аудио датотека"
-
-#: src/audio/clip.c:453
-#, c-format
-msgid "Failed to write audio clip to file: %s"
-msgstr "Неуспенен запис на аудио парче во датотеката: %s"
-
-#: src/audio/clip.c:522
-msgid "Failed to write audio file"
-msgstr "Неуспешен запис на аудио датотека"
-
-#: src/audio/clip.c:544
-#, fuzzy
-msgid "Failed to create audio clip from file"
-msgstr "Неуспенен запис на аудио парче во датотеката: %s"
-
-#: src/audio/clip.c:696
-msgid "Edit in external app"
-msgstr "Уреди во надворешна програма"
-
-#: src/audio/clip.c:715
-#, c-format
-msgid "Edit the file at <u>%s</u>, then press OK"
-msgstr "Уреди ја датотеката при <u>%s</u>, а потоа стисни Во ред (ОК)"
-
-#: src/audio/clip.c:727
-msgid "Launch"
-msgstr "Покрени"
-
-#: src/audio/clip.c:753 src/audio/audio_region.c:90
-#, fuzzy, c-format
-msgid "Failed to create audio clip from file at %s"
-msgstr "Неуспенен запис на аудио парче во датотеката: %s"
-
-#: src/audio/tempo_track.c:38
-msgid "BPM"
-msgstr "УВМ"
-
-#: src/audio/tempo_track.c:51
-msgid "Beats per bar"
-msgstr "Удари по целина"
-
-#: src/audio/tempo_track.c:70
-msgid "Beat unit"
-msgstr "Единица на удар"
-
-#: src/audio/tempo_track.c:185
-msgid "Failed to change BPM"
-msgstr "Неуспешна промена на УВМ"
-
-#: src/audio/automation_point.c:241 src/gui/widgets/fader.c:342
-#: src/gui/widgets/balance_control.c:349 src/gui/widgets/item_factory.c:325
-#: src/gui/widgets/item_factory.c:349
-msgid "Invalid value"
-msgstr "Невалидна вредност"
-
-#: src/audio/recording_manager.c:144
-msgid "Failed to create recorded regions"
-msgstr "Неуспешно создавање на снимени региони"
-
-#: src/audio/pool.c:520
-#, c-format
-msgid "Failed to write clip %s"
-msgstr "Неуспешен запис на парче %s"
-
-#: src/audio/audio_region.c:236
-msgid "Failed to duplicate audio clip"
-msgstr "Неуспешна дупликација на аудио парче"
-
-#: src/audio/engine_alsa.c:328
-#, c-format
-msgid "ALSA Error: %s"
-msgstr "ALSA грешка: %s"
-
-#: src/audio/track_lane.c:64
-#, c-format
-msgid "Lane %d"
-msgstr "Патека %d"
-
-#: src/audio/track_lane.c:95
-msgid "Failed to rename lane"
-msgstr "Неуспешно преименување на патека"
-
-#: src/audio/track_lane.c:142
-msgid "Cannot set track lane soloed"
-msgstr "Неможност да се солира патеката"
-
-#: src/audio/track_lane.c:190
-msgid "Cannot set track lane muted"
-msgstr "Неможност да се занеми патеката"
-
-#: src/audio/sample_processor.c:560
-#, c-format
-msgid "Failed to instantiate plugin %s"
-msgstr "Неуспешна иницијализација на приклучокот %s"
-
-#: src/audio/channel_send.c:84
-#, c-format
-msgid "Channel Send %d enabled"
-msgstr "Препраќањето на каналот %d овоможено"
-
-#: src/audio/channel_send.c:95
-#, c-format
-msgid "Channel Send %d amount"
-msgstr "Препраќање на каналот %d количина"
-
-#: src/audio/channel_send.c:107
-#, c-format
-msgid "Channel Send %d audio in"
-msgstr "Препраќање на канал %d аудио влез"
-
-#: src/audio/channel_send.c:114
-#, c-format
-msgid "Channel Send %d MIDI in"
-msgstr "Препраќање на канал %d МИДИ влез"
-
-#: src/audio/channel_send.c:121
-#, c-format
-msgid "Channel Send %d audio out"
-msgstr "Препраќање на канал %d аудио излез"
-
-#: src/audio/channel_send.c:129
-#, c-format
-msgid "Channel Send %d MIDI out"
-msgstr "Препраќање на канал %d МИДИ излез"
-
-#: src/audio/channel_send.c:420 src/audio/channel_send.c:477
-msgid "Ports cannot be connected"
-msgstr "Неможност да се поврзат портите"
-
-#: src/audio/channel_send.c:582
-msgid "Pre-fader send"
-msgstr "Препраќање од пред потенциометар"
-
-#: src/audio/channel_send.c:584
-msgid "Post-fader send"
-msgstr "Препраќање од после потенциометар"
-
-#: src/audio/channel_send.c:615
-#, c-format
-msgid "%s input"
-msgstr "%s влез"
-
-#: src/audio/engine_pa.c:206 src/audio/engine_pa.c:218
-#: src/audio/engine_pa.c:226
-#, c-format
-msgid "PortAudio Error: %s"
-msgstr "Грешка во PortAudio: %s"
-
-#: src/audio/tracklist.c:1295
-msgid "No file was found"
-msgstr "Не е пронајдена датотека"
-
-#: src/audio/tracklist.c:1322
-#, c-format
-msgid "Unsupported file type %s"
-msgstr "Неподдржан вид на датотека %s"
-
-#: src/audio/tracklist.c:1338
-msgid "This MIDI file contains no data"
-msgstr "Оваа МИДИ датотека не содржи никакви податоци"
-
-#: src/audio/tracklist.c:1355
-msgid "Can only drop 1 file at a time on existing tracks"
-msgstr ""
-"Можно е да се остави едновремено само една датотека врз постоечките ленти"
-
-#: src/audio/tracklist.c:1369
-msgid "Can only drop MIDI files on MIDI/instrument tracks"
-msgstr ""
-"МИДИ датотеките можат да се остават само врз МИДИ / инструменталните ленти"
-
-#: src/audio/tracklist.c:1379
-#, c-format
-msgid ""
-"This MIDI file contains %d tracks. It cannot be dropped into an existing "
-"track"
-msgstr ""
-"Оваа МИДИ датотека содржи %d ленти. Затоа не може да се остави врз постоечка "
-"лента"
-
-#: src/audio/tracklist.c:1394
-msgid "Can only drop audio files on audio tracks"
-msgstr "Аудио датотека може да се остави само врз аудио ленти"
-
-#: src/audio/tracklist.c:1455
-msgid "Failed to create arranger objects"
-msgstr "Неуспешно создавање на објекти во аранжерот"
-
-#: src/audio/tracklist.c:1529
-msgid "Failed to move tracks after copying or moving inside folder"
-msgstr ""
-"Неуспешно преместување на ленти при копирање или преместување внатре во папка"
-
-#: src/audio/tracklist.c:1607
-msgid "Failed to copy tracks inside"
-msgstr "Неуспешно копирање на ленти навнатре"
-
-#: src/audio/tracklist.c:1649
-msgid "Failed to copy track inside"
-msgstr "Неуспешно копирање на лента навнатре"
-
-#: src/audio/tracklist.c:1690
-msgid "Failed to copy tracks"
-msgstr "Неуспешно копирање на ленти"
-
-#: src/audio/tracklist.c:1715
-msgid "Cannot drag folder into itself"
-msgstr "Не е можно да се влече папка во самата себе"
-
-#: src/audio/tracklist.c:1733 src/audio/tracklist.c:1777
-msgid "Failed to move track inside folder"
-msgstr "Неуспешно преместување на лентата внатре во папката"
-
-#: src/audio/tracklist.c:1818
-msgid "Failed to move tracks"
-msgstr "Неуспешно преместување на ленти"
-
-#: src/audio/modulator_macro_processor.c:87
-#, c-format
-msgid "Macro %d"
-msgstr "Макро %d"
-
-#: src/audio/modulator_macro_processor.c:102
-#, c-format
-msgid "Macro CV In %d"
-msgstr "Макро CV влез %d"
-
-#: src/audio/modulator_macro_processor.c:112
-#, c-format
-msgid "Macro CV Out %d"
-msgstr "Макро CV излез %d"
-
-#: src/audio/channel.c:1205 src/plugins/carla_native_plugin.c:1149
-msgid "MIDI out"
-msgstr "МИДИ излез"
 
 #: src/gui/backend/mixer_selections.c:622
 msgid "Failed to paste plugins"
@@ -2900,7 +2899,7 @@ msgstr "Невалидно име на објект %s"
 msgid "Failed to rename object"
 msgstr "Неуспешно преименување на објект"
 
-#: src/gui/widgets/inspector_port.c:121 src/gui/widgets/fader.c:293
+#: src/gui/widgets/inspector_port.c:121 src/gui/widgets/fader.c:321
 #: src/gui/widgets/preferences.c:343 src/gui/widgets/modulator_inner.c:138
 #: src/gui/widgets/modulator_macro.c:155 src/gui/widgets/balance_control.c:287
 #: src/gui/widgets/plugin_browser.c:612 src/gui/widgets/plugin_browser.c:659
@@ -2997,12 +2996,12 @@ msgstr "Нота / Контрола"
 msgid "Destination"
 msgstr "Цел (дестинација)"
 
-#: src/gui/widgets/fader.c:378
+#: src/gui/widgets/fader.c:406
 #, fuzzy
 msgid "Fader Value"
 msgstr "Гласнина по потенциометар"
 
-#: src/gui/widgets/fader.c:488 src/gui/widgets/fader_controls_expander.c:41
+#: src/gui/widgets/fader.c:526 src/gui/widgets/fader_controls_expander.c:41
 msgid "Fader"
 msgstr "Потенциометар"
 
@@ -3026,17 +3025,17 @@ msgstr ""
 "Проектот содржи незачувани промени.\n"
 "Ако го изгасиш без да зачуваш, промените ќе бидат изгубени."
 
-#: src/gui/widgets/main_window.c:779 src/gui/widgets/preferences.c:1007
+#: src/gui/widgets/main_window.c:799 src/gui/widgets/preferences.c:1007
 #: resources/ui/file_auditioner_controls.ui:34 resources/gtk/menus.ui:40
 #: resources/gtk/help-overlay.ui:39
 msgid "Preferences"
 msgstr "Поставки"
 
-#: src/gui/widgets/main_window.c:780
+#: src/gui/widgets/main_window.c:800
 msgid "Log viewer"
 msgstr "Прегледник на записник"
 
-#: src/gui/widgets/main_window.c:781
+#: src/gui/widgets/main_window.c:801
 msgid "Scripting interface"
 msgstr "Околина за скриптирање"
 
@@ -3869,15 +3868,15 @@ msgstr "Избери сѐ"
 msgid "Loop selection"
 msgstr "Повторувај го избраното"
 
-#: src/gui/widgets/bot_dock_edge.c:259
+#: src/gui/widgets/bot_dock_edge.c:251
 msgid "Editor view"
 msgstr "Приказ на уредувач"
 
-#: src/gui/widgets/bot_dock_edge.c:260
+#: src/gui/widgets/bot_dock_edge.c:252
 msgid "Mixer view"
 msgstr "Преглед на миксета"
 
-#: src/gui/widgets/bot_dock_edge.c:264
+#: src/gui/widgets/bot_dock_edge.c:256
 msgid "Chord pad"
 msgstr "Подлога за акорди"
 
@@ -5276,7 +5275,7 @@ msgid "Link to snap"
 msgstr "Врска кон прилепување"
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:342
-#: resources/ui/snap_grid_popover.ui:224
+#: resources/ui/snap_grid_popover.ui:212
 msgid "Last object"
 msgstr "Последен објект"
 
@@ -5300,7 +5299,7 @@ msgstr ""
 "создаден објект, или одреди сопствена должина"
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:373
-#: resources/ui/snap_grid_popover.ui:239 resources/ui/inspector_master.ui:71
+#: resources/ui/snap_grid_popover.ui:225 resources/ui/inspector_master.ui:71
 #: resources/ui/inspector_ap.ui:71 resources/ui/inspector_midi.ui:71
 msgid "Length"
 msgstr "Должина"
@@ -6000,7 +5999,7 @@ msgid "Play/Pause"
 msgstr "Пушти / Пауза"
 
 #: resources/ui/file_auditioner_controls.ui:22
-#: resources/ui/transport_controls.ui:38
+#: resources/ui/transport_controls.ui:32
 msgid "Stop"
 msgstr "Стој"
 
@@ -6032,51 +6031,51 @@ msgstr "Поставки на канал"
 msgid "News"
 msgstr "Вести"
 
-#: resources/ui/snap_box.ui:15
+#: resources/ui/snap_box.ui:13
 msgid "Snap to grid"
 msgstr "Прилепи на мрежа"
 
-#: resources/ui/snap_box.ui:29
+#: resources/ui/snap_box.ui:25
 msgid "Keep offset"
 msgstr "Задржи изместување"
 
-#: resources/ui/snap_box.ui:43
+#: resources/ui/snap_box.ui:37
 msgid "Snap to events"
 msgstr "Прилепи на настани"
 
-#: resources/ui/snap_grid_popover.ui:66 resources/ui/snap_grid_popover.ui:149
+#: resources/ui/snap_grid_popover.ui:66 resources/ui/snap_grid_popover.ui:144
 msgid "Note length"
 msgstr "Нотна должина"
 
-#: resources/ui/snap_grid_popover.ui:84 resources/ui/snap_grid_popover.ui:167
+#: resources/ui/snap_grid_popover.ui:84 resources/ui/snap_grid_popover.ui:162
 msgid "t"
 msgstr "т"
 
-#: resources/ui/snap_grid_popover.ui:87 resources/ui/snap_grid_popover.ui:170
+#: resources/ui/snap_grid_popover.ui:85 resources/ui/snap_grid_popover.ui:163
 msgid "Triplet"
 msgstr "Триплет"
 
-#: resources/ui/snap_grid_popover.ui:97 resources/ui/snap_grid_popover.ui:180
+#: resources/ui/snap_grid_popover.ui:93 resources/ui/snap_grid_popover.ui:171
 msgid "Dotted"
 msgstr "по точки"
 
-#: resources/ui/snap_grid_popover.ui:118 resources/ui/snap_grid_popover.ui:201
+#: resources/ui/snap_grid_popover.ui:113 resources/ui/snap_grid_popover.ui:191
 msgid "Adaptive length"
 msgstr "Прилагодлива должина"
 
-#: resources/ui/snap_grid_popover.ui:130
+#: resources/ui/snap_grid_popover.ui:125
 msgid "Snap"
 msgstr "Прилепување"
 
-#: resources/ui/snap_grid_popover.ui:211
+#: resources/ui/snap_grid_popover.ui:201
 msgid "Link"
 msgstr "Врзување"
 
-#: resources/ui/snap_grid_popover.ui:212
+#: resources/ui/snap_grid_popover.ui:202
 msgid "Link length to snap setting"
 msgstr "Врзи должина со поставките за прилепување"
 
-#: resources/ui/snap_grid_popover.ui:225
+#: resources/ui/snap_grid_popover.ui:213
 msgid "Use last created object's length"
 msgstr "Користи ја должината на последно-создадениот објект"
 
@@ -6084,23 +6083,23 @@ msgstr "Користи ја должината на последно-созда�
 msgid "Bookmarks"
 msgstr "Обележувачи"
 
-#: resources/ui/transport_controls.ui:9
+#: resources/ui/transport_controls.ui:7
 msgid "Return to cue point on stop"
 msgstr "Врати кон појдовната точка при застанување"
 
-#: resources/ui/transport_controls.ui:26
+#: resources/ui/transport_controls.ui:22
 msgid "Play"
 msgstr "Пушти"
 
-#: resources/ui/transport_controls.ui:50
+#: resources/ui/transport_controls.ui:42
 msgid "Backward"
 msgstr "Наназад"
 
-#: resources/ui/transport_controls.ui:62
+#: resources/ui/transport_controls.ui:52
 msgid "Forward"
 msgstr "Нанапред"
 
-#: resources/ui/transport_controls.ui:74
+#: resources/ui/transport_controls.ui:62
 msgid "Loop"
 msgstr "Јамка (врти)"
 
@@ -6169,7 +6168,7 @@ msgstr ""
 msgid "Toggle ghost note visibility"
 msgstr "Видливост на привидни ноти"
 
-#: resources/ui/editor_toolbar.ui:143 resources/ui/timeline_toolbar.ui:105
+#: resources/ui/editor_toolbar.ui:143 resources/ui/timeline_toolbar.ui:104
 msgid "Toggle event viewer"
 msgstr "Прикажи прегледник на настани"
 
@@ -6416,12 +6415,12 @@ msgstr "етикета"
 msgid "Remove range"
 msgstr "Одстрани опсег"
 
-#: resources/ui/timeline_toolbar.ui:39
+#: resources/ui/timeline_toolbar.ui:38
 #: build/data/org.zrythm.Zrythm.gschema.xml:402
 msgid "Musical mode"
 msgstr "Музички модус"
 
-#: resources/ui/timeline_toolbar.ui:78
+#: resources/ui/timeline_toolbar.ui:77
 msgid "Merge selections"
 msgstr "Спои ги избраните"
 
@@ -6532,11 +6531,11 @@ msgstr "Прскање"
 msgid "Initializing..."
 msgstr "Иницијализација..."
 
-#: resources/ui/tracklist_header.ui:26
+#: resources/ui/tracklist_header.ui:25
 msgid "Track filters & visibility"
 msgstr "Лентови филтри и видливост"
 
-#: resources/ui/tracklist_header.ui:53
+#: resources/ui/tracklist_header.ui:52
 #, fuzzy
 msgid "Tracklist Settings"
 msgstr "Избор на ленти"
@@ -8197,293 +8196,344 @@ msgid "DAW"
 msgstr "ДАРс"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:55
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:146
 msgid "Added:"
 msgstr "Додадено:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-msgid "Home/End key shortcut for moving to the start/end of the project"
+msgid "Add toggle to hide deactivated tracks in track filter menu"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+msgid "Add right-click option to loop selection in timeline"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
+msgid "Add option to append all track/lane objects to the current selection"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+msgid "Add tracklist preferences button with option to disable auto-arm"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
+msgid ""
+"Add Crescendo, Flam, Flip H/V, Portato, Staccato, Legato, Strum MIDI "
+"functions"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+msgid "Implement MIDI clock (output) for syncing to Zrythm"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+msgid ""
+"Build: add requirements.txt for managing Python dependencies (for building "
+"docs, etc.)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
+msgid "Changed:"
+msgstr "Измени:"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+msgid ""
+"Link scroll events on digital meter widgets (changes are only applied at the "
+"end of scrolls)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+msgid "Build: re-enable some GCC analyzer checks and add new checks"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+#, fuzzy
+msgid "Change order in track context menu"
+msgstr "Промени портова врска"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:70
+msgid "Subprojects: bump GTK and RtAudio versions"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
+msgid "Cache previous and current transport info during processing"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+msgid "Various internal refactorings"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+#, fuzzy
+msgid ""
+"Update Catalan, French, Japanese, Chinese (Simplified), Russian, Dutch, "
+"Hungarian, Italian, Indonesian, Spanish, Portuguese, Swedish translations"
+msgstr ""
+"Ажурирајте кинески (поедноставен), каталонски, француски, македонски "
+"шведски, унгарски, шпански, германски, португалски (Бразил), руски, англиски "
+"(средно), португалски преводи"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+msgid ""
+"Log: print `(?:?)` instead of `((null):(null))` when function and line "
+"number are unknown"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#, fuzzy
+msgid "Add more error checking and print more debug info in the log"
+msgstr "Додадени повеќе проверки за грешки при разните операции"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
+msgid "Fixed:"
+msgstr "Поправено:"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+msgid "Build: fix bundled plugin build with GCC 13"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+msgid "Fix app icon not showing on Wayland (StartupWMClass)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+msgid "Home/End key shortcut for moving to the start/end of the project"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
 #, fuzzy
 msgid "Option to select note notation in the piano roll"
 msgstr ""
 "Дали да се прикажат привидни ноти од другите региони во нотниот запис (пиано "
 "ролната)."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
 #, fuzzy
 msgid "Ability to select notes in a given pitch in the piano roll"
 msgstr ""
 "Дали да се преслушуваат МИДИ нотите при нивно влечење во нотниот запис "
 "(пиано ролната)."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
 msgid "Ctrl+0 shortcut for zooming to default level"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
-msgid "Changed:"
-msgstr "Измени:"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
 msgid "Show message that BPM/time signature automation is experimental"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
 msgid "Show channel slot context menu on mouse release instead of mouse press"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
 msgid "Skip autosave if any toplevel window is on top"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
 msgid ""
 "Update Catalan, French, Japanese, Chinese (Simplified), Czech, Portuguese "
 "(Brazil) translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
 #, fuzzy
 msgid "Redesign port/arranger object info dialogs"
 msgstr "Инфо за објект во аранжер"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
 msgid "Disable Guile scripting interface on MacOS"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
-msgid "Fixed:"
-msgstr "Поправено:"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid "Fix wrong tooltip message on automatable selector in track lanes"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid ""
 "Fix track lane names getting ellipsized despite there being enough space"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
 msgid "Fix crash when splitting large audio clips"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
 msgid ""
 "Fix \"Move Tracks Under Group\" option not working when setting the direct "
 "output of selected tracks to a new group"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
 msgid "Fix given time range not being taken into account when exporting MIDI"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
 msgid "Audition notes when moved with arrow keys"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
 msgid "Show value when hovering faders and balance controls"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
 msgid "Double click on faders and balance controls to set precise values"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
 msgid "Control-click on balance controls to reset their value"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
 msgid "Audition notes on draw and on click instead of on move"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 msgid ""
 "Show track inspector when double clicking on a track in places other than "
 "the track name"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
 msgid "Don't start DnD on tracks until minimum movement threshold is reached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
 msgid ""
 "Minimize waiting time when creating tracks and connections for multi-out "
 "plugins"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
 msgid "Scroll to middle of piano roll when first shown"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
 msgid "Fix incorrectly allowing bypassing snapping in autofill mode"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
 msgid "Fix editor region being unset when moving tracks"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
 msgid "Fix not propagating errors when performing some actions"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
 msgid ""
 "Fix incorrectly allowing auto-save to continue while pre-rolling or counting "
 "in"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
 msgid "Fix resetting faders and balance controls not being undoable"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
 msgid "Fix not being able to cut regions near the edges with alt-click"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid ""
 "Fix not being able to change parameter values for VST plugins in generic UI "
 "text fields"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
 msgid "Add monitor output meters in the header"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
 msgid "Add Macedonian translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:150
 #, fuzzy
 msgid "Add pitch shift audio function"
 msgstr "Последна користена аудио функција"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
 msgid ""
 "Auto-scroll in the tracklist when dragging tracks and hovering towards the "
 "edges"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:155
 msgid "Update Catalan, Japanese, Russian, French translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
 msgid "Stop using `g_slice_*()` (deprecated in GLib)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:157
 msgid "Simplify CSS for separators"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:158
 msgid ""
 "Move velocity settings to new toolbar in the bottom of the piano roll (fixes "
 "being unable to drag velocity bars when set to high values)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:162
 msgid ""
 "Fix audio files not being saved properly when saving the project after "
 "applying an audio function"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:163
 #, fuzzy
 msgid "Fix error when routing to/from a port that has display unit info"
 msgstr "Поправка на грешка при преместување на регион од последната патека"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:132
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:164
 msgid "Fix minor memory leak"
 msgstr "Поправено мало мемориско истекување"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:165
 msgid ""
 "Fix track/plugin inspect not immediately displaying the track/plugin "
 "properties"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:166
 msgid ""
 "Fix occasional crash when exporting the project (fix not deleting the source "
 "function after disposing an EditableLabelWidget)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:167
 msgid "Fix occasional crash when adding a plugin to a collection"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:168
 msgid "Fix no sound when using Pipewire (regression from previous release)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:169
 #, fuzzy
 msgid "Fix right-clicking on inserts not working on Windows"
 msgstr "Поправка на неповратност при бришење на внесови"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:170
 msgid "Fix error when attempting to paste an empty selection"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:147
-msgid "Add spectrum analyzer"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
-msgid "Add vertical zoom buttons to editor"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
-msgid "User manual: add FAQ section"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
-msgid ""
-"Update French, Catalan, Esperanto, Swedish, German, Korean, Polish, Spanish "
-"translations"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:154
-msgid "Meson: disable fallbacks by default"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:158
-msgid "Fix scrolling horizontally with 2 fingers on touch pads"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:159
 #, fuzzy
-msgid "Fix project plugin states being deleted while in use"
-msgstr ""
-"Поправка на бришењето на приклучочните состојби од главниот проект при "
-"зачвување на сигурносни копии"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
-msgid ""
-"Work around a bug in Pipewire where it doesn't notify clients of buffer size "
-"changes"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:161
-msgid "Fix occasional deadlock when changing engine buffer sizes"
-msgstr ""
+#~ msgid "Fix project plugin states being deleted while in use"
+#~ msgstr ""
+#~ "Поправка на бришењето на приклучочните состојби од главниот проект при "
+#~ "зачвување на сигурносни копии"
 
 #~ msgid "Port info"
 #~ msgstr "Информации за порта"
@@ -8526,15 +8576,6 @@ msgstr ""
 #~ "Create standard project directories when creating a new blank project"
 #~ msgstr "Создади стандардни проекти папки при создавање на нов празен проект"
 
-#~ msgid ""
-#~ "Update Chinese (Simplified), Catalan, French, Swedish, Hungarian, "
-#~ "Spanish, German, Portuguese (Brazil), Russian, English (Middle), "
-#~ "Portuguese translations"
-#~ msgstr ""
-#~ "Ажурирајте кинески (поедноставен), каталонски, француски, македонски "
-#~ "шведски, унгарски, шпански, германски, португалски (Бразил), руски, "
-#~ "англиски (средно), португалски преводи"
-
 #~ msgid "Re-generate bundled plugins with latest faust"
 #~ msgstr "Повторно создај ги здружените приклучоци со последниот фауст"
 
@@ -8568,9 +8609,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Не се обидува да создаде папки за приклучочни состојби при вчитување на "
 #~ "проекти"
-
-#~ msgid "Add more error checking to various operations"
-#~ msgstr "Додадени повеќе проверки за грешки при разните операции"
 
 #~ msgid "Include Carla and GTK versions in debug info"
 #~ msgstr ""

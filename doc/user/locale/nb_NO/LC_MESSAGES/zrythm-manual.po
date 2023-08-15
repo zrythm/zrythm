@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-08-10 18:17+0900\n"
+"POT-Creation-Date: 2023-08-15 16:28+0900\n"
 "PO-Revision-Date: 2021-08-09 23:33+0000\n"
 "Last-Translator: Allan Nordhøy <epost@anotheragency.no>\n"
 "Language: nb_NO\n"
@@ -962,6 +962,74 @@ msgstr ""
 
 #: ../../configuration/shortcuts.rst:47
 msgid "Make this more user friendly & document all actions."
+msgstr ""
+
+#: ../../configuration/ui-scaling-and-wayland.rst:8
+msgid "UI Scaling and Wayland"
+msgstr ""
+
+#: ../../configuration/ui-scaling-and-wayland.rst:11
+msgid "About Wayland"
+msgstr ""
+
+#: ../../configuration/ui-scaling-and-wayland.rst:12
+msgid ""
+"Zrythm currently forces X11 (i.e., XWayland) when running on Wayland because "
+"almost all plugins on GNU/Linux are built against X11 and some plugin UIs "
+"crash when running under Wayland directly."
+msgstr ""
+
+#: ../../configuration/ui-scaling-and-wayland.rst:17
+msgid ""
+"You can avoid these crashes by :ref:`bridging<plugins-files/plugins/plugin-"
+"window:Bridging>` plugins."
+msgstr ""
+
+#: ../../configuration/ui-scaling-and-wayland.rst:19
+msgid ""
+"If you are fine with this and prefer Zrythm to use pure Wayland you can use "
+"the :envvar:`GDK_BACKEND` environment variable. You can either pass this "
+"variable when running Zrythm from the terminal,"
+msgstr ""
+
+#: ../../configuration/ui-scaling-and-wayland.rst:29
+msgid "or you can edit the Desktop Entry for Zrythm."
+msgstr ""
+
+#: ../../configuration/ui-scaling-and-wayland.rst:37
+msgid ""
+"`Gtk - 4.0: Using GTK with Wayland <https://docs.gtk.org/gtk4/wayland.html>`_"
+msgstr ""
+
+#: ../../configuration/ui-scaling-and-wayland.rst:40
+#, fuzzy
+msgid "UI Scaling"
+msgstr ""
+"#-#-#-#-#  getting-started.po (Zrythm 0.4)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  plugins-files.po (Zrythm 0.5)  #-#-#-#-#\n"
+"Programtillegg\n"
+"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+
+#: ../../configuration/ui-scaling-and-wayland.rst:41
+msgid ""
+"If you are using Wayland and your window manager already has the correct "
+"scaling settings, you may be able to get the user interface scaled correctly "
+"by having Zrythm running entirely in Wayland using :envvar:`GDK_BACKEND`."
+msgstr ""
+
+#: ../../configuration/ui-scaling-and-wayland.rst:46
+msgid ""
+"On Xorg, you can scale the interface by setting the :envvar:`GDK_SCALE` "
+"environment variable:"
+msgstr ""
+
+#: ../../configuration/ui-scaling-and-wayland.rst:54
+msgid ""
+"GTK3/4 does not support fractional scaling currently, so fractional factors "
+"will be ignored. This environment variable is also ignored in Mutter Wayland "
+"sessions."
 msgstr ""
 
 #: ../../contributing/intro.rst:7
@@ -6075,21 +6143,21 @@ msgid ""
 "additions by Zrythm (such as `File` and `Presets` menus)."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:21
+#: ../../plugins-files/plugins/plugin-window.rst:20
 msgid "Generic UIs"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:22
+#: ../../plugins-files/plugins/plugin-window.rst:21
 msgid ""
 "If the plugin does not ship with its own UI, the following generic UI will "
 "be generated for it."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:30
+#: ../../plugins-files/plugins/plugin-window.rst:28
 msgid "Bridging"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:31
+#: ../../plugins-files/plugins/plugin-window.rst:29
 msgid ""
 "Most plugins are instantiated in the same process as Zrythm. This has the "
 "advantage that :term:`DSP` is very fast, however, some plugin UIs are not "
@@ -6097,7 +6165,7 @@ msgid ""
 "processes)."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:38
+#: ../../plugins-files/plugins/plugin-window.rst:34
 msgid ""
 "When it is possible to bridge only the UI, Zrythm will do so, and this will "
 "not have any performance implications on DSP. If bridging the whole plugin "
@@ -6105,23 +6173,23 @@ msgid ""
 "required to communicate with the plugin in another process."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:45
+#: ../../plugins-files/plugins/plugin-window.rst:41
 msgid ""
 "This process is transparent to the user and only mentioned for reference."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:49
+#: ../../plugins-files/plugins/plugin-window.rst:45
 msgid "Opening Plugins in Bridged Mode"
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:50
+#: ../../plugins-files/plugins/plugin-window.rst:46
 msgid ""
 "Sometimes, you may need to manually tell Zrythm to open plugins in a "
 "specific way. You can find the options available for each plugin by right "
 "clicking on the plugin in the :ref:`plugin-browser`."
 msgstr ""
 
-#: ../../plugins-files/plugins/plugin-window.rst:58
+#: ../../plugins-files/plugins/plugin-window.rst:54
 msgid "Opening ZynAddSubFX in bridged mode"
 msgstr ""
 

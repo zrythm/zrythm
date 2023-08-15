@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2023-08-10 18:23+0900\n"
+"POT-Creation-Date: 2023-08-15 16:37+0900\n"
 "PO-Revision-Date: 2023-08-10 20:45+0000\n"
 "Last-Translator: Anonymous <noreply@weblate.org>\n"
 "Language-Team: Japanese <https://hosted.weblate.org/projects/zrythm/zrythm/"
@@ -24,290 +24,250 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 5.0-dev\n"
 
-#: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
-msgid "Chromatic"
-msgstr "半音階"
+#: inc/dsp/exporter.h:125
+msgid "Before inserts"
+msgstr "インサート前"
 
-#: inc/schemas/audio/scale.h:94 inc/audio/scale.h:128
-msgid "Major"
-msgstr "長音階"
+#: inc/dsp/exporter.h:126
+msgid "Pre-fader"
+msgstr "プリフェーダー"
 
-#: inc/schemas/audio/scale.h:95 inc/audio/scale.h:129
-msgid "Minor"
-msgstr "短音階"
+#: inc/dsp/exporter.h:127
+msgid "Post fader"
+msgstr "ポストフェーダー"
 
-#: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
-msgid "Ionian"
-msgstr "アイオニアン"
+#: inc/dsp/track.h:166 src/gui/widgets/track_properties_expander.c:124
+#: src/gui/widgets/popovers/route_target_selector_popover.c:160
+#: build/data/org.zrythm.Zrythm.gschema.xml:698
+msgid "Instrument"
+msgstr "音源"
 
-#: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
-msgid "Dorian"
-msgstr "ドリアン"
+#: inc/dsp/track.h:167 src/dsp/region.c:508 src/gui/widgets/bot_bar.c:452
+#: resources/ui/file_browser_filters.ui:10
+#: build/data/org.zrythm.Zrythm.gschema.xml:1219
+msgid "Audio"
+msgstr "オーディオ"
 
-#: inc/schemas/audio/scale.h:98 inc/audio/scale.h:132
-msgid "Phrygian"
-msgstr "フリジアン"
+#: inc/dsp/track.h:168 src/project.c:685
+#: src/gui/widgets/popovers/route_target_selector_popover.c:142
+msgid "Master"
+msgstr "マスター"
 
-#: inc/schemas/audio/scale.h:99 inc/audio/scale.h:133
-msgid "Lydian"
-msgstr "リディアン"
+#: inc/dsp/track.h:169 src/dsp/region.c:514
+msgid "Chord"
+msgstr "コード（和音）"
 
-#: inc/schemas/audio/scale.h:100 inc/audio/scale.h:134
-msgid "Mixolydian"
-msgstr "ミクソリディアン"
+#: inc/dsp/track.h:170 inc/schemas/gui/backend/arranger_object.h:41
+#: inc/gui/backend/arranger_object.h:90
+msgid "Marker"
+msgstr "マーカー"
 
-#: inc/schemas/audio/scale.h:101 inc/audio/scale.h:135
-msgid "Aeolian"
-msgstr "エオリアン"
+#: inc/dsp/track.h:171 src/dsp/tempo_track.c:94
+#: src/gui/widgets/popovers/automatable_selector_popover.c:320
+msgid "Tempo"
+msgstr "テンポ"
 
-#: inc/schemas/audio/scale.h:102 inc/audio/scale.h:136
-msgid "Locrian"
-msgstr "ロクリアン"
+#: inc/dsp/track.h:172
+msgid "Modulator"
+msgstr "モジュレータ"
 
-#: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
-msgid "Melodic Minor"
-msgstr "メロディックマイナー"
+#: inc/dsp/track.h:173
+msgid "Audio FX"
+msgstr "オーディオFX"
 
-#: inc/schemas/audio/scale.h:104 inc/audio/scale.h:138
-msgid "Harmonic Minor"
-msgstr "和声的短音階"
+#: inc/dsp/track.h:174
+msgid "Audio Group"
+msgstr "オーディオグループ"
 
-#: inc/schemas/audio/scale.h:105 inc/audio/scale.h:139
-msgid "Whole Tone"
-msgstr "全音"
+#: inc/dsp/track.h:175 src/dsp/region.c:505
+#: resources/ui/file_browser_filters.ui:18
+msgid "MIDI"
+msgstr "MIDI"
 
-#: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
-msgid "Major Pentatonic"
-msgstr "メジャー・ペンタトニック"
+#: inc/dsp/track.h:176
+msgid "MIDI FX"
+msgstr "MIDI FX"
 
-#: inc/schemas/audio/scale.h:107 inc/audio/scale.h:141
-msgid "Minor Pentatonic"
-msgstr "マイナー・ペンタトニック"
+#: inc/dsp/track.h:177
+msgid "MIDI Group"
+msgstr "MIDI グループ"
 
-#: inc/schemas/audio/scale.h:108 inc/audio/scale.h:142
-msgid "Octatonic Half Whole"
-msgstr "八音（半音 全音）"
+#: inc/dsp/track.h:178
+msgid "Folder"
+msgstr "フォルダ"
 
-#: inc/schemas/audio/scale.h:110 inc/audio/scale.h:143
-msgid "Octatonic Whole Half"
-msgstr "八音（全音 半音）"
-
-#: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
-msgid "Acoustic"
-msgstr "アコースティック"
-
-#: inc/schemas/audio/scale.h:113 inc/audio/scale.h:145
+#: inc/dsp/snap_grid.h:51
 #, fuzzy
-msgid "Harmonic Major"
-msgstr "和声的短音階"
+msgid "bar"
+msgstr "1バー"
 
-#: inc/schemas/audio/scale.h:114 inc/audio/scale.h:146
-msgid "Phrygian Dominant"
-msgstr "フリジアン・ドミナント"
-
-#: inc/schemas/audio/scale.h:115 inc/audio/scale.h:147
-msgid "Major Locrian"
-msgstr "メジャー・ロクリアン"
-
-#: inc/schemas/audio/scale.h:116 inc/audio/scale.h:148
-msgid "Algerian"
-msgstr "アルジェリアン"
-
-#: inc/schemas/audio/scale.h:117 inc/audio/scale.h:149
-msgid "Augmented"
-msgstr "オーギュメント"
-
-#: inc/schemas/audio/scale.h:118 inc/audio/scale.h:150
+#: inc/dsp/snap_grid.h:52
 #, fuzzy
-msgid "Double Harmonic"
-msgstr "ダブルハーモニック"
+msgid "beat"
+msgstr "ユーロビート"
 
-#: inc/schemas/audio/scale.h:119 inc/audio/scale.h:151
+#: inc/dsp/snap_grid.h:72 src/gui/widgets/digital_meter.c:506
+msgid "normal"
+msgstr "普通音符"
+
+#: inc/dsp/snap_grid.h:73 src/gui/widgets/digital_meter.c:509
+msgid "dotted"
+msgstr "付点音符"
+
+#: inc/dsp/snap_grid.h:74 src/gui/widgets/digital_meter.c:512
+msgid "triplet"
+msgstr "３連音符"
+
+#: inc/dsp/engine.h:181
+msgid "1,024"
+msgstr "1,024"
+
+#: inc/dsp/engine.h:181
+msgid "2,048"
+msgstr "2,048"
+
+#: inc/dsp/engine.h:181
+msgid "4,096"
+msgstr "4,096"
+
+#: inc/dsp/engine.h:206
+msgid "22,050"
+msgstr "22,050"
+
+#: inc/dsp/engine.h:206
+msgid "32,000"
+msgstr "32,000"
+
+#: inc/dsp/engine.h:206
+msgid "44,100"
+msgstr "44,100"
+
+#: inc/dsp/engine.h:206
+msgid "48,000"
+msgstr "48,000"
+
+#: inc/dsp/engine.h:207
+msgid "88,200"
+msgstr "88,200"
+
+#: inc/dsp/engine.h:207
+msgid "96,000"
+msgstr "96,000"
+
+#: inc/dsp/engine.h:207
+msgid "192,000"
+msgstr "192,000"
+
+#. TRANSLATORS: Dummy backend
+#: inc/dsp/engine.h:253 inc/dsp/engine.h:309
+#: inc/plugins/plugin_descriptor.h:141
+msgid "Dummy"
+msgstr "ダミー"
+
+#: inc/dsp/engine.h:253
+msgid "Dummy (libsoundio)"
+msgstr "ダミー (libsoundio)"
+
+#: inc/dsp/engine.h:310
+msgid "ALSA Sequencer (not working)"
+msgstr "ALSA シーケンサー (動作しません)"
+
+#: inc/dsp/engine.h:311
+msgid "ALSA Sequencer (rtmidi)"
+msgstr "ALSAシーケンサー (rtmidi)"
+
+#: inc/dsp/audio_function.h:53
 #, fuzzy
-msgid "Chinese"
-msgstr "中国語[zh]"
+msgid "Invert"
+msgstr "反転"
 
-#: inc/schemas/audio/scale.h:120 inc/audio/scale.h:152
+#: inc/dsp/audio_function.h:54
+msgid "Normalize peak"
+msgstr "ノーマライズ (Normalize Peak)"
+
+#: inc/dsp/audio_function.h:55
+msgid "Normalize RMS"
+msgstr "ノーマライズ (Normalize RMS)"
+
+#: inc/dsp/audio_function.h:56
+msgid "Normalize LUFS"
+msgstr "ノーマライズ (Normalize LUFS)"
+
+#: inc/dsp/audio_function.h:57
+msgid "Linear fade in"
+msgstr "リニアフェードイン (Linear fade in)"
+
+#: inc/dsp/audio_function.h:58
+msgid "Linear fade out"
+msgstr "リニアフェードアウト (Linear fade out)"
+
+#: inc/dsp/audio_function.h:59 src/gui/widgets/home_toolbar.c:142
+msgid "Nudge left"
+msgstr "左へナッジ (Nudge)"
+
+#: inc/dsp/audio_function.h:60 src/gui/widgets/home_toolbar.c:143
+msgid "Nudge right"
+msgstr "右へナッジ (Nudge)"
+
+#: inc/dsp/audio_function.h:61
 #, fuzzy
-msgid "Diminished"
-msgstr "ディミニッシュ"
+msgid "Reverse"
+msgstr "逆順"
 
-#: inc/schemas/audio/scale.h:121 inc/audio/scale.h:153
+#: inc/dsp/audio_function.h:62
 #, fuzzy
-msgid "Dominant Diminished"
-msgstr "ドミナント・ディミニッシュ"
+msgid "Pitch shift"
+msgstr "ピッチベンド"
 
-#: inc/schemas/audio/scale.h:122 inc/audio/scale.h:154
-msgid "Egyptian"
-msgstr "エジプト音階"
+#: inc/dsp/audio_function.h:63
+msgid "External program"
+msgstr "外部プログラム"
 
-#: inc/schemas/audio/scale.h:123 inc/audio/scale.h:155
-msgid "Eight Tone Spanish"
-msgstr "エイト・トーン・スパニッシュ"
+#: inc/dsp/audio_function.h:64
+msgid "Guile script"
+msgstr "Guileスクリプト"
 
-#: inc/schemas/audio/scale.h:124 inc/audio/scale.h:156
-msgid "Enigmatic"
-msgstr "エニグマティック"
+#: inc/dsp/audio_function.h:65
+msgid "Custom plugin"
+msgstr "カスタムプラグイン"
 
-#: inc/schemas/audio/scale.h:125 inc/audio/scale.h:157
-msgid "Geez"
-msgstr "Geez"
+#: inc/dsp/audio_function.h:66
+msgid "Invalid"
+msgstr "不正"
 
-#: inc/schemas/audio/scale.h:126 inc/audio/scale.h:158
-msgid "Hindu"
-msgstr "ヒンズー"
+#: inc/dsp/midi_function.h:40 resources/ui/editor_toolbar.ui:154
+msgid "Crescendo"
+msgstr "クレッシェンド"
 
-#: inc/schemas/audio/scale.h:127 inc/audio/scale.h:159
-msgid "Hirajoshi"
-msgstr "平吉"
+#: inc/dsp/midi_function.h:41 resources/ui/editor_toolbar.ui:160
+msgid "Flam"
+msgstr "フラム"
 
-#: inc/schemas/audio/scale.h:128 inc/audio/scale.h:160
-msgid "Hungarian Gypsy"
-msgstr "ハンガリージプシー"
+#: inc/dsp/midi_function.h:42 inc/dsp/automation_function.h:32
+msgid "Flip H"
+msgstr "水平方向に反転"
 
-#: inc/schemas/audio/scale.h:129 inc/audio/scale.h:161
-#, fuzzy
-msgid "Insen"
-msgstr "インサート"
+#: inc/dsp/midi_function.h:43 inc/dsp/automation_function.h:33
+msgid "Flip V"
+msgstr "垂直方向に反転"
 
-#: inc/schemas/audio/scale.h:130 inc/audio/scale.h:162
-#, fuzzy
-msgid "Neapolitan Major"
-msgstr "アイオニアン（長音階）"
+#: inc/dsp/midi_function.h:44 resources/ui/editor_toolbar.ui:181
+msgid "Legato"
+msgstr "レガート"
 
-#: inc/schemas/audio/scale.h:131 inc/audio/scale.h:163
-#, fuzzy
-msgid "Neapolitan Minor"
-msgstr "アエオリアン（自然的短音階）"
+#: inc/dsp/midi_function.h:45 resources/ui/editor_toolbar.ui:187
+msgid "Portato"
+msgstr "ポルタート"
 
-#: inc/schemas/audio/scale.h:132 inc/audio/scale.h:164
-#, fuzzy
-msgid "Oriental"
-msgstr "水平方向"
+#: inc/dsp/midi_function.h:46 resources/ui/editor_toolbar.ui:193
+msgid "Staccato"
+msgstr "スタッカート"
 
-#: inc/schemas/audio/scale.h:133 inc/audio/scale.h:165
-#, fuzzy
-msgid "Romanian Minor"
-msgstr "和声的短音階"
+#: inc/dsp/midi_function.h:47 resources/ui/editor_toolbar.ui:199
+msgid "Strum"
+msgstr "ストラム"
 
-#: inc/schemas/audio/scale.h:134 inc/audio/scale.h:166
-msgid "Altered"
-msgstr "オルタード"
-
-#: inc/schemas/audio/scale.h:135 inc/audio/scale.h:167
-msgid "Maqam"
-msgstr "マカーム"
-
-#: inc/schemas/audio/scale.h:136 inc/audio/scale.h:168
-msgid "Yo"
-msgstr "陽旋法"
-
-#: inc/schemas/audio/scale.h:137 inc/audio/scale.h:169
-msgid "Bebop Locrian"
-msgstr "ビーバップ・ロクリアン"
-
-#: inc/schemas/audio/scale.h:138 inc/audio/scale.h:170
-msgid "Bebop Dominant"
-msgstr "ビバップ・ドミナント"
-
-#: inc/schemas/audio/scale.h:139 inc/audio/scale.h:171
-msgid "Bebop Major"
-msgstr "ビバップメジャー"
-
-#: inc/schemas/audio/scale.h:140 inc/audio/scale.h:172
-msgid "Super Locrian"
-msgstr "スーパーロクリアン"
-
-#: inc/schemas/audio/scale.h:141 inc/audio/scale.h:173
-#, fuzzy
-msgid "Enigmatic Minor"
-msgstr "和声的短音階"
-
-#: inc/schemas/audio/scale.h:142 inc/audio/scale.h:174
-msgid "Composite"
-msgstr "コンポジット"
-
-#: inc/schemas/audio/scale.h:143 inc/audio/scale.h:175
-msgid "Bhairav"
-msgstr "Bhairav"
-
-#: inc/schemas/audio/scale.h:144 inc/audio/scale.h:176
-#, fuzzy
-msgid "Hungarian Minor"
-msgstr "和声的短音階"
-
-#: inc/schemas/audio/scale.h:145 inc/audio/scale.h:177
-msgid "Persian"
-msgstr "ペルシア音階"
-
-#: inc/schemas/audio/scale.h:146 inc/audio/scale.h:178
-msgid "Iwato"
-msgstr "岩戸"
-
-#: inc/schemas/audio/scale.h:147 inc/audio/scale.h:179
-msgid "Kumoi"
-msgstr "雲井"
-
-#: inc/schemas/audio/scale.h:148 inc/audio/scale.h:180
-msgid "Pelog"
-msgstr "ペロッグ"
-
-#: inc/schemas/audio/scale.h:149 inc/audio/scale.h:181
-msgid "Prometheus"
-msgstr "プロメテウス"
-
-#: inc/schemas/audio/scale.h:150 inc/audio/scale.h:182
-msgid "Prometheus Neapolitan"
-msgstr "プロメテウス・ナポリタン"
-
-#: inc/schemas/audio/scale.h:152 inc/audio/scale.h:183
-msgid "Prometheus Liszt"
-msgstr "プロメテウス・リスト"
-
-#: inc/schemas/audio/scale.h:153 inc/audio/scale.h:184
-msgid "Balinese"
-msgstr "バリ音階"
-
-#: inc/schemas/audio/scale.h:154 inc/audio/scale.h:185
-msgid "RagaTodi"
-msgstr "ラガトディ"
-
-#: inc/schemas/audio/scale.h:155 inc/audio/scale.h:186
-#, fuzzy
-msgid "Japanese 1"
-msgstr "日本語[ja]"
-
-#: inc/schemas/audio/scale.h:156 inc/audio/scale.h:187
-#, fuzzy
-msgid "Japanese 2"
-msgstr "日本語[ja]"
-
-#: inc/schemas/audio/curve.h:28 inc/audio/curve.h:95 src/audio/curve.c:58
-#, c-format
-msgid "Exponent"
-msgstr "指数"
-
-#: inc/schemas/audio/curve.h:29 inc/audio/curve.h:96 src/audio/curve.c:61
-#, c-format
-msgid "Superellipse"
-msgstr "超楕円"
-
-#: inc/schemas/audio/curve.h:30 inc/audio/curve.h:97 src/audio/curve.c:390
-msgid "Vital"
-msgstr "Vital"
-
-#: inc/schemas/audio/curve.h:31 inc/audio/curve.h:98 src/audio/curve.c:67
-#, c-format
-msgid "Pulse"
-msgstr "パルス"
-
-#: inc/schemas/audio/curve.h:32 inc/audio/curve.h:99 src/audio/curve.c:70
-#: src/audio/curve.c:385
-#, fuzzy, c-format
-msgid "Logarithmic"
-msgstr "対数"
-
-#: inc/schemas/gui/backend/arranger_object.h:35 inc/audio/transport.h:53
+#: inc/dsp/transport.h:53 inc/schemas/gui/backend/arranger_object.h:35
 #: inc/gui/backend/arranger_object.h:84
 #: src/gui/widgets/route_target_selector.c:37
 #: src/gui/widgets/plugin_properties_expander.c:181
@@ -316,6 +276,343 @@ msgstr "対数"
 #: src/gui/widgets/popovers/route_target_selector_popover.c:134
 msgid "None"
 msgstr "なし"
+
+#: inc/dsp/transport.h:54
+msgid "1 bar"
+msgstr "1バー"
+
+#: inc/dsp/transport.h:55
+msgid "2 bars"
+msgstr "2小節"
+
+#: inc/dsp/transport.h:56
+msgid "4 bars"
+msgstr "4小節"
+
+#: inc/dsp/region.h:65 src/gui/widgets/track.c:1016
+msgid "Inherit"
+msgstr "継承"
+
+#: inc/dsp/region.h:66 src/dsp/automation_track.c:166
+#: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:459
+msgid "Off"
+msgstr "無効"
+
+#: inc/dsp/region.h:67 src/dsp/automation_track.c:160
+#: src/gui/widgets/cc_bindings_tree.c:158
+#: src/gui/widgets/port_connections_tree.c:214
+#: src/gui/widgets/item_factory.c:598 src/gui/widgets/bot_bar.c:459
+msgid "On"
+msgstr "有効"
+
+#: inc/dsp/scale.h:127 inc/schemas/audio/scale.h:93
+msgid "Chromatic"
+msgstr "半音階"
+
+#: inc/dsp/scale.h:128 inc/schemas/audio/scale.h:94
+msgid "Major"
+msgstr "長音階"
+
+#: inc/dsp/scale.h:129 inc/schemas/audio/scale.h:95
+msgid "Minor"
+msgstr "短音階"
+
+#: inc/dsp/scale.h:130 inc/schemas/audio/scale.h:96
+msgid "Ionian"
+msgstr "アイオニアン"
+
+#: inc/dsp/scale.h:131 inc/schemas/audio/scale.h:97
+msgid "Dorian"
+msgstr "ドリアン"
+
+#: inc/dsp/scale.h:132 inc/schemas/audio/scale.h:98
+msgid "Phrygian"
+msgstr "フリジアン"
+
+#: inc/dsp/scale.h:133 inc/schemas/audio/scale.h:99
+msgid "Lydian"
+msgstr "リディアン"
+
+#: inc/dsp/scale.h:134 inc/schemas/audio/scale.h:100
+msgid "Mixolydian"
+msgstr "ミクソリディアン"
+
+#: inc/dsp/scale.h:135 inc/schemas/audio/scale.h:101
+msgid "Aeolian"
+msgstr "エオリアン"
+
+#: inc/dsp/scale.h:136 inc/schemas/audio/scale.h:102
+msgid "Locrian"
+msgstr "ロクリアン"
+
+#: inc/dsp/scale.h:137 inc/schemas/audio/scale.h:103
+msgid "Melodic Minor"
+msgstr "メロディックマイナー"
+
+#: inc/dsp/scale.h:138 inc/schemas/audio/scale.h:104
+msgid "Harmonic Minor"
+msgstr "和声的短音階"
+
+#: inc/dsp/scale.h:139 inc/schemas/audio/scale.h:105
+msgid "Whole Tone"
+msgstr "全音"
+
+#: inc/dsp/scale.h:140 inc/schemas/audio/scale.h:106
+msgid "Major Pentatonic"
+msgstr "メジャー・ペンタトニック"
+
+#: inc/dsp/scale.h:141 inc/schemas/audio/scale.h:107
+msgid "Minor Pentatonic"
+msgstr "マイナー・ペンタトニック"
+
+#: inc/dsp/scale.h:142 inc/schemas/audio/scale.h:108
+msgid "Octatonic Half Whole"
+msgstr "八音（半音 全音）"
+
+#: inc/dsp/scale.h:143 inc/schemas/audio/scale.h:110
+msgid "Octatonic Whole Half"
+msgstr "八音（全音 半音）"
+
+#: inc/dsp/scale.h:144 inc/schemas/audio/scale.h:112
+msgid "Acoustic"
+msgstr "アコースティック"
+
+#: inc/dsp/scale.h:145 inc/schemas/audio/scale.h:113
+#, fuzzy
+msgid "Harmonic Major"
+msgstr "和声的短音階"
+
+#: inc/dsp/scale.h:146 inc/schemas/audio/scale.h:114
+msgid "Phrygian Dominant"
+msgstr "フリジアン・ドミナント"
+
+#: inc/dsp/scale.h:147 inc/schemas/audio/scale.h:115
+msgid "Major Locrian"
+msgstr "メジャー・ロクリアン"
+
+#: inc/dsp/scale.h:148 inc/schemas/audio/scale.h:116
+msgid "Algerian"
+msgstr "アルジェリアン"
+
+#: inc/dsp/scale.h:149 inc/schemas/audio/scale.h:117
+msgid "Augmented"
+msgstr "オーギュメント"
+
+#: inc/dsp/scale.h:150 inc/schemas/audio/scale.h:118
+#, fuzzy
+msgid "Double Harmonic"
+msgstr "ダブルハーモニック"
+
+#: inc/dsp/scale.h:151 inc/schemas/audio/scale.h:119
+#, fuzzy
+msgid "Chinese"
+msgstr "中国語[zh]"
+
+#: inc/dsp/scale.h:152 inc/schemas/audio/scale.h:120
+#, fuzzy
+msgid "Diminished"
+msgstr "ディミニッシュ"
+
+#: inc/dsp/scale.h:153 inc/schemas/audio/scale.h:121
+#, fuzzy
+msgid "Dominant Diminished"
+msgstr "ドミナント・ディミニッシュ"
+
+#: inc/dsp/scale.h:154 inc/schemas/audio/scale.h:122
+msgid "Egyptian"
+msgstr "エジプト音階"
+
+#: inc/dsp/scale.h:155 inc/schemas/audio/scale.h:123
+msgid "Eight Tone Spanish"
+msgstr "エイト・トーン・スパニッシュ"
+
+#: inc/dsp/scale.h:156 inc/schemas/audio/scale.h:124
+msgid "Enigmatic"
+msgstr "エニグマティック"
+
+#: inc/dsp/scale.h:157 inc/schemas/audio/scale.h:125
+msgid "Geez"
+msgstr "Geez"
+
+#: inc/dsp/scale.h:158 inc/schemas/audio/scale.h:126
+msgid "Hindu"
+msgstr "ヒンズー"
+
+#: inc/dsp/scale.h:159 inc/schemas/audio/scale.h:127
+msgid "Hirajoshi"
+msgstr "平吉"
+
+#: inc/dsp/scale.h:160 inc/schemas/audio/scale.h:128
+msgid "Hungarian Gypsy"
+msgstr "ハンガリージプシー"
+
+#: inc/dsp/scale.h:161 inc/schemas/audio/scale.h:129
+#, fuzzy
+msgid "Insen"
+msgstr "インサート"
+
+#: inc/dsp/scale.h:162 inc/schemas/audio/scale.h:130
+#, fuzzy
+msgid "Neapolitan Major"
+msgstr "アイオニアン（長音階）"
+
+#: inc/dsp/scale.h:163 inc/schemas/audio/scale.h:131
+#, fuzzy
+msgid "Neapolitan Minor"
+msgstr "アエオリアン（自然的短音階）"
+
+#: inc/dsp/scale.h:164 inc/schemas/audio/scale.h:132
+#, fuzzy
+msgid "Oriental"
+msgstr "水平方向"
+
+#: inc/dsp/scale.h:165 inc/schemas/audio/scale.h:133
+#, fuzzy
+msgid "Romanian Minor"
+msgstr "和声的短音階"
+
+#: inc/dsp/scale.h:166 inc/schemas/audio/scale.h:134
+msgid "Altered"
+msgstr "オルタード"
+
+#: inc/dsp/scale.h:167 inc/schemas/audio/scale.h:135
+msgid "Maqam"
+msgstr "マカーム"
+
+#: inc/dsp/scale.h:168 inc/schemas/audio/scale.h:136
+msgid "Yo"
+msgstr "陽旋法"
+
+#: inc/dsp/scale.h:169 inc/schemas/audio/scale.h:137
+msgid "Bebop Locrian"
+msgstr "ビーバップ・ロクリアン"
+
+#: inc/dsp/scale.h:170 inc/schemas/audio/scale.h:138
+msgid "Bebop Dominant"
+msgstr "ビバップ・ドミナント"
+
+#: inc/dsp/scale.h:171 inc/schemas/audio/scale.h:139
+msgid "Bebop Major"
+msgstr "ビバップメジャー"
+
+#: inc/dsp/scale.h:172 inc/schemas/audio/scale.h:140
+msgid "Super Locrian"
+msgstr "スーパーロクリアン"
+
+#: inc/dsp/scale.h:173 inc/schemas/audio/scale.h:141
+#, fuzzy
+msgid "Enigmatic Minor"
+msgstr "和声的短音階"
+
+#: inc/dsp/scale.h:174 inc/schemas/audio/scale.h:142
+msgid "Composite"
+msgstr "コンポジット"
+
+#: inc/dsp/scale.h:175 inc/schemas/audio/scale.h:143
+msgid "Bhairav"
+msgstr "Bhairav"
+
+#: inc/dsp/scale.h:176 inc/schemas/audio/scale.h:144
+#, fuzzy
+msgid "Hungarian Minor"
+msgstr "和声的短音階"
+
+#: inc/dsp/scale.h:177 inc/schemas/audio/scale.h:145
+msgid "Persian"
+msgstr "ペルシア音階"
+
+#: inc/dsp/scale.h:178 inc/schemas/audio/scale.h:146
+msgid "Iwato"
+msgstr "岩戸"
+
+#: inc/dsp/scale.h:179 inc/schemas/audio/scale.h:147
+msgid "Kumoi"
+msgstr "雲井"
+
+#: inc/dsp/scale.h:180 inc/schemas/audio/scale.h:148
+msgid "Pelog"
+msgstr "ペロッグ"
+
+#: inc/dsp/scale.h:181 inc/schemas/audio/scale.h:149
+msgid "Prometheus"
+msgstr "プロメテウス"
+
+#: inc/dsp/scale.h:182 inc/schemas/audio/scale.h:150
+msgid "Prometheus Neapolitan"
+msgstr "プロメテウス・ナポリタン"
+
+#: inc/dsp/scale.h:183 inc/schemas/audio/scale.h:152
+msgid "Prometheus Liszt"
+msgstr "プロメテウス・リスト"
+
+#: inc/dsp/scale.h:184 inc/schemas/audio/scale.h:153
+msgid "Balinese"
+msgstr "バリ音階"
+
+#: inc/dsp/scale.h:185 inc/schemas/audio/scale.h:154
+msgid "RagaTodi"
+msgstr "ラガトディ"
+
+#: inc/dsp/scale.h:186 inc/schemas/audio/scale.h:155
+#, fuzzy
+msgid "Japanese 1"
+msgstr "日本語[ja]"
+
+#: inc/dsp/scale.h:187 inc/schemas/audio/scale.h:156
+#, fuzzy
+msgid "Japanese 2"
+msgstr "日本語[ja]"
+
+#. TRANSLATORS: decibels
+#: inc/dsp/pan.h:35
+msgid "0dB"
+msgstr "0dB"
+
+#: inc/dsp/pan.h:36
+msgid "-3dB"
+msgstr "-3dB"
+
+#: inc/dsp/pan.h:37
+msgid "-6dB"
+msgstr "-6dB"
+
+#. TRANSLATORS: Pan algorithm
+#: inc/dsp/pan.h:57 src/dsp/curve.c:371 src/utils/ui.c:627
+msgid "Linear"
+msgstr "リニア (Linear)"
+
+#: inc/dsp/pan.h:58 src/utils/ui.c:628
+msgid "Square Root"
+msgstr "平方根"
+
+#: inc/dsp/pan.h:59
+msgid "Sine"
+msgstr "正弦"
+
+#: inc/dsp/curve.h:95 inc/schemas/audio/curve.h:28 src/dsp/curve.c:58
+#, c-format
+msgid "Exponent"
+msgstr "指数"
+
+#: inc/dsp/curve.h:96 inc/schemas/audio/curve.h:29 src/dsp/curve.c:61
+#, c-format
+msgid "Superellipse"
+msgstr "超楕円"
+
+#: inc/dsp/curve.h:97 inc/schemas/audio/curve.h:30 src/dsp/curve.c:390
+msgid "Vital"
+msgstr "Vital"
+
+#: inc/dsp/curve.h:98 inc/schemas/audio/curve.h:31 src/dsp/curve.c:67
+#, c-format
+msgid "Pulse"
+msgstr "パルス"
+
+#: inc/dsp/curve.h:99 inc/schemas/audio/curve.h:32 src/dsp/curve.c:70
+#: src/dsp/curve.c:385
+#, fuzzy, c-format
+msgid "Logarithmic"
+msgstr "対数"
 
 #: inc/schemas/gui/backend/arranger_object.h:36
 #: inc/gui/backend/arranger_object.h:85
@@ -343,11 +640,6 @@ msgstr "コードオブジェクト"
 #: inc/gui/backend/arranger_object.h:89
 msgid "Scale Object"
 msgstr "スケールオブジェクト"
-
-#: inc/schemas/gui/backend/arranger_object.h:41 inc/audio/track.h:170
-#: inc/gui/backend/arranger_object.h:90
-msgid "Marker"
-msgstr "マーカー"
 
 #: inc/schemas/gui/backend/arranger_object.h:42
 #: inc/gui/backend/arranger_object.h:91
@@ -424,298 +716,6 @@ msgstr "低"
 #: inc/utils/ui.h:62
 msgid "Ultra Low"
 msgstr "超低"
-
-#: inc/audio/exporter.h:125
-msgid "Before inserts"
-msgstr "インサート前"
-
-#: inc/audio/exporter.h:126
-msgid "Pre-fader"
-msgstr "プリフェーダー"
-
-#: inc/audio/exporter.h:127
-msgid "Post fader"
-msgstr "ポストフェーダー"
-
-#: inc/audio/track.h:166 src/gui/widgets/track_properties_expander.c:124
-#: src/gui/widgets/popovers/route_target_selector_popover.c:160
-#: build/data/org.zrythm.Zrythm.gschema.xml:698
-msgid "Instrument"
-msgstr "音源"
-
-#: inc/audio/track.h:167 src/audio/region.c:508 src/gui/widgets/bot_bar.c:452
-#: resources/ui/file_browser_filters.ui:10
-#: build/data/org.zrythm.Zrythm.gschema.xml:1219
-msgid "Audio"
-msgstr "オーディオ"
-
-#: inc/audio/track.h:168 src/project.c:685
-#: src/gui/widgets/popovers/route_target_selector_popover.c:142
-msgid "Master"
-msgstr "マスター"
-
-#: inc/audio/track.h:169 src/audio/region.c:514
-msgid "Chord"
-msgstr "コード（和音）"
-
-#: inc/audio/track.h:171 src/audio/tempo_track.c:94
-#: src/gui/widgets/popovers/automatable_selector_popover.c:320
-msgid "Tempo"
-msgstr "テンポ"
-
-#: inc/audio/track.h:172
-msgid "Modulator"
-msgstr "モジュレータ"
-
-#: inc/audio/track.h:173
-msgid "Audio FX"
-msgstr "オーディオFX"
-
-#: inc/audio/track.h:174
-msgid "Audio Group"
-msgstr "オーディオグループ"
-
-#: inc/audio/track.h:175 src/audio/region.c:505
-#: resources/ui/file_browser_filters.ui:18
-msgid "MIDI"
-msgstr "MIDI"
-
-#: inc/audio/track.h:176
-msgid "MIDI FX"
-msgstr "MIDI FX"
-
-#: inc/audio/track.h:177
-msgid "MIDI Group"
-msgstr "MIDI グループ"
-
-#: inc/audio/track.h:178
-msgid "Folder"
-msgstr "フォルダ"
-
-#: inc/audio/snap_grid.h:51
-#, fuzzy
-msgid "bar"
-msgstr "1バー"
-
-#: inc/audio/snap_grid.h:52
-#, fuzzy
-msgid "beat"
-msgstr "ユーロビート"
-
-#: inc/audio/snap_grid.h:72 src/gui/widgets/digital_meter.c:506
-msgid "normal"
-msgstr "普通音符"
-
-#: inc/audio/snap_grid.h:73 src/gui/widgets/digital_meter.c:509
-msgid "dotted"
-msgstr "付点音符"
-
-#: inc/audio/snap_grid.h:74 src/gui/widgets/digital_meter.c:512
-msgid "triplet"
-msgstr "３連音符"
-
-#: inc/audio/engine.h:181
-msgid "1,024"
-msgstr "1,024"
-
-#: inc/audio/engine.h:181
-msgid "2,048"
-msgstr "2,048"
-
-#: inc/audio/engine.h:181
-msgid "4,096"
-msgstr "4,096"
-
-#: inc/audio/engine.h:206
-msgid "22,050"
-msgstr "22,050"
-
-#: inc/audio/engine.h:206
-msgid "32,000"
-msgstr "32,000"
-
-#: inc/audio/engine.h:206
-msgid "44,100"
-msgstr "44,100"
-
-#: inc/audio/engine.h:206
-msgid "48,000"
-msgstr "48,000"
-
-#: inc/audio/engine.h:207
-msgid "88,200"
-msgstr "88,200"
-
-#: inc/audio/engine.h:207
-msgid "96,000"
-msgstr "96,000"
-
-#: inc/audio/engine.h:207
-msgid "192,000"
-msgstr "192,000"
-
-#. TRANSLATORS: Dummy backend
-#: inc/audio/engine.h:253 inc/audio/engine.h:309
-#: inc/plugins/plugin_descriptor.h:141
-msgid "Dummy"
-msgstr "ダミー"
-
-#: inc/audio/engine.h:253
-msgid "Dummy (libsoundio)"
-msgstr "ダミー (libsoundio)"
-
-#: inc/audio/engine.h:310
-msgid "ALSA Sequencer (not working)"
-msgstr "ALSA シーケンサー (動作しません)"
-
-#: inc/audio/engine.h:311
-msgid "ALSA Sequencer (rtmidi)"
-msgstr "ALSAシーケンサー (rtmidi)"
-
-#: inc/audio/audio_function.h:53
-#, fuzzy
-msgid "Invert"
-msgstr "反転"
-
-#: inc/audio/audio_function.h:54
-msgid "Normalize peak"
-msgstr "ノーマライズ (Normalize Peak)"
-
-#: inc/audio/audio_function.h:55
-msgid "Normalize RMS"
-msgstr "ノーマライズ (Normalize RMS)"
-
-#: inc/audio/audio_function.h:56
-msgid "Normalize LUFS"
-msgstr "ノーマライズ (Normalize LUFS)"
-
-#: inc/audio/audio_function.h:57
-msgid "Linear fade in"
-msgstr "リニアフェードイン (Linear fade in)"
-
-#: inc/audio/audio_function.h:58
-msgid "Linear fade out"
-msgstr "リニアフェードアウト (Linear fade out)"
-
-#: inc/audio/audio_function.h:59 src/gui/widgets/home_toolbar.c:142
-msgid "Nudge left"
-msgstr "左へナッジ (Nudge)"
-
-#: inc/audio/audio_function.h:60 src/gui/widgets/home_toolbar.c:143
-msgid "Nudge right"
-msgstr "右へナッジ (Nudge)"
-
-#: inc/audio/audio_function.h:61
-#, fuzzy
-msgid "Reverse"
-msgstr "逆順"
-
-#: inc/audio/audio_function.h:62
-#, fuzzy
-msgid "Pitch shift"
-msgstr "ピッチベンド"
-
-#: inc/audio/audio_function.h:63
-msgid "External program"
-msgstr "外部プログラム"
-
-#: inc/audio/audio_function.h:64
-msgid "Guile script"
-msgstr "Guileスクリプト"
-
-#: inc/audio/audio_function.h:65
-msgid "Custom plugin"
-msgstr "カスタムプラグイン"
-
-#: inc/audio/audio_function.h:66
-msgid "Invalid"
-msgstr "不正"
-
-#: inc/audio/midi_function.h:40 resources/ui/editor_toolbar.ui:154
-msgid "Crescendo"
-msgstr "クレッシェンド"
-
-#: inc/audio/midi_function.h:41 resources/ui/editor_toolbar.ui:160
-msgid "Flam"
-msgstr "フラム"
-
-#: inc/audio/midi_function.h:42 inc/audio/automation_function.h:32
-msgid "Flip H"
-msgstr "水平方向に反転"
-
-#: inc/audio/midi_function.h:43 inc/audio/automation_function.h:33
-msgid "Flip V"
-msgstr "垂直方向に反転"
-
-#: inc/audio/midi_function.h:44 resources/ui/editor_toolbar.ui:181
-msgid "Legato"
-msgstr "レガート"
-
-#: inc/audio/midi_function.h:45 resources/ui/editor_toolbar.ui:187
-msgid "Portato"
-msgstr "ポルタート"
-
-#: inc/audio/midi_function.h:46 resources/ui/editor_toolbar.ui:193
-msgid "Staccato"
-msgstr "スタッカート"
-
-#: inc/audio/midi_function.h:47 resources/ui/editor_toolbar.ui:199
-msgid "Strum"
-msgstr "ストラム"
-
-#: inc/audio/transport.h:54
-msgid "1 bar"
-msgstr "1バー"
-
-#: inc/audio/transport.h:55
-msgid "2 bars"
-msgstr "2小節"
-
-#: inc/audio/transport.h:56
-msgid "4 bars"
-msgstr "4小節"
-
-#: inc/audio/region.h:65 src/gui/widgets/track.c:1016
-msgid "Inherit"
-msgstr "継承"
-
-#: inc/audio/region.h:66 src/audio/automation_track.c:166
-#: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:459
-msgid "Off"
-msgstr "無効"
-
-#: inc/audio/region.h:67 src/audio/automation_track.c:160
-#: src/gui/widgets/cc_bindings_tree.c:158
-#: src/gui/widgets/port_connections_tree.c:214
-#: src/gui/widgets/item_factory.c:598 src/gui/widgets/bot_bar.c:459
-msgid "On"
-msgstr "有効"
-
-#. TRANSLATORS: decibels
-#: inc/audio/pan.h:35
-msgid "0dB"
-msgstr "0dB"
-
-#: inc/audio/pan.h:36
-msgid "-3dB"
-msgstr "-3dB"
-
-#: inc/audio/pan.h:37
-msgid "-6dB"
-msgstr "-6dB"
-
-#. TRANSLATORS: Pan algorithm
-#: inc/audio/pan.h:57 src/utils/ui.c:627 src/audio/curve.c:371
-msgid "Linear"
-msgstr "リニア (Linear)"
-
-#: inc/audio/pan.h:58 src/utils/ui.c:628
-msgid "Square Root"
-msgstr "平方根"
-
-#: inc/audio/pan.h:59
-msgid "Sine"
-msgstr "正弦"
 
 #: src/project.c:403
 #, fuzzy, c-format
@@ -1161,8 +1161,8 @@ msgstr "ファイルの書き込みに失敗しました: %s"
 msgid "Save Project"
 msgstr "プロジェクトを保存"
 
-#: src/actions/actions.c:789 src/utils/dialogs.c:41 src/utils/dialogs.c:60
-#: src/audio/clip.c:698 src/gui/widgets/main_window.c:138
+#: src/actions/actions.c:789 src/dsp/clip.c:698 src/utils/dialogs.c:41
+#: src/utils/dialogs.c:60 src/gui/widgets/main_window.c:138
 #: src/gui/widgets/plugin_properties_expander.c:107
 #: src/gui/widgets/dialogs/midi_function_dialog.c:412
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:122
@@ -1253,7 +1253,7 @@ msgstr "URI %s を持つプラグインの検索に失敗しました。"
 msgid "Failed to quantize"
 msgstr "プラグインを有効/無効にする"
 
-#: src/actions/actions.c:1660 src/audio/track.c:3669 src/audio/tracklist.c:1483
+#: src/actions/actions.c:1660 src/dsp/track.c:3669 src/dsp/tracklist.c:1483
 #: src/gui/widgets/panel_file_browser.c:459
 #: src/gui/widgets/panel_file_browser.c:475 src/settings/plugin_settings.c:335
 #: src/settings/plugin_settings.c:350 src/settings/plugin_settings.c:422
@@ -1545,7 +1545,7 @@ msgstr "削除できないオブジェクトが選択されています"
 msgid "Failed getting contents for %s"
 msgstr "%s の LV2 UI を開くことができませんでした"
 
-#: src/actions/tracklist_selections.c:311 src/audio/track.c:2062
+#: src/actions/tracklist_selections.c:311 src/dsp/track.c:2062
 #, fuzzy, c-format
 msgid "Failed creating audio clip from file at %s"
 msgstr "ファイルの書き込みに失敗しました: %s"
@@ -1561,8 +1561,8 @@ msgstr "トラックのクローン作成に失敗しました"
 
 #: src/actions/tracklist_selections.c:374
 #: src/actions/tracklist_selections.c:993
-#: src/actions/tracklist_selections.c:1445 src/audio/tracklist.c:1667
-#: src/audio/tracklist.c:1795
+#: src/actions/tracklist_selections.c:1445 src/dsp/tracklist.c:1667
+#: src/dsp/tracklist.c:1795
 #, fuzzy
 msgid "Failed to clone track"
 msgstr "ファイルを開けませんでした：%s"
@@ -1576,7 +1576,7 @@ msgstr "トラックのクローン作成に失敗しました : "
 msgid "%s Track"
 msgstr "%sトラック"
 
-#: src/actions/tracklist_selections.c:768 src/audio/sample_processor.c:552
+#: src/actions/tracklist_selections.c:768 src/dsp/sample_processor.c:552
 #: src/gui/widgets/channel_slot.c:335
 #, fuzzy, c-format
 msgid "Failed to create plugin %s"
@@ -1980,7 +1980,7 @@ msgstr "チャンネルセンド接続"
 msgid "Failed to clone mixer selections"
 msgstr "URI %s を持つプラグインの検索に失敗しました。"
 
-#: src/actions/mixer_selections_action.c:432 src/audio/channel.c:1855
+#: src/actions/mixer_selections_action.c:432 src/dsp/channel.c:1855
 #, fuzzy
 msgid "Failed to clone plugin"
 msgstr "URI %s を持つプラグインの検索に失敗しました。"
@@ -1989,8 +1989,8 @@ msgstr "URI %s を持つプラグインの検索に失敗しました。"
 msgid "Could not create plugin"
 msgstr "プラグインを初期化できませんでした"
 
-#: src/actions/mixer_selections_action.c:538 src/audio/audio_function.c:145
-#: src/audio/track.c:2148 src/audio/track.c:3217
+#: src/actions/mixer_selections_action.c:538 src/dsp/audio_function.c:145
+#: src/dsp/track.c:2148 src/dsp/track.c:3217
 #, fuzzy
 msgid "Failed to instantiate plugin"
 msgstr "プラグインを有効/無効にする"
@@ -2049,6 +2049,762 @@ msgstr "%s を貼り付け"
 #, c-format
 msgid "Paste %d Plugins"
 msgstr "%d個のプラグインを貼り付け"
+
+#: src/dsp/modulator_track.c:59 src/utils/gtk.c:1215
+#: src/gui/widgets/bot_dock_edge.c:254
+msgid "Modulators"
+msgstr "モジュレーター"
+
+#: src/dsp/supported_file.c:269
+msgid "Failed opening file"
+msgstr "ファイルを開くことができませんでした"
+
+#: src/dsp/supported_file.c:274
+#, fuzzy, c-format
+msgid ""
+"<b>%s</b>\n"
+"Sample rate: %d\n"
+"Length: %<PRId64>s %<PRId64> ms | BPM: %.1f\n"
+"Channel(s): %u | Bitrate: %'d.%d kb/s\n"
+"Bit depth: %d bits"
+msgstr ""
+"<b>%s</b>\n"
+"サンプルレート%d\n"
+"長さ: %ld s %ld ms | BPM:%.1f\n"
+"チャンネル数: %d | ビットレート: %'d.%d kb/s\n"
+"ビット深度: %d ビット"
+
+#: src/dsp/snap_grid.c:253 resources/ui/snap_grid_popover.ui:112
+#: resources/ui/snap_grid_popover.ui:190
+msgid "Adaptive"
+msgstr "適応的"
+
+#: src/dsp/fader.c:97
+#, fuzzy
+msgid "Prefader Swap Phase"
+msgstr "プリフェーダーバランス"
+
+#: src/dsp/fader.c:98
+#, fuzzy
+msgid "Fader Swap Phase"
+msgstr "フェーダーバランス"
+
+#: src/dsp/fader.c:140
+msgid "Prefader Volume"
+msgstr "プレフェーダーボリューム"
+
+#: src/dsp/fader.c:140
+msgid "Fader Volume"
+msgstr "フェーダーボリューム"
+
+#: src/dsp/fader.c:169
+msgid "Prefader Balance"
+msgstr "プリフェーダーバランス"
+
+#: src/dsp/fader.c:169
+msgid "Fader Balance"
+msgstr "フェーダーバランス"
+
+#: src/dsp/fader.c:188
+msgid "Prefader Mute"
+msgstr "プレフェーダーミュート"
+
+#: src/dsp/fader.c:188
+msgid "Fader Mute"
+msgstr "フェーダーミュート"
+
+#: src/dsp/fader.c:209
+#, fuzzy
+msgid "Prefader Solo"
+msgstr "プレフェーダー・ソロ"
+
+#: src/dsp/fader.c:209
+#, fuzzy
+msgid "Fader Solo"
+msgstr "フェーダー・ソロ"
+
+#: src/dsp/fader.c:223
+msgid "Prefader Listen"
+msgstr "プリフェーダー・試聴"
+
+#: src/dsp/fader.c:223
+msgid "Fader Listen"
+msgstr "フェーダー・聴取"
+
+#: src/dsp/fader.c:238
+#, fuzzy
+msgid "Prefader Mono Compat"
+msgstr "プリフェーダー・モノ"
+
+#: src/dsp/fader.c:239
+#, fuzzy
+msgid "Fader Mono Compat"
+msgstr "フェーダー・モノ"
+
+#: src/dsp/fader.c:271
+msgid "Ch Pre-Fader in"
+msgstr "Chのプレフェーダーin"
+
+#: src/dsp/fader.c:276
+msgid "Ch Fader in"
+msgstr "Chのフェーダーin"
+
+#: src/dsp/fader.c:282
+msgid "Sample Processor Fader in"
+msgstr "サンプルプロセッサフェーダー入力"
+
+#: src/dsp/fader.c:287
+msgid "Monitor Fader in"
+msgstr "モニターフェーダーin"
+
+#: src/dsp/fader.c:305
+msgid "Ch Pre-Fader out"
+msgstr "Ch プレフェーダー アウト"
+
+#: src/dsp/fader.c:310
+msgid "Ch Fader out"
+msgstr "Ch フェーダーアウト"
+
+#: src/dsp/fader.c:316
+msgid "Sample Processor Fader out"
+msgstr "サンプルプロセッサ フェーダー出力"
+
+#: src/dsp/fader.c:321
+msgid "Monitor Fader out"
+msgstr "モニターフェーダーアウト"
+
+#: src/dsp/fader.c:343
+msgid "Ch MIDI Pre-Fader in"
+msgstr "Ch MIDI プリフェーダーin"
+
+#: src/dsp/fader.c:348
+msgid "Ch MIDI Fader in"
+msgstr "Ch MIDI フェーダーin"
+
+#: src/dsp/fader.c:360
+msgid "Ch MIDI Pre-Fader out"
+msgstr "Ch MIDIプレフェーダーアウト"
+
+#: src/dsp/fader.c:365
+msgid "Ch MIDI Fader out"
+msgstr "Ch MIDIフェーダーアウト"
+
+#: src/dsp/fader.c:594
+#, fuzzy
+msgid "Failed to change volume"
+msgstr "ファイルを開けませんでした：%s"
+
+#: src/dsp/fader.c:643
+#, fuzzy
+msgid "Failed to set MIDI mode"
+msgstr ""
+"SNDFILE %s を開けませんでした。\n"
+"%d:%s"
+
+#: src/dsp/encoder.c:58
+#, c-format
+msgid "An error has occurred opening the audio file '%s'"
+msgstr ""
+
+#: src/dsp/marker_track.c:42
+msgid "Markers"
+msgstr "マーカー"
+
+#: src/dsp/marker_track.c:60 src/gui/widgets/timeline_selection_info.c:228
+#: resources/ui/quantize_dialog.ui:62
+msgid "start"
+msgstr "開始"
+
+#: src/dsp/marker_track.c:67 src/gui/widgets/timeline_selection_info.c:234
+#: resources/ui/quantize_dialog.ui:70
+msgid "end"
+msgstr "終わり"
+
+#: src/dsp/engine_jack.c:311
+msgid "XRUN occurred - check your JACK configuration"
+msgstr "XRUNが発生しました - JACKの設定を確認してください"
+
+#: src/dsp/engine_jack.c:369
+msgid "JACK has shut down"
+msgstr "JACKがシャットダウンしました"
+
+#. TRANSLATORS: JACK failure messages
+#: src/dsp/engine_jack.c:632
+msgid "Overall operation failed"
+msgstr "全体的な操作は失敗しました"
+
+#: src/dsp/engine_jack.c:638
+msgid "The operation contained an invalid or unsupported option"
+msgstr "操作に無効またはサポートされていないオプションが含まれていました"
+
+#: src/dsp/engine_jack.c:644
+msgid "The desired client name was not unique"
+msgstr "目的のクライアント名が一意ではありません"
+
+#: src/dsp/engine_jack.c:648
+msgid "Unable to connect to the JACK server"
+msgstr "サーバーと接続できません"
+
+#: src/dsp/engine_jack.c:653
+msgid "Communication error with the JACK server"
+msgstr "JACKサーバーとの通信エラー"
+
+#: src/dsp/engine_jack.c:657
+msgid "Requested client does not exist"
+msgstr "要求されたクライアントは存在しません"
+
+#: src/dsp/engine_jack.c:661
+msgid "Unable to load internal client"
+msgstr "内部クライアントをロードできませんでした"
+
+#: src/dsp/engine_jack.c:665
+msgid "Unable to initialize client"
+msgstr "クライアントを初期化できませんでした"
+
+#: src/dsp/engine_jack.c:669
+msgid "Unable to access shared memory"
+msgstr "共有メモリにアクセスできません"
+
+#: src/dsp/engine_jack.c:674
+msgid "Client's protocol version does not match"
+msgstr "クライアントのプロトコルバージョンが一致しません"
+
+#: src/dsp/engine_jack.c:678
+msgid "Backend error"
+msgstr "バックエンドエラー"
+
+#: src/dsp/engine_jack.c:682
+msgid "Client zombie"
+msgstr "クライアントゾンビ"
+
+#: src/dsp/engine_jack.c:729
+#, fuzzy, c-format
+msgid "JACK: Failed to disconnect monitor out: %s"
+msgstr "ファイルを開けませんでした：%s"
+
+#: src/dsp/engine_jack.c:778
+msgid "JACK: No physical playback ports found"
+msgstr ""
+
+#: src/dsp/engine_jack.c:792
+#, fuzzy, c-format
+msgid "JACK: Failed to connect monitor output [%s]: %s"
+msgstr "ファイルを開けませんでした：%s"
+
+#: src/dsp/engine_jack.c:793
+msgid "left"
+msgstr ""
+
+#: src/dsp/engine_jack.c:793
+#, fuzzy
+msgid "right"
+msgstr "右"
+
+#: src/dsp/engine_jack.c:851 src/gui/widgets/monitor_section.c:237
+#, fuzzy
+msgid "Failed to connect to left monitor output port"
+msgstr "ファイルを開けませんでした：%s"
+
+#: src/dsp/engine_jack.c:859 src/gui/widgets/monitor_section.c:246
+#, fuzzy
+msgid "Failed to connect to right monitor output port"
+msgstr "ファイルを開けませんでした：%s"
+
+#: src/dsp/curve.c:375
+msgid "Exponential"
+msgstr "指数関数"
+
+#: src/dsp/curve.c:380
+msgid "Elliptic"
+msgstr "楕円"
+
+#: src/dsp/audio_function.c:137 src/gui/widgets/drag_dest_box.c:324
+#, fuzzy
+msgid "Failed to create plugin"
+msgstr "ファイルの書き込みに失敗しました: %s"
+
+#: src/dsp/audio_function.c:370
+msgid "Invalid positions - skipping function"
+msgstr "無効な位置 - 関数をスキップします"
+
+#: src/dsp/audio_function.c:616
+#, fuzzy
+msgid "Failed to get audio clip from external program"
+msgstr "ファイルの書き込みに失敗しました: %s"
+
+#: src/dsp/audio_function.c:641
+#, fuzzy
+msgid "Failed to apply plugin"
+msgstr "URI %s を持つプラグインの検索に失敗しました。"
+
+#: src/dsp/graph_thread.c:572
+#, c-format
+msgid ""
+"Your user does not have enough privileges to allow %s to set the scheduling "
+"priority of threads. Please refer to the 'Getting Started' section in the "
+"user manual for details."
+msgstr ""
+"%s がスレッドのスケジューリング優先度を設定できるような十分な権限が、お客様の"
+"ユーザーにはありません。詳しくは、ユーザーマニュアルの 'Getting Started' の項"
+"を参照してください。"
+
+#: src/dsp/track.c:326
+msgid "Track record"
+msgstr "トラックの録音"
+
+#: src/dsp/track.c:445
+#, fuzzy
+msgid "Failed to clone modulator plugin"
+msgstr "URI %s を持つプラグインの検索に失敗しました。"
+
+#: src/dsp/track.c:474
+#, fuzzy
+msgid "Failed to clone channel"
+msgstr "スキーマ %s を表示できませんでした"
+
+#: src/dsp/track.c:853
+#, fuzzy
+msgid "Cannot set track muted"
+msgstr "ルーティングできません"
+
+#: src/dsp/track.c:897
+#, fuzzy
+msgid "Cannot set track folded"
+msgstr "ルーティングできません"
+
+#: src/dsp/track.c:1409
+#, fuzzy
+msgid "Cannot set track soloed"
+msgstr "ルーティングできません"
+
+#: src/dsp/track.c:1459
+#, fuzzy
+msgid "Cannot set track listened"
+msgstr "ルーティングできません"
+
+#: src/dsp/track.c:2905 src/settings/plugin_settings.c:398
+#: src/settings/plugin_settings.c:440
+#, fuzzy
+msgid "Failed to rename track"
+msgstr "スキーマ %s をリセットできませんでした"
+
+#: src/dsp/track.c:3265 src/dsp/track.c:3310
+#, fuzzy
+msgid "Cannot set track comment"
+msgstr "ルーティングできません"
+
+#: src/dsp/track.c:3346
+#, fuzzy
+msgid "Cannot set track icon"
+msgstr "ルーティングできません"
+
+#: src/dsp/track.c:3580
+#, fuzzy
+msgid "Cannot set track enabled"
+msgstr "ルーティングできません"
+
+#: src/dsp/automation_track.c:163
+msgid "Rec"
+msgstr "Rec"
+
+#: src/dsp/automation_track.c:184
+msgid "Touch"
+msgstr "タッチ"
+
+#: src/dsp/automation_track.c:187
+msgid "Latch"
+msgstr "ラッチ"
+
+#: src/dsp/region.c:511 src/gui/widgets/track.c:1059
+#: build/data/org.zrythm.Zrythm.gschema.xml:1233
+msgid "Automation"
+msgstr "オートメーション"
+
+#: src/dsp/engine.c:499
+#, c-format
+msgid ""
+"Failed to initialize the %s audio backend. Will use the dummy backend "
+"instead. Please check your backend settings in the Preferences."
+msgstr ""
+"%s オーディオ バックエンドの初期化に失敗しました。代わりにダミーバックエンド"
+"を使用します。環境設定でバックエンドの設定を確認してください。"
+
+#: src/dsp/engine.c:540
+#, c-format
+msgid ""
+"The JACK MIDI backend can only be used with the JACK audio backend (your "
+"current audio backend is %s). Will use the dummy MIDI backend instead."
+msgstr ""
+"JACK MIDI バックエンドは、JACK audio バックエンドと一緒にしか使えません（現在"
+"のオーディオバックエンドは %s です）。代わりにダミーのMIDIバックエンドを使い"
+"ます。"
+
+#: src/dsp/engine.c:575
+#, c-format
+msgid ""
+"Failed to initialize the %s MIDI backend. Will use the dummy backend "
+"instead. Please check your backend settings in the Preferences."
+msgstr ""
+"%s のMIDI バックエンドの初期化に失敗しました。代わりにダミーバックエンドを使"
+"用します。環境設定でバックエンドの設定を確認してください。"
+
+#: src/dsp/engine.c:616
+msgid ""
+"Your selected combination of backends may not work properly. If you want to "
+"use JACK, please select JACK as both your audio and MIDI backend."
+msgstr ""
+"選択されたバックエンドの組み合わせが正しく動作しない可能性があります。もし "
+"JACK を使いたいのであれば、オーディオと MIDI バックエンドの両方に JACK を選択"
+"してください。"
+
+#: src/dsp/engine.c:817
+#, c-format
+msgid ""
+"The selected MIDI/audio backend was not found in the version of %s you have "
+"installed. The audio and MIDI backends were set to \"Dummy\". Please set "
+"your preferred backend from the preferences."
+msgstr ""
+"選択したMIDI/オーディオバックエンドは、インストールされたバージョンの%sで見つ"
+"かりませんでした。オーディオおよびMIDIバックエンドは「ダミー」に設定されまし"
+"た。設定から適当なバックエンドを設定してください。"
+
+#: src/dsp/exporter.c:160
+#, c-format
+msgid "Format %s not supported yet"
+msgstr "フォーマット %s はまだサポートされていません"
+
+#: src/dsp/exporter.c:227
+msgid "SF INFO invalid"
+msgstr "SF INFO 無効"
+
+#: src/dsp/exporter.c:256
+#, c-format
+msgid ""
+"Couldn't open SNDFILE %s:\n"
+"%d: %s"
+msgstr ""
+"SNDFILE %s を開けませんでした。\n"
+"%d:%s"
+
+#: src/dsp/exporter.c:267
+#, c-format
+msgid "Invalid SNDFILE format %s: 0x%08X != 0x%08X"
+msgstr ""
+
+#: src/dsp/exporter.c:524
+#, c-format
+msgid ""
+"The exported audio contains segments louder than 0 dB (max detected %.1f dB)."
+msgstr ""
+
+#: src/dsp/exporter.c:1014 src/dsp/exporter.c:1021
+#, fuzzy
+msgid "Failed to create audio track"
+msgstr "ファイルの書き込みに失敗しました: %s"
+
+#: src/dsp/exporter.c:1053
+#, fuzzy
+msgid "Invalid time range"
+msgstr "不正"
+
+#: src/dsp/engine_pulse.c:88
+msgid ""
+"A buffer underflow has occurred. Try increasing the buffer size in the "
+"settings to avoid audio glitches."
+msgstr ""
+"バッファアンダーフローが発生しました。オーディオのグリッチを避けるために、設"
+"定でバッファサイズを大きくしてみてください。"
+
+#: src/dsp/engine_pulse.c:202
+msgid "PulseAudio error: Failed to create main loop"
+msgstr "PulseAudio エラー。メインループの作成に失敗"
+
+#: src/dsp/engine_pulse.c:222
+#, c-format
+msgid "PulseAudio Error: %s"
+msgstr "PulseAudioエラー：%s"
+
+#: src/dsp/engine_pulse.c:239
+msgid "PulseAudio Error: Failed to connect"
+msgstr "PulseAudioエラー：接続に失敗しました"
+
+#. TODO
+#: src/dsp/scale.c:543
+msgid "Unimplemented"
+msgstr "未実装"
+
+#: src/dsp/chord_track.c:40 src/settings/chord_preset.c:47
+#: resources/ui/inspector_chord.ui:7
+msgid "Chords"
+msgstr "コード"
+
+#: src/dsp/clip.c:160
+#, fuzzy
+msgid "Failed to initialize audio file"
+msgstr "ファイルの書き込みに失敗しました: %s"
+
+#: src/dsp/clip.c:186
+#, fuzzy, c-format
+msgid "Failed to initialize audio file at %s"
+msgstr "ファイルの書き込みに失敗しました: %s"
+
+#: src/dsp/clip.c:453
+#, fuzzy, c-format
+msgid "Failed to write audio clip to file: %s"
+msgstr "ファイルの書き込みに失敗しました: %s"
+
+#: src/dsp/clip.c:522
+#, fuzzy
+msgid "Failed to write audio file"
+msgstr "ファイルの書き込みに失敗しました: %s"
+
+#: src/dsp/clip.c:544
+#, fuzzy
+msgid "Failed to create audio clip from file"
+msgstr "ファイルの書き込みに失敗しました: %s"
+
+#: src/dsp/clip.c:696
+msgid "Edit in external app"
+msgstr "外部アプリでの編集"
+
+#: src/dsp/clip.c:698 src/utils/dialogs.c:60
+#: src/gui/widgets/dialogs/create_project_dialog.c:124
+#: src/gui/widgets/dialogs/first_run_dialog.c:274
+#: src/gui/widgets/dialogs/bug_report_dialog.c:187
+#: src/plugins/lv2/lv2_gtk.c:247 resources/ui/port_selector_dialog.ui:126
+#: resources/ui/string_entry_dialog.ui:55
+msgid "_OK"
+msgstr "_OK"
+
+#: src/dsp/clip.c:715
+#, c-format
+msgid "Edit the file at <u>%s</u>, then press OK"
+msgstr "<u>%s</u> にあるファイルを編集し、「OK」を押してください"
+
+#: src/dsp/clip.c:727
+msgid "Launch"
+msgstr "起動"
+
+#: src/dsp/clip.c:753 src/dsp/audio_region.c:90
+#, fuzzy, c-format
+msgid "Failed to create audio clip from file at %s"
+msgstr "ファイルの書き込みに失敗しました: %s"
+
+#: src/dsp/tempo_track.c:38
+msgid "BPM"
+msgstr "BPM"
+
+#: src/dsp/tempo_track.c:51
+msgid "Beats per bar"
+msgstr "バーあたりのビート数"
+
+#: src/dsp/tempo_track.c:70
+msgid "Beat unit"
+msgstr "ビートユニット"
+
+#: src/dsp/tempo_track.c:185
+#, fuzzy
+msgid "Failed to change BPM"
+msgstr "ファイルを開けませんでした：%s"
+
+#: src/dsp/automation_point.c:241 src/gui/widgets/fader.c:370
+#: src/gui/widgets/balance_control.c:349 src/gui/widgets/item_factory.c:325
+#: src/gui/widgets/item_factory.c:349
+#, fuzzy
+msgid "Invalid value"
+msgstr "不正"
+
+#: src/dsp/recording_manager.c:144
+#, fuzzy
+msgid "Failed to create recorded regions"
+msgstr "ファイルの書き込みに失敗しました: %s"
+
+#: src/dsp/pool.c:520
+#, fuzzy, c-format
+msgid "Failed to write clip %s"
+msgstr "ファイルの書き込みに失敗しました: %s"
+
+#: src/dsp/audio_region.c:236
+#, fuzzy
+msgid "Failed to duplicate audio clip"
+msgstr "自動操作イベントを複製"
+
+#: src/dsp/engine_alsa.c:328
+#, c-format
+msgid "ALSA Error: %s"
+msgstr "ALSAエラー：%s"
+
+#: src/dsp/track_lane.c:64
+#, c-format
+msgid "Lane %d"
+msgstr "レーン%d"
+
+#: src/dsp/track_lane.c:95
+#, fuzzy
+msgid "Failed to rename lane"
+msgstr "ファイルを開けませんでした：%s"
+
+#: src/dsp/track_lane.c:142
+#, fuzzy
+msgid "Cannot set track lane soloed"
+msgstr "ルーティングできません"
+
+#: src/dsp/track_lane.c:190
+#, fuzzy
+msgid "Cannot set track lane muted"
+msgstr "ルーティングできません"
+
+#: src/dsp/sample_processor.c:560
+#, fuzzy, c-format
+msgid "Failed to instantiate plugin %s"
+msgstr "URI %s を持つプラグインの検索に失敗しました。"
+
+#: src/dsp/channel_send.c:84
+#, c-format
+msgid "Channel Send %d enabled"
+msgstr "チャンネルセンド %d が有効"
+
+#: src/dsp/channel_send.c:95
+#, c-format
+msgid "Channel Send %d amount"
+msgstr "チャンネルセンド %d 値"
+
+#: src/dsp/channel_send.c:107
+#, fuzzy, c-format
+msgid "Channel Send %d audio in"
+msgstr "チャンネルセンド %d 値"
+
+#: src/dsp/channel_send.c:114
+#, fuzzy, c-format
+msgid "Channel Send %d MIDI in"
+msgstr "チャンネルセンド %d 値"
+
+#: src/dsp/channel_send.c:121
+#, fuzzy, c-format
+msgid "Channel Send %d audio out"
+msgstr "チャンネルセンド %d 値"
+
+#: src/dsp/channel_send.c:129
+#, fuzzy, c-format
+msgid "Channel Send %d MIDI out"
+msgstr "チャンネルセンド %d 値"
+
+#: src/dsp/channel_send.c:420 src/dsp/channel_send.c:477
+#, fuzzy
+msgid "Ports cannot be connected"
+msgstr "これらのポートは接続できません"
+
+#: src/dsp/channel_send.c:582
+msgid "Pre-fader send"
+msgstr "プリフェーダーセンド"
+
+#: src/dsp/channel_send.c:584
+msgid "Post-fader send"
+msgstr "ポストフェーダーセンド"
+
+#: src/dsp/channel_send.c:615
+#, c-format
+msgid "%s input"
+msgstr "%s入力"
+
+#: src/dsp/engine_pa.c:206 src/dsp/engine_pa.c:218 src/dsp/engine_pa.c:226
+#, c-format
+msgid "PortAudio Error: %s"
+msgstr "PortAudioエラー：%s"
+
+#: src/dsp/tracklist.c:1295
+msgid "No file was found"
+msgstr "ファイルが見つかりませんでした"
+
+#: src/dsp/tracklist.c:1322
+#, c-format
+msgid "Unsupported file type %s"
+msgstr "サポートされていないファイルの種類 %s"
+
+#: src/dsp/tracklist.c:1338
+msgid "This MIDI file contains no data"
+msgstr "このMIDIファイルにはデータが含まれていません"
+
+#: src/dsp/tracklist.c:1355
+#, fuzzy
+msgid "Can only drop 1 file at a time on existing tracks"
+msgstr "オーディオトラックにオーディオファイルのみをドロップできます"
+
+#: src/dsp/tracklist.c:1369
+msgid "Can only drop MIDI files on MIDI/instrument tracks"
+msgstr ""
+"MIDI/インストゥルメントトラックにのみMIDIファイルをドロップすることができます"
+
+#: src/dsp/tracklist.c:1379
+#, c-format
+msgid ""
+"This MIDI file contains %d tracks. It cannot be dropped into an existing "
+"track"
+msgstr ""
+"この MIDI ファイルには %d トラックが含まれています。既存のトラックにドロップ"
+"することはできません。"
+
+#: src/dsp/tracklist.c:1394
+msgid "Can only drop audio files on audio tracks"
+msgstr "オーディオトラックにオーディオファイルのみをドロップできます"
+
+#: src/dsp/tracklist.c:1455
+#, fuzzy
+msgid "Failed to create arranger objects"
+msgstr "ファイルの書き込みに失敗しました: %s"
+
+#: src/dsp/tracklist.c:1529
+#, fuzzy
+msgid "Failed to move tracks after copying or moving inside folder"
+msgstr "トラックを内部にコピー"
+
+#: src/dsp/tracklist.c:1607
+#, fuzzy
+msgid "Failed to copy tracks inside"
+msgstr "トラックを内部にコピー"
+
+#: src/dsp/tracklist.c:1649
+#, fuzzy
+msgid "Failed to copy track inside"
+msgstr "トラックを内部にコピー"
+
+#: src/dsp/tracklist.c:1690
+#, fuzzy
+msgid "Failed to copy tracks"
+msgstr "トラックを内部にコピー"
+
+#: src/dsp/tracklist.c:1715
+msgid "Cannot drag folder into itself"
+msgstr "フォルダをフォルダ自身の中にドラッグすることはできません"
+
+#: src/dsp/tracklist.c:1733 src/dsp/tracklist.c:1777
+#, fuzzy
+msgid "Failed to move track inside folder"
+msgstr "トラックを内部にコピー"
+
+#: src/dsp/tracklist.c:1818
+#, fuzzy
+msgid "Failed to move tracks"
+msgstr "ファイルを開けませんでした：%s"
+
+#: src/dsp/modulator_macro_processor.c:87
+#, c-format
+msgid "Macro %d"
+msgstr "マクロ %d"
+
+#: src/dsp/modulator_macro_processor.c:102
+#, c-format
+msgid "Macro CV In %d"
+msgstr "マクロ CV In %d"
+
+#: src/dsp/modulator_macro_processor.c:112
+#, c-format
+msgid "Macro CV Out %d"
+msgstr "マクロ CV 出力 %d"
+
+#: src/dsp/channel.c:1205 src/plugins/carla_native_plugin.c:1149
+msgid "MIDI out"
+msgstr "MIDI出力"
 
 #: src/utils/ui.c:629
 msgid "Sine (Equal Power)"
@@ -2123,11 +2879,6 @@ msgstr "ALSAエラー：%s"
 msgid "Mixer"
 msgstr "ミキサー"
 
-#: src/utils/gtk.c:1215 src/audio/modulator_track.c:59
-#: src/gui/widgets/bot_dock_edge.c:262
-msgid "Modulators"
-msgstr "モジュレーター"
-
 #: src/utils/gtk.c:1218
 msgid "Chord Pad"
 msgstr "コードパッド"
@@ -2196,15 +2947,6 @@ msgstr "開く(_O)"
 msgid "Overwrite Plugin"
 msgstr "プラグインを上書きする"
 
-#: src/utils/dialogs.c:60 src/audio/clip.c:698
-#: src/gui/widgets/dialogs/create_project_dialog.c:124
-#: src/gui/widgets/dialogs/first_run_dialog.c:274
-#: src/gui/widgets/dialogs/bug_report_dialog.c:187
-#: src/plugins/lv2/lv2_gtk.c:247 resources/ui/port_selector_dialog.ui:126
-#: resources/ui/string_entry_dialog.ui:55
-msgid "_OK"
-msgstr "_OK"
-
 #: src/utils/dialogs.c:65
 msgid "A plugin already exists at the selected slot. Overwrite it?"
 msgstr "選択したスロットにプラグインが既に存在します。上書きしますか？"
@@ -2217,749 +2959,6 @@ msgstr "プラグイン%sのインスタンス化エラー。詳細はログを�
 #, c-format
 msgid "%s has encountered an error\n"
 msgstr "%sはエラーが発生しました。\n"
-
-#: src/audio/supported_file.c:269
-msgid "Failed opening file"
-msgstr "ファイルを開くことができませんでした"
-
-#: src/audio/supported_file.c:274
-#, fuzzy, c-format
-msgid ""
-"<b>%s</b>\n"
-"Sample rate: %d\n"
-"Length: %<PRId64>s %<PRId64> ms | BPM: %.1f\n"
-"Channel(s): %u | Bitrate: %'d.%d kb/s\n"
-"Bit depth: %d bits"
-msgstr ""
-"<b>%s</b>\n"
-"サンプルレート%d\n"
-"長さ: %ld s %ld ms | BPM:%.1f\n"
-"チャンネル数: %d | ビットレート: %'d.%d kb/s\n"
-"ビット深度: %d ビット"
-
-#: src/audio/snap_grid.c:253 resources/ui/snap_grid_popover.ui:116
-#: resources/ui/snap_grid_popover.ui:199
-msgid "Adaptive"
-msgstr "適応的"
-
-#: src/audio/fader.c:97
-#, fuzzy
-msgid "Prefader Swap Phase"
-msgstr "プリフェーダーバランス"
-
-#: src/audio/fader.c:98
-#, fuzzy
-msgid "Fader Swap Phase"
-msgstr "フェーダーバランス"
-
-#: src/audio/fader.c:140
-msgid "Prefader Volume"
-msgstr "プレフェーダーボリューム"
-
-#: src/audio/fader.c:140
-msgid "Fader Volume"
-msgstr "フェーダーボリューム"
-
-#: src/audio/fader.c:169
-msgid "Prefader Balance"
-msgstr "プリフェーダーバランス"
-
-#: src/audio/fader.c:169
-msgid "Fader Balance"
-msgstr "フェーダーバランス"
-
-#: src/audio/fader.c:188
-msgid "Prefader Mute"
-msgstr "プレフェーダーミュート"
-
-#: src/audio/fader.c:188
-msgid "Fader Mute"
-msgstr "フェーダーミュート"
-
-#: src/audio/fader.c:209
-#, fuzzy
-msgid "Prefader Solo"
-msgstr "プレフェーダー・ソロ"
-
-#: src/audio/fader.c:209
-#, fuzzy
-msgid "Fader Solo"
-msgstr "フェーダー・ソロ"
-
-#: src/audio/fader.c:223
-msgid "Prefader Listen"
-msgstr "プリフェーダー・試聴"
-
-#: src/audio/fader.c:223
-msgid "Fader Listen"
-msgstr "フェーダー・聴取"
-
-#: src/audio/fader.c:238
-#, fuzzy
-msgid "Prefader Mono Compat"
-msgstr "プリフェーダー・モノ"
-
-#: src/audio/fader.c:239
-#, fuzzy
-msgid "Fader Mono Compat"
-msgstr "フェーダー・モノ"
-
-#: src/audio/fader.c:271
-msgid "Ch Pre-Fader in"
-msgstr "Chのプレフェーダーin"
-
-#: src/audio/fader.c:276
-msgid "Ch Fader in"
-msgstr "Chのフェーダーin"
-
-#: src/audio/fader.c:282
-msgid "Sample Processor Fader in"
-msgstr "サンプルプロセッサフェーダー入力"
-
-#: src/audio/fader.c:287
-msgid "Monitor Fader in"
-msgstr "モニターフェーダーin"
-
-#: src/audio/fader.c:305
-msgid "Ch Pre-Fader out"
-msgstr "Ch プレフェーダー アウト"
-
-#: src/audio/fader.c:310
-msgid "Ch Fader out"
-msgstr "Ch フェーダーアウト"
-
-#: src/audio/fader.c:316
-msgid "Sample Processor Fader out"
-msgstr "サンプルプロセッサ フェーダー出力"
-
-#: src/audio/fader.c:321
-msgid "Monitor Fader out"
-msgstr "モニターフェーダーアウト"
-
-#: src/audio/fader.c:343
-msgid "Ch MIDI Pre-Fader in"
-msgstr "Ch MIDI プリフェーダーin"
-
-#: src/audio/fader.c:348
-msgid "Ch MIDI Fader in"
-msgstr "Ch MIDI フェーダーin"
-
-#: src/audio/fader.c:360
-msgid "Ch MIDI Pre-Fader out"
-msgstr "Ch MIDIプレフェーダーアウト"
-
-#: src/audio/fader.c:365
-msgid "Ch MIDI Fader out"
-msgstr "Ch MIDIフェーダーアウト"
-
-#: src/audio/fader.c:594
-#, fuzzy
-msgid "Failed to change volume"
-msgstr "ファイルを開けませんでした：%s"
-
-#: src/audio/fader.c:643
-#, fuzzy
-msgid "Failed to set MIDI mode"
-msgstr ""
-"SNDFILE %s を開けませんでした。\n"
-"%d:%s"
-
-#: src/audio/encoder.c:58
-#, c-format
-msgid "An error has occurred opening the audio file '%s'"
-msgstr ""
-
-#: src/audio/marker_track.c:42
-msgid "Markers"
-msgstr "マーカー"
-
-#: src/audio/marker_track.c:60 src/gui/widgets/timeline_selection_info.c:228
-#: resources/ui/quantize_dialog.ui:62
-msgid "start"
-msgstr "開始"
-
-#: src/audio/marker_track.c:67 src/gui/widgets/timeline_selection_info.c:234
-#: resources/ui/quantize_dialog.ui:70
-msgid "end"
-msgstr "終わり"
-
-#: src/audio/engine_jack.c:311
-msgid "XRUN occurred - check your JACK configuration"
-msgstr "XRUNが発生しました - JACKの設定を確認してください"
-
-#: src/audio/engine_jack.c:369
-msgid "JACK has shut down"
-msgstr "JACKがシャットダウンしました"
-
-#. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:632
-msgid "Overall operation failed"
-msgstr "全体的な操作は失敗しました"
-
-#: src/audio/engine_jack.c:638
-msgid "The operation contained an invalid or unsupported option"
-msgstr "操作に無効またはサポートされていないオプションが含まれていました"
-
-#: src/audio/engine_jack.c:644
-msgid "The desired client name was not unique"
-msgstr "目的のクライアント名が一意ではありません"
-
-#: src/audio/engine_jack.c:648
-msgid "Unable to connect to the JACK server"
-msgstr "サーバーと接続できません"
-
-#: src/audio/engine_jack.c:653
-msgid "Communication error with the JACK server"
-msgstr "JACKサーバーとの通信エラー"
-
-#: src/audio/engine_jack.c:657
-msgid "Requested client does not exist"
-msgstr "要求されたクライアントは存在しません"
-
-#: src/audio/engine_jack.c:661
-msgid "Unable to load internal client"
-msgstr "内部クライアントをロードできませんでした"
-
-#: src/audio/engine_jack.c:665
-msgid "Unable to initialize client"
-msgstr "クライアントを初期化できませんでした"
-
-#: src/audio/engine_jack.c:669
-msgid "Unable to access shared memory"
-msgstr "共有メモリにアクセスできません"
-
-#: src/audio/engine_jack.c:674
-msgid "Client's protocol version does not match"
-msgstr "クライアントのプロトコルバージョンが一致しません"
-
-#: src/audio/engine_jack.c:678
-msgid "Backend error"
-msgstr "バックエンドエラー"
-
-#: src/audio/engine_jack.c:682
-msgid "Client zombie"
-msgstr "クライアントゾンビ"
-
-#: src/audio/engine_jack.c:729
-#, fuzzy, c-format
-msgid "JACK: Failed to disconnect monitor out: %s"
-msgstr "ファイルを開けませんでした：%s"
-
-#: src/audio/engine_jack.c:778
-msgid "JACK: No physical playback ports found"
-msgstr ""
-
-#: src/audio/engine_jack.c:792
-#, fuzzy, c-format
-msgid "JACK: Failed to connect monitor output [%s]: %s"
-msgstr "ファイルを開けませんでした：%s"
-
-#: src/audio/engine_jack.c:793
-msgid "left"
-msgstr ""
-
-#: src/audio/engine_jack.c:793
-#, fuzzy
-msgid "right"
-msgstr "右"
-
-#: src/audio/engine_jack.c:851 src/gui/widgets/monitor_section.c:237
-#, fuzzy
-msgid "Failed to connect to left monitor output port"
-msgstr "ファイルを開けませんでした：%s"
-
-#: src/audio/engine_jack.c:859 src/gui/widgets/monitor_section.c:246
-#, fuzzy
-msgid "Failed to connect to right monitor output port"
-msgstr "ファイルを開けませんでした：%s"
-
-#: src/audio/curve.c:375
-msgid "Exponential"
-msgstr "指数関数"
-
-#: src/audio/curve.c:380
-msgid "Elliptic"
-msgstr "楕円"
-
-#: src/audio/audio_function.c:137 src/gui/widgets/drag_dest_box.c:324
-#, fuzzy
-msgid "Failed to create plugin"
-msgstr "ファイルの書き込みに失敗しました: %s"
-
-#: src/audio/audio_function.c:370
-msgid "Invalid positions - skipping function"
-msgstr "無効な位置 - 関数をスキップします"
-
-#: src/audio/audio_function.c:616
-#, fuzzy
-msgid "Failed to get audio clip from external program"
-msgstr "ファイルの書き込みに失敗しました: %s"
-
-#: src/audio/audio_function.c:641
-#, fuzzy
-msgid "Failed to apply plugin"
-msgstr "URI %s を持つプラグインの検索に失敗しました。"
-
-#: src/audio/graph_thread.c:572
-#, c-format
-msgid ""
-"Your user does not have enough privileges to allow %s to set the scheduling "
-"priority of threads. Please refer to the 'Getting Started' section in the "
-"user manual for details."
-msgstr ""
-"%s がスレッドのスケジューリング優先度を設定できるような十分な権限が、お客様の"
-"ユーザーにはありません。詳しくは、ユーザーマニュアルの 'Getting Started' の項"
-"を参照してください。"
-
-#: src/audio/track.c:326
-msgid "Track record"
-msgstr "トラックの録音"
-
-#: src/audio/track.c:445
-#, fuzzy
-msgid "Failed to clone modulator plugin"
-msgstr "URI %s を持つプラグインの検索に失敗しました。"
-
-#: src/audio/track.c:474
-#, fuzzy
-msgid "Failed to clone channel"
-msgstr "スキーマ %s を表示できませんでした"
-
-#: src/audio/track.c:853
-#, fuzzy
-msgid "Cannot set track muted"
-msgstr "ルーティングできません"
-
-#: src/audio/track.c:897
-#, fuzzy
-msgid "Cannot set track folded"
-msgstr "ルーティングできません"
-
-#: src/audio/track.c:1409
-#, fuzzy
-msgid "Cannot set track soloed"
-msgstr "ルーティングできません"
-
-#: src/audio/track.c:1459
-#, fuzzy
-msgid "Cannot set track listened"
-msgstr "ルーティングできません"
-
-#: src/audio/track.c:2905 src/settings/plugin_settings.c:398
-#: src/settings/plugin_settings.c:440
-#, fuzzy
-msgid "Failed to rename track"
-msgstr "スキーマ %s をリセットできませんでした"
-
-#: src/audio/track.c:3265 src/audio/track.c:3310
-#, fuzzy
-msgid "Cannot set track comment"
-msgstr "ルーティングできません"
-
-#: src/audio/track.c:3346
-#, fuzzy
-msgid "Cannot set track icon"
-msgstr "ルーティングできません"
-
-#: src/audio/track.c:3580
-#, fuzzy
-msgid "Cannot set track enabled"
-msgstr "ルーティングできません"
-
-#: src/audio/automation_track.c:163
-msgid "Rec"
-msgstr "Rec"
-
-#: src/audio/automation_track.c:184
-msgid "Touch"
-msgstr "タッチ"
-
-#: src/audio/automation_track.c:187
-msgid "Latch"
-msgstr "ラッチ"
-
-#: src/audio/region.c:511 src/gui/widgets/track.c:1059
-#: build/data/org.zrythm.Zrythm.gschema.xml:1233
-msgid "Automation"
-msgstr "オートメーション"
-
-#: src/audio/engine.c:499
-#, c-format
-msgid ""
-"Failed to initialize the %s audio backend. Will use the dummy backend "
-"instead. Please check your backend settings in the Preferences."
-msgstr ""
-"%s オーディオ バックエンドの初期化に失敗しました。代わりにダミーバックエンド"
-"を使用します。環境設定でバックエンドの設定を確認してください。"
-
-#: src/audio/engine.c:540
-#, c-format
-msgid ""
-"The JACK MIDI backend can only be used with the JACK audio backend (your "
-"current audio backend is %s). Will use the dummy MIDI backend instead."
-msgstr ""
-"JACK MIDI バックエンドは、JACK audio バックエンドと一緒にしか使えません（現在"
-"のオーディオバックエンドは %s です）。代わりにダミーのMIDIバックエンドを使い"
-"ます。"
-
-#: src/audio/engine.c:575
-#, c-format
-msgid ""
-"Failed to initialize the %s MIDI backend. Will use the dummy backend "
-"instead. Please check your backend settings in the Preferences."
-msgstr ""
-"%s のMIDI バックエンドの初期化に失敗しました。代わりにダミーバックエンドを使"
-"用します。環境設定でバックエンドの設定を確認してください。"
-
-#: src/audio/engine.c:616
-msgid ""
-"Your selected combination of backends may not work properly. If you want to "
-"use JACK, please select JACK as both your audio and MIDI backend."
-msgstr ""
-"選択されたバックエンドの組み合わせが正しく動作しない可能性があります。もし "
-"JACK を使いたいのであれば、オーディオと MIDI バックエンドの両方に JACK を選択"
-"してください。"
-
-#: src/audio/engine.c:817
-#, c-format
-msgid ""
-"The selected MIDI/audio backend was not found in the version of %s you have "
-"installed. The audio and MIDI backends were set to \"Dummy\". Please set "
-"your preferred backend from the preferences."
-msgstr ""
-"選択したMIDI/オーディオバックエンドは、インストールされたバージョンの%sで見つ"
-"かりませんでした。オーディオおよびMIDIバックエンドは「ダミー」に設定されまし"
-"た。設定から適当なバックエンドを設定してください。"
-
-#: src/audio/exporter.c:160
-#, c-format
-msgid "Format %s not supported yet"
-msgstr "フォーマット %s はまだサポートされていません"
-
-#: src/audio/exporter.c:227
-msgid "SF INFO invalid"
-msgstr "SF INFO 無効"
-
-#: src/audio/exporter.c:256
-#, c-format
-msgid ""
-"Couldn't open SNDFILE %s:\n"
-"%d: %s"
-msgstr ""
-"SNDFILE %s を開けませんでした。\n"
-"%d:%s"
-
-#: src/audio/exporter.c:267
-#, c-format
-msgid "Invalid SNDFILE format %s: 0x%08X != 0x%08X"
-msgstr ""
-
-#: src/audio/exporter.c:524
-#, c-format
-msgid ""
-"The exported audio contains segments louder than 0 dB (max detected %.1f dB)."
-msgstr ""
-
-#: src/audio/exporter.c:1014 src/audio/exporter.c:1021
-#, fuzzy
-msgid "Failed to create audio track"
-msgstr "ファイルの書き込みに失敗しました: %s"
-
-#: src/audio/exporter.c:1053
-#, fuzzy
-msgid "Invalid time range"
-msgstr "不正"
-
-#: src/audio/engine_pulse.c:88
-msgid ""
-"A buffer underflow has occurred. Try increasing the buffer size in the "
-"settings to avoid audio glitches."
-msgstr ""
-"バッファアンダーフローが発生しました。オーディオのグリッチを避けるために、設"
-"定でバッファサイズを大きくしてみてください。"
-
-#: src/audio/engine_pulse.c:202
-msgid "PulseAudio error: Failed to create main loop"
-msgstr "PulseAudio エラー。メインループの作成に失敗"
-
-#: src/audio/engine_pulse.c:222
-#, c-format
-msgid "PulseAudio Error: %s"
-msgstr "PulseAudioエラー：%s"
-
-#: src/audio/engine_pulse.c:239
-msgid "PulseAudio Error: Failed to connect"
-msgstr "PulseAudioエラー：接続に失敗しました"
-
-#. TODO
-#: src/audio/scale.c:543
-msgid "Unimplemented"
-msgstr "未実装"
-
-#: src/audio/chord_track.c:40 src/settings/chord_preset.c:47
-#: resources/ui/inspector_chord.ui:7
-msgid "Chords"
-msgstr "コード"
-
-#: src/audio/clip.c:160
-#, fuzzy
-msgid "Failed to initialize audio file"
-msgstr "ファイルの書き込みに失敗しました: %s"
-
-#: src/audio/clip.c:186
-#, fuzzy, c-format
-msgid "Failed to initialize audio file at %s"
-msgstr "ファイルの書き込みに失敗しました: %s"
-
-#: src/audio/clip.c:453
-#, fuzzy, c-format
-msgid "Failed to write audio clip to file: %s"
-msgstr "ファイルの書き込みに失敗しました: %s"
-
-#: src/audio/clip.c:522
-#, fuzzy
-msgid "Failed to write audio file"
-msgstr "ファイルの書き込みに失敗しました: %s"
-
-#: src/audio/clip.c:544
-#, fuzzy
-msgid "Failed to create audio clip from file"
-msgstr "ファイルの書き込みに失敗しました: %s"
-
-#: src/audio/clip.c:696
-msgid "Edit in external app"
-msgstr "外部アプリでの編集"
-
-#: src/audio/clip.c:715
-#, c-format
-msgid "Edit the file at <u>%s</u>, then press OK"
-msgstr "<u>%s</u> にあるファイルを編集し、「OK」を押してください"
-
-#: src/audio/clip.c:727
-msgid "Launch"
-msgstr "起動"
-
-#: src/audio/clip.c:753 src/audio/audio_region.c:90
-#, fuzzy, c-format
-msgid "Failed to create audio clip from file at %s"
-msgstr "ファイルの書き込みに失敗しました: %s"
-
-#: src/audio/tempo_track.c:38
-msgid "BPM"
-msgstr "BPM"
-
-#: src/audio/tempo_track.c:51
-msgid "Beats per bar"
-msgstr "バーあたりのビート数"
-
-#: src/audio/tempo_track.c:70
-msgid "Beat unit"
-msgstr "ビートユニット"
-
-#: src/audio/tempo_track.c:185
-#, fuzzy
-msgid "Failed to change BPM"
-msgstr "ファイルを開けませんでした：%s"
-
-#: src/audio/automation_point.c:241 src/gui/widgets/fader.c:342
-#: src/gui/widgets/balance_control.c:349 src/gui/widgets/item_factory.c:325
-#: src/gui/widgets/item_factory.c:349
-#, fuzzy
-msgid "Invalid value"
-msgstr "不正"
-
-#: src/audio/recording_manager.c:144
-#, fuzzy
-msgid "Failed to create recorded regions"
-msgstr "ファイルの書き込みに失敗しました: %s"
-
-#: src/audio/pool.c:520
-#, fuzzy, c-format
-msgid "Failed to write clip %s"
-msgstr "ファイルの書き込みに失敗しました: %s"
-
-#: src/audio/audio_region.c:236
-#, fuzzy
-msgid "Failed to duplicate audio clip"
-msgstr "自動操作イベントを複製"
-
-#: src/audio/engine_alsa.c:328
-#, c-format
-msgid "ALSA Error: %s"
-msgstr "ALSAエラー：%s"
-
-#: src/audio/track_lane.c:64
-#, c-format
-msgid "Lane %d"
-msgstr "レーン%d"
-
-#: src/audio/track_lane.c:95
-#, fuzzy
-msgid "Failed to rename lane"
-msgstr "ファイルを開けませんでした：%s"
-
-#: src/audio/track_lane.c:142
-#, fuzzy
-msgid "Cannot set track lane soloed"
-msgstr "ルーティングできません"
-
-#: src/audio/track_lane.c:190
-#, fuzzy
-msgid "Cannot set track lane muted"
-msgstr "ルーティングできません"
-
-#: src/audio/sample_processor.c:560
-#, fuzzy, c-format
-msgid "Failed to instantiate plugin %s"
-msgstr "URI %s を持つプラグインの検索に失敗しました。"
-
-#: src/audio/channel_send.c:84
-#, c-format
-msgid "Channel Send %d enabled"
-msgstr "チャンネルセンド %d が有効"
-
-#: src/audio/channel_send.c:95
-#, c-format
-msgid "Channel Send %d amount"
-msgstr "チャンネルセンド %d 値"
-
-#: src/audio/channel_send.c:107
-#, fuzzy, c-format
-msgid "Channel Send %d audio in"
-msgstr "チャンネルセンド %d 値"
-
-#: src/audio/channel_send.c:114
-#, fuzzy, c-format
-msgid "Channel Send %d MIDI in"
-msgstr "チャンネルセンド %d 値"
-
-#: src/audio/channel_send.c:121
-#, fuzzy, c-format
-msgid "Channel Send %d audio out"
-msgstr "チャンネルセンド %d 値"
-
-#: src/audio/channel_send.c:129
-#, fuzzy, c-format
-msgid "Channel Send %d MIDI out"
-msgstr "チャンネルセンド %d 値"
-
-#: src/audio/channel_send.c:420 src/audio/channel_send.c:477
-#, fuzzy
-msgid "Ports cannot be connected"
-msgstr "これらのポートは接続できません"
-
-#: src/audio/channel_send.c:582
-msgid "Pre-fader send"
-msgstr "プリフェーダーセンド"
-
-#: src/audio/channel_send.c:584
-msgid "Post-fader send"
-msgstr "ポストフェーダーセンド"
-
-#: src/audio/channel_send.c:615
-#, c-format
-msgid "%s input"
-msgstr "%s入力"
-
-#: src/audio/engine_pa.c:206 src/audio/engine_pa.c:218
-#: src/audio/engine_pa.c:226
-#, c-format
-msgid "PortAudio Error: %s"
-msgstr "PortAudioエラー：%s"
-
-#: src/audio/tracklist.c:1295
-msgid "No file was found"
-msgstr "ファイルが見つかりませんでした"
-
-#: src/audio/tracklist.c:1322
-#, c-format
-msgid "Unsupported file type %s"
-msgstr "サポートされていないファイルの種類 %s"
-
-#: src/audio/tracklist.c:1338
-msgid "This MIDI file contains no data"
-msgstr "このMIDIファイルにはデータが含まれていません"
-
-#: src/audio/tracklist.c:1355
-#, fuzzy
-msgid "Can only drop 1 file at a time on existing tracks"
-msgstr "オーディオトラックにオーディオファイルのみをドロップできます"
-
-#: src/audio/tracklist.c:1369
-msgid "Can only drop MIDI files on MIDI/instrument tracks"
-msgstr ""
-"MIDI/インストゥルメントトラックにのみMIDIファイルをドロップすることができます"
-
-#: src/audio/tracklist.c:1379
-#, c-format
-msgid ""
-"This MIDI file contains %d tracks. It cannot be dropped into an existing "
-"track"
-msgstr ""
-"この MIDI ファイルには %d トラックが含まれています。既存のトラックにドロップ"
-"することはできません。"
-
-#: src/audio/tracklist.c:1394
-msgid "Can only drop audio files on audio tracks"
-msgstr "オーディオトラックにオーディオファイルのみをドロップできます"
-
-#: src/audio/tracklist.c:1455
-#, fuzzy
-msgid "Failed to create arranger objects"
-msgstr "ファイルの書き込みに失敗しました: %s"
-
-#: src/audio/tracklist.c:1529
-#, fuzzy
-msgid "Failed to move tracks after copying or moving inside folder"
-msgstr "トラックを内部にコピー"
-
-#: src/audio/tracklist.c:1607
-#, fuzzy
-msgid "Failed to copy tracks inside"
-msgstr "トラックを内部にコピー"
-
-#: src/audio/tracklist.c:1649
-#, fuzzy
-msgid "Failed to copy track inside"
-msgstr "トラックを内部にコピー"
-
-#: src/audio/tracklist.c:1690
-#, fuzzy
-msgid "Failed to copy tracks"
-msgstr "トラックを内部にコピー"
-
-#: src/audio/tracklist.c:1715
-msgid "Cannot drag folder into itself"
-msgstr "フォルダをフォルダ自身の中にドラッグすることはできません"
-
-#: src/audio/tracklist.c:1733 src/audio/tracklist.c:1777
-#, fuzzy
-msgid "Failed to move track inside folder"
-msgstr "トラックを内部にコピー"
-
-#: src/audio/tracklist.c:1818
-#, fuzzy
-msgid "Failed to move tracks"
-msgstr "ファイルを開けませんでした：%s"
-
-#: src/audio/modulator_macro_processor.c:87
-#, c-format
-msgid "Macro %d"
-msgstr "マクロ %d"
-
-#: src/audio/modulator_macro_processor.c:102
-#, c-format
-msgid "Macro CV In %d"
-msgstr "マクロ CV In %d"
-
-#: src/audio/modulator_macro_processor.c:112
-#, c-format
-msgid "Macro CV Out %d"
-msgstr "マクロ CV 出力 %d"
-
-#: src/audio/channel.c:1205 src/plugins/carla_native_plugin.c:1149
-msgid "MIDI out"
-msgstr "MIDI出力"
 
 #: src/gui/backend/mixer_selections.c:622
 #, fuzzy
@@ -3026,7 +3025,7 @@ msgstr "無効なオブジェクト名%s"
 msgid "Failed to rename object"
 msgstr "ファイルを開けませんでした：%s"
 
-#: src/gui/widgets/inspector_port.c:121 src/gui/widgets/fader.c:293
+#: src/gui/widgets/inspector_port.c:121 src/gui/widgets/fader.c:321
 #: src/gui/widgets/preferences.c:343 src/gui/widgets/modulator_inner.c:138
 #: src/gui/widgets/modulator_macro.c:155 src/gui/widgets/balance_control.c:287
 #: src/gui/widgets/plugin_browser.c:612 src/gui/widgets/plugin_browser.c:659
@@ -3126,12 +3125,12 @@ msgstr "ノート/コントロール"
 msgid "Destination"
 msgstr "送信先"
 
-#: src/gui/widgets/fader.c:378
+#: src/gui/widgets/fader.c:406
 #, fuzzy
 msgid "Fader Value"
 msgstr "フェーダーボリューム"
 
-#: src/gui/widgets/fader.c:488 src/gui/widgets/fader_controls_expander.c:41
+#: src/gui/widgets/fader.c:526 src/gui/widgets/fader_controls_expander.c:41
 msgid "Fader"
 msgstr "フェーダー"
 
@@ -3155,17 +3154,17 @@ msgstr ""
 "プロジェクトには、保存されていない変更が含まれています。\n"
 "保存せずに終了すると、未保存の変更内容は失われます。"
 
-#: src/gui/widgets/main_window.c:779 src/gui/widgets/preferences.c:1007
+#: src/gui/widgets/main_window.c:799 src/gui/widgets/preferences.c:1007
 #: resources/ui/file_auditioner_controls.ui:34 resources/gtk/menus.ui:40
 #: resources/gtk/help-overlay.ui:39
 msgid "Preferences"
 msgstr "設定"
 
-#: src/gui/widgets/main_window.c:780
+#: src/gui/widgets/main_window.c:800
 msgid "Log viewer"
 msgstr "ログビューア"
 
-#: src/gui/widgets/main_window.c:781
+#: src/gui/widgets/main_window.c:801
 msgid "Scripting interface"
 msgstr "スクリプトインタフェース"
 
@@ -4052,15 +4051,15 @@ msgstr "すべてを選択"
 msgid "Loop selection"
 msgstr "選択範囲のをループする"
 
-#: src/gui/widgets/bot_dock_edge.c:259
+#: src/gui/widgets/bot_dock_edge.c:251
 msgid "Editor view"
 msgstr "編集画面"
 
-#: src/gui/widgets/bot_dock_edge.c:260
+#: src/gui/widgets/bot_dock_edge.c:252
 msgid "Mixer view"
 msgstr "ミキサー画面"
 
-#: src/gui/widgets/bot_dock_edge.c:264
+#: src/gui/widgets/bot_dock_edge.c:256
 msgid "Chord pad"
 msgstr "コードパッド"
 
@@ -5532,7 +5531,7 @@ msgid "Link to snap"
 msgstr "長さをスナップの設定とリンク"
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:342
-#: resources/ui/snap_grid_popover.ui:224
+#: resources/ui/snap_grid_popover.ui:212
 msgid "Last object"
 msgstr "最新のオブジェクト"
 
@@ -5554,7 +5553,7 @@ msgid ""
 msgstr ""
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:373
-#: resources/ui/snap_grid_popover.ui:239 resources/ui/inspector_master.ui:71
+#: resources/ui/snap_grid_popover.ui:225 resources/ui/inspector_master.ui:71
 #: resources/ui/inspector_ap.ui:71 resources/ui/inspector_midi.ui:71
 msgid "Length"
 msgstr "長さ"
@@ -6283,7 +6282,7 @@ msgid "Play/Pause"
 msgstr "再生/一時停止"
 
 #: resources/ui/file_auditioner_controls.ui:22
-#: resources/ui/transport_controls.ui:38
+#: resources/ui/transport_controls.ui:32
 msgid "Stop"
 msgstr "停止"
 
@@ -6315,51 +6314,51 @@ msgstr "チャンネル設定"
 msgid "News"
 msgstr "ニュース"
 
-#: resources/ui/snap_box.ui:15
+#: resources/ui/snap_box.ui:13
 msgid "Snap to grid"
 msgstr "グリッドにあわせる"
 
-#: resources/ui/snap_box.ui:29
+#: resources/ui/snap_box.ui:25
 msgid "Keep offset"
 msgstr "オフセットを維持する"
 
-#: resources/ui/snap_box.ui:43
+#: resources/ui/snap_box.ui:37
 msgid "Snap to events"
 msgstr "イベントにスナップする"
 
-#: resources/ui/snap_grid_popover.ui:66 resources/ui/snap_grid_popover.ui:149
+#: resources/ui/snap_grid_popover.ui:66 resources/ui/snap_grid_popover.ui:144
 msgid "Note length"
 msgstr "音符の長さ"
 
-#: resources/ui/snap_grid_popover.ui:84 resources/ui/snap_grid_popover.ui:167
+#: resources/ui/snap_grid_popover.ui:84 resources/ui/snap_grid_popover.ui:162
 msgid "t"
 msgstr "t"
 
-#: resources/ui/snap_grid_popover.ui:87 resources/ui/snap_grid_popover.ui:170
+#: resources/ui/snap_grid_popover.ui:85 resources/ui/snap_grid_popover.ui:163
 msgid "Triplet"
 msgstr "３連音符"
 
-#: resources/ui/snap_grid_popover.ui:97 resources/ui/snap_grid_popover.ui:180
+#: resources/ui/snap_grid_popover.ui:93 resources/ui/snap_grid_popover.ui:171
 msgid "Dotted"
 msgstr "付点音符"
 
-#: resources/ui/snap_grid_popover.ui:118 resources/ui/snap_grid_popover.ui:201
+#: resources/ui/snap_grid_popover.ui:113 resources/ui/snap_grid_popover.ui:191
 msgid "Adaptive length"
 msgstr "適応長さ"
 
-#: resources/ui/snap_grid_popover.ui:130
+#: resources/ui/snap_grid_popover.ui:125
 msgid "Snap"
 msgstr "スナップ"
 
-#: resources/ui/snap_grid_popover.ui:211
+#: resources/ui/snap_grid_popover.ui:201
 msgid "Link"
 msgstr "リンク"
 
-#: resources/ui/snap_grid_popover.ui:212
+#: resources/ui/snap_grid_popover.ui:202
 msgid "Link length to snap setting"
 msgstr "長さをスナップの設定とリンク"
 
-#: resources/ui/snap_grid_popover.ui:225
+#: resources/ui/snap_grid_popover.ui:213
 msgid "Use last created object's length"
 msgstr "最後に作成されたオブジェクトの長さを使用"
 
@@ -6367,23 +6366,23 @@ msgstr "最後に作成されたオブジェクトの長さを使用"
 msgid "Bookmarks"
 msgstr "ブックマーク"
 
-#: resources/ui/transport_controls.ui:9
+#: resources/ui/transport_controls.ui:7
 msgid "Return to cue point on stop"
 msgstr "停止時にキューポイントに戻る"
 
-#: resources/ui/transport_controls.ui:26
+#: resources/ui/transport_controls.ui:22
 msgid "Play"
 msgstr "再生"
 
-#: resources/ui/transport_controls.ui:50
+#: resources/ui/transport_controls.ui:42
 msgid "Backward"
 msgstr "後戻り"
 
-#: resources/ui/transport_controls.ui:62
+#: resources/ui/transport_controls.ui:52
 msgid "Forward"
 msgstr "前方"
 
-#: resources/ui/transport_controls.ui:74
+#: resources/ui/transport_controls.ui:62
 msgid "Loop"
 msgstr "ループ"
 
@@ -6453,7 +6452,7 @@ msgstr ""
 msgid "Toggle ghost note visibility"
 msgstr "右側パネルの表示を切り替える"
 
-#: resources/ui/editor_toolbar.ui:143 resources/ui/timeline_toolbar.ui:105
+#: resources/ui/editor_toolbar.ui:143 resources/ui/timeline_toolbar.ui:104
 msgid "Toggle event viewer"
 msgstr "イベント ビューアの表示を切り替える"
 
@@ -6709,12 +6708,12 @@ msgstr "ラベル"
 msgid "Remove range"
 msgstr "レンジを削除する"
 
-#: resources/ui/timeline_toolbar.ui:39
+#: resources/ui/timeline_toolbar.ui:38
 #: build/data/org.zrythm.Zrythm.gschema.xml:402
 msgid "Musical mode"
 msgstr "ミュージカルモード"
 
-#: resources/ui/timeline_toolbar.ui:78
+#: resources/ui/timeline_toolbar.ui:77
 msgid "Merge selections"
 msgstr "選択範囲を結合する"
 
@@ -6828,12 +6827,12 @@ msgstr "スプラッシュ"
 msgid "Initializing..."
 msgstr "初期化中…"
 
-#: resources/ui/tracklist_header.ui:26
+#: resources/ui/tracklist_header.ui:25
 #, fuzzy
 msgid "Track filters & visibility"
 msgstr "トラック表示/未表示設定パネルのサイズ"
 
-#: resources/ui/tracklist_header.ui:53
+#: resources/ui/tracklist_header.ui:52
 #, fuzzy
 msgid "Tracklist Settings"
 msgstr "選択範囲"
@@ -8545,290 +8544,334 @@ msgid "DAW"
 msgstr "DAW"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:55
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:146
 msgid "Added:"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-msgid "Home/End key shortcut for moving to the start/end of the project"
+msgid "Add toggle to hide deactivated tracks in track filter menu"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
-#, fuzzy
-msgid "Option to select note notation in the piano roll"
-msgstr "ピアノロールでドラッグしながらMIDI音符を試聴かどうか。"
+msgid "Add right-click option to loop selection in timeline"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
-#, fuzzy
-msgid "Ability to select notes in a given pitch in the piano roll"
-msgstr "ピアノロールでドラッグしながらMIDI音符を試聴かどうか。"
+msgid "Add option to append all track/lane objects to the current selection"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
-msgid "Ctrl+0 shortcut for zooming to default level"
+msgid "Add tracklist preferences button with option to disable auto-arm"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
+msgid ""
+"Add Crescendo, Flam, Flip H/V, Portato, Staccato, Legato, Strum MIDI "
+"functions"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
+msgid "Implement MIDI clock (output) for syncing to Zrythm"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+msgid ""
+"Build: add requirements.txt for managing Python dependencies (for building "
+"docs, etc.)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
 #, fuzzy
 msgid "Changed:"
 msgstr "変更する"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+msgid ""
+"Link scroll events on digital meter widgets (changes are only applied at the "
+"end of scrolls)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+msgid "Build: re-enable some GCC analyzer checks and add new checks"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+#, fuzzy
+msgid "Change order in track context menu"
+msgstr "ポート接続を変更する"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:70
+msgid "Subprojects: bump GTK and RtAudio versions"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
+msgid "Cache previous and current transport info during processing"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+msgid "Various internal refactorings"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+msgid ""
+"Update Catalan, French, Japanese, Chinese (Simplified), Russian, Dutch, "
+"Hungarian, Italian, Indonesian, Spanish, Portuguese, Swedish translations"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+msgid ""
+"Log: print `(?:?)` instead of `((null):(null))` when function and line "
+"number are unknown"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#, fuzzy
+msgid "Add more error checking and print more debug info in the log"
+msgstr "プラグインをインスタンス化する際は、常にプラグイン UI を表示する"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
+msgid "Fixed:"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+msgid "Build: fix bundled plugin build with GCC 13"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+msgid "Fix app icon not showing on Wayland (StartupWMClass)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+msgid "Home/End key shortcut for moving to the start/end of the project"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
+#, fuzzy
+msgid "Option to select note notation in the piano roll"
+msgstr "ピアノロールでドラッグしながらMIDI音符を試聴かどうか。"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
+#, fuzzy
+msgid "Ability to select notes in a given pitch in the piano roll"
+msgstr "ピアノロールでドラッグしながらMIDI音符を試聴かどうか。"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+msgid "Ctrl+0 shortcut for zooming to default level"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
 msgid "Show message that BPM/time signature automation is experimental"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
 msgid "Show channel slot context menu on mouse release instead of mouse press"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
 msgid "Skip autosave if any toplevel window is on top"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
 msgid ""
 "Update Catalan, French, Japanese, Chinese (Simplified), Czech, Portuguese "
 "(Brazil) translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
 #, fuzzy
 msgid "Redesign port/arranger object info dialogs"
 msgstr "アレンジャーオブジェクト詳細"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
 #, fuzzy
 msgid "Disable Guile scripting interface on MacOS"
 msgstr "スクリプトインタフェース"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
-msgid "Fixed:"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid "Fix wrong tooltip message on automatable selector in track lanes"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid ""
 "Fix track lane names getting ellipsized despite there being enough space"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
 msgid "Fix crash when splitting large audio clips"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
 msgid ""
 "Fix \"Move Tracks Under Group\" option not working when setting the direct "
 "output of selected tracks to a new group"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
 msgid "Fix given time range not being taken into account when exporting MIDI"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
 msgid "Audition notes when moved with arrow keys"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
 msgid "Show value when hovering faders and balance controls"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
 msgid "Double click on faders and balance controls to set precise values"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
 msgid "Control-click on balance controls to reset their value"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
 msgid "Audition notes on draw and on click instead of on move"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 msgid ""
 "Show track inspector when double clicking on a track in places other than "
 "the track name"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
 msgid "Don't start DnD on tracks until minimum movement threshold is reached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
 msgid ""
 "Minimize waiting time when creating tracks and connections for multi-out "
 "plugins"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
 #, fuzzy
 msgid "Scroll to middle of piano roll when first shown"
 msgstr "ピアノロールでドラッグしながらMIDI音符を試聴かどうか。"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
 msgid "Fix incorrectly allowing bypassing snapping in autofill mode"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
 msgid "Fix editor region being unset when moving tracks"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
 msgid "Fix not propagating errors when performing some actions"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
 msgid ""
 "Fix incorrectly allowing auto-save to continue while pre-rolling or counting "
 "in"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
 msgid "Fix resetting faders and balance controls not being undoable"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
 msgid "Fix not being able to cut regions near the edges with alt-click"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid ""
 "Fix not being able to change parameter values for VST plugins in generic UI "
 "text fields"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
 msgid "Add monitor output meters in the header"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
 msgid "Add Macedonian translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:150
 #, fuzzy
 msgid "Add pitch shift audio function"
 msgstr "最後に使用したオーディオ関数"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
 msgid ""
 "Auto-scroll in the tracklist when dragging tracks and hovering towards the "
 "edges"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:155
 msgid "Update Catalan, Japanese, Russian, French translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
 msgid "Stop using `g_slice_*()` (deprecated in GLib)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:157
 msgid "Simplify CSS for separators"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:158
 msgid ""
 "Move velocity settings to new toolbar in the bottom of the piano roll (fixes "
 "being unable to drag velocity bars when set to high values)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:162
 msgid ""
 "Fix audio files not being saved properly when saving the project after "
 "applying an audio function"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:163
 #, fuzzy
 msgid "Fix error when routing to/from a port that has display unit info"
 msgstr "オーディオエディター内で右クリックすると発生するエラーの修正"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:132
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:164
 #, fuzzy
 msgid "Fix minor memory leak"
 msgstr "gccサニタイザーが表示するメモリリークを修正"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:165
 msgid ""
 "Fix track/plugin inspect not immediately displaying the track/plugin "
 "properties"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:166
 msgid ""
 "Fix occasional crash when exporting the project (fix not deleting the source "
 "function after disposing an EditableLabelWidget)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:167
 msgid "Fix occasional crash when adding a plugin to a collection"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:168
 msgid "Fix no sound when using Pipewire (regression from previous release)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:169
 msgid "Fix right-clicking on inserts not working on Windows"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:170
 #, fuzzy
 msgid "Fix error when attempting to paste an empty selection"
 msgstr "オーディオエディター内で右クリックすると発生するエラーの修正"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:147
-msgid "Add spectrum analyzer"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
-msgid "Add vertical zoom buttons to editor"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
-msgid "User manual: add FAQ section"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
-msgid ""
-"Update French, Catalan, Esperanto, Swedish, German, Korean, Polish, Spanish "
-"translations"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:154
-msgid "Meson: disable fallbacks by default"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:158
-msgid "Fix scrolling horizontally with 2 fingers on touch pads"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:159
-msgid "Fix project plugin states being deleted while in use"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
-msgid ""
-"Work around a bug in Pipewire where it doesn't notify clients of buffer size "
-"changes"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:161
-msgid "Fix occasional deadlock when changing engine buffer sizes"
-msgstr ""
 
 #~ msgid "Port info"
 #~ msgstr "ポート詳細"
@@ -8895,10 +8938,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "JACK: handle failure to connect to monitor output gracefully"
 #~ msgstr "ファイルを開けませんでした：%s"
-
-#, fuzzy
-#~ msgid "Add more error checking when writing audio to file"
-#~ msgstr "プラグインをインスタンス化する際は、常にプラグイン UI を表示する"
 
 #~ msgid "Together"
 #~ msgstr "Together"

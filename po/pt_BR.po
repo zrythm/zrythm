@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2023-08-10 18:23+0900\n"
+"POT-Creation-Date: 2023-08-15 16:37+0900\n"
 "PO-Revision-Date: 2023-04-21 04:48+0000\n"
 "Last-Translator: Filipe Motta <luiz_filipe_motta@hotmail.com>\n"
 "Language-Team: Portuguese (Brazil) <https://hosted.weblate.org/projects/"
@@ -27,276 +27,245 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Weblate 4.18-dev\n"
 
-#: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
-msgid "Chromatic"
-msgstr "Cromática"
-
-#: inc/schemas/audio/scale.h:94 inc/audio/scale.h:128
-msgid "Major"
-msgstr "Maior"
-
-#: inc/schemas/audio/scale.h:95 inc/audio/scale.h:129
-msgid "Minor"
-msgstr "Menor"
-
-#: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
-msgid "Ionian"
-msgstr "Jônio"
-
-#: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
-msgid "Dorian"
-msgstr "Dórico"
-
-#: inc/schemas/audio/scale.h:98 inc/audio/scale.h:132
-msgid "Phrygian"
-msgstr "Frígio"
-
-#: inc/schemas/audio/scale.h:99 inc/audio/scale.h:133
-msgid "Lydian"
-msgstr "Lídio"
-
-#: inc/schemas/audio/scale.h:100 inc/audio/scale.h:134
-msgid "Mixolydian"
-msgstr "Mixolídio"
-
-#: inc/schemas/audio/scale.h:101 inc/audio/scale.h:135
-msgid "Aeolian"
-msgstr "Eólio"
-
-#: inc/schemas/audio/scale.h:102 inc/audio/scale.h:136
-msgid "Locrian"
-msgstr "Lócrio"
-
-#: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
-msgid "Melodic Minor"
-msgstr "Menor Melódica"
-
-#: inc/schemas/audio/scale.h:104 inc/audio/scale.h:138
-msgid "Harmonic Minor"
-msgstr "Menor Harmônica"
-
-#: inc/schemas/audio/scale.h:105 inc/audio/scale.h:139
-msgid "Whole Tone"
-msgstr "Tom Inteiro"
-
-#: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
-msgid "Major Pentatonic"
-msgstr "Pentatônica Maior"
-
-#: inc/schemas/audio/scale.h:107 inc/audio/scale.h:141
-msgid "Minor Pentatonic"
-msgstr "Pentatônica Menor"
-
-#: inc/schemas/audio/scale.h:108 inc/audio/scale.h:142
-msgid "Octatonic Half Whole"
-msgstr "Octatônica Semitom-Tom"
-
-#: inc/schemas/audio/scale.h:110 inc/audio/scale.h:143
-msgid "Octatonic Whole Half"
-msgstr "Octatônica Tom-Semitom"
-
-#: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
-msgid "Acoustic"
-msgstr "Acústica"
-
-#: inc/schemas/audio/scale.h:113 inc/audio/scale.h:145
-msgid "Harmonic Major"
-msgstr "Harmônica Maior"
-
-#: inc/schemas/audio/scale.h:114 inc/audio/scale.h:146
-msgid "Phrygian Dominant"
-msgstr "Frígio Dominante"
-
-#: inc/schemas/audio/scale.h:115 inc/audio/scale.h:147
-msgid "Major Locrian"
-msgstr "Lócrio Maior"
-
-#: inc/schemas/audio/scale.h:116 inc/audio/scale.h:148
-msgid "Algerian"
-msgstr "Argelina"
-
-#: inc/schemas/audio/scale.h:117 inc/audio/scale.h:149
-msgid "Augmented"
-msgstr "Aumentada"
-
-#: inc/schemas/audio/scale.h:118 inc/audio/scale.h:150
-msgid "Double Harmonic"
-msgstr "Duplo-Harmônica"
-
-#: inc/schemas/audio/scale.h:119 inc/audio/scale.h:151
-msgid "Chinese"
-msgstr "Chinesa"
-
-#: inc/schemas/audio/scale.h:120 inc/audio/scale.h:152
-msgid "Diminished"
-msgstr "Diminuta"
-
-#: inc/schemas/audio/scale.h:121 inc/audio/scale.h:153
-msgid "Dominant Diminished"
-msgstr "Dominante Diminuta"
-
-#: inc/schemas/audio/scale.h:122 inc/audio/scale.h:154
-msgid "Egyptian"
-msgstr "Egípcia"
-
-#: inc/schemas/audio/scale.h:123 inc/audio/scale.h:155
-msgid "Eight Tone Spanish"
-msgstr "Espanhola de Oito Tons"
-
-#: inc/schemas/audio/scale.h:124 inc/audio/scale.h:156
-msgid "Enigmatic"
-msgstr "Enigmática"
-
-#: inc/schemas/audio/scale.h:125 inc/audio/scale.h:157
-msgid "Geez"
-msgstr "Geez"
-
-#: inc/schemas/audio/scale.h:126 inc/audio/scale.h:158
-msgid "Hindu"
-msgstr "Hindu"
-
-#: inc/schemas/audio/scale.h:127 inc/audio/scale.h:159
-msgid "Hirajoshi"
-msgstr "Hirajoshi"
-
-#: inc/schemas/audio/scale.h:128 inc/audio/scale.h:160
-msgid "Hungarian Gypsy"
-msgstr "Cigana Húngara"
-
-#: inc/schemas/audio/scale.h:129 inc/audio/scale.h:161
-msgid "Insen"
-msgstr "Insen"
-
-#: inc/schemas/audio/scale.h:130 inc/audio/scale.h:162
-msgid "Neapolitan Major"
-msgstr "Napolitana Maior"
-
-#: inc/schemas/audio/scale.h:131 inc/audio/scale.h:163
-msgid "Neapolitan Minor"
-msgstr "Napolitana Menor"
-
-#: inc/schemas/audio/scale.h:132 inc/audio/scale.h:164
-msgid "Oriental"
-msgstr "Oriental"
-
-#: inc/schemas/audio/scale.h:133 inc/audio/scale.h:165
-msgid "Romanian Minor"
-msgstr "Romena Menor"
-
-#: inc/schemas/audio/scale.h:134 inc/audio/scale.h:166
-msgid "Altered"
-msgstr "Alterada"
-
-#: inc/schemas/audio/scale.h:135 inc/audio/scale.h:167
-msgid "Maqam"
-msgstr "Maqam"
-
-#: inc/schemas/audio/scale.h:136 inc/audio/scale.h:168
-msgid "Yo"
-msgstr "Yo"
-
-#: inc/schemas/audio/scale.h:137 inc/audio/scale.h:169
-msgid "Bebop Locrian"
-msgstr "Bebop Lócria"
-
-#: inc/schemas/audio/scale.h:138 inc/audio/scale.h:170
-msgid "Bebop Dominant"
-msgstr "Bebop Dominante"
-
-#: inc/schemas/audio/scale.h:139 inc/audio/scale.h:171
-msgid "Bebop Major"
-msgstr "Bebop Maior"
-
-#: inc/schemas/audio/scale.h:140 inc/audio/scale.h:172
-msgid "Super Locrian"
-msgstr "Super Lócria"
-
-#: inc/schemas/audio/scale.h:141 inc/audio/scale.h:173
-msgid "Enigmatic Minor"
-msgstr "Menor Enigmática"
-
-#: inc/schemas/audio/scale.h:142 inc/audio/scale.h:174
-msgid "Composite"
-msgstr "Híbrida"
-
-#: inc/schemas/audio/scale.h:143 inc/audio/scale.h:175
-msgid "Bhairav"
-msgstr "Bhairav"
-
-#: inc/schemas/audio/scale.h:144 inc/audio/scale.h:176
-msgid "Hungarian Minor"
-msgstr "Húngara Menor"
-
-#: inc/schemas/audio/scale.h:145 inc/audio/scale.h:177
-msgid "Persian"
-msgstr "Persa"
-
-#: inc/schemas/audio/scale.h:146 inc/audio/scale.h:178
-msgid "Iwato"
-msgstr "Iwato"
-
-#: inc/schemas/audio/scale.h:147 inc/audio/scale.h:179
-msgid "Kumoi"
-msgstr "Kumoi"
-
-#: inc/schemas/audio/scale.h:148 inc/audio/scale.h:180
-msgid "Pelog"
-msgstr "Pelog"
-
-#: inc/schemas/audio/scale.h:149 inc/audio/scale.h:181
-msgid "Prometheus"
-msgstr "Prometeu"
-
-#: inc/schemas/audio/scale.h:150 inc/audio/scale.h:182
-msgid "Prometheus Neapolitan"
-msgstr "Prometeu Napolitana"
-
-#: inc/schemas/audio/scale.h:152 inc/audio/scale.h:183
-msgid "Prometheus Liszt"
-msgstr "Prometeu Liszt"
-
-#: inc/schemas/audio/scale.h:153 inc/audio/scale.h:184
-msgid "Balinese"
-msgstr "Balinesa"
-
-#: inc/schemas/audio/scale.h:154 inc/audio/scale.h:185
-msgid "RagaTodi"
-msgstr "RagaTodi"
-
-#: inc/schemas/audio/scale.h:155 inc/audio/scale.h:186
-msgid "Japanese 1"
-msgstr "Japonesa 1"
-
-#: inc/schemas/audio/scale.h:156 inc/audio/scale.h:187
-msgid "Japanese 2"
-msgstr "Japonesa 2"
-
-#: inc/schemas/audio/curve.h:28 inc/audio/curve.h:95 src/audio/curve.c:58
-#, c-format
-msgid "Exponent"
-msgstr "Exponencial"
-
-#: inc/schemas/audio/curve.h:29 inc/audio/curve.h:96 src/audio/curve.c:61
-#, c-format
-msgid "Superellipse"
-msgstr "Superelipse"
-
-#: inc/schemas/audio/curve.h:30 inc/audio/curve.h:97 src/audio/curve.c:390
-msgid "Vital"
-msgstr "Vital"
-
-#: inc/schemas/audio/curve.h:31 inc/audio/curve.h:98 src/audio/curve.c:67
-#, c-format
-msgid "Pulse"
-msgstr "Pulso"
-
-#: inc/schemas/audio/curve.h:32 inc/audio/curve.h:99 src/audio/curve.c:70
-#: src/audio/curve.c:385
-#, fuzzy, c-format
-msgid "Logarithmic"
-msgstr "Logarítmica"
-
-#: inc/schemas/gui/backend/arranger_object.h:35 inc/audio/transport.h:53
+#: inc/dsp/exporter.h:125
+msgid "Before inserts"
+msgstr "Antes das inserções"
+
+#: inc/dsp/exporter.h:126
+msgid "Pre-fader"
+msgstr "Pré-fader"
+
+#: inc/dsp/exporter.h:127
+msgid "Post fader"
+msgstr "Pós-fader"
+
+#: inc/dsp/track.h:166 src/gui/widgets/track_properties_expander.c:124
+#: src/gui/widgets/popovers/route_target_selector_popover.c:160
+#: build/data/org.zrythm.Zrythm.gschema.xml:698
+msgid "Instrument"
+msgstr "Instrumento"
+
+#: inc/dsp/track.h:167 src/dsp/region.c:508 src/gui/widgets/bot_bar.c:452
+#: resources/ui/file_browser_filters.ui:10
+#: build/data/org.zrythm.Zrythm.gschema.xml:1219
+msgid "Audio"
+msgstr "Áudio"
+
+#: inc/dsp/track.h:168 src/project.c:685
+#: src/gui/widgets/popovers/route_target_selector_popover.c:142
+msgid "Master"
+msgstr "Mestre"
+
+#: inc/dsp/track.h:169 src/dsp/region.c:514
+msgid "Chord"
+msgstr "Acorde"
+
+#: inc/dsp/track.h:170 inc/schemas/gui/backend/arranger_object.h:41
+#: inc/gui/backend/arranger_object.h:90
+msgid "Marker"
+msgstr "Marcador"
+
+#: inc/dsp/track.h:171 src/dsp/tempo_track.c:94
+#: src/gui/widgets/popovers/automatable_selector_popover.c:320
+msgid "Tempo"
+msgstr "Tempo"
+
+#: inc/dsp/track.h:172
+msgid "Modulator"
+msgstr "Modulador"
+
+#: inc/dsp/track.h:173
+msgid "Audio FX"
+msgstr "Efeito de Áudio"
+
+#: inc/dsp/track.h:174
+msgid "Audio Group"
+msgstr "Grupo de Áudio"
+
+#: inc/dsp/track.h:175 src/dsp/region.c:505
+#: resources/ui/file_browser_filters.ui:18
+msgid "MIDI"
+msgstr "MIDI"
+
+#: inc/dsp/track.h:176
+msgid "MIDI FX"
+msgstr "Efeito MIDI"
+
+#: inc/dsp/track.h:177
+msgid "MIDI Group"
+msgstr "Grupo MIDI"
+
+#: inc/dsp/track.h:178
+msgid "Folder"
+msgstr "Pasta"
+
+#: inc/dsp/snap_grid.h:51
+msgid "bar"
+msgstr "compasso"
+
+#: inc/dsp/snap_grid.h:52
+msgid "beat"
+msgstr "pulso"
+
+#: inc/dsp/snap_grid.h:72 src/gui/widgets/digital_meter.c:506
+msgid "normal"
+msgstr "normal"
+
+#: inc/dsp/snap_grid.h:73 src/gui/widgets/digital_meter.c:509
+msgid "dotted"
+msgstr "pontilhado"
+
+#: inc/dsp/snap_grid.h:74 src/gui/widgets/digital_meter.c:512
+msgid "triplet"
+msgstr "tercina"
+
+#: inc/dsp/engine.h:181
+msgid "1,024"
+msgstr "1024"
+
+#: inc/dsp/engine.h:181
+msgid "2,048"
+msgstr "2048"
+
+#: inc/dsp/engine.h:181
+msgid "4,096"
+msgstr "4096"
+
+#: inc/dsp/engine.h:206
+msgid "22,050"
+msgstr "22050"
+
+#: inc/dsp/engine.h:206
+msgid "32,000"
+msgstr "32000"
+
+#: inc/dsp/engine.h:206
+msgid "44,100"
+msgstr "44100"
+
+#: inc/dsp/engine.h:206
+msgid "48,000"
+msgstr "48000"
+
+#: inc/dsp/engine.h:207
+msgid "88,200"
+msgstr "88200"
+
+#: inc/dsp/engine.h:207
+msgid "96,000"
+msgstr "96000"
+
+#: inc/dsp/engine.h:207
+msgid "192,000"
+msgstr "192000"
+
+#. TRANSLATORS: Dummy backend
+#: inc/dsp/engine.h:253 inc/dsp/engine.h:309
+#: inc/plugins/plugin_descriptor.h:141
+msgid "Dummy"
+msgstr "Dummy"
+
+#: inc/dsp/engine.h:253
+msgid "Dummy (libsoundio)"
+msgstr "Dummy (libsoundio)"
+
+#: inc/dsp/engine.h:310
+msgid "ALSA Sequencer (not working)"
+msgstr "Sequenciador ALSA (não funciona)"
+
+#: inc/dsp/engine.h:311
+msgid "ALSA Sequencer (rtmidi)"
+msgstr "Sequenciador ALSA (rtmidi)"
+
+#: inc/dsp/audio_function.h:53
+msgid "Invert"
+msgstr "Inverter"
+
+#: inc/dsp/audio_function.h:54
+msgid "Normalize peak"
+msgstr "Normalizar pico"
+
+#: inc/dsp/audio_function.h:55
+msgid "Normalize RMS"
+msgstr "Normalizar RMS"
+
+#: inc/dsp/audio_function.h:56
+msgid "Normalize LUFS"
+msgstr "Normalizar LUFS"
+
+#: inc/dsp/audio_function.h:57
+msgid "Linear fade in"
+msgstr "Fade in linear"
+
+#: inc/dsp/audio_function.h:58
+msgid "Linear fade out"
+msgstr "Fade out linear"
+
+#: inc/dsp/audio_function.h:59 src/gui/widgets/home_toolbar.c:142
+msgid "Nudge left"
+msgstr "Empurrar para a esquerda"
+
+#: inc/dsp/audio_function.h:60 src/gui/widgets/home_toolbar.c:143
+msgid "Nudge right"
+msgstr "Empurrar para a direita"
+
+#: inc/dsp/audio_function.h:61
+msgid "Reverse"
+msgstr "Reverter"
+
+#: inc/dsp/audio_function.h:62
+msgid "Pitch shift"
+msgstr "Mudança de Tom"
+
+#: inc/dsp/audio_function.h:63
+msgid "External program"
+msgstr "Programa externo"
+
+#: inc/dsp/audio_function.h:64
+msgid "Guile script"
+msgstr "Script Guile"
+
+#: inc/dsp/audio_function.h:65
+msgid "Custom plugin"
+msgstr "Plugin personalizado"
+
+#: inc/dsp/audio_function.h:66
+msgid "Invalid"
+msgstr "Inválido"
+
+#: inc/dsp/midi_function.h:40 resources/ui/editor_toolbar.ui:154
+msgid "Crescendo"
+msgstr "Crescendo"
+
+#: inc/dsp/midi_function.h:41 resources/ui/editor_toolbar.ui:160
+msgid "Flam"
+msgstr "Flam"
+
+#: inc/dsp/midi_function.h:42 inc/dsp/automation_function.h:32
+msgid "Flip H"
+msgstr "Inverter Horizontalmente"
+
+#: inc/dsp/midi_function.h:43 inc/dsp/automation_function.h:33
+msgid "Flip V"
+msgstr "Inverter Verticalmente"
+
+#: inc/dsp/midi_function.h:44 resources/ui/editor_toolbar.ui:181
+msgid "Legato"
+msgstr "Legato"
+
+#: inc/dsp/midi_function.h:45 resources/ui/editor_toolbar.ui:187
+msgid "Portato"
+msgstr "Portato"
+
+#: inc/dsp/midi_function.h:46 resources/ui/editor_toolbar.ui:193
+msgid "Staccato"
+msgstr "Staccato"
+
+#: inc/dsp/midi_function.h:47 resources/ui/editor_toolbar.ui:199
+msgid "Strum"
+msgstr "Batida"
+
+#: inc/dsp/transport.h:53 inc/schemas/gui/backend/arranger_object.h:35
 #: inc/gui/backend/arranger_object.h:84
 #: src/gui/widgets/route_target_selector.c:37
 #: src/gui/widgets/plugin_properties_expander.c:181
@@ -305,6 +274,329 @@ msgstr "Logarítmica"
 #: src/gui/widgets/popovers/route_target_selector_popover.c:134
 msgid "None"
 msgstr "Nenhum"
+
+#: inc/dsp/transport.h:54
+msgid "1 bar"
+msgstr "1 compasso"
+
+#: inc/dsp/transport.h:55
+msgid "2 bars"
+msgstr "2 compassos"
+
+#: inc/dsp/transport.h:56
+msgid "4 bars"
+msgstr "4 compassos"
+
+#: inc/dsp/region.h:65 src/gui/widgets/track.c:1016
+msgid "Inherit"
+msgstr "Herdar"
+
+#: inc/dsp/region.h:66 src/dsp/automation_track.c:166
+#: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:459
+msgid "Off"
+msgstr "Desligado"
+
+#: inc/dsp/region.h:67 src/dsp/automation_track.c:160
+#: src/gui/widgets/cc_bindings_tree.c:158
+#: src/gui/widgets/port_connections_tree.c:214
+#: src/gui/widgets/item_factory.c:598 src/gui/widgets/bot_bar.c:459
+msgid "On"
+msgstr "Ligado"
+
+#: inc/dsp/scale.h:127 inc/schemas/audio/scale.h:93
+msgid "Chromatic"
+msgstr "Cromática"
+
+#: inc/dsp/scale.h:128 inc/schemas/audio/scale.h:94
+msgid "Major"
+msgstr "Maior"
+
+#: inc/dsp/scale.h:129 inc/schemas/audio/scale.h:95
+msgid "Minor"
+msgstr "Menor"
+
+#: inc/dsp/scale.h:130 inc/schemas/audio/scale.h:96
+msgid "Ionian"
+msgstr "Jônio"
+
+#: inc/dsp/scale.h:131 inc/schemas/audio/scale.h:97
+msgid "Dorian"
+msgstr "Dórico"
+
+#: inc/dsp/scale.h:132 inc/schemas/audio/scale.h:98
+msgid "Phrygian"
+msgstr "Frígio"
+
+#: inc/dsp/scale.h:133 inc/schemas/audio/scale.h:99
+msgid "Lydian"
+msgstr "Lídio"
+
+#: inc/dsp/scale.h:134 inc/schemas/audio/scale.h:100
+msgid "Mixolydian"
+msgstr "Mixolídio"
+
+#: inc/dsp/scale.h:135 inc/schemas/audio/scale.h:101
+msgid "Aeolian"
+msgstr "Eólio"
+
+#: inc/dsp/scale.h:136 inc/schemas/audio/scale.h:102
+msgid "Locrian"
+msgstr "Lócrio"
+
+#: inc/dsp/scale.h:137 inc/schemas/audio/scale.h:103
+msgid "Melodic Minor"
+msgstr "Menor Melódica"
+
+#: inc/dsp/scale.h:138 inc/schemas/audio/scale.h:104
+msgid "Harmonic Minor"
+msgstr "Menor Harmônica"
+
+#: inc/dsp/scale.h:139 inc/schemas/audio/scale.h:105
+msgid "Whole Tone"
+msgstr "Tom Inteiro"
+
+#: inc/dsp/scale.h:140 inc/schemas/audio/scale.h:106
+msgid "Major Pentatonic"
+msgstr "Pentatônica Maior"
+
+#: inc/dsp/scale.h:141 inc/schemas/audio/scale.h:107
+msgid "Minor Pentatonic"
+msgstr "Pentatônica Menor"
+
+#: inc/dsp/scale.h:142 inc/schemas/audio/scale.h:108
+msgid "Octatonic Half Whole"
+msgstr "Octatônica Semitom-Tom"
+
+#: inc/dsp/scale.h:143 inc/schemas/audio/scale.h:110
+msgid "Octatonic Whole Half"
+msgstr "Octatônica Tom-Semitom"
+
+#: inc/dsp/scale.h:144 inc/schemas/audio/scale.h:112
+msgid "Acoustic"
+msgstr "Acústica"
+
+#: inc/dsp/scale.h:145 inc/schemas/audio/scale.h:113
+msgid "Harmonic Major"
+msgstr "Harmônica Maior"
+
+#: inc/dsp/scale.h:146 inc/schemas/audio/scale.h:114
+msgid "Phrygian Dominant"
+msgstr "Frígio Dominante"
+
+#: inc/dsp/scale.h:147 inc/schemas/audio/scale.h:115
+msgid "Major Locrian"
+msgstr "Lócrio Maior"
+
+#: inc/dsp/scale.h:148 inc/schemas/audio/scale.h:116
+msgid "Algerian"
+msgstr "Argelina"
+
+#: inc/dsp/scale.h:149 inc/schemas/audio/scale.h:117
+msgid "Augmented"
+msgstr "Aumentada"
+
+#: inc/dsp/scale.h:150 inc/schemas/audio/scale.h:118
+msgid "Double Harmonic"
+msgstr "Duplo-Harmônica"
+
+#: inc/dsp/scale.h:151 inc/schemas/audio/scale.h:119
+msgid "Chinese"
+msgstr "Chinesa"
+
+#: inc/dsp/scale.h:152 inc/schemas/audio/scale.h:120
+msgid "Diminished"
+msgstr "Diminuta"
+
+#: inc/dsp/scale.h:153 inc/schemas/audio/scale.h:121
+msgid "Dominant Diminished"
+msgstr "Dominante Diminuta"
+
+#: inc/dsp/scale.h:154 inc/schemas/audio/scale.h:122
+msgid "Egyptian"
+msgstr "Egípcia"
+
+#: inc/dsp/scale.h:155 inc/schemas/audio/scale.h:123
+msgid "Eight Tone Spanish"
+msgstr "Espanhola de Oito Tons"
+
+#: inc/dsp/scale.h:156 inc/schemas/audio/scale.h:124
+msgid "Enigmatic"
+msgstr "Enigmática"
+
+#: inc/dsp/scale.h:157 inc/schemas/audio/scale.h:125
+msgid "Geez"
+msgstr "Geez"
+
+#: inc/dsp/scale.h:158 inc/schemas/audio/scale.h:126
+msgid "Hindu"
+msgstr "Hindu"
+
+#: inc/dsp/scale.h:159 inc/schemas/audio/scale.h:127
+msgid "Hirajoshi"
+msgstr "Hirajoshi"
+
+#: inc/dsp/scale.h:160 inc/schemas/audio/scale.h:128
+msgid "Hungarian Gypsy"
+msgstr "Cigana Húngara"
+
+#: inc/dsp/scale.h:161 inc/schemas/audio/scale.h:129
+msgid "Insen"
+msgstr "Insen"
+
+#: inc/dsp/scale.h:162 inc/schemas/audio/scale.h:130
+msgid "Neapolitan Major"
+msgstr "Napolitana Maior"
+
+#: inc/dsp/scale.h:163 inc/schemas/audio/scale.h:131
+msgid "Neapolitan Minor"
+msgstr "Napolitana Menor"
+
+#: inc/dsp/scale.h:164 inc/schemas/audio/scale.h:132
+msgid "Oriental"
+msgstr "Oriental"
+
+#: inc/dsp/scale.h:165 inc/schemas/audio/scale.h:133
+msgid "Romanian Minor"
+msgstr "Romena Menor"
+
+#: inc/dsp/scale.h:166 inc/schemas/audio/scale.h:134
+msgid "Altered"
+msgstr "Alterada"
+
+#: inc/dsp/scale.h:167 inc/schemas/audio/scale.h:135
+msgid "Maqam"
+msgstr "Maqam"
+
+#: inc/dsp/scale.h:168 inc/schemas/audio/scale.h:136
+msgid "Yo"
+msgstr "Yo"
+
+#: inc/dsp/scale.h:169 inc/schemas/audio/scale.h:137
+msgid "Bebop Locrian"
+msgstr "Bebop Lócria"
+
+#: inc/dsp/scale.h:170 inc/schemas/audio/scale.h:138
+msgid "Bebop Dominant"
+msgstr "Bebop Dominante"
+
+#: inc/dsp/scale.h:171 inc/schemas/audio/scale.h:139
+msgid "Bebop Major"
+msgstr "Bebop Maior"
+
+#: inc/dsp/scale.h:172 inc/schemas/audio/scale.h:140
+msgid "Super Locrian"
+msgstr "Super Lócria"
+
+#: inc/dsp/scale.h:173 inc/schemas/audio/scale.h:141
+msgid "Enigmatic Minor"
+msgstr "Menor Enigmática"
+
+#: inc/dsp/scale.h:174 inc/schemas/audio/scale.h:142
+msgid "Composite"
+msgstr "Híbrida"
+
+#: inc/dsp/scale.h:175 inc/schemas/audio/scale.h:143
+msgid "Bhairav"
+msgstr "Bhairav"
+
+#: inc/dsp/scale.h:176 inc/schemas/audio/scale.h:144
+msgid "Hungarian Minor"
+msgstr "Húngara Menor"
+
+#: inc/dsp/scale.h:177 inc/schemas/audio/scale.h:145
+msgid "Persian"
+msgstr "Persa"
+
+#: inc/dsp/scale.h:178 inc/schemas/audio/scale.h:146
+msgid "Iwato"
+msgstr "Iwato"
+
+#: inc/dsp/scale.h:179 inc/schemas/audio/scale.h:147
+msgid "Kumoi"
+msgstr "Kumoi"
+
+#: inc/dsp/scale.h:180 inc/schemas/audio/scale.h:148
+msgid "Pelog"
+msgstr "Pelog"
+
+#: inc/dsp/scale.h:181 inc/schemas/audio/scale.h:149
+msgid "Prometheus"
+msgstr "Prometeu"
+
+#: inc/dsp/scale.h:182 inc/schemas/audio/scale.h:150
+msgid "Prometheus Neapolitan"
+msgstr "Prometeu Napolitana"
+
+#: inc/dsp/scale.h:183 inc/schemas/audio/scale.h:152
+msgid "Prometheus Liszt"
+msgstr "Prometeu Liszt"
+
+#: inc/dsp/scale.h:184 inc/schemas/audio/scale.h:153
+msgid "Balinese"
+msgstr "Balinesa"
+
+#: inc/dsp/scale.h:185 inc/schemas/audio/scale.h:154
+msgid "RagaTodi"
+msgstr "RagaTodi"
+
+#: inc/dsp/scale.h:186 inc/schemas/audio/scale.h:155
+msgid "Japanese 1"
+msgstr "Japonesa 1"
+
+#: inc/dsp/scale.h:187 inc/schemas/audio/scale.h:156
+msgid "Japanese 2"
+msgstr "Japonesa 2"
+
+#. TRANSLATORS: decibels
+#: inc/dsp/pan.h:35
+msgid "0dB"
+msgstr "0dB"
+
+#: inc/dsp/pan.h:36
+msgid "-3dB"
+msgstr "-3dB"
+
+#: inc/dsp/pan.h:37
+msgid "-6dB"
+msgstr "-6dB"
+
+#. TRANSLATORS: Pan algorithm
+#: inc/dsp/pan.h:57 src/dsp/curve.c:371 src/utils/ui.c:627
+msgid "Linear"
+msgstr "Linear"
+
+#: inc/dsp/pan.h:58 src/utils/ui.c:628
+msgid "Square Root"
+msgstr "Raiz Quadrada"
+
+#: inc/dsp/pan.h:59
+msgid "Sine"
+msgstr "Seno"
+
+#: inc/dsp/curve.h:95 inc/schemas/audio/curve.h:28 src/dsp/curve.c:58
+#, c-format
+msgid "Exponent"
+msgstr "Exponencial"
+
+#: inc/dsp/curve.h:96 inc/schemas/audio/curve.h:29 src/dsp/curve.c:61
+#, c-format
+msgid "Superellipse"
+msgstr "Superelipse"
+
+#: inc/dsp/curve.h:97 inc/schemas/audio/curve.h:30 src/dsp/curve.c:390
+msgid "Vital"
+msgstr "Vital"
+
+#: inc/dsp/curve.h:98 inc/schemas/audio/curve.h:31 src/dsp/curve.c:67
+#, c-format
+msgid "Pulse"
+msgstr "Pulso"
+
+#: inc/dsp/curve.h:99 inc/schemas/audio/curve.h:32 src/dsp/curve.c:70
+#: src/dsp/curve.c:385
+#, fuzzy, c-format
+msgid "Logarithmic"
+msgstr "Logarítmica"
 
 #: inc/schemas/gui/backend/arranger_object.h:36
 #: inc/gui/backend/arranger_object.h:85
@@ -332,11 +624,6 @@ msgstr "Objeto de Acorde"
 #: inc/gui/backend/arranger_object.h:89
 msgid "Scale Object"
 msgstr "Objeto de Escala"
-
-#: inc/schemas/gui/backend/arranger_object.h:41 inc/audio/track.h:170
-#: inc/gui/backend/arranger_object.h:90
-msgid "Marker"
-msgstr "Marcador"
 
 #: inc/schemas/gui/backend/arranger_object.h:42
 #: inc/gui/backend/arranger_object.h:91
@@ -413,293 +700,6 @@ msgstr "Baixo"
 #: inc/utils/ui.h:62
 msgid "Ultra Low"
 msgstr "Ultra Baixo"
-
-#: inc/audio/exporter.h:125
-msgid "Before inserts"
-msgstr "Antes das inserções"
-
-#: inc/audio/exporter.h:126
-msgid "Pre-fader"
-msgstr "Pré-fader"
-
-#: inc/audio/exporter.h:127
-msgid "Post fader"
-msgstr "Pós-fader"
-
-#: inc/audio/track.h:166 src/gui/widgets/track_properties_expander.c:124
-#: src/gui/widgets/popovers/route_target_selector_popover.c:160
-#: build/data/org.zrythm.Zrythm.gschema.xml:698
-msgid "Instrument"
-msgstr "Instrumento"
-
-#: inc/audio/track.h:167 src/audio/region.c:508 src/gui/widgets/bot_bar.c:452
-#: resources/ui/file_browser_filters.ui:10
-#: build/data/org.zrythm.Zrythm.gschema.xml:1219
-msgid "Audio"
-msgstr "Áudio"
-
-#: inc/audio/track.h:168 src/project.c:685
-#: src/gui/widgets/popovers/route_target_selector_popover.c:142
-msgid "Master"
-msgstr "Mestre"
-
-#: inc/audio/track.h:169 src/audio/region.c:514
-msgid "Chord"
-msgstr "Acorde"
-
-#: inc/audio/track.h:171 src/audio/tempo_track.c:94
-#: src/gui/widgets/popovers/automatable_selector_popover.c:320
-msgid "Tempo"
-msgstr "Tempo"
-
-#: inc/audio/track.h:172
-msgid "Modulator"
-msgstr "Modulador"
-
-#: inc/audio/track.h:173
-msgid "Audio FX"
-msgstr "Efeito de Áudio"
-
-#: inc/audio/track.h:174
-msgid "Audio Group"
-msgstr "Grupo de Áudio"
-
-#: inc/audio/track.h:175 src/audio/region.c:505
-#: resources/ui/file_browser_filters.ui:18
-msgid "MIDI"
-msgstr "MIDI"
-
-#: inc/audio/track.h:176
-msgid "MIDI FX"
-msgstr "Efeito MIDI"
-
-#: inc/audio/track.h:177
-msgid "MIDI Group"
-msgstr "Grupo MIDI"
-
-#: inc/audio/track.h:178
-msgid "Folder"
-msgstr "Pasta"
-
-#: inc/audio/snap_grid.h:51
-msgid "bar"
-msgstr "compasso"
-
-#: inc/audio/snap_grid.h:52
-msgid "beat"
-msgstr "pulso"
-
-#: inc/audio/snap_grid.h:72 src/gui/widgets/digital_meter.c:506
-msgid "normal"
-msgstr "normal"
-
-#: inc/audio/snap_grid.h:73 src/gui/widgets/digital_meter.c:509
-msgid "dotted"
-msgstr "pontilhado"
-
-#: inc/audio/snap_grid.h:74 src/gui/widgets/digital_meter.c:512
-msgid "triplet"
-msgstr "tercina"
-
-#: inc/audio/engine.h:181
-msgid "1,024"
-msgstr "1024"
-
-#: inc/audio/engine.h:181
-msgid "2,048"
-msgstr "2048"
-
-#: inc/audio/engine.h:181
-msgid "4,096"
-msgstr "4096"
-
-#: inc/audio/engine.h:206
-msgid "22,050"
-msgstr "22050"
-
-#: inc/audio/engine.h:206
-msgid "32,000"
-msgstr "32000"
-
-#: inc/audio/engine.h:206
-msgid "44,100"
-msgstr "44100"
-
-#: inc/audio/engine.h:206
-msgid "48,000"
-msgstr "48000"
-
-#: inc/audio/engine.h:207
-msgid "88,200"
-msgstr "88200"
-
-#: inc/audio/engine.h:207
-msgid "96,000"
-msgstr "96000"
-
-#: inc/audio/engine.h:207
-msgid "192,000"
-msgstr "192000"
-
-#. TRANSLATORS: Dummy backend
-#: inc/audio/engine.h:253 inc/audio/engine.h:309
-#: inc/plugins/plugin_descriptor.h:141
-msgid "Dummy"
-msgstr "Dummy"
-
-#: inc/audio/engine.h:253
-msgid "Dummy (libsoundio)"
-msgstr "Dummy (libsoundio)"
-
-#: inc/audio/engine.h:310
-msgid "ALSA Sequencer (not working)"
-msgstr "Sequenciador ALSA (não funciona)"
-
-#: inc/audio/engine.h:311
-msgid "ALSA Sequencer (rtmidi)"
-msgstr "Sequenciador ALSA (rtmidi)"
-
-#: inc/audio/audio_function.h:53
-msgid "Invert"
-msgstr "Inverter"
-
-#: inc/audio/audio_function.h:54
-msgid "Normalize peak"
-msgstr "Normalizar pico"
-
-#: inc/audio/audio_function.h:55
-msgid "Normalize RMS"
-msgstr "Normalizar RMS"
-
-#: inc/audio/audio_function.h:56
-msgid "Normalize LUFS"
-msgstr "Normalizar LUFS"
-
-#: inc/audio/audio_function.h:57
-msgid "Linear fade in"
-msgstr "Fade in linear"
-
-#: inc/audio/audio_function.h:58
-msgid "Linear fade out"
-msgstr "Fade out linear"
-
-#: inc/audio/audio_function.h:59 src/gui/widgets/home_toolbar.c:142
-msgid "Nudge left"
-msgstr "Empurrar para a esquerda"
-
-#: inc/audio/audio_function.h:60 src/gui/widgets/home_toolbar.c:143
-msgid "Nudge right"
-msgstr "Empurrar para a direita"
-
-#: inc/audio/audio_function.h:61
-msgid "Reverse"
-msgstr "Reverter"
-
-#: inc/audio/audio_function.h:62
-msgid "Pitch shift"
-msgstr "Mudança de Tom"
-
-#: inc/audio/audio_function.h:63
-msgid "External program"
-msgstr "Programa externo"
-
-#: inc/audio/audio_function.h:64
-msgid "Guile script"
-msgstr "Script Guile"
-
-#: inc/audio/audio_function.h:65
-msgid "Custom plugin"
-msgstr "Plugin personalizado"
-
-#: inc/audio/audio_function.h:66
-msgid "Invalid"
-msgstr "Inválido"
-
-#: inc/audio/midi_function.h:40 resources/ui/editor_toolbar.ui:154
-msgid "Crescendo"
-msgstr "Crescendo"
-
-#: inc/audio/midi_function.h:41 resources/ui/editor_toolbar.ui:160
-msgid "Flam"
-msgstr "Flam"
-
-#: inc/audio/midi_function.h:42 inc/audio/automation_function.h:32
-msgid "Flip H"
-msgstr "Inverter Horizontalmente"
-
-#: inc/audio/midi_function.h:43 inc/audio/automation_function.h:33
-msgid "Flip V"
-msgstr "Inverter Verticalmente"
-
-#: inc/audio/midi_function.h:44 resources/ui/editor_toolbar.ui:181
-msgid "Legato"
-msgstr "Legato"
-
-#: inc/audio/midi_function.h:45 resources/ui/editor_toolbar.ui:187
-msgid "Portato"
-msgstr "Portato"
-
-#: inc/audio/midi_function.h:46 resources/ui/editor_toolbar.ui:193
-msgid "Staccato"
-msgstr "Staccato"
-
-#: inc/audio/midi_function.h:47 resources/ui/editor_toolbar.ui:199
-msgid "Strum"
-msgstr "Batida"
-
-#: inc/audio/transport.h:54
-msgid "1 bar"
-msgstr "1 compasso"
-
-#: inc/audio/transport.h:55
-msgid "2 bars"
-msgstr "2 compassos"
-
-#: inc/audio/transport.h:56
-msgid "4 bars"
-msgstr "4 compassos"
-
-#: inc/audio/region.h:65 src/gui/widgets/track.c:1016
-msgid "Inherit"
-msgstr "Herdar"
-
-#: inc/audio/region.h:66 src/audio/automation_track.c:166
-#: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:459
-msgid "Off"
-msgstr "Desligado"
-
-#: inc/audio/region.h:67 src/audio/automation_track.c:160
-#: src/gui/widgets/cc_bindings_tree.c:158
-#: src/gui/widgets/port_connections_tree.c:214
-#: src/gui/widgets/item_factory.c:598 src/gui/widgets/bot_bar.c:459
-msgid "On"
-msgstr "Ligado"
-
-#. TRANSLATORS: decibels
-#: inc/audio/pan.h:35
-msgid "0dB"
-msgstr "0dB"
-
-#: inc/audio/pan.h:36
-msgid "-3dB"
-msgstr "-3dB"
-
-#: inc/audio/pan.h:37
-msgid "-6dB"
-msgstr "-6dB"
-
-#. TRANSLATORS: Pan algorithm
-#: inc/audio/pan.h:57 src/utils/ui.c:627 src/audio/curve.c:371
-msgid "Linear"
-msgstr "Linear"
-
-#: inc/audio/pan.h:58 src/utils/ui.c:628
-msgid "Square Root"
-msgstr "Raiz Quadrada"
-
-#: inc/audio/pan.h:59
-msgid "Sine"
-msgstr "Seno"
 
 #: src/project.c:403
 #, c-format
@@ -1140,8 +1140,8 @@ msgstr "Falha ao carregar projeto"
 msgid "Save Project"
 msgstr "Salvar projeto"
 
-#: src/actions/actions.c:789 src/utils/dialogs.c:41 src/utils/dialogs.c:60
-#: src/audio/clip.c:698 src/gui/widgets/main_window.c:138
+#: src/actions/actions.c:789 src/dsp/clip.c:698 src/utils/dialogs.c:41
+#: src/utils/dialogs.c:60 src/gui/widgets/main_window.c:138
 #: src/gui/widgets/plugin_properties_expander.c:107
 #: src/gui/widgets/dialogs/midi_function_dialog.c:412
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:122
@@ -1226,7 +1226,7 @@ msgstr "Falha ao desvincular"
 msgid "Failed to quantize"
 msgstr "Falha ao quantizar"
 
-#: src/actions/actions.c:1660 src/audio/track.c:3669 src/audio/tracklist.c:1483
+#: src/actions/actions.c:1660 src/dsp/track.c:3669 src/dsp/tracklist.c:1483
 #: src/gui/widgets/panel_file_browser.c:459
 #: src/gui/widgets/panel_file_browser.c:475 src/settings/plugin_settings.c:335
 #: src/settings/plugin_settings.c:350 src/settings/plugin_settings.c:422
@@ -1484,7 +1484,7 @@ msgstr ""
 msgid "Failed getting contents for %s"
 msgstr "Falha ao obter o conteúdo de %s"
 
-#: src/actions/tracklist_selections.c:311 src/audio/track.c:2062
+#: src/actions/tracklist_selections.c:311 src/dsp/track.c:2062
 #, fuzzy, c-format
 msgid "Failed creating audio clip from file at %s"
 msgstr "Falha ao gravar clipe de áudio no arquivo: %s"
@@ -1499,8 +1499,8 @@ msgstr "Falha ao clonar seleções da lista de faixas"
 
 #: src/actions/tracklist_selections.c:374
 #: src/actions/tracklist_selections.c:993
-#: src/actions/tracklist_selections.c:1445 src/audio/tracklist.c:1667
-#: src/audio/tracklist.c:1795
+#: src/actions/tracklist_selections.c:1445 src/dsp/tracklist.c:1667
+#: src/dsp/tracklist.c:1795
 msgid "Failed to clone track"
 msgstr "Falha ao clonar faixa"
 
@@ -1513,7 +1513,7 @@ msgstr "Falha ao clonar seleções da lista de faixas: "
 msgid "%s Track"
 msgstr "Faixa %s"
 
-#: src/actions/tracklist_selections.c:768 src/audio/sample_processor.c:552
+#: src/actions/tracklist_selections.c:768 src/dsp/sample_processor.c:552
 #: src/gui/widgets/channel_slot.c:335
 #, c-format
 msgid "Failed to create plugin %s"
@@ -1907,7 +1907,7 @@ msgstr "Conexão de send de canal"
 msgid "Failed to clone mixer selections"
 msgstr "Falha ao clonar seleções do mixer"
 
-#: src/actions/mixer_selections_action.c:432 src/audio/channel.c:1855
+#: src/actions/mixer_selections_action.c:432 src/dsp/channel.c:1855
 msgid "Failed to clone plugin"
 msgstr "Falha ao clonar plugin"
 
@@ -1915,8 +1915,8 @@ msgstr "Falha ao clonar plugin"
 msgid "Could not create plugin"
 msgstr "Não foi possível criar plugin"
 
-#: src/actions/mixer_selections_action.c:538 src/audio/audio_function.c:145
-#: src/audio/track.c:2148 src/audio/track.c:3217
+#: src/actions/mixer_selections_action.c:538 src/dsp/audio_function.c:145
+#: src/dsp/track.c:2148 src/dsp/track.c:3217
 msgid "Failed to instantiate plugin"
 msgstr "Falha ao instanciar plugin"
 
@@ -1973,6 +1973,718 @@ msgstr "Colar %s"
 #, c-format
 msgid "Paste %d Plugins"
 msgstr "Colar %d plugins"
+
+#: src/dsp/modulator_track.c:59 src/utils/gtk.c:1215
+#: src/gui/widgets/bot_dock_edge.c:254
+msgid "Modulators"
+msgstr "Moduladores"
+
+#: src/dsp/supported_file.c:269
+msgid "Failed opening file"
+msgstr "Falha ao abrir arquivo"
+
+#: src/dsp/supported_file.c:274
+#, c-format
+msgid ""
+"<b>%s</b>\n"
+"Sample rate: %d\n"
+"Length: %<PRId64>s %<PRId64> ms | BPM: %.1f\n"
+"Channel(s): %u | Bitrate: %'d.%d kb/s\n"
+"Bit depth: %d bits"
+msgstr ""
+"<b>%s</b>\n"
+"Taxa de amostragem: %d\n"
+"Duração: %<PRId64>s %<PRId64> ms | BPM: %.1f\n"
+"Canal(is): %u | Taxa de bits: %'d.%d kb/s\n"
+"Profundidade de bits: %d bits"
+
+#: src/dsp/snap_grid.c:253 resources/ui/snap_grid_popover.ui:112
+#: resources/ui/snap_grid_popover.ui:190
+msgid "Adaptive"
+msgstr "Adaptativo"
+
+#: src/dsp/fader.c:97
+msgid "Prefader Swap Phase"
+msgstr "Mudança de fase pré-fader"
+
+#: src/dsp/fader.c:98
+msgid "Fader Swap Phase"
+msgstr "Mudança de fase do fader"
+
+#: src/dsp/fader.c:140
+msgid "Prefader Volume"
+msgstr "Volume pré-fader"
+
+#: src/dsp/fader.c:140
+msgid "Fader Volume"
+msgstr "Volume do fader"
+
+#: src/dsp/fader.c:169
+msgid "Prefader Balance"
+msgstr "Balanço pré-fader"
+
+#: src/dsp/fader.c:169
+msgid "Fader Balance"
+msgstr "Balanço do fader"
+
+#: src/dsp/fader.c:188
+msgid "Prefader Mute"
+msgstr "Modo mudo pré-fader"
+
+#: src/dsp/fader.c:188
+msgid "Fader Mute"
+msgstr "Modo mudo do fader"
+
+#: src/dsp/fader.c:209
+msgid "Prefader Solo"
+msgstr "Modo solo pré-fader"
+
+#: src/dsp/fader.c:209
+msgid "Fader Solo"
+msgstr "Modo solo do fader"
+
+#: src/dsp/fader.c:223
+msgid "Prefader Listen"
+msgstr "Modo escuta pré-fader"
+
+#: src/dsp/fader.c:223
+msgid "Fader Listen"
+msgstr "Modo escuta no fader"
+
+#: src/dsp/fader.c:238
+msgid "Prefader Mono Compat"
+msgstr "Compatibilidade mono pré-fader"
+
+#: src/dsp/fader.c:239
+msgid "Fader Mono Compat"
+msgstr "Compatibilidade mono do fader"
+
+#: src/dsp/fader.c:271
+msgid "Ch Pre-Fader in"
+msgstr "Entrada pré-fader do canal"
+
+#: src/dsp/fader.c:276
+msgid "Ch Fader in"
+msgstr "Entrada de fader do canal"
+
+#: src/dsp/fader.c:282
+msgid "Sample Processor Fader in"
+msgstr "Entrada de fader do processador de samples"
+
+#: src/dsp/fader.c:287
+msgid "Monitor Fader in"
+msgstr "Entrada de fader de monitoração"
+
+#: src/dsp/fader.c:305
+msgid "Ch Pre-Fader out"
+msgstr "Saída pré-fader do canal"
+
+#: src/dsp/fader.c:310
+msgid "Ch Fader out"
+msgstr "Saída de fader do canal"
+
+#: src/dsp/fader.c:316
+msgid "Sample Processor Fader out"
+msgstr "Saída de fader do processador de samples"
+
+#: src/dsp/fader.c:321
+msgid "Monitor Fader out"
+msgstr "Saída de fader de monitoração"
+
+#: src/dsp/fader.c:343
+msgid "Ch MIDI Pre-Fader in"
+msgstr "Entrada pré-fader do canal MIDI"
+
+#: src/dsp/fader.c:348
+msgid "Ch MIDI Fader in"
+msgstr "Entrada de fader do canal MIDI"
+
+#: src/dsp/fader.c:360
+msgid "Ch MIDI Pre-Fader out"
+msgstr "Saída pré-fader do canal MIDI"
+
+#: src/dsp/fader.c:365
+msgid "Ch MIDI Fader out"
+msgstr "Saída de fader do canal MIDI"
+
+#: src/dsp/fader.c:594
+msgid "Failed to change volume"
+msgstr "Falha ao alterar volume"
+
+#: src/dsp/fader.c:643
+msgid "Failed to set MIDI mode"
+msgstr "Falha ao definir modo de MIDI"
+
+#: src/dsp/encoder.c:58
+#, c-format
+msgid "An error has occurred opening the audio file '%s'"
+msgstr "Ocorreu um erro ao abrir o arquivo de áudio '%s'"
+
+#: src/dsp/marker_track.c:42
+msgid "Markers"
+msgstr "Marcadores"
+
+#: src/dsp/marker_track.c:60 src/gui/widgets/timeline_selection_info.c:228
+#: resources/ui/quantize_dialog.ui:62
+msgid "start"
+msgstr "início"
+
+#: src/dsp/marker_track.c:67 src/gui/widgets/timeline_selection_info.c:234
+#: resources/ui/quantize_dialog.ui:70
+msgid "end"
+msgstr "fim"
+
+#: src/dsp/engine_jack.c:311
+msgid "XRUN occurred - check your JACK configuration"
+msgstr "Ocorreu XRUN - confira sua configuração do JACK"
+
+#: src/dsp/engine_jack.c:369
+msgid "JACK has shut down"
+msgstr "O JACK foi encerrado"
+
+#. TRANSLATORS: JACK failure messages
+#: src/dsp/engine_jack.c:632
+msgid "Overall operation failed"
+msgstr "Falha geral na operação"
+
+#: src/dsp/engine_jack.c:638
+msgid "The operation contained an invalid or unsupported option"
+msgstr "A operação continha uma opção inválida ou não suportada"
+
+#: src/dsp/engine_jack.c:644
+msgid "The desired client name was not unique"
+msgstr "O nome de cliente desejado não era único"
+
+#: src/dsp/engine_jack.c:648
+msgid "Unable to connect to the JACK server"
+msgstr "Não foi possível se conectar ao servidor JACK"
+
+#: src/dsp/engine_jack.c:653
+msgid "Communication error with the JACK server"
+msgstr "Erro de comunicação com o servidor JACK"
+
+#: src/dsp/engine_jack.c:657
+msgid "Requested client does not exist"
+msgstr "O cliente solicitado não existe"
+
+#: src/dsp/engine_jack.c:661
+msgid "Unable to load internal client"
+msgstr "Não foi possível carregar o cliente interno"
+
+#: src/dsp/engine_jack.c:665
+msgid "Unable to initialize client"
+msgstr "Não foi possível inicializar o cliente"
+
+#: src/dsp/engine_jack.c:669
+msgid "Unable to access shared memory"
+msgstr "Não foi possível acessar a memória compartilhada"
+
+#: src/dsp/engine_jack.c:674
+msgid "Client's protocol version does not match"
+msgstr "A versão de protocolo do cliente não é a correspondente"
+
+#: src/dsp/engine_jack.c:678
+msgid "Backend error"
+msgstr "Erro de backend"
+
+#: src/dsp/engine_jack.c:682
+msgid "Client zombie"
+msgstr "Cliente zumbi"
+
+#: src/dsp/engine_jack.c:729
+#, c-format
+msgid "JACK: Failed to disconnect monitor out: %s"
+msgstr "JACK: Falha ao desconectar a saída de monitoração: %s"
+
+#: src/dsp/engine_jack.c:778
+msgid "JACK: No physical playback ports found"
+msgstr "JACK: Nenhuma porta física de reprodução encontrada"
+
+#: src/dsp/engine_jack.c:792
+#, fuzzy, c-format
+msgid "JACK: Failed to connect monitor output [%s]: %s"
+msgstr "JACK: Falha ao conectar saída de monitoração: %s"
+
+#: src/dsp/engine_jack.c:793
+msgid "left"
+msgstr "esquerda"
+
+#: src/dsp/engine_jack.c:793
+msgid "right"
+msgstr "direita"
+
+#: src/dsp/engine_jack.c:851 src/gui/widgets/monitor_section.c:237
+msgid "Failed to connect to left monitor output port"
+msgstr "Falha ao conectar a porta de saída de monitoração esquerda: %s"
+
+#: src/dsp/engine_jack.c:859 src/gui/widgets/monitor_section.c:246
+msgid "Failed to connect to right monitor output port"
+msgstr "Falha ao conectar a porta de saída de monitoração direita: %s"
+
+#: src/dsp/curve.c:375
+msgid "Exponential"
+msgstr "Exponencial"
+
+#: src/dsp/curve.c:380
+msgid "Elliptic"
+msgstr "Elíptico"
+
+#: src/dsp/audio_function.c:137 src/gui/widgets/drag_dest_box.c:324
+msgid "Failed to create plugin"
+msgstr "Falha ao criar plugin"
+
+#: src/dsp/audio_function.c:370
+msgid "Invalid positions - skipping function"
+msgstr "Posições inválidas - função ignorada"
+
+#: src/dsp/audio_function.c:616
+msgid "Failed to get audio clip from external program"
+msgstr "Falha ao obter clipe de áudio de programa externo"
+
+#: src/dsp/audio_function.c:641
+msgid "Failed to apply plugin"
+msgstr "Falha ao aplicar plugin"
+
+#: src/dsp/graph_thread.c:572
+#, c-format
+msgid ""
+"Your user does not have enough privileges to allow %s to set the scheduling "
+"priority of threads. Please refer to the 'Getting Started' section in the "
+"user manual for details."
+msgstr ""
+"Seu usuário não tem privilégios suficientes para permitir que %s defina as "
+"prioridades de agendamento das threads. Consulte a seção 'Getting Started' "
+"do manual de usuário para mais detalhes."
+
+#: src/dsp/track.c:326
+msgid "Track record"
+msgstr "Gravação de faixa"
+
+#: src/dsp/track.c:445
+msgid "Failed to clone modulator plugin"
+msgstr "Falha ao clonar plugin modulador"
+
+#: src/dsp/track.c:474
+msgid "Failed to clone channel"
+msgstr "Falha ao clonar canal"
+
+#: src/dsp/track.c:853
+msgid "Cannot set track muted"
+msgstr "Não foi possível colocar a faixa no modo mudo"
+
+#: src/dsp/track.c:897
+msgid "Cannot set track folded"
+msgstr "Não foi possível recolher a faixa"
+
+#: src/dsp/track.c:1409
+msgid "Cannot set track soloed"
+msgstr "Não foi possível colocar a faixa no modo solo"
+
+#: src/dsp/track.c:1459
+msgid "Cannot set track listened"
+msgstr "Não foi possível colocar a faixa no modo escuta"
+
+#: src/dsp/track.c:2905 src/settings/plugin_settings.c:398
+#: src/settings/plugin_settings.c:440
+msgid "Failed to rename track"
+msgstr "Falha ao renomear a faixa"
+
+#: src/dsp/track.c:3265 src/dsp/track.c:3310
+msgid "Cannot set track comment"
+msgstr "Não foi possível definir o comentário da faixa"
+
+#: src/dsp/track.c:3346
+msgid "Cannot set track icon"
+msgstr "Não foi possível definir o ícone da faixa"
+
+#: src/dsp/track.c:3580
+msgid "Cannot set track enabled"
+msgstr "Não foi possível ativar a faixa"
+
+#: src/dsp/automation_track.c:163
+msgid "Rec"
+msgstr "Gravar"
+
+#: src/dsp/automation_track.c:184
+msgid "Touch"
+msgstr "Touch"
+
+#: src/dsp/automation_track.c:187
+msgid "Latch"
+msgstr "Latch"
+
+#: src/dsp/region.c:511 src/gui/widgets/track.c:1059
+#: build/data/org.zrythm.Zrythm.gschema.xml:1233
+msgid "Automation"
+msgstr "Automação"
+
+#: src/dsp/engine.c:499
+#, c-format
+msgid ""
+"Failed to initialize the %s audio backend. Will use the dummy backend "
+"instead. Please check your backend settings in the Preferences."
+msgstr ""
+"Falha ao inicializar o backend de áudio %s. Em vez disso será utilizado o "
+"backend dummy. Confira sua configurações de backend nas Preferências."
+
+#: src/dsp/engine.c:540
+#, c-format
+msgid ""
+"The JACK MIDI backend can only be used with the JACK audio backend (your "
+"current audio backend is %s). Will use the dummy MIDI backend instead."
+msgstr ""
+"O backend MIDI JACK só pode ser utilizado com o backend de áudio JACK (seu "
+"backend de áudio atual é %s). Em vez disso será utilizado o backend MIDI "
+"dummy."
+
+#: src/dsp/engine.c:575
+#, c-format
+msgid ""
+"Failed to initialize the %s MIDI backend. Will use the dummy backend "
+"instead. Please check your backend settings in the Preferences."
+msgstr ""
+"Falha ao inicializar o backend MIDI %s. Em vez disso será utilizado o "
+"backend dummy. Confira suas configurações de backend nas Preferências."
+
+#: src/dsp/engine.c:616
+msgid ""
+"Your selected combination of backends may not work properly. If you want to "
+"use JACK, please select JACK as both your audio and MIDI backend."
+msgstr ""
+"Sua combinação de backends escolhida pode não funcionar corretamente. Se "
+"você deseja utilizar o JACK, escolha o JACK como seu backend tanto de áudio "
+"quanto de MIDI."
+
+#: src/dsp/engine.c:817
+#, c-format
+msgid ""
+"The selected MIDI/audio backend was not found in the version of %s you have "
+"installed. The audio and MIDI backends were set to \"Dummy\". Please set "
+"your preferred backend from the preferences."
+msgstr ""
+"O backend de MIDI/áudio escolhido não foi encontrado na versão do %s que "
+"você tem instalada. Os backends de MIDI e áudio foram definidos para "
+"\"Dummy\". Defina o backend de sua escolha nas Preferências."
+
+#: src/dsp/exporter.c:160
+#, c-format
+msgid "Format %s not supported yet"
+msgstr "O formato %s ainda não é suportado"
+
+#: src/dsp/exporter.c:227
+msgid "SF INFO invalid"
+msgstr "SF INFO inválida"
+
+#: src/dsp/exporter.c:256
+#, c-format
+msgid ""
+"Couldn't open SNDFILE %s:\n"
+"%d: %s"
+msgstr ""
+"Não foi possível abrir SNDFILE %s:\n"
+"%d: %s"
+
+#: src/dsp/exporter.c:267
+#, c-format
+msgid "Invalid SNDFILE format %s: 0x%08X != 0x%08X"
+msgstr "Formato SNDFILE inválido %s: 0x%08X != 0x%08X"
+
+#: src/dsp/exporter.c:524
+#, c-format
+msgid ""
+"The exported audio contains segments louder than 0 dB (max detected %.1f dB)."
+msgstr ""
+"O áudio exportado contém partes com volume superior a 0dB (máx. detectado "
+"%.1f dB)."
+
+#: src/dsp/exporter.c:1014 src/dsp/exporter.c:1021
+msgid "Failed to create audio track"
+msgstr "Falha ao criar faixa de áudio"
+
+#: src/dsp/exporter.c:1053
+msgid "Invalid time range"
+msgstr "Intervalo de tempo inválido"
+
+#: src/dsp/engine_pulse.c:88
+msgid ""
+"A buffer underflow has occurred. Try increasing the buffer size in the "
+"settings to avoid audio glitches."
+msgstr ""
+"Ocorreu um subfluxo de buffer. Tente aumentar o tamanho do buffer nas "
+"configurações para evitar falhas de áudio."
+
+#: src/dsp/engine_pulse.c:202
+msgid "PulseAudio error: Failed to create main loop"
+msgstr "Erro no PulseAudio: falha ao criar loop principal"
+
+#: src/dsp/engine_pulse.c:222
+#, c-format
+msgid "PulseAudio Error: %s"
+msgstr "Erro no PulseAudio: %s"
+
+#: src/dsp/engine_pulse.c:239
+msgid "PulseAudio Error: Failed to connect"
+msgstr "Erro no PulseAudio: Falha ao conectar"
+
+#. TODO
+#: src/dsp/scale.c:543
+msgid "Unimplemented"
+msgstr "Não implementado"
+
+#: src/dsp/chord_track.c:40 src/settings/chord_preset.c:47
+#: resources/ui/inspector_chord.ui:7
+msgid "Chords"
+msgstr "Acordes"
+
+#: src/dsp/clip.c:160
+#, fuzzy
+msgid "Failed to initialize audio file"
+msgstr "Falha ao escrever o arquivo de áudio: %s"
+
+#: src/dsp/clip.c:186
+#, fuzzy, c-format
+msgid "Failed to initialize audio file at %s"
+msgstr "Falha ao escrever o arquivo de áudio: %s"
+
+#: src/dsp/clip.c:453
+#, c-format
+msgid "Failed to write audio clip to file: %s"
+msgstr "Falha ao gravar clipe de áudio no arquivo: %s"
+
+#: src/dsp/clip.c:522
+msgid "Failed to write audio file"
+msgstr "Falha ao escrever o arquivo de áudio: %s"
+
+#: src/dsp/clip.c:544
+#, fuzzy
+msgid "Failed to create audio clip from file"
+msgstr "Falha ao gravar clipe de áudio no arquivo: %s"
+
+#: src/dsp/clip.c:696
+msgid "Edit in external app"
+msgstr "Editar em aplicativo externo"
+
+#: src/dsp/clip.c:698 src/utils/dialogs.c:60
+#: src/gui/widgets/dialogs/create_project_dialog.c:124
+#: src/gui/widgets/dialogs/first_run_dialog.c:274
+#: src/gui/widgets/dialogs/bug_report_dialog.c:187
+#: src/plugins/lv2/lv2_gtk.c:247 resources/ui/port_selector_dialog.ui:126
+#: resources/ui/string_entry_dialog.ui:55
+msgid "_OK"
+msgstr "_OK"
+
+#: src/dsp/clip.c:715
+#, c-format
+msgid "Edit the file at <u>%s</u>, then press OK"
+msgstr "Edite o arquivo em <u>%s</u>, e depois aperte OK"
+
+#: src/dsp/clip.c:727
+msgid "Launch"
+msgstr "Iniciar"
+
+#: src/dsp/clip.c:753 src/dsp/audio_region.c:90
+#, fuzzy, c-format
+msgid "Failed to create audio clip from file at %s"
+msgstr "Falha ao gravar clipe de áudio no arquivo: %s"
+
+#: src/dsp/tempo_track.c:38
+msgid "BPM"
+msgstr "BPM"
+
+#: src/dsp/tempo_track.c:51
+msgid "Beats per bar"
+msgstr "Pulsos por compasso"
+
+#: src/dsp/tempo_track.c:70
+msgid "Beat unit"
+msgstr "Unidade de pulso"
+
+#: src/dsp/tempo_track.c:185
+msgid "Failed to change BPM"
+msgstr "Falha ao alterar BPM"
+
+#: src/dsp/automation_point.c:241 src/gui/widgets/fader.c:370
+#: src/gui/widgets/balance_control.c:349 src/gui/widgets/item_factory.c:325
+#: src/gui/widgets/item_factory.c:349
+msgid "Invalid value"
+msgstr "Valor inválido"
+
+#: src/dsp/recording_manager.c:144
+msgid "Failed to create recorded regions"
+msgstr "Falha ao criar regiões gravadas"
+
+#: src/dsp/pool.c:520
+#, c-format
+msgid "Failed to write clip %s"
+msgstr "Falha ao escrever clipe %s"
+
+#: src/dsp/audio_region.c:236
+msgid "Failed to duplicate audio clip"
+msgstr "Falha ao duplicar clipe de áudio"
+
+#: src/dsp/engine_alsa.c:328
+#, c-format
+msgid "ALSA Error: %s"
+msgstr "Erro no ALSA: %s"
+
+#: src/dsp/track_lane.c:64
+#, c-format
+msgid "Lane %d"
+msgstr "Pista %d"
+
+#: src/dsp/track_lane.c:95
+msgid "Failed to rename lane"
+msgstr "Falha ao renomear pista"
+
+#: src/dsp/track_lane.c:142
+msgid "Cannot set track lane soloed"
+msgstr "Não foi possível colocar a pista no modo solo"
+
+#: src/dsp/track_lane.c:190
+msgid "Cannot set track lane muted"
+msgstr "Não foi possível colocar a pista no modo mudo"
+
+#: src/dsp/sample_processor.c:560
+#, c-format
+msgid "Failed to instantiate plugin %s"
+msgstr "Falha ao instanciar o plugin %s"
+
+#: src/dsp/channel_send.c:84
+#, c-format
+msgid "Channel Send %d enabled"
+msgstr "Send de canal %d ativado"
+
+#: src/dsp/channel_send.c:95
+#, fuzzy, c-format
+msgid "Channel Send %d amount"
+msgstr "Quantidade do send de canal %"
+
+#: src/dsp/channel_send.c:107
+#, c-format
+msgid "Channel Send %d audio in"
+msgstr "Entrada de áudio do send de canal %d"
+
+#: src/dsp/channel_send.c:114
+#, c-format
+msgid "Channel Send %d MIDI in"
+msgstr "Entrada de MIDI do send de canal %d"
+
+#: src/dsp/channel_send.c:121
+#, c-format
+msgid "Channel Send %d audio out"
+msgstr "Saída de áudio do send de canal %d"
+
+#: src/dsp/channel_send.c:129
+#, c-format
+msgid "Channel Send %d MIDI out"
+msgstr "Saída de MIDI do send de canal %d"
+
+#: src/dsp/channel_send.c:420 src/dsp/channel_send.c:477
+msgid "Ports cannot be connected"
+msgstr "Essas portas não podem ser conectadas"
+
+#: src/dsp/channel_send.c:582
+msgid "Pre-fader send"
+msgstr "Send pré-fader"
+
+#: src/dsp/channel_send.c:584
+msgid "Post-fader send"
+msgstr "Send pós-fader"
+
+#: src/dsp/channel_send.c:615
+#, c-format
+msgid "%s input"
+msgstr "Entrada %s"
+
+#: src/dsp/engine_pa.c:206 src/dsp/engine_pa.c:218 src/dsp/engine_pa.c:226
+#, c-format
+msgid "PortAudio Error: %s"
+msgstr "Erro no PortAudio: %s"
+
+#: src/dsp/tracklist.c:1295
+msgid "No file was found"
+msgstr "Nenhum arquivo encontrado"
+
+#: src/dsp/tracklist.c:1322
+#, c-format
+msgid "Unsupported file type %s"
+msgstr "O tipo de arquivo %s não é suportado"
+
+#: src/dsp/tracklist.c:1338
+msgid "This MIDI file contains no data"
+msgstr "Este arquivo MIDI não contém nenhum dado"
+
+#: src/dsp/tracklist.c:1355
+msgid "Can only drop 1 file at a time on existing tracks"
+msgstr "Só é possível soltar 1 arquivo por vez nas faixas existentes"
+
+#: src/dsp/tracklist.c:1369
+msgid "Can only drop MIDI files on MIDI/instrument tracks"
+msgstr "Só é possível soltar arquivos MIDI em faixas de MIDI/instrumento"
+
+#: src/dsp/tracklist.c:1379
+#, c-format
+msgid ""
+"This MIDI file contains %d tracks. It cannot be dropped into an existing "
+"track"
+msgstr ""
+"Este arquivo MIDI contém %d faixas. Não é possível soltá-lo em uma faixa "
+"existente"
+
+#: src/dsp/tracklist.c:1394
+msgid "Can only drop audio files on audio tracks"
+msgstr "Só é possível soltar arquivos de áudio em faixas de áudio"
+
+#: src/dsp/tracklist.c:1455
+msgid "Failed to create arranger objects"
+msgstr "Falha ao criar objetos do arranjador"
+
+#: src/dsp/tracklist.c:1529
+msgid "Failed to move tracks after copying or moving inside folder"
+msgstr "Falha ao mover faixas após copiar ou mover para dentro da pasta"
+
+#: src/dsp/tracklist.c:1607
+msgid "Failed to copy tracks inside"
+msgstr "Falha ao copiar faixas para dentro"
+
+#: src/dsp/tracklist.c:1649
+msgid "Failed to copy track inside"
+msgstr "Falha ao copiar faixa para dentro"
+
+#: src/dsp/tracklist.c:1690
+msgid "Failed to copy tracks"
+msgstr "Falha ao copiar faixas"
+
+#: src/dsp/tracklist.c:1715
+msgid "Cannot drag folder into itself"
+msgstr "Não é possível arrastar uma pasta para dentro dela mesma"
+
+#: src/dsp/tracklist.c:1733 src/dsp/tracklist.c:1777
+msgid "Failed to move track inside folder"
+msgstr "Falha ao mover faixa para dentro da pasta"
+
+#: src/dsp/tracklist.c:1818
+msgid "Failed to move tracks"
+msgstr "Falha ao mover faixas"
+
+#: src/dsp/modulator_macro_processor.c:87
+#, c-format
+msgid "Macro %d"
+msgstr "Macro %d"
+
+#: src/dsp/modulator_macro_processor.c:102
+#, c-format
+msgid "Macro CV In %d"
+msgstr "Macro de entrada CV %d"
+
+#: src/dsp/modulator_macro_processor.c:112
+#, c-format
+msgid "Macro CV Out %d"
+msgstr "Macro de saída CV %d"
+
+#: src/dsp/channel.c:1205 src/plugins/carla_native_plugin.c:1149
+msgid "MIDI out"
+msgstr "Saída MIDI"
 
 #: src/utils/ui.c:629
 msgid "Sine (Equal Power)"
@@ -2047,11 +2759,6 @@ msgstr "Erro de busca %d: %s"
 msgid "Mixer"
 msgstr "Mixer"
 
-#: src/utils/gtk.c:1215 src/audio/modulator_track.c:59
-#: src/gui/widgets/bot_dock_edge.c:262
-msgid "Modulators"
-msgstr "Moduladores"
-
 #: src/utils/gtk.c:1218
 msgid "Chord Pad"
 msgstr "Pad de Acordes"
@@ -2116,15 +2823,6 @@ msgstr "_Abrir"
 msgid "Overwrite Plugin"
 msgstr "Sobrescrever plugin"
 
-#: src/utils/dialogs.c:60 src/audio/clip.c:698
-#: src/gui/widgets/dialogs/create_project_dialog.c:124
-#: src/gui/widgets/dialogs/first_run_dialog.c:274
-#: src/gui/widgets/dialogs/bug_report_dialog.c:187
-#: src/plugins/lv2/lv2_gtk.c:247 resources/ui/port_selector_dialog.ui:126
-#: resources/ui/string_entry_dialog.ui:55
-msgid "_OK"
-msgstr "_OK"
-
 #: src/utils/dialogs.c:65
 msgid "A plugin already exists at the selected slot. Overwrite it?"
 msgstr "Já existe um plugin no espaço selecionado. Deseja sobrescrevê-lo?"
@@ -2137,705 +2835,6 @@ msgstr "Erro ao instanciar plugin. Veja o relatório para mais detalhes."
 #, c-format
 msgid "%s has encountered an error\n"
 msgstr "%s encontrou um erro\n"
-
-#: src/audio/supported_file.c:269
-msgid "Failed opening file"
-msgstr "Falha ao abrir arquivo"
-
-#: src/audio/supported_file.c:274
-#, c-format
-msgid ""
-"<b>%s</b>\n"
-"Sample rate: %d\n"
-"Length: %<PRId64>s %<PRId64> ms | BPM: %.1f\n"
-"Channel(s): %u | Bitrate: %'d.%d kb/s\n"
-"Bit depth: %d bits"
-msgstr ""
-"<b>%s</b>\n"
-"Taxa de amostragem: %d\n"
-"Duração: %<PRId64>s %<PRId64> ms | BPM: %.1f\n"
-"Canal(is): %u | Taxa de bits: %'d.%d kb/s\n"
-"Profundidade de bits: %d bits"
-
-#: src/audio/snap_grid.c:253 resources/ui/snap_grid_popover.ui:116
-#: resources/ui/snap_grid_popover.ui:199
-msgid "Adaptive"
-msgstr "Adaptativo"
-
-#: src/audio/fader.c:97
-msgid "Prefader Swap Phase"
-msgstr "Mudança de fase pré-fader"
-
-#: src/audio/fader.c:98
-msgid "Fader Swap Phase"
-msgstr "Mudança de fase do fader"
-
-#: src/audio/fader.c:140
-msgid "Prefader Volume"
-msgstr "Volume pré-fader"
-
-#: src/audio/fader.c:140
-msgid "Fader Volume"
-msgstr "Volume do fader"
-
-#: src/audio/fader.c:169
-msgid "Prefader Balance"
-msgstr "Balanço pré-fader"
-
-#: src/audio/fader.c:169
-msgid "Fader Balance"
-msgstr "Balanço do fader"
-
-#: src/audio/fader.c:188
-msgid "Prefader Mute"
-msgstr "Modo mudo pré-fader"
-
-#: src/audio/fader.c:188
-msgid "Fader Mute"
-msgstr "Modo mudo do fader"
-
-#: src/audio/fader.c:209
-msgid "Prefader Solo"
-msgstr "Modo solo pré-fader"
-
-#: src/audio/fader.c:209
-msgid "Fader Solo"
-msgstr "Modo solo do fader"
-
-#: src/audio/fader.c:223
-msgid "Prefader Listen"
-msgstr "Modo escuta pré-fader"
-
-#: src/audio/fader.c:223
-msgid "Fader Listen"
-msgstr "Modo escuta no fader"
-
-#: src/audio/fader.c:238
-msgid "Prefader Mono Compat"
-msgstr "Compatibilidade mono pré-fader"
-
-#: src/audio/fader.c:239
-msgid "Fader Mono Compat"
-msgstr "Compatibilidade mono do fader"
-
-#: src/audio/fader.c:271
-msgid "Ch Pre-Fader in"
-msgstr "Entrada pré-fader do canal"
-
-#: src/audio/fader.c:276
-msgid "Ch Fader in"
-msgstr "Entrada de fader do canal"
-
-#: src/audio/fader.c:282
-msgid "Sample Processor Fader in"
-msgstr "Entrada de fader do processador de samples"
-
-#: src/audio/fader.c:287
-msgid "Monitor Fader in"
-msgstr "Entrada de fader de monitoração"
-
-#: src/audio/fader.c:305
-msgid "Ch Pre-Fader out"
-msgstr "Saída pré-fader do canal"
-
-#: src/audio/fader.c:310
-msgid "Ch Fader out"
-msgstr "Saída de fader do canal"
-
-#: src/audio/fader.c:316
-msgid "Sample Processor Fader out"
-msgstr "Saída de fader do processador de samples"
-
-#: src/audio/fader.c:321
-msgid "Monitor Fader out"
-msgstr "Saída de fader de monitoração"
-
-#: src/audio/fader.c:343
-msgid "Ch MIDI Pre-Fader in"
-msgstr "Entrada pré-fader do canal MIDI"
-
-#: src/audio/fader.c:348
-msgid "Ch MIDI Fader in"
-msgstr "Entrada de fader do canal MIDI"
-
-#: src/audio/fader.c:360
-msgid "Ch MIDI Pre-Fader out"
-msgstr "Saída pré-fader do canal MIDI"
-
-#: src/audio/fader.c:365
-msgid "Ch MIDI Fader out"
-msgstr "Saída de fader do canal MIDI"
-
-#: src/audio/fader.c:594
-msgid "Failed to change volume"
-msgstr "Falha ao alterar volume"
-
-#: src/audio/fader.c:643
-msgid "Failed to set MIDI mode"
-msgstr "Falha ao definir modo de MIDI"
-
-#: src/audio/encoder.c:58
-#, c-format
-msgid "An error has occurred opening the audio file '%s'"
-msgstr "Ocorreu um erro ao abrir o arquivo de áudio '%s'"
-
-#: src/audio/marker_track.c:42
-msgid "Markers"
-msgstr "Marcadores"
-
-#: src/audio/marker_track.c:60 src/gui/widgets/timeline_selection_info.c:228
-#: resources/ui/quantize_dialog.ui:62
-msgid "start"
-msgstr "início"
-
-#: src/audio/marker_track.c:67 src/gui/widgets/timeline_selection_info.c:234
-#: resources/ui/quantize_dialog.ui:70
-msgid "end"
-msgstr "fim"
-
-#: src/audio/engine_jack.c:311
-msgid "XRUN occurred - check your JACK configuration"
-msgstr "Ocorreu XRUN - confira sua configuração do JACK"
-
-#: src/audio/engine_jack.c:369
-msgid "JACK has shut down"
-msgstr "O JACK foi encerrado"
-
-#. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:632
-msgid "Overall operation failed"
-msgstr "Falha geral na operação"
-
-#: src/audio/engine_jack.c:638
-msgid "The operation contained an invalid or unsupported option"
-msgstr "A operação continha uma opção inválida ou não suportada"
-
-#: src/audio/engine_jack.c:644
-msgid "The desired client name was not unique"
-msgstr "O nome de cliente desejado não era único"
-
-#: src/audio/engine_jack.c:648
-msgid "Unable to connect to the JACK server"
-msgstr "Não foi possível se conectar ao servidor JACK"
-
-#: src/audio/engine_jack.c:653
-msgid "Communication error with the JACK server"
-msgstr "Erro de comunicação com o servidor JACK"
-
-#: src/audio/engine_jack.c:657
-msgid "Requested client does not exist"
-msgstr "O cliente solicitado não existe"
-
-#: src/audio/engine_jack.c:661
-msgid "Unable to load internal client"
-msgstr "Não foi possível carregar o cliente interno"
-
-#: src/audio/engine_jack.c:665
-msgid "Unable to initialize client"
-msgstr "Não foi possível inicializar o cliente"
-
-#: src/audio/engine_jack.c:669
-msgid "Unable to access shared memory"
-msgstr "Não foi possível acessar a memória compartilhada"
-
-#: src/audio/engine_jack.c:674
-msgid "Client's protocol version does not match"
-msgstr "A versão de protocolo do cliente não é a correspondente"
-
-#: src/audio/engine_jack.c:678
-msgid "Backend error"
-msgstr "Erro de backend"
-
-#: src/audio/engine_jack.c:682
-msgid "Client zombie"
-msgstr "Cliente zumbi"
-
-#: src/audio/engine_jack.c:729
-#, c-format
-msgid "JACK: Failed to disconnect monitor out: %s"
-msgstr "JACK: Falha ao desconectar a saída de monitoração: %s"
-
-#: src/audio/engine_jack.c:778
-msgid "JACK: No physical playback ports found"
-msgstr "JACK: Nenhuma porta física de reprodução encontrada"
-
-#: src/audio/engine_jack.c:792
-#, fuzzy, c-format
-msgid "JACK: Failed to connect monitor output [%s]: %s"
-msgstr "JACK: Falha ao conectar saída de monitoração: %s"
-
-#: src/audio/engine_jack.c:793
-msgid "left"
-msgstr "esquerda"
-
-#: src/audio/engine_jack.c:793
-msgid "right"
-msgstr "direita"
-
-#: src/audio/engine_jack.c:851 src/gui/widgets/monitor_section.c:237
-msgid "Failed to connect to left monitor output port"
-msgstr "Falha ao conectar a porta de saída de monitoração esquerda: %s"
-
-#: src/audio/engine_jack.c:859 src/gui/widgets/monitor_section.c:246
-msgid "Failed to connect to right monitor output port"
-msgstr "Falha ao conectar a porta de saída de monitoração direita: %s"
-
-#: src/audio/curve.c:375
-msgid "Exponential"
-msgstr "Exponencial"
-
-#: src/audio/curve.c:380
-msgid "Elliptic"
-msgstr "Elíptico"
-
-#: src/audio/audio_function.c:137 src/gui/widgets/drag_dest_box.c:324
-msgid "Failed to create plugin"
-msgstr "Falha ao criar plugin"
-
-#: src/audio/audio_function.c:370
-msgid "Invalid positions - skipping function"
-msgstr "Posições inválidas - função ignorada"
-
-#: src/audio/audio_function.c:616
-msgid "Failed to get audio clip from external program"
-msgstr "Falha ao obter clipe de áudio de programa externo"
-
-#: src/audio/audio_function.c:641
-msgid "Failed to apply plugin"
-msgstr "Falha ao aplicar plugin"
-
-#: src/audio/graph_thread.c:572
-#, c-format
-msgid ""
-"Your user does not have enough privileges to allow %s to set the scheduling "
-"priority of threads. Please refer to the 'Getting Started' section in the "
-"user manual for details."
-msgstr ""
-"Seu usuário não tem privilégios suficientes para permitir que %s defina as "
-"prioridades de agendamento das threads. Consulte a seção 'Getting Started' "
-"do manual de usuário para mais detalhes."
-
-#: src/audio/track.c:326
-msgid "Track record"
-msgstr "Gravação de faixa"
-
-#: src/audio/track.c:445
-msgid "Failed to clone modulator plugin"
-msgstr "Falha ao clonar plugin modulador"
-
-#: src/audio/track.c:474
-msgid "Failed to clone channel"
-msgstr "Falha ao clonar canal"
-
-#: src/audio/track.c:853
-msgid "Cannot set track muted"
-msgstr "Não foi possível colocar a faixa no modo mudo"
-
-#: src/audio/track.c:897
-msgid "Cannot set track folded"
-msgstr "Não foi possível recolher a faixa"
-
-#: src/audio/track.c:1409
-msgid "Cannot set track soloed"
-msgstr "Não foi possível colocar a faixa no modo solo"
-
-#: src/audio/track.c:1459
-msgid "Cannot set track listened"
-msgstr "Não foi possível colocar a faixa no modo escuta"
-
-#: src/audio/track.c:2905 src/settings/plugin_settings.c:398
-#: src/settings/plugin_settings.c:440
-msgid "Failed to rename track"
-msgstr "Falha ao renomear a faixa"
-
-#: src/audio/track.c:3265 src/audio/track.c:3310
-msgid "Cannot set track comment"
-msgstr "Não foi possível definir o comentário da faixa"
-
-#: src/audio/track.c:3346
-msgid "Cannot set track icon"
-msgstr "Não foi possível definir o ícone da faixa"
-
-#: src/audio/track.c:3580
-msgid "Cannot set track enabled"
-msgstr "Não foi possível ativar a faixa"
-
-#: src/audio/automation_track.c:163
-msgid "Rec"
-msgstr "Gravar"
-
-#: src/audio/automation_track.c:184
-msgid "Touch"
-msgstr "Touch"
-
-#: src/audio/automation_track.c:187
-msgid "Latch"
-msgstr "Latch"
-
-#: src/audio/region.c:511 src/gui/widgets/track.c:1059
-#: build/data/org.zrythm.Zrythm.gschema.xml:1233
-msgid "Automation"
-msgstr "Automação"
-
-#: src/audio/engine.c:499
-#, c-format
-msgid ""
-"Failed to initialize the %s audio backend. Will use the dummy backend "
-"instead. Please check your backend settings in the Preferences."
-msgstr ""
-"Falha ao inicializar o backend de áudio %s. Em vez disso será utilizado o "
-"backend dummy. Confira sua configurações de backend nas Preferências."
-
-#: src/audio/engine.c:540
-#, c-format
-msgid ""
-"The JACK MIDI backend can only be used with the JACK audio backend (your "
-"current audio backend is %s). Will use the dummy MIDI backend instead."
-msgstr ""
-"O backend MIDI JACK só pode ser utilizado com o backend de áudio JACK (seu "
-"backend de áudio atual é %s). Em vez disso será utilizado o backend MIDI "
-"dummy."
-
-#: src/audio/engine.c:575
-#, c-format
-msgid ""
-"Failed to initialize the %s MIDI backend. Will use the dummy backend "
-"instead. Please check your backend settings in the Preferences."
-msgstr ""
-"Falha ao inicializar o backend MIDI %s. Em vez disso será utilizado o "
-"backend dummy. Confira suas configurações de backend nas Preferências."
-
-#: src/audio/engine.c:616
-msgid ""
-"Your selected combination of backends may not work properly. If you want to "
-"use JACK, please select JACK as both your audio and MIDI backend."
-msgstr ""
-"Sua combinação de backends escolhida pode não funcionar corretamente. Se "
-"você deseja utilizar o JACK, escolha o JACK como seu backend tanto de áudio "
-"quanto de MIDI."
-
-#: src/audio/engine.c:817
-#, c-format
-msgid ""
-"The selected MIDI/audio backend was not found in the version of %s you have "
-"installed. The audio and MIDI backends were set to \"Dummy\". Please set "
-"your preferred backend from the preferences."
-msgstr ""
-"O backend de MIDI/áudio escolhido não foi encontrado na versão do %s que "
-"você tem instalada. Os backends de MIDI e áudio foram definidos para "
-"\"Dummy\". Defina o backend de sua escolha nas Preferências."
-
-#: src/audio/exporter.c:160
-#, c-format
-msgid "Format %s not supported yet"
-msgstr "O formato %s ainda não é suportado"
-
-#: src/audio/exporter.c:227
-msgid "SF INFO invalid"
-msgstr "SF INFO inválida"
-
-#: src/audio/exporter.c:256
-#, c-format
-msgid ""
-"Couldn't open SNDFILE %s:\n"
-"%d: %s"
-msgstr ""
-"Não foi possível abrir SNDFILE %s:\n"
-"%d: %s"
-
-#: src/audio/exporter.c:267
-#, c-format
-msgid "Invalid SNDFILE format %s: 0x%08X != 0x%08X"
-msgstr "Formato SNDFILE inválido %s: 0x%08X != 0x%08X"
-
-#: src/audio/exporter.c:524
-#, c-format
-msgid ""
-"The exported audio contains segments louder than 0 dB (max detected %.1f dB)."
-msgstr ""
-"O áudio exportado contém partes com volume superior a 0dB (máx. detectado "
-"%.1f dB)."
-
-#: src/audio/exporter.c:1014 src/audio/exporter.c:1021
-msgid "Failed to create audio track"
-msgstr "Falha ao criar faixa de áudio"
-
-#: src/audio/exporter.c:1053
-msgid "Invalid time range"
-msgstr "Intervalo de tempo inválido"
-
-#: src/audio/engine_pulse.c:88
-msgid ""
-"A buffer underflow has occurred. Try increasing the buffer size in the "
-"settings to avoid audio glitches."
-msgstr ""
-"Ocorreu um subfluxo de buffer. Tente aumentar o tamanho do buffer nas "
-"configurações para evitar falhas de áudio."
-
-#: src/audio/engine_pulse.c:202
-msgid "PulseAudio error: Failed to create main loop"
-msgstr "Erro no PulseAudio: falha ao criar loop principal"
-
-#: src/audio/engine_pulse.c:222
-#, c-format
-msgid "PulseAudio Error: %s"
-msgstr "Erro no PulseAudio: %s"
-
-#: src/audio/engine_pulse.c:239
-msgid "PulseAudio Error: Failed to connect"
-msgstr "Erro no PulseAudio: Falha ao conectar"
-
-#. TODO
-#: src/audio/scale.c:543
-msgid "Unimplemented"
-msgstr "Não implementado"
-
-#: src/audio/chord_track.c:40 src/settings/chord_preset.c:47
-#: resources/ui/inspector_chord.ui:7
-msgid "Chords"
-msgstr "Acordes"
-
-#: src/audio/clip.c:160
-#, fuzzy
-msgid "Failed to initialize audio file"
-msgstr "Falha ao escrever o arquivo de áudio: %s"
-
-#: src/audio/clip.c:186
-#, fuzzy, c-format
-msgid "Failed to initialize audio file at %s"
-msgstr "Falha ao escrever o arquivo de áudio: %s"
-
-#: src/audio/clip.c:453
-#, c-format
-msgid "Failed to write audio clip to file: %s"
-msgstr "Falha ao gravar clipe de áudio no arquivo: %s"
-
-#: src/audio/clip.c:522
-msgid "Failed to write audio file"
-msgstr "Falha ao escrever o arquivo de áudio: %s"
-
-#: src/audio/clip.c:544
-#, fuzzy
-msgid "Failed to create audio clip from file"
-msgstr "Falha ao gravar clipe de áudio no arquivo: %s"
-
-#: src/audio/clip.c:696
-msgid "Edit in external app"
-msgstr "Editar em aplicativo externo"
-
-#: src/audio/clip.c:715
-#, c-format
-msgid "Edit the file at <u>%s</u>, then press OK"
-msgstr "Edite o arquivo em <u>%s</u>, e depois aperte OK"
-
-#: src/audio/clip.c:727
-msgid "Launch"
-msgstr "Iniciar"
-
-#: src/audio/clip.c:753 src/audio/audio_region.c:90
-#, fuzzy, c-format
-msgid "Failed to create audio clip from file at %s"
-msgstr "Falha ao gravar clipe de áudio no arquivo: %s"
-
-#: src/audio/tempo_track.c:38
-msgid "BPM"
-msgstr "BPM"
-
-#: src/audio/tempo_track.c:51
-msgid "Beats per bar"
-msgstr "Pulsos por compasso"
-
-#: src/audio/tempo_track.c:70
-msgid "Beat unit"
-msgstr "Unidade de pulso"
-
-#: src/audio/tempo_track.c:185
-msgid "Failed to change BPM"
-msgstr "Falha ao alterar BPM"
-
-#: src/audio/automation_point.c:241 src/gui/widgets/fader.c:342
-#: src/gui/widgets/balance_control.c:349 src/gui/widgets/item_factory.c:325
-#: src/gui/widgets/item_factory.c:349
-msgid "Invalid value"
-msgstr "Valor inválido"
-
-#: src/audio/recording_manager.c:144
-msgid "Failed to create recorded regions"
-msgstr "Falha ao criar regiões gravadas"
-
-#: src/audio/pool.c:520
-#, c-format
-msgid "Failed to write clip %s"
-msgstr "Falha ao escrever clipe %s"
-
-#: src/audio/audio_region.c:236
-msgid "Failed to duplicate audio clip"
-msgstr "Falha ao duplicar clipe de áudio"
-
-#: src/audio/engine_alsa.c:328
-#, c-format
-msgid "ALSA Error: %s"
-msgstr "Erro no ALSA: %s"
-
-#: src/audio/track_lane.c:64
-#, c-format
-msgid "Lane %d"
-msgstr "Pista %d"
-
-#: src/audio/track_lane.c:95
-msgid "Failed to rename lane"
-msgstr "Falha ao renomear pista"
-
-#: src/audio/track_lane.c:142
-msgid "Cannot set track lane soloed"
-msgstr "Não foi possível colocar a pista no modo solo"
-
-#: src/audio/track_lane.c:190
-msgid "Cannot set track lane muted"
-msgstr "Não foi possível colocar a pista no modo mudo"
-
-#: src/audio/sample_processor.c:560
-#, c-format
-msgid "Failed to instantiate plugin %s"
-msgstr "Falha ao instanciar o plugin %s"
-
-#: src/audio/channel_send.c:84
-#, c-format
-msgid "Channel Send %d enabled"
-msgstr "Send de canal %d ativado"
-
-#: src/audio/channel_send.c:95
-#, fuzzy, c-format
-msgid "Channel Send %d amount"
-msgstr "Quantidade do send de canal %"
-
-#: src/audio/channel_send.c:107
-#, c-format
-msgid "Channel Send %d audio in"
-msgstr "Entrada de áudio do send de canal %d"
-
-#: src/audio/channel_send.c:114
-#, c-format
-msgid "Channel Send %d MIDI in"
-msgstr "Entrada de MIDI do send de canal %d"
-
-#: src/audio/channel_send.c:121
-#, c-format
-msgid "Channel Send %d audio out"
-msgstr "Saída de áudio do send de canal %d"
-
-#: src/audio/channel_send.c:129
-#, c-format
-msgid "Channel Send %d MIDI out"
-msgstr "Saída de MIDI do send de canal %d"
-
-#: src/audio/channel_send.c:420 src/audio/channel_send.c:477
-msgid "Ports cannot be connected"
-msgstr "Essas portas não podem ser conectadas"
-
-#: src/audio/channel_send.c:582
-msgid "Pre-fader send"
-msgstr "Send pré-fader"
-
-#: src/audio/channel_send.c:584
-msgid "Post-fader send"
-msgstr "Send pós-fader"
-
-#: src/audio/channel_send.c:615
-#, c-format
-msgid "%s input"
-msgstr "Entrada %s"
-
-#: src/audio/engine_pa.c:206 src/audio/engine_pa.c:218
-#: src/audio/engine_pa.c:226
-#, c-format
-msgid "PortAudio Error: %s"
-msgstr "Erro no PortAudio: %s"
-
-#: src/audio/tracklist.c:1295
-msgid "No file was found"
-msgstr "Nenhum arquivo encontrado"
-
-#: src/audio/tracklist.c:1322
-#, c-format
-msgid "Unsupported file type %s"
-msgstr "O tipo de arquivo %s não é suportado"
-
-#: src/audio/tracklist.c:1338
-msgid "This MIDI file contains no data"
-msgstr "Este arquivo MIDI não contém nenhum dado"
-
-#: src/audio/tracklist.c:1355
-msgid "Can only drop 1 file at a time on existing tracks"
-msgstr "Só é possível soltar 1 arquivo por vez nas faixas existentes"
-
-#: src/audio/tracklist.c:1369
-msgid "Can only drop MIDI files on MIDI/instrument tracks"
-msgstr "Só é possível soltar arquivos MIDI em faixas de MIDI/instrumento"
-
-#: src/audio/tracklist.c:1379
-#, c-format
-msgid ""
-"This MIDI file contains %d tracks. It cannot be dropped into an existing "
-"track"
-msgstr ""
-"Este arquivo MIDI contém %d faixas. Não é possível soltá-lo em uma faixa "
-"existente"
-
-#: src/audio/tracklist.c:1394
-msgid "Can only drop audio files on audio tracks"
-msgstr "Só é possível soltar arquivos de áudio em faixas de áudio"
-
-#: src/audio/tracklist.c:1455
-msgid "Failed to create arranger objects"
-msgstr "Falha ao criar objetos do arranjador"
-
-#: src/audio/tracklist.c:1529
-msgid "Failed to move tracks after copying or moving inside folder"
-msgstr "Falha ao mover faixas após copiar ou mover para dentro da pasta"
-
-#: src/audio/tracklist.c:1607
-msgid "Failed to copy tracks inside"
-msgstr "Falha ao copiar faixas para dentro"
-
-#: src/audio/tracklist.c:1649
-msgid "Failed to copy track inside"
-msgstr "Falha ao copiar faixa para dentro"
-
-#: src/audio/tracklist.c:1690
-msgid "Failed to copy tracks"
-msgstr "Falha ao copiar faixas"
-
-#: src/audio/tracklist.c:1715
-msgid "Cannot drag folder into itself"
-msgstr "Não é possível arrastar uma pasta para dentro dela mesma"
-
-#: src/audio/tracklist.c:1733 src/audio/tracklist.c:1777
-msgid "Failed to move track inside folder"
-msgstr "Falha ao mover faixa para dentro da pasta"
-
-#: src/audio/tracklist.c:1818
-msgid "Failed to move tracks"
-msgstr "Falha ao mover faixas"
-
-#: src/audio/modulator_macro_processor.c:87
-#, c-format
-msgid "Macro %d"
-msgstr "Macro %d"
-
-#: src/audio/modulator_macro_processor.c:102
-#, c-format
-msgid "Macro CV In %d"
-msgstr "Macro de entrada CV %d"
-
-#: src/audio/modulator_macro_processor.c:112
-#, c-format
-msgid "Macro CV Out %d"
-msgstr "Macro de saída CV %d"
-
-#: src/audio/channel.c:1205 src/plugins/carla_native_plugin.c:1149
-msgid "MIDI out"
-msgstr "Saída MIDI"
 
 #: src/gui/backend/mixer_selections.c:622
 msgid "Failed to paste plugins"
@@ -2894,7 +2893,7 @@ msgstr "Nome de objeto inválido %s"
 msgid "Failed to rename object"
 msgstr "Falha ao renomear objeto"
 
-#: src/gui/widgets/inspector_port.c:121 src/gui/widgets/fader.c:293
+#: src/gui/widgets/inspector_port.c:121 src/gui/widgets/fader.c:321
 #: src/gui/widgets/preferences.c:343 src/gui/widgets/modulator_inner.c:138
 #: src/gui/widgets/modulator_macro.c:155 src/gui/widgets/balance_control.c:287
 #: src/gui/widgets/plugin_browser.c:612 src/gui/widgets/plugin_browser.c:659
@@ -2991,12 +2990,12 @@ msgstr "Nota/Controle"
 msgid "Destination"
 msgstr "Destino"
 
-#: src/gui/widgets/fader.c:378
+#: src/gui/widgets/fader.c:406
 #, fuzzy
 msgid "Fader Value"
 msgstr "Volume do fader"
 
-#: src/gui/widgets/fader.c:488 src/gui/widgets/fader_controls_expander.c:41
+#: src/gui/widgets/fader.c:526 src/gui/widgets/fader_controls_expander.c:41
 msgid "Fader"
 msgstr "Fader"
 
@@ -3020,17 +3019,17 @@ msgstr ""
 "O projeto contém alterações não salvas.\n"
 "Se você sair sem salvar, as alterações não salvas serão perdidas."
 
-#: src/gui/widgets/main_window.c:779 src/gui/widgets/preferences.c:1007
+#: src/gui/widgets/main_window.c:799 src/gui/widgets/preferences.c:1007
 #: resources/ui/file_auditioner_controls.ui:34 resources/gtk/menus.ui:40
 #: resources/gtk/help-overlay.ui:39
 msgid "Preferences"
 msgstr "Preferências"
 
-#: src/gui/widgets/main_window.c:780
+#: src/gui/widgets/main_window.c:800
 msgid "Log viewer"
 msgstr "Visualizador de logs"
 
-#: src/gui/widgets/main_window.c:781
+#: src/gui/widgets/main_window.c:801
 msgid "Scripting interface"
 msgstr "Interface de script"
 
@@ -3896,15 +3895,15 @@ msgstr "Selecionar tudo"
 msgid "Loop selection"
 msgstr ""
 
-#: src/gui/widgets/bot_dock_edge.c:259
+#: src/gui/widgets/bot_dock_edge.c:251
 msgid "Editor view"
 msgstr ""
 
-#: src/gui/widgets/bot_dock_edge.c:260
+#: src/gui/widgets/bot_dock_edge.c:252
 msgid "Mixer view"
 msgstr ""
 
-#: src/gui/widgets/bot_dock_edge.c:264
+#: src/gui/widgets/bot_dock_edge.c:256
 msgid "Chord pad"
 msgstr ""
 
@@ -5369,7 +5368,7 @@ msgid "Link to snap"
 msgstr "Vincular a encaixe"
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:342
-#: resources/ui/snap_grid_popover.ui:224
+#: resources/ui/snap_grid_popover.ui:212
 msgid "Last object"
 msgstr "Último objeto"
 
@@ -5391,7 +5390,7 @@ msgid ""
 msgstr ""
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:373
-#: resources/ui/snap_grid_popover.ui:239 resources/ui/inspector_master.ui:71
+#: resources/ui/snap_grid_popover.ui:225 resources/ui/inspector_master.ui:71
 #: resources/ui/inspector_ap.ui:71 resources/ui/inspector_midi.ui:71
 msgid "Length"
 msgstr ""
@@ -6098,7 +6097,7 @@ msgid "Play/Pause"
 msgstr ""
 
 #: resources/ui/file_auditioner_controls.ui:22
-#: resources/ui/transport_controls.ui:38
+#: resources/ui/transport_controls.ui:32
 msgid "Stop"
 msgstr "Parar"
 
@@ -6130,51 +6129,51 @@ msgstr "Configurações de canal"
 msgid "News"
 msgstr "Notícias"
 
-#: resources/ui/snap_box.ui:15
+#: resources/ui/snap_box.ui:13
 msgid "Snap to grid"
 msgstr ""
 
-#: resources/ui/snap_box.ui:29
+#: resources/ui/snap_box.ui:25
 msgid "Keep offset"
 msgstr ""
 
-#: resources/ui/snap_box.ui:43
+#: resources/ui/snap_box.ui:37
 msgid "Snap to events"
 msgstr ""
 
-#: resources/ui/snap_grid_popover.ui:66 resources/ui/snap_grid_popover.ui:149
+#: resources/ui/snap_grid_popover.ui:66 resources/ui/snap_grid_popover.ui:144
 msgid "Note length"
 msgstr "Duração da nota"
 
-#: resources/ui/snap_grid_popover.ui:84 resources/ui/snap_grid_popover.ui:167
+#: resources/ui/snap_grid_popover.ui:84 resources/ui/snap_grid_popover.ui:162
 msgid "t"
 msgstr ""
 
-#: resources/ui/snap_grid_popover.ui:87 resources/ui/snap_grid_popover.ui:170
+#: resources/ui/snap_grid_popover.ui:85 resources/ui/snap_grid_popover.ui:163
 msgid "Triplet"
 msgstr ""
 
-#: resources/ui/snap_grid_popover.ui:97 resources/ui/snap_grid_popover.ui:180
+#: resources/ui/snap_grid_popover.ui:93 resources/ui/snap_grid_popover.ui:171
 msgid "Dotted"
 msgstr ""
 
-#: resources/ui/snap_grid_popover.ui:118 resources/ui/snap_grid_popover.ui:201
+#: resources/ui/snap_grid_popover.ui:113 resources/ui/snap_grid_popover.ui:191
 msgid "Adaptive length"
 msgstr ""
 
-#: resources/ui/snap_grid_popover.ui:130
+#: resources/ui/snap_grid_popover.ui:125
 msgid "Snap"
 msgstr ""
 
-#: resources/ui/snap_grid_popover.ui:211
+#: resources/ui/snap_grid_popover.ui:201
 msgid "Link"
 msgstr "Vínculo"
 
-#: resources/ui/snap_grid_popover.ui:212
+#: resources/ui/snap_grid_popover.ui:202
 msgid "Link length to snap setting"
 msgstr ""
 
-#: resources/ui/snap_grid_popover.ui:225
+#: resources/ui/snap_grid_popover.ui:213
 msgid "Use last created object's length"
 msgstr ""
 
@@ -6182,23 +6181,23 @@ msgstr ""
 msgid "Bookmarks"
 msgstr ""
 
-#: resources/ui/transport_controls.ui:9
+#: resources/ui/transport_controls.ui:7
 msgid "Return to cue point on stop"
 msgstr ""
 
-#: resources/ui/transport_controls.ui:26
+#: resources/ui/transport_controls.ui:22
 msgid "Play"
 msgstr "Reproduzir"
 
-#: resources/ui/transport_controls.ui:50
+#: resources/ui/transport_controls.ui:42
 msgid "Backward"
 msgstr "Voltar"
 
-#: resources/ui/transport_controls.ui:62
+#: resources/ui/transport_controls.ui:52
 msgid "Forward"
 msgstr "Avançar"
 
-#: resources/ui/transport_controls.ui:74
+#: resources/ui/transport_controls.ui:62
 msgid "Loop"
 msgstr ""
 
@@ -6267,7 +6266,7 @@ msgstr ""
 msgid "Toggle ghost note visibility"
 msgstr "Alternar painel direito"
 
-#: resources/ui/editor_toolbar.ui:143 resources/ui/timeline_toolbar.ui:105
+#: resources/ui/editor_toolbar.ui:143 resources/ui/timeline_toolbar.ui:104
 msgid "Toggle event viewer"
 msgstr ""
 
@@ -6520,12 +6519,12 @@ msgstr ""
 msgid "Remove range"
 msgstr ""
 
-#: resources/ui/timeline_toolbar.ui:39
+#: resources/ui/timeline_toolbar.ui:38
 #: build/data/org.zrythm.Zrythm.gschema.xml:402
 msgid "Musical mode"
 msgstr ""
 
-#: resources/ui/timeline_toolbar.ui:78
+#: resources/ui/timeline_toolbar.ui:77
 msgid "Merge selections"
 msgstr ""
 
@@ -6638,12 +6637,12 @@ msgstr ""
 msgid "Initializing..."
 msgstr ""
 
-#: resources/ui/tracklist_header.ui:26
+#: resources/ui/tracklist_header.ui:25
 #, fuzzy
 msgid "Track filters & visibility"
 msgstr "Visibilidade"
 
-#: resources/ui/tracklist_header.ui:53
+#: resources/ui/tracklist_header.ui:52
 #, fuzzy
 msgid "Tracklist Settings"
 msgstr "Seleção"
@@ -8275,284 +8274,327 @@ msgid "DAW"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:55
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:146
 msgid "Added:"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-msgid "Home/End key shortcut for moving to the start/end of the project"
+msgid "Add toggle to hide deactivated tracks in track filter menu"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
-#, fuzzy
-msgid "Option to select note notation in the piano roll"
-msgstr "Escuta as notas MIDI enquanto arrasta elas pelo piano de rolo."
+msgid "Add right-click option to loop selection in timeline"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
-#, fuzzy
-msgid "Ability to select notes in a given pitch in the piano roll"
-msgstr "Escuta as notas MIDI enquanto arrasta elas pelo piano de rolo."
+msgid "Add option to append all track/lane objects to the current selection"
+msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
-msgid "Ctrl+0 shortcut for zooming to default level"
+msgid "Add tracklist preferences button with option to disable auto-arm"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
+msgid ""
+"Add Crescendo, Flam, Flip H/V, Portato, Staccato, Legato, Strum MIDI "
+"functions"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
+msgid "Implement MIDI clock (output) for syncing to Zrythm"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+msgid ""
+"Build: add requirements.txt for managing Python dependencies (for building "
+"docs, etc.)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
 #, fuzzy
 msgid "Changed:"
 msgstr "Mudar Balanço"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+msgid ""
+"Link scroll events on digital meter widgets (changes are only applied at the "
+"end of scrolls)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+msgid "Build: re-enable some GCC analyzer checks and add new checks"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+#, fuzzy
+msgid "Change order in track context menu"
+msgstr "Mudar conexão de portas"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:70
+msgid "Subprojects: bump GTK and RtAudio versions"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
+msgid "Cache previous and current transport info during processing"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+msgid "Various internal refactorings"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+msgid ""
+"Update Catalan, French, Japanese, Chinese (Simplified), Russian, Dutch, "
+"Hungarian, Italian, Indonesian, Spanish, Portuguese, Swedish translations"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+msgid ""
+"Log: print `(?:?)` instead of `((null):(null))` when function and line "
+"number are unknown"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+msgid "Add more error checking and print more debug info in the log"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
+msgid "Fixed:"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+msgid "Build: fix bundled plugin build with GCC 13"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+msgid "Fix app icon not showing on Wayland (StartupWMClass)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+msgid "Home/End key shortcut for moving to the start/end of the project"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
+#, fuzzy
+msgid "Option to select note notation in the piano roll"
+msgstr "Escuta as notas MIDI enquanto arrasta elas pelo piano de rolo."
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
+#, fuzzy
+msgid "Ability to select notes in a given pitch in the piano roll"
+msgstr "Escuta as notas MIDI enquanto arrasta elas pelo piano de rolo."
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
+msgid "Ctrl+0 shortcut for zooming to default level"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
 msgid "Show message that BPM/time signature automation is experimental"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
 msgid "Show channel slot context menu on mouse release instead of mouse press"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
 msgid "Skip autosave if any toplevel window is on top"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
 msgid ""
 "Update Catalan, French, Japanese, Chinese (Simplified), Czech, Portuguese "
 "(Brazil) translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
 msgid "Redesign port/arranger object info dialogs"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
 msgid "Disable Guile scripting interface on MacOS"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
-msgid "Fixed:"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid "Fix wrong tooltip message on automatable selector in track lanes"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid ""
 "Fix track lane names getting ellipsized despite there being enough space"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
 msgid "Fix crash when splitting large audio clips"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
 msgid ""
 "Fix \"Move Tracks Under Group\" option not working when setting the direct "
 "output of selected tracks to a new group"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
 msgid "Fix given time range not being taken into account when exporting MIDI"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
 msgid "Audition notes when moved with arrow keys"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
 msgid "Show value when hovering faders and balance controls"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
 msgid "Double click on faders and balance controls to set precise values"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
 msgid "Control-click on balance controls to reset their value"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
 msgid "Audition notes on draw and on click instead of on move"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 msgid ""
 "Show track inspector when double clicking on a track in places other than "
 "the track name"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
 msgid "Don't start DnD on tracks until minimum movement threshold is reached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
 msgid ""
 "Minimize waiting time when creating tracks and connections for multi-out "
 "plugins"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
 #, fuzzy
 msgid "Scroll to middle of piano roll when first shown"
 msgstr "Escuta as notas MIDI enquanto arrasta elas pelo piano de rolo."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
 msgid "Fix incorrectly allowing bypassing snapping in autofill mode"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
 msgid "Fix editor region being unset when moving tracks"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
 msgid "Fix not propagating errors when performing some actions"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
 msgid ""
 "Fix incorrectly allowing auto-save to continue while pre-rolling or counting "
 "in"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
 msgid "Fix resetting faders and balance controls not being undoable"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
 msgid "Fix not being able to cut regions near the edges with alt-click"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid ""
 "Fix not being able to change parameter values for VST plugins in generic UI "
 "text fields"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
 msgid "Add monitor output meters in the header"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
 msgid "Add Macedonian translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:150
 #, fuzzy
 msgid "Add pitch shift audio function"
 msgstr "Falha ao aplicar função de áudio"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
 msgid ""
 "Auto-scroll in the tracklist when dragging tracks and hovering towards the "
 "edges"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:155
 msgid "Update Catalan, Japanese, Russian, French translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
 msgid "Stop using `g_slice_*()` (deprecated in GLib)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:157
 msgid "Simplify CSS for separators"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:158
 msgid ""
 "Move velocity settings to new toolbar in the bottom of the piano roll (fixes "
 "being unable to drag velocity bars when set to high values)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:162
 msgid ""
 "Fix audio files not being saved properly when saving the project after "
 "applying an audio function"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:163
 msgid "Fix error when routing to/from a port that has display unit info"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:132
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:164
 msgid "Fix minor memory leak"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:165
 msgid ""
 "Fix track/plugin inspect not immediately displaying the track/plugin "
 "properties"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:166
 msgid ""
 "Fix occasional crash when exporting the project (fix not deleting the source "
 "function after disposing an EditableLabelWidget)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:167
 msgid "Fix occasional crash when adding a plugin to a collection"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:168
 msgid "Fix no sound when using Pipewire (regression from previous release)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:169
 msgid "Fix right-clicking on inserts not working on Windows"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:170
 msgid "Fix error when attempting to paste an empty selection"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:147
-msgid "Add spectrum analyzer"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
-msgid "Add vertical zoom buttons to editor"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
-msgid "User manual: add FAQ section"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
-msgid ""
-"Update French, Catalan, Esperanto, Swedish, German, Korean, Polish, Spanish "
-"translations"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:154
-msgid "Meson: disable fallbacks by default"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:158
-msgid "Fix scrolling horizontally with 2 fingers on touch pads"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:159
-msgid "Fix project plugin states being deleted while in use"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
-msgid ""
-"Work around a bug in Pipewire where it doesn't notify clients of buffer size "
-"changes"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:161
-msgid "Fix occasional deadlock when changing engine buffer sizes"
 msgstr ""
 
 #~ msgid "Port info"

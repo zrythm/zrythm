@@ -21,7 +21,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
-"POT-Creation-Date: 2023-08-10 18:23+0900\n"
+"POT-Creation-Date: 2023-08-15 16:37+0900\n"
 "PO-Revision-Date: 2023-07-26 20:45+0000\n"
 "Last-Translator: Yury Verpatov <inaunius@gmail.com>\n"
 "Language-Team: Russian <https://hosted.weblate.org/projects/zrythm/zrythm/ru/"
@@ -34,279 +34,247 @@ msgstr ""
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 5.0-dev\n"
 
-#: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
-msgid "Chromatic"
-msgstr "Хроматика"
+#: inc/dsp/exporter.h:125
+msgid "Before inserts"
+msgstr "Перед вставками (Before inserts)"
 
-#: inc/schemas/audio/scale.h:94 inc/audio/scale.h:128
-msgid "Major"
-msgstr "Мажор"
+#: inc/dsp/exporter.h:126
+msgid "Pre-fader"
+msgstr "Пре-фейдер"
 
-#: inc/schemas/audio/scale.h:95 inc/audio/scale.h:129
-msgid "Minor"
-msgstr "Минор"
+#: inc/dsp/exporter.h:127
+msgid "Post fader"
+msgstr "Пост-фейдер"
 
-#: inc/schemas/audio/scale.h:96 inc/audio/scale.h:130
-msgid "Ionian"
-msgstr "Ионийский"
+#: inc/dsp/track.h:166 src/gui/widgets/track_properties_expander.c:124
+#: src/gui/widgets/popovers/route_target_selector_popover.c:160
+#: build/data/org.zrythm.Zrythm.gschema.xml:698
+msgid "Instrument"
+msgstr "Инструмент (Instrument)"
 
-#: inc/schemas/audio/scale.h:97 inc/audio/scale.h:131
-msgid "Dorian"
-msgstr "Дорический"
+#: inc/dsp/track.h:167 src/dsp/region.c:508 src/gui/widgets/bot_bar.c:452
+#: resources/ui/file_browser_filters.ui:10
+#: build/data/org.zrythm.Zrythm.gschema.xml:1219
+msgid "Audio"
+msgstr "Аудио (Audio)"
 
-#: inc/schemas/audio/scale.h:98 inc/audio/scale.h:132
-msgid "Phrygian"
-msgstr "Фригийский"
+#: inc/dsp/track.h:168 src/project.c:685
+#: src/gui/widgets/popovers/route_target_selector_popover.c:142
+msgid "Master"
+msgstr "Мастер (Master)"
 
-#: inc/schemas/audio/scale.h:99 inc/audio/scale.h:133
-msgid "Lydian"
-msgstr "Лидийский"
+#: inc/dsp/track.h:169 src/dsp/region.c:514
+msgid "Chord"
+msgstr "Трек аккордов (Chord)"
 
-#: inc/schemas/audio/scale.h:100 inc/audio/scale.h:134
-msgid "Mixolydian"
-msgstr "Миксолидийский"
+#: inc/dsp/track.h:170 inc/schemas/gui/backend/arranger_object.h:41
+#: inc/gui/backend/arranger_object.h:90
+msgid "Marker"
+msgstr "Маркер (Marker)"
 
-#: inc/schemas/audio/scale.h:101 inc/audio/scale.h:135
-msgid "Aeolian"
-msgstr "Эолийский"
+#: inc/dsp/track.h:171 src/dsp/tempo_track.c:94
+#: src/gui/widgets/popovers/automatable_selector_popover.c:320
+msgid "Tempo"
+msgstr "Трек темпа (Tempo)"
 
-#: inc/schemas/audio/scale.h:102 inc/audio/scale.h:136
-msgid "Locrian"
-msgstr "Локрийский"
+#: inc/dsp/track.h:172
+msgid "Modulator"
+msgstr "Модулятор"
 
-#: inc/schemas/audio/scale.h:103 inc/audio/scale.h:137
-msgid "Melodic Minor"
-msgstr "Мелодический минор"
+#: inc/dsp/track.h:173
+msgid "Audio FX"
+msgstr "Аудио FX (Audio FX)"
 
-#: inc/schemas/audio/scale.h:104 inc/audio/scale.h:138
-msgid "Harmonic Minor"
-msgstr "Гармонический минор"
+#: inc/dsp/track.h:174
+msgid "Audio Group"
+msgstr "Аудио-групповой (Audio Group)"
 
-#: inc/schemas/audio/scale.h:105 inc/audio/scale.h:139
-msgid "Whole Tone"
-msgstr "Целый тон"
+#: inc/dsp/track.h:175 src/dsp/region.c:505
+#: resources/ui/file_browser_filters.ui:18
+msgid "MIDI"
+msgstr "MIDI"
 
-#: inc/schemas/audio/scale.h:106 inc/audio/scale.h:140
-msgid "Major Pentatonic"
-msgstr "Мажорная пентатоника"
+#: inc/dsp/track.h:176
+msgid "MIDI FX"
+msgstr "MIDI FX"
 
-#: inc/schemas/audio/scale.h:107 inc/audio/scale.h:141
-msgid "Minor Pentatonic"
-msgstr "Минорная пентатоника"
+#: inc/dsp/track.h:177
+msgid "MIDI Group"
+msgstr "MIDI-групповой (MIDI Group)"
 
-#: inc/schemas/audio/scale.h:108 inc/audio/scale.h:142
-msgid "Octatonic Half Whole"
-msgstr "Уменьшенный лад (полутон-тон)"
+#: inc/dsp/track.h:178
+msgid "Folder"
+msgstr "Папка"
 
-#: inc/schemas/audio/scale.h:110 inc/audio/scale.h:143
-msgid "Octatonic Whole Half"
-msgstr "Уменьшенный лад (тон-полутон)"
-
-#: inc/schemas/audio/scale.h:112 inc/audio/scale.h:144
-msgid "Acoustic"
-msgstr "Акустический"
-
-#: inc/schemas/audio/scale.h:113 inc/audio/scale.h:145
-msgid "Harmonic Major"
-msgstr "Гармонический мажор"
-
-#: inc/schemas/audio/scale.h:114 inc/audio/scale.h:146
-msgid "Phrygian Dominant"
-msgstr "Фригийская доминанта"
-
-#: inc/schemas/audio/scale.h:115 inc/audio/scale.h:147
-msgid "Major Locrian"
-msgstr ""
-
-#: inc/schemas/audio/scale.h:116 inc/audio/scale.h:148
-msgid "Algerian"
-msgstr "Алжирский"
-
-#: inc/schemas/audio/scale.h:117 inc/audio/scale.h:149
-msgid "Augmented"
-msgstr "Дополненный"
-
-#: inc/schemas/audio/scale.h:118 inc/audio/scale.h:150
-msgid "Double Harmonic"
-msgstr "Двойная гармоника"
-
-#: inc/schemas/audio/scale.h:119 inc/audio/scale.h:151
-msgid "Chinese"
-msgstr "Китайский"
-
-#: inc/schemas/audio/scale.h:120 inc/audio/scale.h:152
-msgid "Diminished"
-msgstr ""
-
-#: inc/schemas/audio/scale.h:121 inc/audio/scale.h:153
-msgid "Dominant Diminished"
-msgstr ""
-
-#: inc/schemas/audio/scale.h:122 inc/audio/scale.h:154
-msgid "Egyptian"
-msgstr "Египетский"
-
-#: inc/schemas/audio/scale.h:123 inc/audio/scale.h:155
-msgid "Eight Tone Spanish"
-msgstr ""
-
-#: inc/schemas/audio/scale.h:124 inc/audio/scale.h:156
-msgid "Enigmatic"
-msgstr ""
-
-#: inc/schemas/audio/scale.h:125 inc/audio/scale.h:157
-msgid "Geez"
-msgstr ""
-
-#: inc/schemas/audio/scale.h:126 inc/audio/scale.h:158
-msgid "Hindu"
-msgstr ""
-
-#: inc/schemas/audio/scale.h:127 inc/audio/scale.h:159
-msgid "Hirajoshi"
-msgstr ""
-
-#: inc/schemas/audio/scale.h:128 inc/audio/scale.h:160
-msgid "Hungarian Gypsy"
-msgstr ""
-
-#: inc/schemas/audio/scale.h:129 inc/audio/scale.h:161
-msgid "Insen"
-msgstr "Инсен"
-
-#: inc/schemas/audio/scale.h:130 inc/audio/scale.h:162
-msgid "Neapolitan Major"
-msgstr "Неаполитанский мажор"
-
-#: inc/schemas/audio/scale.h:131 inc/audio/scale.h:163
-msgid "Neapolitan Minor"
-msgstr "Неаполитанский минор"
-
-#: inc/schemas/audio/scale.h:132 inc/audio/scale.h:164
+#: inc/dsp/snap_grid.h:51
 #, fuzzy
-msgid "Oriental"
-msgstr "По горизонтали"
+msgid "bar"
+msgstr "1 такт (1 bar)"
 
-#: inc/schemas/audio/scale.h:133 inc/audio/scale.h:165
-msgid "Romanian Minor"
-msgstr "Румынский минор"
-
-#: inc/schemas/audio/scale.h:134 inc/audio/scale.h:166
-msgid "Altered"
+#: inc/dsp/snap_grid.h:52
+msgid "beat"
 msgstr ""
 
-#: inc/schemas/audio/scale.h:135 inc/audio/scale.h:167
-msgid "Maqam"
-msgstr "Макам"
+#: inc/dsp/snap_grid.h:72 src/gui/widgets/digital_meter.c:506
+msgid "normal"
+msgstr "обычный"
 
-#: inc/schemas/audio/scale.h:136 inc/audio/scale.h:168
-msgid "Yo"
-msgstr "Йо"
+#: inc/dsp/snap_grid.h:73 src/gui/widgets/digital_meter.c:509
+msgid "dotted"
+msgstr "С точкой"
 
-#: inc/schemas/audio/scale.h:137 inc/audio/scale.h:169
-msgid "Bebop Locrian"
-msgstr "Локрийский бибоп"
+#: inc/dsp/snap_grid.h:74 src/gui/widgets/digital_meter.c:512
+msgid "triplet"
+msgstr "триоль"
 
-#: inc/schemas/audio/scale.h:138 inc/audio/scale.h:170
-msgid "Bebop Dominant"
-msgstr ""
+#: inc/dsp/engine.h:181
+msgid "1,024"
+msgstr "1,024"
 
-#: inc/schemas/audio/scale.h:139 inc/audio/scale.h:171
-msgid "Bebop Major"
-msgstr "Бибоп мажор"
+#: inc/dsp/engine.h:181
+msgid "2,048"
+msgstr "2,048"
 
-#: inc/schemas/audio/scale.h:140 inc/audio/scale.h:172
-msgid "Super Locrian"
-msgstr "Суперлокрийский"
+#: inc/dsp/engine.h:181
+msgid "4,096"
+msgstr "4,096"
 
-#: inc/schemas/audio/scale.h:141 inc/audio/scale.h:173
+#: inc/dsp/engine.h:206
+msgid "22,050"
+msgstr "22,050"
+
+#: inc/dsp/engine.h:206
+msgid "32,000"
+msgstr "32,000"
+
+#: inc/dsp/engine.h:206
+msgid "44,100"
+msgstr "44,100"
+
+#: inc/dsp/engine.h:206
+msgid "48,000"
+msgstr "48,000"
+
+#: inc/dsp/engine.h:207
+msgid "88,200"
+msgstr "88,200"
+
+#: inc/dsp/engine.h:207
+msgid "96,000"
+msgstr "96,000"
+
+#: inc/dsp/engine.h:207
+msgid "192,000"
+msgstr "192,000"
+
+#. TRANSLATORS: Dummy backend
+#: inc/dsp/engine.h:253 inc/dsp/engine.h:309
+#: inc/plugins/plugin_descriptor.h:141
+msgid "Dummy"
+msgstr "Заглушка"
+
+#: inc/dsp/engine.h:253
+msgid "Dummy (libsoundio)"
+msgstr "Заглушка (libsoundio)"
+
+#: inc/dsp/engine.h:310
+msgid "ALSA Sequencer (not working)"
+msgstr "ALSA Sequencer (не работает)"
+
+#: inc/dsp/engine.h:311
+msgid "ALSA Sequencer (rtmidi)"
+msgstr "AlSA Sequencer (rtmidi)"
+
+#: inc/dsp/audio_function.h:53
+msgid "Invert"
+msgstr "Инвертировать"
+
+#: inc/dsp/audio_function.h:54
+msgid "Normalize peak"
+msgstr "Нормализовать пик сигнала (Normalize peak)"
+
+#: inc/dsp/audio_function.h:55
+msgid "Normalize RMS"
+msgstr "Нормализовать RMS (Normalize RMS)"
+
+#: inc/dsp/audio_function.h:56
+msgid "Normalize LUFS"
+msgstr "Нормализовать LUFS (Normalize LUFS)"
+
+#: inc/dsp/audio_function.h:57
+msgid "Linear fade in"
+msgstr "Линейный феид-ин (Linear fade in)"
+
+#: inc/dsp/audio_function.h:58
+msgid "Linear fade out"
+msgstr "Линейное затухание"
+
+#: inc/dsp/audio_function.h:59 src/gui/widgets/home_toolbar.c:142
+msgid "Nudge left"
+msgstr "Подвинуть влево (Nudge left)"
+
+#: inc/dsp/audio_function.h:60 src/gui/widgets/home_toolbar.c:143
+msgid "Nudge right"
+msgstr "Подвинуть вправо (Nudge right)"
+
+#: inc/dsp/audio_function.h:61
+msgid "Reverse"
+msgstr "Развернуть (Reverse)"
+
+#: inc/dsp/audio_function.h:62
 #, fuzzy
-msgid "Enigmatic Minor"
-msgstr "Гармонический минор"
+msgid "Pitch shift"
+msgstr "Колёсико тона"
 
-#: inc/schemas/audio/scale.h:142 inc/audio/scale.h:174
-msgid "Composite"
-msgstr ""
+#: inc/dsp/audio_function.h:63
+msgid "External program"
+msgstr "Внешняя программа (External program)"
 
-#: inc/schemas/audio/scale.h:143 inc/audio/scale.h:175
-msgid "Bhairav"
-msgstr ""
+#: inc/dsp/audio_function.h:64
+msgid "Guile script"
+msgstr "Скрипт Guile"
 
-#: inc/schemas/audio/scale.h:144 inc/audio/scale.h:176
-#, fuzzy
-msgid "Hungarian Minor"
-msgstr "Гармонический минор"
+#: inc/dsp/audio_function.h:65
+msgid "Custom plugin"
+msgstr "Пользовательский плагин (Custom plugin)"
 
-#: inc/schemas/audio/scale.h:145 inc/audio/scale.h:177
-msgid "Persian"
-msgstr ""
+#: inc/dsp/audio_function.h:66
+msgid "Invalid"
+msgstr "Неверное значение"
 
-#: inc/schemas/audio/scale.h:146 inc/audio/scale.h:178
-msgid "Iwato"
-msgstr ""
+#: inc/dsp/midi_function.h:40 resources/ui/editor_toolbar.ui:154
+msgid "Crescendo"
+msgstr "Крещендо"
 
-#: inc/schemas/audio/scale.h:147 inc/audio/scale.h:179
-msgid "Kumoi"
-msgstr ""
+#: inc/dsp/midi_function.h:41 resources/ui/editor_toolbar.ui:160
+msgid "Flam"
+msgstr "Форшлаг (Flam)"
 
-#: inc/schemas/audio/scale.h:148 inc/audio/scale.h:180
-msgid "Pelog"
-msgstr ""
+#: inc/dsp/midi_function.h:42 inc/dsp/automation_function.h:32
+msgid "Flip H"
+msgstr "Поворот горизонтально (Flip H)"
 
-#: inc/schemas/audio/scale.h:149 inc/audio/scale.h:181
-msgid "Prometheus"
-msgstr ""
+#: inc/dsp/midi_function.h:43 inc/dsp/automation_function.h:33
+msgid "Flip V"
+msgstr "Поворот вертикально (Flip V)"
 
-#: inc/schemas/audio/scale.h:150 inc/audio/scale.h:182
-msgid "Prometheus Neapolitan"
-msgstr ""
+#: inc/dsp/midi_function.h:44 resources/ui/editor_toolbar.ui:181
+msgid "Legato"
+msgstr "Легато (Legato)"
 
-#: inc/schemas/audio/scale.h:152 inc/audio/scale.h:183
-msgid "Prometheus Liszt"
-msgstr ""
+#: inc/dsp/midi_function.h:45 resources/ui/editor_toolbar.ui:187
+msgid "Portato"
+msgstr "Портато"
 
-#: inc/schemas/audio/scale.h:153 inc/audio/scale.h:184
-msgid "Balinese"
-msgstr ""
+#: inc/dsp/midi_function.h:46 resources/ui/editor_toolbar.ui:193
+msgid "Staccato"
+msgstr "Стаккато"
 
-#: inc/schemas/audio/scale.h:154 inc/audio/scale.h:185
-msgid "RagaTodi"
-msgstr ""
+#: inc/dsp/midi_function.h:47 resources/ui/editor_toolbar.ui:199
+msgid "Strum"
+msgstr "Направление щипка (Strum)"
 
-#: inc/schemas/audio/scale.h:155 inc/audio/scale.h:186
-msgid "Japanese 1"
-msgstr ""
-
-#: inc/schemas/audio/scale.h:156 inc/audio/scale.h:187
-msgid "Japanese 2"
-msgstr ""
-
-#: inc/schemas/audio/curve.h:28 inc/audio/curve.h:95 src/audio/curve.c:58
-#, c-format
-msgid "Exponent"
-msgstr "Экспонента (Exponent)"
-
-#: inc/schemas/audio/curve.h:29 inc/audio/curve.h:96 src/audio/curve.c:61
-#, c-format
-msgid "Superellipse"
-msgstr "Суперэллипс (Superellipse)"
-
-#: inc/schemas/audio/curve.h:30 inc/audio/curve.h:97 src/audio/curve.c:390
-msgid "Vital"
-msgstr "Vital"
-
-#: inc/schemas/audio/curve.h:31 inc/audio/curve.h:98 src/audio/curve.c:67
-#, c-format
-msgid "Pulse"
-msgstr "Импульс (Pulse)"
-
-#: inc/schemas/audio/curve.h:32 inc/audio/curve.h:99 src/audio/curve.c:70
-#: src/audio/curve.c:385
-#, c-format
-msgid "Logarithmic"
-msgstr "Логарифмический"
-
-#: inc/schemas/gui/backend/arranger_object.h:35 inc/audio/transport.h:53
+#: inc/dsp/transport.h:53 inc/schemas/gui/backend/arranger_object.h:35
 #: inc/gui/backend/arranger_object.h:84
 #: src/gui/widgets/route_target_selector.c:37
 #: src/gui/widgets/plugin_properties_expander.c:181
@@ -315,6 +283,332 @@ msgstr "Логарифмический"
 #: src/gui/widgets/popovers/route_target_selector_popover.c:134
 msgid "None"
 msgstr "Нет (None)"
+
+#: inc/dsp/transport.h:54
+msgid "1 bar"
+msgstr "1 такт (1 bar)"
+
+#: inc/dsp/transport.h:55
+msgid "2 bars"
+msgstr "2 такта (2 bar)"
+
+#: inc/dsp/transport.h:56
+msgid "4 bars"
+msgstr "4 такта (4 bar)"
+
+#: inc/dsp/region.h:65 src/gui/widgets/track.c:1016
+msgid "Inherit"
+msgstr "Наследовать (Inherit)"
+
+#: inc/dsp/region.h:66 src/dsp/automation_track.c:166
+#: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:459
+msgid "Off"
+msgstr "Выкл. (Off)"
+
+#: inc/dsp/region.h:67 src/dsp/automation_track.c:160
+#: src/gui/widgets/cc_bindings_tree.c:158
+#: src/gui/widgets/port_connections_tree.c:214
+#: src/gui/widgets/item_factory.c:598 src/gui/widgets/bot_bar.c:459
+msgid "On"
+msgstr "Вкл. (On)"
+
+#: inc/dsp/scale.h:127 inc/schemas/audio/scale.h:93
+msgid "Chromatic"
+msgstr "Хроматика"
+
+#: inc/dsp/scale.h:128 inc/schemas/audio/scale.h:94
+msgid "Major"
+msgstr "Мажор"
+
+#: inc/dsp/scale.h:129 inc/schemas/audio/scale.h:95
+msgid "Minor"
+msgstr "Минор"
+
+#: inc/dsp/scale.h:130 inc/schemas/audio/scale.h:96
+msgid "Ionian"
+msgstr "Ионийский"
+
+#: inc/dsp/scale.h:131 inc/schemas/audio/scale.h:97
+msgid "Dorian"
+msgstr "Дорический"
+
+#: inc/dsp/scale.h:132 inc/schemas/audio/scale.h:98
+msgid "Phrygian"
+msgstr "Фригийский"
+
+#: inc/dsp/scale.h:133 inc/schemas/audio/scale.h:99
+msgid "Lydian"
+msgstr "Лидийский"
+
+#: inc/dsp/scale.h:134 inc/schemas/audio/scale.h:100
+msgid "Mixolydian"
+msgstr "Миксолидийский"
+
+#: inc/dsp/scale.h:135 inc/schemas/audio/scale.h:101
+msgid "Aeolian"
+msgstr "Эолийский"
+
+#: inc/dsp/scale.h:136 inc/schemas/audio/scale.h:102
+msgid "Locrian"
+msgstr "Локрийский"
+
+#: inc/dsp/scale.h:137 inc/schemas/audio/scale.h:103
+msgid "Melodic Minor"
+msgstr "Мелодический минор"
+
+#: inc/dsp/scale.h:138 inc/schemas/audio/scale.h:104
+msgid "Harmonic Minor"
+msgstr "Гармонический минор"
+
+#: inc/dsp/scale.h:139 inc/schemas/audio/scale.h:105
+msgid "Whole Tone"
+msgstr "Целый тон"
+
+#: inc/dsp/scale.h:140 inc/schemas/audio/scale.h:106
+msgid "Major Pentatonic"
+msgstr "Мажорная пентатоника"
+
+#: inc/dsp/scale.h:141 inc/schemas/audio/scale.h:107
+msgid "Minor Pentatonic"
+msgstr "Минорная пентатоника"
+
+#: inc/dsp/scale.h:142 inc/schemas/audio/scale.h:108
+msgid "Octatonic Half Whole"
+msgstr "Уменьшенный лад (полутон-тон)"
+
+#: inc/dsp/scale.h:143 inc/schemas/audio/scale.h:110
+msgid "Octatonic Whole Half"
+msgstr "Уменьшенный лад (тон-полутон)"
+
+#: inc/dsp/scale.h:144 inc/schemas/audio/scale.h:112
+msgid "Acoustic"
+msgstr "Акустический"
+
+#: inc/dsp/scale.h:145 inc/schemas/audio/scale.h:113
+msgid "Harmonic Major"
+msgstr "Гармонический мажор"
+
+#: inc/dsp/scale.h:146 inc/schemas/audio/scale.h:114
+msgid "Phrygian Dominant"
+msgstr "Фригийская доминанта"
+
+#: inc/dsp/scale.h:147 inc/schemas/audio/scale.h:115
+msgid "Major Locrian"
+msgstr ""
+
+#: inc/dsp/scale.h:148 inc/schemas/audio/scale.h:116
+msgid "Algerian"
+msgstr "Алжирский"
+
+#: inc/dsp/scale.h:149 inc/schemas/audio/scale.h:117
+msgid "Augmented"
+msgstr "Дополненный"
+
+#: inc/dsp/scale.h:150 inc/schemas/audio/scale.h:118
+msgid "Double Harmonic"
+msgstr "Двойная гармоника"
+
+#: inc/dsp/scale.h:151 inc/schemas/audio/scale.h:119
+msgid "Chinese"
+msgstr "Китайский"
+
+#: inc/dsp/scale.h:152 inc/schemas/audio/scale.h:120
+msgid "Diminished"
+msgstr ""
+
+#: inc/dsp/scale.h:153 inc/schemas/audio/scale.h:121
+msgid "Dominant Diminished"
+msgstr ""
+
+#: inc/dsp/scale.h:154 inc/schemas/audio/scale.h:122
+msgid "Egyptian"
+msgstr "Египетский"
+
+#: inc/dsp/scale.h:155 inc/schemas/audio/scale.h:123
+msgid "Eight Tone Spanish"
+msgstr ""
+
+#: inc/dsp/scale.h:156 inc/schemas/audio/scale.h:124
+msgid "Enigmatic"
+msgstr ""
+
+#: inc/dsp/scale.h:157 inc/schemas/audio/scale.h:125
+msgid "Geez"
+msgstr ""
+
+#: inc/dsp/scale.h:158 inc/schemas/audio/scale.h:126
+msgid "Hindu"
+msgstr ""
+
+#: inc/dsp/scale.h:159 inc/schemas/audio/scale.h:127
+msgid "Hirajoshi"
+msgstr ""
+
+#: inc/dsp/scale.h:160 inc/schemas/audio/scale.h:128
+msgid "Hungarian Gypsy"
+msgstr ""
+
+#: inc/dsp/scale.h:161 inc/schemas/audio/scale.h:129
+msgid "Insen"
+msgstr "Инсен"
+
+#: inc/dsp/scale.h:162 inc/schemas/audio/scale.h:130
+msgid "Neapolitan Major"
+msgstr "Неаполитанский мажор"
+
+#: inc/dsp/scale.h:163 inc/schemas/audio/scale.h:131
+msgid "Neapolitan Minor"
+msgstr "Неаполитанский минор"
+
+#: inc/dsp/scale.h:164 inc/schemas/audio/scale.h:132
+#, fuzzy
+msgid "Oriental"
+msgstr "По горизонтали"
+
+#: inc/dsp/scale.h:165 inc/schemas/audio/scale.h:133
+msgid "Romanian Minor"
+msgstr "Румынский минор"
+
+#: inc/dsp/scale.h:166 inc/schemas/audio/scale.h:134
+msgid "Altered"
+msgstr ""
+
+#: inc/dsp/scale.h:167 inc/schemas/audio/scale.h:135
+msgid "Maqam"
+msgstr "Макам"
+
+#: inc/dsp/scale.h:168 inc/schemas/audio/scale.h:136
+msgid "Yo"
+msgstr "Йо"
+
+#: inc/dsp/scale.h:169 inc/schemas/audio/scale.h:137
+msgid "Bebop Locrian"
+msgstr "Локрийский бибоп"
+
+#: inc/dsp/scale.h:170 inc/schemas/audio/scale.h:138
+msgid "Bebop Dominant"
+msgstr ""
+
+#: inc/dsp/scale.h:171 inc/schemas/audio/scale.h:139
+msgid "Bebop Major"
+msgstr "Бибоп мажор"
+
+#: inc/dsp/scale.h:172 inc/schemas/audio/scale.h:140
+msgid "Super Locrian"
+msgstr "Суперлокрийский"
+
+#: inc/dsp/scale.h:173 inc/schemas/audio/scale.h:141
+#, fuzzy
+msgid "Enigmatic Minor"
+msgstr "Гармонический минор"
+
+#: inc/dsp/scale.h:174 inc/schemas/audio/scale.h:142
+msgid "Composite"
+msgstr ""
+
+#: inc/dsp/scale.h:175 inc/schemas/audio/scale.h:143
+msgid "Bhairav"
+msgstr ""
+
+#: inc/dsp/scale.h:176 inc/schemas/audio/scale.h:144
+#, fuzzy
+msgid "Hungarian Minor"
+msgstr "Гармонический минор"
+
+#: inc/dsp/scale.h:177 inc/schemas/audio/scale.h:145
+msgid "Persian"
+msgstr ""
+
+#: inc/dsp/scale.h:178 inc/schemas/audio/scale.h:146
+msgid "Iwato"
+msgstr ""
+
+#: inc/dsp/scale.h:179 inc/schemas/audio/scale.h:147
+msgid "Kumoi"
+msgstr ""
+
+#: inc/dsp/scale.h:180 inc/schemas/audio/scale.h:148
+msgid "Pelog"
+msgstr ""
+
+#: inc/dsp/scale.h:181 inc/schemas/audio/scale.h:149
+msgid "Prometheus"
+msgstr ""
+
+#: inc/dsp/scale.h:182 inc/schemas/audio/scale.h:150
+msgid "Prometheus Neapolitan"
+msgstr ""
+
+#: inc/dsp/scale.h:183 inc/schemas/audio/scale.h:152
+msgid "Prometheus Liszt"
+msgstr ""
+
+#: inc/dsp/scale.h:184 inc/schemas/audio/scale.h:153
+msgid "Balinese"
+msgstr ""
+
+#: inc/dsp/scale.h:185 inc/schemas/audio/scale.h:154
+msgid "RagaTodi"
+msgstr ""
+
+#: inc/dsp/scale.h:186 inc/schemas/audio/scale.h:155
+msgid "Japanese 1"
+msgstr ""
+
+#: inc/dsp/scale.h:187 inc/schemas/audio/scale.h:156
+msgid "Japanese 2"
+msgstr ""
+
+#. TRANSLATORS: decibels
+#: inc/dsp/pan.h:35
+msgid "0dB"
+msgstr "0dB"
+
+#: inc/dsp/pan.h:36
+msgid "-3dB"
+msgstr "-3dB"
+
+#: inc/dsp/pan.h:37
+msgid "-6dB"
+msgstr "-6dB"
+
+#. TRANSLATORS: Pan algorithm
+#: inc/dsp/pan.h:57 src/dsp/curve.c:371 src/utils/ui.c:627
+msgid "Linear"
+msgstr "Линейный"
+
+#: inc/dsp/pan.h:58 src/utils/ui.c:628
+msgid "Square Root"
+msgstr "Квадратный корень"
+
+#: inc/dsp/pan.h:59
+msgid "Sine"
+msgstr "Синус"
+
+#: inc/dsp/curve.h:95 inc/schemas/audio/curve.h:28 src/dsp/curve.c:58
+#, c-format
+msgid "Exponent"
+msgstr "Экспонента (Exponent)"
+
+#: inc/dsp/curve.h:96 inc/schemas/audio/curve.h:29 src/dsp/curve.c:61
+#, c-format
+msgid "Superellipse"
+msgstr "Суперэллипс (Superellipse)"
+
+#: inc/dsp/curve.h:97 inc/schemas/audio/curve.h:30 src/dsp/curve.c:390
+msgid "Vital"
+msgstr "Vital"
+
+#: inc/dsp/curve.h:98 inc/schemas/audio/curve.h:31 src/dsp/curve.c:67
+#, c-format
+msgid "Pulse"
+msgstr "Импульс (Pulse)"
+
+#: inc/dsp/curve.h:99 inc/schemas/audio/curve.h:32 src/dsp/curve.c:70
+#: src/dsp/curve.c:385
+#, c-format
+msgid "Logarithmic"
+msgstr "Логарифмический"
 
 #: inc/schemas/gui/backend/arranger_object.h:36
 #: inc/gui/backend/arranger_object.h:85
@@ -342,11 +636,6 @@ msgstr "Аккорд-Объект (Chord Object)"
 #: inc/gui/backend/arranger_object.h:89
 msgid "Scale Object"
 msgstr "Лад-Объект (Scale Object)"
-
-#: inc/schemas/gui/backend/arranger_object.h:41 inc/audio/track.h:170
-#: inc/gui/backend/arranger_object.h:90
-msgid "Marker"
-msgstr "Маркер (Marker)"
 
 #: inc/schemas/gui/backend/arranger_object.h:42
 #: inc/gui/backend/arranger_object.h:91
@@ -423,295 +712,6 @@ msgstr "Низкий (Low)"
 #: inc/utils/ui.h:62
 msgid "Ultra Low"
 msgstr "Ультранизкий (Ultra Low)"
-
-#: inc/audio/exporter.h:125
-msgid "Before inserts"
-msgstr "Перед вставками (Before inserts)"
-
-#: inc/audio/exporter.h:126
-msgid "Pre-fader"
-msgstr "Пре-фейдер"
-
-#: inc/audio/exporter.h:127
-msgid "Post fader"
-msgstr "Пост-фейдер"
-
-#: inc/audio/track.h:166 src/gui/widgets/track_properties_expander.c:124
-#: src/gui/widgets/popovers/route_target_selector_popover.c:160
-#: build/data/org.zrythm.Zrythm.gschema.xml:698
-msgid "Instrument"
-msgstr "Инструмент (Instrument)"
-
-#: inc/audio/track.h:167 src/audio/region.c:508 src/gui/widgets/bot_bar.c:452
-#: resources/ui/file_browser_filters.ui:10
-#: build/data/org.zrythm.Zrythm.gschema.xml:1219
-msgid "Audio"
-msgstr "Аудио (Audio)"
-
-#: inc/audio/track.h:168 src/project.c:685
-#: src/gui/widgets/popovers/route_target_selector_popover.c:142
-msgid "Master"
-msgstr "Мастер (Master)"
-
-#: inc/audio/track.h:169 src/audio/region.c:514
-msgid "Chord"
-msgstr "Трек аккордов (Chord)"
-
-#: inc/audio/track.h:171 src/audio/tempo_track.c:94
-#: src/gui/widgets/popovers/automatable_selector_popover.c:320
-msgid "Tempo"
-msgstr "Трек темпа (Tempo)"
-
-#: inc/audio/track.h:172
-msgid "Modulator"
-msgstr "Модулятор"
-
-#: inc/audio/track.h:173
-msgid "Audio FX"
-msgstr "Аудио FX (Audio FX)"
-
-#: inc/audio/track.h:174
-msgid "Audio Group"
-msgstr "Аудио-групповой (Audio Group)"
-
-#: inc/audio/track.h:175 src/audio/region.c:505
-#: resources/ui/file_browser_filters.ui:18
-msgid "MIDI"
-msgstr "MIDI"
-
-#: inc/audio/track.h:176
-msgid "MIDI FX"
-msgstr "MIDI FX"
-
-#: inc/audio/track.h:177
-msgid "MIDI Group"
-msgstr "MIDI-групповой (MIDI Group)"
-
-#: inc/audio/track.h:178
-msgid "Folder"
-msgstr "Папка"
-
-#: inc/audio/snap_grid.h:51
-#, fuzzy
-msgid "bar"
-msgstr "1 такт (1 bar)"
-
-#: inc/audio/snap_grid.h:52
-msgid "beat"
-msgstr ""
-
-#: inc/audio/snap_grid.h:72 src/gui/widgets/digital_meter.c:506
-msgid "normal"
-msgstr "обычный"
-
-#: inc/audio/snap_grid.h:73 src/gui/widgets/digital_meter.c:509
-msgid "dotted"
-msgstr "С точкой"
-
-#: inc/audio/snap_grid.h:74 src/gui/widgets/digital_meter.c:512
-msgid "triplet"
-msgstr "триоль"
-
-#: inc/audio/engine.h:181
-msgid "1,024"
-msgstr "1,024"
-
-#: inc/audio/engine.h:181
-msgid "2,048"
-msgstr "2,048"
-
-#: inc/audio/engine.h:181
-msgid "4,096"
-msgstr "4,096"
-
-#: inc/audio/engine.h:206
-msgid "22,050"
-msgstr "22,050"
-
-#: inc/audio/engine.h:206
-msgid "32,000"
-msgstr "32,000"
-
-#: inc/audio/engine.h:206
-msgid "44,100"
-msgstr "44,100"
-
-#: inc/audio/engine.h:206
-msgid "48,000"
-msgstr "48,000"
-
-#: inc/audio/engine.h:207
-msgid "88,200"
-msgstr "88,200"
-
-#: inc/audio/engine.h:207
-msgid "96,000"
-msgstr "96,000"
-
-#: inc/audio/engine.h:207
-msgid "192,000"
-msgstr "192,000"
-
-#. TRANSLATORS: Dummy backend
-#: inc/audio/engine.h:253 inc/audio/engine.h:309
-#: inc/plugins/plugin_descriptor.h:141
-msgid "Dummy"
-msgstr "Заглушка"
-
-#: inc/audio/engine.h:253
-msgid "Dummy (libsoundio)"
-msgstr "Заглушка (libsoundio)"
-
-#: inc/audio/engine.h:310
-msgid "ALSA Sequencer (not working)"
-msgstr "ALSA Sequencer (не работает)"
-
-#: inc/audio/engine.h:311
-msgid "ALSA Sequencer (rtmidi)"
-msgstr "AlSA Sequencer (rtmidi)"
-
-#: inc/audio/audio_function.h:53
-msgid "Invert"
-msgstr "Инвертировать"
-
-#: inc/audio/audio_function.h:54
-msgid "Normalize peak"
-msgstr "Нормализовать пик сигнала (Normalize peak)"
-
-#: inc/audio/audio_function.h:55
-msgid "Normalize RMS"
-msgstr "Нормализовать RMS (Normalize RMS)"
-
-#: inc/audio/audio_function.h:56
-msgid "Normalize LUFS"
-msgstr "Нормализовать LUFS (Normalize LUFS)"
-
-#: inc/audio/audio_function.h:57
-msgid "Linear fade in"
-msgstr "Линейный феид-ин (Linear fade in)"
-
-#: inc/audio/audio_function.h:58
-msgid "Linear fade out"
-msgstr "Линейное затухание"
-
-#: inc/audio/audio_function.h:59 src/gui/widgets/home_toolbar.c:142
-msgid "Nudge left"
-msgstr "Подвинуть влево (Nudge left)"
-
-#: inc/audio/audio_function.h:60 src/gui/widgets/home_toolbar.c:143
-msgid "Nudge right"
-msgstr "Подвинуть вправо (Nudge right)"
-
-#: inc/audio/audio_function.h:61
-msgid "Reverse"
-msgstr "Развернуть (Reverse)"
-
-#: inc/audio/audio_function.h:62
-#, fuzzy
-msgid "Pitch shift"
-msgstr "Колёсико тона"
-
-#: inc/audio/audio_function.h:63
-msgid "External program"
-msgstr "Внешняя программа (External program)"
-
-#: inc/audio/audio_function.h:64
-msgid "Guile script"
-msgstr "Скрипт Guile"
-
-#: inc/audio/audio_function.h:65
-msgid "Custom plugin"
-msgstr "Пользовательский плагин (Custom plugin)"
-
-#: inc/audio/audio_function.h:66
-msgid "Invalid"
-msgstr "Неверное значение"
-
-#: inc/audio/midi_function.h:40 resources/ui/editor_toolbar.ui:154
-msgid "Crescendo"
-msgstr "Крещендо"
-
-#: inc/audio/midi_function.h:41 resources/ui/editor_toolbar.ui:160
-msgid "Flam"
-msgstr "Форшлаг (Flam)"
-
-#: inc/audio/midi_function.h:42 inc/audio/automation_function.h:32
-msgid "Flip H"
-msgstr "Поворот горизонтально (Flip H)"
-
-#: inc/audio/midi_function.h:43 inc/audio/automation_function.h:33
-msgid "Flip V"
-msgstr "Поворот вертикально (Flip V)"
-
-#: inc/audio/midi_function.h:44 resources/ui/editor_toolbar.ui:181
-msgid "Legato"
-msgstr "Легато (Legato)"
-
-#: inc/audio/midi_function.h:45 resources/ui/editor_toolbar.ui:187
-msgid "Portato"
-msgstr "Портато"
-
-#: inc/audio/midi_function.h:46 resources/ui/editor_toolbar.ui:193
-msgid "Staccato"
-msgstr "Стаккато"
-
-#: inc/audio/midi_function.h:47 resources/ui/editor_toolbar.ui:199
-msgid "Strum"
-msgstr "Направление щипка (Strum)"
-
-#: inc/audio/transport.h:54
-msgid "1 bar"
-msgstr "1 такт (1 bar)"
-
-#: inc/audio/transport.h:55
-msgid "2 bars"
-msgstr "2 такта (2 bar)"
-
-#: inc/audio/transport.h:56
-msgid "4 bars"
-msgstr "4 такта (4 bar)"
-
-#: inc/audio/region.h:65 src/gui/widgets/track.c:1016
-msgid "Inherit"
-msgstr "Наследовать (Inherit)"
-
-#: inc/audio/region.h:66 src/audio/automation_track.c:166
-#: src/gui/widgets/snap_grid.c:42 src/gui/widgets/bot_bar.c:459
-msgid "Off"
-msgstr "Выкл. (Off)"
-
-#: inc/audio/region.h:67 src/audio/automation_track.c:160
-#: src/gui/widgets/cc_bindings_tree.c:158
-#: src/gui/widgets/port_connections_tree.c:214
-#: src/gui/widgets/item_factory.c:598 src/gui/widgets/bot_bar.c:459
-msgid "On"
-msgstr "Вкл. (On)"
-
-#. TRANSLATORS: decibels
-#: inc/audio/pan.h:35
-msgid "0dB"
-msgstr "0dB"
-
-#: inc/audio/pan.h:36
-msgid "-3dB"
-msgstr "-3dB"
-
-#: inc/audio/pan.h:37
-msgid "-6dB"
-msgstr "-6dB"
-
-#. TRANSLATORS: Pan algorithm
-#: inc/audio/pan.h:57 src/utils/ui.c:627 src/audio/curve.c:371
-msgid "Linear"
-msgstr "Линейный"
-
-#: inc/audio/pan.h:58 src/utils/ui.c:628
-msgid "Square Root"
-msgstr "Квадратный корень"
-
-#: inc/audio/pan.h:59
-msgid "Sine"
-msgstr "Синус"
 
 #: src/project.c:403
 #, fuzzy, c-format
@@ -1151,8 +1151,8 @@ msgstr "Не удалось загрузить проект"
 msgid "Save Project"
 msgstr "Сохранить проект"
 
-#: src/actions/actions.c:789 src/utils/dialogs.c:41 src/utils/dialogs.c:60
-#: src/audio/clip.c:698 src/gui/widgets/main_window.c:138
+#: src/actions/actions.c:789 src/dsp/clip.c:698 src/utils/dialogs.c:41
+#: src/utils/dialogs.c:60 src/gui/widgets/main_window.c:138
 #: src/gui/widgets/plugin_properties_expander.c:107
 #: src/gui/widgets/dialogs/midi_function_dialog.c:412
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:122
@@ -1237,7 +1237,7 @@ msgstr "Не удалось отвязать"
 msgid "Failed to quantize"
 msgstr "Не удалось квантовать"
 
-#: src/actions/actions.c:1660 src/audio/track.c:3669 src/audio/tracklist.c:1483
+#: src/actions/actions.c:1660 src/dsp/track.c:3669 src/dsp/tracklist.c:1483
 #: src/gui/widgets/panel_file_browser.c:459
 #: src/gui/widgets/panel_file_browser.c:475 src/settings/plugin_settings.c:335
 #: src/settings/plugin_settings.c:350 src/settings/plugin_settings.c:422
@@ -1489,7 +1489,7 @@ msgstr "Невозможно удалить треки: выделение со�
 msgid "Failed getting contents for %s"
 msgstr "Не удалось получить содержимое для %s"
 
-#: src/actions/tracklist_selections.c:311 src/audio/track.c:2062
+#: src/actions/tracklist_selections.c:311 src/dsp/track.c:2062
 #, fuzzy, c-format
 msgid "Failed creating audio clip from file at %s"
 msgstr "Не удалось записать аудиоклип в файл: %s"
@@ -1504,8 +1504,8 @@ msgstr "Не удалось клонировать выделенное в сп�
 
 #: src/actions/tracklist_selections.c:374
 #: src/actions/tracklist_selections.c:993
-#: src/actions/tracklist_selections.c:1445 src/audio/tracklist.c:1667
-#: src/audio/tracklist.c:1795
+#: src/actions/tracklist_selections.c:1445 src/dsp/tracklist.c:1667
+#: src/dsp/tracklist.c:1795
 msgid "Failed to clone track"
 msgstr "Не удалось клонировать трек"
 
@@ -1518,7 +1518,7 @@ msgstr "Не удалось клонировать выделенное в сп�
 msgid "%s Track"
 msgstr "%s трек"
 
-#: src/actions/tracklist_selections.c:768 src/audio/sample_processor.c:552
+#: src/actions/tracklist_selections.c:768 src/dsp/sample_processor.c:552
 #: src/gui/widgets/channel_slot.c:335
 #, c-format
 msgid "Failed to create plugin %s"
@@ -1915,7 +1915,7 @@ msgstr "Соединение посыла канала"
 msgid "Failed to clone mixer selections"
 msgstr "Не удалось клонировать выделенное в миксере"
 
-#: src/actions/mixer_selections_action.c:432 src/audio/channel.c:1855
+#: src/actions/mixer_selections_action.c:432 src/dsp/channel.c:1855
 msgid "Failed to clone plugin"
 msgstr "Не удалось клонировать плагин"
 
@@ -1923,8 +1923,8 @@ msgstr "Не удалось клонировать плагин"
 msgid "Could not create plugin"
 msgstr "Не удалось создать плагин"
 
-#: src/actions/mixer_selections_action.c:538 src/audio/audio_function.c:145
-#: src/audio/track.c:2148 src/audio/track.c:3217
+#: src/actions/mixer_selections_action.c:538 src/dsp/audio_function.c:145
+#: src/dsp/track.c:2148 src/dsp/track.c:3217
 msgid "Failed to instantiate plugin"
 msgstr "Не удалось добавить плагин"
 
@@ -1981,6 +1981,725 @@ msgstr "Вставить %s"
 #, c-format
 msgid "Paste %d Plugins"
 msgstr "Вставить %d плагинов(а)"
+
+#: src/dsp/modulator_track.c:59 src/utils/gtk.c:1215
+#: src/gui/widgets/bot_dock_edge.c:254
+msgid "Modulators"
+msgstr "Модуляторы (Modulators)"
+
+#: src/dsp/supported_file.c:269
+msgid "Failed opening file"
+msgstr "Не удалось открыть файл"
+
+#: src/dsp/supported_file.c:274
+#, c-format
+msgid ""
+"<b>%s</b>\n"
+"Sample rate: %d\n"
+"Length: %<PRId64>s %<PRId64> ms | BPM: %.1f\n"
+"Channel(s): %u | Bitrate: %'d.%d kb/s\n"
+"Bit depth: %d bits"
+msgstr ""
+"<b>%s</b>\n"
+"Частота дискретизации: %d\n"
+"Длина: %<PRId64>с %<PRId64> мс | Темп: %.1f\n"
+"Канал(ы): %u | Битрейт: %'d.%d кбит/с\n"
+"Битовая глубина: %d бит"
+
+#: src/dsp/snap_grid.c:253 resources/ui/snap_grid_popover.ui:112
+#: resources/ui/snap_grid_popover.ui:190
+msgid "Adaptive"
+msgstr "Адаптивный"
+
+#: src/dsp/fader.c:97
+#, fuzzy
+msgid "Prefader Swap Phase"
+msgstr "Баланс префейдера"
+
+#: src/dsp/fader.c:98
+#, fuzzy
+msgid "Fader Swap Phase"
+msgstr "Баланс фейдера"
+
+#: src/dsp/fader.c:140
+msgid "Prefader Volume"
+msgstr "Громкость префейдера"
+
+#: src/dsp/fader.c:140
+msgid "Fader Volume"
+msgstr "Громкость фейдера"
+
+#: src/dsp/fader.c:169
+msgid "Prefader Balance"
+msgstr "Баланс префейдера"
+
+#: src/dsp/fader.c:169
+msgid "Fader Balance"
+msgstr "Баланс фейдера"
+
+#: src/dsp/fader.c:188
+msgid "Prefader Mute"
+msgstr "Заглушить префейдер"
+
+#: src/dsp/fader.c:188
+msgid "Fader Mute"
+msgstr "Заглушить фейдер"
+
+#: src/dsp/fader.c:209
+msgid "Prefader Solo"
+msgstr "Изолировать префейдер"
+
+#: src/dsp/fader.c:209
+msgid "Fader Solo"
+msgstr "Изоляция фейдера"
+
+#: src/dsp/fader.c:223
+msgid "Prefader Listen"
+msgstr "Прослушивание префейдера"
+
+#: src/dsp/fader.c:223
+msgid "Fader Listen"
+msgstr "Прослушивание фейдера"
+
+#: src/dsp/fader.c:238
+msgid "Prefader Mono Compat"
+msgstr "Префейдер моно режим"
+
+#: src/dsp/fader.c:239
+msgid "Fader Mono Compat"
+msgstr "Фейдер моно режим"
+
+#: src/dsp/fader.c:271
+msgid "Ch Pre-Fader in"
+msgstr "Вход префейдера канала"
+
+#: src/dsp/fader.c:276
+msgid "Ch Fader in"
+msgstr "Вход фейдера канала"
+
+#: src/dsp/fader.c:282
+msgid "Sample Processor Fader in"
+msgstr "Вход фейдера обработчика семплов"
+
+#: src/dsp/fader.c:287
+msgid "Monitor Fader in"
+msgstr "Вход фейдера мониора"
+
+#: src/dsp/fader.c:305
+msgid "Ch Pre-Fader out"
+msgstr "Выход префейдера канала"
+
+#: src/dsp/fader.c:310
+msgid "Ch Fader out"
+msgstr "Выход фейдера канала"
+
+#: src/dsp/fader.c:316
+msgid "Sample Processor Fader out"
+msgstr "Выход фейдера обработчика семплов"
+
+#: src/dsp/fader.c:321
+msgid "Monitor Fader out"
+msgstr "Выход фейдера монитора"
+
+#: src/dsp/fader.c:343
+msgid "Ch MIDI Pre-Fader in"
+msgstr "Вход MIDI префейдера канала"
+
+#: src/dsp/fader.c:348
+msgid "Ch MIDI Fader in"
+msgstr "Вход MIDI фейдера канала"
+
+#: src/dsp/fader.c:360
+msgid "Ch MIDI Pre-Fader out"
+msgstr "Выход MIDI префейдера канала"
+
+#: src/dsp/fader.c:365
+msgid "Ch MIDI Fader out"
+msgstr "Выход MIDI фейдера канала"
+
+#: src/dsp/fader.c:594
+msgid "Failed to change volume"
+msgstr "Не удалось изменить громкость"
+
+#: src/dsp/fader.c:643
+msgid "Failed to set MIDI mode"
+msgstr "Не удалось включить MIDI-режим"
+
+#: src/dsp/encoder.c:58
+#, c-format
+msgid "An error has occurred opening the audio file '%s'"
+msgstr "Произошла ошибка при открытии аудиофайла '%s'"
+
+#: src/dsp/marker_track.c:42
+msgid "Markers"
+msgstr "Маркеры (Markers)"
+
+#: src/dsp/marker_track.c:60 src/gui/widgets/timeline_selection_info.c:228
+#: resources/ui/quantize_dialog.ui:62
+msgid "start"
+msgstr "начало"
+
+#: src/dsp/marker_track.c:67 src/gui/widgets/timeline_selection_info.c:234
+#: resources/ui/quantize_dialog.ui:70
+msgid "end"
+msgstr "конец"
+
+#: src/dsp/engine_jack.c:311
+msgid "XRUN occurred - check your JACK configuration"
+msgstr "Произошла рассинхронизация (XRUN) - проверьте вашу конфигурацию JACK"
+
+#: src/dsp/engine_jack.c:369
+msgid "JACK has shut down"
+msgstr "JACK отключился"
+
+#. TRANSLATORS: JACK failure messages
+#: src/dsp/engine_jack.c:632
+msgid "Overall operation failed"
+msgstr "Всеобщий сбой операции"
+
+#: src/dsp/engine_jack.c:638
+msgid "The operation contained an invalid or unsupported option"
+msgstr "Операция содержала недопустимый или неподдерживаемый параметр"
+
+#: src/dsp/engine_jack.c:644
+msgid "The desired client name was not unique"
+msgstr "Желаемое имя клиента оказалось не уникальным"
+
+#: src/dsp/engine_jack.c:648
+msgid "Unable to connect to the JACK server"
+msgstr "Не удается подключиться к серверу JACK"
+
+#: src/dsp/engine_jack.c:653
+msgid "Communication error with the JACK server"
+msgstr "Ошибка коммуникации с сервером JACK"
+
+#: src/dsp/engine_jack.c:657
+msgid "Requested client does not exist"
+msgstr "Запрошенный клиент не существует"
+
+#: src/dsp/engine_jack.c:661
+msgid "Unable to load internal client"
+msgstr "Не удается загрузить внутренний клиент"
+
+#: src/dsp/engine_jack.c:665
+msgid "Unable to initialize client"
+msgstr "Не удается инициализировать клиент"
+
+#: src/dsp/engine_jack.c:669
+msgid "Unable to access shared memory"
+msgstr "Не удается получить доступ к общей памяти"
+
+#: src/dsp/engine_jack.c:674
+msgid "Client's protocol version does not match"
+msgstr "Версия протокола клиента не совпадает"
+
+#: src/dsp/engine_jack.c:678
+msgid "Backend error"
+msgstr "Ошибка бэкенда"
+
+#: src/dsp/engine_jack.c:682
+msgid "Client zombie"
+msgstr "Зомби клиент"
+
+#: src/dsp/engine_jack.c:729
+#, fuzzy, c-format
+msgid "JACK: Failed to disconnect monitor out: %s"
+msgstr "Не удалось отключить %s от %s"
+
+#: src/dsp/engine_jack.c:778
+msgid "JACK: No physical playback ports found"
+msgstr ""
+
+#: src/dsp/engine_jack.c:792
+#, fuzzy, c-format
+msgid "JACK: Failed to connect monitor output [%s]: %s"
+msgstr "Не удалось подключить порты"
+
+#: src/dsp/engine_jack.c:793
+msgid "left"
+msgstr "левый"
+
+#: src/dsp/engine_jack.c:793
+msgid "right"
+msgstr "правый"
+
+#: src/dsp/engine_jack.c:851 src/gui/widgets/monitor_section.c:237
+#, fuzzy
+msgid "Failed to connect to left monitor output port"
+msgstr "Не удалось подключить порты"
+
+#: src/dsp/engine_jack.c:859 src/gui/widgets/monitor_section.c:246
+#, fuzzy
+msgid "Failed to connect to right monitor output port"
+msgstr "Не удалось подключить порты"
+
+#: src/dsp/curve.c:375
+msgid "Exponential"
+msgstr "Экспоненциально"
+
+#: src/dsp/curve.c:380
+msgid "Elliptic"
+msgstr "Эллиптический"
+
+#: src/dsp/audio_function.c:137 src/gui/widgets/drag_dest_box.c:324
+msgid "Failed to create plugin"
+msgstr "Не удалось создать плагин"
+
+#: src/dsp/audio_function.c:370
+msgid "Invalid positions - skipping function"
+msgstr "Недопустимые позиции - пропускаем функцию"
+
+#: src/dsp/audio_function.c:616
+#, fuzzy
+msgid "Failed to get audio clip from external program"
+msgstr "Не удалось создать трек аудио группы"
+
+#: src/dsp/audio_function.c:641
+msgid "Failed to apply plugin"
+msgstr "Не удалось применить плагин"
+
+#: src/dsp/graph_thread.c:572
+#, c-format
+msgid ""
+"Your user does not have enough privileges to allow %s to set the scheduling "
+"priority of threads. Please refer to the 'Getting Started' section in the "
+"user manual for details."
+msgstr ""
+
+#: src/dsp/track.c:326
+msgid "Track record"
+msgstr "Запись трека"
+
+#: src/dsp/track.c:445
+#, fuzzy
+msgid "Failed to clone modulator plugin"
+msgstr "Не удалось клонировать плагин"
+
+#: src/dsp/track.c:474
+msgid "Failed to clone channel"
+msgstr "Не удалось клонировать канал"
+
+#: src/dsp/track.c:853
+msgid "Cannot set track muted"
+msgstr "Невозможно заглушить трек"
+
+#: src/dsp/track.c:897
+#, fuzzy
+msgid "Cannot set track folded"
+msgstr "Невозможно упаковать трек"
+
+#: src/dsp/track.c:1409
+msgid "Cannot set track soloed"
+msgstr "Невозможно изолировать трек"
+
+#: src/dsp/track.c:1459
+#, fuzzy
+msgid "Cannot set track listened"
+msgstr "Невозможно прослушать трек"
+
+#: src/dsp/track.c:2905 src/settings/plugin_settings.c:398
+#: src/settings/plugin_settings.c:440
+msgid "Failed to rename track"
+msgstr "Не удалось переименовать трек"
+
+#: src/dsp/track.c:3265 src/dsp/track.c:3310
+msgid "Cannot set track comment"
+msgstr "Невозможно задать комментарий к треку"
+
+#: src/dsp/track.c:3346
+msgid "Cannot set track icon"
+msgstr "Невозможно установить значок трека"
+
+#: src/dsp/track.c:3580
+msgid "Cannot set track enabled"
+msgstr "Невозможно активировать трек"
+
+#: src/dsp/automation_track.c:163
+msgid "Rec"
+msgstr "Запись"
+
+#: src/dsp/automation_track.c:184
+msgid "Touch"
+msgstr "Касание (Touch)"
+
+#: src/dsp/automation_track.c:187
+msgid "Latch"
+msgstr "Фиксация (Latch)"
+
+#: src/dsp/region.c:511 src/gui/widgets/track.c:1059
+#: build/data/org.zrythm.Zrythm.gschema.xml:1233
+msgid "Automation"
+msgstr "Автоматизация (Automation)"
+
+#: src/dsp/engine.c:499
+#, c-format
+msgid ""
+"Failed to initialize the %s audio backend. Will use the dummy backend "
+"instead. Please check your backend settings in the Preferences."
+msgstr ""
+"Не удалось инициализировать аудио бэкенд %s. Будет использована заглушка. "
+"Пожалуйста, проверьте установки аудио бэкенда в Настройках."
+
+#: src/dsp/engine.c:540
+#, c-format
+msgid ""
+"The JACK MIDI backend can only be used with the JACK audio backend (your "
+"current audio backend is %s). Will use the dummy MIDI backend instead."
+msgstr ""
+"JACK MIDI может быть использован только вместе с JACK audio (ваш текущий "
+"аудио бэкенд - %s). Будет использована MIDI заглушка."
+
+#: src/dsp/engine.c:575
+#, c-format
+msgid ""
+"Failed to initialize the %s MIDI backend. Will use the dummy backend "
+"instead. Please check your backend settings in the Preferences."
+msgstr ""
+"Не удалось инициализировать %s MIDI бэкенд. Будет использована заглушка. "
+"Пожалуйста, проверьте установки ваших бэкендов в Настройках."
+
+#: src/dsp/engine.c:616
+msgid ""
+"Your selected combination of backends may not work properly. If you want to "
+"use JACK, please select JACK as both your audio and MIDI backend."
+msgstr ""
+"Комбинация выбранных вами бэкендов может работать некорректно. Если вы "
+"хотите использовать JACK, пожалуйста, выберете его в качестве обоих, MIDI и "
+"аудио, бэкендов."
+
+#: src/dsp/engine.c:817
+#, c-format
+msgid ""
+"The selected MIDI/audio backend was not found in the version of %s you have "
+"installed. The audio and MIDI backends were set to \"Dummy\". Please set "
+"your preferred backend from the preferences."
+msgstr ""
+"Выбранный MIDI/аудио бэкенд не был найден в установленной вами версии %s. "
+"Для аудио и MIDI бэкендов будет использована заглушка. Пожалуйста, выберете "
+"предпочтительный бэкенд в настройках."
+
+#: src/dsp/exporter.c:160
+#, c-format
+msgid "Format %s not supported yet"
+msgstr "Формат %s пока не поддерживается"
+
+#: src/dsp/exporter.c:227
+msgid "SF INFO invalid"
+msgstr "SF INFO недействительна"
+
+#: src/dsp/exporter.c:256
+#, c-format
+msgid ""
+"Couldn't open SNDFILE %s:\n"
+"%d: %s"
+msgstr ""
+"Не удалось открыть SNDFILE %s:\n"
+"%d: %s"
+
+#: src/dsp/exporter.c:267
+#, c-format
+msgid "Invalid SNDFILE format %s: 0x%08X != 0x%08X"
+msgstr ""
+
+#: src/dsp/exporter.c:524
+#, c-format
+msgid ""
+"The exported audio contains segments louder than 0 dB (max detected %.1f dB)."
+msgstr ""
+
+#: src/dsp/exporter.c:1014 src/dsp/exporter.c:1021
+msgid "Failed to create audio track"
+msgstr "Не удалось создать аудио трек"
+
+#: src/dsp/exporter.c:1053
+#, fuzzy
+msgid "Invalid time range"
+msgstr "Неверное значение (Invalid)"
+
+#: src/dsp/engine_pulse.c:88
+msgid ""
+"A buffer underflow has occurred. Try increasing the buffer size in the "
+"settings to avoid audio glitches."
+msgstr ""
+"Произошла неполная обработка буфера. Попробуйте увеличить размер буфера в "
+"настройках, чтобы избежать звуковых помех."
+
+#: src/dsp/engine_pulse.c:202
+msgid "PulseAudio error: Failed to create main loop"
+msgstr "Ошибка PulseAudio: Не удалось создать главную петлю"
+
+#: src/dsp/engine_pulse.c:222
+#, c-format
+msgid "PulseAudio Error: %s"
+msgstr "Ошибка PulseAudio: %s"
+
+#: src/dsp/engine_pulse.c:239
+msgid "PulseAudio Error: Failed to connect"
+msgstr "Ошибка PulseAudio: Не удалось подключиться"
+
+#. TODO
+#: src/dsp/scale.c:543
+msgid "Unimplemented"
+msgstr "Функция не реализована"
+
+#: src/dsp/chord_track.c:40 src/settings/chord_preset.c:47
+#: resources/ui/inspector_chord.ui:7
+msgid "Chords"
+msgstr "Аккорды (Chords)"
+
+#: src/dsp/clip.c:160
+#, fuzzy
+msgid "Failed to initialize audio file"
+msgstr "Не удалось записать аудиофайл"
+
+#: src/dsp/clip.c:186
+#, fuzzy, c-format
+msgid "Failed to initialize audio file at %s"
+msgstr "Не удалось записать аудиофайл"
+
+#: src/dsp/clip.c:453
+#, c-format
+msgid "Failed to write audio clip to file: %s"
+msgstr "Не удалось записать аудиоклип в файл: %s"
+
+#: src/dsp/clip.c:522
+msgid "Failed to write audio file"
+msgstr "Не удалось записать аудиофайл"
+
+#: src/dsp/clip.c:544
+#, fuzzy
+msgid "Failed to create audio clip from file"
+msgstr "Не удалось записать аудиоклип в файл: %s"
+
+#: src/dsp/clip.c:696
+msgid "Edit in external app"
+msgstr "Редактировать во внешнем приложении"
+
+#: src/dsp/clip.c:698 src/utils/dialogs.c:60
+#: src/gui/widgets/dialogs/create_project_dialog.c:124
+#: src/gui/widgets/dialogs/first_run_dialog.c:274
+#: src/gui/widgets/dialogs/bug_report_dialog.c:187
+#: src/plugins/lv2/lv2_gtk.c:247 resources/ui/port_selector_dialog.ui:126
+#: resources/ui/string_entry_dialog.ui:55
+msgid "_OK"
+msgstr "_ОК"
+
+#: src/dsp/clip.c:715
+#, c-format
+msgid "Edit the file at <u>%s</u>, then press OK"
+msgstr "Отредактируйте файл в <u> %s </u>, и затем нажмите OK"
+
+#: src/dsp/clip.c:727
+msgid "Launch"
+msgstr "Запуск"
+
+#: src/dsp/clip.c:753 src/dsp/audio_region.c:90
+#, fuzzy, c-format
+msgid "Failed to create audio clip from file at %s"
+msgstr "Не удалось записать аудиоклип в файл: %s"
+
+#: src/dsp/tempo_track.c:38
+msgid "BPM"
+msgstr "Темп (BPM)"
+
+#: src/dsp/tempo_track.c:51
+msgid "Beats per bar"
+msgstr "Долей в такте"
+
+#: src/dsp/tempo_track.c:70
+msgid "Beat unit"
+msgstr "Длина долей (Beat Unit)"
+
+#: src/dsp/tempo_track.c:185
+msgid "Failed to change BPM"
+msgstr "Не удалось изменить темп"
+
+#: src/dsp/automation_point.c:241 src/gui/widgets/fader.c:370
+#: src/gui/widgets/balance_control.c:349 src/gui/widgets/item_factory.c:325
+#: src/gui/widgets/item_factory.c:349
+msgid "Invalid value"
+msgstr "Неверное значение"
+
+#: src/dsp/recording_manager.c:144
+msgid "Failed to create recorded regions"
+msgstr "Не удалось создать записанные области"
+
+#: src/dsp/pool.c:520
+#, c-format
+msgid "Failed to write clip %s"
+msgstr "Не удалось записать клип %s"
+
+#: src/dsp/audio_region.c:236
+msgid "Failed to duplicate audio clip"
+msgstr "Не удалось дублировать аудиоклип"
+
+#: src/dsp/engine_alsa.c:328
+#, c-format
+msgid "ALSA Error: %s"
+msgstr "Ошибка ALSA: %s"
+
+#: src/dsp/track_lane.c:64
+#, c-format
+msgid "Lane %d"
+msgstr "Полоса %d"
+
+#: src/dsp/track_lane.c:95
+msgid "Failed to rename lane"
+msgstr "Не удалось переименовать полосу"
+
+#: src/dsp/track_lane.c:142
+#, fuzzy
+msgid "Cannot set track lane soloed"
+msgstr "Не удается изолировать трек"
+
+#: src/dsp/track_lane.c:190
+#, fuzzy
+msgid "Cannot set track lane muted"
+msgstr "Невозможно заглушить трек"
+
+#: src/dsp/sample_processor.c:560
+#, c-format
+msgid "Failed to instantiate plugin %s"
+msgstr "Не удалось добавить плагин %s"
+
+#: src/dsp/channel_send.c:84
+#, c-format
+msgid "Channel Send %d enabled"
+msgstr "Посыл канала %d активирован"
+
+#: src/dsp/channel_send.c:95
+#, c-format
+msgid "Channel Send %d amount"
+msgstr "Посыл канала %d количество"
+
+#: src/dsp/channel_send.c:107
+#, c-format
+msgid "Channel Send %d audio in"
+msgstr "Аудио вход посыла канала %d"
+
+#: src/dsp/channel_send.c:114
+#, c-format
+msgid "Channel Send %d MIDI in"
+msgstr "MIDI вход посыла канала %d"
+
+#: src/dsp/channel_send.c:121
+#, c-format
+msgid "Channel Send %d audio out"
+msgstr "Аудио выход посыла канала %d"
+
+#: src/dsp/channel_send.c:129
+#, c-format
+msgid "Channel Send %d MIDI out"
+msgstr "MIDI выход посыла канала %d"
+
+#: src/dsp/channel_send.c:420 src/dsp/channel_send.c:477
+msgid "Ports cannot be connected"
+msgstr "Порты не могут быть соединены"
+
+#: src/dsp/channel_send.c:582
+msgid "Pre-fader send"
+msgstr "Префейдерный посыл"
+
+#: src/dsp/channel_send.c:584
+msgid "Post-fader send"
+msgstr "Постфейдерный посыл"
+
+#: src/dsp/channel_send.c:615
+#, c-format
+msgid "%s input"
+msgstr "%s вход"
+
+#: src/dsp/engine_pa.c:206 src/dsp/engine_pa.c:218 src/dsp/engine_pa.c:226
+#, c-format
+msgid "PortAudio Error: %s"
+msgstr "Ошибка PortAudio: %s"
+
+#: src/dsp/tracklist.c:1295
+msgid "No file was found"
+msgstr "Файлов не найдено"
+
+#: src/dsp/tracklist.c:1322
+#, c-format
+msgid "Unsupported file type %s"
+msgstr "Неподдерживаемый тип файла %s"
+
+#: src/dsp/tracklist.c:1338
+msgid "This MIDI file contains no data"
+msgstr ""
+
+#: src/dsp/tracklist.c:1355
+msgid "Can only drop 1 file at a time on existing tracks"
+msgstr "На существующие дорожки можно поместить только 1 файл за раз"
+
+#: src/dsp/tracklist.c:1369
+msgid "Can only drop MIDI files on MIDI/instrument tracks"
+msgstr "MIDI-файлы можно помещать только на MIDI/инструментальные дорожки"
+
+#: src/dsp/tracklist.c:1379
+#, c-format
+msgid ""
+"This MIDI file contains %d tracks. It cannot be dropped into an existing "
+"track"
+msgstr ""
+"Этот MIDI-файл содержит %d дорожки(ок). Он не может быть помещён на "
+"существующий трек"
+
+#: src/dsp/tracklist.c:1394
+msgid "Can only drop audio files on audio tracks"
+msgstr "Аудиофайлы можно помещать только на аудио треки"
+
+#: src/dsp/tracklist.c:1455
+msgid "Failed to create arranger objects"
+msgstr "Не удалось создать объекты аранжировщика"
+
+#: src/dsp/tracklist.c:1529
+#, fuzzy
+msgid "Failed to move tracks after copying or moving inside folder"
+msgstr "Не удалось переместить или скопировать трек внутрь папки"
+
+#: src/dsp/tracklist.c:1607
+msgid "Failed to copy tracks inside"
+msgstr "Не удалось скопировать треки внутрь"
+
+#: src/dsp/tracklist.c:1649
+msgid "Failed to copy track inside"
+msgstr "Не удалось скопировать трек внутрь"
+
+#: src/dsp/tracklist.c:1690
+msgid "Failed to copy tracks"
+msgstr "Не удалось скопировать треки"
+
+#: src/dsp/tracklist.c:1715
+msgid "Cannot drag folder into itself"
+msgstr "Невозможно поместить папку внутрь самой себя"
+
+#: src/dsp/tracklist.c:1733 src/dsp/tracklist.c:1777
+msgid "Failed to move track inside folder"
+msgstr "Не удалось переместить трек внутрь папки"
+
+#: src/dsp/tracklist.c:1818
+#, fuzzy
+msgid "Failed to move tracks"
+msgstr "Не удалось переместить трек"
+
+#: src/dsp/modulator_macro_processor.c:87
+#, c-format
+msgid "Macro %d"
+msgstr "Макро %d"
+
+#: src/dsp/modulator_macro_processor.c:102
+#, c-format
+msgid "Macro CV In %d"
+msgstr "Макро CV вход %d"
+
+#: src/dsp/modulator_macro_processor.c:112
+#, c-format
+msgid "Macro CV Out %d"
+msgstr "Макро CV выход %d"
+
+#: src/dsp/channel.c:1205 src/plugins/carla_native_plugin.c:1149
+msgid "MIDI out"
+msgstr "MIDI выход"
 
 #: src/utils/ui.c:629
 msgid "Sine (Equal Power)"
@@ -2055,11 +2774,6 @@ msgstr "ошибка: %s"
 msgid "Mixer"
 msgstr "Микшер (Mixer)"
 
-#: src/utils/gtk.c:1215 src/audio/modulator_track.c:59
-#: src/gui/widgets/bot_dock_edge.c:262
-msgid "Modulators"
-msgstr "Модуляторы (Modulators)"
-
 #: src/utils/gtk.c:1218
 msgid "Chord Pad"
 msgstr "Панель Аккордов (Chord Pad)"
@@ -2124,15 +2838,6 @@ msgstr "Открыть (_O)"
 msgid "Overwrite Plugin"
 msgstr "Заменить плагин (Overwrite Plugin)"
 
-#: src/utils/dialogs.c:60 src/audio/clip.c:698
-#: src/gui/widgets/dialogs/create_project_dialog.c:124
-#: src/gui/widgets/dialogs/first_run_dialog.c:274
-#: src/gui/widgets/dialogs/bug_report_dialog.c:187
-#: src/plugins/lv2/lv2_gtk.c:247 resources/ui/port_selector_dialog.ui:126
-#: resources/ui/string_entry_dialog.ui:55
-msgid "_OK"
-msgstr "_ОК"
-
 #: src/utils/dialogs.c:65
 msgid "A plugin already exists at the selected slot. Overwrite it?"
 msgstr "В выбранном слоте уже присутствует плагин. Заменить его?"
@@ -2147,712 +2852,6 @@ msgstr ""
 #, c-format
 msgid "%s has encountered an error\n"
 msgstr "%s столкнулся с ошибкой\n"
-
-#: src/audio/supported_file.c:269
-msgid "Failed opening file"
-msgstr "Не удалось открыть файл"
-
-#: src/audio/supported_file.c:274
-#, c-format
-msgid ""
-"<b>%s</b>\n"
-"Sample rate: %d\n"
-"Length: %<PRId64>s %<PRId64> ms | BPM: %.1f\n"
-"Channel(s): %u | Bitrate: %'d.%d kb/s\n"
-"Bit depth: %d bits"
-msgstr ""
-"<b>%s</b>\n"
-"Частота дискретизации: %d\n"
-"Длина: %<PRId64>с %<PRId64> мс | Темп: %.1f\n"
-"Канал(ы): %u | Битрейт: %'d.%d кбит/с\n"
-"Битовая глубина: %d бит"
-
-#: src/audio/snap_grid.c:253 resources/ui/snap_grid_popover.ui:116
-#: resources/ui/snap_grid_popover.ui:199
-msgid "Adaptive"
-msgstr "Адаптивный"
-
-#: src/audio/fader.c:97
-#, fuzzy
-msgid "Prefader Swap Phase"
-msgstr "Баланс префейдера"
-
-#: src/audio/fader.c:98
-#, fuzzy
-msgid "Fader Swap Phase"
-msgstr "Баланс фейдера"
-
-#: src/audio/fader.c:140
-msgid "Prefader Volume"
-msgstr "Громкость префейдера"
-
-#: src/audio/fader.c:140
-msgid "Fader Volume"
-msgstr "Громкость фейдера"
-
-#: src/audio/fader.c:169
-msgid "Prefader Balance"
-msgstr "Баланс префейдера"
-
-#: src/audio/fader.c:169
-msgid "Fader Balance"
-msgstr "Баланс фейдера"
-
-#: src/audio/fader.c:188
-msgid "Prefader Mute"
-msgstr "Заглушить префейдер"
-
-#: src/audio/fader.c:188
-msgid "Fader Mute"
-msgstr "Заглушить фейдер"
-
-#: src/audio/fader.c:209
-msgid "Prefader Solo"
-msgstr "Изолировать префейдер"
-
-#: src/audio/fader.c:209
-msgid "Fader Solo"
-msgstr "Изоляция фейдера"
-
-#: src/audio/fader.c:223
-msgid "Prefader Listen"
-msgstr "Прослушивание префейдера"
-
-#: src/audio/fader.c:223
-msgid "Fader Listen"
-msgstr "Прослушивание фейдера"
-
-#: src/audio/fader.c:238
-msgid "Prefader Mono Compat"
-msgstr "Префейдер моно режим"
-
-#: src/audio/fader.c:239
-msgid "Fader Mono Compat"
-msgstr "Фейдер моно режим"
-
-#: src/audio/fader.c:271
-msgid "Ch Pre-Fader in"
-msgstr "Вход префейдера канала"
-
-#: src/audio/fader.c:276
-msgid "Ch Fader in"
-msgstr "Вход фейдера канала"
-
-#: src/audio/fader.c:282
-msgid "Sample Processor Fader in"
-msgstr "Вход фейдера обработчика семплов"
-
-#: src/audio/fader.c:287
-msgid "Monitor Fader in"
-msgstr "Вход фейдера мониора"
-
-#: src/audio/fader.c:305
-msgid "Ch Pre-Fader out"
-msgstr "Выход префейдера канала"
-
-#: src/audio/fader.c:310
-msgid "Ch Fader out"
-msgstr "Выход фейдера канала"
-
-#: src/audio/fader.c:316
-msgid "Sample Processor Fader out"
-msgstr "Выход фейдера обработчика семплов"
-
-#: src/audio/fader.c:321
-msgid "Monitor Fader out"
-msgstr "Выход фейдера монитора"
-
-#: src/audio/fader.c:343
-msgid "Ch MIDI Pre-Fader in"
-msgstr "Вход MIDI префейдера канала"
-
-#: src/audio/fader.c:348
-msgid "Ch MIDI Fader in"
-msgstr "Вход MIDI фейдера канала"
-
-#: src/audio/fader.c:360
-msgid "Ch MIDI Pre-Fader out"
-msgstr "Выход MIDI префейдера канала"
-
-#: src/audio/fader.c:365
-msgid "Ch MIDI Fader out"
-msgstr "Выход MIDI фейдера канала"
-
-#: src/audio/fader.c:594
-msgid "Failed to change volume"
-msgstr "Не удалось изменить громкость"
-
-#: src/audio/fader.c:643
-msgid "Failed to set MIDI mode"
-msgstr "Не удалось включить MIDI-режим"
-
-#: src/audio/encoder.c:58
-#, c-format
-msgid "An error has occurred opening the audio file '%s'"
-msgstr "Произошла ошибка при открытии аудиофайла '%s'"
-
-#: src/audio/marker_track.c:42
-msgid "Markers"
-msgstr "Маркеры (Markers)"
-
-#: src/audio/marker_track.c:60 src/gui/widgets/timeline_selection_info.c:228
-#: resources/ui/quantize_dialog.ui:62
-msgid "start"
-msgstr "начало"
-
-#: src/audio/marker_track.c:67 src/gui/widgets/timeline_selection_info.c:234
-#: resources/ui/quantize_dialog.ui:70
-msgid "end"
-msgstr "конец"
-
-#: src/audio/engine_jack.c:311
-msgid "XRUN occurred - check your JACK configuration"
-msgstr "Произошла рассинхронизация (XRUN) - проверьте вашу конфигурацию JACK"
-
-#: src/audio/engine_jack.c:369
-msgid "JACK has shut down"
-msgstr "JACK отключился"
-
-#. TRANSLATORS: JACK failure messages
-#: src/audio/engine_jack.c:632
-msgid "Overall operation failed"
-msgstr "Всеобщий сбой операции"
-
-#: src/audio/engine_jack.c:638
-msgid "The operation contained an invalid or unsupported option"
-msgstr "Операция содержала недопустимый или неподдерживаемый параметр"
-
-#: src/audio/engine_jack.c:644
-msgid "The desired client name was not unique"
-msgstr "Желаемое имя клиента оказалось не уникальным"
-
-#: src/audio/engine_jack.c:648
-msgid "Unable to connect to the JACK server"
-msgstr "Не удается подключиться к серверу JACK"
-
-#: src/audio/engine_jack.c:653
-msgid "Communication error with the JACK server"
-msgstr "Ошибка коммуникации с сервером JACK"
-
-#: src/audio/engine_jack.c:657
-msgid "Requested client does not exist"
-msgstr "Запрошенный клиент не существует"
-
-#: src/audio/engine_jack.c:661
-msgid "Unable to load internal client"
-msgstr "Не удается загрузить внутренний клиент"
-
-#: src/audio/engine_jack.c:665
-msgid "Unable to initialize client"
-msgstr "Не удается инициализировать клиент"
-
-#: src/audio/engine_jack.c:669
-msgid "Unable to access shared memory"
-msgstr "Не удается получить доступ к общей памяти"
-
-#: src/audio/engine_jack.c:674
-msgid "Client's protocol version does not match"
-msgstr "Версия протокола клиента не совпадает"
-
-#: src/audio/engine_jack.c:678
-msgid "Backend error"
-msgstr "Ошибка бэкенда"
-
-#: src/audio/engine_jack.c:682
-msgid "Client zombie"
-msgstr "Зомби клиент"
-
-#: src/audio/engine_jack.c:729
-#, fuzzy, c-format
-msgid "JACK: Failed to disconnect monitor out: %s"
-msgstr "Не удалось отключить %s от %s"
-
-#: src/audio/engine_jack.c:778
-msgid "JACK: No physical playback ports found"
-msgstr ""
-
-#: src/audio/engine_jack.c:792
-#, fuzzy, c-format
-msgid "JACK: Failed to connect monitor output [%s]: %s"
-msgstr "Не удалось подключить порты"
-
-#: src/audio/engine_jack.c:793
-msgid "left"
-msgstr "левый"
-
-#: src/audio/engine_jack.c:793
-msgid "right"
-msgstr "правый"
-
-#: src/audio/engine_jack.c:851 src/gui/widgets/monitor_section.c:237
-#, fuzzy
-msgid "Failed to connect to left monitor output port"
-msgstr "Не удалось подключить порты"
-
-#: src/audio/engine_jack.c:859 src/gui/widgets/monitor_section.c:246
-#, fuzzy
-msgid "Failed to connect to right monitor output port"
-msgstr "Не удалось подключить порты"
-
-#: src/audio/curve.c:375
-msgid "Exponential"
-msgstr "Экспоненциально"
-
-#: src/audio/curve.c:380
-msgid "Elliptic"
-msgstr "Эллиптический"
-
-#: src/audio/audio_function.c:137 src/gui/widgets/drag_dest_box.c:324
-msgid "Failed to create plugin"
-msgstr "Не удалось создать плагин"
-
-#: src/audio/audio_function.c:370
-msgid "Invalid positions - skipping function"
-msgstr "Недопустимые позиции - пропускаем функцию"
-
-#: src/audio/audio_function.c:616
-#, fuzzy
-msgid "Failed to get audio clip from external program"
-msgstr "Не удалось создать трек аудио группы"
-
-#: src/audio/audio_function.c:641
-msgid "Failed to apply plugin"
-msgstr "Не удалось применить плагин"
-
-#: src/audio/graph_thread.c:572
-#, c-format
-msgid ""
-"Your user does not have enough privileges to allow %s to set the scheduling "
-"priority of threads. Please refer to the 'Getting Started' section in the "
-"user manual for details."
-msgstr ""
-
-#: src/audio/track.c:326
-msgid "Track record"
-msgstr "Запись трека"
-
-#: src/audio/track.c:445
-#, fuzzy
-msgid "Failed to clone modulator plugin"
-msgstr "Не удалось клонировать плагин"
-
-#: src/audio/track.c:474
-msgid "Failed to clone channel"
-msgstr "Не удалось клонировать канал"
-
-#: src/audio/track.c:853
-msgid "Cannot set track muted"
-msgstr "Невозможно заглушить трек"
-
-#: src/audio/track.c:897
-#, fuzzy
-msgid "Cannot set track folded"
-msgstr "Невозможно упаковать трек"
-
-#: src/audio/track.c:1409
-msgid "Cannot set track soloed"
-msgstr "Невозможно изолировать трек"
-
-#: src/audio/track.c:1459
-#, fuzzy
-msgid "Cannot set track listened"
-msgstr "Невозможно прослушать трек"
-
-#: src/audio/track.c:2905 src/settings/plugin_settings.c:398
-#: src/settings/plugin_settings.c:440
-msgid "Failed to rename track"
-msgstr "Не удалось переименовать трек"
-
-#: src/audio/track.c:3265 src/audio/track.c:3310
-msgid "Cannot set track comment"
-msgstr "Невозможно задать комментарий к треку"
-
-#: src/audio/track.c:3346
-msgid "Cannot set track icon"
-msgstr "Невозможно установить значок трека"
-
-#: src/audio/track.c:3580
-msgid "Cannot set track enabled"
-msgstr "Невозможно активировать трек"
-
-#: src/audio/automation_track.c:163
-msgid "Rec"
-msgstr "Запись"
-
-#: src/audio/automation_track.c:184
-msgid "Touch"
-msgstr "Касание (Touch)"
-
-#: src/audio/automation_track.c:187
-msgid "Latch"
-msgstr "Фиксация (Latch)"
-
-#: src/audio/region.c:511 src/gui/widgets/track.c:1059
-#: build/data/org.zrythm.Zrythm.gschema.xml:1233
-msgid "Automation"
-msgstr "Автоматизация (Automation)"
-
-#: src/audio/engine.c:499
-#, c-format
-msgid ""
-"Failed to initialize the %s audio backend. Will use the dummy backend "
-"instead. Please check your backend settings in the Preferences."
-msgstr ""
-"Не удалось инициализировать аудио бэкенд %s. Будет использована заглушка. "
-"Пожалуйста, проверьте установки аудио бэкенда в Настройках."
-
-#: src/audio/engine.c:540
-#, c-format
-msgid ""
-"The JACK MIDI backend can only be used with the JACK audio backend (your "
-"current audio backend is %s). Will use the dummy MIDI backend instead."
-msgstr ""
-"JACK MIDI может быть использован только вместе с JACK audio (ваш текущий "
-"аудио бэкенд - %s). Будет использована MIDI заглушка."
-
-#: src/audio/engine.c:575
-#, c-format
-msgid ""
-"Failed to initialize the %s MIDI backend. Will use the dummy backend "
-"instead. Please check your backend settings in the Preferences."
-msgstr ""
-"Не удалось инициализировать %s MIDI бэкенд. Будет использована заглушка. "
-"Пожалуйста, проверьте установки ваших бэкендов в Настройках."
-
-#: src/audio/engine.c:616
-msgid ""
-"Your selected combination of backends may not work properly. If you want to "
-"use JACK, please select JACK as both your audio and MIDI backend."
-msgstr ""
-"Комбинация выбранных вами бэкендов может работать некорректно. Если вы "
-"хотите использовать JACK, пожалуйста, выберете его в качестве обоих, MIDI и "
-"аудио, бэкендов."
-
-#: src/audio/engine.c:817
-#, c-format
-msgid ""
-"The selected MIDI/audio backend was not found in the version of %s you have "
-"installed. The audio and MIDI backends were set to \"Dummy\". Please set "
-"your preferred backend from the preferences."
-msgstr ""
-"Выбранный MIDI/аудио бэкенд не был найден в установленной вами версии %s. "
-"Для аудио и MIDI бэкендов будет использована заглушка. Пожалуйста, выберете "
-"предпочтительный бэкенд в настройках."
-
-#: src/audio/exporter.c:160
-#, c-format
-msgid "Format %s not supported yet"
-msgstr "Формат %s пока не поддерживается"
-
-#: src/audio/exporter.c:227
-msgid "SF INFO invalid"
-msgstr "SF INFO недействительна"
-
-#: src/audio/exporter.c:256
-#, c-format
-msgid ""
-"Couldn't open SNDFILE %s:\n"
-"%d: %s"
-msgstr ""
-"Не удалось открыть SNDFILE %s:\n"
-"%d: %s"
-
-#: src/audio/exporter.c:267
-#, c-format
-msgid "Invalid SNDFILE format %s: 0x%08X != 0x%08X"
-msgstr ""
-
-#: src/audio/exporter.c:524
-#, c-format
-msgid ""
-"The exported audio contains segments louder than 0 dB (max detected %.1f dB)."
-msgstr ""
-
-#: src/audio/exporter.c:1014 src/audio/exporter.c:1021
-msgid "Failed to create audio track"
-msgstr "Не удалось создать аудио трек"
-
-#: src/audio/exporter.c:1053
-#, fuzzy
-msgid "Invalid time range"
-msgstr "Неверное значение (Invalid)"
-
-#: src/audio/engine_pulse.c:88
-msgid ""
-"A buffer underflow has occurred. Try increasing the buffer size in the "
-"settings to avoid audio glitches."
-msgstr ""
-"Произошла неполная обработка буфера. Попробуйте увеличить размер буфера в "
-"настройках, чтобы избежать звуковых помех."
-
-#: src/audio/engine_pulse.c:202
-msgid "PulseAudio error: Failed to create main loop"
-msgstr "Ошибка PulseAudio: Не удалось создать главную петлю"
-
-#: src/audio/engine_pulse.c:222
-#, c-format
-msgid "PulseAudio Error: %s"
-msgstr "Ошибка PulseAudio: %s"
-
-#: src/audio/engine_pulse.c:239
-msgid "PulseAudio Error: Failed to connect"
-msgstr "Ошибка PulseAudio: Не удалось подключиться"
-
-#. TODO
-#: src/audio/scale.c:543
-msgid "Unimplemented"
-msgstr "Функция не реализована"
-
-#: src/audio/chord_track.c:40 src/settings/chord_preset.c:47
-#: resources/ui/inspector_chord.ui:7
-msgid "Chords"
-msgstr "Аккорды (Chords)"
-
-#: src/audio/clip.c:160
-#, fuzzy
-msgid "Failed to initialize audio file"
-msgstr "Не удалось записать аудиофайл"
-
-#: src/audio/clip.c:186
-#, fuzzy, c-format
-msgid "Failed to initialize audio file at %s"
-msgstr "Не удалось записать аудиофайл"
-
-#: src/audio/clip.c:453
-#, c-format
-msgid "Failed to write audio clip to file: %s"
-msgstr "Не удалось записать аудиоклип в файл: %s"
-
-#: src/audio/clip.c:522
-msgid "Failed to write audio file"
-msgstr "Не удалось записать аудиофайл"
-
-#: src/audio/clip.c:544
-#, fuzzy
-msgid "Failed to create audio clip from file"
-msgstr "Не удалось записать аудиоклип в файл: %s"
-
-#: src/audio/clip.c:696
-msgid "Edit in external app"
-msgstr "Редактировать во внешнем приложении"
-
-#: src/audio/clip.c:715
-#, c-format
-msgid "Edit the file at <u>%s</u>, then press OK"
-msgstr "Отредактируйте файл в <u> %s </u>, и затем нажмите OK"
-
-#: src/audio/clip.c:727
-msgid "Launch"
-msgstr "Запуск"
-
-#: src/audio/clip.c:753 src/audio/audio_region.c:90
-#, fuzzy, c-format
-msgid "Failed to create audio clip from file at %s"
-msgstr "Не удалось записать аудиоклип в файл: %s"
-
-#: src/audio/tempo_track.c:38
-msgid "BPM"
-msgstr "Темп (BPM)"
-
-#: src/audio/tempo_track.c:51
-msgid "Beats per bar"
-msgstr "Долей в такте"
-
-#: src/audio/tempo_track.c:70
-msgid "Beat unit"
-msgstr "Длина долей (Beat Unit)"
-
-#: src/audio/tempo_track.c:185
-msgid "Failed to change BPM"
-msgstr "Не удалось изменить темп"
-
-#: src/audio/automation_point.c:241 src/gui/widgets/fader.c:342
-#: src/gui/widgets/balance_control.c:349 src/gui/widgets/item_factory.c:325
-#: src/gui/widgets/item_factory.c:349
-msgid "Invalid value"
-msgstr "Неверное значение"
-
-#: src/audio/recording_manager.c:144
-msgid "Failed to create recorded regions"
-msgstr "Не удалось создать записанные области"
-
-#: src/audio/pool.c:520
-#, c-format
-msgid "Failed to write clip %s"
-msgstr "Не удалось записать клип %s"
-
-#: src/audio/audio_region.c:236
-msgid "Failed to duplicate audio clip"
-msgstr "Не удалось дублировать аудиоклип"
-
-#: src/audio/engine_alsa.c:328
-#, c-format
-msgid "ALSA Error: %s"
-msgstr "Ошибка ALSA: %s"
-
-#: src/audio/track_lane.c:64
-#, c-format
-msgid "Lane %d"
-msgstr "Полоса %d"
-
-#: src/audio/track_lane.c:95
-msgid "Failed to rename lane"
-msgstr "Не удалось переименовать полосу"
-
-#: src/audio/track_lane.c:142
-#, fuzzy
-msgid "Cannot set track lane soloed"
-msgstr "Не удается изолировать трек"
-
-#: src/audio/track_lane.c:190
-#, fuzzy
-msgid "Cannot set track lane muted"
-msgstr "Невозможно заглушить трек"
-
-#: src/audio/sample_processor.c:560
-#, c-format
-msgid "Failed to instantiate plugin %s"
-msgstr "Не удалось добавить плагин %s"
-
-#: src/audio/channel_send.c:84
-#, c-format
-msgid "Channel Send %d enabled"
-msgstr "Посыл канала %d активирован"
-
-#: src/audio/channel_send.c:95
-#, c-format
-msgid "Channel Send %d amount"
-msgstr "Посыл канала %d количество"
-
-#: src/audio/channel_send.c:107
-#, c-format
-msgid "Channel Send %d audio in"
-msgstr "Аудио вход посыла канала %d"
-
-#: src/audio/channel_send.c:114
-#, c-format
-msgid "Channel Send %d MIDI in"
-msgstr "MIDI вход посыла канала %d"
-
-#: src/audio/channel_send.c:121
-#, c-format
-msgid "Channel Send %d audio out"
-msgstr "Аудио выход посыла канала %d"
-
-#: src/audio/channel_send.c:129
-#, c-format
-msgid "Channel Send %d MIDI out"
-msgstr "MIDI выход посыла канала %d"
-
-#: src/audio/channel_send.c:420 src/audio/channel_send.c:477
-msgid "Ports cannot be connected"
-msgstr "Порты не могут быть соединены"
-
-#: src/audio/channel_send.c:582
-msgid "Pre-fader send"
-msgstr "Префейдерный посыл"
-
-#: src/audio/channel_send.c:584
-msgid "Post-fader send"
-msgstr "Постфейдерный посыл"
-
-#: src/audio/channel_send.c:615
-#, c-format
-msgid "%s input"
-msgstr "%s вход"
-
-#: src/audio/engine_pa.c:206 src/audio/engine_pa.c:218
-#: src/audio/engine_pa.c:226
-#, c-format
-msgid "PortAudio Error: %s"
-msgstr "Ошибка PortAudio: %s"
-
-#: src/audio/tracklist.c:1295
-msgid "No file was found"
-msgstr "Файлов не найдено"
-
-#: src/audio/tracklist.c:1322
-#, c-format
-msgid "Unsupported file type %s"
-msgstr "Неподдерживаемый тип файла %s"
-
-#: src/audio/tracklist.c:1338
-msgid "This MIDI file contains no data"
-msgstr ""
-
-#: src/audio/tracklist.c:1355
-msgid "Can only drop 1 file at a time on existing tracks"
-msgstr "На существующие дорожки можно поместить только 1 файл за раз"
-
-#: src/audio/tracklist.c:1369
-msgid "Can only drop MIDI files on MIDI/instrument tracks"
-msgstr "MIDI-файлы можно помещать только на MIDI/инструментальные дорожки"
-
-#: src/audio/tracklist.c:1379
-#, c-format
-msgid ""
-"This MIDI file contains %d tracks. It cannot be dropped into an existing "
-"track"
-msgstr ""
-"Этот MIDI-файл содержит %d дорожки(ок). Он не может быть помещён на "
-"существующий трек"
-
-#: src/audio/tracklist.c:1394
-msgid "Can only drop audio files on audio tracks"
-msgstr "Аудиофайлы можно помещать только на аудио треки"
-
-#: src/audio/tracklist.c:1455
-msgid "Failed to create arranger objects"
-msgstr "Не удалось создать объекты аранжировщика"
-
-#: src/audio/tracklist.c:1529
-#, fuzzy
-msgid "Failed to move tracks after copying or moving inside folder"
-msgstr "Не удалось переместить или скопировать трек внутрь папки"
-
-#: src/audio/tracklist.c:1607
-msgid "Failed to copy tracks inside"
-msgstr "Не удалось скопировать треки внутрь"
-
-#: src/audio/tracklist.c:1649
-msgid "Failed to copy track inside"
-msgstr "Не удалось скопировать трек внутрь"
-
-#: src/audio/tracklist.c:1690
-msgid "Failed to copy tracks"
-msgstr "Не удалось скопировать треки"
-
-#: src/audio/tracklist.c:1715
-msgid "Cannot drag folder into itself"
-msgstr "Невозможно поместить папку внутрь самой себя"
-
-#: src/audio/tracklist.c:1733 src/audio/tracklist.c:1777
-msgid "Failed to move track inside folder"
-msgstr "Не удалось переместить трек внутрь папки"
-
-#: src/audio/tracklist.c:1818
-#, fuzzy
-msgid "Failed to move tracks"
-msgstr "Не удалось переместить трек"
-
-#: src/audio/modulator_macro_processor.c:87
-#, c-format
-msgid "Macro %d"
-msgstr "Макро %d"
-
-#: src/audio/modulator_macro_processor.c:102
-#, c-format
-msgid "Macro CV In %d"
-msgstr "Макро CV вход %d"
-
-#: src/audio/modulator_macro_processor.c:112
-#, c-format
-msgid "Macro CV Out %d"
-msgstr "Макро CV выход %d"
-
-#: src/audio/channel.c:1205 src/plugins/carla_native_plugin.c:1149
-msgid "MIDI out"
-msgstr "MIDI выход"
 
 #: src/gui/backend/mixer_selections.c:622
 msgid "Failed to paste plugins"
@@ -2914,7 +2913,7 @@ msgstr "Недопустимое имя объекта %s"
 msgid "Failed to rename object"
 msgstr "Не удалось переименовать объект"
 
-#: src/gui/widgets/inspector_port.c:121 src/gui/widgets/fader.c:293
+#: src/gui/widgets/inspector_port.c:121 src/gui/widgets/fader.c:321
 #: src/gui/widgets/preferences.c:343 src/gui/widgets/modulator_inner.c:138
 #: src/gui/widgets/modulator_macro.c:155 src/gui/widgets/balance_control.c:287
 #: src/gui/widgets/plugin_browser.c:612 src/gui/widgets/plugin_browser.c:659
@@ -3013,12 +3012,12 @@ msgstr "Нота/Контроль (Note/Control)"
 msgid "Destination"
 msgstr "Назначение (Destination)"
 
-#: src/gui/widgets/fader.c:378
+#: src/gui/widgets/fader.c:406
 #, fuzzy
 msgid "Fader Value"
 msgstr "Громкость фейдера"
 
-#: src/gui/widgets/fader.c:488 src/gui/widgets/fader_controls_expander.c:41
+#: src/gui/widgets/fader.c:526 src/gui/widgets/fader_controls_expander.c:41
 msgid "Fader"
 msgstr "Фейдер (Fader)"
 
@@ -3042,17 +3041,17 @@ msgstr ""
 "Проект содержит несохранённые изменения.\n"
 "Они будут потеряны, если вы выйдете не сохранившись."
 
-#: src/gui/widgets/main_window.c:779 src/gui/widgets/preferences.c:1007
+#: src/gui/widgets/main_window.c:799 src/gui/widgets/preferences.c:1007
 #: resources/ui/file_auditioner_controls.ui:34 resources/gtk/menus.ui:40
 #: resources/gtk/help-overlay.ui:39
 msgid "Preferences"
 msgstr "Настройки"
 
-#: src/gui/widgets/main_window.c:780
+#: src/gui/widgets/main_window.c:800
 msgid "Log viewer"
 msgstr "Просмотр логов (Log Viewer)"
 
-#: src/gui/widgets/main_window.c:781
+#: src/gui/widgets/main_window.c:801
 msgid "Scripting interface"
 msgstr "Интерфейс скриптов (Scripting Interface)"
 
@@ -3906,15 +3905,15 @@ msgstr "Выбрать всё"
 msgid "Loop selection"
 msgstr "Зациклить выделенное (Loop selection)"
 
-#: src/gui/widgets/bot_dock_edge.c:259
+#: src/gui/widgets/bot_dock_edge.c:251
 msgid "Editor view"
 msgstr "Вид редактора"
 
-#: src/gui/widgets/bot_dock_edge.c:260
+#: src/gui/widgets/bot_dock_edge.c:252
 msgid "Mixer view"
 msgstr "Вид микшера"
 
-#: src/gui/widgets/bot_dock_edge.c:264
+#: src/gui/widgets/bot_dock_edge.c:256
 msgid "Chord pad"
 msgstr "Панель Аккордов (Chord Pad)"
 
@@ -5357,7 +5356,7 @@ msgid "Link to snap"
 msgstr "Связать длину с настройками привязки"
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:342
-#: resources/ui/snap_grid_popover.ui:224
+#: resources/ui/snap_grid_popover.ui:212
 msgid "Last object"
 msgstr "Последний объект"
 
@@ -5379,7 +5378,7 @@ msgid ""
 msgstr ""
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:373
-#: resources/ui/snap_grid_popover.ui:239 resources/ui/inspector_master.ui:71
+#: resources/ui/snap_grid_popover.ui:225 resources/ui/inspector_master.ui:71
 #: resources/ui/inspector_ap.ui:71 resources/ui/inspector_midi.ui:71
 msgid "Length"
 msgstr "Длина (Length)"
@@ -6085,7 +6084,7 @@ msgid "Play/Pause"
 msgstr "Воспроизведение/Пауза"
 
 #: resources/ui/file_auditioner_controls.ui:22
-#: resources/ui/transport_controls.ui:38
+#: resources/ui/transport_controls.ui:32
 msgid "Stop"
 msgstr "Остановить (Stop)"
 
@@ -6117,51 +6116,51 @@ msgstr "Настройки канала"
 msgid "News"
 msgstr "Новости (News)"
 
-#: resources/ui/snap_box.ui:15
+#: resources/ui/snap_box.ui:13
 msgid "Snap to grid"
 msgstr "Привязать к сетке"
 
-#: resources/ui/snap_box.ui:29
+#: resources/ui/snap_box.ui:25
 msgid "Keep offset"
 msgstr "Сохранить смещение"
 
-#: resources/ui/snap_box.ui:43
+#: resources/ui/snap_box.ui:37
 msgid "Snap to events"
 msgstr "Привязать к событиям"
 
-#: resources/ui/snap_grid_popover.ui:66 resources/ui/snap_grid_popover.ui:149
+#: resources/ui/snap_grid_popover.ui:66 resources/ui/snap_grid_popover.ui:144
 msgid "Note length"
 msgstr "Длина ноты"
 
-#: resources/ui/snap_grid_popover.ui:84 resources/ui/snap_grid_popover.ui:167
+#: resources/ui/snap_grid_popover.ui:84 resources/ui/snap_grid_popover.ui:162
 msgid "t"
 msgstr "t"
 
-#: resources/ui/snap_grid_popover.ui:87 resources/ui/snap_grid_popover.ui:170
+#: resources/ui/snap_grid_popover.ui:85 resources/ui/snap_grid_popover.ui:163
 msgid "Triplet"
 msgstr "Триоль"
 
-#: resources/ui/snap_grid_popover.ui:97 resources/ui/snap_grid_popover.ui:180
+#: resources/ui/snap_grid_popover.ui:93 resources/ui/snap_grid_popover.ui:171
 msgid "Dotted"
 msgstr "С точкой"
 
-#: resources/ui/snap_grid_popover.ui:118 resources/ui/snap_grid_popover.ui:201
+#: resources/ui/snap_grid_popover.ui:113 resources/ui/snap_grid_popover.ui:191
 msgid "Adaptive length"
 msgstr "Адаптивная длина"
 
-#: resources/ui/snap_grid_popover.ui:130
+#: resources/ui/snap_grid_popover.ui:125
 msgid "Snap"
 msgstr "Привязка"
 
-#: resources/ui/snap_grid_popover.ui:211
+#: resources/ui/snap_grid_popover.ui:201
 msgid "Link"
 msgstr "Ссылка"
 
-#: resources/ui/snap_grid_popover.ui:212
+#: resources/ui/snap_grid_popover.ui:202
 msgid "Link length to snap setting"
 msgstr "Связать длину с настройками привязки"
 
-#: resources/ui/snap_grid_popover.ui:225
+#: resources/ui/snap_grid_popover.ui:213
 msgid "Use last created object's length"
 msgstr "Использовать длину последнего созданного объекта"
 
@@ -6169,23 +6168,23 @@ msgstr "Использовать длину последнего созданн�
 msgid "Bookmarks"
 msgstr "Закладки"
 
-#: resources/ui/transport_controls.ui:9
+#: resources/ui/transport_controls.ui:7
 msgid "Return to cue point on stop"
 msgstr "Возврат к точке отсчета на остановке (Return to cue point on stop)"
 
-#: resources/ui/transport_controls.ui:26
+#: resources/ui/transport_controls.ui:22
 msgid "Play"
 msgstr "Воспроизвести (Play)"
 
-#: resources/ui/transport_controls.ui:50
+#: resources/ui/transport_controls.ui:42
 msgid "Backward"
 msgstr "Переместиться назад (Backward)"
 
-#: resources/ui/transport_controls.ui:62
+#: resources/ui/transport_controls.ui:52
 msgid "Forward"
 msgstr "Переместиться вперед (Forward)"
 
-#: resources/ui/transport_controls.ui:74
+#: resources/ui/transport_controls.ui:62
 msgid "Loop"
 msgstr "Цикл (Loop)"
 
@@ -6255,7 +6254,7 @@ msgstr ""
 msgid "Toggle ghost note visibility"
 msgstr "Переключить правую панель"
 
-#: resources/ui/editor_toolbar.ui:143 resources/ui/timeline_toolbar.ui:105
+#: resources/ui/editor_toolbar.ui:143 resources/ui/timeline_toolbar.ui:104
 msgid "Toggle event viewer"
 msgstr "Переключить список событий"
 
@@ -6507,12 +6506,12 @@ msgstr "Лейбл"
 msgid "Remove range"
 msgstr "Удалить диапазон"
 
-#: resources/ui/timeline_toolbar.ui:39
+#: resources/ui/timeline_toolbar.ui:38
 #: build/data/org.zrythm.Zrythm.gschema.xml:402
 msgid "Musical mode"
 msgstr "Музыкальный режим"
 
-#: resources/ui/timeline_toolbar.ui:78
+#: resources/ui/timeline_toolbar.ui:77
 msgid "Merge selections"
 msgstr "Объединить выделенное"
 
@@ -6625,12 +6624,12 @@ msgstr "Всплеск"
 msgid "Initializing..."
 msgstr "Инициализация..."
 
-#: resources/ui/tracklist_header.ui:26
+#: resources/ui/tracklist_header.ui:25
 #, fuzzy
 msgid "Track filters & visibility"
 msgstr "Размер видимости трека"
 
-#: resources/ui/tracklist_header.ui:53
+#: resources/ui/tracklist_header.ui:52
 #, fuzzy
 msgid "Tracklist Settings"
 msgstr "Выделение (Selection)"
@@ -8307,284 +8306,328 @@ msgid "DAW"
 msgstr "Цифровая звуковая рабочая станция (DAW)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:55
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:84
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:114
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:145
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:146
 msgid "Added:"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
-msgid "Home/End key shortcut for moving to the start/end of the project"
+msgid "Add toggle to hide deactivated tracks in track filter menu"
 msgstr ""
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
+msgid "Add right-click option to loop selection in timeline"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
+msgid "Add option to append all track/lane objects to the current selection"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+msgid "Add tracklist preferences button with option to disable auto-arm"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:61
+msgid ""
+"Add Crescendo, Flam, Flip H/V, Portato, Staccato, Legato, Strum MIDI "
+"functions"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
+msgid "Implement MIDI clock (output) for syncing to Zrythm"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:63
+msgid ""
+"Build: add requirements.txt for managing Python dependencies (for building "
+"docs, etc.)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
+msgid "Changed:"
+msgstr "Изменено:"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+msgid ""
+"Link scroll events on digital meter widgets (changes are only applied at the "
+"end of scrolls)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+msgid "Build: re-enable some GCC analyzer checks and add new checks"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+#, fuzzy
+msgid "Change order in track context menu"
+msgstr "Изменить портовое соединение"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:70
+msgid "Subprojects: bump GTK and RtAudio versions"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
+msgid "Cache previous and current transport info during processing"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:72
+msgid "Various internal refactorings"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+msgid ""
+"Update Catalan, French, Japanese, Chinese (Simplified), Russian, Dutch, "
+"Hungarian, Italian, Indonesian, Spanish, Portuguese, Swedish translations"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+msgid ""
+"Log: print `(?:?)` instead of `((null):(null))` when function and line "
+"number are unknown"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#, fuzzy
+msgid "Add more error checking and print more debug info in the log"
+msgstr "Всегда показывать интерфейс плагинов после их добавления"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
+msgid "Fixed:"
+msgstr "Исправлено:"
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:79
+msgid "Build: fix bundled plugin build with GCC 13"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:80
+msgid "Fix app icon not showing on Wayland (StartupWMClass)"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+msgid "Home/End key shortcut for moving to the start/end of the project"
+msgstr ""
+
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:90
 #, fuzzy
 msgid "Option to select note notation in the piano roll"
 msgstr "Прослушивать ли ноты при их перетаскивании в пиано ролле."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:59
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
 #, fuzzy
 msgid "Ability to select notes in a given pitch in the piano roll"
 msgstr "Прослушивать ли ноты при их перетаскивании в пиано ролле."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:60
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:92
 msgid "Ctrl+0 shortcut for zooming to default level"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:62
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:91
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
-msgid "Changed:"
-msgstr "Изменено:"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:64
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
 msgid "Show message that BPM/time signature automation is experimental"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:65
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
 msgid "Show channel slot context menu on mouse release instead of mouse press"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:66
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:98
 msgid "Skip autosave if any toplevel window is on top"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:67
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
 msgid ""
 "Update Catalan, French, Japanese, Chinese (Simplified), Czech, Portuguese "
 "(Brazil) translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:68
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:100
 #, fuzzy
 msgid "Redesign port/arranger object info dialogs"
 msgstr "Информация об объекте аранжировщика"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:69
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
 msgid "Disable Guile scripting interface on MacOS"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:71
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:99
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
-msgid "Fixed:"
-msgstr "Исправлено:"
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:73
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid "Fix wrong tooltip message on automatable selector in track lanes"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:74
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid ""
 "Fix track lane names getting ellipsized despite there being enough space"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:75
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
 msgid "Fix crash when splitting large audio clips"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:76
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:108
 msgid ""
 "Fix \"Move Tracks Under Group\" option not working when setting the direct "
 "output of selected tracks to a new group"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:77
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:109
 msgid "Fix given time range not being taken into account when exporting MIDI"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:86
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
 msgid "Audition notes when moved with arrow keys"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:87
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
 msgid "Show value when hovering faders and balance controls"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:88
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:120
 msgid "Double click on faders and balance controls to set precise values"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:89
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:121
 msgid "Control-click on balance controls to reset their value"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:93
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
 msgid "Audition notes on draw and on click instead of on move"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:94
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 msgid ""
 "Show track inspector when double clicking on a track in places other than "
 "the track name"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:95
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:127
 msgid "Don't start DnD on tracks until minimum movement threshold is reached"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:96
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:128
 msgid ""
 "Minimize waiting time when creating tracks and connections for multi-out "
 "plugins"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:97
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:129
 #, fuzzy
 msgid "Scroll to middle of piano roll when first shown"
 msgstr "Прослушивать ли ноты при их перетаскивании в пиано ролле."
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:101
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
 msgid "Fix incorrectly allowing bypassing snapping in autofill mode"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:102
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
 msgid "Fix editor region being unset when moving tracks"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:103
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
 msgid "Fix not propagating errors when performing some actions"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:104
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
 msgid ""
 "Fix incorrectly allowing auto-save to continue while pre-rolling or counting "
 "in"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:105
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
 msgid "Fix resetting faders and balance controls not being undoable"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:106
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
 msgid "Fix not being able to cut regions near the edges with alt-click"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:107
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid ""
 "Fix not being able to change parameter values for VST plugins in generic UI "
 "text fields"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:116
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
 msgid "Add monitor output meters in the header"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:117
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
 msgid "Add Macedonian translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:118
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:150
 #, fuzzy
 msgid "Add pitch shift audio function"
 msgstr "Последняя использованная аудиофункция"
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:119
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:151
 msgid ""
 "Auto-scroll in the tracklist when dragging tracks and hovering towards the "
 "edges"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:123
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:155
 msgid "Update Catalan, Japanese, Russian, French translations"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:124
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:156
 msgid "Stop using `g_slice_*()` (deprecated in GLib)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:125
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:157
 msgid "Simplify CSS for separators"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:126
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:158
 msgid ""
 "Move velocity settings to new toolbar in the bottom of the piano roll (fixes "
 "being unable to drag velocity bars when set to high values)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:130
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:162
 msgid ""
 "Fix audio files not being saved properly when saving the project after "
 "applying an audio function"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:131
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:163
 msgid "Fix error when routing to/from a port that has display unit info"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:132
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:164
 msgid "Fix minor memory leak"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:133
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:165
 msgid ""
 "Fix track/plugin inspect not immediately displaying the track/plugin "
 "properties"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:134
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:166
 msgid ""
 "Fix occasional crash when exporting the project (fix not deleting the source "
 "function after disposing an EditableLabelWidget)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:135
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:167
 msgid "Fix occasional crash when adding a plugin to a collection"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:136
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:168
 msgid "Fix no sound when using Pipewire (regression from previous release)"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:137
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:169
 msgid "Fix right-clicking on inserts not working on Windows"
 msgstr ""
 
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:138
+#: build/data/org.zrythm.Zrythm.appdata.xml.in:170
 msgid "Fix error when attempting to paste an empty selection"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:147
-msgid "Add spectrum analyzer"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:148
-msgid "Add vertical zoom buttons to editor"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:149
-msgid "User manual: add FAQ section"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:153
-msgid ""
-"Update French, Catalan, Esperanto, Swedish, German, Korean, Polish, Spanish "
-"translations"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:154
-msgid "Meson: disable fallbacks by default"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:158
-msgid "Fix scrolling horizontally with 2 fingers on touch pads"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:159
-msgid "Fix project plugin states being deleted while in use"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:160
-msgid ""
-"Work around a bug in Pipewire where it doesn't notify clients of buffer size "
-"changes"
-msgstr ""
-
-#: build/data/org.zrythm.Zrythm.appdata.xml.in:161
-msgid "Fix occasional deadlock when changing engine buffer sizes"
 msgstr ""
 
 #~ msgid "Port info"
@@ -8648,10 +8691,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "JACK: handle failure to connect to monitor output gracefully"
 #~ msgstr "Не удалось подключить порты"
-
-#, fuzzy
-#~ msgid "Add more error checking when writing audio to file"
-#~ msgstr "Всегда показывать интерфейс плагинов после их добавления"
 
 #, fuzzy
 #~ msgid "GG"
