@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -9,6 +9,9 @@
 
 #ifndef __GUI_WIDGETS_CHANNEL_SLOT_H__
 #define __GUI_WIDGETS_CHANNEL_SLOT_H__
+
+#include "plugins/plugin.h"
+#include "utils/types.h"
 
 #include <gtk/gtk.h>
 
@@ -21,8 +24,9 @@ G_DECLARE_FINAL_TYPE (
   CHANNEL_SLOT_WIDGET,
   GtkWidget)
 
-typedef struct Plugin  Plugin;
-typedef struct Channel Channel;
+TYPEDEF_STRUCT (Plugin);
+TYPEDEF_STRUCT (Channel);
+TYPEDEF_STRUCT_UNDERSCORED (ChannelSlotActivateButtonWidget);
 
 /**
  * @addtogroup widgets
@@ -73,6 +77,8 @@ typedef struct _ChannelSlotWidget
 
   /** Popover to be reused for context menus. */
   GtkPopoverMenu * popover_menu;
+
+  ChannelSlotActivateButtonWidget * activate_btn;
 } ChannelSlotWidget;
 
 /**
@@ -98,17 +104,8 @@ channel_slot_widget_set_instrument (
   ChannelSlotWidget * self,
   Track *             track);
 
-/**
- * Sets or unsets state flags and redraws the
- * widget.
- *
- * @param set True to set, false to unset.
- */
-void
-channel_slot_widget_set_state_flags (
-  ChannelSlotWidget * self,
-  GtkStateFlags       flags,
-  bool                set);
+Plugin *
+channel_slot_widget_get_plugin (ChannelSlotWidget * self);
 
 /**
  * @}

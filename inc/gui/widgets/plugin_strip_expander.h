@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -73,20 +73,6 @@ void
 plugin_strip_expander_widget_redraw_slot (
   PluginStripExpanderWidget * self,
   int                         slot);
-
-/**
- * Unsets state flags and redraws the widget at the
- * given slot.
- *
- * @param slot Slot, or -1 for all slots.
- * @param set True to set, false to unset.
- */
-void
-plugin_strip_expander_widget_set_state_flags (
-  PluginStripExpanderWidget * self,
-  int                         slot,
-  GtkStateFlags               flags,
-  bool                        set);
 
 /**
  * Refreshes each field.

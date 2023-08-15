@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 widget_srcs = files([
@@ -27,6 +27,7 @@ widget_srcs = files([
   'channel_send_selector.c',
   'channel_sends_expander.c',
   'channel_slot.c',
+  'channel_slot_activate_button.c',
   'chord_arranger.c',
   'chord_editor_space.c',
   'chord_key.c',

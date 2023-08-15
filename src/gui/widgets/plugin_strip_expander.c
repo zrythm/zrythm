@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/channel.h"
@@ -42,43 +42,6 @@ plugin_strip_expander_widget_redraw_slot (
 }
 
 /**
- * Unsets state flags and redraws the widget at the
- * given slot.
- *
- * @param slot Slot, or -1 for all slots.
- * @param set True to set, false to unset.
- */
-void
-plugin_strip_expander_widget_set_state_flags (
-  PluginStripExpanderWidget * self,
-  int                         slot,
-  GtkStateFlags               flags,
-  bool                        set)
-{
-  switch (self->slot_type)
-    {
-    case PLUGIN_SLOT_INSERT:
-    case PLUGIN_SLOT_MIDI_FX:
-      if (slot == -1)
-        {
-          for (int i = 0; i < STRIP_SIZE; i++)
-            {
-              plugin_strip_expander_widget_set_state_flags (
-                self, i, flags, set);
-            }
-        }
-      else
-        {
-          channel_slot_widget_set_state_flags (
-            self->slots[slot], flags, set);
-        }
-      break;
-    default:
-      break;
-    }
-}
-
-/**
  * Refreshes each field.
  */
 void
@@ -94,10 +57,6 @@ plugin_strip_expander_widget_refresh (
           {
             Channel * ch = track_get_channel (self->track);
             g_return_if_fail (ch);
-            Plugin * pl = ch->inserts[i];
-            plugin_strip_expander_widget_set_state_flags (
-              self, i, GTK_STATE_FLAG_SELECTED,
-              pl && plugin_is_selected (pl));
             gtk_widget_queue_draw (
               GTK_WIDGET (self->slots[i]));
           }
@@ -106,10 +65,6 @@ plugin_strip_expander_widget_refresh (
           {
             Channel * ch = track_get_channel (self->track);
             g_return_if_fail (ch);
-            Plugin * pl = ch->midi_fx[i];
-            plugin_strip_expander_widget_set_state_flags (
-              self, i, GTK_STATE_FLAG_SELECTED,
-              pl && plugin_is_selected (pl));
             gtk_widget_queue_draw (
               GTK_WIDGET (self->slots[i]));
           }

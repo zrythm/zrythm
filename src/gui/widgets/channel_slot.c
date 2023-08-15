@@ -14,6 +14,7 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/channel_slot.h"
+#include "gui/widgets/channel_slot_activate_button.h"
 #include "gui/widgets/left_dock_edge.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/mixer.h"
@@ -37,8 +38,8 @@ G_DEFINE_TYPE (
 
 #define ELLIPSIZE_PADDING 2
 
-static Plugin *
-get_plugin (ChannelSlotWidget * self)
+Plugin *
+channel_slot_widget_get_plugin (ChannelSlotWidget * self)
 {
   g_return_val_if_fail (
     self->type == PLUGIN_SLOT_INSTRUMENT
@@ -81,14 +82,17 @@ update_pango_layouts (ChannelSlotWidget * self)
       self->txt_layout = layout;
     }
 
+  int btn_width = gtk_widget_get_allocated_width (
+    GTK_WIDGET (self->activate_btn));
+
   pango_layout_set_width (
     self->txt_layout,
     pango_units_from_double (MAX (
       gtk_widget_get_allocated_width (GTK_WIDGET (self))
-        - ELLIPSIZE_PADDING * 2,
+        - ELLIPSIZE_PADDING * 2 - btn_width,
       1)));
 
-  bool empty = get_plugin (self) == NULL;
+  bool empty = channel_slot_widget_get_plugin (self) == NULL;
   if (empty != self->was_empty)
     {
       self->was_empty = empty;
@@ -107,12 +111,15 @@ channel_slot_snapshot (
 {
   ChannelSlotWidget * self = Z_CHANNEL_SLOT_WIDGET (widget);
 
-  int width = gtk_widget_get_allocated_width (widget);
+  const int padding = 2;
+  int       width = gtk_widget_get_allocated_width (widget);
+  int       btn_width = gtk_widget_get_allocated_width (
+    GTK_WIDGET (self->activate_btn));
   int height = gtk_widget_get_allocated_height (widget);
 
-  int      padding = 2;
-  Plugin * plugin = get_plugin (self);
-  GdkRGBA  bg;
+  Plugin * plugin = channel_slot_widget_get_plugin (self);
+  bool    is_selected = plugin && plugin_is_selected (plugin);
+  GdkRGBA bg;
   if (plugin)
     {
       if (!plugin_is_enabled (plugin, false))
@@ -138,13 +145,35 @@ channel_slot_snapshot (
       bg = Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, 0.9f);
     }
 
+  GskRoundedRect  rounded_rect;
+  graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
+    (float) padding, (float) padding,
+    (float) width - (float) padding * 2.f,
+    (float) height - (float) padding * 2.f);
+  gsk_rounded_rect_init_from_rect (
+    &rounded_rect, &graphene_rect, 6.f);
+  gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
+
   /* fill background */
   gtk_snapshot_append_color (
     snapshot, &bg,
     &GRAPHENE_RECT_INIT (
-      (float) padding, (float) padding,
-      (float) width - (float) padding * 2.f,
-      (float) height - (float) padding * 2.f));
+      0.f, 0.f, (float) width, (float) height));
+
+  /* draw border if selected */
+  if (is_selected)
+    {
+      const float border_width = 2.f;
+      GdkRGBA     border_color = UI_COLORS->z_yellow;
+      float       border_widths[] = {
+        border_width, border_width, border_width, border_width
+      };
+      GdkRGBA border_colors[] = {
+        border_color, border_color, border_color, border_color
+      };
+      gtk_snapshot_append_border (
+        snapshot, &rounded_rect, border_widths, border_colors);
+    }
 
   update_pango_layouts (self);
 
@@ -173,7 +202,8 @@ channel_slot_snapshot (
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          (float) width / 2.f - (float) w / 2.f,
+          (float) btn_width + (float) (width - btn_width) / 2.f
+            - (float) w / 2.f,
           (float) height / 2.f - (float) h / 2.f));
       gtk_snapshot_append_layout (
         snapshot, self->txt_layout,
@@ -212,7 +242,8 @@ channel_slot_snapshot (
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          (float) width / 2.f - (float) w / 2.f,
+          (float) btn_width + (float) (width - btn_width) / 2.f
+            - (float) w / 2.f,
           (float) height / 2.f - (float) h / 2.f));
       gtk_snapshot_append_layout (
         snapshot, self->txt_layout,
@@ -228,6 +259,11 @@ channel_slot_snapshot (
         }
     }
 #undef MAX_LEN
+
+  GTK_WIDGET_CLASS (GTK_WIDGET_GET_CLASS (self->activate_btn))
+    ->snapshot (GTK_WIDGET (self), snapshot);
+
+  gtk_snapshot_pop (snapshot);
 }
 
 static gboolean
@@ -499,7 +535,7 @@ select_plugin (
   bool pl = false, ch = false;
 
   /* if plugin exists */
-  Plugin * plugin = get_plugin (self);
+  Plugin * plugin = channel_slot_widget_get_plugin (self);
   if (plugin)
     pl = true;
 
@@ -547,7 +583,7 @@ drag_end (
     gtk_event_controller_get_current_event_state (
       GTK_EVENT_CONTROLLER (gesture));
 
-  Plugin * pl = get_plugin (self);
+  Plugin * pl = channel_slot_widget_get_plugin (self);
   if (pl && self->n_press == 2)
     {
       bool new_visible = !pl->visible;
@@ -620,12 +656,39 @@ tick_cb (
       return G_SOURCE_CONTINUE;
     }
 
-  Plugin * pl = get_plugin (self);
-  bool     is_selected = pl && plugin_is_selected (pl);
-  if (is_selected != self->was_selected)
+  Plugin * pl = channel_slot_widget_get_plugin (self);
+  if (pl)
     {
-      channel_slot_widget_set_state_flags (
-        self, GTK_STATE_FLAG_SELECTED, is_selected);
+      gtk_widget_set_sensitive (
+        GTK_WIDGET (self->activate_btn), true);
+      if (
+        gtk_toggle_button_get_active (
+          GTK_TOGGLE_BUTTON (self->activate_btn))
+        != plugin_is_enabled (pl, false))
+        {
+          g_signal_handler_block (
+            self->activate_btn,
+            self->activate_btn->toggled_id);
+          gtk_toggle_button_set_active (
+            GTK_TOGGLE_BUTTON (self->activate_btn),
+            plugin_is_enabled (pl, false));
+          g_signal_handler_unblock (
+            self->activate_btn,
+            self->activate_btn->toggled_id);
+        }
+    }
+  else if (gtk_toggle_button_get_active (
+             GTK_TOGGLE_BUTTON (self->activate_btn)))
+    {
+      /* disable toggle button if no plugin */
+      g_signal_handler_block (
+        self->activate_btn, self->activate_btn->toggled_id);
+      gtk_toggle_button_set_active (
+        GTK_TOGGLE_BUTTON (self->activate_btn), false);
+      g_signal_handler_unblock (
+        self->activate_btn, self->activate_btn->toggled_id);
+      gtk_widget_set_sensitive (
+        GTK_WIDGET (self->activate_btn), false);
     }
 
   return G_SOURCE_CONTINUE;
@@ -659,7 +722,7 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
-  Plugin * pl = get_plugin (self);
+  Plugin * pl = channel_slot_widget_get_plugin (self);
 
   if (pl)
     {
@@ -793,39 +856,12 @@ finalize (ChannelSlotWidget * self)
     ->finalize (G_OBJECT (self));
 }
 
-/**
- * Sets or unsets state flags and redraws the
- * widget.
- *
- * @param set True to set, false to unset.
- */
-void
-channel_slot_widget_set_state_flags (
-  ChannelSlotWidget * self,
-  GtkStateFlags       flags,
-  bool                set)
-{
-  if (set)
-    {
-      gtk_widget_set_state_flags (GTK_WIDGET (self), flags, 0);
-    }
-  else
-    {
-      gtk_widget_unset_state_flags (GTK_WIDGET (self), flags);
-    }
-  gtk_widget_queue_draw (GTK_WIDGET (self));
-}
-
 void
 channel_slot_widget_set_instrument (
   ChannelSlotWidget * self,
   Track *             track)
 {
   self->track = track;
-  channel_slot_widget_set_state_flags (
-    self, GTK_STATE_FLAG_SELECTED,
-    track->channel->instrument
-      && plugin_is_selected (track->channel->instrument));
 }
 
 static GdkContentProvider *
@@ -835,7 +871,7 @@ on_dnd_drag_prepare (
   double              y,
   ChannelSlotWidget * self)
 {
-  Plugin *                        pl = get_plugin (self);
+  Plugin * pl = channel_slot_widget_get_plugin (self);
   WrappedObjectWithChangeSignal * wrapped_obj =
     wrapped_object_with_change_signal_new (
       pl, WRAPPED_OBJECT_TYPE_PLUGIN);
@@ -921,6 +957,7 @@ static void
 dispose (ChannelSlotWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
+  gtk_widget_unparent (GTK_WIDGET (self->activate_btn));
 
   G_OBJECT_CLASS (channel_slot_widget_parent_class)
     ->dispose (G_OBJECT (self));
@@ -983,6 +1020,11 @@ channel_slot_widget_init (ChannelSlotWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self), motion_controller);
 
+  self->activate_btn =
+    channel_slot_activate_button_widget_new (self);
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->activate_btn), GTK_WIDGET (self));
+
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
 }
@@ -995,7 +1037,7 @@ channel_slot_widget_class_init (ChannelSlotWidgetClass * klass)
   gtk_widget_class_set_css_name (wklass, "channel-slot");
 
   gtk_widget_class_set_layout_manager_type (
-    wklass, GTK_TYPE_BIN_LAYOUT);
+    wklass, GTK_TYPE_BOX_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;

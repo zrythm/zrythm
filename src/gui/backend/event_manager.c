@@ -322,14 +322,6 @@ on_modulator_added (Plugin * modulator)
 static void
 on_plugins_removed (Track * tr)
 {
-  /* redraw slots */
-  if (tr && tr->channel && tr->channel->widget)
-    {
-      plugin_strip_expander_widget_set_state_flags (
-        tr->channel->widget->inserts, -1,
-        GTK_STATE_FLAG_SELECTED, false);
-    }
-
   /* change inspector page */
   left_dock_edge_widget_refresh (MW_LEFT_DOCK_EDGE);
 
