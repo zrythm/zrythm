@@ -106,7 +106,7 @@ clip_editor_widget_on_region_changed (ClipEditorWidget * self)
 void
 clip_editor_widget_navigate_to_region_start (
   ClipEditorWidget * self,
-  bool center_contents_if_already_at_start)
+  bool               center_contents_if_already_at_start)
 {
   ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (IS_REGION_AND_NONNULL (r));

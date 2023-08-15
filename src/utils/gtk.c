@@ -208,7 +208,8 @@ z_gtk_widget_remove_all_children (GtkWidget * widget)
     }
   if (GTK_IS_LIST_BOX (widget))
     {
-      z_gtk_list_box_remove_all_children (GTK_LIST_BOX (widget));
+      z_gtk_list_box_remove_all_children (
+        GTK_LIST_BOX (widget));
       return;
     }
 

@@ -69,7 +69,7 @@ clip_editor_widget_on_region_changed (ClipEditorWidget * self);
 void
 clip_editor_widget_navigate_to_region_start (
   ClipEditorWidget * self,
-  bool center_contents_if_already_at_start);
+  bool               center_contents_if_already_at_start);
 
 ClipEditorWidget *
 clip_editor_widget_new (void);
