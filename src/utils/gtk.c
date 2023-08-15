@@ -206,6 +206,11 @@ z_gtk_widget_remove_all_children (GtkWidget * widget)
         GTK_MENU_BUTTON (widget), NULL);
       return;
     }
+  if (GTK_IS_LIST_BOX (widget))
+    {
+      z_gtk_list_box_remove_all_children (GTK_LIST_BOX (widget));
+      return;
+    }
 
   z_gtk_widget_remove_children_of_type (
     widget, GTK_TYPE_WIDGET);
