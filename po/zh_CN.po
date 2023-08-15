@@ -19,13 +19,14 @@
 # SunRuikang <srk888666@qq.com>, 2022.
 # Martin LYU <my2605070493@gmail.com>, 2023.
 # TheInterestingSoul <wangpy01@outlook.com>, 2023.
+# Frank <1425943868ho@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-08-10 18:23+0900\n"
-"PO-Revision-Date: 2023-05-01 04:47+0000\n"
-"Last-Translator: TheInterestingSoul <wangpy01@outlook.com>\n"
+"PO-Revision-Date: 2023-08-12 20:45+0000\n"
+"Last-Translator: Frank <1425943868ho@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -33,7 +34,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.0-dev\n"
 
 #: inc/schemas/audio/scale.h:93 inc/audio/scale.h:127
 msgid "Chromatic"
@@ -606,9 +607,8 @@ msgid "Reverse"
 msgstr "反转"
 
 #: inc/audio/audio_function.h:62
-#, fuzzy
 msgid "Pitch shift"
-msgstr "俯仰轮"
+msgstr "移调"
 
 #: inc/audio/audio_function.h:63
 msgid "External program"
@@ -816,9 +816,8 @@ msgid "Failed to write audio pool to disk"
 msgstr "未能创建音轨"
 
 #: src/project.c:2071
-#, fuzzy
 msgid "Failed to clone project"
-msgstr "未能克隆音轨"
+msgstr "未能克隆项目"
 
 #: src/zrythm_app.c:125
 msgid "Error - Backtrace:\n"
@@ -860,10 +859,10 @@ msgid "Loading project"
 msgstr "加载项目"
 
 #: src/zrythm_app.c:424
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "No project has been selected or project failed to load. %s will now close."
-msgstr "没有选择任何项目。%s现在将关闭。"
+msgstr "未选择任何项目。%s将会关闭。"
 
 #: src/zrythm_app.c:443
 msgid "Initializing settings"
@@ -1123,9 +1122,8 @@ msgstr "任何未保存的对当前项目的更改都将丢失。是否继续？
 
 #: src/actions/actions.c:720 src/actions/actions.c:744
 #: src/gui/widgets/dialogs/project_assistant.c:246
-#, fuzzy
 msgid "Failed to load project"
-msgstr "未能编辑对象"
+msgstr "未能加载项目"
 
 #: src/actions/actions.c:788
 msgid "Save Project"
@@ -1348,9 +1346,8 @@ msgid "An object cannot be created at the selected location."
 msgstr ""
 
 #: src/actions/actions.c:2852
-#, fuzzy
 msgid "Failed to set region color"
-msgstr "曲线算法设置失败"
+msgstr "未能设置区域颜色"
 
 #: src/actions/actions.c:2882
 #, fuzzy
@@ -1358,9 +1355,8 @@ msgid "Region Color"
 msgstr "区域颜色"
 
 #: src/actions/actions.c:2917
-#, fuzzy
 msgid "Failed to reset region color"
-msgstr "未能创建插件克隆"
+msgstr "未能重设区域颜色"
 
 #: src/actions/actions.c:2959
 msgid "Please enter a BPM"
