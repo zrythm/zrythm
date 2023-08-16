@@ -18,7 +18,7 @@ G_DECLARE_FINAL_TYPE (
   channel_widget,
   Z,
   CHANNEL_WIDGET,
-  GtkBox)
+  GtkWidget)
 
 typedef struct _ColorAreaWidget   ColorAreaWidget;
 typedef struct _KnobWidget        KnobWidget;
@@ -35,7 +35,8 @@ typedef struct _ChannelSendsExpanderWidget
 
 typedef struct _ChannelWidget
 {
-  GtkBox                      parent_instance;
+  GtkWidget                   parent_instance;
+  GtkBox *                    color_box;
   GtkGrid *                   grid;
   RouteTargetSelectorWidget * output;
   ColorAreaWidget *           color;

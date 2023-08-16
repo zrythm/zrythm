@@ -72,22 +72,9 @@ channel_slot_widget_get_plugin (ChannelSlotWidget * self)
 }
 
 static void
-update_pango_layouts (ChannelSlotWidget * self)
+update_pango_layouts (ChannelSlotWidget * self, bool force)
 {
-  bool empty = channel_slot_widget_get_plugin (self) == NULL;
-  bool changed = false;
-  if (empty != self->was_empty)
-    {
-      changed = true;
-      self->was_empty = empty;
-      if (empty)
-        gtk_widget_add_css_class (GTK_WIDGET (self), "empty");
-      else
-        gtk_widget_remove_css_class (
-          GTK_WIDGET (self), "empty");
-    }
-
-  if (!self->txt_layout || changed)
+  if (!self->txt_layout || force)
     {
       object_free_w_func_and_null (
         g_object_unref, self->txt_layout);
@@ -115,6 +102,8 @@ channel_slot_snapshot (
   GtkSnapshot * snapshot)
 {
   ChannelSlotWidget * self = Z_CHANNEL_SLOT_WIDGET (widget);
+
+  update_pango_layouts (self, false);
 
   const int padding = 2;
   int       width = gtk_widget_get_allocated_width (widget);
@@ -179,8 +168,6 @@ channel_slot_snapshot (
       gtk_snapshot_append_border (
         snapshot, &rounded_rect, border_widths, border_colors);
     }
-
-  update_pango_layouts (self);
 
 #define MAX_LEN 400
   char txt[MAX_LEN];
@@ -696,6 +683,17 @@ tick_cb (
         GTK_WIDGET (self->activate_btn), false);
     }
 
+  bool empty = channel_slot_widget_get_plugin (self) == NULL;
+  if (empty != self->was_empty)
+    {
+      self->was_empty = empty;
+      if (empty)
+        gtk_widget_add_css_class (GTK_WIDGET (self), "empty");
+      else
+        gtk_widget_remove_css_class (
+          GTK_WIDGET (self), "empty");
+    }
+
   return G_SOURCE_CONTINUE;
 }
 
@@ -959,6 +957,15 @@ channel_slot_widget_new_instrument (void)
 }
 
 static void
+on_css_changed (GtkWidget * widget, GtkCssStyleChange * change)
+{
+  ChannelSlotWidget * self = Z_CHANNEL_SLOT_WIDGET (widget);
+  GTK_WIDGET_CLASS (channel_slot_widget_parent_class)
+    ->css_changed (widget, change);
+  update_pango_layouts (self, true);
+}
+
+static void
 dispose (ChannelSlotWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
@@ -1039,6 +1046,7 @@ channel_slot_widget_class_init (ChannelSlotWidgetClass * klass)
 {
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = channel_slot_snapshot;
+  wklass->css_changed = on_css_changed;
   gtk_widget_class_set_css_name (wklass, "channel-slot");
 
   gtk_widget_class_set_layout_manager_type (

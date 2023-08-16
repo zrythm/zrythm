@@ -44,7 +44,7 @@
 
 #include <time.h>
 
-G_DEFINE_TYPE (ChannelWidget, channel_widget, GTK_TYPE_BOX)
+G_DEFINE_TYPE (ChannelWidget, channel_widget, GTK_TYPE_WIDGET)
 
 /**
  * Updates the meter reading
@@ -62,12 +62,6 @@ channel_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   int width = gtk_widget_get_allocated_width (widget);
   int height = gtk_widget_get_allocated_height (widget);
-
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
-  gtk_snapshot_render_background (
-    snapshot, context, 0, 0, width, height);
 
   Track * track = channel_get_track (self->channel);
   if (track)
@@ -973,6 +967,9 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
   gtk_widget_class_set_css_name (klass, "channel");
   klass->snapshot = channel_snapshot;
 
+  gtk_widget_class_set_layout_manager_type (
+    klass, GTK_TYPE_BIN_LAYOUT);
+
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
     klass, ChannelWidget, x)
@@ -1017,8 +1014,8 @@ channel_widget_init (ChannelWidget * self)
 
   self->popover_menu =
     GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
+  gtk_widget_set_parent (
+    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   self->last_midi_trigger_time = 0;
 

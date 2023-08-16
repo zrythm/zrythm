@@ -25,29 +25,15 @@ G_DEFINE_TYPE (
 #define ELLIPSIZE_PADDING 2
 
 static void
-update_pango_layout (ChannelSendWidget * self)
+update_pango_layout (ChannelSendWidget * self, bool force)
 {
-  bool empty = channel_send_is_empty (self->send);
-  bool changed = false;
-  if (empty != self->was_empty)
-    {
-      changed = true;
-      self->was_empty = empty;
-      if (empty)
-        gtk_widget_add_css_class (GTK_WIDGET (self), "empty");
-      else
-        gtk_widget_remove_css_class (
-          GTK_WIDGET (self), "empty");
-    }
-
-  if (!self->txt_layout || changed)
+  if (!self->txt_layout || force)
     {
       object_free_w_func_and_null (
         g_object_unref, self->txt_layout);
       PangoLayout * layout = gtk_widget_create_pango_layout (
         GTK_WIDGET (self), NULL);
       pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
-
       self->txt_layout = layout;
     }
 
@@ -69,7 +55,7 @@ channel_send_snapshot (
   int width = gtk_widget_get_allocated_width (widget);
   int height = gtk_widget_get_allocated_height (widget);
 
-  update_pango_layout (self);
+  update_pango_layout (self, false);
 
   GdkRGBA fg;
   gtk_widget_get_color (GTK_WIDGET (self), &fg);
@@ -304,6 +290,40 @@ on_leave (
     GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT);
 }
 
+static bool
+tick_cb (
+  GtkWidget *         widget,
+  GdkFrameClock *     frame_clock,
+  ChannelSendWidget * self)
+{
+  if (!gtk_widget_is_visible (widget))
+    {
+      return G_SOURCE_CONTINUE;
+    }
+
+  bool empty = channel_send_is_empty (self->send);
+  if (empty != self->was_empty)
+    {
+      self->was_empty = empty;
+      if (empty)
+        gtk_widget_add_css_class (GTK_WIDGET (self), "empty");
+      else
+        gtk_widget_remove_css_class (
+          GTK_WIDGET (self), "empty");
+    }
+
+  return G_SOURCE_CONTINUE;
+}
+
+static void
+on_css_changed (GtkWidget * widget, GtkCssStyleChange * change)
+{
+  ChannelSendWidget * self = Z_CHANNEL_SEND_WIDGET (widget);
+  GTK_WIDGET_CLASS (channel_send_widget_parent_class)
+    ->css_changed (widget, change);
+  update_pango_layout (self, true);
+}
+
 static void
 dispose (ChannelSendWidget * self)
 {
@@ -409,6 +429,9 @@ channel_send_widget_init (ChannelSendWidget * self)
   g_signal_connect (
     G_OBJECT (self->drag), "drag-end",
     G_CALLBACK (on_drag_end), self);
+
+  gtk_widget_add_tick_callback (
+    GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
 }
 
 static void
@@ -417,6 +440,7 @@ channel_send_widget_class_init (ChannelSendWidgetClass * klass)
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   gtk_widget_class_set_css_name (wklass, "channel-send");
   wklass->snapshot = channel_send_snapshot;
+  wklass->css_changed = on_css_changed;
 
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BIN_LAYOUT);
