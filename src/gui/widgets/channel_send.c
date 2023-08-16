@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/channel_send.h"
@@ -10,6 +10,7 @@
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/ui.h"
 #include "zrythm_app.h"
@@ -26,8 +27,23 @@ G_DEFINE_TYPE (
 static void
 update_pango_layout (ChannelSendWidget * self)
 {
-  if (!self->txt_layout)
+  bool empty = channel_send_is_empty (self->send);
+  bool changed = false;
+  if (empty != self->was_empty)
     {
+      changed = true;
+      self->was_empty = empty;
+      if (empty)
+        gtk_widget_add_css_class (GTK_WIDGET (self), "empty");
+      else
+        gtk_widget_remove_css_class (
+          GTK_WIDGET (self), "empty");
+    }
+
+  if (!self->txt_layout || changed)
+    {
+      object_free_w_func_and_null (
+        g_object_unref, self->txt_layout);
       PangoLayout * layout = gtk_widget_create_pango_layout (
         GTK_WIDGET (self), NULL);
       pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
@@ -41,17 +57,6 @@ update_pango_layout (ChannelSendWidget * self)
       gtk_widget_get_allocated_width (GTK_WIDGET (self))
         - ELLIPSIZE_PADDING * 2,
       1)));
-
-  bool empty = channel_send_is_empty (self->send);
-  if (empty != self->was_empty)
-    {
-      self->was_empty = empty;
-      if (empty)
-        gtk_widget_add_css_class (GTK_WIDGET (self), "empty");
-      else
-        gtk_widget_remove_css_class (
-          GTK_WIDGET (self), "empty");
-    }
 }
 
 static void
@@ -64,14 +69,10 @@ channel_send_snapshot (
   int width = gtk_widget_get_allocated_width (widget);
   int height = gtk_widget_get_allocated_height (widget);
 
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
-  gtk_snapshot_render_background (
-    snapshot, context, 0, 0, width, height);
-
   update_pango_layout (self);
 
+  GdkRGBA fg;
+  gtk_widget_get_color (GTK_WIDGET (self), &fg);
   int           padding = 2;
   ChannelSend * send = self->send;
   char          dest_name[400] = "";
@@ -91,9 +92,15 @@ channel_send_snapshot (
       pango_layout_set_markup (
         self->txt_layout, dest_name, -1);
       pango_layout_get_pixel_size (self->txt_layout, &w, &h);
-      gtk_snapshot_render_layout (
-        snapshot, context, width / 2 - w / 2,
-        height / 2 - h / 2, self->txt_layout);
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          (float) (width / 2 - w / 2),
+          (float) (height / 2 - h / 2)));
+      gtk_snapshot_append_layout (
+        snapshot, self->txt_layout, &fg);
+      gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
       if (self->cache_tooltip)
@@ -138,9 +145,15 @@ channel_send_snapshot (
       pango_layout_set_markup (
         self->txt_layout, dest_name, -1);
       pango_layout_get_pixel_size (self->txt_layout, &w, &h);
-      gtk_snapshot_render_layout (
-        snapshot, context, width / 2 - w / 2,
-        height / 2 - h / 2, self->txt_layout);
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          (float) (width / 2 - w / 2),
+          (float) (height / 2 - h / 2)));
+      gtk_snapshot_append_layout (
+        snapshot, self->txt_layout, &fg);
+      gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
       if (

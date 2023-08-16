@@ -24,6 +24,7 @@
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/symap.h"
 #include "utils/ui.h"
@@ -73,8 +74,23 @@ channel_slot_widget_get_plugin (ChannelSlotWidget * self)
 static void
 update_pango_layouts (ChannelSlotWidget * self)
 {
-  if (!self->txt_layout)
+  bool empty = channel_slot_widget_get_plugin (self) == NULL;
+  bool changed = false;
+  if (empty != self->was_empty)
     {
+      changed = true;
+      self->was_empty = empty;
+      if (empty)
+        gtk_widget_add_css_class (GTK_WIDGET (self), "empty");
+      else
+        gtk_widget_remove_css_class (
+          GTK_WIDGET (self), "empty");
+    }
+
+  if (!self->txt_layout || changed)
+    {
+      object_free_w_func_and_null (
+        g_object_unref, self->txt_layout);
       PangoLayout * layout = gtk_widget_create_pango_layout (
         GTK_WIDGET (self), NULL);
       pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
@@ -91,17 +107,6 @@ update_pango_layouts (ChannelSlotWidget * self)
       gtk_widget_get_allocated_width (GTK_WIDGET (self))
         - ELLIPSIZE_PADDING * 2 - btn_width,
       1)));
-
-  bool empty = channel_slot_widget_get_plugin (self) == NULL;
-  if (empty != self->was_empty)
-    {
-      self->was_empty = empty;
-      if (empty)
-        gtk_widget_add_css_class (GTK_WIDGET (self), "empty");
-      else
-        gtk_widget_remove_css_class (
-          GTK_WIDGET (self), "empty");
-    }
 }
 
 static void

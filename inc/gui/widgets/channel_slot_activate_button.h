@@ -42,7 +42,8 @@ typedef struct _ChannelSlotActivateButtonWidget
  * Creates a new ChannelSlotActivateButton widget.
  */
 ChannelSlotActivateButtonWidget *
-channel_slot_activate_button_widget_new (ChannelSlotWidget * owner);
+channel_slot_activate_button_widget_new (
+  ChannelSlotWidget * owner);
 
 /**
  * @}
