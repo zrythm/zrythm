@@ -33,8 +33,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include <audec/audec.h>
-
 G_DEFINE_TYPE (
   FileBrowserWidget,
   file_browser_widget,

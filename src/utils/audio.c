@@ -13,7 +13,6 @@
 
 #include <glib/gi18n.h>
 
-#include <audec/audec.h>
 #include <sndfile.h>
 #include <unistd.h>
 
@@ -58,39 +57,6 @@ const char *
 audio_bit_depth_to_pretty_str (BitDepth depth)
 {
   return _ (bit_depth_pretty_strings[depth]);
-}
-
-void
-audio_audec_log_func (
-  AudecLogLevel level,
-  const char *  fmt,
-  va_list       args)
-{
-  GLogLevelFlags g_level = G_LOG_LEVEL_MESSAGE;
-  switch (level)
-    {
-    case AUDEC_LOG_LEVEL_ERROR:
-      g_level = G_LOG_LEVEL_CRITICAL;
-      break;
-    default:
-      break;
-    }
-
-  /*char format[9000];*/
-  /*strcpy (format, fmt);*/
-  /*format[strlen (format) - 1] = '\0';*/
-
-  if (ZRYTHM_TESTING)
-    {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
-      g_message (fmt, args);
-#pragma GCC diagnostic pop
-    }
-  else
-    {
-      g_logv ("audec", g_level, fmt, args);
-    }
 }
 
 /**

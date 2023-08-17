@@ -842,13 +842,6 @@ sndfile_dep = dependency (
     'programs=false',
     'default_library=static',
     ])
-audec_dep = dependency(
-  'audec', version: '>=0.3.2',
-  fallback: ['libaudec', 'libaudec_dep'],
-  static: all_static,
-  default_options: [
-    'default_library=static',
-    ])
 soxr_dep = dependency('soxr')
 
 # link to fontconfig/pangoft2 directly because
@@ -1275,7 +1268,6 @@ zrythm_deps = [
   pulseaudio_dep,
   libsoundio_dep,
   cyaml_dep,
-  audec_dep,
   soxr_dep,
   libcgraph_dep,
   libgvc_dep,

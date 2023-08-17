@@ -57,9 +57,6 @@ Required
 `libadwaita (LGPLv2.1+) <https://gitlab.gnome.org/GNOME/libadwaita>`_
   Additional widgets
 
-`libaudec (AGPLv3+) <https://git.zrythm.org/zrythm/libaudec/>`_
-  Audio file loading
-
 `libbacktrace (3-Clause BSD) <https://github.com/ianlancetaylor/libbacktrace>`_
   Backtraces
 
@@ -74,6 +71,9 @@ Required
 
 Note: if you want detach support use `our fork <https://git.sr.ht/~alextee/libpanel-detach>`_ (``zrythm_detach`` branch).
 
+`libsndfile (LGPLv2.1+) <http://libsndfile.github.io/libsndfile/>`_
+  Audio file IO
+
 `lilv (ISC) <https://drobilla.net/software/lilv>`_
   LV2 host support
 
@@ -85,6 +85,9 @@ Note: if you want detach support use `our fork <https://git.sr.ht/~alextee/libpa
 
 `rubberband (GPLv2+) <https://breakfastquay.com/rubberband/>`_
   Time-stretching and pitch-shifting
+
+`soxr (LGPLv2.1+) <https://sourceforge.net/projects/soxr/>`_
+  Resampling
 
 `vamp-plugin-sdk (X11) <https://vamp-plugins.org/>`_
   Audio analysis

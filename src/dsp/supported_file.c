@@ -4,8 +4,9 @@
 #include <inttypes.h>
 #include <stdlib.h>
 
-#include "dsp/encoder.h"
 #include "dsp/supported_file.h"
+#include "io/audio_file.h"
+#include "utils/error.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
@@ -234,16 +235,23 @@ supported_file_should_autoplay (const SupportedFile * self)
 
   if (supported_file_type_is_audio (self->type))
     {
-      AudioEncoder * enc =
-        audio_encoder_new_from_file (self->abs_path, NULL);
-      if (!enc)
-        return false;
+      AudioFile * af = audio_file_new (self->abs_path);
+      GError *    err = NULL;
+      bool success = audio_file_read_metadata (af, &err);
+      if (!success)
+        {
+          HANDLE_ERROR (
+            err, "Error reading metadata from %s",
+            af->filepath);
+          return false;
+        }
 
-      if ((enc->nfo.length / 1000) > 60)
+      if ((af->metadata.length / 1000) > 60)
         {
           autoplay = false;
         }
-      audio_encoder_free (enc);
+
+      audio_file_free (af);
     }
 
   return autoplay;
@@ -261,12 +269,18 @@ supported_file_get_info_text_for_label (
   char * label = NULL;
   if (supported_file_type_is_audio (self->type))
     {
-      AudioEncoder * enc =
-        audio_encoder_new_from_file (self->abs_path, NULL);
-      if (!enc)
+      AudioFile * af = audio_file_new (self->abs_path);
+      GError *    err = NULL;
+      bool success = audio_file_read_metadata (af, &err);
+      if (!success)
         {
+          HANDLE_ERROR (
+            err, "Error reading metadata from %s",
+            af->filepath);
           g_free (file_type_label);
-          return g_strdup (_ ("Failed opening file"));
+          return g_strdup_printf (
+            _ ("Failed reading metadata for %s"),
+            af->filepath);
         }
 
       label = g_markup_printf_escaped (
@@ -277,12 +291,14 @@ supported_file_get_info_text_for_label (
           "%" PRId64 " ms | BPM: %.1f\n"
           "Channel(s): %u | Bitrate: %'d.%d kb/s\n"
           "Bit depth: %d bits"),
-        self->label, enc->nfo.sample_rate,
-        enc->nfo.length / 1000, enc->nfo.length % 1000,
-        (double) enc->nfo.bpm, enc->nfo.channels,
-        enc->nfo.bit_rate / 1000,
-        (enc->nfo.bit_rate % 1000) / 100, enc->nfo.bit_depth);
-      audio_encoder_free (enc);
+        self->label, af->metadata.samplerate,
+        af->metadata.length / 1000,
+        af->metadata.length % 1000, (double) af->metadata.bpm,
+        af->metadata.channels, af->metadata.bit_rate / 1000,
+        (af->metadata.bit_rate % 1000) / 100,
+        af->metadata.bit_depth);
+
+      audio_file_free (af);
     }
   else
     label = g_markup_printf_escaped (

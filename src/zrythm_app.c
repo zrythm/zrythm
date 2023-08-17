@@ -90,7 +90,6 @@
 
 #include "Wrapper.h"
 #include "ext/whereami/whereami.h"
-#include <audec/audec.h>
 #include <fftw3.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gtksourceview/gtksource.h>
@@ -1067,10 +1066,6 @@ zrythm_app_startup (GApplication * app)
   g_message ("Making fftw planner thread safe...");
   fftw_make_planner_thread_safe ();
   fftwf_make_planner_thread_safe ();
-
-  /* init audio decoder */
-  g_message ("Initing audio decoder...");
-  audec_init ();
 
 #ifdef HAVE_LSP_DSP
   /* init lsp dsp */

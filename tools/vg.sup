@@ -101,26 +101,6 @@
 }
 
 {
-   audec_log_uninitialized_val
-   Memcheck:Value8
-   ...
-   fun:g_strdup_vprintf
-   fun:g_log_structured_standard
-   fun:audio_audec_log_func
-   ...
-}
-
-{
-   audec_log_jump_depending_on_uninitialized_val
-   Memcheck:Cond
-   ...
-   fun:g_strdup_vprintf
-   fun:g_log_structured_standard
-   fun:audio_audec_log_func
-   ...
-}
-
-{
    helm_lv2_instantiation
    Memcheck:Cond
    ...

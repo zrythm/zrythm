@@ -34,8 +34,6 @@ jobs:
           mv VERSION VERSION.txt
           gsed -i "s|'VERSION'|'VERSION.txt'|" meson.build
           meson build -Dtests=true -Dgtk4:x11-backend=false -Dx11=disabled
-          mv subprojects/libaudec/VERSION subprojects/libaudec/VERSION.txt
-          gsed -i "s|'VERSION'|'VERSION.txt'|" subprojects/libaudec/meson.build
           ninja -C build
 
       - name: Test

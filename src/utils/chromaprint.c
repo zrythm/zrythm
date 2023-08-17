@@ -28,7 +28,6 @@
 
 #  include <glib.h>
 
-#  include <audec/audec.h>
 #  include <sndfile.h>
 
 void

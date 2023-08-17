@@ -4,7 +4,6 @@
 #include "zrythm-test-config.h"
 
 #include "actions/tracklist_selections.h"
-#include "dsp/encoder.h"
 #include "dsp/exporter.h"
 #include "dsp/supported_file.h"
 #include "project.h"

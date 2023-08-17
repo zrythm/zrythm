@@ -31,8 +31,11 @@
 #include <inttypes.h>
 
 #include "io/audio_file.h"
+#include "utils/debug.h"
+#include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/objects.h"
+#include "utils/resampler.h"
 
 #include <glib/gi18n.h>
 
@@ -217,9 +220,9 @@ audio_file_read_metadata (AudioFile * self, GError ** error)
  * @param samples Samples to fill in.
  * @param in_parts Whether to read the file in parts. If true,
  *   @p start_from and @p num_frames_to_read must be specified.
- * @param samples Pre-allocated frame array. Caller must ensure
- *   there is enough space (ie, number of frames * number of
- *   channels).
+ * @param samples[out] Pre-allocated frame array. Caller must
+ *   ensure there is enough space (ie, number of frames *
+ *   number of channels).
  */
 bool
 audio_file_read_samples (
@@ -317,6 +320,110 @@ audio_file_finish (AudioFile * self, GError ** error)
       return false;
     }
   idata->sffile = NULL;
+
+  return true;
+}
+
+/**
+ * Simple blocking API for reading and optionally resampling
+ * audio files.
+ *
+ * Only to be used on small files.
+ *
+ * @param[out] frames Pointer to store newly allocated
+ *   interlaved frames to.
+ * @param[out] metadata File metadata will be pasted here if
+ *   non-NULL.
+ * @param samplerate If specified, the audio will be resampled
+ *   to the given samplerate. Pass 0 to avoid resampling.
+ */
+bool
+audio_file_read_simple (
+  const char *        filepath,
+  float **            frames,
+  size_t *            num_frames,
+  AudioFileMetadata * metadata,
+  size_t              samplerate,
+  GError **           error)
+{
+  g_return_val_if_fail (filepath, false);
+  g_return_val_if_fail (frames, false);
+  g_return_val_if_fail (num_frames, false);
+
+  /* read metadata */
+  AudioFile * af = audio_file_new (filepath);
+  GError *    err = NULL;
+  bool        success = audio_file_read_metadata (af, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "Error reading metadata from %s",
+        filepath);
+      return false;
+    }
+  if (metadata)
+    {
+      *metadata = af->metadata;
+    }
+
+  /* read frames in file's sample rate */
+  z_return_val_if_fail_cmp (
+    af->metadata.num_frames, >=, 0, false);
+  z_return_val_if_fail_cmp (
+    af->metadata.channels, >, 0, false);
+  size_t arr_size =
+    (size_t) af->metadata.num_frames
+    * (size_t) af->metadata.channels;
+  *frames = g_realloc (*frames, arr_size * sizeof (float));
+  success = audio_file_read_samples (
+    af, false, *frames, 0, (size_t) af->metadata.num_frames,
+    &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "Error reading frames from %s", filepath);
+      return false;
+    }
+
+  if (samplerate != 0)
+    {
+      /* resample to project's sample rate */
+      Resampler * r = resampler_new (
+        *frames, (size_t) af->metadata.num_frames,
+        af->metadata.samplerate, samplerate,
+        (unsigned int) af->metadata.channels,
+        RESAMPLER_QUALITY_VERY_HIGH, &err);
+      if (!r)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err, "Failed to create resampler");
+          return false;
+        }
+      while (!resampler_is_done (r))
+        {
+          success = resampler_process (r, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                error, err, "Resampler failed to process");
+              return false;
+            }
+        }
+      *num_frames = r->num_out_frames;
+      arr_size = *num_frames * (size_t) af->metadata.channels;
+      *frames = g_realloc (*frames, arr_size * sizeof (float));
+      dsp_copy (*frames, r->out_frames, arr_size);
+      object_free_w_func_and_null (resampler_free, r);
+    }
+
+  success = audio_file_finish (af, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, "Failed to finish audio file usage");
+      return false;
+    }
+  object_free_w_func_and_null (audio_file_free, af);
 
   return true;
 }

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/audio.h"
+#include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/resampler.h"
 

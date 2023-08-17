@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -6,16 +6,17 @@
 #include <inttypes.h>
 #include <stdlib.h>
 
-#include "dsp/encoder.h"
 #include "dsp/engine.h"
 #include "dsp/metronome.h"
 #include "dsp/position.h"
 #include "dsp/transport.h"
+#include "io/audio_file.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/audio.h"
 #include "utils/debug.h"
 #include "utils/dsp.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/io.h"
 #include "utils/objects.h"
@@ -53,64 +54,35 @@ metronome_new (void)
         samplesdir, "square_normal.wav", NULL);
     }
 
-  /* decode */
-  AudioEncoder * enc =
-    audio_encoder_new_from_file (self->emphasis_path, NULL);
-  if (!enc)
+  GError *          err = NULL;
+  AudioFileMetadata metadata = { 0 };
+  bool              success = audio_file_read_simple (
+    self->emphasis_path, &self->emphasis, &self->emphasis_size,
+    &metadata, AUDIO_ENGINE->sample_rate, &err);
+  if (!success)
     {
-      g_critical (
-        "Failed to load samples for metronome "
-        "from %s",
+      HANDLE_ERROR (
+        err, "Failed to load samples for metronome from %s",
         self->emphasis_path);
       metronome_free (self);
       return NULL;
     }
-  audio_encoder_decode (
-    enc, (int) AUDIO_ENGINE->sample_rate, F_NO_SHOW_PROGRESS);
-  self->emphasis = object_new_n (
-    (size_t) (enc->num_out_frames * enc->channels), float);
-  self->emphasis_size = enc->num_out_frames;
-  self->emphasis_channels = enc->channels;
-  if (enc->channels <= 0)
-    {
-      g_critical ("channels: %d", enc->channels);
-      audio_encoder_free (enc);
-      metronome_free (self);
-      return NULL;
-    }
+  self->emphasis_channels = (channels_t) metadata.channels;
 
-  dsp_copy (
-    self->emphasis, enc->out_frames,
-    (size_t) enc->num_out_frames * (size_t) enc->channels);
-  audio_encoder_free (enc);
-
-  enc = audio_encoder_new_from_file (self->normal_path, NULL);
-  if (!enc)
+  err = NULL;
+  memset (&metadata, 0, sizeof (AudioFileMetadata));
+  success = audio_file_read_simple (
+    self->normal_path, &self->normal, &self->normal_size,
+    &metadata, AUDIO_ENGINE->sample_rate, &err);
+  if (!success)
     {
-      g_critical (
-        "Failed to load samples for metronome "
-        "from %s",
+      HANDLE_ERROR (
+        err, "Failed to load samples for metronome from %s",
         self->normal_path);
       metronome_free (self);
       return NULL;
     }
-  audio_encoder_decode (
-    enc, (int) AUDIO_ENGINE->sample_rate, F_NO_SHOW_PROGRESS);
-  self->normal = object_new_n (
-    (size_t) (enc->num_out_frames * enc->channels), float);
-  self->normal_size = enc->num_out_frames;
-  self->normal_channels = enc->channels;
-  if (enc->channels <= 0)
-    {
-      g_critical ("channels: %d", enc->channels);
-      audio_encoder_free (enc);
-      metronome_free (self);
-      return NULL;
-    }
-  dsp_copy (
-    self->normal, enc->out_frames,
-    (size_t) enc->num_out_frames * (size_t) enc->channels);
-  audio_encoder_free (enc);
+  self->normal_channels = (channels_t) metadata.channels;
 
   /* set volume */
   self->volume =

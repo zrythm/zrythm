@@ -16,8 +16,6 @@
 #include "utils/types.h"
 #include "utils/yaml.h"
 
-#include <audec/audec.h>
-
 /**
  * @addtogroup utils
  *
@@ -82,12 +80,6 @@ audio_bit_depth_to_pretty_str (BitDepth depth);
  * Number of plugin slots per channel.
  */
 #define STRIP_SIZE 9
-
-void
-audio_audec_log_func (
-  AudecLogLevel level,
-  const char *  fmt,
-  va_list       args) G_GNUC_PRINTF (2, 0);
 
 /**
  * Writes the buffer as a raw file to the given path.

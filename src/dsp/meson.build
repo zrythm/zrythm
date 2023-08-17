@@ -25,7 +25,6 @@ audio_srcs = files([
   'control_room.c',
   'curve.c',
   'ditherer.c',
-  'encoder.c',
   'engine.c',
   'engine_alsa.c',
   'engine_dummy.c',

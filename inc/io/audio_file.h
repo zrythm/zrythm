@@ -60,14 +60,6 @@ typedef struct AudioFile
 
   /** Implemented in the source file. */
   void * internal_data;
-
-#if 0
-  /** The output frames interleaved. */
-  float * out_frames;
-
-  /** Output number of frames per channel. */
-  unsigned_frame_t num_out_frames;
-#endif
 } AudioFile;
 
 /**
@@ -92,9 +84,9 @@ bool audio_file_read_metadata (
  * @param samples Samples to fill in.
  * @param in_parts Whether to read the file in parts. If true,
  *   @p start_from and @p num_frames_to_read must be specified.
- * @param samples Pre-allocated frame array. Caller must ensure
- *   there is enough space (ie, number of frames * number of
- *   channels).
+ * @param samples[out] Pre-allocated frame array. Caller must
+ *   ensure there is enough space (ie, number of frames *
+ *   number of channels).
  */
 NONNULL_ARGS (1)
 bool audio_file_read_samples (
@@ -108,9 +100,33 @@ bool audio_file_read_samples (
 /**
  * Must be called when done reading or writing files (or when
  * the operation was cancelled).
+ *
+ * This is not needed when only reading metadata.
  */
 NONNULL_ARGS (1)
 bool audio_file_finish (AudioFile * self, GError ** error);
+
+/**
+ * Simple blocking API for reading and optionally resampling
+ * audio files.
+ *
+ * Only to be used on small files.
+ *
+ * @param[out] frames Pointer to store newly allocated
+ *   interlaved frames to.
+ * @param[out] metadata File metadata will be pasted here if
+ *   non-NULL.
+ * @param samplerate If specified, the audio will be resampled
+ *   to the given samplerate. Pass 0 to avoid resampling.
+ */
+bool
+audio_file_read_simple (
+  const char *        filepath,
+  float **            frames,
+  size_t *            num_frames,
+  AudioFileMetadata * metadata,
+  size_t              samplerate,
+  GError **           error);
 
 NONNULL void
 audio_file_free (AudioFile * self);
