@@ -16,8 +16,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include <samplerate.h>
-
 typedef enum
 {
   Z_AUDIO_ENCODER_ERROR_FAILED,

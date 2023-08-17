@@ -14,7 +14,6 @@
 #include <glib/gi18n.h>
 
 #include <audec/audec.h>
-#include <samplerate.h>
 #include <sndfile.h>
 #include <unistd.h>
 
@@ -266,10 +265,10 @@ audio_get_num_frames (const char * filepath)
  */
 bool
 audio_frames_equal (
-  float * src1,
-  float * src2,
-  size_t  num_frames,
-  float   epsilon)
+  const float * src1,
+  const float * src2,
+  size_t        num_frames,
+  float         epsilon)
 {
   for (size_t i = 0; i < num_frames; i++)
     {

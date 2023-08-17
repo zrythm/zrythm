@@ -4,10 +4,10 @@
 #include <stdlib.h>
 
 #include "dsp/clip.h"
-#include "dsp/encoder.h"
 #include "dsp/engine.h"
 #include "dsp/tempo_track.h"
 #include "gui/widgets/main_window.h"
+#include "io/audio_file.h"
 #include "project.h"
 #include "utils/audio.h"
 #include "utils/debug.h"
@@ -20,6 +20,7 @@
 #include "utils/io.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/resampler.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
 
@@ -90,31 +91,22 @@ audio_clip_init_from_file (
   self->samplerate = (int) AUDIO_ENGINE->sample_rate;
   g_return_val_if_fail (self->samplerate > 0, false);
 
-  GError *       err = NULL;
-  AudioEncoder * enc =
-    audio_encoder_new_from_file (full_path, &err);
-  if (!enc)
+  GError * err = NULL;
+
+  /* read metadata */
+  AudioFile * af = audio_file_new (full_path);
+  bool        success = audio_file_read_metadata (af, &err);
+  if (!success)
     {
-      PROPAGATE_PREFIXED_ERROR_LITERAL (
-        error, err, "Error creating encoder");
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "Error reading metadata from %s",
+        full_path);
       return false;
     }
-  audio_encoder_decode (
-    enc, self->samplerate, F_SHOW_PROGRESS);
-
-  size_t arr_size =
-    (size_t) enc->num_out_frames * (size_t) enc->nfo.channels;
-  self->frames =
-    g_realloc (self->frames, arr_size * sizeof (float));
-  self->num_frames = enc->num_out_frames;
-  dsp_copy (self->frames, enc->out_frames, arr_size);
-  g_free_and_null (self->name);
-  char * basename = g_path_get_basename (full_path);
-  self->name = io_file_strip_ext (basename);
-  g_free (basename);
-  self->channels = enc->nfo.channels;
-  self->bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
-  switch (enc->nfo.bit_depth)
+  self->num_frames =
+    (unsigned_frame_t) af->metadata.num_frames;
+  self->channels = (channels_t) af->metadata.channels;
+  switch (af->metadata.bit_depth)
     {
     case 16:
       self->bit_depth = BIT_DEPTH_16;
@@ -126,15 +118,70 @@ audio_clip_init_from_file (
       self->bit_depth = BIT_DEPTH_32;
       break;
     default:
-      g_debug ("unknown bit depth: %d", enc->nfo.bit_depth);
+      g_debug (
+        "unknown bit depth: %d", af->metadata.bit_depth);
       self->bit_depth = BIT_DEPTH_32;
     }
+
+  /* read frames in file's sample rate */
+  size_t arr_size = self->num_frames * self->channels;
+  self->frames =
+    g_realloc (self->frames, arr_size * sizeof (float));
+  success = audio_file_read_samples (
+    af, false, self->frames, 0, self->num_frames, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "Error reading frames from %s", full_path);
+      return false;
+    }
+
+  /* resample to project's sample rate */
+  Resampler * r = resampler_new (
+    self->frames, self->num_frames, af->metadata.samplerate,
+    self->samplerate, self->channels,
+    RESAMPLER_QUALITY_VERY_HIGH, &err);
+  if (!r)
+    {
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, "Failed to create resampler");
+      return false;
+    }
+  while (!resampler_is_done (r))
+    {
+      success = resampler_process (r, &err);
+      if (!success)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err, "Resampler failed to process");
+          return false;
+        }
+    }
+  self->num_frames = r->num_out_frames;
+  arr_size = self->num_frames * self->channels;
+  self->frames =
+    g_realloc (self->frames, arr_size * sizeof (float));
+  dsp_copy (self->frames, r->out_frames, arr_size);
+  object_free_w_func_and_null (resampler_free, r);
+
+  success = audio_file_finish (af, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, "Failed to finish audio file usage");
+      return false;
+    }
+  object_free_w_func_and_null (audio_file_free, af);
+
+  g_free_and_null (self->name);
+  char * basename = g_path_get_basename (full_path);
+  self->name = io_file_strip_ext (basename);
+  g_free (basename);
+  self->bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
   self->use_flac = audio_clip_use_flac (self->bit_depth);
   /*g_message (*/
   /*"\n\n num frames %ld \n\n", self->num_frames);*/
   audio_clip_update_channel_caches (self, 0);
-
-  audio_encoder_free (enc);
 
   return true;
 }
@@ -182,8 +229,9 @@ audio_clip_new_from_file (
   if (!success)
     {
       audio_clip_free (self);
-      HANDLE_ERROR (
-        err, _ ("Failed to initialize audio file at %s"),
+      PROPAGATE_PREFIXED_ERROR (
+        error, err,
+        _ ("Failed to initialize audio file at %s"),
         full_path);
       return NULL;
     }

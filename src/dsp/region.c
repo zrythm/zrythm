@@ -50,9 +50,6 @@
 
 #include <glib/gi18n.h>
 
-#include <samplerate.h>
-#include <sndfile.h>
-
 /**
  * Only to be used by implementing structs.
  */

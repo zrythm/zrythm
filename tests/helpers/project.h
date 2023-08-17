@@ -423,7 +423,7 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   track_name_hash = track_get_name_hash (track);
   r = audio_region_new (
     -1, audio_file_path, true, NULL, 0, NULL, 0, 0, p1,
-    track_name_hash, AUDIO_REGION_LANE, 0);
+    track_name_hash, AUDIO_REGION_LANE, 0, NULL);
   AudioClip * clip = audio_region_get_clip (r);
   g_assert_cmpuint (clip->num_frames, >, 151000);
   g_assert_cmpuint (clip->num_frames, <, 152000);

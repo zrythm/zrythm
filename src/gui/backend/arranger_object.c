@@ -2387,7 +2387,7 @@ clone_region (const ZRegion * region)
           region->clip ? region->clip->channels : 0,
           region->clip ? region->clip->bit_depth : 0,
           &r_obj->pos, region->id.track_name_hash,
-          region->id.lane_pos, region->id.idx);
+          region->id.lane_pos, region->id.idx, NULL);
 
 #if 0
         /* copy the actual frames - they might
@@ -2923,7 +2923,7 @@ arranger_object_split (
             (unsigned_frame_t) localp.frames, prev_r1->name,
             prev_r1_clip->channels, prev_r1_clip->bit_depth,
             &prev_r1->base.pos, prev_r1->id.track_name_hash,
-            prev_r1->id.lane_pos, prev_r1->id.idx);
+            prev_r1->id.lane_pos, prev_r1->id.idx, NULL);
           g_return_val_if_fail (
             new_r1->pool_id != prev_r1->pool_id, false);
           arranger_object_free ((ArrangerObject *) prev_r1);
@@ -3000,7 +3000,7 @@ arranger_object_split (
             prev_r2->name, prev_r2_clip->channels,
             prev_r2_clip->bit_depth, &globalp,
             prev_r2->id.track_name_hash, prev_r2->id.lane_pos,
-            prev_r2->id.idx);
+            prev_r2->id.idx, NULL);
           g_return_val_if_fail (
             new_r2->pool_id != prev_r2->pool_id, false);
           arranger_object_free ((ArrangerObject *) prev_r2);

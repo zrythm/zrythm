@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 zrythm_main = files ('main.c')
@@ -27,6 +27,7 @@ subdir('actions')
 subdir('dsp')
 subdir('gui')
 subdir('guile')
+subdir('io')
 subdir('plugins')
 subdir('schemas')
 subdir('settings')

@@ -2270,7 +2270,7 @@ arranger_selections_merge (ArrangerSelections * self)
           -1, NULL, true, frames, num_frames,
           first_r_clip->name, 2, max_depth, &pos,
           first_r->id.track_name_hash, first_r->id.lane_pos,
-          first_r->id.idx);
+          first_r->id.idx, NULL);
       }
       break;
     case REGION_TYPE_CHORD:

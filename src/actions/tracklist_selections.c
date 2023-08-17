@@ -814,11 +814,18 @@ create_track (
         {
           /* create an audio region & add to
            * track */
+          GError *  err = NULL;
           ZRegion * ar = audio_region_new (
             self->pool_id, NULL, true, NULL, 0, NULL, 0, 0,
-            &start_pos, track_get_name_hash (track), 0, 0);
-          GError * err = NULL;
-          bool     success = track_add_region (
+            &start_pos, track_get_name_hash (track), 0, 0,
+            &err);
+          if (!ar)
+            {
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                error, err, "Failed to create region");
+              return -1;
+            }
+          bool success = track_add_region (
             track, ar, NULL, 0, F_GEN_NAME,
             F_NO_PUBLISH_EVENTS, &err);
           if (!success)

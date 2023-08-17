@@ -62,7 +62,8 @@ audio_region_new (
   const Position *       start_pos,
   unsigned int           track_name_hash,
   int                    lane_pos,
-  int                    idx_inside_lane)
+  int                    idx_inside_lane,
+  GError **              error)
 {
   ZRegion * self = object_new (ZRegion);
   /*ArrangerObject * obj =*/
@@ -85,12 +86,11 @@ audio_region_new (
           clip = audio_clip_new_from_file (filename, &err);
           if (!clip)
             {
-              HANDLE_ERROR (
-                err,
+              PROPAGATE_PREFIXED_ERROR (
+                error, err,
                 _ ("Failed to create audio clip from file at %s"),
                 filename);
-              /* TODO FIXME create a dummy clip here */
-              /*clip = audio_clip_new_from_float_array (..) */
+              return NULL;
             }
         }
       else if (frames)

@@ -1412,10 +1412,21 @@ tracklist_import_files (
                 case TRACK_TYPE_AUDIO:
                   /* create audio region in audio
                    * track */
-                  region = audio_region_new (
-                    -1, file->abs_path, true, NULL, 0, NULL,
-                    0, 0, pos, track_get_name_hash (track),
-                    lane_pos, idx_in_lane);
+                  {
+                    GError * err = NULL;
+                    region = audio_region_new (
+                      -1, file->abs_path, true, NULL, 0, NULL,
+                      0, 0, pos, track_get_name_hash (track),
+                      lane_pos, idx_in_lane, &err);
+                    if (!region)
+                      {
+                        PROPAGATE_PREFIXED_ERROR_LITERAL (
+                          error, err,
+                          "Failed to add audio region");
+                        has_errors = true;
+                        goto free_file_array_and_return;
+                      }
+                  }
                   break;
                 case TRACK_TYPE_MIDI:
                   region = midi_region_new_from_midi_file (

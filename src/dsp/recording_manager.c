@@ -780,7 +780,7 @@ handle_resume_event (
               new_region = audio_region_new (
                 -1, NULL, true, NULL, 1, name, 2, BIT_DEPTH_32,
                 &resume_pos, track_get_name_hash (tr),
-                new_lane_pos, idx_inside_lane);
+                new_lane_pos, idx_inside_lane, NULL);
             }
           g_return_val_if_fail (new_region, false);
           GError * err = NULL;
@@ -1443,7 +1443,7 @@ handle_start_recording (
             -1, NULL, true, NULL, ev->nframes, name, 2,
             BIT_DEPTH_32, &start_pos,
             track_get_name_hash (tr), new_lane_pos,
-            tr->lanes[new_lane_pos]->num_regions);
+            tr->lanes[new_lane_pos]->num_regions, NULL);
           g_return_if_fail (region);
           GError * err = NULL;
           bool     success = track_add_region (

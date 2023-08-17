@@ -1570,7 +1570,7 @@ test_split_large_audio_file (void)
   position_set_to_bar (&pos, 3);
   ZRegion * r = audio_region_new (
     -1, TEST_SINE_OGG_30MIN, true, NULL, 0, NULL, 0, 0, &pos,
-    track_name_hash, AUDIO_REGION_LANE, 0);
+    track_name_hash, AUDIO_REGION_LANE, 0, NULL);
   AudioClip * clip = audio_region_get_clip (r);
   g_assert_cmpuint (clip->num_frames, ==, 79380000);
   GError * err = NULL;

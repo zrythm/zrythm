@@ -72,7 +72,8 @@ audio_region_new (
   const Position *       start_pos,
   unsigned int           track_name_hash,
   int                    lane_pos,
-  int                    idx_inside_lane);
+  int                    idx_inside_lane,
+  GError **              error);
 
 #if 0
 /**

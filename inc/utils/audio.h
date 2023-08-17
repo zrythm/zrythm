@@ -124,10 +124,10 @@ audio_get_num_frames (const char * filepath);
  */
 bool
 audio_frames_equal (
-  float * src1,
-  float * src2,
-  size_t  num_frames,
-  float   epsilon);
+  const float * src1,
+  const float * src2,
+  size_t        num_frames,
+  float         epsilon);
 
 /**
  * Returns whether the file contents are equal.

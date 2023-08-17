@@ -510,11 +510,17 @@ queue_file_or_chord_preset (
 
       /* create an audio region & add to
        * track */
+      GError *  err = NULL;
       ZRegion * ar = audio_region_new (
         -1, file->abs_path, false, NULL, 0, NULL, 0, 0,
-        &start_pos, 0, 0, 0);
-      GError * err = NULL;
-      bool     success = track_add_region (
+        &start_pos, 0, 0, 0, &err);
+      if (!ar)
+        {
+          HANDLE_ERROR_LITERAL (
+            err, "Failed to create audio region");
+          return;
+        }
+      bool success = track_add_region (
         track, ar, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
         &err);
       if (!success)
@@ -522,6 +528,7 @@ queue_file_or_chord_preset (
           HANDLE_ERROR (
             err, "Failed to add region to track %s",
             track->name);
+          return;
         }
 
       ArrangerObject * obj = (ArrangerObject *) ar;

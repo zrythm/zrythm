@@ -849,6 +849,7 @@ audec_dep = dependency(
   default_options: [
     'default_library=static',
     ])
+soxr_dep = dependency('soxr')
 
 # link to fontconfig/pangoft2 directly because
 # they are used in utils/pango.c
@@ -1275,6 +1276,7 @@ zrythm_deps = [
   libsoundio_dep,
   cyaml_dep,
   audec_dep,
+  soxr_dep,
   libcgraph_dep,
   libgvc_dep,
   have_guile ? guile_dep : [],
