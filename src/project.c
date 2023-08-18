@@ -5,6 +5,7 @@
 
 #include <sys/stat.h>
 
+#include "dsp/audio_region.h"
 #include "dsp/automation_point.h"
 #include "dsp/automation_track.h"
 #include "dsp/channel.h"
@@ -442,6 +443,41 @@ project_validate (Project * self)
    * positions (arranger_object_validate) */
 
   g_message ("%s: done", __func__);
+}
+
+/**
+ * @return Whether positions were adjusted.
+ */
+bool
+project_fix_audio_regions (Project * self)
+{
+  g_message ("fixing audio region positions...");
+
+  int         num_fixed = 0;
+  Tracklist * tl = self->tracklist;
+  for (int i = 0; i < tl->num_tracks; i++)
+    {
+      Track * track = tl->tracks[i];
+      if (track->type != TRACK_TYPE_AUDIO)
+        continue;
+
+      for (int j = 0; j < track->num_lanes; j++)
+        {
+          TrackLane * lane = track->lanes[j];
+
+          for (int k = 0; k < lane->num_regions; k++)
+            {
+              ZRegion * r = lane->regions[k];
+              if (audio_region_fix_positions (r, 0))
+                num_fixed++;
+            }
+        }
+    }
+
+  g_message (
+    "done fixing %d audio region positions", num_fixed);
+
+  return num_fixed > 0;
 }
 
 #if 0
@@ -1383,6 +1419,10 @@ project_load (
 
   /* reconnect graph */
   router_recalc_graph (ROUTER, F_NOT_SOFT);
+
+  /* fix audio regions in case running under a new sample
+   * rate */
+  project_fix_audio_regions (PROJECT);
 
   /* resume engine */
   engine_resume (AUDIO_ENGINE, &state);

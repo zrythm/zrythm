@@ -3412,6 +3412,12 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/arranger_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test move audio_region_and lower samplerate",
+    (GTestFunc) test_move_audio_region_and_lower_samplerate);
+  g_test_add_func (
+    TEST_PREFIX "test move audio_region_and lower bpm",
+    (GTestFunc) test_move_audio_region_and_lower_bpm);
+  g_test_add_func (
     TEST_PREFIX "test audio functions",
     (GTestFunc) test_audio_functions);
   g_test_add_func (
@@ -3424,17 +3430,11 @@ main (int argc, char * argv[])
     TEST_PREFIX "test copy and move automation regions",
     (GTestFunc) test_copy_and_move_automation_regions);
   g_test_add_func (
-    TEST_PREFIX "test move audio_region_and lower samplerate",
-    (GTestFunc) test_move_audio_region_and_lower_samplerate);
-  g_test_add_func (
     TEST_PREFIX "test cut automation region",
     (GTestFunc) test_cut_automation_region);
   g_test_add_func (
     TEST_PREFIX "test split large audio file",
     (GTestFunc) test_split_large_audio_file);
-  g_test_add_func (
-    TEST_PREFIX "test move audio_region_and lower bpm",
-    (GTestFunc) test_move_audio_region_and_lower_bpm);
   g_test_add_func (
     TEST_PREFIX "test move timeline",
     (GTestFunc) test_move_timeline);

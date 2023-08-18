@@ -150,12 +150,28 @@ audio_region_detect_bpm (ZRegion * self, GArray * candidates);
 /**
  * Sanity checking.
  *
- * @param frames_per_tick Frames per tick used when
- * validating audio regions. Passing 0 will use the value
- * from the current engine.
+ * @param frames_per_tick Frames per tick used when validating
+ * audio regions. Passing 0 will use the value from the
+ * current engine.
  */
 bool
 audio_region_validate (ZRegion * self, double frames_per_tick);
+
+/**
+ * Fixes off-by-one rounding errors when changing BPM or
+ * sample rate which result in the looped part being longer
+ * than there are actual frames in the clip.
+ *
+ * @param frames_per_tick Frames per tick used when validating
+ * audio regions. Passing 0 will use the value from the
+ * current engine.
+ *
+ * @return Whether positions were adjusted.
+ */
+bool
+audio_region_fix_positions (
+  ZRegion * self,
+  double    frames_per_tick);
 
 /**
  * Frees members only but not the audio region itself.

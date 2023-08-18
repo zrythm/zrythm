@@ -745,6 +745,13 @@ arranger_object_print (const ArrangerObject * self)
       char end_pos_str[100];
       position_to_string (&self->end_pos, end_pos_str);
 
+      char     len_str[100];
+      Position len;
+      position_init (&len);
+      position_add_frames (
+        &len, arranger_object_get_length_in_frames (self));
+      position_to_string (&len, len_str);
+
       if (arranger_object_type_can_loop (self->type))
         {
           char clip_start_pos_str[100];
@@ -757,15 +764,17 @@ arranger_object_print (const ArrangerObject * self)
           position_to_string (
             &self->loop_end_pos, loop_end_pos_str);
           sprintf (
-            positions, "(%s ~ %s | cs: %s ls: %s le: %s)",
-            start_pos_str, end_pos_str, clip_start_pos_str,
-            loop_start_pos_str, loop_end_pos_str);
+            positions,
+            "(%s ~ %s (len: %s) | cs: %s ls: %s le: %s)",
+            start_pos_str, end_pos_str, len_str,
+            clip_start_pos_str, loop_start_pos_str,
+            loop_end_pos_str);
         }
       else
         {
           sprintf (
-            positions, "(%s ~ %s)", start_pos_str,
-            end_pos_str);
+            positions, "(%s ~ %s (len: %s))", start_pos_str,
+            end_pos_str, len_str);
         }
     }
   else

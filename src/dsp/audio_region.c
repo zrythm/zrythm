@@ -641,9 +641,9 @@ audio_region_detect_bpm (ZRegion * self, GArray * candidates)
 /**
  * Sanity checking.
  *
- * @param frames_per_tick Frames per tick used when
- * validating audio regions. Passing 0 will use the value
- * from the current engine.
+ * @param frames_per_tick Frames per tick used when validating
+ * audio regions. Passing 0 will use the value from the
+ * current engine.
  */
 bool
 audio_region_validate (ZRegion * self, double frames_per_tick)
@@ -684,6 +684,88 @@ audio_region_validate (ZRegion * self, double frames_per_tick)
     }
 
   return true;
+}
+
+/**
+ * Fixes off-by-one rounding errors when changing BPM or
+ * sample rate which result in the looped part being longer
+ * than there are actual frames in the clip.
+ *
+ * @param frames_per_tick Frames per tick used when validating
+ * audio regions. Passing 0 will use the value from the
+ * current engine.
+ *
+ * @return Whether positions were adjusted.
+ */
+bool
+audio_region_fix_positions (
+  ZRegion * self,
+  double    frames_per_tick)
+{
+  AudioClip * clip = audio_region_get_clip (self);
+  g_return_val_if_fail (clip, false);
+
+  /* verify that the loop does not contain more
+   * frames than available in the clip */
+  /* use global positions because sometimes the loop
+   * appears to have 1 more frame due to rounding to
+   * nearest frame*/
+  ArrangerObject * obj = (ArrangerObject *) self;
+  signed_frame_t   loop_start_global =
+    position_get_frames_from_ticks (
+      obj->pos.ticks + obj->loop_start_pos.ticks,
+      frames_per_tick);
+  signed_frame_t loop_end_global =
+    position_get_frames_from_ticks (
+      obj->pos.ticks + obj->loop_end_pos.ticks,
+      frames_per_tick);
+  signed_frame_t loop_len =
+    loop_end_global - loop_start_global;
+  /*g_debug ("loop  len: %" SIGNED_FRAME_FORMAT, loop_len);*/
+  signed_frame_t region_len =
+    obj->end_pos.frames - obj->pos.frames;
+
+  signed_frame_t extra_loop_frames =
+    loop_len - (signed_frame_t) clip->num_frames;
+  if (extra_loop_frames > 0)
+    {
+      /* only fix if the difference is 1 frame, which happens
+       * due to rounding - if more than 1 then some other big
+       * problem exists */
+      if (extra_loop_frames == 1)
+        {
+          g_message (
+            "fixing position for audio region. before:");
+          arranger_object_print ((ArrangerObject *) self);
+          if (loop_len == region_len)
+            {
+              position_add_frames (&obj->end_pos, -1);
+              if (
+                obj->fade_out_pos.frames
+                == obj->loop_end_pos.frames)
+                {
+                  position_add_frames (&obj->fade_out_pos, -1);
+                }
+            }
+          position_add_frames (&obj->loop_end_pos, -1);
+          g_message (
+            "fixed position for audio region. after:");
+          arranger_object_print ((ArrangerObject *) self);
+          return true;
+        }
+      else
+        {
+          g_critical (
+            "Audio region loop length in frames (%" SIGNED_FRAME_FORMAT
+            ") is "
+            "greater than the number of frames in the "
+            "clip (%" UNSIGNED_FRAME_FORMAT "). ",
+            loop_len, clip->num_frames);
+          return false;
+        }
+    }
+
+  return false;
 }
 
 /**

@@ -433,6 +433,12 @@ project_save_data_free (ProjectSaveData * self);
 void
 project_validate (Project * self);
 
+/**
+ * @return Whether positions were adjusted.
+ */
+bool
+project_fix_audio_regions (Project * self);
+
 ArrangerSelections *
 project_get_arranger_selections_for_last_selection (
   Project * self);

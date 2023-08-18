@@ -92,6 +92,12 @@ arranger_selections_init_loaded (
             obj, true, false, action); \
           if (obj->type == ARRANGER_OBJECT_TYPE_REGION) \
             { \
+              ZRegion * r = (ZRegion *) obj; \
+              if (r->id.type == REGION_TYPE_AUDIO) \
+                { \
+                  audio_region_fix_positions ( \
+                    r, action ? action->frames_per_tick : 0); \
+                } \
               region_validate ( \
                 (ZRegion *) obj, project, \
                 action ? action->frames_per_tick : 0); \

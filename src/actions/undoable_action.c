@@ -197,6 +197,20 @@ undoable_action_can_contain_clip (UndoableAction * self)
 }
 
 /**
+ * Whether audio region loop/fade/etc. positions are affected
+ * by this undoable action.
+ *
+ * Used to correct off-by-one errors when changing BPM or
+ * resampling or something that causes position conversions.
+ */
+static bool
+affects_audio_region_internal_positions (UndoableAction * self)
+{
+  /* TODO */
+  return true;
+}
+
+/**
  * Common code for do/undo.
  *
  * @param perform True to do (perform), false to undo.
@@ -268,6 +282,11 @@ do_or_undo (UndoableAction * self, bool perform, GError ** error)
     {
       /* recalculate transport bars */
       transport_recalculate_total_bars (TRANSPORT, NULL);
+    }
+
+  if (affects_audio_region_internal_positions (self))
+    {
+      project_fix_audio_regions (PROJECT);
     }
 
   if (undoable_action_needs_pause (self))
