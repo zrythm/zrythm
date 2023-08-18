@@ -12,7 +12,7 @@
 
 #include "utils/yaml.h"
 
-#include "schemas/audio/chord_descriptor.h"
+#include "schemas/dsp/chord_descriptor.h"
 #include "schemas/gui/backend/editor_settings.h"
 
 typedef struct ChordEditor_v1

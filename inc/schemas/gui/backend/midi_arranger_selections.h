@@ -28,7 +28,7 @@
 
 #include "utils/yaml.h"
 
-#include "schemas/audio/midi_note.h"
+#include "schemas/dsp/midi_note.h"
 #include "schemas/gui/backend/arranger_selections.h"
 
 typedef struct MidiArrangerSelections_v1

@@ -12,9 +12,9 @@
 
 #include "utils/yaml.h"
 
-#include "schemas/audio/marker.h"
-#include "schemas/audio/region.h"
-#include "schemas/audio/scale_object.h"
+#include "schemas/dsp/marker.h"
+#include "schemas/dsp/region.h"
+#include "schemas/dsp/scale_object.h"
 #include "schemas/gui/backend/arranger_selections.h"
 
 typedef struct TimelineSelections_v1

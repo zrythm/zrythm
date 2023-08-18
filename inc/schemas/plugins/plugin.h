@@ -14,7 +14,7 @@
 
 #include "utils/types.h"
 
-#include "schemas/audio/port.h"
+#include "schemas/dsp/port.h"
 #include "schemas/plugins/plugin_descriptor.h"
 #include "schemas/plugins/plugin_identifier.h"
 #include "schemas/plugins/plugin_preset.h"

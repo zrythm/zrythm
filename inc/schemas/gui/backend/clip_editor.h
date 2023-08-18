@@ -12,7 +12,7 @@
 
 #include <stdbool.h>
 
-#include "schemas/audio/region_identifier.h"
+#include "schemas/dsp/region_identifier.h"
 #include "schemas/gui/backend/audio_clip_editor.h"
 #include "schemas/gui/backend/automation_editor.h"
 #include "schemas/gui/backend/chord_editor.h"

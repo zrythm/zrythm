@@ -28,7 +28,7 @@
 
 #include "utils/yaml.h"
 
-#include "schemas/audio/chord_object.h"
+#include "schemas/dsp/chord_object.h"
 #include "schemas/gui/backend/arranger_selections.h"
 
 typedef struct ChordSelections_v1

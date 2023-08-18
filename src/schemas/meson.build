@@ -1,7 +1,7 @@
-# SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2022-2023 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-subdir ('audio')
+subdir ('dsp')
 subdir ('gui')
 subdir ('plugins')
 subdir ('settings')

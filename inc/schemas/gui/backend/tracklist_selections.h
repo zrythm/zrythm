@@ -12,7 +12,7 @@
 
 #include "utils/yaml.h"
 
-#include "schemas/audio/track.h"
+#include "schemas/dsp/track.h"
 
 typedef struct TracklistSelections TracklistSelections;
 

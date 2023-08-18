@@ -10,13 +10,13 @@
 #ifndef __SCHEMAS_PROJECT_H__
 #define __SCHEMAS_PROJECT_H__
 
-#include "schemas/audio/engine.h"
-#include "schemas/audio/midi_mapping.h"
-#include "schemas/audio/port_connections_manager.h"
-#include "schemas/audio/quantize_options.h"
-#include "schemas/audio/region_link_group_manager.h"
-#include "schemas/audio/snap_grid.h"
-#include "schemas/audio/tracklist.h"
+#include "schemas/dsp/engine.h"
+#include "schemas/dsp/midi_mapping.h"
+#include "schemas/dsp/port_connections_manager.h"
+#include "schemas/dsp/quantize_options.h"
+#include "schemas/dsp/region_link_group_manager.h"
+#include "schemas/dsp/snap_grid.h"
+#include "schemas/dsp/tracklist.h"
 #include "schemas/gui/backend/audio_selections.h"
 #include "schemas/gui/backend/automation_selections.h"
 #include "schemas/gui/backend/chord_selections.h"

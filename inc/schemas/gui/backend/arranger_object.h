@@ -14,9 +14,9 @@
 
 #include "utils/yaml.h"
 
-#include "schemas/audio/curve.h"
-#include "schemas/audio/position.h"
-#include "schemas/audio/region_identifier.h"
+#include "schemas/dsp/curve.h"
+#include "schemas/dsp/position.h"
+#include "schemas/dsp/region_identifier.h"
 
 typedef enum ArrangerObjectType_v1
 {

@@ -28,8 +28,8 @@
 
 #include "utils/yaml.h"
 
-#include "schemas/audio/position.h"
-#include "schemas/audio/region_identifier.h"
+#include "schemas/dsp/position.h"
+#include "schemas/dsp/region_identifier.h"
 #include "schemas/gui/backend/arranger_selections.h"
 
 typedef struct AudioSelections_v1
