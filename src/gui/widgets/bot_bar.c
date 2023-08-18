@@ -259,16 +259,8 @@ bot_bar_widget_refresh (BotBarWidget * self)
 #ifdef HAVE_JACK
   if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
     {
-      int            size = 8;
-      GdkDisplay *   display = gdk_display_get_default ();
-      GtkIconTheme * icon_theme =
-        gtk_icon_theme_get_for_display (display);
-      GtkIconPaintable * icon_paintable =
-        gtk_icon_theme_lookup_icon (
-          icon_theme, "jack-transport-client", NULL, size, 1,
-          GTK_TEXT_DIR_NONE, GTK_ICON_LOOKUP_PRELOAD);
-      GtkWidget * img = gtk_image_new_from_paintable (
-        GDK_PAINTABLE (icon_paintable));
+      GtkWidget * img = gtk_image_new_from_icon_name (
+        "jack-transport-client");
       gtk_widget_set_halign (img, GTK_ALIGN_END);
       gtk_widget_set_valign (img, GTK_ALIGN_START);
       gtk_widget_set_visible (img, true);
@@ -276,14 +268,10 @@ bot_bar_widget_refresh (BotBarWidget * self)
         img, _ ("JACK Transport client"));
       gtk_overlay_add_overlay (self->playhead_overlay, img);
       self->client_img = img;
-      icon_paintable = gtk_icon_theme_lookup_icon (
-        icon_theme, "jack-timebase-master", NULL, size, 1,
-        GTK_TEXT_DIR_NONE, GTK_ICON_LOOKUP_PRELOAD);
-      img = gtk_image_new_from_paintable (
-        GDK_PAINTABLE (icon_paintable));
+      img =
+        gtk_image_new_from_icon_name ("jack-timebase-master");
       gtk_widget_set_halign (img, GTK_ALIGN_END);
       gtk_widget_set_valign (img, GTK_ALIGN_START);
-      gtk_widget_set_margin_end (img, size + 2);
       gtk_widget_set_visible (img, true);
       gtk_widget_set_tooltip_text (
         img, _ ("JACK Timebase master"));
@@ -308,6 +296,11 @@ bot_bar_widget_refresh (BotBarWidget * self)
           gtk_widget_set_tooltip_text (
             GTK_WIDGET (self->digital_transport),
             PLAYHEAD_JACK_MASTER_CAPTION);
+        }
+      else
+        {
+          gtk_widget_set_visible (self->master_img, false);
+          gtk_widget_set_visible (self->client_img, false);
         }
     }
 #endif
