@@ -197,21 +197,13 @@ undoable_action_can_contain_clip (UndoableAction * self)
 }
 
 /**
- * Performs the action.
+ * Common code for do/undo.
  *
- * @note Only to be called by undo manager.
- *
- * @return Non-zero if errors occurred.
+ * @param perform True to do (perform), false to undo.
  */
-int
-undoable_action_do (UndoableAction * self, GError ** error)
+static int
+do_or_undo (UndoableAction * self, bool perform, GError ** error)
 {
-#if 0
-  g_debug ("waiting for port operation lock...");
-  zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);
-  g_debug ("lock acquired");
-#endif
-
   EngineState state;
   if (undoable_action_needs_pause (self))
     {
@@ -229,10 +221,15 @@ undoable_action_do (UndoableAction * self, GError ** error)
     { \
       char * str = undoable_action_to_string (self); \
       g_message ("[DOING ACTION]: " #uc " (%s)", str); \
-      ret = sc##_action_do ((cc##Action *) self, error); \
+      ret = \
+        perform \
+          ? sc##_action_do ((cc##Action *) self, error) \
+          : sc##_action_undo ((cc##Action *) self, error); \
       if (ret == 0) \
         { \
-          g_message ("[DONE]: " #uc " (%s)", str); \
+          g_message ( \
+            "[%s]: " #uc " (%s)", \
+            perform ? "DONE" : "UNDONE", str); \
         } \
       else \
         { \
@@ -267,13 +264,7 @@ undoable_action_do (UndoableAction * self, GError ** error)
 
 #undef DO_ACTION
 
-#if 0
-  g_debug ("releasing lock...");
-  zix_sem_post (&AUDIO_ENGINE->port_operation_lock);
-  g_debug ("lock released");
-#endif
-
-  if (need_transport_total_bar_update (self, true))
+  if (need_transport_total_bar_update (self, perform))
     {
       /* recalculate transport bars */
       transport_recalculate_total_bars (TRANSPORT, NULL);
@@ -289,6 +280,19 @@ undoable_action_do (UndoableAction * self, GError ** error)
 }
 
 /**
+ * Performs the action.
+ *
+ * @note Only to be called by undo manager.
+ *
+ * @return Non-zero if errors occurred.
+ */
+int
+undoable_action_do (UndoableAction * self, GError ** error)
+{
+  return do_or_undo (self, true, error);
+}
+
+/**
  * Undoes the action.
  *
  * @return Non-zero if errors occurred.
@@ -296,78 +300,7 @@ undoable_action_do (UndoableAction * self, GError ** error)
 int
 undoable_action_undo (UndoableAction * self, GError ** error)
 {
-  /*zix_sem_wait (&AUDIO_ENGINE->port_operation_lock);*/
-
-  EngineState state;
-  if (undoable_action_needs_pause (self))
-    {
-      /* stop engine and give it some time to stop
-       * running */
-      engine_wait_for_pause (
-        AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
-    }
-
-  int ret = 0;
-
-/* uppercase, camel case, snake case */
-#define UNDO_ACTION(uc, sc, cc) \
-  case UA_##uc: \
-    { \
-      char * str = undoable_action_to_string (self); \
-      g_message ("[UNDOING ACTION]: " #uc " (%s)", str); \
-      ret = sc##_action_undo ((cc##Action *) self, error); \
-      if (ret == 0) \
-        { \
-          g_message ("[UNDONE]: " #uc " (%s)", str); \
-        } \
-      else \
-        { \
-          g_warning ("[FAILED]: " #uc " (%s)", str); \
-        } \
-      g_free (str); \
-    } \
-    break;
-
-  switch (self->type)
-    {
-      UNDO_ACTION (
-        TRACKLIST_SELECTIONS, tracklist_selections,
-        TracklistSelections);
-      UNDO_ACTION (CHANNEL_SEND, channel_send, ChannelSend);
-      UNDO_ACTION (
-        MIXER_SELECTIONS, mixer_selections, MixerSelections);
-      UNDO_ACTION (
-        ARRANGER_SELECTIONS, arranger_selections,
-        ArrangerSelections);
-      UNDO_ACTION (MIDI_MAPPING, midi_mapping, MidiMapping);
-      UNDO_ACTION (
-        PORT_CONNECTION, port_connection, PortConnection);
-      UNDO_ACTION (PORT, port, Port);
-      UNDO_ACTION (RANGE, range, Range);
-      UNDO_ACTION (TRANSPORT, transport, Transport);
-      UNDO_ACTION (CHORD, chord, Chord);
-    default:
-      g_warn_if_reached ();
-      ret = -1;
-    }
-
-#undef UNDO_ACTION
-
-  /*zix_sem_post (&AUDIO_ENGINE->port_operation_lock);*/
-
-  if (need_transport_total_bar_update (self, false))
-    {
-      /* recalculate transport bars */
-      transport_recalculate_total_bars (TRANSPORT, NULL);
-    }
-
-  if (undoable_action_needs_pause (self))
-    {
-      /* restart engine */
-      engine_resume (AUDIO_ENGINE, &state);
-    }
-
-  return ret;
+  return do_or_undo (self, false, error);
 }
 
 /**
