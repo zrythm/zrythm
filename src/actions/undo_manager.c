@@ -150,6 +150,11 @@ do_or_undo_action (
   undo_stack_push (opposite_stack, action);
   undo_stack_get_total_cached_actions (opposite_stack);
 
+  if (ZRYTHM_TESTING)
+    {
+      project_validate (PROJECT);
+    }
+
   return 0;
 }
 
