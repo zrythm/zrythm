@@ -6,6 +6,29 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.11.1] - 2023-08-19
+### Added
+- Add bypass button to channel slot widgets and redesign
+- User manual: add section about UI scaling and Wayland
+- Center the region's contents horizontally in the editor on second double-click in the timeline
+- Add accessible roles to some widgets
+- Make faders accessible
+- New libsoxr dependency
+
+### Changed
+- Code refactoring: rename `audio` directory to `dsp`
+- Update Chinese (Simplified), Catalan, Swedish, Japanese translations
+- Use libsndfile + libsoxr instead of libaudec to load audio files
+
+### Fixed
+- Fix visual issues with JACK timebase master and transport client icon indicators
+- Fix off-by-one rounding issues in audio regions when changing BPM or sample rate
+- Fix crash when drawing channel send widgets
+- Fix issues with reuse and licenses
+
+### Removed
+- Remove libaudec (and by extension libsamplerate) dependency
+
 ## [1.0.0-beta.4.10.1] - 2023-08-10
 ### Added
 - Add toggle to hide deactivated tracks in track filter menu
