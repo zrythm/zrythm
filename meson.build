@@ -28,6 +28,7 @@ cmake = import ('cmake')
 cmake_opts = cmake.subproject_options ()
 cmake_opts.add_cmake_defines ({
   'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
+  'BUILD_TESTS': 'OFF',
   })
 
 # --- Check for programs ---
@@ -842,7 +843,25 @@ sndfile_dep = dependency (
     'programs=false',
     'default_library=static',
     ])
-soxr_dep = dependency('soxr')
+soxr_dep = dependency('soxr', required: false)
+if not soxr_dep.found ()
+  # only enable openmp on GNU/Linux to avoid build issues
+  if os_gnu
+    cmake_opts.add_cmake_defines ({
+      'WITH_OPENMP': 'ON'
+      })
+    cmake_opts.append_compile_args('c', '-fopenmp')
+    cmake_opts.append_link_args('-fopenmp')
+  else
+    cmake_opts.add_cmake_defines ({
+      'WITH_OPENMP': 'OFF'
+      })
+  endif
+  soxr_subproject = cmake.subproject (
+    'soxr', options: cmake_opts)
+  soxr_dep = soxr_subproject.dependency (
+    'soxr')
+endif
 
 # link to fontconfig/pangoft2 directly because
 # they are used in utils/pango.c
