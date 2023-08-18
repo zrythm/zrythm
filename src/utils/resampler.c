@@ -41,9 +41,11 @@ input_func (
 
   self->frames_read += len_to_provide;
 
+#if 0
   g_debug (
     "providing %zu frames (%zu requested). total frames read %zu",
     len_to_provide, requested_len, self->frames_read);
+#endif
 
   return len_to_provide;
 }
@@ -175,10 +177,12 @@ resampler_process (Resampler * self, GError ** error)
 
   self->frames_written += frames_written_now;
 
+#if 0
   g_debug (
     "resampler processed: frames written now %zu, total frames written %zu, expected total frames %zu",
     frames_written_now, self->frames_written,
     self->num_out_frames);
+#endif
 
   if (frames_written_now == 0)
     {
