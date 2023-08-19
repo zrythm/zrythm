@@ -34,6 +34,8 @@ struct _IdeFileChooserEntry
 {
   GtkWidget parent_class;
 
+  GtkWidget * hbox;
+
   GtkEntry *  entry;
   GtkButton * button;
 
@@ -234,6 +236,8 @@ static void
 ide_file_chooser_entry_dispose (GObject * object)
 {
   IdeFileChooserEntry * self = (IdeFileChooserEntry *) object;
+
+  gtk_widget_unparent (GTK_WIDGET (self->hbox));
 
   if (self->dialog)
     {
@@ -438,14 +442,12 @@ ide_file_chooser_entry_class_init (
 static void
 ide_file_chooser_entry_init (IdeFileChooserEntry * self)
 {
-  GtkWidget * hbox;
-
-  hbox = g_object_new (
+  self->hbox = g_object_new (
     GTK_TYPE_BOX, "orientation", GTK_ORIENTATION_HORIZONTAL,
     "visible", TRUE, NULL);
   gtk_style_context_add_class (
-    gtk_widget_get_style_context (hbox), "linked");
-  gtk_widget_set_parent (hbox, GTK_WIDGET (self));
+    gtk_widget_get_style_context (self->hbox), "linked");
+  gtk_widget_set_parent (self->hbox, GTK_WIDGET (self));
 
   self->entry = g_object_new (
     GTK_TYPE_ENTRY, "hexpand", TRUE, "visible", TRUE, NULL);
@@ -453,7 +455,8 @@ ide_file_chooser_entry_init (IdeFileChooserEntry * self)
     self->entry, "changed",
     G_CALLBACK (ide_file_chooser_entry_changed), self,
     G_CONNECT_SWAPPED);
-  gtk_box_append (GTK_BOX (hbox), GTK_WIDGET (self->entry));
+  gtk_box_append (
+    GTK_BOX (self->hbox), GTK_WIDGET (self->entry));
 
   self->button = g_object_new (
     GTK_TYPE_BUTTON, "label", _ ("Browse…"), "visible", TRUE,
@@ -462,7 +465,8 @@ ide_file_chooser_entry_init (IdeFileChooserEntry * self)
     self->button, "clicked",
     G_CALLBACK (ide_file_chooser_entry_button_clicked), self,
     G_CONNECT_SWAPPED);
-  gtk_box_append (GTK_BOX (hbox), GTK_WIDGET (self->button));
+  gtk_box_append (
+    GTK_BOX (self->hbox), GTK_WIDGET (self->button));
 }
 
 static gchar *
