@@ -51,6 +51,8 @@ typedef void           MIDI_FILE;
 typedef struct _WrappedObjectWithChangeSignal
   WrappedObjectWithChangeSignal;
 
+TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
+
 /**
  * @addtogroup dsp
  *
@@ -1568,28 +1570,43 @@ track_get_total_bars (Track * self, int * total_bars);
 void
 track_set_caches (Track * self, CacheTypes types);
 
-Track *
+/**
+ * Called when track(s) are actually imported into the
+ * project.
+ */
+typedef void (*TracksReadyCallback) (
+  const FileImportInfo *,
+  const GError *);
+
+/**
+ * @param disable_track_idx Track index to disable, or -1.
+ * @param ready_cb Callback to be called when the tracks are
+ *   ready (added to the project).
+ */
+bool
 track_create_with_action (
   TrackType             type,
   const PluginSetting * pl_setting,
   const SupportedFile * file_descr,
-  Position *            pos,
+  const Position *      pos,
   int                   index,
   int                   num_tracks,
+  int                   disable_track_idx,
+  TracksReadyCallback   ready_cb,
   GError **             error);
 
-#define track_create_empty_at_idx_with_action( \
-  type, idx, error) \
-  track_create_with_action ( \
-    type, NULL, NULL, NULL, idx, 1, error)
+Track *
+track_create_empty_at_idx_with_action (
+  TrackType type,
+  int       index,
+  GError ** error);
 
-/**
- * Create track at index for plugin with action.
- */
-#define track_create_for_plugin_at_idx_w_action( \
-  type, pl_setting, idx, error) \
-  track_create_with_action ( \
-    type, pl_setting, NULL, NULL, idx, 1, error)
+Track *
+track_create_for_plugin_at_idx_w_action (
+  TrackType             type,
+  const PluginSetting * pl_setting,
+  int                   index,
+  GError **             error);
 
 /**
  * Creates a new empty track at the end of the

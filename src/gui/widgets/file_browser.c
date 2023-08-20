@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -75,43 +75,23 @@ on_file_chooser_file_activated (
 
   SupportedFile * file =
     supported_file_new_from_path (abs_path);
+  g_free (abs_path);
 
   g_message (
     "activated file type %d, abs path %s", file->type,
     abs_path);
 
   GError * err = NULL;
-  bool     ret = true;
-  switch (file->type)
-    {
-    case FILE_TYPE_WAV:
-    case FILE_TYPE_OGG:
-    case FILE_TYPE_FLAC:
-    case FILE_TYPE_MP3:
-      ret = tracklist_selections_action_perform_create (
-        TRACK_TYPE_AUDIO, NULL, file, TRACKLIST->num_tracks,
-        PLAYHEAD, 1, -1, &err);
-      break;
-    case FILE_TYPE_MIDI:
-      ret = tracklist_selections_action_perform_create (
-        TRACK_TYPE_MIDI, NULL, file, TRACKLIST->num_tracks,
-        PLAYHEAD,
-        /* the number of tracks
-           * to create depends on the MIDI file */
-        -1, -1, &err);
-      break;
-    default:
-      break;
-    }
-
-  if (!ret)
+  bool     success = tracklist_import_files (
+    TRACKLIST, NULL, file, NULL, NULL, -1, PLAYHEAD, NULL,
+    &err);
+  if (!success)
     {
       HANDLE_ERROR (
         err, _ ("Failed to create track for file '%s'"),
         abs_path);
     }
 
-  g_free (abs_path);
   supported_file_free (file);
 }
 

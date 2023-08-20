@@ -34,7 +34,7 @@ test_fill_stereo_ports (void)
   int num_tracks_before = TRACKLIST->num_tracks;
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1,
-    NULL);
+    -1, NULL, NULL);
 
   Track *     track = TRACKLIST->tracks[num_tracks_before];
   ZRegion *   r = track->lanes[0]->regions[0];
@@ -94,7 +94,7 @@ test_change_samplerate (void)
   int num_tracks_before = TRACKLIST->num_tracks;
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1,
-    NULL);
+    -1, NULL, NULL);
 
   /*Track * track =*/
   /*TRACKLIST->tracks[num_tracks_before];*/
@@ -145,7 +145,7 @@ test_load_project_with_selected_audio_region (void)
   int num_tracks_before = TRACKLIST->num_tracks;
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1,
-    NULL);
+    -1, NULL, NULL);
 
   /* select region */
   Track *   track = TRACKLIST->tracks[num_tracks_before];
@@ -183,7 +183,7 @@ test_load_project_with_different_sample_rate (void)
       int num_tracks_before = TRACKLIST->num_tracks;
       track_create_with_action (
         TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before,
-        1, NULL);
+        1, -1, NULL, NULL);
 
       Track * audio_track =
         TRACKLIST->tracks[num_tracks_before];
@@ -222,10 +222,12 @@ test_detect_bpm (void)
     TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
-  int     num_tracks_before = TRACKLIST->num_tracks;
-  Track * track = track_create_with_action (
+  int num_tracks_before = TRACKLIST->num_tracks;
+  track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, &pos, num_tracks_before, 1,
-    NULL);
+    -1, NULL, NULL);
+  Track * track =
+    tracklist_get_track (TRACKLIST, num_tracks_before);
   supported_file_free (file);
 
   /* select region */

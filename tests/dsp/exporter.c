@@ -45,7 +45,7 @@ test_export_wav (void)
     supported_file_new_from_path (filepath);
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
 
   char * tmp_dir =
     g_dir_make_tmp ("test_wav_prj_XXXXXX", NULL);
@@ -265,9 +265,11 @@ test_mixdown_midi_routed_to_instrument_track (void)
   /* create the MIDI track from a MIDI file */
   SupportedFile * file =
     supported_file_new_from_path (midi_file);
-  Track * midi_track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+  Track * midi_track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
   track_select (
     midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
@@ -431,9 +433,11 @@ _test_bounce_midi_track_routed_to_instrument_track (
   /* create the MIDI track from a MIDI file */
   SupportedFile * file =
     supported_file_new_from_path (midi_file);
-  Track * midi_track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+  Track * midi_track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
   track_select (
     midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
 
@@ -902,15 +906,17 @@ test_export_send (void)
     g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
-  Track * audio_track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+  Track * audio_track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
   supported_file_free (file);
 
   /* create an audio FX track */
-  Track * audio_fx_track = track_create_with_action (
-    TRACK_TYPE_AUDIO_BUS, NULL, NULL, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, NULL);
+  Track * audio_fx_track =
+    track_create_empty_at_idx_with_action (
+      TRACK_TYPE_AUDIO_BUS, TRACKLIST->num_tracks, NULL);
 
   /* on first iteration, there is no send connected
    * to the audio fx track so we expect it to be
@@ -1064,9 +1070,11 @@ test_mixdown_midi (void)
   /* create a MIDI track from the MIDI file */
   SupportedFile * file =
     supported_file_new_from_path (settings->file_uri);
-  Track * exported_track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+  Track * exported_track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
 
   /* verify correct data */
   g_assert_cmpint (exported_track->num_lanes, ==, 2);
@@ -1153,9 +1161,11 @@ test_export_midi_range (void)
   /* create a MIDI track from the MIDI file */
   SupportedFile * file =
     supported_file_new_from_path (settings->file_uri);
-  Track * exported_track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+  Track * exported_track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
 
   /* verify correct data */
   g_assert_cmpint (exported_track->num_lanes, ==, 2);

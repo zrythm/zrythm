@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -19,6 +19,7 @@ typedef struct _TracklistWidget       TracklistWidget;
 typedef struct _PinnedTracklistWidget PinnedTracklistWidget;
 typedef struct Track                  ChordTrack;
 typedef struct SupportedFile          SupportedFile;
+TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
 
 /**
  * @addtogroup dsp
@@ -414,34 +415,37 @@ tracklist_multiply_track_heights (
   bool        check_only,
   bool        fire_events);
 
+bool
+tracklist_import_regions (
+  GPtrArray *            region_arrays,
+  const FileImportInfo * import_info,
+  TracksReadyCallback    ready_cb,
+  GError **              error);
+
 /**
- * Handles a file drop inside the timeline or in
- * empty space in the tracklist.
+ * Begins file import Handles a file drop inside the timeline or in empty space
+ * in the tracklist.
  *
  * @param uri_list URI list, if URI list was dropped.
  * @param file File, if SupportedFile was dropped.
  * @param track Track, if any.
  * @param lane TrackLane, if any.
+ * @param index Index to insert new tracks at, or -1 to insert
+ *   at end.
  * @param pos Position the file was dropped at, if
  *   inside track.
- * @param with_progress Whether to show a progress dialog TODO.
- * @param perform_actions Whether to perform
- *   undoable actions in addition to creating the
- *   regions/tracks.
- *
- * @return Whether successful.
  */
 bool
 tracklist_import_files (
-  Tracklist *     self,
-  char **         uri_list,
-  SupportedFile * orig_file,
-  Track *         track,
-  TrackLane *     lane,
-  Position *      pos,
-  bool            with_progress,
-  bool            perform_actions,
-  GError **       error);
+  Tracklist *           self,
+  char **               uri_list,
+  const SupportedFile * orig_file,
+  Track *               track,
+  TrackLane *           lane,
+  int                   index,
+  const Position *      pos,
+  TracksReadyCallback   ready_cb,
+  GError **             error);
 
 /**
  * Handles a move or copy action based on a drag.

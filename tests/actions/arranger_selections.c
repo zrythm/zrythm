@@ -491,8 +491,10 @@ test_move_audio_region_and_lower_bpm (void)
   int             track_pos = TRACKLIST->num_tracks;
   SupportedFile * file =
     supported_file_new_from_path (audio_file_path);
-  Track * track = track_create_with_action (
-    TRACK_TYPE_AUDIO, NULL, file, &pos, track_pos, 1, NULL);
+  track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, file, &pos, track_pos, 1, -1,
+    NULL, NULL);
+  Track * track = tracklist_get_track (TRACKLIST, track_pos);
 
   /* move the region */
   arranger_object_select (
@@ -557,8 +559,10 @@ test_move_audio_region_and_lower_samplerate (void)
   int             track_pos = TRACKLIST->num_tracks;
   SupportedFile * file =
     supported_file_new_from_path (audio_file_path);
-  Track * track = track_create_with_action (
-    TRACK_TYPE_AUDIO, NULL, file, &pos, track_pos, 1, NULL);
+  track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, file, &pos, track_pos, 1, -1,
+    NULL, NULL);
+  Track * track = tracklist_get_track (TRACKLIST, track_pos);
 
   /* move the region */
   arranger_object_select (
@@ -2359,8 +2363,10 @@ test_duplicate_audio_regions (void)
   int             track_pos = TRACKLIST->num_tracks;
   SupportedFile * file =
     supported_file_new_from_path (audio_file_path);
-  Track * track = track_create_with_action (
-    TRACK_TYPE_AUDIO, NULL, file, &pos1, track_pos, 1, NULL);
+  track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, file, &pos1, track_pos, 1, -1,
+    NULL, NULL);
+  Track * track = tracklist_get_track (TRACKLIST, track_pos);
 
   arranger_object_select (
     (ArrangerObject *) track->lanes[0]->regions[0], F_SELECT,
@@ -2736,9 +2742,11 @@ test_split_and_merge_audio_unlooped (void)
   SupportedFile * file_descr =
     supported_file_new_from_path (audio_file_path);
   position_set_to_bar (&pos, 2);
-  Track * audio_track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file_descr, &pos,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+  Track * audio_track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
   int audio_track_pos = audio_track->pos;
   supported_file_free (file_descr);
   g_assert_nonnull (audio_track);
@@ -2991,9 +2999,11 @@ test_resize_loop_l (void)
   SupportedFile * file_descr =
     supported_file_new_from_path (audio_file_path);
   position_set_to_bar (&pos, 3);
-  Track * audio_track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file_descr, &pos,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+  Track * audio_track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
   int audio_track_pos = audio_track->pos;
   supported_file_free (file_descr);
   g_assert_nonnull (audio_track);
@@ -3348,9 +3358,11 @@ test_move_region_from_lane_3_to_lane_1 (void)
 
   Position pos, end_pos;
   position_init (&pos);
-  Track * track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_MIDI, NULL, NULL, &pos, TRACKLIST->num_tracks,
-    1, NULL);
+    1, -1, NULL, NULL);
+  Track * track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
   TrackLane * lane = track->lanes[0];
   g_assert_cmpint (lane->num_regions, ==, 0);
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_CHANNEL_H__
@@ -36,6 +36,7 @@ typedef struct _ChannelSendsExpanderWidget
 typedef struct _ChannelWidget
 {
   GtkWidget                   parent_instance;
+  GtkBox *                    box;
   GtkBox *                    color_box;
   GtkGrid *                   grid;
   RouteTargetSelectorWidget * output;

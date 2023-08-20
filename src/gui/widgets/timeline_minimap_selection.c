@@ -127,6 +127,8 @@ timeline_minimap_selection_widget_class_init (
   wklass->snapshot = timeline_minimap_selection_snapshot;
   gtk_widget_class_set_css_name (
     wklass, "timeline-minimap-selection");
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BIN_LAYOUT);
 }
 
 static void

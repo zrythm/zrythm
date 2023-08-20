@@ -29,9 +29,11 @@ test_change_bpm_and_time_sig (void)
     supported_file_new_from_path (audio_file_path);
   Position pos;
   position_set_to_bar (&pos, 4);
-  Track * audio_track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file_descr, &pos,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+  Track * audio_track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
   int audio_track_pos = audio_track->pos;
   (void) audio_track_pos;
   supported_file_free (file_descr);
@@ -200,9 +202,11 @@ test_change_bpm_twice_during_playback (void)
     supported_file_new_from_path (audio_file_path);
   Position pos;
   position_set_to_bar (&pos, 4);
-  Track * audio_track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file_descr, &pos,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+  Track * audio_track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
   int audio_track_pos = audio_track->pos;
   (void) audio_track_pos;
   supported_file_free (file_descr);

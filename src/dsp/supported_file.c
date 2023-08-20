@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <inttypes.h>
@@ -36,15 +36,15 @@ supported_file_new_from_path (const char * path)
 }
 
 SupportedFile *
-supported_file_new_from_uri (const char * uri)
+supported_file_new_from_uri (const char * uri, GError ** error)
 {
   GError * err = NULL;
   char *   path = g_filename_from_uri (uri, NULL, &err);
   if (!path)
     {
-      g_critical (
-        "Error getting file path from URI <%s>: %s", uri,
-        err->message);
+      PROPAGATE_PREFIXED_ERROR (
+        error, err, "Error getting file path from URI <%s>",
+        uri);
       return NULL;
     }
 
@@ -96,7 +96,7 @@ supported_file_type_is_midi (ZFileType type)
  * Clones the given SupportedFile.
  */
 SupportedFile *
-supported_file_clone (SupportedFile * src)
+supported_file_clone (const SupportedFile * src)
 {
   SupportedFile * dest = object_new (SupportedFile);
 

@@ -45,9 +45,9 @@ _test_edit_tracks (
       pl_bundle, pl_uri, with_carla);
 
   /* create a track with an instrument */
-  track_create_with_action (
+  track_create_for_plugin_at_idx_w_action (
     is_instrument ? TRACK_TYPE_INSTRUMENT : TRACK_TYPE_AUDIO_BUS,
-    setting, NULL, NULL, 3, 1, NULL);
+    setting, 3, NULL);
   Track * ins_track = get_ins_track ();
   if (is_instrument)
     {
@@ -98,8 +98,8 @@ _test_edit_tracks (
           break;
 
         /* create a MIDI track */
-        track_create_with_action (
-          TRACK_TYPE_MIDI, NULL, NULL, NULL, 2, 1, NULL);
+        track_create_empty_at_idx_with_action (
+          TRACK_TYPE_MIDI, 2, NULL);
         Track * midi_track = TRACKLIST->tracks[2];
         track_select (
           midi_track, F_SELECT, F_EXCLUSIVE,
@@ -163,9 +163,8 @@ _test_edit_tracks (
           break;
 
         /* create an audio group track */
-        track_create_with_action (
-          TRACK_TYPE_AUDIO_GROUP, NULL, NULL, NULL, 2, 1,
-          NULL);
+        track_create_empty_at_idx_with_action (
+          TRACK_TYPE_AUDIO_GROUP, 2, NULL);
         Track * group_track = TRACKLIST->tracks[2];
 
         g_assert_cmpuint (
@@ -503,7 +502,7 @@ test_edit_midi_direct_out_to_ins (void)
     supported_file_new_from_path (midi_files[0]);
   track_create_with_action (
     TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
   Track * midi_track =
     TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   track_select (
@@ -642,9 +641,11 @@ test_rename_midi_track_with_events (void)
   g_assert_nonnull (midi_files);
   SupportedFile * file =
     supported_file_new_from_path (midi_files[0]);
-  Track * midi_track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+  Track * midi_track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
   track_select (
     midi_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   g_strfreev (midi_files);

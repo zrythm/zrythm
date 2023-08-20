@@ -105,9 +105,9 @@ _test (
    * OK */
   setting = test_plugin_manager_get_plugin_setting (
     NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI, with_carla);
-  Track * new_track = track_create_with_action (
-    TRACK_TYPE_AUDIO_BUS, setting, NULL, NULL,
-    TRACKLIST->num_tracks, 1, NULL);
+  Track * new_track = track_create_for_plugin_at_idx_w_action (
+    TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->num_tracks,
+    NULL);
 
   pl = new_track->channel->inserts[0];
   port = get_delay_port (pl);

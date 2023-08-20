@@ -20,7 +20,7 @@
 G_DEFINE_TYPE (
   ChannelSendWidget,
   channel_send_widget,
-  GTK_TYPE_WIDGET)
+  GTK_TYPE_WIDGET);
 
 #define ELLIPSIZE_PADDING 2
 

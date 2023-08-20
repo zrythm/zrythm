@@ -264,7 +264,7 @@ _test_create_plugins (
       /* create an instrument track from helm */
       track_create_with_action (
         TRACK_TYPE_INSTRUMENT, setting, NULL, NULL,
-        TRACKLIST->num_tracks, 1, NULL);
+        TRACKLIST->num_tracks, 1, -1, NULL, NULL);
     }
   else
     {
@@ -420,7 +420,7 @@ _test_port_and_plugin_track_pos_after_move (
   /* create an instrument track from helm */
   track_create_with_action (
     TRACK_TYPE_AUDIO_BUS, setting, NULL, NULL,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
 
   plugin_setting_free (setting);
 

@@ -1,17 +1,14 @@
+// SPDX-FileCopyrightText: © 2020-2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2020-2021 Alexandros Theodotou <alex at zrythm dot org>
- */
 
-#include "dsp/midi_file.h"
+#include "io/midi_file.h"
 
 #include <gtk/gtk.h>
 
 #include <ext/midilib/src/midifile.h>
 
 /**
- * Returns whether the given track in the midi file
- * has data.
+ * Returns whether the given track in the midi file has data.
  */
 bool
 midi_file_track_has_data (const char * abs_path, int track_idx)

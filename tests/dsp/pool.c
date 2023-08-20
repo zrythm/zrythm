@@ -37,7 +37,7 @@ test_remove_unused (void)
       int num_tracks_before = TRACKLIST->num_tracks;
       track_create_with_action (
         TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
-        num_tracks_before, 1, NULL);
+        num_tracks_before, 1, -1, NULL, NULL);
 
       /* save and reload the project */
       test_project_save_and_reload ();
@@ -93,7 +93,7 @@ test_remove_unused (void)
         {
           track_create_with_action (
             TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
-            TRACKLIST->num_tracks, 1, NULL);
+            TRACKLIST->num_tracks, 1, -1, NULL, NULL);
         }
 
       /* assert all clips still exist */
@@ -133,7 +133,7 @@ test_remove_unused (void)
        * for last file no longer exists */
       track_create_with_action (
         TRACK_TYPE_MIDI, NULL, NULL, PLAYHEAD,
-        num_tracks_before, 1, NULL);
+        num_tracks_before, 1, -1, NULL, NULL);
 
       /* save the project to remove unused files from
        * pool */

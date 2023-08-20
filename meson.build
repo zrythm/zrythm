@@ -254,7 +254,7 @@ illegal_char_test_args = [
 
 # GTK/GLIB versions
 gtk_req = '4.10.0'
-glib_req = '2.70.0'
+glib_req = '2.74.0'
 
 # --- Add extra languages ---
 

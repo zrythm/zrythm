@@ -997,28 +997,19 @@ exporter_create_audio_track_after_bounce (
     }
 
   g_return_if_fail (last_track);
+  Position tmp;
+  position_set_to_pos (&tmp, PLAYHEAD);
+  transport_set_playhead_pos (
+    TRANSPORT, &settings->custom_start);
   GError * err = NULL;
-  UndoableAction * ua = tracklist_selections_action_new_create (
-    TRACK_TYPE_AUDIO, NULL, descr, last_track->pos + 1, pos,
-    1, track_to_disable ? track_to_disable->pos : -1, &err);
-  if (ua)
+  bool     success = track_create_with_action (
+    TRACK_TYPE_AUDIO, NULL, descr, pos, last_track->pos + 1, 1,
+    track_to_disable ? track_to_disable->pos : -1, NULL, &err);
+  transport_set_playhead_pos (TRANSPORT, &tmp);
+  if (!success)
     {
-      Position tmp;
-      position_set_to_pos (&tmp, PLAYHEAD);
-      transport_set_playhead_pos (
-        TRANSPORT, &settings->custom_start);
-      int ret = undo_manager_perform (UNDO_MANAGER, ua, &err);
-      if (ret != 0)
-        {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to create audio track"));
-        }
-      transport_set_playhead_pos (TRANSPORT, &tmp);
-    }
-  else
-    {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to create audio track"));
+      HANDLE_ERROR_LITERAL (
+        err, _ ("Failed to create audio track"));
     }
 }
 

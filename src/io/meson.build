@@ -3,6 +3,8 @@
 
 io_srcs = files([
   'audio_file.c',
+  'file_import.c',
+  'midi_file.c',
   ])
 
 zrythm_srcs += io_srcs

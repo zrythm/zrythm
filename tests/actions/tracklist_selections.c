@@ -38,7 +38,7 @@ test_num_tracks_with_file (
 
   bool ret = track_create_with_action (
     TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, num_tracks_before,
-    1, NULL);
+    1, -1, NULL, NULL);
   g_assert_true (ret);
 
   Track * first_track = TRACKLIST->tracks[num_tracks_before];
@@ -1045,7 +1045,8 @@ _test_move_tracks (
 
   /* create an fx track and send to it */
   track_create_with_action (
-    TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL, 4, 1, NULL);
+    TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL, 4, 1, -1, NULL,
+    NULL);
   Track * fx_track = TRACKLIST->tracks[4];
   g_assert_true (fx_track->type == TRACK_TYPE_AUDIO_BUS);
 
@@ -1233,13 +1234,14 @@ test_multi_track_duplicate (void)
   /* create midi track, audio fx track and audio
    * track */
   track_create_with_action (
-    TRACK_TYPE_MIDI, NULL, NULL, NULL, start_pos, 1, NULL);
+    TRACK_TYPE_MIDI, NULL, NULL, NULL, start_pos, 1, -1, NULL,
+    NULL);
   track_create_with_action (
     TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL, start_pos + 1, 1,
-    NULL);
+    -1, NULL, NULL);
   track_create_with_action (
-    TRACK_TYPE_AUDIO, NULL, NULL, NULL, start_pos + 2, 1,
-    NULL);
+    TRACK_TYPE_AUDIO, NULL, NULL, NULL, start_pos + 2, 1, -1,
+    NULL, NULL);
 
   g_assert_true (
     TRACKLIST->tracks[start_pos]->type == TRACK_TYPE_MIDI);
@@ -1411,16 +1413,17 @@ test_duplicate_w_output_and_send (void)
   /* create audio track + audio group track + audio
    * fx track */
   track_create_with_action (
-    TRACK_TYPE_AUDIO, NULL, NULL, NULL, start_pos, 1, NULL);
+    TRACK_TYPE_AUDIO, NULL, NULL, NULL, start_pos, 1, -1,
+    NULL, NULL);
   track_create_with_action (
     TRACK_TYPE_AUDIO_GROUP, NULL, NULL, NULL, start_pos + 1,
-    1, NULL);
+    1, -1, NULL, NULL);
   track_create_with_action (
     TRACK_TYPE_AUDIO_GROUP, NULL, NULL, NULL, start_pos + 2,
-    1, NULL);
+    1, -1, NULL, NULL);
   track_create_with_action (
     TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL, start_pos + 3, 1,
-    NULL);
+    -1, NULL, NULL);
 
   Track * audio_track = TRACKLIST->tracks[start_pos];
   Track * group_track = TRACKLIST->tracks[start_pos + 1];
@@ -1576,7 +1579,7 @@ test_ins_track_duplicate_w_send (void)
   int audio_fx_track_pos = TRACKLIST->num_tracks;
   track_create_with_action (
     TRACK_TYPE_AUDIO_BUS, NULL, NULL, NULL,
-    audio_fx_track_pos, 1, NULL);
+    audio_fx_track_pos, 1, -1, NULL, NULL);
   Track * audio_fx_track =
     TRACKLIST->tracks[audio_fx_track_pos];
 
@@ -2914,7 +2917,7 @@ test_move_track_w_clip_editor_region (void)
   int  num_tracks_before = TRACKLIST->num_tracks;
   bool success = track_create_with_action (
     TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, num_tracks_before,
-    1, NULL);
+    1, -1, NULL, NULL);
   g_assert_true (success);
   Track * first_track = TRACKLIST->tracks[num_tracks_before];
   track_select (
@@ -2947,6 +2950,9 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test delete track w midi file",
+    (GTestFunc) test_delete_track_w_midi_file);
+  g_test_add_func (
     TEST_PREFIX "test move track w clip editor region",
     (GTestFunc) test_move_track_w_clip_editor_region);
   g_test_add_func (
@@ -2969,9 +2975,6 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test ins track duplicate w send",
     (GTestFunc) test_ins_track_duplicate_w_send);
-  g_test_add_func (
-    TEST_PREFIX "test delete track w midi file",
-    (GTestFunc) test_delete_track_w_midi_file);
   g_test_add_func (
     TEST_PREFIX "test ins track deletion with automation",
     (GTestFunc) test_ins_track_deletion_w_automation);

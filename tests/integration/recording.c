@@ -1047,9 +1047,11 @@ test_2nd_audio_recording (void)
   /* create an audio track from the file */
   SupportedFile * file =
     supported_file_new_from_path (TEST_WAV2);
-  Track * audio_track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, NULL, TRACKLIST->num_tracks,
-    1, NULL);
+    1, -1, NULL, NULL);
+  Track * audio_track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
 
   prepare ();
   TRANSPORT->recording = true;

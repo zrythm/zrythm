@@ -104,7 +104,7 @@ SupportedFile *
 supported_file_new_from_path (const char * path);
 
 SupportedFile *
-supported_file_new_from_uri (const char * uri);
+supported_file_new_from_uri (const char * uri, GError ** error);
 
 /**
  * Returns a human readable description of the given
@@ -119,7 +119,7 @@ supported_file_type_get_description (ZFileType type);
  * Clones the given SupportedFile.
  */
 SupportedFile *
-supported_file_clone (SupportedFile * src);
+supported_file_clone (const SupportedFile * src);
 
 /**
  * Returns if the given type is supported.

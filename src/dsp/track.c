@@ -3647,34 +3647,104 @@ track_get_total_bars (Track * self, int * total_bars)
     }
 }
 
-Track *
+/**
+ * @param disable_track_idx Track index to disable, or -1.
+ * @param ready_cb Callback to be called when the tracks are
+ *   ready (added to the project).
+ */
+bool
 track_create_with_action (
   TrackType             type,
   const PluginSetting * pl_setting,
   const SupportedFile * file_descr,
-  Position *            pos,
+  const Position *      pos,
   int                   index,
   int                   num_tracks,
+  int                   disable_track_idx,
+  TracksReadyCallback   ready_cb,
   GError **             error)
 {
   z_return_val_if_fail_cmp (num_tracks, >, 0, NULL);
 
+  /* only support 1 track when using files */
+  g_return_val_if_fail (
+    file_descr == NULL || num_tracks == 1, NULL);
+
   GError * err = NULL;
-  bool     ret = tracklist_selections_action_perform_create (
-    type, pl_setting, file_descr, index, pos, num_tracks, -1,
-    &err);
+  bool     ret = false;
+  if (file_descr)
+    {
+      ret = tracklist_import_files (
+        TRACKLIST, NULL, file_descr, NULL, NULL, index, pos,
+        ready_cb, &err);
+    }
+  else
+    {
+      ret = tracklist_selections_action_perform_create (
+        type, pl_setting, file_descr, index, pos, num_tracks,
+        disable_track_idx, &err);
+    }
   if (!ret)
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", _ ("Failed to create track"));
-      return NULL;
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, _ ("Failed to create track"));
+      return false;
     }
 
-  Track * track = tracklist_get_track (TRACKLIST, index);
-  g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), NULL);
-  z_return_val_if_fail_cmp (track->type, ==, type, NULL);
-  z_return_val_if_fail_cmp (track->pos, ==, index, NULL);
-  return track;
+  if (ZRYTHM_TESTING)
+    {
+      Track * track = tracklist_get_track (TRACKLIST, index);
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (track), NULL);
+      z_return_val_if_fail_cmp (track->type, ==, type, NULL);
+      z_return_val_if_fail_cmp (track->pos, ==, index, NULL);
+    }
+  return true;
+}
+
+static Track *
+create_without_file_with_action (
+  TrackType             type,
+  const PluginSetting * pl_setting,
+  int                   index,
+  GError **             error)
+{
+  bool success = track_create_with_action (
+    type, pl_setting, NULL, NULL, index, 1, -1, NULL, error);
+  if (success)
+    {
+      Track * track = tracklist_get_track (TRACKLIST, index);
+      g_return_val_if_fail (
+        IS_TRACK_AND_NONNULL (track), NULL);
+      z_return_val_if_fail_cmp (track->type, ==, type, NULL);
+      z_return_val_if_fail_cmp (track->pos, ==, index, NULL);
+      return track;
+    }
+  else
+    {
+      return NULL;
+    }
+}
+
+Track *
+track_create_empty_at_idx_with_action (
+  TrackType type,
+  int       index,
+  GError ** error)
+{
+  return create_without_file_with_action (
+    type, NULL, index, error);
+}
+
+Track *
+track_create_for_plugin_at_idx_w_action (
+  TrackType             type,
+  const PluginSetting * pl_setting,
+  int                   index,
+  GError **             error)
+{
+  return create_without_file_with_action (
+    type, pl_setting, index, error);
 }
 
 /**

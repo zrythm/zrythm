@@ -112,14 +112,18 @@ test_solo (void)
     g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
-  Track * audio_track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+  Track * audio_track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
 
   /* create audio track 2 */
-  Track * audio_track2 = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+  Track * audio_track2 = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
 
   /* create group track */
   Track * group_track = track_create_empty_with_action (

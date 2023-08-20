@@ -47,9 +47,11 @@ test_fill_when_region_starts_on_loop_end (void)
   int num_tracks_before = TRACKLIST->num_tracks;
 
   transport_request_pause (TRANSPORT, true);
-  Track * track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, &TRANSPORT->loop_end_pos,
-    num_tracks_before, 1, NULL);
+    num_tracks_before, 1, -1, NULL, NULL);
+  Track * track =
+    tracklist_get_track (TRACKLIST, num_tracks_before);
   /*transport_request_roll (TRANSPORT);*/
   TRANSPORT->play_state = PLAYSTATE_ROLLING;
 

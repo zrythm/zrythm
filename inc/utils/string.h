@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -241,6 +241,12 @@ string_is_empty (const char * str);
  **/
 int
 string_utf8_strcasecmp (const char * s1, const char * s2);
+
+/**
+ * Clones the given string array.
+ */
+char **
+string_array_clone (const char ** src);
 
 /**
  * @}

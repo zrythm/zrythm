@@ -1452,17 +1452,16 @@ on_dnd_drop (
 
       GError * err = NULL;
       bool     success = tracklist_import_files (
-        TRACKLIST, uris, file, track, lane, &pos,
-        Z_F_PROGRESS, true, &err);
+        TRACKLIST, uris, file, track, lane, -1, &pos, NULL,
+        &err);
+      if (uris)
+        g_strfreev (uris);
       if (!success)
         {
           HANDLE_ERROR_LITERAL (
             err, _ ("Failed to import files"));
           return false;
         }
-
-      if (uris)
-        g_strfreev (uris);
     }
 
 finish_data_received:

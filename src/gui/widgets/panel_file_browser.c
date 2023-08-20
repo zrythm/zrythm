@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -440,36 +440,17 @@ on_file_row_activated (
         self, self->files_list_view,
         GTK_SELECTION_MODEL (self->files_selection_model));
     }
-  else if (
-    descr->type == FILE_TYPE_WAV || descr->type == FILE_TYPE_OGG
-    || descr->type == FILE_TYPE_FLAC
-    || descr->type == FILE_TYPE_MP3)
+  else if (supported_file_type_is_supported (descr->type))
     {
       if (zrythm_app_check_and_show_trial_limit_error (
             zrythm_app))
         return;
 
       GError * err = NULL;
-      bool     ret = track_create_with_action (
-        TRACK_TYPE_AUDIO, NULL, descr, PLAYHEAD,
-        TRACKLIST->num_tracks, 1, &err);
-      if (!ret)
-        {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to create track"));
-        }
-    }
-  else if (descr->type == FILE_TYPE_MIDI)
-    {
-      if (zrythm_app_check_and_show_trial_limit_error (
-            zrythm_app))
-        return;
-
-      GError * err = NULL;
-      bool     ret = track_create_with_action (
-        TRACK_TYPE_MIDI, NULL, descr, PLAYHEAD,
-        TRACKLIST->num_tracks, 1, &err);
-      if (!ret)
+      bool     success = tracklist_import_files (
+        TRACKLIST, NULL, descr, NULL, NULL, -1, PLAYHEAD,
+        NULL, &err);
+      if (!success)
         {
           HANDLE_ERROR (
             err, "%s", _ ("Failed to create track"));

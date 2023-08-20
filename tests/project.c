@@ -309,7 +309,7 @@ test_load_with_plugin_after_backup (void)
     supported_file_new_from_path (audio_file_path);
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, &pos, TRACKLIST->num_tracks,
-    1, NULL);
+    1, -1, NULL, NULL);
   object_free_w_func_and_null (supported_file_free, file);
 
   char * dir = g_strdup (PROJECT->dir);

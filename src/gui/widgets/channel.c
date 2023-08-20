@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <sys/time.h>
@@ -960,6 +960,17 @@ channel_widget_tear_down (ChannelWidget * self)
 }
 
 static void
+channel_widget_dispose (GObject * obj)
+{
+  ChannelWidget * self = Z_CHANNEL_WIDGET (obj);
+
+  gtk_widget_unparent (GTK_WIDGET (self->box));
+  gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
+
+  G_OBJECT_CLASS (channel_widget_parent_class)->dispose (obj);
+}
+
+static void
 channel_widget_class_init (ChannelWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
@@ -974,6 +985,7 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
   gtk_widget_class_bind_template_child ( \
     klass, ChannelWidget, x)
 
+  BIND_CHILD (box);
   BIND_CHILD (color);
   BIND_CHILD (output);
   BIND_CHILD (grid);
@@ -997,6 +1009,10 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
   BIND_CHILD (aux_buttons_box);
 
 #undef BIND_CHILD
+
+  GObjectClass * object_class = G_OBJECT_CLASS (klass);
+
+  object_class->dispose = channel_widget_dispose;
 }
 
 static void

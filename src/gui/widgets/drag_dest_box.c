@@ -281,8 +281,8 @@ on_dnd_drop (
         {
           GError * err = NULL;
           bool     success = tracklist_import_files (
-            TRACKLIST, uris, file, NULL, NULL, NULL,
-            Z_F_PROGRESS, true, &err);
+            TRACKLIST, uris, file, NULL, NULL, -1, NULL, NULL,
+            &err);
           if (!success)
             {
               HANDLE_ERROR_LITERAL (

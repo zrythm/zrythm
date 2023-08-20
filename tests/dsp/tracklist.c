@@ -57,7 +57,7 @@ test_swap_with_automation_regions (void)
 
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, NULL, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
 
   create_automation_region (TRACKLIST->num_tracks - 1);
 
@@ -109,8 +109,8 @@ test_handle_drop_empty_midi_file (void)
 
   GError * err = NULL;
   bool     success = tracklist_import_files (
-    TRACKLIST, NULL, file, NULL, NULL, PLAYHEAD,
-    Z_F_NO_PROGRESS, true, &err);
+    TRACKLIST, NULL, file, NULL, NULL, -1, PLAYHEAD, NULL,
+    &err);
   g_assert_false (success);
 
   test_helper_zrythm_cleanup ();

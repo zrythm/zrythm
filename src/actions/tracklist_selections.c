@@ -5,7 +5,6 @@
 #include "dsp/audio_region.h"
 #include "dsp/foldable_track.h"
 #include "dsp/group_target_track.h"
-#include "dsp/midi_file.h"
 #include "dsp/router.h"
 #include "dsp/supported_file.h"
 #include "dsp/track.h"
@@ -13,6 +12,7 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/main_window.h"
+#include "io/midi_file.h"
 #include "plugins/plugin.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -282,6 +282,7 @@ tracklist_selections_action_new (
    * MIDI */
   if (file_descr)
     {
+      g_warning ("use async API");
       if (track_type == TRACK_TYPE_MIDI)
         {
           GError *  err = NULL;

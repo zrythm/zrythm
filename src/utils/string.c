@@ -595,3 +595,14 @@ string_utf8_strcasecmp (const char * s1, const char * s2)
 
   return retval;
 }
+
+/**
+ * Clones the given string array.
+ */
+char **
+string_array_clone (const char ** src)
+{
+  GStrvBuilder * builder = g_strv_builder_new ();
+  g_strv_builder_addv (builder, src);
+  return g_strv_builder_end (builder);
+}

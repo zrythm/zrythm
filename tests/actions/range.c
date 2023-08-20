@@ -126,9 +126,11 @@ test_prepare_common (void)
   g_free (filepath);
   position_set_to_bar (&start, AUDIO_REGION_START_BAR);
   position_set_to_bar (&end, AUDIO_REGION_END_BAR);
-  Track * audio_track = track_create_with_action (
+  track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, &start,
-    TRACKLIST->num_tracks, 1, NULL);
+    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+  Track * audio_track = tracklist_get_last_track (
+    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
   audio_track_pos = audio_track->pos;
   ZRegion * audio_region = audio_track->lanes[0]->regions[0];
 
@@ -555,7 +557,7 @@ test_remove_range_w_start_marker (void)
     supported_file_new_from_path (TEST_WAV2);
   track_create_with_action (
     TRACK_TYPE_AUDIO, NULL, file, NULL, audio_track_pos, 1,
-    NULL);
+    -1, NULL, NULL);
 
   /* remove range */
   Position start, end;
@@ -584,9 +586,11 @@ test_remove_range_w_objects_inside (void)
     TESTS_SRCDIR, "1_track_with_data.mid", NULL);
   SupportedFile * file =
     supported_file_new_from_path (filepath);
-  Track * midi_track = track_create_with_action (
-    TRACK_TYPE_MIDI, NULL, file, NULL, midi_track_pos, 1,
-    NULL);
+  track_create_with_action (
+    TRACK_TYPE_MIDI, NULL, file, NULL, midi_track_pos, 1, -1,
+    NULL, NULL);
+  Track * midi_track =
+    tracklist_get_track (TRACKLIST, midi_track_pos);
 
   /* create scale object */
   MusicalScale * ms = musical_scale_new (0, 0);
