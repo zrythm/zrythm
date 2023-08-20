@@ -1313,7 +1313,7 @@ tracklist_import_regions (
               track = tracklist_get_track (TRACKLIST, index);
               executed_actions++;
             }
-          g_return_if_fail (track);
+          g_return_val_if_fail (track, false);
 
           GError * err = NULL;
           bool     success = track_add_region (
