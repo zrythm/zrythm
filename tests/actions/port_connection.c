@@ -219,6 +219,7 @@ _test_port_connection (
   object_free_w_func_and_null (g_ptr_array_unref, ports);
 
   g_assert_nonnull (dest_port);
+  g_return_if_fail (dest_port);
   g_assert_true (port_is_in_active_project (src_port1));
   g_assert_true (port_is_in_active_project (src_port2));
   g_assert_true (port_is_in_active_project (dest_port));

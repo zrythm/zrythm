@@ -32,9 +32,9 @@ if get_option ('tests')
   test_env.set ('ZRYTHM_DEBUG', '1')
   test_env.set ('Z_CURL_TIMEOUT', '10')
   test_env.set ('G_MESSAGES_DEBUG', 'zrythm')
-  test_env.set ('ZRYTHM_DSP_THREADS', '3')
+  test_env.set ('ZRYTHM_DSP_THREADS', '4')
   test_env.set ('PIPEWIRE_RUNTIME_DIR', '/tmp/zrythm-pipewire')
-  test_env.set ('PIPEWIRE_DEBUG', 'D')
+  test_env.set ('PIPEWIRE_DEBUG', '3')
 
   test_config = configuration_data ()
   test_config.set_quoted (

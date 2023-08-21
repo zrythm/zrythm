@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -847,8 +847,14 @@ port_set_expose_to_backend (Port * self, int expose);
 /**
  * Returns if the port is exposed to the backend.
  */
-NONNULL PURE int
-port_is_exposed_to_backend (const Port * self);
+NONNULL PURE static inline bool
+port_is_exposed_to_backend (const Port * self)
+{
+  return self->internal_type == INTERNAL_JACK_PORT
+         || self->internal_type == INTERNAL_ALSA_SEQ_PORT
+         || self->id.owner_type == PORT_OWNER_TYPE_AUDIO_ENGINE
+         || self->exposed_to_backend;
+}
 
 /**
  * Renames the port on the backend side.
@@ -1034,31 +1040,28 @@ NONNULL void
 port_restore_from_non_project (Port * self, Port * non_project);
 
 /**
- * Clears the audio/cv port buffer.
- *
- * @note Only the Zrythm buffer is cleared. Use
- * port_clear_external_buffer() to clear backend buffers.
- */
-HOT NONNULL OPTIMIZE_O3 void
-port_clear_audio_cv_buffer (Port * port);
-
-/**
- * Clears the MIDI port buffer.
- *
- * @note Only the Zrythm buffer is cleared. Use
- * port_clear_external_buffer() to clear backend buffers.
- */
-HOT NONNULL OPTIMIZE_O3 void
-port_clear_midi_buffer (Port * port);
-
-/**
  * Clears the port buffer.
  *
  * @note Only the Zrythm buffer is cleared. Use
  * port_clear_external_buffer() to clear backend buffers.
  */
-HOT NONNULL OPTIMIZE_O3 void
-port_clear_buffer (Port * port);
+#define port_clear_buffer(_port) \
+  { \
+    if (_port->id.type == TYPE_AUDIO || _port->id.type == TYPE_CV) \
+      { \
+        if (_port->buf) \
+          { \
+            dsp_fill ( \
+              _port->buf, DENORMAL_PREVENTION_VAL, \
+              AUDIO_ENGINE->block_length); \
+          } \
+      } \
+    else if (_port->id.type == TYPE_EVENT) \
+      { \
+        if (_port->midi_events) \
+          _port->midi_events->num_events = 0; \
+      } \
+  }
 
 /**
  * Clears the backend's port buffer.

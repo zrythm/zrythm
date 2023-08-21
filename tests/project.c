@@ -158,7 +158,7 @@ test_new_from_template (void)
 
   /* create a new project using old one as template */
   char * orig_dir = g_strdup (PROJECT->dir);
-  g_assert_nonnull (orig_dir);
+  g_return_if_fail (orig_dir);
   char * filepath =
     g_build_filename (orig_dir, "project.zpj", NULL);
   g_free_and_null (ZRYTHM->create_project_path);
@@ -199,7 +199,7 @@ test_save_as_load_w_pool (void)
 
   /* save the project elsewhere */
   char * orig_dir = g_strdup (PROJECT->dir);
-  g_assert_nonnull (orig_dir);
+  g_return_if_fail (orig_dir);
   char * new_dir =
     g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
   bool success = project_save (
@@ -383,6 +383,8 @@ test_exposed_ports_after_load (void)
 
   test_project_save_and_reload ();
 
+  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  port = track->channel->stereo_out->l;
   g_assert_true (port_is_exposed_to_backend (port));
   assert_jack_port_exists (buf);
 

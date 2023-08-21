@@ -142,7 +142,7 @@ option (
   'extra_optimizations',
   type: 'boolean',
   value: true,
-  description: 'Turn on target machine-specific optimizations.')
+  description: 'Turn on target machine-specific optimizations and optimizations not included in -O2.')
 
 option (
   'extra_extra_optimizations',

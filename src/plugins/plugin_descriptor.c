@@ -363,9 +363,9 @@ plugin_descriptor_is_same_plugin (
   const PluginDescriptor * b)
 {
   return a->arch == b->arch && a->protocol == b->protocol
+         && a->unique_id == b->unique_id && a->ghash == b->ghash
          && string_is_equal (a->path, b->path)
-         && string_is_equal (a->uri, b->uri)
-         && a->unique_id == b->unique_id && a->ghash == b->ghash;
+         && string_is_equal (a->uri, b->uri);
 }
 
 /**

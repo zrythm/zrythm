@@ -40,6 +40,7 @@
 #include "project.h"
 #include "utils/arrays.h"
 #include "utils/dialogs.h"
+#include "utils/dsp.h"
 #include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/math.h"

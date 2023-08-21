@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
@@ -36,12 +36,6 @@ midi_activity_bar_snapshot (
 
   int width = gtk_widget_get_allocated_width (widget);
   int height = gtk_widget_get_allocated_height (widget);
-
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
-  gtk_snapshot_render_background (
-    snapshot, context, 0, 0, width, height);
 
   if (!PROJECT || !AUDIO_ENGINE)
     {

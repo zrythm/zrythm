@@ -654,6 +654,7 @@ zrythm_init_user_dirs_and_files (Zrythm * self, GError ** error)
 
 #define MK_USER_DIR(x) \
   dir = zrythm_get_dir (ZRYTHM_DIR_USER_##x); \
+  g_return_val_if_fail (dir, false); \
   success = io_mkdir (dir, &err); \
   if (!success) \
     { \

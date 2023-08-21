@@ -21,6 +21,7 @@
 SupportedFile *
 supported_file_new_from_path (const char * path)
 {
+  g_return_val_if_fail (path, NULL);
   SupportedFile * self = object_new (SupportedFile);
 
   g_debug ("creating new SupportedFile for %s", path);

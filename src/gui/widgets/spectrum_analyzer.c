@@ -50,7 +50,7 @@ windowHanning (int i, int transformSize)
 {
   return (
     0.5f
-    * (1.0f - cosf (2.0f * M_PI * (float) i / (float) (transformSize - 1))));
+    * (1.0f - cosf (2.0f * (float) M_PI * (float) i / (float) (transformSize - 1))));
 }
 
 static float
@@ -60,12 +60,15 @@ getPowerSpectrumdB (
   const int                index,
   const int                transformSize)
 {
-  const float real = out[index].r * (2.0 / transformSize);
-  const float complex = out[index].i * (2.0 / transformSize);
+  const float real =
+    (float) out[index].r * (2.f / transformSize);
+  const float complex =
+    (float) out[index].i * (2.f / transformSize);
 
   const float powerSpectrum = real * real + complex * complex;
   float       powerSpectrumdB =
-    10.0f / logf (10.0f) * logf (powerSpectrum + 1e-9);
+    10.0f / math_fast_log (10.0f)
+    * math_fast_log (powerSpectrum + 1e-9f);
 
   if (powerSpectrumdB <= threshold)
     {
@@ -77,7 +80,7 @@ getPowerSpectrumdB (
     }
 
   // Normalize values
-  powerSpectrumdB = 1.0 - powerSpectrumdB / -90.0;
+  powerSpectrumdB = 1.f - powerSpectrumdB / -90.f;
 
   if (powerSpectrumdB > 1)
     {
@@ -95,10 +98,10 @@ invLogScale (const float value, const float min, const float max)
   if (value > max)
     return max;
 
-  const float b = logf (max / min) / (max - min);
+  const float b = math_fast_log (max / min) / (max - min);
   const float a = max / expf (max * b);
 
-  return logf (value / a) / b;
+  return math_fast_log (value / a) / b;
 }
 
 static float
@@ -123,7 +126,7 @@ lerp (float a, float b, float f)
 {
   f = CLAMP (f, 0.0f, 1.0f);
 
-  return a * (1.0 - f) + (b * f);
+  return a * (1.f - f) + (b * f);
 }
 
 static float
@@ -154,12 +157,6 @@ spectrum_analyzer_snapshot (
 
   int width = gtk_widget_get_allocated_width (widget);
   int height = gtk_widget_get_allocated_height (widget);
-
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
-  gtk_snapshot_render_background (
-    snapshot, context, 0, 0, width, height);
 
   size_t   block_size = AUDIO_ENGINE->block_length;
   uint32_t block_size_in_bytes =

@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_selections.h"
 #include "dsp/midi_note.h"
@@ -109,6 +93,7 @@ midi_modifier_arranger_widget_select_vels_in_range (
   int         num_velocities = 0;
   Velocity ** velocities = get_enclosed_velocities (
     self, offset_x, &num_velocities, true);
+  g_return_if_fail (velocities);
 
   arranger_selections_clear (
     (ArrangerSelections *) MA_SELECTIONS, F_NO_FREE,
@@ -175,6 +160,7 @@ midi_modifier_arranger_widget_ramp (
   int         num_velocities = 0;
   Velocity ** velocities = get_enclosed_velocities (
     self, offset_x, &num_velocities, true);
+  g_return_if_fail (velocities);
 
   /* ramp */
   Velocity * vel;
@@ -217,6 +203,7 @@ midi_modifier_arranger_widget_ramp (
   num_velocities = 0;
   velocities = get_enclosed_velocities (
     self, offset_x, &num_velocities, false);
+  g_return_if_fail (velocities);
 
   /* reset their value */
   for (int i = 0; i < num_velocities; i++)

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -149,7 +149,7 @@ supported_file_type_get_ext (ZFileType type);
 /**
  * Returns the file type of the given file path.
  */
-ZFileType
+NONNULL ZFileType
 supported_file_get_type (const char * file);
 
 /**

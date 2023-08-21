@@ -6,6 +6,7 @@ charset-normalizer==3.2.0
 click==8.1.6
 docutils==0.20.1
 furo==2023.7.26
+gprof2dot==2022.7.29
 idna==3.4
 imagesize==1.4.1
 Jinja2==3.1.2

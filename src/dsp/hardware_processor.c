@@ -9,6 +9,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
+#include "utils/dsp.h"
 #include "utils/flags.h"
 #include "utils/mem.h"
 #include "utils/objects.h"

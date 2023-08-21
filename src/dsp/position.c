@@ -254,19 +254,18 @@ closest_snap_point (
  *
  * @return Whether a snap point was found or not.
  */
-HOT static bool
-get_prev_snap_point (
+NONNULL_ARGS (1, 4, 5)
+HOT static bool get_prev_snap_point (
   const Position * pos,
   Track *          track,
   ZRegion *        region,
   const SnapGrid * sg,
   Position *       prev_sp)
 {
+  position_set_to_pos (prev_sp, pos);
   if (pos->frames < 0 || pos->ticks < 0)
     {
-      /* negative not supported, set to same
-       * position */
-      position_set_to_pos (prev_sp, pos);
+      /* negative not supported, set to same position */
       return false;
     }
 
@@ -343,19 +342,19 @@ get_prev_snap_point (
  *
  * @return Whether a snap point was found or not.
  */
-HOT static bool
-get_next_snap_point (
+NONNULL_ARGS (1, 4, 5)
+HOT static bool get_next_snap_point (
   const Position * pos,
   Track *          track,
   ZRegion *        region,
   const SnapGrid * sg,
   Position *       next_sp)
 {
+  position_set_to_pos (next_sp, pos);
   if (pos->frames < 0 || pos->ticks < 0)
     {
       /* negative not supported, set to same
        * position */
-      position_set_to_pos (next_sp, pos);
       return false;
     }
 
@@ -518,7 +517,6 @@ position_snap (
       /* get previous snap point from start pos */
       g_return_if_fail (start_pos);
       Position prev_sp_from_start_pos;
-      position_init (&prev_sp_from_start_pos);
       get_prev_snap_point (
         start_pos, track, region, sg, &prev_sp_from_start_pos);
 

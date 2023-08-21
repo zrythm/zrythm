@@ -559,9 +559,6 @@ if get_option ('profiling')
   endif
 endif
 
-common_cflags = []
-extra_optimizations_cflags = []
-
 if get_option ('native_build')
   test_cflags += [
     '-march=native',
@@ -569,31 +566,27 @@ if get_option ('native_build')
     ]
 endif
 
+common_cflags = []
+
+extra_optimizations_cflags = [
+  '-ffast-math',
+  '-DPIC',
+  '-freciprocal-math',
+  '-fsingle-precision-constant',
+  ]
+
 if host_machine.cpu() == 'x86_64'
   extra_optimizations_cflags += [
-    '-ffast-math',
-    '-fstrength-reduce',
-    '-DPIC',
-    '-fdata-sections',
-    '-ffunction-sections',
-    '-freciprocal-math',
-    '-fsingle-precision-constant',
-    '-msse',
-    '-msse2',
     '-mfpmath=sse',
-    #'-fvisibility=hidden',
-    '-fno-math-errno',
     ]
 endif
 
 if get_option ('extra_debug_info') or get_option ('debug') or get_option ('buildtype').contains ('debug')
   extra_optimizations_cflags += [
+    # -O1 turns this on, but it may break backtraces so
+    # explicitly turn it off on builds supposed to be
+    # debuggable
     '-fno-omit-frame-pointer',
-    ]
-else
-  # note: this may break the backtrace
-  extra_optimizations_cflags += [
-    '-fomit-frame-pointer',
     ]
 endif
 extra_optimizations_cflags = cc.get_supported_arguments (extra_optimizations_cflags)
@@ -702,7 +695,8 @@ test_strict_cflags += [
   '-Werror=multistatement-macros',
   '-Werror=switch',
   '-Werror=overflow',
-  '-Werror=array-bounds',
+  # breaks pango subproject build
+  #'-Werror=array-bounds',
   '-Werror=enum-compare',
   '-Werror=misleading-indentation',
   '-Werror=int-in-bool-context',

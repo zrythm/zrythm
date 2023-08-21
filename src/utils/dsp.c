@@ -16,29 +16,6 @@
 #endif
 
 /**
- * Fill the buffer with the given value.
- */
-void
-dsp_fill (float * buf, float val, size_t size)
-{
-#ifdef HAVE_LSP_DSP
-  if (ZRYTHM_USE_OPTIMIZED_DSP)
-    {
-      lsp_dsp_fill (buf, val, size);
-    }
-  else
-    {
-#endif
-      for (size_t i = 0; i < size; i++)
-        {
-          buf[i] = val;
-        }
-#ifdef HAVE_LSP_DSP
-    }
-#endif
-}
-
-/**
  * Gets the minimum of the buffer.
  */
 float

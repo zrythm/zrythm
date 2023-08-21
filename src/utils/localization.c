@@ -96,13 +96,14 @@ get_match (
   const char * prefix,
   const char * codeset)
 {
-  GString * codeset_gstring;
-  codeset_gstring = g_string_new (codeset);
-  char * upper =
+  GString * codeset_gstring = g_string_new (codeset);
+  char *    upper =
     g_string_free (g_string_ascii_up (codeset_gstring), 0);
+  g_return_val_if_fail (upper, NULL);
   codeset_gstring = g_string_new (codeset);
   char * lower =
     g_string_free (g_string_ascii_down (codeset_gstring), 0);
+  g_return_val_if_fail (lower, NULL);
   char * first_upper = g_strdup (lower);
   first_upper[0] = g_ascii_toupper (lower[0]);
 

@@ -1059,10 +1059,9 @@ tracklist_track_name_is_unique (
 bool
 tracklist_has_soloed (const Tracklist * self)
 {
-  Track * track;
   for (int i = 0; i < self->num_tracks; i++)
     {
-      track = self->tracks[i];
+      Track * track = self->tracks[i];
 
       if (track->channel && track_get_soloed (track))
         return true;

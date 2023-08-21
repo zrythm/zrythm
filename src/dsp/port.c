@@ -3348,18 +3348,6 @@ port_set_expose_to_backend (Port * self, int expose)
 }
 
 /**
- * Returns if the port is exposed to the backend.
- */
-int
-port_is_exposed_to_backend (const Port * self)
-{
-  return self->internal_type == INTERNAL_JACK_PORT
-         || self->internal_type == INTERNAL_ALSA_SEQ_PORT
-         || self->id.owner_type == PORT_OWNER_TYPE_AUDIO_ENGINE
-         || self->exposed_to_backend;
-}
-
-/**
  * Renames the port on the backend side.
  */
 void
@@ -3498,56 +3486,6 @@ port_print_full_designation (Port * const self)
   char buf[1200];
   port_get_full_designation (self, buf);
   g_message ("%s", buf);
-}
-
-/**
- * Clears the audio/cv port buffer.
- *
- * @note Only the Zrythm buffer is cleared. Use
- * port_clear_external_buffer() to clear backend buffers.
- */
-void
-port_clear_audio_cv_buffer (Port * port)
-{
-  if (port->buf)
-    {
-      dsp_fill (
-        port->buf, DENORMAL_PREVENTION_VAL,
-        AUDIO_ENGINE->block_length);
-    }
-}
-
-/**
- * Clears the MIDI port buffer.
- *
- * @note Only the Zrythm buffer is cleared. Use
- * port_clear_external_buffer() to clear backend buffers.
- */
-void
-port_clear_midi_buffer (Port * port)
-{
-  if (port->midi_events)
-    port->midi_events->num_events = 0;
-}
-
-/**
- * Clears the port buffer.
- *
- * @note Only the Zrythm buffer is cleared. Use
- * port_clear_external_buffer() to clear backend buffers.
- */
-void
-port_clear_buffer (Port * port)
-{
-  PortIdentifier * pi = &port->id;
-  if (pi->type == TYPE_AUDIO || pi->type == TYPE_CV)
-    {
-      port_clear_audio_cv_buffer (port);
-    }
-  else if (port->id.type == TYPE_EVENT)
-    {
-      port_clear_midi_buffer (port);
-    }
 }
 
 /**

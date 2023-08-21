@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
@@ -88,6 +88,7 @@ add_tracks_to_group_dialog_widget_get_track (
     gtk_check_button_get_active (GTK_CHECK_BUTTON (checkbox));
   track_name = g_strdup (
     gtk_editable_get_text (GTK_EDITABLE (group_entry)));
+  g_return_val_if_fail (track_name, NULL);
   gtk_window_destroy (GTK_WINDOW (self));
   switch (result)
     {

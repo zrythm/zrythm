@@ -87,6 +87,7 @@ audio_pool_ensure_unique_clip_name (
   char * orig_path_in_pool =
     audio_clip_get_path_in_pool (clip, is_backup);
   char * new_name = g_strdup (orig_name_without_ext);
+  g_return_if_fail (new_name);
 
   bool changed = false;
   while (name_exists (self, new_name))

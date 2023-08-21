@@ -210,7 +210,7 @@ then build and run the program normally. The program
 must end gracefully (ie, not Ctrl-C). When the
 program ends, run
 
-    gprof build/src/zrythm > results
+    gprof --flat-profile --annotated-source -B --exec-counts --directory-path="$pwd)" --print-path --graph --table-length=16 --function-ordering --min-count=100 build/src/zrythm > results
 
 and check the results file for the profiling results.
 

@@ -52,6 +52,7 @@ test_midi_fx_routing (void)
   /* export loop and check that there is audio */
   char * audio_file = test_exporter_export_audio (
     TIME_RANGE_LOOP, EXPORT_MODE_FULL);
+  g_return_if_fail (audio_file);
   g_assert_false (audio_file_is_silent (audio_file));
   io_remove (audio_file);
   g_free (audio_file);
@@ -75,6 +76,7 @@ test_midi_fx_routing (void)
   /* export loop and check that there is no audio */
   audio_file = test_exporter_export_audio (
     TIME_RANGE_LOOP, EXPORT_MODE_FULL);
+  g_return_if_fail (audio_file);
   g_assert_true (audio_file_is_silent (audio_file));
   io_remove (audio_file);
   g_free (audio_file);
@@ -89,6 +91,7 @@ test_midi_fx_routing (void)
    * again */
   audio_file = test_exporter_export_audio (
     TIME_RANGE_LOOP, EXPORT_MODE_FULL);
+  g_return_if_fail (audio_file);
   g_assert_false (audio_file_is_silent (audio_file));
   io_remove (audio_file);
   g_free (audio_file);

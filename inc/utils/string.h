@@ -112,7 +112,7 @@ string_is_equal_ignore_case (
  *
  * Example: "MIDI ZRegion #1" -> "MIDI_Region_1".
  */
-char *
+NONNULL char *
 string_convert_to_filename (const char * str);
 
 /**

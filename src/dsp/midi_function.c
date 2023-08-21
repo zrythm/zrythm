@@ -19,6 +19,7 @@ midi_function_type_to_string_id (MidiFunctionType type)
 {
   const char * type_str = midi_function_type_to_string (type);
   char *       ret = g_strdup (type_str);
+  g_return_val_if_fail (ret, NULL);
   for (size_t i = 0; i < strlen (ret); i++)
     {
       ret[i] = g_ascii_tolower (ret[i]);

@@ -88,7 +88,7 @@ io_get_dir (const char * filename)
  * @return True if the directory exists or was successfully
  *   created, false if error was occurred and errno is set.
  */
-NONNULL bool
+bool
 io_mkdir (const char * dir, GError ** error)
 {
   g_return_val_if_fail (

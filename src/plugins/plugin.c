@@ -1635,17 +1635,17 @@ plugin_prepare_process (Plugin * self)
     {
       Port * port =
         g_ptr_array_index (self->audio_in_ports, i);
-      port_clear_audio_cv_buffer (port);
+      port_clear_buffer (port);
     }
   for (size_t i = 0; i < self->cv_in_ports->len; i++)
     {
       Port * port = g_ptr_array_index (self->cv_in_ports, i);
-      port_clear_audio_cv_buffer (port);
+      port_clear_buffer (port);
     }
   for (size_t i = 0; i < self->midi_in_ports->len; i++)
     {
       Port * port = g_ptr_array_index (self->midi_in_ports, i);
-      port_clear_midi_buffer (port);
+      port_clear_buffer (port);
     }
 
   for (int i = 0; i < self->num_out_ports; i++)

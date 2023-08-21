@@ -30,7 +30,8 @@ peak_fall_smooth_calculate_coeff (
   const float      frequency,
   const float      sample_rate)
 {
-  self->coeff = expf (-2.f * M_PI * frequency / sample_rate);
+  self->coeff =
+    expf (-2.f * (float) M_PI * frequency / sample_rate);
 }
 
 void

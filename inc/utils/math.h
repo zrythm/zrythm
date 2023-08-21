@@ -189,7 +189,8 @@ math_get_fader_val_from_amp (sample_t amp)
           amp = 1.f + 1e-20f;
         }
       sample_t fader =
-        powf (6.f * logf (amp) + fader_coefficient1, 8.f)
+        powf (
+          6.f * math_fast_log (amp) + fader_coefficient1, 8.f)
         / fader_coefficient2;
       return (sample_t) fader;
     }
