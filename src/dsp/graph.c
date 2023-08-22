@@ -200,6 +200,7 @@ graph_rechain (Graph * self)
       g_hash_table_insert (
         self->setup_graph_nodes, key, value);
     }
+  g_hash_table_unref (tmp);
 
   /* --- end --- */
 

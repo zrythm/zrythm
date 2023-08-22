@@ -145,6 +145,7 @@ file_manager_new (void)
 
       add_volume (self, vol);
     }
+  g_list_free_full (volumes, g_object_unref);
   g_object_unref (vol_monitor);
 
   if (!ZRYTHM_TESTING)

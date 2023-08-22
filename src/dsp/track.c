@@ -4020,6 +4020,9 @@ track_free (Track * self)
         self->modulator_macros[i]);
     }
 
+  object_free_w_func_and_null (
+    stretcher_free, self->rt_stretcher);
+
   object_zero_and_free (self);
 
   g_debug ("done freeing track");

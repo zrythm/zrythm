@@ -451,7 +451,6 @@ channel_send_selector_widget_init (
 
   /* add treeview */
   self->treeview = GTK_TREE_VIEW (gtk_tree_view_new ());
-  gtk_widget_set_visible (GTK_WIDGET (self->treeview), TRUE);
   gtk_scrolled_window_set_child (
     GTK_SCROLLED_WINDOW (scroll), GTK_WIDGET (self->treeview));
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "utils/audio.h"
+#include "utils/debug.h"
 #include "utils/math.h"
 #include "utils/objects.h"
 #include "utils/resampler.h"
@@ -135,8 +136,10 @@ resampler_new (
   double resample_ratio = output_rate / input_rate;
   self->num_out_frames = (size_t) ceil (
     (double) self->num_in_frames * resample_ratio);
+  /* soxr accesses a few bytes outside apparently so allocate
+   * a bit more */
   self->out_frames = object_new_n (
-    self->num_out_frames * self->num_channels, float);
+    (self->num_out_frames + 8) * self->num_channels, float);
 
   return self;
 }
@@ -148,12 +151,19 @@ resampler_new (
 bool
 resampler_process (Resampler * self, GError ** error)
 {
+  size_t frames_to_write_this_time = MIN (
+    self->num_out_frames - self->frames_written,
+    SOXR_BLOCK_SZ);
+  z_return_val_if_fail_cmp (
+    self->frames_written + frames_to_write_this_time, <=,
+    self->num_out_frames, false);
   size_t frames_written_now = soxr_output (
     (soxr_t) self->priv,
     &self->out_frames[self->frames_written * self->num_channels],
-    MIN (
-      self->num_out_frames - self->frames_written,
-      SOXR_BLOCK_SZ));
+    frames_to_write_this_time);
+  z_return_val_if_fail_cmp (
+    self->frames_written + frames_written_now, <=,
+    self->num_out_frames, false);
 
   soxr_error_t serror = soxr_error ((soxr_t) self->priv);
   if (serror)
