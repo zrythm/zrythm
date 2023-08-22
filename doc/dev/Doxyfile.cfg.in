@@ -847,7 +847,7 @@ RECURSIVE              = YES
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = @MESON_SOURCE_ROOT@/inc/gui/widgets/dzl @MESON_SOURCE_ROOT@/inc/gui/widgets/gtk @MESON_SOURCE_ROOT@/src/gui/widgets/dzl @MESON_SOURCE_ROOT@/src/gui/widgets/gtk @MESON_SOURCE_ROOT@/src/dsp/vamp-ports
+EXCLUDE                = @MESON_SOURCE_ROOT@/inc/gui/widgets/dzl @MESON_SOURCE_ROOT@/inc/gui/widgets/gtk @MESON_SOURCE_ROOT@/src/gui/widgets/dzl @MESON_SOURCE_ROOT@/src/gui/widgets/gtk @MESON_SOURCE_ROOT@/src/dsp/vamp-ports @MESON_SOURCE_ROOT@/inc/schemas @MESON_SOURCE_ROOT@/tests
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded

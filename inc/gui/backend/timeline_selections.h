@@ -30,6 +30,8 @@
 /**
  * Selections to be used for the timeline's current
  * selections, copying, undoing, etc.
+ *
+ * @extends ArrangerSelections
  */
 typedef struct TimelineSelections
 {
@@ -98,6 +100,8 @@ static const cyaml_schema_value_t timeline_selections_schema = {
  *
  * @bool clone_objs True to clone each object,
  *   false to use pointers to project objects.
+ *
+ * @memberof TimelineSelections
  */
 TimelineSelections *
 timeline_selections_new_for_range (

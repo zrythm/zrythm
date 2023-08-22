@@ -1,8 +1,3 @@
-<!---
-SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
-SPDX-License-Identifier: FSFAP
--->
-
 # Building on Windows (MSVC)
 
 > you install VisualStudio community edition, python, git (those 3 are just click click installers) then open "Developer powershell for VS2019" (you should have that in windows apps after installing vs), pip install meson, git clone `your_project`, meson build, ninja -C build
@@ -31,3 +26,8 @@ for building gtk4 on Windows.
 # Thanks
 
 Thanks to Company, xclaesse, dcbaker and lazka for explanations.
+
+<!---
+SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+SPDX-License-Identifier: FSFAP
+-->

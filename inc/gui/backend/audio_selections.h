@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -30,6 +30,8 @@ typedef struct ZRegion ZRegion;
 /**
  * Selections to be used for the AudioArrangerWidget's
  * current selections, copying, undoing, etc.
+ *
+ * @extends ArrangerSelections
  */
 typedef struct AudioSelections
 {
@@ -106,6 +108,8 @@ static const cyaml_schema_value_t audio_selections_schema = {
 /**
  * Sets whether a range selection exists and sends
  * events to update the UI.
+ *
+ * @memberof AudioSelections
  */
 void
 audio_selections_set_has_range (

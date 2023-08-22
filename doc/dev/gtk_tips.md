@@ -1,8 +1,3 @@
-<!---
-SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
-SPDX-License-Identifier: FSFAP
--->
-
 GTK Tips
 ========
 
@@ -72,3 +67,8 @@ mclasen:
 if you call append_layout, you provide the pango layout that specifies what fonts to use
 if it is a pango layout created with gtk_widget_create_pango_layout then yes, css may influence what font is used
 ```
+
+<!---
+SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+SPDX-License-Identifier: FSFAP
+-->

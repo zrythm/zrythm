@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
- * \file
+ * @file
  *
  * API for selections in the piano roll.
  */
@@ -25,8 +25,11 @@
 #define MA_SELECTIONS (PROJECT->midi_arranger_selections)
 
 /**
- * Selections to be used for the midi_arranger's
- * current selections, copying, undoing, etc.
+ * A collection of selected MidiNote's.
+ *
+ * Used for copying, undoing, etc.
+ *
+ * @extends ArrangerSelections
  */
 typedef struct MidiArrangerSelections
 {
@@ -64,6 +67,9 @@ static const cyaml_schema_value_t
       midi_arranger_selections_fields_schema),
   };
 
+/**
+ * @memberof MidiArrangerSelections
+ */
 MidiNote *
 midi_arranger_selections_get_highest_note (
   MidiArrangerSelections * mas);
