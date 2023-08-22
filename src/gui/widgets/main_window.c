@@ -351,8 +351,8 @@ on_focus_widget_changed (
   gpointer     user_data)
 {
   /* below is for debugging */
-#if 0
-  GtkWidget * focus_widget = gtk_window_get_focus (GTK_WINDOW (gobject));
+  GtkWidget * focus_widget =
+    gtk_window_get_focus (GTK_WINDOW (gobject));
   if (focus_widget)
     {
       z_gtk_widget_print_hierarchy (focus_widget);
@@ -361,7 +361,6 @@ on_focus_widget_changed (
     {
       g_debug ("nothing focused");
     }
-#endif
 }
 
 /**

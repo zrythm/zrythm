@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019, 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/view_toolbar.h"
@@ -33,6 +33,8 @@ view_toolbar_widget_class_init (
   resources_set_class_template (klass, "view_toolbar.ui");
 
   gtk_widget_class_set_css_name (klass, "view-toolbar");
+  gtk_widget_class_set_accessible_role (
+    klass, GTK_ACCESSIBLE_ROLE_TOOLBAR);
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

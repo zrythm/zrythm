@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/help_toolbar.h"
 #include "utils/gtk.h"
@@ -62,6 +46,8 @@ help_toolbar_widget_class_init (
   resources_set_class_template (klass, "help_toolbar.ui");
 
   gtk_widget_class_set_css_name (klass, "help-toolbar");
+  gtk_widget_class_set_accessible_role (
+    klass, GTK_ACCESSIBLE_ROLE_TOOLBAR);
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

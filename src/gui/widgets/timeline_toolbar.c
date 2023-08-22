@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/undo_manager.h"
@@ -74,6 +74,9 @@ timeline_toolbar_widget_class_init (
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "timeline_toolbar.ui");
+
+  gtk_widget_class_set_accessible_role (
+    klass, GTK_ACCESSIBLE_ROLE_TOOLBAR);
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

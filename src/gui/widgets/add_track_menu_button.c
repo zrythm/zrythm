@@ -50,7 +50,7 @@ static void
 add_track_menu_button_widget_init (
   AddTrackMenuButtonWidget * self)
 {
-  gtk_widget_set_focusable (GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (GTK_WIDGET (self), false);
 
   self->menu_btn = GTK_MENU_BUTTON (gtk_menu_button_new ());
   set_menu_model (self->menu_btn);

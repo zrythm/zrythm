@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -22,6 +22,25 @@
  * License along with this library. If not, see <http://www.gnu.org/licenses/>.
  *
  * SPDX-License-Identifier: LGPL-2.0-or-later
+ *
+ * ---
+ *
+ * Copyright (c) 2020 Red Hat, Inc.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * SPDX-LicenseIdentifier: LGPL-2.0-or-later
  *
  * ---
  */
@@ -2059,6 +2078,33 @@ z_gtk_print_graphene_rect (graphene_rect_t * rect)
     rect->origin.y, rect->size.width, rect->size.height);
 }
 
+static void
+append_widget_info (GString * gstr, GtkWidget * w)
+{
+  GtkAccessibleRole role =
+    gtk_accessible_get_accessible_role (GTK_ACCESSIBLE (w));
+  GEnumClass * eclass =
+    g_type_class_ref (GTK_TYPE_ACCESSIBLE_ROLE);
+  GEnumValue * value = g_enum_get_value (eclass, role);
+
+#if 0
+      GtkATContext *context
+      = gtk_accessible_get_at_context (GTK_ACCESSIBLE (w));
+      const char *name = "(none)";
+      if (context)
+        {
+        name =gtk_at_context_get_name (context);
+        }
+#endif
+
+  /* TODO print parent class in () */
+  g_string_append_printf (
+    gstr, "%s - [role: %s]\n", gtk_widget_get_name (w),
+    value->value_nick);
+  g_type_class_unref (eclass);
+  /*g_object_unref (context);*/
+}
+
 /**
  * Prints the widget's hierarchy (parents).
  */
@@ -2077,9 +2123,7 @@ z_gtk_widget_print_hierarchy (GtkWidget * widget)
   GString * gstr = g_string_new (NULL);
   while ((parent = (GtkWidget *) g_queue_pop_tail (queue)))
     {
-      /* TODO print parent class in () */
-      g_string_append_printf (
-        gstr, "%s\n", gtk_widget_get_name (parent));
+      append_widget_info (gstr, parent);
       cur_spaces += spaces_per_child;
       for (int j = 0; j < cur_spaces; j++)
         {
@@ -2087,7 +2131,7 @@ z_gtk_widget_print_hierarchy (GtkWidget * widget)
         }
     }
 
-  g_string_append (gstr, gtk_widget_get_name (widget));
+  append_widget_info (gstr, widget);
   char * str = g_string_free (gstr, false);
   g_message ("%s", str);
   g_queue_free (queue);

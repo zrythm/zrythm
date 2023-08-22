@@ -137,6 +137,10 @@ timeline_minimap_selection_widget_init (
 {
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
+  gtk_accessible_update_property (
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL,
+    "Timeline Minimap Selection", -1);
+
   GtkEventController * motion_controller =
     gtk_event_controller_motion_new ();
   gtk_widget_add_controller (

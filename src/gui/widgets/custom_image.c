@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/custom_image.h"
@@ -56,4 +56,6 @@ custom_image_widget_class_init (
 
   gtk_widget_class_set_layout_manager_type (
     klass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_accessible_role (
+    klass, GTK_ACCESSIBLE_ROLE_PRESENTATION);
 }

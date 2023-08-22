@@ -152,6 +152,8 @@ home_toolbar_widget_class_init (
   resources_set_class_template (klass, "home_toolbar.ui");
 
   gtk_widget_class_set_css_name (klass, "home-toolbar");
+  gtk_widget_class_set_accessible_role (
+    klass, GTK_ACCESSIBLE_ROLE_TOOLBAR);
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -15,7 +15,6 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   SplashWindowWidget,
@@ -124,4 +123,9 @@ splash_window_widget_init (SplashWindowWidget * self)
   sprintf (ver_str, "<small>%s</small>", ver);
   g_free (ver);
   gtk_label_set_markup (self->version_label, ver_str);
+
+  gtk_accessible_update_relation (
+    GTK_ACCESSIBLE (self->progress_bar),
+    GTK_ACCESSIBLE_RELATION_DESCRIBED_BY, self->status_label,
+    NULL, -1);
 }

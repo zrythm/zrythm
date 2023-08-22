@@ -1934,7 +1934,7 @@ arranger_widget_on_key_press (
     || keyval == GDK_KEY_less || keyval == GDK_KEY_Delete
     || keyval == GDK_KEY_greater || keyval == GDK_KEY_F2
     || keyval == GDK_KEY_KP_4 || keyval == GDK_KEY_KP_6
-    || keyval == GDK_KEY_Tab)
+    || keyval == GDK_KEY_Tab || keyval == GDK_KEY_ISO_Left_Tab)
     {
       g_debug ("ignoring keyval used for shortcuts");
       return false;
@@ -6786,6 +6786,8 @@ arranger_widget_class_init (ArrangerWidgetClass * _klass)
 
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
   wklass->snapshot = arranger_snapshot;
+  gtk_widget_class_set_accessible_role (
+    wklass, GTK_ACCESSIBLE_ROLE_GROUP);
 
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BIN_LAYOUT);
@@ -6858,6 +6860,10 @@ static void
 arranger_widget_init (ArrangerWidget * self)
 {
   self->first_draw = true;
+
+  gtk_accessible_update_property (
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL,
+    "Arranger", -1);
 
   self->popover_menu =
     GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));

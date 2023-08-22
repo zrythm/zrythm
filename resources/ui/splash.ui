@@ -8,9 +8,6 @@
     <property name="deletable">0</property>
     <property name="icon_name">zrythm</property>
     <property name="title" translatable="yes">Splash</property>
-    <child>
-      <placeholder/>
-    </child>
     <property name="child">
       <object class="GtkBox">
         <property name="orientation">vertical</property>

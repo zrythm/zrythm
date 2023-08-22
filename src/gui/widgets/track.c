@@ -2266,6 +2266,10 @@ track_widget_init (TrackWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
+  gtk_accessible_update_property (
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL,
+    "Track", -1);
+
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
   gtk_orientable_set_orientation (
@@ -2360,6 +2364,8 @@ track_widget_class_init (TrackWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "track.ui");
+  gtk_widget_class_set_accessible_role (
+    klass, GTK_ACCESSIBLE_ROLE_GROUP);
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child (klass, TrackWidget, x)

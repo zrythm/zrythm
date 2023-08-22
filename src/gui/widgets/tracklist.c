@@ -852,8 +852,6 @@ tracklist_widget_init (TracklistWidget * self)
     GTK_WIDGET (self->ddbox), "tracklist-ddbox");
 
   self->channel_add = add_track_menu_button_widget_new ();
-  gtk_widget_set_name (
-    GTK_WIDGET (self->channel_add), "tracklist-add-channel");
 
   gtk_orientable_set_orientation (
     GTK_ORIENTABLE (self), GTK_ORIENTATION_VERTICAL);
