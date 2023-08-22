@@ -36,7 +36,6 @@
 #include "gui/widgets/midi_editor_space.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/midi_note.h"
-#include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/scale_object.h"
 #include "gui/widgets/timeline_arranger.h"

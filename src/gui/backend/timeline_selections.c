@@ -12,7 +12,6 @@
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/timeline_selections.h"
-#include "gui/widgets/midi_region.h"
 #include "io/midi_file.h"
 #include "project.h"
 #include "utils/arrays.h"

@@ -4,12 +4,9 @@
 #ifndef __AUDIO_MIDI_TRACK_H__
 #define __AUDIO_MIDI_TRACK_H__
 
-typedef struct Position        Position;
-typedef struct _TrackWidget    TrackWidget;
-typedef struct Channel         Channel;
-typedef struct MidiEvents      MidiEvents;
-typedef struct AutomationTrack AutomationTrack;
-typedef struct Automatable     Automatable;
+typedef struct Position   Position;
+typedef struct MidiEvents MidiEvents;
+typedef struct Track      Track;
 
 /**
  * @addtogroup dsp

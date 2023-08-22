@@ -39,7 +39,6 @@
 #include "gui/widgets/marker.h"
 #include "gui/widgets/midi_arranger.h"
 #include "gui/widgets/midi_note.h"
-#include "gui/widgets/midi_region.h"
 #include "gui/widgets/region.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/scale_object.h"

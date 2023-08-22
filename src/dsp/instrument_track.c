@@ -7,6 +7,7 @@
 
 #include "dsp/automation_track.h"
 #include "dsp/automation_tracklist.h"
+#include "dsp/channel_track.h"
 #include "dsp/instrument_track.h"
 #include "dsp/midi_note.h"
 #include "dsp/position.h"
@@ -38,7 +39,7 @@ instrument_track_init (Track * self)
 }
 
 void
-instrument_track_setup (InstrumentTrack * self)
+instrument_track_setup (Track * self)
 {
   channel_track_setup (self);
 }

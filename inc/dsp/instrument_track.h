@@ -10,8 +10,8 @@
 #ifndef __AUDIO_INSTRUMENT_TRACK_H__
 #define __AUDIO_INSTRUMENT_TRACK_H__
 
-typedef struct Track Track;
-typedef struct Plugin     Plugin;
+typedef struct Track  Track;
+typedef struct Plugin Plugin;
 
 /**
  * @addtogroup dsp

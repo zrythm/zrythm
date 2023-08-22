@@ -36,7 +36,6 @@
 #include "gui/widgets/channel.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/main_window.h"
-#include "gui/widgets/midi_region.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/track.h"
 #include "project.h"

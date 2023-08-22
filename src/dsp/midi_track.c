@@ -10,6 +10,7 @@
 
 #include "dsp/automation_track.h"
 #include "dsp/automation_tracklist.h"
+#include "dsp/channel_track.h"
 #include "dsp/midi_event.h"
 #include "dsp/midi_note.h"
 #include "dsp/midi_track.h"
