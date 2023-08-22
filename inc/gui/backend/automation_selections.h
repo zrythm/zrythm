@@ -46,9 +46,9 @@
  */
 typedef struct AutomationSelections
 {
-  int schema_version;
-
   ArrangerSelections base;
+
+  int schema_version;
 
   /** Selected AutomationObject's. */
   AutomationPoint ** automation_points;
@@ -59,11 +59,11 @@ typedef struct AutomationSelections
 
 static const cyaml_schema_field_t
   automation_selections_fields_schema[] = {
-    YAML_FIELD_INT (AutomationSelections, schema_version),
     YAML_FIELD_MAPPING_EMBEDDED (
       AutomationSelections,
       base,
       arranger_selections_fields_schema),
+    YAML_FIELD_INT (AutomationSelections, schema_version),
     CYAML_FIELD_SEQUENCE_COUNT (
       "automation_points",
       CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
