@@ -1,7 +1,0 @@
-[*]
-indent_style = space
-indent_size = 4
-
-[*.{css,html}]
-indent_style = space
-indent_size = 2

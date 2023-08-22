@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -7,8 +7,8 @@
  */
 
 /**
- * @defgroup audio Audio
- * @brief DSP and audio related code.
+ * @defgroup dsp DSP
+ * @brief DSP (audio/MIDI signal processing) code.
  * 
  * @{
  */

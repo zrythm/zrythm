@@ -7,7 +7,6 @@
 #include "dsp/position.h"
 #include "gui/backend/tool.h"
 #include "gui/widgets/arranger.h"
-#include "gui/widgets/main_window.h"
 
 #include <gtk/gtk.h>
 
@@ -15,7 +14,6 @@ typedef struct _ArrangerWidget ArrangerWidget;
 typedef struct MidiNote        MidiNote;
 typedef struct SnapGrid        SnapGrid;
 typedef struct AutomationPoint AutomationPoint;
-typedef struct ZRegion         MidiRegion;
 typedef struct Channel         Channel;
 
 /**

@@ -42,6 +42,7 @@ msgfmt = find_program ('msgfmt', required: false)
 bash = find_program ('bash')
 grep = find_program ('grep')
 dot_bin = find_program ('dot', required: false)
+doxygen = find_program ('doxygen', required: false)
 rubberband = find_program (
   'rubberband', required: false)
 cppcheck = find_program (

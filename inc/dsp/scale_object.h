@@ -40,6 +40,8 @@ typedef struct MusicalScale MusicalScale;
 /**
  * A ScaleObject to be shown in the
  * TimelineArrangerWidget.
+ *
+ * @extends ArrangerObject
  */
 typedef struct ScaleObject
 {

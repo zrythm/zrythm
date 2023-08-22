@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
-  <ShortName>{{ PROJECT_NAME }}{% if PROJECT_BRIEF %} {{ PROJECT_BRIEF }}{% endif %}</ShortName>
-  <Description>Search {{ PROJECT_NAME }} documentation</Description>
-  {% if FAVICON %}
-  <Image type="{{ FAVICON[1] }}">{{ SEARCH_BASE_URL|urljoin(FAVICON[0])|e }}</Image>
-  {% endif %}
-  <Url type="text/html" template="{{ SEARCH_BASE_URL }}?q={searchTerms}#search"/>
-</OpenSearchDescription>

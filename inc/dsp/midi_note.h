@@ -42,8 +42,9 @@ typedef enum PianoRollNoteNotation PianoRollNoteNotation;
   arranger_object_is_selected ((ArrangerObject *) r)
 
 /**
- * A MIDI note inside a ZRegion shown in the
- * piano roll.
+ * A MIDI note inside a ZRegion shown in the piano roll.
+ *
+ * @extends ArrangerObject
  */
 typedef struct MidiNote
 {

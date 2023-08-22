@@ -40,8 +40,9 @@
 typedef struct ChordDescriptor ChordDescriptor;
 
 /**
- * A ChordObject to be shown in the
- * TimelineArrangerWidget.
+ * A ChordObject to be shown in the TimelineArrangerWidget.
+ *
+ * @extends ArrangerObject
  */
 typedef struct ChordObject
 {

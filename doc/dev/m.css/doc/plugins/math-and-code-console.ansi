@@ -1,7 +1,0 @@
-![0;34m[[1;37mmosra@don-perverzo [0;37mm.css[0;34m][1;36m$ [0mls
-CONTRIBUTING.rst  CREDITS.rst  [0m[01;34mdoc[0m            [01;34mplugins[0m        README.rst
-COPYING           [01;34mcss[0m          [01;34mdocumentation[0m  [01;34mpelican-theme[0m  [01;34msite[0m
-
-ASan reports:
-
-=>0x0c287fff8030: [1m[0m00[1m[0m[[1m[34mfc[1m[0m][1m[34mfc[1m[0m [1m[34mfc[1m[0m [1m[34mfc[1m[0m [1m[34mfc[1m[0m [1m[34mfc[1m[0m [1m[34mfc[1m[0m [1m[34mfc[1m[0m [1m[34mfc[1m[0m [1m[34mfc[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m [1m[31mfa[1m[0m

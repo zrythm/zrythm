@@ -38,6 +38,8 @@ typedef struct _VelocityWidget VelocityWidget;
 
 /**
  * The MidiNote velocity.
+ *
+ * @extends ArrangerObject
  */
 typedef struct Velocity
 {

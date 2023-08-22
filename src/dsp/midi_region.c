@@ -69,7 +69,7 @@ midi_region_new (
   int              lane_pos,
   int              idx_inside_lane)
 {
-  ZRegion * self = object_new (MidiRegion);
+  ZRegion * self = object_new (ZRegion);
 
   self->id.type = REGION_TYPE_MIDI;
 
@@ -1315,10 +1315,9 @@ midi_region_get_velocities_in_range (
 }
 
 /**
- * Frees members only but not the MidiRegion
- * itself.
+ * Frees members only but not the midi region itself.
  *
- * Regions should be free'd using region_free.
+ * Regions should be free'd using region_free().
  */
 void
 midi_region_free_members (ZRegion * self)

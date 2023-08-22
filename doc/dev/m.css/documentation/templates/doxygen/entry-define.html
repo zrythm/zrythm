@@ -1,5 +1,0 @@
-            <dt{% if not define.has_details and define.base_url == compound.url %} id="{{ define.id }}"{% endif %}>
-              {% set j = joiner(',\n              ') %}
-              <span class="m-doc-wrap-bumper">#define <a href="{% if define.base_url != compound.url %}{{ define.base_url }}{% endif %}#{{ define.id }}" class="m-doc{% if not define.has_details and define.base_url == compound.url %}-self{% endif %}">{{ define.name }}</a>{% if define.params != None %}(</span><span class="m-doc-wrap">{% for param in define.params %}{{ j() }}{{ param[0] }}{% endfor %}){% endif %}{% if define.deprecated %} <span class="m-label m-danger">{{ define.deprecated }}</span>{% endif %}{% if define.since %} {{ define.since }}{% endif %}</span>
-            </dt>
-            <dd>{{ define.brief }}</dd>

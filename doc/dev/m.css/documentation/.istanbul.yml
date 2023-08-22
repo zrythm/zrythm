@@ -1,6 +1,0 @@
-instrumentation:
-    root: .
-    extensions:
-        - .js
-    default-excludes: true
-    excludes: ['test_*/**']

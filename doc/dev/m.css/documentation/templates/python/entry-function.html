@@ -1,5 +1,0 @@
-            <dt{% if not function.has_details %} id="{{ function.id }}"{% endif %}>
-              {% set j = joiner('\n              ' if function.has_complex_params else ' ') %}
-              <span class="m-doc-wrap-bumper">def <a href="#{{ function.id }}" class="m-doc{% if not function.has_details %}-self{% endif %}">{{ function.name }}</a>(</span><span class="m-doc-wrap">{% for param in function.params %}{% if loop.index0 %}{% if function.params[loop.index0 - 1].kind == 'POSITIONAL_OR_KEYWORD' and param.kind == 'KEYWORD_ONLY' %},<span class="m-text m-dim"> *,</span>{% else %},{% endif %}{% endif %}{{ j() }}{% if param.kind == 'VAR_POSITIONAL' %}*{% elif param.kind == 'VAR_KEYWORD' %}**{% endif %}{{ param.name }}{% if param.type_link %}: {{ param.type_link }}{% endif %}{% if param.default %} = {{ param.default }}{% endif %}{% if param.kind == 'POSITIONAL_ONLY' and (loop.last or function.params[loop.index0 + 1].kind != 'POSITIONAL_ONLY') %}<span class="m-text m-dim">, /</span>{% endif %}{% endfor %}){% if function.type_link %} -&gt; {{ function.type_link }}{% endif %}</span>
-            </dt>
-            <dd>{{ function.summary }}</dd>

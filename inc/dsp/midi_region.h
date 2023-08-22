@@ -23,7 +23,6 @@ typedef struct ZRegion         ZRegion;
 typedef struct MidiEvents      MidiEvents;
 typedef struct ChordDescriptor ChordDescriptor;
 typedef struct Velocity        Velocity;
-typedef ZRegion                MidiRegion;
 typedef void                   MIDI_FILE;
 
 /**
@@ -322,7 +321,7 @@ midi_region_get_velocities_in_range (
 /**
  * Frees members only but not the midi region itself.
  *
- * Regions should be free'd using region_free.
+ * Regions should be free'd using region_free().
  */
 void
 midi_region_free_members (ZRegion * self);

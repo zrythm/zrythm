@@ -45,6 +45,8 @@ typedef struct AutomationPointDrawSettings
 
 /**
  * An automation point inside an AutomationTrack.
+ *
+ * @extends ArrangerObject
  */
 typedef struct AutomationPoint
 {

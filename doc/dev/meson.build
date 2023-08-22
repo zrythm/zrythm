@@ -1,16 +1,20 @@
-# SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+# SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-doxyfile = configure_file (
-  output: 'Doxyfile.cfg',
-  input: 'Doxyfile.cfg.in',
-  configuration: cdata,
-  )
+cdata_dev_docs = configuration_data ()
+cdata_dev_docs.merge_from (cdata)
+cdata_dev_docs.set ('DOXYGEN_AWESOME_CSS_PATH', meson.current_source_dir () / 'doxygen-awesome-css')
+cdata_dev_docs.set ('MESON_DEVDOCS_BUILDDIR', meson.current_build_dir ())
 
-doxyfile_mcss = configure_file (
-  output: 'Doxyfile-mcss',
-  input: 'Doxyfile-mcss.in',
-  configuration: cdata,
+doxyfile = configure_file (
+  output: 'Doxyfile.cfg.novcs',
+  input: 'Doxyfile.cfg.in',
+  configuration: cdata_dev_docs,
+  )
+doxyfile = vcs_tag (
+  output: 'Doxyfile.cfg',
+  input: doxyfile,
+  fallback: version_fallback,
   )
 
 extra_dev_docs = files([
@@ -23,34 +27,28 @@ extra_dev_docs = files([
   'weblate.h',
   ])
 
-if dot_bin.found()
-  mcss_docs_target = custom_target (
-    'mcss-dev-docs',
+if dot_bin.found() and doxygen.found()
+  doxygen_docs = custom_target (
+    'doxygen-docs',
+    input: doxyfile,
     depend_files: [
-      doxyfile,
-      doxyfile_mcss,
       zrythm_srcs,
       extra_dev_docs,
       ],
-    output: 'mcss-dev-docs-generated',
+    output: 'html',
     command: [
-      meson.current_source_dir () / 'm.css' /
-      'documentation' / 'doxygen.py',
-      doxyfile_mcss, '&&',
-      'touch', '@OUTPUT@',
+      doxygen, '@INPUT0@',
       ],
     install: false,
     build_by_default: false,
     )
 
-  subdir ('sphinx')
-
   run_target (
-    'gen-mcss-dev-docs',
+    'gen-dev-docs',
     command: [
       'echo',
-      'Developer Docs generated (m.css)',
+      'Developer Docs generated (Doxygen Awesome CSS)',
       ],
-    depends: mcss_docs_target,
+    depends: doxygen_docs,
     )
 endif
