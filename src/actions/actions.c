@@ -1093,8 +1093,9 @@ activate_copy (
               timeline_selections_set_vis_track_indices (
                 clipboard->timeline_sel);
             }
-          char * serialized =
-            yaml_serialize (clipboard, &clipboard_schema);
+          GError * err = NULL;
+          char *   serialized = yaml_serialize (
+            clipboard, &clipboard_schema, &err);
           g_return_if_fail (serialized);
           gdk_clipboard_set_text (
             DEFAULT_CLIPBOARD, serialized);
@@ -1113,8 +1114,9 @@ activate_copy (
           Clipboard * clipboard =
             clipboard_new_for_mixer_selections (
               MIXER_SELECTIONS, F_CLONE);
-          char * serialized =
-            yaml_serialize (clipboard, &clipboard_schema);
+          GError * err = NULL;
+          char *   serialized = yaml_serialize (
+            clipboard, &clipboard_schema, &err);
           g_return_if_fail (serialized);
           gdk_clipboard_set_text (
             DEFAULT_CLIPBOARD, serialized);
@@ -1131,8 +1133,9 @@ activate_copy (
         Clipboard * clipboard =
           clipboard_new_for_tracklist_selections (
             TRACKLIST_SELECTIONS, F_CLONE);
-        char * serialized =
-          yaml_serialize (clipboard, &clipboard_schema);
+        GError * err = NULL;
+        char *   serialized =
+          yaml_serialize (clipboard, &clipboard_schema, &err);
         g_return_if_fail (serialized);
         gdk_clipboard_set_text (DEFAULT_CLIPBOARD, serialized);
         clipboard_free (clipboard);

@@ -1,27 +1,14 @@
-/*
- * Copyright (C) 2020-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/collections.h"
+#include "utils/error.h"
 #include "utils/file.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
+
+#include <glib/gi18n.h>
 
 static char *
 get_plugin_collections_file_path (void)
@@ -37,11 +24,16 @@ void
 plugin_collections_serialize_to_file (PluginCollections * self)
 {
   g_message ("Serializing plugin collections...");
-  char * yaml =
-    yaml_serialize (self, &plugin_collections_schema);
-  g_return_if_fail (yaml);
   GError * err = NULL;
-  char *   path = get_plugin_collections_file_path ();
+  char *   yaml =
+    yaml_serialize (self, &plugin_collections_schema, &err);
+  if (!yaml)
+    {
+      HANDLE_ERROR_LITERAL (
+        err, _ ("Failed to serialize plugin collections"));
+      return;
+    }
+  char * path = get_plugin_collections_file_path ();
   g_return_if_fail (path && strlen (path) > 2);
   g_message ("Writing plugin collections to %s...", path);
   g_file_set_contents (path, yaml, -1, &err);

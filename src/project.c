@@ -875,6 +875,142 @@ project_get_existing_yaml (
 }
 
 /**
+ * Upgrades the given project YAML's schema if needed.
+ *
+ * @return True if the schema was upgraded.
+ */
+COLD static bool
+upgrade_schema (char ** yaml, int src_ver, GError ** error)
+{
+  g_message (
+    "upgrading project schema from version %d...", src_ver);
+  switch (src_ver)
+    {
+    case 1:
+      {
+        /* deserialize into the previous version of the struct */
+        GError *     err = NULL;
+        Project_v1 * self = (Project_v1 *) yaml_deserialize (
+          *yaml, &project_schema_v1, &err);
+        if (!self)
+          {
+            PROPAGATE_PREFIXED_ERROR_LITERAL (
+              error, err,
+              _ ("Failed to deserialize v1 project file"));
+            return false;
+          }
+
+        /* only dropping undo history, so just re-serialize
+       * into YAML */
+        g_free (*yaml);
+        err = NULL;
+        *yaml =
+          yaml_serialize (self, &project_schema_v1, &err);
+        if (!*yaml)
+          {
+            PROPAGATE_PREFIXED_ERROR_LITERAL (
+              error, err,
+              _ ("Failed to serialize v1 project file"));
+            return false;
+          }
+        cyaml_config_t cyaml_config;
+        yaml_get_cyaml_config (&cyaml_config);
+
+        /* free memory allocated by libcyaml */
+        cyaml_free (
+          &cyaml_config, &project_schema_v1, self, 0);
+
+        /* call again for next iteration */
+        err = NULL;
+        bool upgraded = upgrade_schema (yaml, 3, &err);
+        if (!upgraded)
+          {
+            PROPAGATE_PREFIXED_ERROR_LITERAL (
+              error, err,
+              "Failed to upgrade project schema to version 3");
+            return false;
+          }
+        return upgraded;
+      }
+      break;
+    case 2:
+    case 3:
+      {
+        /* deserialize into the previous version of the struct */
+        GError *     err = NULL;
+        Project_v1 * old_prj = (Project_v1 *)
+          yaml_deserialize (*yaml, &project_schema_v1, &err);
+        if (!old_prj)
+          {
+            PROPAGATE_PREFIXED_ERROR_LITERAL (
+              error, err,
+              _ ("Failed to deserialize v2/3 project file"));
+            return false;
+          }
+
+        /* create the new project and serialize it */
+        Project   _new_prj;
+        Project * new_prj = &_new_prj;
+        memset (new_prj, 0, sizeof (Project));
+        new_prj->schema_version = PROJECT_SCHEMA_VERSION;
+        new_prj->title = old_prj->title;
+        new_prj->datetime_str =
+          datetime_get_current_as_string ();
+        new_prj->version = zrythm_get_version (false);
+
+        /* upgrade */
+        new_prj->tracklist =
+          tracklist_upgrade_from_v1 (old_prj->tracklist);
+        new_prj->audio_engine =
+          engine_upgrade_from_v1 (old_prj->audio_engine);
+        new_prj->tracklist_selections =
+          tracklist_selections_upgrade_from_v1 (
+            old_prj->tracklist_selections);
+
+        new_prj->clip_editor = old_prj->clip_editor;
+        new_prj->timeline = old_prj->timeline;
+        new_prj->snap_grid_timeline =
+          old_prj->snap_grid_timeline;
+        new_prj->snap_grid_editor = old_prj->snap_grid_editor;
+        new_prj->quantize_opts_timeline =
+          old_prj->quantize_opts_timeline;
+        new_prj->quantize_opts_editor =
+          old_prj->quantize_opts_editor;
+        new_prj->region_link_group_manager =
+          old_prj->region_link_group_manager;
+        new_prj->port_connections_manager =
+          old_prj->port_connections_manager;
+        new_prj->midi_mappings = old_prj->midi_mappings;
+        new_prj->last_selection = old_prj->last_selection;
+
+        /* re-serialize */
+        g_free (*yaml);
+        err = NULL;
+        *yaml =
+          yaml_serialize (new_prj, &project_schema, &err);
+        if (!*yaml)
+          {
+            PROPAGATE_PREFIXED_ERROR_LITERAL (
+              error, err,
+              _ ("Failed to serialize v3 project file"));
+            return false;
+          }
+        cyaml_config_t cyaml_config;
+        yaml_get_cyaml_config (&cyaml_config);
+
+        /* free memory allocated by libcyaml */
+        cyaml_free (
+          &cyaml_config, &project_schema_v1, old_prj, 0);
+
+        return true;
+      }
+      break;
+    default:
+      return true;
+    }
+}
+
+/**
  * @param filename The filename to open. This will
  *   be the template in the case of template, or
  *   the actual project otherwise.
@@ -995,8 +1131,15 @@ load (
   if (schema_ver != PROJECT_SCHEMA_VERSION)
     {
       /* upgrade project */
-      upgraded = project_upgrade_schema (&yaml, schema_ver);
-      g_warn_if_fail (upgraded);
+      upgraded = upgrade_schema (&yaml, schema_ver, &err);
+      if (!upgraded)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err,
+            _ ("Failed to upgrade project schema"));
+          free (yaml);
+          return false;
+        }
     }
 
   Project * self = (Project *) yaml_deserialize (
@@ -1433,117 +1576,6 @@ project_load (
 }
 
 /**
- * Upgrades the given project YAML's schema if needed.
- *
- * @return True if the schema was upgraded.
- */
-bool
-project_upgrade_schema (char ** yaml, int src_ver)
-{
-  g_message (
-    "upgrading project schema from version %d...", src_ver);
-  switch (src_ver)
-    {
-    case 1:
-      {
-        /* deserialize into the previous version of the struct */
-        GError *     err = NULL;
-        Project_v1 * self = (Project_v1 *) yaml_deserialize (
-          *yaml, &project_schema_v1, &err);
-        if (!self)
-          {
-            HANDLE_ERROR (
-              err, "%s",
-              _ ("Failed to deserialize v1 project file"));
-            return false;
-          }
-
-        /* only dropping undo history, so just re-serialize
-       * into YAML */
-        g_free (*yaml);
-        *yaml = yaml_serialize (self, &project_schema_v1);
-        cyaml_config_t cyaml_config;
-        yaml_get_cyaml_config (&cyaml_config);
-
-        /* free memory allocated by libcyaml */
-        cyaml_free (
-          &cyaml_config, &project_schema_v1, self, 0);
-
-        /* call again for next iteration */
-        bool upgraded = project_upgrade_schema (yaml, 3);
-
-        return upgraded;
-      }
-      break;
-    case 2:
-    case 3:
-      {
-        /* deserialize into the previous version of the struct */
-        GError *     err = NULL;
-        Project_v1 * old_prj = (Project_v1 *)
-          yaml_deserialize (*yaml, &project_schema_v1, &err);
-        if (!old_prj)
-          {
-            HANDLE_ERROR (
-              err, "%s",
-              _ ("Failed to deserialize v2/3 project file"));
-            return false;
-          }
-
-        /* create the new project and serialize it */
-        Project   _new_prj;
-        Project * new_prj = &_new_prj;
-        memset (new_prj, 0, sizeof (Project));
-        new_prj->schema_version = PROJECT_SCHEMA_VERSION;
-        new_prj->title = old_prj->title;
-        new_prj->datetime_str =
-          datetime_get_current_as_string ();
-        new_prj->version = zrythm_get_version (false);
-
-        /* upgrade */
-        new_prj->tracklist =
-          tracklist_upgrade_from_v1 (old_prj->tracklist);
-        new_prj->audio_engine =
-          engine_upgrade_from_v1 (old_prj->audio_engine);
-        new_prj->tracklist_selections =
-          tracklist_selections_upgrade_from_v1 (
-            old_prj->tracklist_selections);
-
-        new_prj->clip_editor = old_prj->clip_editor;
-        new_prj->timeline = old_prj->timeline;
-        new_prj->snap_grid_timeline =
-          old_prj->snap_grid_timeline;
-        new_prj->snap_grid_editor = old_prj->snap_grid_editor;
-        new_prj->quantize_opts_timeline =
-          old_prj->quantize_opts_timeline;
-        new_prj->quantize_opts_editor =
-          old_prj->quantize_opts_editor;
-        new_prj->region_link_group_manager =
-          old_prj->region_link_group_manager;
-        new_prj->port_connections_manager =
-          old_prj->port_connections_manager;
-        new_prj->midi_mappings = old_prj->midi_mappings;
-        new_prj->last_selection = old_prj->last_selection;
-
-        /* re-serialize */
-        g_free (*yaml);
-        *yaml = yaml_serialize (new_prj, &project_schema);
-        cyaml_config_t cyaml_config;
-        yaml_get_cyaml_config (&cyaml_config);
-
-        /* free memory allocated by libcyaml */
-        cyaml_free (
-          &cyaml_config, &project_schema_v1, old_prj, 0);
-
-        return true;
-      }
-      break;
-    default:
-      return true;
-    }
-}
-
-/**
  * Autosave callback.
  *
  * This will keep getting called at regular short intervals,
@@ -1813,14 +1845,15 @@ serialize_project_thread (ProjectSaveData * data)
   GError * err = NULL;
   gint64   time_before = g_get_monotonic_time ();
   char *   yaml =
-    yaml_serialize (data->project, &project_schema);
+    yaml_serialize (data->project, &project_schema, &err);
   gint64 time_after = g_get_monotonic_time ();
   g_message (
     "time to serialize: %ldms",
     (long) (time_after - time_before) / 1000);
   if (!yaml)
     {
-      g_critical ("Failed to serialize project");
+      HANDLE_ERROR_LITERAL (
+        err, _ ("Failed to serialize project"));
       data->has_error = true;
       goto serialize_end;
     }

@@ -749,13 +749,20 @@ chord_preset_pack_manager_serialize (
             pack_dir);
           return false;
         }
-      char * pack_yaml =
-        yaml_serialize (pack, &chord_preset_pack_schema);
-      g_return_val_if_fail (pack_yaml, false);
+      char * pack_yaml = yaml_serialize (
+        pack, &chord_preset_pack_schema, &err);
+      if (!pack_yaml)
+        {
+          PROPAGATE_PREFIXED_ERROR_LITERAL (
+            error, err,
+            _ ("Failed to serialize chord preset packs"));
+          return false;
+        }
       char * pack_path =
         g_build_filename (pack_dir, USER_PACK_FILENAME, NULL);
-      g_file_set_contents (pack_path, pack_yaml, -1, &err);
-      if (err != NULL)
+      success =
+        g_file_set_contents (pack_path, pack_yaml, -1, &err);
+      if (!success)
         {
           PROPAGATE_PREFIXED_ERROR (
             error, err,

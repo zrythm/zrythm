@@ -601,14 +601,6 @@ COLD Project *
 project_new (Zrythm * zrythm);
 
 /**
- * Upgrades the given project YAML's schema if needed.
- *
- * @return True if the schema was upgraded.
- */
-COLD bool
-project_upgrade_schema (char ** yaml, int src_ver);
-
-/**
  * Tears down the project.
  */
 void

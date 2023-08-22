@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -17,6 +17,7 @@
 #include "plugins/plugin_manager.h"
 #include "project.h"
 #include "settings/settings.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/objects.h"
@@ -121,12 +122,21 @@ on_instrument_changed (
   g_return_if_fail (SAMPLE_PROCESSOR->instrument_setting);
 
   /* save setting */
-  char * setting_yaml = yaml_serialize (
+  GError * err = NULL;
+  char *   setting_yaml = yaml_serialize (
     SAMPLE_PROCESSOR->instrument_setting,
-    &plugin_setting_schema);
-  g_settings_set_string (
-    S_UI_FILE_BROWSER, "instrument", setting_yaml);
-  g_free (setting_yaml);
+    &plugin_setting_schema, &err);
+  if (setting_yaml)
+    {
+      g_settings_set_string (
+        S_UI_FILE_BROWSER, "instrument", setting_yaml);
+      g_free (setting_yaml);
+    }
+  else
+    {
+      HANDLE_ERROR_LITERAL (
+        err, "Failed to serialize instrument setting");
+    }
 
   engine_resume (AUDIO_ENGINE, &state);
 

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/port_connection_action.h"
@@ -686,23 +686,27 @@ void
 plugin_settings_serialize_to_file (PluginSettings * self)
 {
   g_message ("Serializing plugin settings...");
-  char * yaml = yaml_serialize (self, &plugin_settings_schema);
-  g_return_if_fail (yaml);
   GError * err = NULL;
-  char *   path = get_plugin_settings_file_path ();
+  char *   yaml =
+    yaml_serialize (self, &plugin_settings_schema, &err);
+  if (!yaml)
+    {
+      HANDLE_ERROR_LITERAL (
+        err, _ ("Failed to serialize plugin settings"));
+      return;
+    }
+  err = NULL;
+  char * path = get_plugin_settings_file_path ();
   g_return_if_fail (path && strlen (path) > 2);
   g_message ("Writing plugin settings to %s...", path);
-  g_file_set_contents (path, yaml, -1, &err);
-  if (err != NULL)
+  bool success = g_file_set_contents (path, yaml, -1, &err);
+  if (!success)
     {
-      g_warning (
-        "Unable to write plugin settings "
-        "file: %s",
-        err->message);
-      g_error_free (err);
+      HANDLE_ERROR_LITERAL (
+        err, _ ("Failed to write plugin settings file"));
       g_free (path);
       g_free (yaml);
-      g_return_if_reached ();
+      return;
     }
   g_free (path);
   g_free (yaml);

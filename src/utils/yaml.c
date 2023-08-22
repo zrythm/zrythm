@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <string.h>
@@ -8,12 +8,12 @@
 
 #include <gtk/gtk.h>
 
-#if 0
+#include <locale.h>
+
 typedef enum
 {
-  Z_YAML_ERROR_UNKNOWN,
+  Z_YAML_ERROR_FAILED,
 } ZYamlError;
-#endif
 
 #define Z_YAML_ERROR z_yaml_error_quark ()
 GQuark
@@ -77,26 +77,42 @@ yaml_cyaml_log_func (
  * MUST be free'd.
  */
 char *
-yaml_serialize (void * data, const cyaml_schema_value_t * schema)
+yaml_serialize (
+  void *                       data,
+  const cyaml_schema_value_t * schema,
+  GError **                    error)
 {
-  cyaml_err_t    err;
+  char * result = NULL;
+
+  /* remember current locale and temporarily switch to C */
+  char * orig_locale = g_strdup (setlocale (LC_ALL, NULL));
+  setlocale (LC_ALL, "C");
+
   cyaml_config_t cyaml_config = {};
   yaml_get_cyaml_config (&cyaml_config);
-  char * output;
-  size_t output_len;
-  err = cyaml_save_data (
+  char *      output;
+  size_t      output_len;
+  cyaml_err_t err = cyaml_save_data (
     &output, &output_len, &cyaml_config, schema, data, 0);
   if (err != CYAML_OK)
     {
-      g_warning ("error %s", cyaml_strerror (err));
-      return NULL;
+      g_set_error (
+        error, Z_YAML_ERROR, Z_YAML_ERROR_FAILED,
+        "cyaml error: %s", cyaml_strerror (err));
+      goto return_serialize_result;
     }
-  char * new_str = object_new_n (output_len + 1, char);
-  memcpy (new_str, output, output_len);
-  new_str[output_len] = '\0';
+  result = object_new_n (output_len + 1, char);
+  memcpy (result, output, output_len);
+  result[output_len] = '\0';
   cyaml_config.mem_fn (cyaml_config.mem_ctx, output, 0);
 
-  return new_str;
+return_serialize_result:
+
+  /* Restore the original locale. */
+  setlocale (LC_ALL, orig_locale);
+  g_free (orig_locale);
+
+  return result;
 }
 
 void *
@@ -105,7 +121,12 @@ yaml_deserialize (
   const cyaml_schema_value_t * schema,
   GError **                    error)
 {
-  void *         obj;
+  void * obj = NULL;
+
+  /* remember current locale and temporarily switch to C */
+  char * orig_locale = g_strdup (setlocale (LC_ALL, NULL));
+  setlocale (LC_ALL, "C");
+
   cyaml_config_t cyaml_config;
   yaml_get_cyaml_config (&cyaml_config);
   cyaml_err_t err = cyaml_load_data (
@@ -114,10 +135,16 @@ yaml_deserialize (
   if (err != CYAML_OK)
     {
       g_set_error (
-        error, Z_YAML_ERROR, err, "cyaml error: %s",
-        cyaml_strerror (err));
-      return NULL;
+        error, Z_YAML_ERROR, Z_YAML_ERROR_FAILED,
+        "cyaml error: %s", cyaml_strerror (err));
+      goto return_deserialize_result;
     }
+
+return_deserialize_result:
+
+  /* Restore the original locale. */
+  setlocale (LC_ALL, orig_locale);
+  g_free (orig_locale);
 
   return obj;
 }
@@ -125,8 +152,8 @@ yaml_deserialize (
 void
 yaml_print (void * data, const cyaml_schema_value_t * schema)
 {
-  char * yaml = yaml_serialize (data, schema);
-
+  GError * err = NULL;
+  char *   yaml = yaml_serialize (data, schema, &err);
   if (yaml)
     {
       g_message ("[YAML]\n%s", yaml);
@@ -134,6 +161,8 @@ yaml_print (void * data, const cyaml_schema_value_t * schema)
     }
   else
     {
-      g_warning ("failed to deserialize %p", data);
+      g_warning (
+        "failed to deserialize %p: %s", data, err->message);
+      g_error_free (err);
     }
 }

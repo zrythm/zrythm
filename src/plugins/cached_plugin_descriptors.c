@@ -1,12 +1,15 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/cached_plugin_descriptors.h"
+#include "utils/error.h"
 #include "utils/file.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm.h"
+
+#include <glib/gi18n.h>
 
 static char *
 get_cached_plugin_descriptors_file_path (void)
@@ -23,11 +26,18 @@ cached_plugin_descriptors_serialize_to_file (
   CachedPluginDescriptors * self)
 {
   g_message ("Serializing cached plugin descriptors...");
-  char * yaml =
-    yaml_serialize (self, &cached_plugin_descriptors_schema);
-  g_return_if_fail (yaml);
   GError * err = NULL;
-  char *   path = get_cached_plugin_descriptors_file_path ();
+  char *   yaml = yaml_serialize (
+    self, &cached_plugin_descriptors_schema, &err);
+  if (!yaml)
+    {
+      HANDLE_ERROR_LITERAL (
+        err,
+        _ ("Failed to serialize cached plugin descriptors"));
+      return;
+    }
+  err = NULL;
+  char * path = get_cached_plugin_descriptors_file_path ();
   g_return_if_fail (path && strlen (path) > 2);
   g_message (
     "Writing cached plugin descriptors to %s...", path);

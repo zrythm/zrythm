@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
@@ -37,14 +37,17 @@ test_load_precise_float (void)
   float_struct my_struct;
   my_struct.fval = 12;
   char * ret =
-    yaml_serialize (&my_struct, &float_struct_schema);
+    yaml_serialize (&my_struct, &float_struct_schema, NULL);
+  g_assert_nonnull (ret);
   g_assert_cmpstr (ret, ==, "---\nfval: 12\n...\n");
   g_free (ret);
 
   my_struct.fval = 1.55331e-40f;
   g_message (
     "my_struct.fval %e %g", my_struct.fval, my_struct.fval);
-  ret = yaml_serialize (&my_struct, &float_struct_schema);
+  ret =
+    yaml_serialize (&my_struct, &float_struct_schema, NULL);
+  g_assert_nonnull (ret);
   g_message ("\n%s", ret);
   bool eq =
     string_is_equal (ret, "---\nfval: 1.55331e-40\n...\n");

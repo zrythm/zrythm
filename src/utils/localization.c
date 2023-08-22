@@ -263,9 +263,7 @@ localization_init (
     {
       code = g_strdup (setlocale (LC_ALL, NULL));
       g_message (
-        "Initing localization with system locale "
-        "%s",
-        code);
+        "Initing localization with system locale %s", code);
     }
   else
     {

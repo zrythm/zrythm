@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -249,10 +249,11 @@
  * @return Newly allocated YAML string, or NULL if
  *   error.
  */
-NONNULL char *
-yaml_serialize (
+NONNULL_ARGS (1, 2)
+char * yaml_serialize (
   void *                       data,
-  const cyaml_schema_value_t * schema);
+  const cyaml_schema_value_t * schema,
+  GError **                    error);
 
 NONNULL_ARGS (1, 2)
 void * yaml_deserialize (

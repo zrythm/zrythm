@@ -116,8 +116,10 @@ test_remove_unused (void)
       g_assert_true (
         g_file_test (last_clip_path, G_FILE_TEST_EXISTS));
 
-      char * undo_manager_yaml =
-        yaml_serialize (UNDO_MANAGER, &undo_manager_schema);
+      char * undo_manager_yaml = yaml_serialize (
+        UNDO_MANAGER, &undo_manager_schema, NULL);
+      g_assert_nonnull (undo_manager_yaml);
+      g_return_if_fail (undo_manager_yaml);
       g_message ("\n%s", undo_manager_yaml);
 
       /* undo and check that last file still exists */
