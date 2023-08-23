@@ -8,21 +8,22 @@ flatpak_build="@FLATPAK_BUILD@"
 if [ "$flatpak_build" != "1" ]; then
   jack_path=$(dirname $(ldconfig -p | grep 'libjack.so ' | head -n 1 | cut -d ' ' -f 4))
 
+  export GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@
+
+  # used by the universal installer
   if [ "@IS_INSTALLER_VER@" = "1" ]; then
     export GDK_PIXBUF_MODULE_FILE="@LIBDIR@/gdk-pixbuf-2.0/2.10.0/loaders.cache"
     export GUILE_LOAD_PATH="@DATADIR@/guile/3.0"
     export GUILE_LOAD_COMPILED_PATH="@LIBDIR@/guile/3.0"
     export GUILE_AUTO_COMPILE=0
+    export PATH="@PREFIX@/libexec:$PATH"
     export @LD_LIBRARY_PATH_ENV@="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:@LIBDIR@:$jack_path:$@LD_LIBRARY_PATH_ENV@"
   else
     export @LD_LIBRARY_PATH_ENV@="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:$jack_path:@LIBDIR@:$@LD_LIBRARY_PATH_ENV@"
   fi
-
-  export GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@
 fi
 
 export G_MESSAGES_DEBUG=zrythm
-export GDK_SYNCHRONIZE=1
 
 user_dir="`gsettings get org.zrythm.Zrythm.preferences.general.paths zrythm-dir | sed s/\'//g`"
 user_gdb_dir="$user_dir/gdb"
@@ -35,8 +36,8 @@ gdb -q --batch \
   -ex "set logging file $gdb_out_file" \
   -ex "set logging on" \
   -ex "set pagination off" \
-  -ex "handle SIG32 pass nostop noprint" \
-  -ex "handle SIGTRAP pass nostop noprint" \
+  -ex "handle SIG32 pass nostop print" \
+  -ex "handle SIGTRAP pass nostop print" \
   -ex "echo backtrace:\\n" \
   -ex "backtrace full" \
   -ex "echo \\n\\nregisters:\\n" \

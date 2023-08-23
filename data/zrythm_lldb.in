@@ -5,17 +5,29 @@
 set -xe
 
 export GSETTINGS_SCHEMA_DIR=@SCHEMAS_DIR@
+
+# used by the universal installer
+if [ "@IS_INSTALLER_VER@" = "1" ]; then
+  export GDK_PIXBUF_MODULE_FILE="@LIBDIR@/gdk-pixbuf-2.0/2.10.0/loaders.cache"
+  export GUILE_LOAD_PATH="@DATADIR@/guile/3.0"
+  export GUILE_LOAD_COMPILED_PATH="@LIBDIR@/guile/3.0"
+  export GUILE_AUTO_COMPILE=0
+  export PATH="@PREFIX@/libexec:$PATH"
+  export @LD_LIBRARY_PATH_ENV@="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:@LIBDIR@:$@LD_LIBRARY_PATH_ENV@"
+else
+  export @LD_LIBRARY_PATH_ENV@="@ZRYTHM_CARLA_LIBDIR@:@ZRYTHM_LIBDIR@:@LIBDIR@:$@LD_LIBRARY_PATH_ENV@"
+fi
+
 export G_MESSAGES_DEBUG=zrythm
-export GDK_SYNCHRONIZE=1
 
 user_dir="`gsettings get org.zrythm.Zrythm.preferences.general.paths zrythm-dir | sed s/\'//g`"
 user_lldb_dir="$user_dir/lldb"
 date_str=`date +%Y-%m-%d_%H-%M-%S`
 lldb_out_file="$user_lldb_dir/lldb_$date_str.bt"
 
-# TODO test
-lldb --attach-pid --batch \
-  --one-line bt \
-  --one-line-on-crash bt \
+lldb --batch \
+  --one-line pro hand -p true -s false \
+  --one-line r \
+  --one-line-on-crash backtrace full \
   --one-line-on-crash quit \
   @BIN_DIR@/@PROGRAM_NAME_LOWERCASE@ "$@"
