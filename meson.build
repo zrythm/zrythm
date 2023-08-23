@@ -1228,17 +1228,6 @@ if have_valgrind
   cdata.set ('HAVE_VALGRIND', 1)
 endif
 
-# don't use libbacktrace on windows - use MgwHelp from DrMingw
-if not os_windows
-  libbacktrace_dep = cc.find_library (
-    'backtrace', required: false)
-  if not libbacktrace_dep.found ()
-    libbacktrace_proj = subproject ('libbacktrace')
-    libbacktrace_dep = libbacktrace_proj.get_variable ('libbacktrace_dep')
-  endif
-  cdata.set ('HAVE_LIBBACKTRACE', 1)
-endif
-
 xxhash_dep = dependency (
   'libxxhash',
   fallback: ['xxhash', 'xxhash_dep'],
@@ -1314,7 +1303,6 @@ zrythm_deps = [
   gtksource_dep,
   lsp_dsp_dep,
   valgrind_dep,
-  libbacktrace_dep,
   xxhash_dep,
   vamp_deps,
   dependency ('libcurl'),
@@ -1350,6 +1338,15 @@ if os_windows
     endif
   endif
   zrythm_deps += dbg_help_lib
+else # else if not windows
+  libbacktrace_dep = cc.find_library (
+    'backtrace', required: false)
+  if not libbacktrace_dep.found ()
+    libbacktrace_proj = subproject ('libbacktrace')
+    libbacktrace_dep = libbacktrace_proj.get_variable ('libbacktrace_dep')
+  endif
+  zrythm_deps += libbacktrace_dep
+  cdata.set ('HAVE_LIBBACKTRACE', 1)
 endif
 
 if use_weak_jack
