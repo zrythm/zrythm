@@ -6,6 +6,24 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.12.1] - 2023-08-24
+### Added
+- Make file import cancellable and allow parallel import for multiple files
+
+### Changed
+- Simplify some optimization flags and remove weird ones
+- Minor performance optimizations
+- New developer docs theme
+- Save and restore locale before and after serializing/deserializing YAML files to avoid float presentation issues
+- Use MgwHelp on Windows if found
+- Meson: Work around broken `vcs_tag()` on Windows
+
+### Fixed
+- Fix not disposing child box in file chooser entry
+- Various accessibility/focus fixes
+- Fix some memory leaks
+- Fix AutomationSelections not actually extending ArrangerSelections as intended
+
 ## [1.0.0-beta.4.11.1] - 2023-08-19
 ### Added
 - Add bypass button to channel slot widgets and redesign
