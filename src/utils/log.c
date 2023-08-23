@@ -586,12 +586,10 @@ log_writer_format_fields (
     }
   else
     {
-      GString *     msg;
-      const gchar * charset;
-
-      msg = g_string_new (message);
+      GString * msg = g_string_new (message);
       escape_string (msg);
 
+      const gchar * charset;
       if (g_get_console_charset (&charset))
         {
           /* charset is UTF-8 already */

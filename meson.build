@@ -199,6 +199,12 @@ else
   error ('unknown host system ' + host_machine.system ())
 endif
 
+if get_option ('fallback_version') == ''
+  version_fallback = meson.project_version ()
+else
+  version_fallback = get_option ('fallback_version')
+endif
+
 # add global arguments
 if os_windows
   # if not building an msys2 package, this might
@@ -285,7 +291,10 @@ cdata.set_quoted (
 cdata.set_quoted (
   'HOST_MACHINE_SYSTEM', host_machine.system ())
 cdata.set_quoted (
-  'PACKAGE_VERSION', '@VCS_TAG@')
+  'PACKAGE_VERSION',
+  # vcs_tag() broke on windows builds so just use the given
+  # version
+  os_windows ? fallback_version : '@VCS_TAG@')
 cdata.set_quoted (
   'COMPILER',
   meson.get_compiler('c').get_id())
@@ -1332,10 +1341,7 @@ if os_windows
   # use MgwHelp if found, otherwise regular DbgHelp
   dbg_help_lib = cc.find_library ('mgwhelp', required: false)
   if not dbg_help_lib.found ()
-    dbg_help_lib = cc.find_library ('libmgwhelp', required: false)
-    if not dbg_help_lib.found ()
-      cc.find_library ('dbghelp')
-    endif
+    cc.find_library ('dbghelp')
   endif
   zrythm_deps += dbg_help_lib
 else # else if not windows
@@ -1392,11 +1398,6 @@ tmp_h = configure_file (
   output: 'tmp.h',
   configuration: cdata,
   )
-if get_option ('fallback_version') == ''
-  version_fallback = meson.project_version ()
-else
-  version_fallback = get_option ('fallback_version')
-endif
 config_h_vcs = vcs_tag (
   input: tmp_h,
   output: 'zrythm-config.h',

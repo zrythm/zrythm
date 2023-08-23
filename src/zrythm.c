@@ -146,7 +146,7 @@ zrythm_get_version (bool with_v)
   else
     {
       if (ver[0] == 'v')
-        return g_strdup (ver + 1);
+        return g_strdup (&ver[1]);
       else
         return g_strdup (ver);
     }
