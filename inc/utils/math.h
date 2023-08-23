@@ -169,10 +169,10 @@ CONST
 static inline sample_t
 math_get_fader_val_from_amp (sample_t amp)
 {
-  static const float fader_coefficient1 =
+  const float fader_coefficient1 =
     /*192.f * logf (2.f);*/
     133.084258667509499408f;
-  static const float fader_coefficient2 =
+  const float fader_coefficient2 =
     /*powf (logf (2.f), 8.f) * powf (198.f, 8.f);*/
     1.25870863180257576e17f;
 
@@ -190,7 +190,9 @@ math_get_fader_val_from_amp (sample_t amp)
         }
       sample_t fader =
         powf (
-          6.f * math_fast_log (amp) + fader_coefficient1, 8.f)
+          /* note: don't use fast_log here - it causes
+           * weirdness in faders */
+          6.f * logf (amp) + fader_coefficient1, 8.f)
         / fader_coefficient2;
       return (sample_t) fader;
     }
