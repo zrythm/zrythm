@@ -1367,6 +1367,8 @@ digital_meter_widget_class_init (
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = digital_meter_snapshot;
   gtk_widget_class_set_css_name (wklass, "digital-meter");
+  gtk_widget_class_set_accessible_role (
+    wklass, GTK_ACCESSIBLE_ROLE_GROUP);
 
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BIN_LAYOUT);
@@ -1379,7 +1381,7 @@ digital_meter_widget_class_init (
 static void
 digital_meter_widget_init (DigitalMeterWidget * self)
 {
-  g_return_if_fail (Z_IS_DIGITAL_METER_WIDGET (self));
+  gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (

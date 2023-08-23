@@ -517,6 +517,7 @@ fader_widget_init (FaderWidget * self)
   self->end_color = UI_COLORS->fader_fill_end;
 
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
+  gtk_widget_set_focus_on_click (GTK_WIDGET (self), true);
 
   self->popover_menu =
     GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
@@ -604,7 +605,8 @@ fader_widget_init (FaderWidget * self)
   gtk_accessible_update_property (
     GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_VALUE_MAX,
     2.0, GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, 0.0,
-    GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, 1.0, -1);
+    GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, 1.0,
+    GTK_ACCESSIBLE_PROPERTY_LABEL, "Fader", -1);
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), fader_tick_cb, self, NULL);

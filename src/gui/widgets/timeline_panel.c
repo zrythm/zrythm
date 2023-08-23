@@ -131,20 +131,24 @@ timeline_panel_widget_init (TimelinePanelWidget * self)
   gtk_widget_set_name (
     GTK_WIDGET (self->timeline_divider_box),
     "timeline-divider-box");
+
+  gtk_widget_set_focus_on_click (GTK_WIDGET (self), false);
 }
 
 static void
 timeline_panel_widget_class_init (
   TimelinePanelWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass, "timeline_panel.ui");
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (wklass, "timeline_panel.ui");
 
-  gtk_widget_class_set_css_name (klass, "timeline-panel");
+  gtk_widget_class_set_css_name (wklass, "timeline-panel");
+  gtk_widget_class_set_accessible_role (
+    wklass, GTK_ACCESSIBLE_ROLE_GROUP);
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, TimelinePanelWidget, x)
+    wklass, TimelinePanelWidget, x)
 
   BIND_CHILD (tracklist_timeline);
   BIND_CHILD (tracklist_top);

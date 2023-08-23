@@ -201,6 +201,10 @@ color_area_widget_init (ColorAreaWidget * self)
 {
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
+  gtk_accessible_update_property (
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL,
+    "Color", -1);
+
   GtkGestureClick * mp =
     GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (
@@ -229,6 +233,8 @@ color_area_widget_class_init (ColorAreaWidgetClass * klass)
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = color_area_snapshot;
   gtk_widget_class_set_css_name (wklass, "color-area");
+  gtk_widget_class_set_accessible_role (
+    wklass, GTK_ACCESSIBLE_ROLE_BUTTON);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;

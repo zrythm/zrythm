@@ -79,6 +79,9 @@ main_notebook_widget_init (MainNotebookWidget * self)
 
   self->timeline_plus_event_viewer_paned =
     GTK_PANED (gtk_paned_new (GTK_ORIENTATION_HORIZONTAL));
+  gtk_widget_set_focusable (
+    GTK_WIDGET (self->timeline_plus_event_viewer_paned),
+    false);
   gtk_paned_set_shrink_start_child (
     self->timeline_plus_event_viewer_paned, false);
   gtk_paned_set_shrink_end_child (

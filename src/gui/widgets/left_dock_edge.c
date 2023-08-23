@@ -111,17 +111,17 @@ wrap_inspector_in_scrolled_window (
   LeftDockEdgeWidget * self,
   GtkWidget *          widget)
 {
-  GtkScrolledWindow * scroll;
-  GtkViewport *       viewport;
-  scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
+  GtkScrolledWindow * scroll =
+    GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
   /*gtk_scrolled_window_set_overlay_scrolling (*/
   /*scroll, false);*/
   gtk_scrolled_window_set_policy (
     scroll, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-  viewport = GTK_VIEWPORT (gtk_viewport_new (NULL, NULL));
-  gtk_viewport_set_child (GTK_VIEWPORT (viewport), widget);
   gtk_scrolled_window_set_child (
-    GTK_SCROLLED_WINDOW (scroll), GTK_WIDGET (viewport));
+    GTK_SCROLLED_WINDOW (scroll), GTK_WIDGET (widget));
+
+  /* doesn't allow focus inside it otherwise */
+  gtk_widget_set_focusable (GTK_WIDGET (scroll), false);
 
   return scroll;
 }

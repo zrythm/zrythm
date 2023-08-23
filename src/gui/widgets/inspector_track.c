@@ -28,7 +28,7 @@
 G_DEFINE_TYPE (
   InspectorTrackWidget,
   inspector_track_widget,
-  GTK_TYPE_BOX)
+  GTK_TYPE_WIDGET)
 
 static void
 reveal_cb (
@@ -253,12 +253,16 @@ static void
 inspector_track_widget_class_init (
   InspectorTrackWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass, "inspector_track.ui");
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_layout_manager_type (
+    wklass, GTK_TYPE_BOX_LAYOUT);
+  resources_set_class_template (wklass, "inspector_track.ui");
+  gtk_widget_class_set_accessible_role (
+    wklass, GTK_ACCESSIBLE_ROLE_GROUP);
 
 #define BIND_CHILD(child) \
   gtk_widget_class_bind_template_child ( \
-    GTK_WIDGET_CLASS (klass), InspectorTrackWidget, child);
+    GTK_WIDGET_CLASS (wklass), InspectorTrackWidget, child);
 
   BIND_CHILD (track_info);
   BIND_CHILD (sends);
@@ -289,6 +293,12 @@ inspector_track_widget_init (InspectorTrackWidget * self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_widget_add_css_class (GTK_WIDGET (self), "inspector");
+
+  GtkBoxLayout * box_layout = GTK_BOX_LAYOUT (
+    gtk_widget_get_layout_manager (GTK_WIDGET (self)));
+  gtk_box_layout_set_spacing (box_layout, 2);
+  gtk_orientable_set_orientation (
+    GTK_ORIENTABLE (box_layout), GTK_ORIENTATION_VERTICAL);
 
   expander_box_widget_set_vexpand (
     Z_EXPANDER_BOX_WIDGET (self->inserts), false);

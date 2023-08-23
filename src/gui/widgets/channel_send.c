@@ -365,10 +365,15 @@ channel_send_widget_init (ChannelSendWidget * self)
 {
   gtk_widget_set_size_request (GTK_WIDGET (self), -1, 20);
 
+  gtk_accessible_update_property (
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL,
+    "Channel send", -1);
+
   self->cache_tooltip = NULL;
 
   gtk_widget_set_hexpand (GTK_WIDGET (self), true);
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
+  gtk_widget_set_focus_on_click (GTK_WIDGET (self), true);
 
   self->selector_popover =
     channel_send_selector_widget_new (self);
@@ -441,6 +446,8 @@ channel_send_widget_class_init (ChannelSendWidgetClass * klass)
   gtk_widget_class_set_css_name (wklass, "channel-send");
   wklass->snapshot = channel_send_snapshot;
   wklass->css_changed = on_css_changed;
+  gtk_widget_class_set_accessible_role (
+    wklass, GTK_ACCESSIBLE_ROLE_GROUP);
 
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BIN_LAYOUT);

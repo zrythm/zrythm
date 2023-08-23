@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="InspectorTrackWidget" parent="GtkBox">
-    <property name="orientation">GTK_ORIENTATION_VERTICAL</property>
-    <property name="spacing">2</property>
+  <template class="InspectorTrackWidget" parent="GtkWidget">
     <child>
       <object class="ColorAreaWidget" id="color">
-        <property name="visible">1</property>
         <property name="height-request">8</property>
         <property name="margin-bottom">1</property>
       </object>

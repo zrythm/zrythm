@@ -981,6 +981,8 @@ channel_slot_widget_init (ChannelSlotWidget * self)
   gtk_widget_set_size_request (GTK_WIDGET (self), -1, 20);
 
   gtk_widget_set_hexpand (GTK_WIDGET (self), true);
+  gtk_widget_set_focusable (GTK_WIDGET (self), true);
+  gtk_widget_set_focus_on_click (GTK_WIDGET (self), true);
 
   self->pl_name = NULL;
   gtk_widget_set_tooltip_text (
@@ -1037,6 +1039,10 @@ channel_slot_widget_init (ChannelSlotWidget * self)
   gtk_widget_set_parent (
     GTK_WIDGET (self->activate_btn), GTK_WIDGET (self));
 
+  gtk_accessible_update_property (
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL,
+    "Channel slot", -1);
+
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
 }
@@ -1048,6 +1054,8 @@ channel_slot_widget_class_init (ChannelSlotWidgetClass * klass)
   wklass->snapshot = channel_slot_snapshot;
   wklass->css_changed = on_css_changed;
   gtk_widget_class_set_css_name (wklass, "channel-slot");
+  gtk_widget_class_set_accessible_role (
+    wklass, GTK_ACCESSIBLE_ROLE_GROUP);
 
   gtk_widget_class_set_layout_manager_type (
     wklass, GTK_TYPE_BOX_LAYOUT);
