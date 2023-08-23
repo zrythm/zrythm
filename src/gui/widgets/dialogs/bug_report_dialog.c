@@ -522,11 +522,11 @@ bug_report_dialog_new (
   self->log = log_get_last_n_lines (LOG, 60);
   self->log_long = log_get_last_n_lines (LOG, 160);
   self->undo_stack =
-    PROJECT && UNDO_MANAGER
+    PROJECT && UNDO_MANAGER && UNDO_MANAGER->undo_stack
       ? undo_stack_get_as_string (UNDO_MANAGER->undo_stack, 12)
       : g_strdup ("<undo stack uninitialized>\n");
   self->undo_stack_long =
-    PROJECT && UNDO_MANAGER
+    PROJECT && UNDO_MANAGER && UNDO_MANAGER->undo_stack
       ? undo_stack_get_as_string (UNDO_MANAGER->undo_stack, 64)
       : g_strdup ("<undo stack uninitialized>\n");
   self->backtrace = g_strdup (backtrace);

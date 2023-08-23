@@ -1228,13 +1228,16 @@ if have_valgrind
   cdata.set ('HAVE_VALGRIND', 1)
 endif
 
-libbacktrace_dep = cc.find_library (
-  'backtrace', required: false)
-if not libbacktrace_dep.found ()
-  libbacktrace_proj = subproject ('libbacktrace')
-  libbacktrace_dep = libbacktrace_proj.get_variable ('libbacktrace_dep')
+# don't use libbacktrace on windows - use MgwHelp from DrMingw
+if not os_windows
+  libbacktrace_dep = cc.find_library (
+    'backtrace', required: false)
+  if not libbacktrace_dep.found ()
+    libbacktrace_proj = subproject ('libbacktrace')
+    libbacktrace_dep = libbacktrace_proj.get_variable ('libbacktrace_dep')
+  endif
+  cdata.set ('HAVE_LIBBACKTRACE', 1)
 endif
-cdata.set ('HAVE_LIBBACKTRACE', 1)
 
 xxhash_dep = dependency (
   'libxxhash',
@@ -1338,14 +1341,15 @@ if os_windows
   zrythm_deps += cc.find_library (
     'winmm', static: true)
 
-  # TODO disable dbghelp and enable drmingw when
-  # meson issue is fixed
-  zrythm_deps += cc.find_library ('dbghelp')
-  #drmingw_subproject = cmake.subproject (
-  #  'drmingw', options: cmake_opts)
-  #drmingw_dep = drmingw_subproject.dependency (
-  #  'drmingw')
-  #zrythm_deps += drmingw_dep
+  # use MgwHelp if found, otherwise regular DbgHelp
+  dbg_help_lib = cc.find_library ('mgwhelp', required: false)
+  if not dbg_help_lib.found ()
+    dbg_help_lib = cc.find_library ('libmgwhelp', required: false)
+    if not dbg_help_lib.found ()
+      cc.find_library ('dbghelp')
+    endif
+  endif
+  zrythm_deps += dbg_help_lib
 endif
 
 if use_weak_jack

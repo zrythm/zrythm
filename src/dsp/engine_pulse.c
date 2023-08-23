@@ -162,8 +162,7 @@ engine_pulse_context_state_callback (
       g_message ("Pulse context ready");
       break;
     case PA_CONTEXT_FAILED:
-      /* FIXME handle gracefully */
-      g_critical (
+      g_warning (
         "Error in pulse context: %s",
         pa_strerror (pa_context_errno (pulse)));
       break;

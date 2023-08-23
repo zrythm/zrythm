@@ -31,7 +31,7 @@
 #include <string.h>
 #ifdef _WOE32
 #  include <windows.h>
-
+/*#define DBGHELP_TRANSLATE_TCHAR*/
 #  include <dbghelp.h>
 #else
 #  include <execinfo.h>
@@ -353,21 +353,17 @@ read_traditional_bt:
         "failed to get a backtrace state, creating traditional "
         "backtrace...");
     }
-#endif
+#endif /* CAN_USE_LIBBACKTRACE */
 
 #if defined(_WOE32)
-  unsigned int   i;
-  void *         stack[100];
-  unsigned short frames;
-  SYMBOL_INFO *  symbol;
-  HANDLE         process;
-
-  process = GetCurrentProcess ();
+  void * stack[100];
+  HANDLE process = GetCurrentProcess ();
 
   SymInitialize (process, NULL, TRUE);
 
-  frames = CaptureStackBackTrace (0, 100, stack, NULL);
-  symbol = (SYMBOL_INFO *) calloc (
+  unsigned short frames =
+    CaptureStackBackTrace (0, 100, stack, NULL);
+  SYMBOL_INFO * symbol = (SYMBOL_INFO *) calloc (
     sizeof (SYMBOL_INFO) + 256 * sizeof (char), 1);
   symbol->MaxNameLen = 255;
   symbol->SizeOfStruct = sizeof (SYMBOL_INFO);
@@ -376,15 +372,17 @@ read_traditional_bt:
     sizeof (IMAGEHLP_LINE64) + 256 * sizeof (char), 1);
   line->SizeOfStruct = sizeof (IMAGEHLP_LINE64);
 
-  for (i = 0; i < frames; i++)
+  for (unsigned int i = 0; i < frames; i++)
     {
-      SymFromAddr (process, (DWORD64) (stack[i]), 0, symbol);
+      DWORD64 address = (DWORD64) (stack[i]);
+      SymFromAddr (process, address, 0, symbol);
 
       bool got_line = false;
       if (with_lines)
         {
+          DWORD dwDisplacement;
           got_line = SymGetLineFromAddr64 (
-            process, (DWORD64) (stack[i]), 0, line);
+            process, address, &dwDisplacement, line);
 
           if (!got_line)
             {
@@ -412,7 +410,7 @@ read_traditional_bt:
     }
   free (symbol);
   free (line);
-#else
+#else /* else if not _WOE32 */
   void *  array[max_lines];
   char ** strings;
 
