@@ -883,8 +883,11 @@ gtk_dep = dependency (
   default_options: [
     'build-demos=false', 'build-examples=false',
     'build-tests=false',
+    'build-testsuite=false',
     'media-gstreamer=disabled',
-    'introspection=disabled'],
+    'x11-backend=' + (os_gnu ? 'true' : 'false'),
+    'introspection=disabled',
+    ],
   static: all_static)
 
 libadwaita_dep = dependency (
