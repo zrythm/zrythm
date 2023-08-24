@@ -923,14 +923,6 @@ dbus_dep = dependency (
 if (dbus_dep.found ())
   cdata.set('HAVE_DBUS', 1)
 endif
-samplerate_dep = dependency (
-  'samplerate', version: '>=0.1.8', required: true)
-if not samplerate_dep.found ()
-  samplerate_subproject = cmake.subproject (
-    'samplerate', options: cmake_opts)
-  samplerate_dep = samplerate_subproject.dependency (
-    'samplerate')
-endif
 lv2_dep = dependency (
   'lv2', version: '>=1.16.0',
   fallback: ['lv2', 'lv2_dep'],
@@ -1281,7 +1273,6 @@ zrythm_deps = [
   graphene_dep,
   gtk_dep,
   sndfile_dep,
-  samplerate_dep,
   alsa_dep,
   pulseaudio_dep,
   libsoundio_dep,
