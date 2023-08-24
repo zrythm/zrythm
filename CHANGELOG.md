@@ -6,6 +6,13 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.12.5] - 2023-08-24
+### Fixed
+- Fix build on windows
+
+### Removed
+- Meson: remove unused libsamplerate dependency
+
 ## [1.0.0-beta.4.12.1] - 2023-08-24
 ### Added
 - Make file import cancellable and allow parallel import for multiple files
