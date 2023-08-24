@@ -145,7 +145,8 @@ arranger_selections_init_loaded (
     case TYPE (AUDIO):
       break;
     default:
-      g_return_if_reached ();
+      g_critical ("unknown type %d", self->type);
+      return;
     }
 
 #undef SET_OBJ
