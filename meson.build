@@ -294,7 +294,7 @@ cdata.set_quoted (
   'PACKAGE_VERSION',
   # vcs_tag() broke on windows builds so just use the given
   # version
-  os_windows ? fallback_version : '@VCS_TAG@')
+  os_windows ? version_fallback : '@VCS_TAG@')
 cdata.set_quoted (
   'COMPILER',
   meson.get_compiler('c').get_id())
