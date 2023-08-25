@@ -21,11 +21,13 @@
             <child type="overlay">
               <object class="GtkLabel" id="status_label">
                 <property name="valign">end</property>
+                <property name="focusable">true</property>
                 <property name="label" translatable="yes">Initializing...</property>
               </object>
             </child>
             <child type="overlay">
               <object class="GtkLabel" id="version_label">
+                <property name="focusable">true</property>
                 <property name="valign">start</property>
                 <property name="halign">end</property>
               </object>
@@ -37,6 +39,7 @@
             <style>
               <class name="osd"/>
             </style>
+            <property name="focusable">true</property>
             <property name="fraction">0.02</property>
           </object>
         </child>

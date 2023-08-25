@@ -85,12 +85,14 @@ static void
 splash_window_widget_class_init (
   SplashWindowWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass, "splash.ui");
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (wklass, "splash.ui");
+  gtk_widget_class_set_accessible_role (
+    wklass, GTK_ACCESSIBLE_ROLE_DIALOG);
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \
-    klass, SplashWindowWidget, x)
+    wklass, SplashWindowWidget, x)
 
   BIND_CHILD (img);
   BIND_CHILD (status_label);
@@ -99,7 +101,7 @@ splash_window_widget_class_init (
 
 #undef BIND_CHILD
 
-  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;
 }
 
@@ -110,9 +112,7 @@ splash_window_widget_init (SplashWindowWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
-  gtk_style_context_add_class (context, "splash");
+  gtk_widget_add_css_class (GTK_WIDGET (self), "splash");
 
   GdkTexture * texture = z_gdk_texture_new_from_icon_name (
     "zrythm-splash-png", 580, -1, 1);
@@ -126,6 +126,6 @@ splash_window_widget_init (SplashWindowWidget * self)
 
   gtk_accessible_update_relation (
     GTK_ACCESSIBLE (self->progress_bar),
-    GTK_ACCESSIBLE_RELATION_DESCRIBED_BY, self->status_label,
+    GTK_ACCESSIBLE_RELATION_LABELLED_BY, self->status_label,
     NULL, -1);
 }
