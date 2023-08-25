@@ -489,6 +489,12 @@ z_gtk_keyval_is_shift (const guint keyval)
   return keyval == GDK_KEY_Shift_L || keyval == GDK_KEY_Shift_R;
 }
 
+static inline int
+z_gtk_keyval_is_menu (const guint keyval)
+{
+  return keyval == GDK_KEY_Menu;
+}
+
 /**
  * Returns the nth child of a container.
  */

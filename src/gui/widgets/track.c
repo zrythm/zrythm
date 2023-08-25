@@ -1132,6 +1132,8 @@ click_pressed (
     track_type_can_record (track->type)
     && track_get_recording (track);
 
+  gtk_widget_grab_focus (GTK_WIDGET (self));
+
   /* FIXME should do this via focus on click
    * property */
   /*if (!gtk_widget_has_focus (GTK_WIDGET (self)))*/
@@ -2045,6 +2047,20 @@ setup_dnd (TrackWidget * self)
 }
 #endif
 
+static void
+track_widget_key_released (
+  GtkEventControllerKey * key_controller,
+  guint                   keyval,
+  guint                   keycode,
+  GdkModifierType         state,
+  TrackWidget *           self)
+{
+  if (z_gtk_keyval_is_menu (keyval))
+    {
+      show_context_menu (self, 0, 0);
+    }
+}
+
 /**
  * Wrapper for child track widget.
  *
@@ -2217,6 +2233,10 @@ track_widget_new (Track * track)
 
   /*setup_dnd (self);*/
 
+  gtk_accessible_update_property (
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL,
+    track->name, -1);
+
   return self;
 }
 
@@ -2288,15 +2308,13 @@ track_widget_init (TrackWidget * self)
 
   gtk_widget_set_vexpand_set (GTK_WIDGET (self), true);
 
-  /* set font sizes */
-  /*gtk_label_set_max_width_chars (*/
-  /*self->top_grid->name->label, 14);*/
-  /*gtk_label_set_width_chars (*/
-  /*self->top_grid->name->label, 14);*/
-  /*gtk_label_set_ellipsize (*/
-  /*self->top_grid->name->label, PANGO_ELLIPSIZE_END);*/
-  /*gtk_label_set_xalign (*/
-  /*self->top_grid->name->label, 0);*/
+  GtkEventControllerKey * key_controller =
+    GTK_EVENT_CONTROLLER_KEY (gtk_event_controller_key_new ());
+  g_signal_connect (
+    G_OBJECT (key_controller), "key-released",
+    G_CALLBACK (track_widget_key_released), self);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (key_controller));
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   gtk_widget_add_controller (
