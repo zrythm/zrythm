@@ -72,7 +72,7 @@ normally be installed under
 .. hint:: Zrythm provides ways to override some of
    these files with user-specified files in the
    :term:`Zrythm user path`. See
-   :doc:`../theming/intro` for details.
+   :ref:`theming/intro:Theming` for details.
 
 User Files
 ----------
