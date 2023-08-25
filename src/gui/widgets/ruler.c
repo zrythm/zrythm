@@ -583,8 +583,8 @@ get_cue_pos_rect (RulerWidget * self, GdkRectangle * rect)
 }
 
 /**
- * Draws the cue point (or clip start if this is
- * the editor ruler.
+ * Draws the cue point (or clip start if this is the editor
+ * ruler.
  */
 static void
 draw_cue_point (
@@ -618,7 +618,8 @@ draw_cue_point (
     {
       if (self->type == TYPE (EDITOR))
         {
-          cairo_set_source_rgb (cr, 0.2, 0.6, 0.9);
+          /*cairo_set_source_rgb (cr, 0.2, 0.6, 0.9);*/
+          cairo_set_source_rgb (cr, 1, 0.2, 0.2);
         }
       else if (self->type == TYPE (TIMELINE))
         {
@@ -1081,12 +1082,6 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       return;
     }
-
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
-  gtk_snapshot_render_background (
-    snapshot, context, 0, 0, visible_rect.size.width,
-    visible_rect.size.height);
 
   self->last_rect = visible_rect;
 
