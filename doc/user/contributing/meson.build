@@ -3,6 +3,8 @@
 
 copy_files = [
   'intro.rst',
+  'overview.rst',
+  'reporting-bugs.rst',
   ]
 
 foreach f : copy_files
