@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -33,7 +33,6 @@ G_DECLARE_FINAL_TYPE (
   GtkWidget)
 
 #define MW_BOT_BAR MW->bot_bar
-#define MW_STATUS_BAR MW_BOT_BAR->status_bar
 #define MW_DIGITAL_TRANSPORT MW_BOT_BAR->digital_transport
 #define MW_DIGITAL_BPM MW_BOT_BAR->digital_bpm
 #define MW_DIGITAL_TIME_SIG MW_BOT_BAR->digital_timesig
@@ -46,14 +45,7 @@ typedef struct _BotBarWidget
   GtkWidget parent_instance;
 
   GtkCenterBox * center_box;
-  GtkStatusbar * status_bar;
-
-  /** New label replacing the original status
-   * bar label. */
-  GtkLabel * label;
-
-  /** Status bar context id. */
-  guint context_id;
+  GtkLabel *     engine_status_label;
 
   GtkBox *             digital_meters;
   DigitalMeterWidget * digital_bpm;

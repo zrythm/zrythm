@@ -5,8 +5,10 @@
     <child>
       <object class="GtkCenterBox" id="center_box">
         <child type="start">
-          <object class="GtkStatusbar" id="status_bar">
-            <property name="margin-start">1</property>
+          <object class="GtkLabel" id="engine_status_label">
+            <property name="justify">left</property>
+            <property name="halign">start</property>
+            <property name="margin-start">4</property>
             <property name="margin-end">1</property>
             <property name="margin-top">1</property>
             <property name="margin-bottom">1</property>

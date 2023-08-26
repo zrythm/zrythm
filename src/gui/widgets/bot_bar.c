@@ -378,25 +378,12 @@ feature_unavailable:
   return false;
 }
 
-static void
-on_text_pushed (
-  GtkStatusbar * statusbar,
-  guint          context_id,
-  gchar *        text,
-  BotBarWidget * self)
-{
-  gtk_label_set_markup (self->label, text);
-}
-
 /**
  * Updates the content of the status bar.
  */
 void
 bot_bar_widget_update_status (BotBarWidget * self)
 {
-  gtk_statusbar_remove_all (
-    MW_STATUS_BAR, MW_BOT_BAR->context_id);
-
   char color_prefix[60];
   sprintf (
     color_prefix, "<span foreground=\"%s\">", self->hex_color);
@@ -427,9 +414,10 @@ bot_bar_widget_update_status (BotBarWidget * self)
 #endif
     }
 
-  char str[860];
-  sprintf (
-    str,
+#define BUF_SZ 1200
+  char str[BUF_SZ];
+  snprintf (
+    str, BUF_SZ,
     "<span size=\"small\">"
     "%s: %s%s%s%s | "
     "%s: %s%s%s%s | "
@@ -466,11 +454,9 @@ bot_bar_widget_update_status (BotBarWidget * self)
     color_suffix,
     AUDIO_ENGINE->activated ? "disable" : "enable",
     AUDIO_ENGINE->activated ? _ ("Disable") : _ ("Enable"));
+#undef BUF_SZ
 
-  g_debug ("new status: %s", str);
-
-  gtk_statusbar_push (
-    MW_STATUS_BAR, MW_BOT_BAR->context_id, str);
+  gtk_label_set_markup (self->engine_status_label, str);
 }
 
 static void
@@ -595,22 +581,9 @@ bot_bar_widget_init (BotBarWidget * self)
 
   cpu_widget_setup (self->cpu_load);
 
-  self->context_id = gtk_statusbar_get_context_id (
-    self->status_bar, "Main context");
-
-  self->label = GTK_LABEL (gtk_label_new (""));
-  gtk_label_set_markup (self->label, "");
-  GtkBox * box = GTK_BOX (gtk_widget_get_first_child (
-    GTK_WIDGET (self->status_bar)));
-  z_gtk_widget_remove_all_children (GTK_WIDGET (box));
-  gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->label));
-
   g_signal_connect (
-    self->status_bar, "text-pushed",
-    G_CALLBACK (on_text_pushed), self);
-  g_signal_connect (
-    self->label, "activate-link", G_CALLBACK (activate_link),
-    self);
+    self->engine_status_label, "activate-link",
+    G_CALLBACK (activate_link), self);
 }
 
 static void
@@ -630,7 +603,7 @@ bot_bar_widget_class_init (BotBarWidgetClass * _klass)
   BIND_CHILD (metronome);
   BIND_CHILD (transport_controls);
   BIND_CHILD (cpu_load);
-  BIND_CHILD (status_bar);
+  BIND_CHILD (engine_status_label);
   BIND_CHILD (playhead_box);
   BIND_CHILD (bot_dock_switcher);
 
