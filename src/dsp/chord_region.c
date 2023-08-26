@@ -34,9 +34,7 @@ chord_region_new (
 
   self->id.type = REGION_TYPE_CHORD;
 
-  region_init (
-    self, start_pos, end_pos,
-    track_get_name_hash (P_CHORD_TRACK), 0, idx);
+  region_init (self, start_pos, end_pos, 0, 0, idx);
 
   g_warn_if_fail (IS_REGION (self));
 

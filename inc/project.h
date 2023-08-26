@@ -50,7 +50,7 @@ typedef struct TracklistSelections TracklistSelections;
  * @{
  */
 
-#define PROJECT_SCHEMA_VERSION 4
+#define PROJECT_SCHEMA_VERSION 5
 
 #define PROJECT ZRYTHM->project
 #define DEFAULT_PROJECT_NAME "Untitled Project"

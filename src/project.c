@@ -1002,6 +1002,72 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
         cyaml_free (
           &cyaml_config, &project_schema_v1, old_prj, 0);
 
+        /* free memory allocated now */
+        g_free_and_null (new_prj->datetime_str);
+        g_free_and_null (new_prj->version);
+
+        return true;
+      }
+      break;
+    case 4:
+      /* v4 note:
+       * AutomationSelections had schema_version instead of
+       * base as the first member. This was an issue and was
+       * fixed, but projects before this change have wrong
+       * values. We are lucky they are all primitive types.
+       * This can be fixed by simply dropping the undo history
+       * and the selections. */
+      {
+        /* deserialize into the current version of the struct */
+        GError *  err = NULL;
+        Project * old_prj = (Project *) yaml_deserialize (
+          *yaml, &project_schema, &err);
+        if (!old_prj)
+          {
+            PROPAGATE_PREFIXED_ERROR_LITERAL (
+              error, err,
+              _ ("Failed to deserialize v4 project file"));
+            return false;
+          }
+
+        /* create the new project and serialize it */
+        Project   _new_prj;
+        Project * new_prj = &_new_prj;
+        memset (new_prj, 0, sizeof (Project));
+        *new_prj = *old_prj;
+        new_prj->schema_version = PROJECT_SCHEMA_VERSION;
+        new_prj->title = old_prj->title;
+        new_prj->datetime_str =
+          datetime_get_current_as_string ();
+        new_prj->version = zrythm_get_version (false);
+
+        /* drop arranger selections and undo history */
+        new_prj->automation_selections = NULL;
+        new_prj->undo_manager = NULL;
+
+        /* re-serialize */
+        g_free (*yaml);
+        err = NULL;
+        *yaml =
+          yaml_serialize (new_prj, &project_schema, &err);
+        if (!*yaml)
+          {
+            PROPAGATE_PREFIXED_ERROR_LITERAL (
+              error, err,
+              _ ("Failed to serialize v4 project file"));
+            return false;
+          }
+        cyaml_config_t cyaml_config;
+        yaml_get_cyaml_config (&cyaml_config);
+
+        /* free memory allocated by libcyaml */
+        cyaml_free (
+          &cyaml_config, &project_schema, old_prj, 0);
+
+        /* free memory allocated now */
+        g_free_and_null (new_prj->datetime_str);
+        g_free_and_null (new_prj->version);
+
         return true;
       }
       break;
