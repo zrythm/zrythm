@@ -68,6 +68,14 @@ if you call append_layout, you provide the pango layout that specifies what font
 if it is a pango layout created with gtk_widget_create_pango_layout then yes, css may influence what font is used
 ```
 
+# `focus_on_click` in custom widgets
+
+```
+Sergey Bugaev
+Focus on click doesn't work automatically, it has to be implemented in a particular widget (by connecting to GestureClick::pressed or something like that and calling grab_focus ())
+And you can set focus-on-click to false to disable that (and that's again something that the particular widget has to check for, and not call grab_focus ()) in that case
+```
+
 <!---
 SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
 SPDX-License-Identifier: FSFAP

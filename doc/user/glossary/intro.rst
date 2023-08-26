@@ -185,5 +185,4 @@ Glossary
       on freedesktop-compliant systems (or if
       :envvar:`XDG_DATA_HOME` is defined), or
 
-    * the directory for local application data on
-      Windows
+    * ``%LOCALAPPDATA%`` on Windows
