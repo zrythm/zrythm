@@ -2119,7 +2119,7 @@ do_quantize (const char * variant, bool quick)
   else
     {
       ui_show_message_printf (
-        GTK_MESSAGE_WARNING, false,
+        _ ("Invalid Selection For Quantize"),
         _ ("Must select either the timeline or the "
            "editor first. The current selection is "
            "%s"),
@@ -2967,8 +2967,8 @@ DEFINE_SIMPLE (activate_input_bpm)
 
 DEFINE_SIMPLE (activate_tap_bpm)
 {
-  ui_show_message_printf (
-    GTK_MESSAGE_WARNING, false, "%s", "Not implemented yet");
+  ui_show_message_literal (
+    _ ("Unimplemented"), _ ("Tap BPM not implemented yet"));
 }
 
 void
@@ -3055,7 +3055,7 @@ DEFINE_SIMPLE (activate_detect_bpm)
       g_string_append_printf (gstr, " %.2f", candidate);
     }
   char * str = g_string_free (gstr, false);
-  ui_show_message_printf (GTK_MESSAGE_INFO, false, "%s", str);
+  ui_show_message_literal (NULL, str);
   g_free (str);
 }
 

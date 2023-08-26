@@ -346,7 +346,9 @@ set_val_with_action (void * object, const char * str)
     }
   else /* else if not valid */
     {
-      ui_show_error_message (false, _ ("Invalid value"));
+      ui_show_error_message (
+        _ ("Invalid Value"),
+        _ ("Invalid value given to balance control"));
     }
 }
 

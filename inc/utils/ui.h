@@ -451,11 +451,10 @@ ui_on_motion_set_status_bar_text_cb (
  */
 void
 ui_show_message_full (
-  GtkWindow *    parent_window,
-  GtkMessageType type,
-  bool           block,
-  const char *   format,
-  ...) G_GNUC_PRINTF (4, 5);
+  GtkWindow *  parent_window,
+  const char * title,
+  const char * format,
+  ...) G_GNUC_PRINTF (3, 4);
 
 #define UI_ACTIVE_WINDOW_OR_NULL \
   (gtk_application_get_active_window ( \
@@ -467,27 +466,26 @@ ui_show_message_full (
 /**
  * Type can be GTK_MESSAGE_ERROR, etc.
  */
-#define ui_show_message_printf(type, block, fmt, ...) \
+#define ui_show_message_printf(title, fmt, ...) \
   ui_show_message_full ( \
-    UI_ACTIVE_WINDOW_OR_NULL, type, block, fmt, __VA_ARGS__)
+    UI_ACTIVE_WINDOW_OR_NULL, title, fmt, __VA_ARGS__)
 
 /**
  * Type can be GTK_MESSAGE_ERROR, etc.
  */
-#define ui_show_message_literal(type, block, str) \
+#define ui_show_message_literal(title, str) \
   ui_show_message_full ( \
-    UI_ACTIVE_WINDOW_OR_NULL, type, block, "%s", str)
+    UI_ACTIVE_WINDOW_OR_NULL, title, "%s", str)
 
 /**
  * Wrapper to show error message so that no casting
  * of the window is needed on the caller side.
  */
-#define ui_show_error_message_printf(block, fmt, ...) \
-  ui_show_message_printf ( \
-    GTK_MESSAGE_ERROR, block, fmt, __VA_ARGS__);
+#define ui_show_error_message_printf(title, fmt, ...) \
+  ui_show_message_printf (title, fmt, __VA_ARGS__);
 
-#define ui_show_error_message(block, msg) \
-  ui_show_error_message_printf (block, "%s", msg)
+#define ui_show_error_message(title, msg) \
+  ui_show_message_literal (title, msg)
 
 /**
  * Returns if \ref rect is hit or not by the

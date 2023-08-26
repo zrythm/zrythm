@@ -184,13 +184,14 @@ handle_arranger_object_position_change (
       else
         {
           ui_show_error_message (
-            GTK_MESSAGE_ERROR, _ ("Invalid position"));
+            _ ("Invalid Position"), _ ("Invalid position"));
         }
     }
   else
     {
       ui_show_error_message (
-        GTK_MESSAGE_ERROR, _ ("Failed to parse position"));
+        _ ("Invalid Position"),
+        _ ("Failed to parse position"));
     }
 }
 
@@ -265,7 +266,7 @@ editable_label_changed_source (gpointer user_data)
       else
         {
           ui_show_error_message (
-            GTK_MESSAGE_ERROR, _ ("Invalid name"));
+            _ ("Invalid Name"), _ ("Invalid name"));
         }
     }
   else if (string_is_equal (column_name, _ ("Velocity")))
@@ -275,7 +276,7 @@ editable_label_changed_source (gpointer user_data)
       if (res != 1 || res == EOF || val < 1 || val > 127)
         {
           ui_show_error_message (
-            GTK_MESSAGE_ERROR, _ ("Invalid velocity"));
+            _ ("Invalid Velocity"), _ ("Invalid velocity"));
         }
       else
         {
@@ -296,7 +297,7 @@ editable_label_changed_source (gpointer user_data)
       if (res != 1 || res == EOF || val < 1 || val > 127)
         {
           ui_show_error_message (
-            GTK_MESSAGE_ERROR, _ ("Invalid pitch"));
+            _ ("Invalid Pitch"), _ ("Invalid pitch"));
         }
       else
         {
@@ -322,7 +323,7 @@ editable_label_changed_source (gpointer user_data)
         || val > port->maxf)
         {
           ui_show_error_message (
-            GTK_MESSAGE_ERROR, _ ("Invalid value"));
+            _ ("Invalid Value"), _ ("Invalid value"));
         }
       else
         {
@@ -346,7 +347,7 @@ editable_label_changed_source (gpointer user_data)
       if (res != 1 || res == EOF || val < -1.f || val > 1.f)
         {
           ui_show_error_message (
-            GTK_MESSAGE_ERROR, _ ("Invalid value"));
+            _ ("Invalid Value"), _ ("Invalid value"));
         }
       else
         {

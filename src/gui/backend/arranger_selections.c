@@ -1891,7 +1891,8 @@ arranger_selections_contains_object (
         }
       break;
     default:
-      g_return_val_if_reached (0);
+      g_critical ("unknown type %d", self->type);
+      return false;
     }
 
   g_return_val_if_reached (0);

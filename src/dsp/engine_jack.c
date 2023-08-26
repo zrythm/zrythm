@@ -524,16 +524,14 @@ engine_jack_test (GtkWindow * win)
     {
       char msg[500];
       engine_jack_get_error_message (status, msg);
-      char full_msg[800];
-      sprintf (full_msg, "JACK Error: %s", msg);
       if (win)
         {
           ui_show_message_full (
-            win, GTK_MESSAGE_ERROR, false, "%s", full_msg);
+            win, _ ("JACK Error"), "%s", msg);
         }
       else
         {
-          g_message ("%s", full_msg);
+          g_warning ("JACK Error: %s", msg);
         }
       return 1;
     }

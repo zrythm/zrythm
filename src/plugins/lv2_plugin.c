@@ -2456,7 +2456,7 @@ lv2_plugin_instantiate (
                   "%s <%s>"),
                 descr->name, descr->uri, basename,
                 descr->author, descr->website);
-              ui_show_error_message (true, msg);
+              ui_show_error_message (NULL, msg);
               g_free (basename);
             }
 

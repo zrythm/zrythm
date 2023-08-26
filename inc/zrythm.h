@@ -17,6 +17,7 @@
 #include <glib.h>
 
 #include "zix/sem.h"
+#include <gio/gio.h>
 
 typedef struct Project                Project;
 typedef struct Symap                  Symap;
@@ -373,20 +374,27 @@ zrythm_get_version (bool with_v);
 bool
 zrythm_is_release (bool official);
 
-/**
- * Returns the latest release version.
- */
 char *
-zrythm_fetch_latest_release_ver (void);
+zrythm_fetch_latest_release_ver_finish (
+  GAsyncResult * result,
+  GError **      error);
 
 /**
- * Returns whether this is the latest release.
- *
- * @p error will be set if an error occurred and the
- * return value should be ignored.
+ * @param callback A GAsyncReadyCallback to call when the
+ *   request is satisfied.
+ * @param callback_data Data to pass to @p callback.
+ */
+void
+zrythm_fetch_latest_release_ver_async (
+  GAsyncReadyCallback callback,
+  gpointer            callback_data);
+
+/**
+ * Returns whether the given release string is the latest
+ * release.
  */
 bool
-zrythm_is_latest_release (GError ** error);
+zrythm_is_latest_release (const char * remote_latest_release);
 
 /**
  * Returns the version and the capabilities.

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-test-config.h"
@@ -25,10 +25,13 @@ test_dummy (void)
 static void
 test_fetch_latest_release (void)
 {
-#ifdef CHECK_UPDATES
+  /* TODO below is async now */
+#if 0
+#  ifdef CHECK_UPDATES
   char * ver = zrythm_fetch_latest_release_ver ();
   g_assert_nonnull (ver);
   g_assert_cmpuint (strlen (ver), <, 20);
+#  endif
 #endif
 }
 

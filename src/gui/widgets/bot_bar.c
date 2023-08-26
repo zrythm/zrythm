@@ -357,7 +357,7 @@ activate_link (
             || (buf_sz == ULLONG_MAX && errno == ERANGE))
             {
               ui_show_error_message (
-                false, _ ("Failed reading value"));
+                NULL, _ ("Failed reading buffer size value"));
             }
           else
             {
@@ -372,7 +372,7 @@ activate_link (
 
 feature_unavailable:
   ui_show_error_message (
-    false,
+    _ ("Feature Not Available"),
     _ ("This feature is not available at the "
        "moment"));
   return false;

@@ -55,8 +55,8 @@
 #include "gui/accel.h"
 #include "gui/backend/file_manager.h"
 #include "gui/backend/piano_roll.h"
+#include "gui/widgets/dialogs/ask_to_check_for_updates_dialog.h"
 #include "gui/widgets/dialogs/bug_report_dialog.h"
-#include "gui/widgets/dialogs/changelog_dialog.h"
 #include "gui/widgets/dialogs/first_run_dialog.h"
 #include "gui/widgets/dialogs/project_assistant.h"
 #include "gui/widgets/dialogs/welcome_message_dialog.h"
@@ -70,6 +70,7 @@
 #include "utils/backtrace.h"
 #include "utils/cairo.h"
 #include "utils/env.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/io.h"
@@ -96,7 +97,7 @@
 #ifdef HAVE_LSP_DSP
 #  include <lsp-plug.in/dsp/dsp.h>
 #endif
-#include <suil/suil.h>
+/*#include <suil/suil.h>*/
 #ifdef HAVE_X11
 #  include <X11/Xlib.h>
 #endif
@@ -197,6 +198,68 @@ zrythm_app_ui_message_free (ZrythmAppUiMessage * self)
   object_zero_and_free (self);
 }
 
+static void
+check_for_updates_latest_release_ver_ready (
+  GObject *      source_object,
+  GAsyncResult * res,
+  gpointer       data)
+{
+  GError * err = NULL;
+  char *   latest_release =
+    zrythm_fetch_latest_release_ver_finish (res, &err);
+  if (!latest_release)
+    {
+      HANDLE_ERROR_LITERAL (
+        err, _ ("Failed fetching the latest release version"));
+      return;
+    }
+
+  bool is_latest_release =
+    zrythm_is_latest_release (latest_release);
+#ifdef HAVE_CHANGELOG
+  /* if latest release and first run on this release show
+   * CHANGELOG */
+  if (
+    is_latest_release
+    && !settings_strv_contains_str (
+      S_GENERAL, "run-versions", PACKAGE_VERSION))
+    {
+      ui_show_message_printf (
+        _ ("Changelog"),
+        _ ("Running %s version <b>%s</b>%s%s"), PROGRAM_NAME,
+        PACKAGE_VERSION, "\n\n", CHANGELOG_TXT);
+      settings_append_to_strv (
+        S_GENERAL, "run-versions", PACKAGE_VERSION, true);
+    }
+#endif /* HAVE_CHANGELOG */
+
+  /* if not latest release and this is an official release,
+   * notify user */
+  char * last_version_notified_on = g_settings_get_string (
+    S_GENERAL, "last-version-new-release-notified-on");
+  g_debug (
+    "last version notified on: %s"
+    "\n package version: %s",
+    last_version_notified_on, PACKAGE_VERSION);
+  if (
+    !is_latest_release && zrythm_is_release (true)
+    && !string_is_equal (
+      last_version_notified_on, PACKAGE_VERSION))
+    {
+      ui_show_message_printf (
+        _ ("New Zrythm Version"),
+        _ ("A new version of Zrythm has been released: "
+           "<b>%s</b>\n\n"
+           "Your current version is %s"),
+        latest_release, PACKAGE_VERSION);
+
+      g_settings_set_string (
+        S_GENERAL, "last-version-new-release-notified-on",
+        PACKAGE_VERSION);
+    }
+  g_free (last_version_notified_on);
+}
+
 /**
  * Handles the logic for checking for updates on
  * startup.
@@ -207,98 +270,19 @@ zrythm_app_check_for_updates (ZrythmApp * self)
   if (g_settings_get_boolean (
         S_GENERAL, "first-check-for-updates"))
     {
-      GtkWidget * dialog = gtk_message_dialog_new (
-        GTK_WINDOW (MAIN_WINDOW),
-        GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION,
-        GTK_BUTTONS_YES_NO,
-        _ ("Do you want %s to check for "
-           "updates on startup?"),
-        PROGRAM_NAME);
-      gtk_window_set_modal (GTK_WINDOW (dialog), true);
-      gtk_window_set_transient_for (
-        GTK_WINDOW (dialog), GTK_WINDOW (MAIN_WINDOW));
-      gtk_window_set_icon_name (GTK_WINDOW (dialog), "zrythm");
-      gtk_window_set_title (
-        GTK_WINDOW (dialog), _ ("Check for Updates"));
-      int ret = z_gtk_dialog_run (GTK_DIALOG (dialog), true);
-      g_settings_set_boolean (
-        S_P_GENERAL_UPDATES, "check-for-updates",
-        ret == GTK_RESPONSE_YES);
-      g_settings_set_boolean (
-        S_GENERAL, "first-check-for-updates", false);
+      /* this will call zrythm_app_check_for_updates() again
+       * later if the response is yes */
+      ask_to_check_for_updates_dialog_run_async (
+        GTK_WINDOW (MAIN_WINDOW));
+      return;
     }
 
-  if (g_settings_get_boolean (
+  if (!g_settings_get_boolean (
         S_P_GENERAL_UPDATES, "check-for-updates"))
-    {
-      GError * err = NULL;
-      bool is_latest_release = zrythm_is_latest_release (&err);
+    return;
 
-      if (err)
-        {
-          g_warning (
-            "Error getting latest release: %s. "
-            "Skipping check for updates",
-            err->message);
-          g_error_free_and_null (err);
-        }
-      else
-        {
-#ifdef HAVE_CHANGELOG
-          /* if latest release and first run on
-           * this release show CHANGELOG */
-          if (
-            is_latest_release
-            && !settings_strv_contains_str (
-              S_GENERAL, "run-versions", PACKAGE_VERSION))
-            {
-              changelog_dialog_widget_run (
-                GTK_WINDOW (MAIN_WINDOW));
-              settings_append_to_strv (
-                S_GENERAL, "run-versions", PACKAGE_VERSION,
-                true);
-            }
-#endif /* HAVE_CHANGELOG */
-
-          /* if not latest release and this is
-           * an official release, notify user */
-          char * last_version_notified_on =
-            g_settings_get_string (
-              S_GENERAL,
-              "last-version-new-release-notified-on");
-          g_debug (
-            "last version notified on: %s"
-            "\n package version: %s",
-            last_version_notified_on, PACKAGE_VERSION);
-          if (
-            !is_latest_release && zrythm_is_release (true)
-            && !string_is_equal (
-              last_version_notified_on, PACKAGE_VERSION))
-            {
-              char * latest_release =
-                zrythm_fetch_latest_release_ver ();
-              GtkWidget * dialog = gtk_message_dialog_new_with_markup (
-                GTK_WINDOW (MAIN_WINDOW),
-                GTK_DIALOG_DESTROY_WITH_PARENT,
-                GTK_MESSAGE_INFO, GTK_BUTTONS_CLOSE,
-                _ ("A new version of Zrythm "
-                   "has been released: "
-                   "<b>%s</b>\n\n"
-                   "Your current version is "
-                   "%s"),
-                latest_release, PACKAGE_VERSION);
-              z_gtk_dialog_run (GTK_DIALOG (dialog), true);
-
-              g_settings_set_string (
-                S_GENERAL,
-                "last-version-new-release-notified-on",
-                PACKAGE_VERSION);
-            }
-          g_free (last_version_notified_on);
-
-        } /* end if no error getting release */
-
-    } /* end if should check for updates */
+  zrythm_fetch_latest_release_ver_async (
+    check_for_updates_latest_release_ver_ready, NULL);
 }
 
 /**
@@ -417,13 +401,11 @@ on_load_project (
 
   if (!success)
     {
-      char msg[600];
-      sprintf (
-        msg,
+      ui_show_error_message_printf (
+        NULL,
         _ ("No project has been selected or project failed "
            "to load. %s will now close."),
         PROGRAM_NAME);
-      ui_show_error_message (true, msg);
       exit (EXIT_SUCCESS);
     }
 
@@ -564,7 +546,6 @@ license_info_dialog_response_cb (
   ZrythmApp * self)
 {
   g_message ("license info dialog closed");
-  gtk_window_destroy (GTK_WINDOW (dialog));
 
   FirstRunDialogWidget * first_run_dialog =
     first_run_dialog_widget_new (GTK_WINDOW (self->splash));
@@ -601,9 +582,10 @@ on_prompt_for_project (
     {
       if (g_settings_get_boolean (S_GENERAL, "first-run"))
         {
-          GtkDialog * dialog = welcome_message_dialog_new (
-            GTK_WINDOW (self->splash));
-          gtk_widget_show (GTK_WIDGET (dialog));
+          AdwMessageDialog * dialog =
+            welcome_message_dialog_new (
+              GTK_WINDOW (self->splash));
+          gtk_window_present (GTK_WINDOW (dialog));
           g_signal_connect (
             G_OBJECT (dialog), "response",
             G_CALLBACK (license_info_dialog_response_cb),
@@ -801,9 +783,9 @@ load_icon (
         "Please install zrythm and breeze-icons.");
       g_critical ("%s", err_msg);
       fprintf (stderr, "%s\n", err_msg);
-      ui_show_message_full (
-        NULL, GTK_MESSAGE_ERROR, false, "%s", err_msg);
-      g_error ("Failed to load icon");
+      ui_show_message_literal (
+        _ ("Icon Theme Not Found"), err_msg);
+      g_critical ("Failed to load icon");
     }
   g_message ("Icon found.");
 }
@@ -1059,8 +1041,8 @@ zrythm_app_startup (GApplication * app)
 #endif
 
   /* init suil */
-  g_message ("Initing suil...");
-  suil_init (&self->argc, &self->argv, SUIL_ARG_NONE);
+  /*g_message ("Initing suil...");*/
+  /*suil_init (&self->argc, &self->argv, SUIL_ARG_NONE);*/
 
   /* init fftw */
   g_message ("Making fftw planner thread safe...");
@@ -1076,10 +1058,12 @@ zrythm_app_startup (GApplication * app)
   lsp_dsp_info_t * info = lsp_dsp_info ();
   if (info)
     {
-      printf ("Architecture:   %s\n", info->arch);
-      printf ("Processor:      %s\n", info->cpu);
-      printf ("Model:          %s\n", info->model);
-      printf ("Features:       %s\n", info->features);
+      g_message (
+        "Architecture:   %s\n"
+        "Processor:      %s\n"
+        "Model:          %s\n"
+        "Features:       %s\n",
+        info->arch, info->cpu, info->model, info->features);
       free (info);
     }
   else

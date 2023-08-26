@@ -314,73 +314,38 @@ zrythm_is_release (bool official)
   return !string_contains_substr (PACKAGE_VERSION, "g");
 }
 
-/**
- * Returns the latest release version.
- */
 char *
-zrythm_fetch_latest_release_ver (void)
+zrythm_fetch_latest_release_ver_finish (
+  GAsyncResult * result,
+  GError **      error)
 {
-  static char * ver = NULL;
-  static bool   called = false;
-
-  if (called && ver)
-    {
-      return g_strdup (ver);
-    }
-
-  char * page = z_curl_get_page_contents_default (
-    "https://www.zrythm.org/releases/?C=M;O=D");
-  if (!page)
-    {
-      g_warning ("failed to get page");
-      return NULL;
-    }
-
-  ver = string_get_regex_group (
-    page, "title=\"zrythm-(.+).tar.xz\"", 1);
-  g_free (page);
-
-  if (!ver)
-    {
-      g_warning ("failed to parse version");
-      return NULL;
-    }
-
-  g_debug ("latest release: %s", ver);
-  called = true;
-
-  return g_strdup (ver);
+  return z_curl_get_page_contents_finish (result, error);
 }
 
 /**
- * Returns whether this is the latest release.
- *
- * @p error will be set if an error occurred and the
- * return value should be ignored.
+ * @param callback A GAsyncReadyCallback to call when the
+ *   request is satisfied.
+ * @param callback_data Data to pass to @p callback.
+ */
+void
+zrythm_fetch_latest_release_ver_async (
+  GAsyncReadyCallback callback,
+  gpointer            callback_data)
+{
+  z_curl_get_page_contents_async (
+    "https://www.zrythm.org/zrythm-version.txt", 8, callback,
+    callback_data);
+}
+
+/**
+ * Returns whether the given release string is the latest
+ * release.
  */
 bool
-zrythm_is_latest_release (GError ** error)
+zrythm_is_latest_release (const char * remote_latest_release)
 {
-  g_return_val_if_fail (*error == NULL, false);
-
-  char * latest_release = zrythm_fetch_latest_release_ver ();
-  if (!latest_release)
-    {
-      g_set_error_literal (
-        error, Z_ZRYTHM_ERROR,
-        Z_ZRYTHM_ERROR_CANNOT_GET_LATEST_RELEASE,
-        "Error getting latest release");
-      return false;
-    }
-
-  bool ret = false;
-  if (string_is_equal (latest_release, PACKAGE_VERSION))
-    {
-      ret = true;
-    }
-  g_free (latest_release);
-
-  return ret;
+  return string_is_equal (
+    remote_latest_release, PACKAGE_VERSION);
 }
 
 /**

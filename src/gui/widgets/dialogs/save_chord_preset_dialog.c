@@ -56,7 +56,7 @@ on_response (
                  pack, entered_name))
         {
           ui_show_message_printf (
-            GTK_MESSAGE_ERROR, false,
+            _ ("Name Unavailable"),
             _ ("Name '%s' is taken. Please enter "
                "a different name"),
             entered_name);

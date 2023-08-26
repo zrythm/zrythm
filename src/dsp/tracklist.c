@@ -1758,9 +1758,8 @@ tracklist_handle_move_or_copy (
               if (!ZRYTHM_TESTING)
                 {
                   ui_show_error_message (
-                    true,
-                    _ ("Cannot drag folder into "
-                       "itself"));
+                    _ ("Error"),
+                    _ ("Cannot drag folder into itself"));
                 }
               return;
             }

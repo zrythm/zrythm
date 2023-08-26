@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -10,17 +10,17 @@
 
 #include <glib/gi18n.h>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
 /**
  * Creates and returns the welcome dialog.
  */
-GtkDialog *
+AdwMessageDialog *
 welcome_message_dialog_new (GtkWindow * parent)
 {
   GString * gstr = g_string_new (NULL);
 
-  g_string_append_printf (
-    gstr, "<big><b>%s</b></big>\n\n",
-    _ ("Welcome to the Zrythm DAW"));
+  g_string_append (gstr, "<big><b>%s</b></big>\n\n");
 
   char * getting_started_guide = g_strdup_printf (
     _ ("If this is your first time using Zrythm, "
@@ -77,24 +77,23 @@ welcome_message_dialog_new (GtkWindow * parent)
 
   char * str = g_string_free (gstr, false);
 
-  GtkDialog * dialog =
-    GTK_DIALOG (gtk_message_dialog_new_with_markup (
-      parent, GTK_DIALOG_DESTROY_WITH_PARENT,
-      GTK_MESSAGE_INFO, GTK_BUTTONS_OK, NULL));
-  gtk_message_dialog_set_markup (
-    GTK_MESSAGE_DIALOG (dialog), str);
+  AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (
+    adw_message_dialog_new (NULL, _ ("Welcome"), NULL));
+  adw_message_dialog_format_body_markup (
+    dialog, str, _ ("Welcome to the Zrythm DAW"));
   gtk_window_set_icon_name (GTK_WINDOW (dialog), "zrythm");
-  gtk_window_set_title (GTK_WINDOW (dialog), _ ("Welcome"));
 
-  GtkWidget * message_area =
-    gtk_message_dialog_get_message_area (
-      GTK_MESSAGE_DIALOG (dialog));
-  GtkWidget * first_lbl =
-    gtk_widget_get_first_child (message_area);
-  gtk_label_set_justify (
-    GTK_LABEL (first_lbl), GTK_JUSTIFY_CENTER);
+  adw_message_dialog_add_responses (
+    ADW_MESSAGE_DIALOG (dialog), "ok", _ ("_OK"), NULL);
+
+  adw_message_dialog_set_default_response (
+    ADW_MESSAGE_DIALOG (dialog), "ok");
+  adw_message_dialog_set_close_response (
+    ADW_MESSAGE_DIALOG (dialog), "ok");
 
   g_free (str);
 
   return dialog;
 }
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#pragma GCC diagnostic pop

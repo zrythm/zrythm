@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
  * \file
@@ -45,7 +29,10 @@
  * @return Newly allocated string or NULL if fail.
  */
 char *
-z_curl_get_page_contents (const char * url, int timeout);
+z_curl_get_page_contents (
+  const char * url,
+  int          timeout,
+  GError **    error);
 
 /**
  * Returns the contents of the page in a newly
@@ -75,6 +62,18 @@ z_curl_post_json_no_auth (
   int          timeout,
   GError **    error,
   ...) G_GNUC_NULL_TERMINATED;
+
+char *
+z_curl_get_page_contents_finish (
+  GAsyncResult * res,
+  GError **      error);
+
+void
+z_curl_get_page_contents_async (
+  const char *        url,
+  int                 timeout_sec,
+  GAsyncReadyCallback callback,
+  gpointer            callback_data);
 
 /**
  * @}

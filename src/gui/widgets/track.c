@@ -1134,11 +1134,6 @@ click_pressed (
 
   gtk_widget_grab_focus (GTK_WIDGET (self));
 
-  /* FIXME should do this via focus on click
-   * property */
-  /*if (!gtk_widget_has_focus (GTK_WIDGET (self)))*/
-  /*gtk_widget_grab_focus (GTK_WIDGET (self));*/
-
   CustomButtonWidget * cb =
     track_widget_get_hovered_button (self, (int) x, (int) y);
   AutomationModeWidget * am =

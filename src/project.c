@@ -1163,20 +1163,18 @@ load (
     string_contains_substr (self->version, "alpha")
     && string_contains_substr (self->version, "1.0.0"))
     {
-      char * str = g_strdup_printf (
+      ui_show_message_printf (
+        _ ("Unsupported Version"),
         _ ("This project was created with an "
            "unsupported version of %s (%s). "
            "It may not work correctly."),
         PROGRAM_NAME, self->version);
-      ui_show_message_printf (
-        GTK_MESSAGE_WARNING, true, "%s", str);
-      g_free (str);
     }
 
   if (self == NULL)
     {
-      ui_show_error_message (
-        true,
+      ui_show_message_literal (
+        _ ("Project Load Failed"),
         _ ("Failed to load project. Please check the "
            "logs for more information."));
       return false;
@@ -1192,7 +1190,7 @@ load (
       if (!finished_file_exists)
         {
           ui_show_error_message_printf (
-            true,
+            _ ("Project Load Failed"),
             _ ("Could not load project: Corrupted project detected (missing FINISHED file at '%s')."),
             finished_file_path);
           return false;
@@ -1435,16 +1433,14 @@ load (
 
   if (schema_ver != PROJECT_SCHEMA_VERSION)
     {
-      char * str = g_strdup_printf (
+      ui_show_message_printf (
+        _ ("Project Upgraded"),
         _ (
           "This project has been automatically upgraded from "
           "v%d to v%d. Saving this project will overwrite the "
           "old one. If you would like to keep both, please "
           "use 'Save As...'."),
         schema_ver, PROJECT_SCHEMA_VERSION);
-      ui_show_message_printf (
-        GTK_MESSAGE_INFO, false, "%s", str);
-      g_free (str);
     }
 
   return true;
@@ -1478,8 +1474,8 @@ project_load (
       bool     success = load (filename, is_template, &err);
       if (!success)
         {
-          ui_show_error_message (
-            true,
+          ui_show_message_literal (
+            _ ("Project Load Failed"),
             _ ("Failed to load project. Will create "
                "a new one instead."));
 

@@ -1,21 +1,6 @@
+// SPDX-FileCopyrightText: © 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
  *
@@ -36,6 +21,8 @@
 
 #include "utils/curl.h"
 #include "utils/env.h"
+#include "utils/objects.h"
+#include "zrythm_app.h"
 
 #include <glib.h>
 
@@ -43,6 +30,7 @@
 
 typedef enum
 {
+  Z_UTILS_CURL_ERROR_FAILED,
   Z_UTILS_CURL_ERROR_BAD_REQUEST,
   Z_UTILS_CURL_ERROR_CANNOT_INIT,
   Z_UTILS_CURL_ERROR_NON_2XX_RESPONSE,
@@ -78,7 +66,10 @@ curl_to_string (void * ptr, size_t size, size_t nmemb, void * data)
  * @return Newly allocated string or NULL if fail.
  */
 char *
-z_curl_get_page_contents (const char * url, int timeout)
+z_curl_get_page_contents (
+  const char * url,
+  int          timeout,
+  GError **    error)
 {
   g_debug ("getting page contents for %s...", url);
 
@@ -88,9 +79,7 @@ z_curl_get_page_contents (const char * url, int timeout)
   GString * page_str = g_string_new (NULL);
 
   CURLcode res;
-  curl_easy_setopt (
-    curl, CURLOPT_URL,
-    "https://www.zrythm.org/releases/?C=M;O=D");
+  curl_easy_setopt (curl, CURLOPT_URL, url);
   curl_easy_setopt (
     curl, CURLOPT_WRITEFUNCTION, curl_to_string);
   curl_easy_setopt (curl, CURLOPT_WRITEDATA, page_str);
@@ -100,25 +89,20 @@ z_curl_get_page_contents (const char * url, int timeout)
 
   char * page = NULL;
   res = curl_easy_perform (curl);
-  if (res != CURLE_OK)
-    {
-      g_warning (
-        "curl_easy_perform() failed: %s",
-        curl_easy_strerror (res));
-
-      g_string_free (page_str, true);
-    }
-  else
+  if (res == CURLE_OK)
     {
       page = g_string_free (page_str, false);
     }
+  else
+    {
+      g_set_error (
+        error, Z_UTILS_CURL_ERROR, Z_UTILS_CURL_ERROR_FAILED,
+        "curl_easy_perform() failed: %s",
+        curl_easy_strerror (res));
+      g_string_free (page_str, true);
+    }
 
   curl_easy_cleanup (curl);
-
-  if (!page)
-    {
-      g_warning ("failed getting page contents");
-    }
 
   g_debug ("done getting page contents for %s", url);
 
@@ -134,6 +118,8 @@ z_curl_get_page_contents (const char * url, int timeout)
 char *
 z_curl_get_page_contents_default (const char * url)
 {
+  g_critical ("unsupported function");
+  return NULL;
   int timeout = env_get_int ("Z_CURL_TIMEOUT", 0);
 
   if (timeout <= 0)
@@ -141,7 +127,7 @@ z_curl_get_page_contents_default (const char * url)
       timeout = 1;
     }
 
-  return z_curl_get_page_contents (url, timeout);
+  return z_curl_get_page_contents (url, timeout, NULL);
 }
 
 struct WriteThis
@@ -337,4 +323,59 @@ z_curl_post_json_no_auth (
   curl_mime_free (mime);
 
   return 0;
+}
+
+typedef struct ZCurlTaskData
+{
+  const char * url;
+  int          timeout_sec;
+} ZCurlTaskData;
+
+static void
+get_page_contents_task (
+  GTask *        task,
+  gpointer       source_obj,
+  gpointer       _task_data,
+  GCancellable * cancellable)
+{
+  ZCurlTaskData * task_data = (ZCurlTaskData *) _task_data;
+  GError *        err = NULL;
+  char *          page = z_curl_get_page_contents (
+    task_data->url, task_data->timeout_sec, &err);
+  if (!page)
+    {
+      g_task_return_error (task, err);
+      return;
+    }
+  g_task_return_pointer (task, page, g_free);
+}
+
+char *
+z_curl_get_page_contents_finish (
+  GAsyncResult * res,
+  GError **      error)
+{
+  g_debug ("finished getting page contents");
+  g_return_val_if_fail (
+    g_task_is_valid (res, zrythm_app), NULL);
+  return (
+    char *) g_task_propagate_pointer ((GTask *) res, error);
+}
+
+void
+z_curl_get_page_contents_async (
+  const char *        url,
+  int                 timeout_sec,
+  GAsyncReadyCallback callback,
+  gpointer            callback_data)
+{
+  GTask * task =
+    g_task_new (zrythm_app, NULL, callback, callback_data);
+  ZCurlTaskData * task_data = object_new (ZCurlTaskData);
+  task_data->url = url;
+  task_data->timeout_sec = timeout_sec;
+  g_task_set_task_data (
+    task, task_data, (GDestroyNotify) free);
+  g_task_run_in_thread (task, get_page_contents_task);
+  g_object_unref (task);
 }

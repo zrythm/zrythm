@@ -1856,7 +1856,8 @@ plugin_open_ui (Plugin * self)
               "author:\n  %s <%s>"),
             descr->name, descr->uri, deprecated_uri,
             descr->author, descr->website);
-          ui_show_error_message (true, msg);
+          ui_show_error_message (
+            _ ("Deprecated UI Type"), msg);
           g_free (deprecated_uri);
         }
     }

@@ -277,12 +277,11 @@ on_plugin_added (Plugin * plugin)
 static void
 on_plugin_crashed (Plugin * plugin)
 {
-  char * str = g_strdup_printf (
+  ui_show_message_printf (
+    _ ("Plugin Crashed"),
     _ ("Plugin '%s' has crashed and has been "
        "disabled."),
     plugin->setting->descr->name);
-  ui_show_error_message (true, str);
-  g_free (str);
 }
 
 static void
@@ -1087,8 +1086,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
              zrythm_app->project_load_message_queue))
           != NULL)
           {
-            ui_show_message_printf (
-              ui_msg->type, false, "%s", ui_msg->msg);
+            ui_show_message_literal (NULL, ui_msg->msg);
             zrythm_app_ui_message_free (ui_msg);
           }
       }

@@ -10,7 +10,7 @@
 #ifndef __GUI_WIDGETS_DIALOGS_WELCOME_MESSAGE_DIALOG_H__
 #define __GUI_WIDGETS_DIALOGS_WELCOME_MESSAGE_DIALOG_H__
 
-#include <gtk/gtk.h>
+#include <adwaita.h>
 
 /**
  * @addtogroup widgets
@@ -21,7 +21,7 @@
 /**
  * Creates and returns the welcome dialog.
  */
-GtkDialog *
+AdwMessageDialog *
 welcome_message_dialog_new (GtkWindow * parent);
 
 /**

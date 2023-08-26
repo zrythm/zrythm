@@ -2514,8 +2514,8 @@ on_drag_begin_handle_hit_object (
           sel, ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH, false);
       if (have_unresizable)
         {
-          ui_show_message_printf (
-            GTK_MESSAGE_WARNING, false, "%s",
+          ui_show_message_literal (
+            _ ("Cannot Resize"),
             _ ("Cannot resize because the "
                "selection contains objects "
                "without length"));
@@ -2539,8 +2539,8 @@ on_drag_begin_handle_hit_object (
                * a looped object mixed with
                * unloopable objects in the
                * selection */
-              ui_show_message_printf (
-                GTK_MESSAGE_WARNING, false, "%s",
+              ui_show_message_literal (
+                _ ("Cannot Resize"),
                 _ ("Cannot resize because the "
                    "selection contains a mix of "
                    "looped and unloopable objects"));
@@ -2851,8 +2851,6 @@ drag_begin (
     && TL_SELECTIONS->num_scale_objects == 0
     && TL_SELECTIONS->num_markers == 0;
 
-  /* this might cause issues with scrolling,
-   * describe why it is needed */
   if (!gtk_widget_has_focus (GTK_WIDGET (self)))
     gtk_widget_grab_focus (GTK_WIDGET (self));
 

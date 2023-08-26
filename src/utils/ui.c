@@ -141,40 +141,42 @@ ui_set_pointer_cursor (GtkWidget * widget)
  */
 void
 ui_show_message_full (
-  GtkWindow *    parent_window,
-  GtkMessageType type,
-  bool           block,
-  const char *   format,
+  GtkWindow *  parent_window,
+  const char * title,
+  const char * format,
   ...)
 {
   va_list args;
   va_start (args, format);
 
-  static char buf[40000];
-  vsprintf (buf, format, args);
+#define UI_MESSAGE_BUF_SZ 2000
+  char * buf = object_new_n (UI_MESSAGE_BUF_SZ, char);
+  int    printed =
+    vsnprintf (buf, UI_MESSAGE_BUF_SZ, format, args);
+  if (printed == -1)
+    {
+      g_warning ("vsnprintf failed");
+      free (buf);
+      return;
+    }
+  g_return_if_fail (printed < UI_MESSAGE_BUF_SZ);
+  buf =
+    g_realloc_n (buf, (size_t) (printed + 1), sizeof (char));
 
   /* log the message anyway */
-  switch (type)
-    {
-    case GTK_MESSAGE_ERROR:
-      g_warning ("%s", buf);
-      break;
-    case GTK_MESSAGE_INFO:
-    default:
-      g_message ("%s", buf);
-      break;
-    }
+  g_message ("%s: %s", title, buf);
 
   /* if have UI, also show a message dialog */
   if (ZRYTHM_HAVE_UI)
     {
-      GtkDialogFlags flags =
-        parent_window ? GTK_DIALOG_DESTROY_WITH_PARENT : 0;
-      flags |= GTK_DIALOG_MODAL;
-      GtkWidget * dialog = gtk_message_dialog_new (
-        parent_window, flags, type, GTK_BUTTONS_CLOSE, "%s",
-        buf);
-      gtk_window_set_title (GTK_WINDOW (dialog), PROGRAM_NAME);
+      GtkWidget * dialog =
+        adw_message_dialog_new (parent_window, title, buf);
+      adw_message_dialog_add_responses (
+        ADW_MESSAGE_DIALOG (dialog), "ok", _ ("_OK"), NULL);
+      adw_message_dialog_set_default_response (
+        ADW_MESSAGE_DIALOG (dialog), "ok");
+      adw_message_dialog_set_close_response (
+        ADW_MESSAGE_DIALOG (dialog), "ok");
       gtk_window_set_icon_name (GTK_WINDOW (dialog), "zrythm");
       if (parent_window)
         {
@@ -182,19 +184,13 @@ ui_show_message_full (
             GTK_WINDOW (dialog), parent_window);
           gtk_window_set_modal (GTK_WINDOW (dialog), true);
         }
-      if (block)
-        {
-          z_gtk_dialog_run (GTK_DIALOG (dialog), true);
-        }
-      else
-        {
-          gtk_window_present (GTK_WINDOW (dialog));
-          g_signal_connect (
-            GTK_DIALOG (dialog), "response",
-            G_CALLBACK (gtk_window_destroy), NULL);
-        }
+      gtk_window_present (GTK_WINDOW (dialog));
+      g_signal_connect (
+        dialog, "response", G_CALLBACK (gtk_window_destroy),
+        NULL);
     }
 
+  free (buf);
   va_end (args);
 }
 
@@ -969,7 +965,7 @@ ui_show_warning_for_tempo_track_experimental_feature (void)
   if (!shown)
     {
       ui_show_message_literal (
-        GTK_MESSAGE_WARNING, false,
+        _ ("Experimental Feature"),
         _ ("BPM and time signature automation is an "
            "experimental feature. Using it may corrupt your "
            "project."));

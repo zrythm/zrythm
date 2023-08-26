@@ -395,7 +395,7 @@ load_bundled_lv2_plugins (PluginManager * self)
             err->message);
           if (ZRYTHM_HAVE_UI)
             {
-              ui_show_error_message (true, msg);
+              ui_show_error_message (NULL, msg);
             }
           g_free (msg);
         }

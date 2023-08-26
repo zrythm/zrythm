@@ -107,16 +107,14 @@ tick_cb (
           GtkWindow * transient_parent =
             gtk_window_get_transient_for (GTK_WINDOW (self));
           ui_show_message_full (
-            transient_parent, GTK_MESSAGE_ERROR, true, "%s",
-            msg);
+            transient_parent, NULL, "%s", msg);
         }
       else if (msg)
         {
           GtkWindow * transient_parent =
             gtk_window_get_transient_for (GTK_WINDOW (self));
           ui_show_message_full (
-            transient_parent, GTK_MESSAGE_INFO, false, "%s",
-            msg);
+            transient_parent, NULL, "%s", msg);
         }
 
       g_free (msg);
