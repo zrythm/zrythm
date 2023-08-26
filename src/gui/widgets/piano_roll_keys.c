@@ -62,12 +62,7 @@ piano_roll_keys_snapshot (
       return;
     }
 
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
   int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_width (widget);
-  gtk_snapshot_render_background (
-    snapshot, context, 0, 0, width, height);
 
   ChordObject * co =
     chord_track_get_chord_at_playhead (P_CHORD_TRACK);

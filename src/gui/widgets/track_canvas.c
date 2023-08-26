@@ -211,10 +211,12 @@ draw_name (
   pango_layout_set_width (
     layout, pango_units_from_double (first_button_x - 22));
 
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
-  gtk_snapshot_render_layout (
-    snapshot, context, 22, 2, layout);
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot, &GRAPHENE_POINT_INIT (22.f, 2.f));
+  gtk_snapshot_append_layout (
+    snapshot, layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+  gtk_snapshot_restore (snapshot);
 }
 
 /**
@@ -722,12 +724,6 @@ track_canvas_snapshot (
   int width = gtk_widget_get_allocated_width (widget);
   int height = gtk_widget_get_allocated_height (widget);
 
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
-  gtk_snapshot_render_background (
-    snapshot, context, 0, 0, width, height);
-
   if (self->last_width != width || self->last_height != height)
     {
       update_pango_layouts (self, width, height);
@@ -788,9 +784,14 @@ track_canvas_snapshot (
       PangoRectangle pangorect;
       pango_layout_get_pixel_extents (
         layout, NULL, &pangorect);
-      gtk_snapshot_render_layout (
-        snapshot, context, 22,
-        (height - pangorect.height) - 2, layout);
+      gtk_snapshot_save (snapshot);
+      gtk_snapshot_translate (
+        snapshot,
+        &GRAPHENE_POINT_INIT (
+          22.f, (float) (height - pangorect.height - 2)));
+      gtk_snapshot_append_layout (
+        snapshot, layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+      gtk_snapshot_restore (snapshot);
     }
 
   if (tw->bg_hovered)

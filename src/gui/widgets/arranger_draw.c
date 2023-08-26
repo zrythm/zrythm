@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/control_port.h"
@@ -270,8 +270,6 @@ draw_debug_text (
     snapshot, &Z_GDK_RGBA_INIT (0, 0, 0, 0.4),
     &GRAPHENE_RECT_INIT (
       (float) rect->x, (float) rect->y, 400.f, 400.f));
-  GtkStyleContext * style_ctx =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
   char                   debug_txt[6000];
   const EditorSettings * settings =
     arranger_widget_get_editor_settings (self);
@@ -283,9 +281,15 @@ draw_debug_text (
     self->hover_y - settings->scroll_start_y,
     ui_get_overlay_action_string (self->action));
   pango_layout_set_markup (self->debug_layout, debug_txt, -1);
-  gtk_snapshot_render_layout (
-    snapshot, style_ctx, rect->x + 4, rect->y + 4,
-    self->debug_layout);
+  gtk_snapshot_save (snapshot);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (
+      (float) (rect->x + 4), (float) (rect->y + 4)));
+  gtk_snapshot_append_layout (
+    snapshot, self->debug_layout,
+    &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+  gtk_snapshot_restore (snapshot);
 }
 
 static void
@@ -766,13 +770,15 @@ draw_audio_bg (
   sprintf (gain_txt, "%.1fdB", gain_db);
   int gain_txt_padding = 3;
   pango_layout_set_markup (self->audio_layout, gain_txt, -1);
-  GtkStyleContext * style_ctx =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
-  gtk_snapshot_render_layout (
-    snapshot, style_ctx, gain_txt_padding + gain_line_start_x,
-    gain_txt_padding
-      + (int) ((double) rect->height * (1.0 - gain_fader_val)),
-    self->audio_layout);
+  gtk_snapshot_translate (
+    snapshot,
+    &GRAPHENE_POINT_INIT (
+      (float) (gain_txt_padding + gain_line_start_x),
+      (float) (gain_txt_padding + (int) ((double) rect->height * (1.0 - gain_fader_val)))));
+  gtk_snapshot_append_layout (
+    snapshot, self->audio_layout,
+    &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+  gtk_snapshot_restore (snapshot);
 }
 
 static void
@@ -1035,9 +1041,6 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /*rect.x, rect.y, rect.width, rect.height);*/
   self->last_rect = visible_rect;
 
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
 #if 0
   cairo_antialias_t antialias =
     cairo_get_antialias (self->cached_cr);
@@ -1047,9 +1050,6 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     self->cached_cr, CAIRO_ANTIALIAS_FAST);
   cairo_set_tolerance (self->cached_cr, 1.5);
 #endif
-
-  gtk_snapshot_render_background (
-    snapshot, context, 0, 0, width, height);
 
   /* pretend we're drawing from 0, 0 */
   gtk_snapshot_save (snapshot);

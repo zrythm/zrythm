@@ -21,14 +21,8 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   MeterWidget * self = Z_METER_WIDGET (widget);
 
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
   int width = gtk_widget_get_allocated_width (widget);
   int height = gtk_widget_get_allocated_height (widget);
-
-  gtk_snapshot_render_background (
-    snapshot, context, 0, 0, width, height);
 
   /* get values */
   float peak = self->meter_peak;

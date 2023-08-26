@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /** \file
@@ -45,15 +45,6 @@ static void
 cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   CpuWidget * self = Z_CPU_WIDGET (widget);
-
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
-
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
-  gtk_snapshot_render_background (
-    snapshot, context, 0, 0, width, height);
 
   GdkRGBA active_color;
   gdk_rgba_parse (&active_color, "#33D17A");

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
@@ -95,14 +95,8 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* do normal cast because this gets called a lot */
   BarSliderWidget * self = (BarSliderWidget *) widget;
 
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
   int width = gtk_widget_get_allocated_width (widget);
   int height = gtk_widget_get_allocated_height (widget);
-
-  gtk_snapshot_render_background (
-    snapshot, context, 0, 0, width, height);
 
   const float real_min = self->min;
   const float real_max = self->max;
