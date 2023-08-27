@@ -81,6 +81,9 @@ typedef struct GraphThread
   /** Pointer back to the graph. */
   Graph * graph;
 
+  void * ptok;
+  void * ctok;
+
 #ifdef HAVE_LSP_DSP
   /** LSP DSP context. */
   lsp_dsp_context_t lsp_ctx;

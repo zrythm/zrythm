@@ -36,6 +36,7 @@ subdir('utils')
 zrythm_link_libs = [
   lv2_lib,
   widgets_lib,
+  concurrentqueue_lib,
   midilib,
   kissfft_lib,
   nanovg_lib,

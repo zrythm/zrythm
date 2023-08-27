@@ -47,6 +47,8 @@
 #include "utils/stoat.h"
 #include "utils/string.h"
 
+#include "concurrentqueue_c.h"
+
 /**
  * Called from a terminal node (from the Graph worked-thread)
  * to indicate it has completed processing.
@@ -100,8 +102,9 @@ graph_on_reached_terminal_node (Graph * self)
       for (size_t i = 0; i < self->n_init_triggers; ++i)
         {
           g_atomic_int_inc (&self->trigger_queue_size);
-          mpmc_queue_push_back_node (
-            self->trigger_queue, self->init_trigger_list[i]);
+          int ret = moodycamel_cq_try_enqueue (
+            self->trigger_queue, (void *) self->init_trigger_list[i]);
+          g_return_if_fail (ret == 1);
         }
       /* continue in worker-thread */
     }
@@ -218,9 +221,9 @@ graph_rechain (Graph * self)
   g_atomic_int_set (
     &self->terminal_refcnt, (guint) self->n_terminal_nodes);
 
-  mpmc_queue_reserve (
-    self->trigger_queue,
-    (size_t) g_hash_table_size (self->graph_nodes));
+  moodycamel_cq_destroy (self->trigger_queue);
+  /* (ceil(N / BLOCK_SIZE) - 1 + 2 * MAX_NUM_PRODUCERS) * BLOCK_SIZE */
+  moodycamel_cq_create (&self->trigger_queue, g_hash_table_size (self->graph_nodes) * 24);
 
   clear_setup (self);
 }
@@ -1348,7 +1351,7 @@ graph_new (Router * router)
   Graph * self = object_new (Graph);
 
   self->router = router;
-  self->trigger_queue = mpmc_queue_new ();
+  moodycamel_cq_create (&self->trigger_queue, 2048);
   self->init_trigger_list = object_new (GraphNode *);
   self->terminal_nodes = object_new (GraphNode *);
   self->graph_nodes = g_hash_table_new_full (
@@ -1611,7 +1614,7 @@ graph_free (Graph * self)
   object_set_to_zero (&self->trigger);
 
   object_free_w_func_and_null (
-    mpmc_queue_free, self->trigger_queue);
+    moodycamel_cq_destroy, self->trigger_queue);
 
   object_zero_and_free (self);
 

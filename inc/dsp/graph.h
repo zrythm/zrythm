@@ -51,6 +51,7 @@ typedef struct Position        Position;
 typedef struct GraphThread     GraphThread;
 typedef struct Router          Router;
 typedef struct ModulatorMacroProcessor ModulatorMacroProcessor;
+typedef void* MoodycamelCQHandle;
 
 /**
  * @addtogroup dsp
@@ -59,10 +60,10 @@ typedef struct ModulatorMacroProcessor ModulatorMacroProcessor;
  */
 
 #define mpmc_queue_push_back_node(q, x) \
-  mpmc_queue_push_back (q, (void *) x)
+  moodycamel_cq_try_enqueue (q, (void *) x)
 
 #define mpmc_queue_dequeue_node(q, x) \
-  mpmc_queue_dequeue (q, (void *) x)
+  moodycamel_cq_try_dequeue (q, (void *) x)
 
 #define MAX_GRAPH_THREADS 128
 
@@ -113,7 +114,9 @@ typedef struct Graph
 
   /** Queue containing nodes that can be
    * processed. */
-  MPMCQueue * trigger_queue;
+  //MPMCQueue * trigger_queue;
+
+  MoodycamelCQHandle trigger_queue;
 
   /** Number of entries in trigger queue. */
   volatile guint trigger_queue_size;

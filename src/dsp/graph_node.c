@@ -4,6 +4,8 @@
 #include <inttypes.h>
 #include <stdlib.h>
 
+#include "concurrentqueue_c.h"
+
 #include "dsp/engine.h"
 #include "dsp/fader.h"
 #include "dsp/graph.h"
@@ -417,13 +419,13 @@ graph_node_trigger (GraphNode * self)
       g_atomic_int_set (
         &self->refcount, (unsigned int) self->init_refcount);
 
-      /* all nodes that feed this node have
-       * completed, so this node be processed
-       * now. */
-      g_atomic_int_inc (&self->graph->trigger_queue_size);
+      /* all nodes that feed this node have completed, so this
+       * node be processed now. */
       /*g_message ("triggering node, pushing back");*/
-      mpmc_queue_push_back_node (
+      g_atomic_int_inc (&self->graph->trigger_queue_size);
+      int ret = mpmc_queue_push_back_node (
         self->graph->trigger_queue, self);
+      g_return_if_fail (ret);
     }
 }
 

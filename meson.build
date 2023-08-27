@@ -222,6 +222,7 @@ have_custom_logo_and_splash = get_option ('custom_logo_and_splash')
 root_inc = include_directories ('.')
 inc_inc = include_directories ('inc')
 ext_inc = include_directories ('ext')
+concurrentqueue_inc = include_directories ('ext/concurrentqueue')
 kissfft_inc = include_directories ('ext/kissfft')
 midilib_inc = include_directories ('ext/midilib')
 whereami_inc = include_directories ('ext/whereami')
@@ -231,6 +232,7 @@ all_inc = [
   root_inc,
   inc_inc,
   ext_inc,
+  concurrentqueue_inc,
   kissfft_inc,
   midilib_inc,
   whereami_inc,

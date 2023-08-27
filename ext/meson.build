@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+subdir ('concurrentqueue')
 subdir ('kissfft')
 subdir ('midilib')
 subdir ('nanovg')

@@ -82,21 +82,33 @@
 #endif
 
 #include <glib/gi18n.h>
+#include "concurrentqueue_c.h"
 
 /* uncomment to show debug messages */
 /*#define DEBUG_THREADS 1*/
 
+/**
+ * See Ardour's Graph::run_one().
+ */
 OPTIMIZE (O3)
 static void *
 worker_thread (void * arg)
 {
   GraphThread * thread = (GraphThread *) arg;
   Graph *       graph = thread->graph;
-  GraphNode *   to_run = NULL;
 
   /* initialize data for g_thread_self so no
    * allocation is done later on */
   g_thread_self ();
+
+  /* create producer/consumer token */
+  if (!thread->ptok)
+    {
+      thread->ptok = moodycamel_create_producer_token (graph->trigger_queue);
+    }
+  thread->ctok = moodycamel_create_consumer_token (graph->trigger_queue);
+  g_return_val_if_fail (thread->ptok, NULL);
+  g_return_val_if_fail (thread->ctok, NULL);
 
   g_message (
     "WORKER THREAD %d created (num threads %d)", thread->id,
@@ -117,7 +129,7 @@ worker_thread (void * arg)
 
   for (;;)
     {
-      to_run = NULL;
+  GraphNode *   to_run = NULL;
 
       if (g_atomic_int_get (&graph->terminate))
         {
@@ -133,26 +145,28 @@ worker_thread (void * arg)
           goto terminate_thread;
         }
 
-      if (mpmc_queue_dequeue_node (
-            graph->trigger_queue, &to_run))
+      if (moodycamel_cq_try_dequeue_consumer (
+            graph->trigger_queue, thread->ctok, (void *) &to_run))
         {
           g_warn_if_fail (to_run);
 #ifdef DEBUG_THREADS
           g_message (
             "[%d]: dequeued node (nodes left %d)", thread->id,
             g_atomic_int_get (&graph->trigger_queue_size));
-          graph_node_print (to_run);
+          /*graph_node_print (to_run);*/
 #endif
-          /* Wake up idle threads, but at most as
-           * many as there's work in the trigger
-           * queue that can be processed by other
-           * threads.
-           * This thread as not yet decreased
-           * _trigger_queue_size. */
+          /* Wake up idle threads, but at most as many as
+           * there's work in the trigger queue that can be
+           * processed by other threads.
+           * This thread has not yet decreased
+           * trigger_queue_size. */
+          /* this thread is not considered idle at this point
+             (so it's not part of idle_thread_cnt) */
           guint idle_cnt = (guint) g_atomic_int_get (
             &graph->idle_thread_cnt);
           guint work_avail = (guint) g_atomic_int_get (
             &graph->trigger_queue_size);
+          /* add 1 for current thread */
           guint wakeup = MIN (idle_cnt + 1, work_avail);
 #ifdef DEBUG_THREADS
           g_message (
@@ -165,31 +179,35 @@ worker_thread (void * arg)
               zix_sem_post (&graph->trigger);
             }
         }
+      else
+        {
+          to_run = NULL;/* it's not this - remove */
+        }
 
       while (!to_run)
         {
-          /* wait for work, fall asleep */
+          /* wait for work (a trigger graph node).
+           * this thread is now idle so increase idle counter */
           g_atomic_int_inc (&graph->idle_thread_cnt);
-          int idle_thread_cnt =
-            g_atomic_int_get (&graph->idle_thread_cnt);
 #ifdef DEBUG_THREADS
           g_message (
             "[%d]: no node to run. just increased "
             "idle thread count "
             "and waiting for work "
             "(current idle threads %d)",
-            thread->id, idle_thread_cnt);
+            thread->id, g_atomic_int_get (&graph->idle_thread_cnt));
 #endif
-          if (idle_thread_cnt > graph->num_threads)
+          if (g_atomic_int_get (&graph->idle_thread_cnt) > graph->num_threads)
             {
               g_critical (
                 "[%d]: idle thread count %d is "
                 "greater than the number of threads "
                 "%d. this should never occur",
-                thread->id, idle_thread_cnt,
+                thread->id, g_atomic_int_get (&graph->idle_thread_cnt),
                 graph->num_threads);
             }
 
+          /* semaphore - wait for a trigger node to be ready */
           zix_sem_wait (&graph->trigger);
 
           if (g_atomic_int_get (&graph->terminate))
@@ -207,9 +225,14 @@ worker_thread (void * arg)
             g_atomic_int_get (&graph->idle_thread_cnt));
 #endif
 
-          /* try to find some work to do */
-          mpmc_queue_dequeue_node (
-            graph->trigger_queue, &to_run);
+          /* try to find some work to do before another idle
+           * thread does. if succeeded, this will break out of
+           * the loop and process the node. if failed, loop
+           * again and wait for another trigger */
+          int ret = moodycamel_cq_try_dequeue_consumer (
+                graph->trigger_queue, thread->ctok, (void *) &to_run);
+          if (!ret)
+            to_run = NULL;
         }
 
       /* process graph-node */
@@ -239,6 +262,9 @@ main_thread (void * arg)
   GraphThread * thread = (GraphThread *) arg;
   Graph *       self = thread->graph;
 
+  thread->ptok = moodycamel_create_producer_token (thread->graph->trigger_queue);
+  g_return_val_if_fail (thread->ptok, NULL);
+
   /* Wait until all worker threads are active */
   while (
     g_atomic_int_get (&self->idle_thread_cnt)
@@ -266,10 +292,11 @@ main_thread (void * arg)
    * Graph_reached_terminal_node)*/
   for (size_t i = 0; i < self->n_init_triggers; ++i)
     {
-      g_atomic_int_inc (&self->trigger_queue_size);
       /*g_message ("[main] pushing back node %d during bootstrap", i);*/
-      mpmc_queue_push_back_node (
-        self->trigger_queue, self->init_trigger_list[i]);
+      g_atomic_int_inc (&self->trigger_queue_size);
+      int ret = moodycamel_cq_try_enqueue_producer (
+        self->trigger_queue, thread->ptok, (void *) self->init_trigger_list[i]);
+      g_return_val_if_fail (ret, NULL);
     }
 
   /* after setup, the main-thread just becomes
