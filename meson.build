@@ -766,7 +766,7 @@ if is_gcc
     '-Wsuggest-attribute=const',
     '-Wsuggest-attribute=noreturn',
     '-Wsuggest-attribute=format',
-    '-Wsuggest-attribute=malloc',
+    #'-Wsuggest-attribute=malloc',
     '-Wsuggest-attribute=cold',
 
     # only do the following on GCC because clang
