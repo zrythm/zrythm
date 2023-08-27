@@ -774,6 +774,7 @@ draw_audio_bg (
   sprintf (gain_txt, "%.1fdB", gain_db);
   int gain_txt_padding = 3;
   pango_layout_set_markup (self->audio_layout, gain_txt, -1);
+  gtk_snapshot_save (snapshot);
   gtk_snapshot_translate (
     snapshot,
     &GRAPHENE_POINT_INIT (
