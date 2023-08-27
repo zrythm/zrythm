@@ -1,24 +1,12 @@
+// SPDX-FileCopyrightText: © 2019, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
  *
+ * ---
+ *
+ * Copyright (C) 2010-2011 Dmitry Vyukov
  * Copyright (C) 2017, 2019 Robin Gareus <robin@gareus.org>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,6 +21,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * ---
  */
 
 /**
@@ -47,7 +37,15 @@
 
 #include <stddef.h>
 
-#include <glib.h>
+#define MPMC_USE_STD_ATOMIC 1
+
+#ifdef MPMC_USE_STD_ATOMIC
+#  include <stdatomic.h>
+#  define MPMC_QUEUE_TYPE atomic_uint
+#else
+#  include <glib.h>
+#  define MPMC_QUEUE_TYPE guint
+#endif
 
 /**
  * @addtogroup utils
@@ -57,8 +55,8 @@
 
 typedef struct cell_t
 {
-  volatile guint sequence;
-  void *         data;
+  MPMC_QUEUE_TYPE sequence;
+  void *          data;
 } cell_t;
 
 /**
@@ -69,11 +67,14 @@ typedef struct cell_t
  */
 typedef struct MPMCQueue
 {
+  char     pad0[64];
   cell_t * buffer;
   size_t   buffer_mask;
-
-  volatile guint enqueue_pos;
-  volatile guint dequeue_pos;
+  char     pad1[64 - sizeof (cell_t *) - sizeof (size_t)];
+  MPMC_QUEUE_TYPE enqueue_pos;
+  char            pad2[64 - sizeof (size_t)];
+  MPMC_QUEUE_TYPE dequeue_pos;
+  char            pad3[64 - sizeof (size_t)];
 
 } MPMCQueue;
 

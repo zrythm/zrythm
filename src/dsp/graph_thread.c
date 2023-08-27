@@ -88,7 +88,7 @@
 
 OPTIMIZE (O3)
 static void *
-worker_thread (void * arg)
+dsp_worker_thread (void * arg)
 {
   GraphThread * thread = (GraphThread *) arg;
   Graph *       graph = thread->graph;
@@ -197,6 +197,7 @@ worker_thread (void * arg)
               goto terminate_thread;
             }
 
+          /* not idle anymore - decrease idle thread count */
           g_atomic_int_dec_and_test (&graph->idle_thread_cnt);
 #ifdef DEBUG_THREADS
           g_message (
@@ -212,7 +213,8 @@ worker_thread (void * arg)
             graph->trigger_queue, &to_run);
         }
 
-      /* process graph-node */
+      /* this thread has now claimed the graph node for
+       * processing - process it */
       g_atomic_int_dec_and_test (&graph->trigger_queue_size);
 #ifdef DEBUG_THREADS
       g_message ("[%d]: running node", thread->id);
@@ -274,7 +276,7 @@ main_thread (void * arg)
 
   /* after setup, the main-thread just becomes
    * a normal worker */
-  return worker_thread (thread);
+  return dsp_worker_thread (thread);
 }
 
 static size_t
@@ -608,7 +610,7 @@ dbus_fail_handling:
 
   res = pthread_create (
     &self->pthread, &attributes,
-    is_main ? &main_thread : &worker_thread, self);
+    is_main ? &main_thread : &dsp_worker_thread, self);
   if (res)
     {
       g_critical (

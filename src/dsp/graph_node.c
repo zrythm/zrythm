@@ -171,8 +171,7 @@ on_node_finish (GraphNode * self)
 {
   int feeds = 0;
 
-  /* notify downstream nodes that depend on this
-   * node */
+  /* notify downstream nodes that depend on this node */
   for (int i = 0; i < self->n_childnodes; ++i)
     {
 #if 0

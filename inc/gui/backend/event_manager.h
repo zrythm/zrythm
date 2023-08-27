@@ -17,6 +17,8 @@
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
 
+#include <glib.h>
+
 typedef struct Zrythm Zrythm;
 typedef struct ZEvent ZEvent;
 

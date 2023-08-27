@@ -70,10 +70,8 @@ graph_on_reached_terminal_node (Graph * self)
       /* Notify caller */
       zix_sem_post (&self->callback_done);
 
-      /* Ensure that all background threads are
-       * idle.
-       * When freewheeling there may be an
-       * immediate restart:
+      /* Ensure that all background threads are idle.
+       * When freewheeling there may be an immediate restart:
        * If there are more threads than CPU cores,
        * some worker- threads may only be "on
        * the way" to become idle. */

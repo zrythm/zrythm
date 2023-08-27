@@ -1,24 +1,12 @@
+// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2019-2021 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
  *
+ * ---
+ *
+ * Copyright (C) 2010-2011 Dmitry Vyukov
  * Copyright (C) 2017, 2019 Robin Gareus <robin@gareus.org>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -33,6 +21,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ * ---
  */
 
 #include <stdint.h>
@@ -95,26 +85,54 @@ mpmc_queue_clear (MPMCQueue * self)
 {
   for (size_t i = 0; i <= self->buffer_mask; ++i)
     {
+#ifdef MPMC_USE_STD_ATOMIC
+      atomic_store_explicit (
+        &self->buffer[i].sequence, i, memory_order_relaxed);
+#else
       g_atomic_int_set (&self->buffer[i].sequence, (guint) i);
+#endif
     }
+#ifdef MPMC_USE_STD_ATOMIC
+  atomic_store_explicit (
+    &self->enqueue_pos, 0, memory_order_relaxed);
+  atomic_store_explicit (
+    &self->dequeue_pos, 0, memory_order_relaxed);
+#else
   g_atomic_int_set (&self->enqueue_pos, 0);
   g_atomic_int_set (&self->dequeue_pos, 0);
+#endif
 }
 
 int
 mpmc_queue_push_back (MPMCQueue * self, void * const data)
 {
   cell_t * cell;
-  gint     pos = g_atomic_int_get (&self->enqueue_pos);
+#ifdef MPMC_USE_STD_ATOMIC
+  unsigned int pos = atomic_load_explicit (
+    &self->enqueue_pos, memory_order_relaxed);
+#else
+  gint pos = g_atomic_int_get (&self->enqueue_pos);
+#endif
   for (;;)
     {
       cell = &self->buffer[(size_t) pos & self->buffer_mask];
+#ifdef MPMC_USE_STD_ATOMIC
+      unsigned int seq = (guint) atomic_load_explicit (
+        &cell->sequence, memory_order_acquire);
+#else
       guint seq = (guint) g_atomic_int_get (&cell->sequence);
+#endif
       intptr_t dif = (intptr_t) seq - (intptr_t) pos;
       if (dif == 0)
         {
+#ifdef MPMC_USE_STD_ATOMIC
+          if (atomic_compare_exchange_weak_explicit (
+                &self->enqueue_pos, &pos, pos + 1,
+                memory_order_acquire, memory_order_acquire))
+#else
           if (g_atomic_int_compare_and_exchange (
                 &self->enqueue_pos, pos, (pos + 1)))
+#endif
             {
               break;
             }
@@ -125,11 +143,21 @@ mpmc_queue_push_back (MPMCQueue * self, void * const data)
         }
       else
         {
+#ifdef MPMC_USE_STD_ATOMIC
+          pos = atomic_load_explicit (
+            &self->enqueue_pos, memory_order_relaxed);
+#else
           pos = g_atomic_int_get (&self->enqueue_pos);
+#endif
         }
     }
   cell->data = data;
+#ifdef MPMC_USE_STD_ATOMIC
+  atomic_store_explicit (
+    &cell->sequence, pos + 1, memory_order_release);
+#else
   g_atomic_int_set (&cell->sequence, pos + 1);
+#endif
 
   return 1;
 }
@@ -138,16 +166,32 @@ int
 mpmc_queue_dequeue (MPMCQueue * self, void ** data)
 {
   cell_t * cell;
-  gint     pos = g_atomic_int_get (&self->dequeue_pos);
+#ifdef MPMC_USE_STD_ATOMIC
+  unsigned int pos = atomic_load_explicit (
+    &self->dequeue_pos, memory_order_relaxed);
+#else
+  gint pos = g_atomic_int_get (&self->dequeue_pos);
+#endif
   for (;;)
     {
       cell = &self->buffer[(size_t) pos & self->buffer_mask];
+#ifdef MPMC_USE_STD_ATOMIC
+      unsigned int seq = (guint) atomic_load_explicit (
+        &cell->sequence, memory_order_acquire);
+#else
       guint seq = (guint) g_atomic_int_get (&cell->sequence);
+#endif
       intptr_t dif = (intptr_t) seq - (intptr_t) (pos + 1);
       if (dif == 0)
         {
+#ifdef MPMC_USE_STD_ATOMIC
+          if (atomic_compare_exchange_weak_explicit (
+                &self->dequeue_pos, &pos, (pos + 1),
+                memory_order_relaxed, memory_order_relaxed))
+#else
           if (g_atomic_int_compare_and_exchange (
                 &self->dequeue_pos, pos, (pos + 1)))
+#endif
             break;
         }
       else if (dif < 0)
@@ -156,12 +200,23 @@ mpmc_queue_dequeue (MPMCQueue * self, void ** data)
         }
       else
         {
+#ifdef MPMC_USE_STD_ATOMIC
+          pos = atomic_load_explicit (
+            &self->dequeue_pos, memory_order_relaxed);
+#else
           pos = g_atomic_int_get (&self->dequeue_pos);
+#endif
         }
     }
   *data = cell->data;
+#ifdef MPMC_USE_STD_ATOMIC
+  atomic_store_explicit (
+    &cell->sequence, pos + self->buffer_mask + 1,
+    memory_order_release);
+#else
   g_atomic_int_set (
     &cell->sequence, pos + (gint) self->buffer_mask + 1);
+#endif
 
   return 1;
 }
