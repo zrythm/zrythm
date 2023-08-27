@@ -16,10 +16,50 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
+static void
+accessible_range_init (GtkAccessibleRangeInterface * iface);
+G_DEFINE_TYPE_WITH_CODE (
   BarSliderWidget,
   bar_slider_widget,
-  GTK_TYPE_WIDGET)
+  GTK_TYPE_WIDGET,
+  G_IMPLEMENT_INTERFACE (
+    GTK_TYPE_ACCESSIBLE_RANGE,
+    accessible_range_init))
+
+/**
+ * Macro to get real value from bar_slider value.
+ */
+#define REAL_VAL_FROM_BAR_SLIDER(bar_slider) \
+  (self->min + (float) bar_slider * (self->max - self->min))
+
+/**
+ * Converts from real value to bar_slider value
+ */
+#define BAR_SLIDER_VAL_FROM_REAL(real) \
+  (((float) real - self->min) / (self->max - self->min))
+
+static gboolean
+accessible_range_set_current_value (
+  GtkAccessibleRange * accessible_range,
+  double               value)
+{
+  BarSliderWidget * self =
+    Z_BAR_SLIDER_WIDGET (accessible_range);
+  if (self->end_setter)
+    {
+      self->end_setter (
+        self->object, REAL_VAL_FROM_BAR_SLIDER (value));
+    }
+
+  return TRUE;
+}
+
+static void
+accessible_range_init (GtkAccessibleRangeInterface * iface)
+{
+  iface->set_current_value =
+    accessible_range_set_current_value;
+}
 
 /**
  * Get the real value.
@@ -44,18 +84,6 @@ get_real_val (BarSliderWidget * self, bool snapped)
         }
     }
 }
-
-/**
- * Macro to get real value from bar_slider value.
- */
-#define REAL_VAL_FROM_BAR_SLIDER(bar_slider) \
-  (self->min + (float) bar_slider * (self->max - self->min))
-
-/**
- * Converts from real value to bar_slider value
- */
-#define BAR_SLIDER_VAL_FROM_REAL(real) \
-  (((float) real - self->min) / (self->max - self->min))
 
 /**
  * Sets real val
@@ -359,6 +387,7 @@ _bar_slider_widget_new (
   g_signal_connect (
     G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end),
     self);
+
   return self;
 }
 
@@ -384,16 +413,23 @@ bar_slider_widget_init (BarSliderWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
+  gtk_accessible_update_property (
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_VALUE_MAX,
+    1.0, GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, 0.0,
+    GTK_ACCESSIBLE_PROPERTY_LABEL, "Slider", -1);
+
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
 }
 
 static void
 bar_slider_widget_class_init (BarSliderWidgetClass * _klass)
 {
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
+  wklass->snapshot = bar_slider_snapshot;
+  gtk_widget_class_set_accessible_role (
+    wklass, GTK_ACCESSIBLE_ROLE_SLIDER);
+
   GObjectClass * klass = G_OBJECT_CLASS (_klass);
 
   klass->finalize = (GObjectFinalizeFunc) finalize;
-
-  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
-  wklass->snapshot = bar_slider_snapshot;
 }
