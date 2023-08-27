@@ -137,10 +137,10 @@ file_reflink (const char * dest, const char * src)
 {
 #ifdef __linux__
   int src_fd = g_open (src, O_RDONLY);
-  if (src_fd)
+  if (src_fd == -1)
     return src_fd;
   int dest_fd = g_open (dest, O_RDWR | O_CREAT, 0644);
-  if (dest_fd)
+  if (dest_fd == -1)
     return src_fd;
   return ioctl (dest_fd, FICLONE, src_fd);
 #else

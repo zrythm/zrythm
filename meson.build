@@ -738,6 +738,7 @@ test_strict_cflags += [
   #'-Werror=analyzer-imprecise-fp-arithmetic',
   '-Werror=analyzer-infinite-recursion',
   '-Werror=analyzer-jump-through-null',
+  '-Werror=analyzer-fd-leak',
   '-Werror=nonnull',
   '-Werror=nonnull-compare',
   '-Werror=pointer-size',
