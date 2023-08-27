@@ -260,7 +260,7 @@ illegal_char_test_args = [
   ]
 
 # GTK/GLIB versions
-gtk_req = '4.10.0'
+gtk_req = '4.14.0'
 glib_req = '2.74.0'
 
 # --- Add extra languages ---
@@ -887,7 +887,7 @@ graphene_dep = dependency (
   include_type: 'system')
 
 gtk_dep = dependency (
-  'gtk4', version: '>=' + gtk_req,
+  'gtk4', version: '>=' + '4.13', #gtk_req,
   fallback: ['gtk4', 'libgtk_dep'],
   default_options: [
     'build-demos=false', 'build-examples=false',

@@ -121,7 +121,7 @@ draw_loop_points (
   GdkRectangle * draw_rect)
 {
   double dashes[] = { 5 };
-  float dashesf[] = { 5.f };
+  float  dashesf[] = { 5.f };
 
   ArrangerObject * obj = (ArrangerObject *) self;
 
@@ -229,20 +229,21 @@ draw_loop_points (
         x_px >= 0 && x_px < full_width)
         {
           GskPathBuilder * builder = gsk_path_builder_new ();
-          gsk_path_builder_move_to (builder, (float) x_px, 0.f);
-          gsk_path_builder_line_to (builder,
-            (float) x_px, (float) full_height);
-          GskPath * path = gsk_path_builder_free_to_path (builder);
-          GskStroke * stroke = gsk_stroke_new ((float) line_width);
+          gsk_path_builder_move_to (
+            builder, (float) x_px, 0.f);
+          gsk_path_builder_line_to (
+            builder, (float) x_px, (float) full_height);
+          GskPath * path =
+            gsk_path_builder_free_to_path (builder);
+          GskStroke * stroke =
+            gsk_stroke_new ((float) line_width);
           gsk_stroke_set_dash (stroke, dashesf, 1);
           gtk_snapshot_push_stroke (snapshot, path, stroke);
           const GdkRGBA color = { 0, 0, 0, 1 };
           gtk_snapshot_append_color (
             snapshot, &color,
             &GRAPHENE_RECT_INIT (
-              (float) x_px, 0.f,
-
-              (float) line_width,
+              (float) x_px, 0.f, (float) line_width,
               (float) full_height));
           gtk_snapshot_pop (snapshot); // stroke
         }
@@ -610,7 +611,7 @@ handle_loop (
   /* calculate draw endpoints */
   z_return_val_if_fail_cmp (loop_ticks, >, 0, true);
   z_return_val_if_fail_cmp (cur_loop, >=, 0, true);
-  double abs_start_ticks_after_loops =
+  double global_start_ticks_after_loops =
     ap_obj->pos.ticks + loop_ticks * (double) cur_loop;
 
   /* if ap started before loop start only draw from the loop
@@ -619,21 +620,21 @@ handle_loop (
     position_is_before (&ap_obj->pos, &obj->loop_start_pos)
     && cur_loop != 0)
     {
-      abs_start_ticks_after_loops +=
+      global_start_ticks_after_loops +=
         obj->loop_start_pos.ticks - ap_obj->pos.ticks;
     }
 
   /* if should be clipped */
-  double abs_end_ticks_after_loops =
+  double global_end_ticks_after_loops =
     ap_end_ticks + loop_ticks * (double) cur_loop;
   double
-    abs_end_ticks_after_loops_with_clipoff; /* same as above but the part outside the loop/region is clipped off */
+    global_end_ticks_after_loops_with_clipoff; /* same as above but the part outside the loop/region is clipped off */
   if (
     next_ap
     && position_is_after_or_equal (
       &next_ap_obj->pos, &obj->loop_end_pos))
     {
-      abs_end_ticks_after_loops_with_clipoff =
+      global_end_ticks_after_loops_with_clipoff =
         obj->loop_end_pos.ticks
         + loop_ticks * (double) cur_loop;
     }
@@ -642,35 +643,36 @@ handle_loop (
     && position_is_after_or_equal (
       &next_ap_obj->pos, &obj->end_pos))
     {
-      abs_end_ticks_after_loops_with_clipoff =
+      global_end_ticks_after_loops_with_clipoff =
         obj->end_pos.ticks + loop_ticks * (double) cur_loop;
     }
   else
     {
-      abs_end_ticks_after_loops_with_clipoff =
-        abs_end_ticks_after_loops;
+      global_end_ticks_after_loops_with_clipoff =
+        global_end_ticks_after_loops;
     }
 
   /* adjust for clip start */
-  abs_start_ticks_after_loops -= obj->clip_start_pos.ticks;
-  abs_end_ticks_after_loops -= obj->clip_start_pos.ticks;
-  abs_end_ticks_after_loops_with_clipoff -=
+  global_start_ticks_after_loops -= obj->clip_start_pos.ticks;
+  global_end_ticks_after_loops -= obj->clip_start_pos.ticks;
+  global_end_ticks_after_loops_with_clipoff -=
     obj->clip_start_pos.ticks;
 
 #if 0
   g_debug (
     "loop %d:, abs start ticks after loops %f | abs end ticks after loops %f | abs end ticks after loops w clipof %f",
     cur_loop, abs_start_ticks_after_loops,
-    abs_end_ticks_after_loops,
-    abs_end_ticks_after_loops_with_clipoff);
+    global_end_ticks_after_loops,
+    global_end_ticks_after_loops_with_clipoff);
 #endif
 
   double x_start_ratio_in_region =
-    abs_start_ticks_after_loops / ticks_in_region;
+    global_start_ticks_after_loops / ticks_in_region;
   double x_end_ratio_in_region =
-    abs_end_ticks_after_loops / ticks_in_region;
+    global_end_ticks_after_loops / ticks_in_region;
   double x_end_ratio_in_region_with_clipoff =
-    abs_end_ticks_after_loops_with_clipoff / ticks_in_region;
+    global_end_ticks_after_loops_with_clipoff
+    / ticks_in_region;
 
   /* get ratio (0.0 - 1.0) on y where ap is */
   double y_start_ratio, y_end_ratio;
@@ -718,13 +720,13 @@ handle_loop (
           2.f * (float) padding));
     }
 
+  bool ret_val = false;
+
   /* draw curve */
   if (next_ap)
     {
       const int line_width = 2;
-
-      /* automation curve width */
-      double ac_width =
+      double    curve_width =
         fabs (x_end_in_region - x_start_in_region);
 
       ArrangerWidget * arranger =
@@ -745,7 +747,7 @@ handle_loop (
         (int) x_start_in_region, 0,
         /* add the line width otherwise the end of the
          * curve gets cut off */
-        (int) (ac_width) + line_width, full_rect->height);
+        (int) (curve_width) + line_width, full_rect->height);
 
       /* adjust if automation point starts before the region */
       if (x_start_in_region < 0)
@@ -769,7 +771,7 @@ handle_loop (
         fabs (y_end_ratio - y_start_ratio) * full_rect->height;
       double step = 0.5;
       double start_from =
-          MAX (vis_rect.x, ap_loop_part_rect.x);
+        MAX (vis_rect.x, ap_loop_part_rect.x);
       start_from = MAX (start_from, 0.0);
       double until =
         ap_loop_part_rect.x + ap_loop_part_rect.width;
@@ -778,18 +780,18 @@ handle_loop (
       for (double k = start_from; k < until + step; k += step)
         {
           double ap_y =
-            math_doubles_equal (ac_width, 0.0)
+            math_doubles_equal (curve_width, 0.0)
               ? 0.5
               :
               /* in pixels, higher values
                  * are lower */
               1.0
                 - automation_point_get_normalized_value_in_curve (
-                  ap, NULL,
+                  ap, self,
                   CLAMP (
-                    (k - x_start_in_region) / ac_width, 0.0,
-                    1.0));
-          /*g_debug ("start from %f k %f x start in region %f ratio %f, ac width %f, ap y %f", start_from, k, x_start_in_region, CLAMP ((k - x_start_in_region) / ac_width, 0.0, 1.0), ac_width, ap_y);*/
+                    (k - x_start_in_region) / curve_width,
+                    0.0, 1.0));
+          /*g_debug ("start from %f k %f x start in region %f ratio %f, ac width %f, ap y %f", start_from, k, x_start_in_region, CLAMP ((k - x_start_in_region) / curve_width, 0.0, 1.0), curve_width, ap_y);*/
           ap_y *= ac_height;
 
           double new_x = k;
@@ -799,19 +801,21 @@ handle_loop (
           else
             new_y = ap_y + y_start;
 
-          /* FIXME memory leak - check above too */
           if (new_x >= full_rect->width)
-            return true;
+            {
+              ret_val = true;
+              break;
+            }
 
           if (G_UNLIKELY (first_call))
             {
-              gsk_path_builder_move_to (builder,
-                (float) new_x, (float) new_y);
+              gsk_path_builder_move_to (
+                builder, (float) new_x, (float) new_y);
               first_call = false;
             }
 
-          gsk_path_builder_line_to (builder,
-            (float) new_x, (float) new_y);
+          gsk_path_builder_line_to (
+            builder, (float) new_x, (float) new_y);
         } /* end foreach draw step */
 
       GskPath * path = gsk_path_builder_free_to_path (builder);
@@ -832,7 +836,7 @@ handle_loop (
 
     } /* endif have next ap */
 
-  return false;
+  return ret_val;
 }
 
 /**
