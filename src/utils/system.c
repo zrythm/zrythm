@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifdef _WOE32
 #  include <windows.h>
@@ -55,6 +39,17 @@ system_run_cmd_w_args (
   bool          warn_if_fail)
 {
   g_message ("ms to wait: %d", ms_to_wait);
+
+#if 0
+  GSubprocessFlags flags = 0;
+  if (!out_stdout)
+    flags |= G_SUBPROCESS_FLAGS_STDOUT_SILENCE;
+  if (!out_stderr)
+    flags |= G_SUBPROCESS_FLAGS_STDERR_SILENCE;
+  GError * err = NULL;
+  GSubprocess * p = g_subprocess_new (
+    args, flags, &err);
+#endif
 
   reproc_options opts;
   memset (&opts, 0, sizeof (reproc_options));
@@ -249,24 +244,4 @@ system_get_cmd_output (
     return str;
   else
     return NULL;
-
-#if 0
-  /* Open the command for reading. */
-  FILE * fp = popen (cmd, "r");
-  g_return_val_if_fail (fp, NULL);
-
-  /* Read the output a line at a time - output it. */
-  const int size = 4000;
-  char buf[size];
-  GString * str = g_string_new (NULL);
-  while (fgets (buf, size, fp) != NULL)
-    {
-      g_string_append (str, buf);
-    }
-
-  /* close */
-  pclose (fp);
-
-  return g_string_free (str, false);
-#endif
 }
