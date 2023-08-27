@@ -123,8 +123,8 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /* do normal cast because this gets called a lot */
   BarSliderWidget * self = (BarSliderWidget *) widget;
 
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   const float real_min = self->min;
   const float real_max = self->max;
@@ -258,8 +258,7 @@ drag_begin (
 
   if (self->init_setter)
     {
-      int width =
-        gtk_widget_get_allocated_width (GTK_WIDGET (self));
+      int width = gtk_widget_get_width (GTK_WIDGET (self));
       double normalized_val = ui_get_normalized_draggable_value (
         width,
         BAR_SLIDER_VAL_FROM_REAL (get_real_val (self, false)),
@@ -281,8 +280,7 @@ drag_update (
   if (!self->editable)
     return;
 
-  int width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  int width = gtk_widget_get_width (GTK_WIDGET (self));
   double new_normalized_val = ui_get_normalized_draggable_value (
     width,
     BAR_SLIDER_VAL_FROM_REAL (get_real_val (self, false)),
@@ -306,8 +304,7 @@ drag_end (
 
   if (self->end_setter)
     {
-      int width =
-        gtk_widget_get_allocated_width (GTK_WIDGET (self));
+      int width = gtk_widget_get_width (GTK_WIDGET (self));
       double normalized_val = ui_get_normalized_draggable_value (
         width,
         BAR_SLIDER_VAL_FROM_REAL (get_real_val (self, false)),

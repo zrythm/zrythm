@@ -509,8 +509,8 @@ do_vertical_zoom (
   EditorSettings * settings =
     arranger_widget_get_editor_settings (self);
   double adj_val = settings->scroll_start_y;
-  double size_before = gtk_widget_get_allocated_height (
-    GTK_WIDGET (MW_PIANO_ROLL_KEYS));
+  double size_before =
+    gtk_widget_get_height (GTK_WIDGET (MW_PIANO_ROLL_KEYS));
   if (hover_y < 0)
     {
       hover_y = adj_val;

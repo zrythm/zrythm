@@ -99,8 +99,7 @@ automation_arranger_widget_create_ap (
   position_from_ticks (
     &local_pos, pos->ticks - region_obj->pos.ticks);
 
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int height = gtk_widget_get_height (GTK_WIDGET (self));
   /* do height - because it's uside down */
   float normalized_val = (float) ((height - start_y) / height);
   g_message ("normalized val is %f", (double) normalized_val);
@@ -252,8 +251,7 @@ automation_arranger_move_hit_aps (
   double           x,
   double           y)
 {
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int height = gtk_widget_get_height (GTK_WIDGET (self));
 
   /* get snapped x */
   Position pos;

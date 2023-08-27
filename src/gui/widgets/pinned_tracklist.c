@@ -59,7 +59,7 @@ pinned_tracklist_widget_get_hit_track (
 
       gtk_widget_get_allocation (GTK_WIDGET (tw), &allocation);
 
-      gtk_widget_translate_coordinates (
+      gtk_widget_compute_point (
         GTK_WIDGET (self), GTK_WIDGET (tw), (int) x, (int) y,
         &wx, &wy);
 

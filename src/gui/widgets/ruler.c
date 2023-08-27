@@ -230,8 +230,7 @@ draw_other_region (
   /*g_debug (
    * "drawing other region %s", region->name);*/
 
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int height = gtk_widget_get_height (GTK_WIDGET (self));
 
   ArrangerObject * r_obj = (ArrangerObject *) region;
   Track *          track = arranger_object_get_track (r_obj);
@@ -257,8 +256,7 @@ draw_regions (
   GtkSnapshot *  snapshot,
   GdkRectangle * rect)
 {
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int height = gtk_widget_get_height (GTK_WIDGET (self));
 
   /* get a visible region - the clip editor
    * region is removed temporarily while moving
@@ -558,7 +556,7 @@ get_clip_start_rect (RulerWidget * self, GdkRectangle * rect)
           rect->x = 0;
         }
       rect->y =
-        ((gtk_widget_get_allocated_height (GTK_WIDGET (self))
+        ((gtk_widget_get_height (GTK_WIDGET (self))
           - RW_RULER_MARKER_SIZE)
          - RW_CUE_MARKER_HEIGHT)
         - 1;
@@ -728,7 +726,7 @@ draw_playhead (
       GdkRectangle dr = { 0, 0, 0, 0 };
       dr.x = px - (RW_PLAYHEAD_TRIANGLE_WIDTH / 2);
       dr.y =
-        gtk_widget_get_allocated_height (GTK_WIDGET (self))
+        gtk_widget_get_height (GTK_WIDGET (self))
         - RW_PLAYHEAD_TRIANGLE_HEIGHT;
       dr.width = RW_PLAYHEAD_TRIANGLE_WIDTH;
       dr.height = RW_PLAYHEAD_TRIANGLE_HEIGHT;
@@ -770,8 +768,7 @@ draw_lines_and_labels (
 
   int beats_per_bar =
     tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int height = gtk_widget_get_height (GTK_WIDGET (self));
 
   GdkRGBA main_color = { 1, 1, 1, 1 };
   GdkRGBA secondary_color = { 0.7f, 0.7f, 0.7f, 0.4f };
@@ -1094,8 +1091,7 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   /* ----- ruler background ------- */
 
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int height = gtk_widget_get_height (GTK_WIDGET (self));
 
   /* if timeline, draw loop background */
   /* FIXME use rect */
@@ -1226,7 +1222,7 @@ ruler_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         }
       dr.y = 0;
       dr.height =
-        gtk_widget_get_allocated_height (GTK_WIDGET (self))
+        gtk_widget_get_height (GTK_WIDGET (self))
         / RW_RANGE_HEIGHT_DIVISOR;
 
       /* fill */
@@ -1360,7 +1356,7 @@ get_range_rect (
       rect->width = RW_CUE_MARKER_WIDTH;
     }
   rect->height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self))
+    gtk_widget_get_height (GTK_WIDGET (self))
     / RW_RANGE_HEIGHT_DIVISOR;
 }
 
@@ -1476,8 +1472,8 @@ set_cursor (RulerWidget * self)
           bool range_end_hit = ruler_widget_is_range_hit (
             self, RW_RANGE_END, x, y);
 
-          int height = gtk_widget_get_allocated_height (
-            GTK_WIDGET (self));
+          int height =
+            gtk_widget_get_height (GTK_WIDGET (self));
           if (self->alt_held)
             {
               ui_set_cursor_from_name (
@@ -1572,8 +1568,7 @@ drag_begin (
         &TRANSPORT->range_1, &TRANSPORT->range_2);
     }
 
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int height = gtk_widget_get_height (GTK_WIDGET (self));
 
   int punch_in_hit = is_punch_in_hit (self, start_x, start_y);
   int punch_out_hit =

@@ -154,7 +154,7 @@ digital_meter_snapshot (
 {
   DigitalMeterWidget * self = Z_DIGITAL_METER_WIDGET (widget);
 
-  int width = gtk_widget_get_allocated_width (widget);
+  int width = gtk_widget_get_width (widget);
 
   if (!PROJECT->loaded)
     return;
@@ -573,8 +573,7 @@ static void
 update_flags (DigitalMeterWidget * self, double x, double y)
 {
   g_debug ("update flags %f %f", x, y);
-  int width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  int width = gtk_widget_get_width (GTK_WIDGET (self));
   switch (self->type)
     {
     case DIGITAL_METER_TYPE_BPM:
@@ -815,8 +814,7 @@ digital_meter_show_context_menu (
 {
   z_gtk_show_context_menu_from_g_menu (
     self->popover_menu,
-    (float) gtk_widget_get_allocated_width (GTK_WIDGET (self))
-      / 2.f,
+    (float) gtk_widget_get_width (GTK_WIDGET (self)) / 2.f,
     0.f, menu);
 }
 

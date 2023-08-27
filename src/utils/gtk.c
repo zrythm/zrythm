@@ -1534,8 +1534,8 @@ z_gtk_generate_screenshot_image (
   GtkSnapshot * snapshot = gtk_snapshot_new ();
   gdk_paintable_snapshot (
     paintable, GDK_SNAPSHOT (snapshot),
-    gtk_widget_get_allocated_width (GTK_WIDGET (widget)),
-    gtk_widget_get_allocated_height (GTK_WIDGET (widget)));
+    gtk_widget_get_width (GTK_WIDGET (widget)),
+    gtk_widget_get_height (GTK_WIDGET (widget)));
   GskRenderNode * node = gtk_snapshot_free_to_node (snapshot);
   GskRenderer *   renderer = gsk_renderer_new_for_surface (
     z_gtk_widget_get_surface (GTK_WIDGET (MAIN_WINDOW)));

@@ -85,13 +85,13 @@ update_pango_layouts (ChannelSlotWidget * self, bool force)
       self->txt_layout = layout;
     }
 
-  int btn_width = gtk_widget_get_allocated_width (
-    GTK_WIDGET (self->activate_btn));
+  int btn_width =
+    gtk_widget_get_width (GTK_WIDGET (self->activate_btn));
 
   pango_layout_set_width (
     self->txt_layout,
     pango_units_from_double (MAX (
-      gtk_widget_get_allocated_width (GTK_WIDGET (self))
+      gtk_widget_get_width (GTK_WIDGET (self))
         - ELLIPSIZE_PADDING * 2 - btn_width,
       1)));
 }
@@ -106,10 +106,10 @@ channel_slot_snapshot (
   update_pango_layouts (self, false);
 
   const int padding = 2;
-  int       width = gtk_widget_get_allocated_width (widget);
-  int       btn_width = gtk_widget_get_allocated_width (
-    GTK_WIDGET (self->activate_btn));
-  int height = gtk_widget_get_allocated_height (widget);
+  int       width = gtk_widget_get_width (widget);
+  int       btn_width =
+    gtk_widget_get_width (GTK_WIDGET (self->activate_btn));
+  int height = gtk_widget_get_height (widget);
 
   Plugin * plugin = channel_slot_widget_get_plugin (self);
   bool    is_selected = plugin && plugin_is_selected (plugin);

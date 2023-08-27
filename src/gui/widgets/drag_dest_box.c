@@ -177,8 +177,8 @@ on_dnd_motion_value_ready (
       /* highlight bottom part of last track */
       Track * track = tracklist_get_last_track (
         TRACKLIST, TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
-      int track_height = gtk_widget_get_allocated_height (
-        GTK_WIDGET (track->widget));
+      int track_height =
+        gtk_widget_get_height (GTK_WIDGET (track->widget));
       track_widget_do_highlight (
         track->widget, 0, track_height - 1, 1);
     }

@@ -34,8 +34,8 @@ midi_activity_bar_snapshot (
   MidiActivityBarWidget * self =
     Z_MIDI_ACTIVITY_BAR_WIDGET (widget);
 
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   if (!PROJECT || !AUDIO_ENGINE)
     {

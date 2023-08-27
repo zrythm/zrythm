@@ -922,7 +922,7 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       /*MW_CENTER_DOCK->*/
       /*pinned_timeline_scroll),*/
       /*-1,*/
-      /*gtk_widget_get_allocated_height (*/
+      /*gtk_widget_get_height (*/
       /*GTK_WIDGET (MW_PINNED_TRACKLIST)));*/
       break;
     case ET_TRACK_LANE_ADDED:

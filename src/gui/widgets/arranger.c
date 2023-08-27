@@ -306,8 +306,7 @@ arranger_widget_set_cursor (
 static bool
 is_cursor_in_top_half (ArrangerWidget * self, double y)
 {
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int height = gtk_widget_get_height (GTK_WIDGET (self));
   return y < ((double) height / 2.0);
 }
 
@@ -994,8 +993,8 @@ move_items_x (ArrangerWidget * self, const double ticks_diff)
 static float
 get_fvalue_at_y (ArrangerWidget * self, double y)
 {
-  float height = (float) gtk_widget_get_allocated_height (
-    GTK_WIDGET (self));
+  float height =
+    (float) gtk_widget_get_height (GTK_WIDGET (self));
 
   ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
   g_return_val_if_fail (
@@ -1029,7 +1028,7 @@ move_items_y (ArrangerWidget * self, double offset_y)
         {
           double offset_y_normalized =
             -offset_y
-            / (double) gtk_widget_get_allocated_height (
+            / (double) gtk_widget_get_height (
               GTK_WIDGET (self));
           g_warn_if_fail (self->sel_at_start);
           (void) get_fvalue_at_y;
@@ -1505,10 +1504,9 @@ auto_scroll (ArrangerWidget * self, int x, int y)
   int h_scroll_speed = 20;
   int v_scroll_speed = 10;
   int border_distance = 5;
-  int scroll_width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  int scroll_width = gtk_widget_get_width (GTK_WIDGET (self));
   int scroll_height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+    gtk_widget_get_height (GTK_WIDGET (self));
   int v_delta = 0;
   int h_delta = 0;
   int adj_x = settings->scroll_start_x;
@@ -5162,22 +5160,20 @@ arranger_widget_get_total_height (ArrangerWidget * self)
     case TYPE (TIMELINE):
       if (self->is_pinned)
         {
-          height = gtk_widget_get_allocated_height (
-            GTK_WIDGET (self));
+          height = gtk_widget_get_height (GTK_WIDGET (self));
         }
       else
         {
-          height = gtk_widget_get_allocated_height (
-            GTK_WIDGET (MW_TRACKLIST));
+          height =
+            gtk_widget_get_height (GTK_WIDGET (MW_TRACKLIST));
         }
       break;
     case TYPE (MIDI):
-      height = gtk_widget_get_allocated_height (
+      height = gtk_widget_get_height (
         GTK_WIDGET (MW_PIANO_ROLL_KEYS));
       break;
     default:
-      height =
-        gtk_widget_get_allocated_height (GTK_WIDGET (self));
+      height = gtk_widget_get_height (GTK_WIDGET (self));
       break;
     }
 

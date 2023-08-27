@@ -22,8 +22,8 @@ timeline_minimap_selection_snapshot (
   GtkWidget *   widget,
   GtkSnapshot * snapshot)
 {
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   GskRoundedRect  rounded_rect;
   graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
@@ -74,7 +74,7 @@ on_motion (
   TimelineMinimapSelectionWidget * self =
     Z_TIMELINE_MINIMAP_SELECTION_WIDGET (user_data);
   GtkWidget * widget = GTK_WIDGET (self);
-  int         width = gtk_widget_get_allocated_width (widget);
+  int         width = gtk_widget_get_width (widget);
 
   gtk_widget_set_state_flags (
     GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT, 0);

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019, 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019, 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/marker_track.h"
@@ -29,8 +29,8 @@ timeline_minimap_bg_snapshot (
   /*TimelineMinimapBgWidget * self =*/
   /*Z_TIMELINE_MINIMAP_BG_WIDGET (widget);*/
 
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   if (!PROJECT->loaded)
     return;
@@ -52,8 +52,8 @@ timeline_minimap_bg_snapshot (
       track = TRACKLIST->tracks[i];
 
       if (track->widget && track->visible)
-        total_track_height += gtk_widget_get_allocated_height (
-          GTK_WIDGET (track->widget));
+        total_track_height +=
+          gtk_widget_get_height (GTK_WIDGET (track->widget));
     }
   int track_height;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -63,13 +63,14 @@ timeline_minimap_bg_snapshot (
       if (!track->widget || !track->visible)
         continue;
 
-      double wy;
-      gtk_widget_translate_coordinates (
+      graphene_point_t wpt;
+      bool             success = gtk_widget_compute_point (
         GTK_WIDGET (track->widget),
-        GTK_WIDGET (MW_TRACKLIST->unpinned_box), 0, 0, NULL,
-        &wy);
-      track_height = gtk_widget_get_allocated_height (
-        GTK_WIDGET (track->widget));
+        GTK_WIDGET (MW_TRACKLIST->unpinned_box),
+        &GRAPHENE_POINT_INIT (0.f, 0.f), &wpt);
+      g_return_if_fail (success);
+      track_height =
+        gtk_widget_get_height (GTK_WIDGET (track->widget));
 
       GdkRGBA color = track->color;
       color.alpha = 0.6f;
@@ -95,7 +96,7 @@ timeline_minimap_bg_snapshot (
                 &GRAPHENE_RECT_INIT (
                   ((float) px_start / (float) song_px)
                     * (float) width,
-                  ((float) wy / (float) total_track_height)
+                  ((float) wpt.y / (float) total_track_height)
                     * (float) height,
                   ((float) px_length / (float) song_px)
                     * (float) width,

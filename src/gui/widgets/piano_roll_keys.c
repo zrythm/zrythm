@@ -62,7 +62,7 @@ piano_roll_keys_snapshot (
       return;
     }
 
-  int width = gtk_widget_get_allocated_width (widget);
+  int width = gtk_widget_get_width (widget);
 
   ChordObject * co =
     chord_track_get_chord_at_playhead (P_CHORD_TRACK);

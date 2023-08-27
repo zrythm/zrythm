@@ -155,8 +155,8 @@ spectrum_analyzer_snapshot (
   SpectrumAnalyzerWidget * self =
     Z_SPECTRUM_ANALYZER_WIDGET (widget);
 
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   size_t   block_size = AUDIO_ENGINE->block_length;
   uint32_t block_size_in_bytes =

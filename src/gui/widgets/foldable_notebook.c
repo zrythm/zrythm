@@ -75,12 +75,12 @@ foldable_notebook_widget_set_visibility (
           int position;
           if (self->pos_in_paned == GTK_POS_BOTTOM)
             {
-              position = gtk_widget_get_allocated_height (
+              position = gtk_widget_get_height (
                 GTK_WIDGET (self->paned));
             }
           else if (self->pos_in_paned == GTK_POS_RIGHT)
             {
-              position = gtk_widget_get_allocated_width (
+              position = gtk_widget_get_width (
                 GTK_WIDGET (self->paned));
             }
           else

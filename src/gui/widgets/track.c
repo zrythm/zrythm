@@ -480,7 +480,7 @@ on_motion (
   TrackWidget *              self)
 {
   /*int height =*/
-  /*gtk_widget_get_allocated_height (widget);*/
+  /*gtk_widget_get_height (widget);*/
 
   /* show resize cursor or not */
   if (self->bg_hovered)
@@ -587,10 +587,8 @@ get_visible_rect (TrackWidget * self, GdkRectangle * rect)
 {
   rect->x = 0;
   rect->y = 0;
-  rect->height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
-  rect->width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  rect->height = gtk_widget_get_height (GTK_WIDGET (self));
+  rect->width = gtk_widget_get_width (GTK_WIDGET (self));
 }
 
 /**
@@ -623,15 +621,16 @@ track_widget_is_cursor_in_range_select_half (
   TrackWidget * self,
   double        y)
 {
-  double wx, wy;
-  gtk_widget_translate_coordinates (
-    GTK_WIDGET (MW_TIMELINE), GTK_WIDGET (self), 0, (int) y,
-    &wx, &wy);
+  graphene_point_t wpt;
+  bool             success = gtk_widget_compute_point (
+    GTK_WIDGET (MW_TIMELINE), GTK_WIDGET (self),
+    &GRAPHENE_POINT_INIT (0.f, (float) y), &wpt);
+  g_return_val_if_fail (success, false);
 
   /* if bot 1/3rd */
   if (
-    wy >= ((self->track->main_height * 2) / 3)
-    && wy <= self->track->main_height)
+    wpt.y >= ((self->track->main_height * 2) / 3)
+    && wpt.y <= self->track->main_height)
     {
       return true;
     }
@@ -1585,7 +1584,7 @@ TrackWidgetHighlight
 track_widget_get_highlight_location (TrackWidget * self, int y)
 {
   Track * track = self->track;
-  int h = gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int     h = gtk_widget_get_height (GTK_WIDGET (self));
   if (track_type_is_foldable (track->type) && y < h - 12 && y > 12)
     {
       return TRACK_WIDGET_HIGHLIGHT_INSIDE;
@@ -1671,14 +1670,16 @@ track_widget_get_local_y (
   ArrangerWidget * arranger,
   int              arranger_y)
 {
-  double y_local;
-  gtk_widget_translate_coordinates (
+  graphene_point_t local;
+  bool             success = gtk_widget_compute_point (
     arranger->is_pinned
       ? GTK_WIDGET (arranger)
       : GTK_WIDGET (MW_TRACKLIST->unpinned_box),
-    GTK_WIDGET (self), 0, (int) arranger_y, NULL, &y_local);
+    GTK_WIDGET (self),
+    &GRAPHENE_POINT_INIT (0.f, (float) arranger_y), &local);
+  g_return_val_if_fail (success, -1);
 
-  return (int) y_local;
+  return (int) local.y;
 }
 
 /**

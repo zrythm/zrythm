@@ -60,8 +60,8 @@ channel_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   ChannelWidget * self = Z_CHANNEL_WIDGET (widget);
 
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   Track * track = channel_get_track (self->channel);
   if (track)
@@ -206,7 +206,7 @@ on_dnd_drop (
     action_str = "MOVE";
   g_debug ("channel widget: dnd drop (action %s)", action_str);
 
-  int w = gtk_widget_get_allocated_width (widget);
+  int w = gtk_widget_get_width (widget);
 
   TrackWidgetHighlight location;
   if (track_type_is_foldable (this->type) && x < w - 12 && x > 12)
@@ -237,7 +237,7 @@ do_highlight (ChannelWidget * self, gint x, gint y)
   return;
   /* if we are closer to the start of selection than
    * the end */
-  int w = gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  int w = gtk_widget_get_width (GTK_WIDGET (self));
   if (x < w / 2)
     {
       /* highlight left */

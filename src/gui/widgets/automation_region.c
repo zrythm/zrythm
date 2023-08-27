@@ -49,8 +49,8 @@ automation_region_draw_cb (
       GtkStyleContext * context =
         gtk_widget_get_style_context (widget);
 
-      int width = gtk_widget_get_allocated_width (widget);
-      int height = gtk_widget_get_allocated_height (widget);
+      int width = gtk_widget_get_width (widget);
+      int height = gtk_widget_get_height (widget);
 
       z_cairo_reset_caches (
         &ao_prv->cached_cr, &ao_prv->cached_surface, width,

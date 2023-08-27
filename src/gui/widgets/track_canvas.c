@@ -721,8 +721,8 @@ track_canvas_snapshot (
 {
   TrackCanvasWidget * self = Z_TRACK_CANVAS_WIDGET (widget);
 
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   if (self->last_width != width || self->last_height != height)
     {

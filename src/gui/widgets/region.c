@@ -738,7 +738,7 @@ handle_loop (
        * screen */
       GdkRectangle vis_rect = Z_GDK_RECTANGLE_INIT (
         settings.scroll_start_x - full_rect->x, -full_rect->y,
-        gtk_widget_get_allocated_width (GTK_WIDGET (arranger)),
+        gtk_widget_get_width (GTK_WIDGET (arranger)),
         full_rect->height);
 
       /* rectangle for the loop part, where the region start

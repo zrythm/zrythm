@@ -73,7 +73,7 @@ int
 chord_editor_space_widget_get_chord_height (
   ChordEditorSpaceWidget * self)
 {
-  return gtk_widget_get_allocated_height (
+  return gtk_widget_get_height (
     GTK_WIDGET (self->chord_keys[0]));
 }
 
@@ -82,7 +82,7 @@ chord_editor_space_widget_get_all_chords_height (
   ChordEditorSpaceWidget * self)
 {
   return CHORD_EDITOR->num_chords
-         * gtk_widget_get_allocated_height (
+         * gtk_widget_get_height (
            GTK_WIDGET (self->chord_keys[0]));
 }
 

@@ -56,8 +56,8 @@ folder_channel_snapshot (
   FolderChannelWidget * self =
     Z_FOLDER_CHANNEL_WIDGET (widget);
 
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   Track * track = self->track;
   if (track)
@@ -110,7 +110,7 @@ on_dnd_drop (
   GdkDragAction action =
     z_gtk_drop_target_get_selected_action (drop_target);
 
-  int w = gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  int w = gtk_widget_get_width (GTK_WIDGET (self));
 
   /* determine position to move to */
   int pos;
@@ -229,7 +229,7 @@ do_highlight (FolderChannelWidget * self, gint x, gint y)
 {
   /* if we are closer to the start of selection than
    * the end */
-  int w = gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  int w = gtk_widget_get_width (GTK_WIDGET (self));
   if (x < w / 2)
     {
       /* highlight left */

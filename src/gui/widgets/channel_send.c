@@ -40,7 +40,7 @@ update_pango_layout (ChannelSendWidget * self, bool force)
   pango_layout_set_width (
     self->txt_layout,
     pango_units_from_double (MAX (
-      gtk_widget_get_allocated_width (GTK_WIDGET (self))
+      gtk_widget_get_width (GTK_WIDGET (self))
         - ELLIPSIZE_PADDING * 2,
       1)));
 }
@@ -52,8 +52,8 @@ channel_send_snapshot (
 {
   ChannelSendWidget * self = Z_CHANNEL_SEND_WIDGET (widget);
 
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   update_pango_layout (self, false);
 
@@ -175,8 +175,7 @@ on_drag_update (
 {
   if (channel_send_is_enabled (self->send))
     {
-      int width =
-        gtk_widget_get_allocated_width (GTK_WIDGET (self));
+      int    width = gtk_widget_get_width (GTK_WIDGET (self));
       double new_normalized_val =
         ui_get_normalized_draggable_value (
           width,

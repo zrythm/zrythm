@@ -28,8 +28,8 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   ColorAreaWidget * self = Z_COLOR_AREA_WIDGET (widget);
 
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   GdkRGBA color;
   color.alpha = 1.0;

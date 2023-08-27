@@ -304,12 +304,16 @@ timeline_arranger_widget_create_chord_or_scale (
   double           y,
   const Position * pos)
 {
-  int track_height = gtk_widget_get_allocated_height (
-    GTK_WIDGET (track->widget));
-  double wy;
-  gtk_widget_translate_coordinates (
-    GTK_WIDGET (self), GTK_WIDGET (track->widget), 0, (int) y,
-    NULL, &wy);
+  int track_height =
+    gtk_widget_get_height (GTK_WIDGET (track->widget));
+
+#if 0
+  graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
+  gtk_widget_compute_point (
+    GTK_WIDGET (self), GTK_WIDGET (track->widget),
+    &GRAPHENE_POINT_INIT (0.f, (float) y),
+    &wpt);
+#endif
 
   if (y >= (double) track_height / 2.0)
     {

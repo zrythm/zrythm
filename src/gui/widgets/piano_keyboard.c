@@ -29,8 +29,8 @@ draw_orange_circle (
   double                cur_offset,
   int                   i)
 {
-  double height = (double) gtk_widget_get_allocated_height (
-    GTK_WIDGET (self));
+  double height =
+    (double) gtk_widget_get_height (GTK_WIDGET (self));
   if (self->for_chord)
     {
       ChordDescriptor * descr =

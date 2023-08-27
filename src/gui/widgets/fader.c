@@ -60,8 +60,8 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   FaderWidget * self = Z_FADER_WIDGET (widget);
 
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   float fader_val = self->fader ? self->fader->fader_val : 1.f;
   float value_px = (float) height * fader_val;
@@ -253,8 +253,7 @@ drag_update (
   /*double multiplier = 0.005;*/
   double diff =
     use_y ? offset_y - self->last_y : offset_x - self->last_x;
-  double height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  double height = gtk_widget_get_height (GTK_WIDGET (self));
   double adjusted_diff = diff / height;
 
   /* lower sensitivity if shift held */

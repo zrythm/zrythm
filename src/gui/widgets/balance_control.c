@@ -64,8 +64,8 @@ balance_control_snapshot (
   BalanceControlWidget * self =
     Z_BALANCE_CONTROL_WIDGET (widget);
 
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   if (!MAIN_WINDOW)
     return;

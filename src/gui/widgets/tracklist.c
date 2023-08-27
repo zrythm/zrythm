@@ -188,15 +188,16 @@ on_dnd_motion (
       gtk_widget_get_allocation (
         GTK_WIDGET (hit_tw), &allocation);
 
-      double wx, wy;
-      gtk_widget_translate_coordinates (
-        GTK_WIDGET (self), GTK_WIDGET (hit_tw), (int) x,
-        (int) y, &wx, &wy);
+      graphene_point_t wpt;
+      bool             success = gtk_widget_compute_point (
+        GTK_WIDGET (self), GTK_WIDGET (hit_tw),
+        &GRAPHENE_POINT_INIT ((float) x, (float) y), &wpt);
+      g_return_if_fail (success);
       track_widget_do_highlight (
-        hit_tw, (int) wx, (int) wy, 1);
+        hit_tw, (int) wpt.x, (int) wpt.y, 1);
     }
 
-  int height = gtk_widget_get_allocated_height (
+  int height = gtk_widget_get_height (
     GTK_WIDGET (self->unpinned_scroll));
   if (
     height > SCROLL_THRESHOLD_PX * 2 + SCROLL_THRESHOLD_PX
@@ -204,19 +205,20 @@ on_dnd_motion (
       GTK_WIDGET (self), GTK_WIDGET (self->unpinned_scroll),
       1, 1, x, y, 0, 1))
     {
-      double wx, wy;
-      gtk_widget_translate_coordinates (
+      graphene_point_t wpt;
+      bool             success = gtk_widget_compute_point (
         GTK_WIDGET (self), GTK_WIDGET (self->unpinned_scroll),
-        (int) x, (int) y, &wx, &wy);
+        &GRAPHENE_POINT_INIT ((float) x, (float) y), &wpt);
+      g_return_if_fail (success);
 
       /* autoscroll */
-      if (height - wy < SCROLL_THRESHOLD_PX)
+      if (height - wpt.y < SCROLL_THRESHOLD_PX)
         {
           if (self->unpinned_scroll_scroll_down_id == 0)
             {
               g_message (
                 "begin autoscroll tracklist down: height %d y %f",
-                height, wy);
+                height, wpt.y);
               self->scroll_speed = DEFAULT_SCROLL_SPEED;
               self->unpinned_scroll_scroll_down_id =
                 g_timeout_add (100, scroll_down_source, self);
@@ -229,13 +231,13 @@ on_dnd_motion (
               self->scroll_speed = DEFAULT_SCROLL_SPEED;
             }
         }
-      else if (wy < SCROLL_THRESHOLD_PX)
+      else if (wpt.y < SCROLL_THRESHOLD_PX)
         {
           if (self->unpinned_scroll_scroll_up_id == 0)
             {
               g_message (
                 "begin autoscroll tracklist up: height %d y %f",
-                height, wy);
+                height, wpt.y);
               self->scroll_speed = DEFAULT_SCROLL_SPEED;
               self->unpinned_scroll_scroll_up_id =
                 g_timeout_add (100, scroll_up_source, self);
@@ -423,14 +425,15 @@ on_dnd_drop (
   GtkAllocation allocation;
   gtk_widget_get_allocation (GTK_WIDGET (hit_tw), &allocation);
 
-  double wx, wy;
-  gtk_widget_translate_coordinates (
-    GTK_WIDGET (self), GTK_WIDGET (hit_tw), (int) x, (int) y,
-    &wx, &wy);
+  graphene_point_t wpt;
+  bool             success = gtk_widget_compute_point (
+    GTK_WIDGET (self), GTK_WIDGET (hit_tw),
+    &GRAPHENE_POINT_INIT ((float) x, (float) y), &wpt);
+  g_return_if_fail (success);
 
   /* determine position to move to */
   TrackWidgetHighlight location =
-    track_widget_get_highlight_location (hit_tw, (int) wy);
+    track_widget_get_highlight_location (hit_tw, (int) wpt.y);
 
   tracklist_handle_move_or_copy (
     TRACKLIST, this_track, location, action);

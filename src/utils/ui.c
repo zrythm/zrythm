@@ -218,15 +218,16 @@ ui_get_hit_child (
       GtkAllocation allocation;
       gtk_widget_get_allocation (child, &allocation);
 
-      double wx, wy;
-      gtk_widget_translate_coordinates (
-        GTK_WIDGET (parent), GTK_WIDGET (child), (int) x,
-        (int) y, &wx, &wy);
+      graphene_point_t wpt;
+      bool             success = gtk_widget_compute_point (
+        GTK_WIDGET (parent), GTK_WIDGET (child),
+        &GRAPHENE_POINT_INIT ((float) x, (float) y), &wpt);
+      g_return_val_if_fail (success, NULL);
 
       /* if hit */
       if (
-        wx >= 0 && wx <= allocation.width && wy >= 0
-        && wy <= allocation.height)
+        wpt.x >= 0 && wpt.x <= allocation.width && wpt.y >= 0
+        && wpt.y <= allocation.height)
         {
           /* if type matches */
           if (G_TYPE_CHECK_INSTANCE_TYPE (child, type))
@@ -474,17 +475,19 @@ ui_is_child_hit (
   GtkAllocation allocation;
   gtk_widget_get_allocation (child, &allocation);
 
-  double wx, wy;
-  gtk_widget_translate_coordinates (
-    GTK_WIDGET (parent), child, (int) x, (int) y, &wx, &wy);
+  graphene_point_t wpt;
+  bool             success = gtk_widget_compute_point (
+    GTK_WIDGET (parent), GTK_WIDGET (child),
+    &GRAPHENE_POINT_INIT ((float) x, (float) y), &wpt);
+  g_return_val_if_fail (success, -1);
 
-  //g_message ("wx wy %d %d", wx, wy);
+  //g_message ("wpt.x wpt.y %d %d", wpt.x, wpt.y);
 
   /* if hit */
   if (
     (!check_x
-     || (wx >= -x_padding && wx <= allocation.width + x_padding))
-    && (!check_y || (wy >= -y_padding && wy <= allocation.height + y_padding)))
+     || (wpt.x >= -x_padding && wpt.x <= allocation.width + x_padding))
+    && (!check_y || (wpt.y >= -y_padding && wpt.y <= allocation.height + y_padding)))
     {
       return 1;
     }

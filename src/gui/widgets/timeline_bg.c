@@ -98,7 +98,7 @@ timeline_bg_widget_draw (
       int full_track_height =
         track_get_full_visible_height (track);
 
-      gtk_widget_translate_coordinates (
+      gtk_widget_compute_point (
         tw_widget,
         GTK_WIDGET (
           is_pinned_timeline

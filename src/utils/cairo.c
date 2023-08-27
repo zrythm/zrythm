@@ -115,8 +115,7 @@ z_cairo_create_pango_layout_from_description (
       pango_layout_set_width (
         layout,
         pango_units_from_double (MAX (
-          gtk_widget_get_allocated_width (widget)
-            - ellipsize_padding * 2,
+          gtk_widget_get_width (widget) - ellipsize_padding * 2,
           1)));
       pango_layout_set_ellipsize (layout, ellipsize_mode);
     }

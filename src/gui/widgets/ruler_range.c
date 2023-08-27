@@ -44,8 +44,8 @@ ruler_range_draw_cb (
 
   int width =
 
-    gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+    gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   gtk_render_background (context, cr, 0, 0, width, height);
 

@@ -115,8 +115,7 @@ audio_arranger_widget_is_cursor_in_fade (
 NONNULL static double
 get_region_gain_y (ArrangerWidget * self, ZRegion * region)
 {
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int   height = gtk_widget_get_height (GTK_WIDGET (self));
   float gain_fader_val =
     math_get_fader_val_from_amp (region->gain);
   return height * (1.0 - (double) gain_fader_val);
@@ -227,8 +226,7 @@ audio_arranger_widget_update_gain (
   ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (IS_REGION_AND_NONNULL (r));
 
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int height = gtk_widget_get_height (GTK_WIDGET (self));
 
   /* get current Y value */
   double gain_y = self->start_y + offset_y;

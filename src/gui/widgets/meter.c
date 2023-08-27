@@ -21,8 +21,8 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   MeterWidget * self = Z_METER_WIDGET (widget);
 
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   /* get values */
   float peak = self->meter_peak;

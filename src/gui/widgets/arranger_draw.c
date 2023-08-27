@@ -322,14 +322,18 @@ draw_timeline_bg (
       double full_track_height =
         track_get_full_visible_height (track);
 
-      double track_start_offset;
-      gtk_widget_translate_coordinates (
+      graphene_point_t track_start_offset_pt;
+      bool             success = gtk_widget_compute_point (
         tw_widget,
         GTK_WIDGET (
           self->is_pinned
             ? MW_TRACKLIST->pinned_box
             : MW_TRACKLIST->unpinned_box),
-        0, 0, NULL, &track_start_offset);
+        &GRAPHENE_POINT_INIT (0.f, 0.f),
+        &track_start_offset_pt);
+      g_return_if_fail (success);
+      double track_start_offset =
+        (double) track_start_offset_pt.y;
 
       line_y =
         (int) track_start_offset + (int) full_track_height;
@@ -1017,10 +1021,8 @@ arranger_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   gint64 start_time = g_get_monotonic_time ();
 
-  int width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int width = gtk_widget_get_width (GTK_WIDGET (self));
+  int height = gtk_widget_get_height (GTK_WIDGET (self));
 
   RulerWidget * ruler = arranger_widget_get_ruler (self);
   if (ruler->px_per_bar < 2.0)

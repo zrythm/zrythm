@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/automation_region.h"
@@ -267,7 +267,7 @@ arranger_object_is_resize_loop (
 
       /* TODO */
       int height_px = 60;
-      /*gtk_widget_get_allocated_height (*/
+      /*gtk_widget_get_height (*/
       /*GTK_WIDGET (self));*/
 
       if (y > height_px / 2)
@@ -361,7 +361,7 @@ get_automation_point_y (
   float ap_ratio = ap->normalized_val;
 
   int allocated_h =
-    gtk_widget_get_allocated_height (GTK_WIDGET (arranger));
+    gtk_widget_get_height (GTK_WIDGET (arranger));
   allocated_h -= AUTOMATION_ARRANGER_VPADDING * 2;
   int point =
     allocated_h - (int) (ap_ratio * (float) allocated_h);
@@ -554,26 +554,27 @@ arranger_object_set_full_rectangle (
             self->full_rect.width = 1;
           }
 
-        double wx = 0, wy = 0;
+        graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
         if (track->widget)
           {
-            gtk_widget_translate_coordinates (
+            bool success = gtk_widget_compute_point (
               (GtkWidget *) (track->widget),
               arranger->is_pinned
                 ? (GtkWidget *) arranger
                 : (GtkWidget *) MW_TRACKLIST->unpinned_box,
-              0, 0, &wx, &wy);
+              &GRAPHENE_POINT_INIT (0.f, 0.f), &wpt);
+            g_return_if_fail (success);
             /* for some reason it returns a few
              * negatives at first */
-            if (wy < 0)
-              wy = 0;
+            if (wpt.y < 0.f)
+              wpt.y = 0.f;
           }
 
         if (region->id.type == REGION_TYPE_CHORD)
           {
             chord_region_recreate_pango_layouts (region);
 
-            self->full_rect.y = (int) wy;
+            self->full_rect.y = (int) wpt.y;
             /* full height minus the space the
              * scales would require, plus some
              * padding */
@@ -591,14 +592,14 @@ arranger_object_set_full_rectangle (
             if (!at->created || !track->automation_visible)
               return;
 
-            self->full_rect.y = (int) wy + at->y;
+            self->full_rect.y = (int) wpt.y + at->y;
             self->full_rect.height = (int) at->height;
 
             WARN_IF_HAS_NEGATIVE_DIMENSIONS;
           }
         else
           {
-            self->full_rect.y = (int) wy;
+            self->full_rect.y = (int) wpt.y;
             self->full_rect.height = (int) track->main_height;
 
             WARN_IF_HAS_NEGATIVE_DIMENSIONS;
@@ -657,16 +658,18 @@ arranger_object_set_full_rectangle (
       {
         Track * track = P_CHORD_TRACK;
 
-        double wx = 0, wy = 0;
+        graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
         if (track->widget)
           {
-            gtk_widget_translate_coordinates (
+            bool success = gtk_widget_compute_point (
               (GtkWidget *) (track->widget),
-              (GtkWidget *) (arranger), 0, 0, &wx, &wy);
+              (GtkWidget *) (arranger),
+              &GRAPHENE_POINT_INIT (0.f, 0.f), &wpt);
+            g_return_if_fail (success);
             /* for some reason it returns a few
              * negatives at first */
-            if (wy < 0)
-              wy = 0;
+            if (wpt.y < 0.f)
+              wpt.y = 0.f;
           }
 
         self->full_rect.x =
@@ -680,7 +683,8 @@ arranger_object_set_full_rectangle (
         int obj_height =
           self->texth + Z_CAIRO_TEXT_PADDING * 2;
         self->full_rect.y =
-          ((int) wy + (int) track->main_height) - obj_height;
+          ((int) wpt.y + (int) track->main_height)
+          - obj_height;
         self->full_rect.height = obj_height;
 
         WARN_IF_HAS_NEGATIVE_DIMENSIONS;
@@ -690,16 +694,18 @@ arranger_object_set_full_rectangle (
       {
         Track * track = P_MARKER_TRACK;
 
-        double wx = 0, wy = 0;
+        graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
         if (track->widget)
           {
-            gtk_widget_translate_coordinates (
+            bool success = gtk_widget_compute_point (
               (GtkWidget *) (track->widget),
-              (GtkWidget *) (arranger), 0, 0, &wx, &wy);
+              (GtkWidget *) (arranger),
+              &GRAPHENE_POINT_INIT (0.f, 0.f), &wpt);
+            g_return_if_fail (success);
             /* for some reason it returns a few
              * negatives at first */
-            if (wy < 0)
-              wy = 0;
+            if (wpt.y < 0.f)
+              wpt.y = 0.f;
           }
 
         self->full_rect.x =
@@ -710,7 +716,7 @@ arranger_object_set_full_rectangle (
           + Z_CAIRO_TEXT_PADDING * 2;
 
         int global_y_start =
-          (int) wy + (int) track->main_height;
+          (int) wpt.y + (int) track->main_height;
         int obj_height = MIN (
           (int) track->main_height,
           self->texth + Z_CAIRO_TEXT_PADDING * 2);
@@ -745,8 +751,8 @@ arranger_object_set_full_rectangle (
          * start of MIDI note */
         self->full_rect.x -= VELOCITY_WIDTH / 2;
 
-        int height = gtk_widget_get_allocated_height (
-          GTK_WIDGET (arranger));
+        int height =
+          gtk_widget_get_height (GTK_WIDGET (arranger));
 
         int vel_px =
           (int) ((float) height * ((float) vel->vel / 127.f));

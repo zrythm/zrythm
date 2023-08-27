@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
@@ -42,8 +42,7 @@ timeline_minimap_widget_px_to_pos (
   Position *              pos,
   int                     px)
 {
-  double width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  double width = gtk_widget_get_width (GTK_WIDGET (self));
   double ratio = (double) px / width;
   int    px_in_ruler = (int) (MW_RULER->total_px * ratio);
   ui_px_to_pos_timeline (px_in_ruler, pos, 1);
@@ -52,8 +51,7 @@ timeline_minimap_widget_px_to_pos (
 static void
 move_selection_x (TimelineMinimapWidget * self, double offset_x)
 {
-  double width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  double width = gtk_widget_get_width (GTK_WIDGET (self));
 
   double new_wx = self->selection_start_pos + offset_x;
 
@@ -70,8 +68,7 @@ resize_selection_l (
   TimelineMinimapWidget * self,
   double                  offset_x)
 {
-  double width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  double width = gtk_widget_get_width (GTK_WIDGET (self));
 
   double new_l = self->selection_start_pos + offset_x;
   double old_selection_width =
@@ -105,8 +102,7 @@ resize_selection_r (
   TimelineMinimapWidget * self,
   double                  offset_x)
 {
-  double width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
+  double width = gtk_widget_get_width (GTK_WIDGET (self));
 
   double new_r = self->selection_end_pos + offset_x;
   double old_selection_width =
@@ -161,16 +157,15 @@ get_child_position (
         MAIN_WINDOW && MW_CENTER_DOCK && MW_TIMELINE_PANEL
         && MW_TIMELINE_PANEL->ruler)
         {
-          int width = gtk_widget_get_allocated_width (
-            GTK_WIDGET (self));
-          int height = gtk_widget_get_allocated_height (
-            GTK_WIDGET (self));
+          int width = gtk_widget_get_width (GTK_WIDGET (self));
+          int height =
+            gtk_widget_get_height (GTK_WIDGET (self));
 
           /* get pixels at start of visible ruler */
           double px_start =
             (double)
               PRJ_TIMELINE->editor_settings.scroll_start_x;
-          double px_width = gtk_widget_get_allocated_width (
+          double px_width = gtk_widget_get_width (
             GTK_WIDGET (MW_TIMELINE_PANEL->ruler));
 
           double start_ratio =
@@ -268,15 +263,15 @@ drag_begin (
             TIMELINE_MINIMAP_ACTION_STARTING_MOVING;
         }
 
-      double wx, wy;
-      gtk_widget_translate_coordinates (
-        GTK_WIDGET (self->selection), GTK_WIDGET (self), 0, 0,
-        &wx, &wy);
-      self->selection_start_pos = wx;
+      graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
+      bool             success = gtk_widget_compute_point (
+        GTK_WIDGET (self->selection), GTK_WIDGET (self),
+        &GRAPHENE_POINT_INIT (0.f, 0.f), &wpt);
+      g_return_if_fail (success);
+      self->selection_start_pos = (double) wpt.x;
       self->selection_end_pos =
-        wx
-        + gtk_widget_get_allocated_width (
-          GTK_WIDGET (self->selection));
+        (double) wpt.x
+        + gtk_widget_get_width (GTK_WIDGET (self->selection));
 
       /* motion handler was causing drag update
        * to not get called */
@@ -301,7 +296,7 @@ drag_begin (
             start_x - selection_width / 2.0;
           self->selection_end_pos =
             self->selection_start_pos
-            + gtk_widget_get_allocated_width (
+            + gtk_widget_get_width (
               GTK_WIDGET (self->selection));
         }
       else if (self->n_press == 2)

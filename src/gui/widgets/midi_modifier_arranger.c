@@ -166,8 +166,7 @@ midi_modifier_arranger_widget_ramp (
   Velocity * vel;
   int        px, val;
   double     y1, y2, x1, x2;
-  int        height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int      height = gtk_widget_get_height (GTK_WIDGET (self));
   Position start_pos;
   for (int i = 0; i < num_velocities; i++)
     {
@@ -221,8 +220,7 @@ midi_modifier_arranger_widget_resize_velocities (
   ArrangerWidget * self,
   double           offset_y)
 {
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int height = gtk_widget_get_height (GTK_WIDGET (self));
 
   /* adjust for circle radius */
   double start_y = self->start_y;
@@ -311,8 +309,7 @@ midi_modifier_arranger_set_hit_velocity_vals (
     self, ARRANGER_OBJECT_TYPE_VELOCITY, x, -1, objs_arr);
   g_message ("%u velocities hit", objs_arr->len);
 
-  int height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  int    height = gtk_widget_get_height (GTK_WIDGET (self));
   double ratio = 1.0 - y / (double) height;
   int    val = CLAMP ((int) (ratio * 127.0), 1, 127);
 

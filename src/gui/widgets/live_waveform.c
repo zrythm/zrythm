@@ -34,10 +34,8 @@ draw_lines (
   size_t               lstart_index,
   size_t               rstart_index)
 {
-  gint width =
-    gtk_widget_get_allocated_width (GTK_WIDGET (self));
-  gint height =
-    gtk_widget_get_allocated_height (GTK_WIDGET (self));
+  gint width = gtk_widget_get_width (GTK_WIDGET (self));
+  gint height = gtk_widget_get_height (GTK_WIDGET (self));
 
   /* draw */
   gdk_cairo_set_source_rgba (cr, &self->color_green);

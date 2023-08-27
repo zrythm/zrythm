@@ -207,8 +207,8 @@ typedef struct UiCaches
   ui_show_notification_idle_printf ("%s", msg)
 
 #define ui_is_widget_revealed(widget) \
-  (gtk_widget_get_allocated_height (GTK_WIDGET (widget)) > 1 \
-   || gtk_widget_get_allocated_width (GTK_WIDGET (widget)) > 1)
+  (gtk_widget_get_height (GTK_WIDGET (widget)) > 1 \
+   || gtk_widget_get_width (GTK_WIDGET (widget)) > 1)
 
 /**
  * Various cursor states to be shared.

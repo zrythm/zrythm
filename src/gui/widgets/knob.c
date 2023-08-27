@@ -108,8 +108,8 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   KnobWidget * self = Z_KNOB_WIDGET (widget);
 
-  int width = gtk_widget_get_allocated_width (widget);
-  int height = gtk_widget_get_allocated_height (widget);
+  int width = gtk_widget_get_width (widget);
+  int height = gtk_widget_get_height (widget);
 
   cairo_t * cr = gtk_snapshot_append_cairo (
     snapshot, &GRAPHENE_RECT_INIT (0, 0, width, height));

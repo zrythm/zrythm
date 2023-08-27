@@ -159,7 +159,7 @@ suil_cocoa_size_allocate(GtkWidget* widget, GtkAllocation* allocation)
 	}
 
 	gint xx, yy;
-	gtk_widget_translate_coordinates(
+	gtk_widget_compute_point(
 		gtk_widget_get_parent(widget), widget, 0, 0, &xx, &yy);
 
 	NSView* view = (NSView*)self->instance->ui_widget;
@@ -177,7 +177,7 @@ suil_cocoa_map(GtkWidget* widget)
 	}
 
 	gint xx, yy;
-	gtk_widget_translate_coordinates(
+	gtk_widget_compute_point(
 		gtk_widget_get_parent(widget), widget, 0, 0, &xx, &yy);
 
 	NSView* view = (NSView*)self->instance->ui_widget;

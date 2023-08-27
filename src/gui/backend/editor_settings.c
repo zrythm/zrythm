@@ -52,23 +52,20 @@ editor_settings_set_scroll_start_y (
       int diff = 0;
       if (self == &PRJ_TIMELINE->editor_settings)
         {
-          int tracklist_height =
-            gtk_widget_get_allocated_height (
-              GTK_WIDGET (MW_TRACKLIST->unpinned_box));
-          int tracklist_scroll_height =
-            gtk_widget_get_allocated_height (
-              GTK_WIDGET (MW_TRACKLIST->unpinned_scroll));
+          int tracklist_height = gtk_widget_get_height (
+            GTK_WIDGET (MW_TRACKLIST->unpinned_box));
+          int tracklist_scroll_height = gtk_widget_get_height (
+            GTK_WIDGET (MW_TRACKLIST->unpinned_scroll));
           diff =
             (self->scroll_start_y + tracklist_scroll_height)
             - tracklist_height;
         }
       else if (self == &PIANO_ROLL->editor_settings)
         {
-          int piano_roll_keys_height =
-            gtk_widget_get_allocated_height (GTK_WIDGET (
-              MW_MIDI_EDITOR_SPACE->piano_roll_keys));
+          int piano_roll_keys_height = gtk_widget_get_height (
+            GTK_WIDGET (MW_MIDI_EDITOR_SPACE->piano_roll_keys));
           int piano_roll_keys_scroll_height =
-            gtk_widget_get_allocated_height (GTK_WIDGET (
+            gtk_widget_get_height (GTK_WIDGET (
               MW_MIDI_EDITOR_SPACE->piano_roll_keys_scroll));
           diff =
             (self->scroll_start_y
@@ -77,11 +74,10 @@ editor_settings_set_scroll_start_y (
         }
       else if (self == &CHORD_EDITOR->editor_settings)
         {
-          int chord_keys_height =
-            gtk_widget_get_allocated_height (GTK_WIDGET (
-              MW_CHORD_EDITOR_SPACE->chord_keys_box));
+          int chord_keys_height = gtk_widget_get_height (
+            GTK_WIDGET (MW_CHORD_EDITOR_SPACE->chord_keys_box));
           int chord_keys_scroll_height =
-            gtk_widget_get_allocated_height (GTK_WIDGET (
+            gtk_widget_get_height (GTK_WIDGET (
               MW_CHORD_EDITOR_SPACE->chord_keys_scroll));
           diff =
             (self->scroll_start_y + chord_keys_scroll_height)

@@ -602,8 +602,8 @@ DEFINE_SIMPLE (activate_best_fit)
 
   double total_ticks =
     position_to_ticks (&end) - position_to_ticks (&start);
-  double allocated_px = (double)
-    gtk_widget_get_allocated_width (GTK_WIDGET (ruler));
+  double allocated_px =
+    (double) gtk_widget_get_width (GTK_WIDGET (ruler));
   double buffer_px = allocated_px / 16.0;
   double needed_px_per_tick =
     (allocated_px - buffer_px) / total_ticks;
