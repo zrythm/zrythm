@@ -75,9 +75,7 @@ header_widget_init (HeaderWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  GtkStyleContext * context;
-  context = gtk_widget_get_style_context (GTK_WIDGET (self));
-  gtk_style_context_add_class (context, "header");
+  gtk_widget_add_css_class (GTK_WIDGET (self), "header");
 
   live_waveform_widget_setup_engine (self->live_waveform);
   spectrum_analyzer_widget_setup_engine (

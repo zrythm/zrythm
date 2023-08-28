@@ -1221,27 +1221,6 @@ tracklist_expose_ports_to_backend (Tracklist * self)
     }
 }
 
-FileImportInfo *
-file_import_info_new ()
-{
-  FileImportInfo * self = object_new (FileImportInfo);
-  return self;
-}
-
-FileImportInfo *
-file_import_info_clone (const FileImportInfo * src)
-{
-  FileImportInfo * self = file_import_info_new ();
-  *self = *src;
-  return self;
-}
-
-void
-file_import_info_free (FileImportInfo * self)
-{
-  object_zero_and_free (self);
-}
-
 bool
 tracklist_import_regions (
   GPtrArray *            region_arrays,

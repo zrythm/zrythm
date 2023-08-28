@@ -2647,7 +2647,7 @@ DEFINE_SIMPLE (activate_editor_function)
         bool done = false;
         if (string_is_equal (str, "current"))
           {
-            AudioFunctionOpts aopts;
+            AudioFunctionOpts aopts = { 0 };
             AudioFunctionType type =
               g_settings_get_int (S_UI, "audio-function");
             switch (type)

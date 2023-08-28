@@ -192,7 +192,7 @@ on_dnd_motion (
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (self), GTK_WIDGET (hit_tw),
         &GRAPHENE_POINT_INIT ((float) x, (float) y), &wpt);
-      g_return_if_fail (success);
+      g_return_val_if_fail (success, GDK_ACTION_ASK);
       track_widget_do_highlight (
         hit_tw, (int) wpt.x, (int) wpt.y, 1);
     }
@@ -209,7 +209,7 @@ on_dnd_motion (
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (self), GTK_WIDGET (self->unpinned_scroll),
         &GRAPHENE_POINT_INIT ((float) x, (float) y), &wpt);
-      g_return_if_fail (success);
+      g_return_val_if_fail (success, GDK_ACTION_ASK);
 
       /* autoscroll */
       if (height - wpt.y < SCROLL_THRESHOLD_PX)
@@ -429,7 +429,7 @@ on_dnd_drop (
   bool             success = gtk_widget_compute_point (
     GTK_WIDGET (self), GTK_WIDGET (hit_tw),
     &GRAPHENE_POINT_INIT ((float) x, (float) y), &wpt);
-  g_return_if_fail (success);
+  g_return_val_if_fail (success, false);
 
   /* determine position to move to */
   TrackWidgetHighlight location =

@@ -514,7 +514,7 @@ lv2_gtk_open_ui (Lv2Plugin * plugin)
   else
     {
       ui_show_message_printf (
-        GTK_MESSAGE_ERROR, false,
+        _ ("Failed to Open UI"),
         _ ("Failed to open LV2 UI for %s"),
         plugin->plugin->setting->descr->name);
       return -1;

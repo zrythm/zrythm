@@ -28,6 +28,27 @@ G_DEFINE_QUARK (
   z - io - file - import - error - quark,
   z_io_file_import_error)
 
+FileImportInfo *
+file_import_info_new (void)
+{
+  FileImportInfo * self = object_new (FileImportInfo);
+  return self;
+}
+
+FileImportInfo *
+file_import_info_clone (const FileImportInfo * src)
+{
+  FileImportInfo * self = file_import_info_new ();
+  *self = *src;
+  return self;
+}
+
+void
+file_import_info_free (FileImportInfo * self)
+{
+  object_zero_and_free (self);
+}
+
 /**
  * Returns a new FileImport instance.
  */
