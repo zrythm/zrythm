@@ -253,7 +253,7 @@ meter_widget_setup (MeterWidget * self, Port * port, int width)
 
   char buf[1200];
   port_get_full_designation (port, buf);
-  g_message ("meter widget set up for %s", buf);
+  /*g_debug ("meter widget set up for %s", buf);*/
 }
 
 /**

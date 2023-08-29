@@ -431,89 +431,86 @@ recording_manager_handle_recording (
   /* ---- end handling start/stop/pause recording
    * events ---- */
 
-  if (G_LIKELY (skip_adding_track_events))
+  if (!G_LIKELY (skip_adding_track_events))
     {
-      goto add_automation_events;
-    }
-
-  /* add recorded track material to event queue */
-
-  if (
-    track_type_has_piano_roll (tr->type)
-    || tr->type == TRACK_TYPE_CHORD)
-    {
-      MidiEvents * midi_events =
-        track_processor->midi_in->midi_events;
-
-      for (int i = 0; i < midi_events->num_events; i++)
+      /* add recorded track material to event queue */
+      if (
+        track_type_has_piano_roll (tr->type)
+        || tr->type == TRACK_TYPE_CHORD)
         {
-          MidiEvent * me = &midi_events->events[i];
+          MidiEvents * midi_events =
+            track_processor->midi_in->midi_events;
 
+          for (int i = 0; i < midi_events->num_events; i++)
+            {
+              MidiEvent * me = &midi_events->events[i];
+
+              RecordingEvent * re = (RecordingEvent *)
+                object_pool_get (self->event_obj_pool);
+              recording_event_init (re);
+              re->type = RECORDING_EVENT_TYPE_MIDI;
+              re->g_start_frame = time_nfo->g_start_frame;
+              re->local_offset = time_nfo->local_offset;
+              re->nframes = time_nfo->nframes;
+              re->has_midi_event = 1;
+              midi_event_copy (&re->midi_event, me);
+              re->track_name_hash = tr->name_hash;
+              /*UP_RECEIVED (re);*/
+              recording_event_queue_push_back_event (
+                self->event_queue, re);
+            }
+
+          if (midi_events->num_events == 0)
+            {
+              RecordingEvent * re = (RecordingEvent *)
+                object_pool_get (self->event_obj_pool);
+              recording_event_init (re);
+              re->type = RECORDING_EVENT_TYPE_MIDI;
+              re->g_start_frame = time_nfo->g_start_frame;
+              re->local_offset = time_nfo->local_offset;
+              re->nframes = time_nfo->nframes;
+              re->has_midi_event = 0;
+              re->track_name_hash = tr->name_hash;
+              /*UP_RECEIVED (re);*/
+              recording_event_queue_push_back_event (
+                self->event_queue, re);
+            }
+        }
+      else if (tr->type == TRACK_TYPE_AUDIO)
+        {
           RecordingEvent * re = (RecordingEvent *)
             object_pool_get (self->event_obj_pool);
           recording_event_init (re);
-          re->type = RECORDING_EVENT_TYPE_MIDI;
+          re->type = RECORDING_EVENT_TYPE_AUDIO;
           re->g_start_frame = time_nfo->g_start_frame;
           re->local_offset = time_nfo->local_offset;
           re->nframes = time_nfo->nframes;
-          re->has_midi_event = 1;
-          midi_event_copy (&re->midi_event, me);
+          dsp_copy (
+            &re->lbuf[time_nfo->local_offset],
+            &track_processor->stereo_in->l
+               ->buf[time_nfo->local_offset],
+            time_nfo->nframes);
+          Port * r =
+            track_processor->mono
+                && control_port_is_toggled (track_processor->mono)
+              ? track_processor->stereo_in->l
+              : track_processor->stereo_in->r;
+          dsp_copy (
+            &re->rbuf[time_nfo->local_offset],
+            &r->buf[time_nfo->local_offset],
+            time_nfo->nframes);
           re->track_name_hash = tr->name_hash;
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
             self->event_queue, re);
         }
-
-      if (midi_events->num_events == 0)
-        {
-          RecordingEvent * re = (RecordingEvent *)
-            object_pool_get (self->event_obj_pool);
-          recording_event_init (re);
-          re->type = RECORDING_EVENT_TYPE_MIDI;
-          re->g_start_frame = time_nfo->g_start_frame;
-          re->local_offset = time_nfo->local_offset;
-          re->nframes = time_nfo->nframes;
-          re->has_midi_event = 0;
-          re->track_name_hash = tr->name_hash;
-          /*UP_RECEIVED (re);*/
-          recording_event_queue_push_back_event (
-            self->event_queue, re);
-        }
     }
-  else if (tr->type == TRACK_TYPE_AUDIO)
-    {
-      RecordingEvent * re = (RecordingEvent *)
-        object_pool_get (self->event_obj_pool);
-      recording_event_init (re);
-      re->type = RECORDING_EVENT_TYPE_AUDIO;
-      re->g_start_frame = time_nfo->g_start_frame;
-      re->local_offset = time_nfo->local_offset;
-      re->nframes = time_nfo->nframes;
-      dsp_copy (
-        &re->lbuf[time_nfo->local_offset],
-        &track_processor->stereo_in->l
-           ->buf[time_nfo->local_offset],
-        time_nfo->nframes);
-      Port * r =
-        track_processor->mono
-            && control_port_is_toggled (track_processor->mono)
-          ? track_processor->stereo_in->l
-          : track_processor->stereo_in->r;
-      dsp_copy (
-        &re->rbuf[time_nfo->local_offset],
-        &r->buf[time_nfo->local_offset], time_nfo->nframes);
-      re->track_name_hash = tr->name_hash;
-      /*UP_RECEIVED (re);*/
-      recording_event_queue_push_back_event (
-        self->event_queue, re);
-    }
-
-add_automation_events:
 
   if (skip_adding_automation_events)
     return;
 
   /* add automation events */
+  /* FIXME optimize -- too many loops */
   for (int i = 0; i < atl->num_ats; i++)
     {
       AutomationTrack * at = atl->ats[i];

@@ -72,14 +72,51 @@ dsp_limit1 (float * buf, float minf, float maxf, size_t size)
 #endif
 }
 
-NONNULL HOT void
-dsp_copy (float * dest, const float * src, size_t size);
+/**
+ * Compute dest[i] = src[i].
+ */
+NONNULL HOT static inline void
+dsp_copy (float * dest, const float * src, size_t size)
+{
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_copy (dest, src, size);
+    }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          dest[i] = src[i];
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+}
 
 /**
  * Scale: dst[i] = dst[i] * k.
  */
-NONNULL HOT void
-dsp_mul_k2 (float * dest, float k, size_t size);
+NONNULL HOT static inline void
+dsp_mul_k2 (float * dest, float k, size_t size)
+{
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_mul_k2 (dest, k, size);
+    }
+  else
+    {
+#endif
+      for (size_t i = 0; i < size; i++)
+        {
+          dest[i] *= k;
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+}
 
 /**
  * Gets the maximum absolute value of the buffer (as amplitude).
@@ -163,8 +200,25 @@ dsp_max (float * buf, size_t size);
 /**
  * Calculate dst[i] = dst[i] + src[i].
  */
-NONNULL HOT void
-dsp_add2 (float * dest, const float * src, size_t count);
+NONNULL HOT static inline void
+dsp_add2 (float * dest, const float * src, size_t count)
+{
+#ifdef HAVE_LSP_DSP
+  if (ZRYTHM_USE_OPTIMIZED_DSP)
+    {
+      lsp_dsp_add2 (dest, src, count);
+    }
+  else
+    {
+#endif
+      for (size_t i = 0; i < count; i++)
+        {
+          dest[i] = dest[i] + src[i];
+        }
+#ifdef HAVE_LSP_DSP
+    }
+#endif
+}
 
 /**
  * Calculate dest[i] = dest[i] * k1 + src[i] * k2.

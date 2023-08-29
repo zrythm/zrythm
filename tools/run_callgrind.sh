@@ -12,12 +12,7 @@
 set -x
 valgrind --tool=callgrind \
   --collect-jumps=yes \
-  --instr-atstart=no --collect-atstart=no \
-  --toggle-collect=arranger_object_draw \
   --separate-threads=yes \
   --dump-instr=yes --compress-strings=no \
-  --zero-before=main_window_widget_setup \
-  --dump-before=main_window_widget_setup \
-  --dump-after=main_window_widget_tear_down \
   "$@"
 set +x

@@ -246,6 +246,9 @@ spectrum_analyzer_snapshot (
         kiss_fft_alloc ((int) block_size, 0, NULL, NULL);
       for (size_t i = 0; i < block_size; i++)
         {
+          g_return_if_fail (
+            block_size
+            <= SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2);
           peak_fall_smooth_calculate_coeff (
             self->bins[i],
             (float) AUDIO_ENGINE->sample_rate / 64.f,

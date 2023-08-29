@@ -1319,22 +1319,6 @@ gen_context_menu_audio (
   gdouble          y)
 {
   return g_menu_new ();
-
-#if 0
-  GtkWidget *menu, *menuitem;
-
-  menu = gtk_menu_new();
-
-  menuitem =
-    gtk_menu_item_new_with_label ("Do something");
-
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL(menu), menuitem);
-
-  gtk_widget_show_all(menu);
-
-  gtk_menu_popup_at_pointer (GTK_MENU(menu), NULL);
-#endif
 }
 
 static GMenu *

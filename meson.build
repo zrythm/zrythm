@@ -730,7 +730,8 @@ test_strict_cflags += [
   '-Werror=analyzer-possible-null-argument',
   '-Werror=analyzer-double-free',
   '-Werror=analyzer-file-leak',
-  '-Werror=analyzer-use-of-uninitialized-value',
+  # GCC still makes mistakes
+  #'-Werror=analyzer-use-of-uninitialized-value',
   '-Werror=analyzer-out-of-bounds',
   '-Werror=analyzer-deref-before-check',
   '-Werror=analyzer-allocation-size',

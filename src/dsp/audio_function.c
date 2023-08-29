@@ -488,6 +488,7 @@ audio_function_apply (
       break;
     case AUDIO_FUNCTION_PITCH_SHIFT:
       {
+        z_return_val_if_fail_cmp (channels, >=, 2, false);
         use_interleaved = false;
         RubberBandState   rubberband_state;
         RubberBandOptions rubberband_opts =

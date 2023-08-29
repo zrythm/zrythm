@@ -343,12 +343,10 @@ automation_track_get_ap_before_pos (
       F_NORMALIZE);
   /*g_debug ("local pos %ld", local_pos);*/
 
-  AutomationPoint * ap;
-  ArrangerObject *  obj;
   for (int i = r->num_aps - 1; i >= 0; i--)
     {
-      ap = r->aps[i];
-      obj = (ArrangerObject *) ap;
+      AutomationPoint * ap = r->aps[i];
+      ArrangerObject *  obj = (ArrangerObject *) ap;
       if (obj->pos.frames <= local_pos)
         return ap;
     }

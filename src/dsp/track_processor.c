@@ -468,15 +468,6 @@ track_processor_disconnect_all (TrackProcessor * self)
     }
 }
 
-Track *
-track_processor_get_track (const TrackProcessor * self)
-{
-  g_return_val_if_fail (
-    IS_TRACK_PROCESSOR (self) && IS_TRACK (self->track), NULL);
-
-  return self->track;
-}
-
 /**
  * Splits the cycle and handles recording for each
  * slot.

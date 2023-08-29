@@ -160,7 +160,7 @@ color_area_widget_setup_track (
   self->track = track;
   self->type = COLOR_AREA_TYPE_TRACK;
 
-  g_message ("setting up track %s for %p", track->name, self);
+  /*g_debug ("setting up track %s for %p", track->name, self);*/
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
 

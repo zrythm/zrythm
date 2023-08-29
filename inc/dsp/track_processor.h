@@ -270,8 +270,17 @@ track_processor_clear_buffers (TrackProcessor * self);
 void
 track_processor_disconnect_all (TrackProcessor * self);
 
-Track *
-track_processor_get_track (const TrackProcessor * self);
+static inline Track *
+track_processor_get_track (const TrackProcessor * self)
+{
+#if 0
+  g_return_val_if_fail (
+    IS_TRACK_PROCESSOR (self) && IS_TRACK (self->track), NULL);
+#endif
+  g_return_val_if_fail (self->track, NULL);
+
+  return self->track;
+}
 
 /**
  * Process the TrackProcessor.
