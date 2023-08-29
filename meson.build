@@ -907,8 +907,15 @@ libadwaita_dep = dependency (
   default_options: [
     'vapi=false', 'tests=false',
     'examples=false', 'introspection=disabled',
-    # resources are not found with static
-    'default_library=shared'])
+    'default_library=static'])
+if libadwaita_dep.type_name () == 'internal'
+  # workaround for resources not found in static subproject
+  # from meson devs:
+  # "Libraries which use GResource need to provide an init
+  # function which registers the gresources"
+  # libadwaita currently doesn't register its gresources
+  libadwaita_dep = libadwaita_dep.as_link_whole ()
+endif
 
 libpanel_dep = dependency (
   'libpanel-1', version: '>=1.0.1',

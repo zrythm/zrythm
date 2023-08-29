@@ -102,6 +102,7 @@
 #  include <X11/Xlib.h>
 #endif
 #include <adwaita.h>
+#include <libpanel.h>
 
 #include <curl/curl.h>
 
@@ -1076,8 +1077,11 @@ zrythm_app_startup (GApplication * app)
   /* init curl */
   curl_global_init (CURL_GLOBAL_ALL);
 
+  /* init libpanel */
+  panel_init ();
+
   /* init libadwaita */
-  adw_init ();
+  /*adw_init (); already called by panel_init () */
   AdwStyleManager * style_mgr =
     adw_style_manager_get_default ();
   adw_style_manager_set_color_scheme (
