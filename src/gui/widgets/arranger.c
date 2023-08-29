@@ -5180,11 +5180,12 @@ arranger_widget_get_visible_rect (
   ArrangerWidget * self,
   GdkRectangle *   rect)
 {
-  gtk_widget_get_allocation (GTK_WIDGET (self), rect);
   const EditorSettings settings =
     arranger_widget_get_editor_setting_values (self);
   rect->x = settings.scroll_start_x;
   rect->y = settings.scroll_start_y;
+  rect->width = gtk_widget_get_width (GTK_WIDGET (self));
+  rect->height = gtk_widget_get_height (GTK_WIDGET (self));
 }
 
 bool

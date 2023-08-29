@@ -697,7 +697,7 @@ on_lane_rename (
       track_lane_get_name,
       (GenericStringSetter)
       track_lane_rename_with_action);
-  gtk_widget_show_all (GTK_WIDGET (dialog));
+  gtk_window_present (GTK_WINDOW (dialog));
 }
 #endif
 

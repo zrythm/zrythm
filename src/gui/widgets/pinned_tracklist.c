@@ -29,28 +29,26 @@ pinned_tracklist_widget_get_hit_track (
   double                  y)
 {
   /* go through each child */
-  Track *       track;
-  TrackWidget * tw;
-  GtkAllocation allocation;
-  gint          wx, wy;
   for (int i = 0; i < self->tracklist->num_tracks; i++)
     {
+      Track *       track;
+      TrackWidget * tw;
+      gint          wx, wy;
       track = self->tracklist->tracks[i];
       if (!track->visible || !track->pinned)
         continue;
 
       tw = track->widget;
 
-      gtk_widget_get_allocation (GTK_WIDGET (tw), &allocation);
+      int width = gtk_widget_get_width (GTK_WIDGET (tw));
+      int height = gtk_widget_get_height (GTK_WIDGET (tw));
 
       gtk_widget_compute_point (
         GTK_WIDGET (self), GTK_WIDGET (tw), (int) x, (int) y,
         &wx, &wy);
 
       /* if hit */
-      if (
-        wx >= 0 && wx <= allocation.width && wy >= 0
-        && wy <= allocation.height)
+      if (wx >= 0 && wx <= width && wy >= 0 && wy <= height)
         {
           return tw;
         }

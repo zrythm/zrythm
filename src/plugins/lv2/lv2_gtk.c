@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /*
@@ -258,7 +258,7 @@ lv2_gtk_on_delete_preset_activate (
   gtk_box_pack_start (
     GTK_BOX(content), text, TRUE, TRUE, 4);
 
-  gtk_widget_show_all (dialog);
+  gtk_window_present (GTK_WINDOW (dialog));
   if (gtk_dialog_run (GTK_DIALOG(dialog)) ==
         GTK_RESPONSE_ACCEPT)
     {

@@ -1781,7 +1781,7 @@ z_gtk_dialog_run (GtkDialog * dialog, bool destroy_on_close)
     gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
 
   if (!gtk_widget_get_visible (GTK_WIDGET (dialog)))
-    gtk_widget_show (GTK_WIDGET (dialog));
+    gtk_window_present (GTK_WINDOW (dialog));
 
   response_handler = g_signal_connect (
     dialog, "response", G_CALLBACK (run_response_handler),

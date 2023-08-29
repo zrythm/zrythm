@@ -558,15 +558,15 @@ activate_finish (
 
 static void
 on_outputs_stereo_response (
-  GtkDialog *     dialog,
-  gint            response_id,
-  PluginSetting * self)
+  AdwMessageDialog * dialog,
+  char *             response,
+  PluginSetting *    self)
 {
-  bool stereo = response_id == GTK_RESPONSE_YES;
+  if (string_is_equal (response, "close"))
+    return;
 
+  bool stereo = string_is_equal (response, "yes");
   activate_finish (self, true, stereo);
-
-  gtk_window_destroy (GTK_WINDOW (dialog));
 }
 
 static void
@@ -579,18 +579,22 @@ on_contains_multiple_outputs_response (
 
   if (autoroute_multiout)
     {
-      GtkWidget * stereo_dialog = gtk_message_dialog_new (
-        GTK_WINDOW (MAIN_WINDOW),
-        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-        GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
+      GtkWidget * stereo_dialog = adw_message_dialog_new (
+        GTK_WINDOW (MAIN_WINDOW), _ ("Stereo?"),
         _ ("Are the outputs stereo?"));
+      gtk_window_set_modal (GTK_WINDOW (stereo_dialog), true);
+      adw_message_dialog_add_responses (
+        ADW_MESSAGE_DIALOG (stereo_dialog), "yes", _ ("_Yes"),
+        "no", _ ("_No"), NULL);
+      adw_message_dialog_set_default_response (
+        ADW_MESSAGE_DIALOG (stereo_dialog), "yes");
       PluginSetting * setting_clone =
         plugin_setting_clone (self, false);
       g_signal_connect_data (
         stereo_dialog, "response",
         G_CALLBACK (on_outputs_stereo_response),
         setting_clone, plugin_setting_free_closure, 0);
-      gtk_widget_show (GTK_WIDGET (stereo_dialog));
+      gtk_window_present (GTK_WINDOW (stereo_dialog));
     }
   else
     {
@@ -630,7 +634,7 @@ plugin_setting_activate (const PluginSetting * self)
         dialog, "response",
         G_CALLBACK (on_contains_multiple_outputs_response),
         setting_clone, plugin_setting_free_closure, 0);
-      gtk_widget_show (GTK_WIDGET (dialog));
+      gtk_window_present (GTK_WINDOW (dialog));
     }
   else
     {

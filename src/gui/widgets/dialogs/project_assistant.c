@@ -379,7 +379,7 @@ project_assistant_widget_present (
       gtk_window_set_transient_for (
         GTK_WINDOW (create_prj_dialog),
         GTK_WINDOW (self->parent));
-      gtk_widget_show (GTK_WIDGET (create_prj_dialog));
+      gtk_window_present (GTK_WINDOW (create_prj_dialog));
     }
   else
     {
@@ -521,7 +521,7 @@ on_response (
           gtk_window_set_transient_for (
             GTK_WINDOW (create_prj_dialog), GTK_WINDOW (self));
         }
-      gtk_widget_show (GTK_WIDGET (create_prj_dialog));
+      gtk_window_present (GTK_WINDOW (create_prj_dialog));
       return;
     }
 
