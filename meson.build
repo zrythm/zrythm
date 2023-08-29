@@ -12,7 +12,7 @@ project (
     # 3: -Wall -Wextra -Wpedantic
     'warning_level=2',
     'buildtype=debugoptimized',
-    'c_std=gnu11',
+    'c_std=gnu17',
     'cpp_std=gnu++11',
     'b_lto=true',
     'b_lto_threads=2',
