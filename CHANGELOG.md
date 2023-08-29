@@ -6,6 +6,33 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.12.34] - 2023-08-30
+### Added
+- User manual: add section about getting core dumps and backtraces
+- User manual: mention `%LOCALAPPDATA%`
+
+### Changed
+- Draw clip start point as red instead of blue
+- Port some dialogs to non-blocking AdwMessageDialog
+- Use C atomics in MPMC queue (slightly faster DSP performance)
+- Build: require GTK 4.13 or above
+- Various optimizations
+- Build: require gnu17 C standard
+
+### Fixed
+- Make splash screen accessible
+- Show context menu on track widgets when menu button is pressed on the keyboard
+- Fix error when loading demo project
+- Fix various GTK deprecations
+- Fix automation regions not drawing last part
+- Make bar sliders accessible
+- Fix reflinking being broken and leaking file descriptors
+- Fix drawing issue in audio editor (missing `gtk_snapshot_save()`)
+- Build: fix using libadwaita/libpanel as subprojects
+
+### Removed
+- Remove some unused code
+
 ## [1.0.0-beta.4.12.5] - 2023-08-24
 ### Fixed
 - Fix build on windows
