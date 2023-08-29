@@ -15,6 +15,95 @@
 #include "tests/helpers/zrythm.h"
 
 static void
+test_vst_instrument_makes_sound (void)
+{
+#ifdef HAVE_CARLA
+  for (int i = 0; i < 2; i++)
+    {
+      const char * pl_path = NULL;
+#  ifdef HAVE_NOIZEMAKER
+      if (i == 0)
+        {
+          /* vst2 */
+          pl_path = NOIZEMAKER_PATH;
+        }
+#  endif
+#  ifdef HAVE_SURGE_XT
+      if (i == 1)
+        {
+          /* vst3 */
+          pl_path = SURGE_XT_PATH;
+        }
+#  endif
+      if (!pl_path)
+        continue;
+
+      test_helper_zrythm_init ();
+
+      /* stop dummy audio engine processing so we can
+       * process manually */
+      test_project_stop_dummy_engine ();
+
+      /* create instrument track */
+      test_plugin_manager_create_tracks_from_plugin (
+        pl_path, NULL, true, true, 1);
+      Track * track =
+        TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+
+      /* create midi note */
+      Position pos, end_pos;
+      position_init (&pos);
+      position_set_to_bar (&end_pos, 3);
+      ZRegion * r = midi_region_new (
+        &pos, &end_pos, track_get_name_hash (track), 0, 0);
+      bool success = track_add_region (
+        track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
+        NULL);
+      g_assert_true (success);
+      MidiNote * mn =
+        midi_note_new (&r->id, &pos, &end_pos, 57, 120);
+      midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
+
+      engine_process (
+        AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+      engine_process (
+        AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+      engine_process (
+        AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+
+      /* bounce */
+      ExportSettings * settings = export_settings_new ();
+      export_settings_set_bounce_defaults (
+        settings, EXPORT_FORMAT_WAV, NULL, __func__);
+      settings->time_range = TIME_RANGE_LOOP;
+      settings->bounce_with_parents = true;
+      settings->mode = EXPORT_MODE_FULL;
+
+      EngineState state;
+      GPtrArray * conns =
+        exporter_prepare_tracks_for_export (settings, &state);
+
+      /* start exporting in a new thread */
+      GThread * thread = g_thread_new (
+        "bounce_thread",
+        (GThreadFunc) exporter_generic_export_thread,
+        settings);
+
+      g_thread_join (thread);
+
+      exporter_post_export (settings, conns, &state);
+
+      g_assert_false (
+        audio_file_is_silent (settings->file_uri));
+
+      export_settings_free (settings);
+
+      test_helper_zrythm_cleanup ();
+    }
+#endif
+}
+
+static void
 test_mono_plugin (void)
 {
 #if defined(HAVE_CARLA) && defined(HAVE_LSP_COMPRESSOR_MONO)
@@ -202,6 +291,9 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/plugins/carla native plugin/"
 
+  g_test_add_func (
+    TEST_PREFIX "test vst instrument makes sound",
+    (GTestFunc) test_vst_instrument_makes_sound);
   g_test_add_func (
     TEST_PREFIX "test mono plugin",
     (GTestFunc) test_mono_plugin);

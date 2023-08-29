@@ -238,6 +238,32 @@ if get_option ('tests')
         name.to_upper() + '_PATH', '')
     endif
   endforeach
+
+  # VST3
+  foreach name, filename : ext_vst3_plugins
+    have_plugin = have_ext_vst3_plugins.get (
+      name, false)
+    if have_plugin
+      path = ext_vst3_plugin_paths[name]
+      # C
+      test_config.set (
+        'HAVE_' + name.to_upper(), 1)
+      test_config.set_quoted (
+        name.to_upper() + '_PATH', path)
+      # Guile
+      test_config_guile.set (
+        'HAVE_' + name.to_upper(), '#t')
+      test_config_guile.set_quoted (
+        name.to_upper() + '_PATH', path)
+    else
+      # Guile
+      test_config_guile.set (
+        'HAVE_' + name.to_upper(), '#f')
+      test_config_guile.set_quoted (
+        name.to_upper() + '_PATH', '')
+    endif
+  endforeach
+
   test_config_h = configure_file (
     output: 'zrythm-test-config.h',
     configuration: test_config,

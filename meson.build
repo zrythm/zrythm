@@ -1506,6 +1506,13 @@ ext_vst_plugins = {
   }
 have_ext_vst_plugins = {}
 ext_vst_plugin_paths = {}
+ext_vst3_plugins = {
+  'onetrick_simian': 'Punk Labs LLC OneTrick SIMIAN.vst3',
+  'dexed': 'Dexed.vst3',
+  'surge_xt': 'Surge XT.vst3',
+  }
+have_ext_vst3_plugins = {}
+ext_vst3_plugin_paths = {}
 # when using the lilv subproject, we can't use lv2ls and
 # lv2info
 lv2info_bin = find_program ('lv2info', required: false)
@@ -1542,7 +1549,22 @@ if get_option ('tests') and lilv_dep.type_name () != 'internal'
       if have_ext_vst
         ext_vst_plugin_paths += {
           name: run_command (
-            get_vst_path_bin, filename,
+            get_vst_path_bin, filename, '',
+            check: true).stdout ().strip ()
+          }
+      endif
+    endforeach
+    foreach name, filename : ext_vst3_plugins
+      have_ext_vst3 = run_command (
+        get_vst_path_bin,
+        filename).returncode () == 0
+      have_ext_vst3_plugins += {
+        name: have_ext_vst3
+        }
+      if have_ext_vst3
+        ext_vst3_plugin_paths += {
+          name: run_command (
+            get_vst_path_bin, filename, '3',
             check: true).stdout ().strip ()
           }
       endif
@@ -1640,6 +1662,11 @@ endforeach
 foreach name, filename : ext_vst_plugins
   tests_summary += {
     filename: ext_vst_plugin_paths.get(name, 'N/A')
+    }
+endforeach
+foreach name, filename : ext_vst3_plugins
+  tests_summary += {
+    filename: ext_vst3_plugin_paths.get(name, 'N/A')
     }
 endforeach
 summary (tests_summary, section: 'Tests')

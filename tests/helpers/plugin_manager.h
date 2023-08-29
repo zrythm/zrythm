@@ -79,8 +79,10 @@ test_plugin_manager_reload_lilv_world_w_path (
 }
 
 /**
- * Get a plugin setting clone from the given
- * URI in the given bundle.
+ * Get a plugin setting clone from the given URI in the given
+ * bundle.
+ *
+ * If non-LV2, the path should be passed to pl_bundle.
  */
 PluginSetting *
 test_plugin_manager_get_plugin_setting (
@@ -88,10 +90,43 @@ test_plugin_manager_get_plugin_setting (
   const char * pl_uri,
   bool         with_carla)
 {
-  LilvNode * path = lilv_new_uri (LILV_WORLD, pl_bundle);
-  g_assert_nonnull (path);
-  lilv_world_load_bundle (LILV_WORLD, path);
-  lilv_node_free (path);
+  if (pl_uri)
+    {
+      LilvNode * path = lilv_new_uri (LILV_WORLD, pl_bundle);
+      g_assert_nonnull (path);
+      lilv_world_load_bundle (LILV_WORLD, path);
+      lilv_node_free (path);
+    }
+  else
+    {
+      char * basename = g_path_get_basename (pl_bundle);
+      char * tmpdir =
+        g_dir_make_tmp ("zrythm_vst_XXXXXX", NULL);
+      char * dest_path =
+        g_build_filename (tmpdir, basename, NULL);
+      if (g_str_has_suffix (pl_bundle, "vst3"))
+        {
+          g_assert_true (io_copy_dir (
+            dest_path, pl_bundle, true, true, NULL));
+        }
+      else
+        {
+          GFile * pl_bundle_file =
+            g_file_new_for_path (pl_bundle);
+          GFile * pl_bundle_file_in_tmp =
+            g_file_new_for_path (dest_path);
+          g_assert_true (g_file_copy (
+            pl_bundle_file, pl_bundle_file_in_tmp,
+            G_FILE_COPY_NONE, NULL, NULL, NULL, NULL));
+          //g_object_unref (pl_bundle_file);
+          //g_object_unref (pl_bundle_file_in_tmp);
+        }
+      g_setenv ("VST3_PATH", tmpdir, true);
+      g_setenv ("VST_PATH", tmpdir, true);
+      g_free (tmpdir);
+      g_free (dest_path);
+      g_free (basename);
+    }
 
   plugin_manager_clear_plugins (PLUGIN_MANAGER);
   plugin_manager_scan_plugins (PLUGIN_MANAGER, 1.0, NULL);
@@ -104,9 +139,24 @@ test_plugin_manager_get_plugin_setting (
     {
       PluginDescriptor * cur_descr = g_ptr_array_index (
         PLUGIN_MANAGER->plugin_descriptors, i);
-      if (string_is_equal (cur_descr->uri, pl_uri))
+      if (pl_uri)
         {
-          descr = plugin_descriptor_clone (cur_descr);
+          if (string_is_equal (cur_descr->uri, pl_uri))
+            {
+              descr = plugin_descriptor_clone (cur_descr);
+            }
+        }
+      else if (cur_descr->protocol != PROT_LV2)
+        {
+          char * basename = g_path_get_basename (pl_bundle);
+          char * descr_basename =
+            g_path_get_basename (cur_descr->path);
+          if (string_is_equal (descr_basename, basename))
+            {
+              descr = plugin_descriptor_clone (cur_descr);
+            }
+          g_free (basename);
+          g_free (descr_basename);
         }
     }
   g_return_val_if_fail (descr, NULL);
