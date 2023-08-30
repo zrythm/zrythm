@@ -119,7 +119,7 @@ channel_sends_expander_widget_setup (
       break;
     case CSE_POSITION_CHANNEL:
       gtk_widget_set_size_request (
-        GTK_WIDGET (self->scroll), -1, 68);
+        GTK_WIDGET (self->scroll), -1, -1);
       expander_box_widget_set_reveal_callback (
         Z_EXPANDER_BOX_WIDGET (self),
         (ExpanderBoxRevealFunc) on_reveal_changed, self);

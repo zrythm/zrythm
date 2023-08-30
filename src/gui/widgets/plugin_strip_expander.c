@@ -197,7 +197,7 @@ plugin_strip_expander_widget_setup (
       break;
     case PSE_POSITION_CHANNEL:
       gtk_widget_set_size_request (
-        GTK_WIDGET (self->scroll), -1, 68);
+        GTK_WIDGET (self->scroll), -1, -1);
       if (
         slot_type == PLUGIN_SLOT_INSERT
         || slot_type == PLUGIN_SLOT_MIDI_FX)
