@@ -224,18 +224,18 @@ inc_inc = include_directories ('inc')
 ext_inc = include_directories ('ext')
 kissfft_inc = include_directories ('ext/kissfft')
 midilib_inc = include_directories ('ext/midilib')
+suil_inc = include_directories ('inc/plugins/lv2')
 whereami_inc = include_directories ('ext/whereami')
 weakjack_inc = include_directories ('ext/weakjack')
-suil_inc = include_directories ('inc/plugins/lv2')
 all_inc = [
   root_inc,
   inc_inc,
   ext_inc,
   kissfft_inc,
   midilib_inc,
+  suil_inc,
   whereami_inc,
   weakjack_inc,
-  suil_inc,
   ]
 
 all_static = get_option ('static_deps')

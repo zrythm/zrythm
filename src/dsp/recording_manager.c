@@ -363,7 +363,7 @@ recording_manager_handle_recording (
           re->g_start_frame = time_nfo->g_start_frame;
           re->local_offset = time_nfo->local_offset;
           re->nframes = time_nfo->nframes;
-          port_identifier_copy (&re->port_id, &at->port_id);
+          re->automation_track_idx = at->index;
           re->track_name_hash = tr->name_hash;
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
@@ -392,7 +392,7 @@ recording_manager_handle_recording (
           re->g_start_frame = time_nfo->g_start_frame;
           re->local_offset = time_nfo->local_offset;
           re->nframes = time_nfo->nframes;
-          port_identifier_copy (&re->port_id, &at->port_id);
+          re->automation_track_idx = at->index;
           re->track_name_hash = tr->name_hash;
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
@@ -418,8 +418,7 @@ recording_manager_handle_recording (
               re->g_start_frame = time_nfo->g_start_frame;
               re->local_offset = time_nfo->local_offset;
               re->nframes = time_nfo->nframes;
-              port_identifier_copy (
-                &re->port_id, &at->port_id);
+              re->automation_track_idx = at->index;
               re->track_name_hash = tr->name_hash;
               /*UP_RECEIVED (re);*/
               recording_event_queue_push_back_event (
@@ -530,7 +529,7 @@ recording_manager_handle_recording (
           re->g_start_frame = time_nfo->g_start_frame;
           re->local_offset = time_nfo->local_offset;
           re->nframes = time_nfo->nframes;
-          port_identifier_copy (&re->port_id, &at->port_id);
+          re->automation_track_idx = at->index;
           re->track_name_hash = tr->name_hash;
           /*UP_RECEIVED (re);*/
           recording_event_queue_push_back_event (
@@ -679,8 +678,7 @@ handle_pause_event (RecordingManager * self, RecordingEvent * ev)
     == RECORDING_EVENT_TYPE_PAUSE_AUTOMATION_RECORDING)
     {
       AutomationTrack * at =
-        automation_track_find_from_port_id (
-          &ev->port_id, false);
+        tr->automation_tracklist.ats[ev->automation_track_idx];
       at->recording_paused = true;
     }
 }
@@ -821,8 +819,7 @@ handle_resume_event (
   else if (ev->type == RECORDING_EVENT_TYPE_AUTOMATION)
     {
       AutomationTrack * at =
-        automation_track_find_from_port_id (
-          &ev->port_id, false);
+        tr->automation_tracklist.ats[ev->automation_track_idx];
       g_return_val_if_fail (at, false);
 
       /* not paused, nothing to do */
@@ -1172,7 +1169,7 @@ handle_automation_event (
   Track * tr = tracklist_find_track_by_name_hash (
     TRACKLIST, ev->track_name_hash);
   AutomationTrack * at =
-    automation_track_find_from_port_id (&ev->port_id, false);
+    tr->automation_tracklist.ats[ev->automation_track_idx];
   Port * port = port_find_from_identifier (&at->port_id);
   float  value = port_get_control_value (port, false);
   float normalized_value = port_get_control_value (port, true);
@@ -1303,8 +1300,8 @@ handle_start_recording (
   AutomationTrack * at = NULL;
   if (is_automation)
     {
-      at = automation_track_find_from_port_id (
-        &ev->port_id, false);
+      at =
+        tr->automation_tracklist.ats[ev->automation_track_idx];
     }
 
   if (self->num_active_recordings == 0)
@@ -1542,9 +1539,11 @@ recording_manager_process_events (RecordingManager * self)
         case RECORDING_EVENT_TYPE_STOP_AUTOMATION_RECORDING:
           g_message ("-------- STOP AUTOMATION RECORDING");
           {
+            Track * tr = tracklist_find_track_by_name_hash (
+              TRACKLIST, ev->track_name_hash);
             AutomationTrack * at =
-              automation_track_find_from_port_id (
-                &ev->port_id, false);
+              tr->automation_tracklist
+                .ats[ev->automation_track_idx];
             g_return_val_if_fail (at, G_SOURCE_REMOVE);
             if (at->recording_started)
               {
@@ -1575,9 +1574,11 @@ recording_manager_process_events (RecordingManager * self)
         case RECORDING_EVENT_TYPE_START_AUTOMATION_RECORDING:
           g_message ("-------- START AUTOMATION RECORDING");
           {
+            Track * tr = tracklist_find_track_by_name_hash (
+              TRACKLIST, ev->track_name_hash);
             AutomationTrack * at =
-              automation_track_find_from_port_id (
-                &ev->port_id, false);
+              tr->automation_tracklist
+                .ats[ev->automation_track_idx];
             g_return_val_if_fail (at, G_SOURCE_REMOVE);
             if (!at->recording_started)
               {

@@ -37,21 +37,18 @@ typedef struct AutomationTracklist
   int schema_version;
 
   /**
-   * Automation tracks in this automation
-   * tracklist.
+   * Automation tracks in this automation tracklist.
    *
-   * These should be updated with ALL of the
-   * automatables available in the channel and its
-   * plugins every time there is an update.
+   * These should be updated with ALL of the automatables
+   * available in the channel and its plugins every time there
+   * is an update.
    *
-   * Active automation lanes that are
-   * shown in the UI, including hidden ones, can
-   * be found using \ref AutomationTrack.created
-   * and \ref AutomationTrack.visible.
+   * Active automation lanes that are shown in the UI,
+   * including hidden ones, can be found using @ref
+   * AutomationTrack.created and @ref AutomationTrack.visible.
    *
-   * Automation tracks become active automation
-   * lanes when they have automation or are
-   * selected.
+   * Automation tracks become active automation lanes when they
+   * have automation or are selected.
    */
   AutomationTrack ** ats;
   int                num_ats;

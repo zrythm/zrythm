@@ -1429,8 +1429,8 @@ port_disconnect_all (Port * self)
 }
 
 /**
- * To be called when the port's identifier changes
- * to update corresponding identifiers.
+ * To be called when the port's identifier changes to update
+ * corresponding identifiers.
  *
  * @param prev_id Previous identifier to be used
  *   for searching.

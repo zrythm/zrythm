@@ -449,12 +449,12 @@ static const cyaml_bitdef_t port_flags2_bitvals[] = {
 /**
  * Struct used to identify Ports in the project.
  *
- * This should include some members of the original
- * struct enough to identify the port. To be used
- * for sources and dests.
+ * This should include some members of the original struct
+ * enough to identify the port. To be used for sources and
+ * dests.
  *
- * This must be filled in before saving and read from
- * while loading to fill in the srcs/dests.
+ * This must be filled in before saving and read from while
+ * loading to fill in the srcs/dests.
  */
 typedef struct PortIdentifier
 {

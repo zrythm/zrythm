@@ -104,8 +104,8 @@ typedef struct RecordingEvent
    */
   MidiEvent midi_event;
 
-  /** Port if automation. */
-  PortIdentifier port_id;
+  /** Index of automation track, if automation. */
+  int automation_track_idx;
 
   /** Automation value, if automation. */
   //float             control_val;
@@ -123,6 +123,15 @@ typedef struct RecordingEvent
  * Inits an already allocated recording event.
  */
 #define recording_event_init(re) \
+  re->type = 0; \
+  re->track_name_hash = 0; \
+  re->region_name[0] = '\0'; \
+  re->g_start_frame = 0; \
+  re->local_offset = 0; \
+  re->has_midi_event = 0; \
+  memset (&re->midi_event, 0, sizeof (MidiEvent)); \
+  re->automation_track_idx = 0; \
+  re->nframes = 0; \
   re->file = __FILE__; \
   re->func = __func__; \
   re->lineno = __LINE__
