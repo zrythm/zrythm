@@ -354,7 +354,7 @@ on_focus_widget_changed (
     gtk_window_get_focus (GTK_WINDOW (gobject));
   if (focus_widget)
     {
-      z_gtk_widget_print_hierarchy (focus_widget);
+      /*z_gtk_widget_print_hierarchy (focus_widget);*/
     }
   else
     {

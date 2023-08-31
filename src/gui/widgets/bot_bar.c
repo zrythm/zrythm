@@ -579,8 +579,6 @@ bot_bar_widget_init (BotBarWidget * self)
   gtk_box_append (
     self->digital_meters, GTK_WIDGET (self->digital_timesig));
 
-  cpu_widget_setup (self->cpu_load);
-
   g_signal_connect (
     self->engine_status_label, "activate-link",
     G_CALLBACK (activate_link), self);

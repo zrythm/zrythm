@@ -227,11 +227,6 @@ refresh_cpu_load (CpuWidget * self)
 
 #endif
 
-  char ttip[100];
-  sprintf (ttip, "CPU: %d%%\nDSP: %d%%", self->cpu, self->dsp);
-  /* FIXME reenable after GTK #4451 is fixed */
-  /*gtk_widget_set_tooltip_text (*/
-  /*(GtkWidget *) self, ttip);*/
   gtk_widget_queue_draw ((GtkWidget *) self);
 
   return G_SOURCE_CONTINUE;
@@ -259,12 +254,8 @@ on_motion_leave (
     GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT);
 }
 
-/**
- * Creates a new Cpu widget and binds it to the
- * given value.
- */
-void
-cpu_widget_setup (CpuWidget * self)
+static void
+on_map (GtkWidget * widget, CpuWidget * self)
 {
   self->cpu_source_id = g_timeout_add_seconds (
     1, (GSourceFunc) refresh_cpu_load, self);
@@ -273,12 +264,32 @@ cpu_widget_setup (CpuWidget * self)
 }
 
 static void
-finalize (CpuWidget * self)
+on_unmap (GtkWidget * widget, CpuWidget * self)
 {
   /* remove the timeout callbacks */
   g_source_remove (self->cpu_source_id);
   g_source_remove (self->dsp_source_id);
+}
 
+static gboolean
+on_query_tooltip (
+  GtkWidget *  widget,
+  gint         x,
+  gint         y,
+  gboolean     keyboard_mode,
+  GtkTooltip * tooltip,
+  CpuWidget *  self)
+{
+  char ttip[100];
+  sprintf (ttip, "CPU: %d%%\nDSP: %d%%", self->cpu, self->dsp);
+  gtk_tooltip_set_text (tooltip, ttip);
+
+  return true;
+}
+
+static void
+finalize (CpuWidget * self)
+{
   object_free_w_func_and_null (
     g_object_unref, self->cpu_texture);
   object_free_w_func_and_null (
@@ -293,6 +304,7 @@ cpu_widget_init (CpuWidget * self)
 {
   self->cpu = 0;
   self->dsp = 0;
+  gtk_widget_set_has_tooltip (GTK_WIDGET (self), true);
 
   self->cpu_texture = z_gdk_texture_new_from_icon_name (
     "ext-iconfinder_cpu_2561419", ICON_SIZE, ICON_SIZE, 1);
@@ -313,6 +325,15 @@ cpu_widget_init (CpuWidget * self)
     G_CALLBACK (on_motion_leave), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), motion_controller);
+
+  g_signal_connect (
+    G_OBJECT (self), "map", G_CALLBACK (on_map), self);
+  g_signal_connect (
+    G_OBJECT (self), "unmap", G_CALLBACK (on_unmap), self);
+
+  g_signal_connect (
+    G_OBJECT (self), "query-tooltip",
+    G_CALLBACK (on_query_tooltip), self);
 }
 
 static void

@@ -47,12 +47,6 @@ typedef struct _CpuWidget
 } CpuWidget;
 
 /**
- * Starts drawing the CPU usage.
- */
-void
-cpu_widget_setup (CpuWidget * self);
-
-/**
  * @}
  */
 
