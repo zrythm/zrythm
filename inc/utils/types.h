@@ -114,6 +114,11 @@ typedef bool (*GenericPredicateFunc) (
   const void * object,
   const void * user_data);
 
+/**
+ * Function to call to free objects.
+ */
+typedef void (*ObjectFreeFunc) (void *);
+
 typedef enum AudioValueFormat
 {
   /** 0 to 2, amplitude. */

@@ -10,6 +10,8 @@
 #ifndef __GUI_BACKEND_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_H__
 #define __GUI_BACKEND_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_H__
 
+#include "utils/types.h"
+
 #include <glib-object.h>
 
 #define WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE \
@@ -40,6 +42,7 @@ typedef enum WrappedObjectType
   WRAPPED_OBJECT_TYPE_ARRANGER_OBJECT,
   WRAPPED_OBJECT_TYPE_PROJECT_INFO,
   WRAPPED_OBJECT_TYPE_PORT,
+  WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET,
 } WrappedObjectType;
 
 typedef struct _WrappedObjectWithChangeSignal
@@ -48,6 +51,8 @@ typedef struct _WrappedObjectWithChangeSignal
 
   WrappedObjectType type;
   void *            obj;
+
+  ObjectFreeFunc free_func;
 } WrappedObjectWithChangeSignal;
 
 /**
@@ -75,6 +80,16 @@ WrappedObjectWithChangeSignal *
 wrapped_object_with_change_signal_new (
   void *            obj,
   WrappedObjectType type);
+
+/**
+ * If this function is not used, the internal object will
+ * not be free'd.
+ */
+WrappedObjectWithChangeSignal *
+wrapped_object_with_change_signal_new_with_free_func (
+  void *            obj,
+  WrappedObjectType type,
+  ObjectFreeFunc    free_func);
 
 /**
  * @}

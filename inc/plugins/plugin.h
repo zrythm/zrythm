@@ -585,7 +585,7 @@ NONNULL Track *
 plugin_get_track (Plugin * self);
 
 NONNULL Plugin *
-plugin_find (PluginIdentifier * id);
+plugin_find (const PluginIdentifier * id);
 
 /**
  * To be called when changes to the plugin

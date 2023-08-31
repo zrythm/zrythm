@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/channel_send.h"
 #include "dsp/midi_mapping.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
@@ -1003,6 +1004,22 @@ item_factory_bind_cb (
               gtk_label_set_text (lbl, pset->name);
 
               add_chord_pset_context_menu (bin, pset);
+            }
+            break;
+          case WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET:
+            {
+              ChannelSendTarget * target =
+                (ChannelSendTarget *) obj->obj;
+
+              char * icon_name =
+                channel_send_target_get_icon (target);
+              gtk_image_set_from_icon_name (img, icon_name);
+              g_free (icon_name);
+
+              char * label =
+                channel_send_target_describe (target);
+              gtk_label_set_text (lbl, label);
+              g_free (label);
             }
             break;
           default:

@@ -44,6 +44,65 @@ get_signal_type (const ChannelSend * self)
   return track->out_signal_type;
 }
 
+/**
+ * Returns a string describing @p self
+ * (track/plugin name/etc.).
+ */
+char *
+channel_send_target_describe (const ChannelSendTarget * self)
+{
+  switch (self->type)
+    {
+    case CHANNEL_SEND_TARGET_TYPE_NONE:
+      return g_strdup (_ ("None"));
+    case CHANNEL_SEND_TARGET_TYPE_TRACK:
+      {
+        Track * tr = TRACKLIST->tracks[self->track_pos];
+        return g_strdup (tr->name);
+      }
+    case CHANNEL_SEND_TARGET_TYPE_PLUGIN_SIDECHAIN:
+      {
+        Plugin * pl = plugin_find (&self->pl_id);
+        char     designation[1200];
+        plugin_get_full_port_group_designation (
+          pl, self->port_group, designation);
+        return g_strdup (designation);
+      }
+    default:
+      break;
+    }
+  g_return_val_if_reached (_ ("Invalid"));
+}
+
+char *
+channel_send_target_get_icon (const ChannelSendTarget * self)
+{
+  switch (self->type)
+    {
+    case CHANNEL_SEND_TARGET_TYPE_NONE:
+      return g_strdup ("edit-none");
+    case CHANNEL_SEND_TARGET_TYPE_TRACK:
+      {
+        Track * tr = TRACKLIST->tracks[self->track_pos];
+        return g_strdup (tr->icon_name);
+      }
+    case CHANNEL_SEND_TARGET_TYPE_PLUGIN_SIDECHAIN:
+      {
+        return g_strdup ("media-album-track");
+      }
+    default:
+      break;
+    }
+  g_return_val_if_reached (g_strdup (_ ("Invalid")));
+}
+
+void
+channel_send_target_free (ChannelSendTarget * self)
+{
+  g_free_and_null (self->port_group);
+  object_zero_and_free (self);
+}
+
 void
 channel_send_init_loaded (ChannelSend * self, Track * track)
 {

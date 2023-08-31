@@ -10,6 +10,8 @@
 #ifndef __UTILS_OBJECT_POOL_H__
 #define __UTILS_OBJECT_POOL_H__
 
+#include "utils/types.h"
+
 #include "zix/sem.h"
 
 /**
@@ -17,12 +19,6 @@
  * pool.
  */
 typedef void * (*ObjectCreatorFunc) (void);
-
-/**
- * Function to call to free the objects in the
- * pool.
- */
-typedef void (*ObjectFreeFunc) (void *);
 
 typedef struct ObjectPool
 {

@@ -1,12 +1,14 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/channel_send_action.h"
 #include "dsp/channel_send.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/channel_send.h"
 #include "gui/widgets/channel_send_selector.h"
+#include "gui/widgets/item_factory.h"
 #include "plugins/plugin_identifier.h"
 #include "project.h"
 #include "utils/error.h"
@@ -20,38 +22,10 @@ G_DEFINE_TYPE (
   channel_send_selector_widget,
   GTK_TYPE_POPOVER)
 
-/* FIXME lots of memory leaks */
-
-/**
- * Target type.
- */
-typedef enum ChannelSendTargetType
-{
-  /** Remove send. */
-  TARGET_TYPE_NONE,
-
-  /** Send to track inputs. */
-  TARGET_TYPE_TRACK,
-
-  /** Send to plugin sidechain inputs. */
-  TARGET_TYPE_PLUGIN_SIDECHAIN,
-} ChannelSendTargetType;
-
-typedef struct ChannelSendTarget
-{
-  ChannelSendTargetType type;
-
-  int track_pos;
-
-  PluginIdentifier pl_id;
-
-  char * port_group;
-} ChannelSendTarget;
-
 static Track *
 get_track_from_target (ChannelSendTarget * target)
 {
-  if (target->type == TARGET_TYPE_NONE)
+  if (target->type == CHANNEL_SEND_TARGET_TYPE_NONE)
     return NULL;
 
   return TRACKLIST->tracks[target->track_pos];
@@ -60,7 +34,7 @@ get_track_from_target (ChannelSendTarget * target)
 static StereoPorts *
 get_sidechain_from_target (ChannelSendTarget * target)
 {
-  if (target->type != TARGET_TYPE_PLUGIN_SIDECHAIN)
+  if (target->type != CHANNEL_SEND_TARGET_TYPE_PLUGIN_SIDECHAIN)
     {
       return NULL;
     }
@@ -74,33 +48,35 @@ get_sidechain_from_target (ChannelSendTarget * target)
   return stereo_ports_new_from_existing (l, r);
 }
 
-#if 0
+/**
+ * Called when row is double clicked.
+ */
 static void
-on_ok_clicked (
-  GtkButton * btn,
+on_row_activated (
+  GtkListView *               list_view,
+  guint                       position,
   ChannelSendSelectorWidget * self)
 {
-  gtk_widget_destroy (GTK_WIDGET (self));
+  gtk_widget_set_visible (GTK_WIDGET (self), false);
 }
-#endif
 
 static void
 on_selection_changed (
-  GtkTreeSelection *          ts,
+  GtkSelectionModel *         selection_model,
+  guint                       position,
+  guint                       n_items,
   ChannelSendSelectorWidget * self)
 {
-  GList * selected_rows =
-    gtk_tree_selection_get_selected_rows (ts, NULL);
-  if (!selected_rows)
+  GObject * gobj =
+    gtk_single_selection_get_selected_item (self->view_model);
+  if (!gobj)
     return;
 
-  GtkTreePath * tp =
-    (GtkTreePath *) g_list_first (selected_rows)->data;
-  GtkTreeIter iter;
-  gtk_tree_model_get_iter (self->model, &iter, tp);
-  GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (self->model, &iter, 2, &value);
-  ChannelSendTarget * target = g_value_get_pointer (&value);
+  /* get wrapped object */
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
+  ChannelSendTarget * target =
+    (ChannelSendTarget *) wrapped_obj->obj;
 
   ChannelSend * send = self->send_widget->send;
   bool          is_empty = channel_send_is_empty (send);
@@ -112,7 +88,7 @@ on_selection_changed (
   ;
   switch (target->type)
     {
-    case TARGET_TYPE_NONE:
+    case CHANNEL_SEND_TARGET_TYPE_NONE:
       if (channel_send_is_enabled (send))
         {
           GError * err = NULL;
@@ -125,7 +101,7 @@ on_selection_changed (
             }
         }
       break;
-    case TARGET_TYPE_TRACK:
+    case CHANNEL_SEND_TARGET_TYPE_TRACK:
       dest_track = get_track_from_target (target);
       switch (src_track->out_signal_type)
         {
@@ -197,7 +173,7 @@ on_selection_changed (
           break;
         }
       break;
-    case TARGET_TYPE_PLUGIN_SIDECHAIN:
+    case CHANNEL_SEND_TARGET_TYPE_PLUGIN_SIDECHAIN:
       {
         dest_sidechain = get_sidechain_from_target (target);
         if (
@@ -239,24 +215,25 @@ on_selection_changed (
 }
 
 static void
-setup_treeview (ChannelSendSelectorWidget * self)
+setup_view (ChannelSendSelectorWidget * self)
 {
   /* icon, name, pointer to data */
-  GtkListStore * list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+  GListStore * list_store =
+    g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
-  GtkTreeSelection * sel = gtk_tree_view_get_selection (
-    GTK_TREE_VIEW (self->treeview));
+  {
+    ChannelSendTarget * target =
+      object_new (ChannelSendTarget);
+    target->type = CHANNEL_SEND_TARGET_TYPE_NONE;
+    WrappedObjectWithChangeSignal * wobj =
+      wrapped_object_with_change_signal_new_with_free_func (
+        target, WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET,
+        (ObjectFreeFunc) channel_send_target_free);
+    g_list_store_append (list_store, wobj);
+  }
 
-  ChannelSendTarget * target = object_new (ChannelSendTarget);
-  target->type = TARGET_TYPE_NONE;
-  GtkTreeIter iter;
-  gtk_list_store_append (list_store, &iter);
-  gtk_list_store_set (
-    list_store, &iter, 0, "edit-none", 1, _ ("None"), 2,
-    target, -1);
-  int select_idx = 0;
-  int count = 1;
+  unsigned int select_idx = 0;
+  unsigned int count = 1;
 
   /* setup tracks */
   ChannelSend * send = self->send_widget->send;
@@ -276,15 +253,18 @@ setup_treeview (ChannelSendSelectorWidget * self)
       g_message ("adding %s", target_track->name);
 
       /* create target */
+      ChannelSendTarget * target =
+        object_new (ChannelSendTarget);
       target = object_new (ChannelSendTarget);
-      target->type = TARGET_TYPE_TRACK;
+      target->type = CHANNEL_SEND_TARGET_TYPE_TRACK;
       target->track_pos = i;
 
       /* add it to list */
-      gtk_list_store_append (list_store, &iter);
-      gtk_list_store_set (
-        list_store, &iter, 0, "media-album-track", 1,
-        target_track->name, 2, target, -1);
+      WrappedObjectWithChangeSignal * wobj =
+        wrapped_object_with_change_signal_new_with_free_func (
+          target, WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET,
+          (ObjectFreeFunc) channel_send_target_free);
+      g_list_store_append (list_store, wobj);
 
       if (
         channel_send_is_enabled (send)
@@ -360,21 +340,21 @@ setup_treeview (ChannelSendSelectorWidget * self)
                 }
 
               /* create target */
-              target = object_new (ChannelSendTarget);
-              target->type = TARGET_TYPE_PLUGIN_SIDECHAIN;
+              ChannelSendTarget * target =
+                object_new (ChannelSendTarget);
+              target->type =
+                CHANNEL_SEND_TARGET_TYPE_PLUGIN_SIDECHAIN;
               target->track_pos = target_track->pos;
               target->pl_id = pl->id;
               target->port_group = g_strdup (l->id.port_group);
 
-              char designation[1200];
-              plugin_get_full_port_group_designation (
-                pl, port->id.port_group, designation);
-
               /* add it to list */
-              gtk_list_store_append (list_store, &iter);
-              gtk_list_store_set (
-                list_store, &iter, 0, "media-album-track", 1,
-                designation, 2, target, -1);
+              WrappedObjectWithChangeSignal * wobj =
+                wrapped_object_with_change_signal_new_with_free_func (
+                  target,
+                  WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET,
+                  (ObjectFreeFunc) channel_send_target_free);
+              g_list_store_append (list_store, wobj);
 
               if (channel_send_is_target_sidechain (send))
                 {
@@ -391,25 +371,28 @@ setup_treeview (ChannelSendSelectorWidget * self)
         }
     }
 
-  self->model = GTK_TREE_MODEL (list_store);
-  gtk_tree_view_set_model (self->treeview, self->model);
+  self->view_model =
+    gtk_single_selection_new (G_LIST_MODEL (list_store));
+  gtk_list_view_set_model (
+    self->view, GTK_SELECTION_MODEL (self->view_model));
+  self->item_factory = item_factory_new (
+    ITEM_FACTORY_ICON_AND_TEXT, false, NULL);
+  gtk_list_view_set_factory (
+    self->view, self->item_factory->list_item_factory);
 
-  GtkTreePath * path =
-    gtk_tree_path_new_from_indices (select_idx, -1);
-  gtk_tree_selection_select_path (sel, path);
-  gtk_tree_path_free (path);
+  gtk_selection_model_select_item (
+    GTK_SELECTION_MODEL (self->view_model), select_idx, true);
 
   g_signal_connect (
-    G_OBJECT (gtk_tree_view_get_selection (
-      GTK_TREE_VIEW (self->treeview))),
-    "changed", G_CALLBACK (on_selection_changed), self);
+    G_OBJECT (self->view_model), "selection-changed",
+    G_CALLBACK (on_selection_changed), self);
 }
 
 void
 channel_send_selector_widget_setup (
   ChannelSendSelectorWidget * self)
 {
-  setup_treeview (self);
+  setup_view (self);
 }
 
 ChannelSendSelectorWidget *
@@ -449,56 +432,11 @@ channel_send_selector_widget_init (
     GTK_SCROLLED_WINDOW (scroll), 240);
   gtk_box_append (GTK_BOX (self->vbox), scroll);
 
-  /* add treeview */
-  self->treeview = GTK_TREE_VIEW (gtk_tree_view_new ());
+  /* add view */
+  self->view = GTK_LIST_VIEW (gtk_list_view_new (NULL, NULL));
   gtk_scrolled_window_set_child (
-    GTK_SCROLLED_WINDOW (scroll), GTK_WIDGET (self->treeview));
-
-#if 0
-  /* add button group */
-  self->btn_box =
-    GTK_BUTTON_BOX (
-      gtk_button_box_new (
-        GTK_ORIENTATION_HORIZONTAL));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->btn_box), TRUE);
-  gtk_container_add (
-    GTK_CONTAINER (self->vbox),
-    GTK_WIDGET (self->btn_box));
-  self->ok_btn =
-    GTK_BUTTON (gtk_button_new_with_label (_("OK")));
-  gtk_widget_set_visible (
-    GTK_WIDGET (self->ok_btn), TRUE);
-  gtk_container_add (
-    GTK_CONTAINER (self->btn_box),
-    GTK_WIDGET (self->ok_btn));
-#endif
-
-  /* init tree view */
-  GtkCellRenderer *   renderer;
-  GtkTreeViewColumn * column;
-
-  /* column for icon */
-  renderer = gtk_cell_renderer_pixbuf_new ();
-  column = gtk_tree_view_column_new_with_attributes (
-    "icon", renderer, "icon-name", 0, NULL);
-  gtk_tree_view_append_column (self->treeview, column);
-
-  /* column for name */
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes (
-    "name", renderer, "text", 1, NULL);
-  gtk_tree_view_append_column (self->treeview, column);
-
-  /* set search column */
-  gtk_tree_view_set_search_column (self->treeview, 1);
-
-  /* set headers invisible */
-  gtk_tree_view_set_headers_visible (self->treeview, false);
-
-#if 0
+    GTK_SCROLLED_WINDOW (scroll), GTK_WIDGET (self->view));
   g_signal_connect (
-    G_OBJECT (self->ok_btn), "clicked",
-    G_CALLBACK (on_ok_clicked), self);
-#endif
+    G_OBJECT (self->view), "activate",
+    G_CALLBACK (on_row_activated), self);
 }

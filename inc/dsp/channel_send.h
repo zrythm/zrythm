@@ -43,6 +43,48 @@ typedef struct PortConnectionsManager PortConnectionsManager;
   (self->track && track_is_in_active_project (self->track))
 
 /**
+ * Target type.
+ */
+typedef enum ChannelSendTargetType
+{
+  /** Remove send. */
+  CHANNEL_SEND_TARGET_TYPE_NONE,
+
+  /** Send to track inputs. */
+  CHANNEL_SEND_TARGET_TYPE_TRACK,
+
+  /** Send to plugin sidechain inputs. */
+  CHANNEL_SEND_TARGET_TYPE_PLUGIN_SIDECHAIN,
+} ChannelSendTargetType;
+
+/**
+ * Send target (used in list views).
+ */
+typedef struct ChannelSendTarget
+{
+  ChannelSendTargetType type;
+
+  int track_pos;
+
+  PluginIdentifier pl_id;
+
+  char * port_group;
+} ChannelSendTarget;
+
+/**
+ * Returns a string describing @p self
+ * (track/plugin name/etc.).
+ */
+char *
+channel_send_target_describe (const ChannelSendTarget * self);
+
+char *
+channel_send_target_get_icon (const ChannelSendTarget * self);
+
+void
+channel_send_target_free (ChannelSendTarget * self);
+
+/**
  * Channel send.
  *
  * The actual connection is tracked separately by

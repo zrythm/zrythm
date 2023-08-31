@@ -852,7 +852,7 @@ plugin_get_channel (Plugin * self)
 }
 
 Plugin *
-plugin_find (PluginIdentifier * id)
+plugin_find (const PluginIdentifier * id)
 {
   Plugin plugin;
   memset (&plugin, 0, sizeof (Plugin));

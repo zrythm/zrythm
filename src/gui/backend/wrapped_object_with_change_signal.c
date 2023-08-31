@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "dsp/channel_send.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "plugins/plugin_descriptor.h"
 #include "settings/chord_preset_pack.h"
@@ -69,12 +70,36 @@ wrapped_object_with_change_signal_get_display_name (
         return g_strdup (descr->name);
       }
       break;
+    case WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET:
+      {
+        ChannelSendTarget * target =
+          (ChannelSendTarget *) wrapped_obj->obj;
+        return channel_send_target_describe (target);
+      }
+      break;
     default:
       g_return_val_if_reached (NULL);
       break;
     }
 
   g_return_val_if_reached (NULL);
+}
+
+/**
+ * If this function is not used, the internal object will
+ * not be free'd.
+ */
+WrappedObjectWithChangeSignal *
+wrapped_object_with_change_signal_new_with_free_func (
+  void *            obj,
+  WrappedObjectType type,
+  ObjectFreeFunc    free_func)
+{
+  WrappedObjectWithChangeSignal * self =
+    wrapped_object_with_change_signal_new (obj, type);
+  self->free_func = free_func;
+
+  return self;
 }
 
 WrappedObjectWithChangeSignal *
@@ -95,6 +120,19 @@ wrapped_object_with_change_signal_new (
 }
 
 static void
+finalize (WrappedObjectWithChangeSignal * self)
+{
+  if (self->free_func && self->obj)
+    {
+      self->free_func (self->obj);
+    }
+
+  G_OBJECT_CLASS (
+    wrapped_object_with_change_signal_parent_class)
+    ->finalize (G_OBJECT (self));
+}
+
+static void
 wrapped_object_with_change_signal_class_init (
   WrappedObjectWithChangeSignalClass * klass)
 {
@@ -107,6 +145,8 @@ wrapped_object_with_change_signal_class_init (
     NULL /* accumulator data */, NULL /* C marshaller */,
     G_TYPE_NONE /* return_type */, 0 /* n_params */,
     NULL /* param_types */);
+
+  oklass->finalize = (GObjectFinalizeFunc) finalize;
 }
 
 static void

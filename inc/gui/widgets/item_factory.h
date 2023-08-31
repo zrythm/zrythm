@@ -26,8 +26,7 @@ typedef enum ItemFactoryType
   /** Integer display. */
   ITEM_FACTORY_INTEGER,
 
-  /** Composite type (eg, used in plugin
-   * browser). */
+  /** Composite type (eg, used in plugin browser). */
   ITEM_FACTORY_ICON_AND_TEXT,
 
   /** Position. */
@@ -60,10 +59,9 @@ typedef struct ItemFactory
 /**
  * Creates a new item factory.
  *
- * @param editable Whether the item should be
- *   editable.
- * @param column_name Column name, if column view,
- *   otherwise NULL.
+ * @param editable Whether the item should be editable.
+ * @param column_name Column name, if column view, otherwise
+ *   NULL.
  */
 ItemFactory *
 item_factory_new (
