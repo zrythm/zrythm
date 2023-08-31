@@ -52,7 +52,6 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
-#include "gui/accel.h"
 #include "gui/widgets/bot_dock_edge.h"
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/left_dock_edge.h"
@@ -798,8 +797,8 @@ z_gtk_get_tooltip_for_action (
   const char * detailed_action,
   const char * tooltip)
 {
-  char * tmp =
-    accel_get_primary_accel_for_action (detailed_action);
+  char * tmp = zrythm_app_get_primary_accel_for_action (
+    zrythm_app, detailed_action);
   if (tmp)
     {
       char * accel = g_markup_escape_text (tmp, -1);

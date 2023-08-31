@@ -14,7 +14,6 @@
 #include "dsp/port_connections_manager.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
-#include "gui/accel.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"

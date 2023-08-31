@@ -8,7 +8,6 @@
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
 #include "dsp/transport.h"
-#include "gui/accel.h"
 #include "gui/backend/arranger_selections.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"

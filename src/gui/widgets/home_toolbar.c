@@ -4,7 +4,6 @@
 #include "actions/undo_manager.h"
 #include "actions/undo_stack.h"
 #include "actions/undoable_action.h"
-#include "gui/accel.h"
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/home_toolbar.h"
 #include "gui/widgets/main_window.h"

@@ -3,7 +3,6 @@
 
 #include "actions/undo_manager.h"
 #include "actions/undoable_action.h"
-#include "gui/accel.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/playhead_scroll_buttons.h"
 #include "gui/widgets/quantize_box.h"

@@ -52,7 +52,6 @@
 #  include "guile/guile.h"
 #  include "guile/project_generator.h"
 #endif
-#include "gui/accel.h"
 #include "gui/backend/file_manager.h"
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/dialogs/ask_to_check_for_updates_dialog.h"
@@ -698,6 +697,40 @@ zrythm_app_open (
   g_message ("done");
 }
 
+void
+zrythm_app_install_action_accel (
+  ZrythmApp *  self,
+  const char * primary,
+  const char * secondary,
+  const char * action_name)
+{
+  g_warn_if_fail (zrythm_app);
+  const char * accels[] = { primary, secondary, NULL };
+  gtk_application_set_accels_for_action (
+    GTK_APPLICATION (zrythm_app), action_name, accels);
+}
+
+char *
+zrythm_app_get_primary_accel_for_action (
+  ZrythmApp *  self,
+  const char * action_name)
+{
+  g_warn_if_fail (zrythm_app);
+  guint           accel_key;
+  GdkModifierType accel_mods;
+  gchar ** accels = gtk_application_get_accels_for_action (
+    GTK_APPLICATION (zrythm_app), action_name);
+  char * ret = NULL;
+  if (accels[0] != NULL)
+    {
+      gtk_accelerator_parse (
+        accels[0], &accel_key, &accel_mods);
+      ret = gtk_accelerator_get_label (accel_key, accel_mods);
+    }
+  g_strfreev (accels);
+  return ret;
+}
+
 static void
 print_gdk_pixbuf_format_info (gpointer data, gpointer user_data)
 {
@@ -1319,8 +1352,8 @@ zrythm_app_startup (GApplication * app)
     S_USER_SHORTCUTS, true, action, keybind); \
   secondary = user_shortcuts_get ( \
     S_USER_SHORTCUTS, false, action, secondary_keybind); \
-  accel_install_action_accelerator ( \
-    primary, secondary, action)
+  zrythm_app_install_action_accel ( \
+    self, primary, secondary, action)
 
 #define INSTALL_ACCEL(keybind, action) \
   INSTALL_ACCEL_WITH_SECONDARY (keybind, NULL, action)

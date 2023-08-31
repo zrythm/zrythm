@@ -16,7 +16,6 @@
 #include "dsp/router.h"
 #include "dsp/track.h"
 #include "dsp/tracklist.h"
-#include "gui/accel.h"
 #include "gui/backend/event_manager.h"
 #include "gui/backend/file_manager.h"
 #include "gui/backend/piano_roll.h"

@@ -6,7 +6,6 @@
 #include "actions/undoable_action.h"
 #include "dsp/audio_function.h"
 #include "dsp/quantize_options.h"
-#include "gui/accel.h"
 #include "gui/backend/event_manager.h"
 #include "gui/widgets/button_with_menu.h"
 #include "gui/widgets/editor_toolbar.h"

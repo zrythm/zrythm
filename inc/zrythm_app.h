@@ -223,6 +223,26 @@ bool
 zrythm_app_check_and_show_trial_limit_error (ZrythmApp * self);
 
 /**
+ * Install accelerator for an action.
+ *
+ * @memberof ZrythmApp
+ */
+void
+zrythm_app_install_action_accel (
+  ZrythmApp *  self,
+  const char * primary,
+  const char * secondary,
+  const char * action_name);
+
+/**
+ * @memberof ZrythmApp
+ */
+char *
+zrythm_app_get_primary_accel_for_action (
+  ZrythmApp *  self,
+  const char * action_name);
+
+/**
  * @}
  */
 

@@ -5,7 +5,6 @@
 
 #include "dsp/master_track.h"
 #include "dsp/tracklist.h"
-#include "gui/accel.h"
 #include "gui/widgets/gtk_flipper.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/help_toolbar.h"
