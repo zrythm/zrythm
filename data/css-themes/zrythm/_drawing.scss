@@ -1,0 +1,38 @@
+/*
+ * SPDX-FileCopyrightText: © Adrien Plazas <adrien.plazas@puri.sm>
+ * SPDX-FileCopyrightText: © Bob Ham <bob.ham@puri.sm>
+ * SPDX-FileCopyrightText: © Dorota Czaplejewicz <dorota.czaplejewicz@puri.sm>
+ * SPDX-FileCopyrightText: © Guido Günther <agx@sigxcpu.org>
+ * SPDX-FileCopyrightText: © Heather Ellsworth <heather.ellsworth@puri.sm>
+ * SPDX-FileCopyrightText: © Julian Richen <julian@richen.io>
+ * SPDX-FileCopyrightText: © Julian Sparber <julian@sparber.net>
+ * SPDX-FileCopyrightText: © Sebastien Lafargue <slafargue@gnome.org>
+ * SPDX-FileCopyrightText: © Zander Brown <zbrown@gnome.org>
+ *
+ * SPDX-License-Identifier: LGPL-2.1-or-later
+ */
+
+// Drawing mixins (from libadwaita)
+
+// generic drawing of more complex things
+
+//
+// Helper mixin for drawing visible focus rings
+//
+// If $target is specified, the focus ring is applied to the specified child element.
+// If $outer is true, the focus ring extends outward. Otherwise, it extends inward.
+// If $within is true, use focus-within instead of focus:focus-visible
+//
+@mixin focus-ring($target: null, $width: 2px, $offset: -$width, $outer: false, $focus-state: ':focus:focus-visible', $fc: $focus_border_color, $transition: null) {
+  & #{$target} {
+    outline: 0 solid transparent;
+    outline-offset: if($outer, $offset + 4px, $offset + $width + 4px);
+    transition: $focus_transition, $transition;
+  }
+
+  &#{$focus-state} #{$target} {
+    outline-color: $fc;
+    outline-width: $width;
+    outline-offset: $offset;
+  }
+}

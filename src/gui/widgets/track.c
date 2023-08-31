@@ -2376,13 +2376,15 @@ track_widget_init (TrackWidget * self)
 static void
 track_widget_class_init (TrackWidgetClass * _klass)
 {
-  GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (klass, "track.ui");
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (wklass, "track.ui");
   gtk_widget_class_set_accessible_role (
-    klass, GTK_ACCESSIBLE_ROLE_GROUP);
+    wklass, GTK_ACCESSIBLE_ROLE_GROUP);
+  gtk_widget_class_set_css_name (wklass, "track");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child (klass, TrackWidget, x)
+  gtk_widget_class_bind_template_child ( \
+    wklass, TrackWidget, x)
 
   BIND_CHILD (canvas);
   BIND_CHILD (main_box);
@@ -2395,7 +2397,7 @@ track_widget_class_init (TrackWidgetClass * _klass)
 #undef BIND_CHILD
 
   gtk_widget_class_set_layout_manager_type (
-    klass, GTK_TYPE_BOX_LAYOUT);
+    wklass, GTK_TYPE_BOX_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;

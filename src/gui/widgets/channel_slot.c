@@ -105,69 +105,12 @@ channel_slot_snapshot (
 
   update_pango_layouts (self, false);
 
-  const int padding = 2;
-  int       width = gtk_widget_get_width (widget);
-  int       btn_width =
+  int width = gtk_widget_get_width (widget);
+  int btn_width =
     gtk_widget_get_width (GTK_WIDGET (self->activate_btn));
   int height = gtk_widget_get_height (widget);
 
   Plugin * plugin = channel_slot_widget_get_plugin (self);
-  bool    is_selected = plugin && plugin_is_selected (plugin);
-  GdkRGBA bg;
-  if (plugin)
-    {
-      if (!plugin_is_enabled (plugin, false))
-        {
-          bg.red = 0.6f;
-          bg.green = 0.6f;
-          bg.blue = 0.6f;
-          bg.alpha = 1.f;
-          if (plugin->visible)
-            {
-              bg.red += 0.1f;
-              bg.green += 0.1f;
-              bg.blue += 0.1f;
-            }
-        }
-      else if (plugin->visible)
-        bg = UI_COLORS->bright_green;
-      else
-        bg = UI_COLORS->darkish_green;
-    }
-  else
-    {
-      bg = Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, 0.9f);
-    }
-
-  GskRoundedRect  rounded_rect;
-  graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
-    (float) padding, (float) padding,
-    (float) width - (float) padding * 2.f,
-    (float) height - (float) padding * 2.f);
-  gsk_rounded_rect_init_from_rect (
-    &rounded_rect, &graphene_rect, 6.f);
-  gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
-
-  /* fill background */
-  gtk_snapshot_append_color (
-    snapshot, &bg,
-    &GRAPHENE_RECT_INIT (
-      0.f, 0.f, (float) width, (float) height));
-
-  /* draw border if selected */
-  if (is_selected)
-    {
-      const float border_width = 2.f;
-      GdkRGBA     border_color = UI_COLORS->z_yellow;
-      float       border_widths[] = {
-        border_width, border_width, border_width, border_width
-      };
-      GdkRGBA border_colors[] = {
-        border_color, border_color, border_color, border_color
-      };
-      gtk_snapshot_append_border (
-        snapshot, &rounded_rect, border_widths, border_colors);
-    }
 
 #define MAX_LEN 400
   char txt[MAX_LEN];
@@ -254,8 +197,6 @@ channel_slot_snapshot (
 
   GTK_WIDGET_CLASS (GTK_WIDGET_GET_CLASS (self->activate_btn))
     ->snapshot (GTK_WIDGET (self), snapshot);
-
-  gtk_snapshot_pop (snapshot);
 }
 
 static gboolean
@@ -683,15 +624,36 @@ tick_cb (
         GTK_WIDGET (self->activate_btn), false);
     }
 
-  bool empty = channel_slot_widget_get_plugin (self) == NULL;
-  if (empty != self->was_empty)
+  Plugin * plugin = channel_slot_widget_get_plugin (self);
+  bool     empty = plugin == NULL;
+  self->was_empty = empty;
+  gtk_widget_remove_css_class (GTK_WIDGET (self), "empty");
+  gtk_widget_remove_css_class (GTK_WIDGET (self), "disabled");
+  gtk_widget_unset_state_flags (
+    GTK_WIDGET (self),
+    GTK_STATE_FLAG_SELECTED | GTK_STATE_FLAG_CHECKED);
+  if (plugin)
     {
-      self->was_empty = empty;
-      if (empty)
-        gtk_widget_add_css_class (GTK_WIDGET (self), "empty");
-      else
-        gtk_widget_remove_css_class (
-          GTK_WIDGET (self), "empty");
+      bool is_selected = plugin_is_selected (plugin);
+      if (is_selected)
+        {
+          gtk_widget_set_state_flags (
+            GTK_WIDGET (self), GTK_STATE_FLAG_SELECTED, false);
+        }
+      if (!plugin_is_enabled (plugin, false))
+        {
+          gtk_widget_add_css_class (
+            GTK_WIDGET (self), "disabled");
+        }
+      if (plugin->visible)
+        {
+          gtk_widget_set_state_flags (
+            GTK_WIDGET (self), GTK_STATE_FLAG_CHECKED, false);
+        }
+    }
+  else
+    {
+      gtk_widget_add_css_class (GTK_WIDGET (self), "empty");
     }
 
   return G_SOURCE_CONTINUE;
@@ -983,6 +945,10 @@ channel_slot_widget_init (ChannelSlotWidget * self)
   gtk_widget_set_hexpand (GTK_WIDGET (self), true);
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
   gtk_widget_set_focus_on_click (GTK_WIDGET (self), true);
+
+  /* this is needed for border radius to take effect */
+  gtk_widget_set_overflow (
+    GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 
   self->pl_name = NULL;
   gtk_widget_set_tooltip_text (

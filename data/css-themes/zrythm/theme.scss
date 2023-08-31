@@ -4,12 +4,20 @@
  */
 
 @import '_palette';
+@import '_drawing';
 
 /* override adwaita colors */
 $accent_color: $dark_orange;
 $accent_bg_color: $bright_orange;
 @define-color accent_color #{$accent_color};
 @define-color accent_bg_color #{$accent_bg_color};
+
+/* taken from libadwaita */
+$ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+$focus_transition: outline-color 200ms $ease-out-quad,
+                   outline-width 200ms $ease-out-quad,
+                   outline-offset 200ms $ease-out-quad;
+$focus_border_color:  gtkalpha($accent_color, 0.5);
 
 panelresizer > widget > separator,
 paned > separator
@@ -208,15 +216,9 @@ filechooser button:active
 }
 
 track-grid:hover,
-region:hover,
 chord:hover,
-scale-object:hover,
-marker:hover,
 channel-slot:hover:not(:selected),
 channel-send:hover:not(:selected),
-ruler-playhead:hover,
-arranger-playhed:hover,
-automation-point:hover
 {
   background-color: $hover_color;
 }
@@ -500,6 +502,38 @@ channel-slot {
     font-style: italic;
     color: $dim_fg;
   }
+
+  @include focus-ring();
+}
+
+channel-slot {
+  border-radius: 6px;
+  margin: 1px;
+
+  &.empty {
+    background-color: gtkalpha($bg_darker_variant2, 0.9)
+  }
+
+  &:not(.empty) {
+    &.disabled {
+      background-color: $light_variant1;
+      &:checked {
+        background-color: $light_variant2;
+      }
+    }
+    &:not(.disabled) {
+      background-color: $darkish_green;
+      &:checked {
+        background-color: $bright_green;
+      }
+    }
+
+    &:selected {
+      border-color: $z_yellow;
+      border-style: solid;
+      border-width: 2px;
+    }
+  }
 }
 
 volume {
@@ -509,6 +543,13 @@ volume {
 fader-buttons button {
   padding-left: 5px;
   padding-right: 5px;
+}
+
+fader,
+balance-control,
+track,
+arranger {
+  @include focus-ring();
 }
 
 .signal-preview {
