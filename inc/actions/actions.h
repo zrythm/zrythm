@@ -135,6 +135,10 @@ activate_zoom_out (
   GVariant *      variant,
   gpointer        user_data);
 
+DECLARE_SIMPLE (activate_cycle_focus);
+DECLARE_SIMPLE (activate_cycle_focus_backwards);
+DECLARE_SIMPLE (activate_focus_first_widget);
+
 COLD DECLARE_SIMPLE (activate_new);
 
 COLD DECLARE_SIMPLE (activate_minimize);

@@ -170,6 +170,70 @@ activate_manual (
   g_free (path);
 }
 
+static void
+cycle_focus (const bool backwards)
+{
+  GtkWidget * widgets[] = {
+    z_gtk_get_first_focusable_child (
+      GTK_WIDGET (MAIN_WINDOW->view_switcher)),
+    z_gtk_get_first_focusable_child (
+      GTK_WIDGET (MW_LEFT_DOCK_EDGE)),
+    z_gtk_get_first_focusable_child (
+      GTK_WIDGET (MW_CENTER_DOCK->main_notebook)),
+    z_gtk_get_first_focusable_child (
+      GTK_WIDGET (MW_RIGHT_DOCK_EDGE)),
+    z_gtk_get_first_focusable_child (
+      GTK_WIDGET (MW_BOT_DOCK_EDGE)),
+    z_gtk_get_first_focusable_child (GTK_WIDGET (MW_BOT_BAR)),
+  };
+
+  const int num_elements = 6;
+  if (backwards)
+    {
+      for (int i = num_elements - 2; i >= 0; i--)
+        {
+          if (
+            gtk_widget_has_focus (widgets[i + 1])
+            || z_gtk_descendant_has_focus (widgets[i + 1]))
+            {
+              gtk_widget_grab_focus (widgets[i]);
+              return;
+            }
+        }
+      gtk_widget_grab_focus (widgets[num_elements - 1]);
+    }
+  else
+    {
+      for (int i = 1; i < num_elements; i++)
+        {
+          if (
+            gtk_widget_has_focus (widgets[i - 1])
+            || z_gtk_descendant_has_focus (widgets[i - 1]))
+            {
+              gtk_widget_grab_focus (widgets[i]);
+              return;
+            }
+        }
+      gtk_widget_grab_focus (widgets[0]);
+    }
+}
+
+DEFINE_SIMPLE (activate_cycle_focus)
+{
+  cycle_focus (false);
+}
+
+DEFINE_SIMPLE (activate_cycle_focus_backwards)
+{
+  cycle_focus (true);
+}
+
+DEFINE_SIMPLE (activate_focus_first_widget)
+{
+  gtk_widget_grab_focus (z_gtk_get_first_focusable_child (
+    GTK_WIDGET (MAIN_WINDOW->view_switcher)));
+}
+
 DEFINE_SIMPLE (activate_chat)
 {
   gtk_show_uri (

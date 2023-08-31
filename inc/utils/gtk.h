@@ -781,6 +781,12 @@ z_gtk_string_list_new_from_cyaml_strvals (
   size_t                 num_vals,
   bool                   localized);
 
+GtkWidget *
+z_gtk_get_first_focusable_child (GtkWidget * parent);
+
+bool
+z_gtk_descendant_has_focus (GtkWidget * parent);
+
 /**
  * @}
  */

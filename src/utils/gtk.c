@@ -2265,3 +2265,49 @@ z_gtk_string_list_new_from_cyaml_strvals (
     }
   return strlist;
 }
+
+static GtkWidget *
+get_first_focused_or_focusable_child (
+  GtkWidget * parent,
+  bool        focused)
+{
+  if (
+    focused
+      ? gtk_widget_is_focus (parent)
+      : gtk_widget_get_focusable (parent))
+    return parent;
+
+  for (GtkWidget * child = gtk_widget_get_first_child (parent);
+       child != NULL;
+       child = gtk_widget_get_next_sibling (child))
+    {
+      if (
+        focused
+          ? gtk_widget_is_focus (child)
+          : gtk_widget_get_focusable (child))
+        return child;
+
+      GtkWidget * descendant =
+        gtk_widget_get_first_child (child);
+      GtkWidget * descendants_focusable_child =
+        get_first_focused_or_focusable_child (
+          descendant, focused);
+      if (descendants_focusable_child)
+        return descendants_focusable_child;
+    }
+
+  return NULL;
+}
+
+GtkWidget *
+z_gtk_get_first_focusable_child (GtkWidget * parent)
+{
+  return get_first_focused_or_focusable_child (parent, false);
+}
+
+bool
+z_gtk_descendant_has_focus (GtkWidget * parent)
+{
+  return get_first_focused_or_focusable_child (parent, true)
+         != NULL;
+}

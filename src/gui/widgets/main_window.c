@@ -437,7 +437,12 @@ main_window_widget_init (MainWindowWidget * self)
 
   GActionEntry actions[] = {
 
-  /* file menu */
+  /* global shortcuts */
+    { "cycle-focus", activate_cycle_focus },
+    { "cycle-focus-backwards", activate_cycle_focus_backwards },
+    { "focus-first-widget", activate_focus_first_widget },
+
+ /* file menu */
     { "new", activate_new },
     { "open", activate_open },
     { "save", activate_save },
