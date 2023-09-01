@@ -119,7 +119,6 @@ widget_srcs = files([
   'scale_object.c',
   'scale_selector_window.c',
   'selection_info.c',
-  'slider_bar.c',
   'snap_grid.c',
   'spectrum_analyzer.c',
   'splash.c',

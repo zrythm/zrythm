@@ -10,7 +10,6 @@
 #include "gui/widgets/knob.h"
 #include "gui/widgets/knob_with_name.h"
 #include "gui/widgets/monitor_section.h"
-#include "gui/widgets/slider_bar.h"
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/error.h"

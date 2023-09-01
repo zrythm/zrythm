@@ -24,7 +24,6 @@
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/ruler.h"
 #include "gui/widgets/ruler_marker.h"
-#include "gui/widgets/ruler_range.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bot_box.h"
 #include "gui/widgets/timeline_minimap.h"
