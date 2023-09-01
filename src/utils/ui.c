@@ -1312,55 +1312,38 @@ ui_caches_new (void)
 {
   UiCaches * self = object_new (UiCaches);
 
-  GtkWidget * widget = gtk_drawing_area_new ();
-  widget = g_object_ref_sink (widget);
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
   UiColors * colors = &self->colors;
-  bool       ret;
 
-#define GET_COLOR_FROM_THEME(cname) \
-  ret = gtk_style_context_lookup_color ( \
-    context, #cname, &colors->cname); \
-  if (!ret) \
-    { \
-      g_warning ("failed to find color " #cname " in theme"); \
-      gdk_rgba_parse (&colors->cname, "grey"); \
-    }
+#define SET_COLOR(cname, caps) \
+  gdk_rgba_parse (&colors->cname, UI_COLOR_##caps)
 
-  GET_COLOR_FROM_THEME (bright_green);
-  GET_COLOR_FROM_THEME (darkish_green);
-  GET_COLOR_FROM_THEME (dark_orange);
-  GET_COLOR_FROM_THEME (bright_orange);
-  GET_COLOR_FROM_THEME (matcha);
-  GET_COLOR_FROM_THEME (prefader_send);
-  GET_COLOR_FROM_THEME (postfader_send);
-  GET_COLOR_FROM_THEME (solo_active);
-  GET_COLOR_FROM_THEME (solo_checked);
-  GET_COLOR_FROM_THEME (fader_fill_start);
-  GET_COLOR_FROM_THEME (fader_fill_end);
-  GET_COLOR_FROM_THEME (highlight_scale_bg);
-  GET_COLOR_FROM_THEME (highlight_chord_bg);
-  GET_COLOR_FROM_THEME (highlight_bass_bg);
-  GET_COLOR_FROM_THEME (highlight_both_bg);
-  GET_COLOR_FROM_THEME (highlight_scale_fg);
-  GET_COLOR_FROM_THEME (highlight_chord_fg);
-  GET_COLOR_FROM_THEME (highlight_bass_fg);
-  GET_COLOR_FROM_THEME (highlight_both_fg);
-  GET_COLOR_FROM_THEME (z_yellow);
-  GET_COLOR_FROM_THEME (z_purple);
+  SET_COLOR (bright_green, BRIGHT_GREEN);
+  SET_COLOR (darkish_green, DARKISH_GREEN);
+  SET_COLOR (dark_orange, DARK_ORANGE);
+  SET_COLOR (bright_orange, BRIGHT_ORANGE);
+  SET_COLOR (matcha, MATCHA);
+  SET_COLOR (prefader_send, PREFADER_SEND);
+  SET_COLOR (postfader_send, POSTFADER_SEND);
+  SET_COLOR (solo_active, SOLO_ACTIVE);
+  SET_COLOR (solo_checked, SOLO_CHECKED);
+  SET_COLOR (fader_fill_start, FADER_FILL_START);
+  SET_COLOR (fader_fill_end, FADER_FILL_END);
+  SET_COLOR (highlight_scale_bg, HIGHLIGHT_SCALE_BG);
+  SET_COLOR (highlight_chord_bg, HIGHLIGHT_CHORD_BG);
+  SET_COLOR (highlight_bass_bg, HIGHLIGHT_BASS_BG);
+  SET_COLOR (highlight_both_bg, HIGHLIGHT_BOTH_BG);
+  SET_COLOR (highlight_scale_fg, HIGHLIGHT_SCALE_FG);
+  SET_COLOR (highlight_chord_fg, HIGHLIGHT_CHORD_FG);
+  SET_COLOR (highlight_bass_fg, HIGHLIGHT_BASS_FG);
+  SET_COLOR (highlight_both_fg, HIGHLIGHT_BOTH_FG);
+  SET_COLOR (z_yellow, Z_YELLOW);
+  SET_COLOR (z_purple, Z_PURPLE);
+  SET_COLOR (dark_text, DARK_TEXT);
+  SET_COLOR (bright_text, BRIGHT_TEXT);
+  SET_COLOR (record_active, RECORD_ACTIVE);
+  SET_COLOR (record_checked, RECORD_CHECKED);
 
-#undef GET_COLOR_FROM_THEME
-
-  g_object_unref (widget);
-
-  gdk_rgba_parse (&colors->dark_text, UI_COLOR_DARK_TEXT);
-  gdk_rgba_parse (&colors->bright_text, UI_COLOR_BRIGHT_TEXT);
-  gdk_rgba_parse (
-    &colors->record_active, UI_COLOR_RECORD_ACTIVE);
-  gdk_rgba_parse (
-    &colors->record_checked, UI_COLOR_RECORD_CHECKED);
+#undef SET_COLOR
 
   return self;
 }
