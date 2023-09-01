@@ -102,7 +102,7 @@
                     </child>
                     <child>
                       <object class="GtkToggleButton" id="toggle_effects">
-                        <property name="icon-name">bars</property>
+                        <property name="icon-name">audio-insert</property>
                         <property name="tooltip-text" translatable="true">Effects</property>
                         <property name="hexpand">True</property>
                         <signal name="toggled" handler="toggles_changed" object="PluginBrowserWidget" swapped="no"/>
