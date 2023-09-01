@@ -545,10 +545,8 @@ fader-buttons button {
   padding-right: 5px;
 }
 
-fader,
-balance-control,
-track,
-arranger {
+/* add focus right on any focusable widget */
+* {
   @include focus-ring();
 }
 
