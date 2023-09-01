@@ -2,7 +2,6 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <template class="HeaderWidget" parent="GtkWidget">
-    <property name="focusable">1</property>
     <child>
       <object class="AdwViewStack" id="stack">
         <property name="hexpand">1</property>
