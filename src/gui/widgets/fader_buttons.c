@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/track.h"
@@ -303,12 +303,10 @@ fader_buttons_widget_init (FaderButtonsWidget * self)
     GTK_BOX (self), GTK_WIDGET (self->popover_menu));
 
   /* add css classes */
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (GTK_WIDGET (self->record));
-  gtk_style_context_add_class (context, "record-button");
-  context =
-    gtk_widget_get_style_context (GTK_WIDGET (self->solo));
-  gtk_style_context_add_class (context, "solo-button");
+  gtk_widget_add_css_class (
+    GTK_WIDGET (self->record), "record-button");
+  gtk_widget_add_css_class (
+    GTK_WIDGET (self->solo), "solo-button");
 
   self->mono_compat_toggled_handler_id = g_signal_connect (
     G_OBJECT (self->mono_compat), "toggled",

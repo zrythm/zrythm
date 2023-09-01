@@ -82,17 +82,11 @@ live_waveform_draw_cb (
 {
   LiveWaveformWidget * self =
     Z_LIVE_WAVEFORM_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (drawing_area);
 
   if (!PROJECT || !AUDIO_ENGINE)
     {
       return;
     }
-
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
-  gtk_render_background (context, cr, 0, 0, width, height);
 
   uint32_t block_size_in_bytes =
     sizeof (float) * (uint32_t) AUDIO_ENGINE->block_length;

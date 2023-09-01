@@ -99,25 +99,24 @@ on_project_selection_type_changed (void)
   const char * class = "selected-element";
   const char * selectable_class = "selectable-element";
 
-  z_gtk_widget_remove_style_class (
+  gtk_widget_remove_css_class (
     GTK_WIDGET (MW_TRACKLIST), class);
-  z_gtk_widget_remove_style_class (
+  gtk_widget_remove_css_class (
     GTK_WIDGET (MW_TIMELINE_PANEL->timelines_plus_ruler),
     class);
   gtk_widget_add_css_class (
     GTK_WIDGET (MW_TIMELINE_PANEL->timelines_plus_ruler),
     selectable_class);
-  z_gtk_widget_remove_style_class (
+  gtk_widget_remove_css_class (
     GTK_WIDGET (MW_TIMELINE_PANEL->tracklist_top), class);
   gtk_widget_add_css_class (
     GTK_WIDGET (MW_TIMELINE_PANEL->tracklist_top),
     selectable_class);
-  z_gtk_widget_remove_style_class (
+  gtk_widget_remove_css_class (
     GTK_WIDGET (MW_CLIP_EDITOR_INNER), class);
   gtk_widget_add_css_class (
     GTK_WIDGET (MW_CLIP_EDITOR_INNER), selectable_class);
-  z_gtk_widget_remove_style_class (
-    GTK_WIDGET (MW_MIXER), class);
+  gtk_widget_remove_css_class (GTK_WIDGET (MW_MIXER), class);
   gtk_widget_add_css_class (
     GTK_WIDGET (MW_MIXER), selectable_class);
 
@@ -126,18 +125,18 @@ on_project_selection_type_changed (void)
     case SELECTION_TYPE_TRACKLIST:
       gtk_widget_add_css_class (
         GTK_WIDGET (MW_TIMELINE_PANEL->tracklist_top), class);
-      z_gtk_widget_remove_style_class (
+      gtk_widget_remove_css_class (
         GTK_WIDGET (MW_TIMELINE_PANEL->tracklist_top),
         selectable_class);
       gtk_widget_add_css_class (GTK_WIDGET (MW_MIXER), class);
-      z_gtk_widget_remove_style_class (
+      gtk_widget_remove_css_class (
         GTK_WIDGET (MW_MIXER), selectable_class);
       break;
     case SELECTION_TYPE_TIMELINE:
       gtk_widget_add_css_class (
         GTK_WIDGET (MW_TIMELINE_PANEL->timelines_plus_ruler),
         class);
-      z_gtk_widget_remove_style_class (
+      gtk_widget_remove_css_class (
         GTK_WIDGET (MW_TIMELINE_PANEL->timelines_plus_ruler),
         selectable_class);
       break;
@@ -149,7 +148,7 @@ on_project_selection_type_changed (void)
     case SELECTION_TYPE_EDITOR:
       gtk_widget_add_css_class (
         GTK_WIDGET (MW_CLIP_EDITOR_INNER), class);
-      z_gtk_widget_remove_style_class (
+      gtk_widget_remove_css_class (
         GTK_WIDGET (MW_CLIP_EDITOR_INNER), selectable_class);
       break;
     }

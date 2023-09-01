@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/control_port.h"
@@ -636,10 +636,6 @@ track_input_expander_widget_init (
     GTK_WIDGET (self->gain_box));
   parent_box =
     gtk_widget_get_parent (GTK_WIDGET (self->gain_box));
-  /*gtk_box_set_child_packing (*/
-  /*GTK_BOX (parent_box),*/
-  /*GTK_WIDGET (self->gain_box), F_NO_EXPAND,*/
-  /*F_FILL, 2, GTK_PACK_START);*/
   gtk_widget_set_tooltip_text (
     GTK_WIDGET (self->gain_box), _ ("Gain"));
   gtk_combo_box_set_row_separator_func (
@@ -666,8 +662,6 @@ track_input_expander_widget_init (
     self->midi_channels, PANGO_ELLIPSIZE_END);
 
   /* add css classes */
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
-  gtk_style_context_add_class (
-    context, "track-input-expander");
+  gtk_widget_add_css_class (
+    GTK_WIDGET (self), "track-input-expander");
 }

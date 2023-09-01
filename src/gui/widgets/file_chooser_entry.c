@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2022-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -445,8 +445,7 @@ ide_file_chooser_entry_init (IdeFileChooserEntry * self)
   self->hbox = g_object_new (
     GTK_TYPE_BOX, "orientation", GTK_ORIENTATION_HORIZONTAL,
     "visible", TRUE, NULL);
-  gtk_style_context_add_class (
-    gtk_widget_get_style_context (self->hbox), "linked");
+  gtk_widget_add_css_class (self->hbox, "linked");
   gtk_widget_set_parent (self->hbox, GTK_WIDGET (self));
 
   self->entry = g_object_new (

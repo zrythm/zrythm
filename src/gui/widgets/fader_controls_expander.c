@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/channel.h"
@@ -77,8 +77,6 @@ fader_controls_expander_widget_init (
     Z_EXPANDER_BOX_WIDGET (self), "fader");
 
   /* add css classes */
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (GTK_WIDGET (self));
-  gtk_style_context_add_class (
-    context, "fader-controls-expander");
+  gtk_widget_add_css_class (
+    GTK_WIDGET (self), "fader-controls-expander");
 }

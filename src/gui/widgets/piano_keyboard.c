@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <math.h>
@@ -62,12 +62,6 @@ piano_keyboard_draw_cb (
 {
   PianoKeyboardWidget * self =
     Z_PIANO_KEYBOARD_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (drawing_area);
-
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
-  gtk_render_background (context, cr, 0, 0, width, height);
 
   int num_white_keys = 0;
   for (int i = 0; i < self->num_keys; i++)

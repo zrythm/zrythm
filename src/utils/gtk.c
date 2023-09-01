@@ -919,21 +919,6 @@ z_gtk_combo_box_set_ellipsize_mode (
 }
 
 /**
- * Removes the given style class from the widget.
- */
-void
-z_gtk_widget_remove_style_class (
-  GtkWidget *   widget,
-  const gchar * class_name)
-{
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-  g_return_if_fail (class_name != NULL);
-
-  gtk_style_context_remove_class (
-    gtk_widget_get_style_context (widget), class_name);
-}
-
-/**
  * Returns the nth child of a container.
  */
 GtkWidget *

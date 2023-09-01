@@ -354,14 +354,6 @@ z_gtk_tool_button_set_icon_size (
 #endif
 
 /**
- * Removes the given style class from the widget.
- */
-void
-z_gtk_widget_remove_style_class (
-  GtkWidget *   widget,
-  const gchar * class_name);
-
-/**
  * Gets the GdkDevice for a GtkWidget.
  */
 static inline GdkDevice *

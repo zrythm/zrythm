@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/control_port.h"
@@ -40,11 +40,6 @@ on_inputs_draw (
   ModulatorMacroWidget * self =
     Z_MODULATOR_MACRO_WIDGET (user_data);
   GtkWidget * widget = GTK_WIDGET (drawing_area);
-
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
-  gtk_render_background (context, cr, 0, 0, width, height);
 
   Port * port =
     P_MODULATOR_TRACK
@@ -112,12 +107,6 @@ on_output_draw (
 {
   ModulatorMacroWidget * self =
     Z_MODULATOR_MACRO_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (drawing_area);
-
-  GtkStyleContext * context =
-    gtk_widget_get_style_context (widget);
-
-  gtk_render_background (context, cr, 0, 0, width, height);
 
   Port * port =
     P_MODULATOR_TRACK

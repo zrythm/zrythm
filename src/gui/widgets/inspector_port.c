@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -453,10 +453,8 @@ inspector_port_widget_new (Port * port)
             GTK_WIDGET (self->jack), GTK_ALIGN_CENTER);
           gtk_widget_set_margin_start (
             GTK_WIDGET (self->jack), 2);
-          GtkStyleContext * context =
-            gtk_widget_get_style_context (
-              GTK_WIDGET (self->jack));
-          gtk_style_context_add_class (context, "mini-button");
+          gtk_widget_add_css_class (
+            GTK_WIDGET (self->jack), "mini-button");
           gtk_widget_set_tooltip_text (
             GTK_WIDGET (self->jack),
             _ ("Expose port to JACK"));
