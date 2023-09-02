@@ -45,12 +45,26 @@ typedef enum WrappedObjectType
   WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET,
 } WrappedObjectType;
 
+/**
+ * A GObject-ified normal C object with a signal that interested
+ * parties can listen to for changes.
+ *
+ * To be used in list view models and other APIs that require
+ * using a GObject.
+ */
 typedef struct _WrappedObjectWithChangeSignal
 {
   GObject parent_instance;
 
   WrappedObjectType type;
   void *            obj;
+
+  /** Parent model, if using tree model. */
+  GListModel * parent_model;
+
+  /** Model containing the children for this object (if using
+   * tree model). */
+  GListModel * child_model;
 
   ObjectFreeFunc free_func;
 } WrappedObjectWithChangeSignal;

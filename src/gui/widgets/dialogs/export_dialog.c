@@ -5,9 +5,11 @@
 #include "dsp/exporter.h"
 #include "dsp/master_track.h"
 #include "dsp/router.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/dialogs/export_dialog.h"
 #include "gui/widgets/dialogs/export_progress_dialog.h"
 #include "gui/widgets/digital_meter.h"
+#include "gui/widgets/item_factory.h"
 #include "gui/widgets/main_window.h"
 #include "project.h"
 #include "settings/settings.h"
@@ -57,8 +59,6 @@ enum
   NUM_TRACK_COLUMNS,
 };
 
-static const char * dummy_text = "";
-
 #define AUDIO_STACK_VISIBLE(self) \
   (string_is_equal ( \
     adw_view_stack_get_visible_child_name (self->stack), \
@@ -82,95 +82,52 @@ get_current_settings (ExportDialogWidget * self)
 }
 
 static void
-add_enabled_recursively (
-  ExportDialogWidget * self,
-  GtkTreeView *        tree_view,
-  GtkTreeIter *        iter,
-  Track ***            tracks,
-  size_t *             size,
-  int *                count)
+get_enabled_child_tracks_recursively (
+  ExportDialogWidget *            self,
+  WrappedObjectWithChangeSignal * wobj,
+  GPtrArray *                     tracks)
 {
-  GtkTreeModelFilter * parent_model = GTK_TREE_MODEL_FILTER (
-    gtk_tree_view_get_model (tree_view));
-  GtkTreeModel * model =
-    gtk_tree_model_filter_get_model (parent_model);
-
-  Track *  track;
-  gboolean checked;
-  gtk_tree_model_get (
-    model, iter, TRACK_COLUMN_CHECKBOX, &checked,
-    TRACK_COLUMN_TRACK, &track, -1);
-  if (checked)
+  if (GPOINTER_TO_INT (
+        g_object_get_data (G_OBJECT (wobj), "checked")))
     {
-      array_double_size_if_full (
-        *tracks, *count, *size, Track *);
-      array_append (*tracks, *count, track);
-      g_debug ("added %s", track->name);
+      Track * track = (Track *) wobj->obj;
+      g_ptr_array_add (tracks, track);
     }
+  if (!wobj->child_model)
+    return;
 
-  /* if group track, also check children
-   * recursively */
-  bool has_children =
-    gtk_tree_model_iter_has_child (model, iter);
-  if (has_children)
+  for (guint i = 0;
+       i < g_list_model_get_n_items (wobj->child_model); i++)
     {
-      int num_children =
-        gtk_tree_model_iter_n_children (model, iter);
-
-      for (int i = 0; i < num_children; i++)
-        {
-          GtkTreeIter child_iter;
-          gtk_tree_model_iter_nth_child (
-            model, &child_iter, iter, i);
-
-          /* recurse */
-          add_enabled_recursively (
-            self, tree_view, &child_iter, tracks, size, count);
-        }
+      WrappedObjectWithChangeSignal * child_wobj =
+        Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+          g_list_model_get_item (wobj->child_model, i));
+      get_enabled_child_tracks_recursively (
+        self, child_wobj, tracks);
     }
 }
 
 /**
  * Returns the currently checked tracks.
  *
- * Must be free'd with free().
- *
- * @param[out] num_tracks Number of tracks returned.
- *
- * @return Newly allocated track array, or NULL if
- *   no tracks selected.
+ * @param[out] tracks Tracks array to fill.
  */
-static Track **
+static void
 get_enabled_tracks (
   ExportDialogWidget * self,
-  GtkTreeView *        tree_view,
-  int *                num_tracks)
+  GtkColumnView *      list_view,
+  GPtrArray *          tracks)
 {
-  size_t   size = 1;
-  int      count = 0;
-  Track ** tracks = object_new_n (size, Track *);
-
-  GtkTreeModelFilter * parent_model = GTK_TREE_MODEL_FILTER (
-    gtk_tree_view_get_model (tree_view));
-  GtkTreeModel * model =
-    gtk_tree_model_filter_get_model (parent_model);
-  GtkTreeIter iter;
-  gtk_tree_model_get_iter_first (model, &iter);
-
-  add_enabled_recursively (
-    self, tree_view, &iter, &tracks, &size, &count);
-
-  if (count == 0)
-    {
-      *num_tracks = 0;
-      free (tracks);
-      return NULL;
-    }
-  else
-    {
-      *num_tracks = count;
-      return tracks;
-    }
+  GtkNoSelection * nosel =
+    GTK_NO_SELECTION (gtk_column_view_get_model (list_view));
+  GtkTreeListModel * tree_model =
+    GTK_TREE_LIST_MODEL (gtk_no_selection_get_model (nosel));
+  GtkTreeListRow * row =
+    gtk_tree_list_model_get_child_row (tree_model, 0);
+  WrappedObjectWithChangeSignal * wobj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+      gtk_tree_list_row_get_item (row));
+  get_enabled_child_tracks_recursively (self, wobj, tracks);
 }
 
 static char *
@@ -241,18 +198,16 @@ get_mixdown_export_filename (
 static char *
 get_stem_export_filenames (
   ExportDialogWidget * self,
-  int                  max_files,
+  size_t               max_files,
   Track *              in_track,
   bool                 audio)
 {
-  GtkTreeView * tree_view =
-    audio ? self->audio_tracks_treeview
-          : self->midi_tracks_treeview;
-  int      num_tracks;
-  Track ** tracks =
-    get_enabled_tracks (self, tree_view, &num_tracks);
+  GtkColumnView * list_view =
+    audio ? self->audio_tracks_view : self->midi_tracks_view;
+  GPtrArray * tracks = g_ptr_array_new ();
+  get_enabled_tracks (self, list_view, tracks);
 
-  if (!tracks)
+  if (tracks->len == 0)
     {
       return g_strdup (_ ("none"));
     }
@@ -274,11 +229,11 @@ get_stem_export_filenames (
 
   GString * gstr = g_string_new (NULL);
 
-  int new_max_files = MIN (num_tracks, max_files);
+  size_t new_max_files = MIN (tracks->len, max_files);
 
-  for (int i = 0; i < new_max_files; i++)
+  for (size_t i = 0; i < new_max_files; i++)
     {
-      Track * track = tracks[i];
+      Track * track = g_ptr_array_index (tracks, i);
 
       if (in_track)
         {
@@ -328,23 +283,26 @@ get_stem_export_filenames (
           g_string_append (gstr, "\n");
         }
       else if (
-        i == (new_max_files - 1) && new_max_files < num_tracks)
+        i == (new_max_files - 1)
+        && new_max_files < tracks->len)
         {
-          if (num_tracks - new_max_files == 1)
+          if (tracks->len - new_max_files == 1)
             {
               g_string_append (gstr, _ ("\n1 more file..."));
             }
           else
             {
               g_string_append_printf (
-                gstr, _ ("\n%d more files..."),
-                num_tracks - new_max_files);
+                gstr, _ ("\n%zu more files..."),
+                tracks->len - new_max_files);
             }
         }
       g_free (base);
     }
 return_result:
   g_free (datetime_str);
+
+  g_ptr_array_unref (tracks);
 
   return g_string_free (gstr, false);
 }
@@ -672,17 +630,16 @@ init_export_info (ExportDialogWidget * self, Track * track)
 static void
 on_export (ExportDialogWidget * self, bool audio)
 {
-  GtkTreeView * tree_view =
-    audio ? self->audio_tracks_treeview
-          : self->midi_tracks_treeview;
+  GtkColumnView * list_view =
+    audio ? self->audio_tracks_view : self->midi_tracks_view;
   bool export_stems = (bool) adw_combo_row_get_selected (
     audio ? self->audio_mixdown_or_stems
           : self->midi_mixdown_or_stems);
 
-  int      num_tracks;
-  Track ** tracks =
-    get_enabled_tracks (self, tree_view, &num_tracks);
-  if (!tracks)
+  GPtrArray * tracks = g_ptr_array_new ();
+  get_enabled_tracks (self, list_view, tracks);
+
+  if (tracks->len == 0)
     {
       ui_show_error_message (false, _ ("No tracks to export"));
       return;
@@ -703,9 +660,9 @@ on_export (ExportDialogWidget * self, bool audio)
   if (export_stems)
     {
       /* export each track individually */
-      for (int i = 0; i < num_tracks; i++)
+      for (size_t i = 0; i < tracks->len; i++)
         {
-          Track * track = tracks[i];
+          Track * track = g_ptr_array_index (tracks, i);
           g_debug ("~ bouncing stem for %s ~", track->name);
 
           /* unmark all tracks for bounce */
@@ -767,9 +724,9 @@ on_export (ExportDialogWidget * self, bool audio)
       tracklist_mark_all_tracks_for_bounce (TRACKLIST, false);
 
       /* mark all checked tracks for bounce */
-      for (int i = 0; i < num_tracks; i++)
+      for (size_t i = 0; i < tracks->len; i++)
         {
-          Track * track = tracks[i];
+          Track * track = g_ptr_array_index (tracks, i);
           track_mark_for_bounce (
             track, F_BOUNCE, F_MARK_REGIONS,
             F_NO_MARK_CHILDREN, F_MARK_PARENTS);
@@ -809,7 +766,7 @@ on_export (ExportDialogWidget * self, bool audio)
 
   ui_show_notification (_ ("Exported"));
 
-  free (tracks);
+  g_ptr_array_unref (tracks);
 }
 
 static void
@@ -831,41 +788,142 @@ on_response (
 }
 
 /**
- * Visible function for tracks tree model.
- *
- * Used for filtering based on selected options.
+ * This toggles on all parents recursively if
+ * something is toggled.
  */
-static gboolean
-tracks_tree_model_visible_func (
-  GtkTreeModel *       model,
-  GtkTreeIter *        iter,
+static void
+set_track_toggle_on_parent_recursively (
+  ExportDialogWidget *            self,
+  WrappedObjectWithChangeSignal * wobj,
+  bool                            toggled)
+{
+  if (!toggled)
+    {
+      return;
+    }
+
+  Track * track = (Track *) wobj->obj;
+
+  /* enable the parent if toggled */
+  Track * direct_out =
+    channel_get_output_track (track->channel);
+  if (!direct_out)
+    return;
+
+  g_debug (
+    "%s: setting toggle %d on parent %s recursively",
+    track->name, toggled, direct_out->name);
+
+  for (guint i = 0;
+       i < g_list_model_get_n_items (wobj->parent_model); i++)
+    {
+      WrappedObjectWithChangeSignal * parent_wobj =
+        Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+          g_list_model_get_item (wobj->parent_model, i));
+      Track * parent_track = (Track *) parent_wobj->obj;
+      if (parent_track == direct_out)
+        {
+          g_object_set_data (
+            G_OBJECT (parent_wobj), "checked",
+            GINT_TO_POINTER (toggled));
+          wrapped_object_with_change_signal_fire (parent_wobj);
+
+          set_track_toggle_on_parent_recursively (
+            self, parent_wobj, toggled);
+        }
+    }
+}
+
+static void
+set_track_toggle_recursively (
+  ExportDialogWidget *            self,
+  WrappedObjectWithChangeSignal * wobj,
+  bool                            toggled)
+{
+  if (!wobj->child_model)
+    return;
+
+  Track * track = (Track *) wobj->obj;
+  g_debug (
+    "%s: setting toggle %d on children recursively",
+    track->name, toggled);
+
+  for (guint i = 0;
+       i < g_list_model_get_n_items (wobj->child_model); i++)
+    {
+      WrappedObjectWithChangeSignal * child_wobj =
+        Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+          g_list_model_get_item (wobj->child_model, i));
+      /*Track * child_track = (Track *) child_wobj->obj;*/
+      g_object_set_data (
+        G_OBJECT (child_wobj), "checked",
+        GINT_TO_POINTER (toggled));
+      wrapped_object_with_change_signal_fire (child_wobj);
+      set_track_toggle_recursively (self, child_wobj, toggled);
+    }
+}
+
+static void
+on_track_toggled (
+  GtkCheckButton *     check_btn,
   ExportDialogWidget * self)
 {
-  bool visible = true;
+  WrappedObjectWithChangeSignal * wobj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+      g_object_get_data (G_OBJECT (check_btn), "wobj"));
+  Track * track = (Track *) wobj->obj;
 
-  return visible;
+  /* get toggled */
+  gboolean toggled = gtk_check_button_get_active (check_btn);
+  g_object_set_data (
+    G_OBJECT (wobj), "checked", GINT_TO_POINTER (toggled));
+  g_debug (
+    "%s track %s", toggled ? "toggled" : "untoggled",
+    track->name);
+
+  /* if exporting mixdown (single file) */
+  bool is_audio = AUDIO_STACK_VISIBLE (self);
+  bool export_stems = (bool) adw_combo_row_get_selected (
+    is_audio
+      ? self->audio_mixdown_or_stems
+      : self->midi_mixdown_or_stems);
+  if (!export_stems)
+    {
+      /* toggle parents if toggled */
+      set_track_toggle_on_parent_recursively (
+        self, wobj, toggled);
+
+      /* propagate value to children recursively */
+      set_track_toggle_recursively (self, wobj, toggled);
+    }
+
+  update_text (self);
 }
 
 static void
 add_group_track_children (
   ExportDialogWidget * self,
-  GtkTreeStore *       tree_store,
-  GtkTreeIter *        iter,
+  GListModel *         parent_store,
+  GListModel *         store,
   Track *              track)
 {
   /* add the group */
-  GtkTreeIter group_iter;
-  gtk_tree_store_append (tree_store, &group_iter, iter);
-  gtk_tree_store_set (
-    tree_store, &group_iter, TRACK_COLUMN_CHECKBOX, true,
-    TRACK_COLUMN_ICON, track->icon_name, TRACK_COLUMN_BG_RGBA,
-    &track->color, TRACK_COLUMN_DUMMY_TEXT, dummy_text,
-    TRACK_COLUMN_NAME, track->name, TRACK_COLUMN_TRACK, track,
-    -1);
+  WrappedObjectWithChangeSignal * wobj =
+    wrapped_object_with_change_signal_new (
+      track, WRAPPED_OBJECT_TYPE_TRACK);
+  g_object_set_data (
+    G_OBJECT (wobj), "checked", GINT_TO_POINTER (true));
+  wobj->parent_model = G_LIST_MODEL (parent_store);
+  g_list_store_append (G_LIST_STORE (store), wobj);
 
   g_debug ("%s: track '%s'", __func__, track->name);
 
+  if (track->num_children == 0)
+    return;
+
   /* add the children */
+  wobj->child_model = G_LIST_MODEL (g_list_store_new (
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE));
   for (int i = 0; i < track->num_children; i++)
     {
       Track * child = tracklist_find_track_by_name_hash (
@@ -873,425 +931,170 @@ add_group_track_children (
       g_return_if_fail (IS_TRACK_AND_NONNULL (child));
 
       g_debug ("child: '%s'", child->name);
-
-      if (child->num_children > 0)
-        {
-          add_group_track_children (
-            self, tree_store, &group_iter, child);
-        }
-      else
-        {
-          GtkTreeIter child_iter;
-          gtk_tree_store_append (
-            tree_store, &child_iter, &group_iter);
-          gtk_tree_store_set (
-            tree_store, &child_iter, TRACK_COLUMN_CHECKBOX,
-            true, TRACK_COLUMN_ICON, child->icon_name,
-            TRACK_COLUMN_BG_RGBA, &child->color,
-            TRACK_COLUMN_DUMMY_TEXT, dummy_text,
-            TRACK_COLUMN_NAME, child->name,
-            TRACK_COLUMN_TRACK, child, -1);
-        }
+      add_group_track_children (
+        self, store, wobj->child_model, child);
     }
 }
 
-/**
- * This toggles on all parents recursively if
- * something is toggled.
- */
-static void
-set_track_toggle_on_parent_recursively (
-  ExportDialogWidget * self,
-  GtkTreeView *        tree_view,
-  GtkTreeIter *        iter,
-  bool                 toggled)
+static GListModel *
+get_child_model (GObject * item, gpointer user_data)
 {
-  if (!toggled)
-    {
-      return;
-    }
+  WrappedObjectWithChangeSignal * wobj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
+  if (wobj->child_model)
+    return g_object_ref (G_LIST_MODEL (wobj->child_model));
 
-  GtkTreeModelFilter * parent_model = GTK_TREE_MODEL_FILTER (
-    gtk_tree_view_get_model (tree_view));
-  GtkTreeModel * model =
-    gtk_tree_model_filter_get_model (parent_model);
-
-  /* enable the parent if toggled */
-  GtkTreeIter parent_iter;
-  bool        has_parent =
-    gtk_tree_model_iter_parent (model, &parent_iter, iter);
-  if (has_parent)
-    {
-      /* set new value on widget */
-      gtk_tree_store_set (
-        GTK_TREE_STORE (model), &parent_iter,
-        TRACK_COLUMN_CHECKBOX, toggled, -1);
-
-      set_track_toggle_on_parent_recursively (
-        self, tree_view, &parent_iter, toggled);
-    }
+  return NULL;
 }
 
 static void
-set_track_toggle_recursively (
-  ExportDialogWidget * self,
-  GtkTreeView *        tree_view,
-  GtkTreeIter *        iter,
-  bool                 toggled)
+on_obj_changed (GObject * obj, GtkCheckButton * check_btn)
 {
-  GtkTreeModelFilter * parent_model = GTK_TREE_MODEL_FILTER (
-    gtk_tree_view_get_model (tree_view));
-  GtkTreeModel * model =
-    gtk_tree_model_filter_get_model (parent_model);
-
-  /* if group track, also enable/disable children
-   * recursively */
-  bool has_children =
-    gtk_tree_model_iter_has_child (model, iter);
-  if (has_children)
-    {
-      int num_children =
-        gtk_tree_model_iter_n_children (model, iter);
-
-      for (int i = 0; i < num_children; i++)
-        {
-          GtkTreeIter child_iter;
-          gtk_tree_model_iter_nth_child (
-            model, &child_iter, iter, i);
-
-          /* set new value on widget */
-          gtk_tree_store_set (
-            GTK_TREE_STORE (model), &child_iter,
-            TRACK_COLUMN_CHECKBOX, toggled, -1);
-
-          /* recurse */
-          set_track_toggle_recursively (
-            self, tree_view, &child_iter, toggled);
-        }
-    }
+  g_signal_handlers_block_matched (
+    check_btn, G_SIGNAL_MATCH_FUNC, 0, 0, NULL,
+    on_track_toggled, NULL);
+  gtk_check_button_set_active (
+    check_btn,
+    GPOINTER_TO_INT (g_object_get_data (obj, "checked")));
+  g_signal_handlers_unblock_matched (
+    check_btn, G_SIGNAL_MATCH_FUNC, 0, 0, NULL,
+    on_track_toggled, NULL);
 }
 
 static void
-on_track_toggled (
-  GtkCellRendererToggle * cell,
-  gchar *                 path_str,
-  ExportDialogWidget *    self)
+checked_factory_setup_cb (
+  GtkSignalListItemFactory * factory,
+  GtkListItem *              listitem,
+  ExportDialogWidget *       self)
 {
-  bool        is_audio = AUDIO_STACK_VISIBLE (self);
-  GSettings * s = get_current_settings (self);
-
-  GtkTreeView * tree_view =
-    is_audio
-      ? self->audio_tracks_treeview
-      : self->midi_tracks_treeview;
-  GtkTreeModelFilter * parent_model = GTK_TREE_MODEL_FILTER (
-    gtk_tree_view_get_model (tree_view));
-  GtkTreeModel * model =
-    gtk_tree_model_filter_get_model (parent_model);
-  g_debug ("path str: %s", path_str);
-
-  /* get tree path and iter */
-  GtkTreePath * path =
-    gtk_tree_path_new_from_string (path_str);
-  GtkTreeIter iter;
-  bool ret = gtk_tree_model_get_iter (model, &iter, path);
-  g_return_if_fail (ret);
-  g_return_if_fail (gtk_tree_store_iter_is_valid (
-    GTK_TREE_STORE (model), &iter));
-
-  /* get toggled */
-  gboolean toggled;
-  gtk_tree_model_get (
-    model, &iter, TRACK_COLUMN_CHECKBOX, &toggled, -1);
-  g_return_if_fail (gtk_tree_store_iter_is_valid (
-    GTK_TREE_STORE (model), &iter));
-
-  /* get new value */
-  toggled ^= 1;
-
-  /* set new value on widget */
-  gtk_tree_store_set (
-    GTK_TREE_STORE (model), &iter, TRACK_COLUMN_CHECKBOX,
-    toggled, -1);
-
-  /* if exporting mixdown (single file) */
-  if (!g_settings_get_boolean (s, "export-stems"))
-    {
-      /* toggle parents if toggled */
-      set_track_toggle_on_parent_recursively (
-        self, tree_view, &iter, toggled);
-
-      /* propagate value to children recursively */
-      set_track_toggle_recursively (
-        self, tree_view, &iter, toggled);
-    }
-
-  update_text (self);
-
-  /* clean up */
-  gtk_tree_path_free (path);
-}
-
-/* TODO */
-#if 0
-/**
- * Returns the currently selected tracks.
- *
- * Must be free'd with free().
- *
- * @param[out] num_tracks Number of tracks returned.
- *
- * @return Newly allocated track array, or NULL if
- *   no tracks selected.
- */
-static Track **
-get_selected_tracks (
-  ExportDialogWidget * self,
-  int *                num_tracks)
-{
-  GtkTreeSelection * selection =
-    gtk_tree_view_get_selection (
-      (self->tracks_treeview));
-
-  size_t size = 1;
-  int count = 0;
-  Track ** tracks =
-    calloc (size, sizeof (Track *));
-
-  GList * selected_rows =
-    gtk_tree_selection_get_selected_rows (
-      selection, NULL);
-  GList * list_iter =
-    g_list_first (selected_rows);
-  while (list_iter)
-    {
-      GtkTreePath * tp = list_iter->data;
-      gtk_tree_selection_select_path (
-        selection, tp);
-      GtkTreeIter iter;
-      gtk_tree_model_get_iter (
-        GTK_TREE_MODEL (self->tracks_store),
-        &iter, tp);
-      Track * track;
-      gtk_tree_model_get (
-        GTK_TREE_MODEL (self->tracks_store),
-        &iter, TRACK_COLUMN_TRACK, &track, -1);
-
-      array_double_size_if_full (
-        tracks, count, size, Track *);
-      array_append (tracks, size, track);
-      g_debug ("track %s selected", track->name);
-
-      list_iter = g_list_next (list_iter);
-    }
-
-  g_list_free_full (
-    selected_rows,
-    (GDestroyNotify) gtk_tree_path_free);
-
-  if (count == 0)
-    {
-      *num_tracks = 0;
-      free (tracks);
-      return NULL;
-    }
-  else
-    {
-      *num_tracks = count;
-      return tracks;
-    }
+  GtkWidget * check_btn = gtk_check_button_new ();
+  gtk_check_button_set_active (
+    GTK_CHECK_BUTTON (check_btn), true);
+  GtkTreeExpander * expander =
+    GTK_TREE_EXPANDER (gtk_tree_expander_new ());
+  gtk_tree_expander_set_child (
+    expander, GTK_WIDGET (check_btn));
+  gtk_list_item_set_focusable (listitem, false);
+  gtk_list_item_set_child (listitem, GTK_WIDGET (expander));
 }
 
 static void
-enable_or_disable_tracks (
-  ExportDialogWidget * self,
-  bool                 enable)
+checked_factory_bind_cb (
+  GtkSignalListItemFactory * factory,
+  GtkListItem *              listitem,
+  ExportDialogWidget *       self)
 {
-  int num_tracks;
-  Track ** tracks =
-    get_selected_tracks (self, &num_tracks);
-
-  if (tracks)
-    {
-      /* TODO enable/disable */
-    }
-}
-
-static void
-on_tracks_disable (
-  GtkMenuItem *        menuitem,
-  ExportDialogWidget * self)
-{
-  g_message ("tracks disable");
-  enable_or_disable_tracks (self, false);
-}
-
-static void
-on_tracks_enable (
-  GtkMenuItem *        menuitem,
-  ExportDialogWidget * self)
-{
-  g_message ("tracks enable");
-  enable_or_disable_tracks (self, true);
-}
-#endif
-
-static void
-show_tracks_context_menu (ExportDialogWidget * self)
-{
-#if 0
-  GtkWidget *menuitem;
-  GtkWidget * menu = gtk_menu_new();
-
-  /* FIXME this is allocating memory every time */
-
-  menuitem =
-    gtk_menu_item_new_with_label (_("Enable"));
-  gtk_widget_set_visible (menuitem, true);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu),
-    GTK_WIDGET (menuitem));
+  GtkTreeListRow * row =
+    GTK_TREE_LIST_ROW (gtk_list_item_get_item (listitem));
+  GtkTreeExpander * expander =
+    GTK_TREE_EXPANDER (gtk_list_item_get_child (listitem));
+  gtk_tree_expander_set_list_row (expander, row);
+  WrappedObjectWithChangeSignal * obj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+      gtk_tree_list_row_get_item (row));
+  GtkWidget * check_btn =
+    gtk_tree_expander_get_child (expander);
+  gtk_check_button_set_active (
+    GTK_CHECK_BUTTON (check_btn),
+    GPOINTER_TO_INT (
+      g_object_get_data (G_OBJECT (obj), "checked")));
+  g_object_set_data (G_OBJECT (check_btn), "wobj", obj);
   g_signal_connect (
-    G_OBJECT (menuitem), "activate",
-    G_CALLBACK (on_tracks_enable), self);
-
-  menuitem =
-    gtk_menu_item_new_with_label (_("Disable"));
-  gtk_widget_set_visible (menuitem, true);
-  gtk_menu_shell_append (
-    GTK_MENU_SHELL (menu),
-    GTK_WIDGET (menuitem));
+    G_OBJECT (check_btn), "toggled",
+    G_CALLBACK (on_track_toggled), self);
   g_signal_connect (
-    G_OBJECT (menuitem), "activate",
-    G_CALLBACK (on_tracks_disable), self);
-
-  gtk_menu_attach_to_widget (
-    GTK_MENU (menu),
-    GTK_WIDGET (self), NULL);
-  gtk_menu_popup_at_pointer (GTK_MENU (menu), NULL);
-#endif
+    G_OBJECT (obj), "changed", G_CALLBACK (on_obj_changed),
+    check_btn);
 }
 
 static void
-on_track_right_click (
-  GtkGestureClick *    gesture,
-  gint                 n_press,
-  gdouble              x_dbl,
-  gdouble              y_dbl,
-  ExportDialogWidget * self)
+checked_factory_unbind_cb (
+  GtkSignalListItemFactory * factory,
+  GtkListItem *              listitem,
+  ExportDialogWidget *       self)
 {
-  if (n_press != 1)
-    return;
-
-  show_tracks_context_menu (self);
+  GtkTreeListRow * row =
+    GTK_TREE_LIST_ROW (gtk_list_item_get_item (listitem));
+  GtkTreeExpander * expander =
+    GTK_TREE_EXPANDER (gtk_list_item_get_child (listitem));
+  gtk_tree_expander_set_list_row (expander, NULL);
+  WrappedObjectWithChangeSignal * obj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+      gtk_tree_list_row_get_item (row));
+  GtkWidget * check_btn =
+    gtk_tree_expander_get_child (expander);
+  g_signal_handlers_disconnect_by_func (
+    check_btn, on_track_toggled, self);
+  g_signal_handlers_disconnect_by_func (
+    obj, on_obj_changed, check_btn);
 }
 
-static GtkTreeModel *
-create_model_for_tracks (ExportDialogWidget * self)
+static void
+checked_factory_teardown_cb (
+  GtkSignalListItemFactory * factory,
+  GtkListItem *              listitem,
+  ExportDialogWidget *       self)
 {
-  /* checkbox, icon, foreground rgba,
-   * background rgba, name, track */
-  GtkTreeStore * tree_store = gtk_tree_store_new (
-    NUM_TRACK_COLUMNS, G_TYPE_BOOLEAN, G_TYPE_STRING,
-    GDK_TYPE_RGBA, G_TYPE_STRING, G_TYPE_STRING,
-    G_TYPE_POINTER);
-
-  /*GtkTreeIter iter;*/
-  /*gtk_tree_store_append (tree_store, &iter, NULL);*/
-  add_group_track_children (
-    self, tree_store, NULL, P_MASTER_TRACK);
-
-  GtkTreeModel * model = gtk_tree_model_filter_new (
-    GTK_TREE_MODEL (tree_store), NULL);
-  gtk_tree_model_filter_set_visible_func (
-    GTK_TREE_MODEL_FILTER (model),
-    (GtkTreeModelFilterVisibleFunc)
-      tracks_tree_model_visible_func,
-    self, NULL);
-
-  return model;
+  gtk_list_item_set_child (listitem, NULL);
 }
 
 static void
 setup_tracks_treeview (ExportDialogWidget * self, bool is_audio)
 {
-  GtkTreeView * tree_view =
+  GtkColumnView * view =
+    is_audio ? self->audio_tracks_view : self->midi_tracks_view;
+  GPtrArray * item_factories =
     is_audio
-      ? self->audio_tracks_treeview
-      : self->midi_tracks_treeview;
+      ? self->audio_item_factories
+      : self->midi_item_factories;
 
-  GtkTreeModel * model = create_model_for_tracks (self);
-  gtk_tree_view_set_model (tree_view, model);
+  GListStore * store =
+    g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  add_group_track_children (
+    self, NULL, G_LIST_MODEL (store), P_MASTER_TRACK);
+  GtkTreeListModel * tree_model = gtk_tree_list_model_new (
+    G_LIST_MODEL (store), false, true,
+    (GtkTreeListModelCreateModelFunc) get_child_model, self,
+    NULL);
+  GtkSelectionModel * sel_model = GTK_SELECTION_MODEL (
+    gtk_no_selection_new (G_LIST_MODEL (tree_model)));
+  gtk_column_view_set_model (view, sel_model);
 
-  /* init tree view */
-  GtkCellRenderer *   renderer;
-  GtkTreeViewColumn * column;
-
-  /* column for checkbox */
-  renderer = gtk_cell_renderer_toggle_new ();
-  column = gtk_tree_view_column_new_with_attributes (
-    "icon", renderer, "active", TRACK_COLUMN_CHECKBOX, NULL);
-  gtk_tree_view_append_column (tree_view, column);
+  GtkListItemFactory * checked_factory =
+    gtk_signal_list_item_factory_new ();
   g_signal_connect (
-    renderer, "toggled", G_CALLBACK (on_track_toggled), self);
-
-  /* column for color */
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes (
-    "name", renderer, "text", TRACK_COLUMN_DUMMY_TEXT,
-    "background-rgba", TRACK_COLUMN_BG_RGBA, NULL);
-  gtk_tree_view_append_column (tree_view, column);
-
-  /* column for icon */
-  renderer = gtk_cell_renderer_pixbuf_new ();
-  column = gtk_tree_view_column_new_with_attributes (
-    "icon", renderer, "icon-name", TRACK_COLUMN_ICON, NULL);
-  gtk_tree_view_append_column (tree_view, column);
-
-  /* column for name */
-  renderer = gtk_cell_renderer_text_new ();
-  column = gtk_tree_view_column_new_with_attributes (
-    "name", renderer, "text", TRACK_COLUMN_NAME, NULL);
-  gtk_tree_view_append_column (tree_view, column);
-
-  /* set search column */
-  gtk_tree_view_set_search_column (
-    tree_view, TRACK_COLUMN_NAME);
-
-  /* hide headers */
-  gtk_tree_view_set_headers_visible (
-    GTK_TREE_VIEW (tree_view), false);
-
-  gtk_tree_selection_set_mode (
-    gtk_tree_view_get_selection (tree_view),
-    GTK_SELECTION_MULTIPLE);
-
-  /* connect right click handler */
-  GtkGestureClick * mp =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
-  gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
+    G_OBJECT (checked_factory), "setup",
+    G_CALLBACK (checked_factory_setup_cb), self);
   g_signal_connect (
-    G_OBJECT (mp), "pressed",
-    G_CALLBACK (on_track_right_click), self);
-  gtk_widget_add_controller (
-    GTK_WIDGET (tree_view), GTK_EVENT_CONTROLLER (mp));
-
-#if 0
-  /* set search func */
-  gtk_tree_view_set_search_equal_func (
-    GTK_TREE_VIEW (tree_view),
-    (GtkTreeViewSearchEqualFunc)
-      plugin_search_equal_func,
-    self, NULL);
-
-  GtkTreeSelection * sel =
-    gtk_tree_view_get_selection (
-      GTK_TREE_VIEW (tree_view));
+    G_OBJECT (checked_factory), "bind",
+    G_CALLBACK (checked_factory_bind_cb), self);
   g_signal_connect (
-    G_OBJECT (sel), "changed",
-    G_CALLBACK (on_selection_changed), self);
-#endif
+    G_OBJECT (checked_factory), "unbind",
+    G_CALLBACK (checked_factory_unbind_cb), self);
+  g_signal_connect (
+    G_OBJECT (checked_factory), "teardown",
+    G_CALLBACK (checked_factory_teardown_cb), self);
+  GtkColumnViewColumn * column = gtk_column_view_column_new (
+    _ ("Export"), checked_factory);
+  gtk_column_view_column_set_resizable (column, true);
+  gtk_column_view_column_set_expand (column, true);
+  gtk_column_view_append_column (view, column);
+
+  item_factory_generate_and_append_column (
+    view, item_factories, ITEM_FACTORY_COLOR,
+    Z_F_NOT_EDITABLE, Z_F_NOT_RESIZABLE, NULL, _ ("Color"));
+
+  item_factory_generate_and_append_column (
+    view, item_factories, ITEM_FACTORY_ICON, Z_F_NOT_EDITABLE,
+    Z_F_NOT_RESIZABLE, NULL, _ ("Icon"));
+
+  item_factory_generate_and_append_column (
+    view, item_factories, ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE,
+    Z_F_NOT_RESIZABLE, NULL, _ ("Name"));
+
+  gtk_column_view_set_tab_behavior (view, GTK_LIST_TAB_CELL);
+
+  /* TODO hide headers */
 }
 
 static void
@@ -1481,6 +1284,16 @@ export_dialog_widget_new (void)
 }
 
 static void
+export_dialog_finalize (ExportDialogWidget * self)
+{
+  g_ptr_array_unref (self->midi_item_factories);
+  g_ptr_array_unref (self->audio_item_factories);
+
+  G_OBJECT_CLASS (export_dialog_widget_parent_class)
+    ->finalize (G_OBJECT (self));
+}
+
+static void
 export_dialog_widget_class_init (
   ExportDialogWidgetClass * _klass)
 {
@@ -1506,7 +1319,7 @@ export_dialog_widget_class_init (
   BIND_CHILD (audio_custom_tr_row);
   BIND_CHILD (audio_custom_tr_start_meter_box);
   BIND_CHILD (audio_custom_tr_end_meter_box);
-  BIND_CHILD (audio_tracks_treeview);
+  BIND_CHILD (audio_tracks_view);
   BIND_CHILD (audio_output_label);
   BIND_CHILD (midi_title);
   BIND_CHILD (midi_artist);
@@ -1519,16 +1332,25 @@ export_dialog_widget_class_init (
   BIND_CHILD (midi_custom_tr_row);
   BIND_CHILD (midi_custom_tr_start_meter_box);
   BIND_CHILD (midi_custom_tr_end_meter_box);
-  BIND_CHILD (midi_tracks_treeview);
+  BIND_CHILD (midi_tracks_view);
   BIND_CHILD (midi_output_label);
 
 #undef BIND_CHILD
+
+  GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->finalize =
+    (GObjectFinalizeFunc) export_dialog_finalize;
 }
 
 static void
 export_dialog_widget_init (ExportDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
+
+  self->audio_item_factories =
+    g_ptr_array_new_with_free_func (item_factory_free_func);
+  self->midi_item_factories =
+    g_ptr_array_new_with_free_func (item_factory_free_func);
 
   gtk_dialog_add_button (
     GTK_DIALOG (self), _ ("_Cancel"), GTK_RESPONSE_REJECT);

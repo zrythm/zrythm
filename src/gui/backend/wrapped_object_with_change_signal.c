@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/channel_send.h"
@@ -7,6 +7,7 @@
 #include "settings/chord_preset_pack.h"
 #include "utils/error.h"
 #include "utils/gtk.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -120,6 +121,13 @@ wrapped_object_with_change_signal_new (
 }
 
 static void
+dispose (WrappedObjectWithChangeSignal * self)
+{
+  object_free_w_func_and_null (
+    g_object_unref, self->child_model);
+}
+
+static void
 finalize (WrappedObjectWithChangeSignal * self)
 {
   if (self->free_func && self->obj)
@@ -146,6 +154,7 @@ wrapped_object_with_change_signal_class_init (
     G_TYPE_NONE /* return_type */, 0 /* n_params */,
     NULL /* param_types */);
 
+  oklass->dispose = (GObjectFinalizeFunc) dispose;
   oklass->finalize = (GObjectFinalizeFunc) finalize;
 }
 

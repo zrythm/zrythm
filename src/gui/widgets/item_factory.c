@@ -7,6 +7,7 @@
 #include "gui/backend/event_manager.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/arranger.h"
+#include "gui/widgets/color_area.h"
 #include "gui/widgets/dialogs/project_assistant.h"
 #include "gui/widgets/digital_meter.h"
 #include "gui/widgets/item_factory.h"
@@ -492,6 +493,21 @@ item_factory_setup_cb (
           bin, GTK_WIDGET (box));
       }
       break;
+    case ITEM_FACTORY_ICON:
+      {
+        g_return_if_fail (!self->editable);
+        GtkImage * img = GTK_IMAGE (gtk_image_new ());
+        popover_menu_bin_widget_set_child (
+          bin, GTK_WIDGET (img));
+      }
+      break;
+    case ITEM_FACTORY_COLOR:
+      {
+        ColorAreaWidget * ca = Z_COLOR_AREA_WIDGET (
+          g_object_new (COLOR_AREA_WIDGET_TYPE, NULL));
+        popover_menu_bin_widget_set_child (
+          bin, GTK_WIDGET (ca));
+      }
     default:
       break;
     }
@@ -580,9 +596,19 @@ item_factory_bind_cb (
 {
   ItemFactory * self = (ItemFactory *) user_data;
 
-  WrappedObjectWithChangeSignal * obj =
-    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
-      gtk_list_item_get_item (listitem));
+  GObject * gobj = gtk_list_item_get_item (listitem);
+  WrappedObjectWithChangeSignal * obj;
+  if (GTK_IS_TREE_LIST_ROW (gobj))
+    {
+      GtkTreeListRow * row = GTK_TREE_LIST_ROW (gobj);
+      obj = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+        gtk_tree_list_row_get_item (row));
+    }
+  else
+    {
+      obj = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+        gtk_list_item_get_item (listitem));
+    }
 
   switch (self->type)
     {
@@ -1027,6 +1053,47 @@ item_factory_bind_cb (
           }
       }
       break;
+    case ITEM_FACTORY_ICON:
+      {
+        PopoverMenuBinWidget * bin = Z_POPOVER_MENU_BIN_WIDGET (
+          gtk_list_item_get_child (listitem));
+        GtkImage * img =
+          GTK_IMAGE (popover_menu_bin_widget_get_child (bin));
+
+        switch (obj->type)
+          {
+          case WRAPPED_OBJECT_TYPE_TRACK:
+            {
+              Track *      track = (Track *) obj->obj;
+              const char * icon_name = track->icon_name;
+              gtk_image_set_from_icon_name (img, icon_name);
+            }
+            break;
+          default:
+            break;
+          }
+      }
+      break;
+    case ITEM_FACTORY_COLOR:
+      {
+        PopoverMenuBinWidget * bin = Z_POPOVER_MENU_BIN_WIDGET (
+          gtk_list_item_get_child (listitem));
+        ColorAreaWidget * ca = Z_COLOR_AREA_WIDGET (
+          popover_menu_bin_widget_get_child (bin));
+
+        switch (obj->type)
+          {
+          case WRAPPED_OBJECT_TYPE_TRACK:
+            {
+              Track * track = (Track *) obj->obj;
+              color_area_widget_setup_generic (
+                ca, &track->color);
+            }
+            break;
+          default:
+            break;
+          }
+      }
     default:
       break;
     }
@@ -1040,9 +1107,19 @@ item_factory_unbind_cb (
 {
   ItemFactory * self = (ItemFactory *) user_data;
 
-  WrappedObjectWithChangeSignal * obj =
-    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
-      gtk_list_item_get_item (listitem));
+  GObject * gobj = gtk_list_item_get_item (listitem);
+  WrappedObjectWithChangeSignal * obj;
+  if (GTK_IS_TREE_LIST_ROW (gobj))
+    {
+      GtkTreeListRow * row = GTK_TREE_LIST_ROW (gobj);
+      obj = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+        gtk_tree_list_row_get_item (row));
+    }
+  else
+    {
+      obj = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+        gtk_list_item_get_item (listitem));
+    }
 
   PopoverMenuBinWidget * bin = Z_POPOVER_MENU_BIN_WIDGET (
     gtk_list_item_get_child (listitem));
@@ -1091,6 +1168,10 @@ item_factory_unbind_cb (
             break;
           }
       }
+      break;
+    case ITEM_FACTORY_ICON:
+    case ITEM_FACTORY_COLOR:
+      /* nothing to do */
       break;
     default:
       break;

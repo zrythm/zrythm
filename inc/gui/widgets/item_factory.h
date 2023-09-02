@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2021-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2021-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -18,6 +18,9 @@
 
 #include <gtk/gtk.h>
 
+/**
+ * Item factory column type.
+ */
 typedef enum ItemFactoryType
 {
   ITEM_FACTORY_TOGGLE,
@@ -26,11 +29,17 @@ typedef enum ItemFactoryType
   /** Integer display. */
   ITEM_FACTORY_INTEGER,
 
+  /** Icon. */
+  ITEM_FACTORY_ICON,
+
   /** Composite type (eg, used in plugin browser). */
   ITEM_FACTORY_ICON_AND_TEXT,
 
   /** Position. */
   ITEM_FACTORY_POSITION,
+
+  /** Color. */
+  ITEM_FACTORY_COLOR,
 } ItemFactoryType;
 
 /**

@@ -64,8 +64,9 @@ typedef struct _ExportDialogWidget
   GtkBox *             audio_custom_tr_end_meter_box;
   DigitalMeterWidget * audio_custom_tr_end_meter;
   Position             audio_custom_end_pos;
-  GtkTreeView *        audio_tracks_treeview;
+  GtkColumnView *      audio_tracks_view;
   GtkLabel *           audio_output_label;
+  GPtrArray *          audio_item_factories;
 
   /* MIDI */
   AdwEntryRow *        midi_title;
@@ -83,8 +84,9 @@ typedef struct _ExportDialogWidget
   GtkBox *             midi_custom_tr_end_meter_box;
   DigitalMeterWidget * midi_custom_tr_end_meter;
   Position             midi_custom_end_pos;
-  GtkTreeView *        midi_tracks_treeview;
+  GtkColumnView *      midi_tracks_view;
   GtkLabel *           midi_output_label;
+  GPtrArray *          midi_item_factories;
 
 } ExportDialogWidget;
 

@@ -133,7 +133,15 @@
                                   <object class="GtkListBoxRow">
                                     <property name="activatable">0</property>
                                     <child>
-                                      <object class="GtkTreeView" id="audio_tracks_treeview">
+                                      <object class="GtkScrolledWindow">
+                                        <property name="height-request">200</property>
+                                        <child>
+                                          <object class="GtkColumnView" id="audio_tracks_view">
+                                            <style>
+                                              <class name="data-table"/>
+                                            </style>
+                                          </object>
+                                        </child>
                                       </object>
                                     </child>
                                   </object>
@@ -269,7 +277,15 @@
                                   <object class="GtkListBoxRow">
                                     <property name="activatable">0</property>
                                     <child>
-                                      <object class="GtkTreeView" id="midi_tracks_treeview">
+                                      <object class="GtkScrolledWindow">
+                                        <property name="height-request">200</property>
+                                        <child>
+                                          <object class="GtkColumnView" id="midi_tracks_view">
+                                            <style>
+                                              <class name="data-table"/>
+                                            </style>
+                                          </object>
+                                        </child>
                                       </object>
                                     </child>
                                   </object>
