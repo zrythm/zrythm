@@ -16,6 +16,8 @@
 #include "utils/types.h"
 #include "utils/yaml.h"
 
+#include <glib/gi18n.h>
+
 typedef struct ArrangerSelections ArrangerSelections;
 
 /**
@@ -37,14 +39,14 @@ typedef enum MidiFunctionType
 } MidiFunctionType;
 
 static const cyaml_strval_t midi_function_type_strings[] = {
-  {__ ("Crescendo"), MIDI_FUNCTION_CRESCENDO      },
-  { __ ("Flam"),     MIDI_FUNCTION_FLAM           },
-  { __ ("Flip H"),   MIDI_FUNCTION_FLIP_HORIZONTAL},
-  { __ ("Flip V"),   MIDI_FUNCTION_FLIP_VERTICAL  },
-  { __ ("Legato"),   MIDI_FUNCTION_LEGATO         },
-  { __ ("Portato"),  MIDI_FUNCTION_PORTATO        },
-  { __ ("Staccato"), MIDI_FUNCTION_STACCATO       },
-  { __ ("Strum"),    MIDI_FUNCTION_STRUM          },
+  {N_ ("Crescendo"), MIDI_FUNCTION_CRESCENDO      },
+  { N_ ("Flam"),     MIDI_FUNCTION_FLAM           },
+  { N_ ("Flip H"),   MIDI_FUNCTION_FLIP_HORIZONTAL},
+  { N_ ("Flip V"),   MIDI_FUNCTION_FLIP_VERTICAL  },
+  { N_ ("Legato"),   MIDI_FUNCTION_LEGATO         },
+  { N_ ("Portato"),  MIDI_FUNCTION_PORTATO        },
+  { N_ ("Staccato"), MIDI_FUNCTION_STACCATO       },
+  { N_ ("Strum"),    MIDI_FUNCTION_STRUM          },
 };
 
 typedef struct MidiFunctionOpts

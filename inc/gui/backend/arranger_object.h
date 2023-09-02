@@ -17,6 +17,8 @@
 #include "dsp/region_identifier.h"
 #include "utils/yaml.h"
 
+#include <glib/gi18n.h>
+
 typedef struct ArrangerObject        ArrangerObject;
 typedef struct ArrangerSelections    ArrangerSelections;
 typedef struct _ArrangerWidget       ArrangerWidget;
@@ -81,16 +83,16 @@ typedef enum ArrangerObjectType
 } ArrangerObjectType;
 
 static const cyaml_strval_t arranger_object_type_strings[] = {
-  {__ ("None"),              ARRANGER_OBJECT_TYPE_NONE        },
-  { __ ("All"),              ARRANGER_OBJECT_TYPE_ALL         },
-  { __ ("Region"),           ARRANGER_OBJECT_TYPE_REGION      },
-  { __ ("Midi Note"),        ARRANGER_OBJECT_TYPE_MIDI_NOTE   },
-  { __ ("Chord Object"),     ARRANGER_OBJECT_TYPE_CHORD_OBJECT},
-  { __ ("Scale Object"),     ARRANGER_OBJECT_TYPE_SCALE_OBJECT},
-  { __ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER      },
-  { __ ("Automation Point"),
+  {N_ ("None"),              ARRANGER_OBJECT_TYPE_NONE        },
+  { N_ ("All"),              ARRANGER_OBJECT_TYPE_ALL         },
+  { N_ ("Region"),           ARRANGER_OBJECT_TYPE_REGION      },
+  { N_ ("Midi Note"),        ARRANGER_OBJECT_TYPE_MIDI_NOTE   },
+  { N_ ("Chord Object"),     ARRANGER_OBJECT_TYPE_CHORD_OBJECT},
+  { N_ ("Scale Object"),     ARRANGER_OBJECT_TYPE_SCALE_OBJECT},
+  { N_ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER      },
+  { N_ ("Automation Point"),
    ARRANGER_OBJECT_TYPE_AUTOMATION_POINT                      },
-  { __ ("Velocity"),         ARRANGER_OBJECT_TYPE_VELOCITY    },
+  { N_ ("Velocity"),         ARRANGER_OBJECT_TYPE_VELOCITY    },
 };
 
 /**

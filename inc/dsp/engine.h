@@ -178,7 +178,7 @@ typedef enum AudioEngineBufferSize
 
 static const char * buffer_size_str[] = {
   "16",  "32",         "64",         "128",        "256",
-  "512", __ ("1,024"), __ ("2,048"), __ ("4,096"),
+  "512", N_ ("1,024"), N_ ("2,048"), N_ ("4,096"),
 };
 
 static inline const char *
@@ -203,8 +203,8 @@ typedef enum AudioEngineSamplerate
 } AudioEngineSamplerate;
 
 static const char * sample_rate_str[] = {
-  __ ("22,050"), __ ("32,000"), __ ("44,100"),  __ ("48,000"),
-  __ ("88,200"), __ ("96,000"), __ ("192,000"),
+  N_ ("22,050"), N_ ("32,000"), N_ ("44,100"),  N_ ("48,000"),
+  N_ ("88,200"), N_ ("96,000"), N_ ("192,000"),
 };
 
 static inline const char *
@@ -250,7 +250,7 @@ audio_backend_is_rtaudio (AudioBackend backend)
 __attribute__ ((
   unused)) static const char * audio_backend_str[] = {
   /* TRANSLATORS: Dummy backend */
-  __ ("Dummy"),           __ ("Dummy (libsoundio)"),
+  N_ ("Dummy"),           N_ ("Dummy (libsoundio)"),
   "ALSA (not working)",   "ALSA (libsoundio)",
   "ALSA (rtaudio)",       "JACK",
   "JACK (libsoundio)",    "JACK (rtaudio)",
@@ -306,9 +306,9 @@ midi_backend_is_rtmidi (MidiBackend backend)
 
 static const char * midi_backend_str[] = {
   /* TRANSLATORS: Dummy backend */
-  __ ("Dummy"),
-  __ ("ALSA Sequencer (not working)"),
-  __ ("ALSA Sequencer (rtmidi)"),
+  N_ ("Dummy"),
+  N_ ("ALSA Sequencer (not working)"),
+  N_ ("ALSA Sequencer (rtmidi)"),
   "JACK MIDI",
   "JACK MIDI (rtmidi)",
   "Windows MME",

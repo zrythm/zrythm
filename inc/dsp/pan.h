@@ -1,20 +1,22 @@
 // SPDX-FileCopyrightText: © 2018-2020 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+/**
+ * @file
+ *
+ * Panning mono sources.
+ */
+
 #ifndef __AUDIO_PAN_H__
 #define __AUDIO_PAN_H__
+
+#include <glib/gi18n.h>
 
 /** The amplitude of -3dBfs (0.707945784f). */
 #define PAN_MINUS_3DB_AMP (-0.292054216f)
 
 /** The amplitude of -6dBfs (0.501187234f). */
 #define PAN_MINUS_6DB_AMP (-0.498812766f)
-
-/**
- * \file
- *
- * Panning mono sources.
- */
 
 /**
  * These are only useful when changing mono to
@@ -32,9 +34,9 @@ typedef enum PanLaw
 
 static const char * pan_law_str[] = {
   /* TRANSLATORS: decibels */
-  __ ("0dB"),
-  __ ("-3dB"),
-  __ ("-6dB"),
+  N_ ("0dB"),
+  N_ ("-3dB"),
+  N_ ("-6dB"),
 };
 
 static inline const char *
@@ -54,9 +56,9 @@ typedef enum PanAlgorithm
 } PanAlgorithm;
 
 static const char * pan_algorithm_str[] = {
-  __ ("Linear"),
-  __ ("Square Root"),
-  __ ("Sine"),
+  N_ ("Linear"),
+  N_ ("Square Root"),
+  N_ ("Sine"),
 };
 
 static inline const char *

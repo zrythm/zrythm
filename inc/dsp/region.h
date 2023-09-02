@@ -17,17 +17,15 @@
 #include "gui/backend/arranger_object.h"
 #include "utils/yaml.h"
 
-#include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
-typedef struct _RegionWidget    RegionWidget;
-typedef struct Channel          Channel;
-typedef struct Track            Track;
-typedef struct MidiNote         MidiNote;
-typedef struct TrackLane        TrackLane;
-typedef struct _AudioClipWidget AudioClipWidget;
-typedef struct RegionLinkGroup  RegionLinkGroup;
-typedef struct Stretcher        Stretcher;
-typedef struct AudioClip        AudioClip;
+typedef struct Channel         Channel;
+typedef struct Track           Track;
+typedef struct MidiNote        MidiNote;
+typedef struct TrackLane       TrackLane;
+typedef struct RegionLinkGroup RegionLinkGroup;
+typedef struct Stretcher       Stretcher;
+typedef struct AudioClip       AudioClip;
 
 /**
  * @addtogroup dsp
@@ -62,9 +60,9 @@ typedef enum RegionMusicalMode
 } RegionMusicalMode;
 
 static const cyaml_strval_t region_musical_mode_strings[] = {
-  {__ ("Inherit"), REGION_MUSICAL_MODE_INHERIT},
-  { __ ("Off"),    REGION_MUSICAL_MODE_OFF    },
-  { __ ("On"),     REGION_MUSICAL_MODE_ON     },
+  {N_ ("Inherit"), REGION_MUSICAL_MODE_INHERIT},
+  { N_ ("Off"),    REGION_MUSICAL_MODE_OFF    },
+  { N_ ("On"),     REGION_MUSICAL_MODE_ON     },
 };
 
 /**

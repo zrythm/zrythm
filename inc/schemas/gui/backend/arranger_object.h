@@ -32,16 +32,16 @@ typedef enum ArrangerObjectType_v1
 } ArrangerObjectType_v1;
 
 static const cyaml_strval_t arranger_object_type_strings_v1[] = {
-  {__ ("None"),              ARRANGER_OBJECT_TYPE_NONE_v1        },
-  { __ ("All"),              ARRANGER_OBJECT_TYPE_ALL_v1         },
-  { __ ("Region"),           ARRANGER_OBJECT_TYPE_REGION_v1      },
-  { __ ("Midi Note"),        ARRANGER_OBJECT_TYPE_MIDI_NOTE_v1   },
-  { __ ("Chord Object"),     ARRANGER_OBJECT_TYPE_CHORD_OBJECT_v1},
-  { __ ("Scale Object"),     ARRANGER_OBJECT_TYPE_SCALE_OBJECT_v1},
-  { __ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER_v1      },
-  { __ ("Automation Point"),
+  {N_ ("None"),              ARRANGER_OBJECT_TYPE_NONE_v1        },
+  { N_ ("All"),              ARRANGER_OBJECT_TYPE_ALL_v1         },
+  { N_ ("Region"),           ARRANGER_OBJECT_TYPE_REGION_v1      },
+  { N_ ("Midi Note"),        ARRANGER_OBJECT_TYPE_MIDI_NOTE_v1   },
+  { N_ ("Chord Object"),     ARRANGER_OBJECT_TYPE_CHORD_OBJECT_v1},
+  { N_ ("Scale Object"),     ARRANGER_OBJECT_TYPE_SCALE_OBJECT_v1},
+  { N_ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER_v1      },
+  { N_ ("Automation Point"),
    ARRANGER_OBJECT_TYPE_AUTOMATION_POINT_v1                      },
-  { __ ("Velocity"),         ARRANGER_OBJECT_TYPE_VELOCITY_v1    },
+  { N_ ("Velocity"),         ARRANGER_OBJECT_TYPE_VELOCITY_v1    },
 };
 
 typedef enum ArrangerObjectFlags_v1

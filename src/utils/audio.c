@@ -35,9 +35,9 @@ G_DEFINE_QUARK (
 static int num_cores = 0;
 
 static const char * bit_depth_pretty_strings[] = {
-  __ ("16 bit"),
-  __ ("24 bit"),
-  __ ("32 bit"),
+  N_ ("16 bit"),
+  N_ ("24 bit"),
+  N_ ("32 bit"),
 };
 
 BitDepth

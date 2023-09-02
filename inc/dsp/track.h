@@ -23,7 +23,7 @@
 #include "plugins/plugin.h"
 #include "utils/yaml.h"
 
-#include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #define MAX_REGIONS 300
 
@@ -165,19 +165,19 @@ typedef enum TrackType
 } TrackType;
 
 static const cyaml_strval_t track_type_strings[] = {
-  {__ ("Instrument"),   TRACK_TYPE_INSTRUMENT },
-  { __ ("Audio"),       TRACK_TYPE_AUDIO      },
-  { __ ("Master"),      TRACK_TYPE_MASTER     },
-  { __ ("Chord"),       TRACK_TYPE_CHORD      },
-  { __ ("Marker"),      TRACK_TYPE_MARKER     },
-  { __ ("Tempo"),       TRACK_TYPE_TEMPO      },
-  { __ ("Modulator"),   TRACK_TYPE_MODULATOR  },
-  { __ ("Audio FX"),    TRACK_TYPE_AUDIO_BUS  },
-  { __ ("Audio Group"), TRACK_TYPE_AUDIO_GROUP},
-  { __ ("MIDI"),        TRACK_TYPE_MIDI       },
-  { __ ("MIDI FX"),     TRACK_TYPE_MIDI_BUS   },
-  { __ ("MIDI Group"),  TRACK_TYPE_MIDI_GROUP },
-  { __ ("Folder"),      TRACK_TYPE_FOLDER     },
+  {N_ ("Instrument"),   TRACK_TYPE_INSTRUMENT },
+  { N_ ("Audio"),       TRACK_TYPE_AUDIO      },
+  { N_ ("Master"),      TRACK_TYPE_MASTER     },
+  { N_ ("Chord"),       TRACK_TYPE_CHORD      },
+  { N_ ("Marker"),      TRACK_TYPE_MARKER     },
+  { N_ ("Tempo"),       TRACK_TYPE_TEMPO      },
+  { N_ ("Modulator"),   TRACK_TYPE_MODULATOR  },
+  { N_ ("Audio FX"),    TRACK_TYPE_AUDIO_BUS  },
+  { N_ ("Audio Group"), TRACK_TYPE_AUDIO_GROUP},
+  { N_ ("MIDI"),        TRACK_TYPE_MIDI       },
+  { N_ ("MIDI FX"),     TRACK_TYPE_MIDI_BUS   },
+  { N_ ("MIDI Group"),  TRACK_TYPE_MIDI_GROUP },
+  { N_ ("Folder"),      TRACK_TYPE_FOLDER     },
 };
 
 /**

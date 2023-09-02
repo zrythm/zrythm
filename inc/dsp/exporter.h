@@ -7,6 +7,8 @@
 #include "dsp/position.h"
 #include "utils/audio.h"
 
+#include <glib/gi18n.h>
+
 typedef struct EngineState  EngineState;
 typedef struct ProgressInfo ProgressInfo;
 
@@ -122,9 +124,9 @@ typedef enum BounceStep
 } BounceStep;
 
 static const char * bounce_step_str[] = {
-  __ ("Before inserts"),
-  __ ("Pre-fader"),
-  __ ("Post fader"),
+  N_ ("Before inserts"),
+  N_ ("Pre-fader"),
+  N_ ("Post fader"),
 };
 
 static inline const char *

@@ -516,9 +516,6 @@ test_cflags = [
   '-Walloca',
   '-fno-common',
   '-DLV2_UI__Gtk4UI="https://lv2plug.in/ns/extensions/ui#Gtk4UI"',
-  # dummy macro for extracting translatable strings
-  # when we can't use gettext()
-  '-D__(x)=x',
   # use structured log
   '-DG_LOG_USE_STRUCTURED=1',
   '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',

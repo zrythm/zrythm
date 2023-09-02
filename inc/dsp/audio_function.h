@@ -14,6 +14,8 @@
 
 #include "utils/yaml.h"
 
+#include <glib/gi18n.h>
+
 typedef struct ArrangerSelections ArrangerSelections;
 typedef struct Plugin             Plugin;
 
@@ -50,20 +52,20 @@ typedef enum AudioFunctionType
 } AudioFunctionType;
 
 static const cyaml_strval_t audio_function_type_strings[] = {
-  {__ ("Invert"),            AUDIO_FUNCTION_INVERT         },
-  { __ ("Normalize peak"),   AUDIO_FUNCTION_NORMALIZE_PEAK },
-  { __ ("Normalize RMS"),    AUDIO_FUNCTION_NORMALIZE_RMS  },
-  { __ ("Normalize LUFS"),   AUDIO_FUNCTION_NORMALIZE_LUFS },
-  { __ ("Linear fade in"),   AUDIO_FUNCTION_LINEAR_FADE_IN },
-  { __ ("Linear fade out"),  AUDIO_FUNCTION_LINEAR_FADE_OUT},
-  { __ ("Nudge left"),       AUDIO_FUNCTION_NUDGE_LEFT     },
-  { __ ("Nudge right"),      AUDIO_FUNCTION_NUDGE_RIGHT    },
-  { __ ("Reverse"),          AUDIO_FUNCTION_REVERSE        },
-  { __ ("Pitch shift"),      AUDIO_FUNCTION_PITCH_SHIFT    },
-  { __ ("External program"), AUDIO_FUNCTION_EXT_PROGRAM    },
-  { __ ("Guile script"),     AUDIO_FUNCTION_GUILE_SCRIPT   },
-  { __ ("Custom plugin"),    AUDIO_FUNCTION_CUSTOM_PLUGIN  },
-  { __ ("Invalid"),          AUDIO_FUNCTION_INVALID        },
+  {N_ ("Invert"),            AUDIO_FUNCTION_INVERT         },
+  { N_ ("Normalize peak"),   AUDIO_FUNCTION_NORMALIZE_PEAK },
+  { N_ ("Normalize RMS"),    AUDIO_FUNCTION_NORMALIZE_RMS  },
+  { N_ ("Normalize LUFS"),   AUDIO_FUNCTION_NORMALIZE_LUFS },
+  { N_ ("Linear fade in"),   AUDIO_FUNCTION_LINEAR_FADE_IN },
+  { N_ ("Linear fade out"),  AUDIO_FUNCTION_LINEAR_FADE_OUT},
+  { N_ ("Nudge left"),       AUDIO_FUNCTION_NUDGE_LEFT     },
+  { N_ ("Nudge right"),      AUDIO_FUNCTION_NUDGE_RIGHT    },
+  { N_ ("Reverse"),          AUDIO_FUNCTION_REVERSE        },
+  { N_ ("Pitch shift"),      AUDIO_FUNCTION_PITCH_SHIFT    },
+  { N_ ("External program"), AUDIO_FUNCTION_EXT_PROGRAM    },
+  { N_ ("Guile script"),     AUDIO_FUNCTION_GUILE_SCRIPT   },
+  { N_ ("Custom plugin"),    AUDIO_FUNCTION_CUSTOM_PLUGIN  },
+  { N_ ("Invalid"),          AUDIO_FUNCTION_INVALID        },
 };
 
 typedef struct AudioFunctionOpts

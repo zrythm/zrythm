@@ -16,6 +16,8 @@
 
 #include "utils/yaml.h"
 
+#include <glib/gi18n.h>
+
 typedef struct _WrappedObjectWithChangeSignal
   WrappedObjectWithChangeSignal;
 
@@ -138,7 +140,7 @@ typedef enum PluginProtocol
 } PluginProtocol;
 
 static const cyaml_strval_t plugin_protocol_strings[] = {
-  {__ ("Dummy"), PROT_DUMMY },
+  {N_ ("Dummy"), PROT_DUMMY },
   { "LV2",       PROT_LV2   },
   { "DSSI",      PROT_DSSI  },
   { "LADSPA",    PROT_LADSPA},

@@ -17,6 +17,7 @@
 #include "utils/types.h"
 
 #include <adwaita.h>
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
 typedef struct Position Position;
@@ -79,10 +80,10 @@ typedef enum UiDetail
 } UiDetail;
 
 static const char * ui_detail_str[] = {
-  __ ("High"),
-  __ ("Normal"),
-  __ ("Low"),
-  __ ("Ultra Low"),
+  N_ ("High"),
+  N_ ("Normal"),
+  N_ ("Low"),
+  N_ ("Ultra Low"),
 };
 
 static inline const char *

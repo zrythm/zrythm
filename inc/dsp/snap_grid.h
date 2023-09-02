@@ -14,6 +14,8 @@
 
 #include "dsp/position.h"
 
+#include <glib/gi18n.h>
+
 /**
  * @addtogroup dsp
  *
@@ -48,8 +50,8 @@ typedef enum NoteLength
 } NoteLength;
 
 static const cyaml_strval_t note_length_strings[] = {
-  {__ ("bar"),   NOTE_LENGTH_BAR  },
-  { __ ("beat"), NOTE_LENGTH_BEAT },
+  {N_ ("bar"),   NOTE_LENGTH_BAR  },
+  { N_ ("beat"), NOTE_LENGTH_BEAT },
   { "2/1",       NOTE_LENGTH_2_1  },
   { "1/1",       NOTE_LENGTH_1_1  },
   { "1/2",       NOTE_LENGTH_1_2  },
@@ -69,9 +71,9 @@ typedef enum NoteType
 } NoteType;
 
 static const cyaml_strval_t note_type_strings[] = {
-  {__ ("normal"),   NOTE_TYPE_NORMAL },
-  { __ ("dotted"),  NOTE_TYPE_DOTTED },
-  { __ ("triplet"), NOTE_TYPE_TRIPLET},
+  {N_ ("normal"),   NOTE_TYPE_NORMAL },
+  { N_ ("dotted"),  NOTE_TYPE_DOTTED },
+  { N_ ("triplet"), NOTE_TYPE_TRIPLET},
 };
 
 /**

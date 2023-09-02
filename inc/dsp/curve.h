@@ -16,6 +16,8 @@
 
 #include "utils/yaml.h"
 
+#include <glib/gi18n.h>
+
 /**
  * @addtogroup dsp
  *
@@ -92,11 +94,11 @@ typedef enum CurveAlgorithm
 } CurveAlgorithm;
 
 static const cyaml_strval_t curve_algorithm_strings[] = {
-  {__ ("Exponent"),      CURVE_ALGORITHM_EXPONENT    },
-  { __ ("Superellipse"), CURVE_ALGORITHM_SUPERELLIPSE},
-  { __ ("Vital"),        CURVE_ALGORITHM_VITAL       },
-  { __ ("Pulse"),        CURVE_ALGORITHM_PULSE       },
-  { __ ("Logarithmic"),  CURVE_ALGORITHM_LOGARITHMIC },
+  {N_ ("Exponent"),      CURVE_ALGORITHM_EXPONENT    },
+  { N_ ("Superellipse"), CURVE_ALGORITHM_SUPERELLIPSE},
+  { N_ ("Vital"),        CURVE_ALGORITHM_VITAL       },
+  { N_ ("Pulse"),        CURVE_ALGORITHM_PULSE       },
+  { N_ ("Logarithmic"),  CURVE_ALGORITHM_LOGARITHMIC },
 };
 
 /**

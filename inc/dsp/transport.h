@@ -50,10 +50,10 @@ typedef enum PrerollCountBars
 } PrerollCountBars;
 
 static const char * preroll_count_bars_str[] = {
-  __ ("None"),
-  __ ("1 bar"),
-  __ ("2 bars"),
-  __ ("4 bars"),
+  N_ ("None"),
+  N_ ("1 bar"),
+  N_ ("2 bars"),
+  N_ ("4 bars"),
 };
 
 static inline const char *
