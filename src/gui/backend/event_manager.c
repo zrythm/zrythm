@@ -61,7 +61,6 @@
 #include "gui/widgets/plugin_strip_expander.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/route_target_selector.h"
-#include "gui/widgets/ruler_marker.h"
 #include "gui/widgets/snap_grid.h"
 #include "gui/widgets/timeline_arranger.h"
 #include "gui/widgets/timeline_bot_box.h"

@@ -16,7 +16,6 @@
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/midi_modifier_arranger.h"
 #include "gui/widgets/ruler.h"
-#include "gui/widgets/ruler_marker.h"
 #include "project.h"
 #include "utils/error.h"
 #include "utils/flags.h"
