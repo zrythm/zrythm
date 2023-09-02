@@ -2296,3 +2296,29 @@ z_gtk_descendant_has_focus (GtkWidget * parent)
   return get_first_focused_or_focusable_child (parent, true)
          != NULL;
 }
+
+void
+z_gtk_window_make_escapable (GtkWindow * self)
+{
+  /* close on escape */
+#if 0
+  /* for reference */
+  GtkShortcutTrigger * trigger =
+    gtk_shortcut_trigger_parse_string ("Escape|<Control>w");
+  GtkShortcutAction * action =
+    gtk_named_action_new ("window.close");
+  GtkShortcut * esc_shortcut =
+    gtk_shortcut_new (trigger, action);
+  GtkShortcutController * sc =
+    GTK_SHORTCUT_CONTROLLER (gtk_shortcut_controller_new ());
+  gtk_shortcut_controller_add_shortcut (sc, esc_shortcut);
+  gtk_widget_add_controller (
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (sc));
+#endif
+  GtkWidgetClass * wklass =
+    GTK_WIDGET_CLASS (G_OBJECT_GET_CLASS (self));
+  gtk_widget_class_add_binding_action (
+    wklass, GDK_KEY_Escape, 0, "window.close", NULL);
+  gtk_widget_class_add_binding_action (
+    wklass, GDK_KEY_w, GDK_CONTROL_MASK, "window.close", NULL);
+}

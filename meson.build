@@ -520,7 +520,6 @@ test_cflags = [
   '-DG_LOG_USE_STRUCTURED=1',
   '-DG_LOG_DOMAIN="' + prog_name_lowercase + '"',
   '-DREALTIME=' + (is_clang ? '__attribute__((annotate("realtime")))' : ''),
-  #'-DDEPRECATED_MSG(x)=__attribute__((deprecated(x)))',
   '-DOPTIMIZE(x)=' + (is_gcc ? '__attribute__((optimize(#x)))' : ''),
   '-DOPTIMIZE_O0=OPTIMIZE(O0)',
   '-DOPTIMIZE_O1=OPTIMIZE(O1)',
@@ -899,7 +898,7 @@ gtk_dep = dependency (
   static: all_static)
 
 libadwaita_dep = dependency (
-  'libadwaita-1', version: '>=1.2',
+  'libadwaita-1', version: '>=1.4',
   fallback: ['libadwaita', 'libadwaita_dep'],
   default_options: [
     'vapi=false', 'tests=false',

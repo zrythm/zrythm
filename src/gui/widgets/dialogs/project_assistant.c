@@ -26,7 +26,7 @@
 G_DEFINE_TYPE (
   ProjectAssistantWidget,
   project_assistant_widget,
-  GTK_TYPE_DIALOG)
+  ADW_TYPE_WINDOW)
 
 static ProjectInfo *
 project_info_new (const char * name, const char * filename)
@@ -315,27 +315,6 @@ on_key_release (
     }
 }
 
-static void
-on_project_activate (
-  GtkColumnView * column_view,
-  guint           position,
-  gpointer        user_data)
-{
-  ProjectAssistantWidget * self =
-    (ProjectAssistantWidget *) user_data;
-
-  GListStore * list_store =
-    z_gtk_column_view_get_list_store (column_view);
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (g_list_model_get_item (
-      G_LIST_MODEL (list_store), position));
-  ProjectInfo * nfo = (ProjectInfo *) wrapped_obj->obj;
-
-  g_debug ("activated %s", nfo->filename);
-
-  gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_OK);
-}
-
 /**
  * Runs the project assistant.
  *
@@ -389,36 +368,45 @@ project_assistant_widget_present (
 }
 
 static void
-on_file_chooser_response (
-  GtkNativeDialog *        native,
-  int                      response,
+run_create_project_dialog (
+  ProjectAssistantWidget * self,
+  GtkWindow *              transient_parent)
+{
+  CreateProjectDialogWidget * create_prj_dialog =
+    create_project_dialog_widget_new ();
+  g_signal_connect (
+    G_OBJECT (create_prj_dialog), "response",
+    G_CALLBACK (create_project_dialog_response_cb),
+    GINT_TO_POINTER (self->zrythm_already_running));
+
+  gtk_window_set_transient_for (
+    GTK_WINDOW (create_prj_dialog),
+    GTK_WINDOW (transient_parent));
+
+  gtk_window_present (GTK_WINDOW (create_prj_dialog));
+}
+
+static bool
+on_close_request (
+  GtkWindow *              window,
   ProjectAssistantWidget * self)
 {
-  if (response == GTK_RESPONSE_ACCEPT)
-    {
-      GtkFileChooser * chooser = GTK_FILE_CHOOSER (native);
-      GFile * file = gtk_file_chooser_get_file (chooser);
-      char *  path = g_file_get_path (file);
-      g_return_if_fail (path);
-      g_object_unref (file);
+  g_debug ("close request");
 
-      ZRYTHM->open_filename = path;
-      g_message ("Loading project: %s", ZRYTHM->open_filename);
+  ZRYTHM->creating_project = true;
+  ZRYTHM->open_filename = NULL;
 
-      post_finish (self, self->zrythm_already_running, false);
-    }
+  /* window already destroyed, set transient to splash screen
+   * instead */
+  run_create_project_dialog (self, GTK_WINDOW (self->parent));
 
-  g_object_unref (native);
+  /* close normally */
+  return false;
 }
 
 static void
-on_response (
-  GtkDialog *              dialog,
-  gint                     response_id,
-  ProjectAssistantWidget * self)
+on_ok_clicked (GtkButton * btn, ProjectAssistantWidget * self)
 {
-  g_debug ("response %d", response_id);
-
   ZRYTHM->creating_project = true;
 
   const char * child_name =
@@ -428,104 +416,122 @@ on_response (
   ProjectInfo * selected_template =
     get_selected_template (self);
 
-  switch (response_id)
+  if (string_is_equal (child_name, "create-new"))
     {
-    case GTK_RESPONSE_DELETE_EVENT:
-    case GTK_RESPONSE_CLOSE:
-    case GTK_RESPONSE_CANCEL:
-      ZRYTHM->open_filename = NULL;
-      break;
-    case GTK_RESPONSE_OK:
-      if (string_is_equal (child_name, "create-new"))
-        {
-          g_return_if_fail (selected_template);
+      g_return_if_fail (selected_template);
 
-          /* if we are loading a blank template */
-          if (selected_template->filename[0] == '-')
-            {
-              ZRYTHM->open_filename = NULL;
-              g_message ("Creating blank project");
-            }
-          else
-            {
-              ZRYTHM->open_filename =
-                selected_template->filename;
-              g_message (
-                "Creating project from template: %s",
-                ZRYTHM->open_filename);
-              ZRYTHM->opening_template = true;
-            }
-        }
-      /* else if we are loading a project */
-      else if (string_is_equal (child_name, "open-recent"))
+      /* if we are loading a blank template */
+      if (selected_template->filename[0] == '-')
         {
-          if (!selected_project)
-            {
-              ui_show_error_message (
-                false, _ ("No project selected"));
-              return;
-            }
-          ZRYTHM->open_filename = selected_project->filename;
-          g_return_if_fail (ZRYTHM->open_filename);
-          g_message (
-            "Loading project: %s", ZRYTHM->open_filename);
-          ZRYTHM->creating_project = false;
-        }
-      break;
-    /* open from path */
-    case 256:
-      {
-        GtkFileChooserNative * native =
-          gtk_file_chooser_native_new (
-            _ ("Select Project File"), GTK_WINDOW (self),
-            GTK_FILE_CHOOSER_ACTION_OPEN, _ ("_Open"),
-            _ ("_Cancel"));
-        GtkFileFilter * filter = gtk_file_filter_new ();
-        gtk_file_filter_add_mime_type (
-          filter, "application/x-zrythm-project");
-        gtk_file_filter_add_suffix (filter, "zpj");
-        gtk_file_chooser_add_filter (
-          GTK_FILE_CHOOSER (native), filter);
-        g_signal_connect (
-          native, "response",
-          G_CALLBACK (on_file_chooser_response), self);
-        gtk_native_dialog_show (GTK_NATIVE_DIALOG (native));
-        return;
-      }
-      break;
-    }
-
-  /* if not loading a project, show dialog to
-   * select directory and name */
-  if (ZRYTHM->creating_project)
-    {
-      CreateProjectDialogWidget * create_prj_dialog =
-        create_project_dialog_widget_new ();
-      g_signal_connect (
-        G_OBJECT (create_prj_dialog), "response",
-        G_CALLBACK (create_project_dialog_response_cb),
-        GINT_TO_POINTER (self->zrythm_already_running));
-
-      /* if window already destroyed, set transient
-       * to splash screen instead */
-      if (
-        response_id == GTK_RESPONSE_DELETE_EVENT
-        || response_id == GTK_RESPONSE_CLOSE)
-        {
-          gtk_window_set_transient_for (
-            GTK_WINDOW (create_prj_dialog),
-            GTK_WINDOW (self->parent));
+          ZRYTHM->open_filename = NULL;
+          g_message ("Creating blank project");
         }
       else
         {
-          gtk_window_set_transient_for (
-            GTK_WINDOW (create_prj_dialog), GTK_WINDOW (self));
+          ZRYTHM->open_filename = selected_template->filename;
+          g_message (
+            "Creating project from template: %s",
+            ZRYTHM->open_filename);
+          ZRYTHM->opening_template = true;
         }
-      gtk_window_present (GTK_WINDOW (create_prj_dialog));
+    }
+  /* else if we are loading a project */
+  else if (string_is_equal (child_name, "open-recent"))
+    {
+      if (!selected_project)
+        {
+          ui_show_error_message (
+            false, _ ("No project selected"));
+          return;
+        }
+      ZRYTHM->open_filename = selected_project->filename;
+      g_return_if_fail (ZRYTHM->open_filename);
+      g_message ("Loading project: %s", ZRYTHM->open_filename);
+      ZRYTHM->creating_project = false;
+    }
+
+  /* if not loading a project, show dialog to select directory
+   * and name */
+  if (ZRYTHM->creating_project)
+    {
+      run_create_project_dialog (self, GTK_WINDOW (self));
+    }
+  else
+    {
+      post_finish (self, self->zrythm_already_running, false);
+    }
+}
+
+static void
+open_ready_cb (
+  GtkFileDialog *          dialog,
+  GAsyncResult *           res,
+  ProjectAssistantWidget * self)
+{
+  GError * err = NULL;
+  GFile *  file =
+    gtk_file_dialog_open_finish (dialog, res, &err);
+  if (!file)
+    {
+      g_message ("no project selected: %s", err->message);
+      g_error_free (err);
       return;
     }
 
+  char * path = g_file_get_path (file);
+  g_return_if_fail (path);
+  g_object_unref (file);
+
+  ZRYTHM->open_filename = path;
+  g_message ("Loading project: %s", ZRYTHM->open_filename);
+
   post_finish (self, self->zrythm_already_running, false);
+}
+
+static void
+on_open_from_path_clicked (
+  GtkButton *              btn,
+  ProjectAssistantWidget * self)
+{
+  ZRYTHM->creating_project = true;
+
+  GtkFileDialog * dialog = gtk_file_dialog_new ();
+  gtk_file_dialog_set_title (dialog, _ ("Select Project"));
+  gtk_file_dialog_set_modal (dialog, true);
+  GtkFileFilter * filter = gtk_file_filter_new ();
+  gtk_file_filter_add_mime_type (
+    filter, "application/x-zrythm-project");
+  gtk_file_filter_add_suffix (filter, "zpj");
+  GListStore * list_store =
+    g_list_store_new (GTK_TYPE_FILE_FILTER);
+  g_list_store_append (list_store, filter);
+  gtk_file_dialog_set_filters (
+    dialog, G_LIST_MODEL (list_store));
+  g_object_unref (list_store);
+  gtk_file_dialog_open (
+    dialog, GTK_WINDOW (self), NULL,
+    (GAsyncReadyCallback) open_ready_cb, self);
+}
+
+static void
+on_project_activate (
+  GtkColumnView * column_view,
+  guint           position,
+  gpointer        user_data)
+{
+  ProjectAssistantWidget * self =
+    (ProjectAssistantWidget *) user_data;
+
+  GListStore * list_store =
+    z_gtk_column_view_get_list_store (column_view);
+  WrappedObjectWithChangeSignal * wrapped_obj =
+    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (g_list_model_get_item (
+      G_LIST_MODEL (list_store), position));
+  ProjectInfo * nfo = (ProjectInfo *) wrapped_obj->obj;
+
+  g_debug ("activated %s", nfo->filename);
+
+  on_ok_clicked (self->ok_btn, self);
 }
 
 static char *
@@ -646,7 +652,7 @@ project_assistant_widget_class_init (
   BIND_CHILD (templates_column_view);
   BIND_CHILD (ok_btn);
   BIND_CHILD (open_from_path_btn);
-  BIND_CHILD (cancel_btn);
+  /*BIND_CHILD (cancel_btn);*/
 
 #undef BIND_CHILD
 
@@ -658,6 +664,8 @@ project_assistant_widget_class_init (
 static void
 project_assistant_widget_init (ProjectAssistantWidget * self)
 {
+  g_type_ensure (ADW_TYPE_TOOLBAR_VIEW);
+
   gtk_widget_init_template (GTK_WIDGET (self));
 
   gtk_widget_set_size_request (GTK_WIDGET (self), 380, 180);
@@ -756,9 +764,22 @@ project_assistant_widget_init (ProjectAssistantWidget * self)
     G_CALLBACK (on_visible_child_name_changed), self);
 
   g_signal_connect (
-    self, "response", G_CALLBACK (on_response), self);
+    self->ok_btn, "clicked", G_CALLBACK (on_ok_clicked), self);
+  g_signal_connect (
+    self->open_from_path_btn, "clicked",
+    G_CALLBACK (on_open_from_path_clicked), self);
+  g_signal_connect (
+    self, "close-request", G_CALLBACK (on_close_request),
+    self);
 
   gtk_window_set_focus (
     GTK_WINDOW (self),
     GTK_WIDGET (self->recent_projects_column_view));
+
+  /* close on escape */
+  z_gtk_window_make_escapable (GTK_WINDOW (self));
+
+  gtk_accessible_update_property (
+    GTK_ACCESSIBLE (self->recent_projects_column_view),
+    GTK_ACCESSIBLE_PROPERTY_LABEL, "Recent projects", -1);
 }

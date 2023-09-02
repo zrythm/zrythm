@@ -779,6 +779,9 @@ z_gtk_get_first_focusable_child (GtkWidget * parent);
 bool
 z_gtk_descendant_has_focus (GtkWidget * parent);
 
+void
+z_gtk_window_make_escapable (GtkWindow * self);
+
 /**
  * @}
  */

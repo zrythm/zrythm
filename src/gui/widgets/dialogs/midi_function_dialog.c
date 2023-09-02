@@ -5,6 +5,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/error.h"
+#include "utils/gtk.h"
 #include "utils/io.h"
 #include "utils/objects.h"
 #include "utils/resources.h"
@@ -421,16 +422,5 @@ midi_function_dialog_widget_init (
   gtk_box_append (self->vbox, GTK_WIDGET (self->page));
 
   /* close on escape */
-  GtkShortcutTrigger * trigger =
-    gtk_shortcut_trigger_parse_string ("Escape|<Control>w");
-  GtkShortcutAction * action =
-    gtk_named_action_new ("window.close");
-  GtkShortcut * esc_shortcut =
-    gtk_shortcut_new (trigger, action);
-  GtkShortcutController * sc =
-    GTK_SHORTCUT_CONTROLLER (gtk_shortcut_controller_new ());
-  gtk_shortcut_controller_add_shortcut (sc, esc_shortcut);
-  gtk_widget_add_controller (
-    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (sc));
-  /* note: can also use gtk_widget_class_add_binding_action (widget_class, GDK_KEY_Escape, 0, "window.close", NULL); */
+  z_gtk_window_make_escapable (GTK_WINDOW (self));
 }

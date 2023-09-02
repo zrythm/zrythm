@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <requires lib="Adw" version="4.0"/>
+  <requires lib="Adw" version="1.0"/>
   <requires lib="gtk" version="4.0"/>
   <template class="ExportDialogWidget" parent="GtkDialog">
     <property name="title" translatable="yes">Export As...</property>
