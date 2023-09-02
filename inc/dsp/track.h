@@ -775,9 +775,11 @@ NONNULL bool
 track_get_should_be_visible (const Track * self);
 
 /**
- * Returns the full visible height (main height +
- * height of all visible automation tracks + height
- * of all visible lanes).
+ * Returns the full visible height (main height + height of
+ * all visible automation tracks + height of all visible
+ * lanes).
+ *
+ * @memberof Track
  */
 NONNULL double
 track_get_full_visible_height (Track * const self);
@@ -1154,12 +1156,38 @@ void
 track_setup (Track * track);
 
 /**
- * Returns the automation tracklist if the track
- * type has one,
+ * Returns the automation tracklist if the track type has one,
  * or NULL if it doesn't (like chord tracks).
  */
-AutomationTracklist *
-track_get_automation_tracklist (Track * const track);
+static inline AutomationTracklist *
+track_get_automation_tracklist (Track * const track)
+{
+  g_return_val_if_fail (IS_TRACK (track), NULL);
+
+  switch (track->type)
+    {
+    case TRACK_TYPE_MARKER:
+    case TRACK_TYPE_FOLDER:
+      break;
+    case TRACK_TYPE_CHORD:
+    case TRACK_TYPE_AUDIO_BUS:
+    case TRACK_TYPE_AUDIO_GROUP:
+    case TRACK_TYPE_MIDI_BUS:
+    case TRACK_TYPE_MIDI_GROUP:
+    case TRACK_TYPE_INSTRUMENT:
+    case TRACK_TYPE_AUDIO:
+    case TRACK_TYPE_MASTER:
+    case TRACK_TYPE_MIDI:
+    case TRACK_TYPE_TEMPO:
+    case TRACK_TYPE_MODULATOR:
+      return &track->automation_tracklist;
+    default:
+      g_warn_if_reached ();
+      break;
+    }
+
+  return NULL;
+}
 
 /**
  * Returns the channel of the track, if the track

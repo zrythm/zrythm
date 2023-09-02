@@ -32,16 +32,16 @@ on_closed (
     port_find_from_identifier (&self->owner->port_id);
   if (self->selected_port && at_port != self->selected_port)
     {
-      /* set the previous automation track
-       * invisible */
-      self->owner->visible = 0;
+      /* set the previous automation track invisible */
+      AutomationTracklist * atl =
+        automation_track_get_automation_tracklist (self->owner);
+      automation_tracklist_set_at_visible (
+        atl, self->owner, false);
 
       g_message (
         "selected port: %s", self->selected_port->id.label);
 
       /* swap indices */
-      AutomationTracklist * atl =
-        automation_track_get_automation_tracklist (self->owner);
       AutomationTrack * selected_at =
         automation_tracklist_get_at_from_port (
           atl, self->selected_port);
@@ -50,7 +50,8 @@ on_closed (
         atl, self->owner, selected_at->index, F_NO_PUSH_DOWN);
 
       selected_at->created = true;
-      selected_at->visible = true;
+      automation_tracklist_set_at_visible (
+        atl, selected_at, true);
       EVENTS_PUSH (ET_AUTOMATION_TRACK_ADDED, selected_at);
     }
   else
@@ -165,6 +166,7 @@ create_model_for_ports (
   Track * track = automation_track_get_track (self->owner);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
+  g_return_val_if_fail (atl, NULL);
   for (int i = 0; i < atl->num_ats; i++)
     {
       AutomationTrack * at = atl->ats[i];

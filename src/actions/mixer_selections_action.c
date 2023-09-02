@@ -76,6 +76,7 @@ clone_ats (
     "cloning automation tracks for track %s", track->name);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
+  g_return_if_fail (atl);
   int count = 0;
   int regions_count = 0;
   for (int j = 0; j < ms->num_slots; j++)
@@ -759,6 +760,7 @@ copy_automation_from_track1_to_track2 (
 {
   AutomationTracklist * prev_atl =
     track_get_automation_tracklist (from_track);
+  g_return_val_if_fail (prev_atl, false);
   for (int j = 0; j < prev_atl->num_ats; j++)
     {
       /* get the previous at */
@@ -776,6 +778,7 @@ copy_automation_from_track1_to_track2 (
        * track */
       AutomationTracklist * atl =
         track_get_automation_tracklist (to_track);
+      g_return_val_if_fail (atl, false);
       for (int k = 0; k < atl->num_ats; k++)
         {
           AutomationTrack * at = atl->ats[k];

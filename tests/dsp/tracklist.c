@@ -30,6 +30,7 @@ create_automation_region (int track_pos)
     &start, &end, track_get_name_hash (track), 0, 0);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
+  g_return_if_fail (atl);
   bool success = track_add_region (
     track, region, atl->ats[0], 0, F_GEN_NAME,
     F_NO_PUBLISH_EVENTS, NULL);

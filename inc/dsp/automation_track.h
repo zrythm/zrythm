@@ -95,6 +95,9 @@ typedef struct AutomationTrack
    * Whether visible or not.
    *
    * Being created is a precondition for this.
+   *
+   * @important Must only be set with
+   *   automation_tracklist_set_at_visible().
    */
   bool visible;
 

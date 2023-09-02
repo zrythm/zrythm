@@ -435,9 +435,10 @@ _test_port_and_plugin_track_pos_after_move (
   /* get an automation track */
   AutomationTracklist * atl =
     track_get_automation_tracklist (src_track);
+  g_return_if_fail (atl);
   AutomationTrack * at = atl->ats[atl->num_ats - 1];
   at->created = true;
-  at->visible = true;
+  automation_tracklist_set_at_visible (atl, at, true);
 
   /* create an automation region */
   Position start_pos, end_pos;
@@ -617,10 +618,11 @@ test_move_two_plugins_one_slot_up (void)
   /* get an automation track */
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
+  g_return_if_fail (atl);
   AutomationTrack * at = atl->ats[atl->num_ats - 1];
   g_message ("automation track %s", at->port_id.label);
   at->created = true;
-  at->visible = true;
+  automation_tracklist_set_at_visible (atl, at, true);
 
   /* create an automation region */
   Position start_pos, end_pos;
@@ -647,12 +649,14 @@ test_move_two_plugins_one_slot_up (void)
   track = TRACKLIST->tracks[track_pos];
   g_assert_true (track_validate (track));
   atl = track_get_automation_tracklist (track);
+  g_return_if_fail (atl);
   at = atl->ats[atl->num_ats - 1];
 
   /* create some automation points */
   Port * port = port_find_from_identifier (&at->port_id);
   position_set_to_bar (&start_pos, 1);
   atl = track_get_automation_tracklist (track);
+  g_return_if_fail (atl);
   at = atl->ats[atl->num_ats - 1];
   g_assert_cmpint (at->num_regions, >, 0);
   region = at->regions[0];
@@ -1276,11 +1280,12 @@ _test_replace_instrument (
   /* get an automation track */
   AutomationTracklist * atl =
     track_get_automation_tracklist (src_track);
+  g_return_if_fail (atl);
   AutomationTrack * at = atl->ats[atl->num_ats - 1];
   g_assert_true (
     at->port_id.owner_type == PORT_OWNER_TYPE_PLUGIN);
   at->created = true;
-  at->visible = true;
+  automation_tracklist_set_at_visible (atl, at, true);
 
   /* create an automation region */
   Position start_pos, end_pos;
@@ -1326,6 +1331,7 @@ _test_replace_instrument (
 
   src_track = TRACKLIST->tracks[src_track_pos];
   atl = track_get_automation_tracklist (src_track);
+  g_return_if_fail (atl);
 
   /* verify automation is gone */
   num_regions = automation_tracklist_get_num_regions (atl);
@@ -1335,6 +1341,7 @@ _test_replace_instrument (
 
   /* verify automation is back */
   atl = track_get_automation_tracklist (src_track);
+  g_return_if_fail (atl);
   num_regions = automation_tracklist_get_num_regions (atl);
   g_assert_cmpint (num_regions, ==, 1);
 
@@ -1362,6 +1369,7 @@ _test_replace_instrument (
   /* verify automation is back */
   src_track = TRACKLIST->tracks[src_track_pos];
   atl = track_get_automation_tracklist (src_track);
+  g_return_if_fail (atl);
   num_regions = automation_tracklist_get_num_regions (atl);
   g_assert_cmpint (num_regions, ==, 1);
 
@@ -1378,6 +1386,7 @@ _test_replace_instrument (
 
   src_track = TRACKLIST->tracks[src_track_pos];
   atl = track_get_automation_tracklist (src_track);
+  g_return_if_fail (atl);
   num_regions = automation_tracklist_get_num_regions (atl);
   g_assert_cmpint (num_regions, ==, 0);
 
@@ -1385,6 +1394,7 @@ _test_replace_instrument (
 
   /* verify automation is back */
   atl = track_get_automation_tracklist (src_track);
+  g_return_if_fail (atl);
   num_regions = automation_tracklist_get_num_regions (atl);
   g_assert_cmpint (num_regions, ==, 1);
 

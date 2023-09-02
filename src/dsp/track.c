@@ -1261,11 +1261,6 @@ track_get_should_be_visible (const Track * self)
   return true;
 }
 
-/**
- * Returns the full visible height (main height +
- * height of all visible automation tracks + height
- * of all visible lanes).
- */
 double
 track_get_full_visible_height (Track * const self)
 {
@@ -1286,9 +1281,10 @@ track_get_full_visible_height (Track * const self)
         track_get_automation_tracklist (self);
       if (atl)
         {
-          for (int i = 0; i < atl->num_ats; i++)
+          for (size_t i = 0; i < atl->visible_ats->len; i++)
             {
-              AutomationTrack * at = atl->ats[i];
+              AutomationTrack * at = (AutomationTrack *)
+                g_ptr_array_index (atl->visible_ats, i);
               g_warn_if_fail (at->height > 0);
               if (at->visible)
                 height += at->height;
@@ -1627,6 +1623,7 @@ track_generate_automation_tracks (Track * track)
 
   if (track_type_has_channel (track->type))
     {
+      g_return_if_fail (atl);
       Channel * ch = track->channel;
 
       /* -- fader -- */
@@ -1635,7 +1632,7 @@ track_generate_automation_tracks (Track * track)
       at = automation_track_new (ch->fader->amp);
       automation_tracklist_add_at (atl, at);
       at->created = 1;
-      at->visible = 1;
+      automation_tracklist_set_at_visible (atl, at, true);
 
       /* balance */
       at = automation_track_new (ch->fader->balance);
@@ -1657,6 +1654,7 @@ track_generate_automation_tracks (Track * track)
 
   if (track_type_has_piano_roll (track->type))
     {
+      g_return_if_fail (atl);
       /* midi automatables */
       for (int i = 0; i < 16; i++)
         {
@@ -1689,7 +1687,8 @@ track_generate_automation_tracks (Track * track)
      * tracks for tempo track */
       at = automation_track_new (track->bpm_port);
       at->created = true;
-      at->visible = true;
+      g_return_if_fail (atl);
+      automation_tracklist_set_at_visible (atl, at, true);
       automation_tracklist_add_at (atl, at);
       at = automation_track_new (track->beats_per_bar_port);
       automation_tracklist_add_at (atl, at);
@@ -1697,6 +1696,7 @@ track_generate_automation_tracks (Track * track)
       automation_tracklist_add_at (atl, at);
       break;
     case TRACK_TYPE_MODULATOR:
+      g_return_if_fail (atl);
       for (int i = 0; i < track->num_modulator_macros; i++)
         {
           at = automation_track_new (
@@ -1704,7 +1704,8 @@ track_generate_automation_tracks (Track * track)
           if (i == 0)
             {
               at->created = true;
-              at->visible = true;
+              automation_tracklist_set_at_visible (
+                atl, at, true);
             }
           automation_tracklist_add_at (atl, at);
         }
@@ -2293,7 +2294,8 @@ track_set_automation_visible (Track * self, const bool visible)
           if (at)
             {
               at->created = true;
-              at->visible = true;
+              automation_tracklist_set_at_visible (
+                atl, at, true);
             }
           else
             {
@@ -2434,40 +2436,6 @@ track_remove_region (
           track_remove_empty_last_lanes (self);
         }
     }
-}
-
-/**
- * Returns the automation tracklist if the track type has one,
- * or NULL if it doesn't (like chord tracks).
- */
-AutomationTracklist *
-track_get_automation_tracklist (Track * const track)
-{
-  g_return_val_if_fail (IS_TRACK (track), NULL);
-
-  switch (track->type)
-    {
-    case TRACK_TYPE_MARKER:
-    case TRACK_TYPE_FOLDER:
-      break;
-    case TRACK_TYPE_CHORD:
-    case TRACK_TYPE_AUDIO_BUS:
-    case TRACK_TYPE_AUDIO_GROUP:
-    case TRACK_TYPE_MIDI_BUS:
-    case TRACK_TYPE_MIDI_GROUP:
-    case TRACK_TYPE_INSTRUMENT:
-    case TRACK_TYPE_AUDIO:
-    case TRACK_TYPE_MASTER:
-    case TRACK_TYPE_MIDI:
-    case TRACK_TYPE_TEMPO:
-    case TRACK_TYPE_MODULATOR:
-      return &track->automation_tracklist;
-    default:
-      g_warn_if_reached ();
-      break;
-    }
-
-  return NULL;
 }
 
 /**

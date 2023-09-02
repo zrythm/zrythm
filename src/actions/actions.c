@@ -4269,7 +4269,7 @@ DEFINE_SIMPLE (
           if (at->visible)
             continue;
 
-          at->visible = true;
+          automation_tracklist_set_at_visible (atl, at, true);
           automation_vis_changed = true;
         }
 
@@ -4313,7 +4313,7 @@ DEFINE_SIMPLE (
           if (!at->visible)
             continue;
 
-          at->visible = false;
+          automation_tracklist_set_at_visible (atl, at, false);
           automation_vis_changed = true;
         }
 
@@ -4369,6 +4369,7 @@ DEFINE_SIMPLE (
   Track * track = tracklist_get_track (TRACKLIST, track_pos);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
+  g_return_if_fail (atl);
   AutomationTrack * at = atl->ats[at_index];
   for (int j = 0; j < at->num_regions; j++)
     {

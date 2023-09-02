@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdlib.h>
@@ -28,12 +28,15 @@ automation_tracklist_init_loaded (
 {
   self->track = track;
   self->ats_size = (size_t) self->num_ats;
-  int               j;
-  AutomationTrack * at;
-  for (j = 0; j < self->num_ats; j++)
+  self->visible_ats = g_ptr_array_new ();
+  for (int j = 0; j < self->num_ats; j++)
     {
-      at = self->ats[j];
+      AutomationTrack * at = self->ats[j];
       automation_track_init_loaded (at, self);
+      if (at->visible)
+        {
+          g_ptr_array_add (self->visible_ats, at);
+        }
     }
 }
 
@@ -121,6 +124,7 @@ automation_tracklist_init (
   g_message ("initing automation tracklist...");
   self->schema_version = AUTOMATION_TRACKLIST_SCHEMA_VERSION;
 
+  self->visible_ats = g_ptr_array_new ();
   /*self->ats_size = 1;*/
   /*self->ats =*/
   /*object_new_n (self->ats_size, AutomationTrack *);*/
@@ -351,6 +355,10 @@ automation_tracklist_clone (
   for (int i = 0; i < src->num_ats; i++)
     {
       dest->ats[i] = automation_track_clone (src->ats[i]);
+      if (dest->ats[i]->visible)
+        {
+          g_ptr_array_add (dest->visible_ats, dest->ats[i]);
+        }
     }
 
   /* TODO create same automation lanes */
@@ -374,35 +382,6 @@ automation_tracklist_update_positions (
     {
       automation_track_update_positions (
         self->ats[i], from_ticks, bpm_change);
-    }
-}
-
-/**
- * Gets the currently visible AutomationTrack's
- * (regardless of whether the automation tracklist
- * is visible in the UI or not.
- */
-void
-automation_tracklist_get_visible_tracks (
-  AutomationTracklist * self,
-  AutomationTrack **    visible_tracks,
-  int *                 num_visible)
-{
-  *num_visible = 0;
-  for (int i = 0; i < self->num_ats; i++)
-    {
-      AutomationTrack * at = self->ats[i];
-      if (at->created && at->visible)
-        {
-          if (visible_tracks)
-            {
-              array_append (visible_tracks, *num_visible, at);
-            }
-          else
-            {
-              (*num_visible)++;
-            }
-        }
     }
 }
 
@@ -587,6 +566,30 @@ automation_tracklist_get_first_invisible_at (
   return NULL;
 }
 
+void
+automation_tracklist_set_at_visible (
+  AutomationTracklist * self,
+  AutomationTrack *     at,
+  bool                  visible)
+{
+  g_return_if_fail (at->created);
+  at->visible = visible;
+  guint index;
+  bool  found =
+    g_ptr_array_find (self->visible_ats, at, &index);
+  if (visible)
+    {
+      if (!found)
+        {
+          g_ptr_array_add (self->visible_ats, at);
+        }
+    }
+  else if (found)
+    {
+      g_ptr_array_remove_index (self->visible_ats, index);
+    }
+}
+
 /**
  * Removes the AutomationTrack from the
  * AutomationTracklist, optionally freeing it.
@@ -599,6 +602,8 @@ automation_tracklist_remove_at (
   bool                  fire_events)
 {
   int deleted_idx = 0;
+
+  g_ptr_array_remove (self->visible_ats, at);
 
 #if 0
   g_debug (
@@ -633,10 +638,7 @@ automation_tracklist_remove_at (
 
   /* if the deleted at was the last visible/created
    * at, make the next one visible */
-  int num_visible;
-  automation_tracklist_get_visible_tracks (
-    self, NULL, &num_visible);
-  if (num_visible == 0)
+  if (self->visible_ats->len == 0)
     {
       AutomationTrack * first_invisible_at =
         automation_tracklist_get_first_invisible_at (self);
@@ -644,7 +646,8 @@ automation_tracklist_remove_at (
         {
           if (!first_invisible_at->created)
             first_invisible_at->created = 1;
-          first_invisible_at->visible = 1;
+          automation_tracklist_set_at_visible (
+            self, first_invisible_at, true);
 
           if (fire_events)
             {
@@ -828,6 +831,9 @@ automation_tracklist_print_regions (AutomationTracklist * self)
 void
 automation_tracklist_free_members (AutomationTracklist * self)
 {
+  object_free_w_func_and_null (
+    g_ptr_array_unref, self->visible_ats);
+
   int size = self->num_ats;
   self->num_ats = 0;
   for (int i = 0; i < size; i++)

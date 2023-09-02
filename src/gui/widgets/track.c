@@ -1304,7 +1304,8 @@ click_released (
                 {
                   if (!new_at->created)
                     new_at->created = 1;
-                  new_at->visible = 1;
+                  automation_tracklist_set_at_visible (
+                    atl, new_at, true);
 
                   /* move it after the clicked
                    * automation track */
@@ -1319,12 +1320,10 @@ click_released (
             {
               /* don't allow deleting if no other
                * visible automation tracks */
-              int num_visible;
-              automation_tracklist_get_visible_tracks (
-                atl, NULL, &num_visible);
-              if (num_visible > 1)
+              if (atl->visible_ats->len > 1)
                 {
-                  at->visible = 0;
+                  automation_tracklist_set_at_visible (
+                    atl, at, false);
                   EVENTS_PUSH (
                     ET_AUTOMATION_TRACK_REMOVED, at);
                 }

@@ -28,12 +28,9 @@ test_set_at_index (void)
   track_set_automation_visible (master, true);
   AutomationTracklist * atl =
     track_get_automation_tracklist (master);
-  AutomationTrack ** visible_ats =
-    calloc (100000, sizeof (AutomationTrack *));
-  int num_visible = 0;
-  automation_tracklist_get_visible_tracks (
-    atl, visible_ats, &num_visible);
-  AutomationTrack * first_vis_at = visible_ats[0];
+  g_return_if_fail (atl);
+  AutomationTrack * first_vis_at = (AutomationTrack *)
+    g_ptr_array_index (atl->visible_ats, 0);
 
   /* create a region and set it as clip editor
    * region */
@@ -86,19 +83,16 @@ test_region_in_2nd_automation_track_get_muted (void)
   track_set_automation_visible (master, true);
   AutomationTracklist * atl =
     track_get_automation_tracklist (master);
-  AutomationTrack ** visible_ats =
-    calloc (100000, sizeof (AutomationTrack *));
-  int num_visible = 0;
-  automation_tracklist_get_visible_tracks (
-    atl, visible_ats, &num_visible);
-  AutomationTrack * first_vis_at = visible_ats[0];
+  g_return_if_fail (atl);
+  AutomationTrack * first_vis_at = (AutomationTrack *)
+    g_ptr_array_index (atl->visible_ats, 0);
 
   /* create a new automation track */
   AutomationTrack * new_at =
     automation_tracklist_get_first_invisible_at (atl);
   if (!new_at->created)
     new_at->created = 1;
-  new_at->visible = true;
+  automation_tracklist_set_at_visible (atl, new_at, true);
 
   /* move it after the clicked
    * automation track */
@@ -152,7 +146,9 @@ test_curve_value (void)
   g_assert_nonnull (fader_at);
   if (!fader_at->created)
     fader_at->created = 1;
-  fader_at->visible = true;
+  AutomationTracklist * atl =
+    automation_track_get_automation_tracklist (fader_at);
+  automation_tracklist_set_at_visible (atl, fader_at, true);
   Port * port = port_find_from_identifier (&fader_at->port_id);
 
   /* create region */

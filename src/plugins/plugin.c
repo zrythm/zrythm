@@ -663,6 +663,7 @@ plugin_remove_ats_from_automation_tracklist (
   Track *               track = plugin_get_track (pl);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
+  g_return_if_fail (atl);
   for (int i = atl->num_ats - 1; i >= 0; i--)
     {
       AutomationTrack * at = atl->ats[i];
@@ -1274,8 +1275,10 @@ plugin_move_automation (
 
   AutomationTracklist * prev_atl =
     track_get_automation_tracklist (prev_track);
+  g_return_if_fail (prev_atl);
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
+  g_return_if_fail (atl);
 
   unsigned int name_hash = track_get_name_hash (track);
   for (int i = prev_atl->num_ats - 1; i >= 0; i--)

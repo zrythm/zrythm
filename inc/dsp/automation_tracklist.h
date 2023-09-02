@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -60,15 +60,20 @@ typedef struct AutomationTracklist
   size_t ats_size;
 
   /**
-   * Cache of automation tracks in record mode,
-   * used in recording manager to avoid looping over
-   * all automation tracks.
+   * Cache of automation tracks in record mode, used in
+   * recording manager to avoid looping over all automation
+   * tracks.
    *
    * Its size should be as large as
    * AutomationTracklist.num_ats.
    */
   AutomationTrack ** ats_in_record_mode;
   int                num_ats_in_record_mode;
+
+  /**
+   * Cache of visible automation tracks.
+   */
+  GPtrArray * visible_ats;
 
   /**
    * Pointer back to the track.
@@ -137,17 +142,6 @@ automation_tracklist_update_positions (
   bool                  from_ticks,
   bool                  bpm_change);
 
-/**
- * Gets the currently visible AutomationTrack's
- * (regardless of whether the automation tracklist
- * is visible in the UI or not.
- */
-void
-automation_tracklist_get_visible_tracks (
-  AutomationTracklist * self,
-  AutomationTrack **    visible_tracks,
-  int *                 num_visible);
-
 AutomationTrack *
 automation_tracklist_get_prev_visible_at (
   AutomationTracklist * self,
@@ -157,6 +151,12 @@ AutomationTrack *
 automation_tracklist_get_next_visible_at (
   AutomationTracklist * self,
   AutomationTrack *     at);
+
+NONNULL void
+automation_tracklist_set_at_visible (
+  AutomationTracklist * self,
+  AutomationTrack *     at,
+  bool                  visible);
 
 /**
  * Returns the AutomationTrack after delta visible

@@ -130,9 +130,10 @@ _test_port_and_plugin_track_pos_after_duplication (
   /* get an automation track */
   AutomationTracklist * atl =
     track_get_automation_tracklist (src_track);
+  g_return_if_fail (atl);
   AutomationTrack * at = atl->ats[atl->num_ats - 1];
   at->created = true;
-  at->visible = true;
+  automation_tracklist_set_at_visible (atl, at, true);
 
   /* create an automation region */
   Position start_pos, end_pos;
@@ -204,6 +205,7 @@ _test_port_and_plugin_track_pos_after_duplication (
 
   /* move automation in 2nd track and undo/redo */
   atl = track_get_automation_tracklist (dest_track);
+  g_return_if_fail (atl);
   ap = atl->ats[atl->num_ats - 1]->regions[0]->aps[0];
   arranger_object_select (
     (ArrangerObject *) ap, true, false, F_NO_PUBLISH_EVENTS);
@@ -291,9 +293,10 @@ _test_undo_track_deletion (
   /* get an automation track */
   AutomationTracklist * atl =
     track_get_automation_tracklist (helm_track);
+  g_return_if_fail (atl);
   AutomationTrack * at = atl->ats[40];
   at->created = true;
-  at->visible = true;
+  automation_tracklist_set_at_visible (atl, at, true);
 
   /* create an automation region */
   Position start_pos, end_pos;
@@ -861,9 +864,10 @@ test_ins_track_deletion_w_automation (void)
   /* get the instrument cutoff automation track */
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
+  g_return_if_fail (atl);
   AutomationTrack * at = atl->ats[41];
   at->created = true;
-  at->visible = true;
+  automation_tracklist_set_at_visible (atl, at, true);
 
   /* create an automation region */
   Position start_pos, end_pos;
@@ -900,7 +904,7 @@ test_ins_track_deletion_w_automation (void)
   /* get the filter cutoff automation track */
   at = atl->ats[141];
   at->created = true;
-  at->visible = true;
+  automation_tracklist_set_at_visible (atl, at, true);
 
   /* create an automation region */
   position_set_to_bar (&start_pos, 2);

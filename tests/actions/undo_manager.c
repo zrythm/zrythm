@@ -31,6 +31,7 @@ perform_create_region_action (void)
   track = TRACKLIST->tracks[track_pos];
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);
+  g_return_if_fail (atl);
   AutomationTrack * at = atl->ats[0];
   bool              success = track_add_region (
     track, r, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
