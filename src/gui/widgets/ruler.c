@@ -1875,7 +1875,8 @@ ruler_widget_get_visible_rect (
   RulerWidget *  self,
   GdkRectangle * rect)
 {
-  gtk_widget_get_allocation (GTK_WIDGET (self), rect);
+  rect->width = gtk_widget_get_width (GTK_WIDGET (self));
+  rect->height = gtk_widget_get_height (GTK_WIDGET (self));
   const EditorSettings * settings =
     ruler_widget_get_editor_settings (self);
   g_return_if_fail (settings);

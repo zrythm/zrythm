@@ -199,9 +199,6 @@ editor_ruler_on_drag_update (
                 F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
               self->last_set_pos = editor_pos;
             }
-
-          /*ruler_marker_widget_update_tooltip (*/
-          /*self->playhead, 1);*/
         }
     }
 }

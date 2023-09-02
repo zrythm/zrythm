@@ -25,7 +25,7 @@
             <child>
               <object class="GtkBox" id="chord_highlight_box">
                 <child>
-                  <object class="GtkComboBox" id="chord_highlighting"/>
+                  <object class="GtkDropDown" id="chord_highlighting"/>
                 </child>
               </object>
             </child>

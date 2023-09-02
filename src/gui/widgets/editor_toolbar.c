@@ -30,11 +30,12 @@ G_DEFINE_TYPE (
 
 static void
 on_highlighting_changed (
-  GtkComboBox *         widget,
-  EditorToolbarWidget * self)
+  GtkDropDown * dropdown,
+  GParamSpec *  pspec,
+  gpointer      user_data)
 {
   piano_roll_set_highlighting (
-    PIANO_ROLL, gtk_combo_box_get_active (widget));
+    PIANO_ROLL, gtk_drop_down_get_selected (dropdown));
 }
 
 static void
@@ -267,44 +268,20 @@ editor_toolbar_widget_setup (EditorToolbarWidget * self)
     self->quantize_box, QUANTIZE_OPTIONS_EDITOR);
 
   /* setup highlighting */
-  GtkTreeIter    iter;
-  GtkListStore * list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
-  gtk_list_store_append (list_store, &iter);
-  gtk_list_store_set (
-    list_store, &iter, 0, "draw-highlight", 1,
-    _ ("No Highlight"), 2, "highlight", -1);
-  gtk_list_store_append (list_store, &iter);
-  gtk_list_store_set (
-    list_store, &iter, 0, "draw-highlight", 1,
-    _ ("Highlight Chord"), 2, "chord", -1);
-  gtk_list_store_append (list_store, &iter);
-  gtk_list_store_set (
-    list_store, &iter, 0, "draw-highlight", 1,
-    _ ("Highlight Scale"), 2, "scale", -1);
-  gtk_list_store_append (list_store, &iter);
-  gtk_list_store_set (
-    list_store, &iter, 0, "draw-highlight", 1,
-    _ ("Highlight Both"), 2, "both", -1);
-  GtkComboBox * combo =
-    GTK_COMBO_BOX (self->chord_highlighting);
-  gtk_combo_box_set_model (combo, GTK_TREE_MODEL (list_store));
-  gtk_combo_box_set_active (combo, PIANO_ROLL->highlighting);
-  GtkCellRenderer * cell = gtk_cell_renderer_pixbuf_new ();
-  gtk_cell_layout_pack_start (
-    GTK_CELL_LAYOUT (combo), cell, TRUE);
-  gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (combo), cell, "icon-name", ICON_NAME_COL,
-    NULL);
-  cell = gtk_cell_renderer_text_new ();
-  gtk_cell_layout_pack_start (
-    GTK_CELL_LAYOUT (combo), cell, TRUE);
-  gtk_cell_layout_set_attributes (
-    GTK_CELL_LAYOUT (combo), cell, "text", LABEL_COL, NULL);
+  GtkStringList * slist = gtk_string_list_new (NULL);
+  gtk_string_list_append (slist, _ ("No Highlight"));
+  gtk_string_list_append (slist, _ ("Highlight Chord"));
+  gtk_string_list_append (slist, _ ("Highlight Scale"));
+  gtk_string_list_append (slist, _ ("Highlight Both"));
+  GtkDropDown * dropdown =
+    GTK_DROP_DOWN (self->chord_highlighting);
+  gtk_drop_down_set_model (dropdown, G_LIST_MODEL (slist));
+  gtk_drop_down_set_selected (
+    dropdown, PIANO_ROLL->highlighting);
 
   /* setup signals */
   g_signal_connect (
-    G_OBJECT (self->chord_highlighting), "changed",
+    G_OBJECT (self->chord_highlighting), "notify::selected",
     G_CALLBACK (on_highlighting_changed), self);
 
   editor_toolbar_widget_refresh (self);

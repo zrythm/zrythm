@@ -6357,12 +6357,12 @@ arranger_widget_scroll_until_obj (
   int              left,
   int              padding)
 {
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (GTK_WIDGET (self), &allocation);
   EditorSettings * settings =
     arranger_widget_get_editor_settings (self);
   g_return_if_fail (settings);
 
+  int width = gtk_widget_get_width (GTK_WIDGET (self));
+  int height = gtk_widget_get_height (GTK_WIDGET (self));
   if (horizontal)
     {
       int start_px =
@@ -6385,7 +6385,7 @@ arranger_widget_scroll_until_obj (
 
       if (
         start_px <= settings->scroll_start_x
-        || end_px >= settings->scroll_start_x + allocation.width)
+        || end_px >= settings->scroll_start_x + width)
         {
           if (left)
             {
@@ -6394,7 +6394,7 @@ arranger_widget_scroll_until_obj (
             }
           else
             {
-              int tmp = (end_px + padding) - allocation.width;
+              int tmp = (end_px + padding) - width;
               editor_settings_set_scroll_start_x (
                 settings, tmp, F_NO_VALIDATE);
             }
@@ -6407,8 +6407,7 @@ arranger_widget_scroll_until_obj (
       int end_px = obj->full_rect.y + obj->full_rect.height;
       if (
         start_px <= settings->scroll_start_y
-        || end_px
-             >= settings->scroll_start_y + allocation.height)
+        || end_px >= settings->scroll_start_y + height)
         {
           if (up)
             {
@@ -6417,7 +6416,7 @@ arranger_widget_scroll_until_obj (
             }
           else
             {
-              int tmp = (end_px + padding) - allocation.height;
+              int tmp = (end_px + padding) - height;
               editor_settings_set_scroll_start_y (
                 settings, tmp, F_NO_VALIDATE);
             }

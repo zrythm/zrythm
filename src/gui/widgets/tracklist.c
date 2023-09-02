@@ -184,10 +184,6 @@ on_dnd_motion (
 
   if (hit_tw)
     {
-      GtkAllocation allocation;
-      gtk_widget_get_allocation (
-        GTK_WIDGET (hit_tw), &allocation);
-
       graphene_point_t wpt;
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (self), GTK_WIDGET (hit_tw),
@@ -421,9 +417,6 @@ on_dnd_drop (
   /* determine if moving or copying */
   GdkDragAction action =
     z_gtk_drop_target_get_selected_action (drop_target);
-
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (GTK_WIDGET (hit_tw), &allocation);
 
   graphene_point_t wpt;
   bool             success = gtk_widget_compute_point (

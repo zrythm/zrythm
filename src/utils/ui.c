@@ -215,9 +215,6 @@ ui_get_hit_child (
       if (!gtk_widget_get_visible (child))
         continue;
 
-      GtkAllocation allocation;
-      gtk_widget_get_allocation (child, &allocation);
-
       graphene_point_t wpt;
       bool             success = gtk_widget_compute_point (
         GTK_WIDGET (parent), GTK_WIDGET (child),
@@ -225,9 +222,11 @@ ui_get_hit_child (
       g_return_val_if_fail (success, NULL);
 
       /* if hit */
+      int width = gtk_widget_get_width (GTK_WIDGET (child));
+      int height = gtk_widget_get_height (GTK_WIDGET (child));
       if (
-        wpt.x >= 0 && wpt.x <= allocation.width && wpt.y >= 0
-        && wpt.y <= allocation.height)
+        wpt.x >= 0 && wpt.x <= width && wpt.y >= 0
+        && wpt.y <= height)
         {
           /* if type matches */
           if (G_TYPE_CHECK_INSTANCE_TYPE (child, type))
@@ -472,9 +471,6 @@ ui_is_child_hit (
   const double x_padding,
   const double y_padding)
 {
-  GtkAllocation allocation;
-  gtk_widget_get_allocation (child, &allocation);
-
   graphene_point_t wpt;
   bool             success = gtk_widget_compute_point (
     GTK_WIDGET (parent), GTK_WIDGET (child),
@@ -484,10 +480,12 @@ ui_is_child_hit (
   //g_message ("wpt.x wpt.y %d %d", wpt.x, wpt.y);
 
   /* if hit */
+  int width = gtk_widget_get_width (GTK_WIDGET (child));
+  int height = gtk_widget_get_height (GTK_WIDGET (child));
   if (
     (!check_x
-     || (wpt.x >= -x_padding && wpt.x <= allocation.width + x_padding))
-    && (!check_y || (wpt.y >= -y_padding && wpt.y <= allocation.height + y_padding)))
+     || (wpt.x >= -x_padding && wpt.x <= width + x_padding))
+    && (!check_y || (wpt.y >= -y_padding && wpt.y <= height + y_padding)))
     {
       return 1;
     }

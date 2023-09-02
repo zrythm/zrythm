@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/chord_descriptor.h"
@@ -159,11 +159,8 @@ on_drag_begin (
   self->drag_start_x = start_x;
   self->drag_start_y = start_y;
 
-  gtk_gesture_set_sequence_state (
-    GTK_GESTURE (gesture),
-    gtk_gesture_single_get_current_sequence (
-      GTK_GESTURE_SINGLE (gesture)),
-    GTK_EVENT_SEQUENCE_CLAIMED);
+  gtk_gesture_set_state (
+    GTK_GESTURE (gesture), GTK_EVENT_SEQUENCE_CLAIMED);
 }
 
 static void
