@@ -358,10 +358,10 @@ cdata.set (
 cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
 cdata.set_quoted (
   'ISSUE_TRACKER_URL',
-  'https://sr.ht/~alextee/zrythm/trackers')
+  'https://gitlab.zrythm.org/zrythm/zrythm/-/issues')
 cdata.set_quoted (
   'NEW_ISSUE_URL',
-  'https://todo.sr.ht/~alextee/zrythm-bug')
+  'https://gitlab.zrythm.org/zrythm/zrythm/-/issues/new')
 cdata.set_quoted (
   'NEW_ISSUE_EMAIL',
   '~alextee/zrythm-bug@todo.sr.ht')
@@ -379,7 +379,7 @@ cdata.set_quoted (
   'https://manual.zrythm.org/en/index.html')
 cdata.set_quoted (
   'LICENSE_URL',
-  'https://git.sr.ht/~alextee/zrythm/tree/master/item/COPYING')
+  'https://gitlab.zrythm.org/zrythm/zrythm/-/raw/master/LICENSES/LicenseRef-ZrythmLicense.txt')
 cdata.set_quoted (
   'BUG_REPORT_API_ENDPOINT',
   'https://accounts.zrythm.org/api/v1/error-reports/new')
