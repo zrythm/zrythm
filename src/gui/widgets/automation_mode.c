@@ -314,8 +314,11 @@ automation_mode_widget_draw (
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          (float) (x + AUTOMATION_MODE_HPADDING + i * (2 * AUTOMATION_MODE_HPADDING) + total_text_widths),
-          (float) ((y + self->height / 2) - self->text_heights[i] / 2)));
+          (float) (x + AUTOMATION_MODE_HPADDING
+                   + i * (2 * AUTOMATION_MODE_HPADDING)
+                   + total_text_widths),
+          (float) ((y + self->height / 2)
+                   - self->text_heights[i] / 2)));
       char mode_str[400];
       if (i == AUTOMATION_MODE_RECORD)
         {

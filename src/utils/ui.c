@@ -359,10 +359,9 @@ px_to_frames (double px, int has_padding, RulerWidget * ruler)
         px = 0.0;
     }
 
-  return
-    (signed_frame_t)
-    (((double) AUDIO_ENGINE->frames_per_tick * px) /
-    ruler->px_per_tick);
+  return (
+    signed_frame_t) (((double) AUDIO_ENGINE->frames_per_tick * px)
+                     / ruler->px_per_tick);
 }
 
 /**

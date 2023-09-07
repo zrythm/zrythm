@@ -214,12 +214,10 @@ draw_loop_points (
   for (int i = 0; i < num_loops; i++)
     {
       x_px =
-        (int)
-        ((double)
-         ((loop_end_ticks + loop_ticks * i)
-          - clip_start_ticks)
-         /* adjust for clip_start */
-         * MW_RULER->px_per_tick);
+        (int) ((double) ((loop_end_ticks + loop_ticks * i)
+                         - clip_start_ticks)
+               /* adjust for clip_start */
+               * MW_RULER->px_per_tick);
 
       if (
         /* if px is vixible */
@@ -1582,7 +1580,8 @@ region_draw (
   gtk_snapshot_append_texture ( \
     snapshot, arranger->name, \
     &GRAPHENE_RECT_INIT ( \
-      (float) (full_rect.width - (size + paddingh) * (icons_drawn + 1)), \
+      (float) (full_rect.width \
+               - (size + paddingh) * (icons_drawn + 1)), \
       (float) paddingv, (float) size, (float) size)); \
   icons_drawn++
 

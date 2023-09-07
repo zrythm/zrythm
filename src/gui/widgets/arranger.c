@@ -3811,7 +3811,8 @@ on_drag_end_automation (ArrangerWidget * self)
         double           ticks_diff =
           obj->pos.ticks - start_obj->pos.ticks;
         double norm_value_diff =
-          (double) (ap->normalized_val - start_ap->normalized_val);
+          (double) (ap->normalized_val
+                    - start_ap->normalized_val);
         GError * err = NULL;
         bool     ret =
           arranger_selections_action_perform_move_automation (

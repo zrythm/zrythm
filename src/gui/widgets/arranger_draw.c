@@ -779,7 +779,9 @@ draw_audio_bg (
     snapshot,
     &GRAPHENE_POINT_INIT (
       (float) (gain_txt_padding + gain_line_start_x),
-      (float) (gain_txt_padding + (int) ((double) rect->height * (1.0 - gain_fader_val)))));
+      (float) (gain_txt_padding
+               + (int) ((double) rect->height
+                        * (1.0 - gain_fader_val)))));
   gtk_snapshot_append_layout (
     snapshot, self->audio_layout,
     &Z_GDK_RGBA_INIT (1, 1, 1, 1));

@@ -1316,9 +1316,8 @@ fader_process (
                       midi_byte_t prev_vel =
                         midi_get_velocity (ev->raw_buffer);
                       midi_byte_t new_vel =
-                        (midi_byte_t)
-                        ((float) prev_vel *
-                         self->amp->control);
+                        (midi_byte_t) ((float) prev_vel
+                                       * self->amp->control);
                       midi_event_set_velocity (
                         ev, MIN (new_vel, 127));
                     }

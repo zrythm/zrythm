@@ -48,7 +48,8 @@ init_common (TrackProcessor * self)
                * [2] (unused) = control */
               midi_byte_t buf[3];
               buf[0] =
-                (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | (midi_byte_t) i);
+                (midi_byte_t) (MIDI_CH1_CTRL_CHANGE
+                               | (midi_byte_t) i);
               buf[1] = (midi_byte_t) j;
               buf[2] = 0;
 

@@ -935,7 +935,9 @@ on_scroll (
             *self->note_length = 0;
           else
             *self->note_length =
-              (NoteLength) (num > NOTE_LENGTH_1_128 ? NOTE_LENGTH_1_128 : num);
+              (NoteLength) (num > NOTE_LENGTH_1_128
+                              ? NOTE_LENGTH_1_128
+                              : num);
         }
       break;
     case DIGITAL_METER_TYPE_NOTE_TYPE:
@@ -946,7 +948,9 @@ on_scroll (
             *self->note_type = 0;
           else
             *self->note_type =
-              (NoteType) (num > NOTE_TYPE_TRIPLET ? NOTE_TYPE_TRIPLET : num);
+              (NoteType) (num > NOTE_TYPE_TRIPLET
+                            ? NOTE_TYPE_TRIPLET
+                            : num);
         }
       break;
     case DIGITAL_METER_TYPE_TIMESIG:
@@ -1158,7 +1162,9 @@ drag_update (
             *self->note_length = 0;
           else
             *self->note_length =
-              (NoteLength) (num > NOTE_LENGTH_1_128 ? NOTE_LENGTH_1_128 : num);
+              (NoteLength) (num > NOTE_LENGTH_1_128
+                              ? NOTE_LENGTH_1_128
+                              : num);
         }
       break;
     case DIGITAL_METER_TYPE_NOTE_TYPE:

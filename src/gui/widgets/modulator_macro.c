@@ -77,10 +77,9 @@ on_inputs_draw (
       for (int i = 0; i < port->num_srcs; i++)
         {
           double val_h =
-            (double)
-            ((port->srcs[i]->buf[0] - port->minf) /
-             (port->maxf - port->minf)) *
-            (double) height;
+            (double) ((port->srcs[i]->buf[0] - port->minf)
+                      / (port->maxf - port->minf))
+            * (double) height;
           cairo_set_source_rgba (cr, 1, 1, 0, 1);
           cairo_rectangle (
             cr, val_w * (double) i, (double) height - val_h,
@@ -115,7 +114,8 @@ on_output_draw (
 
   cairo_set_source_rgba (cr, 1, 1, 0, 1);
   double val_h =
-    (double) ((port->buf[0] - port->minf) / (port->maxf - port->minf))
+    (double) ((port->buf[0] - port->minf)
+              / (port->maxf - port->minf))
     * (double) height;
   cairo_rectangle (cr, 0, (double) height - val_h, width, 1);
   cairo_fill (cr);

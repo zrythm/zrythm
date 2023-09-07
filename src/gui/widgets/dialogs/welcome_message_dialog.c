@@ -69,8 +69,7 @@ welcome_message_dialog_new (GtkWindow * parent)
   char * trademarks = g_strdup_printf (
     _ ("Zrythm and the Zrythm logo are "
        "%strademarks of Alexandros Theodotou%s."),
-    "<a href=\"" TRADEMARK_POLICY_URL "\">",
-    "</a>");
+    "<a href=\"" TRADEMARK_POLICY_URL "\">", "</a>");
   g_string_append_printf (gstr, "\n\n%s", trademarks);
   g_free (trademarks);
 #endif

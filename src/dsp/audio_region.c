@@ -412,10 +412,11 @@ audio_region_fill_stereo_ports (
   size_t    buff_index_start = (size_t) clip->num_frames + 16;
   size_t    buff_size = 0;
   nframes_t prev_offset = time_nfo->local_offset;
-  for (
-    unsigned_frame_t j =
-      (unsigned_frame_t) ((r_local_frames_at_start < 0) ? -r_local_frames_at_start : 0);
-    j < time_nfo->nframes; j++)
+  for (unsigned_frame_t j =
+         (unsigned_frame_t) ((r_local_frames_at_start < 0)
+                               ? -r_local_frames_at_start
+                               : 0);
+       j < time_nfo->nframes; j++)
     {
       unsigned_frame_t current_local_frame =
         time_nfo->local_offset + j;
@@ -534,7 +535,8 @@ audio_region_fill_stereo_ports (
 
       /* current frame local to region start */
       const signed_frame_t current_local_frame =
-        (signed_frame_t) (time_nfo->g_start_frame + current_cycle_frame)
+        (signed_frame_t) (time_nfo->g_start_frame
+                          + current_cycle_frame)
         - r_obj->pos.frames;
 
       /* skip to fade out (or builtin fade out) if

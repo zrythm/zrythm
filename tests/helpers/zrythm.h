@@ -216,8 +216,8 @@ static void
 watch_parent (gint fd)
 {
   GIOChannel * channel;
-  GPollFD fds[1];
-  GArray * pids_to_kill;
+  GPollFD      fds[1];
+  GArray *     pids_to_kill;
 
   channel = g_io_channel_unix_new (fd);
 
@@ -229,10 +229,10 @@ watch_parent (gint fd)
 
   do
     {
-      gint num_events;
-      gchar * command = NULL;
-      guint pid;
-      guint n;
+      gint     num_events;
+      gchar *  command = NULL;
+      guint    pid;
+      guint    n;
       GError * error = NULL;
 
       num_events = g_poll (fds, 1, -1);
@@ -297,9 +297,9 @@ watch_parent (gint fd)
 static GIOChannel *
 watcher_init (void)
 {
-  static gsize started = 0;
+  static gsize        started = 0;
   static GIOChannel * channel = NULL;
-  int errsv;
+  int                 errsv;
 
   if (g_once_init_enter (&started))
     {
@@ -353,8 +353,8 @@ static void
 watcher_send_command (const gchar * command)
 {
   GIOChannel * channel;
-  GError * error = NULL;
-  GIOStatus status;
+  GError *     error = NULL;
+  GIOStatus    status;
 
   channel = watcher_init ();
 

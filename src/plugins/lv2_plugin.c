@@ -1313,11 +1313,10 @@ run (Lv2Plugin * plugin, const nframes_t nframes)
 
   /* Check if it's time to send updates to the UI */
   plugin->event_delta_t += nframes;
-  bool send_ui_updates = false;
+  bool     send_ui_updates = false;
   uint32_t update_frames =
-    (uint32_t)
-    ((float) AUDIO_ENGINE->sample_rate /
-     plugin->plugin->ui_update_hz);
+    (uint32_t) ((float) AUDIO_ENGINE->sample_rate
+                / plugin->plugin->ui_update_hz);
   if (
     have_custom_ui && plugin->plugin->visible
     && (plugin->event_delta_t > update_frames))
@@ -3015,7 +3014,8 @@ lv2_plugin_process (
       Position gpos;
       position_from_frames (
         &gpos,
-        (signed_frame_t) (time_nfo->g_start_frame + time_nfo->nframes));
+        (signed_frame_t) (time_nfo->g_start_frame
+                          + time_nfo->nframes));
       self->gframes = (unsigned_frame_t) gpos.frames;
       self->rolling = 1;
     }

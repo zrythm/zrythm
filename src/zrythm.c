@@ -364,7 +364,7 @@ zrythm_get_prefix (void)
   return io_get_registry_string_val ("InstallPath");
 #elif defined(__APPLE__) && defined(INSTALLER_VER)
   char bundle_path[PATH_MAX];
-  int ret = io_get_bundle_path (bundle_path);
+  int  ret = io_get_bundle_path (bundle_path);
   g_return_val_if_fail (ret == 0, NULL);
   return io_path_get_parent_dir (bundle_path);
 #elif defined(APPIMAGE_BUILD)

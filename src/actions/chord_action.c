@@ -129,8 +129,8 @@ do_or_undo (ChordAction * self, bool _do, GError ** error)
     case CHORD_ACTION_ALL:
       chord_editor_apply_chords (
         CHORD_EDITOR,
-        (const ChordDescriptor **)
-        (_do ? self->chords_after : self->chords_before),
+        (const ChordDescriptor **) (_do ? self->chords_after
+                                        : self->chords_before),
         false);
       EVENTS_PUSH (ET_CHORDS_UPDATED, NULL);
       break;

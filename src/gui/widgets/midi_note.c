@@ -156,9 +156,8 @@ midi_note_draw (MidiNote * self, GtkSnapshot * snapshot)
         snapshot,
         &GRAPHENE_POINT_INIT (
           REGION_NAME_BOX_PADDING + (float) full_rect.x,
-          (float)
-          (fontsize_ratio * REGION_NAME_BOX_PADDING +
-             (float) full_rect.y)));
+          (float) (fontsize_ratio * REGION_NAME_BOX_PADDING
+                   + (float) full_rect.y)));
       pango_layout_set_markup (self->layout, fontize_str, -1);
       gtk_snapshot_append_layout (snapshot, self->layout, &c2);
       gtk_snapshot_restore (snapshot);

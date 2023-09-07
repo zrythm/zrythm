@@ -176,14 +176,18 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         {
           sprintf (
             str, "%s%d%s", self->prefix,
-            (int) (self->convert_to_percentage ? real_val * 100 : real_val),
+            (int) (self->convert_to_percentage
+                     ? real_val * 100
+                     : real_val),
             self->suffix);
         }
       else if (self->decimals < 5)
         {
           sprintf (
             str, "%s%.*f%s", self->prefix, self->decimals,
-            (double) (self->convert_to_percentage ? real_val * 100.f : real_val),
+            (double) (self->convert_to_percentage
+                        ? real_val * 100.f
+                        : real_val),
             self->suffix);
         }
       else

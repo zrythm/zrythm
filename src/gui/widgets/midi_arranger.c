@@ -247,7 +247,9 @@ midi_arranger_widget_set_hovered_note (
           /* redraw the previous note area to
            * unhover it */
           rect.y =
-            (int) (adj_px_per_key * (127.0 - (double) self->hovered_note) - 1.0);
+            (int) (adj_px_per_key
+                     * (127.0 - (double) self->hovered_note)
+                   - 1.0);
           rect.height = (int) adj_px_per_key;
         }
       self->hovered_note = pitch;
@@ -256,7 +258,8 @@ midi_arranger_widget_set_hovered_note (
         {
           /* redraw newly hovered note area */
           rect.y =
-            (int) (adj_px_per_key * (127.0 - (double) pitch) - 1);
+            (int) (adj_px_per_key * (127.0 - (double) pitch)
+                   - 1);
           rect.height = (int) adj_px_per_key;
         }
     }

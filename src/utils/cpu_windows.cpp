@@ -120,7 +120,8 @@ cpu_windows_get_usage (int pid)
     }
 
   cpu =
-    (int) ((system_time_delta * 100 + time_delta / 2) / time_delta);
+    (int) ((system_time_delta * 100 + time_delta / 2)
+           / time_delta);
   last_system_time_ = system_time;
   last_time_ = time;
   return cpu;

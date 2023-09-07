@@ -174,7 +174,8 @@ kmeter_dsp_init (KMeterDsp * self, float samplerate)
   self->fsamp = samplerate;
 
   self->hold =
-    (int) (hold * samplerate + 0.5f); // number of samples to hold peak
+    (int) (hold * samplerate
+           + 0.5f); // number of samples to hold peak
   self->omega =
     9.72f / samplerate; // ballistic filter coefficient
 }

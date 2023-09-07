@@ -555,12 +555,14 @@ automatable_selector_popover_widget_new (
         || id->flags2 & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
         {
           self->selected_type =
-            (AutomatableSelectorType) (AS_TYPE_MIDI_CH1 + id->port_index);
+            (AutomatableSelectorType) (AS_TYPE_MIDI_CH1
+                                       + id->port_index);
         }
       else
         {
           self->selected_type =
-            (AutomatableSelectorType) (AS_TYPE_MIDI_CH1 + id->port_index / 128);
+            (AutomatableSelectorType) (AS_TYPE_MIDI_CH1
+                                       + id->port_index / 128);
         }
     }
   else if (id->flags & PORT_FLAG_MODULATOR_MACRO)

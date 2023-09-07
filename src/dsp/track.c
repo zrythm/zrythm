@@ -2733,7 +2733,8 @@ track_fill_events (
           if (
             !region_is_hit_by_range (
               r, (signed_frame_t) time_nfo->g_start_frame,
-              (signed_frame_t) (midi_events ? g_end_frames : (g_end_frames - 1)),
+              (signed_frame_t) (midi_events ? g_end_frames
+                                            : (g_end_frames - 1)),
               F_INCLUSIVE))
             {
               continue;

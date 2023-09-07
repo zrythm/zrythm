@@ -181,7 +181,8 @@ dsp_linear_fade_out_to (
       for (size_t i = 0; i < size; i++)
         {
           float k =
-            (float) ((size_t) total_frames_to_fade - (i + (size_t) start_offset))
+            (float) ((size_t) total_frames_to_fade
+                     - (i + (size_t) start_offset))
             / (float) total_frames_to_fade;
           k = fade_to_multiplier
               + (1.f - fade_to_multiplier) * k;

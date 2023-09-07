@@ -1188,9 +1188,8 @@ midi_region_fill_midi_events (
              < r_local_pos + (signed_frame_t) time_nfo->nframes)
         {
           midi_time_t _time =
-            (midi_time_t)
-            (time_nfo->local_offset +
-              (mn_obj->pos.frames - r_local_pos));
+            (midi_time_t) (time_nfo->local_offset
+                           + (mn_obj->pos.frames - r_local_pos));
           /*g_message ("normal note on at %u", time);*/
 
           if (mn)
@@ -1221,7 +1220,8 @@ midi_region_fill_midi_events (
         && (mn_obj_end_frames <= (r_local_pos + time_nfo->nframes)))
         {
           midi_time_t _time =
-            (midi_time_t) (time_nfo->local_offset + (mn_obj_end_frames - r_local_pos));
+            (midi_time_t) (time_nfo->local_offset
+                           + (mn_obj_end_frames - r_local_pos));
 
           /* note actually ends 1 frame before
            * the end point, not at the end

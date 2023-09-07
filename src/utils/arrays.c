@@ -249,7 +249,8 @@ array_shuffle (void * array, size_t n, size_t size)
       for (i = 0; i < n - 1; ++i)
         {
           size_t rnd =
-            (size_t) ((double) pcg_rand_uf (ZRYTHM->rand) * (double) RAND_MAX);
+            (size_t) ((double) pcg_rand_uf (ZRYTHM->rand)
+                      * (double) RAND_MAX);
           size_t j = i + rnd / (RAND_MAX / (n - i) + 1);
 
           memcpy (tmp, arr + j * stride, size);

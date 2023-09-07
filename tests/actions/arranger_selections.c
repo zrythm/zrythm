@@ -2796,9 +2796,8 @@ test_split_and_merge_audio_unlooped (void)
   g_assert_cmppos (&r1_obj->loop_end_pos, &tmp);
 
   unsigned_frame_t frames_per_bar =
-    (unsigned_frame_t)
-    (AUDIO_ENGINE->frames_per_tick *
-       (double) TRANSPORT->ticks_per_bar);
+    (unsigned_frame_t) (AUDIO_ENGINE->frames_per_tick
+                        * (double) TRANSPORT->ticks_per_bar);
 
   /* check r1 audio positions */
   AudioClip * r1_clip = audio_region_get_clip (r1);

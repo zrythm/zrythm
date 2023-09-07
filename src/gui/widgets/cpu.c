@@ -136,7 +136,8 @@ refresh_dsp_load (CpuWidget * self)
         (AUDIO_ENGINE->block_length * 1000000)
         / AUDIO_ENGINE->sample_rate;
       self->dsp =
-        (int) ((double) AUDIO_ENGINE->max_time_taken * 100.0 / (double) block_latency);
+        (int) ((double) AUDIO_ENGINE->max_time_taken * 100.0
+               / (double) block_latency);
     }
   else
     self->dsp = 0;
@@ -217,7 +218,9 @@ refresh_cpu_load (CpuWidget * self)
       for (int i = 0; i < CPU_STATE_MAX; i++)
         totalTicks += cpuinfo.cpu_ticks[i];
       self->cpu =
-        (int) (CalculateCPULoad (cpuinfo.cpu_ticks[CPU_STATE_IDLE], totalTicks) * 100.f);
+        (int) (CalculateCPULoad (
+                 cpuinfo.cpu_ticks[CPU_STATE_IDLE], totalTicks)
+               * 100.f);
     }
   else
     {

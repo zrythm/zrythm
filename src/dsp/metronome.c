@@ -253,12 +253,10 @@ metronome_queue_events (
       /* find each bar / beat change after loop
        * start */
       find_and_queue_metronome (
-        &self->transport->loop_start_pos,
-        &playhead_pos,
-        loffset +
-          (nframes_t)
-          (self->transport->loop_end_pos.frames -
-           PLAYHEAD->frames));
+        &self->transport->loop_start_pos, &playhead_pos,
+        loffset
+          + (nframes_t) (self->transport->loop_end_pos.frames
+                         - PLAYHEAD->frames));
     }
   else /* loop not crossed */
     {

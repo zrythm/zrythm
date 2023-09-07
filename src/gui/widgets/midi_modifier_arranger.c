@@ -186,7 +186,8 @@ midi_modifier_arranger_widget_ramp (
        * http://stackoverflow.com/questions/2965144/ddg#2965188 */
       /* get val in pixels */
       val =
-        (int) (y1 + ((y2 - y1) / (x2 - x1)) * ((double) px - x1));
+        (int) (y1
+               + ((y2 - y1) / (x2 - x1)) * ((double) px - x1));
 
       /* normalize and multiply by 127 to get
        * velocity value */

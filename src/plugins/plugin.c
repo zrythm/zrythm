@@ -660,7 +660,7 @@ plugin_remove_ats_from_automation_tracklist (
   bool     free_ats,
   bool     fire_events)
 {
-  Track *               track = plugin_get_track (pl);
+  Track * track = plugin_get_track (pl);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
   AutomationTracklist * atl =
     track_get_automation_tracklist (track);

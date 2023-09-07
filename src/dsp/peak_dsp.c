@@ -142,7 +142,8 @@ peak_dsp_init (PeakDsp * self, float samplerate)
   self->fsamp = samplerate;
 
   self->hold =
-    (int) (hold * samplerate + 0.5f); // number of samples to hold peak
+    (int) (hold * samplerate
+           + 0.5f); // number of samples to hold peak
 }
 
 PeakDsp *

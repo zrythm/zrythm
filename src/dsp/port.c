@@ -1796,9 +1796,8 @@ port_prepare_rtmidi_events (Port * self)
           /* calculate event timestamp */
           gint64 length = cur_time - self->last_midi_dequeue;
           midi_time_t ev_time =
-            (midi_time_t)
-            (((double) h.time / (double) length) *
-            (double) AUDIO_ENGINE->block_length);
+            (midi_time_t) (((double) h.time / (double) length)
+                           * (double) AUDIO_ENGINE->block_length);
 
           if (ev_time >= AUDIO_ENGINE->block_length)
             {
