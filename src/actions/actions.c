@@ -888,53 +888,53 @@ activate_save (
     }
 }
 
-void
-activate_save_as (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data)
+static void
+save_project_ready_cb (
+  GObject *      source_object,
+  GAsyncResult * res,
+  gpointer       data)
 {
-  GtkWidget *          dialog;
-  GtkFileChooser *     chooser;
-  GtkFileChooserAction _action = GTK_FILE_CHOOSER_ACTION_SAVE;
-  gint                 res;
-
-  dialog = gtk_file_chooser_dialog_new (
-    _ ("Save Project"), GTK_WINDOW (MAIN_WINDOW), _action,
-    _ ("_Cancel"), GTK_RESPONSE_CANCEL, _ ("_Save"),
-    GTK_RESPONSE_ACCEPT, NULL);
-  chooser = GTK_FILE_CHOOSER (dialog);
-
-  char * project_file_path = project_get_path (
-    PROJECT, PROJECT_PATH_PROJECT_FILE, false);
-  char * str = io_path_get_parent_dir (project_file_path);
-  g_free (project_file_path);
-  GFile * file = g_file_new_for_path (str);
-  g_free (str);
-  gtk_file_chooser_set_file (
-    GTK_FILE_CHOOSER (chooser), file, NULL);
-  g_object_unref (file);
-  gtk_file_chooser_set_current_name (chooser, PROJECT->title);
-
-  res = z_gtk_dialog_run (GTK_DIALOG (dialog), false);
-  if (res == GTK_RESPONSE_ACCEPT)
+  GFile * selected_file = gtk_file_dialog_save_finish (
+    GTK_FILE_DIALOG (source_object), res, NULL);
+  if (selected_file)
     {
-      file = gtk_file_chooser_get_file (chooser);
-      char * filename = g_file_get_path (file);
-      g_object_unref (file);
+      char * filepath = g_file_get_path (selected_file);
+      g_object_unref (selected_file);
+      g_message ("saving project at: %s", filepath);
       GError * err = NULL;
       bool     success = project_save (
-        PROJECT, filename, F_NOT_BACKUP, ZRYTHM_F_NO_NOTIFY,
+        PROJECT, filepath, F_NOT_BACKUP, ZRYTHM_F_NO_NOTIFY,
         F_NO_ASYNC, &err);
       if (!success)
         {
           HANDLE_ERROR_LITERAL (
             err, _ ("Failed to save project"));
         }
-      g_free (filename);
+      g_free (filepath);
     }
+}
 
-  gtk_window_destroy (GTK_WINDOW (dialog));
+void
+activate_save_as (
+  GSimpleAction * action,
+  GVariant *      variant,
+  gpointer        user_data)
+{
+  GtkFileDialog * dialog = gtk_file_dialog_new ();
+  char *          project_file_path = project_get_path (
+    PROJECT, PROJECT_PATH_PROJECT_FILE, false);
+  char * str = io_path_get_parent_dir (project_file_path);
+  g_free (project_file_path);
+  GFile * file = g_file_new_for_path (str);
+  g_free (str);
+  gtk_file_dialog_set_initial_file (dialog, file);
+  g_object_unref (file);
+  gtk_file_dialog_set_initial_name (dialog, PROJECT->title);
+  gtk_file_dialog_set_accept_label (
+    dialog, _ ("Save Project"));
+  gtk_file_dialog_save (
+    dialog, GTK_WINDOW (MAIN_WINDOW), NULL,
+    save_project_ready_cb, NULL);
 }
 
 DEFINE_SIMPLE (activate_minimize)
