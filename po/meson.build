@@ -19,7 +19,7 @@ i18n.gettext (
   languages: languages_for_gettext,
   args: [
     '--directory=' + meson_src_root,
-    '--msgid-bugs-address=https://todo.sr.ht/~alextee/zrythm-bug',
+    '--msgid-bugs-address=' + cdata.get ('ISSUE_TRACKER_URL'),
     '--add-comments',
     '--keyword=N_',
     '--keyword=C_:1c,2',

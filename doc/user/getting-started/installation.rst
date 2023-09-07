@@ -46,7 +46,7 @@ Building from Source
 --------------------
 You can build Zrythm from source, either using
 a `source distribution tarball <https://www.zrythm.org/releases/>`_
-or `git <https://git.zrythm.org/zrythm/zrythm/>`_.
+or `git <https://gitlab.zrythm.org/zrythm/zrythm/>`_.
 
 See ``INSTALL.rst`` in
 the source distribution for installation

@@ -7,7 +7,7 @@ scripts_conf = {
   'MESON_SOURCE_ROOT': meson_src_root,
   'HOMEPAGE_URL': 'https://www.zrythm.org/en/index.html',
   'DONATION_URL': 'https://www.zrythm.org/en/community.html#donate',
-  'BUG_REPORT_URL': 'https://todo.sr.ht/~alextee/zrythm-bug',
+  'BUG_REPORT_URL': cdata.get ('ISSUE_TRACKER_URL'),
   'FAQ_URL': 'https://manual.zrythm.org/en/getting-started/faq.html',
   'USER_MANUAL_URL': 'https://manual.zrythm.org/en/index.html',
   'TRANSLATE_URL': 'https://hosted.weblate.org/engage/zrythm/',

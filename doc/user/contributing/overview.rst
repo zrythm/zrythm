@@ -32,14 +32,13 @@ themes and icons as discussed in
 
 Testing
 -------
-You are welcome to join us in testing
-the latest features in Zrythm and reporting
-bugs and feedback on
-`Sourcehut <https://todo.sr.ht/~alextee>`_.
+You are welcome to join us in testing the latest features in
+Zrythm and reporting bugs and feedback on
+`GitLab <https://gitlab.zrythm.org/zrythm/zrythm/-/issues>`_.
 
 The latest development branch for new features is
 ``development`` in our
-`git repository <https://git.zrythm.org/zrythm/zrythm>`_.
+`git repository <https://gitlab.zrythm.org/zrythm/zrythm>`_.
 
 .. seealso:: :ref:`contributing/reporting-bugs:Reporting Bugs`
 

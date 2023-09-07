@@ -7,7 +7,6 @@ Zrythm
 ======
 
 [![translated](https://hosted.weblate.org/widgets/zrythm/-/svg-badge.svg "Translation Status")](https://hosted.weblate.org/engage/zrythm/?utm_source=widget)
-[![builds.sr.ht status](https://builds.sr.ht/~alextee/zrythm.svg)](https://builds.sr.ht/~alextee/zrythm?)
 
 *a highly automated and intuitive digital audio
 workstation*

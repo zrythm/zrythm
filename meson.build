@@ -363,9 +363,6 @@ cdata.set_quoted (
   'NEW_ISSUE_URL',
   'https://gitlab.zrythm.org/zrythm/zrythm/-/issues/new')
 cdata.set_quoted (
-  'NEW_ISSUE_EMAIL',
-  '~alextee/zrythm-bug@todo.sr.ht')
-cdata.set_quoted (
   'PRIVACY_POLICY_URL',
   'https://www.zrythm.org/en/privacy.html')
 cdata.set_quoted (
@@ -380,6 +377,9 @@ cdata.set_quoted (
 cdata.set_quoted (
   'LICENSE_URL',
   'https://gitlab.zrythm.org/zrythm/zrythm/-/raw/master/LICENSES/LicenseRef-ZrythmLicense.txt')
+cdata.set_quoted (
+  'TRADEMARK_POLICY_URL',
+  'https://gitlab.zrythm.org/zrythm/zrythm/-/raw/master/TRADEMARKS.md')
 cdata.set_quoted (
   'BUG_REPORT_API_ENDPOINT',
   'https://accounts.zrythm.org/api/v1/error-reports/new')

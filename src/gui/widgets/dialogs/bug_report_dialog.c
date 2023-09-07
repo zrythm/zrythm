@@ -31,7 +31,7 @@ G_DEFINE_TYPE (
   bug_report_dialog_widget,
   GTK_TYPE_DIALOG)
 
-#define SOURCEHUT_RESPONSE 450
+#define GITLAB_RESPONSE 450
 #define EMAIL_RESPONSE 451
 #define PREVIEW_AND_SEND_AUTOMATICALLY_RESPONSE 452
 
@@ -399,7 +399,7 @@ on_preview_and_send_automatically_response (
 }
 
 static void
-on_sourcehut_response (BugReportDialogWidget * self)
+on_gitlab_response (BugReportDialogWidget * self)
 {
   if (!validate_input (self))
     return;
@@ -412,7 +412,7 @@ on_sourcehut_response (BugReportDialogWidget * self)
     GTK_BUTTONS_CLOSE, NULL);
 
   gtk_window_set_title (
-    GTK_WINDOW (dialog), _ ("Send via Sourcehut"));
+    GTK_WINDOW (dialog), _ ("Send via GitLab"));
 
   /* set top text */
   char * atag =
@@ -457,7 +457,8 @@ on_email_response (BugReportDialogWidget * self)
 
   char * report_template = get_report_template (self, true);
   char * email_url = g_strdup_printf (
-    "mailto:%s?body=%s", NEW_ISSUE_EMAIL, report_template);
+    /* FIXME */
+    "mailto:%s?body=%s", NEW_ISSUE_URL, report_template);
   g_free (report_template);
 
   gtk_show_uri (
@@ -487,8 +488,8 @@ on_response (
           exit (EXIT_FAILURE);
         }
       break;
-    case SOURCEHUT_RESPONSE:
-      on_sourcehut_response (self);
+    case GITLAB_RESPONSE:
+      on_gitlab_response (self);
       break;
     case EMAIL_RESPONSE:
       on_email_response (self);
@@ -663,8 +664,8 @@ bug_report_dialog_widget_init (BugReportDialogWidget * self)
 
   gtk_dialog_add_buttons (
     GTK_DIALOG (self), _ ("_Close"), GTK_RESPONSE_CLOSE,
-    _ ("Submit on _SourceHut"), SOURCEHUT_RESPONSE,
-    _ ("Send via _email (publicly visible)"), EMAIL_RESPONSE,
+    _ ("Submit on _GitLab"), GITLAB_RESPONSE,
+    /*_ ("Send via _email (publicly visible)"), EMAIL_RESPONSE,*/
     _ ("Preview and send _automatically (privately/recommended)"),
     PREVIEW_AND_SEND_AUTOMATICALLY_RESPONSE, NULL);
 

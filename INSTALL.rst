@@ -69,7 +69,7 @@ Required
 `libpanel (LGPLv3+) <https://gitlab.gnome.org/chergert/libpanel/>`_
   Dock and panel widgets
 
-Note: if you want detach support use `our fork <https://git.sr.ht/~alextee/libpanel-detach>`_ (``zrythm_detach`` branch).
+Note: if you want detach support use `our fork <https://gitlab.zrythm.org/zrythm/libpanel-detach>`_ (``zrythm_detach`` branch).
 
 `libsndfile (LGPLv2.1+) <http://libsndfile.github.io/libsndfile/>`_
   Audio file IO
@@ -130,10 +130,6 @@ Optional
 
 `SDL2 (zlib) <https://www.libsdl.org/>`_
   Audio backend
-
-Dependency package names for various distros
-can be found `here <https://git.sr.ht/~alextee/zrythm-builds/tree/master/item/.builds>`_
-and `here <https://git.sr.ht/~alextee/zrythm-builds2/tree/master/item/.builds>`_
 
 Configuration
 -------------

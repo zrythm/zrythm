@@ -245,6 +245,7 @@ automation_track_get_automation_tracklist (
   AutomationTrack * self)
 {
   Track * track = automation_track_get_track (self);
+  g_return_val_if_fail (track, NULL);
   return track_get_automation_tracklist (track);
 }
 

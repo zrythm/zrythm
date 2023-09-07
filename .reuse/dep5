@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: Zrythm
 Upstream-Contact: Alexandros Theodotou <alex@zrythm.org>
-Source: https://git.sr.ht/~alextee/zrythm
+Source: https://gitlab.zrythm.org/zrythm/zrythm
 License: LicenseRef-ZrythmLicense
 
 Files: data/fonts/DSEG14-Classic-MINI/*

@@ -79,10 +79,8 @@ it yourself or get it from a distribution.
 When will v1 be released?
 -------------------------
 
-When all bugs and features marked as `v1rc` are completed:
-
-* https://todo.sr.ht/~alextee/zrythm-feature
-* https://todo.sr.ht/~alextee/zrythm-bug
+When all bugfixes and feature implementations under the
+`Version 1 release candidate milestone <https://gitlab.zrythm.org/zrythm/zrythm/-/issues?milestone_title=v1.rc>`_ are completed.
 
 Usage
 +++++
