@@ -155,14 +155,13 @@ on_close_request (GtkWindow * window, MainWindowWidget * self)
     {
       AdwMessageDialog * dialog =
         ADW_MESSAGE_DIALOG (adw_message_dialog_new (
-          window, _ ("Unsaved Changes"),
-          _ ("The project contains unsaved changes.\n"
+          window, _ ("Save Changes?"),
+          _ ("The project contains unsaved changes. "
              "If you quit without saving, unsaved "
              "changes will be lost.")));
       adw_message_dialog_add_responses (
         dialog, "cancel", _ ("_Cancel"), "quit-no-save",
-        _ ("_Quit Without Saving"), "save-quit",
-        _ ("_Save & Quit"), NULL);
+        _ ("_Discard"), "save-quit", _ ("_Save"), NULL);
       adw_message_dialog_set_close_response (dialog, "cancel");
       adw_message_dialog_set_response_appearance (
         dialog, "quit-no-save", ADW_RESPONSE_DESTRUCTIVE);
