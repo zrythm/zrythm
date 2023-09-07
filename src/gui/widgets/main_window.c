@@ -109,6 +109,38 @@ on_main_window_destroy (
   g_message ("main window destroy called");
 }
 
+static void
+save_on_quit_response_cb (
+  AdwMessageDialog * dialog,
+  gchar *            response,
+  MainWindowWidget * self)
+{
+  if (string_is_equal (response, "save-quit"))
+    {
+      /* save project */
+      g_message ("saving project...");
+      GError * err = NULL;
+      bool     successful = project_save (
+        PROJECT, PROJECT->dir, F_NOT_BACKUP,
+        ZRYTHM_F_NO_NOTIFY, F_NO_ASYNC, &err);
+      if (!successful)
+        {
+          HANDLE_ERROR (
+            err, "%s", _ ("Failed to save project"));
+        }
+      gtk_window_destroy (GTK_WINDOW (self));
+    }
+  else if (string_is_equal (response, "quit-no-save"))
+    {
+      g_message ("quitting without saving...");
+      gtk_window_destroy (GTK_WINDOW (self));
+    }
+  else if (string_is_equal (response, "cancel"))
+    {
+      /* no action needed */
+    }
+}
+
 /**
  * This is called when a close request is handled
  * and can be intercepted.
@@ -126,67 +158,36 @@ on_close_request (GtkWindow * window, MainWindowWidget * self)
     undo_manager_get_last_action (UNDO_MANAGER);
 
   /* ask for save if project has unsaved changes */
-  bool ret = false;
   if (last_performed_action != PROJECT->last_saved_action)
     {
-      GtkWidget * dialog = gtk_dialog_new_with_buttons (
-        _ ("Unsaved changes"), GTK_WINDOW (MAIN_WINDOW),
-        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-        _ ("_Save & Quit"), GTK_RESPONSE_ACCEPT,
-        _ ("_Quit without saving"), GTK_RESPONSE_REJECT,
-        _ ("_Cancel"), GTK_RESPONSE_CANCEL, NULL);
-      gtk_dialog_set_default_response (
-        GTK_DIALOG (dialog), GTK_RESPONSE_CANCEL);
-      const char * label_question = _ (
-        "The project contains unsaved changes.\n"
-        "If you quit without saving, unsaved "
-        "changes will be lost.");
-      GtkWidget * label = gtk_label_new (label_question);
-      gtk_widget_set_margin_top (label, 4);
-      gtk_widget_set_margin_bottom (label, 4);
-      gtk_widget_set_visible (label, true);
-      GtkWidget * content =
-        gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-      gtk_box_append (GTK_BOX (content), label);
-      int dialog_res =
-        z_gtk_dialog_run (GTK_DIALOG (dialog), true);
-      switch (dialog_res)
-        {
-        case GTK_RESPONSE_ACCEPT:
-          {
-            /* save project */
-            g_message ("saving project...");
-            GError * err = NULL;
-            bool     successful =
-              project_save (
-                PROJECT, PROJECT->dir, F_NOT_BACKUP,
-                ZRYTHM_F_NO_NOTIFY, F_NO_ASYNC, &err)
-              == 0;
-            if (!successful)
-              {
-                HANDLE_ERROR (
-                  err, "%s", _ ("Failed to save project"));
-              }
-          }
-          break;
-        case GTK_RESPONSE_REJECT:
-          /* no action needed - just quit */
-          g_message ("quitting without saving...");
-          break;
-        default:
-          /* return true to cancel */
-          g_message ("cancel");
-          ret = true;
-          break;
-        }
+      AdwMessageDialog * dialog =
+        ADW_MESSAGE_DIALOG (adw_message_dialog_new (
+          window, _ ("Unsaved Changes"),
+          _ ("The project contains unsaved changes.\n"
+             "If you quit without saving, unsaved "
+             "changes will be lost.")));
+      adw_message_dialog_add_responses (
+        dialog, "cancel", _ ("_Cancel"), "quit-no-save",
+        _ ("_Quit Without Saving"), "save-quit",
+        _ ("_Save & Quit"), NULL);
+      adw_message_dialog_set_close_response (dialog, "cancel");
+      adw_message_dialog_set_response_appearance (
+        dialog, "quit-no-save", ADW_RESPONSE_DESTRUCTIVE);
+      adw_message_dialog_set_response_appearance (
+        dialog, "save-quit", ADW_RESPONSE_SUGGESTED);
+      adw_message_dialog_set_default_response (
+        dialog, "save-quit");
+      g_signal_connect (
+        dialog, "response",
+        G_CALLBACK (save_on_quit_response_cb), self);
+      gtk_window_present (GTK_WINDOW (dialog));
+
+      /* return true to abort closing main window */
+      return true;
 
     } /* endif project has unsaved changes */
 
-  g_debug (
-    "%s: main window delete event returning %d", __func__,
-    ret);
-
-  return ret;
+  return false;
 }
 
 MainWindowWidget *
