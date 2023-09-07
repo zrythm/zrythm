@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -360,8 +360,10 @@ plugin_gtk_on_save_preset_activate (
   int ret = z_gtk_dialog_run (GTK_DIALOG (dialog), false);
   if (ret == GTK_RESPONSE_ACCEPT)
     {
-      char * path = z_gtk_file_chooser_get_filename (
-        GTK_FILE_CHOOSER (dialog));
+      GFile * file =
+        gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
+      char * path = g_file_get_path (file);
+      g_object_unref (file);
       bool add_prefix_active = gtk_check_button_get_active (
         GTK_CHECK_BUTTON (add_prefix));
       if (open_with_carla)
@@ -962,8 +964,9 @@ file_changed (
     GTK_FILE_CHOOSER_NATIVE (dialog);
   GtkFileChooser * file_chooser =
     GTK_FILE_CHOOSER (file_chooser_native);
-  char * filename =
-    z_gtk_file_chooser_get_filename (file_chooser);
+  GFile * file = gtk_file_chooser_get_file (file_chooser);
+  char *  filename = g_file_get_path (file);
+  g_object_unref (file);
 
   g_return_if_fail (IS_PORT_AND_NONNULL (port));
   PluginGtkController * controller = port->widget;
@@ -1466,8 +1469,10 @@ plugin_gtk_generic_set_widget_value (
   else if (
     GTK_IS_FILE_CHOOSER (widget) && type == PM_URIDS.atom_Path)
     {
-      z_gtk_file_chooser_set_file_from_path (
-        GTK_FILE_CHOOSER (widget), (const char *) body);
+      GFile * file = g_file_new_for_path ((const char *) body);
+      gtk_file_chooser_set_file (
+        GTK_FILE_CHOOSER (widget), file, NULL);
+      g_object_unref (file);
     }
   else
     g_warning (_ ("Unknown widget type for value\n"));

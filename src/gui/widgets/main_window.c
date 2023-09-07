@@ -150,15 +150,8 @@ on_close_request (GtkWindow * window, MainWindowWidget * self)
 {
   g_debug ("%s: main window delete event called", __func__);
 
-  /* check if we have unsaved changes - simply
-   * check if the last performed action matches
-   * the last action when the project was last
-   * saved/loaded */
-  UndoableAction * last_performed_action =
-    undo_manager_get_last_action (UNDO_MANAGER);
-
   /* ask for save if project has unsaved changes */
-  if (last_performed_action != PROJECT->last_saved_action)
+  if (project_has_unsaved_changes (PROJECT))
     {
       AdwMessageDialog * dialog =
         ADW_MESSAGE_DIALOG (adw_message_dialog_new (
@@ -340,8 +333,18 @@ main_window_widget_set_project_title (
   MainWindowWidget * self,
   Project *          prj)
 {
-  adw_window_title_set_title (self->window_title, prj->title);
+  char * prj_title;
+  if (project_has_unsaved_changes (prj))
+    {
+      prj_title = g_strdup_printf ("%s*", prj->title);
+    }
+  else
+    {
+      prj_title = g_strdup (prj->title);
+    }
+  adw_window_title_set_title (self->window_title, prj_title);
   adw_window_title_set_subtitle (self->window_title, prj->dir);
+  g_free (prj_title);
 }
 
 static void
@@ -365,6 +368,7 @@ on_focus_widget_changed (
 
 /**
  * Prepare for finalization.
+ * FIXME do this logic inside dispose() or finalize() (check)
  */
 void
 main_window_widget_tear_down (MainWindowWidget * self)

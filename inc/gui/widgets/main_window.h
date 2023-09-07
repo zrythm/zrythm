@@ -96,6 +96,9 @@ main_window_widget_new (ZrythmApp * app);
 void
 main_window_widget_setup (MainWindowWidget * self);
 
+/**
+ * Updates the project name at the top of the window.
+ */
 void
 main_window_widget_set_project_title (
   MainWindowWidget * self,
@@ -106,12 +109,6 @@ main_window_widget_set_project_title (
  */
 void
 main_window_widget_tear_down (MainWindowWidget * self);
-
-/**
- * TODO
- */
-void
-main_window_widget_open (MainWindowWidget * win, GFile * file);
 
 void
 main_window_widget_quit (MainWindowWidget * self);

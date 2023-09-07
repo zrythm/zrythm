@@ -668,15 +668,6 @@ z_gtk_drop_target_get_selected_action (
 GtkIconTheme *
 z_gtk_icon_theme_get_default (void);
 
-char *
-z_gtk_file_chooser_get_filename (
-  GtkFileChooser * file_chooser);
-
-void
-z_gtk_file_chooser_set_file_from_path (
-  GtkFileChooser * file_chooser,
-  const char *     filename);
-
 /**
  * Returns the text on the clipboard, or NULL if
  * there is nothing or the content is not text.

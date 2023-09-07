@@ -2357,6 +2357,16 @@ project_save (
   return true;
 }
 
+bool
+project_has_unsaved_changes (const Project * self)
+{
+  /* simply check if the last performed action matches the
+   * last action when the project was last saved/loaded */
+  UndoableAction * last_performed_action =
+    undo_manager_get_last_action (self->undo_manager);
+  return last_performed_action != self->last_saved_action;
+}
+
 /**
  * Deep-clones the given project.
  *

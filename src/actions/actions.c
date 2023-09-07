@@ -766,52 +766,103 @@ activate_new (
     }
 }
 
-static int
-run_open_dialog (GtkDialog * dialog)
+static void
+open_project_ready_cb (
+  GObject *      source_object,
+  GAsyncResult * res,
+  gpointer       data)
 {
-  int res = z_gtk_dialog_run (GTK_DIALOG (dialog), false);
-  if (res == GTK_RESPONSE_ACCEPT)
+  GFile * selected_file = gtk_file_dialog_open_finish (
+    GTK_FILE_DIALOG (source_object), res, NULL);
+  if (selected_file)
     {
-      GtkFileChooser * chooser = GTK_FILE_CHOOSER (dialog);
-      char *           filename =
-        z_gtk_file_chooser_get_filename (chooser);
-      g_message ("filename %s", filename);
+      char * filepath = g_file_get_path (selected_file);
+      g_object_unref (selected_file);
+      g_message ("opening project at: %s", filepath);
       GError * err = NULL;
-      bool     success = project_load (filename, 0, &err);
+      bool     success =
+        project_load (filepath, Z_F_NOT_TEMPLATE, &err);
       if (!success)
         {
           HANDLE_ERROR_LITERAL (
             err, _ ("Failed to load project"));
         }
-      g_free (filename);
+      g_free (filepath);
     }
+}
 
-  return res;
+static void
+choose_and_open_project (void)
+{
+  GtkFileDialog * dialog = gtk_file_dialog_new ();
+  GFile * project_dir = g_file_new_for_path (PROJECT->dir);
+  gtk_file_dialog_set_initial_folder (dialog, project_dir);
+  gtk_file_dialog_set_accept_label (
+    dialog, _ ("Open Project"));
+  gtk_file_dialog_open (
+    dialog, GTK_WINDOW (MAIN_WINDOW), NULL,
+    open_project_ready_cb, NULL);
+}
+
+static void
+proceed_to_open_response_cb (
+  AdwMessageDialog * dialog,
+  gchar *            response,
+  gpointer           data)
+{
+  if (string_is_equal (response, "discard"))
+    {
+      choose_and_open_project ();
+    }
+  else if (string_is_equal (response, "save"))
+    {
+      g_message ("saving project...");
+      GError * err = NULL;
+      bool     successful = project_save (
+        PROJECT, PROJECT->dir, F_NOT_BACKUP,
+        ZRYTHM_F_NO_NOTIFY, F_NO_ASYNC, &err);
+      if (!successful)
+        {
+          HANDLE_ERROR (
+            err, "%s", _ ("Failed to save project"));
+          return;
+        }
+      choose_and_open_project ();
+    }
+  else
+    {
+      /* do nothing */
+    }
 }
 
 DEFINE_SIMPLE (activate_open)
 {
-  GtkDialog * dialog = dialogs_get_open_project_dialog (
-    GTK_WINDOW (MAIN_WINDOW));
-
-  int res = run_open_dialog (dialog);
-  if (res == GTK_RESPONSE_ACCEPT)
+  if (project_has_unsaved_changes (PROJECT))
     {
-      char * filename = z_gtk_file_chooser_get_filename (
-        GTK_FILE_CHOOSER (dialog));
-      GError * err = NULL;
-      bool     success =
-        project_load (filename, Z_F_NOT_TEMPLATE, &err);
-      if (!success)
-        {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to load project"));
-        }
+      AdwMessageDialog * dialog =
+        ADW_MESSAGE_DIALOG (adw_message_dialog_new (
+          GTK_WINDOW (MAIN_WINDOW), _ ("Save Changes?"),
+          _ ("The project contains unsaved changes. "
+             "If you proceed, any unsaved changes will be "
+             "lost.")));
+      adw_message_dialog_add_responses (
+        dialog, "cancel", _ ("_Cancel"), "discard",
+        _ ("_Discard"), "save", _ ("_Save"), NULL);
+      adw_message_dialog_set_close_response (dialog, "cancel");
+      adw_message_dialog_set_response_appearance (
+        dialog, "discard", ADW_RESPONSE_DESTRUCTIVE);
+      adw_message_dialog_set_response_appearance (
+        dialog, "save", ADW_RESPONSE_SUGGESTED);
+      adw_message_dialog_set_default_response (dialog, "save");
+      g_signal_connect (
+        dialog, "response",
+        G_CALLBACK (proceed_to_open_response_cb), NULL);
+      gtk_window_present (GTK_WINDOW (dialog));
     }
-
-  gtk_window_destroy (GTK_WINDOW (dialog));
-
-  g_debug ("project %p opened", PROJECT);
+  else
+    {
+      choose_and_open_project ();
+    }
 }
 
 void
@@ -858,16 +909,19 @@ activate_save_as (
     PROJECT, PROJECT_PATH_PROJECT_FILE, false);
   char * str = io_path_get_parent_dir (project_file_path);
   g_free (project_file_path);
-  z_gtk_file_chooser_set_file_from_path (chooser, str);
+  GFile * file = g_file_new_for_path (str);
   g_free (str);
+  gtk_file_chooser_set_file (
+    GTK_FILE_CHOOSER (chooser), file, NULL);
+  g_object_unref (file);
   gtk_file_chooser_set_current_name (chooser, PROJECT->title);
 
   res = z_gtk_dialog_run (GTK_DIALOG (dialog), false);
   if (res == GTK_RESPONSE_ACCEPT)
     {
-      char * filename;
-
-      filename = z_gtk_file_chooser_get_filename (chooser);
+      file = gtk_file_chooser_get_file (chooser);
+      char * filename = g_file_get_path (file);
+      g_object_unref (file);
       GError * err = NULL;
       bool     success = project_save (
         PROJECT, filename, F_NOT_BACKUP, ZRYTHM_F_NO_NOTIFY,

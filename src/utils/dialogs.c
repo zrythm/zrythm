@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2018-2019 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2018-2019, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/widgets/main_window.h"
 #include "project.h"
@@ -25,27 +9,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-
-/**
- * Creates and returns an open project dialog.
- */
-GtkDialog *
-dialogs_get_open_project_dialog (GtkWindow * parent)
-{
-  g_return_val_if_fail (GTK_IS_WINDOW (parent), NULL);
-
-  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_OPEN;
-
-  GtkWidget * dialog = gtk_file_chooser_dialog_new (
-    _ ("Open Project"), GTK_WINDOW (parent), action,
-    _ ("_Cancel"), GTK_RESPONSE_CANCEL, _ ("_Open"),
-    GTK_RESPONSE_ACCEPT, NULL);
-
-  z_gtk_file_chooser_set_file_from_path (
-    GTK_FILE_CHOOSER (dialog), PROJECT->dir);
-
-  return GTK_DIALOG (dialog);
-}
 
 /**
  * Creates and returns the overwrite plugin dialog.

@@ -44,8 +44,10 @@ update_btn_label (
     }
   else if (fc)
     {
-      char * path = z_gtk_file_chooser_get_filename (
-        GTK_FILE_CHOOSER (fc));
+      GFile * file =
+        gtk_file_chooser_get_file (GTK_FILE_CHOOSER (fc));
+      char * path = g_file_get_path (file);
+      g_object_unref (file);
       gtk_button_set_label (
         self->button, path ? path : _ ("Select path"));
       g_debug ("updated label to %s", path);
@@ -90,8 +92,10 @@ on_btn_clicked (GtkButton * btn, FileChooserButtonWidget * self)
 
   if (self->path)
     {
-      z_gtk_file_chooser_set_file_from_path (
-        GTK_FILE_CHOOSER (fc_native), self->path);
+      GFile * file = g_file_new_for_path (self->path);
+      gtk_file_chooser_set_file (
+        GTK_FILE_CHOOSER (fc_native), file, NULL);
+      g_object_unref (file);
     }
   if (self->current_dir)
     {

@@ -1865,33 +1865,6 @@ z_gtk_icon_theme_get_default (void)
   return icon_theme;
 }
 
-char *
-z_gtk_file_chooser_get_filename (GtkFileChooser * file_chooser)
-{
-  GFile * file = gtk_file_chooser_get_file (file_chooser);
-  if (!file)
-    {
-      g_debug ("file is NULL");
-      return NULL;
-    }
-
-  char * path = g_file_get_path (file);
-  g_object_unref (file);
-
-  return path;
-}
-
-void
-z_gtk_file_chooser_set_file_from_path (
-  GtkFileChooser * file_chooser,
-  const char *     filename)
-{
-  GFile * file = g_file_new_for_path (filename);
-  g_return_if_fail (file);
-  gtk_file_chooser_set_file (file_chooser, file, NULL);
-  g_object_unref (file);
-}
-
 /**
  * Returns the text on the clipboard, or NULL if
  * there is nothing or the content is not text.

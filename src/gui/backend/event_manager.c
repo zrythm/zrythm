@@ -843,6 +843,8 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
     case ET_UNDO_REDO_ACTION_DONE:
       home_toolbar_widget_refresh_undo_redo_buttons (
         MW_HOME_TOOLBAR);
+      main_window_widget_set_project_title (
+        MAIN_WINDOW, PROJECT);
       break;
     case ET_PIANO_ROLL_HIGHLIGHTING_CHANGED:
       if (MW_MIDI_EDITOR_SPACE)

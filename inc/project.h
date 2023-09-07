@@ -581,6 +581,12 @@ project_get_existing_yaml (
   GError ** error);
 
 /**
+ * @memberof Project
+ */
+NONNULL bool
+project_has_unsaved_changes (const Project * self);
+
+/**
  * Deep-clones the given project.
  *
  * To be used during save on the main thread.
