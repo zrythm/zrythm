@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "plugins/lv2/lv2_log.h"
 #include "plugins/lv2_plugin.h"
@@ -23,17 +7,6 @@
 #include "plugins/plugin_manager.h"
 #include "zrythm.h"
 #include "zrythm_app.h"
-
-/**
- * Needed because we can't set them directly when
- * gi18n.h is included.
- */
-void
-lv2_log_set_printf_funcs (LV2_Log_Log * log)
-{
-  log->printf = lv2_log_printf;
-  log->vprintf = lv2_log_vprintf;
-}
 
 int
 lv2_log_vprintf (
@@ -77,4 +50,21 @@ lv2_log_printf (
   va_end (args);
 
   return ret;
+}
+
+/**
+ * Needed because we can't set them directly when
+ * gi18n.h is included.
+ */
+void
+lv2_log_set_printf_funcs (LV2_Log_Log * log)
+{
+#ifdef printf
+#undef printf
+#endif
+#ifdef vprintf
+#undef vprintf
+#endif
+  log->printf = lv2_log_printf;
+  log->vprintf = lv2_log_vprintf;
 }
