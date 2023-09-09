@@ -61,12 +61,11 @@ typedef enum
 } PluginBrowserSortStyle;
 
 /**
- * The plugin browser allows to browse and filter
- * available Plugin's on the system.
+ * The plugin browser allows to browse and filter available
+ * Plugin's on the system.
  *
- * It contains references to PluginDescriptor's,
- * which it uses to initialize Plugin's on row
- * activation or drag-n-drop.
+ * It contains references to PluginDescriptor's, which it uses
+ * to initialize Plugin's on row activation or drag-n-drop.
  */
 typedef struct _PluginBrowserWidget
 {
@@ -82,18 +81,18 @@ typedef struct _PluginBrowserWidget
    * protocol. */
   AdwViewStack * stack;
 
-  /* The scrolls for each tree view */
-  GtkScrolledWindow * collection_scroll;
-  GtkScrolledWindow * author_scroll;
-  GtkScrolledWindow * category_scroll;
-  GtkScrolledWindow * protocol_scroll;
+  /* The stack pages for each list view */
+  GtkBox *            collection_box;
+  GtkBox *            author_box;
+  GtkBox *            category_box;
+  GtkBox *            protocol_box;
   GtkScrolledWindow * plugin_scroll;
 
   /* The tree views */
-  GtkTreeView * collection_tree_view;
-  GtkTreeView * author_tree_view;
-  GtkTreeView * category_tree_view;
-  GtkTreeView * protocol_tree_view;
+  GtkListView * collection_list_view;
+  GtkListView * author_list_view;
+  GtkListView * category_list_view;
+  GtkListView * protocol_list_view;
 
   GtkSearchEntry * plugin_search_entry;
   GtkListView *    plugin_list_view;
@@ -118,48 +117,27 @@ typedef struct _PluginBrowserWidget
    * selected Plugin. */
   GtkLabel * plugin_info;
 
-  /* FIXME use GPtrArray instead of fixed size
-   * arrays */
+  /** Symbol IDs (for quick comparison) of selected authors. */
+  GArray * selected_authors;
 
-  /** Symbol IDs of selected authors. */
-  uint32_t selected_authors[600];
-  int      num_selected_authors;
+  /** Selected categories (ZPluginCategory). */
+  GArray * selected_categories;
 
-  /** Selected categories. */
-  ZPluginCategory selected_categories[600];
-  int             num_selected_categories;
+  /** Selected protocols (ZPluginProtocol). */
+  GArray * selected_protocols;
 
-  /** Selected protocols. */
-  PluginProtocol selected_protocols[60];
-  int            num_selected_protocols;
-
-  /** The selected collection. */
-  PluginCollection * selected_collection;
-
-  GtkTreeModel *     collection_tree_model;
-  GtkTreeModel *     author_tree_model;
-  GtkTreeModelSort * protocol_tree_model;
-  GtkTreeModel *     category_tree_model;
+  /** Pointers to the collections (PluginCollection instances)
+   * from PluginManager.collections that must not be free'd. */
+  GPtrArray * selected_collections;
 
   /** List view -> selection model -> filter model */
   GtkCustomFilter *    plugin_filter;
   GtkFilterListModel * plugin_filter_model;
   GtkCustomSorter *    plugin_sorter;
   GtkSortListModel *   plugin_sort_model;
-  GtkSingleSelection * plugin_selection_model;
-  ItemFactory *        plugin_item_factory;
 
-  /**
-   * The currently selected collections.
-   *
-   * Used temporarily when right-clicking on
-   * collections.
-   *
-   * These are pointers to the actual collections and
-   * must not be deleted.
-   */
-  PluginCollection ** current_collections;
-  int                 num_current_collections;
+  /** Array of ItemFactory. */
+  GPtrArray * item_factories;
 
   /**
    * A little hack to get the paned position to

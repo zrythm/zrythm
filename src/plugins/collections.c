@@ -172,6 +172,23 @@ plugin_collections_add (
     }
 }
 
+const PluginCollection *
+plugin_collections_find_from_name (
+  const PluginCollections * self,
+  const char *              name)
+{
+  for (int i = 0; i < self->num_collections; i++)
+    {
+      PluginCollection * collection = self->collections[i];
+      if (string_is_equal (collection->name, name))
+        {
+          return collection;
+        }
+    }
+
+  return NULL;
+}
+
 /**
  * Removes the given collection.
  *

@@ -1588,7 +1588,7 @@ lv2_plugin_create_descriptor_from_lilv (const LilvPlugin * lp)
 
   /* set descriptor info */
   PluginDescriptor * pd = plugin_descriptor_new ();
-  pd->protocol = PROT_LV2;
+  pd->protocol = Z_PLUGIN_PROTOCOL_LV2;
   pd->arch = ARCH_64;
   const char * str = lilv_node_as_string (name);
   pd->name = g_strdup (str);

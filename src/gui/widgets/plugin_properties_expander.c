@@ -137,7 +137,7 @@ on_load_preset_clicked (
       g_return_if_reached ();
 #endif
     }
-  else if (setting->descr->protocol == PROT_LV2)
+  else if (setting->descr->protocol == Z_PLUGIN_PROTOCOL_LV2)
     {
       applied = lv2_state_apply_preset (
         self->plugin->lv2, NULL, path, &err);

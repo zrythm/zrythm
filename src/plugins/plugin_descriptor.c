@@ -31,7 +31,7 @@ plugin_descriptor_new (void)
 }
 
 const char *
-plugin_protocol_to_str (PluginProtocol prot)
+plugin_protocol_to_str (ZPluginProtocol prot)
 {
   for (size_t i = 0;
        i < G_N_ELEMENTS (plugin_protocol_strings); i++)
@@ -42,6 +42,21 @@ plugin_protocol_to_str (PluginProtocol prot)
         }
     }
   g_return_val_if_reached (NULL);
+}
+
+ZPluginProtocol
+plugin_protocol_from_str (const char * str)
+{
+  for (size_t i = 0;
+       i < G_N_ELEMENTS (plugin_protocol_strings); i++)
+    {
+      if (string_is_equal (plugin_protocol_strings[i].str, str))
+        {
+          return (ZPluginProtocol) plugin_protocol_strings[i]
+            .val;
+        }
+    }
+  g_return_val_if_reached (Z_PLUGIN_PROTOCOL_LV2);
 }
 
 /**
@@ -113,7 +128,7 @@ plugin_descriptor_is_instrument (
         /* if VSTs are instruments their category
          * must be INSTRUMENT, otherwise they are
          * not */
-        descr->protocol != PROT_VST
+        descr->protocol != Z_PLUGIN_PROTOCOL_VST
         && descr->category == ZPLUGIN_CATEGORY_NONE
         && descr->num_midi_ins > 0
         && descr->num_audio_outs > 0;
@@ -197,7 +212,7 @@ plugin_descriptor_is_midi_modifier (
     (descr->category == ZPLUGIN_CATEGORY_NONE &&
      descr->num_midi_ins > 0 &&
      descr->num_midi_outs > 0 &&
-     descr->protocol != PROT_VST);
+     descr->protocol != Z_PLUGIN_PROTOCOL_VST);
 }
 
 #undef IS_CAT
@@ -263,13 +278,13 @@ plugin_descriptor_string_to_category (const char * str)
   return category;
 }
 
-char *
-plugin_descriptor_category_to_string (ZPluginCategory category)
+const char *
+plugin_category_to_string (ZPluginCategory category)
 {
 
 #define RET_STRING(term, cat) \
   if (category == PC_##cat) \
-  return g_strdup (term)
+  return term
 
   /* add category */
   RET_STRING ("Delay", DELAY);
@@ -316,7 +331,13 @@ plugin_descriptor_category_to_string (ZPluginCategory category)
 
 #undef RET_STRING
 
-  return g_strdup ("Plugin");
+  return "Plugin";
+}
+
+char *
+plugin_descriptor_category_to_string (ZPluginCategory category)
+{
+  return g_strdup (plugin_category_to_string (category));
 }
 
 /**
@@ -377,17 +398,17 @@ plugin_descriptor_has_custom_ui (const PluginDescriptor * self)
 {
   switch (self->protocol)
     {
-    case PROT_LV2:
+    case Z_PLUGIN_PROTOCOL_LV2:
       {
         return lv2_plugin_pick_most_preferable_ui (
           self->uri, NULL, NULL, true, false);
       }
       break;
-    case PROT_VST:
-    case PROT_VST3:
-    case PROT_AU:
-    case PROT_CLAP:
-    case PROT_JSFX:
+    case Z_PLUGIN_PROTOCOL_VST:
+    case Z_PLUGIN_PROTOCOL_VST3:
+    case Z_PLUGIN_PROTOCOL_AU:
+    case Z_PLUGIN_PROTOCOL_CLAP:
+    case Z_PLUGIN_PROTOCOL_JSFX:
 #ifdef HAVE_CARLA
       return carla_native_plugin_has_custom_ui (self);
 #else
@@ -412,7 +433,7 @@ plugin_descriptor_get_min_bridge_mode (
 {
   CarlaBridgeMode mode = CARLA_BRIDGE_NONE;
 
-  if (self->protocol == PROT_LV2)
+  if (self->protocol == Z_PLUGIN_PROTOCOL_LV2)
     {
       /* TODO if the UI and DSP binary is the same
        * file, bridge the whole plugin */
@@ -604,7 +625,7 @@ plugin_descriptor_generate_context_menu (
   /* TODO */
 #if 0
   /* add option for native generic LV2 UI */
-  if (self->protocol == PROT_LV2
+  if (self->protocol == Z_PLUGIN_PROTOCOL_LV2
       &&
       self->min_bridge_mode == CARLA_BRIDGE_NONE)
     {

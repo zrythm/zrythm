@@ -28,10 +28,55 @@
                     <property name="title" translatable="yes">Collection</property>
                     <property name="icon-name">favorite</property>
                     <property name="child">
-                      <object class="GtkScrolledWindow" id="collection_scroll">
-                        <property name="child">
-                          <object class="GtkTreeView" id="collection_tree_view"/>
-                        </property>
+                      <object class="GtkBox" id="collection_box">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkScrolledWindow" id="collection_scroll">
+                            <property name="vexpand">true</property>
+                            <property name="child">
+                              <object class="GtkListView" id="collection_list_view">
+                                <property name="tab-behavior">GTK_LIST_TAB_ITEM</property>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <style>
+                              <class name="toolbar"/>
+                            </style>
+                            <property name="orientation">horizontal</property>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="icon-name">box-icons-book-add</property>
+                                <property name="action-name">app.plugin-collection-add</property>
+                                <property name="tooltip-text" translatable="yes">Add Collection</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="icon-name">box-icons-rename</property>
+                                <property name="action-name">app.plugin-collection-rename</property>
+                                <property name="tooltip-text" translatable="yes">Rename Collection</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="icon-name">box-icons-trash</property>
+                                <property name="action-name">app.plugin-collection-remove</property>
+                                <property name="tooltip-text" translatable="yes">Delete Collection</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="icon-name">box-icons-reset</property>
+                                <property name="action-name">app.plugin-browser-reset</property>
+                                <property name="action-target">'collection'</property>
+                                <property name="tooltip-text" translatable="yes">Reset</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </property>
                   </object>
@@ -42,10 +87,34 @@
                     <property name="title" translatable="yes">Author</property>
                     <property name="icon-name">user</property>
                     <property name="child">
-                      <object class="GtkScrolledWindow" id="author_scroll">
-                        <property name="child">
-                          <object class="GtkTreeView" id="author_tree_view"/>
-                        </property>
+                      <object class="GtkBox" id="author_box">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkScrolledWindow" id="author_scroll">
+                            <property name="vexpand">true</property>
+                            <property name="child">
+                              <object class="GtkListView" id="author_list_view">
+                                <property name="tab-behavior">GTK_LIST_TAB_ITEM</property>
+                            </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <style>
+                              <class name="toolbar"/>
+                            </style>
+                            <property name="orientation">horizontal</property>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="icon-name">box-icons-reset</property>
+                                <property name="action-name">app.plugin-browser-reset</property>
+                                <property name="action-target">'author'</property>
+                                <property name="tooltip-text" translatable="yes">Reset</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </property>
                   </object>
@@ -56,10 +125,34 @@
                     <property name="title" translatable="yes">Category</property>
                     <property name="icon-name">category</property>
                     <property name="child">
-                      <object class="GtkScrolledWindow" id="category_scroll">
-                        <property name="child">
-                          <object class="GtkTreeView" id="category_tree_view"/>
-                        </property>
+                      <object class="GtkBox" id="category_box">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkScrolledWindow" id="category_scroll">
+                            <property name="vexpand">true</property>
+                            <property name="child">
+                              <object class="GtkListView" id="category_list_view">
+                                <property name="tab-behavior">GTK_LIST_TAB_ITEM</property>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <style>
+                              <class name="toolbar"/>
+                            </style>
+                            <property name="orientation">horizontal</property>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="icon-name">box-icons-reset</property>
+                                <property name="action-name">app.plugin-browser-reset</property>
+                                <property name="action-target">'category'</property>
+                                <property name="tooltip-text" translatable="yes">Reset</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </property>
                   </object>
@@ -70,10 +163,34 @@
                     <property name="title" translatable="yes">Protocol</property>
                     <property name="icon-name">protocol</property>
                     <property name="child">
-                      <object class="GtkScrolledWindow" id="protocol_scroll">
-                        <property name="child">
-                          <object class="GtkTreeView" id="protocol_tree_view"/>
-                        </property>
+                      <object class="GtkBox" id="protocol_box">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkScrolledWindow" id="protocol_scroll">
+                            <property name="vexpand">true</property>
+                            <property name="child">
+                              <object class="GtkListView" id="protocol_list_view">
+                                <property name="tab-behavior">GTK_LIST_TAB_ITEM</property>
+                              </object>
+                            </property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <style>
+                              <class name="toolbar"/>
+                            </style>
+                            <property name="orientation">horizontal</property>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="icon-name">box-icons-reset</property>
+                                <property name="action-name">app.plugin-browser-reset</property>
+                                <property name="action-target">'protocol'</property>
+                                <property name="tooltip-text" translatable="yes">Reset</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </property>
                   </object>
@@ -190,9 +307,11 @@
             </child>
             <child>
               <object class="GtkScrolledWindow" id="plugin_scroll">
-                <property name="vexpand">1</property>
+                <property name="vexpand">true</property>
                 <property name="child">
-                  <object class="GtkListView" id="plugin_list_view"/>
+                  <object class="GtkListView" id="plugin_list_view">
+                    <property name="tab-behavior">GTK_LIST_TAB_ITEM</property>
+                  </object>
                 </property>
               </object>
             </child>

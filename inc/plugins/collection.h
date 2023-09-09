@@ -115,6 +115,13 @@ plugin_collection_remove_descriptor (
   const PluginDescriptor * descr);
 
 /**
+ * @memberof PluginCollection
+ */
+GMenuModel *
+plugin_collection_generate_context_menu (
+  const PluginCollection * self);
+
+/**
  * Removes all the descriptors.
  */
 void

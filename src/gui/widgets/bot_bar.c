@@ -25,6 +25,7 @@
 #include "project.h"
 #include "settings/settings.h"
 #include "utils/gtk.h"
+#include "utils/objects.h"
 #include "utils/resources.h"
 #include "utils/string.h"
 #include "utils/ui.h"
@@ -320,6 +321,41 @@ bot_bar_widget_refresh (BotBarWidget * self)
     self->playhead_box, GTK_WIDGET (self->playhead_overlay));
 }
 
+static void
+set_buffer_size (void * object, const char * str)
+{
+  if (str)
+    {
+      unsigned long long int buf_sz = strtoull (str, NULL, 10);
+      if (
+        buf_sz == 0ULL
+        || (buf_sz == ULLONG_MAX && errno == ERANGE))
+        {
+          ui_show_error_message (
+            NULL, _ ("Failed reading buffer size value"));
+          return;
+        }
+      else
+        {
+          engine_set_buffer_size (
+            AUDIO_ENGINE, (uint32_t) buf_sz);
+        }
+    }
+}
+
+static const char *
+get_buffer_size (void * object)
+{
+  static char * buffer_size = NULL;
+  if (buffer_size != NULL)
+    {
+      g_free_and_null (buffer_size);
+    }
+  buffer_size =
+    g_strdup_printf ("%u", AUDIO_ENGINE->block_length);
+  return buffer_size;
+}
+
 static bool
 activate_link (
   GtkWidget *   label,
@@ -344,27 +380,12 @@ activate_link (
   else if (string_is_equal (uri, "change"))
     {
       g_debug ("change buf size pressed");
-      char * str =
-        string_entry_dialog_widget_new_return_string (
-          _ ("New buffer size"));
-      if (str)
-        {
-          unsigned long long int buf_sz =
-            strtoull (str, NULL, 10);
-          g_free (str);
-          if (
-            buf_sz == 0ULL
-            || (buf_sz == ULLONG_MAX && errno == ERANGE))
-            {
-              ui_show_error_message (
-                NULL, _ ("Failed reading buffer size value"));
-            }
-          else
-            {
-              engine_set_buffer_size (
-                AUDIO_ENGINE, (uint32_t) buf_sz);
-            }
-        }
+      StringEntryDialogWidget * dialog =
+        string_entry_dialog_widget_new (
+          _ ("Buffer Size"), NULL,
+          (GenericStringGetter) get_buffer_size,
+          (GenericStringSetter) set_buffer_size);
+      gtk_window_present (GTK_WINDOW (dialog));
       return true;
     }
 

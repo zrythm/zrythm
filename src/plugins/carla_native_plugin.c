@@ -58,29 +58,29 @@ G_DEFINE_QUARK (
   z_plugins_carla_native_plugin_error)
 
 static PluginType
-get_plugin_type_from_protocol (PluginProtocol protocol)
+get_plugin_type_from_protocol (ZPluginProtocol protocol)
 {
   switch (protocol)
     {
-    case PROT_LV2:
+    case Z_PLUGIN_PROTOCOL_LV2:
       return PLUGIN_LV2;
-    case PROT_AU:
+    case Z_PLUGIN_PROTOCOL_AU:
       return PLUGIN_AU;
-    case PROT_VST:
+    case Z_PLUGIN_PROTOCOL_VST:
       return PLUGIN_VST2;
-    case PROT_VST3:
+    case Z_PLUGIN_PROTOCOL_VST3:
       return PLUGIN_VST3;
-    case PROT_SFZ:
+    case Z_PLUGIN_PROTOCOL_SFZ:
       return PLUGIN_SFZ;
-    case PROT_SF2:
+    case Z_PLUGIN_PROTOCOL_SF2:
       return PLUGIN_SF2;
-    case PROT_DSSI:
+    case Z_PLUGIN_PROTOCOL_DSSI:
       return PLUGIN_DSSI;
-    case PROT_LADSPA:
+    case Z_PLUGIN_PROTOCOL_LADSPA:
       return PLUGIN_LADSPA;
-    case PROT_CLAP:
+    case Z_PLUGIN_PROTOCOL_CLAP:
       return PLUGIN_CLAP;
-    case PROT_JSFX:
+    case Z_PLUGIN_PROTOCOL_JSFX:
       return PLUGIN_JSFX;
     default:
       g_return_val_if_reached (0);
@@ -954,30 +954,30 @@ carla_native_plugin_get_descriptor_from_cached (
     {
 #  if 0
     case PLUGIN_INTERNAL:
-      descr->protocol = PROT_CARLA_INTERNAL;
+      descr->protocol = Z_PLUGIN_PROTOCOL_CARLA_INTERNAL;
       break;
     case PLUGIN_LADSPA:
-      descr->protocol = PROT_LADSPA;
+      descr->protocol = Z_PLUGIN_PROTOCOL_LADSPA;
       break;
     case PLUGIN_DSSI:
-      descr->protocol = PROT_DSSI;
+      descr->protocol = Z_PLUGIN_PROTOCOL_DSSI;
       break;
 #  endif
     case PLUGIN_LV2:
-      descr->protocol = PROT_LV2;
+      descr->protocol = Z_PLUGIN_PROTOCOL_LV2;
       break;
     case PLUGIN_VST2:
-      descr->protocol = PROT_VST;
+      descr->protocol = Z_PLUGIN_PROTOCOL_VST;
       break;
 #  if 0
     case PLUGIN_SF2:
-      descr->protocol = PROT_SF2;
+      descr->protocol = Z_PLUGIN_PROTOCOL_SF2;
       break;
     case PLUGIN_SFZ:
-      descr->protocol = PROT_SFZ;
+      descr->protocol = Z_PLUGIN_PROTOCOL_SFZ;
       break;
     case PLUGIN_JACK:
-      descr->protocol = PROT_JACK;
+      descr->protocol = Z_PLUGIN_PROTOCOL_JACK;
       break;
 #  endif
     default:
@@ -1431,8 +1431,8 @@ add_internal_plugin_from_descr (
     {
       switch (descr->protocol)
         {
-        case PROT_LV2:
-        case PROT_AU:
+        case Z_PLUGIN_PROTOCOL_LV2:
+        case Z_PLUGIN_PROTOCOL_AU:
           g_debug ("uri %s", descr->uri);
           ret = carla_add_plugin (
             self->host_handle,
@@ -1440,36 +1440,36 @@ add_internal_plugin_from_descr (
             type, NULL, descr->name, descr->uri, 0, NULL,
             PLUGIN_OPTIONS_NULL);
           break;
-        case PROT_VST:
-        case PROT_VST3:
+        case Z_PLUGIN_PROTOCOL_VST:
+        case Z_PLUGIN_PROTOCOL_VST3:
           ret = carla_add_plugin (
             self->host_handle,
             descr->arch == ARCH_64 ? BINARY_NATIVE : BINARY_WIN32,
             type, descr->path, descr->name, descr->name,
             descr->unique_id, NULL, PLUGIN_OPTIONS_NULL);
           break;
-        case PROT_DSSI:
-        case PROT_LADSPA:
+        case Z_PLUGIN_PROTOCOL_DSSI:
+        case Z_PLUGIN_PROTOCOL_LADSPA:
           ret = carla_add_plugin (
             self->host_handle, BINARY_NATIVE, type,
             descr->path, descr->name, descr->uri, 0, NULL,
             PLUGIN_OPTIONS_NULL);
           break;
-        case PROT_SFZ:
-        case PROT_SF2:
+        case Z_PLUGIN_PROTOCOL_SFZ:
+        case Z_PLUGIN_PROTOCOL_SF2:
           ret = carla_add_plugin (
             self->host_handle, BINARY_NATIVE, type,
             descr->path, descr->name, descr->name, 0, NULL,
             PLUGIN_OPTIONS_NULL);
           break;
-        case PROT_JSFX:
+        case Z_PLUGIN_PROTOCOL_JSFX:
           ret = carla_add_plugin (
             self->host_handle,
             descr->arch == ARCH_64 ? BINARY_NATIVE : BINARY_WIN32,
             type, descr->path, descr->name, descr->name,
             descr->unique_id, NULL, PLUGIN_OPTIONS_NULL);
           break;
-        case PROT_CLAP:
+        case Z_PLUGIN_PROTOCOL_CLAP:
           ret = carla_add_plugin (
             self->host_handle,
             descr->arch == ARCH_64 ? BINARY_NATIVE : BINARY_WIN32,
@@ -2084,13 +2084,13 @@ carla_native_plugin_open_ui (CarlaNativePlugin * self, bool show)
 
   switch (pl->setting->descr->protocol)
     {
-    case PROT_VST:
-    case PROT_VST3:
-    case PROT_DSSI:
-    case PROT_LV2:
-    case PROT_AU:
-    case PROT_CLAP:
-    case PROT_JSFX:
+    case Z_PLUGIN_PROTOCOL_VST:
+    case Z_PLUGIN_PROTOCOL_VST3:
+    case Z_PLUGIN_PROTOCOL_DSSI:
+    case Z_PLUGIN_PROTOCOL_LV2:
+    case Z_PLUGIN_PROTOCOL_AU:
+    case Z_PLUGIN_PROTOCOL_CLAP:
+    case Z_PLUGIN_PROTOCOL_JSFX:
       if (show)
         {
           char * title = plugin_generate_window_title (pl);
@@ -2483,7 +2483,7 @@ carla_native_plugin_close (CarlaNativePlugin * self)
       self->native_plugin_descriptor->deactivate (
         self->native_plugin_handle);
       if (
-        descr->protocol != PROT_LV2
+        descr->protocol != Z_PLUGIN_PROTOCOL_LV2
         || lv2_plugin_can_cleanup (descr->uri))
         {
           self->native_plugin_descriptor->cleanup (

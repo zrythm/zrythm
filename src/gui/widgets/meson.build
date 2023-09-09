@@ -122,6 +122,7 @@ widget_srcs = files([
   'snap_grid.c',
   'spectrum_analyzer.c',
   'splash.c',
+  'string_list_item_factory.c',
   'text_expander.c',
   'timeline_arranger.c',
   'timeline_bot_box.c',

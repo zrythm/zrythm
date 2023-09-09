@@ -661,9 +661,10 @@ get_sf_paths (PluginManager * self, bool sf2)
 }
 
 static int
-get_sf_count (PluginManager * self, PluginProtocol prot)
+get_sf_count (PluginManager * self, ZPluginProtocol prot)
 {
-  char ** paths = get_sf_paths (self, prot == PROT_SF2);
+  char ** paths =
+    get_sf_paths (self, prot == Z_PLUGIN_PROTOCOL_SF2);
   g_return_val_if_fail (paths, 0);
   int    path_idx = 0;
   char * path;
@@ -674,7 +675,9 @@ get_sf_count (PluginManager * self, PluginProtocol prot)
         continue;
 
       char ** sf_instruments = io_get_files_in_dir_ending_in (
-        path, 1, (prot == PROT_SFZ) ? ".sfz" : ".sf2", false);
+        path, 1,
+        (prot == Z_PLUGIN_PROTOCOL_SFZ) ? ".sfz" : ".sf2",
+        false);
       if (!sf_instruments)
         continue;
 
@@ -996,27 +999,27 @@ get_jsfx_count (PluginManager * self)
 bool
 plugin_manager_supports_protocol (
   PluginManager * self,
-  PluginProtocol  protocol)
+  ZPluginProtocol protocol)
 {
   switch (protocol)
     {
-    case PROT_DUMMY:
-    case PROT_LV2:
+    case Z_PLUGIN_PROTOCOL_DUMMY:
+    case Z_PLUGIN_PROTOCOL_LV2:
       return true;
-    case PROT_LADSPA:
-    case PROT_VST:
-    case PROT_VST3:
-    case PROT_SFZ:
-    case PROT_JSFX:
-    case PROT_CLAP:
+    case Z_PLUGIN_PROTOCOL_LADSPA:
+    case Z_PLUGIN_PROTOCOL_VST:
+    case Z_PLUGIN_PROTOCOL_VST3:
+    case Z_PLUGIN_PROTOCOL_SFZ:
+    case Z_PLUGIN_PROTOCOL_JSFX:
+    case Z_PLUGIN_PROTOCOL_CLAP:
 #ifdef HAVE_CARLA
       return true;
 #else
       return false;
 #endif
-    case PROT_DSSI:
-    case PROT_AU:
-    case PROT_SF2:
+    case Z_PLUGIN_PROTOCOL_DSSI:
+    case Z_PLUGIN_PROTOCOL_AU:
+    case Z_PLUGIN_PROTOCOL_SF2:
       {
 #ifdef HAVE_CARLA
         const char * const * carla_features =
@@ -1028,7 +1031,7 @@ plugin_manager_supports_protocol (
 #  define CHECK_FEATURE(str, format) \
     if ( \
       string_is_equal (feature, str) \
-      && protocol == PROT_##format) \
+      && protocol == Z_PLUGIN_PROTOCOL_##format) \
     return true
 
             CHECK_FEATURE ("sf2", SF2);
@@ -1051,7 +1054,7 @@ plugin_manager_supports_protocol (
 static void
 scan_carla_descriptors_from_paths (
   PluginManager * self,
-  PluginProtocol  protocol,
+  ZPluginProtocol protocol,
   unsigned int *  count,
   const double    size,
   double *        progress,
@@ -1076,7 +1079,7 @@ scan_carla_descriptors_from_paths (
   const char * suffix = NULL;
   switch (protocol)
     {
-    case PROT_VST:
+    case Z_PLUGIN_PROTOCOL_VST:
       paths = get_vst_paths (self);
 #  ifdef __APPLE__
       suffix = ".vst";
@@ -1084,31 +1087,31 @@ scan_carla_descriptors_from_paths (
       suffix = LIB_SUFFIX;
 #  endif
       break;
-    case PROT_VST3:
+    case Z_PLUGIN_PROTOCOL_VST3:
       paths = get_vst3_paths (self);
       suffix = ".vst3";
       break;
-    case PROT_DSSI:
+    case Z_PLUGIN_PROTOCOL_DSSI:
       paths = get_dssi_paths (self);
       suffix = LIB_SUFFIX;
       break;
-    case PROT_LADSPA:
+    case Z_PLUGIN_PROTOCOL_LADSPA:
       paths = get_ladspa_paths (self);
       suffix = LIB_SUFFIX;
       break;
-    case PROT_SFZ:
+    case Z_PLUGIN_PROTOCOL_SFZ:
       paths = get_sf_paths (self, false);
       suffix = ".sfz";
       break;
-    case PROT_SF2:
+    case Z_PLUGIN_PROTOCOL_SF2:
       paths = get_sf_paths (self, true);
       suffix = ".sf2";
       break;
-    case PROT_CLAP:
+    case Z_PLUGIN_PROTOCOL_CLAP:
       paths = get_clap_paths (self);
       suffix = ".clap";
       break;
-    case PROT_JSFX:
+    case Z_PLUGIN_PROTOCOL_JSFX:
       paths = get_jsfx_paths (self);
       suffix = ".jsfx";
       break;
@@ -1189,7 +1192,9 @@ scan_carla_descriptors_from_paths (
                 }
               else
                 {
-                  if (protocol == PROT_SFZ || protocol == PROT_SF2)
+                  if (
+                    protocol == Z_PLUGIN_PROTOCOL_SFZ
+                    || protocol == Z_PLUGIN_PROTOCOL_SF2)
                     {
                       descriptors =
                         object_new_n (2, PluginDescriptor *);
@@ -1370,8 +1375,8 @@ plugin_manager_scan_plugins (
 #ifdef HAVE_CARLA
   size += (double) get_vst_count (self);
   size += (double) get_vst3_count (self);
-  size += (double) get_sf_count (self, PROT_SFZ);
-  size += (double) get_sf_count (self, PROT_SF2);
+  size += (double) get_sf_count (self, Z_PLUGIN_PROTOCOL_SFZ);
+  size += (double) get_sf_count (self, Z_PLUGIN_PROTOCOL_SF2);
   size += (double) get_clap_count (self);
   size += (double) get_jsfx_count (self);
 #  ifdef __APPLE__
@@ -1469,44 +1474,44 @@ plugin_manager_scan_plugins (
 #  if !defined(_WOE32) && !defined(__APPLE__)
   /* scan ladspa */
   scan_carla_descriptors_from_paths (
-    self, PROT_LADSPA, &count, size, progress, start_progress,
-    max_progress);
+    self, Z_PLUGIN_PROTOCOL_LADSPA, &count, size, progress,
+    start_progress, max_progress);
 
   /* scan dssi */
   scan_carla_descriptors_from_paths (
-    self, PROT_DSSI, &count, size, progress, start_progress,
-    max_progress);
+    self, Z_PLUGIN_PROTOCOL_DSSI, &count, size, progress,
+    start_progress, max_progress);
 #  endif /* not apple/woe32 */
 
   /* scan vst */
   scan_carla_descriptors_from_paths (
-    self, PROT_VST, &count, size, progress, start_progress,
-    max_progress);
+    self, Z_PLUGIN_PROTOCOL_VST, &count, size, progress,
+    start_progress, max_progress);
 
   /* scan vst3 */
   scan_carla_descriptors_from_paths (
-    self, PROT_VST3, &count, size, progress, start_progress,
-    max_progress);
+    self, Z_PLUGIN_PROTOCOL_VST3, &count, size, progress,
+    start_progress, max_progress);
 
   /* scan sfz */
   scan_carla_descriptors_from_paths (
-    self, PROT_SFZ, &count, size, progress, start_progress,
-    max_progress);
+    self, Z_PLUGIN_PROTOCOL_SFZ, &count, size, progress,
+    start_progress, max_progress);
 
   /* scan sf2 */
   scan_carla_descriptors_from_paths (
-    self, PROT_SF2, &count, size, progress, start_progress,
-    max_progress);
+    self, Z_PLUGIN_PROTOCOL_SF2, &count, size, progress,
+    start_progress, max_progress);
 
   /* scan clap */
   scan_carla_descriptors_from_paths (
-    self, PROT_CLAP, &count, size, progress, start_progress,
-    max_progress);
+    self, Z_PLUGIN_PROTOCOL_CLAP, &count, size, progress,
+    start_progress, max_progress);
 
   /* scan jsfx */
   scan_carla_descriptors_from_paths (
-    self, PROT_JSFX, &count, size, progress, start_progress,
-    max_progress);
+    self, Z_PLUGIN_PROTOCOL_JSFX, &count, size, progress,
+    start_progress, max_progress);
 
 #  ifdef __APPLE__
   /* scan AU plugins */

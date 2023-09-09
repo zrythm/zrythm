@@ -1305,7 +1305,9 @@ engine_realloc_port_buffers (
                   carla_native_plugin_update_buffer_size_and_sample_rate (
                     pl->carla);
                 }
-              else if (pl->setting->descr->protocol == PROT_LV2)
+              else if (
+                pl->setting->descr->protocol
+                == Z_PLUGIN_PROTOCOL_LV2)
                 {
                   lv2_plugin_allocate_port_buffers (pl->lv2);
                 }

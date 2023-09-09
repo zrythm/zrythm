@@ -123,34 +123,34 @@ static const cyaml_strval_t plugin_descriptor_category_strings[] = {
 /**
  * Plugin protocol.
  */
-typedef enum PluginProtocol
+typedef enum ZPluginProtocol
 {
   /** Dummy protocol for tests. */
-  PROT_DUMMY,
-  PROT_LV2,
-  PROT_DSSI,
-  PROT_LADSPA,
-  PROT_VST,
-  PROT_VST3,
-  PROT_AU,
-  PROT_SFZ,
-  PROT_SF2,
-  PROT_CLAP,
-  PROT_JSFX,
-} PluginProtocol;
+  Z_PLUGIN_PROTOCOL_DUMMY,
+  Z_PLUGIN_PROTOCOL_LV2,
+  Z_PLUGIN_PROTOCOL_DSSI,
+  Z_PLUGIN_PROTOCOL_LADSPA,
+  Z_PLUGIN_PROTOCOL_VST,
+  Z_PLUGIN_PROTOCOL_VST3,
+  Z_PLUGIN_PROTOCOL_AU,
+  Z_PLUGIN_PROTOCOL_SFZ,
+  Z_PLUGIN_PROTOCOL_SF2,
+  Z_PLUGIN_PROTOCOL_CLAP,
+  Z_PLUGIN_PROTOCOL_JSFX,
+} ZPluginProtocol;
 
 static const cyaml_strval_t plugin_protocol_strings[] = {
-  {N_ ("Dummy"), PROT_DUMMY },
-  { "LV2",       PROT_LV2   },
-  { "DSSI",      PROT_DSSI  },
-  { "LADSPA",    PROT_LADSPA},
-  { "VST",       PROT_VST   },
-  { "VST3",      PROT_VST3  },
-  { "AU",        PROT_AU    },
-  { "SFZ",       PROT_SFZ   },
-  { "SF2",       PROT_SF2   },
-  { "CLAP",      PROT_CLAP  },
-  { "JSFX",      PROT_JSFX  },
+  {N_ ("Dummy"), Z_PLUGIN_PROTOCOL_DUMMY },
+  { "LV2",       Z_PLUGIN_PROTOCOL_LV2   },
+  { "DSSI",      Z_PLUGIN_PROTOCOL_DSSI  },
+  { "LADSPA",    Z_PLUGIN_PROTOCOL_LADSPA},
+  { "VST",       Z_PLUGIN_PROTOCOL_VST   },
+  { "VST3",      Z_PLUGIN_PROTOCOL_VST3  },
+  { "AU",        Z_PLUGIN_PROTOCOL_AU    },
+  { "SFZ",       Z_PLUGIN_PROTOCOL_SFZ   },
+  { "SF2",       Z_PLUGIN_PROTOCOL_SF2   },
+  { "CLAP",      Z_PLUGIN_PROTOCOL_CLAP  },
+  { "JSFX",      Z_PLUGIN_PROTOCOL_JSFX  },
 };
 
 /**
@@ -217,7 +217,7 @@ typedef struct PluginDescriptor
   /** Architecture (32/64bit). */
   PluginArchitecture arch;
   /** Plugin protocol (Lv2/DSSI/LADSPA/VST/etc.). */
-  PluginProtocol protocol;
+  ZPluginProtocol protocol;
   /** Path, if not an Lv2Plugin which uses URIs. */
   char * path;
   /** Lv2Plugin URI. */
@@ -291,7 +291,43 @@ PluginDescriptor *
 plugin_descriptor_new (void);
 
 const char *
-plugin_protocol_to_str (PluginProtocol prot);
+plugin_protocol_to_str (ZPluginProtocol prot);
+
+ZPluginProtocol
+plugin_protocol_from_str (const char * str);
+
+static inline const char *
+plugin_protocol_get_icon_name (ZPluginProtocol prot)
+{
+  const char * icon = NULL;
+  switch (prot)
+    {
+    case Z_PLUGIN_PROTOCOL_LV2:
+      icon = "logo-lv2";
+      break;
+    case Z_PLUGIN_PROTOCOL_LADSPA:
+      icon = "logo-ladspa";
+      break;
+    case Z_PLUGIN_PROTOCOL_AU:
+      icon = "logo-au";
+      break;
+    case Z_PLUGIN_PROTOCOL_VST:
+    case Z_PLUGIN_PROTOCOL_VST3:
+      icon = "logo-vst";
+      break;
+    case Z_PLUGIN_PROTOCOL_SFZ:
+    case Z_PLUGIN_PROTOCOL_SF2:
+      icon = "file-music-line";
+      break;
+    default:
+      icon = "plug";
+      break;
+    }
+  return icon;
+}
+
+const char *
+plugin_category_to_string (ZPluginCategory category);
 
 /**
  * Clones the plugin descriptor.

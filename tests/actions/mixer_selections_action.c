@@ -211,11 +211,11 @@ test_midi_fx_slot_deletion (void)
 
 static void
 _test_create_plugins (
-  PluginProtocol prot,
-  const char *   pl_bundle,
-  const char *   pl_uri,
-  bool           is_instrument,
-  bool           with_carla)
+  ZPluginProtocol prot,
+  const char *    pl_bundle,
+  const char *    pl_uri,
+  bool            is_instrument,
+  bool            with_carla)
 {
   PluginSetting * setting = NULL;
 
@@ -237,18 +237,18 @@ _test_create_plugins (
 
   switch (prot)
     {
-    case PROT_LV2:
+    case Z_PLUGIN_PROTOCOL_LV2:
       setting = test_plugin_manager_get_plugin_setting (
         pl_bundle, pl_uri, with_carla);
       g_return_if_fail (setting);
       setting = plugin_setting_clone (setting, F_NO_VALIDATE);
       break;
-    case PROT_VST:
+    case Z_PLUGIN_PROTOCOL_VST:
 #ifdef HAVE_CARLA
       {
         PluginDescriptor ** descriptors =
           z_carla_discovery_create_descriptors_from_file (
-            pl_bundle, ARCH_64, PROT_VST);
+            pl_bundle, ARCH_64, Z_PLUGIN_PROTOCOL_VST);
         setting = plugin_setting_new_default (descriptors[0]);
         free (descriptors);
       }
@@ -367,7 +367,8 @@ test_create_plugins (void)
 #ifdef HAVE_CARLA
 #  ifdef HAVE_NOIZEMAKER
           _test_create_plugins (
-            PROT_VST, NOIZEMAKER_PATH, NULL, true, i);
+            Z_PLUGIN_PROTOCOL_VST, NOIZEMAKER_PATH, NULL,
+            true, i);
 #  endif
 #else
           break;
@@ -378,27 +379,28 @@ test_create_plugins (void)
 #  if 0
       /* need to refactor the error handling code because this is expected to fail */
       _test_create_plugins (
-        PROT_LV2, SHERLOCK_ATOM_INSPECTOR_BUNDLE,
+        Z_PLUGIN_PROTOCOL_LV2, SHERLOCK_ATOM_INSPECTOR_BUNDLE,
         SHERLOCK_ATOM_INSPECTOR_URI, false, i);
 #  endif
 #endif
       _test_create_plugins (
-        PROT_LV2, TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true,
-        i);
+        Z_PLUGIN_PROTOCOL_LV2, TRIPLE_SYNTH_BUNDLE,
+        TRIPLE_SYNTH_URI, true, i);
 #ifdef HAVE_LSP_COMPRESSOR
       _test_create_plugins (
-        PROT_LV2, LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI,
-        false, i);
+        Z_PLUGIN_PROTOCOL_LV2, LSP_COMPRESSOR_BUNDLE,
+        LSP_COMPRESSOR_URI, false, i);
 #endif
 #ifdef HAVE_CARLA_RACK
       _test_create_plugins (
-        PROT_LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI, true, i);
+        Z_PLUGIN_PROTOCOL_LV2, CARLA_RACK_BUNDLE,
+        CARLA_RACK_URI, true, i);
 #endif
 #if defined(HAVE_UNLIMITED_MEM) \
   && defined(HAVE_CALF_COMPRESSOR)
       _test_create_plugins (
-        PROT_LV2, CALF_COMPRESSOR_BUNDLE, CALF_COMPRESSOR_URI,
-        true, i);
+        Z_PLUGIN_PROTOCOL_LV2, CALF_COMPRESSOR_BUNDLE,
+        CALF_COMPRESSOR_URI, true, i);
 #endif
     }
 
@@ -1180,28 +1182,28 @@ test_undoing_deletion_of_multiple_inserts (void)
 
 static void
 _test_replace_instrument (
-  PluginProtocol prot,
-  const char *   pl_bundle,
-  const char *   pl_uri,
-  bool           with_carla)
+  ZPluginProtocol prot,
+  const char *    pl_bundle,
+  const char *    pl_uri,
+  bool            with_carla)
 {
 #ifdef HAVE_LSP_COMPRESSOR
   PluginSetting * setting = NULL;
 
   switch (prot)
     {
-    case PROT_LV2:
+    case Z_PLUGIN_PROTOCOL_LV2:
       setting = test_plugin_manager_get_plugin_setting (
         pl_bundle, pl_uri, with_carla);
       g_return_if_fail (setting);
       setting = plugin_setting_clone (setting, F_NO_VALIDATE);
       break;
-    case PROT_VST:
+    case Z_PLUGIN_PROTOCOL_VST:
 #  ifdef HAVE_CARLA
       {
         PluginDescriptor ** descriptors =
           z_carla_discovery_create_descriptors_from_file (
-            pl_bundle, ARCH_64, PROT_VST);
+            pl_bundle, ARCH_64, Z_PLUGIN_PROTOCOL_VST);
         setting = plugin_setting_new_default (descriptors[0]);
         free (descriptors);
       }
@@ -1455,7 +1457,7 @@ test_replace_instrument (void)
 #ifdef HAVE_CARLA
 #  ifdef HAVE_NOIZEMAKER
           _test_replace_instrument (
-            PROT_VST, NOIZEMAKER_PATH, NULL, i);
+            Z_PLUGIN_PROTOCOL_VST, NOIZEMAKER_PATH, NULL, i);
 #  endif
 #else
           break;
@@ -1463,10 +1465,12 @@ test_replace_instrument (void)
         }
 
       _test_replace_instrument (
-        PROT_LV2, TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, i);
+        Z_PLUGIN_PROTOCOL_LV2, TRIPLE_SYNTH_BUNDLE,
+        TRIPLE_SYNTH_URI, i);
 #ifdef HAVE_CARLA_RACK
       _test_replace_instrument (
-        PROT_LV2, CARLA_RACK_BUNDLE, CARLA_RACK_URI, i);
+        Z_PLUGIN_PROTOCOL_LV2, CARLA_RACK_BUNDLE,
+        CARLA_RACK_URI, i);
 #endif
     }
 

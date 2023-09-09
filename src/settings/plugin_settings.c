@@ -145,13 +145,15 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
 #endif
 
   if (
-    descr->protocol == PROT_VST || descr->protocol == PROT_VST3
-    || descr->protocol == PROT_AU || descr->protocol == PROT_SFZ
-    || descr->protocol == PROT_SF2
-    || descr->protocol == PROT_DSSI
-    || descr->protocol == PROT_LADSPA
-    || descr->protocol == PROT_JSFX
-    || descr->protocol == PROT_CLAP)
+    descr->protocol == Z_PLUGIN_PROTOCOL_VST
+    || descr->protocol == Z_PLUGIN_PROTOCOL_VST3
+    || descr->protocol == Z_PLUGIN_PROTOCOL_AU
+    || descr->protocol == Z_PLUGIN_PROTOCOL_SFZ
+    || descr->protocol == Z_PLUGIN_PROTOCOL_SF2
+    || descr->protocol == Z_PLUGIN_PROTOCOL_DSSI
+    || descr->protocol == Z_PLUGIN_PROTOCOL_LADSPA
+    || descr->protocol == Z_PLUGIN_PROTOCOL_JSFX
+    || descr->protocol == Z_PLUGIN_PROTOCOL_CLAP)
     {
       self->open_with_carla = true;
 #ifndef HAVE_CARLA
@@ -235,8 +237,8 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
 
   /* if setting cannot have a UI URI, clear it */
   if (
-    descr->protocol != PROT_LV2 || self->open_with_carla
-    || self->force_generic_ui)
+    descr->protocol != Z_PLUGIN_PROTOCOL_LV2
+    || self->open_with_carla || self->force_generic_ui)
     {
       /*g_debug ("cannot have UI URI");*/
       g_free_and_null (self->ui_uri);

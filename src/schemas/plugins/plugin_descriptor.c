@@ -30,7 +30,7 @@ plugin_descriptor_upgrade_from_v1 (PluginDescriptor_v1 * old)
   self->num_ctrl_outs = old->num_ctrl_outs;
   self->unique_id = old->unique_id;
   self->arch = (PluginArchitecture) old->arch;
-  self->protocol = (PluginProtocol) old->protocol;
+  self->protocol = (ZPluginProtocol) old->protocol;
   self->path = old->path;
   self->uri = old->uri;
   self->min_bridge_mode =

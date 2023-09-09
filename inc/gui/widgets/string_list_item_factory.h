@@ -1,0 +1,38 @@
+// SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
+
+/**
+ * \file
+ *
+ * String list item factory.
+ */
+
+#ifndef __GUI_WIDGETS_STRING_LIST_ITEM_FACTORY_H__
+#define __GUI_WIDGETS_STRING_LIST_ITEM_FACTORY_H__
+
+#include <gtk/gtk.h>
+
+/**
+ * @addtogroup widgets
+ *
+ * @{
+ */
+
+typedef const char * (
+  *StringListItemFactoryEnumStringGetter) (int val);
+
+/**
+ * Returns a simple item factory that puts each string in a
+ * GtkLabel.
+ *
+ * Can be used with AdwEnumListItem and GtkStringObject.
+ */
+GtkListItemFactory *
+string_list_item_factory_new (
+  StringListItemFactoryEnumStringGetter getter);
+
+/**
+ * @}
+ */
+
+#endif

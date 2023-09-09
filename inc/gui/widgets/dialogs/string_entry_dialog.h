@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2020 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2020, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -12,7 +12,7 @@
 
 #include "utils/types.h"
 
-#include <gtk/gtk.h>
+#include <adwaita.h>
 
 #define STRING_ENTRY_DIALOG_WIDGET_TYPE \
   (string_entry_dialog_widget_get_type ())
@@ -21,7 +21,7 @@ G_DECLARE_FINAL_TYPE (
   string_entry_dialog_widget,
   Z,
   STRING_ENTRY_DIALOG_WIDGET,
-  GtkDialog)
+  AdwMessageDialog)
 
 typedef struct _MarkerWidget MarkerWidget;
 typedef struct Marker        Marker;
@@ -37,12 +37,10 @@ typedef struct Marker        Marker;
  */
 typedef struct _StringEntryDialogWidget
 {
-  GtkDialog parent_instance;
+  AdwMessageDialog parent_instance;
 
   GtkEntry *  entry;
   GtkButton * ok;
-  GtkButton * cancel;
-  GtkLabel *  label;
 
   GenericStringGetter getter;
   GenericStringSetter setter;
@@ -59,14 +57,6 @@ string_entry_dialog_widget_new (
   void *              obj,
   GenericStringGetter getter,
   GenericStringSetter setter);
-
-/**
- * Runs a new dialog and returns the string, or
- * NULL if cancelled.
- */
-char *
-string_entry_dialog_widget_new_return_string (
-  const char * label);
 
 /**
  * @}

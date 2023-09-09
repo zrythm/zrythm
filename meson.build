@@ -221,6 +221,10 @@ have_custom_logo_and_splash = get_option ('custom_logo_and_splash')
 # include dirs
 root_inc = include_directories ('.')
 inc_inc = include_directories ('inc')
+# this works around a mkenums_simple() bug
+# see https://github.com/mesonbuild/meson/pull/10855
+# TODO remove it after a few meson releases
+FIXME_plugins_inc = include_directories ('inc/plugins')
 ext_inc = include_directories ('ext')
 kissfft_inc = include_directories ('ext/kissfft')
 midilib_inc = include_directories ('ext/midilib')
@@ -230,6 +234,7 @@ weakjack_inc = include_directories ('ext/weakjack')
 all_inc = [
   root_inc,
   inc_inc,
+  FIXME_plugins_inc,
   ext_inc,
   kissfft_inc,
   midilib_inc,

@@ -262,7 +262,7 @@ typedef enum EventType
   /** Range selection changed in audio editor. */
   ET_AUDIO_SELECTIONS_RANGE_CHANGED,
 
-  ET_PLUGIN_COLLETIONS_CHANGED,
+  ET_PLUGIN_COLLECTIONS_CHANGED,
 
   ET_SNAP_GRID_OPTIONS_CHANGED,
 

@@ -474,6 +474,8 @@ item_factory_setup_cb (
             label = gtk_label_new ("");
             gtk_label_set_ellipsize (
               GTK_LABEL (label), PANGO_ELLIPSIZE_END);
+            gtk_widget_set_halign (
+              GTK_WIDGET (label), GTK_ALIGN_START);
             gtk_label_set_max_width_chars (
               GTK_LABEL (label), max_chars);
           }
@@ -580,6 +582,21 @@ add_chord_pset_context_menu (
 {
   GMenuModel * model =
     chord_preset_generate_context_menu (pset);
+
+  if (model)
+    {
+      popover_menu_bin_widget_set_menu_model (
+        bin, G_MENU_MODEL (model));
+    }
+}
+
+static void
+add_plugin_collection_context_menu (
+  PopoverMenuBinWidget *   bin,
+  const PluginCollection * coll)
+{
+  GMenuModel * model =
+    plugin_collection_generate_context_menu (coll);
 
   if (model)
     {
@@ -908,6 +925,15 @@ item_factory_bind_cb (
                   strcpy (str, track->name);
                 }
             }
+            break;
+          case WRAPPED_OBJECT_TYPE_PLUGIN_COLLECTION:
+            {
+              PluginCollection * coll =
+                (PluginCollection *) obj->obj;
+              strcpy (str, coll->name);
+              add_plugin_collection_context_menu (bin, coll);
+            }
+            break;
           default:
             break;
           }

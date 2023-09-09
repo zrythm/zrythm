@@ -1163,9 +1163,10 @@ event_manager_process_event (EventManager * self, ZEvent * ev)
       break;
     case ET_AUDIO_SELECTIONS_RANGE_CHANGED:
       break;
-    case ET_PLUGIN_COLLETIONS_CHANGED:
+    case ET_PLUGIN_COLLECTIONS_CHANGED:
       plugin_browser_widget_refresh_collections (
         MW_PLUGIN_BROWSER);
+      ui_show_notification (_ ("Plugin collections updated."));
       break;
     case ET_SNAP_GRID_OPTIONS_CHANGED:
       {

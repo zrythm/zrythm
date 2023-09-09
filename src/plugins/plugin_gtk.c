@@ -69,11 +69,11 @@ on_save_activate (
 {
   switch (plugin->setting->descr->protocol)
     {
-    case PROT_LV2:
+    case Z_PLUGIN_PROTOCOL_LV2:
       g_return_if_fail (plugin->lv2);
       lv2_gtk_on_save_activate (plugin->lv2);
       break;
-    case PROT_VST:
+    case Z_PLUGIN_PROTOCOL_VST:
       break;
     default:
       break;
@@ -98,10 +98,10 @@ on_save_activate (
 
       switch (plugin->descr->protocol)
         {
-        case PROT_LV2:
+        case Z_PLUGIN_PROTOCOL_LV2:
           lv2_state_save_to_file (plugin->lv2, base);
           break;
-        case PROT_VST:
+        case Z_PLUGIN_PROTOCOL_VST:
           break;
         default:
           break;
@@ -140,7 +140,7 @@ plugin_gtk_on_preset_activate (
         plugin->active_preset_item)
     {
       if (plugin->setting->descr->protocol ==
-                 PROT_LV2)
+                 Z_PLUGIN_PROTOCOL_LV2)
         {
           g_return_if_fail (plugin->lv2);
           GError * err = NULL;
@@ -292,7 +292,7 @@ plugin_gtk_on_save_preset_activate (
   const PluginSetting *    setting = plugin->setting;
   const PluginDescriptor * descr = setting->descr;
   bool open_with_carla = setting->open_with_carla;
-  bool is_lv2 = descr->protocol == PROT_LV2;
+  bool is_lv2 = descr->protocol == Z_PLUGIN_PROTOCOL_LV2;
 
   GtkWidget * dialog = gtk_file_chooser_dialog_new (
     _ ("Save Preset"),
@@ -423,7 +423,7 @@ on_delete_preset_activate (
 {
   switch (plugin->setting->descr->protocol)
     {
-    case PROT_LV2:
+    case Z_PLUGIN_PROTOCOL_LV2:
       lv2_gtk_on_delete_preset_activate (
         widget, plugin->lv2);
       break;
@@ -1618,7 +1618,7 @@ plugin_gtk_open_generic_ui (Plugin * plugin, bool fire_events)
   gtk_window_present (GTK_WINDOW (plugin->window));
 
   if (
-    plugin->setting->descr->protocol == PROT_LV2
+    plugin->setting->descr->protocol == Z_PLUGIN_PROTOCOL_LV2
     && !plugin->setting->open_with_carla)
     {
       lv2_ui_init (plugin->lv2);

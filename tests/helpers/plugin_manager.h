@@ -146,7 +146,7 @@ test_plugin_manager_get_plugin_setting (
               descr = plugin_descriptor_clone (cur_descr);
             }
         }
-      else if (cur_descr->protocol != PROT_LV2)
+      else if (cur_descr->protocol != Z_PLUGIN_PROTOCOL_LV2)
         {
           char * basename = g_path_get_basename (pl_bundle);
           char * descr_basename =

@@ -287,27 +287,27 @@ PluginDescriptor **
 z_carla_discovery_create_descriptors_from_file (
   const char *       path,
   PluginArchitecture arch,
-  PluginProtocol     protocol)
+  ZPluginProtocol    protocol)
 {
   const char * type = NULL;
   switch (protocol)
     {
-    case PROT_VST3:
+    case Z_PLUGIN_PROTOCOL_VST3:
       type = "vst3";
       break;
-    case PROT_VST:
+    case Z_PLUGIN_PROTOCOL_VST:
       type = "vst";
       break;
-    case PROT_DSSI:
+    case Z_PLUGIN_PROTOCOL_DSSI:
       type = "dssi";
       break;
-    case PROT_LADSPA:
+    case Z_PLUGIN_PROTOCOL_LADSPA:
       type = "ladspa";
       break;
-    case PROT_CLAP:
+    case Z_PLUGIN_PROTOCOL_CLAP:
       type = "clap";
       break;
-    case PROT_JSFX:
+    case Z_PLUGIN_PROTOCOL_JSFX:
       type = "jsfx";
       break;
     default:
@@ -425,7 +425,7 @@ z_carla_discovery_create_au_descriptor_from_info (
   descr->category_str =
     plugin_descriptor_category_to_string (descr->category);
 
-  descr->protocol = PROT_AU;
+  descr->protocol = Z_PLUGIN_PROTOCOL_AU;
   descr->arch = ARCH_64;
   descr->path = NULL;
   descr->min_bridge_mode =
@@ -480,7 +480,7 @@ z_carla_discovery_create_au_descriptor_from_string (
 
   PluginDescriptor * descr = descriptors[0];
   free (descriptors);
-  descr->protocol = PROT_AU;
+  descr->protocol = Z_PLUGIN_PROTOCOL_AU;
   descr->arch = ARCH_64;
   descr->min_bridge_mode =
     plugin_descriptor_get_min_bridge_mode (descr);

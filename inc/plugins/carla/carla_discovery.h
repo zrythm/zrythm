@@ -59,7 +59,7 @@ PluginDescriptor **
 z_carla_discovery_create_descriptors_from_file (
   const char *       path,
   PluginArchitecture arch,
-  PluginProtocol     protocol);
+  ZPluginProtocol    protocol);
 
 /**
  * Create a descriptor for the given AU plugin.

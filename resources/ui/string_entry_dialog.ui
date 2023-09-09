@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <requires lib="gtk" version="4.0"/>
-  <template class="StringEntryDialogWidget" parent="GtkDialog">
-    <property name="default_width">260</property>
-    <child>
-      <placeholder/>
-    </child>
-    <child internal-child="content_area">
+  <template class="StringEntryDialogWidget" parent="AdwMessageDialog">
+    <property name="body" translatable="yes">Please enter a value</property>
+    <property name="default-response">ok</property>
+    <property name="close-response">cancel</property>
+    <property name="modal">true</property>
+    <responses>
+      <response id="cancel" translatable="yes">_Cancel</response>
+      <response id="ok" translatable="yes" appearance="suggested">_OK</response>
+    </responses>
+    <property name="extra-child">
       <object class="GtkBox">
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
@@ -19,11 +23,6 @@
             <property name="orientation">vertical</property>
             <property name="spacing">4</property>
             <child>
-              <object class="GtkLabel" id="label">
-                <property name="label" translatable="yes">Marker name</property>
-              </object>
-            </child>
-            <child>
               <object class="GtkEntry" id="entry">
                 <property name="focusable">1</property>
               </object>
@@ -34,31 +33,6 @@
           </object>
         </child>
       </object>
-    </child>
-    <action-widgets>
-      <action-widget response="-2">cancel</action-widget>
-      <action-widget response="-3">ok</action-widget>
-    </action-widgets>
-    <child internal-child="action_area">
-      <object class="GtkBox">
-        <property name="valign">center</property>
-        <child>
-          <object class="GtkButton" id="cancel">
-            <property name="label" translatable="yes">_Cancel</property>
-            <property name="focusable">1</property>
-            <property name="receives_default">1</property>
-            <property name="use_underline">1</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="ok">
-            <property name="label" translatable="yes">_OK</property>
-            <property name="focusable">1</property>
-            <property name="receives_default">1</property>
-            <property name="use_underline">1</property>
-          </object>
-        </child>
-      </object>
-    </child>
+    </property>
   </template>
 </interface>

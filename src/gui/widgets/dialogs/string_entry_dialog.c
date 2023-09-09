@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "actions/arranger_selections.h"
 #include "dsp/marker.h"
@@ -31,31 +15,28 @@
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
-#include <gtk/gtk.h>
 
 G_DEFINE_TYPE (
   StringEntryDialogWidget,
   string_entry_dialog_widget,
-  GTK_TYPE_DIALOG)
+  ADW_TYPE_MESSAGE_DIALOG)
 
 /**
  * Closes the dialog, optionally saving.
  */
 static void
 on_response (
-  GtkDialog *               dialog,
-  gint                      response,
+  AdwMessageDialog *        dialog,
+  char *                    response,
   StringEntryDialogWidget * self)
 {
-  if (response == GTK_RESPONSE_ACCEPT)
+  if (string_is_equal (response, "ok"))
     {
       const char * text =
         gtk_editable_get_text (GTK_EDITABLE (self->entry));
 
       self->setter (self->obj, text);
     }
-
-  gtk_window_destroy (GTK_WINDOW (self));
 }
 
 static void
@@ -63,7 +44,9 @@ on_entry_activate (
   GtkEntry *                btn,
   StringEntryDialogWidget * self)
 {
-  gtk_dialog_response (GTK_DIALOG (self), GTK_RESPONSE_ACCEPT);
+  adw_message_dialog_response (
+    ADW_MESSAGE_DIALOG (self), "ok");
+  gtk_window_close (GTK_WINDOW (self));
 }
 
 /**
@@ -78,7 +61,7 @@ string_entry_dialog_widget_new (
 {
   StringEntryDialogWidget * self = g_object_new (
     STRING_ENTRY_DIALOG_WIDGET_TYPE, "icon-name", "zrythm",
-    "title", _ ("Please enter a value"), NULL);
+    "heading", label, NULL);
 
   self->obj = obj;
   self->getter = getter;
@@ -87,7 +70,7 @@ string_entry_dialog_widget_new (
   gtk_window_set_transient_for (
     GTK_WINDOW (self), GTK_WINDOW (MAIN_WINDOW));
 
-  gtk_label_set_text (self->label, label);
+  /*gtk_label_set_text (self->label, label);*/
 
   /* setup text */
   gtk_editable_set_text (
@@ -96,6 +79,7 @@ string_entry_dialog_widget_new (
   return self;
 }
 
+#if 0
 static const char *
 str_get (char ** str)
 {
@@ -122,24 +106,7 @@ str_set (char ** str, const char * in_str)
       *str = g_strdup (in_str);
     }
 }
-
-/**
- * Runs a new dialog and returns the string, or
- * NULL if cancelled.
- */
-char *
-string_entry_dialog_widget_new_return_string (
-  const char * label)
-{
-  char *                    str = NULL;
-  StringEntryDialogWidget * self =
-    string_entry_dialog_widget_new (
-      label, &str, (GenericStringGetter) str_get,
-      (GenericStringSetter) str_set);
-  z_gtk_dialog_run (GTK_DIALOG (self), true);
-
-  return str;
-}
+#endif
 
 static void
 string_entry_dialog_widget_class_init (
@@ -153,10 +120,8 @@ string_entry_dialog_widget_class_init (
   gtk_widget_class_bind_template_child ( \
     klass, StringEntryDialogWidget, child)
 
-  BIND_CHILD (ok);
-  BIND_CHILD (cancel);
   BIND_CHILD (entry);
-  BIND_CHILD (label);
+  /*BIND_CHILD (label);*/
 
 #undef BIND_CHILD
 }

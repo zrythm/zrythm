@@ -408,7 +408,9 @@ automation_track_find_from_port (
                   g_return_val_if_fail (
                     IS_PLUGIN_AND_NONNULL (pl), NULL);
 
-                  if (pl->setting->descr->protocol == PROT_LV2)
+                  if (
+                    pl->setting->descr->protocol
+                    == Z_PLUGIN_PROTOCOL_LV2)
                     {
                       /* if lv2 plugin port (not
                        * standard zrythm-provided

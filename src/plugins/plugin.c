@@ -200,7 +200,7 @@ plugin_init_loaded (
 #endif
       switch (self->setting->descr->protocol)
         {
-        case PROT_LV2:
+        case Z_PLUGIN_PROTOCOL_LV2:
           self->lv2 = object_new (Lv2Plugin);
           self->lv2->plugin = self;
           lv2_plugin_init_loaded (self->lv2);
@@ -395,7 +395,7 @@ populate_banks (Plugin * self)
 #endif
       switch (self->setting->descr->protocol)
         {
-        case PROT_LV2:
+        case Z_PLUGIN_PROTOCOL_LV2:
           lv2_plugin_populate_banks (self->lv2);
           break;
         default:
@@ -450,7 +450,7 @@ plugin_set_selected_preset_from_index (Plugin * self, int idx)
         }
 #endif
     }
-  else if (self->setting->descr->protocol == PROT_LV2)
+  else if (self->setting->descr->protocol == Z_PLUGIN_PROTOCOL_LV2)
     {
       /* if init preset */
       if (self->selected_bank.bank_idx == 0 && idx == 0)
@@ -549,7 +549,7 @@ plugin_new_from_setting (
   else
     {
 #endif
-      if (descr->protocol == PROT_LV2)
+      if (descr->protocol == Z_PLUGIN_PROTOCOL_LV2)
         {
           GError * err = NULL;
           lv2_plugin_new_from_uri (self, descr->uri, &err);
@@ -1053,7 +1053,7 @@ plugin_generate_window_title (Plugin * self)
 
   switch (self->setting->descr->protocol)
     {
-    case PROT_LV2:
+    case Z_PLUGIN_PROTOCOL_LV2:
       if (!self->setting->open_with_carla && self->lv2->preset)
         {
           Lv2Plugin *  lv2 = self->lv2;
@@ -1115,7 +1115,7 @@ plugin_activate (Plugin * pl, bool activate)
     {
       switch (pl->setting->descr->protocol)
         {
-        case PROT_LV2:
+        case Z_PLUGIN_PROTOCOL_LV2:
           {
             int ret = lv2_plugin_activate (pl->lv2, activate);
             g_return_val_if_fail (ret == 0, ret);
@@ -1157,7 +1157,7 @@ plugin_cleanup (Plugin * self)
         {
           switch (self->setting->descr->protocol)
             {
-            case PROT_LV2:
+            case Z_PLUGIN_PROTOCOL_LV2:
               {
                 int ret = lv2_plugin_cleanup (self->lv2);
                 g_return_val_if_fail (ret == 0, ret);
@@ -1197,7 +1197,7 @@ plugin_update_latency (Plugin * pl)
 #ifdef HAVE_CARLA
       !pl->setting->open_with_carla &&
 #endif
-      pl->setting->descr->protocol == PROT_LV2)
+      pl->setting->descr->protocol == Z_PLUGIN_PROTOCOL_LV2)
     {
       pl->latency = lv2_plugin_get_latency (pl->lv2);
     }
@@ -1573,7 +1573,7 @@ plugin_instantiate (
     {
       switch (descr->protocol)
         {
-        case PROT_LV2:
+        case Z_PLUGIN_PROTOCOL_LV2:
           {
             self->lv2->plugin = self;
             GError * err = NULL;
@@ -1700,7 +1700,7 @@ plugin_process (
 #endif
       switch (plugin->setting->descr->protocol)
         {
-        case PROT_LV2:
+        case Z_PLUGIN_PROTOCOL_LV2:
           lv2_plugin_process (plugin->lv2, time_nfo);
           break;
         default:
@@ -1841,7 +1841,7 @@ plugin_open_ui (Plugin * self)
 
   /* show error if LV2 UI type is deprecated */
   if (
-    descr->protocol == PROT_LV2
+    descr->protocol == Z_PLUGIN_PROTOCOL_LV2
     && (!setting->open_with_carla || setting->bridge_mode != CARLA_BRIDGE_FULL))
     {
       char * deprecated_uri =
@@ -1894,7 +1894,7 @@ plugin_open_ui (Plugin * self)
           carla_native_plugin_open_ui (self->carla, 1);
 #endif
         }
-      else if (descr->protocol == PROT_LV2)
+      else if (descr->protocol == Z_PLUGIN_PROTOCOL_LV2)
         {
           g_warning ("unsupported");
           g_return_if_reached ();
@@ -2991,7 +2991,8 @@ Port *
 plugin_get_port_by_symbol (Plugin * pl, const char * sym)
 {
   g_return_val_if_fail (
-    IS_PLUGIN (pl) && pl->setting->descr->protocol == PROT_LV2,
+    IS_PLUGIN (pl)
+      && pl->setting->descr->protocol == Z_PLUGIN_PROTOCOL_LV2,
     NULL);
 
   for (int i = 0; i < pl->num_in_ports; i++)
@@ -3023,7 +3024,8 @@ Port *
 plugin_get_port_by_param_uri (Plugin * pl, const char * uri)
 {
   g_return_val_if_fail (
-    IS_PLUGIN (pl) && pl->setting->descr->protocol == PROT_LV2
+    IS_PLUGIN (pl)
+      && pl->setting->descr->protocol == Z_PLUGIN_PROTOCOL_LV2
       && !pl->setting->open_with_carla,
     NULL);
 

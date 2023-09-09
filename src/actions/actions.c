@@ -3523,11 +3523,11 @@ DEFINE_SIMPLE (activate_transpose_chord_pad)
 
 static void
 on_chord_preset_pack_add_response (
-  GtkDialog *       dialog,
-  gint              response,
-  ChordPresetPack * pack)
+  AdwMessageDialog * dialog,
+  char *             response,
+  ChordPresetPack *  pack)
 {
-  if (response == GTK_RESPONSE_ACCEPT)
+  if (string_is_equal (response, "ok"))
     {
       if (strlen (pack->name) > 0)
         {
@@ -3536,7 +3536,8 @@ on_chord_preset_pack_add_response (
         }
       else
         {
-          /* TODO show error message */
+          ui_show_error_message (
+            false, _ ("Failed to create pack"));
         }
     }
 
@@ -3959,7 +3960,7 @@ DEFINE_SIMPLE (activate_plugin_browser_add_to_collection)
   plugin_collections_serialize_to_file (
     PLUGIN_MANAGER->collections);
 
-  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
+  EVENTS_PUSH (ET_PLUGIN_COLLECTIONS_CHANGED, NULL);
 }
 
 DEFINE_SIMPLE (activate_plugin_browser_remove_from_collection)
@@ -3976,7 +3977,7 @@ DEFINE_SIMPLE (activate_plugin_browser_remove_from_collection)
   plugin_collections_serialize_to_file (
     PLUGIN_MANAGER->collections);
 
-  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
+  EVENTS_PUSH (ET_PLUGIN_COLLECTIONS_CHANGED, NULL);
 }
 
 DEFINE_SIMPLE (activate_plugin_browser_reset)
@@ -3984,29 +3985,39 @@ DEFINE_SIMPLE (activate_plugin_browser_reset)
   gsize        size;
   const char * str = g_variant_get_string (variant, &size);
 
+  GtkListView * list_view = NULL;
   if (string_is_equal (str, "category"))
     {
-      GtkTreeSelection * selection =
-        gtk_tree_view_get_selection (
-          (MW_PLUGIN_BROWSER->category_tree_view));
-      gtk_tree_selection_unselect_all (selection);
+      list_view = MW_PLUGIN_BROWSER->category_list_view;
     }
   else if (string_is_equal (str, "author"))
     {
-      GtkTreeSelection * selection =
-        gtk_tree_view_get_selection (
-          (MW_PLUGIN_BROWSER->author_tree_view));
-      gtk_tree_selection_unselect_all (selection);
+      list_view = MW_PLUGIN_BROWSER->author_list_view;
+    }
+  else if (string_is_equal (str, "protocol"))
+    {
+      list_view = MW_PLUGIN_BROWSER->protocol_list_view;
+    }
+  else if (string_is_equal (str, "collection"))
+    {
+      list_view = MW_PLUGIN_BROWSER->collection_list_view;
+    }
+
+  if (list_view)
+    {
+      GtkSelectionModel * model =
+        gtk_list_view_get_model (list_view);
+      gtk_selection_model_unselect_all (model);
     }
 }
 
 static void
 on_plugin_collection_add_response (
-  GtkDialog *        dialog,
-  gint               response,
+  AdwMessageDialog * dialog,
+  char *             response,
   PluginCollection * collection)
 {
-  if (response == GTK_RESPONSE_ACCEPT)
+  if (string_is_equal (response, "ok"))
     {
       if (strlen (collection->name) > 0)
         {
@@ -4014,8 +4025,7 @@ on_plugin_collection_add_response (
           plugin_collections_add (
             PLUGIN_MANAGER->collections, collection,
             F_SERIALIZE);
-          plugin_browser_widget_refresh_collections (
-            MW_PLUGIN_BROWSER);
+          EVENTS_PUSH (ET_PLUGIN_COLLECTIONS_CHANGED, NULL);
         }
       else
         {
@@ -4044,20 +4054,26 @@ DEFINE_SIMPLE (activate_plugin_collection_add)
 
 static void
 on_plugin_collection_rename_response (
-  GtkDialog *        dialog,
-  gint               response,
-  PluginCollection * collection)
+  AdwMessageDialog * dialog,
+  char *             response,
+  gpointer           user_data)
 {
   plugin_collections_serialize_to_file (
     PLUGIN_MANAGER->collections);
 
-  EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
+  EVENTS_PUSH (ET_PLUGIN_COLLECTIONS_CHANGED, NULL);
 }
 
 DEFINE_SIMPLE (activate_plugin_collection_rename)
 {
+  if (MW_PLUGIN_BROWSER->selected_collections->len != 1)
+    {
+      g_warning ("should not be allowed");
+      return;
+    }
   PluginCollection * collection =
-    MW_PLUGIN_BROWSER->current_collections[0];
+    (PluginCollection *) g_ptr_array_index (
+      MW_PLUGIN_BROWSER->selected_collections, 0);
 
   StringEntryDialogWidget * dialog =
     string_entry_dialog_widget_new (
@@ -4073,8 +4089,14 @@ DEFINE_SIMPLE (activate_plugin_collection_rename)
 
 DEFINE_SIMPLE (activate_plugin_collection_remove)
 {
+  if (MW_PLUGIN_BROWSER->selected_collections->len == 0)
+    {
+      g_warning ("should not be allowed");
+      return;
+    }
   PluginCollection * collection =
-    MW_PLUGIN_BROWSER->current_collections[0];
+    (PluginCollection *) g_ptr_array_index (
+      MW_PLUGIN_BROWSER->selected_collections, 0);
 
   int result = GTK_RESPONSE_YES;
   if (collection->num_descriptors > 0)
@@ -4083,9 +4105,9 @@ DEFINE_SIMPLE (activate_plugin_collection_remove)
         GTK_WINDOW (MAIN_WINDOW),
         GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
         GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO,
-        _ ("This collection contains %d plugins. "
+        _ ("The collection '%s' contains %d plugins. "
            "Are you sure you want to remove it?"),
-        collection->num_descriptors);
+        collection->name, collection->num_descriptors);
       result = z_gtk_dialog_run (GTK_DIALOG (dialog), true);
     }
 
@@ -4094,7 +4116,7 @@ DEFINE_SIMPLE (activate_plugin_collection_remove)
       plugin_collections_remove (
         PLUGIN_MANAGER->collections, collection, F_SERIALIZE);
 
-      EVENTS_PUSH (ET_PLUGIN_COLLETIONS_CHANGED, NULL);
+      EVENTS_PUSH (ET_PLUGIN_COLLECTIONS_CHANGED, NULL);
     }
 }
 

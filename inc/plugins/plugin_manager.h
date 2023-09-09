@@ -149,7 +149,7 @@ plugin_manager_find_from_descriptor (
 bool
 plugin_manager_supports_protocol (
   PluginManager * self,
-  PluginProtocol  protocol);
+  ZPluginProtocol protocol);
 
 /**
  * Returns an instrument plugin, if any.

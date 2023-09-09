@@ -273,7 +273,7 @@ cached_plugin_descriptors_get (
       PluginDescriptor * descr = self->descriptors[i];
 
       /* skip LV2 since they don't have paths */
-      if (descr->protocol == PROT_LV2)
+      if (descr->protocol == Z_PLUGIN_PROTOCOL_LV2)
         continue;
 
       GFile * file = g_file_new_for_path (descr->path);

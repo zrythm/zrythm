@@ -59,11 +59,12 @@ lv2_log_printf (
 void
 lv2_log_set_printf_funcs (LV2_Log_Log * log)
 {
+  /* these mess with some other header */
 #ifdef printf
-#undef printf
+#  undef printf
 #endif
 #ifdef vprintf
-#undef vprintf
+#  undef vprintf
 #endif
   log->printf = lv2_log_printf;
   log->vprintf = lv2_log_vprintf;

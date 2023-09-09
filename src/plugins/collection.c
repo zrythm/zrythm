@@ -3,6 +3,7 @@
 
 #include "plugins/collection.h"
 #include "utils/arrays.h"
+#include "utils/gtk.h"
 #include "utils/mem.h"
 #include "utils/objects.h"
 
@@ -161,6 +162,26 @@ plugin_collection_remove_descriptor (
     }
 
   g_warn_if_fail (found);
+}
+
+GMenuModel *
+plugin_collection_generate_context_menu (
+  const PluginCollection * self)
+{
+  GMenu *     menu = g_menu_new ();
+  GMenuItem * menuitem;
+
+  menuitem = z_gtk_create_menu_item (
+    _ ("Rename"), "edit-rename",
+    "app.plugin-collection-rename");
+  g_menu_append_item (menu, menuitem);
+
+  menuitem = z_gtk_create_menu_item (
+    _ ("Delete"), "edit-delete",
+    "app.plugin-collection-remove");
+  g_menu_append_item (menu, menuitem);
+
+  return G_MENU_MODEL (menu);
 }
 
 /**
