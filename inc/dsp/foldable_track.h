@@ -45,9 +45,7 @@ foldable_track_init (Track * track);
  * Used to check if soloed/muted/etc.
  */
 bool
-foldable_track_is_status (
-  Track *                  self,
-  FoldableTrackMixerStatus status);
+foldable_track_is_status (Track * self, FoldableTrackMixerStatus status);
 
 /**
  * Returns whether @p child is a folder child of

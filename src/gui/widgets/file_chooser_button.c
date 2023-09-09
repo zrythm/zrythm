@@ -14,10 +14,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  FileChooserButtonWidget,
-  file_chooser_button_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (FileChooserButtonWidget, file_chooser_button_widget, GTK_TYPE_BOX)
 
 #if 0
 GtkFileChooser *
@@ -44,12 +41,10 @@ update_btn_label (
     }
   else if (fc)
     {
-      GFile * file =
-        gtk_file_chooser_get_file (GTK_FILE_CHOOSER (fc));
-      char * path = g_file_get_path (file);
+      GFile * file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (fc));
+      char *  path = g_file_get_path (file);
       g_object_unref (file);
-      gtk_button_set_label (
-        self->button, path ? path : _ ("Select path"));
+      gtk_button_set_label (self->button, path ? path : _ ("Select path"));
       g_debug ("updated label to %s", path);
       g_free_and_null (path);
     }
@@ -86,15 +81,13 @@ file_chooser_button_widget_set_response_callback (
 static void
 on_btn_clicked (GtkButton * btn, FileChooserButtonWidget * self)
 {
-  GtkFileChooserNative * fc_native =
-    GTK_FILE_CHOOSER_NATIVE (gtk_file_chooser_native_new (
-      self->title, NULL, self->action, NULL, NULL));
+  GtkFileChooserNative * fc_native = GTK_FILE_CHOOSER_NATIVE (
+    gtk_file_chooser_native_new (self->title, NULL, self->action, NULL, NULL));
 
   if (self->path)
     {
       GFile * file = g_file_new_for_path (self->path);
-      gtk_file_chooser_set_file (
-        GTK_FILE_CHOOSER (fc_native), file, NULL);
+      gtk_file_chooser_set_file (GTK_FILE_CHOOSER (fc_native), file, NULL);
       g_object_unref (file);
     }
   if (self->current_dir)
@@ -104,8 +97,7 @@ on_btn_clicked (GtkButton * btn, FileChooserButtonWidget * self)
         GTK_FILE_CHOOSER (fc_native), gfile, NULL);
       g_object_unref (gfile);
     }
-  gtk_native_dialog_set_modal (
-    GTK_NATIVE_DIALOG (fc_native), true);
+  gtk_native_dialog_set_modal (GTK_NATIVE_DIALOG (fc_native), true);
   gtk_native_dialog_set_transient_for (
     GTK_NATIVE_DIALOG (fc_native), self->parent);
   gtk_native_dialog_show (GTK_NATIVE_DIALOG (fc_native));
@@ -114,16 +106,15 @@ on_btn_clicked (GtkButton * btn, FileChooserButtonWidget * self)
       if (self->destroy_notify)
         {
           g_signal_connect_data (
-            G_OBJECT (fc_native), "response",
-            G_CALLBACK (self->response_cb), self->user_data,
-            (GClosureNotify) self->destroy_notify,
+            G_OBJECT (fc_native), "response", G_CALLBACK (self->response_cb),
+            self->user_data, (GClosureNotify) self->destroy_notify,
             G_CONNECT_AFTER);
         }
       else
         {
           g_signal_connect (
-            G_OBJECT (fc_native), "response",
-            self->response_cb, self->user_data);
+            G_OBJECT (fc_native), "response", self->response_cb,
+            self->user_data);
         }
     }
   else
@@ -174,8 +165,7 @@ file_chooser_button_widget_new (
   FileChooserButtonWidget * self =
     g_object_new (FILE_CHOOSER_BUTTON_WIDGET_TYPE, NULL);
 
-  file_chooser_button_widget_setup (
-    self, parent, title, action);
+  file_chooser_button_widget_setup (self, parent, title, action);
 
   return self;
 }
@@ -188,8 +178,7 @@ finalize (FileChooserButtonWidget * self)
 }
 
 static void
-file_chooser_button_widget_class_init (
-  FileChooserButtonWidgetClass * _klass)
+file_chooser_button_widget_class_init (FileChooserButtonWidgetClass * _klass)
 {
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
 
@@ -197,18 +186,15 @@ file_chooser_button_widget_class_init (
 }
 
 static void
-file_chooser_button_widget_init (
-  FileChooserButtonWidget * self)
+file_chooser_button_widget_init (FileChooserButtonWidget * self)
 {
   self->button = GTK_BUTTON (gtk_button_new ());
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->button));
   gtk_widget_set_hexpand (GTK_WIDGET (self->button), true);
 
   g_signal_connect (
-    G_OBJECT (self->button), "clicked",
-    G_CALLBACK (on_btn_clicked), self);
+    G_OBJECT (self->button), "clicked", G_CALLBACK (on_btn_clicked), self);
 
   /* add class */
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self), "file-chooser-button");
+  gtk_widget_add_css_class (GTK_WIDGET (self), "file-chooser-button");
 }

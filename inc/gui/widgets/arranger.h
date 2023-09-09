@@ -18,27 +18,21 @@
 #include <gtk/gtk.h>
 
 #define ARRANGER_WIDGET_TYPE (arranger_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  ArrangerWidget,
-  arranger_widget,
-  Z,
-  ARRANGER_WIDGET,
-  GtkWidget)
+G_DECLARE_FINAL_TYPE (ArrangerWidget, arranger_widget, Z, ARRANGER_WIDGET, GtkWidget)
 
 typedef struct _ArrangerBgWidget ArrangerBgWidget;
 typedef struct MidiNote          MidiNote;
 typedef struct SnapGrid          SnapGrid;
 typedef struct AutomationPoint   AutomationPoint;
 
-typedef struct _GtkEventControllerMotion
-                                  GtkEventControllerMotion;
-typedef struct ArrangerObject     ArrangerObject;
-typedef struct ArrangerSelections ArrangerSelections;
-typedef struct EditorSettings     EditorSettings;
-typedef struct ObjectPool         ObjectPool;
-typedef struct _RulerWidget       RulerWidget;
-typedef enum ArrangerObjectType   ArrangerObjectType;
-typedef enum TransportDisplay     TransportDisplay;
+typedef struct _GtkEventControllerMotion GtkEventControllerMotion;
+typedef struct ArrangerObject            ArrangerObject;
+typedef struct ArrangerSelections        ArrangerSelections;
+typedef struct EditorSettings            EditorSettings;
+typedef struct ObjectPool                ObjectPool;
+typedef struct _RulerWidget              RulerWidget;
+typedef enum ArrangerObjectType          ArrangerObjectType;
+typedef enum TransportDisplay            TransportDisplay;
 
 /**
  * @addtogroup widgets
@@ -489,19 +483,14 @@ arranger_widget_setup (
  * children.
  */
 void
-arranger_widget_set_cursor (
-  ArrangerWidget * self,
-  ArrangerCursor   cursor);
+arranger_widget_set_cursor (ArrangerWidget * self, ArrangerCursor cursor);
 
 /**
  * Wrapper of the UI functions based on the arranger
  * type.
  */
 int
-arranger_widget_pos_to_px (
-  ArrangerWidget * self,
-  Position *       pos,
-  int              use_padding);
+arranger_widget_pos_to_px (ArrangerWidget * self, Position * pos, int use_padding);
 
 /**
  * Gets the cursor based on the current hover
@@ -521,9 +510,7 @@ arranger_widget_refresh_cursor (ArrangerWidget * self);
  * Get all objects currently present in the arranger.
  */
 void
-arranger_widget_get_all_objects (
-  ArrangerWidget * self,
-  GPtrArray *      objs_arr);
+arranger_widget_get_all_objects (ArrangerWidget * self, GPtrArray * objs_arr);
 
 /**
  * Wrapper for ui_px_to_pos depending on the
@@ -542,9 +529,7 @@ arranger_widget_px_to_pos (
  * @param rect The rectangle to fill in.
  */
 void
-arranger_widget_get_visible_rect (
-  ArrangerWidget * self,
-  GdkRectangle *   rect);
+arranger_widget_get_visible_rect (ArrangerWidget * self, GdkRectangle * rect);
 
 /**
  * Fills in the given array with the ArrangerObject's
@@ -597,10 +582,7 @@ arranger_widget_get_hit_arranger_object (
   const double       y);
 
 void
-arranger_widget_select_all (
-  ArrangerWidget * self,
-  bool             select,
-  bool             fire_events);
+arranger_widget_select_all (ArrangerWidget * self, bool select, bool fire_events);
 
 /**
  * Returns if the arranger is in a moving-related
@@ -682,9 +664,7 @@ arranger_widget_toggle_selections_muted (
  * in this arranger (eg, 1.1.0.0 for timeline).
  */
 void
-arranger_widget_get_min_possible_position (
-  ArrangerWidget * self,
-  Position *       pos);
+arranger_widget_get_min_possible_position (ArrangerWidget * self, Position * pos);
 
 /**
  * Sets the highlight rectangle.
@@ -693,9 +673,7 @@ arranger_widget_get_min_possible_position (
  *   to unset/unhighlight.
  */
 void
-arranger_widget_set_highlight_rect (
-  ArrangerWidget * self,
-  GdkRectangle *   rect);
+arranger_widget_set_highlight_rect (ArrangerWidget * self, GdkRectangle * rect);
 
 /**
  * Returns the EditorSettings corresponding to
@@ -709,19 +687,15 @@ arranger_widget_get_editor_settings (ArrangerWidget * self);
  * (like pinned timeline).
  */
 EditorSettings
-arranger_widget_get_editor_setting_values (
-  ArrangerWidget * self);
+arranger_widget_get_editor_setting_values (ArrangerWidget * self);
 
 bool
 arranger_widget_is_playhead_visible (ArrangerWidget * self);
 
 NONNULL void
-arranger_widget_handle_playhead_auto_scroll (
-  ArrangerWidget * self,
-  bool             force);
+arranger_widget_handle_playhead_auto_scroll (ArrangerWidget * self, bool force);
 
-typedef void (*ArrangerWidgetForeachFunc) (
-  ArrangerWidget * arranger);
+typedef void (*ArrangerWidgetForeachFunc) (ArrangerWidget * arranger);
 
 /**
  * Runs the given function for each arranger.

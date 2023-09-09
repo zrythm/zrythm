@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define MIDI_EDITOR_SPACE_WIDGET_TYPE \
-  (midi_editor_space_widget_get_type ())
+#define MIDI_EDITOR_SPACE_WIDGET_TYPE (midi_editor_space_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   MidiEditorSpaceWidget,
   midi_editor_space_widget,
@@ -31,8 +30,7 @@ TYPEDEF_STRUCT_UNDERSCORED (VelocitySettingsWidget);
  * @{
  */
 
-#define MW_MIDI_EDITOR_SPACE \
-  MW_CLIP_EDITOR_INNER->midi_editor_space
+#define MW_MIDI_EDITOR_SPACE MW_CLIP_EDITOR_INNER->midi_editor_space
 
 /**
  * The piano roll widget is the whole space inside
@@ -95,12 +93,10 @@ midi_editor_space_widget_set_piano_keys_scroll_start_y (
  * region.
  */
 gboolean
-midi_editor_space_widget_scroll_to_middle (
-  MidiEditorSpaceWidget * self);
+midi_editor_space_widget_scroll_to_middle (MidiEditorSpaceWidget * self);
 
 void
-midi_editor_space_widget_refresh (
-  MidiEditorSpaceWidget * self);
+midi_editor_space_widget_refresh (MidiEditorSpaceWidget * self);
 
 /**
  * @}

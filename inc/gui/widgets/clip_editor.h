@@ -11,8 +11,7 @@
 #include <adwaita.h>
 #include <gtk/gtk.h>
 
-#define CLIP_EDITOR_WIDGET_TYPE \
-  (clip_editor_widget_get_type ())
+#define CLIP_EDITOR_WIDGET_TYPE (clip_editor_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ClipEditorWidget,
   clip_editor_widget,
@@ -22,12 +21,11 @@ G_DECLARE_FINAL_TYPE (
 
 #define MW_CLIP_EDITOR MW_BOT_DOCK_EDGE->clip_editor
 
-typedef struct _ClipEditorInnerWidget ClipEditorInnerWidget;
-typedef struct _EditorSelectionInfoWidget
-                                    EditorSelectionInfoWidget;
-typedef struct _EditorToolbarWidget EditorToolbarWidget;
-typedef struct _AudioClipEditorWidget AudioClipEditorWidget;
-typedef struct ClipEditor             ClipEditor;
+typedef struct _ClipEditorInnerWidget     ClipEditorInnerWidget;
+typedef struct _EditorSelectionInfoWidget EditorSelectionInfoWidget;
+typedef struct _EditorToolbarWidget       EditorToolbarWidget;
+typedef struct _AudioClipEditorWidget     AudioClipEditorWidget;
+typedef struct ClipEditor                 ClipEditor;
 
 /**
  * The ClipEditorWidget shows in the Clip Editor /

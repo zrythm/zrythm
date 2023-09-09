@@ -42,8 +42,7 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/zrythm/"
 
-  g_test_add_func (
-    TEST_PREFIX "test dummy", (GTestFunc) test_dummy);
+  g_test_add_func (TEST_PREFIX "test dummy", (GTestFunc) test_dummy);
   g_test_add_func (
     TEST_PREFIX "test fetch latest release",
     (GTestFunc) test_fetch_latest_release);

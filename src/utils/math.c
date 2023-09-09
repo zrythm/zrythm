@@ -23,8 +23,7 @@ math_calculate_rms_amp (sample_t * buf, const nframes_t nframes)
       sample = buf[i];
       sum += (sample * sample);
     }
-  return sqrtf (
-    sum / ((sample_t) nframes / (sample_t) MATH_RMS_FRAMES));
+  return sqrtf (sum / ((sample_t) nframes / (sample_t) MATH_RMS_FRAMES));
 }
 
 /**
@@ -36,8 +35,7 @@ math_calculate_rms_amp (sample_t * buf, const nframes_t nframes)
 sample_t
 math_calculate_rms_db (sample_t * buf, const nframes_t nframes)
 {
-  return math_amp_to_dbfs (
-    math_calculate_rms_amp (buf, nframes));
+  return math_amp_to_dbfs (math_calculate_rms_amp (buf, nframes));
 }
 
 /**
@@ -76,9 +74,7 @@ math_is_string_valid_float (const char * str, float * ret)
 {
   int   len;
   float dummy = 0.0;
-  if (
-    sscanf (str, "%f %n", &dummy, &len) == 1
-    && len == (int) strlen (str))
+  if (sscanf (str, "%f %n", &dummy, &len) == 1 && len == (int) strlen (str))
     {
       if (ret)
         {

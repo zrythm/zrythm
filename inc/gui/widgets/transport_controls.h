@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define TRANSPORT_CONTROLS_WIDGET_TYPE \
-  (transport_controls_widget_get_type ())
+#define TRANSPORT_CONTROLS_WIDGET_TYPE (transport_controls_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TransportControlsWidget,
   transport_controls_widget,
@@ -53,8 +52,7 @@ typedef struct _TransportControlsWidget
 } TransportControlsWidget;
 
 void
-transport_controls_widget_refresh (
-  TransportControlsWidget * self);
+transport_controls_widget_refresh (TransportControlsWidget * self);
 
 /**
  * @}

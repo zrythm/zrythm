@@ -28,8 +28,7 @@
 
 #include <gtk/gtk.h>
 
-#define FADER_CONTROLS_GRID_WIDGET_TYPE \
-  (fader_controls_grid_widget_get_type ())
+#define FADER_CONTROLS_GRID_WIDGET_TYPE (fader_controls_grid_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   FaderControlsGridWidget,
   fader_controls_grid_widget,
@@ -77,16 +76,13 @@ typedef struct _FaderControlsGridWidget
 } FaderControlsGridWidget;
 
 void
-fader_controls_grid_widget_setup (
-  FaderControlsGridWidget * self,
-  Track *                   track);
+fader_controls_grid_widget_setup (FaderControlsGridWidget * self, Track * track);
 
 /**
  * Prepare for finalization.
  */
 void
-fader_controls_grid_widget_tear_down (
-  FaderControlsGridWidget * self);
+fader_controls_grid_widget_tear_down (FaderControlsGridWidget * self);
 
 FaderControlsGridWidget *
 fader_controls_grid_widget_new (void);

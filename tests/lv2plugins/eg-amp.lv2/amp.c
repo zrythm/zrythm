@@ -114,8 +114,7 @@ activate (LV2_Handle instance)
 }
 
 /** Define a macro for converting a gain in dB to a coefficient. */
-#define DB_CO(g) \
-  ((g) > -90.0f ? powf (10.0f, (g) *0.05f) : 0.0f)
+#define DB_CO(g) ((g) > -90.0f ? powf (10.0f, (g) *0.05f) : 0.0f)
 
 /**
    The `run()` method is the main process function of the plugin.  It processes

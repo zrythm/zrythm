@@ -76,15 +76,14 @@ engine_sdl_setup (AudioEngine * self)
 
   if (SDL_Init (SDL_INIT_AUDIO | SDL_INIT_NOPARACHUTE) < 0)
     {
-      g_critical (
-        "Failed to initialize SDL: %s", SDL_GetError ());
+      g_critical ("Failed to initialize SDL: %s", SDL_GetError ());
       return -1;
     }
 
   SDL_AudioSpec req_specs;
   memset (&req_specs, 0, sizeof (req_specs));
-  req_specs.freq = engine_samplerate_enum_to_int (
-    (AudioEngineSamplerate) g_settings_get_enum (
+  req_specs.freq =
+    engine_samplerate_enum_to_int ((AudioEngineSamplerate) g_settings_get_enum (
       S_P_GENERAL_ENGINE, "sample-rate"));
   req_specs.format = AUDIO_F32SYS;
   req_specs.channels = 2;
@@ -97,13 +96,11 @@ engine_sdl_setup (AudioEngine * self)
   int num_out_devices = SDL_GetNumAudioDevices (0);
   for (int i = 0; i < num_out_devices; i++)
     {
-      g_message (
-        "Output audio device %d: %s", i,
-        SDL_GetAudioDeviceName (i, 0));
+      g_message ("Output audio device %d: %s", i, SDL_GetAudioDeviceName (i, 0));
     }
 
-  char * out_device = g_settings_get_string (
-    S_P_GENERAL_ENGINE, "sdl-audio-device-name");
+  char * out_device =
+    g_settings_get_string (S_P_GENERAL_ENGINE, "sdl-audio-device-name");
   if (!out_device || strlen (out_device) < 1)
     {
       out_device = NULL;
@@ -115,16 +112,13 @@ engine_sdl_setup (AudioEngine * self)
 
   SDL_AudioSpec actual_specs;
   self->dev = SDL_OpenAudioDevice (
-    out_device, 0, &req_specs, &actual_specs,
-    SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
+    out_device, 0, &req_specs, &actual_specs, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE);
   if (self->dev == 0)
     {
-      g_critical (
-        "Couldn't open audio device: %s", SDL_GetError ());
+      g_critical ("Couldn't open audio device: %s", SDL_GetError ());
       return -1;
     }
-  g_message (
-    "[SDL] Opened output device (ID %d)", (int) self->dev);
+  g_message ("[SDL] Opened output device (ID %d)", (int) self->dev);
 
   /* Set audio engine properties */
   self->sample_rate = (sample_rate_t) actual_specs.freq;
@@ -135,8 +129,7 @@ engine_sdl_setup (AudioEngine * self)
     "%d",
     self->sample_rate, self->block_length);
 
-  int beats_per_bar =
-    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
   g_warn_if_fail (beats_per_bar > 1);
 
   g_message ("SDL set up");

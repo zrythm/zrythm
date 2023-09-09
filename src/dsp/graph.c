@@ -64,8 +64,7 @@ graph_on_reached_terminal_node (Graph * self)
     {
       /* all terminal nodes have completed,
        * we're done with this cycle. */
-      g_warn_if_fail (
-        g_atomic_int_get (&self->trigger_queue_size) == 0);
+      g_warn_if_fail (g_atomic_int_get (&self->trigger_queue_size) == 0);
 
       /* Notify caller */
       zix_sem_post (&self->callback_done);
@@ -75,9 +74,7 @@ graph_on_reached_terminal_node (Graph * self)
        * If there are more threads than CPU cores,
        * some worker- threads may only be "on
        * the way" to become idle. */
-      while (
-        g_atomic_int_get (&self->idle_thread_cnt)
-        != self->num_threads)
+      while (g_atomic_int_get (&self->idle_thread_cnt) != self->num_threads)
         sched_yield ();
 
       if (g_atomic_int_get (&self->terminate))
@@ -91,8 +88,7 @@ graph_on_reached_terminal_node (Graph * self)
 
       /* reset terminal reference count */
       g_atomic_int_set (
-        &self->terminal_refcnt,
-        (unsigned int) self->n_terminal_nodes);
+        &self->terminal_refcnt, (unsigned int) self->n_terminal_nodes);
 
       /* and start the initial nodes */
       for (size_t i = 0; i < self->n_init_triggers; ++i)
@@ -114,8 +110,7 @@ is_valid (Graph * self)
   /* Fill up an array of trigger nodes, and make
    * it large enough so that we can append more
    * nodes to it */
-  int num_setup_graph_nodes =
-    (int) g_hash_table_size (self->setup_graph_nodes);
+  int num_setup_graph_nodes = (int) g_hash_table_size (self->setup_graph_nodes);
   GraphNode * triggers[num_setup_graph_nodes];
   int         num_triggers = self->num_setup_init_triggers;
   for (int i = 0; i < num_triggers; i++)
@@ -168,14 +163,12 @@ graph_rechain (Graph * self)
   /*g_warn_if_fail (*/
   /*g_atomic_int_get (*/
   /*&self->terminal_refcnt) == 0);*/
-  g_warn_if_fail (
-    g_atomic_int_get (&self->trigger_queue_size) == 0);
+  g_warn_if_fail (g_atomic_int_get (&self->trigger_queue_size) == 0);
 
   /* --- swap setup nodes with graph nodes --- */
-  g_return_if_fail (
-    self->graph_nodes && self->setup_graph_nodes);
-  GHashTable * tmp = g_hash_table_new_full (
-    g_direct_hash, g_direct_equal, NULL, NULL);
+  g_return_if_fail (self->graph_nodes && self->setup_graph_nodes);
+  GHashTable * tmp =
+    g_hash_table_new_full (g_direct_hash, g_direct_equal, NULL, NULL);
   GHashTableIter iter;
   gpointer       key, value;
   g_hash_table_iter_init (&iter, self->graph_nodes);
@@ -195,8 +188,7 @@ graph_rechain (Graph * self)
   g_hash_table_iter_init (&iter, tmp);
   while (g_hash_table_iter_next (&iter, &key, &value))
     {
-      g_hash_table_insert (
-        self->setup_graph_nodes, key, value);
+      g_hash_table_insert (self->setup_graph_nodes, key, value);
     }
   g_hash_table_unref (tmp);
 
@@ -204,21 +196,17 @@ graph_rechain (Graph * self)
 
   array_dynamic_swap (
     &self->init_trigger_list, &self->n_init_triggers,
-    &self->setup_init_trigger_list,
-    &self->num_setup_init_triggers);
+    &self->setup_init_trigger_list, &self->num_setup_init_triggers);
   array_dynamic_swap (
-    &self->terminal_nodes, &self->n_terminal_nodes,
-    &self->setup_terminal_nodes,
+    &self->terminal_nodes, &self->n_terminal_nodes, &self->setup_terminal_nodes,
     &self->num_setup_terminal_nodes);
 
   /*self->n_terminal_nodes =*/
   /*(int) self->num_setup_terminal_nodes;*/
-  g_atomic_int_set (
-    &self->terminal_refcnt, (guint) self->n_terminal_nodes);
+  g_atomic_int_set (&self->terminal_refcnt, (guint) self->n_terminal_nodes);
 
   mpmc_queue_reserve (
-    self->trigger_queue,
-    (size_t) g_hash_table_size (self->graph_nodes));
+    self->trigger_queue, (size_t) g_hash_table_size (self->graph_nodes));
 
   clear_setup (self);
 }
@@ -239,10 +227,7 @@ add_plugin (Graph * self, Plugin * pl)
 }
 
 static void
-connect_plugin (
-  Graph *  self,
-  Plugin * pl,
-  bool     drop_unnecessary_ports)
+connect_plugin (Graph * self, Plugin * pl, bool drop_unnecessary_ports)
 {
   g_return_if_fail (pl && !pl->deleting);
   GraphNode * pl_node = graph_find_node_from_plugin (self, pl);
@@ -251,11 +236,8 @@ connect_plugin (
     {
       Port * port = pl->in_ports[i];
       g_return_if_fail (port_get_plugin (port, 1) != NULL);
-      GraphNode * port_node =
-        graph_find_node_from_port (self, port);
-      if (
-        drop_unnecessary_ports && !port_node
-        && port->id.type == TYPE_CONTROL)
+      GraphNode * port_node = graph_find_node_from_port (self, port);
+      if (drop_unnecessary_ports && !port_node && port->id.type == TYPE_CONTROL)
         {
           continue;
         }
@@ -266,8 +248,7 @@ connect_plugin (
     {
       Port * port = pl->out_ports[i];
       g_return_if_fail (port_get_plugin (port, 1) != NULL);
-      GraphNode * port_node =
-        graph_find_node_from_port (self, port);
+      GraphNode * port_node = graph_find_node_from_port (self, port);
       g_warn_if_fail (port_node);
       graph_node_connect (pl_node, port_node);
     }
@@ -301,8 +282,8 @@ void
 graph_destroy (Graph * self)
 {
   g_message (
-    "destroying graph %p (router g1 %p g2 %p)", self,
-    self->router->graph, self->router->graph);
+    "destroying graph %p (router g1 %p g2 %p)", self, self->router->graph,
+    self->router->graph);
   self->destroying = 1;
 
   if (!g_atomic_int_get (&self->terminate) && self->main_thread)
@@ -330,37 +311,30 @@ graph_destroy (Graph * self)
  * @return The graph node, if created.
  */
 static GraphNode *
-add_port (
-  Graph *    self,
-  Port *     port,
-  const bool drop_if_unnecessary)
+add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
 {
   PortOwnerType owner = port->id.owner_type;
 
   if (owner == PORT_OWNER_TYPE_PLUGIN)
     {
       port->plugin = port_get_plugin (port, true);
-      g_return_val_if_fail (
-        IS_PLUGIN_AND_NONNULL (port->plugin), NULL);
+      g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (port->plugin), NULL);
     }
 
   if (port->id.track_name_hash != 0)
     {
       port->track = port_get_track (port, true);
-      g_return_val_if_fail (
-        IS_TRACK_AND_NONNULL (port->track), NULL);
+      g_return_val_if_fail (IS_TRACK_AND_NONNULL (port->track), NULL);
     }
 
   /* reset port sources/dests */
   GPtrArray * srcs = g_ptr_array_new ();
-  int num_srcs = port_connections_manager_get_sources_or_dests (
+  int         num_srcs = port_connections_manager_get_sources_or_dests (
     PORT_CONNECTIONS_MGR, srcs, &port->id, true);
   port->srcs_size = (size_t) num_srcs;
-  port->srcs =
-    object_realloc_n (port->srcs, 0, port->srcs_size, Port *);
+  port->srcs = object_realloc_n (port->srcs, 0, port->srcs_size, Port *);
   port->src_connections = object_realloc_n (
-    port->src_connections, 0, port->srcs_size,
-    PortConnection *);
+    port->src_connections, 0, port->srcs_size, PortConnection *);
 #if 0
   if (num_srcs > 0)
     g_debug (
@@ -369,8 +343,7 @@ add_port (
 #endif
   for (int i = 0; i < num_srcs; i++)
     {
-      PortConnection * conn =
-        (PortConnection *) g_ptr_array_index (srcs, i);
+      PortConnection * conn = (PortConnection *) g_ptr_array_index (srcs, i);
 
       port->srcs[i] = port_find_from_identifier (conn->src_id);
       g_return_val_if_fail (port->srcs[i], NULL);
@@ -380,15 +353,12 @@ add_port (
   g_ptr_array_unref (srcs);
 
   GPtrArray * dests = g_ptr_array_new ();
-  int         num_dests =
-    port_connections_manager_get_sources_or_dests (
-      PORT_CONNECTIONS_MGR, dests, &port->id, false);
+  int         num_dests = port_connections_manager_get_sources_or_dests (
+    PORT_CONNECTIONS_MGR, dests, &port->id, false);
   port->dests_size = (size_t) num_dests;
-  port->dests = object_realloc_n (
-    port->dests, 0, port->dests_size, Port *);
+  port->dests = object_realloc_n (port->dests, 0, port->dests_size, Port *);
   port->dest_connections = object_realloc_n (
-    port->dest_connections, 0, port->dests_size,
-    PortConnection *);
+    port->dest_connections, 0, port->dests_size, PortConnection *);
 #if 0
   if (num_dests > 0)
     g_debug (
@@ -397,11 +367,9 @@ add_port (
 #endif
   for (int i = 0; i < num_dests; i++)
     {
-      PortConnection * conn =
-        (PortConnection *) g_ptr_array_index (dests, i);
+      PortConnection * conn = (PortConnection *) g_ptr_array_index (dests, i);
 
-      port->dests[i] =
-        port_find_from_identifier (conn->dest_id);
+      port->dests[i] = port_find_from_identifier (conn->dest_id);
       g_return_val_if_fail (port->dests[i], NULL);
       port->dest_connections[i] = conn;
     }
@@ -431,16 +399,12 @@ add_port (
 
   /* drop ports without sources and dests */
   if (
-    drop_if_unnecessary && port->num_dests == 0
-    && port->num_srcs == 0 && owner != PORT_OWNER_TYPE_PLUGIN
-    && owner != PORT_OWNER_TYPE_FADER
-    && owner != PORT_OWNER_TYPE_TRACK_PROCESSOR
-    && owner != PORT_OWNER_TYPE_TRACK
+    drop_if_unnecessary && port->num_dests == 0 && port->num_srcs == 0
+    && owner != PORT_OWNER_TYPE_PLUGIN && owner != PORT_OWNER_TYPE_FADER
+    && owner != PORT_OWNER_TYPE_TRACK_PROCESSOR && owner != PORT_OWNER_TYPE_TRACK
     && owner != PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR
-    && owner != PORT_OWNER_TYPE_CHANNEL
-    && owner != PORT_OWNER_TYPE_CHANNEL_SEND
-    && owner != PORT_OWNER_TYPE_AUDIO_ENGINE
-    && owner != PORT_OWNER_TYPE_HW
+    && owner != PORT_OWNER_TYPE_CHANNEL && owner != PORT_OWNER_TYPE_CHANNEL_SEND
+    && owner != PORT_OWNER_TYPE_AUDIO_ENGINE && owner != PORT_OWNER_TYPE_HW
     && owner != PORT_OWNER_TYPE_TRANSPORT
     && !(port->id.flags & PORT_FLAG_MANUAL_PRESS))
     {
@@ -451,8 +415,7 @@ add_port (
       /* allocate buffers to be used during
        * DSP */
       port_allocate_bufs (port);
-      return graph_create_node (
-        self, ROUTE_NODE_TYPE_PORT, port);
+      return graph_create_node (self, ROUTE_NODE_TYPE_PORT, port);
     }
 }
 
@@ -495,18 +458,15 @@ connect_port (Graph * self, Port * port)
  * nodes.
  */
 nframes_t
-graph_get_max_route_playback_latency (
-  Graph * graph,
-  bool    use_setup_nodes)
+graph_get_max_route_playback_latency (Graph * graph, bool use_setup_nodes)
 {
   nframes_t   max = 0;
   GraphNode * node;
-  for (size_t i = 0;
-       i <
-         (use_setup_nodes ?
-            graph->num_setup_init_triggers :
-            graph->n_init_triggers);
-       i++)
+  for (
+    size_t i = 0;
+    i
+    < (use_setup_nodes ? graph->num_setup_init_triggers : graph->n_init_triggers);
+    i++)
     {
       node =
         (use_setup_nodes
@@ -539,18 +499,15 @@ graph_update_latencies (Graph * self, bool use_setup_nodes)
     }
   g_debug ("done setting all latencies to 0");
 
-  g_debug (
-    "iterating over %u nodes...", g_hash_table_size (ht));
+  g_debug ("iterating over %u nodes...", g_hash_table_size (ht));
   g_hash_table_iter_init (&iter, ht);
   while (g_hash_table_iter_next (&iter, &key, &value))
     {
       GraphNode * n = (GraphNode *) value;
-      n->playback_latency =
-        graph_node_get_single_playback_latency (n);
+      n->playback_latency = graph_node_get_single_playback_latency (n);
       if (n->playback_latency > 0)
         {
-          graph_node_set_route_playback_latency (
-            n, n->playback_latency);
+          graph_node_set_route_playback_latency (n, n->playback_latency);
         }
     }
   g_debug ("iterating done...");
@@ -559,9 +516,7 @@ graph_update_latencies (Graph * self, bool use_setup_nodes)
     "Total latencies:\n"
     "Playback: %d\n"
     "Recording: %d\n",
-    graph_get_max_route_playback_latency (
-      self, use_setup_nodes),
-    0);
+    graph_get_max_route_playback_latency (self, use_setup_nodes), 0);
 }
 
 /*
@@ -574,10 +529,7 @@ graph_update_latencies (Graph * self, bool use_setup_nodes)
  *   we are just validating this should be 0.
  */
 void
-graph_setup (
-  Graph *   self,
-  const int drop_unnecessary_ports,
-  const int rechain)
+graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain)
 {
   GraphNode *node, *node2;
 
@@ -586,21 +538,17 @@ graph_setup (
    * ======================== */
 
   /* add the sample processor */
-  graph_create_node (
-    self, ROUTE_NODE_TYPE_SAMPLE_PROCESSOR, SAMPLE_PROCESSOR);
+  graph_create_node (self, ROUTE_NODE_TYPE_SAMPLE_PROCESSOR, SAMPLE_PROCESSOR);
 
   /* add the monitor fader */
-  graph_create_node (
-    self, ROUTE_NODE_TYPE_MONITOR_FADER, MONITOR_FADER);
+  graph_create_node (self, ROUTE_NODE_TYPE_MONITOR_FADER, MONITOR_FADER);
 
   /* add the initial processor */
   graph_create_node (
-    self, ROUTE_NODE_TYPE_INITIAL_PROCESSOR,
-    &self->initial_processor);
+    self, ROUTE_NODE_TYPE_INITIAL_PROCESSOR, &self->initial_processor);
 
   /* add the hardware input processor */
-  graph_create_node (
-    self, ROUTE_NODE_TYPE_HW_PROCESSOR, HW_IN_PROCESSOR);
+  graph_create_node (self, ROUTE_NODE_TYPE_HW_PROCESSOR, HW_IN_PROCESSOR);
 
   /* add plugins */
   Track *  tr;
@@ -643,12 +591,10 @@ graph_setup (
         continue;
 
       /* add the fader */
-      graph_create_node (
-        self, ROUTE_NODE_TYPE_FADER, tr->channel->fader);
+      graph_create_node (self, ROUTE_NODE_TYPE_FADER, tr->channel->fader);
 
       /* add the prefader */
-      graph_create_node (
-        self, ROUTE_NODE_TYPE_PREFADER, tr->channel->prefader);
+      graph_create_node (self, ROUTE_NODE_TYPE_PREFADER, tr->channel->prefader);
 
       /* add plugins */
       for (int j = 0; j < STRIP_SIZE * 2 + 1; j++)
@@ -668,9 +614,7 @@ graph_setup (
         }
 
       /* add sends */
-      if (
-        tr->out_signal_type == TYPE_AUDIO
-        || tr->out_signal_type == TYPE_EVENT)
+      if (tr->out_signal_type == TYPE_AUDIO || tr->out_signal_type == TYPE_EVENT)
         {
           for (int j = 0; j < STRIP_SIZE; j++)
             {
@@ -683,14 +627,12 @@ graph_setup (
                 continue;
 #endif
 
-              graph_create_node (
-                self, ROUTE_NODE_TYPE_CHANNEL_SEND, send);
+              graph_create_node (self, ROUTE_NODE_TYPE_CHANNEL_SEND, send);
             }
         }
     }
 
-  object_free_w_func_and_null (
-    g_ptr_array_unref, self->external_out_ports);
+  object_free_w_func_and_null (g_ptr_array_unref, self->external_out_ports);
   self->external_out_ports = g_ptr_array_new ();
 
   /* add ports */
@@ -710,15 +652,12 @@ graph_setup (
             continue;
         }
 
-      if (
-        port->id.flow == FLOW_OUTPUT
-        && port_is_exposed_to_backend (port))
+      if (port->id.flow == FLOW_OUTPUT && port_is_exposed_to_backend (port))
         {
           g_ptr_array_add (self->external_out_ports, port);
         }
 
-      GraphNode * port_node =
-        add_port (self, port, drop_unnecessary_ports);
+      GraphNode * port_node = add_port (self, port, drop_unnecessary_ports);
       (void) port_node;
 #if 0
       if (port_node)
@@ -744,8 +683,7 @@ graph_setup (
    * ======================== */
 
   /* connect the sample processor */
-  node = graph_find_node_from_sample_processor (
-    self, SAMPLE_PROCESSOR);
+  node = graph_find_node_from_sample_processor (self, SAMPLE_PROCESSOR);
   port = SAMPLE_PROCESSOR->fader->stereo_out->l;
   node2 = graph_find_node_from_port (self, port);
   graph_node_connect (node, node2);
@@ -754,8 +692,7 @@ graph_setup (
   graph_node_connect (node, node2);
 
   /* connect the monitor fader */
-  node =
-    graph_find_node_from_monitor_fader (self, MONITOR_FADER);
+  node = graph_find_node_from_monitor_fader (self, MONITOR_FADER);
   port = MONITOR_FADER->stereo_in->l;
   node2 = graph_find_node_from_port (self, port);
   graph_node_connect (node2, node);
@@ -769,8 +706,7 @@ graph_setup (
   node2 = graph_find_node_from_port (self, port);
   graph_node_connect (node, node2);
 
-  GraphNode * initial_processor_node =
-    graph_find_initial_processor_node (self);
+  GraphNode * initial_processor_node = graph_find_initial_processor_node (self);
 
   /* connect the HW input processor */
   GraphNode * hw_processor_node =
@@ -790,8 +726,8 @@ graph_setup (
     }
 
   /* connect MIDI editor manual press */
-  node2 = graph_find_node_from_port (
-    self, AUDIO_ENGINE->midi_editor_manual_press);
+  node2 =
+    graph_find_node_from_port (self, AUDIO_ENGINE->midi_editor_manual_press);
   graph_node_connect (node2, initial_processor_node);
 
   /* connect the transport ports */
@@ -799,16 +735,13 @@ graph_setup (
   graph_node_connect (node2, initial_processor_node);
   node2 = graph_find_node_from_port (self, TRANSPORT->stop);
   graph_node_connect (node2, initial_processor_node);
-  node2 =
-    graph_find_node_from_port (self, TRANSPORT->backward);
+  node2 = graph_find_node_from_port (self, TRANSPORT->backward);
   graph_node_connect (node2, initial_processor_node);
   node2 = graph_find_node_from_port (self, TRANSPORT->forward);
   graph_node_connect (node2, initial_processor_node);
-  node2 =
-    graph_find_node_from_port (self, TRANSPORT->loop_toggle);
+  node2 = graph_find_node_from_port (self, TRANSPORT->loop_toggle);
   graph_node_connect (node2, initial_processor_node);
-  node2 =
-    graph_find_node_from_port (self, TRANSPORT->rec_toggle);
+  node2 = graph_find_node_from_port (self, TRANSPORT->rec_toggle);
   graph_node_connect (node2, initial_processor_node);
 
   /* connect tracks */
@@ -825,13 +758,11 @@ graph_setup (
               port = tr->processor->mono;
               node2 = graph_find_node_from_port (self, port);
               graph_node_connect (node2, node);
-              graph_node_connect (
-                initial_processor_node, node2);
+              graph_node_connect (initial_processor_node, node2);
               port = tr->processor->input_gain;
               node2 = graph_find_node_from_port (self, port);
               graph_node_connect (node2, node);
-              graph_node_connect (
-                initial_processor_node, node2);
+              graph_node_connect (initial_processor_node, node2);
             }
           port = tr->processor->stereo_in->l;
           node2 = graph_find_node_from_port (self, port);
@@ -851,8 +782,7 @@ graph_setup (
       else if (tr->in_signal_type == TYPE_EVENT)
         {
           if (
-            track_type_has_piano_roll (tr->type)
-            || tr->type == TRACK_TYPE_CHORD)
+            track_type_has_piano_roll (tr->type) || tr->type == TRACK_TYPE_CHORD)
             {
               /* connect piano roll */
               port = tr->processor->piano_roll;
@@ -874,8 +804,7 @@ graph_setup (
               for (int k = 0; k < 128; k++)
                 {
                   port = tr->processor->midi_cc[j * 128 + k];
-                  node2 =
-                    graph_find_node_from_port (self, port);
+                  node2 = graph_find_node_from_port (self, port);
                   if (node2)
                     {
                       graph_node_connect (node2, node);
@@ -943,16 +872,13 @@ graph_setup (
 
               if (pl && !pl->deleting)
                 {
-                  connect_plugin (
-                    self, pl, drop_unnecessary_ports);
+                  connect_plugin (self, pl, drop_unnecessary_ports);
                   for (int k = 0; k < pl->num_in_ports; k++)
                     {
                       Port * pl_port = pl->in_ports[k];
-                      g_return_if_fail (
-                        port_get_plugin (pl_port, 1) != NULL);
+                      g_return_if_fail (port_get_plugin (pl_port, 1) != NULL);
                       GraphNode * port_node =
-                        graph_find_node_from_port (
-                          self, pl_port);
+                        graph_find_node_from_port (self, pl_port);
                       if (
                         drop_unnecessary_ports && !port_node
                         && port->id.type == TYPE_CONTROL)
@@ -975,11 +901,9 @@ graph_setup (
            * processors */
           for (int j = 0; j < tr->num_modulator_macros; j++)
             {
-              ModulatorMacroProcessor * mmp =
-                tr->modulator_macros[j];
-              GraphNode * mmp_node =
-                graph_find_node_from_modulator_macro_processor (
-                  self, mmp);
+              ModulatorMacroProcessor * mmp = tr->modulator_macros[j];
+              GraphNode *               mmp_node =
+                graph_find_node_from_modulator_macro_processor (self, mmp);
 
               port = mmp->cv_in;
               node2 = graph_find_node_from_port (self, port);
@@ -1092,8 +1016,7 @@ graph_setup (
 
           if (pl && !pl->deleting)
             {
-              connect_plugin (
-                self, pl, drop_unnecessary_ports);
+              connect_plugin (self, pl, drop_unnecessary_ports);
             }
         }
 
@@ -1107,40 +1030,31 @@ graph_setup (
           /*if (channel_send_is_empty (send))*/
           /*continue;*/
 
-          node =
-            graph_find_node_from_channel_send (self, send);
+          node = graph_find_node_from_channel_send (self, send);
 
-          node2 =
-            graph_find_node_from_port (self, send->amount);
+          node2 = graph_find_node_from_port (self, send->amount);
           if (node2)
             graph_node_connect (node2, node);
-          node2 =
-            graph_find_node_from_port (self, send->enabled);
+          node2 = graph_find_node_from_port (self, send->enabled);
           if (node2)
             graph_node_connect (node2, node);
 
           if (tr->out_signal_type == TYPE_EVENT)
             {
-              node2 = graph_find_node_from_port (
-                self, send->midi_in);
+              node2 = graph_find_node_from_port (self, send->midi_in);
               graph_node_connect (node2, node);
-              node2 = graph_find_node_from_port (
-                self, send->midi_out);
+              node2 = graph_find_node_from_port (self, send->midi_out);
               graph_node_connect (node, node2);
             }
           else if (tr->out_signal_type == TYPE_AUDIO)
             {
-              node2 = graph_find_node_from_port (
-                self, send->stereo_in->l);
+              node2 = graph_find_node_from_port (self, send->stereo_in->l);
               graph_node_connect (node2, node);
-              node2 = graph_find_node_from_port (
-                self, send->stereo_in->r);
+              node2 = graph_find_node_from_port (self, send->stereo_in->r);
               graph_node_connect (node2, node);
-              node2 = graph_find_node_from_port (
-                self, send->stereo_out->l);
+              node2 = graph_find_node_from_port (self, send->stereo_out->l);
               graph_node_connect (node, node2);
-              node2 = graph_find_node_from_port (
-                self, send->stereo_out->r);
+              node2 = graph_find_node_from_port (self, send->stereo_out->r);
               graph_node_connect (node, node2);
             }
         }
@@ -1177,23 +1091,18 @@ graph_setup (
 
           self->setup_terminal_nodes = (GraphNode **) realloc (
             self->setup_terminal_nodes,
-            (size_t) (1 + self->num_setup_terminal_nodes)
-              * sizeof (GraphNode *));
-          self->setup_terminal_nodes
-            [self->num_setup_terminal_nodes++] = node;
+            (size_t) (1 + self->num_setup_terminal_nodes) * sizeof (GraphNode *));
+          self->setup_terminal_nodes[self->num_setup_terminal_nodes++] = node;
         }
       if (node->init_refcount == 0)
         {
           /* initial node */
           node->initial = true;
 
-          self
-            ->setup_init_trigger_list = (GraphNode **) realloc (
+          self->setup_init_trigger_list = (GraphNode **) realloc (
             self->setup_init_trigger_list,
-            (size_t) (1 + self->num_setup_init_triggers)
-              * sizeof (GraphNode *));
-          self->setup_init_trigger_list
-            [self->num_setup_init_triggers++] = node;
+            (size_t) (1 + self->num_setup_init_triggers) * sizeof (GraphNode *));
+          self->setup_init_trigger_list[self->num_setup_init_triggers++] = node;
         }
     }
 
@@ -1216,8 +1125,7 @@ graph_setup (
 
   clip_editor_set_caches (CLIP_EDITOR);
   tracklist_set_caches (TRACKLIST, CACHE_TYPE_ALL);
-  tracklist_set_caches (
-    SAMPLE_PROCESSOR->tracklist, CACHE_TYPE_ALL);
+  tracklist_set_caches (SAMPLE_PROCESSOR->tracklist, CACHE_TYPE_ALL);
 
   /*graph_print (self);*/
 
@@ -1241,19 +1149,14 @@ graph_setup (
  * @return True if ok, false if invalid.
  */
 bool
-graph_validate_with_connection (
-  Graph *      self,
-  const Port * src,
-  const Port * dest)
+graph_validate_with_connection (Graph * self, const Port * src, const Port * dest)
 {
   g_return_val_if_fail (src && dest, 0);
 
   EngineState state;
-  engine_wait_for_pause (
-    AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
 
-  g_message (
-    "validating for %s to %s", src->id.label, dest->id.label);
+  g_message ("validating for %s to %s", src->id.label, dest->id.label);
 
   graph_setup (self, Z_F_NO_DROP_UNNECESSARY, Z_F_NO_RECHAIN);
 
@@ -1286,10 +1189,8 @@ graph_validate_with_connection (
 int
 graph_start (Graph * graph)
 {
-  int num_cores =
-    MIN (MAX_GRAPH_THREADS, audio_get_num_cores ());
-  graph->num_threads =
-    env_get_int ("ZRYTHM_DSP_THREADS", num_cores - 2);
+  int num_cores = MIN (MAX_GRAPH_THREADS, audio_get_num_cores ());
+  graph->num_threads = env_get_int ("ZRYTHM_DSP_THREADS", num_cores - 2);
   g_warn_if_fail (graph->num_threads >= 0);
 
   graph->num_threads = MAX (graph->num_threads, 0);
@@ -1321,9 +1222,7 @@ graph_start (Graph * graph)
   sched_yield ();
 
   /* wait for all threads to go idle */
-  while (
-    g_atomic_int_get (&graph->idle_thread_cnt)
-    != graph->num_threads)
+  while (g_atomic_int_get (&graph->idle_thread_cnt) != graph->num_threads)
     {
       /* wait for all threads to go idle */
       g_message (
@@ -1350,11 +1249,9 @@ graph_new (Router * router)
   self->init_trigger_list = object_new (GraphNode *);
   self->terminal_nodes = object_new (GraphNode *);
   self->graph_nodes = g_hash_table_new_full (
-    g_direct_hash, g_direct_equal, NULL,
-    (GDestroyNotify) graph_node_free);
+    g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) graph_node_free);
   self->setup_graph_nodes = g_hash_table_new_full (
-    g_direct_hash, g_direct_equal, NULL,
-    (GDestroyNotify) graph_node_free);
+    g_direct_hash, g_direct_equal, NULL, (GDestroyNotify) graph_node_free);
 
   zix_sem_init (&self->callback_start, 0);
   zix_sem_init (&self->callback_done, 0);
@@ -1379,9 +1276,7 @@ graph_terminate (Graph * self)
   /* Flag threads to terminate */
   g_atomic_int_set (&self->terminate, 1);
 
-  while (
-    g_atomic_int_get (&self->idle_thread_cnt)
-    != self->num_threads)
+  while (g_atomic_int_get (&self->idle_thread_cnt) != self->num_threads)
     {
       /* wait for all threads to go idle */
       g_message ("waiting for threads to go idle...");
@@ -1392,9 +1287,7 @@ graph_terminate (Graph * self)
   int tc = g_atomic_int_get (&self->idle_thread_cnt);
   if (tc != self->num_threads)
     {
-      g_warning (
-        "expected %d idle threads, found %d",
-        self->num_threads, tc);
+      g_warning ("expected %d idle threads, found %d", self->num_threads, tc);
     }
   for (int i = 0; i < tc; ++i)
     {
@@ -1423,8 +1316,8 @@ graph_terminate (Graph * self)
 GraphNode *
 graph_find_node_from_port (const Graph * self, const Port * port)
 {
-  GraphNode * node = (GraphNode *) g_hash_table_lookup (
-    self->setup_graph_nodes, port);
+  GraphNode * node =
+    (GraphNode *) g_hash_table_lookup (self->setup_graph_nodes, port);
   if (node && node->type == ROUTE_NODE_TYPE_PORT)
     {
       g_return_val_if_fail (node->port == port, NULL);
@@ -1435,12 +1328,10 @@ graph_find_node_from_port (const Graph * self, const Port * port)
 }
 
 GraphNode *
-graph_find_node_from_plugin (
-  const Graph *  self,
-  const Plugin * pl)
+graph_find_node_from_plugin (const Graph * self, const Plugin * pl)
 {
-  GraphNode * node = (GraphNode *) g_hash_table_lookup (
-    self->setup_graph_nodes, pl);
+  GraphNode * node =
+    (GraphNode *) g_hash_table_lookup (self->setup_graph_nodes, pl);
   if (node && node->type == ROUTE_NODE_TYPE_PLUGIN)
     return node;
   else
@@ -1454,11 +1345,8 @@ graph_find_node_from_track (
   bool          use_setup_nodes)
 {
   GHashTable * nodes =
-    (use_setup_nodes
-       ? self->setup_graph_nodes
-       : self->graph_nodes);
-  GraphNode * node =
-    (GraphNode *) g_hash_table_lookup (nodes, track);
+    (use_setup_nodes ? self->setup_graph_nodes : self->graph_nodes);
+  GraphNode * node = (GraphNode *) g_hash_table_lookup (nodes, track);
   if (node && node->type == ROUTE_NODE_TYPE_TRACK)
     return node;
   else
@@ -1466,12 +1354,10 @@ graph_find_node_from_track (
 }
 
 GraphNode *
-graph_find_node_from_fader (
-  const Graph * self,
-  const Fader * fader)
+graph_find_node_from_fader (const Graph * self, const Fader * fader)
 {
-  GraphNode * node = (GraphNode *) g_hash_table_lookup (
-    self->setup_graph_nodes, fader);
+  GraphNode * node =
+    (GraphNode *) g_hash_table_lookup (self->setup_graph_nodes, fader);
   if (node && node->type == ROUTE_NODE_TYPE_FADER)
     return node;
   else
@@ -1479,12 +1365,10 @@ graph_find_node_from_fader (
 }
 
 GraphNode *
-graph_find_node_from_prefader (
-  const Graph * self,
-  const Fader * prefader)
+graph_find_node_from_prefader (const Graph * self, const Fader * prefader)
 {
-  GraphNode * node = (GraphNode *) g_hash_table_lookup (
-    self->setup_graph_nodes, prefader);
+  GraphNode * node =
+    (GraphNode *) g_hash_table_lookup (self->setup_graph_nodes, prefader);
   if (node && node->type == ROUTE_NODE_TYPE_PREFADER)
     return node;
   else
@@ -1505,12 +1389,10 @@ graph_find_node_from_sample_processor (
 }
 
 GraphNode *
-graph_find_node_from_monitor_fader (
-  const Graph * self,
-  const Fader * fader)
+graph_find_node_from_monitor_fader (const Graph * self, const Fader * fader)
 {
-  GraphNode * node = (GraphNode *) g_hash_table_lookup (
-    self->setup_graph_nodes, fader);
+  GraphNode * node =
+    (GraphNode *) g_hash_table_lookup (self->setup_graph_nodes, fader);
   if (node && node->type == ROUTE_NODE_TYPE_MONITOR_FADER)
     return node;
   else
@@ -1518,12 +1400,10 @@ graph_find_node_from_monitor_fader (
 }
 
 GraphNode *
-graph_find_node_from_channel_send (
-  const Graph *       self,
-  const ChannelSend * send)
+graph_find_node_from_channel_send (const Graph * self, const ChannelSend * send)
 {
-  GraphNode * node = (GraphNode *) g_hash_table_lookup (
-    self->setup_graph_nodes, send);
+  GraphNode * node =
+    (GraphNode *) g_hash_table_lookup (self->setup_graph_nodes, send);
   if (node && node->type == ROUTE_NODE_TYPE_CHANNEL_SEND)
     return node;
   else
@@ -1546,8 +1426,8 @@ graph_find_hw_processor_node (
   const Graph *             self,
   const HardwareProcessor * processor)
 {
-  GraphNode * node = (GraphNode *) g_hash_table_lookup (
-    self->setup_graph_nodes, processor);
+  GraphNode * node =
+    (GraphNode *) g_hash_table_lookup (self->setup_graph_nodes, processor);
   if (node && node->type == ROUTE_NODE_TYPE_HW_PROCESSOR)
     return node;
   else
@@ -1559,11 +1439,9 @@ graph_find_node_from_modulator_macro_processor (
   const Graph *                   self,
   const ModulatorMacroProcessor * processor)
 {
-  GraphNode * node = (GraphNode *) g_hash_table_lookup (
-    self->setup_graph_nodes, processor);
-  if (
-    node
-    && node->type == ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR)
+  GraphNode * node =
+    (GraphNode *) g_hash_table_lookup (self->setup_graph_nodes, processor);
+  if (node && node->type == ROUTE_NODE_TYPE_MODULATOR_MACRO_PROCESOR)
     return node;
   else
     return NULL;
@@ -1590,16 +1468,13 @@ graph_free (Graph * self)
 {
   g_debug ("%s: freeing...", __func__);
 
-  object_free_w_func_and_null (
-    g_hash_table_unref, self->graph_nodes);
+  object_free_w_func_and_null (g_hash_table_unref, self->graph_nodes);
   object_zero_and_free (self->init_trigger_list);
-  object_free_w_func_and_null (
-    g_hash_table_unref, self->setup_graph_nodes);
+  object_free_w_func_and_null (g_hash_table_unref, self->setup_graph_nodes);
   object_zero_and_free (self->setup_init_trigger_list);
   object_zero_and_free (self->terminal_nodes);
 
-  object_free_w_func_and_null (
-    g_ptr_array_unref, self->external_out_ports);
+  object_free_w_func_and_null (g_ptr_array_unref, self->external_out_ports);
 
   zix_sem_destroy (&self->callback_start);
   zix_sem_destroy (&self->callback_done);
@@ -1608,8 +1483,7 @@ graph_free (Graph * self)
   object_set_to_zero (&self->callback_done);
   object_set_to_zero (&self->trigger);
 
-  object_free_w_func_and_null (
-    mpmc_queue_free, self->trigger_queue);
+  object_free_w_func_and_null (mpmc_queue_free, self->trigger_queue);
 
   object_zero_and_free (self);
 

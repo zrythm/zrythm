@@ -27,9 +27,8 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-typedef struct Port Port;
-typedef struct _PortConnectionsPopoverWidget
-  PortConnectionsPopoverWidget;
+typedef struct Port                          Port;
+typedef struct _PortConnectionsPopoverWidget PortConnectionsPopoverWidget;
 
 /**
  * A GtkPopover to select Port's.
@@ -92,8 +91,7 @@ port_selector_dialog_widget_refresh (
  * Creates the popover.
  */
 PortSelectorDialogWidget *
-port_selector_dialog_widget_new (
-  PortConnectionsPopoverWidget * owner);
+port_selector_dialog_widget_new (PortConnectionsPopoverWidget * owner);
 
 /**
  * @}

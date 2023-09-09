@@ -86,14 +86,11 @@ router_get_max_route_playback_latency (Router * router)
  * Starts a new cycle.
  */
 void
-router_start_cycle (
-  Router *              self,
-  EngineProcessTimeInfo time_nfo)
+router_start_cycle (Router * self, EngineProcessTimeInfo time_nfo)
 {
   g_return_if_fail (self && self->graph);
   g_return_if_fail (
-    time_nfo.local_offset + time_nfo.nframes
-    <= AUDIO_ENGINE->nframes);
+    time_nfo.local_offset + time_nfo.nframes <= AUDIO_ENGINE->nframes);
 
   /* only set the kickoff thread when not called
    * from the gtk thread (sometimes this is called
@@ -109,11 +106,8 @@ router_start_cycle (
     }
 
   self->global_offset =
-    self->max_route_playback_latency
-    - AUDIO_ENGINE->remaining_latency_preroll;
-  memcpy (
-    &self->time_nfo, &time_nfo,
-    sizeof (EngineProcessTimeInfo));
+    self->max_route_playback_latency - AUDIO_ENGINE->remaining_latency_preroll;
+  memcpy (&self->time_nfo, &time_nfo, sizeof (EngineProcessTimeInfo));
 
   /* read control port change events */
   while (
@@ -121,24 +115,19 @@ router_start_cycle (
     >= sizeof (ControlPortChange))
     {
       ControlPortChange change = { 0 };
-      zix_ring_read (
-        self->ctrl_port_change_queue, &change,
-        sizeof (change));
+      zix_ring_read (self->ctrl_port_change_queue, &change, sizeof (change));
       if (change.flag1 & PORT_FLAG_BPM)
         {
           tempo_track_set_bpm (
-            P_TEMPO_TRACK, change.real_val, 0.f, true,
-            F_PUBLISH_EVENTS);
+            P_TEMPO_TRACK, change.real_val, 0.f, true, F_PUBLISH_EVENTS);
         }
       else if (change.flag2 & PORT_FLAG2_BEATS_PER_BAR)
         {
-          tempo_track_set_beats_per_bar (
-            P_TEMPO_TRACK, change.ival);
+          tempo_track_set_beats_per_bar (P_TEMPO_TRACK, change.ival);
         }
       else if (change.flag2 & PORT_FLAG2_BEAT_UNIT)
         {
-          tempo_track_set_beat_unit_from_enum (
-            P_TEMPO_TRACK, change.beat_unit);
+          tempo_track_set_beat_unit_from_enum (P_TEMPO_TRACK, change.beat_unit);
         }
     }
 
@@ -149,13 +138,11 @@ router_start_cycle (
     }
   if (self->graph->beats_per_bar_node)
     {
-      graph_node_process (
-        self->graph->beats_per_bar_node, time_nfo);
+      graph_node_process (self->graph->beats_per_bar_node, time_nfo);
     }
   if (self->graph->beat_unit_node)
     {
-      graph_node_process (
-        self->graph->beat_unit_node, time_nfo);
+      graph_node_process (self->graph->beat_unit_node, time_nfo);
     }
 
   self->callback_in_progress = true;
@@ -215,22 +202,17 @@ router_recalc_graph (Router * self, bool soft)
  * changes.
  */
 void
-router_queue_control_port_change (
-  Router *                  self,
-  const ControlPortChange * change)
+router_queue_control_port_change (Router * self, const ControlPortChange * change)
 {
   if (
     zix_ring_write_space (self->ctrl_port_change_queue)
     < sizeof (ControlPortChange))
     {
-      zix_ring_skip (
-        self->ctrl_port_change_queue,
-        sizeof (ControlPortChange));
+      zix_ring_skip (self->ctrl_port_change_queue, sizeof (ControlPortChange));
     }
 
   zix_ring_write (
-    self->ctrl_port_change_queue, change,
-    sizeof (ControlPortChange));
+    self->ctrl_port_change_queue, change, sizeof (ControlPortChange));
 }
 
 /**
@@ -248,8 +230,7 @@ router_new (void)
   zix_sem_init (&self->graph_access, 1);
 
   self->ctrl_port_change_queue = zix_ring_new (
-    zix_default_allocator (),
-    sizeof (ControlPortChange) * (size_t) 24);
+    zix_default_allocator (), sizeof (ControlPortChange) * (size_t) 24);
 
   g_message ("done");
 
@@ -297,8 +278,7 @@ router_is_processing_thread (const Router * const self)
 
   for (int j = 0; j < self->graph->num_threads; j++)
     {
-      if (pthread_equal (
-            pthread_self (), self->graph->threads[j]->pthread))
+      if (pthread_equal (pthread_self (), self->graph->threads[j]->pthread))
         {
           is_processing_thread = true;
           have_result = true;
@@ -308,8 +288,7 @@ router_is_processing_thread (const Router * const self)
 
   if (
     self->graph->main_thread
-    && pthread_equal (
-      pthread_self (), self->graph->main_thread->pthread))
+    && pthread_equal (pthread_self (), self->graph->main_thread->pthread))
     {
       is_processing_thread = true;
       have_result = true;
@@ -333,8 +312,7 @@ router_free (Router * self)
   zix_sem_destroy (&self->graph_access);
   object_set_to_zero (&self->graph_access);
 
-  object_free_w_func_and_null (
-    zix_ring_free, self->ctrl_port_change_queue);
+  object_free_w_func_and_null (zix_ring_free, self->ctrl_port_change_queue);
 
   object_zero_and_free (self);
 

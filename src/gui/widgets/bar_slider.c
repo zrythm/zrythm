@@ -22,9 +22,7 @@ G_DEFINE_TYPE_WITH_CODE (
   BarSliderWidget,
   bar_slider_widget,
   GTK_TYPE_WIDGET,
-  G_IMPLEMENT_INTERFACE (
-    GTK_TYPE_ACCESSIBLE_RANGE,
-    accessible_range_init))
+  G_IMPLEMENT_INTERFACE (GTK_TYPE_ACCESSIBLE_RANGE, accessible_range_init))
 
 /**
  * Macro to get real value from bar_slider value.
@@ -43,12 +41,10 @@ accessible_range_set_current_value (
   GtkAccessibleRange * accessible_range,
   double               value)
 {
-  BarSliderWidget * self =
-    Z_BAR_SLIDER_WIDGET (accessible_range);
+  BarSliderWidget * self = Z_BAR_SLIDER_WIDGET (accessible_range);
   if (self->end_setter)
     {
-      self->end_setter (
-        self->object, REAL_VAL_FROM_BAR_SLIDER (value));
+      self->end_setter (self->object, REAL_VAL_FROM_BAR_SLIDER (value));
     }
 
   return TRUE;
@@ -57,8 +53,7 @@ accessible_range_set_current_value (
 static void
 accessible_range_init (GtkAccessibleRangeInterface * iface)
 {
-  iface->set_current_value =
-    accessible_range_set_current_value;
+  iface->set_current_value = accessible_range_set_current_value;
 }
 
 /**
@@ -93,8 +88,7 @@ set_real_val (BarSliderWidget * self, float real_val)
 {
   if (self->type == BAR_SLIDER_TYPE_PORT_MULTIPLIER)
     {
-      PortConnection * connection =
-        (PortConnection *) self->object;
+      PortConnection * connection = (PortConnection *) self->object;
       connection->multiplier = real_val;
     }
   else
@@ -110,8 +104,7 @@ recreate_pango_layouts (BarSliderWidget * self)
     g_object_unref (self->layout);
 
   self->layout = z_cairo_create_pango_layout_from_string (
-    (GtkWidget *) self, Z_CAIRO_FONT, PANGO_ELLIPSIZE_NONE,
-    -1);
+    (GtkWidget *) self, Z_CAIRO_FONT, PANGO_ELLIPSIZE_NONE, -1);
 }
 
 /**
@@ -135,11 +128,9 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   /*const float min_px = 0.f;*/
   /*const float max_px = width;*/
   const float zero_px =
-    ((real_zero - real_min) / (real_max - real_min))
-    * (float) width;
+    ((real_zero - real_min) / (real_max - real_min)) * (float) width;
   const float val_px =
-    ((real_val - real_min) / (real_max - real_min))
-    * (float) width;
+    ((real_val - real_min) / (real_max - real_min)) * (float) width;
 
   GdkRGBA color = { 1, 1, 1, 0.3f };
 
@@ -148,16 +139,14 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       gtk_snapshot_append_color (
         snapshot, &color,
-        &GRAPHENE_RECT_INIT (
-          val_px, 0.f, zero_px - val_px, (float) height));
+        &GRAPHENE_RECT_INIT (val_px, 0.f, zero_px - val_px, (float) height));
     }
   /* draw from zero to val */
   else
     {
       gtk_snapshot_append_color (
         snapshot, &color,
-        &GRAPHENE_RECT_INIT (
-          zero_px, 0.f, val_px - zero_px, (float) height));
+        &GRAPHENE_RECT_INIT (zero_px, 0.f, val_px - zero_px, (float) height));
     }
 
   if (!self->layout)
@@ -176,18 +165,14 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         {
           sprintf (
             str, "%s%d%s", self->prefix,
-            (int) (self->convert_to_percentage
-                     ? real_val * 100
-                     : real_val),
+            (int) (self->convert_to_percentage ? real_val * 100 : real_val),
             self->suffix);
         }
       else if (self->decimals < 5)
         {
           sprintf (
             str, "%s%.*f%s", self->prefix, self->decimals,
-            (double) (self->convert_to_percentage
-                        ? real_val * 100.f
-                        : real_val),
+            (double) (self->convert_to_percentage ? real_val * 100.f : real_val),
             self->suffix);
         }
       else
@@ -195,8 +180,7 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
           g_warn_if_reached ();
         }
       int we, he;
-      z_cairo_get_text_extents_for_widget (
-        widget, self->layout, str, &we, &he);
+      z_cairo_get_text_extents_for_widget (widget, self->layout, str, &we, &he);
       pango_layout_set_markup (self->layout, str, -1);
       self->last_width_extent = we;
       self->last_height_extent = he;
@@ -219,8 +203,7 @@ bar_slider_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (1, 1, 1, 0.12f),
-        &GRAPHENE_RECT_INIT (
-          0.f, 0.f, (float) width, (float) height));
+        &GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
     }
 
   self->last_real_val = real_val;
@@ -239,9 +222,7 @@ on_motion_enter (
 }
 
 static void
-on_motion_leave (
-  GtkEventControllerMotion * controller,
-  gpointer                   user_data)
+on_motion_leave (GtkEventControllerMotion * controller, gpointer user_data)
 {
   BarSliderWidget * self = Z_BAR_SLIDER_WIDGET (user_data);
   self->hover = false;
@@ -262,15 +243,12 @@ drag_begin (
 
   if (self->init_setter)
     {
-      int width = gtk_widget_get_width (GTK_WIDGET (self));
+      int    width = gtk_widget_get_width (GTK_WIDGET (self));
       double normalized_val = ui_get_normalized_draggable_value (
-        width,
-        BAR_SLIDER_VAL_FROM_REAL (get_real_val (self, false)),
-        self->start_x, self->start_x, self->start_x, 1.0,
-        self->mode);
+        width, BAR_SLIDER_VAL_FROM_REAL (get_real_val (self, false)),
+        self->start_x, self->start_x, self->start_x, 1.0, self->mode);
       self->init_setter (
-        self->object,
-        REAL_VAL_FROM_BAR_SLIDER (normalized_val));
+        self->object, REAL_VAL_FROM_BAR_SLIDER (normalized_val));
     }
 }
 
@@ -284,14 +262,11 @@ drag_update (
   if (!self->editable)
     return;
 
-  int width = gtk_widget_get_width (GTK_WIDGET (self));
+  int    width = gtk_widget_get_width (GTK_WIDGET (self));
   double new_normalized_val = ui_get_normalized_draggable_value (
-    width,
-    BAR_SLIDER_VAL_FROM_REAL (get_real_val (self, false)),
-    self->start_x, self->start_x + offset_x,
-    self->start_x + self->last_x, 1.0, self->mode);
-  set_real_val (
-    self, REAL_VAL_FROM_BAR_SLIDER (new_normalized_val));
+    width, BAR_SLIDER_VAL_FROM_REAL (get_real_val (self, false)), self->start_x,
+    self->start_x + offset_x, self->start_x + self->last_x, 1.0, self->mode);
+  set_real_val (self, REAL_VAL_FROM_BAR_SLIDER (new_normalized_val));
   self->last_x = offset_x;
   gtk_widget_queue_draw ((GtkWidget *) self);
 }
@@ -308,15 +283,12 @@ drag_end (
 
   if (self->end_setter)
     {
-      int width = gtk_widget_get_width (GTK_WIDGET (self));
+      int    width = gtk_widget_get_width (GTK_WIDGET (self));
       double normalized_val = ui_get_normalized_draggable_value (
-        width,
-        BAR_SLIDER_VAL_FROM_REAL (get_real_val (self, false)),
-        self->start_x, self->start_x + offset_x,
-        self->start_x + self->last_x, 1.0, self->mode);
-      self->end_setter (
-        self->object,
-        REAL_VAL_FROM_BAR_SLIDER (normalized_val));
+        width, BAR_SLIDER_VAL_FROM_REAL (get_real_val (self, false)),
+        self->start_x, self->start_x + offset_x, self->start_x + self->last_x,
+        1.0, self->mode);
+      self->end_setter (self->object, REAL_VAL_FROM_BAR_SLIDER (normalized_val));
     }
 
   self->last_x = 0;
@@ -345,8 +317,7 @@ _bar_slider_widget_new (
 {
   g_warn_if_fail (object);
 
-  BarSliderWidget * self =
-    g_object_new (BAR_SLIDER_WIDGET_TYPE, NULL);
+  BarSliderWidget * self = g_object_new (BAR_SLIDER_WIDGET_TYPE, NULL);
   self->type = type;
   self->getter = get_val;
   self->setter = set_val;
@@ -368,26 +339,19 @@ _bar_slider_widget_new (
   gtk_widget_set_hexpand (GTK_WIDGET (self), 1);
   gtk_widget_set_vexpand (GTK_WIDGET (self), 1);
 
-  GtkEventController * motion_controller =
-    gtk_event_controller_motion_new ();
+  GtkEventController * motion_controller = gtk_event_controller_motion_new ();
   g_signal_connect (
-    G_OBJECT (motion_controller), "enter",
-    G_CALLBACK (on_motion_enter), self);
+    G_OBJECT (motion_controller), "enter", G_CALLBACK (on_motion_enter), self);
   g_signal_connect (
-    G_OBJECT (motion_controller), "leave",
-    G_CALLBACK (on_motion_leave), self);
-  gtk_widget_add_controller (
-    GTK_WIDGET (self), motion_controller);
+    G_OBJECT (motion_controller), "leave", G_CALLBACK (on_motion_leave), self);
+  gtk_widget_add_controller (GTK_WIDGET (self), motion_controller);
 
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-begin",
-    G_CALLBACK (drag_begin), self);
+    G_OBJECT (self->drag), "drag-begin", G_CALLBACK (drag_begin), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-update",
-    G_CALLBACK (drag_update), self);
+    G_OBJECT (self->drag), "drag-update", G_CALLBACK (drag_update), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end),
-    self);
+    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end), self);
 
   return self;
 }
@@ -399,8 +363,7 @@ finalize (BarSliderWidget * self)
 
   object_free_w_func_and_null (g_object_unref, self->layout);
 
-  G_OBJECT_CLASS (bar_slider_widget_parent_class)
-    ->finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (bar_slider_widget_parent_class)->finalize (G_OBJECT (self));
 }
 
 static void
@@ -415,9 +378,9 @@ bar_slider_widget_init (BarSliderWidget * self)
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
   gtk_accessible_update_property (
-    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_VALUE_MAX,
-    1.0, GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, 0.0,
-    GTK_ACCESSIBLE_PROPERTY_LABEL, "Slider", -1);
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_VALUE_MAX, 1.0,
+    GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, 0.0, GTK_ACCESSIBLE_PROPERTY_LABEL,
+    "Slider", -1);
 
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
 }
@@ -427,8 +390,7 @@ bar_slider_widget_class_init (BarSliderWidgetClass * _klass)
 {
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
   wklass->snapshot = bar_slider_snapshot;
-  gtk_widget_class_set_accessible_role (
-    wklass, GTK_ACCESSIBLE_ROLE_SLIDER);
+  gtk_widget_class_set_accessible_role (wklass, GTK_ACCESSIBLE_ROLE_SLIDER);
 
   GObjectClass * klass = G_OBJECT_CLASS (_klass);
 

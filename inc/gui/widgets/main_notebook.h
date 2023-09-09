@@ -16,8 +16,7 @@
 #include <gtk/gtk.h>
 #include <libpanel.h>
 
-#define MAIN_NOTEBOOK_WIDGET_TYPE \
-  (main_notebook_widget_get_type ())
+#define MAIN_NOTEBOOK_WIDGET_TYPE (main_notebook_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   MainNotebookWidget,
   main_notebook_widget,

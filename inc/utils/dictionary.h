@@ -36,8 +36,7 @@
  * Dictionary implementation.
  */
 
-#define DICTIONARY_PUSH(s, element) \
-  dictionary_push (s, (void *) element)
+#define DICTIONARY_PUSH(s, element) dictionary_push (s, (void *) element)
 
 typedef struct DictionaryEntry
 {
@@ -61,19 +60,12 @@ dictionary_new (void);
   ((type *) dictionary_find (dict, key, NULL))
 
 void *
-dictionary_find (
-  Dictionary * dict,
-  const char * key,
-  void *       def);
+dictionary_find (Dictionary * dict, const char * key, void * def);
 
-#define dictionary_add(dict, key, val) \
-  _dictionary_add (dict, key, (void *) val)
+#define dictionary_add(dict, key, val) _dictionary_add (dict, key, (void *) val)
 
 void
-_dictionary_add (
-  Dictionary * dict,
-  const char * key,
-  void *       value);
+_dictionary_add (Dictionary * dict, const char * key, void * value);
 
 void
 dictionary_free (Dictionary * self);

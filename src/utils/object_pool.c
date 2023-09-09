@@ -37,8 +37,7 @@ object_pool_new (
 
   self->free_func = free_func;
   self->max_objects = max_objects;
-  self->obj_available =
-    object_new_n ((size_t) max_objects, void *);
+  self->obj_available = object_new_n ((size_t) max_objects, void *);
 
   for (int i = 0; i < max_objects; i++)
     {

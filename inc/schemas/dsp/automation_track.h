@@ -57,33 +57,27 @@ typedef struct AutomationTrack_v1
   AutomationMode_v1 automation_mode;
 } AutomationTrack_v1;
 
-static const cyaml_schema_field_t
-  automation_track_fields_schema_v1[] = {
-    YAML_FIELD_INT (AutomationTrack_v1, schema_version),
-    YAML_FIELD_INT (AutomationTrack_v1, index),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      AutomationTrack_v1,
-      port_id,
-      port_identifier_fields_schema_v1),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      AutomationTrack_v1,
-      regions,
-      region_schema_v1),
-    YAML_FIELD_INT (AutomationTrack_v1, created),
-    YAML_FIELD_ENUM (
-      AutomationTrack_v1,
-      automation_mode,
-      automation_mode_strings_v1),
-    YAML_FIELD_INT (AutomationTrack_v1, visible),
-    YAML_FIELD_FLOAT (AutomationTrack_v1, height),
+static const cyaml_schema_field_t automation_track_fields_schema_v1[] = {
+  YAML_FIELD_INT (AutomationTrack_v1, schema_version),
+  YAML_FIELD_INT (AutomationTrack_v1, index),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    AutomationTrack_v1,
+    port_id,
+    port_identifier_fields_schema_v1),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    AutomationTrack_v1,
+    regions,
+    region_schema_v1),
+  YAML_FIELD_INT (AutomationTrack_v1, created),
+  YAML_FIELD_ENUM (AutomationTrack_v1, automation_mode, automation_mode_strings_v1),
+  YAML_FIELD_INT (AutomationTrack_v1, visible),
+  YAML_FIELD_FLOAT (AutomationTrack_v1, height),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t automation_track_schema_v1 = {
-  YAML_VALUE_PTR (
-    AutomationTrack_v1,
-    automation_track_fields_schema_v1),
+  YAML_VALUE_PTR (AutomationTrack_v1, automation_track_fields_schema_v1),
 };
 
 AutomationTrack *

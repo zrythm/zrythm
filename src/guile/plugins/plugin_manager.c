@@ -34,14 +34,12 @@ SCM_DEFINE (
   "Returns the PluginDescriptor matching the given URI.")
 #define FUNC_NAME s_
 {
-  PluginManager * pm =
-    (PluginManager *) scm_to_pointer (plugin_manager);
+  PluginManager * pm = (PluginManager *) scm_to_pointer (plugin_manager);
 
   g_return_val_if_fail (pm, SCM_BOOL_F);
 
   const PluginDescriptor * descr =
-    plugin_manager_find_plugin_from_uri (
-      pm, scm_to_locale_string (uri));
+    plugin_manager_find_plugin_from_uri (pm, scm_to_locale_string (uri));
 
   if (descr)
     {
@@ -64,8 +62,7 @@ SCM_DEFINE (
   "Scans the system for plugins.")
 #define FUNC_NAME s_
 {
-  PluginManager * pm =
-    (PluginManager *) scm_to_pointer (plugin_manager);
+  PluginManager * pm = (PluginManager *) scm_to_pointer (plugin_manager);
 
   plugin_manager_scan_plugins (pm, 1.0, NULL);
 
@@ -81,13 +78,11 @@ init_module (void * data)
 #endif
 
   scm_c_export (
-    "plugin-manager-find-plugin-from-uri",
-    "plugin-manager-scan-plugins", NULL);
+    "plugin-manager-find-plugin-from-uri", "plugin-manager-scan-plugins", NULL);
 }
 
 void
 guile_plugins_plugin_manager_define_module (void)
 {
-  scm_c_define_module (
-    "plugins plugin-manager", init_module, NULL);
+  scm_c_define_module ("plugins plugin-manager", init_module, NULL);
 }

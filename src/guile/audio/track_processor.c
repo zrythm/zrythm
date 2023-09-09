@@ -34,8 +34,7 @@ SCM_DEFINE (
   "Returns the stereo in ports instance of the track processor.")
 #define FUNC_NAME s_
 {
-  TrackProcessor * tp =
-    (TrackProcessor *) scm_to_pointer (track_processor);
+  TrackProcessor * tp = (TrackProcessor *) scm_to_pointer (track_processor);
 
   return scm_from_pointer (tp->stereo_in, NULL);
 }
@@ -54,6 +53,5 @@ init_module (void * data)
 void
 guile_audio_track_processor_define_module (void)
 {
-  scm_c_define_module (
-    "audio track-processor", init_module, NULL);
+  scm_c_define_module ("audio track-processor", init_module, NULL);
 }

@@ -27,8 +27,7 @@ SCM_DEFINE (
      be automatically reclaimed when it becomes
      inaccessible, and its members will be traced
      by the garbage collector.  */
-  Position * pos = (Position *) scm_gc_malloc (
-    sizeof (Position), "position");
+  Position * pos = (Position *) scm_gc_malloc (sizeof (Position), "position");
 
   position_init (pos);
   position_add_bars (pos, scm_to_int (bars) - 1);

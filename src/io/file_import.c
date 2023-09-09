@@ -53,9 +53,7 @@ file_import_info_free (FileImportInfo * self)
  * Returns a new FileImport instance.
  */
 FileImport *
-file_import_new (
-  const char *           filepath,
-  const FileImportInfo * import_nfo)
+file_import_new (const char * filepath, const FileImportInfo * import_nfo)
 {
   g_return_val_if_fail (filepath, NULL);
 
@@ -77,8 +75,7 @@ file_import_thread_func (
   FileImport * self = Z_FILE_IMPORT (task_data);
 
   TrackType       track_type = 0;
-  SupportedFile * file =
-    supported_file_new_from_path (self->filepath);
+  SupportedFile * file = supported_file_new_from_path (self->filepath);
   if (
     supported_file_type_is_supported (file->type)
     && supported_file_type_is_audio (file->type))
@@ -91,12 +88,10 @@ file_import_thread_func (
     }
   else
     {
-      char * descr =
-        supported_file_type_get_description (file->type);
+      char *   descr = supported_file_type_get_description (file->type);
       GError * err = NULL;
       g_set_error (
-        &err, Z_IO_FILE_IMPORT_ERROR,
-        Z_IO_FILE_IMPORT_ERROR_FAILED,
+        &err, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
         _ ("Unsupported file type %s"), descr);
       g_free (descr);
       supported_file_free (file);
@@ -108,15 +103,12 @@ file_import_thread_func (
   int num_nonempty_midi_tracks = 0;
   if (track_type == TRACK_TYPE_MIDI)
     {
-      num_nonempty_midi_tracks =
-        midi_file_get_num_tracks (self->filepath, true);
+      num_nonempty_midi_tracks = midi_file_get_num_tracks (self->filepath, true);
       if (num_nonempty_midi_tracks == 0)
         {
           g_task_return_new_error (
-            task, Z_IO_FILE_IMPORT_ERROR,
-            Z_IO_FILE_IMPORT_ERROR_FAILED,
-            _ ("The MIDI file at %s contains no data"),
-            self->filepath);
+            task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
+            _ ("The MIDI file at %s contains no data"), self->filepath);
           return;
         }
     }
@@ -133,8 +125,7 @@ file_import_thread_func (
           if (num_nonempty_midi_tracks > 1)
             {
               g_task_return_new_error (
-                task, Z_IO_FILE_IMPORT_ERROR,
-                Z_IO_FILE_IMPORT_ERROR_FAILED,
+                task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
                 _ ("This MIDI file contains %d "
                    "tracks. It cannot be dropped "
                    "into an existing track"),
@@ -148,8 +139,7 @@ file_import_thread_func (
       if (!track)
         {
           g_task_return_new_error (
-            task, Z_IO_FILE_IMPORT_ERROR,
-            Z_IO_FILE_IMPORT_ERROR_FAILED,
+            task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
             _ ("Failed to get track from hash %u"),
             self->import_info->track_name_hash);
           return;
@@ -159,22 +149,16 @@ file_import_thread_func (
   int lane_pos =
     self->import_info->lane >= 0
       ? self->import_info->lane
-      : (
-        !track || track->num_lanes == 1
-          ? 0
-          : track->num_lanes - 2);
-  int idx_in_lane =
-    track ? track->lanes[lane_pos]->num_regions : 0;
+      : (!track || track->num_lanes == 1 ? 0 : track->num_lanes - 2);
+  int idx_in_lane = track ? track->lanes[lane_pos]->num_regions : 0;
   switch (track_type)
     {
     case TRACK_TYPE_AUDIO:
       {
         GError *  err = NULL;
         ZRegion * region = audio_region_new (
-          -1, self->filepath, true, NULL, 0, NULL, 0, 0,
-          &self->import_info->pos,
-          self->import_info->track_name_hash, lane_pos,
-          idx_in_lane, &err);
+          -1, self->filepath, true, NULL, 0, NULL, 0, 0, &self->import_info->pos,
+          self->import_info->track_name_hash, lane_pos, idx_in_lane, &err);
         if (!region)
           {
             /*g_ptr_array_unref (regions);*/
@@ -189,14 +173,12 @@ file_import_thread_func (
         {
           ZRegion * region = midi_region_new_from_midi_file (
             &self->import_info->pos, self->filepath,
-            self->import_info->track_name_hash, lane_pos,
-            idx_in_lane, i);
+            self->import_info->track_name_hash, lane_pos, idx_in_lane, i);
           if (!region)
             {
               /*g_ptr_array_unref (regions);*/
               g_task_return_new_error (
-                task, Z_IO_FILE_IMPORT_ERROR,
-                Z_IO_FILE_IMPORT_ERROR_FAILED,
+                task, Z_IO_FILE_IMPORT_ERROR, Z_IO_FILE_IMPORT_ERROR_FAILED,
                 _ ("Failed to create a MIDI region for file %s"),
                 self->filepath);
               return;
@@ -238,11 +220,8 @@ file_import_async (
   GAsyncReadyCallback callback,
   gpointer            callback_data)
 {
-  g_message (
-    "Starting an async file import operation for: %s",
-    self->filepath);
-  GTask * task =
-    g_task_new (owner, cancellable, callback, callback_data);
+  g_message ("Starting an async file import operation for: %s", self->filepath);
+  GTask * task = g_task_new (owner, cancellable, callback, callback_data);
 
   if (owner)
     {
@@ -259,9 +238,7 @@ file_import_async (
 GPtrArray *
 file_import_sync (FileImport * self, GError ** error)
 {
-  g_message (
-    "Starting a sync file import operation for: %s",
-    self->filepath);
+  g_message ("Starting a sync file import operation for: %s", self->filepath);
   GTask * task = g_task_new (NULL, NULL, NULL, NULL);
 
   g_task_set_return_on_cancel (task, false);
@@ -270,8 +247,7 @@ file_import_sync (FileImport * self, GError ** error)
   g_task_set_task_data (task, self, NULL);
   g_task_run_in_thread_sync (task, file_import_thread_func);
   g_return_val_if_fail (g_task_get_completed (task), NULL);
-  GPtrArray * regions =
-    file_import_finish (self, G_ASYNC_RESULT (task), error);
+  GPtrArray * regions = file_import_finish (self, G_ASYNC_RESULT (task), error);
   g_object_unref (task);
   return regions;
 }
@@ -285,16 +261,11 @@ file_import_sync (FileImport * self, GError ** error)
  *   responsible for freeing the pointer array and the regions.
  */
 GPtrArray *
-file_import_finish (
-  FileImport *   self,
-  GAsyncResult * result,
-  GError **      error)
+file_import_finish (FileImport * self, GAsyncResult * result, GError ** error)
 {
   g_debug ("file_import_finish (FileImport %p)", self);
-  g_return_val_if_fail (
-    g_task_is_valid (result, self->owner), NULL);
-  GPtrArray * regions_array =
-    g_task_propagate_pointer ((GTask *) result, error);
+  g_return_val_if_fail (g_task_is_valid (result, self->owner), NULL);
+  GPtrArray * regions_array = g_task_propagate_pointer ((GTask *) result, error);
   if (regions_array)
     {
       /* ownership is transferred to caller */
@@ -323,10 +294,8 @@ file_import_finalize (GObject * obj)
   g_debug ("finalizing file import instance %p...", self);
 
   g_free_and_null (self->filepath);
-  object_free_w_func_and_null (
-    file_import_info_free, self->import_info);
-  object_free_w_func_and_null (
-    g_ptr_array_unref, self->regions);
+  object_free_w_func_and_null (file_import_info_free, self->import_info);
+  object_free_w_func_and_null (g_ptr_array_unref, self->regions);
 
   G_OBJECT_CLASS (file_import_parent_class)->finalize (obj);
 }
@@ -343,6 +312,6 @@ file_import_class_init (FileImportClass * klass)
 static void
 file_import_init (FileImport * self)
 {
-  self->regions = g_ptr_array_new_with_free_func (
-    (GDestroyNotify) arranger_object_free);
+  self->regions =
+    g_ptr_array_new_with_free_func ((GDestroyNotify) arranger_object_free);
 }

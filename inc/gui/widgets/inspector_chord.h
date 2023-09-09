@@ -22,8 +22,7 @@
 
 #include <gtk/gtk.h>
 
-#define INSPECTOR_CHORD_WIDGET_TYPE \
-  (inspector_chord_widget_get_type ())
+#define INSPECTOR_CHORD_WIDGET_TYPE (inspector_chord_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   InspectorChordWidget,
   inspector_chord_widget,

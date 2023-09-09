@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define FOLDER_CHANNEL_WIDGET_TYPE \
-  (folder_channel_widget_get_type ())
+#define FOLDER_CHANNEL_WIDGET_TYPE (folder_channel_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   FolderChannelWidget,
   folder_channel_widget,
@@ -21,11 +20,11 @@ G_DECLARE_FINAL_TYPE (
   FOLDER_CHANNEL_WIDGET,
   GtkWidget)
 
-typedef struct _ColorAreaWidget ColorAreaWidget;
-typedef struct Track            Track;
+typedef struct _ColorAreaWidget         ColorAreaWidget;
+typedef struct Track                    Track;
 typedef struct _FolderChannelSlotWidget FolderChannelSlotWidget;
-typedef struct _EditableLabelWidget EditableLabelWidget;
-typedef struct _FaderButtonsWidget  FaderButtonsWidget;
+typedef struct _EditableLabelWidget     EditableLabelWidget;
+typedef struct _FaderButtonsWidget      FaderButtonsWidget;
 
 /**
  * @addtogroup widgets

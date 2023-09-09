@@ -32,12 +32,7 @@
 #define RW_PX_TO_HIDE_BEATS 40.0
 
 #define RULER_WIDGET_TYPE (ruler_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  RulerWidget,
-  ruler_widget,
-  Z,
-  RULER_WIDGET,
-  GtkWidget)
+G_DECLARE_FINAL_TYPE (RulerWidget, ruler_widget, Z, RULER_WIDGET, GtkWidget)
 
 /**
  * @addtogroup widgets
@@ -205,9 +200,7 @@ typedef struct _RulerWidget
  * @return Whether the zoom level was set.
  */
 bool
-ruler_widget_set_zoom_level (
-  RulerWidget * self,
-  double        zoom_level);
+ruler_widget_set_zoom_level (RulerWidget * self, double zoom_level);
 
 /**
  * Returns the beat interval for drawing vertical
@@ -257,10 +250,7 @@ ruler_widget_px_to_pos (
   bool          has_padding);
 
 int
-ruler_widget_pos_to_px (
-  RulerWidget * self,
-  Position *    pos,
-  int           use_padding);
+ruler_widget_pos_to_px (RulerWidget * self, Position * pos, int use_padding);
 
 /**
  * Gets the pointer to the EditorSettings associated with the
@@ -273,9 +263,7 @@ ruler_widget_get_editor_settings (RulerWidget * self);
  * Fills in the visible rectangle.
  */
 void
-ruler_widget_get_visible_rect (
-  RulerWidget *  self,
-  GdkRectangle * rect);
+ruler_widget_get_visible_rect (RulerWidget * self, GdkRectangle * rect);
 
 /**
  * Returns the playhead's x coordinate in absolute
@@ -285,9 +273,7 @@ ruler_widget_get_visible_rect (
  *   loops are applied.
  */
 int
-ruler_widget_get_playhead_px (
-  RulerWidget * self,
-  bool          after_loops);
+ruler_widget_get_playhead_px (RulerWidget * self, bool after_loops);
 
 void
 ruler_widget_refresh (RulerWidget * self);

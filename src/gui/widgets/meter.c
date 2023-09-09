@@ -33,28 +33,23 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     value_px = 0;
 
   /* draw filled in bar */
-  float width_without_padding =
-    (float) (width - self->padding * 2);
+  float width_without_padding = (float) (width - self->padding * 2);
 
   GdkRGBA     bar_color = { 0, 0, 0, 1 };
   float       intensity = meter_val;
   const float intensity_inv = 1.f - intensity;
   bar_color.red =
-    intensity_inv * self->end_color.red
-    + intensity * self->start_color.red;
+    intensity_inv * self->end_color.red + intensity * self->start_color.red;
   bar_color.green =
-    intensity_inv * self->end_color.green
-    + intensity * self->start_color.green;
+    intensity_inv * self->end_color.green + intensity * self->start_color.green;
   bar_color.blue =
-    intensity_inv * self->end_color.blue
-    + intensity * self->start_color.blue;
+    intensity_inv * self->end_color.blue + intensity * self->start_color.blue;
 
-  graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
-    0.f, 0.f, (float) width, (float) height);
+  graphene_rect_t graphene_rect =
+    GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
 
   GdkRGBA color4;
-  color_morph (
-    &UI_COLORS->bright_green, &bar_color, 0.5f, &color4);
+  color_morph (&UI_COLORS->bright_green, &bar_color, 0.5f, &color4);
   color4.alpha = 1.f;
 
   /* use gradient */
@@ -79,18 +74,15 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   gtk_snapshot_append_linear_gradient (
     snapshot,
     &GRAPHENE_RECT_INIT (
-      x, (float) height - value_px, x + width_without_padding,
-      value_px),
+      x, (float) height - value_px, x + width_without_padding, value_px),
     &GRAPHENE_POINT_INIT (0.f, (float) width),
-    &GRAPHENE_POINT_INIT (
-      0, (float) height - value_px_for_gradient),
-    stops, G_N_ELEMENTS (stops));
+    &GRAPHENE_POINT_INIT (0, (float) height - value_px_for_gradient), stops,
+    G_N_ELEMENTS (stops));
 
   /* draw meter line */
   gtk_snapshot_append_color (
     snapshot, &Z_GDK_RGBA_INIT (0.4f, 0.1f, 0.05f, 1),
-    &GRAPHENE_RECT_INIT (
-      x, (float) height - value_px, width_without_padding, 1));
+    &GRAPHENE_RECT_INIT (x, (float) height - value_px, width_without_padding, 1));
 
   /* draw peak */
   float   peak_amp = math_get_amp_val_from_fader (peak);
@@ -114,8 +106,7 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   float peak_px = (float) peak * (float) height;
   gtk_snapshot_append_color (
     snapshot, &color,
-    &GRAPHENE_RECT_INIT (
-      x, (float) height - peak_px, width_without_padding, 2));
+    &GRAPHENE_RECT_INIT (x, (float) height - peak_px, width_without_padding, 2));
 
   self->last_meter_val = self->meter_val;
   self->last_meter_peak = self->meter_peak;
@@ -130,8 +121,7 @@ meter_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     border_color, border_color, border_color, border_color
   };
   GskRoundedRect rounded_rect;
-  gsk_rounded_rect_init_from_rect (
-    &rounded_rect, &graphene_rect, 0);
+  gsk_rounded_rect_init_from_rect (&rounded_rect, &graphene_rect, 0);
   gtk_snapshot_append_border (
     snapshot, &rounded_rect, border_widths, border_colors);
 }
@@ -153,19 +143,14 @@ on_crossing (GtkWidget * widget, GdkEvent * event)
 }
 
 static gboolean
-tick_cb (
-  GtkWidget *     widget,
-  GdkFrameClock * frame_clock,
-  MeterWidget *   self)
+tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, MeterWidget * self)
 {
   if (
-    gtk_widget_get_mapped (GTK_WIDGET (self))
-    && AUDIO_ENGINE->activated
+    gtk_widget_get_mapped (GTK_WIDGET (self)) && AUDIO_ENGINE->activated
     && engine_get_run (AUDIO_ENGINE))
     {
       meter_get_value (
-        self->meter, AUDIO_VALUE_FADER, &self->meter_val,
-        &self->meter_peak);
+        self->meter, AUDIO_VALUE_FADER, &self->meter_val, &self->meter_peak);
     }
   else
     {
@@ -174,8 +159,7 @@ tick_cb (
 
   if (
     !math_floats_equal (self->meter_val, self->last_meter_val)
-    || !math_floats_equal (
-      self->meter_peak, self->last_meter_peak))
+    || !math_floats_equal (self->meter_peak, self->last_meter_peak))
     {
       gtk_widget_queue_draw (widget);
     }
@@ -276,8 +260,7 @@ finalize (MeterWidget * self)
 {
   object_free_w_func_and_null (meter_free, self->meter);
 
-  G_OBJECT_CLASS (meter_widget_parent_class)
-    ->finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (meter_widget_parent_class)->finalize (G_OBJECT (self));
 }
 
 static void
@@ -286,9 +269,9 @@ meter_widget_init (MeterWidget * self)
   self->start_color = UI_COLORS->z_yellow;
   self->end_color = UI_COLORS->bright_green;
   gtk_accessible_update_property (
-    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_VALUE_MAX,
-    2.0, GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, 0.0,
-    GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, 1.0, -1);
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_VALUE_MAX, 2.0,
+    GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, 0.0, GTK_ACCESSIBLE_PROPERTY_VALUE_NOW,
+    1.0, -1);
 }
 
 static void
@@ -297,8 +280,7 @@ meter_widget_class_init (MeterWidgetClass * _klass)
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
   wklass->snapshot = meter_snapshot;
   gtk_widget_class_set_css_name (wklass, "meter");
-  gtk_widget_class_set_accessible_role (
-    wklass, GTK_ACCESSIBLE_ROLE_METER);
+  gtk_widget_class_set_accessible_role (wklass, GTK_ACCESSIBLE_ROLE_METER);
 
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;

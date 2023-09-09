@@ -28,8 +28,7 @@
 
 #include <gtk/gtk.h>
 
-#define CC_BINDINGS_TREE_WIDGET_TYPE \
-  (cc_bindings_tree_widget_get_type ())
+#define CC_BINDINGS_TREE_WIDGET_TYPE (cc_bindings_tree_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   CcBindingsTreeWidget,
   cc_bindings_tree_widget,

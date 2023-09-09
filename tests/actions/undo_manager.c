@@ -25,19 +25,17 @@ perform_create_region_action (void)
   position_set_to_bar (&p2, 2);
   int       track_pos = TRACKLIST->num_tracks - 1;
   Track *   track = TRACKLIST->tracks[track_pos];
-  ZRegion * r = automation_region_new (
-    &p1, &p2, track_get_name_hash (track), 0, 0);
+  ZRegion * r =
+    automation_region_new (&p1, &p2, track_get_name_hash (track), 0, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   track = TRACKLIST->tracks[track_pos];
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (track);
+  AutomationTracklist * atl = track_get_automation_tracklist (track);
   g_return_if_fail (atl);
   AutomationTrack * at = atl->ats[0];
-  bool              success = track_add_region (
-    track, r, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
+  bool              success =
+    track_add_region (track, r, at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
-  arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
     (ArrangerSelections *) TL_SELECTIONS, NULL);
 }
@@ -47,13 +45,11 @@ test_perform_many_actions (void)
 {
   test_helper_zrythm_init ();
 
-  for (int i = 0;
-       !undo_stack_is_full (UNDO_MANAGER->undo_stack); i++)
+  for (int i = 0; !undo_stack_is_full (UNDO_MANAGER->undo_stack); i++)
     {
       if (i % 2 == 0)
         {
-          track_create_empty_with_action (
-            TRACK_TYPE_AUDIO_BUS, NULL);
+          track_create_empty_with_action (TRACK_TYPE_AUDIO_BUS, NULL);
         }
       else if (i % 13 == 0)
         {
@@ -72,10 +68,11 @@ test_perform_many_actions (void)
   perform_create_region_action ();
   perform_create_region_action ();
 
-  for (int i = 0;
-       !undo_stack_is_full (UNDO_MANAGER->redo_stack)
-       || undo_stack_is_empty (UNDO_MANAGER->redo_stack);
-       i++)
+  for (
+    int i = 0;
+    !undo_stack_is_full (UNDO_MANAGER->redo_stack)
+    || undo_stack_is_empty (UNDO_MANAGER->redo_stack);
+    i++)
     {
       if (undo_stack_is_empty (UNDO_MANAGER->redo_stack))
         {
@@ -108,51 +105,35 @@ test_multi_actions (void)
   const int num_tracks_at_start = TRACKLIST->num_tracks;
   for (int i = 0; i < max_actions; i++)
     {
-      track_create_empty_with_action (
-        TRACK_TYPE_AUDIO_BUS, NULL);
+      track_create_empty_with_action (TRACK_TYPE_AUDIO_BUS, NULL);
       if (i == 2)
         {
-          UndoableAction * ua =
-            undo_manager_get_last_action (UNDO_MANAGER);
+          UndoableAction * ua = undo_manager_get_last_action (UNDO_MANAGER);
           ua->num_actions = max_actions;
         }
     }
 
-  g_assert_cmpint (
-    TRACKLIST->num_tracks, ==,
-    num_tracks_at_start + max_actions);
-  g_assert_cmpint (
-    UNDO_MANAGER->undo_stack->stack->top, ==, max_actions - 1);
-  g_assert_cmpint (
-    UNDO_MANAGER->redo_stack->stack->top, ==, -1);
+  g_assert_cmpint (TRACKLIST->num_tracks, ==, num_tracks_at_start + max_actions);
+  g_assert_cmpint (UNDO_MANAGER->undo_stack->stack->top, ==, max_actions - 1);
+  g_assert_cmpint (UNDO_MANAGER->redo_stack->stack->top, ==, -1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
 
-  g_assert_cmpint (
-    TRACKLIST->num_tracks, ==, num_tracks_at_start);
-  g_assert_cmpint (
-    UNDO_MANAGER->undo_stack->stack->top, ==, -1);
-  g_assert_cmpint (
-    UNDO_MANAGER->redo_stack->stack->top, ==, max_actions - 1);
+  g_assert_cmpint (TRACKLIST->num_tracks, ==, num_tracks_at_start);
+  g_assert_cmpint (UNDO_MANAGER->undo_stack->stack->top, ==, -1);
+  g_assert_cmpint (UNDO_MANAGER->redo_stack->stack->top, ==, max_actions - 1);
 
   undo_manager_redo (UNDO_MANAGER, NULL);
 
-  g_assert_cmpint (
-    TRACKLIST->num_tracks, ==,
-    num_tracks_at_start + max_actions);
-  g_assert_cmpint (
-    UNDO_MANAGER->undo_stack->stack->top, ==, max_actions - 1);
-  g_assert_cmpint (
-    UNDO_MANAGER->redo_stack->stack->top, ==, -1);
+  g_assert_cmpint (TRACKLIST->num_tracks, ==, num_tracks_at_start + max_actions);
+  g_assert_cmpint (UNDO_MANAGER->undo_stack->stack->top, ==, max_actions - 1);
+  g_assert_cmpint (UNDO_MANAGER->redo_stack->stack->top, ==, -1);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
 
-  g_assert_cmpint (
-    TRACKLIST->num_tracks, ==, num_tracks_at_start);
-  g_assert_cmpint (
-    UNDO_MANAGER->undo_stack->stack->top, ==, -1);
-  g_assert_cmpint (
-    UNDO_MANAGER->redo_stack->stack->top, ==, max_actions - 1);
+  g_assert_cmpint (TRACKLIST->num_tracks, ==, num_tracks_at_start);
+  g_assert_cmpint (UNDO_MANAGER->undo_stack->stack->top, ==, -1);
+  g_assert_cmpint (UNDO_MANAGER->redo_stack->stack->top, ==, max_actions - 1);
 
   test_helper_zrythm_cleanup ();
 }
@@ -165,8 +146,7 @@ test_fill_stack (void)
   int max_len = UNDO_MANAGER->undo_stack->stack->max_length;
   for (int i = 0; i < max_len + 8; i++)
     {
-      track_create_empty_with_action (
-        TRACK_TYPE_AUDIO_BUS, NULL);
+      track_create_empty_with_action (TRACK_TYPE_AUDIO_BUS, NULL);
     }
 
   test_project_save_and_reload ();
@@ -185,11 +165,8 @@ main (int argc, char * argv[])
     TEST_PREFIX "test perform many actions",
     (GTestFunc) test_perform_many_actions);
   g_test_add_func (
-    TEST_PREFIX "test multi actions",
-    (GTestFunc) test_multi_actions);
-  g_test_add_func (
-    TEST_PREFIX "test fill stack",
-    (GTestFunc) test_fill_stack);
+    TEST_PREFIX "test multi actions", (GTestFunc) test_multi_actions);
+  g_test_add_func (TEST_PREFIX "test fill stack", (GTestFunc) test_fill_stack);
 
   return g_test_run ();
 }

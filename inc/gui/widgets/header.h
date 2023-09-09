@@ -10,12 +10,7 @@
 #include <gtk/gtk.h>
 
 #define HEADER_WIDGET_TYPE (header_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  HeaderWidget,
-  header_widget,
-  Z,
-  HEADER_WIDGET,
-  GtkWidget)
+G_DECLARE_FINAL_TYPE (HeaderWidget, header_widget, Z, HEADER_WIDGET, GtkWidget)
 
 /**
  * \file
@@ -64,8 +59,6 @@ void
 header_widget_setup (HeaderWidget * self, const char * title);
 
 void
-header_widget_set_subtitle (
-  HeaderWidget * self,
-  const char *   subtitle);
+header_widget_set_subtitle (HeaderWidget * self, const char * subtitle);
 
 #endif

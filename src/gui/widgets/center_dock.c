@@ -16,15 +16,10 @@
 
 #include <adwaita.h>
 
-G_DEFINE_TYPE (
-  CenterDockWidget,
-  center_dock_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (CenterDockWidget, center_dock_widget, GTK_TYPE_WIDGET)
 
 static bool
-on_center_dock_mapped (
-  GtkWidget *        widget,
-  CenterDockWidget * self)
+on_center_dock_mapped (GtkWidget * widget, CenterDockWidget * self)
 {
   if (self->first_draw)
     {
@@ -45,8 +40,7 @@ center_dock_widget_setup (CenterDockWidget * self)
   main_notebook_widget_setup (self->main_notebook);
 
   g_signal_connect (
-    G_OBJECT (self), "map",
-    G_CALLBACK (on_center_dock_mapped), self);
+    G_OBJECT (self), "map", G_CALLBACK (on_center_dock_mapped), self);
 }
 
 /**
@@ -70,8 +64,7 @@ dispose (CenterDockWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->dock));
 
-  G_OBJECT_CLASS (center_dock_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (center_dock_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
@@ -97,8 +90,7 @@ center_dock_widget_class_init (CenterDockWidgetClass * _klass)
   gtk_widget_class_set_css_name (klass, "center-dock");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, CenterDockWidget, x)
+  gtk_widget_class_bind_template_child (klass, CenterDockWidget, x)
 
   BIND_CHILD (dock);
   BIND_CHILD (main_notebook);
@@ -108,8 +100,7 @@ center_dock_widget_class_init (CenterDockWidgetClass * _klass)
 
 #undef BIND_CHILD
 
-  gtk_widget_class_set_layout_manager_type (
-    klass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (klass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;

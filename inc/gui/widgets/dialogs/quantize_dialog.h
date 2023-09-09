@@ -28,8 +28,7 @@
 
 #include <gtk/gtk.h>
 
-#define QUANTIZE_DIALOG_WIDGET_TYPE \
-  (quantize_dialog_widget_get_type ())
+#define QUANTIZE_DIALOG_WIDGET_TYPE (quantize_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   QuantizeDialogWidget,
   quantize_dialog_widget,

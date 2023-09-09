@@ -39,10 +39,7 @@ engine_jack_rescan_ports (AudioEngine * self);
  * @return Whether successful.
  */
 bool
-engine_jack_reconnect_monitor (
-  AudioEngine * self,
-  bool          left,
-  GError **     error);
+engine_jack_reconnect_monitor (AudioEngine * self, bool left, GError ** error);
 
 void
 engine_jack_handle_position_change (AudioEngine * self);
@@ -54,14 +51,10 @@ void
 engine_jack_handle_stop (AudioEngine * self);
 
 void
-engine_jack_handle_buf_size_change (
-  AudioEngine * self,
-  uint32_t      frames);
+engine_jack_handle_buf_size_change (AudioEngine * self, uint32_t frames);
 
 void
-engine_jack_handle_sample_rate_change (
-  AudioEngine * self,
-  uint32_t      samplerate);
+engine_jack_handle_sample_rate_change (AudioEngine * self, uint32_t samplerate);
 
 /**
  * Prepares for processing.
@@ -83,9 +76,7 @@ engine_jack_set_transport_type (
  * Fills the external out bufs.
  */
 void
-engine_jack_fill_out_bufs (
-  AudioEngine *   self,
-  const nframes_t nframes);
+engine_jack_fill_out_bufs (AudioEngine * self, const nframes_t nframes);
 
 /**
  * Sets up the MIDI engine to use jack.
@@ -107,9 +98,7 @@ engine_jack_setup (AudioEngine * self);
  * status in \p msg.
  */
 void
-engine_jack_get_error_message (
-  jack_status_t status,
-  char *        msg);
+engine_jack_get_error_message (jack_status_t status, char * msg);
 
 void
 engine_jack_tear_down (AudioEngine * self);
@@ -126,9 +115,7 @@ engine_jack_get_jack_type (PortType type);
 
 /** Jack buffer size callback. */
 int
-engine_jack_buffer_size_cb (
-  uint32_t      nframes,
-  AudioEngine * self);
+engine_jack_buffer_size_cb (uint32_t nframes, AudioEngine * self);
 
 /**
  * Returns if this is a pipewire session.

@@ -54,8 +54,7 @@ ui_set_cursor_from_icon_name (
 
       UiCursor * cursor = &UI_CACHES->cursors[i];
       if (
-        string_is_equal (name, cursor->name)
-        && cursor->offset_x == offset_x
+        string_is_equal (name, cursor->name) && cursor->offset_x == offset_x
         && cursor->offset_y == offset_y)
         {
           gtk_widget_set_cursor (widget, cursor->cursor);
@@ -92,24 +91,20 @@ ui_set_cursor_from_icon_name (
   cairo_surface_write_to_png (
     surface, "/tmp/test.png");
 #endif
-  GdkTexture * texture =
-    z_gdk_texture_new_from_icon_name (name, 18, 18, 1);
+  GdkTexture * texture = z_gdk_texture_new_from_icon_name (name, 18, 18, 1);
   if (!texture || !GDK_IS_TEXTURE (texture))
     {
       g_warning ("no texture for %s", name);
       return;
     }
-  int adjusted_offset_x =
-    MIN (offset_x, gdk_texture_get_width (texture) - 1);
-  int adjusted_offset_y =
-    MIN (offset_y, gdk_texture_get_height (texture) - 1);
+  int adjusted_offset_x = MIN (offset_x, gdk_texture_get_width (texture) - 1);
+  int adjusted_offset_y = MIN (offset_y, gdk_texture_get_height (texture) - 1);
   GdkCursor * gdk_cursor = gdk_cursor_new_from_texture (
     texture, adjusted_offset_x, adjusted_offset_y, NULL);
   g_object_unref (texture);
 
   /* add the cursor to the caches */
-  UiCursor * cursor =
-    &UI_CACHES->cursors[UI_CACHES->num_cursors++];
+  UiCursor * cursor = &UI_CACHES->cursors[UI_CACHES->num_cursors++];
   strcpy (cursor->name, name);
   cursor->cursor = gdk_cursor;
   cursor->offset_x = offset_x;
@@ -131,8 +126,7 @@ ui_set_cursor_from_name (GtkWidget * widget, const char * name)
 void
 ui_set_pointer_cursor (GtkWidget * widget)
 {
-  ui_set_cursor_from_icon_name (
-    GTK_WIDGET (widget), "edit-select", 3, 1);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "edit-select", 3, 1);
 }
 
 /**
@@ -151,8 +145,7 @@ ui_show_message_full (
 
 #define UI_MESSAGE_BUF_SZ 2000
   char * buf = object_new_n (UI_MESSAGE_BUF_SZ, char);
-  int    printed =
-    vsnprintf (buf, UI_MESSAGE_BUF_SZ, format, args);
+  int    printed = vsnprintf (buf, UI_MESSAGE_BUF_SZ, format, args);
   if (printed == -1)
     {
       g_warning ("vsnprintf failed");
@@ -160,8 +153,7 @@ ui_show_message_full (
       return;
     }
   g_return_if_fail (printed < UI_MESSAGE_BUF_SZ);
-  buf =
-    g_realloc_n (buf, (size_t) (printed + 1), sizeof (char));
+  buf = g_realloc_n (buf, (size_t) (printed + 1), sizeof (char));
 
   /* log the message anyway */
   g_message ("%s: %s", title, buf);
@@ -169,25 +161,21 @@ ui_show_message_full (
   /* if have UI, also show a message dialog */
   if (ZRYTHM_HAVE_UI)
     {
-      GtkWidget * dialog =
-        adw_message_dialog_new (parent_window, title, buf);
+      GtkWidget * dialog = adw_message_dialog_new (parent_window, title, buf);
       adw_message_dialog_add_responses (
         ADW_MESSAGE_DIALOG (dialog), "ok", _ ("_OK"), NULL);
       adw_message_dialog_set_default_response (
         ADW_MESSAGE_DIALOG (dialog), "ok");
-      adw_message_dialog_set_close_response (
-        ADW_MESSAGE_DIALOG (dialog), "ok");
+      adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "ok");
       gtk_window_set_icon_name (GTK_WINDOW (dialog), "zrythm");
       if (parent_window)
         {
-          gtk_window_set_transient_for (
-            GTK_WINDOW (dialog), parent_window);
+          gtk_window_set_transient_for (GTK_WINDOW (dialog), parent_window);
           gtk_window_set_modal (GTK_WINDOW (dialog), true);
         }
       gtk_window_present (GTK_WINDOW (dialog));
       g_signal_connect (
-        dialog, "response", G_CALLBACK (gtk_window_destroy),
-        NULL);
+        dialog, "response", G_CALLBACK (gtk_window_destroy), NULL);
     }
 
   free (buf);
@@ -202,15 +190,11 @@ ui_show_message_full (
  * @param type Type to look for.
  */
 GtkWidget *
-ui_get_hit_child (
-  GtkWidget * parent,
-  double      x,
-  double      y,
-  GType       type)
+ui_get_hit_child (GtkWidget * parent, double x, double y, GType type)
 {
-  for (GtkWidget * child = gtk_widget_get_first_child (parent);
-       child != NULL;
-       child = gtk_widget_get_next_sibling (child))
+  for (
+    GtkWidget * child = gtk_widget_get_first_child (parent); child != NULL;
+    child = gtk_widget_get_next_sibling (child))
     {
       if (!gtk_widget_get_visible (child))
         continue;
@@ -224,9 +208,7 @@ ui_get_hit_child (
       /* if hit */
       int width = gtk_widget_get_width (GTK_WIDGET (child));
       int height = gtk_widget_get_height (GTK_WIDGET (child));
-      if (
-        wpt.x >= 0 && wpt.x <= width && wpt.y >= 0
-        && wpt.y <= height)
+      if (wpt.x >= 0 && wpt.x <= width && wpt.y >= 0 && wpt.y <= height)
         {
           /* if type matches */
           if (G_TYPE_CHECK_INSTANCE_TYPE (child, type))
@@ -240,11 +222,7 @@ ui_get_hit_child (
 }
 
 NONNULL static void
-px_to_pos (
-  double        px,
-  Position *    pos,
-  bool          use_padding,
-  RulerWidget * ruler)
+px_to_pos (double px, Position * pos, bool use_padding, RulerWidget * ruler)
 {
   if (use_padding)
     {
@@ -272,10 +250,7 @@ px_to_pos (
  *   padding.
  */
 void
-ui_px_to_pos_timeline (
-  double     px,
-  Position * pos,
-  bool       has_padding)
+ui_px_to_pos_timeline (double px, Position * pos, bool has_padding)
 {
   if (!MAIN_WINDOW || !MW_RULER)
     return;
@@ -300,8 +275,7 @@ ui_px_to_pos_editor (double px, Position * pos, bool has_padding)
   if (!MAIN_WINDOW || !EDITOR_RULER)
     return;
 
-  px_to_pos (
-    px, pos, has_padding, Z_RULER_WIDGET (EDITOR_RULER));
+  px_to_pos (px, pos, has_padding, Z_RULER_WIDGET (EDITOR_RULER));
 }
 
 PURE NONNULL static inline int
@@ -325,8 +299,7 @@ ui_pos_to_px_timeline (Position * pos, int use_padding)
   if (!MAIN_WINDOW || !MW_RULER)
     return 0;
 
-  return pos_to_px (
-    pos, use_padding, (RulerWidget *) (MW_RULER));
+  return pos_to_px (pos, use_padding, (RulerWidget *) (MW_RULER));
 }
 
 /**
@@ -339,8 +312,7 @@ ui_pos_to_px_editor (Position * pos, bool use_padding)
   if (!MAIN_WINDOW || !EDITOR_RULER)
     return 0;
 
-  return pos_to_px (
-    pos, use_padding, Z_RULER_WIDGET (EDITOR_RULER));
+  return pos_to_px (pos, use_padding, Z_RULER_WIDGET (EDITOR_RULER));
 }
 
 /**
@@ -378,8 +350,7 @@ ui_px_to_frames_timeline (double px, int has_padding)
   if (!MAIN_WINDOW || !MW_RULER)
     return 0;
 
-  return px_to_frames (
-    px, has_padding, Z_RULER_WIDGET (MW_RULER));
+  return px_to_frames (px, has_padding, Z_RULER_WIDGET (MW_RULER));
 }
 
 /**
@@ -396,8 +367,7 @@ ui_px_to_frames_editor (double px, int has_padding)
   if (!MAIN_WINDOW || !EDITOR_RULER)
     return 0;
 
-  return px_to_frames (
-    px, has_padding, Z_RULER_WIDGET (EDITOR_RULER));
+  return px_to_frames (px, has_padding, Z_RULER_WIDGET (EDITOR_RULER));
 }
 
 /**
@@ -433,8 +403,7 @@ ui_is_point_in_rect_hit (
 
   /* if hit */
   if (
-    (!check_x
-     || (x >= -x_padding && x <= rect->width + x_padding))
+    (!check_x || (x >= -x_padding && x <= rect->width + x_padding))
     && (!check_y || (y >= -y_padding && y <= rect->height + y_padding)))
     {
       return true;
@@ -482,8 +451,7 @@ ui_is_child_hit (
   int width = gtk_widget_get_width (GTK_WIDGET (child));
   int height = gtk_widget_get_height (GTK_WIDGET (child));
   if (
-    (!check_x
-     || (wpt.x >= -x_padding && wpt.x <= width + x_padding))
+    (!check_x || (wpt.x >= -x_padding && wpt.x <= width + x_padding))
     && (!check_y || (wpt.y >= -y_padding && wpt.y <= height + y_padding)))
     {
       return 1;
@@ -516,8 +484,7 @@ void
 ui_show_notification (const char * msg)
 {
   AdwToast * toast = adw_toast_new (msg);
-  adw_toast_overlay_add_toast (
-    MAIN_WINDOW->toast_overlay, toast);
+  adw_toast_overlay_add_toast (MAIN_WINDOW->toast_overlay, toast);
 #if 0
   gtk_label_set_text (MAIN_WINDOW->notification_label,
                       msg);
@@ -551,8 +518,8 @@ void
 ui_rgb_to_hex (double red, double green, double blue, char * buf)
 {
   sprintf (
-    buf, "#%hhx%hhx%hhx", (char) (red * 255.0),
-    (char) (green * 255.0), (char) (blue * 255.0));
+    buf, "#%hhx%hhx%hhx", (char) (red * 255.0), (char) (green * 255.0),
+    (char) (blue * 255.0));
 }
 
 void
@@ -572,8 +539,7 @@ ui_gdk_rgba_to_hex (GdkRGBA * color, char * buf)
   GtkListStore * store; \
   gint           i; \
 \
-  store = gtk_list_store_new ( \
-    3, G_TYPE_INT, G_TYPE_STRING, G_TYPE_STRING); \
+  store = gtk_list_store_new (3, G_TYPE_INT, G_TYPE_STRING, G_TYPE_STRING); \
 \
   int num_elements = G_N_ELEMENTS (values); \
   for (i = 0; i < num_elements; i++) \
@@ -582,8 +548,8 @@ ui_gdk_rgba_to_hex (GdkRGBA * color, char * buf)
       char id[40]; \
       sprintf (id, "%d", values[i]); \
       gtk_list_store_set ( \
-        store, &iter, VALUE_COL, values[i], TEXT_COL, \
-        labels[i], ID_COL, id, -1); \
+        store, &iter, VALUE_COL, values[i], TEXT_COL, labels[i], ID_COL, id, \
+        -1); \
     } \
 \
   return GTK_TREE_MODEL (store);
@@ -651,19 +617,14 @@ static GtkTreeModel *
 ui_create_buffer_size_model (void)
 {
   const int values[NUM_AUDIO_ENGINE_BUFFER_SIZES] = {
-    AUDIO_ENGINE_BUFFER_SIZE_16,
-    AUDIO_ENGINE_BUFFER_SIZE_32,
-    AUDIO_ENGINE_BUFFER_SIZE_64,
-    AUDIO_ENGINE_BUFFER_SIZE_128,
-    AUDIO_ENGINE_BUFFER_SIZE_256,
-    AUDIO_ENGINE_BUFFER_SIZE_512,
-    AUDIO_ENGINE_BUFFER_SIZE_1024,
-    AUDIO_ENGINE_BUFFER_SIZE_2048,
+    AUDIO_ENGINE_BUFFER_SIZE_16,   AUDIO_ENGINE_BUFFER_SIZE_32,
+    AUDIO_ENGINE_BUFFER_SIZE_64,   AUDIO_ENGINE_BUFFER_SIZE_128,
+    AUDIO_ENGINE_BUFFER_SIZE_256,  AUDIO_ENGINE_BUFFER_SIZE_512,
+    AUDIO_ENGINE_BUFFER_SIZE_1024, AUDIO_ENGINE_BUFFER_SIZE_2048,
     AUDIO_ENGINE_BUFFER_SIZE_4096,
   };
   const gchar * labels[NUM_AUDIO_ENGINE_BUFFER_SIZES] = {
-    "16",  "32",   "64",   "128",  "256",
-    "512", "1024", "2048", "4096",
+    "16", "32", "64", "128", "256", "512", "1024", "2048", "4096",
   };
 
   CREATE_SIMPLE_MODEL_BOILERPLATE;
@@ -681,16 +642,12 @@ ui_setup_language_combo_row (AdwComboRow * combo_row)
     localization_get_language_strings_w_codes ();
   for (size_t i = 0; i < NUM_LL_LANGUAGES; i++)
     {
-      gtk_string_list_append (
-        string_list, lang_strings_w_codes[i]);
+      gtk_string_list_append (string_list, lang_strings_w_codes[i]);
     }
-  adw_combo_row_set_model (
-    combo_row, G_LIST_MODEL (string_list));
+  adw_combo_row_set_model (combo_row, G_LIST_MODEL (string_list));
 
-  int active_lang =
-    g_settings_get_enum (S_P_UI_GENERAL, "language");
-  adw_combo_row_set_selected (
-    combo_row, (unsigned int) active_lang);
+  int active_lang = g_settings_get_enum (S_P_UI_GENERAL, "language");
+  adw_combo_row_set_selected (combo_row, (unsigned int) active_lang);
 }
 
 static void
@@ -700,14 +657,11 @@ on_audio_backend_selected_item_changed (
   gpointer     user_data)
 {
   AdwComboRow *     combo_row = ADW_COMBO_ROW (gobject);
-  GtkStringObject * selected_item = GTK_STRING_OBJECT (
-    adw_combo_row_get_selected_item (combo_row));
-  const char * str =
-    gtk_string_object_get_string (selected_item);
-  AudioBackend backend =
-    engine_audio_backend_from_string (str);
-  g_settings_set_enum (
-    S_P_GENERAL_ENGINE, "audio-backend", backend);
+  GtkStringObject * selected_item =
+    GTK_STRING_OBJECT (adw_combo_row_get_selected_item (combo_row));
+  const char * str = gtk_string_object_get_string (selected_item);
+  AudioBackend backend = engine_audio_backend_from_string (str);
+  g_settings_set_enum (S_P_GENERAL_ENGINE, "audio-backend", backend);
 }
 
 /**
@@ -779,18 +733,13 @@ ui_gen_audio_backends_combo_row (bool with_signal)
     NULL,
   };
   GtkStringList * string_list = gtk_string_list_new (labels);
-  AdwComboRow *   combo_row =
-    ADW_COMBO_ROW (adw_combo_row_new ());
-  adw_combo_row_set_model (
-    combo_row, G_LIST_MODEL (string_list));
+  AdwComboRow *   combo_row = ADW_COMBO_ROW (adw_combo_row_new ());
+  adw_combo_row_set_model (combo_row, G_LIST_MODEL (string_list));
 
-  int selected =
-    g_settings_get_enum (S_P_GENERAL_ENGINE, "audio-backend");
+  int selected = g_settings_get_enum (S_P_GENERAL_ENGINE, "audio-backend");
   for (size_t i = 0; i < G_N_ELEMENTS (labels); i++)
     {
-      if (string_is_equal (
-            engine_audio_backend_to_string (selected),
-            labels[i]))
+      if (string_is_equal (engine_audio_backend_to_string (selected), labels[i]))
         {
           adw_combo_row_set_selected (combo_row, i);
           break;
@@ -801,8 +750,7 @@ ui_gen_audio_backends_combo_row (bool with_signal)
     {
       g_signal_connect (
         G_OBJECT (combo_row), "notify::selected-item",
-        G_CALLBACK (on_audio_backend_selected_item_changed),
-        NULL);
+        G_CALLBACK (on_audio_backend_selected_item_changed), NULL);
     }
 
   return combo_row;
@@ -815,13 +763,11 @@ on_midi_backend_selected_item_changed (
   gpointer     user_data)
 {
   AdwComboRow *     combo_row = ADW_COMBO_ROW (gobject);
-  GtkStringObject * selected_item = GTK_STRING_OBJECT (
-    adw_combo_row_get_selected_item (combo_row));
-  const char * str =
-    gtk_string_object_get_string (selected_item);
-  MidiBackend backend = engine_midi_backend_from_string (str);
-  g_settings_set_enum (
-    S_P_GENERAL_ENGINE, "midi-backend", backend);
+  GtkStringObject * selected_item =
+    GTK_STRING_OBJECT (adw_combo_row_get_selected_item (combo_row));
+  const char * str = gtk_string_object_get_string (selected_item);
+  MidiBackend  backend = engine_midi_backend_from_string (str);
+  g_settings_set_enum (S_P_GENERAL_ENGINE, "midi-backend", backend);
 }
 
 /**
@@ -864,18 +810,13 @@ ui_gen_midi_backends_combo_row (bool with_signal)
     NULL,
   };
   GtkStringList * string_list = gtk_string_list_new (labels);
-  AdwComboRow *   combo_row =
-    ADW_COMBO_ROW (adw_combo_row_new ());
-  adw_combo_row_set_model (
-    combo_row, G_LIST_MODEL (string_list));
+  AdwComboRow *   combo_row = ADW_COMBO_ROW (adw_combo_row_new ());
+  adw_combo_row_set_model (combo_row, G_LIST_MODEL (string_list));
 
-  int selected =
-    g_settings_get_enum (S_P_GENERAL_ENGINE, "midi-backend");
+  int selected = g_settings_get_enum (S_P_GENERAL_ENGINE, "midi-backend");
   for (size_t i = 0; i < G_N_ELEMENTS (labels); i++)
     {
-      if (string_is_equal (
-            engine_midi_backend_to_string (selected),
-            labels[i]))
+      if (string_is_equal (engine_midi_backend_to_string (selected), labels[i]))
         {
           adw_combo_row_set_selected (combo_row, i);
           break;
@@ -886,8 +827,7 @@ ui_gen_midi_backends_combo_row (bool with_signal)
     {
       g_signal_connect (
         G_OBJECT (combo_row), "notify::selected-item",
-        G_CALLBACK (on_midi_backend_selected_item_changed),
-        NULL);
+        G_CALLBACK (on_midi_backend_selected_item_changed), NULL);
     }
 
   return combo_row;
@@ -899,12 +839,10 @@ ui_gen_midi_backends_combo_row (bool with_signal)
 void
 ui_setup_pan_algo_combo_box (GtkComboBox * cb)
 {
-  z_gtk_configure_simple_combo_box (
-    cb, ui_create_pan_algo_model ());
+  z_gtk_configure_simple_combo_box (cb, ui_create_pan_algo_model ());
 
   gtk_combo_box_set_active (
-    GTK_COMBO_BOX (cb),
-    g_settings_get_enum (S_P_DSP_PAN, "pan-algorithm"));
+    GTK_COMBO_BOX (cb), g_settings_get_enum (S_P_DSP_PAN, "pan-algorithm"));
 }
 
 /**
@@ -913,12 +851,10 @@ ui_setup_pan_algo_combo_box (GtkComboBox * cb)
 void
 ui_setup_pan_law_combo_box (GtkComboBox * cb)
 {
-  z_gtk_configure_simple_combo_box (
-    cb, ui_create_pan_law_model ());
+  z_gtk_configure_simple_combo_box (cb, ui_create_pan_law_model ());
 
   gtk_combo_box_set_active (
-    GTK_COMBO_BOX (cb),
-    g_settings_get_enum (S_P_DSP_PAN, "pan-law"));
+    GTK_COMBO_BOX (cb), g_settings_get_enum (S_P_DSP_PAN, "pan-law"));
 }
 
 /**
@@ -951,7 +887,7 @@ root privileges)\n\
 #endif
 
   const char * code = localization_get_string_code (lang);
-  char * str = g_strdup_printf (_TEMPLATE, code, PROGRAM_NAME);
+  char *       str = g_strdup_printf (_TEMPLATE, code, PROGRAM_NAME);
 
 #undef _TEMPLATE
 
@@ -979,13 +915,10 @@ ui_show_warning_for_tempo_track_experimental_feature (void)
 void
 ui_setup_buffer_size_combo_box (GtkComboBox * cb)
 {
-  z_gtk_configure_simple_combo_box (
-    cb, ui_create_buffer_size_model ());
+  z_gtk_configure_simple_combo_box (cb, ui_create_buffer_size_model ());
 
   char id[40];
-  sprintf (
-    id, "%d",
-    g_settings_get_enum (S_P_GENERAL_ENGINE, "buffer-size"));
+  sprintf (id, "%d", g_settings_get_enum (S_P_GENERAL_ENGINE, "buffer-size"));
   gtk_combo_box_set_active_id (GTK_COMBO_BOX (cb), id);
 }
 
@@ -997,16 +930,15 @@ on_audio_device_selection_changed (
 {
   const char *      settings_key = (const char *) user_data;
   AdwComboRow *     combo_row = ADW_COMBO_ROW (gobject);
-  GtkStringObject * str_obj = GTK_STRING_OBJECT (
-    adw_combo_row_get_selected_item (combo_row));
+  GtkStringObject * str_obj =
+    GTK_STRING_OBJECT (adw_combo_row_get_selected_item (combo_row));
   if (!str_obj)
     {
       g_message ("no selected item");
       return;
     }
   const char * str = gtk_string_object_get_string (str_obj);
-  g_settings_set_string (
-    S_P_GENERAL_ENGINE, settings_key, str);
+  g_settings_set_string (S_P_GENERAL_ENGINE, settings_key, str);
 }
 
 /**
@@ -1021,8 +953,8 @@ ui_setup_audio_device_name_combo_row (
   bool          populate,
   bool          with_signal)
 {
-  AudioBackend backend = (AudioBackend) g_settings_get_enum (
-    S_P_GENERAL_ENGINE, "audio-backend");
+  AudioBackend backend =
+    (AudioBackend) g_settings_get_enum (S_P_GENERAL_ENGINE, "audio-backend");
 
   GtkStringList * string_list = gtk_string_list_new (NULL);
   char *          names[1024];
@@ -1032,8 +964,7 @@ ui_setup_audio_device_name_combo_row (
       if (backend == AUDIO_BACKEND_SDL)
         {
 #ifdef HAVE_SDL
-          engine_sdl_get_device_names (
-            AUDIO_ENGINE, 0, names, &num_names);
+          engine_sdl_get_device_names (AUDIO_ENGINE, 0, names, &num_names);
 #endif
         }
       else if (audio_backend_is_rtaudio (backend))
@@ -1053,8 +984,7 @@ ui_setup_audio_device_name_combo_row (
           gtk_string_list_append (string_list, names[i]);
         }
     }
-  adw_combo_row_set_model (
-    combo_row, G_LIST_MODEL (string_list));
+  adw_combo_row_set_model (combo_row, G_LIST_MODEL (string_list));
   const char * settings_key = NULL;
   if (backend == AUDIO_BACKEND_SDL)
     {
@@ -1071,8 +1001,7 @@ ui_setup_audio_device_name_combo_row (
   char * current_device =
     g_settings_get_string (S_P_GENERAL_ENGINE, settings_key);
   bool found = false;
-  g_message (
-    "current device from settings: %s", current_device);
+  g_message ("current device from settings: %s", current_device);
   for (int i = 0; i < num_names; i++)
     {
       if (string_is_equal (names[i], current_device))
@@ -1094,8 +1023,7 @@ ui_setup_audio_device_name_combo_row (
     {
       g_signal_connect (
         G_OBJECT (combo_row), "notify::selected",
-        G_CALLBACK (on_audio_device_selection_changed),
-        (gpointer) settings_key);
+        G_CALLBACK (on_audio_device_selection_changed), (gpointer) settings_key);
     }
 }
 
@@ -1105,8 +1033,8 @@ ui_setup_audio_device_name_combo_row (
 void
 ui_setup_vst_paths_entry (GtkEntry * entry)
 {
-  char ** paths = g_settings_get_strv (
-    S_P_PLUGINS_PATHS, "vst-search-paths-windows");
+  char ** paths =
+    g_settings_get_strv (S_P_PLUGINS_PATHS, "vst-search-paths-windows");
   g_return_if_fail (paths);
 
   int    path_idx = 0;
@@ -1120,8 +1048,7 @@ ui_setup_vst_paths_entry (GtkEntry * entry)
     }
   delimited_paths[strlen (delimited_paths) - 1] = '\0';
 
-  gtk_editable_set_text (
-    GTK_EDITABLE (entry), delimited_paths);
+  gtk_editable_set_text (GTK_EDITABLE (entry), delimited_paths);
 }
 
 /**
@@ -1131,13 +1058,11 @@ ui_setup_vst_paths_entry (GtkEntry * entry)
 void
 ui_update_vst_paths_from_entry (GtkEntry * entry)
 {
-  const char * txt =
-    gtk_editable_get_text (GTK_EDITABLE (entry));
+  const char * txt = gtk_editable_get_text (GTK_EDITABLE (entry));
   g_return_if_fail (txt);
   char ** paths = g_strsplit (txt, ";", 0);
   g_settings_set_strv (
-    S_P_PLUGINS_PATHS, "vst-search-paths-windows",
-    (const char * const *) paths);
+    S_P_PLUGINS_PATHS, "vst-search-paths-windows", (const char * const *) paths);
   g_free (paths);
 }
 
@@ -1173,14 +1098,10 @@ ui_get_mid_color (
   const GdkRGBA * c2,
   const float     transition)
 {
-  dest->red =
-    c1->red * transition + c2->red * (1.f - transition);
-  dest->green =
-    c1->green * transition + c2->green * (1.f - transition);
-  dest->blue =
-    c1->blue * transition + c2->blue * (1.f - transition);
-  dest->alpha =
-    c1->alpha * transition + c2->alpha * (1.f - transition);
+  dest->red = c1->red * transition + c2->red * (1.f - transition);
+  dest->green = c1->green * transition + c2->green * (1.f - transition);
+  dest->blue = c1->blue * transition + c2->blue * (1.f - transition);
+  dest->alpha = c1->alpha * transition + c2->alpha * (1.f - transition);
 }
 
 /**
@@ -1256,12 +1177,10 @@ ui_get_normalized_draggable_value (
     case UI_DRAG_MODE_CURSOR:
       return CLAMP (cur_px / size, 0.0, 1.0);
     case UI_DRAG_MODE_RELATIVE:
-      return CLAMP (
-        cur_val + (cur_px - last_px) / size, 0.0, 1.0);
+      return CLAMP (cur_val + (cur_px - last_px) / size, 0.0, 1.0);
     case UI_DRAG_MODE_RELATIVE_WITH_MULTIPLIER:
       return CLAMP (
-        cur_val + (multiplier * (cur_px - last_px)) / size,
-        0.0, 1.0);
+        cur_val + (multiplier * (cur_px - last_px)) / size, 0.0, 1.0);
     }
 
   g_return_val_if_reached (0.0);
@@ -1272,8 +1191,8 @@ ui_get_detail_level (void)
 {
   if (!UI_CACHES->detail_level_set)
     {
-      UI_CACHES->detail_level = (UiDetail)
-        g_settings_get_enum (S_P_UI_GENERAL, "graphic-detail");
+      UI_CACHES->detail_level =
+        (UiDetail) g_settings_get_enum (S_P_UI_GENERAL, "graphic-detail");
       UI_CACHES->detail_level_set = true;
     }
 
@@ -1311,8 +1230,7 @@ ui_caches_new (void)
 
   UiColors * colors = &self->colors;
 
-#define SET_COLOR(cname, caps) \
-  gdk_rgba_parse (&colors->cname, UI_COLOR_##caps)
+#define SET_COLOR(cname, caps) gdk_rgba_parse (&colors->cname, UI_COLOR_##caps)
 
   SET_COLOR (bright_green, BRIGHT_GREEN);
   SET_COLOR (darkish_green, DARKISH_GREEN);

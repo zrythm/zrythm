@@ -77,12 +77,10 @@ channel_send_action_clone (const ChannelSendAction * src)
 
   if (src->connections_mgr_before)
     self->connections_mgr_before =
-      port_connections_manager_clone (
-        src->connections_mgr_before);
+      port_connections_manager_clone (src->connections_mgr_before);
   if (src->connections_mgr_after)
     self->connections_mgr_after =
-      port_connections_manager_clone (
-        src->connections_mgr_after);
+      port_connections_manager_clone (src->connections_mgr_after);
 
   return self;
 }
@@ -104,8 +102,8 @@ channel_send_action_perform (
   GError **                      error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    channel_send_action_new, error, send, type, port, stereo,
-    amount, port_connections_mgr, error);
+    channel_send_action_new, error, send, type, port, stereo, amount,
+    port_connections_mgr, error);
 }
 
 static bool
@@ -129,12 +127,10 @@ connect_or_disconnect (
             {
             case TYPE_EVENT:
               {
-                Port * port =
-                  port_find_from_identifier (self->midi_id);
+                Port *   port = port_find_from_identifier (self->midi_id);
                 GError * err = NULL;
-                bool connected = channel_send_connect_midi (
-                  send, port, F_NO_RECALC_GRAPH, F_VALIDATE,
-                  &err);
+                bool     connected = channel_send_connect_midi (
+                  send, port, F_NO_RECALC_GRAPH, F_VALIDATE, &err);
                 if (!connected)
                   {
                     PROPAGATE_PREFIXED_ERROR (
@@ -147,15 +143,12 @@ connect_or_disconnect (
               break;
             case TYPE_AUDIO:
               {
-                Port * l =
-                  port_find_from_identifier (self->l_id);
-                Port * r =
-                  port_find_from_identifier (self->r_id);
+                Port *   l = port_find_from_identifier (self->l_id);
+                Port *   r = port_find_from_identifier (self->r_id);
                 GError * err = NULL;
-                bool connected = channel_send_connect_stereo (
+                bool     connected = channel_send_connect_stereo (
                   send, NULL, l, r,
-                  self->type
-                    == CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN,
+                  self->type == CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN,
                   F_NO_RECALC_GRAPH, F_VALIDATE, &err);
                 if (!connected)
                   {
@@ -185,9 +178,7 @@ connect_or_disconnect (
 }
 
 int
-channel_send_action_do (
-  ChannelSendAction * self,
-  GError **           error)
+channel_send_action_do (ChannelSendAction * self, GError ** error)
 {
   /* get the actual channel send from the project */
   ChannelSend * send = channel_send_find (self->send_before);
@@ -202,13 +193,11 @@ channel_send_action_do (
     case CHANNEL_SEND_ACTION_CONNECT_STEREO:
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
     case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
-      successful =
-        connect_or_disconnect (self, true, true, &err);
+      successful = connect_or_disconnect (self, true, true, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_DISCONNECT:
-      successful =
-        connect_or_disconnect (self, false, true, &err);
+      successful = connect_or_disconnect (self, false, true, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
@@ -224,8 +213,7 @@ channel_send_action_do (
       g_return_val_if_fail (err, -1);
 
       PROPAGATE_PREFIXED_ERROR (
-        error, err,
-        _ ("Failed to perform channel send action: %s"),
+        error, err, _ ("Failed to perform channel send action: %s"),
         err->message);
       return -1;
     }
@@ -233,8 +221,7 @@ channel_send_action_do (
   if (need_restore_and_recalc)
     {
       undoable_action_save_or_load_port_connections (
-        (UndoableAction *) self, true,
-        &self->connections_mgr_before,
+        (UndoableAction *) self, true, &self->connections_mgr_before,
         &self->connections_mgr_after);
 
       router_recalc_graph (ROUTER, F_NOT_SOFT);
@@ -249,9 +236,7 @@ channel_send_action_do (
  * Edits the plugin.
  */
 int
-channel_send_action_undo (
-  ChannelSendAction * self,
-  GError **           error)
+channel_send_action_undo (ChannelSendAction * self, GError ** error)
 {
   /* get the actual channel send from the project */
   ChannelSend * send = channel_send_find (self->send_before);
@@ -265,19 +250,16 @@ channel_send_action_undo (
     case CHANNEL_SEND_ACTION_CONNECT_MIDI:
     case CHANNEL_SEND_ACTION_CONNECT_STEREO:
     case CHANNEL_SEND_ACTION_CONNECT_SIDECHAIN:
-      successful =
-        connect_or_disconnect (self, false, true, &err);
+      successful = connect_or_disconnect (self, false, true, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
     case CHANNEL_SEND_ACTION_DISCONNECT:
-      successful =
-        connect_or_disconnect (self, true, false, &err);
+      successful = connect_or_disconnect (self, true, false, &err);
       need_restore_and_recalc = true;
       break;
     case CHANNEL_SEND_ACTION_CHANGE_AMOUNT:
-      channel_send_set_amount (
-        send, self->send_before->amount->control);
+      channel_send_set_amount (send, self->send_before->amount->control);
       successful = true;
       break;
     default:
@@ -289,8 +271,7 @@ channel_send_action_undo (
       g_return_val_if_fail (err, -1);
 
       PROPAGATE_PREFIXED_ERROR (
-        error, err,
-        _ ("Failed to perform channel send action: %s"),
+        error, err, _ ("Failed to perform channel send action: %s"),
         err->message);
       return -1;
     }
@@ -298,8 +279,7 @@ channel_send_action_undo (
   if (need_restore_and_recalc)
     {
       undoable_action_save_or_load_port_connections (
-        (UndoableAction *) self, false,
-        &self->connections_mgr_before,
+        (UndoableAction *) self, false, &self->connections_mgr_before,
         &self->connections_mgr_after);
 
       router_recalc_graph (ROUTER, F_NOT_SOFT);
@@ -330,27 +310,20 @@ channel_send_action_stringize (ChannelSendAction * self)
     case CHANNEL_SEND_ACTION_CHANGE_PORTS:
       return g_strdup (_ ("Change ports"));
     }
-  g_return_val_if_reached (
-    g_strdup (_ ("Channel send connection")));
+  g_return_val_if_reached (g_strdup (_ ("Channel send connection")));
 }
 
 void
 channel_send_action_free (ChannelSendAction * self)
 {
+  object_free_w_func_and_null (channel_send_free, self->send_before);
+  object_free_w_func_and_null (port_identifier_free, self->l_id);
+  object_free_w_func_and_null (port_identifier_free, self->r_id);
+  object_free_w_func_and_null (port_identifier_free, self->midi_id);
   object_free_w_func_and_null (
-    channel_send_free, self->send_before);
+    port_connections_manager_free, self->connections_mgr_before);
   object_free_w_func_and_null (
-    port_identifier_free, self->l_id);
-  object_free_w_func_and_null (
-    port_identifier_free, self->r_id);
-  object_free_w_func_and_null (
-    port_identifier_free, self->midi_id);
-  object_free_w_func_and_null (
-    port_connections_manager_free,
-    self->connections_mgr_before);
-  object_free_w_func_and_null (
-    port_connections_manager_free,
-    self->connections_mgr_after);
+    port_connections_manager_free, self->connections_mgr_after);
 
   object_zero_and_free (self);
 }

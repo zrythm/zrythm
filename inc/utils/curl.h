@@ -29,10 +29,7 @@
  * @return Newly allocated string or NULL if fail.
  */
 char *
-z_curl_get_page_contents (
-  const char * url,
-  int          timeout,
-  GError **    error);
+z_curl_get_page_contents (const char * url, int timeout, GError ** error);
 
 /**
  * Returns the contents of the page in a newly
@@ -64,9 +61,7 @@ z_curl_post_json_no_auth (
   ...) G_GNUC_NULL_TERMINATED;
 
 char *
-z_curl_get_page_contents_finish (
-  GAsyncResult * res,
-  GError **      error);
+z_curl_get_page_contents_finish (GAsyncResult * res, GError ** error);
 
 void
 z_curl_get_page_contents_async (

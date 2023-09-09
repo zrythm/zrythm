@@ -33,8 +33,7 @@ test_modulator_connection (
   bool         with_carla)
 {
   PluginSetting * setting =
-    test_plugin_manager_get_plugin_setting (
-      pl_bundle, pl_uri, with_carla);
+    test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, with_carla);
   g_return_if_fail (setting);
 
   /* fix the descriptor (for some reason lilv
@@ -45,23 +44,20 @@ test_modulator_connection (
       setting->descr->category = PC_INSTRUMENT;
     }
   g_free (setting->descr->category_str);
-  setting->descr
-    ->category_str = plugin_descriptor_category_to_string (
-    setting->descr->category);
+  setting->descr->category_str =
+    plugin_descriptor_category_to_string (setting->descr->category);
 
   /* create a modulator */
   mixer_selections_action_perform_create (
-    PLUGIN_SLOT_MODULATOR,
-    track_get_name_hash (P_MODULATOR_TRACK), 0, setting, 1,
-    NULL);
+    PLUGIN_SLOT_MODULATOR, track_get_name_hash (P_MODULATOR_TRACK), 0, setting,
+    1, NULL);
   plugin_setting_free (setting);
 
-  ModulatorMacroProcessor * macro =
-    P_MODULATOR_TRACK->modulator_macros[0];
-  Plugin *    pl = P_MODULATOR_TRACK->modulators[0];
-  Port *      pl_cv_port = NULL;
-  Port *      pl_control_port = NULL;
-  GPtrArray * ports = g_ptr_array_new ();
+  ModulatorMacroProcessor * macro = P_MODULATOR_TRACK->modulator_macros[0];
+  Plugin *                  pl = P_MODULATOR_TRACK->modulators[0];
+  Port *                    pl_cv_port = NULL;
+  Port *                    pl_control_port = NULL;
+  GPtrArray *               ports = g_ptr_array_new ();
   plugin_append_ports (pl, ports);
   for (size_t i = 0; i < ports->len; i++)
     {
@@ -74,9 +70,7 @@ test_modulator_connection (
               break;
             }
         }
-      else if (
-        port->id.type == TYPE_CONTROL
-        && port->id.flow == FLOW_INPUT)
+      else if (port->id.type == TYPE_CONTROL && port->id.flow == FLOW_INPUT)
         {
           pl_control_port = port;
           if (pl_cv_port)
@@ -96,13 +90,10 @@ test_modulator_connection (
   LOG->use_structured_for_console = false;
   LOG->min_log_level_for_test_console = G_LOG_LEVEL_WARNING;
   g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
-    "*ports cannot be connected*");
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*ports cannot be connected*");
+  g_test_expect_message (G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*FAILED*");
   g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*FAILED*");
-  g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
-    "*action not performed*");
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*action not performed*");
   /*g_test_expect_message (*/
   /*G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,*/
   /*"*failed to perform action*");*/
@@ -127,8 +118,7 @@ _test_port_connection (
   bool         with_carla)
 {
   PluginSetting * setting =
-    test_plugin_manager_get_plugin_setting (
-      pl_bundle, pl_uri, with_carla);
+    test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, with_carla);
   g_return_if_fail (setting);
 
   /* fix the descriptor (for some reason lilv
@@ -139,38 +129,34 @@ _test_port_connection (
       setting->descr->category = PC_INSTRUMENT;
     }
   g_free (setting->descr->category_str);
-  setting->descr
-    ->category_str = plugin_descriptor_category_to_string (
-    setting->descr->category);
+  setting->descr->category_str =
+    plugin_descriptor_category_to_string (setting->descr->category);
 
   /* create an extra track */
-  Track * target_track = track_create_empty_with_action (
-    TRACK_TYPE_AUDIO_BUS, NULL);
+  Track * target_track =
+    track_create_empty_with_action (TRACK_TYPE_AUDIO_BUS, NULL);
 
   if (is_instrument)
     {
       /* create an instrument track from helm */
       track_create_for_plugin_at_idx_w_action (
-        TRACK_TYPE_INSTRUMENT, setting, TRACKLIST->num_tracks,
-        NULL);
+        TRACK_TYPE_INSTRUMENT, setting, TRACKLIST->num_tracks, NULL);
     }
   else
     {
       /* create an audio fx track and add the
        * plugin */
-      track_create_empty_with_action (
-        TRACK_TYPE_AUDIO_BUS, NULL);
-      Track * last_track = tracklist_get_last_track (
-        TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
+      track_create_empty_with_action (TRACK_TYPE_AUDIO_BUS, NULL);
+      Track * last_track =
+        tracklist_get_last_track (TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
       mixer_selections_action_perform_create (
-        PLUGIN_SLOT_INSERT, track_get_name_hash (last_track),
-        0, setting, 1, NULL);
+        PLUGIN_SLOT_INSERT, track_get_name_hash (last_track), 0, setting, 1,
+        NULL);
     }
 
   plugin_setting_free (setting);
 
-  Track * src_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * src_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
   /* connect a plugin CV out to the track's
    * balance */
@@ -183,8 +169,7 @@ _test_port_connection (
       Port * port = g_ptr_array_index (ports, i);
       if (
         port->id.owner_type == PORT_OWNER_TYPE_PLUGIN
-        && port->id.type == TYPE_CV
-        && port->id.flow == FLOW_OUTPUT)
+        && port->id.type == TYPE_CV && port->id.flow == FLOW_OUTPUT)
         {
           if (src_port1)
             {
@@ -226,8 +211,7 @@ _test_port_connection (
   g_assert_cmpint (dest_port->num_srcs, ==, 0);
   g_assert_cmpint (src_port1->num_dests, ==, 0);
 
-  port_connection_action_perform_connect (
-    &src_port1->id, &dest_port->id, NULL);
+  port_connection_action_perform_connect (&src_port1->id, &dest_port->id, NULL);
 
   g_assert_cmpint (dest_port->num_srcs, ==, 1);
   g_assert_cmpint (src_port1->num_dests, ==, 1);
@@ -242,8 +226,7 @@ _test_port_connection (
   g_assert_cmpint (dest_port->num_srcs, ==, 1);
   g_assert_cmpint (src_port1->num_dests, ==, 1);
 
-  port_connection_action_perform_connect (
-    &src_port2->id, &dest_port->id, NULL);
+  port_connection_action_perform_connect (&src_port2->id, &dest_port->id, NULL);
 
   g_assert_cmpint (dest_port->num_srcs, ==, 2);
   g_assert_cmpint (src_port1->num_dests, ==, 1);
@@ -273,10 +256,8 @@ test_port_connection (void)
 
 #ifdef HAVE_AMS_LFO
 #  ifdef HAVE_CARLA
-  _test_port_connection (
-    AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
-  test_modulator_connection (
-    AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
+  _test_port_connection (AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
+  test_modulator_connection (AMS_LFO_BUNDLE, AMS_LFO_URI, true, false);
 #  endif /* HAVE_CARLA */
 #endif   /* HAVE_AMS_LFO */
 
@@ -293,10 +274,8 @@ test_cv_to_control_connection (void)
     LOWPASS_FILTER_BUNDLE, LOWPASS_FILTER_URI, false, true, 1);
   test_plugin_manager_create_tracks_from_plugin (
     AMS_LFO_BUNDLE, AMS_LFO_URI, false, true, 1);
-  Track * lp_filter_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
-  Track * ams_lfo_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track *  lp_filter_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
+  Track *  ams_lfo_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * lp_filter = lp_filter_track->channel->inserts[0];
   Plugin * ams_lfo = ams_lfo_track->channel->inserts[0];
 
@@ -317,8 +296,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/port_connection/"
 
   g_test_add_func (
-    TEST_PREFIX "test_port_connection",
-    (GTestFunc) test_port_connection);
+    TEST_PREFIX "test_port_connection", (GTestFunc) test_port_connection);
   g_test_add_func (
     TEST_PREFIX "test_cv_to_control_connection",
     (GTestFunc) test_cv_to_control_connection);

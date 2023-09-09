@@ -57,8 +57,8 @@ typedef struct UndoStack
   size_t                   mixer_selections_actions_size;
 
   TracklistSelectionsAction ** tracklist_selections_actions;
-  size_t num_tracklist_selections_actions;
-  size_t tracklist_selections_actions_size;
+  size_t                       num_tracklist_selections_actions;
+  size_t                       tracklist_selections_actions_size;
 
   ChannelSendAction ** channel_send_actions;
   size_t               num_channel_send_actions;
@@ -175,8 +175,7 @@ undo_stack_get_total_cached_actions (UndoStack * self);
 
 #define undo_stack_is_full(x) (stack_is_full ((x)->stack))
 
-#define undo_stack_peek(x) \
-  ((UndoableAction *) stack_peek ((x)->stack))
+#define undo_stack_peek(x) ((UndoableAction *) stack_peek ((x)->stack))
 
 #define undo_stack_peek_last(x) \
   ((UndoableAction *) stack_peek_last ((x)->stack))
@@ -203,9 +202,7 @@ undo_stack_contains_clip (UndoStack * self, AudioClip * clip);
  * action pointer.
  */
 bool
-undo_stack_contains_action (
-  UndoStack *      self,
-  UndoableAction * ua);
+undo_stack_contains_action (UndoStack * self, UndoableAction * ua);
 
 /**
  * Returns the plugins referred to in the undo stack.

@@ -47,29 +47,23 @@ test_vst_instrument_makes_sound (void)
       /* create instrument track */
       test_plugin_manager_create_tracks_from_plugin (
         pl_path, NULL, true, true, 1);
-      Track * track =
-        TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+      Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
       /* create midi note */
       Position pos, end_pos;
       position_init (&pos);
       position_set_to_bar (&end_pos, 3);
-      ZRegion * r = midi_region_new (
-        &pos, &end_pos, track_get_name_hash (track), 0, 0);
+      ZRegion * r =
+        midi_region_new (&pos, &end_pos, track_get_name_hash (track), 0, 0);
       bool success = track_add_region (
-        track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
-        NULL);
+        track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
       g_assert_true (success);
-      MidiNote * mn =
-        midi_note_new (&r->id, &pos, &end_pos, 57, 120);
+      MidiNote * mn = midi_note_new (&r->id, &pos, &end_pos, 57, 120);
       midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
 
-      engine_process (
-        AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-      engine_process (
-        AUDIO_ENGINE, AUDIO_ENGINE->block_length);
-      engine_process (
-        AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+      engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+      engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+      engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
 
       /* bounce */
       ExportSettings * settings = export_settings_new ();
@@ -80,21 +74,17 @@ test_vst_instrument_makes_sound (void)
       settings->mode = EXPORT_MODE_FULL;
 
       EngineState state;
-      GPtrArray * conns =
-        exporter_prepare_tracks_for_export (settings, &state);
+      GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
 
       /* start exporting in a new thread */
       GThread * thread = g_thread_new (
-        "bounce_thread",
-        (GThreadFunc) exporter_generic_export_thread,
-        settings);
+        "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
       g_thread_join (thread);
 
       exporter_post_export (settings, conns, &state);
 
-      g_assert_false (
-        audio_file_is_silent (settings->file_uri));
+      g_assert_false (audio_file_is_silent (settings->file_uri));
 
       export_settings_free (settings);
 
@@ -115,35 +105,28 @@ test_mono_plugin (void)
   test_project_stop_dummy_engine ();
 
   /* create an audio track */
-  char * filepath =
-    g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
-  SupportedFile * file =
-    supported_file_new_from_path (filepath);
+  char *          filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
+  SupportedFile * file = supported_file_new_from_path (filepath);
   track_create_with_action (
-    TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
-  Track * audio_track = tracklist_get_last_track (
-    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
+    TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1, -1, NULL,
+    NULL);
+  Track * audio_track =
+    tracklist_get_last_track (TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
   supported_file_free (file);
 
   /* hard pan right */
   GError *         err = NULL;
-  UndoableAction * ua =
-    tracklist_selections_action_new_edit_single_float (
-      EDIT_TRACK_ACTION_TYPE_PAN, audio_track, 0.5f, 1.f,
-      false, &err);
+  UndoableAction * ua = tracklist_selections_action_new_edit_single_float (
+    EDIT_TRACK_ACTION_TYPE_PAN, audio_track, 0.5f, 1.f, false, &err);
   undo_manager_perform (UNDO_MANAGER, ua, NULL);
 
   /* add a mono insert */
-  PluginSetting * setting =
-    test_plugin_manager_get_plugin_setting (
-      LSP_COMPRESSOR_MONO_BUNDLE, LSP_COMPRESSOR_MONO_URI,
-      true);
+  PluginSetting * setting = test_plugin_manager_get_plugin_setting (
+    LSP_COMPRESSOR_MONO_BUNDLE, LSP_COMPRESSOR_MONO_URI, true);
   g_return_if_fail (setting);
 
   bool ret = mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSERT, track_get_name_hash (audio_track), 0,
-    setting, 1, NULL);
+    PLUGIN_SLOT_INSERT, track_get_name_hash (audio_track), 0, setting, 1, NULL);
   g_assert_true (ret);
 
   Plugin * pl = audio_track->channel->inserts[0];
@@ -162,13 +145,11 @@ test_mono_plugin (void)
   settings->mode = EXPORT_MODE_FULL;
 
   EngineState state;
-  GPtrArray * conns =
-    exporter_prepare_tracks_for_export (settings, &state);
+  GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
 
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
-    "bounce_thread",
-    (GThreadFunc) exporter_generic_export_thread, settings);
+    "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
   g_thread_join (thread);
 
@@ -214,20 +195,17 @@ test_crash_handling (void)
    * process manually */
   test_project_stop_dummy_engine ();
 
-  PluginSetting * setting =
-    test_plugin_manager_get_plugin_setting (
-      SIGABRT_BUNDLE_URI, SIGABRT_URI, true);
+  PluginSetting * setting = test_plugin_manager_get_plugin_setting (
+    SIGABRT_BUNDLE_URI, SIGABRT_URI, true);
   g_return_if_fail (setting);
   setting->bridge_mode = CARLA_BRIDGE_FULL;
 
   /* create a track from the plugin */
   track_create_for_plugin_at_idx_w_action (
-    TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->num_tracks,
-    NULL);
+    TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->num_tracks, NULL);
 
   Plugin * pl =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1]
-      ->channel->inserts[0];
+    TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->channel->inserts[0];
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
   engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
@@ -251,7 +229,7 @@ test_process (void)
   test_plugin_manager_create_tracks_from_plugin (
     TEST_SIGNAL_BUNDLE, TEST_SIGNAL_URI, false, true, 1);
 
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track *  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->inserts[0];
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
@@ -274,8 +252,7 @@ test_process (void)
   time_nfo.local_offset = local_offset;
   time_nfo.nframes = AUDIO_ENGINE->block_length - local_offset;
   carla_native_plugin_process (pl->carla, &time_nfo);
-  for (nframes_t i = local_offset;
-       i < AUDIO_ENGINE->block_length; i++)
+  for (nframes_t i = local_offset; i < AUDIO_ENGINE->block_length; i++)
     {
       g_assert_true (fabsf (out->buf[i]) > 1e-10f);
     }
@@ -294,19 +271,15 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test vst instrument makes sound",
     (GTestFunc) test_vst_instrument_makes_sound);
-  g_test_add_func (
-    TEST_PREFIX "test mono plugin",
-    (GTestFunc) test_mono_plugin);
-  g_test_add_func (
-    TEST_PREFIX "test process", (GTestFunc) test_process);
+  g_test_add_func (TEST_PREFIX "test mono plugin", (GTestFunc) test_mono_plugin);
+  g_test_add_func (TEST_PREFIX "test process", (GTestFunc) test_process);
 #if 0
   g_test_add_func (
     TEST_PREFIX "test has custom UI",
     (GTestFunc) test_has_custom_ui);
 #endif
   g_test_add_func (
-    TEST_PREFIX "test crash handling",
-    (GTestFunc) test_crash_handling);
+    TEST_PREFIX "test crash handling", (GTestFunc) test_crash_handling);
 
   return g_test_run ();
 }

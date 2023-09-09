@@ -31,10 +31,9 @@ typedef enum TransportActionType
 } TransportActionType;
 
 static const cyaml_strval_t transport_action_type_strings[] = {
-  {"BPM change",            TRANSPORT_ACTION_BPM_CHANGE      },
-  { "beats per bar change",
-   TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE                     },
-  { "beat unit change",     TRANSPORT_ACTION_BEAT_UNIT_CHANGE},
+  {"BPM change",            TRANSPORT_ACTION_BPM_CHANGE          },
+  { "beats per bar change", TRANSPORT_ACTION_BEATS_PER_BAR_CHANGE},
+  { "beat unit change",     TRANSPORT_ACTION_BEAT_UNIT_CHANGE    },
 };
 
 /**
@@ -66,10 +65,7 @@ static const cyaml_schema_field_t transport_action_fields_schema[] = {
     TransportAction,
     parent_instance,
     undoable_action_fields_schema),
-  YAML_FIELD_ENUM (
-    TransportAction,
-    type,
-    transport_action_type_strings),
+  YAML_FIELD_ENUM (TransportAction, type, transport_action_type_strings),
   YAML_FIELD_FLOAT (TransportAction, bpm_before),
   YAML_FIELD_FLOAT (TransportAction, bpm_after),
   YAML_FIELD_INT (TransportAction, int_before),
@@ -80,9 +76,7 @@ static const cyaml_schema_field_t transport_action_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t transport_action_schema = {
-  YAML_VALUE_PTR (
-    TransportAction,
-    transport_action_fields_schema),
+  YAML_VALUE_PTR (TransportAction, transport_action_fields_schema),
 };
 
 void

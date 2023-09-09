@@ -65,8 +65,7 @@ io_file_strip_ext (const char * filename);
 NONNULL const char *
 io_file_get_ext (const char * file);
 
-#define io_path_get_basename(filename) \
-  g_path_get_basename (filename)
+#define io_path_get_basename(filename) g_path_get_basename (filename)
 
 /**
  * Strips path from given filename.
@@ -87,8 +86,7 @@ NONNULL gint64
 io_file_get_last_modified_datetime (const char * filename);
 
 NONNULL char *
-io_file_get_last_modified_datetime_as_str (
-  const char * filename);
+io_file_get_last_modified_datetime_as_str (const char * filename);
 
 /**
  * Removes the given file.

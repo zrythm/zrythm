@@ -84,10 +84,7 @@ typedef struct GraphThread
  * @param is_main 1 if main thread.
  */
 GraphThread *
-graph_thread_new (
-  const int  id,
-  const bool is_main,
-  Graph *    graph);
+graph_thread_new (const int id, const bool is_main, Graph * graph);
 
 /**
  * @}

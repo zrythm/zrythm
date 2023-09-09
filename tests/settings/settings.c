@@ -13,8 +13,7 @@ test_append_to_strv (void)
   test_helper_zrythm_init ();
 
   GSettings settings;
-  settings_append_to_strv (
-    &settings, "test-key", "test-val", false);
+  settings_append_to_strv (&settings, "test-key", "test-val", false);
 
   test_helper_zrythm_cleanup ();
 }
@@ -27,8 +26,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/settings/settings/"
 
   g_test_add_func (
-    TEST_PREFIX "test append to strv",
-    (GTestFunc) test_append_to_strv);
+    TEST_PREFIX "test append to strv", (GTestFunc) test_append_to_strv);
 
   return g_test_run ();
 }

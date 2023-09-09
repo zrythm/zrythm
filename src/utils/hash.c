@@ -79,11 +79,9 @@ get_xxh3_64_hash (FILE * stream, char ** hash_str)
   if (hash_str)
     {
       *hash_str = g_strdup_printf (
-        "%x%x%x%x%x%x%x%x", canonical.digest[0],
-        canonical.digest[1], canonical.digest[2],
-        canonical.digest[3], canonical.digest[4],
-        canonical.digest[5], canonical.digest[6],
-        canonical.digest[7]);
+        "%x%x%x%x%x%x%x%x", canonical.digest[0], canonical.digest[1],
+        canonical.digest[2], canonical.digest[3], canonical.digest[4],
+        canonical.digest[5], canonical.digest[6], canonical.digest[7]);
     }
 
   return hash;
@@ -166,8 +164,7 @@ hash_get_for_struct (const void * const obj, size_t size)
   XXH32_state_t * state = XXH32_createState ();
   g_return_val_if_fail (state, 0);
 
-  XXH32_hash_t hash =
-    hash_get_for_struct_full (state, obj, size);
+  XXH32_hash_t hash = hash_get_for_struct_full (state, obj, size);
 
   /* free the state */
   XXH32_freeState (state);

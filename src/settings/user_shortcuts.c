@@ -47,15 +47,12 @@ is_yaml_our_version (const char * yaml)
 {
   bool same_version = false;
   char version_str[120];
-  sprintf (
-    version_str, "schema_version: %d\n",
-    USER_SHORTCUTS_SCHEMA_VERSION);
+  sprintf (version_str, "schema_version: %d\n", USER_SHORTCUTS_SCHEMA_VERSION);
   same_version = g_str_has_prefix (yaml, version_str);
   if (!same_version)
     {
       sprintf (
-        version_str, "---\nschema_version: %d\n",
-        USER_SHORTCUTS_SCHEMA_VERSION);
+        version_str, "---\nschema_version: %d\n", USER_SHORTCUTS_SCHEMA_VERSION);
       same_version = g_str_has_prefix (yaml, version_str);
     }
 
@@ -72,8 +69,7 @@ user_shortcuts_new (void)
   char *   path = get_user_shortcuts_file_path ();
   if (!file_exists (path))
     {
-      g_message (
-        "User shortcuts file at %s does not exist", path);
+      g_message ("User shortcuts file at %s does not exist", path);
 return_new_instance:
       g_free (path);
       UserShortcuts * self = object_new (UserShortcuts);
@@ -104,8 +100,8 @@ return_new_instance:
       goto return_new_instance;
     }
 
-  UserShortcuts * self = (UserShortcuts *) yaml_deserialize (
-    yaml, &user_shortcuts_schema, &err);
+  UserShortcuts * self =
+    (UserShortcuts *) yaml_deserialize (yaml, &user_shortcuts_schema, &err);
   if (!self)
     {
       g_warning (
@@ -156,8 +152,7 @@ user_shortcuts_free (UserShortcuts * self)
 {
   for (int i = 0; i < self->num_shortcuts; i++)
     {
-      object_free_w_func_and_null (
-        user_shortcut_free, self->shortcuts[i]);
+      object_free_w_func_and_null (user_shortcut_free, self->shortcuts[i]);
     }
 
   object_zero_and_free (self);

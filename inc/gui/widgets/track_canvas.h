@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define TRACK_CANVAS_WIDGET_TYPE \
-  (track_canvas_widget_get_type ())
+#define TRACK_CANVAS_WIDGET_TYPE (track_canvas_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TrackCanvasWidget,
   track_canvas_widget,
@@ -48,8 +47,6 @@ typedef struct _TrackCanvasWidget
 } TrackCanvasWidget;
 
 void
-track_canvas_widget_setup (
-  TrackCanvasWidget * self,
-  TrackWidget *       parent);
+track_canvas_widget_setup (TrackCanvasWidget * self, TrackWidget * parent);
 
 #endif

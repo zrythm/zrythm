@@ -40,8 +40,7 @@ typedef struct _TimelineMinimapSelectionWidget
 } TimelineMinimapSelectionWidget;
 
 TimelineMinimapSelectionWidget *
-timeline_minimap_selection_widget_new (
-  TimelineMinimapWidget * parent);
+timeline_minimap_selection_widget_new (TimelineMinimapWidget * parent);
 
 #if 0
 void

@@ -37,15 +37,14 @@ typedef struct EditorSettings
   double hzoom_level;
 } EditorSettings;
 
-static const cyaml_schema_field_t
-  editor_settings_fields_schema[] = {
-    YAML_FIELD_INT (EditorSettings, schema_version),
-    YAML_FIELD_INT (EditorSettings, scroll_start_x),
-    YAML_FIELD_INT (EditorSettings, scroll_start_y),
-    YAML_FIELD_FLOAT (EditorSettings, hzoom_level),
+static const cyaml_schema_field_t editor_settings_fields_schema[] = {
+  YAML_FIELD_INT (EditorSettings, schema_version),
+  YAML_FIELD_INT (EditorSettings, scroll_start_x),
+  YAML_FIELD_INT (EditorSettings, scroll_start_y),
+  YAML_FIELD_FLOAT (EditorSettings, hzoom_level),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t editor_settings_schema = {
   YAML_VALUE_PTR (EditorSettings, editor_settings_fields_schema),
@@ -55,16 +54,10 @@ void
 editor_settings_init (EditorSettings * self);
 
 void
-editor_settings_set_scroll_start_x (
-  EditorSettings * self,
-  int              x,
-  bool             validate);
+editor_settings_set_scroll_start_x (EditorSettings * self, int x, bool validate);
 
 void
-editor_settings_set_scroll_start_y (
-  EditorSettings * self,
-  int              y,
-  bool             validate);
+editor_settings_set_scroll_start_y (EditorSettings * self, int y, bool validate);
 
 /**
  * Appends the given deltas to the scroll x/y values.

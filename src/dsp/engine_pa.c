@@ -73,8 +73,7 @@ open_stream (AudioEngine * self)
       g_message (
         "device %s (%d) found, "
         "max channels (in %d, out %d)",
-        info->name, i, info->maxInputChannels,
-        info->maxOutputChannels);
+        info->name, i, info->maxInputChannels, info->maxOutputChannels);
     }
 
   PaStreamParameters in_param;
@@ -111,9 +110,7 @@ open_stream (AudioEngine * self)
     self);
   if (err != paNoError)
     {
-      g_warning (
-        "error opening Port Audio stream: %s",
-        Pa_GetErrorText (err));
+      g_warning ("error opening Port Audio stream: %s", Pa_GetErrorText (err));
       return NULL;
     }
 
@@ -130,9 +127,7 @@ engine_pa_setup (AudioEngine * self)
   PaError err = Pa_Initialize ();
   if (err != paNoError)
     {
-      g_warning (
-        "error initializing Port Audio: %s",
-        Pa_GetErrorText (err));
+      g_warning ("error initializing Port Audio: %s", Pa_GetErrorText (err));
       return -1;
     }
   else
@@ -145,11 +140,9 @@ engine_pa_setup (AudioEngine * self)
   g_warn_if_fail (TRANSPORT && TRANSPORT->beats_per_bar > 1);
 
   engine_update_frames_per_tick (
-    self, TRANSPORT->beats_per_bar, TRANSPORT->bpm,
-    self->sample_rate, false);
+    self, TRANSPORT->beats_per_bar, TRANSPORT->bpm, self->sample_rate, false);
 
-  self->pa_out_buf =
-    calloc (self->block_length * 2, sizeof (float));
+  self->pa_out_buf = calloc (self->block_length * 2, sizeof (float));
 
   self->pa_stream = open_stream (self);
   g_return_val_if_fail (self->pa_stream, -1);
@@ -158,9 +151,7 @@ engine_pa_setup (AudioEngine * self)
   err = Pa_StartStream (self->pa_stream);
   if (err != paNoError)
     {
-      g_warning (
-        "error starting Port Audio stream: %s",
-        Pa_GetErrorText (err));
+      g_warning ("error starting Port Audio stream: %s", Pa_GetErrorText (err));
       return -1;
     }
   else
@@ -172,17 +163,14 @@ engine_pa_setup (AudioEngine * self)
 }
 
 void
-engine_pa_fill_out_bufs (
-  AudioEngine *   self,
-  const nframes_t nframes)
+engine_pa_fill_out_bufs (AudioEngine * self, const nframes_t nframes)
 {
   for (unsigned int i = 0; i < nframes; i++)
     {
       self->pa_out_buf[i * 2] = self->monitor_out->l->buf[i];
       /*g_message ("%f",*/
       /*engine->pa_out_buf[i]);*/
-      self->pa_out_buf[i * 2 + 1] =
-        self->monitor_out->r->buf[i];
+      self->pa_out_buf[i * 2 + 1] = self->monitor_out->r->buf[i];
     }
 }
 
@@ -202,28 +190,24 @@ engine_pa_test (GtkWindow * win)
   PaError err = Pa_Initialize ();
   if (err != paNoError)
     {
-      msg = g_strdup_printf (
-        _ ("PortAudio Error: %s"), Pa_GetErrorText (err));
+      msg = g_strdup_printf (_ ("PortAudio Error: %s"), Pa_GetErrorText (err));
       ui_show_error_message (win, msg);
       g_free (msg);
       return 1;
     }
 
   PaStream * stream;
-  err = Pa_OpenDefaultStream (
-    &stream, 2, 2, paFloat32, 48000, 512, NULL, NULL);
+  err = Pa_OpenDefaultStream (&stream, 2, 2, paFloat32, 48000, 512, NULL, NULL);
   if (err != paNoError)
     {
-      msg = g_strdup_printf (
-        _ ("PortAudio Error: %s"), Pa_GetErrorText (err));
+      msg = g_strdup_printf (_ ("PortAudio Error: %s"), Pa_GetErrorText (err));
       ui_show_error_message (win, msg);
       g_free (msg);
       return 1;
     }
   else if ((err = Pa_Terminate ()) != paNoError)
     {
-      msg = g_strdup_printf (
-        _ ("PortAudio Error: %s"), Pa_GetErrorText (err));
+      msg = g_strdup_printf (_ ("PortAudio Error: %s"), Pa_GetErrorText (err));
       ui_show_error_message (win, msg);
       g_free (msg);
       return 1;
@@ -239,21 +223,15 @@ engine_pa_tear_down (AudioEngine * engine)
 {
   PaError err = Pa_StopStream (engine->pa_stream);
   if (err != paNoError)
-    g_warning (
-      "error stopping Port Audio stream: %s",
-      Pa_GetErrorText (err));
+    g_warning ("error stopping Port Audio stream: %s", Pa_GetErrorText (err));
 
   err = Pa_CloseStream (engine->pa_stream);
   if (err != paNoError)
-    g_warning (
-      "error closing Port Audio stream: %s",
-      Pa_GetErrorText (err));
+    g_warning ("error closing Port Audio stream: %s", Pa_GetErrorText (err));
 
   err = Pa_Terminate ();
   if (err != paNoError)
-    g_warning (
-      "error terminating Port Audio: %s",
-      Pa_GetErrorText (err));
+    g_warning ("error terminating Port Audio: %s", Pa_GetErrorText (err));
 }
 
 #endif

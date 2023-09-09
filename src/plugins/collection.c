@@ -16,13 +16,12 @@ plugin_collection_init_loaded (PluginCollection * self)
   if (self->descriptors_size == 0)
     {
       self->descriptors_size = 1;
-      self->descriptors = object_new_n (
-        self->descriptors_size, PluginDescriptor *);
+      self->descriptors =
+        object_new_n (self->descriptors_size, PluginDescriptor *);
     }
   for (int i = 0; i < self->num_descriptors; i++)
     {
-      self->descriptors[i]
-        ->category = plugin_descriptor_string_to_category (
+      self->descriptors[i]->category = plugin_descriptor_string_to_category (
         self->descriptors[i]->category_str);
     }
 }
@@ -38,8 +37,7 @@ plugin_collection_new (void)
   self->schema_version = PLUGIN_COLLECTION_SCHEMA_VERSION;
   self->name = g_strdup ("");
   self->descriptors_size = 1;
-  self->descriptors =
-    object_new_n (self->descriptors_size, PluginDescriptor *);
+  self->descriptors = object_new_n (self->descriptors_size, PluginDescriptor *);
 
   return self;
 }
@@ -74,9 +72,7 @@ plugin_collection_get_name (PluginCollection * self)
 }
 
 void
-plugin_collection_set_name (
-  PluginCollection * self,
-  const char *       name)
+plugin_collection_set_name (PluginCollection * self, const char * name)
 {
   self->name = g_strdup (name);
 }
@@ -96,11 +92,9 @@ plugin_collection_contains_descriptor (
 {
   for (int i = 0; i < self->num_descriptors; i++)
     {
-      if ((match_pointer &&
-           descr == self->descriptors[i]) ||
-          (!match_pointer &&
-           plugin_descriptor_is_same_plugin (
-             descr, self->descriptors[i])))
+      if (
+        (match_pointer && descr == self->descriptors[i])
+        || (!match_pointer && plugin_descriptor_is_same_plugin (descr, self->descriptors[i])))
         {
           return true;
         }
@@ -116,14 +110,12 @@ plugin_collection_add_descriptor (
   PluginCollection *       self,
   const PluginDescriptor * descr)
 {
-  if (plugin_collection_contains_descriptor (
-        self, descr, false))
+  if (plugin_collection_contains_descriptor (self, descr, false))
     {
       return;
     }
 
-  PluginDescriptor * new_descr =
-    plugin_descriptor_clone (descr);
+  PluginDescriptor * new_descr = plugin_descriptor_clone (descr);
   if (descr->path)
     {
       GFile * file = g_file_new_for_path (descr->path);
@@ -131,8 +123,8 @@ plugin_collection_add_descriptor (
       g_object_unref (file);
     }
   array_double_size_if_full (
-    self->descriptors, self->num_descriptors,
-    self->descriptors_size, PluginDescriptor *);
+    self->descriptors, self->num_descriptors, self->descriptors_size,
+    PluginDescriptor *);
   self->descriptors[self->num_descriptors++] = new_descr;
 }
 
@@ -165,20 +157,17 @@ plugin_collection_remove_descriptor (
 }
 
 GMenuModel *
-plugin_collection_generate_context_menu (
-  const PluginCollection * self)
+plugin_collection_generate_context_menu (const PluginCollection * self)
 {
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
   menuitem = z_gtk_create_menu_item (
-    _ ("Rename"), "edit-rename",
-    "app.plugin-collection-rename");
+    _ ("Rename"), "edit-rename", "app.plugin-collection-rename");
   g_menu_append_item (menu, menuitem);
 
   menuitem = z_gtk_create_menu_item (
-    _ ("Delete"), "edit-delete",
-    "app.plugin-collection-remove");
+    _ ("Delete"), "edit-delete", "app.plugin-collection-remove");
   g_menu_append_item (menu, menuitem);
 
   return G_MENU_MODEL (menu);
@@ -202,8 +191,7 @@ plugin_collection_free (PluginCollection * self)
 {
   for (int i = 0; i < self->num_descriptors; i++)
     {
-      object_free_w_func_and_null (
-        plugin_descriptor_free, self->descriptors[i]);
+      object_free_w_func_and_null (plugin_descriptor_free, self->descriptors[i]);
     }
   object_zero_and_free (self->descriptors);
 

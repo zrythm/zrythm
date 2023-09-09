@@ -19,13 +19,12 @@
 
 #include <glib/gi18n.h>
 
-typedef struct ArrangerObject        ArrangerObject;
-typedef struct ArrangerSelections    ArrangerSelections;
-typedef struct _ArrangerWidget       ArrangerWidget;
-typedef struct _ArrangerObjectWidget ArrangerObjectWidget;
-typedef struct UndoableAction        UndoableAction;
-typedef enum ArrangerSelectionsActionEditType
-  ArrangerSelectionsActionEditType;
+typedef struct ArrangerObject                 ArrangerObject;
+typedef struct ArrangerSelections             ArrangerSelections;
+typedef struct _ArrangerWidget                ArrangerWidget;
+typedef struct _ArrangerObjectWidget          ArrangerObjectWidget;
+typedef struct UndoableAction                 UndoableAction;
+typedef enum ArrangerSelectionsActionEditType ArrangerSelectionsActionEditType;
 
 /**
  * @addtogroup gui_backend
@@ -38,12 +37,9 @@ typedef enum ArrangerSelectionsActionEditType
 #define ARRANGER_OBJECT_MAGIC 347616554
 #define IS_ARRANGER_OBJECT(tr) \
   (((ArrangerObject *) tr)->magic == ARRANGER_OBJECT_MAGIC \
-   && ((ArrangerObject *) tr)->type \
-        >= ARRANGER_OBJECT_TYPE_REGION \
-   && ((ArrangerObject *) tr)->type \
-        <= ARRANGER_OBJECT_TYPE_VELOCITY)
-#define IS_ARRANGER_OBJECT_AND_NONNULL(x) \
-  (x && IS_ARRANGER_OBJECT (x))
+   && ((ArrangerObject *) tr)->type >= ARRANGER_OBJECT_TYPE_REGION \
+   && ((ArrangerObject *) tr)->type <= ARRANGER_OBJECT_TYPE_VELOCITY)
+#define IS_ARRANGER_OBJECT_AND_NONNULL(x) (x && IS_ARRANGER_OBJECT (x))
 
 /**
  * Flag used in some functions.
@@ -83,16 +79,15 @@ typedef enum ArrangerObjectType
 } ArrangerObjectType;
 
 static const cyaml_strval_t arranger_object_type_strings[] = {
-  {N_ ("None"),              ARRANGER_OBJECT_TYPE_NONE        },
-  { N_ ("All"),              ARRANGER_OBJECT_TYPE_ALL         },
-  { N_ ("Region"),           ARRANGER_OBJECT_TYPE_REGION      },
-  { N_ ("Midi Note"),        ARRANGER_OBJECT_TYPE_MIDI_NOTE   },
-  { N_ ("Chord Object"),     ARRANGER_OBJECT_TYPE_CHORD_OBJECT},
-  { N_ ("Scale Object"),     ARRANGER_OBJECT_TYPE_SCALE_OBJECT},
-  { N_ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER      },
-  { N_ ("Automation Point"),
-   ARRANGER_OBJECT_TYPE_AUTOMATION_POINT                      },
-  { N_ ("Velocity"),         ARRANGER_OBJECT_TYPE_VELOCITY    },
+  {N_ ("None"),              ARRANGER_OBJECT_TYPE_NONE            },
+  { N_ ("All"),              ARRANGER_OBJECT_TYPE_ALL             },
+  { N_ ("Region"),           ARRANGER_OBJECT_TYPE_REGION          },
+  { N_ ("Midi Note"),        ARRANGER_OBJECT_TYPE_MIDI_NOTE       },
+  { N_ ("Chord Object"),     ARRANGER_OBJECT_TYPE_CHORD_OBJECT    },
+  { N_ ("Scale Object"),     ARRANGER_OBJECT_TYPE_SCALE_OBJECT    },
+  { N_ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER          },
+  { N_ ("Automation Point"), ARRANGER_OBJECT_TYPE_AUTOMATION_POINT},
+  { N_ ("Velocity"),         ARRANGER_OBJECT_TYPE_VELOCITY        },
 };
 
 /**
@@ -303,10 +298,7 @@ typedef struct ArrangerObject
 
 static const cyaml_schema_field_t arranger_object_fields_schema[] = {
   YAML_FIELD_INT (ArrangerObject, schema_version),
-  YAML_FIELD_ENUM (
-    ArrangerObject,
-    type,
-    arranger_object_type_strings),
+  YAML_FIELD_ENUM (ArrangerObject, type, arranger_object_type_strings),
   CYAML_FIELD_BITFIELD (
     "flags",
     CYAML_FLAG_DEFAULT,
@@ -315,14 +307,8 @@ static const cyaml_schema_field_t arranger_object_fields_schema[] = {
     arranger_object_flags_bitvals,
     CYAML_ARRAY_LEN (arranger_object_flags_bitvals)),
   YAML_FIELD_INT (ArrangerObject, muted),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ArrangerObject,
-    pos,
-    position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ArrangerObject,
-    end_pos,
-    position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (ArrangerObject, pos, position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (ArrangerObject, end_pos, position_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerObject,
     clip_start_pos,
@@ -331,18 +317,9 @@ static const cyaml_schema_field_t arranger_object_fields_schema[] = {
     ArrangerObject,
     loop_start_pos,
     position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ArrangerObject,
-    loop_end_pos,
-    position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ArrangerObject,
-    fade_in_pos,
-    position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ArrangerObject,
-    fade_out_pos,
-    position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (ArrangerObject, loop_end_pos, position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (ArrangerObject, fade_in_pos, position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (ArrangerObject, fade_out_pos, position_fields_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
     ArrangerObject,
     fade_in_opts,
@@ -379,8 +356,7 @@ static const cyaml_schema_value_t arranger_object_schema = {
    || type == ARRANGER_OBJECT_TYPE_MARKER)
 
 #define arranger_object_type_has_name(type) \
-  (type == ARRANGER_OBJECT_TYPE_REGION \
-   || type == ARRANGER_OBJECT_TYPE_MARKER)
+  (type == ARRANGER_OBJECT_TYPE_REGION || type == ARRANGER_OBJECT_TYPE_MARKER)
 
 /**
  * Returns if the object is allowed to have lanes.
@@ -454,8 +430,7 @@ arranger_object_get_name (const ArrangerObject * self);
  * Must be free'd by caller.
  */
 char *
-arranger_object_gen_human_readable_name (
-  const ArrangerObject * self);
+arranger_object_gen_human_readable_name (const ArrangerObject * self);
 
 /**
  * Generates the escaped name for the object,
@@ -469,9 +444,7 @@ arranger_object_gen_escaped_name (const ArrangerObject * self);
  * src object's values.
  */
 void
-arranger_object_set_to_object (
-  ArrangerObject * dest,
-  ArrangerObject * src);
+arranger_object_set_to_object (ArrangerObject * dest, ArrangerObject * src);
 
 /**
  * Gets the object the ArrangerObjectInfo
@@ -494,8 +467,7 @@ arranger_object_init_loaded (ArrangerObject * self);
  * to the given object type.
  */
 ArrangerSelections *
-arranger_object_get_selections_for_type (
-  ArrangerObjectType type);
+arranger_object_get_selections_for_type (ArrangerObjectType type);
 
 /**
  * Selects the object by adding it to its
@@ -532,9 +504,7 @@ PURE WARN_UNUSED_RESULT bool arranger_object_is_hit (
  * optionally including incomplete ones.
  */
 int
-arranger_object_get_num_loops (
-  ArrangerObject * self,
-  const int        count_incomplete);
+arranger_object_get_num_loops (ArrangerObject * self, const int count_incomplete);
 
 /**
  * Returns if the object is in the selections.
@@ -560,74 +530,55 @@ arranger_object_print (const ArrangerObject * self);
  *   is a region that can have lanes.
  */
 NONNULL bool
-arranger_object_get_muted (
-  ArrangerObject * self,
-  bool             check_parent);
+arranger_object_get_muted (ArrangerObject * self, bool check_parent);
 
 /**
  * Sets the mute status of the object.
  */
 void
-arranger_object_set_muted (
-  ArrangerObject * self,
-  bool             muted,
-  bool             fire_events);
+arranger_object_set_muted (ArrangerObject * self, bool muted, bool fire_events);
 
 /**
  * Getter.
  */
 void
-arranger_object_get_pos (
-  const ArrangerObject * self,
-  Position *             pos);
+arranger_object_get_pos (const ArrangerObject * self, Position * pos);
 
 /**
  * Getter.
  */
 void
-arranger_object_get_end_pos (
-  const ArrangerObject * self,
-  Position *             pos);
+arranger_object_get_end_pos (const ArrangerObject * self, Position * pos);
 
 /**
  * Getter.
  */
 void
-arranger_object_get_clip_start_pos (
-  const ArrangerObject * self,
-  Position *             pos);
+arranger_object_get_clip_start_pos (const ArrangerObject * self, Position * pos);
 
 /**
  * Getter.
  */
 void
-arranger_object_get_loop_start_pos (
-  const ArrangerObject * self,
-  Position *             pos);
+arranger_object_get_loop_start_pos (const ArrangerObject * self, Position * pos);
 
 /**
  * Getter.
  */
 void
-arranger_object_get_loop_end_pos (
-  const ArrangerObject * self,
-  Position *             pos);
+arranger_object_get_loop_end_pos (const ArrangerObject * self, Position * pos);
 
 /**
  * Getter.
  */
 void
-arranger_object_get_fade_in_pos (
-  const ArrangerObject * self,
-  Position *             pos);
+arranger_object_get_fade_in_pos (const ArrangerObject * self, Position * pos);
 
 /**
  * Getter.
  */
 void
-arranger_object_get_fade_out_pos (
-  const ArrangerObject * self,
-  Position *             pos);
+arranger_object_get_fade_out_pos (const ArrangerObject * self, Position * pos);
 
 void
 arranger_object_get_position_from_type (
@@ -655,8 +606,7 @@ arranger_object_edit_finish (
   ArrangerSelectionsActionEditType type);
 
 void
-arranger_object_edit_position_finish (
-  const ArrangerObject * self);
+arranger_object_edit_position_finish (const ArrangerObject * self);
 
 /**
  * The setter is for use in e.g. the digital meters
@@ -664,9 +614,7 @@ arranger_object_edit_position_finish (
  * arranger actions.
  */
 void
-arranger_object_pos_setter (
-  ArrangerObject * self,
-  const Position * pos);
+arranger_object_pos_setter (ArrangerObject * self, const Position * pos);
 
 /**
  * The setter is for use in e.g. the digital meters
@@ -674,9 +622,7 @@ arranger_object_pos_setter (
  * arranger actions.
  */
 void
-arranger_object_end_pos_setter (
-  ArrangerObject * self,
-  const Position * pos);
+arranger_object_end_pos_setter (ArrangerObject * self, const Position * pos);
 
 /**
  * The setter is for use in e.g. the digital meters
@@ -704,9 +650,7 @@ arranger_object_loop_start_pos_setter (
  * arranger actions.
  */
 void
-arranger_object_loop_end_pos_setter (
-  ArrangerObject * self,
-  const Position * pos);
+arranger_object_loop_end_pos_setter (ArrangerObject * self, const Position * pos);
 
 /**
  * Returns if the given Position is valid.
@@ -721,8 +665,7 @@ arranger_object_is_position_valid (
   const Position *             pos,
   ArrangerObjectPositionType   pos_type);
 
-#define arranger_object_validate_pos \
-  arranger_object_is_position_valid
+#define arranger_object_validate_pos arranger_object_is_position_valid
 
 /**
  * Sets the given position on the object, optionally attempting
@@ -752,28 +695,20 @@ arranger_object_stringize_type (ArrangerObjectType type);
  * Copies the identifier from src to dest.
  */
 void
-arranger_object_copy_identifier (
-  ArrangerObject * dest,
-  ArrangerObject * src);
+arranger_object_copy_identifier (ArrangerObject * dest, ArrangerObject * src);
 
 void
-arranger_object_add_linked_region (
-  ArrangerObject * self,
-  ZRegion *        region);
+arranger_object_add_linked_region (ArrangerObject * self, ZRegion * region);
 
 void
-arranger_object_remove_linked_region (
-  ArrangerObject * self,
-  ZRegion *        region);
+arranger_object_remove_linked_region (ArrangerObject * self, ZRegion * region);
 
 /**
  * Moves the object by the given amount of
  * ticks.
  */
 void
-arranger_object_move (
-  ArrangerObject * self,
-  const double     ticks);
+arranger_object_move (ArrangerObject * self, const double ticks);
 
 /**
  * Returns the length of the ArrangerObject (if
@@ -782,11 +717,9 @@ arranger_object_move (
  * (End Position - start Position).
  */
 NONNULL WARN_UNUSED_RESULT static inline double
-arranger_object_get_length_in_ticks (
-  const ArrangerObject * const self)
+arranger_object_get_length_in_ticks (const ArrangerObject * const self)
 {
-  g_return_val_if_fail (
-    arranger_object_type_has_length (self->type), 0);
+  g_return_val_if_fail (arranger_object_type_has_length (self->type), 0);
 
   return self->end_pos.ticks - self->pos.ticks;
 }
@@ -798,11 +731,9 @@ arranger_object_get_length_in_ticks (
  * (End Position - start Position).
  */
 NONNULL WARN_UNUSED_RESULT static inline signed_frame_t
-arranger_object_get_length_in_frames (
-  const ArrangerObject * const self)
+arranger_object_get_length_in_frames (const ArrangerObject * const self)
 {
-  g_return_val_if_fail (
-    arranger_object_type_has_length (self->type), 0);
+  g_return_val_if_fail (arranger_object_type_has_length (self->type), 0);
 
   return self->end_pos.frames - self->pos.frames;
 }
@@ -811,11 +742,9 @@ arranger_object_get_length_in_frames (
  * Returns the length of the loop in ticks.
  */
 NONNULL static inline double
-arranger_object_get_loop_length_in_ticks (
-  const ArrangerObject * const self)
+arranger_object_get_loop_length_in_ticks (const ArrangerObject * const self)
 {
-  g_return_val_if_fail (
-    arranger_object_type_has_length (self->type), 0);
+  g_return_val_if_fail (arranger_object_type_has_length (self->type), 0);
 
   return self->loop_end_pos.ticks - self->loop_start_pos.ticks;
 }
@@ -824,11 +753,9 @@ arranger_object_get_loop_length_in_ticks (
  * Returns the length of the loop in frames.
  */
 NONNULL HOT static inline signed_frame_t
-arranger_object_get_loop_length_in_frames (
-  const ArrangerObject * const self)
+arranger_object_get_loop_length_in_frames (const ArrangerObject * const self)
 {
-  g_return_val_if_fail (
-    arranger_object_type_has_length (self->type), 0);
+  g_return_val_if_fail (arranger_object_type_has_length (self->type), 0);
 
   return self->loop_end_pos.frames - self->loop_start_pos.frames;
 }
@@ -879,23 +806,18 @@ arranger_object_resize (
   GError **                error);
 
 void
-arranger_object_append_children (
-  ArrangerObject * self,
-  GPtrArray *      children);
+arranger_object_append_children (ArrangerObject * self, GPtrArray * children);
 
 /**
  * Adds the given ticks to each included object.
  */
 void
-arranger_object_add_ticks_to_children (
-  ArrangerObject * self,
-  const double     ticks);
+arranger_object_add_ticks_to_children (ArrangerObject * self, const double ticks);
 
 /**
  * Not to be used anywhere besides below.
  */
-#define _ARRANGER_OBJECT_FREE_AND_SET_STRING( \
-  _obj, _val_name, _val_value) \
+#define _ARRANGER_OBJECT_FREE_AND_SET_STRING(_obj, _val_name, _val_value) \
   g_free_and_null (_obj->_val_name); \
   _obj->_val_name = g_strdup (_val_value)
 
@@ -908,12 +830,10 @@ arranger_object_add_ticks_to_children (
  *   the primitive value to.
  * @param val_value The value to store.
  */
-#define arranger_object_set_string( \
-  cc, obj, val_name, val_value) \
+#define arranger_object_set_string(cc, obj, val_name, val_value) \
   { \
     cc * _obj = (cc *) obj; \
-    _ARRANGER_OBJECT_FREE_AND_SET_STRING ( \
-      _obj, val_name, val_value); \
+    _ARRANGER_OBJECT_FREE_AND_SET_STRING (_obj, val_name, val_value); \
   }
 
 /**
@@ -945,9 +865,7 @@ arranger_object_validate (const ArrangerObject * const self);
  * @return True if valid, false otherwise.
  */
 bool
-arranger_object_validate_name (
-  ArrangerObject * self,
-  const char *     name);
+arranger_object_validate_name (ArrangerObject * self, const char * name);
 
 /**
  * Returns the ArrangerObject matching the
@@ -1028,9 +946,7 @@ arranger_object_set_name (
  * Calls arranger_object_set_name() internally.
  */
 void
-arranger_object_set_name_with_action (
-  ArrangerObject * self,
-  const char *     name);
+arranger_object_set_name_with_action (ArrangerObject * self, const char * name);
 
 /**
  * Sets the end position of the ArrangerObject and
@@ -1038,9 +954,7 @@ arranger_object_set_name_with_action (
  * they are at the end.
  */
 void
-arranger_object_set_start_pos_full_size (
-  ArrangerObject * obj,
-  Position *       pos);
+arranger_object_set_start_pos_full_size (ArrangerObject * obj, Position * pos);
 
 /**
  * Sets the end position of the ArrangerObject and
@@ -1048,9 +962,7 @@ arranger_object_set_start_pos_full_size (
  * position.
  */
 void
-arranger_object_set_end_pos_full_size (
-  ArrangerObject * obj,
-  Position *       pos);
+arranger_object_set_end_pos_full_size (ArrangerObject * obj, Position * pos);
 
 /**
  * Appends the ArrangerObject to where it belongs in the
@@ -1076,9 +988,7 @@ WARN_UNUSED_RESULT NONNULL_ARGS (1) bool arranger_object_add_to_project (
  * @return Whether successful.
  */
 WARN_UNUSED_RESULT bool
-arranger_object_insert_to_project (
-  ArrangerObject * obj,
-  GError **        error);
+arranger_object_insert_to_project (ArrangerObject * obj, GError ** error);
 
 /**
  * Removes the object from its parent in the project.
@@ -1109,9 +1019,7 @@ arranger_object_is_renamable (const ArrangerObject * obj);
  * Removes the child from the given object.
  */
 void
-arranger_object_remove_child (
-  ArrangerObject * self,
-  ArrangerObject * child);
+arranger_object_remove_child (ArrangerObject * self, ArrangerObject * child);
 
 /**
  * @}

@@ -70,14 +70,11 @@ channel_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       gtk_snapshot_append_color (
         snapshot,
         &Z_GDK_RGBA_INIT (
-          track->color.red, track->color.green,
-          track->color.blue, 0.15f),
-        &GRAPHENE_RECT_INIT (
-          0.f, 0.f, (float) width, (float) height));
+          track->color.red, track->color.green, track->color.blue, 0.15f),
+        &GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
     }
 
-  GTK_WIDGET_CLASS (channel_widget_parent_class)
-    ->snapshot (widget, snapshot);
+  GTK_WIDGET_CLASS (channel_widget_parent_class)->snapshot (widget, snapshot);
 }
 
 /**
@@ -108,17 +105,13 @@ channel_widget_tick_cb (
 
   if (track_is_selected (track))
     {
-      gtk_widget_add_css_class (
-        GTK_WIDGET (self->name), "caption-heading");
-      gtk_widget_remove_css_class (
-        GTK_WIDGET (self->name), "caption");
+      gtk_widget_add_css_class (GTK_WIDGET (self->name), "caption-heading");
+      gtk_widget_remove_css_class (GTK_WIDGET (self->name), "caption");
     }
   else
     {
-      gtk_widget_add_css_class (
-        GTK_WIDGET (self->name), "caption");
-      gtk_widget_remove_css_class (
-        GTK_WIDGET (self->name), "caption-heading");
+      gtk_widget_add_css_class (GTK_WIDGET (self->name), "caption");
+      gtk_widget_remove_css_class (GTK_WIDGET (self->name), "caption-heading");
     }
 
   /* TODO */
@@ -128,9 +121,8 @@ channel_widget_tick_cb (
       return G_SOURCE_CONTINUE;
     }
 
-  float amp = MAX (
-    self->meter_l->meter->prev_max,
-    self->meter_r->meter->prev_max);
+  float amp =
+    MAX (self->meter_l->meter->prev_max, self->meter_r->meter->prev_max);
   double val = (double) math_amp_to_dbfs (amp);
   if (math_doubles_equal (val, prev))
     return G_SOURCE_CONTINUE;
@@ -151,15 +143,13 @@ channel_widget_tick_cb (
       if (val > 0)
         {
           sprintf (
-            formatted_str,
-            "<span foreground=\"#FF0A05\">%s</span>", string);
+            formatted_str, "<span foreground=\"#FF0A05\">%s</span>", string);
         }
       else
         {
           strcpy (formatted_str, string);
         }
-      gtk_label_set_markup (
-        self->meter_reading, formatted_str);
+      gtk_label_set_markup (self->meter_reading, formatted_str);
     }
 
   self->meter_reading_val = val;
@@ -175,15 +165,13 @@ on_dnd_drop (
   gdouble         y,
   gpointer        user_data)
 {
-  if (!G_VALUE_HOLDS (
-        value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
+  if (!G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
       g_message ("invalid DND type");
       return false;
     }
 
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    g_value_get_object (value);
+  WrappedObjectWithChangeSignal * wrapped_obj = g_value_get_object (value);
   if (wrapped_obj->type != WRAPPED_OBJECT_TYPE_TRACK)
     {
       g_message ("dropped object not a track");
@@ -196,8 +184,7 @@ on_dnd_drop (
   Track * this = channel_get_track (self->channel);
 
   /* determine if moving or copying */
-  GdkDragAction action =
-    z_gtk_drop_target_get_selected_action (drop_target);
+  GdkDragAction action = z_gtk_drop_target_get_selected_action (drop_target);
 
   const char * action_str = "???";
   if (action == GDK_ACTION_COPY)
@@ -221,8 +208,7 @@ on_dnd_drop (
     {
       location = TRACK_WIDGET_HIGHLIGHT_BOTTOM;
     }
-  tracklist_handle_move_or_copy (
-    TRACKLIST, this, location, action);
+  tracklist_handle_move_or_copy (TRACKLIST, this, location, action);
 
   return true;
 }
@@ -246,8 +232,7 @@ do_highlight (ChannelWidget * self, gint x, gint y)
         GTK_WIDGET (
           self->highlight_left_box));
 #endif
-      gtk_widget_set_size_request (
-        GTK_WIDGET (self->highlight_left_box), 2, -1);
+      gtk_widget_set_size_request (GTK_WIDGET (self->highlight_left_box), 2, -1);
 
       /* unhighlight right */
 #if 0
@@ -295,9 +280,7 @@ on_dnd_drag_motion (
 }
 
 static void
-on_dnd_drag_leave (
-  GtkDropTarget * drop_target,
-  gpointer        user_data)
+on_dnd_drag_leave (GtkDropTarget * drop_target, gpointer user_data)
 {
   ChannelWidget * self = Z_CHANNEL_WIDGET (user_data);
 
@@ -306,12 +289,10 @@ on_dnd_drag_leave (
   /*do_highlight (self);*/
   /*gtk_drag_unhighlight (*/
   /*GTK_WIDGET (self->highlight_left_box));*/
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->highlight_left_box), -1, -1);
+  gtk_widget_set_size_request (GTK_WIDGET (self->highlight_left_box), -1, -1);
   /*gtk_drag_unhighlight (*/
   /*GTK_WIDGET (self->highlight_right_box));*/
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->highlight_right_box), -1, -1);
+  gtk_widget_set_size_request (GTK_WIDGET (self->highlight_right_box), -1, -1);
 }
 
 /**
@@ -331,9 +312,8 @@ on_whole_channel_press (
 {
   self->n_press = n_press;
 
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (gesture));
+  GdkModifierType state = gtk_event_controller_get_current_event_state (
+    GTK_EVENT_CONTROLLER (gesture));
   self->ctrl_held_at_start = state & GDK_CONTROL_MASK;
 }
 
@@ -387,14 +367,12 @@ on_btn_release (
           PROJECT->last_selection = SELECTION_TYPE_TRACKLIST;
         }
 
-      GdkModifierType state =
-        gtk_event_controller_get_current_event_state (
-          GTK_EVENT_CONTROLLER (gesture_click));
+      GdkModifierType state = gtk_event_controller_get_current_event_state (
+        GTK_EVENT_CONTROLLER (gesture_click));
 
       bool ctrl = state & GDK_CONTROL_MASK;
       bool shift = state & GDK_SHIFT_MASK;
-      tracklist_selections_handle_click (
-        track, ctrl, shift, self->dragged);
+      tracklist_selections_handle_click (track, ctrl, shift, self->dragged);
     }
 }
 
@@ -435,19 +413,14 @@ setup_meter (ChannelWidget * self)
   switch (track->out_signal_type)
     {
     case TYPE_EVENT:
-      meter_widget_setup (
-        self->meter_l, self->channel->midi_out, 14);
-      gtk_widget_set_margin_start (
-        GTK_WIDGET (self->meter_l), 5);
-      gtk_widget_set_margin_end (
-        GTK_WIDGET (self->meter_l), 5);
+      meter_widget_setup (self->meter_l, self->channel->midi_out, 14);
+      gtk_widget_set_margin_start (GTK_WIDGET (self->meter_l), 5);
+      gtk_widget_set_margin_end (GTK_WIDGET (self->meter_l), 5);
       gtk_widget_set_visible (GTK_WIDGET (self->meter_r), 0);
       break;
     case TYPE_AUDIO:
-      meter_widget_setup (
-        self->meter_l, self->channel->stereo_out->l, 12);
-      meter_widget_setup (
-        self->meter_r, self->channel->stereo_out->r, 12);
+      meter_widget_setup (self->meter_l, self->channel->stereo_out->l, 12);
+      meter_widget_setup (self->meter_r, self->channel->stereo_out->r, 12);
       break;
     default:
       break;
@@ -458,8 +431,7 @@ setup_meter (ChannelWidget * self)
  * Updates the inserts.
  */
 void
-channel_widget_update_midi_fx_and_inserts (
-  ChannelWidget * self)
+channel_widget_update_midi_fx_and_inserts (ChannelWidget * self)
 {
   plugin_strip_expander_widget_refresh (self->inserts);
   if (self->channel->track->in_signal_type == TYPE_EVENT)
@@ -473,15 +445,13 @@ setup_channel_icon (ChannelWidget * self)
 {
   Track * track = channel_get_track (self->channel);
   gtk_image_set_from_icon_name (self->icon, track->icon_name);
-  gtk_widget_set_sensitive (
-    GTK_WIDGET (self->icon), track_is_enabled (track));
+  gtk_widget_set_sensitive (GTK_WIDGET (self->icon), track_is_enabled (track));
 }
 
 static void
 refresh_output (ChannelWidget * self)
 {
-  route_target_selector_widget_refresh (
-    self->output, self->channel);
+  route_target_selector_widget_refresh (self->output, self->channel);
 }
 
 static void
@@ -491,15 +461,13 @@ refresh_name (ChannelWidget * self)
   g_warn_if_fail (track->name);
   if (track_is_enabled (track))
     {
-      gtk_label_set_text (
-        GTK_LABEL (self->name->label), track->name);
+      gtk_label_set_text (GTK_LABEL (self->name->label), track->name);
     }
   else
     {
-      char * markup = g_strdup_printf (
-        "<span foreground=\"grey\">%s</span>", track->name);
-      gtk_label_set_markup (
-        GTK_LABEL (self->name->label), markup);
+      char * markup =
+        g_strdup_printf ("<span foreground=\"grey\">%s</span>", track->name);
+      gtk_label_set_markup (GTK_LABEL (self->name->label), markup);
     }
 }
 
@@ -517,11 +485,9 @@ static void
 setup_balance_control (ChannelWidget * self)
 {
   self->balance_control = balance_control_widget_new (
-    channel_get_balance_control, channel_set_balance_control,
-    self->channel, self->channel->fader->balance, 12);
-  gtk_box_append (
-    self->balance_control_box,
-    GTK_WIDGET (self->balance_control));
+    channel_get_balance_control, channel_set_balance_control, self->channel,
+    self->channel->fader->balance, 12);
+  gtk_box_append (self->balance_control_box, GTK_WIDGET (self->balance_control));
 }
 
 static void
@@ -571,13 +537,11 @@ channel_widget_refresh (ChannelWidget * self)
   if (track_is_selected (track))
     {
       /* set selected or not */
-      gtk_widget_set_state_flags (
-        GTK_WIDGET (self), GTK_STATE_FLAG_SELECTED, 0);
+      gtk_widget_set_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_SELECTED, 0);
     }
   else
     {
-      gtk_widget_unset_state_flags (
-        GTK_WIDGET (self), GTK_STATE_FLAG_SELECTED);
+      gtk_widget_unset_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_SELECTED);
     }
 }
 
@@ -600,10 +564,8 @@ channel_widget_generate_context_menu_for_track (Track * track)
       GMenu * track_submenu = g_menu_new ();
 
       if (
-        track->type != TRACK_TYPE_MASTER
-        && track->type != TRACK_TYPE_CHORD
-        && track->type != TRACK_TYPE_MARKER
-        && track->type != TRACK_TYPE_TEMPO)
+        track->type != TRACK_TYPE_MASTER && track->type != TRACK_TYPE_CHORD
+        && track->type != TRACK_TYPE_MARKER && track->type != TRACK_TYPE_TEMPO)
         {
           /* delete track */
           if (num_selected == 1)
@@ -625,25 +587,20 @@ channel_widget_generate_context_menu_for_track (Track * track)
         }
 
       menuitem = z_gtk_create_menu_item (
-        num_selected == 1 ? _ ("Hide Track") : _ ("Hide Tracks"),
-        "view-hidden", "app.hide-selected-tracks");
+        num_selected == 1 ? _ ("Hide Track") : _ ("Hide Tracks"), "view-hidden",
+        "app.hide-selected-tracks");
       g_menu_append_item (track_submenu, menuitem);
 
       menuitem = z_gtk_create_menu_item (
-        num_selected == 1
-          ? _ ("Pin/Unpin Track")
-          : _ ("Pin/Unpin Tracks"),
+        num_selected == 1 ? _ ("Pin/Unpin Track") : _ ("Pin/Unpin Tracks"),
         "window-pin", "app.pin-selected-tracks");
       g_menu_append_item (track_submenu, menuitem);
 
-      g_menu_append_section (
-        menu, _ ("Track"), G_MENU_MODEL (track_submenu));
+      g_menu_append_section (menu, _ ("Track"), G_MENU_MODEL (track_submenu));
     }
 
   /* add solo/mute/listen */
-  if (
-    track_type_has_channel (track->type)
-    || track->type == TRACK_TYPE_FOLDER)
+  if (track_type_has_channel (track->type) || track->type == TRACK_TYPE_FOLDER)
     {
       GMenu * channel_submenu = g_menu_new ();
 
@@ -654,12 +611,11 @@ channel_widget_generate_context_menu_for_track (Track * track)
             _ ("Solo"), "solo", "app.solo-selected-tracks");
           g_menu_append_item (channel_submenu, menuitem);
         }
-      if (tracklist_selections_contains_soloed_track (
-            TRACKLIST_SELECTIONS, F_SOLO))
+      if (
+        tracklist_selections_contains_soloed_track (TRACKLIST_SELECTIONS, F_SOLO))
         {
           menuitem = z_gtk_create_menu_item (
-            _ ("Unsolo"), "unsolo",
-            "app.unsolo-selected-tracks");
+            _ ("Unsolo"), "unsolo", "app.unsolo-selected-tracks");
           g_menu_append_item (channel_submenu, menuitem);
         }
 
@@ -670,12 +626,11 @@ channel_widget_generate_context_menu_for_track (Track * track)
             _ ("Mute"), "mute", "app.mute-selected-tracks");
           g_menu_append_item (channel_submenu, menuitem);
         }
-      if (tracklist_selections_contains_muted_track (
-            TRACKLIST_SELECTIONS, F_MUTE))
+      if (
+        tracklist_selections_contains_muted_track (TRACKLIST_SELECTIONS, F_MUTE))
         {
           menuitem = z_gtk_create_menu_item (
-            _ ("Unmute"), "unmute",
-            "app.unmute-selected-tracks");
+            _ ("Unmute"), "unmute", "app.unmute-selected-tracks");
           g_menu_append_item (channel_submenu, menuitem);
         }
 
@@ -683,16 +638,14 @@ channel_widget_generate_context_menu_for_track (Track * track)
             TRACKLIST_SELECTIONS, F_NO_LISTEN))
         {
           menuitem = z_gtk_create_menu_item (
-            _ ("Listen"), "listen",
-            "app.listen-selected-tracks");
+            _ ("Listen"), "listen", "app.listen-selected-tracks");
           g_menu_append_item (channel_submenu, menuitem);
         }
       if (tracklist_selections_contains_listened_track (
             TRACKLIST_SELECTIONS, F_LISTEN))
         {
           menuitem = z_gtk_create_menu_item (
-            _ ("Unlisten"), "unlisten",
-            "app.unlisten-selected-tracks");
+            _ ("Unlisten"), "unlisten", "app.unlisten-selected-tracks");
           g_menu_append_item (channel_submenu, menuitem);
         }
 
@@ -701,12 +654,11 @@ channel_widget_generate_context_menu_for_track (Track * track)
     }
 
   /* add enable/disable */
-  if (tracklist_selections_contains_enabled_track (
-        TRACKLIST_SELECTIONS, F_ENABLED))
+  if (
+    tracklist_selections_contains_enabled_track (TRACKLIST_SELECTIONS, F_ENABLED))
     {
       menuitem = z_gtk_create_menu_item (
-        _ ("Disable"), "offline",
-        "app.disable-selected-tracks");
+        _ ("Disable"), "offline", "app.disable-selected-tracks");
       g_menu_append_item (menu, menuitem);
     }
   else
@@ -717,8 +669,7 @@ channel_widget_generate_context_menu_for_track (Track * track)
     }
 
   menuitem = z_gtk_create_menu_item (
-    _ ("Change color..."), "color-fill",
-    "app.change-track-color");
+    _ ("Change color..."), "color-fill", "app.change-track-color");
   g_menu_append_item (menu, menuitem);
 
   return menu;
@@ -728,11 +679,9 @@ static void
 show_context_menu (ChannelWidget * self, double x, double y)
 {
   GMenu * menu =
-    channel_widget_generate_context_menu_for_track (
-      self->channel->track);
+    channel_widget_generate_context_menu_for_track (self->channel->track);
 
-  z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+  z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
 }
 
 static void
@@ -743,9 +692,8 @@ on_right_click (
   gdouble           y,
   ChannelWidget *   self)
 {
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (gesture));
+  GdkModifierType state = gtk_event_controller_get_current_event_state (
+    GTK_EVENT_CONTROLLER (gesture));
 
   Track * track = self->channel->track;
   if (!track_is_selected (track))
@@ -778,10 +726,9 @@ on_dnd_drag_prepare (
   double          y,
   ChannelWidget * self)
 {
-  Track * track = channel_get_track (self->channel);
+  Track *                         track = channel_get_track (self->channel);
   WrappedObjectWithChangeSignal * wrapped_obj =
-    wrapped_object_with_change_signal_new (
-      track, WRAPPED_OBJECT_TYPE_TRACK);
+    wrapped_object_with_change_signal_new (track, WRAPPED_OBJECT_TYPE_TRACK);
   GdkContentProvider * content_providers[] = {
     gdk_content_provider_new_typed (
       WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, wrapped_obj),
@@ -792,16 +739,12 @@ on_dnd_drag_prepare (
 }
 
 static void
-on_dnd_drag_begin (
-  GtkDragSource * source,
-  GdkDrag *       drag,
-  gpointer        user_data)
+on_dnd_drag_begin (GtkDragSource * source, GdkDrag * drag, gpointer user_data)
 {
   ChannelWidget * self = Z_CHANNEL_WIDGET (user_data);
 
   /* set the widget as the drag icon */
-  GdkPaintable * paintable =
-    gtk_widget_paintable_new (GTK_WIDGET (self));
+  GdkPaintable * paintable = gtk_widget_paintable_new (GTK_WIDGET (self));
   gtk_drag_source_set_icon (source, paintable, 0, 0);
   g_object_unref (paintable);
 
@@ -815,8 +758,7 @@ on_dnd_drag_begin (
 
       ctrl = self->ctrl_held_at_start;
 
-      if (tracklist_selections_contains_track (
-            TRACKLIST_SELECTIONS, track))
+      if (tracklist_selections_contains_track (TRACKLIST_SELECTIONS, track))
         selected = 1;
 
       /* no control & not selected */
@@ -829,8 +771,7 @@ on_dnd_drag_begin (
         {
         }
       else if (ctrl && !selected)
-        tracklist_selections_add_track (
-          TRACKLIST_SELECTIONS, track, 1);
+        tracklist_selections_add_track (TRACKLIST_SELECTIONS, track, 1);
     }
 }
 
@@ -839,14 +780,11 @@ setup_dnd (ChannelWidget * self)
 {
   /* set as drag source for track */
   GtkDragSource * drag_source = gtk_drag_source_new ();
-  gtk_drag_source_set_actions (
-    drag_source, GDK_ACTION_COPY | GDK_ACTION_MOVE);
+  gtk_drag_source_set_actions (drag_source, GDK_ACTION_COPY | GDK_ACTION_MOVE);
   g_signal_connect (
-    drag_source, "prepare", G_CALLBACK (on_dnd_drag_prepare),
-    self);
+    drag_source, "prepare", G_CALLBACK (on_dnd_drag_prepare), self);
   g_signal_connect (
-    drag_source, "drag-begin", G_CALLBACK (on_dnd_drag_begin),
-    self);
+    drag_source, "drag-begin", G_CALLBACK (on_dnd_drag_begin), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self->icon_and_name_event_box),
     GTK_EVENT_CONTROLLER (drag_source));
@@ -855,17 +793,12 @@ setup_dnd (ChannelWidget * self)
    * be moved based on which half it was dropped in,
    * left or right) */
   GtkDropTarget * drop_target = gtk_drop_target_new (
-    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE,
-    GDK_ACTION_MOVE | GDK_ACTION_COPY);
+    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, GDK_ACTION_MOVE | GDK_ACTION_COPY);
   gtk_drop_target_set_preload (drop_target, true);
+  g_signal_connect (drop_target, "drop", G_CALLBACK (on_dnd_drop), self);
   g_signal_connect (
-    drop_target, "drop", G_CALLBACK (on_dnd_drop), self);
-  g_signal_connect (
-    drop_target, "motion", G_CALLBACK (on_dnd_drag_motion),
-    self);
-  g_signal_connect (
-    drop_target, "leave", G_CALLBACK (on_dnd_drag_leave),
-    self);
+    drop_target, "motion", G_CALLBACK (on_dnd_drag_motion), self);
+  g_signal_connect (drop_target, "leave", G_CALLBACK (on_dnd_drag_leave), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (drop_target));
 }
@@ -873,28 +806,23 @@ setup_dnd (ChannelWidget * self)
 ChannelWidget *
 channel_widget_new (Channel * channel)
 {
-  ChannelWidget * self =
-    g_object_new (CHANNEL_WIDGET_TYPE, NULL);
+  ChannelWidget * self = g_object_new (CHANNEL_WIDGET_TYPE, NULL);
   self->channel = channel;
 
   Track * track = channel_get_track (self->channel);
 
   plugin_strip_expander_widget_setup (
-    self->inserts, PLUGIN_SLOT_INSERT, PSE_POSITION_CHANNEL,
-    track);
+    self->inserts, PLUGIN_SLOT_INSERT, PSE_POSITION_CHANNEL, track);
   if (track->in_signal_type == TYPE_EVENT)
     {
       plugin_strip_expander_widget_setup (
-        self->midi_fx, PLUGIN_SLOT_MIDI_FX,
-        PSE_POSITION_CHANNEL, track);
+        self->midi_fx, PLUGIN_SLOT_MIDI_FX, PSE_POSITION_CHANNEL, track);
     }
   else
     {
-      gtk_widget_set_visible (
-        GTK_WIDGET (self->midi_fx), false);
+      gtk_widget_set_visible (GTK_WIDGET (self->midi_fx), false);
     }
-  channel_sends_expander_widget_setup (
-    self->sends, CSE_POSITION_CHANNEL, track);
+  channel_sends_expander_widget_setup (self->sends, CSE_POSITION_CHANNEL, track);
   setup_aux_buttons (self);
   fader_widget_setup (self->fader, channel->fader, 38, -1);
   setup_meter (self);
@@ -903,8 +831,7 @@ channel_widget_new (Channel * channel)
   editable_label_widget_setup (
     self->name, track, (GenericStringGetter) track_get_name,
     (GenericStringSetter) track_set_name_with_action);
-  route_target_selector_widget_setup (
-    self->output, self->channel);
+  route_target_selector_widget_setup (self->output, self->channel);
   color_area_widget_setup_track (self->color, track);
 
 #if 0
@@ -928,11 +855,9 @@ channel_widget_new (Channel * channel)
   channel_widget_refresh (self);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self),
-    (GtkTickCallback) channel_widget_tick_cb, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) channel_widget_tick_cb, self, NULL);
 
-  g_signal_connect (
-    self, "destroy", G_CALLBACK (on_destroy), NULL);
+  g_signal_connect (self, "destroy", G_CALLBACK (on_destroy), NULL);
 
   self->setup = true;
 
@@ -978,12 +903,10 @@ channel_widget_class_init (ChannelWidgetClass * _klass)
   gtk_widget_class_set_css_name (klass, "channel");
   klass->snapshot = channel_snapshot;
 
-  gtk_widget_class_set_layout_manager_type (
-    klass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (klass, GTK_TYPE_BIN_LAYOUT);
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, ChannelWidget, x)
+  gtk_widget_class_bind_template_child (klass, ChannelWidget, x)
 
   BIND_CHILD (box);
   BIND_CHILD (color);
@@ -1028,10 +951,8 @@ channel_widget_init (ChannelWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   self->last_midi_trigger_time = 0;
 
@@ -1040,41 +961,34 @@ channel_widget_init (ChannelWidget * self)
   gtk_label_set_max_width_chars (self->output->label, 9);
 
   self->mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
-  gtk_widget_add_controller (
-    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->mp));
+  gtk_widget_add_controller (GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->mp));
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
   gtk_widget_set_hexpand (GTK_WIDGET (self), 0);
 
-  self->right_mouse_mp =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  self->right_mouse_mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (self->right_mouse_mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (self->right_mouse_mp), GDK_BUTTON_SECONDARY);
   gtk_widget_add_controller (
     GTK_WIDGET (self->icon_and_name_event_box),
     GTK_EVENT_CONTROLLER (self->right_mouse_mp));
 
   g_signal_connect (
-    G_OBJECT (self->mp), "pressed",
-    G_CALLBACK (on_whole_channel_press), self);
+    G_OBJECT (self->mp), "pressed", G_CALLBACK (on_whole_channel_press), self);
   g_signal_connect (
-    G_OBJECT (self->mp), "released",
-    G_CALLBACK (on_btn_release), self);
+    G_OBJECT (self->mp), "released", G_CALLBACK (on_btn_release), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-begin",
-    G_CALLBACK (on_drag_begin), self);
+    G_OBJECT (self->drag), "drag-begin", G_CALLBACK (on_drag_begin), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-update",
-    G_CALLBACK (on_drag_update), self);
+    G_OBJECT (self->drag), "drag-update", G_CALLBACK (on_drag_update), self);
   /*g_signal_connect (*/
   /*G_OBJECT (self->drag), "drag-end",*/
   /*G_CALLBACK (on_drag_end), self);*/
   g_signal_connect (
-    G_OBJECT (self->right_mouse_mp), "pressed",
-    G_CALLBACK (on_right_click), self);
+    G_OBJECT (self->right_mouse_mp), "pressed", G_CALLBACK (on_right_click),
+    self);
 
   setup_dnd (self);
 }

@@ -61,8 +61,7 @@ get_real_val (KnobWidget * self, bool snapped)
         }
     case KNOB_TYPE_PORT_MULTIPLIER:
       {
-        PortConnection * conn =
-          (PortConnection *) self->object;
+        PortConnection * conn = (PortConnection *) self->object;
         return conn->multiplier;
       }
       break;
@@ -121,18 +120,14 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
    * 3px line on it */
   const float pointer_thickness = 3.f * (scale / 80.f);
 
-  const float start_angle =
-    ((180.f - ARC_CUT_ANGLE) * (float) G_PI) / 180.f;
-  const float end_angle =
-    ((360.f + ARC_CUT_ANGLE) * (float) G_PI) / 180.f;
+  const float start_angle = ((180.f - ARC_CUT_ANGLE) * (float) G_PI) / 180.f;
+  const float end_angle = ((360.f + ARC_CUT_ANGLE) * (float) G_PI) / 180.f;
 
   self->last_real_val = get_real_val (self, true);
   const float value = KNOB_VAL_FROM_REAL (self->last_real_val);
-  const float value_angle =
-    start_angle + value * (end_angle - start_angle);
-  float zero_angle =
-    start_angle
-    + ((self->zero - self->min) * (end_angle - start_angle));
+  const float value_angle = start_angle + value * (end_angle - start_angle);
+  float       zero_angle =
+    start_angle + ((self->zero - self->min) * (end_angle - start_angle));
 
   float value_x = cosf (value_angle);
   float value_y = sinf (value_angle);
@@ -154,16 +149,13 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
       float inner_progress_radius = scale * 0.38f;
       float outer_progress_radius = scale * 0.48f;
-      float progress_width =
-        (outer_progress_radius - inner_progress_radius);
-      float progress_radius =
-        inner_progress_radius + progress_width / 2.f;
+      float progress_width = (outer_progress_radius - inner_progress_radius);
+      float progress_radius = inner_progress_radius + progress_width / 2.f;
 
       /* dark surrounding arc background */
       cairo_set_source_rgb (cr, 0.3, 0.3, 0.3);
       cairo_set_line_width (cr, progress_width);
-      cairo_arc (
-        cr, 0, 0, progress_radius, start_angle, end_angle);
+      cairo_arc (cr, 0, 0, progress_radius, start_angle, end_angle);
       cairo_stroke (cr);
 
       //look up the surrounding arc colors from the config
@@ -172,12 +164,10 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       //vary the arc color over the travel of the knob
       double intensity =
         fabs ((double) value - (double) self->zero)
-        / MAX (
-          (double) self->zero, (double) (1.f - self->zero));
+        / MAX ((double) self->zero, (double) (1.f - self->zero));
       const double intensity_inv = 1.0 - intensity;
       double       r =
-        intensity_inv * self->end_color.red
-        + intensity * self->start_color.red;
+        intensity_inv * self->end_color.red + intensity * self->start_color.red;
       double g =
         intensity_inv * self->end_color.green
         + intensity * self->start_color.green;
@@ -190,15 +180,11 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       cairo_set_line_width (cr, progress_width);
       if (zero_angle > value_angle)
         {
-          cairo_arc (
-            cr, 0, 0, progress_radius, value_angle,
-            zero_angle);
+          cairo_arc (cr, 0, 0, progress_radius, value_angle, zero_angle);
         }
       else
         {
-          cairo_arc (
-            cr, 0, 0, progress_radius, zero_angle,
-            value_angle);
+          cairo_arc (cr, 0, 0, progress_radius, zero_angle, value_angle);
         }
       cairo_stroke (cr);
 
@@ -207,18 +193,13 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         {
           /* note we have to offset the pattern from
            * our centerpoint */
-          shade_pattern =
-            cairo_pattern_create_linear (0.0, -yc, 0.0, yc);
-          cairo_pattern_add_color_stop_rgba (
-            shade_pattern, 0.0, 1, 1, 1, 0.15);
-          cairo_pattern_add_color_stop_rgba (
-            shade_pattern, 0.5, 1, 1, 1, 0.0);
-          cairo_pattern_add_color_stop_rgba (
-            shade_pattern, 1.0, 1, 1, 1, 0.0);
+          shade_pattern = cairo_pattern_create_linear (0.0, -yc, 0.0, yc);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 0.0, 1, 1, 1, 0.15);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 0.5, 1, 1, 1, 0.0);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 1.0, 1, 1, 1, 0.0);
           cairo_set_source (cr, shade_pattern);
           cairo_arc (
-            cr, 0, 0, (double) outer_progress_radius - 1.0, 0,
-            2.0 * G_PI);
+            cr, 0, 0, (double) outer_progress_radius - 1.0, 0, 2.0 * G_PI);
           cairo_fill (cr);
           cairo_pattern_destroy (shade_pattern);
         }
@@ -246,8 +227,7 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
     {
       //knob shadow
       cairo_save (cr);
-      cairo_translate (
-        cr, pointer_thickness + 1, pointer_thickness + 1);
+      cairo_translate (cr, pointer_thickness + 1, pointer_thickness + 1);
       cairo_set_source_rgba (cr, 0, 0, 0, 0.1);
       cairo_arc (cr, 0, 0, center_radius - 1, 0, 2.0 * G_PI);
       cairo_fill (cr);
@@ -266,14 +246,10 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
           shade_pattern = cairo_pattern_create_linear (
             0.0, -yc, 0.0,
             yc); //note we have to offset the gradient from our centerpoint
-          cairo_pattern_add_color_stop_rgba (
-            shade_pattern, 0.0, 1, 1, 1, 0.2);
-          cairo_pattern_add_color_stop_rgba (
-            shade_pattern, 0.2, 1, 1, 1, 0.2);
-          cairo_pattern_add_color_stop_rgba (
-            shade_pattern, 0.8, 0, 0, 0, 0.2);
-          cairo_pattern_add_color_stop_rgba (
-            shade_pattern, 1.0, 0, 0, 0, 0.2);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 0.0, 1, 1, 1, 0.2);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 0.2, 1, 1, 1, 0.2);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 0.8, 0, 0, 0, 0.2);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 1.0, 0, 0, 0, 0.2);
           cairo_set_source (cr, shade_pattern);
           cairo_arc (cr, 0, 0, center_radius, 0, 2.0 * G_PI);
           cairo_fill (cr);
@@ -281,9 +257,7 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
           //flat top over beveled edge
           cairo_set_source_rgba (cr, 90, 0, 0, 0.5);
-          cairo_arc (
-            cr, 0, 0, center_radius - pointer_thickness, 0,
-            2.0 * G_PI);
+          cairo_arc (cr, 0, 0, center_radius - pointer_thickness, 0, 2.0 * G_PI);
           cairo_fill (cr);
         }
       else
@@ -292,12 +266,10 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
            * note we have to offset the gradient
            * from our centerpoint */
           shade_pattern = cairo_pattern_create_radial (
-            -center_radius, -center_radius, 1, -center_radius,
-            -center_radius, center_radius * 2.5f);
-          cairo_pattern_add_color_stop_rgba (
-            shade_pattern, 0.0, 1, 1, 1, 0.2);
-          cairo_pattern_add_color_stop_rgba (
-            shade_pattern, 1.0, 0, 0, 0, 0.3);
+            -center_radius, -center_radius, 1, -center_radius, -center_radius,
+            center_radius * 2.5f);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 0.0, 1, 1, 1, 0.2);
+          cairo_pattern_add_color_stop_rgba (shade_pattern, 1.0, 0, 0, 0, 0.3);
           cairo_set_source (cr, shade_pattern);
           cairo_arc (cr, 0, 0, center_radius, 0, 2.0 * G_PI);
           cairo_fill (cr);
@@ -326,9 +298,7 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       cairo_set_source_rgba (cr, 0, 0, 0, 0.3);
       cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
       cairo_set_line_width (cr, pointer_thickness);
-      cairo_move_to (
-        cr, (center_radius * value_x),
-        (center_radius * value_y));
+      cairo_move_to (cr, (center_radius * value_x), (center_radius * value_y));
       cairo_line_to (
         cr, ((center_radius * 0.4f) * value_x),
         ((center_radius * 0.4f) * value_y));
@@ -340,11 +310,9 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
   cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
   cairo_set_line_width (cr, pointer_thickness);
-  cairo_move_to (
-    cr, (center_radius * value_x), (center_radius * value_y));
+  cairo_move_to (cr, (center_radius * value_x), (center_radius * value_y));
   cairo_line_to (
-    cr, ((center_radius * 0.4f) * value_x),
-    ((center_radius * 0.4f) * value_y));
+    cr, ((center_radius * 0.4f) * value_x), ((center_radius * 0.4f) * value_y));
   cairo_stroke (cr);
 
   if (self->hover)
@@ -388,9 +356,7 @@ on_enter (
 }
 
 static void
-on_leave (
-  GtkEventControllerMotion * motion_controller,
-  gpointer                   user_data)
+on_leave (GtkEventControllerMotion * motion_controller, gpointer user_data)
 {
   KnobWidget * self = Z_KNOB_WIDGET (user_data);
   if (!gtk_gesture_drag_get_offset (self->drag, NULL, NULL))
@@ -407,16 +373,13 @@ drag_update (
 {
   offset_y = -offset_y;
   const int use_y =
-    fabs (offset_y - self->last_y)
-    > fabs (offset_x - self->last_x);
+    fabs (offset_y - self->last_y) > fabs (offset_x - self->last_x);
   const float cur_real_val = get_real_val (self, false);
   const float cur_knob_val = KNOB_VAL_FROM_REAL (cur_real_val);
   const float delta =
-    use_y ? (float) (offset_y - self->last_y)
-          : (float) (offset_x - self->last_x);
+    use_y ? (float) (offset_y - self->last_y) : (float) (offset_x - self->last_x);
   const float multiplier = 0.004f;
-  const float new_knob_val =
-    CLAMP (cur_knob_val + multiplier * delta, 0.f, 1.f);
+  const float new_knob_val = CLAMP (cur_knob_val + multiplier * delta, 0.f, 1.f);
   const float new_real_val = REAL_VAL_FROM_KNOB (new_knob_val);
   set_real_val (self, new_real_val);
   self->last_x = offset_x;
@@ -434,17 +397,15 @@ drag_end (
   gdouble          offset_y,
   KnobWidget *     self)
 {
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (gesture));
+  GdkModifierType state = gtk_event_controller_get_current_event_state (
+    GTK_EVENT_CONTROLLER (gesture));
 
   /* reset if ctrl-clicked */
   if (
-    self->default_getter && self->setter
-    && !self->drag_updated && state & GDK_CONTROL_MASK)
+    self->default_getter && self->setter && !self->drag_updated
+    && state & GDK_CONTROL_MASK)
     {
-      float def_fader_val =
-        self->default_getter (self->object);
+      float def_fader_val = self->default_getter (self->object);
       self->setter (self->object, def_fader_val);
     }
 
@@ -454,10 +415,7 @@ drag_end (
 }
 
 static bool
-tick_cb (
-  GtkWidget *     widget,
-  GdkFrameClock * frame_clock,
-  KnobWidget *    self)
+tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, KnobWidget * self)
 {
   float real_val = get_real_val (self, true);
   if (!math_floats_equal (real_val, self->last_real_val))
@@ -519,25 +477,19 @@ _knob_widget_new (
   gtk_widget_set_size_request (GTK_WIDGET (self), size, size);
 
   GtkEventControllerMotion * motion_controller =
-    GTK_EVENT_CONTROLLER_MOTION (
-      gtk_event_controller_motion_new ());
+    GTK_EVENT_CONTROLLER_MOTION (gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT (motion_controller), "enter",
-    G_CALLBACK (on_enter), self);
+    G_OBJECT (motion_controller), "enter", G_CALLBACK (on_enter), self);
   g_signal_connect (
-    G_OBJECT (motion_controller), "leave",
-    G_CALLBACK (on_leave), self);
+    G_OBJECT (motion_controller), "leave", G_CALLBACK (on_leave), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (motion_controller));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (motion_controller));
 
   /* connect signals */
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-update",
-    G_CALLBACK (drag_update), self);
+    G_OBJECT (self->drag), "drag-update", G_CALLBACK (drag_update), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end),
-    self);
+    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end), self);
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
@@ -550,8 +502,7 @@ dispose (KnobWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
-  G_OBJECT_CLASS (knob_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (knob_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
@@ -560,17 +511,14 @@ finalize (KnobWidget * self)
   if (self->layout)
     g_object_unref (self->layout);
 
-  G_OBJECT_CLASS (knob_widget_parent_class)
-    ->finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (knob_widget_parent_class)->finalize (G_OBJECT (self));
 }
 
 static void
 knob_widget_init (KnobWidget * self)
 {
-  self->popover_menu =
-    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   gtk_widget_add_controller (
@@ -586,8 +534,7 @@ knob_widget_class_init (KnobWidgetClass * klass)
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = knob_snapshot;
 
-  gtk_widget_class_set_layout_manager_type (
-    wklass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (wklass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;

@@ -22,8 +22,7 @@
 
 #include <gtk/gtk.h>
 
-#define PROJECT_TOOLBAR_WIDGET_TYPE \
-  (project_toolbar_widget_get_type ())
+#define PROJECT_TOOLBAR_WIDGET_TYPE (project_toolbar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ProjectToolbarWidget,
   project_toolbar_widget,

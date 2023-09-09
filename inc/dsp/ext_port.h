@@ -48,8 +48,7 @@ typedef struct HardwareProcessor HardwareProcessor;
 
 #define ext_port_is_in_active_project(self) \
   (self->hw_processor \
-   && hw_processor_is_in_active_project ( \
-     (self)->hw_processor))
+   && hw_processor_is_in_active_project ((self)->hw_processor))
 
 /**
  * External port type.
@@ -294,11 +293,7 @@ ext_port_get_enabled (ExtPort * self);
  * @param hw Hardware or not.
  */
 void
-ext_ports_get (
-  PortType    type,
-  PortFlow    flow,
-  bool        hw,
-  GPtrArray * ports);
+ext_ports_get (PortType type, PortFlow flow, bool hw, GPtrArray * ports);
 
 /**
  * Creates a shallow clone of the port.

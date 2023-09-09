@@ -18,8 +18,7 @@ control_room_upgrade_from_v1 (ControlRoom_v1 * old)
 
 #define UPDATE(name) self->name = old->name
 
-  self->monitor_fader =
-    fader_upgrade_from_v1 (old->monitor_fader);
+  self->monitor_fader = fader_upgrade_from_v1 (old->monitor_fader);
 
   return self;
 }

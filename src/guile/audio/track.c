@@ -22,8 +22,7 @@ SCM_DEFINE (
 #define FUNC_NAME s_
 {
   Track * track = track_new (
-    TRACK_TYPE_MIDI, scm_to_int (idx),
-    scm_to_locale_string (name), F_WITH_LANE);
+    TRACK_TYPE_MIDI, scm_to_int (idx), scm_to_locale_string (name), F_WITH_LANE);
 
   return scm_from_pointer (track, NULL);
 }
@@ -90,8 +89,8 @@ SCM_DEFINE (
   Track * reftrack = scm_to_pointer (track);
 
   track_set_soloed (
-    reftrack, scm_to_bool (solo), F_TRIGGER_UNDO,
-    F_AUTO_SELECT, F_PUBLISH_EVENTS);
+    reftrack, scm_to_bool (solo), F_TRIGGER_UNDO, F_AUTO_SELECT,
+    F_PUBLISH_EVENTS);
 
   return SCM_BOOL_T;
 }
@@ -110,8 +109,8 @@ SCM_DEFINE (
   Track * reftrack = scm_to_pointer (track);
 
   track_set_muted (
-    reftrack, scm_to_bool (muted), F_TRIGGER_UNDO,
-    F_AUTO_SELECT, F_PUBLISH_EVENTS);
+    reftrack, scm_to_bool (muted), F_TRIGGER_UNDO, F_AUTO_SELECT,
+    F_PUBLISH_EVENTS);
 
   return SCM_BOOL_T;
 }
@@ -149,9 +148,8 @@ init_module (void * data)
 #endif
 
   scm_c_export (
-    "midi-track-new", "track-add-lane-region",
-    "track-get-name", "track-get-channel",
-    "track-get-processor", "track-set-muted", NULL);
+    "midi-track-new", "track-add-lane-region", "track-get-name",
+    "track-get-channel", "track-get-processor", "track-set-muted", NULL);
 }
 
 void

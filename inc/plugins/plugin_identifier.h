@@ -71,18 +71,14 @@ typedef struct PluginIdentifier
   int slot;
 } PluginIdentifier;
 
-static const cyaml_schema_field_t
-  plugin_identifier_fields_schema[] = {
-    YAML_FIELD_INT (PluginIdentifier, schema_version),
-    YAML_FIELD_ENUM (
-      PluginIdentifier,
-      slot_type,
-      plugin_slot_type_strings),
-    YAML_FIELD_UINT (PluginIdentifier, track_name_hash),
-    YAML_FIELD_INT (PluginIdentifier, slot),
+static const cyaml_schema_field_t plugin_identifier_fields_schema[] = {
+  YAML_FIELD_INT (PluginIdentifier, schema_version),
+  YAML_FIELD_ENUM (PluginIdentifier, slot_type, plugin_slot_type_strings),
+  YAML_FIELD_UINT (PluginIdentifier, track_name_hash),
+  YAML_FIELD_INT (PluginIdentifier, slot),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t plugin_identifier_schema = {
   CYAML_VALUE_MAPPING (
@@ -100,14 +96,11 @@ plugin_identifier_is_equal (
   const PluginIdentifier * b)
 {
   return a->slot_type == b->slot_type
-         && a->track_name_hash == b->track_name_hash
-         && a->slot == b->slot;
+         && a->track_name_hash == b->track_name_hash && a->slot == b->slot;
 }
 
 void
-plugin_identifier_copy (
-  PluginIdentifier *       dest,
-  const PluginIdentifier * src);
+plugin_identifier_copy (PluginIdentifier * dest, const PluginIdentifier * src);
 
 NONNULL bool
 plugin_identifier_validate (const PluginIdentifier * self);
@@ -122,9 +115,7 @@ plugin_identifier_validate_slot_type_slot_combo (
   int            slot);
 
 void
-plugin_identifier_print (
-  const PluginIdentifier * self,
-  char *                   str);
+plugin_identifier_print (const PluginIdentifier * self, char * str);
 
 /**
  * @}

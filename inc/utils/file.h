@@ -37,8 +37,7 @@
 /**
  * Returns 1 if the file/dir exists.
  */
-#define file_exists(file) \
-  g_file_test (file, G_FILE_TEST_EXISTS)
+#define file_exists(file) g_file_test (file, G_FILE_TEST_EXISTS)
 
 char *
 file_path_relative_to (const char * path, const char * base);

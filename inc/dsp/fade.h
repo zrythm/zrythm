@@ -27,10 +27,7 @@ typedef struct CurveOptions CurveOptions;
  * @param fade_in 1 for in, 0 for out.
  */
 double
-fade_get_y_normalized (
-  double         x,
-  CurveOptions * opts,
-  int            fade_in);
+fade_get_y_normalized (double x, CurveOptions * opts, int fade_in);
 
 /**
  * @}

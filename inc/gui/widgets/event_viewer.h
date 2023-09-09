@@ -14,8 +14,7 @@
 
 #include <gtk/gtk.h>
 
-#define EVENT_VIEWER_WIDGET_TYPE \
-  (event_viewer_widget_get_type ())
+#define EVENT_VIEWER_WIDGET_TYPE (event_viewer_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   EventViewerWidget,
   event_viewer_widget,
@@ -32,18 +31,12 @@ typedef struct ArrangerSelections ArrangerSelections;
  * @{
  */
 
-#define MW_TIMELINE_EVENT_VIEWER \
-  MW_MAIN_NOTEBOOK->event_viewer
-#define MW_EDITOR_EVENT_VIEWER_STACK \
-  MW_BOT_DOCK_EDGE->event_viewer_stack
-#define MW_MIDI_EVENT_VIEWER \
-  MW_BOT_DOCK_EDGE->event_viewer_midi
-#define MW_CHORD_EVENT_VIEWER \
-  MW_BOT_DOCK_EDGE->event_viewer_chord
-#define MW_AUDIO_EVENT_VIEWER \
-  MW_BOT_DOCK_EDGE->event_viewer_audio
-#define MW_AUTOMATION_EVENT_VIEWER \
-  MW_BOT_DOCK_EDGE->event_viewer_automation
+#define MW_TIMELINE_EVENT_VIEWER MW_MAIN_NOTEBOOK->event_viewer
+#define MW_EDITOR_EVENT_VIEWER_STACK MW_BOT_DOCK_EDGE->event_viewer_stack
+#define MW_MIDI_EVENT_VIEWER MW_BOT_DOCK_EDGE->event_viewer_midi
+#define MW_CHORD_EVENT_VIEWER MW_BOT_DOCK_EDGE->event_viewer_chord
+#define MW_AUDIO_EVENT_VIEWER MW_BOT_DOCK_EDGE->event_viewer_audio
+#define MW_AUTOMATION_EVENT_VIEWER MW_BOT_DOCK_EDGE->event_viewer_automation
 
 typedef enum EventViewerType
 {
@@ -87,16 +80,13 @@ typedef struct _EventViewerWidget
  *   model.
  */
 void
-event_viewer_widget_refresh (
-  EventViewerWidget * self,
-  bool                selections_only);
+event_viewer_widget_refresh (EventViewerWidget * self, bool selections_only);
 
 /**
  * Convenience function.
  */
 void
-event_viewer_widget_refresh_for_selections (
-  ArrangerSelections * sel);
+event_viewer_widget_refresh_for_selections (ArrangerSelections * sel);
 
 /**
  * Convenience function.
@@ -117,9 +107,7 @@ event_viewer_widget_new (void);
  * Sets up the event viewer.
  */
 void
-event_viewer_widget_setup (
-  EventViewerWidget * self,
-  EventViewerType     type);
+event_viewer_widget_setup (EventViewerWidget * self, EventViewerType type);
 
 /**
  * @}

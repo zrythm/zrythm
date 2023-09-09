@@ -20,10 +20,8 @@ test_queue_file (void)
 {
   test_helper_zrythm_init ();
 
-  char * filepath =
-    g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
-  SupportedFile * file =
-    supported_file_new_from_path (filepath);
+  char *          filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
+  SupportedFile * file = supported_file_new_from_path (filepath);
   g_free (filepath);
   for (int i = 0; i < 5; i++)
     {
@@ -46,13 +44,11 @@ test_queue_midi_and_roll_transport (void)
   test_project_stop_dummy_engine ();
 
   SAMPLE_PROCESSOR->instrument_setting =
-    test_plugin_manager_get_plugin_setting (
-      HELM_BUNDLE, HELM_URI, false);
+    test_plugin_manager_get_plugin_setting (HELM_BUNDLE, HELM_URI, false);
 
-  char * filepath = g_build_filename (
-    TESTS_SRCDIR, "1_track_with_data.mid", NULL);
-  SupportedFile * file =
-    supported_file_new_from_path (filepath);
+  char * filepath =
+    g_build_filename (TESTS_SRCDIR, "1_track_with_data.mid", NULL);
+  SupportedFile * file = supported_file_new_from_path (filepath);
   g_free (filepath);
 
   transport_request_roll (TRANSPORT, true);
@@ -60,8 +56,7 @@ test_queue_midi_and_roll_transport (void)
   g_message ("=============== queueing file =============");
 
   sample_processor_queue_file (SAMPLE_PROCESSOR, file);
-  g_assert_cmpint (
-    SAMPLE_PROCESSOR->tracklist->num_tracks, ==, 3);
+  g_assert_cmpint (SAMPLE_PROCESSOR->tracklist->num_tracks, ==, 3);
 
   g_message ("============= starting process ===========");
 
@@ -88,9 +83,7 @@ main (int argc, char * argv[])
   g_test_add_func (
     TEST_PREFIX "test queue midi and roll transport",
     (GTestFunc) test_queue_midi_and_roll_transport);
-  g_test_add_func (
-    TEST_PREFIX "test queue file",
-    (GTestFunc) test_queue_file);
+  g_test_add_func (TEST_PREFIX "test queue file", (GTestFunc) test_queue_file);
 
   return g_test_run ();
 }

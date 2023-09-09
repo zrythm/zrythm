@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define CHORD_EDITOR_SPACE_WIDGET_TYPE \
-  (chord_editor_space_widget_get_type ())
+#define CHORD_EDITOR_SPACE_WIDGET_TYPE (chord_editor_space_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ChordEditorSpaceWidget,
   chord_editor_space_widget,
@@ -30,8 +29,7 @@ typedef struct _ChordKeyWidget ChordKeyWidget;
  * @{
  */
 
-#define MW_CHORD_EDITOR_SPACE \
-  MW_CLIP_EDITOR_INNER->chord_editor_space
+#define MW_CHORD_EDITOR_SPACE MW_CLIP_EDITOR_INNER->chord_editor_space
 
 /**
  * The piano roll widget is the whole space inside
@@ -73,16 +71,13 @@ typedef struct _ChordEditorSpaceWidget
 } ChordEditorSpaceWidget;
 
 int
-chord_editor_space_widget_get_chord_height (
-  ChordEditorSpaceWidget * self);
+chord_editor_space_widget_get_chord_height (ChordEditorSpaceWidget * self);
 
 int
-chord_editor_space_widget_get_all_chords_height (
-  ChordEditorSpaceWidget * self);
+chord_editor_space_widget_get_all_chords_height (ChordEditorSpaceWidget * self);
 
 void
-chord_editor_space_widget_setup (
-  ChordEditorSpaceWidget * self);
+chord_editor_space_widget_setup (ChordEditorSpaceWidget * self);
 
 /**
  * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
@@ -98,12 +93,10 @@ chord_editor_space_widget_set_chord_keys_scroll_start_y (
   int                      y);
 
 void
-chord_editor_space_widget_refresh (
-  ChordEditorSpaceWidget * self);
+chord_editor_space_widget_refresh (ChordEditorSpaceWidget * self);
 
 void
-chord_editor_space_widget_refresh_chords (
-  ChordEditorSpaceWidget * self);
+chord_editor_space_widget_refresh_chords (ChordEditorSpaceWidget * self);
 
 /**
  * @}

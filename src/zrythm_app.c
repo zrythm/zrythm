@@ -111,8 +111,7 @@ ZrythmApp * zrythm_app = NULL;
 G_DEFINE_TYPE (ZrythmApp, zrythm_app, GTK_TYPE_APPLICATION);
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored \
-  "-Wanalyzer-unsafe-call-within-signal-handler"
+#pragma GCC diagnostic ignored "-Wanalyzer-unsafe-call-within-signal-handler"
 /** SIGSEGV/SIGABRT handler. */
 static void
 segv_handler (int sig)
@@ -124,8 +123,7 @@ segv_handler (int sig)
 #ifdef _WOE32
   strcpy (prefix, _ ("Error - Backtrace:\n"));
 #else
-  sprintf (
-    prefix, _ ("Error: %s - Backtrace:\n"), strsignal (sig));
+  sprintf (prefix, _ ("Error: %s - Backtrace:\n"), strsignal (sig));
 #endif
 
   /* avoid getting backtraces too often if a bug report dialog
@@ -153,12 +151,10 @@ segv_handler (int sig)
         {
           char str[500];
           sprintf (str, _ ("%s has crashed. "), PROGRAM_NAME);
-          zrythm_app
-            ->bug_report_dialog = bug_report_dialog_new (
-            GTK_WINDOW (MAIN_WINDOW), str, bt, true);
+          zrythm_app->bug_report_dialog =
+            bug_report_dialog_new (GTK_WINDOW (MAIN_WINDOW), str, bt, true);
 
-          gtk_window_present (
-            GTK_WINDOW (zrythm_app->bug_report_dialog));
+          gtk_window_present (GTK_WINDOW (zrythm_app->bug_report_dialog));
         }
 
       return;
@@ -205,8 +201,7 @@ check_for_updates_latest_release_ver_ready (
   gpointer       data)
 {
   GError * err = NULL;
-  char *   latest_release =
-    zrythm_fetch_latest_release_ver_finish (res, &err);
+  char *   latest_release = zrythm_fetch_latest_release_ver_finish (res, &err);
   if (!latest_release)
     {
       HANDLE_ERROR_LITERAL (
@@ -214,37 +209,32 @@ check_for_updates_latest_release_ver_ready (
       return;
     }
 
-  bool is_latest_release =
-    zrythm_is_latest_release (latest_release);
+  bool is_latest_release = zrythm_is_latest_release (latest_release);
 #ifdef HAVE_CHANGELOG
   /* if latest release and first run on this release show
    * CHANGELOG */
   if (
     is_latest_release
-    && !settings_strv_contains_str (
-      S_GENERAL, "run-versions", PACKAGE_VERSION))
+    && !settings_strv_contains_str (S_GENERAL, "run-versions", PACKAGE_VERSION))
     {
       ui_show_message_printf (
-        _ ("Changelog"),
-        _ ("Running %s version <b>%s</b>%s%s"), PROGRAM_NAME,
+        _ ("Changelog"), _ ("Running %s version <b>%s</b>%s%s"), PROGRAM_NAME,
         PACKAGE_VERSION, "\n\n", CHANGELOG_TXT);
-      settings_append_to_strv (
-        S_GENERAL, "run-versions", PACKAGE_VERSION, true);
+      settings_append_to_strv (S_GENERAL, "run-versions", PACKAGE_VERSION, true);
     }
 #endif /* HAVE_CHANGELOG */
 
   /* if not latest release and this is an official release,
    * notify user */
-  char * last_version_notified_on = g_settings_get_string (
-    S_GENERAL, "last-version-new-release-notified-on");
+  char * last_version_notified_on =
+    g_settings_get_string (S_GENERAL, "last-version-new-release-notified-on");
   g_debug (
     "last version notified on: %s"
     "\n package version: %s",
     last_version_notified_on, PACKAGE_VERSION);
   if (
     !is_latest_release && zrythm_is_release (true)
-    && !string_is_equal (
-      last_version_notified_on, PACKAGE_VERSION))
+    && !string_is_equal (last_version_notified_on, PACKAGE_VERSION))
     {
       ui_show_message_printf (
         _ ("New Zrythm Version"),
@@ -254,8 +244,7 @@ check_for_updates_latest_release_ver_ready (
         latest_release, PACKAGE_VERSION);
 
       g_settings_set_string (
-        S_GENERAL, "last-version-new-release-notified-on",
-        PACKAGE_VERSION);
+        S_GENERAL, "last-version-new-release-notified-on", PACKAGE_VERSION);
     }
   g_free (last_version_notified_on);
 }
@@ -267,18 +256,15 @@ check_for_updates_latest_release_ver_ready (
 void
 zrythm_app_check_for_updates (ZrythmApp * self)
 {
-  if (g_settings_get_boolean (
-        S_GENERAL, "first-check-for-updates"))
+  if (g_settings_get_boolean (S_GENERAL, "first-check-for-updates"))
     {
       /* this will call zrythm_app_check_for_updates() again
        * later if the response is yes */
-      ask_to_check_for_updates_dialog_run_async (
-        GTK_WINDOW (MAIN_WINDOW));
+      ask_to_check_for_updates_dialog_run_async (GTK_WINDOW (MAIN_WINDOW));
       return;
     }
 
-  if (!g_settings_get_boolean (
-        S_P_GENERAL_UPDATES, "check-for-updates"))
+  if (!g_settings_get_boolean (S_P_GENERAL_UPDATES, "check-for-updates"))
     return;
 
   zrythm_fetch_latest_release_ver_async (
@@ -294,8 +280,7 @@ init_recent_projects (void)
 {
   g_message ("Initializing recent projects...");
 
-  gchar ** recent_projects =
-    g_settings_get_strv (S_GENERAL, "recent-projects");
+  gchar ** recent_projects = g_settings_get_strv (S_GENERAL, "recent-projects");
 
   /* get recent projects */
   ZRYTHM->num_recent_projects = 0;
@@ -306,16 +291,16 @@ init_recent_projects (void)
       prj = recent_projects[count];
 
       /* skip duplicates */
-      if (array_contains_cmp (
-            ZRYTHM->recent_projects,
-            ZRYTHM->num_recent_projects, prj, strcmp, 0, 1))
+      if (
+        array_contains_cmp (
+          ZRYTHM->recent_projects, ZRYTHM->num_recent_projects, prj, strcmp, 0,
+          1))
         {
           count++;
           continue;
         }
 
-      ZRYTHM->recent_projects[ZRYTHM->num_recent_projects++] =
-        g_strdup (prj);
+      ZRYTHM->recent_projects[ZRYTHM->num_recent_projects++] = g_strdup (prj);
     }
   g_strfreev (recent_projects);
 
@@ -338,17 +323,13 @@ init_recent_projects (void)
  * This is the final step.
  */
 static void
-on_setup_main_window (
-  GSimpleAction * action,
-  GVariant *      parameter,
-  gpointer        data)
+on_setup_main_window (GSimpleAction * action, GVariant * parameter, gpointer data)
 {
   g_message ("setting up...");
 
   ZrythmApp * self = ZRYTHM_APP (data);
 
-  zrythm_app_set_progress_status (
-    self, _ ("Setting up main window"), 0.98);
+  zrythm_app_set_progress_status (self, _ ("Setting up main window"), 0.98);
 
   /*main_window_widget_setup (MAIN_WINDOW);*/
 
@@ -356,12 +337,11 @@ on_setup_main_window (
   /*engine_set_run (AUDIO_ENGINE, true);*/
 
   /* add timeout for auto-saving projects */
-  unsigned int autosave_interval = g_settings_get_uint (
-    S_P_PROJECTS_GENERAL, "autosave-interval");
+  unsigned int autosave_interval =
+    g_settings_get_uint (S_P_PROJECTS_GENERAL, "autosave-interval");
   if (autosave_interval > 0)
     {
-      PROJECT->last_successful_autosave_time =
-        g_get_monotonic_time ();
+      PROJECT->last_successful_autosave_time = g_get_monotonic_time ();
       g_timeout_add_seconds (3, project_autosave_cb, NULL);
     }
 
@@ -383,21 +363,17 @@ on_setup_main_window (
  * FIXME rename
  */
 static void
-on_load_project (
-  GSimpleAction * action,
-  GVariant *      parameter,
-  gpointer        user_data)
+on_load_project (GSimpleAction * action, GVariant * parameter, gpointer user_data)
 {
-  zrythm_app_set_progress_status (
-    zrythm_app, _ ("Loading project"), 0.8);
+  zrythm_app_set_progress_status (zrythm_app, _ ("Loading project"), 0.8);
 
   g_debug (
     "on_load_project called | open filename '%s' "
     "| opening template %d",
     ZRYTHM->open_filename, ZRYTHM->opening_template);
   GError * err = NULL;
-  bool     success = project_load (
-    ZRYTHM->open_filename, ZRYTHM->opening_template, &err);
+  bool     success =
+    project_load (ZRYTHM->open_filename, ZRYTHM->opening_template, &err);
 
   if (!success)
     {
@@ -420,36 +396,29 @@ init_thread (gpointer data)
 
   ZrythmApp * self = ZRYTHM_APP (data);
 
-  zrythm_app_set_progress_status (
-    self, _ ("Initializing settings"), 0.0);
+  zrythm_app_set_progress_status (self, _ ("Initializing settings"), 0.0);
 
   ZRYTHM->debug = env_get_int ("ZRYTHM_DEBUG", 0);
   /* init zrythm folders ~/Zrythm */
   char msg[500];
-  sprintf (
-    msg, _ ("Initializing %s directories"), PROGRAM_NAME);
+  sprintf (msg, _ ("Initializing %s directories"), PROGRAM_NAME);
   zrythm_app_set_progress_status (self, msg, 0.01);
   GError * err = NULL;
-  bool     success =
-    zrythm_init_user_dirs_and_files (ZRYTHM, &err);
+  bool     success = zrythm_init_user_dirs_and_files (ZRYTHM, &err);
   if (!success)
     {
-      g_error (
-        "Failed to create user dirs and files: %s",
-        err->message);
+      g_error ("Failed to create user dirs and files: %s", err->message);
       return NULL;
     }
   init_recent_projects ();
   zrythm_init_templates (ZRYTHM);
 
   /* init log */
-  zrythm_app_set_progress_status (
-    self, _ ("Initializing logging system"), 0.02);
+  zrythm_app_set_progress_status (self, _ ("Initializing logging system"), 0.02);
   success = log_init_with_file (LOG, NULL, &err);
   if (!success)
     {
-      g_error (
-        "Failed to init log with file: %s", err->message);
+      g_error ("Failed to init log with file: %s", err->message);
       return NULL;
     }
 
@@ -465,18 +434,15 @@ init_thread (gpointer data)
     "system.");
 #endif
 
-  zrythm_app_set_progress_status (
-    self, _ ("Initializing caches"), 0.05);
+  zrythm_app_set_progress_status (self, _ ("Initializing caches"), 0.05);
   self->ui_caches = ui_caches_new ();
 
-  zrythm_app_set_progress_status (
-    self, _ ("Initializing file manager"), 0.15);
+  zrythm_app_set_progress_status (self, _ ("Initializing file manager"), 0.15);
   file_manager_load_files (FILE_MANAGER);
 
   if (!g_settings_get_boolean (S_GENERAL, "first-run"))
     {
-      zrythm_app_set_progress_status (
-        self, _ ("Scanning plugins"), 0.4);
+      zrythm_app_set_progress_status (self, _ ("Scanning plugins"), 0.4);
       plugin_manager_scan_plugins (
         ZRYTHM->plugin_manager, 0.7, &ZRYTHM->progress);
     }
@@ -517,8 +483,7 @@ first_run_dialog_response_cb (
   gint        response_id,
   ZrythmApp * self)
 {
-  FirstRunDialogWidget * first_run_dialog =
-    Z_FIRST_RUN_DIALOG_WIDGET (dialog);
+  FirstRunDialogWidget * first_run_dialog = Z_FIRST_RUN_DIALOG_WIDGET (dialog);
 
   g_debug ("response %d", response_id);
 
@@ -564,10 +529,7 @@ license_info_dialog_response_cb (
  * (start assistant).
  */
 static void
-on_prompt_for_project (
-  GSimpleAction * action,
-  GVariant *      parameter,
-  gpointer        data)
+on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer data)
 {
   g_message ("prompting for project...");
 
@@ -583,26 +545,22 @@ on_prompt_for_project (
       if (g_settings_get_boolean (S_GENERAL, "first-run"))
         {
           AdwMessageDialog * dialog =
-            welcome_message_dialog_new (
-              GTK_WINDOW (self->splash));
+            welcome_message_dialog_new (GTK_WINDOW (self->splash));
           gtk_window_present (GTK_WINDOW (dialog));
           g_signal_connect (
             G_OBJECT (dialog), "response",
-            G_CALLBACK (license_info_dialog_response_cb),
-            self);
+            G_CALLBACK (license_info_dialog_response_cb), self);
           g_message ("showing license info dialog");
 
           return;
         }
 
-      zrythm_app_set_progress_status (
-        self, _ ("Waiting for project"), 0.8);
+      zrythm_app_set_progress_status (self, _ ("Waiting for project"), 0.8);
 
       /* if running for the first time (even after the
        * GSetting is set to false) run the demo project,
        * otherwise ask the user for a project */
-      bool use_demo_template =
-        self->is_first_run && ZRYTHM->demo_template;
+      bool use_demo_template = self->is_first_run && ZRYTHM->demo_template;
 #ifdef _WOE32
       /* crashes on windows -- fix first then re-enable */
       use_demo_template = false;
@@ -610,8 +568,7 @@ on_prompt_for_project (
       if (use_demo_template)
         {
           project_assistant_widget_present (
-            GTK_WINDOW (self->splash), false,
-            ZRYTHM->demo_template);
+            GTK_WINDOW (self->splash), false, ZRYTHM->demo_template);
         }
       else
         {
@@ -656,8 +613,7 @@ zrythm_app_set_font_scale (ZrythmApp * self, double font_scale)
   /* this was taken from the GtkInspector
    * visual.c code */
   g_object_set (
-    self->default_settings, "gtk-xft-dpi",
-    (int) (font_scale * 96 * 1024), NULL);
+    self->default_settings, "gtk-xft-dpi", (int) (font_scale * 96 * 1024), NULL);
 }
 
 /*
@@ -718,13 +674,12 @@ zrythm_app_get_primary_accel_for_action (
   g_warn_if_fail (zrythm_app);
   guint           accel_key;
   GdkModifierType accel_mods;
-  gchar ** accels = gtk_application_get_accels_for_action (
+  gchar **        accels = gtk_application_get_accels_for_action (
     GTK_APPLICATION (zrythm_app), action_name);
   char * ret = NULL;
   if (accels[0] != NULL)
     {
-      gtk_accelerator_parse (
-        accels[0], &accel_key, &accel_mods);
+      gtk_accelerator_parse (accels[0], &accel_key, &accel_mods);
       ret = gtk_accelerator_get_label (accel_key, accel_mods);
     }
   g_strfreev (accels);
@@ -737,15 +692,13 @@ print_gdk_pixbuf_format_info (gpointer data, gpointer user_data)
   GdkPixbufFormat * format = (GdkPixbufFormat *) data;
   ZrythmApp *       self = ZRYTHM_APP (user_data);
 
-  char * name = gdk_pixbuf_format_get_name (format);
-  char * description =
-    gdk_pixbuf_format_get_description (format);
+  char *  name = gdk_pixbuf_format_get_name (format);
+  char *  description = gdk_pixbuf_format_get_description (format);
   char *  license = gdk_pixbuf_format_get_license (format);
   char    mime_types[800] = "";
-  char ** _mime_types =
-    gdk_pixbuf_format_get_mime_types (format);
-  char * tmp = NULL;
-  int    i = 0;
+  char ** _mime_types = gdk_pixbuf_format_get_mime_types (format);
+  char *  tmp = NULL;
+  int     i = 0;
   while ((tmp = _mime_types[i++]))
     {
       strcat (mime_types, tmp);
@@ -754,8 +707,7 @@ print_gdk_pixbuf_format_info (gpointer data, gpointer user_data)
   mime_types[strlen (mime_types) - 2] = '\0';
   g_strfreev (_mime_types);
   char    extensions[800] = "";
-  char ** _extensions =
-    gdk_pixbuf_format_get_extensions (format);
+  char ** _extensions = gdk_pixbuf_format_get_extensions (format);
   tmp = NULL;
   i = 0;
   while ((tmp = _extensions[i++]))
@@ -802,8 +754,7 @@ load_icon (
         "zrythm-dark",
         icon_name);
       g_object_set (
-        default_settings, "gtk-icon-theme-name",
-        "zrythm-dark", NULL);
+        default_settings, "gtk-icon-theme-name", "zrythm-dark", NULL);
       found = gtk_icon_theme_has_icon (icon_theme, icon_name);
       g_message ("found: %d", found);
     }
@@ -817,8 +768,7 @@ load_icon (
         "Please install zrythm and breeze-icons.");
       g_critical ("%s", err_msg);
       fprintf (stderr, "%s\n", err_msg);
-      ui_show_message_literal (
-        _ ("Icon Theme Not Found"), err_msg);
+      ui_show_message_literal (_ ("Icon Theme Not Found"), err_msg);
       g_critical ("Failed to load icon");
     }
   g_message ("Icon found.");
@@ -851,32 +801,27 @@ lock_memory (ZrythmApp * self)
                 }
               else
                 {
-                  ZrythmAppUiMessage * ui_msg =
-                    zrythm_app_ui_message_new (
-                      GTK_MESSAGE_ERROR,
-                      "Could not set system memory "
-                      "lock limit to 'unlimited'");
-                  g_async_queue_push (
-                    self->project_load_message_queue, ui_msg);
+                  ZrythmAppUiMessage * ui_msg = zrythm_app_ui_message_new (
+                    GTK_MESSAGE_ERROR,
+                    "Could not set system memory "
+                    "lock limit to 'unlimited'");
+                  g_async_queue_push (self->project_load_message_queue, ui_msg);
                 }
             }
         }
       else
         {
           char * str = g_strdup_printf (
-            _ (
-              "Your user does not have enough "
-              "privileges to allow %s to lock "
-              "unlimited memory. This may cause "
-              "audio dropouts. Please refer to "
-              "the 'Getting Started' section in "
-              "the user manual for details."),
+            _ ("Your user does not have enough "
+               "privileges to allow %s to lock "
+               "unlimited memory. This may cause "
+               "audio dropouts. Please refer to "
+               "the 'Getting Started' section in "
+               "the user manual for details."),
             PROGRAM_NAME);
           ZrythmAppUiMessage * ui_msg =
-            zrythm_app_ui_message_new (
-              GTK_MESSAGE_WARNING, str);
-          g_async_queue_push (
-            self->project_load_message_queue, ui_msg);
+            zrythm_app_ui_message_new (GTK_MESSAGE_WARNING, str);
+          g_async_queue_push (self->project_load_message_queue, ui_msg);
           g_free (str);
         }
     }
@@ -888,8 +833,7 @@ lock_memory (ZrythmApp * self)
         strerror (errno));
       ZrythmAppUiMessage * ui_msg =
         zrythm_app_ui_message_new (GTK_MESSAGE_WARNING, str);
-      g_async_queue_push (
-        self->project_load_message_queue, ui_msg);
+      g_async_queue_push (self->project_load_message_queue, ui_msg);
       g_free (str);
     }
 
@@ -900,17 +844,13 @@ lock_memory (ZrythmApp * self)
       if (mlockall (MCL_CURRENT | MCL_FUTURE))
         {
 #  ifdef __APPLE__
-          g_warning (
-            "Cannot lock down memory: %s", strerror (errno));
+          g_warning ("Cannot lock down memory: %s", strerror (errno));
 #  else
           char * str = g_strdup_printf (
-            _ ("Cannot lock down memory: %s"),
-            strerror (errno));
+            _ ("Cannot lock down memory: %s"), strerror (errno));
           ZrythmAppUiMessage * ui_msg =
-            zrythm_app_ui_message_new (
-              GTK_MESSAGE_WARNING, str);
-          g_async_queue_push (
-            self->project_load_message_queue, ui_msg);
+            zrythm_app_ui_message_new (GTK_MESSAGE_WARNING, str);
+          g_async_queue_push (self->project_load_message_queue, ui_msg);
           g_free (str);
 #  endif
         }
@@ -991,9 +931,7 @@ raise_open_file_limit (void)
     }
   else
     {
-      g_warning (
-        "Could not get system open files limit (%s)",
-        strerror (errno));
+      g_warning ("Could not get system open files limit (%s)", strerror (errno));
     }
 #endif
 }
@@ -1013,10 +951,8 @@ zrythm_app_startup (GApplication * app)
 
   /* init localization, using system locale if
    * first run */
-  GSettings * prefs =
-    g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".general");
-  localization_init (
-    g_settings_get_boolean (prefs, "first-run"), true, true);
+  GSettings * prefs = g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".general");
+  localization_init (g_settings_get_boolean (prefs, "first-run"), true, true);
   g_object_unref (G_OBJECT (prefs));
 
   char * exe_path = NULL;
@@ -1025,13 +961,11 @@ zrythm_app_startup (GApplication * app)
   if (length > 0)
     {
       exe_path = (char *) malloc ((size_t) length + 1);
-      wai_getExecutablePath (
-        exe_path, length, &dirname_length);
+      wai_getExecutablePath (exe_path, length, &dirname_length);
       exe_path[length] = '\0';
     }
 
-  ZRYTHM = zrythm_new (
-    exe_path ? exe_path : self->argv[0], true, false, true);
+  ZRYTHM = zrythm_new (exe_path ? exe_path : self->argv[0], true, false, true);
   g_return_if_fail (ZRYTHM);
 
   const char * copyright_line =
@@ -1039,15 +973,13 @@ zrythm_app_startup (GApplication * app)
   char * ver = zrythm_get_version (0);
   fprintf (
     stdout,
-    _ (
-      "%s-%s\n%s\n\n"
-      "%s comes with ABSOLUTELY NO WARRANTY!\n\n"
-      "This is free software, and you are welcome to redistribute it\n"
-      "under certain conditions. See the file 'COPYING' for details.\n\n"
-      "Write comments and bugs to %s\n"
-      "Support this project at https://liberapay.com/Zrythm\n\n"),
-    PROGRAM_NAME, ver, copyright_line, PROGRAM_NAME,
-    ISSUE_TRACKER_URL);
+    _ ("%s-%s\n%s\n\n"
+       "%s comes with ABSOLUTELY NO WARRANTY!\n\n"
+       "This is free software, and you are welcome to redistribute it\n"
+       "under certain conditions. See the file 'COPYING' for details.\n\n"
+       "Write comments and bugs to %s\n"
+       "Support this project at https://liberapay.com/Zrythm\n\n"),
+    PROGRAM_NAME, ver, copyright_line, PROGRAM_NAME, ISSUE_TRACKER_URL);
   g_free (ver);
 
   char * cur_dir = g_get_current_dir ();
@@ -1058,8 +990,7 @@ zrythm_app_startup (GApplication * app)
   guile_init (self->argc, self->argv);
 #endif
 
-  g_message (
-    "GTK_THEME was '%s'. unsetting...", getenv ("GTK_THEME"));
+  g_message ("GTK_THEME was '%s'. unsetting...", getenv ("GTK_THEME"));
   g_unsetenv ("GTK_THEME");
 
   /* install segfault handler */
@@ -1115,26 +1046,20 @@ zrythm_app_startup (GApplication * app)
 
   /* init libadwaita */
   /*adw_init (); already called by panel_init () */
-  AdwStyleManager * style_mgr =
-    adw_style_manager_get_default ();
-  adw_style_manager_set_color_scheme (
-    style_mgr, ADW_COLOR_SCHEME_FORCE_DARK);
+  AdwStyleManager * style_mgr = adw_style_manager_get_default ();
+  adw_style_manager_set_color_scheme (style_mgr, ADW_COLOR_SCHEME_FORCE_DARK);
 
   /* init gtksourceview */
   gtk_source_init ();
   z_gtk_source_language_manager_get ();
 
-  G_APPLICATION_CLASS (zrythm_app_parent_class)
-    ->startup (G_APPLICATION (self));
+  G_APPLICATION_CLASS (zrythm_app_parent_class)->startup (G_APPLICATION (self));
 
   g_message ("called startup on G_APPLICATION_CLASS");
 
-  bool ret =
-    g_application_get_is_registered (G_APPLICATION (self));
-  bool remote =
-    g_application_get_is_remote (G_APPLICATION (self));
-  g_message (
-    "application registered: %d, is remote %d", ret, remote);
+  bool ret = g_application_get_is_registered (G_APPLICATION (self));
+  bool remote = g_application_get_is_remote (G_APPLICATION (self));
+  g_message ("application registered: %d, is remote %d", ret, remote);
 
   g_message (
     "application resources base path: %s",
@@ -1155,50 +1080,38 @@ zrythm_app_startup (GApplication * app)
   g_message ("Monitor scale factor: %d", scale_factor);
 #if defined(_WOE32)
   g_object_set (
-    self->default_settings, "gtk-font-name",
-    "Segoe UI Normal 10", NULL);
+    self->default_settings, "gtk-font-name", "Segoe UI Normal 10", NULL);
   g_object_set (
-    self->default_settings, "gtk-cursor-theme-name",
-    "Adwaita", NULL);
+    self->default_settings, "gtk-cursor-theme-name", "Adwaita", NULL);
 #elif defined(__APPLE__)
-  g_object_set (
-    self->default_settings, "gtk-font-name", "Regular 10",
-    NULL);
+  g_object_set (self->default_settings, "gtk-font-name", "Regular 10", NULL);
 #else
   g_object_set (
-    self->default_settings, "gtk-font-name",
-    "Cantarell Regular 10", NULL);
+    self->default_settings, "gtk-font-name", "Cantarell Regular 10", NULL);
 #endif
 
   /* explicitly set font scaling */
-  double font_scale =
-    g_settings_get_double (S_P_UI_GENERAL, "font-scale");
+  double font_scale = g_settings_get_double (S_P_UI_GENERAL, "font-scale");
   zrythm_app_set_font_scale (self, font_scale);
 
   g_message ("Theme set");
 
   GtkIconTheme * icon_theme = z_gtk_icon_theme_get_default ();
-  char *         icon_theme_name =
-    g_settings_get_string (S_P_UI_GENERAL, "icon-theme");
+  char * icon_theme_name = g_settings_get_string (S_P_UI_GENERAL, "icon-theme");
   g_message ("setting icon theme to '%s'", icon_theme_name);
   g_object_set (
-    self->default_settings, "gtk-icon-theme-name",
-    icon_theme_name, NULL);
+    self->default_settings, "gtk-icon-theme-name", icon_theme_name, NULL);
   g_free_and_null (icon_theme_name);
 
   /* --- add icon search paths --- */
 
   /* prepend freedesktop system icons to search
    * path, just in case */
-  char * parent_datadir =
-    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_PARENT_DATADIR);
+  char * parent_datadir = zrythm_get_dir (ZRYTHM_DIR_SYSTEM_PARENT_DATADIR);
   char * freedesktop_icon_theme_dir =
     g_build_filename (parent_datadir, "icons", NULL);
-  gtk_icon_theme_add_search_path (
-    icon_theme, freedesktop_icon_theme_dir);
-  g_message (
-    "added icon theme search path: %s",
-    freedesktop_icon_theme_dir);
+  gtk_icon_theme_add_search_path (icon_theme, freedesktop_icon_theme_dir);
+  g_message ("added icon theme search path: %s", freedesktop_icon_theme_dir);
   g_free (parent_datadir);
   g_free (freedesktop_icon_theme_dir);
 
@@ -1206,22 +1119,16 @@ zrythm_app_startup (GApplication * app)
   {
     char * system_icon_theme_dir =
       zrythm_get_dir (ZRYTHM_DIR_SYSTEM_THEMES_ICONS_DIR);
-    gtk_icon_theme_add_search_path (
-      icon_theme, system_icon_theme_dir);
-    g_message (
-      "added icon theme search path: %s",
-      system_icon_theme_dir);
+    gtk_icon_theme_add_search_path (icon_theme, system_icon_theme_dir);
+    g_message ("added icon theme search path: %s", system_icon_theme_dir);
     g_free (system_icon_theme_dir);
   }
 
   /* prepend user custom icons to search path */
   {
-    char * user_icon_theme_dir =
-      zrythm_get_dir (ZRYTHM_DIR_USER_THEMES_ICONS);
-    gtk_icon_theme_add_search_path (
-      icon_theme, user_icon_theme_dir);
-    g_message (
-      "added icon theme search path: %s", user_icon_theme_dir);
+    char * user_icon_theme_dir = zrythm_get_dir (ZRYTHM_DIR_USER_THEMES_ICONS);
+    gtk_icon_theme_add_search_path (icon_theme, user_icon_theme_dir);
+    g_message ("added icon theme search path: %s", user_icon_theme_dir);
     g_free (user_icon_theme_dir);
   }
 
@@ -1230,8 +1137,7 @@ zrythm_app_startup (GApplication * app)
   /* look for found loaders */
   g_message ("looking for GDK Pixbuf formats...");
   GSList * formats_list = gdk_pixbuf_get_formats ();
-  g_slist_foreach (
-    formats_list, print_gdk_pixbuf_format_info, self);
+  g_slist_foreach (formats_list, print_gdk_pixbuf_format_info, self);
   g_slist_free (g_steal_pointer (&formats_list));
   if (!self->have_svg_loader)
     {
@@ -1243,8 +1149,7 @@ zrythm_app_startup (GApplication * app)
   /* zrythm */
   load_icon (self->default_settings, icon_theme, "solo");
   /* breeze dark */
-  load_icon (
-    self->default_settings, icon_theme, "node-type-cusp");
+  load_icon (self->default_settings, icon_theme, "node-type-cusp");
 
   g_message ("Setting gtk icon theme resource paths...");
   /* TODO auto-generate this code from meson (also in
@@ -1262,8 +1167,7 @@ zrythm_app_startup (GApplication * app)
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/gnome-builder");
   gtk_icon_theme_add_resource_path (
-    icon_theme,
-    "/org/zrythm/Zrythm/app/icons/gnome-icon-library");
+    icon_theme, "/org/zrythm/Zrythm/app/icons/gnome-icon-library");
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/fluentui");
   gtk_icon_theme_add_resource_path (
@@ -1277,10 +1181,8 @@ zrythm_app_startup (GApplication * app)
 
   /* get css theme file path */
   GtkCssProvider * css_provider = gtk_css_provider_new ();
-  char *           user_themes_dir =
-    zrythm_get_dir (ZRYTHM_DIR_USER_THEMES_CSS);
-  char * css_theme_file =
-    g_settings_get_string (S_P_UI_GENERAL, "css-theme");
+  char * user_themes_dir = zrythm_get_dir (ZRYTHM_DIR_USER_THEMES_CSS);
+  char * css_theme_file = g_settings_get_string (S_P_UI_GENERAL, "css-theme");
   char * css_theme_path =
     g_build_filename (user_themes_dir, css_theme_file, NULL);
   g_free (user_themes_dir);
@@ -1290,8 +1192,8 @@ zrythm_app_startup (GApplication * app)
       g_free (css_theme_path);
       char * system_themes_dir =
         zrythm_get_dir (ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR);
-      css_theme_path = g_build_filename (
-        system_themes_dir, css_theme_file, NULL);
+      css_theme_path =
+        g_build_filename (system_themes_dir, css_theme_file, NULL);
       g_free (system_themes_dir);
     }
   if (!g_file_test (css_theme_path, G_FILE_TEST_EXISTS))
@@ -1300,22 +1202,19 @@ zrythm_app_startup (GApplication * app)
       g_free (css_theme_path);
       char * system_themes_dir =
         zrythm_get_dir (ZRYTHM_DIR_SYSTEM_THEMES_CSS_DIR);
-      css_theme_path = g_build_filename (
-        system_themes_dir, "zrythm-theme.css", NULL);
+      css_theme_path =
+        g_build_filename (system_themes_dir, "zrythm-theme.css", NULL);
       g_free (system_themes_dir);
     }
   g_free (css_theme_file);
   g_message ("CSS theme path: %s", css_theme_path);
 
   /* set default css provider */
-  gtk_css_provider_load_from_path (
-    css_provider, css_theme_path);
+  gtk_css_provider_load_from_path (css_provider, css_theme_path);
   gtk_style_context_add_provider_for_display (
-    gdk_display_get_default (),
-    GTK_STYLE_PROVIDER (css_provider), 800);
+    gdk_display_get_default (), GTK_STYLE_PROVIDER (css_provider), 800);
   g_object_unref (css_provider);
-  g_message (
-    "set default css provider from path: %s", css_theme_path);
+  g_message ("set default css provider from path: %s", css_theme_path);
 
   /* set default window icon */
   gtk_window_set_default_icon_name ("zrythm");
@@ -1337,25 +1236,21 @@ zrythm_app_startup (GApplication * app)
 
   /* start initialization in another thread */
   zix_sem_init (&self->progress_status_lock, 1);
-  self->init_thread = g_thread_new (
-    "init_thread", (GThreadFunc) init_thread, self);
+  self->init_thread =
+    g_thread_new ("init_thread", (GThreadFunc) init_thread, self);
 
   /* set a source func in the main GTK thread to
    * check when initialization finished */
-  g_idle_add (
-    (GSourceFunc) zrythm_app_prompt_for_project_func, self);
+  g_idle_add ((GSourceFunc) zrythm_app_prompt_for_project_func, self);
 
   /* install accelerators for each action */
   const char * primary = NULL;
   const char * secondary = NULL;
-#define INSTALL_ACCEL_WITH_SECONDARY( \
-  keybind, secondary_keybind, action) \
-  primary = user_shortcuts_get ( \
-    S_USER_SHORTCUTS, true, action, keybind); \
-  secondary = user_shortcuts_get ( \
-    S_USER_SHORTCUTS, false, action, secondary_keybind); \
-  zrythm_app_install_action_accel ( \
-    self, primary, secondary, action)
+#define INSTALL_ACCEL_WITH_SECONDARY(keybind, secondary_keybind, action) \
+  primary = user_shortcuts_get (S_USER_SHORTCUTS, true, action, keybind); \
+  secondary = \
+    user_shortcuts_get (S_USER_SHORTCUTS, false, action, secondary_keybind); \
+  zrythm_app_install_action_accel (self, primary, secondary, action)
 
 #define INSTALL_ACCEL(keybind, action) \
   INSTALL_ACCEL_WITH_SECONDARY (keybind, NULL, action)
@@ -1379,28 +1274,23 @@ zrythm_app_startup (GApplication * app)
   INSTALL_ACCEL ("<Control>v", "app.paste");
   INSTALL_ACCEL ("<Control>d", "app.duplicate");
   INSTALL_ACCEL ("<Control><Shift>4", "app.toggle-left-panel");
-  INSTALL_ACCEL (
-    "<Control><Shift>6", "app.toggle-right-panel");
+  INSTALL_ACCEL ("<Control><Shift>6", "app.toggle-right-panel");
   INSTALL_ACCEL ("<Control><Shift>2", "app.toggle-bot-panel");
   INSTALL_ACCEL ("<Control>equal", "app.zoom-in::global");
   INSTALL_ACCEL ("<Control>minus", "app.zoom-out::global");
   INSTALL_ACCEL_WITH_SECONDARY (
-    "<Control>plus", "<Control>0",
-    "app.original-size::global");
-  INSTALL_ACCEL (
-    "<Control>bracketleft", "app.best-fit::global");
+    "<Control>plus", "<Control>0", "app.original-size::global");
+  INSTALL_ACCEL ("<Control>bracketleft", "app.best-fit::global");
   INSTALL_ACCEL ("<Control>l", "app.loop-selection");
   INSTALL_ACCEL ("Home", "app.goto-start-marker");
   INSTALL_ACCEL ("End", "app.goto-end-marker");
   INSTALL_ACCEL_WITH_SECONDARY (
-    "<Control>KP_4", "<Control>BackSpace",
-    "app.goto-prev-marker");
+    "<Control>KP_4", "<Control>BackSpace", "app.goto-prev-marker");
   INSTALL_ACCEL ("<Control>KP_6", "app.goto-next-marker");
   INSTALL_ACCEL ("<Control>space", "app.play-pause");
   INSTALL_ACCEL ("<Alt>Q", "app.quantize-options::global");
   INSTALL_ACCEL ("<Control>J", "app.merge-selection");
-  INSTALL_ACCEL (
-    gdk_keyval_name (GDK_KEY_Home), "app.go-to-start");
+  INSTALL_ACCEL (gdk_keyval_name (GDK_KEY_Home), "app.go-to-start");
 
 #undef INSTALL_ACCEL
 
@@ -1414,9 +1304,7 @@ zrythm_app_startup (GApplication * app)
  * This is also called manually on SIGINT.
  */
 static void
-zrythm_app_on_shutdown (
-  GApplication * application,
-  ZrythmApp *    self)
+zrythm_app_on_shutdown (GApplication * application, ZrythmApp * self)
 {
   g_message ("Shutting down...");
 
@@ -1479,10 +1367,7 @@ print_settings (ZrythmApp * self)
 }
 
 static void
-convert_project (
-  ZrythmApp *  self,
-  bool         compress,
-  const char * file_to_convert)
+convert_project (ZrythmApp * self, bool compress, const char * file_to_convert)
 {
   verify_file_exists (file_to_convert);
 
@@ -1495,30 +1380,28 @@ convert_project (
       verify_output_exists (self);
 
       ret = project_compress (
-        &self->output_file, NULL, PROJECT_COMPRESS_FILE,
-        file_to_convert, 0, PROJECT_COMPRESS_FILE, &err);
+        &self->output_file, NULL, PROJECT_COMPRESS_FILE, file_to_convert, 0,
+        PROJECT_COMPRESS_FILE, &err);
     }
   else
     {
       if (self->output_file)
         {
           ret = project_decompress (
-            &self->output_file, NULL, PROJECT_DECOMPRESS_FILE,
-            file_to_convert, 0, PROJECT_DECOMPRESS_FILE, &err);
+            &self->output_file, NULL, PROJECT_DECOMPRESS_FILE, file_to_convert,
+            0, PROJECT_DECOMPRESS_FILE, &err);
         }
       else
         {
           ret = project_decompress (
-            &output, &output_size, PROJECT_DECOMPRESS_DATA,
-            file_to_convert, 0, PROJECT_DECOMPRESS_FILE, &err);
+            &output, &output_size, PROJECT_DECOMPRESS_DATA, file_to_convert, 0,
+            PROJECT_DECOMPRESS_FILE, &err);
         }
     }
 
   if (!ret)
     {
-      fprintf (
-        stderr, _ ("Project failed to decompress: %s\n"),
-        err->message);
+      fprintf (stderr, _ ("Project failed to decompress: %s\n"), err->message);
       g_error_free (err);
       exit (EXIT_FAILURE);
     }
@@ -1526,8 +1409,7 @@ convert_project (
     {
       if (!compress && !self->output_file)
         {
-          output =
-            g_realloc (output, output_size + sizeof (char));
+          output = g_realloc (output, output_size + sizeof (char));
           output[output_size] = '\0';
           fprintf (stdout, "%s\n", output);
         }
@@ -1545,13 +1427,11 @@ gen_project (ZrythmApp * self, const char * filepath)
 #ifdef HAVE_GUILE
   ZRYTHM->generating_project = true;
   ZRYTHM->have_ui = false;
-  int script_res =
-    guile_project_generator_generate_project_from_file (
-      filepath, self->output_file);
+  int script_res = guile_project_generator_generate_project_from_file (
+    filepath, self->output_file);
   exit (script_res);
 #else
-  fprintf (
-    stderr, _ ("libguile is required for this option\n"));
+  fprintf (stderr, _ ("libguile is required for this option\n"));
   exit (EXIT_FAILURE);
 #endif
 }
@@ -1568,10 +1448,7 @@ reset_to_factory (void)
  * Called on the local instance to handle options.
  */
 static int
-on_handle_local_options (
-  GApplication * app,
-  GVariantDict * opts,
-  ZrythmApp *    self)
+on_handle_local_options (GApplication * app, GVariantDict * opts, ZrythmApp * self)
 {
   /*g_debug ("handling options");*/
 
@@ -1589,22 +1466,19 @@ on_handle_local_options (
   else if (g_variant_dict_contains (opts, "yaml-to-zpj"))
     {
       char * filepath = NULL;
-      g_variant_dict_lookup (
-        opts, "yaml-to-zpj", "^ay", &filepath);
+      g_variant_dict_lookup (opts, "yaml-to-zpj", "^ay", &filepath);
       convert_project (self, true, filepath);
     }
   else if (g_variant_dict_contains (opts, "zpj-to-yaml"))
     {
       char * filepath = NULL;
-      g_variant_dict_lookup (
-        opts, "zpj-to-yaml", "^ay", &filepath);
+      g_variant_dict_lookup (opts, "zpj-to-yaml", "^ay", &filepath);
       convert_project (self, false, filepath);
     }
   else if (g_variant_dict_contains (opts, "gen-project"))
     {
       char * filepath = NULL;
-      g_variant_dict_lookup (
-        opts, "gen-project", "^ay", &filepath);
+      g_variant_dict_lookup (opts, "gen-project", "^ay", &filepath);
       gen_project (self, filepath);
     }
   else if (g_variant_dict_contains (opts, "reset-to-factory"))
@@ -1615,8 +1489,7 @@ on_handle_local_options (
   if (g_variant_dict_contains (opts, "cyaml-log-level"))
     {
       char * log_level = NULL;
-      g_variant_dict_lookup (
-        opts, "cyaml-log-level", "&s", &log_level);
+      g_variant_dict_lookup (opts, "cyaml-log-level", "&s", &log_level);
       if (string_is_equal_ignore_case (log_level, "debug"))
         {
           yaml_set_log_level (CYAML_LOG_DEBUG);
@@ -1638,8 +1511,7 @@ on_handle_local_options (
 #ifdef APPIMAGE_BUILD
   {
     char * rpath = NULL;
-    if (!g_variant_dict_lookup (
-          opts, "appimage-runtime-path", "&s", &rpath))
+    if (!g_variant_dict_lookup (opts, "appimage-runtime-path", "&s", &rpath))
       {
         g_error ("must pass --appimage-runtime-path");
       }
@@ -1696,63 +1568,46 @@ static void
 add_option_entries (ZrythmApp * self)
 {
   GOptionEntry entries[] = {
-    { "version", 'v', G_OPTION_FLAG_NO_ARG,
-     G_OPTION_ARG_CALLBACK, print_version,
-     _ ("Print version information"), NULL },
-    { "zpj-to-yaml", 0, G_OPTION_FLAG_NONE,
-     G_OPTION_ARG_FILENAME, NULL,
+    { "version", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
+     print_version, _ ("Print version information"), NULL },
+    { "zpj-to-yaml", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_FILENAME, NULL,
      _ ("Convert ZPJ-FILE to YAML"), "ZPJ-FILE" },
-    { "yaml-to-zpj", 0, G_OPTION_FLAG_NONE,
-     G_OPTION_ARG_FILENAME, NULL,
-     _ ("Convert YAML-PROJECT-FILE to the .zpj format"),
-     "YAML-PROJECT-FILE" },
-    { "gen-project", 0, G_OPTION_FLAG_NONE,
-     G_OPTION_ARG_FILENAME, NULL,
-     _ ("Generate a project from SCRIPT-FILE"),
-     "SCRIPT-FILE" },
-    { "pretty", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE,
-     &self->pretty_print,
+    { "yaml-to-zpj", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_FILENAME, NULL,
+     _ ("Convert YAML-PROJECT-FILE to the .zpj format"), "YAML-PROJECT-FILE" },
+    { "gen-project", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_FILENAME, NULL,
+     _ ("Generate a project from SCRIPT-FILE"), "SCRIPT-FILE" },
+    { "pretty", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, &self->pretty_print,
      _ ("Print output in user-friendly way"), NULL },
-    { "print-settings", 'p', G_OPTION_FLAG_NONE,
-     G_OPTION_ARG_NONE, NULL, _ ("Print current settings"),
-     NULL },
-    { "reset-to-factory", 0, G_OPTION_FLAG_NONE,
-     G_OPTION_ARG_NONE, NULL,
+    { "print-settings", 'p', G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, NULL,
+     _ ("Print current settings"), NULL },
+    { "reset-to-factory", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, NULL,
      _ ("Reset to factory settings"), NULL },
-    { "audio-backend", 0, G_OPTION_FLAG_NONE,
-     G_OPTION_ARG_STRING, &self->audio_backend,
-     _ ("Override the audio backend to use"), "BACKEND" },
-    { "midi-backend", 0, G_OPTION_FLAG_NONE,
-     G_OPTION_ARG_STRING, &self->midi_backend,
-     _ ("Override the MIDI backend to use"), "BACKEND" },
-    { "dummy", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
-     set_dummy, _ ("Shorthand for --midi-backend=none "
+    { "audio-backend", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING,
+     &self->audio_backend, _ ("Override the audio backend to use"), "BACKEND" },
+    { "midi-backend", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING,
+     &self->midi_backend, _ ("Override the MIDI backend to use"), "BACKEND" },
+    { "dummy", 0, G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK, set_dummy,
+     _ ("Shorthand for --midi-backend=none "
          "--audio-backend=none"),
      NULL },
-    { "buf-size", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_INT,
-     &self->buf_size,
+    { "buf-size", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_INT, &self->buf_size,
      "Override the buffer size to use for the "
       "audio backend, if applicable", "BUF_SIZE" },
-    { "samplerate", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_INT,
-     &self->samplerate,
+    { "samplerate", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_INT, &self->samplerate,
      "Override the samplerate to use for the "
       "audio backend, if applicable", "SAMPLERATE" },
     { "output", 'o', G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING,
-     &self->output_file, "File or directory to output to",
-     "FILE" },
-    { "cyaml-log-level", 0, G_OPTION_FLAG_NONE,
-     G_OPTION_ARG_STRING, NULL, "Cyaml log level",
-     "LOG-LEVEL" },
+     &self->output_file, "File or directory to output to", "FILE" },
+    { "cyaml-log-level", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING, NULL,
+     "Cyaml log level", "LOG-LEVEL" },
 #ifdef APPIMAGE_BUILD
-    { "appimage-runtime-path", 0, G_OPTION_FLAG_NONE,
-     G_OPTION_ARG_STRING, NULL, "AppImage runtime path",
-     "PATH" },
+    { "appimage-runtime-path", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_STRING, NULL,
+     "AppImage runtime path", "PATH" },
 #endif
     { 0 },
   };
 
-  g_application_add_main_option_entries (
-    G_APPLICATION (self), entries);
+  g_application_add_main_option_entries (G_APPLICATION (self), entries);
   g_application_set_option_context_parameter_string (
     G_APPLICATION (self), _ ("[PROJECT-FILE]"));
 
@@ -1766,8 +1621,7 @@ add_option_entries (ZrythmApp * self)
       "  -p --pretty                         Pretty-print current settings\n\n"
       "Please report issues to %s\n"),
     ISSUE_TRACKER_URL);
-  g_application_set_option_context_description (
-    G_APPLICATION (self), examples);
+  g_application_set_option_context_description (G_APPLICATION (self), examples);
 
   char summary[8000];
   sprintf (
@@ -1775,8 +1629,7 @@ add_option_entries (ZrythmApp * self)
     _ ("Run %s, optionally passing a project "
        "file."),
     PROGRAM_NAME);
-  g_application_set_option_context_summary (
-    G_APPLICATION (self), summary);
+  g_application_set_option_context_summary (G_APPLICATION (self), summary);
 }
 
 /**
@@ -1797,9 +1650,7 @@ bool
 zrythm_app_check_and_show_trial_limit_error (ZrythmApp * self)
 {
 #ifdef TRIAL_VER
-  if (
-    PROJECT && TRACKLIST
-    && TRACKLIST->num_tracks >= TRIAL_MAX_TRACKS)
+  if (PROJECT && TRACKLIST && TRACKLIST->num_tracks >= TRIAL_MAX_TRACKS)
     {
       ui_show_error_message_printf (
         true,
@@ -1839,8 +1690,7 @@ zrythm_app_new (int argc, const char ** argv)
 
   /* add handlers */
   g_signal_connect (
-    G_OBJECT (self), "shutdown",
-    G_CALLBACK (zrythm_app_on_shutdown), self);
+    G_OBJECT (self), "shutdown", G_CALLBACK (zrythm_app_on_shutdown), self);
   g_signal_connect (
     G_OBJECT (self), "handle-local-options",
     G_CALLBACK (on_handle_local_options), self);
@@ -1851,16 +1701,14 @@ zrythm_app_new (int argc, const char ** argv)
 static void
 finalize (ZrythmApp * self)
 {
-  g_message (
-    "%s (%s): finalizing ZrythmApp...", __func__, __FILE__);
+  g_message ("%s (%s): finalizing ZrythmApp...", __func__, __FILE__);
 
   if (self->default_settings)
     {
       g_object_unref (self->default_settings);
     }
 
-  object_free_w_func_and_null (
-    ui_caches_free, self->ui_caches);
+  object_free_w_func_and_null (ui_caches_free, self->ui_caches);
 
   /* init curl */
   curl_global_cleanup ();
@@ -1911,6 +1759,5 @@ zrythm_app_init (ZrythmApp * self)
   };
 
   g_action_map_add_action_entries (
-    G_ACTION_MAP (self), entries, G_N_ELEMENTS (entries),
-    self);
+    G_ACTION_MAP (self), entries, G_N_ELEMENTS (entries), self);
 }

@@ -34,10 +34,8 @@ typedef struct AudioEngine        AudioEngine;
 #define TRANSPORT_DEFAULT_TOTAL_BARS 128
 
 #define PLAYHEAD (&TRANSPORT->playhead_pos)
-#define TRANSPORT_IS_ROLLING \
-  (TRANSPORT->play_state == PLAYSTATE_ROLLING)
-#define TRANSPORT_IS_PAUSED \
-  (TRANSPORT->play_state == PLAYSTATE_PAUSED)
+#define TRANSPORT_IS_ROLLING (TRANSPORT->play_state == PLAYSTATE_ROLLING)
+#define TRANSPORT_IS_PAUSED (TRANSPORT->play_state == PLAYSTATE_PAUSED)
 #define TRANSPORT_IS_LOOPING (TRANSPORT->loop)
 #define TRANSPORT_IS_RECORDING (TRANSPORT->recording)
 
@@ -63,8 +61,7 @@ transport_preroll_count_to_str (PrerollCountBars bars)
 }
 
 static inline int
-transport_preroll_count_bars_enum_to_int (
-  PrerollCountBars bars)
+transport_preroll_count_bars_enum_to_int (PrerollCountBars bars)
 {
   switch (bars)
     {
@@ -329,64 +326,22 @@ typedef struct Transport
 static const cyaml_schema_field_t transport_fields_schema[] = {
   YAML_FIELD_INT (Transport, schema_version),
   YAML_FIELD_INT (Transport, total_bars),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Transport,
-    playhead_pos,
-    position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Transport,
-    cue_pos,
-    position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Transport,
-    loop_start_pos,
-    position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Transport,
-    loop_end_pos,
-    position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Transport,
-    punch_in_pos,
-    position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Transport,
-    punch_out_pos,
-    position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Transport,
-    range_1,
-    position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Transport,
-    range_2,
-    position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (Transport, playhead_pos, position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (Transport, cue_pos, position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (Transport, loop_start_pos, position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (Transport, loop_end_pos, position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (Transport, punch_in_pos, position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (Transport, punch_out_pos, position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (Transport, range_1, position_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (Transport, range_2, position_fields_schema),
   YAML_FIELD_INT (Transport, has_range),
   YAML_FIELD_INT (Transport, position),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport,
-    roll,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport,
-    stop,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport,
-    backward,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport,
-    forward,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport,
-    loop_toggle,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport,
-    rec_toggle,
-    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport, roll, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport, stop, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport, backward, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport, forward, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport, loop_toggle, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport, rec_toggle, port_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -459,27 +414,19 @@ transport_stretch_regions (
   GError **            error);
 
 void
-transport_set_punch_mode_enabled (
-  Transport * self,
-  bool        enabled);
+transport_set_punch_mode_enabled (Transport * self, bool enabled);
 
 void
-transport_set_start_playback_on_midi_input (
-  Transport * self,
-  bool        enabled);
+transport_set_start_playback_on_midi_input (Transport * self, bool enabled);
 
 void
-transport_set_recording_mode (
-  Transport *            self,
-  TransportRecordingMode mode);
+transport_set_recording_mode (Transport * self, TransportRecordingMode mode);
 
 /**
  * Sets whether metronome is enabled or not.
  */
 void
-transport_set_metronome_enabled (
-  Transport * self,
-  const int   enabled);
+transport_set_metronome_enabled (Transport * self, const int enabled);
 
 /**
  * Moves the playhead by the time corresponding to
@@ -487,9 +434,7 @@ transport_set_metronome_enabled (
  * end point.
  */
 void
-transport_add_to_playhead (
-  Transport *          self,
-  const signed_frame_t nframes);
+transport_add_to_playhead (Transport * self, const signed_frame_t nframes);
 
 /**
  * Request pause.
@@ -572,10 +517,7 @@ transport_move_playhead (
  * Enables or disables loop.
  */
 void
-transport_set_loop (
-  Transport * self,
-  bool        enabled,
-  bool        with_wait);
+transport_set_loop (Transport * self, bool enabled, bool with_wait);
 
 /**
  * Moves the playhead to the start Marker.
@@ -609,9 +551,7 @@ transport_goto_next_marker (Transport * self);
  *   (false).
  */
 void
-transport_update_positions (
-  Transport * self,
-  bool        update_from_ticks);
+transport_update_positions (Transport * self, bool update_from_ticks);
 
 #if 0
 /**
@@ -650,10 +590,7 @@ transport_get_ppqn (Transport * self);
  * Stores the position of the range in \ref pos.
  */
 void
-transport_get_range_pos (
-  Transport * self,
-  bool        first,
-  Position *  pos);
+transport_get_range_pos (Transport * self, bool first, Position * pos);
 
 /**
  * Sets if the project has range and updates UI.
@@ -692,19 +629,15 @@ transport_is_loop_point_met (
     self->loop
     && G_UNLIKELY (
       self->loop_end_pos.frames > g_start_frames
-      && self->loop_end_pos.frames
-           <= g_start_frames + (long) nframes))
+      && self->loop_end_pos.frames <= g_start_frames + (long) nframes))
     {
-      return (
-        nframes_t) (self->loop_end_pos.frames - g_start_frames);
+      return (nframes_t) (self->loop_end_pos.frames - g_start_frames);
     }
   return 0;
 }
 
 bool
-transport_position_is_inside_punch_range (
-  Transport * self,
-  Position *  pos);
+transport_position_is_inside_punch_range (Transport * self, Position * pos);
 
 /**
  * Recalculates the total bars based on the last
@@ -715,24 +648,16 @@ transport_position_is_inside_punch_range (
  *   project will be checked.
  */
 void
-transport_recalculate_total_bars (
-  Transport *          self,
-  ArrangerSelections * sel);
+transport_recalculate_total_bars (Transport * self, ArrangerSelections * sel);
 
 /**
  * Updates the total bars.
  */
 void
-transport_update_total_bars (
-  Transport * self,
-  int         total_bars,
-  bool        fire_events);
+transport_update_total_bars (Transport * self, int total_bars, bool fire_events);
 
 void
-transport_update_caches (
-  Transport * self,
-  int         beats_per_bar,
-  int         beat_unit);
+transport_update_caches (Transport * self, int beats_per_bar, int beat_unit);
 
 /**
  * Sets recording on/off.

@@ -29,9 +29,7 @@ supported_file_new_from_path (const char * path)
   self->type = supported_file_get_type (path);
   self->label = g_path_get_basename (path);
 
-  g_warn_if_fail (
-    self->type >= FILE_TYPE_MIDI
-    && self->type < NUM_FILE_TYPES);
+  g_warn_if_fail (self->type >= FILE_TYPE_MIDI && self->type < NUM_FILE_TYPES);
 
   return self;
 }
@@ -44,8 +42,7 @@ supported_file_new_from_uri (const char * uri, GError ** error)
   if (!path)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err, "Error getting file path from URI <%s>",
-        uri);
+        error, err, "Error getting file path from URI <%s>", uri);
       return NULL;
     }
 
@@ -64,8 +61,8 @@ supported_file_type_is_supported (ZFileType type)
   if (supported_file_type_is_audio (type))
     {
       if (
-        type == FILE_TYPE_FLAC || type == FILE_TYPE_OGG
-        || type == FILE_TYPE_WAV || type == FILE_TYPE_MP3)
+        type == FILE_TYPE_FLAC || type == FILE_TYPE_OGG || type == FILE_TYPE_WAV
+        || type == FILE_TYPE_MP3)
         return 1;
     }
   if (supported_file_type_is_midi (type))
@@ -238,12 +235,10 @@ supported_file_should_autoplay (const SupportedFile * self)
     {
       AudioFile * af = audio_file_new (self->abs_path);
       GError *    err = NULL;
-      bool success = audio_file_read_metadata (af, &err);
+      bool        success = audio_file_read_metadata (af, &err);
       if (!success)
         {
-          HANDLE_ERROR (
-            err, "Error reading metadata from %s",
-            af->filepath);
+          HANDLE_ERROR (err, "Error reading metadata from %s", af->filepath);
           return false;
         }
 
@@ -262,42 +257,34 @@ supported_file_should_autoplay (const SupportedFile * self)
  * Returns a pango markup to be used in GTK labels.
  */
 char *
-supported_file_get_info_text_for_label (
-  const SupportedFile * self)
+supported_file_get_info_text_for_label (const SupportedFile * self)
 {
-  char * file_type_label =
-    supported_file_type_get_description (self->type);
+  char * file_type_label = supported_file_type_get_description (self->type);
   char * label = NULL;
   if (supported_file_type_is_audio (self->type))
     {
       AudioFile * af = audio_file_new (self->abs_path);
       GError *    err = NULL;
-      bool success = audio_file_read_metadata (af, &err);
+      bool        success = audio_file_read_metadata (af, &err);
       if (!success)
         {
-          HANDLE_ERROR (
-            err, "Error reading metadata from %s",
-            af->filepath);
+          HANDLE_ERROR (err, "Error reading metadata from %s", af->filepath);
           g_free (file_type_label);
           return g_strdup_printf (
-            _ ("Failed reading metadata for %s"),
-            af->filepath);
+            _ ("Failed reading metadata for %s"), af->filepath);
         }
 
       label = g_markup_printf_escaped (
-        _ (
-          "<b>%s</b>\n"
-          "Sample rate: %d\n"
-          "Length: %" PRId64 "s "
-          "%" PRId64 " ms | BPM: %.1f\n"
-          "Channel(s): %u | Bitrate: %'d.%d kb/s\n"
-          "Bit depth: %d bits"),
-        self->label, af->metadata.samplerate,
-        af->metadata.length / 1000,
+        _ ("<b>%s</b>\n"
+           "Sample rate: %d\n"
+           "Length: %" PRId64 "s "
+           "%" PRId64 " ms | BPM: %.1f\n"
+           "Channel(s): %u | Bitrate: %'d.%d kb/s\n"
+           "Bit depth: %d bits"),
+        self->label, af->metadata.samplerate, af->metadata.length / 1000,
         af->metadata.length % 1000, (double) af->metadata.bpm,
         af->metadata.channels, af->metadata.bit_rate / 1000,
-        (af->metadata.bit_rate % 1000) / 100,
-        af->metadata.bit_depth);
+        (af->metadata.bit_rate % 1000) / 100, af->metadata.bit_depth);
 
       audio_file_free (af);
     }

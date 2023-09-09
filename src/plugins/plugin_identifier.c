@@ -16,11 +16,9 @@ bool
 plugin_identifier_validate (const PluginIdentifier * self)
 {
   z_return_val_if_fail_cmp (
-    self->schema_version, ==,
-    PLUGIN_IDENTIFIER_SCHEMA_VERSION, false);
+    self->schema_version, ==, PLUGIN_IDENTIFIER_SCHEMA_VERSION, false);
   g_return_val_if_fail (
-    plugin_identifier_validate_slot_type_slot_combo (
-      self->slot_type, self->slot),
+    plugin_identifier_validate_slot_type_slot_combo (self->slot_type, self->slot),
     false);
   return true;
 }
@@ -40,9 +38,7 @@ plugin_identifier_validate_slot_type_slot_combo (
 }
 
 void
-plugin_identifier_copy (
-  PluginIdentifier *       dest,
-  const PluginIdentifier * src)
+plugin_identifier_copy (PluginIdentifier * dest, const PluginIdentifier * src)
 {
   g_return_if_fail (plugin_identifier_validate (src));
 
@@ -53,11 +49,9 @@ plugin_identifier_copy (
 }
 
 void
-plugin_identifier_print (
-  const PluginIdentifier * self,
-  char *                   str)
+plugin_identifier_print (const PluginIdentifier * self, char * str)
 {
   sprintf (
-    str, "slot_type: %d, track_name hash: %u, slot: %d",
-    self->slot_type, self->track_name_hash, self->slot);
+    str, "slot_type: %d, track_name hash: %u, slot: %d", self->slot_type,
+    self->track_name_hash, self->slot);
 }

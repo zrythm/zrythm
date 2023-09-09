@@ -39,27 +39,25 @@ typedef struct CachedPluginDescriptors
   int                num_blacklisted;
 } CachedPluginDescriptors;
 
-static const cyaml_schema_field_t
-  cached_plugin_descriptors_fields_schema[] = {
-    YAML_FIELD_INT (CachedPluginDescriptors, schema_version),
-    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-      CachedPluginDescriptors,
-      descriptors,
-      plugin_descriptor_schema),
-    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-      CachedPluginDescriptors,
-      blacklisted,
-      plugin_descriptor_schema),
+static const cyaml_schema_field_t cached_plugin_descriptors_fields_schema[] = {
+  YAML_FIELD_INT (CachedPluginDescriptors, schema_version),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    CachedPluginDescriptors,
+    descriptors,
+    plugin_descriptor_schema),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    CachedPluginDescriptors,
+    blacklisted,
+    plugin_descriptor_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  cached_plugin_descriptors_schema = {
-    YAML_VALUE_PTR (
-      CachedPluginDescriptors,
-      cached_plugin_descriptors_fields_schema),
-  };
+static const cyaml_schema_value_t cached_plugin_descriptors_schema = {
+  YAML_VALUE_PTR (
+    CachedPluginDescriptors,
+    cached_plugin_descriptors_fields_schema),
+};
 
 /**
  * Reads the file and fills up the object.
@@ -68,8 +66,7 @@ CachedPluginDescriptors *
 cached_plugin_descriptors_new (void);
 
 void
-cached_plugin_descriptors_serialize_to_file (
-  CachedPluginDescriptors * self);
+cached_plugin_descriptors_serialize_to_file (CachedPluginDescriptors * self);
 
 /**
  * Returns if the plugin at the given path is
@@ -156,12 +153,10 @@ cached_plugin_descriptors_add (
  * Clears the descriptors and removes the cache file.
  */
 void
-cached_plugin_descriptors_clear (
-  CachedPluginDescriptors * self);
+cached_plugin_descriptors_clear (CachedPluginDescriptors * self);
 
 void
-cached_plugin_descriptors_free (
-  CachedPluginDescriptors * self);
+cached_plugin_descriptors_free (CachedPluginDescriptors * self);
 
 /**
  * @}

@@ -315,16 +315,14 @@ test_curve_algorithms (void)
   val = curve_get_normalized_y (0.0, &opts, 0);
   g_assert_cmpfloat_with_epsilon (val, 0.0, epsilon);
   val = curve_get_normalized_y (0.5, &opts, 0);
-  g_assert_cmpfloat_with_epsilon (
-    val, 1 - 0.968689501, epsilon);
+  g_assert_cmpfloat_with_epsilon (val, 1 - 0.968689501, epsilon);
 
   val = curve_get_normalized_y (1.0, &opts, 0);
   g_assert_cmpfloat_with_epsilon (val, 1.0, epsilon);
   val = curve_get_normalized_y (0.0, &opts, 1);
   g_assert_cmpfloat_with_epsilon (val, 1.0, epsilon);
   val = curve_get_normalized_y (0.5, &opts, 1);
-  g_assert_cmpfloat_with_epsilon (
-    val, 1 - 0.968689501, epsilon);
+  g_assert_cmpfloat_with_epsilon (val, 1 - 0.968689501, epsilon);
   val = curve_get_normalized_y (1.0, &opts, 1);
   g_assert_cmpfloat_with_epsilon (val, 0.0, epsilon);
 
@@ -333,15 +331,13 @@ test_curve_algorithms (void)
   val = curve_get_normalized_y (0.0, &opts, 0);
   g_assert_cmpfloat_with_epsilon (val, 0.0, epsilon);
   val = curve_get_normalized_y (0.5, &opts, 0);
-  g_assert_cmpfloat_with_epsilon (
-    val, 1 - 0.893168449, epsilon);
+  g_assert_cmpfloat_with_epsilon (val, 1 - 0.893168449, epsilon);
   val = curve_get_normalized_y (1.0, &opts, 0);
   g_assert_cmpfloat_with_epsilon (val, 1.0, epsilon);
   val = curve_get_normalized_y (0.0, &opts, 1);
   g_assert_cmpfloat_with_epsilon (val, 1.0, epsilon);
   val = curve_get_normalized_y (0.5, &opts, 1);
-  g_assert_cmpfloat_with_epsilon (
-    val, 1 - 0.893168449, epsilon);
+  g_assert_cmpfloat_with_epsilon (val, 1 - 0.893168449, epsilon);
   val = curve_get_normalized_y (1.0, &opts, 1);
   g_assert_cmpfloat_with_epsilon (val, 0.0, epsilon);
 
@@ -401,8 +397,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/curve/"
 
   g_test_add_func (
-    TEST_PREFIX "test_curve_algorithms",
-    (GTestFunc) test_curve_algorithms);
+    TEST_PREFIX "test_curve_algorithms", (GTestFunc) test_curve_algorithms);
 
   return g_test_run ();
 }

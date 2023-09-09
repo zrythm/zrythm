@@ -43,25 +43,24 @@ typedef struct AutomationSelections
 
 } AutomationSelections;
 
-static const cyaml_schema_field_t
-  automation_selections_fields_schema[] = {
-    YAML_FIELD_MAPPING_EMBEDDED (
-      AutomationSelections,
-      base,
-      arranger_selections_fields_schema),
-    YAML_FIELD_INT (AutomationSelections, schema_version),
-    CYAML_FIELD_SEQUENCE_COUNT (
-      "automation_points",
-      CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-      AutomationSelections,
-      automation_points,
-      num_automation_points,
-      &automation_point_schema,
-      0,
-      CYAML_UNLIMITED),
+static const cyaml_schema_field_t automation_selections_fields_schema[] = {
+  YAML_FIELD_MAPPING_EMBEDDED (
+    AutomationSelections,
+    base,
+    arranger_selections_fields_schema),
+  YAML_FIELD_INT (AutomationSelections, schema_version),
+  CYAML_FIELD_SEQUENCE_COUNT (
+    "automation_points",
+    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
+    AutomationSelections,
+    automation_points,
+    num_automation_points,
+    &automation_point_schema,
+    0,
+    CYAML_UNLIMITED),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t automation_selections_schema = {
   CYAML_VALUE_MAPPING (

@@ -51,21 +51,18 @@ typedef struct AudioClipEditor
   EditorSettings editor_settings;
 } AudioClipEditor;
 
-static const cyaml_schema_field_t
-  audio_clip_editor_fields_schema[] = {
-    YAML_FIELD_INT (AudioClipEditor, schema_version),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      AudioClipEditor,
-      editor_settings,
-      editor_settings_fields_schema),
+static const cyaml_schema_field_t audio_clip_editor_fields_schema[] = {
+  YAML_FIELD_INT (AudioClipEditor, schema_version),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    AudioClipEditor,
+    editor_settings,
+    editor_settings_fields_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t audio_clip_editor_schema = {
-  YAML_VALUE_PTR (
-    AudioClipEditor,
-    audio_clip_editor_fields_schema),
+  YAML_VALUE_PTR (AudioClipEditor, audio_clip_editor_fields_schema),
 };
 
 void

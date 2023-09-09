@@ -74,8 +74,7 @@ typedef struct _WrappedObjectWithChangeSignal
  * Fires the signal.
  */
 void
-wrapped_object_with_change_signal_fire (
-  WrappedObjectWithChangeSignal * self);
+wrapped_object_with_change_signal_fire (WrappedObjectWithChangeSignal * self);
 
 /**
  * Returns a display name for the given object,
@@ -85,16 +84,13 @@ wrapped_object_with_change_signal_fire (
  * This can be used with GtkCclosureExpression.
  */
 char *
-wrapped_object_with_change_signal_get_display_name (
-  void * data);
+wrapped_object_with_change_signal_get_display_name (void * data);
 
 /**
  * Instantiates a new WrappedObjectWithChangeSignal.
  */
 WrappedObjectWithChangeSignal *
-wrapped_object_with_change_signal_new (
-  void *            obj,
-  WrappedObjectType type);
+wrapped_object_with_change_signal_new (void * obj, WrappedObjectType type);
 
 /**
  * If this function is not used, the internal object will

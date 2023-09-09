@@ -30,18 +30,13 @@ SCM_DEFINE (
   5,
   0,
   0,
-  (SCM start_pos,
-   SCM end_pos,
-   SCM track_idx,
-   SCM lane_idx,
-   SCM idx_inside_lane),
+  (SCM start_pos, SCM end_pos, SCM track_idx, SCM lane_idx, SCM idx_inside_lane),
   "Returns a new midi region.")
 #define FUNC_NAME s_
 {
   ZRegion * region = midi_region_new (
     scm_to_pointer (start_pos), scm_to_pointer (end_pos),
-    scm_to_int (track_idx), scm_to_int (lane_idx),
-    scm_to_int (idx_inside_lane));
+    scm_to_int (track_idx), scm_to_int (lane_idx), scm_to_int (idx_inside_lane));
 
   return scm_from_pointer (region, NULL);
 }
@@ -71,8 +66,7 @@ init_module (void * data)
 #  include "audio_midi_region.x"
 #endif
 
-  scm_c_export (
-    "midi-region-new", "midi-region-add-midi-note", NULL);
+  scm_c_export ("midi-region-new", "midi-region-add-midi-note", NULL);
 }
 
 void

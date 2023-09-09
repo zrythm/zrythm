@@ -152,10 +152,7 @@ dsp_abs_max (float * buf, size_t size)
  * @return Whether the peak changed.
  */
 HOT NONNULL static inline bool
-dsp_abs_max_with_existing_peak (
-  float * buf,
-  float * cur_peak,
-  size_t  size)
+dsp_abs_max_with_existing_peak (float * buf, float * cur_peak, size_t size)
 {
   float new_peak = *cur_peak;
 
@@ -224,12 +221,7 @@ dsp_add2 (float * dest, const float * src, size_t count)
  * Calculate dest[i] = dest[i] * k1 + src[i] * k2.
  */
 NONNULL HOT static inline void
-dsp_mix2 (
-  float *       dest,
-  const float * src,
-  float         k1,
-  float         k2,
-  size_t        size)
+dsp_mix2 (float * dest, const float * src, float k1, float k2, size_t size)
 {
 #ifdef HAVE_LSP_DSP
   if (ZRYTHM_USE_OPTIMIZED_DSP)
@@ -383,10 +375,6 @@ dsp_linear_fade_out_to (
  * - equal amplitude sum = (L+R) /2 (-6.02dB)
  */
 NONNULL void
-dsp_make_mono (
-  float * l,
-  float * r,
-  size_t  size,
-  bool    equal_power);
+dsp_make_mono (float * l, float * r, size_t size, bool equal_power);
 
 #endif

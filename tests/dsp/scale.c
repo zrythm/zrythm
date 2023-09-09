@@ -15,22 +15,17 @@
 static void
 test_scale_contains_note (void)
 {
-  MusicalScale * scale =
-    musical_scale_new (SCALE_MINOR, NOTE_D);
+  MusicalScale * scale = musical_scale_new (SCALE_MINOR, NOTE_D);
 
   g_assert_true (musical_scale_contains_note (scale, NOTE_C));
-  g_assert_false (
-    musical_scale_contains_note (scale, NOTE_CS));
+  g_assert_false (musical_scale_contains_note (scale, NOTE_CS));
   g_assert_true (musical_scale_contains_note (scale, NOTE_D));
-  g_assert_false (
-    musical_scale_contains_note (scale, NOTE_DS));
+  g_assert_false (musical_scale_contains_note (scale, NOTE_DS));
   g_assert_true (musical_scale_contains_note (scale, NOTE_E));
   g_assert_true (musical_scale_contains_note (scale, NOTE_F));
-  g_assert_false (
-    musical_scale_contains_note (scale, NOTE_FS));
+  g_assert_false (musical_scale_contains_note (scale, NOTE_FS));
   g_assert_true (musical_scale_contains_note (scale, NOTE_G));
-  g_assert_false (
-    musical_scale_contains_note (scale, NOTE_GS));
+  g_assert_false (musical_scale_contains_note (scale, NOTE_GS));
   g_assert_true (musical_scale_contains_note (scale, NOTE_A));
   g_assert_true (musical_scale_contains_note (scale, NOTE_AS));
   g_assert_false (musical_scale_contains_note (scale, NOTE_B));

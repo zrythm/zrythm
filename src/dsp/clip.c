@@ -58,9 +58,7 @@ _create (void)
  *   channel. The previous frames will be kept.
  */
 void
-audio_clip_update_channel_caches (
-  AudioClip * self,
-  size_t      start_from)
+audio_clip_update_channel_caches (AudioClip * self, size_t start_from)
 {
   z_return_if_fail_cmp (self->channels, >, 0);
   z_return_if_fail_cmp (self->num_frames, >, 0);
@@ -69,13 +67,10 @@ audio_clip_update_channel_caches (
   for (unsigned int i = 0; i < self->channels; i++)
     {
       self->ch_frames[i] = g_realloc (
-        self->ch_frames[i],
-        sizeof (float) * (size_t) self->num_frames);
-      for (size_t j = start_from;
-           j < (size_t) self->num_frames; j++)
+        self->ch_frames[i], sizeof (float) * (size_t) self->num_frames);
+      for (size_t j = start_from; j < (size_t) self->num_frames; j++)
         {
-          self->ch_frames[i][j] =
-            self->frames[j * self->channels + i];
+          self->ch_frames[i][j] = self->frames[j * self->channels + i];
         }
     }
 }
@@ -99,12 +94,10 @@ audio_clip_init_from_file (
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err, "Error reading metadata from %s",
-        full_path);
+        error, err, "Error reading metadata from %s", full_path);
       return false;
     }
-  self->num_frames =
-    (unsigned_frame_t) af->metadata.num_frames;
+  self->num_frames = (unsigned_frame_t) af->metadata.num_frames;
   self->channels = (channels_t) af->metadata.channels;
   switch (af->metadata.bit_depth)
     {
@@ -118,15 +111,13 @@ audio_clip_init_from_file (
       self->bit_depth = BIT_DEPTH_32;
       break;
     default:
-      g_debug (
-        "unknown bit depth: %d", af->metadata.bit_depth);
+      g_debug ("unknown bit depth: %d", af->metadata.bit_depth);
       self->bit_depth = BIT_DEPTH_32;
     }
 
   /* read frames in file's sample rate */
   size_t arr_size = self->num_frames * self->channels;
-  self->frames =
-    g_realloc (self->frames, arr_size * sizeof (float));
+  self->frames = g_realloc (self->frames, arr_size * sizeof (float));
   success = audio_file_read_samples (
     af, false, self->frames, 0, self->num_frames, &err);
   if (!success)
@@ -138,9 +129,8 @@ audio_clip_init_from_file (
 
   /* resample to project's sample rate */
   Resampler * r = resampler_new (
-    self->frames, self->num_frames, af->metadata.samplerate,
-    self->samplerate, self->channels,
-    RESAMPLER_QUALITY_VERY_HIGH, &err);
+    self->frames, self->num_frames, af->metadata.samplerate, self->samplerate,
+    self->channels, RESAMPLER_QUALITY_VERY_HIGH, &err);
   if (!r)
     {
       PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -159,8 +149,7 @@ audio_clip_init_from_file (
     }
   self->num_frames = r->num_out_frames;
   arr_size = self->num_frames * self->channels;
-  self->frames =
-    g_realloc (self->frames, arr_size * sizeof (float));
+  self->frames = g_realloc (self->frames, arr_size * sizeof (float));
   dsp_copy (self->frames, r->out_frames, arr_size);
   object_free_w_func_and_null (resampler_free, r);
 
@@ -199,12 +188,10 @@ audio_clip_init_loaded (AudioClip * self)
 
   bpm_t    bpm = self->bpm;
   GError * err = NULL;
-  bool     success =
-    audio_clip_init_from_file (self, filepath, &err);
+  bool     success = audio_clip_init_from_file (self, filepath, &err);
   if (!success)
     {
-      HANDLE_ERROR_LITERAL (
-        err, _ ("Failed to initialize audio file"));
+      HANDLE_ERROR_LITERAL (err, _ ("Failed to initialize audio file"));
     }
   self->bpm = bpm;
 
@@ -217,22 +204,17 @@ audio_clip_init_loaded (AudioClip * self)
  * The name used is the basename of the file.
  */
 AudioClip *
-audio_clip_new_from_file (
-  const char * full_path,
-  GError **    error)
+audio_clip_new_from_file (const char * full_path, GError ** error)
 {
   AudioClip * self = _create ();
 
   GError * err = NULL;
-  bool     success =
-    audio_clip_init_from_file (self, full_path, &err);
+  bool     success = audio_clip_init_from_file (self, full_path, &err);
   if (!success)
     {
       audio_clip_free (self);
       PROPAGATE_PREFIXED_ERROR (
-        error, err,
-        _ ("Failed to initialize audio file at %s"),
-        full_path);
+        error, err, _ ("Failed to initialize audio file at %s"), full_path);
       return NULL;
     }
 
@@ -258,8 +240,7 @@ audio_clip_new_from_float_array (
 {
   AudioClip * self = _create ();
 
-  self->frames =
-    object_new_n ((size_t) (nframes * channels), sample_t);
+  self->frames = object_new_n ((size_t) (nframes * channels), sample_t);
   self->num_frames = nframes;
   self->channels = channels;
   self->samplerate = (int) AUDIO_ENGINE->sample_rate;
@@ -268,8 +249,7 @@ audio_clip_new_from_float_array (
   self->bit_depth = bit_depth;
   self->use_flac = audio_clip_use_flac (bit_depth);
   self->pool_id = -1;
-  dsp_copy (
-    self->frames, arr, (size_t) nframes * (size_t) channels);
+  dsp_copy (self->frames, arr, (size_t) nframes * (size_t) channels);
   self->bpm = tempo_track_get_current_bpm (P_TEMPO_TRACK);
   audio_clip_update_channel_caches (self, 0);
 
@@ -295,8 +275,7 @@ audio_clip_new_recording (
   AudioClip * self = _create ();
 
   self->channels = channels;
-  self->frames = object_new_n (
-    (size_t) (nframes * self->channels), sample_t);
+  self->frames = object_new_n ((size_t) (nframes * self->channels), sample_t);
   self->num_frames = nframes;
   self->name = g_strdup (name);
   self->pool_id = -1;
@@ -306,8 +285,7 @@ audio_clip_new_recording (
   self->use_flac = false;
   g_return_val_if_fail (self->samplerate > 0, NULL);
   dsp_fill (
-    self->frames, DENORMAL_PREVENTION_VAL,
-    (size_t) nframes * (size_t) channels);
+    self->frames, DENORMAL_PREVENTION_VAL, (size_t) nframes * (size_t) channels);
   audio_clip_update_channel_caches (self, 0);
 
   return self;
@@ -328,18 +306,16 @@ audio_clip_get_path_in_pool_from_name (
   bool         use_flac,
   bool         is_backup)
 {
-  char * prj_pool_dir =
-    project_get_path (PROJECT, PROJECT_PATH_POOL, is_backup);
+  char * prj_pool_dir = project_get_path (PROJECT, PROJECT_PATH_POOL, is_backup);
   if (!file_exists (prj_pool_dir))
     {
       g_critical ("%s does not exist", prj_pool_dir);
       return NULL;
     }
   char * without_ext = io_file_strip_ext (name);
-  char * basename = g_strdup_printf (
-    "%s.%s", without_ext, use_flac ? "FLAC" : "wav");
-  char * new_path =
-    g_build_filename (prj_pool_dir, basename, NULL);
+  char * basename =
+    g_strdup_printf ("%s.%s", without_ext, use_flac ? "FLAC" : "wav");
+  char * new_path = g_build_filename (prj_pool_dir, basename, NULL);
   g_free (without_ext);
   g_free (basename);
   g_free (prj_pool_dir);
@@ -377,22 +353,18 @@ audio_clip_write_to_pool (
   bool        is_backup,
   GError **   error)
 {
-  AudioClip * pool_clip =
-    audio_pool_get_clip (AUDIO_POOL, self->pool_id);
+  AudioClip * pool_clip = audio_pool_get_clip (AUDIO_POOL, self->pool_id);
   g_return_val_if_fail (pool_clip, false);
   g_return_val_if_fail (pool_clip == self, false);
 
   audio_pool_print (AUDIO_POOL);
   g_message (
-    "attempting to write clip %s (%d) to pool...", self->name,
-    self->pool_id);
+    "attempting to write clip %s (%d) to pool...", self->name, self->pool_id);
 
   /* generate a copy of the given filename in the
    * project dir */
-  char * path_in_main_project =
-    audio_clip_get_path_in_pool (self, F_NOT_BACKUP);
-  char * new_path =
-    audio_clip_get_path_in_pool (self, is_backup);
+  char * path_in_main_project = audio_clip_get_path_in_pool (self, F_NOT_BACKUP);
+  char * new_path = audio_clip_get_path_in_pool (self, is_backup);
   g_return_val_if_fail (path_in_main_project, false);
   g_return_val_if_fail (new_path, false);
 
@@ -405,9 +377,7 @@ audio_clip_write_to_pool (
       char * existing_file_hash =
         hash_get_from_file (new_path, HASH_ALGORITHM_XXH3_64);
       bool same_hash =
-        self->file_hash
-        && string_is_equal (
-          self->file_hash, existing_file_hash);
+        self->file_hash && string_is_equal (self->file_hash, existing_file_hash);
       g_free (existing_file_hash);
 
       if (same_hash)
@@ -437,10 +407,10 @@ audio_clip_write_to_pool (
       bool exists_in_main_project = false;
       if (file_exists (path_in_main_project))
         {
-          char * existing_file_hash = hash_get_from_file (
-            path_in_main_project, HASH_ALGORITHM_XXH3_64);
-          exists_in_main_project = string_is_equal (
-            self->file_hash, existing_file_hash);
+          char * existing_file_hash =
+            hash_get_from_file (path_in_main_project, HASH_ALGORITHM_XXH3_64);
+          exists_in_main_project =
+            string_is_equal (self->file_hash, existing_file_hash);
           g_free (existing_file_hash);
         }
 
@@ -459,27 +429,22 @@ audio_clip_write_to_pool (
                 "instead");
 
               /* copy */
-              GFile * src_file =
-                g_file_new_for_path (path_in_main_project);
-              GFile * dest_file =
-                g_file_new_for_path (new_path);
+              GFile *  src_file = g_file_new_for_path (path_in_main_project);
+              GFile *  dest_file = g_file_new_for_path (new_path);
               GError * err = NULL;
               g_debug (
                 "copying clip from main project "
                 "('%s' to '%s')",
                 path_in_main_project, new_path);
-              if (g_file_copy (
-                    src_file, dest_file, 0, NULL, NULL, NULL,
-                    &err))
+              if (g_file_copy (src_file, dest_file, 0, NULL, NULL, NULL, &err))
                 {
                   need_new_write = false;
                 }
               else /* else if failed */
                 {
                   g_warning (
-                    "Failed to copy '%s' to '%s': %s",
-                    path_in_main_project, new_path,
-                    err->message);
+                    "Failed to copy '%s' to '%s': %s", path_in_main_project,
+                    new_path, err->message);
                 }
             } /* endif reflink fail */
         }
@@ -492,14 +457,11 @@ audio_clip_write_to_pool (
         "(parts %d, is backup  %d): '%s'",
         self->name, parts, is_backup, new_path);
       GError * err = NULL;
-      bool     success = audio_clip_write_to_file (
-        self, new_path, parts, &err);
+      bool     success = audio_clip_write_to_file (self, new_path, parts, &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR (
-            error, err,
-            _ ("Failed to write audio clip to file: %s"),
-            new_path);
+            error, err, _ ("Failed to write audio clip to file: %s"), new_path);
           return false;
         }
 
@@ -507,8 +469,8 @@ audio_clip_write_to_pool (
         {
           /* store file hash */
           g_free_and_null (self->file_hash);
-          self->file_hash = hash_get_from_file (
-            new_path, HASH_ALGORITHM_XXH3_64);
+          self->file_hash =
+            hash_get_from_file (new_path, HASH_ALGORITHM_XXH3_64);
         }
     }
 
@@ -536,11 +498,9 @@ audio_clip_write_to_file (
   GError **    error)
 {
   g_return_val_if_fail (self->samplerate > 0, false);
-  g_return_val_if_fail (
-    self->frames_written < SIZE_MAX, false);
-  size_t before_frames = (size_t) self->frames_written;
-  unsigned_frame_t ch_offset =
-    parts ? self->frames_written : 0;
+  g_return_val_if_fail (self->frames_written < SIZE_MAX, false);
+  size_t           before_frames = (size_t) self->frames_written;
+  unsigned_frame_t ch_offset = parts ? self->frames_written : 0;
   unsigned_frame_t offset = ch_offset * self->channels;
 
   size_t nframes;
@@ -548,22 +508,19 @@ audio_clip_write_to_file (
     {
       z_return_val_if_fail_cmp (
         self->num_frames, >=, self->frames_written, false);
-      unsigned_frame_t _nframes =
-        self->num_frames - self->frames_written;
+      unsigned_frame_t _nframes = self->num_frames - self->frames_written;
       z_return_val_if_fail_cmp (_nframes, <, SIZE_MAX, false);
       nframes = _nframes;
     }
   else
     {
-      z_return_val_if_fail_cmp (
-        self->num_frames, <, SIZE_MAX, false);
+      z_return_val_if_fail_cmp (self->num_frames, <, SIZE_MAX, false);
       nframes = self->num_frames;
     }
   GError * err = NULL;
   bool     success = audio_write_raw_file (
-    &self->frames[offset], ch_offset, nframes,
-    (uint32_t) self->samplerate, self->use_flac,
-    self->bit_depth, self->channels, filepath, &err);
+    &self->frames[offset], ch_offset, nframes, (uint32_t) self->samplerate,
+    self->use_flac, self->bit_depth, self->channels, filepath, &err);
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -583,21 +540,17 @@ audio_clip_write_to_file (
   if (ZRYTHM_TESTING)
     {
       err = NULL;
-      AudioClip * new_clip =
-        audio_clip_new_from_file (filepath, &err);
+      AudioClip * new_clip = audio_clip_new_from_file (filepath, &err);
       if (!new_clip)
         {
           PROPAGATE_PREFIXED_ERROR_LITERAL (
-            error, err,
-            _ ("Failed to create audio clip from file"));
+            error, err, _ ("Failed to create audio clip from file"));
           return false;
         }
 
       if (self->num_frames != new_clip->num_frames)
         {
-          g_warning (
-            "%zu != %zu", self->num_frames,
-            new_clip->num_frames);
+          g_warning ("%zu != %zu", self->num_frames, new_clip->num_frames);
         }
       float epsilon = 0.0001f;
       g_warn_if_fail (audio_frames_equal (
@@ -605,8 +558,7 @@ audio_clip_write_to_file (
         (size_t) new_clip->num_frames, epsilon));
       g_warn_if_fail (audio_frames_equal (
         self->frames, new_clip->frames,
-        (size_t) new_clip->num_frames * new_clip->channels,
-        epsilon));
+        (size_t) new_clip->num_frames * new_clip->channels, epsilon));
       audio_clip_free (new_clip);
     }
 
@@ -675,10 +627,8 @@ on_launch_clicked (GtkButton * btn, AppLaunchData * data)
   GError * err = NULL;
   GList *  file_list = NULL;
   file_list = g_list_append (file_list, data->file);
-  GAppInfo * app_nfo =
-    gtk_app_chooser_get_app_info (data->app_chooser);
-  bool success =
-    g_app_info_launch (app_nfo, file_list, NULL, &err);
+  GAppInfo * app_nfo = gtk_app_chooser_get_app_info (data->app_chooser);
+  bool       success = g_app_info_launch (app_nfo, file_list, NULL, &err);
   g_list_free (file_list);
   if (!success)
     {
@@ -701,23 +651,17 @@ on_launch_clicked (GtkButton * btn, AppLaunchData * data)
  *   NULL, if not.
  */
 AudioClip *
-audio_clip_edit_in_ext_program (
-  AudioClip * self,
-  GError **   error)
+audio_clip_edit_in_ext_program (AudioClip * self, GError ** error)
 {
   GError * err = NULL;
-  char *   tmp_dir =
-    g_dir_make_tmp ("zrythm-audio-clip-tmp-XXXXXX", &err);
+  char *   tmp_dir = g_dir_make_tmp ("zrythm-audio-clip-tmp-XXXXXX", &err);
   if (!tmp_dir)
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", "Failed to create tmp dir");
+      PROPAGATE_PREFIXED_ERROR (error, err, "%s", "Failed to create tmp dir");
       return NULL;
     }
-  char * abs_path =
-    g_build_filename (tmp_dir, "tmp.wav", NULL);
-  bool success =
-    audio_clip_write_to_file (self, abs_path, false, &err);
+  char * abs_path = g_build_filename (tmp_dir, "tmp.wav", NULL);
+  bool   success = audio_clip_write_to_file (self, abs_path, false, &err);
   audio_clip_free (self);
   if (!success)
     {
@@ -728,29 +672,24 @@ audio_clip_edit_in_ext_program (
 
   GFile *     file = g_file_new_for_path (abs_path);
   GFileInfo * file_info = g_file_query_info (
-    file, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
-    G_FILE_QUERY_INFO_NONE, NULL, &err);
+    file, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE, G_FILE_QUERY_INFO_NONE, NULL,
+    &err);
   if (!file_info)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err, "Failed to query file info for %s",
-        abs_path);
+        error, err, "Failed to query file info for %s", abs_path);
       return NULL;
     }
-  const char * content_type =
-    g_file_info_get_content_type (file_info);
+  const char * content_type = g_file_info_get_content_type (file_info);
 
   GtkWidget * dialog = gtk_dialog_new_with_buttons (
     _ ("Edit in external app"), GTK_WINDOW (MAIN_WINDOW),
-    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-    _ ("_OK"), GTK_RESPONSE_ACCEPT, _ ("_Cancel"),
-    GTK_RESPONSE_REJECT, NULL);
+    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, _ ("_OK"),
+    GTK_RESPONSE_ACCEPT, _ ("_Cancel"), GTK_RESPONSE_REJECT, NULL);
 
   /* populate content area */
-  GtkWidget * content_area =
-    gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-  GtkWidget * main_box =
-    gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
+  GtkWidget * content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+  GtkWidget * main_box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 12);
   gtk_widget_set_margin_start (main_box, 4);
   gtk_widget_set_margin_end (main_box, 4);
   gtk_widget_set_margin_top (main_box, 4);
@@ -766,19 +705,17 @@ audio_clip_edit_in_ext_program (
   gtk_label_set_markup (GTK_LABEL (lbl), markup);
   gtk_box_append (GTK_BOX (main_box), lbl);
 
-  GtkWidget * launch_box =
-    gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
+  GtkWidget * launch_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 2);
   gtk_widget_set_halign (launch_box, GTK_ALIGN_CENTER);
-  GtkWidget * app_chooser_button =
-    gtk_app_chooser_button_new (content_type);
+  GtkWidget * app_chooser_button = gtk_app_chooser_button_new (content_type);
   gtk_box_append (GTK_BOX (launch_box), app_chooser_button);
-  GtkWidget * btn = gtk_button_new_with_label (_ ("Launch"));
+  GtkWidget *     btn = gtk_button_new_with_label (_ ("Launch"));
   AppLaunchData * data = object_new (AppLaunchData);
   data->file = file;
   data->app_chooser = GTK_APP_CHOOSER (app_chooser_button);
   g_signal_connect_data (
-    G_OBJECT (btn), "clicked", G_CALLBACK (on_launch_clicked),
-    data, (GClosureNotify) app_launch_data_free, 0);
+    G_OBJECT (btn), "clicked", G_CALLBACK (on_launch_clicked), data,
+    (GClosureNotify) app_launch_data_free, 0);
   gtk_box_append (GTK_BOX (launch_box), btn);
   gtk_box_append (GTK_BOX (main_box), launch_box);
 
@@ -786,8 +723,8 @@ audio_clip_edit_in_ext_program (
   if (ret != GTK_RESPONSE_ACCEPT)
     {
       g_set_error_literal (
-        error, Z_AUDIO_CLIP_ERROR,
-        Z_AUDIO_CLIP_ERROR_CANCELLED, "Operation cancelled");
+        error, Z_AUDIO_CLIP_ERROR, Z_AUDIO_CLIP_ERROR_CANCELLED,
+        "Operation cancelled");
       return NULL;
     }
 
@@ -797,9 +734,7 @@ audio_clip_edit_in_ext_program (
   if (!self)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err,
-        _ ("Failed to create audio clip from file at %s"),
-        abs_path);
+        error, err, _ ("Failed to create audio clip from file at %s"), abs_path);
       return NULL;
     }
 

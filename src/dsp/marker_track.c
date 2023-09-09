@@ -38,9 +38,8 @@ marker_track_init (Track * self)
 MarkerTrack *
 marker_track_default (int track_pos)
 {
-  Track * self = track_new (
-    TRACK_TYPE_MARKER, track_pos, _ ("Markers"),
-    F_WITHOUT_LANE);
+  Track * self =
+    track_new (TRACK_TYPE_MARKER, track_pos, _ ("Markers"), F_WITHOUT_LANE);
 
 #if 0
   /* hack to allow setting positions */
@@ -131,18 +130,13 @@ marker_track_get_end_marker (const Track * self)
  * Inserts a marker to the track.
  */
 void
-marker_track_insert_marker (
-  MarkerTrack * self,
-  Marker *      marker,
-  int           pos)
+marker_track_insert_marker (MarkerTrack * self, Marker * marker, int pos)
 {
   g_return_if_fail (self->type == TRACK_TYPE_MARKER && marker);
 
-  marker_set_track_name_hash (
-    marker, track_get_name_hash (self));
+  marker_set_track_name_hash (marker, track_get_name_hash (self));
   array_double_size_if_full (
-    self->markers, self->num_markers, self->markers_size,
-    Marker *);
+    self->markers, self->num_markers, self->markers_size, Marker *);
   array_insert (self->markers, self->num_markers, pos, marker);
 
   for (int i = pos; i < self->num_markers; i++)
@@ -176,9 +170,7 @@ marker_track_clear (MarkerTrack * self)
   for (int i = 0; i < self->num_markers; i++)
     {
       Marker * marker = self->markers[i];
-      if (
-        marker->type == MARKER_TYPE_START
-        || marker->type == MARKER_TYPE_END)
+      if (marker->type == MARKER_TYPE_START || marker->type == MARKER_TYPE_END)
         continue;
       marker_track_remove_marker (self, marker, 1);
     }
@@ -199,19 +191,14 @@ marker_track_validate (MarkerTrack * self)
  * Removes a marker, optionally freeing it.
  */
 void
-marker_track_remove_marker (
-  MarkerTrack * self,
-  Marker *      marker,
-  int           free)
+marker_track_remove_marker (MarkerTrack * self, Marker * marker, int free)
 {
   /* deselect */
   arranger_selections_remove_object (
-    (ArrangerSelections *) TL_SELECTIONS,
-    (ArrangerObject *) marker);
+    (ArrangerSelections *) TL_SELECTIONS, (ArrangerObject *) marker);
 
   int pos = -1;
-  array_delete_return_pos (
-    self->markers, self->num_markers, marker, pos);
+  array_delete_return_pos (self->markers, self->num_markers, marker, pos);
   g_return_if_fail (pos >= 0);
 
   for (int i = pos; i < self->num_markers; i++)
@@ -225,6 +212,5 @@ marker_track_remove_marker (
       arranger_object_free ((ArrangerObject *) marker);
     }
 
-  EVENTS_PUSH (
-    ET_ARRANGER_OBJECT_REMOVED, ARRANGER_OBJECT_TYPE_MARKER);
+  EVENTS_PUSH (ET_ARRANGER_OBJECT_REMOVED, ARRANGER_OBJECT_TYPE_MARKER);
 }

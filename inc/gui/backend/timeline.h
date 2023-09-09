@@ -48,10 +48,7 @@ static const cyaml_schema_field_t timeline_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t timeline_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    Timeline,
-    timeline_fields_schema),
+  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, Timeline, timeline_fields_schema),
 };
 
 /**

@@ -26,21 +26,17 @@
 #include <gtk/gtk.h>
 
 int
-snap_grid_get_ticks_from_length_and_type (
-  NoteLength length,
-  NoteType   type)
+snap_grid_get_ticks_from_length_and_type (NoteLength length, NoteType type)
 {
   int ticks = 0;
   switch (length)
     {
     case NOTE_LENGTH_BAR:
-      g_return_val_if_fail (
-        TRANSPORT && TRANSPORT->ticks_per_bar > 0, -1);
+      g_return_val_if_fail (TRANSPORT && TRANSPORT->ticks_per_bar > 0, -1);
       ticks = TRANSPORT->ticks_per_bar;
       break;
     case NOTE_LENGTH_BEAT:
-      g_return_val_if_fail (
-        TRANSPORT && TRANSPORT->ticks_per_beat > 0, -1);
+      g_return_val_if_fail (TRANSPORT && TRANSPORT->ticks_per_beat > 0, -1);
       ticks = TRANSPORT->ticks_per_beat;
       break;
     case NOTE_LENGTH_2_1:
@@ -118,13 +114,10 @@ snap_grid_get_snap_ticks (const SnapGrid * self)
         }
 
       /* get intervals used in drawing */
-      int sixteenth_interval =
-        ruler_widget_get_sixteenth_interval (ruler);
-      int beat_interval =
-        ruler_widget_get_beat_interval (ruler);
-      int bar_interval = (int) MAX (
-        (RW_PX_TO_HIDE_BEATS) / (double) ruler->px_per_bar,
-        1.0);
+      int sixteenth_interval = ruler_widget_get_sixteenth_interval (ruler);
+      int beat_interval = ruler_widget_get_beat_interval (ruler);
+      int bar_interval =
+        (int) MAX ((RW_PX_TO_HIDE_BEATS) / (double) ruler->px_per_bar, 1.0);
 
       /* attempt to snap at smallest interval */
       if (sixteenth_interval > 0)
@@ -175,13 +168,13 @@ snap_grid_get_default_ticks (SnapGrid * self)
       double last_obj_length = 0.0;
       if (self->type == SNAP_GRID_TYPE_TIMELINE)
         {
-          last_obj_length = g_settings_get_double (
-            S_UI, "timeline-last-object-length");
+          last_obj_length =
+            g_settings_get_double (S_UI, "timeline-last-object-length");
         }
       else if (self->type == SNAP_GRID_TYPE_EDITOR)
         {
-          last_obj_length = g_settings_get_double (
-            S_UI, "editor-last-object-length");
+          last_obj_length =
+            g_settings_get_double (S_UI, "editor-last-object-length");
         }
       return (int) last_obj_length;
     }
@@ -229,9 +222,7 @@ get_note_length_str (NoteLength length)
  * Must be free'd.
  */
 char *
-snap_grid_stringize_length_and_type (
-  NoteLength note_length,
-  NoteType   note_type)
+snap_grid_stringize_length_and_type (NoteLength note_length, NoteType note_type)
 {
   const char * c = get_note_type_str (note_type);
   const char * first_part = get_note_length_str (note_length);
@@ -274,8 +265,7 @@ snap_grid_get_nearby_snap_point (
   const Position *       pos,
   const bool             return_prev)
 {
-  g_return_val_if_fail (
-    pos->frames >= 0 && pos->ticks >= 0, false);
+  g_return_val_if_fail (pos->frames >= 0 && pos->ticks >= 0, false);
 
   position_set_to_pos (ret_pos, pos);
   double snap_ticks = snap_grid_get_snap_ticks (self);
@@ -308,8 +298,7 @@ snap_grid_clone (SnapGrid * src)
   self->default_adaptive = src->default_adaptive;
   self->length_type = src->length_type;
   self->snap_to_grid = src->snap_to_grid;
-  self->snap_to_grid_keep_offset =
-    src->snap_to_grid_keep_offset;
+  self->snap_to_grid_keep_offset = src->snap_to_grid_keep_offset;
   self->snap_to_events = src->snap_to_events;
 
   return self;

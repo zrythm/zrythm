@@ -14,8 +14,7 @@
 
 typedef struct Port Port;
 
-#define MW_PORT_CONNECTIONS_TREE \
-  (MW_PORT_CONNECTIONS->bindings_tree)
+#define MW_PORT_CONNECTIONS_TREE (MW_PORT_CONNECTIONS->bindings_tree)
 
 #define PORT_CONNECTIONS_TREE_WIDGET_TYPE \
   (port_connections_tree_widget_get_type ())
@@ -54,8 +53,7 @@ typedef struct _PortConnectionsTreeWidget
  * Refreshes the tree model.
  */
 void
-port_connections_tree_widget_refresh (
-  PortConnectionsTreeWidget * self);
+port_connections_tree_widget_refresh (PortConnectionsTreeWidget * self);
 
 /**
  * Instantiates a new PortConnectionsTreeWidget.

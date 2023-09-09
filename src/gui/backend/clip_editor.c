@@ -48,10 +48,7 @@ clip_editor_init_loaded (ClipEditor * self)
  * To be called only from GTK threads.
  */
 void
-clip_editor_set_region (
-  ClipEditor * self,
-  ZRegion *    region,
-  bool         fire_events)
+clip_editor_set_region (ClipEditor * self, ZRegion * region, bool fire_events)
 {
   if (region)
     {
@@ -66,8 +63,7 @@ clip_editor_set_region (
    * event viewer as necessary */
   if (fire_events && !self->has_region && region)
     {
-      EVENTS_PUSH (
-        ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED, NULL);
+      EVENTS_PUSH (ET_CLIP_EDITOR_FIRST_TIME_REGION_SELECTED, NULL);
     }
 
   /*
@@ -87,13 +83,11 @@ clip_editor_set_region (
     {
       self->has_region = 1;
       region_identifier_copy (&self->region_id, &region->id);
-      self->track =
-        arranger_object_get_track ((ArrangerObject *) region);
+      self->track = arranger_object_get_track ((ArrangerObject *) region);
 
       /* if audio region, also set it in
        * selections */
-      region_identifier_copy (
-        &AUDIO_SELECTIONS->region_id, &region->id);
+      region_identifier_copy (&AUDIO_SELECTIONS->region_id, &region->id);
     }
   else
     {
@@ -109,9 +103,7 @@ clip_editor_set_region (
       g_debug ("clip editor region successfully changed");
     }
 
-  if (
-    fire_events && ZRYTHM_HAVE_UI && MAIN_WINDOW
-    && MW_CLIP_EDITOR)
+  if (fire_events && ZRYTHM_HAVE_UI && MAIN_WINDOW && MW_CLIP_EDITOR)
     {
       EVENTS_PUSH (ET_CLIP_EDITOR_REGION_CHANGED, NULL);
 
@@ -150,8 +142,7 @@ clip_editor_get_track (ClipEditor * self)
   ZRegion * region = clip_editor_get_region (self);
   g_return_val_if_fail (region, NULL);
 
-  Track * track =
-    arranger_object_get_track ((ArrangerObject *) region);
+  Track * track = arranger_object_get_track ((ArrangerObject *) region);
   g_return_val_if_fail (track, NULL);
 
   return track;
@@ -181,8 +172,7 @@ clip_editor_get_arranger_selections (ClipEditor * self)
       return NULL;
     }
 
-  ArrangerSelections * sel =
-    region_get_arranger_selections (region);
+  ArrangerSelections * sel = region_get_arranger_selections (region);
   if (!sel)
     {
       return NULL;
@@ -199,11 +189,9 @@ clip_editor_clone (const ClipEditor * src)
   region_identifier_copy (&self->region_id, &src->region_id);
   self->has_region = src->has_region;
   self->piano_roll = piano_roll_clone (src->piano_roll);
-  self->automation_editor =
-    automation_editor_clone (src->automation_editor);
+  self->automation_editor = automation_editor_clone (src->automation_editor);
   self->chord_editor = chord_editor_clone (src->chord_editor);
-  self->audio_clip_editor =
-    audio_clip_editor_clone (src->audio_clip_editor);
+  self->audio_clip_editor = audio_clip_editor_clone (src->audio_clip_editor);
 
   return self;
 }
@@ -260,14 +248,10 @@ clip_editor_init (ClipEditor * self)
 void
 clip_editor_free (ClipEditor * self)
 {
-  object_free_w_func_and_null (
-    piano_roll_free, self->piano_roll);
-  object_free_w_func_and_null (
-    audio_clip_editor_free, self->audio_clip_editor);
-  object_free_w_func_and_null (
-    chord_editor_free, self->chord_editor);
-  object_free_w_func_and_null (
-    automation_editor_free, self->automation_editor);
+  object_free_w_func_and_null (piano_roll_free, self->piano_roll);
+  object_free_w_func_and_null (audio_clip_editor_free, self->audio_clip_editor);
+  object_free_w_func_and_null (chord_editor_free, self->chord_editor);
+  object_free_w_func_and_null (automation_editor_free, self->automation_editor);
 
   object_zero_and_free (self);
 }

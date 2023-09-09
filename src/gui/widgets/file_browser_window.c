@@ -17,12 +17,10 @@ FileBrowserWindowWidget *
 file_browser_window_widget_new (void)
 {
   FileBrowserWindowWidget * self = g_object_new (
-    FILE_BROWSER_WINDOW_WIDGET_TYPE, "title",
-    _ ("File Browser"), NULL);
+    FILE_BROWSER_WINDOW_WIDGET_TYPE, "title", _ ("File Browser"), NULL);
 
   self->file_browser = file_browser_widget_new ();
-  GtkBox * box =
-    GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  GtkBox * box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   gtk_box_append (box, GTK_WIDGET (self->file_browser));
   gtk_window_set_child (GTK_WINDOW (self), GTK_WIDGET (box));
 
@@ -30,13 +28,11 @@ file_browser_window_widget_new (void)
 }
 
 static void
-file_browser_window_widget_class_init (
-  FileBrowserWindowWidgetClass * _klass)
+file_browser_window_widget_class_init (FileBrowserWindowWidgetClass * _klass)
 {
 }
 
 static void
-file_browser_window_widget_init (
-  FileBrowserWindowWidget * self)
+file_browser_window_widget_init (FileBrowserWindowWidget * self)
 {
 }

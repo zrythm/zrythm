@@ -90,15 +90,11 @@ init_common (Project * self)
 }
 
 static bool
-make_project_dirs (
-  Project * self,
-  bool      is_backup,
-  GError ** error)
+make_project_dirs (Project * self, bool is_backup, GError ** error)
 {
 #define MK_PROJECT_DIR(_path) \
   { \
-    char * tmp = project_get_path ( \
-      self, PROJECT_PATH_##_path, is_backup); \
+    char * tmp = project_get_path (self, PROJECT_PATH_##_path, is_backup); \
     if (!tmp) \
       { \
         g_set_error_literal ( \
@@ -155,8 +151,8 @@ _project_compress (
   GError **              error)
 {
   g_message (
-    "using zstd v%d.%d.%d", ZSTD_VERSION_MAJOR,
-    ZSTD_VERSION_MINOR, ZSTD_VERSION_RELEASE);
+    "using zstd v%d.%d.%d", ZSTD_VERSION_MAJOR, ZSTD_VERSION_MINOR,
+    ZSTD_VERSION_RELEASE);
 
   char * src = NULL;
   size_t src_size = 0;
@@ -168,8 +164,7 @@ _project_compress (
       break;
     case PROJECT_COMPRESS_FILE:
       {
-        bool ret =
-          g_file_get_contents (_src, &src, &src_size, error);
+        bool ret = g_file_get_contents (_src, &src, &src_size, error);
         if (!ret)
           {
             return false;
@@ -185,8 +180,7 @@ _project_compress (
       g_message ("compressing project...");
       size_t compress_bound = ZSTD_compressBound (src_size);
       dest = malloc (compress_bound);
-      dest_size = ZSTD_compress (
-        dest, compress_bound, src, src_size, 1);
+      dest_size = ZSTD_compress (dest, compress_bound, src, src_size, 1);
       if (ZSTD_isError (dest_size))
         {
           free (dest);
@@ -216,8 +210,7 @@ _project_compress (
           return false;
         }
       dest = malloc ((size_t) frame_content_size);
-      dest_size = ZSTD_decompress (
-        dest, frame_content_size, src, src_size);
+      dest_size = ZSTD_decompress (dest, frame_content_size, src, src_size);
       if (ZSTD_isError (dest_size))
         {
           free (dest);
@@ -243,8 +236,7 @@ _project_compress (
     }
 
   g_message (
-    "%s : %u bytes -> %u bytes",
-    compress ? "Compression" : "Decompression",
+    "%s : %u bytes -> %u bytes", compress ? "Compression" : "Decompression",
     (unsigned) src_size, (unsigned) dest_size);
 
   switch (dest_type)
@@ -255,8 +247,7 @@ _project_compress (
       break;
     case PROJECT_COMPRESS_FILE:
       {
-        bool ret = g_file_set_contents (
-          *_dest, dest, (gssize) dest_size, error);
+        bool ret = g_file_set_contents (*_dest, dest, (gssize) dest_size, error);
         if (!ret)
           return false;
       }
@@ -285,8 +276,7 @@ get_newer_backup (Project * self)
   time_t        t1;
   time_t        t2;
 
-  char * filepath =
-    project_get_path (self, PROJECT_PATH_PROJECT_FILE, false);
+  char * filepath = project_get_path (self, PROJECT_PATH_PROJECT_FILE, false);
   g_return_val_if_fail (filepath, NULL);
 
   if (stat (filepath, &stat_res) == 0)
@@ -296,15 +286,13 @@ get_newer_backup (Project * self)
     }
   else
     {
-      g_warning (
-        "Failed to get last modified for %s", filepath);
+      g_warning ("Failed to get last modified for %s", filepath);
       return NULL;
     }
   g_free (filepath);
 
   char * result = NULL;
-  char * backups_dir =
-    project_get_path (self, PROJECT_PATH_BACKUPS, false);
+  char * backups_dir = project_get_path (self, PROJECT_PATH_BACKUPS, false);
   dir = g_dir_open (backups_dir, 0, &error);
   if (!dir)
     {
@@ -312,8 +300,8 @@ get_newer_backup (Project * self)
     }
   while ((filename = g_dir_read_name (dir)))
     {
-      char * full_path = g_build_filename (
-        backups_dir, filename, PROJECT_FILE, NULL);
+      char * full_path =
+        g_build_filename (backups_dir, filename, PROJECT_FILE, NULL);
       g_message ("%s", full_path);
 
       if (stat (full_path, &stat_res) == 0)
@@ -325,15 +313,13 @@ get_newer_backup (Project * self)
             {
               if (!result)
                 g_free (result);
-              result = g_build_filename (
-                backups_dir, filename, NULL);
+              result = g_build_filename (backups_dir, filename, NULL);
               t1 = t2;
             }
         }
       else
         {
-          g_warning (
-            "Failed to get last modified for %s", full_path);
+          g_warning ("Failed to get last modified for %s", full_path);
           g_dir_close (dir);
           g_free (backups_dir);
           return NULL;
@@ -361,15 +347,12 @@ set_datetime_str (Project * self)
  * @return Whether successful.
  */
 static bool
-set_and_create_next_available_backup_dir (
-  Project * self,
-  GError ** error)
+set_and_create_next_available_backup_dir (Project * self, GError ** error)
 {
   if (self->backup_dir)
     g_free (self->backup_dir);
 
-  char * backups_dir =
-    project_get_path (self, PROJECT_PATH_BACKUPS, false);
+  char * backups_dir = project_get_path (self, PROJECT_PATH_BACKUPS, false);
 
   int i = 0;
   do
@@ -377,18 +360,14 @@ set_and_create_next_available_backup_dir (
       if (i > 0)
         {
           g_free (self->backup_dir);
-          char * bak_title =
-            g_strdup_printf ("%s.bak%d", self->title, i);
-          self->backup_dir =
-            g_build_filename (backups_dir, bak_title, NULL);
+          char * bak_title = g_strdup_printf ("%s.bak%d", self->title, i);
+          self->backup_dir = g_build_filename (backups_dir, bak_title, NULL);
           g_free (bak_title);
         }
       else
         {
-          char * bak_title =
-            g_strdup_printf ("%s.bak", self->title);
-          self->backup_dir =
-            g_build_filename (backups_dir, bak_title, NULL);
+          char * bak_title = g_strdup_printf ("%s.bak", self->title);
+          self->backup_dir = g_build_filename (backups_dir, bak_title, NULL);
           g_free (bak_title);
         }
       i++;
@@ -436,8 +415,7 @@ project_validate (Project * self)
 
   tracklist_validate (self->tracklist);
 
-  region_link_group_manager_validate (
-    self->region_link_group_manager);
+  region_link_group_manager_validate (self->region_link_group_manager);
 
   /* TODO add arranger_object_get_all and check
    * positions (arranger_object_validate) */
@@ -474,8 +452,7 @@ project_fix_audio_regions (Project * self)
         }
     }
 
-  g_message (
-    "done fixing %d audio region positions", num_fixed);
+  g_message ("done fixing %d audio region positions", num_fixed);
 
   return num_fixed > 0;
 }
@@ -517,8 +494,7 @@ project_get_arranger_for_last_selection (
 #endif
 
 ArrangerSelections *
-project_get_arranger_selections_for_last_selection (
-  Project * self)
+project_get_arranger_selections_for_last_selection (Project * self)
 {
   ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
   switch (self->last_selection)
@@ -534,8 +510,7 @@ project_get_arranger_selections_for_last_selection (
             case REGION_TYPE_AUDIO:
               return (ArrangerSelections *) AUDIO_SELECTIONS;
             case REGION_TYPE_AUTOMATION:
-              return (
-                ArrangerSelections *) AUTOMATION_SELECTIONS;
+              return (ArrangerSelections *) AUTOMATION_SELECTIONS;
             case REGION_TYPE_MIDI:
               return (ArrangerSelections *) MA_SELECTIONS;
             case REGION_TYPE_CHORD:
@@ -597,8 +572,7 @@ recreate_main_window (void)
   g_message ("recreating main window...");
   MAIN_WINDOW = main_window_widget_new (zrythm_app);
   g_warn_if_fail (
-    MAIN_WINDOW->center_dock->main_notebook->timeline_panel
-      ->tracklist);
+    MAIN_WINDOW->center_dock->main_notebook->timeline_panel->tracklist);
 }
 
 /**
@@ -610,15 +584,14 @@ recreate_main_window (void)
 void
 project_init_selections (Project * self)
 {
-  self->automation_selections =
-    (AutomationSelections *) arranger_selections_new (
-      ARRANGER_SELECTIONS_TYPE_AUTOMATION);
-  self->audio_selections = (AudioSelections *)
-    arranger_selections_new (ARRANGER_SELECTIONS_TYPE_AUDIO);
-  self->chord_selections = (ChordSelections *)
-    arranger_selections_new (ARRANGER_SELECTIONS_TYPE_CHORD);
-  self->timeline_selections = (TimelineSelections *)
-    arranger_selections_new (ARRANGER_SELECTIONS_TYPE_TIMELINE);
+  self->automation_selections = (AutomationSelections *)
+    arranger_selections_new (ARRANGER_SELECTIONS_TYPE_AUTOMATION);
+  self->audio_selections = (AudioSelections *) arranger_selections_new (
+    ARRANGER_SELECTIONS_TYPE_AUDIO);
+  self->chord_selections = (ChordSelections *) arranger_selections_new (
+    ARRANGER_SELECTIONS_TYPE_CHORD);
+  self->timeline_selections = (TimelineSelections *) arranger_selections_new (
+    ARRANGER_SELECTIONS_TYPE_TIMELINE);
   self->midi_arranger_selections = (MidiArrangerSelections *)
     arranger_selections_new (ARRANGER_SELECTIONS_TYPE_MIDI);
   self->mixer_selections = mixer_selections_new ();
@@ -696,8 +669,8 @@ project_create_default (
   transport_update_caches (
     self->audio_engine->transport, beats_per_bar, beat_unit);
   engine_update_frames_per_tick (
-    self->audio_engine, beats_per_bar, bpm,
-    self->audio_engine->sample_rate, true, true, false);
+    self->audio_engine, beats_per_bar, bpm, self->audio_engine->sample_rate,
+    true, true, false);
 
   /* modulator */
   g_message ("adding modulator track...");
@@ -718,13 +691,11 @@ project_create_default (
   /* add master channel to mixer and tracklist */
   g_message ("adding master track...");
   track = track_new (
-    TRACK_TYPE_MASTER, TRACKLIST->num_tracks, _ ("Master"),
-    F_WITHOUT_LANE);
+    TRACK_TYPE_MASTER, TRACKLIST->num_tracks, _ ("Master"), F_WITHOUT_LANE);
   tracklist_append_track (
     TRACKLIST, track, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
   self->tracklist->master_track = track;
-  tracklist_selections_add_track (
-    self->tracklist_selections, track, 0);
+  tracklist_selections_add_track (self->tracklist_selections, track, 0);
   self->last_selection = SELECTION_TYPE_TRACKLIST;
 
   /* pre-setup engine */
@@ -741,8 +712,7 @@ project_create_default (
     }
 
   engine_update_frames_per_tick (
-    AUDIO_ENGINE, beats_per_bar,
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
+    AUDIO_ENGINE, beats_per_bar, tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate, true, true, false);
 
   /* set directory/title and create standard dirs */
@@ -751,7 +721,7 @@ project_create_default (
   g_free_and_null (self->title);
   self->title = g_path_get_basename (prj_dir);
   GError * err = NULL;
-  bool success = make_project_dirs (self, F_NOT_BACKUP, &err);
+  bool     success = make_project_dirs (self, F_NOT_BACKUP, &err);
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -774,28 +744,21 @@ project_create_default (
   self->loaded = true;
 
   snap_grid_init (
-    self->snap_grid_timeline, SNAP_GRID_TYPE_TIMELINE,
-    NOTE_LENGTH_BAR, true);
-  quantize_options_init (
-    self->quantize_opts_timeline, NOTE_LENGTH_1_1);
+    self->snap_grid_timeline, SNAP_GRID_TYPE_TIMELINE, NOTE_LENGTH_BAR, true);
+  quantize_options_init (self->quantize_opts_timeline, NOTE_LENGTH_1_1);
   snap_grid_init (
-    self->snap_grid_editor, SNAP_GRID_TYPE_EDITOR,
-    NOTE_LENGTH_1_8, true);
-  quantize_options_init (
-    self->quantize_opts_editor, NOTE_LENGTH_1_8);
+    self->snap_grid_editor, SNAP_GRID_TYPE_EDITOR, NOTE_LENGTH_1_8, true);
+  quantize_options_init (self->quantize_opts_editor, NOTE_LENGTH_1_8);
   clip_editor_init (self->clip_editor);
   timeline_init (self->timeline);
-  quantize_options_update_quantize_points (
-    self->quantize_opts_timeline);
-  quantize_options_update_quantize_points (
-    self->quantize_opts_editor);
+  quantize_options_update_quantize_points (self->quantize_opts_timeline);
+  quantize_options_update_quantize_points (self->quantize_opts_editor);
 
   if (have_ui)
     {
       g_message ("setting up main window...");
       g_warn_if_fail (
-        MAIN_WINDOW->center_dock->main_notebook
-          ->timeline_panel->tracklist);
+        MAIN_WINDOW->center_dock->main_notebook->timeline_panel->tracklist);
       setup_main_window (self);
     }
 
@@ -822,30 +785,24 @@ project_create_default (
  *   from the most recent backup.
  */
 char *
-project_get_existing_yaml (
-  Project * self,
-  bool      backup,
-  GError ** error)
+project_get_existing_yaml (Project * self, bool backup, GError ** error)
 {
   /* get file contents */
-  char * project_file_path = project_get_path (
-    self, PROJECT_PATH_PROJECT_FILE, backup);
+  char * project_file_path =
+    project_get_path (self, PROJECT_PATH_PROJECT_FILE, backup);
   g_return_val_if_fail (project_file_path, NULL);
   g_message (
-    "%s: getting YAML for project file %s", __func__,
-    project_file_path);
+    "%s: getting YAML for project file %s", __func__, project_file_path);
 
   char *   compressed_pj;
   gsize    compressed_pj_size;
   GError * err = NULL;
   g_file_get_contents (
-    project_file_path, &compressed_pj, &compressed_pj_size,
-    &err);
+    project_file_path, &compressed_pj, &compressed_pj_size, &err);
   if (err != NULL)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err, _ ("Unable to read file at %s"),
-        project_file_path);
+        error, err, _ ("Unable to read file at %s"), project_file_path);
       return NULL;
     }
 
@@ -861,8 +818,7 @@ project_get_existing_yaml (
   if (!ret)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err,
-        _ ("Failed to decompress project file at %s"),
+        error, err, _ ("Failed to decompress project file at %s"),
         project_file_path);
       return NULL;
     }
@@ -882,21 +838,19 @@ project_get_existing_yaml (
 COLD static bool
 upgrade_schema (char ** yaml, int src_ver, GError ** error)
 {
-  g_message (
-    "upgrading project schema from version %d...", src_ver);
+  g_message ("upgrading project schema from version %d...", src_ver);
   switch (src_ver)
     {
     case 1:
       {
         /* deserialize into the previous version of the struct */
         GError *     err = NULL;
-        Project_v1 * self = (Project_v1 *) yaml_deserialize (
-          *yaml, &project_schema_v1, &err);
+        Project_v1 * self =
+          (Project_v1 *) yaml_deserialize (*yaml, &project_schema_v1, &err);
         if (!self)
           {
             PROPAGATE_PREFIXED_ERROR_LITERAL (
-              error, err,
-              _ ("Failed to deserialize v1 project file"));
+              error, err, _ ("Failed to deserialize v1 project file"));
             return false;
           }
 
@@ -904,21 +858,18 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
        * into YAML */
         g_free (*yaml);
         err = NULL;
-        *yaml =
-          yaml_serialize (self, &project_schema_v1, &err);
+        *yaml = yaml_serialize (self, &project_schema_v1, &err);
         if (!*yaml)
           {
             PROPAGATE_PREFIXED_ERROR_LITERAL (
-              error, err,
-              _ ("Failed to serialize v1 project file"));
+              error, err, _ ("Failed to serialize v1 project file"));
             return false;
           }
         cyaml_config_t cyaml_config;
         yaml_get_cyaml_config (&cyaml_config);
 
         /* free memory allocated by libcyaml */
-        cyaml_free (
-          &cyaml_config, &project_schema_v1, self, 0);
+        cyaml_free (&cyaml_config, &project_schema_v1, self, 0);
 
         /* call again for next iteration */
         err = NULL;
@@ -926,8 +877,7 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
         if (!upgraded)
           {
             PROPAGATE_PREFIXED_ERROR_LITERAL (
-              error, err,
-              "Failed to upgrade project schema to version 3");
+              error, err, "Failed to upgrade project schema to version 3");
             return false;
           }
         return upgraded;
@@ -938,13 +888,12 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
       {
         /* deserialize into the previous version of the struct */
         GError *     err = NULL;
-        Project_v1 * old_prj = (Project_v1 *)
-          yaml_deserialize (*yaml, &project_schema_v1, &err);
+        Project_v1 * old_prj =
+          (Project_v1 *) yaml_deserialize (*yaml, &project_schema_v1, &err);
         if (!old_prj)
           {
             PROPAGATE_PREFIXED_ERROR_LITERAL (
-              error, err,
-              _ ("Failed to deserialize v2/3 project file"));
+              error, err, _ ("Failed to deserialize v2/3 project file"));
             return false;
           }
 
@@ -954,53 +903,41 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
         memset (new_prj, 0, sizeof (Project));
         new_prj->schema_version = PROJECT_SCHEMA_VERSION;
         new_prj->title = old_prj->title;
-        new_prj->datetime_str =
-          datetime_get_current_as_string ();
+        new_prj->datetime_str = datetime_get_current_as_string ();
         new_prj->version = zrythm_get_version (false);
 
         /* upgrade */
-        new_prj->tracklist =
-          tracklist_upgrade_from_v1 (old_prj->tracklist);
-        new_prj->audio_engine =
-          engine_upgrade_from_v1 (old_prj->audio_engine);
+        new_prj->tracklist = tracklist_upgrade_from_v1 (old_prj->tracklist);
+        new_prj->audio_engine = engine_upgrade_from_v1 (old_prj->audio_engine);
         new_prj->tracklist_selections =
-          tracklist_selections_upgrade_from_v1 (
-            old_prj->tracklist_selections);
+          tracklist_selections_upgrade_from_v1 (old_prj->tracklist_selections);
 
         new_prj->clip_editor = old_prj->clip_editor;
         new_prj->timeline = old_prj->timeline;
-        new_prj->snap_grid_timeline =
-          old_prj->snap_grid_timeline;
+        new_prj->snap_grid_timeline = old_prj->snap_grid_timeline;
         new_prj->snap_grid_editor = old_prj->snap_grid_editor;
-        new_prj->quantize_opts_timeline =
-          old_prj->quantize_opts_timeline;
-        new_prj->quantize_opts_editor =
-          old_prj->quantize_opts_editor;
-        new_prj->region_link_group_manager =
-          old_prj->region_link_group_manager;
-        new_prj->port_connections_manager =
-          old_prj->port_connections_manager;
+        new_prj->quantize_opts_timeline = old_prj->quantize_opts_timeline;
+        new_prj->quantize_opts_editor = old_prj->quantize_opts_editor;
+        new_prj->region_link_group_manager = old_prj->region_link_group_manager;
+        new_prj->port_connections_manager = old_prj->port_connections_manager;
         new_prj->midi_mappings = old_prj->midi_mappings;
         new_prj->last_selection = old_prj->last_selection;
 
         /* re-serialize */
         g_free (*yaml);
         err = NULL;
-        *yaml =
-          yaml_serialize (new_prj, &project_schema, &err);
+        *yaml = yaml_serialize (new_prj, &project_schema, &err);
         if (!*yaml)
           {
             PROPAGATE_PREFIXED_ERROR_LITERAL (
-              error, err,
-              _ ("Failed to serialize v3 project file"));
+              error, err, _ ("Failed to serialize v3 project file"));
             return false;
           }
         cyaml_config_t cyaml_config;
         yaml_get_cyaml_config (&cyaml_config);
 
         /* free memory allocated by libcyaml */
-        cyaml_free (
-          &cyaml_config, &project_schema_v1, old_prj, 0);
+        cyaml_free (&cyaml_config, &project_schema_v1, old_prj, 0);
 
         /* free memory allocated now */
         g_free_and_null (new_prj->datetime_str);
@@ -1020,13 +957,12 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
       {
         /* deserialize into the current version of the struct */
         GError *  err = NULL;
-        Project * old_prj = (Project *) yaml_deserialize (
-          *yaml, &project_schema, &err);
+        Project * old_prj =
+          (Project *) yaml_deserialize (*yaml, &project_schema, &err);
         if (!old_prj)
           {
             PROPAGATE_PREFIXED_ERROR_LITERAL (
-              error, err,
-              _ ("Failed to deserialize v4 project file"));
+              error, err, _ ("Failed to deserialize v4 project file"));
             return false;
           }
 
@@ -1037,8 +973,7 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
         *new_prj = *old_prj;
         new_prj->schema_version = PROJECT_SCHEMA_VERSION;
         new_prj->title = old_prj->title;
-        new_prj->datetime_str =
-          datetime_get_current_as_string ();
+        new_prj->datetime_str = datetime_get_current_as_string ();
         new_prj->version = zrythm_get_version (false);
 
         /* drop arranger selections and undo history */
@@ -1048,21 +983,18 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
         /* re-serialize */
         g_free (*yaml);
         err = NULL;
-        *yaml =
-          yaml_serialize (new_prj, &project_schema, &err);
+        *yaml = yaml_serialize (new_prj, &project_schema, &err);
         if (!*yaml)
           {
             PROPAGATE_PREFIXED_ERROR_LITERAL (
-              error, err,
-              _ ("Failed to serialize v4 project file"));
+              error, err, _ ("Failed to serialize v4 project file"));
             return false;
           }
         cyaml_config_t cyaml_config;
         yaml_get_cyaml_config (&cyaml_config);
 
         /* free memory allocated by libcyaml */
-        cyaml_free (
-          &cyaml_config, &project_schema, old_prj, 0);
+        cyaml_free (&cyaml_config, &project_schema, old_prj, 0);
 
         /* free memory allocated now */
         g_free_and_null (new_prj->datetime_str);
@@ -1086,10 +1018,7 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
  * @return Whether successful.
  */
 static bool
-load (
-  const char * filename,
-  const int    is_template,
-  GError **    error)
+load (const char * filename, const int is_template, GError ** error)
 {
   g_return_val_if_fail (filename, -1);
   char * dir = io_get_dir (filename);
@@ -1112,8 +1041,7 @@ load (
       PROJECT->backup_dir = get_newer_backup (PROJECT);
       if (PROJECT->backup_dir)
         {
-          g_message (
-            "newer backup found %s", PROJECT->backup_dir);
+          g_message ("newer backup found %s", PROJECT->backup_dir);
 
           if (ZRYTHM_TESTING)
             {
@@ -1126,24 +1054,18 @@ load (
           else
             {
               GtkWidget * dialog = gtk_message_dialog_new (
-                NULL,
-                GTK_DIALOG_MODAL
-                  | GTK_DIALOG_DESTROY_WITH_PARENT,
+                NULL, GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                 GTK_MESSAGE_INFO, GTK_BUTTONS_YES_NO,
                 _ ("Newer backup found:\n  %s.\n"
                    "Use the newer backup?"),
                 PROJECT->backup_dir);
-              gtk_window_set_title (
-                GTK_WINDOW (dialog), _ ("Backup found"));
-              gtk_window_set_icon_name (
-                GTK_WINDOW (dialog), "zrythm");
+              gtk_window_set_title (GTK_WINDOW (dialog), _ ("Backup found"));
+              gtk_window_set_icon_name (GTK_WINDOW (dialog), "zrythm");
               if (MAIN_WINDOW)
                 {
-                  gtk_widget_set_visible (
-                    GTK_WIDGET (MAIN_WINDOW), 0);
+                  gtk_widget_set_visible (GTK_WIDGET (MAIN_WINDOW), 0);
                 }
-              int res =
-                z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+              int res = z_gtk_dialog_run (GTK_DIALOG (dialog), true);
               switch (res)
                 {
                 case GTK_RESPONSE_YES:
@@ -1157,8 +1079,7 @@ load (
                 }
               if (MAIN_WINDOW)
                 {
-                  gtk_widget_set_visible (
-                    GTK_WIDGET (MAIN_WINDOW), 1);
+                  gtk_widget_set_visible (GTK_WIDGET (MAIN_WINDOW), 1);
                 }
             }
         }
@@ -1168,8 +1089,7 @@ load (
   PROJECT->loading_from_backup = use_backup;
 
   GError * err = NULL;
-  char *   yaml =
-    project_get_existing_yaml (PROJECT, use_backup, &err);
+  char *   yaml = project_get_existing_yaml (PROJECT, use_backup, &err);
   if (!yaml)
     {
       PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -1177,8 +1097,7 @@ load (
       return false;
     }
 
-  char * prj_ver_str =
-    string_get_regex_group (yaml, "\nversion: (.*)\n", 1);
+  char * prj_ver_str = string_get_regex_group (yaml, "\nversion: (.*)\n", 1);
   if (!prj_ver_str)
     {
       PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -1190,8 +1109,8 @@ load (
 
   gint64 time_before = g_get_monotonic_time ();
 
-  int schema_ver = string_get_regex_group_as_int (
-    yaml, "---\nschema_version: (.*)\n", 1, -1);
+  int schema_ver =
+    string_get_regex_group_as_int (yaml, "---\nschema_version: (.*)\n", 1, -1);
   g_message ("detected schema version %d", schema_ver);
   bool upgraded = false;
   if (schema_ver != PROJECT_SCHEMA_VERSION)
@@ -1201,19 +1120,16 @@ load (
       if (!upgraded)
         {
           PROPAGATE_PREFIXED_ERROR_LITERAL (
-            error, err,
-            _ ("Failed to upgrade project schema"));
+            error, err, _ ("Failed to upgrade project schema"));
           free (yaml);
           return false;
         }
     }
 
-  Project * self = (Project *) yaml_deserialize (
-    yaml, &project_schema, &err);
-  gint64 time_after = g_get_monotonic_time ();
+  Project * self = (Project *) yaml_deserialize (yaml, &project_schema, &err);
+  gint64    time_after = g_get_monotonic_time ();
   g_message (
-    "time to deserialize: %ldms",
-    (long) (time_after - time_before) / 1000);
+    "time to deserialize: %ldms", (long) (time_after - time_before) / 1000);
   if (!self)
     {
       PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -1249,8 +1165,8 @@ load (
   /* check for FINISHED file */
   if (schema_ver > 3)
     {
-      char * finished_file_path = project_get_path (
-        PROJECT, PROJECT_PATH_FINISHED_FILE, use_backup);
+      char * finished_file_path =
+        project_get_path (PROJECT, PROJECT_PATH_FINISHED_FILE, use_backup);
       bool finished_file_exists =
         g_file_test (finished_file_path, G_FILE_TEST_EXISTS);
       if (!finished_file_exists)
@@ -1266,8 +1182,8 @@ load (
   else
     {
       g_message (
-        "skipping check for %s file (schema ver %d)",
-        PROJECT_FINISHED_FILE, schema_ver);
+        "skipping check for %s file (schema ver %d)", PROJECT_FINISHED_FILE,
+        schema_ver);
     }
 
   g_message ("Project successfully deserialized.");
@@ -1275,18 +1191,15 @@ load (
   /* if template, also copy the pool and plugin states */
   if (is_template)
     {
-      char * prev_pool_dir =
-        g_build_filename (dir, PROJECT_POOL_DIR, NULL);
-      char * new_pool_dir = g_build_filename (
-        ZRYTHM->create_project_path, PROJECT_POOL_DIR, NULL);
+      char * prev_pool_dir = g_build_filename (dir, PROJECT_POOL_DIR, NULL);
+      char * new_pool_dir =
+        g_build_filename (ZRYTHM->create_project_path, PROJECT_POOL_DIR, NULL);
       char * prev_plugins_dir =
         g_build_filename (dir, PROJECT_PLUGINS_DIR, NULL);
       char * new_plugins_dir = g_build_filename (
-        ZRYTHM->create_project_path, PROJECT_PLUGINS_DIR,
-        NULL);
+        ZRYTHM->create_project_path, PROJECT_PLUGINS_DIR, NULL);
       bool success = io_copy_dir (
-        new_pool_dir, prev_pool_dir, F_NO_FOLLOW_SYMLINKS,
-        F_RECURSIVE, &err);
+        new_pool_dir, prev_pool_dir, F_NO_FOLLOW_SYMLINKS, F_RECURSIVE, &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -1294,8 +1207,8 @@ load (
           return false;
         }
       success = io_copy_dir (
-        new_plugins_dir, prev_plugins_dir,
-        F_NO_FOLLOW_SYMLINKS, F_RECURSIVE, &err);
+        new_plugins_dir, prev_plugins_dir, F_NO_FOLLOW_SYMLINKS, F_RECURSIVE,
+        &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -1316,13 +1229,12 @@ load (
   /* if backup, copy plugin states */
   if (use_backup)
     {
-      char * prev_plugins_dir = g_build_filename (
-        self->backup_dir, PROJECT_PLUGINS_DIR, NULL);
-      char * new_plugins_dir =
-        g_build_filename (dir, PROJECT_PLUGINS_DIR, NULL);
+      char * prev_plugins_dir =
+        g_build_filename (self->backup_dir, PROJECT_PLUGINS_DIR, NULL);
+      char * new_plugins_dir = g_build_filename (dir, PROJECT_PLUGINS_DIR, NULL);
       bool success = io_copy_dir (
-        new_plugins_dir, prev_plugins_dir,
-        F_NO_FOLLOW_SYMLINKS, F_RECURSIVE, &err);
+        new_plugins_dir, prev_plugins_dir, F_NO_FOLLOW_SYMLINKS, F_RECURSIVE,
+        &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -1384,11 +1296,9 @@ load (
   timeline_init_loaded (self->timeline);
   tracklist_init_loaded (self->tracklist, self, NULL);
 
-  int beats_per_bar =
-    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
   engine_update_frames_per_tick (
-    AUDIO_ENGINE, beats_per_bar,
-    tempo_track_get_current_bpm (P_TEMPO_TRACK),
+    AUDIO_ENGINE, beats_per_bar, tempo_track_get_current_bpm (P_TEMPO_TRACK),
     AUDIO_ENGINE->sample_rate, true, true, false);
 
   /* undo manager must be loaded after updating engine
@@ -1408,28 +1318,23 @@ load (
    * selections (because it's too much work with little
    * benefit to port the selections from older projects) */
 
-#define INIT_OR_CREATE_ARR_SELECTIONS( \
-  prefix, c_type, type_name) \
+#define INIT_OR_CREATE_ARR_SELECTIONS(prefix, c_type, type_name) \
   if (self->prefix##_selections) \
     { \
       arranger_selections_init_loaded ( \
-        (ArrangerSelections *) self->prefix##_selections, \
-        true, NULL); \
+        (ArrangerSelections *) self->prefix##_selections, true, NULL); \
     } \
   else \
     { \
-      self->prefix##_selections = \
-        (c_type##Selections *) arranger_selections_new ( \
-          ARRANGER_SELECTIONS_TYPE_##type_name); \
+      self->prefix##_selections = (c_type##Selections *) \
+        arranger_selections_new (ARRANGER_SELECTIONS_TYPE_##type_name); \
     }
 
   INIT_OR_CREATE_ARR_SELECTIONS (audio, Audio, AUDIO);
   INIT_OR_CREATE_ARR_SELECTIONS (chord, Chord, CHORD);
-  INIT_OR_CREATE_ARR_SELECTIONS (
-    automation, Automation, AUTOMATION);
+  INIT_OR_CREATE_ARR_SELECTIONS (automation, Automation, AUTOMATION);
   INIT_OR_CREATE_ARR_SELECTIONS (timeline, Timeline, TIMELINE);
-  INIT_OR_CREATE_ARR_SELECTIONS (
-    midi_arranger, MidiArranger, MIDI);
+  INIT_OR_CREATE_ARR_SELECTIONS (midi_arranger, MidiArranger, MIDI);
 
   if (!self->mixer_selections)
     {
@@ -1437,18 +1342,13 @@ load (
       mixer_selections_init (self->mixer_selections);
     }
 
-  tracklist_selections_init_loaded (
-    self->tracklist_selections);
+  tracklist_selections_init_loaded (self->tracklist_selections);
 
-  quantize_options_update_quantize_points (
-    self->quantize_opts_timeline);
-  quantize_options_update_quantize_points (
-    self->quantize_opts_editor);
+  quantize_options_update_quantize_points (self->quantize_opts_timeline);
+  quantize_options_update_quantize_points (self->quantize_opts_editor);
 
-  region_link_group_manager_init_loaded (
-    self->region_link_group_manager);
-  port_connections_manager_init_loaded (
-    self->port_connections_manager);
+  region_link_group_manager_init_loaded (self->region_link_group_manager);
+  port_connections_manager_init_loaded (self->port_connections_manager);
 
   if (ZRYTHM_HAVE_UI)
     {
@@ -1461,8 +1361,7 @@ load (
           destroy_prev_main_window (mww);
         }
 
-      g_return_val_if_fail (
-        GTK_IS_WINDOW (MAIN_WINDOW), false);
+      g_return_val_if_fail (GTK_IS_WINDOW (MAIN_WINDOW), false);
     }
 
   /* sanity check */
@@ -1501,11 +1400,10 @@ load (
     {
       ui_show_message_printf (
         _ ("Project Upgraded"),
-        _ (
-          "This project has been automatically upgraded from "
-          "v%d to v%d. Saving this project will overwrite the "
-          "old one. If you would like to keep both, please "
-          "use 'Save As...'."),
+        _ ("This project has been automatically upgraded from "
+           "v%d to v%d. Saving this project will overwrite the "
+           "old one. If you would like to keep both, please "
+           "use 'Save As...'."),
         schema_ver, PROJECT_SCHEMA_VERSION);
     }
 
@@ -1525,14 +1423,10 @@ load (
  * @return Whether successful.
  */
 bool
-project_load (
-  const char * filename,
-  const bool   is_template,
-  GError **    error)
+project_load (const char * filename, const bool is_template, GError ** error)
 {
   g_message (
-    "%s: filename: %s, is template: %d", __func__, filename,
-    is_template);
+    "%s: filename: %s, is template: %d", __func__, filename, is_template);
 
   if (filename)
     {
@@ -1548,8 +1442,7 @@ project_load (
           CreateProjectDialogWidget * dialog =
             create_project_dialog_widget_new ();
 
-          int ret =
-            z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+          int ret = z_gtk_dialog_run (GTK_DIALOG (dialog), true);
 
           if (ret != GTK_RESPONSE_OK)
             {
@@ -1557,16 +1450,13 @@ project_load (
             }
 
           g_message (
-            "%s: creating project %s", __func__,
-            ZRYTHM->create_project_path);
+            "%s: creating project %s", __func__, ZRYTHM->create_project_path);
           Project * created_prj = project_create_default (
-            PROJECT, ZRYTHM->create_project_path, false, true,
-            &err);
+            PROJECT, ZRYTHM->create_project_path, false, true, &err);
           if (!created_prj)
             {
               PROPAGATE_PREFIXED_ERROR_LITERAL (
-                error, err,
-                "Failed to create default project");
+                error, err, "Failed to create default project");
               return false;
             }
         } /* endif failed to load project */
@@ -1576,8 +1466,7 @@ project_load (
     {
       GError *  err = NULL;
       Project * created_prj = project_create_default (
-        PROJECT, ZRYTHM->create_project_path, false, true,
-        &err);
+        PROJECT, ZRYTHM->create_project_path, false, true, &err);
       if (!created_prj)
         {
           PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -1590,8 +1479,8 @@ project_load (
     {
       GError * err = NULL;
       bool     success = project_save (
-        PROJECT, PROJECT->dir, F_NOT_BACKUP,
-        Z_F_NO_SHOW_NOTIFICATION, F_NO_ASYNC, &err);
+        PROJECT, PROJECT->dir, F_NOT_BACKUP, Z_F_NO_SHOW_NOTIFICATION,
+        F_NO_ASYNC, &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR (
@@ -1600,8 +1489,7 @@ project_load (
         }
     }
 
-  PROJECT->last_saved_action =
-    undo_manager_get_last_action (UNDO_MANAGER);
+  PROJECT->last_saved_action = undo_manager_get_last_action (UNDO_MANAGER);
 
   engine_activate (AUDIO_ENGINE, true);
 
@@ -1649,13 +1537,12 @@ int
 project_autosave_cb (void * data)
 {
   if (
-    !PROJECT || !PROJECT->loaded || !PROJECT->dir
-    || !PROJECT->datetime_str || !MAIN_WINDOW
-    || !MAIN_WINDOW->setup)
+    !PROJECT || !PROJECT->loaded || !PROJECT->dir || !PROJECT->datetime_str
+    || !MAIN_WINDOW || !MAIN_WINDOW->setup)
     return G_SOURCE_CONTINUE;
 
-  unsigned int autosave_interval_mins = g_settings_get_uint (
-    S_P_PROJECTS_GENERAL, "autosave-interval");
+  unsigned int autosave_interval_mins =
+    g_settings_get_uint (S_P_PROJECTS_GENERAL, "autosave-interval");
 
   /* return if autosave disabled */
   if (autosave_interval_mins <= 0)
@@ -1698,9 +1585,7 @@ project_autosave_cb (void * data)
 
   /* skip if sound is playing */
   out_ports = P_MASTER_TRACK->channel->stereo_out;
-  if (
-    out_ports->l->peak >= 0.0001f
-    || out_ports->r->peak >= 0.0001f)
+  if (out_ports->l->peak >= 0.0001f || out_ports->r->peak >= 0.0001f)
     {
       g_debug ("sound is playing, skipping autosave");
       goto post_save_sem_and_continue;
@@ -1715,9 +1600,7 @@ project_autosave_cb (void * data)
       goto post_save_sem_and_continue;
     }
 
-  if (
-    PROJECT->last_action_in_last_successful_autosave
-    == last_action)
+  if (PROJECT->last_action_in_last_successful_autosave == last_action)
     {
       g_debug (
         "last action is same as previous backup - skipping "
@@ -1729,21 +1612,17 @@ project_autosave_cb (void * data)
   if (ZRYTHM_HAVE_UI)
     {
       GListModel * toplevels = gtk_window_get_toplevels ();
-      guint        num_toplevels =
-        g_list_model_get_n_items (toplevels);
+      guint        num_toplevels = g_list_model_get_n_items (toplevels);
       for (guint i = 0; i < num_toplevels; i++)
         {
 
-          GtkWindow * window =
-            GTK_WINDOW (g_list_model_get_item (toplevels, i));
+          GtkWindow * window = GTK_WINDOW (g_list_model_get_item (toplevels, i));
           if (
             gtk_widget_get_visible (GTK_WIDGET (window))
             && (gtk_window_get_modal (window) || gtk_window_get_transient_for (window) == GTK_WINDOW (MAIN_WINDOW)))
             {
-              g_debug (
-                "modal/transient windows exist - skipping autosave");
-              z_gtk_widget_print_hierarchy (
-                GTK_WIDGET (window));
+              g_debug ("modal/transient windows exist - skipping autosave");
+              z_gtk_widget_print_hierarchy (GTK_WIDGET (window));
               goto post_save_sem_and_continue;
             }
         }
@@ -1751,8 +1630,7 @@ project_autosave_cb (void * data)
 
   /* ok to save */
   success = project_save (
-    PROJECT, PROJECT->dir, F_BACKUP, Z_F_SHOW_NOTIFICATION,
-    F_ASYNC, &err);
+    PROJECT, PROJECT->dir, F_BACKUP, Z_F_SHOW_NOTIFICATION, F_ASYNC, &err);
   if (success)
     {
       PROJECT->last_successful_autosave_time = cur_time;
@@ -1793,30 +1671,30 @@ project_get_path (Project * self, ProjectPath path, bool backup)
       return g_build_filename (dir, PROJECT_PLUGINS_DIR, NULL);
     case PROJECT_PATH_PLUGIN_STATES:
       {
-        char * plugins_dir = project_get_path (
-          self, PROJECT_PATH_PLUGINS, backup);
-        char * ret = g_build_filename (
-          plugins_dir, PROJECT_PLUGIN_STATES_DIR, NULL);
+        char * plugins_dir =
+          project_get_path (self, PROJECT_PATH_PLUGINS, backup);
+        char * ret =
+          g_build_filename (plugins_dir, PROJECT_PLUGIN_STATES_DIR, NULL);
         g_free (plugins_dir);
         return ret;
       }
       break;
     case PROJECT_PATH_PLUGIN_EXT_COPIES:
       {
-        char * plugins_dir = project_get_path (
-          self, PROJECT_PATH_PLUGINS, backup);
-        char * ret = g_build_filename (
-          plugins_dir, PROJECT_PLUGIN_EXT_COPIES_DIR, NULL);
+        char * plugins_dir =
+          project_get_path (self, PROJECT_PATH_PLUGINS, backup);
+        char * ret =
+          g_build_filename (plugins_dir, PROJECT_PLUGIN_EXT_COPIES_DIR, NULL);
         g_free (plugins_dir);
         return ret;
       }
       break;
     case PROJECT_PATH_PLUGIN_EXT_LINKS:
       {
-        char * plugins_dir = project_get_path (
-          self, PROJECT_PATH_PLUGINS, backup);
-        char * ret = g_build_filename (
-          plugins_dir, PROJECT_PLUGIN_EXT_LINKS_DIR, NULL);
+        char * plugins_dir =
+          project_get_path (self, PROJECT_PATH_PLUGINS, backup);
+        char * ret =
+          g_build_filename (plugins_dir, PROJECT_PLUGIN_EXT_LINKS_DIR, NULL);
         g_free (plugins_dir);
         return ret;
       }
@@ -1826,8 +1704,7 @@ project_get_path (Project * self, ProjectPath path, bool backup)
     case PROJECT_PATH_PROJECT_FILE:
       return g_build_filename (dir, PROJECT_FILE, NULL);
     case PROJECT_PATH_FINISHED_FILE:
-      return g_build_filename (
-        dir, PROJECT_FINISHED_FILE, NULL);
+      return g_build_filename (dir, PROJECT_FINISHED_FILE, NULL);
     default:
       g_return_val_if_reached (NULL);
     }
@@ -1858,10 +1735,8 @@ project_new (Zrythm * _zrythm)
   self->quantize_opts_timeline = quantize_options_new ();
   self->quantize_opts_editor = quantize_options_new ();
   self->tracklist_selections = tracklist_selections_new (true);
-  self->region_link_group_manager =
-    region_link_group_manager_new ();
-  self->port_connections_manager =
-    port_connections_manager_new ();
+  self->region_link_group_manager = region_link_group_manager_new ();
+  self->port_connections_manager = port_connections_manager_new ();
   self->midi_mappings = midi_mappings_new ();
 
   init_common (self);
@@ -1874,8 +1749,7 @@ project_new (Zrythm * _zrythm)
 ProjectSaveData *
 project_save_data_new (void)
 {
-  ProjectSaveData * self =
-    object_new_unresizable (ProjectSaveData);
+  ProjectSaveData * self = object_new_unresizable (ProjectSaveData);
   self->progress_info = progress_info_new ();
 
   return self;
@@ -1886,8 +1760,7 @@ project_save_data_free (ProjectSaveData * self)
 {
   g_free_and_null (self->project_file_path);
   object_free_w_func_and_null (project_free, self->project);
-  object_free_w_func_and_null (
-    progress_info_free, self->progress_info);
+  object_free_w_func_and_null (progress_info_free, self->progress_info);
 
   object_zero_and_free_unresizable (ProjectSaveData, self);
 }
@@ -1906,16 +1779,13 @@ serialize_project_thread (ProjectSaveData * data)
   g_message ("serializing project to yaml...");
   GError * err = NULL;
   gint64   time_before = g_get_monotonic_time ();
-  char *   yaml =
-    yaml_serialize (data->project, &project_schema, &err);
-  gint64 time_after = g_get_monotonic_time ();
+  char *   yaml = yaml_serialize (data->project, &project_schema, &err);
+  gint64   time_after = g_get_monotonic_time ();
   g_message (
-    "time to serialize: %ldms",
-    (long) (time_after - time_before) / 1000);
+    "time to serialize: %ldms", (long) (time_after - time_before) / 1000);
   if (!yaml)
     {
-      HANDLE_ERROR_LITERAL (
-        err, _ ("Failed to serialize project"));
+      HANDLE_ERROR_LITERAL (err, _ ("Failed to serialize project"));
       data->has_error = true;
       goto serialize_end;
     }
@@ -1923,31 +1793,26 @@ serialize_project_thread (ProjectSaveData * data)
   /* compress */
   err = NULL;
   ret = project_compress (
-    &compressed_yaml, &compressed_size, PROJECT_COMPRESS_DATA,
-    yaml, strlen (yaml) * sizeof (char),
-    PROJECT_COMPRESS_DATA, &err);
+    &compressed_yaml, &compressed_size, PROJECT_COMPRESS_DATA, yaml,
+    strlen (yaml) * sizeof (char), PROJECT_COMPRESS_DATA, &err);
   g_free (yaml);
   if (!ret)
     {
-      HANDLE_ERROR (
-        err, "%s", _ ("Failed to compress project file"));
+      HANDLE_ERROR (err, "%s", _ ("Failed to compress project file"));
       data->has_error = true;
       goto serialize_end;
     }
 
   /* set file contents */
   g_message (
-    "%s: saving project file at %s...", __func__,
-    data->project_file_path);
+    "%s: saving project file at %s...", __func__, data->project_file_path);
   g_file_set_contents (
-    data->project_file_path, compressed_yaml,
-    (gssize) compressed_size, &err);
+    data->project_file_path, compressed_yaml, (gssize) compressed_size, &err);
   free (compressed_yaml);
   if (err != NULL)
     {
       g_critical (
-        "%s: Unable to write project file: %s", __func__,
-        err->message);
+        "%s: Unable to write project file: %s", __func__, err->message);
       g_error_free (err);
       data->has_error = true;
     }
@@ -1984,8 +1849,7 @@ project_idle_saved_cb (ProjectSaveData * data)
     {
       if (!ZRYTHM_TESTING)
         {
-          zrythm_add_to_recent_projects (
-            ZRYTHM, data->project_file_path);
+          zrythm_add_to_recent_projects (ZRYTHM, data->project_file_path);
         }
       if (data->show_notification)
         ui_show_notification (_ ("Project saved."));
@@ -2010,8 +1874,7 @@ static void
 cleanup_plugin_state_dirs (ProjectSaveData * data)
 {
   g_debug (
-    "cleaning plugin state dirs%s...",
-    data->is_backup ? " for backup" : "");
+    "cleaning plugin state dirs%s...", data->is_backup ? " for backup" : "");
 
   /* if saving backup, the temporary state dirs
      * created during clone() are not needed by
@@ -2037,8 +1900,8 @@ cleanup_plugin_state_dirs (ProjectSaveData * data)
       g_debug ("plugin %zu: %s", i, pl->state_dir);
     }
 
-  char * plugin_states_path = project_get_path (
-    PROJECT, PROJECT_PATH_PLUGIN_STATES, F_NOT_BACKUP);
+  char * plugin_states_path =
+    project_get_path (PROJECT, PROJECT_PATH_PLUGIN_STATES, F_NOT_BACKUP);
 
   /* get existing plugin state dirs */
   GDir *   dir;
@@ -2048,8 +1911,7 @@ cleanup_plugin_state_dirs (ProjectSaveData * data)
   const char * filename;
   while ((filename = g_dir_read_name (dir)))
     {
-      char * full_path =
-        g_build_filename (plugin_states_path, filename, NULL);
+      char * full_path = g_build_filename (plugin_states_path, filename, NULL);
 
       /* skip non-dirs */
       if (!g_file_test (full_path, G_FILE_TEST_IS_DIR))
@@ -2076,8 +1938,7 @@ cleanup_plugin_state_dirs (ProjectSaveData * data)
 
       if (!found)
         {
-          g_message (
-            "removing unused plugin state in %s", full_path);
+          g_message ("removing unused plugin state in %s", full_path);
           io_rmdir (full_path, Z_F_FORCE);
         }
 
@@ -2119,8 +1980,7 @@ project_save (
   bool        engine_paused = false;
   if (AUDIO_ENGINE->activated)
     {
-      engine_wait_for_pause (
-        AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
+      engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
       engine_paused = true;
     }
 
@@ -2142,8 +2002,7 @@ project_save (
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err, "Failed to create project directory %s",
-        PROJECT->dir);
+        error, err, "Failed to create project directory %s", PROJECT->dir);
       return false;
     }
 
@@ -2164,8 +2023,7 @@ project_save (
   /* if backup, get next available backup dir */
   if (is_backup)
     {
-      success =
-        set_and_create_next_available_backup_dir (self, &err);
+      success = set_and_create_next_available_backup_dir (self, &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -2184,30 +2042,26 @@ project_save (
 
   /* write the pool */
   audio_pool_remove_unused (AUDIO_POOL, is_backup);
-  success =
-    audio_pool_write_to_disk (AUDIO_POOL, is_backup, &err);
+  success = audio_pool_write_to_disk (AUDIO_POOL, is_backup, &err);
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s",
-        _ ("Failed to write audio pool to disk"));
+        error, err, "%s", _ ("Failed to write audio pool to disk"));
       return false;
     }
 
   ProjectSaveData * data = project_save_data_new ();
-  data->project_file_path = project_get_path (
-    self, PROJECT_PATH_PROJECT_FILE, is_backup);
+  data->project_file_path =
+    project_get_path (self, PROJECT_PATH_PROJECT_FILE, is_backup);
   data->show_notification = show_notification;
   data->is_backup = is_backup;
   data->project = project_clone (PROJECT, is_backup, &err);
   if (!data->project)
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", _ ("Failed to clone project"));
+      PROPAGATE_PREFIXED_ERROR (error, err, "%s", _ ("Failed to clone project"));
       return false;
     }
-  g_return_val_if_fail (
-    data->project->tracklist_selections, false);
+  g_return_val_if_fail (data->project->tracklist_selections, false);
   data->project->tracklist_selections->free_tracks = true;
 
 #if 0
@@ -2260,13 +2114,13 @@ project_save (
   if (is_backup)
     {
       /* copy plugin states */
-      char * prj_pl_states_dir = project_get_path (
-        PROJECT, PROJECT_PATH_PLUGINS, F_NOT_BACKUP);
-      char * prj_backup_pl_states_dir = project_get_path (
-        PROJECT, PROJECT_PATH_PLUGINS, F_BACKUP);
+      char * prj_pl_states_dir =
+        project_get_path (PROJECT, PROJECT_PATH_PLUGINS, F_NOT_BACKUP);
+      char * prj_backup_pl_states_dir =
+        project_get_path (PROJECT, PROJECT_PATH_PLUGINS, F_BACKUP);
       success = io_copy_dir (
-        prj_backup_pl_states_dir, prj_pl_states_dir,
-        F_NO_FOLLOW_SYMLINKS, F_RECURSIVE, &err);
+        prj_backup_pl_states_dir, prj_pl_states_dir, F_NO_FOLLOW_SYMLINKS,
+        F_RECURSIVE, &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -2287,14 +2141,13 @@ project_save (
   if (async)
     {
       g_thread_new (
-        "serialize_project_thread",
-        (GThreadFunc) serialize_project_thread, data);
+        "serialize_project_thread", (GThreadFunc) serialize_project_thread,
+        data);
 
       /* don't show progress dialog */
       if (ZRYTHM_HAVE_UI && false)
         {
-          g_idle_add (
-            (GSourceFunc) project_idle_saved_cb, data);
+          g_idle_add ((GSourceFunc) project_idle_saved_cb, data);
 
 #if 0
           /* show progress while saving */
@@ -2328,8 +2181,8 @@ project_save (
 
   /* write FINISHED file */
   {
-    char * finished_file_path = project_get_path (
-      self, PROJECT_PATH_FINISHED_FILE, is_backup);
+    char * finished_file_path =
+      project_get_path (self, PROJECT_PATH_FINISHED_FILE, is_backup);
     io_touch_file (finished_file_path);
     g_free (finished_file_path);
   }
@@ -2341,8 +2194,7 @@ project_save (
     undo_manager_get_last_action (self->undo_manager);
   if (is_backup)
     {
-      self->last_action_in_last_successful_autosave =
-        last_action;
+      self->last_action_in_last_successful_autosave = last_action;
     }
   else
     {
@@ -2376,10 +2228,7 @@ project_has_unsaved_changes (const Project * self)
  *   is for a backup.
  */
 Project *
-project_clone (
-  const Project * src,
-  bool            for_backup,
-  GError **       error)
+project_clone (const Project * src, bool for_backup, GError ** error)
 {
   g_return_val_if_fail (ZRYTHM_APP_IS_GTK_THREAD, NULL);
   g_message ("cloning project...");
@@ -2393,10 +2242,8 @@ project_clone (
   self->tracklist = tracklist_clone (src->tracklist);
   self->clip_editor = clip_editor_clone (src->clip_editor);
   self->timeline = timeline_clone (src->timeline);
-  self->snap_grid_timeline =
-    snap_grid_clone (src->snap_grid_timeline);
-  self->snap_grid_editor =
-    snap_grid_clone (src->snap_grid_editor);
+  self->snap_grid_timeline = snap_grid_clone (src->snap_grid_timeline);
+  self->snap_grid_editor = snap_grid_clone (src->snap_grid_editor);
   self->quantize_opts_timeline =
     quantize_options_clone (src->quantize_opts_timeline);
   self->quantize_opts_editor =
@@ -2404,24 +2251,20 @@ project_clone (
   self->audio_engine = engine_clone (src->audio_engine);
   self->mixer_selections =
     mixer_selections_clone (src->mixer_selections, F_PROJECT);
-  self->timeline_selections =
-    (TimelineSelections *) arranger_selections_clone (
-      (ArrangerSelections *) src->timeline_selections);
+  self->timeline_selections = (TimelineSelections *) arranger_selections_clone (
+    (ArrangerSelections *) src->timeline_selections);
   self->midi_arranger_selections =
     (MidiArrangerSelections *) arranger_selections_clone (
       (ArrangerSelections *) src->midi_arranger_selections);
-  self->chord_selections =
-    (ChordSelections *) arranger_selections_clone (
-      (ArrangerSelections *) src->chord_selections);
-  self->automation_selections =
-    (AutomationSelections *) arranger_selections_clone (
-      (ArrangerSelections *) src->automation_selections);
-  self->audio_selections =
-    (AudioSelections *) arranger_selections_clone (
-      (ArrangerSelections *) src->audio_selections);
+  self->chord_selections = (ChordSelections *) arranger_selections_clone (
+    (ArrangerSelections *) src->chord_selections);
+  self->automation_selections = (AutomationSelections *)
+    arranger_selections_clone ((ArrangerSelections *) src->automation_selections);
+  self->audio_selections = (AudioSelections *) arranger_selections_clone (
+    (ArrangerSelections *) src->audio_selections);
   GError * err = NULL;
-  self->tracklist_selections = tracklist_selections_clone (
-    src->tracklist_selections, &err);
+  self->tracklist_selections =
+    tracklist_selections_clone (src->tracklist_selections, &err);
   if (!self->tracklist_selections)
     {
       PROPAGATE_PREFIXED_ERROR (
@@ -2430,19 +2273,15 @@ project_clone (
     }
   self->tracklist_selections->is_project = true;
   self->region_link_group_manager =
-    region_link_group_manager_clone (
-      src->region_link_group_manager);
+    region_link_group_manager_clone (src->region_link_group_manager);
   self->port_connections_manager =
-    port_connections_manager_clone (
-      src->port_connections_manager);
-  self->midi_mappings =
-    midi_mappings_clone (src->midi_mappings);
+    port_connections_manager_clone (src->port_connections_manager);
+  self->midi_mappings = midi_mappings_clone (src->midi_mappings);
 
   /* no undo history in backups */
   if (!for_backup)
     {
-      self->undo_manager =
-        undo_manager_clone (src->undo_manager);
+      self->undo_manager = undo_manager_clone (src->undo_manager);
     }
 
   g_message ("finished cloning project");
@@ -2457,17 +2296,13 @@ static void
 free_arranger_selections (Project * self)
 {
   object_free_w_func_and_null_cast (
-    arranger_selections_free, ArrangerSelections *,
-    self->automation_selections);
+    arranger_selections_free, ArrangerSelections *, self->automation_selections);
   object_free_w_func_and_null_cast (
-    arranger_selections_free, ArrangerSelections *,
-    self->audio_selections);
+    arranger_selections_free, ArrangerSelections *, self->audio_selections);
   object_free_w_func_and_null_cast (
-    arranger_selections_free, ArrangerSelections *,
-    self->chord_selections);
+    arranger_selections_free, ArrangerSelections *, self->chord_selections);
   object_free_w_func_and_null_cast (
-    arranger_selections_free, ArrangerSelections *,
-    self->timeline_selections);
+    arranger_selections_free, ArrangerSelections *, self->timeline_selections);
   object_free_w_func_and_null_cast (
     arranger_selections_free, ArrangerSelections *,
     self->midi_arranger_selections);
@@ -2494,49 +2329,39 @@ project_free (Project * self)
    * track */
   self->clip_editor->has_region = false;
 
-  object_free_w_func_and_null (
-    undo_manager_free, self->undo_manager);
+  object_free_w_func_and_null (undo_manager_free, self->undo_manager);
 
   /* must be free'd before tracklist selections,
    * mixer selections, engine, and port connection
    * manager */
-  object_free_w_func_and_null (
-    tracklist_free, self->tracklist);
+  object_free_w_func_and_null (tracklist_free, self->tracklist);
 
-  object_free_w_func_and_null (
-    midi_mappings_free, self->midi_mappings);
-  object_free_w_func_and_null (
-    clip_editor_free, self->clip_editor);
+  object_free_w_func_and_null (midi_mappings_free, self->midi_mappings);
+  object_free_w_func_and_null (clip_editor_free, self->clip_editor);
   object_free_w_func_and_null (timeline_free, self->timeline);
-  object_free_w_func_and_null (
-    snap_grid_free, self->snap_grid_timeline);
-  object_free_w_func_and_null (
-    snap_grid_free, self->snap_grid_editor);
+  object_free_w_func_and_null (snap_grid_free, self->snap_grid_timeline);
+  object_free_w_func_and_null (snap_grid_free, self->snap_grid_editor);
   object_free_w_func_and_null (
     quantize_options_free, self->quantize_opts_timeline);
   object_free_w_func_and_null (
     quantize_options_free, self->quantize_opts_editor);
   object_free_w_func_and_null (
-    region_link_group_manager_free,
-    self->region_link_group_manager);
+    region_link_group_manager_free, self->region_link_group_manager);
 
   object_free_w_func_and_null (
     tracklist_selections_free, self->tracklist_selections);
 
   free_arranger_selections (self);
 
-  object_free_w_func_and_null (
-    engine_free, self->audio_engine);
+  object_free_w_func_and_null (engine_free, self->audio_engine);
 
   /* must be free'd after engine */
   object_free_w_func_and_null (
-    port_connections_manager_free,
-    self->port_connections_manager);
+    port_connections_manager_free, self->port_connections_manager);
 
   /* must be free'd after port connections
    * manager */
-  object_free_w_func_and_null (
-    mixer_selections_free, self->mixer_selections);
+  object_free_w_func_and_null (mixer_selections_free, self->mixer_selections);
 
   zix_sem_destroy (&self->save_sem);
 

@@ -66,17 +66,13 @@ arranger_object_is_fade (
   bool             only_outer,
   bool             check_lane);
 
-#define arranger_object_is_fade_in( \
-  self, x, y, only_handle, only_outer) \
-  arranger_object_is_fade ( \
-    self, true, x, y, only_handle, only_outer, true) \
+#define arranger_object_is_fade_in(self, x, y, only_handle, only_outer) \
+  arranger_object_is_fade (self, true, x, y, only_handle, only_outer, true) \
     || arranger_object_is_fade ( \
       self, true, x, y, only_handle, only_outer, false)
 
-#define arranger_object_is_fade_out( \
-  self, x, y, only_handle, only_outer) \
-  arranger_object_is_fade ( \
-    self, false, x, y, only_handle, only_outer, true) \
+#define arranger_object_is_fade_out(self, x, y, only_handle, only_outer) \
+  arranger_object_is_fade (self, false, x, y, only_handle, only_outer, true) \
     || arranger_object_is_fade ( \
       self, false, x, y, only_handle, only_outer, false)
 
@@ -87,9 +83,7 @@ arranger_object_is_fade (
  * @param x X in local coordinates.
  */
 NONNULL PURE bool
-arranger_object_is_resize_l (
-  ArrangerObject * self,
-  const int        x);
+arranger_object_is_resize_l (ArrangerObject * self, const int x);
 
 /**
  * Returns if the current position is for resizing
@@ -98,9 +92,7 @@ arranger_object_is_resize_l (
  * @param x X in local coordinates.
  */
 NONNULL bool
-arranger_object_is_resize_r (
-  ArrangerObject * self,
-  const int        x);
+arranger_object_is_resize_r (ArrangerObject * self, const int x);
 
 /**
  * Returns if the current position is for resizing
@@ -110,10 +102,7 @@ arranger_object_is_resize_r (
  * @param y Y in local coordinates.
  */
 bool
-arranger_object_is_resize_up (
-  ArrangerObject * self,
-  const int        x,
-  const int        y);
+arranger_object_is_resize_up (ArrangerObject * self, const int x, const int y);
 
 /**
  * Returns if the current position is for resizing
@@ -122,9 +111,7 @@ arranger_object_is_resize_up (
  * @param y Y in local coordinates.
  */
 bool
-arranger_object_is_resize_loop (
-  ArrangerObject * self,
-  const int        y);
+arranger_object_is_resize_loop (ArrangerObject * self, const int y);
 
 /**
  * Returns if the current position is for renaming
@@ -134,10 +121,7 @@ arranger_object_is_resize_loop (
  * @param y Y in local coordinates.
  */
 NONNULL bool
-arranger_object_is_rename (
-  ArrangerObject * self,
-  const int        x,
-  const int        y);
+arranger_object_is_rename (ArrangerObject * self, const int x, const int y);
 
 /**
  * Returns if arranger_object widgets should show
@@ -150,9 +134,7 @@ arranger_object_is_rename (
  *   pressed.
  */
 bool
-arranger_object_should_show_cut_lines (
-  ArrangerObject * self,
-  bool             alt_pressed);
+arranger_object_should_show_cut_lines (ArrangerObject * self, bool alt_pressed);
 
 /**
  * Gets the full rectangle for a linked object.

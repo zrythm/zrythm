@@ -15,13 +15,12 @@
 
 #include "utils/yaml.h"
 
-typedef struct ArrangerObject ArrangerObject;
-typedef struct Position       Position;
-typedef struct AudioClip      AudioClip;
-typedef struct UndoableAction UndoableAction;
-typedef enum ArrangerSelectionsActionEditType
-                       ArrangerSelectionsActionEditType;
-typedef struct ZRegion ZRegion;
+typedef struct ArrangerObject                 ArrangerObject;
+typedef struct Position                       Position;
+typedef struct AudioClip                      AudioClip;
+typedef struct UndoableAction                 UndoableAction;
+typedef enum ArrangerSelectionsActionEditType ArrangerSelectionsActionEditType;
+typedef struct ZRegion                        ZRegion;
 
 /**
  * @addtogroup gui_backend
@@ -33,10 +32,8 @@ typedef struct ZRegion ZRegion;
 
 #define ARRANGER_SELECTIONS_MAGIC 35867752
 #define IS_ARRANGER_SELECTIONS(x) \
-  (((ArrangerSelections *) x)->magic \
-   == ARRANGER_SELECTIONS_MAGIC)
-#define IS_ARRANGER_SELECTIONS_AND_NONNULL(x) \
-  (x && IS_ARRANGER_SELECTIONS (x))
+  (((ArrangerSelections *) x)->magic == ARRANGER_SELECTIONS_MAGIC)
+#define IS_ARRANGER_SELECTIONS_AND_NONNULL(x) (x && IS_ARRANGER_SELECTIONS (x))
 #define ARRANGER_SELECTIONS(x) arranger_selections_cast (x)
 
 #define ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS 0.1
@@ -70,21 +67,15 @@ typedef struct ArrangerSelections
   int magic;
 } ArrangerSelections;
 
-static const cyaml_schema_field_t
-  arranger_selections_fields_schema[] = {
-    YAML_FIELD_INT (ArrangerSelections, schema_version),
-    YAML_FIELD_ENUM (
-      ArrangerSelections,
-      type,
-      arranger_selections_type_strings),
+static const cyaml_schema_field_t arranger_selections_fields_schema[] = {
+  YAML_FIELD_INT (ArrangerSelections, schema_version),
+  YAML_FIELD_ENUM (ArrangerSelections, type, arranger_selections_type_strings),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t arranger_selections_schema = {
-  YAML_VALUE_PTR (
-    ArrangerSelections,
-    arranger_selections_fields_schema),
+  YAML_VALUE_PTR (ArrangerSelections, arranger_selections_fields_schema),
 };
 
 typedef enum ArrangerSelectionsProperty
@@ -123,9 +114,7 @@ void arranger_selections_init_loaded (
  * Initializes the selections.
  */
 NONNULL void
-arranger_selections_init (
-  ArrangerSelections *   self,
-  ArrangerSelectionsType type);
+arranger_selections_init (ArrangerSelections * self, ArrangerSelectionsType type);
 
 /**
  * Creates new arranger selections.
@@ -143,9 +132,7 @@ arranger_selections_verify (ArrangerSelections * self);
  * Appends the given object to the selections.
  */
 NONNULL void
-arranger_selections_add_object (
-  ArrangerSelections * self,
-  ArrangerObject *     obj);
+arranger_selections_add_object (ArrangerSelections * self, ArrangerObject * obj);
 
 /**
  * Sets the values of each object in the dest
@@ -166,14 +153,10 @@ arranger_selections_set_from_selections (
  * @param desc Descending or not.
  */
 NONNULL void
-arranger_selections_sort_by_indices (
-  ArrangerSelections * sel,
-  int                  desc);
+arranger_selections_sort_by_indices (ArrangerSelections * sel, int desc);
 
 NONNULL void
-arranger_selections_sort_by_positions (
-  ArrangerSelections * self,
-  int                  desc);
+arranger_selections_sort_by_positions (ArrangerSelections * self, int desc);
 
 /**
  * Clone the struct for copying, undoing, etc.
@@ -220,15 +203,13 @@ arranger_selections_get_end_pos (
  * Returns the number of selected objects.
  */
 NONNULL int
-arranger_selections_get_num_objects (
-  const ArrangerSelections * self);
+arranger_selections_get_num_objects (const ArrangerSelections * self);
 
 /**
  * Gets first object.
  */
 NONNULL ArrangerObject *
-arranger_selections_get_first_object (
-  const ArrangerSelections * self);
+arranger_selections_get_first_object (const ArrangerSelections * self);
 
 /**
  * Gets last object.
@@ -289,41 +270,32 @@ arranger_selections_add_to_region (
  * @param ticks Ticks to add.
  */
 NONNULL void
-arranger_selections_add_ticks (
-  ArrangerSelections * self,
-  const double         ticks);
+arranger_selections_add_ticks (ArrangerSelections * self, const double ticks);
 
 /**
  * Returns whether all the selections are on the
  * same lane (track lane or automation lane).
  */
 NONNULL bool
-arranger_selections_all_on_same_lane (
-  ArrangerSelections * self);
+arranger_selections_all_on_same_lane (ArrangerSelections * self);
 
 /**
  * Selects all possible objects from the project.
  */
 NONNULL void
-arranger_selections_select_all (
-  ArrangerSelections * self,
-  bool                 fire_events);
+arranger_selections_select_all (ArrangerSelections * self, bool fire_events);
 
 /**
  * Clears selections.
  */
 NONNULL void
-arranger_selections_clear (
-  ArrangerSelections * self,
-  bool                 free,
-  bool                 fire_events);
+arranger_selections_clear (ArrangerSelections * self, bool free, bool fire_events);
 
 /**
  * Code to run after deserializing.
  */
 NONNULL void
-arranger_selections_post_deserialize (
-  ArrangerSelections * self);
+arranger_selections_post_deserialize (ArrangerSelections * self);
 
 NONNULL bool
 arranger_selections_validate (ArrangerSelections * self);
@@ -375,8 +347,7 @@ arranger_selections_contains_undeletable_object (
  * object (such as the start marker).
  */
 NONNULL bool
-arranger_selections_contains_unclonable_object (
-  const ArrangerSelections * self);
+arranger_selections_contains_unclonable_object (const ArrangerSelections * self);
 
 NONNULL bool
 arranger_selections_contains_unrenamable_object (
@@ -420,20 +391,16 @@ NONNULL bool
 arranger_selections_can_be_pasted (ArrangerSelections * self);
 
 NONNULL bool
-arranger_selections_contains_looped (
-  ArrangerSelections * self);
+arranger_selections_contains_looped (ArrangerSelections * self);
 
 NONNULL bool
 arranger_selections_can_be_merged (ArrangerSelections * self);
 
 NONNULL double
-arranger_selections_get_length_in_ticks (
-  ArrangerSelections * self);
+arranger_selections_get_length_in_ticks (ArrangerSelections * self);
 
 NONNULL bool
-arranger_selections_contains_clip (
-  ArrangerSelections * self,
-  AudioClip *          clip);
+arranger_selections_contains_clip (ArrangerSelections * self, AudioClip * clip);
 
 NONNULL bool
 arranger_selections_can_split_at_pos (

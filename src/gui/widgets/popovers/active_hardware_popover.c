@@ -22,17 +22,13 @@ G_DEFINE_TYPE (
   GTK_TYPE_POPOVER)
 
 static void
-on_closed (
-  ActiveHardwarePopoverWidget * self,
-  gpointer                      user_data)
+on_closed (ActiveHardwarePopoverWidget * self, gpointer user_data)
 {
   active_hardware_mb_widget_refresh (self->owner);
 }
 
 static void
-get_controllers (
-  ActiveHardwarePopoverWidget * self,
-  GPtrArray *                   controllers)
+get_controllers (ActiveHardwarePopoverWidget * self, GPtrArray * controllers)
 {
   HardwareProcessor * processor =
     self->owner->input
@@ -41,12 +37,11 @@ get_controllers (
 
   /* force a rescan just in case */
   hardware_processor_rescan_ext_ports (processor);
-  for (int i = 0;
-       i <
-         (self->owner->is_midi ?
-            processor->num_ext_midi_ports :
-            processor->num_ext_audio_ports);
-       i++)
+  for (
+    int i = 0;
+    i
+    < (self->owner->is_midi ? processor->num_ext_midi_ports : processor->num_ext_audio_ports);
+    i++)
     {
       ExtPort * port =
         self->owner->is_midi
@@ -60,21 +55,18 @@ get_controllers (
  * Finds checkbutton with given label.
  */
 static GtkWidget *
-find_checkbutton (
-  ActiveHardwarePopoverWidget * self,
-  const char *                  label)
+find_checkbutton (ActiveHardwarePopoverWidget * self, const char * label)
 {
-  for (GtkWidget * child = gtk_widget_get_first_child (
-         GTK_WIDGET (self->controllers_box));
-       child != NULL;
-       child = gtk_widget_get_next_sibling (child))
+  for (
+    GtkWidget * child =
+      gtk_widget_get_first_child (GTK_WIDGET (self->controllers_box));
+    child != NULL; child = gtk_widget_get_next_sibling (child))
     {
       if (!GTK_IS_CHECK_BUTTON (child))
         continue;
 
       GtkCheckButton * chkbtn = GTK_CHECK_BUTTON (child);
-      if (string_is_equal (
-            gtk_check_button_get_label (chkbtn), label))
+      if (string_is_equal (gtk_check_button_get_label (chkbtn), label))
         {
           return GTK_WIDGET (chkbtn);
         }
@@ -86,28 +78,24 @@ find_checkbutton (
 static void
 setup (ActiveHardwarePopoverWidget * self)
 {
-  GPtrArray * controllers =
-    g_ptr_array_new_full (100, (GDestroyNotify) g_free);
+  GPtrArray * controllers = g_ptr_array_new_full (100, (GDestroyNotify) g_free);
 
   /* remove pre-existing controllers */
-  z_gtk_widget_destroy_all_children (
-    GTK_WIDGET (self->controllers_box));
+  z_gtk_widget_destroy_all_children (GTK_WIDGET (self->controllers_box));
 
   /* scan controllers and add them */
   get_controllers (self, controllers);
   for (size_t i = 0; i < controllers->len; i++)
     {
-      char * controller_str =
-        (char *) g_ptr_array_index (controllers, i);
-      GtkWidget * chkbtn =
-        gtk_check_button_new_with_label (controller_str);
+      char *      controller_str = (char *) g_ptr_array_index (controllers, i);
+      GtkWidget * chkbtn = gtk_check_button_new_with_label (controller_str);
       gtk_box_append (self->controllers_box, chkbtn);
     }
 
   /* fetch saved controllers and tick them if they
    * exist */
-  gchar ** saved_controllers = g_settings_get_strv (
-    self->owner->settings, self->owner->key);
+  gchar ** saved_controllers =
+    g_settings_get_strv (self->owner->settings, self->owner->key);
   char * tmp;
   size_t i = 0;
   while ((tmp = saved_controllers[i]) != NULL)
@@ -119,8 +107,7 @@ setup (ActiveHardwarePopoverWidget * self)
       if (chkbtn)
         {
           /* tick it */
-          gtk_check_button_set_active (
-            GTK_CHECK_BUTTON (chkbtn), 1);
+          gtk_check_button_set_active (GTK_CHECK_BUTTON (chkbtn), 1);
         }
 
       i++;
@@ -137,8 +124,7 @@ on_rescan (GtkButton * btn, ActiveHardwarePopoverWidget * self)
 }
 
 ActiveHardwarePopoverWidget *
-active_hardware_popover_widget_new (
-  ActiveHardwareMbWidget * owner)
+active_hardware_popover_widget_new (ActiveHardwareMbWidget * owner)
 {
   ActiveHardwarePopoverWidget * self =
     g_object_new (ACTIVE_HARDWARE_POPOVER_WIDGET_TYPE, NULL);
@@ -155,12 +141,10 @@ active_hardware_popover_widget_class_init (
   ActiveHardwarePopoverWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "active_hardware_popover.ui");
+  resources_set_class_template (klass, "active_hardware_popover.ui");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, ActiveHardwarePopoverWidget, x)
+  gtk_widget_class_bind_template_child (klass, ActiveHardwarePopoverWidget, x)
 
   BIND_CHILD (rescan);
   BIND_CHILD (controllers_box);
@@ -171,12 +155,10 @@ active_hardware_popover_widget_class_init (
 }
 
 static void
-active_hardware_popover_widget_init (
-  ActiveHardwarePopoverWidget * self)
+active_hardware_popover_widget_init (ActiveHardwarePopoverWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
   g_signal_connect (
-    G_OBJECT (self->rescan), "clicked",
-    G_CALLBACK (on_rescan), self);
+    G_OBJECT (self->rescan), "clicked", G_CALLBACK (on_rescan), self);
 }

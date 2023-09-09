@@ -89,8 +89,7 @@ resampler_new (
  * To be called periodically until resampler_is_done() returns
  * true.
  */
-NONNULL_ARGS (1)
-bool resampler_process (Resampler * self, GError ** error);
+NONNULL_ARGS (1) bool resampler_process (Resampler * self, GError ** error);
 
 /**
  * Indicates whether resampling is finished.

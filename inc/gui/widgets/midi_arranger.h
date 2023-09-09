@@ -86,9 +86,7 @@ midi_arranger_widget_snap_midi_notes_r (
  * @param pitch The note pitch, or -1 for no note.
  */
 void
-midi_arranger_widget_set_hovered_note (
-  ArrangerWidget * self,
-  int              pitch);
+midi_arranger_widget_set_hovered_note (ArrangerWidget * self, int pitch);
 
 /**
  * Resets the transient of each note in the
@@ -138,9 +136,7 @@ midi_arranger_widget_gen_context_menu (
   double           y);
 
 void
-midi_arranger_handle_vertical_zoom_action (
-  ArrangerWidget * self,
-  bool             zoom_in);
+midi_arranger_handle_vertical_zoom_action (ArrangerWidget * self, bool zoom_in);
 
 /**
  * Handle ctrl+shift+scroll.

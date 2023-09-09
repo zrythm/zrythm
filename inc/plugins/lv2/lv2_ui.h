@@ -69,9 +69,7 @@ lv2_ui_instantiate (Lv2Plugin * plugin);
  * @param nframes Used for event ports.
  */
 void
-lv2_ui_read_and_apply_events (
-  Lv2Plugin * plugin,
-  uint32_t    nframes);
+lv2_ui_read_and_apply_events (Lv2Plugin * plugin, uint32_t nframes);
 
 /**
  * Write events from the plugin's UI to the plugin.

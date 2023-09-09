@@ -32,16 +32,13 @@ on_track_types_changed (
   const GArray *         selection_indices,
   void *                 user_data)
 {
-  TrackFilterPopoverWidget * self =
-    Z_TRACK_FILTER_POPOVER_WIDGET (user_data);
+  TrackFilterPopoverWidget * self = Z_TRACK_FILTER_POPOVER_WIDGET (user_data);
 
   g_debug (
-    "selected filter track types changed: %u selected",
-    selection_indices->len);
+    "selected filter track types changed: %u selected", selection_indices->len);
 
   GVariantBuilder builder;
-  g_variant_builder_init (
-    &builder, (const GVariantType *) "au");
+  g_variant_builder_init (&builder, (const GVariantType *) "au");
   for (guint i = 0; i < selection_indices->len; i++)
     {
       guint idx = g_array_index (selection_indices, guint, i);
@@ -53,20 +50,16 @@ on_track_types_changed (
   g_variant_unref (variant);
 
   gtk_filter_changed (
-    GTK_FILTER (self->custom_filter),
-    GTK_FILTER_CHANGE_DIFFERENT);
+    GTK_FILTER (self->custom_filter), GTK_FILTER_CHANGE_DIFFERENT);
 }
 
 static void
-on_track_name_changed (
-  GtkEditable *              editable,
-  TrackFilterPopoverWidget * self)
+on_track_name_changed (GtkEditable * editable, TrackFilterPopoverWidget * self)
 {
   const char * str = gtk_editable_get_text (editable);
   g_settings_set_string (S_UI, "track-filter-name", str);
   gtk_filter_changed (
-    GTK_FILTER (self->custom_filter),
-    GTK_FILTER_CHANGE_DIFFERENT);
+    GTK_FILTER (self->custom_filter), GTK_FILTER_CHANGE_DIFFERENT);
 }
 
 static void
@@ -75,14 +68,11 @@ on_show_disabled_tracks_active_changed (
   GParamSpec * pspec,
   gpointer     user_data)
 {
-  TrackFilterPopoverWidget * self =
-    Z_TRACK_FILTER_POPOVER_WIDGET (user_data);
+  TrackFilterPopoverWidget * self = Z_TRACK_FILTER_POPOVER_WIDGET (user_data);
   bool active = gtk_switch_get_active (GTK_SWITCH (gobject));
-  g_settings_set_boolean (
-    S_UI, "track-filter-show-disabled", active);
+  g_settings_set_boolean (S_UI, "track-filter-show-disabled", active);
   gtk_filter_changed (
-    GTK_FILTER (self->custom_filter),
-    GTK_FILTER_CHANGE_DIFFERENT);
+    GTK_FILTER (self->custom_filter), GTK_FILTER_CHANGE_DIFFERENT);
 }
 
 static int
@@ -93,25 +83,22 @@ filter_func (void * gobj, void * user_data)
     Z_TRACK_FILTER_POPOVER_WIDGET (user_data);
 #endif
 
-  char * name =
-    g_settings_get_string (S_UI, "track-filter-name");
+  char * name = g_settings_get_string (S_UI, "track-filter-name");
 
   WrappedObjectWithChangeSignal * wrapped_track =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
   Track * track = (Track *) wrapped_track->obj;
   g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
 
-  bool filtered = !string_contains_substr_case_insensitive (
-    track->name, name);
+  bool filtered = !string_contains_substr_case_insensitive (track->name, name);
   g_free (name);
 
   if (!filtered)
     {
-      GVariant * variant =
-        g_settings_get_value (S_UI, "track-filter-type");
+      GVariant *    variant = g_settings_get_value (S_UI, "track-filter-type");
       gsize         n_elements;
-      gconstpointer arr_ptr = g_variant_get_fixed_array (
-        variant, &n_elements, sizeof (guint));
+      gconstpointer arr_ptr =
+        g_variant_get_fixed_array (variant, &n_elements, sizeof (guint));
       const guint * elements = (const guint *) arr_ptr;
       bool          track_type_matched = n_elements == 0;
       for (gsize i = 0; i < n_elements; i++)
@@ -132,8 +119,7 @@ filter_func (void * gobj, void * user_data)
     {
       if (
         !track->enabled
-        && !g_settings_get_boolean (
-          S_UI, "track-filter-show-disabled"))
+        && !g_settings_get_boolean (S_UI, "track-filter-show-disabled"))
         {
           filtered = true;
         }
@@ -156,23 +142,18 @@ refresh_track_col_view_items (TrackFilterPopoverWidget * self)
       Track * track = TRACKLIST->tracks[i];
 
       WrappedObjectWithChangeSignal * wrapped_track =
-        wrapped_object_with_change_signal_new (
-          track, WRAPPED_OBJECT_TYPE_TRACK);
+        wrapped_object_with_change_signal_new (track, WRAPPED_OBJECT_TYPE_TRACK);
 
-      g_list_store_append (
-        self->track_list_store, wrapped_track);
+      g_list_store_append (self->track_list_store, wrapped_track);
     }
 }
 
 static void
-setup_col_view (
-  TrackFilterPopoverWidget * self,
-  GtkColumnView *            col_view)
+setup_col_view (TrackFilterPopoverWidget * self, GtkColumnView * col_view)
 {
   self->track_col_view = col_view;
 
-  GListStore * store =
-    g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  GListStore * store = g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
   self->track_list_store = store;
 
   /* make sortable */
@@ -182,46 +163,39 @@ setup_col_view (
     gtk_sort_list_model_new (G_LIST_MODEL (store), sorter);
 
   /* make filterable */
-  self->custom_filter =
-    gtk_custom_filter_new (filter_func, self, NULL);
+  self->custom_filter = gtk_custom_filter_new (filter_func, self, NULL);
   GtkFilterListModel * filter_model = gtk_filter_list_model_new (
-    G_LIST_MODEL (sort_list_model),
-    GTK_FILTER (self->custom_filter));
+    G_LIST_MODEL (sort_list_model), GTK_FILTER (self->custom_filter));
 
   /* only allow single selection */
   GtkSingleSelection * sel = GTK_SINGLE_SELECTION (
     gtk_single_selection_new (G_LIST_MODEL (filter_model)));
 
   /* set model */
-  gtk_column_view_set_model (
-    col_view, GTK_SELECTION_MODEL (sel));
+  gtk_column_view_set_model (col_view, GTK_SELECTION_MODEL (sel));
 
   /* add columns */
   item_factory_generate_and_append_column (
-    self->track_col_view, self->item_factories,
-    ITEM_FACTORY_TEXT, Z_F_NOT_EDITABLE, Z_F_RESIZABLE, NULL,
-    _ ("Name"));
+    self->track_col_view, self->item_factories, ITEM_FACTORY_TEXT,
+    Z_F_NOT_EDITABLE, Z_F_RESIZABLE, NULL, _ ("Name"));
   item_factory_generate_and_append_column (
-    self->track_col_view, self->item_factories,
-    ITEM_FACTORY_TOGGLE, Z_F_EDITABLE, Z_F_RESIZABLE, NULL,
-    _ ("Visibility"));
+    self->track_col_view, self->item_factories, ITEM_FACTORY_TOGGLE,
+    Z_F_EDITABLE, Z_F_RESIZABLE, NULL, _ ("Visibility"));
 
   /* refresh to add items */
   refresh_track_col_view_items (self);
 
   /* set style */
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self->track_col_view), "data-table");
+  gtk_widget_add_css_class (GTK_WIDGET (self->track_col_view), "data-table");
 }
 
 static int
 get_track_type_selections (guint * selections)
 {
-  GVariant * variant =
-    g_settings_get_value (S_UI, "track-filter-type");
+  GVariant *    variant = g_settings_get_value (S_UI, "track-filter-type");
   gsize         n_elements;
-  gconstpointer arr_ptr = g_variant_get_fixed_array (
-    variant, &n_elements, sizeof (guint));
+  gconstpointer arr_ptr =
+    g_variant_get_fixed_array (variant, &n_elements, sizeof (guint));
   const guint * elements = (const guint *) arr_ptr;
   for (gsize i = 0; i < n_elements; i++)
     {
@@ -251,22 +225,18 @@ track_filter_popover_finalize (TrackFilterPopoverWidget * self)
 }
 
 static void
-track_filter_popover_widget_class_init (
-  TrackFilterPopoverWidgetClass * _klass)
+track_filter_popover_widget_class_init (TrackFilterPopoverWidgetClass * _klass)
 {
   /*GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);*/
 
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
-  oklass->finalize =
-    (GObjectFinalizeFunc) track_filter_popover_finalize;
+  oklass->finalize = (GObjectFinalizeFunc) track_filter_popover_finalize;
 }
 
 static void
-track_filter_popover_widget_init (
-  TrackFilterPopoverWidget * self)
+track_filter_popover_widget_init (TrackFilterPopoverWidget * self)
 {
-  self->item_factories =
-    g_ptr_array_new_with_free_func (item_factory_free_func);
+  self->item_factories = g_ptr_array_new_with_free_func (item_factory_free_func);
 
   AdwPreferencesPage * ppage =
     ADW_PREFERENCES_PAGE (adw_preferences_page_new ());
@@ -275,86 +245,65 @@ track_filter_popover_widget_init (
   AdwPreferencesGroup * pgroup;
   AdwEntryRow *         entry_row;
 
-  pgroup =
-    ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
+  pgroup = ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
   adw_preferences_group_set_title (pgroup, _ ("Filter"));
   adw_preferences_page_add (ppage, pgroup);
 
   entry_row = ADW_ENTRY_ROW (adw_entry_row_new ());
   {
-    char * track_name =
-      g_settings_get_string (S_UI, "track-filter-name");
-    gtk_editable_set_text (
-      GTK_EDITABLE (entry_row), track_name);
+    char * track_name = g_settings_get_string (S_UI, "track-filter-name");
+    gtk_editable_set_text (GTK_EDITABLE (entry_row), track_name);
     g_free (track_name);
   }
   g_signal_connect (
-    entry_row, "changed", G_CALLBACK (on_track_name_changed),
-    self);
+    entry_row, "changed", G_CALLBACK (on_track_name_changed), self);
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (entry_row), _ ("Track name"));
   adw_preferences_group_add (pgroup, GTK_WIDGET (entry_row));
 
-  AdwExpanderRow * exp_row =
-    ADW_EXPANDER_ROW (adw_expander_row_new ());
+  AdwExpanderRow * exp_row = ADW_EXPANDER_ROW (adw_expander_row_new ());
   adw_preferences_row_set_title (
     ADW_PREFERENCES_ROW (exp_row), _ ("Track types"));
-  MultiSelectionWidget * multi_select =
-    multi_selection_widget_new ();
-  guint selections[100];
+  MultiSelectionWidget * multi_select = multi_selection_widget_new ();
+  guint                  selections[100];
   int num_selections = get_track_type_selections (selections);
   multi_selection_widget_setup (
-    multi_select, NULL, track_type_strings,
-    TRACK_TYPE_FOLDER + 1, on_track_types_changed, selections,
-    num_selections, self);
-  GtkListBoxRow * list_box_row =
-    GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
-  gtk_list_box_row_set_child (
-    list_box_row, GTK_WIDGET (multi_select));
-  adw_expander_row_add_row (
-    exp_row, GTK_WIDGET (list_box_row));
+    multi_select, NULL, track_type_strings, TRACK_TYPE_FOLDER + 1,
+    on_track_types_changed, selections, num_selections, self);
+  GtkListBoxRow * list_box_row = GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
+  gtk_list_box_row_set_child (list_box_row, GTK_WIDGET (multi_select));
+  adw_expander_row_add_row (exp_row, GTK_WIDGET (list_box_row));
   adw_expander_row_set_expanded (exp_row, true);
   adw_preferences_group_add (pgroup, GTK_WIDGET (exp_row));
 
   AdwActionRow * show_disabled_tracks_row =
     ADW_ACTION_ROW (adw_action_row_new ());
   adw_preferences_row_set_title (
-    ADW_PREFERENCES_ROW (show_disabled_tracks_row),
-    _ ("Disabled Tracks"));
-  GtkSwitch * show_disabled_tracks_switch =
-    GTK_SWITCH (gtk_switch_new ());
+    ADW_PREFERENCES_ROW (show_disabled_tracks_row), _ ("Disabled Tracks"));
+  GtkSwitch * show_disabled_tracks_switch = GTK_SWITCH (gtk_switch_new ());
   gtk_switch_set_active (
     show_disabled_tracks_switch,
-    g_settings_get_boolean (
-      S_UI, "track-filter-show-disabled"));
+    g_settings_get_boolean (S_UI, "track-filter-show-disabled"));
   gtk_widget_set_valign (
-    GTK_WIDGET (show_disabled_tracks_switch),
-    GTK_ALIGN_CENTER);
+    GTK_WIDGET (show_disabled_tracks_switch), GTK_ALIGN_CENTER);
   adw_action_row_add_suffix (
-    show_disabled_tracks_row,
-    GTK_WIDGET (show_disabled_tracks_switch));
+    show_disabled_tracks_row, GTK_WIDGET (show_disabled_tracks_switch));
   g_signal_connect (
     show_disabled_tracks_switch, "notify::active",
     G_CALLBACK (on_show_disabled_tracks_active_changed), self);
-  adw_preferences_group_add (
-    pgroup, GTK_WIDGET (show_disabled_tracks_row));
+  adw_preferences_group_add (pgroup, GTK_WIDGET (show_disabled_tracks_row));
 
-  pgroup =
-    ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
+  pgroup = ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
   adw_preferences_group_set_title (pgroup, _ ("Visibility"));
   adw_preferences_page_add (ppage, pgroup);
 
   list_box_row = GTK_LIST_BOX_ROW (gtk_list_box_row_new ());
-  GtkColumnView * col_view =
-    GTK_COLUMN_VIEW (gtk_column_view_new (NULL));
+  GtkColumnView * col_view = GTK_COLUMN_VIEW (gtk_column_view_new (NULL));
   setup_col_view (self, col_view);
-  gtk_list_box_row_set_child (
-    list_box_row, GTK_WIDGET (col_view));
-  adw_preferences_group_add (
-    pgroup, GTK_WIDGET (list_box_row));
+  gtk_list_box_row_set_child (list_box_row, GTK_WIDGET (col_view));
+  adw_preferences_group_add (pgroup, GTK_WIDGET (list_box_row));
 
-  gtk_popover_set_child (
-    GTK_POPOVER (self), GTK_WIDGET (ppage));
+  gtk_popover_set_child (GTK_POPOVER (self), GTK_WIDGET (ppage));
 
   gtk_widget_set_size_request (GTK_WIDGET (self), -1, 600);
 }

@@ -93,13 +93,9 @@ fader_create_swap_phase_port (Fader * self, bool passthrough)
 {
   Port * swap_phase = port_new_with_type (
     TYPE_CONTROL, FLOW_INPUT,
-    passthrough
-      ? _ ("Prefader Swap Phase")
-      : _ ("Fader Swap Phase"));
+    passthrough ? _ ("Prefader Swap Phase") : _ ("Fader Swap Phase"));
   swap_phase->id.sym =
-    passthrough
-      ? g_strdup ("prefader_swap_phase")
-      : g_strdup ("fader_swap_phase");
+    passthrough ? g_strdup ("prefader_swap_phase") : g_strdup ("fader_swap_phase");
   swap_phase->id.flags2 |= PORT_FLAG2_FADER_SWAP_PHASE;
   swap_phase->id.flags |= PORT_FLAG_TOGGLE;
 
@@ -140,19 +136,15 @@ fader_new (
     passthrough ? _ ("Prefader Volume") : _ ("Fader Volume"),
     PORT_OWNER_TYPE_FADER, self);
   self->amp->id.sym =
-    passthrough
-      ? g_strdup ("prefader_volume")
-      : g_strdup ("fader_volume");
+    passthrough ? g_strdup ("prefader_volume") : g_strdup ("fader_volume");
   self->amp->deff = amp;
   self->amp->minf = 0.f;
   self->amp->maxf = 2.f;
-  port_set_control_value (
-    self->amp, amp, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+  port_set_control_value (self->amp, amp, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
   self->fader_val = math_get_fader_val_from_amp (amp);
   self->amp->id.flags |= PORT_FLAG_AMPLITUDE;
   if (
-    (type == FADER_TYPE_AUDIO_CHANNEL
-     || type == FADER_TYPE_MIDI_CHANNEL)
+    (type == FADER_TYPE_AUDIO_CHANNEL || type == FADER_TYPE_MIDI_CHANNEL)
     && !passthrough)
     {
       self->amp->id.flags |= PORT_FLAG_AUTOMATABLE;
@@ -169,14 +161,11 @@ fader_new (
     passthrough ? _ ("Prefader Balance") : _ ("Fader Balance"),
     PORT_OWNER_TYPE_FADER, self);
   self->balance->id.sym =
-    passthrough
-      ? g_strdup ("prefader_balance")
-      : g_strdup ("fader_balance");
+    passthrough ? g_strdup ("prefader_balance") : g_strdup ("fader_balance");
   port_set_control_value (self->balance, balance, 0, 0);
   self->balance->id.flags |= PORT_FLAG_STEREO_BALANCE;
   if (
-    (type == FADER_TYPE_AUDIO_CHANNEL
-     || type == FADER_TYPE_MIDI_CHANNEL)
+    (type == FADER_TYPE_AUDIO_CHANNEL || type == FADER_TYPE_MIDI_CHANNEL)
     && !passthrough)
     {
       self->balance->id.flags |= PORT_FLAG_AUTOMATABLE;
@@ -185,19 +174,15 @@ fader_new (
   /* set mute */
   self->mute = port_new_with_type_and_owner (
     TYPE_CONTROL, FLOW_INPUT,
-    passthrough ? _ ("Prefader Mute") : _ ("Fader Mute"),
-    PORT_OWNER_TYPE_FADER, self);
+    passthrough ? _ ("Prefader Mute") : _ ("Fader Mute"), PORT_OWNER_TYPE_FADER,
+    self);
   self->mute->id.sym =
-    passthrough
-      ? g_strdup ("prefader_mute")
-      : g_strdup ("fader_mute");
-  control_port_set_toggled (
-    self->mute, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
+    passthrough ? g_strdup ("prefader_mute") : g_strdup ("fader_mute");
+  control_port_set_toggled (self->mute, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
   self->mute->id.flags |= PORT_FLAG_FADER_MUTE;
   self->mute->id.flags |= PORT_FLAG_TOGGLE;
   if (
-    (type == FADER_TYPE_AUDIO_CHANNEL
-     || type == FADER_TYPE_MIDI_CHANNEL)
+    (type == FADER_TYPE_AUDIO_CHANNEL || type == FADER_TYPE_MIDI_CHANNEL)
     && !passthrough)
     {
       self->mute->id.flags |= PORT_FLAG_AUTOMATABLE;
@@ -206,14 +191,11 @@ fader_new (
   /* set solo */
   self->solo = port_new_with_type_and_owner (
     TYPE_CONTROL, FLOW_INPUT,
-    passthrough ? _ ("Prefader Solo") : _ ("Fader Solo"),
-    PORT_OWNER_TYPE_FADER, self);
+    passthrough ? _ ("Prefader Solo") : _ ("Fader Solo"), PORT_OWNER_TYPE_FADER,
+    self);
   self->solo->id.sym =
-    passthrough
-      ? g_strdup ("prefader_solo")
-      : g_strdup ("fader_solo");
-  control_port_set_toggled (
-    self->solo, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
+    passthrough ? g_strdup ("prefader_solo") : g_strdup ("fader_solo");
+  control_port_set_toggled (self->solo, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
   self->solo->id.flags2 |= PORT_FLAG2_FADER_SOLO;
   self->solo->id.flags |= PORT_FLAG_TOGGLE;
 
@@ -223,43 +205,32 @@ fader_new (
     passthrough ? _ ("Prefader Listen") : _ ("Fader Listen"),
     PORT_OWNER_TYPE_FADER, self);
   self->listen->id.sym =
-    passthrough
-      ? g_strdup ("prefader_listen")
-      : g_strdup ("fader_listen");
-  control_port_set_toggled (
-    self->listen, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
+    passthrough ? g_strdup ("prefader_listen") : g_strdup ("fader_listen");
+  control_port_set_toggled (self->listen, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
   self->listen->id.flags2 |= PORT_FLAG2_FADER_LISTEN;
   self->listen->id.flags |= PORT_FLAG_TOGGLE;
 
   /* set mono compat */
   self->mono_compat_enabled = port_new_with_type_and_owner (
     TYPE_CONTROL, FLOW_INPUT,
-    passthrough
-      ? _ ("Prefader Mono Compat")
-      : _ ("Fader Mono Compat"),
+    passthrough ? _ ("Prefader Mono Compat") : _ ("Fader Mono Compat"),
     PORT_OWNER_TYPE_FADER, self);
   self->mono_compat_enabled->id.sym =
     passthrough
       ? g_strdup ("prefader_mono_compat_enabled")
       : g_strdup ("fader_mono_compat_enabled");
   control_port_set_toggled (
-    self->mono_compat_enabled, F_NO_TOGGLE,
-    F_NO_PUBLISH_EVENTS);
-  self->mono_compat_enabled->id.flags2 |=
-    PORT_FLAG2_FADER_MONO_COMPAT;
+    self->mono_compat_enabled, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
+  self->mono_compat_enabled->id.flags2 |= PORT_FLAG2_FADER_MONO_COMPAT;
   self->mono_compat_enabled->id.flags |= PORT_FLAG_TOGGLE;
 
   /* set swap phase */
-  self->swap_phase =
-    fader_create_swap_phase_port (self, passthrough);
-  control_port_set_toggled (
-    self->swap_phase, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
-  port_set_owner (
-    self->swap_phase, PORT_OWNER_TYPE_FADER, self);
+  self->swap_phase = fader_create_swap_phase_port (self, passthrough);
+  control_port_set_toggled (self->swap_phase, F_NO_TOGGLE, F_NO_PUBLISH_EVENTS);
+  port_set_owner (self->swap_phase, PORT_OWNER_TYPE_FADER, self);
 
   if (
-    type == FADER_TYPE_AUDIO_CHANNEL
-    || type == FADER_TYPE_MONITOR
+    type == FADER_TYPE_AUDIO_CHANNEL || type == FADER_TYPE_MONITOR
     || type == FADER_TYPE_SAMPLE_PROCESSOR)
     {
       const char * name = NULL;
@@ -293,10 +264,8 @@ fader_new (
         F_INPUT, name, sym, PORT_OWNER_TYPE_FADER, self);
 
       /* set proper owner */
-      port_set_owner (
-        self->stereo_in->l, PORT_OWNER_TYPE_FADER, self);
-      port_set_owner (
-        self->stereo_in->r, PORT_OWNER_TYPE_FADER, self);
+      port_set_owner (self->stereo_in->l, PORT_OWNER_TYPE_FADER, self);
+      port_set_owner (self->stereo_in->r, PORT_OWNER_TYPE_FADER, self);
 
       if (type == FADER_TYPE_AUDIO_CHANNEL)
         {
@@ -327,10 +296,8 @@ fader_new (
         F_NOT_INPUT, name, sym, PORT_OWNER_TYPE_FADER, self);
 
       /* set proper owner */
-      port_set_owner (
-        self->stereo_out->l, PORT_OWNER_TYPE_FADER, self);
-      port_set_owner (
-        self->stereo_out->r, PORT_OWNER_TYPE_FADER, self);
+      port_set_owner (self->stereo_out->l, PORT_OWNER_TYPE_FADER, self);
+      port_set_owner (self->stereo_out->r, PORT_OWNER_TYPE_FADER, self);
     }
 
   if (type == FADER_TYPE_MIDI_CHANNEL)
@@ -349,8 +316,7 @@ fader_new (
           sym = "ch_midi_fader_in";
         }
       self->midi_in = port_new_with_type_and_owner (
-        TYPE_EVENT, FLOW_INPUT, name, PORT_OWNER_TYPE_FADER,
-        self);
+        TYPE_EVENT, FLOW_INPUT, name, PORT_OWNER_TYPE_FADER, self);
       self->midi_in->id.sym = g_strdup (sym);
       self->midi_in->midi_events = midi_events_new ();
 
@@ -366,8 +332,7 @@ fader_new (
           sym = "ch_midi_fader_out";
         }
       self->midi_out = port_new_with_type_and_owner (
-        TYPE_EVENT, FLOW_OUTPUT, name, PORT_OWNER_TYPE_FADER,
-        self);
+        TYPE_EVENT, FLOW_OUTPUT, name, PORT_OWNER_TYPE_FADER, self);
       self->midi_out->id.sym = g_strdup (sym);
       self->midi_out->midi_events = midi_events_new ();
     }
@@ -379,8 +344,8 @@ Fader *
 fader_find_from_port_identifier (const PortIdentifier * id)
 {
   PortFlags2 flag2 = id->flags2;
-  Track *    tr = tracklist_find_track_by_name_hash (
-    TRACKLIST, id->track_name_hash);
+  Track *    tr =
+    tracklist_find_track_by_name_hash (TRACKLIST, id->track_name_hash);
   if (!tr && flag2 & PORT_FLAG2_SAMPLE_PROCESSOR_TRACK)
     {
       tr = tracklist_find_track_by_name_hash (
@@ -455,8 +420,7 @@ fader_get_implied_soloed (Fader * self)
   if (
     (self->type != FADER_TYPE_AUDIO_CHANNEL
      && self->type != FADER_TYPE_MIDI_CHANNEL)
-    || self->passthrough
-    || control_port_is_toggled (self->solo))
+    || self->passthrough || control_port_is_toggled (self->solo))
     {
       return false;
     }
@@ -470,8 +434,7 @@ fader_get_implied_soloed (Fader * self)
     {
       if (track_type_has_channel (out_track->type))
         {
-          out_track =
-            channel_get_output_track (out_track->channel);
+          out_track = channel_get_output_track (out_track->channel);
           if (out_track && track_get_soloed (out_track))
             {
               return true;
@@ -490,8 +453,7 @@ fader_get_implied_soloed (Fader * self)
       for (int i = 0; i < track->num_children; i++)
         {
           Track * child_track =
-            tracklist_find_track_by_name_hash (
-              TRACKLIST, track->children[i]);
+            tracklist_find_track_by_name_hash (TRACKLIST, track->children[i]);
           if (
             child_track
             && (track_get_soloed (child_track) || track_get_implied_soloed (child_track)))
@@ -546,8 +508,7 @@ fader_update_volume_and_fader_val (Fader * self)
   /* calculate volume */
   self->volume = math_amp_to_dbfs (self->amp->control);
 
-  self->fader_val =
-    math_get_fader_val_from_amp (self->amp->control);
+  self->fader_val = math_get_fader_val_from_amp (self->amp->control);
 }
 
 /**
@@ -559,8 +520,7 @@ fader_set_amp (void * _fader, float amp)
   Fader * self = (Fader *) _fader;
   g_return_if_fail (IS_FADER (self));
 
-  port_set_control_value (
-    self->amp, amp, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+  port_set_control_value (self->amp, amp, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
   fader_update_volume_and_fader_val (self);
 }
@@ -579,19 +539,16 @@ fader_set_amp_with_action (
   bool    skip_if_equal)
 {
   Track * track = fader_get_track (self);
-  bool    is_equal =
-    math_floats_equal_epsilon (amp_from, amp_to, 0.0001f);
+  bool    is_equal = math_floats_equal_epsilon (amp_from, amp_to, 0.0001f);
   if (!skip_if_equal || !is_equal)
     {
       GError * err = NULL;
-      bool     ret =
-        tracklist_selections_action_perform_edit_single_float (
-          EDIT_TRACK_ACTION_TYPE_VOLUME, track, amp_from,
-          amp_to, F_NOT_ALREADY_EDITED, &err);
+      bool     ret = tracklist_selections_action_perform_edit_single_float (
+        EDIT_TRACK_ACTION_TYPE_VOLUME, track, amp_from, amp_to,
+        F_NOT_ALREADY_EDITED, &err);
       if (!ret)
         {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to change volume"));
+          HANDLE_ERROR (err, "%s", _ ("Failed to change volume"));
         }
     }
 }
@@ -606,8 +563,7 @@ fader_add_amp (void * _self, sample_t amp)
   Fader * self = (Fader *) _self;
 
   float fader_amp = fader_get_amp (self);
-  fader_amp =
-    CLAMP (fader_amp + amp, self->amp->minf, self->amp->maxf);
+  fader_amp = CLAMP (fader_amp + amp, self->amp->minf, self->amp->maxf);
   fader_set_amp (self, fader_amp);
 
   fader_update_volume_and_fader_val (self);
@@ -633,14 +589,12 @@ fader_set_midi_mode (
       g_return_if_fail (IS_TRACK_AND_NONNULL (track));
 
       GError * err = NULL;
-      bool     ret =
-        tracklist_selections_action_perform_edit_single_int (
-          EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE, track, mode,
-          F_NOT_ALREADY_EDITED, &err);
+      bool     ret = tracklist_selections_action_perform_edit_single_int (
+        EDIT_TRACK_ACTION_TYPE_MIDI_FADER_MODE, track, mode,
+        F_NOT_ALREADY_EDITED, &err);
       if (!ret)
         {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to set MIDI mode"));
+          HANDLE_ERROR (err, "%s", _ ("Failed to set MIDI mode"));
         }
     }
   else
@@ -667,13 +621,9 @@ fader_get_mono_compat_enabled (Fader * self)
  * Sets whether mono compatibility is enabled.
  */
 void
-fader_set_mono_compat_enabled (
-  Fader * self,
-  bool    enabled,
-  bool    fire_events)
+fader_set_mono_compat_enabled (Fader * self, bool enabled, bool fire_events)
 {
-  control_port_set_toggled (
-    self->mono_compat_enabled, enabled, fire_events);
+  control_port_set_toggled (self->mono_compat_enabled, enabled, fire_events);
 
   if (
     self->type == FADER_TYPE_AUDIO_CHANNEL
@@ -701,13 +651,9 @@ fader_get_swap_phase (Fader * self)
  * Sets whether mono compatibility is enabled.
  */
 void
-fader_set_swap_phase (
-  Fader * self,
-  bool    enabled,
-  bool    fire_events)
+fader_set_swap_phase (Fader * self, bool enabled, bool fire_events)
 {
-  control_port_set_toggled (
-    self->swap_phase, enabled, fire_events);
+  control_port_set_toggled (self->swap_phase, enabled, fire_events);
 
   if (
     self->type == FADER_TYPE_AUDIO_CHANNEL
@@ -740,8 +686,7 @@ fader_db_string_getter (void * obj, char * buf)
 {
   Fader * fader = (Fader *) obj;
 
-  sprintf (
-    buf, "%.1f", math_amp_to_dbfs (fader->amp->control));
+  sprintf (buf, "%.1f", math_amp_to_dbfs (fader->amp->control));
 }
 
 /**
@@ -753,30 +698,25 @@ fader_set_fader_val (Fader * self, float fader_val)
 {
   self->fader_val = fader_val;
   float fader_amp = math_get_amp_val_from_fader (fader_val);
-  fader_amp =
-    CLAMP (fader_amp, self->amp->minf, self->amp->maxf);
+  fader_amp = CLAMP (fader_amp, self->amp->minf, self->amp->maxf);
   fader_set_amp (self, fader_amp);
   self->volume = math_amp_to_dbfs (fader_amp);
 
   if (self == MONITOR_FADER)
     {
-      g_settings_set_double (
-        S_MONITOR, "monitor-vol", (double) fader_amp);
+      g_settings_set_double (S_MONITOR, "monitor-vol", (double) fader_amp);
     }
   else if (self == CONTROL_ROOM->mute_fader)
     {
-      g_settings_set_double (
-        S_MONITOR, "mute-vol", (double) fader_amp);
+      g_settings_set_double (S_MONITOR, "mute-vol", (double) fader_amp);
     }
   else if (self == CONTROL_ROOM->listen_fader)
     {
-      g_settings_set_double (
-        S_MONITOR, "listen-vol", (double) fader_amp);
+      g_settings_set_double (S_MONITOR, "listen-vol", (double) fader_amp);
     }
   else if (self == CONTROL_ROOM->dim_fader)
     {
-      g_settings_set_double (
-        S_MONITOR, "dim-vol", (double) fader_amp);
+      g_settings_set_double (S_MONITOR, "dim-vol", (double) fader_amp);
     }
 }
 
@@ -874,8 +814,7 @@ fader_copy_values (Fader * src, Fader * dest)
   dest->mute->control = src->mute->control;
   dest->solo->control = src->solo->control;
   dest->listen->control = src->listen->control;
-  dest->mono_compat_enabled->control =
-    src->mono_compat_enabled->control;
+  dest->mono_compat_enabled->control = src->mono_compat_enabled->control;
   dest->swap_phase->control = src->swap_phase->control;
 }
 
@@ -883,9 +822,7 @@ fader_copy_values (Fader * src, Fader * dest)
  * Process the Fader.
  */
 void
-fader_process (
-  Fader *                             self,
-  const EngineProcessTimeInfo * const time_nfo)
+fader_process (Fader * self, const EngineProcessTimeInfo * const time_nfo)
 {
   if (ZRYTHM_TESTING)
     {
@@ -906,8 +843,7 @@ fader_process (
       g_return_if_fail (IS_TRACK_AND_NONNULL (track));
     }
 
-  const int default_fade_frames =
-    FADER_FADE_FRAMES_FOR_TYPE (self);
+  const int default_fade_frames = FADER_FADE_FRAMES_FOR_TYPE (self);
 
   bool effectively_muted = false;
   if (!self->passthrough)
@@ -952,19 +888,16 @@ fader_process (
     }
 
   if (
-    self->type == FADER_TYPE_AUDIO_CHANNEL
-    || self->type == FADER_TYPE_MONITOR
+    self->type == FADER_TYPE_AUDIO_CHANNEL || self->type == FADER_TYPE_MONITOR
     || self->type == FADER_TYPE_SAMPLE_PROCESSOR)
     {
       /* copy the input to output */
       dsp_copy (
         &self->stereo_out->l->buf[time_nfo->local_offset],
-        &self->stereo_in->l->buf[time_nfo->local_offset],
-        time_nfo->nframes);
+        &self->stereo_in->l->buf[time_nfo->local_offset], time_nfo->nframes);
       dsp_copy (
         &self->stereo_out->r->buf[time_nfo->local_offset],
-        &self->stereo_in->r->buf[time_nfo->local_offset],
-        time_nfo->nframes);
+        &self->stereo_in->r->buf[time_nfo->local_offset], time_nfo->nframes);
 
       /* if prefader */
       if (self->passthrough)
@@ -997,21 +930,18 @@ fader_process (
           if (self->type == FADER_TYPE_MONITOR)
             {
               mute_amp = AUDIO_ENGINE->denormal_prevention_val;
-              float dim_amp =
-                fader_get_amp (CONTROL_ROOM->dim_fader);
+              float dim_amp = fader_get_amp (CONTROL_ROOM->dim_fader);
 
               /* if have listened tracks */
               if (tracklist_has_listened (TRACKLIST))
                 {
                   /* dim signal */
                   dsp_mul_k2 (
-                    &self->stereo_out->l
-                       ->buf[time_nfo->local_offset],
-                    dim_amp, time_nfo->nframes);
+                    &self->stereo_out->l->buf[time_nfo->local_offset], dim_amp,
+                    time_nfo->nframes);
                   dsp_mul_k2 (
-                    &self->stereo_out->r
-                       ->buf[time_nfo->local_offset],
-                    dim_amp, time_nfo->nframes);
+                    &self->stereo_out->r->buf[time_nfo->local_offset], dim_amp,
+                    time_nfo->nframes);
 
                   /* add listened signal */
                   /* TODO add "listen" buffer
@@ -1019,10 +949,8 @@ fader_process (
                    * listened tracks to it during
                    * processing instead of looping
                    * here */
-                  float listen_amp = fader_get_amp (
-                    CONTROL_ROOM->listen_fader);
-                  for (int i = 0; i < TRACKLIST->num_tracks;
-                       i++)
+                  float listen_amp = fader_get_amp (CONTROL_ROOM->listen_fader);
+                  for (int i = 0; i < TRACKLIST->num_tracks; i++)
                     {
                       Track * t = TRACKLIST->tracks[i];
 
@@ -1031,22 +959,15 @@ fader_process (
                         && t->out_signal_type == TYPE_AUDIO
                         && track_get_listened (t))
                         {
-                          Fader * f =
-                            track_get_fader (t, true);
+                          Fader * f = track_get_fader (t, true);
                           dsp_mix2 (
-                            &self->stereo_out->l
-                               ->buf[time_nfo->local_offset],
-                            &f->stereo_out->l
-                               ->buf[time_nfo->local_offset],
-                            1.f, listen_amp,
-                            time_nfo->nframes);
+                            &self->stereo_out->l->buf[time_nfo->local_offset],
+                            &f->stereo_out->l->buf[time_nfo->local_offset], 1.f,
+                            listen_amp, time_nfo->nframes);
                           dsp_mix2 (
-                            &self->stereo_out->r
-                               ->buf[time_nfo->local_offset],
-                            &f->stereo_out->r
-                               ->buf[time_nfo->local_offset],
-                            1.f, listen_amp,
-                            time_nfo->nframes);
+                            &self->stereo_out->r->buf[time_nfo->local_offset],
+                            &f->stereo_out->r->buf[time_nfo->local_offset], 1.f,
+                            listen_amp, time_nfo->nframes);
                         }
                     }
                 } /* endif have listened tracks */
@@ -1055,79 +976,61 @@ fader_process (
               if (CONTROL_ROOM->dim_output)
                 {
                   dsp_mul_k2 (
-                    &self->stereo_out->l
-                       ->buf[time_nfo->local_offset],
-                    dim_amp, time_nfo->nframes);
+                    &self->stereo_out->l->buf[time_nfo->local_offset], dim_amp,
+                    time_nfo->nframes);
                   dsp_mul_k2 (
-                    &self->stereo_out->r
-                       ->buf[time_nfo->local_offset],
-                    dim_amp, time_nfo->nframes);
+                    &self->stereo_out->r->buf[time_nfo->local_offset], dim_amp,
+                    time_nfo->nframes);
                 }
             } /* endif monitor fader */
           else
             {
-              mute_amp =
-                fader_get_amp (CONTROL_ROOM->mute_fader);
+              mute_amp = fader_get_amp (CONTROL_ROOM->mute_fader);
 
               /* add fade if changed from muted to non-muted or
                * vice versa */
               if (effectively_muted && !self->was_effectively_muted)
                 {
                   g_atomic_int_set (
-                    &self->fade_out_samples,
-                    default_fade_frames);
+                    &self->fade_out_samples, default_fade_frames);
                   g_atomic_int_set (&self->fading_out, 1);
                 }
-              else if (
-                !effectively_muted
-                && self->was_effectively_muted)
+              else if (!effectively_muted && self->was_effectively_muted)
                 {
                   g_atomic_int_set (&self->fading_out, 0);
-                  g_atomic_int_set (
-                    &self->fade_in_samples,
-                    default_fade_frames);
+                  g_atomic_int_set (&self->fade_in_samples, default_fade_frames);
                 }
             }
 
           /* handle fade in */
-          int fade_in_samples =
-            g_atomic_int_get (&self->fade_in_samples);
+          int fade_in_samples = g_atomic_int_get (&self->fade_in_samples);
           if (G_UNLIKELY (fade_in_samples > 0))
             {
-              z_return_if_fail_cmp (
-                default_fade_frames, >=, fade_in_samples);
+              z_return_if_fail_cmp (default_fade_frames, >=, fade_in_samples);
 #if 0
               g_debug (
                 "fading in %d samples", fade_in_samples);
 #endif
               dsp_linear_fade_in_from (
-                &self->stereo_out->l
-                   ->buf[time_nfo->local_offset],
-                default_fade_frames - fade_in_samples,
-                default_fade_frames, time_nfo->nframes,
-                mute_amp);
+                &self->stereo_out->l->buf[time_nfo->local_offset],
+                default_fade_frames - fade_in_samples, default_fade_frames,
+                time_nfo->nframes, mute_amp);
               dsp_linear_fade_in_from (
-                &self->stereo_out->r
-                   ->buf[time_nfo->local_offset],
-                default_fade_frames - fade_in_samples,
-                default_fade_frames, time_nfo->nframes,
-                mute_amp);
+                &self->stereo_out->r->buf[time_nfo->local_offset],
+                default_fade_frames - fade_in_samples, default_fade_frames,
+                time_nfo->nframes, mute_amp);
               fade_in_samples -= (int) time_nfo->nframes;
               fade_in_samples = MAX (fade_in_samples, 0);
-              g_atomic_int_set (
-                &self->fade_in_samples, fade_in_samples);
+              g_atomic_int_set (&self->fade_in_samples, fade_in_samples);
             }
 
           /* handle fade out */
           size_t faded_out_frames = 0;
           if (G_UNLIKELY (g_atomic_int_get (&self->fading_out)))
             {
-              int fade_out_samples =
-                g_atomic_int_get (&self->fade_out_samples);
-              int samples_to_process = MAX (
-                0,
-                MIN (
-                  fade_out_samples, (int) time_nfo->nframes));
+              int fade_out_samples = g_atomic_int_get (&self->fade_out_samples);
+              int samples_to_process =
+                MAX (0, MIN (fade_out_samples, (int) time_nfo->nframes));
               if (fade_out_samples > 0)
                 {
                   z_return_if_fail_cmp (
@@ -1139,22 +1042,16 @@ fader_process (
                     samples_to_process);
 #endif
                   dsp_linear_fade_out_to (
-                    &self->stereo_out->l
-                       ->buf[time_nfo->local_offset],
-                    default_fade_frames - fade_out_samples,
-                    default_fade_frames,
+                    &self->stereo_out->l->buf[time_nfo->local_offset],
+                    default_fade_frames - fade_out_samples, default_fade_frames,
                     (size_t) samples_to_process, mute_amp);
                   dsp_linear_fade_out_to (
-                    &self->stereo_out->r
-                       ->buf[time_nfo->local_offset],
-                    default_fade_frames - fade_out_samples,
-                    default_fade_frames,
+                    &self->stereo_out->r->buf[time_nfo->local_offset],
+                    default_fade_frames - fade_out_samples, default_fade_frames,
                     (size_t) samples_to_process, mute_amp);
                   fade_out_samples -= samples_to_process;
-                  faded_out_frames +=
-                    (size_t) samples_to_process;
-                  g_atomic_int_set (
-                    &self->fade_out_samples, fade_out_samples);
+                  faded_out_frames += (size_t) samples_to_process;
+                  g_atomic_int_set (&self->fade_out_samples, fade_out_samples);
                 }
 
               /* if still fading out and have no more fade
@@ -1162,54 +1059,45 @@ fader_process (
               if (fade_out_samples == 0)
                 {
                   size_t remaining_frames =
-                    time_nfo->nframes
-                    - (size_t) samples_to_process;
+                    time_nfo->nframes - (size_t) samples_to_process;
 #if 0
                   g_debug (
                     "silence for remaining %zu frames",
                     remaining_frames);
 #endif
                   dsp_mul_k2 (
-                    &self->stereo_out->l->buf
-                       [time_nfo->local_offset
-                        + faded_out_frames],
+                    &self->stereo_out->l
+                       ->buf[time_nfo->local_offset + faded_out_frames],
                     mute_amp, remaining_frames);
                   dsp_mul_k2 (
-                    &self->stereo_out->r->buf
-                       [time_nfo->local_offset
-                        + faded_out_frames],
+                    &self->stereo_out->r
+                       ->buf[time_nfo->local_offset + faded_out_frames],
                     mute_amp, remaining_frames);
-                  faded_out_frames +=
-                    (size_t) remaining_frames;
+                  faded_out_frames += (size_t) remaining_frames;
                 }
             }
 
-          float pan =
-            port_get_control_value (self->balance, 0);
+          float pan = port_get_control_value (self->balance, 0);
           float amp = port_get_control_value (self->amp, 0);
 
           float calc_l, calc_r;
           balance_control_get_calc_lr (
-            BALANCE_CONTROL_ALGORITHM_LINEAR, pan, &calc_l,
-            &calc_r);
+            BALANCE_CONTROL_ALGORITHM_LINEAR, pan, &calc_l, &calc_r);
 
           /* apply fader and pan */
           dsp_mul_k2 (
-            &self->stereo_out->l->buf[time_nfo->local_offset],
-            amp * calc_l, time_nfo->nframes);
+            &self->stereo_out->l->buf[time_nfo->local_offset], amp * calc_l,
+            time_nfo->nframes);
           dsp_mul_k2 (
-            &self->stereo_out->r->buf[time_nfo->local_offset],
-            amp * calc_r, time_nfo->nframes);
+            &self->stereo_out->r->buf[time_nfo->local_offset], amp * calc_r,
+            time_nfo->nframes);
 
           /* make mono if mono compat enabled */
-          if (control_port_is_toggled (
-                self->mono_compat_enabled))
+          if (control_port_is_toggled (self->mono_compat_enabled))
             {
               dsp_make_mono (
-                &self->stereo_out->l
-                   ->buf[time_nfo->local_offset],
-                &self->stereo_out->r
-                   ->buf[time_nfo->local_offset],
+                &self->stereo_out->l->buf[time_nfo->local_offset],
+                &self->stereo_out->r->buf[time_nfo->local_offset],
                 time_nfo->nframes, false);
             }
 
@@ -1217,17 +1105,14 @@ fader_process (
           if (control_port_is_toggled (self->swap_phase))
             {
               dsp_mul_k2 (
-                &self->stereo_out->l
-                   ->buf[time_nfo->local_offset],
-                -1.f, time_nfo->nframes);
+                &self->stereo_out->l->buf[time_nfo->local_offset], -1.f,
+                time_nfo->nframes);
               dsp_mul_k2 (
-                &self->stereo_out->r
-                   ->buf[time_nfo->local_offset],
-                -1.f, time_nfo->nframes);
+                &self->stereo_out->r->buf[time_nfo->local_offset], -1.f,
+                time_nfo->nframes);
             }
 
-          int fade_out_samples =
-            g_atomic_int_get (&self->fade_out_samples);
+          int fade_out_samples = g_atomic_int_get (&self->fade_out_samples);
           if (
             effectively_muted && fade_out_samples == 0
             && time_nfo->nframes - faded_out_frames > 0)
@@ -1241,31 +1126,25 @@ fader_process (
               if (mute_amp < 0.00001f)
                 {
                   dsp_fill (
-                    &self->stereo_out->l->buf
-                       [time_nfo->local_offset
-                        + faded_out_frames],
+                    &self->stereo_out->l
+                       ->buf[time_nfo->local_offset + faded_out_frames],
                     AUDIO_ENGINE->denormal_prevention_val,
                     time_nfo->nframes - faded_out_frames);
                   dsp_fill (
-                    &self->stereo_out->r->buf
-                       [time_nfo->local_offset
-                        + faded_out_frames],
+                    &self->stereo_out->r
+                       ->buf[time_nfo->local_offset + faded_out_frames],
                     AUDIO_ENGINE->denormal_prevention_val,
                     time_nfo->nframes - faded_out_frames);
                 }
               else
                 {
                   dsp_mul_k2 (
-                    &self->stereo_out->l
-                       ->buf[time_nfo->local_offset],
-                    mute_amp,
+                    &self->stereo_out->l->buf[time_nfo->local_offset], mute_amp,
                     time_nfo->nframes - faded_out_frames);
                   dsp_mul_k2 (
-                    &self->stereo_out->r->buf
-                       [time_nfo->local_offset
-                        + faded_out_frames],
-                    mute_amp,
-                    time_nfo->nframes - faded_out_frames);
+                    &self->stereo_out->r
+                       ->buf[time_nfo->local_offset + faded_out_frames],
+                    mute_amp, time_nfo->nframes - faded_out_frames);
                 }
             }
 
@@ -1278,13 +1157,11 @@ fader_process (
             || self->type == FADER_TYPE_SAMPLE_PROCESSOR)
             {
               dsp_limit1 (
-                &self->stereo_out->l
-                   ->buf[time_nfo->local_offset],
-                -2.f, 2.f, time_nfo->nframes);
+                &self->stereo_out->l->buf[time_nfo->local_offset], -2.f, 2.f,
+                time_nfo->nframes);
               dsp_limit1 (
-                &self->stereo_out->r
-                   ->buf[time_nfo->local_offset],
-                -2.f, 2.f, time_nfo->nframes);
+                &self->stereo_out->r->buf[time_nfo->local_offset], -2.f, 2.f,
+                time_nfo->nframes);
             }
         } /* fi not prefader */
     }     /* fi monitor/audio fader */
@@ -1293,40 +1170,32 @@ fader_process (
       if (!effectively_muted)
         {
           midi_events_append (
-            self->midi_out->midi_events,
-            self->midi_in->midi_events, time_nfo->local_offset,
-            time_nfo->nframes, F_NOT_QUEUED);
+            self->midi_out->midi_events, self->midi_in->midi_events,
+            time_nfo->local_offset, time_nfo->nframes, F_NOT_QUEUED);
 
           /* if not prefader, also apply volume
            * changes */
           if (!self->passthrough)
             {
-              int num_events =
-                self->midi_out->midi_events->num_events;
+              int num_events = self->midi_out->midi_events->num_events;
               for (int i = 0; i < num_events; i++)
                 {
-                  MidiEvent * ev =
-                    &self->midi_out->midi_events->events[i];
+                  MidiEvent * ev = &self->midi_out->midi_events->events[i];
 
                   if (
-                    self->midi_mode
-                      == MIDI_FADER_MODE_VEL_MULTIPLIER
+                    self->midi_mode == MIDI_FADER_MODE_VEL_MULTIPLIER
                     && midi_is_note_on (ev->raw_buffer))
                     {
-                      midi_byte_t prev_vel =
-                        midi_get_velocity (ev->raw_buffer);
+                      midi_byte_t prev_vel = midi_get_velocity (ev->raw_buffer);
                       midi_byte_t new_vel =
-                        (midi_byte_t) ((float) prev_vel
-                                       * self->amp->control);
-                      midi_event_set_velocity (
-                        ev, MIN (new_vel, 127));
+                        (midi_byte_t) ((float) prev_vel * self->amp->control);
+                      midi_event_set_velocity (ev, MIN (new_vel, 127));
                     }
                 }
 
               if (
                 self->midi_mode == MIDI_FADER_MODE_CC_VOLUME
-                && !math_floats_equal (
-                  self->last_cc_volume, self->amp->control))
+                && !math_floats_equal (self->last_cc_volume, self->amp->control))
                 {
                   /* TODO add volume event on each
                    * channel */
@@ -1359,8 +1228,7 @@ fader_clone (const Fader * src)
   self->mute = port_clone (src->mute);
   self->solo = port_clone (src->solo);
   self->listen = port_clone (src->listen);
-  self->mono_compat_enabled =
-    port_clone (src->mono_compat_enabled);
+  self->mono_compat_enabled = port_clone (src->mono_compat_enabled);
   self->swap_phase = port_clone (src->swap_phase);
   if (src->midi_in)
     self->midi_in = port_clone (src->midi_in);
@@ -1382,8 +1250,7 @@ fader_clone (const Fader * src)
 void
 fader_free (Fader * self)
 {
-#define DISCONNECT_AND_FREE(x) \
-  object_free_w_func_and_null (port_free, x)
+#define DISCONNECT_AND_FREE(x) object_free_w_func_and_null (port_free, x)
 
   DISCONNECT_AND_FREE (self->amp);
   DISCONNECT_AND_FREE (self->balance);

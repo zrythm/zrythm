@@ -34,8 +34,7 @@
 
 #include <gtk/gtk.h>
 
-#define PINNED_TRACKLIST_WIDGET_TYPE \
-  (pinned_tracklist_widget_get_type ())
+#define PINNED_TRACKLIST_WIDGET_TYPE (pinned_tracklist_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PinnedTracklistWidget,
   pinned_tracklist_widget,
@@ -49,8 +48,7 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MW_PINNED_TRACKLIST \
-  MW_TIMELINE_PANEL->pinned_tracklist
+#define MW_PINNED_TRACKLIST MW_TIMELINE_PANEL->pinned_tracklist
 
 typedef struct Tracklist    Tracklist;
 typedef struct _TrackWidget TrackWidget;
@@ -85,8 +83,7 @@ pinned_tracklist_widget_get_hit_track (
  * Removes and readds the tracks.
  */
 void
-pinned_tracklist_widget_hard_refresh (
-  PinnedTracklistWidget * self);
+pinned_tracklist_widget_hard_refresh (PinnedTracklistWidget * self);
 
 /**
  * Sets up the PinnedTracklistWidget.

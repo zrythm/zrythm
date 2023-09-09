@@ -17,28 +17,23 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  TimelineToolbarWidget,
-  timeline_toolbar_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (TimelineToolbarWidget, timeline_toolbar_widget, GTK_TYPE_BOX)
 
 void
 timeline_toolbar_widget_refresh (TimelineToolbarWidget * self)
 {
   /* enable/disable merge button */
-  bool sensitive = arranger_selections_can_be_merged (
-    (ArrangerSelections *) TL_SELECTIONS);
+  bool sensitive =
+    arranger_selections_can_be_merged ((ArrangerSelections *) TL_SELECTIONS);
   g_debug ("settings merge button sensitivity %d", sensitive);
-  gtk_widget_set_sensitive (
-    GTK_WIDGET (self->merge_btn), sensitive);
+  gtk_widget_set_sensitive (GTK_WIDGET (self->merge_btn), sensitive);
 }
 
 void
 timeline_toolbar_widget_setup (TimelineToolbarWidget * self)
 {
   snap_grid_widget_setup (self->snap_grid, SNAP_GRID_TIMELINE);
-  quantize_box_widget_setup (
-    self->quantize_box, QUANTIZE_OPTIONS_TIMELINE);
+  quantize_box_widget_setup (self->quantize_box, QUANTIZE_OPTIONS_TIMELINE);
 }
 
 static void
@@ -68,18 +63,15 @@ timeline_toolbar_widget_init (TimelineToolbarWidget * self)
 }
 
 static void
-timeline_toolbar_widget_class_init (
-  TimelineToolbarWidgetClass * _klass)
+timeline_toolbar_widget_class_init (TimelineToolbarWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "timeline_toolbar.ui");
 
-  gtk_widget_class_set_accessible_role (
-    klass, GTK_ACCESSIBLE_ROLE_TOOLBAR);
+  gtk_widget_class_set_accessible_role (klass, GTK_ACCESSIBLE_ROLE_TOOLBAR);
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, TimelineToolbarWidget, x)
+  gtk_widget_class_bind_template_child (klass, TimelineToolbarWidget, x)
 
   BIND_CHILD (snap_grid);
   BIND_CHILD (quantize_box);

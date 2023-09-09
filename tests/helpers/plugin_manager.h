@@ -31,8 +31,7 @@
  */
 
 void
-test_plugin_manager_reload_lilv_world_w_path (
-  const char * path);
+test_plugin_manager_reload_lilv_world_w_path (const char * path);
 
 /**
  * Get a plugin setting clone from the given
@@ -61,8 +60,7 @@ test_plugin_manager_create_tracks_from_plugin (
   int          num_tracks);
 
 void
-test_plugin_manager_reload_lilv_world_w_path (
-  const char * path)
+test_plugin_manager_reload_lilv_world_w_path (const char * path)
 {
   LilvWorld * world = lilv_world_new ();
   PLUGIN_MANAGER->lilv_world = world;
@@ -70,8 +68,7 @@ test_plugin_manager_reload_lilv_world_w_path (
   lilv_world_load_specifications (world);
   lilv_world_load_plugin_classes (world);
   LilvNode * lv2_path = lilv_new_string (LILV_WORLD, path);
-  lilv_world_set_option (
-    world, LILV_OPTION_LV2_PATH, lv2_path);
+  lilv_world_set_option (world, LILV_OPTION_LV2_PATH, lv2_path);
   lilv_world_load_all (world);
   object_free_w_func_and_null (lilv_node_free, lv2_path);
   plugin_manager_clear_plugins (PLUGIN_MANAGER);
@@ -100,24 +97,19 @@ test_plugin_manager_get_plugin_setting (
   else
     {
       char * basename = g_path_get_basename (pl_bundle);
-      char * tmpdir =
-        g_dir_make_tmp ("zrythm_vst_XXXXXX", NULL);
-      char * dest_path =
-        g_build_filename (tmpdir, basename, NULL);
+      char * tmpdir = g_dir_make_tmp ("zrythm_vst_XXXXXX", NULL);
+      char * dest_path = g_build_filename (tmpdir, basename, NULL);
       if (g_str_has_suffix (pl_bundle, "vst3"))
         {
-          g_assert_true (io_copy_dir (
-            dest_path, pl_bundle, true, true, NULL));
+          g_assert_true (io_copy_dir (dest_path, pl_bundle, true, true, NULL));
         }
       else
         {
-          GFile * pl_bundle_file =
-            g_file_new_for_path (pl_bundle);
-          GFile * pl_bundle_file_in_tmp =
-            g_file_new_for_path (dest_path);
+          GFile * pl_bundle_file = g_file_new_for_path (pl_bundle);
+          GFile * pl_bundle_file_in_tmp = g_file_new_for_path (dest_path);
           g_assert_true (g_file_copy (
-            pl_bundle_file, pl_bundle_file_in_tmp,
-            G_FILE_COPY_NONE, NULL, NULL, NULL, NULL));
+            pl_bundle_file, pl_bundle_file_in_tmp, G_FILE_COPY_NONE, NULL, NULL,
+            NULL, NULL));
           //g_object_unref (pl_bundle_file);
           //g_object_unref (pl_bundle_file_in_tmp);
         }
@@ -130,15 +122,13 @@ test_plugin_manager_get_plugin_setting (
 
   plugin_manager_clear_plugins (PLUGIN_MANAGER);
   plugin_manager_scan_plugins (PLUGIN_MANAGER, 1.0, NULL);
-  g_assert_cmpuint (
-    PLUGIN_MANAGER->plugin_descriptors->len, >, 0);
+  g_assert_cmpuint (PLUGIN_MANAGER->plugin_descriptors->len, >, 0);
 
   PluginDescriptor * descr = NULL;
-  for (size_t i = 0;
-       i < PLUGIN_MANAGER->plugin_descriptors->len; i++)
+  for (size_t i = 0; i < PLUGIN_MANAGER->plugin_descriptors->len; i++)
     {
-      PluginDescriptor * cur_descr = g_ptr_array_index (
-        PLUGIN_MANAGER->plugin_descriptors, i);
+      PluginDescriptor * cur_descr =
+        g_ptr_array_index (PLUGIN_MANAGER->plugin_descriptors, i);
       if (pl_uri)
         {
           if (string_is_equal (cur_descr->uri, pl_uri))
@@ -149,8 +139,7 @@ test_plugin_manager_get_plugin_setting (
       else if (cur_descr->protocol != Z_PLUGIN_PROTOCOL_LV2)
         {
           char * basename = g_path_get_basename (pl_bundle);
-          char * descr_basename =
-            g_path_get_basename (cur_descr->path);
+          char * descr_basename = g_path_get_basename (cur_descr->path);
           if (string_is_equal (descr_basename, basename))
             {
               descr = plugin_descriptor_clone (cur_descr);
@@ -196,8 +185,7 @@ test_plugin_manager_create_tracks_from_plugin (
   int          num_tracks)
 {
   PluginSetting * setting =
-    test_plugin_manager_get_plugin_setting (
-      pl_bundle, pl_uri, with_carla);
+    test_plugin_manager_get_plugin_setting (pl_bundle, pl_uri, with_carla);
   g_return_val_if_fail (setting, -1);
 
   TrackType track_type = TRACK_TYPE_AUDIO_BUS;
@@ -209,15 +197,14 @@ test_plugin_manager_create_tracks_from_plugin (
       setting->descr->category = PC_INSTRUMENT;
       g_free (setting->descr->category_str);
       setting->descr->category_str =
-        plugin_descriptor_category_to_string (
-          setting->descr->category);
+        plugin_descriptor_category_to_string (setting->descr->category);
       track_type = TRACK_TYPE_INSTRUMENT;
     }
 
   /* create a track from the plugin */
   bool ret = track_create_with_action (
-    track_type, setting, NULL, NULL, TRACKLIST->num_tracks,
-    num_tracks, -1, NULL, NULL);
+    track_type, setting, NULL, NULL, TRACKLIST->num_tracks, num_tracks, -1,
+    NULL, NULL);
   g_assert_true (ret);
 
   return TRACKLIST->num_tracks - 1;

@@ -26,8 +26,7 @@
 /**
  * Appends element to the end of array array and increases the size.
  */
-#define array_append(array, size, element) \
-  (array)[(size)++] = element;
+#define array_append(array, size, element) (array)[(size)++] = element;
 
 #define array_double_append(arr1, arr2, size, el1, el2) \
   arr1[size] = el1; \
@@ -100,8 +99,7 @@ _array_double_size_if_full (
   ((size_t) (count) < (size_t) (size) \
      ? ({}) \
      : _array_double_size_if_full ( \
-       (void **) &array, (size_t) (count), &size, \
-       sizeof (type)))
+       (void **) &array, (size_t) (count), &size, sizeof (type)))
 
 /**
  * Deletes element from array and rearranges other
@@ -184,8 +182,7 @@ _array_double_size_if_full (
  * Assumes that the element should be deleted at the
  * same index in both arrays.
  */
-#define array_double_delete( \
-  array1, array2, size, element1, element2) \
+#define array_double_delete(array1, array2, size, element1, element2) \
   for (int ii = 0; ii < size; ii++) \
     { \
       if (array1[ii] == element1) \
@@ -200,11 +197,10 @@ _array_double_size_if_full (
         } \
     }
 
-#define array_contains_cmp( \
-  array, size, element, cmp, equal_val, pointers) \
+#define array_contains_cmp(array, size, element, cmp, equal_val, pointers) \
   _array_contains_cmp ( \
-    (void **) array, size, (void *) element, \
-    (int (*) (void *, void *)) cmp, equal_val, pointers)
+    (void **) array, size, (void *) element, (int (*) (void *, void *)) cmp, \
+    equal_val, pointers)
 
 /**
  * Macro so that no casting to void ** and void * is
@@ -215,8 +211,7 @@ _array_double_size_if_full (
 
 #define array_dynamic_swap(arr1, sz1, arr2, sz2) \
   _array_dynamic_swap ( \
-    (void ***) arr1, (size_t *) sz1, (void ***) arr2, \
-    (size_t *) sz2)
+    (void ***) arr1, (size_t *) sz1, (void ***) arr2, (size_t *) sz2)
 
 /**
  * Swaps the elements of the 2 arrays.
@@ -227,11 +222,7 @@ _array_double_size_if_full (
  * @param arr2 Source array.
  */
 void
-_array_dynamic_swap (
-  void *** arr1,
-  size_t * sz1,
-  void *** arr2,
-  size_t * sz2);
+_array_dynamic_swap (void *** arr1, size_t * sz1, void *** arr2, size_t * sz2);
 
 static inline int
 array_contains_int (int * array, int size, int element)
@@ -290,10 +281,7 @@ int
 _array_index_of (void ** array, int size, void * element);
 
 void
-array_sort_alphabetically (
-  char ** array,
-  int     size,
-  int     case_sensitive);
+array_sort_alphabetically (char ** array, int size, int case_sensitive);
 
 void
 array_sort_float (float * array, int size);
@@ -301,8 +289,7 @@ array_sort_float (float * array, int size);
 void
 array_sort_long (long * array, int size);
 
-#define array_get_count(_arr, _sz) \
-  _array_get_count ((void **) _arr, _sz)
+#define array_get_count(_arr, _sz) _array_get_count ((void **) _arr, _sz)
 
 /**
  * Gets the count of a NULL-terminated array.

@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define CHANNEL_SEND_WIDGET_TYPE \
-  (channel_send_widget_get_type ())
+#define CHANNEL_SEND_WIDGET_TYPE (channel_send_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ChannelSendWidget,
   channel_send_widget,
@@ -21,9 +20,8 @@ G_DECLARE_FINAL_TYPE (
   CHANNEL_SEND_WIDGET,
   GtkWidget)
 
-typedef struct ChannelSend ChannelSend;
-typedef struct _ChannelSendSelectorWidget
-  ChannelSendSelectorWidget;
+typedef struct ChannelSend                ChannelSend;
+typedef struct _ChannelSendSelectorWidget ChannelSendSelectorWidget;
 
 /**
  * @addtogroup widgets

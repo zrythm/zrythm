@@ -7,10 +7,7 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  HelpToolbarWidget,
-  help_toolbar_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (HelpToolbarWidget, help_toolbar_widget, GTK_TYPE_BOX)
 
 static void
 help_toolbar_widget_init (HelpToolbarWidget * self)
@@ -18,8 +15,7 @@ help_toolbar_widget_init (HelpToolbarWidget * self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
 #define SET_TOOLTIP(x, tooltip) \
-  z_gtk_set_tooltip_for_actionable ( \
-    GTK_ACTIONABLE (self->x), tooltip)
+  z_gtk_set_tooltip_for_actionable (GTK_ACTIONABLE (self->x), tooltip)
   SET_TOOLTIP (about, _ ("About Zrythm"));
   SET_TOOLTIP (chat, _ ("Chat (Matrix)"));
   SET_TOOLTIP (manual, _ ("Manual"));
@@ -39,19 +35,16 @@ help_toolbar_widget_init (HelpToolbarWidget * self)
 }
 
 static void
-help_toolbar_widget_class_init (
-  HelpToolbarWidgetClass * _klass)
+help_toolbar_widget_class_init (HelpToolbarWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "help_toolbar.ui");
 
   gtk_widget_class_set_css_name (klass, "help-toolbar");
-  gtk_widget_class_set_accessible_role (
-    klass, GTK_ACCESSIBLE_ROLE_TOOLBAR);
+  gtk_widget_class_set_accessible_role (klass, GTK_ACCESSIBLE_ROLE_TOOLBAR);
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, HelpToolbarWidget, x)
+  gtk_widget_class_bind_template_child (klass, HelpToolbarWidget, x)
 
   BIND_CHILD (about);
   BIND_CHILD (chat);

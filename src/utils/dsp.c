@@ -129,8 +129,8 @@ dsp_linear_fade_in_from (
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp_dsp_lin_inter_mul2 (
-        dest, 0, fade_from_multiplier, total_frames_to_fade,
-        1.f, start_offset, size);
+        dest, 0, fade_from_multiplier, total_frames_to_fade, 1.f, start_offset,
+        size);
     }
   else
     {
@@ -138,10 +138,8 @@ dsp_linear_fade_in_from (
       for (size_t i = 0; i < size; i++)
         {
           float k =
-            (float) (i + (size_t) start_offset)
-            / (float) total_frames_to_fade;
-          k = fade_from_multiplier
-              + (1.f - fade_from_multiplier) * k;
+            (float) (i + (size_t) start_offset) / (float) total_frames_to_fade;
+          k = fade_from_multiplier + (1.f - fade_from_multiplier) * k;
           dest[i] *= k;
         }
 #ifdef HAVE_LSP_DSP
@@ -172,8 +170,8 @@ dsp_linear_fade_out_to (
   if (ZRYTHM_USE_OPTIMIZED_DSP)
     {
       lsp_dsp_lin_inter_mul2 (
-        dest, 0, 1.f, total_frames_to_fade,
-        fade_to_multiplier, start_offset, size);
+        dest, 0, 1.f, total_frames_to_fade, fade_to_multiplier, start_offset,
+        size);
     }
   else
     {
@@ -181,11 +179,9 @@ dsp_linear_fade_out_to (
       for (size_t i = 0; i < size; i++)
         {
           float k =
-            (float) ((size_t) total_frames_to_fade
-                     - (i + (size_t) start_offset))
+            (float) ((size_t) total_frames_to_fade - (i + (size_t) start_offset))
             / (float) total_frames_to_fade;
-          k = fade_to_multiplier
-              + (1.f - fade_to_multiplier) * k;
+          k = fade_to_multiplier + (1.f - fade_to_multiplier) * k;
           dest[i] *= k;
         }
 #ifdef HAVE_LSP_DSP

@@ -31,8 +31,7 @@ fixture_set_up (TrackFixture * self)
 {
   int      track_pos = TRACKLIST->num_tracks;
   GError * err = NULL;
-  tracklist_selections_action_perform_create_midi (
-    track_pos, 1, &err);
+  tracklist_selections_action_perform_create_midi (track_pos, 1, &err);
   g_assert_null (err);
   self->midi_track = TRACKLIST->tracks[track_pos];
   self->events = midi_events_new ();
@@ -57,10 +56,9 @@ prepare_region_with_note_at_start_to_end (
   position_add_ticks (&end_pos, 3);
   position_update_frames_from_ticks (&start_pos, 0.0);
   position_update_frames_from_ticks (&end_pos, 0.0);
-  ZRegion * r = midi_region_new (
-    &start_pos, &end_pos, track_get_name_hash (track), 0, 0);
-  MidiNote * mn1 = midi_note_new (
-    &r->id, &start_pos, &end_pos, pitch, velocity);
+  ZRegion * r =
+    midi_region_new (&start_pos, &end_pos, track_get_name_hash (track), 0, 0);
+  MidiNote * mn1 = midi_note_new (&r->id, &start_pos, &end_pos, pitch, velocity);
   midi_region_add_midi_note (r, mn1, 0);
 
   return r;
@@ -83,11 +81,9 @@ test_fill_midi_events (void)
 
   midi_byte_t pitch1 = 35;
   midi_byte_t vel1 = 91;
-  ZRegion *   r = prepare_region_with_note_at_start_to_end (
-    track, pitch1, vel1);
+  ZRegion * r = prepare_region_with_note_at_start_to_end (track, pitch1, vel1);
   ArrangerObject * r_obj = (ArrangerObject *) r;
-  bool             success =
-    track_add_region (track, r, NULL, 0, 1, 0, NULL);
+  bool             success = track_add_region (track, r, NULL, 0, 1, 0, NULL);
   g_assert_true (success);
   MidiNote *       mn = r->midi_notes[0];
   ArrangerObject * mn_obj = (ArrangerObject *) mn;
@@ -100,8 +96,7 @@ test_fill_midi_events (void)
   TRANSPORT->play_state = PLAYSTATE_ROLLING;
 
 #define SET_CACHES_AND_FILL \
-  tracklist_set_caches ( \
-    TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS); \
+  tracklist_set_caches (TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS); \
   track_fill_events (track, &time_nfo, events, NULL);
 
   /* try basic fill */
@@ -115,12 +110,9 @@ test_fill_midi_events (void)
   ev = &events->queued_events[0];
   g_assert_nonnull (ev);
   g_assert_cmpuint (
-    midi_get_channel_1_to_16 (ev->raw_buffer), ==,
-    midi_region_get_midi_ch (r));
-  g_assert_cmpuint (
-    midi_get_note_number (ev->raw_buffer), ==, pitch1);
-  g_assert_cmpuint (
-    midi_get_velocity (ev->raw_buffer), ==, vel1);
+    midi_get_channel_1_to_16 (ev->raw_buffer), ==, midi_region_get_midi_ch (r));
+  g_assert_cmpuint (midi_get_note_number (ev->raw_buffer), ==, pitch1);
+  g_assert_cmpuint (midi_get_velocity (ev->raw_buffer), ==, vel1);
   g_assert_cmpint ((long) ev->time, ==, pos.frames);
   midi_events_clear (events, F_QUEUED);
 
@@ -288,8 +280,7 @@ test_fill_midi_events (void)
   position_set_to_bar (&r_obj->loop_end_pos, 2);
   position_update_frames_from_ticks (&r_obj->pos, 0.0);
   position_update_frames_from_ticks (&r_obj->end_pos, 0.0);
-  position_update_frames_from_ticks (
-    &r_obj->loop_end_pos, 0.0);
+  position_update_frames_from_ticks (&r_obj->loop_end_pos, 0.0);
   position_set_to_bar (&mn_obj->pos, 1);
   position_add_ticks (&mn_obj->pos, -1);
   position_update_frames_from_ticks (&mn_obj->pos, 0.0);
@@ -327,10 +318,8 @@ test_fill_midi_events (void)
   position_add_ticks (&r_obj->loop_start_pos, 7);
   position_update_frames_from_ticks (&r_obj->pos, 0.0);
   position_update_frames_from_ticks (&r_obj->end_pos, 0.0);
-  position_update_frames_from_ticks (
-    &r_obj->loop_start_pos, 0.0);
-  position_update_frames_from_ticks (
-    &r_obj->loop_end_pos, 0.0);
+  position_update_frames_from_ticks (&r_obj->loop_start_pos, 0.0);
+  position_update_frames_from_ticks (&r_obj->loop_end_pos, 0.0);
   position_set_to_bar (&mn_obj->pos, 1);
   position_add_ticks (&mn_obj->pos, 7);
   position_set_to_bar (&mn_obj->end_pos, 2);
@@ -588,11 +577,9 @@ test_fill_midi_events (void)
    * 1.1.1.0.
    */
   position_set_to_bar (&r_obj->pos, 1);
-  position_set_to_pos (
-    &r_obj->end_pos, &TRANSPORT->loop_end_pos);
+  position_set_to_pos (&r_obj->end_pos, &TRANSPORT->loop_end_pos);
   position_set_to_bar (&r_obj->loop_start_pos, 1);
-  position_set_to_pos (
-    &r_obj->loop_end_pos, &TRANSPORT->loop_end_pos);
+  position_set_to_pos (&r_obj->loop_end_pos, &TRANSPORT->loop_end_pos);
   position_set_to_bar (&mn_obj->pos, 1);
   position_set_to_pos (&pos, &TRANSPORT->loop_end_pos);
   position_add_frames (&pos, -20);
@@ -705,24 +692,19 @@ test_fill_midi_events_from_engine (void)
   /* create an instrument track for testing */
   test_plugin_manager_create_tracks_from_plugin (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
-  Track * ins_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
-  ZRegion * r = prepare_region_with_note_at_start_to_end (
-    ins_track, 35, 60);
+  ZRegion * r = prepare_region_with_note_at_start_to_end (ins_track, 35, 60);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   bool             success = track_add_region (
-    ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
-    NULL);
+    ins_track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
   engine_set_run (AUDIO_ENGINE, 0); // needed to set caches
-  tracklist_set_caches (
-    TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS);
+  tracklist_set_caches (TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS);
   engine_set_run (AUDIO_ENGINE, 1);
 
   transport_set_loop (TRANSPORT, true, true);
-  position_set_to_pos (
-    &TRANSPORT->loop_end_pos, &r_obj->end_pos);
+  position_set_to_pos (&TRANSPORT->loop_end_pos, &r_obj->end_pos);
   Position pos;
   position_set_to_pos (&pos, &r_obj->end_pos);
   position_add_frames (&pos, -20);
@@ -740,18 +722,15 @@ test_fill_midi_events_from_engine (void)
   MidiEvent * ev = &midi_events->events[0];
   g_assert_true (midi_is_note_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 19);
-  g_assert_cmpuint (
-    midi_get_note_number (ev->raw_buffer), ==, 35);
+  g_assert_cmpuint (midi_get_note_number (ev->raw_buffer), ==, 35);
   ev = &midi_events->events[1];
   g_assert_true (midi_is_all_notes_off (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 19);
   ev = &midi_events->events[2];
   g_assert_true (midi_is_note_on (ev->raw_buffer));
   g_assert_cmpuint (ev->time, ==, 20);
-  g_assert_cmpuint (
-    midi_get_note_number (ev->raw_buffer), ==, 35);
-  g_assert_cmpuint (
-    midi_get_velocity (ev->raw_buffer), ==, 60);
+  g_assert_cmpuint (midi_get_note_number (ev->raw_buffer), ==, 35);
+  g_assert_cmpuint (midi_get_velocity (ev->raw_buffer), ==, 60);
 
   /* process again and check events are 0 */
   g_message ("--- processing engine...");
@@ -770,8 +749,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/midi_track/"
 
   g_test_add_func (
-    TEST_PREFIX "test fill midi events",
-    (GTestFunc) test_fill_midi_events);
+    TEST_PREFIX "test fill midi events", (GTestFunc) test_fill_midi_events);
   g_test_add_func (
     TEST_PREFIX "test fill midi events from engine",
     (GTestFunc) test_fill_midi_events_from_engine);

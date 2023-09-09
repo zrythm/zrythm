@@ -37,9 +37,8 @@ add_volume (FileManager * self, GVolume * vol)
 {
   GMount * mount = g_volume_get_mount (vol);
   char *   name = g_volume_get_name (vol);
-  GFile *  root =
-    mount ? g_mount_get_default_location (mount) : NULL;
-  char * path = NULL;
+  GFile *  root = mount ? g_mount_get_default_location (mount) : NULL;
+  char *   path = NULL;
   if (root)
     {
       path = g_file_get_path (root);
@@ -73,8 +72,7 @@ file_manager_new (void)
 {
   FileManager * self = object_new (FileManager);
 
-  self->files = g_ptr_array_new_full (
-    400, (GDestroyNotify) supported_file_free);
+  self->files = g_ptr_array_new_full (400, (GDestroyNotify) supported_file_free);
   self->locations = g_ptr_array_new_with_free_func (
     (GDestroyNotify) file_browser_location_free);
 
@@ -91,17 +89,15 @@ file_manager_new (void)
   fl = file_browser_location_new ();
   /* TRANSLATORS: Desktop directory */
   fl->label = g_strdup (_ ("Desktop"));
-  fl->path = g_strdup (
-    g_get_user_special_dir (G_USER_DIRECTORY_DESKTOP));
+  fl->path = g_strdup (g_get_user_special_dir (G_USER_DIRECTORY_DESKTOP));
   fl->special_location = FILE_MANAGER_DESKTOP;
   g_ptr_array_add (self->locations, fl);
 
   /* drives */
   g_message ("adding drives...");
   GVolumeMonitor * vol_monitor = g_volume_monitor_get ();
-  GList *          drives =
-    g_volume_monitor_get_connected_drives (vol_monitor);
-  GList * dl = drives;
+  GList *          drives = g_volume_monitor_get_connected_drives (vol_monitor);
+  GList *          dl = drives;
   while (dl != NULL)
     {
       GList * dn = dl->next;
@@ -151,8 +147,8 @@ file_manager_new (void)
   if (!ZRYTHM_TESTING)
     {
       /* add bookmarks */
-      char ** bookmarks = g_settings_get_strv (
-        S_UI_FILE_BROWSER, "file-browser-bookmarks");
+      char ** bookmarks =
+        g_settings_get_strv (S_UI_FILE_BROWSER, "file-browser-bookmarks");
       for (size_t i = 0; bookmarks[i] != NULL; i++)
         {
           char * bookmark = bookmarks[i];
@@ -166,11 +162,8 @@ file_manager_new (void)
 
       /* set remembered location */
       FileBrowserLocation * loc = file_browser_location_new ();
-      loc->path = g_settings_get_string (
-        S_UI_FILE_BROWSER, "last-location");
-      if (
-        strlen (loc->path) > 0
-        && g_file_test (loc->path, G_FILE_TEST_IS_DIR))
+      loc->path = g_settings_get_string (S_UI_FILE_BROWSER, "last-location");
+      if (strlen (loc->path) > 0 && g_file_test (loc->path, G_FILE_TEST_IS_DIR))
         {
           file_manager_set_selection (self, loc, true, false);
         }
@@ -190,14 +183,11 @@ alphaBetize (const void * _a, const void * _b)
     return r;
   /* if equal ignoring case, use opposite of strcmp()
    * result to get lower before upper */
-  return -strcmp (
-    a->label, b->label); /* aka: return strcmp(b, a); */
+  return -strcmp (a->label, b->label); /* aka: return strcmp(b, a); */
 }
 
 static void
-load_files_from_location (
-  FileManager *         self,
-  FileBrowserLocation * location)
+load_files_from_location (FileManager * self, FileBrowserLocation * location)
 {
   const gchar *   file;
   SupportedFile * fd;
@@ -238,8 +228,7 @@ load_files_from_location (
 
       /* set absolute path & label */
       char * absolute_path = g_strdup_printf (
-        "%s%s%s",
-        strlen (location->path) == 1 ? "" : location->path,
+        "%s%s%s", strlen (location->path) == 1 ? "" : location->path,
         G_DIR_SEPARATOR_S, file);
       fd->abs_path = absolute_path;
       fd->label = g_strdup (file);
@@ -247,12 +236,11 @@ load_files_from_location (
       GError *    err = NULL;
       GFile *     gfile = g_file_new_for_path (absolute_path);
       GFileInfo * info = g_file_query_info (
-        gfile, G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN,
-        G_FILE_QUERY_INFO_NONE, NULL, &err);
+        gfile, G_FILE_ATTRIBUTE_STANDARD_IS_HIDDEN, G_FILE_QUERY_INFO_NONE,
+        NULL, &err);
       if (err)
         {
-          g_warning (
-            "failed to query file info for %s", absolute_path);
+          g_warning ("failed to query file info for %s", absolute_path);
         }
       else
         {
@@ -295,13 +283,11 @@ file_manager_load_files (FileManager * self)
 {
   if (self->selection)
     {
-      load_files_from_location (
-        self, (FileBrowserLocation *) self->selection);
+      load_files_from_location (self, (FileBrowserLocation *) self->selection);
     }
   else
     {
-      g_ptr_array_remove_range (
-        self->files, 0, self->files->len);
+      g_ptr_array_remove_range (self->files, 0, self->files->len);
     }
 }
 
@@ -329,8 +315,7 @@ file_manager_set_selection (
   if (save_to_settings)
     {
       g_settings_set_string (
-        S_UI_FILE_BROWSER, "last-location",
-        self->selection->path);
+        S_UI_FILE_BROWSER, "last-location", self->selection->path);
     }
 }
 
@@ -349,8 +334,7 @@ save_locations (FileManager * self)
   GStrvBuilder * strv_builder = g_strv_builder_new ();
   for (guint i = 0; i < FILE_MANAGER->locations->len; i++)
     {
-      FileBrowserLocation * loc =
-        g_ptr_array_index (FILE_MANAGER->locations, i);
+      FileBrowserLocation * loc = g_ptr_array_index (FILE_MANAGER->locations, i);
       if (loc->special_location > FILE_MANAGER_NONE)
         continue;
 
@@ -359,8 +343,7 @@ save_locations (FileManager * self)
 
   char ** strings = g_strv_builder_end (strv_builder);
   g_settings_set_strv (
-    S_UI_FILE_BROWSER, "file-browser-bookmarks",
-    (const char * const *) strings);
+    S_UI_FILE_BROWSER, "file-browser-bookmarks", (const char * const *) strings);
   g_strfreev (strings);
 }
 
@@ -368,9 +351,7 @@ save_locations (FileManager * self)
  * Adds a location and saves the settings.
  */
 void
-file_manager_add_location_and_save (
-  FileManager * self,
-  const char *  abs_path)
+file_manager_add_location_and_save (FileManager * self, const char * abs_path)
 {
   FileBrowserLocation * loc = file_browser_location_new ();
   loc->path = g_strdup (abs_path);
@@ -399,15 +380,13 @@ file_manager_remove_location_and_save (
 
   unsigned int idx;
   bool         ret = g_ptr_array_find_with_equal_func (
-    self->locations, loc,
-    (GEqualFunc) file_browser_location_equal_func, &idx);
+    self->locations, loc, (GEqualFunc) file_browser_location_equal_func, &idx);
   if (ret)
     {
       FileBrowserLocation * existing_loc =
         g_ptr_array_index (self->locations, idx);
       if (
-        !skip_if_standard
-        || existing_loc->special_location == FILE_MANAGER_NONE)
+        !skip_if_standard || existing_loc->special_location == FILE_MANAGER_NONE)
         {
           g_ptr_array_remove_index (self->locations, idx);
         }
@@ -454,8 +433,8 @@ void
 file_browser_location_print (const FileBrowserLocation * loc)
 {
   g_message (
-    "[FileBrowserLocation] %s: '%s', special: %d", loc->label,
-    loc->path, loc->special_location);
+    "[FileBrowserLocation] %s: '%s', special: %d", loc->label, loc->path,
+    loc->special_location);
 }
 
 void

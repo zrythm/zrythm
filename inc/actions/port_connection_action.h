@@ -22,13 +22,12 @@ typedef enum PortConnectionActionType
   PORT_CONNECTION_CHANGE_MULTIPLIER,
 } PortConnectionActionType;
 
-static const cyaml_strval_t
-  port_connection_action_type_strings[] = {
-    {"connect",            PORT_CONNECTION_CONNECT          },
-    { "disconnect",        PORT_CONNECTION_CONNECT          },
-    { "enable",            PORT_CONNECTION_ENABLE           },
-    { "disable",           PORT_CONNECTION_DISABLE          },
-    { "change multiplier", PORT_CONNECTION_CHANGE_MULTIPLIER},
+static const cyaml_strval_t port_connection_action_type_strings[] = {
+  {"connect",            PORT_CONNECTION_CONNECT          },
+  { "disconnect",        PORT_CONNECTION_CONNECT          },
+  { "enable",            PORT_CONNECTION_ENABLE           },
+  { "disable",           PORT_CONNECTION_DISABLE          },
+  { "change multiplier", PORT_CONNECTION_CHANGE_MULTIPLIER},
 };
 
 typedef struct PortConnectionAction
@@ -47,34 +46,27 @@ typedef struct PortConnectionAction
   float val;
 } PortConnectionAction;
 
-static const cyaml_schema_field_t
-  port_connection_action_fields_schema[] = {
-    YAML_FIELD_MAPPING_EMBEDDED (
-      PortConnectionAction,
-      parent_instance,
-      undoable_action_fields_schema),
-    YAML_FIELD_ENUM (
-      PortConnectionAction,
-      type,
-      port_connection_action_type_strings),
-    YAML_FIELD_MAPPING_PTR (
-      PortConnectionAction,
-      connection,
-      port_connection_fields_schema),
-    YAML_FIELD_FLOAT (PortConnectionAction, val),
+static const cyaml_schema_field_t port_connection_action_fields_schema[] = {
+  YAML_FIELD_MAPPING_EMBEDDED (
+    PortConnectionAction,
+    parent_instance,
+    undoable_action_fields_schema),
+  YAML_FIELD_ENUM (PortConnectionAction, type, port_connection_action_type_strings),
+  YAML_FIELD_MAPPING_PTR (
+    PortConnectionAction,
+    connection,
+    port_connection_fields_schema),
+  YAML_FIELD_FLOAT (PortConnectionAction, val),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t port_connection_action_schema = {
-  YAML_VALUE_PTR (
-    PortConnectionAction,
-    port_connection_action_fields_schema),
+  YAML_VALUE_PTR (PortConnectionAction, port_connection_action_fields_schema),
 };
 
 void
-port_connection_action_init_loaded (
-  PortConnectionAction * self);
+port_connection_action_init_loaded (PortConnectionAction * self);
 
 /**
  * Create a new action.
@@ -87,31 +79,26 @@ port_connection_action_new (
   float                    new_val,
   GError **                error);
 
-#define port_connection_action_new_connect( \
-  src_id, dest_id, error) \
+#define port_connection_action_new_connect(src_id, dest_id, error) \
   port_connection_action_new ( \
     PORT_CONNECTION_CONNECT, src_id, dest_id, 0.f, error)
 
-#define port_connection_action_new_disconnect( \
-  src_id, dest_id, error) \
+#define port_connection_action_new_disconnect(src_id, dest_id, error) \
   port_connection_action_new ( \
     PORT_CONNECTION_DISCONNECT, src_id, dest_id, 0.f, error)
 
-#define port_connection_action_new_enable( \
-  src_id, dest_id, enable, error) \
+#define port_connection_action_new_enable(src_id, dest_id, enable, error) \
   port_connection_action_new ( \
-    enable ? PORT_CONNECTION_ENABLE : PORT_CONNECTION_DISABLE, \
-    src_id, dest_id, 0.f, error)
+    enable ? PORT_CONNECTION_ENABLE : PORT_CONNECTION_DISABLE, src_id, \
+    dest_id, 0.f, error)
 
 #define port_connection_action_new_change_multiplier( \
   src_id, dest_id, new_multiplier, error) \
   port_connection_action_new ( \
-    PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, dest_id, \
-    new_multiplier, error)
+    PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, dest_id, new_multiplier, error)
 
 NONNULL PortConnectionAction *
-port_connection_action_clone (
-  const PortConnectionAction * src);
+port_connection_action_clone (const PortConnectionAction * src);
 
 bool
 port_connection_action_perform (
@@ -121,37 +108,29 @@ port_connection_action_perform (
   float                    new_val,
   GError **                error);
 
-#define port_connection_action_perform_connect( \
-  src_id, dest_id, error) \
+#define port_connection_action_perform_connect(src_id, dest_id, error) \
   port_connection_action_perform ( \
     PORT_CONNECTION_CONNECT, src_id, dest_id, 0.f, error)
 
-#define port_connection_action_perform_disconnect( \
-  src_id, dest_id, error) \
+#define port_connection_action_perform_disconnect(src_id, dest_id, error) \
   port_connection_action_perform ( \
     PORT_CONNECTION_DISCONNECT, src_id, dest_id, 0.f, error)
 
-#define port_connection_action_perform_enable( \
-  src_id, dest_id, enable, error) \
+#define port_connection_action_perform_enable(src_id, dest_id, enable, error) \
   port_connection_action_perform ( \
-    enable ? PORT_CONNECTION_ENABLE : PORT_CONNECTION_DISABLE, \
-    src_id, dest_id, 0.f, error)
+    enable ? PORT_CONNECTION_ENABLE : PORT_CONNECTION_DISABLE, src_id, \
+    dest_id, 0.f, error)
 
 #define port_connection_action_perform_change_multiplier( \
   src_id, dest_id, new_multiplier, error) \
   port_connection_action_perform ( \
-    PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, dest_id, \
-    new_multiplier, error)
+    PORT_CONNECTION_CHANGE_MULTIPLIER, src_id, dest_id, new_multiplier, error)
 
 int
-port_connection_action_do (
-  PortConnectionAction * self,
-  GError **              error);
+port_connection_action_do (PortConnectionAction * self, GError ** error);
 
 int
-port_connection_action_undo (
-  PortConnectionAction * self,
-  GError **              error);
+port_connection_action_undo (PortConnectionAction * self, GError ** error);
 
 char *
 port_connection_action_stringize (PortConnectionAction * self);

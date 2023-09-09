@@ -71,28 +71,13 @@ static const cyaml_schema_field_t fader_fields_schema_v1[] = {
   YAML_FIELD_FLOAT (Fader_v1, volume),
   YAML_FIELD_MAPPING_PTR (Fader_v1, amp, port_fields_schema_v1),
   YAML_FIELD_FLOAT (Fader_v1, phase),
-  YAML_FIELD_MAPPING_PTR (
-    Fader_v1,
-    balance,
-    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Fader_v1, balance, port_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR (Fader_v1, mute, port_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR (Fader_v1, solo, port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR (
-    Fader_v1,
-    listen,
-    port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR (
-    Fader_v1,
-    mono_compat_enabled,
-    port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Fader_v1,
-    midi_in,
-    port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Fader_v1,
-    midi_out,
-    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Fader_v1, listen, port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Fader_v1, mono_compat_enabled, port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Fader_v1, midi_in, port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Fader_v1, midi_out, port_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Fader_v1,
     stereo_in,
@@ -101,10 +86,7 @@ static const cyaml_schema_field_t fader_fields_schema_v1[] = {
     Fader_v1,
     stereo_out,
     stereo_ports_fields_schema_v1),
-  YAML_FIELD_ENUM (
-    Fader_v1,
-    midi_mode,
-    midi_fader_mode_strings_v1),
+  YAML_FIELD_ENUM (Fader_v1, midi_mode, midi_fader_mode_strings_v1),
   YAML_FIELD_INT (Fader_v1, passthrough),
 
   CYAML_FIELD_END

@@ -177,19 +177,10 @@ static const cyaml_schema_field_t automation_track_fields_schema[] = {
     AutomationTrack,
     port_id,
     port_identifier_fields_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    AutomationTrack,
-    regions,
-    region_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (AutomationTrack, regions, region_schema),
   YAML_FIELD_INT (AutomationTrack, created),
-  YAML_FIELD_ENUM (
-    AutomationTrack,
-    automation_mode,
-    automation_mode_strings),
-  YAML_FIELD_ENUM (
-    AutomationTrack,
-    record_mode,
-    automation_record_mode_strings),
+  YAML_FIELD_ENUM (AutomationTrack, automation_mode, automation_mode_strings),
+  YAML_FIELD_ENUM (AutomationTrack, record_mode, automation_record_mode_strings),
   YAML_FIELD_INT (AutomationTrack, visible),
   YAML_FIELD_FLOAT (AutomationTrack, height),
 
@@ -197,9 +188,7 @@ static const cyaml_schema_field_t automation_track_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t automation_track_schema = {
-  YAML_VALUE_PTR (
-    AutomationTrack,
-    automation_track_fields_schema),
+  YAML_VALUE_PTR (AutomationTrack, automation_track_fields_schema),
 };
 
 COLD NONNULL_ARGS (1) void automation_track_init_loaded (
@@ -226,9 +215,7 @@ automation_mode_get_localized (AutomationMode mode, char * buf);
  * Gets the automation mode as a localized string.
  */
 void
-automation_record_mode_get_localized (
-  AutomationRecordMode mode,
-  char *               buf);
+automation_record_mode_get_localized (AutomationRecordMode mode, char * buf);
 
 /**
  * @note This is expensive and should only be used
@@ -239,9 +226,7 @@ automation_record_mode_get_localized (
  *   identifier members are checked.
  */
 NONNULL AutomationTrack *
-automation_track_find_from_port_id (
-  PortIdentifier * id,
-  bool             basic_search);
+automation_track_find_from_port_id (PortIdentifier * id, bool basic_search);
 
 /**
  * Finds the AutomationTrack associated with
@@ -251,10 +236,7 @@ automation_track_find_from_port_id (
  *   known.
  */
 HOT AutomationTrack *
-automation_track_find_from_port (
-  Port *  port,
-  Track * track,
-  bool    basic_search);
+automation_track_find_from_port (Port * port, Track * track, bool basic_search);
 
 void
 automation_track_set_automation_mode (
@@ -265,13 +247,11 @@ automation_track_set_automation_mode (
 NONNULL static inline void
 automation_track_swap_record_mode (AutomationTrack * self)
 {
-  self->record_mode =
-    (self->record_mode + 1) % NUM_AUTOMATION_RECORD_MODES;
+  self->record_mode = (self->record_mode + 1) % NUM_AUTOMATION_RECORD_MODES;
 }
 
 NONNULL AutomationTracklist *
-automation_track_get_automation_tracklist (
-  AutomationTrack * self);
+automation_track_get_automation_tracklist (AutomationTrack * self);
 
 /**
  * Returns whether the automation in the automation
@@ -282,9 +262,7 @@ automation_track_get_automation_tracklist (
  *   the same timestamp is used in sequential calls.
  */
 HOT NONNULL bool
-automation_track_should_read_automation (
-  AutomationTrack * at,
-  gint64            cur_time);
+automation_track_should_read_automation (AutomationTrack * at, gint64 cur_time);
 
 /**
  * Returns if the automation track should currently
@@ -321,9 +299,7 @@ automation_track_should_be_recording (
  *   track_add_region() instead.
  */
 NONNULL void
-automation_track_add_region (
-  AutomationTrack * self,
-  ZRegion *         region);
+automation_track_add_region (AutomationTrack * self, ZRegion * region);
 
 /**
  * Inserts an automation ZRegion to the
@@ -333,10 +309,7 @@ automation_track_add_region (
  *   track_insert_region() instead.
  */
 NONNULL void
-automation_track_insert_region (
-  AutomationTrack * self,
-  ZRegion *         region,
-  int               idx);
+automation_track_insert_region (AutomationTrack * self, ZRegion * region, int idx);
 
 /**
  * Returns the visible y offset from the top of
@@ -418,9 +391,7 @@ automation_track_unselect_all (AutomationTrack * self);
  * Removes a region from the automation track.
  */
 NONNULL void
-automation_track_remove_region (
-  AutomationTrack * self,
-  ZRegion *         region);
+automation_track_remove_region (AutomationTrack * self, ZRegion * region);
 
 /**
  * Removes and frees all arranger objects
@@ -475,13 +446,10 @@ NONNULL ZRegion *
 automation_track_get_last_region (AutomationTrack * self);
 
 NONNULL void
-automation_track_set_caches (
-  AutomationTrack * self,
-  CacheTypes        types);
+automation_track_set_caches (AutomationTrack * self, CacheTypes types);
 
 NONNULL bool
-automation_track_contains_automation (
-  const AutomationTrack * self);
+automation_track_contains_automation (const AutomationTrack * self);
 
 NONNULL bool
 automation_track_verify (AutomationTrack * self);

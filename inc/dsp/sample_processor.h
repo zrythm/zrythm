@@ -34,8 +34,7 @@ typedef struct ChordPreset   ChordPreset;
 #define SAMPLE_PROCESSOR (AUDIO_ENGINE->sample_processor)
 
 #define sample_processor_is_in_active_project(self) \
-  (self->audio_engine \
-   && engine_is_in_active_project (self->audio_engine))
+  (self->audio_engine && engine_is_in_active_project (self->audio_engine))
 
 /**
  * A processor to be used in the routing graph for
@@ -81,21 +80,15 @@ typedef struct SampleProcessor
   AudioEngine * audio_engine;
 } SampleProcessor;
 
-static const cyaml_schema_field_t
-  sample_processor_fields_schema[] = {
-    YAML_FIELD_INT (SampleProcessor, schema_version),
-    YAML_FIELD_MAPPING_PTR (
-      SampleProcessor,
-      fader,
-      fader_fields_schema),
+static const cyaml_schema_field_t sample_processor_fields_schema[] = {
+  YAML_FIELD_INT (SampleProcessor, schema_version),
+  YAML_FIELD_MAPPING_PTR (SampleProcessor, fader, fader_fields_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t sample_processor_schema = {
-  YAML_VALUE_PTR (
-    SampleProcessor,
-    sample_processor_fields_schema),
+  YAML_VALUE_PTR (SampleProcessor, sample_processor_fields_schema),
 };
 
 /**
@@ -106,9 +99,7 @@ COLD WARN_UNUSED_RESULT SampleProcessor *
 sample_processor_new (AudioEngine * engine);
 
 COLD void
-sample_processor_init_loaded (
-  SampleProcessor * self,
-  AudioEngine *     engine);
+sample_processor_init_loaded (SampleProcessor * self, AudioEngine * engine);
 
 /**
  * Clears the buffers.
@@ -144,8 +135,7 @@ sample_processor_remove_sample_playback (
  * Used for countin.
  */
 void
-sample_processor_queue_metronome_countin (
-  SampleProcessor * self);
+sample_processor_queue_metronome_countin (SampleProcessor * self);
 
 /**
  * Queues a metronomem tick at the given local
@@ -172,9 +162,7 @@ sample_processor_queue_sample_from_file (
  * Adds a file (audio or MIDI) to the queue.
  */
 void
-sample_processor_queue_file (
-  SampleProcessor *     self,
-  const SupportedFile * file);
+sample_processor_queue_file (SampleProcessor * self, const SupportedFile * file);
 
 /**
  * Adds a chord preset to the queue.

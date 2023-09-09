@@ -35,8 +35,7 @@
 #include <sndfile.h>
 
 #if defined(__GNUC__)
-#  define LILV_LOG_FUNC(fmt, arg1) \
-    __attribute__ ((format (printf, fmt, arg1)))
+#  define LILV_LOG_FUNC(fmt, arg1) __attribute__ ((format (printf, fmt, arg1)))
 #else
 #  define LILV_LOG_FUNC(fmt, arg1)
 #endif
@@ -65,9 +64,9 @@ typedef struct
   const LilvPort * lilv_port; ///< Port description
   PortType         type;      ///< Datatype
   uint32_t         index;     ///< Port index
-  float            value; ///< Control value (if applicable)
-  bool             is_input; ///< True iff an input port
-  bool             optional; ///< True iff connection optional
+  float            value;     ///< Control value (if applicable)
+  bool             is_input;  ///< True iff an input port
+  bool             optional;  ///< True iff connection optional
 } Port;
 
 /** Features */
@@ -142,9 +141,7 @@ sopen (LV2Apply * self, const char * path, int mode, SF_INFO * fmt)
   const int st = sf_error (file);
   if (st)
     {
-      fatal (
-        self, 1, "Failed to open %s (%s)\n", path,
-        sf_error_number (st));
+      fatal (self, 1, "Failed to open %s (%s)\n", path, sf_error_number (st));
       return NULL;
     }
   return file;
@@ -157,9 +154,7 @@ sclose (const char * path, SNDFILE * file)
   int st = 0;
   if (file && (st = sf_close (file)))
     {
-      fatal (
-        NULL, 1, "Failed to close %s (%s)\n", path,
-        sf_error_number (st));
+      fatal (NULL, 1, "Failed to close %s (%s)\n", path, sf_error_number (st));
     }
 }
 
@@ -170,11 +165,7 @@ sclose (const char * path, SNDFILE * file)
    channels are distributed in a round-robin fashion (LRLRL).
 */
 static bool
-sread (
-  SNDFILE * file,
-  unsigned  file_chans,
-  float *   buf,
-  unsigned  buf_chans)
+sread (SNDFILE * file, unsigned file_chans, float * buf, unsigned buf_chans)
 {
   const sf_count_t n_read = sf_readf_float (file, buf, 1);
   for (unsigned i = file_chans - 1; i < buf_chans; ++i)
@@ -219,39 +210,32 @@ static int
 create_ports (LV2Apply * self)
 {
   LilvWorld *    world = self->world;
-  const uint32_t n_ports =
-    lilv_plugin_get_num_ports (self->plugin);
+  const uint32_t n_ports = lilv_plugin_get_num_ports (self->plugin);
 
   self->n_ports = n_ports;
   self->ports = (Port *) calloc (self->n_ports, sizeof (Port));
 
   /* Get default values for all ports */
   float * values = (float *) calloc (n_ports, sizeof (float));
-  lilv_plugin_get_port_ranges_float (
-    self->plugin, NULL, NULL, values);
+  lilv_plugin_get_port_ranges_float (self->plugin, NULL, NULL, values);
 
-  LilvNode * lv2_InputPort =
-    lilv_new_uri (world, LV2_CORE__InputPort);
-  LilvNode * lv2_OutputPort =
-    lilv_new_uri (world, LV2_CORE__OutputPort);
-  LilvNode * lv2_AudioPort =
-    lilv_new_uri (world, LV2_CORE__AudioPort);
-  LilvNode * lv2_ControlPort =
-    lilv_new_uri (world, LV2_CORE__ControlPort);
+  LilvNode * lv2_InputPort = lilv_new_uri (world, LV2_CORE__InputPort);
+  LilvNode * lv2_OutputPort = lilv_new_uri (world, LV2_CORE__OutputPort);
+  LilvNode * lv2_AudioPort = lilv_new_uri (world, LV2_CORE__AudioPort);
+  LilvNode * lv2_ControlPort = lilv_new_uri (world, LV2_CORE__ControlPort);
   LilvNode * lv2_connectionOptional =
     lilv_new_uri (world, LV2_CORE__connectionOptional);
 
   for (uint32_t i = 0; i < n_ports; ++i)
     {
       Port *           port = &self->ports[i];
-      const LilvPort * lport =
-        lilv_plugin_get_port_by_index (self->plugin, i);
+      const LilvPort * lport = lilv_plugin_get_port_by_index (self->plugin, i);
 
       port->lilv_port = lport;
       port->index = i;
       port->value = isnan (values[i]) ? 0.0f : values[i];
-      port->optional = lilv_port_has_property (
-        self->plugin, lport, lv2_connectionOptional);
+      port->optional =
+        lilv_port_has_property (self->plugin, lport, lv2_connectionOptional);
 
       /* Check if port is an input or output */
       if (lilv_port_is_a (self->plugin, lport, lv2_InputPort))
@@ -259,12 +243,9 @@ create_ports (LV2Apply * self)
           port->is_input = true;
         }
       else if (
-        !lilv_port_is_a (self->plugin, lport, lv2_OutputPort)
-        && !port->optional)
+        !lilv_port_is_a (self->plugin, lport, lv2_OutputPort) && !port->optional)
         {
-          return fatal (
-            self, 1, "Port %u is neither input nor output\n",
-            i);
+          return fatal (self, 1, "Port %u is neither input nor output\n", i);
         }
 
       /* Check if port is an audio or control port */
@@ -272,8 +253,7 @@ create_ports (LV2Apply * self)
         {
           port->type = TYPE_CONTROL;
         }
-      else if (lilv_port_is_a (
-                 self->plugin, lport, lv2_AudioPort))
+      else if (lilv_port_is_a (self->plugin, lport, lv2_AudioPort))
         {
           port->type = TYPE_AUDIO;
           if (port->is_input)
@@ -287,8 +267,7 @@ create_ports (LV2Apply * self)
         }
       else if (!port->optional)
         {
-          return fatal (
-            self, 1, "Port %u has unsupported type\n", i);
+          return fatal (self, 1, "Port %u has unsupported type\n", i);
         }
     }
 
@@ -332,10 +311,8 @@ static void
 init_urids (LV2Apply * self)
 {
   self->symap = symap_new ();
-  self->urids.atom_Float =
-    symap_map (self->symap, LV2_ATOM__Float);
-  self->urids.atom_Int =
-    symap_map (self->symap, LV2_ATOM__Int);
+  self->urids.atom_Float = symap_map (self->symap, LV2_ATOM__Float);
+  self->urids.atom_Int = symap_map (self->symap, LV2_ATOM__Int);
   self->urids.bufsz_maxBlockLength =
     symap_map (self->symap, LV2_BUF_SIZE__maxBlockLength);
   self->urids.bufsz_minBlockLength =
@@ -345,10 +322,7 @@ init_urids (LV2Apply * self)
 }
 
 static void
-init_feature (
-  LV2_Feature * const dest,
-  const char * const  URI,
-  void *              data)
+init_feature (LV2_Feature * const dest, const char * const URI, void * data)
 {
   dest->URI = URI;
   dest->data = data;
@@ -358,22 +332,16 @@ static void
 init_features (LV2Apply * self)
 {
   /* Build options array to pass to plugin */
-  const LV2_Options_Option options[ARRAY_SIZE (
-    self->features.options)] = {
-    {LV2_OPTIONS_INSTANCE,  0, self->urids.param_sampleRate,
-     sizeof (float),                                                           self->urids.atom_Float,
-     &self->sample_rate                                                                                                   },
-    { LV2_OPTIONS_INSTANCE, 0,
-     self->urids.bufsz_minBlockLength,                       sizeof (int32_t),
-     self->urids.atom_Int,                                                                             &self->block_length},
-    { LV2_OPTIONS_INSTANCE, 0,
-     self->urids.bufsz_maxBlockLength,                       sizeof (int32_t),
-     self->urids.atom_Int,                                                                             &self->block_length},
-    { LV2_OPTIONS_INSTANCE, 0, 0,                            0,                0,                      NULL               }
+  const LV2_Options_Option options[ARRAY_SIZE (self->features.options)] = {
+    {LV2_OPTIONS_INSTANCE,  0, self->urids.param_sampleRate,     sizeof (float),
+     self->urids.atom_Float,                                                                           &self->sample_rate },
+    { LV2_OPTIONS_INSTANCE, 0, self->urids.bufsz_minBlockLength,
+     sizeof (int32_t),                                                           self->urids.atom_Int, &self->block_length},
+    { LV2_OPTIONS_INSTANCE, 0, self->urids.bufsz_maxBlockLength,
+     sizeof (int32_t),                                                           self->urids.atom_Int, &self->block_length},
+    { LV2_OPTIONS_INSTANCE, 0, 0,                                0,              0,                    NULL               }
   };
-  memcpy (
-    self->features.options, options,
-    sizeof (self->features.options));
+  memcpy (self->features.options, options, sizeof (self->features.options));
 
   init_feature (
     &self->features.options_feature, LV2_OPTIONS__options,
@@ -381,14 +349,11 @@ init_features (LV2Apply * self)
 
   self->map.handle = self;
   self->map.map = map_uri;
-  init_feature (
-    &self->features.map_feature, LV2_URID__map, &self->map);
+  init_feature (&self->features.map_feature, LV2_URID__map, &self->map);
 
   self->unmap.handle = self;
   self->unmap.unmap = unmap_uri;
-  init_feature (
-    &self->features.unmap_feature, LV2_URID__unmap,
-    &self->unmap);
+  init_feature (&self->features.unmap_feature, LV2_URID__unmap, &self->unmap);
 
   /* Build feature list for passing to plugins */
   const LV2_Feature * const features[] = {
@@ -407,8 +372,7 @@ int
 main (int argc, char ** argv)
 {
   LV2Apply self = {
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-    0,    NULL, 0,    0,    0,    NULL
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, 0, 0, 0, NULL
   };
 
   /* Parse command line arguments */
@@ -440,14 +404,12 @@ main (int argc, char ** argv)
         {
           if (argc < i + 3)
             {
-              return fatal (
-                &self, 1, "Missing argument for -c\n");
+              return fatal (&self, 1, "Missing argument for -c\n");
             }
-          self.params = (Param *) realloc (
-            self.params, ++self.n_params * sizeof (Param));
+          self.params =
+            (Param *) realloc (self.params, ++self.n_params * sizeof (Param));
           self.params[self.n_params - 1].sym = argv[++i];
-          self.params[self.n_params - 1].value =
-            atof (argv[++i]);
+          self.params[self.n_params - 1].value = atof (argv[++i]);
         }
       else if (argv[i][0] == '-')
         {
@@ -472,29 +434,24 @@ main (int argc, char ** argv)
   LilvNode * uri = lilv_new_uri (self.world, plugin_uri);
   if (!uri)
     {
-      return fatal (
-        &self, 2, "Invalid plugin URI <%s>\n", plugin_uri);
+      return fatal (&self, 2, "Invalid plugin URI <%s>\n", plugin_uri);
     }
 
   /* Discover world */
   lilv_world_load_all (self.world);
 
   /* Get plugin */
-  const LilvPlugins * plugins =
-    lilv_world_get_all_plugins (self.world);
-  const LilvPlugin * plugin =
-    lilv_plugins_get_by_uri (plugins, uri);
+  const LilvPlugins * plugins = lilv_world_get_all_plugins (self.world);
+  const LilvPlugin *  plugin = lilv_plugins_get_by_uri (plugins, uri);
   lilv_node_free (uri);
   if (!(self.plugin = plugin))
     {
-      return fatal (
-        &self, 3, "Plugin <%s> not found\n", plugin_uri);
+      return fatal (&self, 3, "Plugin <%s> not found\n", plugin_uri);
     }
 
   /* Open input file */
   SF_INFO in_fmt = { 0, 0, 0, 0, 0, 0 };
-  if (!(self.in_file =
-          sopen (&self, self.in_path, SFM_READ, &in_fmt)))
+  if (!(self.in_file = sopen (&self, self.in_path, SFM_READ, &in_fmt)))
     {
       return 4;
     }
@@ -510,8 +467,8 @@ main (int argc, char ** argv)
     || (in_fmt.channels != (int) self.n_audio_in && in_fmt.channels != 1))
     {
       return fatal (
-        &self, 6, "Unable to map %d inputs to %u ports\n",
-        in_fmt.channels, self.n_audio_in);
+        &self, 6, "Unable to map %d inputs to %u ports\n", in_fmt.channels,
+        self.n_audio_in);
     }
   self.block_length = 1;
   self.sample_rate = in_fmt.samplerate;
@@ -525,27 +482,22 @@ main (int argc, char ** argv)
   /* Set control values */
   for (unsigned i = 0; i < self.n_params; ++i)
     {
-      const Param * param = &self.params[i];
-      LilvNode *    sym =
-        lilv_new_string (self.world, param->sym);
-      const LilvPort * port =
-        lilv_plugin_get_port_by_symbol (plugin, sym);
+      const Param *    param = &self.params[i];
+      LilvNode *       sym = lilv_new_string (self.world, param->sym);
+      const LilvPort * port = lilv_plugin_get_port_by_symbol (plugin, sym);
       lilv_node_free (sym);
       if (!port)
         {
-          return fatal (
-            &self, 7, "Unknown port `%s'\n", param->sym);
+          return fatal (&self, 7, "Unknown port `%s'\n", param->sym);
         }
 
-      self.ports[lilv_port_get_index (plugin, port)].value =
-        param->value;
+      self.ports[lilv_port_get_index (plugin, port)].value = param->value;
     }
 
   /* Open output file */
   SF_INFO out_fmt = in_fmt;
   out_fmt.channels = self.n_audio_out;
-  if (!(self.out_file =
-          sopen (&self, self.out_path, SFM_WRITE, &out_fmt)))
+  if (!(self.out_file = sopen (&self, self.out_path, SFM_WRITE, &out_fmt)))
     {
       free (self.ports);
       return 8;
@@ -553,33 +505,29 @@ main (int argc, char ** argv)
 
   /* Instantiate plugin and connect ports */
   const uint32_t n_ports = lilv_plugin_get_num_ports (plugin);
-  float in_buf[self.n_audio_in > 0 ? self.n_audio_in : 1];
-  float out_buf[self.n_audio_out > 0 ? self.n_audio_out : 1];
-  self.instance = lilv_plugin_instantiate (
-    self.plugin, in_fmt.samplerate, self.feature_list);
+  float          in_buf[self.n_audio_in > 0 ? self.n_audio_in : 1];
+  float          out_buf[self.n_audio_out > 0 ? self.n_audio_out : 1];
+  self.instance =
+    lilv_plugin_instantiate (self.plugin, in_fmt.samplerate, self.feature_list);
   if (!self.instance)
     {
-      return fatal (
-        &self, 11, "Failed to instantiate plugin\n");
+      return fatal (&self, 11, "Failed to instantiate plugin\n");
     }
   for (uint32_t p = 0, i = 0, o = 0; p < n_ports; ++p)
     {
       if (self.ports[p].type == TYPE_CONTROL)
         {
-          lilv_instance_connect_port (
-            self.instance, p, &self.ports[p].value);
+          lilv_instance_connect_port (self.instance, p, &self.ports[p].value);
         }
       else if (self.ports[p].type == TYPE_AUDIO)
         {
           if (self.ports[p].is_input)
             {
-              lilv_instance_connect_port (
-                self.instance, p, in_buf + i++);
+              lilv_instance_connect_port (self.instance, p, in_buf + i++);
             }
           else
             {
-              lilv_instance_connect_port (
-                self.instance, p, out_buf + o++);
+              lilv_instance_connect_port (self.instance, p, out_buf + o++);
             }
         }
       else
@@ -593,14 +541,12 @@ main (int argc, char ** argv)
      read/write from/to sndfile. */
 
   lilv_instance_activate (self.instance);
-  while (sread (
-    self.in_file, in_fmt.channels, in_buf, self.n_audio_in))
+  while (sread (self.in_file, in_fmt.channels, in_buf, self.n_audio_in))
     {
       lilv_instance_run (self.instance, 1);
       if (sf_writef_float (self.out_file, out_buf, 1) != 1)
         {
-          return fatal (
-            &self, 9, "Failed to write to output file\n");
+          return fatal (&self, 9, "Failed to write to output file\n");
         }
     }
   lilv_instance_deactivate (self.instance);

@@ -13,8 +13,7 @@
 #include <adwaita.h>
 #include <gtk/gtk.h>
 
-#define HOME_TOOLBAR_WIDGET_TYPE \
-  (home_toolbar_widget_get_type ())
+#define HOME_TOOLBAR_WIDGET_TYPE (home_toolbar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   HomeToolbarWidget,
   home_toolbar_widget,
@@ -55,8 +54,7 @@ typedef struct _HomeToolbarWidget
 } HomeToolbarWidget;
 
 void
-home_toolbar_widget_refresh_undo_redo_buttons (
-  HomeToolbarWidget * self);
+home_toolbar_widget_refresh_undo_redo_buttons (HomeToolbarWidget * self);
 
 void
 home_toolbar_widget_setup (HomeToolbarWidget * self);

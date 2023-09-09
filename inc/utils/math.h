@@ -78,14 +78,10 @@
  * Checks if 2 doubles are equal.
  */
 #define math_floats_equal(a, b) \
-  ((a) > (b) \
-     ? (a) - (b) < FLT_EPSILON \
-     : (b) - (a) < FLT_EPSILON)
+  ((a) > (b) ? (a) - (b) < FLT_EPSILON : (b) - (a) < FLT_EPSILON)
 
 #define math_doubles_equal(a, b) \
-  ((a) > (b) \
-     ? (a) - (b) < DBL_EPSILON \
-     : (b) - (a) < DBL_EPSILON)
+  ((a) > (b) ? (a) - (b) < DBL_EPSILON : (b) - (a) < DBL_EPSILON)
 
 /**
  * Rounds a double to a (minimum) signed 32-bit
@@ -114,8 +110,7 @@
  */
 #define math_round_float_to_signed_64(x) (llroundf (x))
 
-#define math_round_float_to_signed_frame_t(x) \
-  math_round_float_to_signed_64 (x)
+#define math_round_float_to_signed_frame_t(x) math_round_float_to_signed_64 (x)
 
 /**
  * Fast log calculation to be used where precision
@@ -207,8 +202,7 @@ static inline sample_t
 math_get_amp_val_from_fader (sample_t fader)
 {
   static const float val1 = 1.f / 6.f;
-  return powf (
-    2.f, (val1) * (-192.f + 198.f * powf (fader, 1.f / 8.f)));
+  return powf (2.f, (val1) * (-192.f + 198.f * powf (fader, 1.f / 8.f)));
 }
 
 /**
@@ -222,9 +216,7 @@ math_amp_to_dbfs (sample_t amp)
 }
 
 sample_t
-math_calculate_rms_amp (
-  sample_t *      buf,
-  const nframes_t nframes);
+math_calculate_rms_amp (sample_t * buf, const nframes_t nframes);
 
 /**
  * Calculate db using RMS method.

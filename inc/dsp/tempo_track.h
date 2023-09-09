@@ -112,9 +112,7 @@ int
 tempo_track_beat_unit_enum_to_int (BeatUnit ebeat_unit);
 
 void
-tempo_track_set_beat_unit_from_enum (
-  Track *  self,
-  BeatUnit ebeat_unit);
+tempo_track_set_beat_unit_from_enum (Track * self, BeatUnit ebeat_unit);
 
 BeatUnit
 tempo_track_get_beat_unit_enum (Track * self);

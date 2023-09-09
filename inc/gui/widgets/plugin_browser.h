@@ -15,8 +15,7 @@
 
 #include <gtk/gtk.h>
 
-#define PLUGIN_BROWSER_WIDGET_TYPE \
-  (plugin_browser_widget_get_type ())
+#define PLUGIN_BROWSER_WIDGET_TYPE (plugin_browser_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PluginBrowserWidget,
   plugin_browser_widget,
@@ -168,8 +167,7 @@ PluginBrowserWidget *
 plugin_browser_widget_new (void);
 
 void
-plugin_browser_widget_refresh_collections (
-  PluginBrowserWidget * self);
+plugin_browser_widget_refresh_collections (PluginBrowserWidget * self);
 
 /**
  * @}

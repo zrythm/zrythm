@@ -33,8 +33,7 @@ test_midi_file_playback (void)
   /* create a track for testing */
   int      track_pos = TRACKLIST->num_tracks;
   GError * err = NULL;
-  tracklist_selections_action_perform_create_midi (
-    track_pos, 1, &err);
+  tracklist_selections_action_perform_create_midi (track_pos, 1, &err);
   g_assert_null (err);
 
   MidiEvents * events = midi_events_new ();
@@ -49,8 +48,7 @@ test_midi_file_playback (void)
   while ((midi_file = midi_files[count++]))
     ;
   srandom ((unsigned int) time (NULL));
-  array_shuffle (
-    midi_files, (size_t) (count - 1), sizeof (char *));
+  array_shuffle (midi_files, (size_t) (count - 1), sizeof (char *));
 
   int      iter = 0;
   Position init_pos;
@@ -61,16 +59,15 @@ test_midi_file_playback (void)
       /*continue;*/
       g_message ("testing %s", midi_file);
 
-      SupportedFile * file =
-        supported_file_new_from_path (midi_file);
+      SupportedFile * file = supported_file_new_from_path (midi_file);
       track_create_with_action (
-        TRACK_TYPE_MIDI, NULL, file, PLAYHEAD,
-        TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+        TRACK_TYPE_MIDI, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1, -1,
+        NULL, NULL);
       supported_file_free (file);
       g_message ("testing %s", midi_file);
 
-      Track * track = tracklist_get_last_track (
-        TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, true);
+      Track * track =
+        tracklist_get_last_track (TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, true);
 
       ZRegion * region = track->lanes[0]->regions[0];
 
@@ -78,8 +75,7 @@ test_midi_file_playback (void)
        * note, send end pos a few cycles later */
       Position start_pos, stop_pos;
       position_set_to_pos (
-        &start_pos,
-        &((ArrangerObject *) region->midi_notes[0])->pos);
+        &start_pos, &((ArrangerObject *) region->midi_notes[0])->pos);
       position_set_to_pos (&stop_pos, &start_pos);
       position_add_frames (&start_pos, -BUFFER_SIZE * 2);
       position_add_frames (
@@ -90,15 +86,14 @@ test_midi_file_playback (void)
        * covered positions to check for warnings */
       Position tmp;
       position_set_to_pos (&tmp, &start_pos);
-      position_add_frames (
-        &tmp, BUFFER_SIZE * 32 + BUFFER_SIZE / 3);
-      arranger_object_end_pos_setter (
-        (ArrangerObject *) region, &tmp);
+      position_add_frames (&tmp, BUFFER_SIZE * 32 + BUFFER_SIZE / 3);
+      arranger_object_end_pos_setter ((ArrangerObject *) region, &tmp);
 
       /* start filling events to see if any
        * warnings occur */
-      for (signed_frame_t i = start_pos.frames;
-           i < stop_pos.frames; i += BUFFER_SIZE)
+      for (
+        signed_frame_t i = start_pos.frames; i < stop_pos.frames;
+        i += BUFFER_SIZE)
         {
           /* try all possible offsets */
           for (int j = 0; j < BUFFER_SIZE; j++)
@@ -108,8 +103,7 @@ test_midi_file_playback (void)
                 .local_offset = (nframes_t) j,
                 .nframes = BUFFER_SIZE,
               };
-              track_fill_events (
-                track, &time_nfo, events, NULL);
+              track_fill_events (track, &time_nfo, events, NULL);
               midi_events_clear (events, true);
             }
         }
@@ -135,8 +129,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/integration/midi_file/"
 
   g_test_add_func (
-    TEST_PREFIX "test_midi_file_playback",
-    (GTestFunc) test_midi_file_playback);
+    TEST_PREFIX "test_midi_file_playback", (GTestFunc) test_midi_file_playback);
 
   return g_test_run ();
 }

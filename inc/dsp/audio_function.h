@@ -84,8 +84,7 @@ audio_function_type_to_string (AudioFunctionType type)
 }
 
 char *
-audio_function_get_action_target_for_type (
-  AudioFunctionType type);
+audio_function_get_action_target_for_type (AudioFunctionType type);
 
 /**
  * Returns a detailed action name to be used for
@@ -98,10 +97,8 @@ audio_function_get_detailed_action_for_type (
   AudioFunctionType type,
   const char *      base_action);
 
-#define audio_function_get_detailed_action_for_type_default( \
-  type) \
-  audio_function_get_detailed_action_for_type ( \
-    type, "app.editor-function")
+#define audio_function_get_detailed_action_for_type_default(type) \
+  audio_function_get_detailed_action_for_type (type, "app.editor-function")
 
 const char *
 audio_function_get_icon_name_for_type (AudioFunctionType type);

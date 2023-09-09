@@ -22,25 +22,23 @@ typedef struct PluginPresetIdentifier_v1
   PluginIdentifier_v1 plugin_id;
 } PluginPresetIdentifier_v1;
 
-static const cyaml_schema_field_t
-  plugin_preset_identifier_fields_schema_v1[] = {
-    YAML_FIELD_INT (PluginPresetIdentifier_v1, schema_version),
-    YAML_FIELD_INT (PluginPresetIdentifier_v1, idx),
-    YAML_FIELD_INT (PluginPresetIdentifier_v1, bank_idx),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      PluginPresetIdentifier_v1,
-      plugin_id,
-      plugin_identifier_fields_schema_v1),
+static const cyaml_schema_field_t plugin_preset_identifier_fields_schema_v1[] = {
+  YAML_FIELD_INT (PluginPresetIdentifier_v1, schema_version),
+  YAML_FIELD_INT (PluginPresetIdentifier_v1, idx),
+  YAML_FIELD_INT (PluginPresetIdentifier_v1, bank_idx),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    PluginPresetIdentifier_v1,
+    plugin_id,
+    plugin_identifier_fields_schema_v1),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  plugin_preset_identifier_schema_v1 = {
-    YAML_VALUE_PTR (
-      PluginPresetIdentifier_v1,
-      plugin_preset_identifier_fields_schema_v1),
-  };
+static const cyaml_schema_value_t plugin_preset_identifier_schema_v1 = {
+  YAML_VALUE_PTR (
+    PluginPresetIdentifier_v1,
+    plugin_preset_identifier_fields_schema_v1),
+};
 
 typedef struct PluginPreset_v1
 {
@@ -51,24 +49,21 @@ typedef struct PluginPreset_v1
   PluginPresetIdentifier_v1 id;
 } PluginPreset_v1;
 
-static const cyaml_schema_field_t
-  plugin_preset_fields_schema_v1[] = {
-    YAML_FIELD_INT (PluginPreset_v1, schema_version),
-    YAML_FIELD_STRING_PTR (PluginPreset_v1, name),
-    YAML_FIELD_STRING_PTR_OPTIONAL (PluginPreset_v1, uri),
-    YAML_FIELD_INT (PluginPreset_v1, carla_program),
-    YAML_FIELD_MAPPING_EMBEDDED (
-      PluginPreset_v1,
-      id,
-      plugin_preset_identifier_fields_schema_v1),
+static const cyaml_schema_field_t plugin_preset_fields_schema_v1[] = {
+  YAML_FIELD_INT (PluginPreset_v1, schema_version),
+  YAML_FIELD_STRING_PTR (PluginPreset_v1, name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginPreset_v1, uri),
+  YAML_FIELD_INT (PluginPreset_v1, carla_program),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    PluginPreset_v1,
+    id,
+    plugin_preset_identifier_fields_schema_v1),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t plugin_preset_schema_v1 = {
-  YAML_VALUE_PTR (
-    PluginPreset_v1,
-    plugin_preset_fields_schema_v1),
+  YAML_VALUE_PTR (PluginPreset_v1, plugin_preset_fields_schema_v1),
 };
 
 typedef struct PluginBank_v1
@@ -103,8 +98,7 @@ static const cyaml_schema_value_t plugin_bank_schema_v1 = {
 };
 
 PluginPresetIdentifier *
-plugin_preset_identifier_upgrade_from_v1 (
-  PluginPresetIdentifier_v1 * old);
+plugin_preset_identifier_upgrade_from_v1 (PluginPresetIdentifier_v1 * old);
 
 PluginPreset *
 plugin_preset_upgrade_from_v1 (PluginPreset_v1 * old);

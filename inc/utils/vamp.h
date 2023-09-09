@@ -338,9 +338,7 @@ vamp_feature_new (
   const char * label);
 
 const ZVampFeatureList *
-vamp_feature_set_get_list_for_output (
-  ZVampFeatureSet * self,
-  int               output_idx);
+vamp_feature_set_get_list_for_output (ZVampFeatureSet * self, int output_idx);
 
 void
 vamp_feature_list_print (const ZVampFeatureList * self);

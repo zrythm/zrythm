@@ -30,10 +30,7 @@ static const cyaml_schema_field_t scale_object_fields_schema_v1[] = {
     base,
     arranger_object_fields_schema_v1),
   YAML_FIELD_INT (ScaleObject_v1, index),
-  YAML_FIELD_MAPPING_PTR (
-    ScaleObject_v1,
-    scale,
-    musical_scale_fields_schema_v2),
+  YAML_FIELD_MAPPING_PTR (ScaleObject_v1, scale, musical_scale_fields_schema_v2),
 
   CYAML_FIELD_END
 };

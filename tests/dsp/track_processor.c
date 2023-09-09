@@ -36,8 +36,7 @@ test_process_master (void)
 
   for (nframes_t i = 0; i < AUDIO_ENGINE->block_length; i++)
     {
-      P_MASTER_TRACK->processor->stereo_in->l->buf[i] =
-        (float) (i + 1);
+      P_MASTER_TRACK->processor->stereo_in->l->buf[i] = (float) (i + 1);
     }
 
   nframes_t             local_offset = 60;
@@ -46,19 +45,17 @@ test_process_master (void)
     .local_offset = 0,
     .nframes = local_offset,
   };
-  track_processor_process (
-    P_MASTER_TRACK->processor, &time_nfo);
+  track_processor_process (P_MASTER_TRACK->processor, &time_nfo);
   time_nfo.g_start_frame = local_offset;
   time_nfo.local_offset = local_offset;
   time_nfo.nframes = AUDIO_ENGINE->block_length - local_offset;
-  track_processor_process (
-    P_MASTER_TRACK->processor, &time_nfo);
+  track_processor_process (P_MASTER_TRACK->processor, &time_nfo);
 
   for (nframes_t i = 0; i < AUDIO_ENGINE->block_length; i++)
     {
       g_assert_cmpfloat_with_epsilon (
-        P_MASTER_TRACK->processor->stereo_out->l->buf[i],
-        (float) (i + 1), 0.000001f);
+        P_MASTER_TRACK->processor->stereo_out->l->buf[i], (float) (i + 1),
+        0.000001f);
     }
 
   test_helper_zrythm_cleanup ();
@@ -74,8 +71,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/tracklist/"
 
   g_test_add_func (
-    TEST_PREFIX "test process master",
-    (GTestFunc) test_process_master);
+    TEST_PREFIX "test process master", (GTestFunc) test_process_master);
 
   return g_test_run ();
 }

@@ -24,8 +24,7 @@
 
 #include <gtk/gtk.h>
 
-#define INSPECTOR_AP_WIDGET_TYPE \
-  (inspector_ap_widget_get_type ())
+#define INSPECTOR_AP_WIDGET_TYPE (inspector_ap_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   InspectorApWidget,
   inspector_ap_widget,

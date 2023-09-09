@@ -28,8 +28,7 @@
 
 #include <gtk/gtk.h>
 
-#define POPOVER_MENU_BIN_WIDGET_TYPE \
-  (popover_menu_bin_widget_get_type ())
+#define POPOVER_MENU_BIN_WIDGET_TYPE (popover_menu_bin_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PopoverMenuBinWidget,
   popover_menu_bin_widget,
@@ -60,8 +59,7 @@ typedef struct _PopoverMenuBinWidget
 } PopoverMenuBinWidget;
 
 GMenuModel *
-popover_menu_bin_widget_get_menu_model (
-  PopoverMenuBinWidget * self);
+popover_menu_bin_widget_get_menu_model (PopoverMenuBinWidget * self);
 
 void
 popover_menu_bin_widget_set_menu_model (
@@ -74,8 +72,7 @@ popover_menu_bin_widget_set_child (
   GtkWidget *            child);
 
 GtkWidget *
-popover_menu_bin_widget_get_child (
-  PopoverMenuBinWidget * self);
+popover_menu_bin_widget_get_child (PopoverMenuBinWidget * self);
 
 PopoverMenuBinWidget *
 popover_menu_bin_widget_new (void);

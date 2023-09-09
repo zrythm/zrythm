@@ -118,10 +118,7 @@ typedef struct UndoableAction
 
 static const cyaml_schema_field_t undoable_action_fields_schema[] = {
   YAML_FIELD_INT (UndoableAction, schema_version),
-  YAML_FIELD_ENUM (
-    UndoableAction,
-    type,
-    undoable_action_type_strings),
+  YAML_FIELD_ENUM (UndoableAction, type, undoable_action_type_strings),
   YAML_FIELD_FLOAT (UndoableAction, frames_per_tick),
   YAML_FIELD_INT (UndoableAction, sample_rate),
   YAML_FIELD_INT (UndoableAction, stack_idx),
@@ -144,9 +141,7 @@ undoable_action_init_loaded (UndoableAction * self);
  * Initializer to be used by implementing actions.
  */
 NONNULL void
-undoable_action_init (
-  UndoableAction *   self,
-  UndoableActionType type);
+undoable_action_init (UndoableAction * self, UndoableActionType type);
 
 /**
  * Returns whether the action requires pausing
@@ -171,14 +166,10 @@ undoable_action_can_contain_clip (UndoableAction * self);
  * refers to the given audio clip.
  */
 NONNULL bool
-undoable_action_contains_clip (
-  UndoableAction * self,
-  AudioClip *      clip);
+undoable_action_contains_clip (UndoableAction * self, AudioClip * clip);
 
 NONNULL void
-undoable_action_get_plugins (
-  UndoableAction * self,
-  GPtrArray *      arr);
+undoable_action_get_plugins (UndoableAction * self, GPtrArray * arr);
 
 /**
  * Sets the number of actions for this action.
@@ -187,9 +178,7 @@ undoable_action_get_plugins (
  * performed.
  */
 NONNULL void
-undoable_action_set_num_actions (
-  UndoableAction * self,
-  int              num_actions);
+undoable_action_set_num_actions (UndoableAction * self, int num_actions);
 
 /**
  * To be used by actions that save/load port
@@ -223,9 +212,7 @@ int undoable_action_do (UndoableAction * self, GError ** error);
  * @return Non-zero if errors occurred.
  */
 NONNULL_ARGS (1)
-int undoable_action_undo (
-  UndoableAction * self,
-  GError **        error);
+int undoable_action_undo (UndoableAction * self, GError ** error);
 
 void
 undoable_action_free (UndoableAction * self);

@@ -18,7 +18,7 @@
 #include <lilv/lilv.h>
 
 typedef struct CachedPluginDescriptors CachedPluginDescriptors;
-typedef struct PluginCollections PluginCollections;
+typedef struct PluginCollections       PluginCollections;
 
 /**
  * @addtogroup plugins
@@ -36,8 +36,7 @@ typedef struct PluginCollections PluginCollections;
 #define PM_URIDS (PLUGIN_MANAGER->urids)
 #define PM_SYMAP (PLUGIN_MANAGER->symap)
 #define PM_SYMAP_LOCK (PLUGIN_MANAGER->symap_lock)
-#define PM_GET_NODE(uri) \
-  plugin_manager_get_node (PLUGIN_MANAGER, uri)
+#define PM_GET_NODE(uri) plugin_manager_get_node (PLUGIN_MANAGER, uri)
 
 typedef struct PluginDescriptor PluginDescriptor;
 
@@ -99,9 +98,7 @@ plugin_manager_new (void);
  * node is created and cached.
  */
 const LilvNode *
-plugin_manager_get_node (
-  PluginManager * self,
-  const char *    uri);
+plugin_manager_get_node (PluginManager * self, const char * uri);
 
 /**
  * Scans for plugins, optionally updating the
@@ -126,9 +123,7 @@ plugin_manager_scan_plugins (
  * must not be free'd.
  */
 PluginDescriptor *
-plugin_manager_find_plugin_from_uri (
-  PluginManager * self,
-  const char *    uri);
+plugin_manager_find_plugin_from_uri (PluginManager * self, const char * uri);
 
 /**
  * Finds and returns the PluginDescriptor instance
@@ -147,9 +142,7 @@ plugin_manager_find_from_descriptor (
  * plugin protocol.
  */
 bool
-plugin_manager_supports_protocol (
-  PluginManager * self,
-  ZPluginProtocol protocol);
+plugin_manager_supports_protocol (PluginManager * self, ZPluginProtocol protocol);
 
 /**
  * Returns an instrument plugin, if any.

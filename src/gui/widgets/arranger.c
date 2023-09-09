@@ -123,8 +123,7 @@ arranger_widget_can_scroll_vertically (ArrangerWidget * self)
 {
   if (
     (self->type == TYPE (TIMELINE) && self->is_pinned)
-    || self->type == TYPE (MIDI_MODIFIER)
-    || self->type == TYPE (AUDIO)
+    || self->type == TYPE (MIDI_MODIFIER) || self->type == TYPE (AUDIO)
     || self->type == TYPE (AUTOMATION))
     return false;
 
@@ -136,12 +135,10 @@ arranger_widget_can_scroll_vertically (ArrangerWidget * self)
  * (like pinned timeline).
  */
 EditorSettings
-arranger_widget_get_editor_setting_values (
-  ArrangerWidget * self)
+arranger_widget_get_editor_setting_values (ArrangerWidget * self)
 {
-  EditorSettings * settings =
-    arranger_widget_get_editor_settings (self);
-  EditorSettings ret = { 0 };
+  EditorSettings * settings = arranger_widget_get_editor_settings (self);
+  EditorSettings   ret = { 0 };
   g_return_val_if_fail (settings, ret);
   ret = *settings;
   if (!arranger_widget_can_scroll_vertically (self))
@@ -163,8 +160,7 @@ const char *
 arranger_widget_get_type_str (ArrangerWidgetType type)
 {
   static const char * arranger_widget_type_str[] = {
-    "timeline", "midi",  "midi modifier",
-    "audio",    "chord", "automation",
+    "timeline", "midi", "midi modifier", "audio", "chord", "automation",
   };
   return arranger_widget_type_str[type];
 }
@@ -204,12 +200,9 @@ arranger_widget_get_playhead_px (ArrangerWidget * self)
  * children.
  */
 void
-arranger_widget_set_cursor (
-  ArrangerWidget * self,
-  ArrangerCursor   cursor)
+arranger_widget_set_cursor (ArrangerWidget * self, ArrangerCursor cursor)
 {
-#define SET_X_CURSOR(x) \
-  ui_set_##x##_cursor (GTK_WIDGET (self));
+#define SET_X_CURSOR(x) ui_set_##x##_cursor (GTK_WIDGET (self));
 
 #define SET_CURSOR_FROM_NAME(name) \
   ui_set_cursor_from_name (GTK_WIDGET (self), name);
@@ -339,10 +332,9 @@ SnapGrid *
 arranger_widget_get_snap_grid (ArrangerWidget * self)
 {
   if (
-    self == MW_MIDI_MODIFIER_ARRANGER
-    || self == MW_MIDI_ARRANGER
-    || self == MW_AUTOMATION_ARRANGER
-    || self == MW_AUDIO_ARRANGER || self == MW_CHORD_ARRANGER)
+    self == MW_MIDI_MODIFIER_ARRANGER || self == MW_MIDI_ARRANGER
+    || self == MW_AUTOMATION_ARRANGER || self == MW_AUDIO_ARRANGER
+    || self == MW_CHORD_ARRANGER)
     {
       return SNAP_GRID_EDITOR;
     }
@@ -392,9 +384,7 @@ typedef struct ObjectOverlapInfo
  * @return Whether the object was added or not.
  */
 HOT static bool
-add_object_if_overlap (
-  ArrangerWidget *    self,
-  ObjectOverlapInfo * nfo)
+add_object_if_overlap (ArrangerWidget * self, ObjectOverlapInfo * nfo)
 {
   GdkRectangle *   rect = nfo->rect;
   double           x = nfo->x;
@@ -427,11 +417,9 @@ add_object_if_overlap (
       else
         {
           ZRegion * r = arranger_object_get_region (obj);
-          g_return_val_if_fail (
-            IS_REGION_AND_NONNULL (r), false);
+          g_return_val_if_fail (IS_REGION_AND_NONNULL (r), false);
           g_obj_end_pos = r->base.pos;
-          position_add_ticks (
-            &g_obj_end_pos, obj->end_pos.ticks);
+          position_add_ticks (&g_obj_end_pos, obj->end_pos.ticks);
         }
       if (position_is_before (&g_obj_end_pos, &nfo->start_pos))
         {
@@ -453,8 +441,7 @@ add_object_if_overlap (
       g_obj_start_pos = r->base.pos;
       position_add_ticks (&g_obj_start_pos, obj->pos.ticks);
     }
-  position_add_ticks (
-    &g_obj_start_pos, -12.0 / ruler->px_per_tick);
+  position_add_ticks (&g_obj_start_pos, -12.0 / ruler->px_per_tick);
   if (position_is_after (&g_obj_start_pos, &nfo->end_pos))
     {
       return false;
@@ -462,8 +449,7 @@ add_object_if_overlap (
 
   /* --- end optimization --- */
 
-  bool is_same_arranger =
-    arranger_object_get_arranger (obj) == self;
+  bool is_same_arranger = arranger_object_get_arranger (obj) == self;
   if (!is_same_arranger)
     return false;
 
@@ -471,24 +457,21 @@ add_object_if_overlap (
   bool add = false;
   if (rect)
     {
-      if ((ui_rectangle_overlap (&obj->full_rect, rect) ||
-           /* also check original (transient) */
-           (arranger_object_should_orig_be_visible (obj, self)
-            && obj->transient
-            && ui_rectangle_overlap (
-              &obj->transient->full_rect, rect))))
+      if (
+        (ui_rectangle_overlap (&obj->full_rect, rect) ||
+         /* also check original (transient) */
+         (arranger_object_should_orig_be_visible (obj, self) && obj->transient
+          && ui_rectangle_overlap (&obj->transient->full_rect, rect))))
         {
           add = true;
         }
     }
   else if (
     (ui_is_point_in_rect_hit (
-       &obj->full_rect, x >= 0 ? true : false,
-       y >= 0 ? true : false, x, y, 0, 0)
+       &obj->full_rect, x >= 0 ? true : false, y >= 0 ? true : false, x, y, 0, 0)
      ||
      /* also check original (transient) */
-     (arranger_object_should_orig_be_visible (obj, self)
-      && obj->transient
+     (arranger_object_should_orig_be_visible (obj, self) && obj->transient
       && ui_is_point_in_rect_hit (
         &obj->transient->full_rect, x >= 0 ? true : false,
         y >= 0 ? true : false, x, y, 0, 0))))
@@ -497,8 +480,7 @@ add_object_if_overlap (
        * curve cross (either main object or
        * transient) */
       ArrangerObject * obj_to_check =
-        (arranger_object_should_orig_be_visible (obj, self)
-         && obj->transient
+        (arranger_object_should_orig_be_visible (obj, self) && obj->transient
          && ui_is_point_in_rect_hit (
            &obj->transient->full_rect, x >= 0 ? true : false,
            y >= 0 ? true : false, x, y, 0, 0))
@@ -509,8 +491,7 @@ add_object_if_overlap (
        * points */
       if (
         obj->type == ARRANGER_OBJECT_TYPE_AUTOMATION_POINT
-        && !automation_point_is_point_hit (
-          (AutomationPoint *) obj_to_check, x, y)
+        && !automation_point_is_point_hit ((AutomationPoint *) obj_to_check, x, y)
         && !automation_point_is_curve_hit (
           (AutomationPoint *) obj_to_check, x, y, 16.0))
         {
@@ -578,8 +559,7 @@ get_hit_objects (
   nfo.rect = rect;
   nfo.x = x;
   nfo.y = y;
-  arranger_widget_px_to_pos (
-    self, rect ? rect->x : x, &nfo.start_pos, true);
+  arranger_widget_px_to_pos (self, rect ? rect->x : x, &nfo.start_pos, true);
   if (rect)
     {
       arranger_widget_px_to_pos (
@@ -595,16 +575,14 @@ get_hit_objects (
     {
     case TYPE (TIMELINE):
       if (
-        type != ARRANGER_OBJECT_TYPE_ALL
-        && type != ARRANGER_OBJECT_TYPE_REGION
+        type != ARRANGER_OBJECT_TYPE_ALL && type != ARRANGER_OBJECT_TYPE_REGION
         && type != ARRANGER_OBJECT_TYPE_MARKER
         && type != ARRANGER_OBJECT_TYPE_SCALE_OBJECT)
         break;
 
       /* add overlapping regions */
       if (
-        type == ARRANGER_OBJECT_TYPE_ALL
-        || type == ARRANGER_OBJECT_TYPE_REGION)
+        type == ARRANGER_OBJECT_TYPE_ALL || type == ARRANGER_OBJECT_TYPE_REGION)
         {
           /* midi and audio regions */
           for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -614,10 +592,9 @@ get_hit_objects (
               /* skip tracks if not visible or this
                * is timeline and pin status doesn't
                * match */
-              if (!track->visible ||
-                  (TYPE (TIMELINE) &&
-                     track_is_pinned (track) !=
-                       self->is_pinned))
+              if (
+                !track->visible
+                || (TYPE (TIMELINE) && track_is_pinned (track) != self->is_pinned))
                 {
                   continue;
                 }
@@ -629,8 +606,8 @@ get_hit_objects (
 
               if (G_LIKELY (track->widget))
                 {
-                  int track_y = track_widget_get_local_y (
-                    track->widget, self, start_y);
+                  int track_y =
+                    track_widget_get_local_y (track->widget, self, start_y);
 
                   /* skip if track starts after the
                    * rect */
@@ -659,8 +636,7 @@ get_hit_objects (
                       g_warn_if_fail (IS_REGION (r));
                       obj = (ArrangerObject *) r;
                       nfo.obj = obj;
-                      bool ret =
-                        add_object_if_overlap (self, &nfo);
+                      bool ret = add_object_if_overlap (self, &nfo);
                       if (!ret)
                         {
                           /* check lanes */
@@ -670,12 +646,9 @@ get_hit_objects (
                           region_get_lane_full_rect (
                             lane->regions[k], &lane_rect);
                           if (
-                            ((rect
-                              && ui_rectangle_overlap (
-                                &lane_rect, rect))
+                            ((rect && ui_rectangle_overlap (&lane_rect, rect))
                              || (!rect && ui_is_point_in_rect_hit (&lane_rect, true, true, x, y, 0, 0)))
-                            && arranger_object_get_arranger (obj)
-                                 == self
+                            && arranger_object_get_arranger (obj) == self
                             && !obj->deleted_temporarily)
                             {
                               g_ptr_array_add (arr, obj);
@@ -694,8 +667,7 @@ get_hit_objects (
                 }
 
               /* automation regions */
-              AutomationTracklist * atl =
-                track_get_automation_tracklist (track);
+              AutomationTracklist * atl = track_get_automation_tracklist (track);
               if (atl && track->automation_visible)
                 {
                   for (int j = 0; j < atl->num_ats; j++)
@@ -707,8 +679,7 @@ get_hit_objects (
 
                       for (int k = 0; k < at->num_regions; k++)
                         {
-                          obj =
-                            (ArrangerObject *) at->regions[k];
+                          obj = (ArrangerObject *) at->regions[k];
                           nfo.obj = obj;
                           add_object_if_overlap (self, &nfo);
                         }
@@ -734,8 +705,7 @@ get_hit_objects (
 
       /* add overlapping markers */
       if (
-        (type == ARRANGER_OBJECT_TYPE_ALL
-         || type == ARRANGER_OBJECT_TYPE_MARKER)
+        (type == ARRANGER_OBJECT_TYPE_ALL || type == ARRANGER_OBJECT_TYPE_MARKER)
         && track_get_should_be_visible (P_MARKER_TRACK))
         {
           for (int j = 0; j < P_MARKER_TRACK->num_markers; j++)
@@ -770,8 +740,7 @@ get_hit_objects (
             {
               /* add other region notes for same track
                * (ghosted) */
-              Track * track = arranger_object_get_track (
-                (ArrangerObject *) r);
+              Track * track = arranger_object_get_track ((ArrangerObject *) r);
               g_return_if_fail (track);
 
               for (int i = 0; i < track->num_lanes; i++)
@@ -782,8 +751,7 @@ get_hit_objects (
                       ZRegion * cur_r = lane->regions[j];
                       if (cur_r == r)
                         continue;
-                      for (int k = 0;
-                           k < cur_r->num_midi_notes; k++)
+                      for (int k = 0; k < cur_r->num_midi_notes; k++)
                         {
                           MidiNote * mn = cur_r->midi_notes[k];
                           obj = (ArrangerObject *) mn;
@@ -831,8 +799,7 @@ get_hit_objects (
             {
               ChordObject * co = r->chord_objects[i];
               obj = (ArrangerObject *) co;
-              g_return_if_fail (
-                co->chord_index < CHORD_EDITOR->num_chords);
+              g_return_if_fail (co->chord_index < CHORD_EDITOR->num_chords);
               nfo.obj = obj;
               add_object_if_overlap (self, &nfo);
             }
@@ -889,9 +856,7 @@ arranger_widget_get_hit_objects_in_rect (
  * Filters out objects from frozen tracks.
  */
 static void
-filter_out_frozen_objects (
-  ArrangerWidget * self,
-  GPtrArray *      objs_arr)
+filter_out_frozen_objects (ArrangerWidget * self, GPtrArray * objs_arr)
 {
   if (self->type != ARRANGER_WIDGET_TYPE_TIMELINE)
     {
@@ -901,7 +866,7 @@ filter_out_frozen_objects (
   for (int i = (int) objs_arr->len - 1; i >= 0; i--)
     {
       ArrangerObject * obj = g_ptr_array_index (objs_arr, i);
-      Track * track = arranger_object_get_track (obj);
+      Track *          track = arranger_object_get_track (obj);
       g_return_if_fail (track);
 
       if (track->frozen)
@@ -964,8 +929,7 @@ arranger_widget_is_in_moving_operation (ArrangerWidget * self)
 static void
 move_items_x (ArrangerWidget * self, const double ticks_diff)
 {
-  ArrangerSelections * sel =
-    arranger_widget_get_selections (self);
+  ArrangerSelections * sel = arranger_widget_get_selections (self);
   g_return_if_fail (sel);
 
   EVENTS_PUSH_NOW (ET_ARRANGER_SELECTIONS_IN_TRANSIT, sel);
@@ -993,8 +957,7 @@ move_items_x (ArrangerWidget * self, const double ticks_diff)
 static float
 get_fvalue_at_y (ArrangerWidget * self, double y)
 {
-  float height =
-    (float) gtk_widget_get_height (GTK_WIDGET (self));
+  float height = (float) gtk_widget_get_height (GTK_WIDGET (self));
 
   ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
   g_return_val_if_fail (
@@ -1002,8 +965,8 @@ get_fvalue_at_y (ArrangerWidget * self, double y)
   AutomationTrack * at = region_get_automation_track (region);
 
   /* get ratio from widget */
-  float widget_value = height - (float) y;
-  float widget_ratio = CLAMP (widget_value / height, 0.f, 1.f);
+  float  widget_value = height - (float) y;
+  float  widget_ratio = CLAMP (widget_value / height, 0.f, 1.f);
   Port * port = port_find_from_identifier (&at->port_id);
   float  automatable_value =
     control_port_normalized_val_to_real (port, widget_ratio);
@@ -1017,8 +980,7 @@ get_fvalue_at_y (ArrangerWidget * self, double y)
 static void
 move_items_y (ArrangerWidget * self, double offset_y)
 {
-  ArrangerSelections * sel =
-    arranger_widget_get_selections (self);
+  ArrangerSelections * sel = arranger_widget_get_selections (self);
   g_return_if_fail (sel);
 
   switch (self->type)
@@ -1027,26 +989,18 @@ move_items_y (ArrangerWidget * self, double offset_y)
       if (AUTOMATION_SELECTIONS->num_automation_points)
         {
           double offset_y_normalized =
-            -offset_y
-            / (double) gtk_widget_get_height (
-              GTK_WIDGET (self));
+            -offset_y / (double) gtk_widget_get_height (GTK_WIDGET (self));
           g_warn_if_fail (self->sel_at_start);
           (void) get_fvalue_at_y;
-          for (int i = 0;
-               i < AUTOMATION_SELECTIONS->num_automation_points;
-               i++)
+          for (int i = 0; i < AUTOMATION_SELECTIONS->num_automation_points; i++)
             {
-              AutomationPoint * ap =
-                AUTOMATION_SELECTIONS->automation_points[i];
+              AutomationPoint * ap = AUTOMATION_SELECTIONS->automation_points[i];
               AutomationSelections * automation_sel =
                 (AutomationSelections *) self->sel_at_start;
-              AutomationPoint * start_ap =
-                automation_sel->automation_points[i];
+              AutomationPoint * start_ap = automation_sel->automation_points[i];
 
               automation_point_set_fvalue (
-                ap,
-                start_ap->normalized_val
-                  + (float) offset_y_normalized,
+                ap, start_ap->normalized_val + (float) offset_y_normalized,
                 F_NORMALIZED, F_PUBLISH_EVENTS);
             }
           ArrangerObject * start_ap_obj = self->start_object;
@@ -1061,45 +1015,33 @@ move_items_y (ArrangerWidget * self, double offset_y)
         /* old = original track
          * last = track where last change happened
          * (new) = track at hover position */
-        Track * track =
-          timeline_arranger_widget_get_track_at_y (
-            self, self->start_y + offset_y);
+        Track * track = timeline_arranger_widget_get_track_at_y (
+          self, self->start_y + offset_y);
         Track * old_track =
-          timeline_arranger_widget_get_track_at_y (
-            self, self->start_y);
-        Track * last_track =
-          tracklist_get_visible_track_after_delta (
-            TRACKLIST, old_track, self->visible_track_diff);
+          timeline_arranger_widget_get_track_at_y (self, self->start_y);
+        Track * last_track = tracklist_get_visible_track_after_delta (
+          TRACKLIST, old_track, self->visible_track_diff);
 
-        TrackLane * lane =
-          timeline_arranger_widget_get_track_lane_at_y (
-            self, self->start_y + offset_y);
+        TrackLane * lane = timeline_arranger_widget_get_track_lane_at_y (
+          self, self->start_y + offset_y);
         TrackLane * old_lane =
-          timeline_arranger_widget_get_track_lane_at_y (
-            self, self->start_y);
+          timeline_arranger_widget_get_track_lane_at_y (self, self->start_y);
         TrackLane * last_lane = NULL;
         if (old_lane)
           {
-            Track * old_lane_track =
-              track_lane_get_track (old_lane);
-            last_lane =
-              old_lane_track
-                ->lanes[old_lane->pos + self->lane_diff];
+            Track * old_lane_track = track_lane_get_track (old_lane);
+            last_lane = old_lane_track->lanes[old_lane->pos + self->lane_diff];
           }
 
         AutomationTrack * at =
-          timeline_arranger_widget_get_at_at_y (
-            self, self->start_y + offset_y);
+          timeline_arranger_widget_get_at_at_y (self, self->start_y + offset_y);
         AutomationTrack * old_at =
-          timeline_arranger_widget_get_at_at_y (
-            self, self->start_y);
+          timeline_arranger_widget_get_at_at_y (self, self->start_y);
         AutomationTrack * last_at = NULL;
         if (track && old_at)
           {
-            last_at =
-              automation_tracklist_get_visible_at_after_delta (
-                &track->automation_tracklist, old_at,
-                self->visible_at_diff);
+            last_at = automation_tracklist_get_visible_at_after_delta (
+              &track->automation_tracklist, old_at, self->visible_at_diff);
           }
 
         /* if new track is equal, move lanes or
@@ -1114,9 +1056,8 @@ move_items_y (ArrangerWidget * self, double offset_y)
                 int delta = lane->pos - last_lane->pos;
                 if (delta != 0)
                   {
-                    bool moved =
-                      timeline_selections_move_regions_to_new_lanes (
-                        TL_SELECTIONS, delta);
+                    bool moved = timeline_selections_move_regions_to_new_lanes (
+                      TL_SELECTIONS, delta);
                     if (moved)
                       {
                         self->lane_diff = cur_diff;
@@ -1125,17 +1066,14 @@ move_items_y (ArrangerWidget * self, double offset_y)
               }
             else if (at && old_at && last_at && at != old_at)
               {
-                int cur_diff =
-                  automation_tracklist_get_visible_at_diff (
-                    &track->automation_tracklist, old_at, at);
-                int delta =
-                  automation_tracklist_get_visible_at_diff (
-                    &track->automation_tracklist, last_at, at);
+                int cur_diff = automation_tracklist_get_visible_at_diff (
+                  &track->automation_tracklist, old_at, at);
+                int delta = automation_tracklist_get_visible_at_diff (
+                  &track->automation_tracklist, last_at, at);
                 if (delta != 0)
                   {
-                    bool moved =
-                      timeline_selections_move_regions_to_new_ats (
-                        TL_SELECTIONS, delta);
+                    bool moved = timeline_selections_move_regions_to_new_ats (
+                      TL_SELECTIONS, delta);
                     if (moved)
                       {
                         self->visible_at_diff = cur_diff;
@@ -1144,19 +1082,16 @@ move_items_y (ArrangerWidget * self, double offset_y)
               }
           }
         /* otherwise move tracks */
-        else if (
-          track && last_track && old_track
-          && track != last_track)
+        else if (track && last_track && old_track && track != last_track)
           {
-            int cur_diff = tracklist_get_visible_track_diff (
-              TRACKLIST, old_track, track);
-            int delta = tracklist_get_visible_track_diff (
-              TRACKLIST, last_track, track);
+            int cur_diff =
+              tracklist_get_visible_track_diff (TRACKLIST, old_track, track);
+            int delta =
+              tracklist_get_visible_track_diff (TRACKLIST, last_track, track);
             if (delta != 0)
               {
-                bool moved =
-                  timeline_selections_move_regions_to_new_tracks (
-                    TL_SELECTIONS, delta);
+                bool moved = timeline_selections_move_regions_to_new_tracks (
+                  TL_SELECTIONS, delta);
                 if (moved)
                   {
                     self->visible_track_diff = cur_diff;
@@ -1169,27 +1104,21 @@ move_items_y (ArrangerWidget * self, double offset_y)
       {
         int y_delta;
         /* first note selected */
-        int first_note_selected =
-          ((MidiNote *) self->start_object)->val;
+        int first_note_selected = ((MidiNote *) self->start_object)->val;
         /* note at cursor */
-        int note_at_cursor =
-          piano_roll_keys_widget_get_key_from_y (
-            MW_PIANO_ROLL_KEYS, self->start_y + offset_y);
+        int note_at_cursor = piano_roll_keys_widget_get_key_from_y (
+          MW_PIANO_ROLL_KEYS, self->start_y + offset_y);
 
         y_delta = note_at_cursor - first_note_selected;
-        y_delta =
-          midi_arranger_calc_deltamax_for_note_movement (
-            y_delta);
+        y_delta = midi_arranger_calc_deltamax_for_note_movement (y_delta);
 
         for (int i = 0; i < MA_SELECTIONS->num_midi_notes; i++)
           {
-            MidiNote * midi_note =
-              MA_SELECTIONS->midi_notes[i];
+            MidiNote * midi_note = MA_SELECTIONS->midi_notes[i];
             /*ArrangerObject * mn_obj =*/
             /*(ArrangerObject *) midi_note;*/
             midi_note_set_val (
-              midi_note,
-              (midi_byte_t) ((int) midi_note->val + y_delta));
+              midi_note, (midi_byte_t) ((int) midi_note->val + y_delta));
             /*if (Z_IS_ARRANGER_OBJECT_WIDGET (*/
             /*mn_obj->widget))*/
             /*{*/
@@ -1207,24 +1136,18 @@ move_items_y (ArrangerWidget * self, double offset_y)
       {
         int y_delta;
         /* first chord selected */
-        ChordObject * first_co =
-          (ChordObject *) self->start_object;
-        int first_chord_selected = first_co->chord_index;
+        ChordObject * first_co = (ChordObject *) self->start_object;
+        int           first_chord_selected = first_co->chord_index;
         /* chord at cursor */
         int chord_at_cursor =
-          chord_arranger_widget_get_chord_at_y (
-            self->start_y + offset_y);
+          chord_arranger_widget_get_chord_at_y (self->start_y + offset_y);
 
         y_delta = chord_at_cursor - first_chord_selected;
-        y_delta =
-          chord_arranger_calc_deltamax_for_chord_movement (
-            y_delta);
+        y_delta = chord_arranger_calc_deltamax_for_chord_movement (y_delta);
 
-        for (int i = 0;
-             i < CHORD_SELECTIONS->num_chord_objects; i++)
+        for (int i = 0; i < CHORD_SELECTIONS->num_chord_objects; i++)
           {
-            ChordObject * co =
-              CHORD_SELECTIONS->chord_objects[i];
+            ChordObject * co = CHORD_SELECTIONS->chord_objects[i];
             co->chord_index = co->chord_index + y_delta;
           }
       }
@@ -1235,10 +1158,7 @@ move_items_y (ArrangerWidget * self, double offset_y)
 }
 
 void
-arranger_widget_select_all (
-  ArrangerWidget * self,
-  bool             select,
-  bool             fire_events)
+arranger_widget_select_all (ArrangerWidget * self, bool select, bool fire_events)
 {
   ArrangerSelections * sel =
     arranger_widget_get_selections ((ArrangerWidget *) self);
@@ -1250,10 +1170,9 @@ arranger_widget_select_all (
       arranger_widget_get_all_objects (self, objs_arr);
       for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = (ArrangerObject *)
-            g_ptr_array_index (objs_arr, i);
-          arranger_object_select (
-            obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+          ArrangerObject * obj =
+            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
+          arranger_object_select (obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
         }
       g_ptr_array_unref (objs_arr);
 
@@ -1267,13 +1186,11 @@ arranger_widget_select_all (
       g_debug ("deselecting all");
       if (arranger_selections_has_any (sel))
         {
-          arranger_selections_clear (
-            sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+          arranger_selections_clear (sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
           if (fire_events)
             {
-              EVENTS_PUSH_NOW (
-                ET_ARRANGER_SELECTIONS_REMOVED, sel);
+              EVENTS_PUSH_NOW (ET_ARRANGER_SELECTIONS_REMOVED, sel);
             }
         }
     }
@@ -1312,21 +1229,13 @@ arranger_widget_get_editor_settings (ArrangerWidget * self)
 }
 
 static GMenu *
-gen_context_menu_audio (
-  ArrangerWidget * self,
-  GMenu *          menu,
-  gdouble          x,
-  gdouble          y)
+gen_context_menu_audio (ArrangerWidget * self, GMenu * menu, gdouble x, gdouble y)
 {
   return g_menu_new ();
 }
 
 static GMenu *
-gen_context_menu_chord (
-  ArrangerWidget * self,
-  GMenu *          menu,
-  gdouble          x,
-  gdouble          y)
+gen_context_menu_chord (ArrangerWidget * self, GMenu * menu, gdouble x, gdouble y)
 {
   return g_menu_new ();
 }
@@ -1355,12 +1264,10 @@ show_context_menu (ArrangerWidget * self, gdouble x, gdouble y)
   switch (self->type)
     {
     case TYPE (TIMELINE):
-      menu = timeline_arranger_widget_gen_context_menu (
-        self, menu, x, y);
+      menu = timeline_arranger_widget_gen_context_menu (self, menu, x, y);
       break;
     case TYPE (MIDI):
-      menu = midi_arranger_widget_gen_context_menu (
-        self, menu, x, y);
+      menu = midi_arranger_widget_gen_context_menu (self, menu, x, y);
       break;
     case TYPE (MIDI_MODIFIER):
       menu = gen_context_menu_midi_modifier (self, menu, x, y);
@@ -1369,8 +1276,7 @@ show_context_menu (ArrangerWidget * self, gdouble x, gdouble y)
       menu = gen_context_menu_chord (self, menu, x, y);
       break;
     case TYPE (AUTOMATION):
-      menu = automation_arranger_widget_gen_context_menu (
-        self, menu, x, y);
+      menu = automation_arranger_widget_gen_context_menu (self, menu, x, y);
       break;
     case TYPE (AUDIO):
       menu = gen_context_menu_audio (self, menu, x, y);
@@ -1379,9 +1285,8 @@ show_context_menu (ArrangerWidget * self, gdouble x, gdouble y)
 
   g_return_if_fail (menu);
 
-  ArrangerObject * obj =
-    arranger_widget_get_hit_arranger_object (
-      self, ARRANGER_OBJECT_TYPE_ALL, x, y);
+  ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
+    self, ARRANGER_OBJECT_TYPE_ALL, x, y);
 
   if (!obj)
     {
@@ -1389,15 +1294,11 @@ show_context_menu (ArrangerWidget * self, gdouble x, gdouble y)
 
       /* add "create object" menu item */
       char action_name[500];
-      sprintf (
-        action_name, "app.create-arranger-obj(('%p',%f,%f))",
-        self, x, y);
-      menuitem = z_gtk_create_menu_item (
-        _ ("Create Object"), NULL, action_name);
+      sprintf (action_name, "app.create-arranger-obj(('%p',%f,%f))", self, x, y);
+      menuitem = z_gtk_create_menu_item (_ ("Create Object"), NULL, action_name);
       g_menu_append_item (create_submenu, menuitem);
 
-      g_menu_append_section (
-        menu, _ ("Create"), G_MENU_MODEL (create_submenu));
+      g_menu_append_section (menu, _ ("Create"), G_MENU_MODEL (create_submenu));
     }
 
   const EditorSettings settings =
@@ -1482,15 +1383,13 @@ auto_scroll (ArrangerWidget * self, int x, int y)
   if (!scroll_h && !scroll_v)
     return;
 
-  EditorSettings * settings =
-    arranger_widget_get_editor_settings (self);
+  EditorSettings * settings = arranger_widget_get_editor_settings (self);
   g_return_if_fail (settings);
   int h_scroll_speed = 20;
   int v_scroll_speed = 10;
   int border_distance = 5;
   int scroll_width = gtk_widget_get_width (GTK_WIDGET (self));
-  int scroll_height =
-    gtk_widget_get_height (GTK_WIDGET (self));
+  int scroll_height = gtk_widget_get_height (GTK_WIDGET (self));
   int v_delta = 0;
   int h_delta = 0;
   int adj_x = settings->scroll_start_x;
@@ -1525,8 +1424,7 @@ auto_scroll (ArrangerWidget * self, int x, int y)
     {
       v_delta -= settings->scroll_start_y + v_delta;
     }
-  editor_settings_append_scroll (
-    settings, h_delta, v_delta, F_VALIDATE);
+  editor_settings_append_scroll (settings, h_delta, v_delta, F_VALIDATE);
   self->offset_x_from_scroll += h_delta;
   self->offset_y_from_scroll += v_delta;
 
@@ -1561,17 +1459,14 @@ arranger_widget_on_key_release (
       self->alt_held = 0;
     }
 
-  ArrangerSelections * sel =
-    arranger_widget_get_selections (self);
+  ArrangerSelections * sel = arranger_widget_get_selections (self);
 
   if (ACTION_IS (STARTING_MOVING))
     {
       if (self->alt_held && self->can_link)
         self->action = UI_OVERLAY_ACTION_MOVING_LINK;
       else if (
-        self->ctrl_held
-        && !arranger_selections_contains_unclonable_object (
-          sel))
+        self->ctrl_held && !arranger_selections_contains_unclonable_object (sel))
         self->action = UI_OVERLAY_ACTION_MOVING_COPY;
       else
         self->action = UI_OVERLAY_ACTION_MOVING;
@@ -1586,14 +1481,10 @@ arranger_widget_on_key_release (
     {
       self->action = UI_OVERLAY_ACTION_MOVING_COPY;
     }
-  else if (
-    ACTION_IS (MOVING_LINK) && !self->alt_held
-    && self->can_link)
+  else if (ACTION_IS (MOVING_LINK) && !self->alt_held && self->can_link)
     {
       self->action =
-        self->ctrl_held
-          ? UI_OVERLAY_ACTION_MOVING_COPY
-          : UI_OVERLAY_ACTION_MOVING;
+        self->ctrl_held ? UI_OVERLAY_ACTION_MOVING_COPY : UI_OVERLAY_ACTION_MOVING;
     }
   else if (ACTION_IS (MOVING_COPY) && !self->ctrl_held)
     {
@@ -1638,16 +1529,13 @@ arranger_widget_on_key_press (
       self->alt_held = 1;
     }
 
-  ArrangerSelections * sel =
-    arranger_widget_get_selections (self);
+  ArrangerSelections * sel = arranger_widget_get_selections (self);
   g_return_val_if_fail (sel, false);
 
   if (ACTION_IS (STARTING_MOVING))
     {
       if (
-        self->ctrl_held
-        && !arranger_selections_contains_unclonable_object (
-          sel))
+        self->ctrl_held && !arranger_selections_contains_unclonable_object (sel))
         self->action = UI_OVERLAY_ACTION_MOVING_COPY;
       else
         self->action = UI_OVERLAY_ACTION_MOVING;
@@ -1665,9 +1553,7 @@ arranger_widget_on_key_press (
   else if (ACTION_IS (MOVING_LINK) && !self->alt_held)
     {
       self->action =
-        self->ctrl_held
-          ? UI_OVERLAY_ACTION_MOVING_COPY
-          : UI_OVERLAY_ACTION_MOVING;
+        self->ctrl_held ? UI_OVERLAY_ACTION_MOVING_COPY : UI_OVERLAY_ACTION_MOVING;
     }
   else if (ACTION_IS (MOVING_COPY) && !self->ctrl_held)
     {
@@ -1686,10 +1572,8 @@ arranger_widget_on_key_press (
             }
           else
             {
-              SnapGrid * sg =
-                arranger_widget_get_snap_grid (self);
-              move_ticks =
-                (double) snap_grid_get_snap_ticks (sg);
+              SnapGrid * sg = arranger_widget_get_snap_grid (self);
+              move_ticks = (double) snap_grid_get_snap_ticks (sg);
             }
 
           /* check arrow movement */
@@ -1702,23 +1586,17 @@ arranger_widget_on_key_press (
                 self, &min_possible_pos);
 
               /* get earliest object */
-              ArrangerObject * obj =
-                arranger_selections_get_first_object (sel);
+              ArrangerObject * obj = arranger_selections_get_first_object (sel);
 
-              if (
-                obj->pos.ticks - move_ticks
-                >= min_possible_pos.ticks)
+              if (obj->pos.ticks - move_ticks >= min_possible_pos.ticks)
                 {
                   GError * err = NULL;
-                  bool     ret =
-                    arranger_selections_action_perform_move (
-                      sel, -move_ticks, 0, 0, 0, 0, 0, NULL,
-                      F_NOT_ALREADY_MOVED, &err);
+                  bool     ret = arranger_selections_action_perform_move (
+                    sel, -move_ticks, 0, 0, 0, 0, 0, NULL, F_NOT_ALREADY_MOVED,
+                    &err);
                   if (!ret)
                     {
-                      HANDLE_ERROR (
-                        err, "%s",
-                        _ ("Failed to move selection"));
+                      HANDLE_ERROR (err, "%s", _ ("Failed to move selection"));
                     }
 
                   /* scroll left if needed */
@@ -1730,14 +1608,11 @@ arranger_widget_on_key_press (
             {
               have_arrow_movement = true;
               GError * err = NULL;
-              bool     ret =
-                arranger_selections_action_perform_move (
-                  sel, move_ticks, 0, 0, 0, 0, 0, NULL,
-                  F_NOT_ALREADY_MOVED, &err);
+              bool     ret = arranger_selections_action_perform_move (
+                sel, move_ticks, 0, 0, 0, 0, 0, NULL, F_NOT_ALREADY_MOVED, &err);
               if (!ret)
                 {
-                  HANDLE_ERROR (
-                    err, "%s", _ ("Failed to move selection"));
+                  HANDLE_ERROR (err, "%s", _ ("Failed to move selection"));
                 }
 
               /* get latest object */
@@ -1751,14 +1626,11 @@ arranger_widget_on_key_press (
           else if (keyval == GDK_KEY_Down)
             {
               have_arrow_movement = true;
-              if (
-                self == MW_MIDI_ARRANGER
-                || self == MW_MIDI_MODIFIER_ARRANGER)
+              if (self == MW_MIDI_ARRANGER || self == MW_MIDI_MODIFIER_ARRANGER)
                 {
                   int        pitch_delta = 0;
                   MidiNote * mn =
-                    midi_arranger_selections_get_lowest_note (
-                      MA_SELECTIONS);
+                    midi_arranger_selections_get_lowest_note (MA_SELECTIONS);
                   ArrangerObject * obj = (ArrangerObject *) mn;
 
                   if (self->ctrl_held)
@@ -1775,10 +1647,8 @@ arranger_widget_on_key_press (
                   if (pitch_delta)
                     {
                       GError * err = NULL;
-                      bool     ret =
-                        arranger_selections_action_perform_move_midi (
-                          sel, 0, pitch_delta,
-                          F_NOT_ALREADY_MOVED, &err);
+                      bool ret = arranger_selections_action_perform_move_midi (
+                        sel, 0, pitch_delta, F_NOT_ALREADY_MOVED, &err);
                       if (!ret)
                         {
                           HANDLE_ERROR (
@@ -1795,14 +1665,11 @@ arranger_widget_on_key_press (
               else if (self == MW_CHORD_ARRANGER)
                 {
                   GError * err = NULL;
-                  bool     ret =
-                    arranger_selections_action_perform_move_chord (
-                      sel, 0, 1, F_NOT_ALREADY_MOVED, &err);
+                  bool     ret = arranger_selections_action_perform_move_chord (
+                    sel, 0, 1, F_NOT_ALREADY_MOVED, &err);
                   if (!ret)
                     {
-                      HANDLE_ERROR (
-                        err, "%s",
-                        _ ("Failed to move chords"));
+                      HANDLE_ERROR (err, "%s", _ ("Failed to move chords"));
                     }
                 }
               else if (self == MW_TIMELINE)
@@ -1818,14 +1685,11 @@ arranger_widget_on_key_press (
           else if (keyval == GDK_KEY_Up)
             {
               have_arrow_movement = true;
-              if (
-                self == MW_MIDI_ARRANGER
-                || self == MW_MIDI_MODIFIER_ARRANGER)
+              if (self == MW_MIDI_ARRANGER || self == MW_MIDI_MODIFIER_ARRANGER)
                 {
                   int        pitch_delta = 0;
                   MidiNote * mn =
-                    midi_arranger_selections_get_highest_note (
-                      MA_SELECTIONS);
+                    midi_arranger_selections_get_highest_note (MA_SELECTIONS);
                   ArrangerObject * obj = (ArrangerObject *) mn;
 
                   if (self->ctrl_held)
@@ -1842,10 +1706,8 @@ arranger_widget_on_key_press (
                   if (pitch_delta)
                     {
                       GError * err = NULL;
-                      bool     ret =
-                        arranger_selections_action_perform_move_midi (
-                          sel, 0, pitch_delta,
-                          F_NOT_ALREADY_MOVED, &err);
+                      bool ret = arranger_selections_action_perform_move_midi (
+                        sel, 0, pitch_delta, F_NOT_ALREADY_MOVED, &err);
                       if (!ret)
                         {
                           HANDLE_ERROR (
@@ -1862,9 +1724,8 @@ arranger_widget_on_key_press (
               else if (self == MW_CHORD_ARRANGER)
                 {
                   GError * err = NULL;
-                  bool     ret =
-                    arranger_selections_action_perform_move_chord (
-                      sel, 0, -1, F_NOT_ALREADY_MOVED, &err);
+                  bool     ret = arranger_selections_action_perform_move_chord (
+                    sel, 0, -1, F_NOT_ALREADY_MOVED, &err);
                   if (!ret)
                     {
                       HANDLE_ERROR (
@@ -1890,8 +1751,7 @@ arranger_widget_on_key_press (
               /* FIXME remember the ID just in case the
                * arranger gets deleted before this is caleld */
               g_timeout_add (
-                400, midi_arranger_unlisten_notes_source_func,
-                self);
+                400, midi_arranger_unlisten_notes_source_func, self);
             }
 
         } /* arranger selections has any */
@@ -1908,15 +1768,13 @@ arranger_widget_on_key_press (
   /* FIXME this whole function should not check
    * for keyvals and return false always */
   if (
-    keyval == GDK_KEY_space
-    || (keyval >= GDK_KEY_1 && keyval <= GDK_KEY_6)
-    || keyval == GDK_KEY_A || keyval == GDK_KEY_a
-    || keyval == GDK_KEY_M || keyval == GDK_KEY_m
-    || keyval == GDK_KEY_Q || keyval == GDK_KEY_q
+    keyval == GDK_KEY_space || (keyval >= GDK_KEY_1 && keyval <= GDK_KEY_6)
+    || keyval == GDK_KEY_A || keyval == GDK_KEY_a || keyval == GDK_KEY_M
+    || keyval == GDK_KEY_m || keyval == GDK_KEY_Q || keyval == GDK_KEY_q
     || keyval == GDK_KEY_less || keyval == GDK_KEY_Delete
     || keyval == GDK_KEY_greater || keyval == GDK_KEY_F2
-    || keyval == GDK_KEY_KP_4 || keyval == GDK_KEY_KP_6
-    || keyval == GDK_KEY_Tab || keyval == GDK_KEY_ISO_Left_Tab)
+    || keyval == GDK_KEY_KP_4 || keyval == GDK_KEY_KP_6 || keyval == GDK_KEY_Tab
+    || keyval == GDK_KEY_ISO_Left_Tab)
     {
       g_debug ("ignoring keyval used for shortcuts");
       return false;
@@ -1927,12 +1785,10 @@ arranger_widget_on_key_press (
   /* if key was Esc, cancel any drag and adjust
    * the undo/redo stacks */
   if (
-    keyval == GDK_KEY_Escape
-    && gtk_gesture_is_active (GTK_GESTURE (self->drag)))
+    keyval == GDK_KEY_Escape && gtk_gesture_is_active (GTK_GESTURE (self->drag)))
     {
       UNDO_MANAGER->redo_stack_locked = true;
-      UndoableAction * last_action =
-        undo_manager_get_last_action (UNDO_MANAGER);
+      UndoableAction * last_action = undo_manager_get_last_action (UNDO_MANAGER);
       gtk_gesture_set_state (
         GTK_GESTURE (self->drag), GTK_EVENT_SEQUENCE_DENIED);
       UndoableAction * new_last_action =
@@ -1954,9 +1810,7 @@ arranger_widget_on_key_press (
  *   to unset/unhighlight.
  */
 void
-arranger_widget_set_highlight_rect (
-  ArrangerWidget * self,
-  GdkRectangle *   rect)
+arranger_widget_set_highlight_rect (ArrangerWidget * self, GdkRectangle * rect)
 {
   if (rect)
     {
@@ -1994,9 +1848,8 @@ click_pressed (
   self->n_press = n_press;
 
   /* set modifier button states */
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (gesture));
+  GdkModifierType state = gtk_event_controller_get_current_event_state (
+    GTK_EVENT_CONTROLLER (gesture));
   if (state & GDK_SHIFT_MASK)
     self->shift_held = 1;
   if (state & GDK_CONTROL_MASK)
@@ -2050,16 +1903,13 @@ arranger_widget_create_item (
     }
 
   /* snap it */
-  if (
-    autofilling
-    || (!self->shift_held && SNAP_GRID_ANY_SNAP (self->snap_grid)))
+  if (autofilling || (!self->shift_held && SNAP_GRID_ANY_SNAP (self->snap_grid)))
     {
       Track * track_for_snap = NULL;
       if (self->type == TYPE (TIMELINE))
         {
           track_for_snap =
-            timeline_arranger_widget_get_track_at_y (
-              self, start_y);
+            timeline_arranger_widget_get_track_at_y (self, start_y);
         }
 
       SnapGrid * sg = snap_grid_clone (self->snap_grid);
@@ -2070,8 +1920,7 @@ arranger_widget_create_item (
         }
 
       position_snap (
-        &self->earliest_obj_start_pos, &pos, track_for_snap,
-        NULL, sg);
+        &self->earliest_obj_start_pos, &pos, track_for_snap, NULL, sg);
 
       snap_grid_free (sg);
     }
@@ -2084,37 +1933,29 @@ arranger_widget_create_item (
       {
         /* figure out if we are creating a region or
          * automation point */
-        at = timeline_arranger_widget_get_at_at_y (
-          self, start_y);
-        track = timeline_arranger_widget_get_track_at_y (
-          self, start_y);
+        at = timeline_arranger_widget_get_at_at_y (self, start_y);
+        track = timeline_arranger_widget_get_track_at_y (self, start_y);
 
         GError * err = NULL;
         bool     success = true;
         if (at) /* if creating automation region */
           {
             success = timeline_arranger_widget_create_region (
-              self, REGION_TYPE_AUTOMATION, track, NULL, at,
-              &pos, &err);
+              self, REGION_TYPE_AUTOMATION, track, NULL, at, &pos, &err);
           }
         else if (track) /* else if double click inside track */
           {
             TrackLane * lane =
-              timeline_arranger_widget_get_track_lane_at_y (
-                self, start_y);
+              timeline_arranger_widget_get_track_lane_at_y (self, start_y);
             switch (track->type)
               {
               case TRACK_TYPE_INSTRUMENT:
-                success =
-                  timeline_arranger_widget_create_region (
-                    self, REGION_TYPE_MIDI, track, lane, NULL,
-                    &pos, &err);
+                success = timeline_arranger_widget_create_region (
+                  self, REGION_TYPE_MIDI, track, lane, NULL, &pos, &err);
                 break;
               case TRACK_TYPE_MIDI:
-                success =
-                  timeline_arranger_widget_create_region (
-                    self, REGION_TYPE_MIDI, track, lane, NULL,
-                    &pos, &err);
+                success = timeline_arranger_widget_create_region (
+                  self, REGION_TYPE_MIDI, track, lane, NULL, &pos, &err);
                 break;
               case TRACK_TYPE_AUDIO:
                 break;
@@ -2129,8 +1970,7 @@ arranger_widget_create_item (
               case TRACK_TYPE_AUDIO_GROUP:
                 break;
               case TRACK_TYPE_MARKER:
-                timeline_arranger_widget_create_marker (
-                  self, track, &pos);
+                timeline_arranger_widget_create_marker (self, track, &pos);
                 break;
               default:
                 /* TODO */
@@ -2139,16 +1979,14 @@ arranger_widget_create_item (
           }
         if (!success)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to create region"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to create region"));
             return;
           }
       }
       break;
     case TYPE (MIDI):
       /* find the note and region at x,y */
-      note = piano_roll_keys_widget_get_key_from_y (
-        MW_PIANO_ROLL_KEYS, start_y);
+      note = piano_roll_keys_widget_get_key_from_y (MW_PIANO_ROLL_KEYS, start_y);
       region = clip_editor_get_region (CLIP_EDITOR);
 
       /* create a note */
@@ -2163,15 +2001,13 @@ arranger_widget_create_item (
       break;
     case TYPE (CHORD):
       /* find the chord and region at x,y */
-      chord_index =
-        chord_arranger_widget_get_chord_at_y (start_y);
+      chord_index = chord_arranger_widget_get_chord_at_y (start_y);
       region = clip_editor_get_region (CLIP_EDITOR);
 
       /* create a chord object */
       if (region && chord_index < CHORD_EDITOR->num_chords)
         {
-          chord_arranger_widget_create_chord (
-            self, &pos, chord_index, region);
+          chord_arranger_widget_create_chord (self, &pos, chord_index, region);
         }
       break;
     case TYPE (AUTOMATION):
@@ -2188,8 +2024,7 @@ arranger_widget_create_item (
   if (!autofilling)
     {
       /* set the start selections */
-      ArrangerSelections * sel =
-        arranger_widget_get_selections (self);
+      ArrangerSelections * sel = arranger_widget_get_selections (self);
       g_return_if_fail (sel);
       self->sel_at_start = arranger_selections_clone (sel);
     }
@@ -2219,14 +2054,12 @@ autofill (ArrangerWidget * self, double x, double y)
   if (self->action != UI_OVERLAY_ACTION_AUTOFILLING)
     {
       self->action = UI_OVERLAY_ACTION_AUTOFILLING;
-      ArrangerSelections * sel =
-        arranger_widget_get_selections (self);
+      ArrangerSelections * sel = arranger_widget_get_selections (self);
       g_return_if_fail (sel);
 
       /* clear the actual selections to append
        * created objects */
-      arranger_selections_clear (
-        sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+      arranger_selections_clear (sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
 
       /* also clear the selections at start so we
        * can append the affected objects */
@@ -2240,13 +2073,11 @@ autofill (ArrangerWidget * self, double x, double y)
           self->sel_at_start = arranger_selections_clone (sel);
         }
 
-      ZRegion * clip_editor_region =
-        clip_editor_get_region (CLIP_EDITOR);
+      ZRegion * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
       if (clip_editor_region)
         {
-          self->region_at_start =
-            (ZRegion *) arranger_object_clone (
-              (ArrangerObject *) clip_editor_region);
+          self->region_at_start = (ZRegion *) arranger_object_clone (
+            (ArrangerObject *) clip_editor_region);
         }
       else
         {
@@ -2256,8 +2087,7 @@ autofill (ArrangerWidget * self, double x, double y)
 
   if (self->type == TYPE (MIDI_MODIFIER))
     {
-      midi_modifier_arranger_set_hit_velocity_vals (
-        self, x, y, true);
+      midi_modifier_arranger_set_hit_velocity_vals (self, x, y, true);
     }
   else if (self->type == TYPE (AUTOMATION))
     {
@@ -2269,9 +2099,8 @@ autofill (ArrangerWidget * self, double x, double y)
     }
   else
     {
-      ArrangerObject * obj =
-        arranger_widget_get_hit_arranger_object (
-          self, ARRANGER_OBJECT_TYPE_ALL, x, y);
+      ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
+        self, ARRANGER_OBJECT_TYPE_ALL, x, y);
 
       /* don't write over object */
       if (obj)
@@ -2304,8 +2133,7 @@ set_earliest_obj (ArrangerWidget * self)
 {
   g_debug ("setting earliest object...");
 
-  ArrangerSelections * sel =
-    arranger_widget_get_selections (self);
+  ArrangerSelections * sel = arranger_widget_get_selections (self);
   g_return_if_fail (sel);
   if (arranger_selections_has_any (sel))
     {
@@ -2318,8 +2146,7 @@ set_earliest_obj (ArrangerWidget * self)
       self->earliest_obj_exists = 0;
     }
 
-  g_debug (
-    "earliest object exists: %d", self->earliest_obj_exists);
+  g_debug ("earliest object exists: %d", self->earliest_obj_exists);
 }
 
 /**
@@ -2334,9 +2161,8 @@ on_drag_begin_handle_hit_object (
   const double     x,
   const double     y)
 {
-  ArrangerObject * obj =
-    arranger_widget_get_hit_arranger_object (
-      self, ARRANGER_OBJECT_TYPE_ALL, x, y);
+  ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
+    self, ARRANGER_OBJECT_TYPE_ALL, x, y);
 
   /*(void) filter_out_frozen_objects;*/
   if (!obj || arranger_object_is_frozen (obj))
@@ -2353,22 +2179,16 @@ on_drag_begin_handle_hit_object (
   self->start_pos_px = x;
 
   /* get flags */
-  bool is_fade_in_point =
-    arranger_object_is_fade_in (obj, wx, wy, 1, 0);
-  bool is_fade_out_point =
-    arranger_object_is_fade_out (obj, wx, wy, 1, 0);
-  bool is_fade_in_outer =
-    arranger_object_is_fade_in (obj, wx, wy, 0, 1);
-  bool is_fade_out_outer =
-    arranger_object_is_fade_out (obj, wx, wy, 0, 1);
+  bool is_fade_in_point = arranger_object_is_fade_in (obj, wx, wy, 1, 0);
+  bool is_fade_out_point = arranger_object_is_fade_out (obj, wx, wy, 1, 0);
+  bool is_fade_in_outer = arranger_object_is_fade_in (obj, wx, wy, 0, 1);
+  bool is_fade_out_outer = arranger_object_is_fade_out (obj, wx, wy, 0, 1);
   bool is_resize_l = arranger_object_is_resize_l (obj, wx);
   bool is_resize_r = arranger_object_is_resize_r (obj, wx);
-  bool is_resize_up =
-    arranger_object_is_resize_up (obj, wx, wy);
-  bool is_resize_loop =
-    arranger_object_is_resize_loop (obj, wy);
-  bool show_cut_lines = arranger_object_should_show_cut_lines (
-    obj, self->alt_held);
+  bool is_resize_up = arranger_object_is_resize_up (obj, wx, wy);
+  bool is_resize_loop = arranger_object_is_resize_loop (obj, wy);
+  bool show_cut_lines =
+    arranger_object_should_show_cut_lines (obj, self->alt_held);
   bool is_rename = arranger_object_is_rename (obj, wx, wy);
   bool is_selected = arranger_object_is_selected (obj);
   self->start_object_was_selected = is_selected;
@@ -2384,8 +2204,7 @@ on_drag_begin_handle_hit_object (
           if (self->ctrl_held)
             {
               /* append to selections */
-              arranger_object_select (
-                obj, F_SELECT, F_APPEND, F_PUBLISH_EVENTS);
+              arranger_object_select (obj, F_SELECT, F_APPEND, F_PUBLISH_EVENTS);
             }
           else
             {
@@ -2398,8 +2217,7 @@ on_drag_begin_handle_hit_object (
       break;
     case TOOL_CUT:
       /* only select this object */
-      arranger_object_select (
-        obj, F_SELECT, F_NO_APPEND, F_PUBLISH_EVENTS);
+      arranger_object_select (obj, F_SELECT, F_NO_APPEND, F_PUBLISH_EVENTS);
       break;
     default:
       break;
@@ -2411,8 +2229,7 @@ on_drag_begin_handle_hit_object (
     obj->type == ARRANGER_OBJECT_TYPE_REGION
     && self->drag_start_btn == GDK_BUTTON_PRIMARY)
     {
-      clip_editor_set_region (
-        CLIP_EDITOR, (ZRegion *) obj, F_PUBLISH_EVENTS);
+      clip_editor_set_region (CLIP_EDITOR, (ZRegion *) obj, F_PUBLISH_EVENTS);
 
       /* if double click bring up piano roll */
       if (self->n_press == 2 && !self->ctrl_held)
@@ -2431,8 +2248,7 @@ on_drag_begin_handle_hit_object (
       ZRegion * r = arranger_object_get_region (obj);
       if (r != cur_r)
         {
-          clip_editor_set_region (
-            CLIP_EDITOR, r, F_PUBLISH_EVENTS);
+          clip_editor_set_region (CLIP_EDITOR, r, F_PUBLISH_EVENTS);
         }
     }
   /* if open marker dialog if double click on
@@ -2441,12 +2257,10 @@ on_drag_begin_handle_hit_object (
     {
       if (self->n_press == 2 && !self->ctrl_held)
         {
-          StringEntryDialogWidget * dialog =
-            string_entry_dialog_widget_new (
-              _ ("Marker name"), obj,
-              (GenericStringGetter) arranger_object_get_name,
-              (GenericStringSetter)
-                arranger_object_set_name_with_action);
+          StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
+            _ ("Marker name"), obj,
+            (GenericStringGetter) arranger_object_get_name,
+            (GenericStringSetter) arranger_object_set_name_with_action);
           gtk_window_present (GTK_WINDOW (dialog));
           self->action = UI_OVERLAY_ACTION_NONE;
           return true;
@@ -2459,8 +2273,7 @@ on_drag_begin_handle_hit_object (
       if (self->n_press == 2 && !self->ctrl_held)
         {
           ScaleSelectorWindowWidget * scale_selector =
-            scale_selector_window_widget_new (
-              (ScaleObject *) obj);
+            scale_selector_window_widget_new ((ScaleObject *) obj);
           gtk_window_present (GTK_WINDOW (scale_selector));
           self->action = UI_OVERLAY_ACTION_NONE;
           return true;
@@ -2471,13 +2284,10 @@ on_drag_begin_handle_hit_object (
     {
       if (self->n_press == 2 && !self->ctrl_held)
         {
-          StringEntryDialogWidget * dialog =
-            string_entry_dialog_widget_new (
-              _ ("Automation value"), obj,
-              (GenericStringGetter)
-                automation_point_get_fvalue_as_string,
-              (GenericStringSetter)
-                automation_point_set_fvalue_with_action);
+          StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
+            _ ("Automation value"), obj,
+            (GenericStringGetter) automation_point_get_fvalue_as_string,
+            (GenericStringSetter) automation_point_set_fvalue_with_action);
           gtk_window_present (GTK_WINDOW (dialog));
           self->action = UI_OVERLAY_ACTION_NONE;
           return true;
@@ -2488,12 +2298,10 @@ on_drag_begin_handle_hit_object (
    * resizable */
   if (is_resize_l || is_resize_r)
     {
-      ArrangerSelections * sel =
-        arranger_widget_get_selections (self);
+      ArrangerSelections * sel = arranger_widget_get_selections (self);
 
-      bool have_unresizable =
-        arranger_selections_contains_object_with_property (
-          sel, ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH, false);
+      bool have_unresizable = arranger_selections_contains_object_with_property (
+        sel, ARRANGER_SELECTIONS_PROPERTY_HAS_LENGTH, false);
       if (have_unresizable)
         {
           ui_show_message_literal (
@@ -2504,17 +2312,13 @@ on_drag_begin_handle_hit_object (
           return false;
         }
 
-      bool have_looped =
-        arranger_selections_contains_object_with_property (
-          sel, ARRANGER_SELECTIONS_PROPERTY_HAS_LOOPED, true);
-      if (
-        (is_resize_l || is_resize_r) && !is_resize_loop
-        && have_looped)
+      bool have_looped = arranger_selections_contains_object_with_property (
+        sel, ARRANGER_SELECTIONS_PROPERTY_HAS_LOOPED, true);
+      if ((is_resize_l || is_resize_r) && !is_resize_loop && have_looped)
         {
           bool have_unloopable =
             arranger_selections_contains_object_with_property (
-              sel, ARRANGER_SELECTIONS_PROPERTY_CAN_LOOP,
-              false);
+              sel, ARRANGER_SELECTIONS_PROPERTY_CAN_LOOP, false);
           if (have_unloopable)
             {
               /* cancel resize since we have
@@ -2546,11 +2350,9 @@ on_drag_begin_handle_hit_object (
     is_fade_in_point || is_fade_in_outer || is_fade_out_point
     || is_fade_out_outer)
     {
-      ArrangerSelections * sel =
-        arranger_widget_get_selections (self);
-      bool have_unfadeable =
-        arranger_selections_contains_object_with_property (
-          sel, ARRANGER_SELECTIONS_PROPERTY_CAN_FADE, false);
+      ArrangerSelections * sel = arranger_widget_get_selections (self);
+      bool have_unfadeable = arranger_selections_contains_object_with_property (
+        sel, ARRANGER_SELECTIONS_PROPERTY_CAN_FADE, false);
       if (have_unfadeable)
         {
           /* don't fade */
@@ -2566,8 +2368,7 @@ on_drag_begin_handle_hit_object (
   g_debug ("action before");
   arranger_widget_print_action (self);
 
-  bool drum_mode =
-    arranger_widget_get_drum_mode_enabled (self);
+  bool drum_mode = arranger_widget_get_drum_mode_enabled (self);
 
   /* update arranger action */
   switch (obj->type)
@@ -2743,20 +2544,17 @@ on_drag_begin_handle_hit_object (
 
 #undef SET_ACTION
 
-  ArrangerSelections * orig_selections =
-    arranger_widget_get_selections (self);
+  ArrangerSelections * orig_selections = arranger_widget_get_selections (self);
 
   /* set index in prev lane for selected objects
    * if timeline */
   if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
     {
-      timeline_selections_set_index_in_prev_lane (
-        TL_SELECTIONS);
+      timeline_selections_set_index_in_prev_lane (TL_SELECTIONS);
     }
 
   /* clone the arranger selections at this point */
-  self->sel_at_start =
-    arranger_selections_clone (orig_selections);
+  self->sel_at_start = arranger_selections_clone (orig_selections);
 
   /* if the action is stretching, set the
    * "before_length" on each region */
@@ -2764,10 +2562,8 @@ on_drag_begin_handle_hit_object (
     orig_selections->type == ARRANGER_SELECTIONS_TYPE_TIMELINE
     && ACTION_IS (STRETCHING_R))
     {
-      TimelineSelections * sel =
-        (TimelineSelections *) orig_selections;
-      transport_prepare_audio_regions_for_stretch (
-        TRANSPORT, sel);
+      TimelineSelections * sel = (TimelineSelections *) orig_selections;
+      transport_prepare_audio_regions_for_stretch (TRANSPORT, sel);
     }
 
   return true;
@@ -2792,8 +2588,7 @@ drag_begin (
 
   self->start_x = start_x;
   self->hover_x = start_x;
-  arranger_widget_px_to_pos (
-    self, start_x, &self->start_pos, F_PADDING);
+  arranger_widget_px_to_pos (self, start_x, &self->start_pos, F_PADDING);
   self->start_y = start_y;
   self->hover_y = start_y;
   ;
@@ -2809,8 +2604,8 @@ drag_begin (
       PROJECT->last_selection = SELECTION_TYPE_EDITOR;
     }
 
-  self->drag_start_btn = gtk_gesture_single_get_current_button (
-    GTK_GESTURE_SINGLE (gesture));
+  self->drag_start_btn =
+    gtk_gesture_single_get_current_button (GTK_GESTURE_SINGLE (gesture));
   switch (self->drag_start_btn)
     {
     case GDK_BUTTON_PRIMARY:
@@ -2830,30 +2625,26 @@ drag_begin (
   /* check if selections can create links */
   self->can_link =
     TYPE_IS (TIMELINE) && TL_SELECTIONS->num_regions > 0
-    && TL_SELECTIONS->num_scale_objects == 0
-    && TL_SELECTIONS->num_markers == 0;
+    && TL_SELECTIONS->num_scale_objects == 0 && TL_SELECTIONS->num_markers == 0;
 
   if (!gtk_widget_has_focus (GTK_WIDGET (self)))
     gtk_widget_grab_focus (GTK_WIDGET (self));
 
   /* get current pos */
-  arranger_widget_px_to_pos (
-    self, self->start_x, &self->curr_pos, F_PADDING);
+  arranger_widget_px_to_pos (self, self->start_x, &self->curr_pos, F_PADDING);
 
   /* get difference with drag start pos */
-  self->curr_ticks_diff_from_start = position_get_ticks_diff (
-    &self->curr_pos, &self->start_pos, NULL);
+  self->curr_ticks_diff_from_start =
+    position_get_ticks_diff (&self->curr_pos, &self->start_pos, NULL);
 
   /* handle hit object */
-  int objects_hit =
-    on_drag_begin_handle_hit_object (self, start_x, start_y);
+  int objects_hit = on_drag_begin_handle_hit_object (self, start_x, start_y);
   g_message ("objects hit %d", objects_hit);
   arranger_widget_print_action (self);
 
   if (objects_hit)
     {
-      ArrangerSelections * sel =
-        arranger_widget_get_selections (self);
+      ArrangerSelections * sel = arranger_widget_get_selections (self);
       self->sel_at_start = arranger_selections_clone (sel);
 
       if (self->type == TYPE (MIDI))
@@ -2875,24 +2666,19 @@ drag_begin (
             {
             case TOOL_SELECT_NORMAL:
             case TOOL_SELECT_STRETCH:
-              if (
-                self->drag_start_btn == GDK_BUTTON_MIDDLE
-                || self->alt_held)
+              if (self->drag_start_btn == GDK_BUTTON_MIDDLE || self->alt_held)
                 {
-                  self->action =
-                    UI_OVERLAY_ACTION_STARTING_PANNING;
+                  self->action = UI_OVERLAY_ACTION_STARTING_PANNING;
                 }
               else
                 {
                   /* selection */
-                  self->action =
-                    UI_OVERLAY_ACTION_STARTING_SELECTION;
+                  self->action = UI_OVERLAY_ACTION_STARTING_SELECTION;
 
                   if (!self->ctrl_held)
                     {
                       /* deselect all */
-                      arranger_widget_select_all (
-                        self, false, true);
+                      arranger_widget_select_all (self, false, true);
                     }
 
                   /* set whether selecting
@@ -2909,15 +2695,13 @@ drag_begin (
                     {
                       AUDIO_SELECTIONS->has_selection = false;
                       self->action =
-                        audio_arranger_widget_get_action_on_drag_begin (
-                          self);
+                        audio_arranger_widget_get_action_on_drag_begin (self);
                     }
                 }
               break;
             case TOOL_EDIT:
               if (
-                self->type == TYPE (TIMELINE)
-                || self->type == TYPE (MIDI)
+                self->type == TYPE (TIMELINE) || self->type == TYPE (MIDI)
                 || self->type == TYPE (CHORD))
                 {
                   if (self->ctrl_held)
@@ -2944,20 +2728,16 @@ drag_begin (
               break;
             case TOOL_ERASER:
               /* delete selection */
-              self->action =
-                UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
+              self->action = UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
               break;
             case TOOL_RAMP:
               self->action = UI_OVERLAY_ACTION_STARTING_RAMP;
               break;
             case TOOL_AUDITION:
-              self->action =
-                UI_OVERLAY_ACTION_STARTING_AUDITIONING;
+              self->action = UI_OVERLAY_ACTION_STARTING_AUDITIONING;
               self->was_paused = TRANSPORT_IS_PAUSED;
-              position_set_to_pos (
-                &self->playhead_pos_at_start, PLAYHEAD);
-              transport_set_playhead_pos (
-                TRANSPORT, &self->start_pos);
+              position_set_to_pos (&self->playhead_pos_at_start, PLAYHEAD);
+              transport_set_playhead_pos (TRANSPORT, &self->start_pos);
               transport_request_roll (TRANSPORT, true);
             default:
               break;
@@ -2971,13 +2751,11 @@ drag_begin (
             case TOOL_SELECT_NORMAL:
             case TOOL_SELECT_STRETCH:
             case TOOL_EDIT:
-              arranger_widget_create_item (
-                self, start_x, start_y, false);
+              arranger_widget_create_item (self, start_x, start_y, false);
               break;
             case TOOL_ERASER:
               /* delete selection */
-              self->action =
-                UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
+              self->action = UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION;
               break;
             default:
               break;
@@ -3014,25 +2792,22 @@ select_in_range (
   bool             ignore_frozen,
   bool delete)
 {
-  ArrangerSelections * arranger_sel =
-    arranger_widget_get_selections (self);
+  ArrangerSelections * arranger_sel = arranger_widget_get_selections (self);
   g_return_if_fail (arranger_sel);
-  ArrangerSelections * prev_sel =
-    arranger_selections_clone (arranger_sel);
+  ArrangerSelections * prev_sel = arranger_selections_clone (arranger_sel);
 
   if (delete &&in_range)
     {
       GPtrArray * objs_arr = g_ptr_array_new_full (200, NULL);
-      arranger_selections_get_all_objects (
-        self->sel_to_delete, objs_arr);
+      arranger_selections_get_all_objects (self->sel_to_delete, objs_arr);
       if (ignore_frozen)
         {
           filter_out_frozen_objects (self, objs_arr);
         }
       for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = (ArrangerObject *)
-            g_ptr_array_index (objs_arr, i);
+          ArrangerObject * obj =
+            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
           obj->deleted_temporarily = false;
         }
       arranger_selections_clear (
@@ -3080,28 +2855,25 @@ select_in_range (
   /* redraw union of last rectangle and new
    * rectangle */
   GdkRectangle union_rect;
-  gdk_rectangle_union (
-    &rect, &self->last_selection_rect, &union_rect);
+  gdk_rectangle_union (&rect, &self->last_selection_rect, &union_rect);
   self->last_selection_rect = rect;
 
   switch (self->type)
     {
     case TYPE (CHORD):
       arranger_widget_get_hit_objects_in_rect (
-        self, ARRANGER_OBJECT_TYPE_CHORD_OBJECT, &rect,
-        objs_arr);
+        self, ARRANGER_OBJECT_TYPE_CHORD_OBJECT, &rect, objs_arr);
       if (ignore_frozen)
         {
           filter_out_frozen_objects (self, objs_arr);
         }
       for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = (ArrangerObject *)
-            g_ptr_array_index (objs_arr, i);
+          ArrangerObject * obj =
+            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
           if (delete)
             {
-              arranger_selections_add_object (
-                self->sel_to_delete, obj);
+              arranger_selections_add_object (self->sel_to_delete, obj);
               obj->deleted_temporarily = true;
             }
           else
@@ -3113,20 +2885,18 @@ select_in_range (
       break;
     case TYPE (AUTOMATION):
       arranger_widget_get_hit_objects_in_rect (
-        self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT, &rect,
-        objs_arr);
+        self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT, &rect, objs_arr);
       if (ignore_frozen)
         {
           filter_out_frozen_objects (self, objs_arr);
         }
       for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = (ArrangerObject *)
-            g_ptr_array_index (objs_arr, i);
+          ArrangerObject * obj =
+            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
           if (delete)
             {
-              arranger_selections_add_object (
-                self->sel_to_delete, obj);
+              arranger_selections_add_object (self->sel_to_delete, obj);
               obj->deleted_temporarily = true;
             }
           else
@@ -3145,12 +2915,11 @@ select_in_range (
         }
       for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = (ArrangerObject *)
-            g_ptr_array_index (objs_arr, i);
+          ArrangerObject * obj =
+            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
           if (delete)
             {
-              arranger_selections_add_object (
-                self->sel_to_delete, obj);
+              arranger_selections_add_object (self->sel_to_delete, obj);
               obj->deleted_temporarily = true;
             }
           else
@@ -3163,20 +2932,18 @@ select_in_range (
 
       g_ptr_array_remove_range (objs_arr, 0, objs_arr->len);
       arranger_widget_get_hit_objects_in_rect (
-        self, ARRANGER_OBJECT_TYPE_SCALE_OBJECT, &rect,
-        objs_arr);
+        self, ARRANGER_OBJECT_TYPE_SCALE_OBJECT, &rect, objs_arr);
       if (ignore_frozen)
         {
           filter_out_frozen_objects (self, objs_arr);
         }
       for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = (ArrangerObject *)
-            g_ptr_array_index (objs_arr, i);
+          ArrangerObject * obj =
+            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
           if (delete)
             {
-              arranger_selections_add_object (
-                self->sel_to_delete, obj);
+              arranger_selections_add_object (self->sel_to_delete, obj);
               obj->deleted_temporarily = true;
             }
           else
@@ -3195,14 +2962,13 @@ select_in_range (
         }
       for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = (ArrangerObject *)
-            g_ptr_array_index (objs_arr, i);
+          ArrangerObject * obj =
+            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
           if (delete)
             {
               if (arranger_object_is_deletable (obj))
                 {
-                  arranger_selections_add_object (
-                    self->sel_to_delete, obj);
+                  arranger_selections_add_object (self->sel_to_delete, obj);
                   obj->deleted_temporarily = true;
                 }
             }
@@ -3222,12 +2988,11 @@ select_in_range (
         }
       for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = (ArrangerObject *)
-            g_ptr_array_index (objs_arr, i);
+          ArrangerObject * obj =
+            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
           if (delete)
             {
-              arranger_selections_add_object (
-                self->sel_to_delete, obj);
+              arranger_selections_add_object (self->sel_to_delete, obj);
               obj->deleted_temporarily = true;
             }
           else
@@ -3238,8 +3003,7 @@ select_in_range (
         }
       midi_arranger_selections_unlisten_note_diff (
         (MidiArrangerSelections *) prev_sel,
-        (MidiArrangerSelections *)
-          arranger_widget_get_selections (self));
+        (MidiArrangerSelections *) arranger_widget_get_selections (self));
       break;
     case TYPE (MIDI_MODIFIER):
       arranger_widget_get_hit_objects_in_rect (
@@ -3250,23 +3014,21 @@ select_in_range (
         }
       for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = (ArrangerObject *)
-            g_ptr_array_index (objs_arr, i);
+          ArrangerObject * obj =
+            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
           Velocity *       vel = (Velocity *) obj;
           MidiNote *       mn = velocity_get_midi_note (vel);
           ArrangerObject * mn_obj = (ArrangerObject *) mn;
 
           if (delete)
             {
-              arranger_selections_add_object (
-                self->sel_to_delete, mn_obj);
+              arranger_selections_add_object (self->sel_to_delete, mn_obj);
               obj->deleted_temporarily = true;
             }
           else
             {
               arranger_object_select (
-                mn_obj, F_SELECT, F_APPEND,
-                F_NO_PUBLISH_EVENTS);
+                mn_obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
             }
         }
       break;
@@ -3290,18 +3052,15 @@ pan (ArrangerWidget * self, double offset_x, double offset_y)
   g_message ("panning %f %f", offset_x, offset_y);
 
   /* pan */
-  EditorSettings * settings =
-    arranger_widget_get_editor_settings (self);
+  EditorSettings * settings = arranger_widget_get_editor_settings (self);
   editor_settings_append_scroll (
     settings, (int) -offset_x, (int) -offset_y, F_VALIDATE);
 
   /* these are also affected */
-  self->last_offset_x =
-    MAX (0, self->last_offset_x - offset_x);
+  self->last_offset_x = MAX (0, self->last_offset_x - offset_x);
   self->hover_x = MAX (0, self->hover_x - offset_x);
   self->start_x = MAX (0, self->start_x - offset_x);
-  self->last_offset_y =
-    MAX (0, self->last_offset_y - offset_y);
+  self->last_offset_y = MAX (0, self->last_offset_y - offset_y);
   self->hover_y = MAX (0, self->hover_y - offset_y);
   self->start_y = MAX (0, self->start_y - offset_y);
 }
@@ -3319,22 +3078,19 @@ drag_update (
   if (
     !self->drag_update_started
     && !gtk_drag_check_threshold (
-      GTK_WIDGET (self), (int) self->start_x,
-      (int) self->start_y, (int) (self->start_x + offset_x),
-      (int) (self->start_y + offset_y)))
+      GTK_WIDGET (self), (int) self->start_x, (int) self->start_y,
+      (int) (self->start_x + offset_x), (int) (self->start_y + offset_y)))
     {
       return;
     }
 
   self->drag_update_started = true;
 
-  ArrangerSelections * sel =
-    arranger_widget_get_selections (self);
+  ArrangerSelections * sel = arranger_widget_get_selections (self);
 
   /* state mask needs to be updated */
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (gesture));
+  GdkModifierType state = gtk_event_controller_get_current_event_state (
+    GTK_EVENT_CONTROLLER (gesture));
   if (state & GDK_SHIFT_MASK)
     self->shift_held = 1;
   else
@@ -3348,56 +3104,45 @@ drag_update (
 
   /* get current pos */
   arranger_widget_px_to_pos (
-    self, self->start_x + offset_x, &self->curr_pos,
-    F_PADDING);
+    self, self->start_x + offset_x, &self->curr_pos, F_PADDING);
 
   /* get difference with drag start pos */
-  self->curr_ticks_diff_from_start = position_get_ticks_diff (
-    &self->curr_pos, &self->start_pos, NULL);
+  self->curr_ticks_diff_from_start =
+    position_get_ticks_diff (&self->curr_pos, &self->start_pos, NULL);
 
   if (self->earliest_obj_exists)
     {
       /* add diff to the earliest object's start pos
        * and snap it, then get the diff ticks */
       Position earliest_obj_new_pos;
-      position_set_to_pos (
-        &earliest_obj_new_pos, &self->earliest_obj_start_pos);
+      position_set_to_pos (&earliest_obj_new_pos, &self->earliest_obj_start_pos);
       position_add_ticks (
-        &earliest_obj_new_pos,
-        self->curr_ticks_diff_from_start);
+        &earliest_obj_new_pos, self->curr_ticks_diff_from_start);
 
-      if (position_is_before_or_equal (
-            &earliest_obj_new_pos, &POSITION_START))
+      if (position_is_before_or_equal (&earliest_obj_new_pos, &POSITION_START))
         {
           /* stop at 0.0.0.0 */
-          position_set_to_pos (
-            &earliest_obj_new_pos, &POSITION_START);
+          position_set_to_pos (&earliest_obj_new_pos, &POSITION_START);
         }
-      else if (
-        !self->shift_held
-        && SNAP_GRID_ANY_SNAP (self->snap_grid))
+      else if (!self->shift_held && SNAP_GRID_ANY_SNAP (self->snap_grid))
         {
           Track * track_for_snap = NULL;
           if (self->type == TYPE (TIMELINE))
             {
-              track_for_snap =
-                timeline_arranger_widget_get_track_at_y (
-                  self, self->start_y + offset_y);
+              track_for_snap = timeline_arranger_widget_get_track_at_y (
+                self, self->start_y + offset_y);
             }
           position_snap (
-            &self->earliest_obj_start_pos,
-            &earliest_obj_new_pos, track_for_snap, NULL,
-            self->snap_grid);
+            &self->earliest_obj_start_pos, &earliest_obj_new_pos,
+            track_for_snap, NULL, self->snap_grid);
         }
       self->adj_ticks_diff = position_get_ticks_diff (
-        &earliest_obj_new_pos, &self->earliest_obj_start_pos,
-        NULL);
+        &earliest_obj_new_pos, &self->earliest_obj_start_pos, NULL);
     }
 
   /* if right clicking, start erasing action */
   if (
-    self->drag_start_btn == GDK_BUTTON_SECONDARY
-    && P_TOOL == TOOL_SELECT_NORMAL
+    self->drag_start_btn == GDK_BUTTON_SECONDARY && P_TOOL == TOOL_SELECT_NORMAL
     && self->action != UI_OVERLAY_ACTION_STARTING_ERASING
     && self->action != UI_OVERLAY_ACTION_ERASING)
     {
@@ -3418,16 +3163,14 @@ drag_update (
     case UI_OVERLAY_ACTION_STARTING_DELETE_SELECTION:
       self->action = UI_OVERLAY_ACTION_DELETE_SELECTING;
       {
-        arranger_selections_clear (
-          sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+        arranger_selections_clear (sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
         self->sel_to_delete = arranger_selections_clone (sel);
       }
       break;
     case UI_OVERLAY_ACTION_STARTING_ERASING:
       self->action = UI_OVERLAY_ACTION_ERASING;
       {
-        arranger_selections_clear (
-          sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+        arranger_selections_clear (sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
         self->sel_to_delete = arranger_selections_clone (sel);
       }
       break;
@@ -3435,9 +3178,7 @@ drag_update (
       if (self->alt_held && self->can_link)
         self->action = UI_OVERLAY_ACTION_MOVING_LINK;
       else if (
-        self->ctrl_held
-        && !arranger_selections_contains_unclonable_object (
-          sel))
+        self->ctrl_held && !arranger_selections_contains_unclonable_object (sel))
         self->action = UI_OVERLAY_ACTION_MOVING_COPY;
       else
         self->action = UI_OVERLAY_ACTION_MOVING;
@@ -3449,9 +3190,7 @@ drag_update (
       if (self->alt_held && self->can_link)
         self->action = UI_OVERLAY_ACTION_MOVING_LINK;
       else if (
-        self->ctrl_held
-        && !arranger_selections_contains_unclonable_object (
-          sel))
+        self->ctrl_held && !arranger_selections_contains_unclonable_object (sel))
         self->action = UI_OVERLAY_ACTION_MOVING_COPY;
       break;
     case UI_OVERLAY_ACTION_MOVING_LINK:
@@ -3497,8 +3236,7 @@ drag_update (
       {
         /* find and select objects inside selection */
         select_in_range (
-          self, offset_x, offset_y, F_IN_RANGE,
-          F_IGNORE_FROZEN, F_NO_DELETE);
+          self, offset_x, offset_y, F_IN_RANGE, F_IGNORE_FROZEN, F_NO_DELETE);
 
         /* redraw new selections and other needed
          * things */
@@ -3509,15 +3247,13 @@ drag_update (
       /* find and delete objects inside
        * selection */
       select_in_range (
-        self, offset_x, offset_y, F_IN_RANGE, F_IGNORE_FROZEN,
-        F_DELETE);
+        self, offset_x, offset_y, F_IN_RANGE, F_IGNORE_FROZEN, F_DELETE);
       EVENTS_PUSH (ET_SELECTING_IN_ARRANGER, self);
       break;
     case UI_OVERLAY_ACTION_ERASING:
       /* delete anything touched */
       select_in_range (
-        self, offset_x, offset_y, F_NOT_IN_RANGE,
-        F_IGNORE_FROZEN, F_DELETE);
+        self, offset_x, offset_y, F_NOT_IN_RANGE, F_IGNORE_FROZEN, F_DELETE);
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_FADE:
     case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
@@ -3548,16 +3284,14 @@ drag_update (
             int ret = timeline_arranger_widget_snap_regions_l (
               self, &self->curr_pos, 1);
             if (!ret)
-              timeline_arranger_widget_snap_regions_l (
-                self, &self->curr_pos, 0);
+              timeline_arranger_widget_snap_regions_l (self, &self->curr_pos, 0);
           }
         else if (self->type == TYPE (MIDI))
           {
-            int ret = midi_arranger_widget_snap_midi_notes_l (
-              self, &self->curr_pos, 1);
+            int ret =
+              midi_arranger_widget_snap_midi_notes_l (self, &self->curr_pos, 1);
             if (!ret)
-              midi_arranger_widget_snap_midi_notes_l (
-                self, &self->curr_pos, 0);
+              midi_arranger_widget_snap_midi_notes_l (self, &self->curr_pos, 0);
           }
       }
       break;
@@ -3566,13 +3300,11 @@ drag_update (
       if (self->type == TYPE (TIMELINE))
         {
           if (self->resizing_range)
-            timeline_arranger_widget_snap_range_r (
-              self, &self->curr_pos);
+            timeline_arranger_widget_snap_range_r (self, &self->curr_pos);
           else
             {
-              int ret =
-                timeline_arranger_widget_snap_regions_r (
-                  self, &self->curr_pos, F_DRY_RUN);
+              int ret = timeline_arranger_widget_snap_regions_r (
+                self, &self->curr_pos, F_DRY_RUN);
               if (!ret)
                 timeline_arranger_widget_snap_regions_r (
                   self, &self->curr_pos, F_NOT_DRY_RUN);
@@ -3595,14 +3327,12 @@ drag_update (
           {
             if (self->resizing_range)
               {
-                timeline_arranger_widget_snap_range_r (
-                  self, &self->curr_pos);
+                timeline_arranger_widget_snap_range_r (self, &self->curr_pos);
               }
             else
               {
-                int ret =
-                  timeline_arranger_widget_snap_regions_r (
-                    self, &self->curr_pos, F_DRY_RUN);
+                int ret = timeline_arranger_widget_snap_regions_r (
+                  self, &self->curr_pos, F_DRY_RUN);
                 if (!ret)
                   {
                     timeline_arranger_widget_snap_regions_r (
@@ -3625,8 +3355,7 @@ drag_update (
           {
             if (self->resizing_range)
               {
-                audio_arranger_widget_snap_range_r (
-                  self, &self->curr_pos);
+                audio_arranger_widget_snap_range_r (self, &self->curr_pos);
               }
           }
 
@@ -3636,13 +3365,11 @@ drag_update (
     case UI_OVERLAY_ACTION_RESIZING_UP:
       if (self->type == TYPE (MIDI_MODIFIER))
         {
-          midi_modifier_arranger_widget_resize_velocities (
-            self, offset_y);
+          midi_modifier_arranger_widget_resize_velocities (self, offset_y);
         }
       else if (self->type == TYPE (AUTOMATION))
         {
-          automation_arranger_widget_resize_curves (
-            self, offset_y);
+          automation_arranger_widget_resize_curves (self, offset_y);
         }
       else if (self->type == TYPE (AUDIO))
         {
@@ -3652,8 +3379,7 @@ drag_update (
     case UI_OVERLAY_ACTION_RESIZING_UP_FADE_IN:
       if (self->type == TYPE (TIMELINE))
         {
-          timeline_arranger_widget_fade_up (
-            self, offset_y, true);
+          timeline_arranger_widget_fade_up (self, offset_y, true);
         }
       else if (self->type == TYPE (AUDIO))
         {
@@ -3663,22 +3389,18 @@ drag_update (
     case UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT:
       if (self->type == TYPE (TIMELINE))
         {
-          timeline_arranger_widget_fade_up (
-            self, offset_y, false);
+          timeline_arranger_widget_fade_up (self, offset_y, false);
         }
       else if (self->type == TYPE (AUDIO))
         {
-          audio_arranger_widget_fade_up (
-            self, offset_y, false);
+          audio_arranger_widget_fade_up (self, offset_y, false);
         }
       break;
     case UI_OVERLAY_ACTION_MOVING:
     case UI_OVERLAY_ACTION_CREATING_MOVING:
     case UI_OVERLAY_ACTION_MOVING_COPY:
     case UI_OVERLAY_ACTION_MOVING_LINK:
-      move_items_x (
-        self,
-        self->adj_ticks_diff - self->last_adj_ticks_diff);
+      move_items_x (self, self->adj_ticks_diff - self->last_adj_ticks_diff);
       move_items_y (self, offset_y);
       break;
     case UI_OVERLAY_ACTION_PANNING:
@@ -3686,9 +3408,7 @@ drag_update (
       break;
     case UI_OVERLAY_ACTION_AUTOFILLING:
       g_message ("autofilling");
-      autofill (
-        self, self->start_x + offset_x,
-        self->start_y + offset_y);
+      autofill (self, self->start_x + offset_x, self->start_y + offset_y);
       break;
     case UI_OVERLAY_ACTION_AUDITIONING:
       g_debug ("auditioning");
@@ -3697,8 +3417,7 @@ drag_update (
       /* find and select objects inside selection */
       if (self->type == TYPE (MIDI_MODIFIER))
         {
-          midi_modifier_arranger_widget_ramp (
-            self, offset_x, offset_y);
+          midi_modifier_arranger_widget_ramp (self, offset_x, offset_y);
         }
       break;
     case UI_OVERLAY_ACTION_CUTTING:
@@ -3711,8 +3430,7 @@ drag_update (
 
   if (self->action != UI_OVERLAY_ACTION_NONE)
     auto_scroll (
-      self, (int) (self->start_x + offset_x),
-      (int) (self->start_y + offset_y));
+      self, (int) (self->start_x + offset_x), (int) (self->start_y + offset_y));
 
   if (self->type == TYPE (MIDI))
     {
@@ -3738,16 +3456,14 @@ handle_erase_action (ArrangerWidget * self)
     {
       if (
         arranger_selections_has_any (self->sel_to_delete)
-        && !arranger_selections_contains_undeletable_object (
-          self->sel_to_delete))
+        && !arranger_selections_contains_undeletable_object (self->sel_to_delete))
         {
           GError * err = NULL;
-          bool ret = arranger_selections_action_perform_delete (
+          bool     ret = arranger_selections_action_perform_delete (
             self->sel_to_delete, &err);
           if (!ret)
             {
-              HANDLE_ERROR (
-                err, "%s", _ ("Failed to delete selection"));
+              HANDLE_ERROR (err, "%s", _ ("Failed to delete selection"));
             }
         }
       object_free_w_func_and_null (
@@ -3763,15 +3479,12 @@ on_drag_end_automation (ArrangerWidget * self)
     case UI_OVERLAY_ACTION_RESIZING_UP:
       {
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_edit (
-          self->sel_at_start,
-          (ArrangerSelections *) AUTOMATION_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE,
-          F_ALREADY_EDITED, &err);
+        bool     ret = arranger_selections_action_perform_edit (
+          self->sel_at_start, (ArrangerSelections *) AUTOMATION_SELECTIONS,
+          ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, F_ALREADY_EDITED, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to edit selection"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to edit selection"));
           }
       }
       break;
@@ -3801,50 +3514,40 @@ on_drag_end_automation (ArrangerWidget * self)
       {
         AutomationSelections * sel_at_start =
           (AutomationSelections *) self->sel_at_start;
-        AutomationPoint * start_ap =
-          sel_at_start->automation_points[0];
-        ArrangerObject * start_obj =
-          (ArrangerObject *) start_ap;
-        AutomationPoint * ap =
-          AUTOMATION_SELECTIONS->automation_points[0];
-        ArrangerObject * obj = (ArrangerObject *) ap;
-        double           ticks_diff =
-          obj->pos.ticks - start_obj->pos.ticks;
-        double norm_value_diff =
-          (double) (ap->normalized_val
-                    - start_ap->normalized_val);
+        AutomationPoint * start_ap = sel_at_start->automation_points[0];
+        ArrangerObject *  start_obj = (ArrangerObject *) start_ap;
+        AutomationPoint * ap = AUTOMATION_SELECTIONS->automation_points[0];
+        ArrangerObject *  obj = (ArrangerObject *) ap;
+        double            ticks_diff = obj->pos.ticks - start_obj->pos.ticks;
+        double            norm_value_diff =
+          (double) (ap->normalized_val - start_ap->normalized_val);
         GError * err = NULL;
-        bool     ret =
-          arranger_selections_action_perform_move_automation (
-            AUTOMATION_SELECTIONS, ticks_diff,
-            norm_value_diff, F_ALREADY_MOVED, &err);
+        bool     ret = arranger_selections_action_perform_move_automation (
+          AUTOMATION_SELECTIONS, ticks_diff, norm_value_diff, F_ALREADY_MOVED,
+          &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to move automation"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to move automation"));
           }
       }
       break;
       /* if copy-moved */
     case UI_OVERLAY_ACTION_MOVING_COPY:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        double ticks_diff =
-          obj->pos.ticks - obj->transient->pos.ticks;
-        float value_diff =
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        double ticks_diff = obj->pos.ticks - obj->transient->pos.ticks;
+        float  value_diff =
           ((AutomationPoint *) obj)->normalized_val
           - ((AutomationPoint *) obj->transient)->normalized_val;
 
         GError * err = NULL;
         bool     ret = (UndoableAction *)
           arranger_selections_action_perform_duplicate_automation (
-            (ArrangerSelections *) AUTOMATION_SELECTIONS,
-            ticks_diff, value_diff, F_ALREADY_MOVED, &err);
+            (ArrangerSelections *) AUTOMATION_SELECTIONS, ticks_diff,
+            value_diff, F_ALREADY_MOVED, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to duplicate automation"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to duplicate automation"));
           }
       }
       break;
@@ -3852,20 +3555,19 @@ on_drag_end_automation (ArrangerWidget * self)
     case UI_OVERLAY_ACTION_STARTING_SELECTION:
       {
         arranger_selections_clear (
-          (ArrangerSelections *) AUTOMATION_SELECTIONS,
-          F_NO_FREE, F_NO_PUBLISH_EVENTS);
+          (ArrangerSelections *) AUTOMATION_SELECTIONS, F_NO_FREE,
+          F_NO_PUBLISH_EVENTS);
       }
       break;
     /* if something was created */
     case UI_OVERLAY_ACTION_CREATING_MOVING:
       {
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_create (
+        bool     ret = arranger_selections_action_perform_create (
           AUTOMATION_SELECTIONS, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to create objects"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to create objects"));
           }
       }
       break;
@@ -3875,17 +3577,14 @@ on_drag_end_automation (ArrangerWidget * self)
       break;
     case UI_OVERLAY_ACTION_AUTOFILLING:
       {
-        ZRegion * region =
-          clip_editor_get_region (CLIP_EDITOR);
+        ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
 
         GError * err = NULL;
-        bool     ret =
-          arranger_selections_action_perform_automation_fill (
-            self->region_at_start, region, true, &err);
+        bool     ret = arranger_selections_action_perform_automation_fill (
+          self->region_at_start, region, true, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to fill automation"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to fill automation"));
           }
       }
       break;
@@ -3907,15 +3606,12 @@ on_drag_end_midi_modifier (ArrangerWidget * self)
         g_return_if_fail (self->sel_at_start);
 
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_edit (
-          self->sel_at_start,
-          (ArrangerSelections *) MA_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true,
-          &err);
+        bool     ret = arranger_selections_action_perform_edit (
+          self->sel_at_start, (ArrangerSelections *) MA_SELECTIONS,
+          ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to edit selections"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to edit selections"));
           }
       }
       break;
@@ -3924,15 +3620,11 @@ on_drag_end_midi_modifier (ArrangerWidget * self)
         Position selection_start_pos, selection_end_pos;
         ui_px_to_pos_editor (
           self->start_x,
-          self->last_offset_x >= 0
-            ? &selection_start_pos
-            : &selection_end_pos,
+          self->last_offset_x >= 0 ? &selection_start_pos : &selection_end_pos,
           F_PADDING);
         ui_px_to_pos_editor (
           self->start_x + self->last_offset_x,
-          self->last_offset_x >= 0
-            ? &selection_end_pos
-            : &selection_start_pos,
+          self->last_offset_x >= 0 ? &selection_end_pos : &selection_start_pos,
           F_PADDING);
 
         /* prepare the velocities in cloned
@@ -3940,8 +3632,8 @@ on_drag_end_midi_modifier (ArrangerWidget * self)
          * vels at start */
         midi_modifier_arranger_widget_select_vels_in_range (
           self, self->last_offset_x);
-        self->sel_at_start = arranger_selections_clone (
-          (ArrangerSelections *) MA_SELECTIONS);
+        self->sel_at_start =
+          arranger_selections_clone ((ArrangerSelections *) MA_SELECTIONS);
         MidiArrangerSelections * sel_at_start =
           (MidiArrangerSelections *) self->sel_at_start;
         for (int i = 0; i < sel_at_start->num_midi_notes; i++)
@@ -3952,15 +3644,12 @@ on_drag_end_midi_modifier (ArrangerWidget * self)
           }
 
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_edit (
-          self->sel_at_start,
-          (ArrangerSelections *) MA_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true,
-          &err);
+        bool     ret = arranger_selections_action_perform_edit (
+          self->sel_at_start, (ArrangerSelections *) MA_SELECTIONS,
+          ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to edit selections"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to edit selections"));
           }
       }
       break;
@@ -3969,19 +3658,15 @@ on_drag_end_midi_modifier (ArrangerWidget * self)
       handle_erase_action (self);
       break;
     case UI_OVERLAY_ACTION_AUTOFILLING:
-      if (arranger_selections_has_any (
-            (ArrangerSelections *) MA_SELECTIONS))
+      if (arranger_selections_has_any ((ArrangerSelections *) MA_SELECTIONS))
         {
           GError * err = NULL;
-          bool ret = arranger_selections_action_perform_edit (
-            self->sel_at_start,
-            (ArrangerSelections *) MA_SELECTIONS,
-            ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true,
-            &err);
+          bool     ret = arranger_selections_action_perform_edit (
+            self->sel_at_start, (ArrangerSelections *) MA_SELECTIONS,
+            ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE, true, &err);
           if (!ret)
             {
-              HANDLE_ERROR (
-                err, "%s", _ ("Failed to edit selections"));
+              HANDLE_ERROR (err, "%s", _ ("Failed to edit selections"));
             }
         }
       break;
@@ -3999,52 +3684,44 @@ on_drag_end_midi (ArrangerWidget * self)
     {
     case UI_OVERLAY_ACTION_RESIZING_L:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        double ticks_diff =
-          obj->pos.ticks - obj->transient->pos.ticks;
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        double ticks_diff = obj->pos.ticks - obj->transient->pos.ticks;
 
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_resize (
+        bool     ret = arranger_selections_action_perform_resize (
           (ArrangerSelections *) MA_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_RESIZE_L, ticks_diff,
-          F_ALREADY_EDITED, &err);
+          ARRANGER_SELECTIONS_ACTION_RESIZE_L, ticks_diff, F_ALREADY_EDITED,
+          &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to resize objects"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to resize objects"));
           }
       }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        MidiNote * mn = (MidiNote *) obj;
-        MidiNote * mn_trans = (MidiNote *) obj->transient;
-        int        pitch_diff = mn->val - mn_trans->val;
-        double     ticks_diff =
-          obj->end_pos.ticks - obj->transient->end_pos.ticks;
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        MidiNote *       mn = (MidiNote *) obj;
+        MidiNote *       mn_trans = (MidiNote *) obj->transient;
+        int              pitch_diff = mn->val - mn_trans->val;
+        double ticks_diff = obj->end_pos.ticks - obj->transient->end_pos.ticks;
 
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_resize (
+        bool     ret = arranger_selections_action_perform_resize (
           (ArrangerSelections *) MA_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_RESIZE_R, ticks_diff,
-          F_ALREADY_EDITED, &err);
+          ARRANGER_SELECTIONS_ACTION_RESIZE_R, ticks_diff, F_ALREADY_EDITED,
+          &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to resize objects"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to resize objects"));
           }
         else if (pitch_diff)
           {
             ret = arranger_selections_action_perform_move_midi (
-              MA_SELECTIONS, 0, pitch_diff, F_ALREADY_MOVED,
-              &err);
+              MA_SELECTIONS, 0, pitch_diff, F_ALREADY_MOVED, &err);
             if (!ret)
               {
-                HANDLE_ERROR (
-                  err, "%s", _ ("Failed to move MIDI notes"));
+                HANDLE_ERROR (err, "%s", _ ("Failed to move MIDI notes"));
               }
             else
               {
@@ -4061,9 +3738,7 @@ on_drag_end_midi (ArrangerWidget * self)
        * moving*/
         if (self->ctrl_held)
           {
-            if (
-              self->start_object
-              && self->start_object_was_selected)
+            if (self->start_object && self->start_object_was_selected)
               {
                 /* deselect it */
                 arranger_object_select (
@@ -4075,53 +3750,42 @@ on_drag_end_midi (ArrangerWidget * self)
       break;
     case UI_OVERLAY_ACTION_MOVING:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        double ticks_diff =
-          obj->pos.ticks - obj->transient->pos.ticks;
-        int pitch_diff =
-          ((MidiNote *) obj)->val
-          - ((MidiNote *) obj->transient)->val;
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        double ticks_diff = obj->pos.ticks - obj->transient->pos.ticks;
+        int    pitch_diff =
+          ((MidiNote *) obj)->val - ((MidiNote *) obj->transient)->val;
 
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_move_midi (
-          MA_SELECTIONS, ticks_diff, pitch_diff,
-          F_ALREADY_MOVED, &err);
+        bool     ret = arranger_selections_action_perform_move_midi (
+          MA_SELECTIONS, ticks_diff, pitch_diff, F_ALREADY_MOVED, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to move MIDI notes"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to move MIDI notes"));
           }
       }
       break;
     /* if copy/link-moved */
     case UI_OVERLAY_ACTION_MOVING_COPY:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        double ticks_diff =
-          obj->pos.ticks - obj->transient->pos.ticks;
-        int pitch_diff =
-          ((MidiNote *) obj)->val
-          - ((MidiNote *) obj->transient)->val;
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        double ticks_diff = obj->pos.ticks - obj->transient->pos.ticks;
+        int    pitch_diff =
+          ((MidiNote *) obj)->val - ((MidiNote *) obj->transient)->val;
 
         GError * err = NULL;
-        bool     ret =
-          arranger_selections_action_perform_duplicate_midi (
-            (ArrangerSelections *) MA_SELECTIONS, ticks_diff,
-            pitch_diff, F_ALREADY_MOVED, &err);
+        bool     ret = arranger_selections_action_perform_duplicate_midi (
+          (ArrangerSelections *) MA_SELECTIONS, ticks_diff, pitch_diff,
+          F_ALREADY_MOVED, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to duplicate MIDI notes"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to duplicate MIDI notes"));
           }
       }
       break;
     case UI_OVERLAY_ACTION_NONE:
       {
         arranger_selections_clear (
-          (ArrangerSelections *) MA_SELECTIONS, F_NO_FREE,
-          F_NO_PUBLISH_EVENTS);
+          (ArrangerSelections *) MA_SELECTIONS, F_NO_FREE, F_NO_PUBLISH_EVENTS);
       }
       break;
     /* something was created */
@@ -4129,12 +3793,11 @@ on_drag_end_midi (ArrangerWidget * self)
     case UI_OVERLAY_ACTION_AUTOFILLING:
       {
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_create (
-          MA_SELECTIONS, &err);
+        bool     ret =
+          arranger_selections_action_perform_create (MA_SELECTIONS, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to create MIDI notes"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to create MIDI notes"));
           }
       }
       break;
@@ -4170,9 +3833,7 @@ on_drag_end_chord (ArrangerWidget * self)
          * moving*/
         if (self->ctrl_held)
           {
-            if (
-              self->start_object
-              && self->start_object_was_selected)
+            if (self->start_object && self->start_object_was_selected)
               {
                 /*[> deselect it <]*/
                 arranger_object_select (
@@ -4184,46 +3845,36 @@ on_drag_end_chord (ArrangerWidget * self)
       break;
     case UI_OVERLAY_ACTION_MOVING:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        double ticks_diff =
-          obj->pos.ticks - obj->transient->pos.ticks;
-        int chord_diff =
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        double ticks_diff = obj->pos.ticks - obj->transient->pos.ticks;
+        int    chord_diff =
           ((ChordObject *) obj)->chord_index
           - ((ChordObject *) obj->transient)->chord_index;
 
         GError * err = NULL;
-        bool     ret =
-          arranger_selections_action_perform_move_chord (
-            CHORD_SELECTIONS, ticks_diff, chord_diff,
-            F_ALREADY_MOVED, &err);
+        bool     ret = arranger_selections_action_perform_move_chord (
+          CHORD_SELECTIONS, ticks_diff, chord_diff, F_ALREADY_MOVED, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to move chords"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to move chords"));
           }
       }
       break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
     case UI_OVERLAY_ACTION_MOVING_LINK:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        double ticks_diff =
-          obj->pos.ticks - obj->transient->pos.ticks;
-        int chord_diff =
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        double ticks_diff = obj->pos.ticks - obj->transient->pos.ticks;
+        int    chord_diff =
           ((ChordObject *) obj)->chord_index
           - ((ChordObject *) obj->transient)->chord_index;
 
         GError * err = NULL;
-        bool     ret =
-          arranger_selections_action_perform_duplicate_chord (
-            CHORD_SELECTIONS, ticks_diff, chord_diff,
-            F_ALREADY_MOVED, &err);
+        bool     ret = arranger_selections_action_perform_duplicate_chord (
+          CHORD_SELECTIONS, ticks_diff, chord_diff, F_ALREADY_MOVED, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to duplicate chords"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to duplicate chords"));
           }
       }
       break;
@@ -4238,12 +3889,11 @@ on_drag_end_chord (ArrangerWidget * self)
     case UI_OVERLAY_ACTION_CREATING_MOVING:
       {
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_create (
-          CHORD_SELECTIONS, &err);
+        bool     ret =
+          arranger_selections_action_perform_create (CHORD_SELECTIONS, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to create objects"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to create objects"));
           }
       }
       break;
@@ -4271,12 +3921,10 @@ on_drag_end_audio (ArrangerWidget * self)
         if (
           AUDIO_SELECTIONS->has_selection
           && position_is_after (
-            &AUDIO_SELECTIONS->sel_start,
-            &AUDIO_SELECTIONS->sel_end))
+            &AUDIO_SELECTIONS->sel_start, &AUDIO_SELECTIONS->sel_end))
           {
             Position tmp = AUDIO_SELECTIONS->sel_start;
-            AUDIO_SELECTIONS->sel_start =
-              AUDIO_SELECTIONS->sel_end;
+            AUDIO_SELECTIONS->sel_start = AUDIO_SELECTIONS->sel_end;
             AUDIO_SELECTIONS->sel_end = tmp;
           }
       }
@@ -4284,33 +3932,29 @@ on_drag_end_audio (ArrangerWidget * self)
     case UI_OVERLAY_ACTION_RESIZING_L_FADE:
     case UI_OVERLAY_ACTION_RESIZING_R_FADE:
       {
-        ArrangerObject * obj = (ArrangerObject *)
-          clip_editor_get_region (CLIP_EDITOR);
+        ArrangerObject * obj =
+          (ArrangerObject *) clip_editor_get_region (CLIP_EDITOR);
         g_return_if_fail (IS_REGION_AND_NONNULL (obj));
-        bool is_fade_in =
-          self->action == UI_OVERLAY_ACTION_RESIZING_L_FADE;
+        bool   is_fade_in = self->action == UI_OVERLAY_ACTION_RESIZING_L_FADE;
         double ticks_diff =
-          (is_fade_in
-             ? obj->fade_in_pos.ticks
-             : obj->fade_out_pos.ticks)
+          (is_fade_in ? obj->fade_in_pos.ticks : obj->fade_out_pos.ticks)
           - self->fade_pos_at_start.ticks;
 
-        ArrangerSelections * sel = arranger_selections_new (
-          ARRANGER_SELECTIONS_TYPE_TIMELINE);
+        ArrangerSelections * sel =
+          arranger_selections_new (ARRANGER_SELECTIONS_TYPE_TIMELINE);
         arranger_selections_add_object (sel, obj);
 
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_resize (
+        bool     ret = arranger_selections_action_perform_resize (
           sel,
           is_fade_in
-            ? ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE
-            : ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE,
+                ? ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE
+                : ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE,
           ticks_diff, F_ALREADY_EDITED, &err);
         arranger_selections_free (sel);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed resizing selection"));
+            HANDLE_ERROR (err, "%s", _ ("Failed resizing selection"));
           }
       }
       break;
@@ -4318,43 +3962,36 @@ on_drag_end_audio (ArrangerWidget * self)
     case UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT:
     case UI_OVERLAY_ACTION_RESIZING_UP:
       {
-        ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
+        ZRegion *        r = clip_editor_get_region (CLIP_EDITOR);
         ArrangerObject * obj = (ArrangerObject *) r;
         g_return_if_fail (IS_REGION_AND_NONNULL (obj));
 
         /* prepare current selections */
-        ArrangerSelections * sel = arranger_selections_new (
-          ARRANGER_SELECTIONS_TYPE_TIMELINE);
+        ArrangerSelections * sel =
+          arranger_selections_new (ARRANGER_SELECTIONS_TYPE_TIMELINE);
         arranger_selections_add_object (sel, obj);
 
         ArrangerSelectionsActionEditType edit_type;
 
         /* prepare selections before */
         ArrangerSelections * sel_before =
-          arranger_selections_new (
-            ARRANGER_SELECTIONS_TYPE_TIMELINE);
-        ArrangerObject * clone_obj =
-          arranger_object_clone (obj);
+          arranger_selections_new (ARRANGER_SELECTIONS_TYPE_TIMELINE);
+        ArrangerObject * clone_obj = arranger_object_clone (obj);
         if (self->action == UI_OVERLAY_ACTION_RESIZING_UP_FADE_IN)
           {
-            clone_obj->fade_in_opts.curviness =
-              self->dval_at_start;
+            clone_obj->fade_in_opts.curviness = self->dval_at_start;
             edit_type = ARRANGER_SELECTIONS_ACTION_EDIT_FADES;
           }
-        else if (
-          self->action
-          == UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT)
+        else if (self->action == UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT)
           {
-            clone_obj->fade_out_opts.curviness =
-              self->dval_at_start;
+            clone_obj->fade_out_opts.curviness = self->dval_at_start;
             edit_type = ARRANGER_SELECTIONS_ACTION_EDIT_FADES;
           }
         else if (self->action == UI_OVERLAY_ACTION_RESIZING_UP)
           {
             ZRegion * clone_r = (ZRegion *) clone_obj;
             clone_r->gain = self->fval_at_start;
-            edit_type =
-              ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE;
+            edit_type = ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE;
           }
         else
           {
@@ -4363,14 +4000,13 @@ on_drag_end_audio (ArrangerWidget * self)
         arranger_selections_add_object (sel_before, clone_obj);
 
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_edit (
+        bool     ret = arranger_selections_action_perform_edit (
           sel_before, sel, edit_type, F_ALREADY_EDITED, &err);
         arranger_selections_free_full (sel_before);
         arranger_selections_free (sel);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to edit selection"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to edit selection"));
           }
       }
       break;
@@ -4384,8 +4020,7 @@ on_drag_end_timeline (ArrangerWidget * self)
 {
   g_debug ("drag end timeline starting...");
 
-  ArrangerSelections * sel =
-    arranger_widget_get_selections (self);
+  ArrangerSelections * sel = arranger_widget_get_selections (self);
   g_return_if_fail (sel);
 
   switch (self->action)
@@ -4394,31 +4029,26 @@ on_drag_end_timeline (ArrangerWidget * self)
     case UI_OVERLAY_ACTION_RESIZING_UP_FADE_OUT:
       {
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_edit (
-          self->sel_at_start,
-          (ArrangerSelections *) TL_SELECTIONS,
+        bool     ret = arranger_selections_action_perform_edit (
+          self->sel_at_start, (ArrangerSelections *) TL_SELECTIONS,
           ARRANGER_SELECTIONS_ACTION_EDIT_FADES, true, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s",
-              _ ("Failed to edit timeline objects"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to edit timeline objects"));
           }
       }
       break;
     case UI_OVERLAY_ACTION_RESIZING_L:
       if (!self->resizing_range)
         {
-          ArrangerObject * obj =
-            (ArrangerObject *) self->start_object;
-          double ticks_diff =
-            obj->pos.ticks - obj->transient->pos.ticks;
+          ArrangerObject * obj = (ArrangerObject *) self->start_object;
+          double ticks_diff = obj->pos.ticks - obj->transient->pos.ticks;
 
           GError * err = NULL;
-          bool ret = arranger_selections_action_perform_resize (
+          bool     ret = arranger_selections_action_perform_resize (
             (ArrangerSelections *) TL_SELECTIONS,
-            ARRANGER_SELECTIONS_ACTION_RESIZE_L, ticks_diff,
-            F_ALREADY_EDITED, &err);
+            ARRANGER_SELECTIONS_ACTION_RESIZE_L, ticks_diff, F_ALREADY_EDITED,
+            &err);
           if (!ret)
             {
               HANDLE_ERROR (
@@ -4430,16 +4060,14 @@ on_drag_end_timeline (ArrangerWidget * self)
       break;
     case UI_OVERLAY_ACTION_STRETCHING_L:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        double ticks_diff =
-          obj->pos.ticks - obj->transient->pos.ticks;
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        double ticks_diff = obj->pos.ticks - obj->transient->pos.ticks;
 
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_resize (
+        bool     ret = arranger_selections_action_perform_resize (
           (ArrangerSelections *) TL_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_STRETCH_L, ticks_diff,
-          F_ALREADY_EDITED, &err);
+          ARRANGER_SELECTIONS_ACTION_STRETCH_L, ticks_diff, F_ALREADY_EDITED,
+          &err);
         if (!ret)
           {
             HANDLE_ERROR (
@@ -4451,36 +4079,31 @@ on_drag_end_timeline (ArrangerWidget * self)
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_LOOP:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        double ticks_diff =
-          obj->pos.ticks - obj->transient->pos.ticks;
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        double ticks_diff = obj->pos.ticks - obj->transient->pos.ticks;
 
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_resize (
+        bool     ret = arranger_selections_action_perform_resize (
           (ArrangerSelections *) TL_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP,
-          ticks_diff, F_ALREADY_EDITED, &err);
+          ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP, ticks_diff,
+          F_ALREADY_EDITED, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to resize selection"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to resize selection"));
           }
       }
       break;
     case UI_OVERLAY_ACTION_RESIZING_L_FADE:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        double ticks_diff =
-          obj->fade_in_pos.ticks
-          - obj->transient->fade_in_pos.ticks;
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        double           ticks_diff =
+          obj->fade_in_pos.ticks - obj->transient->fade_in_pos.ticks;
 
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_resize (
+        bool     ret = arranger_selections_action_perform_resize (
           (ArrangerSelections *) TL_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE,
-          ticks_diff, F_ALREADY_EDITED, &err);
+          ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE, ticks_diff,
+          F_ALREADY_EDITED, &err);
         if (!ret)
           {
             HANDLE_ERROR (
@@ -4493,87 +4116,73 @@ on_drag_end_timeline (ArrangerWidget * self)
     case UI_OVERLAY_ACTION_RESIZING_R:
       if (!self->resizing_range)
         {
-          ArrangerObject * obj =
-            (ArrangerObject *) self->start_object;
-          double ticks_diff =
-            obj->end_pos.ticks - obj->transient->end_pos.ticks;
+          ArrangerObject * obj = (ArrangerObject *) self->start_object;
+          double ticks_diff = obj->end_pos.ticks - obj->transient->end_pos.ticks;
 
           GError * err = NULL;
-          bool ret = arranger_selections_action_perform_resize (
+          bool     ret = arranger_selections_action_perform_resize (
             (ArrangerSelections *) TL_SELECTIONS,
-            ARRANGER_SELECTIONS_ACTION_RESIZE_R, ticks_diff,
-            F_ALREADY_EDITED, &err);
+            ARRANGER_SELECTIONS_ACTION_RESIZE_R, ticks_diff, F_ALREADY_EDITED,
+            &err);
           if (!ret)
             {
-              HANDLE_ERROR (
-                err, "%s", _ ("Failed resizing selections"));
+              HANDLE_ERROR (err, "%s", _ ("Failed resizing selections"));
             }
         }
       break;
     case UI_OVERLAY_ACTION_STRETCHING_R:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        double ticks_diff =
-          obj->end_pos.ticks - obj->transient->end_pos.ticks;
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        double ticks_diff = obj->end_pos.ticks - obj->transient->end_pos.ticks;
         /* stretch now */
         GError * err = NULL;
         bool     success = transport_stretch_regions (
-          TRANSPORT, TL_SELECTIONS, false, 0.0, Z_F_FORCE,
-          &err);
+          TRANSPORT, TL_SELECTIONS, false, 0.0, Z_F_FORCE, &err);
         if (!success)
           {
-            HANDLE_ERROR_LITERAL (
-              err, "Failed stretching regions");
+            HANDLE_ERROR_LITERAL (err, "Failed stretching regions");
           }
 
         success = arranger_selections_action_perform_resize (
           (ArrangerSelections *) TL_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_STRETCH_R, ticks_diff,
-          F_ALREADY_EDITED, &err);
+          ARRANGER_SELECTIONS_ACTION_STRETCH_R, ticks_diff, F_ALREADY_EDITED,
+          &err);
         if (!success)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed resizing selections"));
+            HANDLE_ERROR (err, "%s", _ ("Failed resizing selections"));
           }
       }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R_LOOP:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        double ticks_diff =
-          obj->end_pos.ticks - obj->transient->end_pos.ticks;
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        double ticks_diff = obj->end_pos.ticks - obj->transient->end_pos.ticks;
 
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_resize (
+        bool     ret = arranger_selections_action_perform_resize (
           (ArrangerSelections *) TL_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP,
-          ticks_diff, F_ALREADY_EDITED, &err);
+          ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP, ticks_diff,
+          F_ALREADY_EDITED, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed resizing selections"));
+            HANDLE_ERROR (err, "%s", _ ("Failed resizing selections"));
           }
       }
       break;
     case UI_OVERLAY_ACTION_RESIZING_R_FADE:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        double ticks_diff =
-          obj->fade_out_pos.ticks
-          - obj->transient->fade_out_pos.ticks;
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        double           ticks_diff =
+          obj->fade_out_pos.ticks - obj->transient->fade_out_pos.ticks;
 
         GError * err = NULL;
-        bool ret = arranger_selections_action_perform_resize (
+        bool     ret = arranger_selections_action_perform_resize (
           (ArrangerSelections *) TL_SELECTIONS,
-          ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE,
-          ticks_diff, F_ALREADY_EDITED, &err);
+          ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE, ticks_diff,
+          F_ALREADY_EDITED, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed resizing selection"));
+            HANDLE_ERROR (err, "%s", _ ("Failed resizing selection"));
           }
       }
       break;
@@ -4586,8 +4195,7 @@ on_drag_end_timeline (ArrangerWidget * self)
             {
               /* deselect it */
               arranger_object_select (
-                self->start_object, F_NO_SELECT, F_APPEND,
-                F_PUBLISH_EVENTS);
+                self->start_object, F_NO_SELECT, F_APPEND, F_PUBLISH_EVENTS);
               g_debug ("deselecting object");
             }
         }
@@ -4601,79 +4209,64 @@ on_drag_end_timeline (ArrangerWidget * self)
           /* single click on object */
           if (self->start_object)
             {
-              if (
-                self->start_object->type
-                == ARRANGER_OBJECT_TYPE_MARKER)
+              if (self->start_object->type == ARRANGER_OBJECT_TYPE_MARKER)
                 {
                   transport_move_playhead (
-                    TRANSPORT, &self->start_object->pos,
-                    F_PANIC, F_SET_CUE_POINT,
-                    F_PUBLISH_EVENTS);
+                    TRANSPORT, &self->start_object->pos, F_PANIC,
+                    F_SET_CUE_POINT, F_PUBLISH_EVENTS);
                 }
             }
         }
       break;
     case UI_OVERLAY_ACTION_MOVING:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
         g_return_if_fail (obj && obj->transient);
-        double ticks_diff =
-          obj->pos.ticks - obj->transient->pos.ticks;
+        double ticks_diff = obj->pos.ticks - obj->transient->pos.ticks;
 
         GError * err = NULL;
-        bool     ret =
-          arranger_selections_action_perform_move_timeline (
-            TL_SELECTIONS, ticks_diff, self->visible_track_diff,
-            self->lane_diff, NULL, F_ALREADY_MOVED, &err);
+        bool     ret = arranger_selections_action_perform_move_timeline (
+          TL_SELECTIONS, ticks_diff, self->visible_track_diff, self->lane_diff,
+          NULL, F_ALREADY_MOVED, &err);
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s", _ ("Failed to move objects"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to move objects"));
           }
       }
       break;
     case UI_OVERLAY_ACTION_MOVING_COPY:
     case UI_OVERLAY_ACTION_MOVING_LINK:
       {
-        ArrangerObject * obj =
-          (ArrangerObject *) self->start_object;
-        double ticks_diff =
-          obj->pos.ticks - obj->transient->pos.ticks;
+        ArrangerObject * obj = (ArrangerObject *) self->start_object;
+        double ticks_diff = obj->pos.ticks - obj->transient->pos.ticks;
 
         GError * err = NULL;
         bool     ret;
         if (ACTION_IS (MOVING_COPY))
           {
-            ret =
-              arranger_selections_action_perform_duplicate_timeline (
-                TL_SELECTIONS, ticks_diff,
-                self->visible_track_diff, self->lane_diff,
-                NULL, F_ALREADY_MOVED, &err);
+            ret = arranger_selections_action_perform_duplicate_timeline (
+              TL_SELECTIONS, ticks_diff, self->visible_track_diff,
+              self->lane_diff, NULL, F_ALREADY_MOVED, &err);
           }
         else if (ACTION_IS (MOVING_LINK))
           {
             ret = arranger_selections_action_perform_link (
-              self->sel_at_start,
-              (ArrangerSelections *) TL_SELECTIONS,
-              ticks_diff, self->visible_track_diff,
-              self->lane_diff, F_ALREADY_MOVED, &err);
+              self->sel_at_start, (ArrangerSelections *) TL_SELECTIONS,
+              ticks_diff, self->visible_track_diff, self->lane_diff,
+              F_ALREADY_MOVED, &err);
           }
         else
           g_return_if_reached ();
 
         if (!ret)
           {
-            HANDLE_ERROR (
-              err, "%s",
-              _ ("Failed to link or copy selection"));
+            HANDLE_ERROR (err, "%s", _ ("Failed to link or copy selection"));
           }
       }
       break;
     case UI_OVERLAY_ACTION_NONE:
     case UI_OVERLAY_ACTION_STARTING_SELECTION:
-      arranger_selections_clear (
-        sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+      arranger_selections_clear (sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
       break;
     /* if something was created */
     case UI_OVERLAY_ACTION_CREATING_MOVING:
@@ -4682,12 +4275,10 @@ on_drag_end_timeline (ArrangerWidget * self)
       if (arranger_selections_has_any (sel))
         {
           GError * err = NULL;
-          bool ret = arranger_selections_action_perform_create (
-            sel, &err);
+          bool     ret = arranger_selections_action_perform_create (sel, &err);
           if (!ret)
             {
-              HANDLE_ERROR (
-                err, "%s", _ ("Failed to create objects"));
+              HANDLE_ERROR (err, "%s", _ ("Failed to create objects"));
             }
         }
       break;
@@ -4701,9 +4292,7 @@ on_drag_end_timeline (ArrangerWidget * self)
         Position cut_pos;
         position_set_to_pos (&cut_pos, &self->curr_pos);
 
-        if (
-          SNAP_GRID_ANY_SNAP (self->snap_grid)
-          && !self->shift_held)
+        if (SNAP_GRID_ANY_SNAP (self->snap_grid) && !self->shift_held)
           {
             /* keep offset is not applicable here and causes
              * errors if enabled */
@@ -4718,13 +4307,11 @@ on_drag_end_timeline (ArrangerWidget * self)
               (ArrangerSelections *) TL_SELECTIONS, &cut_pos))
           {
             GError * err = NULL;
-            bool ret = arranger_selections_action_perform_split (
-              (ArrangerSelections *) TL_SELECTIONS, &cut_pos,
-              &err);
+            bool     ret = arranger_selections_action_perform_split (
+              (ArrangerSelections *) TL_SELECTIONS, &cut_pos, &err);
             if (!ret)
               {
-                HANDLE_ERROR (
-                  err, "%s", _ ("Failed to split selection"));
+                HANDLE_ERROR (err, "%s", _ ("Failed to split selection"));
               }
           }
       }
@@ -4732,16 +4319,12 @@ on_drag_end_timeline (ArrangerWidget * self)
     case UI_OVERLAY_ACTION_RENAMING:
       {
         const char * obj_type_str =
-          arranger_object_get_type_as_string (
-            self->start_object->type);
-        char * str =
-          g_strdup_printf (_ ("%s name"), obj_type_str);
-        StringEntryDialogWidget * dialog =
-          string_entry_dialog_widget_new (
-            str, self->start_object,
-            (GenericStringGetter) arranger_object_get_name,
-            (GenericStringSetter)
-              arranger_object_set_name_with_action);
+          arranger_object_get_type_as_string (self->start_object->type);
+        char * str = g_strdup_printf (_ ("%s name"), obj_type_str);
+        StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
+          str, self->start_object,
+          (GenericStringGetter) arranger_object_get_name,
+          (GenericStringSetter) arranger_object_set_name_with_action);
         gtk_window_present (GTK_WINDOW (dialog));
         self->action = UI_OVERLAY_ACTION_NONE;
         g_free (str);
@@ -4778,16 +4361,13 @@ drag_end (
 
   /* if something was clicked with ctrl without
    * moving */
-  if (
-    ACTION_IS (STARTING_MOVING) && self->start_object
-    && self->ctrl_held)
+  if (ACTION_IS (STARTING_MOVING) && self->start_object && self->ctrl_held)
     {
       /* if was selected, deselect it */
       if (self->start_object_was_selected)
         {
           arranger_object_select (
-            self->start_object, F_NO_SELECT, F_APPEND,
-            F_PUBLISH_EVENTS);
+            self->start_object, F_NO_SELECT, F_APPEND, F_PUBLISH_EVENTS);
           g_debug ("ctrl-deselecting object");
         }
       /* if was deselected, select it */
@@ -4795,8 +4375,7 @@ drag_end (
         {
           /* select it */
           arranger_object_select (
-            self->start_object, F_SELECT, F_APPEND,
-            F_PUBLISH_EVENTS);
+            self->start_object, F_SELECT, F_APPEND, F_PUBLISH_EVENTS);
           g_debug ("ctrl-selecting object");
         }
     }
@@ -4809,15 +4388,12 @@ drag_end (
     && self->drag_start_btn == GDK_BUTTON_PRIMARY)
     {
       self->action = UI_OVERLAY_ACTION_DELETE_SELECTING;
-      ArrangerSelections * sel =
-        arranger_widget_get_selections (self);
+      ArrangerSelections * sel = arranger_widget_get_selections (self);
       g_return_if_fail (sel);
-      arranger_selections_clear (
-        sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
+      arranger_selections_clear (sel, F_NO_FREE, F_NO_PUBLISH_EVENTS);
       self->sel_to_delete = arranger_selections_clone (sel);
       select_in_range (
-        self, offset_x, offset_y, F_IN_RANGE, F_IGNORE_FROZEN,
-        F_DELETE);
+        self, offset_x, offset_y, F_IN_RANGE, F_IGNORE_FROZEN, F_DELETE);
     }
 
   /* handle audition stop */
@@ -4829,8 +4405,7 @@ drag_end (
         {
           transport_request_pause (TRANSPORT, true);
         }
-      transport_set_playhead_pos (
-        TRANSPORT, &self->playhead_pos_at_start);
+      transport_set_playhead_pos (TRANSPORT, &self->playhead_pos_at_start);
     }
 
   switch (self->type)
@@ -4861,10 +4436,9 @@ drag_end (
   if (gesture)
     {
       GdkEventSequence * sequence =
-        gtk_gesture_single_get_current_sequence (
-          GTK_GESTURE_SINGLE (gesture));
-      GdkEvent * ev = gtk_gesture_get_last_event (
-        GTK_GESTURE (gesture), sequence);
+        gtk_gesture_single_get_current_sequence (GTK_GESTURE_SINGLE (gesture));
+      GdkEvent * ev =
+        gtk_gesture_get_last_event (GTK_GESTURE (gesture), sequence);
       guint btn;
       if (
         ev
@@ -4877,8 +4451,7 @@ drag_end (
             && self->action != UI_OVERLAY_ACTION_ERASING)
             {
               show_context_menu (
-                self, self->start_x + offset_x,
-                self->start_y + offset_y);
+                self, self->start_x + offset_x, self->start_y + offset_y);
             }
         }
     }
@@ -4903,8 +4476,7 @@ drag_end (
     }
   if (self->region_at_start)
     {
-      arranger_object_free (
-        (ArrangerObject *) self->region_at_start);
+      arranger_object_free ((ArrangerObject *) self->region_at_start);
       self->region_at_start = NULL;
     }
 
@@ -5049,13 +4621,11 @@ arranger_widget_get_hit_arranger_object (
   double             y)
 {
   GPtrArray * objs_arr = g_ptr_array_new ();
-  arranger_widget_get_hit_objects_at_point (
-    self, type, x, y, objs_arr);
+  arranger_widget_get_hit_objects_at_point (self, type, x, y, objs_arr);
   ArrangerObject * obj = NULL;
   if (objs_arr->len > 0)
     {
-      obj = (ArrangerObject *) g_ptr_array_index (
-        objs_arr, objs_arr->len - 1);
+      obj = (ArrangerObject *) g_ptr_array_index (objs_arr, objs_arr->len - 1);
     }
 
   g_ptr_array_unref (objs_arr);
@@ -5070,10 +4640,7 @@ arranger_widget_get_hit_arranger_object (
  * type.
  */
 int
-arranger_widget_pos_to_px (
-  ArrangerWidget * self,
-  Position *       pos,
-  int              use_padding)
+arranger_widget_pos_to_px (ArrangerWidget * self, Position * pos, int use_padding)
 {
   if (self->type == TYPE (TIMELINE))
     {
@@ -5117,9 +4684,7 @@ arranger_widget_get_selections (ArrangerWidget * self)
  * Get all objects currently present in the arranger.
  */
 void
-arranger_widget_get_all_objects (
-  ArrangerWidget * self,
-  GPtrArray *      objs_arr)
+arranger_widget_get_all_objects (ArrangerWidget * self, GPtrArray * objs_arr)
 {
   RulerWidget * ruler = arranger_widget_get_ruler (self);
   GdkRectangle  rect = {
@@ -5149,13 +4714,11 @@ arranger_widget_get_total_height (ArrangerWidget * self)
         }
       else
         {
-          height =
-            gtk_widget_get_height (GTK_WIDGET (MW_TRACKLIST));
+          height = gtk_widget_get_height (GTK_WIDGET (MW_TRACKLIST));
         }
       break;
     case TYPE (MIDI):
-      height = gtk_widget_get_height (
-        GTK_WIDGET (MW_PIANO_ROLL_KEYS));
+      height = gtk_widget_get_height (GTK_WIDGET (MW_PIANO_ROLL_KEYS));
       break;
     default:
       height = gtk_widget_get_height (GTK_WIDGET (self));
@@ -5177,9 +4740,7 @@ arranger_widget_get_ruler (ArrangerWidget * self)
  * @param rect The rectangle to fill in.
  */
 void
-arranger_widget_get_visible_rect (
-  ArrangerWidget * self,
-  GdkRectangle *   rect)
+arranger_widget_get_visible_rect (ArrangerWidget * self, GdkRectangle * rect)
 {
   const EditorSettings settings =
     arranger_widget_get_editor_setting_values (self);
@@ -5238,15 +4799,12 @@ on_scroll (
   double x = self->hover_x;
   double y = self->hover_y;
 
-  g_debug (
-    "scrolled to %.1f (d %d), %.1f (d %d)", x, (int) dx, y,
-    (int) dy);
+  g_debug ("scrolled to %.1f (d %d), %.1f (d %d)", x, (int) dx, y, (int) dy);
 
   EVENTS_PUSH (ET_ARRANGER_SCROLLED, self);
 
-  GdkModifierType modifier_type =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (scroll_controller));
+  GdkModifierType modifier_type = gtk_event_controller_get_current_event_state (
+    GTK_EVENT_CONTROLLER (scroll_controller));
 
   bool ctrl_held = modifier_type & GDK_CONTROL_MASK;
   if (ctrl_held)
@@ -5273,33 +4831,26 @@ on_scroll (
        * zoom */
       else
         {
-          RulerWidget * ruler =
-            arranger_widget_get_ruler (self);
+          RulerWidget * ruler = arranger_widget_get_ruler (self);
 
           /* get current adjustment so we can get the
            * difference from the cursor */
-          EditorSettings * settings =
-            arranger_widget_get_editor_settings (self);
+          EditorSettings * settings = arranger_widget_get_editor_settings (self);
 
           /* get position of cursor */
           Position cursor_pos;
-          arranger_widget_px_to_pos (
-            self, x, &cursor_pos, F_PADDING);
+          arranger_widget_px_to_pos (self, x, &cursor_pos, F_PADDING);
           /*position_print (&cursor_pos);*/
 
           /* get px diff so we can calculate the new
            * adjustment later */
           double diff = x - (double) settings->scroll_start_x;
 
-          double scroll_multiplier =
-            (dy > 0) ? (1.0 / 1.3) : 1.3;
+          double scroll_multiplier = (dy > 0) ? (1.0 / 1.3) : 1.3;
           ruler_widget_set_zoom_level (
-            ruler,
-            ruler_widget_get_zoom_level (ruler)
-              * scroll_multiplier);
+            ruler, ruler_widget_get_zoom_level (ruler) * scroll_multiplier);
 
-          int new_x = arranger_widget_pos_to_px (
-            self, &cursor_pos, F_PADDING);
+          int new_x = arranger_widget_pos_to_px (self, &cursor_pos, F_PADDING);
 
           editor_settings_set_scroll_start_x (
             settings, new_x - (int) diff, F_VALIDATE);
@@ -5307,8 +4858,7 @@ on_scroll (
           /* refresh relevant widgets */
           if (self->type == TYPE (TIMELINE))
             {
-              timeline_minimap_widget_refresh (
-                MW_TIMELINE_MINIMAP);
+              timeline_minimap_widget_refresh (MW_TIMELINE_MINIMAP);
             }
 
           /* also update hover x since we're using it here */
@@ -5340,20 +4890,17 @@ on_scroll (
            * handle the scroll, otherwise ignore */
           if (
             self->type != TYPE (MIDI_MODIFIER)
-            && !(
-              self->type == TYPE (TIMELINE) && self->is_pinned))
+            && !(self->type == TYPE (TIMELINE) && self->is_pinned))
             {
               scroll_y = (int) dy;
             }
         }
-      EditorSettings * settings =
-        arranger_widget_get_editor_settings (self);
+      EditorSettings * settings = arranger_widget_get_editor_settings (self);
       scroll_x = scroll_x * scroll_amt;
       scroll_y = scroll_y * scroll_amt;
       int scroll_x_before = settings->scroll_start_x;
       int scroll_y_before = settings->scroll_start_y;
-      editor_settings_append_scroll (
-        settings, scroll_x, scroll_y, F_VALIDATE);
+      editor_settings_append_scroll (settings, scroll_x, scroll_y, F_VALIDATE);
 
       /* also adjust the drag offsets (in case we are currently
        * dragging */
@@ -5373,14 +4920,12 @@ on_scroll (
           else if (self->type == TYPE (MIDI))
             {
               midi_editor_space_widget_set_piano_keys_scroll_start_y (
-                MW_MIDI_EDITOR_SPACE,
-                settings->scroll_start_y);
+                MW_MIDI_EDITOR_SPACE, settings->scroll_start_y);
             }
           else if (self->type == TYPE (CHORD))
             {
               chord_editor_space_widget_set_chord_keys_scroll_start_y (
-                MW_CHORD_EDITOR_SPACE,
-                settings->scroll_start_y);
+                MW_CHORD_EDITOR_SPACE, settings->scroll_start_y);
             }
         }
     }
@@ -5389,9 +4934,7 @@ on_scroll (
 }
 
 static void
-on_leave (
-  GtkEventControllerMotion * motion_controller,
-  ArrangerWidget *           self)
+on_leave (GtkEventControllerMotion * motion_controller, ArrangerWidget * self)
 {
   switch (self->type)
     {
@@ -5430,9 +4973,8 @@ on_motion (
   self->hover_x = x;
   self->hover_y = y;
 
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (motion_controller));
+  GdkModifierType state = gtk_event_controller_get_current_event_state (
+    GTK_EVENT_CONTROLLER (motion_controller));
   if (state)
     {
       /*self->alt_held = state & GDK_ALT_MASK;*/
@@ -5441,10 +4983,8 @@ on_motion (
     }
 
   /* highlight hovered object */
-  ArrangerObject * obj =
-    arranger_widget_get_hit_arranger_object (
-      self, ARRANGER_OBJECT_TYPE_ALL, self->hover_x,
-      self->hover_y);
+  ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
+    self, ARRANGER_OBJECT_TYPE_ALL, self->hover_x, self->hover_y);
   if (obj && arranger_object_is_frozen (obj))
     {
       obj = NULL;
@@ -5452,8 +4992,7 @@ on_motion (
   if (self->hovered_object != obj)
     {
       g_warn_if_fail (
-        !self->hovered_object
-        || IS_ARRANGER_OBJECT (self->hovered_object));
+        !self->hovered_object || IS_ARRANGER_OBJECT (self->hovered_object));
       self->hovered_object = obj;
     }
 
@@ -5470,14 +5009,11 @@ on_motion (
       timeline_arranger_widget_set_cut_lines_visible (self);
       break;
     case TYPE (CHORD):
-      self->hovered_chord_index =
-        chord_arranger_widget_get_chord_at_y (y);
+      self->hovered_chord_index = chord_arranger_widget_get_chord_at_y (y);
       break;
     case TYPE (MIDI):
       midi_arranger_widget_set_hovered_note (
-        self,
-        piano_roll_keys_widget_get_key_from_y (
-          MW_PIANO_ROLL_KEYS, y));
+        self, piano_roll_keys_widget_get_key_from_y (MW_PIANO_ROLL_KEYS, y));
       break;
     default:
       break;
@@ -5487,9 +5023,7 @@ on_motion (
 }
 
 static void
-on_focus_leave (
-  GtkEventControllerFocus * focus,
-  ArrangerWidget *          self)
+on_focus_leave (GtkEventControllerFocus * focus, ArrangerWidget * self)
 {
   g_debug ("arranger focus out");
 
@@ -5528,9 +5062,7 @@ get_audio_arranger_cursor (ArrangerWidget * self, Tool tool)
   switch (action)
     {
     case UI_OVERLAY_ACTION_NONE:
-      if (
-        P_TOOL == TOOL_SELECT_NORMAL
-        || P_TOOL == TOOL_SELECT_STRETCH)
+      if (P_TOOL == TOOL_SELECT_NORMAL || P_TOOL == TOOL_SELECT_STRETCH)
         {
           /* gain line */
           if (audio_arranger_widget_is_cursor_gain (
@@ -5552,22 +5084,19 @@ get_audio_arranger_cursor (ArrangerWidget * self, Tool tool)
             }
           /* resize fade out */
           if (audio_arranger_widget_is_cursor_in_fade (
-                self, self->hover_x, self->hover_y, false,
-                true))
+                self, self->hover_x, self->hover_y, false, true))
             {
               return ARRANGER_CURSOR_RESIZING_L_FADE;
             }
           /* fade in curviness */
           if (audio_arranger_widget_is_cursor_in_fade (
-                self, self->hover_x, self->hover_y, true,
-                false))
+                self, self->hover_x, self->hover_y, true, false))
             {
               return ARRANGER_CURSOR_RESIZING_UP_FADE_IN;
             }
           /* fade out curviness */
           if (audio_arranger_widget_is_cursor_in_fade (
-                self, self->hover_x, self->hover_y, false,
-                false))
+                self, self->hover_x, self->hover_y, false, false))
             {
               return ARRANGER_CURSOR_RESIZING_UP_FADE_OUT;
             }
@@ -5636,9 +5165,7 @@ get_audio_arranger_cursor (ArrangerWidget * self, Tool tool)
 }
 
 static ArrangerCursor
-get_midi_modifier_arranger_cursor (
-  ArrangerWidget * self,
-  Tool             tool)
+get_midi_modifier_arranger_cursor (ArrangerWidget * self, Tool tool)
 {
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
@@ -5648,18 +5175,15 @@ get_midi_modifier_arranger_cursor (
     case UI_OVERLAY_ACTION_NONE:
       if (tool == TOOL_SELECT_NORMAL || tool == TOOL_SELECT_STRETCH)
         {
-          ArrangerObject * vel_obj =
-            arranger_widget_get_hit_arranger_object (
-              (ArrangerWidget *) self,
-              ARRANGER_OBJECT_TYPE_VELOCITY, self->hover_x,
-              self->hover_y);
+          ArrangerObject * vel_obj = arranger_widget_get_hit_arranger_object (
+            (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_VELOCITY,
+            self->hover_x, self->hover_y);
           int is_hit = vel_obj != NULL;
 
           if (is_hit)
             {
               int is_resize = arranger_object_is_resize_up (
-                vel_obj,
-                (int) self->hover_x - vel_obj->full_rect.x,
+                vel_obj, (int) self->hover_x - vel_obj->full_rect.x,
                 (int) self->hover_y - vel_obj->full_rect.y);
               if (is_resize)
                 {
@@ -5739,8 +5263,7 @@ get_chord_arranger_cursor (ArrangerWidget * self, Tool tool)
 
   int is_hit =
     arranger_widget_get_hit_arranger_object (
-      (ArrangerWidget *) self,
-      ARRANGER_OBJECT_TYPE_CHORD_OBJECT, self->hover_x,
+      (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_CHORD_OBJECT, self->hover_x,
       self->hover_y)
     != NULL;
 
@@ -5823,11 +5346,9 @@ get_automation_arranger_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
-  ArrangerObject * hit_obj =
-    arranger_widget_get_hit_arranger_object (
-      (ArrangerWidget *) self,
-      ARRANGER_OBJECT_TYPE_AUTOMATION_POINT, self->hover_x,
-      self->hover_y);
+  ArrangerObject * hit_obj = arranger_widget_get_hit_arranger_object (
+    (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT,
+    self->hover_x, self->hover_y);
 
   switch (action)
     {
@@ -5838,9 +5359,9 @@ get_automation_arranger_cursor (ArrangerWidget * self, Tool tool)
           {
             if (hit_obj)
               {
-                if (automation_point_is_point_hit (
-                      (AutomationPoint *) hit_obj,
-                      self->hover_x, self->hover_y))
+                if (
+                  automation_point_is_point_hit (
+                    (AutomationPoint *) hit_obj, self->hover_x, self->hover_y))
                   {
                     return ARRANGER_CURSOR_GRAB;
                   }
@@ -5929,19 +5450,15 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
-  ArrangerObject * r_obj =
-    arranger_widget_get_hit_arranger_object (
-      (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_REGION,
-      self->hover_x, self->hover_y);
-  ArrangerObject * s_obj =
-    arranger_widget_get_hit_arranger_object (
-      (ArrangerWidget *) self,
-      ARRANGER_OBJECT_TYPE_SCALE_OBJECT, self->hover_x,
-      self->hover_y);
-  ArrangerObject * m_obj =
-    arranger_widget_get_hit_arranger_object (
-      (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_MARKER,
-      self->hover_x, self->hover_y);
+  ArrangerObject * r_obj = arranger_widget_get_hit_arranger_object (
+    (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_REGION, self->hover_x,
+    self->hover_y);
+  ArrangerObject * s_obj = arranger_widget_get_hit_arranger_object (
+    (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_SCALE_OBJECT, self->hover_x,
+    self->hover_y);
+  ArrangerObject * m_obj = arranger_widget_get_hit_arranger_object (
+    (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_MARKER, self->hover_x,
+    self->hover_y);
 
   if (r_obj && arranger_object_is_frozen (r_obj))
     {
@@ -5971,31 +5488,21 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
                   {
                     if (self->alt_held)
                       return ARRANGER_CURSOR_CUT;
-                    int wx =
-                      (int) self->hover_x - r_obj->full_rect.x;
-                    int wy =
-                      (int) self->hover_y - r_obj->full_rect.y;
+                    int wx = (int) self->hover_x - r_obj->full_rect.x;
+                    int wy = (int) self->hover_y - r_obj->full_rect.y;
                     int is_fade_in_point =
-                      arranger_object_is_fade_in (
-                        r_obj, wx, wy, 1, 0);
+                      arranger_object_is_fade_in (r_obj, wx, wy, 1, 0);
                     int is_fade_out_point =
-                      arranger_object_is_fade_out (
-                        r_obj, wx, wy, 1, 0);
+                      arranger_object_is_fade_out (r_obj, wx, wy, 1, 0);
                     int is_fade_in_outer_region =
-                      arranger_object_is_fade_in (
-                        r_obj, wx, wy, 0, 1);
+                      arranger_object_is_fade_in (r_obj, wx, wy, 0, 1);
                     int is_fade_out_outer_region =
-                      arranger_object_is_fade_out (
-                        r_obj, wx, wy, 0, 1);
-                    int is_resize_l =
-                      arranger_object_is_resize_l (r_obj, wx);
-                    int is_resize_r =
-                      arranger_object_is_resize_r (r_obj, wx);
+                      arranger_object_is_fade_out (r_obj, wx, wy, 0, 1);
+                    int is_resize_l = arranger_object_is_resize_l (r_obj, wx);
+                    int is_resize_r = arranger_object_is_resize_r (r_obj, wx);
                     int is_resize_loop =
-                      arranger_object_is_resize_loop (
-                        r_obj, wy);
-                    bool is_rename = arranger_object_is_rename (
-                      r_obj, wx, wy);
+                      arranger_object_is_resize_loop (r_obj, wy);
+                    bool is_rename = arranger_object_is_rename (r_obj, wx, wy);
                     if (is_fade_in_point)
                       return ARRANGER_CURSOR_FADE_IN;
                     else if (is_fade_out_point)
@@ -6034,8 +5541,7 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
             else
               {
                 Track * track =
-                  timeline_arranger_widget_get_track_at_y (
-                    self, self->hover_y);
+                  timeline_arranger_widget_get_track_at_y (self, self->hover_y);
 
                 if (track)
                   {
@@ -6169,21 +5675,19 @@ get_midi_arranger_cursor (ArrangerWidget * self, Tool tool)
   ArrangerCursor  ac = ARRANGER_CURSOR_SELECT;
   UiOverlayAction action = self->action;
 
-  ArrangerObject * obj =
-    arranger_widget_get_hit_arranger_object (
-      (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_MIDI_NOTE,
-      self->hover_x, self->hover_y);
+  ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
+    (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_MIDI_NOTE, self->hover_x,
+    self->hover_y);
   int is_hit = obj != NULL;
 
-  bool drum_mode =
-    arranger_widget_get_drum_mode_enabled (self);
+  bool drum_mode = arranger_widget_get_drum_mode_enabled (self);
 
   switch (action)
     {
     case UI_OVERLAY_ACTION_NONE:
       if (
-        tool == TOOL_SELECT_NORMAL
-        || tool == TOOL_SELECT_STRETCH || tool == TOOL_EDIT)
+        tool == TOOL_SELECT_NORMAL || tool == TOOL_SELECT_STRETCH
+        || tool == TOOL_EDIT)
         {
           int is_resize_l = 0, is_resize_r = 0;
 
@@ -6335,8 +5839,8 @@ arranger_widget_toggle_selections_muted (
 {
   g_return_if_fail (arranger_object_can_mute (clicked_object));
 
-  GAction * action = g_action_map_lookup_action (
-    G_ACTION_MAP (MAIN_WINDOW), "mute-selection");
+  GAction * action =
+    g_action_map_lookup_action (G_ACTION_MAP (MAIN_WINDOW), "mute-selection");
   GVariant * var = g_variant_new_string ("timeline");
   g_action_activate (action, var);
 }
@@ -6358,28 +5862,24 @@ arranger_widget_scroll_until_obj (
   int              left,
   int              padding)
 {
-  EditorSettings * settings =
-    arranger_widget_get_editor_settings (self);
+  EditorSettings * settings = arranger_widget_get_editor_settings (self);
   g_return_if_fail (settings);
 
   int width = gtk_widget_get_width (GTK_WIDGET (self));
   int height = gtk_widget_get_height (GTK_WIDGET (self));
   if (horizontal)
     {
-      int start_px =
-        arranger_widget_pos_to_px (self, &obj->pos, 1);
-      int end_px =
-        arranger_widget_pos_to_px (self, &obj->end_pos, 1);
+      int start_px = arranger_widget_pos_to_px (self, &obj->pos, 1);
+      int end_px = arranger_widget_pos_to_px (self, &obj->end_pos, 1);
 
       /* adjust px for objects with non-global
        * positions */
       if (!arranger_object_type_has_global_pos (obj->type))
         {
-          ArrangerObject * r_obj = (ArrangerObject *)
-            clip_editor_get_region (CLIP_EDITOR);
+          ArrangerObject * r_obj =
+            (ArrangerObject *) clip_editor_get_region (CLIP_EDITOR);
           g_return_if_fail (r_obj);
-          int tmp_px =
-            arranger_widget_pos_to_px (self, &r_obj->pos, 1);
+          int tmp_px = arranger_widget_pos_to_px (self, &r_obj->pos, 1);
           start_px += tmp_px;
           end_px += tmp_px;
         }
@@ -6396,8 +5896,7 @@ arranger_widget_scroll_until_obj (
           else
             {
               int tmp = (end_px + padding) - width;
-              editor_settings_set_scroll_start_x (
-                settings, tmp, F_NO_VALIDATE);
+              editor_settings_set_scroll_start_x (settings, tmp, F_NO_VALIDATE);
             }
         }
     }
@@ -6418,8 +5917,7 @@ arranger_widget_scroll_until_obj (
           else
             {
               int tmp = (end_px + padding) - height;
-              editor_settings_set_scroll_start_y (
-                settings, tmp, F_NO_VALIDATE);
+              editor_settings_set_scroll_start_y (settings, tmp, F_NO_VALIDATE);
             }
         }
     }
@@ -6454,9 +5952,7 @@ arranger_widget_any_doing_action (void)
  * in this arranger (eg, 1.1.0.0 for timeline).
  */
 void
-arranger_widget_get_min_possible_position (
-  ArrangerWidget * self,
-  Position *       pos)
+arranger_widget_get_min_possible_position (ArrangerWidget * self, Position * pos)
 {
   switch (self->type)
     {
@@ -6469,11 +5965,9 @@ arranger_widget_get_min_possible_position (
     case TYPE (AUTOMATION):
     case TYPE (AUDIO):
       {
-        ZRegion * region =
-          clip_editor_get_region (CLIP_EDITOR);
+        ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
         g_return_if_fail (region);
-        position_set_to_pos (
-          pos, &((ArrangerObject *) region)->pos);
+        position_set_to_pos (pos, &((ArrangerObject *) region)->pos);
         position_change_sign (pos);
       }
       break;
@@ -6481,9 +5975,7 @@ arranger_widget_get_min_possible_position (
 }
 
 void
-arranger_widget_handle_playhead_auto_scroll (
-  ArrangerWidget * self,
-  bool             force)
+arranger_widget_handle_playhead_auto_scroll (ArrangerWidget * self, bool force)
 {
   if (!TRANSPORT_IS_ROLLING && !force)
     return;
@@ -6492,17 +5984,15 @@ arranger_widget_handle_playhead_auto_scroll (
   bool follow = false;
   if (self->type == ARRANGER_WIDGET_TYPE_TIMELINE)
     {
-      scroll_edges = g_settings_get_boolean (
-        S_UI, "timeline-playhead-scroll-edges");
-      follow = g_settings_get_boolean (
-        S_UI, "timeline-playhead-follow");
+      scroll_edges =
+        g_settings_get_boolean (S_UI, "timeline-playhead-scroll-edges");
+      follow = g_settings_get_boolean (S_UI, "timeline-playhead-follow");
     }
   else
     {
-      scroll_edges = g_settings_get_boolean (
-        S_UI, "editor-playhead-scroll-edges");
-      follow = g_settings_get_boolean (
-        S_UI, "editor-playhead-follow");
+      scroll_edges =
+        g_settings_get_boolean (S_UI, "editor-playhead-scroll-edges");
+      follow = g_settings_get_boolean (S_UI, "editor-playhead-follow");
     }
 
   GdkRectangle rect;
@@ -6511,8 +6001,7 @@ arranger_widget_handle_playhead_auto_scroll (
   int buffer = 5;
   int playhead_x = arranger_widget_get_playhead_px (self);
 
-  EditorSettings * settings =
-    arranger_widget_get_editor_settings (self);
+  EditorSettings * settings = arranger_widget_get_editor_settings (self);
   if (follow)
     {
       /* scroll */
@@ -6544,8 +6033,7 @@ arranger_tick_cb (
   gpointer        user_data)
 {
   ArrangerWidget * self = Z_ARRANGER_WIDGET (widget);
-  self->queued_playhead_px =
-    arranger_widget_get_playhead_px (self);
+  self->queued_playhead_px = arranger_widget_get_playhead_px (self);
 
   gtk_widget_queue_draw (widget);
 
@@ -6578,9 +6066,7 @@ arranger_widget_setup (
 {
   g_debug ("setting up arranger widget...");
 
-  g_return_if_fail (
-    self && type >= ARRANGER_WIDGET_TYPE_TIMELINE
-    && snap_grid);
+  g_return_if_fail (self && type >= ARRANGER_WIDGET_TYPE_TIMELINE && snap_grid);
   self->type = type;
   self->snap_grid = snap_grid;
 
@@ -6590,48 +6076,33 @@ arranger_widget_setup (
     {
     case TYPE (TIMELINE):
       /* make drag dest */
-      gtk_widget_add_css_class (
-        GTK_WIDGET (self), "timeline-arranger");
+      gtk_widget_add_css_class (GTK_WIDGET (self), "timeline-arranger");
       timeline_arranger_setup_drag_dest (self);
 
       /* create common textures */
-      self->symbolic_link_texture =
-        z_gdk_texture_new_from_icon_name (
-          "emblem-symbolic-link", icon_texture_size,
-          icon_texture_size, 1);
-      self->music_note_16th_texture =
-        z_gdk_texture_new_from_icon_name (
-          "music-note-16th", icon_texture_size,
-          icon_texture_size, 1);
-      self->fork_awesome_snowflake_texture =
-        z_gdk_texture_new_from_icon_name (
-          "fork-awesome-snowflake-o", icon_texture_size,
-          icon_texture_size, 1);
-      self->media_playlist_repeat_texture =
-        z_gdk_texture_new_from_icon_name (
-          "media-playlist-repeat", icon_texture_size,
-          icon_texture_size, 1);
+      self->symbolic_link_texture = z_gdk_texture_new_from_icon_name (
+        "emblem-symbolic-link", icon_texture_size, icon_texture_size, 1);
+      self->music_note_16th_texture = z_gdk_texture_new_from_icon_name (
+        "music-note-16th", icon_texture_size, icon_texture_size, 1);
+      self->fork_awesome_snowflake_texture = z_gdk_texture_new_from_icon_name (
+        "fork-awesome-snowflake-o", icon_texture_size, icon_texture_size, 1);
+      self->media_playlist_repeat_texture = z_gdk_texture_new_from_icon_name (
+        "media-playlist-repeat", icon_texture_size, icon_texture_size, 1);
       break;
     case TYPE (AUTOMATION):
-      gtk_widget_add_css_class (
-        GTK_WIDGET (self), "automation-arranger");
-      self->ap_layout =
-        z_cairo_create_pango_layout_from_string (
-          GTK_WIDGET (self), "8", PANGO_ELLIPSIZE_NONE, 0);
+      gtk_widget_add_css_class (GTK_WIDGET (self), "automation-arranger");
+      self->ap_layout = z_cairo_create_pango_layout_from_string (
+        GTK_WIDGET (self), "8", PANGO_ELLIPSIZE_NONE, 0);
       break;
     case TYPE (MIDI_MODIFIER):
-      gtk_widget_add_css_class (
-        GTK_WIDGET (self), "midi-modifier-arranger");
-      self->vel_layout =
-        z_cairo_create_pango_layout_from_string (
-          GTK_WIDGET (self), "8", PANGO_ELLIPSIZE_NONE, 0);
+      gtk_widget_add_css_class (GTK_WIDGET (self), "midi-modifier-arranger");
+      self->vel_layout = z_cairo_create_pango_layout_from_string (
+        GTK_WIDGET (self), "8", PANGO_ELLIPSIZE_NONE, 0);
       break;
     case TYPE (AUDIO):
-      gtk_widget_add_css_class (
-        GTK_WIDGET (self), "audio-arranger");
-      self->audio_layout =
-        z_cairo_create_pango_layout_from_string (
-          GTK_WIDGET (self), "8", PANGO_ELLIPSIZE_NONE, 0);
+      gtk_widget_add_css_class (GTK_WIDGET (self), "audio-arranger");
+      self->audio_layout = z_cairo_create_pango_layout_from_string (
+        GTK_WIDGET (self), "8", PANGO_ELLIPSIZE_NONE, 0);
     default:
       break;
     }
@@ -6639,39 +6110,28 @@ arranger_widget_setup (
   self->debug_layout = z_cairo_create_pango_layout_from_string (
     GTK_WIDGET (self), "8", PANGO_ELLIPSIZE_NONE, 0);
 
-  GtkEventControllerScroll * scroll_controller =
-    GTK_EVENT_CONTROLLER_SCROLL (
-      gtk_event_controller_scroll_new (
-        GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES));
+  GtkEventControllerScroll * scroll_controller = GTK_EVENT_CONTROLLER_SCROLL (
+    gtk_event_controller_scroll_new (GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES));
   g_signal_connect (
-    G_OBJECT (scroll_controller), "scroll",
-    G_CALLBACK (on_scroll), self);
+    G_OBJECT (scroll_controller), "scroll", G_CALLBACK (on_scroll), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (scroll_controller));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (scroll_controller));
 
   /* connect signals */
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-begin",
-    G_CALLBACK (drag_begin), self);
+    G_OBJECT (self->drag), "drag-begin", G_CALLBACK (drag_begin), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-update",
-    G_CALLBACK (drag_update), self);
+    G_OBJECT (self->drag), "drag-update", G_CALLBACK (drag_update), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end),
-    self);
+    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "cancel", G_CALLBACK (drag_cancel),
-    self);
+    G_OBJECT (self->drag), "cancel", G_CALLBACK (drag_cancel), self);
   g_signal_connect (
-    G_OBJECT (self->click), "pressed",
-    G_CALLBACK (click_pressed), self);
+    G_OBJECT (self->click), "pressed", G_CALLBACK (click_pressed), self);
   g_signal_connect (
-    G_OBJECT (self->click), "stopped",
-    G_CALLBACK (click_stopped), self);
+    G_OBJECT (self->click), "stopped", G_CALLBACK (click_stopped), self);
   g_signal_connect (
-    G_OBJECT (self->right_click), "released",
-    G_CALLBACK (on_right_click), self);
+    G_OBJECT (self->right_click), "released", G_CALLBACK (on_right_click), self);
 
   GtkEventControllerKey * key_controller =
     GTK_EVENT_CONTROLLER_KEY (gtk_event_controller_key_new ());
@@ -6685,28 +6145,20 @@ arranger_widget_setup (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (key_controller));
 
   GtkEventControllerMotion * motion_controller =
-    GTK_EVENT_CONTROLLER_MOTION (
-      gtk_event_controller_motion_new ());
+    GTK_EVENT_CONTROLLER_MOTION (gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT (motion_controller), "motion",
-    G_CALLBACK (on_motion), self);
+    G_OBJECT (motion_controller), "motion", G_CALLBACK (on_motion), self);
   g_signal_connect (
-    G_OBJECT (motion_controller), "leave",
-    G_CALLBACK (on_leave), self);
+    G_OBJECT (motion_controller), "leave", G_CALLBACK (on_leave), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (motion_controller));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (motion_controller));
 
-  GtkEventController * focus =
-    gtk_event_controller_focus_new ();
+  GtkEventController * focus = gtk_event_controller_focus_new ();
   g_signal_connect (
-    G_OBJECT (focus), "leave", G_CALLBACK (on_focus_leave),
-    self);
-  gtk_widget_add_controller (
-    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (focus));
+    G_OBJECT (focus), "leave", G_CALLBACK (on_focus_leave), self);
+  gtk_widget_add_controller (GTK_WIDGET (self), GTK_EVENT_CONTROLLER (focus));
 
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), arranger_tick_cb, self, NULL);
+  gtk_widget_add_tick_callback (GTK_WIDGET (self), arranger_tick_cb, self, NULL);
 
   gtk_widget_set_focus_on_click (GTK_WIDGET (self), true);
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
@@ -6719,41 +6171,31 @@ dispose (ArrangerWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
-  G_OBJECT_CLASS (arranger_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (arranger_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
 finalize (ArrangerWidget * self)
 {
-  object_free_w_func_and_null (
-    g_object_unref, self->vel_layout);
-  object_free_w_func_and_null (
-    g_object_unref, self->ap_layout);
-  object_free_w_func_and_null (
-    g_object_unref, self->audio_layout);
-  object_free_w_func_and_null (
-    g_object_unref, self->debug_layout);
+  object_free_w_func_and_null (g_object_unref, self->vel_layout);
+  object_free_w_func_and_null (g_object_unref, self->ap_layout);
+  object_free_w_func_and_null (g_object_unref, self->audio_layout);
+  object_free_w_func_and_null (g_object_unref, self->debug_layout);
 
-  object_free_w_func_and_null (
-    g_object_unref, self->symbolic_link_texture);
-  object_free_w_func_and_null (
-    g_object_unref, self->music_note_16th_texture);
+  object_free_w_func_and_null (g_object_unref, self->symbolic_link_texture);
+  object_free_w_func_and_null (g_object_unref, self->music_note_16th_texture);
   object_free_w_func_and_null (
     g_object_unref, self->fork_awesome_snowflake_texture);
   object_free_w_func_and_null (
     g_object_unref, self->media_playlist_repeat_texture);
 
-  object_free_w_func_and_null (
-    gsk_render_node_unref, self->loop_line_node);
+  object_free_w_func_and_null (gsk_render_node_unref, self->loop_line_node);
   object_free_w_func_and_null (
     gsk_render_node_unref, self->clip_start_line_node);
 
-  object_free_w_func_and_null (
-    g_ptr_array_unref, self->hit_objs_to_draw);
+  object_free_w_func_and_null (g_ptr_array_unref, self->hit_objs_to_draw);
 
-  G_OBJECT_CLASS (arranger_widget_parent_class)
-    ->finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (arranger_widget_parent_class)->finalize (G_OBJECT (self));
 }
 
 static void
@@ -6765,74 +6207,65 @@ arranger_widget_class_init (ArrangerWidgetClass * _klass)
 
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
   wklass->snapshot = arranger_snapshot;
-  gtk_widget_class_set_accessible_role (
-    wklass, GTK_ACCESSIBLE_ROLE_GROUP);
+  gtk_widget_class_set_accessible_role (wklass, GTK_ACCESSIBLE_ROLE_GROUP);
 
-  gtk_widget_class_set_layout_manager_type (
-    wklass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (wklass, GTK_TYPE_BIN_LAYOUT);
   gtk_widget_class_set_css_name (wklass, "arranger");
 
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_space, 0,
-    z_gtk_simple_action_shortcut_func, "s", "play-pause",
+    wklass, GDK_KEY_space, 0, z_gtk_simple_action_shortcut_func, "s",
+    "play-pause", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_space, GDK_SHIFT_MASK, z_gtk_simple_action_shortcut_func,
+    "s", "record-play", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_1, 0, z_gtk_simple_action_shortcut_func, "s", "select-mode",
     NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_space, GDK_SHIFT_MASK,
-    z_gtk_simple_action_shortcut_func, "s", "record-play",
+    wklass, GDK_KEY_2, 0, z_gtk_simple_action_shortcut_func, "s", "edit-mode",
     NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_1, 0, z_gtk_simple_action_shortcut_func,
-    "s", "select-mode", NULL);
+    wklass, GDK_KEY_3, 0, z_gtk_simple_action_shortcut_func, "s", "cut-mode",
+    NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_2, 0, z_gtk_simple_action_shortcut_func,
-    "s", "edit-mode", NULL);
+    wklass, GDK_KEY_4, 0, z_gtk_simple_action_shortcut_func, "s", "eraser-mode",
+    NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_3, 0, z_gtk_simple_action_shortcut_func,
-    "s", "cut-mode", NULL);
+    wklass, GDK_KEY_5, 0, z_gtk_simple_action_shortcut_func, "s", "ramp-mode",
+    NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_4, 0, z_gtk_simple_action_shortcut_func,
-    "s", "eraser-mode", NULL);
+    wklass, GDK_KEY_6, 0, z_gtk_simple_action_shortcut_func, "s",
+    "audition-mode", NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_5, 0, z_gtk_simple_action_shortcut_func,
-    "s", "ramp-mode", NULL);
-  gtk_widget_class_add_binding (
-    wklass, GDK_KEY_6, 0, z_gtk_simple_action_shortcut_func,
-    "s", "audition-mode", NULL);
-  gtk_widget_class_add_binding (
-    wklass, GDK_KEY_M, GDK_SHIFT_MASK,
-    z_gtk_simple_action_shortcut_func, "s",
+    wklass, GDK_KEY_M, GDK_SHIFT_MASK, z_gtk_simple_action_shortcut_func, "s",
     "mute-selection::global", NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_less, GDK_SHIFT_MASK,
-    z_gtk_simple_action_shortcut_func, "s",
-    "nudge-selection::left", NULL);
+    wklass, GDK_KEY_less, GDK_SHIFT_MASK, z_gtk_simple_action_shortcut_func,
+    "s", "nudge-selection::left", NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_greater, GDK_SHIFT_MASK,
-    z_gtk_simple_action_shortcut_func, "s",
-    "nudge-selection::right", NULL);
+    wklass, GDK_KEY_greater, GDK_SHIFT_MASK, z_gtk_simple_action_shortcut_func,
+    "s", "nudge-selection::right", NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_A, GDK_CONTROL_MASK,
-    z_gtk_simple_action_shortcut_func, "s", "select-all",
-    NULL);
+    wklass, GDK_KEY_A, GDK_CONTROL_MASK, z_gtk_simple_action_shortcut_func, "s",
+    "select-all", NULL);
   gtk_widget_class_add_binding (
     wklass, GDK_KEY_A, GDK_CONTROL_MASK | GDK_SHIFT_MASK,
-    z_gtk_simple_action_shortcut_func, "s", "clear-selection",
+    z_gtk_simple_action_shortcut_func, "s", "clear-selection", NULL);
+  gtk_widget_class_add_binding (
+    wklass, GDK_KEY_Delete, 0, z_gtk_simple_action_shortcut_func, "s", "delete",
     NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_Delete, 0,
-    z_gtk_simple_action_shortcut_func, "s", "delete", NULL);
+    wklass, GDK_KEY_Q, 0, z_gtk_simple_action_shortcut_func, "s",
+    "quick-quantize::global", NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_Q, 0, z_gtk_simple_action_shortcut_func,
-    "s", "quick-quantize::global", NULL);
+    wklass, GDK_KEY_KP_4, 0, z_gtk_simple_action_shortcut_func, "s",
+    "goto-prev-marker", NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_KP_4, 0, z_gtk_simple_action_shortcut_func,
-    "s", "goto-prev-marker", NULL);
+    wklass, GDK_KEY_KP_6, 0, z_gtk_simple_action_shortcut_func, "s",
+    "goto-next-marker", NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_KP_6, 0, z_gtk_simple_action_shortcut_func,
-    "s", "goto-next-marker", NULL);
-  gtk_widget_class_add_binding (
-    wklass, GDK_KEY_F2, 0, z_gtk_simple_action_shortcut_func,
-    "s", "rename-arranger-object", NULL);
+    wklass, GDK_KEY_F2, 0, z_gtk_simple_action_shortcut_func, "s",
+    "rename-arranger-object", NULL);
 }
 
 static void
@@ -6841,13 +6274,10 @@ arranger_widget_init (ArrangerWidget * self)
   self->first_draw = true;
 
   gtk_accessible_update_property (
-    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL,
-    "Arranger", -1);
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL, "Arranger", -1);
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   /* make widget able to focus */
   gtk_widget_set_focus_on_click (GTK_WIDGET (self), true);
@@ -6859,27 +6289,21 @@ arranger_widget_init (ArrangerWidget * self)
     GTK_EVENT_CONTROLLER (self->drag), GTK_PHASE_CAPTURE);
 
   /* allow all buttons for drag */
-  gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (self->drag), 0);
+  gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (self->drag), 0);
 
   self->click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   /* allow all buttons */
-  gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (self->click), 0);
+  gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (self->click), 0);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->click));
   gtk_event_controller_set_propagation_phase (
     GTK_EVENT_CONTROLLER (self->click), GTK_PHASE_CAPTURE);
 
-  self->right_click =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  self->right_click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->right_click));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->right_click));
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (self->right_click),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (self->right_click), GDK_BUTTON_SECONDARY);
 
-  gtk_widget_set_overflow (
-    GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
+  gtk_widget_set_overflow (GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 }

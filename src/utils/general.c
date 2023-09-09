@@ -28,8 +28,7 @@ utils_get_uint_from_bitfield_val (unsigned int bitfield)
   /* 32-bit word input to count zero bits on
    * right */
   unsigned int v = bitfield;
-  unsigned int c =
-    32; // c will be the number of zero bits on the right
+  unsigned int c = 32; // c will be the number of zero bits on the right
   v &= (unsigned int) (-(signed) (v));
   if (v)
     c--;

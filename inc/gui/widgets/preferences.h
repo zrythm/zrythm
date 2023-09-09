@@ -12,8 +12,7 @@
 
 #include <adwaita.h>
 
-#define PREFERENCES_WIDGET_TYPE \
-  (preferences_widget_get_type ())
+#define PREFERENCES_WIDGET_TYPE (preferences_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PreferencesWidget,
   preferences_widget,

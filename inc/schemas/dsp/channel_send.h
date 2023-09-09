@@ -27,27 +27,15 @@ typedef struct ChannelSend_v1
 static const cyaml_schema_field_t channel_send_fields_schema_v1[] = {
   YAML_FIELD_INT (ChannelSend_v1, schema_version),
   YAML_FIELD_INT (ChannelSend_v1, slot),
-  YAML_FIELD_MAPPING_PTR (
-    ChannelSend_v1,
-    amount,
-    port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR (
-    ChannelSend_v1,
-    enabled,
-    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (ChannelSend_v1, amount, port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (ChannelSend_v1, enabled, port_fields_schema_v1),
   YAML_FIELD_INT (ChannelSend_v1, is_sidechain),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChannelSend_v1,
-    midi_in,
-    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (ChannelSend_v1, midi_in, port_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ChannelSend_v1,
     stereo_in,
     stereo_ports_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChannelSend_v1,
-    midi_out,
-    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (ChannelSend_v1, midi_out, port_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ChannelSend_v1,
     stereo_out,
@@ -58,9 +46,7 @@ static const cyaml_schema_field_t channel_send_fields_schema_v1[] = {
 };
 
 static const cyaml_schema_value_t channel_send_schema_v1 = {
-  YAML_VALUE_PTR_NULLABLE (
-    ChannelSend_v1,
-    channel_send_fields_schema_v1),
+  YAML_VALUE_PTR_NULLABLE (ChannelSend_v1, channel_send_fields_schema_v1),
 };
 
 ChannelSend *

@@ -153,9 +153,7 @@ curve_get_fade_presets (void);
  * \ref buf.
  */
 void
-curve_algorithm_get_localized_name (
-  CurveAlgorithm algo,
-  char *         buf);
+curve_algorithm_get_localized_name (CurveAlgorithm algo, char * buf);
 
 gboolean
 curve_algorithm_get_g_settings_mapping (
@@ -178,15 +176,10 @@ curve_algorithm_set_g_settings_mapping (
  * @param start_higher Start at higher point.
  */
 HOT NONNULL double
-curve_get_normalized_y (
-  double         x,
-  CurveOptions * opts,
-  int            start_higher);
+curve_get_normalized_y (double x, CurveOptions * opts, int start_higher);
 
 PURE bool
-curve_options_are_equal (
-  const CurveOptions * a,
-  const CurveOptions * b);
+curve_options_are_equal (const CurveOptions * a, const CurveOptions * b);
 
 /**
  * @}

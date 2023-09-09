@@ -45,10 +45,7 @@ static const cyaml_schema_field_t plugin_setting_fields_schema_v1[] = {
     plugin_descriptor_fields_schema_v1),
   YAML_FIELD_INT (PluginSetting_v1, open_with_carla),
   YAML_FIELD_INT (PluginSetting_v1, force_generic_ui),
-  YAML_FIELD_ENUM (
-    PluginSetting_v1,
-    bridge_mode,
-    carla_bridge_mode_strings_v1),
+  YAML_FIELD_ENUM (PluginSetting_v1, bridge_mode, carla_bridge_mode_strings_v1),
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginSetting_v1, ui_uri),
   YAML_FIELD_INT_OPT (PluginSetting, last_instantiated_time),
   YAML_FIELD_INT_OPT (PluginSetting, num_instantiations),
@@ -57,26 +54,21 @@ static const cyaml_schema_field_t plugin_setting_fields_schema_v1[] = {
 };
 
 static const cyaml_schema_value_t plugin_setting_schema_v1 = {
-  YAML_VALUE_PTR (
-    PluginSetting_v1,
-    plugin_setting_fields_schema_v1),
+  YAML_VALUE_PTR (PluginSetting_v1, plugin_setting_fields_schema_v1),
 };
 
-static const cyaml_schema_field_t
-  plugin_settings_fields_schema_v3[] = {
-    YAML_FIELD_INT (PluginSettings_v3, schema_version),
-    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-      PluginSettings_v3,
-      settings,
-      plugin_setting_schema_v1),
+static const cyaml_schema_field_t plugin_settings_fields_schema_v3[] = {
+  YAML_FIELD_INT (PluginSettings_v3, schema_version),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    PluginSettings_v3,
+    settings,
+    plugin_setting_schema_v1),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t plugin_settings_schema_v3 = {
-  YAML_VALUE_PTR (
-    PluginSettings_v3,
-    plugin_settings_fields_schema_v3),
+  YAML_VALUE_PTR (PluginSettings_v3, plugin_settings_fields_schema_v3),
 };
 
 PluginSetting *

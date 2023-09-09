@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define TIMELINE_PANEL_WIDGET_TYPE \
-  (timeline_panel_widget_get_type ())
+#define TIMELINE_PANEL_WIDGET_TYPE (timeline_panel_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TimelinePanelWidget,
   timeline_panel_widget,
@@ -21,13 +20,12 @@ G_DECLARE_FINAL_TYPE (
   TIMELINE_PANEL_WIDGET,
   GtkBox)
 
-typedef struct _RulerWidget     RulerWidget;
-typedef struct _TracklistWidget TracklistWidget;
-typedef struct _TimelinePanelBotBoxWidget
-  TimelinePanelBotBoxWidget;
-typedef struct _TracklistHeaderWidget TracklistHeaderWidget;
-typedef struct _TimelineToolbarWidget TimelineToolbarWidget;
-typedef struct _TimelineBotBoxWidget  TimelineBotBoxWidget;
+typedef struct _RulerWidget               RulerWidget;
+typedef struct _TracklistWidget           TracklistWidget;
+typedef struct _TimelinePanelBotBoxWidget TimelinePanelBotBoxWidget;
+typedef struct _TracklistHeaderWidget     TracklistHeaderWidget;
+typedef struct _TimelineToolbarWidget     TimelineToolbarWidget;
+typedef struct _TimelineBotBoxWidget      TimelineBotBoxWidget;
 
 /**
  * @addtogroup widgets
@@ -37,8 +35,7 @@ typedef struct _TimelineBotBoxWidget  TimelineBotBoxWidget;
 
 #define MW_TIMELINE_PANEL (MW_MAIN_NOTEBOOK->timeline_panel)
 
-#define MW_TRACKLIST_SCROLL \
-  (MW_TIMELINE_PANEL->tracklist_scroll)
+#define MW_TRACKLIST_SCROLL (MW_TIMELINE_PANEL->tracklist_scroll)
 
 typedef struct _TimelinePanelWidget
 {

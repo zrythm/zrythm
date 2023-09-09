@@ -15,12 +15,7 @@
 #include <gtk/gtk.h>
 
 #define TRACK_WIDGET_TYPE (track_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  TrackWidget,
-  track_widget,
-  Z,
-  TRACK_WIDGET,
-  GtkWidget)
+G_DECLARE_FINAL_TYPE (TrackWidget, track_widget, Z, TRACK_WIDGET, GtkWidget)
 
 typedef struct _ArrangerWidget      ArrangerWidget;
 typedef struct AutomationModeWidget AutomationModeWidget;
@@ -71,15 +66,12 @@ typedef struct _TrackCanvasWidget   TrackCanvasWidget;
 #define TRACK_ICON_NAME_TEMPO "filename-bpm-amarok"
 #define TRACK_ICON_NAME_MODULATOR "modulator"
 #define TRACK_ICON_NAME_FOLD "fluentui-folder-regular"
-#define TRACK_ICON_NAME_FOLD_OPEN \
-  "fluentui-folder-open-regular"
+#define TRACK_ICON_NAME_FOLD_OPEN "fluentui-folder-open-regular"
 #define TRACK_ICON_NAME_MONITOR_AUDIO "audition"
 
-#define TRACK_ICON_IS(x, name) \
-  (string_is_equal (x, TRACK_ICON_NAME_##name))
+#define TRACK_ICON_IS(x, name) (string_is_equal (x, TRACK_ICON_NAME_##name))
 
-#define TRACK_CB_ICON_IS(name) \
-  TRACK_ICON_IS (cb->icon_name, name)
+#define TRACK_CB_ICON_IS(name) TRACK_ICON_IS (cb->icon_name, name)
 
 /**
  * Highlight location.
@@ -313,9 +305,7 @@ track_widget_on_record_toggled (TrackWidget * self);
  * objects or range.
  */
 bool
-track_widget_is_cursor_in_range_select_half (
-  TrackWidget * self,
-  double        y);
+track_widget_is_cursor_in_range_select_half (TrackWidget * self, double y);
 
 /**
  * Updates the track icons.
@@ -374,16 +364,10 @@ void
 track_widget_recreate_group_colors (TrackWidget * self);
 
 CustomButtonWidget *
-track_widget_get_hovered_button (
-  TrackWidget * self,
-  int           x,
-  int           y);
+track_widget_get_hovered_button (TrackWidget * self, int x, int y);
 
 AutomationModeWidget *
-track_widget_get_hovered_am_widget (
-  TrackWidget * self,
-  int           x,
-  int           y);
+track_widget_get_hovered_am_widget (TrackWidget * self, int x, int y);
 
 AutomationTrack *
 track_widget_get_at_at_y (TrackWidget * self, double y);

@@ -42,13 +42,11 @@ typedef struct ExtPort         ExtPort;
 
 /** Magic number to identify channels. */
 #define CHANNEL_MAGIC 8431676
-#define IS_CHANNEL(x) \
-  (((Channel *) x)->magic == CHANNEL_MAGIC)
+#define IS_CHANNEL(x) (((Channel *) x)->magic == CHANNEL_MAGIC)
 #define IS_CHANNEL_AND_NONNULL(x) (x && IS_CHANNEL (x))
 
 #define FOREACH_STRIP for (int i = 0; i < STRIP_SIZE; i++)
-#define FOREACH_AUTOMATABLE(ch) \
-  for (int i = 0; i < ch->num_automatables; i++)
+#define FOREACH_AUTOMATABLE(ch) for (int i = 0; i < ch->num_automatables; i++)
 #define MAX_FADER_AMP 1.42f
 
 #define channel_is_in_active_project(self) \
@@ -209,48 +207,20 @@ typedef struct Channel
 
 static const cyaml_schema_field_t channel_fields_schema[] = {
   YAML_FIELD_INT (Channel, schema_version),
-  YAML_FIELD_SEQUENCE_FIXED (
-    Channel,
-    midi_fx,
-    plugin_schema,
-    STRIP_SIZE),
-  YAML_FIELD_SEQUENCE_FIXED (
-    Channel,
-    inserts,
-    plugin_schema,
-    STRIP_SIZE),
-  YAML_FIELD_SEQUENCE_FIXED (
-    Channel,
-    sends,
-    channel_send_schema,
-    STRIP_SIZE),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Channel,
-    instrument,
-    plugin_fields_schema),
+  YAML_FIELD_SEQUENCE_FIXED (Channel, midi_fx, plugin_schema, STRIP_SIZE),
+  YAML_FIELD_SEQUENCE_FIXED (Channel, inserts, plugin_schema, STRIP_SIZE),
+  YAML_FIELD_SEQUENCE_FIXED (Channel, sends, channel_send_schema, STRIP_SIZE),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Channel, instrument, plugin_fields_schema),
   YAML_FIELD_MAPPING_PTR (Channel, prefader, fader_fields_schema),
   YAML_FIELD_MAPPING_PTR (Channel, fader, fader_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Channel,
-    midi_out,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Channel,
-    stereo_out,
-    stereo_ports_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Channel, midi_out, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Channel, stereo_out, stereo_ports_fields_schema),
   YAML_FIELD_UINT (Channel, has_output),
   YAML_FIELD_UINT (Channel, output_name_hash),
   YAML_FIELD_INT (Channel, track_pos),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    Channel,
-    ext_midi_ins,
-    ext_port_schema),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (Channel, ext_midi_ins, ext_port_schema),
   YAML_FIELD_INT (Channel, all_midi_ins),
-  YAML_FIELD_SEQUENCE_FIXED (
-    Channel,
-    midi_channels,
-    int_schema,
-    16),
+  YAML_FIELD_SEQUENCE_FIXED (Channel, midi_channels, int_schema, 16),
   YAML_FIELD_INT (Channel, all_midi_channels),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
     Channel,
@@ -295,10 +265,7 @@ channel_handle_recording (
  * plugin ports to the array.
  */
 void
-channel_append_ports (
-  Channel *   self,
-  GPtrArray * ports,
-  bool        include_plugins);
+channel_append_ports (Channel * self, GPtrArray * ports, bool include_plugins);
 
 NONNULL void
 channel_set_magic (Channel * self);
@@ -420,9 +387,7 @@ channel_reconnect_ext_input_ports (Channel * ch);
  * of the given type for the channel.
  */
 NONNULL AutomationTrack *
-channel_get_automation_track (
-  Channel * channel,
-  PortFlags port_flags);
+channel_get_automation_track (Channel * channel, PortFlags port_flags);
 
 /**
  * Removes a plugin at pos from the channel.
@@ -473,10 +438,7 @@ channel_get_mono_compat_enabled (Channel * self);
  * Sets whether mono compatibility is enabled.
  */
 NONNULL void
-channel_set_mono_compat_enabled (
-  Channel * self,
-  bool      enabled,
-  bool      fire_events);
+channel_set_mono_compat_enabled (Channel * self, bool enabled, bool fire_events);
 
 /**
  * Gets whether mono compatibility is enabled.
@@ -488,20 +450,14 @@ channel_get_swap_phase (Channel * self);
  * Sets whether mono compatibility is enabled.
  */
 NONNULL void
-channel_set_swap_phase (
-  Channel * self,
-  bool      enabled,
-  bool      fire_events);
+channel_set_swap_phase (Channel * self, bool enabled, bool fire_events);
 
 /**
  * Selects/deselects all plugins in the given slot
  * type.
  */
 void
-channel_select_all (
-  Channel *      self,
-  PluginSlotType type,
-  bool           select);
+channel_select_all (Channel * self, PluginSlotType type, bool select);
 
 /**
  * Sets caches for processing.
@@ -521,10 +477,7 @@ channel_set_caches (Channel * self);
  *   channel.
  */
 NONNULL_ARGS (1, 2)
-Channel * channel_clone (
-  Channel * ch,
-  Track *   track,
-  GError ** error);
+Channel * channel_clone (Channel * ch, Track * track, GError ** error);
 
 /**
  * Disconnects the channel from the processing

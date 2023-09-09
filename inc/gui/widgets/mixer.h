@@ -30,12 +30,11 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _DragDestBoxWidget DragDestBoxWidget;
-typedef struct Channel            Channel;
-typedef struct _ChannelSlotWidget ChannelSlotWidget;
-typedef struct Track              Track;
-typedef struct _AddTrackMenuButtonWidget
-  AddTrackMenuButtonWidget;
+typedef struct _DragDestBoxWidget        DragDestBoxWidget;
+typedef struct Channel                   Channel;
+typedef struct _ChannelSlotWidget        ChannelSlotWidget;
+typedef struct Track                     Track;
+typedef struct _AddTrackMenuButtonWidget AddTrackMenuButtonWidget;
 
 /**
  * @addtogroup widgets
@@ -44,12 +43,7 @@ typedef struct _AddTrackMenuButtonWidget
  */
 
 #define MIXER_WIDGET_TYPE (mixer_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  MixerWidget,
-  mixer_widget,
-  Z,
-  MIXER_WIDGET,
-  GtkBox)
+G_DECLARE_FINAL_TYPE (MixerWidget, mixer_widget, Z, MIXER_WIDGET, GtkBox)
 
 #define MW_MIXER MW_BOT_DOCK_EDGE->mixer
 

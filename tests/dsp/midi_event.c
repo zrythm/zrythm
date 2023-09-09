@@ -30,8 +30,7 @@ test_add_note_ons (void)
 
       g_assert_cmpuint (ev->time, ==, _time);
       g_assert_true (midi_is_note_on (ev->raw_buffer));
-      g_assert_cmpuint (
-        midi_get_velocity (ev->raw_buffer), ==, 121);
+      g_assert_cmpuint (midi_get_velocity (ev->raw_buffer), ==, 121);
     }
 
   test_helper_zrythm_cleanup ();
@@ -45,8 +44,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/midi_event/"
 
   g_test_add_func (
-    TEST_PREFIX "test add note ons",
-    (GTestFunc) test_add_note_ons);
+    TEST_PREFIX "test add note ons", (GTestFunc) test_add_note_ons);
 
   return g_test_run ();
 }

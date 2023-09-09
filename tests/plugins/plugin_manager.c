@@ -19,13 +19,13 @@ test_find_plugins (void)
   g_assert_nonnull (setting);
 #endif
 #ifdef HAVE_AMS_LFO
-  setting = test_plugin_manager_get_plugin_setting (
-    AMS_LFO_BUNDLE, AMS_LFO_URI, false);
+  setting =
+    test_plugin_manager_get_plugin_setting (AMS_LFO_BUNDLE, AMS_LFO_URI, false);
   g_assert_nonnull (setting);
 #endif
 #ifdef HAVE_HELM
-  setting = test_plugin_manager_get_plugin_setting (
-    HELM_BUNDLE, HELM_URI, false);
+  setting =
+    test_plugin_manager_get_plugin_setting (HELM_BUNDLE, HELM_URI, false);
   g_assert_nonnull (setting);
 #endif
 }
@@ -41,8 +41,7 @@ main (int argc, char * argv[])
 
   /* test that finding the plugins works */
   g_test_add_func (
-    TEST_PREFIX "test find plugins",
-    (GTestFunc) test_find_plugins);
+    TEST_PREFIX "test find plugins", (GTestFunc) test_find_plugins);
 
   return g_test_run ();
 }

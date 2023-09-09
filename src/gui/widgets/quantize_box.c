@@ -14,51 +14,40 @@
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-G_DEFINE_TYPE (
-  QuantizeBoxWidget,
-  quantize_box_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (QuantizeBoxWidget, quantize_box_widget, GTK_TYPE_BOX)
 
 /**
  * Sets up the QuantizeBoxWidget.
  */
 void
-quantize_box_widget_setup (
-  QuantizeBoxWidget * self,
-  QuantizeOptions *   q_opts)
+quantize_box_widget_setup (QuantizeBoxWidget * self, QuantizeOptions * q_opts)
 {
   self->q_opts = q_opts;
   if (QUANTIZE_OPTIONS_IS_EDITOR (q_opts))
     {
       gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (self->quick_quantize_btn), "s",
-        "editor");
+        GTK_ACTIONABLE (self->quick_quantize_btn), "s", "editor");
       gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (self->quantize_opts_btn), "s",
-        "editor");
+        GTK_ACTIONABLE (self->quantize_opts_btn), "s", "editor");
     }
   else if (QUANTIZE_OPTIONS_IS_TIMELINE (q_opts))
     {
       gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (self->quick_quantize_btn), "s",
-        "timeline");
+        GTK_ACTIONABLE (self->quick_quantize_btn), "s", "timeline");
       gtk_actionable_set_action_target (
-        GTK_ACTIONABLE (self->quantize_opts_btn), "s",
-        "timeline");
+        GTK_ACTIONABLE (self->quantize_opts_btn), "s", "timeline");
     }
 }
 
 static void
-quantize_box_widget_class_init (
-  QuantizeBoxWidgetClass * _klass)
+quantize_box_widget_class_init (QuantizeBoxWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "quantize_box.ui");
   gtk_widget_class_set_css_name (klass, "quantize-box");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, QuantizeBoxWidget, x)
+  gtk_widget_class_bind_template_child (klass, QuantizeBoxWidget, x)
 
   BIND_CHILD (quick_quantize_btn);
   BIND_CHILD (quantize_opts_btn);

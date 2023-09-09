@@ -59,10 +59,7 @@ system_run_cmd (const char * cmd, long ms_timer);
  *   wait.
  */
 char *
-system_get_cmd_output (
-  char ** argv,
-  long    ms_timer,
-  bool    always_wait);
+system_get_cmd_output (char ** argv, long ms_timer, bool always_wait);
 
 /**
  * Runs the given command in the background, waits

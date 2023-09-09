@@ -24,17 +24,13 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  InspectorApWidget,
-  inspector_ap_widget,
-  GTK_TYPE_GRID)
+G_DEFINE_TYPE (InspectorApWidget, inspector_ap_widget, GTK_TYPE_GRID)
 
 static void
 inspector_ap_widget_class_init (InspectorApWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (
-    GTK_WIDGET_CLASS (klass),
-    "/org/zrythm/ui/inspector_ap.ui");
+    GTK_WIDGET_CLASS (klass), "/org/zrythm/ui/inspector_ap.ui");
 
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass), InspectorApWidget, position_box);

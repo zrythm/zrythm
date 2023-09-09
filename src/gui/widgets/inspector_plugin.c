@@ -19,10 +19,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  InspectorPluginWidget,
-  inspector_plugin_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (InspectorPluginWidget, inspector_plugin_widget, GTK_TYPE_BOX)
 
 static void
 setup_color (InspectorPluginWidget * self, Track * track)
@@ -57,9 +54,8 @@ inspector_plugin_widget_show (
 
   if (set_notebook_page)
     {
-      PanelWidget * panel_widget =
-        PANEL_WIDGET (gtk_widget_get_ancestor (
-          GTK_WIDGET (self), PANEL_TYPE_WIDGET));
+      PanelWidget * panel_widget = PANEL_WIDGET (
+        gtk_widget_get_ancestor (GTK_WIDGET (self), PANEL_TYPE_WIDGET));
       g_return_if_fail (panel_widget);
       panel_widget_raise (panel_widget);
       g_debug ("raised plugin inspector");
@@ -74,8 +70,7 @@ inspector_plugin_widget_show (
     }
   else
     {
-      Track * tr = tracklist_selections_get_highest_track (
-        TRACKLIST_SELECTIONS);
+      Track * tr = tracklist_selections_get_highest_track (TRACKLIST_SELECTIONS);
       Channel * ch = track_get_channel (tr);
       if (ch)
         {
@@ -84,9 +79,7 @@ inspector_plugin_widget_show (
           if (num_pls > 0)
             {
               pl = pls[0];
-              g_message (
-                "showing info for plugin %s",
-                pl->setting->descr->name);
+              g_message ("showing info for plugin %s", pl->setting->descr->name);
             }
         }
     }
@@ -112,13 +105,10 @@ inspector_plugin_widget_show (
     self->audio_ins, FLOW_INPUT, TYPE_AUDIO, pl);
   ports_expander_widget_setup_plugin (
     self->audio_outs, FLOW_OUTPUT, TYPE_AUDIO, pl);
-  ports_expander_widget_setup_plugin (
-    self->cv_ins, FLOW_INPUT, TYPE_CV, pl);
-  ports_expander_widget_setup_plugin (
-    self->cv_outs, FLOW_OUTPUT, TYPE_CV, pl);
+  ports_expander_widget_setup_plugin (self->cv_ins, FLOW_INPUT, TYPE_CV, pl);
+  ports_expander_widget_setup_plugin (self->cv_outs, FLOW_OUTPUT, TYPE_CV, pl);
 
-  plugin_properties_expander_widget_refresh (
-    self->properties, pl);
+  plugin_properties_expander_widget_refresh (self->properties, pl);
 }
 
 InspectorPluginWidget *
@@ -127,15 +117,13 @@ inspector_plugin_widget_new (void)
   InspectorPluginWidget * self =
     g_object_new (INSPECTOR_PLUGIN_WIDGET_TYPE, NULL);
 
-  plugin_properties_expander_widget_setup (
-    self->properties, NULL);
+  plugin_properties_expander_widget_setup (self->properties, NULL);
 
   return self;
 }
 
 static void
-inspector_plugin_widget_class_init (
-  InspectorPluginWidgetClass * _klass)
+inspector_plugin_widget_class_init (InspectorPluginWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "inspector_plugin.ui");

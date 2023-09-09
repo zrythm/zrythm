@@ -22,8 +22,7 @@
  * @{
  */
 
-#define STACK_PUSH(s, element) \
-  stack_push (s, (void *) element)
+#define STACK_PUSH(s, element) stack_push (s, (void *) element)
 
 /**
  * Stack implementation.

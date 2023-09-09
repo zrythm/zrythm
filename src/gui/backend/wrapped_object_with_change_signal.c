@@ -33,8 +33,7 @@ static guint obj_signals[N_SIGNALS] = { 0 };
  * Fires the signal.
  */
 void
-wrapped_object_with_change_signal_fire (
-  WrappedObjectWithChangeSignal * self)
+wrapped_object_with_change_signal_fire (WrappedObjectWithChangeSignal * self)
 {
   g_signal_emit (self, obj_signals[SIGNAL_CHANGED], 0);
 }
@@ -47,11 +46,9 @@ wrapped_object_with_change_signal_fire (
  * This can be used with GtkCclosureExpression.
  */
 char *
-wrapped_object_with_change_signal_get_display_name (
-  void * data)
+wrapped_object_with_change_signal_get_display_name (void * data)
 {
-  g_return_val_if_fail (
-    Z_IS_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data), NULL);
+  g_return_val_if_fail (Z_IS_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data), NULL);
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
 
@@ -59,22 +56,19 @@ wrapped_object_with_change_signal_get_display_name (
     {
     case WRAPPED_OBJECT_TYPE_CHORD_PSET_PACK:
       {
-        ChordPresetPack * pack =
-          (ChordPresetPack *) wrapped_obj->obj;
+        ChordPresetPack * pack = (ChordPresetPack *) wrapped_obj->obj;
         return g_strdup (pack->name);
       }
       break;
     case WRAPPED_OBJECT_TYPE_PLUGIN_DESCR:
       {
-        PluginDescriptor * descr =
-          (PluginDescriptor *) wrapped_obj->obj;
+        PluginDescriptor * descr = (PluginDescriptor *) wrapped_obj->obj;
         return g_strdup (descr->name);
       }
       break;
     case WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET:
       {
-        ChannelSendTarget * target =
-          (ChannelSendTarget *) wrapped_obj->obj;
+        ChannelSendTarget * target = (ChannelSendTarget *) wrapped_obj->obj;
         return channel_send_target_describe (target);
       }
       break;
@@ -104,12 +98,10 @@ wrapped_object_with_change_signal_new_with_free_func (
 }
 
 WrappedObjectWithChangeSignal *
-wrapped_object_with_change_signal_new (
-  void *            obj,
-  WrappedObjectType type)
+wrapped_object_with_change_signal_new (void * obj, WrappedObjectType type)
 {
-  WrappedObjectWithChangeSignal * self = g_object_new (
-    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, NULL);
+  WrappedObjectWithChangeSignal * self =
+    g_object_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, NULL);
 
   self->type = type;
   self->obj = obj;
@@ -123,8 +115,7 @@ wrapped_object_with_change_signal_new (
 static void
 dispose (WrappedObjectWithChangeSignal * self)
 {
-  object_free_w_func_and_null (
-    g_object_unref, self->child_model);
+  object_free_w_func_and_null (g_object_unref, self->child_model);
 }
 
 static void
@@ -135,8 +126,7 @@ finalize (WrappedObjectWithChangeSignal * self)
       self->free_func (self->obj);
     }
 
-  G_OBJECT_CLASS (
-    wrapped_object_with_change_signal_parent_class)
+  G_OBJECT_CLASS (wrapped_object_with_change_signal_parent_class)
     ->finalize (G_OBJECT (self));
 }
 
@@ -149,9 +139,8 @@ wrapped_object_with_change_signal_class_init (
   obj_signals[SIGNAL_CHANGED] = g_signal_newv (
     "changed", G_TYPE_FROM_CLASS (oklass),
     G_SIGNAL_RUN_LAST | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
-    NULL /* closure */, NULL /* accumulator */,
-    NULL /* accumulator data */, NULL /* C marshaller */,
-    G_TYPE_NONE /* return_type */, 0 /* n_params */,
+    NULL /* closure */, NULL /* accumulator */, NULL /* accumulator data */,
+    NULL /* C marshaller */, G_TYPE_NONE /* return_type */, 0 /* n_params */,
     NULL /* param_types */);
 
   oklass->dispose = (GObjectFinalizeFunc) dispose;
@@ -159,7 +148,6 @@ wrapped_object_with_change_signal_class_init (
 }
 
 static void
-wrapped_object_with_change_signal_init (
-  WrappedObjectWithChangeSignal * self)
+wrapped_object_with_change_signal_init (WrappedObjectWithChangeSignal * self)
 {
 }

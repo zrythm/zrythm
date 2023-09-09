@@ -21,8 +21,7 @@ SCM position_type;
 SCM track_type;
 SCM tracklist_type;
 
-#define SUCCESS_TEXT_TRANSLATED \
-  _ ("Script execution successful")
+#define SUCCESS_TEXT_TRANSLATED _ ("Script execution successful")
 
 #define FAILURE_TEXT_TRANSLATED _ ("Script execution failed")
 
@@ -47,17 +46,14 @@ static const char * guile_lang_canonical_strings[] = {
 const char *
 guile_get_script_language_str (GuileScriptLanguage lang)
 {
-  g_return_val_if_fail (
-    lang < NUM_GUILE_SCRIPT_LANGUAGES, NULL);
+  g_return_val_if_fail (lang < NUM_GUILE_SCRIPT_LANGUAGES, NULL);
   return guile_lang_strings[lang];
 }
 
 const char *
-guile_get_script_language_canonical_str (
-  GuileScriptLanguage lang)
+guile_get_script_language_canonical_str (GuileScriptLanguage lang)
 {
-  g_return_val_if_fail (
-    lang < NUM_GUILE_SCRIPT_LANGUAGES, NULL);
+  g_return_val_if_fail (lang < NUM_GUILE_SCRIPT_LANGUAGES, NULL);
   return guile_lang_canonical_strings[lang];
 }
 
@@ -120,13 +116,12 @@ call_proc (void * data)
 {
   ExecutionInfo * nfo = (ExecutionInfo *) data;
 
-  SCM eval_string_proc = scm_variable_ref (
-    scm_c_public_lookup ("ice-9 eval-string", "eval-string"));
+  SCM eval_string_proc =
+    scm_variable_ref (scm_c_public_lookup ("ice-9 eval-string", "eval-string"));
   SCM          code = scm_from_utf8_string (nfo->script);
-  const char * lang_str =
-    guile_get_script_language_canonical_str (nfo->lang);
-  SCM s_from_lang = scm_from_utf8_symbol (lang_str);
-  SCM kwd_lang = scm_from_utf8_keyword ("lang");
+  const char * lang_str = guile_get_script_language_canonical_str (nfo->lang);
+  SCM          s_from_lang = scm_from_utf8_symbol (lang_str);
+  SCM          kwd_lang = scm_from_utf8_keyword ("lang");
   scm_call_3 (eval_string_proc, code, kwd_lang, s_from_lang);
 
   return SCM_BOOL_T;
@@ -141,8 +136,7 @@ eval_handler (void * handler_data, SCM key, SCM args)
    * after the stack has been unwound here. */
 
   scm_print_exception (error_out_port, SCM_BOOL_F, key, args);
-  scm_display_backtrace (
-    stack, error_out_port, SCM_BOOL_F, SCM_BOOL_F);
+  scm_display_backtrace (stack, error_out_port, SCM_BOOL_F, SCM_BOOL_F);
 
   return SCM_BOOL_F;
 }
@@ -173,8 +167,8 @@ guile_mode_func (void * data)
   SCM captured_stack = SCM_BOOL_F;
 
   SCM ret = scm_c_catch (
-    SCM_BOOL_T, call_proc, data, eval_handler,
-    &captured_stack, preunwind_proc, &captured_stack);
+    SCM_BOOL_T, call_proc, data, eval_handler, &captured_stack, preunwind_proc,
+    &captured_stack);
 
   SCM    str_scm = scm_get_output_string (out_port);
   char * str = scm_to_locale_string (str_scm);
@@ -211,8 +205,7 @@ guile_run_script (const char * script, GuileScriptLanguage lang)
 {
   /* pause engine */
   EngineState state;
-  engine_wait_for_pause (
-    AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
+  engine_wait_for_pause (AUDIO_ENGINE, &state, Z_F_NO_FORCE, true);
 
   ExecutionInfo nfo = { .script = script, .lang = lang };
 
@@ -221,8 +214,7 @@ guile_run_script (const char * script, GuileScriptLanguage lang)
   /*struct sigaction oldact;*/
   /*sigaction(SIGABRT, NULL, &oldact);*/
 
-  char * ret =
-    scm_with_guile (&guile_mode_func, (void *) &nfo);
+  char * ret = scm_with_guile (&guile_mode_func, (void *) &nfo);
 
   /*sigaction(SIGABRT, &oldact, NULL);*/
 
@@ -239,6 +231,5 @@ guile_run_script (const char * script, GuileScriptLanguage lang)
 bool
 guile_script_succeeded (const char * pango_markup)
 {
-  return string_contains_substr (
-    pango_markup, SUCCESS_TEXT_TRANSLATED);
+  return string_contains_substr (pango_markup, SUCCESS_TEXT_TRANSLATED);
 }

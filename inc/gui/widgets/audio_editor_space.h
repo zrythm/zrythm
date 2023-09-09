@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define AUDIO_EDITOR_SPACE_WIDGET_TYPE \
-  (audio_editor_space_widget_get_type ())
+#define AUDIO_EDITOR_SPACE_WIDGET_TYPE (audio_editor_space_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   AudioEditorSpaceWidget,
   audio_editor_space_widget,
@@ -29,8 +28,7 @@ typedef struct _ArrangerWidget ArrangerWidget;
  * @{
  */
 
-#define MW_AUDIO_EDITOR_SPACE \
-  MW_CLIP_EDITOR_INNER->audio_editor_space
+#define MW_AUDIO_EDITOR_SPACE MW_CLIP_EDITOR_INNER->audio_editor_space
 
 /**
  * The piano roll widget is the whole space inside
@@ -45,8 +43,7 @@ typedef struct _AudioEditorSpaceWidget
 } AudioEditorSpaceWidget;
 
 void
-audio_editor_space_widget_setup (
-  AudioEditorSpaceWidget * self);
+audio_editor_space_widget_setup (AudioEditorSpaceWidget * self);
 
 /**
  * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
@@ -57,8 +54,7 @@ audio_editor_space_widget_update_size_group (
   int                      visible);
 
 void
-audio_editor_space_widget_refresh (
-  AudioEditorSpaceWidget * self);
+audio_editor_space_widget_refresh (AudioEditorSpaceWidget * self);
 
 /**
  * @}

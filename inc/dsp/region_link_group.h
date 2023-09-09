@@ -43,8 +43,7 @@ typedef struct ZRegion ZRegion;
 
 #define REGION_LINK_GROUP_MAGIC 1222013
 #define IS_REGION_LINK_GROUP(x) \
-  (((RegionLinkGroup *) (x))->magic \
-   == REGION_LINK_GROUP_MAGIC)
+  (((RegionLinkGroup *) (x))->magic == REGION_LINK_GROUP_MAGIC)
 
 /**
  * A group of linked regions.
@@ -64,30 +63,24 @@ typedef struct RegionLinkGroup
   int group_idx;
 } RegionLinkGroup;
 
-static const cyaml_schema_field_t
-  region_link_group_fields_schema[] = {
-    YAML_FIELD_INT (RegionLinkGroup, schema_version),
-    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-      RegionLinkGroup,
-      ids,
-      region_identifier_schema_default),
-    YAML_FIELD_INT (RegionLinkGroup, group_idx),
-
-    CYAML_FIELD_END
-  };
-
-static const cyaml_schema_value_t region_link_group_schema = {
-  YAML_VALUE_PTR (
+static const cyaml_schema_field_t region_link_group_fields_schema[] = {
+  YAML_FIELD_INT (RegionLinkGroup, schema_version),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     RegionLinkGroup,
-    region_link_group_fields_schema),
+    ids,
+    region_identifier_schema_default),
+  YAML_FIELD_INT (RegionLinkGroup, group_idx),
+
+  CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-  region_link_group_schema_default = {
-    YAML_VALUE_DEFAULT (
-      RegionLinkGroup,
-      region_link_group_fields_schema),
-  };
+static const cyaml_schema_value_t region_link_group_schema = {
+  YAML_VALUE_PTR (RegionLinkGroup, region_link_group_fields_schema),
+};
+
+static const cyaml_schema_value_t region_link_group_schema_default = {
+  YAML_VALUE_DEFAULT (RegionLinkGroup, region_link_group_fields_schema),
+};
 
 NONNULL void
 region_link_group_init_loaded (RegionLinkGroup * self);
@@ -96,9 +89,7 @@ RegionLinkGroup *
 region_link_group_new (int idx);
 
 NONNULL void
-region_link_group_add_region (
-  RegionLinkGroup * self,
-  ZRegion *         region);
+region_link_group_add_region (RegionLinkGroup * self, ZRegion * region);
 
 /**
  * Remove the region from the link group.
@@ -115,9 +106,7 @@ region_link_group_remove_region (
   bool              update_identifier);
 
 NONNULL bool
-region_link_group_contains_region (
-  RegionLinkGroup * self,
-  ZRegion *         region);
+region_link_group_contains_region (RegionLinkGroup * self, ZRegion * region);
 
 NONNULL void
 region_link_group_print (RegionLinkGroup * self);
@@ -129,9 +118,7 @@ region_link_group_print (RegionLinkGroup * self);
  *   happened.
  */
 NONNULL void
-region_link_group_update (
-  RegionLinkGroup * self,
-  ZRegion *         region);
+region_link_group_update (RegionLinkGroup * self, ZRegion * region);
 
 NONNULL bool
 region_link_group_validate (RegionLinkGroup * self);

@@ -137,9 +137,7 @@ carla_native_plugin_init_loaded (CarlaNativePlugin * self);
  * @return Non-zero if fail.
  */
 NONNULL_ARGS (1)
-int carla_native_plugin_new_from_setting (
-  Plugin *  plugin,
-  GError ** error);
+int carla_native_plugin_new_from_setting (Plugin * plugin, GError ** error);
 
 /**
  * Returns a filled in descriptor from the
@@ -225,9 +223,7 @@ carla_native_plugin_process (
  * Shows or hides the UI.
  */
 NONNULL void
-carla_native_plugin_open_ui (
-  CarlaNativePlugin * self,
-  bool                show);
+carla_native_plugin_open_ui (CarlaNativePlugin * self, bool show);
 
 /**
  * Returns the plugin Port corresponding to the
@@ -242,13 +238,10 @@ carla_native_plugin_get_port_from_param_id (
  * Returns the MIDI out port.
  */
 NONNULL Port *
-carla_native_plugin_get_midi_out_port (
-  CarlaNativePlugin * self);
+carla_native_plugin_get_midi_out_port (CarlaNativePlugin * self);
 
 NONNULL float
-carla_native_plugin_get_param_value (
-  CarlaNativePlugin * self,
-  const uint32_t      id);
+carla_native_plugin_get_param_value (CarlaNativePlugin * self, const uint32_t id);
 
 /**
  * Called from port_set_control_value() to send
@@ -263,16 +256,13 @@ carla_native_plugin_set_param_value (
   float               val);
 
 NONNULL int
-carla_native_plugin_activate (
-  CarlaNativePlugin * self,
-  bool                activate);
+carla_native_plugin_activate (CarlaNativePlugin * self, bool activate);
 
 NONNULL void
 carla_native_plugin_close (CarlaNativePlugin * self);
 
 bool
-carla_native_plugin_has_custom_ui (
-  const PluginDescriptor * descr);
+carla_native_plugin_has_custom_ui (const PluginDescriptor * descr);
 
 /**
  * Returns the latency in samples.

@@ -51,9 +51,7 @@ typedef enum GraphExportType
 } GraphExportType;
 
 void
-graph_export_as_simple (
-  GraphExportType type,
-  const char *    export_path);
+graph_export_as_simple (GraphExportType type, const char * export_path);
 
 /**
  * Exports the graph at the given path.
@@ -61,10 +59,7 @@ graph_export_as_simple (
  * Engine must be paused before calling this.
  */
 void
-graph_export_as (
-  Graph *         graph,
-  GraphExportType type,
-  const char *    path);
+graph_export_as (Graph * graph, GraphExportType type, const char * path);
 
 /**
  * @}

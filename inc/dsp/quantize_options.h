@@ -38,14 +38,10 @@
 
 #define QUANTIZE_OPTIONS_SCHEMA_VERSION 1
 
-#define QUANTIZE_OPTIONS_IS_EDITOR(qo) \
-  (PROJECT->quantize_opts_editor == qo)
-#define QUANTIZE_OPTIONS_IS_TIMELINE(qo) \
-  (PROJECT->quantize_opts_timeline == qo)
-#define QUANTIZE_OPTIONS_TIMELINE \
-  (PROJECT->quantize_opts_timeline)
-#define QUANTIZE_OPTIONS_EDITOR \
-  (PROJECT->quantize_opts_editor)
+#define QUANTIZE_OPTIONS_IS_EDITOR(qo) (PROJECT->quantize_opts_editor == qo)
+#define QUANTIZE_OPTIONS_IS_TIMELINE(qo) (PROJECT->quantize_opts_timeline == qo)
+#define QUANTIZE_OPTIONS_TIMELINE (PROJECT->quantize_opts_timeline)
+#define QUANTIZE_OPTIONS_EDITOR (PROJECT->quantize_opts_editor)
 
 #define MAX_SNAP_POINTS 120096
 
@@ -91,10 +87,7 @@ typedef struct QuantizeOptions
 
 static const cyaml_schema_field_t quantize_options_fields_schema[] = {
   YAML_FIELD_INT (QuantizeOptions, schema_version),
-  YAML_FIELD_ENUM (
-    QuantizeOptions,
-    note_length,
-    note_length_strings),
+  YAML_FIELD_ENUM (QuantizeOptions, note_length, note_length_strings),
   YAML_FIELD_ENUM (QuantizeOptions, note_type, note_type_strings),
   YAML_FIELD_FLOAT (QuantizeOptions, amount),
   YAML_FIELD_INT (QuantizeOptions, adj_start),
@@ -106,22 +99,17 @@ static const cyaml_schema_field_t quantize_options_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t quantize_options_schema = {
-  YAML_VALUE_PTR (
-    QuantizeOptions,
-    quantize_options_fields_schema),
+  YAML_VALUE_PTR (QuantizeOptions, quantize_options_fields_schema),
 };
 
 void
-quantize_options_init (
-  QuantizeOptions * self,
-  NoteLength        note_length);
+quantize_options_init (QuantizeOptions * self, NoteLength note_length);
 
 /**
  * Updates snap points.
  */
 void
-quantize_options_update_quantize_points (
-  QuantizeOptions * self);
+quantize_options_update_quantize_points (QuantizeOptions * self);
 
 float
 quantize_options_get_swing (QuantizeOptions * self);
@@ -133,19 +121,13 @@ float
 quantize_options_get_randomization (QuantizeOptions * self);
 
 void
-quantize_options_set_swing (
-  QuantizeOptions * self,
-  float             swing);
+quantize_options_set_swing (QuantizeOptions * self, float swing);
 
 void
-quantize_options_set_amount (
-  QuantizeOptions * self,
-  float             amount);
+quantize_options_set_amount (QuantizeOptions * self, float amount);
 
 void
-quantize_options_set_randomization (
-  QuantizeOptions * self,
-  float             randomization);
+quantize_options_set_randomization (QuantizeOptions * self, float randomization);
 
 /**
  * Returns the grid intensity as a human-readable string.
@@ -153,9 +135,7 @@ quantize_options_set_randomization (
  * Must be free'd.
  */
 char *
-quantize_options_stringize (
-  NoteLength note_length,
-  NoteType   note_type);
+quantize_options_stringize (NoteLength note_length, NoteType note_type);
 
 /**
  * Quantizes the given Position using the given
@@ -169,9 +149,7 @@ quantize_options_stringize (
  *   backwards).
  */
 double
-quantize_options_quantize_position (
-  QuantizeOptions * self,
-  Position *        pos);
+quantize_options_quantize_position (QuantizeOptions * self, Position * pos);
 
 /**
  * Clones the QuantizeOptions.

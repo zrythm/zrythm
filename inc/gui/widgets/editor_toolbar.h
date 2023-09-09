@@ -11,8 +11,7 @@
 #include <adwaita.h>
 #include <gtk/gtk.h>
 
-#define EDITOR_TOOLBAR_WIDGET_TYPE \
-  (editor_toolbar_widget_get_type ())
+#define EDITOR_TOOLBAR_WIDGET_TYPE (editor_toolbar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   EditorToolbarWidget,
   editor_toolbar_widget,

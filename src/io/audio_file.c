@@ -131,23 +131,19 @@ ensure_sndfile (AudioFile * self, int mode, GError ** error)
       if (!sf_format_check (&idata->sfinfo))
         {
           g_set_error (
-            error, Z_AUDIO_FILE_ERROR,
-            Z_AUDIO_FILE_ERROR_INVALID_DATA,
+            error, Z_AUDIO_FILE_ERROR, Z_AUDIO_FILE_ERROR_INVALID_DATA,
             _ ("sf_format_check failed for '%s': %s (error code %i)"),
-            self->filepath, sf_strerror (NULL),
-            sf_error (NULL));
+            self->filepath, sf_strerror (NULL), sf_error (NULL));
           return false;
         }
     }
 
   g_debug ("opening sndfile at %s...", self->filepath);
-  idata->sffile =
-    sf_open (self->filepath, mode, &idata->sfinfo);
+  idata->sffile = sf_open (self->filepath, mode, &idata->sfinfo);
   if (!idata->sffile)
     {
       g_set_error (
-        error, Z_AUDIO_FILE_ERROR,
-        Z_AUDIO_FILE_ERROR_FILE_OPEN_FAILED,
+        error, Z_AUDIO_FILE_ERROR, Z_AUDIO_FILE_ERROR_FILE_OPEN_FAILED,
         _ ("Failed to open audio file at '%s': %s (error code %i)"),
         self->filepath, sf_strerror (NULL), sf_error (NULL));
       return false;
@@ -166,8 +162,7 @@ audio_file_read_metadata (AudioFile * self, GError ** error)
 
   InternalData * idata = (InternalData *) self->internal_data;
 
-  g_debug (
-    "attempting to read metadata for %s", self->filepath);
+  g_debug ("attempting to read metadata for %s", self->filepath);
 
   memset (&idata->sfinfo, 0, sizeof (SF_INFO));
   GError * err = NULL;
@@ -186,18 +181,13 @@ audio_file_read_metadata (AudioFile * self, GError ** error)
   metadata->num_frames = sfinfo->frames;
   metadata->samplerate = sfinfo->samplerate;
   metadata->length =
-    sfinfo->samplerate
-      ? (sfinfo->frames * 1000) / sfinfo->samplerate
-      : 0;
+    sfinfo->samplerate ? (sfinfo->frames * 1000) / sfinfo->samplerate : 0;
   metadata->bit_depth = parse_bit_depth (sfinfo->format);
   metadata->bit_rate =
-    metadata->bit_depth * metadata->channels
-    * metadata->samplerate;
+    metadata->bit_depth * metadata->channels * metadata->samplerate;
 
   SF_LOOP_INFO loop;
-  if (
-    sf_command (sffile, SFC_GET_LOOP_INFO, &loop, sizeof (loop))
-    == SF_TRUE)
+  if (sf_command (sffile, SFC_GET_LOOP_INFO, &loop, sizeof (loop)) == SF_TRUE)
     {
       metadata->bpm = loop.bpm;
     }
@@ -205,8 +195,7 @@ audio_file_read_metadata (AudioFile * self, GError ** error)
   if (!audio_file_finish (self, &err))
     {
       PROPAGATE_PREFIXED_ERROR_LITERAL (
-        error, err,
-        _ ("Failed to close audio file after reading info"));
+        error, err, _ ("Failed to close audio file after reading info"));
       return false;
     }
 
@@ -236,7 +225,7 @@ audio_file_read_samples (
   g_return_val_if_fail (self->metadata.filled, false);
 
   AudioFileMetadata * metadata = &self->metadata;
-  InternalData * idata = (InternalData *) self->internal_data;
+  InternalData *      idata = (InternalData *) self->internal_data;
 
   GError * err = NULL;
   idata->sfinfo.format = 0;
@@ -249,27 +238,23 @@ audio_file_read_samples (
 
   if (in_parts)
     {
-      sf_count_t num_seeked = sf_seek (
-        idata->sffile, (sf_count_t) start_from,
-        SEEK_SET | SFM_READ);
+      sf_count_t num_seeked =
+        sf_seek (idata->sffile, (sf_count_t) start_from, SEEK_SET | SFM_READ);
       if (num_seeked != (sf_count_t) start_from)
         {
           g_set_error (
-            error, Z_AUDIO_FILE_ERROR,
-            Z_AUDIO_FILE_ERROR_FAILED,
+            error, Z_AUDIO_FILE_ERROR, Z_AUDIO_FILE_ERROR_FAILED,
             _ ("Tried to seek %zu frames but actually "
                "seeked %zd frames"),
             start_from, num_seeked);
           return false;
         }
       sf_count_t num_read = sf_readf_float (
-        idata->sffile, samples,
-        (sf_count_t) num_frames_to_read);
+        idata->sffile, samples, (sf_count_t) num_frames_to_read);
       if (num_read != (sf_count_t) num_frames_to_read)
         {
           g_set_error (
-            error, Z_AUDIO_FILE_ERROR,
-            Z_AUDIO_FILE_ERROR_FAILED,
+            error, Z_AUDIO_FILE_ERROR, Z_AUDIO_FILE_ERROR_FAILED,
             _ ("Expected to read %zu frames but actually "
                "read %zd frames"),
             num_frames_to_read, num_read);
@@ -279,15 +264,13 @@ audio_file_read_samples (
   else
     {
       /* read all frames */
-      g_debug (
-        "reading all frames from file %s", self->filepath);
-      sf_count_t num_read = sf_readf_float (
-        idata->sffile, samples, metadata->num_frames);
+      g_debug ("reading all frames from file %s", self->filepath);
+      sf_count_t num_read =
+        sf_readf_float (idata->sffile, samples, metadata->num_frames);
       if (num_read != metadata->num_frames)
         {
           g_set_error (
-            error, Z_AUDIO_FILE_ERROR,
-            Z_AUDIO_FILE_ERROR_FAILED,
+            error, Z_AUDIO_FILE_ERROR, Z_AUDIO_FILE_ERROR_FAILED,
             _ ("Expected to read %" PRId64 " frames but actually "
                "read %zd frames"),
             metadata->num_frames, num_read);
@@ -315,8 +298,7 @@ audio_file_finish (AudioFile * self, GError ** error)
       g_set_error (
         error, Z_AUDIO_FILE_ERROR, Z_AUDIO_FILE_ERROR_FAILED,
         _ ("Failed to close audio file at '%s': %s (error code %i)"),
-        self->filepath, sf_strerror (idata->sffile),
-        sf_error (idata->sffile));
+        self->filepath, sf_strerror (idata->sffile), sf_error (idata->sffile));
       return false;
     }
   idata->sffile = NULL;
@@ -357,8 +339,7 @@ audio_file_read_simple (
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err, "Error reading metadata from %s",
-        filepath);
+        error, err, "Error reading metadata from %s", filepath);
       return false;
     }
   if (metadata)
@@ -367,17 +348,13 @@ audio_file_read_simple (
     }
 
   /* read frames in file's sample rate */
-  z_return_val_if_fail_cmp (
-    af->metadata.num_frames, >=, 0, false);
-  z_return_val_if_fail_cmp (
-    af->metadata.channels, >, 0, false);
+  z_return_val_if_fail_cmp (af->metadata.num_frames, >=, 0, false);
+  z_return_val_if_fail_cmp (af->metadata.channels, >, 0, false);
   size_t arr_size =
-    (size_t) af->metadata.num_frames
-    * (size_t) af->metadata.channels;
+    (size_t) af->metadata.num_frames * (size_t) af->metadata.channels;
   *frames = g_realloc (*frames, arr_size * sizeof (float));
   success = audio_file_read_samples (
-    af, false, *frames, 0, (size_t) af->metadata.num_frames,
-    &err);
+    af, false, *frames, 0, (size_t) af->metadata.num_frames, &err);
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (
@@ -389,9 +366,8 @@ audio_file_read_simple (
     {
       /* resample to project's sample rate */
       Resampler * r = resampler_new (
-        *frames, (size_t) af->metadata.num_frames,
-        af->metadata.samplerate, samplerate,
-        (unsigned int) af->metadata.channels,
+        *frames, (size_t) af->metadata.num_frames, af->metadata.samplerate,
+        samplerate, (unsigned int) af->metadata.channels,
         RESAMPLER_QUALITY_VERY_HIGH, &err);
       if (!r)
         {

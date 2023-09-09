@@ -17,30 +17,25 @@ get_cached_plugin_descriptors_file_path (void)
   char * zrythm_dir = zrythm_get_dir (ZRYTHM_DIR_USER_TOP);
   g_return_val_if_fail (zrythm_dir, NULL);
 
-  return g_build_filename (
-    zrythm_dir, "cached_plugin_descriptors.yaml", NULL);
+  return g_build_filename (zrythm_dir, "cached_plugin_descriptors.yaml", NULL);
 }
 
 void
-cached_plugin_descriptors_serialize_to_file (
-  CachedPluginDescriptors * self)
+cached_plugin_descriptors_serialize_to_file (CachedPluginDescriptors * self)
 {
   g_message ("Serializing cached plugin descriptors...");
   GError * err = NULL;
-  char *   yaml = yaml_serialize (
-    self, &cached_plugin_descriptors_schema, &err);
+  char * yaml = yaml_serialize (self, &cached_plugin_descriptors_schema, &err);
   if (!yaml)
     {
       HANDLE_ERROR_LITERAL (
-        err,
-        _ ("Failed to serialize cached plugin descriptors"));
+        err, _ ("Failed to serialize cached plugin descriptors"));
       return;
     }
   err = NULL;
   char * path = get_cached_plugin_descriptors_file_path ();
   g_return_if_fail (path && strlen (path) > 2);
-  g_message (
-    "Writing cached plugin descriptors to %s...", path);
+  g_message ("Writing cached plugin descriptors to %s...", path);
   g_file_set_contents (path, yaml, -1, &err);
   if (err != NULL)
     {
@@ -93,10 +88,8 @@ cached_plugin_descriptors_new (void)
         path);
 return_new_instance:
       g_free (path);
-      CachedPluginDescriptors * self =
-        object_new (CachedPluginDescriptors);
-      self->schema_version =
-        CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION;
+      CachedPluginDescriptors * self = object_new (CachedPluginDescriptors);
+      self->schema_version = CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION;
       return self;
     }
   char * yaml = NULL;
@@ -127,9 +120,8 @@ return_new_instance:
       goto return_new_instance;
     }
 
-  CachedPluginDescriptors * self =
-    (CachedPluginDescriptors *) yaml_deserialize (
-      yaml, &cached_plugin_descriptors_schema, &err);
+  CachedPluginDescriptors * self = (CachedPluginDescriptors *)
+    yaml_deserialize (yaml, &cached_plugin_descriptors_schema, &err);
   if (!self)
     {
       g_critical (
@@ -146,8 +138,7 @@ return_new_instance:
 
   for (int i = 0; i < self->num_descriptors; i++)
     {
-      self->descriptors[i]
-        ->category = plugin_descriptor_string_to_category (
+      self->descriptors[i]->category = plugin_descriptor_string_to_category (
         self->descriptors[i]->category_str);
     }
 
@@ -183,7 +174,7 @@ cached_plugin_descriptors_is_blacklisted (
   for (int i = 0; i < self->num_blacklisted; i++)
     {
       PluginDescriptor * descr = self->blacklisted[i];
-      GFile * file = g_file_new_for_path (descr->path);
+      GFile *            file = g_file_new_for_path (descr->path);
       if (
         string_is_equal (descr->path, traversed_path)
         && descr->ghash == g_file_hash (file))
@@ -221,8 +212,7 @@ cached_plugin_descriptors_find (
       for (int i = 0; i < self->num_descriptors; i++)
         {
           PluginDescriptor * cur_descr = self->descriptors[i];
-          if (plugin_descriptor_is_same_plugin (
-                cur_descr, descr))
+          if (plugin_descriptor_is_same_plugin (cur_descr, descr))
             {
               return cur_descr;
             }
@@ -233,8 +223,7 @@ cached_plugin_descriptors_find (
       for (int i = 0; i < self->num_blacklisted; i++)
         {
           PluginDescriptor * cur_descr = self->blacklisted[i];
-          if (plugin_descriptor_is_same_plugin (
-                cur_descr, descr))
+          if (plugin_descriptor_is_same_plugin (cur_descr, descr))
             {
               return cur_descr;
             }
@@ -259,14 +248,12 @@ cached_plugin_descriptors_get (
   CachedPluginDescriptors * self,
   const char *              abs_path)
 {
-  PluginDescriptor ** descriptors =
-    object_new_n (1, PluginDescriptor *);
-  int num_descriptors = 0;
+  PluginDescriptor ** descriptors = object_new_n (1, PluginDescriptor *);
+  int                 num_descriptors = 0;
 
   char * traversed_path = io_traverse_path (abs_path);
 
-  g_debug (
-    "Getting cached descriptors for %s", traversed_path);
+  g_debug ("Getting cached descriptors for %s", traversed_path);
 
   for (int i = 0; i < self->num_descriptors; i++)
     {
@@ -284,15 +271,13 @@ cached_plugin_descriptors_get (
               num_descriptors++;
               descriptors = g_realloc (
                 descriptors,
-                (size_t) (num_descriptors + 1)
-                  * sizeof (PluginDescriptor *));
+                (size_t) (num_descriptors + 1) * sizeof (PluginDescriptor *));
               descriptors[num_descriptors - 1] = descr;
             }
           else
             {
               g_debug (
-                "hash differs %u != %u", descr->ghash,
-                g_file_hash (file));
+                "hash differs %u != %u", descr->ghash, g_file_hash (file));
             }
         }
       g_object_unref (file);
@@ -356,14 +341,12 @@ cached_plugin_descriptors_replace (
   const PluginDescriptor *  _new_descr,
   bool                      _serialize)
 {
-  PluginDescriptor * new_descr =
-    plugin_descriptor_clone (_new_descr);
+  PluginDescriptor * new_descr = plugin_descriptor_clone (_new_descr);
 
   for (int i = 0; i < self->num_descriptors; i++)
     {
       PluginDescriptor * cur_descr = self->descriptors[i];
-      if (plugin_descriptor_is_same_plugin (
-            cur_descr, new_descr))
+      if (plugin_descriptor_is_same_plugin (cur_descr, new_descr))
         {
           self->descriptors[i] = new_descr;
           plugin_descriptor_free (cur_descr);
@@ -373,8 +356,7 @@ cached_plugin_descriptors_replace (
   for (int i = 0; i < self->num_blacklisted; i++)
     {
       PluginDescriptor * cur_descr = self->blacklisted[i];
-      if (plugin_descriptor_is_same_plugin (
-            cur_descr, new_descr))
+      if (plugin_descriptor_is_same_plugin (cur_descr, new_descr))
         {
           self->descriptors[i] = new_descr;
           plugin_descriptor_free (cur_descr);
@@ -405,8 +387,7 @@ cached_plugin_descriptors_add (
   const PluginDescriptor *  descr,
   int                       _serialize)
 {
-  PluginDescriptor * new_descr =
-    plugin_descriptor_clone (descr);
+  PluginDescriptor * new_descr = plugin_descriptor_clone (descr);
   if (descr->path)
     {
       GFile * file = g_file_new_for_path (descr->path);
@@ -425,8 +406,7 @@ cached_plugin_descriptors_add (
  * Clears the descriptors and removes the cache file.
  */
 void
-cached_plugin_descriptors_clear (
-  CachedPluginDescriptors * self)
+cached_plugin_descriptors_clear (CachedPluginDescriptors * self)
 {
   for (int i = 0; i < self->num_descriptors; i++)
     {
@@ -442,13 +422,11 @@ cached_plugin_descriptors_free (CachedPluginDescriptors * self)
 {
   for (int i = 0; i < self->num_descriptors; i++)
     {
-      object_free_w_func_and_null (
-        plugin_descriptor_free, self->descriptors[i]);
+      object_free_w_func_and_null (plugin_descriptor_free, self->descriptors[i]);
     }
   for (int i = 0; i < self->num_blacklisted; i++)
     {
-      object_free_w_func_and_null (
-        plugin_descriptor_free, self->blacklisted[i]);
+      object_free_w_func_and_null (plugin_descriptor_free, self->blacklisted[i]);
     }
 
   object_zero_and_free (self);

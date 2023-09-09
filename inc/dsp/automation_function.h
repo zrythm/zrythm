@@ -36,8 +36,7 @@ static const cyaml_strval_t automation_function_type_strings[] = {
 };
 
 static inline const char *
-automation_function_type_to_string (
-  AutomationFunctionType type)
+automation_function_type_to_string (AutomationFunctionType type)
 {
   return automation_function_type_strings[type].str;
 }

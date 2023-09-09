@@ -40,15 +40,13 @@ typedef enum ClipboardType
 } ClipboardType;
 
 static const cyaml_strval_t clipboard_type_strings[] = {
-  {"Timeline selections",    CLIPBOARD_TYPE_TIMELINE_SELECTIONS},
-  { "MIDI selections",       CLIPBOARD_TYPE_MIDI_SELECTIONS    },
-  { "Automation selections",
-   CLIPBOARD_TYPE_AUTOMATION_SELECTIONS                        },
-  { "Chord selections",      CLIPBOARD_TYPE_CHORD_SELECTIONS   },
-  { "Audio selections",      CLIPBOARD_TYPE_AUDIO_SELECTIONS   },
-  { "Mixer selections",      CLIPBOARD_TYPE_MIXER_SELECTIONS   },
-  { "Tracklist selections",
-   CLIPBOARD_TYPE_TRACKLIST_SELECTIONS                         },
+  {"Timeline selections",    CLIPBOARD_TYPE_TIMELINE_SELECTIONS  },
+  { "MIDI selections",       CLIPBOARD_TYPE_MIDI_SELECTIONS      },
+  { "Automation selections", CLIPBOARD_TYPE_AUTOMATION_SELECTIONS},
+  { "Chord selections",      CLIPBOARD_TYPE_CHORD_SELECTIONS     },
+  { "Audio selections",      CLIPBOARD_TYPE_AUDIO_SELECTIONS     },
+  { "Mixer selections",      CLIPBOARD_TYPE_MIXER_SELECTIONS     },
+  { "Tracklist selections",  CLIPBOARD_TYPE_TRACKLIST_SELECTIONS },
 };
 
 /**
@@ -109,19 +107,13 @@ static const cyaml_schema_value_t clipboard_schema = {
  * arranger selections.
  */
 Clipboard *
-clipboard_new_for_arranger_selections (
-  ArrangerSelections * sel,
-  bool                 clone);
+clipboard_new_for_arranger_selections (ArrangerSelections * sel, bool clone);
 
 Clipboard *
-clipboard_new_for_mixer_selections (
-  MixerSelections * sel,
-  bool              clone);
+clipboard_new_for_mixer_selections (MixerSelections * sel, bool clone);
 
 Clipboard *
-clipboard_new_for_tracklist_selections (
-  TracklistSelections * sel,
-  bool                  clone);
+clipboard_new_for_tracklist_selections (TracklistSelections * sel, bool clone);
 
 /**
  * Gets the ArrangerSelections, if this clipboard

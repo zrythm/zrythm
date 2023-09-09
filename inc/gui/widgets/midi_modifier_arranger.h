@@ -25,8 +25,7 @@
 
 #include <gtk/gtk.h>
 
-#define MW_MIDI_MODIFIER_ARRANGER \
-  (MW_MIDI_EDITOR_SPACE->modifier_arranger)
+#define MW_MIDI_MODIFIER_ARRANGER (MW_MIDI_EDITOR_SPACE->modifier_arranger)
 
 typedef struct Velocity        Velocity;
 typedef struct _VelocityWidget VelocityWidget;
@@ -43,8 +42,7 @@ typedef struct _ArrangerWidget ArrangerWidget;
  * in the current region.
  */
 void
-midi_modifier_arranger_widget_set_start_vel (
-  ArrangerWidget * self);
+midi_modifier_arranger_widget_set_start_vel (ArrangerWidget * self);
 
 void
 midi_modifier_arranger_widget_select_vels_in_range (

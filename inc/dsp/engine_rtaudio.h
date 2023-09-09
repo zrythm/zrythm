@@ -44,9 +44,7 @@ void
 engine_rtaudio_activate (AudioEngine * self, bool activate);
 
 rtaudio_t
-engine_rtaudio_create_rtaudio (
-  AudioEngine * self,
-  AudioBackend  backend);
+engine_rtaudio_create_rtaudio (AudioEngine * self, AudioBackend backend);
 
 /**
  * Returns a list of names inside \ref names that

@@ -35,8 +35,8 @@ init_common (SampleProcessor * self)
 
   if (!ZRYTHM_TESTING)
     {
-      char * setting_yaml = g_settings_get_string (
-        S_UI_FILE_BROWSER, "instrument");
+      char * setting_yaml =
+        g_settings_get_string (S_UI_FILE_BROWSER, "instrument");
       PluginSetting * setting = NULL;
       if (strlen (setting_yaml) > 0)
         {
@@ -46,8 +46,7 @@ init_common (SampleProcessor * self)
           if (!setting)
             {
               g_warning (
-                "failed to deserialize plugin setting schema: %s",
-                err->message);
+                "failed to deserialize plugin setting schema: %s", err->message);
               g_error_free (err);
             }
           (void) setting;
@@ -60,25 +59,20 @@ init_common (SampleProcessor * self)
           if (!instrument)
             return;
 
-          setting = plugin_settings_find (
-            S_PLUGIN_SETTINGS, instrument);
+          setting = plugin_settings_find (S_PLUGIN_SETTINGS, instrument);
           if (!setting)
             {
-              setting =
-                plugin_setting_new_default (instrument);
+              setting = plugin_setting_new_default (instrument);
             }
         }
 
       g_return_if_fail (setting);
-      self->instrument_setting =
-        plugin_setting_clone (setting, F_VALIDATE);
+      self->instrument_setting = plugin_setting_clone (setting, F_VALIDATE);
     }
 }
 
 void
-sample_processor_init_loaded (
-  SampleProcessor * self,
-  AudioEngine *     engine)
+sample_processor_init_loaded (SampleProcessor * self, AudioEngine * engine)
 {
   self->audio_engine = engine;
   fader_init_loaded (self->fader, NULL, NULL, self);
@@ -97,8 +91,7 @@ sample_processor_new (AudioEngine * engine)
   self->audio_engine = engine;
   self->schema_version = SAMPLE_PROCESSOR_SCHEMA_VERSION;
 
-  self->fader = fader_new (
-    FADER_TYPE_SAMPLE_PROCESSOR, false, NULL, NULL, self);
+  self->fader = fader_new (FADER_TYPE_SAMPLE_PROCESSOR, false, NULL, NULL, self);
 
   init_common (self);
 
@@ -109,9 +102,7 @@ sample_processor_new (AudioEngine * engine)
  * Clears the buffers.
  */
 void
-sample_processor_prepare_process (
-  SampleProcessor * self,
-  const nframes_t   nframes)
+sample_processor_prepare_process (SampleProcessor * self, const nframes_t nframes)
 {
   fader_clear_buffers (self->fader);
 }
@@ -164,10 +155,8 @@ sample_processor_process (
   nframes_t        max_frames;
   SamplePlayback * sp;
   g_return_if_fail (
-    self && self->fader && self->fader->stereo_out
-    && self->fader->stereo_out->l
-    && self->fader->stereo_out->l->buf
-    && self->fader->stereo_out->r
+    self && self->fader && self->fader->stereo_out && self->fader->stereo_out->l
+    && self->fader->stereo_out->l->buf && self->fader->stereo_out->r
     && self->fader->stereo_out->r->buf);
 
   z_return_if_fail_cmp (self->num_current_samples, <, 256);
@@ -196,28 +185,21 @@ sample_processor_process (
         {
           /* fill in the buffer for as many frames
            * as possible */
-          max_frames = MIN (
-            (nframes_t) (sp->buf_size - sp->offset), nframes);
+          max_frames = MIN ((nframes_t) (sp->buf_size - sp->offset), nframes);
           for (j = 0; j < max_frames; j++)
             {
               nframes_t buf_offset = j + cycle_offset;
-              z_return_if_fail_cmp (
-                buf_offset, <, AUDIO_ENGINE->block_length);
-              z_return_if_fail_cmp (
-                sp->offset, <, sp->buf_size);
+              z_return_if_fail_cmp (buf_offset, <, AUDIO_ENGINE->block_length);
+              z_return_if_fail_cmp (sp->offset, <, sp->buf_size);
               if (sp->channels == 1)
                 {
-                  l[buf_offset] +=
-                    (*sp->buf)[sp->offset] * sp->volume;
-                  r[buf_offset] +=
-                    (*sp->buf)[sp->offset++] * sp->volume;
+                  l[buf_offset] += (*sp->buf)[sp->offset] * sp->volume;
+                  r[buf_offset] += (*sp->buf)[sp->offset++] * sp->volume;
                 }
               else if (sp->channels == 2)
                 {
-                  l[buf_offset] +=
-                    (*sp->buf)[sp->offset++] * sp->volume;
-                  r[buf_offset] +=
-                    (*sp->buf)[sp->offset++] * sp->volume;
+                  l[buf_offset] += (*sp->buf)[sp->offset++] * sp->volume;
+                  r[buf_offset] += (*sp->buf)[sp->offset++] * sp->volume;
                 }
             }
         }
@@ -226,8 +208,7 @@ sample_processor_process (
       else if (sp->start_offset >= cycle_offset)
         {
           z_return_if_fail_cmp (sp->offset, ==, 0);
-          z_return_if_fail_cmp (
-            (cycle_offset + nframes), >=, sp->start_offset);
+          z_return_if_fail_cmp ((cycle_offset + nframes), >=, sp->start_offset);
 
           /* fill in the buffer for as many frames
            * as possible */
@@ -237,23 +218,17 @@ sample_processor_process (
           for (j = 0; j < max_frames; j++)
             {
               nframes_t buf_offset = j + sp->start_offset;
-              z_return_if_fail_cmp (
-                buf_offset, <, cycle_offset + nframes);
-              z_return_if_fail_cmp (
-                sp->offset, <, sp->buf_size);
+              z_return_if_fail_cmp (buf_offset, <, cycle_offset + nframes);
+              z_return_if_fail_cmp (sp->offset, <, sp->buf_size);
               if (sp->channels == 1)
                 {
-                  l[buf_offset] +=
-                    (*sp->buf)[sp->offset] * sp->volume;
-                  r[buf_offset] +=
-                    (*sp->buf)[sp->offset++] * sp->volume;
+                  l[buf_offset] += (*sp->buf)[sp->offset] * sp->volume;
+                  r[buf_offset] += (*sp->buf)[sp->offset++] * sp->volume;
                 }
               else if (sp->channels == 2)
                 {
-                  l[buf_offset] +=
-                    (*sp->buf)[sp->offset++] * sp->volume;
-                  r[buf_offset] +=
-                    (*sp->buf)[sp->offset++] * sp->volume;
+                  l[buf_offset] += (*sp->buf)[sp->offset++] * sp->volume;
+                  r[buf_offset] += (*sp->buf)[sp->offset++] * sp->volume;
                 }
             }
         }
@@ -279,29 +254,23 @@ sample_processor_process (
 
           EngineProcessTimeInfo time_nfo = {
             .g_start_frame =
-              (unsigned_frame_t) self->playhead.frames
-              + cycle_offset,
+              (unsigned_frame_t) self->playhead.frames + cycle_offset,
             .local_offset = cycle_offset,
             .nframes = nframes,
           };
 
           if (track->type == TRACK_TYPE_AUDIO)
             {
-              track_processor_process (
-                track->processor, &time_nfo);
+              track_processor_process (track->processor, &time_nfo);
 
-              audio_data_l =
-                track->processor->stereo_out->l->buf;
-              audio_data_r =
-                track->processor->stereo_out->l->buf;
+              audio_data_l = track->processor->stereo_out->l->buf;
+              audio_data_r = track->processor->stereo_out->l->buf;
             }
           else if (track->type == TRACK_TYPE_MIDI)
             {
-              track_processor_process (
-                track->processor, &time_nfo);
+              track_processor_process (track->processor, &time_nfo);
               midi_events_append (
-                self->midi_events,
-                track->processor->midi_out->midi_events,
+                self->midi_events, track->processor->midi_out->midi_events,
                 cycle_offset, nframes, F_NOT_QUEUED);
             }
           else if (track->type == TRACK_TYPE_INSTRUMENT)
@@ -312,9 +281,8 @@ sample_processor_process (
 
               plugin_prepare_process (ins);
               midi_events_append (
-                ins->midi_in_port->midi_events,
-                self->midi_events, cycle_offset, nframes,
-                F_NOT_QUEUED);
+                ins->midi_in_port->midi_events, self->midi_events, cycle_offset,
+                nframes, F_NOT_QUEUED);
               plugin_process (ins, &time_nfo);
               audio_data_l = ins->l_out->buf;
               audio_data_r = ins->r_out->buf;
@@ -323,11 +291,11 @@ sample_processor_process (
           if (audio_data_l && audio_data_r)
             {
               dsp_mix2 (
-                &l[cycle_offset], &audio_data_l[cycle_offset],
-                1.f, self->fader->amp->control, nframes);
+                &l[cycle_offset], &audio_data_l[cycle_offset], 1.f,
+                self->fader->amp->control, nframes);
               dsp_mix2 (
-                &r[cycle_offset], &audio_data_r[cycle_offset],
-                1.f, self->fader->amp->control, nframes);
+                &r[cycle_offset], &audio_data_r[cycle_offset], 1.f,
+                self->fader->amp->control, nframes);
             }
         }
     }
@@ -345,47 +313,37 @@ sample_processor_process (
  * Used for countin.
  */
 void
-sample_processor_queue_metronome_countin (
-  SampleProcessor * self)
+sample_processor_queue_metronome_countin (SampleProcessor * self)
 {
-  PrerollCountBars bars =
-    g_settings_get_enum (S_TRANSPORT, "metronome-countin");
-  int num_bars =
-    transport_preroll_count_bars_enum_to_int (bars);
-  int beats_per_bar =
-    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  PrerollCountBars bars = g_settings_get_enum (S_TRANSPORT, "metronome-countin");
+  int num_bars = transport_preroll_count_bars_enum_to_int (bars);
+  int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
   int num_beats = beats_per_bar * num_bars;
 
   double frames_per_bar =
-    AUDIO_ENGINE->frames_per_tick
-    * (double) TRANSPORT->ticks_per_bar;
+    AUDIO_ENGINE->frames_per_tick * (double) TRANSPORT->ticks_per_bar;
   for (int i = 0; i < num_bars; i++)
     {
-      long offset = (long) ((double) i * frames_per_bar);
-      SamplePlayback * sp =
-        &self->current_samples[self->num_current_samples];
+      long             offset = (long) ((double) i * frames_per_bar);
+      SamplePlayback * sp = &self->current_samples[self->num_current_samples];
       sample_playback_init (
         sp, &METRONOME->emphasis, METRONOME->emphasis_size,
-        METRONOME->emphasis_channels,
-        0.1f * METRONOME->volume, offset);
+        METRONOME->emphasis_channels, 0.1f * METRONOME->volume, offset);
       self->num_current_samples++;
     }
 
   double frames_per_beat =
-    AUDIO_ENGINE->frames_per_tick
-    * (double) TRANSPORT->ticks_per_beat;
+    AUDIO_ENGINE->frames_per_tick * (double) TRANSPORT->ticks_per_beat;
   for (int i = 0; i < num_beats; i++)
     {
       if (i % beats_per_bar == 0)
         continue;
 
-      long offset = (long) ((double) i * frames_per_beat);
-      SamplePlayback * sp =
-        &self->current_samples[self->num_current_samples];
+      long             offset = (long) ((double) i * frames_per_beat);
+      SamplePlayback * sp = &self->current_samples[self->num_current_samples];
       sample_playback_init (
         sp, &METRONOME->normal, METRONOME->normal_size,
-        METRONOME->normal_channels, 0.1f * METRONOME->volume,
-        offset);
+        METRONOME->normal_channels, 0.1f * METRONOME->volume, offset);
       self->num_current_samples++;
     }
 }
@@ -417,8 +375,7 @@ sample_processor_queue_metronome (
     metronome_pos_str, offset);
 #endif
 
-  SamplePlayback * sp =
-    &self->current_samples[self->num_current_samples];
+  SamplePlayback * sp = &self->current_samples[self->num_current_samples];
 
   g_return_if_fail (offset < AUDIO_ENGINE->block_length);
 
@@ -427,15 +384,13 @@ sample_processor_queue_metronome (
     {
       sample_playback_init (
         sp, &METRONOME->emphasis, METRONOME->emphasis_size,
-        METRONOME->emphasis_channels,
-        0.1f * METRONOME->volume, offset);
+        METRONOME->emphasis_channels, 0.1f * METRONOME->volume, offset);
     }
   else if (type == METRONOME_TYPE_NORMAL)
     {
       sample_playback_init (
         sp, &METRONOME->normal, METRONOME->normal_size,
-        METRONOME->normal_channels, 0.1f * METRONOME->volume,
-        offset);
+        METRONOME->normal_channels, 0.1f * METRONOME->volume, offset);
     }
 
   self->num_current_samples++;
@@ -480,8 +435,8 @@ queue_file_or_chord_preset (
         }
 
       tracklist_remove_track (
-        self->tracklist, track, true, F_FREE,
-        F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+        self->tracklist, track, true, F_FREE, F_NO_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
     }
 
   Position start_pos;
@@ -491,43 +446,38 @@ queue_file_or_chord_preset (
   /* create master track */
   g_debug ("creating master track...");
   Track * track = track_new (
-    TRACK_TYPE_MASTER, self->tracklist->num_tracks,
-    "Sample Processor Master", F_WITHOUT_LANE);
+    TRACK_TYPE_MASTER, self->tracklist->num_tracks, "Sample Processor Master",
+    F_WITHOUT_LANE);
   self->tracklist->master_track = track;
   tracklist_insert_track (
-    self->tracklist, track, track->pos, F_NO_PUBLISH_EVENTS,
-    F_NO_RECALC_GRAPH);
+    self->tracklist, track, track->pos, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 
   if (file && supported_file_type_is_audio (file->type))
     {
       g_debug ("creating audio track...");
       track = track_new (
-        TRACK_TYPE_AUDIO, self->tracklist->num_tracks,
-        "Sample processor audio", F_WITH_LANE);
+        TRACK_TYPE_AUDIO, self->tracklist->num_tracks, "Sample processor audio",
+        F_WITH_LANE);
       tracklist_insert_track (
-        self->tracklist, track, track->pos,
-        F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+        self->tracklist, track, track->pos, F_NO_PUBLISH_EVENTS,
+        F_NO_RECALC_GRAPH);
 
       /* create an audio region & add to
        * track */
       GError *  err = NULL;
       ZRegion * ar = audio_region_new (
-        -1, file->abs_path, false, NULL, 0, NULL, 0, 0,
-        &start_pos, 0, 0, 0, &err);
+        -1, file->abs_path, false, NULL, 0, NULL, 0, 0, &start_pos, 0, 0, 0,
+        &err);
       if (!ar)
         {
-          HANDLE_ERROR_LITERAL (
-            err, "Failed to create audio region");
+          HANDLE_ERROR_LITERAL (err, "Failed to create audio region");
           return;
         }
       bool success = track_add_region (
-        track, ar, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS,
-        &err);
+        track, ar, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
       if (!success)
         {
-          HANDLE_ERROR (
-            err, "Failed to add region to track %s",
-            track->name);
+          HANDLE_ERROR (err, "Failed to add region to track %s", track->name);
           return;
         }
 
@@ -535,8 +485,7 @@ queue_file_or_chord_preset (
       position_set_to_pos (&self->file_end_pos, &obj->end_pos);
     }
   else if (
-    ((file && supported_file_type_is_midi (file->type))
-     || chord_pset)
+    ((file && supported_file_type_is_midi (file->type)) || chord_pset)
     && self->instrument_setting)
     {
       /* create an instrument track */
@@ -545,13 +494,11 @@ queue_file_or_chord_preset (
         TRACK_TYPE_INSTRUMENT, self->tracklist->num_tracks,
         "Sample processor instrument", F_WITH_LANE);
       tracklist_insert_track (
-        self->tracklist, instrument_track,
-        instrument_track->pos, F_NO_PUBLISH_EVENTS,
-        F_NO_RECALC_GRAPH);
+        self->tracklist, instrument_track, instrument_track->pos,
+        F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
       GError * err = NULL;
       Plugin * pl = plugin_new_from_setting (
-        self->instrument_setting,
-        track_get_name_hash (instrument_track),
+        self->instrument_setting, track_get_name_hash (instrument_track),
         PLUGIN_SLOT_INSTRUMENT, -1, &err);
       if (!pl)
         {
@@ -573,16 +520,14 @@ queue_file_or_chord_preset (
       g_return_if_fail (pl->l_out);
       g_return_if_fail (pl->r_out);
       channel_add_plugin (
-        instrument_track->channel, PLUGIN_SLOT_INSTRUMENT,
-        pl->id.slot, pl, F_NO_CONFIRM, F_NOT_MOVING_PLUGIN,
-        F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH,
-        F_NO_PUBLISH_EVENTS);
+        instrument_track->channel, PLUGIN_SLOT_INSTRUMENT, pl->id.slot, pl,
+        F_NO_CONFIRM, F_NOT_MOVING_PLUGIN, F_GEN_AUTOMATABLES,
+        F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
       int num_tracks = 1;
       if (file)
         {
-          num_tracks =
-            midi_file_get_num_tracks (file->abs_path, true);
+          num_tracks = midi_file_get_num_tracks (file->abs_path, true);
         }
       g_debug ("creating %d MIDI tracks...", num_tracks);
       for (int i = 0; i < num_tracks; i++)
@@ -590,24 +535,23 @@ queue_file_or_chord_preset (
           char name[600];
           sprintf (name, "Sample processor MIDI %d", i);
           track = track_new (
-            TRACK_TYPE_MIDI, self->tracklist->num_tracks,
-            name, F_WITH_LANE);
+            TRACK_TYPE_MIDI, self->tracklist->num_tracks, name, F_WITH_LANE);
           tracklist_insert_track (
-            self->tracklist, track, track->pos,
-            F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+            self->tracklist, track, track->pos, F_NO_PUBLISH_EVENTS,
+            F_NO_RECALC_GRAPH);
 
           /* route track to instrument */
           group_target_track_add_child (
-            instrument_track, track_get_name_hash (track),
-            F_CONNECT, F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
+            instrument_track, track_get_name_hash (track), F_CONNECT,
+            F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
 
           if (file)
             {
               /* create a MIDI region from the MIDI
                * file & add to track */
               ZRegion * mr = midi_region_new_from_midi_file (
-                &start_pos, file->abs_path,
-                track_get_name_hash (track), 0, 0, i);
+                &start_pos, file->abs_path, track_get_name_hash (track), 0, 0,
+                i);
               if (mr)
                 {
                   err = NULL;
@@ -617,26 +561,21 @@ queue_file_or_chord_preset (
                      * based
                      * on the track name (if any) in
                      * the MIDI file */
-                    mr->name ? F_NO_GEN_NAME : F_GEN_NAME,
-                    F_NO_PUBLISH_EVENTS, &err);
+                    mr->name ? F_NO_GEN_NAME : F_GEN_NAME, F_NO_PUBLISH_EVENTS,
+                    &err);
                   if (success)
                     {
-                      ArrangerObject * obj =
-                        (ArrangerObject *) mr;
-                      if (position_is_after (
-                            &obj->end_pos, &self->file_end_pos))
+                      ArrangerObject * obj = (ArrangerObject *) mr;
+                      if (position_is_after (&obj->end_pos, &self->file_end_pos))
                         {
                           position_set_to_pos (
-                            &self->file_end_pos,
-                            &obj->end_pos);
+                            &self->file_end_pos, &obj->end_pos);
                         }
                     }
                   else
                     {
                       HANDLE_ERROR (
-                        err,
-                        "Failed to add region to track %s",
-                        track->name);
+                        err, "Failed to add region to track %s", track->name);
                     }
                 }
               else
@@ -654,15 +593,13 @@ queue_file_or_chord_preset (
               Position end_pos;
               position_from_seconds (&end_pos, 13.0);
               ZRegion * mr = midi_region_new (
-                &start_pos, &end_pos,
-                track_get_name_hash (track), 0, 0);
+                &start_pos, &end_pos, track_get_name_hash (track), 0, 0);
 
               /* add notes */
               for (int j = 0; j < 12; j++)
                 {
                   ChordDescriptor * descr =
-                    chord_descriptor_clone (
-                      chord_pset->descr[j]);
+                    chord_descriptor_clone (chord_pset->descr[j]);
                   chord_descriptor_update_notes (descr);
                   if (descr->type == CHORD_TYPE_NONE)
                     {
@@ -673,16 +610,14 @@ queue_file_or_chord_preset (
                   Position cur_pos;
                   position_from_seconds (&cur_pos, j * 1.0);
                   Position cur_end_pos;
-                  position_from_seconds (
-                    &cur_end_pos, j * 1.0 + 0.5);
-                  for (int k = 0;
-                       k < CHORD_DESCRIPTOR_MAX_NOTES; k++)
+                  position_from_seconds (&cur_end_pos, j * 1.0 + 0.5);
+                  for (int k = 0; k < CHORD_DESCRIPTOR_MAX_NOTES; k++)
                     {
                       if (descr->notes[k])
                         {
                           MidiNote * mn = midi_note_new (
-                            &mr->id, &cur_pos, &cur_end_pos,
-                            k + 36, VELOCITY_DEFAULT);
+                            &mr->id, &cur_pos, &cur_end_pos, k + 36,
+                            VELOCITY_DEFAULT);
                           midi_region_add_midi_note (
                             mr, mn, F_NO_PUBLISH_EVENTS);
                         }
@@ -692,22 +627,18 @@ queue_file_or_chord_preset (
                 } /* endforeach chord descriptor */
 
               ArrangerObject * obj = (ArrangerObject *) mr;
-              if (position_is_after (
-                    &obj->end_pos, &self->file_end_pos))
+              if (position_is_after (&obj->end_pos, &self->file_end_pos))
                 {
-                  position_set_to_pos (
-                    &self->file_end_pos, &obj->end_pos);
+                  position_set_to_pos (&self->file_end_pos, &obj->end_pos);
                 }
 
               err = NULL;
               bool success = track_add_region (
-                track, mr, NULL, 0,
-                mr->name ? F_NO_GEN_NAME : F_GEN_NAME,
+                track, mr, NULL, 0, mr->name ? F_NO_GEN_NAME : F_GEN_NAME,
                 F_NO_PUBLISH_EVENTS, &err);
               if (!success)
                 {
-                  HANDLE_ERROR_LITERAL (
-                    err, "Failed to add region to track");
+                  HANDLE_ERROR_LITERAL (err, "Failed to add region to track");
                 }
 
             } /* endif chord preset */
@@ -720,8 +651,7 @@ queue_file_or_chord_preset (
 
   /* add some room to end pos */
   char file_end_pos_str[600];
-  position_to_string_full (
-    &self->file_end_pos, file_end_pos_str, 2);
+  position_to_string_full (&self->file_end_pos, file_end_pos_str, 2);
   g_message ("playing until %s", file_end_pos_str);
   position_add_bars (&self->file_end_pos, 1);
 
@@ -734,9 +664,7 @@ queue_file_or_chord_preset (
  * Adds a file (audio or MIDI) to the queue.
  */
 void
-sample_processor_queue_file (
-  SampleProcessor *     self,
-  const SupportedFile * file)
+sample_processor_queue_file (SampleProcessor * self, const SupportedFile * file)
 {
   queue_file_or_chord_preset (self, file, NULL);
 }
@@ -790,11 +718,9 @@ sample_processor_free (SampleProcessor * self)
   if (self == SAMPLE_PROCESSOR)
     sample_processor_disconnect (self);
 
-  object_free_w_func_and_null (
-    tracklist_free, self->tracklist);
+  object_free_w_func_and_null (tracklist_free, self->tracklist);
   object_free_w_func_and_null (fader_free, self->fader);
-  object_free_w_func_and_null (
-    midi_events_free, self->midi_events);
+  object_free_w_func_and_null (midi_events_free, self->midi_events);
 
   object_zero_and_free (self);
 }

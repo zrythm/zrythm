@@ -68,16 +68,12 @@ enum
   N_PROPS
 };
 
-G_DEFINE_TYPE (
-  IdeFileChooserEntry,
-  ide_file_chooser_entry,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (IdeFileChooserEntry, ide_file_chooser_entry, GTK_TYPE_WIDGET)
 
 static GParamSpec * properties[N_PROPS];
 
 static void
-ide_file_chooser_entry_sync_to_dialog (
-  IdeFileChooserEntry * self)
+ide_file_chooser_entry_sync_to_dialog (IdeFileChooserEntry * self)
 {
   GtkWidget * toplevel;
   GtkWidget * default_widget;
@@ -88,18 +84,16 @@ ide_file_chooser_entry_sync_to_dialog (
     return;
 
   g_object_set (
-    self->dialog, "action", self->action, "create-folders",
-    self->create_folders, "do-overwrite-confirmation",
-    self->do_overwrite_confirmation, "local-only",
-    self->local_only, "show-hidden", self->show_hidden,
-    "filter", self->filter, "title", self->title, NULL);
+    self->dialog, "action", self->action, "create-folders", self->create_folders,
+    "do-overwrite-confirmation", self->do_overwrite_confirmation, "local-only",
+    self->local_only, "show-hidden", self->show_hidden, "filter", self->filter,
+    "title", self->title, NULL);
 
   if (self->file != NULL)
     gtk_file_chooser_set_file (
       GTK_FILE_CHOOSER (self->dialog), self->file, NULL);
 
-  toplevel =
-    GTK_WIDGET (gtk_widget_get_native (GTK_WIDGET (self)));
+  toplevel = GTK_WIDGET (gtk_widget_get_native (GTK_WIDGET (self)));
 
   if (GTK_IS_WINDOW (toplevel))
     gtk_window_set_transient_for (
@@ -111,18 +105,15 @@ ide_file_chooser_entry_sync_to_dialog (
   switch (self->action)
     {
     case GTK_FILE_CHOOSER_ACTION_OPEN:
-      gtk_button_set_label (
-        GTK_BUTTON (default_widget), _ ("Open"));
+      gtk_button_set_label (GTK_BUTTON (default_widget), _ ("Open"));
       break;
 
     case GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
-      gtk_button_set_label (
-        GTK_BUTTON (default_widget), _ ("Select"));
+      gtk_button_set_label (GTK_BUTTON (default_widget), _ ("Select"));
       break;
 
     case GTK_FILE_CHOOSER_ACTION_SAVE:
-      gtk_button_set_label (
-        GTK_BUTTON (default_widget), _ ("Save"));
+      gtk_button_set_label (GTK_BUTTON (default_widget), _ ("Save"));
       break;
 
     default:
@@ -143,8 +134,7 @@ ide_file_chooser_entry_dialog_response (
     {
       g_autoptr (GFile) file = NULL;
 
-      file =
-        gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
+      file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
       if (file != NULL)
         ide_file_chooser_entry_set_file (self, file);
     }
@@ -155,24 +145,21 @@ ide_file_chooser_entry_dialog_response (
 }
 
 static void
-ide_file_chooser_entry_ensure_dialog (
-  IdeFileChooserEntry * self)
+ide_file_chooser_entry_ensure_dialog (IdeFileChooserEntry * self)
 {
   g_assert (IDE_IS_FILE_CHOOSER_ENTRY (self));
 
   if (self->dialog == NULL)
     {
       self->dialog = g_object_new (
-        GTK_TYPE_FILE_CHOOSER_DIALOG, "local-only", TRUE,
-        "modal", TRUE, NULL);
+        GTK_TYPE_FILE_CHOOSER_DIALOG, "local-only", TRUE, "modal", TRUE, NULL);
       g_signal_connect_object (
         self->dialog, "response",
-        G_CALLBACK (ide_file_chooser_entry_dialog_response),
-        self, G_CONNECT_SWAPPED);
+        G_CALLBACK (ide_file_chooser_entry_dialog_response), self,
+        G_CONNECT_SWAPPED);
       gtk_dialog_add_buttons (
-        GTK_DIALOG (self->dialog), _ ("Cancel"),
-        GTK_RESPONSE_CANCEL, _ ("Open"), GTK_RESPONSE_OK,
-        NULL);
+        GTK_DIALOG (self->dialog), _ ("Cancel"), GTK_RESPONSE_CANCEL,
+        _ ("Open"), GTK_RESPONSE_OK, NULL);
       gtk_dialog_set_default_response (
         GTK_DIALOG (self->dialog), GTK_RESPONSE_OK);
     }
@@ -215,21 +202,17 @@ file_expand (const gchar * path)
 }
 
 static void
-ide_file_chooser_entry_changed (
-  IdeFileChooserEntry * self,
-  GtkEntry *            entry)
+ide_file_chooser_entry_changed (IdeFileChooserEntry * self, GtkEntry * entry)
 {
   g_autoptr (GFile) file = NULL;
 
   g_assert (IDE_IS_FILE_CHOOSER_ENTRY (self));
   g_assert (GTK_IS_ENTRY (entry));
 
-  file = file_expand (
-    gtk_editable_get_text (GTK_EDITABLE (entry)));
+  file = file_expand (gtk_editable_get_text (GTK_EDITABLE (entry)));
 
   if (g_set_object (&self->file, file))
-    g_object_notify_by_pspec (
-      G_OBJECT (self), properties[PROP_FILE]);
+    g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_FILE]);
 }
 
 static void
@@ -245,8 +228,7 @@ ide_file_chooser_entry_dispose (GObject * object)
       self->dialog = NULL;
     }
 
-  G_OBJECT_CLASS (ide_file_chooser_entry_parent_class)
-    ->dispose (object);
+  G_OBJECT_CLASS (ide_file_chooser_entry_parent_class)->dispose (object);
 }
 
 static void
@@ -258,8 +240,7 @@ ide_file_chooser_entry_finalize (GObject * object)
   g_clear_object (&self->filter);
   g_clear_pointer (&self->title, g_free);
 
-  G_OBJECT_CLASS (ide_file_chooser_entry_parent_class)
-    ->finalize (object);
+  G_OBJECT_CLASS (ide_file_chooser_entry_parent_class)->finalize (object);
 }
 
 static void
@@ -286,8 +267,7 @@ ide_file_chooser_entry_get_property (
       break;
 
     case PROP_DO_OVERWRITE_CONFIRMATION:
-      g_value_set_boolean (
-        value, self->do_overwrite_confirmation);
+      g_value_set_boolean (value, self->do_overwrite_confirmation);
       break;
 
     case PROP_SHOW_HIDDEN:
@@ -299,15 +279,12 @@ ide_file_chooser_entry_get_property (
       break;
 
     case PROP_FILE:
-      g_value_take_object (
-        value, ide_file_chooser_entry_get_file (self));
+      g_value_take_object (value, ide_file_chooser_entry_get_file (self));
       break;
 
     case PROP_MAX_WIDTH_CHARS:
       g_value_set_int (
-        value,
-        gtk_editable_get_max_width_chars (
-          GTK_EDITABLE (self->entry)));
+        value, gtk_editable_get_max_width_chars (GTK_EDITABLE (self->entry)));
       break;
 
     case PROP_TITLE:
@@ -315,8 +292,7 @@ ide_file_chooser_entry_get_property (
       break;
 
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (
-        object, prop_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
     }
 }
 
@@ -344,8 +320,7 @@ ide_file_chooser_entry_set_property (
       break;
 
     case PROP_DO_OVERWRITE_CONFIRMATION:
-      self->do_overwrite_confirmation =
-        g_value_get_boolean (value);
+      self->do_overwrite_confirmation = g_value_get_boolean (value);
       break;
 
     case PROP_SHOW_HIDDEN:
@@ -358,8 +333,7 @@ ide_file_chooser_entry_set_property (
       break;
 
     case PROP_FILE:
-      ide_file_chooser_entry_set_file (
-        self, g_value_get_object (value));
+      ide_file_chooser_entry_set_file (self, g_value_get_object (value));
       break;
 
     case PROP_MAX_WIDTH_CHARS:
@@ -373,40 +347,34 @@ ide_file_chooser_entry_set_property (
       break;
 
     default:
-      G_OBJECT_WARN_INVALID_PROPERTY_ID (
-        object, prop_id, pspec);
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
     }
 
   ide_file_chooser_entry_sync_to_dialog (self);
 }
 
 static void
-ide_file_chooser_entry_class_init (
-  IdeFileChooserEntryClass * klass)
+ide_file_chooser_entry_class_init (IdeFileChooserEntryClass * klass)
 {
   GObjectClass *   object_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass * widget_class = GTK_WIDGET_CLASS (klass);
 
   object_class->dispose = ide_file_chooser_entry_dispose;
   object_class->finalize = ide_file_chooser_entry_finalize;
-  object_class->get_property =
-    ide_file_chooser_entry_get_property;
-  object_class->set_property =
-    ide_file_chooser_entry_set_property;
+  object_class->get_property = ide_file_chooser_entry_get_property;
+  object_class->set_property = ide_file_chooser_entry_set_property;
 
   properties[PROP_ACTION] = g_param_spec_enum (
     "action", NULL, NULL, GTK_TYPE_FILE_CHOOSER_ACTION,
-    GTK_FILE_CHOOSER_ACTION_OPEN,
-    (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+    GTK_FILE_CHOOSER_ACTION_OPEN, (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
   properties[PROP_CREATE_FOLDERS] = g_param_spec_boolean (
     "create-folders", NULL, NULL, FALSE,
     (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
-  properties[PROP_DO_OVERWRITE_CONFIRMATION] =
-    g_param_spec_boolean (
-      "do-overwrite-confirmation", NULL, NULL, FALSE,
-      (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+  properties[PROP_DO_OVERWRITE_CONFIRMATION] = g_param_spec_boolean (
+    "do-overwrite-confirmation", NULL, NULL, FALSE,
+    (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
   properties[PROP_LOCAL_ONLY] = g_param_spec_boolean (
     "local-only", NULL, NULL, FALSE,
@@ -429,43 +397,35 @@ ide_file_chooser_entry_class_init (
     (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
   properties[PROP_TITLE] = g_param_spec_string (
-    "title", NULL, NULL, NULL,
-    (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
+    "title", NULL, NULL, NULL, (G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS));
 
-  g_object_class_install_properties (
-    object_class, N_PROPS, properties);
+  g_object_class_install_properties (object_class, N_PROPS, properties);
 
-  gtk_widget_class_set_layout_manager_type (
-    widget_class, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (widget_class, GTK_TYPE_BIN_LAYOUT);
 }
 
 static void
 ide_file_chooser_entry_init (IdeFileChooserEntry * self)
 {
   self->hbox = g_object_new (
-    GTK_TYPE_BOX, "orientation", GTK_ORIENTATION_HORIZONTAL,
-    "visible", TRUE, NULL);
+    GTK_TYPE_BOX, "orientation", GTK_ORIENTATION_HORIZONTAL, "visible", TRUE,
+    NULL);
   gtk_widget_add_css_class (self->hbox, "linked");
   gtk_widget_set_parent (self->hbox, GTK_WIDGET (self));
 
-  self->entry = g_object_new (
-    GTK_TYPE_ENTRY, "hexpand", TRUE, "visible", TRUE, NULL);
+  self->entry =
+    g_object_new (GTK_TYPE_ENTRY, "hexpand", TRUE, "visible", TRUE, NULL);
   g_signal_connect_object (
-    self->entry, "changed",
-    G_CALLBACK (ide_file_chooser_entry_changed), self,
+    self->entry, "changed", G_CALLBACK (ide_file_chooser_entry_changed), self,
     G_CONNECT_SWAPPED);
-  gtk_box_append (
-    GTK_BOX (self->hbox), GTK_WIDGET (self->entry));
+  gtk_box_append (GTK_BOX (self->hbox), GTK_WIDGET (self->entry));
 
   self->button = g_object_new (
-    GTK_TYPE_BUTTON, "label", _ ("Browse…"), "visible", TRUE,
-    NULL);
+    GTK_TYPE_BUTTON, "label", _ ("Browse…"), "visible", TRUE, NULL);
   g_signal_connect_object (
-    self->button, "clicked",
-    G_CALLBACK (ide_file_chooser_entry_button_clicked), self,
-    G_CONNECT_SWAPPED);
-  gtk_box_append (
-    GTK_BOX (self->hbox), GTK_WIDGET (self->button));
+    self->button, "clicked", G_CALLBACK (ide_file_chooser_entry_button_clicked),
+    self, G_CONNECT_SWAPPED);
+  gtk_box_append (GTK_BOX (self->hbox), GTK_WIDGET (self->button));
 }
 
 static gchar *
@@ -490,16 +450,14 @@ file_collapse (GFile * file)
     {
       g_autofree gchar * freeme = path;
 
-      path =
-        g_build_filename (g_get_home_dir (), freeme, NULL);
+      path = g_build_filename (g_get_home_dir (), freeme, NULL);
     }
 
   if (g_str_has_prefix (path, g_get_home_dir ()))
     {
       g_autofree gchar * freeme = path;
 
-      path = g_build_filename (
-        "~", freeme + strlen (g_get_home_dir ()), NULL);
+      path = g_build_filename ("~", freeme + strlen (g_get_home_dir ()), NULL);
     }
 
   return path;
@@ -515,16 +473,13 @@ file_collapse (GFile * file)
 GFile *
 ide_file_chooser_entry_get_file (IdeFileChooserEntry * self)
 {
-  g_return_val_if_fail (
-    IDE_IS_FILE_CHOOSER_ENTRY (self), NULL);
+  g_return_val_if_fail (IDE_IS_FILE_CHOOSER_ENTRY (self), NULL);
 
   return self->file ? g_object_ref (self->file) : NULL;
 }
 
 void
-ide_file_chooser_entry_set_file (
-  IdeFileChooserEntry * self,
-  GFile *               file)
+ide_file_chooser_entry_set_file (IdeFileChooserEntry * self, GFile * file)
 {
   g_autofree gchar * collapsed = NULL;
 
@@ -542,21 +497,16 @@ ide_file_chooser_entry_set_file (
   self->file = file;
 
   collapsed = file_collapse (file);
-  gtk_editable_set_text (
-    GTK_EDITABLE (self->entry), collapsed);
+  gtk_editable_set_text (GTK_EDITABLE (self->entry), collapsed);
 
-  g_object_notify_by_pspec (
-    G_OBJECT (self), properties[PROP_FILE]);
+  g_object_notify_by_pspec (G_OBJECT (self), properties[PROP_FILE]);
 }
 
 GtkWidget *
-ide_file_chooser_entry_new (
-  const gchar *        title,
-  GtkFileChooserAction action)
+ide_file_chooser_entry_new (const gchar * title, GtkFileChooserAction action)
 {
   return g_object_new (
-    IDE_TYPE_FILE_CHOOSER_ENTRY, "title", title, "action",
-    action, NULL);
+    IDE_TYPE_FILE_CHOOSER_ENTRY, "title", title, "action", action, NULL);
 }
 
 /**
@@ -570,8 +520,7 @@ ide_file_chooser_entry_new (
 GtkEntry *
 ide_file_chooser_entry_get_entry (IdeFileChooserEntry * self)
 {
-  g_return_val_if_fail (
-    IDE_IS_FILE_CHOOSER_ENTRY (self), NULL);
+  g_return_val_if_fail (IDE_IS_FILE_CHOOSER_ENTRY (self), NULL);
 
   return self->entry;
 }

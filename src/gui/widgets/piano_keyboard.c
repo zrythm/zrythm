@@ -13,10 +13,7 @@
 #include "zrythm.h"
 #include "zrythm_app.h"
 
-G_DEFINE_TYPE (
-  PianoKeyboardWidget,
-  piano_keyboard_widget,
-  GTK_TYPE_DRAWING_AREA)
+G_DEFINE_TYPE (PianoKeyboardWidget, piano_keyboard_widget, GTK_TYPE_DRAWING_AREA)
 
 /**
  * Draws an orange circle if the note is enabled.
@@ -29,24 +26,19 @@ draw_orange_circle (
   double                cur_offset,
   int                   i)
 {
-  double height =
-    (double) gtk_widget_get_height (GTK_WIDGET (self));
+  double height = (double) gtk_widget_get_height (GTK_WIDGET (self));
   if (self->for_chord)
     {
-      ChordDescriptor * descr =
-        CHORD_EDITOR->chords[self->chord_idx];
+      ChordDescriptor * descr = CHORD_EDITOR->chords[self->chord_idx];
       if (descr->notes[self->start_key + i])
         {
           double circle_radius = key_width / 3.0;
-          bool   is_black =
-            piano_roll_is_key_black (self->start_key + i);
-          gdk_cairo_set_source_rgba (
-            cr, &UI_COLORS->dark_orange);
+          bool   is_black = piano_roll_is_key_black (self->start_key + i);
+          gdk_cairo_set_source_rgba (cr, &UI_COLORS->dark_orange);
           cairo_set_source_rgba (cr, 1, 0, 0, 1);
           cairo_arc (
             cr, cur_offset + key_width / 2.0,
-            is_black ? height / 3.0 : height / 1.2,
-            circle_radius, 0, 2 * M_PI);
+            is_black ? height / 3.0 : height / 1.2, circle_radius, 0, 2 * M_PI);
           cairo_fill (cr);
         }
     }
@@ -60,8 +52,7 @@ piano_keyboard_draw_cb (
   int              height,
   gpointer         user_data)
 {
-  PianoKeyboardWidget * self =
-    Z_PIANO_KEYBOARD_WIDGET (user_data);
+  PianoKeyboardWidget * self = Z_PIANO_KEYBOARD_WIDGET (user_data);
 
   int num_white_keys = 0;
   for (int i = 0; i < self->num_keys; i++)
@@ -75,8 +66,7 @@ piano_keyboard_draw_cb (
   double cur_offset = 0.0;
   for (int i = 0; i < self->num_keys; i++)
     {
-      bool is_black =
-        piano_roll_is_key_black (self->start_key + i);
+      bool is_black = piano_roll_is_key_black (self->start_key + i);
       if (is_black)
         continue;
 
@@ -97,12 +87,11 @@ piano_keyboard_draw_cb (
   cur_offset = 0.0;
   for (int i = 0; i < self->num_keys; i++)
     {
-      bool is_black =
-        piano_roll_is_key_black (self->start_key + i);
+      bool is_black = piano_roll_is_key_black (self->start_key + i);
       if (!is_black)
         {
-          bool is_next_black = piano_roll_is_next_key_black (
-            self->start_key + i);
+          bool is_next_black =
+            piano_roll_is_next_key_black (self->start_key + i);
 
           if (is_next_black)
             cur_offset += key_width / 2.0;
@@ -113,8 +102,7 @@ piano_keyboard_draw_cb (
         }
 
       cairo_set_source_rgba (cr, 0, 0, 0, 1);
-      cairo_rectangle (
-        cr, cur_offset, 0, key_width, (double) height / 1.4);
+      cairo_rectangle (cr, cur_offset, 0, key_width, (double) height / 1.4);
       cairo_fill (cr);
 
       /* draw orange circle if part of chord */
@@ -156,19 +144,16 @@ piano_keyboard_widget_new_for_chord_key (const int chord_idx)
 PianoKeyboardWidget *
 piano_keyboard_widget_new (GtkOrientation orientation)
 {
-  PianoKeyboardWidget * self =
-    g_object_new (PIANO_KEYBOARD_WIDGET_TYPE, NULL);
+  PianoKeyboardWidget * self = g_object_new (PIANO_KEYBOARD_WIDGET_TYPE, NULL);
 
   gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self), piano_keyboard_draw_cb, self,
-    NULL);
+    GTK_DRAWING_AREA (self), piano_keyboard_draw_cb, self, NULL);
 
   return self;
 }
 
 static void
-piano_keyboard_widget_class_init (
-  PianoKeyboardWidgetClass * _klass)
+piano_keyboard_widget_class_init (PianoKeyboardWidgetClass * _klass)
 {
 }
 

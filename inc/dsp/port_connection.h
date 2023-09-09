@@ -67,14 +67,8 @@ typedef struct PortConnection
 
 static const cyaml_schema_field_t port_connection_fields_schema[] = {
   YAML_FIELD_INT (PortConnection, schema_version),
-  YAML_FIELD_MAPPING_PTR (
-    PortConnection,
-    src_id,
-    port_identifier_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    PortConnection,
-    dest_id,
-    port_identifier_fields_schema),
+  YAML_FIELD_MAPPING_PTR (PortConnection, src_id, port_identifier_fields_schema),
+  YAML_FIELD_MAPPING_PTR (PortConnection, dest_id, port_identifier_fields_schema),
   YAML_FIELD_FLOAT (PortConnection, multiplier),
   YAML_FIELD_INT (PortConnection, locked),
   YAML_FIELD_INT (PortConnection, enabled),

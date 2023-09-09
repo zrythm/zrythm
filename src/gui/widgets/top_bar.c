@@ -51,8 +51,7 @@ top_bar_widget_class_init (TopBarWidgetClass * _klass)
   gtk_widget_class_set_css_name (klass, "top-bar");
 
 #define BIND_CHILD(child) \
-  gtk_widget_class_bind_template_child ( \
-    klass, TopBarWidget, child)
+  gtk_widget_class_bind_template_child (klass, TopBarWidget, child)
 
 #undef BIND_CHILD
 }

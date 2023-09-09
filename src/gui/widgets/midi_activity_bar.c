@@ -12,10 +12,7 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  MidiActivityBarWidget,
-  midi_activity_bar_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (MidiActivityBarWidget, midi_activity_bar_widget, GTK_TYPE_WIDGET)
 
 /** 250 ms */
 static const double MAX_TIME = 250000.0;
@@ -27,12 +24,9 @@ static int     other_color_set = 0;
  * Draws the color picker.
  */
 static void
-midi_activity_bar_snapshot (
-  GtkWidget *   widget,
-  GtkSnapshot * snapshot)
+midi_activity_bar_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
-  MidiActivityBarWidget * self =
-    Z_MIDI_ACTIVITY_BAR_WIDGET (widget);
+  MidiActivityBarWidget * self = Z_MIDI_ACTIVITY_BAR_WIDGET (widget);
 
   int width = gtk_widget_get_width (widget);
   int height = gtk_widget_get_height (widget);
@@ -46,13 +40,12 @@ midi_activity_bar_snapshot (
   if (self->draw_border)
     {
       GskRoundedRect  rounded_rect;
-      graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
-        0.f, 0.f, (float) width, (float) height);
-      gsk_rounded_rect_init_from_rect (
-        &rounded_rect, &graphene_rect, 0);
+      graphene_rect_t graphene_rect =
+        GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height);
+      gsk_rounded_rect_init_from_rect (&rounded_rect, &graphene_rect, 0);
       const float border_width = 1.f;
-      GdkRGBA border_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.2);
-      float   border_widths[] = {
+      GdkRGBA     border_color = Z_GDK_RGBA_INIT (1, 1, 1, 0.2);
+      float       border_widths[] = {
         border_width, border_width, border_width, border_width
       };
       GdkRGBA border_colors[] = {
@@ -83,8 +76,7 @@ midi_activity_bar_snapshot (
     {
       gtk_snapshot_append_color (
         snapshot, &other_color,
-        &GRAPHENE_RECT_INIT (
-          0.f, 0.f, (float) width, (float) height));
+        &GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
 
       switch (self->type)
         {
@@ -103,8 +95,7 @@ midi_activity_bar_snapshot (
   else
     {
       /* draw fade */
-      gint64 time_diff =
-        g_get_real_time () - self->last_trigger_time;
+      gint64 time_diff = g_get_real_time () - self->last_trigger_time;
       if ((double) time_diff < MAX_TIME)
         {
           if (self->animation == MAB_ANIMATION_BAR)
@@ -112,19 +103,15 @@ midi_activity_bar_snapshot (
               gtk_snapshot_append_color (
                 snapshot, &other_color,
                 &GRAPHENE_RECT_INIT (
-                  0.f,
-                  (float) height
-                    * ((float) time_diff / (float) MAX_TIME),
+                  0.f, (float) height * ((float) time_diff / (float) MAX_TIME),
                   (float) width, (float) height));
             }
           else if (self->animation == MAB_ANIMATION_FLASH)
             {
-              other_color.alpha =
-                1.f - (float) time_diff / (float) MAX_TIME;
+              other_color.alpha = 1.f - (float) time_diff / (float) MAX_TIME;
               gtk_snapshot_append_color (
                 snapshot, &other_color,
-                &GRAPHENE_RECT_INIT (
-                  0.f, 0.f, (float) width, (float) height));
+                &GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
             }
         }
     }
@@ -157,17 +144,14 @@ midi_activity_bar_widget_set_animation (
  * TrackWidget implementations.
  */
 void
-midi_activity_bar_widget_setup_track (
-  MidiActivityBarWidget * self,
-  Track *                 track)
+midi_activity_bar_widget_setup_track (MidiActivityBarWidget * self, Track * track)
 {
   self->track = track;
   self->type = MAB_TYPE_TRACK;
   self->draw_border = false;
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) update_activity,
-    self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) update_activity, self, NULL);
 }
 
 /**
@@ -175,15 +159,13 @@ midi_activity_bar_widget_setup_track (
  * AudioEngine.
  */
 void
-midi_activity_bar_widget_setup_engine (
-  MidiActivityBarWidget * self)
+midi_activity_bar_widget_setup_engine (MidiActivityBarWidget * self)
 {
   self->type = MAB_TYPE_ENGINE;
   self->draw_border = true;
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) update_activity,
-    self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) update_activity, self, NULL);
 }
 
 static void
@@ -193,8 +175,7 @@ midi_activity_bar_widget_init (MidiActivityBarWidget * self)
 }
 
 static void
-midi_activity_bar_widget_class_init (
-  MidiActivityBarWidgetClass * klass)
+midi_activity_bar_widget_class_init (MidiActivityBarWidgetClass * klass)
 {
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   gtk_widget_class_set_css_name (wklass, "midi-activity-bar");

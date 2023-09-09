@@ -57,8 +57,7 @@ SCM_DEFINE (
   "Undoes the last action.")
 #define FUNC_NAME s_
 {
-  UndoManager * undo_mgr =
-    (UndoManager *) scm_to_pointer (undo_manager);
+  UndoManager * undo_mgr = (UndoManager *) scm_to_pointer (undo_manager);
 
   GError * err = NULL;
   int      ret = undo_manager_undo (undo_mgr, &err);
@@ -81,8 +80,7 @@ SCM_DEFINE (
   "Redoes the last undone action.")
 #define FUNC_NAME s_
 {
-  UndoManager * undo_mgr =
-    (UndoManager *) scm_to_pointer (undo_manager);
+  UndoManager * undo_mgr = (UndoManager *) scm_to_pointer (undo_manager);
 
   GError * err = NULL;
   int      ret = undo_manager_redo (undo_mgr, &err);
@@ -112,6 +110,5 @@ init_module (void * data)
 void
 guile_actions_undo_manager_define_module (void)
 {
-  scm_c_define_module (
-    "actions undo-manager", init_module, NULL);
+  scm_c_define_module ("actions undo-manager", init_module, NULL);
 }

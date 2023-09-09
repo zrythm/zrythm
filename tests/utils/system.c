@@ -35,36 +35,28 @@ test_run_cmd_w_args (void)
   };
 
   /* try no output */
-  ret = system_run_cmd_w_args (
-    args_instant, 100, NULL, NULL, false);
+  ret = system_run_cmd_w_args (args_instant, 100, NULL, NULL, false);
   g_assert_cmpint (ret, ==, 0);
 
   ret = system_run_cmd_w_args (args, 1, &output, NULL, false);
   g_assert_cmpint (ret, !=, 0);
   ret = system_run_cmd_w_args (args, 1, NULL, &output, false);
   g_assert_cmpint (ret, !=, 0);
-  ret = system_run_cmd_w_args (
-    args_stderr, 1, &output, NULL, false);
+  ret = system_run_cmd_w_args (args_stderr, 1, &output, NULL, false);
   g_assert_cmpint (ret, !=, 0);
-  ret = system_run_cmd_w_args (
-    args_stderr, 1, NULL, &output, false);
+  ret = system_run_cmd_w_args (args_stderr, 1, NULL, &output, false);
   g_assert_cmpint (ret, !=, 0);
 
-  ret =
-    system_run_cmd_w_args (args, 2000, &output, NULL, false);
+  ret = system_run_cmd_w_args (args, 2000, &output, NULL, false);
   g_assert_cmpint (ret, !=, 0);
-  ret =
-    system_run_cmd_w_args (args, 2000, NULL, &output, false);
+  ret = system_run_cmd_w_args (args, 2000, NULL, &output, false);
   g_assert_cmpint (ret, !=, 0);
-  ret = system_run_cmd_w_args (
-    args_stderr, 2000, &output, NULL, false);
+  ret = system_run_cmd_w_args (args_stderr, 2000, &output, NULL, false);
   g_assert_cmpint (ret, !=, 0);
-  ret = system_run_cmd_w_args (
-    args_stderr, 2000, NULL, &output, false);
+  ret = system_run_cmd_w_args (args_stderr, 2000, NULL, &output, false);
   g_assert_cmpint (ret, !=, 0);
 
-  ret =
-    system_run_cmd_w_args (args, 8000, &output, NULL, false);
+  ret = system_run_cmd_w_args (args, 8000, &output, NULL, false);
   g_assert_cmpint (ret, ==, 0);
   g_assert_cmpstr (output, ==, "hello\n");
   output[0] = '\0';
@@ -98,8 +90,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/utils/general/"
 
   g_test_add_func (
-    TEST_PREFIX "test run cmd w args",
-    (GTestFunc) test_run_cmd_w_args);
+    TEST_PREFIX "test run cmd w args", (GTestFunc) test_run_cmd_w_args);
 
   return g_test_run ();
 }

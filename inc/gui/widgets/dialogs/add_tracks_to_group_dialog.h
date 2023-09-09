@@ -46,8 +46,7 @@ typedef struct _AddTracksToGroupDialogWidget
  *   has been executed, or NULL if failure.
  */
 Track *
-add_tracks_to_group_dialog_widget_get_track (
-  TracklistSelections * sel);
+add_tracks_to_group_dialog_widget_get_track (TracklistSelections * sel);
 
 /**
  * @}

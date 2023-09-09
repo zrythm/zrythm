@@ -46,8 +46,7 @@ typedef enum RouteTargetSelectorType
   ROUTE_TARGET_TYPE_INSTRUMENT,
 } RouteTargetSelectorType;
 
-typedef struct _RouteTargetSelectorWidget
-  RouteTargetSelectorWidget;
+typedef struct _RouteTargetSelectorWidget RouteTargetSelectorWidget;
 
 typedef struct _RouteTargetSelectorPopoverWidget
 {
@@ -74,7 +73,6 @@ typedef struct _RouteTargetSelectorPopoverWidget
  * Creates a new RouteTargetSelectorPopoverWidget.
  */
 RouteTargetSelectorPopoverWidget *
-route_target_selector_popover_widget_new (
-  RouteTargetSelectorWidget * owner);
+route_target_selector_popover_widget_new (RouteTargetSelectorWidget * owner);
 
 #endif

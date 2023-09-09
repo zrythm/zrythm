@@ -32,20 +32,16 @@ on_response (
 {
   if (string_is_equal (response, "ok"))
     {
-      const char * text =
-        gtk_editable_get_text (GTK_EDITABLE (self->entry));
+      const char * text = gtk_editable_get_text (GTK_EDITABLE (self->entry));
 
       self->setter (self->obj, text);
     }
 }
 
 static void
-on_entry_activate (
-  GtkEntry *                btn,
-  StringEntryDialogWidget * self)
+on_entry_activate (GtkEntry * btn, StringEntryDialogWidget * self)
 {
-  adw_message_dialog_response (
-    ADW_MESSAGE_DIALOG (self), "ok");
+  adw_message_dialog_response (ADW_MESSAGE_DIALOG (self), "ok");
   gtk_window_close (GTK_WINDOW (self));
 }
 
@@ -60,21 +56,19 @@ string_entry_dialog_widget_new (
   GenericStringSetter setter)
 {
   StringEntryDialogWidget * self = g_object_new (
-    STRING_ENTRY_DIALOG_WIDGET_TYPE, "icon-name", "zrythm",
-    "heading", label, NULL);
+    STRING_ENTRY_DIALOG_WIDGET_TYPE, "icon-name", "zrythm", "heading", label,
+    NULL);
 
   self->obj = obj;
   self->getter = getter;
   self->setter = setter;
 
-  gtk_window_set_transient_for (
-    GTK_WINDOW (self), GTK_WINDOW (MAIN_WINDOW));
+  gtk_window_set_transient_for (GTK_WINDOW (self), GTK_WINDOW (MAIN_WINDOW));
 
   /*gtk_label_set_text (self->label, label);*/
 
   /* setup text */
-  gtk_editable_set_text (
-    GTK_EDITABLE (self->entry), getter (obj));
+  gtk_editable_set_text (GTK_EDITABLE (self->entry), getter (obj));
 
   return self;
 }
@@ -109,16 +103,13 @@ str_set (char ** str, const char * in_str)
 #endif
 
 static void
-string_entry_dialog_widget_class_init (
-  StringEntryDialogWidgetClass * _klass)
+string_entry_dialog_widget_class_init (StringEntryDialogWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "string_entry_dialog.ui");
+  resources_set_class_template (klass, "string_entry_dialog.ui");
 
 #define BIND_CHILD(child) \
-  gtk_widget_class_bind_template_child ( \
-    klass, StringEntryDialogWidget, child)
+  gtk_widget_class_bind_template_child (klass, StringEntryDialogWidget, child)
 
   BIND_CHILD (entry);
   /*BIND_CHILD (label);*/
@@ -127,15 +118,11 @@ string_entry_dialog_widget_class_init (
 }
 
 static void
-string_entry_dialog_widget_init (
-  StringEntryDialogWidget * self)
+string_entry_dialog_widget_init (StringEntryDialogWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
   g_signal_connect (
-    G_OBJECT (self->entry), "activate",
-    G_CALLBACK (on_entry_activate), self);
-  g_signal_connect (
-    G_OBJECT (self), "response", G_CALLBACK (on_response),
-    self);
+    G_OBJECT (self->entry), "activate", G_CALLBACK (on_entry_activate), self);
+  g_signal_connect (G_OBJECT (self), "response", G_CALLBACK (on_response), self);
 }

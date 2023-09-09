@@ -58,11 +58,9 @@ selection_info_widget_add_info (
   /* add separator if not 0 */
   if (l > 0)
     {
-      GtkWidget * separator =
-        gtk_separator_new (GTK_ORIENTATION_VERTICAL);
+      GtkWidget * separator = gtk_separator_new (GTK_ORIENTATION_VERTICAL);
       gtk_widget_set_visible (separator, 1);
-      gtk_grid_attach (
-        GTK_GRID (self), separator, l - 1, 0, 1, 2);
+      gtk_grid_attach (GTK_GRID (self), separator, l - 1, 0, 1, 2);
     }
 
   if (label)
@@ -88,8 +86,7 @@ selection_info_widget_clear (SelectionInfoWidget * self)
 }
 
 static void
-selection_info_widget_class_init (
-  SelectionInfoWidgetClass * _klass)
+selection_info_widget_class_init (SelectionInfoWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (klass, "selection-info");

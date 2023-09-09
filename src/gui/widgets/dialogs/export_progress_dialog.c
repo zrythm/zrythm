@@ -30,9 +30,7 @@ G_DEFINE_TYPE (
   GENERIC_PROGRESS_DIALOG_WIDGET_TYPE)
 
 static void
-on_open_directory_clicked (
-  GtkButton *                  btn,
-  ExportProgressDialogWidget * self)
+on_open_directory_clicked (GtkButton * btn, ExportProgressDialogWidget * self)
 {
   char * dir = io_get_dir (self->info->file_uri);
   io_open_directory (dir);
@@ -60,26 +58,23 @@ export_progress_dialog_widget_new (
   self->info = info;
 
   generic_progress_dialog_widget_setup (
-    generic_progress_dialog, _ ("Export Progress"),
-    info->progress_info, _ ("Exporting..."), autoclose,
-    cancelable);
+    generic_progress_dialog, _ ("Export Progress"), info->progress_info,
+    _ ("Exporting..."), autoclose, cancelable);
 
   self->show_open_dir_btn = show_open_dir_btn;
 
   if (show_open_dir_btn)
     {
-      self->open_directory = GTK_BUTTON (
-        gtk_button_new_with_label (_ ("Open Directory")));
+      self->open_directory =
+        GTK_BUTTON (gtk_button_new_with_label (_ ("Open Directory")));
       gtk_widget_set_tooltip_text (
-        GTK_WIDGET (self->open_directory),
-        _ ("Opens the containing directory"));
+        GTK_WIDGET (self->open_directory), _ ("Opens the containing directory"));
       g_signal_connect (
         G_OBJECT (self->open_directory), "clicked",
         G_CALLBACK (on_open_directory_clicked), self);
 
       generic_progress_dialog_add_button (
-        generic_progress_dialog, self->open_directory, true,
-        true);
+        generic_progress_dialog, self->open_directory, true, true);
     }
 
   return self;
@@ -92,8 +87,7 @@ export_progress_dialog_widget_class_init (
 }
 
 static void
-export_progress_dialog_widget_init (
-  ExportProgressDialogWidget * self)
+export_progress_dialog_widget_init (ExportProgressDialogWidget * self)
 {
   g_type_ensure (GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
 }

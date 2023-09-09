@@ -36,8 +36,7 @@ SCM_DEFINE (
 {
   Plugin * pl = (Plugin *) scm_to_pointer (plugin);
 
-  return scm_from_pointer (
-    pl->in_ports[scm_to_int (port_idx)], NULL);
+  return scm_from_pointer (pl->in_ports[scm_to_int (port_idx)], NULL);
 }
 #undef FUNC_NAME
 
@@ -53,8 +52,7 @@ SCM_DEFINE (
 {
   Plugin * pl = (Plugin *) scm_to_pointer (plugin);
 
-  return scm_from_pointer (
-    pl->out_ports[scm_to_int (port_idx)], NULL);
+  return scm_from_pointer (pl->out_ports[scm_to_int (port_idx)], NULL);
 }
 #undef FUNC_NAME
 
@@ -64,8 +62,7 @@ init_module (void * data)
 #ifndef SNARF_MODE
 #  include "plugins_plugin.x"
 #endif
-  scm_c_export (
-    "plugin-get-in-port", "plugin-get-out-port", NULL);
+  scm_c_export ("plugin-get-in-port", "plugin-get-out-port", NULL);
 }
 
 void

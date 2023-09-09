@@ -7,10 +7,7 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  KnobWithNameWidget,
-  knob_with_name_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (KnobWithNameWidget, knob_with_name_widget, GTK_TYPE_BOX)
 
 /**
  * Returns a new instance.
@@ -29,11 +26,10 @@ knob_with_name_widget_new (
   int                 spacing)
 {
   KnobWithNameWidget * self = g_object_new (
-    KNOB_WITH_NAME_WIDGET_TYPE, "orientation", orientation,
-    "spacing", 2, NULL);
+    KNOB_WITH_NAME_WIDGET_TYPE, "orientation", orientation, "spacing", 2, NULL);
 
-  EditableLabelWidget * label = editable_label_widget_new (
-    obj, name_getter, name_setter, -1);
+  EditableLabelWidget * label =
+    editable_label_widget_new (obj, name_getter, name_setter, -1);
 
   if (label_before)
     {
@@ -54,13 +50,11 @@ dispose (KnobWithNameWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
-  G_OBJECT_CLASS (knob_with_name_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (knob_with_name_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
-knob_with_name_widget_class_init (
-  KnobWithNameWidgetClass * _klass)
+knob_with_name_widget_class_init (KnobWithNameWidgetClass * _klass)
 {
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;
@@ -69,8 +63,6 @@ knob_with_name_widget_class_init (
 static void
 knob_with_name_widget_init (KnobWithNameWidget * self)
 {
-  self->popover_menu =
-    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 }

@@ -52,12 +52,9 @@ color_is_same (GdkRGBA * src, GdkRGBA * dest)
 {
   float epsilon = 0.000001f;
   return math_floats_equal_epsilon (src->red, dest->red, epsilon)
-         && math_floats_equal_epsilon (
-           src->green, dest->green, epsilon)
-         && math_floats_equal_epsilon (
-           src->blue, dest->blue, epsilon)
-         && math_floats_equal_epsilon (
-           src->alpha, dest->alpha, epsilon);
+         && math_floats_equal_epsilon (src->green, dest->green, epsilon)
+         && math_floats_equal_epsilon (src->blue, dest->blue, epsilon)
+         && math_floats_equal_epsilon (src->alpha, dest->alpha, epsilon);
 }
 
 /**

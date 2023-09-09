@@ -41,35 +41,35 @@
 
 typedef struct UndoStack_v1
 {
-  int                            schema_version;
-  Stack_v1 *                     stack;
-  ArrangerSelectionsAction_v1 ** as_actions;
-  size_t                         num_as_actions;
-  size_t                         as_actions_size;
-  MixerSelectionsAction_v1 **    mixer_selections_actions;
-  size_t                         num_mixer_selections_actions;
-  size_t mixer_selections_actions_size;
+  int                             schema_version;
+  Stack_v1 *                      stack;
+  ArrangerSelectionsAction_v1 **  as_actions;
+  size_t                          num_as_actions;
+  size_t                          as_actions_size;
+  MixerSelectionsAction_v1 **     mixer_selections_actions;
+  size_t                          num_mixer_selections_actions;
+  size_t                          mixer_selections_actions_size;
   TracklistSelectionsAction_v1 ** tracklist_selections_actions;
-  size_t                  num_tracklist_selections_actions;
-  size_t                  tracklist_selections_actions_size;
-  ChannelSendAction_v1 ** channel_send_actions;
-  size_t                  num_channel_send_actions;
-  size_t                  channel_send_actions_size;
-  PortConnectionAction_v1 ** port_connection_actions;
-  size_t                     num_port_connection_actions;
-  size_t                     port_connection_actions_size;
-  PortAction_v1 **           port_actions;
-  size_t                     num_port_actions;
-  size_t                     port_actions_size;
-  MidiMappingAction_v1 **    midi_mapping_actions;
-  size_t                     num_midi_mapping_actions;
-  size_t                     midi_mapping_actions_size;
-  RangeAction_v1 **          range_actions;
-  size_t                     num_range_actions;
-  size_t                     range_actions_size;
-  TransportAction_v1 **      transport_actions;
-  size_t                     num_transport_actions;
-  size_t                     transport_actions_size;
+  size_t                          num_tracklist_selections_actions;
+  size_t                          tracklist_selections_actions_size;
+  ChannelSendAction_v1 **         channel_send_actions;
+  size_t                          num_channel_send_actions;
+  size_t                          channel_send_actions_size;
+  PortConnectionAction_v1 **      port_connection_actions;
+  size_t                          num_port_connection_actions;
+  size_t                          port_connection_actions_size;
+  PortAction_v1 **                port_actions;
+  size_t                          num_port_actions;
+  size_t                          port_actions_size;
+  MidiMappingAction_v1 **         midi_mapping_actions;
+  size_t                          num_midi_mapping_actions;
+  size_t                          midi_mapping_actions_size;
+  RangeAction_v1 **               range_actions;
+  size_t                          num_range_actions;
+  size_t                          range_actions_size;
+  TransportAction_v1 **           transport_actions;
+  size_t                          num_transport_actions;
+  size_t                          transport_actions_size;
 } UndoStack_v1;
 
 static const cyaml_schema_field_t undo_stack_fields_schema_v1[] = {
@@ -110,10 +110,7 @@ static const cyaml_schema_field_t undo_stack_fields_schema_v1[] = {
     UndoStack_v1,
     transport_actions,
     transport_action_schema_v1),
-  YAML_FIELD_MAPPING_PTR (
-    UndoStack_v1,
-    stack,
-    stack_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (UndoStack_v1, stack, stack_fields_schema_v1),
 
   CYAML_FIELD_END
 };

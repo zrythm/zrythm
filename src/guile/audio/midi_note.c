@@ -30,19 +30,14 @@ SCM_DEFINE (
   5,
   0,
   0,
-  (SCM region,
-   SCM start_pos,
-   SCM end_pos,
-   SCM pitch,
-   SCM velocity),
+  (SCM region, SCM start_pos, SCM end_pos, SCM pitch, SCM velocity),
   "Returns a new midi note.")
 #define FUNC_NAME s_
 {
   ZRegion *  midi_region = scm_to_pointer (region);
   MidiNote * mn = midi_note_new (
-    &midi_region->id, scm_to_pointer (start_pos),
-    scm_to_pointer (end_pos), scm_to_uint8 (pitch),
-    scm_to_uint8 (velocity));
+    &midi_region->id, scm_to_pointer (start_pos), scm_to_pointer (end_pos),
+    scm_to_uint8 (pitch), scm_to_uint8 (velocity));
 
   return scm_from_pointer (mn, NULL);
 }

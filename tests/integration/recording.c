@@ -33,8 +33,7 @@
 
 #define SET_CACHES_AND_PROCESS \
   engine_set_run (AUDIO_ENGINE, 0); \
-  tracklist_set_caches ( \
-    TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS); \
+  tracklist_set_caches (TRACKLIST, CACHE_TYPE_PLAYBACK_SNAPSHOTS); \
   engine_set_run (AUDIO_ENGINE, 1); \
   engine_process (AUDIO_ENGINE, CYCLE_SIZE)
 
@@ -47,8 +46,8 @@ prepare (void)
 
   /* create dummy input for audio recording */
   AUDIO_ENGINE->dummy_input = stereo_ports_new_generic (
-    true, "Dummy input", "dummy_input",
-    PORT_OWNER_TYPE_AUDIO_ENGINE, AUDIO_ENGINE);
+    true, "Dummy input", "dummy_input", PORT_OWNER_TYPE_AUDIO_ENGINE,
+    AUDIO_ENGINE);
   port_allocate_bufs (AUDIO_ENGINE->dummy_input->l);
   port_allocate_bufs (AUDIO_ENGINE->dummy_input->r);
 
@@ -72,8 +71,7 @@ do_takes_no_loop_no_punch (
   transport_set_punch_mode_enabled (TRANSPORT, false);
 
   /* move playhead to 2.1.1.0 */
-  transport_set_playhead_to_bar (
-    TRANSPORT, PLAYHEAD_START_BAR);
+  transport_set_playhead_to_bar (TRANSPORT, PLAYHEAD_START_BAR);
 
   /* enable recording for audio & ins track */
   track_set_recording (ins_track, true, false);
@@ -89,8 +87,7 @@ do_takes_no_loop_no_punch (
     }
 
   /* enable recording for master track automation */
-  g_assert_cmpint (
-    master_track->automation_tracklist.num_ats, >=, 3);
+  g_assert_cmpint (master_track->automation_tracklist.num_ats, >=, 3);
   latch_at = master_track->automation_tracklist.ats[0];
   latch_at->record_mode = AUTOMATION_RECORD_MODE_LATCH;
   automation_track_set_automation_mode (
@@ -118,8 +115,7 @@ do_takes_no_loop_no_punch (
   ZRegion *mr, *audio_r, *latch_r, *touch_r, *on_r;
   (void) on_r;
   (void) touch_r;
-  ArrangerObject *mr_obj, *audio_r_obj, *latch_r_obj,
-    *touch_r_obj, *on_r_obj;
+  ArrangerObject *mr_obj, *audio_r_obj, *latch_r_obj, *touch_r_obj, *on_r_obj;
   (void) on_r_obj;
   (void) touch_r_obj;
 
@@ -151,8 +147,7 @@ do_takes_no_loop_no_punch (
   g_assert_cmpuint (clip->num_frames, ==, CYCLE_SIZE);
   for (int i = 0; i < 2; i++)
     {
-      g_assert_true (audio_frames_empty (
-        &clip->ch_frames[i][0], CYCLE_SIZE));
+      g_assert_true (audio_frames_empty (&clip->ch_frames[i][0], CYCLE_SIZE));
     }
 
   /* assert that automation events are created */
@@ -171,8 +166,7 @@ do_takes_no_loop_no_punch (
     latch_val_at_start, latch_port->control, 0.0001f);
   g_assert_cmpfloat_with_epsilon (
     touch_val_at_start, touch_port->control, 0.0001f);
-  g_assert_cmpfloat_with_epsilon (
-    on_val_at_start, on_port->control, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (on_val_at_start, on_port->control, 0.0001f);
 
   /* assert that automation points are created */
   g_assert_cmpint (latch_r->num_aps, ==, 1);
@@ -180,16 +174,13 @@ do_takes_no_loop_no_punch (
   ArrangerObject *  ap_obj = (ArrangerObject *) ap;
   position_init (&pos);
   g_assert_cmppos (&pos, &ap_obj->pos);
-  g_assert_cmpfloat_with_epsilon (
-    ap->fvalue, latch_val_at_start, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (ap->fvalue, latch_val_at_start, 0.0001f);
 
   /* send a MIDI event */
   Port * port = ins_track->processor->midi_in;
-  midi_events_add_note_on (
-    port->midi_events, 1, NOTE_PITCH, 70, 0, F_QUEUED);
+  midi_events_add_note_on (port->midi_events, 1, NOTE_PITCH, 70, 0, F_QUEUED);
   midi_events_add_note_off (
-    port->midi_events, 1, NOTE_PITCH, CYCLE_SIZE - 1,
-    F_QUEUED);
+    port->midi_events, 1, NOTE_PITCH, CYCLE_SIZE - 1, F_QUEUED);
 
   /* send audio data */
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
@@ -200,8 +191,7 @@ do_takes_no_loop_no_punch (
 
   /* send automation data */
   port_set_control_value (
-    latch_port, AUTOMATION_VAL, F_NOT_NORMALIZED,
-    F_NO_PUBLISH_EVENTS);
+    latch_port, AUTOMATION_VAL, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
   /* run the engine */
   SET_CACHES_AND_PROCESS;
@@ -210,8 +200,7 @@ do_takes_no_loop_no_punch (
   g_message ("process 2 ended");
 
   /* verify MIDI region positions */
-  long r_length_frames =
-    arranger_object_get_length_in_frames (mr_obj);
+  long r_length_frames = arranger_object_get_length_in_frames (mr_obj);
   position_set_to_bar (&pos, PLAYHEAD_START_BAR);
   g_assert_cmppos (&pos, &mr_obj->pos);
   position_init (&pos);
@@ -226,15 +215,13 @@ do_takes_no_loop_no_punch (
   MidiNote *       mn = mr->midi_notes[0];
   ArrangerObject * mn_obj = (ArrangerObject *) mn;
   g_assert_cmpint (mn->val, ==, NOTE_PITCH);
-  long mn_length_frames =
-    arranger_object_get_length_in_frames (mn_obj);
+  long mn_length_frames = arranger_object_get_length_in_frames (mn_obj);
   g_assert_cmpint (mn_length_frames, ==, CYCLE_SIZE);
   position_from_frames (&pos, CYCLE_SIZE);
   g_assert_cmppos (&mn_obj->pos, &pos);
 
   /* verify audio region positions */
-  r_length_frames =
-    arranger_object_get_length_in_frames (audio_r_obj);
+  r_length_frames = arranger_object_get_length_in_frames (audio_r_obj);
   position_set_to_bar (&pos, PLAYHEAD_START_BAR);
   g_assert_cmppos (&pos, &audio_r_obj->pos);
   position_init (&pos);
@@ -256,8 +243,7 @@ do_takes_no_loop_no_punch (
     }
 
   /* verify automation region positions */
-  r_length_frames =
-    arranger_object_get_length_in_frames (latch_r_obj);
+  r_length_frames = arranger_object_get_length_in_frames (latch_r_obj);
   position_set_to_bar (&pos, PLAYHEAD_START_BAR);
   g_assert_cmppos (&pos, &latch_r_obj->pos);
   position_init (&pos);
@@ -272,15 +258,13 @@ do_takes_no_loop_no_punch (
   ap_obj = (ArrangerObject *) ap;
   position_init (&pos);
   g_assert_cmppos (&pos, &ap_obj->pos);
-  g_assert_cmpfloat_with_epsilon (
-    ap->fvalue, latch_val_at_start, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (ap->fvalue, latch_val_at_start, 0.0001f);
   ap = latch_r->aps[1];
   ap_obj = (ArrangerObject *) ap;
   position_init (&pos);
   position_add_frames (&pos, CYCLE_SIZE);
   g_assert_cmppos (&pos, &ap_obj->pos);
-  g_assert_cmpfloat_with_epsilon (
-    ap->fvalue, AUTOMATION_VAL, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (ap->fvalue, AUTOMATION_VAL, 0.0001f);
 
   /* stop recording */
   track_set_recording (ins_track, false, false);
@@ -292,8 +276,7 @@ do_takes_no_loop_no_punch (
   transport_request_pause (TRANSPORT, true);
   recording_manager_process_events (RECORDING_MANAGER);
 
-  g_assert_cmpint (
-    RECORDING_MANAGER->num_active_recordings, ==, 0);
+  g_assert_cmpint (RECORDING_MANAGER->num_active_recordings, ==, 0);
 
   g_message ("process 3 ended");
 
@@ -340,8 +323,7 @@ do_takes_loop_no_punch (
     }
 
   /* enable recording for master track automation */
-  g_assert_cmpint (
-    master_track->automation_tracklist.num_ats, >=, 3);
+  g_assert_cmpint (master_track->automation_tracklist.num_ats, >=, 3);
   latch_at = master_track->automation_tracklist.ats[0];
   latch_at->record_mode = AUTOMATION_RECORD_MODE_LATCH;
   automation_track_set_automation_mode (
@@ -370,8 +352,7 @@ do_takes_loop_no_punch (
   ZRegion *mr, *audio_r, *latch_r, *touch_r, *on_r;
   (void) on_r;
   (void) touch_r;
-  ArrangerObject *mr_obj, *audio_r_obj, *latch_r_obj,
-    *touch_r_obj, *on_r_obj;
+  ArrangerObject *mr_obj, *audio_r_obj, *latch_r_obj, *touch_r_obj, *on_r_obj;
   (void) on_r_obj;
   (void) touch_r_obj;
 
@@ -413,10 +394,8 @@ do_takes_loop_no_punch (
   g_assert_cmpuint (clip->num_frames, ==, FRAMES_BEFORE_LOOP);
   for (nframes_t i = 0; i < (nframes_t) FRAMES_BEFORE_LOOP; i++)
     {
-      g_assert_cmpfloat_with_epsilon (
-        clip->ch_frames[0][i], 0.f, 0.000001f);
-      g_assert_cmpfloat_with_epsilon (
-        clip->ch_frames[1][i], 0.f, 0.000001f);
+      g_assert_cmpfloat_with_epsilon (clip->ch_frames[0][i], 0.f, 0.000001f);
+      g_assert_cmpfloat_with_epsilon (clip->ch_frames[1][i], 0.f, 0.000001f);
     }
   audio_r = audio_track->lanes[2]->regions[0];
   audio_r_obj = (ArrangerObject *) audio_r;
@@ -428,15 +407,11 @@ do_takes_loop_no_punch (
   g_assert_cmppos (&pos, &audio_r_obj->loop_end_pos);
   /* assert that audio is silent */
   clip = audio_region_get_clip (audio_r);
-  g_assert_cmpuint (
-    clip->num_frames, ==, CYCLE_SIZE - FRAMES_BEFORE_LOOP);
-  for (nframes_t i = 0;
-       i < CYCLE_SIZE - (nframes_t) FRAMES_BEFORE_LOOP; i++)
+  g_assert_cmpuint (clip->num_frames, ==, CYCLE_SIZE - FRAMES_BEFORE_LOOP);
+  for (nframes_t i = 0; i < CYCLE_SIZE - (nframes_t) FRAMES_BEFORE_LOOP; i++)
     {
-      g_assert_cmpfloat_with_epsilon (
-        clip->ch_frames[0][i], 0.f, 0.000001f);
-      g_assert_cmpfloat_with_epsilon (
-        clip->ch_frames[1][i], 0.f, 0.000001f);
+      g_assert_cmpfloat_with_epsilon (clip->ch_frames[0][i], 0.f, 0.000001f);
+      g_assert_cmpfloat_with_epsilon (clip->ch_frames[1][i], 0.f, 0.000001f);
     }
 
   /* assert that automation events are created */
@@ -464,8 +439,7 @@ do_takes_loop_no_punch (
     latch_val_at_start, latch_port->control, 0.0001f);
   g_assert_cmpfloat_with_epsilon (
     touch_val_at_start, touch_port->control, 0.0001f);
-  g_assert_cmpfloat_with_epsilon (
-    on_val_at_start, on_port->control, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (on_val_at_start, on_port->control, 0.0001f);
 
   /* assert that automation points are created */
   latch_r = latch_at->regions[0];
@@ -475,8 +449,7 @@ do_takes_loop_no_punch (
   ArrangerObject *  ap_obj = (ArrangerObject *) ap;
   position_init (&pos);
   g_assert_cmppos (&pos, &ap_obj->pos);
-  g_assert_cmpfloat_with_epsilon (
-    ap->fvalue, latch_val_at_start, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (ap->fvalue, latch_val_at_start, 0.0001f);
 #if 0
   ap = latch_r->aps[1];
   ap_obj = (ArrangerObject *) ap;
@@ -621,10 +594,7 @@ do_takes_loop_no_punch (
 }
 
 static void
-test_recording_takes (
-  Track * ins_track,
-  Track * audio_track,
-  Track * master_track)
+test_recording_takes (Track * ins_track, Track * audio_track, Track * master_track)
 {
   int ins_track_pos = ins_track->pos;
   int audio_track_pos = audio_track->pos;
@@ -632,8 +602,7 @@ test_recording_takes (
   g_assert_cmpint (audio_track_pos, <, TRACKLIST->num_tracks);
 
   prepare ();
-  do_takes_no_loop_no_punch (
-    ins_track, audio_track, master_track);
+  do_takes_no_loop_no_punch (ins_track, audio_track, master_track);
 
   g_assert_cmpint (audio_track_pos, <, TRACKLIST->num_tracks);
   ins_track = TRACKLIST->tracks[ins_track_pos];
@@ -641,8 +610,7 @@ test_recording_takes (
   master_track = TRACKLIST->tracks[master_track_pos];
 
   prepare ();
-  do_takes_loop_no_punch (
-    ins_track, audio_track, master_track);
+  do_takes_loop_no_punch (ins_track, audio_track, master_track);
 }
 
 static void
@@ -657,12 +625,10 @@ test_recording (void)
   /* create an instrument track for testing */
   test_plugin_manager_create_tracks_from_plugin (
     TRIPLE_SYNTH_BUNDLE, TRIPLE_SYNTH_URI, true, false, 1);
-  Track * ins_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track * ins_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
 
   /* create an audio track */
-  Track * audio_track =
-    track_create_empty_with_action (TRACK_TYPE_AUDIO, NULL);
+  Track * audio_track = track_create_empty_with_action (TRACK_TYPE_AUDIO, NULL);
   g_assert_true (IS_TRACK_AND_NONNULL (audio_track));
 
   /* get master track */
@@ -706,8 +672,7 @@ test_automation_touch_recording (void)
   /* move playhead to 4 ticks before loop */
   Position pos;
   position_set_to_pos (&pos, &TRANSPORT->loop_end_pos);
-  position_add_frames (
-    &pos, -(CYCLE_SIZE + FRAMES_BEFORE_LOOP));
+  position_add_frames (&pos, -(CYCLE_SIZE + FRAMES_BEFORE_LOOP));
   transport_set_playhead_pos (TRANSPORT, &pos);
 
   /* enable recording for audio & ins track */
@@ -715,8 +680,7 @@ test_automation_touch_recording (void)
   AutomationTrack * touch_at;
 
   /* enable recording for automation */
-  g_assert_cmpint (
-    ins_track->automation_tracklist.num_ats, >=, 3);
+  g_assert_cmpint (ins_track->automation_tracklist.num_ats, >=, 3);
   touch_at = ins_track->automation_tracklist.ats[1];
   touch_at->record_mode = AUTOMATION_RECORD_MODE_TOUCH;
   automation_track_set_automation_mode (
@@ -725,8 +689,7 @@ test_automation_touch_recording (void)
   g_assert_nonnull (touch_port);
   float touch_val_at_start = 0.1f;
   port_set_control_value (
-    touch_port, touch_val_at_start, F_NOT_NORMALIZED,
-    F_NO_PUBLISH_EVENTS);
+    touch_port, touch_val_at_start, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
   /* run the engine for 1 cycle */
   g_message ("--- processing engine...");
@@ -743,8 +706,7 @@ test_automation_touch_recording (void)
   /* alter automation */
   float touch_val_at_end = 0.2f;
   port_set_control_value (
-    touch_port, touch_val_at_end, F_NOT_NORMALIZED,
-    F_NO_PUBLISH_EVENTS);
+    touch_port, touch_val_at_end, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
 
   /* run the engine for 1 cycle (including loop) */
   g_message ("--- processing engine...");
@@ -757,11 +719,9 @@ test_automation_touch_recording (void)
   touch_r_obj = (ArrangerObject *) touch_r;
   position_set_to_pos (&pos, &TRANSPORT->loop_end_pos);
   g_assert_cmppos (&pos, &touch_r_obj->end_pos);
-  position_add_frames (
-    &pos, -(CYCLE_SIZE + FRAMES_BEFORE_LOOP));
+  position_add_frames (&pos, -(CYCLE_SIZE + FRAMES_BEFORE_LOOP));
   g_assert_cmppos (&pos, &touch_r_obj->pos);
-  position_from_frames (
-    &pos, (CYCLE_SIZE + FRAMES_BEFORE_LOOP));
+  position_from_frames (&pos, (CYCLE_SIZE + FRAMES_BEFORE_LOOP));
   g_assert_cmppos (&pos, &touch_r_obj->loop_end_pos);
   touch_r = touch_at->regions[1];
   touch_r_obj = (ArrangerObject *) touch_r;
@@ -782,15 +742,13 @@ test_automation_touch_recording (void)
   ArrangerObject *  ap_obj = (ArrangerObject *) ap;
   position_init (&pos);
   g_assert_cmppos (&pos, &ap_obj->pos);
-  g_assert_cmpfloat_with_epsilon (
-    ap->fvalue, touch_val_at_start, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (ap->fvalue, touch_val_at_start, 0.0001f);
   ap = touch_r->aps[1];
   ap_obj = (ArrangerObject *) ap;
   position_init (&pos);
   position_add_frames (&pos, CYCLE_SIZE);
   g_assert_cmppos (&pos, &ap_obj->pos);
-  g_assert_cmpfloat_with_epsilon (
-    ap->fvalue, touch_val_at_end, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (ap->fvalue, touch_val_at_end, 0.0001f);
 
   test_helper_zrythm_cleanup ();
 }
@@ -805,8 +763,7 @@ test_mono_recording (void)
   test_project_stop_dummy_engine ();
 
   /* create an audio track */
-  Track * audio_track =
-    track_create_empty_with_action (TRACK_TYPE_AUDIO, NULL);
+  Track * audio_track = track_create_empty_with_action (TRACK_TYPE_AUDIO, NULL);
 
   prepare ();
   TRANSPORT->recording = true;
@@ -825,11 +782,9 @@ test_mono_recording (void)
   track_set_recording (audio_track, true, false);
 
   /* set mono */
-  TrackProcessor * audio_track_processor =
-    audio_track->processor;
+  TrackProcessor * audio_track_processor = audio_track->processor;
   port_set_control_value (
-    audio_track_processor->mono, 1.f, true,
-    F_NO_PUBLISH_EVENTS);
+    audio_track_processor->mono, 1.f, true, F_NO_PUBLISH_EVENTS);
 
   for (nframes_t i = 0; i < CYCLE_SIZE; i++)
     {
@@ -894,8 +849,7 @@ test_long_audio_recording (void)
   test_project_stop_dummy_engine ();
 
   /* create an audio track */
-  Track * audio_track =
-    track_create_empty_with_action (TRACK_TYPE_AUDIO, NULL);
+  Track * audio_track = track_create_empty_with_action (TRACK_TYPE_AUDIO, NULL);
 
   prepare ();
   TRANSPORT->recording = true;
@@ -914,21 +868,17 @@ test_long_audio_recording (void)
   /* enable recording for audio track */
   track_set_recording (audio_track, true, false);
 
-  AudioClip * clip =
-    audio_clip_new_from_file (TEST_WAV2, NULL);
+  AudioClip *      clip = audio_clip_new_from_file (TEST_WAV2, NULL);
   unsigned_frame_t processed_ch_frames = 0;
 
   double total_secs_to_process =
-    (double) clip->num_frames
-    / (double) AUDIO_ENGINE->sample_rate;
+    (double) clip->num_frames / (double) AUDIO_ENGINE->sample_rate;
 
   /* process almost whole clip */
   unsigned_frame_t total_samples_to_process =
-    ((unsigned_frame_t) total_secs_to_process - 1)
-    * AUDIO_ENGINE->sample_rate;
+    ((unsigned_frame_t) total_secs_to_process - 1) * AUDIO_ENGINE->sample_rate;
 
-  unsigned_frame_t total_loops =
-    total_samples_to_process / CYCLE_SIZE;
+  unsigned_frame_t total_loops = total_samples_to_process / CYCLE_SIZE;
 
   ZRegion *        audio_r;
   ArrangerObject * audio_r_obj;
@@ -949,8 +899,7 @@ test_long_audio_recording (void)
       recording_manager_process_events (RECORDING_MANAGER);
 
       /* assert that audio events are created */
-      g_assert_cmpint (
-        audio_track->lanes[0]->num_regions, ==, 1);
+      g_assert_cmpint (audio_track->lanes[0]->num_regions, ==, 1);
       audio_r = audio_track->lanes[0]->regions[0];
       audio_r_obj = (ArrangerObject *) audio_r;
       position_set_to_pos (&pos, &TRANSPORT->playhead_pos);
@@ -960,37 +909,29 @@ test_long_audio_recording (void)
 
       /* assert that audio is correct */
       AudioClip * r_clip = audio_region_get_clip (audio_r);
-      g_assert_cmpuint (
-        r_clip->num_frames, ==, processed_ch_frames);
+      g_assert_cmpuint (r_clip->num_frames, ==, processed_ch_frames);
       for (nframes_t i = 0; i < processed_ch_frames; i++)
         {
           g_assert_cmpfloat_with_epsilon (
-            r_clip->ch_frames[0][i], clip->ch_frames[0][i],
-            0.000001f);
+            r_clip->ch_frames[0][i], clip->ch_frames[0][i], 0.000001f);
           g_assert_cmpfloat_with_epsilon (
-            r_clip->ch_frames[1][i], clip->ch_frames[1][i],
-            0.000001f);
+            r_clip->ch_frames[1][i], clip->ch_frames[1][i], 0.000001f);
         }
 
       /* load the region file and check that
        * frames are correct */
       AudioClip * new_clip = audio_clip_new_from_file (
-        audio_clip_get_path_in_pool (r_clip, F_NOT_BACKUP),
-        NULL);
+        audio_clip_get_path_in_pool (r_clip, F_NOT_BACKUP), NULL);
       if (r_clip->num_frames < new_clip->num_frames)
         {
-          g_warning (
-            "%zu < %zu", r_clip->num_frames,
-            new_clip->num_frames);
+          g_warning ("%zu < %zu", r_clip->num_frames, new_clip->num_frames);
         }
       g_warn_if_fail (audio_frames_equal (
         r_clip->ch_frames[0], new_clip->ch_frames[0],
-        (size_t) MIN (new_clip->num_frames, r_clip->num_frames),
-        0.0001f));
+        (size_t) MIN (new_clip->num_frames, r_clip->num_frames), 0.0001f));
       g_warn_if_fail (audio_frames_equal (
         r_clip->frames, new_clip->frames,
-        (size_t) MIN (
-          new_clip->num_frames * 2, r_clip->num_frames * 2),
+        (size_t) MIN (new_clip->num_frames * 2, r_clip->num_frames * 2),
         0.0001f));
       audio_clip_free (new_clip);
     }
@@ -1017,8 +958,7 @@ test_long_audio_recording (void)
     audio_clip_get_path_in_pool (r_clip, F_NOT_BACKUP), NULL);
   g_warn_if_fail (audio_frames_equal (
     r_clip->frames, new_clip->frames,
-    (size_t) MIN (new_clip->num_frames, r_clip->num_frames),
-    0.0001f));
+    (size_t) MIN (new_clip->num_frames, r_clip->num_frames), 0.0001f));
   audio_clip_free (new_clip);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -1045,13 +985,12 @@ test_2nd_audio_recording (void)
   test_project_stop_dummy_engine ();
 
   /* create an audio track from the file */
-  SupportedFile * file =
-    supported_file_new_from_path (TEST_WAV2);
+  SupportedFile * file = supported_file_new_from_path (TEST_WAV2);
   track_create_with_action (
-    TRACK_TYPE_AUDIO, NULL, file, NULL, TRACKLIST->num_tracks,
-    1, -1, NULL, NULL);
-  Track * audio_track = tracklist_get_last_track (
-    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
+    TRACK_TYPE_AUDIO, NULL, file, NULL, TRACKLIST->num_tracks, 1, -1, NULL,
+    NULL);
+  Track * audio_track =
+    tracklist_get_last_track (TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
 
   prepare ();
   TRANSPORT->recording = true;
@@ -1070,21 +1009,17 @@ test_2nd_audio_recording (void)
   /* enable recording for audio track */
   track_set_recording (audio_track, true, false);
 
-  AudioClip * clip =
-    audio_clip_new_from_file (TEST_WAV2, NULL);
+  AudioClip *      clip = audio_clip_new_from_file (TEST_WAV2, NULL);
   unsigned_frame_t processed_ch_frames = 0;
 
   double total_secs_to_process =
-    (double) clip->num_frames
-    / (double) AUDIO_ENGINE->sample_rate;
+    (double) clip->num_frames / (double) AUDIO_ENGINE->sample_rate;
 
   /* process almost whole clip */
   unsigned_frame_t total_samples_to_process =
-    ((unsigned_frame_t) total_secs_to_process - 1)
-    * AUDIO_ENGINE->sample_rate;
+    ((unsigned_frame_t) total_secs_to_process - 1) * AUDIO_ENGINE->sample_rate;
 
-  unsigned_frame_t total_loops =
-    total_samples_to_process / CYCLE_SIZE;
+  unsigned_frame_t total_loops = total_samples_to_process / CYCLE_SIZE;
 
   ZRegion *        audio_r;
   ArrangerObject * audio_r_obj;
@@ -1104,8 +1039,7 @@ test_2nd_audio_recording (void)
       recording_manager_process_events (RECORDING_MANAGER);
 
       /* assert that audio events are created */
-      g_assert_cmpint (
-        audio_track->lanes[1]->num_regions, ==, 1);
+      g_assert_cmpint (audio_track->lanes[1]->num_regions, ==, 1);
       audio_r = audio_track->lanes[1]->regions[0];
       audio_r_obj = (ArrangerObject *) audio_r;
       position_set_to_pos (&pos, &TRANSPORT->playhead_pos);
@@ -1115,8 +1049,7 @@ test_2nd_audio_recording (void)
 
       /* assert that audio is silent */
       AudioClip * r_clip = audio_region_get_clip (audio_r);
-      g_assert_cmpuint (
-        r_clip->num_frames, ==, processed_ch_frames);
+      g_assert_cmpuint (r_clip->num_frames, ==, processed_ch_frames);
       for (nframes_t i = 0; i < processed_ch_frames; i++)
         {
           g_assert_cmpfloat_with_epsilon (
@@ -1173,8 +1106,7 @@ test_chord_track_recording (void)
   position_set_to_pos (&init_pos, &pos);
 
   /* enable recording for audio track */
-  track_set_recording (
-    P_CHORD_TRACK, true, F_NO_PUBLISH_EVENTS);
+  track_set_recording (P_CHORD_TRACK, true, F_NO_PUBLISH_EVENTS);
 
   /* run the engine for a few cycles */
   for (int i = 0; i < 4; i++)
@@ -1188,8 +1120,7 @@ test_chord_track_recording (void)
 
   /* stop recording */
   if (track_type_can_record (P_CHORD_TRACK->type))
-    track_set_recording (
-      P_CHORD_TRACK, false, F_NO_PUBLISH_EVENTS);
+    track_set_recording (P_CHORD_TRACK, false, F_NO_PUBLISH_EVENTS);
 
   /* run engine 1 more cycle to finalize
    * recording */
@@ -1216,8 +1147,7 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/integration/recording/"
 
-  g_test_add_func (
-    TEST_PREFIX "test_recording", (GTestFunc) test_recording);
+  g_test_add_func (TEST_PREFIX "test_recording", (GTestFunc) test_recording);
   g_test_add_func (
     TEST_PREFIX "test automation touch recording",
     (GTestFunc) test_automation_touch_recording);
@@ -1231,8 +1161,7 @@ main (int argc, char * argv[])
     TEST_PREFIX "test long audio recording",
     (GTestFunc) test_long_audio_recording);
   g_test_add_func (
-    TEST_PREFIX "test mono recording",
-    (GTestFunc) test_mono_recording);
+    TEST_PREFIX "test mono recording", (GTestFunc) test_mono_recording);
 
   return g_test_run ();
 }

@@ -20,13 +20,11 @@
 
 #include "lv2/ui/ui.h"
 
-#define LV2_EXTERNAL_UI_URI \
-  "http://kxstudio.sf.net/ns/lv2ext/external-ui"
+#define LV2_EXTERNAL_UI_URI "http://kxstudio.sf.net/ns/lv2ext/external-ui"
 #define LV2_EXTERNAL_UI_PREFIX LV2_EXTERNAL_UI_URI "#"
 
 #define LV2_EXTERNAL_UI__Host LV2_EXTERNAL_UI_PREFIX "Host"
-#define LV2_EXTERNAL_UI__Widget \
-  LV2_EXTERNAL_UI_PREFIX "Widget"
+#define LV2_EXTERNAL_UI__Widget LV2_EXTERNAL_UI_PREFIX "Widget"
 
 /** This extension used to be defined by a lv2plug.in URI */
 #define LV2_EXTERNAL_UI_DEPRECATED_URI \

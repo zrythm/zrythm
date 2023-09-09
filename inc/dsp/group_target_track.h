@@ -77,8 +77,6 @@ group_target_track_add_children (
  * given hash.
  */
 NONNULL PURE int
-group_target_track_find_child (
-  Track *      self,
-  unsigned int track_name_hash);
+group_target_track_find_child (Track * self, unsigned int track_name_hash);
 
 #endif /* __AUDIO_GROUP_TARGET_TRACK_H__ */

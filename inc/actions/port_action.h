@@ -46,10 +46,7 @@ static const cyaml_schema_field_t port_action_fields_schema[] = {
     parent_instance,
     undoable_action_fields_schema),
   YAML_FIELD_ENUM (PortAction, type, port_action_type_strings),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    PortAction,
-    port_id,
-    port_identifier_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (PortAction, port_id, port_identifier_fields_schema),
   YAML_FIELD_FLOAT (PortAction, val),
 
   CYAML_FIELD_END
@@ -77,9 +74,7 @@ port_action_new (
  * Create a new action.
  */
 WARN_UNUSED_RESULT UndoableAction *
-port_action_new_reset_control (
-  PortIdentifier * port_id,
-  GError **        error);
+port_action_new_reset_control (PortIdentifier * port_id, GError ** error);
 
 NONNULL PortAction *
 port_action_clone (const PortAction * src);
@@ -93,9 +88,7 @@ port_action_perform (
   GError **        error);
 
 bool
-port_action_perform_reset_control (
-  PortIdentifier * port_id,
-  GError **        error);
+port_action_perform_reset_control (PortIdentifier * port_id, GError ** error);
 
 int
 port_action_do (PortAction * self, GError ** error);

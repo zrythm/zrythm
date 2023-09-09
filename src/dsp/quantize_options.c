@@ -37,15 +37,13 @@
  * Updates snap points.
  */
 void
-quantize_options_update_quantize_points (
-  QuantizeOptions * self)
+quantize_options_update_quantize_points (QuantizeOptions * self)
 {
   Position tmp, end_pos;
   position_init (&tmp);
   position_set_to_bar (&end_pos, TRANSPORT->total_bars + 1);
   self->num_q_points = 0;
-  position_set_to_pos (
-    &self->q_points[self->num_q_points++], &tmp);
+  position_set_to_pos (&self->q_points[self->num_q_points++], &tmp);
   long ticks = snap_grid_get_ticks_from_length_and_type (
     self->note_length, self->note_type);
   long swing_offset =
@@ -60,15 +58,12 @@ quantize_options_update_quantize_points (
           position_add_ticks (&tmp, swing_offset);
         }
 
-      position_set_to_pos (
-        &self->q_points[self->num_q_points++], &tmp);
+      position_set_to_pos (&self->q_points[self->num_q_points++], &tmp);
     }
 }
 
 void
-quantize_options_init (
-  QuantizeOptions * self,
-  NoteLength        note_length)
+quantize_options_init (QuantizeOptions * self, NoteLength note_length)
 {
   self->schema_version = QUANTIZE_OPTIONS_SCHEMA_VERSION;
   self->note_length = note_length;
@@ -106,17 +101,13 @@ quantize_options_set_swing (QuantizeOptions * self, float swing)
 }
 
 void
-quantize_options_set_amount (
-  QuantizeOptions * self,
-  float             amount)
+quantize_options_set_amount (QuantizeOptions * self, float amount)
 {
   self->amount = amount;
 }
 
 void
-quantize_options_set_randomization (
-  QuantizeOptions * self,
-  float             randomization)
+quantize_options_set_randomization (QuantizeOptions * self, float randomization)
 {
   self->rand_ticks = (unsigned int) round (randomization);
 }
@@ -128,24 +119,19 @@ quantize_options_set_randomization (
  * Must be free'd.
  */
 char *
-quantize_options_stringize (
-  NoteLength note_length,
-  NoteType   note_type)
+quantize_options_stringize (NoteLength note_length, NoteType note_type)
 {
-  return snap_grid_stringize_length_and_type (
-    note_length, note_type);
+  return snap_grid_stringize_length_and_type (note_length, note_type);
 }
 
 static Position *
 get_prev_point (QuantizeOptions * self, Position * pos)
 {
-  g_return_val_if_fail (
-    pos->frames >= 0 && pos->ticks >= 0, NULL);
+  g_return_val_if_fail (pos->frames >= 0 && pos->ticks >= 0, NULL);
 
-  Position * prev_point =
-    (Position *) algorithms_binary_search_nearby (
-      pos, self->q_points, (size_t) self->num_q_points,
-      sizeof (Position), position_cmp_func, true, true);
+  Position * prev_point = (Position *) algorithms_binary_search_nearby (
+    pos, self->q_points, (size_t) self->num_q_points, sizeof (Position),
+    position_cmp_func, true, true);
 
   return prev_point;
 }
@@ -153,13 +139,11 @@ get_prev_point (QuantizeOptions * self, Position * pos)
 static Position *
 get_next_point (QuantizeOptions * self, Position * pos)
 {
-  g_return_val_if_fail (
-    pos->frames >= 0 && pos->ticks >= 0, NULL);
+  g_return_val_if_fail (pos->frames >= 0 && pos->ticks >= 0, NULL);
 
-  Position * next_point =
-    (Position *) algorithms_binary_search_nearby (
-      pos, self->q_points, (size_t) self->num_q_points,
-      sizeof (Position), position_cmp_func, false, true);
+  Position * next_point = (Position *) algorithms_binary_search_nearby (
+    pos, self->q_points, (size_t) self->num_q_points, sizeof (Position),
+    position_cmp_func, false, true);
 
   return next_point;
 }
@@ -176,9 +160,7 @@ get_next_point (QuantizeOptions * self, Position * pos)
  *   backwards).
  */
 double
-quantize_options_quantize_position (
-  QuantizeOptions * self,
-  Position *        pos)
+quantize_options_quantize_position (QuantizeOptions * self, Position * pos)
 {
   Position * prev_point = get_prev_point (self, pos);
   Position * next_point = get_next_point (self, pos);
@@ -186,15 +168,12 @@ quantize_options_quantize_position (
 
   const double upper = self->rand_ticks;
   const double lower = -self->rand_ticks;
-  double rand_double = (double) pcg_rand_u32 (ZRYTHM->rand);
-  double rand_ticks =
-    fmod (rand_double, (upper - lower + 1.0)) + lower;
+  double       rand_double = (double) pcg_rand_u32 (ZRYTHM->rand);
+  double       rand_ticks = fmod (rand_double, (upper - lower + 1.0)) + lower;
 
   /* if previous point is closer */
   double diff;
-  if (
-    pos->ticks - prev_point->ticks
-    <= next_point->ticks - pos->ticks)
+  if (pos->ticks - prev_point->ticks <= next_point->ticks - pos->ticks)
     {
       diff = prev_point->ticks - pos->ticks;
     }

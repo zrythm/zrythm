@@ -39,8 +39,7 @@
 const char *
 localization_get_localized_name (LocalizationLanguage lang)
 {
-  g_return_val_if_fail (
-    lang >= 0 && lang < NUM_LL_LANGUAGES, NULL);
+  g_return_val_if_fail (lang >= 0 && lang < NUM_LL_LANGUAGES, NULL);
 
   return language_strings[lang];
 }
@@ -52,8 +51,7 @@ localization_get_localized_name (LocalizationLanguage lang)
 const char *
 localization_get_string_code (LocalizationLanguage lang)
 {
-  g_return_val_if_fail (
-    lang >= 0 && lang < NUM_LL_LANGUAGES, NULL);
+  g_return_val_if_fail (lang >= 0 && lang < NUM_LL_LANGUAGES, NULL);
 
   return language_codes[lang];
 }
@@ -65,8 +63,7 @@ localization_get_string_code (LocalizationLanguage lang)
 const char *
 localization_get_string_w_code (LocalizationLanguage lang)
 {
-  g_return_val_if_fail (
-    lang >= 0 && lang < NUM_LL_LANGUAGES, NULL);
+  g_return_val_if_fail (lang >= 0 && lang < NUM_LL_LANGUAGES, NULL);
 
   return language_strings_w_codes[lang];
 }
@@ -97,12 +94,10 @@ get_match (
   const char * codeset)
 {
   GString * codeset_gstring = g_string_new (codeset);
-  char *    upper =
-    g_string_free (g_string_ascii_up (codeset_gstring), 0);
+  char *    upper = g_string_free (g_string_ascii_up (codeset_gstring), 0);
   g_return_val_if_fail (upper, NULL);
   codeset_gstring = g_string_new (codeset);
-  char * lower =
-    g_string_free (g_string_ascii_down (codeset_gstring), 0);
+  char * lower = g_string_free (g_string_ascii_down (codeset_gstring), 0);
   g_return_val_if_fail (lower, NULL);
   char * first_upper = g_strdup (lower);
   first_upper[0] = g_ascii_toupper (lower[0]);
@@ -171,14 +166,12 @@ localization_locale_exists (LocalizationLanguage lang)
 
 #define IS_MATCH(caps, code) \
   case LL_##caps: \
-    match = get_match ( \
-      installed_locales, num_installed_locales, code, \
-      CODESET); \
+    match = \
+      get_match (installed_locales, num_installed_locales, code, CODESET); \
     if (!match) \
       { \
         match = get_match ( \
-          installed_locales, num_installed_locales, code, \
-          ALT_CODESET); \
+          installed_locales, num_installed_locales, code, ALT_CODESET); \
       } \
     break
 
@@ -262,22 +255,21 @@ localization_init (
   if (use_locale)
     {
       code = g_strdup (setlocale (LC_ALL, NULL));
-      g_message (
-        "Initing localization with system locale %s", code);
+      g_message ("Initing localization with system locale %s", code);
     }
   else
     {
       /* get selected locale */
-      GSettings * prefs = g_settings_new (
-        GSETTINGS_ZRYTHM_PREFIX ".preferences.ui.general");
+      GSettings * prefs =
+        g_settings_new (GSETTINGS_ZRYTHM_PREFIX ".preferences.ui.general");
       lang = g_settings_get_enum (prefs, "language");
       g_object_unref (G_OBJECT (prefs));
 
       if (print_debug_messages)
         {
           g_message (
-            "preferred lang: '%s' (%s)",
-            language_strings[lang], language_codes[lang]);
+            "preferred lang: '%s' (%s)", language_strings[lang],
+            language_codes[lang]);
         }
 
       if (lang == LL_EN)
@@ -300,8 +292,7 @@ localization_init (
       match = setlocale (LC_ALL, code);
       if (print_debug_messages)
         {
-          g_message (
-            "setting locale to %s (found %s)", code, match);
+          g_message ("setting locale to %s (found %s)", code, match);
         }
 #if defined(_WOE32) || defined(__APPLE__)
       char buf[120];
@@ -320,8 +311,7 @@ localization_init (
             language_strings[lang]);
           if (queue_error_if_not_installed)
             {
-              zrythm_app->startup_errors
-                [zrythm_app->num_startup_errors++] = msg;
+              zrythm_app->startup_errors[zrythm_app->num_startup_errors++] = msg;
             }
           g_warning ("%s", msg);
         }
@@ -341,12 +331,10 @@ localization_init (
   bindtextdomain (GETTEXT_PACKAGE, windows_localedir);
   bindtextdomain ("libadwaita", windows_localedir);
 #else
-  char * localedir =
-    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_LOCALEDIR);
+  char * localedir = zrythm_get_dir (ZRYTHM_DIR_SYSTEM_LOCALEDIR);
   bindtextdomain (GETTEXT_PACKAGE, localedir);
   bindtextdomain ("libadwaita", localedir);
-  g_debug (
-    "setting textdomain: %s, %s", GETTEXT_PACKAGE, localedir);
+  g_debug ("setting textdomain: %s, %s", GETTEXT_PACKAGE, localedir);
   g_free (localedir);
 #endif
 

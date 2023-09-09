@@ -22,8 +22,7 @@
  * @{
  */
 
-#define CHORD_PRESET_PACK_MANAGER \
-  (ZRYTHM->chord_preset_pack_manager)
+#define CHORD_PRESET_PACK_MANAGER (ZRYTHM->chord_preset_pack_manager)
 
 /**
  * Chord preset pack manager.
@@ -46,8 +45,7 @@ ChordPresetPackManager *
 chord_preset_pack_manager_new (bool scan_for_packs);
 
 int
-chord_preset_pack_manager_get_num_packs (
-  const ChordPresetPackManager * self);
+chord_preset_pack_manager_get_num_packs (const ChordPresetPackManager * self);
 
 ChordPresetPack *
 chord_preset_pack_manager_get_pack_at (
@@ -114,8 +112,7 @@ chord_preset_pack_manager_serialize (
   GError **                error);
 
 void
-chord_preset_pack_manager_free (
-  const ChordPresetPackManager * self);
+chord_preset_pack_manager_free (const ChordPresetPackManager * self);
 
 /**
  * @}

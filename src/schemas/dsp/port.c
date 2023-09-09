@@ -14,8 +14,7 @@ port_upgrade_from_v1 (Port_v1 * old)
 
   Port * self = object_new (Port);
   self->schema_version = PORT_SCHEMA_VERSION;
-  PortIdentifier * id =
-    port_identifier_upgrade_from_v1 (&old->id);
+  PortIdentifier * id = port_identifier_upgrade_from_v1 (&old->id);
   self->id = *id;
   self->exposed_to_backend = old->exposed_to_backend;
   self->control = old->control;

@@ -34,8 +34,7 @@ SCM_DEFINE (
   "Returns the left or right port of the stereo pair.")
 #define FUNC_NAME s_
 {
-  StereoPorts * sp =
-    (StereoPorts *) scm_to_pointer (stereo_ports);
+  StereoPorts * sp = (StereoPorts *) scm_to_pointer (stereo_ports);
   if (scm_to_bool (left))
     {
       return scm_from_pointer (sp->l, NULL);
@@ -68,8 +67,7 @@ init_module (void * data)
 #ifndef SNARF_MODE
 #  include "audio_port.x"
 #endif
-  scm_c_export (
-    "port-get-identifier", "stereo-ports-get-port", NULL);
+  scm_c_export ("port-get-identifier", "stereo-ports-get-port", NULL);
 }
 
 void

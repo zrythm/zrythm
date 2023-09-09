@@ -8,8 +8,7 @@
 
 #include <gtk/gtk.h>
 
-#define KNOB_WITH_NAME_WIDGET_TYPE \
-  (knob_with_name_widget_get_type ())
+#define KNOB_WITH_NAME_WIDGET_TYPE (knob_with_name_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   KnobWithNameWidget,
   knob_with_name_widget,

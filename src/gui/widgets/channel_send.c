@@ -17,10 +17,7 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  ChannelSendWidget,
-  channel_send_widget,
-  GTK_TYPE_WIDGET);
+G_DEFINE_TYPE (ChannelSendWidget, channel_send_widget, GTK_TYPE_WIDGET);
 
 #define ELLIPSIZE_PADDING 2
 
@@ -29,10 +26,9 @@ update_pango_layout (ChannelSendWidget * self, bool force)
 {
   if (!self->txt_layout || force)
     {
-      object_free_w_func_and_null (
-        g_object_unref, self->txt_layout);
-      PangoLayout * layout = gtk_widget_create_pango_layout (
-        GTK_WIDGET (self), NULL);
+      object_free_w_func_and_null (g_object_unref, self->txt_layout);
+      PangoLayout * layout =
+        gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
       pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
       self->txt_layout = layout;
     }
@@ -40,15 +36,11 @@ update_pango_layout (ChannelSendWidget * self, bool force)
   pango_layout_set_width (
     self->txt_layout,
     pango_units_from_double (MAX (
-      gtk_widget_get_width (GTK_WIDGET (self))
-        - ELLIPSIZE_PADDING * 2,
-      1)));
+      gtk_widget_get_width (GTK_WIDGET (self)) - ELLIPSIZE_PADDING * 2, 1)));
 }
 
 static void
-channel_send_snapshot (
-  GtkWidget *   widget,
-  GtkSnapshot * snapshot)
+channel_send_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   ChannelSendWidget * self = Z_CHANNEL_SEND_WIDGET (widget);
 
@@ -69,23 +61,19 @@ channel_send_snapshot (
       gtk_snapshot_append_color (
         snapshot, &Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, 1.f),
         &GRAPHENE_RECT_INIT (
-          (float) padding, (float) padding,
-          (float) width - (float) padding * 2.f,
+          (float) padding, (float) padding, (float) width - (float) padding * 2.f,
           (float) height - (float) padding * 2.f));
 
       /* fill text */
       int w, h;
-      pango_layout_set_markup (
-        self->txt_layout, dest_name, -1);
+      pango_layout_set_markup (self->txt_layout, dest_name, -1);
       pango_layout_get_pixel_size (self->txt_layout, &w, &h);
       gtk_snapshot_save (snapshot);
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          (float) (width / 2 - w / 2),
-          (float) (height / 2 - h / 2)));
-      gtk_snapshot_append_layout (
-        snapshot, self->txt_layout, &fg);
+          (float) (width / 2 - w / 2), (float) (height / 2 - h / 2)));
+      gtk_snapshot_append_layout (snapshot, self->txt_layout, &fg);
       gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
@@ -110,47 +98,38 @@ channel_send_snapshot (
       gtk_snapshot_append_color (
         snapshot, &bg_color,
         &GRAPHENE_RECT_INIT (
-          (float) padding, (float) padding,
-          (float) width - (float) padding * 2.f,
+          (float) padding, (float) padding, (float) width - (float) padding * 2.f,
           (float) height - (float) padding * 2.f));
 
       /* fill amount */
       bg_color.alpha = 1.f;
       float amount =
-        channel_send_get_amount_for_widgets (self->send)
-        * (float) width;
+        channel_send_get_amount_for_widgets (self->send) * (float) width;
       gtk_snapshot_append_color (
         snapshot, &bg_color,
         &GRAPHENE_RECT_INIT (
-          (float) padding, (float) padding,
-          amount - (float) padding * 2.f,
+          (float) padding, (float) padding, amount - (float) padding * 2.f,
           (float) height - (float) padding * 2));
 
       /* fill text */
       int w, h;
-      pango_layout_set_markup (
-        self->txt_layout, dest_name, -1);
+      pango_layout_set_markup (self->txt_layout, dest_name, -1);
       pango_layout_get_pixel_size (self->txt_layout, &w, &h);
       gtk_snapshot_save (snapshot);
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          (float) (width / 2 - w / 2),
-          (float) (height / 2 - h / 2)));
-      gtk_snapshot_append_layout (
-        snapshot, self->txt_layout, &fg);
+          (float) (width / 2 - w / 2), (float) (height / 2 - h / 2)));
+      gtk_snapshot_append_layout (snapshot, self->txt_layout, &fg);
       gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
-      if (
-        !self->cache_tooltip
-        || !g_strcmp0 (dest_name, self->cache_tooltip))
+      if (!self->cache_tooltip || !g_strcmp0 (dest_name, self->cache_tooltip))
         {
           if (self->cache_tooltip)
             g_free (self->cache_tooltip);
           self->cache_tooltip = g_strdup (dest_name);
-          gtk_widget_set_tooltip_text (
-            widget, self->cache_tooltip);
+          gtk_widget_set_tooltip_text (widget, self->cache_tooltip);
         }
     }
 }
@@ -176,13 +155,10 @@ on_drag_update (
   if (channel_send_is_enabled (self->send))
     {
       int    width = gtk_widget_get_width (GTK_WIDGET (self));
-      double new_normalized_val =
-        ui_get_normalized_draggable_value (
-          width,
-          channel_send_get_amount_for_widgets (self->send),
-          self->start_x, self->start_x + offset_x,
-          self->start_x + self->last_offset_x, 1.0,
-          UI_DRAG_MODE_CURSOR);
+      double new_normalized_val = ui_get_normalized_draggable_value (
+        width, channel_send_get_amount_for_widgets (self->send), self->start_x,
+        self->start_x + offset_x, self->start_x + self->last_offset_x, 1.0,
+        UI_DRAG_MODE_CURSOR);
       channel_send_set_amount_from_widget (
         self->send, (float) new_normalized_val);
       gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -203,18 +179,17 @@ on_drag_end (
 
   float send_amount_at_end = self->send->amount->control;
   port_set_control_value (
-    self->send->amount, self->send_amount_at_start,
-    F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+    self->send->amount, self->send_amount_at_start, F_NOT_NORMALIZED,
+    F_NO_PUBLISH_EVENTS);
 
   if (channel_send_is_enabled (self->send) && self->n_press != 2)
     {
       GError * err = NULL;
-      bool ret = channel_send_action_perform_change_amount (
+      bool     ret = channel_send_action_perform_change_amount (
         self->send, send_amount_at_end, &err);
       if (!ret)
         {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to change send amount"));
+          HANDLE_ERROR (err, "%s", _ ("Failed to change send amount"));
         }
     }
 }
@@ -232,8 +207,7 @@ on_pressed (
 
   if (n_press == 2)
     {
-      channel_send_selector_widget_setup (
-        self->selector_popover);
+      channel_send_selector_widget_setup (self->selector_popover);
       gtk_popover_popup (GTK_POPOVER (self->selector_popover));
     }
 }
@@ -249,8 +223,7 @@ show_context_menu (ChannelSendWidget * self, double x, double y)
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
-  z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+  z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
 }
 
 static void
@@ -275,25 +248,18 @@ on_enter (
   gpointer                   user_data)
 {
   ChannelSendWidget * self = Z_CHANNEL_SEND_WIDGET (user_data);
-  gtk_widget_set_state_flags (
-    GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT, 0);
+  gtk_widget_set_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT, 0);
 }
 
 static void
-on_leave (
-  GtkEventControllerMotion * motion_controller,
-  gpointer                   user_data)
+on_leave (GtkEventControllerMotion * motion_controller, gpointer user_data)
 {
   ChannelSendWidget * self = Z_CHANNEL_SEND_WIDGET (user_data);
-  gtk_widget_unset_state_flags (
-    GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT);
+  gtk_widget_unset_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT);
 }
 
 static bool
-tick_cb (
-  GtkWidget *         widget,
-  GdkFrameClock *     frame_clock,
-  ChannelSendWidget * self)
+tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSendWidget * self)
 {
   if (!gtk_widget_is_visible (widget))
     {
@@ -307,8 +273,7 @@ tick_cb (
       if (empty)
         gtk_widget_add_css_class (GTK_WIDGET (self), "empty");
       else
-        gtk_widget_remove_css_class (
-          GTK_WIDGET (self), "empty");
+        gtk_widget_remove_css_class (GTK_WIDGET (self), "empty");
     }
 
   return G_SOURCE_CONTINUE;
@@ -329,8 +294,7 @@ dispose (ChannelSendWidget * self)
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
   gtk_widget_unparent (GTK_WIDGET (self->selector_popover));
 
-  G_OBJECT_CLASS (channel_send_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (channel_send_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
@@ -341,8 +305,7 @@ finalize (ChannelSendWidget * self)
   if (self->txt_layout)
     g_object_unref (self->txt_layout);
 
-  G_OBJECT_CLASS (channel_send_widget_parent_class)
-    ->finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (channel_send_widget_parent_class)->finalize (G_OBJECT (self));
 }
 
 /**
@@ -352,8 +315,7 @@ finalize (ChannelSendWidget * self)
 ChannelSendWidget *
 channel_send_widget_new (ChannelSend * send)
 {
-  ChannelSendWidget * self =
-    g_object_new (CHANNEL_SEND_WIDGET_TYPE, NULL);
+  ChannelSendWidget * self = g_object_new (CHANNEL_SEND_WIDGET_TYPE, NULL);
   self->send = send;
 
   return self;
@@ -365,8 +327,7 @@ channel_send_widget_init (ChannelSendWidget * self)
   gtk_widget_set_size_request (GTK_WIDGET (self), -1, 20);
 
   gtk_accessible_update_property (
-    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL,
-    "Channel send", -1);
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL, "Channel send", -1);
 
   self->cache_tooltip = NULL;
 
@@ -374,15 +335,11 @@ channel_send_widget_init (ChannelSendWidget * self)
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
   gtk_widget_set_focus_on_click (GTK_WIDGET (self), true);
 
-  self->selector_popover =
-    channel_send_selector_widget_new (self);
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->selector_popover), GTK_WIDGET (self));
+  self->selector_popover = channel_send_selector_widget_new (self);
+  gtk_widget_set_parent (GTK_WIDGET (self->selector_popover), GTK_WIDGET (self));
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   self->click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_event_controller_set_propagation_phase (
@@ -390,14 +347,11 @@ channel_send_widget_init (ChannelSendWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->click));
 
-  self->right_mouse_mp =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  self->right_mouse_mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (self->right_mouse_mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (self->right_mouse_mp), GDK_BUTTON_SECONDARY);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->right_mouse_mp));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->right_mouse_mp));
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   gtk_event_controller_set_propagation_phase (
@@ -405,34 +359,26 @@ channel_send_widget_init (ChannelSendWidget * self)
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
-  GtkEventController * motion_controller =
-    gtk_event_controller_motion_new ();
+  GtkEventController * motion_controller = gtk_event_controller_motion_new ();
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (motion_controller));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (motion_controller));
 
   /* connect signals */
   g_signal_connect (
-    G_OBJECT (motion_controller), "enter",
-    G_CALLBACK (on_enter), self);
+    G_OBJECT (motion_controller), "enter", G_CALLBACK (on_enter), self);
   g_signal_connect (
-    G_OBJECT (motion_controller), "leave",
-    G_CALLBACK (on_leave), self);
+    G_OBJECT (motion_controller), "leave", G_CALLBACK (on_leave), self);
   g_signal_connect (
-    G_OBJECT (self->click), "pressed",
-    G_CALLBACK (on_pressed), self);
+    G_OBJECT (self->click), "pressed", G_CALLBACK (on_pressed), self);
   g_signal_connect (
-    G_OBJECT (self->right_mouse_mp), "pressed",
-    G_CALLBACK (on_right_click), self);
+    G_OBJECT (self->right_mouse_mp), "pressed", G_CALLBACK (on_right_click),
+    self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-begin",
-    G_CALLBACK (on_drag_begin), self);
+    G_OBJECT (self->drag), "drag-begin", G_CALLBACK (on_drag_begin), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-update",
-    G_CALLBACK (on_drag_update), self);
+    G_OBJECT (self->drag), "drag-update", G_CALLBACK (on_drag_update), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-end",
-    G_CALLBACK (on_drag_end), self);
+    G_OBJECT (self->drag), "drag-end", G_CALLBACK (on_drag_end), self);
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
@@ -445,11 +391,9 @@ channel_send_widget_class_init (ChannelSendWidgetClass * klass)
   gtk_widget_class_set_css_name (wklass, "channel-send");
   wklass->snapshot = channel_send_snapshot;
   wklass->css_changed = on_css_changed;
-  gtk_widget_class_set_accessible_role (
-    wklass, GTK_ACCESSIBLE_ROLE_GROUP);
+  gtk_widget_class_set_accessible_role (wklass, GTK_ACCESSIBLE_ROLE_GROUP);
 
-  gtk_widget_class_set_layout_manager_type (
-    wklass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (wklass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;

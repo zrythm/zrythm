@@ -125,12 +125,9 @@ void
 midi_event_print (const MidiEvent * ev);
 
 PURE static inline bool
-midi_events_are_equal (
-  const MidiEvent * src,
-  const MidiEvent * dest)
+midi_events_are_equal (const MidiEvent * src, const MidiEvent * dest)
 {
-  return dest->time == src->time
-         && dest->raw_buffer[0] == src->raw_buffer[0]
+  return dest->time == src->time && dest->raw_buffer[0] == src->raw_buffer[0]
          && dest->raw_buffer[1] == src->raw_buffer[1]
          && dest->raw_buffer[2] == src->raw_buffer[2];
 }
@@ -249,10 +246,7 @@ midi_events_add_cc_volume (
  * @param check_queued Check the queued events.
  */
 int
-midi_events_has_note_on (
-  MidiEvents * self,
-  int          check_main,
-  int          check_queued);
+midi_events_has_note_on (MidiEvents * self, int check_main, int check_queued);
 
 /**
  * Parses a MidiEvent from a raw MIDI buffer.
@@ -376,9 +370,7 @@ midi_events_clear (MidiEvents * midi_events, int queued);
  * instead.
  */
 void
-midi_events_clear_duplicates (
-  MidiEvents * midi_events,
-  const int    queued);
+midi_events_clear_duplicates (MidiEvents * midi_events, const int queued);
 
 /**
  * Copies the queue contents to the original struct
@@ -391,20 +383,14 @@ midi_events_dequeue (MidiEvents * midi_events);
  * exists in the given events.
  */
 int
-midi_events_check_for_note_on (
-  MidiEvents * midi_events,
-  int          note,
-  int          queued);
+midi_events_check_for_note_on (MidiEvents * midi_events, int note, int queued);
 
 /**
  * Deletes the midi event with a note on signal
  * from the queue, and returns if it deleted or not.
  */
 int
-midi_events_delete_note_on (
-  MidiEvents * midi_events,
-  int          note,
-  int          queued);
+midi_events_delete_note_on (MidiEvents * midi_events, int note, int queued);
 
 #ifdef HAVE_JACK
 /**

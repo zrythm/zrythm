@@ -25,8 +25,7 @@
  * @{
  */
 
-#define PROJECT_ASSISTANT_WIDGET_TYPE \
-  (project_assistant_widget_get_type ())
+#define PROJECT_ASSISTANT_WIDGET_TYPE (project_assistant_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ProjectAssistantWidget,
   project_assistant_widget,

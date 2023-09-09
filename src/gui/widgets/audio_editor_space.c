@@ -22,10 +22,7 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  AudioEditorSpaceWidget,
-  audio_editor_space_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (AudioEditorSpaceWidget, audio_editor_space_widget, GTK_TYPE_BOX)
 
 /**
  * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
@@ -36,13 +33,11 @@ audio_editor_space_widget_update_size_group (
   int                      visible)
 {
   clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
-    MW_CLIP_EDITOR_INNER, GTK_WIDGET (self->left_box),
-    visible);
+    MW_CLIP_EDITOR_INNER, GTK_WIDGET (self->left_box), visible);
 }
 
 void
-audio_editor_space_widget_refresh (
-  AudioEditorSpaceWidget * self)
+audio_editor_space_widget_refresh (AudioEditorSpaceWidget * self)
 {
   /*link_scrolls (self);*/
 }
@@ -53,8 +48,8 @@ audio_editor_space_widget_setup (AudioEditorSpaceWidget * self)
   if (self->arranger)
     {
       arranger_widget_setup (
-        Z_ARRANGER_WIDGET (self->arranger),
-        ARRANGER_WIDGET_TYPE_AUDIO, SNAP_GRID_EDITOR);
+        Z_ARRANGER_WIDGET (self->arranger), ARRANGER_WIDGET_TYPE_AUDIO,
+        SNAP_GRID_EDITOR);
     }
 
   audio_editor_space_widget_refresh (self);
@@ -72,16 +67,13 @@ audio_editor_space_widget_init (AudioEditorSpaceWidget * self)
 }
 
 static void
-audio_editor_space_widget_class_init (
-  AudioEditorSpaceWidgetClass * _klass)
+audio_editor_space_widget_class_init (AudioEditorSpaceWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "audio_editor_space.ui");
+  resources_set_class_template (klass, "audio_editor_space.ui");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, AudioEditorSpaceWidget, x)
+  gtk_widget_class_bind_template_child (klass, AudioEditorSpaceWidget, x)
 
   BIND_CHILD (left_box);
   BIND_CHILD (arranger);

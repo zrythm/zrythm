@@ -30,8 +30,7 @@ typedef struct EngineProcessTimeInfo EngineProcessTimeInfo;
 #define TRACK_PROCESSOR_SCHEMA_VERSION 1
 
 #define TRACK_PROCESSOR_MAGIC 81213128
-#define IS_TRACK_PROCESSOR(tr) \
-  ((tr) && (tr)->magic == TRACK_PROCESSOR_MAGIC)
+#define IS_TRACK_PROCESSOR(tr) ((tr) && (tr)->magic == TRACK_PROCESSOR_MAGIC)
 
 #define track_processor_is_in_active_project(self) \
   (self->track && track_is_in_active_project (self->track))
@@ -164,30 +163,12 @@ typedef struct TrackProcessor
 
 static const cyaml_schema_field_t track_processor_fields_schema[] = {
   YAML_FIELD_INT (TrackProcessor, schema_version),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor,
-    mono,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor,
-    input_gain,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor,
-    output_gain,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor,
-    midi_in,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor,
-    midi_out,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor,
-    piano_roll,
-    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (TrackProcessor, mono, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (TrackProcessor, input_gain, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (TrackProcessor, output_gain, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (TrackProcessor, midi_in, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (TrackProcessor, midi_out, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (TrackProcessor, piano_roll, port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor,
     monitor_audio,
@@ -200,16 +181,8 @@ static const cyaml_schema_field_t track_processor_fields_schema[] = {
     TrackProcessor,
     stereo_out,
     stereo_ports_fields_schema),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    TrackProcessor,
-    midi_cc,
-    port_schema,
-    128 * 16),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    TrackProcessor,
-    pitch_bend,
-    port_schema,
-    16),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (TrackProcessor, midi_cc, port_schema, 128 * 16),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (TrackProcessor, pitch_bend, port_schema, 16),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
     TrackProcessor,
     poly_key_pressure,
@@ -231,9 +204,8 @@ static const cyaml_schema_value_t track_processor_schema = {
 /**
  * Inits a TrackProcessor after a project is loaded.
  */
-COLD NONNULL_ARGS (1) void track_processor_init_loaded (
-  TrackProcessor * self,
-  Track *          track);
+COLD NONNULL_ARGS (
+  1) void track_processor_init_loaded (TrackProcessor * self, Track * track);
 
 #if 0
 void
@@ -253,9 +225,7 @@ track_processor_new (Track * track);
  * Copy port values from \ref src to \ref dest.
  */
 void
-track_processor_copy_values (
-  TrackProcessor * dest,
-  TrackProcessor * src);
+track_processor_copy_values (TrackProcessor * dest, TrackProcessor * src);
 
 /**
  * Clears all buffers.
@@ -314,8 +284,7 @@ track_processor_process (
  * Used when there is no plugin in the channel.
  */
 void
-track_processor_disconnect_from_prefader (
-  TrackProcessor * self);
+track_processor_disconnect_from_prefader (TrackProcessor * self);
 
 /**
  * Connects the TrackProcessor's stereo out ports to
@@ -331,18 +300,14 @@ track_processor_connect_to_prefader (TrackProcessor * self);
  * from the Plugin's input ports.
  */
 void
-track_processor_disconnect_from_plugin (
-  TrackProcessor * self,
-  Plugin *         pl);
+track_processor_disconnect_from_plugin (TrackProcessor * self, Plugin * pl);
 
 /**
  * Connect the TrackProcessor's out ports to the
  * Plugin's input ports.
  */
 void
-track_processor_connect_to_plugin (
-  TrackProcessor * self,
-  Plugin *         pl);
+track_processor_connect_to_plugin (TrackProcessor * self, Plugin * pl);
 
 #if 0
 void
@@ -351,9 +316,7 @@ track_processor_update_track_name_hash (
 #endif
 
 void
-track_processor_append_ports (
-  TrackProcessor * self,
-  GPtrArray *      ports);
+track_processor_append_ports (TrackProcessor * self, GPtrArray * ports);
 
 /**
  * Frees the TrackProcessor.

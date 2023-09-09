@@ -92,13 +92,12 @@ Log * zlog = NULL;
 #define STRING_BUFFER_SIZE (FORMAT_UNSIGNED_BUFSIZE + 32)
 
 #define ALERT_LEVELS \
-  (G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL \
-   | G_LOG_LEVEL_WARNING)
+  (G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING)
 
 #define CHAR_IS_SAFE(wc) \
   (!( \
-    (wc < 0x20 && wc != '\t' && wc != '\n' && wc != '\r') \
-    || (wc == 0x7f) || (wc >= 0x80 && wc < 0xa0)))
+    (wc < 0x20 && wc != '\t' && wc != '\n' && wc != '\r') || (wc == 0x7f) \
+    || (wc >= 0x80 && wc < 0xa0)))
 
 /* For a radix of 8 we need at most 3 output bytes for 1 input
  * byte. Additionally we might need up to 2 output bytes for the
@@ -108,14 +107,14 @@ Log * zlog = NULL;
 
 /* these are emitted by the default log handler */
 #define DEFAULT_LEVELS \
-  (G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL \
-   | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_MESSAGE)
+  (G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_WARNING \
+   | G_LOG_LEVEL_MESSAGE)
 /* these are filtered by G_MESSAGES_DEBUG by the default log handler */
 #define INFO_LEVELS (G_LOG_LEVEL_INFO | G_LOG_LEVEL_DEBUG)
 
 static GLogLevelFlags g_log_msg_prefix =
-  G_LOG_LEVEL_ERROR | G_LOG_LEVEL_WARNING
-  | G_LOG_LEVEL_CRITICAL | G_LOG_LEVEL_DEBUG;
+  G_LOG_LEVEL_ERROR | G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL
+  | G_LOG_LEVEL_DEBUG;
 
 #ifdef _WOE32
 static gboolean win32_keep_fatal_message = FALSE;
@@ -200,13 +199,11 @@ escape_string (GString * string)
 
           /* Emit invalid UTF-8 as hex escapes
                  */
-          tmp =
-            g_strdup_printf ("\\x%02x", (guint) (guchar) *p);
+          tmp = g_strdup_printf ("\\x%02x", (guint) (guchar) *p);
           g_string_erase (string, pos, 1);
           g_string_insert (string, pos, tmp);
 
-          p = string->str
-              + (pos + 4); /* Skip over escape sequence */
+          p = string->str + (pos + 4); /* Skip over escape sequence */
 
           g_free (tmp);
           continue;
@@ -231,13 +228,11 @@ escape_string (GString * string)
            * about 8-digit \Uxxxxyyyy
            */
           tmp = g_strdup_printf ("\\u%04x", wc);
-          g_string_erase (
-            string, pos, g_utf8_next_char (p) - p);
+          g_string_erase (string, pos, g_utf8_next_char (p) - p);
           g_string_insert (string, pos, tmp);
           g_free (tmp);
 
-          p = string->str
-              + (pos + 6); /* Skip over escape sequence */
+          p = string->str + (pos + 6); /* Skip over escape sequence */
         }
       else
         p = g_utf8_next_char (p);
@@ -377,8 +372,7 @@ mklevel_prefix (
 {
   gboolean to_stdout = TRUE;
 
-  strcpy (
-    level_prefix, log_level_to_color (log_level, use_color));
+  strcpy (level_prefix, log_level_to_color (log_level, use_color));
 
   switch (log_level & G_LOG_LEVEL_MASK)
     {
@@ -409,8 +403,7 @@ mklevel_prefix (
         {
           strcat (level_prefix, "LOG-");
           format_unsigned (
-            level_prefix + 4,
-            (gulong) (log_level & G_LOG_LEVEL_MASK), 16);
+            level_prefix + 4, (gulong) (log_level & G_LOG_LEVEL_MASK), 16);
         }
       else
         strcat (level_prefix, "LOG");
@@ -425,9 +418,7 @@ mklevel_prefix (
     strcat (level_prefix, " **");
 
 #ifdef G_OS_WIN32
-  if (
-    (log_level & G_LOG_FLAG_FATAL) != 0
-    && !g_test_initialized ())
+  if ((log_level & G_LOG_FLAG_FATAL) != 0 && !g_test_initialized ())
     win32_keep_fatal_message = TRUE;
 #endif
   return to_stdout ? stdout : stderr;
@@ -447,12 +438,10 @@ strdup_convert (const gchar * string, const gchar * charset)
       for (p = (guchar *) string; *p; p++)
         {
           if (
-            CHAR_IS_SAFE (*p)
-            && !(*p == '\r' && *(p + 1) != '\n') && *p < 0x80)
+            CHAR_IS_SAFE (*p) && !(*p == '\r' && *(p + 1) != '\n') && *p < 0x80)
             g_string_append_c (gstring, (char) *p);
           else
-            g_string_append_printf (
-              gstring, "\\x%02x", (guint) (guchar) *p);
+            g_string_append_printf (gstring, "\\x%02x", (guint) (guchar) *p);
         }
 
       return g_string_free (gstring, FALSE);
@@ -474,8 +463,7 @@ strdup_convert (const gchar * string, const gchar * charset)
             {
               warned = TRUE;
               g_fprintf (
-                stderr, "GLib: Cannot convert message: %s\n",
-                err->message);
+                stderr, "GLib: Cannot convert message: %s\n", err->message);
             }
           g_error_free (err);
 
@@ -508,9 +496,7 @@ log_writer_format_fields (
   gchar       time_buf[128];
 
   /* Extract some common fields. */
-  for (i = 0;
-       (message == NULL || log_domain == NULL) && i < n_fields;
-       i++)
+  for (i = 0; (message == NULL || log_domain == NULL) && i < n_fields; i++)
     {
       const GLogField * field = &fields[i];
 
@@ -547,11 +533,9 @@ log_writer_format_fields (
 #endif
 
       if (prg_name == NULL)
-        g_string_append_printf (
-          gstring, "(process:%lu): ", pid);
+        g_string_append_printf (gstring, "(process:%lu): ", pid);
       else
-        g_string_append_printf (
-          gstring, "(%s:%lu): ", prg_name, pid);
+        g_string_append_printf (gstring, "(%s:%lu): ", prg_name, pid);
     }
 
   if (log_domain != NULL)
@@ -570,15 +554,13 @@ log_writer_format_fields (
   strftime (time_buf, sizeof (time_buf), "%H:%M:%S", now_tm);
 
   g_string_append_printf (
-    gstring, "%s%s.%03d%s: ", use_color ? "\033[34m" : "",
-    time_buf, (gint) ((now / 1000) % 1000),
-    color_reset (use_color));
+    gstring, "%s%s.%03d%s: ", use_color ? "\033[34m" : "", time_buf,
+    (gint) ((now / 1000) % 1000), color_reset (use_color));
 
   /* EDIT: append file, func and line */
   g_string_append_printf (
-    gstring, "%s(%s:%s)%s: ", use_color ? "\033[90m" : "",
-    func ? func : "?", line ? line : "?",
-    color_reset (use_color));
+    gstring, "%s(%s:%s)%s: ", use_color ? "\033[90m" : "", func ? func : "?",
+    line ? line : "?", color_reset (use_color));
 
   if (message == NULL)
     {
@@ -619,11 +601,9 @@ log_writer_standard_streams (
   gpointer          user_data)
 {
   FILE *  stream;
-  gchar * out =
-    NULL; /* in the current locale’s character set */
+  gchar * out = NULL; /* in the current locale’s character set */
 
-  g_return_val_if_fail (
-    fields != NULL, G_LOG_WRITER_UNHANDLED);
+  g_return_val_if_fail (fields != NULL, G_LOG_WRITER_UNHANDLED);
   g_return_val_if_fail (n_fields > 0, G_LOG_WRITER_UNHANDLED);
 
   stream = log_level_to_file (log_level);
@@ -631,8 +611,7 @@ log_writer_standard_streams (
     return G_LOG_WRITER_UNHANDLED;
 
   out = log_writer_format_fields (
-    log_level, fields, n_fields,
-    g_log_writer_supports_color (fileno (stream)));
+    log_level, fields, n_fields, g_log_writer_supports_color (fileno (stream)));
   g_fprintf (stream, "%s\n", out);
   fflush (stream);
   g_free (out);
@@ -653,8 +632,7 @@ need_backtrace (Log * self, const LogEvent * const ev)
 
   bool ret =
     (time_now - self->last_bt_time > BT_COOLDOWN_TIME)
-    && ev->log_level == G_LOG_LEVEL_CRITICAL
-    && ev->is_zrythm_domain
+    && ev->log_level == G_LOG_LEVEL_CRITICAL && ev->is_zrythm_domain
     && !string_contains_substr (
       ev->message,
       "assertion 'size >= 0' failed in "
@@ -667,28 +645,21 @@ need_backtrace (Log * self, const LogEvent * const ev)
       ev->message,
       "gtk_window_set_titlebar() called on a "
       "realized window")
-    && !string_contains_substr (
-      ev->message, "attempt to allocate widget")
+    && !string_contains_substr (ev->message, "attempt to allocate widget")
     && !string_contains_substr (
       ev->message, "Theme file for default has no directories")
     && !string_contains_substr (
       ev->message,
       "gsk_render_node_unref: assertion 'GSK_IS_RENDER_NODE (node)' failed")
-    && !string_contains_substr (
-      ev->message, "A floating object GtkAdjustment")
+    && !string_contains_substr (ev->message, "A floating object GtkAdjustment")
     && !string_contains_substr (
       ev->message,
       "gtk_css_node_insert_after: assertion 'previous_sibling == NULL || previous_sibling->parent == parent' failed")
     && !string_contains_substr (
-      ev->message,
-      "you are running a non-free operating system")
-    && !string_contains_substr (
-      ev->message, "Allocation height too small")
-    && !string_contains_substr (
-      ev->message, "Allocation width too small")
-    && !string_contains_substr (
-      ev->message, "GDK_DROP_STATE_NONE")
-    &&
+      ev->message, "you are running a non-free operating system")
+    && !string_contains_substr (ev->message, "Allocation height too small")
+    && !string_contains_substr (ev->message, "Allocation width too small")
+    && !string_contains_substr (ev->message, "GDK_DROP_STATE_NONE") &&
     /* this happens with portals when opening
      * the native file chooser (either flatpak
      * builds or when using GTK_USE_PORTAL=1
@@ -717,9 +688,7 @@ need_backtrace (Log * self, const LogEvent * const ev)
       "gdk_drop_status: assertion 'gdk_drag_action_is_unique (preferred)' failed")
     &&
     /* gtk error after last update */
-    !string_contains_substr (
-      ev->message, "reports a minimum width of ")
-    &&
+    !string_contains_substr (ev->message, "reports a minimum width of ") &&
     /* user's system is broken - avoid bug reports */
     !string_contains_substr (
       ev->message,
@@ -727,8 +696,7 @@ need_backtrace (Log * self, const LogEvent * const ev)
     &&
     /* wireplumber bug */
     !string_contains_substr (
-      ev->message,
-      "Failed to set scheduler settings: Operation not permitted");
+      ev->message, "Failed to set scheduler settings: Operation not permitted");
 
   if (ret)
     self->last_bt_time = time_now;
@@ -817,20 +785,15 @@ log_idle_cb (Log * self)
             }
 
           if (
-            ev->log_level == G_LOG_LEVEL_CRITICAL
-            && ZRYTHM_HAVE_UI
+            ev->log_level == G_LOG_LEVEL_CRITICAL && ZRYTHM_HAVE_UI
             && !zrythm_app->bug_report_dialog)
             {
               char msg[500];
-              sprintf (
-                msg, _ ("%s has encountered an error\n"),
-                PROGRAM_NAME);
-              zrythm_app
-                ->bug_report_dialog = bug_report_dialog_new (
-                MAIN_WINDOW ? GTK_WINDOW (MAIN_WINDOW) : NULL,
-                msg, ev->backtrace, false);
-              gtk_window_present (
-                GTK_WINDOW (zrythm_app->bug_report_dialog));
+              sprintf (msg, _ ("%s has encountered an error\n"), PROGRAM_NAME);
+              zrythm_app->bug_report_dialog = bug_report_dialog_new (
+                MAIN_WINDOW ? GTK_WINDOW (MAIN_WINDOW) : NULL, msg,
+                ev->backtrace, false);
+              gtk_window_present (GTK_WINDOW (zrythm_app->bug_report_dialog));
             }
 
           /* write the backtrace to the log after
@@ -843,9 +806,8 @@ log_idle_cb (Log * self)
         } /* endif ev->backtrace */
 
       if (
-        ev->log_level == G_LOG_LEVEL_WARNING && ZRYTHM_HAVE_UI
-        && MAIN_WINDOW && MW_HEADER
-        && !MAIN_WINDOW->log_has_pending_warnings)
+        ev->log_level == G_LOG_LEVEL_WARNING && ZRYTHM_HAVE_UI && MAIN_WINDOW
+        && MW_HEADER && !MAIN_WINDOW->log_has_pending_warnings)
         {
           MAIN_WINDOW->log_has_pending_warnings = true;
           EVENTS_PUSH (ET_LOG_WARNING_STATE_CHANGED, NULL);
@@ -863,8 +825,7 @@ static gboolean
 log_is_old_api (const GLogField * fields, gsize n_fields)
 {
   return (
-    n_fields >= 1
-    && g_strcmp0 (fields[0].key, "GLIB_OLD_LOG_API") == 0
+    n_fields >= 1 && g_strcmp0 (fields[0].key, "GLIB_OLD_LOG_API") == 0
     && g_strcmp0 (fields[0].value, "1") == 0);
 }
 
@@ -880,21 +841,16 @@ log_writer_default_custom (
   static gsize    initialized = 0;
   static gboolean stderr_is_journal = FALSE;
 
-  g_return_val_if_fail (
-    fields != NULL, G_LOG_WRITER_UNHANDLED);
+  g_return_val_if_fail (fields != NULL, G_LOG_WRITER_UNHANDLED);
   g_return_val_if_fail (n_fields > 0, G_LOG_WRITER_UNHANDLED);
 
   /* Disable debug message output unless specified in G_MESSAGES_DEBUG. */
-  if (
-    !(log_level & DEFAULT_LEVELS)
-    && !(log_level >> G_LOG_LEVEL_USER_SHIFT))
+  if (!(log_level & DEFAULT_LEVELS) && !(log_level >> G_LOG_LEVEL_USER_SHIFT))
     {
       const gchar * log_domain = NULL;
       gsize         i;
 
-      if (
-        (log_level & INFO_LEVELS) == 0
-        || self->log_domains == NULL)
+      if ((log_level & INFO_LEVELS) == 0 || self->log_domains == NULL)
         return G_LOG_WRITER_HANDLED;
 
       for (i = 0; i < n_fields; i++)
@@ -915,31 +871,26 @@ log_writer_default_custom (
   /* Mark messages as fatal if they have a level set in
    * g_log_set_always_fatal().
    */
-  if (
-    (log_level & log_always_fatal)
-    && !log_is_old_api (fields, n_fields))
+  if ((log_level & log_always_fatal) && !log_is_old_api (fields, n_fields))
     log_level |= G_LOG_FLAG_FATAL;
 
   /* Try logging to the systemd journal as first choice. */
   if (g_once_init_enter (&initialized))
     {
-      stderr_is_journal =
-        g_log_writer_is_journald (fileno (stderr));
+      stderr_is_journal = g_log_writer_is_journald (fileno (stderr));
       g_once_init_leave (&initialized, TRUE);
     }
 
   if (
     stderr_is_journal
-    && g_log_writer_journald (
-         log_level, fields, n_fields, user_data)
+    && g_log_writer_journald (log_level, fields, n_fields, user_data)
          == G_LOG_WRITER_HANDLED)
     goto handled;
 
   /* FIXME: Add support for the Windows log. */
 
   if (
-    log_writer_standard_streams (
-      log_level, fields, n_fields, user_data)
+    log_writer_standard_streams (log_level, fields, n_fields, user_data)
     == G_LOG_WRITER_HANDLED)
     goto handled;
 
@@ -954,11 +905,8 @@ handled:
         {
           gchar * locale_msg = NULL;
 
-          locale_msg = g_locale_from_utf8 (
-            fatal_msg_buf, -1, NULL, NULL, NULL);
-          MessageBox (
-            NULL, locale_msg, NULL,
-            MB_ICONERROR | MB_SETFOREGROUND);
+          locale_msg = g_locale_from_utf8 (fatal_msg_buf, -1, NULL, NULL, NULL);
+          MessageBox (NULL, locale_msg, NULL, MB_ICONERROR | MB_SETFOREGROUND);
           g_free (locale_msg);
         }
 #endif /* !G_OS_WIN32 */
@@ -989,18 +937,16 @@ log_writer (
 {
   if (use_default_log_writer)
     {
-      return g_log_writer_default (
-        log_level, fields, n_fields, NULL);
+      return g_log_writer_default (log_level, fields, n_fields, NULL);
     }
 
-  char * str = log_writer_format_fields (
-    log_level, fields, n_fields, F_NO_USE_COLOR);
+  char * str =
+    log_writer_format_fields (log_level, fields, n_fields, F_NO_USE_COLOR);
 
   if (self->initialized)
     {
       /* queue the message */
-      LogEvent * ev =
-        (LogEvent *) object_pool_get (self->obj_pool);
+      LogEvent * ev = (LogEvent *) object_pool_get (self->obj_pool);
       ev->log_level = log_level;
       ev->message = str;
 
@@ -1009,8 +955,7 @@ log_writer (
         {
           if (
             string_is_equal (fields[i].key, "GLIB_DOMAIN")
-            && string_is_equal (
-              (const char *) fields[i].value, "zrythm"))
+            && string_is_equal ((const char *) fields[i].value, "zrythm"))
             {
               ev->is_zrythm_domain = true;
               break;
@@ -1019,12 +964,10 @@ log_writer (
 
       if (need_backtrace (self, ev) && !RUNNING_ON_VALGRIND)
         {
-          ev->backtrace =
-            backtrace_get_with_lines ("", 100, true);
+          ev->backtrace = backtrace_get_with_lines ("", 100, true);
         }
 
-      int num_avail_objs =
-        object_pool_get_num_available (self->obj_pool);
+      int num_avail_objs = object_pool_get_num_available (self->obj_pool);
       if (num_avail_objs < 200)
         {
           log_idle_cb (self);
@@ -1042,12 +985,10 @@ log_writer (
       /* also log to /tmp */
       if (!tmp_log_file)
         {
-          char * datetime = datetime_get_for_filename ();
-          char * filename =
-            g_strdup_printf ("zrythm_%s.log", datetime);
+          char *       datetime = datetime_get_for_filename ();
+          char *       filename = g_strdup_printf ("zrythm_%s.log", datetime);
           const char * tmpdir = g_get_tmp_dir ();
-          tmp_log_file =
-            g_build_filename (tmpdir, filename, NULL);
+          tmp_log_file = g_build_filename (tmpdir, filename, NULL);
           g_free (filename);
           g_free (datetime);
         }
@@ -1067,8 +1008,7 @@ log_writer (
           /* this is because the following doesn't
            * send a trap when executed from non-gtk
            * threads during testing */
-          return g_log_writer_default (
-            log_level, fields, n_fields, self);
+          return g_log_writer_default (log_level, fields, n_fields, self);
         }
       else
         {
@@ -1081,8 +1021,7 @@ log_writer (
     }
   else
     {
-      return log_writer_default_custom (
-        log_level, fields, n_fields, self);
+      return log_writer_default_custom (log_level, fields, n_fields, self);
       /*log_writer_standard_streams (*/
       /*log_level, fields, n_fields, self);*/
     }
@@ -1098,8 +1037,8 @@ log_writer (
 void
 log_init_writer_idle (Log * self, unsigned int secs)
 {
-  self->writer_source_id = g_timeout_add_seconds (
-    secs, (GSourceFunc) log_idle_cb, self);
+  self->writer_source_id =
+    g_timeout_add_seconds (secs, (GSourceFunc) log_idle_cb, self);
 }
 
 static void *
@@ -1121,8 +1060,7 @@ typedef struct Line
 {
   char   line[LINE_SIZE]; // content
   size_t storage_sz;      // allocation size of line memory
-  size_t
-    sz; // size of line, not including terminating null byte ('\0')
+  size_t sz; // size of line, not including terminating null byte ('\0')
 } Line;
 
 /**
@@ -1210,10 +1148,7 @@ log_get_last_n_lines (Log * self, int n)
  * @return Whether successful.
  */
 WARN_UNUSED_RESULT bool
-log_init_with_file (
-  Log *        self,
-  const char * filepath,
-  GError **    error)
+log_init_with_file (Log * self, const char * filepath, GError ** error)
 {
   /* open file to write to */
   if (filepath)
@@ -1224,26 +1159,22 @@ log_init_with_file (
         {
           g_set_error (
             error, Z_UTILS_LOG_ERROR, Z_UTILS_LOG_ERROR_FAILED,
-            "Failed to open logfile at %s",
-            self->log_filepath);
+            "Failed to open logfile at %s", self->log_filepath);
           return false;
         }
     }
   else
     {
       char * str_datetime = datetime_get_for_filename ();
-      char * user_log_dir =
-        zrythm_get_dir (ZRYTHM_DIR_USER_LOG);
+      char * user_log_dir = zrythm_get_dir (ZRYTHM_DIR_USER_LOG);
       self->log_filepath = g_strdup_printf (
-        "%s%slog_%s.log", user_log_dir, G_DIR_SEPARATOR_S,
-        str_datetime);
+        "%s%slog_%s.log", user_log_dir, G_DIR_SEPARATOR_S, str_datetime);
       GError * err = NULL;
       bool     success = io_mkdir (user_log_dir, &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR (
-            error, err, "Failed to make log directory %s",
-            user_log_dir);
+            error, err, "Failed to make log directory %s", user_log_dir);
           return false;
         }
       self->logfile = fopen (self->log_filepath, "a");
@@ -1251,8 +1182,7 @@ log_init_with_file (
         {
           g_set_error (
             error, Z_UTILS_LOG_ERROR, Z_UTILS_LOG_ERROR_FAILED,
-            "Failed to open logfile at %s",
-            self->log_filepath);
+            "Failed to open logfile at %s", self->log_filepath);
           return false;
         }
       g_free (user_log_dir);
@@ -1264,13 +1194,11 @@ log_init_with_file (
 
   /* init the object pool for log events */
   self->obj_pool = object_pool_new (
-    create_log_event_obj, (ObjectFreeFunc) free_log_event_obj,
-    MESSAGES_MAX);
+    create_log_event_obj, (ObjectFreeFunc) free_log_event_obj, MESSAGES_MAX);
 
   /* init the message queue */
   self->mqueue = mpmc_queue_new ();
-  mpmc_queue_reserve (
-    self->mqueue, (size_t) MESSAGES_MAX * sizeof (char *));
+  mpmc_queue_reserve (self->mqueue, (size_t) MESSAGES_MAX * sizeof (char *));
 
   self->initialized = true;
 
@@ -1317,12 +1245,10 @@ log_generate_compressed_file (
   char **   ret_path,
   GError ** error)
 {
-  g_return_val_if_fail (
-    *ret_dir == NULL && *ret_path == NULL, false);
+  g_return_val_if_fail (*ret_dir == NULL && *ret_path == NULL, false);
 
   GError * err = NULL;
-  char *   log_file_tmpdir =
-    g_dir_make_tmp ("zrythm-log-file-XXXXXX", &err);
+  char *   log_file_tmpdir = g_dir_make_tmp ("zrythm-log-file-XXXXXX", &err);
   if (!log_file_tmpdir)
     {
       g_set_error_literal (
@@ -1337,26 +1263,24 @@ log_generate_compressed_file (
   size_t log_txt_sz = strlen (log_txt);
   size_t compress_bound = ZSTD_compressBound (log_txt_sz);
   char * dest = malloc (compress_bound);
-  size_t dest_size = ZSTD_compress (
-    dest, compress_bound, log_txt, log_txt_sz, 1);
+  size_t dest_size =
+    ZSTD_compress (dest, compress_bound, log_txt, log_txt_sz, 1);
   if (ZSTD_isError (dest_size))
     {
       free (dest);
 
       g_set_error (
         error, Z_UTILS_LOG_ERROR, Z_UTILS_LOG_ERROR_FAILED,
-        "Failed to compress log text: %s",
-        ZSTD_getErrorName (dest_size));
+        "Failed to compress log text: %s", ZSTD_getErrorName (dest_size));
 
       g_free (log_file_tmpdir);
       return false;
     }
 
   /* write to dest file */
-  char * dest_filepath =
-    g_build_filename (log_file_tmpdir, "log.txt.zst", NULL);
-  bool ret = g_file_set_contents (
-    dest_filepath, dest, (gssize) dest_size, error);
+  char * dest_filepath = g_build_filename (log_file_tmpdir, "log.txt.zst", NULL);
+  bool ret =
+    g_file_set_contents (dest_filepath, dest, (gssize) dest_size, error);
   g_free (dest);
   if (!ret)
     {
@@ -1391,13 +1315,12 @@ log_new (void)
   Log * self = object_new (Log);
 
   const GDebugKey keys[] = {
-    {"gc-friendly",      1                     },
-    { "fatal-warnings",
-     G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL},
-    { "fatal-criticals", G_LOG_LEVEL_CRITICAL  }
+    {"gc-friendly",      1                                         },
+    { "fatal-warnings",  G_LOG_LEVEL_WARNING | G_LOG_LEVEL_CRITICAL},
+    { "fatal-criticals", G_LOG_LEVEL_CRITICAL                      }
   };
-  GLogLevelFlags flags = g_parse_debug_envvar (
-    "G_DEBUG", keys, G_N_ELEMENTS (keys), 0);
+  GLogLevelFlags flags =
+    g_parse_debug_envvar ("G_DEBUG", keys, G_N_ELEMENTS (keys), 0);
 
   log_always_fatal |= flags & G_LOG_LEVEL_MASK;
 
@@ -1409,8 +1332,7 @@ log_new (void)
   if (!log_writer_set)
     {
       log_writer_set = true;
-      g_log_set_writer_func (
-        (GLogWriterFunc) log_writer, self, NULL);
+      g_log_set_writer_func ((GLogWriterFunc) log_writer, self, NULL);
       use_default_log_writer = false;
     }
 
@@ -1452,8 +1374,7 @@ log_free (Log * self)
   use_default_log_writer = true;
 
   /* free children */
-  object_free_w_func_and_null (
-    object_pool_free, self->obj_pool);
+  object_free_w_func_and_null (object_pool_free, self->obj_pool);
   object_free_w_func_and_null (mpmc_queue_free, self->mqueue);
   /*g_object_unref_and_null (self->messages_buf);*/
 

@@ -32,12 +32,9 @@ chord_region_recreate_pango_layouts (ZRegion * self)
       PangoFontDescription * desc;
       self->chords_layout = gtk_widget_create_pango_layout (
         GTK_WIDGET (arranger_object_get_arranger (obj)), NULL);
-      desc = pango_font_description_from_string (
-        REGION_NAME_FONT_NO_SIZE " 6");
-      pango_layout_set_font_description (
-        self->chords_layout, desc);
+      desc = pango_font_description_from_string (REGION_NAME_FONT_NO_SIZE " 6");
+      pango_layout_set_font_description (self->chords_layout, desc);
       pango_font_description_free (desc);
     }
-  pango_layout_get_pixel_size (
-    self->chords_layout, &obj->textw, &obj->texth);
+  pango_layout_get_pixel_size (self->chords_layout, &obj->textw, &obj->texth);
 }

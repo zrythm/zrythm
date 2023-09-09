@@ -46,9 +46,7 @@ typedef struct _ExpanderBoxWidget
  * Sets the label to show.
  */
 void
-expander_box_widget_set_label (
-  ExpanderBoxWidget * self,
-  const char *        label);
+expander_box_widget_set_label (ExpanderBoxWidget * self, const char * label);
 
 /**
  * Sets the icon name to show.

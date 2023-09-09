@@ -43,9 +43,7 @@ marker_set_index (Marker * self, int index)
  * Sets the Track of the Marker.
  */
 void
-marker_set_track_name_hash (
-  Marker *     marker,
-  unsigned int track_name_hash)
+marker_set_track_name_hash (Marker * marker, unsigned int track_name_hash)
 {
   marker->track_name_hash = track_name_hash;
 }

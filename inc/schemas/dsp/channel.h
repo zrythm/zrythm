@@ -47,37 +47,13 @@ typedef struct Channel_v1
 
 static const cyaml_schema_field_t channel_fields_schema_v1[] = {
   YAML_FIELD_INT (Channel_v1, schema_version),
-  YAML_FIELD_SEQUENCE_FIXED (
-    Channel_v1,
-    midi_fx,
-    plugin_schema_v1,
-    STRIP_SIZE),
-  YAML_FIELD_SEQUENCE_FIXED (
-    Channel_v1,
-    inserts,
-    plugin_schema_v1,
-    STRIP_SIZE),
-  YAML_FIELD_SEQUENCE_FIXED (
-    Channel_v1,
-    sends,
-    channel_send_schema_v1,
-    STRIP_SIZE),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Channel_v1,
-    instrument,
-    plugin_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR (
-    Channel_v1,
-    prefader,
-    fader_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR (
-    Channel_v1,
-    fader,
-    fader_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Channel_v1,
-    midi_out,
-    port_fields_schema_v1),
+  YAML_FIELD_SEQUENCE_FIXED (Channel_v1, midi_fx, plugin_schema_v1, STRIP_SIZE),
+  YAML_FIELD_SEQUENCE_FIXED (Channel_v1, inserts, plugin_schema_v1, STRIP_SIZE),
+  YAML_FIELD_SEQUENCE_FIXED (Channel_v1, sends, channel_send_schema_v1, STRIP_SIZE),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Channel_v1, instrument, plugin_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Channel_v1, prefader, fader_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Channel_v1, fader, fader_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Channel_v1, midi_out, port_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Channel_v1,
     stereo_out,
@@ -90,11 +66,7 @@ static const cyaml_schema_field_t channel_fields_schema_v1[] = {
     ext_midi_ins,
     ext_port_schema_v1),
   YAML_FIELD_INT (Channel_v1, all_midi_ins),
-  YAML_FIELD_SEQUENCE_FIXED (
-    Channel_v1,
-    midi_channels,
-    int_schema,
-    16),
+  YAML_FIELD_SEQUENCE_FIXED (Channel_v1, midi_channels, int_schema, 16),
   YAML_FIELD_INT (Channel_v1, all_midi_channels),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
     Channel_v1,

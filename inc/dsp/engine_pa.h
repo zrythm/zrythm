@@ -41,9 +41,7 @@ int
 engine_pa_setup (AudioEngine * self);
 
 void
-engine_pa_fill_out_bufs (
-  AudioEngine *   self,
-  const nframes_t nframes);
+engine_pa_fill_out_bufs (AudioEngine * self, const nframes_t nframes);
 
 /**
  * Tests if PortAudio is working properly.

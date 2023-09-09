@@ -112,9 +112,7 @@ router_recalc_graph (Router * self, bool soft);
  * Starts a new cycle.
  */
 void
-router_start_cycle (
-  Router *              self,
-  EngineProcessTimeInfo time_nfo);
+router_start_cycle (Router * self, EngineProcessTimeInfo time_nfo);
 
 /**
  * Returns the max playback latency of the trigger
@@ -127,18 +125,16 @@ router_get_max_route_playback_latency (Router * router);
  * Returns if the current thread is a
  * processing thread.
  */
-WARN_UNUSED_RESULT HOT NONNULL
-  ACCESS_READ_ONLY (1) bool router_is_processing_thread (
-    const Router * const router);
+WARN_UNUSED_RESULT HOT NONNULL ACCESS_READ_ONLY (
+  1) bool router_is_processing_thread (const Router * const router);
 
 /**
  * Returns whether this is the thread that kicks
  * off processing (thread that calls
  * router_start_cycle()).
  */
-WARN_UNUSED_RESULT HOT NONNULL
-  ACCESS_READ_ONLY (1) bool router_is_processing_kickoff_thread (
-    const Router * const self);
+WARN_UNUSED_RESULT HOT NONNULL ACCESS_READ_ONLY (
+  1) bool router_is_processing_kickoff_thread (const Router * const self);
 
 /**
  * Queues a control port change to be applied

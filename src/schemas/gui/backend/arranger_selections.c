@@ -7,8 +7,7 @@
 #include "schemas/gui/backend/arranger_selections.h"
 
 ArrangerSelections *
-arranger_selections_upgrade_from_v1 (
-  ArrangerSelections_v1 * old)
+arranger_selections_upgrade_from_v1 (ArrangerSelections_v1 * old)
 {
   if (!old)
     return NULL;

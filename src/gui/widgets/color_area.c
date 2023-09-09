@@ -15,10 +15,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  ColorAreaWidget,
-  color_area_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (ColorAreaWidget, color_area_widget, GTK_TYPE_WIDGET)
 
 /**
  * Draws the color picker.
@@ -57,8 +54,7 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   gtk_snapshot_append_color (
     snapshot, &color,
-    &GRAPHENE_RECT_INIT (
-      0.f, 0.f, (float) width, (float) height));
+    &GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
 
   if (self->type == COLOR_AREA_TYPE_TRACK)
     {
@@ -67,8 +63,7 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       /* draw each parent */
       if (self->parents)
         {
-          g_ptr_array_remove_range (
-            self->parents, 0, self->parents->len);
+          g_ptr_array_remove_range (self->parents, 0, self->parents->len);
         }
       else
         {
@@ -79,11 +74,9 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       size_t len = self->parents->len + 1;
       for (size_t i = 0; i < self->parents->len; i++)
         {
-          Track * parent_track =
-            g_ptr_array_index (self->parents, i);
+          Track * parent_track = g_ptr_array_index (self->parents, i);
 
-          double start_y =
-            ((double) i / (double) len) * (double) height;
+          double start_y = ((double) i / (double) len) * (double) height;
           double h = (double) height / (double) len;
 
           color = parent_track->color;
@@ -91,8 +84,7 @@ color_area_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
             color_brighten_default (&color);
           gtk_snapshot_append_color (
             snapshot, &color,
-            &GRAPHENE_RECT_INIT (
-              0.f, (float) start_y, (float) width, (float) h));
+            &GRAPHENE_RECT_INIT (0.f, (float) start_y, (float) width, (float) h));
         }
     }
 }
@@ -126,9 +118,7 @@ on_enter (
 }
 
 static void
-on_leave (
-  GtkEventControllerMotion * motion_controller,
-  gpointer                   user_data)
+on_leave (GtkEventControllerMotion * motion_controller, gpointer user_data)
 {
   ColorAreaWidget * self = Z_COLOR_AREA_WIDGET (user_data);
   self->hovered = false;
@@ -140,9 +130,7 @@ on_leave (
  * color pointer.
  */
 void
-color_area_widget_setup_generic (
-  ColorAreaWidget * self,
-  GdkRGBA *         color)
+color_area_widget_setup_generic (ColorAreaWidget * self, GdkRGBA * color)
 {
   self->color = *color;
   gtk_widget_queue_draw (GTK_WIDGET (self));
@@ -153,9 +141,7 @@ color_area_widget_setup_generic (
  * TrackWidget implementations.
  */
 void
-color_area_widget_setup_track (
-  ColorAreaWidget * self,
-  Track *           track)
+color_area_widget_setup_track (ColorAreaWidget * self, Track * track)
 {
   self->track = track;
   self->type = COLOR_AREA_TYPE_TRACK;
@@ -171,9 +157,7 @@ color_area_widget_setup_track (
  * color is read directly from the Track.
  */
 void
-color_area_widget_set_color (
-  ColorAreaWidget * self,
-  GdkRGBA *         color)
+color_area_widget_set_color (ColorAreaWidget * self, GdkRGBA * color)
 {
   self->color = *color;
 
@@ -183,11 +167,9 @@ color_area_widget_set_color (
 static void
 finalize (ColorAreaWidget * self)
 {
-  object_free_w_func_and_null (
-    g_ptr_array_unref, self->parents);
+  object_free_w_func_and_null (g_ptr_array_unref, self->parents);
 
-  G_OBJECT_CLASS (color_area_widget_parent_class)
-    ->finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (color_area_widget_parent_class)->finalize (G_OBJECT (self));
 }
 
 static void
@@ -196,29 +178,21 @@ color_area_widget_init (ColorAreaWidget * self)
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
   gtk_accessible_update_property (
-    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL,
-    "Color", -1);
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL, "Color", -1);
 
-  GtkGestureClick * mp =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  GtkGestureClick * mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (
-    G_OBJECT (mp), "pressed", G_CALLBACK (multipress_pressed),
-    self);
-  gtk_widget_add_controller (
-    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (mp));
+    G_OBJECT (mp), "pressed", G_CALLBACK (multipress_pressed), self);
+  gtk_widget_add_controller (GTK_WIDGET (self), GTK_EVENT_CONTROLLER (mp));
 
   GtkEventControllerMotion * motion_controller =
-    GTK_EVENT_CONTROLLER_MOTION (
-      gtk_event_controller_motion_new ());
+    GTK_EVENT_CONTROLLER_MOTION (gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT (motion_controller), "enter",
-    G_CALLBACK (on_enter), self);
+    G_OBJECT (motion_controller), "enter", G_CALLBACK (on_enter), self);
   g_signal_connect (
-    G_OBJECT (motion_controller), "leave",
-    G_CALLBACK (on_leave), self);
+    G_OBJECT (motion_controller), "leave", G_CALLBACK (on_leave), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (motion_controller));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (motion_controller));
 }
 
 static void
@@ -227,8 +201,7 @@ color_area_widget_class_init (ColorAreaWidgetClass * klass)
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = color_area_snapshot;
   gtk_widget_class_set_css_name (wklass, "color-area");
-  gtk_widget_class_set_accessible_role (
-    wklass, GTK_ACCESSIBLE_ROLE_BUTTON);
+  gtk_widget_class_set_accessible_role (wklass, GTK_ACCESSIBLE_ROLE_BUTTON);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;

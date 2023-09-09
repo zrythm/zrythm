@@ -38,8 +38,7 @@
 //#define FUNC_NAME s_
 
 /** Macro. */
-#if defined(SCM_MAGIC_SNARF_DOCS) \
-  || defined(SCM_MAGIC_SNARFER)
+#if defined(SCM_MAGIC_SNARF_DOCS) || defined(SCM_MAGIC_SNARFER)
 #  define SNARF_MODE 1
 #endif
 

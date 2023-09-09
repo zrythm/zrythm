@@ -54,8 +54,7 @@ dispose (HeaderWidget * self)
   gtk_widget_unparent (GTK_WIDGET (self->stack));
   gtk_widget_unparent (GTK_WIDGET (self->end_box));
 
-  G_OBJECT_CLASS (header_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (header_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
@@ -77,16 +76,13 @@ header_widget_init (HeaderWidget * self)
   gtk_widget_add_css_class (GTK_WIDGET (self), "header");
 
   live_waveform_widget_setup_engine (self->live_waveform);
-  spectrum_analyzer_widget_setup_engine (
-    self->spectrum_analyzer);
+  spectrum_analyzer_widget_setup_engine (self->spectrum_analyzer);
   midi_activity_bar_widget_setup_engine (self->midi_activity);
   midi_activity_bar_widget_set_animation (
     self->midi_activity, MAB_ANIMATION_FLASH);
 
-  MeterWidget * l = meter_widget_new (
-    P_MASTER_TRACK->channel->stereo_out->l, 8);
-  MeterWidget * r = meter_widget_new (
-    P_MASTER_TRACK->channel->stereo_out->r, 8);
+  MeterWidget * l = meter_widget_new (P_MASTER_TRACK->channel->stereo_out->l, 8);
+  MeterWidget * r = meter_widget_new (P_MASTER_TRACK->channel->stereo_out->r, 8);
   gtk_box_append (self->meter_box, GTK_WIDGET (l));
   gtk_box_append (self->meter_box, GTK_WIDGET (r));
 
@@ -103,8 +99,7 @@ header_widget_class_init (HeaderWidgetClass * _klass)
   resources_set_class_template (klass, "header.ui");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, HeaderWidget, x)
+  gtk_widget_class_bind_template_child (klass, HeaderWidget, x)
 
   BIND_CHILD (stack);
   BIND_CHILD (end_box);
@@ -119,8 +114,7 @@ header_widget_class_init (HeaderWidgetClass * _klass)
 
 #undef BIND_CHILD
 
-  gtk_widget_class_set_layout_manager_type (
-    klass, GTK_TYPE_BOX_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (klass, GTK_TYPE_BOX_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;

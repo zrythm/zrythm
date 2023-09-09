@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define FADER_BUTTONS_WIDGET_TYPE \
-  (fader_buttons_widget_get_type ())
+#define FADER_BUTTONS_WIDGET_TYPE (fader_buttons_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   FaderButtonsWidget,
   fader_buttons_widget,
@@ -60,17 +59,13 @@ typedef struct _FaderButtonsWidget
 } FaderButtonsWidget;
 
 void
-fader_buttons_widget_block_signal_handlers (
-  FaderButtonsWidget * self);
+fader_buttons_widget_block_signal_handlers (FaderButtonsWidget * self);
 
 void
-fader_buttons_widget_unblock_signal_handlers (
-  FaderButtonsWidget * self);
+fader_buttons_widget_unblock_signal_handlers (FaderButtonsWidget * self);
 
 void
-fader_buttons_widget_refresh (
-  FaderButtonsWidget * self,
-  Track *              track);
+fader_buttons_widget_refresh (FaderButtonsWidget * self, Track * track);
 
 /**
  * @}

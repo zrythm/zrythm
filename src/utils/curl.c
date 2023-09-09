@@ -51,8 +51,7 @@ curl_to_string (void * ptr, size_t size, size_t nmemb, void * data)
 
   GString * page_str = (GString *) data;
 
-  page_str = g_string_append_len (
-    page_str, ptr, (gssize) (size * nmemb));
+  page_str = g_string_append_len (page_str, ptr, (gssize) (size * nmemb));
 
   return size * nmemb;
 }
@@ -66,10 +65,7 @@ curl_to_string (void * ptr, size_t size, size_t nmemb, void * data)
  * @return Newly allocated string or NULL if fail.
  */
 char *
-z_curl_get_page_contents (
-  const char * url,
-  int          timeout,
-  GError **    error)
+z_curl_get_page_contents (const char * url, int timeout, GError ** error)
 {
   g_debug ("getting page contents for %s...", url);
 
@@ -80,12 +76,10 @@ z_curl_get_page_contents (
 
   CURLcode res;
   curl_easy_setopt (curl, CURLOPT_URL, url);
-  curl_easy_setopt (
-    curl, CURLOPT_WRITEFUNCTION, curl_to_string);
+  curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION, curl_to_string);
   curl_easy_setopt (curl, CURLOPT_WRITEDATA, page_str);
   curl_easy_setopt (curl, CURLOPT_TIMEOUT, timeout);
-  curl_easy_setopt (
-    curl, CURLOPT_USERAGENT, "zrythm-daw/" PACKAGE_VERSION);
+  curl_easy_setopt (curl, CURLOPT_USERAGENT, "zrythm-daw/" PACKAGE_VERSION);
 
   char * page = NULL;
   res = curl_easy_perform (curl);
@@ -97,8 +91,7 @@ z_curl_get_page_contents (
     {
       g_set_error (
         error, Z_UTILS_CURL_ERROR, Z_UTILS_CURL_ERROR_FAILED,
-        "curl_easy_perform() failed: %s",
-        curl_easy_strerror (res));
+        "curl_easy_perform() failed: %s", curl_easy_strerror (res));
       g_string_free (page_str, true);
     }
 
@@ -137,11 +130,7 @@ struct WriteThis
 };
 
 static size_t
-read_callback (
-  char * dest,
-  size_t size,
-  size_t nmemb,
-  void * userp)
+read_callback (char * dest, size_t size, size_t nmemb, void * userp)
 {
   struct WriteThis * wt = (struct WriteThis *) userp;
   size_t             buffer_size = size * nmemb;
@@ -184,9 +173,7 @@ z_curl_post_json_no_auth (
   ...)
 {
   g_return_val_if_fail (
-    url == NULL || data == NULL || error == NULL
-      || *error == NULL,
-    -1);
+    url == NULL || data == NULL || error == NULL || *error == NULL, -1);
 
   g_message ("sending data...");
 
@@ -194,8 +181,8 @@ z_curl_post_json_no_auth (
   if (!curl)
     {
       g_set_error_literal (
-        error, Z_UTILS_CURL_ERROR,
-        Z_UTILS_CURL_ERROR_CANNOT_INIT, "Failed to init curl");
+        error, Z_UTILS_CURL_ERROR, Z_UTILS_CURL_ERROR_CANNOT_INIT,
+        "Failed to init curl");
       return -1;
     }
 
@@ -209,10 +196,8 @@ z_curl_post_json_no_auth (
 #endif
 
   struct curl_slist * headers = NULL;
-  headers =
-    curl_slist_append (headers, "Accept: application/json");
-  headers = curl_slist_append (
-    headers, "Content-Type: multipart/form-data");
+  headers = curl_slist_append (headers, "Accept: application/json");
+  headers = curl_slist_append (headers, "Content-Type: multipart/form-data");
 #if 0
   headers =
     curl_slist_append (
@@ -234,12 +219,10 @@ z_curl_post_json_no_auth (
   curl_easy_setopt (
     curl, CURLOPT_READDATA, &write_data);
 #endif
-  curl_easy_setopt (
-    curl, CURLOPT_WRITEFUNCTION, curl_to_string);
+  curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION, curl_to_string);
   curl_easy_setopt (curl, CURLOPT_WRITEDATA, response);
   curl_easy_setopt (curl, CURLOPT_TIMEOUT, timeout);
-  curl_easy_setopt (
-    curl, CURLOPT_USERAGENT, "zrythm-daw/" PACKAGE_VERSION);
+  curl_easy_setopt (curl, CURLOPT_USERAGENT, "zrythm-daw/" PACKAGE_VERSION);
 #if 0
   curl_easy_setopt (curl, CURLOPT_VERBOSE, 1L);
 #endif
@@ -277,14 +260,10 @@ z_curl_post_json_no_auth (
   res = curl_easy_perform (curl);
   if (res != CURLE_OK)
     {
-      g_warning (
-        "curl_easy_perform() failed: %s",
-        curl_easy_strerror (res));
+      g_warning ("curl_easy_perform() failed: %s", curl_easy_strerror (res));
       g_set_error (
-        error, Z_UTILS_CURL_ERROR,
-        Z_UTILS_CURL_ERROR_BAD_REQUEST,
-        "curl_easy_perform() failed: %s",
-        curl_easy_strerror (res));
+        error, Z_UTILS_CURL_ERROR, Z_UTILS_CURL_ERROR_BAD_REQUEST,
+        "curl_easy_perform() failed: %s", curl_easy_strerror (res));
 
       curl_easy_cleanup (curl);
       g_string_free (response, true);
@@ -306,8 +285,7 @@ z_curl_post_json_no_auth (
   else
     {
       g_set_error (
-        error, Z_UTILS_CURL_ERROR,
-        Z_UTILS_CURL_ERROR_NON_2XX_RESPONSE,
+        error, Z_UTILS_CURL_ERROR, Z_UTILS_CURL_ERROR_NON_2XX_RESPONSE,
         "POST failed: [%ld] %s", http_code, response_str);
 
       g_free (response_str);
@@ -340,8 +318,8 @@ get_page_contents_task (
 {
   ZCurlTaskData * task_data = (ZCurlTaskData *) _task_data;
   GError *        err = NULL;
-  char *          page = z_curl_get_page_contents (
-    task_data->url, task_data->timeout_sec, &err);
+  char *          page =
+    z_curl_get_page_contents (task_data->url, task_data->timeout_sec, &err);
   if (!page)
     {
       g_task_return_error (task, err);
@@ -351,15 +329,11 @@ get_page_contents_task (
 }
 
 char *
-z_curl_get_page_contents_finish (
-  GAsyncResult * res,
-  GError **      error)
+z_curl_get_page_contents_finish (GAsyncResult * res, GError ** error)
 {
   g_debug ("finished getting page contents");
-  g_return_val_if_fail (
-    g_task_is_valid (res, zrythm_app), NULL);
-  return (
-    char *) g_task_propagate_pointer ((GTask *) res, error);
+  g_return_val_if_fail (g_task_is_valid (res, zrythm_app), NULL);
+  return (char *) g_task_propagate_pointer ((GTask *) res, error);
 }
 
 void
@@ -369,13 +343,11 @@ z_curl_get_page_contents_async (
   GAsyncReadyCallback callback,
   gpointer            callback_data)
 {
-  GTask * task =
-    g_task_new (zrythm_app, NULL, callback, callback_data);
+  GTask *         task = g_task_new (zrythm_app, NULL, callback, callback_data);
   ZCurlTaskData * task_data = object_new (ZCurlTaskData);
   task_data->url = url;
   task_data->timeout_sec = timeout_sec;
-  g_task_set_task_data (
-    task, task_data, (GDestroyNotify) free);
+  g_task_set_task_data (task, task_data, (GDestroyNotify) free);
   g_task_run_in_thread (task, get_page_contents_task);
   g_object_unref (task);
 }

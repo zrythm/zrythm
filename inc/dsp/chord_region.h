@@ -28,10 +28,7 @@ typedef struct ZRegion     ZRegion;
  * @param idx Index inside chord track.
  */
 NONNULL ZRegion *
-chord_region_new (
-  const Position * start_pos,
-  const Position * end_pos,
-  int              idx);
+chord_region_new (const Position * start_pos, const Position * end_pos, int idx);
 
 /**
  * Inserts a ChordObject to the Region.

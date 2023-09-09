@@ -121,6 +121,5 @@ init_module (void * data)
 void
 guile_actions_tracklist_selections_action_define_module (void)
 {
-  scm_c_define_module (
-    "actions tracklist-selections-action", init_module, NULL);
+  scm_c_define_module ("actions tracklist-selections-action", init_module, NULL);
 }

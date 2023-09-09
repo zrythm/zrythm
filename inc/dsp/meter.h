@@ -95,11 +95,7 @@ meter_new_for_port (Port * port);
  * cycle.
  */
 void
-meter_get_value (
-  Meter *          self,
-  AudioValueFormat format,
-  float *          val,
-  float *          max);
+meter_get_value (Meter * self, AudioValueFormat format, float * val, float * max);
 
 void
 meter_free (Meter * self);

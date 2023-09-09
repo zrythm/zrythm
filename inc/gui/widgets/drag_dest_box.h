@@ -36,8 +36,7 @@ typedef struct Channel Channel;
  * @{
  */
 
-#define DRAG_DEST_BOX_WIDGET_TYPE \
-  (drag_dest_box_widget_get_type ())
+#define DRAG_DEST_BOX_WIDGET_TYPE (drag_dest_box_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   DragDestBoxWidget,
   drag_dest_box_widget,

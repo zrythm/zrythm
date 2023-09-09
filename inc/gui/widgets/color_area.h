@@ -65,18 +65,14 @@ typedef struct _ColorAreaWidget
  * of manually changing the color.
  */
 void
-color_area_widget_setup_generic (
-  ColorAreaWidget * self,
-  GdkRGBA *         color);
+color_area_widget_setup_generic (ColorAreaWidget * self, GdkRGBA * color);
 
 /**
  * Creates a ColorAreaWidget for use inside
  * TrackWidget implementations.
  */
 void
-color_area_widget_setup_track (
-  ColorAreaWidget * self,
-  Track *           track);
+color_area_widget_setup_track (ColorAreaWidget * self, Track * track);
 
 /**
  * Changes the color.
@@ -85,8 +81,6 @@ color_area_widget_setup_track (
  * color is read directly from the Track.
  */
 void
-color_area_widget_set_color (
-  ColorAreaWidget * widget,
-  GdkRGBA *         color);
+color_area_widget_set_color (ColorAreaWidget * widget, GdkRGBA * color);
 
 #endif

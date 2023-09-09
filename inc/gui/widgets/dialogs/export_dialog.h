@@ -13,8 +13,7 @@
 #include <adwaita.h>
 #include <gtk/gtk.h>
 
-#define EXPORT_DIALOG_WIDGET_TYPE \
-  (export_dialog_widget_get_type ())
+#define EXPORT_DIALOG_WIDGET_TYPE (export_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ExportDialogWidget,
   export_dialog_widget,

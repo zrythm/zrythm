@@ -25,12 +25,7 @@ G_BEGIN_DECLS
  */
 
 #define FILE_IMPORT_TYPE (file_import_get_type ())
-G_DECLARE_FINAL_TYPE (
-  FileImport,
-  file_import,
-  Z,
-  FILE_IMPORT,
-  GObject);
+G_DECLARE_FINAL_TYPE (FileImport, file_import, Z, FILE_IMPORT, GObject);
 
 typedef struct _FileImportInfo
 {
@@ -86,9 +81,7 @@ typedef struct _FileImport
  * Returns a new FileImport instance.
  */
 FileImport *
-file_import_new (
-  const char *           filepath,
-  const FileImportInfo * import_nfo);
+file_import_new (const char * filepath, const FileImportInfo * import_nfo);
 
 /**
  * Begins file import for a single file.
@@ -118,10 +111,7 @@ file_import_sync (FileImport * self, GError ** error);
  *   responsible for freeing the pointer array and the regions.
  */
 GPtrArray *
-file_import_finish (
-  FileImport *   self,
-  GAsyncResult * result,
-  GError **      error);
+file_import_finish (FileImport * self, GAsyncResult * result, GError ** error);
 
 /**
  * @}

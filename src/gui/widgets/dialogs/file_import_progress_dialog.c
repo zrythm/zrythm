@@ -27,10 +27,8 @@ static void
 update_content (FileImportProgressDialog * self)
 {
   adw_message_dialog_format_body (
-    ADW_MESSAGE_DIALOG (self),
-    _ ("Imported %d of %d files..."),
-    self->num_files_total - self->num_files_remaining,
-    self->num_files_total);
+    ADW_MESSAGE_DIALOG (self), _ ("Imported %d of %d files..."),
+    self->num_files_total - self->num_files_remaining, self->num_files_total);
   if (self->num_files_remaining == 0)
     {
       adw_message_dialog_format_body (
@@ -75,8 +73,7 @@ handle_regions (FileImportProgressDialog * self)
 {
   GError * err = NULL;
   bool     success = tracklist_import_regions (
-    self->region_arrays, self->import_info,
-    self->tracks_ready_cb, &err);
+    self->region_arrays, self->import_info, self->tracks_ready_cb, &err);
   if (success)
     {
       ui_show_notification_idle_printf (
@@ -84,11 +81,9 @@ handle_regions (FileImportProgressDialog * self)
     }
   else
     {
-      HANDLE_ERROR_LITERAL (
-        err, _ ("Failed to import regions"));
+      HANDLE_ERROR_LITERAL (err, _ ("Failed to import regions"));
     }
-  adw_message_dialog_response (
-    ADW_MESSAGE_DIALOG (self), "ok");
+  adw_message_dialog_response (ADW_MESSAGE_DIALOG (self), "ok");
 }
 
 /**
@@ -98,10 +93,7 @@ handle_regions (FileImportProgressDialog * self)
  * done or cancelled).
  */
 static void
-import_async_ready_cb (
-  GObject *      source_object,
-  GAsyncResult * res,
-  gpointer       data)
+import_async_ready_cb (GObject * source_object, GAsyncResult * res, gpointer data)
 {
   FileImportProgressDialog * self =
     Z_FILE_IMPORT_PROGRESS_DIALOG (source_object);
@@ -109,9 +101,7 @@ import_async_ready_cb (
   FileImport * fi = Z_FILE_IMPORT (data);
   GPtrArray *  regions = file_import_finish (fi, res, &err);
   self->num_files_remaining--;
-  g_debug (
-    "async ready: files remaining %d",
-    self->num_files_remaining);
+  g_debug ("async ready: files remaining %d", self->num_files_remaining);
   if (regions)
     {
       g_message ("Imported regions for %s", fi->filepath);
@@ -126,8 +116,7 @@ import_async_ready_cb (
         }
       else
         {
-          HANDLE_ERROR_LITERAL (
-            err, _ ("Failed to import files"));
+          HANDLE_ERROR_LITERAL (err, _ ("Failed to import files"));
           g_cancellable_cancel (self->cancellable);
         }
     }
@@ -146,19 +135,16 @@ import_async_ready_cb (
  * presenting progress info.
  */
 void
-file_import_progress_dialog_run (
-  FileImportProgressDialog * self)
+file_import_progress_dialog_run (FileImportProgressDialog * self)
 {
   int          i = 0;
   const char * filepath;
   while ((filepath = self->filepaths[i++]) != NULL)
     {
-      FileImport * fi =
-        file_import_new (filepath, self->import_info);
+      FileImport * fi = file_import_new (filepath, self->import_info);
       g_ptr_array_add (self->file_imports, fi);
       file_import_async (
-        fi, G_OBJECT (self), self->cancellable,
-        import_async_ready_cb, fi);
+        fi, G_OBJECT (self), self->cancellable, import_async_ready_cb, fi);
     }
 
   gtk_window_present (GTK_WINDOW (self));
@@ -175,8 +161,8 @@ file_import_progress_dialog_new (
   TracksReadyCallback tracks_ready_cb,
   GtkWindow *         parent)
 {
-  FileImportProgressDialog * self = g_object_new (
-    FILE_IMPORT_PROGRESS_PROGRESS_DIALOG_TYPE, NULL);
+  FileImportProgressDialog * self =
+    g_object_new (FILE_IMPORT_PROGRESS_PROGRESS_DIALOG_TYPE, NULL);
 
   self->import_info = file_import_info_clone (import_info);
   self->filepaths = string_array_clone (filepaths);
@@ -191,8 +177,7 @@ file_import_progress_dialog_new (
   update_content (self);
 
   gtk_window_set_transient_for (
-    GTK_WINDOW (self),
-    parent ? parent : UI_ACTIVE_WINDOW_OR_NULL);
+    GTK_WINDOW (self), parent ? parent : UI_ACTIVE_WINDOW_OR_NULL);
 
   return self;
 }
@@ -200,40 +185,32 @@ file_import_progress_dialog_new (
 static void
 dispose (GObject * obj)
 {
-  FileImportProgressDialog * self =
-    Z_FILE_IMPORT_PROGRESS_DIALOG (obj);
+  FileImportProgressDialog * self = Z_FILE_IMPORT_PROGRESS_DIALOG (obj);
 
   g_debug ("disposing import dialog...");
 
-  object_free_w_func_and_null (
-    g_ptr_array_unref, self->file_imports);
+  object_free_w_func_and_null (g_ptr_array_unref, self->file_imports);
   g_clear_object (&self->cancellable);
 
-  G_OBJECT_CLASS (file_import_progress_dialog_parent_class)
-    ->dispose (obj);
+  G_OBJECT_CLASS (file_import_progress_dialog_parent_class)->dispose (obj);
 }
 
 static void
 finalize (GObject * obj)
 {
-  FileImportProgressDialog * self =
-    Z_FILE_IMPORT_PROGRESS_DIALOG (obj);
+  FileImportProgressDialog * self = Z_FILE_IMPORT_PROGRESS_DIALOG (obj);
 
   g_debug ("finalizing import dialog...");
 
   object_free_w_func_and_null (g_strfreev, self->filepaths);
-  object_free_w_func_and_null (
-    file_import_info_free, self->import_info);
-  object_free_w_func_and_null (
-    g_ptr_array_unref, self->region_arrays);
+  object_free_w_func_and_null (file_import_info_free, self->import_info);
+  object_free_w_func_and_null (g_ptr_array_unref, self->region_arrays);
 
-  G_OBJECT_CLASS (file_import_progress_dialog_parent_class)
-    ->finalize (obj);
+  G_OBJECT_CLASS (file_import_progress_dialog_parent_class)->finalize (obj);
 }
 
 static void
-file_import_progress_dialog_class_init (
-  FileImportProgressDialogClass * klass)
+file_import_progress_dialog_class_init (FileImportProgressDialogClass * klass)
 {
   GObjectClass * object_class = G_OBJECT_CLASS (klass);
 
@@ -242,22 +219,18 @@ file_import_progress_dialog_class_init (
 }
 
 static void
-file_import_progress_dialog_init (
-  FileImportProgressDialog * self)
+file_import_progress_dialog_init (FileImportProgressDialog * self)
 {
   self->cancellable = g_cancellable_new ();
-  self->file_imports =
-    g_ptr_array_new_with_free_func (g_object_unref);
-  self->region_arrays = g_ptr_array_new_with_free_func (
-    (GDestroyNotify) g_ptr_array_unref);
+  self->file_imports = g_ptr_array_new_with_free_func (g_object_unref);
+  self->region_arrays =
+    g_ptr_array_new_with_free_func ((GDestroyNotify) g_ptr_array_unref);
 
-  adw_message_dialog_set_heading (
-    ADW_MESSAGE_DIALOG (self), _ ("File Import"));
+  adw_message_dialog_set_heading (ADW_MESSAGE_DIALOG (self), _ ("File Import"));
   adw_message_dialog_add_responses (
     ADW_MESSAGE_DIALOG (self), "cancel", _ ("_Cancel"), NULL);
 
   gtk_window_set_modal (GTK_WINDOW (self), true);
 
-  g_signal_connect (
-    self, "response", G_CALLBACK (response_cb), self);
+  g_signal_connect (self, "response", G_CALLBACK (response_cb), self);
 }

@@ -16,21 +16,19 @@ typedef struct PortConnectionsManager_v1
   size_t               connections_size;
 } PortConnectionsManager_v1;
 
-static const cyaml_schema_field_t
-  port_connections_manager_fields_schema_v1[] = {
-    YAML_FIELD_INT (PortConnectionsManager_v1, schema_version),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      PortConnectionsManager_v1,
-      connections,
-      port_connection_schema_v1),
+static const cyaml_schema_field_t port_connections_manager_fields_schema_v1[] = {
+  YAML_FIELD_INT (PortConnectionsManager_v1, schema_version),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    PortConnectionsManager_v1,
+    connections,
+    port_connection_schema_v1),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  port_connections_manager_schema_v1 = {
-    YAML_VALUE_PTR (
-      PortConnectionsManager_v1,
-      port_connections_manager_fields_schema_v1),
-  };
+static const cyaml_schema_value_t port_connections_manager_schema_v1 = {
+  YAML_VALUE_PTR (
+    PortConnectionsManager_v1,
+    port_connections_manager_fields_schema_v1),
+};
 #endif

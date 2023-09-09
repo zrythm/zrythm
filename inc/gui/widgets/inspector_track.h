@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define INSPECTOR_TRACK_WIDGET_TYPE \
-  (inspector_track_widget_get_type ())
+#define INSPECTOR_TRACK_WIDGET_TYPE (inspector_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   InspectorTrackWidget,
   inspector_track_widget,
@@ -21,20 +20,15 @@ G_DECLARE_FINAL_TYPE (
   INSPECTOR_TRACK_WIDGET,
   GtkWidget)
 
-typedef struct TracklistSelections TracklistSelections;
-typedef struct _TrackPropertiesExpanderWidget
-  TrackPropertiesExpanderWidget;
-typedef struct _PortsExpanderWidget PortsExpanderWidget;
-typedef struct _TrackInputExpanderWidget
-  TrackInputExpanderWidget;
-typedef struct _PluginStripExpanderWidget
-  PluginStripExpanderWidget;
-typedef struct _FaderControlsExpanderWidget
-  FaderControlsExpanderWidget;
-typedef struct _TextExpanderWidget TextExpanderWidget;
-typedef struct _ColorAreaWidget    ColorAreaWidget;
-typedef struct _ChannelSendsExpanderWidget
-  ChannelSendsExpanderWidget;
+typedef struct TracklistSelections            TracklistSelections;
+typedef struct _TrackPropertiesExpanderWidget TrackPropertiesExpanderWidget;
+typedef struct _PortsExpanderWidget           PortsExpanderWidget;
+typedef struct _TrackInputExpanderWidget      TrackInputExpanderWidget;
+typedef struct _PluginStripExpanderWidget     PluginStripExpanderWidget;
+typedef struct _FaderControlsExpanderWidget   FaderControlsExpanderWidget;
+typedef struct _TextExpanderWidget            TextExpanderWidget;
+typedef struct _ColorAreaWidget               ColorAreaWidget;
+typedef struct _ChannelSendsExpanderWidget    ChannelSendsExpanderWidget;
 
 /**
  * @addtogroup widgets

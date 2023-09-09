@@ -24,19 +24,13 @@ midi_mapping_action_init_loaded (MidiMappingAction * self)
  * Creates a new action.
  */
 UndoableAction *
-midi_mapping_action_new_enable (
-  int       idx,
-  bool      enable,
-  GError ** error)
+midi_mapping_action_new_enable (int idx, bool enable, GError ** error)
 {
   MidiMappingAction * self = object_new (MidiMappingAction);
   UndoableAction *    ua = (UndoableAction *) self;
   undoable_action_init (ua, UA_MIDI_MAPPING);
 
-  self->type =
-    enable
-      ? MIDI_MAPPING_ACTION_ENABLE
-      : MIDI_MAPPING_ACTION_DISABLE;
+  self->type = enable ? MIDI_MAPPING_ACTION_ENABLE : MIDI_MAPPING_ACTION_DISABLE;
   self->idx = idx;
 
   return ua;
@@ -92,8 +86,7 @@ midi_mapping_action_clone (const MidiMappingAction * src)
   self->idx = src->idx;
   if (src->dest_port_id)
     {
-      self->dest_port_id =
-        port_identifier_clone (src->dest_port_id);
+      self->dest_port_id = port_identifier_clone (src->dest_port_id);
     }
   if (src->dev_port)
     {
@@ -108,10 +101,7 @@ midi_mapping_action_clone (const MidiMappingAction * src)
  * Wrapper of midi_mapping_action_new_enable().
  */
 bool
-midi_mapping_action_perform_enable (
-  int       idx,
-  bool      enable,
-  GError ** error)
+midi_mapping_action_perform_enable (int idx, bool enable, GError ** error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
     midi_mapping_action_new_enable, error, idx, enable, error);
@@ -128,8 +118,7 @@ midi_mapping_action_perform_bind (
   GError **     error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    midi_mapping_action_new_bind, error, buf, device_port,
-    dest_port, error);
+    midi_mapping_action_new_bind, error, buf, device_port, dest_port, error);
 }
 
 /**
@@ -147,51 +136,39 @@ bind_or_unbind (MidiMappingAction * self, bool bind)
 {
   if (bind)
     {
-      Port * port =
-        port_find_from_identifier (self->dest_port_id);
+      Port * port = port_find_from_identifier (self->dest_port_id);
       self->idx = MIDI_MAPPINGS->num_mappings;
       midi_mappings_bind_device (
-        MIDI_MAPPINGS, self->buf, self->dev_port, port,
-        F_NO_PUBLISH_EVENTS);
+        MIDI_MAPPINGS, self->buf, self->dev_port, port, F_NO_PUBLISH_EVENTS);
     }
   else
     {
-      MidiMapping * mapping =
-        MIDI_MAPPINGS->mappings[self->idx];
-      memcpy (
-        self->buf, mapping->key, 3 * sizeof (midi_byte_t));
+      MidiMapping * mapping = MIDI_MAPPINGS->mappings[self->idx];
+      memcpy (self->buf, mapping->key, 3 * sizeof (midi_byte_t));
       if (self->dev_port)
         {
           ext_port_free (self->dev_port);
         }
       if (mapping->device_port)
         {
-          self->dev_port =
-            ext_port_clone (mapping->device_port);
+          self->dev_port = ext_port_clone (mapping->device_port);
         }
-      object_free_w_func_and_null (
-        port_identifier_free, self->dest_port_id);
-      self->dest_port_id =
-        port_identifier_clone (&mapping->dest_id);
-      midi_mappings_unbind (
-        MIDI_MAPPINGS, self->idx, F_NO_PUBLISH_EVENTS);
+      object_free_w_func_and_null (port_identifier_free, self->dest_port_id);
+      self->dest_port_id = port_identifier_clone (&mapping->dest_id);
+      midi_mappings_unbind (MIDI_MAPPINGS, self->idx, F_NO_PUBLISH_EVENTS);
     }
 }
 
 int
-midi_mapping_action_do (
-  MidiMappingAction * self,
-  GError **           error)
+midi_mapping_action_do (MidiMappingAction * self, GError ** error)
 {
   switch (self->type)
     {
     case MIDI_MAPPING_ACTION_ENABLE:
-      midi_mapping_set_enabled (
-        MIDI_MAPPINGS->mappings[self->idx], true);
+      midi_mapping_set_enabled (MIDI_MAPPINGS->mappings[self->idx], true);
       break;
     case MIDI_MAPPING_ACTION_DISABLE:
-      midi_mapping_set_enabled (
-        MIDI_MAPPINGS->mappings[self->idx], false);
+      midi_mapping_set_enabled (MIDI_MAPPINGS->mappings[self->idx], false);
       break;
     case MIDI_MAPPING_ACTION_BIND:
       bind_or_unbind (self, true);
@@ -212,19 +189,15 @@ midi_mapping_action_do (
  * Edits the plugin.
  */
 int
-midi_mapping_action_undo (
-  MidiMappingAction * self,
-  GError **           error)
+midi_mapping_action_undo (MidiMappingAction * self, GError ** error)
 {
   switch (self->type)
     {
     case MIDI_MAPPING_ACTION_ENABLE:
-      midi_mapping_set_enabled (
-        MIDI_MAPPINGS->mappings[self->idx], false);
+      midi_mapping_set_enabled (MIDI_MAPPINGS->mappings[self->idx], false);
       break;
     case MIDI_MAPPING_ACTION_DISABLE:
-      midi_mapping_set_enabled (
-        MIDI_MAPPINGS->mappings[self->idx], true);
+      midi_mapping_set_enabled (MIDI_MAPPINGS->mappings[self->idx], true);
       break;
     case MIDI_MAPPING_ACTION_BIND:
       bind_or_unbind (self, false);

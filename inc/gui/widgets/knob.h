@@ -17,12 +17,7 @@
 #include <gtk/gtk.h>
 
 #define KNOB_WIDGET_TYPE (knob_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  KnobWidget,
-  knob_widget,
-  Z,
-  KNOB_WIDGET,
-  GtkWidget)
+G_DECLARE_FINAL_TYPE (KnobWidget, knob_widget, Z, KNOB_WIDGET, GtkWidget)
 
 /**
  * @addtogroup widgets
@@ -141,18 +136,16 @@ _knob_widget_new (
 #define knob_widget_new_simple( \
   getter, default_getter, setter, obj, min, max, size, zero) \
   _knob_widget_new ( \
-    (GenericFloatGetter) getter, \
-    (GenericFloatGetter) default_getter, \
-    (GenericFloatSetter) setter, (void *) obj, \
-    KNOB_TYPE_NORMAL, min, max, size, zero)
+    (GenericFloatGetter) getter, (GenericFloatGetter) default_getter, \
+    (GenericFloatSetter) setter, (void *) obj, KNOB_TYPE_NORMAL, min, max, \
+    size, zero)
 
 /**
  * @param conn PortConnection pointer.
  */
 #define knob_widget_new_port(conn, size) \
   _knob_widget_new ( \
-    NULL, NULL, (void *) conn, KNOB_TYPE_PORT_MULTIPLIER, \
-    0.f, 1.f, size, 0.f)
+    NULL, NULL, (void *) conn, KNOB_TYPE_PORT_MULTIPLIER, 0.f, 1.f, size, 0.f)
 
 /**
  * @}

@@ -27,12 +27,7 @@
 #include <gtk/gtk.h>
 
 #define CHORD_KEY_WIDGET_TYPE (chord_key_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  ChordKeyWidget,
-  chord_key_widget,
-  Z,
-  CHORD_KEY_WIDGET,
-  GtkGrid)
+G_DECLARE_FINAL_TYPE (ChordKeyWidget, chord_key_widget, Z, CHORD_KEY_WIDGET, GtkGrid)
 
 typedef struct _PianoKeyboardWidget PianoKeyboardWidget;
 

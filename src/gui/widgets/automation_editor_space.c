@@ -36,13 +36,11 @@ automation_editor_space_widget_update_size_group (
   int                           visible)
 {
   clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
-    MW_CLIP_EDITOR_INNER, GTK_WIDGET (self->left_box),
-    visible);
+    MW_CLIP_EDITOR_INNER, GTK_WIDGET (self->left_box), visible);
 }
 
 void
-automation_editor_space_widget_refresh (
-  AutomationEditorSpaceWidget * self)
+automation_editor_space_widget_refresh (AutomationEditorSpaceWidget * self)
 {
   /*link_scrolls (self);*/
   /*automation_editor_legend_widget_refresh (*/
@@ -50,14 +48,13 @@ automation_editor_space_widget_refresh (
 }
 
 void
-automation_editor_space_widget_setup (
-  AutomationEditorSpaceWidget * self)
+automation_editor_space_widget_setup (AutomationEditorSpaceWidget * self)
 {
   if (self->arranger)
     {
       arranger_widget_setup (
-        Z_ARRANGER_WIDGET (self->arranger),
-        ARRANGER_WIDGET_TYPE_AUTOMATION, SNAP_GRID_EDITOR);
+        Z_ARRANGER_WIDGET (self->arranger), ARRANGER_WIDGET_TYPE_AUTOMATION,
+        SNAP_GRID_EDITOR);
 
       /*automation_editor_legend_widget_setup (*/
       /*self->legend);*/
@@ -67,8 +64,7 @@ automation_editor_space_widget_setup (
 }
 
 static void
-automation_editor_space_widget_init (
-  AutomationEditorSpaceWidget * self)
+automation_editor_space_widget_init (AutomationEditorSpaceWidget * self)
 {
   /*g_type_ensure (*/
   /*AUTOMATION_EDITOR_LEGEND_WIDGET_TYPE);*/
@@ -85,12 +81,10 @@ automation_editor_space_widget_class_init (
   AutomationEditorSpaceWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "automation_editor_space.ui");
+  resources_set_class_template (klass, "automation_editor_space.ui");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, AutomationEditorSpaceWidget, x)
+  gtk_widget_class_bind_template_child (klass, AutomationEditorSpaceWidget, x)
 
   BIND_CHILD (arranger);
   BIND_CHILD (left_box);

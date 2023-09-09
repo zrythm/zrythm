@@ -10,8 +10,7 @@
 #include <gtk/gtk.h>
 #include <libpanel.h>
 
-#define MAIN_WINDOW_WIDGET_TYPE \
-  (main_window_widget_get_type ())
+#define MAIN_WINDOW_WIDGET_TYPE (main_window_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   MainWindowWidget,
   main_window_widget,
@@ -100,9 +99,7 @@ main_window_widget_setup (MainWindowWidget * self);
  * Updates the project name at the top of the window.
  */
 void
-main_window_widget_set_project_title (
-  MainWindowWidget * self,
-  Project *          prj);
+main_window_widget_set_project_title (MainWindowWidget * self, Project * prj);
 
 /**
  * Prepare for finalization.

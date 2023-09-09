@@ -65,19 +65,14 @@ stretcher_new_rubberband (
   if (realtime)
     {
       opts =
-        RubberBandOptionProcessRealTime
-        | RubberBandOptionTransientsCrisp
-        | RubberBandOptionDetectorCompound
-        | RubberBandOptionPhaseLaminar
-        | RubberBandOptionThreadingAlways
-        | RubberBandOptionWindowStandard
-        | RubberBandOptionSmoothingOff
-        | RubberBandOptionFormantShifted
-        | RubberBandOptionPitchHighSpeed
-        | RubberBandOptionChannelsApart;
+        RubberBandOptionProcessRealTime | RubberBandOptionTransientsCrisp
+        | RubberBandOptionDetectorCompound | RubberBandOptionPhaseLaminar
+        | RubberBandOptionThreadingAlways | RubberBandOptionWindowStandard
+        | RubberBandOptionSmoothingOff | RubberBandOptionFormantShifted
+        | RubberBandOptionPitchHighSpeed | RubberBandOptionChannelsApart;
       self->block_size = 16000;
-      self->rubberband_state = rubberband_new (
-        samplerate, channels, opts, time_ratio, pitch_ratio);
+      self->rubberband_state =
+        rubberband_new (samplerate, channels, opts, time_ratio, pitch_ratio);
 
       /* feed it samples so it is ready to use */
 #if 0
@@ -137,16 +132,11 @@ stretcher_new_rubberband (
   else
     {
       opts =
-        RubberBandOptionProcessOffline
-        | RubberBandOptionStretchElastic
-        | RubberBandOptionTransientsCrisp
-        | RubberBandOptionDetectorCompound
-        | RubberBandOptionPhaseLaminar
-        | RubberBandOptionThreadingNever
-        | RubberBandOptionWindowStandard
-        | RubberBandOptionSmoothingOff
-        | RubberBandOptionFormantShifted
-        | RubberBandOptionPitchHighQuality
+        RubberBandOptionProcessOffline | RubberBandOptionStretchElastic
+        | RubberBandOptionTransientsCrisp | RubberBandOptionDetectorCompound
+        | RubberBandOptionPhaseLaminar | RubberBandOptionThreadingNever
+        | RubberBandOptionWindowStandard | RubberBandOptionSmoothingOff
+        | RubberBandOptionFormantShifted | RubberBandOptionPitchHighQuality
         | RubberBandOptionChannelsApart
       /* use finer engine if rubberband v3 */
 #if RUBBERBAND_API_MAJOR_VERSION > 2 \
@@ -155,10 +145,9 @@ stretcher_new_rubberband (
 #endif
         ;
       self->block_size = 6000;
-      self->rubberband_state = rubberband_new (
-        samplerate, channels, opts, time_ratio, pitch_ratio);
-      rubberband_set_max_process_size (
-        self->rubberband_state, self->block_size);
+      self->rubberband_state =
+        rubberband_new (samplerate, channels, opts, time_ratio, pitch_ratio);
+      rubberband_set_max_process_size (self->rubberband_state, self->block_size);
     }
   rubberband_set_default_debug_level (0);
 
@@ -188,8 +177,7 @@ stretcher_stretch (
   float *     out_samples_r,
   size_t      out_samples_wanted)
 {
-  g_message (
-    "%s: in samples size: %zu", __func__, in_samples_size);
+  g_message ("%s: in samples size: %zu", __func__, in_samples_size);
   g_return_val_if_fail (in_samples_l, -1);
 
   /*rubberband_reset (self->rubberband_state);*/
@@ -205,8 +193,7 @@ stretcher_stretch (
 
   if (self->is_realtime)
     {
-      rubberband_set_max_process_size (
-        self->rubberband_state, in_samples_size);
+      rubberband_set_max_process_size (self->rubberband_state, in_samples_size);
     }
   else
     {
@@ -215,19 +202,15 @@ stretcher_stretch (
       rubberband_set_expected_input_duration (
         self->rubberband_state, in_samples_size);
 
-      rubberband_study (
-        self->rubberband_state, in_samples, in_samples_size,
-        1);
+      rubberband_study (self->rubberband_state, in_samples, in_samples_size, 1);
     }
   unsigned int samples_required =
     rubberband_get_samples_required (self->rubberband_state);
   g_message (
-    "%s: samples required: %u, latency: %u", __func__,
-    samples_required,
+    "%s: samples required: %u, latency: %u", __func__, samples_required,
     rubberband_get_latency (self->rubberband_state));
   rubberband_process (
-    self->rubberband_state, in_samples, in_samples_size,
-    false);
+    self->rubberband_state, in_samples, in_samples_size, false);
 
   /* get the output data */
   int avail = rubberband_available (self->rubberband_state);
@@ -241,15 +224,12 @@ stretcher_stretch (
     }
 
   g_message (
-    "%s: samples wanted %zu (avail %u)", __func__,
-    out_samples_wanted, avail);
+    "%s: samples wanted %zu (avail %u)", __func__, out_samples_wanted, avail);
   size_t retrieved_out_samples = rubberband_retrieve (
     self->rubberband_state, out_samples, out_samples_wanted);
   g_warn_if_fail (retrieved_out_samples == out_samples_wanted);
 
-  g_message (
-    "%s: out samples size: %zu", __func__,
-    retrieved_out_samples);
+  g_message ("%s: out samples size: %zu", __func__, retrieved_out_samples);
 
   return (ssize_t) retrieved_out_samples;
 }
@@ -313,8 +293,8 @@ stretcher_stretch_interleaved (
   while (samples_to_read > 0)
     {
       /* samples to read now */
-      unsigned int read_now = (unsigned int) MIN (
-        (size_t) self->block_size, samples_to_read);
+      unsigned int read_now =
+        (unsigned int) MIN ((size_t) self->block_size, samples_to_read);
 
       /* read */
       rubberband_study (
@@ -328,10 +308,8 @@ stretcher_stretch_interleaved (
 
   /* create the out sample arrays */
   float * out_samples[channels];
-  size_t  out_samples_size =
-    (size_t) math_round_double_to_signed_64 (
-      rubberband_get_time_ratio (self->rubberband_state)
-      * in_samples_size);
+  size_t  out_samples_size = (size_t) math_round_double_to_signed_64 (
+    rubberband_get_time_ratio (self->rubberband_state) * in_samples_size);
   for (unsigned int i = 0; i < channels; i++)
     {
       out_samples[i] = object_new_n (out_samples_size, float);
@@ -342,8 +320,8 @@ stretcher_stretch_interleaved (
   size_t total_out_frames = 0;
   while (processed < in_samples_size)
     {
-      size_t in_chunk_size = rubberband_get_samples_required (
-        self->rubberband_state);
+      size_t in_chunk_size =
+        rubberband_get_samples_required (self->rubberband_state);
       size_t samples_left = in_samples_size - processed;
 
       if (samples_left < in_chunk_size)
@@ -366,16 +344,15 @@ stretcher_stretch_interleaved (
       /*g_message ("processed %lu, in samples %lu",*/
       /*processed, in_samples_size);*/
 
-      size_t avail = (size_t) rubberband_available (
-        self->rubberband_state);
+      size_t avail = (size_t) rubberband_available (self->rubberband_state);
 
       /* retrieve the output data in temporary
        * arrays */
       float   tmp_out_l[avail];
       float   tmp_out_r[avail];
       float * tmp_out_arrays[2] = { tmp_out_l, tmp_out_r };
-      size_t  out_chunk_size = rubberband_retrieve (
-        self->rubberband_state, tmp_out_arrays, avail);
+      size_t  out_chunk_size =
+        rubberband_retrieve (self->rubberband_state, tmp_out_arrays, avail);
 
       /* save the result */
       for (size_t i = 0; i < channels; i++)
@@ -383,8 +360,7 @@ stretcher_stretch_interleaved (
           for (size_t j = 0; j < out_chunk_size; j++)
             {
               g_return_val_if_fail (out_samples[i], -1);
-              out_samples[i][j + total_out_frames] =
-                tmp_out_arrays[i][j];
+              out_samples[i][j + total_out_frames] = tmp_out_arrays[i][j];
             }
         }
 
@@ -392,8 +368,7 @@ stretcher_stretch_interleaved (
     }
 
   g_message (
-    "retrieved %zu samples (expected %zu)", total_out_frames,
-    out_samples_size);
+    "retrieved %zu samples (expected %zu)", total_out_frames, out_samples_size);
   g_warn_if_fail (
     /* allow 1 sample earlier */
     total_out_frames <= out_samples_size
@@ -401,14 +376,12 @@ stretcher_stretch_interleaved (
 
   /* store the output data in the given arrays */
   *_out_samples = g_realloc (
-    *_out_samples,
-    (size_t) channels * total_out_frames * sizeof (float));
+    *_out_samples, (size_t) channels * total_out_frames * sizeof (float));
   for (unsigned int ch = 0; ch < channels; ch++)
     {
       for (size_t i = 0; i < total_out_frames; i++)
         {
-          (*_out_samples)[i * (size_t) channels + ch] =
-            out_samples[ch][i];
+          (*_out_samples)[i * (size_t) channels + ch] = out_samples[ch][i];
         }
     }
 

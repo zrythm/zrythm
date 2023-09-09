@@ -3,29 +3,20 @@
 
 #include "gui/widgets/editable_label.h"
 
-G_DEFINE_TYPE (
-  EditableLabelWidget,
-  editable_label_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (EditableLabelWidget, editable_label_widget, GTK_TYPE_WIDGET)
 
 static void
 on_entry_activated (GtkEntry * entry, EditableLabelWidget * self)
 {
-  (*self->setter) (
-    self->object,
-    gtk_editable_get_text (GTK_EDITABLE (entry)));
+  (*self->setter) (self->object, gtk_editable_get_text (GTK_EDITABLE (entry)));
   if (self->foreign_popover)
-    gtk_widget_set_visible (
-      GTK_WIDGET (self->foreign_popover), false);
+    gtk_widget_set_visible (GTK_WIDGET (self->foreign_popover), false);
 
-  gtk_label_set_text (
-    self->label, (*self->getter) (self->object));
+  gtk_label_set_text (self->label, (*self->getter) (self->object));
 }
 
 static void
-on_popover_closed (
-  GtkPopover *          popover,
-  EditableLabelWidget * self)
+on_popover_closed (GtkPopover * popover, EditableLabelWidget * self)
 {
   if (self->is_temp)
     {
@@ -36,10 +27,8 @@ on_popover_closed (
 static gboolean
 select_region (gpointer user_data)
 {
-  EditableLabelWidget * self =
-    Z_EDITABLE_LABEL_WIDGET (user_data);
-  gtk_editable_select_region (
-    GTK_EDITABLE (self->entry), 0, -1);
+  EditableLabelWidget * self = Z_EDITABLE_LABEL_WIDGET (user_data);
+  gtk_editable_select_region (GTK_EDITABLE (self->entry), 0, -1);
 
   return G_SOURCE_REMOVE;
 }
@@ -52,15 +41,13 @@ editable_label_widget_show_popover (EditableLabelWidget * self)
 {
   gtk_popover_popup (self->popover);
   gtk_editable_set_text (
-    GTK_EDITABLE (self->entry),
-    (*self->getter) (self->object));
+    GTK_EDITABLE (self->entry), (*self->getter) (self->object));
 
   /* workaround because selecting a region doesn't
    * work 100% of the time if done here */
   if (self->select_region_source_id != 0)
     {
-      self->select_region_source_id =
-        g_idle_add (select_region, self);
+      self->select_region_source_id = g_idle_add (select_region, self);
     }
 }
 
@@ -82,8 +69,7 @@ editable_label_widget_show_popover_for_widget (
   g_return_if_fail (GTK_IS_WIDGET (parent));
   g_return_if_fail (GTK_IS_POPOVER (popover));
 
-  EditableLabelWidget * self =
-    g_object_new (EDITABLE_LABEL_WIDGET_TYPE, NULL);
+  EditableLabelWidget * self = g_object_new (EDITABLE_LABEL_WIDGET_TYPE, NULL);
 
   self->object = object;
   self->getter = getter;
@@ -99,22 +85,18 @@ editable_label_widget_show_popover_for_widget (
   gtk_popover_set_child (popover, GTK_WIDGET (entry));
 
   g_signal_connect (
-    G_OBJECT (self->entry), "activate",
-    G_CALLBACK (on_entry_activated), self);
+    G_OBJECT (self->entry), "activate", G_CALLBACK (on_entry_activated), self);
   g_signal_connect (
-    G_OBJECT (popover), "closed",
-    G_CALLBACK (on_popover_closed), self);
+    G_OBJECT (popover), "closed", G_CALLBACK (on_popover_closed), self);
 
   gtk_popover_popup (popover);
-  gtk_editable_set_text (
-    GTK_EDITABLE (self->entry), (*getter) (object));
+  gtk_editable_set_text (GTK_EDITABLE (self->entry), (*getter) (object));
 
   /* workaround because selecting a region doesn't
    * work 100% of the time if done here */
   if (self->select_region_source_id != 0)
     {
-      self->select_region_source_id =
-        g_idle_add (select_region, self);
+      self->select_region_source_id = g_idle_add (select_region, self);
     }
 }
 
@@ -157,8 +139,7 @@ editable_label_widget_setup (
 
   if (self->getter)
     {
-      gtk_label_set_text (
-        self->label, (*self->getter) (self->object));
+      gtk_label_set_text (self->label, (*self->getter) (self->object));
     }
 }
 
@@ -177,8 +158,7 @@ editable_label_widget_new (
   GenericStringSetter setter,
   int                 width)
 {
-  EditableLabelWidget * self =
-    g_object_new (EDITABLE_LABEL_WIDGET_TYPE, NULL);
+  EditableLabelWidget * self = g_object_new (EDITABLE_LABEL_WIDGET_TYPE, NULL);
 
   editable_label_widget_setup (self, object, getter, setter);
 
@@ -200,19 +180,16 @@ dispose (EditableLabelWidget * self)
   gtk_widget_unparent (GTK_WIDGET (self->popover));
   gtk_widget_unparent (GTK_WIDGET (self->label));
 
-  G_OBJECT_CLASS (editable_label_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (editable_label_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
-editable_label_widget_class_init (
-  EditableLabelWidgetClass * _klass)
+editable_label_widget_class_init (EditableLabelWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (klass, "editable-label");
 
-  gtk_widget_class_set_layout_manager_type (
-    klass, GTK_TYPE_BOX_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (klass, GTK_TYPE_BOX_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;
@@ -222,29 +199,24 @@ static void
 editable_label_widget_init (EditableLabelWidget * self)
 {
   GtkWidget * label = gtk_label_new ("");
-  gtk_widget_set_parent (
-    GTK_WIDGET (label), GTK_WIDGET (self));
+  gtk_widget_set_parent (GTK_WIDGET (label), GTK_WIDGET (self));
   self->label = GTK_LABEL (label);
   gtk_label_set_ellipsize (self->label, PANGO_ELLIPSIZE_END);
 
   self->popover = GTK_POPOVER (gtk_popover_new ());
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover), GTK_WIDGET (self));
+  gtk_widget_set_parent (GTK_WIDGET (self->popover), GTK_WIDGET (self));
   GtkEntry * entry = GTK_ENTRY (gtk_entry_new ());
   self->entry = entry;
   gtk_popover_set_child (self->popover, GTK_WIDGET (entry));
 
   g_signal_connect (
-    G_OBJECT (self->entry), "activate",
-    G_CALLBACK (on_entry_activated), self);
+    G_OBJECT (self->entry), "activate", G_CALLBACK (on_entry_activated), self);
   g_signal_connect (
-    G_OBJECT (self->popover), "closed",
-    G_CALLBACK (on_popover_closed), self);
+    G_OBJECT (self->popover), "closed", G_CALLBACK (on_popover_closed), self);
 
   self->mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (
     G_OBJECT (self->mp), "pressed",
     G_CALLBACK (editable_label_widget_on_mp_press), self);
-  gtk_widget_add_controller (
-    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->mp));
+  gtk_widget_add_controller (GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->mp));
 }

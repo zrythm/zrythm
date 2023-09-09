@@ -32,10 +32,7 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  ChannelSlotWidget,
-  channel_slot_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (ChannelSlotWidget, channel_slot_widget, GTK_TYPE_WIDGET)
 
 #define ELLIPSIZE_PADDING 2
 
@@ -43,9 +40,7 @@ Plugin *
 channel_slot_widget_get_plugin (ChannelSlotWidget * self)
 {
   g_return_val_if_fail (
-    self->type == PLUGIN_SLOT_INSTRUMENT
-      || IS_TRACK (self->track),
-    NULL);
+    self->type == PLUGIN_SLOT_INSTRUMENT || IS_TRACK (self->track), NULL);
 
   Plugin * plugin = NULL;
   switch (self->type)
@@ -76,38 +71,32 @@ update_pango_layouts (ChannelSlotWidget * self, bool force)
 {
   if (!self->txt_layout || force)
     {
-      object_free_w_func_and_null (
-        g_object_unref, self->txt_layout);
-      PangoLayout * layout = gtk_widget_create_pango_layout (
-        GTK_WIDGET (self), NULL);
+      object_free_w_func_and_null (g_object_unref, self->txt_layout);
+      PangoLayout * layout =
+        gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
       pango_layout_set_ellipsize (layout, PANGO_ELLIPSIZE_END);
 
       self->txt_layout = layout;
     }
 
-  int btn_width =
-    gtk_widget_get_width (GTK_WIDGET (self->activate_btn));
+  int btn_width = gtk_widget_get_width (GTK_WIDGET (self->activate_btn));
 
   pango_layout_set_width (
     self->txt_layout,
     pango_units_from_double (MAX (
-      gtk_widget_get_width (GTK_WIDGET (self))
-        - ELLIPSIZE_PADDING * 2 - btn_width,
+      gtk_widget_get_width (GTK_WIDGET (self)) - ELLIPSIZE_PADDING * 2 - btn_width,
       1)));
 }
 
 static void
-channel_slot_snapshot (
-  GtkWidget *   widget,
-  GtkSnapshot * snapshot)
+channel_slot_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   ChannelSlotWidget * self = Z_CHANNEL_SLOT_WIDGET (widget);
 
   update_pango_layouts (self, false);
 
   int width = gtk_widget_get_width (widget);
-  int btn_width =
-    gtk_widget_get_width (GTK_WIDGET (self->activate_btn));
+  int btn_width = gtk_widget_get_width (GTK_WIDGET (self->activate_btn));
   int height = gtk_widget_get_height (widget);
 
   Plugin * plugin = channel_slot_widget_get_plugin (self);
@@ -137,18 +126,14 @@ channel_slot_snapshot (
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          (float) btn_width + (float) (width - btn_width) / 2.f
-            - (float) w / 2.f,
+          (float) btn_width + (float) (width - btn_width) / 2.f - (float) w / 2.f,
           (float) height / 2.f - (float) h / 2.f));
       gtk_snapshot_append_layout (
-        snapshot, self->txt_layout,
-        &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+        snapshot, self->txt_layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
       gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
-      if (
-        !self->pl_name
-        || !g_strcmp0 (descr->name, self->pl_name))
+      if (!self->pl_name || !g_strcmp0 (descr->name, self->pl_name))
         {
           if (self->pl_name)
             g_free (self->pl_name);
@@ -166,9 +151,7 @@ channel_slot_snapshot (
         }
       else
         {
-          snprintf (
-            txt, MAX_LEN, _ ("Slot #%d"),
-            self->slot_index + 1);
+          snprintf (txt, MAX_LEN, _ ("Slot #%d"), self->slot_index + 1);
         }
       z_cairo_get_text_extents_for_widget (
         widget, self->txt_layout, txt, &w, &h);
@@ -177,12 +160,10 @@ channel_slot_snapshot (
       gtk_snapshot_translate (
         snapshot,
         &GRAPHENE_POINT_INIT (
-          (float) btn_width + (float) (width - btn_width) / 2.f
-            - (float) w / 2.f,
+          (float) btn_width + (float) (width - btn_width) / 2.f - (float) w / 2.f,
           (float) height / 2.f - (float) h / 2.f));
       gtk_snapshot_append_layout (
-        snapshot, self->txt_layout,
-        &Z_GDK_RGBA_INIT (1, 1, 1, 0.55));
+        snapshot, self->txt_layout, &Z_GDK_RGBA_INIT (1, 1, 1, 0.55));
       gtk_snapshot_restore (snapshot);
 
       /* update tooltip */
@@ -207,8 +188,7 @@ on_dnd_drop (
   double          y,
   gpointer        data)
 {
-  if (!G_VALUE_HOLDS (
-        value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
+  if (!G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
       g_message ("invalid DND type");
       return false;
@@ -216,8 +196,7 @@ on_dnd_drop (
 
   ChannelSlotWidget * self = Z_CHANNEL_SLOT_WIDGET (data);
 
-  GdkDragAction action =
-    z_gtk_drop_target_get_selected_action (drop_target);
+  GdkDragAction action = z_gtk_drop_target_get_selected_action (drop_target);
 
   g_debug (
     "channel slot: dnd drop %s",
@@ -226,10 +205,9 @@ on_dnd_drop (
       ? "MOVE"
       : "LINK");
 
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    g_value_get_object (value);
-  Plugin *           pl = NULL;
-  PluginDescriptor * descr = NULL;
+  WrappedObjectWithChangeSignal * wrapped_obj = g_value_get_object (value);
+  Plugin *                        pl = NULL;
+  PluginDescriptor *              descr = NULL;
   if (wrapped_obj->type == WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
     {
       descr = (PluginDescriptor *) wrapped_obj->obj;
@@ -245,31 +223,25 @@ on_dnd_drop (
       /* if plugin not at original position */
       Track * orig_track = plugin_get_track (pl);
       if (
-        self->track != orig_track
-        || self->slot_index != pl->id.slot
+        self->track != orig_track || self->slot_index != pl->id.slot
         || self->type != pl->id.slot_type)
         {
           if (plugin_descriptor_is_valid_for_slot_type (
-                pl->setting->descr, self->type,
-                self->track->type))
+                pl->setting->descr, self->type, self->track->type))
             {
               bool     ret;
               GError * err = NULL;
               if (action == GDK_ACTION_COPY)
                 {
                   ret = mixer_selections_action_perform_copy (
-                    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
-                    self->type,
-                    track_get_name_hash (self->track),
-                    self->slot_index, &err);
+                    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, self->type,
+                    track_get_name_hash (self->track), self->slot_index, &err);
                 }
               else if (action == GDK_ACTION_MOVE)
                 {
                   ret = mixer_selections_action_perform_move (
-                    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
-                    self->type,
-                    track_get_name_hash (self->track),
-                    self->slot_index, &err);
+                    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, self->type,
+                    track_get_name_hash (self->track), self->slot_index, &err);
                 }
               else
                 g_return_val_if_reached (false);
@@ -295,22 +267,19 @@ on_dnd_drop (
       if (plugin_descriptor_is_valid_for_slot_type (
             descr, self->type, self->track->type))
         {
-          PluginSetting * setting =
-            plugin_setting_new_default (descr);
-          GError * err = NULL;
-          bool ret = mixer_selections_action_perform_create (
-            self->type, track_get_name_hash (self->track),
-            self->slot_index, setting, 1, &err);
+          PluginSetting * setting = plugin_setting_new_default (descr);
+          GError *        err = NULL;
+          bool            ret = mixer_selections_action_perform_create (
+            self->type, track_get_name_hash (self->track), self->slot_index,
+            setting, 1, &err);
           if (ret)
             {
-              plugin_setting_increment_num_instantiations (
-                setting);
+              plugin_setting_increment_num_instantiations (setting);
             }
           else
             {
               HANDLE_ERROR (
-                err, _ ("Failed to create plugin %s"),
-                setting->descr->name);
+                err, _ ("Failed to create plugin %s"), setting->descr->name);
             }
           plugin_setting_free (setting);
         }
@@ -323,9 +292,7 @@ on_dnd_drop (
   if (plugin_invalid)
     {
       char msg[400];
-      sprintf (
-        msg, _ ("Plugin %s cannot be added to this slot"),
-        descr->name);
+      sprintf (msg, _ ("Plugin %s cannot be added to this slot"), descr->name);
       ui_show_error_message (false, msg);
     }
 
@@ -337,9 +304,7 @@ on_dnd_drop (
 /**
  * Control not pressed, no plugin exists, not same channel */
 static inline void
-select_no_ctrl_no_pl_no_ch (
-  ChannelSlotWidget * self,
-  bool                fire_events)
+select_no_ctrl_no_pl_no_ch (ChannelSlotWidget * self, bool fire_events)
 {
   mixer_selections_clear (MIXER_SELECTIONS, fire_events);
 }
@@ -347,9 +312,7 @@ select_no_ctrl_no_pl_no_ch (
 /**
  * Control not pressed, no plugin exists, same channel */
 static inline void
-select_no_ctrl_no_pl_ch (
-  ChannelSlotWidget * self,
-  bool                fire_events)
+select_no_ctrl_no_pl_ch (ChannelSlotWidget * self, bool fire_events)
 {
   mixer_selections_clear (MIXER_SELECTIONS, fire_events);
 }
@@ -357,16 +320,13 @@ select_no_ctrl_no_pl_ch (
 /**
  * Control not pressed, plugin exists, not same channel */
 static inline void
-select_no_ctrl_pl_no_ch (
-  ChannelSlotWidget * self,
-  bool                fire_events)
+select_no_ctrl_pl_no_ch (ChannelSlotWidget * self, bool fire_events)
 {
-  mixer_selections_clear (
-    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+  mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
 
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, self->track, self->type,
-    self->slot_index, F_NO_CLONE, fire_events);
+    MIXER_SELECTIONS, self->track, self->type, self->slot_index, F_NO_CLONE,
+    fire_events);
 }
 
 /**
@@ -379,21 +339,18 @@ select_no_ctrl_pl_ch (ChannelSlotWidget * self, bool fire_events)
   if (!mixer_selections_contains_slot (
         MIXER_SELECTIONS, self->type, self->slot_index))
     {
-      mixer_selections_clear (
-        MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+      mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
 
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, self->track, self->type,
-        self->slot_index, F_NO_CLONE, fire_events);
+        MIXER_SELECTIONS, self->track, self->type, self->slot_index, F_NO_CLONE,
+        fire_events);
     }
 }
 
 /**
  * Control pressed, no plugin exists, not same channel */
 static inline void
-select_ctrl_no_pl_no_ch (
-  ChannelSlotWidget * self,
-  bool                fire_events)
+select_ctrl_no_pl_no_ch (ChannelSlotWidget * self, bool fire_events)
 {
   mixer_selections_clear (MIXER_SELECTIONS, fire_events);
 }
@@ -412,11 +369,10 @@ static inline void
 select_ctrl_pl_no_ch (ChannelSlotWidget * self, bool fire_events)
 {
   /* make it the only selection */
-  mixer_selections_clear (
-    MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
+  mixer_selections_clear (MIXER_SELECTIONS, F_NO_PUBLISH_EVENTS);
   mixer_selections_add_slot (
-    MIXER_SELECTIONS, self->track, self->type,
-    self->slot_index, F_NO_CLONE, fire_events);
+    MIXER_SELECTIONS, self->track, self->type, self->slot_index, F_NO_CLONE,
+    fire_events);
 }
 
 /**
@@ -430,15 +386,14 @@ select_ctrl_pl_ch (ChannelSlotWidget * self, bool fire_events)
         MIXER_SELECTIONS, self->type, self->slot_index))
     {
       mixer_selections_remove_slot (
-        MIXER_SELECTIONS, self->slot_index, self->type,
-        fire_events);
+        MIXER_SELECTIONS, self->slot_index, self->type, fire_events);
       /*self->deselected = 1;*/
     }
   else
     {
       mixer_selections_add_slot (
-        MIXER_SELECTIONS, self->track, self->type,
-        self->slot_index, F_NO_CLONE, fire_events);
+        MIXER_SELECTIONS, self->track, self->type, self->slot_index, F_NO_CLONE,
+        fire_events);
     }
 }
 
@@ -460,10 +415,7 @@ select_ctrl_pl_ch (ChannelSlotWidget * self, bool fire_events)
  * @param ctrl Whether Control is held down or not.
  */
 static void
-select_plugin (
-  ChannelSlotWidget * self,
-  bool                ctrl,
-  bool                fire_events)
+select_plugin (ChannelSlotWidget * self, bool ctrl, bool fire_events)
 {
   bool pl = false, ch = false;
 
@@ -476,8 +428,7 @@ select_plugin (
   g_return_if_fail (self->track);
   if (
     self->track->channel
-    && track_get_name_hash (self->track)
-         == MIXER_SELECTIONS->track_name_hash)
+    && track_get_name_hash (self->track) == MIXER_SELECTIONS->track_name_hash)
     ch = true;
 
   if (!ctrl && !pl && !ch)
@@ -512,17 +463,16 @@ drag_end (
   gdouble             offset_y,
   ChannelSlotWidget * self)
 {
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (gesture));
+  GdkModifierType state = gtk_event_controller_get_current_event_state (
+    GTK_EVENT_CONTROLLER (gesture));
 
   Plugin * pl = channel_slot_widget_get_plugin (self);
   if (pl && self->n_press == 2)
     {
       bool new_visible = !pl->visible;
       g_message (
-        "%s: setting plugin %s visible %d", __func__,
-        pl->setting->descr->name, new_visible);
+        "%s: setting plugin %s visible %d", __func__, pl->setting->descr->name,
+        new_visible);
       g_warn_if_fail (pl->instantiated);
       pl->visible = new_visible;
       EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED, pl);
@@ -545,8 +495,7 @@ drag_end (
       g_return_if_fail (self->track);
       g_return_if_fail (self->track->channel);
       g_return_if_fail (self->track->channel->widget);
-      self->track->channel->widget->last_plugin_press =
-        g_get_monotonic_time ();
+      self->track->channel->widget->last_plugin_press = g_get_monotonic_time ();
     }
   g_message ("%s: drag end %d press", __func__, self->n_press);
 }
@@ -563,8 +512,7 @@ on_press (
   g_message ("pressed %d", n_press);
 
   if (
-    self->open_plugin_inspector_on_click
-    && self->type != PLUGIN_SLOT_INSTRUMENT)
+    self->open_plugin_inspector_on_click && self->type != PLUGIN_SLOT_INSTRUMENT)
     {
       if (self->type == PLUGIN_SLOT_INSERT)
         {
@@ -579,10 +527,7 @@ on_press (
 }
 
 static bool
-tick_cb (
-  GtkWidget *         widget,
-  GdkFrameClock *     frame_clock,
-  ChannelSlotWidget * self)
+tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, ChannelSlotWidget * self)
 {
   if (!gtk_widget_is_visible (widget))
     {
@@ -592,26 +537,21 @@ tick_cb (
   Plugin * pl = channel_slot_widget_get_plugin (self);
   if (pl)
     {
-      gtk_widget_set_sensitive (
-        GTK_WIDGET (self->activate_btn), true);
+      gtk_widget_set_sensitive (GTK_WIDGET (self->activate_btn), true);
       if (
-        gtk_toggle_button_get_active (
-          GTK_TOGGLE_BUTTON (self->activate_btn))
+        gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (self->activate_btn))
         != plugin_is_enabled (pl, false))
         {
           g_signal_handler_block (
-            self->activate_btn,
-            self->activate_btn->toggled_id);
+            self->activate_btn, self->activate_btn->toggled_id);
           gtk_toggle_button_set_active (
             GTK_TOGGLE_BUTTON (self->activate_btn),
             plugin_is_enabled (pl, false));
           g_signal_handler_unblock (
-            self->activate_btn,
-            self->activate_btn->toggled_id);
+            self->activate_btn, self->activate_btn->toggled_id);
         }
     }
-  else if (gtk_toggle_button_get_active (
-             GTK_TOGGLE_BUTTON (self->activate_btn)))
+  else if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (self->activate_btn)))
     {
       /* disable toggle button if no plugin */
       g_signal_handler_block (
@@ -620,8 +560,7 @@ tick_cb (
         GTK_TOGGLE_BUTTON (self->activate_btn), false);
       g_signal_handler_unblock (
         self->activate_btn, self->activate_btn->toggled_id);
-      gtk_widget_set_sensitive (
-        GTK_WIDGET (self->activate_btn), false);
+      gtk_widget_set_sensitive (GTK_WIDGET (self->activate_btn), false);
     }
 
   Plugin * plugin = channel_slot_widget_get_plugin (self);
@@ -630,8 +569,7 @@ tick_cb (
   gtk_widget_remove_css_class (GTK_WIDGET (self), "empty");
   gtk_widget_remove_css_class (GTK_WIDGET (self), "disabled");
   gtk_widget_unset_state_flags (
-    GTK_WIDGET (self),
-    GTK_STATE_FLAG_SELECTED | GTK_STATE_FLAG_CHECKED);
+    GTK_WIDGET (self), GTK_STATE_FLAG_SELECTED | GTK_STATE_FLAG_CHECKED);
   if (plugin)
     {
       bool is_selected = plugin_is_selected (plugin);
@@ -642,8 +580,7 @@ tick_cb (
         }
       if (!plugin_is_enabled (plugin, false))
         {
-          gtk_widget_add_css_class (
-            GTK_WIDGET (self), "disabled");
+          gtk_widget_add_css_class (GTK_WIDGET (self), "disabled");
         }
       if (plugin->visible)
         {
@@ -696,17 +633,15 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
       /* add bypass option */
       char tmp[500];
       sprintf (tmp, "app.plugin-toggle-enabled::%p", pl);
-      menuitem =
-        z_gtk_create_menu_item (_ ("Bypass"), NULL, tmp);
+      menuitem = z_gtk_create_menu_item (_ ("Bypass"), NULL, tmp);
       g_menu_append_item (plugin_submenu, menuitem);
 
       /* add inspect option */
-      menuitem = z_gtk_create_menu_item (
-        _ ("Inspect"), NULL, "app.plugin-inspect");
+      menuitem =
+        z_gtk_create_menu_item (_ ("Inspect"), NULL, "app.plugin-inspect");
       g_menu_append_item (plugin_submenu, menuitem);
 
-      g_menu_append_section (
-        menu, _ ("Plugin"), G_MENU_MODEL (plugin_submenu));
+      g_menu_append_section (menu, _ ("Plugin"), G_MENU_MODEL (plugin_submenu));
     }
 
   GMenu * edit_submenu = g_menu_new ();
@@ -724,31 +659,25 @@ show_context_menu (ChannelSlotWidget * self, double x, double y)
   if (pl && self->type != PLUGIN_SLOT_INSTRUMENT)
     {
       /* add delete item */
-      menuitem = CREATE_DELETE_MENU_ITEM (
-        "app.mixer-selections-delete");
+      menuitem = CREATE_DELETE_MENU_ITEM ("app.mixer-selections-delete");
       g_menu_append_item (edit_submenu, menuitem);
     }
 
-  g_menu_append_section (
-    menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
+  g_menu_append_section (menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
 
   if (self->type != PLUGIN_SLOT_INSTRUMENT)
     {
       GMenu * select_submenu = g_menu_new ();
 
-      menuitem = CREATE_CLEAR_SELECTION_MENU_ITEM (
-        "app.clear-selection");
+      menuitem = CREATE_CLEAR_SELECTION_MENU_ITEM ("app.clear-selection");
       g_menu_append_item (select_submenu, menuitem);
-      menuitem =
-        CREATE_SELECT_ALL_MENU_ITEM ("app.select-all");
+      menuitem = CREATE_SELECT_ALL_MENU_ITEM ("app.select-all");
       g_menu_append_item (select_submenu, menuitem);
 
-      g_menu_append_section (
-        menu, _ ("Select"), G_MENU_MODEL (select_submenu));
+      g_menu_append_section (menu, _ ("Select"), G_MENU_MODEL (select_submenu));
     }
 
-  z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+  z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
 }
 
 static void
@@ -762,12 +691,10 @@ on_right_click (
   if (n_press != 1)
     return;
 
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (gesture));
+  GdkModifierType state = gtk_event_controller_get_current_event_state (
+    GTK_EVENT_CONTROLLER (gesture));
 
-  select_plugin (
-    self, state & GDK_CONTROL_MASK, F_NO_PUBLISH_EVENTS);
+  select_plugin (self, state & GDK_CONTROL_MASK, F_NO_PUBLISH_EVENTS);
 
   show_context_menu (self, x, y);
 }
@@ -795,18 +722,14 @@ on_motion_enter (
   gpointer                   user_data)
 {
   ChannelSlotWidget * self = Z_CHANNEL_SLOT_WIDGET (user_data);
-  gtk_widget_set_state_flags (
-    GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT, 0);
+  gtk_widget_set_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT, 0);
 }
 
 static void
-on_motion_leave (
-  GtkEventControllerMotion * motion_controller,
-  gpointer                   user_data)
+on_motion_leave (GtkEventControllerMotion * motion_controller, gpointer user_data)
 {
   ChannelSlotWidget * self = Z_CHANNEL_SLOT_WIDGET (user_data);
-  gtk_widget_unset_state_flags (
-    GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT);
+  gtk_widget_unset_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT);
 }
 
 static void
@@ -817,14 +740,11 @@ finalize (ChannelSlotWidget * self)
   if (self->txt_layout)
     g_object_unref (self->txt_layout);
 
-  G_OBJECT_CLASS (channel_slot_widget_parent_class)
-    ->finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (channel_slot_widget_parent_class)->finalize (G_OBJECT (self));
 }
 
 void
-channel_slot_widget_set_instrument (
-  ChannelSlotWidget * self,
-  Track *             track)
+channel_slot_widget_set_instrument (ChannelSlotWidget * self, Track * track)
 {
   self->track = track;
 }
@@ -836,10 +756,9 @@ on_dnd_drag_prepare (
   double              y,
   ChannelSlotWidget * self)
 {
-  Plugin * pl = channel_slot_widget_get_plugin (self);
+  Plugin *                        pl = channel_slot_widget_get_plugin (self);
   WrappedObjectWithChangeSignal * wrapped_obj =
-    wrapped_object_with_change_signal_new (
-      pl, WRAPPED_OBJECT_TYPE_PLUGIN);
+    wrapped_object_with_change_signal_new (pl, WRAPPED_OBJECT_TYPE_PLUGIN);
   GdkContentProvider * content_providers[] = {
     gdk_content_provider_new_typed (
       WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE, wrapped_obj),
@@ -859,24 +778,20 @@ setup_dnd (ChannelSlotWidget * self)
       gtk_drag_source_set_actions (
         drag_source, GDK_ACTION_COPY | GDK_ACTION_MOVE);
       g_signal_connect (
-        drag_source, "prepare",
-        G_CALLBACK (on_dnd_drag_prepare), self);
+        drag_source, "prepare", G_CALLBACK (on_dnd_drag_prepare), self);
       gtk_widget_add_controller (
         GTK_WIDGET (self), GTK_EVENT_CONTROLLER (drag_source));
     }
 
   /* set as drag dest for both plugins and
    * plugin descriptors */
-  GtkDropTarget * drop_target = gtk_drop_target_new (
-    G_TYPE_INVALID, GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  GtkDropTarget * drop_target =
+    gtk_drop_target_new (G_TYPE_INVALID, GDK_ACTION_MOVE | GDK_ACTION_COPY);
   gtk_drop_target_set_preload (drop_target, true);
   GType types[] = { WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE };
-  gtk_drop_target_set_gtypes (
-    drop_target, types, G_N_ELEMENTS (types));
-  g_signal_connect (
-    drop_target, "drop", G_CALLBACK (on_dnd_drop), self);
-  g_signal_connect (
-    drop_target, "motion", G_CALLBACK (on_dnd_motion), self);
+  gtk_drop_target_set_gtypes (drop_target, types, G_N_ELEMENTS (types));
+  g_signal_connect (drop_target, "drop", G_CALLBACK (on_dnd_drop), self);
+  g_signal_connect (drop_target, "motion", G_CALLBACK (on_dnd_motion), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (drop_target));
 }
@@ -892,13 +807,11 @@ channel_slot_widget_new (
   PluginSlotType type,
   bool           open_plugin_inspector_on_click)
 {
-  ChannelSlotWidget * self =
-    g_object_new (CHANNEL_SLOT_WIDGET_TYPE, NULL);
+  ChannelSlotWidget * self = g_object_new (CHANNEL_SLOT_WIDGET_TYPE, NULL);
   self->slot_index = slot_index;
   self->type = type;
   self->track = track;
-  self->open_plugin_inspector_on_click =
-    open_plugin_inspector_on_click;
+  self->open_plugin_inspector_on_click = open_plugin_inspector_on_click;
 
   setup_dnd (self);
 
@@ -912,8 +825,8 @@ channel_slot_widget_new (
 ChannelSlotWidget *
 channel_slot_widget_new_instrument (void)
 {
-  ChannelSlotWidget * self = channel_slot_widget_new (
-    -1, NULL, PLUGIN_SLOT_INSTRUMENT, false);
+  ChannelSlotWidget * self =
+    channel_slot_widget_new (-1, NULL, PLUGIN_SLOT_INSTRUMENT, false);
 
   return self;
 }
@@ -933,8 +846,7 @@ dispose (ChannelSlotWidget * self)
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
   gtk_widget_unparent (GTK_WIDGET (self->activate_btn));
 
-  G_OBJECT_CLASS (channel_slot_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (channel_slot_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
@@ -947,67 +859,51 @@ channel_slot_widget_init (ChannelSlotWidget * self)
   gtk_widget_set_focus_on_click (GTK_WIDGET (self), true);
 
   /* this is needed for border radius to take effect */
-  gtk_widget_set_overflow (
-    GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
+  gtk_widget_set_overflow (GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 
   self->pl_name = NULL;
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self), _ ("empty slot"));
+  gtk_widget_set_tooltip_text (GTK_WIDGET (self), _ ("empty slot"));
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   self->click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_event_controller_set_propagation_phase (
     GTK_EVENT_CONTROLLER (self->click), GTK_PHASE_CAPTURE);
   g_signal_connect (
-    G_OBJECT (self->click), "pressed", G_CALLBACK (on_press),
-    self);
+    G_OBJECT (self->click), "pressed", G_CALLBACK (on_press), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->click));
 
-  self->right_mouse_mp =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  self->right_mouse_mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (self->right_mouse_mp),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (self->right_mouse_mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    G_OBJECT (self->right_mouse_mp), "released",
-    G_CALLBACK (on_right_click), self);
+    G_OBJECT (self->right_mouse_mp), "released", G_CALLBACK (on_right_click),
+    self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->right_mouse_mp));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->right_mouse_mp));
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   gtk_event_controller_set_propagation_phase (
     GTK_EVENT_CONTROLLER (self->drag), GTK_PHASE_CAPTURE);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end),
-    self);
+    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
-  GtkEventController * motion_controller =
-    gtk_event_controller_motion_new ();
+  GtkEventController * motion_controller = gtk_event_controller_motion_new ();
   g_signal_connect (
-    G_OBJECT (motion_controller), "enter",
-    G_CALLBACK (on_motion_enter), self);
+    G_OBJECT (motion_controller), "enter", G_CALLBACK (on_motion_enter), self);
   g_signal_connect (
-    G_OBJECT (motion_controller), "leave",
-    G_CALLBACK (on_motion_leave), self);
-  gtk_widget_add_controller (
-    GTK_WIDGET (self), motion_controller);
+    G_OBJECT (motion_controller), "leave", G_CALLBACK (on_motion_leave), self);
+  gtk_widget_add_controller (GTK_WIDGET (self), motion_controller);
 
-  self->activate_btn =
-    channel_slot_activate_button_widget_new (self);
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->activate_btn), GTK_WIDGET (self));
+  self->activate_btn = channel_slot_activate_button_widget_new (self);
+  gtk_widget_set_parent (GTK_WIDGET (self->activate_btn), GTK_WIDGET (self));
 
   gtk_accessible_update_property (
-    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL,
-    "Channel slot", -1);
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL, "Channel slot", -1);
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), (GtkTickCallback) tick_cb, self, NULL);
@@ -1020,11 +916,9 @@ channel_slot_widget_class_init (ChannelSlotWidgetClass * klass)
   wklass->snapshot = channel_slot_snapshot;
   wklass->css_changed = on_css_changed;
   gtk_widget_class_set_css_name (wklass, "channel-slot");
-  gtk_widget_class_set_accessible_role (
-    wklass, GTK_ACCESSIBLE_ROLE_GROUP);
+  gtk_widget_class_set_accessible_role (wklass, GTK_ACCESSIBLE_ROLE_GROUP);
 
-  gtk_widget_class_set_layout_manager_type (
-    wklass, GTK_TYPE_BOX_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (wklass, GTK_TYPE_BOX_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;

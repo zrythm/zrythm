@@ -30,8 +30,7 @@
 
 #include <glib/gi18n.h>
 
-#define TYPE_IS(x) \
-  (self->type == TRACKLIST_SELECTIONS_ACTION_##x)
+#define TYPE_IS(x) (self->type == TRACKLIST_SELECTIONS_ACTION_##x)
 
 typedef enum
 {
@@ -48,8 +47,7 @@ G_DEFINE_QUARK (
   z_actions_tracklist_selections_error)
 
 void
-tracklist_selections_action_init_loaded (
-  TracklistSelectionsAction * self)
+tracklist_selections_action_init_loaded (TracklistSelectionsAction * self)
 {
   if (self->tls_before)
     {
@@ -61,8 +59,7 @@ tracklist_selections_action_init_loaded (
     }
   if (self->foldable_tls_before)
     {
-      tracklist_selections_init_loaded (
-        self->foldable_tls_before);
+      tracklist_selections_init_loaded (self->foldable_tls_before);
     }
 
   self->src_sends_size = (size_t) self->num_src_sends;
@@ -74,19 +71,14 @@ tracklist_selections_action_init_loaded (
 }
 
 static void
-copy_track_positions (
-  TracklistSelections * sel,
-  int *                 tracks,
-  int *                 num_tracks)
+copy_track_positions (TracklistSelections * sel, int * tracks, int * num_tracks)
 {
   *num_tracks = sel->num_tracks;
   for (int i = 0; i < sel->num_tracks; i++)
     {
       tracks[i] = sel->tracks[i]->pos;
     }
-  qsort (
-    tracks, (size_t) *num_tracks, sizeof (int),
-    algorithm_sort_int_cmpfunc);
+  qsort (tracks, (size_t) *num_tracks, sizeof (int), algorithm_sort_int_cmpfunc);
 }
 
 /**
@@ -98,8 +90,7 @@ copy_track_positions (
 static void
 reset_foldable_track_sizes (TracklistSelectionsAction * self)
 {
-  for (int i = 0; i < self->foldable_tls_before->num_tracks;
-       i++)
+  for (int i = 0; i < self->foldable_tls_before->num_tracks; i++)
     {
       Track * own_tr = self->foldable_tls_before->tracks[i];
       Track * prj_tr = track_find_by_name (own_tr->name);
@@ -117,8 +108,7 @@ validate (TracklistSelectionsAction * self)
     {
       if (
         !self->tls_before
-        || tracklist_selections_contains_undeletable_track (
-          self->tls_before))
+        || tracklist_selections_contains_undeletable_track (self->tls_before))
         {
           return false;
         }
@@ -171,9 +161,8 @@ tracklist_selections_action_new (
   bool                           already_edited,
   GError **                      error)
 {
-  TracklistSelectionsAction * self =
-    object_new (TracklistSelectionsAction);
-  UndoableAction * ua = (UndoableAction *) self;
+  TracklistSelectionsAction * self = object_new (TracklistSelectionsAction);
+  UndoableAction *            ua = (UndoableAction *) self;
   undoable_action_init (ua, UA_TRACKLIST_SELECTIONS);
 
   position_init (&self->pos);
@@ -185,9 +174,7 @@ tracklist_selections_action_new (
 
   /* --- validation --- */
 
-  if (
-    type == TRACKLIST_SELECTIONS_ACTION_CREATE
-    && num_tracks <= 0)
+  if (type == TRACKLIST_SELECTIONS_ACTION_CREATE && num_tracks <= 0)
     {
       g_critical ("attempted to create %d tracks", num_tracks);
       return NULL;
@@ -196,8 +183,7 @@ tracklist_selections_action_new (
   if (
     (type == TRACKLIST_SELECTIONS_ACTION_COPY
      || type == TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE)
-    && tracklist_selections_contains_uncopyable_track (
-      tls_before))
+    && tracklist_selections_contains_uncopyable_track (tls_before))
     {
       g_set_error (
         error, Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR,
@@ -208,8 +194,7 @@ tracklist_selections_action_new (
 
   if (
     type == TRACKLIST_SELECTIONS_ACTION_DELETE
-    && tracklist_selections_contains_undeletable_track (
-      tls_before))
+    && tracklist_selections_contains_undeletable_track (tls_before))
     {
       g_set_error (
         error, Z_ACTIONS_TRACKLIST_SELECTIONS_ERROR,
@@ -222,10 +207,8 @@ tracklist_selections_action_new (
     type == TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE
     || type == TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE)
     {
-      Track * foldable_tr = foldable_tr =
-        TRACKLIST->tracks[track_pos];
-      g_return_val_if_fail (
-        track_type_is_foldable (foldable_tr->type), NULL);
+      Track * foldable_tr = foldable_tr = TRACKLIST->tracks[track_pos];
+      g_return_val_if_fail (track_type_is_foldable (foldable_tr->type), NULL);
     }
 
   /* --- end validation --- */
@@ -234,15 +217,13 @@ tracklist_selections_action_new (
     tls_before == TRACKLIST_SELECTIONS
     && (type != TRACKLIST_SELECTIONS_ACTION_EDIT || edit_type != EDIT_TRACK_ACTION_TYPE_FOLD))
     {
-      tracklist_selections_select_foldable_children (
-        tls_before);
+      tracklist_selections_select_foldable_children (tls_before);
     }
 
   self->type = type;
   if (pl_setting)
     {
-      self->pl_setting =
-        plugin_setting_clone (pl_setting, F_VALIDATE);
+      self->pl_setting = plugin_setting_clone (pl_setting, F_VALIDATE);
     }
   else if (!file_descr)
     {
@@ -270,8 +251,7 @@ tracklist_selections_action_new (
   /* calculate number of tracks */
   if (file_descr && track_type == TRACK_TYPE_MIDI)
     {
-      self->num_tracks =
-        midi_file_get_num_tracks (file_descr->abs_path, true);
+      self->num_tracks = midi_file_get_num_tracks (file_descr->abs_path, true);
     }
   else
     {
@@ -289,12 +269,10 @@ tracklist_selections_action_new (
           uint8_t * data = NULL;
           size_t    length = 0;
           if (!g_file_get_contents (
-                file_descr->abs_path, (gchar **) &data,
-                &length, &err))
+                file_descr->abs_path, (gchar **) &data, &length, &err))
             {
               PROPAGATE_PREFIXED_ERROR (
-                error, err,
-                _ ("Failed getting contents for %s"),
+                error, err, _ ("Failed getting contents for %s"),
                 file_descr->abs_path);
               return NULL;
             }
@@ -303,26 +281,23 @@ tracklist_selections_action_new (
       else if (track_type == TRACK_TYPE_AUDIO)
         {
           GError *    err = NULL;
-          AudioClip * clip = audio_clip_new_from_file (
-            file_descr->abs_path, &err);
+          AudioClip * clip =
+            audio_clip_new_from_file (file_descr->abs_path, &err);
           if (!clip)
             {
               PROPAGATE_PREFIXED_ERROR (
-                error, err,
-                _ ("Failed creating audio clip from file at %s"),
+                error, err, _ ("Failed creating audio clip from file at %s"),
                 file_descr->abs_path);
               return NULL;
             }
-          self->pool_id =
-            audio_pool_add_clip (AUDIO_POOL, clip);
+          self->pool_id = audio_pool_add_clip (AUDIO_POOL, clip);
         }
       else
         {
           g_return_val_if_reached (NULL);
         }
 
-      self->file_basename =
-        g_path_get_basename (file_descr->abs_path);
+      self->file_basename = g_path_get_basename (file_descr->abs_path);
     }
 
   bool need_full_selections = true;
@@ -347,8 +322,7 @@ tracklist_selections_action_new (
       if (need_full_selections)
         {
           GError * err = NULL;
-          self->tls_before =
-            tracklist_selections_clone (tls_before, &err);
+          self->tls_before = tracklist_selections_clone (tls_before, &err);
           if (err)
             {
               object_free_w_func_and_null_cast (
@@ -360,8 +334,7 @@ tracklist_selections_action_new (
               return NULL;
             }
           tracklist_selections_sort (self->tls_before, true);
-          self->foldable_tls_before =
-            tracklist_selections_new (F_NOT_PROJECT);
+          self->foldable_tls_before = tracklist_selections_new (F_NOT_PROJECT);
           for (int i = 0; i < TRACKLIST->num_tracks; i++)
             {
               Track * tr = TRACKLIST->tracks[i];
@@ -371,21 +344,18 @@ tracklist_selections_action_new (
                   if (err)
                     {
                       PROPAGATE_PREFIXED_ERROR (
-                        error, err, "%s",
-                        _ ("Failed to clone track"));
+                        error, err, "%s", _ ("Failed to clone track"));
                       return NULL;
                     }
                   tracklist_selections_add_track (
-                    self->foldable_tls_before, clone_tr,
-                    F_NO_PUBLISH_EVENTS);
+                    self->foldable_tls_before, clone_tr, F_NO_PUBLISH_EVENTS);
                 }
             }
         }
       else
         {
           copy_track_positions (
-            tls_before, self->tracks_before,
-            &self->num_tracks);
+            tls_before, self->tracks_before, &self->num_tracks);
         }
     }
 
@@ -394,8 +364,7 @@ tracklist_selections_action_new (
       if (need_full_selections)
         {
           GError * err = NULL;
-          self->tls_after =
-            tracklist_selections_clone (tls_after, &err);
+          self->tls_after = tracklist_selections_clone (tls_after, &err);
           if (err)
             {
               PROPAGATE_PREFIXED_ERROR (
@@ -417,20 +386,17 @@ tracklist_selections_action_new (
     {
       int num_before_tracks = self->tls_before->num_tracks;
       self->num_out_tracks = num_before_tracks;
-      self->out_tracks = calloc (
-        (size_t) num_before_tracks, sizeof (unsigned int));
+      self->out_tracks =
+        calloc ((size_t) num_before_tracks, sizeof (unsigned int));
 
       /* save the outputs & incoming sends */
       for (int k = 0; k < num_before_tracks; k++)
         {
           Track * clone_track = self->tls_before->tracks[k];
 
-          if (
-            clone_track->channel
-            && clone_track->channel->has_output)
+          if (clone_track->channel && clone_track->channel->has_output)
             {
-              self->out_tracks[k] =
-                clone_track->channel->output_name_hash;
+              self->out_tracks[k] = clone_track->channel->output_name_hash;
             }
           else
             {
@@ -447,16 +413,14 @@ tracklist_selections_action_new (
 
               for (int j = 0; j < STRIP_SIZE; j++)
                 {
-                  ChannelSend * send =
-                    cur_track->channel->sends[j];
+                  ChannelSend * send = cur_track->channel->sends[j];
                   if (channel_send_is_empty (send))
                     {
                       continue;
                     }
 
                   Track * target_track =
-                    channel_send_get_target_track (
-                      send, cur_track);
+                    channel_send_get_target_track (send, cur_track);
                   g_return_val_if_fail (
                     IS_TRACK_AND_NONNULL (target_track), NULL);
 
@@ -499,10 +463,9 @@ tracklist_selections_action_new (
       self->new_txt = g_strdup (new_txt);
     }
 
-  self->ival_before =
-    calloc (MAX (1, (size_t) self->num_tracks), sizeof (int));
-  self->colors_before = calloc (
-    MAX (1, (size_t) self->num_tracks), sizeof (GdkRGBA));
+  self->ival_before = calloc (MAX (1, (size_t) self->num_tracks), sizeof (int));
+  self->colors_before =
+    calloc (MAX (1, (size_t) self->num_tracks), sizeof (GdkRGBA));
 
   if (port_connections_mgr)
     {
@@ -523,19 +486,16 @@ tracklist_selections_action_new (
 }
 
 TracklistSelectionsAction *
-tracklist_selections_action_clone (
-  const TracklistSelectionsAction * src)
+tracklist_selections_action_clone (const TracklistSelectionsAction * src)
 {
-  TracklistSelectionsAction * self =
-    object_new (TracklistSelectionsAction);
+  TracklistSelectionsAction * self = object_new (TracklistSelectionsAction);
 
   self->parent_instance = src->parent_instance;
 
   self->type = src->type;
   self->track_type = src->track_type;
   if (src->pl_setting)
-    self->pl_setting =
-      plugin_setting_clone (src->pl_setting, F_NO_VALIDATE);
+    self->pl_setting = plugin_setting_clone (src->pl_setting, F_NO_VALIDATE);
   self->is_empty = src->is_empty;
   self->track_pos = src->track_pos;
   self->lane_pos = src->lane_pos;
@@ -544,10 +504,8 @@ tracklist_selections_action_clone (
 
   if (src->num_tracks > 0)
     {
-      self->ival_before =
-        object_new_n ((size_t) src->num_tracks, int);
-      self->colors_before =
-        object_new_n ((size_t) src->num_tracks, GdkRGBA);
+      self->ival_before = object_new_n ((size_t) src->num_tracks, int);
+      self->colors_before = object_new_n ((size_t) src->num_tracks, GdkRGBA);
       for (int i = 0; i < src->num_tracks; i++)
         {
           self->tracks_before[i] = src->tracks_before[i];
@@ -566,8 +524,7 @@ tracklist_selections_action_clone (
   if (src->tls_before)
     {
       GError * err = NULL;
-      self->tls_before =
-        tracklist_selections_clone (src->tls_before, &err);
+      self->tls_before = tracklist_selections_clone (src->tls_before, &err);
       if (!self->tls_before)
         {
           g_critical ("%s", err->message);
@@ -577,8 +534,7 @@ tracklist_selections_action_clone (
   if (src->tls_after)
     {
       GError * err = NULL;
-      self->tls_after =
-        tracklist_selections_clone (src->tls_after, &err);
+      self->tls_after = tracklist_selections_clone (src->tls_after, &err);
       if (!self->tls_after)
         {
           g_critical ("%s", err->message);
@@ -588,8 +544,8 @@ tracklist_selections_action_clone (
   if (src->foldable_tls_before)
     {
       GError * err = NULL;
-      self->foldable_tls_before = tracklist_selections_clone (
-        src->foldable_tls_before, &err);
+      self->foldable_tls_before =
+        tracklist_selections_clone (src->foldable_tls_before, &err);
       if (!self->foldable_tls_before)
         {
           g_critical ("%s", err->message);
@@ -599,8 +555,8 @@ tracklist_selections_action_clone (
 
   if (src->num_out_tracks > 0)
     {
-      self->out_tracks = object_new_n (
-        (size_t) src->num_out_tracks, unsigned int);
+      self->out_tracks =
+        object_new_n ((size_t) src->num_out_tracks, unsigned int);
       for (int i = 0; i < src->num_out_tracks; i++)
         {
           self->out_tracks[i] = src->out_tracks[i];
@@ -610,12 +566,11 @@ tracklist_selections_action_clone (
 
   if (src->num_src_sends > 0)
     {
-      self->src_sends = object_new_n (
-        (size_t) src->num_src_sends, ChannelSend *);
+      self->src_sends =
+        object_new_n ((size_t) src->num_src_sends, ChannelSend *);
       for (int i = 0; i < src->num_src_sends; i++)
         {
-          self->src_sends[i] =
-            channel_send_clone (src->src_sends[i]);
+          self->src_sends[i] = channel_send_clone (src->src_sends[i]);
         }
       self->num_src_sends = src->num_src_sends;
     }
@@ -628,12 +583,10 @@ tracklist_selections_action_clone (
 
   if (src->connections_mgr_before)
     self->connections_mgr_before =
-      port_connections_manager_clone (
-        src->connections_mgr_before);
+      port_connections_manager_clone (src->connections_mgr_before);
   if (src->connections_mgr_after)
     self->connections_mgr_after =
-      port_connections_manager_clone (
-        src->connections_mgr_after);
+      port_connections_manager_clone (src->connections_mgr_after);
 
   return self;
 }
@@ -662,10 +615,9 @@ tracklist_selections_action_perform (
   GError **                      error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    tracklist_selections_action_new, error, type, tls_before,
-    tls_after, port_connections_mgr, track, track_type,
-    pl_setting, file_descr, track_pos, lane_pos, pos,
-    num_tracks, edit_type, ival_after, color_new, val_before,
+    tracklist_selections_action_new, error, type, tls_before, tls_after,
+    port_connections_mgr, track, track_type, pl_setting, file_descr, track_pos,
+    lane_pos, pos, num_tracks, edit_type, ival_after, color_new, val_before,
     val_after, new_txt, already_edited, error);
 }
 
@@ -687,14 +639,14 @@ tracklist_selections_action_perform_set_direct_out (
   if (direct_out)
     {
       UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-        tracklist_selections_action_new_edit_direct_out,
-        error, self, port_connections_mgr, direct_out, error);
+        tracklist_selections_action_new_edit_direct_out, error, self,
+        port_connections_mgr, direct_out, error);
     }
   else
     {
       UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-        tracklist_selections_action_new_edit_remove_direct_out,
-        error, self, port_connections_mgr, error);
+        tracklist_selections_action_new_edit_remove_direct_out, error, self,
+        port_connections_mgr, error);
     }
 }
 
@@ -706,48 +658,36 @@ tracklist_selections_action_perform_set_direct_out (
  * @return Non-zero if error.
  */
 static int
-create_track (
-  TracklistSelectionsAction * self,
-  int                         idx,
-  GError **                   error)
+create_track (TracklistSelectionsAction * self, int idx, GError ** error)
 {
   Track * track;
   int     pos = self->track_pos + idx;
 
   if (self->is_empty)
     {
-      const char * track_type_str =
-        track_stringize_type (self->track_type);
-      char label[600];
+      const char * track_type_str = track_stringize_type (self->track_type);
+      char         label[600];
       sprintf (label, _ ("%s Track"), track_type_str);
 
-      track =
-        track_new (self->track_type, pos, label, F_WITH_LANE);
+      track = track_new (self->track_type, pos, label, F_WITH_LANE);
       tracklist_insert_track (
-        TRACKLIST, track, pos, F_NO_PUBLISH_EVENTS,
-        F_NO_RECALC_GRAPH);
+        TRACKLIST, track, pos, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
     }
   else /* else if track is not empty */
     {
       Plugin * pl = NULL;
 
       /* if creating audio track from file */
-      if (
-        self->track_type == TRACK_TYPE_AUDIO
-        && self->pool_id >= 0)
+      if (self->track_type == TRACK_TYPE_AUDIO && self->pool_id >= 0)
         {
-          track = track_new (
-            self->track_type, pos, self->file_basename,
-            F_WITH_LANE);
+          track =
+            track_new (self->track_type, pos, self->file_basename, F_WITH_LANE);
         }
       /* else if creating MIDI track from file */
-      else if (
-        self->track_type == TRACK_TYPE_MIDI
-        && self->base64_midi)
+      else if (self->track_type == TRACK_TYPE_MIDI && self->base64_midi)
         {
-          track = track_new (
-            self->track_type, pos, self->file_basename,
-            F_WITH_LANE);
+          track =
+            track_new (self->track_type, pos, self->file_basename, F_WITH_LANE);
         }
       /* at this point we can assume it has a
        * plugin */
@@ -756,18 +696,15 @@ create_track (
           PluginSetting *    setting = self->pl_setting;
           PluginDescriptor * descr = setting->descr;
 
-          track = track_new (
-            self->track_type, pos, descr->name, F_WITH_LANE);
+          track = track_new (self->track_type, pos, descr->name, F_WITH_LANE);
 
           GError * err = NULL;
           pl = plugin_new_from_setting (
-            setting, track_get_name_hash (track),
-            PLUGIN_SLOT_INSERT, 0, &err);
+            setting, track_get_name_hash (track), PLUGIN_SLOT_INSERT, 0, &err);
           if (!pl)
             {
               PROPAGATE_PREFIXED_ERROR (
-                error, err, _ ("Failed to create plugin %s"),
-                descr->name);
+                error, err, _ ("Failed to create plugin %s"), descr->name);
               return -1;
             }
 
@@ -775,34 +712,26 @@ create_track (
           if (ret != 0)
             {
               PROPAGATE_PREFIXED_ERROR (
-                error, err,
-                _ ("Error instantiating plugin %s"),
-                descr->name);
+                error, err, _ ("Error instantiating plugin %s"), descr->name);
               plugin_free (pl);
               return -1;
             }
 
           /* activate */
-          g_return_val_if_fail (
-            plugin_activate (pl, F_ACTIVATE) == 0, -1);
+          g_return_val_if_fail (plugin_activate (pl, F_ACTIVATE) == 0, -1);
         }
 
       tracklist_insert_track (
-        TRACKLIST, track, track->pos, F_NO_PUBLISH_EVENTS,
-        F_NO_RECALC_GRAPH);
+        TRACKLIST, track, track->pos, F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
 
       if (track->channel && pl)
         {
-          bool is_instrument =
-            track->type == TRACK_TYPE_INSTRUMENT;
+          bool is_instrument = track->type == TRACK_TYPE_INSTRUMENT;
           channel_add_plugin (
             track->channel,
-            is_instrument
-              ? PLUGIN_SLOT_INSTRUMENT
-              : PLUGIN_SLOT_INSERT,
-            is_instrument ? -1 : pl->id.slot, pl, F_CONFIRM,
-            F_NOT_MOVING_PLUGIN, F_GEN_AUTOMATABLES,
-            F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
+            is_instrument ? PLUGIN_SLOT_INSTRUMENT : PLUGIN_SLOT_INSERT,
+            is_instrument ? -1 : pl->id.slot, pl, F_CONFIRM, F_NOT_MOVING_PLUGIN,
+            F_GEN_AUTOMATABLES, F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
         }
 
       Position start_pos;
@@ -817,9 +746,8 @@ create_track (
            * track */
           GError *  err = NULL;
           ZRegion * ar = audio_region_new (
-            self->pool_id, NULL, true, NULL, 0, NULL, 0, 0,
-            &start_pos, track_get_name_hash (track), 0, 0,
-            &err);
+            self->pool_id, NULL, true, NULL, 0, NULL, 0, 0, &start_pos,
+            track_get_name_hash (track), 0, 0, &err);
           if (!ar)
             {
               PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -827,51 +755,42 @@ create_track (
               return -1;
             }
           bool success = track_add_region (
-            track, ar, NULL, 0, F_GEN_NAME,
-            F_NO_PUBLISH_EVENTS, &err);
+            track, ar, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR (
-                error, err, "%s",
-                "Failed to add region to track");
+                error, err, "%s", "Failed to add region to track");
               return -1;
             }
         }
       else if (
-        self->track_type == TRACK_TYPE_MIDI
-        && self->base64_midi && self->file_basename)
+        self->track_type == TRACK_TYPE_MIDI && self->base64_midi
+        && self->file_basename)
         {
           /* create a temporary midi file */
           GError * err = NULL;
-          char *   dir =
-            g_dir_make_tmp ("zrythm_tmp_midi_XXXXXX", &err);
+          char *   dir = g_dir_make_tmp ("zrythm_tmp_midi_XXXXXX", &err);
           if (!dir)
             {
-              g_critical (
-                "failed creating tmpdir: %s", err->message);
+              g_critical ("failed creating tmpdir: %s", err->message);
               return -1;
             }
-          char * full_path =
-            g_build_filename (dir, "data.MID", NULL);
+          char *    full_path = g_build_filename (dir, "data.MID", NULL);
           size_t    len;
-          uint8_t * data =
-            g_base64_decode (self->base64_midi, &len);
+          uint8_t * data = g_base64_decode (self->base64_midi, &len);
           err = NULL;
           if (!g_file_set_contents (
-                full_path, (const gchar *) data, (gssize) len,
-                &err))
+                full_path, (const gchar *) data, (gssize) len, &err))
             {
               PROPAGATE_PREFIXED_ERROR (
-                error, err, _ ("Failed saving file %s"),
-                full_path);
+                error, err, _ ("Failed saving file %s"), full_path);
               return -1;
             }
 
           /* create a MIDI region from the MIDI
            * file & add to track */
           ZRegion * mr = midi_region_new_from_midi_file (
-            &start_pos, full_path,
-            track_get_name_hash (track), 0, 0, idx);
+            &start_pos, full_path, track_get_name_hash (track), 0, 0, idx);
           if (mr)
             {
               bool success = track_add_region (
@@ -880,13 +799,12 @@ create_track (
                  * based
                  * on the track name (if any) in
                  * the MIDI file */
-                mr->name ? F_NO_GEN_NAME : F_GEN_NAME,
-                F_NO_PUBLISH_EVENTS, &err);
+                mr->name ? F_NO_GEN_NAME : F_GEN_NAME, F_NO_PUBLISH_EVENTS,
+                &err);
               if (!success)
                 {
                   PROPAGATE_PREFIXED_ERROR (
-                    error, err, "%s",
-                    "Failed to add region to track");
+                    error, err, "%s", "Failed to add region to track");
                   return -1;
                 }
             }
@@ -913,8 +831,7 @@ create_track (
 
       if (
         pl && ZRYTHM_HAVE_UI
-        && g_settings_get_boolean (
-          S_P_PLUGINS_UIS, "open-on-instantiate"))
+        && g_settings_get_boolean (S_P_PLUGINS_UIS, "open-on-instantiate"))
         {
           pl->visible = 1;
           EVENTS_PUSH (ET_PLUGIN_VISIBILITY_CHANGED, pl);
@@ -925,13 +842,10 @@ create_track (
 }
 
 static void
-save_or_load_port_connections (
-  TracklistSelectionsAction * self,
-  bool                        _do)
+save_or_load_port_connections (TracklistSelectionsAction * self, bool _do)
 {
   undoable_action_save_or_load_port_connections (
-    (UndoableAction *) self, _do,
-    &self->connections_mgr_before,
+    (UndoableAction *) self, _do, &self->connections_mgr_before,
     &self->connections_mgr_after);
 }
 
@@ -974,13 +888,11 @@ do_or_undo_create_or_delete (
             {
               g_return_val_if_fail (
                 self->ival_after < TRACKLIST->num_tracks, -1);
-              Track * tr_to_disable =
-                TRACKLIST->tracks[self->ival_after];
-              g_return_val_if_fail (
-                IS_TRACK_AND_NONNULL (tr_to_disable), -1);
+              Track * tr_to_disable = TRACKLIST->tracks[self->ival_after];
+              g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr_to_disable), -1);
               track_set_enabled (
-                tr_to_disable, F_NO_ENABLE, F_NO_TRIGGER_UNDO,
-                F_NO_AUTO_SELECT, F_PUBLISH_EVENTS);
+                tr_to_disable, F_NO_ENABLE, F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
+                F_PUBLISH_EVENTS);
             }
         }
       /* else if delete undo */
@@ -1015,8 +927,7 @@ do_or_undo_create_or_delete (
                 {
                   for (int j = 0; j < STRIP_SIZE; j++)
                     {
-                      ChannelSend * send =
-                        track->channel->sends[j];
+                      ChannelSend * send = track->channel->sends[j];
                       send->enabled->control = 0.f;
                     }
                 }
@@ -1025,16 +936,15 @@ do_or_undo_create_or_delete (
                * original pos */
               track->num_children = 0;
               tracklist_insert_track (
-                TRACKLIST, track, track->pos,
-                F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+                TRACKLIST, track, track->pos, F_NO_PUBLISH_EVENTS,
+                F_NO_RECALC_GRAPH);
 
               /* if group track, readd all children */
               if (TRACK_CAN_BE_GROUP_TARGET (track))
                 {
                   group_target_track_add_children (
-                    track, own_track->children,
-                    own_track->num_children, F_DISCONNECT,
-                    F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
+                    track, own_track->children, own_track->num_children,
+                    F_DISCONNECT, F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
                 }
 
               if (track->type == TRACK_TYPE_INSTRUMENT)
@@ -1053,37 +963,30 @@ do_or_undo_create_or_delete (
               Track * own_track = self->tls_before->tracks[i];
 
               /* get the project track */
-              Track * track =
-                TRACKLIST->tracks[own_track->pos];
+              Track * track = TRACKLIST->tracks[own_track->pos];
               if (!track_type_has_channel (track->type))
                 continue;
 
               /* reconnect output */
               if (self->out_tracks[i] != 0)
                 {
-                  Track * out_track =
-                    channel_get_output_track (track->channel);
+                  Track * out_track = channel_get_output_track (track->channel);
                   group_target_track_remove_child (
-                    out_track, track_get_name_hash (track),
-                    F_DISCONNECT, F_NO_RECALC_GRAPH,
-                    F_NO_PUBLISH_EVENTS);
-                  out_track =
-                    tracklist_find_track_by_name_hash (
-                      TRACKLIST, self->out_tracks[i]);
+                    out_track, track_get_name_hash (track), F_DISCONNECT,
+                    F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
+                  out_track = tracklist_find_track_by_name_hash (
+                    TRACKLIST, self->out_tracks[i]);
                   group_target_track_add_child (
-                    out_track, track_get_name_hash (track),
-                    F_CONNECT, F_NO_RECALC_GRAPH,
-                    F_NO_PUBLISH_EVENTS);
+                    out_track, track_get_name_hash (track), F_CONNECT,
+                    F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
                 }
 
               /* reconnect any sends sent from the
                * track */
               for (int j = 0; j < STRIP_SIZE; j++)
                 {
-                  ChannelSend * clone_send =
-                    own_track->channel->sends[j];
-                  ChannelSend * send =
-                    track->channel->sends[j];
+                  ChannelSend * clone_send = own_track->channel->sends[j];
+                  ChannelSend * send = track->channel->sends[j];
                   channel_send_copy_values (send, clone_send);
                 }
 
@@ -1093,13 +996,10 @@ do_or_undo_create_or_delete (
               for (size_t j = 0; j < ports->len; j++)
                 {
                   Port * port = g_ptr_array_index (ports, j);
-                  Port * prj_port =
-                    port_find_from_identifier (&port->id);
-                  port_restore_from_non_project (
-                    prj_port, port);
+                  Port * prj_port = port_find_from_identifier (&port->id);
+                  port_restore_from_non_project (prj_port, port);
                 }
-              object_free_w_func_and_null (
-                g_ptr_array_unref, ports);
+              object_free_w_func_and_null (g_ptr_array_unref, ports);
             }
 
           /* re-connect any source sends */
@@ -1109,8 +1009,7 @@ do_or_undo_create_or_delete (
 
               /* get the original send and connect
                * it */
-              ChannelSend * prj_send =
-                channel_send_find (clone_send);
+              ChannelSend * prj_send = channel_send_find (clone_send);
               /*Track * orig_track =*/
               /*channel_send_get_track (prj_send);*/
 
@@ -1132,13 +1031,12 @@ do_or_undo_create_or_delete (
         {
           for (int i = self->num_tracks - 1; i >= 0; i--)
             {
-              Track * track =
-                TRACKLIST->tracks[self->track_pos + i];
+              Track * track = TRACKLIST->tracks[self->track_pos + i];
               g_return_val_if_fail (track, -1);
 
               tracklist_remove_track (
-                TRACKLIST, track, F_REMOVE_PL, F_FREE,
-                F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+                TRACKLIST, track, F_REMOVE_PL, F_FREE, F_NO_PUBLISH_EVENTS,
+                F_NO_RECALC_GRAPH);
             }
 
           /* reenable given track, if any (eg when
@@ -1147,13 +1045,11 @@ do_or_undo_create_or_delete (
             {
               g_return_val_if_fail (
                 self->ival_after < TRACKLIST->num_tracks, -1);
-              Track * tr_to_enable =
-                TRACKLIST->tracks[self->ival_after];
-              g_return_val_if_fail (
-                IS_TRACK_AND_NONNULL (tr_to_enable), -1);
+              Track * tr_to_enable = TRACKLIST->tracks[self->ival_after];
+              g_return_val_if_fail (IS_TRACK_AND_NONNULL (tr_to_enable), -1);
               track_set_enabled (
-                tr_to_enable, F_ENABLE, F_NO_TRIGGER_UNDO,
-                F_NO_AUTO_SELECT, F_PUBLISH_EVENTS);
+                tr_to_enable, F_ENABLE, F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
+                F_PUBLISH_EVENTS);
             }
         }
       /* else if delete do */
@@ -1166,38 +1062,31 @@ do_or_undo_create_or_delete (
 
               /* get the original send and disconnect
                * it */
-              ChannelSend * send =
-                channel_send_find (clone_send);
-              channel_send_disconnect (
-                send, F_NO_RECALC_GRAPH);
+              ChannelSend * send = channel_send_find (clone_send);
+              channel_send_disconnect (send, F_NO_RECALC_GRAPH);
             }
 
-          for (int i = self->tls_before->num_tracks - 1;
-               i >= 0; i--)
+          for (int i = self->tls_before->num_tracks - 1; i >= 0; i--)
             {
               Track * own_track = self->tls_before->tracks[i];
 
               /* get track from pos */
-              Track * track =
-                TRACKLIST->tracks[own_track->pos];
+              Track * track = TRACKLIST->tracks[own_track->pos];
               g_return_val_if_fail (track, -1);
 
               /* remember any custom connections */
               GPtrArray * ports = g_ptr_array_new ();
               track_append_ports (track, ports, true);
               GPtrArray * clone_ports = g_ptr_array_new ();
-              track_append_ports (
-                own_track, clone_ports, true);
+              track_append_ports (own_track, clone_ports, true);
               for (size_t j = 0; j < ports->len; j++)
                 {
-                  Port * prj_port =
-                    g_ptr_array_index (ports, j);
+                  Port * prj_port = g_ptr_array_index (ports, j);
 
                   Port * clone_port = NULL;
                   for (size_t k = 0; k < clone_ports->len; k++)
                     {
-                      Port * cur_clone_port =
-                        g_ptr_array_index (clone_ports, k);
+                      Port * cur_clone_port = g_ptr_array_index (clone_ports, k);
                       if (port_identifier_is_equal (
                             &cur_clone_port->id, &prj_port->id))
                         {
@@ -1207,27 +1096,23 @@ do_or_undo_create_or_delete (
                     }
                   g_return_val_if_fail (clone_port, -1);
 
-                  port_copy_metadata_from_project (
-                    clone_port, prj_port);
+                  port_copy_metadata_from_project (clone_port, prj_port);
                 }
-              object_free_w_func_and_null (
-                g_ptr_array_unref, ports);
-              object_free_w_func_and_null (
-                g_ptr_array_unref, clone_ports);
+              object_free_w_func_and_null (g_ptr_array_unref, ports);
+              object_free_w_func_and_null (g_ptr_array_unref, clone_ports);
 
               /* if group track, remove all
                * children */
               if (TRACK_CAN_BE_GROUP_TARGET (track))
                 {
                   group_target_track_remove_all_children (
-                    track, F_DISCONNECT, F_NO_RECALC_GRAPH,
-                    F_NO_PUBLISH_EVENTS);
+                    track, F_DISCONNECT, F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
                 }
 
               /* remove it */
               tracklist_remove_track (
-                TRACKLIST, track, F_REMOVE_PL, F_FREE,
-                F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+                TRACKLIST, track, F_REMOVE_PL, F_FREE, F_NO_PUBLISH_EVENTS,
+                F_NO_RECALC_GRAPH);
             }
         }
 
@@ -1266,8 +1151,7 @@ do_or_undo_move_or_copy (
   bool unpin = self->type == TRACKLIST_SELECTIONS_ACTION_UNPIN;
 
   /* if moving, this will be set back */
-  ZRegion * prev_clip_editor_region =
-    clip_editor_get_region (CLIP_EDITOR);
+  ZRegion * prev_clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
 
   if (_do)
     {
@@ -1276,8 +1160,7 @@ do_or_undo_move_or_copy (
       if (inside)
         {
           foldable_tr = TRACKLIST->tracks[self->track_pos];
-          g_return_val_if_fail (
-            track_type_is_foldable (foldable_tr->type), -1);
+          g_return_val_if_fail (track_type_is_foldable (foldable_tr->type), -1);
         }
 
       Track * prev_track = NULL;
@@ -1287,16 +1170,14 @@ do_or_undo_move_or_copy (
            * already in the folder */
           for (int i = 0; i < self->tls_before->num_tracks; i++)
             {
-              Track * prj_track = track_find_by_name (
-                self->tls_before->tracks[i]->name);
+              Track * prj_track =
+                track_find_by_name (self->tls_before->tracks[i]->name);
               g_return_val_if_fail (prj_track, -1);
               if (inside)
                 {
                   GPtrArray * parents = g_ptr_array_new ();
-                  track_add_folder_parents (
-                    prj_track, parents, false);
-                  if (!g_ptr_array_find (
-                        parents, foldable_tr, NULL))
+                  track_add_folder_parents (prj_track, parents, false);
+                  if (!g_ptr_array_find (parents, foldable_tr, NULL))
                     self->num_fold_change_tracks++;
                   g_ptr_array_unref (parents);
                 }
@@ -1304,8 +1185,8 @@ do_or_undo_move_or_copy (
 
           for (int i = 0; i < self->tls_before->num_tracks; i++)
             {
-              Track * prj_track = track_find_by_name (
-                self->tls_before->tracks[i]->name);
+              Track * prj_track =
+                track_find_by_name (self->tls_before->tracks[i]->name);
               g_return_val_if_fail (prj_track, -1);
 
               int target_pos = -1;
@@ -1333,43 +1214,36 @@ do_or_undo_move_or_copy (
               own_track->pos = prj_track->pos;
 
               GPtrArray * parents = g_ptr_array_new ();
-              track_add_folder_parents (
-                prj_track, parents, false);
+              track_add_folder_parents (prj_track, parents, false);
 
               tracklist_move_track (
-                TRACKLIST, prj_track, target_pos, true,
-                F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+                TRACKLIST, prj_track, target_pos, true, F_NO_PUBLISH_EVENTS,
+                F_NO_RECALC_GRAPH);
               prev_track = prj_track;
 
               /* adjust parent sizes */
               for (size_t k = 0; k < parents->len; k++)
                 {
-                  Track * parent =
-                    g_ptr_array_index (parents, k);
+                  Track * parent = g_ptr_array_index (parents, k);
 
                   /* if new pos is outside
                    * parent */
                   if (
                     prj_track->pos < parent->pos
-                    || prj_track->pos
-                         >= parent->pos + parent->size)
+                    || prj_track->pos >= parent->pos + parent->size)
                     {
                       g_debug (
                         "new pos of %s (%d) is "
                         "outside parent %s: "
                         "parent--",
-                        prj_track->name, prj_track->pos,
-                        parent->name);
+                        prj_track->name, prj_track->pos, parent->name);
                       parent->size--;
                     }
 
                   /* if foldable track is child of
                    * parent (size will be readded
                    * later) */
-                  if (
-                    inside
-                    && foldable_track_is_child (
-                      parent, foldable_tr))
+                  if (inside && foldable_track_is_child (parent, foldable_tr))
                     {
                       g_debug (
                         "foldable track %s is "
@@ -1383,8 +1257,7 @@ do_or_undo_move_or_copy (
 
               if (i == 0)
                 tracklist_selections_select_single (
-                  TRACKLIST_SELECTIONS, prj_track,
-                  F_NO_PUBLISH_EVENTS);
+                  TRACKLIST_SELECTIONS, prj_track, F_NO_PUBLISH_EVENTS);
               else
                 tracklist_selections_add_track (
                   TRACKLIST_SELECTIONS, prj_track, 0);
@@ -1400,8 +1273,7 @@ do_or_undo_move_or_copy (
 
           if (inside)
             {
-              self->num_fold_change_tracks =
-                self->tls_before->num_tracks;
+              self->num_fold_change_tracks = self->tls_before->num_tracks;
             }
 
           /* get outputs & sends */
@@ -1413,19 +1285,16 @@ do_or_undo_move_or_copy (
               Track * own_track = self->tls_before->tracks[i];
               if (own_track->channel)
                 {
-                  outputs[i] = channel_get_output_track (
-                    own_track->channel);
+                  outputs[i] = channel_get_output_track (own_track->channel);
 
                   for (int j = 0; j < STRIP_SIZE; j++)
                     {
-                      ChannelSend * send =
-                        own_track->channel->sends[j];
+                      ChannelSend * send = own_track->channel->sends[j];
                       sends[i][j] = channel_send_clone (send);
                       send_conns[i][j] = g_ptr_array_new ();
 
                       channel_send_append_connection (
-                        send, self->connections_mgr_before,
-                        send_conns[i][j]);
+                        send, self->connections_mgr_before, send_conns[i][j]);
                     }
                 }
               else
@@ -1434,8 +1303,7 @@ do_or_undo_move_or_copy (
                 }
             }
 
-          tracklist_selections_clear (
-            TRACKLIST_SELECTIONS, F_NO_PUBLISH_EVENTS);
+          tracklist_selections_clear (TRACKLIST_SELECTIONS, F_NO_PUBLISH_EVENTS);
 
           /* create new tracks routed to master */
           Track * new_tracks[num_tracks];
@@ -1464,8 +1332,7 @@ do_or_undo_move_or_copy (
                   /* remove sends */
                   for (int j = 0; j < STRIP_SIZE; j++)
                     {
-                      ChannelSend * send =
-                        track->channel->sends[j];
+                      ChannelSend * send = track->channel->sends[j];
                       send->enabled->control = 0.f;
                     }
                 }
@@ -1479,13 +1346,12 @@ do_or_undo_move_or_copy (
 
               /* add to tracklist at given pos */
               tracklist_insert_track (
-                TRACKLIST, track, target_pos,
-                F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+                TRACKLIST, track, target_pos, F_NO_PUBLISH_EVENTS,
+                F_NO_RECALC_GRAPH);
 
               /* select it */
               track_select (
-                track, F_SELECT, F_NOT_EXCLUSIVE,
-                F_NO_PUBLISH_EVENTS);
+                track, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
             }
 
           /* reroute new tracks to correct
@@ -1495,16 +1361,13 @@ do_or_undo_move_or_copy (
               Track * track = new_tracks[i];
               if (outputs[i])
                 {
-                  Track * out_track =
-                    channel_get_output_track (track->channel);
+                  Track * out_track = channel_get_output_track (track->channel);
                   group_target_track_remove_child (
-                    out_track, track_get_name_hash (track),
-                    F_DISCONNECT, F_NO_RECALC_GRAPH,
-                    F_NO_PUBLISH_EVENTS);
+                    out_track, track_get_name_hash (track), F_DISCONNECT,
+                    F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
                   group_target_track_add_child (
-                    outputs[i], track_get_name_hash (track),
-                    F_CONNECT, F_NO_RECALC_GRAPH,
-                    F_NO_PUBLISH_EVENTS);
+                    outputs[i], track_get_name_hash (track), F_CONNECT,
+                    F_NO_RECALC_GRAPH, F_NO_PUBLISH_EVENTS);
                 }
 
               if (track->channel)
@@ -1512,11 +1375,9 @@ do_or_undo_move_or_copy (
                   for (int j = 0; j < STRIP_SIZE; j++)
                     {
                       ChannelSend * own_send = sends[i][j];
-                      GPtrArray * own_conns = send_conns[i][j];
-                      ChannelSend * track_send =
-                        track->channel->sends[j];
-                      channel_send_copy_values (
-                        track_send, own_send);
+                      GPtrArray *   own_conns = send_conns[i][j];
+                      ChannelSend * track_send = track->channel->sends[j];
+                      channel_send_copy_values (track_send, own_send);
                       if (
                         own_conns->len > 0
                         && track->out_signal_type == TYPE_AUDIO)
@@ -1524,17 +1385,12 @@ do_or_undo_move_or_copy (
                           PortConnection * conn =
                             g_ptr_array_index (own_conns, 0);
                           port_connections_manager_ensure_connect (
-                            PORT_CONNECTIONS_MGR,
-                            &track_send->stereo_out->l->id,
-                            conn->dest_id, 1.f, F_LOCKED,
-                            F_ENABLE);
-                          conn =
-                            g_ptr_array_index (own_conns, 1);
+                            PORT_CONNECTIONS_MGR, &track_send->stereo_out->l->id,
+                            conn->dest_id, 1.f, F_LOCKED, F_ENABLE);
+                          conn = g_ptr_array_index (own_conns, 1);
                           port_connections_manager_ensure_connect (
-                            PORT_CONNECTIONS_MGR,
-                            &track_send->stereo_out->r->id,
-                            conn->dest_id, 1.f, F_LOCKED,
-                            F_ENABLE);
+                            PORT_CONNECTIONS_MGR, &track_send->stereo_out->r->id,
+                            conn->dest_id, 1.f, F_LOCKED, F_ENABLE);
                         }
                       else if (
                         own_conns->len > 0
@@ -1543,10 +1399,8 @@ do_or_undo_move_or_copy (
                           PortConnection * conn =
                             g_ptr_array_index (own_conns, 0);
                           port_connections_manager_ensure_connect (
-                            PORT_CONNECTIONS_MGR,
-                            &track_send->midi_out->id,
-                            conn->dest_id, 1.f, F_LOCKED,
-                            F_ENABLE);
+                            PORT_CONNECTIONS_MGR, &track_send->midi_out->id,
+                            conn->dest_id, 1.f, F_LOCKED, F_ENABLE);
                         }
 
                       channel_send_free (own_send);
@@ -1566,8 +1420,7 @@ do_or_undo_move_or_copy (
         {
           /* update foldable track sizes (incl.
            * parents) */
-          foldable_track_add_to_size (
-            foldable_tr, self->num_fold_change_tracks);
+          foldable_track_add_to_size (foldable_tr, self->num_fold_change_tracks);
         }
     }
   /* if undoing */
@@ -1575,26 +1428,22 @@ do_or_undo_move_or_copy (
     {
       if (move)
         {
-          for (int i = self->tls_before->num_tracks - 1;
-               i >= 0; i--)
+          for (int i = self->tls_before->num_tracks - 1; i >= 0; i--)
             {
               Track * own_track = self->tls_before->tracks[i];
 
-              Track * prj_track =
-                track_find_by_name (own_track->name);
-              g_return_val_if_fail (
-                IS_TRACK_AND_NONNULL (prj_track), -1);
+              Track * prj_track = track_find_by_name (own_track->name);
+              g_return_val_if_fail (IS_TRACK_AND_NONNULL (prj_track), -1);
 
               int target_pos = own_track->pos;
               tracklist_move_track (
-                TRACKLIST, prj_track, target_pos, false,
-                F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+                TRACKLIST, prj_track, target_pos, false, F_NO_PUBLISH_EVENTS,
+                F_NO_RECALC_GRAPH);
 
               if (i == 0)
                 {
                   tracklist_selections_select_single (
-                    TRACKLIST_SELECTIONS, prj_track,
-                    F_NO_PUBLISH_EVENTS);
+                    TRACKLIST_SELECTIONS, prj_track, F_NO_PUBLISH_EVENTS);
                 }
               else
                 {
@@ -1607,8 +1456,7 @@ do_or_undo_move_or_copy (
         }
       else if (copy)
         {
-          for (int i = self->tls_before->num_tracks - 1;
-               i >= 0; i--)
+          for (int i = self->tls_before->num_tracks - 1; i >= 0; i--)
             {
               /* get the track from the inserted
                * pos */
@@ -1617,13 +1465,12 @@ do_or_undo_move_or_copy (
                 target_pos++;
 
               Track * track = TRACKLIST->tracks[target_pos];
-              g_return_val_if_fail (
-                IS_TRACK_AND_NONNULL (track), -1);
+              g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), -1);
 
               /* remove it */
               tracklist_remove_track (
-                TRACKLIST, track, F_REMOVE_PL, F_FREE,
-                F_NO_PUBLISH_EVENTS, F_NO_RECALC_GRAPH);
+                TRACKLIST, track, F_REMOVE_PL, F_FREE, F_NO_PUBLISH_EVENTS,
+                F_NO_RECALC_GRAPH);
             }
           EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
           EVENTS_PUSH (ET_TRACKS_REMOVED, NULL);
@@ -1635,8 +1482,7 @@ do_or_undo_move_or_copy (
           /* update foldable track sizes (incl.
            * parents) */
           foldable_tr = TRACKLIST->tracks[self->track_pos];
-          g_return_val_if_fail (
-            track_type_is_foldable (foldable_tr->type), -1);
+          g_return_val_if_fail (track_type_is_foldable (foldable_tr->type), -1);
 
           foldable_track_add_to_size (
             foldable_tr, -self->num_fold_change_tracks);
@@ -1648,20 +1494,17 @@ do_or_undo_move_or_copy (
 
   if ((pin && _do) || (unpin && !_do))
     {
-      TRACKLIST->pinned_tracks_cutoff +=
-        self->tls_before->num_tracks;
+      TRACKLIST->pinned_tracks_cutoff += self->tls_before->num_tracks;
     }
   else if ((unpin && _do) || (pin && !_do))
     {
-      TRACKLIST->pinned_tracks_cutoff -=
-        self->tls_before->num_tracks;
+      TRACKLIST->pinned_tracks_cutoff -= self->tls_before->num_tracks;
     }
 
   if (move)
     {
       clip_editor_set_region (
-        CLIP_EDITOR, prev_clip_editor_region,
-        F_NO_PUBLISH_EVENTS);
+        CLIP_EDITOR, prev_clip_editor_region, F_NO_PUBLISH_EVENTS);
     }
 
   /* restore connections */
@@ -1676,10 +1519,7 @@ do_or_undo_move_or_copy (
 }
 
 static int
-do_or_undo_edit (
-  TracklistSelectionsAction * self,
-  bool                        _do,
-  GError **                   error)
+do_or_undo_edit (TracklistSelectionsAction * self, bool _do, GError ** error)
 {
   if (_do && self->already_edited)
     {
@@ -1706,10 +1546,8 @@ do_or_undo_edit (
             {
               int soloed = track_get_soloed (track);
               track_set_soloed (
-                track,
-                _do ? self->ival_after : self->ival_before[i],
-                F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
-                F_NO_PUBLISH_EVENTS);
+                track, _do ? self->ival_after : self->ival_before[i],
+                F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT, F_NO_PUBLISH_EVENTS);
 
               self->ival_before[i] = soloed;
             }
@@ -1719,8 +1557,7 @@ do_or_undo_edit (
             TrackLane * lane = track->lanes[self->lane_pos];
             int         soloed = track_lane_get_soloed (lane);
             track_lane_set_soloed (
-              lane,
-              _do ? self->ival_after : self->ival_before[i],
+              lane, _do ? self->ival_after : self->ival_before[i],
               F_NO_TRIGGER_UNDO, F_NO_PUBLISH_EVENTS);
 
             self->ival_before[i] = soloed;
@@ -1731,10 +1568,8 @@ do_or_undo_edit (
             {
               int muted = track_get_muted (track);
               track_set_muted (
-                track,
-                _do ? self->ival_after : self->ival_before[i],
-                F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
-                F_NO_PUBLISH_EVENTS);
+                track, _do ? self->ival_after : self->ival_before[i],
+                F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT, F_NO_PUBLISH_EVENTS);
 
               self->ival_before[i] = muted;
             }
@@ -1744,8 +1579,7 @@ do_or_undo_edit (
             TrackLane * lane = track->lanes[self->lane_pos];
             int         muted = track_lane_get_muted (lane);
             track_lane_set_muted (
-              lane,
-              _do ? self->ival_after : self->ival_before[i],
+              lane, _do ? self->ival_after : self->ival_before[i],
               F_NO_TRIGGER_UNDO, F_NO_PUBLISH_EVENTS);
 
             self->ival_before[i] = muted;
@@ -1756,10 +1590,8 @@ do_or_undo_edit (
             {
               int listened = track_get_listened (track);
               track_set_listened (
-                track,
-                _do ? self->ival_after : self->ival_before[i],
-                F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
-                F_NO_PUBLISH_EVENTS);
+                track, _do ? self->ival_after : self->ival_before[i],
+                F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT, F_NO_PUBLISH_EVENTS);
 
               self->ival_before[i] = listened;
             }
@@ -1768,10 +1600,8 @@ do_or_undo_edit (
           {
             int enabled = track_is_enabled (track);
             track_set_enabled (
-              track,
-              _do ? self->ival_after : self->ival_before[i],
-              F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
-              F_NO_PUBLISH_EVENTS);
+              track, _do ? self->ival_after : self->ival_before[i],
+              F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT, F_NO_PUBLISH_EVENTS);
 
             self->ival_before[i] = enabled;
           }
@@ -1780,19 +1610,15 @@ do_or_undo_edit (
           {
             int folded = track->folded;
             track_set_folded (
-              track,
-              _do ? self->ival_after : self->ival_before[i],
-              F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT,
-              F_PUBLISH_EVENTS);
+              track, _do ? self->ival_after : self->ival_before[i],
+              F_NO_TRIGGER_UNDO, F_NO_AUTO_SELECT, F_PUBLISH_EVENTS);
 
             self->ival_before[i] = folded;
           }
           break;
         case EDIT_TRACK_ACTION_TYPE_VOLUME:
           g_return_val_if_fail (ch, -1);
-          fader_set_amp (
-            ch->fader,
-            _do ? self->val_after : self->val_before);
+          fader_set_amp (ch->fader, _do ? self->val_after : self->val_before);
           break;
         case EDIT_TRACK_ACTION_TYPE_PAN:
           g_return_val_if_fail (ch, -1);
@@ -1805,14 +1631,12 @@ do_or_undo_edit (
             {
               self->ival_before[i] = ch->fader->midi_mode;
               fader_set_midi_mode (
-                ch->fader, self->ival_after, false,
-                F_PUBLISH_EVENTS);
+                ch->fader, self->ival_after, false, F_PUBLISH_EVENTS);
             }
           else
             {
               fader_set_midi_mode (
-                ch->fader, self->ival_before[i], false,
-                F_PUBLISH_EVENTS);
+                ch->fader, self->ival_before[i], false, F_PUBLISH_EVENTS);
             }
           break;
         case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
@@ -1822,36 +1646,29 @@ do_or_undo_edit (
             int cur_direct_out_pos = -1;
             if (ch->has_output)
               {
-                Track * cur_direct_out_track =
-                  channel_get_output_track (ch);
+                Track * cur_direct_out_track = channel_get_output_track (ch);
                 cur_direct_out_pos = cur_direct_out_track->pos;
               }
 
             /* disconnect from the current track */
             if (ch->has_output)
               {
-                Track * target_track =
-                  tracklist_find_track_by_name_hash (
-                    TRACKLIST, ch->output_name_hash);
+                Track * target_track = tracklist_find_track_by_name_hash (
+                  TRACKLIST, ch->output_name_hash);
                 group_target_track_remove_child (
-                  target_track,
-                  track_get_name_hash (ch->track),
-                  F_DISCONNECT, F_NO_RECALC_GRAPH,
-                  F_PUBLISH_EVENTS);
+                  target_track, track_get_name_hash (ch->track), F_DISCONNECT,
+                  F_NO_RECALC_GRAPH, F_PUBLISH_EVENTS);
               }
 
-            int target_pos =
-              _do ? self->ival_after : self->ival_before[i];
+            int target_pos = _do ? self->ival_after : self->ival_before[i];
 
             /* reconnect to the new track */
             if (target_pos != -1)
               {
-                z_return_val_if_fail_cmp (
-                  target_pos, !=, ch->track->pos, -1);
+                z_return_val_if_fail_cmp (target_pos, !=, ch->track->pos, -1);
                 group_target_track_add_child (
-                  TRACKLIST->tracks[target_pos],
-                  track_get_name_hash (ch->track), F_CONNECT,
-                  F_NO_RECALC_GRAPH, F_PUBLISH_EVENTS);
+                  TRACKLIST->tracks[target_pos], track_get_name_hash (ch->track),
+                  F_CONNECT, F_NO_RECALC_GRAPH, F_PUBLISH_EVENTS);
               }
 
             /* remember previous pos */
@@ -1863,8 +1680,7 @@ do_or_undo_edit (
         case EDIT_TRACK_ACTION_TYPE_RENAME:
           {
             char * cur_name = g_strdup (track->name);
-            track_set_name (
-              track, self->new_txt, F_NO_PUBLISH_EVENTS);
+            track_set_name (track, self->new_txt, F_NO_PUBLISH_EVENTS);
 
             /* remember the new name */
             g_free (self->new_txt);
@@ -1888,8 +1704,7 @@ do_or_undo_edit (
           {
             GdkRGBA cur_color = track->color;
             track_set_color (
-              track,
-              _do ? &self->new_color : &self->colors_before[i],
+              track, _do ? &self->new_color : &self->colors_before[i],
               F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
 
             /* remember color */
@@ -1900,8 +1715,7 @@ do_or_undo_edit (
           {
             char * cur_icon = g_strdup (track->icon_name);
             track_set_icon (
-              track, self->new_txt, F_NOT_UNDOABLE,
-              F_PUBLISH_EVENTS);
+              track, self->new_txt, F_NOT_UNDOABLE, F_PUBLISH_EVENTS);
 
             g_free (self->new_txt);
             self->new_txt = cur_icon;
@@ -1910,8 +1724,7 @@ do_or_undo_edit (
         case EDIT_TRACK_ACTION_TYPE_COMMENT:
           {
             char * cur_comment = g_strdup (track->comment);
-            track_set_comment (
-              track, self->new_txt, F_NOT_UNDOABLE);
+            track_set_comment (track, self->new_txt, F_NOT_UNDOABLE);
 
             g_free (self->new_txt);
             self->new_txt = cur_comment;
@@ -1939,10 +1752,7 @@ do_or_undo_edit (
 }
 
 static int
-do_or_undo (
-  TracklistSelectionsAction * self,
-  bool                        _do,
-  GError **                   error)
+do_or_undo (TracklistSelectionsAction * self, bool _do, GError ** error)
 {
   bool ret = -1;
   switch (self->type)
@@ -1950,17 +1760,14 @@ do_or_undo (
     case TRACKLIST_SELECTIONS_ACTION_COPY:
     case TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE:
       ret = do_or_undo_move_or_copy (
-        self, _do, true,
-        self->type == TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE,
+        self, _do, true, self->type == TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE,
         error);
       break;
     case TRACKLIST_SELECTIONS_ACTION_CREATE:
-      ret =
-        do_or_undo_create_or_delete (self, _do, true, error);
+      ret = do_or_undo_create_or_delete (self, _do, true, error);
       break;
     case TRACKLIST_SELECTIONS_ACTION_DELETE:
-      ret =
-        do_or_undo_create_or_delete (self, _do, false, error);
+      ret = do_or_undo_create_or_delete (self, _do, false, error);
       break;
     case TRACKLIST_SELECTIONS_ACTION_EDIT:
       ret = do_or_undo_edit (self, _do, error);
@@ -1970,8 +1777,7 @@ do_or_undo (
     case TRACKLIST_SELECTIONS_ACTION_PIN:
     case TRACKLIST_SELECTIONS_ACTION_UNPIN:
       ret = do_or_undo_move_or_copy (
-        self, _do, false,
-        self->type == TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE,
+        self, _do, false, self->type == TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE,
         error);
       break;
     default:
@@ -1985,8 +1791,7 @@ do_or_undo (
         {
           Track * track = TRACKLIST->tracks[i];
           z_return_val_if_fail_cmp (
-            (size_t) track->num_lanes, <=, track->lanes_size,
-            -1);
+            (size_t) track->num_lanes, <=, track->lanes_size, -1);
         }
     }
 
@@ -1994,9 +1799,7 @@ do_or_undo (
 }
 
 int
-tracklist_selections_action_do (
-  TracklistSelectionsAction * self,
-  GError **                   error)
+tracklist_selections_action_do (TracklistSelectionsAction * self, GError ** error)
 {
   int ret = do_or_undo (self, true, error);
   return ret;
@@ -2012,8 +1815,7 @@ tracklist_selections_action_undo (
 }
 
 char *
-tracklist_selections_action_stringize (
-  TracklistSelectionsAction * self)
+tracklist_selections_action_stringize (TracklistSelectionsAction * self)
 {
   switch (self->type)
     {
@@ -2030,27 +1832,22 @@ tracklist_selections_action_stringize (
         {
           if (self->type == TRACKLIST_SELECTIONS_ACTION_COPY_INSIDE)
             return g_strdup_printf (
-              _ ("Copy %d Tracks inside"),
-              self->tls_before->num_tracks);
+              _ ("Copy %d Tracks inside"), self->tls_before->num_tracks);
           else
             return g_strdup_printf (
-              _ ("Copy %d Tracks"),
-              self->tls_before->num_tracks);
+              _ ("Copy %d Tracks"), self->tls_before->num_tracks);
         }
     case TRACKLIST_SELECTIONS_ACTION_CREATE:
       {
-        const char * type =
-          track_stringize_type (self->track_type);
+        const char * type = track_stringize_type (self->track_type);
         if (self->num_tracks == 1)
           {
-            return g_strdup_printf (
-              _ ("Create %s Track"), type);
+            return g_strdup_printf (_ ("Create %s Track"), type);
           }
         else
           {
             return g_strdup_printf (
-              _ ("Create %d %s Tracks"), self->num_tracks,
-              type);
+              _ ("Create %d %s Tracks"), self->num_tracks, type);
           }
       }
     case TRACKLIST_SELECTIONS_ACTION_DELETE:
@@ -2061,8 +1858,7 @@ tracklist_selections_action_stringize (
       else
         {
           return g_strdup_printf (
-            _ ("Delete %d Tracks"),
-            self->tls_before->num_tracks);
+            _ ("Delete %d Tracks"), self->tls_before->num_tracks);
         }
     case TRACKLIST_SELECTIONS_ACTION_EDIT:
       if (
@@ -2108,12 +1904,12 @@ tracklist_selections_action_stringize (
                 return g_strdup (_ ("Unfold Track"));
             case EDIT_TRACK_ACTION_TYPE_VOLUME:
               return g_strdup_printf (
-                _ ("Change Fader from %.1f to %.1f"),
-                self->val_before, self->val_after);
+                _ ("Change Fader from %.1f to %.1f"), self->val_before,
+                self->val_after);
             case EDIT_TRACK_ACTION_TYPE_PAN:
               return g_strdup_printf (
-                _ ("Change Pan from %.1f to %.1f"),
-                self->val_before, self->val_after);
+                _ ("Change Pan from %.1f to %.1f"), self->val_before,
+                self->val_after);
             case EDIT_TRACK_ACTION_TYPE_DIRECT_OUT:
               return g_strdup (_ ("Change direct out"));
             case EDIT_TRACK_ACTION_TYPE_RENAME:
@@ -2138,15 +1934,13 @@ tracklist_selections_action_stringize (
             {
             case EDIT_TRACK_ACTION_TYPE_SOLO:
               if (self->ival_after)
-                return g_strdup_printf (
-                  _ ("Solo %d Tracks"), self->num_tracks);
+                return g_strdup_printf (_ ("Solo %d Tracks"), self->num_tracks);
               else
                 return g_strdup_printf (
                   _ ("Unsolo %d Tracks"), self->num_tracks);
             case EDIT_TRACK_ACTION_TYPE_MUTE:
               if (self->ival_after)
-                return g_strdup_printf (
-                  _ ("Mute %d Tracks"), self->num_tracks);
+                return g_strdup_printf (_ ("Mute %d Tracks"), self->num_tracks);
               else
                 return g_strdup_printf (
                   _ ("Unmute %d Tracks"), self->num_tracks);
@@ -2166,8 +1960,7 @@ tracklist_selections_action_stringize (
                   _ ("Disable %d Tracks"), self->num_tracks);
             case EDIT_TRACK_ACTION_TYPE_FOLD:
               if (self->ival_after)
-                return g_strdup_printf (
-                  _ ("Fold %d Tracks"), self->num_tracks);
+                return g_strdup_printf (_ ("Fold %d Tracks"), self->num_tracks);
               else
                 return g_strdup_printf (
                   _ ("Unfold %d Tracks"), self->num_tracks);
@@ -2199,14 +1992,12 @@ tracklist_selections_action_stringize (
           if (self->type == TRACKLIST_SELECTIONS_ACTION_MOVE_INSIDE)
             {
               return g_strdup_printf (
-                _ ("Move %d Tracks inside"),
-                self->tls_before->num_tracks);
+                _ ("Move %d Tracks inside"), self->tls_before->num_tracks);
             }
           else
             {
               return g_strdup_printf (
-                _ ("Move %d Tracks"),
-                self->tls_before->num_tracks);
+                _ ("Move %d Tracks"), self->tls_before->num_tracks);
             }
         }
       break;
@@ -2228,8 +2019,7 @@ tracklist_selections_action_stringize (
       else
         {
           return g_strdup_printf (
-            _ ("Unpin %d Tracks"),
-            self->tls_before->num_tracks);
+            _ ("Unpin %d Tracks"), self->tls_before->num_tracks);
         }
       break;
     }
@@ -2238,20 +2028,15 @@ tracklist_selections_action_stringize (
 }
 
 void
-tracklist_selections_action_free (
-  TracklistSelectionsAction * self)
+tracklist_selections_action_free (TracklistSelectionsAction * self)
 {
-  object_free_w_func_and_null (
-    tracklist_selections_free, self->tls_before);
-  object_free_w_func_and_null (
-    tracklist_selections_free, self->tls_after);
-  object_free_w_func_and_null (
-    plugin_setting_free, self->pl_setting);
+  object_free_w_func_and_null (tracklist_selections_free, self->tls_before);
+  object_free_w_func_and_null (tracklist_selections_free, self->tls_after);
+  object_free_w_func_and_null (plugin_setting_free, self->pl_setting);
 
   for (int i = 0; i < self->num_src_sends; i++)
     {
-      object_free_w_func_and_null (
-        channel_send_free, self->src_sends[i]);
+      object_free_w_func_and_null (channel_send_free, self->src_sends[i]);
     }
   object_zero_and_free (self->src_sends);
 
@@ -2263,11 +2048,9 @@ tracklist_selections_action_free (
   g_free_and_null (self->file_basename);
 
   object_free_w_func_and_null (
-    port_connections_manager_free,
-    self->connections_mgr_before);
+    port_connections_manager_free, self->connections_mgr_before);
   object_free_w_func_and_null (
-    port_connections_manager_free,
-    self->connections_mgr_after);
+    port_connections_manager_free, self->connections_mgr_after);
 
   object_zero_and_free (self);
 }

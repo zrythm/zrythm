@@ -13,12 +13,7 @@
 #include <gtk/gtk.h>
 
 #define FADER_WIDGET_TYPE (fader_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  FaderWidget,
-  fader_widget,
-  Z,
-  FADER_WIDGET,
-  GtkWidget)
+G_DECLARE_FINAL_TYPE (FaderWidget, fader_widget, Z, FADER_WIDGET, GtkWidget)
 
 typedef struct Fader Fader;
 
@@ -62,11 +57,7 @@ typedef struct _FaderWidget
  * given Fader.
  */
 void
-fader_widget_setup (
-  FaderWidget * self,
-  Fader *       fader,
-  int           width,
-  int           height);
+fader_widget_setup (FaderWidget * self, Fader * fader, int width, int height);
 
 /**
  * @}

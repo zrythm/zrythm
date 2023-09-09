@@ -24,10 +24,7 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  InspectorChordWidget,
-  inspector_chord_widget,
-  GTK_TYPE_GRID)
+G_DEFINE_TYPE (InspectorChordWidget, inspector_chord_widget, GTK_TYPE_GRID)
 
 void
 inspector_chord_widget_show_chords (
@@ -41,8 +38,7 @@ inspector_chord_widget_show_chords (
     }
   else
     {
-      char * string =
-        g_strdup_printf ("Chords (%d)", num_chords);
+      char * string = g_strdup_printf ("Chords (%d)", num_chords);
       gtk_label_set_text (self->header, string);
       g_free (string);
 
@@ -53,8 +49,7 @@ inspector_chord_widget_show_chords (
 }
 
 static void
-inspector_chord_widget_class_init (
-  InspectorChordWidgetClass * _klass)
+inspector_chord_widget_class_init (InspectorChordWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "inspector_chord.ui");
@@ -75,8 +70,7 @@ inspector_chord_widget_class_init (
   /*klass,*/
   /*InspectorChordWidget,*/
   /*mute_toggle);*/
-  gtk_widget_class_bind_template_child (
-    klass, InspectorChordWidget, header);
+  gtk_widget_class_bind_template_child (klass, InspectorChordWidget, header);
 }
 
 static void

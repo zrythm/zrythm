@@ -70,10 +70,7 @@ progress_info_get_message (ProgressInfo * self);
  * To be called by the task caller.
  */
 void
-progress_info_get_progress (
-  ProgressInfo * self,
-  double *       progress,
-  char **        str);
+progress_info_get_progress (ProgressInfo * self, double * progress, char ** str);
 
 /**
  * To be called by the task itself.

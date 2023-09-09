@@ -91,9 +91,7 @@ int
 plugin_gtk_close_ui (Plugin * plugin);
 
 void
-plugin_gtk_set_window_title (
-  Plugin *    plugin,
-  GtkWindow * window);
+plugin_gtk_set_window_title (Plugin * plugin, GtkWindow * window);
 
 void
 plugin_gtk_add_control_row (
@@ -115,15 +113,10 @@ plugin_gtk_on_preset_destroy (
 #endif
 
 void
-plugin_gtk_on_save_preset_activate (
-  GtkWidget * widget,
-  Plugin *    plugin);
+plugin_gtk_on_save_preset_activate (GtkWidget * widget, Plugin * plugin);
 
 gint
-plugin_gtk_menu_cmp (
-  gconstpointer a,
-  gconstpointer b,
-  gpointer      data);
+plugin_gtk_menu_cmp (gconstpointer a, gconstpointer b, gpointer data);
 
 #if 0
 PluginGtkPresetMenu*
@@ -143,9 +136,7 @@ plugin_gtk_rebuild_preset_menu (
  * @return Whether any banks were added.
  */
 bool
-plugin_gtk_setup_plugin_banks_combo_box (
-  GtkComboBoxText * cb,
-  Plugin *          plugin);
+plugin_gtk_setup_plugin_banks_combo_box (GtkComboBoxText * cb, Plugin * plugin);
 
 /**
  * Sets up the combo box with all the presets the
@@ -155,9 +146,7 @@ plugin_gtk_setup_plugin_banks_combo_box (
  * @return Whether any presets were added.
  */
 bool
-plugin_gtk_setup_plugin_presets_list_box (
-  GtkListBox * box,
-  Plugin *     plugin);
+plugin_gtk_setup_plugin_presets_list_box (GtkListBox * box, Plugin * plugin);
 
 /**
  * Creates a label for a control.

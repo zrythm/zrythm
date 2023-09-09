@@ -52,29 +52,24 @@ typedef struct MidiMappingAction
 
 } MidiMappingAction;
 
-static const cyaml_schema_field_t
-  midi_mapping_action_fields_schema[] = {
-    YAML_FIELD_MAPPING_EMBEDDED (
-      MidiMappingAction,
-      parent_instance,
-      undoable_action_fields_schema),
-    YAML_FIELD_INT (MidiMappingAction, idx),
-    YAML_FIELD_MAPPING_PTR_OPTIONAL (
-      MidiMappingAction,
-      dest_port_id,
-      port_identifier_fields_schema),
-    YAML_FIELD_MAPPING_PTR_OPTIONAL (
-      MidiMappingAction,
-      dev_port,
-      ext_port_fields_schema),
-    YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-      MidiMappingAction,
-      buf,
-      uint8_t_schema,
-      3),
+static const cyaml_schema_field_t midi_mapping_action_fields_schema[] = {
+  YAML_FIELD_MAPPING_EMBEDDED (
+    MidiMappingAction,
+    parent_instance,
+    undoable_action_fields_schema),
+  YAML_FIELD_INT (MidiMappingAction, idx),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    MidiMappingAction,
+    dest_port_id,
+    port_identifier_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    MidiMappingAction,
+    dev_port,
+    ext_port_fields_schema),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (MidiMappingAction, buf, uint8_t_schema, 3),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t midi_mapping_action_schema = {
   CYAML_VALUE_MAPPING (
@@ -90,10 +85,7 @@ midi_mapping_action_init_loaded (MidiMappingAction * self);
  * Creates a new action.
  */
 WARN_UNUSED_RESULT UndoableAction *
-midi_mapping_action_new_enable (
-  int       idx,
-  bool      enable,
-  GError ** error);
+midi_mapping_action_new_enable (int idx, bool enable, GError ** error);
 
 /**
  * Creates a new action.
@@ -118,10 +110,7 @@ midi_mapping_action_clone (const MidiMappingAction * src);
  * Wrapper of midi_mapping_action_new_enable().
  */
 bool
-midi_mapping_action_perform_enable (
-  int       idx,
-  bool      enable,
-  GError ** error);
+midi_mapping_action_perform_enable (int idx, bool enable, GError ** error);
 
 /**
  * Wrapper of midi_mapping_action_new_bind().
@@ -140,14 +129,10 @@ bool
 midi_mapping_action_perform_unbind (int idx, GError ** error);
 
 int
-midi_mapping_action_do (
-  MidiMappingAction * self,
-  GError **           error);
+midi_mapping_action_do (MidiMappingAction * self, GError ** error);
 
 int
-midi_mapping_action_undo (
-  MidiMappingAction * self,
-  GError **           error);
+midi_mapping_action_undo (MidiMappingAction * self, GError ** error);
 
 char *
 midi_mapping_action_stringize (MidiMappingAction * self);

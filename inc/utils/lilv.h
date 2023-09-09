@@ -52,9 +52,7 @@
  */
 
 float
-lilv_get_float_from_node_with_fallback (
-  LilvNode * node,
-  float      fallback);
+lilv_get_float_from_node_with_fallback (LilvNode * node, float fallback);
 
 /**
  * @}

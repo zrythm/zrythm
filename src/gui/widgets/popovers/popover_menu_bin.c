@@ -20,10 +20,7 @@
 #include "gui/widgets/popovers/popover_menu_bin.h"
 #include "utils/gtk.h"
 
-G_DEFINE_TYPE (
-  PopoverMenuBinWidget,
-  popover_menu_bin_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (PopoverMenuBinWidget, popover_menu_bin_widget, GTK_TYPE_WIDGET)
 
 static void
 on_right_click (
@@ -33,8 +30,7 @@ on_right_click (
   gdouble           y,
   gpointer          user_data)
 {
-  PopoverMenuBinWidget * self =
-    Z_POPOVER_MENU_BIN_WIDGET (user_data);
+  PopoverMenuBinWidget * self = Z_POPOVER_MENU_BIN_WIDGET (user_data);
   g_debug ("right click");
   if (!self->menu_model)
     {
@@ -54,8 +50,7 @@ on_right_click (
 }
 
 GMenuModel *
-popover_menu_bin_widget_get_menu_model (
-  PopoverMenuBinWidget * self)
+popover_menu_bin_widget_get_menu_model (PopoverMenuBinWidget * self)
 {
   return self->menu_model;
 }
@@ -79,9 +74,7 @@ popover_menu_bin_widget_set_menu_model (
 }
 
 void
-popover_menu_bin_widget_set_child (
-  PopoverMenuBinWidget * self,
-  GtkWidget *            child)
+popover_menu_bin_widget_set_child (PopoverMenuBinWidget * self, GtkWidget * child)
 {
   self->child = child;
   if (child)
@@ -112,8 +105,7 @@ dispose (PopoverMenuBinWidget * self)
 }
 
 static void
-popover_menu_bin_widget_class_init (
-  PopoverMenuBinWidgetClass * _klass)
+popover_menu_bin_widget_class_init (PopoverMenuBinWidgetClass * _klass)
 {
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;
@@ -122,22 +114,17 @@ popover_menu_bin_widget_class_init (
 static void
 popover_menu_bin_widget_init (PopoverMenuBinWidget * self)
 {
-  self->popover_menu =
-    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   GtkLayoutManager * bin_layout = gtk_bin_layout_new ();
-  gtk_widget_set_layout_manager (
-    GTK_WIDGET (self), bin_layout);
+  gtk_widget_set_layout_manager (GTK_WIDGET (self), bin_layout);
 
-  GtkGestureClick * right_click =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  GtkGestureClick * right_click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (right_click), GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    G_OBJECT (right_click), "released",
-    G_CALLBACK (on_right_click), self);
+    G_OBJECT (right_click), "released", G_CALLBACK (on_right_click), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (right_click));
 }

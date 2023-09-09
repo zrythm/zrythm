@@ -25,10 +25,7 @@
 #include "utils/resources.h"
 #include "zrythm_app.h"
 
-G_DEFINE_TYPE (
-  TimelinePanelWidget,
-  timeline_panel_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (TimelinePanelWidget, timeline_panel_widget, GTK_TYPE_BOX)
 
 void
 timeline_panel_widget_setup (TimelinePanelWidget * self)
@@ -43,8 +40,7 @@ timeline_panel_widget_setup (TimelinePanelWidget * self)
   /* set tracklist header size */
   gtk_widget_set_size_request (
     GTK_WIDGET (self->tracklist_header), -1, RW_HEIGHT);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->ruler), -1, RW_HEIGHT);
+  gtk_widget_set_size_request (GTK_WIDGET (self->ruler), -1, RW_HEIGHT);
   tracklist_header_widget_setup (self->tracklist_header);
 
   ruler_widget_refresh (Z_RULER_WIDGET (MW_RULER));
@@ -52,8 +48,8 @@ timeline_panel_widget_setup (TimelinePanelWidget * self)
 
   /* setup unpinned timeline */
   arranger_widget_setup (
-    Z_ARRANGER_WIDGET (self->timeline),
-    ARRANGER_WIDGET_TYPE_TIMELINE, SNAP_GRID_TIMELINE);
+    Z_ARRANGER_WIDGET (self->timeline), ARRANGER_WIDGET_TYPE_TIMELINE,
+    SNAP_GRID_TIMELINE);
 
   /* for some reason the size group in TracklistWidget
    * doesn't work, so just vexpand here */
@@ -61,11 +57,10 @@ timeline_panel_widget_setup (TimelinePanelWidget * self)
 
   /* setup pinned timeline */
   self->pinned_timeline->is_pinned = 1;
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self->pinned_timeline), "pinned");
+  gtk_widget_add_css_class (GTK_WIDGET (self->pinned_timeline), "pinned");
   arranger_widget_setup (
-    Z_ARRANGER_WIDGET (self->pinned_timeline),
-    ARRANGER_WIDGET_TYPE_TIMELINE, SNAP_GRID_TIMELINE);
+    Z_ARRANGER_WIDGET (self->pinned_timeline), ARRANGER_WIDGET_TYPE_TIMELINE,
+    SNAP_GRID_TIMELINE);
 
   timeline_toolbar_widget_setup (self->timeline_toolbar);
 }
@@ -86,8 +81,7 @@ timeline_panel_widget_tear_down (TimelinePanelWidget * self)
 TimelinePanelWidget *
 timeline_panel_widget_new (void)
 {
-  TimelinePanelWidget * self =
-    g_object_new (TIMELINE_PANEL_WIDGET_TYPE, NULL);
+  TimelinePanelWidget * self = g_object_new (TIMELINE_PANEL_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -112,43 +106,33 @@ timeline_panel_widget_init (TimelinePanelWidget * self)
   self->timeline_ruler_h_size_group =
     gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
   gtk_size_group_add_widget (
-    self->timeline_ruler_h_size_group,
-    GTK_WIDGET (self->ruler));
+    self->timeline_ruler_h_size_group, GTK_WIDGET (self->ruler));
   gtk_size_group_add_widget (
-    self->timeline_ruler_h_size_group,
-    GTK_WIDGET (self->timeline));
+    self->timeline_ruler_h_size_group, GTK_WIDGET (self->timeline));
   gtk_size_group_add_widget (
-    self->timeline_ruler_h_size_group,
-    GTK_WIDGET (self->pinned_timeline));
+    self->timeline_ruler_h_size_group, GTK_WIDGET (self->pinned_timeline));
 
-  gtk_paned_set_shrink_start_child (
-    self->tracklist_timeline, false);
-  gtk_paned_set_shrink_end_child (
-    self->tracklist_timeline, false);
+  gtk_paned_set_shrink_start_child (self->tracklist_timeline, false);
+  gtk_paned_set_shrink_end_child (self->tracklist_timeline, false);
 
+  gtk_widget_set_name (GTK_WIDGET (self->tracklist_top), "tracklist-top-box");
   gtk_widget_set_name (
-    GTK_WIDGET (self->tracklist_top), "tracklist-top-box");
-  gtk_widget_set_name (
-    GTK_WIDGET (self->timeline_divider_box),
-    "timeline-divider-box");
+    GTK_WIDGET (self->timeline_divider_box), "timeline-divider-box");
 
   gtk_widget_set_focus_on_click (GTK_WIDGET (self), false);
 }
 
 static void
-timeline_panel_widget_class_init (
-  TimelinePanelWidgetClass * _klass)
+timeline_panel_widget_class_init (TimelinePanelWidgetClass * _klass)
 {
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (wklass, "timeline_panel.ui");
 
   gtk_widget_class_set_css_name (wklass, "timeline-panel");
-  gtk_widget_class_set_accessible_role (
-    wklass, GTK_ACCESSIBLE_ROLE_GROUP);
+  gtk_widget_class_set_accessible_role (wklass, GTK_ACCESSIBLE_ROLE_GROUP);
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    wklass, TimelinePanelWidget, x)
+  gtk_widget_class_bind_template_child (wklass, TimelinePanelWidget, x)
 
   BIND_CHILD (tracklist_timeline);
   BIND_CHILD (tracklist_top);

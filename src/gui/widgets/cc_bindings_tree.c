@@ -17,10 +17,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  CcBindingsTreeWidget,
-  cc_bindings_tree_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (CcBindingsTreeWidget, cc_bindings_tree_widget, GTK_TYPE_BOX)
 
 enum
 {
@@ -123,8 +120,7 @@ on_right_click (
 void
 cc_bindings_tree_widget_refresh (CcBindingsTreeWidget * self)
 {
-  GListStore * store =
-    z_gtk_column_view_get_list_store (self->column_view);
+  GListStore * store = z_gtk_column_view_get_list_store (self->column_view);
 
   g_list_store_remove_all (store);
 
@@ -139,23 +135,19 @@ cc_bindings_tree_widget_refresh (CcBindingsTreeWidget * self)
 static void
 generate_column_view (CcBindingsTreeWidget * self)
 {
-  self->item_factories =
-    g_ptr_array_new_with_free_func (item_factory_free_func);
+  self->item_factories = g_ptr_array_new_with_free_func (item_factory_free_func);
 
-  GListStore * store =
-    g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
-  GtkMultiSelection * sel = GTK_MULTI_SELECTION (
-    gtk_multi_selection_new (G_LIST_MODEL (store)));
-  self->column_view = GTK_COLUMN_VIEW (
-    gtk_column_view_new (GTK_SELECTION_MODEL (sel)));
-  gtk_scrolled_window_set_child (
-    self->scroll, GTK_WIDGET (self->column_view));
+  GListStore * store = g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  GtkMultiSelection * sel =
+    GTK_MULTI_SELECTION (gtk_multi_selection_new (G_LIST_MODEL (store)));
+  self->column_view =
+    GTK_COLUMN_VIEW (gtk_column_view_new (GTK_SELECTION_MODEL (sel)));
+  gtk_scrolled_window_set_child (self->scroll, GTK_WIDGET (self->column_view));
 
   /* column for checkbox */
   item_factory_generate_and_append_column (
-    self->column_view, self->item_factories,
-    ITEM_FACTORY_TOGGLE, Z_F_EDITABLE, Z_F_RESIZABLE, NULL,
-    _ ("On"));
+    self->column_view, self->item_factories, ITEM_FACTORY_TOGGLE, Z_F_EDITABLE,
+    Z_F_RESIZABLE, NULL, _ ("On"));
 
 #if 0
   /* column for device */
@@ -202,15 +194,11 @@ generate_column_view (CcBindingsTreeWidget * self)
 #endif
 
   /* connect right click handler */
-  GtkGestureClick * mp =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  GtkGestureClick * mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_widget_add_controller (
     GTK_WIDGET (self->column_view), GTK_EVENT_CONTROLLER (mp));
-  gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
-  g_signal_connect (
-    G_OBJECT (mp), "pressed", G_CALLBACK (on_right_click),
-    self);
+  gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
+  g_signal_connect (G_OBJECT (mp), "pressed", G_CALLBACK (on_right_click), self);
 }
 
 CcBindingsTreeWidget *
@@ -232,19 +220,16 @@ cc_bindings_tree_finalize (CcBindingsTreeWidget * self)
 }
 
 static void
-cc_bindings_tree_widget_class_init (
-  CcBindingsTreeWidgetClass * klass)
+cc_bindings_tree_widget_class_init (CcBindingsTreeWidgetClass * klass)
 {
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
-  oklass->finalize =
-    (GObjectFinalizeFunc) cc_bindings_tree_finalize;
+  oklass->finalize = (GObjectFinalizeFunc) cc_bindings_tree_finalize;
 }
 
 static void
 cc_bindings_tree_widget_init (CcBindingsTreeWidget * self)
 {
-  self->scroll =
-    GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
+  self->scroll = GTK_SCROLLED_WINDOW (gtk_scrolled_window_new ());
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->scroll));
   gtk_widget_set_hexpand (GTK_WIDGET (self->scroll), true);
 

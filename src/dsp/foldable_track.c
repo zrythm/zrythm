@@ -32,9 +32,7 @@ foldable_track_init (Track * self)
  * Used to check if soloed/muted/etc.
  */
 bool
-foldable_track_is_status (
-  Track *                  self,
-  FoldableTrackMixerStatus status)
+foldable_track_is_status (Track * self, FoldableTrackMixerStatus status)
 {
   g_return_val_if_fail (self->tracklist, false);
   bool all_soloed = self->size > 1;
@@ -42,10 +40,8 @@ foldable_track_is_status (
   for (int i = 1; i < self->size; i++)
     {
       int     pos = self->pos + i;
-      Track * child =
-        tracklist_get_track (self->tracklist, pos);
-      g_return_val_if_fail (
-        IS_TRACK_AND_NONNULL (child), false);
+      Track * child = tracklist_get_track (self->tracklist, pos);
+      g_return_val_if_fail (IS_TRACK_AND_NONNULL (child), false);
 
       if (track_type_has_channel (child->type))
         has_channel_tracks = true;
@@ -137,16 +133,12 @@ foldable_track_add_to_size (Track * self, int delta)
   track_add_folder_parents (self, parents, false);
 
   self->size += delta;
-  g_debug (
-    "new %s size: %d (added %d)", self->name, self->size,
-    delta);
+  g_debug ("new %s size: %d (added %d)", self->name, self->size, delta);
   for (size_t i = 0; i < parents->len; i++)
     {
       Track * parent = g_ptr_array_index (parents, i);
       parent->size += delta;
-      g_debug (
-        "new %s size: %d (added %d)", parent->name,
-        parent->size, delta);
+      g_debug ("new %s size: %d (added %d)", parent->name, parent->size, delta);
     }
   g_ptr_array_unref (parents);
 }

@@ -22,11 +22,10 @@
 
 #include <gtk/gtk.h>
 
-typedef struct ChordPreset     ChordPreset;
-typedef struct ChordPresetPack ChordPresetPack;
-typedef struct _FileAuditionerControlsWidget
-                           FileAuditionerControlsWidget;
-typedef struct ItemFactory ItemFactory;
+typedef struct ChordPreset                   ChordPreset;
+typedef struct ChordPresetPack               ChordPresetPack;
+typedef struct _FileAuditionerControlsWidget FileAuditionerControlsWidget;
+typedef struct ItemFactory                   ItemFactory;
 
 /**
  * @addtogroup widgets
@@ -34,8 +33,7 @@ typedef struct ItemFactory ItemFactory;
  * @{
  */
 
-#define CHORD_PACK_BROWSER_WIDGET_TYPE \
-  (chord_pack_browser_widget_get_type ())
+#define CHORD_PACK_BROWSER_WIDGET_TYPE (chord_pack_browser_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ChordPackBrowserWidget,
   chord_pack_browser_widget,
@@ -43,8 +41,7 @@ G_DECLARE_FINAL_TYPE (
   CHORD_PACK_BROWSER_WIDGET,
   GtkBox)
 
-#define MW_CHORD_PACK_BROWSER \
-  MW_RIGHT_DOCK_EDGE->chord_pack_browser
+#define MW_CHORD_PACK_BROWSER MW_RIGHT_DOCK_EDGE->chord_pack_browser
 
 typedef struct _ChordPackBrowserWidget
 {
@@ -82,12 +79,10 @@ typedef struct _ChordPackBrowserWidget
 } ChordPackBrowserWidget;
 
 void
-chord_pack_browser_widget_refresh_packs (
-  ChordPackBrowserWidget * self);
+chord_pack_browser_widget_refresh_packs (ChordPackBrowserWidget * self);
 
 void
-chord_pack_browser_widget_refresh_presets (
-  ChordPackBrowserWidget * self);
+chord_pack_browser_widget_refresh_presets (ChordPackBrowserWidget * self);
 
 ChordPackBrowserWidget *
 chord_pack_browser_widget_new (void);

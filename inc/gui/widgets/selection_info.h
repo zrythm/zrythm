@@ -31,8 +31,7 @@
 
 #include <gtk/gtk.h>
 
-#define SELECTION_INFO_WIDGET_TYPE \
-  (selection_info_widget_get_type ())
+#define SELECTION_INFO_WIDGET_TYPE (selection_info_widget_get_type ())
 G_DECLARE_DERIVABLE_TYPE (
   SelectionInfoWidget,
   selection_info_widget,
@@ -42,8 +41,7 @@ G_DECLARE_DERIVABLE_TYPE (
 
 #define SELECTION_INFO_WIDGET_GET_PRIVATE(self) \
   SelectionInfoWidgetPrivate * sel_inf_prv = \
-    selection_info_widget_get_private ( \
-      Z_SELECTION_INFO_WIDGET (self));
+    selection_info_widget_get_private (Z_SELECTION_INFO_WIDGET (self));
 
 /**
  * A widget to display info about the current
@@ -63,12 +61,10 @@ typedef struct _SelectionInfoWidgetClass
   GtkGridClass parent_class;
 } SelectionInfoWidgetClass;
 
-#define selection_info_widget_add_info_with_text( \
-  _self, _txt, _widget) \
+#define selection_info_widget_add_info_with_text(_self, _txt, _widget) \
   GtkWidget * _lbl = gtk_label_new (_txt); \
   gtk_widget_set_visible (_lbl, 1); \
-  selection_info_widget_add_info ( \
-    _self, _lbl, GTK_WIDGET (_widget));
+  selection_info_widget_add_info (_self, _lbl, GTK_WIDGET (_widget));
 
 /**
  * Adds a piece of info to the grid.

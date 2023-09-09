@@ -51,8 +51,7 @@ kmeter_dsp_process (KMeterDsp * self, float * p, int n)
     {
       /*const float fall = 15.f;*/
       const float fall = 5.f;
-      const float tme =
-        (float) n / self->fsamp; // period time in seconds
+      const float tme = (float) n / self->fsamp; // period time in seconds
       self->fall = powf (
         10.0f,
         -0.05f * fall * tme); // per period fallback multiplier
@@ -87,10 +86,9 @@ kmeter_dsp_process (KMeterDsp * self, float * p, int n)
       s = *p++;
       s *= s;
       if (t < s)
-        t = s;                      // Update digital peak.
-      z1 += self->omega * (s - z1); // Update first filter.
-      z2 +=
-        4 * self->omega * (z1 - z2); // Update second filter.
+        t = s;                           // Update digital peak.
+      z1 += self->omega * (s - z1);      // Update first filter.
+      z2 += 4 * self->omega * (z1 - z2); // Update second filter.
     }
 
   if (isnan (z1))
@@ -133,9 +131,8 @@ kmeter_dsp_process (KMeterDsp * self, float * p, int n)
     }
   else
     {
-      self->peak *=
-        self->fall; // else let the peak value fall back,
-      self->peak += 1e-10f; // and avoid denormals.
+      self->peak *= self->fall; // else let the peak value fall back,
+      self->peak += 1e-10f;     // and avoid denormals.
     }
 }
 
@@ -173,11 +170,8 @@ kmeter_dsp_init (KMeterDsp * self, float samplerate)
   const float hold = 1.5f;
   self->fsamp = samplerate;
 
-  self->hold =
-    (int) (hold * samplerate
-           + 0.5f); // number of samples to hold peak
-  self->omega =
-    9.72f / samplerate; // ballistic filter coefficient
+  self->hold = (int) (hold * samplerate + 0.5f); // number of samples to hold peak
+  self->omega = 9.72f / samplerate;              // ballistic filter coefficient
 }
 
 KMeterDsp *

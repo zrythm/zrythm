@@ -15,9 +15,8 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _KnobWithNameWidget KnobWithNameWidget;
-typedef struct _PortConnectionsPopoverWidget
-  PortConnectionsPopoverWidget;
+typedef struct _KnobWithNameWidget           KnobWithNameWidget;
+typedef struct _PortConnectionsPopoverWidget PortConnectionsPopoverWidget;
 
 /**
  * @addtogroup widgets
@@ -25,8 +24,7 @@ typedef struct _PortConnectionsPopoverWidget
  * @{
  */
 
-#define MODULATOR_MACRO_WIDGET_TYPE \
-  (modulator_macro_widget_get_type ())
+#define MODULATOR_MACRO_WIDGET_TYPE (modulator_macro_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ModulatorMacroWidget,
   modulator_macro_widget,

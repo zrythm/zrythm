@@ -42,10 +42,7 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  DragDestBoxWidget,
-  drag_dest_box_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (DragDestBoxWidget, drag_dest_box_widget, GTK_TYPE_BOX)
 
 static void
 on_dnd_leave_value_ready (
@@ -55,20 +52,17 @@ on_dnd_leave_value_ready (
 {
   GdkDrop *      drop = GDK_DROP (source_object);
   GError *       err = NULL;
-  const GValue * value =
-    gdk_drop_read_value_finish (drop, res, &err);
+  const GValue * value = gdk_drop_read_value_finish (drop, res, &err);
   if (err)
     {
       g_message ("error: %s", err->message);
       return;
     }
 
-  if (!G_VALUE_HOLDS (
-        value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
+  if (!G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     return;
 
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    g_value_get_object (value);
+  WrappedObjectWithChangeSignal * wrapped_obj = g_value_get_object (value);
   if (wrapped_obj->type == WRAPPED_OBJECT_TYPE_TRACK)
     {
       /* unhighlight bottom part of last track */
@@ -79,12 +73,9 @@ on_dnd_leave_value_ready (
 }
 
 static void
-on_dnd_leave (
-  GtkDropTarget *     drop_target,
-  DragDestBoxWidget * self)
+on_dnd_leave (GtkDropTarget * drop_target, DragDestBoxWidget * self)
 {
-  GdkDrop * drop =
-    gtk_drop_target_get_current_drop (drop_target);
+  GdkDrop * drop = gtk_drop_target_get_current_drop (drop_target);
   if (!drop)
     return;
 
@@ -101,8 +92,7 @@ on_dnd_motion_value_ready (
 {
   GdkDrop *      drop = GDK_DROP (source_object);
   GError *       err = NULL;
-  const GValue * value =
-    gdk_drop_read_value_finish (drop, res, &err);
+  const GValue * value = gdk_drop_read_value_finish (drop, res, &err);
   if (err)
     {
       g_message ("error: %s", err->message);
@@ -113,11 +103,9 @@ on_dnd_motion_value_ready (
   Track *            dropped_track = NULL;
   Plugin *           pl = NULL;
   PluginDescriptor * pl_descr = NULL;
-  if (G_VALUE_HOLDS (
-        value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
+  if (G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
-      WrappedObjectWithChangeSignal * wrapped_obj =
-        g_value_get_object (value);
+      WrappedObjectWithChangeSignal * wrapped_obj = g_value_get_object (value);
       if (wrapped_obj->type == WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
           supported_file = (SupportedFile *) wrapped_obj->obj;
@@ -126,8 +114,7 @@ on_dnd_motion_value_ready (
         {
           pl = (Plugin *) wrapped_obj->obj;
         }
-      else if (
-        wrapped_obj->type == WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
+      else if (wrapped_obj->type == WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
         {
           pl_descr = (PluginDescriptor *) wrapped_obj->obj;
         }
@@ -176,10 +163,8 @@ on_dnd_motion_value_ready (
       /* highlight bottom part of last track */
       Track * track = tracklist_get_last_track (
         TRACKLIST, TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
-      int track_height =
-        gtk_widget_get_height (GTK_WIDGET (track->widget));
-      track_widget_do_highlight (
-        track->widget, 0, track_height - 1, 1);
+      int track_height = gtk_widget_get_height (GTK_WIDGET (track->widget));
+      track_widget_do_highlight (track->widget, 0, track_height - 1, 1);
     }
   else
     {
@@ -194,16 +179,13 @@ on_dnd_motion (
   gdouble         y,
   gpointer        user_data)
 {
-  DragDestBoxWidget * self =
-    Z_DRAG_DEST_BOX_WIDGET (user_data);
+  DragDestBoxWidget * self = Z_DRAG_DEST_BOX_WIDGET (user_data);
 
   /* request value */
-  GdkDrop * drop =
-    gtk_drop_target_get_current_drop (drop_target);
+  GdkDrop * drop = gtk_drop_target_get_current_drop (drop_target);
   /* FIXME just use gtk_drop_target_get_value() */
   gdk_drop_read_value_async (
-    drop, G_TYPE_OBJECT, 0, NULL, on_dnd_motion_value_ready,
-    self);
+    drop, G_TYPE_OBJECT, 0, NULL, on_dnd_motion_value_ready, self);
 
   return GDK_ACTION_MOVE;
 }
@@ -218,18 +200,15 @@ on_dnd_drop (
 {
   DragDestBoxWidget * self = Z_DRAG_DEST_BOX_WIDGET (data);
 
-  GdkDragAction action =
-    z_gtk_drop_target_get_selected_action (drop_target);
+  GdkDragAction action = z_gtk_drop_target_get_selected_action (drop_target);
 
   SupportedFile *    file = NULL;
   PluginDescriptor * pd = NULL;
   Plugin *           pl = NULL;
   Track *            track = NULL;
-  if (G_VALUE_HOLDS (
-        value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
+  if (G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
-      WrappedObjectWithChangeSignal * wrapped_obj =
-        g_value_get_object (value);
+      WrappedObjectWithChangeSignal * wrapped_obj = g_value_get_object (value);
       if (wrapped_obj->type == WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
           file = (SupportedFile *) wrapped_obj->obj;
@@ -238,8 +217,7 @@ on_dnd_drop (
         {
           pl = (Plugin *) wrapped_obj->obj;
         }
-      else if (
-        wrapped_obj->type == WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
+      else if (wrapped_obj->type == WRAPPED_OBJECT_TYPE_PLUGIN_DESCR)
         {
           pd = (PluginDescriptor *) wrapped_obj->obj;
         }
@@ -275,17 +253,14 @@ on_dnd_drop (
           uris = g_strv_builder_end (uris_builder);
         }
 
-      if (!zrythm_app_check_and_show_trial_limit_error (
-            zrythm_app))
+      if (!zrythm_app_check_and_show_trial_limit_error (zrythm_app))
         {
           GError * err = NULL;
           bool     success = tracklist_import_files (
-            TRACKLIST, uris, file, NULL, NULL, -1, NULL, NULL,
-            &err);
+            TRACKLIST, uris, file, NULL, NULL, -1, NULL, NULL, &err);
           if (!success)
             {
-              HANDLE_ERROR_LITERAL (
-                err, _ ("Failed to import files"));
+              HANDLE_ERROR_LITERAL (err, _ ("Failed to import files"));
             }
         }
       return true;
@@ -296,11 +271,9 @@ on_dnd_drop (
         self->type == DRAG_DEST_BOX_TYPE_MIXER
         || self->type == DRAG_DEST_BOX_TYPE_TRACKLIST)
         {
-          PluginSetting * setting =
-            plugin_setting_new_default (pd);
+          PluginSetting * setting = plugin_setting_new_default (pd);
 
-          if (!zrythm_app_check_and_show_trial_limit_error (
-                zrythm_app))
+          if (!zrythm_app_check_and_show_trial_limit_error (zrythm_app))
             {
               plugin_setting_activate (setting);
             }
@@ -309,18 +282,14 @@ on_dnd_drop (
         }
       else
         {
-          PluginSetting * setting =
-            plugin_setting_new_default (pd);
-          GError * err = NULL;
-          bool ret = mixer_selections_action_perform_create (
-            PLUGIN_SLOT_MODULATOR,
-            track_get_name_hash (P_MODULATOR_TRACK),
-            P_MODULATOR_TRACK->num_modulators, setting, 1,
-            &err);
+          PluginSetting * setting = plugin_setting_new_default (pd);
+          GError *        err = NULL;
+          bool            ret = mixer_selections_action_perform_create (
+            PLUGIN_SLOT_MODULATOR, track_get_name_hash (P_MODULATOR_TRACK),
+            P_MODULATOR_TRACK->num_modulators, setting, 1, &err);
           if (!ret)
             {
-              HANDLE_ERROR (
-                err, "%s", _ ("Failed to create plugin"));
+              HANDLE_ERROR (err, "%s", _ ("Failed to create plugin"));
             }
           plugin_setting_free (setting);
         }
@@ -338,30 +307,28 @@ on_dnd_drop (
       if (action == GDK_ACTION_COPY)
         {
           ret = mixer_selections_action_perform_copy (
-            MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
-            PLUGIN_SLOT_INSERT, 0, 0, &err);
+            MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT, 0, 0,
+            &err);
         }
       else if (action == GDK_ACTION_MOVE)
         {
           ret = mixer_selections_action_perform_move (
-            MIXER_SELECTIONS, PORT_CONNECTIONS_MGR,
-            PLUGIN_SLOT_INSERT, 0, 0, &err);
+            MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, PLUGIN_SLOT_INSERT, 0, 0,
+            &err);
         }
       else
         g_return_val_if_reached (true);
 
       if (!ret)
         {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to move or copy plugin"));
+          HANDLE_ERROR (err, "%s", _ ("Failed to move or copy plugin"));
         }
 
       return true;
     }
   else if (track)
     {
-      tracklist_selections_select_foldable_children (
-        TRACKLIST_SELECTIONS);
+      tracklist_selections_select_foldable_children (TRACKLIST_SELECTIONS);
       int pos = tracklist_get_last_pos (
         TRACKLIST, TRACKLIST_PIN_OPTION_UNPINNED_ONLY, true);
       pos++;
@@ -370,35 +337,31 @@ on_dnd_drop (
       bool     ret = false;
       if (action == GDK_ACTION_COPY)
         {
-          if (tracklist_selections_contains_uncopyable_track (
-                TRACKLIST_SELECTIONS))
+          if (
+            tracklist_selections_contains_uncopyable_track (TRACKLIST_SELECTIONS))
             {
               g_message (
                 "cannot copy - track selection "
                 "contains uncopyable track");
               return false;
             }
-          if (!zrythm_app_check_and_show_trial_limit_error (
-                zrythm_app))
+          if (!zrythm_app_check_and_show_trial_limit_error (zrythm_app))
             {
               ret = tracklist_selections_action_perform_copy (
-                TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR,
-                pos, &err);
+                TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, pos, &err);
             }
         }
       else if (action == GDK_ACTION_MOVE)
         {
           ret = tracklist_selections_action_perform_move (
-            TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, pos,
-            &err);
+            TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, pos, &err);
         }
       else
         g_return_val_if_reached (true);
 
       if (!ret)
         {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to move or copy track"));
+          HANDLE_ERROR (err, "%s", _ ("Failed to move or copy track"));
         }
 
       return true;
@@ -413,8 +376,7 @@ show_context_menu (DragDestBoxWidget * self, double x, double y)
 {
   GMenu * menu = tracklist_widget_generate_add_track_menu ();
 
-  z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+  z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
 }
 
 static void
@@ -425,8 +387,7 @@ on_right_click (
   gdouble           y,
   gpointer          user_data)
 {
-  DragDestBoxWidget * self =
-    Z_DRAG_DEST_BOX_WIDGET (user_data);
+  DragDestBoxWidget * self = Z_DRAG_DEST_BOX_WIDGET (user_data);
 
   if (n_press == 1)
     {
@@ -443,8 +404,7 @@ on_click_pressed (
   DragDestBoxWidget * self)
 {
   mixer_selections_clear (MIXER_SELECTIONS, F_PUBLISH_EVENTS);
-  tracklist_selections_select_last_visible (
-    TRACKLIST_SELECTIONS);
+  tracklist_selections_select_last_visible (TRACKLIST_SELECTIONS);
 
   PROJECT->last_selection = SELECTION_TYPE_TRACKLIST;
   EVENTS_PUSH (ET_PROJECT_SELECTION_TYPE_CHANGED, NULL);
@@ -453,24 +413,19 @@ on_click_pressed (
 static void
 setup_dnd (DragDestBoxWidget * self)
 {
-  GtkDropTarget * drop_target = gtk_drop_target_new (
-    G_TYPE_INVALID, GDK_ACTION_COPY | GDK_ACTION_MOVE);
+  GtkDropTarget * drop_target =
+    gtk_drop_target_new (G_TYPE_INVALID, GDK_ACTION_COPY | GDK_ACTION_MOVE);
   GType types[] = {
-    GDK_TYPE_FILE_LIST, G_TYPE_FILE,
-    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE
+    GDK_TYPE_FILE_LIST, G_TYPE_FILE, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE
   };
-  gtk_drop_target_set_gtypes (
-    drop_target, types, G_N_ELEMENTS (types));
+  gtk_drop_target_set_gtypes (drop_target, types, G_N_ELEMENTS (types));
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (drop_target));
 
   /* connect signal */
-  g_signal_connect (
-    drop_target, "motion", G_CALLBACK (on_dnd_motion), self);
-  g_signal_connect (
-    drop_target, "drop", G_CALLBACK (on_dnd_drop), self);
-  g_signal_connect (
-    drop_target, "leave", G_CALLBACK (on_dnd_leave), self);
+  g_signal_connect (drop_target, "motion", G_CALLBACK (on_dnd_motion), self);
+  g_signal_connect (drop_target, "drop", G_CALLBACK (on_dnd_drop), self);
+  g_signal_connect (drop_target, "leave", G_CALLBACK (on_dnd_leave), self);
 }
 
 /**
@@ -483,8 +438,7 @@ drag_dest_box_widget_new (
   DragDestBoxType type)
 {
   /* create */
-  DragDestBoxWidget * self =
-    g_object_new (DRAG_DEST_BOX_WIDGET_TYPE, NULL);
+  DragDestBoxWidget * self = g_object_new (DRAG_DEST_BOX_WIDGET_TYPE, NULL);
 
   self->type = type;
 
@@ -514,29 +468,22 @@ drag_dest_box_widget_new (
 static void
 drag_dest_box_widget_init (DragDestBoxWidget * self)
 {
-  self->popover_menu =
-    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->popover_menu));
+  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->popover_menu));
 
   self->click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (
-    G_OBJECT (self->click), "pressed",
-    G_CALLBACK (on_click_pressed), self);
+    G_OBJECT (self->click), "pressed", G_CALLBACK (on_click_pressed), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->click));
 
-  self->right_click =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  self->right_click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (self->right_click),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (self->right_click), GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    G_OBJECT (self->right_click), "pressed",
-    G_CALLBACK (on_right_click), self);
+    G_OBJECT (self->right_click), "pressed", G_CALLBACK (on_right_click), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (self->right_click));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->right_click));
 
 #if 0
   self->drag =
@@ -564,8 +511,7 @@ drag_dest_box_widget_init (DragDestBoxWidget * self)
 }
 
 static void
-drag_dest_box_widget_class_init (
-  DragDestBoxWidgetClass * _klass)
+drag_dest_box_widget_class_init (DragDestBoxWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_css_name (klass, "drag-dest-box");

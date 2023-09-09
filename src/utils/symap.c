@@ -101,9 +101,7 @@ symap_search (const Symap * map, const char * sym, bool * exact)
     {
       return 0; // Empty map, insert at 0
     }
-  else if (
-    strcmp (map->symbols[map->index[map->size - 1] - 1], sym)
-    < 0)
+  else if (strcmp (map->symbols[map->index[map->size - 1] - 1], sym) < 0)
     {
       return map->size; // Greater than last element, append
     }
@@ -137,9 +135,7 @@ symap_search (const Symap * map, const char * sym, bool * exact)
         }
     }
 
-  assert (
-    !*exact
-    || strcmp (map->symbols[map->index[i] - 1], sym) > 0);
+  assert (!*exact || strcmp (map->symbols[map->index[i] - 1], sym) > 0);
   return i;
 }
 
@@ -164,8 +160,7 @@ symap_map (Symap * map, const char * sym)
   const uint32_t index = symap_search (map, sym, &exact);
   if (exact)
     {
-      assert (
-        !strcmp (map->symbols[map->index[index] - 1], sym));
+      assert (!strcmp (map->symbols[map->index[index] - 1], sym));
       return map->index[index];
     }
 
@@ -173,13 +168,11 @@ symap_map (Symap * map, const char * sym)
   char * const   str = symap_strdup (sym);
 
   /* Append new symbol to symbols array */
-  map->symbols = (char **) realloc (
-    map->symbols, map->size * sizeof (str));
+  map->symbols = (char **) realloc (map->symbols, map->size * sizeof (str));
   map->symbols[id - 1] = str;
 
   /* Insert new index element into sorted index */
-  map->index = (uint32_t *) realloc (
-    map->index, map->size * sizeof (uint32_t));
+  map->index = (uint32_t *) realloc (map->index, map->size * sizeof (uint32_t));
   if (index < map->size - 1)
     {
       memmove (
@@ -216,9 +209,7 @@ symap_dump (Symap * map)
   g_message ("{");
   for (uint32_t i = 0; i < map->size; ++i)
     {
-      g_message (
-        "\t%u = %s", map->index[i],
-        map->symbols[map->index[i] - 1]);
+      g_message ("\t%u = %s", map->index[i], map->symbols[map->index[i] - 1]);
     }
   g_message ("}");
 }
@@ -227,9 +218,7 @@ int
 main ()
 {
 #  define N_SYMS 5
-  char * syms[N_SYMS] = {
-    "hello", "bonjour", "goodbye", "aloha", "salut"
-  };
+  char * syms[N_SYMS] = { "hello", "bonjour", "goodbye", "aloha", "salut" };
 
   Symap * map = symap_new ();
   for (int i = 0; i < N_SYMS; ++i)
@@ -249,8 +238,7 @@ main ()
 
       if (symap_map (map, syms[i]) != id)
         {
-          g_error (
-            "error: Remapped symbol to a different ID\n");
+          g_error ("error: Remapped symbol to a different ID\n");
           return 1;
         }
 

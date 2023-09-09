@@ -80,26 +80,11 @@ static const cyaml_schema_field_t project_fields_schema_v1[] = {
   YAML_FIELD_STRING_PTR (Project_v1, title),
   YAML_FIELD_STRING_PTR (Project_v1, datetime_str),
   YAML_FIELD_STRING_PTR (Project_v1, version),
-  YAML_FIELD_MAPPING_PTR (
-    Project_v1,
-    tracklist,
-    tracklist_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR (
-    Project_v1,
-    clip_editor,
-    clip_editor_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project_v1,
-    timeline,
-    timeline_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project_v1,
-    snap_grid_timeline,
-    snap_grid_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project_v1,
-    snap_grid_editor,
-    snap_grid_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Project_v1, tracklist, tracklist_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Project_v1, clip_editor, clip_editor_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Project_v1, timeline, timeline_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Project_v1, snap_grid_timeline, snap_grid_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Project_v1, snap_grid_editor, snap_grid_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     Project_v1,
     quantize_opts_timeline,
@@ -108,10 +93,7 @@ static const cyaml_schema_field_t project_fields_schema_v1[] = {
     Project_v1,
     quantize_opts_editor,
     quantize_options_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project_v1,
-    audio_engine,
-    engine_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Project_v1, audio_engine, engine_fields_schema_v1),
   YAML_FIELD_IGNORE_OPT ("mixer_selections"),
   YAML_FIELD_IGNORE_OPT ("timeline_selections"),
   YAML_FIELD_IGNORE_OPT ("midi_arranger_selections"),
@@ -130,16 +112,10 @@ static const cyaml_schema_field_t project_fields_schema_v1[] = {
     Project_v1,
     port_connections_manager,
     port_connections_manager_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project_v1,
-    midi_mappings,
-    midi_mappings_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Project_v1, midi_mappings, midi_mappings_fields_schema),
   /* ignore undo history */
   YAML_FIELD_IGNORE_OPT ("undo_manager"),
-  YAML_FIELD_ENUM (
-    Project_v1,
-    last_selection,
-    selection_type_strings),
+  YAML_FIELD_ENUM (Project_v1, last_selection, selection_type_strings),
 
   CYAML_FIELD_END
 };

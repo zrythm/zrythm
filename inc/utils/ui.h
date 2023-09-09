@@ -60,8 +60,7 @@ typedef struct Port     Port;
 #define UI_COLOR_HIGHLIGHT_BASS_BG UI_COLOR_LIGHT_BLUEISH
 #define UI_COLOR_HIGHLIGHT_BOTH_BG "#FF22FF"
 #define UI_COLOR_HIGHLIGHT_SCALE_FG "#F79616"
-#define UI_COLOR_HIGHLIGHT_CHORD_FG \
-  UI_COLOR_HIGHLIGHT_SCALE_FG
+#define UI_COLOR_HIGHLIGHT_CHORD_FG UI_COLOR_HIGHLIGHT_SCALE_FG
 #define UI_COLOR_HIGHLIGHT_BASS_FG "white"
 #define UI_COLOR_HIGHLIGHT_BOTH_FG "white"
 #define UI_COLOR_FADER_FILL_START UI_COLOR_DARK_ORANGE
@@ -208,12 +207,10 @@ typedef struct UiCaches
 #define ui_set_hover_status_bar_signals(w, t) \
   g_signal_connect ( \
     G_OBJECT (w), "enter-notify-event", \
-    G_CALLBACK (ui_on_motion_set_status_bar_text_cb), \
-    g_strdup (t)); \
+    G_CALLBACK (ui_on_motion_set_status_bar_text_cb), g_strdup (t)); \
   g_signal_connect ( \
     G_OBJECT (w), "leave-notify-event", \
-    G_CALLBACK (ui_on_motion_set_status_bar_text_cb), \
-    g_strdup (t));
+    G_CALLBACK (ui_on_motion_set_status_bar_text_cb), g_strdup (t));
 
 /**
  * Shows the notification when idle.
@@ -223,9 +220,7 @@ typedef struct UiCaches
  */
 #define ui_show_notification_idle_printf(fmt, ...) \
   char * text = g_strdup_printf (fmt, __VA_ARGS__); \
-  g_idle_add ( \
-    (GSourceFunc) ui_show_notification_idle_func, \
-    (void *) text)
+  g_idle_add ((GSourceFunc) ui_show_notification_idle_func, (void *) text)
 
 #define ui_show_notification_idle(msg) \
   ui_show_notification_idle_printf ("%s", msg)
@@ -388,32 +383,25 @@ void
 ui_set_pointer_cursor (GtkWidget * widget);
 
 #define ui_set_pencil_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "pencil", 3, 18);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "pencil", 3, 18);
 
 #define ui_set_brush_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "draw-brush", 3, 18);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "draw-brush", 3, 18);
 
 #define ui_set_cut_clip_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "cut-tool", 9, 6);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "cut-tool", 9, 6);
 
 #define ui_set_eraser_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "draw-eraser", 3, 6);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "draw-eraser", 3, 6);
 
 #define ui_set_line_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "draw-line", 3, 6);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "draw-line", 3, 6);
 
 #define ui_set_speaker_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "audio-volume-high", 3, 6);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "audio-volume-high", 3, 6);
 
 #define ui_set_hand_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "transform-move", 10, 10);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "transform-move", 10, 10);
 
 #define ui_set_left_resize_cursor(widget) \
   ui_set_cursor_from_icon_name ( \
@@ -440,12 +428,10 @@ ui_set_pointer_cursor (GtkWidget * widget);
     GTK_WIDGET (widget), "object-resize-loop-right", 15, 10);
 
 #define ui_set_fade_in_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "fade-in", 11, 11);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "fade-in", 11, 11);
 
 #define ui_set_fade_out_cursor(widget) \
-  ui_set_cursor_from_icon_name ( \
-    GTK_WIDGET (widget), "fade-out", 11, 11);
+  ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "fade-out", 11, 11);
 
 /**
  * Sets cursor from icon name.
@@ -481,25 +467,21 @@ ui_show_message_full (
   ...) G_GNUC_PRINTF (3, 4);
 
 #define UI_ACTIVE_WINDOW_OR_NULL \
-  (gtk_application_get_active_window ( \
-     GTK_APPLICATION (zrythm_app)) \
-     ? gtk_application_get_active_window ( \
-       GTK_APPLICATION (zrythm_app)) \
+  (gtk_application_get_active_window (GTK_APPLICATION (zrythm_app)) \
+     ? gtk_application_get_active_window (GTK_APPLICATION (zrythm_app)) \
      : NULL)
 
 /**
  * Type can be GTK_MESSAGE_ERROR, etc.
  */
 #define ui_show_message_printf(title, fmt, ...) \
-  ui_show_message_full ( \
-    UI_ACTIVE_WINDOW_OR_NULL, title, fmt, __VA_ARGS__)
+  ui_show_message_full (UI_ACTIVE_WINDOW_OR_NULL, title, fmt, __VA_ARGS__)
 
 /**
  * Type can be GTK_MESSAGE_ERROR, etc.
  */
 #define ui_show_message_literal(title, str) \
-  ui_show_message_full ( \
-    UI_ACTIVE_WINDOW_OR_NULL, title, "%s", str)
+  ui_show_message_full (UI_ACTIVE_WINDOW_OR_NULL, title, "%s", str)
 
 /**
  * Wrapper to show error message so that no casting
@@ -508,8 +490,7 @@ ui_show_message_full (
 #define ui_show_error_message_printf(title, fmt, ...) \
   ui_show_message_printf (title, fmt, __VA_ARGS__);
 
-#define ui_show_error_message(title, msg) \
-  ui_show_message_literal (title, msg)
+#define ui_show_error_message(title, msg) ui_show_message_literal (title, msg)
 
 /**
  * Returns if \ref rect is hit or not by the
@@ -574,11 +555,7 @@ ui_is_child_hit (
  * @param type Type to look for.
  */
 GtkWidget *
-ui_get_hit_child (
-  GtkWidget * parent,
-  double      x,
-  double      y,
-  GType       type);
+ui_get_hit_child (GtkWidget * parent, double x, double y, GType type);
 
 UiDetail
 ui_get_detail_level (void);
@@ -595,10 +572,7 @@ ui_get_detail_level (void);
  *   padding.
  */
 NONNULL void
-ui_px_to_pos_timeline (
-  double     px,
-  Position * pos,
-  bool       has_padding);
+ui_px_to_pos_timeline (double px, Position * pos, bool has_padding);
 
 /**
  * Converts from pixels to frames.
@@ -648,10 +622,7 @@ ui_pos_to_px_editor (Position * pos, bool use_padding);
  *   padding.
  */
 NONNULL void
-ui_px_to_pos_editor (
-  double     px,
-  Position * pos,
-  bool       has_padding);
+ui_px_to_pos_editor (double px, Position * pos, bool has_padding);
 
 /**
  * Converts RGB to hex string.
@@ -790,15 +761,11 @@ ui_rectangle_overlap (
   const GdkRectangle * const rect2)
 {
   /* if one rect is on the side of the other */
-  if (
-    rect1->x > rect2->x + rect2->width
-    || rect2->x > rect1->x + rect1->width)
+  if (rect1->x > rect2->x + rect2->width || rect2->x > rect1->x + rect1->width)
     return false;
 
   /* if one rect is above the other */
-  if (
-    rect1->y > rect2->y + rect2->height
-    || rect2->y > rect1->y + rect1->height)
+  if (rect1->y > rect2->y + rect2->height || rect2->y > rect1->y + rect1->height)
     return false;
 
   return true;

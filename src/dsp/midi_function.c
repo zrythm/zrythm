@@ -36,8 +36,8 @@ midi_function_type_to_string_id (MidiFunctionType type)
 MidiFunctionType
 midi_function_string_id_to_type (const char * id)
 {
-  for (MidiFunctionType i = MIDI_FUNCTION_CRESCENDO;
-       i <= MIDI_FUNCTION_STRUM; i++)
+  for (
+    MidiFunctionType i = MIDI_FUNCTION_CRESCENDO; i <= MIDI_FUNCTION_STRUM; i++)
     {
       char * str = midi_function_type_to_string_id (i);
       bool   eq = string_is_equal (str, id);
@@ -62,11 +62,9 @@ midi_function_apply (
   GError **            error)
 {
   /* TODO */
-  g_message (
-    "applying %s...", midi_function_type_to_string (type));
+  g_message ("applying %s...", midi_function_type_to_string (type));
 
-  MidiArrangerSelections * mas =
-    (MidiArrangerSelections *) sel;
+  MidiArrangerSelections * mas = (MidiArrangerSelections *) sel;
 
   switch (type)
     {
@@ -76,11 +74,11 @@ midi_function_apply (
         curve_opts_init (&curve_opts);
         curve_opts.algo = opts.curve_algo;
         curve_opts.curviness = opts.curviness;
-        int vel_interval = abs (opts.end_vel - opts.start_vel);
-        MidiNote * first_note = (MidiNote *)
-          arranger_selections_get_first_object (sel);
-        MidiNote * last_note = (MidiNote *)
-          arranger_selections_get_last_object (sel, false);
+        int        vel_interval = abs (opts.end_vel - opts.start_vel);
+        MidiNote * first_note =
+          (MidiNote *) arranger_selections_get_first_object (sel);
+        MidiNote * last_note =
+          (MidiNote *) arranger_selections_get_last_object (sel, false);
         if (first_note == last_note)
           {
             first_note->vel->vel = opts.start_vel;
@@ -88,8 +86,7 @@ midi_function_apply (
           }
 
         double total_ticks =
-          last_note->base.pos.ticks
-          - first_note->base.pos.ticks;
+          last_note->base.pos.ticks - first_note->base.pos.ticks;
         for (int i = 0; i < mas->num_midi_notes; i++)
           {
             MidiNote * mn = mas->midi_notes[i];
@@ -99,8 +96,7 @@ midi_function_apply (
               mn_ticks_from_start / total_ticks, &curve_opts,
               opts.start_vel > opts.end_vel);
             mn->vel->vel =
-              opts.start_vel
-              + (midi_byte_t) (vel_interval * vel_multiplier);
+              opts.start_vel + (midi_byte_t) (vel_interval * vel_multiplier);
           }
       }
       break;
@@ -114,40 +110,29 @@ midi_function_apply (
           {
             MidiNote *       mn = mas->midi_notes[i];
             ArrangerObject * mn_obj = (ArrangerObject *) mn;
-            double           len =
-              arranger_object_get_length_in_ticks (mn_obj);
-            MidiNote * new_mn =
-              (MidiNote *) arranger_object_clone (
-                mn_obj); // midi_note_new (&mn_obj->region_id, &mn->base.pos, &mn->base.end_pos, mn->val, mn->vel->vel);
-            ArrangerObject * new_mn_obj =
-              (ArrangerObject *) new_mn;
+            double           len = arranger_object_get_length_in_ticks (mn_obj);
+            MidiNote *       new_mn = (MidiNote *) arranger_object_clone (
+              mn_obj); // midi_note_new (&mn_obj->region_id, &mn->base.pos, &mn->base.end_pos, mn->val, mn->vel->vel);
+            ArrangerObject * new_mn_obj = (ArrangerObject *) new_mn;
             new_midi_notes[i] = new_mn;
-            double opt_ticks =
-              position_ms_to_ticks ((signed_ms_t) opts.time);
+            double opt_ticks = position_ms_to_ticks ((signed_ms_t) opts.time);
             arranger_object_move (new_mn_obj, opt_ticks);
             if (opts.time >= 0)
               {
                 /* make new note as long as existing note was
                  * and make existing note up to the new note */
-                position_add_ticks (
-                  &new_mn_obj->end_pos, len - opt_ticks);
+                position_add_ticks (&new_mn_obj->end_pos, len - opt_ticks);
                 position_add_ticks (
                   &mn_obj->end_pos,
-                  (-(
-                    new_mn_obj->end_pos.ticks
-                    - new_mn_obj->pos.ticks))
-                    + 1);
+                  (-(new_mn_obj->end_pos.ticks - new_mn_obj->pos.ticks)) + 1);
               }
             else
               {
                 /* make new note up to the existing note */
-                position_set_to_pos (
-                  &new_mn_obj->end_pos, &new_mn_obj->pos);
+                position_set_to_pos (&new_mn_obj->end_pos, &new_mn_obj->pos);
                 position_add_ticks (
                   &new_mn_obj->end_pos,
-                  ((mn_obj->end_pos.ticks - mn_obj->pos.ticks)
-                   - opt_ticks)
-                    - 1);
+                  ((mn_obj->end_pos.ticks - mn_obj->pos.ticks) - opt_ticks) - 1);
               }
           }
         int prev_num_midi_notes = mas->num_midi_notes;
@@ -155,12 +140,10 @@ midi_function_apply (
           {
             MidiNote *       mn = new_midi_notes[i];
             ArrangerObject * mn_obj = (ArrangerObject *) mn;
-            ZRegion * r = region_find (&mn_obj->region_id);
-            midi_region_add_midi_note (
-              r, mn, F_NO_PUBLISH_EVENTS);
+            ZRegion *        r = region_find (&mn_obj->region_id);
+            midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
             /* clone again because the selections are supposed to hold clones */
-            ArrangerObject * mn_clone =
-              arranger_object_clone (mn_obj);
+            ArrangerObject * mn_clone = arranger_object_clone (mn_obj);
             arranger_selections_add_object (sel, mn_clone);
           }
       }
@@ -169,8 +152,7 @@ midi_function_apply (
       {
         MidiNote * highest_note =
           midi_arranger_selections_get_highest_note (mas);
-        MidiNote * lowest_note =
-          midi_arranger_selections_get_lowest_note (mas);
+        MidiNote * lowest_note = midi_arranger_selections_get_lowest_note (mas);
         g_return_val_if_fail (highest_note && lowest_note, -1);
         int highest_pitch = highest_note->val;
         int lowest_pitch = lowest_note->val;
@@ -178,7 +160,7 @@ midi_function_apply (
         for (int i = 0; i < mas->num_midi_notes; i++)
           {
             MidiNote * mn = mas->midi_notes[i];
-            uint8_t new_val = diff - (mn->val - lowest_pitch);
+            uint8_t    new_val = diff - (mn->val - lowest_pitch);
             new_val += lowest_pitch;
             mn->val = new_val;
           }
@@ -198,11 +180,9 @@ midi_function_apply (
           {
             MidiNote *       mn = mas->midi_notes[i];
             ArrangerObject * obj = (ArrangerObject *) mn;
-            double           ticks =
-              arranger_object_get_length_in_ticks (obj);
+            double           ticks = arranger_object_get_length_in_ticks (obj);
             position_set_to_pos (
-              &obj->pos,
-              &poses[(mas->num_midi_notes - i) - 1]);
+              &obj->pos, &poses[(mas->num_midi_notes - i) - 1]);
             position_set_to_pos (&obj->end_pos, &obj->pos);
             position_print (&obj->pos);
             position_add_ticks (&obj->end_pos, ticks);
@@ -217,8 +197,7 @@ midi_function_apply (
             MidiNote *       mn = mas->midi_notes[i];
             ArrangerObject * mn_obj = (ArrangerObject *) mn;
             MidiNote *       next_mn = mas->midi_notes[i + 1];
-            position_set_to_pos (
-              &mn_obj->end_pos, &next_mn->base.pos);
+            position_set_to_pos (&mn_obj->end_pos, &next_mn->base.pos);
             /* make sure the note has a length */
             if (mn_obj->end_pos.ticks - mn_obj->pos.ticks < 1.0)
               {
@@ -237,14 +216,12 @@ midi_function_apply (
             MidiNote *       mn = mas->midi_notes[i];
             ArrangerObject * mn_obj = (ArrangerObject *) mn;
             MidiNote *       next_mn = mas->midi_notes[i + 1];
-            position_set_to_pos (
-              &mn_obj->end_pos, &next_mn->base.pos);
+            position_set_to_pos (&mn_obj->end_pos, &next_mn->base.pos);
             position_add_ms (&mn_obj->end_pos, -80.0);
             /* make sure the note has a length */
             if (mn_obj->end_pos.ticks - mn_obj->pos.ticks < 1.0)
               {
-                position_set_to_pos (
-                  &mn_obj->end_pos, &next_mn->base.pos);
+                position_set_to_pos (&mn_obj->end_pos, &next_mn->base.pos);
                 position_add_ms (&mn_obj->end_pos, 40.0);
               }
           }
@@ -256,8 +233,7 @@ midi_function_apply (
           {
             MidiNote *       mn = mas->midi_notes[i];
             ArrangerObject * mn_obj = (ArrangerObject *) mn;
-            position_set_to_pos (
-              &mn_obj->end_pos, &mn_obj->pos);
+            position_set_to_pos (&mn_obj->end_pos, &mn_obj->pos);
             position_add_ms (&mn_obj->end_pos, 140.0);
           }
       }
@@ -269,26 +245,21 @@ midi_function_apply (
         curve_opts.algo = opts.curve_algo;
         curve_opts.curviness = opts.curviness;
 
-        midi_arranger_selections_sort_by_pitch (
-          mas, !opts.ascending);
+        midi_arranger_selections_sort_by_pitch (mas, !opts.ascending);
         for (int i = 0; i < mas->num_midi_notes; i++)
           {
             MidiNote * first_mn = mas->midi_notes[0];
             MidiNote * mn = mas->midi_notes[i];
-            double ms_multiplier = curve_get_normalized_y (
-              (double) i / (double) mas->num_midi_notes,
-              &curve_opts, !opts.ascending);
+            double     ms_multiplier = curve_get_normalized_y (
+              (double) i / (double) mas->num_midi_notes, &curve_opts,
+              !opts.ascending);
             double ms_to_add = ms_multiplier * opts.time;
-            g_message (
-              "multi %f, ms %f", ms_multiplier, ms_to_add);
+            g_message ("multi %f, ms %f", ms_multiplier, ms_to_add);
             ArrangerObject * mn_obj = (ArrangerObject *) mn;
-            double           len_ticks =
-              arranger_object_get_length_in_ticks (mn_obj);
-            position_set_to_pos (
-              &mn_obj->pos, &first_mn->base.pos);
+            double len_ticks = arranger_object_get_length_in_ticks (mn_obj);
+            position_set_to_pos (&mn_obj->pos, &first_mn->base.pos);
             position_add_ms (&mn_obj->pos, ms_to_add);
-            position_set_to_pos (
-              &mn_obj->end_pos, &mn_obj->pos);
+            position_set_to_pos (&mn_obj->end_pos, &mn_obj->pos);
             position_add_ticks (&mn_obj->end_pos, len_ticks);
           }
       }

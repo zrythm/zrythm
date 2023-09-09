@@ -69,18 +69,12 @@ static const cyaml_schema_field_t timeline_selections_fields_schema[] = {
     base,
     arranger_selections_fields_schema),
   YAML_FIELD_INT (TimelineSelections, schema_version),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    TimelineSelections,
-    regions,
-    region_schema),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (TimelineSelections, regions, region_schema),
   YAML_FIELD_DYN_ARRAY_VAR_COUNT (
     TimelineSelections,
     scale_objects,
     scale_object_schema),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    TimelineSelections,
-    markers,
-    marker_schema),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (TimelineSelections, markers, marker_schema),
   YAML_FIELD_INT (TimelineSelections, region_track_vis_index),
   YAML_FIELD_INT (TimelineSelections, chord_track_vis_index),
   YAML_FIELD_INT (TimelineSelections, marker_track_vis_index),
@@ -89,9 +83,7 @@ static const cyaml_schema_field_t timeline_selections_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t timeline_selections_schema = {
-  YAML_VALUE_PTR (
-    TimelineSelections,
-    timeline_selections_fields_schema),
+  YAML_VALUE_PTR (TimelineSelections, timeline_selections_fields_schema),
 };
 
 /**
@@ -128,8 +120,7 @@ timeline_selections_get_last_track (TimelineSelections * ts);
  * Used during copying.
  */
 void
-timeline_selections_set_vis_track_indices (
-  TimelineSelections * ts);
+timeline_selections_set_vis_track_indices (TimelineSelections * ts);
 
 /**
  * Returns whether the selections can be pasted.
@@ -151,9 +142,7 @@ timeline_selections_can_be_pasted (
  *   parents recursively.
  */
 void
-timeline_selections_mark_for_bounce (
-  TimelineSelections * ts,
-  bool                 with_parents);
+timeline_selections_mark_for_bounce (TimelineSelections * ts, bool with_parents);
 
 /**
  * Move the selected regions to new automation tracks.
@@ -195,12 +184,10 @@ timeline_selections_move_regions_to_new_tracks (
  * \ref ZRegion.index_in_prev_lane.
  */
 void
-timeline_selections_set_index_in_prev_lane (
-  TimelineSelections * self);
+timeline_selections_set_index_in_prev_lane (TimelineSelections * self);
 
 NONNULL bool
-timeline_selections_contains_only_regions (
-  const TimelineSelections * self);
+timeline_selections_contains_only_regions (const TimelineSelections * self);
 
 NONNULL bool
 timeline_selections_contains_only_region_types (
@@ -221,14 +208,12 @@ timeline_selections_export_to_midi_file (
 #define timeline_selections_move_w_action( \
   sel, ticks, delta_tracks, delta_lanes, already_moved) \
   arranger_selections_move_w_action ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, \
-    already_moved)
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, already_moved)
 
 #define timeline_selections_duplicate_w_action( \
   sel, ticks, delta_tracks, delta_lanes, already_moved) \
   arranger_selections_duplicate_w_action ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, \
-    already_moved)
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, already_moved)
 
 /**
  * @}

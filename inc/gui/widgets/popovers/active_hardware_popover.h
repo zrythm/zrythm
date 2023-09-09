@@ -29,7 +29,6 @@ typedef struct _ActiveHardwarePopoverWidget
  * Creates the popover.
  */
 ActiveHardwarePopoverWidget *
-active_hardware_popover_widget_new (
-  ActiveHardwareMbWidget * owner);
+active_hardware_popover_widget_new (ActiveHardwareMbWidget * owner);
 
 #endif

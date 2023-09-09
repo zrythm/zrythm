@@ -72,10 +72,7 @@
  * If category not already set in the categories, add it.
  */
 static void
-add_category_and_author (
-  PluginManager * self,
-  char *          category,
-  char *          author)
+add_category_and_author (PluginManager * self, char * category, char * author)
 {
   g_return_if_fail (category);
   if (!string_is_ascii (category))
@@ -117,8 +114,7 @@ add_category_and_author (
       if (!ignore_author)
         {
           g_message ("%s: %s", __func__, author);
-          self->plugin_authors[self->num_plugin_authors++] =
-            g_strdup (author);
+          self->plugin_authors[self->num_plugin_authors++] = g_strdup (author);
         }
     }
 }
@@ -176,8 +172,7 @@ plugin_manager_get_node (PluginManager * self, const char * uri)
     }
 
   array_double_size_if_full (
-    self->nodes, self->num_nodes, self->nodes_size,
-    LilvNode *);
+    self->nodes, self->num_nodes, self->nodes_size, LilvNode *);
   LilvNode * new_node = lilv_new_uri (LILV_WORLD, uri);
   array_append (self->nodes, self->num_nodes, new_node);
 
@@ -197,8 +192,8 @@ create_and_load_lilv_word (PluginManager * self)
   char *     env_lv2_path = getenv ("LV2_PATH");
   char *     builtin_plugins_path =
     zrythm_get_dir (ZRYTHM_DIR_SYSTEM_BUNDLED_PLUGINSDIR);
-  char * special_plugins_path = zrythm_get_dir (
-    ZRYTHM_DIR_SYSTEM_SPECIAL_LV2_PLUGINS_DIR);
+  char * special_plugins_path =
+    zrythm_get_dir (ZRYTHM_DIR_SYSTEM_SPECIAL_LV2_PLUGINS_DIR);
   char * extra_zrythm_plugin_paths = g_strdup_printf (
     "%s" G_SEARCHPATH_SEPARATOR_S "%s", builtin_plugins_path,
     special_plugins_path);
@@ -219,16 +214,13 @@ create_and_load_lilv_word (PluginManager * self)
         "/app/extensions/Plugins/lv2:%s",
         g_get_home_dir (), extra_zrythm_plugin_paths);
 #elif defined(_WOE32)
-      char * appdata_path = windows_get_special_path (
-        WINDOWS_SPECIAL_PATH_APPDATA);
+      char * appdata_path =
+        windows_get_special_path (WINDOWS_SPECIAL_PATH_APPDATA);
       char * common_program_files_path =
-        windows_get_special_path (
-          WINDOWS_SPECIAL_PATH_COMMON_PROGRAM_FILES);
+        windows_get_special_path (WINDOWS_SPECIAL_PATH_COMMON_PROGRAM_FILES);
       self->lv2_path = g_strdup_printf (
-        "%s" G_SEARCHPATH_SEPARATOR_S
-        "%s" G_SEARCHPATH_SEPARATOR_S "%s",
-        appdata_path, common_program_files_path,
-        extra_zrythm_plugin_paths);
+        "%s" G_SEARCHPATH_SEPARATOR_S "%s" G_SEARCHPATH_SEPARATOR_S "%s",
+        appdata_path, common_program_files_path, extra_zrythm_plugin_paths);
       g_free_and_null (appdata_path);
       g_free_and_null (common_program_files_path);
 #elif defined(__APPLE__)
@@ -256,8 +248,7 @@ create_and_load_lilv_word (PluginManager * self)
       else
         {
           self->lv2_path = g_strdup_printf (
-            "%s/.lv2:/usr/local/" LIBDIR_NAME
-            "/lv2:/usr/" LIBDIR_NAME
+            "%s/.lv2:/usr/local/" LIBDIR_NAME "/lv2:/usr/" LIBDIR_NAME
             "/lv2:"
             /* some distros report the wrong
                * LIBDIR_NAME so hardcode these */
@@ -274,25 +265,22 @@ create_and_load_lilv_word (PluginManager * self)
   /* add test plugins if testing */
   if (ZRYTHM_TESTING)
     {
-      const char * tests_builddir =
-        g_getenv ("G_TEST_BUILDDIR");
-      const char * root_builddir =
-        g_getenv ("G_TEST_BUILD_ROOT_DIR");
+      const char * tests_builddir = g_getenv ("G_TEST_BUILDDIR");
+      const char * root_builddir = g_getenv ("G_TEST_BUILD_ROOT_DIR");
       g_return_if_fail (tests_builddir);
       g_return_if_fail (root_builddir);
 
       char * before_path = self->lv2_path;
       self->lv2_path = g_strdup_printf (
-        "%s:%s/lv2plugins:%s/data/plugins", before_path,
-        tests_builddir, root_builddir);
+        "%s:%s/lv2plugins:%s/data/plugins", before_path, tests_builddir,
+        root_builddir);
       g_free (before_path);
     }
 
   lv2_path = lilv_new_string (world, self->lv2_path);
 
   g_message ("%s: LV2 path: %s", __func__, self->lv2_path);
-  lilv_world_set_option (
-    world, LILV_OPTION_LV2_PATH, lv2_path);
+  lilv_world_set_option (world, LILV_OPTION_LV2_PATH, lv2_path);
 
   if (ZRYTHM_TESTING)
     {
@@ -323,13 +311,9 @@ init_symap (PluginManager * self)
   SYMAP_MAP (atom_Path, LV2_ATOM__Path);
   SYMAP_MAP (atom_String, LV2_ATOM__String);
   SYMAP_MAP (atom_eventTransfer, LV2_ATOM__eventTransfer);
-  SYMAP_MAP (
-    bufsz_maxBlockLength, LV2_BUF_SIZE__maxBlockLength);
-  SYMAP_MAP (
-    bufsz_minBlockLength, LV2_BUF_SIZE__minBlockLength);
-  SYMAP_MAP (
-    bufsz_nominalBlockLength,
-    LV2_BUF_SIZE__nominalBlockLength);
+  SYMAP_MAP (bufsz_maxBlockLength, LV2_BUF_SIZE__maxBlockLength);
+  SYMAP_MAP (bufsz_minBlockLength, LV2_BUF_SIZE__minBlockLength);
+  SYMAP_MAP (bufsz_nominalBlockLength, LV2_BUF_SIZE__nominalBlockLength);
   SYMAP_MAP (bufsz_sequenceSize, LV2_BUF_SIZE__sequenceSize);
   SYMAP_MAP (log_Error, LV2_LOG__Error);
   SYMAP_MAP (log_Trace, LV2_LOG__Trace);
@@ -366,8 +350,7 @@ load_bundled_lv2_plugins (PluginManager * self)
 #ifndef _WOE32
   GError *     err;
   const char * path = CONFIGURE_ZRYTHM_LIBDIR "/lv2";
-  if (g_file_test (
-        path, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
+  if (g_file_test (path, G_FILE_TEST_EXISTS | G_FILE_TEST_IS_DIR))
     {
       GDir * bundle_lv2_dir = g_dir_open (path, 0, &err);
       if (bundle_lv2_dir)
@@ -377,10 +360,9 @@ load_bundled_lv2_plugins (PluginManager * self)
           while ((dir = g_dir_read_name (bundle_lv2_dir)))
             {
               str = g_strdup_printf (
-                "file://%s%s%s%smanifest.ttl", path,
-                G_DIR_SEPARATOR_S, dir, G_DIR_SEPARATOR_S);
-              LilvNode * uri =
-                lilv_new_uri (self->lilv_world, str);
+                "file://%s%s%s%smanifest.ttl", path, G_DIR_SEPARATOR_S, dir,
+                G_DIR_SEPARATOR_S);
+              LilvNode * uri = lilv_new_uri (self->lilv_world, str);
               lilv_world_load_bundle (self->lilv_world, uri);
               g_message ("Loaded bundled plugin at %s", str);
               g_free (str);
@@ -391,8 +373,7 @@ load_bundled_lv2_plugins (PluginManager * self)
       else
         {
           char * msg = g_strdup_printf (
-            "%s%s", _ ("Error loading LV2 bundle dir: "),
-            err->message);
+            "%s%s", _ ("Error loading LV2 bundle dir: "), err->message);
           if (ZRYTHM_HAVE_UI)
             {
               ui_show_error_message (NULL, msg);
@@ -408,15 +389,14 @@ plugin_manager_new (void)
 {
   PluginManager * self = object_new (PluginManager);
 
-  self->plugin_descriptors = g_ptr_array_new_full (
-    100, (GDestroyNotify) plugin_descriptor_free);
+  self->plugin_descriptors =
+    g_ptr_array_new_full (100, (GDestroyNotify) plugin_descriptor_free);
 
   self->symap = symap_new ();
   zix_sem_init (&self->symap_lock, 1);
 
   self->nodes_size = 1;
-  self->nodes =
-    malloc (self->nodes_size * sizeof (LilvNode *));
+  self->nodes = malloc (self->nodes_size * sizeof (LilvNode *));
 
   /* init lv2 */
   create_and_load_lilv_word (self);
@@ -424,8 +404,7 @@ plugin_manager_new (void)
   load_bundled_lv2_plugins (self);
 
   /* init vst/dssi/ladspa */
-  self->cached_plugin_descriptors =
-    cached_plugin_descriptors_new ();
+  self->cached_plugin_descriptors = cached_plugin_descriptors_new ();
 
   /* fetch/create collections */
   self->collections = plugin_collections_new ();
@@ -448,8 +427,8 @@ get_vst_paths (PluginManager * self)
     }
   else
     {
-      paths = g_settings_get_strv (
-        S_P_PLUGINS_PATHS, "vst-search-paths-windows");
+      paths =
+        g_settings_get_strv (S_P_PLUGINS_PATHS, "vst-search-paths-windows");
     }
   g_return_val_if_fail (paths, NULL);
 #  elif defined(__APPLE__)
@@ -497,12 +476,10 @@ get_vst_paths (PluginManager * self)
     }
   else
     {
-      g_message (
-        "using %s from the environment (VST_PATH)", vst_path);
+      g_message ("using %s from the environment (VST_PATH)", vst_path);
     }
   g_return_val_if_fail (vst_path, NULL);
-  char ** paths =
-    g_strsplit (vst_path, G_SEARCHPATH_SEPARATOR_S, 0);
+  char ** paths = g_strsplit (vst_path, G_SEARCHPATH_SEPARATOR_S, 0);
   g_free (vst_path);
 #  endif   // __APPLE__
 
@@ -563,12 +540,10 @@ get_vst3_paths (PluginManager * self)
     }
   else
     {
-      g_message (
-        "using %s from the environment (VST3_PATH)", vst_path);
+      g_message ("using %s from the environment (VST3_PATH)", vst_path);
     }
   g_return_val_if_fail (vst_path, NULL);
-  char ** paths =
-    g_strsplit (vst_path, G_SEARCHPATH_SEPARATOR_S, 0);
+  char ** paths = g_strsplit (vst_path, G_SEARCHPATH_SEPARATOR_S, 0);
   g_free (vst_path);
   return paths;
 #  endif // __APPLE__
@@ -587,8 +562,8 @@ get_vst3_count (PluginManager * self)
       if (!g_file_test (path, G_FILE_TEST_EXISTS))
         continue;
 
-      char ** vst_plugins = io_get_files_in_dir_ending_in (
-        path, 1, ".vst3", false);
+      char ** vst_plugins =
+        io_get_files_in_dir_ending_in (path, 1, ".vst3", false);
       if (!vst_plugins)
         continue;
 
@@ -618,8 +593,8 @@ get_vst_count (PluginManager * self)
       if (!g_file_test (path, G_FILE_TEST_EXISTS))
         continue;
 
-      char ** vst_plugins = io_get_files_in_dir_ending_in (
-        path, 1, LIB_SUFFIX, false);
+      char ** vst_plugins =
+        io_get_files_in_dir_ending_in (path, 1, LIB_SUFFIX, false);
       if (!vst_plugins)
         continue;
 
@@ -645,15 +620,13 @@ get_sf_paths (PluginManager * self, bool sf2)
   char ** paths = NULL;
   if (ZRYTHM_TESTING)
     {
-      paths = g_strsplit (
-        G_SEARCHPATH_SEPARATOR_S, G_SEARCHPATH_SEPARATOR_S,
-        -1);
+      paths =
+        g_strsplit (G_SEARCHPATH_SEPARATOR_S, G_SEARCHPATH_SEPARATOR_S, -1);
     }
   else
     {
       paths = g_settings_get_strv (
-        S_P_PLUGINS_PATHS,
-        sf2 ? "sf2-search-paths" : "sfz-search-paths");
+        S_P_PLUGINS_PATHS, sf2 ? "sf2-search-paths" : "sfz-search-paths");
       g_return_val_if_fail (paths, NULL);
     }
 
@@ -663,8 +636,7 @@ get_sf_paths (PluginManager * self, bool sf2)
 static int
 get_sf_count (PluginManager * self, ZPluginProtocol prot)
 {
-  char ** paths =
-    get_sf_paths (self, prot == Z_PLUGIN_PROTOCOL_SF2);
+  char ** paths = get_sf_paths (self, prot == Z_PLUGIN_PROTOCOL_SF2);
   g_return_val_if_fail (paths, 0);
   int    path_idx = 0;
   char * path;
@@ -675,16 +647,13 @@ get_sf_count (PluginManager * self, ZPluginProtocol prot)
         continue;
 
       char ** sf_instruments = io_get_files_in_dir_ending_in (
-        path, 1,
-        (prot == Z_PLUGIN_PROTOCOL_SFZ) ? ".sfz" : ".sf2",
-        false);
+        path, 1, (prot == Z_PLUGIN_PROTOCOL_SFZ) ? ".sfz" : ".sf2", false);
       if (!sf_instruments)
         continue;
 
       char * plugin_path;
       int    plugin_idx = 0;
-      while (
-        (plugin_path = sf_instruments[plugin_idx++]) != NULL)
+      while ((plugin_path = sf_instruments[plugin_idx++]) != NULL)
         {
           count++;
         }
@@ -734,12 +703,9 @@ get_dssi_paths (PluginManager * self)
     }
   else
     {
-      g_message (
-        "using %s from the environment (DSSI_PATH)",
-        dssi_path);
+      g_message ("using %s from the environment (DSSI_PATH)", dssi_path);
     }
-  char ** paths =
-    g_strsplit (dssi_path, G_SEARCHPATH_SEPARATOR_S, 0);
+  char ** paths = g_strsplit (dssi_path, G_SEARCHPATH_SEPARATOR_S, 0);
   g_free (dssi_path);
 
   g_debug ("%s: done", __func__);
@@ -756,8 +722,7 @@ get_ladspa_paths (PluginManager * self)
   if (!ladspa_path || (strlen (ladspa_path) == 0))
     {
 #  ifdef FLATPAK_BUILD
-      ladspa_path =
-        g_strdup ("/app/extensions/Plugins/ladspa");
+      ladspa_path = g_strdup ("/app/extensions/Plugins/ladspa");
 #  elif defined(INSTALLER_VER)
       ladspa_path = g_strdup (
         "/usr/lib/ladspa:"
@@ -783,16 +748,13 @@ get_ladspa_paths (PluginManager * self)
         }
 #  endif /* flatpak build */
 
-      g_message (
-        "Using standard LADSPA paths: %s", ladspa_path);
+      g_message ("Using standard LADSPA paths: %s", ladspa_path);
     }
   else
     {
-      g_message (
-        "using %s from the environment (LADSPA)", ladspa_path);
+      g_message ("using %s from the environment (LADSPA)", ladspa_path);
     }
-  char ** paths =
-    g_strsplit (ladspa_path, G_SEARCHPATH_SEPARATOR_S, 0);
+  char ** paths = g_strsplit (ladspa_path, G_SEARCHPATH_SEPARATOR_S, 0);
   g_free (ladspa_path);
 
   g_debug ("%s: done", __func__);
@@ -859,13 +821,10 @@ get_clap_paths (PluginManager * self)
     }
   else
     {
-      g_message (
-        "using %s from the environment (CLAP_PATH)",
-        clap_path);
+      g_message ("using %s from the environment (CLAP_PATH)", clap_path);
     }
   g_return_val_if_fail (clap_path, NULL);
-  char ** paths =
-    g_strsplit (clap_path, G_SEARCHPATH_SEPARATOR_S, 0);
+  char ** paths = g_strsplit (clap_path, G_SEARCHPATH_SEPARATOR_S, 0);
   g_free (clap_path);
 #  endif // __APPLE__
 
@@ -887,15 +846,14 @@ get_clap_count (PluginManager * self)
       if (!g_file_test (path, G_FILE_TEST_EXISTS))
         continue;
 
-      char ** clap_plugins = io_get_files_in_dir_ending_in (
-        path, 1, ".clap", false);
+      char ** clap_plugins =
+        io_get_files_in_dir_ending_in (path, 1, ".clap", false);
       if (!clap_plugins)
         continue;
 
       char * plugin_path;
       int    plugin_idx = 0;
-      while (
-        (plugin_path = clap_plugins[plugin_idx++]) != NULL)
+      while ((plugin_path = clap_plugins[plugin_idx++]) != NULL)
         {
           count++;
         }
@@ -919,10 +877,8 @@ get_jsfx_paths (PluginManager * self)
       if (strlen (jsfx_env_path) > 0)
         {
           g_message (
-            "Prepending %s from the environment (JSFX_PATH)",
-            jsfx_env_path);
-          env_paths = g_strsplit (
-            jsfx_env_path, G_SEARCHPATH_SEPARATOR_S, 0);
+            "Prepending %s from the environment (JSFX_PATH)", jsfx_env_path);
+          env_paths = g_strsplit (jsfx_env_path, G_SEARCHPATH_SEPARATOR_S, 0);
         }
       g_free (jsfx_env_path);
     }
@@ -936,8 +892,7 @@ get_jsfx_paths (PluginManager * self)
     }
   else
     {
-      pref_paths = g_settings_get_strv (
-        S_P_PLUGINS_PATHS, "jsfx-search-paths");
+      pref_paths = g_settings_get_strv (S_P_PLUGINS_PATHS, "jsfx-search-paths");
     }
   g_return_val_if_fail (pref_paths, NULL);
 
@@ -972,15 +927,14 @@ get_jsfx_count (PluginManager * self)
       if (!g_file_test (path, G_FILE_TEST_EXISTS))
         continue;
 
-      char ** jsfx_plugins = io_get_files_in_dir_ending_in (
-        path, 1, ".jsfx", false);
+      char ** jsfx_plugins =
+        io_get_files_in_dir_ending_in (path, 1, ".jsfx", false);
       if (!jsfx_plugins)
         continue;
 
       char * plugin_path;
       int    plugin_idx = 0;
-      while (
-        (plugin_path = jsfx_plugins[plugin_idx++]) != NULL)
+      while ((plugin_path = jsfx_plugins[plugin_idx++]) != NULL)
         {
           count++;
         }
@@ -997,9 +951,7 @@ get_jsfx_count (PluginManager * self)
  * plugin protocol.
  */
 bool
-plugin_manager_supports_protocol (
-  PluginManager * self,
-  ZPluginProtocol protocol)
+plugin_manager_supports_protocol (PluginManager * self, ZPluginProtocol protocol)
 {
   switch (protocol)
     {
@@ -1022,16 +974,14 @@ plugin_manager_supports_protocol (
     case Z_PLUGIN_PROTOCOL_SF2:
       {
 #ifdef HAVE_CARLA
-        const char * const * carla_features =
-          carla_get_supported_features ();
-        const char * feature;
-        int          i = 0;
+        const char * const * carla_features = carla_get_supported_features ();
+        const char *         feature;
+        int                  i = 0;
         while ((feature = carla_features[i++]))
           {
 #  define CHECK_FEATURE(str, format) \
     if ( \
-      string_is_equal (feature, str) \
-      && protocol == Z_PLUGIN_PROTOCOL_##format) \
+      string_is_equal (feature, str) && protocol == Z_PLUGIN_PROTOCOL_##format) \
     return true
 
             CHECK_FEATURE ("sf2", SF2);
@@ -1062,8 +1012,7 @@ scan_carla_descriptors_from_paths (
   const double    max_progress)
 {
 
-  const char * protocol_str =
-    plugin_protocol_to_str (protocol);
+  const char * protocol_str = plugin_protocol_to_str (protocol);
   if (!plugin_manager_supports_protocol (self, protocol))
     {
       g_warning (
@@ -1127,11 +1076,9 @@ scan_carla_descriptors_from_paths (
       if (!g_file_test (path, G_FILE_TEST_EXISTS))
         continue;
 
-      g_message (
-        "scanning for %s plugins in %s", protocol_str, path);
+      g_message ("scanning for %s plugins in %s", protocol_str, path);
 
-      char ** plugins = io_get_files_in_dir_ending_in (
-        path, 1, suffix, false);
+      char ** plugins = io_get_files_in_dir_ending_in (path, 1, suffix, false);
       if (!plugins)
         continue;
 
@@ -1139,9 +1086,8 @@ scan_carla_descriptors_from_paths (
       int    plugin_idx = 0;
       while ((plugin_path = plugins[plugin_idx++]) != NULL)
         {
-          PluginDescriptor ** descriptors =
-            cached_plugin_descriptors_get (
-              self->cached_plugin_descriptors, plugin_path);
+          PluginDescriptor ** descriptors = cached_plugin_descriptors_get (
+            self->cached_plugin_descriptors, plugin_path);
 
           /* if any cached descriptors are found */
           if (descriptors)
@@ -1153,24 +1099,20 @@ scan_carla_descriptors_from_paths (
               while ((descriptor = descriptors[i++]))
                 {
                   bool added = false;
-                  if (!g_ptr_array_find_with_equal_func (
-                        self->plugin_descriptors, descriptor,
-                        (GEqualFunc)
-                          plugin_descriptor_is_same_plugin,
-                        NULL))
+                  if (
+                    !g_ptr_array_find_with_equal_func (
+                      self->plugin_descriptors, descriptor,
+                      (GEqualFunc) plugin_descriptor_is_same_plugin, NULL))
                     {
                       PluginDescriptor * clone =
                         plugin_descriptor_clone (descriptor);
-                      g_ptr_array_add (
-                        self->plugin_descriptors, clone);
+                      g_ptr_array_add (self->plugin_descriptors, clone);
                       add_category_and_author (
-                        self, clone->category_str,
-                        clone->author);
+                        self, clone->category_str, clone->author);
                       added = true;
                     }
                   g_debug (
-                    "Found cached %s %s%s", protocol_str,
-                    descriptor->name,
+                    "Found cached %s %s%s", protocol_str, descriptor->name,
                     added ? "" : " (skipped)");
                 }
             }
@@ -1182,8 +1124,7 @@ scan_carla_descriptors_from_paths (
                 "%s",
                 plugin_path);
               if (cached_plugin_descriptors_is_blacklisted (
-                    self->cached_plugin_descriptors,
-                    plugin_path))
+                    self->cached_plugin_descriptors, plugin_path))
                 {
                   g_message (
                     "Ignoring blacklisted %s "
@@ -1196,26 +1137,19 @@ scan_carla_descriptors_from_paths (
                     protocol == Z_PLUGIN_PROTOCOL_SFZ
                     || protocol == Z_PLUGIN_PROTOCOL_SF2)
                     {
-                      descriptors =
-                        object_new_n (2, PluginDescriptor *);
-                      descriptors[0] =
-                        plugin_descriptor_new ();
-                      PluginDescriptor * descr =
-                        descriptors[0];
+                      descriptors = object_new_n (2, PluginDescriptor *);
+                      descriptors[0] = plugin_descriptor_new ();
+                      PluginDescriptor * descr = descriptors[0];
                       descr->path = g_strdup (plugin_path);
-                      GFile * file =
-                        g_file_new_for_path (descr->path);
+                      GFile * file = g_file_new_for_path (descr->path);
                       descr->ghash = g_file_hash (file);
                       g_object_unref (file);
                       descr->category = PC_INSTRUMENT;
                       descr->category_str =
-                        plugin_descriptor_category_to_string (
-                          descr->category);
+                        plugin_descriptor_category_to_string (descr->category);
                       descr->name =
-                        io_path_get_basename_without_ext (
-                          plugin_path);
-                      char * parent_path =
-                        io_path_get_parent_dir (plugin_path);
+                        io_path_get_basename_without_ext (plugin_path);
+                      char * parent_path = io_path_get_parent_dir (plugin_path);
                       if (!parent_path)
                         {
                           g_warning (
@@ -1226,8 +1160,7 @@ scan_carla_descriptors_from_paths (
                           descriptors[0] = NULL;
                           continue;
                         }
-                      descr->author =
-                        g_path_get_basename (parent_path);
+                      descr->author = g_path_get_basename (parent_path);
                       g_free (parent_path);
                       descr->num_audio_outs = 2;
                       descr->num_midi_ins = 1;
@@ -1254,9 +1187,7 @@ scan_carla_descriptors_from_paths (
                         }
                     }
 
-                  g_debug (
-                    "descriptors for %s: %p", plugin_path,
-                    descriptors);
+                  g_debug ("descriptors for %s: %p", plugin_path, descriptors);
 
                   if (descriptors)
                     {
@@ -1264,22 +1195,17 @@ scan_carla_descriptors_from_paths (
                       int                i = 0;
                       while ((descriptor = descriptors[i++]))
                         {
-                          g_ptr_array_add (
-                            self->plugin_descriptors,
-                            descriptor);
+                          g_ptr_array_add (self->plugin_descriptors, descriptor);
                           add_category_and_author (
-                            self, descriptor->category_str,
-                            descriptor->author);
+                            self, descriptor->category_str, descriptor->author);
                           g_message (
-                            "Caching %s %s", protocol_str,
-                            descriptor->name);
+                            "Caching %s %s", protocol_str, descriptor->name);
 
                           PluginDescriptor * clone =
-                            plugin_descriptor_clone (
-                              descriptor);
+                            plugin_descriptor_clone (descriptor);
                           cached_plugin_descriptors_add (
-                            self->cached_plugin_descriptors,
-                            clone, F_NO_SERIALIZE);
+                            self->cached_plugin_descriptors, clone,
+                            F_NO_SERIALIZE);
                         }
                       g_debug (
                         "%d descriptors cached for "
@@ -1289,11 +1215,9 @@ scan_carla_descriptors_from_paths (
                   else
                     {
                       g_message (
-                        "Blacklisting %s %s", protocol_str,
-                        plugin_path);
+                        "Blacklisting %s %s", protocol_str, plugin_path);
                       cached_plugin_descriptors_blacklist (
-                        self->cached_plugin_descriptors,
-                        plugin_path, 0);
+                        self->cached_plugin_descriptors, plugin_path, 0);
                     }
                 }
             }
@@ -1303,14 +1227,13 @@ scan_carla_descriptors_from_paths (
             {
               *progress =
                 start_progress
-                + ((double) *count / size)
-                    * (max_progress - start_progress);
+                + ((double) *count / size) * (max_progress - start_progress);
               char prog_str[800];
               if (descriptors)
                 {
                   sprintf (
-                    prog_str, _ ("Scanned %s plugin: %s"),
-                    protocol_str, descriptors[0]->name);
+                    prog_str, _ ("Scanned %s plugin: %s"), protocol_str,
+                    descriptors[0]->name);
 
                   free (descriptors);
                   descriptors = NULL;
@@ -1326,8 +1249,7 @@ scan_carla_descriptors_from_paths (
                        "%2$s"),
                     protocol_str, plugin_path);
                 }
-              zrythm_app_set_progress_status (
-                zrythm_app, prog_str, *progress);
+              zrythm_app_set_progress_status (zrythm_app, prog_str, *progress);
             }
         }
       if (plugin_idx > 0 && !ZRYTHM_TESTING)
@@ -1364,8 +1286,7 @@ plugin_manager_scan_plugins (
 
   /* load all plugins with lilv */
   LilvWorld *         world = self->lilv_world;
-  const LilvPlugins * lilv_plugins =
-    lilv_world_get_all_plugins (world);
+  const LilvPlugins * lilv_plugins = lilv_world_get_all_plugins (world);
   self->lilv_plugins = lilv_plugins;
 
   if (getenv ("ZRYTHM_SKIP_PLUGIN_SCAN"))
@@ -1389,49 +1310,37 @@ plugin_manager_scan_plugins (
   unsigned int count = 0;
   LILV_FOREACH (plugins, i, lilv_plugins)
     {
-      const LilvPlugin * p =
-        lilv_plugins_get (lilv_plugins, i);
+      const LilvPlugin * p = lilv_plugins_get (lilv_plugins, i);
 
-      PluginDescriptor * descriptor =
-        lv2_plugin_create_descriptor_from_lilv (p);
+      PluginDescriptor * descriptor = lv2_plugin_create_descriptor_from_lilv (p);
 
       if (descriptor)
         {
           /* add descriptor to list */
-          g_ptr_array_add (
-            self->plugin_descriptors, descriptor);
+          g_ptr_array_add (self->plugin_descriptors, descriptor);
           add_category_and_author (
-            self, descriptor->category_str,
-            descriptor->author);
+            self, descriptor->category_str, descriptor->author);
 
           /* update descriptor in cached */
-          const PluginDescriptor * found_descr =
-            cached_plugin_descriptors_find (
-              self->cached_plugin_descriptors, descriptor,
-              F_CHECK_VALID, F_CHECK_BLACKLISTED);
+          const PluginDescriptor * found_descr = cached_plugin_descriptors_find (
+            self->cached_plugin_descriptors, descriptor, F_CHECK_VALID,
+            F_CHECK_BLACKLISTED);
           if (found_descr)
             {
               if (
-                found_descr->num_audio_ins
-                  != descriptor->num_audio_ins
-                || found_descr->num_audio_outs
-                     != descriptor->num_audio_outs
-                || found_descr->num_midi_ins
-                     != descriptor->num_midi_ins
-                || found_descr->num_midi_outs
-                     != descriptor->num_midi_outs
+                found_descr->num_audio_ins != descriptor->num_audio_ins
+                || found_descr->num_audio_outs != descriptor->num_audio_outs
+                || found_descr->num_midi_ins != descriptor->num_midi_ins
+                || found_descr->num_midi_outs != descriptor->num_midi_outs
                 || found_descr->num_cv_ins != descriptor->num_cv_ins
-                || found_descr->num_cv_outs
-                     != descriptor->num_cv_outs)
+                || found_descr->num_cv_outs != descriptor->num_cv_outs)
                 cached_plugin_descriptors_replace (
-                  self->cached_plugin_descriptors, descriptor,
-                  F_SERIALIZE);
+                  self->cached_plugin_descriptors, descriptor, F_SERIALIZE);
             }
           else
             {
               cached_plugin_descriptors_add (
-                self->cached_plugin_descriptors, descriptor,
-                F_NO_SERIALIZE);
+                self->cached_plugin_descriptors, descriptor, F_NO_SERIALIZE);
             }
         }
 
@@ -1441,85 +1350,75 @@ plugin_manager_scan_plugins (
         {
           *progress =
             start_progress
-            + ((double) count / size)
-                * (max_progress - start_progress);
+            + ((double) count / size) * (max_progress - start_progress);
           char prog_str[800];
           if (descriptor)
             {
               sprintf (
-                prog_str, "%s: %s", _ ("Scanned LV2 plugin"),
-                descriptor->name);
+                prog_str, "%s: %s", _ ("Scanned LV2 plugin"), descriptor->name);
             }
           else
             {
-              const LilvNode * lv2_uri =
-                lilv_plugin_get_uri (p);
-              const char * uri_str =
-                lilv_node_as_string (lv2_uri);
-              sprintf (
-                prog_str, _ ("Skipped LV2 plugin at %s"),
-                uri_str);
+              const LilvNode * lv2_uri = lilv_plugin_get_uri (p);
+              const char *     uri_str = lilv_node_as_string (lv2_uri);
+              sprintf (prog_str, _ ("Skipped LV2 plugin at %s"), uri_str);
             }
-          zrythm_app_set_progress_status (
-            zrythm_app, prog_str, *progress);
+          zrythm_app_set_progress_status (zrythm_app, prog_str, *progress);
         }
     }
   g_message ("%s: Scanned %d LV2 plugins", __func__, count);
 
-  cached_plugin_descriptors_serialize_to_file (
-    self->cached_plugin_descriptors);
+  cached_plugin_descriptors_serialize_to_file (self->cached_plugin_descriptors);
 
 #ifdef HAVE_CARLA
 
 #  if !defined(_WOE32) && !defined(__APPLE__)
   /* scan ladspa */
   scan_carla_descriptors_from_paths (
-    self, Z_PLUGIN_PROTOCOL_LADSPA, &count, size, progress,
-    start_progress, max_progress);
+    self, Z_PLUGIN_PROTOCOL_LADSPA, &count, size, progress, start_progress,
+    max_progress);
 
   /* scan dssi */
   scan_carla_descriptors_from_paths (
-    self, Z_PLUGIN_PROTOCOL_DSSI, &count, size, progress,
-    start_progress, max_progress);
+    self, Z_PLUGIN_PROTOCOL_DSSI, &count, size, progress, start_progress,
+    max_progress);
 #  endif /* not apple/woe32 */
 
   /* scan vst */
   scan_carla_descriptors_from_paths (
-    self, Z_PLUGIN_PROTOCOL_VST, &count, size, progress,
-    start_progress, max_progress);
+    self, Z_PLUGIN_PROTOCOL_VST, &count, size, progress, start_progress,
+    max_progress);
 
   /* scan vst3 */
   scan_carla_descriptors_from_paths (
-    self, Z_PLUGIN_PROTOCOL_VST3, &count, size, progress,
-    start_progress, max_progress);
+    self, Z_PLUGIN_PROTOCOL_VST3, &count, size, progress, start_progress,
+    max_progress);
 
   /* scan sfz */
   scan_carla_descriptors_from_paths (
-    self, Z_PLUGIN_PROTOCOL_SFZ, &count, size, progress,
-    start_progress, max_progress);
+    self, Z_PLUGIN_PROTOCOL_SFZ, &count, size, progress, start_progress,
+    max_progress);
 
   /* scan sf2 */
   scan_carla_descriptors_from_paths (
-    self, Z_PLUGIN_PROTOCOL_SF2, &count, size, progress,
-    start_progress, max_progress);
+    self, Z_PLUGIN_PROTOCOL_SF2, &count, size, progress, start_progress,
+    max_progress);
 
   /* scan clap */
   scan_carla_descriptors_from_paths (
-    self, Z_PLUGIN_PROTOCOL_CLAP, &count, size, progress,
-    start_progress, max_progress);
+    self, Z_PLUGIN_PROTOCOL_CLAP, &count, size, progress, start_progress,
+    max_progress);
 
   /* scan jsfx */
   scan_carla_descriptors_from_paths (
-    self, Z_PLUGIN_PROTOCOL_JSFX, &count, size, progress,
-    start_progress, max_progress);
+    self, Z_PLUGIN_PROTOCOL_JSFX, &count, size, progress, start_progress,
+    max_progress);
 
 #  ifdef __APPLE__
   /* scan AU plugins */
   g_message ("Scanning AU plugins...");
-  unsigned int au_count =
-    carla_get_cached_plugin_count (PLUGIN_AU, NULL);
-  char * all_plugins =
-    z_carla_discovery_run (ARCH_64, "au", ":all");
+  unsigned int au_count = carla_get_cached_plugin_count (PLUGIN_AU, NULL);
+  char *       all_plugins = z_carla_discovery_run (ARCH_64, "au", ":all");
   g_message ("all plugins %s", all_plugins);
   g_message ("%u plugins found", au_count);
   if (all_plugins)
@@ -1532,11 +1431,9 @@ plugin_manager_scan_plugins (
 
           if (descriptor)
             {
-              g_ptr_array_add (
-                self->plugin_descriptors, descriptor);
+              g_ptr_array_add (self->plugin_descriptors, descriptor);
               add_category_and_author (
-                self, descriptor->category_str,
-                descriptor->author);
+                self, descriptor->category_str, descriptor->author);
             }
 
           count++;
@@ -1545,23 +1442,19 @@ plugin_manager_scan_plugins (
             {
               *progress =
                 start_progress
-                + ((double) count / size)
-                    * (max_progress - start_progress);
+                + ((double) count / size) * (max_progress - start_progress);
               char prog_str[800];
               if (descriptor)
                 {
                   sprintf (
-                    prog_str, "%s: %s",
-                    _ ("Scanned AU plugin"), descriptor->name);
+                    prog_str, "%s: %s", _ ("Scanned AU plugin"),
+                    descriptor->name);
                 }
               else
                 {
-                  sprintf (
-                    prog_str, _ ("Skipped AU plugin at %u"),
-                    i);
+                  sprintf (prog_str, _ ("Skipped AU plugin at %u"), i);
                 }
-              zrythm_app_set_progress_status (
-                zrythm_app, prog_str, *progress);
+              zrythm_app_set_progress_status (zrythm_app, prog_str, *progress);
             }
         }
     }
@@ -1573,19 +1466,15 @@ plugin_manager_scan_plugins (
 #endif   // HAVE_CARLA
 
   /* sort alphabetically */
-  g_ptr_array_sort (
-    self->plugin_descriptors, sort_plugin_func);
+  g_ptr_array_sort (self->plugin_descriptors, sort_plugin_func);
   qsort (
-    self->plugin_categories,
-    (size_t) self->num_plugin_categories, sizeof (char *),
-    sort_alphabetical_func);
-  qsort (
-    self->plugin_authors, (size_t) self->num_plugin_authors,
+    self->plugin_categories, (size_t) self->num_plugin_categories,
     sizeof (char *), sort_alphabetical_func);
+  qsort (
+    self->plugin_authors, (size_t) self->num_plugin_authors, sizeof (char *),
+    sort_alphabetical_func);
 
-  g_message (
-    "%s: %d Plugins scanned.", __func__,
-    self->plugin_descriptors->len);
+  g_message ("%s: %d Plugins scanned.", __func__, self->plugin_descriptors->len);
 
   /*print_plugins ();*/
 }
@@ -1598,14 +1487,11 @@ plugin_manager_scan_plugins (
  * must not be free'd.
  */
 PluginDescriptor *
-plugin_manager_find_plugin_from_uri (
-  PluginManager * self,
-  const char *    uri)
+plugin_manager_find_plugin_from_uri (PluginManager * self, const char * uri)
 {
   for (size_t i = 0; i < self->plugin_descriptors->len; i++)
     {
-      PluginDescriptor * descr =
-        g_ptr_array_index (self->plugin_descriptors, i);
+      PluginDescriptor * descr = g_ptr_array_index (self->plugin_descriptors, i);
       if (string_is_equal (uri, descr->uri))
         {
           return descr;
@@ -1631,8 +1517,7 @@ plugin_manager_find_from_descriptor (
 
   for (size_t i = 0; i < self->plugin_descriptors->len; i++)
     {
-      PluginDescriptor * descr =
-        g_ptr_array_index (self->plugin_descriptors, i);
+      PluginDescriptor * descr = g_ptr_array_index (self->plugin_descriptors, i);
       if (plugin_descriptor_is_same_plugin (src_descr, descr))
         {
           return descr;
@@ -1651,8 +1536,7 @@ plugin_manager_pick_instrument (PluginManager * self)
 {
   for (size_t i = 0; i < self->plugin_descriptors->len; i++)
     {
-      PluginDescriptor * descr =
-        g_ptr_array_index (self->plugin_descriptors, i);
+      PluginDescriptor * descr = g_ptr_array_index (self->plugin_descriptors, i);
       if (plugin_descriptor_is_instrument (descr))
         {
           return descr;
@@ -1665,8 +1549,7 @@ void
 plugin_manager_clear_plugins (PluginManager * self)
 {
   g_ptr_array_remove_range (
-    self->plugin_descriptors, 0,
-    self->plugin_descriptors->len);
+    self->plugin_descriptors, 0, self->plugin_descriptors->len);
 
   for (int i = 0; i < self->num_plugin_categories; i++)
     {
@@ -1693,16 +1576,13 @@ plugin_manager_free (PluginManager * self)
       lilv_node_free (node);
     }
 
-  object_free_w_func_and_null (
-    lilv_world_free, self->lilv_world);
+  object_free_w_func_and_null (lilv_world_free, self->lilv_world);
 
   g_ptr_array_unref (self->plugin_descriptors);
 
   object_free_w_func_and_null (
-    cached_plugin_descriptors_free,
-    self->cached_plugin_descriptors);
-  object_free_w_func_and_null (
-    plugin_collections_free, self->collections);
+    cached_plugin_descriptors_free, self->cached_plugin_descriptors);
+  object_free_w_func_and_null (plugin_collections_free, self->collections);
 
   object_zero_and_free (self);
 

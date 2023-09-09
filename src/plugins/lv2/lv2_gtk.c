@@ -178,8 +178,7 @@ lv2_gtk_on_save_preset_activate (
   const char * uri,
   bool         add_prefix)
 {
-  LilvNode * plug_name =
-    lilv_plugin_get_name (plugin->lilv_plugin);
+  LilvNode *   plug_name = lilv_plugin_get_name (plugin->lilv_plugin);
   const char * prefix = "";
   const char * sep = "";
   if (add_prefix)
@@ -192,8 +191,7 @@ lv2_gtk_on_save_preset_activate (
   char * basename = g_path_get_basename (path);
   char * sym = string_symbolify (basename);
   char * sprefix = string_symbolify (prefix);
-  char * bundle =
-    g_strjoin (NULL, sprefix, sep, sym, ".preset.lv2/", NULL);
+  char * bundle = g_strjoin (NULL, sprefix, sep, sym, ".preset.lv2/", NULL);
   char * file = g_strjoin (NULL, sym, ".ttl", NULL);
   char * dir = g_build_filename (dirname, bundle, NULL);
 
@@ -310,15 +308,14 @@ patch_put_get (
   const LV2_Atom_Object *  obj,
   const LV2_Atom_Object ** body)
 {
-  lv2_atom_object_get (
-    obj, PM_URIDS.patch_body, (const LV2_Atom *) body, 0);
+  lv2_atom_object_get (obj, PM_URIDS.patch_body, (const LV2_Atom *) body, 0);
   if (!*body)
     {
       g_warning ("patch:Put message with no body");
       return 1;
     }
-  else if (!lv2_atom_forge_is_object_type (
-             &plugin->main_forge, (*body)->atom.type))
+  else if (
+    !lv2_atom_forge_is_object_type (&plugin->main_forge, (*body)->atom.type))
     {
       g_warning ("patch:Put body is not an object");
       return 1;
@@ -334,19 +331,14 @@ patch_put_get (
  * This applies to both generic and custom UIs.
  */
 static void
-property_changed (
-  Lv2Plugin *      plugin,
-  LV2_URID         key,
-  const LV2_Atom * value)
+property_changed (Lv2Plugin * plugin, LV2_URID key, const LV2_Atom * value)
 {
   Port * port = lv2_plugin_get_property_port (plugin, key);
   if (port)
     {
-      g_message (
-        "LV2 plugin property for %s changed", port->id.sym);
+      g_message ("LV2 plugin property for %s changed", port->id.sym);
       plugin_gtk_generic_set_widget_value (
-        plugin->plugin, port->widget, value->size,
-        value->type, value + 1);
+        plugin->plugin, port->widget, value->size, value->type, value + 1);
     }
   else
     {
@@ -373,8 +365,7 @@ lv2_gtk_ui_port_event (
   if (lv2_plugin->suil_instance)
     {
       suil_instance_port_event (
-        lv2_plugin->suil_instance, port_index, buffer_size,
-        protocol, buffer);
+        lv2_plugin->suil_instance, port_index, buffer_size, protocol, buffer);
       return;
     }
 
@@ -387,8 +378,7 @@ lv2_gtk_ui_port_event (
       if (port->widget)
         {
           plugin_gtk_generic_set_widget_value (
-            pl, port->widget, buffer_size,
-            lv2_plugin->main_forge.Float, buffer);
+            pl, port->widget, buffer_size, lv2_plugin->main_forge.Float, buffer);
           return;
         }
       else
@@ -404,21 +394,17 @@ lv2_gtk_ui_port_event (
     }
 
   const LV2_Atom * atom = (const LV2_Atom *) buffer;
-  if (lv2_atom_forge_is_object_type (
-        &lv2_plugin->main_forge, atom->type))
+  if (lv2_atom_forge_is_object_type (&lv2_plugin->main_forge, atom->type))
     {
       lv2_plugin->updating = true;
-      const LV2_Atom_Object * obj =
-        (const LV2_Atom_Object *) buffer;
+      const LV2_Atom_Object * obj = (const LV2_Atom_Object *) buffer;
       if (obj->body.otype == PM_URIDS.patch_Set)
         {
           const LV2_Atom_URID * property = NULL;
           const LV2_Atom *      value = NULL;
-          if (!patch_set_get (
-                lv2_plugin, obj, &property, &value))
+          if (!patch_set_get (lv2_plugin, obj, &property, &value))
             {
-              property_changed (
-                lv2_plugin, property->body, value);
+              property_changed (lv2_plugin, property->body, value);
             }
         }
       else if (obj->body.otype == PM_URIDS.patch_Put)
@@ -428,8 +414,7 @@ lv2_gtk_ui_port_event (
             {
               LV2_ATOM_OBJECT_FOREACH (body, prop)
               {
-                property_changed (
-                  lv2_plugin, prop->key, &prop->value);
+                property_changed (lv2_plugin, prop->key, &prop->value);
               }
             }
         }
@@ -488,34 +473,30 @@ lv2_gtk_open_ui (Lv2Plugin * plugin)
   if (plugin->has_external_ui && plugin->external_ui_widget)
     {
       g_message ("showing external LV2 UI");
-      plugin->external_ui_widget->show (
-        plugin->external_ui_widget);
+      plugin->external_ui_widget->show (plugin->external_ui_widget);
       plugin->plugin->external_ui_visible = true;
     }
   else if (plugin->suil_instance)
     {
       g_message ("Creating suil window for UI...");
-      GtkWidget * widget = GTK_WIDGET (
-        suil_instance_get_widget (plugin->suil_instance));
+      GtkWidget * widget =
+        GTK_WIDGET (suil_instance_get_widget (plugin->suil_instance));
 
       /* suil already adds the widget to the
        * container in win_in_gtk3 but it doesn't
        * in x11_in_gtk3 */
 #ifndef _WOE32
-      gtk_box_append (
-        GTK_BOX (plugin->plugin->ev_box), widget);
+      gtk_box_append (GTK_BOX (plugin->plugin->ev_box), widget);
 #endif
       gtk_window_set_resizable (
-        GTK_WINDOW (plugin->plugin->window),
-        lv2_ui_is_resizable (plugin));
+        GTK_WINDOW (plugin->plugin->window), lv2_ui_is_resizable (plugin));
       gtk_widget_grab_focus (widget);
       gtk_window_present (GTK_WINDOW (plugin->plugin->window));
     }
   else
     {
       ui_show_message_printf (
-        _ ("Failed to Open UI"),
-        _ ("Failed to open LV2 UI for %s"),
+        _ ("Failed to Open UI"), _ ("Failed to open LV2 UI for %s"),
         plugin->plugin->setting->descr->name);
       return -1;
     }
@@ -539,8 +520,7 @@ lv2_gtk_open_ui (Lv2Plugin * plugin)
     "Update frequency (Hz): %.01f",
     (double) plugin->plugin->ui_update_hz);
   g_return_val_if_fail (
-    plugin->plugin->ui_update_hz >= PLUGIN_MIN_REFRESH_RATE,
-    -1);
+    plugin->plugin->ui_update_hz >= PLUGIN_MIN_REFRESH_RATE, -1);
 
   plugin->plugin->update_ui_source_id = g_timeout_add (
     (int) (1000.f / plugin->plugin->ui_update_hz),

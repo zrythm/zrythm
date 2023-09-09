@@ -13,9 +13,8 @@
 #include "dsp/track.h"
 #include "utils/yaml.h"
 
-typedef enum TracklistSelectionsActionType
-  TracklistSelectionsActionType;
-typedef enum EditTracksActionType EditTracksActionType;
+typedef enum TracklistSelectionsActionType TracklistSelectionsActionType;
+typedef enum EditTracksActionType          EditTracksActionType;
 
 /**
  * @addtogroup gui_backend
@@ -54,22 +53,19 @@ typedef struct TracklistSelections
   bool free_tracks;
 } TracklistSelections;
 
-static const cyaml_schema_field_t
-  tracklist_selections_fields_schema[] = {
-    YAML_FIELD_INT (TracklistSelections, schema_version),
-    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-      TracklistSelections,
-      tracks,
-      track_schema),
-    YAML_FIELD_INT (TracklistSelections, is_project),
+static const cyaml_schema_field_t tracklist_selections_fields_schema[] = {
+  YAML_FIELD_INT (TracklistSelections, schema_version),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    TracklistSelections,
+    tracks,
+    track_schema),
+  YAML_FIELD_INT (TracklistSelections, is_project),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t tracklist_selections_schema = {
-  YAML_VALUE_PTR (
-    TracklistSelections,
-    tracklist_selections_fields_schema),
+  YAML_VALUE_PTR (TracklistSelections, tracklist_selections_fields_schema),
 };
 
 void
@@ -97,8 +93,7 @@ TracklistSelections * tracklist_selections_clone (
  * instead.
  */
 Track *
-tracklist_selections_get_highest_track (
-  TracklistSelections * self);
+tracklist_selections_get_highest_track (TracklistSelections * self);
 
 /**
  * Gets lowest track in the selections.
@@ -107,8 +102,7 @@ tracklist_selections_get_highest_track (
  * instead.
  */
 Track *
-tracklist_selections_get_lowest_track (
-  TracklistSelections * self);
+tracklist_selections_get_lowest_track (TracklistSelections * self);
 
 void
 tracklist_selections_add_track (
@@ -127,17 +121,14 @@ tracklist_selections_add_tracks_in_range (
  * Clears the selections.
  */
 void
-tracklist_selections_clear (
-  TracklistSelections * self,
-  const bool            fire_events);
+tracklist_selections_clear (TracklistSelections * self, const bool fire_events);
 
 /**
  * Make sure all children of foldable tracks in
  * the selection are also selected.
  */
 void
-tracklist_selections_select_foldable_children (
-  TracklistSelections * self);
+tracklist_selections_select_foldable_children (TracklistSelections * self);
 
 /**
  * Handle a click selection.
@@ -217,9 +208,7 @@ tracklist_selections_contains_enabled_track (
  * Returns if the Track is selected or not.
  */
 bool
-tracklist_selections_contains_track (
-  TracklistSelections * self,
-  Track *               track);
+tracklist_selections_contains_track (TracklistSelections * self, Track * track);
 
 bool
 tracklist_selections_contains_track_index (
@@ -248,24 +237,20 @@ tracklist_selections_select_single (
  * @param visible_only Only select visible tracks.
  */
 void
-tracklist_selections_select_all (
-  TracklistSelections * ts,
-  int                   visible_only);
+tracklist_selections_select_all (TracklistSelections * ts, int visible_only);
 
 /**
  * Selects the last visible track after clearing the
  * selections.
  */
 void
-tracklist_selections_select_last_visible (
-  TracklistSelections * ts);
+tracklist_selections_select_last_visible (TracklistSelections * ts);
 
 /**
  * Toggle visibility of the selected tracks.
  */
 void
-tracklist_selections_toggle_visibility (
-  TracklistSelections * ts);
+tracklist_selections_toggle_visibility (TracklistSelections * ts);
 
 /**
  * Toggle pin/unpin of the selected tracks.
@@ -284,13 +269,10 @@ tracklist_selections_print (TracklistSelections * self);
  * from the clipboard.
  */
 void
-tracklist_selections_post_deserialize (
-  TracklistSelections * self);
+tracklist_selections_post_deserialize (TracklistSelections * self);
 
 void
-tracklist_selections_paste_to_pos (
-  TracklistSelections * ts,
-  int                   pos);
+tracklist_selections_paste_to_pos (TracklistSelections * ts, int pos);
 
 /**
  * Sorts the tracks by position.
@@ -298,14 +280,10 @@ tracklist_selections_paste_to_pos (
  * @param asc Ascending or not.
  */
 void
-tracklist_selections_sort (
-  TracklistSelections * self,
-  bool                  asc);
+tracklist_selections_sort (TracklistSelections * self, bool asc);
 
 NONNULL void
-tracklist_selections_get_plugins (
-  TracklistSelections * self,
-  GPtrArray *           arr);
+tracklist_selections_get_plugins (TracklistSelections * self, GPtrArray * arr);
 
 /**
  * Marks the tracks to be bounced.

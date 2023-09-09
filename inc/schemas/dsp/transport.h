@@ -47,10 +47,7 @@ static const cyaml_schema_field_t transport_fields_schema_v1[] = {
     Transport_v1,
     playhead_pos,
     position_fields_schema_v1),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Transport_v1,
-    cue_pos,
-    position_fields_schema_v1),
+  YAML_FIELD_MAPPING_EMBEDDED (Transport_v1, cue_pos, position_fields_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Transport_v1,
     loop_start_pos,
@@ -67,40 +64,16 @@ static const cyaml_schema_field_t transport_fields_schema_v1[] = {
     Transport_v1,
     punch_out_pos,
     position_fields_schema_v1),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Transport_v1,
-    range_1,
-    position_fields_schema_v1),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Transport_v1,
-    range_2,
-    position_fields_schema_v1),
+  YAML_FIELD_MAPPING_EMBEDDED (Transport_v1, range_1, position_fields_schema_v1),
+  YAML_FIELD_MAPPING_EMBEDDED (Transport_v1, range_2, position_fields_schema_v1),
   YAML_FIELD_INT (Transport_v1, has_range),
   YAML_FIELD_INT (Transport_v1, position),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport_v1,
-    roll,
-    port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport_v1,
-    stop,
-    port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport_v1,
-    backward,
-    port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport_v1,
-    forward,
-    port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport_v1,
-    loop_toggle,
-    port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Transport_v1,
-    rec_toggle,
-    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport_v1, roll, port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport_v1, stop, port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport_v1, backward, port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport_v1, forward, port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport_v1, loop_toggle, port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Transport_v1, rec_toggle, port_fields_schema_v1),
 
   CYAML_FIELD_END
 };

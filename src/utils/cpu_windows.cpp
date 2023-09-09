@@ -89,18 +89,15 @@ cpu_windows_get_usage (int pid)
 
   GetSystemTimeAsFileTime (&now);
 
-  HANDLE hProcess =
-    OpenProcess (PROCESS_ALL_ACCESS, false, pid);
+  HANDLE hProcess = OpenProcess (PROCESS_ALL_ACCESS, false, pid);
   if (!GetProcessTimes (
-        hProcess, &creation_time, &exit_time, &kernel_time,
-        &user_time))
+        hProcess, &creation_time, &exit_time, &kernel_time, &user_time))
     {
       // can not find the process
       exit (EXIT_FAILURE);
     }
   system_time =
-    (file_time_2_utc (&kernel_time)
-     + file_time_2_utc (&user_time))
+    (file_time_2_utc (&kernel_time) + file_time_2_utc (&user_time))
     / processor_count_;
   time = file_time_2_utc (&now);
 
@@ -119,9 +116,7 @@ cpu_windows_get_usage (int pid)
       return cpu_windows_get_usage (pid);
     }
 
-  cpu =
-    (int) ((system_time_delta * 100 + time_delta / 2)
-           / time_delta);
+  cpu = (int) ((system_time_delta * 100 + time_delta / 2) / time_delta);
   last_system_time_ = system_time;
   last_time_ = time;
   return cpu;

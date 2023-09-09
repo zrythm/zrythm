@@ -33,13 +33,11 @@ marker_recreate_pango_layouts (Marker * self)
       PangoFontDescription * desc;
       self->layout = gtk_widget_create_pango_layout (
         GTK_WIDGET (arranger_object_get_arranger (obj)), NULL);
-      desc =
-        pango_font_description_from_string (MARKER_NAME_FONT);
+      desc = pango_font_description_from_string (MARKER_NAME_FONT);
       pango_layout_set_font_description (self->layout, desc);
       pango_font_description_free (desc);
     }
-  pango_layout_get_pixel_size (
-    self->layout, &obj->textw, &obj->texth);
+  pango_layout_get_pixel_size (self->layout, &obj->textw, &obj->texth);
 }
 
 /**
@@ -49,24 +47,21 @@ void
 marker_draw (Marker * self, GtkSnapshot * snapshot)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
-  ArrangerWidget * arranger =
-    arranger_object_get_arranger (obj);
+  ArrangerWidget * arranger = arranger_object_get_arranger (obj);
 
   /* set color */
   GdkRGBA color = P_MARKER_TRACK->color;
   ui_get_arranger_object_color (
-    &color, arranger->hovered_object == obj,
-    marker_is_selected (self), false, false);
+    &color, arranger->hovered_object == obj, marker_is_selected (self), false,
+    false);
 
   /* create clip */
   GskRoundedRect  rounded_rect;
   graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
     (float) obj->full_rect.x, (float) obj->full_rect.y,
-    (float) obj->full_rect.width,
-    (float) obj->full_rect.height);
+    (float) obj->full_rect.width, (float) obj->full_rect.height);
   gsk_rounded_rect_init_from_rect (
-    &rounded_rect, &graphene_rect,
-    (float) obj->full_rect.height / 6.0f);
+    &rounded_rect, &graphene_rect, (float) obj->full_rect.height / 6.0f);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
 
   /* fill */

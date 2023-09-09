@@ -67,9 +67,7 @@ engine_windows_mme_activate (AudioEngine * self, bool activate);
  *   on the devices or not.
  */
 int
-engine_windows_mme_rescan_devices (
-  AudioEngine * self,
-  int           start);
+engine_windows_mme_rescan_devices (AudioEngine * self, int start);
 
 int
 engine_windows_mme_tear_down (AudioEngine * self);

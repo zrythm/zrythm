@@ -121,9 +121,7 @@ lv2_state_save_to_string (Lv2Plugin * pl, bool is_backup);
  * and this function must return an absolute path.
  */
 char *
-lv2_state_make_path_temp (
-  LV2_State_Make_Path_Handle handle,
-  const char *               path);
+lv2_state_make_path_temp (LV2_State_Make_Path_Handle handle, const char * path);
 
 /**
  * Saves the preset.
@@ -156,10 +154,7 @@ int
 lv2_state_delete_current_preset (Lv2Plugin * plugin);
 
 int
-lv2_state_load_presets (
-  Lv2Plugin * plugin,
-  PresetSink  sink,
-  void *      data);
+lv2_state_load_presets (Lv2Plugin * plugin, PresetSink sink, void * data);
 
 int
 lv2_state_unload_presets (Lv2Plugin * plugin);

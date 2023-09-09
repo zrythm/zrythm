@@ -22,8 +22,7 @@
 
 #include <gtk/gtk.h>
 
-#define HELP_TOOLBAR_WIDGET_TYPE \
-  (help_toolbar_widget_get_type ())
+#define HELP_TOOLBAR_WIDGET_TYPE (help_toolbar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   HelpToolbarWidget,
   help_toolbar_widget,

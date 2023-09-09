@@ -24,10 +24,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  ModulatorMacroWidget,
-  modulator_macro_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (ModulatorMacroWidget, modulator_macro_widget, GTK_TYPE_WIDGET)
 
 static void
 on_inputs_draw (
@@ -37,21 +34,17 @@ on_inputs_draw (
   int              height,
   gpointer         user_data)
 {
-  ModulatorMacroWidget * self =
-    Z_MODULATOR_MACRO_WIDGET (user_data);
-  GtkWidget * widget = GTK_WIDGET (drawing_area);
+  ModulatorMacroWidget * self = Z_MODULATOR_MACRO_WIDGET (user_data);
+  GtkWidget *            widget = GTK_WIDGET (drawing_area);
 
   Port * port =
-    P_MODULATOR_TRACK
-      ->modulator_macros[self->modulator_macro_idx]
-      ->cv_in;
+    P_MODULATOR_TRACK->modulator_macros[self->modulator_macro_idx]->cv_in;
 
   if (port->num_srcs == 0)
     {
       const char * str = _ ("No inputs");
       int          w, h;
-      z_cairo_get_text_extents_for_widget (
-        widget, self->layout, str, &w, &h);
+      z_cairo_get_text_extents_for_widget (widget, self->layout, str, &w, &h);
       cairo_set_source_rgba (cr, 1, 1, 1, 1);
 
 #if 0
@@ -72,8 +65,7 @@ on_inputs_draw (
     }
   else
     {
-      double val_w =
-        ((double) width / (double) port->num_srcs);
+      double val_w = ((double) width / (double) port->num_srcs);
       for (int i = 0; i < port->num_srcs; i++)
         {
           double val_h =
@@ -82,15 +74,13 @@ on_inputs_draw (
             * (double) height;
           cairo_set_source_rgba (cr, 1, 1, 0, 1);
           cairo_rectangle (
-            cr, val_w * (double) i, (double) height - val_h,
-            val_w, 1);
+            cr, val_w * (double) i, (double) height - val_h, val_w, 1);
           cairo_fill (cr);
 
           if (i != 0)
             {
               cairo_set_source_rgba (cr, 0.4, 0.4, 0.4, 1);
-              z_cairo_draw_vertical_line (
-                cr, val_w * i, 0, height, 1);
+              z_cairo_draw_vertical_line (cr, val_w * i, 0, height, 1);
             }
         }
     }
@@ -104,18 +94,14 @@ on_output_draw (
   int              height,
   gpointer         user_data)
 {
-  ModulatorMacroWidget * self =
-    Z_MODULATOR_MACRO_WIDGET (user_data);
+  ModulatorMacroWidget * self = Z_MODULATOR_MACRO_WIDGET (user_data);
 
   Port * port =
-    P_MODULATOR_TRACK
-      ->modulator_macros[self->modulator_macro_idx]
-      ->cv_out;
+    P_MODULATOR_TRACK->modulator_macros[self->modulator_macro_idx]->cv_out;
 
   cairo_set_source_rgba (cr, 1, 1, 0, 1);
   double val_h =
-    (double) ((port->buf[0] - port->minf)
-              / (port->maxf - port->minf))
+    (double) ((port->buf[0] - port->minf) / (port->maxf - port->minf))
     * (double) height;
   cairo_rectangle (cr, 0, (double) height - val_h, width, 1);
   cairo_fill (cr);
@@ -135,9 +121,8 @@ on_knob_right_click (
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
 
-  KnobWidget * knob =
-    Z_KNOB_WIDGET (gtk_event_controller_get_widget (
-      GTK_EVENT_CONTROLLER (gesture)));
+  KnobWidget * knob = Z_KNOB_WIDGET (
+    gtk_event_controller_get_widget (GTK_EVENT_CONTROLLER (gesture)));
 
   char tmp[600];
   sprintf (tmp, "app.reset-control::%p", port);
@@ -149,12 +134,10 @@ on_knob_right_click (
   g_menu_append_item (menu, menuitem);
 
   sprintf (tmp, "app.port-view-info::%p", port);
-  menuitem =
-    z_gtk_create_menu_item (_ ("View info"), NULL, tmp);
+  menuitem = z_gtk_create_menu_item (_ ("View info"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
-  z_gtk_show_context_menu_from_g_menu (
-    knob->popover_menu, x, y, menu);
+  z_gtk_show_context_menu_from_g_menu (knob->popover_menu, x, y, menu);
 }
 
 void
@@ -167,10 +150,9 @@ on_automate_clicked (GtkButton * btn, Port * port)
 {
   g_return_if_fail (port);
 
-  ModulatorMacroWidget * self = Z_MODULATOR_MACRO_WIDGET (
-    g_object_get_data (G_OBJECT (btn), "owner"));
-  port_connections_popover_widget_refresh (
-    self->connections_popover, port);
+  ModulatorMacroWidget * self =
+    Z_MODULATOR_MACRO_WIDGET (g_object_get_data (G_OBJECT (btn), "owner"));
+  port_connections_popover_widget_refresh (self->connections_popover, port);
   gtk_popover_popup (GTK_POPOVER (self->connections_popover));
 
 #if 0
@@ -194,8 +176,7 @@ redraw_cb (
 ModulatorMacroWidget *
 modulator_macro_widget_new (int modulator_macro_idx)
 {
-  ModulatorMacroWidget * self =
-    g_object_new (MODULATOR_MACRO_WIDGET_TYPE, NULL);
+  ModulatorMacroWidget * self = g_object_new (MODULATOR_MACRO_WIDGET_TYPE, NULL);
 
   self->modulator_macro_idx = modulator_macro_idx;
 
@@ -205,56 +186,40 @@ modulator_macro_widget_new (int modulator_macro_idx)
 
   KnobWidget * knob = knob_widget_new_simple (
     control_port_get_val, control_port_get_default_val,
-    control_port_set_real_val, port, port->minf, port->maxf,
-    48, port->zerof);
+    control_port_set_real_val, port, port->minf, port->maxf, 48, port->zerof);
   self->knob_with_name = knob_with_name_widget_new (
-    macro,
-    (GenericStringGetter) modulator_macro_processor_get_name,
-    (GenericStringSetter) modulator_macro_processor_set_name,
-    knob, GTK_ORIENTATION_VERTICAL, true, 2);
+    macro, (GenericStringGetter) modulator_macro_processor_get_name,
+    (GenericStringSetter) modulator_macro_processor_set_name, knob,
+    GTK_ORIENTATION_VERTICAL, true, 2);
   gtk_grid_attach (
-    GTK_GRID (self->grid), GTK_WIDGET (self->knob_with_name),
-    1, 0, 1, 2);
+    GTK_GRID (self->grid), GTK_WIDGET (self->knob_with_name), 1, 0, 1, 2);
 
   /* add context menu */
-  GtkGestureClick * mp =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
-  gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
+  GtkGestureClick * mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    G_OBJECT (mp), "pressed",
-    G_CALLBACK (on_knob_right_click), port);
-  gtk_widget_add_controller (
-    GTK_WIDGET (knob), GTK_EVENT_CONTROLLER (mp));
+    G_OBJECT (mp), "pressed", G_CALLBACK (on_knob_right_click), port);
+  gtk_widget_add_controller (GTK_WIDGET (knob), GTK_EVENT_CONTROLLER (mp));
 
   g_object_set_data (G_OBJECT (self->outputs), "owner", self);
-  g_object_set_data (
-    G_OBJECT (self->add_input), "owner", self);
+  g_object_set_data (G_OBJECT (self->add_input), "owner", self);
 
   g_signal_connect (
-    G_OBJECT (self->outputs), "clicked",
-    G_CALLBACK (on_automate_clicked),
-    P_MODULATOR_TRACK->modulator_macros[modulator_macro_idx]
-      ->cv_out);
+    G_OBJECT (self->outputs), "clicked", G_CALLBACK (on_automate_clicked),
+    P_MODULATOR_TRACK->modulator_macros[modulator_macro_idx]->cv_out);
   g_signal_connect (
-    G_OBJECT (self->add_input), "clicked",
-    G_CALLBACK (on_automate_clicked),
-    P_MODULATOR_TRACK->modulator_macros[modulator_macro_idx]
-      ->cv_in);
+    G_OBJECT (self->add_input), "clicked", G_CALLBACK (on_automate_clicked),
+    P_MODULATOR_TRACK->modulator_macros[modulator_macro_idx]->cv_in);
 
   gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self->inputs), on_inputs_draw, self,
-    NULL);
+    GTK_DRAWING_AREA (self->inputs), on_inputs_draw, self, NULL);
   gtk_drawing_area_set_draw_func (
-    GTK_DRAWING_AREA (self->output), on_output_draw, self,
-    NULL);
+    GTK_DRAWING_AREA (self->output), on_output_draw, self, NULL);
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self->inputs), (GtkTickCallback) redraw_cb,
-    self, NULL);
+    GTK_WIDGET (self->inputs), (GtkTickCallback) redraw_cb, self, NULL);
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self->output), (GtkTickCallback) redraw_cb,
-    self, NULL);
+    GTK_WIDGET (self->output), (GtkTickCallback) redraw_cb, self, NULL);
 
   return self;
 }
@@ -272,25 +237,21 @@ dispose (ModulatorMacroWidget * self)
   gtk_widget_unparent (GTK_WIDGET (self->connections_popover));
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
-  G_OBJECT_CLASS (modulator_macro_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (modulator_macro_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
-modulator_macro_widget_class_init (
-  ModulatorMacroWidgetClass * _klass)
+modulator_macro_widget_class_init (ModulatorMacroWidgetClass * _klass)
 {
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
 
   resources_set_class_template (wklass, "modulator_macro.ui");
 
-  gtk_widget_class_set_layout_manager_type (
-    wklass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (wklass, GTK_TYPE_BIN_LAYOUT);
   gtk_widget_class_set_css_name (wklass, "modulator-macro");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    wklass, ModulatorMacroWidget, x)
+  gtk_widget_class_bind_template_child (wklass, ModulatorMacroWidget, x)
 
   BIND_CHILD (grid);
   BIND_CHILD (inputs);
@@ -310,8 +271,7 @@ modulator_macro_widget_init (ModulatorMacroWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->inputs), -1, 12);
+  gtk_widget_set_size_request (GTK_WIDGET (self->inputs), -1, 12);
   /*gtk_widget_set_size_request (*/
   /*GTK_WIDGET (self->inputs), 24, -1);*/
 
@@ -323,8 +283,6 @@ modulator_macro_widget_init (ModulatorMacroWidget * self)
   gtk_widget_set_parent (
     GTK_WIDGET (self->connections_popover), GTK_WIDGET (self));
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 }

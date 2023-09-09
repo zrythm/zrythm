@@ -100,17 +100,13 @@ z_cairo_rounded_rectangle (
 
   cairo_new_sub_path (cr);
   cairo_arc (
-    cr, x + width - radius, y + radius, radius, -90 * degrees,
-    0 * degrees);
+    cr, x + width - radius, y + radius, radius, -90 * degrees, 0 * degrees);
   cairo_arc (
-    cr, x + width - radius, y + height - radius, radius,
-    0 * degrees, 90 * degrees);
+    cr, x + width - radius, y + height - radius, radius, 0 * degrees,
+    90 * degrees);
   cairo_arc (
-    cr, x + radius, y + height - radius, radius, 90 * degrees,
-    180 * degrees);
-  cairo_arc (
-    cr, x + radius, y + radius, radius, 180 * degrees,
-    270 * degrees);
+    cr, x + radius, y + height - radius, radius, 90 * degrees, 180 * degrees);
+  cairo_arc (cr, x + radius, y + radius, radius, 180 * degrees, 270 * degrees);
   cairo_close_path (cr);
 }
 
@@ -142,8 +138,7 @@ _z_cairo_get_text_extents_for_widget (
  */
 #define z_cairo_draw_text(cr, widget, layout, text) \
   z_cairo_draw_text_full ( \
-    cr, widget, layout, text, Z_CAIRO_TEXT_PADDING, \
-    Z_CAIRO_TEXT_PADDING)
+    cr, widget, layout, text, Z_CAIRO_TEXT_PADDING, Z_CAIRO_TEXT_PADDING)
 
 /**
  * Draws the given text using the given font
@@ -162,12 +157,7 @@ z_cairo_draw_text_full (
  * Draws a diamond shape.
  */
 static inline void
-z_cairo_diamond (
-  cairo_t * cr,
-  double    x,
-  double    y,
-  double    width,
-  double    height)
+z_cairo_diamond (cairo_t * cr, double x, double y, double width, double height)
 {
   cairo_move_to (cr, x, height / 2);
   cairo_line_to (cr, width / 2, y);
@@ -181,10 +171,7 @@ z_cairo_diamond (
  * Returns a surface for the icon name.
  */
 cairo_surface_t *
-z_cairo_get_surface_from_icon_name (
-  const char * icon_name,
-  int          size,
-  int          scale);
+z_cairo_get_surface_from_icon_name (const char * icon_name, int size, int scale);
 
 /**
  * Creates a PangoLayout to be cached in widgets

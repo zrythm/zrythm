@@ -31,8 +31,7 @@ G_DECLARE_FINAL_TYPE (
   ROUTE_TARGET_SELECTOR_WIDGET,
   GtkBox)
 
-typedef struct _RouteTargetSelectorPopoverWidget
-  RouteTargetSelectorPopoverWidget;
+typedef struct _RouteTargetSelectorPopoverWidget RouteTargetSelectorPopoverWidget;
 typedef struct _ChannelWidget ChannelWidget;
 
 /**

@@ -40,8 +40,7 @@ volume_draw_cb (
   cairo_stroke (cr);
 
   /* draw filled in bar */
-  double normalized_val =
-    control_port_get_normalized_val (self->port);
+  double normalized_val = control_port_get_normalized_val (self->port);
   double filled_w = normalized_val * (double) width;
   double filled_h =
     /* tan (theta) * filled_w */
@@ -54,9 +53,7 @@ volume_draw_cb (
 }
 
 static void
-on_leave (
-  GtkEventControllerMotion * motion_controller,
-  VolumeWidget *             self)
+on_leave (GtkEventControllerMotion * motion_controller, VolumeWidget * self)
 {
   if (!gtk_gesture_drag_get_offset (self->drag, NULL, NULL))
     self->hover = 0;
@@ -83,18 +80,13 @@ drag_update (
 {
   offset_y = -offset_y;
   const int use_y =
-    fabs (offset_y - self->last_y)
-    > fabs (offset_x - self->last_x);
-  const float cur_norm_val =
-    control_port_get_normalized_val (self->port);
+    fabs (offset_y - self->last_y) > fabs (offset_x - self->last_x);
+  const float cur_norm_val = control_port_get_normalized_val (self->port);
   const float delta =
-    use_y ? (float) (offset_y - self->last_y)
-          : (float) (offset_x - self->last_x);
+    use_y ? (float) (offset_y - self->last_y) : (float) (offset_x - self->last_x);
   const float multiplier = 0.012f;
-  const float new_norm_val =
-    CLAMP (cur_norm_val + multiplier * delta, 0.f, 1.f);
-  control_port_set_val_from_normalized (
-    self->port, new_norm_val, false);
+  const float new_norm_val = CLAMP (cur_norm_val + multiplier * delta, 0.f, 1.f);
+  control_port_set_val_from_normalized (self->port, new_norm_val, false);
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
 
@@ -109,9 +101,8 @@ drag_end (
   gdouble          offset_y,
   VolumeWidget *   self)
 {
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (gesture));
+  GdkModifierType state = gtk_event_controller_get_current_event_state (
+    GTK_EVENT_CONTROLLER (gesture));
 
   /* reset if ctrl-clicked */
   if (state & GDK_CONTROL_MASK)
@@ -131,26 +122,20 @@ volume_widget_setup (VolumeWidget * self, Port * port)
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-update",
-    G_CALLBACK (drag_update), self);
+    G_OBJECT (self->drag), "drag-update", G_CALLBACK (drag_update), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end),
-    self);
+    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
   GtkEventControllerMotion * motion_controller =
-    GTK_EVENT_CONTROLLER_MOTION (
-      gtk_event_controller_motion_new ());
+    GTK_EVENT_CONTROLLER_MOTION (gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT (motion_controller), "enter",
-    G_CALLBACK (on_enter), self);
+    G_OBJECT (motion_controller), "enter", G_CALLBACK (on_enter), self);
   g_signal_connect (
-    G_OBJECT (motion_controller), "leave",
-    G_CALLBACK (on_leave), self);
+    G_OBJECT (motion_controller), "leave", G_CALLBACK (on_leave), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (motion_controller));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (motion_controller));
 
   gtk_drawing_area_set_draw_func (
     GTK_DRAWING_AREA (self), volume_draw_cb, self, NULL);
@@ -159,8 +144,7 @@ volume_widget_setup (VolumeWidget * self, Port * port)
 VolumeWidget *
 volume_widget_new (Port * port)
 {
-  VolumeWidget * self =
-    g_object_new (VOLUME_WIDGET_TYPE, NULL);
+  VolumeWidget * self = g_object_new (VOLUME_WIDGET_TYPE, NULL);
 
   volume_widget_setup (self, port);
 

@@ -32,8 +32,7 @@ typedef struct PortConnection PortConnection;
 
 #define PORT_CONNECTIONS_MANAGER_SCHEMA_VERSION 1
 
-#define PORT_CONNECTIONS_MGR \
-  (PROJECT->port_connections_manager)
+#define PORT_CONNECTIONS_MGR (PROJECT->port_connections_manager)
 
 /**
  * Port connections manager.
@@ -66,27 +65,22 @@ typedef struct PortConnectionsManager
   GHashTable * dest_ht;
 } PortConnectionsManager;
 
-static const cyaml_schema_field_t
-  port_connections_manager_fields_schema[] = {
-    YAML_FIELD_INT (PortConnectionsManager, schema_version),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      PortConnectionsManager,
-      connections,
-      port_connection_schema),
+static const cyaml_schema_field_t port_connections_manager_fields_schema[] = {
+  YAML_FIELD_INT (PortConnectionsManager, schema_version),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    PortConnectionsManager,
+    connections,
+    port_connection_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  port_connections_manager_schema = {
-    YAML_VALUE_PTR (
-      PortConnectionsManager,
-      port_connections_manager_fields_schema),
-  };
+static const cyaml_schema_value_t port_connections_manager_schema = {
+  YAML_VALUE_PTR (PortConnectionsManager, port_connections_manager_fields_schema),
+};
 
 NONNULL void
-port_connections_manager_init_loaded (
-  PortConnectionsManager * self);
+port_connections_manager_init_loaded (PortConnectionsManager * self);
 
 PortConnectionsManager *
 port_connections_manager_new (void);
@@ -98,8 +92,7 @@ port_connections_manager_new (void);
  * connections.
  */
 void
-port_connections_manager_regenerate_hashtables (
-  PortConnectionsManager * self);
+port_connections_manager_regenerate_hashtables (PortConnectionsManager * self);
 
 /**
  * Adds the sources/destinations of @ref id in the
@@ -203,11 +196,10 @@ port_connections_manager_ensure_connect (
   bool                     locked,
   bool                     enabled);
 
-#define port_connections_manager_ensure_connect_from_connection( \
-  self, conn) \
+#define port_connections_manager_ensure_connect_from_connection(self, conn) \
   port_connections_manager_ensure_connect ( \
-    self, conn->src_id, conn->dest_id, conn->multiplier, \
-    conn->locked, conn->enabled)
+    self, conn->src_id, conn->dest_id, conn->multiplier, conn->locked, \
+    conn->enabled)
 
 /**
  * Removes the connection for the given ports if
@@ -250,15 +242,13 @@ void
 port_connections_manager_print_ht (GHashTable * ht);
 
 void
-port_connections_manager_print (
-  const PortConnectionsManager * self);
+port_connections_manager_print (const PortConnectionsManager * self);
 
 /**
  * To be used during serialization.
  */
 NONNULL PortConnectionsManager *
-port_connections_manager_clone (
-  const PortConnectionsManager * src);
+port_connections_manager_clone (const PortConnectionsManager * src);
 
 /**
  * Deletes port, doing required cleanup and updating counters.

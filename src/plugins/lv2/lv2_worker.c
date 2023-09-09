@@ -37,10 +37,8 @@ lv2_worker_respond (
   const void *              data)
 {
   Lv2Worker * worker = (Lv2Worker *) handle;
-  zix_ring_write (
-    worker->responses, (const char *) &size, sizeof (size));
-  zix_ring_write (
-    worker->responses, (const char *) data, size);
+  zix_ring_write (worker->responses, (const char *) &size, sizeof (size));
+  zix_ring_write (worker->responses, (const char *) data, size);
   return LV2_WORKER_SUCCESS;
 }
 
@@ -63,8 +61,7 @@ worker_func (void * data)
         }
 
       uint32_t size = 0;
-      zix_ring_read (
-        worker->requests, (char *) &size, sizeof (size));
+      zix_ring_read (worker->requests, (char *) &size, sizeof (size));
 
       if (!(buf = realloc (buf, size)))
         {
@@ -80,12 +77,10 @@ worker_func (void * data)
       plugin_print (plugin->plugin, pl_str, 700);
       if (DEBUGGING)
         {
-          g_debug (
-            "running work (threaded) for plugin %s", pl_str);
+          g_debug ("running work (threaded) for plugin %s", pl_str);
         }
       worker->iface->work (
-        plugin->instance->lv2_handle, lv2_worker_respond,
-        worker, size, buf);
+        plugin->instance->lv2_handle, lv2_worker_respond, worker, size, buf);
       zix_sem_post (&plugin->work_lock);
     }
 
@@ -108,14 +103,11 @@ lv2_worker_init (
   worker->threaded = threaded;
   if (threaded)
     {
-      zix_thread_create (
-        &worker->thread, 4096, worker_func, worker);
-      worker->requests =
-        zix_ring_new (zix_default_allocator (), 4096);
+      zix_thread_create (&worker->thread, 4096, worker_func, worker);
+      worker->requests = zix_ring_new (zix_default_allocator (), 4096);
       zix_ring_mlock (worker->requests);
     }
-  worker->responses =
-    zix_ring_new (zix_default_allocator (), 4096);
+  worker->responses = zix_ring_new (zix_default_allocator (), 4096);
   worker->response = malloc (4096);
   zix_ring_mlock (worker->responses);
 }
@@ -160,8 +152,7 @@ lv2_worker_schedule (
       plugin_print (plugin->plugin, pl_str, 700);
       if (!worker->iface)
         {
-          g_warning (
-            "Worker interface for %s is NULL", pl_str);
+          g_warning ("Worker interface for %s is NULL", pl_str);
           return LV2_WORKER_ERR_UNKNOWN;
         }
       g_debug (
@@ -169,18 +160,15 @@ lv2_worker_schedule (
         "for plugin %s",
         worker->threaded, pl_str);
       worker->iface->work (
-        plugin->instance->lv2_handle, lv2_worker_respond,
-        worker, size, data);
+        plugin->instance->lv2_handle, lv2_worker_respond, worker, size, data);
       zix_sem_post (&plugin->work_lock);
     }
   else
     {
       /* Schedule a request to be executed by the
        * worker thread */
-      zix_ring_write (
-        worker->requests, (const char *) &size, sizeof (size));
-      zix_ring_write (
-        worker->requests, (const char *) data, size);
+      zix_ring_write (worker->requests, (const char *) &size, sizeof (size));
+      zix_ring_write (worker->requests, (const char *) data, size);
       zix_sem_post (&worker->sem);
     }
   return LV2_WORKER_SUCCESS;
@@ -193,23 +181,17 @@ lv2_worker_schedule (
  * https://lv2plug.in/doc/html/group__worker.html.
  */
 void
-lv2_worker_emit_responses (
-  Lv2Worker *    worker,
-  LilvInstance * instance)
+lv2_worker_emit_responses (Lv2Worker * worker, LilvInstance * instance)
 {
   if (worker->responses)
     {
-      uint32_t read_space =
-        zix_ring_read_space (worker->responses);
+      uint32_t read_space = zix_ring_read_space (worker->responses);
       while (read_space)
         {
           uint32_t size = 0;
-          zix_ring_read (
-            worker->responses, (char *) &size, sizeof (size));
+          zix_ring_read (worker->responses, (char *) &size, sizeof (size));
 
-          zix_ring_read (
-            worker->responses, (char *) worker->response,
-            size);
+          zix_ring_read (worker->responses, (char *) worker->response, size);
 
           worker->iface->work_response (
             instance->lv2_handle, size, worker->response);

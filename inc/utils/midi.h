@@ -89,9 +89,7 @@ midi_get_bytes_from_combined (
  * @return The MIDI channel
  */
 int
-midi_ctrl_change_get_ch_and_description (
-  midi_byte_t * ctrl_change,
-  char *        buf);
+midi_ctrl_change_get_ch_and_description (midi_byte_t * ctrl_change, char * buf);
 
 /**
  * Returns the length of the MIDI message based on
@@ -107,8 +105,7 @@ midi_get_msg_length (const uint8_t status_byte);
 static inline float
 midi_note_number_to_frequency (const uint8_t note)
 {
-  return 440.f
-         * powf (2.f, ((float) note - 69.f) * (1.f / 12.f));
+  return 440.f * powf (2.f, ((float) note - 69.f) * (1.f / 12.f));
 }
 
 static inline uint8_t
@@ -175,9 +172,7 @@ const char *
 midi_get_note_name (const midi_byte_t note);
 
 void
-midi_get_note_name_with_octave (
-  const midi_byte_t short_msg[3],
-  char *            buf);
+midi_get_note_name_with_octave (const midi_byte_t short_msg[3], char * buf);
 
 static inline bool
 midi_is_note_on (const midi_byte_t short_msg[3])
@@ -196,8 +191,7 @@ midi_is_note_off (const midi_byte_t short_msg[3])
 static inline bool
 midi_is_program_change (const midi_byte_t short_msg[3])
 {
-  return midi_is_short_message_type (
-    short_msg, MIDI_CH1_PROG_CHANGE);
+  return midi_is_short_message_type (short_msg, MIDI_CH1_PROG_CHANGE);
 }
 
 static inline midi_byte_t
@@ -209,29 +203,25 @@ midi_get_program_change_number (const midi_byte_t short_msg[3])
 static inline bool
 midi_is_pitch_wheel (const midi_byte_t short_msg[3])
 {
-  return midi_is_short_message_type (
-    short_msg, MIDI_CH1_PITCH_WHEEL_RANGE);
+  return midi_is_short_message_type (short_msg, MIDI_CH1_PITCH_WHEEL_RANGE);
 }
 
 static inline bool
 midi_is_aftertouch (const midi_byte_t short_msg[3])
 {
-  return midi_is_short_message_type (
-    short_msg, MIDI_CH1_POLY_AFTERTOUCH);
+  return midi_is_short_message_type (short_msg, MIDI_CH1_POLY_AFTERTOUCH);
 }
 
 static inline bool
 midi_is_channel_pressure (const midi_byte_t short_msg[3])
 {
-  return midi_is_short_message_type (
-    short_msg, MIDI_CH1_CHAN_AFTERTOUCH);
+  return midi_is_short_message_type (short_msg, MIDI_CH1_CHAN_AFTERTOUCH);
 }
 
 static inline bool
 midi_is_controller (const midi_byte_t short_msg[3])
 {
-  return midi_is_short_message_type (
-    short_msg, MIDI_CH1_CTRL_CHANGE);
+  return midi_is_short_message_type (short_msg, MIDI_CH1_CTRL_CHANGE);
 }
 
 /**
@@ -272,8 +262,7 @@ midi_get_aftertouch_value (const midi_byte_t short_msg[3])
 }
 
 static inline midi_byte_t
-midi_get_channel_pressure_value (
-  const midi_byte_t short_msg[3])
+midi_get_channel_pressure_value (const midi_byte_t short_msg[3])
 {
   return short_msg[1];
 }
@@ -347,23 +336,16 @@ midi_is_song_position_pointer (const midi_byte_t short_msg[3])
 }
 
 static inline uint32_t
-midi_get_song_position_pointer_value (
-  const midi_byte_t short_msg[3])
+midi_get_song_position_pointer_value (const midi_byte_t short_msg[3])
 {
   return midi_get_14_bit_value (short_msg);
 }
 
 void
-midi_get_hex_str (
-  const midi_byte_t * msg,
-  const size_t        msg_sz,
-  char *              buf);
+midi_get_hex_str (const midi_byte_t * msg, const size_t msg_sz, char * buf);
 
 void
-midi_print_to_str (
-  const midi_byte_t * msg,
-  const size_t        msg_sz,
-  char *              buf);
+midi_print_to_str (const midi_byte_t * msg, const size_t msg_sz, char * buf);
 
 void
 midi_print (const midi_byte_t * msg, const size_t msg_sz);
@@ -376,8 +358,7 @@ midi_is_short_msg (const midi_byte_t * msg, const size_t msg_sz)
   if (msg_sz > 3)
     return false;
 
-  return msg[0] != MIDI_SYSTEM_MESSAGE
-         && msg[0] != MIDI_META_EVENT;
+  return msg[0] != MIDI_SYSTEM_MESSAGE && msg[0] != MIDI_META_EVENT;
 }
 
 static inline bool
@@ -404,14 +385,11 @@ midi_is_meta_event_of_type (
   const size_t        msg_sz,
   const midi_byte_t   type)
 {
-  return msg_sz > 2 && msg[1] == type
-         && msg[0] == MIDI_META_EVENT;
+  return msg_sz > 2 && msg[1] == type && msg[0] == MIDI_META_EVENT;
 }
 
 static inline midi_byte_t
-midi_get_meta_event_type (
-  const midi_byte_t * msg,
-  const size_t        msg_sz)
+midi_get_meta_event_type (const midi_byte_t * msg, const size_t msg_sz)
 {
   g_return_val_if_fail (midi_is_meta_event (msg, msg_sz), 0);
 
@@ -419,9 +397,7 @@ midi_get_meta_event_type (
 }
 
 void
-midi_get_meta_event_type_name (
-  char *            buf,
-  const midi_byte_t type);
+midi_get_meta_event_type_name (char * buf, const midi_byte_t type);
 
 /**
  * FIXME NOT TESTED

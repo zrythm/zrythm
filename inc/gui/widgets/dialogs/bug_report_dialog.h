@@ -23,8 +23,7 @@
  * @{
  */
 
-#define BUG_REPORT_DIALOG_WIDGET_TYPE \
-  (bug_report_dialog_widget_get_type ())
+#define BUG_REPORT_DIALOG_WIDGET_TYPE (bug_report_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   BugReportDialogWidget,
   bug_report_dialog_widget,

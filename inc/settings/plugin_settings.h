@@ -61,16 +61,10 @@ typedef struct PluginSetting
 
 static const cyaml_schema_field_t plugin_setting_fields_schema[] = {
   YAML_FIELD_INT (PluginSetting, schema_version),
-  YAML_FIELD_MAPPING_PTR (
-    PluginSetting,
-    descr,
-    plugin_descriptor_fields_schema),
+  YAML_FIELD_MAPPING_PTR (PluginSetting, descr, plugin_descriptor_fields_schema),
   YAML_FIELD_INT (PluginSetting, open_with_carla),
   YAML_FIELD_INT (PluginSetting, force_generic_ui),
-  YAML_FIELD_ENUM (
-    PluginSetting,
-    bridge_mode,
-    carla_bridge_mode_strings),
+  YAML_FIELD_ENUM (PluginSetting, bridge_mode, carla_bridge_mode_strings),
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginSetting, ui_uri),
   YAML_FIELD_INT_OPT (PluginSetting, last_instantiated_time),
   YAML_FIELD_INT_OPT (PluginSetting, num_instantiations),
@@ -91,16 +85,15 @@ typedef struct PluginSettings
   int             num_settings;
 } PluginSettings;
 
-static const cyaml_schema_field_t
-  plugin_settings_fields_schema[] = {
-    YAML_FIELD_INT (PluginSettings, schema_version),
-    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-      PluginSettings,
-      settings,
-      plugin_setting_schema),
+static const cyaml_schema_field_t plugin_settings_fields_schema[] = {
+  YAML_FIELD_INT (PluginSettings, schema_version),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    PluginSettings,
+    settings,
+    plugin_setting_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t plugin_settings_schema = {
   YAML_VALUE_PTR (PluginSettings, plugin_settings_fields_schema),
@@ -118,9 +111,7 @@ PluginSetting * NONNULL
 plugin_setting_clone (const PluginSetting * src, bool validate);
 
 bool
-plugin_setting_is_equal (
-  const PluginSetting * a,
-  const PluginSetting * b);
+plugin_setting_is_equal (const PluginSetting * a, const PluginSetting * b);
 
 /**
  * Makes sure the setting is valid in the current
@@ -132,9 +123,7 @@ plugin_setting_is_equal (
  * to true.
  */
 NONNULL void
-plugin_setting_validate (
-  PluginSetting * self,
-  bool            print_result);
+plugin_setting_validate (PluginSetting * self, bool print_result);
 
 NONNULL void
 plugin_setting_print (const PluginSetting * self);
@@ -155,8 +144,7 @@ plugin_setting_activate (const PluginSetting * self);
  * @note This also serializes all plugin settings.
  */
 NONNULL void
-plugin_setting_increment_num_instantiations (
-  PluginSetting * self);
+plugin_setting_increment_num_instantiations (PluginSetting * self);
 
 /**
  * Frees the plugin setting.
@@ -185,9 +173,7 @@ plugin_settings_serialize_to_file (PluginSettings * self);
  * @return The found setting or NULL.
  */
 NONNULL PluginSetting *
-plugin_settings_find (
-  PluginSettings *         self,
-  const PluginDescriptor * descr);
+plugin_settings_find (PluginSettings * self, const PluginDescriptor * descr);
 
 /**
  * Replaces a setting or appends a setting to the

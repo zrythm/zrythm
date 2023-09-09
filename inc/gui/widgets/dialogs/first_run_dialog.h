@@ -7,8 +7,7 @@
 #include <adwaita.h>
 #include <gtk/gtk.h>
 
-#define FIRST_RUN_DIALOG_WIDGET_TYPE \
-  (first_run_dialog_widget_get_type ())
+#define FIRST_RUN_DIALOG_WIDGET_TYPE (first_run_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   FirstRunDialogWidget,
   first_run_dialog_widget,

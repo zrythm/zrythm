@@ -40,25 +40,20 @@ typedef struct PluginCollection
   size_t              descriptors_size;
 } PluginCollection;
 
-static const cyaml_schema_field_t
-  plugin_collection_fields_schema[] = {
-    YAML_FIELD_INT (PluginCollection, schema_version),
-    YAML_FIELD_STRING_PTR (PluginCollection, name),
-    YAML_FIELD_STRING_PTR_OPTIONAL (
-      PluginCollection,
-      description),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
-      PluginCollection,
-      descriptors,
-      plugin_descriptor_schema),
+static const cyaml_schema_field_t plugin_collection_fields_schema[] = {
+  YAML_FIELD_INT (PluginCollection, schema_version),
+  YAML_FIELD_STRING_PTR (PluginCollection, name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginCollection, description),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
+    PluginCollection,
+    descriptors,
+    plugin_descriptor_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t plugin_collection_schema = {
-  YAML_VALUE_PTR (
-    PluginCollection,
-    plugin_collection_fields_schema),
+  YAML_VALUE_PTR (PluginCollection, plugin_collection_fields_schema),
 };
 
 void
@@ -80,9 +75,7 @@ char *
 plugin_collection_get_name (PluginCollection * self);
 
 void
-plugin_collection_set_name (
-  PluginCollection * self,
-  const char *       name);
+plugin_collection_set_name (PluginCollection * self, const char * name);
 
 /**
  * Returns whether the collection contains the
@@ -118,8 +111,7 @@ plugin_collection_remove_descriptor (
  * @memberof PluginCollection
  */
 GMenuModel *
-plugin_collection_generate_context_menu (
-  const PluginCollection * self);
+plugin_collection_generate_context_menu (const PluginCollection * self);
 
 /**
  * Removes all the descriptors.

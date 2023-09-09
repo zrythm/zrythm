@@ -36,8 +36,7 @@ typedef struct _CcBindingsTreeWidget CcBindingsTreeWidget;
  * @{
  */
 
-#define CC_BINDINGS_WIDGET_TYPE \
-  (cc_bindings_widget_get_type ())
+#define CC_BINDINGS_WIDGET_TYPE (cc_bindings_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   CcBindingsWidget,
   cc_bindings_widget,

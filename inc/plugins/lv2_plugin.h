@@ -75,13 +75,10 @@ typedef struct PluginDescriptor  PluginDescriptor;
  */
 
 #define LV2_PLUGIN_MAGIC 58173672
-#define IS_LV2_PLUGIN(tr) \
-  (tr && tr->magic == LV2_PLUGIN_MAGIC)
+#define IS_LV2_PLUGIN(tr) (tr && tr->magic == LV2_PLUGIN_MAGIC)
 
-#define LV2_ZRYTHM__defaultBank \
-  "https://lv2.zrythm.org#default-bank"
-#define LV2_ZRYTHM__initPreset \
-  "https://lv2.zrythm.org#init-preset"
+#define LV2_ZRYTHM__defaultBank "https://lv2.zrythm.org#default-bank"
+#define LV2_ZRYTHM__initPreset "https://lv2.zrythm.org#init-preset"
 #define LV2_KX__externalUi \
   "http://kxstudio.sf.net/ns/lv2ext/" \
   "external-ui#Widget"
@@ -238,9 +235,8 @@ typedef struct Lv2Plugin
 
   /** Frames since last update sent to UI. */
   uint32_t event_delta_t;
-  uint32_t
-    midi_event_id; ///< MIDI event class ID in event context
-  bool exit;       ///< True iff execution is finished
+  uint32_t midi_event_id; ///< MIDI event class ID in event context
+  bool     exit;          ///< True iff execution is finished
 
   /** Whether a plugin update is needed. */
   bool request_update;
@@ -463,18 +459,13 @@ lv2_plugin_has_deprecated_ui (const char * uri);
  * Returns whether the given UI uri is supported.
  */
 NONNULL bool
-lv2_plugin_is_ui_supported (
-  const char * pl_uri,
-  const char * ui_uri);
+lv2_plugin_is_ui_supported (const char * pl_uri, const char * ui_uri);
 
 /**
  * Returns the UI URIs that this plugin has.
  */
 void
-lv2_plugin_get_uis (
-  const char * pl_uri,
-  char **      uris,
-  int *        num_uris);
+lv2_plugin_get_uis (const char * pl_uri, char ** uris, int * num_uris);
 
 /**
  * Pick the most preferable UI for the given flag.
@@ -493,25 +484,19 @@ lv2_plugin_pick_ui (
   const LilvNode **   out_ui_type);
 
 NONNULL char *
-lv2_plugin_get_ui_class (
-  const char * pl_uri,
-  const char * ui_uri);
+lv2_plugin_get_ui_class (const char * pl_uri, const char * ui_uri);
 
 /**
  * Returns the bundle path of the UI as a URI.
  */
 NONNULL char *
-lv2_plugin_get_ui_bundle_uri (
-  const char * pl_uri,
-  const char * ui_uri);
+lv2_plugin_get_ui_bundle_uri (const char * pl_uri, const char * ui_uri);
 
 /**
  * Returns the binary path of the UI as a URI.
  */
 NONNULL char *
-lv2_plugin_get_ui_binary_uri (
-  const char * pl_uri,
-  const char * ui_uri);
+lv2_plugin_get_ui_binary_uri (const char * pl_uri, const char * ui_uri);
 
 /**
  * Pick the most preferable UI.
@@ -537,10 +522,7 @@ NONNULL bool
 lv2_plugin_ui_type_is_external (const LilvNode * ui_type);
 
 NONNULL bool
-lv2_plugin_is_ui_external (
-  const char * uri,
-  const char * ui_uri,
-  GError **    error);
+lv2_plugin_is_ui_external (const char * uri, const char * ui_uri, GError ** error);
 
 /**
  * Ported from Lv2Control.
@@ -557,9 +539,7 @@ lv2_plugin_set_control (
  * property URID.
  */
 NONNULL Port *
-lv2_plugin_get_property_port (
-  Lv2Plugin * self,
-  LV2_URID    property);
+lv2_plugin_get_property_port (Lv2Plugin * self, LV2_URID property);
 
 /**
  * Function to get a port value.
@@ -579,9 +559,7 @@ NONNULL char *
 lv2_plugin_get_library_path (Lv2Plugin * self);
 
 NONNULL char *
-lv2_plugin_get_abs_state_file_path (
-  Lv2Plugin * self,
-  bool        is_backup);
+lv2_plugin_get_abs_state_file_path (Lv2Plugin * self, bool is_backup);
 
 /**
  * Allocate port buffers (only necessary for MIDI).

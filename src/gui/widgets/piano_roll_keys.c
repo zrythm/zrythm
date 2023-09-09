@@ -31,30 +31,21 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  PianoRollKeysWidget,
-  piano_roll_keys_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (PianoRollKeysWidget, piano_roll_keys_widget, GTK_TYPE_WIDGET)
 
 #define DEFAULT_PX_PER_KEY 7
 /* can also try SemiBold */
 #define PIANO_ROLL_KEYS_FONT "8"
 
 static void
-piano_roll_keys_snapshot (
-  GtkWidget *   widget,
-  GtkSnapshot * snapshot)
+piano_roll_keys_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
-  PianoRollKeysWidget * self =
-    Z_PIANO_ROLL_KEYS_WIDGET (widget);
-  GtkScrolledWindow * scroll =
-    MW_MIDI_EDITOR_SPACE->piano_roll_keys_scroll;
-  graphene_rect_t visible_rect;
-  z_gtk_scrolled_window_get_visible_rect (
-    scroll, &visible_rect);
+  PianoRollKeysWidget * self = Z_PIANO_ROLL_KEYS_WIDGET (widget);
+  GtkScrolledWindow *   scroll = MW_MIDI_EDITOR_SPACE->piano_roll_keys_scroll;
+  graphene_rect_t       visible_rect;
+  z_gtk_scrolled_window_get_visible_rect (scroll, &visible_rect);
   GdkRectangle visible_rect_gdk;
-  z_gtk_graphene_rect_t_to_gdk_rectangle (
-    &visible_rect_gdk, &visible_rect);
+  z_gtk_graphene_rect_t_to_gdk_rectangle (&visible_rect_gdk, &visible_rect);
 
   Track * tr = clip_editor_get_track (CLIP_EDITOR);
   if (!IS_TRACK_AND_NONNULL (tr))
@@ -64,10 +55,8 @@ piano_roll_keys_snapshot (
 
   int width = gtk_widget_get_width (widget);
 
-  ChordObject * co =
-    chord_track_get_chord_at_playhead (P_CHORD_TRACK);
-  ScaleObject * so =
-    chord_track_get_scale_at_playhead (P_CHORD_TRACK);
+  ChordObject * co = chord_track_get_chord_at_playhead (P_CHORD_TRACK);
+  ScaleObject * so = chord_track_get_scale_at_playhead (P_CHORD_TRACK);
 
   bool drum_mode = tr->drum_mode;
 
@@ -85,8 +74,7 @@ piano_roll_keys_snapshot (
     {
       /* skip keys outside visible rectangle */
       if (
-        (float) visible_rect_gdk.y
-          > (float) ((127 - i) + 1) * px_per_key
+        (float) visible_rect_gdk.y > (float) ((127 - i) + 1) * px_per_key
         || (float) (visible_rect_gdk.y + visible_rect_gdk.height)
              < (float) (127 - i) * px_per_key)
         continue;
@@ -94,28 +82,22 @@ piano_roll_keys_snapshot (
       /* check if in scale and in chord */
       int  normalized_key = i % 12;
       bool in_scale =
-        so
-        && musical_scale_contains_note (
-          so->scale, normalized_key);
+        so && musical_scale_contains_note (so->scale, normalized_key);
       bool in_chord =
         co
         && chord_descriptor_is_key_in_chord (
-          chord_object_get_chord_descriptor (co),
-          normalized_key);
+          chord_object_get_chord_descriptor (co), normalized_key);
       bool is_bass =
         co
         && chord_descriptor_is_key_bass (
-          chord_object_get_chord_descriptor (co),
-          normalized_key);
+          chord_object_get_chord_descriptor (co), normalized_key);
 
       /* ---- draw label ---- */
 
       const MidiNoteDescriptor * descr =
-        piano_roll_find_midi_note_descriptor_by_val (
-          PIANO_ROLL, drum_mode, i);
+        piano_roll_find_midi_note_descriptor_by_val (PIANO_ROLL, drum_mode, i);
 
-      int fontsize =
-        piano_roll_keys_widget_get_font_size (self);
+      int          fontsize = piano_roll_keys_widget_get_font_size (self);
       const char * note_name_to_use =
         drum_mode ? descr->custom_name : descr->note_name_pango;
       char note_name_inner[60];
@@ -128,13 +110,11 @@ piano_roll_keys_snapshot (
         }
       else
         {
-          sprintf (
-            note_name_inner, "%s (%d)", note_name_to_use,
-            descr->value);
+          sprintf (note_name_inner, "%s (%d)", note_name_to_use, descr->value);
         }
       sprintf (
-        note_name, "<span size=\"%d\">%s</span>",
-        fontsize * 1000 - 4000, note_name_inner);
+        note_name, "<span size=\"%d\">%s</span>", fontsize * 1000 - 4000,
+        note_name_inner);
 
       if (drum_mode)
         {
@@ -156,20 +136,17 @@ piano_roll_keys_snapshot (
               gtk_snapshot_append_color (
                 snapshot, &color,
                 &GRAPHENE_RECT_INIT (
-                  0, (127 - i) * px_per_key, label_width,
-                  px_per_key));
+                  0, (127 - i) * px_per_key, label_width, px_per_key));
 
               char hex[18];
-              ui_gdk_rgba_to_hex (
-                &UI_COLORS->highlight_bass_fg, hex);
+              ui_gdk_rgba_to_hex (&UI_COLORS->highlight_bass_fg, hex);
               sprintf (
-                str,
-                "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
+                str, "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
                 note_name, hex, _ ("bass"));
             }
           else if (
-            PIANO_ROLL->highlighting == PR_HIGHLIGHT_BOTH
-            && in_chord && in_scale)
+            PIANO_ROLL->highlighting == PR_HIGHLIGHT_BOTH && in_chord
+            && in_scale)
             {
               has_color = true;
               color = UI_COLORS->highlight_both_bg;
@@ -177,15 +154,12 @@ piano_roll_keys_snapshot (
               gtk_snapshot_append_color (
                 snapshot, &color,
                 &GRAPHENE_RECT_INIT (
-                  0, (127 - i) * px_per_key, label_width,
-                  px_per_key));
+                  0, (127 - i) * px_per_key, label_width, px_per_key));
 
               char hex[18];
-              ui_gdk_rgba_to_hex (
-                &UI_COLORS->highlight_both_fg, hex);
+              ui_gdk_rgba_to_hex (&UI_COLORS->highlight_both_fg, hex);
               sprintf (
-                str,
-                "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
+                str, "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
                 note_name, hex, _ ("both"));
             }
           else if (
@@ -197,11 +171,9 @@ piano_roll_keys_snapshot (
               color = UI_COLORS->highlight_scale_bg;
 
               char hex[18];
-              ui_gdk_rgba_to_hex (
-                &UI_COLORS->highlight_scale_fg, hex);
+              ui_gdk_rgba_to_hex (&UI_COLORS->highlight_scale_fg, hex);
               sprintf (
-                str,
-                "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
+                str, "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
                 note_name, hex, _ ("scale"));
             }
           else if (
@@ -213,11 +185,9 @@ piano_roll_keys_snapshot (
               color = UI_COLORS->highlight_chord_bg;
 
               char hex[18];
-              ui_gdk_rgba_to_hex (
-                &UI_COLORS->highlight_chord_fg, hex);
+              ui_gdk_rgba_to_hex (&UI_COLORS->highlight_chord_fg, hex);
               sprintf (
-                str,
-                "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
+                str, "%s  <span size=\"small\" foreground=\"%s\">%s</span>",
                 note_name, hex, _ ("chord"));
             }
           else
@@ -231,8 +201,7 @@ piano_roll_keys_snapshot (
               gtk_snapshot_append_color (
                 snapshot, &color,
                 &GRAPHENE_RECT_INIT (
-                  0, (127 - i) * px_per_key, label_width,
-                  px_per_key));
+                  0, (127 - i) * px_per_key, label_width, px_per_key));
             }
         }
 
@@ -255,8 +224,7 @@ piano_roll_keys_snapshot (
           gtk_snapshot_translate (
             snapshot, &GRAPHENE_POINT_INIT (4, text_y_start));
           gtk_snapshot_append_layout (
-            snapshot, self->layout,
-            &Z_GDK_RGBA_INIT (1, 1, 1, 1));
+            snapshot, self->layout, &Z_GDK_RGBA_INIT (1, 1, 1, 1));
           gtk_snapshot_restore (snapshot);
         }
 
@@ -273,8 +241,7 @@ piano_roll_keys_snapshot (
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          label_width, (127 - i) * px_per_key, key_width,
-          px_per_key));
+          label_width, (127 - i) * px_per_key, key_width, px_per_key));
 
       /* add shade if currently pressed note */
       if (piano_roll_contains_current_note (PIANO_ROLL, i))
@@ -289,23 +256,20 @@ piano_roll_keys_snapshot (
           gtk_snapshot_append_color (
             snapshot, &color,
             &GRAPHENE_RECT_INIT (
-              label_width + 4, (127 - i) * px_per_key,
-              key_width - 4, px_per_key));
+              label_width + 4, (127 - i) * px_per_key, key_width - 4,
+              px_per_key));
         }
 
       /* add border below */
       float y = (float) ((127 - i) + 1) * px_per_key;
       color = Z_GDK_RGBA_INIT (0.7f, 0.7f, 0.7f, 0.3f);
       gtk_snapshot_append_color (
-        snapshot, &color,
-        &GRAPHENE_RECT_INIT (0.f, y, (float) width, 1.f));
+        snapshot, &color, &GRAPHENE_RECT_INIT (0.f, y, (float) width, 1.f));
     }
 }
 
 int
-piano_roll_keys_widget_get_key_from_y (
-  PianoRollKeysWidget * self,
-  double                y)
+piano_roll_keys_widget_get_key_from_y (PianoRollKeysWidget * self, double y)
 {
   return 127 - (int) (y / (self->px_per_key + 1.0));
 }
@@ -315,8 +279,7 @@ piano_roll_keys_widget_get_key_from_y (
  * current pixels (height) per key.
  */
 int
-piano_roll_keys_widget_get_font_size (
-  PianoRollKeysWidget * self)
+piano_roll_keys_widget_get_font_size (PianoRollKeysWidget * self)
 {
   /* converted from pixels to points */
   /* see https://websemantics.uk/articles/font-size-conversion/ */
@@ -420,8 +383,7 @@ void
 piano_roll_keys_widget_refresh (PianoRollKeysWidget * self)
 {
   self->px_per_key =
-    (double) DEFAULT_PX_PER_KEY
-    * (double) PIANO_ROLL->notes_zoom;
+    (double) DEFAULT_PX_PER_KEY * (double) PIANO_ROLL->notes_zoom;
   double key_px_before = self->total_key_px;
   self->total_key_px = (self->px_per_key + 1.0) * 128.0;
 
@@ -432,9 +394,7 @@ piano_roll_keys_widget_refresh (PianoRollKeysWidget * self)
 }
 
 void
-piano_roll_keys_widget_redraw_note (
-  PianoRollKeysWidget * self,
-  int                   note)
+piano_roll_keys_widget_redraw_note (PianoRollKeysWidget * self, int note)
 {
   gtk_widget_queue_draw (GTK_WIDGET (self));
 }
@@ -451,8 +411,7 @@ select_notes_in_pitch (int pitch, bool append)
   if (!append)
     {
       arranger_selections_clear (
-        (ArrangerSelections *) MA_SELECTIONS, F_NO_FREE,
-        F_PUBLISH_EVENTS);
+        (ArrangerSelections *) MA_SELECTIONS, F_NO_FREE, F_PUBLISH_EVENTS);
     }
   ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (r);
@@ -463,8 +422,7 @@ select_notes_in_pitch (int pitch, bool append)
       if (mn->val == pitch)
         {
           arranger_object_select (
-            (ArrangerObject *) mn, F_SELECT, F_APPEND,
-            F_NO_PUBLISH_EVENTS);
+            (ArrangerObject *) mn, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
         }
     }
 }
@@ -500,28 +458,24 @@ activate_notation_mode (
   g_return_if_fail (_variant);
 
   gsize        size;
-  const char * variant =
-    g_variant_get_string (_variant, &size);
+  const char * variant = g_variant_get_string (_variant, &size);
   g_simple_action_set_state (action, _variant);
   if (string_is_equal (variant, "musical"))
     {
       g_settings_set_enum (
-        S_UI, "piano-roll-note-notation",
-        PIANO_ROLL_NOTE_NOTATION_MUSICAL);
+        S_UI, "piano-roll-note-notation", PIANO_ROLL_NOTE_NOTATION_MUSICAL);
     }
   else if (string_is_equal (variant, "pitch"))
     {
       g_settings_set_enum (
-        S_UI, "piano-roll-note-notation",
-        PIANO_ROLL_NOTE_NOTATION_PITCH);
+        S_UI, "piano-roll-note-notation", PIANO_ROLL_NOTE_NOTATION_PITCH);
     }
   else
     {
       g_return_if_reached ();
     }
 
-  PianoRollKeysWidget * self =
-    Z_PIANO_ROLL_KEYS_WIDGET (user_data);
+  PianoRollKeysWidget * self = Z_PIANO_ROLL_KEYS_WIDGET (user_data);
   piano_roll_keys_widget_redraw_full (self);
 }
 
@@ -545,22 +499,18 @@ on_right_click (
     note_notation_section, _ ("Musical"),
     "piano-roll-keys.notation-mode::musical");
   g_menu_append (
-    note_notation_section, _ ("Pitch"),
-    "piano-roll-keys.notation-mode::pitch");
+    note_notation_section, _ ("Pitch"), "piano-roll-keys.notation-mode::pitch");
   g_menu_append_section (
-    menu, _ ("Note Notation"),
-    G_MENU_MODEL (note_notation_section));
+    menu, _ ("Note Notation"), G_MENU_MODEL (note_notation_section));
 
   GMenu *     selection_section = g_menu_new ();
   GMenuItem * menuitem;
-  menuitem =
-    g_menu_item_new (_ ("Select notes in pitch"), NULL);
+  menuitem = g_menu_item_new (_ ("Select notes in pitch"), NULL);
   g_menu_item_set_action_and_target_value (
     menuitem, "piano-roll-keys.select-notes-in-pitch",
     g_variant_new_int32 (pitch));
   g_menu_append_item (selection_section, menuitem);
-  menuitem = g_menu_item_new (
-    _ ("Append notes in pitch to selection"), NULL);
+  menuitem = g_menu_item_new (_ ("Append notes in pitch to selection"), NULL);
   g_menu_item_set_action_and_target_value (
     menuitem, "piano-roll-keys.append-notes-in-pitch",
     g_variant_new_int32 (pitch));
@@ -568,11 +518,9 @@ on_right_click (
   g_menu_append_section (
     menu, _ ("Selection"), G_MENU_MODEL (selection_section));
 
-  gtk_popover_menu_set_menu_model (
-    self->popover_menu, G_MENU_MODEL (menu));
+  gtk_popover_menu_set_menu_model (self->popover_menu, G_MENU_MODEL (menu));
 
-  z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+  z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
 }
 
 static guint
@@ -606,8 +554,7 @@ dispose (PianoRollKeysWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
-  G_OBJECT_CLASS (piano_roll_keys_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (piano_roll_keys_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
@@ -618,87 +565,67 @@ piano_roll_keys_widget_init (PianoRollKeysWidget * self)
   gtk_widget_set_size_request (GTK_WIDGET (self), -1, 600);
 
   PangoFontDescription * desc;
-  self->layout =
-    gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
-  desc =
-    pango_font_description_from_string (PIANO_ROLL_KEYS_FONT);
+  self->layout = gtk_widget_create_pango_layout (GTK_WIDGET (self), NULL);
+  desc = pango_font_description_from_string (PIANO_ROLL_KEYS_FONT);
   pango_layout_set_font_description (self->layout, desc);
   pango_font_description_free (desc);
 
   GtkEventControllerMotion * motion_controller =
-    GTK_EVENT_CONTROLLER_MOTION (
-      gtk_event_controller_motion_new ());
+    GTK_EVENT_CONTROLLER_MOTION (gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT (motion_controller), "motion",
-    G_CALLBACK (on_motion), self);
+    G_OBJECT (motion_controller), "motion", G_CALLBACK (on_motion), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (motion_controller));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (motion_controller));
 
   self->click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (self->click), GDK_BUTTON_PRIMARY);
   g_signal_connect (
-    G_OBJECT (self->click), "pressed",
-    G_CALLBACK (on_pressed), self);
+    G_OBJECT (self->click), "pressed", G_CALLBACK (on_pressed), self);
   g_signal_connect (
-    G_OBJECT (self->click), "released",
-    G_CALLBACK (on_released), self);
+    G_OBJECT (self->click), "released", G_CALLBACK (on_released), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->click));
 
-  GtkGestureClick * right_click =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  GtkGestureClick * right_click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (right_click), GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    G_OBJECT (right_click), "released",
-    G_CALLBACK (on_right_click), self);
+    G_OBJECT (right_click), "released", G_CALLBACK (on_right_click), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (right_click));
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self),
-    (GtkTickCallback) piano_roll_keys_tick_cb, self, NULL);
+    GTK_WIDGET (self), (GtkTickCallback) piano_roll_keys_tick_cb, self, NULL);
 
   /* set menu */
-  GSimpleActionGroup * action_group =
-    g_simple_action_group_new ();
-  const char * notation_modes[] = {
+  GSimpleActionGroup * action_group = g_simple_action_group_new ();
+  const char *         notation_modes[] = {
     "'musical'",
     "'pitch'",
   };
   GActionEntry actions[] = {
     { "notation-mode", activate_notation_mode, "s",
-     notation_modes[g_settings_get_enum (
-        S_UI, "piano-roll-note-notation")] },
-    { "select-notes-in-pitch", activate_select_notes_in_pitch,
-     "i" },
-    { "append-notes-in-pitch", activate_append_notes_in_pitch,
-     "i" },
+     notation_modes[g_settings_get_enum (S_UI, "piano-roll-note-notation")] },
+    { "select-notes-in-pitch", activate_select_notes_in_pitch, "i" },
+    { "append-notes-in-pitch", activate_append_notes_in_pitch, "i" },
   };
   g_action_map_add_action_entries (
-    G_ACTION_MAP (action_group), actions,
-    G_N_ELEMENTS (actions), self);
+    G_ACTION_MAP (action_group), actions, G_N_ELEMENTS (actions), self);
   gtk_widget_insert_action_group (
-    GTK_WIDGET (self), "piano-roll-keys",
-    G_ACTION_GROUP (action_group));
+    GTK_WIDGET (self), "piano-roll-keys", G_ACTION_GROUP (action_group));
 }
 
 static void
-piano_roll_keys_widget_class_init (
-  PianoRollKeysWidgetClass * klass)
+piano_roll_keys_widget_class_init (PianoRollKeysWidgetClass * klass)
 {
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = piano_roll_keys_snapshot;
 
-  gtk_widget_class_set_layout_manager_type (
-    wklass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (wklass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;

@@ -44,12 +44,9 @@ test_contains_substr (void)
   };
 
   g_assert_true (string_contains_substr (strs[0], "Читать"));
-  g_assert_true (
-    string_contains_substr_case_insensitive (strs[1], "abc"));
-  g_assert_false (
-    string_contains_substr (strs[0], "Чатитать"));
-  g_assert_false (
-    string_contains_substr_case_insensitive (strs[1], "abd"));
+  g_assert_true (string_contains_substr_case_insensitive (strs[1], "abc"));
+  g_assert_false (string_contains_substr (strs[0], "Чатитать"));
+  g_assert_false (string_contains_substr_case_insensitive (strs[1], "abd"));
 }
 
 static void
@@ -216,11 +213,9 @@ test_replace_regex (void)
 
   replace_str = "??? ...\n";
   regex = "(\\?\\?\\?\n)+\\1";
-  src_str = g_strdup (
-    "???\n???\n???\n???\n??? abc\n???\n???\n??? test");
+  src_str = g_strdup ("???\n???\n???\n???\n??? abc\n???\n???\n??? test");
   string_replace_regex (&src_str, regex, replace_str);
-  g_assert_cmpstr (
-    src_str, ==, "??? ...\n??? abc\n??? ...\n??? test");
+  g_assert_cmpstr (src_str, ==, "??? ...\n??? abc\n??? ...\n??? test");
 }
 
 int
@@ -230,20 +225,16 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/utils/string/"
 
+  g_test_add_func (TEST_PREFIX "test is equal", (GTestFunc) test_is_equal);
   g_test_add_func (
-    TEST_PREFIX "test is equal", (GTestFunc) test_is_equal);
-  g_test_add_func (
-    TEST_PREFIX "test replace regex",
-    (GTestFunc) test_replace_regex);
+    TEST_PREFIX "test replace regex", (GTestFunc) test_replace_regex);
   g_test_add_func (
     TEST_PREFIX "test get int after last space",
     (GTestFunc) test_get_int_after_last_space);
   g_test_add_func (
-    TEST_PREFIX "test contains substr",
-    (GTestFunc) test_contains_substr);
+    TEST_PREFIX "test contains substr", (GTestFunc) test_contains_substr);
   g_test_add_func (
-    TEST_PREFIX "test copy w realloc",
-    (GTestFunc) test_copy_w_realloc);
+    TEST_PREFIX "test copy w realloc", (GTestFunc) test_copy_w_realloc);
 
   return g_test_run ();
 }

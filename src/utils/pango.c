@@ -42,21 +42,17 @@ z_pango_create_layout_from_description (
       FcConfig * fc_config = FcConfigCreate ();
 
       /* add fonts/zrythm dir to find DSEG font */
-      char * fontdir =
-        zrythm_get_dir (ZRYTHM_DIR_SYSTEM_FONTSDIR);
-      FcConfigAppFontAddDir (
-        fc_config, (const unsigned char *) fontdir);
+      char * fontdir = zrythm_get_dir (ZRYTHM_DIR_SYSTEM_FONTSDIR);
+      FcConfigAppFontAddDir (fc_config, (const unsigned char *) fontdir);
       g_free (fontdir);
       FcConfigBuildFonts (fc_config);
 
       PangoFontMap * font_map =
-        pango_cairo_font_map_new_for_font_type (
-          CAIRO_FONT_TYPE_FT);
-      pango_fc_font_map_set_config (
-        PANGO_FC_FONT_MAP (font_map), fc_config);
+        pango_cairo_font_map_new_for_font_type (CAIRO_FONT_TYPE_FT);
+      pango_fc_font_map_set_config (PANGO_FC_FONT_MAP (font_map), fc_config);
 
-      PangoContext * context = pango_font_map_create_context (
-        PANGO_FONT_MAP (font_map));
+      PangoContext * context =
+        pango_font_map_create_context (PANGO_FONT_MAP (font_map));
       PangoLayout * pangoLayout = pango_layout_new (context);
 
       FcPattern *   pattern = FcPatternCreate ();
@@ -66,12 +62,10 @@ z_pango_create_layout_from_description (
       FcObjectSetDestroy (os);
       for (int i = 0; i < fs->nfont; i++)
         {
-          guchar * font_name = FcNameUnparse (fs->fonts[i]);
+          guchar *               font_name = FcNameUnparse (fs->fonts[i]);
           PangoFontDescription * desc =
-            pango_font_description_from_string (
-              (gchar *) font_name);
-          pango_font_map_load_font (
-            PANGO_FONT_MAP (font_map), context, desc);
+            pango_font_description_from_string ((gchar *) font_name);
+          pango_font_map_load_font (PANGO_FONT_MAP (font_map), context, desc);
           pango_font_description_free (desc);
           g_debug ("fontname: %s", font_name);
           g_free (font_name);

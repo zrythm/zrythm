@@ -16,8 +16,7 @@
 
 #include <gtk/gtk.h>
 
-#define ACTIVE_HARDWARE_MB_WIDGET_TYPE \
-  (active_hardware_mb_widget_get_type ())
+#define ACTIVE_HARDWARE_MB_WIDGET_TYPE (active_hardware_mb_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ActiveHardwareMbWidget,
   active_hardware_mb_widget,
@@ -31,8 +30,7 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-typedef struct _ActiveHardwarePopoverWidget
-  ActiveHardwarePopoverWidget;
+typedef struct _ActiveHardwarePopoverWidget ActiveHardwarePopoverWidget;
 
 /**
  * A menu button that allows selecting active
@@ -88,12 +86,10 @@ active_hardware_mb_widget_setup (
  * settings.
  */
 void
-active_hardware_mb_widget_save_settings (
-  ActiveHardwareMbWidget * self);
+active_hardware_mb_widget_save_settings (ActiveHardwareMbWidget * self);
 
 void
-active_hardware_mb_widget_refresh (
-  ActiveHardwareMbWidget * self);
+active_hardware_mb_widget_refresh (ActiveHardwareMbWidget * self);
 
 ActiveHardwareMbWidget *
 active_hardware_mb_widget_new (void);

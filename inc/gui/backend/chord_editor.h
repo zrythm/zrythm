@@ -64,10 +64,7 @@ static const cyaml_schema_field_t chord_editor_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t chord_editor_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    ChordEditor,
-    chord_editor_fields_schema),
+  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, ChordEditor, chord_editor_fields_schema),
 };
 
 /**
@@ -100,10 +97,7 @@ chord_editor_apply_chords (
   bool                     undoable);
 
 void
-chord_editor_apply_preset (
-  ChordEditor * self,
-  ChordPreset * pset,
-  bool          undoable);
+chord_editor_apply_preset (ChordEditor * self, ChordPreset * pset, bool undoable);
 
 void
 chord_editor_apply_preset_from_scale (
@@ -113,10 +107,7 @@ chord_editor_apply_preset_from_scale (
   bool             undoable);
 
 void
-chord_editor_transpose_chords (
-  ChordEditor * self,
-  bool          up,
-  bool          undoable);
+chord_editor_transpose_chords (ChordEditor * self, bool up, bool undoable);
 
 /**
  * Returns the ChordDescriptor for the given note

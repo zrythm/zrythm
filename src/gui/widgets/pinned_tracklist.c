@@ -14,10 +14,7 @@
 #include "utils/gtk.h"
 #include "zrythm.h"
 
-G_DEFINE_TYPE (
-  PinnedTracklistWidget,
-  pinned_tracklist_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (PinnedTracklistWidget, pinned_tracklist_widget, GTK_TYPE_BOX)
 
 /**
  * Gets TrackWidget hit at the given coordinates.
@@ -44,8 +41,7 @@ pinned_tracklist_widget_get_hit_track (
       int height = gtk_widget_get_height (GTK_WIDGET (tw));
 
       gtk_widget_compute_point (
-        GTK_WIDGET (self), GTK_WIDGET (tw), (int) x, (int) y,
-        &wx, &wy);
+        GTK_WIDGET (self), GTK_WIDGET (tw), (int) x, (int) y, &wx, &wy);
 
       /* if hit */
       if (wx >= 0 && wx <= width && wy >= 0 && wy <= height)
@@ -60,8 +56,7 @@ pinned_tracklist_widget_get_hit_track (
  * Removes and readds the tracks.
  */
 void
-pinned_tracklist_widget_hard_refresh (
-  PinnedTracklistWidget * self)
+pinned_tracklist_widget_hard_refresh (PinnedTracklistWidget * self)
 {
   /* remove all tracks */
   z_gtk_container_remove_all_children (GTK_CONTAINER (self));
@@ -81,8 +76,7 @@ pinned_tracklist_widget_hard_refresh (
       track_widget_refresh (track->widget);
 
       /* add to tracklist widget */
-      gtk_container_add (
-        GTK_CONTAINER (self), GTK_WIDGET (track->widget));
+      gtk_container_add (GTK_CONTAINER (self), GTK_WIDGET (track->widget));
     }
   /*GtkWidget * sep =*/
   /*gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);*/
@@ -107,8 +101,7 @@ pinned_tracklist_widget_hard_refresh (
           g_value_init (&a, G_TYPE_INT);
           g_value_set_int (&a, track->handle_pos);
           gtk_container_child_set_property (
-            GTK_CONTAINER (self), GTK_WIDGET (tw), "position",
-            &a);
+            GTK_CONTAINER (self), GTK_WIDGET (tw), "position", &a);
         }
     }
   g_list_free (children);
@@ -125,13 +118,11 @@ pinned_tracklist_widget_on_size_allocate (
   /*MW_CENTER_DOCK->pinned_timeline_scroll),*/
   /*-1, allocation->height);*/
   if (
-    gtk_paned_get_position (
-      MW_TIMELINE_PANEL->timeline_divider_pane)
+    gtk_paned_get_position (MW_TIMELINE_PANEL->timeline_divider_pane)
     != allocation->height)
     {
       gtk_paned_set_position (
-        MW_TIMELINE_PANEL->timeline_divider_pane,
-        allocation->height);
+        MW_TIMELINE_PANEL->timeline_divider_pane, allocation->height);
     }
 }
 
@@ -151,13 +142,11 @@ pinned_tracklist_widget_setup (
 
   g_signal_connect (
     G_OBJECT (self), "size-allocate",
-    G_CALLBACK (pinned_tracklist_widget_on_size_allocate),
-    self);
+    G_CALLBACK (pinned_tracklist_widget_on_size_allocate), self);
 }
 
 static void
-pinned_tracklist_widget_class_init (
-  PinnedTracklistWidgetClass * _klass)
+pinned_tracklist_widget_class_init (PinnedTracklistWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
 

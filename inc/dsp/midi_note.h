@@ -35,8 +35,7 @@ typedef enum PianoRollNoteNotation PianoRollNoteNotation;
 
 #define MIDI_NOTE_MAGIC 3588791
 #define IS_MIDI_NOTE(tr) \
-  ((MidiNote *) tr \
-   && ((MidiNote *) tr)->magic == MIDI_NOTE_MAGIC)
+  ((MidiNote *) tr && ((MidiNote *) tr)->magic == MIDI_NOTE_MAGIC)
 
 #define midi_note_is_selected(r) \
   arranger_object_is_selected ((ArrangerObject *) r)
@@ -83,10 +82,7 @@ typedef struct MidiNote
 } MidiNote;
 
 static const cyaml_schema_field_t midi_note_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    MidiNote,
-    base,
-    arranger_object_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (MidiNote, base, arranger_object_fields_schema),
   YAML_FIELD_INT (MidiNote, schema_version),
   YAML_FIELD_MAPPING_PTR (MidiNote, vel, velocity_fields_schema),
   YAML_FIELD_UINT (MidiNote, val),
@@ -108,9 +104,7 @@ static const cyaml_schema_value_t midi_note_schema = {
  * @param pos Position to fill in.
  */
 void
-midi_note_get_global_start_pos (
-  MidiNote * self,
-  Position * pos);
+midi_note_get_global_start_pos (MidiNote * self, Position * pos);
 
 /**
  * Creates a new MidiNote.
@@ -127,10 +121,7 @@ midi_note_new (
  * Sets the region the MidiNote belongs to.
  */
 void
-midi_note_set_region_and_index (
-  MidiNote * self,
-  ZRegion *  region,
-  int        idx);
+midi_note_set_region_and_index (MidiNote * self, ZRegion * region, int idx);
 
 void
 midi_note_set_cache_val (MidiNote * self, const uint8_t val);

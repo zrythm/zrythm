@@ -6,8 +6,7 @@
 
 #include <gtk/gtk.h>
 
-#define SPLASH_WINDOW_WIDGET_TYPE \
-  (splash_window_widget_get_type ())
+#define SPLASH_WINDOW_WIDGET_TYPE (splash_window_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   SplashWindowWidget,
   splash_window_widget,

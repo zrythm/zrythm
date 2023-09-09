@@ -50,14 +50,8 @@ typedef struct UndoManager
 
 static const cyaml_schema_field_t undo_manager_fields_schema[] = {
   YAML_FIELD_INT (UndoManager, schema_version),
-  YAML_FIELD_MAPPING_PTR (
-    UndoManager,
-    undo_stack,
-    undo_stack_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    UndoManager,
-    redo_stack,
-    undo_stack_fields_schema),
+  YAML_FIELD_MAPPING_PTR (UndoManager, undo_stack, undo_stack_fields_schema),
+  YAML_FIELD_MAPPING_PTR (UndoManager, redo_stack, undo_stack_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -83,14 +77,12 @@ undo_manager_new (void);
 /**
  * Undo last action.
  */
-NONNULL_ARGS (1)
-int undo_manager_undo (UndoManager * self, GError ** error);
+NONNULL_ARGS (1) int undo_manager_undo (UndoManager * self, GError ** error);
 
 /**
  * Redo last undone action.
  */
-NONNULL_ARGS (1)
-int undo_manager_redo (UndoManager * self, GError ** error);
+NONNULL_ARGS (1) int undo_manager_redo (UndoManager * self, GError ** error);
 
 /**
  * Performs the action and pushes it to the undo
@@ -108,16 +100,14 @@ int undo_manager_perform (
  * Second and last argument given must be a
  * GError **.
  */
-#define UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR( \
-  action, err, ...) \
+#define UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR(action, err, ...) \
   { \
     g_return_val_if_fail ( \
       router_is_processing_thread (ROUTER) == false, false); \
     UndoableAction * ua = action (__VA_ARGS__); \
     if (ua) \
       { \
-        int ret = \
-          undo_manager_perform (UNDO_MANAGER, ua, err); \
+        int ret = undo_manager_perform (UNDO_MANAGER, ua, err); \
         if (ret == 0) \
           return true; \
       } \
@@ -129,9 +119,7 @@ int undo_manager_perform (
  * stack.
  */
 NONNULL bool
-undo_manager_contains_clip (
-  UndoManager * self,
-  AudioClip *   clip);
+undo_manager_contains_clip (UndoManager * self, AudioClip * clip);
 
 /**
  * Returns all plugins in the undo stacks.

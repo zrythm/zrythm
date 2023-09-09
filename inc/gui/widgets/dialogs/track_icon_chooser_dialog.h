@@ -66,8 +66,7 @@ track_icon_chooser_dialog_widget_new (Track * track);
  * @return Whether the icon was set or not.
  */
 bool
-track_icon_chooser_dialog_widget_run (
-  TrackIconChooserDialogWidget * self);
+track_icon_chooser_dialog_widget_run (TrackIconChooserDialogWidget * self);
 
 /**
  * @}

@@ -70,8 +70,7 @@ typedef struct _TwoColExpanderBoxWidgetClass
  * Gets the private.
  */
 TwoColExpanderBoxWidgetPrivate *
-two_col_expander_box_widget_get_private (
-  TwoColExpanderBoxWidget * self);
+two_col_expander_box_widget_get_private (TwoColExpanderBoxWidget * self);
 
 /**
  * Sets the horizontal spacing.
@@ -124,14 +123,12 @@ two_col_expander_box_widget_add_single (
  * Removes and destroys the children widgets.
  */
 void
-two_col_expander_box_widget_remove_children (
-  TwoColExpanderBoxWidget * self);
+two_col_expander_box_widget_remove_children (TwoColExpanderBoxWidget * self);
 
 /**
  * Gets the content box.
  */
 GtkBox *
-two_col_expander_box_widget_get_content_box (
-  TwoColExpanderBoxWidget * self);
+two_col_expander_box_widget_get_content_box (TwoColExpanderBoxWidget * self);
 
 #endif

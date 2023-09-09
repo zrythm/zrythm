@@ -72,8 +72,7 @@ file_import_progress_dialog_new (
  * presenting progress info.
  */
 void
-file_import_progress_dialog_run (
-  FileImportProgressDialog * self);
+file_import_progress_dialog_run (FileImportProgressDialog * self);
 
 /**
  * @}

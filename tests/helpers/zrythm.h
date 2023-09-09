@@ -89,8 +89,7 @@ test_helper_zrythm_gui_init (int argc, char * argv[]);
 
 /** Compares 2 Position pointers. */
 #define g_assert_cmppos(a, b) \
-  g_assert_cmpfloat_with_epsilon ( \
-    (a)->ticks, (b)->ticks, 0.0001); \
+  g_assert_cmpfloat_with_epsilon ((a)->ticks, (b)->ticks, 0.0001); \
   g_assert_cmpint ((a)->frames, ==, (b)->frames)
 
 #ifndef G_APPROX_VALUE
@@ -108,8 +107,7 @@ test_helper_zrythm_gui_init (int argc, char * argv[]);
       else \
         g_assertion_message_cmpnum ( \
           G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, \
-          #n1 " == " #n2 " (+/- " #epsilon ")", __n1, \
-          "==", __n2, 'f'); \
+          #n1 " == " #n2 " (+/- " #epsilon ")", __n1, "==", __n2, 'f'); \
     } \
     G_STMT_END
 #endif
@@ -118,24 +116,20 @@ test_helper_zrythm_gui_init (int argc, char * argv[]);
 #  define g_assert_cmpfloat(n1, n2) \
     G_STMT_START \
     { \
-      double \
-        __n1 = (n1), \
-        __n2 = (n2), __epsilon = (FLT_EPSILON); \
+      double __n1 = (n1), __n2 = (n2), __epsilon = (FLT_EPSILON); \
       if (G_APPROX_VALUE (__n1, __n2, __epsilon)) \
         ; \
       else \
         g_assertion_message_cmpnum ( \
           G_LOG_DOMAIN, __FILE__, __LINE__, G_STRFUNC, \
-          #n1 " == " #n2 " (+/- " #epsilon ")", __n1, \
-          "==", __n2, 'f'); \
+          #n1 " == " #n2 " (+/- " #epsilon ")", __n1, "==", __n2, 'f'); \
     } \
     G_STMT_END
 #endif
 
 #if defined(__GNUC__) && !defined(__clang__)
 #  pragma GCC diagnostic push
-#  pragma GCC diagnostic ignored \
-    "-Wanalyzer-unsafe-call-within-signal-handler"
+#  pragma GCC diagnostic ignored "-Wanalyzer-unsafe-call-within-signal-handler"
 #endif
 static void
 segv_handler (int sig)
@@ -144,8 +138,7 @@ segv_handler (int sig)
 #ifdef _WOE32
   strcpy (prefix, _ ("Error - Backtrace:\n"));
 #else
-  sprintf (
-    prefix, _ ("Error: %s - Backtrace:\n"), strsignal (sig));
+  sprintf (prefix, _ ("Error: %s - Backtrace:\n"), strsignal (sig));
 #endif
   char * bt = backtrace_get (prefix, 100, false);
 
@@ -183,8 +176,7 @@ _g_test_watcher_add_pid (GPid pid)
         0x2000 /* JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE */;
 
       if (!SetInformationJobObject (
-            job, JobObjectExtendedLimitInformation, &info,
-            sizeof (info)))
+            job, JobObjectExtendedLimitInformation, &info, sizeof (info)))
         g_warning (
           "Can't enable JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE: %s",
           g_win32_error_message (GetLastError ()));
@@ -258,8 +250,7 @@ watch_parent (gint fd)
         }
 
       /* Read the command from the input */
-      g_io_channel_read_line (
-        channel, &command, NULL, NULL, &error);
+      g_io_channel_read_line (channel, &command, NULL, NULL, &error);
       g_assert_no_error (error);
 
       /* Check for known commands */
@@ -285,8 +276,7 @@ watch_parent (gint fd)
         }
       else
         {
-          g_warning (
-            "unknown command from parent '%s'", command);
+          g_warning ("unknown command from parent '%s'", command);
         }
 
       g_free (command);
@@ -359,8 +349,7 @@ watcher_send_command (const gchar * command)
   channel = watcher_init ();
 
   do
-    status = g_io_channel_write_chars (
-      channel, command, -1, NULL, &error);
+    status = g_io_channel_write_chars (channel, command, -1, NULL, &error);
   while (status == G_IO_STATUS_AGAIN);
   g_assert_no_error (error);
 
@@ -419,20 +408,17 @@ make_pipe (gint pipe_fds[2], GError ** error)
 static void
 start_daemon (Zrythm * self)
 {
-  const gchar * argv[] = {
-    PIPEWIRE_BIN, "-c", PIPEWIRE_CONF_PATH, NULL
-  };
-  gint     pipe_fds[2] = { -1, -1 };
-  GError * error = NULL;
+  const gchar * argv[] = { PIPEWIRE_BIN, "-c", PIPEWIRE_CONF_PATH, NULL };
+  gint          pipe_fds[2] = { -1, -1 };
+  GError *      error = NULL;
 
   make_pipe (pipe_fds, &error);
   g_assert_no_error (error);
 
   g_message ("print address: %d", pipe_fds[1]);
 
-  const char * pipewire_runtime_dir =
-    g_getenv ("PIPEWIRE_RUNTIME_DIR");
-  bool success = io_mkdir (pipewire_runtime_dir, &error);
+  const char * pipewire_runtime_dir = g_getenv ("PIPEWIRE_RUNTIME_DIR");
+  bool         success = io_mkdir (pipewire_runtime_dir, &error);
   g_assert_true (success);
   g_assert_no_error (error);
 
@@ -444,8 +430,8 @@ start_daemon (Zrythm * self)
       /* dbus-daemon will not abuse our descriptors, and
                                      * passing this means we can use posix_spawn() for speed */
       G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
-    NULL, NULL, -1, -1, -1, &pipe_fds[1], &pipe_fds[1], 1,
-    &self->pipewire_pid, NULL, NULL, NULL, &error);
+    NULL, NULL, -1, -1, -1, &pipe_fds[1], &pipe_fds[1], 1, &self->pipewire_pid,
+    NULL, NULL, NULL, &error);
   g_assert_no_error (error);
 
   _g_test_watcher_add_pid (self->pipewire_pid);
@@ -457,8 +443,7 @@ stop_daemon (Zrythm * self)
 #ifdef G_OS_WIN32
   if (!TerminateProcess (self->pipewire_pid, 0))
     g_warning (
-      "Can't terminate process: %s",
-      g_win32_error_message (GetLastError ()));
+      "Can't terminate process: %s", g_win32_error_message (GetLastError ()));
 #else
   kill (self->pipewire_pid, SIGTERM);
 #endif
@@ -488,8 +473,7 @@ _test_helper_zrythm_init (
   if (use_pipewire)
     {
 #ifndef HAVE_PIPEWIRE
-      g_error (
-        "pipewire program not found but requested pipewire engine");
+      g_error ("pipewire program not found but requested pipewire engine");
 #endif
       ZRYTHM->use_pipewire_in_tests = use_pipewire;
       start_daemon (ZRYTHM);
@@ -498,8 +482,7 @@ _test_helper_zrythm_init (
   /* init logic - note: will use a random dir in
    * tmp as the user dir */
   GError * err = NULL;
-  bool     success =
-    zrythm_init_user_dirs_and_files (ZRYTHM, &err);
+  bool     success = zrythm_init_user_dirs_and_files (ZRYTHM, &err);
   g_assert_true (success);
   zrythm_init_templates (ZRYTHM);
 
@@ -513,14 +496,13 @@ _test_helper_zrythm_init (
   zrythm_app->buf_size = buf_size;
 
   /* init logging to custom file */
-  char * tmp_log_dir = g_build_filename (
-    g_get_tmp_dir (), "zrythm_test_logs", NULL);
+  char * tmp_log_dir =
+    g_build_filename (g_get_tmp_dir (), "zrythm_test_logs", NULL);
   success = io_mkdir (tmp_log_dir, NULL);
   g_assert_true (success);
   char * str_datetime = datetime_get_for_filename ();
   char * log_filepath = g_strdup_printf (
-    "%s%slog_%s.log", tmp_log_dir, G_DIR_SEPARATOR_S,
-    str_datetime);
+    "%s%slog_%s.log", tmp_log_dir, G_DIR_SEPARATOR_S, str_datetime);
   g_free (str_datetime);
   g_free (tmp_log_dir);
   success = log_init_with_file (LOG, log_filepath, NULL);
@@ -541,8 +523,8 @@ _test_helper_zrythm_init (
   /* append lv2 path for test plugins */
   char * tmp = PLUGIN_MANAGER->lv2_path;
   PLUGIN_MANAGER->lv2_path = g_strdup_printf (
-    "%s%s%s", PLUGIN_MANAGER->lv2_path,
-    G_SEARCHPATH_SEPARATOR_S, TESTS_BUILDDIR);
+    "%s%s%s", PLUGIN_MANAGER->lv2_path, G_SEARCHPATH_SEPARATOR_S,
+    TESTS_BUILDDIR);
   g_free (tmp);
 }
 
@@ -606,13 +588,11 @@ test_helper_zrythm_gui_init (int argc, char * argv[])
 
   /* set theme */
   g_object_set (
-    gtk_settings_get_default (), "gtk-theme-name",
-    "Matcha-dark-sea", NULL);
+    gtk_settings_get_default (), "gtk-theme-name", "Matcha-dark-sea", NULL);
   g_message ("set theme");
 
   GdkDisplay *   display = gdk_display_get_default ();
-  GtkIconTheme * icon_theme =
-    gtk_icon_theme_get_for_display (display);
+  GtkIconTheme * icon_theme = gtk_icon_theme_get_for_display (display);
   gtk_icon_theme_add_resource_path (
     icon_theme, "/org/zrythm/Zrythm/app/icons/breeze-icons");
   gtk_icon_theme_add_resource_path (

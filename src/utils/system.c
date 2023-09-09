@@ -61,9 +61,7 @@ system_run_cmd_w_args (
   opts.stop.third.timeout = REPROC_INFINITE;
   opts.deadline = ms_to_wait;
 
-  reproc_sink
-    stdout_sink = REPROC_SINK_NULL,
-    stderr_sink = REPROC_SINK_NULL;
+  reproc_sink stdout_sink = REPROC_SINK_NULL, stderr_sink = REPROC_SINK_NULL;
   if (out_stdout)
     {
       *out_stdout = NULL;
@@ -119,32 +117,27 @@ system_run_cmd (const char * cmd, long ms_timer)
   ZeroMemory (&pi, sizeof (pi));
   g_message ("attempting to run process %s", cmd);
   BOOL b = CreateProcess (
-    NULL, cmd, NULL, NULL, TRUE, DETACHED_PROCESS, NULL, NULL,
-    &si, &pi);
+    NULL, cmd, NULL, NULL, TRUE, DETACHED_PROCESS, NULL, NULL, &si, &pi);
   if (!b)
     {
       g_critical ("create process failed for %s", cmd);
       return -1;
     }
   /* wait for process to end */
-  DWORD dwMilliseconds =
-    ms_timer >= 0 ? (DWORD) ms_timer : INFINITE;
+  DWORD dwMilliseconds = ms_timer >= 0 ? (DWORD) ms_timer : INFINITE;
   WaitForSingleObject (pi.hProcess, dwMilliseconds);
   DWORD dwExitCode = 0;
   GetExitCodeProcess (pi.hProcess, &dwExitCode);
   /* close process and thread handles */
   CloseHandle (pi.hProcess);
   CloseHandle (pi.hThread);
-  g_message (
-    "windows process exit code: %d", (int) dwExitCode);
+  g_message ("windows process exit code: %d", (int) dwExitCode);
   return (int) dwExitCode;
 #else
   char timed_cmd[8000];
   if (ms_timer >= 0)
     {
-      sprintf (
-        timed_cmd, "timeout %ld bash -c \"%s\"",
-        ms_timer / 1000, cmd);
+      sprintf (timed_cmd, "timeout %ld bash -c \"%s\"", ms_timer / 1000, cmd);
     }
   return system (timed_cmd);
 #endif
@@ -156,10 +149,7 @@ typedef struct ChildWatchData
 } ChildWatchData;
 
 static gboolean
-watch_out_cb (
-  GIOChannel *     channel,
-  GIOCondition     cond,
-  ChildWatchData * data)
+watch_out_cb (GIOChannel * channel, GIOCondition cond, ChildWatchData * data)
 {
   data->exited = true;
 
@@ -180,21 +170,17 @@ watch_out_cb (
  *   wait.
  */
 char *
-system_get_cmd_output (
-  char ** argv,
-  long    ms_timer,
-  bool    always_wait)
+system_get_cmd_output (char ** argv, long ms_timer, bool always_wait)
 {
   GPid     pid;
   int      out, err;
   GError * g_err = NULL;
   bool     ret = g_spawn_async_with_pipes (
-    NULL, argv, NULL, G_SPAWN_DEFAULT, NULL, NULL, &pid, NULL,
-    &out, &err, &g_err);
+    NULL, argv, NULL, G_SPAWN_DEFAULT, NULL, NULL, &pid, NULL, &out, &err,
+    &g_err);
   if (!ret)
     {
-      g_warning (
-        "(%s) spawn failed: %s", __func__, g_err->message);
+      g_warning ("(%s) spawn failed: %s", __func__, g_err->message);
       return NULL;
     }
 
@@ -217,14 +203,11 @@ system_get_cmd_output (
        * for the full length of the timer if no
        * input is received */
       ChildWatchData data = { false };
-      g_io_add_watch (
-        out_ch, G_IO_IN, (GIOFunc) watch_out_cb, &data);
+      g_io_add_watch (out_ch, G_IO_IN, (GIOFunc) watch_out_cb, &data);
 
       gint64 time_at_start = g_get_monotonic_time ();
       gint64 cur_time = time_at_start;
-      while (
-        !data.exited
-        && (cur_time - time_at_start) < (1000 * ms_timer))
+      while (!data.exited && (cur_time - time_at_start) < (1000 * ms_timer))
         {
           g_usleep (10000);
           cur_time = g_get_monotonic_time ();
@@ -236,8 +219,7 @@ system_get_cmd_output (
 
   char *    str;
   gsize     size;
-  GIOStatus gio_status =
-    g_io_channel_read_to_end (out_ch, &str, &size, NULL);
+  GIOStatus gio_status = g_io_channel_read_to_end (out_ch, &str, &size, NULL);
   g_io_channel_unref (out_ch);
 
   if (gio_status == G_IO_STATUS_NORMAL)

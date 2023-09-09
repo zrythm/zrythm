@@ -34,9 +34,7 @@ typedef struct _SnapGridWidget
 } SnapGridWidget;
 
 void
-snap_grid_widget_setup (
-  SnapGridWidget * self,
-  SnapGrid *       snap_grid);
+snap_grid_widget_setup (SnapGridWidget * self, SnapGrid * snap_grid);
 
 void
 snap_grid_widget_refresh (SnapGridWidget * self);

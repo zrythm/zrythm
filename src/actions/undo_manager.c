@@ -24,8 +24,7 @@ typedef enum
   Z_ACTIONS_UNDO_MANAGER_ERROR_ACTION_FAILED,
 } ZActionsUndoManagerError;
 
-#define Z_ACTIONS_UNDO_MANAGER_ERROR \
-  z_actions_undo_manager_error_quark ()
+#define Z_ACTIONS_UNDO_MANAGER_ERROR z_actions_undo_manager_error_quark ()
 GQuark
 z_actions_undo_manager_error_quark (void);
 G_DEFINE_QUARK (
@@ -118,8 +117,7 @@ do_or_undo_action (
   if (ret != 0)
     {
       zix_sem_post (&self->action_sem);
-      g_warning (
-        "%s: action not performed (err %d)", __func__, ret);
+      g_warning ("%s: action not performed (err %d)", __func__, ret);
       return -1;
     }
   /* else if no error pop from the stack */
@@ -136,8 +134,8 @@ do_or_undo_action (
    * element */
   if (undo_stack_is_full (opposite_stack))
     {
-      UndoableAction * action_to_delete = (UndoableAction *)
-        undo_stack_pop_last (opposite_stack);
+      UndoableAction * action_to_delete =
+        (UndoableAction *) undo_stack_pop_last (opposite_stack);
 
       /* TODO create functions to delete
        * unnecessary files held by the action
@@ -178,8 +176,7 @@ undo_manager_undo (UndoManager * self, GError ** error)
   for (int i = 0; i < num_actions; i++)
     {
       g_message ("[ACTION %d/%d]", i + 1, num_actions);
-      action =
-        (UndoableAction *) undo_stack_peek (self->undo_stack);
+      action = (UndoableAction *) undo_stack_peek (self->undo_stack);
       if (i == 0)
         action->num_actions = 1;
       else if (i == num_actions - 1)
@@ -229,8 +226,7 @@ undo_manager_redo (UndoManager * self, GError ** error)
   for (int i = 0; i < num_actions; i++)
     {
       g_message ("[ACTION %d/%d]", i + 1, num_actions);
-      action =
-        (UndoableAction *) undo_stack_peek (self->redo_stack);
+      action = (UndoableAction *) undo_stack_peek (self->redo_stack);
       if (i == 0)
         action->num_actions = 1;
       else if (i == num_actions - 1)
@@ -267,10 +263,7 @@ undo_manager_redo (UndoManager * self, GError ** error)
  * @return Non-zero if error.
  */
 int
-undo_manager_perform (
-  UndoManager *    self,
-  UndoableAction * action,
-  GError **        error)
+undo_manager_perform (UndoManager * self, UndoableAction * action, GError ** error)
 {
   /* check that action is not already in the
    * stacks */
@@ -283,8 +276,8 @@ undo_manager_perform (
 
   /* if error return */
   GError * err = NULL;
-  int      ret = do_or_undo_action (
-    self, action, self->redo_stack, self->undo_stack, &err);
+  int      ret =
+    do_or_undo_action (self, action, self->redo_stack, self->undo_stack, &err);
   if (ret != 0)
     {
       PROPAGATE_PREFIXED_ERROR (
@@ -384,10 +377,8 @@ undo_manager_free (UndoManager * self)
 {
   g_message ("%s: freeing...", __func__);
 
-  object_free_w_func_and_null (
-    undo_stack_free, self->undo_stack);
-  object_free_w_func_and_null (
-    undo_stack_free, self->redo_stack);
+  object_free_w_func_and_null (undo_stack_free, self->undo_stack);
+  object_free_w_func_and_null (undo_stack_free, self->redo_stack);
 
   zix_sem_destroy (&self->action_sem);
 

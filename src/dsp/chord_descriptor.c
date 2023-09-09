@@ -105,8 +105,7 @@ chord_descriptor_update_notes (ChordDescriptor * self)
       break;
     }
 
-  unsigned int min_seventh_sems =
-    self->type == CHORD_TYPE_DIM ? 9 : 10;
+  unsigned int min_seventh_sems = self->type == CHORD_TYPE_DIM ? 9 : 10;
 
   /* add accents */
   switch (self->accent)
@@ -149,9 +148,7 @@ chord_descriptor_update_notes (ChordDescriptor * self)
     }
 
   /* add the 7th to accents > 7 */
-  if (
-    self->accent >= CHORD_ACC_b9
-    && self->accent <= CHORD_ACC_6_13)
+  if (self->accent >= CHORD_ACC_b9 && self->accent <= CHORD_ACC_6_13)
     {
       self->notes[12 + self->root_note + min_seventh_sems] = 1;
     }
@@ -195,16 +192,14 @@ ChordDescriptor *
 chord_descriptor_clone (const ChordDescriptor * src)
 {
   ChordDescriptor * cd = chord_descriptor_new (
-    src->root_note, src->has_bass, src->bass_note, src->type,
-    src->accent, src->inversion);
+    src->root_note, src->has_bass, src->bass_note, src->type, src->accent,
+    src->inversion);
 
   return cd;
 }
 
 void
-chord_descriptor_copy (
-  ChordDescriptor *       dest,
-  const ChordDescriptor * src)
+chord_descriptor_copy (ChordDescriptor * dest, const ChordDescriptor * src)
 {
   /* no allocated memory so memcpy is enough */
   memcpy (dest, src, sizeof (ChordDescriptor));
@@ -244,9 +239,7 @@ chord_descriptor_chord_accent_to_string (ChordAccent accent)
  * @param key A note inside a single octave (0-11).
  */
 bool
-chord_descriptor_is_key_bass (
-  ChordDescriptor * chord,
-  MusicalNote       key)
+chord_descriptor_is_key_bass (ChordDescriptor * chord, MusicalNote key)
 {
   if (chord->has_bass)
     {
@@ -265,9 +258,7 @@ chord_descriptor_is_key_bass (
  * @param key A note inside a single octave (0-11).
  */
 bool
-chord_descriptor_is_key_in_chord (
-  ChordDescriptor * chord,
-  MusicalNote       key)
+chord_descriptor_is_key_in_chord (ChordDescriptor * chord, MusicalNote key)
 {
   if (chord_descriptor_is_key_bass (chord, key))
     {
@@ -299,29 +290,21 @@ chord_descriptor_to_new_string (const ChordDescriptor * chord)
  * Returns the chord in human readable string.
  */
 void
-chord_descriptor_to_string (
-  const ChordDescriptor * chord,
-  char *                  str)
+chord_descriptor_to_string (const ChordDescriptor * chord, char * str)
 {
   sprintf (
-    str, "%s%s",
-    chord_descriptor_note_to_string (chord->root_note),
+    str, "%s%s", chord_descriptor_note_to_string (chord->root_note),
     chord_descriptor_chord_type_to_string (chord->type));
 
   if (chord->accent > CHORD_ACC_NONE)
     {
       strcat (str, " ");
-      strcat (
-        str,
-        chord_descriptor_chord_accent_to_string (
-          chord->accent));
+      strcat (str, chord_descriptor_chord_accent_to_string (chord->accent));
     }
   if (chord->has_bass && (chord->bass_note != chord->root_note))
     {
       strcat (str, "/");
-      strcat (
-        str,
-        chord_descriptor_note_to_string (chord->bass_note));
+      strcat (str, chord_descriptor_note_to_string (chord->bass_note));
     }
 
   if (chord->inversion != 0)

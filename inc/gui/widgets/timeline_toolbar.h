@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define TIMELINE_TOOLBAR_WIDGET_TYPE \
-  (timeline_toolbar_widget_get_type ())
+#define TIMELINE_TOOLBAR_WIDGET_TYPE (timeline_toolbar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TimelineToolbarWidget,
   timeline_toolbar_widget,
@@ -21,12 +20,11 @@ G_DECLARE_FINAL_TYPE (
   TIMELINE_TOOLBAR_WIDGET,
   GtkBox)
 
-typedef struct _QuantizeMbWidget  QuantizeMbWidget;
-typedef struct _QuantizeBoxWidget QuantizeBoxWidget;
-typedef struct _SnapGridWidget    SnapGridWidget;
-typedef struct _RangeActionButtonsWidget
-                                  RangeActionButtonsWidget;
-typedef struct _ZoomButtonsWidget ZoomButtonsWidget;
+typedef struct _QuantizeMbWidget         QuantizeMbWidget;
+typedef struct _QuantizeBoxWidget        QuantizeBoxWidget;
+typedef struct _SnapGridWidget           SnapGridWidget;
+typedef struct _RangeActionButtonsWidget RangeActionButtonsWidget;
+typedef struct _ZoomButtonsWidget        ZoomButtonsWidget;
 
 /**
  * @addtogroup widgets
@@ -34,8 +32,7 @@ typedef struct _ZoomButtonsWidget ZoomButtonsWidget;
  * @{
  */
 
-#define MW_TIMELINE_TOOLBAR \
-  MW_TIMELINE_PANEL->timeline_toolbar
+#define MW_TIMELINE_TOOLBAR MW_TIMELINE_PANEL->timeline_toolbar
 
 /**
  * The Timeline toolbar in the top.

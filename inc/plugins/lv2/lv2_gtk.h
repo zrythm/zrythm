@@ -75,10 +75,7 @@ lv2_gtk_ui_port_event (
  * changes value.
  */
 void
-lv2_gtk_set_float_control (
-  Lv2Plugin * lv2_plugin,
-  Port *      port,
-  float       value);
+lv2_gtk_set_float_control (Lv2Plugin * lv2_plugin, Port * port, float value);
 
 /**
  * Opens the LV2 plugin's UI (either wrapped with
@@ -121,14 +118,10 @@ lv2_gtk_on_save_preset_activate (
   bool         add_prefix);
 
 GtkWidget *
-lv2_gtk_build_control_widget (
-  Lv2Plugin * plugin,
-  GtkWindow * window);
+lv2_gtk_build_control_widget (Lv2Plugin * plugin, GtkWindow * window);
 
 void
-lv2_gtk_on_delete_preset_activate (
-  GtkWidget * widget,
-  Lv2Plugin * plugin);
+lv2_gtk_on_delete_preset_activate (GtkWidget * widget, Lv2Plugin * plugin);
 
 /**
  * @}

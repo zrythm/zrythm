@@ -6,8 +6,7 @@
 
 #include <gtk/gtk.h>
 
-#define MODULATOR_INNER_WIDGET_TYPE \
-  (modulator_inner_widget_get_type ())
+#define MODULATOR_INNER_WIDGET_TYPE (modulator_inner_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ModulatorInnerWidget,
   modulator_inner_widget,
@@ -15,11 +14,10 @@ G_DECLARE_FINAL_TYPE (
   MODULATOR_INNER_WIDGET,
   GtkBox)
 
-typedef struct _KnobWithNameWidget KnobWithNameWidget;
-typedef struct _LiveWaveformWidget LiveWaveformWidget;
-typedef struct _ModulatorWidget    ModulatorWidget;
-typedef struct _PortConnectionsPopoverWidget
-  PortConnectionsPopoverWidget;
+typedef struct _KnobWithNameWidget           KnobWithNameWidget;
+typedef struct _LiveWaveformWidget           LiveWaveformWidget;
+typedef struct _ModulatorWidget              ModulatorWidget;
+typedef struct _PortConnectionsPopoverWidget PortConnectionsPopoverWidget;
 
 typedef struct _ModulatorInnerWidget
 {

@@ -42,8 +42,7 @@
  */
 #define RW_PX_TO_HIDE_BEATS 40.0
 
-#define CUSTOM_IMAGE_WIDGET_TYPE \
-  (custom_image_widget_get_type ())
+#define CUSTOM_IMAGE_WIDGET_TYPE (custom_image_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   CustomImageWidget,
   custom_image_widget,
@@ -67,9 +66,7 @@ typedef struct _CustomImageWidget
 } CustomImageWidget;
 
 void
-custom_image_widget_set_texture (
-  CustomImageWidget * self,
-  GdkTexture *        texture);
+custom_image_widget_set_texture (CustomImageWidget * self, GdkTexture * texture);
 
 /**
  * @}

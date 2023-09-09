@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define PORT_INFO_DIALOG_WIDGET_TYPE \
-  (port_info_dialog_widget_get_type ())
+#define PORT_INFO_DIALOG_WIDGET_TYPE (port_info_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PortInfoDialogWidget,
   port_info_dialog_widget,

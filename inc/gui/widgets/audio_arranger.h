@@ -36,9 +36,7 @@
 #define MW_AUDIO_ARRANGER MW_AUDIO_EDITOR_SPACE->arranger
 
 void
-audio_arranger_widget_snap_range_r (
-  ArrangerWidget * self,
-  Position *       pos);
+audio_arranger_widget_snap_range_r (ArrangerWidget * self, Position * pos);
 
 /**
  * Returns whether the cursor is inside a fade
@@ -62,14 +60,10 @@ audio_arranger_widget_is_cursor_in_fade (
  * Returns whether the cursor touches the gain line.
  */
 bool
-audio_arranger_widget_is_cursor_gain (
-  ArrangerWidget * self,
-  double           x,
-  double           y);
+audio_arranger_widget_is_cursor_gain (ArrangerWidget * self, double x, double y);
 
 UiOverlayAction
-audio_arranger_widget_get_action_on_drag_begin (
-  ArrangerWidget * self);
+audio_arranger_widget_get_action_on_drag_begin (ArrangerWidget * self);
 
 /**
  * Handle fade in/out curviness drag.
@@ -81,9 +75,7 @@ audio_arranger_widget_fade_up (
   bool             fade_in);
 
 void
-audio_arranger_widget_update_gain (
-  ArrangerWidget * self,
-  double           offset_y);
+audio_arranger_widget_update_gain (ArrangerWidget * self, double offset_y);
 
 /**
  * Updates the fade position during drag update.

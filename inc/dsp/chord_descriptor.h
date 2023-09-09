@@ -175,14 +175,8 @@ typedef struct ChordDescriptor
 static const cyaml_schema_field_t chord_descriptor_fields_schema[] = {
   YAML_FIELD_INT (ChordDescriptor, schema_version),
   YAML_FIELD_INT (ChordDescriptor, has_bass),
-  YAML_FIELD_ENUM (
-    ChordDescriptor,
-    root_note,
-    musical_note_strings),
-  YAML_FIELD_ENUM (
-    ChordDescriptor,
-    bass_note,
-    musical_note_strings),
+  YAML_FIELD_ENUM (ChordDescriptor, root_note, musical_note_strings),
+  YAML_FIELD_ENUM (ChordDescriptor, bass_note, musical_note_strings),
   YAML_FIELD_ENUM (ChordDescriptor, type, chord_type_strings),
   YAML_FIELD_ENUM (ChordDescriptor, accent, chord_accent_strings),
   CYAML_FIELD_SEQUENCE_FIXED (
@@ -217,8 +211,7 @@ chord_descriptor_new (
   int         inversion);
 
 static inline int
-chord_descriptor_get_max_inversion (
-  const ChordDescriptor * const self)
+chord_descriptor_get_max_inversion (const ChordDescriptor * const self)
 {
   int max_inv = 2;
   switch (self->accent)
@@ -246,8 +239,7 @@ chord_descriptor_get_max_inversion (
 }
 
 static inline int
-chord_descriptor_get_min_inversion (
-  const ChordDescriptor * const self)
+chord_descriptor_get_min_inversion (const ChordDescriptor * const self)
 {
   return -chord_descriptor_get_max_inversion (self);
 }
@@ -265,9 +257,7 @@ chord_descriptor_are_notes_equal (int * notes_a, int * notes_b)
 }
 
 static inline int
-chord_descriptor_is_equal (
-  ChordDescriptor * a,
-  ChordDescriptor * b)
+chord_descriptor_is_equal (ChordDescriptor * a, ChordDescriptor * b)
 {
   return a->has_bass == b->has_bass && a->root_note == b->root_note
          && a->bass_note == b->bass_note && a->type == b->type
@@ -282,9 +272,7 @@ chord_descriptor_is_equal (
  * @param key A note inside a single octave (0-11).
  */
 bool
-chord_descriptor_is_key_in_chord (
-  ChordDescriptor * chord,
-  MusicalNote       key);
+chord_descriptor_is_key_in_chord (ChordDescriptor * chord, MusicalNote key);
 
 /**
  * Returns if @ref key is the bass or root note of
@@ -293,9 +281,7 @@ chord_descriptor_is_key_in_chord (
  * @param key A note inside a single octave (0-11).
  */
 bool
-chord_descriptor_is_key_bass (
-  ChordDescriptor * chord,
-  MusicalNote       key);
+chord_descriptor_is_key_bass (ChordDescriptor * chord, MusicalNote key);
 
 /**
  * Clones the given ChordDescriptor.
@@ -304,9 +290,7 @@ ChordDescriptor *
 chord_descriptor_clone (const ChordDescriptor * src);
 
 void
-chord_descriptor_copy (
-  ChordDescriptor *       dest,
-  const ChordDescriptor * src);
+chord_descriptor_copy (ChordDescriptor * dest, const ChordDescriptor * src);
 
 /**
  * Returns the chord type as a string (eg. "aug").
@@ -338,9 +322,7 @@ chord_descriptor_to_new_string (const ChordDescriptor * chord);
  * Returns the chord in human readable string.
  */
 NONNULL void
-chord_descriptor_to_string (
-  const ChordDescriptor * chord,
-  char *                  str);
+chord_descriptor_to_string (const ChordDescriptor * chord, char * str);
 
 /**
  * Updates the notes array based on the current

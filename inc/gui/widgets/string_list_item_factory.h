@@ -18,8 +18,7 @@
  * @{
  */
 
-typedef const char * (
-  *StringListItemFactoryEnumStringGetter) (int val);
+typedef const char * (*StringListItemFactoryEnumStringGetter) (int val);
 
 /**
  * Returns a simple item factory that puts each string in a
@@ -28,8 +27,7 @@ typedef const char * (
  * Can be used with AdwEnumListItem and GtkStringObject.
  */
 GtkListItemFactory *
-string_list_item_factory_new (
-  StringListItemFactoryEnumStringGetter getter);
+string_list_item_factory_new (StringListItemFactoryEnumStringGetter getter);
 
 /**
  * @}

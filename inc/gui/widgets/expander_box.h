@@ -16,8 +16,7 @@
 
 #include <gtk/gtk.h>
 
-#define EXPANDER_BOX_WIDGET_TYPE \
-  (expander_box_widget_get_type ())
+#define EXPANDER_BOX_WIDGET_TYPE (expander_box_widget_get_type ())
 G_DECLARE_DERIVABLE_TYPE (
   ExpanderBoxWidget,
   expander_box_widget,
@@ -79,9 +78,7 @@ expander_box_widget_get_private (ExpanderBoxWidget * self);
  * Sets the label to show.
  */
 void
-expander_box_widget_set_label (
-  ExpanderBoxWidget * self,
-  const char *        label);
+expander_box_widget_set_label (ExpanderBoxWidget * self, const char * label);
 
 /**
  * Sets the icon name to show.
@@ -100,24 +97,19 @@ expander_box_widget_set_icon_resource (
   IconType            icon_type,
   const char *        path)
 {
-  ExpanderBoxWidgetPrivate * prv =
-    expander_box_widget_get_private (self);
+  ExpanderBoxWidgetPrivate * prv = expander_box_widget_get_private (self);
 
   resources_set_image_icon (prv->btn_img, icon_type, path);
 }
 
 void
-expander_box_widget_add_content (
-  ExpanderBoxWidget * self,
-  GtkWidget *         content);
+expander_box_widget_add_content (ExpanderBoxWidget * self, GtkWidget * content);
 
 /**
  * Reveals or hides the expander box's contents.
  */
 void
-expander_box_widget_set_reveal (
-  ExpanderBoxWidget * self,
-  int                 reveal);
+expander_box_widget_set_reveal (ExpanderBoxWidget * self, int reveal);
 
 void
 expander_box_widget_set_reveal_callback (
@@ -131,9 +123,7 @@ expander_box_widget_set_orientation (
   GtkOrientation      orientation);
 
 void
-expander_box_widget_set_vexpand (
-  ExpanderBoxWidget * self,
-  bool                expand);
+expander_box_widget_set_vexpand (ExpanderBoxWidget * self, bool expand);
 
 ExpanderBoxWidget *
 expander_box_widget_new (

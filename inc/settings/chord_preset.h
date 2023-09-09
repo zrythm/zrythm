@@ -46,11 +46,7 @@ typedef struct ChordPreset
 
 static const cyaml_schema_field_t chord_preset_fields_schema[] = {
   YAML_FIELD_INT (ChordPreset, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    ChordPreset,
-    descr,
-    chord_descriptor_schema,
-    12),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (ChordPreset, descr, chord_descriptor_schema, 12),
   YAML_FIELD_STRING_PTR (ChordPreset, name),
 
   CYAML_FIELD_END

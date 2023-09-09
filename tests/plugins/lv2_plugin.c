@@ -28,13 +28,11 @@ test_lilv_instance_activation (void)
         HELM_BUNDLE, HELM_URI, true, false, 1);
 
       Plugin * pl =
-        TRACKLIST->tracks[TRACKLIST->num_tracks - 1]
-          ->channel->instrument;
+        TRACKLIST->tracks[TRACKLIST->num_tracks - 1]->channel->instrument;
       g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
       EngineState state;
-      engine_wait_for_pause (
-        AUDIO_ENGINE, &state, false, true);
+      engine_wait_for_pause (AUDIO_ENGINE, &state, false, true);
 
       lilv_instance_deactivate (pl->lv2->instance);
       lilv_instance_activate (pl->lv2->instance);
@@ -53,12 +51,10 @@ test_lilv_instance_activation (void)
 static void
 check_state_contains_wav (void)
 {
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track *  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->instrument;
-  char *   state_dir =
-    plugin_get_abs_state_dir (pl, false, false);
-  char * state_file =
-    g_build_filename (state_dir, "state.ttl", NULL);
+  char *   state_dir = plugin_get_abs_state_dir (pl, false, false);
+  char *   state_file = g_build_filename (state_dir, "state.ttl", NULL);
   GError * err = NULL;
   char *   content = NULL;
   g_file_get_contents (state_file, &content, NULL, &err);
@@ -79,18 +75,16 @@ test_save_state_w_files (void)
   test_helper_zrythm_init ();
 
   test_plugin_manager_create_tracks_from_plugin (
-    LSP_MULTISAMPLER_24_DO_BUNDLE, LSP_MULTISAMPLER_24_DO_URI,
-    true, false, 1);
+    LSP_MULTISAMPLER_24_DO_BUNDLE, LSP_MULTISAMPLER_24_DO_URI, true, false, 1);
 
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track *  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->instrument;
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
   char * pset_bundle_path = g_build_filename (
     TESTS_BUILDDIR, "presets",
     "LSP_Multi_Sampler_x24_DirectOut_test.preset.lv2", NULL);
-  char * pset_bundle_path_uri =
-    g_strdup_printf ("file://%s/", pset_bundle_path);
+  char * pset_bundle_path_uri = g_strdup_printf ("file://%s/", pset_bundle_path);
   LilvNode * pset_path_uri_node =
     lilv_new_uri (LILV_WORLD, pset_bundle_path_uri);
   lilv_world_load_bundle (LILV_WORLD, pset_path_uri_node);
@@ -107,31 +101,25 @@ test_save_state_w_files (void)
       g_message ("Preset <%s>", lilv_node_as_string (preset));
 
       LilvNodes * labels = lilv_world_find_nodes (
-        LILV_WORLD, preset,
-        PM_GET_NODE (LILV_NS_RDFS "label"), NULL);
+        LILV_WORLD, preset, PM_GET_NODE (LILV_NS_RDFS "label"), NULL);
       if (labels)
         {
-          const LilvNode * label =
-            lilv_nodes_get_first (labels);
+          const LilvNode * label = lilv_nodes_get_first (labels);
           g_message ("label: %s", lilv_node_as_string (label));
           lilv_nodes_free (labels);
         }
       else
         {
           g_message (
-            "Preset <%s> has no rdfs:label\n",
-            lilv_node_as_string (preset));
+            "Preset <%s> has no rdfs:label\n", lilv_node_as_string (preset));
         }
     }
   lilv_nodes_free (presets);
 
-  char * pset_uri = g_strdup_printf (
-    "%s%s", pset_bundle_path_uri, "test2.ttl");
-  LilvNode * pset_uri_node =
-    lilv_new_uri (LILV_WORLD, pset_uri);
+  char * pset_uri = g_strdup_printf ("%s%s", pset_bundle_path_uri, "test2.ttl");
+  LilvNode * pset_uri_node = lilv_new_uri (LILV_WORLD, pset_uri);
   g_assert_nonnull (pset_uri_node);
-  bool applied = lv2_state_apply_preset (
-    pl->lv2, pset_uri_node, NULL, NULL);
+  bool applied = lv2_state_apply_preset (pl->lv2, pset_uri_node, NULL, NULL);
   g_assert_true (applied);
   lilv_node_free (pset_uri_node);
 
@@ -139,13 +127,12 @@ test_save_state_w_files (void)
   Position pos, end_pos;
   position_init (&pos);
   position_set_to_bar (&end_pos, 3);
-  ZRegion * r = midi_region_new (
-    &pos, &end_pos, track_get_name_hash (track), 0, 0);
-  bool success = track_add_region (
-    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
+  ZRegion * r =
+    midi_region_new (&pos, &end_pos, track_get_name_hash (track), 0, 0);
+  bool success =
+    track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
-  MidiNote * mn =
-    midi_note_new (&r->id, &pos, &end_pos, 57, 120);
+  MidiNote * mn = midi_note_new (&r->id, &pos, &end_pos, 57, 120);
   midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
 
   /* stop dummy audio engine processing so we can
@@ -167,8 +154,7 @@ test_save_state_w_files (void)
   lilv_state_free (state);
   check_state_contains_wav ();
 
-  success = project_save (
-    PROJECT, PROJECT->dir, false, false, F_NO_ASYNC, NULL);
+  success = project_save (PROJECT, PROJECT->dir, false, false, F_NO_ASYNC, NULL);
   g_assert_true (success);
   check_state_contains_wav ();
 
@@ -202,7 +188,7 @@ test_reloading_project_with_instrument (
   test_plugin_manager_create_tracks_from_plugin (
     pl_bundle, pl_uri, true, true, 1);
 
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track *  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->instrument;
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
@@ -232,8 +218,7 @@ static void
 test_lots_of_params (void)
 {
 #ifdef HAVE_SFIZZ
-  test_reloading_project_with_instrument (
-    SFIZZ_BUNDLE, SFIZZ_URI);
+  test_reloading_project_with_instrument (SFIZZ_BUNDLE, SFIZZ_URI);
 #endif
 }
 
@@ -244,8 +229,7 @@ static void
 test_reloading_drops_project (void)
 {
 #ifdef HAVE_DROPS
-  test_reloading_project_with_instrument (
-    DROPS_BUNDLE, DROPS_URI);
+  test_reloading_project_with_instrument (DROPS_BUNDLE, DROPS_URI);
 #endif
 }
 
@@ -261,7 +245,7 @@ test_process (void)
   test_plugin_manager_create_tracks_from_plugin (
     TEST_SIGNAL_BUNDLE, TEST_SIGNAL_URI, false, false, 1);
 
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track *  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->inserts[0];
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
@@ -285,8 +269,7 @@ test_process (void)
   time_nfo.local_offset = local_offset;
   time_nfo.nframes = AUDIO_ENGINE->block_length - local_offset;
   lv2_plugin_process (pl->lv2, &time_nfo);
-  for (nframes_t i = local_offset;
-       i < AUDIO_ENGINE->block_length; i++)
+  for (nframes_t i = local_offset; i < AUDIO_ENGINE->block_length; i++)
     {
       g_assert_true (fabsf (out->buf[i]) > 1e-10f);
     }
@@ -318,8 +301,7 @@ main (int argc, char * argv[])
     (GTestFunc) test_reloading_drops_project);
 #endif
   g_test_add_func (
-    TEST_PREFIX "test lots of params",
-    (GTestFunc) test_lots_of_params);
+    TEST_PREFIX "test lots of params", (GTestFunc) test_lots_of_params);
 
   (void) test_save_state_w_files;
   (void) test_lilv_instance_activation;

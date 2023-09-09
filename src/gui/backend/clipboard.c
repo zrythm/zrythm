@@ -10,9 +10,7 @@
  * arranger selections.
  */
 Clipboard *
-clipboard_new_for_arranger_selections (
-  ArrangerSelections * sel,
-  bool                 clone)
+clipboard_new_for_arranger_selections (ArrangerSelections * sel, bool clone)
 {
   Clipboard * self = object_new (Clipboard);
 
@@ -51,9 +49,7 @@ clipboard_new_for_arranger_selections (
 }
 
 Clipboard *
-clipboard_new_for_mixer_selections (
-  MixerSelections * sel,
-  bool              clone)
+clipboard_new_for_mixer_selections (MixerSelections * sel, bool clone)
 {
   Clipboard * self = object_new (Clipboard);
 
@@ -69,9 +65,7 @@ clipboard_new_for_mixer_selections (
 }
 
 Clipboard *
-clipboard_new_for_tracklist_selections (
-  TracklistSelections * sel,
-  bool                  clone)
+clipboard_new_for_tracklist_selections (TracklistSelections * sel, bool clone)
 {
   Clipboard * self = object_new (Clipboard);
 
@@ -135,8 +129,7 @@ clipboard_free (Clipboard * self)
     case CLIPBOARD_TYPE_CHORD_SELECTIONS:
     case CLIPBOARD_TYPE_AUDIO_SELECTIONS:
       {
-        ArrangerSelections * sel =
-          clipboard_get_selections (self);
+        ArrangerSelections * sel = clipboard_get_selections (self);
         g_return_if_fail (sel);
         arranger_selections_free_full (sel);
       }

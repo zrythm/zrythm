@@ -62,13 +62,11 @@ true_peak_dsp_process (TruePeakDsp * self, float * data, int n)
   self->src->out_data = self->buf;
   zita_resampler_process (self->src);
 
-  float v;
-  float m = self->res ? 0 : self->m;
-  float p = self->res ? 0 : self->p;
-  float z1 =
-    self->z1 > 20 ? 20 : (self->z1 < 0 ? 0 : self->z1);
-  float z2 =
-    self->z2 > 20 ? 20 : (self->z2 < 0 ? 0 : self->z2);
+  float   v;
+  float   m = self->res ? 0 : self->m;
+  float   p = self->res ? 0 : self->p;
+  float   z1 = self->z1 > 20 ? 20 : (self->z1 < 0 ? 0 : self->z1);
+  float   z2 = self->z2 > 20 ? 20 : (self->z2 < 0 ? 0 : self->z2);
   float * b = self->buf;
 
   while (n--)
@@ -198,8 +196,8 @@ void
 true_peak_dsp_init (TruePeakDsp * self, float samplerate)
 {
   zita_resampler_setup_with_frel (
-    self->src, (unsigned int) samplerate,
-    (unsigned int) (samplerate * 4.f), 1, 24, 1.0);
+    self->src, (unsigned int) samplerate, (unsigned int) (samplerate * 4.f), 1,
+    24, 1.0);
   self->buf = (float *) g_malloc (32768 * sizeof (float));
 
   self->z1 = self->z2 = .0f;

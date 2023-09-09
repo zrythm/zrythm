@@ -176,10 +176,7 @@ void *
 graph_node_get_pointer (GraphNode * self);
 
 void
-graph_node_print_to_str (
-  GraphNode * node,
-  char *      buf,
-  size_t      buf_sz);
+graph_node_print_to_str (GraphNode * node, char * buf, size_t buf_sz);
 
 void
 graph_node_print (GraphNode * node);
@@ -188,9 +185,7 @@ graph_node_print (GraphNode * node);
  * Processes the GraphNode.
  */
 HOT void
-graph_node_process (
-  GraphNode *           node,
-  EngineProcessTimeInfo time_nfo);
+graph_node_process (GraphNode * node, EngineProcessTimeInfo time_nfo);
 
 /**
  * Returns the latency of only the given port, without adding
@@ -211,9 +206,7 @@ graph_node_get_single_playback_latency (GraphNode * node);
  * latency so far.
  */
 void
-graph_node_set_route_playback_latency (
-  GraphNode * node,
-  nframes_t   dest_latency);
+graph_node_set_route_playback_latency (GraphNode * node, nframes_t dest_latency);
 
 /**
  * Called by an upstream node when it has completed

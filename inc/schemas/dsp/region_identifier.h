@@ -39,34 +39,25 @@ typedef struct RegionIdentifier_v1
   int           idx;
 } RegionIdentifier_v1;
 
-static const cyaml_schema_field_t
-  region_identifier_fields_schema_v1[] = {
-    YAML_FIELD_INT (RegionIdentifier_v1, schema_version),
-    YAML_FIELD_BITFIELD (
-      RegionIdentifier_v1,
-      type,
-      region_type_bitvals_v1),
-    YAML_FIELD_INT (RegionIdentifier_v1, link_group),
-    YAML_FIELD_UINT (RegionIdentifier, track_name_hash),
-    YAML_FIELD_INT (RegionIdentifier_v1, lane_pos),
-    YAML_FIELD_INT (RegionIdentifier_v1, at_idx),
-    YAML_FIELD_INT (RegionIdentifier_v1, idx),
+static const cyaml_schema_field_t region_identifier_fields_schema_v1[] = {
+  YAML_FIELD_INT (RegionIdentifier_v1, schema_version),
+  YAML_FIELD_BITFIELD (RegionIdentifier_v1, type, region_type_bitvals_v1),
+  YAML_FIELD_INT (RegionIdentifier_v1, link_group),
+  YAML_FIELD_UINT (RegionIdentifier, track_name_hash),
+  YAML_FIELD_INT (RegionIdentifier_v1, lane_pos),
+  YAML_FIELD_INT (RegionIdentifier_v1, at_idx),
+  YAML_FIELD_INT (RegionIdentifier_v1, idx),
 
-    CYAML_FIELD_END
-  };
-
-static const cyaml_schema_value_t region_identifier_schema_v1 = {
-  YAML_VALUE_PTR (
-    RegionIdentifier_v1,
-    region_identifier_fields_schema_v1),
+  CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-  region_identifier_schema_default_v1 = {
-    YAML_VALUE_DEFAULT (
-      RegionIdentifier_v1,
-      region_identifier_fields_schema_v1),
-  };
+static const cyaml_schema_value_t region_identifier_schema_v1 = {
+  YAML_VALUE_PTR (RegionIdentifier_v1, region_identifier_fields_schema_v1),
+};
+
+static const cyaml_schema_value_t region_identifier_schema_default_v1 = {
+  YAML_VALUE_DEFAULT (RegionIdentifier_v1, region_identifier_fields_schema_v1),
+};
 
 RegionIdentifier *
 region_identifier_upgrade_from_v1 (RegionIdentifier_v1 * old);

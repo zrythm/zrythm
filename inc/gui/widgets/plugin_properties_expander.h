@@ -31,11 +31,10 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _EditableLabelWidget EditableLabelWidget;
-typedef struct _PluginPresetSelectorWidget
-                      PluginPresetSelectorWidget;
-typedef struct Track  Track;
-typedef struct Plugin Plugin;
+typedef struct _EditableLabelWidget        EditableLabelWidget;
+typedef struct _PluginPresetSelectorWidget PluginPresetSelectorWidget;
+typedef struct Track                       Track;
+typedef struct Plugin                      Plugin;
 
 #define PLUGIN_PROPERTIES_EXPANDER_WIDGET_TYPE \
   (plugin_properties_expander_widget_get_type ())

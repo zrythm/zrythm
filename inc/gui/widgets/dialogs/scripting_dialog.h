@@ -18,8 +18,7 @@
 #include <gtksourceview/gtksource.h>
 #pragma GCC diagnostic pop
 
-#define SCRIPTING_DIALOG_WIDGET_TYPE \
-  (scripting_dialog_widget_get_type ())
+#define SCRIPTING_DIALOG_WIDGET_TYPE (scripting_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ScriptingDialogWidget,
   scripting_dialog_widget,

@@ -34,8 +34,7 @@ get_delay_port (Plugin * pl)
 {
   for (int i = 0; i < pl->num_in_ports; i++)
     {
-      if (string_is_equal_ignore_case (
-            pl->in_ports[i]->id.label, "Delay Time"))
+      if (string_is_equal_ignore_case (pl->in_ports[i]->id.label, "Delay Time"))
         {
           return pl->in_ports[i];
           break;
@@ -56,16 +55,14 @@ _test (
     pl_bundle, pl_uri, is_instrument, with_carla, 1);
 
   Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
-  int orig_track_pos = track->pos;
+  int     orig_track_pos = track->pos;
 
-  PluginSetting * setting =
-    test_plugin_manager_get_plugin_setting (
-      NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI, with_carla);
+  PluginSetting * setting = test_plugin_manager_get_plugin_setting (
+    NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI, with_carla);
 
   /* 2. add no delay line */
   mixer_selections_action_perform_create (
-    PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0,
-    setting, 1, NULL);
+    PLUGIN_SLOT_INSERT, track_get_name_hash (track), 0, setting, 1, NULL);
 
   /* 3. set delay to high value */
   Plugin * pl = track->channel->inserts[0];
@@ -80,8 +77,7 @@ _test (
 
   /* recalculate graph to update latencies */
   router_recalc_graph (ROUTER, F_SOFT);
-  GraphNode * node =
-    graph_find_node_from_track (ROUTER->graph, track, false);
+  GraphNode * node = graph_find_node_from_track (ROUTER->graph, track, false);
   g_assert_true (node);
   g_assert_cmpint (latency, ==, node->route_playback_latency);
 
@@ -106,8 +102,7 @@ _test (
   setting = test_plugin_manager_get_plugin_setting (
     NO_DELAY_LINE_BUNDLE, NO_DELAY_LINE_URI, with_carla);
   Track * new_track = track_create_for_plugin_at_idx_w_action (
-    TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->num_tracks,
-    NULL);
+    TRACK_TYPE_AUDIO_BUS, setting, TRACKLIST->num_tracks, NULL);
 
   pl = new_track->channel->inserts[0];
   port = get_delay_port (pl);
@@ -122,12 +117,10 @@ _test (
 
   /* recalculate graph to update latencies */
   router_recalc_graph (ROUTER, F_SOFT);
-  node = graph_find_node_from_track (
-    ROUTER->graph, P_TEMPO_TRACK, false);
+  node = graph_find_node_from_track (ROUTER->graph, P_TEMPO_TRACK, false);
   g_assert_true (node);
   g_assert_cmpint (latency2, ==, node->route_playback_latency);
-  node = graph_find_node_from_track (
-    ROUTER->graph, new_track, false);
+  node = graph_find_node_from_track (ROUTER->graph, new_track, false);
   g_assert_true (node);
   g_assert_cmpint (latency2, ==, node->route_playback_latency);
 
@@ -158,8 +151,7 @@ _test (
 
   /* recalculate graph to update latencies */
   router_recalc_graph (ROUTER, F_SOFT);
-  node = graph_find_node_from_track (
-    ROUTER->graph, P_TEMPO_TRACK, false);
+  node = graph_find_node_from_track (ROUTER->graph, P_TEMPO_TRACK, false);
   g_assert_true (node);
   g_assert_cmpint (node->route_playback_latency, ==, 0);
 }

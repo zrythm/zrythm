@@ -87,9 +87,8 @@ chord_preset_set_name (ChordPreset * self, const char * name)
 GMenuModel *
 chord_preset_generate_context_menu (const ChordPreset * self)
 {
-  ChordPresetPack * pack =
-    chord_preset_pack_manager_get_pack_for_preset (
-      CHORD_PRESET_PACK_MANAGER, self);
+  ChordPresetPack * pack = chord_preset_pack_manager_get_pack_for_preset (
+    CHORD_PRESET_PACK_MANAGER, self);
   g_return_val_if_fail (pack, NULL);
   if (pack->is_standard)
     return NULL;
@@ -100,14 +99,12 @@ chord_preset_generate_context_menu (const ChordPreset * self)
 
   /* rename */
   sprintf (action, "app.rename-chord-preset::%p", self);
-  menuitem = z_gtk_create_menu_item (
-    _ ("_Rename"), "edit-rename", action);
+  menuitem = z_gtk_create_menu_item (_ ("_Rename"), "edit-rename", action);
   g_menu_append_item (menu, menuitem);
 
   /* delete */
   sprintf (action, "app.delete-chord-preset::%p", self);
-  menuitem = z_gtk_create_menu_item (
-    _ ("_Delete"), "edit-delete", action);
+  menuitem = z_gtk_create_menu_item (_ ("_Delete"), "edit-delete", action);
   g_menu_append_item (menu, menuitem);
 
   return G_MENU_MODEL (menu);
@@ -123,8 +120,7 @@ chord_preset_free (ChordPreset * self)
 
   for (int i = 0; i < 12; i++)
     {
-      object_free_w_func_and_null (
-        chord_descriptor_free, self->descr[i]);
+      object_free_w_func_and_null (chord_descriptor_free, self->descr[i]);
     }
 
   object_zero_and_free (self);

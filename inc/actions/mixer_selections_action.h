@@ -26,13 +26,12 @@ typedef enum MixerSelectionsActionType
   MIXER_SELECTIONS_ACTION_MOVE,
 } MixerSelectionsActionType;
 
-static const cyaml_strval_t
-  mixer_selections_action_type_strings[] = {
-    {"Copy",    MIXER_SELECTIONS_ACTION_COPY  },
-    { "Paste",  MIXER_SELECTIONS_ACTION_PASTE },
-    { "Create", MIXER_SELECTIONS_ACTION_CREATE},
-    { "Delete", MIXER_SELECTIONS_ACTION_DELETE},
-    { "Move",   MIXER_SELECTIONS_ACTION_MOVE  },
+static const cyaml_strval_t mixer_selections_action_type_strings[] = {
+  {"Copy",    MIXER_SELECTIONS_ACTION_COPY  },
+  { "Paste",  MIXER_SELECTIONS_ACTION_PASTE },
+  { "Create", MIXER_SELECTIONS_ACTION_CREATE},
+  { "Delete", MIXER_SELECTIONS_ACTION_DELETE},
+  { "Move",   MIXER_SELECTIONS_ACTION_MOVE  },
 };
 
 /**
@@ -121,10 +120,7 @@ static const cyaml_schema_field_t mixer_selections_action_fields_schema[] = {
     MixerSelectionsAction,
     type,
     mixer_selections_action_type_strings),
-  YAML_FIELD_ENUM (
-    MixerSelectionsAction,
-    slot_type,
-    plugin_slot_type_strings),
+  YAML_FIELD_ENUM (MixerSelectionsAction, slot_type, plugin_slot_type_strings),
   YAML_FIELD_INT (MixerSelectionsAction, to_slot),
   YAML_FIELD_UINT (MixerSelectionsAction, to_track_name_hash),
   YAML_FIELD_INT (MixerSelectionsAction, new_channel),
@@ -161,16 +157,12 @@ static const cyaml_schema_field_t mixer_selections_action_fields_schema[] = {
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-  mixer_selections_action_schema = {
-    YAML_VALUE_PTR (
-      MixerSelectionsAction,
-      mixer_selections_action_fields_schema),
-  };
+static const cyaml_schema_value_t mixer_selections_action_schema = {
+  YAML_VALUE_PTR (MixerSelectionsAction, mixer_selections_action_fields_schema),
+};
 
 void
-mixer_selections_action_init_loaded (
-  MixerSelectionsAction * self);
+mixer_selections_action_init_loaded (MixerSelectionsAction * self);
 
 /**
  * Create a new action.
@@ -201,36 +193,34 @@ mixer_selections_action_new (
 #define mixer_selections_action_new_create( \
   slot_type, to_tr, to_slot, setting, num_plugins, error) \
   mixer_selections_action_new ( \
-    NULL, NULL, MIXER_SELECTIONS_ACTION_CREATE, slot_type, \
-    to_tr, to_slot, setting, num_plugins, error)
+    NULL, NULL, MIXER_SELECTIONS_ACTION_CREATE, slot_type, to_tr, to_slot, \
+    setting, num_plugins, error)
 
 #define mixer_selections_action_new_copy( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_new ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_COPY, \
-    slot_type, to_tr, to_slot, NULL, 0, error)
+    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_COPY, slot_type, to_tr, \
+    to_slot, NULL, 0, error)
 
 #define mixer_selections_action_new_paste( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_new ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_PASTE, \
-    slot_type, to_tr, to_slot, NULL, 0, error)
+    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_PASTE, slot_type, to_tr, \
+    to_slot, NULL, 0, error)
 
 #define mixer_selections_action_new_move( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_new ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_MOVE, \
-    slot_type, to_tr, to_slot, NULL, 0, error)
+    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_MOVE, slot_type, to_tr, \
+    to_slot, NULL, 0, error)
 
-#define mixer_selections_action_new_delete( \
-  ms, port_connections_mgr, error) \
+#define mixer_selections_action_new_delete(ms, port_connections_mgr, error) \
   mixer_selections_action_new ( \
-    ms, port_connections_mgr, \
-    MIXER_SELECTIONS_ACTION_DELETE, 0, 0, 0, NULL, 0, error)
+    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_DELETE, 0, 0, 0, NULL, \
+    0, error)
 
 NONNULL MixerSelectionsAction *
-mixer_selections_action_clone (
-  const MixerSelectionsAction * src);
+mixer_selections_action_clone (const MixerSelectionsAction * src);
 
 bool
 mixer_selections_action_perform (
@@ -247,46 +237,40 @@ mixer_selections_action_perform (
 #define mixer_selections_action_perform_create( \
   slot_type, to_tr, to_slot, setting, num_plugins, error) \
   mixer_selections_action_perform ( \
-    NULL, NULL, MIXER_SELECTIONS_ACTION_CREATE, slot_type, \
-    to_tr, to_slot, setting, num_plugins, error)
+    NULL, NULL, MIXER_SELECTIONS_ACTION_CREATE, slot_type, to_tr, to_slot, \
+    setting, num_plugins, error)
 
 #define mixer_selections_action_perform_copy( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_perform ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_COPY, \
-    slot_type, to_tr, to_slot, NULL, 0, error)
+    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_COPY, slot_type, to_tr, \
+    to_slot, NULL, 0, error)
 
 #define mixer_selections_action_perform_paste( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_perform ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_PASTE, \
-    slot_type, to_tr, to_slot, NULL, 0, error)
+    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_PASTE, slot_type, to_tr, \
+    to_slot, NULL, 0, error)
 
 #define mixer_selections_action_perform_move( \
   ms, port_connections_mgr, slot_type, to_tr, to_slot, error) \
   mixer_selections_action_perform ( \
-    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_MOVE, \
-    slot_type, to_tr, to_slot, NULL, 0, error)
+    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_MOVE, slot_type, to_tr, \
+    to_slot, NULL, 0, error)
 
-#define mixer_selections_action_perform_delete( \
-  ms, port_connections_mgr, error) \
+#define mixer_selections_action_perform_delete(ms, port_connections_mgr, error) \
   mixer_selections_action_perform ( \
-    ms, port_connections_mgr, \
-    MIXER_SELECTIONS_ACTION_DELETE, 0, 0, 0, NULL, 0, error)
+    ms, port_connections_mgr, MIXER_SELECTIONS_ACTION_DELETE, 0, 0, 0, NULL, \
+    0, error)
 
 int
-mixer_selections_action_do (
-  MixerSelectionsAction * self,
-  GError **               error);
+mixer_selections_action_do (MixerSelectionsAction * self, GError ** error);
 
 int
-mixer_selections_action_undo (
-  MixerSelectionsAction * self,
-  GError **               error);
+mixer_selections_action_undo (MixerSelectionsAction * self, GError ** error);
 
 char *
-mixer_selections_action_stringize (
-  MixerSelectionsAction * self);
+mixer_selections_action_stringize (MixerSelectionsAction * self);
 
 void
 mixer_selections_action_free (MixerSelectionsAction * self);

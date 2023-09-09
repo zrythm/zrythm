@@ -59,10 +59,8 @@ uint32_t
 pcg_rand_u32 (PCGRand * self)
 {
   uint64_t oldstate = self->_state;
-  self->_state =
-    oldstate * 6364136223846793005ULL + self->_inc;
-  uint32_t xorshifted =
-    (uint32_t) (((oldstate >> 18u) ^ oldstate) >> 27u);
+  self->_state = oldstate * 6364136223846793005ULL + self->_inc;
+  uint32_t xorshifted = (uint32_t) (((oldstate >> 18u) ^ oldstate) >> 27u);
   uint32_t rot = (uint32_t) (oldstate >> 59u);
   return (xorshifted >> rot) | (xorshifted << ((-rot) & 31));
 }

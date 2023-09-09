@@ -16,8 +16,7 @@ typedef enum
   Z_UTILS_RESAMPLER_ERROR_FAILED,
 } ZUtilsResamplerError;
 
-#define Z_UTILS_RESAMPLER_ERROR \
-  z_utils_resampler_error_quark ()
+#define Z_UTILS_RESAMPLER_ERROR z_utils_resampler_error_quark ()
 GQuark
 z_utils_resampler_error_quark (void);
 G_DEFINE_QUARK (
@@ -27,18 +26,14 @@ G_DEFINE_QUARK (
 #define SOXR_BLOCK_SZ 1028
 
 static size_t
-input_func (
-  void *      input_func_state,
-  soxr_in_t * data,
-  size_t      requested_len)
+input_func (void * input_func_state, soxr_in_t * data, size_t requested_len)
 {
   Resampler * self = (Resampler *) input_func_state;
 
-  size_t len_to_provide = MIN (
-    self->num_in_frames - self->frames_read, requested_len);
+  size_t len_to_provide =
+    MIN (self->num_in_frames - self->frames_read, requested_len);
 
-  *data =
-    &self->in_frames[self->frames_read * self->num_channels];
+  *data = &self->in_frames[self->frames_read * self->num_channels];
 
   self->frames_read += len_to_provide;
 
@@ -108,25 +103,21 @@ resampler_new (
 
   soxr_error_t serror;
   soxr_t       soxr = soxr_create (
-    input_rate, output_rate, num_channels, &serror, NULL,
-    &quality_spec, NULL);
+    input_rate, output_rate, num_channels, &serror, NULL, &quality_spec, NULL);
 
   if (serror)
     {
       g_set_error (
-        error, Z_UTILS_RESAMPLER_ERROR,
-        Z_UTILS_RESAMPLER_ERROR_FAILED,
+        error, Z_UTILS_RESAMPLER_ERROR, Z_UTILS_RESAMPLER_ERROR_FAILED,
         _ ("Failed to create soxr instance: %s"), serror);
       return NULL;
     }
 
-  serror =
-    soxr_set_input_fn (soxr, input_func, self, SOXR_BLOCK_SZ);
+  serror = soxr_set_input_fn (soxr, input_func, self, SOXR_BLOCK_SZ);
   if (serror)
     {
       g_set_error (
-        error, Z_UTILS_RESAMPLER_ERROR,
-        Z_UTILS_RESAMPLER_ERROR_FAILED,
+        error, Z_UTILS_RESAMPLER_ERROR, Z_UTILS_RESAMPLER_ERROR_FAILED,
         _ ("Failed to set soxr input function: %s"), serror);
       return NULL;
     }
@@ -134,12 +125,12 @@ resampler_new (
   self->priv = soxr;
 
   double resample_ratio = output_rate / input_rate;
-  self->num_out_frames = (size_t) ceil (
-    (double) self->num_in_frames * resample_ratio);
+  self->num_out_frames =
+    (size_t) ceil ((double) self->num_in_frames * resample_ratio);
   /* soxr accesses a few bytes outside apparently so allocate
    * a bit more */
-  self->out_frames = object_new_n (
-    (self->num_out_frames + 8) * self->num_channels, float);
+  self->out_frames =
+    object_new_n ((self->num_out_frames + 8) * self->num_channels, float);
 
   return self;
 }
@@ -151,26 +142,23 @@ resampler_new (
 bool
 resampler_process (Resampler * self, GError ** error)
 {
-  size_t frames_to_write_this_time = MIN (
-    self->num_out_frames - self->frames_written,
-    SOXR_BLOCK_SZ);
+  size_t frames_to_write_this_time =
+    MIN (self->num_out_frames - self->frames_written, SOXR_BLOCK_SZ);
   z_return_val_if_fail_cmp (
-    self->frames_written + frames_to_write_this_time, <=,
-    self->num_out_frames, false);
+    self->frames_written + frames_to_write_this_time, <=, self->num_out_frames,
+    false);
   size_t frames_written_now = soxr_output (
     (soxr_t) self->priv,
     &self->out_frames[self->frames_written * self->num_channels],
     frames_to_write_this_time);
   z_return_val_if_fail_cmp (
-    self->frames_written + frames_written_now, <=,
-    self->num_out_frames, false);
+    self->frames_written + frames_written_now, <=, self->num_out_frames, false);
 
   soxr_error_t serror = soxr_error ((soxr_t) self->priv);
   if (serror)
     {
       g_set_error (
-        error, Z_UTILS_RESAMPLER_ERROR,
-        Z_UTILS_RESAMPLER_ERROR_FAILED,
+        error, Z_UTILS_RESAMPLER_ERROR, Z_UTILS_RESAMPLER_ERROR_FAILED,
         _ ("soxr_process() error: %s"), serror);
       return false;
     }
@@ -178,10 +166,8 @@ resampler_process (Resampler * self, GError ** error)
   if (math_doubles_equal (self->input_rate, self->output_rate))
     {
       audio_frames_equal (
-        &self->in_frames
-           [self->frames_written * self->num_channels],
-        &self->out_frames
-           [self->frames_written * self->num_channels],
+        &self->in_frames[self->frames_written * self->num_channels],
+        &self->out_frames[self->frames_written * self->num_channels],
         frames_written_now * self->num_channels, 0.00000001f);
     }
 
@@ -219,8 +205,7 @@ resampler_is_done (Resampler * self)
 void
 resampler_free (Resampler * self)
 {
-  object_free_w_func_and_null_cast (
-    soxr_delete, soxr_t, self->priv);
+  object_free_w_func_and_null_cast (soxr_delete, soxr_t, self->priv);
 
   if (self->out_frames)
     {

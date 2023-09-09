@@ -85,8 +85,7 @@ typedef struct _ChannelSendsExpanderWidget
  * Refreshes each field.
  */
 void
-channel_sends_expander_widget_refresh (
-  ChannelSendsExpanderWidget * self);
+channel_sends_expander_widget_refresh (ChannelSendsExpanderWidget * self);
 
 /**
  * Sets up the ChannelSendsExpanderWidget.

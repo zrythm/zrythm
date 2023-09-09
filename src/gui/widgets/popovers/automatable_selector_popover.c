@@ -23,35 +23,28 @@ G_DEFINE_TYPE (
   GTK_TYPE_POPOVER)
 
 static void
-on_closed (
-  AutomatableSelectorPopoverWidget * self,
-  gpointer                           user_data)
+on_closed (AutomatableSelectorPopoverWidget * self, gpointer user_data)
 {
   /* if the selected automatable changed */
-  Port * at_port =
-    port_find_from_identifier (&self->owner->port_id);
+  Port * at_port = port_find_from_identifier (&self->owner->port_id);
   if (self->selected_port && at_port != self->selected_port)
     {
       /* set the previous automation track invisible */
       AutomationTracklist * atl =
         automation_track_get_automation_tracklist (self->owner);
-      automation_tracklist_set_at_visible (
-        atl, self->owner, false);
+      automation_tracklist_set_at_visible (atl, self->owner, false);
 
-      g_message (
-        "selected port: %s", self->selected_port->id.label);
+      g_message ("selected port: %s", self->selected_port->id.label);
 
       /* swap indices */
       AutomationTrack * selected_at =
-        automation_tracklist_get_at_from_port (
-          atl, self->selected_port);
+        automation_tracklist_get_at_from_port (atl, self->selected_port);
       g_return_if_fail (selected_at);
       automation_tracklist_set_at_index (
         atl, self->owner, selected_at->index, F_NO_PUSH_DOWN);
 
       selected_at->created = true;
-      automation_tracklist_set_at_visible (
-        atl, selected_at, true);
+      automation_tracklist_set_at_visible (atl, selected_at, true);
       EVENTS_PUSH (ET_AUTOMATION_TRACK_ADDED, selected_at);
     }
   else
@@ -74,15 +67,14 @@ update_info_label (AutomatableSelectorPopoverWidget * self)
       Port * port = self->selected_port;
 
       char * label = g_strdup_printf (
-        "%s\nMin: %f\nMax: %f", port->id.label,
-        (double) port->minf, (double) port->maxf);
+        "%s\nMin: %f\nMax: %f", port->id.label, (double) port->minf,
+        (double) port->maxf);
 
       gtk_label_set_text (self->info, label);
     }
   else
     {
-      gtk_label_set_text (
-        self->info, _ ("No control selected"));
+      gtk_label_set_text (self->info, _ ("No control selected"));
     }
 
   return G_SOURCE_REMOVE;
@@ -95,18 +87,16 @@ static void
 select_automatable (AutomatableSelectorPopoverWidget * self)
 {
   /* select current type */
-  GtkTreeSelection * sel = gtk_tree_view_get_selection (
-    GTK_TREE_VIEW (self->type_treeview));
+  GtkTreeSelection * sel =
+    gtk_tree_view_get_selection (GTK_TREE_VIEW (self->type_treeview));
   GtkTreeIter iter;
-  int         valid =
-    gtk_tree_model_get_iter_first (self->type_model, &iter);
+  int         valid = gtk_tree_model_get_iter_first (self->type_model, &iter);
   g_return_if_fail (valid);
   while (valid)
     {
       int type;
       int slot;
-      gtk_tree_model_get (
-        self->type_model, &iter, 2, &type, 3, &slot, -1);
+      gtk_tree_model_get (self->type_model, &iter, 2, &type, 3, &slot, -1);
       if (
         (AutomatableSelectorType) type == self->selected_type
         && slot == self->selected_slot)
@@ -114,8 +104,7 @@ select_automatable (AutomatableSelectorPopoverWidget * self)
           break;
         }
 
-      valid =
-        gtk_tree_model_iter_next (self->type_model, &iter);
+      valid = gtk_tree_model_iter_next (self->type_model, &iter);
     }
   g_return_if_fail (valid);
   gtk_tree_selection_select_iter (sel, &iter);
@@ -123,25 +112,21 @@ select_automatable (AutomatableSelectorPopoverWidget * self)
   /* select current automatable */
   if (self->selected_port)
     {
-      sel = gtk_tree_view_get_selection (
-        GTK_TREE_VIEW (self->port_treeview));
+      sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (self->port_treeview));
 
       /* find the iter corresponding to the
        * automatable */
-      valid = gtk_tree_model_get_iter_first (
-        self->port_model, &iter);
+      valid = gtk_tree_model_get_iter_first (self->port_model, &iter);
       while (valid)
         {
           Port * port;
-          gtk_tree_model_get (
-            self->port_model, &iter, 2, &port, -1);
+          gtk_tree_model_get (self->port_model, &iter, 2, &port, -1);
           if (port == self->selected_port)
             {
               gtk_tree_selection_select_iter (sel, &iter);
               break;
             }
-          valid = gtk_tree_model_iter_next (
-            self->port_model, &iter);
+          valid = gtk_tree_model_iter_next (self->port_model, &iter);
         }
     }
 
@@ -149,8 +134,7 @@ select_automatable (AutomatableSelectorPopoverWidget * self)
 }
 
 static GtkTreeModel *
-create_model_for_ports (
-  AutomatableSelectorPopoverWidget * self)
+create_model_for_ports (AutomatableSelectorPopoverWidget * self)
 {
   g_message (
     "creating model for ports for type %d and slot "
@@ -160,12 +144,11 @@ create_model_for_ports (
   GtkTreeIter    iter;
 
   /* file name, index */
-  list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+  list_store =
+    gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
-  Track * track = automation_track_get_track (self->owner);
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (track);
+  Track *               track = automation_track_get_track (self->owner);
+  AutomationTracklist * atl = track_get_automation_tracklist (track);
   g_return_val_if_fail (atl, NULL);
   for (int i = 0; i < atl->num_ats; i++)
     {
@@ -204,8 +187,7 @@ create_model_for_ports (
           if (
             port->id.flags2 & PORT_FLAG2_MIDI_PITCH_BEND
             || port->id.flags2 & PORT_FLAG2_MIDI_POLY_KEY_PRESSURE
-            || port->id.flags2
-                 & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
+            || port->id.flags2 & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
             {
               if (
                 (int) self->selected_type
@@ -233,23 +215,21 @@ create_model_for_ports (
         case AS_TYPE_CHANNEL:
           /* skip non-channel automation tracks */
           port = port_find_from_identifier (&at->port_id);
-          if (!(port->id.flags & PORT_FLAG_FADER_MUTE
-                || port->id.flags & PORT_FLAG_CHANNEL_FADER
-                || port->id.flags & PORT_FLAG_STEREO_BALANCE
-                || port->id.flags2 & PORT_FLAG2_CHANNEL_SEND_ENABLED
-                || port->id.flags2
-                     & PORT_FLAG2_CHANNEL_SEND_AMOUNT))
+          if (
+            !(port->id.flags & PORT_FLAG_FADER_MUTE
+              || port->id.flags & PORT_FLAG_CHANNEL_FADER
+              || port->id.flags & PORT_FLAG_STEREO_BALANCE
+              || port->id.flags2 & PORT_FLAG2_CHANNEL_SEND_ENABLED
+              || port->id.flags2 & PORT_FLAG2_CHANNEL_SEND_AMOUNT))
             continue;
 
           strcpy (icon_name, "node-type-cusp");
           break;
         case AS_TYPE_MIDI_FX:
-          plugin =
-            track->channel->midi_fx[self->selected_slot];
+          plugin = track->channel->midi_fx[self->selected_slot];
           break;
         case AS_TYPE_INSERT:
-          plugin =
-            track->channel->inserts[self->selected_slot];
+          plugin = track->channel->inserts[self->selected_slot];
           break;
         case AS_TYPE_INSTRUMENT:
           plugin = track->channel->instrument;
@@ -261,9 +241,10 @@ create_model_for_ports (
           port = port_find_from_identifier (&at->port_id);
 
           /* skip non-tempo automation tracks */
-          if (!(port->id.flags & PORT_FLAG_BPM
-                || port->id.flags2 & PORT_FLAG2_BEATS_PER_BAR
-                || port->id.flags2 & PORT_FLAG2_BEAT_UNIT))
+          if (
+            !(port->id.flags & PORT_FLAG_BPM
+              || port->id.flags2 & PORT_FLAG2_BEATS_PER_BAR
+              || port->id.flags2 & PORT_FLAG2_BEAT_UNIT))
             continue;
           break;
         }
@@ -293,8 +274,7 @@ create_model_for_ports (
           /* add a new row to the model */
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
-            list_store, &iter, 0, icon_name, 1,
-            port->id.label, 2, port, -1);
+            list_store, &iter, 0, icon_name, 1, port->id.label, 2, port, -1);
         }
     }
 
@@ -302,8 +282,7 @@ create_model_for_ports (
 }
 
 static GtkTreeModel *
-create_model_for_types (
-  AutomatableSelectorPopoverWidget * self)
+create_model_for_types (AutomatableSelectorPopoverWidget * self)
 {
   GtkListStore * list_store;
   GtkTreeIter    iter;
@@ -318,15 +297,15 @@ create_model_for_types (
     {
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
-        list_store, &iter, 0, "filename-bpm-amarok", 1,
-        _ ("Tempo"), 2, AS_TYPE_TEMPO, 3, 0, -1);
+        list_store, &iter, 0, "filename-bpm-amarok", 1, _ ("Tempo"), 2,
+        AS_TYPE_TEMPO, 3, 0, -1);
     }
   else if (track->type == TRACK_TYPE_MODULATOR)
     {
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
-        list_store, &iter, 0, "code-function", 1,
-        _ ("Macros"), 2, AS_TYPE_MACRO, 3, 0, -1);
+        list_store, &iter, 0, "code-function", 1, _ ("Macros"), 2,
+        AS_TYPE_MACRO, 3, 0, -1);
     }
 
   if (track_type_has_piano_roll (track->type))
@@ -346,20 +325,18 @@ create_model_for_types (
     {
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
-        list_store, &iter, 0, "track-inspector", 1,
-        _ ("Channel"), 2, AS_TYPE_CHANNEL, 3, 0, -1);
+        list_store, &iter, 0, "track-inspector", 1, _ ("Channel"), 2,
+        AS_TYPE_CHANNEL, 3, 0, -1);
 
       if (track->channel->instrument)
         {
           Plugin * plugin = track->channel->instrument;
           char     label[600];
-          sprintf (
-            label, _ ("[Instrument] %s"),
-            plugin->setting->descr->name);
+          sprintf (label, _ ("[Instrument] %s"), plugin->setting->descr->name);
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
-            list_store, &iter, 0, "instrument", 1, label, 2,
-            AS_TYPE_INSTRUMENT, 3, 0, -1);
+            list_store, &iter, 0, "instrument", 1, label, 2, AS_TYPE_INSTRUMENT,
+            3, 0, -1);
         }
 
       for (int i = 0; i < STRIP_SIZE; i++)
@@ -373,8 +350,8 @@ create_model_for_types (
                 plugin->setting->descr->name);
               gtk_list_store_append (list_store, &iter);
               gtk_list_store_set (
-                list_store, &iter, 0, "plugins", 1, label, 2,
-                AS_TYPE_MIDI_FX, 3, i, -1);
+                list_store, &iter, 0, "plugins", 1, label, 2, AS_TYPE_MIDI_FX,
+                3, i, -1);
             }
 
           plugin = track->channel->inserts[i];
@@ -386,8 +363,8 @@ create_model_for_types (
                 plugin->setting->descr->name);
               gtk_list_store_append (list_store, &iter);
               gtk_list_store_set (
-                list_store, &iter, 0, "plugins", 1, label, 2,
-                AS_TYPE_INSERT, 3, i, -1);
+                list_store, &iter, 0, "plugins", 1, label, 2, AS_TYPE_INSERT, 3,
+                i, -1);
             }
         }
     }
@@ -398,12 +375,11 @@ create_model_for_types (
         {
           char label[600];
           sprintf (
-            label, _ ("[Modulator %d] %s"), i + 1,
-            plugin->setting->descr->name);
+            label, _ ("[Modulator %d] %s"), i + 1, plugin->setting->descr->name);
           gtk_list_store_append (list_store, &iter);
           gtk_list_store_set (
-            list_store, &iter, 0, "plugins", 1, label, 2,
-            AS_TYPE_MODULATOR, 3, i, -1);
+            list_store, &iter, 0, "plugins", 1, label, 2, AS_TYPE_MODULATOR, 3,
+            i, -1);
         }
     }
 
@@ -411,9 +387,7 @@ create_model_for_types (
 }
 
 static GtkTreeView *
-tree_view_create (
-  AutomatableSelectorPopoverWidget * self,
-  GtkTreeModel *                     model);
+tree_view_create (AutomatableSelectorPopoverWidget * self, GtkTreeModel * model);
 
 static void
 on_selection_changed (
@@ -428,32 +402,27 @@ on_selection_changed (
 
   GtkTreeView *  tv = gtk_tree_selection_get_tree_view (ts);
   GtkTreeModel * model = gtk_tree_view_get_model (tv);
-  GList *        selected_rows =
-    gtk_tree_selection_get_selected_rows (ts, NULL);
+  GList * selected_rows = gtk_tree_selection_get_selected_rows (ts, NULL);
   if (selected_rows)
     {
-      GtkTreePath * tp =
-        (GtkTreePath *) g_list_first (selected_rows)->data;
-      GtkTreeIter iter;
+      GtkTreePath * tp = (GtkTreePath *) g_list_first (selected_rows)->data;
+      GtkTreeIter   iter;
       gtk_tree_model_get_iter (model, &iter, tp);
       GValue value = G_VALUE_INIT;
 
       if (model == self->type_model)
         {
           gtk_tree_model_get (
-            model, &iter, 2, &self->selected_type, 3,
-            &self->selected_slot, -1);
+            model, &iter, 2, &self->selected_type, 3, &self->selected_slot, -1);
           g_message (
             "selected type %d slot %d", self->selected_type,
             self->selected_slot);
           self->port_model = create_model_for_ports (self);
-          self->port_treeview =
-            tree_view_create (self, self->port_model);
+          self->port_treeview = tree_view_create (self, self->port_model);
           z_gtk_widget_destroy_all_children (
             GTK_WIDGET (self->port_treeview_box));
           gtk_box_append (
-            self->port_treeview_box,
-            GTK_WIDGET (self->port_treeview));
+            self->port_treeview_box, GTK_WIDGET (self->port_treeview));
 
           self->selected_port = NULL;
           update_info_label (self);
@@ -470,13 +439,10 @@ on_selection_changed (
 }
 
 static GtkTreeView *
-tree_view_create (
-  AutomatableSelectorPopoverWidget * self,
-  GtkTreeModel *                     model)
+tree_view_create (AutomatableSelectorPopoverWidget * self, GtkTreeModel * model)
 {
   /* instantiate tree view using model */
-  GtkWidget * tree_view =
-    gtk_tree_view_new_with_model (GTK_TREE_MODEL (model));
+  GtkWidget * tree_view = gtk_tree_view_new_with_model (GTK_TREE_MODEL (model));
 
   /* init tree view */
   GtkCellRenderer *   renderer;
@@ -486,29 +452,24 @@ tree_view_create (
   renderer = gtk_cell_renderer_pixbuf_new ();
   column = gtk_tree_view_column_new_with_attributes (
     "icon", renderer, "icon-name", 0, NULL);
-  gtk_tree_view_append_column (
-    GTK_TREE_VIEW (tree_view), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), column);
 
   /* column for name */
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes (
     "name", renderer, "text", 1, NULL);
-  gtk_tree_view_append_column (
-    GTK_TREE_VIEW (tree_view), column);
+  gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), column);
 
   /* set search column */
-  gtk_tree_view_set_search_column (
-    GTK_TREE_VIEW (tree_view), 1);
+  gtk_tree_view_set_search_column (GTK_TREE_VIEW (tree_view), 1);
 
   /* set headers invisible */
-  gtk_tree_view_set_headers_visible (
-    GTK_TREE_VIEW (tree_view), 0);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree_view), 0);
 
   gtk_widget_set_visible (tree_view, 1);
 
   g_signal_connect (
-    G_OBJECT (gtk_tree_view_get_selection (
-      GTK_TREE_VIEW (tree_view))),
+    G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view))),
     "changed", G_CALLBACK (on_selection_changed), self);
 
   return GTK_TREE_VIEW (tree_view);
@@ -518,29 +479,25 @@ tree_view_create (
  * Creates a digital meter with the given type (bpm or position).
  */
 AutomatableSelectorPopoverWidget *
-automatable_selector_popover_widget_new (
-  AutomationTrack * owner)
+automatable_selector_popover_widget_new (AutomationTrack * owner)
 {
-  AutomatableSelectorPopoverWidget * self = g_object_new (
-    AUTOMATABLE_SELECTOR_POPOVER_WIDGET_TYPE, NULL);
+  AutomatableSelectorPopoverWidget * self =
+    g_object_new (AUTOMATABLE_SELECTOR_POPOVER_WIDGET_TYPE, NULL);
 
   self->owner = owner;
 
   /* set selected type */
   self->selected_type = AS_TYPE_CHANNEL;
-  Port * port =
-    port_find_from_identifier (&self->owner->port_id);
+  Port *           port = port_find_from_identifier (&self->owner->port_id);
   PortIdentifier * id = &port->id;
   if (
-    id->flags & PORT_FLAG_BPM
-    || id->flags2 & PORT_FLAG2_BEATS_PER_BAR
+    id->flags & PORT_FLAG_BPM || id->flags2 & PORT_FLAG2_BEATS_PER_BAR
     || id->flags2 & PORT_FLAG2_BEAT_UNIT)
     {
       self->selected_type = AS_TYPE_TEMPO;
     }
   else if (
-    id->flags & PORT_FLAG_FADER_MUTE
-    || id->flags & PORT_FLAG_CHANNEL_FADER
+    id->flags & PORT_FLAG_FADER_MUTE || id->flags & PORT_FLAG_CHANNEL_FADER
     || id->flags & PORT_FLAG_STEREO_BALANCE
     || id->flags2 & PORT_FLAG2_CHANNEL_SEND_ENABLED
     || id->flags2 & PORT_FLAG2_CHANNEL_SEND_AMOUNT)
@@ -555,14 +512,12 @@ automatable_selector_popover_widget_new (
         || id->flags2 & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
         {
           self->selected_type =
-            (AutomatableSelectorType) (AS_TYPE_MIDI_CH1
-                                       + id->port_index);
+            (AutomatableSelectorType) (AS_TYPE_MIDI_CH1 + id->port_index);
         }
       else
         {
           self->selected_type =
-            (AutomatableSelectorType) (AS_TYPE_MIDI_CH1
-                                       + id->port_index / 128);
+            (AutomatableSelectorType) (AS_TYPE_MIDI_CH1 + id->port_index / 128);
         }
     }
   else if (id->flags & PORT_FLAG_MODULATOR_MACRO)
@@ -602,17 +557,13 @@ automatable_selector_popover_widget_new (
 
   /* create model/treeview for types */
   self->type_model = create_model_for_types (self);
-  self->type_treeview =
-    tree_view_create (self, self->type_model);
-  gtk_box_append (
-    self->type_treeview_box, GTK_WIDGET (self->type_treeview));
+  self->type_treeview = tree_view_create (self, self->type_model);
+  gtk_box_append (self->type_treeview_box, GTK_WIDGET (self->type_treeview));
 
   /* create model/treeview for ports */
   self->port_model = create_model_for_ports (self);
-  self->port_treeview =
-    tree_view_create (self, self->port_model);
-  gtk_box_append (
-    self->port_treeview_box, GTK_WIDGET (self->port_treeview));
+  self->port_treeview = tree_view_create (self, self->port_model);
+  gtk_box_append (self->port_treeview_box, GTK_WIDGET (self->port_treeview));
 
   /* select the automatable */
   self->selecting_manually = 1;
@@ -626,8 +577,7 @@ automatable_selector_popover_widget_class_init (
   AutomatableSelectorPopoverWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "automatable_selector.ui");
+  resources_set_class_template (klass, "automatable_selector.ui");
 
 #define BIND_CHILD(x) \
   gtk_widget_class_bind_template_child ( \

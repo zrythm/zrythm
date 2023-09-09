@@ -44,25 +44,20 @@ musical_scale_new (MusicalScaleType type, MusicalNote root)
  *   different triads when rising/falling).
  */
 const ChordType *
-musical_scale_get_triad_types (
-  MusicalScaleType scale_type,
-  bool             ascending)
+musical_scale_get_triad_types (MusicalScaleType scale_type, bool ascending)
 {
-#define SET_TRIADS( \
-  n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12) \
+#define SET_TRIADS(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12) \
   { \
     static const ChordType chord_types[] = { \
-      CHORD_TYPE_##n1,  CHORD_TYPE_##n2,  CHORD_TYPE_##n3, \
-      CHORD_TYPE_##n4,  CHORD_TYPE_##n5,  CHORD_TYPE_##n6, \
-      CHORD_TYPE_##n7,  CHORD_TYPE_##n8,  CHORD_TYPE_##n9, \
-      CHORD_TYPE_##n10, CHORD_TYPE_##n11, CHORD_TYPE_##n12 \
+      CHORD_TYPE_##n1, CHORD_TYPE_##n2,  CHORD_TYPE_##n3,  CHORD_TYPE_##n4, \
+      CHORD_TYPE_##n5, CHORD_TYPE_##n6,  CHORD_TYPE_##n7,  CHORD_TYPE_##n8, \
+      CHORD_TYPE_##n9, CHORD_TYPE_##n10, CHORD_TYPE_##n11, CHORD_TYPE_##n12 \
     }; \
     return chord_types; \
   }
 
 #define SET_7_TRIADS(n1, n2, n3, n4, n5, n6, n7) \
-  SET_TRIADS ( \
-    n1, n2, n3, n4, n5, n6, n7, NONE, NONE, NONE, NONE, NONE)
+  SET_TRIADS (n1, n2, n3, n4, n5, n6, n7, NONE, NONE, NONE, NONE, NONE)
 
   /* get the notes starting at C */
   switch (scale_type)
@@ -179,12 +174,9 @@ musical_scale_get_triad_types (
  *   different notes when rising/falling).
  */
 const bool *
-musical_scale_get_notes (
-  MusicalScaleType scale_type,
-  bool             ascending)
+musical_scale_get_notes (MusicalScaleType scale_type, bool ascending)
 {
-#define SET_NOTES( \
-  n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12) \
+#define SET_NOTES(n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12) \
   { \
     static const bool notes[] = { \
       n1, n2, n3, n4, n5, n6, n7, n8, n9, n10, n11, n12 \
@@ -401,15 +393,12 @@ musical_scale_clone (MusicalScale * src)
  * @param note A note inside a single octave (0-11).
  */
 bool
-musical_scale_contains_note (
-  const MusicalScale * scale,
-  MusicalNote          note)
+musical_scale_contains_note (const MusicalScale * scale, MusicalNote note)
 {
   if (scale->root_key == note)
     return 1;
 
-  const bool * notes =
-    musical_scale_get_notes (scale->type, false);
+  const bool * notes = musical_scale_get_notes (scale->type, false);
 
   return notes[((int) note - (int) scale->root_key + 12) % 12];
 }
@@ -425,9 +414,7 @@ musical_scale_contains_chord (
 {
   for (int i = 0; i < 48; i++)
     {
-      if (
-        chord->notes[i]
-        && !musical_scale_contains_note (scale, i % 12))
+      if (chord->notes[i] && !musical_scale_contains_note (scale, i % 12))
         return 0;
     }
   return 1;
@@ -446,14 +433,12 @@ musical_scale_is_accent_in_scale (
   if (!musical_scale_contains_note (scale, chord_root))
     return 0;
 
-  unsigned int min_seventh_sems =
-    type == CHORD_TYPE_DIM ? 9 : 10;
+  unsigned int min_seventh_sems = type == CHORD_TYPE_DIM ? 9 : 10;
 
   /* if 7th not in scale no need to check > 7th */
   if (
     chord_accent >= CHORD_ACC_b9
-    && !musical_scale_contains_note (
-      scale, (chord_root + min_seventh_sems) % 12))
+    && !musical_scale_contains_note (scale, (chord_root + min_seventh_sems) % 12))
     return 0;
 
   switch (chord_accent)
@@ -464,35 +449,24 @@ musical_scale_is_accent_in_scale (
       return musical_scale_contains_note (
         scale, (chord_root + min_seventh_sems) % 12);
     case CHORD_ACC_j7:
-      return musical_scale_contains_note (
-        scale, (chord_root + 11) % 12);
+      return musical_scale_contains_note (scale, (chord_root + 11) % 12);
     case CHORD_ACC_b9:
-      return musical_scale_contains_note (
-        scale, (chord_root + 13) % 12);
+      return musical_scale_contains_note (scale, (chord_root + 13) % 12);
     case CHORD_ACC_9:
-      return musical_scale_contains_note (
-        scale, (chord_root + 14) % 12);
+      return musical_scale_contains_note (scale, (chord_root + 14) % 12);
     case CHORD_ACC_S9:
-      return musical_scale_contains_note (
-        scale, (chord_root + 15) % 12);
+      return musical_scale_contains_note (scale, (chord_root + 15) % 12);
     case CHORD_ACC_11:
-      return musical_scale_contains_note (
-        scale, (chord_root + 17) % 12);
+      return musical_scale_contains_note (scale, (chord_root + 17) % 12);
     case CHORD_ACC_b5_S11:
-      return musical_scale_contains_note (
-               scale, (chord_root + 6) % 12)
-             && musical_scale_contains_note (
-               scale, (chord_root + 18) % 12);
+      return musical_scale_contains_note (scale, (chord_root + 6) % 12)
+             && musical_scale_contains_note (scale, (chord_root + 18) % 12);
     case CHORD_ACC_S5_b13:
-      return musical_scale_contains_note (
-               scale, (chord_root + 8) % 12)
-             && musical_scale_contains_note (
-               scale, (chord_root + 16) % 12);
+      return musical_scale_contains_note (scale, (chord_root + 8) % 12)
+             && musical_scale_contains_note (scale, (chord_root + 16) % 12);
     case CHORD_ACC_6_13:
-      return musical_scale_contains_note (
-               scale, (chord_root + 9) % 12)
-             && musical_scale_contains_note (
-               scale, (chord_root + 21) % 12);
+      return musical_scale_contains_note (scale, (chord_root + 9) % 12)
+             && musical_scale_contains_note (scale, (chord_root + 21) % 12);
     default:
       return 0;
     }
@@ -527,8 +501,7 @@ musical_scale_strcpy (MusicalScale * scale, char * buf)
 #define SET_SCALE_STR(uppercase, str) \
   case SCALE_##uppercase: \
     sprintf ( \
-      buf, "%s %s", \
-      chord_descriptor_note_to_string (scale->root_key), \
+      buf, "%s %s", chord_descriptor_note_to_string (scale->root_key), \
       _ (str)); \
     return;
 

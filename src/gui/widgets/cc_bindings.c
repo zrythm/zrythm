@@ -27,12 +27,10 @@ cc_bindings_widget_refresh (CcBindingsWidget * self)
 CcBindingsWidget *
 cc_bindings_widget_new (void)
 {
-  CcBindingsWidget * self =
-    g_object_new (CC_BINDINGS_WIDGET_TYPE, NULL);
+  CcBindingsWidget * self = g_object_new (CC_BINDINGS_WIDGET_TYPE, NULL);
 
   self->bindings_tree = cc_bindings_tree_widget_new ();
-  gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->bindings_tree));
+  gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->bindings_tree));
   gtk_widget_set_vexpand (GTK_WIDGET (self->bindings_tree), 1);
 
   return self;

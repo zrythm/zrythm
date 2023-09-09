@@ -43,13 +43,12 @@ windows_mme_device_new (int input, int index)
   MMRESULT    ret;
   if (input)
     {
-      ret = midiInGetDevCaps (
-        (UINT_PTR) index, &in_caps, sizeof (MIDIINCAPS));
+      ret = midiInGetDevCaps ((UINT_PTR) index, &in_caps, sizeof (MIDIINCAPS));
     }
   else
     {
-      ret = midiOutGetDevCaps (
-        (UINT_PTR) index, &out_caps, sizeof (MIDIOUTCAPS));
+      ret =
+        midiOutGetDevCaps ((UINT_PTR) index, &out_caps, sizeof (MIDIOUTCAPS));
     }
   if (ret != MMSYSERR_NOERROR)
     {
@@ -57,8 +56,7 @@ windows_mme_device_new (int input, int index)
       return NULL;
     }
 
-  WindowsMmeDevice * self =
-    calloc (1, sizeof (WindowsMmeDevice));
+  WindowsMmeDevice * self = calloc (1, sizeof (WindowsMmeDevice));
   self->is_input = input;
   self->id = index;
   if (input)
@@ -79,8 +77,7 @@ windows_mme_device_new (int input, int index)
     }
 
   self->midi_ring = zix_ring_new (
-    zix_default_allocator (),
-    sizeof (uint8_t) * (size_t) MIDI_BUFFER_SIZE);
+    zix_default_allocator (), sizeof (uint8_t) * (size_t) MIDI_BUFFER_SIZE);
 
   return self;
 }
@@ -109,18 +106,15 @@ windows_mme_device_dequeue_midi_event_struct (
   uint64_t timestamp;
   size_t   data_size;
   int      ret = windows_mme_device_dequeue_midi_event (
-    self, timestamp_start, timestamp_end, &timestamp,
-    ev->raw_buffer, &data_size);
+    self, timestamp_start, timestamp_end, &timestamp, ev->raw_buffer,
+    &data_size);
   if (!ret)
     return 0;
 
   /* calculate the time in frames */
-  uint64_t timestamp_interval =
-    timestamp_end - timestamp_start;
-  int64_t timestamp_offset =
-    (int64_t) timestamp - (int64_t) timestamp_start;
-  double ratio =
-    (double) timestamp_offset / (double) timestamp_interval;
+  uint64_t timestamp_interval = timestamp_end - timestamp_start;
+  int64_t  timestamp_offset = (int64_t) timestamp - (int64_t) timestamp_start;
+  double   ratio = (double) timestamp_offset / (double) timestamp_interval;
 #  if 0
   if (ratio < 0.001 || ratio >= 1.0)
   {
@@ -129,8 +123,7 @@ windows_mme_device_dequeue_midi_event_struct (
   }
 #  endif
 
-  ev->time =
-    (midi_time_t) (ratio * (double) AUDIO_ENGINE->block_length);
+  ev->time = (midi_time_t) (ratio * (double) AUDIO_ENGINE->block_length);
 
   return 1;
 }
@@ -152,8 +145,7 @@ windows_mme_device_dequeue_midi_event (
 {
   g_return_val_if_fail (self, 0);
 
-  const uint32_t read_space =
-    zix_ring_read_space (self->midi_ring);
+  const uint32_t read_space = zix_ring_read_space (self->midi_ring);
   if (read_space <= sizeof (MidiEventHeader))
     {
       /* defer */
@@ -181,16 +173,14 @@ windows_mme_device_dequeue_midi_event (
         self->name, h.time, h.size);
     }
   g_return_val_if_fail (h.size >= 1 && h.size <= 3, 1);
-  g_return_val_if_fail (
-    read_space >= sizeof (MidiEventHeader) + h.size, 1);
+  g_return_val_if_fail (read_space >= sizeof (MidiEventHeader) + h.size, 1);
 
   if (h.time >= timestamp_end)
     {
       /* this will never be reached but keep just
        * for reference */
       g_critical (
-        "MMEMidiInput event %f(ms) early",
-        (h.time - timestamp_end) * 1e-3);
+        "MMEMidiInput event %f(ms) early", (h.time - timestamp_end) * 1e-3);
       return 1;
     }
   else if (h.time < timestamp_start)
@@ -224,8 +214,7 @@ enqueue_midi_msg (
   size_t             data_size,
   uint32_t           timestamp)
 {
-  const uint32_t total_size =
-    sizeof (MidiEventHeader) + data_size;
+  const uint32_t total_size = sizeof (MidiEventHeader) + data_size;
 
   if (data_size == 0)
     {
@@ -254,8 +243,7 @@ enqueue_midi_msg (
     .time = ts,
     .size = data_size,
   };
-  zix_ring_write (
-    self->midi_ring, (uint8_t *) &h, sizeof (MidiEventHeader));
+  zix_ring_write (self->midi_ring, (uint8_t *) &h, sizeof (MidiEventHeader));
   zix_ring_write (self->midi_ring, midi_data, data_size);
 
   return 0;
@@ -277,8 +265,7 @@ handle_short_msg (
       return;
     }
 
-  enqueue_midi_msg (
-    self, midi_data, (size_t) length, timestamp);
+  enqueue_midi_msg (self, midi_data, (size_t) length, timestamp);
 }
 
 static void
@@ -311,8 +298,7 @@ handle_sysex_msg (
 
   if ((data[0] != 0xf0) || (data[byte_count - 1] != 0xf7))
     {
-      g_message (
-        "Discarding %llu byte sysex chunk", byte_count);
+      g_message ("Discarding %llu byte sysex chunk", byte_count);
     }
   else
     {
@@ -326,8 +312,8 @@ handle_sysex_msg (
   midi_header->dwFlags = 0;
   midi_header->dwBytesRecorded = 0;
 
-  MMRESULT result = midiInPrepareHeader (
-    self->in_handle, midi_header, sizeof (MIDIHDR));
+  MMRESULT result =
+    midiInPrepareHeader (self->in_handle, midi_header, sizeof (MIDIHDR));
 
   if (result != MMSYSERR_NOERROR)
     {
@@ -336,12 +322,10 @@ handle_sysex_msg (
       return;
     }
 
-  result = midiInAddBuffer (
-    self->in_handle, midi_header, sizeof (MIDIHDR));
+  result = midiInAddBuffer (self->in_handle, midi_header, sizeof (MIDIHDR));
   if (result != MMSYSERR_NOERROR)
     {
-      g_critical (
-        "Unable to add sysex buffer to buffer pool:");
+      g_critical ("Unable to add sysex buffer to buffer pool:");
       engine_windows_mme_print_error (result, self->is_input);
     }
 }
@@ -403,10 +387,8 @@ windows_mme_device_input_cb (
 
   if (!priority_boosted)
     {
-      windows_mmcss_set_thread_characteristics (
-        "Pro Audio", &task_handle);
-      windows_mmcss_set_thread_priority (
-        task_handle, AVRT_PRIORITY_HIGH);
+      windows_mmcss_set_thread_characteristics ("Pro Audio", &task_handle);
+      windows_mmcss_set_thread_priority (task_handle, AVRT_PRIORITY_HIGH);
       priority_boosted = 1;
     }
 #  endif
@@ -430,30 +412,23 @@ windows_mme_device_input_cb (
       // driver. I'm not sure what could be done
       // differently if that occurs
       // so just handle MIM_DATA as per normal
-      handle_short_msg (
-        self, (const uint8_t *) &midi_msg,
-        (uint32_t) timestamp);
+      handle_short_msg (self, (const uint8_t *) &midi_msg, (uint32_t) timestamp);
       break;
     case MIM_DATA:
       if (DEBUGGING)
         {
           g_debug (
-            "WinMME: [%s] short msg at %u", self->name,
-            (uint32_t) timestamp);
+            "WinMME: [%s] short msg at %u", self->name, (uint32_t) timestamp);
         }
-      handle_short_msg (
-        self, (const uint8_t *) &midi_msg,
-        (uint32_t) timestamp);
+      handle_short_msg (self, (const uint8_t *) &midi_msg, (uint32_t) timestamp);
       break;
     case MIM_LONGDATA:
       if (DEBUGGING)
         {
           g_debug (
-            "WinMME: [%s] long msg at %u", self->name,
-            (uint32_t) timestamp);
+            "WinMME: [%s] long msg at %u", self->name, (uint32_t) timestamp);
         }
-      handle_sysex_msg (
-        self, (MIDIHDR *) midi_msg, (uint32_t) timestamp);
+      handle_sysex_msg (self, (MIDIHDR *) midi_msg, (uint32_t) timestamp);
       break;
     case MIM_ERROR:
       g_warning (
@@ -468,9 +443,7 @@ windows_mme_device_input_cb (
         self->name);
       break;
     default:
-      g_warning (
-        "WinMME: Driver %s sent an unknown message",
-        self->name);
+      g_warning ("WinMME: Driver %s sent an unknown message", self->name);
       break;
     }
 }
@@ -491,8 +464,8 @@ add_sysex_buffer (WindowsMmeDevice * self)
       return -1;
     }
 
-  result = midiInAddBuffer (
-    self->in_handle, &self->sysex_header, sizeof (MIDIHDR));
+  result =
+    midiInAddBuffer (self->in_handle, &self->sysex_header, sizeof (MIDIHDR));
   if (result != MMSYSERR_NOERROR)
     {
       engine_windows_mme_print_error (result, 1);
@@ -523,8 +496,7 @@ windows_mme_device_open (WindowsMmeDevice * self, int start)
       if (self->is_input)
         result = midiInOpen (
           &self->in_handle, (UINT) self->id,
-          (DWORD_PTR) windows_mme_device_input_cb,
-          (DWORD_PTR) self,
+          (DWORD_PTR) windows_mme_device_input_cb, (DWORD_PTR) self,
           CALLBACK_FUNCTION | MIDI_IO_STATUS);
       else
         {
@@ -532,8 +504,7 @@ windows_mme_device_open (WindowsMmeDevice * self, int start)
         }
       if (result != MMSYSERR_NOERROR)
         {
-          engine_windows_mme_print_error (
-            result, self->is_input);
+          engine_windows_mme_print_error (result, self->is_input);
           return -1;
         }
 
@@ -543,8 +514,7 @@ windows_mme_device_open (WindowsMmeDevice * self, int start)
           g_return_val_if_reached (-1);
         }
 
-      g_message (
-        "Opened MIDI in device at index %u", self->id);
+      g_message ("Opened MIDI in device at index %u", self->id);
       self->opened = 1;
     }
 
@@ -572,14 +542,12 @@ windows_mme_device_start (WindowsMmeDevice * self)
       self->started = (result == MMSYSERR_NOERROR);
       if (!self->started)
         {
-          engine_windows_mme_print_error (
-            result, self->is_input);
+          engine_windows_mme_print_error (result, self->is_input);
           return -1;
         }
       else
         {
-          g_message (
-            "WinMMEMidiInput: device %s started", self->name);
+          g_message ("WinMMEMidiInput: device %s started", self->name);
         }
     }
 
@@ -602,14 +570,12 @@ windows_mme_device_stop (WindowsMmeDevice * self)
       self->started = 0;
       if (result != MMSYSERR_NOERROR)
         {
-          engine_windows_mme_print_error (
-            result, self->is_input);
+          engine_windows_mme_print_error (result, self->is_input);
           return -1;
         }
       else
         {
-          g_message (
-            "WinMMEMidiInput: device %s stopped", self->name);
+          g_message ("WinMMEMidiInput: device %s stopped", self->name);
         }
     }
 
@@ -664,8 +630,7 @@ windows_mme_device_close (WindowsMmeDevice * self, int free)
 
   if (has_error)
     {
-      g_warning (
-        "Unable to Close MIDI device: %s", self->name);
+      g_warning ("Unable to Close MIDI device: %s", self->name);
     }
   else
     {
@@ -696,8 +661,8 @@ windows_mme_device_print_info (WindowsMmeDevice * dev)
     "Product identifier: %u \n"
     "Driver version: %u.%u \n"
     "Product name: %s",
-    dev->manufacturer_id, dev->product_id,
-    dev->driver_ver_major, dev->driver_ver_minor, dev->name);
+    dev->manufacturer_id, dev->product_id, dev->driver_ver_major,
+    dev->driver_ver_minor, dev->name);
 }
 
 void

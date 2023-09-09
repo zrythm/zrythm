@@ -11,10 +11,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  PortInfoDialogWidget,
-  port_info_dialog_widget,
-  GTK_TYPE_WINDOW)
+G_DEFINE_TYPE (PortInfoDialogWidget, port_info_dialog_widget, GTK_TYPE_WINDOW)
 
 static void
 set_values (
@@ -28,8 +25,7 @@ set_values (
 
   AdwPreferencesGroup * pref_group =
     ADW_PREFERENCES_GROUP (adw_preferences_group_new ());
-  adw_preferences_group_set_title (
-    pref_group, _ ("Port Info"));
+  adw_preferences_group_set_title (pref_group, _ ("Port Info"));
   adw_preferences_page_add (pref_page, pref_group);
 
   AdwActionRow * row;
@@ -38,8 +34,7 @@ set_values (
 
 #define PREPARE_ROW(title) \
   row = ADW_ACTION_ROW (adw_action_row_new ()); \
-  adw_preferences_row_set_title ( \
-    ADW_PREFERENCES_ROW (row), title); \
+  adw_preferences_row_set_title (ADW_PREFERENCES_ROW (row), title); \
   lbl = GTK_LABEL (gtk_label_new (NULL))
 
 #define ADD_ROW \
@@ -64,9 +59,7 @@ set_values (
   ADD_ROW;
 
   PREPARE_ROW (_ ("Range"));
-  sprintf (
-    tmp, _ ("%.1f to %.1f"), (double) port->minf,
-    (double) port->maxf);
+  sprintf (tmp, _ ("%.1f to %.1f"), (double) port->minf, (double) port->maxf);
   gtk_label_set_text (lbl, tmp);
   ADD_ROW;
 
@@ -89,25 +82,21 @@ set_values (
 
   PREPARE_ROW (_ ("Flags"));
   GtkFlowBox * flags_box = GTK_FLOW_BOX (gtk_flow_box_new ());
-  for (int i = 0;
-       i < (int) CYAML_ARRAY_LEN (port_flags_bitvals); i++)
+  for (int i = 0; i < (int) CYAML_ARRAY_LEN (port_flags_bitvals); i++)
     {
       if (!(id->flags & (1 << i)))
         continue;
 
-      GtkWidget * lbl_ =
-        gtk_label_new (port_flags_bitvals[i].name);
+      GtkWidget * lbl_ = gtk_label_new (port_flags_bitvals[i].name);
       gtk_widget_set_hexpand (lbl_, 1);
       gtk_flow_box_append (GTK_FLOW_BOX (flags_box), lbl_);
     }
-  for (int i = 0;
-       i < (int) CYAML_ARRAY_LEN (port_flags2_bitvals); i++)
+  for (int i = 0; i < (int) CYAML_ARRAY_LEN (port_flags2_bitvals); i++)
     {
       if (!(id->flags2 & (unsigned int) (1 << i)))
         continue;
 
-      GtkWidget * lbl_ =
-        gtk_label_new (port_flags2_bitvals[i].name);
+      GtkWidget * lbl_ = gtk_label_new (port_flags2_bitvals[i].name);
       gtk_widget_set_hexpand (lbl_, 1);
       gtk_flow_box_append (GTK_FLOW_BOX (flags_box), lbl_);
     }
@@ -128,16 +117,14 @@ port_info_dialog_widget_new (Port * port)
 
   AdwPreferencesPage * pref_page =
     ADW_PREFERENCES_PAGE (adw_preferences_page_new ());
-  gtk_window_set_child (
-    GTK_WINDOW (self), GTK_WIDGET (pref_page));
+  gtk_window_set_child (GTK_WINDOW (self), GTK_WIDGET (pref_page));
   set_values (self, pref_page, port);
 
   return self;
 }
 
 static void
-port_info_dialog_widget_class_init (
-  PortInfoDialogWidgetClass * _klass)
+port_info_dialog_widget_class_init (PortInfoDialogWidgetClass * _klass)
 {
 }
 

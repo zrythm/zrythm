@@ -33,12 +33,9 @@ test_get_chord_at_pos (void)
   ChordObject * co2 = r->chord_objects[1];
   co1->chord_index = 0;
   co2->chord_index = 2;
-  arranger_object_set_end_pos_full_size (
-    (ArrangerObject *) r, &p2);
-  arranger_object_set_start_pos_full_size (
-    (ArrangerObject *) r, &p1);
-  arranger_object_loop_end_pos_setter (
-    (ArrangerObject *) r, &loop);
+  arranger_object_set_end_pos_full_size ((ArrangerObject *) r, &p2);
+  arranger_object_set_start_pos_full_size ((ArrangerObject *) r, &p1);
+  arranger_object_loop_end_pos_setter ((ArrangerObject *) r, &loop);
 
   region_print (r);
 
@@ -104,8 +101,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/chord track/"
 
   g_test_add_func (
-    TEST_PREFIX "test get chord at pos",
-    (GTestFunc) test_get_chord_at_pos);
+    TEST_PREFIX "test get chord at pos", (GTestFunc) test_get_chord_at_pos);
 
   return g_test_run ();
 }

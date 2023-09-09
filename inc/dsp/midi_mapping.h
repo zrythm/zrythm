@@ -14,8 +14,7 @@
 #include "dsp/port.h"
 #include "utils/midi.h"
 
-typedef struct _WrappedObjectWithChangeSignal
-  WrappedObjectWithChangeSignal;
+typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 
 /**
  * @addtogroup dsp
@@ -62,19 +61,9 @@ typedef struct MidiMapping
 
 static const cyaml_schema_field_t midi_mapping_fields_schema[] = {
   YAML_FIELD_INT (MidiMapping, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    MidiMapping,
-    key,
-    uint8_t_schema,
-    3),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    MidiMapping,
-    device_port,
-    ext_port_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    MidiMapping,
-    dest_id,
-    port_identifier_fields_schema),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (MidiMapping, key, uint8_t_schema, 3),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (MidiMapping, device_port, ext_port_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (MidiMapping, dest_id, port_identifier_fields_schema),
   YAML_FIELD_INT (MidiMapping, enabled),
 
   CYAML_FIELD_END
@@ -132,17 +121,13 @@ midi_mappings_init_loaded (MidiMappings * self);
 MidiMappings *
 midi_mappings_new (void);
 
-#define midi_mappings_bind_device( \
-  self, buf, dev_port, dest_port, fire_events) \
+#define midi_mappings_bind_device(self, buf, dev_port, dest_port, fire_events) \
   midi_mappings_bind_at ( \
-    self, buf, dev_port, dest_port, (self)->num_mappings, \
-    fire_events)
+    self, buf, dev_port, dest_port, (self)->num_mappings, fire_events)
 
-#define midi_mappings_bind_track( \
-  self, buf, dest_port, fire_events) \
+#define midi_mappings_bind_track(self, buf, dest_port, fire_events) \
   midi_mappings_bind_at ( \
-    self, buf, NULL, dest_port, (self)->num_mappings, \
-    fire_events)
+    self, buf, NULL, dest_port, (self)->num_mappings, fire_events)
 
 /**
  * Binds the CC represented by the given raw buffer
@@ -169,10 +154,7 @@ midi_mappings_bind_at (
  *   lock, such as inside an undoable action.
  */
 void
-midi_mappings_unbind (
-  MidiMappings * self,
-  int            idx,
-  bool           fire_events);
+midi_mappings_unbind (MidiMappings * self, int idx, bool fire_events);
 
 MidiMapping *
 midi_mapping_new (void);
@@ -181,9 +163,7 @@ void
 midi_mapping_set_enabled (MidiMapping * self, bool enabled);
 
 int
-midi_mapping_get_index (
-  MidiMappings * self,
-  MidiMapping *  mapping);
+midi_mapping_get_index (MidiMappings * self, MidiMapping * mapping);
 
 NONNULL MidiMapping *
 midi_mapping_clone (const MidiMapping * src);

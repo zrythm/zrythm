@@ -37,14 +37,11 @@ SCM_DEFINE (
   "Connects 2 ports as an undoable action.")
 #define FUNC_NAME s_
 {
-  PortIdentifier * src_id =
-    (PortIdentifier *) scm_to_pointer (src_port_id);
-  PortIdentifier * dest_id =
-    (PortIdentifier *) scm_to_pointer (dest_port_id);
+  PortIdentifier * src_id = (PortIdentifier *) scm_to_pointer (src_port_id);
+  PortIdentifier * dest_id = (PortIdentifier *) scm_to_pointer (dest_port_id);
 
   GError * err = NULL;
-  bool     ret = port_connection_action_perform_connect (
-    src_id, dest_id, &err);
+  bool     ret = port_connection_action_perform_connect (src_id, dest_id, &err);
   if (!ret)
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to connect ports"));
@@ -60,13 +57,11 @@ init_module (void * data)
 #ifndef SNARF_MODE
 #  include "actions_port_connection_action.x"
 #endif
-  scm_c_export (
-    "port-connection-action-perform-connect", NULL);
+  scm_c_export ("port-connection-action-perform-connect", NULL);
 }
 
 void
 guile_actions_port_connection_action_define_module (void)
 {
-  scm_c_define_module (
-    "actions port-connection-action", init_module, NULL);
+  scm_c_define_module ("actions port-connection-action", init_module, NULL);
 }

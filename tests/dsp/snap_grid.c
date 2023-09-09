@@ -25,8 +25,7 @@ test_update_snap_points (void)
   SnapGrid sg;
   gint64   before, after;
 
-  snap_grid_init (
-    &sg, SNAP_GRID_TYPE_TIMELINE, NOTE_LENGTH_1_128, false);
+  snap_grid_init (&sg, SNAP_GRID_TYPE_TIMELINE, NOTE_LENGTH_1_128, false);
 
 #define TEST_WITH_MAX_BARS(x) \
   before = g_get_monotonic_time (); \
@@ -51,8 +50,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/snap grid/"
 
   g_test_add_func (
-    TEST_PREFIX "test update snap points",
-    (GTestFunc) test_update_snap_points);
+    TEST_PREFIX "test update snap points", (GTestFunc) test_update_snap_points);
 
   return g_test_run ();
 }

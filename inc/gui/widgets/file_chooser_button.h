@@ -6,8 +6,7 @@
 
 #include <gtk/gtk.h>
 
-#define FILE_CHOOSER_BUTTON_WIDGET_TYPE \
-  (file_chooser_button_widget_get_type ())
+#define FILE_CHOOSER_BUTTON_WIDGET_TYPE (file_chooser_button_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   FileChooserButtonWidget,
   file_chooser_button_widget,

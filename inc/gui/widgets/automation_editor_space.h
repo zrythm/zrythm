@@ -21,9 +21,8 @@ G_DECLARE_FINAL_TYPE (
   AUTOMATION_EDITOR_SPACE_WIDGET,
   GtkBox)
 
-typedef struct _ArrangerWidget ArrangerWidget;
-typedef struct _AutomationEditorLegendWidget
-  AutomationEditorLegendWidget;
+typedef struct _ArrangerWidget               ArrangerWidget;
+typedef struct _AutomationEditorLegendWidget AutomationEditorLegendWidget;
 
 /**
  * @addtogroup widgets
@@ -31,8 +30,7 @@ typedef struct _AutomationEditorLegendWidget
  * @{
  */
 
-#define MW_AUTOMATION_EDITOR_SPACE \
-  MW_CLIP_EDITOR_INNER->automation_editor_space
+#define MW_AUTOMATION_EDITOR_SPACE MW_CLIP_EDITOR_INNER->automation_editor_space
 
 /**
  * The piano roll widget is the whole space inside
@@ -60,8 +58,7 @@ typedef struct _AutomationEditorSpaceWidget
 } AutomationEditorSpaceWidget;
 
 void
-automation_editor_space_widget_setup (
-  AutomationEditorSpaceWidget * self);
+automation_editor_space_widget_setup (AutomationEditorSpaceWidget * self);
 
 /**
  * See CLIP_EDITOR_INNER_WIDGET_ADD_TO_SIZEGROUP.
@@ -72,8 +69,7 @@ automation_editor_space_widget_update_size_group (
   int                           visible);
 
 void
-automation_editor_space_widget_refresh (
-  AutomationEditorSpaceWidget * self);
+automation_editor_space_widget_refresh (AutomationEditorSpaceWidget * self);
 
 /**
  * @}

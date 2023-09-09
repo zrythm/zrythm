@@ -86,8 +86,8 @@ stack_push (Stack * s, void * element)
       g_atomic_int_inc (&s->top);
       if (s->max_length == -1)
         {
-          s->elements = g_realloc (
-            s->elements, (size_t) (top + 2) * sizeof (void *));
+          s->elements =
+            g_realloc (s->elements, (size_t) (top + 2) * sizeof (void *));
         }
       s->elements[top + 1] = element;
     }

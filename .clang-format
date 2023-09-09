@@ -62,7 +62,7 @@ BreakConstructorInitializersBeforeComma: false
 BreakConstructorInitializers: BeforeColon
 BreakStringLiterals: false
 ContinuationIndentWidth: 2
-ColumnLimit: 62
+ColumnLimit: 80
 CommentPragmas: '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
@@ -110,8 +110,7 @@ MaxEmptyLinesToKeep: 1
 PenaltyBreakAssignment: 30
 PenaltyBreakBeforeFirstCallParameter: 20
 PenaltyBreakComment: 300
-#enable after clang 14
-#PenaltyBreakOpenParenthesis: 40
+PenaltyBreakOpenParenthesis: 40
 PenaltyBreakString: 1000
 PenaltyExcessCharacter: 120
 PenaltyIndentedWhitespace: 100

@@ -62,8 +62,7 @@ windows_get_special_path (WindowsSpecialPath path_type)
 
   if (SHGetSpecialFolderPathW (NULL, path, csidl, FALSE))
     {
-      char * ret =
-        g_utf16_to_utf8 (path, -1, NULL, NULL, NULL);
+      char * ret = g_utf16_to_utf8 (path, -1, NULL, NULL, NULL);
       g_return_val_if_fail (ret, NULL);
       return ret;
     }

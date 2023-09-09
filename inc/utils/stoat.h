@@ -12,8 +12,7 @@
 #    undef NONREALTIME
 #  endif
 #  define REALTIME __attribute__ ((annotate ("realtime")))
-#  define NONREALTIME \
-    __attribute__ ((annotate ("nonrealtime")))
+#  define NONREALTIME __attribute__ ((annotate ("nonrealtime")))
 #else
 #  define REALTIME
 #  define NONREALTIME

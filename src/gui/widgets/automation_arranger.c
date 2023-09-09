@@ -96,8 +96,7 @@ automation_arranger_widget_create_ap (
 
   /* get local pos */
   Position local_pos;
-  position_from_ticks (
-    &local_pos, pos->ticks - region_obj->pos.ticks);
+  position_from_ticks (&local_pos, pos->ticks - region_obj->pos.ticks);
 
   int height = gtk_widget_get_height (GTK_WIDGET (self));
   /* do height - because it's uside down */
@@ -108,12 +107,11 @@ automation_arranger_widget_create_ap (
    * outside the widget */
   normalized_val = CLAMP (normalized_val, 0.f, 1.f);
 
-  float value = control_port_normalized_val_to_real (
-    port, normalized_val);
+  float value = control_port_normalized_val_to_real (port, normalized_val);
 
   /* create a new ap */
-  AutomationPoint * ap = automation_point_new_float (
-    value, normalized_val, &local_pos);
+  AutomationPoint * ap =
+    automation_point_new_float (value, normalized_val, &local_pos);
   ArrangerObject * ap_obj = (ArrangerObject *) ap;
 
   /* set it as start object */
@@ -124,37 +122,29 @@ automation_arranger_widget_create_ap (
 
   /* set position to all counterparts */
   arranger_object_set_position (
-    ap_obj, &local_pos, ARRANGER_OBJECT_POSITION_TYPE_START,
-    F_NO_VALIDATE);
+    ap_obj, &local_pos, ARRANGER_OBJECT_POSITION_TYPE_START, F_NO_VALIDATE);
 
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, ap);
-  arranger_object_select (
-    ap_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (ap_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 }
 
 /**
  * Change curviness of selected curves.
  */
 void
-automation_arranger_widget_resize_curves (
-  ArrangerWidget * self,
-  double           offset_y)
+automation_arranger_widget_resize_curves (ArrangerWidget * self, double offset_y)
 {
   double diff = offset_y - self->last_offset_y;
   diff = -diff;
   diff = diff / 120.0;
-  for (int i = 0;
-       i < AUTOMATION_SELECTIONS->num_automation_points; i++)
+  for (int i = 0; i < AUTOMATION_SELECTIONS->num_automation_points; i++)
     {
-      AutomationPoint * ap =
-        AUTOMATION_SELECTIONS->automation_points[i];
-      double new_curve_val =
-        CLAMP (ap->curve_opts.curviness + diff, -1.0, 1.0);
+      AutomationPoint * ap = AUTOMATION_SELECTIONS->automation_points[i];
+      double new_curve_val = CLAMP (ap->curve_opts.curviness + diff, -1.0, 1.0);
       automation_point_set_curviness (ap, new_curve_val);
     }
 
-  EVENTS_PUSH (
-    ET_ARRANGER_SELECTIONS_CHANGED, AUTOMATION_SELECTIONS);
+  EVENTS_PUSH (ET_ARRANGER_SELECTIONS_CHANGED, AUTOMATION_SELECTIONS);
 }
 
 /** Used for passing a curve algorithm to some
@@ -185,10 +175,8 @@ automation_arranger_widget_gen_context_menu (
     }
   GMenuItem * menuitem;
 
-  ArrangerObject * obj =
-    arranger_widget_get_hit_arranger_object (
-      (ArrangerWidget *) self,
-      ARRANGER_OBJECT_TYPE_AUTOMATION_POINT, x, y);
+  ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
+    (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT, x, y);
   AutomationPoint * ap = (AutomationPoint *) obj;
 
   if (ap)
@@ -207,20 +195,17 @@ automation_arranger_widget_gen_context_menu (
 
       char str[100];
       sprintf (str, "app.arranger-object-view-info::%p", obj);
-      menuitem =
-        z_gtk_create_menu_item (_ ("View info"), NULL, str);
+      menuitem = z_gtk_create_menu_item (_ ("View info"), NULL, str);
       g_menu_append_item (edit_submenu, menuitem);
 
-      g_menu_append_section (
-        menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
+      g_menu_append_section (menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
 
       /* add curve algorithm selection */
       GMenu * curve_algorithm_submenu = g_menu_new ();
       for (int i = 0; i < NUM_CURVE_ALGORITHMS; i++)
         {
           char name[100];
-          curve_algorithm_get_localized_name (
-            (CurveAlgorithm) i, name);
+          curve_algorithm_get_localized_name ((CurveAlgorithm) i, name);
           char tmp[200];
           /* TODO change action state so that
            * selected algorithm shows as selected */
@@ -228,13 +213,11 @@ automation_arranger_widget_gen_context_menu (
           menuitem = z_gtk_create_menu_item (name, NULL, tmp);
           g_menu_item_set_action_and_target_value (
             menuitem, tmp, g_variant_new_int32 (i));
-          g_menu_append_item (
-            curve_algorithm_submenu, menuitem);
+          g_menu_append_item (curve_algorithm_submenu, menuitem);
         }
 
       g_menu_append_section (
-        menu, _ ("Curve algorithm"),
-        G_MENU_MODEL (curve_algorithm_submenu));
+        menu, _ ("Curve algorithm"), G_MENU_MODEL (curve_algorithm_submenu));
     }
 
   return menu;
@@ -246,10 +229,7 @@ automation_arranger_widget_gen_context_menu (
  * @return Whether an automation point was moved.
  */
 bool
-automation_arranger_move_hit_aps (
-  ArrangerWidget * self,
-  double           x,
-  double           y)
+automation_arranger_move_hit_aps (ArrangerWidget * self, double x, double y)
 {
   int height = gtk_widget_get_height (GTK_WIDGET (self));
 
@@ -259,36 +239,32 @@ automation_arranger_move_hit_aps (
   if (!self->shift_held && SNAP_GRID_ANY_SNAP (self->snap_grid))
     {
       position_snap (
-        &self->earliest_obj_start_pos, &pos, NULL, NULL,
-        self->snap_grid);
+        &self->earliest_obj_start_pos, &pos, NULL, NULL, self->snap_grid);
       x = arranger_widget_pos_to_px (self, &pos, true);
     }
 
   /* move any hit automation points */
-  ArrangerObject * obj =
-    arranger_widget_get_hit_arranger_object (
-      self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT, x, -1);
+  ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
+    self, ARRANGER_OBJECT_TYPE_AUTOMATION_POINT, x, -1);
   if (obj)
     {
       AutomationPoint * ap = (AutomationPoint *) obj;
       if (automation_point_is_point_hit (ap, x, -1))
         {
-          arranger_object_select (
-            obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
+          arranger_object_select (obj, F_SELECT, F_APPEND, F_NO_PUBLISH_EVENTS);
 
           Port * port = automation_point_get_port (ap);
           g_return_val_if_fail (port, false);
 
           /* move it to the y value */
           /* do height - because it's uside down */
-          float normalized_val =
-            (float) ((height - y) / height);
+          float normalized_val = (float) ((height - y) / height);
 
           /* clamp the value because the cursor might
            * be outside the widget */
           normalized_val = CLAMP (normalized_val, 0.f, 1.f);
-          float value = control_port_normalized_val_to_real (
-            port, normalized_val);
+          float value =
+            control_port_normalized_val_to_real (port, normalized_val);
           automation_point_set_fvalue (
             ap, value, F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
 

@@ -31,8 +31,7 @@ G_DEFINE_TYPE (
  * Creates an project dialog widget and displays it.
  */
 ProjectProgressDialogWidget *
-project_progress_dialog_widget_new (
-  ProjectSaveData * project_save_data)
+project_progress_dialog_widget_new (ProjectSaveData * project_save_data)
 {
   g_type_ensure (GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
 
@@ -42,16 +41,12 @@ project_progress_dialog_widget_new (
   GenericProgressDialogWidget * generic_progress_dialog =
     Z_GENERIC_PROGRESS_DIALOG_WIDGET (self);
 
-  project_save_data->progress_info->label_str =
-    g_strdup ("Saving...");
-  strcpy (
-    project_save_data->progress_info.label_done_str,
-    _ ("Saved"));
+  project_save_data->progress_info->label_str = g_strdup ("Saving...");
+  strcpy (project_save_data->progress_info.label_done_str, _ ("Saved"));
 
   generic_progress_dialog_widget_setup (
     generic_progress_dialog, _ ("Project Progress"),
-    &project_save_data->progress_info, F_AUTO_CLOSE,
-    F_NOT_CANCELABLE);
+    &project_save_data->progress_info, F_AUTO_CLOSE, F_NOT_CANCELABLE);
 
   return self;
 }
@@ -63,8 +58,7 @@ project_progress_dialog_widget_class_init (
 }
 
 static void
-project_progress_dialog_widget_init (
-  ProjectProgressDialogWidget * self)
+project_progress_dialog_widget_init (ProjectProgressDialogWidget * self)
 {
   g_type_ensure (GENERIC_PROGRESS_DIALOG_WIDGET_TYPE);
 }

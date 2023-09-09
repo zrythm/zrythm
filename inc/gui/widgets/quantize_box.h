@@ -32,8 +32,7 @@
  * @{
  */
 
-#define QUANTIZE_BOX_WIDGET_TYPE \
-  (quantize_box_widget_get_type ())
+#define QUANTIZE_BOX_WIDGET_TYPE (quantize_box_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   QuantizeBoxWidget,
   quantize_box_widget,
@@ -59,9 +58,7 @@ typedef struct _QuantizeBoxWidget
  * Sets up the QuantizeBoxWidget.
  */
 void
-quantize_box_widget_setup (
-  QuantizeBoxWidget * self,
-  QuantizeOptions *   q_opts);
+quantize_box_widget_setup (QuantizeBoxWidget * self, QuantizeOptions * q_opts);
 
 /**
  * @}

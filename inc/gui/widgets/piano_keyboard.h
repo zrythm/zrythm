@@ -30,8 +30,7 @@
 
 #include <gtk/gtk.h>
 
-#define PIANO_KEYBOARD_WIDGET_TYPE \
-  (piano_keyboard_widget_get_type ())
+#define PIANO_KEYBOARD_WIDGET_TYPE (piano_keyboard_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PianoKeyboardWidget,
   piano_keyboard_widget,

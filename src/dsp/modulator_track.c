@@ -40,8 +40,7 @@ modulator_track_init (Track * self)
   self->num_visible_modulator_macros = max_macros;
   for (int i = 0; i < max_macros; i++)
     {
-      self->modulator_macros[i] =
-        modulator_macro_processor_new (self, i);
+      self->modulator_macros[i] = modulator_macro_processor_new (self, i);
     }
   self->num_modulator_macros = max_macros;
 
@@ -56,8 +55,7 @@ Track *
 modulator_track_default (int track_pos)
 {
   Track * self = track_new (
-    TRACK_TYPE_MODULATOR, track_pos, _ ("Modulators"),
-    F_WITHOUT_LANE);
+    TRACK_TYPE_MODULATOR, track_pos, _ ("Modulators"), F_WITHOUT_LANE);
 
   return self;
 }
@@ -83,23 +81,19 @@ modulator_track_insert_modulator (
   bool     pub_events)
 {
   g_return_if_fail (
-    IS_TRACK (self) && IS_PLUGIN (modulator)
-    && slot <= self->num_modulators);
+    IS_TRACK (self) && IS_PLUGIN (modulator) && slot <= self->num_modulators);
 
   if (replace_mode)
     {
       Plugin * existing_pl =
-        slot < self->num_modulators
-          ? self->modulators[slot]
-          : NULL;
+        slot < self->num_modulators ? self->modulators[slot] : NULL;
       if (existing_pl)
         {
           /* confirm if another plugin exists */
           if (confirm)
             {
               GtkDialog * dialog =
-                dialogs_get_overwrite_plugin_dialog (
-                  GTK_WINDOW (MAIN_WINDOW));
+                dialogs_get_overwrite_plugin_dialog (GTK_WINDOW (MAIN_WINDOW));
               int result = z_gtk_dialog_run (dialog, true);
 
               /* do nothing if not accepted */
@@ -119,21 +113,21 @@ modulator_track_insert_modulator (
         }
 
       g_message (
-        "Inserting modulator %s at %s:%d",
-        modulator->setting->descr->name, self->name, slot);
+        "Inserting modulator %s at %s:%d", modulator->setting->descr->name,
+        self->name, slot);
       if (slot == self->num_modulators)
         {
           array_double_size_if_full (
-            self->modulators, self->num_modulators,
-            self->modulators_size, Modulator *);
+            self->modulators, self->num_modulators, self->modulators_size,
+            Modulator *);
           self->num_modulators++;
         }
     }
   else
     {
       array_double_size_if_full (
-        self->modulators, self->num_modulators,
-        self->modulators_size, Modulator *);
+        self->modulators, self->num_modulators, self->modulators_size,
+        Modulator *);
 
       /* push other modulators forward (make
        * space for new modulator) */
@@ -144,8 +138,7 @@ modulator_track_insert_modulator (
           g_message (
             "setting modulator %s from slot %d "
             "to slot %d",
-            self->modulators[i]->setting->descr->name, i - 1,
-            i);
+            self->modulators[i]->setting->descr->name, i - 1, i);
           plugin_set_track_and_slot (
             self->modulators[i], track_get_name_hash (self),
             PLUGIN_SLOT_MODULATOR, i);
@@ -155,12 +148,10 @@ modulator_track_insert_modulator (
   /* add the modulator */
   self->modulators[slot] = modulator;
   g_message (
-    "setting modulator %s to slot %d",
-    modulator->setting->descr->name, slot);
+    "setting modulator %s to slot %d", modulator->setting->descr->name, slot);
 
   plugin_set_track_and_slot (
-    modulator, track_get_name_hash (self),
-    PLUGIN_SLOT_MODULATOR, slot);
+    modulator, track_get_name_hash (self), PLUGIN_SLOT_MODULATOR, slot);
 
   if (gen_automatables)
     {
@@ -201,16 +192,13 @@ modulator_track_remove_modulator (
 {
   Plugin * plugin = self->modulators[slot];
   g_return_if_fail (IS_PLUGIN (plugin));
-  g_return_if_fail (
-    plugin->id.track_name_hash == track_get_name_hash (self));
+  g_return_if_fail (plugin->id.track_name_hash == track_get_name_hash (self));
 
   plugin_remove_ats_from_automation_tracklist (
-    plugin, deleting_modulator,
-    !deleting_track && !deleting_modulator);
+    plugin, deleting_modulator, !deleting_track && !deleting_modulator);
 
   g_message (
-    "Removing %s from %s:%d", plugin->setting->descr->name,
-    self->name, slot);
+    "Removing %s from %s:%d", plugin->setting->descr->name, self->name, slot);
 
   /* unexpose all JACK ports */
   plugin_expose_ports (plugin, F_NOT_EXPOSE, true, true);
@@ -222,8 +210,8 @@ modulator_track_remove_modulator (
       if (plugin_is_selected (plugin))
         {
           mixer_selections_remove_slot (
-            MIXER_SELECTIONS, plugin->id.slot,
-            PLUGIN_SLOT_MODULATOR, F_PUBLISH_EVENTS);
+            MIXER_SELECTIONS, plugin->id.slot, PLUGIN_SLOT_MODULATOR,
+            F_PUBLISH_EVENTS);
         }
 
       plugin_disconnect (plugin);

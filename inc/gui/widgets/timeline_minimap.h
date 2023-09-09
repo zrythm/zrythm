@@ -14,8 +14,7 @@
 
 #include <gtk/gtk.h>
 
-#define TIMELINE_MINIMAP_WIDGET_TYPE \
-  (timeline_minimap_widget_get_type ())
+#define TIMELINE_MINIMAP_WIDGET_TYPE (timeline_minimap_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TimelineMinimapWidget,
   timeline_minimap_widget,
@@ -23,10 +22,9 @@ G_DECLARE_FINAL_TYPE (
   TIMELINE_MINIMAP_WIDGET,
   GtkWidget)
 
-typedef struct _TimelineMinimapBgWidget TimelineMinimapBgWidget;
-typedef struct _TimelineMinimapSelectionWidget
-                               TimelineMinimapSelectionWidget;
-typedef struct TimelineMinimap TimelineMinimap;
+typedef struct _TimelineMinimapBgWidget        TimelineMinimapBgWidget;
+typedef struct _TimelineMinimapSelectionWidget TimelineMinimapSelectionWidget;
+typedef struct TimelineMinimap                 TimelineMinimap;
 
 /**
  * @addtogroup widgets
@@ -34,8 +32,7 @@ typedef struct TimelineMinimap TimelineMinimap;
  * @{
  */
 
-#define MW_TIMELINE_MINIMAP \
-  MW_TIMELINE_BOT_BOX->timeline_minimap
+#define MW_TIMELINE_MINIMAP MW_TIMELINE_BOT_BOX->timeline_minimap
 
 typedef enum TimelineMinimapAction
 {

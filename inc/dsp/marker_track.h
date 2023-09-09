@@ -44,10 +44,7 @@ marker_track_init (Track * track);
  * Inserts a marker to the track.
  */
 void
-marker_track_insert_marker (
-  MarkerTrack * self,
-  Marker *      marker,
-  int           pos);
+marker_track_insert_marker (MarkerTrack * self, Marker * marker, int pos);
 
 /**
  * Adds a marker to the track.
@@ -67,10 +64,7 @@ marker_track_clear (MarkerTrack * self);
  * Removes a marker, optionally freeing it.
  */
 void
-marker_track_remove_marker (
-  MarkerTrack * self,
-  Marker *      marker,
-  int           free);
+marker_track_remove_marker (MarkerTrack * self, Marker * marker, int free);
 
 bool
 marker_track_validate (MarkerTrack * self);

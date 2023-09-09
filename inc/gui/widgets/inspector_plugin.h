@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define INSPECTOR_PLUGIN_WIDGET_TYPE \
-  (inspector_plugin_widget_get_type ())
+#define INSPECTOR_PLUGIN_WIDGET_TYPE (inspector_plugin_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   InspectorPluginWidget,
   inspector_plugin_widget,
@@ -27,14 +26,12 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MW_PLUGIN_INSPECTOR \
-  MW_LEFT_DOCK_EDGE->plugin_inspector
+#define MW_PLUGIN_INSPECTOR MW_LEFT_DOCK_EDGE->plugin_inspector
 
-typedef struct _PortsExpanderWidget PortsExpanderWidget;
-typedef struct _PluginPropertiesExpanderWidget
-  PluginPropertiesExpanderWidget;
-typedef struct _ColorAreaWidget ColorAreaWidget;
-typedef struct MixerSelections  MixerSelections;
+typedef struct _PortsExpanderWidget            PortsExpanderWidget;
+typedef struct _PluginPropertiesExpanderWidget PluginPropertiesExpanderWidget;
+typedef struct _ColorAreaWidget                ColorAreaWidget;
+typedef struct MixerSelections                 MixerSelections;
 
 typedef struct _InspectorPluginWidget
 {

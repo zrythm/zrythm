@@ -136,9 +136,7 @@ audio_clip_init_loaded (AudioClip * self);
  * The name used is the basename of the file.
  */
 NONNULL_ARGS (1)
-AudioClip * audio_clip_new_from_file (
-  const char * full_path,
-  GError **    error);
+AudioClip * audio_clip_new_from_file (const char * full_path, GError ** error);
 
 /**
  * Creates an audio clip by copying the given float
@@ -180,9 +178,7 @@ audio_clip_new_recording (
  *   channel. The previous frames will be kept.
  */
 NONNULL void
-audio_clip_update_channel_caches (
-  AudioClip * self,
-  size_t      start_from);
+audio_clip_update_channel_caches (AudioClip * self, size_t start_from);
 
 /**
  * Shows a dialog with info on how to edit a file,
@@ -199,9 +195,7 @@ audio_clip_update_channel_caches (
  *   NULL, if not.
  */
 NONNULL AudioClip *
-audio_clip_edit_in_ext_program (
-  AudioClip * self,
-  GError **   error);
+audio_clip_edit_in_ext_program (AudioClip * self, GError ** error);
 
 /**
  * Writes the given audio clip data to a file.

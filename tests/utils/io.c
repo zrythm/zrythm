@@ -81,24 +81,22 @@ test_get_files_in_dir (void)
 #ifdef __linux__
   char ** files;
 
-  files = io_get_files_in_dir_ending_in (
-    TESTS_SRCDIR, F_NO_RECURSIVE, ".wav", false);
+  files =
+    io_get_files_in_dir_ending_in (TESTS_SRCDIR, F_NO_RECURSIVE, ".wav", false);
   g_assert_nonnull (files);
   g_strfreev (files);
 
   files = NULL;
 
-  g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*reached*");
-  files = io_get_files_in_dir_ending_in (
-    "/non-existent", F_RECURSIVE, ".wav", false);
+  g_test_expect_message (G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*reached*");
+  files =
+    io_get_files_in_dir_ending_in ("/non-existent", F_RECURSIVE, ".wav", false);
   g_test_assert_expected_messages ();
   g_assert_null (files);
 
-  g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*reached*");
-  files = io_get_files_in_dir_ending_in (
-    "/non-existent", F_RECURSIVE, ".wav", true);
+  g_test_expect_message (G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*reached*");
+  files =
+    io_get_files_in_dir_ending_in ("/non-existent", F_RECURSIVE, ".wav", true);
   g_test_assert_expected_messages ();
   g_assert_nonnull (files);
   g_assert_null (files[0]);
@@ -116,15 +114,11 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/utils/io/"
 
   g_test_add_func (
-    TEST_PREFIX "test get parent dir",
-    (GTestFunc) test_get_parent_dir);
+    TEST_PREFIX "test get parent dir", (GTestFunc) test_get_parent_dir);
+  g_test_add_func (TEST_PREFIX "test get ext", (GTestFunc) test_get_ext);
   g_test_add_func (
-    TEST_PREFIX "test get ext", (GTestFunc) test_get_ext);
-  g_test_add_func (
-    TEST_PREFIX "test get files in dir",
-    (GTestFunc) test_get_files_in_dir);
-  g_test_add_func (
-    TEST_PREFIX "test strip ext", (GTestFunc) test_strip_ext);
+    TEST_PREFIX "test get files in dir", (GTestFunc) test_get_files_in_dir);
+  g_test_add_func (TEST_PREFIX "test strip ext", (GTestFunc) test_strip_ext);
 
   return g_test_run ();
 }

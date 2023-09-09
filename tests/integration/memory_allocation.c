@@ -56,8 +56,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/integration/memory_allocation/"
 
   g_test_add_func (
-    TEST_PREFIX "test memory allocation",
-    (GTestFunc) test_memory_allocation);
+    TEST_PREFIX "test memory allocation", (GTestFunc) test_memory_allocation);
 
   return g_test_run ();
 }

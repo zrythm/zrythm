@@ -41,8 +41,7 @@ typedef struct AudioClip       AudioClip;
 
 #define REGION_PRINTF_FILENAME "%s_%s.mid"
 
-#define region_is_selected(r) \
-  arranger_object_is_selected ((ArrangerObject *) r)
+#define region_is_selected(r) arranger_object_is_selected ((ArrangerObject *) r)
 
 /**
  * Musical mode setting for audio regions.
@@ -287,21 +286,12 @@ typedef struct ZRegion
 
 static const cyaml_schema_field_t region_fields_schema[] = {
   YAML_FIELD_INT (ZRegion, schema_version),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ZRegion,
-    base,
-    arranger_object_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ZRegion,
-    id,
-    region_identifier_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (ZRegion, base, arranger_object_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (ZRegion, id, region_identifier_fields_schema),
   YAML_FIELD_STRING_PTR (ZRegion, name),
   YAML_FIELD_INT (ZRegion, pool_id),
   YAML_FIELD_FLOAT (ZRegion, gain),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ZRegion,
-    color,
-    gdk_rgba_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (ZRegion, color, gdk_rgba_fields_schema),
   YAML_FIELD_INT (ZRegion, use_color),
   CYAML_FIELD_SEQUENCE_COUNT (
     "midi_notes",
@@ -330,10 +320,7 @@ static const cyaml_schema_field_t region_fields_schema[] = {
     &chord_object_schema,
     0,
     CYAML_UNLIMITED),
-  YAML_FIELD_ENUM (
-    ZRegion,
-    musical_mode,
-    region_musical_mode_strings),
+  YAML_FIELD_ENUM (ZRegion, musical_mode, region_musical_mode_strings),
 
   CYAML_FIELD_END
 };
@@ -345,8 +332,7 @@ static const cyaml_schema_value_t region_schema = {
 /**
  * Returns if the given ZRegion type can have fades.
  */
-#define region_type_can_fade(rtype) \
-  (rtype == REGION_TYPE_AUDIO)
+#define region_type_can_fade(rtype) (rtype == REGION_TYPE_AUDIO)
 
 /**
  * Only to be used by implementing structs.
@@ -377,10 +363,7 @@ region_set_track_name_hash (
 #endif
 
 NONNULL void
-region_print_to_str (
-  const ZRegion * self,
-  char *          buf,
-  const size_t    buf_size);
+region_print_to_str (const ZRegion * self, char * buf, const size_t buf_size);
 
 /**
  * Print region info for debugging.
@@ -415,10 +398,7 @@ region_get_link_group (ZRegion * self);
  * @public @memberof ZRegion
  */
 void
-region_set_link_group (
-  ZRegion * region,
-  int       group_idx,
-  bool      update_identifier);
+region_set_link_group (ZRegion * region, int group_idx, bool update_identifier);
 
 NONNULL bool
 region_has_link_group (ZRegion * region);
@@ -573,9 +553,7 @@ region_type_has_lane (const RegionType type)
  * @public @memberof ZRegion
  */
 void
-region_set_automation_track (
-  ZRegion *         region,
-  AutomationTrack * at);
+region_set_automation_track (ZRegion * region, AutomationTrack * at);
 
 /**
  * Gets the AutomationTrack using the saved index.
@@ -742,10 +720,7 @@ region_get_arranger_for_children (ZRegion * self);
  * @public @memberof ZRegion
  */
 bool
-region_validate (
-  ZRegion * self,
-  bool      is_project,
-  double    frames_per_tick);
+region_validate (ZRegion * self, bool is_project, double frames_per_tick);
 
 /**
  * Disconnects the region and anything using it.

@@ -70,18 +70,12 @@ static const cyaml_schema_field_t clip_editor_fields_schema[] = {
     region_id,
     region_identifier_fields_schema),
   YAML_FIELD_INT (ClipEditor, has_region),
-  YAML_FIELD_MAPPING_PTR (
-    ClipEditor,
-    piano_roll,
-    piano_roll_fields_schema),
+  YAML_FIELD_MAPPING_PTR (ClipEditor, piano_roll, piano_roll_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     ClipEditor,
     automation_editor,
     automation_editor_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    ClipEditor,
-    chord_editor,
-    chord_editor_fields_schema),
+  YAML_FIELD_MAPPING_PTR (ClipEditor, chord_editor, chord_editor_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     ClipEditor,
     audio_clip_editor,
@@ -119,10 +113,7 @@ clip_editor_new (void);
  * To be called only from GTK threads.
  */
 void
-clip_editor_set_region (
-  ClipEditor * self,
-  ZRegion *    region,
-  bool         fire_events);
+clip_editor_set_region (ClipEditor * self, ZRegion * region, bool fire_events);
 
 ZRegion *
 clip_editor_get_region (ClipEditor * self);

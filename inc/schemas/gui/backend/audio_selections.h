@@ -38,10 +38,7 @@ static const cyaml_schema_field_t audio_selections_fields_schema_v1[] = {
     AudioSelections_v1,
     sel_start,
     position_fields_schema_v1),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AudioSelections,
-    sel_end,
-    position_fields_schema_v1),
+  YAML_FIELD_MAPPING_EMBEDDED (AudioSelections, sel_end, position_fields_schema_v1),
   YAML_FIELD_INT (AudioSelections_v1, pool_id),
   YAML_FIELD_MAPPING_EMBEDDED (
     AudioSelections_v1,
@@ -52,9 +49,7 @@ static const cyaml_schema_field_t audio_selections_fields_schema_v1[] = {
 };
 
 static const cyaml_schema_value_t audio_selections_schema_v1 = {
-  YAML_VALUE_PTR (
-    AudioSelections_v1,
-    audio_selections_fields_schema_v1),
+  YAML_VALUE_PTR (AudioSelections_v1, audio_selections_fields_schema_v1),
 };
 
 #endif

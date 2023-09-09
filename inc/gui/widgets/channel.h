@@ -9,29 +9,21 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _PluginStripExpanderWidget
-  PluginStripExpanderWidget;
+typedef struct _PluginStripExpanderWidget PluginStripExpanderWidget;
 
 #define CHANNEL_WIDGET_TYPE (channel_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  ChannelWidget,
-  channel_widget,
-  Z,
-  CHANNEL_WIDGET,
-  GtkWidget)
+G_DECLARE_FINAL_TYPE (ChannelWidget, channel_widget, Z, CHANNEL_WIDGET, GtkWidget)
 
-typedef struct _ColorAreaWidget   ColorAreaWidget;
-typedef struct _KnobWidget        KnobWidget;
-typedef struct _FaderWidget       FaderWidget;
-typedef struct Channel            Channel;
-typedef struct _ChannelSlotWidget ChannelSlotWidget;
-typedef struct _RouteTargetSelectorWidget
-  RouteTargetSelectorWidget;
-typedef struct _BalanceControlWidget BalanceControlWidget;
-typedef struct _EditableLabelWidget  EditableLabelWidget;
-typedef struct _FaderButtonsWidget   FaderButtonsWidget;
-typedef struct _ChannelSendsExpanderWidget
-  ChannelSendsExpanderWidget;
+typedef struct _ColorAreaWidget            ColorAreaWidget;
+typedef struct _KnobWidget                 KnobWidget;
+typedef struct _FaderWidget                FaderWidget;
+typedef struct Channel                     Channel;
+typedef struct _ChannelSlotWidget          ChannelSlotWidget;
+typedef struct _RouteTargetSelectorWidget  RouteTargetSelectorWidget;
+typedef struct _BalanceControlWidget       BalanceControlWidget;
+typedef struct _EditableLabelWidget        EditableLabelWidget;
+typedef struct _FaderButtonsWidget         FaderButtonsWidget;
+typedef struct _ChannelSendsExpanderWidget ChannelSendsExpanderWidget;
 
 typedef struct _ChannelWidget
 {
@@ -137,8 +129,7 @@ typedef struct _ChannelWidget
  * Updates the inserts.
  */
 void
-channel_widget_update_midi_fx_and_inserts (
-  ChannelWidget * self);
+channel_widget_update_midi_fx_and_inserts (ChannelWidget * self);
 
 void
 channel_widget_redraw_fader (ChannelWidget * self);

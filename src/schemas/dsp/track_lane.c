@@ -25,12 +25,10 @@ track_lane_upgrade_from_v1 (TrackLane_v1 * old)
   UPDATE (solo);
   UPDATE (midi_ch);
   self->num_regions = old->num_regions;
-  self->regions = g_malloc_n (
-    (size_t) self->num_regions, sizeof (ZRegion *));
+  self->regions = g_malloc_n ((size_t) self->num_regions, sizeof (ZRegion *));
   for (int i = 0; i < self->num_regions; i++)
     {
-      self->regions[i] =
-        region_upgrade_from_v1 (old->regions[i]);
+      self->regions[i] = region_upgrade_from_v1 (old->regions[i]);
     }
 
   return self;

@@ -73,8 +73,7 @@ midi_region_new (
   self->id.type = REGION_TYPE_MIDI;
 
   region_init (
-    self, start_pos, end_pos, track_name_hash, lane_pos,
-    idx_inside_lane);
+    self, start_pos, end_pos, track_name_hash, lane_pos, idx_inside_lane);
 
   return self;
 }
@@ -93,20 +92,16 @@ midi_region_new_from_chord_descr (
   int               lane_pos,
   int               idx_inside_lane)
 {
-  int r_length_ticks =
-    snap_grid_get_default_ticks (SNAP_GRID_TIMELINE);
-  int mn_length_ticks =
-    snap_grid_get_default_ticks (SNAP_GRID_EDITOR);
+  int r_length_ticks = snap_grid_get_default_ticks (SNAP_GRID_TIMELINE);
+  int mn_length_ticks = snap_grid_get_default_ticks (SNAP_GRID_EDITOR);
 
   /* get region end pos */
   Position r_end_pos;
-  position_from_ticks (
-    &r_end_pos, pos->ticks + (double) r_length_ticks);
+  position_from_ticks (&r_end_pos, pos->ticks + (double) r_length_ticks);
 
   /* create region */
   ZRegion * r = midi_region_new (
-    pos, &r_end_pos, track_name_hash, lane_pos,
-    idx_inside_lane);
+    pos, &r_end_pos, track_name_hash, lane_pos, idx_inside_lane);
 
   /* get midi note positions */
   Position mn_pos, mn_end_pos;
@@ -119,10 +114,8 @@ midi_region_new_from_chord_descr (
       if (descr->notes[i])
         {
           MidiNote * mn = midi_note_new (
-            &r->id, &mn_pos, &mn_end_pos, i + 36,
-            VELOCITY_DEFAULT);
-          midi_region_add_midi_note (
-            r, mn, F_NO_PUBLISH_EVENTS);
+            &r->id, &mn_pos, &mn_end_pos, i + 36, VELOCITY_DEFAULT);
+          midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
         }
     }
 
@@ -162,10 +155,8 @@ midi_region_insert_midi_note (
   g_return_if_fail (self->id.type == REGION_TYPE_MIDI);
 
   array_double_size_if_full (
-    self->midi_notes, self->num_midi_notes,
-    self->midi_notes_size, MidiNote *);
-  array_insert (
-    self->midi_notes, self->num_midi_notes, idx, midi_note);
+    self->midi_notes, self->num_midi_notes, self->midi_notes_size, MidiNote *);
+  array_insert (self->midi_notes, self->num_midi_notes, idx, midi_note);
 
   for (int i = idx; i < self->num_midi_notes; i++)
     {
@@ -206,8 +197,7 @@ midi_region_pop_unended_note (ZRegion * self, int pitch)
   if (match)
     {
       /* pop it from the array */
-      array_delete (
-        self->unended_notes, self->num_unended_notes, match);
+      array_delete (self->unended_notes, self->num_unended_notes, match);
 
       return match;
     }
@@ -224,12 +214,9 @@ midi_region_get_first_midi_note (ZRegion * region)
   MidiNote * result = NULL;
   for (int i = 0; i < region->num_midi_notes; i++)
     {
-      ArrangerObject * cur_mn_obj =
-        (ArrangerObject *) region->midi_notes[i];
+      ArrangerObject * cur_mn_obj = (ArrangerObject *) region->midi_notes[i];
       ArrangerObject * result_obj = (ArrangerObject *) result;
-      if (
-        !result
-        || result_obj->end_pos.ticks > cur_mn_obj->end_pos.ticks)
+      if (!result || result_obj->end_pos.ticks > cur_mn_obj->end_pos.ticks)
         {
           result = region->midi_notes[i];
         }
@@ -248,8 +235,7 @@ midi_region_get_last_midi_note (ZRegion * region)
       if (
         !result
         || ((ArrangerObject *) result)->end_pos.ticks
-             < ((ArrangerObject *) region->midi_notes[i])
-                 ->end_pos.ticks)
+             < ((ArrangerObject *) region->midi_notes[i])->end_pos.ticks)
         {
           result = region->midi_notes[i];
         }
@@ -308,8 +294,7 @@ midi_region_remove_midi_note (
   if (MA_SELECTIONS)
     {
       arranger_selections_remove_object (
-        (ArrangerSelections *) MA_SELECTIONS,
-        (ArrangerObject *) midi_note);
+        (ArrangerSelections *) MA_SELECTIONS, (ArrangerObject *) midi_note);
     }
 
   /*ARRANGER_WIDGET_GET_PRIVATE (*/
@@ -320,13 +305,11 @@ midi_region_remove_midi_note (
   /*ar_prv->start_object = NULL;*/
   /*}*/
 
-  array_delete (
-    region->midi_notes, region->num_midi_notes, midi_note);
+  array_delete (region->midi_notes, region->num_midi_notes, midi_note);
 
   for (int i = 0; i < region->num_midi_notes; i++)
     {
-      midi_note_set_region_and_index (
-        region->midi_notes[i], region, i);
+      midi_note_set_region_and_index (region->midi_notes[i], region, i);
     }
 
   if (free)
@@ -336,9 +319,7 @@ midi_region_remove_midi_note (
 
   if (pub_event)
     {
-      EVENTS_PUSH (
-        ET_ARRANGER_OBJECT_REMOVED,
-        ARRANGER_OBJECT_TYPE_MIDI_NOTE);
+      EVENTS_PUSH (ET_ARRANGER_OBJECT_REMOVED, ARRANGER_OBJECT_TYPE_MIDI_NOTE);
     }
 }
 
@@ -382,8 +363,7 @@ midi_region_new_from_midi_file (
   Position end_pos;
   position_from_ticks (&end_pos, start_pos->ticks + 1);
   region_init (
-    self, start_pos, &end_pos, track_name_hash, lane_pos,
-    idx_inside_lane);
+    self, start_pos, &end_pos, track_name_hash, lane_pos, idx_inside_lane);
 
   midiReadInitMessage (&msg);
   int    num_tracks = midiReadGetNumTracks (mf);
@@ -410,11 +390,9 @@ midi_region_new_from_midi_file (
       while (midiReadGetNextMessage (mf, i, &msg))
         {
           /* convert time to zrythm time */
-          ticks =
-            ((double) msg.dwAbsPos * transport_ppqn) / ppqn;
+          ticks = ((double) msg.dwAbsPos * transport_ppqn) / ppqn;
           position_from_ticks (&pos, ticks);
-          position_from_ticks (
-            &global_pos, r_obj->pos.ticks + ticks);
+          position_from_ticks (&global_pos, r_obj->pos.ticks + ticks);
           g_debug ("dwAbsPos: %d ", msg.dwAbsPos);
 
           int bars = position_get_bars (&pos, true);
@@ -446,12 +424,11 @@ handle_note_off:
                 "[ch %d pitch %d]",
                 msg.dwAbsPos, msg.MsgData.NoteOff.iChannel,
                 msg.MsgData.NoteOff.iNote);
-              mn = midi_region_pop_unended_note (
-                self, msg.MsgData.NoteOff.iNote);
+              mn =
+                midi_region_pop_unended_note (self, msg.MsgData.NoteOff.iNote);
               if (mn)
                 {
-                  arranger_object_end_pos_setter (
-                    (ArrangerObject *) mn, &pos);
+                  arranger_object_end_pos_setter ((ArrangerObject *) mn, &pos);
                 }
               else
                 {
@@ -465,10 +442,8 @@ handle_note_off:
               /* 0 velocity is a note off */
               if (msg.MsgData.NoteOn.iVolume == 0)
                 {
-                  msg.MsgData.NoteOff.iChannel =
-                    msg.MsgData.NoteOn.iChannel;
-                  msg.MsgData.NoteOff.iNote =
-                    msg.MsgData.NoteOn.iNote;
+                  msg.MsgData.NoteOff.iChannel = msg.MsgData.NoteOn.iChannel;
+                  msg.MsgData.NoteOff.iNote = msg.MsgData.NoteOn.iNote;
                   goto handle_note_off;
                 }
 
@@ -476,41 +451,30 @@ handle_note_off:
                 "Note on at %d "
                 "[ch %d pitch %d vel %d]",
                 msg.dwAbsPos, msg.MsgData.NoteOn.iChannel,
-                msg.MsgData.NoteOn.iNote,
-                msg.MsgData.NoteOn.iVolume);
+                msg.MsgData.NoteOn.iNote, msg.MsgData.NoteOn.iVolume);
               midi_region_start_unended_note (
                 self, &pos, NULL, msg.MsgData.NoteOn.iNote,
                 msg.MsgData.NoteOn.iVolume, 0);
               break;
             case msgNoteKeyPressure:
-              muGetNameFromNote (
-                str, msg.MsgData.NoteKeyPressure.iNote);
+              muGetNameFromNote (str, msg.MsgData.NoteKeyPressure.iNote);
               g_debug (
-                "(%.2d) %s %d",
-                msg.MsgData.NoteKeyPressure.iChannel, str,
+                "(%.2d) %s %d", msg.MsgData.NoteKeyPressure.iChannel, str,
                 msg.MsgData.NoteKeyPressure.iPressure);
               break;
             case msgSetParameter:
-              muGetControlName (
-                str, msg.MsgData.NoteParameter.iControl);
+              muGetControlName (str, msg.MsgData.NoteParameter.iControl);
               g_debug (
-                "(%.2d) %s -> %d",
-                msg.MsgData.NoteParameter.iChannel, str,
+                "(%.2d) %s -> %d", msg.MsgData.NoteParameter.iChannel, str,
                 msg.MsgData.NoteParameter.iParam);
               break;
             case msgSetProgram:
-              muGetInstrumentName (
-                str, msg.MsgData.ChangeProgram.iProgram);
-              g_debug (
-                "(%.2d) %s",
-                msg.MsgData.ChangeProgram.iChannel, str);
+              muGetInstrumentName (str, msg.MsgData.ChangeProgram.iProgram);
+              g_debug ("(%.2d) %s", msg.MsgData.ChangeProgram.iChannel, str);
               break;
             case msgChangePressure:
-              muGetControlName (
-                str, msg.MsgData.ChangePressure.iPressure);
-              g_debug (
-                "(%.2d) %s",
-                msg.MsgData.ChangePressure.iChannel, str);
+              muGetControlName (str, msg.MsgData.ChangePressure.iPressure);
+              g_debug ("(%.2d) %s", msg.MsgData.ChangePressure.iChannel, str);
               break;
             case msgSetPitchWheel:
               g_debug (
@@ -523,8 +487,7 @@ handle_note_off:
                 {
                 case metaMIDIPort:
                   g_debug (
-                    "MIDI Port = %d",
-                    msg.MsgData.MetaEvent.Data.iMIDIPort);
+                    "MIDI Port = %d", msg.MsgData.MetaEvent.Data.iMIDIPort);
                   break;
                 case metaSequenceNumber:
                   g_debug (
@@ -532,52 +495,42 @@ handle_note_off:
                     msg.MsgData.MetaEvent.Data.iSequenceNumber);
                   break;
                 case metaTextEvent:
-                  g_debug (
-                    "Text = '%s'",
-                    msg.MsgData.MetaEvent.Data.Text.pData);
+                  g_debug ("Text = '%s'", msg.MsgData.MetaEvent.Data.Text.pData);
                   break;
                 case metaCopyright:
                   g_debug (
-                    "Copyright = '%s'",
-                    msg.MsgData.MetaEvent.Data.Text.pData);
+                    "Copyright = '%s'", msg.MsgData.MetaEvent.Data.Text.pData);
                   break;
                 case metaTrackName:
                   {
                     char tmp[6000];
                     strncpy (
-                      tmp,
-                      (char *)
-                        msg.MsgData.MetaEvent.Data.Text.pData,
+                      tmp, (char *) msg.MsgData.MetaEvent.Data.Text.pData,
                       msg.iMsgSize - 3);
                     tmp[msg.iMsgSize - 3] = '\0';
                     arranger_object_set_name (
-                      (ArrangerObject *) self, tmp,
-                      F_NO_PUBLISH_EVENTS);
+                      (ArrangerObject *) self, tmp, F_NO_PUBLISH_EVENTS);
                     g_warn_if_fail (self->name);
                     g_message (
-                      "[data sz %d] Track name = '%s'",
-                      msg.iMsgSize - 3, self->name);
+                      "[data sz %d] Track name = '%s'", msg.iMsgSize - 3,
+                      self->name);
                   }
                   break;
                 case metaInstrument:
                   g_message (
-                    "Instrument = '%s'",
-                    msg.MsgData.MetaEvent.Data.Text.pData);
+                    "Instrument = '%s'", msg.MsgData.MetaEvent.Data.Text.pData);
                   break;
                 case metaLyric:
                   g_message (
-                    "Lyric = '%s'",
-                    msg.MsgData.MetaEvent.Data.Text.pData);
+                    "Lyric = '%s'", msg.MsgData.MetaEvent.Data.Text.pData);
                   break;
                 case metaMarker:
                   g_message (
-                    "Marker = '%s'",
-                    msg.MsgData.MetaEvent.Data.Text.pData);
+                    "Marker = '%s'", msg.MsgData.MetaEvent.Data.Text.pData);
                   break;
                 case metaCuePoint:
                   g_message (
-                    "Cue point = '%s'",
-                    msg.MsgData.MetaEvent.Data.Text.pData);
+                    "Cue point = '%s'", msg.MsgData.MetaEvent.Data.Text.pData);
                   break;
                 case metaEndSequence:
                   g_message ("End Sequence");
@@ -588,15 +541,11 @@ handle_note_off:
                        * instead */
                       return NULL;
                     }
-                  arranger_object_end_pos_setter (
-                    r_obj, &global_pos);
-                  arranger_object_loop_end_pos_setter (
-                    r_obj, &global_pos);
+                  arranger_object_end_pos_setter (r_obj, &global_pos);
+                  arranger_object_loop_end_pos_setter (r_obj, &global_pos);
                   break;
                 case metaSetTempo:
-                  g_message (
-                    "tempo %d",
-                    msg.MsgData.MetaEvent.Data.Tempo.iBPM);
+                  g_message ("tempo %d", msg.MsgData.MetaEvent.Data.Tempo.iBPM);
                   break;
                 case metaSMPTEOffset:
                   g_message (
@@ -609,15 +558,13 @@ handle_note_off:
                   break;
                 case metaTimeSig:
                   g_message (
-                    "Time sig = %d/%d",
-                    msg.MsgData.MetaEvent.Data.TimeSig.iNom,
+                    "Time sig = %d/%d", msg.MsgData.MetaEvent.Data.TimeSig.iNom,
                     msg.MsgData.MetaEvent.Data.TimeSig.iDenom
                       / MIDI_NOTE_CROCHET);
                   break;
                 case metaKeySig:
-                  if (muGetKeySigName (
-                        str,
-                        msg.MsgData.MetaEvent.Data.KeySig.iKey))
+                  if (
+                    muGetKeySigName (str, msg.MsgData.MetaEvent.Data.KeySig.iKey))
                     g_message ("Key sig = %s", str);
                   break;
                 case metaSequencerSpecific:
@@ -671,28 +618,23 @@ handle_note_off:
 
   if (self->num_unended_notes != 0)
     {
-      g_warning (
-        "unended notes found: %d", self->num_unended_notes);
+      g_warning ("unended notes found: %d", self->num_unended_notes);
 
-      double length = arranger_object_get_length_in_ticks (
-        (ArrangerObject *) self);
+      double length =
+        arranger_object_get_length_in_ticks ((ArrangerObject *) self);
       position_from_ticks (&end_pos, length);
 
       while (self->num_unended_notes > 0)
         {
           mn = midi_region_pop_unended_note (self, -1);
-          arranger_object_end_pos_setter (
-            (ArrangerObject *) mn, &end_pos);
+          arranger_object_end_pos_setter ((ArrangerObject *) mn, &end_pos);
         }
     }
 
   g_return_val_if_fail (
-    position_is_before (&self->base.pos, &self->base.end_pos),
-    NULL);
+    position_is_before (&self->base.pos, &self->base.end_pos), NULL);
 
-  g_message (
-    "%s: done ~ %d MIDI notes read", __func__,
-    self->num_midi_notes);
+  g_message ("%s: done ~ %d MIDI notes read", __func__, self->num_midi_notes);
 
   return self;
 }
@@ -730,13 +672,11 @@ midi_region_start_unended_note (
       position_add_ticks (&end_pos, 1);
     }
 
-  MidiNote * mn = midi_note_new (
-    &self->id, start_pos, &end_pos, pitch, vel);
+  MidiNote * mn = midi_note_new (&self->id, start_pos, &end_pos, pitch, vel);
   midi_region_add_midi_note (self, mn, pub_events);
 
   /* add to unended notes */
-  array_append (
-    self->unended_notes, self->num_unended_notes, mn);
+  array_append (self->unended_notes, self->num_unended_notes, mn);
 }
 
 /**
@@ -800,8 +740,7 @@ midi_region_export_to_midi_file (
     {
       /* Write tempo information out to track 1 */
       midiSongAddTempo (
-        mf, 1,
-        (int) tempo_track_get_current_bpm (P_TEMPO_TRACK));
+        mf, 1, (int) tempo_track_get_current_bpm (P_TEMPO_TRACK));
 
       /* All data is written out to _tracks_ not
        * channels. We therefore
@@ -817,15 +756,12 @@ midi_region_export_to_midi_file (
       midiFileSetVersion (mf, midi_version);
 
       /* common time: 4 crochet beats, per bar */
-      int beats_per_bar =
-        tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+      int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
       midiSongAddSimpleTimeSig (
         mf, 1, beats_per_bar,
-        math_round_double_to_signed_32 (
-          TRANSPORT->ticks_per_beat));
+        math_round_double_to_signed_32 (TRANSPORT->ticks_per_beat));
 
-      midi_region_write_to_midi_file (
-        self, mf, false, export_full);
+      midi_region_write_to_midi_file (self, mf, false, export_full);
 
       midiFileClose (mf);
     }
@@ -861,9 +797,7 @@ midi_region_get_midi_ch (const ZRegion * self)
  * playable part of the region.
  */
 bool
-midi_region_is_note_playable (
-  const ZRegion *  self,
-  const MidiNote * midi_note)
+midi_region_is_note_playable (const ZRegion * self, const MidiNote * midi_note)
 {
   ArrangerObject * self_obj = (ArrangerObject *) self;
 
@@ -876,11 +810,9 @@ midi_region_is_note_playable (
 
   if (
     !position_is_between (
-      &mn_obj->pos, &self_obj->loop_start_pos,
-      &self_obj->loop_end_pos)
+      &mn_obj->pos, &self_obj->loop_start_pos, &self_obj->loop_end_pos)
     && !position_is_between (
-      &mn_obj->pos, &self_obj->clip_start_pos,
-      &self_obj->loop_start_pos))
+      &mn_obj->pos, &self_obj->clip_start_pos, &self_obj->loop_start_pos))
     {
       return false;
     }
@@ -910,11 +842,9 @@ get_note_positions_in_export (
   POSITION_INIT_ON_STACK (export_start_pos);
   POSITION_INIT_ON_STACK (export_end_pos);
   position_add_ticks (
-    &export_end_pos,
-    arranger_object_get_length_in_ticks (self_obj));
+    &export_end_pos, arranger_object_get_length_in_ticks (self_obj));
 
-  position_set_to_pos (
-    end_pos, position_min (&self_obj->loop_end_pos, end_pos));
+  position_set_to_pos (end_pos, position_min (&self_obj->loop_end_pos, end_pos));
 
   if (position_is_before (start_pos, &self_obj->clip_start_pos))
     {
@@ -929,10 +859,8 @@ get_note_positions_in_export (
     end_pos,
     loop_length_in_ticks * repeat_index
       - position_to_ticks (&self_obj->clip_start_pos));
-  position_set_to_pos (
-    start_pos, position_max (start_pos, &export_start_pos));
-  position_set_to_pos (
-    end_pos, position_min (end_pos, &export_end_pos));
+  position_set_to_pos (start_pos, position_max (start_pos, &export_start_pos));
+  position_set_to_pos (end_pos, position_min (end_pos, &export_end_pos));
 }
 
 /**
@@ -952,11 +880,9 @@ is_note_export_start_pos_in_full_region (
   POSITION_INIT_ON_STACK (export_start_pos);
   POSITION_INIT_ON_STACK (export_end_pos);
   position_add_ticks (
-    &export_end_pos,
-    arranger_object_get_length_in_ticks (self_obj));
+    &export_end_pos, arranger_object_get_length_in_ticks (self_obj));
 
-  return position_is_between (
-    start_pos, &export_start_pos, &export_end_pos);
+  return position_is_between (start_pos, &export_start_pos, &export_end_pos);
 }
 
 /**
@@ -1016,9 +942,10 @@ midi_region_add_events (
 
           if (full)
             {
-              if (position_is_between (
-                    &mn_obj->pos, &self_obj->loop_start_pos,
-                    &self_obj->loop_end_pos))
+              if (
+                position_is_between (
+                  &mn_obj->pos, &self_obj->loop_start_pos,
+                  &self_obj->loop_end_pos))
                 {
                   write_only_once = false;
                 }
@@ -1026,8 +953,7 @@ midi_region_add_events (
               get_note_positions_in_export (
                 self, &mn_pos, &mn_end_pos, repeat_counter);
 
-              if (!is_note_export_start_pos_in_full_region (
-                    self, &mn_pos))
+              if (!is_note_export_start_pos_in_full_region (self, &mn_pos))
                 {
                   continue;
                 }
@@ -1052,17 +978,13 @@ midi_region_add_events (
                 }
               midi_events_add_note_on (
                 events, 1, mn->val, mn->vel->vel,
-                (midi_time_t) (note_global_start_ticks),
-                F_NOT_QUEUED);
+                (midi_time_t) (note_global_start_ticks), F_NOT_QUEUED);
               midi_events_add_note_off (
-                events, 1, mn->val,
-                (midi_time_t) (note_global_end_ticks),
+                events, 1, mn->val, (midi_time_t) (note_global_end_ticks),
                 F_NOT_QUEUED);
             }
         }
-      while (
-        ++repeat_counter < number_of_loop_repeats
-        && !write_only_once);
+      while (++repeat_counter < number_of_loop_repeats && !write_only_once);
     }
 
   midi_events_sort (events, F_NOT_QUEUED);
@@ -1073,10 +995,7 @@ midi_region_add_events (
  * point.
  */
 static inline void
-send_notes_off_at (
-  ZRegion *    self,
-  MidiEvents * midi_events,
-  midi_time_t  time)
+send_notes_off_at (ZRegion * self, MidiEvents * midi_events, midi_time_t time)
 {
   /*g_debug ("sending notes off at %u", time);*/
 
@@ -1090,8 +1009,7 @@ send_notes_off_at (
       /* FIXME set channel */
     }
 
-  midi_events_add_all_notes_off (
-    midi_events, channel, time, F_QUEUED);
+  midi_events_add_all_notes_off (midi_events, channel, time, F_QUEUED);
 }
 
 /**
@@ -1133,10 +1051,8 @@ midi_region_fill_midi_events (
         ((time_nfo->local_offset + time_nfo->nframes) - 1));
     }
 
-  const signed_frame_t r_local_pos =
-    region_timeline_frames_to_local (
-      self, (signed_frame_t) time_nfo->g_start_frame,
-      F_NORMALIZE);
+  const signed_frame_t r_local_pos = region_timeline_frames_to_local (
+    self, (signed_frame_t) time_nfo->g_start_frame, F_NORMALIZE);
 
 #if 0
   if (time_nfo->g_start_frame == 0)
@@ -1182,10 +1098,8 @@ midi_region_fill_midi_events (
       /* if object starts inside the current
        * range */
       if (
-        mn_obj->pos.frames >= 0
-        && mn_obj->pos.frames >= r_local_pos
-        && mn_obj->pos.frames
-             < r_local_pos + (signed_frame_t) time_nfo->nframes)
+        mn_obj->pos.frames >= 0 && mn_obj->pos.frames >= r_local_pos
+        && mn_obj->pos.frames < r_local_pos + (signed_frame_t) time_nfo->nframes)
         {
           midi_time_t _time =
             (midi_time_t) (time_nfo->local_offset
@@ -1195,14 +1109,13 @@ midi_region_fill_midi_events (
           if (mn)
             {
               midi_events_add_note_on (
-                midi_events, midi_region_get_midi_ch (self),
-                mn->val, mn->vel->vel, _time, F_QUEUED);
+                midi_events, midi_region_get_midi_ch (self), mn->val,
+                mn->vel->vel, _time, F_QUEUED);
             }
           else if (co)
             {
               midi_events_add_note_ons_from_chord_descr (
-                midi_events, descr, 1, VELOCITY_DEFAULT,
-                _time, F_QUEUED);
+                midi_events, descr, 1, VELOCITY_DEFAULT, _time, F_QUEUED);
             }
         }
 
@@ -1210,8 +1123,7 @@ midi_region_fill_midi_events (
         (track->type == TRACK_TYPE_CHORD
            ? math_round_double_to_signed_frame_t (
              mn_obj->pos.frames
-             + TRANSPORT->ticks_per_beat
-                 * AUDIO_ENGINE->frames_per_tick)
+             + TRANSPORT->ticks_per_beat * AUDIO_ENGINE->frames_per_tick)
            : mn_obj->end_pos.frames);
 
       /* if note ends within the cycle */
@@ -1244,19 +1156,17 @@ midi_region_fill_midi_events (
           if (mn)
             {
               midi_events_add_note_off (
-                midi_events, midi_region_get_midi_ch (self),
-                mn->val, _time, F_QUEUED);
+                midi_events, midi_region_get_midi_ch (self), mn->val, _time,
+                F_QUEUED);
             }
           else if (co)
             {
-              for (int l = 0; l < CHORD_DESCRIPTOR_MAX_NOTES;
-                   l++)
+              for (int l = 0; l < CHORD_DESCRIPTOR_MAX_NOTES; l++)
                 {
                   if (descr->notes[l])
                     {
                       midi_events_add_note_off (
-                        midi_events, 1, l + 36, _time,
-                        F_QUEUED);
+                        midi_events, 1, l + 36, _time, F_QUEUED);
                     }
                 }
             }
@@ -1290,16 +1200,12 @@ midi_region_get_velocities_in_range (
 
 #define ADD_VELOCITY \
   array_double_size_if_full ( \
-    *velocities, *num_velocities, *velocities_size, \
-    Velocity *); \
+    *velocities, *num_velocities, *velocities_size, Velocity *); \
   (*velocities)[(*num_velocities)++] = mn->vel
 
       if (
-        inside
-        && position_is_after_or_equal (
-          &global_start_pos, start_pos)
-        && position_is_before_or_equal (
-          &global_start_pos, end_pos))
+        inside && position_is_after_or_equal (&global_start_pos, start_pos)
+        && position_is_before_or_equal (&global_start_pos, end_pos))
         {
           ADD_VELOCITY;
         }
@@ -1325,7 +1231,6 @@ midi_region_free_members (ZRegion * self)
 
   for (int i = 0; i < self->num_midi_notes; i++)
     {
-      arranger_object_free (
-        (ArrangerObject *) self->midi_notes[i]);
+      arranger_object_free ((ArrangerObject *) self->midi_notes[i]);
     }
 }

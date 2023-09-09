@@ -99,28 +99,13 @@ typedef struct SnapGrid_v1
 static const cyaml_schema_field_t snap_grid_fields_schema_v1[] = {
   YAML_FIELD_INT (SnapGrid_v1, schema_version),
   YAML_FIELD_ENUM (SnapGrid_v1, type, snap_grid_type_strings_v1),
-  YAML_FIELD_ENUM (
-    SnapGrid_v1,
-    snap_note_length,
-    note_length_strings_v1),
-  YAML_FIELD_ENUM (
-    SnapGrid_v1,
-    snap_note_type,
-    note_type_strings_v1),
+  YAML_FIELD_ENUM (SnapGrid_v1, snap_note_length, note_length_strings_v1),
+  YAML_FIELD_ENUM (SnapGrid_v1, snap_note_type, note_type_strings_v1),
   YAML_FIELD_INT (SnapGrid_v1, snap_adaptive),
-  YAML_FIELD_ENUM (
-    SnapGrid_v1,
-    default_note_length,
-    note_length_strings_v1),
-  YAML_FIELD_ENUM (
-    SnapGrid_v1,
-    default_note_type,
-    note_type_strings_v1),
+  YAML_FIELD_ENUM (SnapGrid_v1, default_note_length, note_length_strings_v1),
+  YAML_FIELD_ENUM (SnapGrid_v1, default_note_type, note_type_strings_v1),
   YAML_FIELD_INT (SnapGrid_v1, default_adaptive),
-  YAML_FIELD_ENUM (
-    SnapGrid_v1,
-    length_type,
-    note_length_type_strings_v1),
+  YAML_FIELD_ENUM (SnapGrid_v1, length_type, note_length_type_strings_v1),
   YAML_FIELD_INT (SnapGrid_v1, snap_to_grid),
   YAML_FIELD_INT (SnapGrid_v1, snap_to_grid_keep_offset),
   YAML_FIELD_INT (SnapGrid_v1, snap_to_events),

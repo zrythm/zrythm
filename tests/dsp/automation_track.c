@@ -26,11 +26,10 @@ test_set_at_index (void)
 
   Track * master = P_MASTER_TRACK;
   track_set_automation_visible (master, true);
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (master);
+  AutomationTracklist * atl = track_get_automation_tracklist (master);
   g_return_if_fail (atl);
-  AutomationTrack * first_vis_at = (AutomationTrack *)
-    g_ptr_array_index (atl->visible_ats, 0);
+  AutomationTrack * first_vis_at =
+    (AutomationTrack *) g_ptr_array_index (atl->visible_ats, 0);
 
   /* create a region and set it as clip editor
    * region */
@@ -38,26 +37,21 @@ test_set_at_index (void)
   position_set_to_bar (&start, 2);
   position_set_to_bar (&end, 4);
   ZRegion * region = automation_region_new (
-    &start, &end, track_get_name_hash (master),
-    first_vis_at->index, 0);
+    &start, &end, track_get_name_hash (master), first_vis_at->index, 0);
   bool success = track_add_region (
-    master, region, first_vis_at, -1, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS, NULL);
+    master, region, first_vis_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
   arranger_object_select (
-    (ArrangerObject *) region, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) region, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
     (ArrangerSelections *) TL_SELECTIONS, NULL);
 
-  clip_editor_set_region (
-    CLIP_EDITOR, region, F_NO_PUBLISH_EVENTS);
+  clip_editor_set_region (CLIP_EDITOR, region, F_NO_PUBLISH_EVENTS);
 
   AutomationTrack * first_invisible_at =
     automation_tracklist_get_first_invisible_at (atl);
   automation_tracklist_set_at_index (
-    atl, first_invisible_at, first_vis_at->index,
-    F_NO_PUSH_DOWN);
+    atl, first_invisible_at, first_vis_at->index, F_NO_PUSH_DOWN);
 
   /* check that clip editor region can be found */
   clip_editor_get_region (CLIP_EDITOR);
@@ -81,23 +75,20 @@ test_region_in_2nd_automation_track_get_muted (void)
 
   Track * master = P_MASTER_TRACK;
   track_set_automation_visible (master, true);
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (master);
+  AutomationTracklist * atl = track_get_automation_tracklist (master);
   g_return_if_fail (atl);
-  AutomationTrack * first_vis_at = (AutomationTrack *)
-    g_ptr_array_index (atl->visible_ats, 0);
+  AutomationTrack * first_vis_at =
+    (AutomationTrack *) g_ptr_array_index (atl->visible_ats, 0);
 
   /* create a new automation track */
-  AutomationTrack * new_at =
-    automation_tracklist_get_first_invisible_at (atl);
+  AutomationTrack * new_at = automation_tracklist_get_first_invisible_at (atl);
   if (!new_at->created)
     new_at->created = 1;
   automation_tracklist_set_at_visible (atl, new_at, true);
 
   /* move it after the clicked
    * automation track */
-  automation_tracklist_set_at_index (
-    atl, new_at, first_vis_at->index + 1, true);
+  automation_tracklist_set_at_index (atl, new_at, first_vis_at->index + 1, true);
 
   /* create a region and set it as clip editor
    * region */
@@ -105,26 +96,21 @@ test_region_in_2nd_automation_track_get_muted (void)
   position_set_to_bar (&start, 2);
   position_set_to_bar (&end, 4);
   ZRegion * region = automation_region_new (
-    &start, &end, track_get_name_hash (master), new_at->index,
-    0);
+    &start, &end, track_get_name_hash (master), new_at->index, 0);
   bool success = track_add_region (
-    master, region, new_at, -1, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS, NULL);
+    master, region, new_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
   arranger_object_select (
-    (ArrangerObject *) region, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) region, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
     (ArrangerSelections *) TL_SELECTIONS, NULL);
 
-  clip_editor_set_region (
-    CLIP_EDITOR, region, F_NO_PUBLISH_EVENTS);
+  clip_editor_set_region (CLIP_EDITOR, region, F_NO_PUBLISH_EVENTS);
 
   engine_wait_n_cycles (AUDIO_ENGINE, 3);
 
   /* assert not muted */
-  g_assert_false (arranger_object_get_muted (
-    (ArrangerObject *) region, true));
+  g_assert_false (arranger_object_get_muted ((ArrangerObject *) region, true));
 
   test_helper_zrythm_cleanup ();
 }
@@ -141,8 +127,8 @@ test_curve_value (void)
   track_set_automation_visible (master, true);
   /*AutomationTracklist * atl =*/
   /*track_get_automation_tracklist (master);*/
-  AutomationTrack * fader_at = channel_get_automation_track (
-    master->channel, PORT_FLAG_CHANNEL_FADER);
+  AutomationTrack * fader_at =
+    channel_get_automation_track (master->channel, PORT_FLAG_CHANNEL_FADER);
   g_assert_nonnull (fader_at);
   if (!fader_at->created)
     fader_at->created = 1;
@@ -156,15 +142,12 @@ test_curve_value (void)
   position_set_to_bar (&start, 1);
   position_set_to_bar (&end, 5);
   ZRegion * region = automation_region_new (
-    &start, &end, track_get_name_hash (master),
-    fader_at->index, 0);
+    &start, &end, track_get_name_hash (master), fader_at->index, 0);
   bool success = track_add_region (
-    master, region, fader_at, -1, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS, NULL);
+    master, region, fader_at, -1, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
   arranger_object_select (
-    (ArrangerObject *) region, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) region, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
     (ArrangerSelections *) TL_SELECTIONS, NULL);
 
@@ -172,37 +155,29 @@ test_curve_value (void)
    * points */
   Position pos;
   position_set_to_bar (&pos, 1);
-  AutomationPoint * ap =
-    automation_point_new_float (0.0f, 0.0f, &pos);
+  AutomationPoint * ap = automation_point_new_float (0.0f, 0.0f, &pos);
   automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (
-    AUTOMATION_SELECTIONS, NULL);
+    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_create (AUTOMATION_SELECTIONS, NULL);
   position_set_to_bar (&pos, 2);
   ap = automation_point_new_float (2.0f, 1.0f, &pos);
   automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (
-    AUTOMATION_SELECTIONS, NULL);
+    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_create (AUTOMATION_SELECTIONS, NULL);
   position_set_to_bar (&pos, 3);
   ap = automation_point_new_float (0.0f, 0.0f, &pos);
   automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
-  arranger_selections_action_perform_create (
-    AUTOMATION_SELECTIONS, NULL);
+    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_selections_action_perform_create (AUTOMATION_SELECTIONS, NULL);
   g_assert_cmpint (region->num_aps, ==, 3);
 
   transport_request_roll (TRANSPORT, true);
   engine_process (AUDIO_ENGINE, 40);
 
-  g_assert_cmpfloat_with_epsilon (
-    port->control, 2.32830644e-10, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (port->control, 2.32830644e-10, 0.0001f);
 
   position_set_to_bar (&pos, 3);
   position_add_frames (&pos, -80);
@@ -210,8 +185,7 @@ test_curve_value (void)
 
   engine_process (AUDIO_ENGINE, 40);
 
-  g_assert_cmpfloat_with_epsilon (
-    port->control, 2.32830644e-10, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (port->control, 2.32830644e-10, 0.0001f);
 
   test_helper_zrythm_cleanup ();
 }
@@ -223,15 +197,11 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/audio/automation_track/"
 
+  g_test_add_func (TEST_PREFIX "test curve value", (GTestFunc) test_curve_value);
   g_test_add_func (
-    TEST_PREFIX "test curve value",
-    (GTestFunc) test_curve_value);
+    TEST_PREFIX "test set at index", (GTestFunc) test_set_at_index);
   g_test_add_func (
-    TEST_PREFIX "test set at index",
-    (GTestFunc) test_set_at_index);
-  g_test_add_func (
-    TEST_PREFIX
-    "test region in 2nd automation track get muted",
+    TEST_PREFIX "test region in 2nd automation track get muted",
     (GTestFunc) test_region_in_2nd_automation_track_get_muted);
 
   return g_test_run ();

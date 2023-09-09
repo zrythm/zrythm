@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define LIVE_WAVEFORM_WIDGET_TYPE \
-  (live_waveform_widget_get_type ())
+#define LIVE_WAVEFORM_WIDGET_TYPE (live_waveform_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   LiveWaveformWidget,
   live_waveform_widget,

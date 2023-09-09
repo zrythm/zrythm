@@ -27,8 +27,7 @@ welcome_message_dialog_new (GtkWindow * parent)
        "we suggest going through the 'Getting "
        "Started' section in the %suser manual%s."),
     "<a href=\"" USER_MANUAL_URL "\">", "</a>");
-  g_string_append_printf (
-    gstr, "%s\n\n", getting_started_guide);
+  g_string_append_printf (gstr, "%s\n\n", getting_started_guide);
 
 #if !defined(INSTALLER_VER) || defined(TRIAL_VER)
   char * donations = g_strdup_printf (
@@ -45,13 +44,12 @@ welcome_message_dialog_new (GtkWindow * parent)
 #ifdef FLATPAK_BUILD
   g_string_append_printf (
     gstr, "<b>%s</b>: %s\n\n", _ ("Flatpak users"),
-    _ (
-      "The PipeWire version of this Flatpak "
-      "runtime has a known bug that may cause errors "
-      "when starting Zrythm. "
-      "We recommend setting a fixed buffer size "
-      "for Zrythm in your PipeWire config to avoid "
-      "this."));
+    _ ("The PipeWire version of this Flatpak "
+       "runtime has a known bug that may cause errors "
+       "when starting Zrythm. "
+       "We recommend setting a fixed buffer size "
+       "for Zrythm in your PipeWire config to avoid "
+       "this."));
 
   g_string_append_printf (
     gstr, "<b>%s</b>: %s\n\n", _ ("Flatpak limitation"),
@@ -64,8 +62,7 @@ welcome_message_dialog_new (GtkWindow * parent)
     gstr, "%s", "© " COPYRIGHT_YEARS ", " COPYRIGHT_NAME ".");
 
   /* trademark info */
-#if !defined(HAVE_CUSTOM_NAME) \
-  || !defined(HAVE_CUSTOM_LOGO_AND_SPLASH)
+#if !defined(HAVE_CUSTOM_NAME) || !defined(HAVE_CUSTOM_LOGO_AND_SPLASH)
   char * trademarks = g_strdup_printf (
     _ ("Zrythm and the Zrythm logo are "
        "%strademarks of Alexandros Theodotou%s."),
@@ -76,8 +73,8 @@ welcome_message_dialog_new (GtkWindow * parent)
 
   char * str = g_string_free (gstr, false);
 
-  AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (
-    adw_message_dialog_new (NULL, _ ("Welcome"), NULL));
+  AdwMessageDialog * dialog =
+    ADW_MESSAGE_DIALOG (adw_message_dialog_new (NULL, _ ("Welcome"), NULL));
   adw_message_dialog_format_body_markup (
     dialog, str, _ ("Welcome to the Zrythm DAW"));
   gtk_window_set_icon_name (GTK_WINDOW (dialog), "zrythm");
@@ -85,10 +82,8 @@ welcome_message_dialog_new (GtkWindow * parent)
   adw_message_dialog_add_responses (
     ADW_MESSAGE_DIALOG (dialog), "ok", _ ("_OK"), NULL);
 
-  adw_message_dialog_set_default_response (
-    ADW_MESSAGE_DIALOG (dialog), "ok");
-  adw_message_dialog_set_close_response (
-    ADW_MESSAGE_DIALOG (dialog), "ok");
+  adw_message_dialog_set_default_response (ADW_MESSAGE_DIALOG (dialog), "ok");
+  adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "ok");
 
   g_free (str);
 

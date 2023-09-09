@@ -18,8 +18,7 @@ marker_upgrade_from_v1 (Marker_v1 * old)
 
 #define UPDATE(name) self->name = old->name
 
-  ArrangerObject * base =
-    arranger_object_upgrade_from_v1 (&old->base);
+  ArrangerObject * base = arranger_object_upgrade_from_v1 (&old->base);
   self->base = *base;
 
   UPDATE (name);

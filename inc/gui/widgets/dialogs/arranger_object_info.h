@@ -44,8 +44,7 @@ typedef struct _ArrangerObjectInfoDialogWidget
  * displays it.
  */
 ArrangerObjectInfoDialogWidget *
-arranger_object_info_dialog_widget_new (
-  ArrangerObject * object);
+arranger_object_info_dialog_widget_new (ArrangerObject * object);
 
 /**
  * @}

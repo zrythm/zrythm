@@ -39,22 +39,16 @@ typedef struct CurveOptions_v1
   double            curviness;
 } CurveOptions_v1;
 
-static const cyaml_schema_field_t
-  curve_options_fields_schema_v1[] = {
-    YAML_FIELD_INT (CurveOptions_v1, schema_version),
-    YAML_FIELD_ENUM (
-      CurveOptions_v1,
-      algo,
-      curve_algorithm_strings_v1),
-    YAML_FIELD_FLOAT (CurveOptions_v1, curviness),
+static const cyaml_schema_field_t curve_options_fields_schema_v1[] = {
+  YAML_FIELD_INT (CurveOptions_v1, schema_version),
+  YAML_FIELD_ENUM (CurveOptions_v1, algo, curve_algorithm_strings_v1),
+  YAML_FIELD_FLOAT (CurveOptions_v1, curviness),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t curve_options_schema_v1 = {
-  YAML_VALUE_PTR (
-    CurveOptions_v1,
-    curve_options_fields_schema_v1),
+  YAML_VALUE_PTR (CurveOptions_v1, curve_options_fields_schema_v1),
 };
 
 CurveOptions *

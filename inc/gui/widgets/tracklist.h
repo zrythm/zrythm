@@ -9,12 +9,7 @@
 #define USE_WIDE_HANDLE 1
 
 #define TRACKLIST_WIDGET_TYPE (tracklist_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  TracklistWidget,
-  tracklist_widget,
-  Z,
-  TRACKLIST_WIDGET,
-  GtkBox)
+G_DECLARE_FINAL_TYPE (TracklistWidget, tracklist_widget, Z, TRACKLIST_WIDGET, GtkBox)
 
 /**
  * @addtogroup widgets
@@ -24,13 +19,12 @@ G_DECLARE_FINAL_TYPE (
 
 #define MW_TRACKLIST MW_TIMELINE_PANEL->tracklist
 
-typedef struct _TrackWidget       TrackWidget;
-typedef struct _DragDestBoxWidget DragDestBoxWidget;
-typedef struct _ChordTrackWidget  ChordTrackWidget;
-typedef struct Track              InstrumentTrack;
-typedef struct Tracklist          Tracklist;
-typedef struct _AddTrackMenuButtonWidget
-  AddTrackMenuButtonWidget;
+typedef struct _TrackWidget              TrackWidget;
+typedef struct _DragDestBoxWidget        DragDestBoxWidget;
+typedef struct _ChordTrackWidget         ChordTrackWidget;
+typedef struct Track                     InstrumentTrack;
+typedef struct Tracklist                 Tracklist;
+typedef struct _AddTrackMenuButtonWidget AddTrackMenuButtonWidget;
 
 /**
  * The TracklistWidget holds all the Track's
@@ -90,9 +84,7 @@ typedef struct _TracklistWidget
  * Sets up the TracklistWidget.
  */
 void
-tracklist_widget_setup (
-  TracklistWidget * self,
-  Tracklist *       tracklist);
+tracklist_widget_setup (TracklistWidget * self, Tracklist * tracklist);
 
 /**
  * Prepare for finalization.
@@ -105,8 +97,7 @@ tracklist_widget_tear_down (TracklistWidget * self);
  * visible are visible.
  */
 void
-tracklist_widget_update_track_visibility (
-  TracklistWidget * self);
+tracklist_widget_update_track_visibility (TracklistWidget * self);
 
 /**
  * Generates a menu for adding tracks to the tracklist.
@@ -118,10 +109,7 @@ tracklist_widget_generate_add_track_menu (void);
  * Gets hit TrackWidget and the given coordinates.
  */
 TrackWidget *
-tracklist_widget_get_hit_track (
-  TracklistWidget * self,
-  double            x,
-  double            y);
+tracklist_widget_get_hit_track (TracklistWidget * self, double x, double y);
 
 /**
  * Handle ctrl+shift+scroll.
@@ -136,9 +124,7 @@ tracklist_widget_handle_vertical_zoom_scroll (
  * Updates the scroll adjustment.
  */
 void
-tracklist_widget_set_unpinned_scroll_start_y (
-  TracklistWidget * self,
-  int               y);
+tracklist_widget_set_unpinned_scroll_start_y (TracklistWidget * self, int y);
 
 /**
  * Refreshes each track without recreating it.

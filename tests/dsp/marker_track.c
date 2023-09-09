@@ -55,9 +55,7 @@ main (int argc, char * argv[])
 
 #define TEST_PREFIX "/audio/marker track/"
 
-  g_test_add_func (
-    TEST_PREFIX "test add marker",
-    (GTestFunc) test_add_marker);
+  g_test_add_func (TEST_PREFIX "test add marker", (GTestFunc) test_add_marker);
 
   return g_test_run ();
 }

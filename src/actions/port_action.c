@@ -40,8 +40,7 @@ port_action_new (
   if (is_normalized)
     {
       Port * port = port_find_from_identifier (port_id);
-      self->val =
-        control_port_normalized_val_to_real (port, val);
+      self->val = control_port_normalized_val_to_real (port, val);
     }
   else
     {
@@ -55,15 +54,12 @@ port_action_new (
  * Create a new action.
  */
 UndoableAction *
-port_action_new_reset_control (
-  PortIdentifier * port_id,
-  GError **        error)
+port_action_new_reset_control (PortIdentifier * port_id, GError ** error)
 {
   Port * port = port_find_from_identifier (port_id);
 
   return port_action_new (
-    PORT_ACTION_SET_CONTROL_VAL, port_id, port->deff,
-    F_NOT_NORMALIZED, error);
+    PORT_ACTION_SET_CONTROL_VAL, port_id, port->deff, F_NOT_NORMALIZED, error);
 }
 
 PortAction *
@@ -88,14 +84,11 @@ port_action_perform (
   GError **        error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    port_action_new, error, type, port_id, val, is_normalized,
-    error);
+    port_action_new, error, type, port_id, val, is_normalized, error);
 }
 
 bool
-port_action_perform_reset_control (
-  PortIdentifier * port_id,
-  GError **        error)
+port_action_perform_reset_control (PortIdentifier * port_id, GError ** error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
     port_action_new_reset_control, error, port_id, error);

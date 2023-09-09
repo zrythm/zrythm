@@ -84,10 +84,7 @@ static const cyaml_schema_field_t chord_action_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t chord_action_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    ChordAction,
-    chord_action_fields_schema),
+  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, ChordAction, chord_action_fields_schema),
 };
 
 void

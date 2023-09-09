@@ -30,8 +30,7 @@ add_or_replace_connection (
       replacing = true;
       GPtrArray * prev_connections = connections;
       connections = g_ptr_array_new ();
-      g_ptr_array_extend (
-        connections, prev_connections, NULL, NULL);
+      g_ptr_array_extend (connections, prev_connections, NULL, NULL);
       /* the old array will be freed automatically
        * by the hash table when replacing */
     }
@@ -60,8 +59,7 @@ add_or_replace_connection (
  * connections.
  */
 void
-port_connections_manager_regenerate_hashtables (
-  PortConnectionsManager * self)
+port_connections_manager_regenerate_hashtables (PortConnectionsManager * self)
 {
 #if 0
   g_debug (
@@ -69,10 +67,8 @@ port_connections_manager_regenerate_hashtables (
     "manager...");
 #endif
 
-  object_free_w_func_and_null (
-    g_hash_table_destroy, self->src_ht);
-  object_free_w_func_and_null (
-    g_hash_table_destroy, self->dest_ht);
+  object_free_w_func_and_null (g_hash_table_destroy, self->src_ht);
+  object_free_w_func_and_null (g_hash_table_destroy, self->dest_ht);
 
   /* FIXME the hashes returned are 32 bits but
    * they should allow the minimum size of 16 bits
@@ -89,10 +85,8 @@ port_connections_manager_regenerate_hashtables (
   for (int i = 0; i < self->num_connections; i++)
     {
       PortConnection * conn = self->connections[i];
-      add_or_replace_connection (
-        self->src_ht, conn->src_id, conn);
-      add_or_replace_connection (
-        self->dest_ht, conn->dest_id, conn);
+      add_or_replace_connection (self->src_ht, conn->src_id, conn);
+      add_or_replace_connection (self->dest_ht, conn->dest_id, conn);
     }
 
 #if 0
@@ -108,8 +102,7 @@ port_connections_manager_regenerate_hashtables (
 }
 
 void
-port_connections_manager_init_loaded (
-  PortConnectionsManager * self)
+port_connections_manager_init_loaded (PortConnectionsManager * self)
 {
   self->connections_size = (size_t) self->num_connections;
   port_connections_manager_regenerate_hashtables (self);
@@ -118,14 +111,11 @@ port_connections_manager_init_loaded (
 PortConnectionsManager *
 port_connections_manager_new (void)
 {
-  PortConnectionsManager * self =
-    object_new (PortConnectionsManager);
-  self->schema_version =
-    PORT_CONNECTIONS_MANAGER_SCHEMA_VERSION;
+  PortConnectionsManager * self = object_new (PortConnectionsManager);
+  self->schema_version = PORT_CONNECTIONS_MANAGER_SCHEMA_VERSION;
 
   self->connections_size = 64;
-  self->connections =
-    object_new_n (self->connections_size, PortConnection *);
+  self->connections = object_new_n (self->connections_size, PortConnection *);
 
   port_connections_manager_regenerate_hashtables (self);
 
@@ -142,7 +132,7 @@ port_connections_manager_predicate_is_send_of (
   const void * user_data)
 {
   const PortConnection * conn = (const PortConnection *) obj;
-  const ChannelSend * send = (const ChannelSend *) user_data;
+  const ChannelSend *    send = (const ChannelSend *) user_data;
 
   Track * track = channel_send_get_track (send);
   g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
@@ -154,10 +144,8 @@ port_connections_manager_predicate_is_send_of (
           ? track->channel->prefader->stereo_out
           : track->channel->fader->stereo_out;
 
-      return port_identifier_is_equal (
-               conn->src_id, &self_stereo->l->id)
-             || port_identifier_is_equal (
-               conn->src_id, &self_stereo->r->id);
+      return port_identifier_is_equal (conn->src_id, &self_stereo->l->id)
+             || port_identifier_is_equal (conn->src_id, &self_stereo->r->id);
     }
   else if (track->out_signal_type == TYPE_EVENT)
     {
@@ -166,8 +154,7 @@ port_connections_manager_predicate_is_send_of (
           ? track->channel->prefader->midi_out
           : track->channel->fader->midi_out;
 
-      return port_identifier_is_equal (
-        conn->src_id, &self_port->id);
+      return port_identifier_is_equal (conn->src_id, &self_port->id);
     }
 
   g_return_val_if_reached (false);
@@ -245,8 +232,7 @@ int port_connections_manager_get_unlocked_sources_or_dests (
   int ret = 0;
   for (size_t i = 0; i < res->len; i++)
     {
-      PortConnection * conn =
-        (PortConnection *) g_ptr_array_index (res, i);
+      PortConnection * conn = (PortConnection *) g_ptr_array_index (res, i);
       if (!conn->locked)
         ret++;
 
@@ -278,8 +264,7 @@ port_connections_manager_get_source_or_dest (
 {
   GPtrArray * conns = g_ptr_array_new ();
   int         num_conns =
-    port_connections_manager_get_sources_or_dests (
-      self, conns, id, sources);
+    port_connections_manager_get_sources_or_dests (self, conns, id, sources);
   if (num_conns != 1)
     {
       size_t sz = 2000;
@@ -343,19 +328,17 @@ port_connections_manager_ensure_connect (
         port_identifier_is_equal (conn->src_id, src)
         && port_identifier_is_equal (conn->dest_id, dest))
         {
-          port_connection_update (
-            conn, multiplier, locked, enabled);
-          port_connections_manager_regenerate_hashtables (
-            self);
+          port_connection_update (conn, multiplier, locked, enabled);
+          port_connections_manager_regenerate_hashtables (self);
           return conn;
         }
     }
 
   array_double_size_if_full (
-    self->connections, self->num_connections,
-    self->connections_size, PortConnection *);
-  PortConnection * conn = port_connection_new (
-    src, dest, multiplier, locked, enabled);
+    self->connections, self->num_connections, self->connections_size,
+    PortConnection *);
+  PortConnection * conn =
+    port_connection_new (src, dest, multiplier, locked, enabled);
   self->connections[self->num_connections++] = conn;
 
   if (self == PORT_CONNECTIONS_MGR)
@@ -471,8 +454,7 @@ clear (PortConnectionsManager * self)
 {
   for (int i = 0; i < self->num_connections; i++)
     {
-      object_free_w_func_and_null (
-        port_connection_free, self->connections[i]);
+      object_free_w_func_and_null (port_connection_free, self->connections[i]);
     }
   self->num_connections = 0;
 }
@@ -491,13 +473,11 @@ port_connections_manager_reset (
   clear (self);
 
   self->connections = g_realloc_n (
-    self->connections, (size_t) src->num_connections,
-    sizeof (PortConnection *));
+    self->connections, (size_t) src->num_connections, sizeof (PortConnection *));
   self->connections_size = (size_t) src->num_connections;
   for (int i = 0; i < src->num_connections; i++)
     {
-      self->connections[i] =
-        port_connection_clone (src->connections[i]);
+      self->connections[i] = port_connection_clone (src->connections[i]);
     }
   self->num_connections = src->num_connections;
 
@@ -531,12 +511,10 @@ port_connections_manager_print_ht (GHashTable * ht)
 }
 
 void
-port_connections_manager_print (
-  const PortConnectionsManager * self)
+port_connections_manager_print (const PortConnectionsManager * self)
 {
   GString * gstr = g_string_new (NULL);
-  g_string_append_printf (
-    gstr, "Port connections manager (%p):\n", self);
+  g_string_append_printf (gstr, "Port connections manager (%p):\n", self);
   for (int i = 0; i < self->num_connections; i++)
     {
       PortConnection * conn = self->connections[i];
@@ -554,20 +532,16 @@ port_connections_manager_print (
  * To be used during serialization.
  */
 PortConnectionsManager *
-port_connections_manager_clone (
-  const PortConnectionsManager * src)
+port_connections_manager_clone (const PortConnectionsManager * src)
 {
-  PortConnectionsManager * self =
-    port_connections_manager_new ();
+  PortConnectionsManager * self = port_connections_manager_new ();
 
   self->connections = g_realloc_n (
-    self->connections, (size_t) src->num_connections,
-    sizeof (PortConnection *));
+    self->connections, (size_t) src->num_connections, sizeof (PortConnection *));
   self->connections_size = (size_t) src->num_connections;
   for (int i = 0; i < src->num_connections; i++)
     {
-      self->connections[i] =
-        port_connection_clone (src->connections[i]);
+      self->connections[i] = port_connection_clone (src->connections[i]);
     }
   self->num_connections = src->num_connections;
 
@@ -584,14 +558,11 @@ port_connections_manager_free (PortConnectionsManager * self)
 {
   for (int i = 0; i < self->num_connections; i++)
     {
-      object_free_w_func_and_null (
-        port_connection_free, self->connections[i]);
+      object_free_w_func_and_null (port_connection_free, self->connections[i]);
     }
 
-  object_free_w_func_and_null (
-    g_hash_table_destroy, self->src_ht);
-  object_free_w_func_and_null (
-    g_hash_table_destroy, self->dest_ht);
+  object_free_w_func_and_null (g_hash_table_destroy, self->src_ht);
+  object_free_w_func_and_null (g_hash_table_destroy, self->dest_ht);
 
   object_zero_and_free (self);
 }

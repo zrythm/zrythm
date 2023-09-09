@@ -55,10 +55,7 @@ string_is_ascii (const char * string);
  * contains the given substring.
  */
 char *
-string_array_contains_substr (
-  char **      str_array,
-  int          num_str,
-  const char * substr);
+string_array_contains_substr (char ** str_array, int num_str, const char * substr);
 
 /**
  * Returns if the given string contains the given
@@ -68,9 +65,7 @@ bool
 string_contains_substr (const char * str, const char * substr);
 
 bool
-string_contains_substr_case_insensitive (
-  const char * str,
-  const char * substr);
+string_contains_substr_case_insensitive (const char * str, const char * substr);
 
 /**
  * Converts the given string to uppercase in \ref
@@ -102,9 +97,7 @@ string_to_lower (const char * in, char * out);
  * case.
  */
 bool
-string_is_equal_ignore_case (
-  const char * str1,
-  const char * str2);
+string_is_equal_ignore_case (const char * str1, const char * str2);
 
 /**
  * Returns a newly allocated string that is a
@@ -122,9 +115,7 @@ string_convert_to_filename (const char * str);
  */
 MALLOC
 NONNULL char *
-string_get_substr_before_suffix (
-  const char * str,
-  const char * suffix);
+string_get_substr_before_suffix (const char * str, const char * suffix);
 
 /**
  * Removes everything up to and including the first
@@ -132,25 +123,17 @@ string_get_substr_before_suffix (
  * and returns a newly allocated string.
  */
 char *
-string_remove_until_after_first_match (
-  const char * str,
-  const char * match);
+string_remove_until_after_first_match (const char * str, const char * match);
 
 /**
  * Replaces @ref src_str with @ref replace_str in
  * all instances matched by @ref regex.
  */
 void
-string_replace_regex (
-  char **      str,
-  const char * regex,
-  const char * replace_str);
+string_replace_regex (char ** str, const char * regex, const char * replace_str);
 
 char *
-string_replace (
-  const char * str,
-  const char * from,
-  const char * to);
+string_replace (const char * str, const char * from, const char * to);
 
 /**
  * Gets the string in the given regex group.
@@ -158,10 +141,7 @@ string_replace (
  * @return A newly allocated string or NULL.
  */
 char *
-string_get_regex_group (
-  const char * str,
-  const char * regex,
-  int          group);
+string_get_regex_group (const char * str, const char * regex, int group);
 
 /**
  * Gets the string in the given regex group as an
@@ -190,9 +170,7 @@ string_get_regex_group_as_int (
  *   string without the number (including the space).
  */
 int
-string_get_int_after_last_space (
-  const char * str,
-  char *       str_without_num);
+string_get_int_after_last_space (const char * str, char * str_without_num);
 
 /**
  * TODO

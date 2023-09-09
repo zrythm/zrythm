@@ -58,8 +58,7 @@ typedef struct _SaveChordPresetDialogWidget
  * Creates a dialog widget and displays it.
  */
 SaveChordPresetDialogWidget *
-save_chord_preset_dialog_widget_new (
-  GtkWindow * parent_window);
+save_chord_preset_dialog_widget_new (GtkWindow * parent_window);
 
 /**
  * @}

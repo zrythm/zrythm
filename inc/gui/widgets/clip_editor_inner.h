@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define CLIP_EDITOR_INNER_WIDGET_TYPE \
-  (clip_editor_inner_widget_get_type ())
+#define CLIP_EDITOR_INNER_WIDGET_TYPE (clip_editor_inner_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ClipEditorInnerWidget,
   clip_editor_inner_widget,
@@ -21,14 +20,13 @@ G_DECLARE_FINAL_TYPE (
   CLIP_EDITOR_INNER_WIDGET,
   GtkWidget)
 
-typedef struct _RulerWidget            RulerWidget;
-typedef struct _ColorAreaWidget        ColorAreaWidget;
-typedef struct _MidiEditorSpaceWidget  MidiEditorSpaceWidget;
-typedef struct _AudioEditorSpaceWidget AudioEditorSpaceWidget;
-typedef struct _ChordEditorSpaceWidget ChordEditorSpaceWidget;
-typedef struct _AutomationEditorSpaceWidget
-                               AutomationEditorSpaceWidget;
-typedef struct _ArrangerWidget ArrangerWidget;
+typedef struct _RulerWidget                 RulerWidget;
+typedef struct _ColorAreaWidget             ColorAreaWidget;
+typedef struct _MidiEditorSpaceWidget       MidiEditorSpaceWidget;
+typedef struct _AudioEditorSpaceWidget      AudioEditorSpaceWidget;
+typedef struct _ChordEditorSpaceWidget      ChordEditorSpaceWidget;
+typedef struct _AutomationEditorSpaceWidget AutomationEditorSpaceWidget;
+typedef struct _ArrangerWidget              ArrangerWidget;
 TYPEDEF_STRUCT_UNDERSCORED (ZoomButtonsWidget);
 
 /**
@@ -108,12 +106,10 @@ void
 clip_editor_inner_widget_setup (ClipEditorInnerWidget * self);
 
 void
-clip_editor_inner_widget_refresh (
-  ClipEditorInnerWidget * self);
+clip_editor_inner_widget_refresh (ClipEditorInnerWidget * self);
 
 ArrangerWidget *
-clip_editor_inner_widget_get_visible_arranger (
-  ClipEditorInnerWidget * self);
+clip_editor_inner_widget_get_visible_arranger (ClipEditorInnerWidget * self);
 
 /**
  * @}

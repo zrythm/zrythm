@@ -53,8 +53,7 @@ void
 toolbox_widget_refresh (ToolboxWidget * self)
 {
 #define BLOCK_SIGNAL_HANDLER(lowercase) \
-  g_signal_handler_block ( \
-    self->lowercase##_mode, self->lowercase##_handler_id)
+  g_signal_handler_block (self->lowercase##_mode, self->lowercase##_handler_id)
 
   /* block signal handlers */
   BLOCK_SIGNAL_HANDLER (select);
@@ -77,9 +76,7 @@ toolbox_widget_refresh (ToolboxWidget * self)
   /* set select mode img */
   gtk_image_set_from_icon_name (
     self->select_img,
-    P_TOOL == TOOL_SELECT_STRETCH
-      ? "selection-end-symbolic"
-      : "edit-select");
+    P_TOOL == TOOL_SELECT_STRETCH ? "selection-end-symbolic" : "edit-select");
 
   /* set toggled states */
   switch (P_TOOL)
@@ -126,12 +123,10 @@ toolbox_widget_class_init (ToolboxWidgetClass * _klass)
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "toolbox.ui");
   gtk_widget_class_set_css_name (klass, "toolbox");
-  gtk_widget_class_set_accessible_role (
-    klass, GTK_ACCESSIBLE_ROLE_GROUP);
+  gtk_widget_class_set_accessible_role (klass, GTK_ACCESSIBLE_ROLE_GROUP);
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, ToolboxWidget, x)
+  gtk_widget_class_bind_template_child (klass, ToolboxWidget, x)
 
   BIND_CHILD (select_mode);
   BIND_CHILD (edit_mode);
@@ -170,8 +165,8 @@ toolbox_widget_init (ToolboxWidget * self)
 
 #define CONNECT_CLICK_HANDLER(lowercase) \
   self->lowercase##_handler_id = g_signal_connect ( \
-    G_OBJECT (self->lowercase##_mode), "toggled", \
-    G_CALLBACK (on_toggled), self)
+    G_OBJECT (self->lowercase##_mode), "toggled", G_CALLBACK (on_toggled), \
+    self)
 
   /* connect click handlers */
   CONNECT_CLICK_HANDLER (select);
@@ -183,8 +178,7 @@ toolbox_widget_init (ToolboxWidget * self)
 #undef CONNECT_CLICK_HANDLER
 
 #define CONNECT_NOTIFY_SIGNALS(lowercase) \
-  connect_notify_signals ( \
-    self, GTK_WIDGET (self->lowercase##_mode))
+  connect_notify_signals (self, GTK_WIDGET (self->lowercase##_mode))
 
   /* connect notify signals */
   CONNECT_NOTIFY_SIGNALS (select);
@@ -198,8 +192,7 @@ toolbox_widget_init (ToolboxWidget * self)
 
   const char * tooltip_text;
 #define SET_TOOLTIP(x, action) \
-  tooltip_text = gtk_widget_get_tooltip_text ( \
-    GTK_WIDGET (self->x##_mode)); \
+  tooltip_text = gtk_widget_get_tooltip_text (GTK_WIDGET (self->x##_mode)); \
   z_gtk_widget_set_tooltip_for_action ( \
     GTK_WIDGET (self->x##_mode), action, tooltip_text);
 

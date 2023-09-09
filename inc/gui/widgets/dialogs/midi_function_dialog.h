@@ -68,9 +68,7 @@ midi_function_dialog_widget_get_opts (
  * pre-fills the values from GSettings.
  */
 MidiFunctionDialogWidget *
-midi_function_dialog_widget_new (
-  GtkWindow *      parent,
-  MidiFunctionType type);
+midi_function_dialog_widget_new (GtkWindow * parent, MidiFunctionType type);
 
 /**
  * @}

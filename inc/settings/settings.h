@@ -44,31 +44,24 @@ typedef struct UserShortcuts  UserShortcuts;
 /* ---- Preferences ---- */
 #define S_P_DSP_PAN SETTINGS->preferences_dsp_pan
 #define S_P_EDITING_AUDIO SETTINGS->preferences_editing_audio
-#define S_P_EDITING_AUTOMATION \
-  SETTINGS->preferences_editing_automation
+#define S_P_EDITING_AUTOMATION SETTINGS->preferences_editing_automation
 #define S_P_EDITING_UNDO SETTINGS->preferences_editing_undo
-#define S_P_GENERAL_ENGINE \
-  SETTINGS->preferences_general_engine
+#define S_P_GENERAL_ENGINE SETTINGS->preferences_general_engine
 #define S_P_GENERAL_PATHS SETTINGS->preferences_general_paths
-#define S_P_GENERAL_UPDATES \
-  SETTINGS->preferences_general_updates
+#define S_P_GENERAL_UPDATES SETTINGS->preferences_general_updates
 #define S_P_PLUGINS_UIS SETTINGS->preferences_plugins_uis
 #define S_P_PLUGINS_PATHS SETTINGS->preferences_plugins_paths
-#define S_P_PROJECTS_GENERAL \
-  SETTINGS->preferences_projects_general
+#define S_P_PROJECTS_GENERAL SETTINGS->preferences_projects_general
 #define S_P_UI_GENERAL SETTINGS->preferences_ui_general
-#define S_P_SCRIPTING_GENERAL \
-  SETTINGS->preferences_scripting_general
+#define S_P_SCRIPTING_GENERAL SETTINGS->preferences_scripting_general
 
 /* ---- end preferences ---- */
 
 #define S_IS_DEBUG (g_settings_get_int (S_GENERAL, "debug"))
 
-#define S_SET_ENUM(settings, key, val) \
-  g_settings_set_enum (settings, key, val)
+#define S_SET_ENUM(settings, key, val) g_settings_set_enum (settings, key, val)
 
-#define S_GET_ENUM(settings, key) \
-  g_settings_get_enum (settings, key)
+#define S_GET_ENUM(settings, key) g_settings_get_enum (settings, key)
 
 #define S_UI_SET_ENUM(key, val) S_SET_ENUM (S_UI, key, val)
 
@@ -147,10 +140,7 @@ settings_new (void);
  * @return Whether successfully reset.
  */
 bool
-settings_reset_to_factory (
-  bool        confirm,
-  GtkWindow * window,
-  bool        exit_on_finish);
+settings_reset_to_factory (bool confirm, GtkWindow * window, bool exit_on_finish);
 
 /**
  * Prints the current settings.
@@ -189,14 +179,10 @@ settings_get_range_double (
   double *     upper);
 
 GVariant *
-settings_get_default_value (
-  const char * schema,
-  const char * key);
+settings_get_default_value (const char * schema, const char * key);
 
 double
-settings_get_default_value_double (
-  const char * schema,
-  const char * key);
+settings_get_default_value_double (const char * schema, const char * key);
 
 /**
  * Returns the localized summary as a newly
@@ -210,9 +196,7 @@ settings_get_summary (GSettings * settings, const char * key);
  * allocated string.
  */
 char *
-settings_get_description (
-  GSettings *  settings,
-  const char * key);
+settings_get_description (GSettings * settings, const char * key);
 
 /**
  * Frees settings.

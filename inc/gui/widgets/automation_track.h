@@ -22,8 +22,7 @@
 
 #include <gtk/gtk.h>
 
-#define AUTOMATION_TRACK_WIDGET_TYPE \
-  (automation_track_widget_get_type ())
+#define AUTOMATION_TRACK_WIDGET_TYPE (automation_track_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   AutomationTrackWidget,
   automation_track_widget,
@@ -31,14 +30,13 @@ G_DECLARE_FINAL_TYPE (
   AUTOMATION_TRACK_WIDGET,
   GtkGrid)
 
-typedef struct _TrackWidget           TrackWidget;
-typedef struct AutomationTrack        AutomationTrack;
-typedef struct _DigitalMeterWidget    DigitalMeterWidget;
-typedef struct Track                  Track;
-typedef struct _AutomationPointWidget AutomationPointWidget;
-typedef struct AutomationTrack        AutomationTrack;
-typedef struct _AutomatableSelectorButtonWidget
-  AutomatableSelectorButtonWidget;
+typedef struct _TrackWidget                     TrackWidget;
+typedef struct AutomationTrack                  AutomationTrack;
+typedef struct _DigitalMeterWidget              DigitalMeterWidget;
+typedef struct Track                            Track;
+typedef struct _AutomationPointWidget           AutomationPointWidget;
+typedef struct AutomationTrack                  AutomationTrack;
+typedef struct _AutomatableSelectorButtonWidget AutomatableSelectorButtonWidget;
 
 typedef struct _AutomationTrackWidget
 {
@@ -83,8 +81,7 @@ void
 automation_track_widget_refresh (AutomationTrackWidget * self);
 
 void
-automation_track_widget_update_current_val (
-  AutomationTrackWidget * self);
+automation_track_widget_update_current_val (AutomationTrackWidget * self);
 
 /**
  * Returns the y pixels from the value based on the

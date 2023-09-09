@@ -31,8 +31,7 @@ position_cmpfunc (const void * a, const void * b)
 {
   const Position * posa = (Position const *) a;
   const Position * posb = (Position const *) b;
-  return (
-    int) CLAMP (position_compare_frames (posa, posb), -1, 1);
+  return (int) CLAMP (position_compare_frames (posa, posb), -1, 1);
 }
 
 void
@@ -48,9 +47,7 @@ position_sort_array (Position * array, const size_t size)
  *   will be used instead.
  */
 void
-position_update_ticks_from_frames (
-  Position * self,
-  double     ticks_per_frame)
+position_update_ticks_from_frames (Position * self, double ticks_per_frame)
 {
   if (math_doubles_equal (ticks_per_frame, 0.0))
     {
@@ -64,17 +61,14 @@ position_update_ticks_from_frames (
  * Converts ticks to frames.
  */
 signed_frame_t
-position_get_frames_from_ticks (
-  double ticks,
-  double frames_per_tick)
+position_get_frames_from_ticks (double ticks, double frames_per_tick)
 {
   if (math_doubles_equal (frames_per_tick, 0.0))
     {
       frames_per_tick = AUDIO_ENGINE->frames_per_tick;
     }
   g_return_val_if_fail (frames_per_tick > 0, -1);
-  return math_round_double_to_signed_frame_t (
-    (ticks * frames_per_tick));
+  return math_round_double_to_signed_frame_t ((ticks * frames_per_tick));
 }
 
 /**
@@ -84,12 +78,9 @@ position_get_frames_from_ticks (
  *   will be used instead.
  */
 void
-position_update_frames_from_ticks (
-  Position * self,
-  double     frames_per_tick)
+position_update_frames_from_ticks (Position * self, double frames_per_tick)
 {
-  self->frames = position_get_frames_from_ticks (
-    self->ticks, frames_per_tick);
+  self->frames = position_get_frames_from_ticks (self->ticks, frames_per_tick);
 }
 
 /**
@@ -179,16 +170,14 @@ position_add_ms (Position * pos, const double ms)
 void
 position_add_minutes (Position * pos, int mins)
 {
-  signed_frame_t frames =
-    position_ms_to_frames (mins * 60 * 1000);
+  signed_frame_t frames = position_ms_to_frames (mins * 60 * 1000);
   position_add_frames (pos, frames);
 }
 
 void
 position_add_seconds (Position * pos, const signed_sec_t seconds)
 {
-  signed_frame_t frames =
-    position_ms_to_frames (seconds * 1000);
+  signed_frame_t frames = position_ms_to_frames (seconds * 1000);
   position_add_frames (pos, frames);
 }
 
@@ -208,8 +197,7 @@ position_set_min_size (
   SnapGrid *       snap)
 {
   position_set_to_pos (end_pos, start_pos);
-  position_add_ticks (
-    end_pos, snap_grid_get_default_ticks (snap));
+  position_add_ticks (end_pos, snap_grid_get_default_ticks (snap));
 }
 
 /**
@@ -441,14 +429,11 @@ get_closest_snap_point (
 {
   /* get closest snap point */
   Position prev_sp, next_sp;
-  bool     prev_snapped =
-    get_prev_snap_point (pos, track, region, sg, &prev_sp);
-  bool next_snapped =
-    get_next_snap_point (pos, track, region, sg, &next_sp);
+  bool prev_snapped = get_prev_snap_point (pos, track, region, sg, &prev_sp);
+  bool next_snapped = get_next_snap_point (pos, track, region, sg, &next_sp);
   if (prev_snapped && next_snapped)
     {
-      Position * closest_sp_ptr =
-        closest_snap_point (pos, &prev_sp, &next_sp);
+      Position * closest_sp_ptr = closest_snap_point (pos, &prev_sp, &next_sp);
       *closest_sp = *closest_sp_ptr;
       return true;
     }
@@ -521,8 +506,7 @@ position_snap (
         start_pos, track, region, sg, &prev_sp_from_start_pos);
 
       /* get diff from previous snap point */
-      double ticks_delta =
-        start_pos->ticks - prev_sp_from_start_pos.ticks;
+      double ticks_delta = start_pos->ticks - prev_sp_from_start_pos.ticks;
 
       /* add ticks to current pos and check the
        * closest snap point to the resulting
@@ -531,8 +515,8 @@ position_snap (
 
       /* get closest snap point */
       Position closest_sp;
-      bool     have_closest_sp = get_closest_snap_point (
-        pos, track, region, sg, &closest_sp);
+      bool     have_closest_sp =
+        get_closest_snap_point (pos, track, region, sg, &closest_sp);
       if (have_closest_sp)
         {
           /* move to closest snap point */
@@ -547,8 +531,7 @@ position_snap (
     {
       /* get closest snap point */
       Position closest_sp;
-      get_closest_snap_point (
-        pos, track, region, sg, &closest_sp);
+      get_closest_snap_point (pos, track, region, sg, &closest_sp);
 
       /* move to closest snap point */
       position_set_to_pos (pos, &closest_sp);
@@ -586,9 +569,7 @@ position_from_ticks (Position * pos, double ticks)
 }
 
 void
-position_from_frames (
-  Position *           pos,
-  const signed_frame_t frames)
+position_from_frames (Position * pos, const signed_frame_t frames)
 {
   pos->schema_version = POSITION_SCHEMA_VERSION;
   pos->frames = frames;
@@ -622,10 +603,7 @@ position_add_ticks (Position * self, double ticks)
  * @param pos Position to set to.
  */
 inline void
-position_get_midway_pos (
-  Position * start_pos,
-  Position * end_pos,
-  Position * pos)
+position_get_midway_pos (Position * start_pos, Position * end_pos, Position * pos)
 {
   double end_ticks, start_ticks, ticks_diff;
   start_ticks = position_to_ticks (start_pos);
@@ -684,10 +662,7 @@ position_to_string_alloc (const Position * pos)
 }
 
 void
-position_to_string_full (
-  const Position * pos,
-  char *           buf,
-  int              decimal_places)
+position_to_string_full (const Position * pos, char * buf, int decimal_places)
 {
   int    bars = position_get_bars (pos, true);
   int    beats = position_get_beats (pos, true);
@@ -697,15 +672,14 @@ position_to_string_full (
   if (ZRYTHM_TESTING)
     {
       sprintf (
-        buf, "%d.%d.%d.%.*f (%" SIGNED_FRAME_FORMAT ")", bars,
-        abs (beats), abs (sixteenths), decimal_places,
-        fabs (ticks), pos->frames);
+        buf, "%d.%d.%d.%.*f (%" SIGNED_FRAME_FORMAT ")", bars, abs (beats),
+        abs (sixteenths), decimal_places, fabs (ticks), pos->frames);
     }
   else
     {
       sprintf (
-        buf, "%d.%d.%d.%.*f", bars, abs (beats),
-        abs (sixteenths), decimal_places, fabs (ticks));
+        buf, "%d.%d.%d.%.*f", bars, abs (beats), abs (sixteenths),
+        decimal_places, fabs (ticks));
     }
 }
 
@@ -729,8 +703,7 @@ position_parse (Position * pos, const char * str)
 {
   int   bars, beats, sixteenths;
   float ticksf;
-  int   res = sscanf (
-    str, "%d.%d.%d.%f", &bars, &beats, &sixteenths, &ticksf);
+  int   res = sscanf (str, "%d.%d.%d.%f", &bars, &beats, &sixteenths, &ticksf);
   if (res != 4 || res == EOF)
     return false;
 
@@ -758,15 +731,13 @@ position_parse (Position * pos, const char * str)
 
   double ticks = (double) ticksf;
 
-  int beats_per_bar =
-    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
   int sixteenths_per_beat = TRANSPORT->sixteenths_per_beat;
   int total_sixteenths =
-    bars * beats_per_bar * sixteenths_per_beat
-    + beats * sixteenths_per_beat + sixteenths;
+    bars * beats_per_bar * sixteenths_per_beat + beats * sixteenths_per_beat
+    + sixteenths;
   double total_ticks =
-    (double) (total_sixteenths) *TICKS_PER_SIXTEENTH_NOTE_DBL
-    + ticks;
+    (double) (total_sixteenths) *TICKS_PER_SIXTEENTH_NOTE_DBL + ticks;
   position_from_ticks (pos, total_ticks);
 
   return true;
@@ -788,9 +759,7 @@ position_print (const Position * pos)
 }
 
 void
-position_print_range (
-  const Position * pos,
-  const Position * pos2)
+position_print_range (const Position * pos, const Position * pos2)
 {
   char buf[140];
   position_to_string (pos, buf);
@@ -804,8 +773,8 @@ position_print_range (
     "<delta %" SIGNED_FRAME_FORMAT
     " frames "
     "%f ticks>",
-    buf, pos->frames, buf2, pos2->frames,
-    pos2->frames - pos->frames, pos2->ticks - pos->ticks);
+    buf, pos->frames, buf2, pos2->frames, pos2->frames - pos->frames,
+    pos2->ticks - pos->ticks);
 }
 
 /**
@@ -815,9 +784,7 @@ position_print_range (
  *   current beat if it is at the beat start.
  */
 int
-position_get_total_bars (
-  const Position * pos,
-  bool             include_current)
+position_get_total_bars (const Position * pos, bool include_current)
 {
   int bars = position_get_bars (pos, false);
   int cur_bars = position_get_bars (pos, true);
@@ -846,15 +813,12 @@ position_get_total_bars (
  *   current beat if it is at the beat start.
  */
 int
-position_get_total_beats (
-  const Position * pos,
-  bool             include_current)
+position_get_total_beats (const Position * pos, bool include_current)
 {
   int beats = position_get_beats (pos, false);
   int bars = position_get_bars (pos, false);
 
-  int beats_per_bar =
-    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
   int ret = beats + bars * beats_per_bar;
 
   if (include_current || ret == 0)
@@ -863,8 +827,7 @@ position_get_total_beats (
     }
 
   Position tmp;
-  position_from_ticks (
-    &tmp, (double) ret * TRANSPORT->ticks_per_beat);
+  position_from_ticks (&tmp, (double) ret * TRANSPORT->ticks_per_beat);
   if (tmp.frames == pos->frames)
     {
       ret--;
@@ -878,9 +841,7 @@ position_get_total_beats (
  * including the current one.
  */
 int
-position_get_total_sixteenths (
-  const Position * pos,
-  bool             include_current)
+position_get_total_sixteenths (const Position * pos, bool include_current)
 {
   int ret;
   if (pos->ticks >= 0)
@@ -900,8 +861,7 @@ position_get_total_sixteenths (
     }
 
   Position tmp;
-  position_from_ticks (
-    &tmp, (double) ret * TICKS_PER_SIXTEENTH_NOTE_DBL);
+  position_from_ticks (&tmp, (double) ret * TICKS_PER_SIXTEENTH_NOTE_DBL);
   if (tmp.frames == pos->frames)
     {
       ret--;
@@ -935,9 +895,7 @@ int
 position_get_bars (const Position * pos, bool start_at_one)
 {
   g_return_val_if_fail (
-    ZRYTHM && PROJECT && TRANSPORT
-      && TRANSPORT->ticks_per_bar > 0,
-    -1);
+    ZRYTHM && PROJECT && TRANSPORT && TRANSPORT->ticks_per_bar > 0, -1);
 
   double total_bars = pos->ticks / TRANSPORT->ticks_per_bar;
   if (total_bars >= 0.0)
@@ -973,13 +931,11 @@ int
 position_get_beats (const Position * pos, bool start_at_one)
 {
   g_return_val_if_fail (
-    ZRYTHM && PROJECT && TRANSPORT
-      && TRANSPORT->ticks_per_bar > 0
+    ZRYTHM && PROJECT && TRANSPORT && TRANSPORT->ticks_per_bar > 0
       && TRANSPORT->ticks_per_beat > 0 && P_TEMPO_TRACK,
     -1);
 
-  int beats_per_bar =
-    tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
+  int beats_per_bar = tempo_track_get_beats_per_bar (P_TEMPO_TRACK);
   g_return_val_if_fail (beats_per_bar > 0, -1);
 
   double total_bars = (double) position_get_bars (pos, false);
@@ -1018,19 +974,14 @@ int
 position_get_sixteenths (const Position * pos, bool start_at_one)
 {
   g_return_val_if_fail (
-    ZRYTHM && PROJECT && TRANSPORT
-      && TRANSPORT->sixteenths_per_beat > 0,
-    -1);
+    ZRYTHM && PROJECT && TRANSPORT && TRANSPORT->sixteenths_per_beat > 0, -1);
 
-  double total_beats =
-    (double) position_get_total_beats (pos, true);
+  double total_beats = (double) position_get_total_beats (pos, true);
   /*g_message ("total beats %f", total_beats);*/
-  double total_sixteenths =
-    pos->ticks / TICKS_PER_SIXTEENTH_NOTE_DBL;
+  double total_sixteenths = pos->ticks / TICKS_PER_SIXTEENTH_NOTE_DBL;
   /*g_message ("total sixteenths %f",*/
   /*total_sixteenths);*/
-  total_sixteenths -=
-    (double) (total_beats * TRANSPORT->sixteenths_per_beat);
+  total_sixteenths -= (double) (total_beats * TRANSPORT->sixteenths_per_beat);
   if (total_sixteenths >= 0.0)
     {
       int ret = (int) floor (total_sixteenths);
@@ -1060,11 +1011,9 @@ position_get_sixteenths (const Position * pos, bool start_at_one)
 double
 position_get_ticks (const Position * pos)
 {
-  double total_sixteenths =
-    position_get_total_sixteenths (pos, true);
+  double total_sixteenths = position_get_total_sixteenths (pos, true);
   /*g_debug ("total sixteenths %f", total_sixteenths);*/
-  return pos->ticks
-         - (total_sixteenths * TICKS_PER_SIXTEENTH_NOTE_DBL);
+  return pos->ticks - (total_sixteenths * TICKS_PER_SIXTEENTH_NOTE_DBL);
 }
 
 bool

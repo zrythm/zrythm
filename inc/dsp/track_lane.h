@@ -95,20 +95,14 @@ static const cyaml_schema_field_t track_lane_fields_schema[] = {
   YAML_FIELD_FLOAT (TrackLane, height),
   YAML_FIELD_INT (TrackLane, mute),
   YAML_FIELD_INT (TrackLane, solo),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    TrackLane,
-    regions,
-    region_schema),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (TrackLane, regions, region_schema),
   YAML_FIELD_UINT (TrackLane, midi_ch),
 
   CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t track_lane_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    TrackLane,
-    track_lane_fields_schema),
+  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, TrackLane, track_lane_fields_schema),
 };
 
 void
@@ -131,10 +125,7 @@ track_lane_new (Track * track, int pos);
  * given index.
  */
 void
-track_lane_insert_region (
-  TrackLane * self,
-  ZRegion *   region,
-  int         idx);
+track_lane_insert_region (TrackLane * self, ZRegion * region, int idx);
 
 /**
  * Adds a ZRegion to the given TrackLane.
@@ -168,18 +159,13 @@ track_lane_clear (TrackLane * self);
  *   undoable action.
  */
 void
-track_lane_rename (
-  TrackLane *  self,
-  const char * new_name,
-  bool         with_action);
+track_lane_rename (TrackLane * self, const char * new_name, bool with_action);
 
 /**
  * Wrapper over track_lane_rename().
  */
 void
-track_lane_rename_with_action (
-  TrackLane *  self,
-  const char * new_name);
+track_lane_rename_with_action (TrackLane * self, const char * new_name);
 
 /**
  * Sets track lane soloed, updates UI and optionally
@@ -228,10 +214,7 @@ track_lane_get_name (TrackLane * self);
  *   (false).
  */
 void
-track_lane_update_positions (
-  TrackLane * self,
-  bool        from_ticks,
-  bool        bpm_change);
+track_lane_update_positions (TrackLane * self, bool from_ticks, bool bpm_change);
 
 /**
  * Sets the new track name hash to all the lane's

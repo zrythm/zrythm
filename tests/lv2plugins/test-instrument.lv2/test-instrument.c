@@ -79,13 +79,12 @@ instantiate (
 
   // Scan host features for URID map
   const char * missing = lv2_features_query (
-    features, LV2_LOG__log, &self->logger.log, false,
-    LV2_URID__map, &self->map, true, NULL);
+    features, LV2_LOG__log, &self->logger.log, false, LV2_URID__map, &self->map,
+    true, NULL);
   lv2_log_logger_set_map (&self->logger, self->map);
   if (missing)
     {
-      lv2_log_error (
-        &self->logger, "Missing feature <%s>\n", missing);
+      lv2_log_error (&self->logger, "Missing feature <%s>\n", missing);
       free (self);
       return NULL;
     }
@@ -175,11 +174,9 @@ run (LV2_Handle instance, uint32_t sample_count)
             process (self, &processed);
           }
       }
-    if (lv2_atom_forge_is_object_type (
-          &self->forge, ev->body.type))
+    if (lv2_atom_forge_is_object_type (&self->forge, ev->body.type))
       {
-        const LV2_Atom_Object * obj =
-          (const LV2_Atom_Object *) &ev->body;
+        const LV2_Atom_Object * obj = (const LV2_Atom_Object *) &ev->body;
 
         /* TODO */
         (void) obj;

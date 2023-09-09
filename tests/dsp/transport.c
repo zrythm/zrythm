@@ -32,8 +32,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/transport/"
 
   g_test_add_func (
-    TEST_PREFIX "test load project bpm",
-    (GTestFunc) test_load_project_bpm);
+    TEST_PREFIX "test load project bpm", (GTestFunc) test_load_project_bpm);
 
   return g_test_run ();
 }

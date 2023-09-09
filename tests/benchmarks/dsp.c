@@ -72,8 +72,7 @@ _test_dsp_fill (bool optimized, bool large_buff)
   float * src = object_new_n (LARGE_BUFFER_SIZE, float);
   float   val = 0.3f;
 
-  size_t buf_size =
-    large_buff ? LARGE_BUFFER_SIZE : BUFFER_SIZE;
+  size_t buf_size = large_buff ? LARGE_BUFFER_SIZE : BUFFER_SIZE;
 
   DspBenchmark * benchmark;
 
@@ -183,8 +182,7 @@ _test_run_engine (bool optimized)
     /* create a few tracks with plugins */
 #ifdef HAVE_LSP_COMPRESSOR
   test_plugin_manager_create_tracks_from_plugin (
-    LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, false,
-    NUM_TRACKS);
+    LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, false, NUM_TRACKS);
 #endif
 
   DspBenchmark * benchmark;
@@ -193,13 +191,10 @@ _test_run_engine (bool optimized)
   start = g_get_monotonic_time ();
   for (int i = 0; i < NUM_ITERATIONS_ENGINE; i++)
     {
-      engine_process (
-        AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+      engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
       LOOP_END ("engine cycles", optimized);
 
-      g_message (
-        "%soptimized time: %ld", optimized ? "" : "un",
-        end - start);
+      g_message ("%soptimized time: %ld", optimized ? "" : "un", end - start);
       /*g_warn_if_reached ();*/
 
 #ifdef HAVE_LSP_DSP
@@ -230,8 +225,7 @@ _test_run_engine (bool optimized)
           "---- %s ----\n"
           "unoptimized: %ldms\n"
           "optimized: %ldms\n",
-          benchmark->func_name,
-          benchmark->unoptimized_usec / 1000,
+          benchmark->func_name, benchmark->unoptimized_usec / 1000,
           benchmark->optimized_usec / 1000);
       }
   }
@@ -246,11 +240,8 @@ _test_run_engine (bool optimized)
 
 #define TEST_PREFIX "/benchmarks/dsp/"
 
-    g_test_add_func (
-      TEST_PREFIX "test dsp fill", (GTestFunc) test_dsp_fill);
-    g_test_add_func (
-      TEST_PREFIX "test run engine",
-      (GTestFunc) test_run_engine);
+    g_test_add_func (TEST_PREFIX "test dsp fill", (GTestFunc) test_dsp_fill);
+    g_test_add_func (TEST_PREFIX "test run engine", (GTestFunc) test_run_engine);
     g_test_add_func (
       TEST_PREFIX "print benchmark results",
       (GTestFunc) print_benchmark_results);

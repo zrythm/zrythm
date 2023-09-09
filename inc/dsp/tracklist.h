@@ -34,15 +34,10 @@ TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
 
 #define tracklist_is_in_active_project(self) \
   (self->project == PROJECT \
-   || \
-   (self->sample_processor \
-    && \
-    sample_processor_is_in_active_project ( \
-      self->sample_processor)))
+   || (self->sample_processor && sample_processor_is_in_active_project (self->sample_processor)))
 
 #define tracklist_is_auditioner(self) \
-  (self->sample_processor \
-   && tracklist_is_in_active_project (self))
+  (self->sample_processor && tracklist_is_in_active_project (self))
 
 /**
  * Used in track search functions.
@@ -131,10 +126,7 @@ typedef struct Tracklist
 
 static const cyaml_schema_field_t tracklist_fields_schema[] = {
   YAML_FIELD_INT (Tracklist, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    Tracklist,
-    tracks,
-    track_schema),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (Tracklist, tracks, track_schema),
   YAML_FIELD_INT (Tracklist, pinned_tracks_cutoff),
 
   CYAML_FIELD_END
@@ -153,9 +145,7 @@ COLD NONNULL_ARGS (1) void tracklist_init_loaded (
   SampleProcessor * sample_processor);
 
 COLD Tracklist *
-tracklist_new (
-  Project *         project,
-  SampleProcessor * sample_processor);
+tracklist_new (Project * project, SampleProcessor * sample_processor);
 
 /**
  * Selects or deselects all tracks.
@@ -165,10 +155,7 @@ tracklist_new (
  *   selected).
  */
 NONNULL void
-tracklist_select_all (
-  Tracklist * self,
-  bool        select,
-  bool        fire_events);
+tracklist_select_all (Tracklist * self, bool select, bool fire_events);
 
 /**
  * Finds visible tracks and puts them in given array.
@@ -184,18 +171,14 @@ tracklist_get_visible_tracks (
  * any.
  */
 Track *
-tracklist_find_track_by_name (
-  Tracklist *  self,
-  const char * name);
+tracklist_find_track_by_name (Tracklist * self, const char * name);
 
 /**
  * Returns the Track matching the given name, if
  * any.
  */
 NONNULL OPTIMIZE_O3 Track *
-tracklist_find_track_by_name_hash (
-  Tracklist *  self,
-  unsigned int hash);
+tracklist_find_track_by_name_hash (Tracklist * self, unsigned int hash);
 
 NONNULL int
 tracklist_contains_master_track (Tracklist * self);
@@ -325,18 +308,14 @@ tracklist_get_chord_track (const Tracklist * self);
  *   0 to check the non-pinned tracklist.
  */
 Track *
-tracklist_get_first_visible_track (
-  Tracklist * self,
-  const int   pinned);
+tracklist_get_first_visible_track (Tracklist * self, const int pinned);
 
 /**
  * Returns the previous visible Track in the same
  * Tracklist as the given one (ie, pinned or not).
  */
 Track *
-tracklist_get_prev_visible_track (
-  Tracklist * self,
-  Track *     track);
+tracklist_get_prev_visible_track (Tracklist * self, Track * track);
 
 /**
  * Returns the index of the last Track.
@@ -369,9 +348,7 @@ tracklist_get_last_track (
  * Tracklist as the given one (ie, pinned or not).
  */
 Track *
-tracklist_get_next_visible_track (
-  Tracklist * self,
-  Track *     track);
+tracklist_get_next_visible_track (Tracklist * self, Track * track);
 
 /**
  * Returns the Track after delta visible Track's.
@@ -498,9 +475,7 @@ tracklist_get_num_listened_tracks (const Tracklist * self);
  * @param visible 1 for visible, 0 for invisible.
  */
 int
-tracklist_get_num_visible_tracks (
-  Tracklist * self,
-  int         visible);
+tracklist_get_num_visible_tracks (Tracklist * self, int visible);
 
 /**
  * Fills in the given array (if non-NULL) with all
@@ -508,9 +483,7 @@ tracklist_get_num_visible_tracks (
  * of plugins.
  */
 int
-tracklist_get_plugins (
-  const Tracklist * const self,
-  GPtrArray *             arr);
+tracklist_get_plugins (const Tracklist * const self, GPtrArray * arr);
 
 /**
  * Activate or deactivate all plugins.
@@ -519,9 +492,7 @@ tracklist_get_plugins (
  * reactivating a plugin will reset its state.
  */
 void
-tracklist_activate_all_plugins (
-  Tracklist * self,
-  bool        activate);
+tracklist_activate_all_plugins (Tracklist * self, bool activate);
 
 /**
  * Exposes each track's ports that should be
@@ -537,9 +508,7 @@ tracklist_expose_ports_to_backend (Tracklist * self);
  * Marks or unmarks all tracks for bounce.
  */
 void
-tracklist_mark_all_tracks_for_bounce (
-  Tracklist * self,
-  bool        bounce);
+tracklist_mark_all_tracks_for_bounce (Tracklist * self, bool bounce);
 
 void
 tracklist_get_total_bars (Tracklist * self, int * total_bars);

@@ -84,17 +84,16 @@ typedef enum PortOwnerType_v1
 } PortOwnerType_v1;
 
 static const cyaml_strval_t port_owner_type_strings_v1[] = {
-  {"audio engine",               PORT_OWNER_TYPE_AUDIO_ENGINE_v1   },
-  { "plugin",                    PORT_OWNER_TYPE_PLUGIN_v1         },
-  { "track",                     PORT_OWNER_TYPE_TRACK_v1          },
-  { "channel",                   PORT_OWNER_TYPE_CHANNEL_v1        },
-  { "fader",                     PORT_OWNER_TYPE_FADER_v1          },
-  { "channel send",              PORT_OWNER_TYPE_CHANNEL_SEND_v1   },
-  { "track processor",           PORT_OWNER_TYPE_TRACK_PROCESSOR_v1},
-  { "hw",                        PORT_OWNER_TYPE_HW_v1             },
-  { "transport",                 PORT_OWNER_TYPE_TRANSPORT_v1      },
-  { "modulator macro processor",
-   PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR_v1                    },
+  {"audio engine",               PORT_OWNER_TYPE_AUDIO_ENGINE_v1             },
+  { "plugin",                    PORT_OWNER_TYPE_PLUGIN_v1                   },
+  { "track",                     PORT_OWNER_TYPE_TRACK_v1                    },
+  { "channel",                   PORT_OWNER_TYPE_CHANNEL_v1                  },
+  { "fader",                     PORT_OWNER_TYPE_FADER_v1                    },
+  { "channel send",              PORT_OWNER_TYPE_CHANNEL_SEND_v1             },
+  { "track processor",           PORT_OWNER_TYPE_TRACK_PROCESSOR_v1          },
+  { "hw",                        PORT_OWNER_TYPE_HW_v1                       },
+  { "transport",                 PORT_OWNER_TYPE_TRANSPORT_v1                },
+  { "modulator macro processor", PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR_v1},
 };
 
 /**
@@ -263,30 +262,19 @@ static const cyaml_schema_field_t port_identifier_fields_schema_v1[] = {
   YAML_FIELD_STRING_PTR_OPTIONAL (PortIdentifier_v1, sym),
   YAML_FIELD_STRING_PTR_OPTIONAL (PortIdentifier_v1, uri),
   YAML_FIELD_STRING_PTR_OPTIONAL (PortIdentifier_v1, comment),
-  YAML_FIELD_ENUM (
-    PortIdentifier_v1,
-    owner_type,
-    port_owner_type_strings_v1),
+  YAML_FIELD_ENUM (PortIdentifier_v1, owner_type, port_owner_type_strings_v1),
   YAML_FIELD_ENUM (PortIdentifier_v1, type, port_type_strings_v1),
   YAML_FIELD_ENUM (PortIdentifier_v1, flow, port_flow_strings_v1),
   YAML_FIELD_ENUM (PortIdentifier_v1, unit, port_unit_strings_v1),
-  YAML_FIELD_BITFIELD (
-    PortIdentifier_v1,
-    flags,
-    port_flags_bitvals_v1),
-  YAML_FIELD_BITFIELD (
-    PortIdentifier_v1,
-    flags2,
-    port_flags2_bitvals_v1),
+  YAML_FIELD_BITFIELD (PortIdentifier_v1, flags, port_flags_bitvals_v1),
+  YAML_FIELD_BITFIELD (PortIdentifier_v1, flags2, port_flags2_bitvals_v1),
   YAML_FIELD_UINT (PortIdentifier_v1, track_name_hash),
   YAML_FIELD_MAPPING_EMBEDDED (
     PortIdentifier_v1,
     plugin_id,
     plugin_identifier_fields_schema_v1),
   YAML_FIELD_STRING_PTR_OPTIONAL (PortIdentifier_v1, port_group),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    PortIdentifier_v1,
-    ext_port_id),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PortIdentifier_v1, ext_port_id),
   YAML_FIELD_INT (PortIdentifier_v1, port_index),
 
   CYAML_FIELD_END,
@@ -299,13 +287,12 @@ static const cyaml_schema_value_t port_identifier_schema_v1 = {
     port_identifier_fields_schema_v1),
 };
 
-static const cyaml_schema_value_t
-  port_identifier_schema_default_v1 = {
-    CYAML_VALUE_MAPPING (
-      CYAML_FLAG_DEFAULT,
-      PortIdentifier_v1,
-      port_identifier_fields_schema_v1),
-  };
+static const cyaml_schema_value_t port_identifier_schema_default_v1 = {
+  CYAML_VALUE_MAPPING (
+    CYAML_FLAG_DEFAULT,
+    PortIdentifier_v1,
+    port_identifier_fields_schema_v1),
+};
 
 PortIdentifier *
 port_identifier_upgrade_from_v1 (PortIdentifier_v1 * old);

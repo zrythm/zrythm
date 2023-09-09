@@ -55,8 +55,7 @@ m_instantiate (
   const char *                bundle_path,
   const LV2_Feature * const * features)
 {
-  LVMidiPlumbing * self =
-    (LVMidiPlumbing *) calloc (1, sizeof (LVMidiPlumbing));
+  LVMidiPlumbing * self = (LVMidiPlumbing *) calloc (1, sizeof (LVMidiPlumbing));
   if (!self)
     return NULL;
 
@@ -194,17 +193,14 @@ m_run (LV2_Handle instance, uint32_t n_samples)
       const uint32_t capacity = self->midiout->atom.size;
       lv2_atom_forge_set_buffer (
         &self->forge, (uint8_t *) self->midiout, capacity);
-      lv2_atom_forge_sequence_head (
-        &self->forge, &self->frame, 0);
+      lv2_atom_forge_sequence_head (&self->forge, &self->frame, 0);
     }
 
   for (uint32_t c = 0; c < self->channels; ++c)
     {
       if (self->input[c] != self->output[c])
         {
-          memcpy (
-            self->output[c], self->input[c],
-            sizeof (float) * n_samples);
+          memcpy (self->output[c], self->input[c], sizeof (float) * n_samples);
         }
     }
 }

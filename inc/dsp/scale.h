@@ -205,10 +205,7 @@ typedef struct MusicalScale
 
 static const cyaml_schema_field_t musical_scale_fields_schema[] = {
   YAML_FIELD_INT (MusicalScale, schema_version),
-  YAML_FIELD_ENUM (
-    MusicalScale,
-    type,
-    musical_scale_type_strings),
+  YAML_FIELD_ENUM (MusicalScale, type, musical_scale_type_strings),
   YAML_FIELD_ENUM (MusicalScale, root_key, musical_note_strings),
 
   CYAML_FIELD_END,
@@ -232,9 +229,7 @@ musical_scale_new (MusicalScaleType type, MusicalNote root);
  *   different notes when rising/falling).
  */
 const bool *
-musical_scale_get_notes (
-  MusicalScaleType scale_type,
-  bool             ascending);
+musical_scale_get_notes (MusicalScaleType scale_type, bool ascending);
 
 /**
  * Returns the triads in the given scale.
@@ -249,9 +244,7 @@ musical_scale_get_notes (
  */
 RETURNS_NONNULL
 const ChordType *
-musical_scale_get_triad_types (
-  MusicalScaleType scale_type,
-  bool             ascending);
+musical_scale_get_triad_types (MusicalScaleType scale_type, bool ascending);
 
 /**
  * Clones the scale.
@@ -312,9 +305,7 @@ musical_scale_is_accent_in_scale (
  * @param note A note inside a single octave (0-11).
  */
 bool
-musical_scale_contains_note (
-  const MusicalScale * scale,
-  MusicalNote          note);
+musical_scale_contains_note (const MusicalScale * scale, MusicalNote note);
 
 /**
  * Returns the scale in human readable string.

@@ -14,8 +14,7 @@
 
 #include <adwaita.h>
 
-#define STRING_ENTRY_DIALOG_WIDGET_TYPE \
-  (string_entry_dialog_widget_get_type ())
+#define STRING_ENTRY_DIALOG_WIDGET_TYPE (string_entry_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   StringEntryDialogWidget,
   string_entry_dialog_widget,

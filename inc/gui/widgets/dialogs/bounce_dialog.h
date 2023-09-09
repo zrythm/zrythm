@@ -28,8 +28,7 @@
 
 #include <gtk/gtk.h>
 
-#define BOUNCE_DIALOG_WIDGET_TYPE \
-  (bounce_dialog_widget_get_type ())
+#define BOUNCE_DIALOG_WIDGET_TYPE (bounce_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   BounceDialogWidget,
   bounce_dialog_widget,
@@ -37,8 +36,7 @@ G_DECLARE_FINAL_TYPE (
   BOUNCE_DIALOG_WIDGET,
   GtkDialog)
 
-typedef struct _BounceStepSelectorWidget
-  BounceStepSelectorWidget;
+typedef struct _BounceStepSelectorWidget BounceStepSelectorWidget;
 
 /**
  * @addtogroup widgets
@@ -82,9 +80,7 @@ typedef struct _BounceDialogWidget
  * Creates a bounce dialog.
  */
 BounceDialogWidget *
-bounce_dialog_widget_new (
-  BounceDialogWidgetType type,
-  const char *           bounce_name);
+bounce_dialog_widget_new (BounceDialogWidgetType type, const char * bounce_name);
 
 /**
  * @}

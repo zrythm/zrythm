@@ -15,8 +15,7 @@
 #include <gtk/gtk.h>
 #include <libpanel.h>
 
-#define BOT_DOCK_EDGE_WIDGET_TYPE \
-  (bot_dock_edge_widget_get_type ())
+#define BOT_DOCK_EDGE_WIDGET_TYPE (bot_dock_edge_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   BotDockEdgeWidget,
   bot_dock_edge_widget,
@@ -82,8 +81,7 @@ bot_dock_edge_widget_setup (BotDockEdgeWidget * self);
  * Sets the appropriate stack page.
  */
 void
-bot_dock_edge_widget_update_event_viewer_stack_page (
-  BotDockEdgeWidget * self);
+bot_dock_edge_widget_update_event_viewer_stack_page (BotDockEdgeWidget * self);
 
 /**
  * Brings up the clip editor.

@@ -35,10 +35,7 @@
  * @note the transient is also checked.
  */
 bool
-automation_point_is_point_hit (
-  AutomationPoint * self,
-  double            x,
-  double            y);
+automation_point_is_point_hit (AutomationPoint * self, double x, double y);
 
 /**
  * Returns if the automation curve is hit.

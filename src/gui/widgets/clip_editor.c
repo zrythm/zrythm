@@ -31,8 +31,7 @@ clip_editor_widget_setup (ClipEditorWidget * self)
   clip_editor_inner_widget_setup (self->clip_editor_inner);
 
   gtk_stack_set_visible_child (
-    GTK_STACK (self->stack),
-    GTK_WIDGET (self->no_selection_page));
+    GTK_STACK (self->stack), GTK_WIDGET (self->no_selection_page));
 }
 
 /**
@@ -83,16 +82,14 @@ clip_editor_widget_on_region_changed (ClipEditorWidget * self)
            * when this widget is disposed to avoid calling on
            * a free'd object */
           g_idle_add (
-            (GSourceFunc)
-              midi_editor_space_widget_scroll_to_middle,
+            (GSourceFunc) midi_editor_space_widget_scroll_to_middle,
             self->clip_editor_inner->midi_editor_space);
         }
     }
   else
     {
       gtk_stack_set_visible_child (
-        GTK_STACK (self->stack),
-        GTK_WIDGET (self->no_selection_page));
+        GTK_STACK (self->stack), GTK_WIDGET (self->no_selection_page));
     }
 }
 
@@ -111,31 +108,27 @@ clip_editor_widget_navigate_to_region_start (
   ZRegion * r = clip_editor_get_region (CLIP_EDITOR);
   g_return_if_fail (IS_REGION_AND_NONNULL (r));
   ArrangerObject * r_obj = (ArrangerObject *) r;
-  int px = ui_pos_to_px_editor (&r_obj->pos, false);
-  ArrangerWidget * arranger =
-    region_get_arranger_for_children (r);
-  EditorSettings * settings =
-    arranger_widget_get_editor_settings (arranger);
+  int              px = ui_pos_to_px_editor (&r_obj->pos, false);
+  ArrangerWidget * arranger = region_get_arranger_for_children (r);
+  EditorSettings * settings = arranger_widget_get_editor_settings (arranger);
   if (px == settings->scroll_start_x)
     {
       /* execute the best fit action to center contents */
-      GAction * action = g_action_map_lookup_action (
-        G_ACTION_MAP (zrythm_app), "best-fit");
+      GAction * action =
+        g_action_map_lookup_action (G_ACTION_MAP (zrythm_app), "best-fit");
       GVariant * var = g_variant_new_string ("editor");
       g_action_activate (action, var);
     }
   else
     {
-      editor_settings_set_scroll_start_x (
-        settings, px, F_NO_VALIDATE);
+      editor_settings_set_scroll_start_x (settings, px, F_NO_VALIDATE);
     }
 }
 
 ClipEditorWidget *
 clip_editor_widget_new (void)
 {
-  ClipEditorWidget * self =
-    g_object_new (CLIP_EDITOR_WIDGET_TYPE, NULL);
+  ClipEditorWidget * self = g_object_new (CLIP_EDITOR_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -159,8 +152,7 @@ clip_editor_widget_class_init (ClipEditorWidgetClass * _klass)
   gtk_widget_class_set_css_name (klass, "clip-editor");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, ClipEditorWidget, x)
+  gtk_widget_class_bind_template_child (klass, ClipEditorWidget, x)
 
   BIND_CHILD (stack);
   BIND_CHILD (main_box);

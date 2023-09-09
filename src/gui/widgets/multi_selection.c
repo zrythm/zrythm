@@ -6,31 +6,22 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  MultiSelectionWidget,
-  multi_selection_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (MultiSelectionWidget, multi_selection_widget, GTK_TYPE_WIDGET)
 
 static void
-on_toggle_toggled (
-  GtkToggleButton *      toggle,
-  MultiSelectionWidget * self)
+on_toggle_toggled (GtkToggleButton * toggle, MultiSelectionWidget * self)
 {
   bool active = gtk_toggle_button_get_active (toggle);
 
-  guint idx = GPOINTER_TO_UINT (
-    g_object_get_data (G_OBJECT (toggle), "index"));
+  guint idx = GPOINTER_TO_UINT (g_object_get_data (G_OBJECT (toggle), "index"));
 
-  g_debug (
-    "track filter toggle toggled at index %u: active %d", idx,
-    active);
+  g_debug ("track filter toggle toggled at index %u: active %d", idx, active);
   if (active)
     {
       /* return if already selected */
       for (guint i = 0; i < self->selections->len; i++)
         {
-          guint cur_idx =
-            g_array_index (self->selections, guint, i);
+          guint cur_idx = g_array_index (self->selections, guint, i);
           if (cur_idx == idx)
             return;
         }
@@ -45,8 +36,7 @@ on_toggle_toggled (
       for (guint i = 0; i < self->selections->len; i++)
         {
           guint cur_idx = i;
-          guint cur_selection =
-            g_array_index (self->selections, guint, i);
+          guint cur_selection = g_array_index (self->selections, guint, i);
           if (cur_selection == idx)
             {
               found_idx = cur_idx;
@@ -73,28 +63,22 @@ refresh (MultiSelectionWidget * self)
 {
   for (guint i = 0; i < self->item_strings->len; i++)
     {
-      char * str =
-        g_array_index (self->item_strings, char *, i);
-      GtkToggleButton * toggle = GTK_TOGGLE_BUTTON (
-        gtk_toggle_button_new_with_label (str));
-      g_object_set_data (
-        G_OBJECT (toggle), "index", GUINT_TO_POINTER (i));
+      char *            str = g_array_index (self->item_strings, char *, i);
+      GtkToggleButton * toggle =
+        GTK_TOGGLE_BUTTON (gtk_toggle_button_new_with_label (str));
+      g_object_set_data (G_OBJECT (toggle), "index", GUINT_TO_POINTER (i));
 
       for (guint j = 0; j < self->selections->len; j++)
         {
-          guint cur_selection =
-            g_array_index (self->selections, guint, j);
+          guint cur_selection = g_array_index (self->selections, guint, j);
           if (cur_selection == i)
             {
               gtk_toggle_button_set_active (toggle, true);
             }
         }
 
-      gtk_flow_box_append (
-        self->flow_box, GTK_WIDGET (toggle));
-      g_signal_connect (
-        toggle, "toggled", G_CALLBACK (on_toggle_toggled),
-        self);
+      gtk_flow_box_append (self->flow_box, GTK_WIDGET (toggle));
+      g_signal_connect (toggle, "toggled", G_CALLBACK (on_toggle_toggled), self);
     }
 }
 
@@ -152,8 +136,7 @@ clear_item_string (gpointer data)
 MultiSelectionWidget *
 multi_selection_widget_new (void)
 {
-  MultiSelectionWidget * self =
-    g_object_new (MULTI_SELECTION_WIDGET_TYPE, NULL);
+  MultiSelectionWidget * self = g_object_new (MULTI_SELECTION_WIDGET_TYPE, NULL);
 
   return self;
 }
@@ -163,8 +146,7 @@ dispose (MultiSelectionWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->flow_box));
 
-  G_OBJECT_CLASS (multi_selection_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (multi_selection_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
@@ -178,8 +160,7 @@ finalize (MultiSelectionWidget * self)
 }
 
 static void
-multi_selection_widget_class_init (
-  MultiSelectionWidgetClass * klass)
+multi_selection_widget_class_init (MultiSelectionWidgetClass * klass)
 {
   gtk_widget_class_set_layout_manager_type (
     GTK_WIDGET_CLASS (klass), GTK_TYPE_BIN_LAYOUT);
@@ -192,14 +173,11 @@ multi_selection_widget_class_init (
 static void
 multi_selection_widget_init (MultiSelectionWidget * self)
 {
-  self->item_strings =
-    g_array_new (true, true, sizeof (char *));
-  g_array_set_clear_func (
-    self->item_strings, clear_item_string);
+  self->item_strings = g_array_new (true, true, sizeof (char *));
+  g_array_set_clear_func (self->item_strings, clear_item_string);
   self->selections = g_array_new (true, true, sizeof (guint));
 
   self->flow_box = GTK_FLOW_BOX (gtk_flow_box_new ());
   gtk_flow_box_set_min_children_per_line (self->flow_box, 3);
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->flow_box), GTK_WIDGET (self));
+  gtk_widget_set_parent (GTK_WIDGET (self->flow_box), GTK_WIDGET (self));
 }

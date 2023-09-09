@@ -12,16 +12,11 @@
 #include <glib/gi18n.h>
 
 static void
-response_cb (
-  AdwMessageDialog * self,
-  gchar *            response,
-  gpointer           user_data)
+response_cb (AdwMessageDialog * self, gchar * response, gpointer user_data)
 {
   bool is_yes = string_is_equal (response, "yes");
-  g_settings_set_boolean (
-    S_P_GENERAL_UPDATES, "check-for-updates", is_yes);
-  g_settings_set_boolean (
-    S_GENERAL, "first-check-for-updates", false);
+  g_settings_set_boolean (S_P_GENERAL_UPDATES, "check-for-updates", is_yes);
+  g_settings_set_boolean (S_GENERAL, "first-check-for-updates", false);
 
   if (is_yes)
     {
@@ -35,30 +30,22 @@ response_cb (
 void
 ask_to_check_for_updates_dialog_run_async (GtkWindow * parent)
 {
-  AdwMessageDialog * dialog =
-    ADW_MESSAGE_DIALOG (adw_message_dialog_new (
-      parent, _ ("Check for Updates?"), NULL));
+  AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (
+    adw_message_dialog_new (parent, _ ("Check for Updates?"), NULL));
   adw_message_dialog_format_body (
-    dialog,
-    _ ("Do you want %s to check for updates on startup?"),
-    PROGRAM_NAME);
+    dialog, _ ("Do you want %s to check for updates on startup?"), PROGRAM_NAME);
   adw_message_dialog_add_responses (
     dialog, "yes", _ ("_Yes"), "no", _ ("_No"), NULL);
   gtk_window_set_modal (GTK_WINDOW (dialog), true);
-  gtk_window_set_transient_for (
-    GTK_WINDOW (dialog), GTK_WINDOW (MAIN_WINDOW));
+  gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (MAIN_WINDOW));
   gtk_window_set_icon_name (GTK_WINDOW (dialog), "zrythm");
   adw_message_dialog_set_response_appearance (
-    ADW_MESSAGE_DIALOG (dialog), "yes",
-    ADW_RESPONSE_SUGGESTED);
+    ADW_MESSAGE_DIALOG (dialog), "yes", ADW_RESPONSE_SUGGESTED);
 
-  adw_message_dialog_set_default_response (
-    ADW_MESSAGE_DIALOG (dialog), "yes");
-  adw_message_dialog_set_close_response (
-    ADW_MESSAGE_DIALOG (dialog), "no");
+  adw_message_dialog_set_default_response (ADW_MESSAGE_DIALOG (dialog), "yes");
+  adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "no");
 
-  g_signal_connect (
-    dialog, "response", G_CALLBACK (response_cb), dialog);
+  g_signal_connect (dialog, "response", G_CALLBACK (response_cb), dialog);
 
   gtk_window_present (GTK_WINDOW (dialog));
 }

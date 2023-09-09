@@ -45,8 +45,7 @@ audio_bit_depth_from_pretty_str (const char * str)
 {
   for (BitDepth i = BIT_DEPTH_16; i <= BIT_DEPTH_32; i++)
     {
-      if (string_is_equal (
-            str, _ (bit_depth_pretty_strings[i])))
+      if (string_is_equal (str, _ (bit_depth_pretty_strings[i])))
         return i;
     }
 
@@ -88,8 +87,7 @@ audio_write_raw_file (
     "writing raw file: already written %zu, "
     "nframes %zu, samplerate %u, channels %u, "
     "filename %s, flac? %d",
-    frames_already_written, nframes, samplerate, channels,
-    filename, flac);
+    frames_already_written, nframes, samplerate, channels, filename, flac);
 
   SF_INFO info;
 
@@ -135,8 +133,7 @@ audio_write_raw_file (
       return false;
     }
 
-  SNDFILE * sndfile =
-    sf_open (filename, flac ? SFM_WRITE : SFM_RDWR, &info);
+  SNDFILE * sndfile = sf_open (filename, flac ? SFM_WRITE : SFM_RDWR, &info);
   if (!sndfile)
     {
       g_set_error (
@@ -148,8 +145,8 @@ audio_write_raw_file (
   if (info.format != (type_major | type_minor))
     {
       g_critical (
-        "Invalid SNDFILE format: 0x%08X != 0x%08X",
-        info.format, type_major | type_minor);
+        "Invalid SNDFILE format: 0x%08X != 0x%08X", info.format,
+        type_major | type_minor);
       return false;
     }
 
@@ -157,16 +154,13 @@ audio_write_raw_file (
 
   if (!flac)
     {
-      size_t seek_to =
-        write_chunk ? frames_already_written : 0;
+      size_t seek_to = write_chunk ? frames_already_written : 0;
       g_debug ("seeking to %zu", seek_to);
-      int ret = sf_seek (
-        sndfile, (sf_count_t) seek_to, SEEK_SET | SFM_WRITE);
+      int ret = sf_seek (sndfile, (sf_count_t) seek_to, SEEK_SET | SFM_WRITE);
       if (ret == -1 || ret != (int) seek_to)
         {
           g_set_error (
-            error, Z_UTILS_AUDIO_ERROR,
-            Z_UTILS_AUDIO_ERROR_FAILED,
+            error, Z_UTILS_AUDIO_ERROR, Z_UTILS_AUDIO_ERROR_FAILED,
             _ ("Seek error %d: %s"), ret, sf_strerror (NULL));
           return false;
         }
@@ -174,14 +168,13 @@ audio_write_raw_file (
 
   sf_count_t _nframes = (sf_count_t) nframes;
   g_debug ("nframes = %ld", _nframes);
-  sf_count_t count =
-    sf_writef_float (sndfile, buff, (sf_count_t) _nframes);
+  sf_count_t count = sf_writef_float (sndfile, buff, (sf_count_t) _nframes);
   if (count != (sf_count_t) nframes)
     {
       g_set_error (
         error, Z_UTILS_AUDIO_ERROR, Z_UTILS_AUDIO_ERROR_FAILED,
-        "Mismatch: expected %ld frames, got %ld: %s",
-        _nframes, count, sf_strerror (sndfile));
+        "Mismatch: expected %ld frames, got %ld: %s", _nframes, count,
+        sf_strerror (sndfile));
       return false;
     }
 
@@ -238,12 +231,9 @@ audio_frames_equal (
 {
   for (size_t i = 0; i < num_frames; i++)
     {
-      if (!math_floats_equal_epsilon (
-            src1[i], src2[i], epsilon))
+      if (!math_floats_equal_epsilon (src1[i], src2[i], epsilon))
         {
-          g_debug (
-            "[%zu] %f != %f", i, (double) src1[i],
-            (double) src2[i]);
+          g_debug ("[%zu] %f != %f", i, (double) src1[i], (double) src2[i]);
           return false;
         }
     }
@@ -299,8 +289,7 @@ audio_files_equal (
   for (size_t i = 0; i < c1->channels; i++)
     {
       ret = audio_frames_equal (
-        c1->ch_frames[i], c2->ch_frames[i], num_frames,
-        epsilon);
+        c1->ch_frames[i], c2->ch_frames[i], num_frames, epsilon);
       if (!ret)
         {
           goto cleanup_clips;
@@ -340,10 +329,9 @@ audio_file_is_silent (const char * filepath)
   SNDFILE * sndfile = sf_open (filepath, SFM_READ, &sfinfo);
   g_return_val_if_fail (sndfile && sfinfo.frames > 0, true);
 
-  long    buf_size = sfinfo.frames * sfinfo.channels;
-  float * data = calloc ((size_t) buf_size, sizeof (float));
-  sf_count_t frames_read =
-    sf_readf_float (sndfile, data, sfinfo.frames);
+  long       buf_size = sfinfo.frames * sfinfo.channels;
+  float *    data = calloc ((size_t) buf_size, sizeof (float));
+  sf_count_t frames_read = sf_readf_float (sndfile, data, sfinfo.frames);
   g_assert_cmpint (frames_read, ==, sfinfo.frames);
   g_return_val_if_fail (frames_read == sfinfo.frames, true);
   g_debug ("read %ld frames for %s", frames_read, filepath);
@@ -369,18 +357,15 @@ audio_detect_bpm (
   unsigned int samplerate,
   GArray *     candidates)
 {
-  ZVampPlugin * plugin = vamp_get_plugin (
-    Z_VAMP_PLUGIN_FIXED_TEMPO_ESTIMATOR, (float) samplerate);
-  size_t step_sz =
-    vamp_plugin_get_preferred_step_size (plugin);
-  size_t block_sz =
-    vamp_plugin_get_preferred_block_size (plugin);
+  ZVampPlugin * plugin =
+    vamp_get_plugin (Z_VAMP_PLUGIN_FIXED_TEMPO_ESTIMATOR, (float) samplerate);
+  size_t step_sz = vamp_plugin_get_preferred_step_size (plugin);
+  size_t block_sz = vamp_plugin_get_preferred_block_size (plugin);
 
   /* only works with 1 channel */
   vamp_plugin_initialize (plugin, 1, step_sz, block_sz);
 
-  ZVampOutputList * outputs =
-    vamp_plugin_get_output_descriptors (plugin);
+  ZVampOutputList * outputs = vamp_plugin_get_output_descriptors (plugin);
   vamp_plugin_output_list_print (outputs);
   vamp_plugin_output_list_free (outputs);
 
@@ -392,23 +377,20 @@ audio_detect_bpm (
         &src[cur_timestamp],
       };
       ZVampFeatureSet * feature_set = vamp_plugin_process (
-        plugin, (const float * const *) frames, cur_timestamp,
-        samplerate);
+        plugin, (const float * const *) frames, cur_timestamp, samplerate);
       const ZVampFeatureList * fl =
         vamp_feature_set_get_list_for_output (feature_set, 0);
       if (fl)
         {
           vamp_feature_list_print (fl);
-          const ZVampFeature * feature =
-            g_ptr_array_index (fl->list, 0);
+          const ZVampFeature * feature = g_ptr_array_index (fl->list, 0);
           bpm = feature->values[0];
 
           if (candidates)
             {
               for (size_t i = 0; i < feature->num_values; i++)
                 {
-                  g_array_append_val (
-                    candidates, feature->values[i]);
+                  g_array_append_val (candidates, feature->values[i]);
                 }
             }
         }
@@ -424,16 +406,14 @@ audio_detect_bpm (
   if (fl)
     {
       vamp_feature_list_print (fl);
-      const ZVampFeature * feature =
-        g_ptr_array_index (fl->list, 0);
+      const ZVampFeature * feature = g_ptr_array_index (fl->list, 0);
       bpm = feature->values[0];
 
       if (candidates)
         {
           for (size_t i = 0; i < feature->num_values; i++)
             {
-              g_array_append_val (
-                candidates, feature->values[i]);
+              g_array_append_val (candidates, feature->values[i]);
             }
         }
     }

@@ -309,26 +309,11 @@ static const cyaml_schema_field_t project_fields_schema[] = {
   YAML_FIELD_STRING_PTR (Project, title),
   YAML_FIELD_STRING_PTR (Project, datetime_str),
   YAML_FIELD_STRING_PTR (Project, version),
-  YAML_FIELD_MAPPING_PTR (
-    Project,
-    tracklist,
-    tracklist_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project,
-    clip_editor,
-    clip_editor_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project,
-    timeline,
-    timeline_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project,
-    snap_grid_timeline,
-    snap_grid_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project,
-    snap_grid_editor,
-    snap_grid_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Project, tracklist, tracklist_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Project, clip_editor, clip_editor_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Project, timeline, timeline_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Project, snap_grid_timeline, snap_grid_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Project, snap_grid_editor, snap_grid_fields_schema),
   YAML_FIELD_MAPPING_PTR (
     Project,
     quantize_opts_timeline,
@@ -337,10 +322,7 @@ static const cyaml_schema_field_t project_fields_schema[] = {
     Project,
     quantize_opts_editor,
     quantize_options_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project,
-    audio_engine,
-    engine_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Project, audio_engine, engine_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Project,
     mixer_selections,
@@ -377,18 +359,12 @@ static const cyaml_schema_field_t project_fields_schema[] = {
     Project,
     port_connections_manager,
     port_connections_manager_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project,
-    midi_mappings,
-    midi_mappings_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Project, midi_mappings, midi_mappings_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Project,
     undo_manager,
     undo_manager_fields_schema),
-  YAML_FIELD_ENUM (
-    Project,
-    last_selection,
-    selection_type_strings),
+  YAML_FIELD_ENUM (Project, last_selection, selection_type_strings),
 
   CYAML_FIELD_END
 };
@@ -440,8 +416,7 @@ bool
 project_fix_audio_regions (Project * self);
 
 ArrangerSelections *
-project_get_arranger_selections_for_last_selection (
-  Project * self);
+project_get_arranger_selections_for_last_selection (Project * self);
 
 /**
  * Creates a default project.
@@ -474,10 +449,7 @@ project_create_default (
  * @return Whether successful.
  */
 WARN_UNUSED_RESULT COLD bool
-project_load (
-  const char * filename,
-  const bool   is_template,
-  GError **    error);
+project_load (const char * filename, const bool is_template, GError ** error);
 
 /**
  * Saves the project to a project file in the
@@ -575,10 +547,7 @@ _project_compress (
  *   from the most recent backup.
  */
 char *
-project_get_existing_yaml (
-  Project * self,
-  bool      backup,
-  GError ** error);
+project_get_existing_yaml (Project * self, bool backup, GError ** error);
 
 /**
  * @memberof Project
@@ -595,10 +564,7 @@ project_has_unsaved_changes (const Project * self);
  *   is for a backup.
  */
 NONNULL Project *
-project_clone (
-  const Project * src,
-  bool            for_backup,
-  GError **       error);
+project_clone (const Project * src, bool for_backup, GError ** error);
 
 /**
  * Creates an empty project object.

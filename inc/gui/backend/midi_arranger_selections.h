@@ -45,38 +45,32 @@ typedef struct MidiArrangerSelections
 
 } MidiArrangerSelections;
 
-static const cyaml_schema_field_t
-  midi_arranger_selections_fields_schema[] = {
-    YAML_FIELD_MAPPING_EMBEDDED (
-      MidiArrangerSelections,
-      base,
-      arranger_selections_fields_schema),
-    YAML_FIELD_INT (MidiArrangerSelections, schema_version),
-    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-      MidiArrangerSelections,
-      midi_notes,
-      midi_note_schema),
+static const cyaml_schema_field_t midi_arranger_selections_fields_schema[] = {
+  YAML_FIELD_MAPPING_EMBEDDED (
+    MidiArrangerSelections,
+    base,
+    arranger_selections_fields_schema),
+  YAML_FIELD_INT (MidiArrangerSelections, schema_version),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+    MidiArrangerSelections,
+    midi_notes,
+    midi_note_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  midi_arranger_selections_schema = {
-    YAML_VALUE_PTR (
-      MidiArrangerSelections,
-      midi_arranger_selections_fields_schema),
-  };
+static const cyaml_schema_value_t midi_arranger_selections_schema = {
+  YAML_VALUE_PTR (MidiArrangerSelections, midi_arranger_selections_fields_schema),
+};
 
 /**
  * @memberof MidiArrangerSelections
  */
 MidiNote *
-midi_arranger_selections_get_highest_note (
-  MidiArrangerSelections * mas);
+midi_arranger_selections_get_highest_note (MidiArrangerSelections * mas);
 
 MidiNote *
-midi_arranger_selections_get_lowest_note (
-  MidiArrangerSelections * mas);
+midi_arranger_selections_get_lowest_note (MidiArrangerSelections * mas);
 
 /**
  * Sets the listen status of notes on and off based
@@ -101,9 +95,7 @@ midi_arranger_selections_can_be_pasted (
   ZRegion *                region);
 
 NONNULL void
-midi_arranger_selections_sort_by_pitch (
-  MidiArrangerSelections * self,
-  bool                     desc);
+midi_arranger_selections_sort_by_pitch (MidiArrangerSelections * self, bool desc);
 
 /**
 * @}

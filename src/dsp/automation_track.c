@@ -41,9 +41,7 @@ _at_create (void)
 }
 
 void
-automation_track_init_loaded (
-  AutomationTrack *     self,
-  AutomationTracklist * atl)
+automation_track_init_loaded (AutomationTrack * self, AutomationTracklist * atl)
 {
   self->atl = atl;
 
@@ -68,8 +66,7 @@ automation_track_new (Port * port)
 
   self->height = TRACK_DEF_HEIGHT;
 
-  g_return_val_if_fail (
-    port_identifier_validate (&port->id), NULL);
+  g_return_val_if_fail (port_identifier_validate (&port->id), NULL);
   port_identifier_copy (&self->port_id, &port->id);
 
   port->at = self;
@@ -101,17 +98,14 @@ automation_track_validate (AutomationTrack * self)
   if (self->port_id.owner_type == PORT_OWNER_TYPE_PLUGIN)
     {
       g_return_val_if_fail (
-        self->port_id.plugin_id.track_name_hash
-          == track_name_hash,
-        false);
+        self->port_id.plugin_id.track_name_hash == track_name_hash, false);
     }
 
   /* this is expensive so only do this during tests */
   if (ZRYTHM_TESTING)
     {
       AutomationTrack * found_at =
-        automation_track_find_from_port_id (
-          &self->port_id, !ZRYTHM_TESTING);
+        automation_track_find_from_port_id (&self->port_id, !ZRYTHM_TESTING);
       if (found_at != self)
         {
           g_message (
@@ -130,16 +124,15 @@ automation_track_validate (AutomationTrack * self)
     {
       ZRegion * r = self->regions[j];
       g_return_val_if_fail (
-        r->id.track_name_hash == track_name_hash
-          && r->id.at_idx == self->index && r->id.idx == j,
+        r->id.track_name_hash == track_name_hash && r->id.at_idx == self->index
+          && r->id.idx == j,
         false);
       for (int k = 0; k < r->num_aps; k++)
         {
           AutomationPoint * ap = r->aps[k];
           ArrangerObject *  obj = (ArrangerObject *) ap;
           g_return_val_if_fail (
-            obj->region_id.track_name_hash == track_name_hash,
-            false);
+            obj->region_id.track_name_hash == track_name_hash, false);
         }
       g_return_val_if_fail (r->num_midi_notes == 0, false);
       g_return_val_if_fail (r->num_chord_objects == 0, false);
@@ -174,9 +167,7 @@ automation_mode_get_localized (AutomationMode mode, char * buf)
  * Gets the automation mode as a localized string.
  */
 void
-automation_record_mode_get_localized (
-  AutomationRecordMode mode,
-  char *               buf)
+automation_record_mode_get_localized (AutomationRecordMode mode, char * buf)
 {
   switch (mode)
     {
@@ -198,12 +189,9 @@ automation_record_mode_get_localized (
  *   track_add_region() instead.
  */
 void
-automation_track_add_region (
-  AutomationTrack * self,
-  ZRegion *         region)
+automation_track_add_region (AutomationTrack * self, ZRegion * region)
 {
-  automation_track_insert_region (
-    self, region, self->num_regions);
+  automation_track_insert_region (self, region, self->num_regions);
 }
 
 /**
@@ -214,18 +202,13 @@ automation_track_add_region (
  *   track_insert_region() instead.
  */
 void
-automation_track_insert_region (
-  AutomationTrack * self,
-  ZRegion *         region,
-  int               idx)
+automation_track_insert_region (AutomationTrack * self, ZRegion * region, int idx)
 {
   g_return_if_fail (idx >= 0);
-  g_return_if_fail (
-    region->name && region->id.type == REGION_TYPE_AUTOMATION);
+  g_return_if_fail (region->name && region->id.type == REGION_TYPE_AUTOMATION);
 
   array_double_size_if_full (
-    self->regions, self->num_regions, self->regions_size,
-    ZRegion *);
+    self->regions, self->num_regions, self->regions_size, ZRegion *);
   for (int i = self->num_regions; i > idx; i--)
     {
       self->regions[i] = self->regions[i - 1];
@@ -241,8 +224,7 @@ automation_track_insert_region (
 }
 
 AutomationTracklist *
-automation_track_get_automation_tracklist (
-  AutomationTrack * self)
+automation_track_get_automation_tracklist (AutomationTrack * self)
 {
   Track * track = automation_track_get_track (self);
   g_return_val_if_fail (track, NULL);
@@ -265,12 +247,9 @@ automation_track_get_region_before_pos (
   bool                    ends_after,
   bool                    use_snapshots)
 {
-  ZRegion ** regions =
-    use_snapshots ? self->region_snapshots : self->regions;
-  int num_regions =
-    use_snapshots
-      ? self->num_region_snapshots
-      : self->num_regions;
+  ZRegion ** regions = use_snapshots ? self->region_snapshots : self->regions;
+  int        num_regions =
+    use_snapshots ? self->num_region_snapshots : self->num_regions;
   if (ends_after)
     {
       for (int i = num_regions - 1; i >= 0; i--)
@@ -279,8 +258,7 @@ automation_track_get_region_before_pos (
           ArrangerObject * r_obj = (ArrangerObject *) region;
           if (
             position_is_before_or_equal (&r_obj->pos, pos)
-            && position_is_after_or_equal (
-              &r_obj->end_pos, pos))
+            && position_is_after_or_equal (&r_obj->end_pos, pos))
             return region;
         }
     }
@@ -293,8 +271,7 @@ automation_track_get_region_before_pos (
         {
           ZRegion *        region = regions[i];
           ArrangerObject * r_obj = (ArrangerObject *) region;
-          long             distance_from_r_end =
-            r_obj->end_pos.frames - pos->frames;
+          long distance_from_r_end = r_obj->end_pos.frames - pos->frames;
           if (
             position_is_before_or_equal (&r_obj->pos, pos)
             && distance_from_r_end > latest_distance)
@@ -335,13 +312,12 @@ automation_track_get_ap_before_pos (
 
   /* if region ends before pos, assume pos is the
    * region's end pos */
-  signed_frame_t local_pos =
-    (signed_frame_t) region_timeline_frames_to_local (
-      r,
-      !ends_after && (r_obj->end_pos.frames < pos->frames)
-        ? r_obj->end_pos.frames - 1
-        : pos->frames,
-      F_NORMALIZE);
+  signed_frame_t local_pos = (signed_frame_t) region_timeline_frames_to_local (
+    r,
+    !ends_after && (r_obj->end_pos.frames < pos->frames)
+      ? r_obj->end_pos.frames - 1
+      : pos->frames,
+    F_NORMALIZE);
   /*g_debug ("local pos %ld", local_pos);*/
 
   for (int i = r->num_aps - 1; i >= 0; i--)
@@ -364,10 +340,7 @@ automation_track_get_ap_before_pos (
  *   known.
  */
 AutomationTrack *
-automation_track_find_from_port (
-  Port *  port,
-  Track * track,
-  bool    basic_search)
+automation_track_find_from_port (Port * port, Track * track, bool basic_search)
 {
   if (!track)
     {
@@ -375,8 +348,7 @@ automation_track_find_from_port (
     }
   g_return_val_if_fail (track, NULL);
 
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (track);
+  AutomationTracklist * atl = track_get_automation_tracklist (track);
   g_return_val_if_fail (atl, NULL);
   for (int i = 0; i < atl->num_ats; i++)
     {
@@ -405,12 +377,9 @@ automation_track_find_from_port (
                     }
 
                   Plugin * pl = port_get_plugin (port, true);
-                  g_return_val_if_fail (
-                    IS_PLUGIN_AND_NONNULL (pl), NULL);
+                  g_return_val_if_fail (IS_PLUGIN_AND_NONNULL (pl), NULL);
 
-                  if (
-                    pl->setting->descr->protocol
-                    == Z_PLUGIN_PROTOCOL_LV2)
+                  if (pl->setting->descr->protocol == Z_PLUGIN_PROTOCOL_LV2)
                     {
                       /* if lv2 plugin port (not
                        * standard zrythm-provided
@@ -420,10 +389,8 @@ automation_track_find_from_port (
                        * label but different
                        * symbol) */
                       if (
-                        src->flags
-                          ^ PORT_FLAG_GENERIC_PLUGIN_PORT
-                        && !string_is_equal (
-                          dest->sym, src->sym))
+                        src->flags ^ PORT_FLAG_GENERIC_PLUGIN_PORT
+                        && !string_is_equal (dest->sym, src->sym))
                         {
                           continue;
                         }
@@ -448,8 +415,7 @@ automation_track_find_from_port (
       /* not basic search */
       else
         {
-          if (port_identifier_is_equal (
-                &port->id, &at->port_id))
+          if (port_identifier_is_equal (&port->id, &at->port_id))
             {
               return at;
             }
@@ -468,16 +434,12 @@ automation_track_find_from_port (
  *   identifier members are checked.
  */
 AutomationTrack *
-automation_track_find_from_port_id (
-  PortIdentifier * id,
-  bool             basic_search)
+automation_track_find_from_port_id (PortIdentifier * id, bool basic_search)
 {
   Port * port = port_find_from_identifier (id);
-  g_return_val_if_fail (
-    port && port_identifier_is_equal (id, &port->id), NULL);
+  g_return_val_if_fail (port && port_identifier_is_equal (id, &port->id), NULL);
 
-  return automation_track_find_from_port (
-    port, NULL, basic_search);
+  return automation_track_find_from_port (port, NULL, basic_search);
 }
 
 void
@@ -488,8 +450,7 @@ automation_track_set_automation_mode (
 {
   g_return_if_fail (ZRYTHM_APP_IS_GTK_THREAD);
 
-  AutomationTracklist * atl =
-    automation_track_get_automation_tracklist (self);
+  AutomationTracklist * atl = automation_track_get_automation_tracklist (self);
   g_return_if_fail (atl);
 
   /* add to atl cache if recording */
@@ -498,8 +459,7 @@ automation_track_set_automation_mode (
       bool already_added = false;
       for (int i = 0; i < atl->num_ats_in_record_mode; i++)
         {
-          AutomationTrack * cur_at =
-            atl->ats_in_record_mode[i];
+          AutomationTrack * cur_at = atl->ats_in_record_mode[i];
           if (self == cur_at)
             {
               already_added = true;
@@ -510,8 +470,7 @@ automation_track_set_automation_mode (
       if (!already_added)
         {
           array_append (
-            atl->ats_in_record_mode,
-            atl->num_ats_in_record_mode, self);
+            atl->ats_in_record_mode, atl->num_ats_in_record_mode, self);
         }
     }
 
@@ -532,17 +491,14 @@ automation_track_set_automation_mode (
  *   the same timestamp is used in sequential calls.
  */
 bool
-automation_track_should_read_automation (
-  AutomationTrack * at,
-  gint64            cur_time)
+automation_track_should_read_automation (AutomationTrack * at, gint64 cur_time)
 {
   if (at->automation_mode == AUTOMATION_MODE_OFF)
     return false;
 
   /* TODO last argument should be true but doesnt
    * work properly atm */
-  if (automation_track_should_be_recording (
-        at, cur_time, false))
+  if (automation_track_should_be_recording (at, cur_time, false))
     return false;
 
   return true;
@@ -615,8 +571,7 @@ automation_track_unselect_all (AutomationTrack * self)
     {
       ZRegion * region = self->regions[i];
       arranger_object_select (
-        (ArrangerObject *) region, false, false,
-        F_NO_PUBLISH_EVENTS);
+        (ArrangerObject *) region, false, false, F_NO_PUBLISH_EVENTS);
     }
 }
 
@@ -624,9 +579,7 @@ automation_track_unselect_all (AutomationTrack * self)
  * Removes a region from the automation track.
  */
 void
-automation_track_remove_region (
-  AutomationTrack * self,
-  ZRegion *         region)
+automation_track_remove_region (AutomationTrack * self, ZRegion * region)
 {
   g_return_if_fail (IS_REGION (region));
 
@@ -643,8 +596,7 @@ automation_track_remove_region (
       region_update_identifier (r);
       if (r == clip_editor_region)
         {
-          clip_editor_set_region (
-            CLIP_EDITOR, r, F_NO_PUBLISH_EVENTS);
+          clip_editor_set_region (CLIP_EDITOR, r, F_NO_PUBLISH_EVENTS);
         }
     }
 }
@@ -661,8 +613,7 @@ automation_track_clear (AutomationTrack * self)
       ZRegion * region = self->regions[i];
       Track *   track = automation_track_get_track (self);
       g_return_if_fail (IS_TRACK_AND_NONNULL (track));
-      track_remove_region (
-        track, region, F_NO_PUBLISH_EVENTS, F_FREE);
+      track_remove_region (track, region, F_NO_PUBLISH_EVENTS, F_FREE);
     }
   self->num_regions = 0;
 }
@@ -718,8 +669,8 @@ automation_track_get_val_at_pos (
   bool              ends_after,
   bool              use_snapshots)
 {
-  AutomationPoint * ap = automation_track_get_ap_before_pos (
-    self, pos, ends_after, use_snapshots);
+  AutomationPoint * ap =
+    automation_track_get_ap_before_pos (self, pos, ends_after, use_snapshots);
   ArrangerObject * ap_obj = (ArrangerObject *) ap;
 
   Port * port = port_find_from_identifier (&self->port_id);
@@ -740,13 +691,12 @@ automation_track_get_val_at_pos (
 
   /* if region ends before pos, assume pos is the
    * region's end pos */
-  signed_frame_t localp =
-    (signed_frame_t) region_timeline_frames_to_local (
-      region,
-      !ends_after && (r_obj->end_pos.frames < pos->frames)
-        ? r_obj->end_pos.frames - 1
-        : pos->frames,
-      F_NORMALIZE);
+  signed_frame_t localp = (signed_frame_t) region_timeline_frames_to_local (
+    region,
+    !ends_after && (r_obj->end_pos.frames < pos->frames)
+      ? r_obj->end_pos.frames - 1
+      : pos->frames,
+    F_NORMALIZE);
   /*g_debug ("local pos %ld", localp);*/
 
   AutomationPoint * next_ap =
@@ -766,15 +716,13 @@ automation_track_get_val_at_pos (
         }
     }
 
-  int prev_ap_lower =
-    ap->normalized_val <= next_ap->normalized_val;
-  float cur_next_diff = (float) fabsf (
-    ap->normalized_val - next_ap->normalized_val);
+  int   prev_ap_lower = ap->normalized_val <= next_ap->normalized_val;
+  float cur_next_diff =
+    (float) fabsf (ap->normalized_val - next_ap->normalized_val);
 
   /* ratio of how far in we are in the curve */
   signed_frame_t ap_frames = position_to_frames (&ap_obj->pos);
-  signed_frame_t next_ap_frames =
-    position_to_frames (&next_ap_obj->pos);
+  signed_frame_t next_ap_frames = position_to_frames (&next_ap_obj->pos);
   double         ratio;
   signed_frame_t numerator = localp - ap_frames;
   signed_frame_t denominator = next_ap_frames - ap_frames;
@@ -794,8 +742,7 @@ automation_track_get_val_at_pos (
   g_return_val_if_fail (ratio >= 0, 0.f);
 
   float result =
-    (float) automation_point_get_normalized_value_in_curve (
-      ap, region, ratio);
+    (float) automation_point_get_normalized_value_in_curve (ap, region, ratio);
   result = result * cur_next_diff;
   if (prev_ap_lower)
     result += ap->normalized_val;
@@ -808,8 +755,7 @@ automation_track_get_val_at_pos (
     }
   else
     {
-      return control_port_normalized_val_to_real (
-        port, result);
+      return control_port_normalized_val_to_real (port, result);
     }
 }
 
@@ -830,8 +776,7 @@ automation_track_update_positions (
   for (int i = 0; i < self->num_regions; i++)
     {
       arranger_object_update_positions (
-        (ArrangerObject *) self->regions[i], from_ticks,
-        bpm_change, NULL);
+        (ArrangerObject *) self->regions[i], from_ticks, bpm_change, NULL);
     }
 }
 
@@ -908,26 +853,21 @@ automation_track_verify (AutomationTrack * self)
 }
 
 void
-automation_track_set_caches (
-  AutomationTrack * self,
-  CacheTypes        types)
+automation_track_set_caches (AutomationTrack * self, CacheTypes types)
 {
   if (types & CACHE_TYPE_PLAYBACK_SNAPSHOTS)
     {
       for (int i = 0; i < self->num_region_snapshots; i++)
         {
-          arranger_object_free (
-            (ArrangerObject *) self->region_snapshots[i]);
+          arranger_object_free ((ArrangerObject *) self->region_snapshots[i]);
         }
       self->num_region_snapshots = 0;
       self->region_snapshots = g_realloc_n (
-        self->region_snapshots, (size_t) self->num_regions,
-        sizeof (ZRegion *));
+        self->region_snapshots, (size_t) self->num_regions, sizeof (ZRegion *));
       for (int i = 0; i < self->num_regions; i++)
         {
-          self->region_snapshots[i] =
-            (ZRegion *) arranger_object_clone (
-              (ArrangerObject *) self->regions[i]);
+          self->region_snapshots[i] = (ZRegion *) arranger_object_clone (
+            (ArrangerObject *) self->regions[i]);
           self->num_region_snapshots++;
         }
     }
@@ -939,8 +879,7 @@ automation_track_set_caches (
 }
 
 bool
-automation_track_contains_automation (
-  const AutomationTrack * self)
+automation_track_contains_automation (const AutomationTrack * self)
 {
   return self->num_regions > 0;
 }
@@ -971,8 +910,8 @@ automation_track_clone (AutomationTrack * src)
   for (int j = 0; j < src->num_regions; j++)
     {
       src_region = src->regions[j];
-      dest->regions[j] = (ZRegion *) arranger_object_clone (
-        (ArrangerObject *) src_region);
+      dest->regions[j] =
+        (ZRegion *) arranger_object_clone ((ArrangerObject *) src_region);
     }
 
   return dest;
@@ -984,15 +923,13 @@ automation_track_free (AutomationTrack * self)
   for (int i = 0; i < self->num_regions; i++)
     {
       object_free_w_func_and_null_cast (
-        arranger_object_free, ArrangerObject *,
-        self->regions[i]);
+        arranger_object_free, ArrangerObject *, self->regions[i]);
     }
   object_zero_and_free (self->regions);
   for (int i = 0; i < self->num_region_snapshots; i++)
     {
       object_free_w_func_and_null_cast (
-        arranger_object_free, ArrangerObject *,
-        self->region_snapshots[i]);
+        arranger_object_free, ArrangerObject *, self->region_snapshots[i]);
     }
   object_zero_and_free (self->region_snapshots);
 

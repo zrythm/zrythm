@@ -43,8 +43,7 @@ SCM_DEFINE (
   char ver[1000];
   zrythm_get_version_with_capabilities (ver, false);
   return scm_from_stringn (
-    ver, strlen (ver), "UTF8",
-    SCM_FAILED_CONVERSION_QUESTION_MARK);
+    ver, strlen (ver), "UTF8", SCM_FAILED_CONVERSION_QUESTION_MARK);
 }
 #undef FUNC_NAME
 
@@ -76,14 +75,7 @@ SCM_DEFINE (
 }
 #undef FUNC_NAME
 
-SCM_DEFINE (
-  s_zrythm_null,
-  "zrythm-null",
-  0,
-  0,
-  0,
-  (),
-  "Returns a NULL pointer.")
+SCM_DEFINE (s_zrythm_null, "zrythm-null", 0, 0, 0, (), "Returns a NULL pointer.")
 #define FUNC_NAME s_
 {
   return NULL;
@@ -113,9 +105,8 @@ init_module (void * data)
 #  include "zrythm.x"
 #endif
   scm_c_export (
-    "zrythm-get-ver", "zrythm-get-plugin-manager",
-    "zrythm-get-project", "zrythm-message", "zrythm-null",
-    NULL);
+    "zrythm-get-ver", "zrythm-get-plugin-manager", "zrythm-get-project",
+    "zrythm-message", "zrythm-null", NULL);
 }
 
 void

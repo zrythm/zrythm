@@ -31,8 +31,7 @@ typedef struct AudioEngine AudioEngine;
 #define HW_OUT_PROCESSOR (AUDIO_ENGINE->hw_out_processor)
 
 #define hw_processor_is_in_active_project(self) \
-  (self->engine \
-   && engine_is_in_active_project ((self)->engine))
+  (self->engine && engine_is_in_active_project ((self)->engine))
 
 /**
  * Hardware processor.
@@ -117,9 +116,7 @@ static const cyaml_schema_field_t hardware_processor_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t hardware_processor_schema = {
-  YAML_VALUE_PTR (
-    HardwareProcessor,
-    hardware_processor_fields_schema),
+  YAML_VALUE_PTR (HardwareProcessor, hardware_processor_fields_schema),
 };
 
 COLD NONNULL_ARGS (1) void hardware_processor_init_loaded (
@@ -147,9 +144,7 @@ hardware_processor_rescan_ext_ports (HardwareProcessor * self);
  * @see ext_port_get_id()
  */
 ExtPort *
-hardware_processor_find_ext_port (
-  HardwareProcessor * self,
-  const char *        id);
+hardware_processor_find_ext_port (HardwareProcessor * self, const char * id);
 
 /**
  * Finds a port from its ID (type + full name).
@@ -157,9 +152,7 @@ hardware_processor_find_ext_port (
  * @see ext_port_get_id()
  */
 Port *
-hardware_processor_find_port (
-  HardwareProcessor * self,
-  const char *        id);
+hardware_processor_find_port (HardwareProcessor * self, const char * id);
 
 /**
  * Sets up the ports but does not start them.
@@ -176,18 +169,14 @@ hardware_processor_setup (HardwareProcessor * self);
  *   deactivate
  */
 void
-hardware_processor_activate (
-  HardwareProcessor * self,
-  bool                activate);
+hardware_processor_activate (HardwareProcessor * self, bool activate);
 
 /**
  * Processes the data.
  */
 REALTIME
 void
-hardware_processor_process (
-  HardwareProcessor * self,
-  nframes_t           nframes);
+hardware_processor_process (HardwareProcessor * self, nframes_t nframes);
 
 /**
  * To be used during serialization.

@@ -87,9 +87,7 @@ z_carla_discovery_create_au_descriptor_from_string (
  *   descriptors, or NULL if no descriptors found.
  */
 PluginDescriptor **
-z_carla_discovery_parse_plugin_info (
-  const char * plugin_path,
-  char *       results);
+z_carla_discovery_parse_plugin_info (const char * plugin_path, char * results);
 
 /**
  * @}

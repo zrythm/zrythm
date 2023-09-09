@@ -32,23 +32,18 @@ region_link_group_new (int idx)
 }
 
 bool
-region_link_group_contains_region (
-  RegionLinkGroup * self,
-  ZRegion *         region)
+region_link_group_contains_region (RegionLinkGroup * self, ZRegion * region)
 {
   for (int i = 0; i < self->num_ids; i++)
     {
-      if (region_identifier_is_equal (
-            &self->ids[i], &region->id))
+      if (region_identifier_is_equal (&self->ids[i], &region->id))
         return true;
     }
   return false;
 }
 
 void
-region_link_group_add_region (
-  RegionLinkGroup * self,
-  ZRegion *         region)
+region_link_group_add_region (RegionLinkGroup * self, ZRegion * region)
 {
   if (region_link_group_contains_region (self, region))
     return;
@@ -57,11 +52,9 @@ region_link_group_add_region (
   g_return_if_fail (IS_REGION_LINK_GROUP (self));
 
   array_double_size_if_full (
-    self->ids, self->num_ids, self->ids_size,
-    RegionIdentifier);
+    self->ids, self->num_ids, self->ids_size, RegionIdentifier);
   region->id.link_group = self->group_idx;
-  region_identifier_copy (
-    &self->ids[self->num_ids++], &region->id);
+  region_identifier_copy (&self->ids[self->num_ids++], &region->id);
 }
 
 /**
@@ -79,8 +72,7 @@ region_link_group_remove_region (
   bool              update_identifier)
 {
   g_return_if_fail (
-    IS_REGION_LINK_GROUP (self) && IS_REGION (region)
-    && self->num_ids > 0
+    IS_REGION_LINK_GROUP (self) && IS_REGION (region) && self->num_ids > 0
     && self->group_idx < REGION_LINK_GROUP_MANAGER->num_groups);
 
   g_message (
@@ -90,15 +82,13 @@ region_link_group_remove_region (
   bool found = false;
   for (int i = 0; i < self->num_ids; i++)
     {
-      if (region_identifier_is_equal (
-            &self->ids[i], &region->id))
+      if (region_identifier_is_equal (&self->ids[i], &region->id))
         {
           found = true;
           self->num_ids--;
           for (int j = i; j < self->num_ids; j++)
             {
-              region_identifier_copy (
-                &self->ids[j], &self->ids[j + 1]);
+              region_identifier_copy (&self->ids[j], &self->ids[j + 1]);
             }
           break;
         }
@@ -118,8 +108,7 @@ region_link_group_remove_region (
       /* if no regions left, remove the group */
       else if (self->num_ids == 0)
         {
-          g_warn_if_fail (
-            REGION_LINK_GROUP_MANAGER->num_groups > 0);
+          g_warn_if_fail (REGION_LINK_GROUP_MANAGER->num_groups > 0);
           region_link_group_manager_remove_group (
             REGION_LINK_GROUP_MANAGER, self->group_idx);
         }
@@ -138,22 +127,18 @@ region_link_group_remove_region (
  *   happened.
  */
 void
-region_link_group_update (
-  RegionLinkGroup * self,
-  ZRegion *         main_region)
+region_link_group_update (RegionLinkGroup * self, ZRegion * main_region)
 {
   for (int i = 0; i < self->num_ids; i++)
     {
       ZRegion * region = region_find (&self->ids[i]);
       g_return_if_fail (IS_REGION_AND_NONNULL (region));
 
-      if (region_identifier_is_equal (
-            &self->ids[i], &main_region->id))
+      if (region_identifier_is_equal (&self->ids[i], &main_region->id))
         continue;
 
       g_message (
-        "[%s] updating %d (%d %s)", __func__, i,
-        region->id.idx, region->name);
+        "[%s] updating %d (%d %s)", __func__, i, region->id.idx, region->name);
 
       /* delete and readd all children */
       region_remove_all_children (region);
@@ -167,10 +152,8 @@ region_link_group_validate (RegionLinkGroup * self)
   for (int i = 0; i < self->num_ids; i++)
     {
       ZRegion * region = region_find (&self->ids[i]);
-      g_return_val_if_fail (
-        IS_REGION_AND_NONNULL (region), false);
-      RegionLinkGroup * link_group =
-        region_get_link_group (region);
+      g_return_val_if_fail (IS_REGION_AND_NONNULL (region), false);
+      RegionLinkGroup * link_group = region_get_link_group (region);
       g_return_val_if_fail (link_group == self, false);
     }
 
@@ -215,8 +198,7 @@ region_link_group_clone (const RegionLinkGroup * src)
   self->magic = REGION_LINK_GROUP_MAGIC;
 
   self->group_idx = src->group_idx;
-  self->ids =
-    object_new_n ((size_t) src->num_ids, RegionIdentifier);
+  self->ids = object_new_n ((size_t) src->num_ids, RegionIdentifier);
   for (int i = 0; i < src->num_ids; i++)
     {
       region_identifier_copy (&self->ids[i], &src->ids[i]);

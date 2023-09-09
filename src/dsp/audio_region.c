@@ -69,8 +69,7 @@ audio_region_new (
   /*ArrangerObject * obj =*/
   /*(ArrangerObject *) self;*/
 
-  g_return_val_if_fail (
-    start_pos && start_pos->frames >= 0, NULL);
+  g_return_val_if_fail (start_pos && start_pos->frames >= 0, NULL);
 
   self->id.type = REGION_TYPE_AUDIO;
   self->pool_id = -1;
@@ -87,8 +86,7 @@ audio_region_new (
           if (!clip)
             {
               PROPAGATE_PREFIXED_ERROR (
-                error, err,
-                _ ("Failed to create audio clip from file at %s"),
+                error, err, _ ("Failed to create audio clip from file at %s"),
                 filename);
               return NULL;
             }
@@ -101,16 +99,14 @@ audio_region_new (
         }
       else
         {
-          clip =
-            audio_clip_new_recording (2, nframes, clip_name);
+          clip = audio_clip_new_recording (2, nframes, clip_name);
           recording = 1;
         }
       g_return_val_if_fail (clip, NULL);
 
       if (read_from_pool)
         {
-          self->pool_id =
-            audio_pool_add_clip (AUDIO_POOL, clip);
+          self->pool_id = audio_pool_add_clip (AUDIO_POOL, clip);
           g_warn_if_fail (self->pool_id > -1);
         }
       else
@@ -128,13 +124,11 @@ audio_region_new (
   /* set end pos to sample end */
   Position end_pos;
   position_set_to_pos (&end_pos, start_pos);
-  position_add_frames (
-    &end_pos, (signed_frame_t) clip->num_frames);
+  position_add_frames (&end_pos, (signed_frame_t) clip->num_frames);
 
   /* init split points */
   self->split_points_size = 1;
-  self->split_points =
-    object_new_n (self->split_points_size, Position);
+  self->split_points = object_new_n (self->split_points_size, Position);
   self->num_split_points = 0;
 
   /* init APs */
@@ -145,8 +139,7 @@ audio_region_new (
 
   /* init */
   region_init (
-    self, start_pos, &end_pos, track_name_hash, lane_pos,
-    idx_inside_lane);
+    self, start_pos, &end_pos, track_name_hash, lane_pos, idx_inside_lane);
 
   (void) recording;
   g_warn_if_fail (audio_region_get_clip (self));
@@ -167,8 +160,7 @@ audio_region_get_clip (const ZRegion * self)
     (!self->read_from_pool && self->clip)
       || (self->read_from_pool && self->pool_id >= 0),
     NULL);
-  g_return_val_if_fail (
-    self->id.type == REGION_TYPE_AUDIO, NULL);
+  g_return_val_if_fail (self->id.type == REGION_TYPE_AUDIO, NULL);
 
   AudioClip * clip = NULL;
   if (G_LIKELY (self->read_from_pool))
@@ -181,8 +173,7 @@ audio_region_get_clip (const ZRegion * self)
       clip = self->clip;
     }
 
-  g_return_val_if_fail (
-    clip && clip->frames && clip->num_frames > 0, NULL);
+  g_return_val_if_fail (clip && clip->frames && clip->num_frames > 0, NULL);
 
   return clip;
 }
@@ -232,8 +223,7 @@ audio_region_replace_frames (
       if (id != prev_id || id < 0)
         {
           PROPAGATE_PREFIXED_ERROR (
-            error, err, "%s",
-            _ ("Failed to duplicate audio clip"));
+            error, err, "%s", _ ("Failed to duplicate audio clip"));
           return false;
         }
       clip = audio_pool_get_clip (AUDIO_POOL, id);
@@ -252,14 +242,11 @@ audio_region_replace_frames (
   audio_clip_update_channel_caches (clip, start_frame);
 
   GError * err = NULL;
-  bool     success = audio_clip_write_to_pool (
-    clip, false, F_NOT_BACKUP, &err);
+  bool     success = audio_clip_write_to_pool (clip, false, F_NOT_BACKUP, &err);
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err,
-        "Failed to write audio region clip %s to pool",
-        clip->name);
+        error, err, "Failed to write audio region clip %s to pool", clip->name);
       return false;
     }
 
@@ -281,8 +268,7 @@ timestretch_buf (
   unsigned_frame_t frames_to_process)
 {
   g_return_if_fail (r && self->rt_stretcher);
-  stretcher_set_time_ratio (
-    self->rt_stretcher, 1.0 / timestretch_ratio);
+  stretcher_set_time_ratio (self->rt_stretcher, 1.0 / timestretch_ratio);
   unsigned_frame_t in_frames_to_process =
     (unsigned_frame_t) (frames_to_process * timestretch_ratio);
   g_message (
@@ -293,21 +279,18 @@ timestretch_buf (
     "in frames to process %" PRIu64
     ", "
     "out frames to process %" PRIu64,
-    __func__, in_frame_offset, out_frame_offset,
-    in_frames_to_process, frames_to_process);
+    __func__, in_frame_offset, out_frame_offset, in_frames_to_process,
+    frames_to_process);
   g_return_if_fail (
-    (in_frame_offset + in_frames_to_process)
-    <= clip->num_frames);
+    (in_frame_offset + in_frames_to_process) <= clip->num_frames);
   ssize_t retrieved = stretcher_stretch (
     self->rt_stretcher, &clip->ch_frames[0][in_frame_offset],
     clip->channels == 1
       ? &clip->ch_frames[0][in_frame_offset]
       : &clip->ch_frames[1][in_frame_offset],
     in_frames_to_process, &lbuf_after_ts[out_frame_offset],
-    &rbuf_after_ts[out_frame_offset],
-    (size_t) frames_to_process);
-  g_return_if_fail (
-    (unsigned_frame_t) retrieved == frames_to_process);
+    &rbuf_after_ts[out_frame_offset], (size_t) frames_to_process);
+  g_return_if_fail ((unsigned_frame_t) retrieved == frames_to_process);
 }
 
 /**
@@ -334,39 +317,34 @@ audio_region_fill_stereo_ports (
 
   /* if timestretching in the timeline, skip
    * processing */
-  if (G_UNLIKELY (
-        ZRYTHM_HAVE_UI && MW_TIMELINE
-        && MW_TIMELINE->action == UI_OVERLAY_ACTION_STRETCHING_R))
+  if (
+    G_UNLIKELY (
+      ZRYTHM_HAVE_UI && MW_TIMELINE
+      && MW_TIMELINE->action == UI_OVERLAY_ACTION_STRETCHING_R))
     {
       dsp_fill (
-        &stereo_ports->l->buf[time_nfo->local_offset],
-        DENORMAL_PREVENTION_VAL, time_nfo->nframes);
+        &stereo_ports->l->buf[time_nfo->local_offset], DENORMAL_PREVENTION_VAL,
+        time_nfo->nframes);
       dsp_fill (
-        &stereo_ports->r->buf[time_nfo->local_offset],
-        DENORMAL_PREVENTION_VAL, time_nfo->nframes);
+        &stereo_ports->r->buf[time_nfo->local_offset], DENORMAL_PREVENTION_VAL,
+        time_nfo->nframes);
       return;
     }
 
   /* restretch if necessary */
   Position g_start_pos;
-  position_from_frames (
-    &g_start_pos, (signed_frame_t) time_nfo->g_start_frame);
-  bpm_t cur_bpm =
-    tempo_track_get_bpm_at_pos (P_TEMPO_TRACK, &g_start_pos);
+  position_from_frames (&g_start_pos, (signed_frame_t) time_nfo->g_start_frame);
+  bpm_t  cur_bpm = tempo_track_get_bpm_at_pos (P_TEMPO_TRACK, &g_start_pos);
   double timestretch_ratio = 1.0;
   bool   needs_rt_timestretch = false;
-  if (
-    region_get_musical_mode (self)
-    && !math_floats_equal (clip->bpm, cur_bpm))
+  if (region_get_musical_mode (self) && !math_floats_equal (clip->bpm, cur_bpm))
     {
       needs_rt_timestretch = true;
-      timestretch_ratio =
-        (double) cur_bpm / (double) clip->bpm;
+      timestretch_ratio = (double) cur_bpm / (double) clip->bpm;
       g_message (
         "timestretching: "
         "(cur bpm %f clip bpm %f) %f",
-        (double) cur_bpm, (double) clip->bpm,
-        timestretch_ratio);
+        (double) cur_bpm, (double) clip->bpm, timestretch_ratio);
     }
 
   /* buffers after timestretch */
@@ -385,10 +363,8 @@ audio_region_fill_stereo_ports (
   g_message ("ratio %f", ratio);
 #endif
 
-  signed_frame_t r_local_frames_at_start =
-    region_timeline_frames_to_local (
-      self, (signed_frame_t) time_nfo->g_start_frame,
-      F_NORMALIZE);
+  signed_frame_t r_local_frames_at_start = region_timeline_frames_to_local (
+    self, (signed_frame_t) time_nfo->g_start_frame, F_NORMALIZE);
 
 #if 0
   Position r_local_pos_at_start;
@@ -412,26 +388,21 @@ audio_region_fill_stereo_ports (
   size_t    buff_index_start = (size_t) clip->num_frames + 16;
   size_t    buff_size = 0;
   nframes_t prev_offset = time_nfo->local_offset;
-  for (unsigned_frame_t j =
-         (unsigned_frame_t) ((r_local_frames_at_start < 0)
-                               ? -r_local_frames_at_start
-                               : 0);
-       j < time_nfo->nframes; j++)
+  for (
+    unsigned_frame_t j =
+      (unsigned_frame_t) ((r_local_frames_at_start < 0) ? -r_local_frames_at_start : 0);
+    j < time_nfo->nframes; j++)
     {
-      unsigned_frame_t current_local_frame =
-        time_nfo->local_offset + j;
-      signed_frame_t r_local_pos =
-        region_timeline_frames_to_local (
-          self, (signed_frame_t) (time_nfo->g_start_frame + j),
-          F_NORMALIZE);
+      unsigned_frame_t current_local_frame = time_nfo->local_offset + j;
+      signed_frame_t   r_local_pos = region_timeline_frames_to_local (
+        self, (signed_frame_t) (time_nfo->g_start_frame + j), F_NORMALIZE);
       if (r_local_pos < 0 || j > AUDIO_ENGINE->block_length)
         {
           g_critical (
             "invalid r_local_pos %" PRId64 ", j %" PRIu64
             ", "
             "g_start_frames %" PRIu64 ", nframes %u",
-            r_local_pos, j, time_nfo->g_start_frame,
-            time_nfo->nframes);
+            r_local_pos, j, time_nfo->g_start_frame, time_nfo->nframes);
           return;
         }
 
@@ -439,16 +410,15 @@ audio_region_fill_stereo_ports (
 
 #define STRETCH \
   timestretch_buf ( \
-    track, self, clip, buff_index_start, timestretch_ratio, \
-    lbuf_after_ts, rbuf_after_ts, prev_offset, \
+    track, self, clip, buff_index_start, timestretch_ratio, lbuf_after_ts, \
+    rbuf_after_ts, prev_offset, \
     (unsigned_frame_t) ((current_local_frame - prev_offset) + 1))
 
       /* if we are starting at a new
        * point in the audio clip */
       if (needs_rt_timestretch)
         {
-          buff_index =
-            (ssize_t) (buff_index * timestretch_ratio);
+          buff_index = (ssize_t) (buff_index * timestretch_ratio);
           if (buff_index < (ssize_t) buff_index_start)
             {
               g_message (
@@ -485,8 +455,7 @@ audio_region_fill_stereo_ports (
       else
         {
           z_return_if_fail_cmp (buff_index, >=, 0);
-          if (G_UNLIKELY (
-                buff_index >= (ssize_t) clip->num_frames))
+          if (G_UNLIKELY (buff_index >= (ssize_t) clip->num_frames))
             {
               g_critical (
                 "Buffer index %zd exceeds %zu "
@@ -505,54 +474,45 @@ audio_region_fill_stereo_ports (
   /* apply gain */
   if (!math_floats_equal (self->gain, 1.f))
     {
-      dsp_mul_k2 (
-        &lbuf_after_ts[0], self->gain, time_nfo->nframes);
-      dsp_mul_k2 (
-        &rbuf_after_ts[0], self->gain, time_nfo->nframes);
+      dsp_mul_k2 (&lbuf_after_ts[0], self->gain, time_nfo->nframes);
+      dsp_mul_k2 (&rbuf_after_ts[0], self->gain, time_nfo->nframes);
     }
 
   /* copy frames */
   dsp_copy (
-    &stereo_ports->l->buf[time_nfo->local_offset],
-    &lbuf_after_ts[0], time_nfo->nframes);
+    &stereo_ports->l->buf[time_nfo->local_offset], &lbuf_after_ts[0],
+    time_nfo->nframes);
   dsp_copy (
-    &stereo_ports->r->buf[time_nfo->local_offset],
-    &rbuf_after_ts[0], time_nfo->nframes);
+    &stereo_ports->r->buf[time_nfo->local_offset], &rbuf_after_ts[0],
+    time_nfo->nframes);
 
   /* apply fades */
-  const signed_frame_t num_frames_in_fade_in_area =
-    r_obj->fade_in_pos.frames;
+  const signed_frame_t num_frames_in_fade_in_area = r_obj->fade_in_pos.frames;
   const signed_frame_t num_frames_in_fade_out_area =
-    r_obj->end_pos.frames
-    - (r_obj->fade_out_pos.frames + r_obj->pos.frames);
+    r_obj->end_pos.frames - (r_obj->fade_out_pos.frames + r_obj->pos.frames);
   const signed_frame_t local_builtin_fade_out_start_frames =
     r_obj->end_pos.frames
     - (AUDIO_REGION_BUILTIN_FADE_FRAMES + r_obj->pos.frames);
   for (nframes_t j = 0; j < time_nfo->nframes; j++)
     {
-      const unsigned_frame_t current_cycle_frame =
-        time_nfo->local_offset + j;
+      const unsigned_frame_t current_cycle_frame = time_nfo->local_offset + j;
 
       /* current frame local to region start */
       const signed_frame_t current_local_frame =
-        (signed_frame_t) (time_nfo->g_start_frame
-                          + current_cycle_frame)
+        (signed_frame_t) (time_nfo->g_start_frame + current_cycle_frame)
         - r_obj->pos.frames;
 
       /* skip to fade out (or builtin fade out) if
        * not in any fade area */
-      if (G_LIKELY (
-            current_local_frame >= MAX (
-              r_obj->fade_in_pos.frames,
-              AUDIO_REGION_BUILTIN_FADE_FRAMES)
-            && current_local_frame < MIN (
-                 r_obj->fade_out_pos.frames,
-                 local_builtin_fade_out_start_frames)))
+      if (
+        G_LIKELY (
+          current_local_frame
+            >= MAX (r_obj->fade_in_pos.frames, AUDIO_REGION_BUILTIN_FADE_FRAMES)
+          && current_local_frame < MIN (
+               r_obj->fade_out_pos.frames, local_builtin_fade_out_start_frames)))
         {
           j +=
-            MIN (
-              r_obj->fade_out_pos.frames,
-              local_builtin_fade_out_start_frames)
+            MIN (r_obj->fade_out_pos.frames, local_builtin_fade_out_start_frames)
             - current_local_frame;
           j--;
           continue;
@@ -564,8 +524,7 @@ audio_region_fill_stereo_ports (
         && current_local_frame < num_frames_in_fade_in_area)
         {
           float fade_in = (float) fade_get_y_normalized (
-            (double) current_local_frame
-              / (double) num_frames_in_fade_in_area,
+            (double) current_local_frame / (double) num_frames_in_fade_in_area,
             &r_obj->fade_in_opts, 1);
 
           stereo_ports->l->buf[current_cycle_frame] *= fade_in;
@@ -574,29 +533,24 @@ audio_region_fill_stereo_ports (
       /* if inside object fade out */
       if (current_local_frame >= r_obj->fade_out_pos.frames)
         {
-          z_return_if_fail_cmp (
-            num_frames_in_fade_out_area, >, 0);
+          z_return_if_fail_cmp (num_frames_in_fade_out_area, >, 0);
           signed_frame_t num_frames_from_fade_out_start =
             current_local_frame - r_obj->fade_out_pos.frames;
           z_return_if_fail_cmp (
-            num_frames_from_fade_out_start, <=,
-            num_frames_in_fade_out_area);
+            num_frames_from_fade_out_start, <=, num_frames_in_fade_out_area);
           float fade_out = (float) fade_get_y_normalized (
             (double) num_frames_from_fade_out_start
               / (double) num_frames_in_fade_out_area,
             &r_obj->fade_out_opts, 0);
 
-          stereo_ports->l->buf[current_cycle_frame] *=
-            fade_out;
-          stereo_ports->r->buf[current_cycle_frame] *=
-            fade_out;
+          stereo_ports->l->buf[current_cycle_frame] *= fade_out;
+          stereo_ports->r->buf[current_cycle_frame] *= fade_out;
         }
       /* if inside builtin fade in, apply builtin
        * fade in */
       if (
         current_local_frame >= 0
-        && current_local_frame
-             < AUDIO_REGION_BUILTIN_FADE_FRAMES)
+        && current_local_frame < AUDIO_REGION_BUILTIN_FADE_FRAMES)
         {
           float fade_in =
             (float) current_local_frame
@@ -607,13 +561,10 @@ audio_region_fill_stereo_ports (
         }
       /* if inside builtin fade out, apply builtin
        * fade out */
-      if (
-        current_local_frame
-        >= local_builtin_fade_out_start_frames)
+      if (current_local_frame >= local_builtin_fade_out_start_frames)
         {
           signed_frame_t num_frames_from_fade_out_start =
-            current_local_frame
-            - local_builtin_fade_out_start_frames;
+            current_local_frame - local_builtin_fade_out_start_frames;
           z_return_if_fail_cmp (
             num_frames_from_fade_out_start, <=,
             AUDIO_REGION_BUILTIN_FADE_FRAMES);
@@ -621,10 +572,8 @@ audio_region_fill_stereo_ports (
             1.f
             - ((float) num_frames_from_fade_out_start / (float) AUDIO_REGION_BUILTIN_FADE_FRAMES);
 
-          stereo_ports->l->buf[current_cycle_frame] *=
-            fade_out;
-          stereo_ports->r->buf[current_cycle_frame] *=
-            fade_out;
+          stereo_ports->l->buf[current_cycle_frame] *= fade_out;
+          stereo_ports->r->buf[current_cycle_frame] *= fade_out;
         }
     }
 }
@@ -661,16 +610,11 @@ audio_region_validate (ZRegion * self, double frames_per_tick)
        * appears to have 1 more frame due to rounding to
        * nearest frame*/
       ArrangerObject * obj = (ArrangerObject *) self;
-      signed_frame_t   loop_start_global =
-        position_get_frames_from_ticks (
-          obj->pos.ticks + obj->loop_start_pos.ticks,
-          frames_per_tick);
-      signed_frame_t loop_end_global =
-        position_get_frames_from_ticks (
-          obj->pos.ticks + obj->loop_end_pos.ticks,
-          frames_per_tick);
-      signed_frame_t loop_len =
-        loop_end_global - loop_start_global;
+      signed_frame_t   loop_start_global = position_get_frames_from_ticks (
+        obj->pos.ticks + obj->loop_start_pos.ticks, frames_per_tick);
+      signed_frame_t loop_end_global = position_get_frames_from_ticks (
+        obj->pos.ticks + obj->loop_end_pos.ticks, frames_per_tick);
+      signed_frame_t loop_len = loop_end_global - loop_start_global;
       /*g_debug ("loop  len: %" SIGNED_FRAME_FORMAT, loop_len);*/
 
       if (loop_len > (signed_frame_t) clip->num_frames)
@@ -700,9 +644,7 @@ audio_region_validate (ZRegion * self, double frames_per_tick)
  * @return Whether positions were adjusted.
  */
 bool
-audio_region_fix_positions (
-  ZRegion * self,
-  double    frames_per_tick)
+audio_region_fix_positions (ZRegion * self, double frames_per_tick)
 {
   AudioClip * clip = audio_region_get_clip (self);
   g_return_val_if_fail (clip, false);
@@ -713,19 +655,13 @@ audio_region_fix_positions (
    * appears to have 1 more frame due to rounding to
    * nearest frame*/
   ArrangerObject * obj = (ArrangerObject *) self;
-  signed_frame_t   loop_start_global =
-    position_get_frames_from_ticks (
-      obj->pos.ticks + obj->loop_start_pos.ticks,
-      frames_per_tick);
-  signed_frame_t loop_end_global =
-    position_get_frames_from_ticks (
-      obj->pos.ticks + obj->loop_end_pos.ticks,
-      frames_per_tick);
-  signed_frame_t loop_len =
-    loop_end_global - loop_start_global;
+  signed_frame_t   loop_start_global = position_get_frames_from_ticks (
+    obj->pos.ticks + obj->loop_start_pos.ticks, frames_per_tick);
+  signed_frame_t loop_end_global = position_get_frames_from_ticks (
+    obj->pos.ticks + obj->loop_end_pos.ticks, frames_per_tick);
+  signed_frame_t loop_len = loop_end_global - loop_start_global;
   /*g_debug ("loop  len: %" SIGNED_FRAME_FORMAT, loop_len);*/
-  signed_frame_t region_len =
-    obj->end_pos.frames - obj->pos.frames;
+  signed_frame_t region_len = obj->end_pos.frames - obj->pos.frames;
 
   signed_frame_t extra_loop_frames =
     loop_len - (signed_frame_t) clip->num_frames;
@@ -736,22 +672,18 @@ audio_region_fix_positions (
        * problem exists */
       if (extra_loop_frames == 1)
         {
-          g_message (
-            "fixing position for audio region. before:");
+          g_message ("fixing position for audio region. before:");
           arranger_object_print ((ArrangerObject *) self);
           if (loop_len == region_len)
             {
               position_add_frames (&obj->end_pos, -1);
-              if (
-                obj->fade_out_pos.frames
-                == obj->loop_end_pos.frames)
+              if (obj->fade_out_pos.frames == obj->loop_end_pos.frames)
                 {
                   position_add_frames (&obj->fade_out_pos, -1);
                 }
             }
           position_add_frames (&obj->loop_end_pos, -1);
-          g_message (
-            "fixed position for audio region. after:");
+          g_message ("fixed position for audio region. after:");
           arranger_object_print ((ArrangerObject *) self);
           return true;
         }

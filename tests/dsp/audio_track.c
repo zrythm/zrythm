@@ -40,18 +40,16 @@ test_fill_when_region_starts_on_loop_end (void)
   position_add_frames (&TRANSPORT->loop_start_pos, -31);
 
   /* create audio track with region */
-  char * filepath = g_build_filename (
-    TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
-  SupportedFile * file =
-    supported_file_new_from_path (filepath);
-  int num_tracks_before = TRACKLIST->num_tracks;
+  char * filepath =
+    g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
+  SupportedFile * file = supported_file_new_from_path (filepath);
+  int             num_tracks_before = TRACKLIST->num_tracks;
 
   transport_request_pause (TRANSPORT, true);
   track_create_with_action (
-    TRACK_TYPE_AUDIO, NULL, file, &TRANSPORT->loop_end_pos,
-    num_tracks_before, 1, -1, NULL, NULL);
-  Track * track =
-    tracklist_get_track (TRACKLIST, num_tracks_before);
+    TRACK_TYPE_AUDIO, NULL, file, &TRANSPORT->loop_end_pos, num_tracks_before,
+    1, -1, NULL, NULL);
+  Track * track = tracklist_get_track (TRACKLIST, num_tracks_before);
   /*transport_request_roll (TRANSPORT);*/
   TRANSPORT->play_state = PLAYSTATE_ROLLING;
 
@@ -74,10 +72,8 @@ test_fill_when_region_starts_on_loop_end (void)
   track_fill_events (track, &time_nfo, NULL, ports);
   for (int j = 0; j < nframes; j++)
     {
-      g_assert_cmpfloat_with_epsilon (
-        ports->l->buf[j], 0.f, 0.0000001f);
-      g_assert_cmpfloat_with_epsilon (
-        ports->r->buf[j], 0.f, 0.0000001f);
+      g_assert_cmpfloat_with_epsilon (ports->l->buf[j], 0.f, 0.0000001f);
+      g_assert_cmpfloat_with_epsilon (ports->r->buf[j], 0.f, 0.0000001f);
     }
 
   /* run after loop end and make sure sample is
@@ -92,17 +88,13 @@ test_fill_when_region_starts_on_loop_end (void)
       /* take into account builtin fades */
       if (j == 0)
         {
-          g_assert_true (
-            math_floats_equal (ports->l->buf[j], 0.f));
-          g_assert_true (
-            math_floats_equal (ports->r->buf[j], 0.f));
+          g_assert_true (math_floats_equal (ports->l->buf[j], 0.f));
+          g_assert_true (math_floats_equal (ports->r->buf[j], 0.f));
         }
       else
         {
-          g_assert_true (
-            fabsf (ports->l->buf[j]) > 0.0000001f);
-          g_assert_true (
-            fabsf (ports->r->buf[j]) > 0.0000001f);
+          g_assert_true (fabsf (ports->l->buf[j]) > 0.0000001f);
+          g_assert_true (fabsf (ports->r->buf[j]) > 0.0000001f);
         }
     }
 

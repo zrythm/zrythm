@@ -24,8 +24,7 @@ typedef struct AudioEngine AudioEngine;
 #define CONTROL_ROOM (AUDIO_ENGINE->control_room)
 
 #define control_room_is_in_active_project(self) \
-  (self->audio_engine \
-   && engine_is_in_active_project (self->audio_engine))
+  (self->audio_engine && engine_is_in_active_project (self->audio_engine))
 
 /**
  * The control room allows to specify how Listen will
@@ -82,10 +81,7 @@ typedef struct ControlRoom
 
 static const cyaml_schema_field_t control_room_fields_schema[] = {
   YAML_FIELD_INT (ControlRoom, schema_version),
-  YAML_FIELD_MAPPING_PTR (
-    ControlRoom,
-    monitor_fader,
-    fader_fields_schema),
+  YAML_FIELD_MAPPING_PTR (ControlRoom, monitor_fader, fader_fields_schema),
 
   CYAML_FIELD_END
 };
@@ -97,9 +93,8 @@ static const cyaml_schema_value_t control_room_schema = {
 /**
  * Inits the control room from a project.
  */
-COLD NONNULL_ARGS (1) void control_room_init_loaded (
-  ControlRoom * self,
-  AudioEngine * engine);
+COLD NONNULL_ARGS (
+  1) void control_room_init_loaded (ControlRoom * self, AudioEngine * engine);
 
 /**
  * Creates a new control room.
@@ -112,9 +107,7 @@ control_room_new (AudioEngine * engine);
  * parties.
  */
 void
-control_room_set_dim_output (
-  ControlRoom * self,
-  int           dim_output);
+control_room_set_dim_output (ControlRoom * self, int dim_output);
 
 /**
  * Used during serialization.

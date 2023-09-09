@@ -33,12 +33,11 @@
 #define RECORDING_EVENTS_PUSH_AUDIO(et, _arg) \
   if (RECORDING_MANAGER->event_queue) \
     { \
-      RecordingEvent * ev = (RecordingEvent *) \
-        object_pool_get (RECORDING_MANAGER->event_obj_pool); \
+      RecordingEvent * ev = (RecordingEvent *) object_pool_get ( \
+        RECORDING_MANAGER->event_obj_pool); \
       ev->type = et; \
       ev->arg = (void *) _arg; \
-      event_queue_push_back_event ( \
-        RECORDING_MANAGER->event_queue, _ev); \
+      event_queue_push_back_event (RECORDING_MANAGER->event_queue, _ev); \
     }
 
 typedef enum RecordingEventType

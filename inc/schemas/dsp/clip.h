@@ -42,9 +42,7 @@ static const cyaml_schema_field_t audio_clip_fields_schema_v1[] = {
 };
 
 static const cyaml_schema_value_t audio_clip_schema_v1 = {
-  YAML_VALUE_PTR_NULLABLE (
-    AudioClip_v1,
-    audio_clip_fields_schema_v1),
+  YAML_VALUE_PTR_NULLABLE (AudioClip_v1, audio_clip_fields_schema_v1),
 };
 
 AudioClip *

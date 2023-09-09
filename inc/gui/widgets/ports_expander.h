@@ -35,8 +35,7 @@ typedef struct _EditableLabelWidget EditableLabelWidget;
 typedef struct Track                Track;
 typedef struct Plugin               Plugin;
 
-#define PORTS_EXPANDER_WIDGET_TYPE \
-  (ports_expander_widget_get_type ())
+#define PORTS_EXPANDER_WIDGET_TYPE (ports_expander_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PortsExpanderWidget,
   ports_expander_widget,

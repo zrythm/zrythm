@@ -65,36 +65,24 @@ typedef struct ModulatorMacroProcessor
 
 } ModulatorMacroProcessor;
 
-static const cyaml_schema_field_t
-  modulator_macro_processor_fields_schema[] = {
-    YAML_FIELD_INT (ModulatorMacroProcessor, schema_version),
-    YAML_FIELD_STRING_PTR (ModulatorMacroProcessor, name),
-    YAML_FIELD_MAPPING_PTR (
-      ModulatorMacroProcessor,
-      cv_in,
-      port_fields_schema),
-    YAML_FIELD_MAPPING_PTR (
-      ModulatorMacroProcessor,
-      cv_out,
-      port_fields_schema),
-    YAML_FIELD_MAPPING_PTR (
-      ModulatorMacroProcessor,
-      macro,
-      port_fields_schema),
+static const cyaml_schema_field_t modulator_macro_processor_fields_schema[] = {
+  YAML_FIELD_INT (ModulatorMacroProcessor, schema_version),
+  YAML_FIELD_STRING_PTR (ModulatorMacroProcessor, name),
+  YAML_FIELD_MAPPING_PTR (ModulatorMacroProcessor, cv_in, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (ModulatorMacroProcessor, cv_out, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (ModulatorMacroProcessor, macro, port_fields_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  modulator_macro_processor_schema = {
-    YAML_VALUE_PTR (
-      ModulatorMacroProcessor,
-      modulator_macro_processor_fields_schema),
-  };
+static const cyaml_schema_value_t modulator_macro_processor_schema = {
+  YAML_VALUE_PTR (
+    ModulatorMacroProcessor,
+    modulator_macro_processor_fields_schema),
+};
 
 static inline const char *
-modulator_macro_processor_get_name (
-  ModulatorMacroProcessor * self)
+modulator_macro_processor_get_name (ModulatorMacroProcessor * self)
 {
   return self->name;
 }
@@ -110,8 +98,7 @@ modulator_macro_processor_set_name (
   const char *              name);
 
 Track *
-modulator_macro_processor_get_track (
-  ModulatorMacroProcessor * self);
+modulator_macro_processor_get_track (ModulatorMacroProcessor * self);
 
 /**
  * Process.
@@ -125,8 +112,7 @@ ModulatorMacroProcessor *
 modulator_macro_processor_new (Track * track, int idx);
 
 void
-modulator_macro_processor_free (
-  ModulatorMacroProcessor * self);
+modulator_macro_processor_free (ModulatorMacroProcessor * self);
 
 /**
  * @}

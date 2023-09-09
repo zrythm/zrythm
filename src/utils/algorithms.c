@@ -59,8 +59,7 @@ algorithms_binary_search_nearby (
   void * ret = NULL;
   while (first <= last)
     {
-      pivot =
-        (void *) (((const char *) base) + (middle * size));
+      pivot = (void *) (((const char *) base) + (middle * size));
       pivot_succ = NULL;
       pivot_succ_is_before = 0;
 
@@ -76,24 +75,17 @@ algorithms_binary_search_nearby (
           if (include_equal)
             return (void *) pivot;
           else if (return_prev)
-            ret =
-              (void *) (((const char *) base)
-                        + ((middle - 1) * size));
+            ret = (void *) (((const char *) base) + ((middle - 1) * size));
           else
-            ret =
-              (void *) (((const char *) base)
-                        + ((middle + 1) * size));
+            ret = (void *) (((const char *) base) + ((middle + 1) * size));
           return ret;
         }
 
       /* Select pivot successor if possible */
       if (middle < last)
         {
-          pivot_succ =
-            (void *) (((const char *) base)
-                      + ((middle + 1) * size));
-          pivot_succ_is_before =
-            cmp_func (pivot_succ, key) <= 0;
+          pivot_succ = (void *) (((const char *) base) + ((middle + 1) * size));
+          pivot_succ_is_before = cmp_func (pivot_succ, key) <= 0;
         }
       pivot_is_before = cmp_func (pivot, key) <= 0;
 

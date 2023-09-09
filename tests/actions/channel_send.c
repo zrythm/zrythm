@@ -33,23 +33,19 @@ test_route_master_send_to_fx (void)
   test_helper_zrythm_init ();
 
   /* create audio fx track */
-  Track * audio_fx = track_create_empty_with_action (
-    TRACK_TYPE_AUDIO_BUS, NULL);
+  Track * audio_fx = track_create_empty_with_action (TRACK_TYPE_AUDIO_BUS, NULL);
 
   /* expect messages */
   LOG->use_structured_for_console = false;
   LOG->min_log_level_for_test_console = G_LOG_LEVEL_WARNING;
+  g_test_expect_message (G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*FAILED*");
   g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*FAILED*");
-  g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
-    "*action not performed*");
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*action not performed*");
 
   /* route master to it */
   GError * err = NULL;
   bool     ret = channel_send_action_perform_connect_audio (
-    P_MASTER_TRACK->channel->sends[0],
-    audio_fx->processor->stereo_in, &err);
+    P_MASTER_TRACK->channel->sends[0], audio_fx->processor->stereo_in, &err);
 
   /* let engine run for a few cycles */
   engine_wait_n_cycles (AUDIO_ENGINE, 3);

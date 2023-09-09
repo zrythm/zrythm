@@ -17,8 +17,7 @@
 
 #include <gtk/gtk.h>
 
-#define MULTI_SELECTION_WIDGET_TYPE \
-  (multi_selection_widget_get_type ())
+#define MULTI_SELECTION_WIDGET_TYPE (multi_selection_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   MultiSelectionWidget,
   multi_selection_widget,

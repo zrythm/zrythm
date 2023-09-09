@@ -53,20 +53,19 @@ typedef enum ArrangerSelectionsActionType
   AS_ACTION_SPLIT,
 } ArrangerSelectionsActionType;
 
-static const cyaml_strval_t
-  arranger_selections_action_type_strings[] = {
-    {"Automation fill", AS_ACTION_AUTOMATION_FILL},
-    { "Create",         AS_ACTION_CREATE         },
-    { "Delete",         AS_ACTION_DELETE         },
-    { "Duplicate",      AS_ACTION_DUPLICATE      },
-    { "Edit",           AS_ACTION_EDIT           },
-    { "Link",           AS_ACTION_LINK           },
-    { "Merge",          AS_ACTION_MERGE          },
-    { "Move",           AS_ACTION_MOVE           },
-    { "Quantize",       AS_ACTION_QUANTIZE       },
-    { "Record",         AS_ACTION_RECORD         },
-    { "Resize",         AS_ACTION_RESIZE         },
-    { "Split",          AS_ACTION_SPLIT          },
+static const cyaml_strval_t arranger_selections_action_type_strings[] = {
+  {"Automation fill", AS_ACTION_AUTOMATION_FILL},
+  { "Create",         AS_ACTION_CREATE         },
+  { "Delete",         AS_ACTION_DELETE         },
+  { "Duplicate",      AS_ACTION_DUPLICATE      },
+  { "Edit",           AS_ACTION_EDIT           },
+  { "Link",           AS_ACTION_LINK           },
+  { "Merge",          AS_ACTION_MERGE          },
+  { "Move",           AS_ACTION_MOVE           },
+  { "Quantize",       AS_ACTION_QUANTIZE       },
+  { "Record",         AS_ACTION_RECORD         },
+  { "Resize",         AS_ACTION_RESIZE         },
+  { "Split",          AS_ACTION_SPLIT          },
 };
 
 /**
@@ -84,20 +83,15 @@ typedef enum ArrangerSelectionsActionResizeType
   ARRANGER_SELECTIONS_ACTION_STRETCH_R,
 } ArrangerSelectionsActionResizeType;
 
-static const cyaml_strval_t
-  arranger_selections_action_resize_type_strings[] = {
-    {"Resize L",         ARRANGER_SELECTIONS_ACTION_RESIZE_L },
-    { "Resize R",        ARRANGER_SELECTIONS_ACTION_RESIZE_R },
-    { "Resize L (loop)",
-     ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP                },
-    { "Resize R (loop)",
-     ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP                },
-    { "Resize L (fade)",
-     ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE                },
-    { "Resize R (fade)",
-     ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE                },
-    { "Stretch L",       ARRANGER_SELECTIONS_ACTION_STRETCH_L},
-    { "Stretch R",       ARRANGER_SELECTIONS_ACTION_STRETCH_R},
+static const cyaml_strval_t arranger_selections_action_resize_type_strings[] = {
+  {"Resize L",         ARRANGER_SELECTIONS_ACTION_RESIZE_L     },
+  { "Resize R",        ARRANGER_SELECTIONS_ACTION_RESIZE_R     },
+  { "Resize L (loop)", ARRANGER_SELECTIONS_ACTION_RESIZE_L_LOOP},
+  { "Resize R (loop)", ARRANGER_SELECTIONS_ACTION_RESIZE_R_LOOP},
+  { "Resize L (fade)", ARRANGER_SELECTIONS_ACTION_RESIZE_L_FADE},
+  { "Resize R (fade)", ARRANGER_SELECTIONS_ACTION_RESIZE_R_FADE},
+  { "Stretch L",       ARRANGER_SELECTIONS_ACTION_STRETCH_L    },
+  { "Stretch R",       ARRANGER_SELECTIONS_ACTION_STRETCH_R    },
 };
 
 /**
@@ -146,16 +140,14 @@ typedef enum ArrangerSelectionsActionEditType
   ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,
 } ArrangerSelectionsActionEditType;
 
-static const cyaml_strval_t
-  arranger_selections_action_edit_type_strings[] = {
-    {"Name",             ARRANGER_SELECTIONS_ACTION_EDIT_NAME     },
-    { "Pos",             ARRANGER_SELECTIONS_ACTION_EDIT_POS      },
-    { "Primitive",       ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE},
-    { "Scale",           ARRANGER_SELECTIONS_ACTION_EDIT_SCALE    },
-    { "Fades",           ARRANGER_SELECTIONS_ACTION_EDIT_FADES    },
-    { "Mute",            ARRANGER_SELECTIONS_ACTION_EDIT_MUTE     },
-    { "Editor function",
-     ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION              },
+static const cyaml_strval_t arranger_selections_action_edit_type_strings[] = {
+  {"Name",             ARRANGER_SELECTIONS_ACTION_EDIT_NAME           },
+  { "Pos",             ARRANGER_SELECTIONS_ACTION_EDIT_POS            },
+  { "Primitive",       ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE      },
+  { "Scale",           ARRANGER_SELECTIONS_ACTION_EDIT_SCALE          },
+  { "Fades",           ARRANGER_SELECTIONS_ACTION_EDIT_FADES          },
+  { "Mute",            ARRANGER_SELECTIONS_ACTION_EDIT_MUTE           },
+  { "Editor function", ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION},
 };
 
 /**
@@ -278,9 +270,7 @@ static const cyaml_schema_field_t arranger_selections_action_fields_schema[] = {
   YAML_FIELD_INT (ArrangerSelectionsAction, delta_chords),
   YAML_FIELD_INT (ArrangerSelectionsAction, delta_pitch),
   YAML_FIELD_INT (ArrangerSelectionsAction, delta_vel),
-  YAML_FIELD_FLOAT (
-    ArrangerSelectionsAction,
-    delta_normalized_amount),
+  YAML_FIELD_FLOAT (ArrangerSelectionsAction, delta_normalized_amount),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ArrangerSelectionsAction,
     target_port,
@@ -386,16 +376,14 @@ static const cyaml_schema_field_t arranger_selections_action_fields_schema[] = {
   CYAML_FIELD_END
 };
 
-static const cyaml_schema_value_t
-  arranger_selections_action_schema = {
-    YAML_VALUE_PTR_NULLABLE (
-      ArrangerSelectionsAction,
-      arranger_selections_action_fields_schema),
-  };
+static const cyaml_schema_value_t arranger_selections_action_schema = {
+  YAML_VALUE_PTR_NULLABLE (
+    ArrangerSelectionsAction,
+    arranger_selections_action_fields_schema),
+};
 
 void
-arranger_selections_action_init_loaded (
-  ArrangerSelectionsAction * self);
+arranger_selections_action_init_loaded (ArrangerSelectionsAction * self);
 
 /**
  * Creates a new action for creating/deleting
@@ -450,62 +438,54 @@ arranger_selections_action_new_move_or_duplicate (
   GError **              error);
 
 #define arranger_selections_action_new_move( \
-  sel, ticks, chords, pitch, tracks, lanes, norm_amt, \
-  port_id, already_moved, error) \
+  sel, ticks, chords, pitch, tracks, lanes, norm_amt, port_id, already_moved, \
+  error) \
   arranger_selections_action_new_move_or_duplicate ( \
-    (ArrangerSelections *) sel, 1, ticks, chords, pitch, \
-    tracks, lanes, norm_amt, port_id, already_moved, error)
+    (ArrangerSelections *) sel, 1, ticks, chords, pitch, tracks, lanes, \
+    norm_amt, port_id, already_moved, error)
 #define arranger_selections_action_new_duplicate( \
-  sel, ticks, chords, pitch, tracks, lanes, norm_amt, \
-  port_id, already_moved, error) \
+  sel, ticks, chords, pitch, tracks, lanes, norm_amt, port_id, already_moved, \
+  error) \
   arranger_selections_action_new_move_or_duplicate ( \
-    (ArrangerSelections *) sel, 0, ticks, chords, pitch, \
-    tracks, lanes, norm_amt, port_id, already_moved, error)
+    (ArrangerSelections *) sel, 0, ticks, chords, pitch, tracks, lanes, \
+    norm_amt, port_id, already_moved, error)
 
 #define arranger_selections_action_new_move_timeline( \
-  sel, ticks, delta_tracks, delta_lanes, port_id, \
-  already_moved, error) \
+  sel, ticks, delta_tracks, delta_lanes, port_id, already_moved, error) \
   arranger_selections_action_new_move ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, \
-    already_moved, error)
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, already_moved, \
+    error)
 #define arranger_selections_action_new_duplicate_timeline( \
-  sel, ticks, delta_tracks, delta_lanes, port_id, \
-  already_moved, error) \
+  sel, ticks, delta_tracks, delta_lanes, port_id, already_moved, error) \
   arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, \
-    already_moved, error)
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, already_moved, \
+    error)
 
 #define arranger_selections_action_new_move_midi( \
   sel, ticks, delta_pitch, already_moved, error) \
   arranger_selections_action_new_move ( \
-    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, \
-    already_moved, error)
+    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, already_moved, error)
 #define arranger_selections_action_new_duplicate_midi( \
   sel, ticks, delta_pitch, already_moved, error) \
   arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, \
-    already_moved, error)
+    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, already_moved, error)
 #define arranger_selections_action_new_move_chord( \
   sel, ticks, delta_chords, already_moved, error) \
   arranger_selections_action_new_move ( \
-    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, \
-    already_moved, error)
+    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, already_moved, error)
 #define arranger_selections_action_new_duplicate_chord( \
   sel, ticks, delta_chords, already_moved, error) \
   arranger_selections_action_new_duplicate ( \
-    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, \
-    already_moved, error)
+    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, already_moved, error)
 
 #define arranger_selections_action_new_move_automation( \
   sel, ticks, norm_amt, already_moved, error) \
   arranger_selections_action_new_move ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, \
-    error)
+    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, error)
 #define arranger_selections_action_new_duplicate_automation( \
   sel, ticks, norm_amt, already_moved, error) \
   arranger_selections_action_new_duplicate ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, \
-    error)
+    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, error)
 
 /**
  * Creates a new action for linking regions.
@@ -621,9 +601,7 @@ arranger_selections_action_new_split (
  * ArrangerObject's.
  */
 WARN_UNUSED_RESULT UndoableAction *
-arranger_selections_action_new_merge (
-  ArrangerSelections * sel,
-  GError **            error);
+arranger_selections_action_new_merge (ArrangerSelections * sel, GError ** error);
 
 /**
  * Creates a new action for resizing
@@ -653,8 +631,7 @@ arranger_selections_action_new_quantize (
   GError **            error);
 
 NONNULL ArrangerSelectionsAction *
-arranger_selections_action_clone (
-  const ArrangerSelectionsAction * src);
+arranger_selections_action_clone (const ArrangerSelectionsAction * src);
 
 bool
 arranger_selections_action_perform_create_or_delete (
@@ -692,62 +669,54 @@ arranger_selections_action_perform_move_or_duplicate (
   GError **              error);
 
 #define arranger_selections_action_perform_move( \
-  sel, ticks, chords, pitch, tracks, lanes, norm_amt, \
-  port_id, already_moved, error) \
+  sel, ticks, chords, pitch, tracks, lanes, norm_amt, port_id, already_moved, \
+  error) \
   arranger_selections_action_perform_move_or_duplicate ( \
-    (ArrangerSelections *) sel, 1, ticks, chords, pitch, \
-    tracks, lanes, norm_amt, port_id, already_moved, error)
+    (ArrangerSelections *) sel, 1, ticks, chords, pitch, tracks, lanes, \
+    norm_amt, port_id, already_moved, error)
 #define arranger_selections_action_perform_duplicate( \
-  sel, ticks, chords, pitch, tracks, lanes, norm_amt, \
-  port_id, already_moved, error) \
+  sel, ticks, chords, pitch, tracks, lanes, norm_amt, port_id, already_moved, \
+  error) \
   arranger_selections_action_perform_move_or_duplicate ( \
-    (ArrangerSelections *) sel, 0, ticks, chords, pitch, \
-    tracks, lanes, norm_amt, port_id, already_moved, error)
+    (ArrangerSelections *) sel, 0, ticks, chords, pitch, tracks, lanes, \
+    norm_amt, port_id, already_moved, error)
 
 #define arranger_selections_action_perform_move_timeline( \
-  sel, ticks, delta_tracks, delta_lanes, port_id, \
-  already_moved, error) \
+  sel, ticks, delta_tracks, delta_lanes, port_id, already_moved, error) \
   arranger_selections_action_perform_move ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, \
-    already_moved, error)
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, already_moved, \
+    error)
 #define arranger_selections_action_perform_duplicate_timeline( \
-  sel, ticks, delta_tracks, delta_lanes, port_id, \
-  already_moved, error) \
+  sel, ticks, delta_tracks, delta_lanes, port_id, already_moved, error) \
   arranger_selections_action_perform_duplicate ( \
-    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, \
-    already_moved, error)
+    sel, ticks, 0, 0, delta_tracks, delta_lanes, 0, port_id, already_moved, \
+    error)
 
 #define arranger_selections_action_perform_move_midi( \
   sel, ticks, delta_pitch, already_moved, error) \
   arranger_selections_action_perform_move ( \
-    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, \
-    already_moved, error)
+    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, already_moved, error)
 #define arranger_selections_action_perform_duplicate_midi( \
   sel, ticks, delta_pitch, already_moved, error) \
   arranger_selections_action_perform_duplicate ( \
-    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, \
-    already_moved, error)
+    sel, ticks, 0, delta_pitch, 0, 0, 0, NULL, already_moved, error)
 #define arranger_selections_action_perform_move_chord( \
   sel, ticks, delta_chords, already_moved, error) \
   arranger_selections_action_perform_move ( \
-    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, \
-    already_moved, error)
+    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, already_moved, error)
 #define arranger_selections_action_perform_duplicate_chord( \
   sel, ticks, delta_chords, already_moved, error) \
   arranger_selections_action_perform_duplicate ( \
-    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, \
-    already_moved, error)
+    sel, ticks, delta_chords, 0, 0, 0, 0, NULL, already_moved, error)
 
 #define arranger_selections_action_perform_move_automation( \
   sel, ticks, norm_amt, already_moved, error) \
   arranger_selections_action_perform_move ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, \
-    error)
+    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, error)
 #define arranger_selections_action_perform_duplicate_automation( \
   sel, ticks, norm_amt, already_moved, error) \
   arranger_selections_action_perform_duplicate ( \
-    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, \
-    error)
+    sel, ticks, 0, 0, 0, 0, norm_amt, NULL, already_moved, error)
 
 bool
 arranger_selections_action_perform_link (
@@ -829,9 +798,7 @@ arranger_selections_action_perform_quantize (
   GError **            error);
 
 int
-arranger_selections_action_do (
-  ArrangerSelectionsAction * self,
-  GError **                  error);
+arranger_selections_action_do (ArrangerSelectionsAction * self, GError ** error);
 
 int
 arranger_selections_action_undo (
@@ -839,8 +806,7 @@ arranger_selections_action_undo (
   GError **                  error);
 
 char *
-arranger_selections_action_stringize (
-  ArrangerSelectionsAction * self);
+arranger_selections_action_stringize (ArrangerSelectionsAction * self);
 
 bool
 arranger_selections_action_contains_clip (
@@ -848,8 +814,7 @@ arranger_selections_action_contains_clip (
   AudioClip *                clip);
 
 void
-arranger_selections_action_free (
-  ArrangerSelectionsAction * self);
+arranger_selections_action_free (ArrangerSelectionsAction * self);
 
 /**
  * @}

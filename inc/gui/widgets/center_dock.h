@@ -13,8 +13,7 @@
 #include <gtk/gtk.h>
 #include <libpanel.h>
 
-#define CENTER_DOCK_WIDGET_TYPE \
-  (center_dock_widget_get_type ())
+#define CENTER_DOCK_WIDGET_TYPE (center_dock_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   CenterDockWidget,
   center_dock_widget,

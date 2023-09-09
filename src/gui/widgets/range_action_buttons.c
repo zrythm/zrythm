@@ -27,22 +27,16 @@
 #include "project.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (
-  RangeActionButtonsWidget,
-  range_action_buttons_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (RangeActionButtonsWidget, range_action_buttons_widget, GTK_TYPE_BOX)
 
 static void
-range_action_buttons_widget_class_init (
-  RangeActionButtonsWidgetClass * _klass)
+range_action_buttons_widget_class_init (RangeActionButtonsWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "range_action_buttons.ui");
+  resources_set_class_template (klass, "range_action_buttons.ui");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, RangeActionButtonsWidget, x)
+  gtk_widget_class_bind_template_child (klass, RangeActionButtonsWidget, x)
 
   BIND_CHILD (insert_silence);
   BIND_CHILD (remove);
@@ -51,8 +45,7 @@ range_action_buttons_widget_class_init (
 }
 
 static void
-range_action_buttons_widget_init (
-  RangeActionButtonsWidget * self)
+range_action_buttons_widget_init (RangeActionButtonsWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 }

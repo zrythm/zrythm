@@ -92,10 +92,8 @@ mixer_widget_hard_refresh (MixerWidget * self)
     }
 
   /* remove all things in the container */
-  z_gtk_widget_remove_all_children (
-    GTK_WIDGET (self->channels_box));
-  g_return_if_fail (
-    gtk_widget_get_parent (GTK_WIDGET (self->ddbox)) == NULL);
+  z_gtk_widget_remove_all_children (GTK_WIDGET (self->channels_box));
+  g_return_if_fail (gtk_widget_get_parent (GTK_WIDGET (self->ddbox)) == NULL);
 
   /* add all channels */
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -106,21 +104,17 @@ mixer_widget_hard_refresh (MixerWidget * self)
         continue;
 
       if (
-        track_type_is_foldable (track->type)
-        && track->type != TRACK_TYPE_MASTER)
+        track_type_is_foldable (track->type) && track->type != TRACK_TYPE_MASTER)
         {
           if (!track->folder_ch_widget)
             {
-              track->folder_ch_widget =
-                folder_channel_widget_new (track);
+              track->folder_ch_widget = folder_channel_widget_new (track);
             }
 
-          folder_channel_widget_refresh (
-            track->folder_ch_widget);
+          folder_channel_widget_refresh (track->folder_ch_widget);
 
           gtk_box_append (
-            self->channels_box,
-            GTK_WIDGET (track->folder_ch_widget));
+            self->channels_box, GTK_WIDGET (track->folder_ch_widget));
         }
 
       if (!track_type_has_channel (track->type))
@@ -137,21 +131,17 @@ mixer_widget_hard_refresh (MixerWidget * self)
 
       if (
         track->type != TRACK_TYPE_MASTER
-        && !gtk_widget_get_parent (
-          GTK_WIDGET (ch->widget))) /* not master */
+        && !gtk_widget_get_parent (GTK_WIDGET (ch->widget))) /* not master */
         {
-          gtk_box_append (
-            self->channels_box, GTK_WIDGET (ch->widget));
+          gtk_box_append (self->channels_box, GTK_WIDGET (ch->widget));
         }
     }
 
   /* add the add button */
-  gtk_box_append (
-    self->channels_box, GTK_WIDGET (self->channels_add));
+  gtk_box_append (self->channels_box, GTK_WIDGET (self->channels_add));
 
   /* re-add dummy box for dnd */
-  gtk_box_append (
-    self->channels_box, GTK_WIDGET (self->ddbox));
+  gtk_box_append (self->channels_box, GTK_WIDGET (self->ddbox));
 
   /* unref refed widgets */
   for (size_t i = 0; i < refed_widgets->len; i++)
@@ -175,12 +165,9 @@ mixer_widget_setup (MixerWidget * self, Channel * master)
 
   if (!self->setup)
     {
-      gtk_box_append (
-        GTK_BOX (self->master_box),
-        GTK_WIDGET (master->widget));
+      gtk_box_append (GTK_BOX (self->master_box), GTK_WIDGET (master->widget));
     }
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (self->master_box), false);
+  gtk_widget_set_hexpand (GTK_WIDGET (self->master_box), false);
 
   mixer_widget_hard_refresh (self);
 
@@ -221,12 +208,10 @@ mixer_widget_init (MixerWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  gtk_widget_set_name (
-    GTK_WIDGET (self->channels_add), "mixer-add-channel");
+  gtk_widget_set_name (GTK_WIDGET (self->channels_add), "mixer-add-channel");
 
   /* add dummy box for dnd */
   self->ddbox = drag_dest_box_widget_new (
     GTK_ORIENTATION_HORIZONTAL, 0, DRAG_DEST_BOX_TYPE_MIXER);
-  gtk_box_append (
-    self->channels_box, GTK_WIDGET (self->ddbox));
+  gtk_box_append (self->channels_box, GTK_WIDGET (self->ddbox));
 }

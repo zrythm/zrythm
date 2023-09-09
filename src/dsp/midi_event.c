@@ -67,8 +67,7 @@ typedef enum MidiEventType
 } MidiEventType;
 
 static const char * midi_event_type_strings[] = {
-  "pitchbend", "controller",    "note off",
-  "note on",   "all notes off",
+  "pitchbend", "controller", "note off", "note on", "all notes off",
 };
 
 /**
@@ -88,8 +87,7 @@ midi_events_append (
   const nframes_t nframes,
   bool            queued)
 {
-  midi_events_append_w_filter (
-    dest, src, NULL, local_offset, nframes, queued);
+  midi_events_append_w_filter (dest, src, NULL, local_offset, nframes, queued);
 }
 
 /**
@@ -123,15 +121,14 @@ midi_events_transform_chord_and_append (
         && (src_ev->time < local_offset || src_ev->time >= local_offset + nframes))
         {
           g_debug (
-            "skipping event: time %" PRIu8
-            " (local offset %" PRIu32 " nframes %" PRIu32 ")",
+            "skipping event: time %" PRIu8 " (local offset %" PRIu32
+            " nframes %" PRIu32 ")",
             src_ev->time, local_offset, nframes);
           continue;
         }
 
       /* make sure there is enough space */
-      g_return_if_fail (
-        dest->num_events < MAX_MIDI_EVENTS - 6);
+      g_return_if_fail (dest->num_events < MAX_MIDI_EVENTS - 6);
 
       const uint8_t * buf = src_ev->raw_buffer;
 
@@ -139,18 +136,16 @@ midi_events_transform_chord_and_append (
         continue;
 
       /* only use middle octave */
-      midi_byte_t note_number = midi_get_note_number (buf);
+      midi_byte_t             note_number = midi_get_note_number (buf);
       const ChordDescriptor * descr =
-        chord_editor_get_chord_from_note_number (
-          CHORD_EDITOR, note_number);
+        chord_editor_get_chord_from_note_number (CHORD_EDITOR, note_number);
       if (!descr)
         continue;
 
       if (midi_is_note_on (buf))
         {
           midi_events_add_note_ons_from_chord_descr (
-            dest, descr, 1, VELOCITY_DEFAULT, src_ev->time,
-            queued);
+            dest, descr, 1, VELOCITY_DEFAULT, src_ev->time, queued);
         }
       else if (midi_is_note_off (buf))
         {
@@ -201,8 +196,8 @@ midi_events_append_w_filter (
         && (src_ev->time < local_offset || src_ev->time >= local_offset + nframes))
         {
           g_debug (
-            "skipping event: time %" PRIu8
-            " (local offset %" PRIu32 " nframes %" PRIu32 ")",
+            "skipping event: time %" PRIu8 " (local offset %" PRIu32
+            " nframes %" PRIu32 ")",
             src_ev->time, local_offset, nframes);
           continue;
         }
@@ -251,8 +246,7 @@ midi_events_set_channel (
 #define SET_CHANNEL(byte) \
   if ((ev->raw_buffer[0] & byte) == byte) \
     { \
-      ev->raw_buffer[0] = \
-        (ev->raw_buffer[0] & byte) | (channel - 1); \
+      ev->raw_buffer[0] = (ev->raw_buffer[0] & byte) | (channel - 1); \
       continue; \
     }
 
@@ -298,18 +292,13 @@ midi_events_clear (MidiEvents * self, int queued)
  * exists in the given events.
  */
 int
-midi_events_check_for_note_on (
-  MidiEvents * self,
-  int          note,
-  int          queued)
+midi_events_check_for_note_on (MidiEvents * self, int note, int queued)
 {
   /*g_message ("waiting check note on");*/
   zix_sem_wait (&self->access_sem);
 
   MidiEvent * ev;
-  for (int i = 0;
-       i < queued ? self->num_queued_events : self->num_events;
-       i++)
+  for (int i = 0; i < queued ? self->num_queued_events : self->num_events; i++)
     {
       if (queued)
         ev = &self->queued_events[i];
@@ -318,9 +307,7 @@ midi_events_check_for_note_on (
 
       midi_byte_t * buf = ev->raw_buffer;
 
-      if (
-        midi_is_note_on (buf)
-        && midi_get_note_number (buf) == note)
+      if (midi_is_note_on (buf) && midi_get_note_number (buf) == note)
         return 1;
     }
 
@@ -335,25 +322,20 @@ midi_events_check_for_note_on (
  * from the queue, and returns if it deleted or not.
  */
 int
-midi_events_delete_note_on (
-  MidiEvents * self,
-  int          note,
-  int          queued)
+midi_events_delete_note_on (MidiEvents * self, int note, int queued)
 {
   /*g_message ("waiting delete note on");*/
   zix_sem_wait (&self->access_sem);
 
   MidiEvent *ev, *ev2, *next_ev;
   int        match = 0;
-  for (int i = queued ? self->num_queued_events - 1
-                      : self->num_events - 1;
-       i >= 0; i--)
+  for (
+    int i = queued ? self->num_queued_events - 1 : self->num_events - 1; i >= 0;
+    i--)
     {
       ev = queued ? &self->queued_events[i] : &self->events[i];
       midi_byte_t * buf = ev->raw_buffer;
-      if (
-        midi_is_note_on (buf)
-        && midi_get_note_number (buf) == note)
+      if (midi_is_note_on (buf) && midi_get_note_number (buf) == note)
         {
           match = 1;
 
@@ -362,11 +344,9 @@ midi_events_delete_note_on (
           else
             --self->num_events;
 
-          for (int ii = i;
-               ii < queued
-                 ? self->num_queued_events
-                 : self->num_events;
-               ii++)
+          for (
+            int ii = i;
+            ii < queued ? self->num_queued_events : self->num_events; ii++)
             {
               if (queued)
                 {
@@ -421,10 +401,7 @@ midi_events_new (void)
  * @param check_queued Check the queued events.
  */
 int
-midi_events_has_note_on (
-  MidiEvents * self,
-  int          check_main,
-  int          check_queued)
+midi_events_has_note_on (MidiEvents * self, int check_main, int check_queued)
 {
   if (check_main)
     {
@@ -440,8 +417,7 @@ midi_events_has_note_on (
     {
       for (int i = 0; i < self->num_queued_events; i++)
         {
-          if (midi_is_note_on (
-                self->queued_events[i].raw_buffer))
+          if (midi_is_note_on (self->queued_events[i].raw_buffer))
             {
               return 1;
             }
@@ -495,8 +471,7 @@ midi_events_add_all_notes_off (
     ev = &self->events[self->num_events];
 
   ev->time = time;
-  ev->raw_buffer[0] =
-    (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | (channel - 1));
+  ev->raw_buffer[0] = (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | (channel - 1));
   ev->raw_buffer[1] = MIDI_ALL_NOTES_OFF;
   ev->raw_buffer[2] = 0x00;
   ev->raw_buffer_sz = 3;
@@ -529,12 +504,10 @@ midi_events_panic (MidiEvents * self, bool queued)
 {
   if (zrythm_app)
     {
-      g_return_if_fail (
-        g_thread_self () == zrythm_app->gtk_thread);
+      g_return_if_fail (g_thread_self () == zrythm_app->gtk_thread);
     }
 
-  while (
-    zix_sem_try_wait (&self->access_sem) != ZIX_STATUS_SUCCESS)
+  while (zix_sem_try_wait (&self->access_sem) != ZIX_STATUS_SUCCESS)
     {
       g_usleep (10);
     }
@@ -555,10 +528,8 @@ midi_events_write_to_midi_file (
     {
       const MidiEvent * ev = &self->events[i];
 
-      BYTE buf[] = {
-        ev->raw_buffer[0], ev->raw_buffer[1], ev->raw_buffer[2]
-      };
-      int delta_time = (int) ev->time - last_time;
+      BYTE buf[] = { ev->raw_buffer[0], ev->raw_buffer[1], ev->raw_buffer[2] };
+      int  delta_time = (int) ev->time - last_time;
       midiTrackAddRaw (
         mf, midi_track, 3, buf,
         /* move ptr */
@@ -597,8 +568,7 @@ midi_events_copy_to_jack (
         {
           midi_data[j] = ev->raw_buffer[j];
         }
-      jack_midi_event_write (
-        buff, ev->time, midi_data, ev->raw_buffer_sz);
+      jack_midi_event_write (buff, ev->time, midi_data, ev->raw_buffer_sz);
 #  if 0
       g_message (
         "wrote MIDI event to JACK MIDI out at %d",
@@ -631,8 +601,7 @@ midi_events_add_note_off (
     ev = &self->events[self->num_events];
 
   ev->time = time;
-  ev->raw_buffer[0] =
-    (midi_byte_t) (MIDI_CH1_NOTE_OFF | (channel - 1));
+  ev->raw_buffer[0] = (midi_byte_t) (MIDI_CH1_NOTE_OFF | (channel - 1));
   ev->raw_buffer[1] = note_pitch;
   ev->raw_buffer[2] = 90;
   ev->raw_buffer_sz = 3;
@@ -718,8 +687,7 @@ midi_events_add_control_change (
     ev = &self->events[self->num_events];
 
   ev->time = time;
-  ev->raw_buffer[0] =
-    (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | (channel - 1));
+  ev->raw_buffer[0] = (midi_byte_t) (MIDI_CH1_CTRL_CHANGE | (channel - 1));
   ev->raw_buffer[1] = controller;
   ev->raw_buffer[2] = control;
   ev->raw_buffer_sz = 3;
@@ -752,8 +720,7 @@ midi_events_add_pitchbend (
     ev = &self->events[self->num_events];
 
   ev->time = time;
-  ev->raw_buffer[0] =
-    (midi_byte_t) (MIDI_CH1_PITCH_WHEEL_RANGE | (channel - 1));
+  ev->raw_buffer[0] = (midi_byte_t) (MIDI_CH1_PITCH_WHEEL_RANGE | (channel - 1));
   midi_get_bytes_from_combined (
     pitchbend + 8192, &ev->raw_buffer[1], &ev->raw_buffer[2]);
   ev->raw_buffer_sz = 3;
@@ -831,9 +798,7 @@ midi_events_sort (MidiEvents * self, const bool queued)
       events = self->events;
       num_events = (size_t) self->num_events;
     }
-  qsort (
-    events, num_events, sizeof (MidiEvent),
-    midi_event_cmpfunc);
+  qsort (events, num_events, sizeof (MidiEvent), midi_event_cmpfunc);
 }
 
 /**
@@ -866,8 +831,7 @@ midi_events_add_note_on (
     ev = &self->events[self->num_events];
 
   ev->time = time;
-  ev->raw_buffer[0] =
-    (midi_byte_t) (MIDI_CH1_NOTE_ON | (channel - 1));
+  ev->raw_buffer[0] = (midi_byte_t) (MIDI_CH1_NOTE_ON | (channel - 1));
   ev->raw_buffer[1] = note_pitch;
   ev->raw_buffer[2] = velocity;
   ev->raw_buffer_sz = 3;
@@ -922,8 +886,7 @@ midi_events_add_note_offs_from_chord_descr (
     {
       if (descr->notes[i])
         {
-          midi_events_add_note_off (
-            self, channel, i + 36, time, queued);
+          midi_events_add_note_off (self, channel, i + 36, time, queued);
         }
     }
 }
@@ -967,18 +930,15 @@ midi_events_add_event_from_buf (
       if (buf[2] == 0)
         goto note_off;
 
-      midi_events_add_note_on (
-        self, channel, buf[1], buf[2], time, queued);
+      midi_events_add_note_on (self, channel, buf[1], buf[2], time, queued);
       break;
     case MIDI_CH1_NOTE_OFF:
 note_off:
-      midi_events_add_note_off (
-        self, channel, buf[1], time, queued);
+      midi_events_add_note_off (self, channel, buf[1], time, queued);
       break;
     case MIDI_CH1_PITCH_WHEEL_RANGE:
       midi_events_add_pitchbend (
-        self, channel, midi_get_14_bit_value (buf), time,
-        queued);
+        self, channel, midi_get_14_bit_value (buf), time, queued);
       break;
     case MIDI_SYSTEM_MESSAGE:
       /* ignore active sensing */
@@ -991,12 +951,10 @@ note_off:
         }
       break;
     case MIDI_CH1_CTRL_CHANGE:
-      midi_events_add_control_change (
-        self, 1, buf[1], buf[2], time, queued);
+      midi_events_add_control_change (self, 1, buf[1], buf[2], time, queued);
       break;
     default:
-      midi_events_add_raw (
-        self, buf, (size_t) buf_size, time, queued);
+      midi_events_add_raw (self, buf, (size_t) buf_size, time, queued);
       break;
     }
 }
@@ -1007,10 +965,8 @@ midi_events_delete_event (
   const MidiEvent * ev,
   const bool        queued)
 {
-  MidiEvent * arr =
-    queued ? self->queued_events : self->events;
-#define NUM_EVENTS \
-  (queued ? self->num_queued_events : self->num_events)
+  MidiEvent * arr = queued ? self->queued_events : self->events;
+#define NUM_EVENTS (queued ? self->num_queued_events : self->num_events)
 
   for (int i = 0; i < NUM_EVENTS; i++)
     {
@@ -1047,11 +1003,9 @@ midi_event_print (const MidiEvent * ev)
 void
 midi_events_print (MidiEvents * self, const int queued)
 {
-  MidiEvent * arr =
-    queued ? self->queued_events : self->events;
+  MidiEvent * arr = queued ? self->queued_events : self->events;
   MidiEvent * ev1;
-#define NUM_EVENTS \
-  (queued ? self->num_queued_events : self->num_events)
+#define NUM_EVENTS (queued ? self->num_queued_events : self->num_events)
 
   int i;
   for (i = 0; i < NUM_EVENTS; i++)
@@ -1073,8 +1027,7 @@ midi_events_panic_all (const bool queued)
   g_message ("~ midi panic all (queued: %d) ~", queued);
 
   midi_events_panic (
-    AUDIO_ENGINE->midi_editor_manual_press->midi_events,
-    queued);
+    AUDIO_ENGINE->midi_editor_manual_press->midi_events, queued);
 
   Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -1085,8 +1038,7 @@ midi_events_panic_all (const bool queued)
         track_type_has_piano_roll (track->type)
         || track->type == TRACK_TYPE_CHORD)
         {
-          midi_events_panic (
-            track->processor->piano_roll->midi_events, queued);
+          midi_events_panic (track->processor->piano_roll->midi_events, queued);
         }
     }
 }
@@ -1098,17 +1050,13 @@ midi_events_panic_all (const bool queued)
  * instead.
  */
 void
-midi_events_clear_duplicates (
-  MidiEvents * self,
-  const int    queued)
+midi_events_clear_duplicates (MidiEvents * self, const int queued)
 {
   g_return_if_fail (self);
 
-  MidiEvent * arr =
-    queued ? self->queued_events : self->events;
-  MidiEvent *ev1, *ev2;
-#define NUM_EVENTS \
-  (queued ? self->num_queued_events : self->num_events)
+  MidiEvent * arr = queued ? self->queued_events : self->events;
+  MidiEvent * ev1, *ev2;
+#define NUM_EVENTS (queued ? self->num_queued_events : self->num_events)
 
   int i, j, k;
   for (i = 0; i < NUM_EVENTS; i++)

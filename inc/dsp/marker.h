@@ -24,12 +24,10 @@
 
 #define MARKER_WIDGET_TRIANGLE_W 10
 
-#define marker_is_selected(r) \
-  arranger_object_is_selected ((ArrangerObject *) r)
+#define marker_is_selected(r) arranger_object_is_selected ((ArrangerObject *) r)
 
 #define marker_is_deletable(m) \
-  ((m)->type != MARKER_TYPE_START \
-   && (m)->type != MARKER_TYPE_END)
+  ((m)->type != MARKER_TYPE_START && (m)->type != MARKER_TYPE_END)
 
 #define MARKER_SCHEMA_VERSION 2
 
@@ -83,10 +81,7 @@ typedef struct Marker
 } Marker;
 
 static const cyaml_schema_field_t marker_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Marker,
-    base,
-    arranger_object_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (Marker, base, arranger_object_fields_schema),
   YAML_FIELD_INT (Marker, schema_version),
   YAML_FIELD_STRING_PTR (Marker, name),
   YAML_FIELD_UINT (Marker, track_name_hash),
@@ -119,9 +114,7 @@ marker_set_index (Marker * self, int index);
  * Sets the Track of the Marker.
  */
 void
-marker_set_track_name_hash (
-  Marker *     marker,
-  unsigned int track_name_hash);
+marker_set_track_name_hash (Marker * marker, unsigned int track_name_hash);
 
 Marker *
 marker_find_by_name (const char * name);

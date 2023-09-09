@@ -30,8 +30,7 @@
 
 #include <gtk/gtk.h>
 
-#define BIND_CC_DIALOG_WIDGET_TYPE \
-  (bind_cc_dialog_widget_get_type ())
+#define BIND_CC_DIALOG_WIDGET_TYPE (bind_cc_dialog_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   BindCcDialogWidget,
   bind_cc_dialog_widget,

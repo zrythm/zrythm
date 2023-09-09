@@ -62,10 +62,7 @@ typedef struct AudioPool
 
 static const cyaml_schema_field_t audio_pool_fields_schema[] = {
   YAML_FIELD_INT (AudioPool, schema_version),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    AudioPool,
-    clips,
-    audio_clip_schema),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (AudioPool, clips, audio_clip_schema),
 
   CYAML_FIELD_END
 };
@@ -151,19 +148,14 @@ audio_pool_remove_unused (AudioPool * self, bool backup);
  * replaced by a unique name.
  */
 void
-audio_pool_ensure_unique_clip_name (
-  AudioPool * pool,
-  AudioClip * clip);
+audio_pool_ensure_unique_clip_name (AudioPool * pool, AudioClip * clip);
 
 /**
  * Generates a name for a recording clip.
  */
 MALLOC
 char *
-audio_pool_gen_name_for_recording_clip (
-  AudioPool * pool,
-  Track *     track,
-  int         lane);
+audio_pool_gen_name_for_recording_clip (AudioPool * pool, Track * track, int lane);
 
 /**
  * Loads the frame buffers of clips currently in
@@ -186,10 +178,7 @@ audio_pool_reload_clip_frame_bufs (AudioPool * self);
  * @return Whether successful.
  */
 bool
-audio_pool_write_to_disk (
-  AudioPool * self,
-  bool        is_backup,
-  GError **   error);
+audio_pool_write_to_disk (AudioPool * self, bool is_backup, GError ** error);
 
 /**
  * To be used during serialization.

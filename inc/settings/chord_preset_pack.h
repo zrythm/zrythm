@@ -61,31 +61,26 @@ typedef struct ChordPresetPack
   bool is_standard;
 } ChordPresetPack;
 
-static const cyaml_schema_field_t
-  chord_preset_pack_fields_schema[] = {
-    YAML_FIELD_INT (ChordPresetPack, schema_version),
-    YAML_FIELD_STRING_PTR (ChordPresetPack, name),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      ChordPresetPack,
-      presets,
-      chord_preset_schema),
+static const cyaml_schema_field_t chord_preset_pack_fields_schema[] = {
+  YAML_FIELD_INT (ChordPresetPack, schema_version),
+  YAML_FIELD_STRING_PTR (ChordPresetPack, name),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    ChordPresetPack,
+    presets,
+    chord_preset_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t chord_preset_pack_schema = {
-  YAML_VALUE_PTR (
-    ChordPresetPack,
-    chord_preset_pack_fields_schema),
+  YAML_VALUE_PTR (ChordPresetPack, chord_preset_pack_fields_schema),
 };
 
 ChordPresetPack *
 chord_preset_pack_new (const char * name, bool is_standard);
 
 bool
-chord_preset_pack_contains_name (
-  const ChordPresetPack * self,
-  const char *            name);
+chord_preset_pack_contains_name (const ChordPresetPack * self, const char * name);
 
 bool
 chord_preset_pack_contains_preset (
@@ -97,29 +92,22 @@ chord_preset_pack_contains_preset (
  *   still responsible for @ref pset.
  */
 void
-chord_preset_pack_add_preset (
-  ChordPresetPack *   self,
-  const ChordPreset * pset);
+chord_preset_pack_add_preset (ChordPresetPack * self, const ChordPreset * pset);
 
 void
-chord_preset_pack_delete_preset (
-  ChordPresetPack * self,
-  ChordPreset *     pset);
+chord_preset_pack_delete_preset (ChordPresetPack * self, ChordPreset * pset);
 
 const char *
 chord_preset_pack_get_name (const ChordPresetPack * self);
 
 void
-chord_preset_pack_set_name (
-  ChordPresetPack * self,
-  const char *      name);
+chord_preset_pack_set_name (ChordPresetPack * self, const char * name);
 
 ChordPresetPack *
 chord_preset_pack_clone (const ChordPresetPack * src);
 
 GMenuModel *
-chord_preset_pack_generate_context_menu (
-  const ChordPresetPack * self);
+chord_preset_pack_generate_context_menu (const ChordPresetPack * self);
 
 void
 chord_preset_pack_free (ChordPresetPack * self);

@@ -73,10 +73,7 @@ typedef struct ItemFactory
  *   NULL.
  */
 ItemFactory *
-item_factory_new (
-  ItemFactoryType type,
-  bool            editable,
-  const char *    column_name);
+item_factory_new (ItemFactoryType type, bool editable, const char * column_name);
 
 /**
  * Shorthand to generate and append a column to

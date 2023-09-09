@@ -42,10 +42,7 @@ lv2_evbuf_pad_size (uint32_t size)
 }
 
 LV2_Evbuf *
-lv2_evbuf_new (
-  uint32_t capacity,
-  LV2_URID atom_Chunk,
-  LV2_URID atom_Sequence)
+lv2_evbuf_new (uint32_t capacity, LV2_URID atom_Chunk, LV2_URID atom_Sequence)
 {
   g_return_val_if_fail (capacity > 0, NULL);
 
@@ -57,8 +54,7 @@ lv2_evbuf_new (
     aligned_alloc (
       64,
 #endif
-      sizeof (LV2_Evbuf) + sizeof (LV2_Atom_Sequence)
-      + capacity);
+      sizeof (LV2_Evbuf) + sizeof (LV2_Atom_Sequence) + capacity);
   g_return_val_if_fail (evbuf, NULL);
   evbuf->capacity = capacity;
   evbuf->atom_Chunk = atom_Chunk;
@@ -93,8 +89,7 @@ lv2_evbuf_get_size (LV2_Evbuf * evbuf)
 {
   g_return_val_if_fail (
     evbuf->atom.atom.type != evbuf->atom_Sequence
-      || evbuf->atom.atom.size
-           >= sizeof (LV2_Atom_Sequence_Body),
+      || evbuf->atom.atom.size >= sizeof (LV2_Atom_Sequence_Body),
     0);
   return evbuf->atom.atom.type == evbuf->atom_Sequence
            ? evbuf->atom.atom.size - sizeof (LV2_Atom_Sequence_Body)
@@ -120,9 +115,7 @@ LV2_Evbuf_Iterator
 lv2_evbuf_end (LV2_Evbuf * evbuf)
 {
   const uint32_t           size = lv2_evbuf_get_size (evbuf);
-  const LV2_Evbuf_Iterator iter = {
-    evbuf, lv2_evbuf_pad_size (size)
-  };
+  const LV2_Evbuf_Iterator iter = { evbuf, lv2_evbuf_pad_size (size) };
   return iter;
 }
 
@@ -144,12 +137,10 @@ lv2_evbuf_next (LV2_Evbuf_Iterator iter)
   uint32_t    offset = iter.offset;
   uint32_t    size;
   size =
-    ((LV2_Atom_Event *) ((char *) LV2_ATOM_CONTENTS (
-                           LV2_Atom_Sequence, &evbuf->atom)
+    ((LV2_Atom_Event *) ((char *) LV2_ATOM_CONTENTS (LV2_Atom_Sequence, &evbuf->atom)
                          + offset))
       ->body.size;
-  offset +=
-    lv2_evbuf_pad_size (sizeof (LV2_Atom_Event) + size);
+  offset += lv2_evbuf_pad_size (sizeof (LV2_Atom_Event) + size);
 
   LV2_Evbuf_Iterator next = { evbuf, offset };
   return next;
@@ -176,8 +167,7 @@ lv2_evbuf_get (
   LV2_Atom_Event *    aev;
   aseq = &iter.evbuf->atom;
   aev =
-    (LV2_Atom_Event *) ((char *) LV2_ATOM_CONTENTS (
-                          LV2_Atom_Sequence, aseq)
+    (LV2_Atom_Event *) ((char *) LV2_ATOM_CONTENTS (LV2_Atom_Sequence, aseq)
                         + iter.offset);
   *frames = aev->time.frames;
   *subframes = 0;
@@ -208,8 +198,7 @@ lv2_evbuf_write (
     }
 
   aev =
-    (LV2_Atom_Event *) ((char *) LV2_ATOM_CONTENTS (
-                          LV2_Atom_Sequence, aseq)
+    (LV2_Atom_Event *) ((char *) LV2_ATOM_CONTENTS (LV2_Atom_Sequence, aseq)
                         + iter->offset);
   aev->time.frames = frames;
   aev->body.type = type;

@@ -23,10 +23,7 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  InspectorMidiWidget,
-  inspector_midi_widget,
-  GTK_TYPE_GRID)
+G_DEFINE_TYPE (InspectorMidiWidget, inspector_midi_widget, GTK_TYPE_GRID)
 
 void
 inspector_midi_widget_show_midi (
@@ -40,8 +37,7 @@ inspector_midi_widget_show_midi (
     }
   else
     {
-      char * string =
-        g_strdup_printf ("Midis (%d)", num_midis);
+      char * string = g_strdup_printf ("Midis (%d)", num_midis);
       gtk_label_set_text (self->header, string);
       g_free (string);
 
@@ -52,23 +48,19 @@ inspector_midi_widget_show_midi (
 }
 
 static void
-inspector_midi_widget_class_init (
-  InspectorMidiWidgetClass * klass)
+inspector_midi_widget_class_init (InspectorMidiWidgetClass * klass)
 {
   gtk_widget_class_set_template_from_resource (
-    GTK_WIDGET_CLASS (klass),
-    "/org/zrythm/ui/inspector_midi.ui");
+    GTK_WIDGET_CLASS (klass), "/org/zrythm/ui/inspector_midi.ui");
 
   gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass), InspectorMidiWidget,
-    position_box);
+    GTK_WIDGET_CLASS (klass), InspectorMidiWidget, position_box);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass), InspectorMidiWidget, length_box);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass), InspectorMidiWidget, color);
   gtk_widget_class_bind_template_child (
-    GTK_WIDGET_CLASS (klass), InspectorMidiWidget,
-    mute_toggle);
+    GTK_WIDGET_CLASS (klass), InspectorMidiWidget, mute_toggle);
   gtk_widget_class_bind_template_child (
     GTK_WIDGET_CLASS (klass), InspectorMidiWidget, header);
 }

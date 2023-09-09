@@ -27,8 +27,8 @@ test_midi_mappping (void)
 
   midi_byte_t buf[3] = { 0xB0, 0x07, 121 };
   midi_mappings_bind_device (
-    MIDI_MAPPINGS, buf, ext_port,
-    P_MASTER_TRACK->channel->fader->amp, F_NO_PUBLISH_EVENTS);
+    MIDI_MAPPINGS, buf, ext_port, P_MASTER_TRACK->channel->fader->amp,
+    F_NO_PUBLISH_EVENTS);
   g_assert_cmpint (MIDI_MAPPINGS->num_mappings, ==, 1);
 
   int size = midi_mappings_get_for_port (
@@ -40,8 +40,7 @@ test_midi_mappping (void)
   test_project_save_and_reload ();
 
   g_assert_true (
-    P_MASTER_TRACK->channel->fader->amp
-    == MIDI_MAPPINGS->mappings[0]->dest);
+    P_MASTER_TRACK->channel->fader->amp == MIDI_MAPPINGS->mappings[0]->dest);
 }
 
 int
@@ -54,8 +53,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/midi_mapping/"
 
   g_test_add_func (
-    TEST_PREFIX "test midi mapping",
-    (GTestFunc) test_midi_mappping);
+    TEST_PREFIX "test midi mapping", (GTestFunc) test_midi_mappping);
 
   return g_test_run ();
 }

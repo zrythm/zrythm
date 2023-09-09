@@ -26,27 +26,22 @@ create_automation_region (int track_pos)
   Position start, end;
   position_set_to_bar (&start, 1);
   position_set_to_bar (&end, 3);
-  ZRegion * region = automation_region_new (
-    &start, &end, track_get_name_hash (track), 0, 0);
-  AutomationTracklist * atl =
-    track_get_automation_tracklist (track);
+  ZRegion * region =
+    automation_region_new (&start, &end, track_get_name_hash (track), 0, 0);
+  AutomationTracklist * atl = track_get_automation_tracklist (track);
   g_return_if_fail (atl);
   bool success = track_add_region (
-    track, region, atl->ats[0], 0, F_GEN_NAME,
-    F_NO_PUBLISH_EVENTS, NULL);
+    track, region, atl->ats[0], 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, NULL);
   g_assert_true (success);
   arranger_object_select (
-    (ArrangerObject *) region, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) region, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
     (ArrangerSelections *) TL_SELECTIONS, NULL);
 
-  AutomationPoint * ap =
-    automation_point_new_float (0.1f, 0.1f, &start);
+  AutomationPoint * ap = automation_point_new_float (0.1f, 0.1f, &start);
   automation_region_add_ap (region, ap, F_NO_PUBLISH_EVENTS);
   arranger_object_select (
-    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    (ArrangerObject *) ap, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
   arranger_selections_action_perform_create (
     (ArrangerSelections *) AUTOMATION_SELECTIONS, NULL);
 }
@@ -57,8 +52,8 @@ test_swap_with_automation_regions (void)
   test_helper_zrythm_init ();
 
   track_create_with_action (
-    TRACK_TYPE_AUDIO, NULL, NULL, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
+    TRACK_TYPE_AUDIO, NULL, NULL, PLAYHEAD, TRACKLIST->num_tracks, 1, -1, NULL,
+    NULL);
 
   create_automation_region (TRACKLIST->num_tracks - 1);
 
@@ -67,15 +62,11 @@ test_swap_with_automation_regions (void)
   create_automation_region (TRACKLIST->num_tracks - 1);
 
   /* swap tracks */
-  Track * track1 =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
-  Track * track2 =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
-  track_select (
-    track2, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  Track * track1 = TRACKLIST->tracks[TRACKLIST->num_tracks - 2];
+  Track * track2 = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (track2, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_move (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, track1->pos,
-    NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, track1->pos, NULL);
 
   undo_manager_undo (UNDO_MANAGER, NULL);
   undo_manager_undo (UNDO_MANAGER, NULL);
@@ -103,15 +94,14 @@ test_handle_drop_empty_midi_file (void)
 {
   test_helper_zrythm_init ();
 
-  char * path = g_build_filename (
-    TESTS_SRCDIR, "empty_midi_file_type1.mid", NULL);
+  char * path =
+    g_build_filename (TESTS_SRCDIR, "empty_midi_file_type1.mid", NULL);
   SupportedFile * file = supported_file_new_from_path (path);
   g_free (path);
 
   GError * err = NULL;
   bool     success = tracklist_import_files (
-    TRACKLIST, NULL, file, NULL, NULL, -1, PLAYHEAD, NULL,
-    &err);
+    TRACKLIST, NULL, file, NULL, NULL, -1, PLAYHEAD, NULL, &err);
   g_assert_false (success);
 
   test_helper_zrythm_cleanup ();

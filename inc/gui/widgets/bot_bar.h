@@ -13,10 +13,10 @@
 #include <gtk/gtk.h>
 #include <libpanel.h>
 
-typedef struct _DigitalMeterWidget DigitalMeterWidget;
+typedef struct _DigitalMeterWidget      DigitalMeterWidget;
 typedef struct _TransportControlsWidget TransportControlsWidget;
-typedef struct _CpuWidget            CpuWidget;
-typedef struct _ButtonWithMenuWidget ButtonWithMenuWidget;
+typedef struct _CpuWidget               CpuWidget;
+typedef struct _ButtonWithMenuWidget    ButtonWithMenuWidget;
 
 /**
  * @addtogroup widgets
@@ -25,12 +25,7 @@ typedef struct _ButtonWithMenuWidget ButtonWithMenuWidget;
  */
 
 #define BOT_BAR_WIDGET_TYPE (bot_bar_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  BotBarWidget,
-  bot_bar_widget,
-  Z,
-  BOT_BAR_WIDGET,
-  GtkWidget)
+G_DECLARE_FINAL_TYPE (BotBarWidget, bot_bar_widget, Z, BOT_BAR_WIDGET, GtkWidget)
 
 #define MW_BOT_BAR MW->bot_bar
 #define MW_DIGITAL_TRANSPORT MW_BOT_BAR->digital_transport

@@ -24,8 +24,7 @@
 
 #include <gtk/gtk.h>
 
-#define INSPECTOR_MIDI_WIDGET_TYPE \
-  (inspector_midi_widget_get_type ())
+#define INSPECTOR_MIDI_WIDGET_TYPE (inspector_midi_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   InspectorMidiWidget,
   inspector_midi_widget,

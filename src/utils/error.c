@@ -20,8 +20,8 @@ error_handle_prv (GError * err, const char * format, ...)
   if (err)
     {
       char * tmp = g_strdup_vprintf (format, args);
-      char * str = g_strdup_printf (
-        _ ("%s\n---Backtrace---\n%s"), tmp, err->message);
+      char * str =
+        g_strdup_printf (_ ("%s\n---Backtrace---\n%s"), tmp, err->message);
       g_free (tmp);
       if (ZRYTHM_HAVE_UI)
         {

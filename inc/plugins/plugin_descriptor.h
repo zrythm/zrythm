@@ -18,8 +18,7 @@
 
 #include <glib/gi18n.h>
 
-typedef struct _WrappedObjectWithChangeSignal
-  WrappedObjectWithChangeSignal;
+typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 
 /**
  * @addtogroup plugins
@@ -245,13 +244,8 @@ static const cyaml_schema_field_t plugin_descriptor_fields_schema[] = {
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, author),
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, name),
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, website),
-  YAML_FIELD_ENUM (
-    PluginDescriptor,
-    category,
-    plugin_descriptor_category_strings),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    PluginDescriptor,
-    category_str),
+  YAML_FIELD_ENUM (PluginDescriptor, category, plugin_descriptor_category_strings),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, category_str),
   YAML_FIELD_INT (PluginDescriptor, num_audio_ins),
   YAML_FIELD_INT (PluginDescriptor, num_audio_outs),
   YAML_FIELD_INT (PluginDescriptor, num_midi_ins),
@@ -261,20 +255,11 @@ static const cyaml_schema_field_t plugin_descriptor_fields_schema[] = {
   YAML_FIELD_INT (PluginDescriptor, num_cv_ins),
   YAML_FIELD_UINT (PluginDescriptor, unique_id),
   YAML_FIELD_INT (PluginDescriptor, num_cv_outs),
-  YAML_FIELD_ENUM (
-    PluginDescriptor,
-    arch,
-    plugin_architecture_strings),
-  YAML_FIELD_ENUM (
-    PluginDescriptor,
-    protocol,
-    plugin_protocol_strings),
+  YAML_FIELD_ENUM (PluginDescriptor, arch, plugin_architecture_strings),
+  YAML_FIELD_ENUM (PluginDescriptor, protocol, plugin_protocol_strings),
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, path),
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, uri),
-  YAML_FIELD_ENUM (
-    PluginDescriptor,
-    min_bridge_mode,
-    carla_bridge_mode_strings),
+  YAML_FIELD_ENUM (PluginDescriptor, min_bridge_mode, carla_bridge_mode_strings),
   YAML_FIELD_INT (PluginDescriptor, has_custom_ui),
   YAML_FIELD_UINT (PluginDescriptor, ghash),
 
@@ -282,9 +267,7 @@ static const cyaml_schema_field_t plugin_descriptor_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t plugin_descriptor_schema = {
-  YAML_VALUE_PTR (
-    PluginDescriptor,
-    plugin_descriptor_fields_schema),
+  YAML_VALUE_PTR (PluginDescriptor, plugin_descriptor_fields_schema),
 };
 
 PluginDescriptor *
@@ -333,9 +316,7 @@ plugin_category_to_string (ZPluginCategory category);
  * Clones the plugin descriptor.
  */
 NONNULL void
-plugin_descriptor_copy (
-  PluginDescriptor *       dest,
-  const PluginDescriptor * src);
+plugin_descriptor_copy (PluginDescriptor * dest, const PluginDescriptor * src);
 
 /**
  * Clones the plugin descriptor.
@@ -347,29 +328,25 @@ plugin_descriptor_clone (const PluginDescriptor * src);
  * Returns if the Plugin is an instrument or not.
  */
 NONNULL bool
-plugin_descriptor_is_instrument (
-  const PluginDescriptor * const descr);
+plugin_descriptor_is_instrument (const PluginDescriptor * const descr);
 
 /**
  * Returns if the Plugin is an effect or not.
  */
 NONNULL bool
-plugin_descriptor_is_effect (
-  const PluginDescriptor * const descr);
+plugin_descriptor_is_effect (const PluginDescriptor * const descr);
 
 /**
  * Returns if the Plugin is a modulator or not.
  */
 NONNULL int
-plugin_descriptor_is_modulator (
-  const PluginDescriptor * const descr);
+plugin_descriptor_is_modulator (const PluginDescriptor * const descr);
 
 /**
  * Returns if the Plugin is a midi modifier or not.
  */
 NONNULL int
-plugin_descriptor_is_midi_modifier (
-  const PluginDescriptor * const descr);
+plugin_descriptor_is_midi_modifier (const PluginDescriptor * const descr);
 
 /**
  * Returns the ZPluginCategory matching the given
@@ -379,16 +356,14 @@ NONNULL ZPluginCategory
 plugin_descriptor_string_to_category (const char * str);
 
 char *
-plugin_descriptor_category_to_string (
-  ZPluginCategory category);
+plugin_descriptor_category_to_string (ZPluginCategory category);
 
 /**
  * Gets an appropriate icon name for the given
  * descriptor.
  */
 const char *
-plugin_descriptor_get_icon_name (
-  const PluginDescriptor * const self);
+plugin_descriptor_get_icon_name (const PluginDescriptor * const self);
 
 /**
  * Returns if the given plugin identifier can be
@@ -414,16 +389,14 @@ plugin_descriptor_is_same_plugin (
  * UI.
  */
 NONNULL bool
-plugin_descriptor_has_custom_ui (
-  const PluginDescriptor * self);
+plugin_descriptor_has_custom_ui (const PluginDescriptor * self);
 
 /**
  * Returns the minimum bridge mode required for this
  * plugin.
  */
 NONNULL CarlaBridgeMode
-plugin_descriptor_get_min_bridge_mode (
-  const PluginDescriptor * self);
+plugin_descriptor_get_min_bridge_mode (const PluginDescriptor * self);
 
 /**
  * Returns whether the plugin is known to work, so it should
@@ -436,20 +409,16 @@ plugin_descriptor_get_min_bridge_mode (
  * be debugged if issues arise.
  */
 NONNULL bool
-plugin_descriptor_is_whitelisted (
-  const PluginDescriptor * self);
+plugin_descriptor_is_whitelisted (const PluginDescriptor * self);
 
 NONNULL GMenuModel *
-plugin_descriptor_generate_context_menu (
-  const PluginDescriptor * self);
+plugin_descriptor_generate_context_menu (const PluginDescriptor * self);
 
 NONNULL void
 plugin_descriptor_free (PluginDescriptor * self);
 
 NONNULL void
-plugin_descriptor_free_closure (
-  void *     data,
-  GClosure * closure);
+plugin_descriptor_free_closure (void * data, GClosure * closure);
 
 /**
  * @}

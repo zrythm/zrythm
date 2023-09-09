@@ -30,8 +30,7 @@
 
 #include <gtk/gtk.h>
 
-#define BUTTON_WITH_MENU_WIDGET_TYPE \
-  (button_with_menu_widget_get_type ())
+#define BUTTON_WITH_MENU_WIDGET_TYPE (button_with_menu_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ButtonWithMenuWidget,
   button_with_menu_widget,
@@ -101,8 +100,7 @@ ButtonWithMenuWidget *
 button_with_menu_widget_new (void);
 
 static inline GtkMenuButton *
-button_with_menu_widget_get_menu_button (
-  ButtonWithMenuWidget * self)
+button_with_menu_widget_get_menu_button (ButtonWithMenuWidget * self)
 {
   return self->menu_btn;
 }

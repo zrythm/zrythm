@@ -19,9 +19,7 @@
 #include <gtk/gtk.h>
 
 void
-mixer_selections_init_loaded (
-  MixerSelections * self,
-  bool              is_project)
+mixer_selections_init_loaded (MixerSelections * self, bool is_project)
 {
   if (!is_project)
     {
@@ -156,8 +154,8 @@ mixer_selections_get_track (const MixerSelections * const self)
   if (!self->has_any)
     return NULL;
 
-  Track * track = tracklist_find_track_by_name_hash (
-    TRACKLIST, self->track_name_hash);
+  Track * track =
+    tracklist_find_track_by_name_hash (TRACKLIST, self->track_name_hash);
   g_return_val_if_fail (track, NULL);
   return track;
 }
@@ -184,9 +182,7 @@ mixer_selections_add_slot (
 {
   unsigned int name_hash = track_get_name_hash (track);
 
-  if (
-    !ms->has_any || name_hash != ms->track_name_hash
-    || type != ms->type)
+  if (!ms->has_any || name_hash != ms->track_name_hash || type != ms->type)
     {
       mixer_selections_clear (ms, F_NO_PUBLISH_EVENTS);
     }
@@ -195,8 +191,8 @@ mixer_selections_add_slot (
   ms->has_any = true;
 
   g_debug (
-    "adding slot %s:%s:%d", track->name,
-    plugin_slot_type_strings[type].str, slot);
+    "adding slot %s:%s:%d", track->name, plugin_slot_type_strings[type].str,
+    slot);
 
   Plugin * pl = NULL;
   if (!array_contains_int (ms->slots, ms->num_slots, slot))
@@ -228,15 +224,13 @@ mixer_selections_add_slot (
           if (!pl_to_append)
             {
               /* FIXME handle properly */
-              g_critical (
-                "failed to clone plugin: %s", err->message);
+              g_critical ("failed to clone plugin: %s", err->message);
               return;
             }
         }
 
       array_double_append (
-        ms->slots, ms->plugins, ms->num_slots, slot,
-        pl_to_append);
+        ms->slots, ms->plugins, ms->num_slots, slot, pl_to_append);
     }
 
   if (pl && plugin_is_in_active_project (pl))
@@ -307,9 +301,7 @@ mixer_selections_contains_slot (
  * Returns if the plugin is selected or not.
  */
 bool
-mixer_selections_contains_plugin (
-  MixerSelections * ms,
-  Plugin *          pl)
+mixer_selections_contains_plugin (MixerSelections * ms, Plugin * pl)
 {
   g_return_val_if_fail (ms && IS_PLUGIN (pl), false);
 
@@ -329,9 +321,7 @@ mixer_selections_contains_plugin (
     {
       for (int i = 0; i < ms->num_slots; i++)
         {
-          if (
-            ms->slots[i] == pl->id.slot
-            && ms->type == pl->id.slot_type)
+          if (ms->slots[i] == pl->id.slot && ms->type == pl->id.slot_type)
             return true;
         }
     }
@@ -421,8 +411,7 @@ mixer_selections_get_plugins (
   else
     {
       Track * track = mixer_selections_get_track (self);
-      g_return_val_if_fail (
-        IS_TRACK_AND_NONNULL (track), false);
+      g_return_val_if_fail (IS_TRACK_AND_NONNULL (track), false);
 
       for (int i = 0; i < self->num_slots; i++)
         {
@@ -496,9 +485,7 @@ mixer_selections_validate (MixerSelections * self)
  * Clears selections.
  */
 void
-mixer_selections_clear (
-  MixerSelections * self,
-  const int         pub_events)
+mixer_selections_clear (MixerSelections * self, const int pub_events)
 {
   int i;
 
@@ -526,9 +513,7 @@ mixer_selections_clear (
  *   project selections.
  */
 MixerSelections *
-mixer_selections_clone (
-  MixerSelections * src,
-  bool              src_is_project)
+mixer_selections_clone (MixerSelections * src, bool src_is_project)
 {
   MixerSelections * ms = mixer_selections_new ();
 
@@ -539,10 +524,9 @@ mixer_selections_clone (
       Plugin * pl = NULL;
       if (src_is_project)
         {
-          Track * track = tracklist_find_track_by_name_hash (
-            TRACKLIST, src->track_name_hash);
-          pl = track_get_plugin_at_slot (
-            track, src->type, src->slots[i]);
+          Track * track =
+            tracklist_find_track_by_name_hash (TRACKLIST, src->track_name_hash);
+          pl = track_get_plugin_at_slot (track, src->type, src->slots[i]);
           g_return_val_if_fail (IS_PLUGIN (pl), NULL);
         }
       else
@@ -555,8 +539,8 @@ mixer_selections_clone (
       if (!ms->plugins[i])
         {
           g_warning (
-            "failed to clone plugin %s: %s",
-            pl->setting->descr->name, err->message);
+            "failed to clone plugin %s: %s", pl->setting->descr->name,
+            err->message);
           g_error_free_and_null (err);
           mixer_selections_free (ms);
           return NULL;
@@ -615,8 +599,7 @@ mixer_selections_paste_to_slot (
 {
   GError * err = NULL;
   bool     ret = mixer_selections_action_perform_paste (
-    ms, PORT_CONNECTIONS_MGR, type,
-    track_get_name_hash (ch->track), slot, &err);
+    ms, PORT_CONNECTIONS_MGR, type, track_get_name_hash (ch->track), slot, &err);
   if (!ret)
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to paste plugins"));

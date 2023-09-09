@@ -56,8 +56,7 @@ file_path_relative_to (const char * path, const char * base)
 {
   const size_t path_len = strlen (path);
   const size_t base_len = strlen (base);
-  const size_t min_len =
-    (path_len < base_len) ? path_len : base_len;
+  const size_t min_len = (path_len < base_len) ? path_len : base_len;
 
   // Find the last separator common to both paths
   size_t last_shared_sep = 0;
@@ -93,7 +92,7 @@ file_path_relative_to (const char * path, const char * base)
 
   // Write up references
   const size_t suffix_len = path_len - last_shared_sep;
-  char * rel = g_malloc0_n (1, suffix_len + (up * 3) + 1);
+  char *       rel = g_malloc0_n (1, suffix_len + (up * 3) + 1);
   for (size_t i = 0; i < up; ++i)
     {
       if (use_slash)
@@ -107,8 +106,7 @@ file_path_relative_to (const char * path, const char * base)
     }
 
   // Write suffix
-  memcpy (
-    rel + (up * 3), path + last_shared_sep + 1, suffix_len);
+  memcpy (rel + (up * 3), path + last_shared_sep + 1, suffix_len);
   return rel;
 }
 
@@ -119,7 +117,7 @@ file_symlink (const char * old_path, const char * new_path)
 #ifdef _WOE32
   ret = !CreateHardLink (new_path, old_path, 0);
 #else
-  char * target = file_path_relative_to (old_path, new_path);
+  char *            target = file_path_relative_to (old_path, new_path);
   ret = symlink (target, new_path);
   g_free (target);
 #endif

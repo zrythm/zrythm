@@ -43,8 +43,7 @@ eval_handler (void * handler_data, SCM key, SCM args)
    * after the stack has been unwound here. */
 
   scm_print_exception (error_out_port, SCM_BOOL_F, key, args);
-  scm_display_backtrace (
-    stack, error_out_port, SCM_BOOL_F, SCM_BOOL_F);
+  scm_display_backtrace (stack, error_out_port, SCM_BOOL_F, SCM_BOOL_F);
 
   return SCM_BOOL_F;
 }
@@ -64,8 +63,8 @@ preunwind_proc (void * handler_data, SCM key, SCM parameters)
 static void *
 guile_mode_func (void * data)
 {
-  char * script_path = g_build_filename (
-    TESTS_SRCDIR, (const char *) data, NULL);
+  char * script_path =
+    g_build_filename (TESTS_SRCDIR, (const char *) data, NULL);
 
   guile_define_modules ();
 
@@ -78,8 +77,8 @@ guile_mode_func (void * data)
   SCM captured_stack = SCM_BOOL_F;
 
   SCM ret = scm_c_catch (
-    SCM_BOOL_T, call_proc, script_path, eval_handler,
-    &captured_stack, preunwind_proc, &captured_stack);
+    SCM_BOOL_T, call_proc, script_path, eval_handler, &captured_stack,
+    preunwind_proc, &captured_stack);
   g_free (script_path);
 
   SCM str_scm = scm_get_output_string (out_port);

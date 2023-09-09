@@ -94,11 +94,7 @@ _array_index_of (void ** array, int size, void * element)
  * @param arr2 Source array.
  */
 void
-_array_dynamic_swap (
-  void *** arr1,
-  size_t * sz1,
-  void *** arr2,
-  size_t * sz2)
+_array_dynamic_swap (void *** arr1, size_t * sz1, void *** arr2, size_t * sz2)
 {
   g_return_if_fail (arr1 && arr2 && *arr1 && *arr2);
   int is_1_larger = *sz1 > *sz2;
@@ -123,8 +119,7 @@ _array_dynamic_swap (
     }
 
   /* resize the small array */
-  *small_arr =
-    g_realloc (*small_arr, *large_sz * sizeof (void *));
+  *small_arr = g_realloc (*small_arr, *large_sz * sizeof (void *));
 
   /* copy the elements of the small array in tmp */
   void * tmp[*small_sz > 0 ? *small_sz : 1];
@@ -134,8 +129,7 @@ _array_dynamic_swap (
   memcpy (*small_arr, *large_arr, sizeof (void *) * *large_sz);
 
   /* resize large array */
-  *large_arr =
-    g_realloc (*large_arr, *small_sz * sizeof (void *));
+  *large_arr = g_realloc (*large_arr, *small_sz * sizeof (void *));
 
   /* copy the elements from temp to large array */
   memcpy (*large_arr, tmp, sizeof (void *) * *small_sz);
@@ -181,9 +175,7 @@ _array_double_size_if_full (
 
   if (G_UNLIKELY (count > *max_sz && *max_sz != 0))
     {
-      g_critical (
-        "invalid count (%zu) and max sz (%zu)", count,
-        *max_sz);
+      g_critical ("invalid count (%zu) and max sz (%zu)", count, *max_sz);
       return;
     }
 
@@ -200,8 +192,8 @@ _array_double_size_if_full (
     }
   else
     {
-      *arr_ptr = object_realloc_n_sizeof (
-        *arr_ptr, *max_sz * el_size, new_sz * el_size);
+      *arr_ptr =
+        object_realloc_n_sizeof (*arr_ptr, *max_sz * el_size, new_sz * el_size);
     }
   *max_sz = new_sz;
 }
@@ -220,10 +212,7 @@ alphaBetize (const void * a, const void * b)
 }
 
 void
-array_sort_alphabetically (
-  char ** array,
-  int     size,
-  int     case_sensitive)
+array_sort_alphabetically (char ** array, int size, int case_sensitive)
 {
   if (!case_sensitive)
     qsort (array, (size_t) size, sizeof (char *), alphaBetize);
@@ -249,8 +238,7 @@ array_shuffle (void * array, size_t n, size_t size)
       for (i = 0; i < n - 1; ++i)
         {
           size_t rnd =
-            (size_t) ((double) pcg_rand_uf (ZRYTHM->rand)
-                      * (double) RAND_MAX);
+            (size_t) ((double) pcg_rand_uf (ZRYTHM->rand) * (double) RAND_MAX);
           size_t j = i + rnd / (RAND_MAX / (n - i) + 1);
 
           memcpy (tmp, arr + j * stride, size);

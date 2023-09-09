@@ -17,10 +17,7 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  RightDockEdgeWidget,
-  right_dock_edge_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (RightDockEdgeWidget, right_dock_edge_widget, GTK_TYPE_WIDGET)
 
 /* TODO implement after workspaces */
 #if 0
@@ -42,8 +39,7 @@ on_notebook_switch_page (
 void
 right_dock_edge_widget_setup (RightDockEdgeWidget * self)
 {
-  monitor_section_widget_setup (
-    self->monitor_section, CONTROL_ROOM);
+  monitor_section_widget_setup (self->monitor_section, CONTROL_ROOM);
 
   /* TODO load from workspaces */
 #if 0
@@ -66,8 +62,7 @@ dispose (RightDockEdgeWidget * self)
 {
   gtk_widget_unparent (GTK_WIDGET (self->panel_frame));
 
-  G_OBJECT_CLASS (right_dock_edge_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (right_dock_edge_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
@@ -81,10 +76,8 @@ right_dock_edge_widget_init (RightDockEdgeWidget * self)
 
 #define ADD_TAB(widget, icon, title) \
   { \
-    PanelWidget * panel_widget = \
-      PANEL_WIDGET (panel_widget_new ()); \
-    panel_widget_set_child ( \
-      panel_widget, GTK_WIDGET (widget)); \
+    PanelWidget * panel_widget = PANEL_WIDGET (panel_widget_new ()); \
+    panel_widget_set_child (panel_widget, GTK_WIDGET (widget)); \
     panel_widget_set_icon_name (panel_widget, icon); \
     panel_widget_set_title (panel_widget, title); \
     panel_frame_add (self->panel_frame, panel_widget); \
@@ -94,37 +87,29 @@ right_dock_edge_widget_init (RightDockEdgeWidget * self)
   self->plugin_browser = plugin_browser_widget_new ();
   box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->plugin_browser_box = box;
-  gtk_box_append (
-    GTK_BOX (box), GTK_WIDGET (self->plugin_browser));
-  ADD_TAB (
-    GTK_WIDGET (box), "plugin-solid", _ ("Plugin Browser"));
+  gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->plugin_browser));
+  ADD_TAB (GTK_WIDGET (box), "plugin-solid", _ ("Plugin Browser"));
 
   /* add file browser */
   self->file_browser = panel_file_browser_widget_new ();
   box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->file_browser_box = box;
-  gtk_box_append (
-    GTK_BOX (box), GTK_WIDGET (self->file_browser));
-  ADD_TAB (
-    GTK_WIDGET (box), "folder-music-line", _ ("File Browser"));
+  gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->file_browser));
+  ADD_TAB (GTK_WIDGET (box), "folder-music-line", _ ("File Browser"));
 
   /* add control room */
   self->monitor_section = monitor_section_widget_new ();
   box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->monitor_section_box = box;
-  gtk_box_append (
-    GTK_BOX (box), GTK_WIDGET (self->monitor_section));
+  gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->monitor_section));
   ADD_TAB (GTK_WIDGET (box), "speaker", _ ("Monitor Section"));
 
   /* add chord preset browser */
   self->chord_pack_browser = chord_pack_browser_widget_new ();
   box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
   self->chord_pack_browser_box = box;
-  gtk_box_append (
-    GTK_BOX (box), GTK_WIDGET (self->chord_pack_browser));
-  ADD_TAB (
-    GTK_WIDGET (box), "minuet-chords",
-    _ ("Chord Preset Browser"));
+  gtk_box_append (GTK_BOX (box), GTK_WIDGET (self->chord_pack_browser));
+  ADD_TAB (GTK_WIDGET (box), "minuet-chords", _ ("Chord Preset Browser"));
 
   /* TODO: uncomment after
    * https://gitlab.gnome.org/chergert/libpanel/-/issues/10 */
@@ -144,8 +129,7 @@ right_dock_edge_widget_init (RightDockEdgeWidget * self)
 }
 
 static void
-right_dock_edge_widget_class_init (
-  RightDockEdgeWidgetClass * _klass)
+right_dock_edge_widget_class_init (RightDockEdgeWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "right_dock_edge.ui");
@@ -153,15 +137,13 @@ right_dock_edge_widget_class_init (
   gtk_widget_class_set_css_name (klass, "right-dock-edge");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, RightDockEdgeWidget, x)
+  gtk_widget_class_bind_template_child (klass, RightDockEdgeWidget, x)
 
   BIND_CHILD (panel_frame);
 
 #undef BIND_CHILD
 
-  gtk_widget_class_set_layout_manager_type (
-    klass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (klass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;

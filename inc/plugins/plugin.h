@@ -22,15 +22,14 @@
 /* pulled in from X11 */
 #undef Bool
 
-typedef struct Project           Project;
-typedef struct Channel           Channel;
-typedef struct AutomationTrack   AutomationTrack;
-typedef struct _ModulatorWidget  ModulatorWidget;
-typedef struct Lv2Plugin         Lv2Plugin;
-typedef struct CarlaNativePlugin CarlaNativePlugin;
-typedef struct MixerSelections   MixerSelections;
-typedef struct _WrappedObjectWithChangeSignal
-  WrappedObjectWithChangeSignal;
+typedef struct Project                        Project;
+typedef struct Channel                        Channel;
+typedef struct AutomationTrack                AutomationTrack;
+typedef struct _ModulatorWidget               ModulatorWidget;
+typedef struct Lv2Plugin                      Lv2Plugin;
+typedef struct CarlaNativePlugin              CarlaNativePlugin;
+typedef struct MixerSelections                MixerSelections;
+typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 
 /**
  * @addtogroup plugins
@@ -283,26 +282,11 @@ typedef struct Plugin
 
 static const cyaml_schema_field_t plugin_fields_schema[] = {
   YAML_FIELD_INT (Plugin, schema_version),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Plugin,
-    id,
-    plugin_identifier_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Plugin,
-    setting,
-    plugin_setting_fields_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    Plugin,
-    in_ports,
-    port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    Plugin,
-    out_ports,
-    port_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    Plugin,
-    banks,
-    plugin_bank_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (Plugin, id, plugin_identifier_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Plugin, setting, plugin_setting_fields_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Plugin, in_ports, port_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Plugin, out_ports, port_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Plugin, banks, plugin_bank_schema),
   YAML_FIELD_MAPPING_EMBEDDED (
     Plugin,
     selected_bank,
@@ -322,18 +306,13 @@ static const cyaml_schema_value_t plugin_schema = {
 };
 
 NONNULL_ARGS (1)
-void plugin_init_loaded (
-  Plugin *          self,
-  Track *           track,
-  MixerSelections * ms);
+void plugin_init_loaded (Plugin * self, Track * track, MixerSelections * ms);
 
 /**
  * Adds an AutomationTrack to the Plugin.
  */
 NONNULL void
-plugin_add_automation_track (
-  Plugin *          self,
-  AutomationTrack * at);
+plugin_add_automation_track (Plugin * self, AutomationTrack * at);
 
 /**
  * Adds an in port to the plugin's list.
@@ -369,10 +348,7 @@ Plugin * plugin_new_from_setting (
  * Create a dummy plugin for tests.
  */
 Plugin *
-plugin_new_dummy (
-  ZPluginCategory cat,
-  unsigned int    track_name_hash,
-  int             slot);
+plugin_new_dummy (ZPluginCategory cat, unsigned int track_name_hash, int slot);
 
 /**
  * Sets the UI refresh rate on the Plugin.
@@ -422,8 +398,7 @@ plugin_remove_ats_from_automation_tracklist (
  * @return The cloned plugin, or NULL if an error
  *   occurred.
  */
-NONNULL_ARGS (1)
-Plugin * plugin_clone (Plugin * src, GError ** error);
+NONNULL_ARGS (1) Plugin * plugin_clone (Plugin * src, GError ** error);
 
 void
 plugin_get_full_port_group_designation (
@@ -432,10 +407,7 @@ plugin_get_full_port_group_designation (
   char *       buf);
 
 NONNULL Port *
-plugin_get_port_in_group (
-  Plugin *     self,
-  const char * port_group,
-  bool         left);
+plugin_get_port_in_group (Plugin * self, const char * port_group, bool left);
 
 /**
  * Find corresponding port in the same port group
@@ -503,11 +475,7 @@ plugin_append_ports (Plugin * self, GPtrArray * ports);
  * @param outputs Expose/unexpose outputs.
  */
 NONNULL void
-plugin_expose_ports (
-  Plugin * pl,
-  bool     expose,
-  bool     inputs,
-  bool     outputs);
+plugin_expose_ports (Plugin * pl, bool expose, bool inputs, bool outputs);
 
 /**
  * Gets a port by its symbol.
@@ -564,19 +532,13 @@ plugin_get_abs_state_dir (
  * Ensures the state dir exists or creates it.
  */
 NONNULL WARN_UNUSED_RESULT bool
-plugin_ensure_state_dir (
-  Plugin *  self,
-  bool      is_backup,
-  GError ** error);
+plugin_ensure_state_dir (Plugin * self, bool is_backup, GError ** error);
 
 /**
  * Returns all plugins in the current project.
  */
 NONNULL void
-plugin_get_all (
-  Project *   prj,
-  GPtrArray * arr,
-  bool        check_undo_manager);
+plugin_get_all (Project * prj, GPtrArray * arr, bool check_undo_manager);
 
 NONNULL Channel *
 plugin_get_channel (Plugin * self);
@@ -612,9 +574,7 @@ plugin_update_latency (Plugin * pl);
  *   through indices.
  */
 NONNULL void
-plugin_generate_automation_tracks (
-  Plugin * plugin,
-  Track *  track);
+plugin_generate_automation_tracks (Plugin * plugin, Track * track);
 
 /**
  * Prepare plugin for processing.
@@ -627,26 +587,19 @@ plugin_prepare_process (Plugin * self);
  * channel)
  */
 NONNULL_ARGS (1)
-int plugin_instantiate (
-  Plugin *    self,
-  LilvState * state,
-  GError **   error);
+int plugin_instantiate (Plugin * self, LilvState * state, GError ** error);
 
 /**
  * Sets the track name hash on the plugin.
  */
 NONNULL void
-plugin_set_track_name_hash (
-  Plugin *     pl,
-  unsigned int track_name_hash);
+plugin_set_track_name_hash (Plugin * pl, unsigned int track_name_hash);
 
 /**
  * Process plugin.
  */
 NONNULL HOT void
-plugin_process (
-  Plugin *                            plugin,
-  const EngineProcessTimeInfo * const time_nfo);
+plugin_process (Plugin * plugin, const EngineProcessTimeInfo * const time_nfo);
 
 NONNULL MALLOC char *
 plugin_generate_window_title (Plugin * plugin);
@@ -683,10 +636,7 @@ NONNULL bool
 plugin_is_enabled (Plugin * self, bool check_track);
 
 NONNULL void
-plugin_set_enabled (
-  Plugin * self,
-  bool     enabled,
-  bool     fire_events);
+plugin_set_enabled (Plugin * self, bool enabled, bool fire_events);
 
 /**
  * Processes the plugin by passing through the
@@ -723,10 +673,7 @@ NONNULL void
 plugin_update_automatables (Plugin * plugin);
 
 PluginBank *
-plugin_add_bank_if_not_exists (
-  Plugin *     self,
-  const char * uri,
-  const char * name);
+plugin_add_bank_if_not_exists (Plugin * self, const char * uri, const char * name);
 
 NONNULL void
 plugin_add_preset_to_bank (
@@ -741,9 +688,7 @@ NONNULL void
 plugin_set_selected_preset_from_index (Plugin * self, int idx);
 
 NONNULL void
-plugin_set_selected_preset_by_name (
-  Plugin *     self,
-  const char * name);
+plugin_set_selected_preset_by_name (Plugin * self, const char * name);
 
 /**
  * Sets caches for processing.

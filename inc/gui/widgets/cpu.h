@@ -21,12 +21,7 @@
 #define MW_CPU (MW_BOT_BAR->cpu_load)
 
 #define CPU_WIDGET_TYPE (cpu_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  CpuWidget,
-  cpu_widget,
-  Z,
-  CPU_WIDGET,
-  GtkWidget)
+G_DECLARE_FINAL_TYPE (CpuWidget, cpu_widget, Z, CPU_WIDGET, GtkWidget)
 
 typedef struct _CpuWidget
 {

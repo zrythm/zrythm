@@ -83,27 +83,19 @@ typedef struct AutomationTracklist
   Track * track;
 } AutomationTracklist;
 
-static const cyaml_schema_field_t
-  automation_tracklist_fields_schema[] = {
-    YAML_FIELD_INT (AutomationTracklist, schema_version),
-    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-      AutomationTracklist,
-      ats,
-      automation_track_schema),
+static const cyaml_schema_field_t automation_tracklist_fields_schema[] = {
+  YAML_FIELD_INT (AutomationTracklist, schema_version),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (AutomationTracklist, ats, automation_track_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t automation_tracklist_schema = {
-  YAML_VALUE_PTR (
-    AutomationTracklist,
-    automation_tracklist_fields_schema),
+  YAML_VALUE_PTR (AutomationTracklist, automation_tracklist_fields_schema),
 };
 
 void
-automation_tracklist_init (
-  AutomationTracklist * self,
-  Track *               track);
+automation_tracklist_init (AutomationTracklist * self, Track * track);
 
 /**
  * Inits a loaded AutomationTracklist.
@@ -116,9 +108,7 @@ Track *
 automation_tracklist_get_track (AutomationTracklist * self);
 
 void
-automation_tracklist_add_at (
-  AutomationTracklist * self,
-  AutomationTrack *     at);
+automation_tracklist_add_at (AutomationTracklist * self, AutomationTrack * at);
 
 /**
  * Prints info about all the automation tracks.
@@ -225,9 +215,7 @@ automation_tracklist_clone (
  * given Port.
  */
 AutomationTrack *
-automation_tracklist_get_at_from_port (
-  AutomationTracklist * self,
-  Port *                port);
+automation_tracklist_get_at_from_port (AutomationTracklist * self, Port * port);
 
 /**
  * Unselects all arranger objects.
@@ -277,15 +265,13 @@ automation_tracklist_get_plugin_at (
   const char *          symbol);
 
 WARN_UNUSED_RESULT NONNULL AutomationTrack *
-automation_tracklist_get_first_invisible_at (
-  AutomationTracklist * self);
+automation_tracklist_get_first_invisible_at (AutomationTracklist * self);
 
 /**
  * Returns the number of visible AutomationTrack's.
  */
 NONNULL int
-automation_tracklist_get_num_visible (
-  AutomationTracklist * self);
+automation_tracklist_get_num_visible (AutomationTracklist * self);
 
 /**
  * Verifies the identifiers on a live automation
@@ -301,17 +287,13 @@ automation_tracklist_validate (AutomationTracklist * self);
  * automation tracklist.
  */
 WARN_UNUSED_RESULT NONNULL int
-automation_tracklist_get_num_regions (
-  AutomationTracklist * self);
+automation_tracklist_get_num_regions (AutomationTracklist * self);
 
 NONNULL void
-automation_tracklist_print_regions (
-  AutomationTracklist * self);
+automation_tracklist_print_regions (AutomationTracklist * self);
 
 NONNULL void
-automation_tracklist_set_caches (
-  AutomationTracklist * self,
-  CacheTypes            types);
+automation_tracklist_set_caches (AutomationTracklist * self, CacheTypes types);
 
 NONNULL void
 automation_tracklist_free_members (AutomationTracklist * self);

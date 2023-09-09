@@ -47,19 +47,13 @@ chord_track_init (Track * track);
  * index.
  */
 void
-chord_track_insert_chord_region (
-  ChordTrack * track,
-  ZRegion *    region,
-  int          idx);
+chord_track_insert_chord_region (ChordTrack * track, ZRegion * region, int idx);
 
 /**
  * Inserts a scale to the track.
  */
 void
-chord_track_insert_scale (
-  ChordTrack *  track,
-  ScaleObject * scale,
-  int           pos);
+chord_track_insert_scale (ChordTrack * track, ScaleObject * scale, int pos);
 
 /**
  * Adds a scale to the track.
@@ -71,10 +65,7 @@ chord_track_add_scale (ChordTrack * track, ScaleObject * scale);
  * Removes a scale from the chord Track.
  */
 void
-chord_track_remove_scale (
-  ChordTrack *  self,
-  ScaleObject * scale,
-  bool          free);
+chord_track_remove_scale (ChordTrack * self, ScaleObject * scale, bool free);
 
 /**
  * Removes a region from the chord track.
@@ -96,9 +87,7 @@ chord_track_validate (Track * self);
  * in the TimelineArranger.
  */
 ChordObject *
-chord_track_get_chord_at_pos (
-  const Track *    ct,
-  const Position * pos);
+chord_track_get_chord_at_pos (const Track * ct, const Position * pos);
 
 /**
  * Returns the current scale.
@@ -111,9 +100,7 @@ chord_track_get_chord_at_pos (
  * in the TimelineArranger.
  */
 ScaleObject *
-chord_track_get_scale_at_pos (
-  const Track *    ct,
-  const Position * pos);
+chord_track_get_scale_at_pos (const Track * ct, const Position * pos);
 
 /**
  * Removes all objects from the chord track.

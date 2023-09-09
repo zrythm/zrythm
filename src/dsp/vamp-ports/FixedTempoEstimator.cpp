@@ -62,10 +62,7 @@ public:
 
   OutputList getOutputDescriptors () const;
 
-  bool initialise (
-    size_t channels,
-    size_t stepSize,
-    size_t blockSize);
+  bool       initialise (size_t channels, size_t stepSize, size_t blockSize);
   void       reset ();
   FeatureSet process (const float * const *, RealTime);
   FeatureSet getRemainingFeatures ();
@@ -99,10 +96,9 @@ private:
 };
 
 FixedTempoEstimator::D::D (float inputSampleRate)
-    : m_inputSampleRate (inputSampleRate), m_stepSize (0),
-      m_blockSize (0), m_minbpm (50), m_maxbpm (190),
-      m_maxdflen (10), m_priorMagnitudes (0), m_df (0),
-      m_r (0), m_fr (0), m_t (0), m_n (0)
+    : m_inputSampleRate (inputSampleRate), m_stepSize (0), m_blockSize (0),
+      m_minbpm (50), m_maxbpm (190), m_maxdflen (10), m_priorMagnitudes (0),
+      m_df (0), m_r (0), m_fr (0), m_t (0), m_n (0)
 {
 }
 
@@ -209,8 +205,7 @@ FixedTempoEstimator::D::getOutputDescriptors () const
   d.isQuantized = false;
   d.sampleType = OutputDescriptor::VariableSampleRate;
   d.sampleRate = m_inputSampleRate;
-  d.hasDuration =
-    true; // our returned tempo spans a certain range
+  d.hasDuration = true; // our returned tempo spans a certain range
   list.push_back (d);
 
   d.identifier = "candidates";
@@ -239,24 +234,21 @@ FixedTempoEstimator::D::getOutputDescriptors () const
     }
   else
     {
-      d.sampleRate =
-        m_inputSampleRate / (getPreferredBlockSize () / 2);
+      d.sampleRate = m_inputSampleRate / (getPreferredBlockSize () / 2);
     }
   d.hasDuration = false;
   list.push_back (d);
 
   d.identifier = "acf";
   d.name = "Autocorrelation Function";
-  d.description =
-    "Autocorrelation of onset detection function";
+  d.description = "Autocorrelation of onset detection function";
   d.hasKnownExtents = false;
   d.unit = "r";
   list.push_back (d);
 
   d.identifier = "filtered_acf";
   d.name = "Filtered Autocorrelation";
-  d.description =
-    "Filtered autocorrelation of onset detection function";
+  d.description = "Filtered autocorrelation of onset detection function";
   d.unit = "r";
   list.push_back (d);
 
@@ -264,8 +256,7 @@ FixedTempoEstimator::D::getOutputDescriptors () const
 }
 
 bool
-FixedTempoEstimator::D::
-  initialise (size_t, size_t stepSize, size_t blockSize)
+FixedTempoEstimator::D::initialise (size_t, size_t stepSize, size_t blockSize)
 {
   m_stepSize = stepSize;
   m_blockSize = blockSize;
@@ -321,18 +312,14 @@ FixedTempoEstimator::D::reset ()
 }
 
 FixedTempoEstimator::FeatureSet
-FixedTempoEstimator::D::process (
-  const float * const * inputBuffers,
-  RealTime              ts)
+FixedTempoEstimator::D::process (const float * const * inputBuffers, RealTime ts)
 {
   FeatureSet fs;
 
   if (m_stepSize == 0)
     {
-      cerr
-        << "ERROR: FixedTempoEstimator::process: "
-        << "FixedTempoEstimator has not been initialised"
-        << endl;
+      cerr << "ERROR: FixedTempoEstimator::process: "
+           << "FixedTempoEstimator has not been initialised" << endl;
       return fs;
     }
 
@@ -406,19 +393,14 @@ FixedTempoEstimator::D::calculate ()
 {
   if (m_r)
     {
-      cerr
-        << "FixedTempoEstimator::calculate: calculation already happened?"
-        << endl;
+      cerr << "FixedTempoEstimator::calculate: calculation already happened?"
+           << endl;
       return;
     }
 
-  if (
-    m_n < m_dfsize / 9
-    && m_n < (1.0 * m_inputSampleRate) / m_stepSize)
+  if (m_n < m_dfsize / 9 && m_n < (1.0 * m_inputSampleRate) / m_stepSize)
     { // 1 second
-      cerr
-        << "FixedTempoEstimator::calculate: Input is too short"
-        << endl;
+      cerr << "FixedTempoEstimator::calculate: Input is too short" << endl;
       return;
     }
 
@@ -427,13 +409,11 @@ FixedTempoEstimator::D::calculate ()
   // and m_fr (the filtered autocorrelation from whose peaks tempo
   // estimates will be taken).
 
-  int n =
-    m_n; // length of actual df array (m_dfsize is the theoretical max)
+  int n = m_n; // length of actual df array (m_dfsize is the theoretical max)
 
   m_r = new float[n / 2];  // raw autocorrelation
   m_fr = new float[n / 2]; // filtered autocorrelation
-  m_t = new float
-    [n / 2]; // averaged tempo estimate for each lag value
+  m_t = new float[n / 2];  // averaged tempo estimate for each lag value
 
   for (int i = 0; i < n / 2; ++i)
     {
@@ -466,9 +446,7 @@ FixedTempoEstimator::D::calculate ()
 
       int div = 1;
 
-      for (int j = 0;
-           j < int (sizeof (related) / sizeof (related[0]));
-           ++j)
+      for (int j = 0; j < int (sizeof (related) / sizeof (related[0])); ++j)
         {
 
           // Check for an obvious peak at each metrically related lag
@@ -516,8 +494,7 @@ FixedTempoEstimator::D::calculate ()
                   // also a pretty good looking peak, so use it to
                   // improve our tempo estimate for the original lag
 
-                  m_t[i] =
-                    m_t[i] + lag2tempo (kmax) * related[j];
+                  m_t[i] = m_t[i] + lag2tempo (kmax) * related[j];
                   ++div;
                 }
             }
@@ -528,8 +505,7 @@ FixedTempoEstimator::D::calculate ()
       // Finally apply a primitive perceptual weighting (to prefer
       // tempi of around 120-130)
 
-      float weight =
-        1.f - fabsf (128.f - lag2tempo (i)) * 0.005;
+      float weight = 1.f - fabsf (128.f - lag2tempo (i)) * 0.005;
       if (weight < 0.f)
         weight = 0.f;
       weight = weight * weight * weight;
@@ -562,9 +538,7 @@ FixedTempoEstimator::D::assembleFeatures ()
       // Return the detection function in the DF output
 
       feature.timestamp =
-        m_start
-        + RealTime::frame2RealTime (
-          i * m_stepSize, m_inputSampleRate);
+        m_start + RealTime::frame2RealTime (i * m_stepSize, m_inputSampleRate);
       feature.values[0] = m_df[i];
       feature.label = "";
       fs[DFOutput].push_back (feature);
@@ -577,9 +551,7 @@ FixedTempoEstimator::D::assembleFeatures ()
       // value labelled according to its corresponding tempo
 
       feature.timestamp =
-        m_start
-        + RealTime::frame2RealTime (
-          i * m_stepSize, m_inputSampleRate);
+        m_start + RealTime::frame2RealTime (i * m_stepSize, m_inputSampleRate);
       feature.values[0] = m_r[i];
       sprintf (buffer, "%.1f bpm", lag2tempo (i));
       if (i == n / 2 - 1)
@@ -616,9 +588,7 @@ FixedTempoEstimator::D::assembleFeatures ()
       // Also return the filtered autocorrelation in its own output
 
       feature.timestamp =
-        m_start
-        + RealTime::frame2RealTime (
-          i * m_stepSize, m_inputSampleRate);
+        m_start + RealTime::frame2RealTime (i * m_stepSize, m_inputSampleRate);
       feature.values[0] = m_fr[i];
       sprintf (buffer, "%.1f bpm", lag2tempo (i));
       if (i == p1 || i == n / 2 - 2)
@@ -662,8 +632,7 @@ FixedTempoEstimator::D::assembleFeatures ()
       // not a peak!
 
       feature.values[0] = lag2tempo (maxpi);
-      cerr << "WARNING: No stored tempo for index " << maxpi
-           << endl;
+      cerr << "WARNING: No stored tempo for index " << maxpi << endl;
     }
 
   sprintf (buffer, "%.1f bpm", feature.values[0]);
@@ -699,8 +668,7 @@ FixedTempoEstimator::D::assembleFeatures ()
   return fs;
 }
 
-FixedTempoEstimator::FixedTempoEstimator (
-  float inputSampleRate)
+FixedTempoEstimator::FixedTempoEstimator (float inputSampleRate)
     : Plugin (inputSampleRate), m_d (new D (inputSampleRate))
 {
 }
@@ -759,14 +727,10 @@ FixedTempoEstimator::getPreferredBlockSize () const
 }
 
 bool
-FixedTempoEstimator::initialise (
-  size_t channels,
-  size_t stepSize,
-  size_t blockSize)
+FixedTempoEstimator::
+  initialise (size_t channels, size_t stepSize, size_t blockSize)
 {
-  if (
-    channels < getMinChannelCount ()
-    || channels > getMaxChannelCount ())
+  if (channels < getMinChannelCount () || channels > getMaxChannelCount ())
     return false;
 
   return m_d->initialise (channels, stepSize, blockSize);
@@ -803,9 +767,7 @@ FixedTempoEstimator::getOutputDescriptors () const
 }
 
 FixedTempoEstimator::FeatureSet
-FixedTempoEstimator::process (
-  const float * const * inputBuffers,
-  RealTime              ts)
+FixedTempoEstimator::process (const float * const * inputBuffers, RealTime ts)
 {
   return m_d->process (inputBuffers, ts);
 }

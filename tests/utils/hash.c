@@ -14,12 +14,11 @@
 static void
 test_get_from_file (void)
 {
-  char * filepath = g_build_filename (
-    TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
+  char * filepath =
+    g_build_filename (TESTS_SRCDIR, "test_start_with_signal.mp3", NULL);
 
   g_message ("start");
-  char * hash =
-    hash_get_from_file (filepath, HASH_ALGORITHM_XXH32);
+  char *   hash = hash_get_from_file (filepath, HASH_ALGORITHM_XXH32);
   uint32_t hash_simple = hash_get_from_file_simple (filepath);
   g_message ("end");
   g_assert_cmpstr (hash, ==, "ca5b86cb");
@@ -45,8 +44,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/utils/hash/"
 
   g_test_add_func (
-    TEST_PREFIX "test get from file",
-    (GTestFunc) test_get_from_file);
+    TEST_PREFIX "test get from file", (GTestFunc) test_get_from_file);
 
   return g_test_run ();
 }

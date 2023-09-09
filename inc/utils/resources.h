@@ -58,10 +58,7 @@ GtkWidget *
 resources_get_icon (IconType icon_type, const char * filename);
 
 void
-resources_set_image_icon (
-  GtkImage *   img,
-  IconType     icon_type,
-  const char * path);
+resources_set_image_icon (GtkImage * img, IconType icon_type, const char * path);
 
 /**
  * Sets class template from resource.
@@ -69,9 +66,7 @@ resources_set_image_icon (
  * Filename is part after .../ui/
  */
 void
-resources_set_class_template (
-  GtkWidgetClass * klass,
-  const char *     filename);
+resources_set_class_template (GtkWidgetClass * klass, const char * filename);
 
 void
 resources_add_icon_to_button (

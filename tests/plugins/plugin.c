@@ -39,8 +39,7 @@ _test_loading_non_existing_plugin (
   LOG->use_structured_for_console = false;
   LOG->min_log_level_for_test_console = G_LOG_LEVEL_WARNING;
   g_test_expect_message (
-    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
-    "*Instantiation failed for plugin *");
+    G_LOG_DOMAIN, G_LOG_LEVEL_WARNING, "*Instantiation failed for plugin *");
 
   test_project_reload (prj_file);
   g_free (prj_file);
@@ -59,8 +58,7 @@ test_loading_non_existing_plugin (void)
   test_helper_zrythm_init ();
 
 #ifdef HAVE_HELM
-  _test_loading_non_existing_plugin (
-    HELM_BUNDLE, HELM_URI, false);
+  _test_loading_non_existing_plugin (HELM_BUNDLE, HELM_URI, false);
 #endif
 
   test_helper_zrythm_cleanup ();
@@ -69,14 +67,13 @@ test_loading_non_existing_plugin (void)
 static Port *
 get_skew_duty_port (void)
 {
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track *  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->instrument;
   Port *   port = NULL;
   for (int i = 0; i < pl->num_in_ports; i++)
     {
       Port * cur_port = pl->in_ports[i];
-      if (string_is_equal (
-            cur_port->id.label, "OscA Skew/Duty"))
+      if (string_is_equal (cur_port->id.label, "OscA Skew/Duty"))
         {
           port = cur_port;
           break;
@@ -100,10 +97,8 @@ test_loading_fully_bridged_plugin (void)
   float val_before = port->control;
   float val_after = 1.f;
   g_assert_cmpfloat_with_epsilon (val_before, 0.5f, 0.0001f);
-  port_set_control_value (
-    port, val_after, F_NORMALIZED, F_PUBLISH_EVENTS);
-  g_assert_cmpfloat_with_epsilon (
-    port->control, val_after, 0.0001f);
+  port_set_control_value (port, val_after, F_NORMALIZED, F_PUBLISH_EVENTS);
+  g_assert_cmpfloat_with_epsilon (port->control, val_after, 0.0001f);
 
   /* save project and reload and check the
    * value is correct */
@@ -111,8 +106,7 @@ test_loading_fully_bridged_plugin (void)
 
   port = get_skew_duty_port ();
   g_return_if_fail (port);
-  g_assert_cmpfloat_with_epsilon (
-    port->control, val_after, 0.0001f);
+  g_assert_cmpfloat_with_epsilon (port->control, val_after, 0.0001f);
 #  endif
 #endif
 
@@ -126,9 +120,8 @@ test_loading_plugins_needing_bridging (void)
 
 #ifdef HAVE_CARLA
 #  ifdef HAVE_CALF_MONOSYNTH
-  PluginSetting * setting =
-    test_plugin_manager_get_plugin_setting (
-      CALF_MONOSYNTH_BUNDLE, CALF_MONOSYNTH_URI, false);
+  PluginSetting * setting = test_plugin_manager_get_plugin_setting (
+    CALF_MONOSYNTH_BUNDLE, CALF_MONOSYNTH_URI, false);
   g_return_if_fail (setting);
   g_assert_true (setting->open_with_carla);
   g_assert_true (setting->bridge_mode == CARLA_BRIDGE_FULL);
@@ -146,26 +139,24 @@ test_bypass_state_after_project_load (void)
 #ifdef HAVE_LSP_COMPRESSOR
   test_helper_zrythm_init ();
 
-  for (int i = 0;
+  for (
+    int i = 0;
 #  ifdef HAVE_CARLA
-       i < 2;
+    i < 2;
 #  else
-       i < 1;
+    i < 1;
 #  endif
-       i++)
+    i++)
     {
       /* create fx track */
       test_plugin_manager_create_tracks_from_plugin (
-        LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false,
-        i == 1, 1);
-      Track * track =
-        TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+        LSP_COMPRESSOR_BUNDLE, LSP_COMPRESSOR_URI, false, i == 1, 1);
+      Track *  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
       Plugin * pl = track->channel->inserts[0];
       g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 
       /* set bypass */
-      plugin_set_enabled (
-        pl, F_NOT_ENABLED, F_NO_PUBLISH_EVENTS);
+      plugin_set_enabled (pl, F_NOT_ENABLED, F_NO_PUBLISH_EVENTS);
       g_assert_false (plugin_is_enabled (pl, false));
 
       /* reload project */
@@ -191,7 +182,7 @@ test_plugin_without_outputs (void)
 
   test_plugin_manager_create_tracks_from_plugin (
     KXSTUDIO_LFO_BUNDLE, KXSTUDIO_LFO_URI, false, true, 1);
-  Track * track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  Track *  track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
   Plugin * pl = track->channel->inserts[0];
   g_assert_true (IS_PLUGIN_AND_NONNULL (pl));
 

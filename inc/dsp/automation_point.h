@@ -85,10 +85,7 @@ typedef struct AutomationPoint
 } AutomationPoint;
 
 static const cyaml_schema_field_t automation_point_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AutomationPoint,
-    base,
-    arranger_object_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (AutomationPoint, base, arranger_object_fields_schema),
   YAML_FIELD_INT (AutomationPoint, schema_version),
   YAML_FIELD_FLOAT (AutomationPoint, fvalue),
   YAML_FIELD_FLOAT (AutomationPoint, normalized_val),
@@ -102,9 +99,7 @@ static const cyaml_schema_field_t automation_point_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t automation_point_schema = {
-  YAML_VALUE_PTR (
-    AutomationPoint,
-    automation_point_fields_schema),
+  YAML_VALUE_PTR (AutomationPoint, automation_point_fields_schema),
 };
 
 /**
@@ -186,13 +181,10 @@ automation_point_get_port (const AutomationPoint * const self);
  * AutomationTrack that this AutomationPoint is in.
  */
 AutomationTrack *
-automation_point_get_automation_track (
-  const AutomationPoint * const self);
+automation_point_get_automation_track (const AutomationPoint * const self);
 
 PURE int
-automation_point_is_equal (
-  AutomationPoint * a,
-  AutomationPoint * b);
+automation_point_is_equal (AutomationPoint * a, AutomationPoint * b);
 
 /**
  * Returns if the curve of the AutomationPoint

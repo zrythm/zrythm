@@ -193,9 +193,7 @@ static const cyaml_schema_field_t plugin_descriptor_fields_schema_v1[] = {
     PluginDescriptor_v1,
     category,
     plugin_descriptor_category_strings_v1),
-  YAML_FIELD_STRING_PTR_OPTIONAL (
-    PluginDescriptor_v1,
-    category_str),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor_v1, category_str),
   YAML_FIELD_INT (PluginDescriptor_v1, num_audio_ins),
   YAML_FIELD_INT (PluginDescriptor_v1, num_audio_outs),
   YAML_FIELD_INT (PluginDescriptor_v1, num_midi_ins),
@@ -205,14 +203,8 @@ static const cyaml_schema_field_t plugin_descriptor_fields_schema_v1[] = {
   YAML_FIELD_INT (PluginDescriptor_v1, num_cv_ins),
   YAML_FIELD_INT (PluginDescriptor_v1, num_cv_outs),
   YAML_FIELD_UINT (PluginDescriptor_v1, unique_id),
-  YAML_FIELD_ENUM (
-    PluginDescriptor_v1,
-    arch,
-    plugin_architecture_strings_v1),
-  YAML_FIELD_ENUM (
-    PluginDescriptor_v1,
-    protocol,
-    plugin_protocol_strings_v1),
+  YAML_FIELD_ENUM (PluginDescriptor_v1, arch, plugin_architecture_strings_v1),
+  YAML_FIELD_ENUM (PluginDescriptor_v1, protocol, plugin_protocol_strings_v1),
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor_v1, path),
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor_v1, uri),
   YAML_FIELD_ENUM (
@@ -226,9 +218,7 @@ static const cyaml_schema_field_t plugin_descriptor_fields_schema_v1[] = {
 };
 
 static const cyaml_schema_value_t plugin_descriptor_schema_v1 = {
-  YAML_VALUE_PTR (
-    PluginDescriptor_v1,
-    plugin_descriptor_fields_schema_v1),
+  YAML_VALUE_PTR (PluginDescriptor_v1, plugin_descriptor_fields_schema_v1),
 };
 
 PluginDescriptor *

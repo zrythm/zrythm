@@ -132,10 +132,7 @@ bool log_generate_compressed_file (
  * @return Whether successful.
  */
 WARN_UNUSED_RESULT bool
-log_init_with_file (
-  Log *        self,
-  const char * filepath,
-  GError **    error);
+log_init_with_file (Log * self, const char * filepath, GError ** error);
 
 /**
  * Returns a pointer to the global zlog.

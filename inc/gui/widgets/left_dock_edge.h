@@ -24,8 +24,7 @@ typedef struct _InspectorPluginWidget  InspectorPluginWidget;
  * @{
  */
 
-#define LEFT_DOCK_EDGE_WIDGET_TYPE \
-  (left_dock_edge_widget_get_type ())
+#define LEFT_DOCK_EDGE_WIDGET_TYPE (left_dock_edge_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   LeftDockEdgeWidget,
   left_dock_edge_widget,

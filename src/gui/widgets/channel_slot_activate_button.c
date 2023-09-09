@@ -23,8 +23,7 @@ on_toggled (GtkToggleButton * btn, gpointer user_data)
   if (pl)
     {
       plugin_set_enabled (
-        pl, gtk_toggle_button_get_active (btn),
-        F_PUBLISH_EVENTS);
+        pl, gtk_toggle_button_get_active (btn), F_PUBLISH_EVENTS);
     }
 }
 
@@ -32,11 +31,10 @@ on_toggled (GtkToggleButton * btn, gpointer user_data)
  * Creates a new ChannelSlotActivateButton widget.
  */
 ChannelSlotActivateButtonWidget *
-channel_slot_activate_button_widget_new (
-  ChannelSlotWidget * owner)
+channel_slot_activate_button_widget_new (ChannelSlotWidget * owner)
 {
-  ChannelSlotActivateButtonWidget * self = g_object_new (
-    CHANNEL_SLOT_ACTIVATE_BUTTON_WIDGET_TYPE, NULL);
+  ChannelSlotActivateButtonWidget * self =
+    g_object_new (CHANNEL_SLOT_ACTIVATE_BUTTON_WIDGET_TYPE, NULL);
 
   self->owner = owner;
 
@@ -49,18 +47,15 @@ channel_slot_activate_button_widget_new (
 static void
 dispose (ChannelSlotActivateButtonWidget * self)
 {
-  G_OBJECT_CLASS (
-    channel_slot_activate_button_widget_parent_class)
+  G_OBJECT_CLASS (channel_slot_activate_button_widget_parent_class)
     ->dispose (G_OBJECT (self));
 }
 
 static void
-channel_slot_activate_button_widget_init (
-  ChannelSlotActivateButtonWidget * self)
+channel_slot_activate_button_widget_init (ChannelSlotActivateButtonWidget * self)
 {
   /*gtk_button_set_icon_name (GTK_BUTTON (self), "edit-tool");*/
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self), "channel-slot-activate-btn");
+  gtk_widget_add_css_class (GTK_WIDGET (self), "channel-slot-activate-btn");
   gtk_widget_set_halign (GTK_WIDGET (self), GTK_ALIGN_CENTER);
   gtk_widget_set_valign (GTK_WIDGET (self), GTK_ALIGN_CENTER);
 }

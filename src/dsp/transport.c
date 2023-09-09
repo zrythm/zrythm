@@ -49,23 +49,17 @@ init_common (Transport * self)
   self->play_state = PLAYSTATE_PAUSED;
 
   self->loop =
-    ZRYTHM_TESTING
-      ? true
-      : g_settings_get_boolean (S_TRANSPORT, "loop");
+    ZRYTHM_TESTING ? true : g_settings_get_boolean (S_TRANSPORT, "loop");
   self->metronome_enabled =
     ZRYTHM_TESTING
       ? true
-      : g_settings_get_boolean (
-        S_TRANSPORT, "metronome-enabled");
+      : g_settings_get_boolean (S_TRANSPORT, "metronome-enabled");
   self->punch_mode =
-    ZRYTHM_TESTING
-      ? true
-      : g_settings_get_boolean (S_TRANSPORT, "punch-mode");
+    ZRYTHM_TESTING ? true : g_settings_get_boolean (S_TRANSPORT, "punch-mode");
   self->start_playback_on_midi_input =
     ZRYTHM_TESTING
       ? false
-      : g_settings_get_boolean (
-        S_TRANSPORT, "start-on-midi-input");
+      : g_settings_get_boolean (S_TRANSPORT, "start-on-midi-input");
   self->recording_mode =
     ZRYTHM_TESTING
       ? RECORDING_MODE_TAKES
@@ -83,10 +77,7 @@ init_common (Transport * self)
  *   active project transport.
  */
 void
-transport_init_loaded (
-  Transport *   self,
-  AudioEngine * engine,
-  Track *       tempo_track)
+transport_init_loaded (Transport * self, AudioEngine * engine, Track * tempo_track)
 {
   self->audio_engine = engine;
 
@@ -96,8 +87,7 @@ transport_init_loaded (
 
   if (tempo_track)
     {
-      int beats_per_bar =
-        tempo_track_get_beats_per_bar (tempo_track);
+      int beats_per_bar = tempo_track_get_beats_per_bar (tempo_track);
       int beat_unit = tempo_track_get_beat_unit (tempo_track);
       transport_update_caches (self, beats_per_bar, beat_unit);
     }
@@ -168,53 +158,41 @@ transport_new (AudioEngine * engine)
   /*}*/
 
   /* create ports */
-  self->roll =
-    port_new_with_type (TYPE_EVENT, FLOW_INPUT, "Roll");
+  self->roll = port_new_with_type (TYPE_EVENT, FLOW_INPUT, "Roll");
   self->roll->id.sym = g_strdup ("roll");
   port_set_owner (self->roll, PORT_OWNER_TYPE_TRANSPORT, self);
   self->roll->id.flags |= PORT_FLAG_TOGGLE;
   self->roll->id.flags2 |= PORT_FLAG2_TRANSPORT_ROLL;
 
-  self->stop =
-    port_new_with_type (TYPE_EVENT, FLOW_INPUT, "Stop");
+  self->stop = port_new_with_type (TYPE_EVENT, FLOW_INPUT, "Stop");
   self->stop->id.sym = g_strdup ("stop");
   port_set_owner (self->stop, PORT_OWNER_TYPE_TRANSPORT, self);
   self->stop->id.flags |= PORT_FLAG_TOGGLE;
   self->stop->id.flags2 |= PORT_FLAG2_TRANSPORT_STOP;
 
-  self->backward =
-    port_new_with_type (TYPE_EVENT, FLOW_INPUT, "Backward");
+  self->backward = port_new_with_type (TYPE_EVENT, FLOW_INPUT, "Backward");
   self->backward->id.sym = g_strdup ("backward");
-  port_set_owner (
-    self->backward, PORT_OWNER_TYPE_TRANSPORT, self);
+  port_set_owner (self->backward, PORT_OWNER_TYPE_TRANSPORT, self);
   self->backward->id.flags |= PORT_FLAG_TOGGLE;
   self->backward->id.flags2 |= PORT_FLAG2_TRANSPORT_BACKWARD;
 
-  self->forward =
-    port_new_with_type (TYPE_EVENT, FLOW_INPUT, "Forward");
+  self->forward = port_new_with_type (TYPE_EVENT, FLOW_INPUT, "Forward");
   self->forward->id.sym = g_strdup ("forward");
-  port_set_owner (
-    self->forward, PORT_OWNER_TYPE_TRANSPORT, self);
+  port_set_owner (self->forward, PORT_OWNER_TYPE_TRANSPORT, self);
   self->forward->id.flags |= PORT_FLAG_TOGGLE;
   self->forward->id.flags2 |= PORT_FLAG2_TRANSPORT_FORWARD;
 
-  self->loop_toggle = port_new_with_type (
-    TYPE_EVENT, FLOW_INPUT, "Loop toggle");
+  self->loop_toggle = port_new_with_type (TYPE_EVENT, FLOW_INPUT, "Loop toggle");
   self->loop_toggle->id.sym = g_strdup ("loop_toggle");
-  port_set_owner (
-    self->loop_toggle, PORT_OWNER_TYPE_TRANSPORT, self);
+  port_set_owner (self->loop_toggle, PORT_OWNER_TYPE_TRANSPORT, self);
   self->loop_toggle->id.flags |= PORT_FLAG_TOGGLE;
-  self->loop_toggle->id.flags2 |=
-    PORT_FLAG2_TRANSPORT_LOOP_TOGGLE;
+  self->loop_toggle->id.flags2 |= PORT_FLAG2_TRANSPORT_LOOP_TOGGLE;
 
-  self->rec_toggle =
-    port_new_with_type (TYPE_EVENT, FLOW_INPUT, "Rec toggle");
+  self->rec_toggle = port_new_with_type (TYPE_EVENT, FLOW_INPUT, "Rec toggle");
   self->rec_toggle->id.sym = g_strdup ("rec_toggle");
-  port_set_owner (
-    self->rec_toggle, PORT_OWNER_TYPE_TRANSPORT, self);
+  port_set_owner (self->rec_toggle, PORT_OWNER_TYPE_TRANSPORT, self);
   self->rec_toggle->id.flags |= PORT_FLAG_TOGGLE;
-  self->rec_toggle->id.flags2 |=
-    PORT_FLAG2_TRANSPORT_REC_TOGGLE;
+  self->rec_toggle->id.flags2 |= PORT_FLAG2_TRANSPORT_REC_TOGGLE;
 
   init_common (self);
 
@@ -234,17 +212,12 @@ transport_clone (const Transport * src)
   self->has_range = src->has_range;
   self->position = src->position;
 
-  position_set_to_pos (
-    &self->loop_start_pos, &src->loop_start_pos);
-  position_set_to_pos (
-    &self->playhead_pos, &src->playhead_pos);
-  position_set_to_pos (
-    &self->loop_end_pos, &src->loop_end_pos);
+  position_set_to_pos (&self->loop_start_pos, &src->loop_start_pos);
+  position_set_to_pos (&self->playhead_pos, &src->playhead_pos);
+  position_set_to_pos (&self->loop_end_pos, &src->loop_end_pos);
   position_set_to_pos (&self->cue_pos, &src->cue_pos);
-  position_set_to_pos (
-    &self->punch_in_pos, &src->punch_in_pos);
-  position_set_to_pos (
-    &self->punch_out_pos, &src->punch_out_pos);
+  position_set_to_pos (&self->punch_in_pos, &src->punch_in_pos);
+  position_set_to_pos (&self->punch_out_pos, &src->punch_out_pos);
   position_set_to_pos (&self->range_1, &src->range_1);
   position_set_to_pos (&self->range_2, &src->range_2);
 
@@ -283,8 +256,7 @@ transport_prepare_audio_regions_for_stretch (
         {
           ZRegion * region = sel->regions[i];
           region->before_length =
-            arranger_object_get_length_in_ticks (
-              (ArrangerObject *) region);
+            arranger_object_get_length_in_ticks ((ArrangerObject *) region);
         }
     }
   else
@@ -303,9 +275,8 @@ transport_prepare_audio_regions_for_stretch (
               for (int k = 0; k < lane->num_regions; k++)
                 {
                   ZRegion * region = lane->regions[k];
-                  region->before_length =
-                    arranger_object_get_length_in_ticks (
-                      (ArrangerObject *) region);
+                  region->before_length = arranger_object_get_length_in_ticks (
+                    (ArrangerObject *) region);
                 } // foreach region
             }     // foreach lane
         }         // foreach track
@@ -353,10 +324,9 @@ transport_stretch_regions (
           double           ratio =
             with_fixed_ratio
                         ? time_ratio
-                        : arranger_object_get_length_in_ticks (r_obj)
-                  / region->before_length;
+                        : arranger_object_get_length_in_ticks (r_obj) / region->before_length;
           GError * err = NULL;
-          bool success = region_stretch (region, ratio, &err);
+          bool     success = region_stretch (region, ratio, &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -387,22 +357,18 @@ transport_stretch_regions (
                   if (!region_get_musical_mode (region))
                     continue;
 
-                  ArrangerObject * r_obj =
-                    (ArrangerObject *) region;
-                  double ratio =
+                  ArrangerObject * r_obj = (ArrangerObject *) region;
+                  double           ratio =
                     with_fixed_ratio
-                      ? time_ratio
-                      : arranger_object_get_length_in_ticks (
-                          r_obj)
+                                ? time_ratio
+                                : arranger_object_get_length_in_ticks (r_obj)
                           / region->before_length;
                   GError * err = NULL;
-                  bool     success =
-                    region_stretch (region, ratio, &err);
+                  bool     success = region_stretch (region, ratio, &err);
                   if (!success)
                     {
                       PROPAGATE_PREFIXED_ERROR_LITERAL (
-                        error, err,
-                        "Failed to stretch region");
+                        error, err, "Failed to stretch region");
                       return false;
                     }
                 }
@@ -420,32 +386,25 @@ transport_set_punch_mode_enabled (Transport * self, bool enabled)
 
   if (!ZRYTHM_TESTING)
     {
-      g_settings_set_boolean (
-        S_TRANSPORT, "punch-mode", enabled);
+      g_settings_set_boolean (S_TRANSPORT, "punch-mode", enabled);
     }
 }
 
 void
-transport_set_start_playback_on_midi_input (
-  Transport * self,
-  bool        enabled)
+transport_set_start_playback_on_midi_input (Transport * self, bool enabled)
 {
   self->start_playback_on_midi_input = enabled;
-  g_settings_set_boolean (
-    S_TRANSPORT, "start-on-midi-input", enabled);
+  g_settings_set_boolean (S_TRANSPORT, "start-on-midi-input", enabled);
 }
 
 void
-transport_set_recording_mode (
-  Transport *            self,
-  TransportRecordingMode mode)
+transport_set_recording_mode (Transport * self, TransportRecordingMode mode)
 {
   self->recording_mode = mode;
 
   if (!ZRYTHM_TESTING)
     {
-      g_settings_set_enum (
-        S_TRANSPORT, "recording-mode", mode);
+      g_settings_set_enum (S_TRANSPORT, "recording-mode", mode);
     }
 }
 
@@ -453,10 +412,7 @@ transport_set_recording_mode (
  * Updates beat unit and anything depending on it.
  */
 void
-transport_update_caches (
-  Transport * self,
-  int         beats_per_bar,
-  int         beat_unit)
+transport_update_caches (Transport * self, int beats_per_bar, int beat_unit)
 {
   /**
    * Regarding calculation:
@@ -469,8 +425,7 @@ transport_update_caches (
   self->ticks_per_beat = 3840 / beat_unit;
   self->ticks_per_bar = self->ticks_per_beat * beats_per_bar;
   self->sixteenths_per_beat = 16 / beat_unit;
-  self->sixteenths_per_bar =
-    (self->sixteenths_per_beat * beats_per_bar);
+  self->sixteenths_per_bar = (self->sixteenths_per_beat * beats_per_bar);
   g_warn_if_fail (self->ticks_per_bar > 0.0);
   g_warn_if_fail (self->ticks_per_beat > 0.0);
 }
@@ -500,13 +455,10 @@ transport_request_pause (Transport * self, bool with_wait)
   self->play_state = PLAYSTATE_PAUSE_REQUESTED;
 
   TRANSPORT->playhead_before_pause = self->playhead_pos;
-  if (
-    !ZRYTHM_TESTING
-    && g_settings_get_boolean (S_TRANSPORT, "return-to-cue"))
+  if (!ZRYTHM_TESTING && g_settings_get_boolean (S_TRANSPORT, "return-to-cue"))
     {
       transport_move_playhead (
-        self, &self->cue_pos, F_PANIC, F_NO_SET_CUE_POINT,
-        F_PUBLISH_EVENTS);
+        self, &self->cue_pos, F_PANIC, F_NO_SET_CUE_POINT, F_PUBLISH_EVENTS);
     }
 
   if (with_wait)
@@ -527,8 +479,7 @@ void
 transport_request_roll (Transport * self, bool with_wait)
 {
   /* can only be called from the gtk thread */
-  g_return_if_fail (
-    !AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
+  g_return_if_fail (!AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
 
   if (with_wait)
     {
@@ -538,28 +489,23 @@ transport_request_roll (Transport * self, bool with_wait)
   if (ZRYTHM && !ZRYTHM_TESTING)
     {
       /* handle countin */
-      PrerollCountBars bars = g_settings_get_enum (
-        S_TRANSPORT, "metronome-countin");
-      int num_bars =
-        transport_preroll_count_bars_enum_to_int (bars);
+      PrerollCountBars bars =
+        g_settings_get_enum (S_TRANSPORT, "metronome-countin");
+      int    num_bars = transport_preroll_count_bars_enum_to_int (bars);
       double frames_per_bar =
-        AUDIO_ENGINE->frames_per_tick
-        * (double) TRANSPORT->ticks_per_bar;
+        AUDIO_ENGINE->frames_per_tick * (double) TRANSPORT->ticks_per_bar;
       self->countin_frames_remaining =
         (long) ((double) num_bars * frames_per_bar);
       if (self->metronome_enabled)
         {
-          sample_processor_queue_metronome_countin (
-            SAMPLE_PROCESSOR);
+          sample_processor_queue_metronome_countin (SAMPLE_PROCESSOR);
         }
 
       if (self->recording)
         {
           /* handle preroll */
-          bars = g_settings_get_enum (
-            S_TRANSPORT, "recording-preroll");
-          num_bars =
-            transport_preroll_count_bars_enum_to_int (bars);
+          bars = g_settings_get_enum (S_TRANSPORT, "recording-preroll");
+          num_bars = transport_preroll_count_bars_enum_to_int (bars);
           Position pos;
           position_set_to_pos (&pos, &self->playhead_pos);
           position_add_bars (&pos, -num_bars);
@@ -591,12 +537,9 @@ transport_request_roll (Transport * self, bool with_wait)
  * end point.
  */
 void
-transport_add_to_playhead (
-  Transport *          self,
-  const signed_frame_t nframes)
+transport_add_to_playhead (Transport * self, const signed_frame_t nframes)
 {
-  transport_position_add_frames (
-    self, &TRANSPORT->playhead_pos, nframes);
+  transport_position_add_frames (self, &TRANSPORT->playhead_pos, nframes);
   EVENTS_PUSH (ET_PLAYHEAD_POS_CHANGED, NULL);
 }
 
@@ -638,8 +581,7 @@ transport_can_user_move_playhead (const Transport * self)
 {
   if (
     self->recording && self->play_state == PLAYSTATE_ROLLING
-    && self->audio_engine
-    && g_atomic_int_get (&self->audio_engine->run))
+    && self->audio_engine && g_atomic_int_get (&self->audio_engine->run))
     return false;
   else
     return true;
@@ -669,8 +611,7 @@ transport_move_playhead (
   /* if currently recording, do nothing */
   if (!transport_can_user_move_playhead (self))
     {
-      g_message (
-        "currently recording - refusing to move playhead manually");
+      g_message ("currently recording - refusing to move playhead manually");
       return;
     }
 
@@ -695,12 +636,10 @@ transport_move_playhead (
                 {
                   MidiNote * midi_note = region->midi_notes[j];
 
-                  if (midi_note_hit (
-                        midi_note, PLAYHEAD->frames))
+                  if (midi_note_hit (midi_note, PLAYHEAD->frames))
                     {
                       MidiEvents * midi_events =
-                        track->processor->piano_roll
-                          ->midi_events;
+                        track->processor->piano_roll->midi_events;
 
                       zix_sem_wait (&midi_events->access_sem);
                       midi_events_add_note_off (
@@ -725,8 +664,7 @@ transport_move_playhead (
     {
       /* FIXME use another flag to decide when
        * to do this */
-      self->last_manual_playhead_change =
-        g_get_monotonic_time ();
+      self->last_manual_playhead_change = g_get_monotonic_time ();
 
       EVENTS_PUSH (ET_PLAYHEAD_POS_CHANGED_MANUALLY, NULL);
     }
@@ -736,13 +674,10 @@ transport_move_playhead (
  * Sets whether metronome is enabled or not.
  */
 void
-transport_set_metronome_enabled (
-  Transport * self,
-  const int   enabled)
+transport_set_metronome_enabled (Transport * self, const int enabled)
 {
   self->metronome_enabled = enabled;
-  g_settings_set_boolean (
-    S_TRANSPORT, "metronome-enabled", enabled);
+  g_settings_set_boolean (S_TRANSPORT, "metronome-enabled", enabled);
 }
 
 /**
@@ -751,9 +686,8 @@ transport_set_metronome_enabled (
 double
 transport_get_ppqn (Transport * self)
 {
-  int beat_unit = tempo_track_get_beat_unit (P_TEMPO_TRACK);
-  double res =
-    self->ticks_per_beat * ((double) beat_unit / 4.0);
+  int    beat_unit = tempo_track_get_beat_unit (P_TEMPO_TRACK);
+  double res = self->ticks_per_beat * ((double) beat_unit / 4.0);
   return res;
 }
 
@@ -765,21 +699,14 @@ transport_get_ppqn (Transport * self)
  *   (false).
  */
 void
-transport_update_positions (
-  Transport * self,
-  bool        update_from_ticks)
+transport_update_positions (Transport * self, bool update_from_ticks)
 {
-  position_update (
-    &self->playhead_pos, update_from_ticks, 0.0);
+  position_update (&self->playhead_pos, update_from_ticks, 0.0);
   position_update (&self->cue_pos, update_from_ticks, 0.0);
-  position_update (
-    &self->loop_start_pos, update_from_ticks, 0.0);
-  position_update (
-    &self->loop_end_pos, update_from_ticks, 0.0);
-  position_update (
-    &self->punch_in_pos, update_from_ticks, 0.0);
-  position_update (
-    &self->punch_out_pos, update_from_ticks, 0.0);
+  position_update (&self->loop_start_pos, update_from_ticks, 0.0);
+  position_update (&self->loop_end_pos, update_from_ticks, 0.0);
+  position_update (&self->punch_in_pos, update_from_ticks, 0.0);
+  position_update (&self->punch_out_pos, update_from_ticks, 0.0);
 }
 
 #define GATHER_MARKERS \
@@ -788,24 +715,17 @@ transport_update_positions (
   int      num_markers = 0, i; \
   for (i = 0; i < P_MARKER_TRACK->num_markers; i++) \
     { \
-      ArrangerObject * m_obj = \
-        (ArrangerObject *) P_MARKER_TRACK->markers[i]; \
-      position_set_to_pos ( \
-        &markers[num_markers++], &m_obj->pos); \
+      ArrangerObject * m_obj = (ArrangerObject *) P_MARKER_TRACK->markers[i]; \
+      position_set_to_pos (&markers[num_markers++], &m_obj->pos); \
     } \
-  position_set_to_pos ( \
-    &markers[num_markers++], &self->cue_pos); \
-  position_set_to_pos ( \
-    &markers[num_markers++], &self->loop_start_pos); \
-  position_set_to_pos ( \
-    &markers[num_markers++], &self->loop_end_pos); \
-  position_set_to_pos ( \
-    &markers[num_markers++], &POSITION_START); \
+  position_set_to_pos (&markers[num_markers++], &self->cue_pos); \
+  position_set_to_pos (&markers[num_markers++], &self->loop_start_pos); \
+  position_set_to_pos (&markers[num_markers++], &self->loop_end_pos); \
+  position_set_to_pos (&markers[num_markers++], &POSITION_START); \
   position_sort_array (markers, (size_t) num_markers)
 
 static void
-foreach_arranger_handle_playhead_auto_scroll (
-  ArrangerWidget * arranger)
+foreach_arranger_handle_playhead_auto_scroll (ArrangerWidget * arranger)
 {
   arranger_widget_handle_playhead_auto_scroll (arranger, true);
 }
@@ -820,13 +740,12 @@ move_to_marker_or_pos_and_fire_events (
   const Position * pos)
 {
   transport_move_playhead (
-    self, marker ? &marker->base.pos : pos, F_PANIC,
-    F_SET_CUE_POINT, F_PUBLISH_EVENTS);
+    self, marker ? &marker->base.pos : pos, F_PANIC, F_SET_CUE_POINT,
+    F_PUBLISH_EVENTS);
 
   if (ZRYTHM_HAVE_UI)
     {
-      arranger_widget_foreach (
-        foreach_arranger_handle_playhead_auto_scroll);
+      arranger_widget_foreach (foreach_arranger_handle_playhead_auto_scroll);
     }
 }
 
@@ -836,11 +755,9 @@ move_to_marker_or_pos_and_fire_events (
 void
 transport_goto_start_marker (Transport * self)
 {
-  Marker * start_marker =
-    marker_track_get_start_marker (P_MARKER_TRACK);
+  Marker * start_marker = marker_track_get_start_marker (P_MARKER_TRACK);
   g_return_if_fail (start_marker);
-  move_to_marker_or_pos_and_fire_events (
-    self, start_marker, NULL);
+  move_to_marker_or_pos_and_fire_events (self, start_marker, NULL);
 }
 
 /**
@@ -849,11 +766,9 @@ transport_goto_start_marker (Transport * self)
 void
 transport_goto_end_marker (Transport * self)
 {
-  Marker * end_marker =
-    marker_track_get_end_marker (P_MARKER_TRACK);
+  Marker * end_marker = marker_track_get_end_marker (P_MARKER_TRACK);
   g_return_if_fail (end_marker);
-  move_to_marker_or_pos_and_fire_events (
-    self, end_marker, NULL);
+  move_to_marker_or_pos_and_fire_events (self, end_marker, NULL);
 }
 
 /**
@@ -869,19 +784,15 @@ transport_goto_prev_marker (Transport * self)
       if (
         position_is_before (&markers[i], &self->playhead_pos)
         && TRANSPORT_IS_ROLLING && i > 0
-        && (position_to_ms (&self->playhead_pos)
-            - position_to_ms (&markers[i]))
+        && (position_to_ms (&self->playhead_pos) - position_to_ms (&markers[i]))
              < 180)
         {
-          move_to_marker_or_pos_and_fire_events (
-            self, NULL, &markers[i - 1]);
+          move_to_marker_or_pos_and_fire_events (self, NULL, &markers[i - 1]);
           break;
         }
-      else if (position_is_before (
-                 &markers[i], &self->playhead_pos))
+      else if (position_is_before (&markers[i], &self->playhead_pos))
         {
-          move_to_marker_or_pos_and_fire_events (
-            self, NULL, &markers[i]);
+          move_to_marker_or_pos_and_fire_events (self, NULL, &markers[i]);
           break;
         }
     }
@@ -899,8 +810,7 @@ transport_goto_next_marker (Transport * self)
     {
       if (position_is_after (&markers[i], &self->playhead_pos))
         {
-          move_to_marker_or_pos_and_fire_events (
-            self, NULL, &markers[i]);
+          move_to_marker_or_pos_and_fire_events (self, NULL, &markers[i]);
           break;
         }
     }
@@ -910,14 +820,10 @@ transport_goto_next_marker (Transport * self)
  * Enables or disables loop.
  */
 void
-transport_set_loop (
-  Transport * self,
-  bool        enabled,
-  bool        with_wait)
+transport_set_loop (Transport * self, bool enabled, bool with_wait)
 {
   /* can only be called from the gtk thread */
-  g_return_if_fail (
-    !AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
+  g_return_if_fail (!AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
 
   if (with_wait)
     {
@@ -989,14 +895,12 @@ transport_position_add_frames (
   /* if start frames were before the loop-end point
    * and the new frames are after (loop crossed) */
   if (
-    TRANSPORT_IS_LOOPING
-    && pos_before_adding.frames < self->loop_end_pos.frames
+    TRANSPORT_IS_LOOPING && pos_before_adding.frames < self->loop_end_pos.frames
     && pos->frames >= self->loop_end_pos.frames)
     {
       /* adjust the new frames */
       position_add_ticks (
-        pos,
-        self->loop_start_pos.ticks - self->loop_end_pos.ticks);
+        pos, self->loop_start_pos.ticks - self->loop_end_pos.ticks);
 
       g_warn_if_fail (pos->frames < self->loop_end_pos.frames);
     }
@@ -1027,13 +931,10 @@ transport_set_has_range (Transport * self, bool has_range)
  * Stores the position of the range in \ref pos.
  */
 void
-transport_get_range_pos (
-  Transport * self,
-  bool        first,
-  Position *  pos)
+transport_get_range_pos (Transport * self, bool first, Position * pos)
 {
-  bool range1_first = position_is_before_or_equal (
-    &self->range_1, &self->range_2);
+  bool range1_first =
+    position_is_before_or_equal (&self->range_1, &self->range_2);
 
   if (first)
     {
@@ -1073,8 +974,7 @@ transport_set_range (
   const Position * pos,
   bool             snap)
 {
-  Position * pos_to_set =
-    range1 ? &self->range_1 : &self->range_2;
+  Position * pos_to_set = range1 ? &self->range_1 : &self->range_2;
 
   Position init_pos;
   position_init (&init_pos);
@@ -1089,15 +989,12 @@ transport_set_range (
 
   if (snap)
     {
-      position_snap (
-        start_pos, pos_to_set, NULL, NULL, SNAP_GRID_TIMELINE);
+      position_snap (start_pos, pos_to_set, NULL, NULL, SNAP_GRID_TIMELINE);
     }
 }
 
 bool
-transport_position_is_inside_punch_range (
-  Transport * self,
-  Position *  pos)
+transport_position_is_inside_punch_range (Transport * self, Position * pos)
 {
   return pos->frames >= self->punch_in_pos.frames
          && pos->frames < self->punch_out_pos.frames;
@@ -1112,9 +1009,7 @@ transport_position_is_inside_punch_range (
  *   project will be checked.
  */
 void
-transport_recalculate_total_bars (
-  Transport *          self,
-  ArrangerSelections * sel)
+transport_recalculate_total_bars (Transport * self, ArrangerSelections * sel)
 {
   if (!ZRYTHM_HAVE_UI)
     return;
@@ -1126,8 +1021,8 @@ transport_recalculate_total_bars (
       arranger_selections_get_all_objects (sel, objs_arr);
       for (size_t i = 0; i < objs_arr->len; i++)
         {
-          ArrangerObject * obj = (ArrangerObject *)
-            g_ptr_array_index (objs_arr, i);
+          ArrangerObject * obj =
+            (ArrangerObject *) g_ptr_array_index (objs_arr, i);
           Position pos;
           if (arranger_object_type_has_length (obj->type))
             {
@@ -1156,21 +1051,16 @@ transport_recalculate_total_bars (
       total_bars += BARS_END_BUFFER;
     }
 
-  transport_update_total_bars (
-    self, total_bars, F_PUBLISH_EVENTS);
+  transport_update_total_bars (self, total_bars, F_PUBLISH_EVENTS);
 }
 
 /**
  * Updates the total bars.
  */
 void
-transport_update_total_bars (
-  Transport * self,
-  int         total_bars,
-  bool        fire_events)
+transport_update_total_bars (Transport * self, int total_bars, bool fire_events)
 {
-  g_return_if_fail (
-    self && total_bars >= TRANSPORT_DEFAULT_TOTAL_BARS);
+  g_return_if_fail (self && total_bars >= TRANSPORT_DEFAULT_TOTAL_BARS);
 
   if (self->total_bars == total_bars)
     return;
@@ -1190,8 +1080,7 @@ void
 transport_move_backward (Transport * self, bool with_wait)
 {
   /* can only be called from the gtk thread */
-  g_return_if_fail (
-    !AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
+  g_return_if_fail (!AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
 
   if (with_wait)
     {
@@ -1218,8 +1107,7 @@ void
 transport_move_forward (Transport * self, bool with_wait)
 {
   /* can only be called from the gtk thread */
-  g_return_if_fail (
-    !AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
+  g_return_if_fail (!AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
 
   if (with_wait)
     {
@@ -1250,8 +1138,7 @@ transport_set_recording (
   bool        fire_events)
 {
   /* can only be called from the gtk thread */
-  g_return_if_fail (
-    !AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
+  g_return_if_fail (!AUDIO_ENGINE->run || ZRYTHM_APP_IS_GTK_THREAD);
 
   if (with_wait)
     {
@@ -1267,8 +1154,7 @@ transport_set_recording (
 
   if (fire_events)
     {
-      EVENTS_PUSH (
-        ET_TRANSPORT_RECORDING_ON_OFF_CHANGED, NULL);
+      EVENTS_PUSH (ET_TRANSPORT_RECORDING_ON_OFF_CHANGED, NULL);
     }
 }
 

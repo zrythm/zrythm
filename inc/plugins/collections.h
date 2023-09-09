@@ -34,21 +34,18 @@ typedef struct PluginCollections
   int                num_collections;
 } PluginCollections;
 
-static const cyaml_schema_field_t
-  plugin_collections_fields_schema[] = {
-    YAML_FIELD_INT (PluginCollections, schema_version),
-    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-      PluginCollections,
-      collections,
-      plugin_collection_schema),
+static const cyaml_schema_field_t plugin_collections_fields_schema[] = {
+  YAML_FIELD_INT (PluginCollections, schema_version),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    PluginCollections,
+    collections,
+    plugin_collection_schema),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t plugin_collections_schema = {
-  YAML_VALUE_PTR (
-    PluginCollections,
-    plugin_collections_fields_schema),
+  YAML_VALUE_PTR (PluginCollections, plugin_collections_fields_schema),
 };
 
 /**
@@ -58,8 +55,7 @@ PluginCollections *
 plugin_collections_new (void);
 
 void
-plugin_collections_serialize_to_file (
-  PluginCollections * self);
+plugin_collections_serialize_to_file (PluginCollections * self);
 
 /**
  * Appends a collection.

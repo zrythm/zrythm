@@ -36,9 +36,7 @@ peak_fall_smooth_calculate_coeff (
   const float      sample_rate);
 
 void
-peak_fall_smooth_set_value (
-  PeakFallSmooth * self,
-  const float      val);
+peak_fall_smooth_set_value (PeakFallSmooth * self, const float val);
 
 float
 peak_fall_smooth_get_smoothed_value (PeakFallSmooth * self);

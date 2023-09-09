@@ -13,8 +13,7 @@
 #include <gtk/gtk.h>
 #include <libpanel.h>
 
-#define RIGHT_DOCK_EDGE_WIDGET_TYPE \
-  (right_dock_edge_widget_get_type ())
+#define RIGHT_DOCK_EDGE_WIDGET_TYPE (right_dock_edge_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   RightDockEdgeWidget,
   right_dock_edge_widget,

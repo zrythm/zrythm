@@ -69,35 +69,30 @@ chord_arranger_widget_create_chord (
   int              chord_index,
   ZRegion *        region)
 {
-  g_return_val_if_fail (
-    chord_index < CHORD_EDITOR->num_chords, NULL);
+  g_return_val_if_fail (chord_index < CHORD_EDITOR->num_chords, NULL);
   self->action = UI_OVERLAY_ACTION_CREATING_MOVING;
 
   ArrangerObject * region_obj = (ArrangerObject *) region;
 
   /* get local pos */
   Position local_pos;
-  position_from_ticks (
-    &local_pos, pos->ticks - region_obj->pos.ticks);
+  position_from_ticks (&local_pos, pos->ticks - region_obj->pos.ticks);
 
   /* create a new chord */
-  ChordObject * chord = chord_object_new (
-    &region->id, chord_index, region->num_chord_objects);
+  ChordObject * chord =
+    chord_object_new (&region->id, chord_index, region->num_chord_objects);
   ArrangerObject * chord_obj = (ArrangerObject *) chord;
 
   /* add it to chord region */
-  chord_region_add_chord_object (
-    region, chord, F_PUBLISH_EVENTS);
+  chord_region_add_chord_object (region, chord, F_PUBLISH_EVENTS);
 
   arranger_object_set_position (
-    chord_obj, &local_pos,
-    ARRANGER_OBJECT_POSITION_TYPE_START, F_NO_VALIDATE);
+    chord_obj, &local_pos, ARRANGER_OBJECT_POSITION_TYPE_START, F_NO_VALIDATE);
 
   /* set as start object */
   self->start_object = chord_obj;
 
-  arranger_object_select (
-    chord_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (chord_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
   return chord;
 }
@@ -110,9 +105,7 @@ chord_arranger_widget_get_chord_at_y (double y)
 {
   double adj_y = y - 1;
   double adj_px_per_key =
-    chord_editor_space_widget_get_chord_height (
-      MW_CHORD_EDITOR_SPACE)
-    + 1;
+    chord_editor_space_widget_get_chord_height (MW_CHORD_EDITOR_SPACE) + 1;
   return (int) floor (adj_y / adj_px_per_key);
 }
 
@@ -131,12 +124,9 @@ chord_arranger_calc_deltamax_for_chord_movement (int y_delta)
         {
           y_delta = 0;
         }
-      else if (
-        co->chord_index + y_delta
-        >= (CHORD_EDITOR->num_chords - 1))
+      else if (co->chord_index + y_delta >= (CHORD_EDITOR->num_chords - 1))
         {
-          y_delta =
-            (CHORD_EDITOR->num_chords - 1) - co->chord_index;
+          y_delta = (CHORD_EDITOR->num_chords - 1) - co->chord_index;
         }
     }
   return y_delta;

@@ -25,10 +25,7 @@
  * @param region ZRegion to paste to.
  */
 int
-chord_selections_can_be_pasted (
-  ChordSelections * ts,
-  Position *        pos,
-  ZRegion *         r)
+chord_selections_can_be_pasted (ChordSelections * ts, Position * pos, ZRegion * r)
 {
   if (!r || r->id.type != REGION_TYPE_CHORD)
     return 0;

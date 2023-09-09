@@ -56,19 +56,14 @@ automation_region_force_sort (ZRegion * self);
  * Adds an AutomationPoint to the Region.
  */
 void
-automation_region_add_ap (
-  ZRegion *         self,
-  AutomationPoint * ap,
-  int               pub_events);
+automation_region_add_ap (ZRegion * self, AutomationPoint * ap, int pub_events);
 
 /**
  * Returns the AutomationPoint before the given
  * one.
  */
 NONNULL PURE AutomationPoint *
-automation_region_get_prev_ap (
-  ZRegion *         self,
-  AutomationPoint * ap);
+automation_region_get_prev_ap (ZRegion * self, AutomationPoint * ap);
 
 /**
  * Returns the AutomationPoint after the given

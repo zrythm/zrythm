@@ -35,8 +35,7 @@ typedef enum
   Z_AUDIO_AUDIO_FUNCTION_ERROR_FAILED,
 } ZAudioAudioFunctionError;
 
-#define Z_AUDIO_AUDIO_FUNCTION_ERROR \
-  z_audio_audio_function_error_quark ()
+#define Z_AUDIO_AUDIO_FUNCTION_ERROR z_audio_audio_function_error_quark ()
 GQuark
 z_audio_audio_function_error_quark (void);
 G_DEFINE_QUARK (
@@ -44,14 +43,12 @@ G_DEFINE_QUARK (
   z_audio_audio_function_error)
 
 char *
-audio_function_get_action_target_for_type (
-  AudioFunctionType type)
+audio_function_get_action_target_for_type (AudioFunctionType type)
 {
   const char * type_str = audio_function_type_to_string (type);
-  char * type_str_lower = g_strdup (type_str);
+  char *       type_str_lower = g_strdup (type_str);
   string_to_lower (type_str, type_str_lower);
-  char * substituted =
-    string_replace (type_str_lower, " ", "-");
+  char * substituted = string_replace (type_str_lower, " ", "-");
   g_free (type_str_lower);
 
   return substituted;
@@ -68,8 +65,7 @@ audio_function_get_detailed_action_for_type (
   AudioFunctionType type,
   const char *      base_action)
 {
-  char * target =
-    audio_function_get_action_target_for_type (type);
+  char * target = audio_function_get_action_target_for_type (type);
   char * ret = g_strdup_printf ("%s::%s", base_action, target);
   g_free (target);
 
@@ -129,12 +125,11 @@ apply_plugin (
   g_return_val_if_fail (setting, -1);
   setting->force_generic_ui = true;
   GError * err = NULL;
-  Plugin * pl = plugin_new_from_setting (
-    setting, 0, PLUGIN_SLOT_INSERT, 0, &err);
+  Plugin * pl =
+    plugin_new_from_setting (setting, 0, PLUGIN_SLOT_INSERT, 0, &err);
   if (!IS_PLUGIN_AND_NONNULL (pl))
     {
-      PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s", _ ("Failed to create plugin"));
+      PROPAGATE_PREFIXED_ERROR (error, err, "%s", _ ("Failed to create plugin"));
       return -1;
     }
   pl->is_function = true;
@@ -160,10 +155,8 @@ apply_plugin (
   /*pl->window, GTK_WIDGET (MAIN_WINDOW));*/
 
   /* add vbox for stacking elements */
-  pl->vbox =
-    GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
-  GtkWidget * container =
-    gtk_dialog_get_content_area (GTK_DIALOG (pl->window));
+  pl->vbox = GTK_BOX (gtk_box_new (GTK_ORIENTATION_VERTICAL, 0));
+  GtkWidget * container = gtk_dialog_get_content_area (GTK_DIALOG (pl->window));
   gtk_box_append (GTK_BOX (container), GTK_WIDGET (pl->vbox));
 
 #if 0
@@ -175,8 +168,7 @@ apply_plugin (
 
   /* Create/show alignment to contain UI (whether
    * custom or generic) */
-  pl->ev_box =
-    GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  pl->ev_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
   gtk_box_append (pl->vbox, GTK_WIDGET (pl->ev_box));
   gtk_widget_set_vexpand (GTK_WIDGET (pl->ev_box), true);
 
@@ -230,9 +222,8 @@ apply_plugin (
       r_out = l_out;
     }
 
-  uint32_t step =
-    (uint32_t) MIN (AUDIO_ENGINE->block_length, num_frames);
-  size_t i = 0; /* frames processed */
+  uint32_t step = (uint32_t) MIN (AUDIO_ENGINE->block_length, num_frames);
+  size_t   i = 0; /* frames processed */
   plugin_update_latency (pl);
   nframes_t latency = pl->latency;
   while (i < num_frames)
@@ -249,8 +240,7 @@ apply_plugin (
       for (size_t j = 0; j < step; j++)
         {
           signed_frame_t actual_j =
-            (signed_frame_t) (i + j)
-            - (signed_frame_t) latency;
+            (signed_frame_t) (i + j) - (signed_frame_t) latency;
           if (actual_j < 0)
             continue;
 #if 0
@@ -261,10 +251,8 @@ apply_plugin (
 #endif
           g_return_val_if_fail (l_out, -1);
           g_return_val_if_fail (r_out, -1);
-          frames[actual_j * (signed_frame_t) channels] =
-            l_out->buf[j];
-          frames[actual_j * (signed_frame_t) channels + 1] =
-            r_out->buf[j];
+          frames[actual_j * (signed_frame_t) channels] = l_out->buf[j];
+          frames[actual_j * (signed_frame_t) channels + 1] = r_out->buf[j];
         }
       if (i > latency)
         {
@@ -292,8 +280,7 @@ apply_plugin (
       for (size_t j = 0; j < step; j++)
         {
           signed_frame_t actual_j =
-            (signed_frame_t) (i + j + num_frames)
-            - (signed_frame_t) latency;
+            (signed_frame_t) (i + j + num_frames) - (signed_frame_t) latency;
           g_return_val_if_fail (actual_j >= 0, -1);
 #if 0
           g_message (
@@ -303,10 +290,8 @@ apply_plugin (
 #endif
           g_return_val_if_fail (l_out, -1);
           g_return_val_if_fail (r_out, -1);
-          frames[actual_j * (signed_frame_t) channels] =
-            l_out->buf[j];
-          frames[actual_j * (signed_frame_t) channels + 1] =
-            r_out->buf[j];
+          frames[actual_j * (signed_frame_t) channels] = l_out->buf[j];
+          frames[actual_j * (signed_frame_t) channels + 1] = r_out->buf[j];
         }
       i += step;
       step = (uint32_t) MIN (step, latency - i);
@@ -342,15 +327,13 @@ audio_function_apply (
   const char *         uri,
   GError **            error)
 {
-  g_message (
-    "applying %s...", audio_function_type_to_string (type));
+  g_message ("applying %s...", audio_function_type_to_string (type));
 
   AudioSelections * audio_sel = (AudioSelections *) sel;
 
   ZRegion * r = region_find (&audio_sel->region_id);
   g_return_val_if_fail (r, false);
-  Track * tr =
-    arranger_object_get_track ((ArrangerObject *) r);
+  Track * tr = arranger_object_get_track ((ArrangerObject *) r);
   g_return_val_if_fail (tr, false);
   AudioClip * orig_clip = audio_region_get_clip (r);
   g_return_val_if_fail (orig_clip, false);
@@ -359,8 +342,7 @@ audio_function_apply (
   position_init (&init_pos);
   if (
     position_is_before (&audio_sel->sel_start, &r->base.pos)
-    || position_is_after (
-      &audio_sel->sel_end, &r->base.end_pos))
+    || position_is_after (&audio_sel->sel_end, &r->base.end_pos))
     {
       position_print (&audio_sel->sel_start);
       position_print (&audio_sel->sel_end);
@@ -379,23 +361,18 @@ audio_function_apply (
   position_add_frames (&end, -r->base.pos.frames);
 
   /* create a copy of the frames to be replaced */
-  unsigned_frame_t num_frames =
-    (unsigned_frame_t) (end.frames - start.frames);
+  unsigned_frame_t num_frames = (unsigned_frame_t) (end.frames - start.frames);
 
   bool use_interleaved = true;
 
   /* interleaved frames */
   channels_t channels = orig_clip->channels;
-  float *    src_frames =
-    object_new_n (num_frames * channels, float);
-  float * dest_frames =
-    object_new_n (num_frames * channels, float);
+  float *    src_frames = object_new_n (num_frames * channels, float);
+  float *    dest_frames = object_new_n (num_frames * channels, float);
   dsp_copy (
-    &dest_frames[0],
-    &orig_clip->frames[start.frames * (long) channels],
+    &dest_frames[0], &orig_clip->frames[start.frames * (long) channels],
     num_frames * channels);
-  dsp_copy (
-    &src_frames[0], &dest_frames[0], num_frames * channels);
+  dsp_copy (&src_frames[0], &dest_frames[0], num_frames * channels);
 
   /* uninterleaved frames */
   float * ch_src_frames[channels];
@@ -408,16 +385,12 @@ audio_function_apply (
         {
           ch_src_frames[j][i] = src_frames[i * channels + j];
         }
-      dsp_copy (
-        &ch_dest_frames[j][0], &ch_src_frames[j][0],
-        num_frames);
+      dsp_copy (&ch_dest_frames[j][0], &ch_src_frames[j][0], num_frames);
     }
 
-  unsigned_frame_t nudge_frames =
-    (unsigned_frame_t) position_get_frames_from_ticks (
-      ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS, 0.0);
-  unsigned_frame_t nudge_frames_all_channels =
-    channels * nudge_frames;
+  unsigned_frame_t nudge_frames = (unsigned_frame_t)
+    position_get_frames_from_ticks (ARRANGER_SELECTIONS_DEFAULT_NUDGE_TICKS, 0.0);
+  unsigned_frame_t nudge_frames_all_channels = channels * nudge_frames;
   unsigned_frame_t num_frames_excl_nudge;
   g_debug (
     "num frames %" PRIu64
@@ -429,15 +402,12 @@ audio_function_apply (
   switch (type)
     {
     case AUDIO_FUNCTION_INVERT:
-      dsp_mul_k2 (
-        &dest_frames[0], -1.f, num_frames * channels);
+      dsp_mul_k2 (&dest_frames[0], -1.f, num_frames * channels);
       break;
     case AUDIO_FUNCTION_NORMALIZE_PEAK:
       /* note: this normalizes by taking all channels into
        * account */
-      dsp_normalize (
-        &dest_frames[0], &dest_frames[0],
-        num_frames * channels);
+      dsp_normalize (&dest_frames[0], &dest_frames[0], num_frames * channels);
       break;
     case AUDIO_FUNCTION_NORMALIZE_RMS:
       /* TODO rms-normalize */
@@ -447,21 +417,17 @@ audio_function_apply (
       break;
     case AUDIO_FUNCTION_LINEAR_FADE_IN:
       dsp_linear_fade_in_from (
-        &dest_frames[0], 0, num_frames * channels,
-        num_frames * channels, 0.f);
+        &dest_frames[0], 0, num_frames * channels, num_frames * channels, 0.f);
       break;
     case AUDIO_FUNCTION_LINEAR_FADE_OUT:
       dsp_linear_fade_out_to (
-        &dest_frames[0], 0, num_frames * channels,
-        num_frames * channels, 0.f);
+        &dest_frames[0], 0, num_frames * channels, num_frames * channels, 0.f);
       break;
     case AUDIO_FUNCTION_NUDGE_LEFT:
       g_return_val_if_fail (num_frames > nudge_frames, false);
-      num_frames_excl_nudge =
-        num_frames - (size_t) nudge_frames;
+      num_frames_excl_nudge = num_frames - (size_t) nudge_frames;
       dsp_copy (
-        &dest_frames[0],
-        &src_frames[nudge_frames_all_channels],
+        &dest_frames[0], &src_frames[nudge_frames_all_channels],
         channels * num_frames_excl_nudge);
       dsp_fill (
         &dest_frames[channels * num_frames_excl_nudge], 0.f,
@@ -469,21 +435,17 @@ audio_function_apply (
       break;
     case AUDIO_FUNCTION_NUDGE_RIGHT:
       g_return_val_if_fail (num_frames > nudge_frames, false);
-      num_frames_excl_nudge =
-        num_frames - (size_t) nudge_frames;
+      num_frames_excl_nudge = num_frames - (size_t) nudge_frames;
       dsp_copy (
         &dest_frames[nudge_frames], &src_frames[0],
         channels * num_frames_excl_nudge);
-      dsp_fill (
-        &dest_frames[0], 0.f, nudge_frames_all_channels);
+      dsp_fill (&dest_frames[0], 0.f, nudge_frames_all_channels);
       break;
     case AUDIO_FUNCTION_REVERSE:
       use_interleaved = false;
       for (size_t j = 0; j < channels; j++)
         {
-          dsp_reverse2 (
-            &ch_dest_frames[j][0], &ch_src_frames[j][0],
-            num_frames);
+          dsp_reverse2 (&ch_dest_frames[j][0], &ch_src_frames[j][0], num_frames);
         }
       break;
     case AUDIO_FUNCTION_PITCH_SHIFT:
@@ -498,34 +460,28 @@ audio_function_apply (
   || (RUBBERBAND_API_MAJOR_VERSION == 2 && RUBBERBAND_API_MINOR_VERSION >= 7)
           | RubberBandOptionEngineFiner
 #endif
-          | RubberBandOptionPitchHighQuality
-          | RubberBandOptionFormantPreserved
-          | RubberBandOptionThreadingAlways
-          | RubberBandOptionChannelsApart;
+          | RubberBandOptionPitchHighQuality | RubberBandOptionFormantPreserved
+          | RubberBandOptionThreadingAlways | RubberBandOptionChannelsApart;
         rubberband_state = rubberband_new (
-          AUDIO_ENGINE->sample_rate, channels,
-          rubberband_opts, 1.0, opts.amount);
+          AUDIO_ENGINE->sample_rate, channels, rubberband_opts, 1.0,
+          opts.amount);
         const size_t max_process_size = 8192;
         rubberband_set_debug_level (rubberband_state, 2);
-        rubberband_set_max_process_size (
-          rubberband_state, max_process_size);
-        rubberband_set_expected_input_duration (
-          rubberband_state, num_frames);
+        rubberband_set_max_process_size (rubberband_state, max_process_size);
+        rubberband_set_expected_input_duration (rubberband_state, num_frames);
         rubberband_study (
-          rubberband_state,
-          (const float * const *) ch_src_frames, num_frames,
+          rubberband_state, (const float * const *) ch_src_frames, num_frames,
           true);
         size_t samples_fed = 0;
         size_t frames_read = 0;
         while (frames_read < num_frames)
           {
-            unsigned int samples_required = MIN (
-              num_frames - samples_fed, max_process_size);
+            unsigned int samples_required =
+              MIN (num_frames - samples_fed, max_process_size);
             /*rubberband_get_samples_required (*/
             /*rubberband_state));*/
             float * tmp_in_arrays[2] = {
-              &ch_src_frames[0][samples_fed],
-              &ch_src_frames[1][samples_fed]
+              &ch_src_frames[0][samples_fed], &ch_src_frames[1][samples_fed]
             };
             samples_fed += samples_required;
             g_message (
@@ -535,14 +491,12 @@ audio_function_apply (
             if (samples_required > 0)
               {
                 rubberband_process (
-                  rubberband_state,
-                  (const float * const *) tmp_in_arrays,
+                  rubberband_state, (const float * const *) tmp_in_arrays,
                   samples_required, samples_fed == num_frames);
               }
             for (;;)
               {
-                int avail =
-                  rubberband_available (rubberband_state);
+                int avail = rubberband_available (rubberband_state);
                 if (avail == 0)
                   {
                     g_message ("avail == 0");
@@ -571,10 +525,8 @@ audio_function_apply (
                   &ch_dest_frames[0][frames_read],
                   &ch_dest_frames[1][frames_read]
                 };
-                size_t retrieved_out_samples =
-                  rubberband_retrieve (
-                    rubberband_state, tmp_out_arrays,
-                    (unsigned int) avail);
+                size_t retrieved_out_samples = rubberband_retrieve (
+                  rubberband_state, tmp_out_arrays, (unsigned int) avail);
                 if ((int) retrieved_out_samples != avail)
                   {
                     g_set_error (
@@ -595,8 +547,8 @@ audio_function_apply (
             g_set_error (
               error, Z_AUDIO_AUDIO_FUNCTION_ERROR,
               Z_AUDIO_AUDIO_FUNCTION_ERROR_FAILED,
-              "rubberband: expected %zu frames but read %zu",
-              num_frames, frames_read);
+              "rubberband: expected %zu frames but read %zu", num_frames,
+              frames_read);
             return false;
           }
       }
@@ -604,11 +556,9 @@ audio_function_apply (
     case AUDIO_FUNCTION_EXT_PROGRAM:
       {
         AudioClip * tmp_clip = audio_clip_new_from_float_array (
-          src_frames, num_frames, channels, BIT_DEPTH_32,
-          "tmp-clip");
+          src_frames, num_frames, channels, BIT_DEPTH_32, "tmp-clip");
         GError * err = NULL;
-        tmp_clip =
-          audio_clip_edit_in_ext_program (tmp_clip, &err);
+        tmp_clip = audio_clip_edit_in_ext_program (tmp_clip, &err);
         if (!tmp_clip)
           {
             /* FIXME this should be handled async */
@@ -619,14 +569,12 @@ audio_function_apply (
           }
         dsp_copy (
           &dest_frames[0], &tmp_clip->frames[0],
-          MIN (num_frames, (size_t) tmp_clip->num_frames)
-            * channels);
+          MIN (num_frames, (size_t) tmp_clip->num_frames) * channels);
         if ((size_t) tmp_clip->num_frames < num_frames)
           {
             dsp_fill (
               &dest_frames[0], 0.f,
-              (num_frames - (size_t) tmp_clip->num_frames)
-                * channels);
+              (num_frames - (size_t) tmp_clip->num_frames) * channels);
           }
       }
       break;
@@ -634,8 +582,7 @@ audio_function_apply (
       {
         g_return_val_if_fail (uri, false);
         GError * err = NULL;
-        int      ret = apply_plugin (
-          uri, dest_frames, num_frames, channels, &err);
+        int ret = apply_plugin (uri, dest_frames, num_frames, channels, &err);
         if (ret != 0)
           {
             PROPAGATE_PREFIXED_ERROR (
@@ -671,26 +618,21 @@ audio_function_apply (
         {
           for (size_t i = 0; i < num_frames; i++)
             {
-              dest_frames[i * channels + j] =
-                ch_dest_frames[j][i];
+              dest_frames[i * channels + j] = ch_dest_frames[j][i];
             }
         }
     }
 
   AudioClip * clip = audio_clip_new_from_float_array (
-    &dest_frames[0], num_frames, channels, BIT_DEPTH_32,
-    orig_clip->name);
+    &dest_frames[0], num_frames, channels, BIT_DEPTH_32, orig_clip->name);
   audio_pool_add_clip (AUDIO_POOL, clip);
-  g_message (
-    "writing %s to pool (id %d)", clip->name, clip->pool_id);
+  g_message ("writing %s to pool (id %d)", clip->name, clip->pool_id);
   GError * err = NULL;
-  bool     success = audio_clip_write_to_pool (
-    clip, false, F_NOT_BACKUP, &err);
+  bool     success = audio_clip_write_to_pool (clip, false, F_NOT_BACKUP, &err);
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err, "%s",
-        "Failed to write audio clip to pool");
+        error, err, "%s", "Failed to write audio clip to pool");
       return false;
     }
 
@@ -700,13 +642,12 @@ audio_function_apply (
     {
       /* replace the frames in the region */
       success = audio_region_replace_frames (
-        r, dest_frames, (size_t) start.frames, num_frames,
-        F_NO_DUPLICATE_CLIP, &err);
+        r, dest_frames, (size_t) start.frames, num_frames, F_NO_DUPLICATE_CLIP,
+        &err);
       if (!success)
         {
           PROPAGATE_PREFIXED_ERROR (
-            error, err, "%s",
-            "Failed to replace region frames");
+            error, err, "%s", "Failed to replace region frames");
           return false;
         }
     }
@@ -720,8 +661,7 @@ audio_function_apply (
       if (type == AUDIO_FUNCTION_PITCH_SHIFT)
         {
           g_settings_set_double (
-            S_UI, "audio-function-pitch-shift-ratio",
-            opts.amount);
+            S_UI, "audio-function-pitch-shift-ratio", opts.amount);
         }
     }
 

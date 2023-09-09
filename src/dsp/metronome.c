@@ -38,27 +38,24 @@ metronome_new (void)
       const char * src_root = getenv ("G_TEST_SRC_ROOT_DIR");
       g_warn_if_fail (src_root);
       self->emphasis_path = g_build_filename (
-        src_root, "data", "samples", "klick",
-        "square_emphasis.wav", NULL);
+        src_root, "data", "samples", "klick", "square_emphasis.wav", NULL);
       self->normal_path = g_build_filename (
-        src_root, "data", "samples", "klick",
-        "/square_normal.wav", NULL);
+        src_root, "data", "samples", "klick", "/square_normal.wav", NULL);
     }
   else
     {
-      char * samplesdir =
-        zrythm_get_dir (ZRYTHM_DIR_SYSTEM_SAMPLESDIR);
-      self->emphasis_path = g_build_filename (
-        samplesdir, "square_emphasis.wav", NULL);
-      self->normal_path = g_build_filename (
-        samplesdir, "square_normal.wav", NULL);
+      char * samplesdir = zrythm_get_dir (ZRYTHM_DIR_SYSTEM_SAMPLESDIR);
+      self->emphasis_path =
+        g_build_filename (samplesdir, "square_emphasis.wav", NULL);
+      self->normal_path =
+        g_build_filename (samplesdir, "square_normal.wav", NULL);
     }
 
   GError *          err = NULL;
   AudioFileMetadata metadata = { 0 };
   bool              success = audio_file_read_simple (
-    self->emphasis_path, &self->emphasis, &self->emphasis_size,
-    &metadata, AUDIO_ENGINE->sample_rate, &err);
+    self->emphasis_path, &self->emphasis, &self->emphasis_size, &metadata,
+    AUDIO_ENGINE->sample_rate, &err);
   if (!success)
     {
       HANDLE_ERROR (
@@ -72,13 +69,12 @@ metronome_new (void)
   err = NULL;
   memset (&metadata, 0, sizeof (AudioFileMetadata));
   success = audio_file_read_simple (
-    self->normal_path, &self->normal, &self->normal_size,
-    &metadata, AUDIO_ENGINE->sample_rate, &err);
+    self->normal_path, &self->normal, &self->normal_size, &metadata,
+    AUDIO_ENGINE->sample_rate, &err);
   if (!success)
     {
       HANDLE_ERROR (
-        err, "Failed to load samples for metronome from %s",
-        self->normal_path);
+        err, "Failed to load samples for metronome from %s", self->normal_path);
       metronome_free (self);
       return NULL;
     }
@@ -88,8 +84,7 @@ metronome_new (void)
   self->volume =
     ZRYTHM_TESTING
       ? 1.f
-      : (float) g_settings_get_double (
-        S_TRANSPORT, "metronome-volume");
+      : (float) g_settings_get_double (S_TRANSPORT, "metronome-volume");
 
   return self;
 }
@@ -115,10 +110,8 @@ find_and_queue_metronome (
 
   /* find each bar / beat change from start
    * to finish */
-  int num_bars_before =
-    position_get_total_bars (start_pos, false);
-  int num_bars_after =
-    position_get_total_bars (end_pos, false);
+  int num_bars_before = position_get_total_bars (start_pos, false);
+  int num_bars_after = position_get_total_bars (end_pos, false);
   int bars_diff = num_bars_after - num_bars_before;
 
 #if 0
@@ -147,17 +140,14 @@ find_and_queue_metronome (
       position_add_bars (&bar_pos, num_bars_before + i + 1);
 
       /* offset of bar pos from start pos */
-      signed_frame_t bar_offset_long =
-        bar_pos.frames - start_pos->frames;
+      signed_frame_t bar_offset_long = bar_pos.frames - start_pos->frames;
       if (bar_offset_long < 0)
         {
           g_message ("bar pos:");
           position_print (&bar_pos);
           g_message ("start pos:");
           position_print (start_pos);
-          g_critical (
-            "bar offset long (%" PRId64 ") is < 0",
-            bar_offset_long);
+          g_critical ("bar offset long (%" PRId64 ") is < 0", bar_offset_long);
           return;
         }
 
@@ -165,19 +155,14 @@ find_and_queue_metronome (
       signed_frame_t metronome_offset_long =
         bar_offset_long + (signed_frame_t) loffset;
       z_return_if_fail_cmp (metronome_offset_long, >=, 0);
-      nframes_t metronome_offset =
-        (nframes_t) metronome_offset_long;
-      z_return_if_fail_cmp (
-        metronome_offset, <, AUDIO_ENGINE->block_length);
+      nframes_t metronome_offset = (nframes_t) metronome_offset_long;
+      z_return_if_fail_cmp (metronome_offset, <, AUDIO_ENGINE->block_length);
       sample_processor_queue_metronome (
-        SAMPLE_PROCESSOR, METRONOME_TYPE_EMPHASIS,
-        metronome_offset);
+        SAMPLE_PROCESSOR, METRONOME_TYPE_EMPHASIS, metronome_offset);
     }
 
-  int num_beats_before =
-    position_get_total_beats (start_pos, false);
-  int num_beats_after =
-    position_get_total_beats (end_pos, false);
+  int num_beats_before = position_get_total_beats (start_pos, false);
+  int num_beats_after = position_get_total_beats (end_pos, false);
   int beats_diff = num_beats_after - num_beats_before;
 
   for (int i = 0; i < beats_diff; i++)
@@ -201,8 +186,7 @@ find_and_queue_metronome (
             }
 
           /* offset of beat pos from start pos */
-          signed_frame_t beat_offset_long =
-            beat_pos.frames - start_pos->frames;
+          signed_frame_t beat_offset_long = beat_pos.frames - start_pos->frames;
           z_return_if_fail_cmp (beat_offset_long, >=, 0);
 
           /* add local offset */
@@ -210,13 +194,10 @@ find_and_queue_metronome (
             beat_offset_long + (signed_frame_t) loffset;
           z_return_if_fail_cmp (metronome_offset_long, >=, 0);
 
-          nframes_t metronome_offset =
-            (nframes_t) metronome_offset_long;
-          z_return_if_fail_cmp (
-            metronome_offset, <, AUDIO_ENGINE->block_length);
+          nframes_t metronome_offset = (nframes_t) metronome_offset_long;
+          z_return_if_fail_cmp (metronome_offset, <, AUDIO_ENGINE->block_length);
           sample_processor_queue_metronome (
-            SAMPLE_PROCESSOR, METRONOME_TYPE_NORMAL,
-            metronome_offset);
+            SAMPLE_PROCESSOR, METRONOME_TYPE_NORMAL, metronome_offset);
         }
     }
 }
@@ -238,11 +219,9 @@ metronome_queue_events (
   position_init (&beat_pos);
   position_set_to_pos (&playhead_pos, PLAYHEAD);
   position_set_to_pos (&unlooped_playhead, PLAYHEAD);
-  transport_position_add_frames (
-    self->transport, &playhead_pos, nframes);
+  transport_position_add_frames (self->transport, &playhead_pos, nframes);
   position_add_frames (&unlooped_playhead, (long) nframes);
-  int loop_crossed =
-    unlooped_playhead.frames != playhead_pos.frames;
+  int loop_crossed = unlooped_playhead.frames != playhead_pos.frames;
   if (loop_crossed)
     {
       /* find each bar / beat change until loop
@@ -255,15 +234,13 @@ metronome_queue_events (
       find_and_queue_metronome (
         &self->transport->loop_start_pos, &playhead_pos,
         loffset
-          + (nframes_t) (self->transport->loop_end_pos.frames
-                         - PLAYHEAD->frames));
+          + (nframes_t) (self->transport->loop_end_pos.frames - PLAYHEAD->frames));
     }
   else /* loop not crossed */
     {
       /* find each bar / beat change from start
        * to finish */
-      find_and_queue_metronome (
-        PLAYHEAD, &playhead_pos, loffset);
+      find_and_queue_metronome (PLAYHEAD, &playhead_pos, loffset);
     }
 }
 
@@ -272,8 +249,7 @@ metronome_set_volume (Metronome * self, float volume)
 {
   self->volume = volume;
 
-  g_settings_set_double (
-    S_TRANSPORT, "metronome-volume", (double) volume);
+  g_settings_set_double (S_TRANSPORT, "metronome-volume", (double) volume);
 }
 
 void

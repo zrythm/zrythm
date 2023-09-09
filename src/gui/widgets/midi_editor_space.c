@@ -30,18 +30,12 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  MidiEditorSpaceWidget,
-  midi_editor_space_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (MidiEditorSpaceWidget, midi_editor_space_widget, GTK_TYPE_WIDGET)
 
 static void
-on_midi_modifier_changed (
-  GtkComboBox *           widget,
-  MidiEditorSpaceWidget * self)
+on_midi_modifier_changed (GtkComboBox * widget, MidiEditorSpaceWidget * self)
 {
-  piano_roll_set_midi_modifier (
-    PIANO_ROLL, gtk_combo_box_get_active (widget));
+  piano_roll_set_midi_modifier (PIANO_ROLL, gtk_combo_box_get_active (widget));
 }
 
 static int
@@ -51,9 +45,8 @@ on_scroll (
   gdouble                    dy,
   gpointer                   user_data)
 {
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (scroll_controller));
+  GdkModifierType state = gtk_event_controller_get_current_event_state (
+    GTK_EVENT_CONTROLLER (scroll_controller));
 
   if (state & GDK_CONTROL_MASK && state & GDK_SHIFT_MASK)
     {
@@ -69,21 +62,18 @@ on_scroll (
  * region.
  */
 gboolean
-midi_editor_space_widget_scroll_to_middle (
-  MidiEditorSpaceWidget * self)
+midi_editor_space_widget_scroll_to_middle (MidiEditorSpaceWidget * self)
 {
   /* scroll to the middle on first show */
   if (!self->scrolled_on_first_refresh)
     {
       GtkAdjustment * adj =
-        gtk_scrolled_window_get_vadjustment (
-          self->piano_roll_keys_scroll);
+        gtk_scrolled_window_get_vadjustment (self->piano_roll_keys_scroll);
       int adj_upper = (int) gtk_adjustment_get_upper (adj);
       if (adj_upper > 1)
         {
           editor_settings_set_scroll_start_y (
-            &PIANO_ROLL->editor_settings, adj_upper / 2,
-            F_VALIDATE);
+            &PIANO_ROLL->editor_settings, adj_upper / 2, F_VALIDATE);
           self->scrolled_on_first_refresh = true;
           return G_SOURCE_REMOVE;
         }
@@ -99,8 +89,7 @@ midi_editor_space_widget_refresh (MidiEditorSpaceWidget * self)
 
   /* setup combo box */
   gtk_combo_box_set_active (
-    GTK_COMBO_BOX (self->midi_modifier_chooser),
-    PIANO_ROLL->midi_modifier);
+    GTK_COMBO_BOX (self->midi_modifier_chooser), PIANO_ROLL->midi_modifier);
 }
 
 void
@@ -109,11 +98,9 @@ midi_editor_space_widget_update_size_group (
   int                     visible)
 {
   clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
-    MW_CLIP_EDITOR_INNER,
-    GTK_WIDGET (self->midi_vel_chooser_box), visible);
+    MW_CLIP_EDITOR_INNER, GTK_WIDGET (self->midi_vel_chooser_box), visible);
   clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
-    MW_CLIP_EDITOR_INNER, GTK_WIDGET (self->midi_notes_box),
-    visible);
+    MW_CLIP_EDITOR_INNER, GTK_WIDGET (self->midi_notes_box), visible);
 }
 
 /**
@@ -124,10 +111,9 @@ midi_editor_space_widget_set_piano_keys_scroll_start_y (
   MidiEditorSpaceWidget * self,
   int                     y)
 {
-  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
-    self->piano_roll_keys_scroll);
-  if (!math_doubles_equal (
-        (double) y, gtk_adjustment_get_value (hadj)))
+  GtkAdjustment * hadj =
+    gtk_scrolled_window_get_vadjustment (self->piano_roll_keys_scroll);
+  if (!math_doubles_equal ((double) y, gtk_adjustment_get_value (hadj)))
     {
       gtk_adjustment_set_value (hadj, (double) y);
     }
@@ -139,8 +125,8 @@ on_piano_keys_scroll_hadj_changed (
   MidiEditorSpaceWidget * self)
 {
   editor_settings_set_scroll_start_y (
-    &PIANO_ROLL->editor_settings,
-    (int) gtk_adjustment_get_value (adj), F_VALIDATE);
+    &PIANO_ROLL->editor_settings, (int) gtk_adjustment_get_value (adj),
+    F_VALIDATE);
 }
 
 void
@@ -149,8 +135,8 @@ midi_editor_space_widget_setup (MidiEditorSpaceWidget * self)
   if (self->arranger)
     {
       arranger_widget_setup (
-        Z_ARRANGER_WIDGET (self->arranger),
-        ARRANGER_WIDGET_TYPE_MIDI, SNAP_GRID_EDITOR);
+        Z_ARRANGER_WIDGET (self->arranger), ARRANGER_WIDGET_TYPE_MIDI,
+        SNAP_GRID_EDITOR);
     }
   if (self->modifier_arranger)
     {
@@ -163,11 +149,10 @@ midi_editor_space_widget_setup (MidiEditorSpaceWidget * self)
 
   /* add a signal handler to update the editor settings on
    * scroll */
-  GtkAdjustment * vadj = gtk_scrolled_window_get_vadjustment (
-    self->piano_roll_keys_scroll);
+  GtkAdjustment * vadj =
+    gtk_scrolled_window_get_vadjustment (self->piano_roll_keys_scroll);
   g_signal_connect (
-    vadj, "value-changed",
-    G_CALLBACK (on_piano_keys_scroll_hadj_changed), self);
+    vadj, "value-changed", G_CALLBACK (on_piano_keys_scroll_hadj_changed), self);
 
   midi_editor_space_widget_refresh (self);
 }
@@ -178,13 +163,11 @@ midi_editor_space_tick_cb (
   GdkFrameClock * frame_clock,
   gpointer        user_data)
 {
-  MidiEditorSpaceWidget * self =
-    Z_MIDI_EDITOR_SPACE_WIDGET (user_data);
+  MidiEditorSpaceWidget * self = Z_MIDI_EDITOR_SPACE_WIDGET (user_data);
 
-  GtkAdjustment * vadj = gtk_scrolled_window_get_vadjustment (
-    self->piano_roll_keys_scroll);
-  gtk_adjustment_set_value (
-    vadj, PIANO_ROLL->editor_settings.scroll_start_y);
+  GtkAdjustment * vadj =
+    gtk_scrolled_window_get_vadjustment (self->piano_roll_keys_scroll);
+  gtk_adjustment_set_value (vadj, PIANO_ROLL->editor_settings.scroll_start_y);
 
   return G_SOURCE_CONTINUE;
 }
@@ -192,8 +175,7 @@ midi_editor_space_tick_cb (
 static void
 dispose (MidiEditorSpaceWidget * self)
 {
-  gtk_widget_unparent (
-    GTK_WIDGET (self->midi_arranger_velocity_paned));
+  gtk_widget_unparent (GTK_WIDGET (self->midi_arranger_velocity_paned));
 
   G_OBJECT_CLASS (midi_editor_space_widget_parent_class)
     ->dispose (G_OBJECT (self));
@@ -207,25 +189,19 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  gtk_paned_set_resize_start_child (
-    self->midi_arranger_velocity_paned, true);
-  gtk_paned_set_resize_end_child (
-    self->midi_arranger_velocity_paned, true);
-  gtk_paned_set_shrink_start_child (
-    self->midi_arranger_velocity_paned, false);
-  gtk_paned_set_shrink_end_child (
-    self->midi_arranger_velocity_paned, false);
+  gtk_paned_set_resize_start_child (self->midi_arranger_velocity_paned, true);
+  gtk_paned_set_resize_end_child (self->midi_arranger_velocity_paned, true);
+  gtk_paned_set_shrink_start_child (self->midi_arranger_velocity_paned, false);
+  gtk_paned_set_shrink_end_child (self->midi_arranger_velocity_paned, false);
 
   self->arranger->type = ARRANGER_WIDGET_TYPE_MIDI;
-  self->modifier_arranger->type =
-    ARRANGER_WIDGET_TYPE_MIDI_MODIFIER;
+  self->modifier_arranger->type = ARRANGER_WIDGET_TYPE_MIDI_MODIFIER;
 
   /* doesn't work */
   self->arranger_and_keys_vsize_group =
     gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
   gtk_size_group_add_widget (
-    self->arranger_and_keys_vsize_group,
-    GTK_WIDGET (self->arranger));
+    self->arranger_and_keys_vsize_group, GTK_WIDGET (self->arranger));
   gtk_size_group_add_widget (
     self->arranger_and_keys_vsize_group,
     GTK_WIDGET (self->piano_roll_keys_scroll));
@@ -235,8 +211,7 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
 
   /* also hexpand the modifier arranger TODO use a size
    * group */
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (self->modifier_arranger), true);
+  gtk_widget_set_hexpand (GTK_WIDGET (self->modifier_arranger), true);
 
   /* setup signals */
   g_signal_connect (
@@ -247,31 +222,25 @@ midi_editor_space_widget_init (MidiEditorSpaceWidget * self)
   /*"size-allocate",*/
   /*G_CALLBACK (on_keys_box_size_allocate), self);*/
 
-  GtkEventControllerScroll * scroll_controller =
-    GTK_EVENT_CONTROLLER_SCROLL (
-      gtk_event_controller_scroll_new (
-        GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES));
+  GtkEventControllerScroll * scroll_controller = GTK_EVENT_CONTROLLER_SCROLL (
+    gtk_event_controller_scroll_new (GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES));
   g_signal_connect (
-    G_OBJECT (scroll_controller), "scroll",
-    G_CALLBACK (on_scroll), self);
+    G_OBJECT (scroll_controller), "scroll", G_CALLBACK (on_scroll), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (scroll_controller));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (scroll_controller));
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), midi_editor_space_tick_cb, self, NULL);
 }
 
 static void
-midi_editor_space_widget_class_init (
-  MidiEditorSpaceWidgetClass * _klass)
+midi_editor_space_widget_class_init (MidiEditorSpaceWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "midi_editor_space.ui");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, MidiEditorSpaceWidget, x)
+  gtk_widget_class_bind_template_child (klass, MidiEditorSpaceWidget, x)
 
   BIND_CHILD (midi_modifier_chooser);
   BIND_CHILD (piano_roll_keys_scroll);
@@ -285,8 +254,7 @@ midi_editor_space_widget_class_init (
 
 #undef BIND_CHILD
 
-  gtk_widget_class_set_layout_manager_type (
-    klass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (klass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;

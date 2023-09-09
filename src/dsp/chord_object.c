@@ -18,10 +18,7 @@
  * Creates a ChordObject.
  */
 ChordObject *
-chord_object_new (
-  RegionIdentifier * region_id,
-  int                chord_index,
-  int                index)
+chord_object_new (RegionIdentifier * region_id, int chord_index, int index)
 {
   ChordObject * self = object_new (ChordObject);
 
@@ -58,8 +55,7 @@ chord_object_is_equal (ChordObject * a, ChordObject * b)
   ArrangerObject * obj_a = (ArrangerObject *) a;
   ArrangerObject * obj_b = (ArrangerObject *) b;
   return position_is_equal_ticks (&obj_a->pos, &obj_b->pos)
-         && a->chord_index == b->chord_index
-         && a->index == b->index;
+         && a->chord_index == b->chord_index && a->index == b->index;
 }
 
 /**
@@ -94,10 +90,7 @@ chord_object_find_by_pos (ChordObject * clone)
  * Sets the region and index of the chord.
  */
 void
-chord_object_set_region_and_index (
-  ChordObject * self,
-  ZRegion *     region,
-  int           idx)
+chord_object_set_region_and_index (ChordObject * self, ZRegion * region, int idx)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   region_identifier_copy (&obj->region_id, &region->id);

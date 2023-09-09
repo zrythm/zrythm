@@ -39,10 +39,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  PanelFileBrowserWidget,
-  panel_file_browser_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (PanelFileBrowserWidget, panel_file_browser_widget, GTK_TYPE_WIDGET)
 
 enum
 {
@@ -60,13 +57,12 @@ create_model_for_locations (PanelFileBrowserWidget * self)
   GtkTreeIter iter;
 
   /* icon, file name, index */
-  list_store = gtk_list_store_new (
-    3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
+  list_store =
+    gtk_list_store_new (3, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER);
 
   for (guint i = 0; i < FILE_MANAGER->locations->len; i++)
     {
-      FileBrowserLocation * loc =
-        g_ptr_array_index (FILE_MANAGER->locations, i);
+      FileBrowserLocation * loc = g_ptr_array_index (FILE_MANAGER->locations, i);
 
       char icon_name[600];
       switch (loc->special_location)
@@ -88,8 +84,7 @@ create_model_for_locations (PanelFileBrowserWidget * self)
       /* Add a new row to the model */
       gtk_list_store_append (list_store, &iter);
       gtk_list_store_set (
-        list_store, &iter, 0, icon_name, 1, loc->label, 2,
-        loc, -1);
+        list_store, &iter, 0, icon_name, 1, loc->label, 2, loc, -1);
     }
 
   return GTK_TREE_MODEL (list_store);
@@ -108,12 +103,10 @@ show_bookmarks_context_menu (
   self->cur_loc = loc;
 
   menuitem = z_gtk_create_menu_item (
-    _ ("Delete"), "edit-delete",
-    "app.panel-file-browser-delete-bookmark");
+    _ ("Delete"), "edit-delete", "app.panel-file-browser-delete-bookmark");
   g_menu_append_item (menu, menuitem);
 
-  z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+  z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
 }
 
 static void
@@ -132,14 +125,14 @@ on_bookmark_right_click (
 
   int x, y;
   gtk_tree_view_convert_widget_to_bin_window_coords (
-    GTK_TREE_VIEW (self->bookmarks_tree_view), (int) x_dbl,
-    (int) y_dbl, &x, &y);
+    GTK_TREE_VIEW (self->bookmarks_tree_view), (int) x_dbl, (int) y_dbl, &x, &y);
 
   GtkTreeSelection * selection =
     gtk_tree_view_get_selection ((self->bookmarks_tree_view));
-  if (!gtk_tree_view_get_path_at_pos (
-        GTK_TREE_VIEW (self->bookmarks_tree_view), x, y,
-        &path, &column, NULL, NULL))
+  if (
+    !gtk_tree_view_get_path_at_pos (
+      GTK_TREE_VIEW (self->bookmarks_tree_view), x, y, &path, &column, NULL,
+      NULL))
     {
       g_message ("no path at position %d %d", x, y);
       // if we can't find path at pos, we surely don't
@@ -154,8 +147,7 @@ on_bookmark_right_click (
     GTK_TREE_MODEL (self->bookmarks_tree_model), &iter, path);
   GValue value = G_VALUE_INIT;
   gtk_tree_model_get_value (
-    GTK_TREE_MODEL (self->bookmarks_tree_model), &iter,
-    COLUMN_DESCR, &value);
+    GTK_TREE_MODEL (self->bookmarks_tree_model), &iter, COLUMN_DESCR, &value);
   gtk_tree_path_free (path);
 
   FileBrowserLocation * loc = g_value_get_pointer (&value);
@@ -164,14 +156,12 @@ on_bookmark_right_click (
 }
 
 void
-panel_file_browser_refresh_bookmarks (
-  PanelFileBrowserWidget * self)
+panel_file_browser_refresh_bookmarks (PanelFileBrowserWidget * self)
 {
   self->bookmarks_tree_model =
     GTK_TREE_MODEL (create_model_for_locations (self));
   gtk_tree_view_set_model (
-    self->bookmarks_tree_view,
-    GTK_TREE_MODEL (self->bookmarks_tree_model));
+    self->bookmarks_tree_view, GTK_TREE_MODEL (self->bookmarks_tree_model));
 }
 
 /**
@@ -180,28 +170,25 @@ panel_file_browser_refresh_bookmarks (
 static gboolean
 files_filter_func (GObject * item, gpointer user_data)
 {
-  PanelFileBrowserWidget * self =
-    Z_PANEL_FILE_BROWSER_WIDGET (user_data);
+  PanelFileBrowserWidget * self = Z_PANEL_FILE_BROWSER_WIDGET (user_data);
   WrappedObjectWithChangeSignal * wrapped_obj =
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
   SupportedFile * descr = (SupportedFile *) wrapped_obj->obj;
 
-  bool show_audio = gtk_toggle_button_get_active (
-    self->filters_toolbar->toggle_audio);
-  bool show_midi = gtk_toggle_button_get_active (
-    self->filters_toolbar->toggle_midi);
-  bool show_presets = gtk_toggle_button_get_active (
-    self->filters_toolbar->toggle_presets);
-  bool all_toggles_off =
-    !show_audio && !show_midi && !show_presets;
+  bool show_audio =
+    gtk_toggle_button_get_active (self->filters_toolbar->toggle_audio);
+  bool show_midi =
+    gtk_toggle_button_get_active (self->filters_toolbar->toggle_midi);
+  bool show_presets =
+    gtk_toggle_button_get_active (self->filters_toolbar->toggle_presets);
+  bool all_toggles_off = !show_audio && !show_midi && !show_presets;
 
   /* filter by name */
-  const char * text = gtk_editable_get_text (
-    GTK_EDITABLE (self->file_search_entry));
+  const char * text =
+    gtk_editable_get_text (GTK_EDITABLE (self->file_search_entry));
   if (
     text && strlen (text) > 0
-    && !string_contains_substr_case_insensitive (
-      descr->label, text))
+    && !string_contains_substr_case_insensitive (descr->label, text))
     {
       return false;
     }
@@ -224,8 +211,7 @@ files_filter_func (GObject * item, gpointer user_data)
     case FILE_TYPE_OTHER:
       visible =
         all_toggles_off
-        && g_settings_get_boolean (
-          S_UI_FILE_BROWSER, "show-unsupported-files");
+        && g_settings_get_boolean (S_UI_FILE_BROWSER, "show-unsupported-files");
       break;
     default:
       break;
@@ -235,8 +221,7 @@ files_filter_func (GObject * item, gpointer user_data)
     return false;
 
   if (
-    !g_settings_get_boolean (
-      S_UI_FILE_BROWSER, "show-hidden-files")
+    !g_settings_get_boolean (S_UI_FILE_BROWSER, "show-hidden-files")
     && descr->hidden)
     return false;
 
@@ -244,12 +229,9 @@ files_filter_func (GObject * item, gpointer user_data)
 }
 
 static int
-update_file_info_label (
-  PanelFileBrowserWidget * self,
-  const char *             label)
+update_file_info_label (PanelFileBrowserWidget * self, const char * label)
 {
-  gtk_label_set_markup (
-    self->file_info, label ? label : _ ("No file selected"));
+  gtk_label_set_markup (self->file_info, label ? label : _ ("No file selected"));
 
   return G_SOURCE_REMOVE;
 }
@@ -257,10 +239,9 @@ update_file_info_label (
 static WrappedObjectWithChangeSignal *
 get_selected_file (GtkWidget * widget)
 {
-  PanelFileBrowserWidget * self =
-    Z_PANEL_FILE_BROWSER_WIDGET (widget);
-  GObject * gobj = gtk_single_selection_get_selected_item (
-    self->files_selection_model);
+  PanelFileBrowserWidget * self = Z_PANEL_FILE_BROWSER_WIDGET (widget);
+  GObject *                gobj =
+    gtk_single_selection_get_selected_item (self->files_selection_model);
   if (!gobj)
     return NULL;
 
@@ -275,13 +256,12 @@ static GListModel *
 create_model_for_files (PanelFileBrowserWidget * self)
 {
   /* file name, index */
-  GListStore * store =
-    g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  GListStore * store = g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
 
   for (size_t i = 0; i < FILE_MANAGER->files->len; i++)
     {
-      SupportedFile * descr = (SupportedFile *)
-        g_ptr_array_index (FILE_MANAGER->files, i);
+      SupportedFile * descr =
+        (SupportedFile *) g_ptr_array_index (FILE_MANAGER->files, i);
 
       WrappedObjectWithChangeSignal * wrapped_descr =
         wrapped_object_with_change_signal_new (
@@ -290,12 +270,12 @@ create_model_for_files (PanelFileBrowserWidget * self)
       g_list_store_append (store, wrapped_descr);
     }
 
-  self->files_filter = gtk_custom_filter_new (
-    (GtkCustomFilterFunc) files_filter_func, self, NULL);
+  self->files_filter =
+    gtk_custom_filter_new ((GtkCustomFilterFunc) files_filter_func, self, NULL);
   self->files_filter_model = gtk_filter_list_model_new (
     G_LIST_MODEL (store), GTK_FILTER (self->files_filter));
-  self->files_selection_model = gtk_single_selection_new (
-    G_LIST_MODEL (self->files_filter_model));
+  self->files_selection_model =
+    gtk_single_selection_new (G_LIST_MODEL (self->files_filter_model));
 
   return G_LIST_MODEL (self->files_selection_model);
 }
@@ -307,8 +287,7 @@ on_files_selection_changed (
   guint               n_items,
   gpointer            user_data)
 {
-  PanelFileBrowserWidget * self =
-    Z_PANEL_FILE_BROWSER_WIDGET (user_data);
+  PanelFileBrowserWidget * self = Z_PANEL_FILE_BROWSER_WIDGET (user_data);
 
   sample_processor_stop_file_playback (SAMPLE_PROCESSOR);
 
@@ -326,16 +305,14 @@ on_files_selection_changed (
   SupportedFile * descr = (SupportedFile *) wrapped_obj->obj;
   self->cur_file = descr;
 
-  g_ptr_array_remove_range (
-    self->selected_files, 0, self->selected_files->len);
+  g_ptr_array_remove_range (self->selected_files, 0, self->selected_files->len);
   g_ptr_array_add (self->selected_files, descr);
 
   /* return if file does not exist */
   if (!g_file_test (descr->abs_path, G_FILE_TEST_EXISTS))
     return;
 
-  char * label =
-    supported_file_get_info_text_for_label (descr);
+  char * label = supported_file_get_info_text_for_label (descr);
   g_message ("selected file: %s", descr->abs_path);
   update_file_info_label (self, label);
 
@@ -355,8 +332,8 @@ files_list_view_setup (
 {
   gtk_list_view_set_model (list_view, selection_model);
   ItemFactory * prev_factory = self->files_item_factory;
-  self->files_item_factory = item_factory_new (
-    ITEM_FACTORY_ICON_AND_TEXT, false, NULL);
+  self->files_item_factory =
+    item_factory_new (ITEM_FACTORY_ICON_AND_TEXT, false, NULL);
   gtk_list_view_set_factory (
     list_view, self->files_item_factory->list_item_factory);
 
@@ -377,9 +354,8 @@ on_bookmark_row_activated (
   GtkTreeViewColumn *      column,
   PanelFileBrowserWidget * self)
 {
-  GtkTreeModel * model =
-    GTK_TREE_MODEL (gtk_tree_view_get_model (tree_view));
-  GtkTreeIter iter;
+  GtkTreeModel * model = GTK_TREE_MODEL (gtk_tree_view_get_model (tree_view));
+  GtkTreeIter    iter;
   gtk_tree_model_get_iter (model, &iter, tp);
   GValue value = G_VALUE_INIT;
   gtk_tree_model_get_value (model, &iter, 2, &value);
@@ -399,19 +375,14 @@ on_file_search_changed (
   PanelFileBrowserWidget * self)
 {
   gtk_filter_changed (
-    GTK_FILTER (self->files_filter),
-    GTK_FILTER_CHANGE_DIFFERENT);
+    GTK_FILTER (self->files_filter), GTK_FILTER_CHANGE_DIFFERENT);
 }
 
 /* FIXME duplicated code with file_browser's on_file_chooser_file_activated - move to a single place */
 static void
-on_file_row_activated (
-  GtkListView * list_view,
-  guint         position,
-  gpointer      user_data)
+on_file_row_activated (GtkListView * list_view, guint position, gpointer user_data)
 {
-  PanelFileBrowserWidget * self =
-    Z_PANEL_FILE_BROWSER_WIDGET (user_data);
+  PanelFileBrowserWidget * self = Z_PANEL_FILE_BROWSER_WIDGET (user_data);
 
   GObject * gobj = g_list_model_get_object (
     G_LIST_MODEL (self->files_selection_model), position);
@@ -423,17 +394,13 @@ on_file_row_activated (
     Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (gobj);
   SupportedFile * descr = (SupportedFile *) wrapped_obj->obj;
 
-  if (
-    descr->type == FILE_TYPE_DIR
-    || descr->type == FILE_TYPE_PARENT_DIR)
+  if (descr->type == FILE_TYPE_DIR || descr->type == FILE_TYPE_PARENT_DIR)
     {
       /* FIXME free unnecessary stuff */
-      FileBrowserLocation * loc =
-        object_new (FileBrowserLocation);
+      FileBrowserLocation * loc = object_new (FileBrowserLocation);
       loc->path = descr->abs_path;
       loc->label = g_path_get_basename (loc->path);
-      file_manager_set_selection (
-        FILE_MANAGER, loc, true, true);
+      file_manager_set_selection (FILE_MANAGER, loc, true, true);
       self->files_selection_model =
         GTK_SINGLE_SELECTION (create_model_for_files (self));
       files_list_view_setup (
@@ -442,18 +409,15 @@ on_file_row_activated (
     }
   else if (supported_file_type_is_supported (descr->type))
     {
-      if (zrythm_app_check_and_show_trial_limit_error (
-            zrythm_app))
+      if (zrythm_app_check_and_show_trial_limit_error (zrythm_app))
         return;
 
       GError * err = NULL;
       bool     success = tracklist_import_files (
-        TRACKLIST, NULL, descr, NULL, NULL, -1, PLAYHEAD,
-        NULL, &err);
+        TRACKLIST, NULL, descr, NULL, NULL, -1, PLAYHEAD, NULL, &err);
       if (!success)
         {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to create track"));
+          HANDLE_ERROR (err, "%s", _ ("Failed to create track"));
         }
     }
 }
@@ -478,19 +442,16 @@ tree_view_setup (
       renderer = gtk_cell_renderer_pixbuf_new ();
       column = gtk_tree_view_column_new_with_attributes (
         "icon", renderer, "icon-name", COLUMN_ICON, NULL);
-      gtk_tree_view_append_column (
-        GTK_TREE_VIEW (tree_view), column);
+      gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), column);
 
       /* column for name */
       renderer = gtk_cell_renderer_text_new ();
       column = gtk_tree_view_column_new_with_attributes (
         "name", renderer, "text", COLUMN_NAME, NULL);
-      gtk_tree_view_append_column (
-        GTK_TREE_VIEW (tree_view), column);
+      gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), column);
 
       /* set search column */
-      gtk_tree_view_set_search_column (
-        GTK_TREE_VIEW (tree_view), COLUMN_NAME);
+      gtk_tree_view_set_search_column (GTK_TREE_VIEW (tree_view), COLUMN_NAME);
     }
   else
     {
@@ -498,13 +459,11 @@ tree_view_setup (
       renderer = gtk_cell_renderer_text_new ();
       column = gtk_tree_view_column_new_with_attributes (
         "name", renderer, "text", 0, NULL);
-      gtk_tree_view_append_column (
-        GTK_TREE_VIEW (tree_view), column);
+      gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view), column);
     }
 
   /* hide headers and allow multi-selection */
-  gtk_tree_view_set_headers_visible (
-    GTK_TREE_VIEW (tree_view), false);
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree_view), false);
 
   if (allow_multi)
     {
@@ -526,10 +485,8 @@ on_position_change (
     }
 
   int divider_pos = gtk_paned_get_position (self->paned);
-  g_settings_set_int (
-    S_UI, "browser-divider-position", divider_pos);
-  g_message (
-    "set browser divider position to %d", divider_pos);
+  g_settings_set_int (S_UI, "browser-divider-position", divider_pos);
+  g_message ("set browser divider position to %d", divider_pos);
   /*g_warning ("pos %d", divider_pos);*/
 }
 
@@ -541,8 +498,7 @@ on_map (GtkWidget * widget, PanelFileBrowserWidget * self)
       self->first_draw = false;
 
       /* set divider position */
-      int divider_pos =
-        g_settings_get_int (S_UI, "browser-divider-position");
+      int divider_pos = g_settings_get_int (S_UI, "browser-divider-position");
       /*g_warning ("pos %d", divider_pos);*/
       gtk_paned_set_position (self->paned, divider_pos);
     }
@@ -552,8 +508,7 @@ static void
 refilter_files (PanelFileBrowserWidget * self)
 {
   gtk_filter_changed (
-    GTK_FILTER (self->files_filter),
-    GTK_FILTER_CHANGE_DIFFERENT);
+    GTK_FILTER (self->files_filter), GTK_FILTER_CHANGE_DIFFERENT);
 }
 
 static void
@@ -562,8 +517,7 @@ on_file_filter_option_changed (
   char *      key,
   gpointer    user_data)
 {
-  PanelFileBrowserWidget * self =
-    Z_PANEL_FILE_BROWSER_WIDGET (user_data);
+  PanelFileBrowserWidget * self = Z_PANEL_FILE_BROWSER_WIDGET (user_data);
   refilter_files (self);
 }
 
@@ -580,11 +534,10 @@ panel_file_browser_widget_new (void)
   gtk_label_set_xalign (self->file_info, 0);
 
   file_auditioner_controls_widget_setup (
-    self->auditioner_controls, GTK_WIDGET (self), true,
-    get_selected_file, (GenericCallback) refilter_files);
-  file_browser_filters_widget_setup (
-    self->filters_toolbar, GTK_WIDGET (self),
+    self->auditioner_controls, GTK_WIDGET (self), true, get_selected_file,
     (GenericCallback) refilter_files);
+  file_browser_filters_widget_setup (
+    self->filters_toolbar, GTK_WIDGET (self), (GenericCallback) refilter_files);
 
   /* populate bookmarks */
   self->bookmarks_tree_model =
@@ -603,37 +556,29 @@ panel_file_browser_widget_new (void)
     self, self->files_list_view,
     GTK_SELECTION_MODEL (self->files_selection_model));
   g_signal_connect (
-    self->files_list_view, "activate",
-    G_CALLBACK (on_file_row_activated), self);
+    self->files_list_view, "activate", G_CALLBACK (on_file_row_activated), self);
 
   /* setup file search entry */
   gtk_search_entry_set_key_capture_widget (
-    self->file_search_entry,
-    GTK_WIDGET (self->files_list_view));
+    self->file_search_entry, GTK_WIDGET (self->files_list_view));
   g_object_set (
-    G_OBJECT (self->file_search_entry), "placeholder-text",
-    _ ("Search..."), NULL);
+    G_OBJECT (self->file_search_entry), "placeholder-text", _ ("Search..."),
+    NULL);
   g_signal_connect (
     G_OBJECT (self->file_search_entry), "search-changed",
     G_CALLBACK (on_file_search_changed), self);
 
+  g_signal_connect (G_OBJECT (self), "map", G_CALLBACK (on_map), self);
   g_signal_connect (
-    G_OBJECT (self), "map", G_CALLBACK (on_map), self);
-  g_signal_connect (
-    G_OBJECT (self), "notify::position",
-    G_CALLBACK (on_position_change), self);
+    G_OBJECT (self), "notify::position", G_CALLBACK (on_position_change), self);
 
   /* connect right click handlers */
-  GtkGestureClick * mp =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
-  gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
+  GtkGestureClick * mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (mp), GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    G_OBJECT (mp), "pressed",
-    G_CALLBACK (on_bookmark_right_click), self);
+    G_OBJECT (mp), "pressed", G_CALLBACK (on_bookmark_right_click), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self->bookmarks_tree_view),
-    GTK_EVENT_CONTROLLER (mp));
+    GTK_WIDGET (self->bookmarks_tree_view), GTK_EVENT_CONTROLLER (mp));
 
   return self;
 }
@@ -655,16 +600,13 @@ finalize (PanelFileBrowserWidget * self)
 }
 
 static void
-panel_file_browser_widget_class_init (
-  PanelFileBrowserWidgetClass * _klass)
+panel_file_browser_widget_class_init (PanelFileBrowserWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "panel_file_browser.ui");
+  resources_set_class_template (klass, "panel_file_browser.ui");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, PanelFileBrowserWidget, x)
+  gtk_widget_class_bind_template_child (klass, PanelFileBrowserWidget, x)
 
   BIND_CHILD (paned);
   BIND_CHILD (browser_top);
@@ -678,8 +620,7 @@ panel_file_browser_widget_class_init (
 
 #undef BIND_CHILD
 
-  gtk_widget_class_set_layout_manager_type (
-    klass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (klass, GTK_TYPE_BIN_LAYOUT);
 
   GObjectClass * goklass = G_OBJECT_CLASS (_klass);
   goklass->dispose = (GObjectFinalizeFunc) dispose;
@@ -694,10 +635,8 @@ panel_file_browser_widget_init (PanelFileBrowserWidget * self)
 
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   gtk_widget_set_hexpand (GTK_WIDGET (self->paned), true);
 
@@ -705,8 +644,7 @@ panel_file_browser_widget_init (PanelFileBrowserWidget * self)
 
   /* re-filter when these change */
   g_signal_connect (
-    G_OBJECT (S_UI_FILE_BROWSER),
-    "changed::show-unsupported-files",
+    G_OBJECT (S_UI_FILE_BROWSER), "changed::show-unsupported-files",
     G_CALLBACK (on_file_filter_option_changed), self);
   g_signal_connect (
     G_OBJECT (S_UI_FILE_BROWSER), "changed::show-hidden-files",

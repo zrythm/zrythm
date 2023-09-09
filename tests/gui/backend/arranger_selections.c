@@ -18,30 +18,24 @@
 #include <locale.h>
 
 static void
-test_region_length_in_ticks (
-  Track * track,
-  int     bar_start,
-  int     bar_end)
+test_region_length_in_ticks (Track * track, int bar_start, int bar_end)
 {
   Position p1, p2;
   position_set_to_bar (&p1, bar_start);
   position_set_to_bar (&p2, bar_end);
-  ZRegion * r = midi_region_new (
-    &p1, &p2, track_get_name_hash (track), 0, 0);
+  ZRegion * r = midi_region_new (&p1, &p2, track_get_name_hash (track), 0, 0);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   GError *         err = NULL;
-  bool             success = track_add_region (
-    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
+  bool             success =
+    track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
   g_assert_true (success);
 
-  arranger_object_select (
-    r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (r_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
   double length = arranger_selections_get_length_in_ticks (
     (ArrangerSelections *) TL_SELECTIONS);
   g_assert_cmpfloat_with_epsilon (
-    length, TRANSPORT->ticks_per_bar * (bar_end - bar_start),
-    0.00001);
+    length, TRANSPORT->ticks_per_bar * (bar_end - bar_start), 0.00001);
 }
 
 static void
@@ -49,8 +43,7 @@ test_get_length_in_ticks (void)
 {
   test_helper_zrythm_init ();
 
-  Track * track =
-    track_create_empty_with_action (TRACK_TYPE_MIDI, NULL);
+  Track * track = track_create_empty_with_action (TRACK_TYPE_MIDI, NULL);
 
   test_region_length_in_ticks (track, 3, 4);
   test_region_length_in_ticks (track, 100, 102);
@@ -64,31 +57,27 @@ test_get_last_object (void)
 {
   test_helper_zrythm_init ();
 
-  Track * track =
-    track_create_empty_with_action (TRACK_TYPE_MIDI, NULL);
+  Track * track = track_create_empty_with_action (TRACK_TYPE_MIDI, NULL);
 
   Position p1, p2;
   position_set_to_bar (&p1, 3);
   position_set_to_bar (&p2, 4);
-  ZRegion * r = midi_region_new (
-    &p1, &p2, track_get_name_hash (track), 0, 0);
-  GError * err = NULL;
-  bool     success = track_add_region (
-    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
+  ZRegion * r = midi_region_new (&p1, &p2, track_get_name_hash (track), 0, 0);
+  GError *  err = NULL;
+  bool      success =
+    track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
   g_assert_true (success);
 
   position_from_frames (&p1, -40000);
   position_from_frames (&p2, -4000);
-  MidiNote * mn = midi_note_new (&r->id, &p1, &p2, 60, 60);
+  MidiNote *       mn = midi_note_new (&r->id, &p1, &p2, 60, 60);
   ArrangerObject * mn_obj = (ArrangerObject *) mn;
   midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
 
-  arranger_object_select (
-    mn_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (mn_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
-  ArrangerObject * last_obj =
-    arranger_selections_get_last_object (
-      (ArrangerSelections *) MA_SELECTIONS, true);
+  ArrangerObject * last_obj = arranger_selections_get_last_object (
+    (ArrangerSelections *) MA_SELECTIONS, true);
   g_assert_nonnull (last_obj);
   g_assert_true (last_obj == mn_obj);
 
@@ -100,27 +89,24 @@ test_contains_object_with_property (void)
 {
   test_helper_zrythm_init ();
 
-  Track * track =
-    track_create_empty_with_action (TRACK_TYPE_MIDI, NULL);
+  Track * track = track_create_empty_with_action (TRACK_TYPE_MIDI, NULL);
 
   Position p1, p2;
   position_set_to_bar (&p1, 3);
   position_set_to_bar (&p2, 4);
-  ZRegion * r = midi_region_new (
-    &p1, &p2, track_get_name_hash (track), 0, 0);
-  GError * err = NULL;
-  bool     success = track_add_region (
-    track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
+  ZRegion * r = midi_region_new (&p1, &p2, track_get_name_hash (track), 0, 0);
+  GError *  err = NULL;
+  bool      success =
+    track_add_region (track, r, NULL, 0, F_GEN_NAME, F_NO_PUBLISH_EVENTS, &err);
   g_assert_true (success);
 
   position_from_frames (&p1, -40000);
   position_from_frames (&p2, -4000);
-  MidiNote * mn = midi_note_new (&r->id, &p1, &p2, 60, 60);
+  MidiNote *       mn = midi_note_new (&r->id, &p1, &p2, 60, 60);
   ArrangerObject * mn_obj = (ArrangerObject *) mn;
   midi_region_add_midi_note (r, mn, F_NO_PUBLISH_EVENTS);
 
-  arranger_object_select (
-    mn_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (mn_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
   bool ret = arranger_selections_contains_object_with_property (
     (ArrangerSelections *) MA_SELECTIONS,
@@ -145,8 +131,7 @@ main (int argc, char * argv[])
     TEST_PREFIX "test contains object with property",
     (GTestFunc) test_contains_object_with_property);
   g_test_add_func (
-    TEST_PREFIX "test get last object",
-    (GTestFunc) test_get_last_object);
+    TEST_PREFIX "test get last object", (GTestFunc) test_get_last_object);
   g_test_add_func (
     TEST_PREFIX "test get length in ticks",
     (GTestFunc) test_get_length_in_ticks);

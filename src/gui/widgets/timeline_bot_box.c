@@ -8,10 +8,7 @@
 #include "gui/widgets/timeline_minimap.h"
 #include "utils/resources.h"
 
-G_DEFINE_TYPE (
-  TimelineBotBoxWidget,
-  timeline_bot_box_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (TimelineBotBoxWidget, timeline_bot_box_widget, GTK_TYPE_BOX)
 
 static void
 timeline_bot_box_widget_init (TimelineBotBoxWidget * self)
@@ -25,8 +22,7 @@ timeline_bot_box_widget_init (TimelineBotBoxWidget * self)
 }
 
 static void
-timeline_bot_box_widget_class_init (
-  TimelineBotBoxWidgetClass * _klass)
+timeline_bot_box_widget_class_init (TimelineBotBoxWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "timeline_bot_box.ui");
@@ -34,8 +30,7 @@ timeline_bot_box_widget_class_init (
   gtk_widget_class_set_css_name (klass, "center-dock-bot-box");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, TimelineBotBoxWidget, x)
+  gtk_widget_class_bind_template_child (klass, TimelineBotBoxWidget, x)
 
   BIND_CHILD (left_tb);
   BIND_CHILD (instrument_add);

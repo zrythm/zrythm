@@ -34,8 +34,7 @@ G_DEFINE_TYPE (CpuWidget, cpu_widget, GTK_TYPE_WIDGET)
 #define PADDING 2
 #define ICON_SIZE BAR_HEIGHT
 #define TOTAL_H (PADDING * 3 + BAR_HEIGHT * 2)
-#define TOTAL_W \
-  (ICON_SIZE + PADDING * 3 + NUM_BARS * PADDING * 2)
+#define TOTAL_W (ICON_SIZE + PADDING * 3 + NUM_BARS * PADDING * 2)
 
 /**
  * Taken from
@@ -57,25 +56,19 @@ cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   graphene_matrix_t color_matrix;
   graphene_matrix_init_from_float (
     &color_matrix,
-    (float[16]){
-      1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0,
-      color.alpha });
+    (float[16]){ 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, color.alpha });
   graphene_vec4_t color_offset;
-  graphene_vec4_init (
-    &color_offset, color.red, color.green, color.blue, 0);
+  graphene_vec4_init (&color_offset, color.red, color.green, color.blue, 0);
 
-  gtk_snapshot_push_color_matrix (
-    snapshot, &color_matrix, &color_offset);
+  gtk_snapshot_push_color_matrix (snapshot, &color_matrix, &color_offset);
 
   gtk_snapshot_append_texture (
     snapshot, self->cpu_texture,
-    &GRAPHENE_RECT_INIT (
-      PADDING, PADDING, ICON_SIZE, ICON_SIZE));
+    &GRAPHENE_RECT_INIT (PADDING, PADDING, ICON_SIZE, ICON_SIZE));
 
   gtk_snapshot_append_texture (
     snapshot, self->dsp_texture,
-    &GRAPHENE_RECT_INIT (
-      PADDING, PADDING * 2 + ICON_SIZE, ICON_SIZE, ICON_SIZE));
+    &GRAPHENE_RECT_INIT (PADDING, PADDING * 2 + ICON_SIZE, ICON_SIZE, ICON_SIZE));
 
   gtk_snapshot_pop (snapshot);
 
@@ -92,8 +85,8 @@ cpu_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       gtk_snapshot_append_color (
         snapshot, &color,
         &GRAPHENE_RECT_INIT (
-          ICON_SIZE + PADDING + (float) i * PADDING * 2.f,
-          PADDING, BAR_WIDTH, BAR_HEIGHT));
+          ICON_SIZE + PADDING + (float) i * PADDING * 2.f, PADDING, BAR_WIDTH,
+          BAR_HEIGHT));
     }
 
   /* DSP */
@@ -133,8 +126,7 @@ refresh_dsp_load (CpuWidget * self)
   if (g_atomic_int_get (&AUDIO_ENGINE->run))
     {
       gint64 block_latency =
-        (AUDIO_ENGINE->block_length * 1000000)
-        / AUDIO_ENGINE->sample_rate;
+        (AUDIO_ENGINE->block_length * 1000000) / AUDIO_ENGINE->sample_rate;
       self->dsp =
         (int) ((double) AUDIO_ENGINE->max_time_taken * 100.0
                / (double) block_latency);
@@ -156,15 +148,11 @@ static unsigned long long _previousTotalTicks = 0;
 static unsigned long long _previousIdleTicks = 0;
 
 float
-CalculateCPULoad (
-  unsigned long long idleTicks,
-  unsigned long long totalTicks)
+CalculateCPULoad (unsigned long long idleTicks, unsigned long long totalTicks)
 {
-  unsigned long long totalTicksSinceLastTime =
-    totalTicks - _previousTotalTicks;
-  unsigned long long idleTicksSinceLastTime =
-    idleTicks - _previousIdleTicks;
-  float ret =
+  unsigned long long totalTicksSinceLastTime = totalTicks - _previousTotalTicks;
+  unsigned long long idleTicksSinceLastTime = idleTicks - _previousIdleTicks;
+  float              ret =
     1.0f
     - ((totalTicksSinceLastTime > 0) ? ((float) idleTicksSinceLastTime) / totalTicksSinceLastTime : 0);
   _previousTotalTicks = totalTicks;
@@ -185,8 +173,7 @@ refresh_cpu_load (CpuWidget * self)
   FILE * fp;
 
   fp = fopen ("/proc/stat", "r");
-  fscanf (
-    fp, "%*s %Lf %Lf %Lf %Lf", &a[0], &a[1], &a[2], &a[3]);
+  fscanf (fp, "%*s %Lf %Lf %Lf %Lf", &a[0], &a[1], &a[2], &a[3]);
   fclose (fp);
 
   loadavg =
@@ -210,16 +197,14 @@ refresh_cpu_load (CpuWidget * self)
   mach_msg_type_number_t    count = HOST_CPU_LOAD_INFO_COUNT;
   if (
     host_statistics (
-      mach_host_self (), HOST_CPU_LOAD_INFO,
-      (host_info_t) &cpuinfo, &count)
+      mach_host_self (), HOST_CPU_LOAD_INFO, (host_info_t) &cpuinfo, &count)
     == KERN_SUCCESS)
     {
       unsigned long long totalTicks = 0;
       for (int i = 0; i < CPU_STATE_MAX; i++)
         totalTicks += cpuinfo.cpu_ticks[i];
       self->cpu =
-        (int) (CalculateCPULoad (
-                 cpuinfo.cpu_ticks[CPU_STATE_IDLE], totalTicks)
+        (int) (CalculateCPULoad (cpuinfo.cpu_ticks[CPU_STATE_IDLE], totalTicks)
                * 100.f);
     }
   else
@@ -243,27 +228,23 @@ on_motion_enter (
   gpointer                   user_data)
 {
   CpuWidget * self = Z_CPU_WIDGET (user_data);
-  gtk_widget_set_state_flags (
-    GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT, 0);
+  gtk_widget_set_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT, 0);
 }
 
 static void
-on_motion_leave (
-  GtkEventControllerMotion * controller,
-  gpointer                   user_data)
+on_motion_leave (GtkEventControllerMotion * controller, gpointer user_data)
 {
   CpuWidget * self = Z_CPU_WIDGET (user_data);
-  gtk_widget_unset_state_flags (
-    GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT);
+  gtk_widget_unset_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT);
 }
 
 static void
 on_map (GtkWidget * widget, CpuWidget * self)
 {
-  self->cpu_source_id = g_timeout_add_seconds (
-    1, (GSourceFunc) refresh_cpu_load, self);
-  self->dsp_source_id = g_timeout_add_seconds (
-    1, (GSourceFunc) refresh_dsp_load, self);
+  self->cpu_source_id =
+    g_timeout_add_seconds (1, (GSourceFunc) refresh_cpu_load, self);
+  self->dsp_source_id =
+    g_timeout_add_seconds (1, (GSourceFunc) refresh_dsp_load, self);
 }
 
 static void
@@ -293,13 +274,10 @@ on_query_tooltip (
 static void
 finalize (CpuWidget * self)
 {
-  object_free_w_func_and_null (
-    g_object_unref, self->cpu_texture);
-  object_free_w_func_and_null (
-    g_object_unref, self->dsp_texture);
+  object_free_w_func_and_null (g_object_unref, self->cpu_texture);
+  object_free_w_func_and_null (g_object_unref, self->dsp_texture);
 
-  G_OBJECT_CLASS (cpu_widget_parent_class)
-    ->finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (cpu_widget_parent_class)->finalize (G_OBJECT (self));
 }
 
 static void
@@ -314,29 +292,21 @@ cpu_widget_init (CpuWidget * self)
   self->dsp_texture = z_gdk_texture_new_from_icon_name (
     "font-awesome-wave-square-solid", ICON_SIZE, ICON_SIZE, 1);
 
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self), TOTAL_W, TOTAL_H);
+  gtk_widget_set_size_request (GTK_WIDGET (self), TOTAL_W, TOTAL_H);
 
   /* connect signals */
-  GtkEventController * motion_controller =
-    gtk_event_controller_motion_new ();
+  GtkEventController * motion_controller = gtk_event_controller_motion_new ();
   g_signal_connect (
-    G_OBJECT (motion_controller), "enter",
-    G_CALLBACK (on_motion_enter), self);
+    G_OBJECT (motion_controller), "enter", G_CALLBACK (on_motion_enter), self);
   g_signal_connect (
-    G_OBJECT (motion_controller), "leave",
-    G_CALLBACK (on_motion_leave), self);
-  gtk_widget_add_controller (
-    GTK_WIDGET (self), motion_controller);
+    G_OBJECT (motion_controller), "leave", G_CALLBACK (on_motion_leave), self);
+  gtk_widget_add_controller (GTK_WIDGET (self), motion_controller);
+
+  g_signal_connect (G_OBJECT (self), "map", G_CALLBACK (on_map), self);
+  g_signal_connect (G_OBJECT (self), "unmap", G_CALLBACK (on_unmap), self);
 
   g_signal_connect (
-    G_OBJECT (self), "map", G_CALLBACK (on_map), self);
-  g_signal_connect (
-    G_OBJECT (self), "unmap", G_CALLBACK (on_unmap), self);
-
-  g_signal_connect (
-    G_OBJECT (self), "query-tooltip",
-    G_CALLBACK (on_query_tooltip), self);
+    G_OBJECT (self), "query-tooltip", G_CALLBACK (on_query_tooltip), self);
 }
 
 static void

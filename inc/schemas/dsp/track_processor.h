@@ -42,10 +42,7 @@ typedef struct TrackProcessor_v1
 
 static const cyaml_schema_field_t track_processor_fields_schema_v1[] = {
   YAML_FIELD_INT (TrackProcessor_v1, schema_version),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    TrackProcessor_v1,
-    mono,
-    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (TrackProcessor_v1, mono, port_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     TrackProcessor_v1,
     input_gain,
@@ -103,9 +100,7 @@ static const cyaml_schema_field_t track_processor_fields_schema_v1[] = {
 };
 
 static const cyaml_schema_value_t track_processor_schema_v1 = {
-  YAML_VALUE_PTR (
-    TrackProcessor_v1,
-    track_processor_fields_schema_v1),
+  YAML_VALUE_PTR (TrackProcessor_v1, track_processor_fields_schema_v1),
 };
 
 TrackProcessor *

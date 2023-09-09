@@ -22,9 +22,7 @@
  * Inits a loaded AutomationTracklist.
  */
 void
-automation_tracklist_init_loaded (
-  AutomationTracklist * self,
-  Track *               track)
+automation_tracklist_init_loaded (AutomationTracklist * self, Track * track)
 {
   self->track = track;
   self->ats_size = (size_t) self->num_ats;
@@ -49,9 +47,7 @@ automation_tracklist_get_track (AutomationTracklist * self)
 }
 
 void
-automation_tracklist_add_at (
-  AutomationTracklist * self,
-  AutomationTrack *     at)
+automation_tracklist_add_at (AutomationTracklist * self, AutomationTrack * at)
 {
 #if 0
   g_debug (
@@ -62,13 +58,11 @@ automation_tracklist_add_at (
 #endif
 
   array_double_size_if_full (
-    self->ats, self->num_ats, self->ats_size,
-    AutomationTrack *);
+    self->ats, self->num_ats, self->ats_size, AutomationTrack *);
   array_append (self->ats, self->num_ats, at);
 
   at->index = self->num_ats - 1;
-  at->port_id.track_name_hash =
-    track_get_name_hash (self->track);
+  at->port_id.track_name_hash = track_get_name_hash (self->track);
 
   /* move automation track regions */
   for (int i = 0; i < at->num_regions; i++)
@@ -115,9 +109,7 @@ automation_tracklist_get_plugin_at (
  * visible.
  */
 void
-automation_tracklist_init (
-  AutomationTracklist * self,
-  Track *               track)
+automation_tracklist_init (AutomationTracklist * self, Track * track)
 {
   self->track = track;
 
@@ -155,12 +147,10 @@ automation_tracklist_set_at_index (
   if (index == self->num_ats && push_down)
     {
       /* move AT to before last */
-      automation_tracklist_set_at_index (
-        self, at, index - 1, push_down);
+      automation_tracklist_set_at_index (self, at, index - 1, push_down);
       /* move last AT to before last */
       automation_tracklist_set_at_index (
-        self, self->ats[self->num_ats - 1], index - 1,
-        push_down);
+        self, self->ats[self->num_ats - 1], index - 1, push_down);
       return;
     }
 
@@ -173,20 +163,15 @@ automation_tracklist_set_at_index (
   if (at->index == index)
     return;
 
-  ZRegion * clip_editor_region =
-    clip_editor_get_region (CLIP_EDITOR);
-  int clip_editor_region_idx = -2;
+  ZRegion * clip_editor_region = clip_editor_get_region (CLIP_EDITOR);
+  int       clip_editor_region_idx = -2;
   if (clip_editor_region)
     {
-      RegionIdentifier * clip_editor_region_id =
-        &clip_editor_region->id;
+      RegionIdentifier * clip_editor_region_id = &clip_editor_region->id;
 
-      if (
-        clip_editor_region_id->track_name_hash
-        == at->port_id.track_name_hash)
+      if (clip_editor_region_id->track_name_hash == at->port_id.track_name_hash)
         {
-          clip_editor_region_idx =
-            clip_editor_region_id->at_idx;
+          clip_editor_region_idx = clip_editor_region_id->at_idx;
         }
     }
 
@@ -203,8 +188,7 @@ automation_tracklist_set_at_index (
               int prev_idx = i;
               int new_idx = i + 1;
               self->ats[new_idx] = self->ats[i];
-              automation_track_set_index (
-                self->ats[i], new_idx);
+              automation_track_set_index (self->ats[i], new_idx);
 
               /* update clip editor region if it was
                * affected */
@@ -232,8 +216,7 @@ automation_tracklist_set_at_index (
               int prev_idx = i;
               int new_idx = i - 1;
               self->ats[new_idx] = self->ats[i];
-              automation_track_set_index (
-                self->ats[i], new_idx);
+              automation_track_set_index (self->ats[i], new_idx);
 
               /* update clip editor region if it was
                * affected */
@@ -276,9 +259,7 @@ automation_tracklist_set_at_index (
           CLIP_EDITOR->region_id.at_idx = index;
         }
 
-      g_debug (
-        "new pos %s (%d)", new_at->port_id.label,
-        new_at->index);
+      g_debug ("new pos %s (%d)", new_at->port_id.label, new_at->index);
     }
 }
 
@@ -301,8 +282,7 @@ automation_tracklist_update_track_name_hash (
       at->port_id.track_name_hash = track_name_hash;
       if (at->port_id.owner_type == PORT_OWNER_TYPE_PLUGIN)
         {
-          at->port_id.plugin_id.track_name_hash =
-            track_name_hash;
+          at->port_id.plugin_id.track_name_hash = track_name_hash;
         }
       for (int j = 0; j < at->num_regions; j++)
         {
@@ -344,9 +324,7 @@ automation_tracklist_clear (AutomationTracklist * self)
  * src to dest.
  */
 void
-automation_tracklist_clone (
-  AutomationTracklist * src,
-  AutomationTracklist * dest)
+automation_tracklist_clone (AutomationTracklist * src, AutomationTracklist * dest)
 {
   dest->ats_size = (size_t) src->num_ats;
   dest->num_ats = src->num_ats;
@@ -380,8 +358,7 @@ automation_tracklist_update_positions (
 {
   for (int i = 0; i < self->num_ats; i++)
     {
-      automation_track_update_positions (
-        self->ats[i], from_ticks, bpm_change);
+      automation_track_update_positions (self->ats[i], from_ticks, bpm_change);
     }
 }
 
@@ -439,8 +416,7 @@ automation_tracklist_get_visible_at_after_delta (
       AutomationTrack * vis_at = at;
       while (delta > 0)
         {
-          vis_at = automation_tracklist_get_next_visible_at (
-            self, vis_at);
+          vis_at = automation_tracklist_get_next_visible_at (self, vis_at);
 
           if (!vis_at)
             return NULL;
@@ -454,8 +430,7 @@ automation_tracklist_get_visible_at_after_delta (
       AutomationTrack * vis_at = at;
       while (delta < 0)
         {
-          vis_at = automation_tracklist_get_prev_visible_at (
-            self, vis_at);
+          vis_at = automation_tracklist_get_prev_visible_at (self, vis_at);
 
           if (!vis_at)
             return NULL;
@@ -508,16 +483,13 @@ automation_tracklist_get_visible_at_diff (
  * given Port.
  */
 AutomationTrack *
-automation_tracklist_get_at_from_port (
-  AutomationTracklist * self,
-  Port *                port)
+automation_tracklist_get_at_from_port (AutomationTracklist * self, Port * port)
 {
   AutomationTrack * at;
   for (int i = 0; i < self->num_ats; i++)
     {
       at = self->ats[i];
-      Port * at_port =
-        port_find_from_identifier (&at->port_id);
+      Port * at_port = port_find_from_identifier (&at->port_id);
       if (at_port == port)
         {
           return at;
@@ -537,8 +509,7 @@ automation_tracklist_get_at_from_port (
  * it.
  */
 AutomationTrack *
-automation_tracklist_get_first_invisible_at (
-  AutomationTracklist * self)
+automation_tracklist_get_first_invisible_at (AutomationTracklist * self)
 {
   /* prioritize automation tracks with existing
    * lanes */
@@ -575,8 +546,7 @@ automation_tracklist_set_at_visible (
   g_return_if_fail (at->created);
   at->visible = visible;
   guint index;
-  bool  found =
-    g_ptr_array_find (self->visible_ats, at, &index);
+  bool  found = g_ptr_array_find (self->visible_ats, at, &index);
   if (visible)
     {
       if (!found)
@@ -620,8 +590,7 @@ automation_tracklist_remove_at (
       automation_track_clear (at);
     }
 
-  array_delete_return_pos (
-    self->ats, self->num_ats, at, deleted_idx);
+  array_delete_return_pos (self->ats, self->num_ats, at, deleted_idx);
 
   /* move automation track regions for automation
    * tracks after the deleted one*/
@@ -646,13 +615,11 @@ automation_tracklist_remove_at (
         {
           if (!first_invisible_at->created)
             first_invisible_at->created = 1;
-          automation_tracklist_set_at_visible (
-            self, first_invisible_at, true);
+          automation_tracklist_set_at_visible (self, first_invisible_at, true);
 
           if (fire_events)
             {
-              EVENTS_PUSH (
-                ET_AUTOMATION_TRACK_ADDED, first_invisible_at);
+              EVENTS_PUSH (ET_AUTOMATION_TRACK_ADDED, first_invisible_at);
             }
         }
     }
@@ -679,16 +646,14 @@ automation_tracklist_print_ats (AutomationTracklist * self)
   GString * g_str = g_string_new (NULL);
 
   g_string_append_printf (
-    g_str, "Automation tracklist (track '%s')\n",
-    self->track->name);
+    g_str, "Automation tracklist (track '%s')\n", self->track->name);
 
   for (int i = 0; i < self->num_ats; i++)
     {
       AutomationTrack * at = self->ats[i];
 
       g_string_append_printf (
-        g_str, "[%d] '%s' (sym '%s')\n", i, at->port_id.label,
-        at->port_id.sym);
+        g_str, "[%d] '%s' (sym '%s')\n", i, at->port_id.label, at->port_id.sym);
     }
   g_string_erase (g_str, (gssize) (g_str->len - 1), -1);
 
@@ -701,8 +666,7 @@ automation_tracklist_print_ats (AutomationTracklist * self)
  * Returns the number of visible AutomationTrack's.
  */
 int
-automation_tracklist_get_num_visible (
-  AutomationTracklist * self)
+automation_tracklist_get_num_visible (AutomationTracklist * self)
 {
   AutomationTrack * at;
   int               i;
@@ -729,20 +693,15 @@ bool
 automation_tracklist_validate (AutomationTracklist * self)
 {
   g_return_val_if_fail (
-    self->schema_version == AUTOMATION_TRACKLIST_SCHEMA_VERSION,
-    false);
-  g_return_val_if_fail (
-    IS_TRACK_AND_NONNULL (self->track), false);
+    self->schema_version == AUTOMATION_TRACKLIST_SCHEMA_VERSION, false);
+  g_return_val_if_fail (IS_TRACK_AND_NONNULL (self->track), false);
 
-  unsigned int track_name_hash =
-    track_get_name_hash (self->track);
+  unsigned int track_name_hash = track_get_name_hash (self->track);
   for (int i = 0; i < self->num_ats; i++)
     {
       AutomationTrack * at = self->ats[i];
       g_return_val_if_fail (
-        at->port_id.track_name_hash == track_name_hash
-          && at->index == i,
-        false);
+        at->port_id.track_name_hash == track_name_hash && at->index == i, false);
       automation_track_validate (at);
     }
 
@@ -754,8 +713,7 @@ automation_tracklist_validate (AutomationTracklist * self)
  * automation tracklist.
  */
 int
-automation_tracklist_get_num_regions (
-  AutomationTracklist * self)
+automation_tracklist_get_num_regions (AutomationTracklist * self)
 {
   int count = 0;
   for (int i = 0; i < self->num_ats; i++)
@@ -767,9 +725,7 @@ automation_tracklist_get_num_regions (
 }
 
 void
-automation_tracklist_set_caches (
-  AutomationTracklist * self,
-  CacheTypes            types)
+automation_tracklist_set_caches (AutomationTracklist * self, CacheTypes types)
 {
   Track * track = automation_tracklist_get_track (self);
   g_return_if_fail (IS_TRACK_AND_NONNULL (track));
@@ -795,8 +751,7 @@ automation_tracklist_set_caches (
         && at->automation_mode == AUTOMATION_MODE_RECORD)
         {
           array_append (
-            self->ats_in_record_mode,
-            self->num_ats_in_record_mode, at);
+            self->ats_in_record_mode, self->num_ats_in_record_mode, at);
         }
     }
 }
@@ -820,8 +775,8 @@ automation_tracklist_print_regions (AutomationTracklist * self)
         continue;
 
       g_string_append_printf (
-        str, "\n  [%d] port '%s': %d regions", i,
-        at->port_id.label, at->num_regions);
+        str, "\n  [%d] port '%s': %d regions", i, at->port_id.label,
+        at->num_regions);
     }
   char * tmp = g_string_free (str, false);
   g_message ("%s", tmp);
@@ -831,15 +786,13 @@ automation_tracklist_print_regions (AutomationTracklist * self)
 void
 automation_tracklist_free_members (AutomationTracklist * self)
 {
-  object_free_w_func_and_null (
-    g_ptr_array_unref, self->visible_ats);
+  object_free_w_func_and_null (g_ptr_array_unref, self->visible_ats);
 
   int size = self->num_ats;
   self->num_ats = 0;
   for (int i = 0; i < size; i++)
     {
-      object_free_w_func_and_null (
-        automation_track_free, self->ats[i]);
+      object_free_w_func_and_null (automation_track_free, self->ats[i]);
     }
 
   object_zero_and_free (self->ats);

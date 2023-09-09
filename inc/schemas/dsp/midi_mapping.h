@@ -32,11 +32,7 @@ typedef struct MidiMappings_v1
 
 static const cyaml_schema_field_t midi_mapping_fields_schema_v1[] = {
   YAML_FIELD_INT (MidiMapping_v1, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (
-    MidiMapping_v1,
-    key,
-    uint8_t_schema,
-    3),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (MidiMapping_v1, key, uint8_t_schema, 3),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     MidiMapping_v1,
     device_port,
@@ -51,25 +47,20 @@ static const cyaml_schema_field_t midi_mapping_fields_schema_v1[] = {
 };
 
 static const cyaml_schema_value_t midi_mapping_schema_v1 = {
-  YAML_VALUE_DEFAULT (
-    MidiMapping_v1,
-    midi_mapping_fields_schema_v1),
+  YAML_VALUE_DEFAULT (MidiMapping_v1, midi_mapping_fields_schema_v1),
 };
 
-static const cyaml_schema_field_t
-  midi_mappings_fields_schema_v1[] = {
-    YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-      MidiMappings_v1,
-      mappings,
-      midi_mapping_schema_v1),
+static const cyaml_schema_field_t midi_mappings_fields_schema_v1[] = {
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    MidiMappings_v1,
+    mappings,
+    midi_mapping_schema_v1),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t midi_mappings_schema_v1 = {
-  YAML_VALUE_PTR (
-    MidiMappings_v1,
-    midi_mappings_fields_schema_v1),
+  YAML_VALUE_PTR (MidiMappings_v1, midi_mappings_fields_schema_v1),
 };
 
 #endif

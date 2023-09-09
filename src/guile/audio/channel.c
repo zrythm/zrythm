@@ -36,8 +36,7 @@ SCM_DEFINE (
 {
   Channel * ch = (Channel *) scm_to_pointer (channel);
 
-  return scm_from_pointer (
-    ch->inserts[scm_to_int (insert_slot)], NULL);
+  return scm_from_pointer (ch->inserts[scm_to_int (insert_slot)], NULL);
 }
 #undef FUNC_NAME
 
@@ -69,8 +68,7 @@ SCM_DEFINE (
 {
   Channel * ch = (Channel *) scm_to_pointer (channel);
 
-  return scm_from_pointer (
-    &ch->sends[scm_to_int (send_slot)], NULL);
+  return scm_from_pointer (&ch->sends[scm_to_int (send_slot)], NULL);
 }
 #undef FUNC_NAME
 
@@ -82,8 +80,7 @@ init_module (void * data)
 #endif
 
   scm_c_export (
-    "channel-get-insert", "channel-get-instrument",
-    "channel-get-send", NULL);
+    "channel-get-insert", "channel-get-instrument", "channel-get-send", NULL);
 }
 
 void

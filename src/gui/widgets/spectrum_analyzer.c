@@ -40,10 +40,7 @@
 
 static const float threshold = -90.f;
 
-G_DEFINE_TYPE (
-  SpectrumAnalyzerWidget,
-  spectrum_analyzer_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (SpectrumAnalyzerWidget, spectrum_analyzer_widget, GTK_TYPE_WIDGET)
 
 static float
 windowHanning (int i, int transformSize)
@@ -60,15 +57,12 @@ getPowerSpectrumdB (
   const int                index,
   const int                transformSize)
 {
-  const float real =
-    (float) out[index].r * (2.f / transformSize);
-  const float complex =
-    (float) out[index].i * (2.f / transformSize);
+  const float real = (float) out[index].r * (2.f / transformSize);
+  const float complex = (float) out[index].i * (2.f / transformSize);
 
   const float powerSpectrum = real * real + complex * complex;
   float       powerSpectrumdB =
-    10.0f / math_fast_log (10.0f)
-    * math_fast_log (powerSpectrum + 1e-9f);
+    10.0f / math_fast_log (10.0f) * math_fast_log (powerSpectrum + 1e-9f);
 
   if (powerSpectrumdB <= threshold)
     {
@@ -105,18 +99,14 @@ invLogScale (const float value, const float min, const float max)
 }
 
 static float
-getBinPos (
-  const int   bin,
-  const int   numBins,
-  const float sampleRate)
+getBinPos (const int bin, const int numBins, const float sampleRate)
 {
   const float maxFreq = sampleRate / 2;
   const float hzPerBin = maxFreq / numBins;
 
   const float freq = hzPerBin * bin;
   const float scaledFreq =
-    invLogScale (freq + 1, SPECTRUM_ANALYZER_MIN_FREQ, maxFreq)
-    - 1;
+    invLogScale (freq + 1, SPECTRUM_ANALYZER_MIN_FREQ, maxFreq) - 1;
 
   return numBins * scaledFreq / maxFreq;
 }
@@ -133,8 +123,7 @@ static float
 getBinPixelColor (const float powerSpectrumdB)
 {
   const float euler = expf (1.0f);
-  const float scaledSpectrum =
-    (expf (powerSpectrumdB) - 1) / (euler - 1);
+  const float scaledSpectrum = (expf (powerSpectrumdB) - 1) / (euler - 1);
 
   float dB = -90.f + 90.f * scaledSpectrum;
   dB = CLAMP (dB, -90, 0);
@@ -148,28 +137,22 @@ getBinPixelColor (const float powerSpectrumdB)
 }
 
 static void
-spectrum_analyzer_snapshot (
-  GtkWidget *   widget,
-  GtkSnapshot * snapshot)
+spectrum_analyzer_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
-  SpectrumAnalyzerWidget * self =
-    Z_SPECTRUM_ANALYZER_WIDGET (widget);
+  SpectrumAnalyzerWidget * self = Z_SPECTRUM_ANALYZER_WIDGET (widget);
 
   int width = gtk_widget_get_width (widget);
   int height = gtk_widget_get_height (widget);
 
   size_t   block_size = AUDIO_ENGINE->block_length;
-  uint32_t block_size_in_bytes =
-    sizeof (float) * (uint32_t) block_size;
+  uint32_t block_size_in_bytes = sizeof (float) * (uint32_t) block_size;
 
   Port * port = NULL;
   g_return_if_fail (IS_TRACK_AND_NONNULL (P_MASTER_TRACK));
   if (!P_MASTER_TRACK->channel->stereo_out->l->write_ring_buffers)
     {
-      P_MASTER_TRACK->channel->stereo_out->l
-        ->write_ring_buffers = true;
-      P_MASTER_TRACK->channel->stereo_out->r
-        ->write_ring_buffers = true;
+      P_MASTER_TRACK->channel->stereo_out->l->write_ring_buffers = true;
+      P_MASTER_TRACK->channel->stereo_out->r->write_ring_buffers = true;
       return;
     }
   port = P_MASTER_TRACK->channel->stereo_out->l;
@@ -181,12 +164,9 @@ spectrum_analyzer_snapshot (
     return;
 
   /* get the L buffer */
-  uint32_t read_space_avail =
-    zix_ring_read_space (port->audio_ring);
+  uint32_t read_space_avail = zix_ring_read_space (port->audio_ring);
   uint32_t blocks_to_read =
-    block_size_in_bytes == 0
-      ? 0
-      : read_space_avail / block_size_in_bytes;
+    block_size_in_bytes == 0 ? 0 : read_space_avail / block_size_in_bytes;
   /* if buffer is not filled do not draw */
   if (blocks_to_read <= 0)
     return;
@@ -194,11 +174,10 @@ spectrum_analyzer_snapshot (
   while (read_space_avail > self->buf_sz[0])
     {
       array_double_size_if_full (
-        self->bufs[0], self->buf_sz[0], self->buf_sz[0],
-        float);
+        self->bufs[0], self->buf_sz[0], self->buf_sz[0], float);
     }
-  uint32_t lblocks_read = zix_ring_peek (
-    port->audio_ring, &(self->bufs[0][0]), read_space_avail);
+  uint32_t lblocks_read =
+    zix_ring_peek (port->audio_ring, &(self->bufs[0][0]), read_space_avail);
   lblocks_read /= block_size_in_bytes;
   uint32_t lstart_index = (lblocks_read - 1) * block_size;
   if (lblocks_read == 0)
@@ -219,11 +198,10 @@ spectrum_analyzer_snapshot (
   while (read_space_avail > self->buf_sz[1])
     {
       array_double_size_if_full (
-        self->bufs[1], self->buf_sz[1], self->buf_sz[1],
-        float);
+        self->bufs[1], self->buf_sz[1], self->buf_sz[1], float);
     }
-  size_t rblocks_read = zix_ring_peek (
-    port->audio_ring, &(self->bufs[1][0]), read_space_avail);
+  size_t rblocks_read =
+    zix_ring_peek (port->audio_ring, &(self->bufs[1][0]), read_space_avail);
   rblocks_read /= block_size_in_bytes;
   size_t rstart_index = (rblocks_read - 1) * block_size;
   if (rblocks_read == 0)
@@ -233,8 +211,8 @@ spectrum_analyzer_snapshot (
     }
 
   dsp_make_mono (
-    &self->bufs[0][lstart_index],
-    &self->bufs[1][rstart_index], block_size, true);
+    &self->bufs[0][lstart_index], &self->bufs[1][rstart_index], block_size,
+    true);
   const float * mono_buf = &self->bufs[0][lstart_index];
 
   /* --- process --- */
@@ -242,16 +220,12 @@ spectrum_analyzer_snapshot (
   if ((int) block_size != self->last_block_size)
     {
       kiss_fft_free (self->fft_config);
-      self->fft_config =
-        kiss_fft_alloc ((int) block_size, 0, NULL, NULL);
+      self->fft_config = kiss_fft_alloc ((int) block_size, 0, NULL, NULL);
       for (size_t i = 0; i < block_size; i++)
         {
-          g_return_if_fail (
-            block_size
-            <= SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2);
+          g_return_if_fail (block_size <= SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2);
           peak_fall_smooth_calculate_coeff (
-            self->bins[i],
-            (float) AUDIO_ENGINE->sample_rate / 64.f,
+            self->bins[i], (float) AUDIO_ENGINE->sample_rate / 64.f,
             (float) AUDIO_ENGINE->sample_rate);
         }
     }
@@ -259,23 +233,20 @@ spectrum_analyzer_snapshot (
   int stepSize = block_size / 2;
   int half = block_size / 2;
 
-  const float scaleX =
-    (float) width / (float) block_size * 2.f;
+  const float scaleX = (float) width / (float) block_size * 2.f;
   gtk_snapshot_scale (snapshot, scaleX, 1.f);
 
   // samples to throw away
   for (int i = 0; i < stepSize; ++i)
     {
-      self->fft_in[i].r =
-        mono_buf[i] * windowHanning (i, block_size);
+      self->fft_in[i].r = mono_buf[i] * windowHanning (i, block_size);
       self->fft_in[i].i = 0;
     }
 
   // samples to keep
   for (int i = stepSize; i < stepSize * 2; ++i)
     {
-      self->fft_in[i].r =
-        mono_buf[i - stepSize] * windowHanning (i, block_size);
+      self->fft_in[i].r = mono_buf[i - stepSize] * windowHanning (i, block_size);
       self->fft_in[i].i = 0;
     }
 
@@ -284,9 +255,7 @@ spectrum_analyzer_snapshot (
   for (int i = 0; i < half; ++i)
     {
       peak_fall_smooth_set_value (
-        self->bins[i],
-        getPowerSpectrumdB (
-          self, self->fft_out, i, block_size));
+        self->bins[i], getPowerSpectrumdB (self, self->fft_out, i, block_size));
     }
 
   /* --- end process --- */
@@ -313,19 +282,15 @@ spectrum_analyzer_snapshot (
       if (i < half - 1) // must interpolate to fill the gaps
         {
           const float nextPowerSpectrumdB =
-            peak_fall_smooth_get_smoothed_value (
-              self->bins[i + 1]);
+            peak_fall_smooth_get_smoothed_value (self->bins[i + 1]);
 
-          freqPos = (int) getBinPos (
-            i, half, AUDIO_ENGINE->sample_rate);
-          const int nextFreqPos = (int) getBinPos (
-            i + 1, half, AUDIO_ENGINE->sample_rate);
+          freqPos = (int) getBinPos (i, half, AUDIO_ENGINE->sample_rate);
+          const int nextFreqPos =
+            (int) getBinPos (i + 1, half, AUDIO_ENGINE->sample_rate);
 
-          const int freqDelta =
-            (int) nextFreqPos - (int) freqPos;
+          const int freqDelta = (int) nextFreqPos - (int) freqPos;
 
-          for (int j = (int) freqPos; j < (int) nextFreqPos;
-               ++j)
+          for (int j = (int) freqPos; j < (int) nextFreqPos; ++j)
             {
               (void) freqDelta;
               (void) nextPowerSpectrumdB;
@@ -337,16 +302,14 @@ spectrum_analyzer_snapshot (
               gtk_snapshot_append_color (
                 snapshot, &color_green,
                 &GRAPHENE_RECT_INIT (
-                  (float) j, height - 2, 1,
-                  -(float) height * lerped_amt));
+                  (float) j, height - 2, 1, -(float) height * lerped_amt));
             }
         }
 
       gtk_snapshot_append_color (
         snapshot, &color_green,
         &GRAPHENE_RECT_INIT (
-          (float) freqPos, height - 2, 1,
-          -(float) height * amp));
+          (float) freqPos, height - 2, 1, -(float) height * amp));
 
       /*fScrollingTexture.drawPixelOnCurrentLine(freqPos, pixelColor);*/
     }
@@ -369,8 +332,7 @@ update_activity (
  * Creates a spectrum analyzer for the AudioEngine.
  */
 void
-spectrum_analyzer_widget_setup_engine (
-  SpectrumAnalyzerWidget * self)
+spectrum_analyzer_widget_setup_engine (SpectrumAnalyzerWidget * self)
 {
 }
 
@@ -394,8 +356,7 @@ finalize (SpectrumAnalyzerWidget * self)
   object_zero_and_free (self->fft_out);
   for (int i = 0; i < SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2; i++)
     {
-      object_free_w_func_and_null (
-        peak_fall_smooth_free, self->bins[i]);
+      object_free_w_func_and_null (peak_fall_smooth_free, self->bins[i]);
     }
   free (self->bins);
 
@@ -412,29 +373,23 @@ spectrum_analyzer_widget_init (SpectrumAnalyzerWidget * self)
   self->bufs[1] = object_new_n (BUF_SIZE, float);
   self->buf_sz[0] = BUF_SIZE;
   self->buf_sz[1] = BUF_SIZE;
-  self->fft_config =
-    kiss_fft_alloc (BLOCK_SIZE, 0, NULL, NULL);
-  self->fft_in = object_new_n (
-    SPECTRUM_ANALYZER_MAX_BLOCK_SIZE, kiss_fft_cpx);
-  self->fft_out = object_new_n (
-    SPECTRUM_ANALYZER_MAX_BLOCK_SIZE, kiss_fft_cpx);
-  self->bins = object_new_n (
-    SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2, PeakFallSmooth *);
+  self->fft_config = kiss_fft_alloc (BLOCK_SIZE, 0, NULL, NULL);
+  self->fft_in = object_new_n (SPECTRUM_ANALYZER_MAX_BLOCK_SIZE, kiss_fft_cpx);
+  self->fft_out = object_new_n (SPECTRUM_ANALYZER_MAX_BLOCK_SIZE, kiss_fft_cpx);
+  self->bins =
+    object_new_n (SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2, PeakFallSmooth *);
   for (int i = 0; i < SPECTRUM_ANALYZER_MAX_BLOCK_SIZE / 2; i++)
     {
       self->bins[i] = peak_fall_smooth_new ();
     }
 
   gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), (GtkTickCallback) update_activity,
-    self, NULL);
-  gtk_widget_set_overflow (
-    GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
+    GTK_WIDGET (self), (GtkTickCallback) update_activity, self, NULL);
+  gtk_widget_set_overflow (GTK_WIDGET (self), GTK_OVERFLOW_HIDDEN);
 }
 
 static void
-spectrum_analyzer_widget_class_init (
-  SpectrumAnalyzerWidgetClass * klass)
+spectrum_analyzer_widget_class_init (SpectrumAnalyzerWidgetClass * klass)
 {
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = spectrum_analyzer_snapshot;

@@ -22,8 +22,7 @@
 
 #include <gtk/gtk.h>
 
-#define PORT_CONNECTION_ROW_WIDGET_TYPE \
-  (port_connection_row_widget_get_type ())
+#define PORT_CONNECTION_ROW_WIDGET_TYPE (port_connection_row_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PortConnectionRowWidget,
   port_connection_row_widget,
@@ -31,11 +30,10 @@ G_DECLARE_FINAL_TYPE (
   PORT_CONNECTION_ROW_WIDGET,
   GtkBox)
 
-typedef struct _KnobWidget      KnobWidget;
-typedef struct _BarSliderWidget BarSliderWidget;
-typedef struct _PortConnectionsPopoverWidget
-                              PortConnectionsPopoverWidget;
-typedef struct PortConnection PortConnection;
+typedef struct _KnobWidget                   KnobWidget;
+typedef struct _BarSliderWidget              BarSliderWidget;
+typedef struct _PortConnectionsPopoverWidget PortConnectionsPopoverWidget;
+typedef struct PortConnection                PortConnection;
 
 typedef struct _PortConnectionRowWidget
 {

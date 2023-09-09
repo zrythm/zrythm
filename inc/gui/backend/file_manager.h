@@ -138,9 +138,7 @@ file_browser_location_print (const FileBrowserLocation * loc);
  * Adds a location and saves the settings.
  */
 void
-file_manager_add_location_and_save (
-  FileManager * self,
-  const char *  abs_path);
+file_manager_add_location_and_save (FileManager * self, const char * abs_path);
 
 /**
  * Removes the given location (bookmark) from the

@@ -21,21 +21,16 @@ track_processor_upgrade_from_v1 (TrackProcessor_v1 * old)
   self->midi_in = port_upgrade_from_v1 (old->midi_in);
   self->midi_out = port_upgrade_from_v1 (old->midi_out);
   self->piano_roll = port_upgrade_from_v1 (old->piano_roll);
-  self->monitor_audio =
-    port_upgrade_from_v1 (old->monitor_audio);
-  self->stereo_in =
-    stereo_ports_upgrade_from_v1 (old->stereo_in);
-  self->stereo_out =
-    stereo_ports_upgrade_from_v1 (old->stereo_out);
+  self->monitor_audio = port_upgrade_from_v1 (old->monitor_audio);
+  self->stereo_in = stereo_ports_upgrade_from_v1 (old->stereo_in);
+  self->stereo_out = stereo_ports_upgrade_from_v1 (old->stereo_out);
   for (int i = 0; i < 128 * 16; i++)
     {
-      self->midi_cc[i] =
-        port_upgrade_from_v1 (old->midi_cc[i]);
+      self->midi_cc[i] = port_upgrade_from_v1 (old->midi_cc[i]);
     }
   for (int i = 0; i < 16; i++)
     {
-      self->pitch_bend[i] =
-        port_upgrade_from_v1 (old->pitch_bend[i]);
+      self->pitch_bend[i] = port_upgrade_from_v1 (old->pitch_bend[i]);
       self->poly_key_pressure[i] =
         port_upgrade_from_v1 (old->poly_key_pressure[i]);
       self->channel_pressure[i] =

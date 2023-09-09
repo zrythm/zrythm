@@ -34,15 +34,12 @@ void
 z_chromaprint_fingerprint_free (ChromaprintFingerprint * self)
 {
   object_free_w_func_and_null (chromaprint_dealloc, self->fp);
-  object_free_w_func_and_null (
-    chromaprint_dealloc, self->compressed_str);
+  object_free_w_func_and_null (chromaprint_dealloc, self->compressed_str);
   object_zero_and_free (self);
 }
 
 ChromaprintFingerprint *
-z_chromaprint_get_fingerprint (
-  const char *     file1,
-  unsigned_frame_t max_frames)
+z_chromaprint_get_fingerprint (const char * file1, unsigned_frame_t max_frames)
 {
   int ret;
 
@@ -53,16 +50,13 @@ z_chromaprint_get_fingerprint (
   g_return_val_if_fail (sndfile, NULL);
   g_return_val_if_fail (sfinfo.frames > 0, NULL);
 
-  ChromaprintContext * ctx =
-    chromaprint_new (CHROMAPRINT_ALGORITHM_DEFAULT);
+  ChromaprintContext * ctx = chromaprint_new (CHROMAPRINT_ALGORITHM_DEFAULT);
   g_return_val_if_fail (ctx, NULL);
-  ret = chromaprint_start (
-    ctx, sfinfo.samplerate, sfinfo.channels);
+  ret = chromaprint_start (ctx, sfinfo.samplerate, sfinfo.channels);
   g_return_val_if_fail (ret == 1, NULL);
-  int     buf_size = sfinfo.frames * sfinfo.channels;
-  short * data = calloc ((size_t) buf_size, sizeof (short));
-  sf_count_t frames_read =
-    sf_readf_short (sndfile, data, sfinfo.frames);
+  int        buf_size = sfinfo.frames * sfinfo.channels;
+  short *    data = calloc ((size_t) buf_size, sizeof (short));
+  sf_count_t frames_read = sf_readf_short (sndfile, data, sfinfo.frames);
   g_return_val_if_fail (frames_read == sfinfo.frames, NULL);
   g_message ("read %ld frames for %s", frames_read, file1);
 
@@ -72,16 +66,13 @@ z_chromaprint_get_fingerprint (
   ret = chromaprint_finish (ctx);
   g_return_val_if_fail (ret == 1, NULL);
 
-  ChromaprintFingerprint * fp =
-    object_new (ChromaprintFingerprint);
+  ChromaprintFingerprint * fp = object_new (ChromaprintFingerprint);
   ret = chromaprint_get_fingerprint (ctx, &fp->compressed_str);
   g_return_val_if_fail (ret == 1, NULL);
-  ret =
-    chromaprint_get_raw_fingerprint (ctx, &fp->fp, &fp->size);
+  ret = chromaprint_get_raw_fingerprint (ctx, &fp->fp, &fp->size);
   g_return_val_if_fail (ret == 1, NULL);
 
-  g_message (
-    "fingerprint %s [%d]", fp->compressed_str, fp->size);
+  g_message ("fingerprint %s [%d]", fp->compressed_str, fp->size);
 
   chromaprint_free (ctx);
   free (data);
@@ -103,9 +94,8 @@ z_chromaprint_check_fingerprint_similarity (
   int          perc,
   int          expected_size)
 {
-  const unsigned_frame_t max_frames = MIN (
-    audio_get_num_frames (file1),
-    audio_get_num_frames (file2));
+  const unsigned_frame_t max_frames =
+    MIN (audio_get_num_frames (file1), audio_get_num_frames (file2));
   ChromaprintFingerprint * fp1 =
     z_chromaprint_get_fingerprint (file1, max_frames);
   g_return_if_fail (fp1);
@@ -124,8 +114,7 @@ z_chromaprint_check_fingerprint_similarity (
     }
 
   double rated = (double) rate / (double) min;
-  int    rate_perc =
-    (int) math_round_double_to_signed_32 (rated * 100.0);
+  int    rate_perc = (int) math_round_double_to_signed_32 (rated * 100.0);
   g_message ("%d out of %d (%d%%)", rate, min, rate_perc);
 
   g_return_if_fail (rate_perc >= perc);

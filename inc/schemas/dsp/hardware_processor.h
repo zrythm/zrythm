@@ -29,38 +29,34 @@ typedef struct HardwareProcessor_v1
   int           num_midi_ports;
 } HardwareProcessor_v1;
 
-static const cyaml_schema_field_t
-  hardware_processor_fields_schema_v1[] = {
-    YAML_FIELD_INT (HardwareProcessor_v1, schema_version),
-    YAML_FIELD_INT (HardwareProcessor_v1, is_input),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      HardwareProcessor_v1,
-      ext_audio_ports,
-      ext_port_schema_v1),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      HardwareProcessor_v1,
-      ext_midi_ports,
-      ext_port_schema_v1),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      HardwareProcessor_v1,
-      audio_ports,
-      port_schema_v1),
-    YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-      HardwareProcessor_v1,
-      midi_ports,
-      port_schema_v1),
+static const cyaml_schema_field_t hardware_processor_fields_schema_v1[] = {
+  YAML_FIELD_INT (HardwareProcessor_v1, schema_version),
+  YAML_FIELD_INT (HardwareProcessor_v1, is_input),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    HardwareProcessor_v1,
+    ext_audio_ports,
+    ext_port_schema_v1),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    HardwareProcessor_v1,
+    ext_midi_ports,
+    ext_port_schema_v1),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    HardwareProcessor_v1,
+    audio_ports,
+    port_schema_v1),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
+    HardwareProcessor_v1,
+    midi_ports,
+    port_schema_v1),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t hardware_processor_schema_v1 = {
-  YAML_VALUE_PTR (
-    HardwareProcessor_v1,
-    hardware_processor_fields_schema_v1),
+  YAML_VALUE_PTR (HardwareProcessor_v1, hardware_processor_fields_schema_v1),
 };
 
 HardwareProcessor *
-hardware_processor_upgrade_from_v1 (
-  HardwareProcessor_v1 * old);
+hardware_processor_upgrade_from_v1 (HardwareProcessor_v1 * old);
 
 #endif

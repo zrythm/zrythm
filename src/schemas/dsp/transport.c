@@ -20,8 +20,7 @@ transport_upgrade_from_v1 (Transport_v1 * old)
   Position * name = position_upgrade_from_v1 (&old->name); \
   self->name = *name
 
-#define UPDATE_PORT(name) \
-  self->name = port_upgrade_from_v1 (old->name)
+#define UPDATE_PORT(name) self->name = port_upgrade_from_v1 (old->name)
 
 #define UPDATE(name) self->name = old->name
 

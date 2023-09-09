@@ -25,9 +25,7 @@
  * events to update the UI.
  */
 void
-audio_selections_set_has_range (
-  AudioSelections * self,
-  bool              has_range)
+audio_selections_set_has_range (AudioSelections * self, bool has_range)
 {
   self->has_selection = true;
 
@@ -41,10 +39,7 @@ audio_selections_set_has_range (
  * @param region ZRegion to paste to.
  */
 bool
-audio_selections_can_be_pasted (
-  AudioSelections * ts,
-  Position *        pos,
-  ZRegion *         r)
+audio_selections_can_be_pasted (AudioSelections * ts, Position * pos, ZRegion * r)
 {
   if (!r || r->id.type != REGION_TYPE_AUDIO)
     return false;

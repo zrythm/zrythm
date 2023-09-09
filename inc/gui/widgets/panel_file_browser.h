@@ -8,12 +8,10 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _FileAuditionerControlsWidget
-  FileAuditionerControlsWidget;
-typedef struct FileBrowserLocation FileBrowserLocation;
-typedef struct _FileBrowserFiltersWidget
-                           FileBrowserFiltersWidget;
-typedef struct ItemFactory ItemFactory;
+typedef struct _FileAuditionerControlsWidget FileAuditionerControlsWidget;
+typedef struct FileBrowserLocation           FileBrowserLocation;
+typedef struct _FileBrowserFiltersWidget     FileBrowserFiltersWidget;
+typedef struct ItemFactory                   ItemFactory;
 
 /**
  * @addtogroup widgets
@@ -21,8 +19,7 @@ typedef struct ItemFactory ItemFactory;
  * @{
  */
 
-#define PANEL_FILE_BROWSER_WIDGET_TYPE \
-  (panel_file_browser_widget_get_type ())
+#define PANEL_FILE_BROWSER_WIDGET_TYPE (panel_file_browser_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PanelFileBrowserWidget,
   panel_file_browser_widget,
@@ -74,8 +71,7 @@ typedef struct _PanelFileBrowserWidget
 } PanelFileBrowserWidget;
 
 void
-panel_file_browser_refresh_bookmarks (
-  PanelFileBrowserWidget * self);
+panel_file_browser_refresh_bookmarks (PanelFileBrowserWidget * self);
 
 PanelFileBrowserWidget *
 panel_file_browser_widget_new (void);

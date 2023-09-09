@@ -25,8 +25,7 @@ TYPEDEF_STRUCT (PeakFallSmooth);
  * @{
  */
 
-#define SPECTRUM_ANALYZER_WIDGET_TYPE \
-  (spectrum_analyzer_widget_get_type ())
+#define SPECTRUM_ANALYZER_WIDGET_TYPE (spectrum_analyzer_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   SpectrumAnalyzerWidget,
   spectrum_analyzer_widget,
@@ -63,8 +62,7 @@ typedef struct _SpectrumAnalyzerWidget
  * Creates a spectrum analyzer for the AudioEngine.
  */
 void
-spectrum_analyzer_widget_setup_engine (
-  SpectrumAnalyzerWidget * self);
+spectrum_analyzer_widget_setup_engine (SpectrumAnalyzerWidget * self);
 
 SpectrumAnalyzerWidget *
 spectrum_analyzer_widget_new_for_port (Port * port);

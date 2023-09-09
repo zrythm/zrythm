@@ -34,29 +34,29 @@
 #  include <rtaudio_c.h>
 #endif
 
-typedef struct Plugin           Plugin;
-typedef struct MidiEvents       MidiEvents;
-typedef struct Fader            Fader;
-typedef struct ZixRingImpl      ZixRing;
-typedef struct WindowsMmeDevice WindowsMmeDevice;
-typedef struct Channel          Channel;
-typedef struct AudioEngine      AudioEngine;
-typedef struct Track            Track;
-typedef struct PortConnection   PortConnection;
-typedef struct TrackProcessor   TrackProcessor;
+typedef struct Plugin                  Plugin;
+typedef struct MidiEvents              MidiEvents;
+typedef struct Fader                   Fader;
+typedef struct ZixRingImpl             ZixRing;
+typedef struct WindowsMmeDevice        WindowsMmeDevice;
+typedef struct Channel                 Channel;
+typedef struct AudioEngine             AudioEngine;
+typedef struct Track                   Track;
+typedef struct PortConnection          PortConnection;
+typedef struct TrackProcessor          TrackProcessor;
 typedef struct ModulatorMacroProcessor ModulatorMacroProcessor;
-typedef struct RtMidiDevice          RtMidiDevice;
-typedef struct RtAudioDevice         RtAudioDevice;
-typedef struct AutomationTrack       AutomationTrack;
-typedef struct TruePeakDsp           TruePeakDsp;
-typedef struct ExtPort               ExtPort;
-typedef struct AudioClip             AudioClip;
-typedef struct ChannelSend           ChannelSend;
-typedef struct Transport             Transport;
-typedef struct PluginGtkController   PluginGtkController;
-typedef struct EngineProcessTimeInfo EngineProcessTimeInfo;
-typedef enum PanAlgorithm            PanAlgorithm;
-typedef enum PanLaw                  PanLaw;
+typedef struct RtMidiDevice            RtMidiDevice;
+typedef struct RtAudioDevice           RtAudioDevice;
+typedef struct AutomationTrack         AutomationTrack;
+typedef struct TruePeakDsp             TruePeakDsp;
+typedef struct ExtPort                 ExtPort;
+typedef struct AudioClip               AudioClip;
+typedef struct ChannelSend             ChannelSend;
+typedef struct Transport               Transport;
+typedef struct PluginGtkController     PluginGtkController;
+typedef struct EngineProcessTimeInfo   EngineProcessTimeInfo;
+typedef enum PanAlgorithm              PanAlgorithm;
+typedef enum PanLaw                    PanLaw;
 
 /**
  * @addtogroup dsp
@@ -80,30 +80,20 @@ typedef enum PanLaw                  PanLaw;
 #define PORT_NOT_OWNED -1
 
 #define port_is_owner_active(self, _owner_type, owner) \
-  ((self->id.owner_type == _owner_type) \
-   && (self->owner != NULL) \
+  ((self->id.owner_type == _owner_type) && (self->owner != NULL) \
    && owner##_is_in_active_project (self->owner))
 
 #define port_is_in_active_project(self) \
-  (port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_AUDIO_ENGINE, engine) \
+  (port_is_owner_active (self, PORT_OWNER_TYPE_AUDIO_ENGINE, engine) \
+   || port_is_owner_active (self, PORT_OWNER_TYPE_PLUGIN, plugin) \
+   || port_is_owner_active (self, PORT_OWNER_TYPE_TRACK, track) \
+   || port_is_owner_active (self, PORT_OWNER_TYPE_CHANNEL, track) \
+   || port_is_owner_active (self, PORT_OWNER_TYPE_FADER, fader) \
+   || port_is_owner_active (self, PORT_OWNER_TYPE_CHANNEL_SEND, channel_send) \
+   || port_is_owner_active (self, PORT_OWNER_TYPE_TRACK_PROCESSOR, track) \
    || port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_PLUGIN, plugin) \
-   || port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_TRACK, track) \
-   || port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_CHANNEL, track) \
-   || port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_FADER, fader) \
-   || port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_CHANNEL_SEND, channel_send) \
-   || port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_TRACK_PROCESSOR, track) \
-   || port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, \
-     modulator_macro_processor) \
-   || port_is_owner_active ( \
-     self, PORT_OWNER_TYPE_HW, ext_port))
+     self, PORT_OWNER_TYPE_MODULATOR_MACRO_PROCESSOR, modulator_macro_processor) \
+   || port_is_owner_active (self, PORT_OWNER_TYPE_HW, ext_port))
 
 /**
  * What the internal data is.
@@ -544,10 +534,7 @@ typedef struct Port
 
 static const cyaml_schema_field_t port_fields_schema[] = {
   YAML_FIELD_INT (Port, schema_version),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Port,
-    id,
-    port_identifier_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (Port, id, port_identifier_fields_schema),
   YAML_FIELD_INT (Port, exposed_to_backend),
   YAML_FIELD_FLOAT (Port, control),
   YAML_FIELD_FLOAT (Port, minf),
@@ -598,10 +585,7 @@ NONNULL void
 port_init_loaded (Port * self, void * owner);
 
 void
-port_set_owner (
-  Port *        self,
-  PortOwnerType owner_type,
-  void *        owner);
+port_set_owner (Port * self, PortOwnerType owner_type, void * owner);
 
 NONNULL Port *
 port_find_from_identifier (const PortIdentifier * const id);
@@ -627,10 +611,7 @@ static inline void stereo_ports_set_owner (
  * Creates port.
  */
 WARN_UNUSED_RESULT NONNULL Port *
-port_new_with_type (
-  PortType     type,
-  PortFlow     flow,
-  const char * label);
+port_new_with_type (PortType type, PortFlow flow, const char * label);
 
 WARN_UNUSED_RESULT NONNULL Port *
 port_new_with_type_and_owner (
@@ -688,10 +669,7 @@ stereo_ports_new_generic (
  * @return Non-zero if error.
  */
 NONNULL void
-stereo_ports_connect (
-  StereoPorts * src,
-  StereoPorts * dest,
-  int           locked);
+stereo_ports_connect (StereoPorts * src, StereoPorts * dest, int locked);
 
 NONNULL void
 stereo_ports_disconnect (StereoPorts * self);
@@ -914,8 +892,7 @@ port_get_control_value (Port * self, const bool normalize);
  */
 #define port_connect(a, b, locked) \
   port_connections_manager_ensure_connect ( \
-    PORT_CONNECTIONS_MGR, &((a)->id), &((b)->id), 1.f, \
-    locked, true)
+    PORT_CONNECTIONS_MGR, &((a)->id), &((b)->id), 1.f, locked, true)
 
 /**
  * Removes the connection between the given ports.
@@ -946,10 +923,7 @@ port_get_num_unlocked_dests (const Port * self);
  * @param hash The new hash.
  */
 void
-port_update_track_name_hash (
-  Port *       self,
-  Track *      track,
-  unsigned int new_hash);
+port_update_track_name_hash (Port * self, Track * track, unsigned int new_hash);
 
 /**
  * Apply given fader value to port.
@@ -1012,9 +986,7 @@ ports_disconnect (Port ** ports, int num_ports, int deleting);
  * can be restored on undo.
  */
 NONNULL void
-port_copy_metadata_from_project (
-  Port * self,
-  Port * project_port);
+port_copy_metadata_from_project (Port * self, Port * project_port);
 
 /**
  * Copies the port values from @ref other to @ref
@@ -1052,8 +1024,7 @@ port_restore_from_non_project (Port * self, Port * non_project);
         if (_port->buf) \
           { \
             dsp_fill ( \
-              _port->buf, DENORMAL_PREVENTION_VAL, \
-              AUDIO_ENGINE->block_length); \
+              _port->buf, DENORMAL_PREVENTION_VAL, AUDIO_ENGINE->block_length); \
           } \
       } \
     else if (_port->id.type == TYPE_EVENT) \

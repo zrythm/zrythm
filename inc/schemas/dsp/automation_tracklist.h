@@ -21,26 +21,21 @@ typedef struct AutomationTracklist_v1
   int                   num_ats;
 } AutomationTracklist_v1;
 
-static const cyaml_schema_field_t
-  automation_tracklist_fields_schema_v1[] = {
-    YAML_FIELD_INT (AutomationTracklist_v1, schema_version),
-    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-      AutomationTracklist_v1,
-      ats,
-      automation_track_schema_v1),
+static const cyaml_schema_field_t automation_tracklist_fields_schema_v1[] = {
+  YAML_FIELD_INT (AutomationTracklist_v1, schema_version),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+    AutomationTracklist_v1,
+    ats,
+    automation_track_schema_v1),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  automation_tracklist_schema_v1 = {
-    YAML_VALUE_PTR (
-      AutomationTracklist_v1,
-      automation_tracklist_fields_schema_v1),
-  };
+static const cyaml_schema_value_t automation_tracklist_schema_v1 = {
+  YAML_VALUE_PTR (AutomationTracklist_v1, automation_tracklist_fields_schema_v1),
+};
 
 AutomationTracklist *
-automation_tracklist_upgrade_from_v1 (
-  AutomationTracklist_v1 * old);
+automation_tracklist_upgrade_from_v1 (AutomationTracklist_v1 * old);
 
 #endif

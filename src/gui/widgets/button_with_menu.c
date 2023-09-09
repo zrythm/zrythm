@@ -10,22 +10,17 @@
 
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  ButtonWithMenuWidget,
-  button_with_menu_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (ButtonWithMenuWidget, button_with_menu_widget, GTK_TYPE_BOX)
 
 void
 button_with_menu_widget_set_menu_model (
   ButtonWithMenuWidget * self,
   GMenuModel *           gmenu_model)
 {
-  GMenuModel * existing_model =
-    gtk_menu_button_get_menu_model (self->menu_btn);
+  GMenuModel * existing_model = gtk_menu_button_get_menu_model (self->menu_btn);
   if (existing_model != gmenu_model)
     {
-      gtk_menu_button_set_menu_model (
-        self->menu_btn, gmenu_model);
+      gtk_menu_button_set_menu_model (self->menu_btn, gmenu_model);
     }
 }
 
@@ -37,8 +32,7 @@ button_with_menu_widget_set_popover (
   ButtonWithMenuWidget * self,
   GtkPopover *           popover)
 {
-  gtk_menu_button_set_popover (
-    self->menu_btn, GTK_WIDGET (popover));
+  gtk_menu_button_set_popover (self->menu_btn, GTK_WIDGET (popover));
 }
 
 /**
@@ -72,29 +66,22 @@ button_with_menu_widget_setup (
     downward_arrow ? "arrow-down-small" : "arrow-up-small");
   gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->menu_btn));
   /* TODO write CSS rule to set image size to 6 */
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self->menu_btn), "arrow-button");
+  gtk_widget_add_css_class (GTK_WIDGET (self->menu_btn), "arrow-button");
 
   gtk_widget_add_css_class (GTK_WIDGET (self), "linked");
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self), "button-with-menu");
+  gtk_widget_add_css_class (GTK_WIDGET (self), "button-with-menu");
 
   int width;
   gtk_widget_get_size_request (GTK_WIDGET (btn), &width, NULL);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (btn), width, height);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self->menu_btn), -1, height);
+  gtk_widget_set_size_request (GTK_WIDGET (btn), width, height);
+  gtk_widget_set_size_request (GTK_WIDGET (self->menu_btn), -1, height);
 
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (btn), btn_tooltip_text);
-  gtk_widget_set_tooltip_text (
-    GTK_WIDGET (self->menu_btn), menu_tooltip_text);
+  gtk_widget_set_tooltip_text (GTK_WIDGET (btn), btn_tooltip_text);
+  gtk_widget_set_tooltip_text (GTK_WIDGET (self->menu_btn), menu_tooltip_text);
 
   if (gmenu_model)
     {
-      button_with_menu_widget_set_menu_model (
-        self, gmenu_model);
+      button_with_menu_widget_set_menu_model (self, gmenu_model);
     }
 }
 
@@ -118,8 +105,7 @@ button_with_menu_widget_init (ButtonWithMenuWidget * self)
 }
 
 static void
-button_with_menu_widget_class_init (
-  ButtonWithMenuWidgetClass * _klass)
+button_with_menu_widget_class_init (ButtonWithMenuWidgetClass * _klass)
 {
   GObjectClass * klass = G_OBJECT_CLASS (_klass);
 

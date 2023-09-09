@@ -32,8 +32,7 @@ TYPEDEF_STRUCT_UNDERSCORED (RegionWidget);
  * @{
  */
 
-#define MW_AUTOMATION_ARRANGER \
-  MW_AUTOMATION_EDITOR_SPACE->arranger
+#define MW_AUTOMATION_ARRANGER MW_AUTOMATION_EDITOR_SPACE->arranger
 
 /** Padding to leave before and after the usable
  * vertical range for automation. */
@@ -57,9 +56,7 @@ automation_arranger_widget_create_ap (
  * Change curviness of selected curves.
  */
 void
-automation_arranger_widget_resize_curves (
-  ArrangerWidget * self,
-  double           offset_y);
+automation_arranger_widget_resize_curves (ArrangerWidget * self, double offset_y);
 
 /**
  * Generate a context menu at x, y.
@@ -81,10 +78,7 @@ automation_arranger_widget_gen_context_menu (
  * @return Whether an automation point was moved.
  */
 bool
-automation_arranger_move_hit_aps (
-  ArrangerWidget * self,
-  double           x,
-  double           y);
+automation_arranger_move_hit_aps (ArrangerWidget * self, double x, double y);
 
 /**
  * @}

@@ -18,10 +18,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-G_DEFINE_TYPE (
-  ModulatorWidget,
-  modulator_widget,
-  TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
+G_DEFINE_TYPE (ModulatorWidget, modulator_widget, TWO_COL_EXPANDER_BOX_WIDGET_TYPE)
 
 void
 modulator_widget_refresh (ModulatorWidget * self)
@@ -34,25 +31,20 @@ modulator_widget_new (Plugin * modulator)
 {
   g_return_val_if_fail (IS_PLUGIN (modulator), NULL);
 
-  ModulatorWidget * self =
-    g_object_new (MODULATOR_WIDGET_TYPE, NULL);
+  ModulatorWidget * self = g_object_new (MODULATOR_WIDGET_TYPE, NULL);
 
   self->modulator = modulator;
 
   self->inner = modulator_inner_widget_new (self);
 
   expander_box_widget_set_label (
-    Z_EXPANDER_BOX_WIDGET (self),
-    modulator->setting->descr->name);
-  expander_box_widget_set_icon_name (
-    Z_EXPANDER_BOX_WIDGET (self), "modulator");
+    Z_EXPANDER_BOX_WIDGET (self), modulator->setting->descr->name);
+  expander_box_widget_set_icon_name (Z_EXPANDER_BOX_WIDGET (self), "modulator");
 
   two_col_expander_box_widget_add_single (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self),
-    GTK_WIDGET (self->inner));
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (self->inner));
   two_col_expander_box_widget_set_scroll_policy (
-    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_POLICY_NEVER,
-    GTK_POLICY_NEVER);
+    Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_POLICY_NEVER, GTK_POLICY_NEVER);
 
   /* TODO */
 #if 0
@@ -72,8 +64,7 @@ modulator_widget_new (Plugin * modulator)
 static void
 finalize (ModulatorWidget * self)
 {
-  G_OBJECT_CLASS (modulator_widget_parent_class)
-    ->finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (modulator_widget_parent_class)->finalize (G_OBJECT (self));
 }
 
 static void

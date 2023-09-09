@@ -12,12 +12,7 @@
 #include <gtk/gtk.h>
 
 #define METER_WIDGET_TYPE (meter_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  MeterWidget,
-  meter_widget,
-  Z,
-  METER_WIDGET,
-  GtkWidget)
+G_DECLARE_FINAL_TYPE (MeterWidget, meter_widget, Z, METER_WIDGET, GtkWidget)
 
 typedef struct Meter Meter;
 

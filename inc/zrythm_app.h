@@ -15,23 +15,18 @@
 #include <zix/sem.h>
 
 #define ZRYTHM_APP_TYPE (zrythm_app_get_type ())
-G_DECLARE_FINAL_TYPE (
-  ZrythmApp,
-  zrythm_app,
-  ZRYTHM,
-  APP,
-  GtkApplication)
+G_DECLARE_FINAL_TYPE (ZrythmApp, zrythm_app, ZRYTHM, APP, GtkApplication)
 
 #define ZRYTHM_APP_IS_GTK_THREAD \
   (zrythm_app && zrythm_app->gtk_thread == g_thread_self ())
 
-typedef struct _MainWindowWidget   MainWindowWidget;
-typedef struct _SplashWindowWidget SplashWindowWidget;
+typedef struct _MainWindowWidget        MainWindowWidget;
+typedef struct _SplashWindowWidget      SplashWindowWidget;
 typedef struct _FirstRunAssistantWidget FirstRunAssistantWidget;
-typedef struct _ProjectAssistantWidget ProjectAssistantWidget;
-typedef struct _BugReportDialogWidget  BugReportDialogWidget;
-typedef struct Zrythm                  Zrythm;
-typedef struct UiCaches                UiCaches;
+typedef struct _ProjectAssistantWidget  ProjectAssistantWidget;
+typedef struct _BugReportDialogWidget   BugReportDialogWidget;
+typedef struct Zrythm                   Zrythm;
+typedef struct UiCaches                 UiCaches;
 
 /**
  * @addtogroup general
@@ -49,9 +44,7 @@ typedef struct ZrythmAppUiMessage
 } ZrythmAppUiMessage;
 
 ZrythmAppUiMessage *
-zrythm_app_ui_message_new (
-  GtkMessageType type,
-  const char *   msg);
+zrythm_app_ui_message_new (GtkMessageType type, const char * msg);
 
 void
 zrythm_app_ui_message_free (ZrythmAppUiMessage * self);

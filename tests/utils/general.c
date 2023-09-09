@@ -14,14 +14,11 @@ static void
 test_uint_from_bitfield (void)
 {
   g_assert_cmpuint (
-    0, ==,
-    utils_get_uint_from_bitfield_val (PORT_FLAG_STEREO_L));
+    0, ==, utils_get_uint_from_bitfield_val (PORT_FLAG_STEREO_L));
   g_assert_cmpuint (
-    14, ==,
-    utils_get_uint_from_bitfield_val (PORT_FLAG_NOT_ON_GUI));
+    14, ==, utils_get_uint_from_bitfield_val (PORT_FLAG_NOT_ON_GUI));
   g_assert_cmpuint (
-    18, ==,
-    utils_get_uint_from_bitfield_val (PORT_FLAG_CHANNEL_FADER));
+    18, ==, utils_get_uint_from_bitfield_val (PORT_FLAG_CHANNEL_FADER));
 }
 
 int
@@ -32,8 +29,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/utils/general/"
 
   g_test_add_func (
-    TEST_PREFIX "test uint from bitfield",
-    (GTestFunc) test_uint_from_bitfield);
+    TEST_PREFIX "test uint from bitfield", (GTestFunc) test_uint_from_bitfield);
 
   return g_test_run ();
 }

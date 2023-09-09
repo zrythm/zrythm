@@ -84,15 +84,13 @@ typedef const char * (*GenericStringGetter) (void * object);
 /**
  * Setter prototype for float values.
  */
-typedef void (
-  *GenericStringSetter) (void * object, const char * val);
+typedef void (*GenericStringSetter) (void * object, const char * val);
 
 /**
  * Getter prototype for strings to be saved in the
  * given buffer.
  */
-typedef void (
-  *GenericStringCopyGetter) (void * object, char * buf);
+typedef void (*GenericStringCopyGetter) (void * object, char * buf);
 
 /**
  * Generic callback.
@@ -110,9 +108,8 @@ typedef int (*GenericCmpFunc) (const void * a, const void * b);
  * To be used to return whether the given pointer
  * matches some condition.
  */
-typedef bool (*GenericPredicateFunc) (
-  const void * object,
-  const void * user_data);
+typedef bool (
+  *GenericPredicateFunc) (const void * object, const void * user_data);
 
 /**
  * Function to call to free objects.
@@ -167,8 +164,7 @@ typedef enum CacheTypes
 
 #define CACHE_TYPE_ALL \
   (CACHE_TYPE_TRACK_NAME_HASHES | CACHE_TYPE_PLUGIN_PORTS \
-   | CACHE_TYPE_PLAYBACK_SNAPSHOTS \
-   | CACHE_TYPE_AUTOMATION_LANE_RECORD_MODES \
+   | CACHE_TYPE_PLAYBACK_SNAPSHOTS | CACHE_TYPE_AUTOMATION_LANE_RECORD_MODES \
    | CACHE_TYPE_AUTOMATION_LANE_PORTS)
 
 /**

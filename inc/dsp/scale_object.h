@@ -34,8 +34,7 @@ typedef struct MusicalScale MusicalScale;
   arranger_object_is_selected ((ArrangerObject *) r)
 
 #define SCALE_OBJECT_MAGIC 13187994
-#define IS_SCALE_OBJECT(tr) \
-  (tr && tr->magic == SCALE_OBJECT_MAGIC)
+#define IS_SCALE_OBJECT(tr) (tr && tr->magic == SCALE_OBJECT_MAGIC)
 
 /**
  * A ScaleObject to be shown in the
@@ -61,16 +60,10 @@ typedef struct ScaleObject
 } ScaleObject;
 
 static const cyaml_schema_field_t scale_object_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ScaleObject,
-    base,
-    arranger_object_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (ScaleObject, base, arranger_object_fields_schema),
   YAML_FIELD_INT (ScaleObject, schema_version),
   YAML_FIELD_INT (ScaleObject, index),
-  YAML_FIELD_MAPPING_PTR (
-    ScaleObject,
-    scale,
-    musical_scale_fields_schema),
+  YAML_FIELD_MAPPING_PTR (ScaleObject, scale, musical_scale_fields_schema),
 
   CYAML_FIELD_END
 };

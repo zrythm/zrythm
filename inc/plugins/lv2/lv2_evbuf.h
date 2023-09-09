@@ -62,10 +62,7 @@ typedef struct
    URIDs for atom:Chunk and atom:Sequence must be passed for LV2_EVBUF_ATOM.
 */
 LV2_Evbuf *
-lv2_evbuf_new (
-  uint32_t capacity,
-  LV2_URID atom_Chunk,
-  LV2_URID atom_Sequence);
+lv2_evbuf_new (uint32_t capacity, LV2_URID atom_Chunk, LV2_URID atom_Sequence);
 
 /**
    Free an event buffer allocated with lv2_evbuf_new.

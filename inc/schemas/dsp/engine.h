@@ -53,10 +53,7 @@ typedef struct AudioEngine_v1
 
 static const cyaml_schema_field_t engine_fields_schema_v1[] = {
   YAML_FIELD_INT (AudioEngine_v1, schema_version),
-  YAML_FIELD_ENUM (
-    AudioEngine_v1,
-    transport_type,
-    jack_transport_type_strings_v1),
+  YAML_FIELD_ENUM (AudioEngine_v1, transport_type, jack_transport_type_strings_v1),
   YAML_FIELD_INT (AudioEngine_v1, sample_rate),
   YAML_FIELD_FLOAT (AudioEngine_v1, frames_per_tick),
   YAML_FIELD_MAPPING_PTR (
@@ -67,18 +64,9 @@ static const cyaml_schema_field_t engine_fields_schema_v1[] = {
     AudioEngine_v1,
     midi_editor_manual_press,
     port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR (
-    AudioEngine_v1,
-    midi_in,
-    port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR (
-    AudioEngine_v1,
-    transport,
-    transport_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR (
-    AudioEngine_v1,
-    pool,
-    audio_pool_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (AudioEngine_v1, midi_in, port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (AudioEngine_v1, transport, transport_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (AudioEngine_v1, pool, audio_pool_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR (
     AudioEngine_v1,
     control_room,

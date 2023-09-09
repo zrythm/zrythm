@@ -56,8 +56,7 @@ ProgressCompletionType
 progress_info_get_completion_type (ProgressInfo * self)
 {
   g_return_val_if_fail (
-    self->status == PROGRESS_STATUS_COMPLETED,
-    PROGRESS_COMPLETED_HAS_ERROR);
+    self->status == PROGRESS_STATUS_COMPLETED, PROGRESS_COMPLETED_HAS_ERROR);
   return self->completion_type;
 }
 
@@ -69,8 +68,7 @@ progress_info_request_cancellation (ProgressInfo * self)
 {
   if (self->status == PROGRESS_STATUS_COMPLETED)
     {
-      g_warning (
-        "requested cancellation but task already completed");
+      g_warning ("requested cancellation but task already completed");
       return;
     }
 
@@ -134,10 +132,7 @@ progress_info_get_message (ProgressInfo * self)
  * To be called by the task caller.
  */
 void
-progress_info_get_progress (
-  ProgressInfo * self,
-  double *       progress,
-  char **        str)
+progress_info_get_progress (ProgressInfo * self, double * progress, char ** str)
 {
   g_mutex_lock (&self->mutex);
 

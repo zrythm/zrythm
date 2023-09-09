@@ -33,8 +33,7 @@ G_DECLARE_FINAL_TYPE (
   AUTOMATABLE_SELECTOR_POPOVER_WIDGET,
   GtkPopover)
 
-typedef struct _AutomatableSelectorButtonWidget
-  AutomatableSelectorButtonWidget;
+typedef struct _AutomatableSelectorButtonWidget AutomatableSelectorButtonWidget;
 
 /**
  * @addtogroup widgets
@@ -130,8 +129,7 @@ typedef struct _AutomatableSelectorPopoverWidget
  * Creates the popover.
  */
 AutomatableSelectorPopoverWidget *
-automatable_selector_popover_widget_new (
-  AutomationTrack * owner);
+automatable_selector_popover_widget_new (AutomationTrack * owner);
 
 /**
  * @}

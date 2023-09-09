@@ -53,10 +53,7 @@ typedef struct PianoRoll_v1
 static const cyaml_schema_field_t piano_roll_fields_schema_v1[] = {
   YAML_FIELD_INT (PianoRoll_v1, schema_version),
   YAML_FIELD_FLOAT (PianoRoll_v1, notes_zoom),
-  YAML_FIELD_ENUM (
-    PianoRoll_v1,
-    midi_modifier,
-    midi_modifier_strings_v1),
+  YAML_FIELD_ENUM (PianoRoll_v1, midi_modifier, midi_modifier_strings_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     PianoRoll_v1,
     editor_settings,

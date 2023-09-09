@@ -38,8 +38,7 @@ chord_preset_pack_new (const char * name, bool is_standard)
   self->schema_version = CHORD_PRESET_PACK_SCHEMA_VERSION;
   self->name = g_strdup (name);
   self->presets_size = 12;
-  self->presets =
-    object_new_n (self->presets_size, ChordPreset *);
+  self->presets = object_new_n (self->presets_size, ChordPreset *);
   self->is_standard = is_standard;
 
   return self;
@@ -50,13 +49,10 @@ chord_preset_pack_new (const char * name, bool is_standard)
  *   still responsible for @ref pset.
  */
 void
-chord_preset_pack_add_preset (
-  ChordPresetPack *   self,
-  const ChordPreset * pset)
+chord_preset_pack_add_preset (ChordPresetPack * self, const ChordPreset * pset)
 {
   array_double_size_if_full (
-    self->presets, self->num_presets, self->presets_size,
-    ChordPreset *);
+    self->presets, self->num_presets, self->presets_size, ChordPreset *);
 
   ChordPreset * clone = chord_preset_clone (pset);
   clone->pack = self;
@@ -65,9 +61,7 @@ chord_preset_pack_add_preset (
 }
 
 bool
-chord_preset_pack_contains_name (
-  const ChordPresetPack * self,
-  const char *            name)
+chord_preset_pack_contains_name (const ChordPresetPack * self, const char * name)
 {
   for (int i = 0; i < self->num_presets; i++)
     {
@@ -95,9 +89,7 @@ chord_preset_pack_contains_preset (
 }
 
 void
-chord_preset_pack_delete_preset (
-  ChordPresetPack * self,
-  ChordPreset *     pset)
+chord_preset_pack_delete_preset (ChordPresetPack * self, ChordPreset * pset)
 {
   array_delete (self->presets, self->num_presets, pset);
 
@@ -113,9 +105,7 @@ chord_preset_pack_get_name (const ChordPresetPack * self)
 }
 
 void
-chord_preset_pack_set_name (
-  ChordPresetPack * self,
-  const char *      name)
+chord_preset_pack_set_name (ChordPresetPack * self, const char * name)
 {
   object_free_w_func_and_null (g_free, self->name);
 
@@ -125,8 +115,7 @@ chord_preset_pack_set_name (
 }
 
 GMenuModel *
-chord_preset_pack_generate_context_menu (
-  const ChordPresetPack * self)
+chord_preset_pack_generate_context_menu (const ChordPresetPack * self)
 {
   if (self->is_standard)
     return NULL;
@@ -137,14 +126,12 @@ chord_preset_pack_generate_context_menu (
 
   /* rename */
   sprintf (action, "app.rename-chord-preset-pack::%p", self);
-  menuitem = z_gtk_create_menu_item (
-    _ ("_Rename"), "edit-rename", action);
+  menuitem = z_gtk_create_menu_item (_ ("_Rename"), "edit-rename", action);
   g_menu_append_item (menu, menuitem);
 
   /* delete */
   sprintf (action, "app.delete-chord-preset-pack::%p", self);
-  menuitem = z_gtk_create_menu_item (
-    _ ("_Delete"), "edit-delete", action);
+  menuitem = z_gtk_create_menu_item (_ ("_Delete"), "edit-delete", action);
   g_menu_append_item (menu, menuitem);
 
   return G_MENU_MODEL (menu);
@@ -153,12 +140,11 @@ chord_preset_pack_generate_context_menu (
 ChordPresetPack *
 chord_preset_pack_clone (const ChordPresetPack * src)
 {
-  ChordPresetPack * self =
-    chord_preset_pack_new (src->name, src->is_standard);
+  ChordPresetPack * self = chord_preset_pack_new (src->name, src->is_standard);
 
   self->presets = object_realloc_n (
-    self->presets, self->presets_size,
-    MAX (1, (size_t) src->num_presets), ChordPreset *);
+    self->presets, self->presets_size, MAX (1, (size_t) src->num_presets),
+    ChordPreset *);
   for (int i = 0; i < src->num_presets; i++)
     {
       self->presets[i] = chord_preset_clone (src->presets[i]);
@@ -175,8 +161,7 @@ chord_preset_pack_free (ChordPresetPack * self)
 
   for (int i = 0; i < self->num_presets; i++)
     {
-      object_free_w_func_and_null (
-        chord_preset_free, self->presets[i]);
+      object_free_w_func_and_null (chord_preset_free, self->presets[i]);
     }
   free (self->presets);
 

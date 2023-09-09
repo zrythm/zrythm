@@ -43,8 +43,7 @@ myaudio_cb (
           g_message ("XRUN in RtAudio");
         }
 
-      zix_ring_write (
-        self->audio_ring, in_buf, nframes * sizeof (float));
+      zix_ring_write (self->audio_ring, in_buf, nframes * sizeof (float));
 
 #  if 0
       for (unsigned int i = 0; i < nframes; i++)
@@ -77,8 +76,8 @@ rtaudio_device_new (
   self->id = device_id;
   self->port = port;
   self->channel_idx = channel_idx;
-  self->handle = engine_rtaudio_create_rtaudio (
-    AUDIO_ENGINE, AUDIO_ENGINE->audio_backend);
+  self->handle =
+    engine_rtaudio_create_rtaudio (AUDIO_ENGINE, AUDIO_ENGINE->audio_backend);
   if (!self->handle)
     {
       g_warning ("Failed to create RtAudio handle");
@@ -91,8 +90,7 @@ rtaudio_device_new (
     {
       int dev_count = rtaudio_device_count (self->handle);
       g_return_val_if_fail (dev_count >= 0, NULL);
-      for (unsigned int i = 0; i < (unsigned int) dev_count;
-           i++)
+      for (unsigned int i = 0; i < (unsigned int) dev_count; i++)
         {
           rtaudio_device_info_t cur_dev_nfo =
             rtaudio_get_device_info (self->handle, i);
@@ -105,8 +103,7 @@ rtaudio_device_new (
     }
   else
     {
-      dev_nfo =
-        rtaudio_get_device_info (self->handle, device_id);
+      dev_nfo = rtaudio_get_device_info (self->handle, device_id);
     }
   self->name = g_strdup (dev_nfo.name);
 
@@ -153,9 +150,9 @@ rtaudio_device_open (RtAudioDevice * self, int start)
   unsigned int buffer_size = AUDIO_ENGINE->block_length;
   /* input stream */
   int ret = rtaudio_open_stream (
-    self->handle, NULL, &stream_params, RTAUDIO_FORMAT_FLOAT32,
-    samplerate, &buffer_size, (rtaudio_cb_t) myaudio_cb, self,
-    &stream_opts, (rtaudio_error_cb_t) error_cb);
+    self->handle, NULL, &stream_params, RTAUDIO_FORMAT_FLOAT32, samplerate,
+    &buffer_size, (rtaudio_cb_t) myaudio_cb, self, &stream_opts,
+    (rtaudio_error_cb_t) error_cb);
   if (ret)
     {
       g_warning (

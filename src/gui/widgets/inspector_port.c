@@ -27,18 +27,14 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  InspectorPortWidget,
-  inspector_port_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (InspectorPortWidget, inspector_port_widget, GTK_TYPE_WIDGET)
 
 #ifdef HAVE_JACK
 static void
 on_jack_toggled (GtkWidget * widget, InspectorPortWidget * self)
 {
   port_set_expose_to_backend (
-    self->port,
-    gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget)));
+    self->port, gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget)));
 }
 #endif
 
@@ -55,42 +51,35 @@ get_port_str (InspectorPortWidget * self, Port * port, char * buf)
     || port->id.owner_type == PORT_OWNER_TYPE_FADER
     || port->id.owner_type == PORT_OWNER_TYPE_TRACK)
     {
-      int num_midi_mappings = midi_mappings_get_for_port (
-        MIDI_MAPPINGS, port, NULL);
+      int num_midi_mappings =
+        midi_mappings_get_for_port (MIDI_MAPPINGS, port, NULL);
 
       const char * star = (num_midi_mappings > 0 ? "*" : "");
-      char *       port_label =
-        g_markup_escape_text (port->id.label, -1);
-      char color_prefix[60];
-      sprintf (
-        color_prefix, "<span foreground=\"%s\">",
-        self->hex_color);
+      char *       port_label = g_markup_escape_text (port->id.label, -1);
+      char         color_prefix[60];
+      sprintf (color_prefix, "<span foreground=\"%s\">", self->hex_color);
       char color_suffix[40] = "</span>";
       if (port->id.flow == FLOW_INPUT)
         {
-          int num_unlocked_srcs =
-            port_get_num_unlocked_srcs (port);
+          int num_unlocked_srcs = port_get_num_unlocked_srcs (port);
           sprintf (
             buf,
             "%s <small><sup>"
             "%s%d%s%s"
             "</sup></small>",
-            port_label, color_prefix, num_unlocked_srcs, star,
-            color_suffix);
+            port_label, color_prefix, num_unlocked_srcs, star, color_suffix);
           self->last_num_connections = num_unlocked_srcs;
           return true;
         }
       else if (port->id.flow == FLOW_OUTPUT)
         {
-          int num_unlocked_dests =
-            port_get_num_unlocked_dests (port);
+          int num_unlocked_dests = port_get_num_unlocked_dests (port);
           sprintf (
             buf,
             "%s <small><sup>"
             "%s%d%s%s"
             "</sup></small>",
-            port_label, color_prefix, num_unlocked_dests,
-            star, color_suffix);
+            port_label, color_prefix, num_unlocked_dests, star, color_suffix);
           self->last_num_connections = num_unlocked_dests;
           return true;
         }
@@ -104,10 +93,7 @@ get_port_str (InspectorPortWidget * self, Port * port, char * buf)
 }
 
 static void
-show_context_menu (
-  InspectorPortWidget * self,
-  gdouble               x,
-  gdouble               y)
+show_context_menu (InspectorPortWidget * self, gdouble x, gdouble y)
 {
   GMenu *     menu = g_menu_new ();
   GMenuItem * menuitem;
@@ -117,8 +103,7 @@ show_context_menu (
   if (self->port->id.type == TYPE_CONTROL)
     {
       sprintf (tmp, "app.reset-control::%p", self->port);
-      menuitem =
-        z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
+      menuitem = z_gtk_create_menu_item (_ ("Reset"), NULL, tmp);
       g_menu_append_item (menu, menuitem);
 
       sprintf (tmp, "app.bind-midi-cc::%p", self->port);
@@ -127,12 +112,10 @@ show_context_menu (
     }
 
   sprintf (tmp, "app.port-view-info::%p", self->port);
-  menuitem =
-    z_gtk_create_menu_item (_ ("View info"), NULL, tmp);
+  menuitem = z_gtk_create_menu_item (_ ("View info"), NULL, tmp);
   g_menu_append_item (menu, menuitem);
 
-  z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+  z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
 }
 
 static void
@@ -152,9 +135,7 @@ on_right_click (
 }
 
 static void
-on_popover_closed (
-  GtkPopover *          popover,
-  InspectorPortWidget * self)
+on_popover_closed (GtkPopover * popover, InspectorPortWidget * self)
 {
   get_port_str (self, self->port, self->bar_slider->prefix);
 }
@@ -198,8 +179,7 @@ get_port_value (InspectorPortWidget * self)
     case TYPE_EVENT:
       {
         float val, max;
-        meter_get_value (
-          self->meter, AUDIO_VALUE_FADER, &val, &max);
+        meter_get_value (self->meter, AUDIO_VALUE_FADER, &val, &max);
         return val;
       }
       break;
@@ -209,8 +189,7 @@ get_port_value (InspectorPortWidget * self)
       }
       break;
     case TYPE_CONTROL:
-      return control_port_real_val_to_normalized (
-        port, port->unsnapped_control);
+      return control_port_real_val_to_normalized (port, port->unsnapped_control);
       break;
     default:
       break;
@@ -227,16 +206,14 @@ get_snapped_port_value (InspectorPortWidget * self)
       /* optimization */
       if (
         G_LIKELY (self->last_port_val_set)
-        && math_floats_equal (
-          self->last_real_val, port->control))
+        && math_floats_equal (self->last_real_val, port->control))
         {
           return self->last_normalized_val;
         }
 
       self->last_real_val = port->control;
       self->last_normalized_val =
-        control_port_real_val_to_normalized (
-          port, port->control);
+        control_port_real_val_to_normalized (port, port->control);
       self->last_port_val_set = true;
       return self->last_normalized_val;
     }
@@ -250,8 +227,7 @@ static void
 set_port_value (InspectorPortWidget * self, float val)
 {
   port_set_control_value (
-    self->port,
-    control_port_normalized_val_to_real (self->port, val),
+    self->port, control_port_normalized_val_to_real (self->port, val),
     F_NOT_NORMALIZED, F_PUBLISH_EVENTS);
 }
 
@@ -279,13 +255,12 @@ val_change_finished (InspectorPortWidget * self, float val)
 
       GError * err = NULL;
       bool     ret = port_action_perform (
-        PORT_ACTION_SET_CONTROL_VAL, &self->port->id, val,
-        F_NORMALIZED, &err);
+        PORT_ACTION_SET_CONTROL_VAL, &self->port->id, val, F_NORMALIZED, &err);
       if (!ret)
         {
           HANDLE_ERROR (
-            err, _ ("Failed to set control %s to %f"),
-            self->port->id.label, (double) val);
+            err, _ ("Failed to set control %s to %f"), self->port->id.label,
+            (double) val);
         }
     }
 }
@@ -310,8 +285,7 @@ bar_slider_tick_cb (
     }
   if (num_connections != self->last_num_connections)
     {
-      get_port_str (
-        self, self->port, self->bar_slider->prefix);
+      get_port_str (self, self->port, self->bar_slider->prefix);
     }
 
   /* if enough time passed, try to update the
@@ -327,8 +301,8 @@ bar_slider_tick_cb (
       char * comment_escaped = NULL;
       if (self->port->id.comment)
         {
-          comment_escaped = g_markup_printf_escaped (
-            "<i>%s</i>\n", self->port->id.comment);
+          comment_escaped =
+            g_markup_printf_escaped ("<i>%s</i>\n", self->port->id.comment);
         }
       const char * src_or_dest_str =
         self->port->id.flow == FLOW_INPUT
@@ -342,21 +316,18 @@ bar_slider_tick_cb (
         "%s: <b>%f</b>\n"
         "%s: <b>%f</b> | "
         "%s: <b>%f</b>",
-        full_designation_escaped,
-        comment_escaped ? comment_escaped : "",
+        full_designation_escaped, comment_escaped ? comment_escaped : "",
         src_or_dest_str,
         self->port->id.flow == FLOW_INPUT
           ? self->port->num_srcs
           : self->port->num_dests,
-        _ ("Current val"), (double) get_port_value (self),
-        _ ("Min"), (double) self->minf, _ ("Max"),
-        (double) self->maxf);
+        _ ("Current val"), (double) get_port_value (self), _ ("Min"),
+        (double) self->minf, _ ("Max"), (double) self->maxf);
       g_free (full_designation_escaped);
       g_free_and_null (comment_escaped);
 
       /* if the tooltip changed, update it */
-      const char * cur_tooltip =
-        gtk_widget_get_tooltip_markup (widget);
+      const char * cur_tooltip = gtk_widget_get_tooltip_markup (widget);
       if (!string_is_equal (cur_tooltip, str))
         {
           /* FIXME reenable when GTK bug is fixed */
@@ -375,8 +346,7 @@ bar_slider_tick_cb (
 InspectorPortWidget *
 inspector_port_widget_new (Port * port)
 {
-  InspectorPortWidget * self =
-    g_object_new (INSPECTOR_PORT_WIDGET_TYPE, NULL);
+  InspectorPortWidget * self = g_object_new (INSPECTOR_PORT_WIDGET_TYPE, NULL);
 
   self->port = port;
   self->meter = meter_new_for_port (port);
@@ -409,23 +379,18 @@ inspector_port_widget_new (Port * port)
           is_control = 1;
         }
       self->bar_slider = _bar_slider_widget_new (
-        BAR_SLIDER_TYPE_NORMAL,
-        (GenericFloatGetter) get_port_value,
+        BAR_SLIDER_TYPE_NORMAL, (GenericFloatGetter) get_port_value,
         (GenericFloatSetter) set_port_value, (void *) self,
         /* use normalized vals for controls */
-        is_control ? 0.f : minf, is_control ? 1.f : maxf, -1,
-        20, is_control ? 0.f : zerof, 0, 2,
-        UI_DRAG_MODE_CURSOR, str, "");
+        is_control ? 0.f : minf, is_control ? 1.f : maxf, -1, 20,
+        is_control ? 0.f : zerof, 0, 2, UI_DRAG_MODE_CURSOR, str, "");
       self->bar_slider->snapped_getter =
         (GenericFloatGetter) get_snapped_port_value;
       self->bar_slider->show_value = 0;
       self->bar_slider->editable = editable;
-      self->bar_slider->init_setter =
-        (GenericFloatSetter) set_init_port_value;
-      self->bar_slider->end_setter =
-        (GenericFloatSetter) val_change_finished;
-      gtk_overlay_set_child (
-        self->overlay, GTK_WIDGET (self->bar_slider));
+      self->bar_slider->init_setter = (GenericFloatSetter) set_init_port_value;
+      self->bar_slider->end_setter = (GenericFloatSetter) val_change_finished;
+      gtk_overlay_set_child (self->overlay, GTK_WIDGET (self->bar_slider));
       self->minf = minf;
       self->maxf = maxf;
       self->zerof = zerof;
@@ -433,42 +398,31 @@ inspector_port_widget_new (Port * port)
 
       /* keep drawing the bar slider */
       gtk_widget_add_tick_callback (
-        GTK_WIDGET (self->bar_slider),
-        (GtkTickCallback) bar_slider_tick_cb, self, NULL);
+        GTK_WIDGET (self->bar_slider), (GtkTickCallback) bar_slider_tick_cb,
+        self, NULL);
     }
 
     /* jack button */
 #ifdef HAVE_JACK
   if (AUDIO_ENGINE->audio_backend == AUDIO_BACKEND_JACK)
     {
-      if (
-        port->id.type == TYPE_AUDIO
-        || port->id.type == TYPE_EVENT)
+      if (port->id.type == TYPE_AUDIO || port->id.type == TYPE_EVENT)
         {
-          self->jack = z_gtk_toggle_button_new_with_icon (
-            "expose-to-jack");
-          gtk_widget_set_halign (
-            GTK_WIDGET (self->jack), GTK_ALIGN_START);
-          gtk_widget_set_valign (
-            GTK_WIDGET (self->jack), GTK_ALIGN_CENTER);
-          gtk_widget_set_margin_start (
-            GTK_WIDGET (self->jack), 2);
-          gtk_widget_add_css_class (
-            GTK_WIDGET (self->jack), "mini-button");
+          self->jack = z_gtk_toggle_button_new_with_icon ("expose-to-jack");
+          gtk_widget_set_halign (GTK_WIDGET (self->jack), GTK_ALIGN_START);
+          gtk_widget_set_valign (GTK_WIDGET (self->jack), GTK_ALIGN_CENTER);
+          gtk_widget_set_margin_start (GTK_WIDGET (self->jack), 2);
+          gtk_widget_add_css_class (GTK_WIDGET (self->jack), "mini-button");
           gtk_widget_set_tooltip_text (
-            GTK_WIDGET (self->jack),
-            _ ("Expose port to JACK"));
-          gtk_overlay_add_overlay (
-            self->overlay, GTK_WIDGET (self->jack));
-          if (
-            port->data
-            && port->internal_type == INTERNAL_JACK_PORT)
+            GTK_WIDGET (self->jack), _ ("Expose port to JACK"));
+          gtk_overlay_add_overlay (self->overlay, GTK_WIDGET (self->jack));
+          if (port->data && port->internal_type == INTERNAL_JACK_PORT)
             {
               gtk_toggle_button_set_active (self->jack, 1);
             }
           g_signal_connect (
-            G_OBJECT (self->jack), "toggled",
-            G_CALLBACK (on_jack_toggled), self);
+            G_OBJECT (self->jack), "toggled", G_CALLBACK (on_jack_toggled),
+            self);
 
           /* add some margin to clearly show the jack
            * button */
@@ -481,8 +435,7 @@ inspector_port_widget_new (Port * port)
     }
 #endif
 
-  self->double_click_gesture =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  self->double_click_gesture = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   g_signal_connect (
     G_OBJECT (self->double_click_gesture), "pressed",
     G_CALLBACK (on_double_click), self);
@@ -490,11 +443,9 @@ inspector_port_widget_new (Port * port)
     GTK_WIDGET (self->bar_slider),
     GTK_EVENT_CONTROLLER (self->double_click_gesture));
 
-  self->right_click_gesture =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  self->right_click_gesture = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
-    GTK_GESTURE_SINGLE (self->right_click_gesture),
-    GDK_BUTTON_SECONDARY);
+    GTK_GESTURE_SINGLE (self->right_click_gesture), GDK_BUTTON_SECONDARY);
   g_signal_connect (
     G_OBJECT (self->right_click_gesture), "pressed",
     G_CALLBACK (on_right_click), self);
@@ -513,8 +464,7 @@ finalize (InspectorPortWidget * self)
   if (self->meter)
     meter_free (self->meter);
 
-  G_OBJECT_CLASS (inspector_port_widget_parent_class)
-    ->finalize (G_OBJECT (self));
+  G_OBJECT_CLASS (inspector_port_widget_parent_class)->finalize (G_OBJECT (self));
 }
 
 static void
@@ -523,8 +473,7 @@ dispose (InspectorPortWidget * self)
   gtk_widget_unparent (GTK_WIDGET (self->overlay));
   gtk_widget_unparent (GTK_WIDGET (self->popover_menu));
 
-#define GET_REFCOUNT \
-  (((ZGObjectImpl *) self->connections_popover)->ref_count)
+#define GET_REFCOUNT (((ZGObjectImpl *) self->connections_popover)->ref_count)
 
   int refcount = (int) GET_REFCOUNT;
   /*g_debug ("refcount: %d", refcount);*/
@@ -543,34 +492,28 @@ dispose (InspectorPortWidget * self)
 
 #undef GET_REFCOUNT
 
-  G_OBJECT_CLASS (inspector_port_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (inspector_port_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
-inspector_port_widget_class_init (
-  InspectorPortWidgetClass * klass)
+inspector_port_widget_class_init (InspectorPortWidgetClass * klass)
 {
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;
   oklass->dispose = (GObjectFinalizeFunc) dispose;
 
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
-  gtk_widget_class_set_layout_manager_type (
-    wklass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_layout_manager_type (wklass, GTK_TYPE_BIN_LAYOUT);
 }
 
 static void
 inspector_port_widget_init (InspectorPortWidget * self)
 {
   self->overlay = GTK_OVERLAY (gtk_overlay_new ());
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->overlay), GTK_WIDGET (self));
+  gtk_widget_set_parent (GTK_WIDGET (self->overlay), GTK_WIDGET (self));
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   self->connections_popover =
     port_connections_popover_widget_new (GTK_WIDGET (self));
@@ -579,6 +522,5 @@ inspector_port_widget_init (InspectorPortWidget * self)
   /*g_object_ref_sink (self->connections_popover);*/
   /*g_object_ref (self->connections_popover);*/
 
-  ui_gdk_rgba_to_hex (
-    &UI_COLORS->bright_orange, self->hex_color);
+  ui_gdk_rgba_to_hex (&UI_COLORS->bright_orange, self->hex_color);
 }

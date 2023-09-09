@@ -48,8 +48,7 @@
  * Used when alt was unpressed.
  */
 void
-timeline_arranger_widget_set_cut_lines_visible (
-  ArrangerWidget * self)
+timeline_arranger_widget_set_cut_lines_visible (ArrangerWidget * self)
 {
 #if 0
   ArrangerObject * obj =
@@ -91,18 +90,14 @@ timeline_arranger_widget_set_cut_lines_visible (
 }
 
 TrackLane *
-timeline_arranger_widget_get_track_lane_at_y (
-  ArrangerWidget * self,
-  double           y)
+timeline_arranger_widget_get_track_lane_at_y (ArrangerWidget * self, double y)
 {
-  Track * track =
-    timeline_arranger_widget_get_track_at_y (self, y);
+  Track * track = timeline_arranger_widget_get_track_at_y (self, y);
   if (!track || !track->lanes_visible)
     return NULL;
 
   /* y local to track */
-  int y_local =
-    track_widget_get_local_y (track->widget, self, (int) y);
+  int y_local = track_widget_get_local_y (track->widget, self, (int) y);
 
   TrackLane * lane;
   for (int j = 0; j < track->num_lanes; j++)
@@ -117,9 +112,7 @@ timeline_arranger_widget_get_track_lane_at_y (
 }
 
 Track *
-timeline_arranger_widget_get_track_at_y (
-  ArrangerWidget * self,
-  double           y)
+timeline_arranger_widget_get_track_at_y (ArrangerWidget * self, double y)
 {
   Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -142,11 +135,12 @@ timeline_arranger_widget_get_track_at_y (
           continue;
         }
 
-      if (ui_is_child_hit (
-            self->is_pinned
-              ? GTK_WIDGET (self)
-              : GTK_WIDGET (MW_TRACKLIST->unpinned_box),
-            GTK_WIDGET (track->widget), 0, 1, 0, y, 0, 1))
+      if (
+        ui_is_child_hit (
+          self->is_pinned
+            ? GTK_WIDGET (self)
+            : GTK_WIDGET (MW_TRACKLIST->unpinned_box),
+          GTK_WIDGET (track->widget), 0, 1, 0, y, 0, 1))
         return track;
     }
 
@@ -157,18 +151,14 @@ timeline_arranger_widget_get_track_at_y (
  * Returns the hit AutomationTrack at y.
  */
 AutomationTrack *
-timeline_arranger_widget_get_at_at_y (
-  ArrangerWidget * self,
-  double           y)
+timeline_arranger_widget_get_at_at_y (ArrangerWidget * self, double y)
 {
-  Track * track =
-    timeline_arranger_widget_get_track_at_y (self, y);
+  Track * track = timeline_arranger_widget_get_track_at_y (self, y);
   if (!track)
     return NULL;
 
   /* y local to track */
-  int y_local =
-    track_widget_get_local_y (track->widget, self, (int) y);
+  int y_local = track_widget_get_local_y (track->widget, self, (int) y);
 
   return track_widget_get_at_at_y (track->widget, y_local);
 }
@@ -195,8 +185,7 @@ timeline_arranger_widget_create_region (
   const Position *  pos,
   GError **         error)
 {
-  bool autofilling =
-    self->action == UI_OVERLAY_ACTION_AUTOFILLING;
+  bool autofilling = self->action == UI_OVERLAY_ACTION_AUTOFILLING;
 
   /* if autofilling, the action is already set */
   if (!autofilling)
@@ -224,14 +213,13 @@ timeline_arranger_widget_create_region (
     case REGION_TYPE_AUDIO:
       break;
     case REGION_TYPE_CHORD:
-      region = chord_region_new (
-        pos, &end_pos, P_CHORD_TRACK->num_chord_regions);
+      region =
+        chord_region_new (pos, &end_pos, P_CHORD_TRACK->num_chord_regions);
       break;
     case REGION_TYPE_AUTOMATION:
       g_return_val_if_fail (at, false);
       region = automation_region_new (
-        pos, &end_pos, track_get_name_hash (track), at->index,
-        at->num_regions);
+        pos, &end_pos, track_get_name_hash (track), at->index, at->num_regions);
       break;
     }
 
@@ -247,9 +235,7 @@ timeline_arranger_widget_create_region (
       {
         success = track_add_region (
           track, region, NULL,
-          lane
-            ? lane->pos
-            : (track->num_lanes == 1 ? 0 : track->num_lanes - 2),
+          lane ? lane->pos : (track->num_lanes == 1 ? 0 : track->num_lanes - 2),
           F_GEN_NAME, F_PUBLISH_EVENTS, &err);
       }
       break;
@@ -257,20 +243,17 @@ timeline_arranger_widget_create_region (
       break;
     case REGION_TYPE_CHORD:
       success = track_add_region (
-        track, region, NULL, -1, F_GEN_NAME, F_PUBLISH_EVENTS,
-        &err);
+        track, region, NULL, -1, F_GEN_NAME, F_PUBLISH_EVENTS, &err);
       break;
     case REGION_TYPE_AUTOMATION:
       success = track_add_region (
-        track, region, at, -1, F_GEN_NAME, F_PUBLISH_EVENTS,
-        &err);
+        track, region, at, -1, F_GEN_NAME, F_PUBLISH_EVENTS, &err);
       break;
     }
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err, "Failed to add region to track %s",
-        track->name);
+        error, err, "Failed to add region to track %s", track->name);
       return false;
     }
 
@@ -280,11 +263,9 @@ timeline_arranger_widget_create_region (
   /*r_obj, 1);*/
 
   arranger_object_set_position (
-    r_obj, &r_obj->end_pos, ARRANGER_OBJECT_POSITION_TYPE_END,
-    F_NO_VALIDATE);
+    r_obj, &r_obj->end_pos, ARRANGER_OBJECT_POSITION_TYPE_END, F_NO_VALIDATE);
   arranger_object_select (
-    r_obj, F_SELECT, autofilling ? F_APPEND : F_NO_APPEND,
-    F_NO_PUBLISH_EVENTS);
+    r_obj, F_SELECT, autofilling ? F_APPEND : F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
   return true;
 }
@@ -304,8 +285,7 @@ timeline_arranger_widget_create_chord_or_scale (
   double           y,
   const Position * pos)
 {
-  int track_height =
-    gtk_widget_get_height (GTK_WIDGET (track->widget));
+  int track_height = gtk_widget_get_height (GTK_WIDGET (track->widget));
 
 #if 0
   graphene_point_t wpt = GRAPHENE_POINT_INIT (0.f, 0.f);
@@ -322,12 +302,11 @@ timeline_arranger_widget_create_chord_or_scale (
   else
     {
       GError * err = NULL;
-      bool success = timeline_arranger_widget_create_region (
+      bool     success = timeline_arranger_widget_create_region (
         self, REGION_TYPE_CHORD, track, NULL, NULL, pos, &err);
       if (!success)
         {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to create region"));
+          HANDLE_ERROR (err, "%s", _ ("Failed to create region"));
           return;
         }
     }
@@ -350,8 +329,7 @@ timeline_arranger_widget_create_scale (
   self->action = UI_OVERLAY_ACTION_CREATING_MOVING;
 
   /* create a new scale */
-  MusicalScale * descr =
-    musical_scale_new (SCALE_AEOLIAN, NOTE_A);
+  MusicalScale *   descr = musical_scale_new (SCALE_AEOLIAN, NOTE_A);
   ScaleObject *    scale = scale_object_new (descr);
   ArrangerObject * scale_obj = (ArrangerObject *) scale;
 
@@ -367,8 +345,7 @@ timeline_arranger_widget_create_scale (
   arranger_object_pos_setter (scale_obj, pos);
 
   EVENTS_PUSH (ET_ARRANGER_OBJECT_CREATED, scale);
-  arranger_object_select (
-    scale_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
+  arranger_object_select (scale_obj, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 }
 
 /**
@@ -412,17 +389,13 @@ timeline_arranger_widget_create_marker (
  * and sets it.
  */
 void
-timeline_arranger_widget_set_select_type (
-  ArrangerWidget * self,
-  double           y)
+timeline_arranger_widget_set_select_type (ArrangerWidget * self, double y)
 {
-  Track * track =
-    timeline_arranger_widget_get_track_at_y (self, y);
+  Track * track = timeline_arranger_widget_get_track_at_y (self, y);
 
   if (track)
     {
-      if (track_widget_is_cursor_in_range_select_half (
-            track->widget, y))
+      if (track_widget_is_cursor_in_range_select_half (track->widget, y))
         {
           /* set resizing range flags */
           self->resizing_range = true;
@@ -465,8 +438,7 @@ snap_region_l (
   Position *       new_pos,
   int              dry_run)
 {
-  ArrangerObjectResizeType type =
-    ARRANGER_OBJECT_RESIZE_NORMAL;
+  ArrangerObjectResizeType type = ARRANGER_OBJECT_RESIZE_NORMAL;
   if ACTION_IS (RESIZING_L_LOOP)
     type = ARRANGER_OBJECT_RESIZE_LOOP;
   else if ACTION_IS (RESIZING_L_FADE)
@@ -482,11 +454,9 @@ snap_region_l (
     SNAP_GRID_ANY_SNAP (self->snap_grid) && !self->shift_held
     && type != ARRANGER_OBJECT_RESIZE_FADE)
     {
-      Track * track =
-        arranger_object_get_track ((ArrangerObject *) region);
+      Track * track = arranger_object_get_track ((ArrangerObject *) region);
       position_snap (
-        &self->earliest_obj_start_pos, new_pos, track, NULL,
-        self->snap_grid);
+        &self->earliest_obj_start_pos, new_pos, track, NULL, self->snap_grid);
     }
 
   ArrangerObject * r_obj = (ArrangerObject *) region;
@@ -509,8 +479,7 @@ snap_region_l (
       if (type == ARRANGER_OBJECT_RESIZE_FADE)
         {
           is_valid = arranger_object_validate_pos (
-            r_obj, new_pos,
-            ARRANGER_OBJECT_POSITION_TYPE_FADE_IN);
+            r_obj, new_pos, ARRANGER_OBJECT_POSITION_TYPE_FADE_IN);
           diff =
             position_to_ticks (new_pos)
             - position_to_ticks (&r_obj->fade_in_pos);
@@ -518,22 +487,18 @@ snap_region_l (
       else
         {
           is_valid = arranger_object_validate_pos (
-            r_obj, new_pos,
-            ARRANGER_OBJECT_POSITION_TYPE_START);
-          diff =
-            position_to_ticks (new_pos)
-            - position_to_ticks (&r_obj->pos);
+            r_obj, new_pos, ARRANGER_OBJECT_POSITION_TYPE_START);
+          diff = position_to_ticks (new_pos) - position_to_ticks (&r_obj->pos);
         }
 
       if (is_valid)
         {
           GError * err = NULL;
-          bool     success = arranger_object_resize (
-            r_obj, true, type, diff, true, &err);
+          bool     success =
+            arranger_object_resize (r_obj, true, type, diff, true, &err);
           if (!success)
             {
-              HANDLE_ERROR_LITERAL (
-                err, "Failed to resize object");
+              HANDLE_ERROR_LITERAL (err, "Failed to resize object");
               return -1;
             }
         }
@@ -576,9 +541,7 @@ timeline_arranger_widget_snap_regions_l (
     }
   else
     {
-      delta =
-        position_to_ticks (pos)
-        - position_to_ticks (&start_r_obj->pos);
+      delta = position_to_ticks (pos) - position_to_ticks (&start_r_obj->pos);
     }
 
   /* new start pos for each region, calculated by
@@ -635,8 +598,7 @@ snap_region_r (
   Position *       new_pos,
   int              dry_run)
 {
-  ArrangerObjectResizeType type =
-    ARRANGER_OBJECT_RESIZE_NORMAL;
+  ArrangerObjectResizeType type = ARRANGER_OBJECT_RESIZE_NORMAL;
   if ACTION_IS (RESIZING_R_LOOP)
     type = ARRANGER_OBJECT_RESIZE_LOOP;
   else if ACTION_IS (RESIZING_R_FADE)
@@ -652,22 +614,18 @@ snap_region_r (
     SNAP_GRID_ANY_SNAP (self->snap_grid) && !self->shift_held
     && type != ARRANGER_OBJECT_RESIZE_FADE)
     {
-      Track * track =
-        arranger_object_get_track ((ArrangerObject *) region);
+      Track * track = arranger_object_get_track ((ArrangerObject *) region);
       position_snap (
-        &self->earliest_obj_start_pos, new_pos, track, NULL,
-        self->snap_grid);
+        &self->earliest_obj_start_pos, new_pos, track, NULL, self->snap_grid);
     }
 
   ArrangerObject * r_obj = (ArrangerObject *) region;
   if (type == ARRANGER_OBJECT_RESIZE_FADE)
     {
       Position tmp;
-      position_from_ticks (
-        &tmp, r_obj->end_pos.ticks - r_obj->pos.ticks);
+      position_from_ticks (&tmp, r_obj->end_pos.ticks - r_obj->pos.ticks);
       if (
-        position_is_before_or_equal (
-          new_pos, &r_obj->fade_in_pos)
+        position_is_before_or_equal (new_pos, &r_obj->fade_in_pos)
         || position_is_after (new_pos, &tmp))
         return -1;
     }
@@ -684,8 +642,7 @@ snap_region_r (
       if (type == ARRANGER_OBJECT_RESIZE_FADE)
         {
           is_valid = arranger_object_validate_pos (
-            r_obj, new_pos,
-            ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT);
+            r_obj, new_pos, ARRANGER_OBJECT_POSITION_TYPE_FADE_OUT);
           diff =
             position_to_ticks (new_pos)
             - position_to_ticks (&r_obj->fade_out_pos);
@@ -695,20 +652,17 @@ snap_region_r (
           is_valid = arranger_object_validate_pos (
             r_obj, new_pos, ARRANGER_OBJECT_POSITION_TYPE_END);
           diff =
-            position_to_ticks (new_pos)
-            - position_to_ticks (&r_obj->end_pos);
+            position_to_ticks (new_pos) - position_to_ticks (&r_obj->end_pos);
         }
 
       if (is_valid)
         {
           GError * err = NULL;
           bool     success = arranger_object_resize (
-            r_obj, Z_F_NOT_LEFT, type, diff,
-            Z_F_DURING_UI_ACTION, &err);
+            r_obj, Z_F_NOT_LEFT, type, diff, Z_F_DURING_UI_ACTION, &err);
           if (!success)
             {
-              HANDLE_ERROR_LITERAL (
-                err, "Failed to resize object");
+              HANDLE_ERROR_LITERAL (err, "Failed to resize object");
               return -1;
             }
 
@@ -716,16 +670,13 @@ snap_region_r (
            * appropriately */
           if (self->action == UI_OVERLAY_ACTION_CREATING_RESIZING_R)
             {
-              double full_size =
-                arranger_object_get_length_in_ticks (r_obj);
+              double   full_size = arranger_object_get_length_in_ticks (r_obj);
               Position tmp;
-              position_set_to_pos (
-                &tmp, &r_obj->loop_start_pos);
+              position_set_to_pos (&tmp, &r_obj->loop_start_pos);
               position_add_ticks (&tmp, full_size);
 
               /* use the setters */
-              arranger_object_loop_end_pos_setter (
-                r_obj, &tmp);
+              arranger_object_loop_end_pos_setter (r_obj, &tmp);
             }
         }
     }
@@ -768,8 +719,7 @@ timeline_arranger_widget_snap_regions_r (
   else
     {
       delta =
-        position_to_ticks (pos)
-        - position_to_ticks (&start_r_obj->end_pos);
+        position_to_ticks (pos) - position_to_ticks (&start_r_obj->end_pos);
     }
 
   /* new end pos for each region, calculated by
@@ -802,29 +752,23 @@ timeline_arranger_widget_snap_regions_r (
     }
 
   EVENTS_PUSH (
-    ET_ARRANGER_SELECTIONS_CHANGED,
-    (ArrangerSelections *) TL_SELECTIONS);
+    ET_ARRANGER_SELECTIONS_CHANGED, (ArrangerSelections *) TL_SELECTIONS);
 
   return 0;
 }
 
 void
-timeline_arranger_widget_snap_range_r (
-  ArrangerWidget * self,
-  Position *       pos)
+timeline_arranger_widget_snap_range_r (ArrangerWidget * self, Position * pos)
 {
   if (self->resizing_range_start)
     {
       /* set range 1 at current point */
-      ui_px_to_pos_timeline (
-        self->start_x, &TRANSPORT->range_1, 1);
+      ui_px_to_pos_timeline (self->start_x, &TRANSPORT->range_1, 1);
       if (SNAP_GRID_ANY_SNAP (self->snap_grid) && !self->shift_held)
         {
-          position_snap_simple (
-            &TRANSPORT->range_1, SNAP_GRID_TIMELINE);
+          position_snap_simple (&TRANSPORT->range_1, SNAP_GRID_TIMELINE);
         }
-      position_set_to_pos (
-        &TRANSPORT->range_2, &TRANSPORT->range_1);
+      position_set_to_pos (&TRANSPORT->range_2, &TRANSPORT->range_1);
 
       MW_TIMELINE->resizing_range_start = 0;
     }
@@ -857,14 +801,12 @@ create_fade_preset_menu (
       sprintf (
         tmp, "app.set-region-fade-%s-algorithm-preset::%s",
         fade_in ? "in" : "out", pset->id);
-      GMenuItem * menuitem =
-        z_gtk_create_menu_item (pset->label, NULL, tmp);
+      GMenuItem * menuitem = z_gtk_create_menu_item (pset->label, NULL, tmp);
       g_menu_append_item (section, menuitem);
     }
   g_ptr_array_unref (psets);
 
-  g_menu_append_section (
-    menu, _ ("Fade Preset"), G_MENU_MODEL (section));
+  g_menu_append_section (menu, _ ("Fade Preset"), G_MENU_MODEL (section));
 }
 
 #if 0
@@ -1002,9 +944,8 @@ timeline_arranger_widget_gen_context_menu (
     }
   GMenuItem * menuitem;
 
-  ArrangerObject * obj =
-    arranger_widget_get_hit_arranger_object (
-      (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_ALL, x, y);
+  ArrangerObject * obj = arranger_widget_get_hit_arranger_object (
+    (ArrangerWidget *) self, ARRANGER_OBJECT_TYPE_ALL, x, y);
 
   if (obj)
     {
@@ -1036,31 +977,26 @@ timeline_arranger_widget_gen_context_menu (
 
       char str[100];
       sprintf (str, "app.arranger-object-view-info::%p", obj);
-      menuitem =
-        z_gtk_create_menu_item (_ ("View info"), NULL, str);
+      menuitem = z_gtk_create_menu_item (_ ("View info"), NULL, str);
       g_menu_append_item (edit_submenu, menuitem);
 
-      g_menu_append_section (
-        menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
+      g_menu_append_section (menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
 
-      if (timeline_selections_contains_only_regions (
-            TL_SELECTIONS))
+      if (timeline_selections_contains_only_regions (TL_SELECTIONS))
         {
           if (arranger_object_get_muted (obj, false))
             {
-              menuitem = CREATE_UNMUTE_MENU_ITEM (
-                "app.mute-selection::timeline");
+              menuitem =
+                CREATE_UNMUTE_MENU_ITEM ("app.mute-selection::timeline");
             }
           else
             {
-              menuitem = CREATE_MUTE_MENU_ITEM (
-                "app.mute-selection::timeline");
+              menuitem = CREATE_MUTE_MENU_ITEM ("app.mute-selection::timeline");
             }
           g_menu_append_item (menu, menuitem);
 
           menuitem = z_gtk_create_menu_item (
-            _ ("Change Color..."), NULL,
-            "app.change-region-color");
+            _ ("Change Color..."), NULL, "app.change-region-color");
           g_menu_append_item (menu, menuitem);
 
           menuitem = z_gtk_create_menu_item (
@@ -1075,27 +1011,20 @@ timeline_arranger_widget_gen_context_menu (
               if (TL_SELECTIONS->num_regions == 1)
                 {
                   char tmp[200];
-                  sprintf (
-                    tmp, "app.detect-bpm::%p",
-                    TL_SELECTIONS->regions[0]);
-                  menuitem = z_gtk_create_menu_item (
-                    _ ("Detect BPM"), NULL, tmp);
-                  g_menu_append_item (
-                    audio_regions_submenu, menuitem);
+                  sprintf (tmp, "app.detect-bpm::%p", TL_SELECTIONS->regions[0]);
+                  menuitem =
+                    z_gtk_create_menu_item (_ ("Detect BPM"), NULL, tmp);
+                  g_menu_append_item (audio_regions_submenu, menuitem);
                   /* create fade menus */
-                  if (arranger_object_is_fade_in (
-                        obj, local_x, local_y, 0, 0))
+                  if (arranger_object_is_fade_in (obj, local_x, local_y, 0, 0))
                     {
                       create_fade_preset_menu (
-                        self, audio_regions_submenu, obj,
-                        true);
+                        self, audio_regions_submenu, obj, true);
                     }
-                  if (arranger_object_is_fade_out (
-                        obj, local_x, local_y, 0, 0))
+                  if (arranger_object_is_fade_out (obj, local_x, local_y, 0, 0))
                     {
                       create_fade_preset_menu (
-                        self, audio_regions_submenu, obj,
-                        false);
+                        self, audio_regions_submenu, obj, false);
                     }
 
 #if 0
@@ -1105,11 +1034,11 @@ timeline_arranger_widget_gen_context_menu (
 #endif
                 }
 
-              GMenu * region_functions_subsubmenu =
-                g_menu_new ();
+              GMenu * region_functions_subsubmenu = g_menu_new ();
 
-              for (int i = AUDIO_FUNCTION_INVERT;
-                   i < AUDIO_FUNCTION_CUSTOM_PLUGIN; i++)
+              for (
+                int i = AUDIO_FUNCTION_INVERT; i < AUDIO_FUNCTION_CUSTOM_PLUGIN;
+                i++)
                 {
                   if (
                     i == AUDIO_FUNCTION_NORMALIZE_RMS
@@ -1118,22 +1047,17 @@ timeline_arranger_widget_gen_context_menu (
 
                   char tmp[200];
                   sprintf (tmp, "app.timeline-function");
-                  GMenuItem * submenu_item =
-                    z_gtk_create_menu_item (
-                      _ (audio_function_type_to_string (i)),
-                      NULL, tmp);
+                  GMenuItem * submenu_item = z_gtk_create_menu_item (
+                    _ (audio_function_type_to_string (i)), NULL, tmp);
                   g_menu_item_set_action_and_target_value (
-                    submenu_item, tmp,
-                    g_variant_new_int32 (i));
-                  g_menu_append_item (
-                    region_functions_subsubmenu, submenu_item);
+                    submenu_item, tmp, g_variant_new_int32 (i));
+                  g_menu_append_item (region_functions_subsubmenu, submenu_item);
                 }
               g_menu_append_submenu (
                 audio_regions_submenu, _ ("Functions"),
                 G_MENU_MODEL (region_functions_subsubmenu));
               g_menu_append_section (
-                menu, _ ("Audio Regions"),
-                G_MENU_MODEL (audio_regions_submenu));
+                menu, _ ("Audio Regions"), G_MENU_MODEL (audio_regions_submenu));
             } /* endif contains only audio regions */
 
           if (timeline_selections_contains_only_region_types (
@@ -1142,21 +1066,17 @@ timeline_arranger_widget_gen_context_menu (
               GMenu * midi_regions_submenu = g_menu_new ();
 
               menuitem = z_gtk_create_menu_item (
-                _ ("Export as MIDI file..."), NULL,
-                "app.export-midi-regions");
-              g_menu_append_item (
-                midi_regions_submenu, menuitem);
+                _ ("Export as MIDI file..."), NULL, "app.export-midi-regions");
+              g_menu_append_item (midi_regions_submenu, menuitem);
 
               g_menu_append_section (
-                menu, _ ("MIDI Regions"),
-                G_MENU_MODEL (midi_regions_submenu));
+                menu, _ ("MIDI Regions"), G_MENU_MODEL (midi_regions_submenu));
             }
 
           if (timeline_selections_contains_only_region_types (
                 TL_SELECTIONS, REGION_TYPE_AUTOMATION))
             {
-              GMenu * automation_regions_submenu =
-                g_menu_new ();
+              GMenu * automation_regions_submenu = g_menu_new ();
 
               GMenu * tracks_submenu = g_menu_new ();
 
@@ -1178,23 +1098,17 @@ timeline_arranger_widget_gen_context_menu (
                       if (!at->created)
                         continue;
 
-                      Port * port = port_find_from_identifier (
-                        &at->port_id);
+                      Port * port = port_find_from_identifier (&at->port_id);
 
                       char tmp[200];
-                      sprintf (
-                        tmp, "app.move-automation-regions::%p",
-                        port);
+                      sprintf (tmp, "app.move-automation-regions::%p", port);
                       GMenuItem * submenu_item =
-                        z_gtk_create_menu_item (
-                          port->id.label, NULL, tmp);
-                      g_menu_append_item (
-                        ats_submenu, submenu_item);
+                        z_gtk_create_menu_item (port->id.label, NULL, tmp);
+                      g_menu_append_item (ats_submenu, submenu_item);
                     }
 
                   g_menu_append_submenu (
-                    tracks_submenu, track->name,
-                    G_MENU_MODEL (ats_submenu));
+                    tracks_submenu, track->name, G_MENU_MODEL (ats_submenu));
                 }
               g_menu_append_submenu (
                 automation_regions_submenu, _ ("Move to Lane"),
@@ -1207,8 +1121,7 @@ timeline_arranger_widget_gen_context_menu (
           GMenu * bounce_submenu = g_menu_new ();
 
           menuitem = z_gtk_create_menu_item (
-            _ ("Quick Bounce"), NULL,
-            "app.quick-bounce-selections");
+            _ ("Quick Bounce"), NULL, "app.quick-bounce-selections");
           g_menu_append_item (bounce_submenu, menuitem);
 
           menuitem = z_gtk_create_menu_item (
@@ -1216,8 +1129,7 @@ timeline_arranger_widget_gen_context_menu (
           g_menu_append_item (bounce_submenu, menuitem);
 
           g_menu_append_section (
-            menu, _ ("Bounce to Audio"),
-            G_MENU_MODEL (bounce_submenu));
+            menu, _ ("Bounce to Audio"), G_MENU_MODEL (bounce_submenu));
         }
     }
   else /* else if no object clicked */
@@ -1227,8 +1139,7 @@ timeline_arranger_widget_gen_context_menu (
       menuitem = CREATE_PASTE_MENU_ITEM ("app.paste");
       g_menu_append_item (edit_submenu, menuitem);
 
-      g_menu_append_section (
-        menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
+      g_menu_append_section (menu, _ ("Edit"), G_MENU_MODEL (edit_submenu));
     }
 
   return menu;
@@ -1250,11 +1161,9 @@ timeline_arranger_widget_fade_up (
       ZRegion *        r = TL_SELECTIONS->regions[i];
       ArrangerObject * obj = (ArrangerObject *) r;
 
-      CurveOptions * opts =
-        fade_in ? &obj->fade_in_opts : &obj->fade_out_opts;
-      double delta = (self->last_offset_y - offset_y) * 0.008;
-      opts->curviness =
-        CLAMP (opts->curviness + delta, -1.0, 1.0);
+      CurveOptions * opts = fade_in ? &obj->fade_in_opts : &obj->fade_out_opts;
+      double         delta = (self->last_offset_y - offset_y) * 0.008;
+      opts->curviness = CLAMP (opts->curviness + delta, -1.0, 1.0);
     }
 }
 
@@ -1268,7 +1177,7 @@ highlight_timeline (
   TrackLane *      lane)
 {
   /* get default size */
-  int ticks = snap_grid_get_default_ticks (SNAP_GRID_TIMELINE);
+  int      ticks = snap_grid_get_default_ticks (SNAP_GRID_TIMELINE);
   Position length_pos;
   position_from_ticks (&length_pos, ticks);
   int width_px = ui_pos_to_px_timeline (&length_pos, false);
@@ -1287,8 +1196,8 @@ highlight_timeline (
   if (track)
     {
       height = (int) track->main_height;
-      int track_y_local = track_widget_get_local_y (
-        track->widget, self, (int) y);
+      int track_y_local =
+        track_widget_get_local_y (track->widget, self, (int) y);
       if (lane)
         {
           y -= track_y_local - lane->y;
@@ -1312,8 +1221,7 @@ highlight_timeline (
             track_get_should_be_visible (t)
             && track_is_pinned (t) == self->is_pinned)
             {
-              y_after_last_track +=
-                (int) track_get_full_visible_height (t);
+              y_after_last_track += (int) track_get_full_visible_height (t);
             }
         }
       y = y_after_last_track;
@@ -1338,19 +1246,14 @@ on_dnd_drop (
   x += (double) settings.scroll_start_x;
   y += (double) settings.scroll_start_y;
 
-  Track * track =
-    timeline_arranger_widget_get_track_at_y (self, y);
-  TrackLane * lane =
-    timeline_arranger_widget_get_track_lane_at_y (self, y);
-  AutomationTrack * at =
-    timeline_arranger_widget_get_at_at_y (self, y);
+  Track *     track = timeline_arranger_widget_get_track_at_y (self, y);
+  TrackLane * lane = timeline_arranger_widget_get_track_lane_at_y (self, y);
+  AutomationTrack * at = timeline_arranger_widget_get_at_at_y (self, y);
 
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (drop_target));
+  GdkModifierType state = gtk_event_controller_get_current_event_state (
+    GTK_EVENT_CONTROLLER (drop_target));
 
-  highlight_timeline (
-    self, state, (int) x, (int) y, track, lane);
+  highlight_timeline (self, state, (int) x, (int) y, track, lane);
 
   g_message (
     "dnd data dropped (timeline - is "
@@ -1359,11 +1262,9 @@ on_dnd_drop (
 
   SupportedFile *   file = NULL;
   ChordDescriptor * chord_descr = NULL;
-  if (G_VALUE_HOLDS (
-        value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
+  if (G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
-      WrappedObjectWithChangeSignal * wrapped_obj =
-        g_value_get_object (value);
+      WrappedObjectWithChangeSignal * wrapped_obj = g_value_get_object (value);
       if (wrapped_obj->type == WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
           file = (SupportedFile *) wrapped_obj->obj;
@@ -1382,39 +1283,29 @@ on_dnd_drop (
 
       /* create chord region */
       Position pos, end_pos;
+      ui_px_to_pos_timeline (self->highlight_rect.x, &pos, true);
       ui_px_to_pos_timeline (
-        self->highlight_rect.x, &pos, true);
-      ui_px_to_pos_timeline (
-        self->highlight_rect.x + self->highlight_rect.width,
-        &end_pos, true);
+        self->highlight_rect.x + self->highlight_rect.width, &end_pos, true);
       int lane_pos =
-        lane
-          ? lane->pos
-          : (track->num_lanes == 1 ? 0 : track->num_lanes - 2);
-      int idx_in_lane = track->lanes[lane_pos]->num_regions;
+        lane ? lane->pos : (track->num_lanes == 1 ? 0 : track->num_lanes - 2);
+      int       idx_in_lane = track->lanes[lane_pos]->num_regions;
       ZRegion * region = midi_region_new_from_chord_descr (
-        &pos, descr, track_get_name_hash (track), lane_pos,
-        idx_in_lane);
+        &pos, descr, track_get_name_hash (track), lane_pos, idx_in_lane);
       GError * err = NULL;
       bool     success = track_add_region (
-        track, region, NULL, lane_pos, F_GEN_NAME,
-        F_PUBLISH_EVENTS, &err);
+        track, region, NULL, lane_pos, F_GEN_NAME, F_PUBLISH_EVENTS, &err);
       if (!success)
         {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to add region to track"));
+          HANDLE_ERROR (err, "%s", _ ("Failed to add region to track"));
           return false;
         }
       arranger_object_select (
-        (ArrangerObject *) region, F_SELECT, F_NO_APPEND,
-        F_NO_PUBLISH_EVENTS);
+        (ArrangerObject *) region, F_SELECT, F_NO_APPEND, F_NO_PUBLISH_EVENTS);
 
-      success = arranger_selections_action_perform_create (
-        TL_SELECTIONS, &err);
+      success = arranger_selections_action_perform_create (TL_SELECTIONS, &err);
       if (!success)
         {
-          HANDLE_ERROR (
-            err, "%s", _ ("Failed to create selections"));
+          HANDLE_ERROR (err, "%s", _ ("Failed to create selections"));
           return false;
         }
     }
@@ -1451,19 +1342,16 @@ on_dnd_drop (
         }
 
       Position pos;
-      ui_px_to_pos_timeline (
-        self->highlight_rect.x, &pos, true);
+      ui_px_to_pos_timeline (self->highlight_rect.x, &pos, true);
 
       GError * err = NULL;
       bool     success = tracklist_import_files (
-        TRACKLIST, uris, file, track, lane, -1, &pos, NULL,
-        &err);
+        TRACKLIST, uris, file, track, lane, -1, &pos, NULL, &err);
       if (uris)
         g_strfreev (uris);
       if (!success)
         {
-          HANDLE_ERROR_LITERAL (
-            err, _ ("Failed to import files"));
+          HANDLE_ERROR_LITERAL (err, _ ("Failed to import files"));
           return false;
         }
     }
@@ -1488,30 +1376,23 @@ on_dnd_motion (
   x += (double) settings.scroll_start_x;
   y += (double) settings.scroll_start_y;
 
-  self->hovered_at =
-    timeline_arranger_widget_get_at_at_y (self, y);
-  self->hovered_lane =
-    timeline_arranger_widget_get_track_lane_at_y (self, y);
-  self->hovered_track =
-    timeline_arranger_widget_get_track_at_y (self, y);
+  self->hovered_at = timeline_arranger_widget_get_at_at_y (self, y);
+  self->hovered_lane = timeline_arranger_widget_get_track_lane_at_y (self, y);
+  self->hovered_track = timeline_arranger_widget_get_track_at_y (self, y);
 
   arranger_widget_set_highlight_rect (self, NULL);
 
-  const GValue * value =
-    gtk_drop_target_get_value (drop_target);
+  const GValue *    value = gtk_drop_target_get_value (drop_target);
   ChordDescriptor * chord_descr = NULL;
   SupportedFile *   supported_file = NULL;
-  if (G_VALUE_HOLDS (
-        value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
+  if (G_VALUE_HOLDS (value, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE))
     {
-      WrappedObjectWithChangeSignal * wrapped_obj =
-        g_value_get_object (value);
+      WrappedObjectWithChangeSignal * wrapped_obj = g_value_get_object (value);
       if (wrapped_obj->type == WRAPPED_OBJECT_TYPE_SUPPORTED_FILE)
         {
           supported_file = (SupportedFile *) wrapped_obj->obj;
         }
-      else if (
-        wrapped_obj->type == WRAPPED_OBJECT_TYPE_CHORD_DESCR)
+      else if (wrapped_obj->type == WRAPPED_OBJECT_TYPE_CHORD_DESCR)
         {
           chord_descr = (ChordDescriptor *) wrapped_obj->obj;
         }
@@ -1537,8 +1418,7 @@ on_dnd_motion (
         }
 
       /* highlight track */
-      highlight_timeline (
-        self, 0, (int) x, (int) y, track, lane);
+      highlight_timeline (self, 0, (int) x, (int) y, track, lane);
 
       return GDK_ACTION_COPY;
     }
@@ -1549,16 +1429,14 @@ on_dnd_motion (
       if (track)
         {
           if (
-            track->type != TRACK_TYPE_MIDI
-            && track->type != TRACK_TYPE_INSTRUMENT
+            track->type != TRACK_TYPE_MIDI && track->type != TRACK_TYPE_INSTRUMENT
             && track->type != TRACK_TYPE_AUDIO)
             {
               return 0;
             }
 
           /* track is compatible, highlight */
-          highlight_timeline (
-            self, 0, (int) x, (int) y, track, lane);
+          highlight_timeline (self, 0, (int) x, (int) y, track, lane);
           g_message ("highlighting track");
 
           return GDK_ACTION_COPY;
@@ -1567,8 +1445,7 @@ on_dnd_motion (
        * last track  TODO */
       else
         {
-          highlight_timeline (
-            self, 0, (int) x, (int) y, NULL, NULL);
+          highlight_timeline (self, 0, (int) x, (int) y, NULL, NULL);
           return GDK_ACTION_COPY;
         }
     }
@@ -1590,22 +1467,17 @@ on_dnd_leave (GtkDropTarget * drop_target, ArrangerWidget * self)
 void
 timeline_arranger_setup_drag_dest (ArrangerWidget * self)
 {
-  GtkDropTarget * drop_target = gtk_drop_target_new (
-    G_TYPE_INVALID, GDK_ACTION_MOVE | GDK_ACTION_COPY);
+  GtkDropTarget * drop_target =
+    gtk_drop_target_new (G_TYPE_INVALID, GDK_ACTION_MOVE | GDK_ACTION_COPY);
   GType types[] = {
-    GDK_TYPE_FILE_LIST, G_TYPE_FILE,
-    WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE
+    GDK_TYPE_FILE_LIST, G_TYPE_FILE, WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE
   };
-  gtk_drop_target_set_gtypes (
-    drop_target, types, G_N_ELEMENTS (types));
+  gtk_drop_target_set_gtypes (drop_target, types, G_N_ELEMENTS (types));
   gtk_drop_target_set_preload (drop_target, true);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (drop_target));
 
-  g_signal_connect (
-    drop_target, "drop", G_CALLBACK (on_dnd_drop), self);
-  g_signal_connect (
-    drop_target, "motion", G_CALLBACK (on_dnd_motion), self);
-  g_signal_connect (
-    drop_target, "leave", G_CALLBACK (on_dnd_leave), self);
+  g_signal_connect (drop_target, "drop", G_CALLBACK (on_dnd_drop), self);
+  g_signal_connect (drop_target, "motion", G_CALLBACK (on_dnd_motion), self);
+  g_signal_connect (drop_target, "leave", G_CALLBACK (on_dnd_leave), self);
 }

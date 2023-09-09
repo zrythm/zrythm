@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define EDITABLE_LABEL_WIDGET_TYPE \
-  (editable_label_widget_get_type ())
+#define EDITABLE_LABEL_WIDGET_TYPE (editable_label_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   EditableLabelWidget,
   editable_label_widget,
@@ -60,8 +59,7 @@ typedef struct _EditableLabelWidget
  * Shows the popover.
  */
 void
-editable_label_widget_show_popover (
-  EditableLabelWidget * self);
+editable_label_widget_show_popover (EditableLabelWidget * self);
 
 /**
  * Shows a popover without the need of an editable

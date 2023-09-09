@@ -34,46 +34,35 @@ typedef struct ScaleObject            ScaleObject;
  */
 
 #define MW_TIMELINE (MW_TIMELINE_PANEL->timeline)
-#define MW_PINNED_TIMELINE \
-  (MW_TIMELINE_PANEL->pinned_timeline)
+#define MW_PINNED_TIMELINE (MW_TIMELINE_PANEL->pinned_timeline)
 
 void
-timeline_arranger_widget_snap_range_r (
-  ArrangerWidget * self,
-  Position *       pos);
+timeline_arranger_widget_snap_range_r (ArrangerWidget * self, Position * pos);
 
 /**
  * Gets hit TrackLane at y.
  */
 TrackLane *
-timeline_arranger_widget_get_track_lane_at_y (
-  ArrangerWidget * self,
-  double           y);
+timeline_arranger_widget_get_track_lane_at_y (ArrangerWidget * self, double y);
 
 /**
  * Gets the Track at y.
  */
 Track *
-timeline_arranger_widget_get_track_at_y (
-  ArrangerWidget * self,
-  double           y);
+timeline_arranger_widget_get_track_at_y (ArrangerWidget * self, double y);
 
 /**
  * Returns the hit AutomationTrack at y.
  */
 AutomationTrack *
-timeline_arranger_widget_get_at_at_y (
-  ArrangerWidget * self,
-  double           y);
+timeline_arranger_widget_get_at_at_y (ArrangerWidget * self, double y);
 
 /**
  * Determines the selection time (objects/range)
  * and sets it.
  */
 void
-timeline_arranger_widget_set_select_type (
-  ArrangerWidget * self,
-  double           y);
+timeline_arranger_widget_set_select_type (ArrangerWidget * self, double y);
 
 /**
  * Create a ZRegion at the given Position in the
@@ -177,9 +166,7 @@ timeline_arranger_widget_snap_regions_r (
  * FIXME move to parent?
  */
 void
-timeline_arranger_widget_scroll_to (
-  ArrangerWidget * self,
-  Position *       pos);
+timeline_arranger_widget_scroll_to (ArrangerWidget * self, Position * pos);
 
 /**
  * Move the selected Regions to the new Track.
@@ -211,15 +198,13 @@ timeline_arranger_move_regions_to_new_lanes (
  * Used when alt was unpressed.
  */
 void
-timeline_arranger_widget_set_cut_lines_visible (
-  ArrangerWidget * self);
+timeline_arranger_widget_set_cut_lines_visible (ArrangerWidget * self);
 
 /**
  * To be called when pinning/unpinning.
  */
 void
-timeline_arranger_widget_remove_children (
-  ArrangerWidget * self);
+timeline_arranger_widget_remove_children (ArrangerWidget * self);
 
 /**
  * Generate a context menu at x, y.

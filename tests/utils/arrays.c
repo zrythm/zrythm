@@ -116,8 +116,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/utils/arrays/"
 
   g_test_add_func (
-    TEST_PREFIX "test array dynamic swap",
-    (GTestFunc) test_array_dynamic_swap);
+    TEST_PREFIX "test array dynamic swap", (GTestFunc) test_array_dynamic_swap);
   g_test_add_func (
     TEST_PREFIX "test double size if full",
     (GTestFunc) test_double_size_if_full);

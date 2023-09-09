@@ -25,16 +25,10 @@ public:
   BeatTracker (float inputSampleRate);
   virtual ~BeatTracker ();
 
-  bool initialise (
-    size_t channels,
-    size_t stepSize,
-    size_t blockSize);
+  bool initialise (size_t channels, size_t stepSize, size_t blockSize);
   void reset ();
 
-  InputDomain getInputDomain () const
-  {
-    return FrequencyDomain;
-  }
+  InputDomain getInputDomain () const { return FrequencyDomain; }
 
   std::string getIdentifier () const;
   std::string getName () const;
@@ -52,9 +46,8 @@ public:
 
   OutputList getOutputDescriptors () const;
 
-  FeatureSet process (
-    const float * const * inputBuffers,
-    Vamp::RealTime        timestamp);
+  FeatureSet
+  process (const float * const * inputBuffers, Vamp::RealTime timestamp);
 
   FeatureSet getRemainingFeatures ();
 

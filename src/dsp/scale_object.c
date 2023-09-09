@@ -45,6 +45,5 @@ scale_object_is_equal (ScaleObject * a, ScaleObject * b)
   ArrangerObject * obj_a = (ArrangerObject *) a;
   ArrangerObject * obj_b = (ArrangerObject *) b;
   return position_is_equal_ticks (&obj_a->pos, &obj_b->pos)
-         && a->index == b->index
-         && musical_scale_is_equal (a->scale, b->scale);
+         && a->index == b->index && musical_scale_is_equal (a->scale, b->scale);
 }

@@ -33,8 +33,7 @@ plugin_descriptor_upgrade_from_v1 (PluginDescriptor_v1 * old)
   self->protocol = (ZPluginProtocol) old->protocol;
   self->path = old->path;
   self->uri = old->uri;
-  self->min_bridge_mode =
-    (CarlaBridgeMode) old->min_bridge_mode;
+  self->min_bridge_mode = (CarlaBridgeMode) old->min_bridge_mode;
   self->has_custom_ui = old->has_custom_ui;
   self->ghash = old->ghash;
 

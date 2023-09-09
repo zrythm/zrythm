@@ -74,8 +74,7 @@ typedef struct _PrerollCountSelectorWidget
  * Creates a PrerollCountSelectorWidget.
  */
 PrerollCountSelectorWidget *
-preroll_count_selector_widget_new (
-  PrerollCountSelectorType type);
+preroll_count_selector_widget_new (PrerollCountSelectorType type);
 
 /**
  * @}

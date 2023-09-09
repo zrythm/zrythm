@@ -27,10 +27,8 @@
 #define CHORD_OBJECT_SCHEMA_VERSION 1
 
 #define CHORD_OBJECT_MAGIC 4181694
-#define IS_CHORD_OBJECT(x) \
-  (((ChordObject *) x)->magic == CHORD_OBJECT_MAGIC)
-#define IS_CHORD_OBJECT_AND_NONNULL(x) \
-  (x && IS_CHORD_OBJECT (x))
+#define IS_CHORD_OBJECT(x) (((ChordObject *) x)->magic == CHORD_OBJECT_MAGIC)
+#define IS_CHORD_OBJECT_AND_NONNULL(x) (x && IS_CHORD_OBJECT (x))
 
 #define CHORD_OBJECT_WIDGET_TRIANGLE_W 10
 
@@ -65,13 +63,9 @@ typedef struct ChordObject
 } ChordObject;
 
 static const cyaml_schema_field_t chord_object_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ChordObject,
-    base,
-    arranger_object_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (ChordObject, base, arranger_object_fields_schema),
   YAML_FIELD_INT (ChordObject, schema_version),
-  YAML_FIELD_INT (ChordObject, index),
-  YAML_FIELD_INT (ChordObject, chord_index),
+  YAML_FIELD_INT (ChordObject, index), YAML_FIELD_INT (ChordObject, chord_index),
 
   CYAML_FIELD_END
 };
@@ -84,10 +78,7 @@ static const cyaml_schema_value_t chord_object_schema = {
  * Creates a ChordObject.
  */
 ChordObject *
-chord_object_new (
-  RegionIdentifier * region_id,
-  int                chord_index,
-  int                index);
+chord_object_new (RegionIdentifier * region_id, int chord_index, int index);
 
 int
 chord_object_is_equal (ChordObject * a, ChordObject * b);
@@ -96,10 +87,7 @@ chord_object_is_equal (ChordObject * a, ChordObject * b);
  * Sets the region and index of the chord.
  */
 void
-chord_object_set_region_and_index (
-  ChordObject * self,
-  ZRegion *     region,
-  int           idx);
+chord_object_set_region_and_index (ChordObject * self, ZRegion * region, int idx);
 
 /**
  * Returns the ChordDescriptor associated with this

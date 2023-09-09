@@ -3,15 +3,10 @@
 
 #include "gui/widgets/custom_image.h"
 
-G_DEFINE_TYPE (
-  CustomImageWidget,
-  custom_image_widget,
-  GTK_TYPE_WIDGET)
+G_DEFINE_TYPE (CustomImageWidget, custom_image_widget, GTK_TYPE_WIDGET)
 
 static void
-custom_image_snapshot (
-  GtkWidget *   widget,
-  GtkSnapshot * snapshot)
+custom_image_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   CustomImageWidget * self = Z_CUSTOM_IMAGE_WIDGET (widget);
 
@@ -28,9 +23,7 @@ custom_image_snapshot (
  * Takes ownership of texture.
  */
 void
-custom_image_widget_set_texture (
-  CustomImageWidget * self,
-  GdkTexture *        texture)
+custom_image_widget_set_texture (CustomImageWidget * self, GdkTexture * texture)
 {
   self->texture = texture;
 
@@ -47,15 +40,12 @@ custom_image_widget_init (CustomImageWidget * self)
 }
 
 static void
-custom_image_widget_class_init (
-  CustomImageWidgetClass * _klass)
+custom_image_widget_class_init (CustomImageWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   klass->snapshot = custom_image_snapshot;
   gtk_widget_class_set_css_name (klass, "custom-image");
 
-  gtk_widget_class_set_layout_manager_type (
-    klass, GTK_TYPE_BIN_LAYOUT);
-  gtk_widget_class_set_accessible_role (
-    klass, GTK_ACCESSIBLE_ROLE_PRESENTATION);
+  gtk_widget_class_set_layout_manager_type (klass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_accessible_role (klass, GTK_ACCESSIBLE_ROLE_PRESENTATION);
 }

@@ -87,13 +87,12 @@ instantiate (
 
   // Scan host features for URID map
   const char * missing = lv2_features_query (
-    features, LV2_LOG__log, &self->logger.log, false,
-    LV2_URID__map, &self->map, true, NULL);
+    features, LV2_LOG__log, &self->logger.log, false, LV2_URID__map, &self->map,
+    true, NULL);
   lv2_log_logger_set_map (&self->logger, self->map);
   if (missing)
     {
-      lv2_log_error (
-        &self->logger, "Missing feature <%s>\n", missing);
+      lv2_log_error (&self->logger, "Missing feature <%s>\n", missing);
       free (self);
       return NULL;
     }
@@ -145,15 +144,12 @@ run (LV2_Handle instance, uint32_t sample_count)
               {
                 printf ("\nNOTE ON %d\n", msg[1]);
               }
-            else if (
-              lv2_midi_message_type (msg)
-              == LV2_MIDI_MSG_NOTE_OFF)
+            else if (lv2_midi_message_type (msg) == LV2_MIDI_MSG_NOTE_OFF)
               {
                 printf ("\nNOTE OFF %d\n", msg[1]);
               }
             // Forward note to output
-            lv2_atom_sequence_append_event (
-              self->out_port, out_capacity, ev);
+            lv2_atom_sequence_append_event (self->out_port, out_capacity, ev);
 
             if (msg[1] <= 127 - 7)
               {
@@ -161,17 +157,13 @@ run (LV2_Handle instance, uint32_t sample_count)
                 MIDINoteEvent fifth;
 
                 // Could simply do fifth.event = *ev here instead...
-                fifth.event.time.frames =
-                  ev->time.frames; // Same time
-                fifth.event.body.type =
-                  ev->body.type; // Same type
-                fifth.event.body.size =
-                  ev->body.size; // Same size
+                fifth.event.time.frames = ev->time.frames; // Same time
+                fifth.event.body.type = ev->body.type;     // Same type
+                fifth.event.body.size = ev->body.size;     // Same size
 
-                fifth.msg[0] = msg[0]; // Same status
-                fifth.msg[1] =
-                  msg[1] + 7;          // Pitch up 7 semitones
-                fifth.msg[2] = msg[2]; // Same velocity
+                fifth.msg[0] = msg[0];     // Same status
+                fifth.msg[1] = msg[1] + 7; // Pitch up 7 semitones
+                fifth.msg[2] = msg[2];     // Same velocity
 
                 // Write 5th event
                 lv2_atom_sequence_append_event (
@@ -180,8 +172,7 @@ run (LV2_Handle instance, uint32_t sample_count)
             break;
           default:
             // Forward all other MIDI events directly
-            lv2_atom_sequence_append_event (
-              self->out_port, out_capacity, ev);
+            lv2_atom_sequence_append_event (self->out_port, out_capacity, ev);
             break;
           }
       }

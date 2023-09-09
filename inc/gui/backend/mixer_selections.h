@@ -57,14 +57,8 @@ typedef struct MixerSelections
 
 static const cyaml_schema_field_t mixer_selections_fields_schema[] = {
   YAML_FIELD_INT (MixerSelections, schema_version),
-  YAML_FIELD_ENUM (
-    MixerSelections,
-    type,
-    plugin_slot_type_strings),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    MixerSelections,
-    slots,
-    int_schema),
+  YAML_FIELD_ENUM (MixerSelections, type, plugin_slot_type_strings),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (MixerSelections, slots, int_schema),
   CYAML_FIELD_SEQUENCE_COUNT (
     "plugins",
     CYAML_FLAG_DEFAULT,
@@ -81,15 +75,11 @@ static const cyaml_schema_field_t mixer_selections_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t mixer_selections_schema = {
-  YAML_VALUE_PTR (
-    MixerSelections,
-    mixer_selections_fields_schema),
+  YAML_VALUE_PTR (MixerSelections, mixer_selections_fields_schema),
 };
 
 void
-mixer_selections_init_loaded (
-  MixerSelections * ms,
-  bool              is_project);
+mixer_selections_init_loaded (MixerSelections * ms, bool is_project);
 
 MixerSelections *
 mixer_selections_new (void);
@@ -104,9 +94,7 @@ mixer_selections_init (MixerSelections * self);
  *   project selections.
  */
 MixerSelections *
-mixer_selections_clone (
-  MixerSelections * src,
-  bool              src_is_project);
+mixer_selections_clone (MixerSelections * src, bool src_is_project);
 
 /**
  * Returns if there are any selections.
@@ -155,8 +143,7 @@ mixer_selections_paste_to_slot (
  * Get current Track.
  */
 Track *
-mixer_selections_get_track (
-  const MixerSelections * const self);
+mixer_selections_get_track (const MixerSelections * const self);
 
 /**
  * Returns if the slot is selected or not.
@@ -171,9 +158,7 @@ mixer_selections_contains_slot (
  * Returns if the plugin is selected or not.
  */
 bool
-mixer_selections_contains_plugin (
-  MixerSelections * ms,
-  Plugin *          pl);
+mixer_selections_contains_plugin (MixerSelections * ms, Plugin * pl);
 
 bool
 mixer_selections_contains_uninstantiated_plugin (
@@ -244,9 +229,7 @@ mixer_selections_validate (MixerSelections * self);
  * Clears selections.
  */
 NONNULL void
-mixer_selections_clear (
-  MixerSelections * ms,
-  const int         pub_events);
+mixer_selections_clear (MixerSelections * ms, const int pub_events);
 
 NONNULL void
 mixer_selections_free (MixerSelections * self);

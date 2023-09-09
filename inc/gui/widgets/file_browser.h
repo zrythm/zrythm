@@ -14,8 +14,7 @@
 
 #include <gtk/gtk.h>
 
-#define FILE_BROWSER_WIDGET_TYPE \
-  (file_browser_widget_get_type ())
+#define FILE_BROWSER_WIDGET_TYPE (file_browser_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   FileBrowserWidget,
   file_browser_widget,
@@ -23,12 +22,9 @@ G_DECLARE_FINAL_TYPE (
   FILE_BROWSER_WIDGET,
   GtkBox)
 
-typedef struct _FileAuditionerControlsWidget
-  FileAuditionerControlsWidget;
-typedef struct _FileBrowserFiltersWidget
-  FileBrowserFiltersWidget;
-typedef struct _WrappedObjectWithChangeSignal
-  WrappedObjectWithChangeSignal;
+typedef struct _FileAuditionerControlsWidget  FileAuditionerControlsWidget;
+typedef struct _FileBrowserFiltersWidget      FileBrowserFiltersWidget;
+typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 
 /**
  * @addtogroup widgets

@@ -36,8 +36,7 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
 {
   ArrangerObject * obj = (ArrangerObject *) self;
   MidiNote *       mn = velocity_get_midi_note (self);
-  ArrangerWidget * arranger =
-    arranger_object_get_arranger (obj);
+  ArrangerWidget * arranger = arranger_object_get_arranger (obj);
 
   /* get color */
   GdkRGBA color;
@@ -48,8 +47,7 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
   gtk_snapshot_save (snapshot);
   gtk_snapshot_translate (
     snapshot,
-    &GRAPHENE_POINT_INIT (
-      (float) obj->full_rect.x, (float) obj->full_rect.y));
+    &GRAPHENE_POINT_INIT ((float) obj->full_rect.x, (float) obj->full_rect.y));
 
   /* --- draw --- */
 
@@ -59,10 +57,8 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
-      (float) obj->full_rect.width / 2.f
-        - VELOCITY_LINE_WIDTH / 2.f,
-      (float) circle_radius, VELOCITY_LINE_WIDTH,
-      (float) obj->full_rect.height));
+      (float) obj->full_rect.width / 2.f - VELOCITY_LINE_WIDTH / 2.f,
+      (float) circle_radius, VELOCITY_LINE_WIDTH, (float) obj->full_rect.height));
 
   /*
    * draw circle:
@@ -73,8 +69,7 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
    * 3. append colored border
    */
   gtk_snapshot_save (snapshot);
-  gtk_snapshot_translate (
-    snapshot, &GRAPHENE_POINT_INIT (-0.5f, -0.5f));
+  gtk_snapshot_translate (snapshot, &GRAPHENE_POINT_INIT (-0.5f, -0.5f));
   float          circle_angle = 2.f * (float) M_PI;
   GskRoundedRect rounded_rect;
   gsk_rounded_rect_init_from_rect (
@@ -85,8 +80,7 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
     circle_angle);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
   gtk_snapshot_append_color (
-    snapshot, &Z_GDK_RGBA_INIT (0.8, 0.8, 0.8, 1),
-    &rounded_rect.bounds);
+    snapshot, &Z_GDK_RGBA_INIT (0.8, 0.8, 0.8, 1), &rounded_rect.bounds);
   const float border_width = 2.f;
   float       border_widths[] = {
     border_width, border_width, border_width, border_width
@@ -109,8 +103,7 @@ velocity_draw (Velocity * self, GtkSnapshot * snapshot)
       gtk_snapshot_save (snapshot);
       gtk_snapshot_translate (
         snapshot,
-        &GRAPHENE_POINT_INIT (
-          (float) text_start_x, (float) text_start_y));
+        &GRAPHENE_POINT_INIT ((float) text_start_x, (float) text_start_y));
       PangoLayout * layout = arranger->vel_layout;
       pango_layout_set_text (layout, text, -1);
       gtk_snapshot_append_layout (

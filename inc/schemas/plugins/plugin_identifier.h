@@ -39,23 +39,17 @@ typedef struct PluginIdentifier_v1
   int               slot;
 } PluginIdentifier_v1;
 
-static const cyaml_schema_field_t
-  plugin_identifier_fields_schema_v1[] = {
-    YAML_FIELD_INT (PluginIdentifier_v1, schema_version),
-    YAML_FIELD_ENUM (
-      PluginIdentifier_v1,
-      slot_type,
-      plugin_slot_type_strings_v1),
-    YAML_FIELD_UINT (PluginIdentifier_v1, track_name_hash),
-    YAML_FIELD_INT (PluginIdentifier_v1, slot),
+static const cyaml_schema_field_t plugin_identifier_fields_schema_v1[] = {
+  YAML_FIELD_INT (PluginIdentifier_v1, schema_version),
+  YAML_FIELD_ENUM (PluginIdentifier_v1, slot_type, plugin_slot_type_strings_v1),
+  YAML_FIELD_UINT (PluginIdentifier_v1, track_name_hash),
+  YAML_FIELD_INT (PluginIdentifier_v1, slot),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
 static const cyaml_schema_value_t plugin_identifier_schema_v1 = {
-  YAML_VALUE_PTR (
-    PluginIdentifier_v1,
-    plugin_identifier_fields_schema_v1),
+  YAML_VALUE_PTR (PluginIdentifier_v1, plugin_identifier_fields_schema_v1),
 };
 
 PluginIdentifier *

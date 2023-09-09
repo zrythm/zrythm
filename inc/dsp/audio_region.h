@@ -169,9 +169,7 @@ audio_region_validate (ZRegion * self, double frames_per_tick);
  * @return Whether positions were adjusted.
  */
 bool
-audio_region_fix_positions (
-  ZRegion * self,
-  double    frames_per_tick);
+audio_region_fix_positions (ZRegion * self, double frames_per_tick);
 
 /**
  * Frees members only but not the audio region itself.

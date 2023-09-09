@@ -22,53 +22,37 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  FileBrowserFiltersWidget,
-  file_browser_filters_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (FileBrowserFiltersWidget, file_browser_filters_widget, GTK_TYPE_BOX)
 
 static void
-toggles_changed (
-  GtkToggleButton *          btn,
-  FileBrowserFiltersWidget * self)
+toggles_changed (GtkToggleButton * btn, FileBrowserFiltersWidget * self)
 {
   if (gtk_toggle_button_get_active (btn))
     {
       /* block signals, unset all, unblock */
       g_signal_handlers_block_by_func (
         self->toggle_audio, toggles_changed, self);
-      g_signal_handlers_block_by_func (
-        self->toggle_midi, toggles_changed, self);
+      g_signal_handlers_block_by_func (self->toggle_midi, toggles_changed, self);
       g_signal_handlers_block_by_func (
         self->toggle_presets, toggles_changed, self);
 
       if (btn == self->toggle_audio)
         {
-          S_SET_ENUM (
-            S_UI_FILE_BROWSER, "filter",
-            FILE_BROWSER_FILTER_AUDIO);
+          S_SET_ENUM (S_UI_FILE_BROWSER, "filter", FILE_BROWSER_FILTER_AUDIO);
           gtk_toggle_button_set_active (self->toggle_midi, 0);
-          gtk_toggle_button_set_active (
-            self->toggle_presets, 0);
+          gtk_toggle_button_set_active (self->toggle_presets, 0);
         }
       else if (btn == self->toggle_midi)
         {
-          S_SET_ENUM (
-            S_UI_FILE_BROWSER, "filter",
-            FILE_BROWSER_FILTER_MIDI);
+          S_SET_ENUM (S_UI_FILE_BROWSER, "filter", FILE_BROWSER_FILTER_MIDI);
           gtk_toggle_button_set_active (self->toggle_audio, 0);
-          gtk_toggle_button_set_active (
-            self->toggle_presets, 0);
+          gtk_toggle_button_set_active (self->toggle_presets, 0);
         }
       else if (btn == self->toggle_presets)
         {
-          S_SET_ENUM (
-            S_UI_FILE_BROWSER, "filter",
-            FILE_BROWSER_FILTER_PRESET);
-          gtk_toggle_button_set_active (
-            self->toggle_midi, false);
-          gtk_toggle_button_set_active (
-            self->toggle_audio, false);
+          S_SET_ENUM (S_UI_FILE_BROWSER, "filter", FILE_BROWSER_FILTER_PRESET);
+          gtk_toggle_button_set_active (self->toggle_midi, false);
+          gtk_toggle_button_set_active (self->toggle_audio, false);
         }
 
       g_signal_handlers_unblock_by_func (
@@ -80,8 +64,7 @@ toggles_changed (
     }
   else
     {
-      S_SET_ENUM (
-        S_UI_FILE_BROWSER, "filter", FILE_BROWSER_FILTER_NONE);
+      S_SET_ENUM (S_UI_FILE_BROWSER, "filter", FILE_BROWSER_FILTER_NONE);
     }
 
   self->refilter_files (self->owner);
@@ -101,16 +84,13 @@ file_browser_filters_widget_setup (
 }
 
 static void
-file_browser_filters_widget_class_init (
-  FileBrowserFiltersWidgetClass * _klass)
+file_browser_filters_widget_class_init (FileBrowserFiltersWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "file_browser_filters.ui");
+  resources_set_class_template (klass, "file_browser_filters.ui");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, FileBrowserFiltersWidget, x)
+  gtk_widget_class_bind_template_child (klass, FileBrowserFiltersWidget, x)
 
   BIND_CHILD (toggle_audio);
   BIND_CHILD (toggle_midi);
@@ -118,8 +98,7 @@ file_browser_filters_widget_class_init (
 
 #undef BIND_CHILD
 
-#define BIND_SIGNAL(sig) \
-  gtk_widget_class_bind_template_callback (klass, sig)
+#define BIND_SIGNAL(sig) gtk_widget_class_bind_template_callback (klass, sig)
 
   BIND_SIGNAL (toggles_changed);
 
@@ -127,11 +106,9 @@ file_browser_filters_widget_class_init (
 }
 
 static void
-file_browser_filters_widget_init (
-  FileBrowserFiltersWidget * self)
+file_browser_filters_widget_init (FileBrowserFiltersWidget * self)
 {
   gtk_widget_init_template (GTK_WIDGET (self));
 
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self), "file-browser-filters");
+  gtk_widget_add_css_class (GTK_WIDGET (self), "file-browser-filters");
 }

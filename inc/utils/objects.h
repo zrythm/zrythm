@@ -66,8 +66,7 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
 /**
  * Calloc \ref n blocks for type \ref type.
  */
-#define object_new_n(n, type) \
-  object_new_n_sizeof (n, sizeof (type))
+#define object_new_n(n, type) object_new_n_sizeof (n, sizeof (type))
 
 #define object_realloc_n_sizeof(obj, prev_sz, sz) \
   realloc_zero (obj, prev_sz, sz)
@@ -79,16 +78,14 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
  * @param n New number of blocks.
  */
 #define object_realloc_n(obj, prev_n, n, type) \
-  object_realloc_n_sizeof ( \
-    obj, prev_n * sizeof (type), n * sizeof (type))
+  object_realloc_n_sizeof (obj, prev_n * sizeof (type), n * sizeof (type))
 
 /**
  * Zero's out the struct pointed to by \ref ptr.
  *
  * @param ptr A pointer to a struct.
  */
-#define object_set_to_zero(ptr) \
-  memset (ptr, 0, sizeof (*(ptr)))
+#define object_set_to_zero(ptr) memset (ptr, 0, sizeof (*(ptr)))
 
 /**
  * Frees memory for objects created with object_new().
@@ -105,8 +102,7 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
   _object_zero_and_free ((void **) &(ptr), sizeof (*(ptr)))
 
 #define object_zero_and_free_unresizable(type, ptr) \
-  _object_zero_and_free_unresizable ( \
-    (void **) &(ptr), sizeof (type))
+  _object_zero_and_free_unresizable ((void **) &(ptr), sizeof (type))
 
 /**
  * Call the function \ref _func to free \ref _obj
@@ -127,8 +123,7 @@ _object_zero_and_free_unresizable (void ** ptr, size_t sz)
   object_free_w_func_and_null (g_object_unref, ptr)
 
 /** Convenience wrapper. */
-#define g_free_and_null(ptr) \
-  object_free_w_func_and_null (g_free, ptr)
+#define g_free_and_null(ptr) object_free_w_func_and_null (g_free, ptr)
 
 /** Convenience wrapper. */
 #define g_error_free_and_null(ptr) \

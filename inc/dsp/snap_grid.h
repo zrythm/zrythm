@@ -30,8 +30,7 @@
 #define SNAP_GRID_IS_EDITOR(sg) (SNAP_GRID_EDITOR == sg)
 #define SNAP_GRID_IS_TIMELINE(sg) (SNAP_GRID_TIMELINE == sg)
 /* if any snapping is enabled */
-#define SNAP_GRID_ANY_SNAP(sg) \
-  (sg->snap_to_grid || sg->snap_to_events)
+#define SNAP_GRID_ANY_SNAP(sg) (sg->snap_to_grid || sg->snap_to_events)
 #define SNAP_GRID_DEFAULT_MAX_BAR 10000
 
 typedef enum NoteLength
@@ -176,25 +175,13 @@ typedef struct SnapGrid
 static const cyaml_schema_field_t snap_grid_fields_schema[] = {
   YAML_FIELD_INT (SnapGrid, schema_version),
   YAML_FIELD_ENUM (SnapGrid, type, snap_grid_type_strings),
-  YAML_FIELD_ENUM (
-    SnapGrid,
-    snap_note_length,
-    note_length_strings),
+  YAML_FIELD_ENUM (SnapGrid, snap_note_length, note_length_strings),
   YAML_FIELD_ENUM (SnapGrid, snap_note_type, note_type_strings),
   YAML_FIELD_INT (SnapGrid, snap_adaptive),
-  YAML_FIELD_ENUM (
-    SnapGrid,
-    default_note_length,
-    note_length_strings),
-  YAML_FIELD_ENUM (
-    SnapGrid,
-    default_note_type,
-    note_type_strings),
+  YAML_FIELD_ENUM (SnapGrid, default_note_length, note_length_strings),
+  YAML_FIELD_ENUM (SnapGrid, default_note_type, note_type_strings),
   YAML_FIELD_INT (SnapGrid, default_adaptive),
-  YAML_FIELD_ENUM (
-    SnapGrid,
-    length_type,
-    note_length_type_strings),
+  YAML_FIELD_ENUM (SnapGrid, length_type, note_length_type_strings),
   YAML_FIELD_INT (SnapGrid, snap_to_grid),
   YAML_FIELD_INT (SnapGrid, snap_to_grid_keep_offset),
   YAML_FIELD_INT (SnapGrid, snap_to_events),
@@ -203,10 +190,7 @@ static const cyaml_schema_field_t snap_grid_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t snap_grid_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    SnapGrid,
-    snap_grid_fields_schema),
+  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, SnapGrid, snap_grid_fields_schema),
 };
 
 void
@@ -217,9 +201,7 @@ snap_grid_init (
   bool         adaptive);
 
 int
-snap_grid_get_ticks_from_length_and_type (
-  NoteLength length,
-  NoteType   type);
+snap_grid_get_ticks_from_length_and_type (NoteLength length, NoteType type);
 
 /**
  * Gets a snap point's length in ticks.
@@ -243,9 +225,7 @@ snap_grid_get_default_ticks (SnapGrid * self);
  * Must be free'd.
  */
 char *
-snap_grid_stringize_length_and_type (
-  NoteLength note_length,
-  NoteType   note_type);
+snap_grid_stringize_length_and_type (NoteLength note_length, NoteType note_type);
 
 /**
  * Returns the grid intensity as a human-readable

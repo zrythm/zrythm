@@ -23,8 +23,7 @@ flip (AutomationSelections * sel, bool vertical)
       if (vertical)
         {
           automation_point_set_fvalue (
-            ap, 1.f - ap->normalized_val, F_NORMALIZED,
-            F_NO_PUBLISH_EVENTS);
+            ap, 1.f - ap->normalized_val, F_NORMALIZED, F_NO_PUBLISH_EVENTS);
           ap->curve_opts.curviness = -ap->curve_opts.curviness;
         }
       else
@@ -46,9 +45,7 @@ automation_function_apply (
   AutomationFunctionType type,
   GError **              error)
 {
-  g_message (
-    "applying %s...",
-    automation_function_type_to_string (type));
+  g_message ("applying %s...", automation_function_type_to_string (type));
 
   switch (type)
     {

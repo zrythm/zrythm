@@ -20,8 +20,7 @@
 #include <gtksourceview/gtksource.h>
 #pragma GCC diagnostic pop
 
-#define TEXT_EXPANDER_WIDGET_TYPE \
-  (text_expander_widget_get_type ())
+#define TEXT_EXPANDER_WIDGET_TYPE (text_expander_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TextExpanderWidget,
   text_expander_widget,

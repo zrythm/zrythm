@@ -46,8 +46,7 @@ tracklist_selections_init_loaded (TracklistSelections * self)
  * Gets highest track in the selections.
  */
 Track *
-tracklist_selections_get_highest_track (
-  TracklistSelections * ts)
+tracklist_selections_get_highest_track (TracklistSelections * ts)
 {
   Track * track;
   int     min_pos = 1000;
@@ -70,8 +69,7 @@ tracklist_selections_get_highest_track (
  * Gets lowest track in the selections.
  */
 Track *
-tracklist_selections_get_lowest_track (
-  TracklistSelections * ts)
+tracklist_selections_get_lowest_track (TracklistSelections * ts)
 {
   Track * track;
   int     max_pos = -1;
@@ -97,8 +95,7 @@ tracklist_selections_get_lowest_track (
 TracklistSelections *
 tracklist_selections_new (bool is_project)
 {
-  TracklistSelections * self =
-    object_new (TracklistSelections);
+  TracklistSelections * self = object_new (TracklistSelections);
 
   self->schema_version = TRACKLIST_SELECTIONS_SCHEMA_VERSION;
 
@@ -128,18 +125,15 @@ tracklist_selections_add_track (
     }
 
   g_debug (
-    "%s currently recording: %d, have channel: %d",
-    track->name,
-    track_type_can_record (track->type)
-      && track_get_recording (track),
+    "%s currently recording: %d, have channel: %d", track->name,
+    track_type_can_record (track->type) && track_get_recording (track),
     track->channel != NULL);
 
   /* if recording is not already on, auto-arm */
   if (
-    ZRYTHM_HAVE_UI
-    && g_settings_get_boolean (S_UI, "track-autoarm")
-    && track_type_can_record (track->type)
-    && !track_get_recording (track) && track->channel)
+    ZRYTHM_HAVE_UI && g_settings_get_boolean (S_UI, "track-autoarm")
+    && track_type_can_record (track->type) && !track_get_recording (track)
+    && track->channel)
     {
       track_set_recording (track, true, fire_events);
       track->record_set_automatically = true;
@@ -153,16 +147,14 @@ tracklist_selections_add_tracks_in_range (
   int                   max_pos,
   bool                  fire_events)
 {
-  g_message (
-    "selecting tracks from %d to %d...", min_pos, max_pos);
+  g_message ("selecting tracks from %d to %d...", min_pos, max_pos);
 
   tracklist_selections_clear (self, fire_events);
 
   for (int i = min_pos; i <= max_pos; i++)
     {
       Track * track = TRACKLIST->tracks[i];
-      tracklist_selections_add_track (
-        self, track, fire_events);
+      tracklist_selections_add_track (self, track, fire_events);
     }
 
   g_message ("done");
@@ -172,9 +164,7 @@ tracklist_selections_add_tracks_in_range (
  * Clears the selections.
  */
 void
-tracklist_selections_clear (
-  TracklistSelections * self,
-  const bool            fire_events)
+tracklist_selections_clear (TracklistSelections * self, const bool fire_events)
 {
   g_message ("clearing tracklist selections...");
 
@@ -195,9 +185,7 @@ tracklist_selections_clear (
         }
     }
 
-  if (
-    fire_events && self->is_project && ZRYTHM_HAVE_UI
-    && PROJECT->loaded)
+  if (fire_events && self->is_project && ZRYTHM_HAVE_UI && PROJECT->loaded)
     {
       EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
     }
@@ -210,8 +198,7 @@ tracklist_selections_clear (
  * the selection are also selected.
  */
 void
-tracklist_selections_select_foldable_children (
-  TracklistSelections * self)
+tracklist_selections_select_foldable_children (TracklistSelections * self)
 {
   int num_tracklist_sel = self->num_tracks;
   for (int i = 0; i < num_tracklist_sel; i++)
@@ -222,13 +209,11 @@ tracklist_selections_select_foldable_children (
         {
           for (int j = 1; j < cur_track->size; j++)
             {
-              Track * child_track =
-                TRACKLIST->tracks[j + cur_idx];
+              Track * child_track = TRACKLIST->tracks[j + cur_idx];
               if (!track_is_selected (child_track))
                 {
                   track_select (
-                    child_track, F_SELECT, F_NOT_EXCLUSIVE,
-                    F_NO_PUBLISH_EVENTS);
+                    child_track, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
                 }
             }
         }
@@ -253,8 +238,7 @@ tracklist_selections_handle_click (
           if (TRACKLIST_SELECTIONS->num_tracks > 1)
             {
               track_select (
-                track, F_NO_SELECT, F_NOT_EXCLUSIVE,
-                F_PUBLISH_EVENTS);
+                track, F_NO_SELECT, F_NOT_EXCLUSIVE, F_PUBLISH_EVENTS);
             }
         }
       else
@@ -269,40 +253,34 @@ tracklist_selections_handle_click (
           if (TRACKLIST_SELECTIONS->num_tracks > 0)
             {
               Track * highest =
-                tracklist_selections_get_highest_track (
-                  TRACKLIST_SELECTIONS);
+                tracklist_selections_get_highest_track (TRACKLIST_SELECTIONS);
               Track * lowest =
-                tracklist_selections_get_lowest_track (
-                  TRACKLIST_SELECTIONS);
+                tracklist_selections_get_lowest_track (TRACKLIST_SELECTIONS);
               g_return_if_fail (
-                IS_TRACK_AND_NONNULL (highest)
-                && IS_TRACK_AND_NONNULL (lowest));
+                IS_TRACK_AND_NONNULL (highest) && IS_TRACK_AND_NONNULL (lowest));
               if (track->pos > highest->pos)
                 {
                   /* select all tracks in between */
                   tracklist_selections_add_tracks_in_range (
-                    TRACKLIST_SELECTIONS, highest->pos,
-                    track->pos, F_PUBLISH_EVENTS);
+                    TRACKLIST_SELECTIONS, highest->pos, track->pos,
+                    F_PUBLISH_EVENTS);
                 }
               else if (track->pos < lowest->pos)
                 {
                   /* select all tracks in between */
                   tracklist_selections_add_tracks_in_range (
-                    TRACKLIST_SELECTIONS, track->pos,
-                    lowest->pos, F_PUBLISH_EVENTS);
+                    TRACKLIST_SELECTIONS, track->pos, lowest->pos,
+                    F_PUBLISH_EVENTS);
                 }
             }
         }
       else if (ctrl)
         {
-          track_select (
-            track, F_SELECT, F_NOT_EXCLUSIVE,
-            F_PUBLISH_EVENTS);
+          track_select (track, F_SELECT, F_NOT_EXCLUSIVE, F_PUBLISH_EVENTS);
         }
       else
         {
-          track_select (
-            track, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
+          track_select (track, F_SELECT, F_EXCLUSIVE, F_PUBLISH_EVENTS);
         }
     }
 }
@@ -313,9 +291,7 @@ tracklist_selections_handle_click (
  * @param visible_only Only select visible tracks.
  */
 void
-tracklist_selections_select_all (
-  TracklistSelections * ts,
-  int                   visible_only)
+tracklist_selections_select_all (TracklistSelections * ts, int visible_only)
 {
   Track * track;
   for (int i = 0; i < TRACKLIST->num_tracks; i++)
@@ -401,8 +377,7 @@ tracklist_selections_contains_undeletable_track (
 }
 
 bool
-tracklist_selections_contains_uncopyable_track (
-  const TracklistSelections * self)
+tracklist_selections_contains_uncopyable_track (const TracklistSelections * self)
 {
   for (int i = 0; i < self->num_tracks; i++)
     {
@@ -473,9 +448,7 @@ tracklist_selections_contains_soloed_track (
  *   unmuted tracks.
  */
 bool
-tracklist_selections_contains_muted_track (
-  TracklistSelections * self,
-  bool                  muted)
+tracklist_selections_contains_muted_track (TracklistSelections * self, bool muted)
 {
   for (int i = 0; i < self->num_tracks; i++)
     {
@@ -532,12 +505,9 @@ tracklist_selections_contains_enabled_track (
 }
 
 bool
-tracklist_selections_contains_track (
-  TracklistSelections * self,
-  Track *               track)
+tracklist_selections_contains_track (TracklistSelections * self, Track * track)
 {
-  return array_contains (
-    self->tracks, self->num_tracks, track);
+  return array_contains (self->tracks, self->num_tracks, track);
 }
 
 bool
@@ -567,8 +537,7 @@ tracklist_selections_print (TracklistSelections * self)
   for (int i = 0; i < self->num_tracks; i++)
     {
       track = self->tracks[i];
-      g_message (
-        "[idx %d] %s (pos %d)", i, track->name, track->pos);
+      g_message ("[idx %d] %s (pos %d)", i, track->name, track->pos);
     }
   g_message ("-------- end --------");
 }
@@ -598,14 +567,12 @@ tracklist_selections_select_single (
  * selections.
  */
 void
-tracklist_selections_select_last_visible (
-  TracklistSelections * ts)
+tracklist_selections_select_last_visible (TracklistSelections * ts)
 {
-  Track * track = tracklist_get_last_track (
-    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, true);
+  Track * track =
+    tracklist_get_last_track (TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, true);
   g_warn_if_fail (track);
-  tracklist_selections_select_single (
-    ts, track, F_PUBLISH_EVENTS);
+  tracklist_selections_select_single (ts, track, F_PUBLISH_EVENTS);
 }
 
 static int
@@ -638,9 +605,7 @@ tracklist_selections_sort (TracklistSelections * self, bool asc)
 }
 
 void
-tracklist_selections_get_plugins (
-  TracklistSelections * self,
-  GPtrArray *           arr)
+tracklist_selections_get_plugins (TracklistSelections * self, GPtrArray * arr)
 {
   for (int i = 0; i < self->num_tracks; i++)
     {
@@ -653,8 +618,7 @@ tracklist_selections_get_plugins (
  * Toggle visibility of the selected tracks.
  */
 void
-tracklist_selections_toggle_visibility (
-  TracklistSelections * ts)
+tracklist_selections_toggle_visibility (TracklistSelections * ts)
 {
   Track * track;
   for (int i = 0; i < ts->num_tracks; i++)
@@ -695,8 +659,7 @@ TracklistSelections * tracklist_selections_clone (
 {
   g_return_val_if_fail (!error || !*error, NULL);
 
-  TracklistSelections * self =
-    object_new (TracklistSelections);
+  TracklistSelections * self = object_new (TracklistSelections);
 
   self->is_project = src->is_project;
 
@@ -709,10 +672,8 @@ TracklistSelections * tracklist_selections_clone (
       if (!new_r)
         {
           PROPAGATE_PREFIXED_ERROR (
-            error, err, _ ("Failed to clone track '%s'"),
-            r->name);
-          object_free_w_func_and_null (
-            tracklist_selections_free, self);
+            error, err, _ ("Failed to clone track '%s'"), r->name);
+          object_free_w_func_and_null (tracklist_selections_free, self);
           return NULL;
         }
       array_append (self->tracks, self->num_tracks, new_r);
@@ -728,8 +689,7 @@ TracklistSelections * tracklist_selections_clone (
  * from the clipboard.
  */
 void
-tracklist_selections_post_deserialize (
-  TracklistSelections * self)
+tracklist_selections_post_deserialize (TracklistSelections * self)
 {
   for (int i = 0; i < self->num_tracks; i++)
     {
@@ -738,9 +698,7 @@ tracklist_selections_post_deserialize (
 }
 
 void
-tracklist_selections_paste_to_pos (
-  TracklistSelections * ts,
-  int                   pos)
+tracklist_selections_paste_to_pos (TracklistSelections * ts, int pos)
 {
   GError * err = NULL;
   bool     ret = tracklist_selections_action_perform_copy (
@@ -776,15 +734,14 @@ tracklist_selections_mark_for_bounce (
           track->bounce_to_master = true;
         }
       track_mark_for_bounce (
-        track, F_BOUNCE, F_MARK_REGIONS, F_MARK_CHILDREN,
-        with_parents);
+        track, F_BOUNCE, F_MARK_REGIONS, F_MARK_CHILDREN, with_parents);
     }
 
   if (mark_master)
     {
       track_mark_for_bounce (
-        P_MASTER_TRACK, F_BOUNCE, F_NO_MARK_REGIONS,
-        F_NO_MARK_CHILDREN, F_NO_MARK_PARENTS);
+        P_MASTER_TRACK, F_BOUNCE, F_NO_MARK_REGIONS, F_NO_MARK_CHILDREN,
+        F_NO_MARK_PARENTS);
     }
 }
 
@@ -795,8 +752,7 @@ tracklist_selections_free (TracklistSelections * self)
     {
       for (int i = 0; i < self->num_tracks; i++)
         {
-          g_return_if_fail (
-            IS_TRACK_AND_NONNULL (self->tracks[i]));
+          g_return_if_fail (IS_TRACK_AND_NONNULL (self->tracks[i]));
 
 #if 0
           /* skip project tracks */
@@ -804,12 +760,9 @@ tracklist_selections_free (TracklistSelections * self)
             continue;
 #endif
 
-          track_disconnect (
-            self->tracks[i], F_NO_REMOVE_PL,
-            F_NO_RECALC_GRAPH);
+          track_disconnect (self->tracks[i], F_NO_REMOVE_PL, F_NO_RECALC_GRAPH);
 
-          object_free_w_func_and_null (
-            track_free, self->tracks[i]);
+          object_free_w_func_and_null (track_free, self->tracks[i]);
         }
     }
 

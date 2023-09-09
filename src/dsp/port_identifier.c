@@ -66,9 +66,7 @@ port_identifier_port_group_cmp (const void * p1, const void * p2)
  * @note This frees/allocates memory on \ref dest.
  */
 void
-port_identifier_copy (
-  PortIdentifier *       dest,
-  const PortIdentifier * src)
+port_identifier_copy (PortIdentifier * dest, const PortIdentifier * src)
 {
   g_return_if_fail (dest != src);
   dest->schema_version = src->schema_version;
@@ -90,25 +88,19 @@ port_identifier_copy (
 }
 
 bool
-port_identifier_is_equal (
-  const PortIdentifier * src,
-  const PortIdentifier * dest)
+port_identifier_is_equal (const PortIdentifier * src, const PortIdentifier * dest)
 {
   bool eq =
-    dest->owner_type == src->owner_type
-    && dest->unit == src->unit && dest->type == src->type
-    && dest->flow == src->flow && dest->flags == src->flags
-    && dest->flags2 == src->flags2
+    dest->owner_type == src->owner_type && dest->unit == src->unit
+    && dest->type == src->type && dest->flow == src->flow
+    && dest->flags == src->flags && dest->flags2 == src->flags2
     && dest->track_name_hash == src->track_name_hash;
   if (!eq)
     return false;
 
   if (dest->owner_type == PORT_OWNER_TYPE_PLUGIN)
     {
-      eq =
-        eq
-        && plugin_identifier_is_equal (
-          &dest->plugin_id, &src->plugin_id);
+      eq = eq && plugin_identifier_is_equal (&dest->plugin_id, &src->plugin_id);
     }
 
   /* if LV2 (has symbol) check symbol match,
@@ -163,14 +155,11 @@ port_identifier_print_to_str (
     "type: %s\nflow: %s\nflags: %d %d\nunit: %d\n"
     "port group: %s\next port id: %s\n"
     "track name hash: %u\nport idx: %d\nplugin: %s",
-    self, port_identifier_get_hash (self), self->label,
-    self->sym, self->uri, self->comment,
-    port_owner_type_strings[self->owner_type].str,
-    port_type_strings[self->type].str,
-    port_flow_strings[self->flow].str, self->flags,
-    self->flags2, self->unit, self->port_group,
-    self->ext_port_id, self->track_name_hash,
-    self->port_index, pl_buf);
+    self, port_identifier_get_hash (self), self->label, self->sym, self->uri,
+    self->comment, port_owner_type_strings[self->owner_type].str,
+    port_type_strings[self->type].str, port_flow_strings[self->flow].str,
+    self->flags, self->flags2, self->unit, self->port_group, self->ext_port_id,
+    self->track_name_hash, self->port_index, pl_buf);
 }
 
 void
@@ -220,8 +209,7 @@ port_identifier_get_hash (const void * self)
   hash = hash ^ g_int_hash (&id->unit);
   hash =
     hash
-    ^ hash_get_for_struct_full (
-      state, &id->plugin_id, sizeof (PluginIdentifier));
+    ^ hash_get_for_struct_full (state, &id->plugin_id, sizeof (PluginIdentifier));
   if (id->port_group)
     hash = hash ^ g_str_hash (id->port_group);
   if (id->ext_port_id)

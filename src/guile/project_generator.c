@@ -35,22 +35,18 @@ guile_project_generator_generate_project_from_string (
     }
 
   /* create the project at a temporary path */
-  char * tmp_path =
-    g_dir_make_tmp ("zrythm_guile_prj_gen_XXXXXX", NULL);
+  char *    tmp_path = g_dir_make_tmp ("zrythm_guile_prj_gen_XXXXXX", NULL);
   GError *  err = NULL;
   Project * prj = project_create_default (
-    use_tmp_project ? PROJECT : NULL, tmp_path, true, true,
-    &err);
+    use_tmp_project ? PROJECT : NULL, tmp_path, true, true, &err);
   if (!prj)
     {
-      HANDLE_ERROR_LITERAL (
-        err, "Failed to create default project");
+      HANDLE_ERROR_LITERAL (err, "Failed to create default project");
       return -1;
     }
 
   /* save the project at the given path */
-  bool success = project_save (
-    prj, prj_path, false, false, F_NO_ASYNC, &err);
+  bool success = project_save (prj, prj_path, false, false, F_NO_ASYNC, &err);
   if (!success)
     {
       HANDLE_ERROR_LITERAL (err, "Failed to save project");
@@ -66,8 +62,8 @@ guile_project_generator_generate_project_from_string (
   PROJECT = prj;
 
   /* run the script to fill in the project */
-  char * markup = (char *) guile_run_script (
-    script, GUILE_SCRIPT_LANGUAGE_SCHEME);
+  char * markup =
+    (char *) guile_run_script (script, GUILE_SCRIPT_LANGUAGE_SCHEME);
   g_message ("\nResult:\n%s", markup);
 
   if (!guile_script_succeeded (markup))
@@ -82,8 +78,7 @@ guile_project_generator_generate_project_from_string (
     }
 
   /* save the project at the given path */
-  success = project_save (
-    prj, prj_path, false, false, F_NO_ASYNC, &err);
+  success = project_save (prj, prj_path, false, false, F_NO_ASYNC, &err);
   if (!success)
     {
       HANDLE_ERROR_LITERAL (err, "Failed to save project");
@@ -117,8 +112,7 @@ guile_project_generator_generate_project_from_file (
   GError * err = NULL;
   char *   contents;
   gsize    contents_len;
-  g_file_get_contents (
-    filepath, &contents, &contents_len, &err);
+  g_file_get_contents (filepath, &contents, &contents_len, &err);
   if (err)
     {
       g_warning ("Failed to open file: %s", err->message);

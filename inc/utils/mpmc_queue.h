@@ -67,10 +67,10 @@ typedef struct cell_t
  */
 typedef struct MPMCQueue
 {
-  char     pad0[64];
-  cell_t * buffer;
-  size_t   buffer_mask;
-  char     pad1[64 - sizeof (cell_t *) - sizeof (size_t)];
+  char            pad0[64];
+  cell_t *        buffer;
+  size_t          buffer_mask;
+  char            pad1[64 - sizeof (cell_t *) - sizeof (size_t)];
   MPMC_QUEUE_TYPE enqueue_pos;
   char            pad2[64 - sizeof (size_t)];
   MPMC_QUEUE_TYPE dequeue_pos;

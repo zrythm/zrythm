@@ -58,8 +58,7 @@ typedef enum
   Z_PLUGINS_LV2_LV2_STATE_ERROR_FAILED,
 } ZPluginsCarlaNativePluginError;
 
-#define Z_PLUGINS_LV2_LV2_STATE_ERROR \
-  z_plugins_lv2_lv2_state_error_quark ()
+#define Z_PLUGINS_LV2_LV2_STATE_ERROR z_plugins_lv2_lv2_state_error_quark ()
 GQuark
 z_plugins_lv2_lv2_state_error_quark (void);
 G_DEFINE_QUARK (
@@ -187,9 +186,7 @@ lv2_state_make_path_save (
  * and this function must return an absolute path.
  */
 char *
-lv2_state_make_path_temp (
-  LV2_State_Make_Path_Handle handle,
-  const char *               path)
+lv2_state_make_path_temp (LV2_State_Make_Path_Handle handle, const char * path)
 {
   Lv2Plugin * pl = (Lv2Plugin *) handle;
   g_return_val_if_fail (IS_LV2_PLUGIN (pl), NULL);
@@ -217,26 +214,23 @@ lv2_state_make_path_temp (
 LilvState *
 lv2_state_save_to_file (Lv2Plugin * pl, bool is_backup)
 {
-  g_return_val_if_fail (
-    pl->plugin->instantiated && pl->instance, NULL);
+  g_return_val_if_fail (pl->plugin->instantiated && pl->instance, NULL);
 
-  char * abs_state_dir =
-    plugin_get_abs_state_dir (pl->plugin, is_backup, true);
-  char * copy_dir = project_get_path (
-    PROJECT, PROJECT_PATH_PLUGIN_EXT_COPIES, false);
-  char * link_dir = project_get_path (
-    PROJECT, PROJECT_PATH_PLUGIN_EXT_LINKS, false);
+  char * abs_state_dir = plugin_get_abs_state_dir (pl->plugin, is_backup, true);
+  char * copy_dir =
+    project_get_path (PROJECT, PROJECT_PATH_PLUGIN_EXT_COPIES, false);
+  char * link_dir =
+    project_get_path (PROJECT, PROJECT_PATH_PLUGIN_EXT_LINKS, false);
 
   LilvState * const state = lilv_state_new_from_instance (
-    pl->lilv_plugin, pl->instance, &pl->map, pl->temp_dir,
-    copy_dir, link_dir, abs_state_dir,
-    lv2_plugin_get_port_value, pl, LV2_STATE_IS_PORTABLE,
+    pl->lilv_plugin, pl->instance, &pl->map, pl->temp_dir, copy_dir, link_dir,
+    abs_state_dir, lv2_plugin_get_port_value, pl, LV2_STATE_IS_PORTABLE,
     pl->state_features);
   g_return_val_if_fail (state, NULL);
 
   int rc = lilv_state_save (
-    LILV_WORLD, &pl->map, &pl->unmap, state, NULL,
-    abs_state_dir, STATE_FILENAME);
+    LILV_WORLD, &pl->map, &pl->unmap, state, NULL, abs_state_dir,
+    STATE_FILENAME);
   if (rc)
     {
       g_critical ("Lilv save state failed");
@@ -259,11 +253,9 @@ LilvState *
 lv2_state_save_to_memory (Lv2Plugin * plugin)
 {
   LilvState * state = lilv_state_new_from_instance (
-    plugin->lilv_plugin, plugin->instance, &plugin->map,
-    plugin->temp_dir, NULL, NULL, NULL,
-    lv2_plugin_get_port_value, plugin,
-    LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE,
-    plugin->state_features);
+    plugin->lilv_plugin, plugin->instance, &plugin->map, plugin->temp_dir, NULL,
+    NULL, NULL, lv2_plugin_get_port_value, plugin,
+    LV2_STATE_IS_POD | LV2_STATE_IS_PORTABLE, plugin->state_features);
 
   g_message (
     "Lilv state saved to memory for plugin %s",
@@ -288,8 +280,7 @@ set_port_value (
   Port * port = plugin_get_port_by_symbol (pl, port_symbol);
   if (!port)
     {
-      g_warning (
-        "[%s] Preset port %s is missing", pl_str, port_symbol);
+      g_warning ("[%s] Preset port %s is missing", pl_str, port_symbol);
       return;
     }
 
@@ -307,14 +298,11 @@ set_port_value (
   else
     {
       g_warning (
-        "[%s] Preset `%s' value has bad type <%s>", pl_str,
-        port_symbol,
+        "[%s] Preset `%s' value has bad type <%s>", pl_str, port_symbol,
         plugin->unmap.unmap (plugin->unmap.handle, type));
       return;
     }
-  g_debug (
-    "(lv2 state): setting %s=%f...", port_symbol,
-    (double) fvalue);
+  g_debug ("(lv2 state): setting %s=%f...", port_symbol, (double) fvalue);
 
   if (TRANSPORT->play_state != PLAYSTATE_ROLLING)
     {
@@ -325,21 +313,19 @@ set_port_value (
     {
       /* Send value to running plugin */
       lv2_ui_send_event_from_ui_to_plugin (
-        plugin, port->lilv_port_index, sizeof (fvalue), 0,
-        &fvalue);
+        plugin, port->lilv_port_index, sizeof (fvalue), 0, &fvalue);
     }
 
   if (pl->visible)
     {
       /* update UI */
-      char buf[sizeof (Lv2ControlChange) + sizeof (fvalue)];
+      char               buf[sizeof (Lv2ControlChange) + sizeof (fvalue)];
       Lv2ControlChange * ev = (Lv2ControlChange *) buf;
       ev->index = port->lilv_port_index;
       ev->protocol = 0;
       ev->size = sizeof (fvalue);
       *(float *) ev->body = fvalue;
-      zix_ring_write (
-        plugin->plugin_to_ui_events, buf, sizeof (buf));
+      zix_ring_write (plugin->plugin_to_ui_events, buf, sizeof (buf));
     }
 }
 
@@ -359,16 +345,14 @@ lv2_state_apply_state (Lv2Plugin * plugin, LilvState * state)
         "plugin '%s' does not support safe "
         "restore, pausing engine",
         pl_str);
-      engine_wait_for_pause (
-        AUDIO_ENGINE, &engine_state, Z_F_NO_FORCE, true);
+      engine_wait_for_pause (AUDIO_ENGINE, &engine_state, Z_F_NO_FORCE, true);
       g_return_if_fail (!AUDIO_ENGINE->run);
       engine_paused = true;
     }
 
   g_message ("applying state for LV2 plugin '%s'...", pl_str);
   lilv_state_restore (
-    state, plugin->instance, set_port_value, plugin, 0,
-    plugin->state_features);
+    state, plugin->instance, set_port_value, plugin, 0, plugin->state_features);
   g_message ("LV2 state applied for plugin '%s'", pl_str);
 
   if (engine_paused)
@@ -396,13 +380,13 @@ lv2_state_apply_preset (
   lilv_state_free (plugin->preset);
   if (preset)
     {
-      plugin->preset = lilv_state_new_from_world (
-        LILV_WORLD, &plugin->map, preset);
+      plugin->preset =
+        lilv_state_new_from_world (LILV_WORLD, &plugin->map, preset);
     }
   else
     {
-      plugin->preset = lilv_state_new_from_file (
-        LILV_WORLD, &plugin->map, NULL, path);
+      plugin->preset =
+        lilv_state_new_from_file (LILV_WORLD, &plugin->map, NULL, path);
     }
 
   if (!plugin->preset)
@@ -430,9 +414,8 @@ lv2_state_save_preset (
   const char * filename)
 {
   LilvState * const state = lilv_state_new_from_instance (
-    plugin->lilv_plugin, plugin->instance, &plugin->map,
-    plugin->temp_dir, dir, dir, dir, lv2_plugin_get_port_value,
-    plugin, LV2_STATE_IS_PORTABLE, NULL);
+    plugin->lilv_plugin, plugin->instance, &plugin->map, plugin->temp_dir, dir,
+    dir, dir, lv2_plugin_get_port_value, plugin, LV2_STATE_IS_PORTABLE, NULL);
 
   if (label)
     {
@@ -440,8 +423,7 @@ lv2_state_save_preset (
     }
 
   int ret = lilv_state_save (
-    LILV_WORLD, &plugin->map, &plugin->unmap, state, uri, dir,
-    filename);
+    LILV_WORLD, &plugin->map, &plugin->unmap, state, uri, dir, filename);
 
   lilv_state_free (plugin->preset);
   plugin->preset = state;
@@ -460,8 +442,7 @@ lv2_state_delete_current_preset (Lv2Plugin * plugin)
       return 1;
     }
 
-  lilv_world_unload_resource (
-    LILV_WORLD, lilv_state_get_uri (plugin->preset));
+  lilv_world_unload_resource (LILV_WORLD, lilv_state_get_uri (plugin->preset));
   lilv_state_delete (LILV_WORLD, plugin->preset);
   lilv_state_free (plugin->preset);
   plugin->preset = NULL;
@@ -469,10 +450,7 @@ lv2_state_delete_current_preset (Lv2Plugin * plugin)
 }
 
 int
-lv2_state_load_presets (
-  Lv2Plugin * plugin,
-  PresetSink  sink,
-  void *      data)
+lv2_state_load_presets (Lv2Plugin * plugin, PresetSink sink, void * data)
 {
   LilvNodes * presets = lilv_plugin_get_related (
     plugin->lilv_plugin, PM_GET_NODE (LV2_PRESETS__Preset));
@@ -486,20 +464,17 @@ lv2_state_load_presets (
         }
 
       LilvNodes * labels = lilv_world_find_nodes (
-        LILV_WORLD, preset,
-        PM_GET_NODE (LILV_NS_RDFS "label"), NULL);
+        LILV_WORLD, preset, PM_GET_NODE (LILV_NS_RDFS "label"), NULL);
       if (labels)
         {
-          const LilvNode * label =
-            lilv_nodes_get_first (labels);
+          const LilvNode * label = lilv_nodes_get_first (labels);
           sink (plugin, preset, label, data);
           lilv_nodes_free (labels);
         }
       else
         {
           g_message (
-            "Preset <%s> has no rdfs:label\n",
-            lilv_node_as_string (preset));
+            "Preset <%s> has no rdfs:label\n", lilv_node_as_string (preset));
         }
     }
   lilv_nodes_free (presets);

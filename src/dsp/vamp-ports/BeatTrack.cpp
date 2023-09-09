@@ -51,8 +51,8 @@ public:
 };
 
 BeatTracker::BeatTracker (float inputSampleRate)
-    : Vamp::Plugin (inputSampleRate), m_d (0),
-      m_method (METHOD_NEW), m_dfType (DF_COMPLEXSD),
+    : Vamp::Plugin (inputSampleRate), m_d (0), m_method (METHOD_NEW),
+      m_dfType (DF_COMPLEXSD),
       m_alpha (0.9), // MEPD new exposed parameter for beat tracker, default value = 0.9 (as old version)
       m_tightness (4.),
       m_inputtempo (
@@ -127,8 +127,7 @@ BeatTracker::getParameterDescriptors () const
 
   desc.identifier = "dftype";
   desc.name = "Onset Detection Function Type";
-  desc.description =
-    "Method used to calculate the onset detection function";
+  desc.description = "Method used to calculate the onset detection function";
   desc.minValue = 0;
   desc.maxValue = 4;
   desc.defaultValue = 3;
@@ -288,10 +287,7 @@ BeatTracker::setParameter (std::string name, float value)
 }
 
 bool
-BeatTracker::initialise (
-  size_t channels,
-  size_t stepSize,
-  size_t blockSize)
+BeatTracker::initialise (size_t channels, size_t stepSize, size_t blockSize)
 {
   if (m_d)
     {
@@ -299,13 +295,11 @@ BeatTracker::initialise (
       m_d = 0;
     }
 
-  if (
-    channels < getMinChannelCount ()
-    || channels > getMaxChannelCount ())
+  if (channels < getMinChannelCount () || channels > getMaxChannelCount ())
     {
       std::cerr
-        << "BeatTracker::initialise: Unsupported channel count: "
-        << channels << std::endl;
+        << "BeatTracker::initialise: Unsupported channel count: " << channels
+        << std::endl;
       return false;
     }
 
@@ -313,8 +307,8 @@ BeatTracker::initialise (
     {
       std::cerr
         << "ERROR: BeatTracker::initialise: Unsupported step size for this sample rate: "
-        << stepSize << " (wanted "
-        << (getPreferredStepSize ()) << ")" << std::endl;
+        << stepSize << " (wanted " << (getPreferredStepSize ()) << ")"
+        << std::endl;
       return false;
     }
 
@@ -322,8 +316,8 @@ BeatTracker::initialise (
     {
       std::cerr
         << "WARNING: BeatTracker::initialise: Sub-optimal block size for this sample rate: "
-        << blockSize << " (wanted "
-        << getPreferredBlockSize () << ")" << std::endl;
+        << blockSize << " (wanted " << getPreferredBlockSize () << ")"
+        << std::endl;
       //        return false;
     }
 
@@ -350,8 +344,7 @@ BeatTracker::reset ()
 size_t
 BeatTracker::getPreferredStepSize () const
 {
-  size_t step =
-    size_t (m_inputSampleRate * m_stepSecs + 0.0001);
+  size_t step = size_t (m_inputSampleRate * m_stepSecs + 0.0001);
   //    std::cerr << "BeatTracker::getPreferredStepSize: input sample rate is " << m_inputSampleRate << ", step size is " << step << std::endl;
   return step;
 }
@@ -385,8 +378,7 @@ BeatTracker::getOutputDescriptors () const
   OutputDescriptor df;
   df.identifier = "detection_fn";
   df.name = "Onset Detection Function";
-  df.description =
-    "Probability function of note onset likelihood";
+  df.description = "Probability function of note onset likelihood";
   df.unit = "";
   df.hasFixedBinCount = true;
   df.binCount = 1;
@@ -438,8 +430,7 @@ BeatTracker::process (
       imags[i] = inputBuffers[0][i * 2 + 1];
     }
 
-  double output =
-    m_d->df->processFrequencyDomain (reals, imags);
+  double output = m_d->df->processFrequencyDomain (reals, imags);
 
   delete[] reals;
   delete[] imags;
@@ -455,8 +446,7 @@ BeatTracker::process (
   feature.hasTimestamp = false;
   feature.values.push_back (output);
 
-  returnFeatures[1].push_back (
-    feature); // detection function is output 1
+  returnFeatures[1].push_back (feature); // detection function is output 1
   return returnFeatures;
 }
 
@@ -495,8 +485,7 @@ BeatTracker::beatTrackOld ()
   TempoTrack tempoTracker (ttParams);
 
   vector<double> tempi;
-  vector<int>    beats =
-    tempoTracker.process (m_d->dfOutput, &tempi);
+  vector<int>    beats = tempoTracker.process (m_d->dfOutput, &tempi);
 
   FeatureSet returnFeatures;
 
@@ -511,8 +500,7 @@ BeatTracker::beatTrackOld ()
       feature.hasTimestamp = true;
       feature.timestamp =
         m_d->origin
-        + Vamp::RealTime::frame2RealTime (
-          frame, lrintf (m_inputSampleRate));
+        + Vamp::RealTime::frame2RealTime (frame, lrintf (m_inputSampleRate));
 
       float bpm = 0.0;
       int   frameIncrement = 0;
@@ -520,8 +508,7 @@ BeatTracker::beatTrackOld ()
       if (i < beats.size () - 1)
         {
 
-          frameIncrement =
-            (beats[i + 1] - beats[i]) * m_d->dfConfig.stepSize;
+          frameIncrement = (beats[i + 1] - beats[i]) * m_d->dfConfig.stepSize;
 
           // one beat is frameIncrement frames, so there are
           // samplerate/frameIncrement bps, so
@@ -529,16 +516,14 @@ BeatTracker::beatTrackOld ()
 
           if (frameIncrement > 0)
             {
-              bpm =
-                (60.0 * m_inputSampleRate) / frameIncrement;
+              bpm = (60.0 * m_inputSampleRate) / frameIncrement;
               bpm = int (bpm * 100.0 + 0.5) / 100.0;
               sprintf (label, "%.2f bpm", bpm);
               feature.label = label;
             }
         }
 
-      returnFeatures[0].push_back (
-        feature); // beats are output 0
+      returnFeatures[0].push_back (feature); // beats are output 0
     }
 
   double prevTempo = 0.0;
@@ -546,26 +531,21 @@ BeatTracker::beatTrackOld ()
   for (size_t i = 0; i < tempi.size (); ++i)
     {
 
-      size_t frame =
-        i * m_d->dfConfig.stepSize * ttParams.lagLength;
+      size_t frame = i * m_d->dfConfig.stepSize * ttParams.lagLength;
 
       //        std::cerr << "unit " << i << ", step size " << m_d->dfConfig.stepSize << ", hop " << ttParams.lagLength << ", frame = " << frame << std::endl;
 
-      if (
-        tempi[i] > 1
-        && int (tempi[i] * 100) != int (prevTempo * 100))
+      if (tempi[i] > 1 && int (tempi[i] * 100) != int (prevTempo * 100))
         {
           Feature feature;
           feature.hasTimestamp = true;
           feature.timestamp =
             m_d->origin
-            + Vamp::RealTime::frame2RealTime (
-              frame, lrintf (m_inputSampleRate));
+            + Vamp::RealTime::frame2RealTime (frame, lrintf (m_inputSampleRate));
           feature.values.push_back (tempi[i]);
           sprintf (label, "%.2f bpm", tempi[i]);
           feature.label = label;
-          returnFeatures[2].push_back (
-            feature); // tempo is output 2
+          returnFeatures[2].push_back (feature); // tempo is output 2
           prevTempo = tempi[i];
         }
     }
@@ -603,14 +583,12 @@ BeatTracker::beatTrackNew ()
   TempoTrackV2 tt (m_inputSampleRate, m_d->dfConfig.stepSize);
 
   // MEPD - note this function is now passed 2 new parameters, m_inputtempo and m_constraintempo
-  tt.calculateBeatPeriod (
-    df, beatPeriod, tempi, m_inputtempo, m_constraintempo);
+  tt.calculateBeatPeriod (df, beatPeriod, tempi, m_inputtempo, m_constraintempo);
 
   vector<double> beats;
 
   // MEPD - note this function is now passed 2 new parameters, m_alpha and m_tightness
-  tt.calculateBeats (
-    df, beatPeriod, beats, m_alpha, m_tightness);
+  tt.calculateBeats (df, beatPeriod, beats, m_alpha, m_tightness);
 
   FeatureSet returnFeatures;
 
@@ -625,8 +603,7 @@ BeatTracker::beatTrackNew ()
       feature.hasTimestamp = true;
       feature.timestamp =
         m_d->origin
-        + Vamp::RealTime::frame2RealTime (
-          frame, lrintf (m_inputSampleRate));
+        + Vamp::RealTime::frame2RealTime (frame, lrintf (m_inputSampleRate));
 
       float bpm = 0.0;
       int   frameIncrement = 0;
@@ -634,8 +611,7 @@ BeatTracker::beatTrackNew ()
       if (i + 1 < beats.size ())
         {
 
-          frameIncrement =
-            (beats[i + 1] - beats[i]) * m_d->dfConfig.stepSize;
+          frameIncrement = (beats[i + 1] - beats[i]) * m_d->dfConfig.stepSize;
 
           // one beat is frameIncrement frames, so there are
           // samplerate/frameIncrement bps, so
@@ -643,16 +619,14 @@ BeatTracker::beatTrackNew ()
 
           if (frameIncrement > 0)
             {
-              bpm =
-                (60.0 * m_inputSampleRate) / frameIncrement;
+              bpm = (60.0 * m_inputSampleRate) / frameIncrement;
               bpm = int (bpm * 100.0 + 0.5) / 100.0;
               sprintf (label, "%.2f bpm", bpm);
               feature.label = label;
             }
         }
 
-      returnFeatures[0].push_back (
-        feature); // beats are output 0
+      returnFeatures[0].push_back (feature); // beats are output 0
     }
 
   double prevTempo = 0.0;
@@ -662,21 +636,17 @@ BeatTracker::beatTrackNew ()
 
       size_t frame = i * m_d->dfConfig.stepSize;
 
-      if (
-        tempi[i] > 1
-        && int (tempi[i] * 100) != int (prevTempo * 100))
+      if (tempi[i] > 1 && int (tempi[i] * 100) != int (prevTempo * 100))
         {
           Feature feature;
           feature.hasTimestamp = true;
           feature.timestamp =
             m_d->origin
-            + Vamp::RealTime::frame2RealTime (
-              frame, lrintf (m_inputSampleRate));
+            + Vamp::RealTime::frame2RealTime (frame, lrintf (m_inputSampleRate));
           feature.values.push_back (tempi[i]);
           sprintf (label, "%.2f bpm", tempi[i]);
           feature.label = label;
-          returnFeatures[2].push_back (
-            feature); // tempo is output 2
+          returnFeatures[2].push_back (feature); // tempo is output 2
           prevTempo = tempi[i];
         }
     }

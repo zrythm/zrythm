@@ -31,9 +31,7 @@ G_DEFINE_TYPE_WITH_CODE (
   FaderWidget,
   fader_widget,
   GTK_TYPE_WIDGET,
-  G_IMPLEMENT_INTERFACE (
-    GTK_TYPE_ACCESSIBLE_RANGE,
-    accessible_range_init))
+  G_IMPLEMENT_INTERFACE (GTK_TYPE_ACCESSIBLE_RANGE, accessible_range_init))
 
 static gboolean
 accessible_range_set_current_value (
@@ -42,8 +40,7 @@ accessible_range_set_current_value (
 {
   FaderWidget * self = Z_FADER_WIDGET (accessible_range);
   float         cur_amp = fader_get_amp (self->fader);
-  fader_set_amp_with_action (
-    self->fader, cur_amp, (float) value, true);
+  fader_set_amp_with_action (self->fader, cur_amp, (float) value, true);
 
   return TRUE;
 }
@@ -51,8 +48,7 @@ accessible_range_set_current_value (
 static void
 accessible_range_init (GtkAccessibleRangeInterface * iface)
 {
-  iface->set_current_value =
-    accessible_range_set_current_value;
+  iface->set_current_value = accessible_range_set_current_value;
 }
 
 static void
@@ -72,16 +68,11 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   GskRoundedRect rounded_rect;
   gsk_rounded_rect_init_from_rect (
     &rounded_rect,
-    &GRAPHENE_RECT_INIT (
-      0.f, 0.f, (float) width, (float) height),
-    fill_radius);
+    &GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height), fill_radius);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
   gtk_snapshot_append_color (
-    snapshot,
-    &Z_GDK_RGBA_INIT (
-      0.1f, 0.1f, 0.1f, self->hover ? 0.8f : 0.6f),
-    &GRAPHENE_RECT_INIT (
-      0.f, 0.f, (float) width, (float) height));
+    snapshot, &Z_GDK_RGBA_INIT (0.1f, 0.1f, 0.1f, self->hover ? 0.8f : 0.6f),
+    &GRAPHENE_RECT_INIT (0.f, 0.f, (float) width, (float) height));
   gtk_snapshot_pop (snapshot);
 
   /*const int padding = 2;*/
@@ -94,17 +85,13 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   double       intensity = fader_val;
   const double intensity_inv = 1.0 - intensity;
   double       r =
-    intensity_inv * self->end_color.red
-    + intensity * self->start_color.red;
+    intensity_inv * self->end_color.red + intensity * self->start_color.red;
   double g =
-    intensity_inv * self->end_color.green
-    + intensity * self->start_color.green;
+    intensity_inv * self->end_color.green + intensity * self->start_color.green;
   double b =
-    intensity_inv * self->end_color.blue
-    + intensity * self->start_color.blue;
+    intensity_inv * self->end_color.blue + intensity * self->start_color.blue;
   double a =
-    intensity_inv * self->end_color.alpha
-    + intensity * self->start_color.alpha;
+    intensity_inv * self->end_color.alpha + intensity * self->start_color.alpha;
 
   if (!self->hover)
     a = 0.9f;
@@ -113,20 +100,15 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   const float     border_width = 3.f;
   graphene_rect_t value_graphene_rect = GRAPHENE_RECT_INIT (
-    border_width, border_width,
-    (float) width - border_width * 2.f,
+    border_width, border_width, (float) width - border_width * 2.f,
     (float) height - border_width * 2.f);
   gsk_rounded_rect_init_from_rect (
     &rounded_rect, &value_graphene_rect, fill_radius);
   gtk_snapshot_push_rounded_clip (snapshot, &rounded_rect);
   gtk_snapshot_append_color (
-    snapshot,
-    &Z_GDK_RGBA_INIT (
-      (float) r, (float) g, (float) b, (float) a),
+    snapshot, &Z_GDK_RGBA_INIT ((float) r, (float) g, (float) b, (float) a),
     &GRAPHENE_RECT_INIT (
-      0.f,
-      ((float) height - value_px)
-        + (float) inner_line_width * 2.f,
+      0.f, ((float) height - value_px) + (float) inner_line_width * 2.f,
       (float) width, value_px));
   gtk_snapshot_pop (snapshot);
 
@@ -162,9 +144,7 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
   gtk_snapshot_append_color (
     snapshot, &color,
     &GRAPHENE_RECT_INIT (
-      border_width,
-      ((float) height - value_px)
-        - (float) inner_line_width / 2.f,
+      border_width, ((float) height - value_px) - (float) inner_line_width / 2.f,
       (float) width - border_width * 2.f, inner_line_width));
 
   /* draw value */
@@ -175,18 +155,15 @@ fader_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       pango_layout_set_text (self->layout, val_str, -1);
       int x_px, y_px;
       pango_layout_get_pixel_size (self->layout, &x_px, &y_px);
-      float start_x = (float) width / 2.f - x_px / 2.f;
-      bool  show_text_at_bottom = y_px > (height - value_px);
-      float start_y =
-        show_text_at_bottom ? height / 2.f - y_px / 2.f : 0;
+      float   start_x = (float) width / 2.f - x_px / 2.f;
+      bool    show_text_at_bottom = y_px > (height - value_px);
+      float   start_y = show_text_at_bottom ? height / 2.f - y_px / 2.f : 0;
       GdkRGBA text_color =
         show_text_at_bottom
           ? Z_GDK_RGBA_INIT (1, 1, 1, 1)
           : Z_GDK_RGBA_INIT (1, 1, 1, 1);
-      gtk_snapshot_translate (
-        snapshot, &GRAPHENE_POINT_INIT (start_x, start_y));
-      gtk_snapshot_append_layout (
-        snapshot, self->layout, &text_color);
+      gtk_snapshot_translate (snapshot, &GRAPHENE_POINT_INIT (start_x, start_y));
+      gtk_snapshot_append_layout (snapshot, self->layout, &text_color);
     }
 }
 
@@ -203,9 +180,7 @@ on_enter (
 }
 
 static void
-on_leave (
-  GtkEventControllerMotion * motion_controller,
-  gpointer                   user_data)
+on_leave (GtkEventControllerMotion * motion_controller, gpointer user_data)
 {
   FaderWidget * self = Z_FADER_WIDGET (user_data);
   self->hover = false;
@@ -251,8 +226,7 @@ drag_update (
   int use_y = 1;
 
   /*double multiplier = 0.005;*/
-  double diff =
-    use_y ? offset_y - self->last_y : offset_x - self->last_x;
+  double diff = use_y ? offset_y - self->last_y : offset_x - self->last_x;
   double height = gtk_widget_get_height (GTK_WIDGET (self));
   double adjusted_diff = diff / height;
 
@@ -264,8 +238,8 @@ drag_update (
       adjusted_diff *= 0.4;
     }
 
-  double new_fader_val = CLAMP (
-    (double) self->fader->fader_val + adjusted_diff, 0.0, 1.0);
+  double new_fader_val =
+    CLAMP ((double) self->fader->fader_val + adjusted_diff, 0.0, 1.0);
   fader_set_fader_val (self->fader, (float) new_fader_val);
   self->last_x = offset_x;
   self->last_y = offset_y;
@@ -297,8 +271,7 @@ drag_end (
   g_return_if_fail (IS_FADER (self->fader));
 
   float cur_amp = fader_get_amp (self->fader);
-  fader_set_amp_with_action (
-    self->fader, self->amp_at_start, cur_amp, true);
+  fader_set_amp_with_action (self->fader, self->amp_at_start, cur_amp, true);
 
   self->dragging = false;
 }
@@ -318,8 +291,7 @@ show_context_menu (FaderWidget * self, double x, double y)
   menuitem = CREATE_MIDI_LEARN_MENU_ITEM (tmp);
   g_menu_append_item (menu, menuitem);
 
-  z_gtk_show_context_menu_from_g_menu (
-    self->popover_menu, x, y, menu);
+  z_gtk_show_context_menu_from_g_menu (self->popover_menu, x, y, menu);
 }
 
 static void
@@ -337,9 +309,7 @@ on_right_click (
 }
 
 static void
-set_fader_val_with_action_from_db (
-  void *       object,
-  const char * str)
+set_fader_val_with_action_from_db (void * object, const char * str)
 {
   Fader * fader = (Fader *) object;
   bool    is_valid = false;
@@ -355,8 +325,7 @@ set_fader_val_with_action_from_db (
   if (is_valid)
     {
       fader_set_amp_with_action (
-        fader, fader_get_amp (object), math_dbfs_to_amp (val),
-        true);
+        fader, fader_get_amp (object), math_dbfs_to_amp (val), true);
     }
   else
     {
@@ -382,23 +351,19 @@ on_click (
 {
   if (n_press == 1)
     {
-      GdkModifierType state =
-        gtk_event_controller_get_current_event_state (
-          GTK_EVENT_CONTROLLER (gesture));
+      GdkModifierType state = gtk_event_controller_get_current_event_state (
+        GTK_EVENT_CONTROLLER (gesture));
       if (state & GDK_CONTROL_MASK)
         {
           fader_set_amp_with_action (
-            self->fader, fader_get_amp (self->fader), 1.f,
-            true);
+            self->fader, fader_get_amp (self->fader), 1.f, true);
         }
     }
   else if (n_press == 2)
     {
-      StringEntryDialogWidget * dialog =
-        string_entry_dialog_widget_new (
-          _ ("Fader Value"), self->fader,
-          get_fader_db_val_as_string,
-          set_fader_val_with_action_from_db);
+      StringEntryDialogWidget * dialog = string_entry_dialog_widget_new (
+        _ ("Fader Value"), self->fader, get_fader_db_val_as_string,
+        set_fader_val_with_action_from_db);
       gtk_window_present (GTK_WINDOW (dialog));
     }
 }
@@ -414,14 +379,12 @@ on_scroll (
 
   GdkEvent * event = gtk_event_controller_get_current_event (
     GTK_EVENT_CONTROLLER (scroll_controller));
-  GdkScrollDirection direction =
-    gdk_scroll_event_get_direction (event);
-  double abs_x, abs_y;
+  GdkScrollDirection direction = gdk_scroll_event_get_direction (event);
+  double             abs_x, abs_y;
   gdk_event_get_position (event, &abs_x, &abs_y);
 
-  GdkModifierType state =
-    gtk_event_controller_get_current_event_state (
-      GTK_EVENT_CONTROLLER (scroll_controller));
+  GdkModifierType state = gtk_event_controller_get_current_event_state (
+    GTK_EVENT_CONTROLLER (scroll_controller));
 
   /* add/subtract *inc* amount */
   float inc = 0.04f;
@@ -431,10 +394,7 @@ on_scroll (
       inc = 0.01f;
     }
   int up_down =
-    (direction == GDK_SCROLL_UP
-     || direction == GDK_SCROLL_RIGHT)
-      ? 1
-      : -1;
+    (direction == GDK_SCROLL_UP || direction == GDK_SCROLL_RIGHT) ? 1 : -1;
   float add_val = (float) up_down * inc;
   float current_val = fader_get_fader_val (self->fader);
   float new_val = CLAMP (current_val + add_val, 0.0f, 1.0f);
@@ -447,10 +407,7 @@ on_scroll (
 }
 
 static gboolean
-fader_tick_cb (
-  GtkWidget *     widget,
-  GdkFrameClock * frame_clock,
-  gpointer        user_data)
+fader_tick_cb (GtkWidget * widget, GdkFrameClock * frame_clock, gpointer user_data)
 {
   if (!gtk_widget_get_mapped (widget))
     {
@@ -463,8 +420,7 @@ fader_tick_cb (
   if (!math_doubles_equal (cur_amp, self->last_reported_amp))
     {
       gtk_accessible_update_property (
-        GTK_ACCESSIBLE (self),
-        GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, cur_amp, -1);
+        GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, cur_amp, -1);
     }
 
   gtk_widget_queue_draw (widget);
@@ -477,19 +433,14 @@ fader_tick_cb (
  * given Fader.
  */
 void
-fader_widget_setup (
-  FaderWidget * self,
-  Fader *       fader,
-  int           width,
-  int           height)
+fader_widget_setup (FaderWidget * self, Fader * fader, int width, int height)
 {
   g_return_if_fail (IS_FADER (fader));
 
   self->fader = fader;
 
   /* set size */
-  gtk_widget_set_size_request (
-    GTK_WIDGET (self), width, height);
+  gtk_widget_set_size_request (GTK_WIDGET (self), width, height);
 }
 
 static void
@@ -499,8 +450,7 @@ dispose (FaderWidget * self)
 
   g_object_unref (self->layout);
 
-  G_OBJECT_CLASS (fader_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (fader_widget_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
@@ -512,26 +462,20 @@ fader_widget_init (FaderWidget * self)
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
   gtk_widget_set_focus_on_click (GTK_WIDGET (self), true);
 
-  self->popover_menu =
-    GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
-  gtk_widget_set_parent (
-    GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
+  self->popover_menu = GTK_POPOVER_MENU (gtk_popover_menu_new_from_model (NULL));
+  gtk_widget_set_parent (GTK_WIDGET (self->popover_menu), GTK_WIDGET (self));
 
   gtk_widget_set_tooltip_text (GTK_WIDGET (self), _ ("Fader"));
 
-  self->layout =
-    z_cairo_create_default_pango_layout (GTK_WIDGET (self));
+  self->layout = z_cairo_create_default_pango_layout (GTK_WIDGET (self));
 
   self->drag = GTK_GESTURE_DRAG (gtk_gesture_drag_new ());
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-begin",
-    G_CALLBACK (drag_begin), self);
+    G_OBJECT (self->drag), "drag-begin", G_CALLBACK (drag_begin), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-update",
-    G_CALLBACK (drag_update), self);
+    G_OBJECT (self->drag), "drag-update", G_CALLBACK (drag_update), self);
   g_signal_connect (
-    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end),
-    self);
+    G_OBJECT (self->drag), "drag-end", G_CALLBACK (drag_end), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->drag));
 
@@ -551,58 +495,44 @@ fader_widget_init (FaderWidget * self)
     self->tooltip_win, GTK_WIN_POS_MOUSE);
 #endif
 
-  GtkGestureClick * right_click =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  GtkGestureClick * right_click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (right_click), GDK_BUTTON_SECONDARY);
   g_signal_connect (
-    G_OBJECT (right_click), "pressed",
-    G_CALLBACK (on_right_click), self);
+    G_OBJECT (right_click), "pressed", G_CALLBACK (on_right_click), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (right_click));
 
-  GtkGestureClick * double_click =
-    GTK_GESTURE_CLICK (gtk_gesture_click_new ());
+  GtkGestureClick * double_click = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_gesture_single_set_button (
     GTK_GESTURE_SINGLE (double_click), GDK_BUTTON_PRIMARY);
   g_signal_connect (
-    G_OBJECT (double_click), "pressed", G_CALLBACK (on_click),
-    self);
+    G_OBJECT (double_click), "pressed", G_CALLBACK (on_click), self);
   gtk_widget_add_controller (
     GTK_WIDGET (self), GTK_EVENT_CONTROLLER (double_click));
 
   GtkEventControllerMotion * motion_controller =
-    GTK_EVENT_CONTROLLER_MOTION (
-      gtk_event_controller_motion_new ());
+    GTK_EVENT_CONTROLLER_MOTION (gtk_event_controller_motion_new ());
   g_signal_connect (
-    G_OBJECT (motion_controller), "enter",
-    G_CALLBACK (on_enter), self);
+    G_OBJECT (motion_controller), "enter", G_CALLBACK (on_enter), self);
   g_signal_connect (
-    G_OBJECT (motion_controller), "leave",
-    G_CALLBACK (on_leave), self);
+    G_OBJECT (motion_controller), "leave", G_CALLBACK (on_leave), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (motion_controller));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (motion_controller));
 
-  GtkEventControllerScroll * scroll_controller =
-    GTK_EVENT_CONTROLLER_SCROLL (
-      gtk_event_controller_scroll_new (
-        GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES));
+  GtkEventControllerScroll * scroll_controller = GTK_EVENT_CONTROLLER_SCROLL (
+    gtk_event_controller_scroll_new (GTK_EVENT_CONTROLLER_SCROLL_BOTH_AXES));
   g_signal_connect (
-    G_OBJECT (scroll_controller), "scroll",
-    G_CALLBACK (on_scroll), self);
+    G_OBJECT (scroll_controller), "scroll", G_CALLBACK (on_scroll), self);
   gtk_widget_add_controller (
-    GTK_WIDGET (self),
-    GTK_EVENT_CONTROLLER (scroll_controller));
+    GTK_WIDGET (self), GTK_EVENT_CONTROLLER (scroll_controller));
 
   gtk_accessible_update_property (
-    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_VALUE_MAX,
-    2.0, GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, 0.0,
-    GTK_ACCESSIBLE_PROPERTY_VALUE_NOW, 1.0,
-    GTK_ACCESSIBLE_PROPERTY_LABEL, "Fader", -1);
+    GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_VALUE_MAX, 2.0,
+    GTK_ACCESSIBLE_PROPERTY_VALUE_MIN, 0.0, GTK_ACCESSIBLE_PROPERTY_VALUE_NOW,
+    1.0, GTK_ACCESSIBLE_PROPERTY_LABEL, "Fader", -1);
 
-  gtk_widget_add_tick_callback (
-    GTK_WIDGET (self), fader_tick_cb, self, NULL);
+  gtk_widget_add_tick_callback (GTK_WIDGET (self), fader_tick_cb, self, NULL);
 }
 
 static void
@@ -612,10 +542,8 @@ fader_widget_class_init (FaderWidgetClass * klass)
   wklass->snapshot = fader_snapshot;
   gtk_widget_class_set_css_name (wklass, "fader");
 
-  gtk_widget_class_set_layout_manager_type (
-    wklass, GTK_TYPE_BIN_LAYOUT);
-  gtk_widget_class_set_accessible_role (
-    wklass, GTK_ACCESSIBLE_ROLE_SLIDER);
+  gtk_widget_class_set_layout_manager_type (wklass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_accessible_role (wklass, GTK_ACCESSIBLE_ROLE_SLIDER);
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;

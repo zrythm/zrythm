@@ -91,8 +91,7 @@ io_get_dir (const char * filename)
 bool
 io_mkdir (const char * dir, GError ** error)
 {
-  g_return_val_if_fail (
-    error == NULL || *error == NULL, false);
+  g_return_val_if_fail (error == NULL || *error == NULL, false);
 
   g_message ("Creating directory: %s", dir);
   struct stat st = { 0 };
@@ -107,8 +106,7 @@ io_mkdir (const char * dir, GError ** error)
         {
           g_set_error (
             error, Z_UTILS_IO_ERROR, Z_UTILS_IO_ERROR_FAILED,
-            "Failed to make directory with parents: %s",
-            strerror (errno));
+            "Failed to make directory with parents: %s", strerror (errno));
           return false;
         }
     }
@@ -207,8 +205,7 @@ io_path_get_parent_dir (const char * path)
 #  define PATH_SEP "/"
 #  define ROOT_REGEX "/"
 #endif
-  char regex[] =
-    "(" ROOT_REGEX ".*)" PATH_SEP "[^" PATH_SEP "]+";
+  char   regex[] = "(" ROOT_REGEX ".*)" PATH_SEP "[^" PATH_SEP "]+";
   char * parent = string_get_regex_group (path, regex, 1);
 #if 0
   g_message ("[%s]\npath: %s\nregex: %s\nparent: %s",
@@ -255,8 +252,7 @@ io_file_get_last_modified_datetime (const char * filename)
 }
 
 char *
-io_file_get_last_modified_datetime_as_str (
-  const char * filename)
+io_file_get_last_modified_datetime_as_str (const char * filename)
 {
   gint64 secs = io_file_get_last_modified_datetime (filename);
   if (secs == -1)
@@ -305,8 +301,7 @@ io_rmdir (const char * path, bool force)
 {
   if (force)
     {
-      g_return_val_if_fail (
-        g_path_is_absolute (path) && strlen (path) > 20, -1);
+      g_return_val_if_fail (g_path_is_absolute (path) && strlen (path) > 20, -1);
       nftw (path, unlink_cb, 64, FTW_DEPTH | FTW_PHYS);
     }
 
@@ -345,9 +340,7 @@ append_files_from_dir_ending_in (
         }
       else
         {
-          g_warning (
-            "Failed opening directory %s: %s", _dir,
-            error->message);
+          g_warning ("Failed opening directory %s: %s", _dir, error->message);
         }
       return;
     }
@@ -360,17 +353,14 @@ append_files_from_dir_ending_in (
       if (recursive && g_file_test (full_path, G_FILE_TEST_IS_DIR))
         {
           append_files_from_dir_ending_in (
-            files, num_files, recursive, full_path,
-            end_string);
+            files, num_files, recursive, full_path, end_string);
         }
 
       if (
-        !end_string
-        || (end_string && g_str_has_suffix (full_path, end_string)))
+        !end_string || (end_string && g_str_has_suffix (full_path, end_string)))
         {
-          *files = g_realloc (
-            *files,
-            sizeof (char *) * (size_t) (*num_files + 2));
+          *files =
+            g_realloc (*files, sizeof (char *) * (size_t) (*num_files + 2));
           (*files)[(*num_files)] = g_strdup (full_path);
           (*num_files)++;
         }
@@ -411,8 +401,7 @@ io_copy_dir (
       else
         {
           PROPAGATE_PREFIXED_ERROR (
-            error, err, "Failed opening directory %s",
-            srcdir_str);
+            error, err, "Failed opening directory %s", srcdir_str);
         }
       return false;
     }
@@ -421,58 +410,49 @@ io_copy_dir (
   if (!success)
     {
       PROPAGATE_PREFIXED_ERROR (
-        error, err, "Failed creating directory %s",
-        destdir_str);
+        error, err, "Failed creating directory %s", destdir_str);
       return false;
     }
 
   const gchar * filename;
   while ((filename = g_dir_read_name (srcdir)))
     {
-      char * src_full_path =
-        g_build_filename (srcdir_str, filename, NULL);
-      char * dest_full_path =
-        g_build_filename (destdir_str, filename, NULL);
+      char * src_full_path = g_build_filename (srcdir_str, filename, NULL);
+      char * dest_full_path = g_build_filename (destdir_str, filename, NULL);
 
-      bool is_dir =
-        g_file_test (src_full_path, G_FILE_TEST_IS_DIR);
+      bool is_dir = g_file_test (src_full_path, G_FILE_TEST_IS_DIR);
 
       /* recurse if necessary */
       if (recursive && is_dir)
         {
           success = io_copy_dir (
-            dest_full_path, src_full_path, follow_symlinks,
-            recursive, &err);
+            dest_full_path, src_full_path, follow_symlinks, recursive, &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR (
-                error, err,
-                "Failed copying directory %s to %s",
-                src_full_path, dest_full_path);
+                error, err, "Failed copying directory %s to %s", src_full_path,
+                dest_full_path);
               return false;
             }
         }
       /* otherwise if not dir, copy file */
       else if (!is_dir)
         {
-          GFile * src_file =
-            g_file_new_for_path (src_full_path);
-          GFile * dest_file =
-            g_file_new_for_path (dest_full_path);
+          GFile * src_file = g_file_new_for_path (src_full_path);
+          GFile * dest_file = g_file_new_for_path (dest_full_path);
           g_return_val_if_fail (src_file && dest_file, false);
           GFileCopyFlags flags = G_FILE_COPY_OVERWRITE;
           if (!follow_symlinks)
             {
               flags |= G_FILE_COPY_NOFOLLOW_SYMLINKS;
             }
-          success = g_file_copy (
-            src_file, dest_file, flags, NULL, NULL, NULL,
-            &err);
+          success =
+            g_file_copy (src_file, dest_file, flags, NULL, NULL, NULL, &err);
           if (!success)
             {
               PROPAGATE_PREFIXED_ERROR (
-                error, err, "Failed copying file %s to %s",
-                src_full_path, dest_full_path);
+                error, err, "Failed copying file %s to %s", src_full_path,
+                dest_full_path);
               return false;
             }
 
@@ -540,8 +520,7 @@ io_get_files_in_dir_ending_in (
   char ** arr = object_new_n (1, char *);
   int     count = 0;
 
-  append_files_from_dir_ending_in (
-    &arr, &count, recursive, _dir, end_string);
+  append_files_from_dir_ending_in (&arr, &count, recursive, _dir, end_string);
 
   if (count == 0 && !allow_empty)
     {
@@ -563,8 +542,8 @@ io_get_files_in_dir_ending_in (
 char *
 io_get_next_available_filepath (const char * filepath)
 {
-  int    i = 1;
-  char * file_without_ext = io_file_strip_ext (filepath);
+  int          i = 1;
+  char *       file_without_ext = io_file_strip_ext (filepath);
   const char * file_ext = io_file_get_ext (filepath);
   char *       new_path = g_strdup (filepath);
   while (file_exists (new_path))
@@ -572,14 +551,13 @@ io_get_next_available_filepath (const char * filepath)
       if (g_file_test (new_path, G_FILE_TEST_IS_DIR))
         {
           g_free (new_path);
-          new_path =
-            g_strdup_printf ("%s (%d)", filepath, i++);
+          new_path = g_strdup_printf ("%s (%d)", filepath, i++);
         }
       else
         {
           g_free (new_path);
-          new_path = g_strdup_printf (
-            "%s (%d).%s", file_without_ext, i++, file_ext);
+          new_path =
+            g_strdup_printf ("%s (%d).%s", file_without_ext, i++, file_ext);
         }
     }
   g_free (file_without_ext);
@@ -599,8 +577,7 @@ io_open_directory (const char * path)
   char command[800];
 #ifdef _WOE32
   char * canonical_path = g_canonicalize_filename (path, NULL);
-  char * new_path =
-    string_replace (canonical_path, "\\", "\\\\");
+  char * new_path = string_replace (canonical_path, "\\", "\\\\");
   g_free (canonical_path);
   sprintf (command, OPEN_DIR_CMD " \"%s\"", new_path);
   g_free (new_path);
@@ -623,10 +600,9 @@ io_escape_dir_name (char * dest, const char * dir)
   for (int i = len - 1; i >= 0; i--)
     {
       if (
-        dest[i] == '/' || dest[i] == '>' || dest[i] == '<'
-        || dest[i] == '|' || dest[i] == ':' || dest[i] == '&'
-        || dest[i] == '(' || dest[i] == ')' || dest[i] == ';'
-        || dest[i] == '\\')
+        dest[i] == '/' || dest[i] == '>' || dest[i] == '<' || dest[i] == '|'
+        || dest[i] == ':' || dest[i] == '&' || dest[i] == '(' || dest[i] == ')'
+        || dest[i] == ';' || dest[i] == '\\')
         {
           for (int j = i; j < len; j++)
             {
@@ -643,12 +619,10 @@ io_get_registry_string_val (const char * path)
   char  value[8192];
   DWORD BufferSize = 8192;
   char  prefix[500];
-  sprintf (
-    prefix, "Software\\%s\\%s\\Settings", PROGRAM_NAME,
-    PROGRAM_NAME);
+  sprintf (prefix, "Software\\%s\\%s\\Settings", PROGRAM_NAME, PROGRAM_NAME);
   RegGetValue (
-    HKEY_LOCAL_MACHINE, prefix, path, RRF_RT_ANY, NULL,
-    (PVOID) &value, &BufferSize);
+    HKEY_LOCAL_MACHINE, prefix, path, RRF_RT_ANY, NULL, (PVOID) &value,
+    &BufferSize);
   g_message ("reg value: %s", value);
   return g_strdup (value);
 }
@@ -689,9 +663,7 @@ io_traverse_path (const char * abs_path)
     {
       if (!string_is_equal (traversed_path, abs_path))
         {
-          g_debug (
-            "traversed path: %s => %s", abs_path,
-            traversed_path);
+          g_debug ("traversed path: %s => %s", abs_path, traversed_path);
         }
       return traversed_path;
     }

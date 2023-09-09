@@ -13,17 +13,13 @@
 #include "zrythm-test-config.h"
 
 char *
-test_exporter_export_audio (
-  ExportTimeRange time_range,
-  ExportMode      mode);
+test_exporter_export_audio (ExportTimeRange time_range, ExportMode mode);
 
 /**
  * Convenient quick export.
  */
 char *
-test_exporter_export_audio (
-  ExportTimeRange time_range,
-  ExportMode      mode)
+test_exporter_export_audio (ExportTimeRange time_range, ExportMode mode)
 {
   g_assert_false (TRANSPORT_IS_ROLLING);
   g_assert_cmpint (TRANSPORT->playhead_pos.frames, ==, 0);
@@ -38,30 +34,24 @@ test_exporter_export_audio (
   if (mode == EXPORT_MODE_FULL)
     {
       settings->mode = EXPORT_MODE_FULL;
-      tracklist_mark_all_tracks_for_bounce (
-        TRACKLIST, F_NO_BOUNCE);
+      tracklist_mark_all_tracks_for_bounce (TRACKLIST, F_NO_BOUNCE);
       settings->bounce_with_parents = false;
     }
   else
     {
       settings->mode = EXPORT_MODE_TRACKS;
-      tracklist_mark_all_tracks_for_bounce (
-        TRACKLIST, F_BOUNCE);
+      tracklist_mark_all_tracks_for_bounce (TRACKLIST, F_BOUNCE);
       settings->bounce_with_parents = true;
     }
-  char * exports_dir =
-    project_get_path (PROJECT, PROJECT_PATH_EXPORTS, false);
-  settings->file_uri =
-    g_build_filename (exports_dir, filename, NULL);
+  char * exports_dir = project_get_path (PROJECT, PROJECT_PATH_EXPORTS, false);
+  settings->file_uri = g_build_filename (exports_dir, filename, NULL);
 
   EngineState state;
-  GPtrArray * conns =
-    exporter_prepare_tracks_for_export (settings, &state);
+  GPtrArray * conns = exporter_prepare_tracks_for_export (settings, &state);
 
   /* start exporting in a new thread */
   GThread * thread = g_thread_new (
-    "bounce_thread",
-    (GThreadFunc) exporter_generic_export_thread, settings);
+    "bounce_thread", (GThreadFunc) exporter_generic_export_thread, settings);
 
   g_thread_join (thread);
 

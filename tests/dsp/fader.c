@@ -25,8 +25,7 @@ test_fader_process_with_instrument (
 
   /* send a note then wait for playback */
   midi_events_add_note_on (
-    track->processor->midi_in->midi_events, 1, 82, 74, 2,
-    true);
+    track->processor->midi_in->midi_events, 1, 82, 74, 2, true);
 
   /* stop dummy audio engine processing so we can
    * process manually */
@@ -37,8 +36,7 @@ test_fader_process_with_instrument (
    * make the note make sound) */
   for (int i = 0; i < 2; i++)
     {
-      engine_process (
-        AUDIO_ENGINE, AUDIO_ENGINE->block_length);
+      engine_process (AUDIO_ENGINE, AUDIO_ENGINE->block_length);
     }
 
   /* test fader */
@@ -74,9 +72,7 @@ track_has_sound (Track * track)
 {
   for (nframes_t i = 0; i < AUDIO_ENGINE->block_length; i++)
     {
-      if (
-        fabsf (track->channel->fader->stereo_out->l->buf[i])
-        > 0.0001f)
+      if (fabsf (track->channel->fader->stereo_out->l->buf[i]) > 0.0001f)
         {
           return true;
         }
@@ -108,38 +104,32 @@ test_solo (void)
   test_helper_zrythm_init ();
 
   /* create audio track */
-  char * filepath =
-    g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
-  SupportedFile * file =
-    supported_file_new_from_path (filepath);
+  char *          filepath = g_build_filename (TESTS_SRCDIR, "test.wav", NULL);
+  SupportedFile * file = supported_file_new_from_path (filepath);
   track_create_with_action (
-    TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
-  Track * audio_track = tracklist_get_last_track (
-    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
+    TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1, -1, NULL,
+    NULL);
+  Track * audio_track =
+    tracklist_get_last_track (TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
 
   /* create audio track 2 */
   track_create_with_action (
-    TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD,
-    TRACKLIST->num_tracks, 1, -1, NULL, NULL);
-  Track * audio_track2 = tracklist_get_last_track (
-    TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
+    TRACK_TYPE_AUDIO, NULL, file, PLAYHEAD, TRACKLIST->num_tracks, 1, -1, NULL,
+    NULL);
+  Track * audio_track2 =
+    tracklist_get_last_track (TRACKLIST, TRACKLIST_PIN_OPTION_BOTH, false);
 
   /* create group track */
-  Track * group_track = track_create_empty_with_action (
-    TRACK_TYPE_AUDIO_GROUP, NULL);
+  Track * group_track =
+    track_create_empty_with_action (TRACK_TYPE_AUDIO_GROUP, NULL);
 
   /* route audio tracks to group track */
-  track_select (
-    audio_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (audio_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, group_track,
-    NULL);
-  track_select (
-    audio_track2, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, group_track, NULL);
+  track_select (audio_track2, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_set_direct_out (
-    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, group_track,
-    NULL);
+    TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, group_track, NULL);
 
   /* stop dummy audio engine processing so we can
    * process manually */
@@ -148,8 +138,7 @@ test_solo (void)
 
   /* test solo group makes sound */
   track_set_soloed (
-    group_track, F_SOLO, F_TRIGGER_UNDO, F_AUTO_SELECT,
-    F_NO_PUBLISH_EVENTS);
+    group_track, F_SOLO, F_TRIGGER_UNDO, F_AUTO_SELECT, F_NO_PUBLISH_EVENTS);
   test_track_has_sound (P_MASTER_TRACK, true);
   test_track_has_sound (group_track, true);
   test_track_has_sound (audio_track, true);
@@ -158,8 +147,7 @@ test_solo (void)
 
   /* test solo audio track makes sound */
   track_set_soloed (
-    audio_track, F_SOLO, F_TRIGGER_UNDO, F_AUTO_SELECT,
-    F_NO_PUBLISH_EVENTS);
+    audio_track, F_SOLO, F_TRIGGER_UNDO, F_AUTO_SELECT, F_NO_PUBLISH_EVENTS);
   test_track_has_sound (P_MASTER_TRACK, true);
   test_track_has_sound (group_track, true);
   test_track_has_sound (audio_track, true);
@@ -167,11 +155,8 @@ test_solo (void)
   undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* test solo both audio tracks */
-  track_select (
-    audio_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (
-    audio_track2, F_SELECT, F_NOT_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+  track_select (audio_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (audio_track2, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_edit_solo (
     TRACKLIST_SELECTIONS, F_SOLO, NULL);
   test_track_has_sound (P_MASTER_TRACK, true);
@@ -181,17 +166,13 @@ test_solo (void)
   undo_manager_undo (UNDO_MANAGER, NULL);
 
   /* test undo/redo */
-  track_select (
-    audio_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (audio_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_edit_solo (
     TRACKLIST_SELECTIONS, F_SOLO, NULL);
   g_assert_true (track_get_soloed (audio_track));
   g_assert_false (track_get_soloed (audio_track2));
-  track_select (
-    audio_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
-  track_select (
-    audio_track2, F_SELECT, F_NOT_EXCLUSIVE,
-    F_NO_PUBLISH_EVENTS);
+  track_select (audio_track, F_SELECT, F_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
+  track_select (audio_track2, F_SELECT, F_NOT_EXCLUSIVE, F_NO_PUBLISH_EVENTS);
   tracklist_selections_action_perform_edit_solo (
     TRACKLIST_SELECTIONS, F_SOLO, NULL);
   g_assert_true (track_get_soloed (audio_track));
@@ -214,10 +195,8 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/audio/fader/"
 
   g_test_add_func (
-    TEST_PREFIX "test fader process",
-    (GTestFunc) test_fader_process);
-  g_test_add_func (
-    TEST_PREFIX "test solo", (GTestFunc) test_solo);
+    TEST_PREFIX "test fader process", (GTestFunc) test_fader_process);
+  g_test_add_func (TEST_PREFIX "test solo", (GTestFunc) test_solo);
 
   return g_test_run ();
 }

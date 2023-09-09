@@ -24,8 +24,8 @@ typedef struct Position_v1
 
 static const cyaml_schema_field_t position_fields_schema_v1[] = {
   YAML_FIELD_INT (Position_v1, schema_version),
-  YAML_FIELD_FLOAT (Position_v1, ticks),
-  YAML_FIELD_INT (Position_v1, frames), CYAML_FIELD_END
+  YAML_FIELD_FLOAT (Position_v1, ticks), YAML_FIELD_INT (Position_v1, frames),
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t position_schema_v1 = {

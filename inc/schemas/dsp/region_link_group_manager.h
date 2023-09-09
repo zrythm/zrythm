@@ -22,22 +22,20 @@ typedef struct RegionLinkGroupManager_v1
   size_t               groups_size;
 } RegionLinkGroupManager_v1;
 
-static const cyaml_schema_field_t
-  region_link_group_manager_fields_schema_v1[] = {
-    YAML_FIELD_INT (RegionLinkGroupManager_v1, schema_version),
-    YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-      RegionLinkGroupManager_v1,
-      groups,
-      region_link_group_schema_default_v1),
+static const cyaml_schema_field_t region_link_group_manager_fields_schema_v1[] = {
+  YAML_FIELD_INT (RegionLinkGroupManager_v1, schema_version),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
+    RegionLinkGroupManager_v1,
+    groups,
+    region_link_group_schema_default_v1),
 
-    CYAML_FIELD_END
-  };
+  CYAML_FIELD_END
+};
 
-static const cyaml_schema_value_t
-  region_link_group_manager_schema_v1 = {
-    YAML_VALUE_PTR (
-      RegionLinkGroupManager_v1,
-      region_link_group_manager_fields_schema_v1),
-  };
+static const cyaml_schema_value_t region_link_group_manager_schema_v1 = {
+  YAML_VALUE_PTR (
+    RegionLinkGroupManager_v1,
+    region_link_group_manager_fields_schema_v1),
+};
 
 #endif

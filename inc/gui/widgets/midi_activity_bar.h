@@ -28,8 +28,7 @@
 
 #include <gtk/gtk.h>
 
-#define MIDI_ACTIVITY_BAR_WIDGET_TYPE \
-  (midi_activity_bar_widget_get_type ())
+#define MIDI_ACTIVITY_BAR_WIDGET_TYPE (midi_activity_bar_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   MidiActivityBarWidget,
   midi_activity_bar_widget,
@@ -101,8 +100,7 @@ midi_activity_bar_widget_set_animation (
  * AudioEngine.
  */
 void
-midi_activity_bar_widget_setup_engine (
-  MidiActivityBarWidget * self);
+midi_activity_bar_widget_setup_engine (MidiActivityBarWidget * self);
 
 /**
  * @}

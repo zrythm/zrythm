@@ -31,12 +31,7 @@ typedef struct Port Port;
  */
 
 #define VOLUME_WIDGET_TYPE (volume_widget_get_type ())
-G_DECLARE_FINAL_TYPE (
-  VolumeWidget,
-  volume_widget,
-  Z,
-  VOLUME_WIDGET,
-  GtkDrawingArea)
+G_DECLARE_FINAL_TYPE (VolumeWidget, volume_widget, Z, VOLUME_WIDGET, GtkDrawingArea)
 
 typedef struct _VolumeWidget
 {

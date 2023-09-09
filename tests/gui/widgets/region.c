@@ -27,8 +27,7 @@ fishbowl_creation_func ()
   region_gen_name (r, "Test Region", NULL, NULL);
   ArrangerObject * r_obj = (ArrangerObject *) r;
   arranger_object_gen_widget (r_obj);
-  gtk_widget_set_size_request (
-    GTK_WIDGET (r_obj->widget), 200, 20);
+  gtk_widget_set_size_request (GTK_WIDGET (r_obj->widget), 200, 20);
 
   return GTK_WIDGET (r_obj->widget);
 }
@@ -36,8 +35,8 @@ fishbowl_creation_func ()
 static void
 test_midi_region_fishbowl ()
 {
-  guint region_count = fishbowl_window_widget_run (
-    fishbowl_creation_func, DEFAULT_FISHBOWL_TIME);
+  guint region_count =
+    fishbowl_window_widget_run (fishbowl_creation_func, DEFAULT_FISHBOWL_TIME);
 }
 
 int

@@ -50,8 +50,7 @@ route_target_selector_widget_refresh (
 
   /*if (self->popover && GTK_IS_WIDGET (self->popover))*/
   /*g_object_unref (self->popover);*/
-  gtk_menu_button_set_popover (
-    GTK_MENU_BUTTON (self->menu_button), NULL);
+  gtk_menu_button_set_popover (GTK_MENU_BUTTON (self->menu_button), NULL);
   self->popover = NULL;
 
   Track * track = NULL;
@@ -77,19 +76,15 @@ route_target_selector_widget_refresh (
   else
     {
       gtk_widget_set_tooltip_text (
-        GTK_WIDGET (self->box),
-        _ ("Select channel to route signal to"));
-      self->popover =
-        route_target_selector_popover_widget_new (self);
+        GTK_WIDGET (self->box), _ ("Select channel to route signal to"));
+      self->popover = route_target_selector_popover_widget_new (self);
       gtk_menu_button_set_popover (
-        GTK_MENU_BUTTON (self->menu_button),
-        GTK_WIDGET (self->popover));
+        GTK_MENU_BUTTON (self->menu_button), GTK_WIDGET (self->popover));
     }
 
   /* this is a box created by menubutton
    * internally */
-  GtkWidget * parent_box =
-    gtk_widget_get_parent (GTK_WIDGET (self->box));
+  GtkWidget * parent_box = gtk_widget_get_parent (GTK_WIDGET (self->box));
   gtk_widget_set_halign (parent_box, GTK_ALIGN_FILL);
 }
 
@@ -125,8 +120,7 @@ finalize (RouteTargetSelectorWidget * self)
 }
 
 static void
-route_target_selector_widget_class_init (
-  RouteTargetSelectorWidgetClass * _klass)
+route_target_selector_widget_class_init (RouteTargetSelectorWidgetClass * _klass)
 {
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
 
@@ -134,34 +128,26 @@ route_target_selector_widget_class_init (
 }
 
 static void
-route_target_selector_widget_init (
-  RouteTargetSelectorWidget * self)
+route_target_selector_widget_init (RouteTargetSelectorWidget * self)
 {
   self->menu_button = GTK_MENU_BUTTON (gtk_menu_button_new ());
-  gtk_box_append (
-    GTK_BOX (self), GTK_WIDGET (self->menu_button));
-  gtk_widget_set_hexpand (
-    GTK_WIDGET (self->menu_button), true);
+  gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->menu_button));
+  gtk_widget_set_hexpand (GTK_WIDGET (self->menu_button), true);
 
   /* add class */
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self), "route_target_selector");
+  gtk_widget_add_css_class (GTK_WIDGET (self), "route_target_selector");
 
-  self->box =
-    GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+  self->box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
   gtk_widget_set_name (
-    GTK_WIDGET (self->box),
-    "route-target-selector-menubutton-box");
+    GTK_WIDGET (self->box), "route-target-selector-menubutton-box");
   self->img = GTK_IMAGE (gtk_image_new_from_icon_name (
     "gnome-builder-debug-step-out-symbolic-light"));
 
   self->label = GTK_LABEL (gtk_label_new (_ ("Stereo Out")));
-  gtk_widget_add_css_class (
-    GTK_WIDGET (self->label), "channel_label_smaller");
+  gtk_widget_add_css_class (GTK_WIDGET (self->label), "channel_label_smaller");
   gtk_label_set_ellipsize (self->label, PANGO_ELLIPSIZE_END);
 
   gtk_box_append (self->box, GTK_WIDGET (self->img));
   gtk_box_append (self->box, GTK_WIDGET (self->label));
-  gtk_menu_button_set_child (
-    self->menu_button, GTK_WIDGET (self->box));
+  gtk_menu_button_set_child (self->menu_button, GTK_WIDGET (self->box));
 }

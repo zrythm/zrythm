@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define PIANO_ROLL_KEYS_WIDGET_TYPE \
-  (piano_roll_keys_widget_get_type ())
+#define PIANO_ROLL_KEYS_WIDGET_TYPE (piano_roll_keys_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PianoRollKeysWidget,
   piano_roll_keys_widget,
@@ -27,8 +26,7 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MW_PIANO_ROLL_KEYS \
-  MW_MIDI_EDITOR_SPACE->piano_roll_keys
+#define MW_PIANO_ROLL_KEYS MW_MIDI_EDITOR_SPACE->piano_roll_keys
 
 /**
  * The piano roll widget is the whole space inside
@@ -89,28 +87,22 @@ typedef struct _PianoRollKeysWidget
  * current pixels (height) per key.
  */
 int
-piano_roll_keys_widget_get_font_size (
-  PianoRollKeysWidget * self);
+piano_roll_keys_widget_get_font_size (PianoRollKeysWidget * self);
 
 void
 piano_roll_keys_widget_refresh (PianoRollKeysWidget * self);
 
 void
-piano_roll_keys_widget_redraw_note (
-  PianoRollKeysWidget * self,
-  int                   note);
+piano_roll_keys_widget_redraw_note (PianoRollKeysWidget * self, int note);
 
 void
-piano_roll_keys_widget_redraw_full (
-  PianoRollKeysWidget * self);
+piano_roll_keys_widget_redraw_full (PianoRollKeysWidget * self);
 
 void
 piano_roll_keys_widget_setup (PianoRollKeysWidget * self);
 
 int
-piano_roll_keys_widget_get_key_from_y (
-  PianoRollKeysWidget * self,
-  double                y);
+piano_roll_keys_widget_get_key_from_y (PianoRollKeysWidget * self, double y);
 
 /**
  * @}

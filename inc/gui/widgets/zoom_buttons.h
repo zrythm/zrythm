@@ -10,8 +10,7 @@
 
 #include <gtk/gtk.h>
 
-#define ZOOM_BUTTONS_WIDGET_TYPE \
-  (zoom_buttons_widget_get_type ())
+#define ZOOM_BUTTONS_WIDGET_TYPE (zoom_buttons_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ZoomButtonsWidget,
   zoom_buttons_widget,

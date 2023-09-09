@@ -81,9 +81,7 @@ control_port_normalized_val_to_real (
  *   used in widgets.
  */
 NONNULL PURE float
-control_port_real_val_to_normalized (
-  const Port * const self,
-  float              real_val);
+control_port_real_val_to_normalized (const Port * const self, float real_val);
 
 /**
  * Checks if the given value is toggled.
@@ -166,10 +164,7 @@ control_port_set_real_val_w_events (Port * self, float val);
  * Wrapper over port_set_control_value() for toggles.
  */
 void
-control_port_set_toggled (
-  Port * self,
-  bool   toggled,
-  bool   forward_events);
+control_port_set_toggled (Port * self, bool toggled, bool forward_events);
 
 /**
  * Updates the actual value.
@@ -184,10 +179,7 @@ control_port_set_toggled (
  *   plugin to receive a UI event for this change.
  */
 HOT NONNULL void
-control_port_set_val_from_normalized (
-  Port * self,
-  float  val,
-  bool   automating);
+control_port_set_val_from_normalized (Port * self, float val, bool automating);
 
 /**
  * @}

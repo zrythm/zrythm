@@ -23,10 +23,8 @@ test_mock_au_plugin_scan (void)
   unsigned int au_count = 45;
   GError *     err = NULL;
   char *       contents = NULL;
-  char *       filename =
-    g_build_filename (TESTS_SRCDIR, "au_plugins.txt", NULL);
-  bool success =
-    g_file_get_contents (filename, &contents, NULL, &err);
+  char * filename = g_build_filename (TESTS_SRCDIR, "au_plugins.txt", NULL);
+  bool   success = g_file_get_contents (filename, &contents, NULL, &err);
   g_assert_true (success);
   char * all_plugins = contents;
   g_message ("all plugins %s", all_plugins);
@@ -34,15 +32,12 @@ test_mock_au_plugin_scan (void)
   for (unsigned int i = 0; i < au_count; i++)
     {
       PluginDescriptor * descriptor =
-        z_carla_discovery_create_au_descriptor_from_string (
-          all_plugins, (int) i);
+        z_carla_discovery_create_au_descriptor_from_string (all_plugins, (int) i);
 
       if (descriptor)
         {
-          g_assert_cmpuint (
-            strlen (descriptor->category_str), >, 1);
-          g_assert_cmpuint (
-            strlen (descriptor->category_str), <, 40);
+          g_assert_cmpuint (strlen (descriptor->category_str), >, 1);
+          g_assert_cmpuint (strlen (descriptor->category_str), <, 40);
 
           g_message ("Scanned AU plugin %s", descriptor->name);
 
@@ -163,13 +158,11 @@ carla-discovery::parameters.outs::0\n\
 carla-discovery::end::------------";
 
   PluginDescriptor * descr = NULL;
-  descr = z_carla_discovery_create_au_descriptor_from_string (
-    str, 0);
+  descr = z_carla_discovery_create_au_descriptor_from_string (str, 0);
   g_assert_cmpstr (descr->name, ==, "SurgeEffectsBank");
   g_assert_true (descr->has_custom_ui);
   plugin_descriptor_free (descr);
-  descr = z_carla_discovery_create_au_descriptor_from_string (
-    str, 1);
+  descr = z_carla_discovery_create_au_descriptor_from_string (str, 1);
   g_assert_cmpstr (descr->name, ==, "AUBandpass");
   g_assert_true (descr->has_custom_ui);
   plugin_descriptor_free (descr);
@@ -189,8 +182,7 @@ main (int argc, char * argv[])
     TEST_PREFIX "test mock AU plugin scan",
     (GTestFunc) test_mock_au_plugin_scan);
   g_test_add_func (
-    TEST_PREFIX "test parse plugin info",
-    (GTestFunc) test_parse_plugin_info);
+    TEST_PREFIX "test parse plugin info", (GTestFunc) test_parse_plugin_info);
 
   return g_test_run ();
 }

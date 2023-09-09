@@ -7,10 +7,7 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  ZoomButtonsWidget,
-  zoom_buttons_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (ZoomButtonsWidget, zoom_buttons_widget, GTK_TYPE_BOX)
 
 /**
  * @param orientation Orientation the zoom buttons will zoom
@@ -40,8 +37,7 @@ zoom_buttons_widget_setup (
 
 #undef SET_ACTION
 
-  gtk_orientable_set_orientation (
-    GTK_ORIENTABLE (self), orientation);
+  gtk_orientable_set_orientation (GTK_ORIENTABLE (self), orientation);
 }
 
 static void
@@ -55,16 +51,14 @@ zoom_buttons_widget_init (ZoomButtonsWidget * self)
 
   SET_TOOLTIP (zoom_in, "zoom-in", _ ("Zoom In"));
   SET_TOOLTIP (zoom_out, "zoom-out", _ ("Zoom Out"));
-  SET_TOOLTIP (
-    original_size, "original-size", _ ("Original Size"));
+  SET_TOOLTIP (original_size, "original-size", _ ("Original Size"));
   SET_TOOLTIP (best_fit, "best-fit", _ ("Best Fit"));
 
 #undef SET_TOOLTIP
 }
 
 static void
-zoom_buttons_widget_class_init (
-  ZoomButtonsWidgetClass * _klass)
+zoom_buttons_widget_class_init (ZoomButtonsWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "zoom_buttons.ui");
@@ -72,8 +66,7 @@ zoom_buttons_widget_class_init (
   gtk_widget_class_set_css_name (klass, "zoom-buttons");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, ZoomButtonsWidget, x)
+  gtk_widget_class_bind_template_child (klass, ZoomButtonsWidget, x)
 
   BIND_CHILD (zoom_in);
   BIND_CHILD (zoom_out);

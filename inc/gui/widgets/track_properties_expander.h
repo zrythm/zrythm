@@ -39,11 +39,10 @@ G_DECLARE_FINAL_TYPE (
   TRACK_PROPERTIES_EXPANDER_WIDGET,
   TwoColExpanderBoxWidget);
 
-typedef struct _EditableLabelWidget EditableLabelWidget;
-typedef struct Track                Track;
-typedef struct _RouteTargetSelectorWidget
-                                  RouteTargetSelectorWidget;
-typedef struct _ChannelSlotWidget ChannelSlotWidget;
+typedef struct _EditableLabelWidget       EditableLabelWidget;
+typedef struct Track                      Track;
+typedef struct _RouteTargetSelectorWidget RouteTargetSelectorWidget;
+typedef struct _ChannelSlotWidget         ChannelSlotWidget;
 
 /**
  * @addtogroup widgets

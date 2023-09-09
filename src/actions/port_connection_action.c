@@ -14,8 +14,7 @@
 #include <glib/gi18n.h>
 
 void
-port_connection_action_init_loaded (
-  PortConnectionAction * self)
+port_connection_action_init_loaded (PortConnectionAction * self)
 {
   /* no need */
 }
@@ -31,20 +30,18 @@ port_connection_action_new (
   float                    new_val,
   GError **                error)
 {
-  PortConnectionAction * self =
-    object_new (PortConnectionAction);
-  UndoableAction * ua = (UndoableAction *) self;
+  PortConnectionAction * self = object_new (PortConnectionAction);
+  UndoableAction *       ua = (UndoableAction *) self;
   undoable_action_init (ua, UA_PORT_CONNECTION);
 
   /* check for existing connection to get values */
-  const PortConnection * conn =
-    port_connections_manager_find_connection (
-      PORT_CONNECTIONS_MGR, src_id, dest_id);
+  const PortConnection * conn = port_connections_manager_find_connection (
+    PORT_CONNECTIONS_MGR, src_id, dest_id);
   if (conn)
     self->connection = port_connection_clone (conn);
   else
-    self->connection = port_connection_new (
-      src_id, dest_id, 1.f, F_NOT_LOCKED, F_ENABLE);
+    self->connection =
+      port_connection_new (src_id, dest_id, 1.f, F_NOT_LOCKED, F_ENABLE);
   self->type = type;
   self->val = new_val;
 
@@ -54,8 +51,7 @@ port_connection_action_new (
 PortConnectionAction *
 port_connection_action_clone (const PortConnectionAction * src)
 {
-  PortConnectionAction * self =
-    object_new (PortConnectionAction);
+  PortConnectionAction * self = object_new (PortConnectionAction);
   self->parent_instance = src->parent_instance;
 
   self->type = src->type;
@@ -74,8 +70,7 @@ port_connection_action_perform (
   GError **                error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    port_connection_action_new, error, type, src_id, dest_id,
-    new_val, error);
+    port_connection_action_new, error, type, src_id, dest_id, new_val, error);
 }
 
 static int
@@ -84,15 +79,11 @@ port_connection_action_do_or_undo (
   bool                   _do,
   GError **              error)
 {
-  Port * src =
-    port_find_from_identifier (self->connection->src_id);
-  Port * dest =
-    port_find_from_identifier (self->connection->dest_id);
+  Port * src = port_find_from_identifier (self->connection->src_id);
+  Port * dest = port_find_from_identifier (self->connection->dest_id);
   g_return_val_if_fail (src && dest, -1);
-  PortConnection * prj_connection =
-    port_connections_manager_find_connection (
-      PORT_CONNECTIONS_MGR, self->connection->src_id,
-      self->connection->dest_id);
+  PortConnection * prj_connection = port_connections_manager_find_connection (
+    PORT_CONNECTIONS_MGR, self->connection->src_id, self->connection->dest_id);
 
   switch (self->type)
     {
@@ -108,24 +99,20 @@ port_connection_action_do_or_undo (
               return -1;
             }
           port_connections_manager_ensure_connect (
-            PORT_CONNECTIONS_MGR, &src->id, &dest->id, 1.f,
-            F_NOT_LOCKED, F_ENABLE);
+            PORT_CONNECTIONS_MGR, &src->id, &dest->id, 1.f, F_NOT_LOCKED,
+            F_ENABLE);
           if (ZRYTHM_TESTING)
             {
-              int num_dests =
-                port_connections_manager_get_sources_or_dests (
-                  PORT_CONNECTIONS_MGR, NULL, &src->id, false);
+              int num_dests = port_connections_manager_get_sources_or_dests (
+                PORT_CONNECTIONS_MGR, NULL, &src->id, false);
               g_return_val_if_fail (num_dests > 0, -1);
-              int num_srcs =
-                port_connections_manager_get_sources_or_dests (
-                  PORT_CONNECTIONS_MGR, NULL, &dest->id, true);
+              int num_srcs = port_connections_manager_get_sources_or_dests (
+                PORT_CONNECTIONS_MGR, NULL, &dest->id, true);
               g_return_val_if_fail (num_srcs > 0, -1);
             }
 
           /* set base value if cv -> control */
-          if (
-            src->id.type == TYPE_CV
-            && dest->id.type == TYPE_CONTROL)
+          if (src->id.type == TYPE_CV && dest->id.type == TYPE_CONTROL)
             {
               dest->base_value = dest->control;
             }
@@ -160,20 +147,15 @@ port_connection_action_do_or_undo (
 }
 
 int
-port_connection_action_do (
-  PortConnectionAction * self,
-  GError **              error)
+port_connection_action_do (PortConnectionAction * self, GError ** error)
 {
   return port_connection_action_do_or_undo (self, true, error);
 }
 
 int
-port_connection_action_undo (
-  PortConnectionAction * self,
-  GError **              error)
+port_connection_action_undo (PortConnectionAction * self, GError ** error)
 {
-  return port_connection_action_do_or_undo (
-    self, false, error);
+  return port_connection_action_do_or_undo (self, false, error);
 }
 
 char *
@@ -205,8 +187,7 @@ port_connection_action_stringize (PortConnectionAction * self)
 void
 port_connection_action_free (PortConnectionAction * self)
 {
-  object_free_w_func_and_null (
-    port_connection_free, self->connection);
+  object_free_w_func_and_null (port_connection_free, self->connection);
 
   object_zero_and_free (self);
 }

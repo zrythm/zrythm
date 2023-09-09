@@ -50,14 +50,8 @@ typedef struct ZRegion_v1
 
 static const cyaml_schema_field_t region_fields_schema_v1[] = {
   YAML_FIELD_INT (ZRegion_v1, schema_version),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ZRegion_v1,
-    base,
-    arranger_object_fields_schema_v1),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ZRegion_v1,
-    id,
-    region_identifier_fields_schema_v1),
+  YAML_FIELD_MAPPING_EMBEDDED (ZRegion_v1, base, arranger_object_fields_schema_v1),
+  YAML_FIELD_MAPPING_EMBEDDED (ZRegion_v1, id, region_identifier_fields_schema_v1),
   YAML_FIELD_STRING_PTR (ZRegion_v1, name),
   YAML_FIELD_INT (ZRegion_v1, pool_id),
   YAML_FIELD_FLOAT (ZRegion_v1, gain),
@@ -88,10 +82,7 @@ static const cyaml_schema_field_t region_fields_schema_v1[] = {
     &chord_object_schema_v1,
     0,
     CYAML_UNLIMITED),
-  YAML_FIELD_ENUM (
-    ZRegion_v1,
-    musical_mode,
-    region_musical_mode_strings_v1),
+  YAML_FIELD_ENUM (ZRegion_v1, musical_mode, region_musical_mode_strings_v1),
 
   CYAML_FIELD_END
 };

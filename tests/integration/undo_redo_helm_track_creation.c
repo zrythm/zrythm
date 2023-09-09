@@ -48,10 +48,8 @@ _test (
     pl_bundle, pl_uri, is_instrument, with_carla, 1);
 
   /* select it */
-  Track * helm_track =
-    TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
-  track_select (
-    helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
+  Track * helm_track = TRACKLIST->tracks[TRACKLIST->num_tracks - 1];
+  track_select (helm_track, F_SELECT, true, F_NO_PUBLISH_EVENTS);
 
   /* 2. delete track */
   tracklist_selections_action_perform_delete (
@@ -92,8 +90,7 @@ main (int argc, char * argv[])
 
   test_helper_zrythm_init ();
 
-#define TEST_PREFIX \
-  "/integration/undo_redo_helm_track_creation/"
+#define TEST_PREFIX "/integration/undo_redo_helm_track_creation/"
 
   g_test_add_func (TEST_PREFIX "test", (GTestFunc) test);
 

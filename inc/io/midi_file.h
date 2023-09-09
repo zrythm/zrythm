@@ -28,9 +28,7 @@ midi_file_track_has_data (const char * abs_path, int track_idx);
  * Returns the number of tracks in the MIDI file.
  */
 int
-midi_file_get_num_tracks (
-  const char * abs_path,
-  bool         non_empty_only);
+midi_file_get_num_tracks (const char * abs_path, bool non_empty_only);
 
 /**
  * @}

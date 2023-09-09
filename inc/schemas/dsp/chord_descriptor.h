@@ -113,22 +113,10 @@ typedef struct ChordDescriptor_v2
 static const cyaml_schema_field_t chord_descriptor_fields_schema_v2[] = {
   YAML_FIELD_INT (ChordDescriptor_v2, schema_version),
   YAML_FIELD_INT (ChordDescriptor_v2, has_bass),
-  YAML_FIELD_ENUM (
-    ChordDescriptor_v2,
-    root_note,
-    musical_note_strings_v1),
-  YAML_FIELD_ENUM (
-    ChordDescriptor_v2,
-    bass_note,
-    musical_note_strings_v1),
-  YAML_FIELD_ENUM (
-    ChordDescriptor_v2,
-    type,
-    chord_type_strings_v1),
-  YAML_FIELD_ENUM (
-    ChordDescriptor_v2,
-    accent,
-    chord_accent_strings_v1),
+  YAML_FIELD_ENUM (ChordDescriptor_v2, root_note, musical_note_strings_v1),
+  YAML_FIELD_ENUM (ChordDescriptor_v2, bass_note, musical_note_strings_v1),
+  YAML_FIELD_ENUM (ChordDescriptor_v2, type, chord_type_strings_v1),
+  YAML_FIELD_ENUM (ChordDescriptor_v2, accent, chord_accent_strings_v1),
   CYAML_FIELD_SEQUENCE_FIXED (
     "notes",
     CYAML_FLAG_OPTIONAL,

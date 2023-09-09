@@ -171,12 +171,11 @@ _bar_slider_widget_new (
  * Helper to create a bar slider widget.
  */
 #define bar_slider_widget_new( \
-  getter, setter, obj, min, max, w, h, zero, dec, mode, \
-  suffix) \
+  getter, setter, obj, min, max, w, h, zero, dec, mode, suffix) \
   _bar_slider_widget_new ( \
     BAR_SLIDER_TYPE_NORMAL, (float (*) (void *)) getter, \
-    (void (*) (void *, float)) setter, (void *) obj, min, \
-    max, w, h, zero, 0, dec, mode, "", suffix)
+    (void (*) (void *, float)) setter, (void *) obj, min, max, w, h, zero, 0, \
+    dec, mode, "", suffix)
 
 /**
  * Wrapper.
@@ -185,9 +184,8 @@ _bar_slider_widget_new (
  */
 #define bar_slider_widget_new_port_connection(conn, prefix) \
   _bar_slider_widget_new ( \
-    BAR_SLIDER_TYPE_PORT_MULTIPLIER, NULL, NULL, \
-    (void *) conn, 0.f, 1.f, 160, 20, 0.f, 1, 0, \
-    UI_DRAG_MODE_CURSOR, prefix, " %")
+    BAR_SLIDER_TYPE_PORT_MULTIPLIER, NULL, NULL, (void *) conn, 0.f, 1.f, 160, \
+    20, 0.f, 1, 0, UI_DRAG_MODE_CURSOR, prefix, " %")
 
 /**
  * @}

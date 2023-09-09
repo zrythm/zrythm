@@ -44,8 +44,8 @@ chord_action_new (
     {
       self->type = CHORD_ACTION_SINGLE;
 
-      self->chord_before = chord_descriptor_clone (
-        CHORD_EDITOR->chords[chord_idx]);
+      self->chord_before =
+        chord_descriptor_clone (CHORD_EDITOR->chords[chord_idx]);
       self->chord_after = chord_descriptor_clone (chord);
       self->chord_idx = chord_idx;
     }
@@ -53,17 +53,15 @@ chord_action_new (
     {
       self->type = CHORD_ACTION_ALL;
 
-      self->chords_before = object_new_n (
-        CHORD_EDITOR_NUM_CHORDS, ChordDescriptor *);
-      self->chords_after = object_new_n (
-        CHORD_EDITOR_NUM_CHORDS, ChordDescriptor *);
+      self->chords_before =
+        object_new_n (CHORD_EDITOR_NUM_CHORDS, ChordDescriptor *);
+      self->chords_after =
+        object_new_n (CHORD_EDITOR_NUM_CHORDS, ChordDescriptor *);
 
       for (size_t i = 0; i < CHORD_EDITOR_NUM_CHORDS; i++)
         {
-          self->chords_before[i] =
-            chord_descriptor_clone (chords_before[i]);
-          self->chords_after[i] =
-            chord_descriptor_clone (chords_after[i]);
+          self->chords_before[i] = chord_descriptor_clone (chords_before[i]);
+          self->chords_after[i] = chord_descriptor_clone (chords_after[i]);
         }
     }
 
@@ -82,23 +80,20 @@ chord_action_clone (const ChordAction * src)
   switch (self->type)
     {
     case CHORD_ACTION_ALL:
-      self->chords_before = object_new_n (
-        CHORD_EDITOR_NUM_CHORDS, ChordDescriptor *);
-      self->chords_after = object_new_n (
-        CHORD_EDITOR_NUM_CHORDS, ChordDescriptor *);
+      self->chords_before =
+        object_new_n (CHORD_EDITOR_NUM_CHORDS, ChordDescriptor *);
+      self->chords_after =
+        object_new_n (CHORD_EDITOR_NUM_CHORDS, ChordDescriptor *);
       for (int i = 0; i < CHORD_EDITOR_NUM_CHORDS; i++)
         {
           self->chords_before[i] =
             chord_descriptor_clone (src->chords_before[i]);
-          self->chords_after[i] =
-            chord_descriptor_clone (src->chords_after[i]);
+          self->chords_after[i] = chord_descriptor_clone (src->chords_after[i]);
         }
       break;
     case CHORD_ACTION_SINGLE:
-      self->chord_before =
-        chord_descriptor_clone (src->chord_before);
-      self->chord_after =
-        chord_descriptor_clone (src->chord_before);
+      self->chord_before = chord_descriptor_clone (src->chord_before);
+      self->chord_after = chord_descriptor_clone (src->chord_before);
       break;
     }
 
@@ -117,8 +112,8 @@ chord_action_perform (
   GError **                error)
 {
   UNDO_MANAGER_PERFORM_AND_PROPAGATE_ERR (
-    chord_action_new, error, chords_before, chords_after,
-    chord, chord_idx, error);
+    chord_action_new, error, chords_before, chords_after, chord, chord_idx,
+    error);
 }
 
 static int
@@ -129,19 +124,15 @@ do_or_undo (ChordAction * self, bool _do, GError ** error)
     case CHORD_ACTION_ALL:
       chord_editor_apply_chords (
         CHORD_EDITOR,
-        (const ChordDescriptor **) (_do ? self->chords_after
-                                        : self->chords_before),
+        (const ChordDescriptor **) (_do ? self->chords_after : self->chords_before),
         false);
       EVENTS_PUSH (ET_CHORDS_UPDATED, NULL);
       break;
     case CHORD_ACTION_SINGLE:
       chord_editor_apply_single_chord (
-        CHORD_EDITOR,
-        (_do ? self->chord_after : self->chord_before),
+        CHORD_EDITOR, (_do ? self->chord_after : self->chord_before),
         self->chord_idx, false);
-      EVENTS_PUSH (
-        ET_CHORD_KEY_CHANGED,
-        CHORD_EDITOR->chords[self->chord_idx]);
+      EVENTS_PUSH (ET_CHORD_KEY_CHANGED, CHORD_EDITOR->chords[self->chord_idx]);
       break;
     }
 
@@ -183,10 +174,8 @@ chord_action_free (ChordAction * self)
     }
   else if (self->type == CHORD_ACTION_SINGLE)
     {
-      object_free_w_func_and_null (
-        chord_descriptor_free, self->chord_before);
-      object_free_w_func_and_null (
-        chord_descriptor_free, self->chord_after);
+      object_free_w_func_and_null (chord_descriptor_free, self->chord_before);
+      object_free_w_func_and_null (chord_descriptor_free, self->chord_after);
     }
 
   object_zero_and_free (self);

@@ -18,8 +18,7 @@ midi_note_upgrade_from_v1 (MidiNote_v1 * old)
 
 #define UPDATE(name) self->name = old->name
 
-  ArrangerObject * base =
-    arranger_object_upgrade_from_v1 (&old->base);
+  ArrangerObject * base = arranger_object_upgrade_from_v1 (&old->base);
   self->base = *base;
 
   self->vel = velocity_upgrade_from_v1 (old->vel);

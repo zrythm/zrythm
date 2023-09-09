@@ -36,8 +36,7 @@
 #define position_add_bars(_pos, _b) \
   g_warn_if_fail (TRANSPORT->ticks_per_bar > 0); \
   position_add_ticks ((_pos), (_b) *TRANSPORT->ticks_per_bar)
-#define position_snap_simple(pos, sg) \
-  position_snap (NULL, pos, NULL, NULL, sg)
+#define position_snap_simple(pos, sg) position_snap (NULL, pos, NULL, NULL, sg)
 
 #define POSITION_MAX_BAR 160000
 
@@ -55,8 +54,7 @@
  * 0 = equal
  * positive = p2 is earlier
  */
-#define position_compare_frames(p1, p2) \
-  ((p1)->frames - (p2)->frames)
+#define position_compare_frames(p1, p2) ((p1)->frames - (p2)->frames)
 
 /** Checks if _pos is before _cmp. */
 #define position_is_before(_pos, _cmp) \
@@ -71,15 +69,13 @@
   (position_compare_frames (_pos, _cmp) == 0)
 
 /** Checks if _pos is after _cmp. */
-#define position_is_after(_pos, _cmp) \
-  (position_compare_frames (_pos, _cmp) > 0)
+#define position_is_after(_pos, _cmp) (position_compare_frames (_pos, _cmp) > 0)
 
 /** Checks if _pos is after or equal to _cmp. */
 #define position_is_after_or_equal(_pos, _cmp) \
   (position_compare_frames (_pos, _cmp) >= 0)
 
-#define position_is_positive(pos) \
-  ((pos)->frames >= 0 && (pos)->ticks >= 0)
+#define position_is_positive(pos) ((pos)->frames >= 0 && (pos)->ticks >= 0)
 
 /**
  * Compares 2 positions based on their total ticks.
@@ -88,8 +84,7 @@
  * 0 = equal
  * positive = p2 is earlier
  */
-#define position_compare_ticks(p1, p2) \
-  ((p1)->ticks - (p2)->ticks)
+#define position_compare_ticks(p1, p2) ((p1)->ticks - (p2)->ticks)
 
 #define position_is_equal_ticks(p1, p2) \
   (fabs (position_compare_ticks (p1, p2)) <= DBL_EPSILON)
@@ -97,26 +92,21 @@
 /** Returns if _pos is after or equal to _start and
  * before _end. */
 #define position_is_between(_pos, _start, _end) \
-  (position_is_after_or_equal (_pos, _start) \
-   && position_is_before (_pos, _end))
+  (position_is_after_or_equal (_pos, _start) && position_is_before (_pos, _end))
 
 /** Returns if _pos is after _start and
  * before _end. */
 #define position_is_between_excl_start(_pos, _start, _end) \
-  (position_is_after (_pos, _start) \
-   && position_is_before (_pos, _end))
+  (position_is_after (_pos, _start) && position_is_before (_pos, _end))
 
 /** Returns minimum of p1 and p2 */
-#define position_min(p1, p2) \
-  (position_compare_frames (p1, p2) < 0 ? p1 : p2)
+#define position_min(p1, p2) (position_compare_frames (p1, p2) < 0 ? p1 : p2)
 
 /** Returns maximum of p1 and p2 */
-#define position_max(p1, p2) \
-  (position_compare_frames (p1, p2) > 0 ? p1 : p2)
+#define position_max(p1, p2) (position_compare_frames (p1, p2) > 0 ? p1 : p2)
 
 /** Inits the default position on the stack. */
-#define POSITION_INIT_ON_STACK(name) \
-  Position name = POSITION_START;
+#define POSITION_INIT_ON_STACK(name) Position name = POSITION_START;
 
 /**
  * Initializes given position.
@@ -160,8 +150,7 @@ typedef struct Position
 } Position;
 
 static const cyaml_schema_field_t position_fields_schema[] = {
-  YAML_FIELD_INT (Position, schema_version),
-  YAML_FIELD_FLOAT (Position, ticks),
+  YAML_FIELD_INT (Position, schema_version), YAML_FIELD_FLOAT (Position, ticks),
   YAML_FIELD_INT (Position, frames),
 
   CYAML_FIELD_END
@@ -211,8 +200,7 @@ position_sort_array (Position * array, const size_t size);
  *
  * Assumes each position is Position *.
  */
-#define position_set_to_pos(_pos, _target) \
-  *(_pos) = *(_target)
+#define position_set_to_pos(_pos, _target) *(_pos) = *(_target)
 
 /**
  * Adds the frames to the position and updates
@@ -220,9 +208,7 @@ position_sort_array (Position * array, const size_t size);
  * frames are still accurate.
  */
 HOT void
-position_add_frames (
-  Position *           pos,
-  const signed_frame_t frames);
+position_add_frames (Position * pos, const signed_frame_t frames);
 
 /** Deprecated - added for compatibility. */
 #define position_to_frames(x) ((x)->frames)
@@ -236,9 +222,7 @@ void
 position_from_seconds (Position * position, double secs);
 
 HOT NONNULL void
-position_from_frames (
-  Position *           pos,
-  const signed_frame_t frames);
+position_from_frames (Position * pos, const signed_frame_t frames);
 
 /**
  * Sets position to the given total tick count.
@@ -274,9 +258,7 @@ void
 position_add_minutes (Position * pos, int mins);
 
 void
-position_add_seconds (
-  Position *         pos,
-  const signed_sec_t seconds);
+position_add_seconds (Position * pos, const signed_sec_t seconds);
 
 /**
  * Snaps position using given options.
@@ -327,9 +309,7 @@ position_set_min_size (
  *   will be used instead.
  */
 HOT NONNULL void
-position_update_ticks_from_frames (
-  Position * position,
-  double     ticks_per_frame);
+position_update_ticks_from_frames (Position * position, double ticks_per_frame);
 
 /**
  * Converts ticks to frames.
@@ -338,9 +318,7 @@ position_update_ticks_from_frames (
  *   will be used instead.
  */
 signed_frame_t
-position_get_frames_from_ticks (
-  double ticks,
-  double frames_per_tick);
+position_get_frames_from_ticks (double ticks, double frames_per_tick);
 
 /**
  * Updates frames.
@@ -349,9 +327,7 @@ position_get_frames_from_ticks (
  *   will be used instead.
  */
 HOT NONNULL void
-position_update_frames_from_ticks (
-  Position * self,
-  double     frames_per_tick);
+position_update_frames_from_ticks (Position * self, double frames_per_tick);
 
 /**
  * Updates the position from ticks or frames.
@@ -378,10 +354,7 @@ position_update (Position * self, bool from_ticks, double ratio)
  * @param pos Position to set to.
  */
 void
-position_get_midway_pos (
-  Position * start_pos,
-  Position * end_pos,
-  Position * pos);
+position_get_midway_pos (Position * start_pos, Position * end_pos, Position * pos);
 
 /**
  * Returns the difference in ticks between the two
@@ -409,10 +382,7 @@ NONNULL char *
 position_to_string_alloc (const Position * pos);
 
 NONNULL void
-position_to_string_full (
-  const Position * pos,
-  char *           buf,
-  int              decimal_places);
+position_to_string_full (const Position * pos, char * buf, int decimal_places);
 
 /**
  * Creates a string in the form of "0.0.0.0" from
@@ -436,9 +406,7 @@ NONNULL void
 position_print (const Position * pos);
 
 NONNULL void
-position_print_range (
-  const Position * pos,
-  const Position * pos2);
+position_print_range (const Position * pos, const Position * pos2);
 
 /**
  * Returns the total number of beats.
@@ -447,9 +415,7 @@ position_print_range (
  *   current beat if it is at the beat start.
  */
 NONNULL int
-position_get_total_bars (
-  const Position * pos,
-  bool             include_current);
+position_get_total_bars (const Position * pos, bool include_current);
 
 /**
  * Returns the total number of beats.
@@ -458,18 +424,14 @@ position_get_total_bars (
  *   current beat if it is at the beat start.
  */
 NONNULL int
-position_get_total_beats (
-  const Position * pos,
-  bool             include_current);
+position_get_total_beats (const Position * pos, bool include_current);
 
 /**
  * Returns the total number of sixteenths not
  * including the current one.
  */
 NONNULL int
-position_get_total_sixteenths (
-  const Position * pos,
-  bool             include_current);
+position_get_total_sixteenths (const Position * pos, bool include_current);
 
 /**
  * Changes the sign of the position.
@@ -513,9 +475,7 @@ position_get_beats (const Position * pos, bool start_at_one);
  *   0.
  */
 NONNULL int
-position_get_sixteenths (
-  const Position * pos,
-  bool             start_at_one);
+position_get_sixteenths (const Position * pos, bool start_at_one);
 
 /**
  * Gets the ticks of the position.

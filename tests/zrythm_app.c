@@ -25,8 +25,7 @@ on_finished_conversion_from_zpj_to_yaml (void)
   if (length > 0)
     {
       exe_path = (char *) malloc ((size_t) length + 1);
-      wai_getExecutablePath (
-        exe_path, length, &dirname_length);
+      wai_getExecutablePath (exe_path, length, &dirname_length);
       exe_path[length] = '\0';
     }
   g_assert_nonnull (exe_path);
@@ -49,10 +48,8 @@ on_finished_conversion_from_zpj_to_yaml (void)
   int    argc = 3;
   char * argv_after[] = { exe_path, arg1, arg2 };
 
-  ZrythmApp * app =
-    zrythm_app_new (argc, (const char **) argv_after);
-  int ret =
-    g_application_run (G_APPLICATION (app), argc, argv_after);
+  ZrythmApp * app = zrythm_app_new (argc, (const char **) argv_after);
+  int         ret = g_application_run (G_APPLICATION (app), argc, argv_after);
   g_assert_cmpint (ret, ==, 0);
   g_object_unref (app);
 
@@ -72,8 +69,7 @@ test_project_conversion (void)
   if (length > 0)
     {
       exe_path = (char *) malloc ((size_t) length + 1);
-      wai_getExecutablePath (
-        exe_path, length, &dirname_length);
+      wai_getExecutablePath (exe_path, length, &dirname_length);
       exe_path[length] = '\0';
     }
   g_assert_nonnull (exe_path);
@@ -91,10 +87,8 @@ test_project_conversion (void)
   int    argc = 3;
   char * argv[] = { exe_path, arg1, arg2 };
 
-  ZrythmApp * app =
-    zrythm_app_new (argc, (const char **) argv);
-  int ret =
-    g_application_run (G_APPLICATION (app), argc, argv);
+  ZrythmApp * app = zrythm_app_new (argc, (const char **) argv);
+  int         ret = g_application_run (G_APPLICATION (app), argc, argv);
   g_assert_cmpint (ret, ==, 0);
   g_object_unref (app);
 
@@ -107,8 +101,7 @@ test_project_conversion (void)
   char * argv_after[] = { exe_path, arg1, arg2 };
 
   app = zrythm_app_new (argc, (const char **) argv_after);
-  ret =
-    g_application_run (G_APPLICATION (app), argc, argv_after);
+  ret = g_application_run (G_APPLICATION (app), argc, argv_after);
   g_assert_cmpint (ret, ==, 0);
   g_object_unref (app);
 
@@ -123,8 +116,7 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/zrythm_app/"
 
   g_test_add_func (
-    TEST_PREFIX "test project conversion",
-    (GTestFunc) test_project_conversion);
+    TEST_PREFIX "test project conversion", (GTestFunc) test_project_conversion);
 
   return g_test_run ();
 }

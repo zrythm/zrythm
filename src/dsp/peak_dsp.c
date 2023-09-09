@@ -49,8 +49,7 @@ peak_dsp_process (PeakDsp * self, float * p, int n)
     {
       /*const float fall = 15.f;*/
       const float fall = 5.f;
-      const float tme =
-        (float) n / self->fsamp; // period time in seconds
+      const float tme = (float) n / self->fsamp; // period time in seconds
       self->fall = powf (
         10.f,
         -0.05f * fall * tme); // per period fallback multiplier
@@ -101,9 +100,8 @@ peak_dsp_process (PeakDsp * self, float * p, int n)
     }
   else
     {
-      self->peak *=
-        self->fall; // else let the peak value fall back,
-      self->peak += 1e-10f; // and avoid denormals.
+      self->peak *= self->fall; // else let the peak value fall back,
+      self->peak += 1e-10f;     // and avoid denormals.
     }
 }
 
@@ -141,9 +139,7 @@ peak_dsp_init (PeakDsp * self, float samplerate)
   const float hold = 1.5f;
   self->fsamp = samplerate;
 
-  self->hold =
-    (int) (hold * samplerate
-           + 0.5f); // number of samples to hold peak
+  self->hold = (int) (hold * samplerate + 0.5f); // number of samples to hold peak
 }
 
 PeakDsp *

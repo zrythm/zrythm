@@ -18,31 +18,24 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  HomeToolbarWidget,
-  home_toolbar_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (HomeToolbarWidget, home_toolbar_widget, GTK_TYPE_BOX)
 
 static void
 refresh_undo_or_redo_button (HomeToolbarWidget * self, bool redo)
 {
   g_warn_if_fail (UNDO_MANAGER);
 
-  AdwSplitButton * split_btn =
-    redo ? self->redo_btn : self->undo_btn;
-  UndoStack * stack =
-    redo ? UNDO_MANAGER->redo_stack : UNDO_MANAGER->undo_stack;
+  AdwSplitButton * split_btn = redo ? self->redo_btn : self->undo_btn;
+  UndoStack * stack = redo ? UNDO_MANAGER->redo_stack : UNDO_MANAGER->undo_stack;
 
   gtk_widget_set_sensitive (
     GTK_WIDGET (split_btn), !undo_stack_is_empty (stack));
 
 #define SET_TOOLTIP(tooltip) \
-  z_gtk_set_tooltip_for_actionable ( \
-    GTK_ACTIONABLE (split_btn), (tooltip))
+  z_gtk_set_tooltip_for_actionable (GTK_ACTIONABLE (split_btn), (tooltip))
 
-  const char * undo_or_redo_str =
-    redo ? _ ("Redo") : _ ("Undo");
-  GMenu * menu = NULL;
+  const char * undo_or_redo_str = redo ? _ ("Redo") : _ ("Undo");
+  GMenu *      menu = NULL;
   if (undo_stack_is_empty (stack))
     {
       SET_TOOLTIP (undo_or_redo_str);
@@ -57,15 +50,13 @@ refresh_undo_or_redo_button (HomeToolbarWidget * self, bool redo)
       for (int i = 0; i < max_actions;)
         {
           UndoableAction * ua =
-            stack->stack->elements
-              [g_atomic_int_get (&stack->stack->top) - i];
+            stack->stack->elements[g_atomic_int_get (&stack->stack->top) - i];
 
           char * action_str = undoable_action_to_string (ua);
 
           char tmp[600];
           sprintf (tmp, "app.%s_n", redo ? "redo" : "undo");
-          menuitem =
-            z_gtk_create_menu_item (action_str, NULL, tmp);
+          menuitem = z_gtk_create_menu_item (action_str, NULL, tmp);
           g_menu_item_set_action_and_target_value (
             menuitem, tmp, g_variant_new_int32 (i));
           g_menu_append_item (menu, menuitem);
@@ -73,15 +64,11 @@ refresh_undo_or_redo_button (HomeToolbarWidget * self, bool redo)
           if (i == 0)
             {
               char tooltip[800];
-              sprintf (
-                tooltip, "%s %s", undo_or_redo_str,
-                action_str);
+              sprintf (tooltip, "%s %s", undo_or_redo_str, action_str);
               if (ua->num_actions > 1)
                 {
                   char num_actions_str[100];
-                  sprintf (
-                    num_actions_str, " (x%d)",
-                    ua->num_actions);
+                  sprintf (num_actions_str, " (x%d)", ua->num_actions);
                   strcat (tooltip, num_actions_str);
                 }
               SET_TOOLTIP (tooltip);
@@ -96,16 +83,14 @@ refresh_undo_or_redo_button (HomeToolbarWidget * self, bool redo)
 
   if (menu)
     {
-      adw_split_button_set_menu_model (
-        split_btn, G_MENU_MODEL (menu));
+      adw_split_button_set_menu_model (split_btn, G_MENU_MODEL (menu));
     }
 }
 
 /* TODO rename to refresh buttons and refresh
 * everything */
 void
-home_toolbar_widget_refresh_undo_redo_buttons (
-  HomeToolbarWidget * self)
+home_toolbar_widget_refresh_undo_redo_buttons (HomeToolbarWidget * self)
 {
   g_warn_if_fail (UNDO_MANAGER);
 
@@ -128,8 +113,7 @@ home_toolbar_widget_init (HomeToolbarWidget * self)
   gtk_widget_init_template (GTK_WIDGET (self));
 
 #define SET_TOOLTIP(x, tooltip) \
-  z_gtk_set_tooltip_for_actionable ( \
-    GTK_ACTIONABLE (self->x), tooltip)
+  z_gtk_set_tooltip_for_actionable (GTK_ACTIONABLE (self->x), tooltip)
   SET_TOOLTIP (cut, _ ("Cut"));
   SET_TOOLTIP (copy, _ ("Copy"));
   SET_TOOLTIP (paste, _ ("Paste"));
@@ -144,19 +128,16 @@ home_toolbar_widget_init (HomeToolbarWidget * self)
 }
 
 static void
-home_toolbar_widget_class_init (
-  HomeToolbarWidgetClass * _klass)
+home_toolbar_widget_class_init (HomeToolbarWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   resources_set_class_template (klass, "home_toolbar.ui");
 
   gtk_widget_class_set_css_name (klass, "home-toolbar");
-  gtk_widget_class_set_accessible_role (
-    klass, GTK_ACCESSIBLE_ROLE_TOOLBAR);
+  gtk_widget_class_set_accessible_role (klass, GTK_ACCESSIBLE_ROLE_TOOLBAR);
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, HomeToolbarWidget, x)
+  gtk_widget_class_bind_template_child (klass, HomeToolbarWidget, x)
 
   BIND_CHILD (undo_btn);
   BIND_CHILD (redo_btn);

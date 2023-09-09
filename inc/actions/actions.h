@@ -15,9 +15,7 @@
 #include <gtk/gtk.h>
 
 #define DECLARE_SIMPLE(x) \
-  void x ( \
-    GSimpleAction * action, GVariant * variant, \
-    gpointer user_data)
+  void x (GSimpleAction * action, GVariant * variant, gpointer user_data)
 
 /**
  * @addtogroup actions
@@ -26,15 +24,10 @@
  */
 
 void
-actions_set_app_action_enabled (
-  const char * action_name,
-  const bool   enabled);
+actions_set_app_action_enabled (const char * action_name, const bool enabled);
 
 void
-activate_about (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
+activate_about (GSimpleAction * action, GVariant * variant, gpointer user_data);
 
 /**
  * Show preferences window.
@@ -49,10 +42,7 @@ activate_preferences (
  * Show preferences window.
  */
 void
-activate_log (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
+activate_log (GSimpleAction * action, GVariant * variant, gpointer user_data);
 
 /**
  * Show preferences window.
@@ -94,10 +84,7 @@ activate_edit_mode (
  * Activate cut mode.
  */
 void
-activate_cut_mode (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
+activate_cut_mode (GSimpleAction * action, GVariant * variant, gpointer user_data);
 
 /**
  * Activate eraser mode.
@@ -118,22 +105,13 @@ activate_ramp_mode (
   gpointer        user_data);
 
 void
-activate_quit (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
+activate_quit (GSimpleAction * action, GVariant * variant, gpointer user_data);
 
 void
-activate_zoom_in (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
+activate_zoom_in (GSimpleAction * action, GVariant * variant, gpointer user_data);
 
 void
-activate_zoom_out (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
+activate_zoom_out (GSimpleAction * action, GVariant * variant, gpointer user_data);
 
 DECLARE_SIMPLE (activate_cycle_focus);
 DECLARE_SIMPLE (activate_cycle_focus_backwards);
@@ -146,10 +124,7 @@ COLD DECLARE_SIMPLE (activate_minimize);
 COLD DECLARE_SIMPLE (activate_open);
 
 COLD void
-activate_save (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
+activate_save (GSimpleAction * action, GVariant * variant, gpointer user_data);
 
 COLD DECLARE_SIMPLE (activate_save_as);
 
@@ -235,10 +210,7 @@ activate_loop_selection (
   gpointer        user_data);
 
 void
-activate_best_fit (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data);
+activate_best_fit (GSimpleAction * action, GVariant * variant, gpointer user_data);
 
 void
 activate_original_size (
@@ -286,14 +258,11 @@ DECLARE_SIMPLE (activate_bounce_selected_tracks);
 DECLARE_SIMPLE (activate_selected_tracks_direct_out_to);
 DECLARE_SIMPLE (activate_selected_tracks_direct_out_new);
 DECLARE_SIMPLE (activate_toggle_track_passthrough_input);
-DECLARE_SIMPLE (
-  activate_show_used_automation_lanes_on_selected_tracks);
-DECLARE_SIMPLE (
-  activate_hide_unused_automation_lanes_on_selected_tracks);
+DECLARE_SIMPLE (activate_show_used_automation_lanes_on_selected_tracks);
+DECLARE_SIMPLE (activate_hide_unused_automation_lanes_on_selected_tracks);
 DECLARE_SIMPLE (activate_append_track_objects_to_selection);
 DECLARE_SIMPLE (activate_append_lane_objects_to_selection);
-DECLARE_SIMPLE (
-  activate_append_lane_automation_regions_to_selection);
+DECLARE_SIMPLE (activate_append_lane_automation_regions_to_selection);
 
 void
 activate_snap_events (
@@ -316,10 +285,7 @@ change_state_dim_output (
   gpointer        user_data);
 
 void
-change_state_loop (
-  GSimpleAction * action,
-  GVariant *      value,
-  gpointer        user_data);
+change_state_loop (GSimpleAction * action, GVariant * value, gpointer user_data);
 
 void
 change_state_metronome (
@@ -466,14 +432,11 @@ DECLARE_SIMPLE (activate_panel_file_browser_delete_bookmark);
 /* plugin browser actions */
 DECLARE_SIMPLE (activate_plugin_browser_add_to_project);
 DECLARE_SIMPLE (activate_plugin_browser_add_to_project_carla);
-DECLARE_SIMPLE (
-  activate_plugin_browser_add_to_project_bridged_ui);
-DECLARE_SIMPLE (
-  activate_plugin_browser_add_to_project_bridged_full);
+DECLARE_SIMPLE (activate_plugin_browser_add_to_project_bridged_ui);
+DECLARE_SIMPLE (activate_plugin_browser_add_to_project_bridged_full);
 DECLARE_SIMPLE (change_state_plugin_browser_toggle_generic_ui);
 DECLARE_SIMPLE (activate_plugin_browser_add_to_collection);
-DECLARE_SIMPLE (
-  activate_plugin_browser_remove_from_collection);
+DECLARE_SIMPLE (activate_plugin_browser_remove_from_collection);
 DECLARE_SIMPLE (activate_plugin_browser_reset);
 DECLARE_SIMPLE (activate_plugin_collection_add);
 DECLARE_SIMPLE (activate_plugin_collection_rename);

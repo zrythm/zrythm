@@ -81,11 +81,9 @@ init_descriptors (PianoRoll * self)
       descr->custom_name = g_strdup ("");
 
       descr->note_name = g_strdup_printf (
-        "%s%d", chord_descriptor_note_to_string (i % 12),
-        i / 12 - 1);
+        "%s%d", chord_descriptor_note_to_string (i % 12), i / 12 - 1);
       descr->note_name_pango = g_strdup_printf (
-        "%s<sup>%d</sup>",
-        chord_descriptor_note_to_string (i % 12), i / 12 - 1);
+        "%s<sup>%d</sup>", chord_descriptor_note_to_string (i % 12), i / 12 - 1);
       idx++;
     }
 
@@ -103,11 +101,9 @@ init_descriptors (PianoRoll * self)
       descr->custom_name = g_strdup (drum_labels[idx]);
 
       descr->note_name = g_strdup_printf (
-        "%s%d", chord_descriptor_note_to_string (i % 12),
-        i / 12 - 1);
+        "%s%d", chord_descriptor_note_to_string (i % 12), i / 12 - 1);
       descr->note_name_pango = g_strdup_printf (
-        "%s<sup>%d</sup>",
-        chord_descriptor_note_to_string (i % 12), i / 12 - 1);
+        "%s<sup>%d</sup>", chord_descriptor_note_to_string (i % 12), i / 12 - 1);
       idx++;
     }
   for (int i = 0; i < 128; i++)
@@ -123,15 +119,12 @@ init_descriptors (PianoRoll * self)
       descr->marked = 0;
       descr->visible = 1;
       descr->custom_name = g_strdup_printf (
-        "#%d: %s%d", i,
-        chord_descriptor_note_to_string (i % 12), i / 12 - 1);
+        "#%d: %s%d", i, chord_descriptor_note_to_string (i % 12), i / 12 - 1);
 
       descr->note_name = g_strdup_printf (
-        "%s%d", chord_descriptor_note_to_string (i % 12),
-        i / 12 - 1);
+        "%s%d", chord_descriptor_note_to_string (i % 12), i / 12 - 1);
       descr->note_name_pango = g_strdup_printf (
-        "%s<sup>%d</sup>",
-        chord_descriptor_note_to_string (i % 12), i / 12 - 1);
+        "%s<sup>%d</sup>", chord_descriptor_note_to_string (i % 12), i / 12 - 1);
       idx++;
     }
 
@@ -139,9 +132,7 @@ init_descriptors (PianoRoll * self)
 }
 
 /* 1 = black */
-static const int notes[12] = {
-  0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0
-};
+static const int notes[12] = { 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 1, 0 };
 
 /**
  * Returns if the key is black.
@@ -158,11 +149,9 @@ piano_roll_is_key_black (int note)
 void
 piano_roll_add_current_note (PianoRoll * self, int note)
 {
-  if (!array_contains_int (
-        self->current_notes, self->num_current_notes, note))
+  if (!array_contains_int (self->current_notes, self->num_current_notes, note))
     {
-      array_append (
-        self->current_notes, self->num_current_notes, note);
+      array_append (self->current_notes, self->num_current_notes, note);
     }
 }
 
@@ -172,8 +161,7 @@ piano_roll_add_current_note (PianoRoll * self, int note)
 void
 piano_roll_remove_current_note (PianoRoll * self, int note)
 {
-  if (array_contains_int (
-        self->current_notes, self->num_current_notes, note))
+  if (array_contains_int (self->current_notes, self->num_current_notes, note))
     {
       array_delete_primitive (
         self->current_notes, self->num_current_notes, note);
@@ -187,8 +175,7 @@ piano_roll_remove_current_note (PianoRoll * self, int note)
 int
 piano_roll_contains_current_note (PianoRoll * self, int note)
 {
-  return array_contains_int (
-    self->current_notes, self->num_current_notes, note);
+  return array_contains_int (self->current_notes, self->num_current_notes, note);
 }
 
 /**
@@ -200,8 +187,7 @@ piano_roll_init_loaded (PianoRoll * self)
 {
   if (!ZRYTHM_TESTING)
     {
-      self->highlighting =
-        g_settings_get_enum (S_UI, "piano-roll-highlight");
+      self->highlighting = g_settings_get_enum (S_UI, "piano-roll-highlight");
     }
 
   init_descriptors (self);
@@ -234,22 +220,17 @@ piano_roll_find_midi_note_descriptor_by_val (
 }
 
 void
-midi_note_descriptor_set_custom_name (
-  MidiNoteDescriptor * descr,
-  char *               str)
+midi_note_descriptor_set_custom_name (MidiNoteDescriptor * descr, char * str)
 {
   descr->custom_name = g_strdup (str);
 }
 
 void
-piano_roll_set_highlighting (
-  PianoRoll *           self,
-  PianoRollHighlighting highlighting)
+piano_roll_set_highlighting (PianoRoll * self, PianoRollHighlighting highlighting)
 {
   self->highlighting = highlighting;
 
-  g_settings_set_enum (
-    S_UI, "piano-roll-highlight", highlighting);
+  g_settings_set_enum (S_UI, "piano-roll-highlight", highlighting);
 
   EVENTS_PUSH (ET_PIANO_ROLL_HIGHLIGHTING_CHANGED, NULL);
 }
@@ -266,10 +247,7 @@ piano_roll_get_current_track (const PianoRoll * self)
 }
 
 void
-piano_roll_set_notes_zoom (
-  PianoRoll * self,
-  float       notes_zoom,
-  int         fire_events)
+piano_roll_set_notes_zoom (PianoRoll * self, float notes_zoom, int fire_events)
 {
   if (notes_zoom < 1.f || notes_zoom > 4.5f)
     return;
@@ -286,9 +264,7 @@ piano_roll_set_notes_zoom (
  * Sets the MIDI modifier.
  */
 void
-piano_roll_set_midi_modifier (
-  PianoRoll *  self,
-  MidiModifier modifier)
+piano_roll_set_midi_modifier (PianoRoll * self, MidiModifier modifier)
 {
   self->midi_modifier = modifier;
 
@@ -313,10 +289,9 @@ piano_roll_init (PianoRoll * self)
 
   if (!ZRYTHM_TESTING)
     {
-      self->highlighting =
-        g_settings_get_enum (S_UI, "piano-roll-highlight");
-      self->midi_modifier = g_settings_get_enum (
-        S_UI, "piano-roll-midi-modifier");
+      self->highlighting = g_settings_get_enum (S_UI, "piano-roll-highlight");
+      self->midi_modifier =
+        g_settings_get_enum (S_UI, "piano-roll-midi-modifier");
     }
 
   init_descriptors (self);

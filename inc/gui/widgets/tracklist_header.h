@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define TRACKLIST_HEADER_WIDGET_TYPE \
-  (tracklist_header_widget_get_type ())
+#define TRACKLIST_HEADER_WIDGET_TYPE (tracklist_header_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TracklistHeaderWidget,
   tracklist_header_widget,
@@ -27,8 +26,7 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MW_TRACKLIST_HEADER \
-  (MW_TIMELINE_PANEL->tracklist_header)
+#define MW_TRACKLIST_HEADER (MW_TIMELINE_PANEL->tracklist_header)
 
 typedef struct _TracklistHeaderWidget
 {
@@ -39,8 +37,7 @@ typedef struct _TracklistHeaderWidget
 } TracklistHeaderWidget;
 
 void
-tracklist_header_widget_refresh_track_count (
-  TracklistHeaderWidget * self);
+tracklist_header_widget_refresh_track_count (TracklistHeaderWidget * self);
 
 void
 tracklist_header_widget_setup (TracklistHeaderWidget * self);

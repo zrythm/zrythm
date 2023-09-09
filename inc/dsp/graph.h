@@ -39,17 +39,17 @@
 #include "zix/sem.h"
 #include <pthread.h>
 
-typedef struct GraphNode       GraphNode;
-typedef struct Graph           Graph;
-typedef struct MPMCQueue       MPMCQueue;
-typedef struct Port            Port;
-typedef struct Fader           Fader;
-typedef struct Track           Track;
-typedef struct SampleProcessor SampleProcessor;
-typedef struct Plugin          Plugin;
-typedef struct Position        Position;
-typedef struct GraphThread     GraphThread;
-typedef struct Router          Router;
+typedef struct GraphNode               GraphNode;
+typedef struct Graph                   Graph;
+typedef struct MPMCQueue               MPMCQueue;
+typedef struct Port                    Port;
+typedef struct Fader                   Fader;
+typedef struct Track                   Track;
+typedef struct SampleProcessor         SampleProcessor;
+typedef struct Plugin                  Plugin;
+typedef struct Position                Position;
+typedef struct GraphThread             GraphThread;
+typedef struct Router                  Router;
 typedef struct ModulatorMacroProcessor ModulatorMacroProcessor;
 
 /**
@@ -58,11 +58,9 @@ typedef struct ModulatorMacroProcessor ModulatorMacroProcessor;
  * @{
  */
 
-#define mpmc_queue_push_back_node(q, x) \
-  mpmc_queue_push_back (q, (void *) x)
+#define mpmc_queue_push_back_node(q, x) mpmc_queue_push_back (q, (void *) x)
 
-#define mpmc_queue_dequeue_node(q, x) \
-  mpmc_queue_dequeue (q, (void *) x)
+#define mpmc_queue_dequeue_node(q, x) mpmc_queue_dequeue (q, (void *) x)
 
 #define MAX_GRAPH_THREADS 128
 
@@ -166,14 +164,10 @@ void
 graph_destroy (Graph * graph);
 
 GraphNode *
-graph_find_node_from_port (
-  const Graph * self,
-  const Port *  port);
+graph_find_node_from_port (const Graph * self, const Port * port);
 
 GraphNode *
-graph_find_node_from_plugin (
-  const Graph *  self,
-  const Plugin * pl);
+graph_find_node_from_plugin (const Graph * self, const Plugin * pl);
 
 GraphNode *
 graph_find_node_from_track (
@@ -182,14 +176,10 @@ graph_find_node_from_track (
   bool          use_setup_nodes);
 
 GraphNode *
-graph_find_node_from_fader (
-  const Graph * self,
-  const Fader * fader);
+graph_find_node_from_fader (const Graph * self, const Fader * fader);
 
 GraphNode *
-graph_find_node_from_prefader (
-  const Graph * self,
-  const Fader * prefader);
+graph_find_node_from_prefader (const Graph * self, const Fader * prefader);
 
 GraphNode *
 graph_find_node_from_sample_processor (
@@ -197,9 +187,7 @@ graph_find_node_from_sample_processor (
   const SampleProcessor * sample_processor);
 
 GraphNode *
-graph_find_node_from_monitor_fader (
-  const Graph * self,
-  const Fader * fader);
+graph_find_node_from_monitor_fader (const Graph * self, const Fader * fader);
 
 GraphNode *
 graph_find_node_from_modulator_macro_processor (
@@ -207,9 +195,7 @@ graph_find_node_from_modulator_macro_processor (
   const ModulatorMacroProcessor * processor);
 
 GraphNode *
-graph_find_node_from_channel_send (
-  const Graph *       self,
-  const ChannelSend * send);
+graph_find_node_from_channel_send (const Graph * self, const ChannelSend * send);
 
 GraphNode *
 graph_find_initial_processor_node (const Graph * self);
@@ -224,19 +210,14 @@ graph_find_hw_processor_node (
  * returns it.
  */
 NONNULL GraphNode *
-graph_create_node (
-  Graph *       self,
-  GraphNodeType type,
-  void *        data);
+graph_create_node (Graph * self, GraphNodeType type, void * data);
 
 /**
  * Returns the max playback latency of the trigger
  * nodes.
  */
 nframes_t
-graph_get_max_route_playback_latency (
-  Graph * graph,
-  bool    use_setup_nodes);
+graph_get_max_route_playback_latency (Graph * graph, bool use_setup_nodes);
 
 /**
  * Called from a terminal node (from the Graph worked-thread)
@@ -262,10 +243,7 @@ graph_update_latencies (Graph * self, bool use_setup_nodes);
  *   we are just validating this should be 0.
  */
 void
-graph_setup (
-  Graph *   self,
-  const int drop_unnecessary_ports,
-  const int rechain);
+graph_setup (Graph * self, const int drop_unnecessary_ports, const int rechain);
 
 /**
  * Adds a new connection for the given
@@ -281,10 +259,7 @@ graph_setup (
  * @return True if ok, false if invalid.
  */
 bool
-graph_validate_with_connection (
-  Graph *      self,
-  const Port * src,
-  const Port * dest);
+graph_validate_with_connection (Graph * self, const Port * src, const Port * dest);
 
 /**
  * Starts as many threads as there are cores.

@@ -155,27 +155,15 @@ typedef struct ChannelSend
 static const cyaml_schema_field_t channel_send_fields_schema[] = {
   YAML_FIELD_INT (ChannelSend, schema_version),
   YAML_FIELD_INT (ChannelSend, slot),
-  YAML_FIELD_MAPPING_PTR (
-    ChannelSend,
-    amount,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    ChannelSend,
-    enabled,
-    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (ChannelSend, amount, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (ChannelSend, enabled, port_fields_schema),
   YAML_FIELD_INT (ChannelSend, is_sidechain),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChannelSend,
-    midi_in,
-    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (ChannelSend, midi_in, port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ChannelSend,
     stereo_in,
     stereo_ports_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChannelSend,
-    midi_out,
-    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (ChannelSend, midi_out, port_fields_schema),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     ChannelSend,
     stereo_out,
@@ -186,24 +174,17 @@ static const cyaml_schema_field_t channel_send_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t channel_send_schema = {
-  YAML_VALUE_PTR_NULLABLE (
-    ChannelSend,
-    channel_send_fields_schema),
+  YAML_VALUE_PTR_NULLABLE (ChannelSend, channel_send_fields_schema),
 };
 
 NONNULL_ARGS (1)
-void channel_send_init_loaded (
-  ChannelSend * self,
-  Track *       track);
+void channel_send_init_loaded (ChannelSend * self, Track * track);
 
 /**
  * Creates a channel send instance.
  */
 ChannelSend *
-channel_send_new (
-  unsigned int track_name_hash,
-  int          slot,
-  Track *      track);
+channel_send_new (unsigned int track_name_hash, int slot, Track * track);
 
 /**
  * Gets the owner track.
@@ -214,8 +195,7 @@ channel_send_get_track (const ChannelSend * self);
 NONNULL bool
 channel_send_is_enabled (const ChannelSend * self);
 
-#define channel_send_is_empty(x) \
-  (!channel_send_is_enabled (x))
+#define channel_send_is_empty(x) (!channel_send_is_enabled (x))
 
 /**
  * Returns whether the channel send target is a
@@ -231,9 +211,7 @@ channel_send_is_target_sidechain (ChannelSend * self);
  *   (optional).
  */
 Track *
-channel_send_get_target_track (
-  ChannelSend * self,
-  Track *       owner);
+channel_send_get_target_track (ChannelSend * self, Track * owner);
 
 /**
  * Gets the target sidechain port.
@@ -253,9 +231,7 @@ channel_send_get_amount_for_widgets (ChannelSend * self);
  * Sets the amount from a widget amount (0.0-1.0).
  */
 NONNULL void
-channel_send_set_amount_from_widget (
-  ChannelSend * self,
-  float         val);
+channel_send_set_amount_from_widget (ChannelSend * self, float val);
 
 /**
  * Connects a send to stereo ports.
@@ -302,9 +278,7 @@ NONNULL void
 channel_send_get_dest_name (ChannelSend * self, char * buf);
 
 NONNULL void
-channel_send_copy_values (
-  ChannelSend *       dest,
-  const ChannelSend * src);
+channel_send_copy_values (ChannelSend * dest, const ChannelSend * src);
 
 NONNULL ChannelSend *
 channel_send_clone (const ChannelSend * src);
@@ -322,9 +296,7 @@ void
 channel_send_connect_to_owner (ChannelSend * self);
 
 void
-channel_send_append_ports (
-  ChannelSend * self,
-  GPtrArray *   ports);
+channel_send_append_ports (ChannelSend * self, GPtrArray * ports);
 
 /**
  * Appends the connection(s), if non-empty, to the

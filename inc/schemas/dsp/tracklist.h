@@ -24,10 +24,7 @@ typedef struct Tracklist_v1
 
 static const cyaml_schema_field_t tracklist_fields_schema_v1[] = {
   YAML_FIELD_INT (Tracklist_v1, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    Tracklist_v1,
-    tracks,
-    track_schema_v1),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (Tracklist_v1, tracks, track_schema_v1),
   YAML_FIELD_INT (Tracklist_v1, pinned_tracks_cutoff),
 
   CYAML_FIELD_END

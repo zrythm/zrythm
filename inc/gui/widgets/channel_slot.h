@@ -15,8 +15,7 @@
 
 #include <gtk/gtk.h>
 
-#define CHANNEL_SLOT_WIDGET_TYPE \
-  (channel_slot_widget_get_type ())
+#define CHANNEL_SLOT_WIDGET_TYPE (channel_slot_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ChannelSlotWidget,
   channel_slot_widget,
@@ -100,9 +99,7 @@ channel_slot_widget_new (
   bool           open_plugin_inspector_on_click);
 
 void
-channel_slot_widget_set_instrument (
-  ChannelSlotWidget * self,
-  Track *             track);
+channel_slot_widget_set_instrument (ChannelSlotWidget * self, Track * track);
 
 Plugin *
 channel_slot_widget_get_plugin (ChannelSlotWidget * self);

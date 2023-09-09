@@ -79,11 +79,9 @@ midi_region_new_from_chord_descr (
  *
  * @param pub_events Publish UI events or not.
  */
-#define midi_region_add_midi_note( \
-  region, midi_note, pub_events) \
+#define midi_region_add_midi_note(region, midi_note, pub_events) \
   midi_region_insert_midi_note ( \
-    region, midi_note, \
-    ((ZRegion *) (region))->num_midi_notes, pub_events)
+    region, midi_note, ((ZRegion *) (region))->num_midi_notes, pub_events)
 
 /**
  * Inserts the MidiNote to the given ZRegion.
@@ -273,9 +271,7 @@ midi_region_get_midi_ch (const ZRegion * self);
  * playable part of the region.
  */
 bool
-midi_region_is_note_playable (
-  const ZRegion *  self,
-  const MidiNote * midi_note);
+midi_region_is_note_playable (const ZRegion * self, const MidiNote * midi_note);
 
 /**
  * Adds the contents of the region converted into events.

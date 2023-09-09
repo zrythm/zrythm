@@ -15,8 +15,7 @@ test_overlay_action_strings (void)
   /* verify that actions were not added/removed
    * without matching strings */
   g_assert_cmpstr (
-    ui_overlay_strings[NUM_UI_OVERLAY_ACTIONS], ==,
-    "--INVALID--");
+    ui_overlay_strings[NUM_UI_OVERLAY_ACTIONS], ==, "--INVALID--");
 }
 
 int

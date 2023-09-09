@@ -76,13 +76,11 @@ engine_windows_mme_get_error (
   MMRESULT result;
   if (input)
     {
-      result =
-        midiInGetErrorText (error_code, buf, (UINT) buf_size);
+      result = midiInGetErrorText (error_code, buf, (UINT) buf_size);
     }
   else
     {
-      result = midiOutGetErrorText (
-        error_code, buf, (UINT) buf_size);
+      result = midiOutGetErrorText (error_code, buf, (UINT) buf_size);
     }
   g_return_val_if_fail (result == MMSYSERR_NOERROR, -1);
 
@@ -98,8 +96,7 @@ engine_windows_mme_print_error (MMRESULT error_code, int input)
   g_return_if_fail (error_code != MMSYSERR_NOERROR);
 
   char msg[600];
-  int  ret = engine_windows_mme_get_error (
-    error_code, input, msg, 600);
+  int  ret = engine_windows_mme_get_error (error_code, input, msg, 600);
   if (!ret)
     {
       ui_show_error_message_printf (
@@ -128,8 +125,7 @@ engine_windows_mme_activate (AudioEngine * self, bool activate)
 
       if (activate)
         {
-          g_return_val_if_fail (
-            dev->opened == 1 && dev->started == 0, -1);
+          g_return_val_if_fail (dev->opened == 1 && dev->started == 0, -1);
           int ret = windows_mme_device_start (dev);
           g_return_val_if_fail (ret == 0, -1);
         }
@@ -145,8 +141,7 @@ engine_windows_mme_activate (AudioEngine * self, bool activate)
       WindowsMmeDevice * dev = self->mme_out_devs[i];
       if (activate)
         {
-          g_return_val_if_fail (
-            dev->opened == 1 && dev->started == 0, -1);
+          g_return_val_if_fail (dev->opened == 1 && dev->started == 0, -1);
           int ret = windows_mme_device_start (dev);
           g_return_val_if_fail (ret == 0, -1);
         }
@@ -194,37 +189,34 @@ engine_windows_mme_rescan_devices (AudioEngine * self, int start)
   self->num_mme_in_devs = 0;
   self->num_mme_out_devs = 0;
 
-  int num_devs = engine_windows_mme_get_num_devices (
-    WINDOWS_MME_DEVICE_FLOW_INPUT);
+  int num_devs =
+    engine_windows_mme_get_num_devices (WINDOWS_MME_DEVICE_FLOW_INPUT);
   for (int i = 0; i < num_devs; i++)
     {
-      WindowsMmeDevice * dev = windows_mme_device_new (
-        WINDOWS_MME_DEVICE_FLOW_INPUT, i);
+      WindowsMmeDevice * dev =
+        windows_mme_device_new (WINDOWS_MME_DEVICE_FLOW_INPUT, i);
       g_return_val_if_fail (dev, -1);
       int ret = windows_mme_device_open (dev, 0);
       if (ret != 0)
         {
-          g_warning (
-            "failed to open Windows MME input device %d", i);
+          g_warning ("failed to open Windows MME input device %d", i);
           continue;
         }
       self->mme_in_devs[self->num_mme_in_devs++] = dev;
     }
 
-  num_devs = engine_windows_mme_get_num_devices (
-    WINDOWS_MME_DEVICE_FLOW_OUTPUT);
+  num_devs = engine_windows_mme_get_num_devices (WINDOWS_MME_DEVICE_FLOW_OUTPUT);
 
   for (int i = 0; i < num_devs; i++)
     {
-      WindowsMmeDevice * dev = windows_mme_device_new (
-        WINDOWS_MME_DEVICE_FLOW_OUTPUT, i);
+      WindowsMmeDevice * dev =
+        windows_mme_device_new (WINDOWS_MME_DEVICE_FLOW_OUTPUT, i);
       g_return_val_if_fail (dev, -1);
       g_message ("found midi output device %s", dev->name);
       int ret = windows_mme_device_open (dev, 0);
       if (ret != 0)
         {
-          g_warning (
-            "failed to open Windows MME output device %d", i);
+          g_warning ("failed to open Windows MME output device %d", i);
           continue;
         }
       self->mme_out_devs[self->num_mme_out_devs++] = dev;

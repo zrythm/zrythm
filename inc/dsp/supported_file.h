@@ -14,8 +14,7 @@
 
 #include "utils/yaml.h"
 
-typedef struct _WrappedObjectWithChangeSignal
-  WrappedObjectWithChangeSignal;
+typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 
 /**
  * @addtogroup utils
@@ -23,8 +22,7 @@ typedef struct _WrappedObjectWithChangeSignal
  * @{
  */
 
-#define SUPPORTED_FILE_DND_PREFIX \
-  Z_DND_STRING_PREFIX "SupportedFile::"
+#define SUPPORTED_FILE_DND_PREFIX Z_DND_STRING_PREFIX "SupportedFile::"
 
 /**
  * File type.
@@ -91,9 +89,7 @@ static const cyaml_schema_field_t supported_file_fields_schema[] = {
 };
 
 static const cyaml_schema_value_t supported_file_schema = {
-  YAML_VALUE_PTR_NULLABLE (
-    SupportedFile,
-    supported_file_fields_schema),
+  YAML_VALUE_PTR_NULLABLE (SupportedFile, supported_file_fields_schema),
 };
 
 /**
@@ -164,15 +160,13 @@ supported_file_should_autoplay (const SupportedFile * self);
  * SupportedFile's type.
  */
 const char *
-supported_file_get_icon_name (
-  const SupportedFile * const self);
+supported_file_get_icon_name (const SupportedFile * const self);
 
 /**
  * Returns a pango markup to be used in GTK labels.
  */
 NONNULL char *
-supported_file_get_info_text_for_label (
-  const SupportedFile * self);
+supported_file_get_info_text_for_label (const SupportedFile * self);
 
 /**
  * Frees the instance and all its members.

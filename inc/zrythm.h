@@ -43,14 +43,12 @@ typedef struct PCGRand                PCGRand;
 
 #define MAX_RECENT_PROJECTS 20
 #define DEBUGGING (G_UNLIKELY (ZRYTHM && ZRYTHM->debug))
-#define ZRYTHM_TESTING \
-  (G_UNLIKELY (ZRYTHM && ZRYTHM->testing))
+#define ZRYTHM_TESTING (G_UNLIKELY (ZRYTHM && ZRYTHM->testing))
 #define ZRYTHM_GENERATING_PROJECT (ZRYTHM->generating_project)
 #define ZRYTHM_HAVE_UI (ZRYTHM && ZRYTHM->have_ui)
 
 #ifdef HAVE_LSP_DSP
-#  define ZRYTHM_USE_OPTIMIZED_DSP \
-    (G_LIKELY (ZRYTHM->use_optimized_dsp))
+#  define ZRYTHM_USE_OPTIMIZED_DSP (G_LIKELY (ZRYTHM->use_optimized_dsp))
 #else
 #  define ZRYTHM_USE_OPTIMIZED_DSP false
 #endif
@@ -347,9 +345,7 @@ typedef struct Zrythm
 extern Zrythm * zrythm;
 
 void
-zrythm_add_to_recent_projects (
-  Zrythm *     self,
-  const char * filepath);
+zrythm_add_to_recent_projects (Zrythm * self, const char * filepath);
 
 void
 zrythm_remove_recent_project (char * filepath);
@@ -375,9 +371,7 @@ bool
 zrythm_is_release (bool official);
 
 char *
-zrythm_fetch_latest_release_ver_finish (
-  GAsyncResult * result,
-  GError **      error);
+zrythm_fetch_latest_release_ver_finish (GAsyncResult * result, GError ** error);
 
 /**
  * @param callback A GAsyncReadyCallback to call when the
@@ -404,9 +398,7 @@ zrythm_is_latest_release (const char * remote_latest_release);
  *   additional system info (for bug reports).
  */
 void
-zrythm_get_version_with_capabilities (
-  char * buf,
-  bool   include_system_info);
+zrythm_get_version_with_capabilities (char * buf, bool include_system_info);
 
 /**
  * Returns system info (mainly used for bug
@@ -466,9 +458,7 @@ zrythm_get_user_dir (bool force_default);
  * @return Whether successful.
  */
 NONNULL bool
-zrythm_init_user_dirs_and_files (
-  Zrythm *  self,
-  GError ** error);
+zrythm_init_user_dirs_and_files (Zrythm * self, GError ** error);
 
 /**
  * Initializes the array of project templates.
@@ -484,11 +474,7 @@ zrythm_init_templates (Zrythm * self);
  * @param testing Whether this is a unit test.
  */
 Zrythm *
-zrythm_new (
-  const char * exe_path,
-  bool         have_ui,
-  bool         testing,
-  bool         optimized_dsp);
+zrythm_new (const char * exe_path, bool have_ui, bool testing, bool optimized_dsp);
 
 /**
  * Frees the instance and any unfreed members.

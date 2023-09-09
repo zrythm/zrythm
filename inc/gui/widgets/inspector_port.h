@@ -14,8 +14,7 @@
 
 #include <gtk/gtk.h>
 
-#define INSPECTOR_PORT_WIDGET_TYPE \
-  (inspector_port_widget_get_type ())
+#define INSPECTOR_PORT_WIDGET_TYPE (inspector_port_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   InspectorPortWidget,
   inspector_port_widget,
@@ -23,10 +22,9 @@ G_DECLARE_FINAL_TYPE (
   INSPECTOR_PORT_WIDGET,
   GtkWidget)
 
-typedef struct _BarSliderWidget BarSliderWidget;
-typedef struct _PortConnectionsPopoverWidget
-                     PortConnectionsPopoverWidget;
-typedef struct Meter Meter;
+typedef struct _BarSliderWidget              BarSliderWidget;
+typedef struct _PortConnectionsPopoverWidget PortConnectionsPopoverWidget;
+typedef struct Meter                         Meter;
 
 /**
  * @addtogroup widgets

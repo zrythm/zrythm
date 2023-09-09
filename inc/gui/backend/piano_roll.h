@@ -213,10 +213,7 @@ static const cyaml_strval_t midi_modifier_strings[] = {
 static const cyaml_schema_field_t piano_roll_fields_schema[] = {
   YAML_FIELD_INT (PianoRoll, schema_version),
   YAML_FIELD_FLOAT (PianoRoll, notes_zoom),
-  YAML_FIELD_ENUM (
-    PianoRoll,
-    midi_modifier,
-    midi_modifier_strings),
+  YAML_FIELD_ENUM (PianoRoll, midi_modifier, midi_modifier_strings),
   YAML_FIELD_MAPPING_EMBEDDED (
     PianoRoll,
     editor_settings,
@@ -235,11 +232,9 @@ static const cyaml_schema_value_t piano_roll_schema = {
 int
 piano_roll_is_key_black (int note);
 
-#define piano_roll_is_next_key_black(x) \
-  piano_roll_is_key_black (x + 1)
+#define piano_roll_is_next_key_black(x) piano_roll_is_key_black (x + 1)
 
-#define piano_roll_is_prev_key_black(x) \
-  piano_roll_is_key_black (x - 1)
+#define piano_roll_is_prev_key_black(x) piano_roll_is_key_black (x - 1)
 
 /**
  * Adds the note if it doesn't exist in the array.
@@ -268,10 +263,7 @@ Track *
 piano_roll_get_current_track (const PianoRoll * self);
 
 void
-piano_roll_set_notes_zoom (
-  PianoRoll * self,
-  float       notes_zoom,
-  int         fire_events);
+piano_roll_set_notes_zoom (PianoRoll * self, float notes_zoom, int fire_events);
 
 /**
  * Inits the PianoRoll after a Project has been
@@ -291,16 +283,13 @@ piano_roll_find_midi_note_descriptor_by_val (
   const uint8_t val);
 
 static inline char *
-midi_note_descriptor_get_custom_name (
-  MidiNoteDescriptor * descr)
+midi_note_descriptor_get_custom_name (MidiNoteDescriptor * descr)
 {
   return descr->custom_name;
 }
 
 void
-midi_note_descriptor_set_custom_name (
-  MidiNoteDescriptor * descr,
-  char *               str);
+midi_note_descriptor_set_custom_name (MidiNoteDescriptor * descr, char * str);
 
 /**
  * Updates the highlighting and notifies the UI.
@@ -314,9 +303,7 @@ piano_roll_set_highlighting (
  * Sets the MIDI modifier.
  */
 void
-piano_roll_set_midi_modifier (
-  PianoRoll *  self,
-  MidiModifier modifier);
+piano_roll_set_midi_modifier (PianoRoll * self, MidiModifier modifier);
 
 /**
  * Gets the visible notes.

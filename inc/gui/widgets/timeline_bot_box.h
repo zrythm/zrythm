@@ -28,8 +28,7 @@
 
 #include <gtk/gtk.h>
 
-#define TIMELINE_BOT_BOX_WIDGET_TYPE \
-  (timeline_bot_box_widget_get_type ())
+#define TIMELINE_BOT_BOX_WIDGET_TYPE (timeline_bot_box_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TimelineBotBoxWidget,
   timeline_bot_box_widget,

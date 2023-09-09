@@ -191,9 +191,7 @@ midi_get_controller_name (uint8_t cc)
  *   change.
  */
 int
-midi_ctrl_change_get_ch_and_description (
-  midi_byte_t * ctrl_change,
-  char *        buf)
+midi_ctrl_change_get_ch_and_description (midi_byte_t * ctrl_change, char * buf)
 {
   /* FIXME is there a reason this is not using
    * get_controller_name() ? */
@@ -208,14 +206,11 @@ midi_ctrl_change_get_ch_and_description (
     {
       if (ctrl_change[1] >= 0x08 && ctrl_change[1] <= 0x1F)
         {
-          sprintf (
-            buf, "Continuous controller #%u", ctrl_change[1]);
+          sprintf (buf, "Continuous controller #%u", ctrl_change[1]);
         }
       else if (ctrl_change[1] >= 0x28 && ctrl_change[1] <= 0x3F)
         {
-          sprintf (
-            buf, "Continuous controller #%u",
-            ctrl_change[1] - 0x28);
+          sprintf (buf, "Continuous controller #%u", ctrl_change[1] - 0x28);
         }
       else
         {
@@ -335,9 +330,7 @@ midi_get_note_name (const midi_byte_t note)
 }
 
 void
-midi_get_note_name_with_octave (
-  const midi_byte_t short_msg[3],
-  char *            buf)
+midi_get_note_name_with_octave (const midi_byte_t short_msg[3], char * buf)
 {
   midi_byte_t note = midi_get_note_number (short_msg);
   midi_byte_t note_idx = midi_get_chromatic_scale_index (note);
@@ -346,9 +339,7 @@ midi_get_note_name_with_octave (
 }
 
 void
-midi_get_meta_event_type_name (
-  char *            buf,
-  const midi_byte_t type)
+midi_get_meta_event_type_name (char * buf, const midi_byte_t type)
 {
   switch (type)
     {
@@ -404,10 +395,7 @@ midi_get_meta_event_type_name (
 }
 
 void
-midi_get_hex_str (
-  const midi_byte_t * msg,
-  const size_t        msg_sz,
-  char *              buf)
+midi_get_hex_str (const midi_byte_t * msg, const size_t msg_sz, char * buf)
 {
   buf[0] = '\0';
   for (size_t i = 0; i < msg_sz; i++)
@@ -421,9 +409,7 @@ midi_get_hex_str (
 }
 
 static void
-midi_print_short_msg_to_str (
-  const midi_byte_t short_msg[3],
-  char *            buf)
+midi_print_short_msg_to_str (const midi_byte_t short_msg[3], char * buf)
 {
   midi_byte_t channel = midi_get_channel_1_to_16 (short_msg);
 
@@ -432,30 +418,27 @@ midi_print_short_msg_to_str (
       char note[40];
       midi_get_note_name_with_octave (short_msg, note);
       sprintf (
-        buf, "Note-On %s: Velocity: %u", note,
-        midi_get_velocity (short_msg));
+        buf, "Note-On %s: Velocity: %u", note, midi_get_velocity (short_msg));
     }
   else if (midi_is_note_off (short_msg))
     {
       char note[40];
       midi_get_note_name_with_octave (short_msg, note);
       sprintf (
-        buf, "Note-Off %s: Velocity: %u", note,
-        midi_get_velocity (short_msg));
+        buf, "Note-Off %s: Velocity: %u", note, midi_get_velocity (short_msg));
     }
   else if (midi_is_aftertouch (short_msg))
     {
       char note[40];
       midi_get_note_name_with_octave (short_msg, note);
       sprintf (
-        buf, "Aftertouch %s: %u", note,
-        midi_get_aftertouch_value (short_msg));
+        buf, "Aftertouch %s: %u", note, midi_get_aftertouch_value (short_msg));
     }
   else if (midi_is_pitch_wheel (short_msg))
     {
       sprintf (
-        buf, "Pitch Wheel: %u (Ch%u)",
-        midi_get_pitchwheel_value (short_msg), channel);
+        buf, "Pitch Wheel: %u (Ch%u)", midi_get_pitchwheel_value (short_msg),
+        channel);
     }
   else if (midi_is_channel_pressure (short_msg))
     {
@@ -467,8 +450,7 @@ midi_print_short_msg_to_str (
     {
       sprintf (
         buf, "Controller (Ch%u): %s=%u", channel,
-        midi_get_controller_name (
-          midi_get_controller_number (short_msg)),
+        midi_get_controller_name (midi_get_controller_number (short_msg)),
         midi_get_controller_value (short_msg));
     }
   else if (midi_is_program_change (short_msg))
@@ -508,8 +490,7 @@ midi_print_short_msg_to_str (
   else if (midi_is_short_msg_meta_event (short_msg))
     {
       sprintf (
-        buf, "Meta-Event Type: %u",
-        midi_get_meta_event_type (short_msg, 3));
+        buf, "Meta-Event Type: %u", midi_get_meta_event_type (short_msg, 3));
     }
   else if (midi_is_song_position_pointer (short_msg))
     {
@@ -526,10 +507,7 @@ midi_print_short_msg_to_str (
 }
 
 void
-midi_print_to_str (
-  const midi_byte_t * msg,
-  const size_t        msg_sz,
-  char *              buf)
+midi_print_to_str (const midi_byte_t * msg, const size_t msg_sz, char * buf)
 {
   if (midi_is_short_msg (msg, msg_sz))
     {
@@ -544,19 +522,16 @@ midi_print_to_str (
   else if (midi_is_meta_event (msg, msg_sz))
     {
       const midi_byte_t * data = NULL;
-      size_t              data_sz =
-        midi_get_meta_event_data (&data, msg, msg_sz);
+      size_t data_sz = midi_get_meta_event_data (&data, msg, msg_sz);
       if (data_sz == 0)
         {
           strcpy (buf, "Invalid meta event");
         }
       else
         {
-          midi_byte_t meta_event_type =
-            midi_get_meta_event_type (msg, msg_sz);
-          char meta_event_name[600];
-          midi_get_meta_event_type_name (
-            meta_event_name, meta_event_type);
+          midi_byte_t meta_event_type = midi_get_meta_event_type (msg, msg_sz);
+          char        meta_event_name[600];
+          midi_get_meta_event_type_name (meta_event_name, meta_event_type);
           char hex[data_sz * 4];
           midi_get_hex_str (data, data_sz, hex);
           sprintf (
@@ -571,9 +546,7 @@ midi_print_to_str (
     {
       char hex[msg_sz * 4];
       midi_get_hex_str (msg, msg_sz, hex);
-      sprintf (
-        buf, "Unknown MIDI event of size %zu: %s", msg_sz,
-        hex);
+      sprintf (buf, "Unknown MIDI event of size %zu: %s", msg_sz, hex);
     }
 }
 

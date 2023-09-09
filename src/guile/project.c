@@ -68,8 +68,8 @@ init_module (void * data)
 #  include "project.x"
 #endif
   scm_c_export (
-    "project-get-title", "project-get-tracklist",
-    "project-get-undo-manager", NULL);
+    "project-get-title", "project-get-tracklist", "project-get-undo-manager",
+    NULL);
 }
 
 void

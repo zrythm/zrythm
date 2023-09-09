@@ -14,8 +14,7 @@
 
 #include <gtk/gtk.h>
 
-#define FOLDABLE_NOTEBOOK_WIDGET_TYPE \
-  (foldable_notebook_widget_get_type ())
+#define FOLDABLE_NOTEBOOK_WIDGET_TYPE (foldable_notebook_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   FoldableNotebookWidget,
   foldable_notebook_widget,
@@ -29,8 +28,7 @@ G_DECLARE_FINAL_TYPE (
  * @{
  */
 
-#define MW_BOT_FOLDABLE_NOTEBOOK \
-  MW_BOT_DOCK_EDGE->bot_notebook
+#define MW_BOT_FOLDABLE_NOTEBOOK MW_BOT_DOCK_EDGE->bot_notebook
 
 /**
  * A GtkNotebook that shows or hides itself when the
@@ -82,9 +80,7 @@ typedef struct _FoldableNotebookWidget
  * Creates a FoldableNotebookWidget.
  */
 FoldableNotebookWidget *
-foldable_notebook_widget_new (
-  GtkPositionType pos_in_paned,
-  bool            with_text);
+foldable_notebook_widget_new (GtkPositionType pos_in_paned, bool with_text);
 
 /**
  * Get the widget at the given page.
@@ -102,8 +98,7 @@ foldable_notebook_widget_get_widget_at_page (
  * a rewrite.
  */
 GtkWidget *
-foldable_notebook_widget_get_current_widget (
-  FoldableNotebookWidget * self);
+foldable_notebook_widget_get_current_widget (FoldableNotebookWidget * self);
 
 /**
  * Sets the folded space visible or not.
@@ -118,15 +113,13 @@ foldable_notebook_widget_set_visibility (
  * is visible.
  */
 int
-foldable_notebook_widget_is_content_visible (
-  FoldableNotebookWidget * self);
+foldable_notebook_widget_is_content_visible (FoldableNotebookWidget * self);
 
 /**
  * Gets the internal notebook.
  */
 GtkNotebook *
-foldable_notebook_widget_get_notebook (
-  FoldableNotebookWidget * self);
+foldable_notebook_widget_get_notebook (FoldableNotebookWidget * self);
 
 void
 foldable_notebook_widget_set_current_page (
@@ -135,8 +128,7 @@ foldable_notebook_widget_set_current_page (
   bool                     block_signals);
 
 int
-foldable_notebook_widget_get_current_page (
-  FoldableNotebookWidget * self);
+foldable_notebook_widget_get_current_page (FoldableNotebookWidget * self);
 
 void
 foldable_notebook_widget_add_page (
@@ -150,8 +142,7 @@ foldable_notebook_widget_add_page (
  * Combines the above.
  */
 void
-foldable_notebook_widget_toggle_visibility (
-  FoldableNotebookWidget * self);
+foldable_notebook_widget_toggle_visibility (FoldableNotebookWidget * self);
 
 /**
  * Sets up an existing FoldableNotebookWidget.

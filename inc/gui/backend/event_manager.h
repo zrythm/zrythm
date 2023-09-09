@@ -71,11 +71,9 @@ typedef struct EventManager
 
 #define EVENT_MANAGER_MAX_EVENTS 4000
 
-#define event_queue_push_back_event(q, x) \
-  mpmc_queue_push_back (q, (void *) x)
+#define event_queue_push_back_event(q, x) mpmc_queue_push_back (q, (void *) x)
 
-#define event_queue_dequeue_event(q, x) \
-  mpmc_queue_dequeue (q, (void *) x)
+#define event_queue_dequeue_event(q, x) mpmc_queue_dequeue (q, (void *) x)
 
 /**
  * Push events.
@@ -86,16 +84,14 @@ typedef struct EventManager
     && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting) \
     && EVENT_MANAGER->process_source_id) \
     { \
-      ZEvent * _ev = (ZEvent *) object_pool_get ( \
-        EVENT_MANAGER->obj_pool); \
+      ZEvent * _ev = (ZEvent *) object_pool_get (EVENT_MANAGER->obj_pool); \
       _ev->file = __FILE__; \
       _ev->func = __func__; \
       _ev->lineno = __LINE__; \
       _ev->type = (et); \
       _ev->arg = (void *) (_arg); \
       if ( \
-        zrythm_app->gtk_thread \
-          == g_thread_self () /* skip backtrace for now */ \
+        zrythm_app->gtk_thread == g_thread_self () /* skip backtrace for now */ \
         && false) \
         { \
           _ev->backtrace = backtrace_get ("", 40, false); \
@@ -106,9 +102,7 @@ typedef struct EventManager
         (et) != ET_PLAYHEAD_POS_CHANGED \
         && g_thread_self () == zrythm_app->gtk_thread) \
         { \
-          g_debug ( \
-            "pushing UI event " #et " (%s:%d)", __func__, \
-            __LINE__); \
+          g_debug ("pushing UI event " #et " (%s:%d)", __func__, __LINE__); \
         } \
       event_queue_push_back_event (EVENT_QUEUE, _ev); \
     }
@@ -121,8 +115,7 @@ typedef struct EventManager
     && (!PROJECT || !AUDIO_ENGINE || !AUDIO_ENGINE->exporting) \
     && EVENT_MANAGER->process_source_id) \
     { \
-      ZEvent * _ev = (ZEvent *) object_pool_get ( \
-        EVENT_MANAGER->obj_pool); \
+      ZEvent * _ev = (ZEvent *) object_pool_get (EVENT_MANAGER->obj_pool); \
       _ev->file = __FILE__; \
       _ev->func = __func__; \
       _ev->lineno = __LINE__; \
@@ -138,8 +131,7 @@ typedef struct EventManager
       if (et != ET_PLAYHEAD_POS_CHANGED) \
         { \
           g_debug ( \
-            "processing UI event now " #et " (%s:%d)", \
-            __func__, __LINE__); \
+            "processing UI event now " #et " (%s:%d)", __func__, __LINE__); \
         } \
       event_manager_process_event (EVENT_MANAGER, _ev); \
       object_pool_return (EVENT_MANAGER->obj_pool, _ev); \
@@ -187,9 +179,7 @@ event_manager_process_now (EventManager * self);
  * given object.
  */
 void
-event_manager_remove_events_for_obj (
-  EventManager * self,
-  void *         obj);
+event_manager_remove_events_for_obj (EventManager * self, void * obj);
 
 void
 event_manager_free (EventManager * self);

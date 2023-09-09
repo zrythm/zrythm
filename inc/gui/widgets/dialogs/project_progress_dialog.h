@@ -61,8 +61,7 @@ typedef struct _ProjectProgressDialogWidget
  * Creates an project dialog widget and displays it.
  */
 ProjectProgressDialogWidget *
-project_progress_dialog_widget_new (
-  ProjectSaveData * project_save_data);
+project_progress_dialog_widget_new (ProjectSaveData * project_save_data);
 
 /**
  * @}

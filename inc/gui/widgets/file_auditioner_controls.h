@@ -41,9 +41,8 @@ G_DECLARE_FINAL_TYPE (
   FILE_AUDITIONER_CONTROLS_WIDGET,
   GtkBox)
 
-typedef struct _VolumeWidget VolumeWidget;
-typedef struct _WrappedObjectWithChangeSignal
-  WrappedObjectWithChangeSignal;
+typedef struct _VolumeWidget                  VolumeWidget;
+typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
 
 /**
  * @addtogroup widgets
@@ -51,8 +50,8 @@ typedef struct _WrappedObjectWithChangeSignal
  * @{
  */
 
-typedef WrappedObjectWithChangeSignal * (
-  *SelectedFileGetter) (GtkWidget * widget);
+typedef WrappedObjectWithChangeSignal * (*SelectedFileGetter) (
+  GtkWidget * widget);
 
 /**
  * File auditioner controls used in file browsers.

@@ -36,12 +36,10 @@
  * @{
  */
 
-#define DEFAULT_CLIPBOARD \
-  gdk_display_get_clipboard (gdk_display_get_default ())
+#define DEFAULT_CLIPBOARD gdk_display_get_clipboard (gdk_display_get_default ())
 
 #define CREATE_MIDI_LEARN_MENU_ITEM(action) \
-  z_gtk_create_menu_item ( \
-    _ ("MIDI learn"), "signal-midi", action)
+  z_gtk_create_menu_item (_ ("MIDI learn"), "signal-midi", action)
 
 #define CREATE_CUT_MENU_ITEM(action) \
   z_gtk_create_menu_item (_ ("Cu_t"), "edit-cut", action)
@@ -53,21 +51,17 @@
   z_gtk_create_menu_item (_ ("_Paste"), "edit-paste", action)
 
 #define CREATE_DELETE_MENU_ITEM(action) \
-  z_gtk_create_menu_item ( \
-    _ ("_Delete"), "edit-delete", action)
+  z_gtk_create_menu_item (_ ("_Delete"), "edit-delete", action)
 
 #define CREATE_CLEAR_SELECTION_MENU_ITEM(action) \
   z_gtk_create_menu_item (/* TRANSLATORS: deselects everything */ \
-                          _ ("Cle_ar Selection"), \
-                          "edit-clear", action)
+                          _ ("Cle_ar Selection"), "edit-clear", action)
 
 #define CREATE_SELECT_ALL_MENU_ITEM(action) \
-  z_gtk_create_menu_item ( \
-    _ ("Select A_ll"), "edit-select-all", action)
+  z_gtk_create_menu_item (_ ("Select A_ll"), "edit-select-all", action)
 
 #define CREATE_DUPLICATE_MENU_ITEM(action) \
-  z_gtk_create_menu_item ( \
-    _ ("Duplicate"), "edit-duplicate", action)
+  z_gtk_create_menu_item (_ ("Duplicate"), "edit-duplicate", action)
 
 #define CREATE_MUTE_MENU_ITEM(action) \
   z_gtk_create_menu_item (_ ("Mute"), "mute", action)
@@ -75,21 +69,19 @@
 #define CREATE_UNMUTE_MENU_ITEM(action) \
   z_gtk_create_menu_item (_ ("Unmute"), NULL, action)
 
-#define z_gtk_assistant_set_current_page_complete( \
-  assistant, complete) \
+#define z_gtk_assistant_set_current_page_complete(assistant, complete) \
   gtk_assistant_set_page_complete ( \
     GTK_ASSISTANT (assistant), \
     gtk_assistant_get_nth_page ( \
       GTK_ASSISTANT (assistant), \
-      gtk_assistant_get_current_page ( \
-        GTK_ASSISTANT (assistant))), \
+      gtk_assistant_get_current_page (GTK_ASSISTANT (assistant))), \
     complete);
 
 #define Z_GDK_RGBA_INIT(r, g, b, a) \
   (GdkRGBA) \
   { \
-    .red = (float) (r), .green = (float) (g), \
-    .blue = (float) (b), .alpha = (float) (a) \
+    .red = (float) (r), .green = (float) (g), .blue = (float) (b), \
+    .alpha = (float) (a) \
   }
 
 #define Z_GDK_RECTANGLE_INIT(_x, _y, _w, _h) \
@@ -139,12 +131,10 @@ z_gtk_notebook_get_current_page_widget (GtkNotebook * notebook)
 }
 
 static inline GtkWidget *
-z_gtk_notebook_get_current_tab_label_widget (
-  GtkNotebook * notebook)
+z_gtk_notebook_get_current_tab_label_widget (GtkNotebook * notebook)
 {
   return gtk_notebook_get_tab_label (
-    notebook,
-    z_gtk_notebook_get_current_page_widget (notebook));
+    notebook, z_gtk_notebook_get_current_page_widget (notebook));
 }
 
 GdkMonitor *
@@ -163,8 +153,7 @@ void
 z_gtk_tree_view_remove_all_columns (GtkTreeView * treeview);
 
 void
-z_gtk_column_view_remove_all_columnes (
-  GtkColumnView * column_view);
+z_gtk_column_view_remove_all_columnes (GtkColumnView * column_view);
 
 GListStore *
 z_gtk_column_view_get_list_store (GtkColumnView * column_view);
@@ -174,9 +163,7 @@ z_gtk_column_view_get_list_store (GtkColumnView * column_view);
  * store.
  */
 void
-z_gtk_list_store_splice (
-  GListStore * store,
-  GPtrArray *  ptr_array);
+z_gtk_list_store_splice (GListStore * store, GPtrArray * ptr_array);
 
 void
 z_gtk_widget_remove_all_children (GtkWidget * widget);
@@ -185,14 +172,10 @@ void
 z_gtk_widget_destroy_all_children (GtkWidget * widget);
 
 void
-z_gtk_widget_remove_children_of_type (
-  GtkWidget * widget,
-  GType       type);
+z_gtk_widget_remove_children_of_type (GtkWidget * widget, GType type);
 
 void
-z_gtk_overlay_add_if_not_exists (
-  GtkOverlay * overlay,
-  GtkWidget *  widget);
+z_gtk_overlay_add_if_not_exists (GtkOverlay * overlay, GtkWidget * widget);
 
 /**
  * Returns the primary or secondary label of the
@@ -201,18 +184,14 @@ z_gtk_overlay_add_if_not_exists (
  * @param secondary 0 for primary, 1 for secondary.
  */
 GtkLabel *
-z_gtk_message_dialog_get_label (
-  GtkMessageDialog * self,
-  const int          secondary);
+z_gtk_message_dialog_get_label (GtkMessageDialog * self, const int secondary);
 
 /**
  * Configures a simple value-text combo box using
  * the given model.
  */
 void
-z_gtk_configure_simple_combo_box (
-  GtkComboBox *  cb,
-  GtkTreeModel * model);
+z_gtk_configure_simple_combo_box (GtkComboBox * cb, GtkTreeModel * model);
 
 /**
  * Sets the icon name and optionally text.
@@ -259,23 +238,17 @@ z_gtk_button_new_with_icon_and_text (
  * Creates a button with the given resource name as icon.
  */
 GtkButton *
-z_gtk_button_new_with_resource (
-  IconType     icon_type,
-  const char * name);
+z_gtk_button_new_with_resource (IconType icon_type, const char * name);
 
 /**
  * Creates a toggle button with the given resource name as
  * icon.
  */
 GtkToggleButton *
-z_gtk_toggle_button_new_with_resource (
-  IconType     icon_type,
-  const char * name);
+z_gtk_toggle_button_new_with_resource (IconType icon_type, const char * name);
 
-#define z_gtk_create_menu_item( \
-  lbl_name, icn_name, action_name) \
-  z_gtk_create_menu_item_full ( \
-    lbl_name, icn_name, action_name)
+#define z_gtk_create_menu_item(lbl_name, icn_name, action_name) \
+  z_gtk_create_menu_item_full (lbl_name, icn_name, action_name)
 
 /**
  * Creates a menu item.
@@ -290,9 +263,7 @@ z_gtk_create_menu_item_full (
  * Returns a pointer stored at the given selection.
  */
 void *
-z_gtk_get_single_selection_pointer (
-  GtkTreeView * tv,
-  int           column);
+z_gtk_get_single_selection_pointer (GtkTreeView * tv, int column);
 
 #if 0
 /**
@@ -317,9 +288,7 @@ z_gtk_get_label_from_menu_item (
  *   g_free().
  */
 char *
-z_gtk_get_tooltip_for_action (
-  const char * detailed_action,
-  const char * tooltip);
+z_gtk_get_tooltip_for_action (const char * detailed_action, const char * tooltip);
 
 /**
  * Sets the tooltip for the given action on the
@@ -359,8 +328,8 @@ z_gtk_tool_button_set_icon_size (
 static inline GdkDevice *
 z_gtk_widget_get_device (GtkWidget * widget)
 {
-  return (gdk_seat_get_pointer (gdk_display_get_default_seat (
-    gtk_widget_get_display (widget))));
+  return (gdk_seat_get_pointer (
+    gdk_display_get_default_seat (gtk_widget_get_display (widget))));
 }
 
 #if 0
@@ -433,13 +402,11 @@ z_gtk_widget_get_surface (GtkWidget * widget)
  * Ctrl is held.
  */
 static inline void
-z_gtk_widget_get_mask (
-  GtkWidget *       widget,
-  GdkModifierType * mask)
+z_gtk_widget_get_mask (GtkWidget * widget, GdkModifierType * mask)
 {
   gdk_surface_get_device_position (
-    z_gtk_widget_get_surface (widget),
-    z_gtk_widget_get_device (widget), NULL, NULL, mask);
+    z_gtk_widget_get_surface (widget), z_gtk_widget_get_device (widget), NULL,
+    NULL, mask);
 }
 
 /**
@@ -458,8 +425,7 @@ z_gtk_keyval_is_alt (const guint keyval)
 static inline int
 z_gtk_keyval_is_ctrl (const guint keyval)
 {
-  return keyval == GDK_KEY_Control_L
-         || keyval == GDK_KEY_Control_R;
+  return keyval == GDK_KEY_Control_L || keyval == GDK_KEY_Control_R;
 }
 
 /**
@@ -507,9 +473,7 @@ z_gtk_combo_box_set_ellipsize_mode (
  * the emblem if \ref emblem_icon is NULL.
  */
 void
-z_gtk_button_set_emblem (
-  GtkButton *  btn,
-  const char * emblem_icon);
+z_gtk_button_set_emblem (GtkButton * btn, const char * emblem_icon);
 
 /**
  * Makes the given notebook foldable.
@@ -533,10 +497,7 @@ z_gtk_flow_box_get_selected_child (GtkFlowBox * self);
  * Callback to use for simple directory links.
  */
 bool
-z_gtk_activate_dir_link_func (
-  GtkLabel * label,
-  char *     uri,
-  void *     data);
+z_gtk_activate_dir_link_func (GtkLabel * label, char * uri, void * data);
 
 GtkSourceLanguageManager *
 z_gtk_source_language_manager_get (void);
@@ -629,9 +590,7 @@ z_gtk_graphene_rect_t_to_gdk_rectangle (
   graphene_rect_t * grect);
 
 void
-z_gdk_rectangle_to_graphene_rect_t (
-  graphene_rect_t * grect,
-  GdkRectangle *    rect);
+z_gdk_rectangle_to_graphene_rect_t (graphene_rect_t * grect, GdkRectangle * rect);
 
 void
 z_gdk_rectangle_print (const GdkRectangle * rect);
@@ -662,8 +621,7 @@ z_gtk_show_context_menu_from_g_menu (
  * during a drop (eg, GDK_ACTION_COPY).
  */
 GdkDragAction
-z_gtk_drop_target_get_selected_action (
-  GtkDropTarget * drop_target);
+z_gtk_drop_target_get_selected_action (GtkDropTarget * drop_target);
 
 GtkIconTheme *
 z_gtk_icon_theme_get_default (void);
@@ -748,9 +706,7 @@ z_gtk_simple_action_shortcut_func (
  * for a child of type \ref type.
  */
 GtkWidget *
-z_gtk_widget_find_child_of_type (
-  GtkWidget * widget,
-  GType       type);
+z_gtk_widget_find_child_of_type (GtkWidget * widget, GType type);
 
 void
 z_gtk_list_box_remove_all_children (GtkListBox * list_box);

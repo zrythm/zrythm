@@ -22,8 +22,7 @@
 
 #include <gtk/gtk.h>
 
-#define INSPECTOR_EDITOR_WIDGET_TYPE \
-  (inspector_editor_widget_get_type ())
+#define INSPECTOR_EDITOR_WIDGET_TYPE (inspector_editor_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   InspectorEditorWidget,
   inspector_editor_widget,

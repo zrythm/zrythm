@@ -51,8 +51,7 @@ ChannelSendSelectorWidget *
 channel_send_selector_widget_new (ChannelSendWidget * send);
 
 void
-channel_send_selector_widget_setup (
-  ChannelSendSelectorWidget * self);
+channel_send_selector_widget_setup (ChannelSendSelectorWidget * self);
 
 /**
  * @}

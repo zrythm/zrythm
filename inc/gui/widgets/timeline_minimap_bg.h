@@ -12,8 +12,7 @@
 
 #include <gtk/gtk.h>
 
-#define TIMELINE_MINIMAP_BG_WIDGET_TYPE \
-  (timeline_minimap_bg_widget_get_type ())
+#define TIMELINE_MINIMAP_BG_WIDGET_TYPE (timeline_minimap_bg_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   TimelineMinimapBgWidget,
   timeline_minimap_bg_widget,

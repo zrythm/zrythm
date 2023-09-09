@@ -22,8 +22,7 @@ typedef struct _SnapGridWidget     SnapGridWidget;
  * @{
  */
 
-#define SNAP_GRID_POPOVER_WIDGET_TYPE \
-  (snap_grid_popover_widget_get_type ())
+#define SNAP_GRID_POPOVER_WIDGET_TYPE (snap_grid_popover_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   SnapGridPopoverWidget,
   snap_grid_popover_widget,

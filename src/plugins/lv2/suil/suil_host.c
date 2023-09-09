@@ -32,8 +32,7 @@ suil_host_new (
   SuilPortSubscribeFunc   subscribe_func,
   SuilPortUnsubscribeFunc unsubscribe_func)
 {
-  SuilHost * host =
-    (SuilHost *) calloc (1, sizeof (struct SuilHostImpl));
+  SuilHost * host = (SuilHost *) calloc (1, sizeof (struct SuilHostImpl));
   host->write_func = write_func;
   host->index_func = index_func;
   host->subscribe_func = subscribe_func;
@@ -42,9 +41,7 @@ suil_host_new (
 }
 
 void
-suil_host_set_touch_func (
-  SuilHost *    host,
-  SuilTouchFunc touch_func)
+suil_host_set_touch_func (SuilHost * host, SuilTouchFunc touch_func)
 {
   host->touch_func = touch_func;
 }

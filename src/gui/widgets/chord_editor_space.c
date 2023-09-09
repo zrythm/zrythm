@@ -25,10 +25,7 @@
 
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (
-  ChordEditorSpaceWidget,
-  chord_editor_space_widget,
-  GTK_TYPE_BOX)
+G_DEFINE_TYPE (ChordEditorSpaceWidget, chord_editor_space_widget, GTK_TYPE_BOX)
 
 #define DEFAULT_PX_PER_KEY 12
 
@@ -41,8 +38,7 @@ chord_editor_space_widget_update_size_group (
   int                      visible)
 {
   clip_editor_inner_widget_add_to_left_of_ruler_sizegroup (
-    MW_CLIP_EDITOR_INNER, GTK_WIDGET (self->left_box),
-    visible);
+    MW_CLIP_EDITOR_INNER, GTK_WIDGET (self->left_box), visible);
 }
 
 void
@@ -50,10 +46,9 @@ chord_editor_space_widget_set_chord_keys_scroll_start_y (
   ChordEditorSpaceWidget * self,
   int                      y)
 {
-  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
-    self->chord_keys_scroll);
-  if (!math_doubles_equal (
-        (double) y, gtk_adjustment_get_value (hadj)))
+  GtkAdjustment * hadj =
+    gtk_scrolled_window_get_vadjustment (self->chord_keys_scroll);
+  if (!math_doubles_equal ((double) y, gtk_adjustment_get_value (hadj)))
     {
       gtk_adjustment_set_value (hadj, (double) y);
     }
@@ -65,37 +60,31 @@ on_chord_keys_scroll_hadj_changed (
   ChordEditorSpaceWidget * self)
 {
   editor_settings_set_scroll_start_y (
-    &CHORD_EDITOR->editor_settings,
-    (int) gtk_adjustment_get_value (adj), F_VALIDATE);
+    &CHORD_EDITOR->editor_settings, (int) gtk_adjustment_get_value (adj),
+    F_VALIDATE);
 }
 
 int
-chord_editor_space_widget_get_chord_height (
-  ChordEditorSpaceWidget * self)
+chord_editor_space_widget_get_chord_height (ChordEditorSpaceWidget * self)
 {
-  return gtk_widget_get_height (
-    GTK_WIDGET (self->chord_keys[0]));
+  return gtk_widget_get_height (GTK_WIDGET (self->chord_keys[0]));
 }
 
 int
-chord_editor_space_widget_get_all_chords_height (
-  ChordEditorSpaceWidget * self)
+chord_editor_space_widget_get_all_chords_height (ChordEditorSpaceWidget * self)
 {
   return CHORD_EDITOR->num_chords
-         * gtk_widget_get_height (
-           GTK_WIDGET (self->chord_keys[0]));
+         * gtk_widget_get_height (GTK_WIDGET (self->chord_keys[0]));
 }
 
 void
-chord_editor_space_widget_refresh (
-  ChordEditorSpaceWidget * self)
+chord_editor_space_widget_refresh (ChordEditorSpaceWidget * self)
 {
   /*link_scrolls (self);*/
 }
 
 void
-chord_editor_space_widget_refresh_chords (
-  ChordEditorSpaceWidget * self)
+chord_editor_space_widget_refresh_chords (ChordEditorSpaceWidget * self)
 {
   for (int j = 0; j < CHORD_EDITOR->num_chords; j++)
     {
@@ -109,15 +98,14 @@ chord_editor_space_widget_setup (ChordEditorSpaceWidget * self)
   if (self->arranger)
     {
       arranger_widget_setup (
-        Z_ARRANGER_WIDGET (self->arranger),
-        ARRANGER_WIDGET_TYPE_CHORD, SNAP_GRID_EDITOR);
+        Z_ARRANGER_WIDGET (self->arranger), ARRANGER_WIDGET_TYPE_CHORD,
+        SNAP_GRID_EDITOR);
     }
 
   for (int i = 0; i < CHORD_EDITOR->num_chords; i++)
     {
       self->chord_keys[i] = chord_key_widget_new (i);
-      GtkBox * box =
-        GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+      GtkBox * box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
       gtk_box_append (box, GTK_WIDGET (self->chord_keys[i]));
       gtk_widget_add_css_class (GTK_WIDGET (box), "chord_key");
       gtk_box_append (self->chord_keys_box, GTK_WIDGET (box));
@@ -126,11 +114,10 @@ chord_editor_space_widget_setup (ChordEditorSpaceWidget * self)
 
   /* add a signal handler to update the editor settings on
    * scroll */
-  GtkAdjustment * hadj = gtk_scrolled_window_get_vadjustment (
-    self->chord_keys_scroll);
+  GtkAdjustment * hadj =
+    gtk_scrolled_window_get_vadjustment (self->chord_keys_scroll);
   g_signal_connect (
-    hadj, "value-changed",
-    G_CALLBACK (on_chord_keys_scroll_hadj_changed), self);
+    hadj, "value-changed", G_CALLBACK (on_chord_keys_scroll_hadj_changed), self);
 
   chord_editor_space_widget_refresh (self);
 }
@@ -141,13 +128,11 @@ chord_editor_space_tick_cb (
   GdkFrameClock * frame_clock,
   gpointer        user_data)
 {
-  ChordEditorSpaceWidget * self =
-    Z_CHORD_EDITOR_SPACE_WIDGET (user_data);
+  ChordEditorSpaceWidget * self = Z_CHORD_EDITOR_SPACE_WIDGET (user_data);
 
-  GtkAdjustment * vadj = gtk_scrolled_window_get_vadjustment (
-    self->chord_keys_scroll);
-  gtk_adjustment_set_value (
-    vadj, CHORD_EDITOR->editor_settings.scroll_start_y);
+  GtkAdjustment * vadj =
+    gtk_scrolled_window_get_vadjustment (self->chord_keys_scroll);
+  gtk_adjustment_set_value (vadj, CHORD_EDITOR->editor_settings.scroll_start_y);
 
   return G_SOURCE_CONTINUE;
 }
@@ -164,27 +149,22 @@ chord_editor_space_widget_init (ChordEditorSpaceWidget * self)
   self->arranger_and_keys_vsize_group =
     gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
   gtk_size_group_add_widget (
-    self->arranger_and_keys_vsize_group,
-    GTK_WIDGET (self->arranger));
+    self->arranger_and_keys_vsize_group, GTK_WIDGET (self->arranger));
   gtk_size_group_add_widget (
-    self->arranger_and_keys_vsize_group,
-    GTK_WIDGET (self->chord_keys_box));
+    self->arranger_and_keys_vsize_group, GTK_WIDGET (self->chord_keys_box));
 
   gtk_widget_add_tick_callback (
     GTK_WIDGET (self), chord_editor_space_tick_cb, self, NULL);
 }
 
 static void
-chord_editor_space_widget_class_init (
-  ChordEditorSpaceWidgetClass * _klass)
+chord_editor_space_widget_class_init (ChordEditorSpaceWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
-  resources_set_class_template (
-    klass, "chord_editor_space.ui");
+  resources_set_class_template (klass, "chord_editor_space.ui");
 
 #define BIND_CHILD(x) \
-  gtk_widget_class_bind_template_child ( \
-    klass, ChordEditorSpaceWidget, x)
+  gtk_widget_class_bind_template_child (klass, ChordEditorSpaceWidget, x)
 
   BIND_CHILD (arranger);
   BIND_CHILD (left_box);

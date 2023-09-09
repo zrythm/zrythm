@@ -13,8 +13,7 @@
 #include <adwaita.h>
 #include <gtk/gtk.h>
 
-#define MODULATOR_VIEW_WIDGET_TYPE \
-  (modulator_view_widget_get_type ())
+#define MODULATOR_VIEW_WIDGET_TYPE (modulator_view_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   ModulatorViewWidget,
   modulator_view_widget,
@@ -39,8 +38,7 @@ TYPEDEF_STRUCT (Track);
  * Brings up the ModulatorViewWidget in the notebook.
  */
 #define SHOW_MODULATOR_VIEW \
-  gtk_notebook_set_current_page ( \
-    MW_MODULATOR_VIEW->bot_notebook, 2)
+  gtk_notebook_set_current_page (MW_MODULATOR_VIEW->bot_notebook, 2)
 
 /**
  * The ModulatorViewWidget contains the
@@ -60,9 +58,7 @@ typedef struct _ModulatorViewWidget
 } ModulatorViewWidget;
 
 void
-modulator_view_widget_refresh (
-  ModulatorViewWidget * self,
-  Track *               track);
+modulator_view_widget_refresh (ModulatorViewWidget * self, Track * track);
 
 ModulatorViewWidget *
 modulator_view_widget_new (void);

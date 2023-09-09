@@ -46,8 +46,7 @@ const char *
 guile_get_script_language_str (GuileScriptLanguage lang);
 
 const char *
-guile_get_script_language_canonical_str (
-  GuileScriptLanguage lang);
+guile_get_script_language_canonical_str (GuileScriptLanguage lang);
 
 GuileScriptLanguage
 guile_get_script_language_from_str (const char * str);
@@ -75,9 +74,7 @@ guile_define_modules (void);
  * @param lang The language of the script.
  */
 char *
-guile_run_script (
-  const char *        script,
-  GuileScriptLanguage lang);
+guile_run_script (const char * script, GuileScriptLanguage lang);
 
 /**
  * Returns whether the script succeeded based on

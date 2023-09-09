@@ -60,12 +60,9 @@ typedef struct Velocity
 } Velocity;
 
 static const cyaml_schema_field_t velocity_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Velocity,
-    base,
-    arranger_object_fields_schema),
-  YAML_FIELD_INT (Velocity, schema_version),
-  YAML_FIELD_UINT (Velocity, vel), CYAML_FIELD_END
+  YAML_FIELD_MAPPING_EMBEDDED (Velocity, base, arranger_object_fields_schema),
+  YAML_FIELD_INT (Velocity, schema_version), YAML_FIELD_UINT (Velocity, vel),
+  CYAML_FIELD_END
 };
 
 static const cyaml_schema_value_t velocity_schema = {
@@ -82,9 +79,7 @@ velocity_new (MidiNote * midi_note, const uint8_t vel);
  * Sets the MidiNote the Velocity belongs to.
  */
 void
-velocity_set_midi_note (
-  Velocity * velocity,
-  MidiNote * midi_note);
+velocity_set_midi_note (Velocity * velocity, MidiNote * midi_note);
 
 /**
  * Returns 1 if the Velocity's match, 0 if not.

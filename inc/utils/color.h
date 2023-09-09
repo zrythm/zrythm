@@ -100,11 +100,7 @@ color_get_darkness (GdkRGBA * color);
  * @b.
  */
 void
-color_morph (
-  GdkRGBA * a,
-  GdkRGBA * b,
-  float     amt,
-  GdkRGBA * result);
+color_morph (GdkRGBA * a, GdkRGBA * b, float amt, GdkRGBA * result);
 
 /**
  * @}

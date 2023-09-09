@@ -78,8 +78,7 @@ plugin_strip_expander_widget_redraw_slot (
  * Refreshes each field.
  */
 void
-plugin_strip_expander_widget_refresh (
-  PluginStripExpanderWidget * self);
+plugin_strip_expander_widget_refresh (PluginStripExpanderWidget * self);
 
 /**
  * Sets up the PluginStripExpanderWidget.

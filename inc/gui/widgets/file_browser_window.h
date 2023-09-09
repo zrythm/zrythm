@@ -28,8 +28,7 @@
 
 #include <gtk/gtk.h>
 
-#define FILE_BROWSER_WINDOW_WIDGET_TYPE \
-  (file_browser_window_widget_get_type ())
+#define FILE_BROWSER_WINDOW_WIDGET_TYPE (file_browser_window_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   FileBrowserWindowWidget,
   file_browser_window_widget,

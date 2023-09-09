@@ -27,15 +27,14 @@ typedef struct Lv2Plugin Lv2Plugin;
 
 typedef struct
 {
-  Lv2Plugin * plugin;    ///< Pointer back to the plugin
-  ZixRing *   requests;  ///< Requests to the worker
-  ZixRing *   responses; ///< Responses from the worker
-  void *      response;  ///< Worker response buffer
-  ZixSem      sem;       ///< Worker semaphore
-  ZixThread   thread;    ///< Worker thread
-  const LV2_Worker_Interface *
-       iface;    ///< Plugin worker interface
-  bool threaded; ///< Run work in another thread
+  Lv2Plugin *                  plugin;    ///< Pointer back to the plugin
+  ZixRing *                    requests;  ///< Requests to the worker
+  ZixRing *                    responses; ///< Responses from the worker
+  void *                       response;  ///< Worker response buffer
+  ZixSem                       sem;       ///< Worker semaphore
+  ZixThread                    thread;    ///< Worker thread
+  const LV2_Worker_Interface * iface;     ///< Plugin worker interface
+  bool                         threaded;  ///< Run work in another thread
 } Lv2Worker;
 
 void
@@ -69,8 +68,6 @@ lv2_worker_schedule (
  * https://lv2plug.in/doc/html/group__worker.html.
  */
 void
-lv2_worker_emit_responses (
-  Lv2Worker *    worker,
-  LilvInstance * instance);
+lv2_worker_emit_responses (Lv2Worker * worker, LilvInstance * instance);
 
 #endif

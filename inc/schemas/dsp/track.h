@@ -128,72 +128,33 @@ static const cyaml_schema_field_t track_fields_schema_v1[] = {
   YAML_FIELD_INT (Track_v1, visible),
   YAML_FIELD_FLOAT (Track_v1, main_height),
   YAML_FIELD_INT (Track_v1, passthrough_midi_input),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Track_v1,
-    recording,
-    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Track_v1, recording, port_fields_schema_v1),
   YAML_FIELD_INT (Track_v1, enabled),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Track_v1,
-    color,
-    gdk_rgba_fields_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
-    Track_v1,
-    lanes,
-    track_lane_schema_v1),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    Track_v1,
-    chord_regions,
-    region_schema_v1),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    Track_v1,
-    scales,
-    scale_object_schema_v1),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    Track_v1,
-    markers,
-    marker_schema_v1),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Track_v1,
-    channel,
-    channel_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Track_v1,
-    bpm_port,
-    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_EMBEDDED (Track_v1, color, gdk_rgba_fields_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (Track_v1, lanes, track_lane_schema_v1),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Track_v1, chord_regions, region_schema_v1),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Track_v1, scales, scale_object_schema_v1),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Track_v1, markers, marker_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Track_v1, channel, channel_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Track_v1, bpm_port, port_fields_schema_v1),
   YAML_FIELD_MAPPING_PTR_OPTIONAL (
     Track_v1,
     beats_per_bar_port,
     port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Track_v1,
-    beat_unit_port,
-    port_fields_schema_v1),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    Track_v1,
-    modulators,
-    plugin_schema_v1),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Track_v1, beat_unit_port, port_fields_schema_v1),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (Track_v1, modulators, plugin_schema_v1),
   YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
     Track_v1,
     modulator_macros,
     modulator_macro_processor_schema_v1),
   YAML_FIELD_INT (Track_v1, num_visible_modulator_macros),
-  YAML_FIELD_MAPPING_PTR (
-    Track_v1,
-    processor,
-    track_processor_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Track_v1, processor, track_processor_fields_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Track_v1,
     automation_tracklist,
     automation_tracklist_fields_schema_v1),
-  YAML_FIELD_ENUM (
-    Track_v1,
-    in_signal_type,
-    port_type_strings_v1),
-  YAML_FIELD_ENUM (
-    Track_v1,
-    out_signal_type,
-    port_type_strings_v1),
+  YAML_FIELD_ENUM (Track_v1, in_signal_type, port_type_strings_v1),
+  YAML_FIELD_ENUM (Track_v1, out_signal_type, port_type_strings_v1),
   YAML_FIELD_UINT (Track_v1, midi_ch),
   YAML_FIELD_STRING_PTR (Track_v1, comment),
   YAML_FIELD_DYN_ARRAY_VAR_COUNT_PRIMITIVES (

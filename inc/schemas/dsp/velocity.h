@@ -20,10 +20,7 @@ typedef struct Velocity_v1
 } Velocity_v1;
 
 static const cyaml_schema_field_t velocity_fields_schema_v1[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Velocity_v1,
-    base,
-    arranger_object_fields_schema_v1),
+  YAML_FIELD_MAPPING_EMBEDDED (Velocity_v1, base, arranger_object_fields_schema_v1),
   YAML_FIELD_INT (Velocity_v1, schema_version),
   YAML_FIELD_UINT (Velocity_v1, vel), CYAML_FIELD_END
 };

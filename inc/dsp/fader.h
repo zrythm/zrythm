@@ -249,27 +249,12 @@ static const cyaml_schema_field_t fader_fields_schema[] = {
   YAML_FIELD_MAPPING_PTR (Fader, mute, port_fields_schema),
   YAML_FIELD_MAPPING_PTR (Fader, solo, port_fields_schema),
   YAML_FIELD_MAPPING_PTR (Fader, listen, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Fader,
-    mono_compat_enabled,
-    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR (Fader, mono_compat_enabled, port_fields_schema),
   YAML_FIELD_MAPPING_PTR (Fader, swap_phase, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Fader,
-    midi_in,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Fader,
-    midi_out,
-    port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Fader,
-    stereo_in,
-    stereo_ports_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Fader,
-    stereo_out,
-    stereo_ports_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Fader, midi_in, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Fader, midi_out, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Fader, stereo_in, stereo_ports_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Fader, stereo_out, stereo_ports_fields_schema),
   YAML_FIELD_ENUM (Fader, midi_mode, midi_fader_mode_strings),
   YAML_FIELD_INT (Fader, passthrough),
 
@@ -382,8 +367,7 @@ fader_get_implied_soloed (Fader * self);
 /**
  * Returns whether the fader is listened.
  */
-#define fader_get_listened(self) \
-  (control_port_is_toggled (self->listen))
+#define fader_get_listened(self) (control_port_is_toggled (self->listen))
 
 /**
  * Sets fader listen and optionally adds the action
@@ -416,10 +400,7 @@ fader_get_mono_compat_enabled (Fader * self);
  * Sets whether mono compatibility is enabled.
  */
 void
-fader_set_mono_compat_enabled (
-  Fader * self,
-  bool    enabled,
-  bool    fire_events);
+fader_set_mono_compat_enabled (Fader * self, bool enabled, bool fire_events);
 
 /**
  * Gets whether mono compatibility is enabled.
@@ -431,10 +412,7 @@ fader_get_swap_phase (Fader * self);
  * Sets whether mono compatibility is enabled.
  */
 void
-fader_set_swap_phase (
-  Fader * self,
-  bool    enabled,
-  bool    fire_events);
+fader_set_swap_phase (Fader * self, bool enabled, bool fire_events);
 
 float
 fader_get_fader_val (void * self);
@@ -485,9 +463,7 @@ fader_copy_values (Fader * src, Fader * dest);
  * Process the Fader.
  */
 NONNULL HOT void
-fader_process (
-  Fader *                             self,
-  const EngineProcessTimeInfo * const time_nfo);
+fader_process (Fader * self, const EngineProcessTimeInfo * const time_nfo);
 
 #if 0
 /**

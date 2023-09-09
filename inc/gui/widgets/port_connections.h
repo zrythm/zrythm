@@ -28,8 +28,7 @@
 
 #include <gtk/gtk.h>
 
-typedef struct _PortConnectionsTreeWidget
-  PortConnectionsTreeWidget;
+typedef struct _PortConnectionsTreeWidget PortConnectionsTreeWidget;
 
 /**
  * @addtogroup widgets
@@ -37,8 +36,7 @@ typedef struct _PortConnectionsTreeWidget
  * @{
  */
 
-#define PORT_CONNECTIONS_WIDGET_TYPE \
-  (port_connections_widget_get_type ())
+#define PORT_CONNECTIONS_WIDGET_TYPE (port_connections_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   PortConnectionsWidget,
   port_connections_widget,
@@ -46,8 +44,7 @@ G_DECLARE_FINAL_TYPE (
   PORT_CONNECTIONS_WIDGET,
   GtkBox)
 
-#define MW_PORT_CONNECTIONS \
-  (MW_MAIN_NOTEBOOK->port_connections)
+#define MW_PORT_CONNECTIONS (MW_MAIN_NOTEBOOK->port_connections)
 
 /**
  * Left dock widget.

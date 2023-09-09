@@ -28,8 +28,7 @@
 
 #include <gtk/gtk.h>
 
-#define FISHBOWL_WINDOW_WIDGET_TYPE \
-  (fishbowl_window_widget_get_type ())
+#define FISHBOWL_WINDOW_WIDGET_TYPE (fishbowl_window_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   FishbowlWindowWidget,
   fishbowl_window_widget,
@@ -58,22 +57,15 @@ typedef struct _FishbowlWindowWidget
  * @}
  */
 
-G_DEFINE_TYPE (
-  FishbowlWindowWidget,
-  fishbowl_window_widget,
-  GTK_TYPE_WINDOW)
+G_DEFINE_TYPE (FishbowlWindowWidget, fishbowl_window_widget, GTK_TYPE_WINDOW)
 
 static void
-prev_button_clicked_cb (
-  GtkButton *            btn,
-  FishbowlWindowWidget * self)
+prev_button_clicked_cb (GtkButton * btn, FishbowlWindowWidget * self)
 {
 }
 
 static void
-next_button_clicked_cb (
-  GtkButton *            btn,
-  FishbowlWindowWidget * self)
+next_button_clicked_cb (GtkButton * btn, FishbowlWindowWidget * self)
 {
 }
 
@@ -94,26 +86,20 @@ close_window (FishbowlWindowWidget * win)
 FishbowlWindowWidget *
 fishbowl_window_widget_new (GtkFishCreationFunc creation_func)
 {
-  FishbowlWindowWidget * self =
-    g_object_new (FISHBOWL_WINDOW_WIDGET_TYPE, NULL);
+  FishbowlWindowWidget * self = g_object_new (FISHBOWL_WINDOW_WIDGET_TYPE, NULL);
 
   gtk_fishbowl_set_creation_func (self->bowl, creation_func);
-  gtk_fishbowl_set_update_delay (
-    self->bowl, G_USEC_PER_SEC / 3);
+  gtk_fishbowl_set_update_delay (self->bowl, G_USEC_PER_SEC / 3);
 
   return self;
 }
 
 guint
-fishbowl_window_widget_run (
-  GtkFishCreationFunc creation_func,
-  int                 secs_to_run)
+fishbowl_window_widget_run (GtkFishCreationFunc creation_func, int secs_to_run)
 {
-  FishbowlWindowWidget * self =
-    fishbowl_window_widget_new (creation_func);
+  FishbowlWindowWidget * self = fishbowl_window_widget_new (creation_func);
 
-  g_timeout_add (
-    secs_to_run * 1000, (GSourceFunc) close_window, self);
+  g_timeout_add (secs_to_run * 1000, (GSourceFunc) close_window, self);
 
   gtk_widget_show_all (GTK_WIDGET (self));
   gtk_main ();
@@ -127,15 +113,13 @@ fishbowl_window_widget_run (
 guint
 fishbowl_window_widget_run_label (int secs_to_run)
 {
-  return fishbowl_window_widget_run (
-    create_test_label, secs_to_run);
+  return fishbowl_window_widget_run (create_test_label, secs_to_run);
 }
 
 guint
 fishbowl_window_widget_run_button (int secs_to_run)
 {
-  return fishbowl_window_widget_run (
-    create_test_label, secs_to_run);
+  return fishbowl_window_widget_run (create_test_label, secs_to_run);
 }
 
 static void
@@ -149,24 +133,19 @@ fishbowl_window_widget_init (FishbowlWindowWidget * self)
 }
 
 static void
-fishbowl_window_widget_class_init (
-  FishbowlWindowWidgetClass * _klass)
+fishbowl_window_widget_class_init (FishbowlWindowWidgetClass * _klass)
 {
   GtkWidgetClass * klass = GTK_WIDGET_CLASS (_klass);
   gtk_widget_class_set_template_from_resource (
-    GTK_WIDGET_CLASS (klass),
-    "/org/zrythm/Zrythm/app/ui/fishbowl_window.ui");
+    GTK_WIDGET_CLASS (klass), "/org/zrythm/Zrythm/app/ui/fishbowl_window.ui");
 
   gtk_widget_class_bind_template_child (
     klass, FishbowlWindowWidget, changes_allow);
   gtk_widget_class_bind_template_child (
     klass, FishbowlWindowWidget, changes_prevent);
-  gtk_widget_class_bind_template_child (
-    klass, FishbowlWindowWidget, bowl);
-  gtk_widget_class_bind_template_callback (
-    klass, next_button_clicked_cb);
-  gtk_widget_class_bind_template_callback (
-    klass, prev_button_clicked_cb);
+  gtk_widget_class_bind_template_child (klass, FishbowlWindowWidget, bowl);
+  gtk_widget_class_bind_template_callback (klass, next_button_clicked_cb);
+  gtk_widget_class_bind_template_callback (klass, prev_button_clicked_cb);
 }
 
 #endif

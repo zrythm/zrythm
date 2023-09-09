@@ -18,8 +18,7 @@
 
 #include <gtk/gtk.h>
 
-#define DIGITAL_METER_WIDGET_TYPE \
-  (digital_meter_widget_get_type ())
+#define DIGITAL_METER_WIDGET_TYPE (digital_meter_widget_get_type ())
 G_DECLARE_FINAL_TYPE (
   DigitalMeterWidget,
   digital_meter_widget,
@@ -121,10 +120,10 @@ typedef struct _DigitalMeterWidget
   /* for note length/type */
   NoteLength * note_length;
   NoteType *   note_type;
-  int update_note_length; ///< flag to update note length
-  int start_note_length;  ///< start note length
-  int update_note_type;   ///< flag to update note type
-  int start_note_type;    ///< start note type
+  int          update_note_length; ///< flag to update note length
+  int          start_note_length;  ///< start note length
+  int          update_note_type;   ///< flag to update note type
+  int          start_note_type;    ///< start note type
 
   /* for time sig */
   int update_timesig_top;
@@ -193,8 +192,8 @@ digital_meter_widget_new (
   _digital_meter_widget_new_for_position ( \
     (void *) obj, (void (*) (void *)) drag_begin, \
     (void (*) (void *, Position *)) getter, \
-    (void (*) (void *, Position *)) setter, \
-    (void (*) (void *)) drag_end, caption)
+    (void (*) (void *, Position *)) setter, (void (*) (void *)) drag_end, \
+    caption)
 
 /**
  * Creates a digital meter for an arbitrary position.
@@ -221,9 +220,7 @@ _digital_meter_widget_new_for_position (
   const char * caption);
 
 void
-digital_meter_set_draw_line (
-  DigitalMeterWidget * self,
-  int                  draw_line);
+digital_meter_set_draw_line (DigitalMeterWidget * self, int draw_line);
 
 /**
  * Shows the widgets popover menu with the provided content
@@ -231,9 +228,7 @@ digital_meter_set_draw_line (
  * @param menu content of the popover menu
  */
 void
-digital_meter_show_context_menu (
-  DigitalMeterWidget * self,
-  GMenu *              menu);
+digital_meter_show_context_menu (DigitalMeterWidget * self, GMenu * menu);
 
 /**
  * @}

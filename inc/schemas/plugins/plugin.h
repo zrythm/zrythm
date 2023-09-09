@@ -39,26 +39,11 @@ typedef struct Plugin_v1
 
 static const cyaml_schema_field_t plugin_fields_schema_v1[] = {
   YAML_FIELD_INT (Plugin_v1, schema_version),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Plugin_v1,
-    id,
-    plugin_identifier_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR (
-    Plugin_v1,
-    setting,
-    plugin_setting_fields_schema_v1),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
-    Plugin_v1,
-    in_ports,
-    port_schema_v1),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (
-    Plugin_v1,
-    out_ports,
-    port_schema_v1),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    Plugin_v1,
-    banks,
-    plugin_bank_schema_v1),
+  YAML_FIELD_MAPPING_EMBEDDED (Plugin_v1, id, plugin_identifier_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Plugin_v1, setting, plugin_setting_fields_schema_v1),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (Plugin_v1, in_ports, port_schema_v1),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (Plugin_v1, out_ports, port_schema_v1),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Plugin_v1, banks, plugin_bank_schema_v1),
   YAML_FIELD_MAPPING_EMBEDDED (
     Plugin_v1,
     selected_bank,

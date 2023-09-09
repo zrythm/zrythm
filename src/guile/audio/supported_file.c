@@ -34,8 +34,7 @@ SCM_DEFINE (
   "Returns an instance of SupportedFile.")
 #define FUNC_NAME s_
 {
-  SupportedFile * file =
-    supported_file_new_from_path (scm_to_pointer (path));
+  SupportedFile * file = supported_file_new_from_path (scm_to_pointer (path));
 
   return scm_from_pointer (file, NULL);
 }
@@ -54,6 +53,5 @@ init_module (void * data)
 void
 guile_audio_supported_file_define_module (void)
 {
-  scm_c_define_module (
-    "audio supported-file", init_module, NULL);
+  scm_c_define_module ("audio supported-file", init_module, NULL);
 }

@@ -29,10 +29,7 @@ typedef struct Port_v1
 
 static const cyaml_schema_field_t port_fields_schema_v1[] = {
   YAML_FIELD_INT (Port_v1, schema_version),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Port_v1,
-    id,
-    port_identifier_fields_schema_v1),
+  YAML_FIELD_MAPPING_EMBEDDED (Port_v1, id, port_identifier_fields_schema_v1),
   YAML_FIELD_INT (Port_v1, exposed_to_backend),
   YAML_FIELD_FLOAT (Port_v1, control),
   YAML_FIELD_FLOAT (Port_v1, minf),
@@ -62,14 +59,8 @@ typedef struct StereoPorts_v1
 
 static const cyaml_schema_field_t stereo_ports_fields_schema_v1[] = {
   YAML_FIELD_INT (StereoPorts_v1, schema_version),
-  YAML_FIELD_MAPPING_PTR (
-    StereoPorts_v1,
-    l,
-    port_fields_schema_v1),
-  YAML_FIELD_MAPPING_PTR (
-    StereoPorts_v1,
-    r,
-    port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (StereoPorts_v1, l, port_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (StereoPorts_v1, r, port_fields_schema_v1),
 
   CYAML_FIELD_END
 };

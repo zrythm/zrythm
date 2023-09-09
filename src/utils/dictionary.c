@@ -24,9 +24,7 @@
 Dictionary *
 dictionary_new (void)
 {
-  Dictionary proto = {
-    0, 10, object_new_n (10, DictionaryEntry)
-  };
+  Dictionary   proto = { 0, 10, object_new_n (10, DictionaryEntry) };
   Dictionary * d = object_new (Dictionary);
   *d = proto;
   return d;
@@ -53,10 +51,7 @@ dictionary_find (Dictionary * dict, const char * key, void * def)
 }
 
 void
-_dictionary_add (
-  Dictionary * dict,
-  const char * key,
-  void *       value)
+_dictionary_add (Dictionary * dict, const char * key, void * value)
 {
   int idx = dictionary_find_index (dict, key);
   if (idx != -1)
@@ -67,8 +62,7 @@ _dictionary_add (
   if (dict->len == (int) dict->size)
     {
       dict->entry = object_realloc_n (
-        dict->entry, dict->size, dict->size * 2,
-        DictionaryEntry);
+        dict->entry, dict->size, dict->size * 2, DictionaryEntry);
       dict->size *= 2;
     }
   dict->entry[dict->len].key = g_strdup (key);

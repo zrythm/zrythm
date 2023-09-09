@@ -18,22 +18,18 @@ G_DEFINE_TYPE (
 #define PADDING 2
 
 static void
-timeline_minimap_selection_snapshot (
-  GtkWidget *   widget,
-  GtkSnapshot * snapshot)
+timeline_minimap_selection_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 {
   int width = gtk_widget_get_width (widget);
   int height = gtk_widget_get_height (widget);
 
   GskRoundedRect  rounded_rect;
   graphene_rect_t graphene_rect = GRAPHENE_RECT_INIT (
-    0.f, PADDING, (float) width,
-    (float) height - PADDING * 2.f);
-  gsk_rounded_rect_init_from_rect (
-    &rounded_rect, &graphene_rect, 0);
+    0.f, PADDING, (float) width, (float) height - PADDING * 2.f);
+  gsk_rounded_rect_init_from_rect (&rounded_rect, &graphene_rect, 0);
   const float border_width = 2.f;
-  GdkRGBA border_color = Z_GDK_RGBA_INIT (0.9, 0.9, 0.9, 0.9);
-  float   border_widths[] = {
+  GdkRGBA     border_color = Z_GDK_RGBA_INIT (0.9, 0.9, 0.9, 0.9);
+  float       border_widths[] = {
     border_width, border_width, border_width, border_width
   };
   GdkRGBA border_colors[] = {
@@ -46,22 +42,18 @@ timeline_minimap_selection_snapshot (
     border_color.alpha / 3.f,
   };
 
-  gtk_snapshot_append_color (
-    snapshot, &inside_color, &graphene_rect);
+  gtk_snapshot_append_color (snapshot, &inside_color, &graphene_rect);
   gtk_snapshot_append_border (
     snapshot, &rounded_rect, border_widths, border_colors);
 }
 
 static void
-on_leave (
-  GtkEventControllerMotion * motion_controller,
-  gpointer                   user_data)
+on_leave (GtkEventControllerMotion * motion_controller, gpointer user_data)
 {
   TimelineMinimapSelectionWidget * self =
     Z_TIMELINE_MINIMAP_SELECTION_WIDGET (user_data);
 
-  gtk_widget_unset_state_flags (
-    GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT);
+  gtk_widget_unset_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT);
 }
 
 static void
@@ -76,8 +68,7 @@ on_motion (
   GtkWidget * widget = GTK_WIDGET (self);
   int         width = gtk_widget_get_width (widget);
 
-  gtk_widget_set_state_flags (
-    GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT, 0);
+  gtk_widget_set_state_flags (GTK_WIDGET (self), GTK_STATE_FLAG_PRELIGHT, 0);
   if (x < UI_RESIZE_CURSOR_SPACE)
     {
       self->cursor = UI_CURSOR_STATE_RESIZE_L;
@@ -95,12 +86,9 @@ on_motion (
       self->cursor = UI_CURSOR_STATE_DEFAULT;
       if (
         self->parent->action != TIMELINE_MINIMAP_ACTION_MOVING
-        && self->parent->action
-             != TIMELINE_MINIMAP_ACTION_STARTING_MOVING
-        && self->parent->action
-             != TIMELINE_MINIMAP_ACTION_RESIZING_L
-        && self->parent->action
-             != TIMELINE_MINIMAP_ACTION_RESIZING_R)
+        && self->parent->action != TIMELINE_MINIMAP_ACTION_STARTING_MOVING
+        && self->parent->action != TIMELINE_MINIMAP_ACTION_RESIZING_L
+        && self->parent->action != TIMELINE_MINIMAP_ACTION_RESIZING_R)
         {
           ui_set_cursor_from_name (widget, "default");
         }
@@ -108,11 +96,10 @@ on_motion (
 }
 
 TimelineMinimapSelectionWidget *
-timeline_minimap_selection_widget_new (
-  TimelineMinimapWidget * parent)
+timeline_minimap_selection_widget_new (TimelineMinimapWidget * parent)
 {
-  TimelineMinimapSelectionWidget * self = g_object_new (
-    TIMELINE_MINIMAP_SELECTION_WIDGET_TYPE, NULL);
+  TimelineMinimapSelectionWidget * self =
+    g_object_new (TIMELINE_MINIMAP_SELECTION_WIDGET_TYPE, NULL);
 
   self->parent = parent;
 
@@ -125,15 +112,12 @@ timeline_minimap_selection_widget_class_init (
 {
   GtkWidgetClass * wklass = GTK_WIDGET_CLASS (klass);
   wklass->snapshot = timeline_minimap_selection_snapshot;
-  gtk_widget_class_set_css_name (
-    wklass, "timeline-minimap-selection");
-  gtk_widget_class_set_layout_manager_type (
-    wklass, GTK_TYPE_BIN_LAYOUT);
+  gtk_widget_class_set_css_name (wklass, "timeline-minimap-selection");
+  gtk_widget_class_set_layout_manager_type (wklass, GTK_TYPE_BIN_LAYOUT);
 }
 
 static void
-timeline_minimap_selection_widget_init (
-  TimelineMinimapSelectionWidget * self)
+timeline_minimap_selection_widget_init (TimelineMinimapSelectionWidget * self)
 {
   gtk_widget_set_focusable (GTK_WIDGET (self), true);
 
@@ -141,14 +125,10 @@ timeline_minimap_selection_widget_init (
     GTK_ACCESSIBLE (self), GTK_ACCESSIBLE_PROPERTY_LABEL,
     "Timeline Minimap Selection", -1);
 
-  GtkEventController * motion_controller =
-    gtk_event_controller_motion_new ();
-  gtk_widget_add_controller (
-    GTK_WIDGET (self), motion_controller);
+  GtkEventController * motion_controller = gtk_event_controller_motion_new ();
+  gtk_widget_add_controller (GTK_WIDGET (self), motion_controller);
   g_signal_connect (
-    G_OBJECT (motion_controller), "motion",
-    G_CALLBACK (on_motion), self);
+    G_OBJECT (motion_controller), "motion", G_CALLBACK (on_motion), self);
   g_signal_connect (
-    G_OBJECT (motion_controller), "leave",
-    G_CALLBACK (on_leave), self);
+    G_OBJECT (motion_controller), "leave", G_CALLBACK (on_leave), self);
 }

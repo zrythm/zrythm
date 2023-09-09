@@ -16,8 +16,7 @@
 #include <gtk/gtk.h>
 
 MidiNote *
-midi_arranger_selections_get_highest_note (
-  MidiArrangerSelections * mas)
+midi_arranger_selections_get_highest_note (MidiArrangerSelections * mas)
 {
   MidiNote * top_mn = mas->midi_notes[0];
   MidiNote * tmp;
@@ -33,8 +32,7 @@ midi_arranger_selections_get_highest_note (
 }
 
 MidiNote *
-midi_arranger_selections_get_lowest_note (
-  MidiArrangerSelections * mas)
+midi_arranger_selections_get_lowest_note (MidiArrangerSelections * mas)
 {
 
   MidiNote * bot_mn = mas->midi_notes[0];
@@ -119,12 +117,9 @@ sort_by_pitch_desc_func (const void * a, const void * b)
 }
 
 void
-midi_arranger_selections_sort_by_pitch (
-  MidiArrangerSelections * self,
-  bool                     desc)
+midi_arranger_selections_sort_by_pitch (MidiArrangerSelections * self, bool desc)
 {
   qsort (
-    self->midi_notes, (size_t) self->num_midi_notes,
-    sizeof (MidiNote *),
+    self->midi_notes, (size_t) self->num_midi_notes, sizeof (MidiNote *),
     desc ? sort_by_pitch_desc_func : sort_by_pitch_func);
 }

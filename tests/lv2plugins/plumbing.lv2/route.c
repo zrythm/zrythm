@@ -161,9 +161,7 @@ a_run (LV2_Handle instance, uint32_t n_samples)
   // TODO reverse sort by map and use temp buffers for x-over inline.
   for (uint32_t c = 0; c < self->n_out; ++c)
     {
-      if (
-        map[c] > 0
-        && self->input[map[c] - 1] != self->output[c])
+      if (map[c] > 0 && self->input[map[c] - 1] != self->output[c])
         {
           memcpy (
             self->output[c], self->input[map[c] - 1],
@@ -175,8 +173,7 @@ a_run (LV2_Handle instance, uint32_t n_samples)
     {
       if (map[c] == 0)
         {
-          memset (
-            self->output[c], 0, sizeof (float) * n_samples);
+          memset (self->output[c], 0, sizeof (float) * n_samples);
         }
     }
 }
