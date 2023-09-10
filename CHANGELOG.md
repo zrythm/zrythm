@@ -6,6 +6,38 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.13.1] - 2023-09-10
+### Added
+- Add focus ring on all focusable widgets
+- Make plugin slot widgets themable
+- Implement cycling focus through panels with F6 and jumping to top with F10
+- Add bug report template to GitLab
+- Ask to save/discard changes when attempting to open another project
+- Add toolbars with buttons to reset selection to each filter list in the plugin browser
+- Add buttons to add/rename/delete plugin collections in the plugin browser
+
+### Changed
+- Build some external projects with full optimization
+- Improve performance when recording automation
+- Port some usage of deprecated GtkTreeView to GtkListView/GtkColumnView
+- Change audio effect icon in plugin browser
+- Cache visible automation tracks to avoid searching for them every time (optimization)
+- Update some URLs to point to new zrythm.org services
+- Make some dialogs async
+- Code formatting: change allowed column limit to 80 and enable PenaltyBreakOpenParenthesis
+- Subprojects: use libadwaita fork that points to appstream fork with fixes for MacOS/Windows
+- Start using glib-mkenums with AdwEnumListModel to simplify presentation of enums
+
+### Fixed
+- Fix memory being allocated in DSP thread when recording automation
+- Fix crash in CPU usage widget (add/remove source callbacks on map/unmap)
+- Re-enable tooltip in CPU usage widget
+- Fix various GTK deprecations
+- Fix some issues with focus
+
+### Removed
+- Remove height requirement for inserts/sends inside channel widgets
+
 ## [1.0.0-beta.4.12.34] - 2023-08-30
 ### Added
 - User manual: add section about getting core dumps and backtraces
