@@ -14,21 +14,22 @@
 # Ludwig <ludwig-o@freenet.de>, 2022.
 # Hartmut Wagener <hartmut.w.wagener@t-online.de>, 2023.
 # CyCode <cycode@cycode.eu>, 2023.
+# UltraBlack <mail@chonkyrabbit.eu>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-08-15 16:37+0900\n"
-"PO-Revision-Date: 2023-02-25 23:41+0000\n"
-"Last-Translator: CyCode <cycode@cycode.eu>\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/"
-">\n"
+"PO-Revision-Date: 2023-09-06 20:45+0000\n"
+"Last-Translator: UltraBlack <mail@chonkyrabbit.eu>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/zrythm/de/>"
+"\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: inc/dsp/exporter.h:125
 msgid "Before inserts"
@@ -66,7 +67,7 @@ msgstr "Akkord"
 #: inc/dsp/track.h:170 inc/schemas/gui/backend/arranger_object.h:41
 #: inc/gui/backend/arranger_object.h:90
 msgid "Marker"
-msgstr "Marker"
+msgstr "Markierungen"
 
 #: inc/dsp/track.h:171 src/dsp/tempo_track.c:94
 #: src/gui/widgets/popovers/automatable_selector_popover.c:320
@@ -716,9 +717,9 @@ msgid "Ultra Low"
 msgstr "Extrem niedrig"
 
 #: src/project.c:403
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create backup directory %s"
-msgstr "Spur an %d erzeugen fehlgeschlagen"
+msgstr "Backup Ordner %s konnte nicht erstellt werden"
 
 #: src/project.c:811
 #, fuzzy, c-format
@@ -726,9 +727,9 @@ msgid "Unable to read file at %s"
 msgstr "Datei kann nicht gelesen werden: %s"
 
 #: src/project.c:829
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to decompress project file at %s"
-msgstr "Fehler beim Dekomprimieren der Projektdatei"
+msgstr "Fehler beim Dekomprimieren der Projektdatei %s"
 
 #: src/project.c:895
 #, c-format
@@ -781,6 +782,8 @@ msgid ""
 "Could not load project: Corrupted project detected (missing FINISHED file at "
 "'%s')."
 msgstr ""
+"Das Projekt konnte nicht geladen werden: Fehlerhaftes Projekt erkannt ("
+"fehlende FINISHED Datei in '%s')."
 
 #: src/project.c:1261
 #, c-format
@@ -789,6 +792,9 @@ msgid ""
 "project will overwrite the old one. If you would like to keep both, please "
 "use 'Save As...'."
 msgstr ""
+"Das Projekt wurde automatisch von v%d zu v%d aktualisiert. Speichern des "
+"Projektes überschreibt das alte. Falls beide behalten werden sollen, "
+"verwende 'Speichern unter...'."
 
 #: src/project.c:1304
 msgid "Failed to load project. Will create a new one instead."
@@ -920,7 +926,7 @@ msgstr ""
 #: src/zrythm_app.c:871
 #, c-format
 msgid "Could not get system memory lock limit (%s)"
-msgstr ""
+msgstr "Das Sperrlimit des Arbeitsspeichers konnte nicht ermittelt werden (%s)"
 
 #: src/zrythm_app.c:892
 #, fuzzy, c-format
@@ -1052,6 +1058,7 @@ msgstr "Führen Sie %s aus, optional mit Angabe einer Projektdatei."
 #, c-format
 msgid "This version of Zrythm does not support creating more than %d tracks."
 msgstr ""
+"Diese Zrythm Version unterstützt es nicht, mehr als %d Spuren zu erstellen."
 
 #: src/actions/range_action.c:744 resources/ui/range_action_buttons.ui:11
 msgid "Insert silence"
@@ -1262,6 +1269,9 @@ msgid ""
 "The selected tracks contain uninstantiated plugins. Deleting them will not "
 "be undoable and the undo history will be cleared. Continue with deletion?"
 msgstr ""
+"Die Ausgewählten Spuren enthalten uninitialisierte Plugins. Es wird nicht "
+"möglich sein, deren Löschung rückgängig zu machen, und die Aktionschronik "
+"wird geleert. Mit Löschen fortfahren?"
 
 #: src/actions/actions.c:1883
 msgid "Failed to pin/unpin tracks"
@@ -1373,7 +1383,7 @@ msgstr "Projektname"
 
 #: src/actions/actions.c:2815
 msgid "An object cannot be created at the selected location."
-msgstr ""
+msgstr "Ein Objekt kann an der Ausgewählten Position nicht erstellt werden."
 
 #: src/actions/actions.c:2852
 #, fuzzy
@@ -1420,6 +1430,8 @@ msgid ""
 "No custom preset packs found. Please create a preset pack first from the "
 "chord preset browser."
 msgstr ""
+"Keine eigenen Vorlagenpakete gefunden. Bitte erstelle ein Vorlagenpaket im "
+"Akkord Vorlagen Browser."
 
 #: src/actions/actions.c:3431 src/actions/actions.c:3472
 msgid "Preset Pack Name"
@@ -1513,7 +1525,7 @@ msgstr "Kein Spuren ausgewählt"
 
 #: src/actions/tracklist_selections.c:357
 msgid "Failed to clone tracklist selections"
-msgstr ""
+msgstr "Die Spurenliste Auswahl konnte nicht geklont werden"
 
 #: src/actions/tracklist_selections.c:374
 #: src/actions/tracklist_selections.c:993
@@ -1524,7 +1536,7 @@ msgstr "Spur konnte nicht geklont werden"
 
 #: src/actions/tracklist_selections.c:402
 msgid "Failed to clone tracklist selections: "
-msgstr ""
+msgstr "Die Spurenliste Auswahl konnte nicht geklont werden: "
 
 #: src/actions/tracklist_selections.c:721
 #, c-format
@@ -1564,7 +1576,7 @@ msgstr "Spur kopieren"
 #: src/actions/tracklist_selections.c:2025
 #, c-format
 msgid "Copy %d Tracks inside"
-msgstr ""
+msgstr "Kopiere %d Spuren nach"
 
 #: src/actions/tracklist_selections.c:2029
 #, c-format
@@ -1628,11 +1640,12 @@ msgstr "Laut schalten"
 
 #: src/actions/tracklist_selections.c:2088
 msgid "Listen Track"
-msgstr ""
+msgstr "Spur hören"
 
 #: src/actions/tracklist_selections.c:2090
+#, fuzzy
 msgid "Unlisten Track"
-msgstr ""
+msgstr "Spur nicht mehr hören"
 
 #: src/actions/tracklist_selections.c:2093
 #, fuzzy
@@ -1654,7 +1667,7 @@ msgstr "Spur ausklappen"
 #: src/actions/tracklist_selections.c:2103
 #, c-format
 msgid "Change Fader from %.1f to %.1f"
-msgstr ""
+msgstr "Ändere Regler von %.1f zu %.1f"
 
 #: src/actions/tracklist_selections.c:2107
 #, fuzzy, c-format
@@ -1664,7 +1677,7 @@ msgstr "%.1f bis %.1f"
 #: src/actions/tracklist_selections.c:2110
 #: src/actions/tracklist_selections.c:2171
 msgid "Change direct out"
-msgstr ""
+msgstr "Ändere direkten Ausgang"
 
 #: src/actions/tracklist_selections.c:2112
 msgid "Rename track"

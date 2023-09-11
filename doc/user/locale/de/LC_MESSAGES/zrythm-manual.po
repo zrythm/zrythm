@@ -42,15 +42,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-08-15 16:28+0900\n"
-"PO-Revision-Date: 2023-02-02 08:46+0000\n"
-"Last-Translator: Hartmut Wagener <hartmut.w.wagener@t-online.de>\n"
+"PO-Revision-Date: 2023-09-06 20:45+0000\n"
+"Last-Translator: UltraBlack <mail@chonkyrabbit.eu>\n"
+"Language-Team: German <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/de/>\n"
 "Language: de\n"
-"Language-Team: German <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/de/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -3369,7 +3370,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:135 ../../tracks/track-types.rst:51
 msgid "Marker"
-msgstr ""
+msgstr "Markierungen"
 
 #: ../../editing/timeline/arranger.rst:137
 #, fuzzy
