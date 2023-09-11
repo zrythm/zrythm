@@ -14,7 +14,7 @@ widget_srcs += files([
   'export_midi_file_dialog.c',
   'export_progress_dialog.c',
   'file_import_progress_dialog.c',
-  'first_run_dialog.c',
+  'first_run.c',
   'generic_progress_dialog.c',
   'midi_function_dialog.c',
   'object_color_chooser_dialog.c',

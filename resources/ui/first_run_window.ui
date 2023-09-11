@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="Adw" version="1.0"/>
+  <template class="FirstRunWindow" parent="AdwWindow">
+    <property name="title" translatable="yes">Set Up Zrythm</property>
+    <property name="icon-name">zrythm</property>
+    <property name="modal">true</property>
+    <property name="content">
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar">
+          </object>
+        </child>
+        <property name="content">
+          <object class="AdwPreferencesPage" id="pref_page">
+          </object>
+        </property>
+        <child type="bottom">
+          <object class="GtkActionBar">
+            <child type="end">
+              <object class="GtkButton" id="ok_btn">
+                <style>
+                  <class name="suggested-action"/>
+                </style>
+                <property name="label" translatable="yes">_OK</property>
+                <property name="use-underline">1</property>
+              </object>
+            </child>
+            <child type="end">
+              <object class="GtkButton" id="reset_btn">
+                <property name="label" translatable="yes">_Reset</property>
+                <property name="use-underline">1</property>
+              </object>
+            </child>
+            <child type="start">
+              <object class="GtkButton" id="cancel_btn">
+                <property name="label" translatable="yes">_Cancel</property>
+                <property name="use-underline">1</property>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>

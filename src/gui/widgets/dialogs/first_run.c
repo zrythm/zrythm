@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -12,7 +12,7 @@
 #include "dsp/engine_pa.h"
 #include "dsp/engine_pulse.h"
 #include "gui/widgets/active_hardware_mb.h"
-#include "gui/widgets/dialogs/first_run_dialog.h"
+#include "gui/widgets/dialogs/first_run.h"
 #include "gui/widgets/file_chooser_entry.h"
 #include "plugins/plugin_manager.h"
 #include "settings/settings.h"
@@ -29,7 +29,7 @@
 #include <adwaita.h>
 #include <glib/gi18n.h>
 
-G_DEFINE_TYPE (FirstRunDialogWidget, first_run_dialog_widget, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (FirstRunWindow, first_run_window, ADW_TYPE_WINDOW)
 
 /**
  * Thread that scans for plugins after the first
@@ -49,8 +49,8 @@ scan_plugins_after_first_run_thread (gpointer data)
   return NULL;
 }
 
-void
-first_run_dialog_widget_ok (FirstRunDialogWidget * self)
+static void
+on_ok_clicked (GtkButton * btn, FirstRunWindow * self)
 {
   g_message ("first run dialog OK pressed");
 
@@ -79,10 +79,12 @@ first_run_dialog_widget_ok (FirstRunDialogWidget * self)
   g_idle_add ((GSourceFunc) zrythm_app_prompt_for_project_func, zrythm_app);
 
   g_message ("queued prompt for project");
+
+  gtk_window_destroy (GTK_WINDOW (self));
 }
 
-void
-first_run_dialog_widget_reset (FirstRunDialogWidget * self)
+static void
+on_reset_clicked (GtkButton * btn, FirstRunWindow * self)
 {
   char *  dir = zrythm_get_default_user_dir ();
   GFile * gf_dir = g_file_new_for_path (dir);
@@ -99,10 +101,13 @@ first_run_dialog_widget_reset (FirstRunDialogWidget * self)
 }
 
 static void
-on_language_changed (
-  GObject *              gobject,
-  GParamSpec *           pspec,
-  FirstRunDialogWidget * self)
+on_cancel_or_close (GtkWidget * btn, FirstRunWindow * self)
+{
+  exit (EXIT_SUCCESS);
+}
+
+static void
+on_language_changed (GObject * gobject, GParamSpec * pspec, FirstRunWindow * self)
 {
   AdwComboRow * combo_row = self->language_dropdown;
 
@@ -118,16 +123,14 @@ on_language_changed (
   if (localization_init (false, true, false))
     {
       /* enable OK */
-      gtk_dialog_set_response_sensitive (
-        GTK_DIALOG (self), GTK_RESPONSE_OK, true);
+      gtk_widget_set_sensitive (GTK_WIDGET (self->ok_btn), true);
       gtk_widget_set_visible (GTK_WIDGET (self->lang_error_txt), false);
     }
   /* locale doesn't exist */
   else
     {
       /* disable OK */
-      gtk_dialog_set_response_sensitive (
-        GTK_DIALOG (self), GTK_RESPONSE_OK, false);
+      gtk_widget_set_sensitive (GTK_WIDGET (self->ok_btn), false);
 
       /* show warning */
       char * str = ui_get_locale_not_available_string (lang);
@@ -156,12 +159,10 @@ on_file_set (GObject * gobject, GParamSpec * pspec, gpointer user_data)
 /**
  * Returns a new instance.
  */
-FirstRunDialogWidget *
-first_run_dialog_widget_new (GtkWindow * parent)
+FirstRunWindow *
+first_run_window_new (GtkWindow * parent)
 {
-  FirstRunDialogWidget * self = g_object_new (
-    FIRST_RUN_DIALOG_WIDGET_TYPE, "icon-name", "zrythm", "title",
-    _ ("Setup Zrythm"), NULL);
+  FirstRunWindow * self = g_object_new (FIRST_RUN_WINDOW_TYPE, NULL);
 
   gtk_window_set_transient_for (GTK_WINDOW (self), parent);
 
@@ -169,24 +170,22 @@ first_run_dialog_widget_new (GtkWindow * parent)
 }
 
 static void
-dispose (FirstRunDialogWidget * self)
+dispose (FirstRunWindow * self)
 {
-  G_OBJECT_CLASS (first_run_dialog_widget_parent_class)
-    ->dispose (G_OBJECT (self));
+  G_OBJECT_CLASS (first_run_window_parent_class)->dispose (G_OBJECT (self));
 }
 
 static void
-first_run_dialog_widget_init (FirstRunDialogWidget * self)
+first_run_window_init (FirstRunWindow * self)
 {
-  GtkBox * content_area =
-    GTK_BOX (gtk_dialog_get_content_area (GTK_DIALOG (self)));
+  g_type_ensure (ADW_TYPE_TOOLBAR_VIEW);
+
+  gtk_widget_init_template (GTK_WIDGET (self));
 
   self->lang_error_txt = GTK_LABEL (gtk_label_new (""));
 
-  AdwPreferencesPage * pref_page =
-    ADW_PREFERENCES_PAGE (adw_preferences_page_new ());
-  gtk_widget_set_vexpand (GTK_WIDGET (pref_page), true);
-  gtk_box_append (content_area, GTK_WIDGET (pref_page));
+  AdwPreferencesPage * pref_page = self->pref_page;
+  /*gtk_widget_set_vexpand (GTK_WIDGET (pref_page), true);*/
 
   /* just one preference group with everything for
    * now */
@@ -240,16 +239,33 @@ first_run_dialog_widget_init (FirstRunDialogWidget * self)
   g_free (dir);
   g_free (projects_dir);
 
-  gtk_dialog_add_buttons (
-    GTK_DIALOG (self), _ ("_Cancel"), GTK_RESPONSE_CANCEL, _ ("_Reset"),
-    FIRST_RUN_DIALOG_RESET_RESPONSE, _ ("_OK"), GTK_RESPONSE_OK, NULL);
+  gtk_window_set_default_size (GTK_WINDOW (self), 520, 296);
 
-  gtk_widget_set_size_request (GTK_WIDGET (self), 520, 160);
+  g_signal_connect (self->ok_btn, "clicked", G_CALLBACK (on_ok_clicked), self);
+  g_signal_connect (
+    self->reset_btn, "clicked", G_CALLBACK (on_reset_clicked), self);
+  g_signal_connect (
+    self->cancel_btn, "clicked", G_CALLBACK (on_cancel_or_close), self);
+  g_signal_connect (
+    self, "close-request", G_CALLBACK (on_cancel_or_close), self);
 }
 
 static void
-first_run_dialog_widget_class_init (FirstRunDialogWidgetClass * _klass)
+first_run_window_class_init (FirstRunWindowClass * _klass)
 {
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
+  resources_set_class_template (wklass, "first_run_window.ui");
+
+#define BIND_CHILD(x) \
+  gtk_widget_class_bind_template_child (wklass, FirstRunWindow, x)
+
+  BIND_CHILD (pref_page);
+  BIND_CHILD (ok_btn);
+  BIND_CHILD (reset_btn);
+  BIND_CHILD (cancel_btn);
+
+#undef BIND_CHILD
+
   GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->dispose = (GObjectFinalizeFunc) dispose;
 }

@@ -56,7 +56,7 @@
 #include "gui/backend/piano_roll.h"
 #include "gui/widgets/dialogs/ask_to_check_for_updates_dialog.h"
 #include "gui/widgets/dialogs/bug_report_dialog.h"
-#include "gui/widgets/dialogs/first_run_dialog.h"
+#include "gui/widgets/dialogs/first_run.h"
 #include "gui/widgets/dialogs/project_assistant.h"
 #include "gui/widgets/dialogs/welcome_message_dialog.h"
 #include "gui/widgets/main_window.h"
@@ -478,47 +478,16 @@ zrythm_app_prompt_for_project_func (ZrythmApp * self)
 }
 
 static void
-first_run_dialog_response_cb (
-  GtkDialog * dialog,
-  gint        response_id,
-  ZrythmApp * self)
-{
-  FirstRunDialogWidget * first_run_dialog = Z_FIRST_RUN_DIALOG_WIDGET (dialog);
-
-  g_debug ("response %d", response_id);
-
-  switch (response_id)
-    {
-    case FIRST_RUN_DIALOG_RESET_RESPONSE:
-      first_run_dialog_widget_reset (first_run_dialog);
-      return;
-    case GTK_RESPONSE_CANCEL:
-    case GTK_RESPONSE_DELETE_EVENT:
-      exit (0);
-      break;
-    case GTK_RESPONSE_OK:
-      first_run_dialog_widget_ok (first_run_dialog);
-      break;
-    }
-
-  gtk_window_destroy (GTK_WINDOW (dialog));
-}
-
-static void
 license_info_dialog_response_cb (
   GtkDialog * dialog,
   gint        response_id,
   ZrythmApp * self)
 {
-  g_message ("license info dialog closed");
+  g_debug ("license info dialog closed. displaying first run dialog");
 
-  FirstRunDialogWidget * first_run_dialog =
-    first_run_dialog_widget_new (GTK_WINDOW (self->splash));
+  FirstRunWindow * first_run_dialog =
+    first_run_window_new (GTK_WINDOW (self->splash));
   gtk_window_present (GTK_WINDOW (first_run_dialog));
-
-  g_signal_connect (
-    G_OBJECT (first_run_dialog), "response",
-    G_CALLBACK (first_run_dialog_response_cb), self);
 }
 
 /**

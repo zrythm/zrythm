@@ -85,6 +85,9 @@ welcome_message_dialog_new (GtkWindow * parent)
   adw_message_dialog_set_default_response (ADW_MESSAGE_DIALOG (dialog), "ok");
   adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "ok");
 
+  gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
+  gtk_window_set_modal (GTK_WINDOW (dialog), true);
+
   g_free (str);
 
   return dialog;
