@@ -39,10 +39,10 @@ struct _IdeFileChooserEntry
   GtkEntry *  entry;
   GtkButton * button;
 
-  GtkFileChooserDialog * dialog;
-  GtkFileFilter *        filter;
-  GFile *                file;
-  gchar *                title;
+  GtkFileDialog * dialog;
+  GtkFileFilter * filter;
+  GFile *         file;
+  gchar *         title;
 
   GtkFileChooserAction action;
 
@@ -75,73 +75,64 @@ static GParamSpec * properties[N_PROPS];
 static void
 ide_file_chooser_entry_sync_to_dialog (IdeFileChooserEntry * self)
 {
-  GtkWidget * toplevel;
-  GtkWidget * default_widget;
-
   g_assert (IDE_IS_FILE_CHOOSER_ENTRY (self));
 
   if (self->dialog == NULL)
     return;
 
+#if 0
+  GtkWidget * default_widget;
   g_object_set (
     self->dialog, "action", self->action, "create-folders", self->create_folders,
     "do-overwrite-confirmation", self->do_overwrite_confirmation, "local-only",
     self->local_only, "show-hidden", self->show_hidden, "filter", self->filter,
     "title", self->title, NULL);
+#endif
 
   if (self->file != NULL)
-    gtk_file_chooser_set_file (
-      GTK_FILE_CHOOSER (self->dialog), self->file, NULL);
-
-  toplevel = GTK_WIDGET (gtk_widget_get_native (GTK_WIDGET (self)));
-
-  if (GTK_IS_WINDOW (toplevel))
-    gtk_window_set_transient_for (
-      GTK_WINDOW (self->dialog), GTK_WINDOW (toplevel));
-
-  default_widget = gtk_dialog_get_widget_for_response (
-    GTK_DIALOG (self->dialog), GTK_RESPONSE_OK);
-
-  switch (self->action)
     {
-    case GTK_FILE_CHOOSER_ACTION_OPEN:
-      gtk_button_set_label (GTK_BUTTON (default_widget), _ ("Open"));
-      break;
-
-    case GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
-      gtk_button_set_label (GTK_BUTTON (default_widget), _ ("Select"));
-      break;
-
-    case GTK_FILE_CHOOSER_ACTION_SAVE:
-      gtk_button_set_label (GTK_BUTTON (default_widget), _ ("Save"));
-      break;
-
-    default:
-      break;
+      if (self->action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER)
+        {
+          gtk_file_dialog_set_initial_folder (
+            GTK_FILE_DIALOG (self->dialog), self->file);
+        }
+      else
+        {
+          gtk_file_dialog_set_initial_file (
+            GTK_FILE_DIALOG (self->dialog), self->file);
+        }
     }
 }
 
 static void
-ide_file_chooser_entry_dialog_response (
-  IdeFileChooserEntry *  self,
-  gint                   response_id,
-  GtkFileChooserDialog * dialog)
+ide_file_chooser_entry_dialog_async_cb (
+  GtkFileDialog *       dialog,
+  GAsyncResult *        res,
+  IdeFileChooserEntry * self)
 {
   g_assert (IDE_IS_FILE_CHOOSER_ENTRY (self));
-  g_assert (GTK_IS_FILE_CHOOSER_DIALOG (dialog));
+  g_assert (GTK_IS_FILE_DIALOG (dialog));
 
-  if (response_id == GTK_RESPONSE_OK)
+  GFile * file = NULL;
+  switch (self->action)
     {
-      g_autoptr (GFile) file = NULL;
-
-      file = gtk_file_chooser_get_file (GTK_FILE_CHOOSER (dialog));
-      if (file != NULL)
-        ide_file_chooser_entry_set_file (self, file);
+    case GTK_FILE_CHOOSER_ACTION_OPEN:
+      file = gtk_file_dialog_open_finish (dialog, res, NULL);
+      break;
+    case GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
+      file = gtk_file_dialog_select_folder_finish (dialog, res, NULL);
+      break;
+    case GTK_FILE_CHOOSER_ACTION_SAVE:
+      file = gtk_file_dialog_save_finish (dialog, res, NULL);
+      break;
+    default:
+      break;
     }
 
-  self->dialog = NULL;
-
-  gtk_window_destroy (GTK_WINDOW (dialog));
+  if (file)
+    {
+      ide_file_chooser_entry_set_file (self, file);
+    }
 }
 
 static void
@@ -151,17 +142,7 @@ ide_file_chooser_entry_ensure_dialog (IdeFileChooserEntry * self)
 
   if (self->dialog == NULL)
     {
-      self->dialog = g_object_new (
-        GTK_TYPE_FILE_CHOOSER_DIALOG, "local-only", TRUE, "modal", TRUE, NULL);
-      g_signal_connect_object (
-        self->dialog, "response",
-        G_CALLBACK (ide_file_chooser_entry_dialog_response), self,
-        G_CONNECT_SWAPPED);
-      gtk_dialog_add_buttons (
-        GTK_DIALOG (self->dialog), _ ("Cancel"), GTK_RESPONSE_CANCEL,
-        _ ("Open"), GTK_RESPONSE_OK, NULL);
-      gtk_dialog_set_default_response (
-        GTK_DIALOG (self->dialog), GTK_RESPONSE_OK);
+      self->dialog = g_object_new (GTK_TYPE_FILE_DIALOG, "modal", TRUE, NULL);
     }
 
   ide_file_chooser_entry_sync_to_dialog (self);
@@ -176,7 +157,31 @@ ide_file_chooser_entry_button_clicked (
   g_assert (GTK_IS_BUTTON (button));
 
   ide_file_chooser_entry_ensure_dialog (self);
-  gtk_window_present (GTK_WINDOW (self->dialog));
+
+  GtkWidget * toplevel = GTK_WIDGET (gtk_widget_get_native (GTK_WIDGET (self)));
+  GtkWindow * window = NULL;
+  if (GTK_IS_WINDOW (toplevel))
+    window = GTK_WINDOW (toplevel);
+  switch (self->action)
+    {
+    case GTK_FILE_CHOOSER_ACTION_OPEN:
+      gtk_file_dialog_open (
+        self->dialog, window, NULL,
+        (GAsyncReadyCallback) ide_file_chooser_entry_dialog_async_cb, self);
+      break;
+    case GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
+      gtk_file_dialog_select_folder (
+        self->dialog, window, NULL,
+        (GAsyncReadyCallback) ide_file_chooser_entry_dialog_async_cb, self);
+      break;
+    case GTK_FILE_CHOOSER_ACTION_SAVE:
+      gtk_file_dialog_save (
+        self->dialog, window, NULL,
+        (GAsyncReadyCallback) ide_file_chooser_entry_dialog_async_cb, self);
+      break;
+    default:
+      break;
+    }
 }
 
 static GFile *
@@ -224,7 +229,7 @@ ide_file_chooser_entry_dispose (GObject * object)
 
   if (self->dialog)
     {
-      gtk_window_destroy (GTK_WINDOW (self->dialog));
+      g_object_unref (self->dialog);
       self->dialog = NULL;
     }
 
