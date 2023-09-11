@@ -8,15 +8,16 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-15 16:28+0900\n"
-"PO-Revision-Date: 2023-03-21 03:49+0000\n"
+"PO-Revision-Date: 2023-09-11 20:45+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
+"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/ca/>\n"
 "Language: ca\n"
-"Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/ca/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -1045,12 +1046,11 @@ msgstr "Fer que sigui més fàcil d'utilitzar i documentar totes les accions."
 
 #: ../../configuration/ui-scaling-and-wayland.rst:8
 msgid "UI Scaling and Wayland"
-msgstr ""
+msgstr "Escalat de la IU i Wayland"
 
 #: ../../configuration/ui-scaling-and-wayland.rst:11
-#, fuzzy
 msgid "About Wayland"
-msgstr "Quant a Flatpak"
+msgstr "Quant a Wayland"
 
 #: ../../configuration/ui-scaling-and-wayland.rst:12
 msgid ""
@@ -1058,12 +1058,18 @@ msgid ""
 "almost all plugins on GNU/Linux are built against X11 and some plugin UIs "
 "crash when running under Wayland directly."
 msgstr ""
+"Actualment, Zrythm obliga a utilitzar X11 (és a dir, XWayland) quan "
+"s'executa a Wayland perquè gairebé tots els complements de GNU/Linux es "
+"construeixen amb X11 i algunes IU de complements es bloquegen quan "
+"s'executen directament a Wayland."
 
 #: ../../configuration/ui-scaling-and-wayland.rst:17
 msgid ""
 "You can avoid these crashes by :ref:`bridging<plugins-files/plugins/plugin-"
 "window:Bridging>` plugins."
 msgstr ""
+"Pots evitar aquests bloquejos utilitzant complements :ref:`bridging<plugins-"
+"files/plugins/plugin-window:Bridging>`."
 
 #: ../../configuration/ui-scaling-and-wayland.rst:19
 msgid ""
@@ -1071,21 +1077,24 @@ msgid ""
 "the :envvar:`GDK_BACKEND` environment variable. You can either pass this "
 "variable when running Zrythm from the terminal,"
 msgstr ""
+"Si això no us importa i prefereixes que Zrythm utilitzi Wayland purament, "
+"pots utilitzar la variable d'entorn :envvar:`GDK_BACKEND`. Pots passar "
+"aquesta variable quan iniciïs Zrythm des del terminal,"
 
 #: ../../configuration/ui-scaling-and-wayland.rst:29
 msgid "or you can edit the Desktop Entry for Zrythm."
-msgstr ""
+msgstr "o pots editar l'entrada d'escriptori de Zrythm."
 
 #: ../../configuration/ui-scaling-and-wayland.rst:37
-#, fuzzy
 msgid ""
 "`Gtk - 4.0: Using GTK with Wayland <https://docs.gtk.org/gtk4/wayland.html>`_"
-msgstr "`GTK+ CSS Overview <https://docs.gtk.org/gtk4/css-overview.html>`_"
+msgstr ""
+"`Gtk - 4.0: Utilitzant GTK amb Wayland <https://docs.gtk.org/gtk4/wayland."
+"html>`_"
 
 #: ../../configuration/ui-scaling-and-wayland.rst:40
-#, fuzzy
 msgid "UI Scaling"
-msgstr "Exploració AU"
+msgstr "Escalant IU"
 
 #: ../../configuration/ui-scaling-and-wayland.rst:41
 msgid ""
@@ -1093,12 +1102,18 @@ msgid ""
 "scaling settings, you may be able to get the user interface scaled correctly "
 "by having Zrythm running entirely in Wayland using :envvar:`GDK_BACKEND`."
 msgstr ""
+"Si utilitzes Wayland i el teu gestor de finestres ja té la configuració "
+"d'escala correcta, és possible que puguis escalar correctament la interfície "
+"d'usuari fent que Zrythm s'executi completament a Wayland utilitzant "
+":envvar:`GDK_BACKEND`."
 
 #: ../../configuration/ui-scaling-and-wayland.rst:46
 msgid ""
 "On Xorg, you can scale the interface by setting the :envvar:`GDK_SCALE` "
 "environment variable:"
 msgstr ""
+"A Xorg, pots escalar la interfície configurant la variable d'entorn "
+":envvar:`GDK_SCALE`:"
 
 #: ../../configuration/ui-scaling-and-wayland.rst:54
 msgid ""
@@ -1106,6 +1121,9 @@ msgid ""
 "will be ignored. This environment variable is also ignored in Mutter Wayland "
 "sessions."
 msgstr ""
+"GTK3/4 no admet l'escala fraccionada actualment, de manera que s'ignoraran "
+"els factors fraccionaris. Aquesta variable d'entorn també s'ignora a les "
+"sessions de Mutter Wayland."
 
 #: ../../contributing/intro.rst:7
 msgid "Contributing"
