@@ -9,10 +9,7 @@
 /**
  * Creates and returns the overwrite plugin dialog.
  */
-GtkDialog *
+AdwMessageDialog *
 dialogs_get_overwrite_plugin_dialog (GtkWindow * parent);
-
-GtkDialog *
-dialogs_get_error_instantiating_plugin_dialog (GtkWindow * parent);
 
 #endif

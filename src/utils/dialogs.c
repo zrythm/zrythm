@@ -13,32 +13,19 @@
 /**
  * Creates and returns the overwrite plugin dialog.
  */
-GtkDialog *
+AdwMessageDialog *
 dialogs_get_overwrite_plugin_dialog (GtkWindow * parent)
 {
-  GtkDialogFlags flags = GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT;
-  GtkDialog *    dialog = GTK_DIALOG (gtk_dialog_new_with_buttons (
-    _ ("Overwrite Plugin"), GTK_WINDOW (MAIN_WINDOW), flags, _ ("_OK"),
-    GTK_RESPONSE_ACCEPT, _ ("_Cancel"), GTK_RESPONSE_REJECT, NULL));
-  GtkWidget *    box = gtk_dialog_get_content_area (dialog);
-  GtkWidget *    label = g_object_new (
-    GTK_TYPE_LABEL, "label",
-    _ ("A plugin already exists at the selected "
-             "slot. Overwrite it?"),
-    "margin-start", 8, "margin-end", 8, "margin-top", 4, "margin-bottom", 8,
-    NULL);
-  gtk_widget_set_visible (label, 1);
-  gtk_box_append (GTK_BOX (box), label);
+  AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (adw_message_dialog_new (
+    parent, _ ("Overwrite Plugin?"),
+    _ ("A plugin already exists at the selected slot. Overwrite it?")));
+  adw_message_dialog_add_responses (
+    ADW_MESSAGE_DIALOG (dialog), "cancel", _ ("_Cancel"), "overwrite",
+    _ ("_Overwrite"), NULL);
+  adw_message_dialog_set_response_appearance (
+    ADW_MESSAGE_DIALOG (dialog), "overwrite", ADW_RESPONSE_DESTRUCTIVE);
+  adw_message_dialog_set_default_response (
+    ADW_MESSAGE_DIALOG (dialog), "cancel");
+  adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "cancel");
   return dialog;
-}
-
-GtkDialog *
-dialogs_get_error_instantiating_plugin_dialog (GtkWindow * parent)
-{
-  GtkDialogFlags flags = GTK_DIALOG_DESTROY_WITH_PARENT;
-  GtkWidget *    dialog = gtk_message_dialog_new (
-    GTK_WINDOW (MAIN_WINDOW), flags, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE,
-    _ ("Error instantiating plugin. "
-             "Please see log for details."));
-  return GTK_DIALOG (dialog);
 }

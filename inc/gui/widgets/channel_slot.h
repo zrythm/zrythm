@@ -48,8 +48,7 @@ typedef struct _ChannelSlotWidget
   GtkGestureDrag *  drag;
 
   /**
-   * Previous plugin name at
-   * this slot in the last draw callback, or NULL.
+   * Previous plugin name at this slot in the last draw callback, or NULL.
    *
    * If this changes, the tooltip is changed.
    */

@@ -662,42 +662,26 @@ plugin_validate (Plugin * self)
   return true;
 }
 
-/**
- * Moves the plugin to the given slot in
- * the given channel.
- *
- * If a plugin already exists, it deletes it and
- * replaces it.
- */
-void
-plugin_move (
-  Plugin *       pl,
-  Track *        track,
-  PluginSlotType slot_type,
-  int            slot,
-  bool           fire_events)
+typedef struct PluginMoveData
 {
-  /* confirm if another plugin exists */
-  Plugin * existing_pl = track_get_plugin_at_slot (track, slot_type, slot);
-  /* TODO move confirmation to widget */
-#if 0
-  if (existing_pl && ZRYTHM_HAVE_UI)
-    {
-      GtkDialog * dialog =
-        dialogs_get_overwrite_plugin_dialog (
-          GTK_WINDOW (MAIN_WINDOW));
-      int result =
-        gtk_dialog_run (dialog);
-      gtk_widget_destroy (GTK_WIDGET (dialog));
+  Plugin *       pl;
+  Track *        track;
+  PluginSlotType slot_type;
+  int            slot;
+  bool           fire_events;
+} PluginMoveData;
 
-      /* do nothing if not accepted */
-      if (result != GTK_RESPONSE_ACCEPT)
-        {
-          return;
-        }
-    }
-#endif
+static void
+plugin_move_data_free (void * _data)
+{
+  PluginMoveData * self = (PluginMoveData *) _data;
+  object_zero_and_free (self);
+}
 
+static void
+do_move (PluginMoveData * data)
+{
+  Plugin *       pl = data->pl;
   int            prev_slot = pl->id.slot;
   PluginSlotType prev_slot_type = pl->id.slot_type;
   Track *        prev_track = plugin_get_track (pl);
@@ -706,16 +690,19 @@ plugin_move (
   g_return_if_fail (IS_CHANNEL_AND_NONNULL (prev_ch));
 
   /* if existing plugin exists, delete it */
+  Plugin * existing_pl =
+    track_get_plugin_at_slot (data->track, data->slot_type, data->slot);
   if (existing_pl)
     {
       channel_remove_plugin (
-        track->channel, slot_type, slot, F_NOT_MOVING_PLUGIN, F_DELETING_PLUGIN,
-        F_NOT_DELETING_CHANNEL, F_NO_RECALC_GRAPH);
+        data->track->channel, data->slot_type, data->slot, F_NOT_MOVING_PLUGIN,
+        F_DELETING_PLUGIN, F_NOT_DELETING_CHANNEL, F_NO_RECALC_GRAPH);
     }
 
   /* move plugin's automation from src to
    * dest */
-  plugin_move_automation (pl, prev_track, track, slot_type, slot);
+  plugin_move_automation (
+    pl, prev_track, data->track, data->slot_type, data->slot);
 
   /* remove plugin from its channel */
   channel_remove_plugin (
@@ -724,14 +711,61 @@ plugin_move (
 
   /* add plugin to its new channel */
   channel_add_plugin (
-    track->channel, slot_type, slot, pl, F_NO_CONFIRM, F_MOVING_PLUGIN,
-    F_NO_GEN_AUTOMATABLES, F_RECALC_GRAPH, F_PUBLISH_EVENTS);
+    data->track->channel, data->slot_type, data->slot, pl, F_NO_CONFIRM,
+    F_MOVING_PLUGIN, F_NO_GEN_AUTOMATABLES, F_RECALC_GRAPH, F_PUBLISH_EVENTS);
 
-  if (fire_events)
+  if (data->fire_events)
     {
       EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, prev_ch);
-      EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, track->channel);
+      EVENTS_PUSH (ET_CHANNEL_SLOTS_CHANGED, data->track->channel);
     }
+}
+
+static void
+overwrite_plugin_response_cb (
+  AdwMessageDialog * dialog,
+  char *             response,
+  gpointer           user_data)
+{
+  PluginMoveData * data = (PluginMoveData *) user_data;
+  if (!string_is_equal (response, "overwrite"))
+    {
+      return;
+    }
+
+  do_move (data);
+}
+
+void
+plugin_move (
+  Plugin *       pl,
+  Track *        track,
+  PluginSlotType slot_type,
+  int            slot,
+  bool           confirm_overwrite,
+  bool           fire_events)
+{
+  PluginMoveData * data = object_new (PluginMoveData);
+  data->pl = pl;
+  data->track = track;
+  data->slot_type = slot_type;
+  data->slot = slot;
+  data->fire_events = fire_events;
+
+  Plugin * existing_pl = track_get_plugin_at_slot (track, slot_type, slot);
+  if (existing_pl && confirm_overwrite && ZRYTHM_HAVE_UI)
+    {
+      AdwMessageDialog * dialog =
+        dialogs_get_overwrite_plugin_dialog (GTK_WINDOW (MAIN_WINDOW));
+      gtk_window_present (GTK_WINDOW (dialog));
+      g_signal_connect_data (
+        dialog, "response", G_CALLBACK (overwrite_plugin_response_cb), data,
+        (GClosureNotify) plugin_move_data_free, G_CONNECT_DEFAULT);
+      return;
+    }
+
+  do_move (data);
+  plugin_move_data_free (data);
 }
 
 /**
@@ -781,7 +815,7 @@ plugin_set_track_and_slot (
 }
 
 Track *
-plugin_get_track (Plugin * self)
+plugin_get_track (const Plugin * self)
 {
   g_return_val_if_fail (self->track, NULL);
   return self->track;

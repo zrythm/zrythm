@@ -336,9 +336,9 @@ plugin_descriptor_category_to_string (ZPluginCategory category)
  */
 bool
 plugin_descriptor_is_valid_for_slot_type (
-  PluginDescriptor * self,
-  int                slot_type,
-  int                track_type)
+  const PluginDescriptor * self,
+  int                      slot_type,
+  int                      track_type)
 {
   switch (slot_type)
     {

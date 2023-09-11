@@ -309,6 +309,27 @@ NONNULL void
 channel_reset_fader (Channel * self, bool fire_events);
 
 /**
+ * Handles import (paste/drop) of plugins or plugin descriptors or mixer
+ * selections.
+ *
+ * @param pl Passed when passing @p sel to be used for validation.
+ * @param sel Plugins to import.
+ * @param copy Whether to copy instead of move, when copying plugins.
+ * @param ask_if_overwrite Whether to ask for permission if the import
+ * overwrites existing plugins.
+ */
+void
+channel_handle_plugin_import (
+  Channel *                self,
+  const Plugin *           pl,
+  const MixerSelections *  sel,
+  const PluginDescriptor * descr,
+  int                      slot,
+  PluginSlotType           slot_type,
+  bool                     copy,
+  bool                     ask_if_overwrite);
+
+/**
  * Prepares the channel for processing.
  *
  * To be called before the main cycle each time on
@@ -451,6 +472,12 @@ channel_get_swap_phase (Channel * self);
  */
 NONNULL void
 channel_set_swap_phase (Channel * self, bool enabled, bool fire_events);
+
+/**
+ * @memberof Channel
+ */
+Plugin *
+channel_get_plugin_at (const Channel * self, int slot, PluginSlotType slot_type);
 
 /**
  * Selects/deselects all plugins in the given slot

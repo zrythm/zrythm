@@ -371,9 +371,9 @@ plugin_descriptor_get_icon_name (const PluginDescriptor * const self);
  */
 bool
 plugin_descriptor_is_valid_for_slot_type (
-  PluginDescriptor * self,
-  int                slot_type,
-  int                track_type);
+  const PluginDescriptor * self,
+  int                      slot_type,
+  int                      track_type);
 
 /**
  * Returns whether the two descriptors describe

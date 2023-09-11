@@ -167,20 +167,16 @@ mixer_selections_action_init_loaded (MixerSelectionsAction * self);
 /**
  * Create a new action.
  *
- * @param ms The mixer selections before the action
- *   is performed.
+ * @param ms The mixer selections before the action is performed.
  * @param slot_type Target slot type.
- * @param to_track_name_hash Target track name hash,
- *   or 0 for new channel.
+ * @param to_track_name_hash Target track name hash, or 0 for new channel.
  * @param to_slot Target slot.
- * @param setting The plugin setting, if creating
- *   plugins.
- * @param num_plugins The number of plugins to create,
- *   if creating plugins.
+ * @param setting The plugin setting, if creating plugins.
+ * @param num_plugins The number of plugins to create, if creating plugins.
  */
 WARN_UNUSED_RESULT UndoableAction *
 mixer_selections_action_new (
-  MixerSelections *              ms,
+  const MixerSelections *        ms,
   const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType      type,
   PluginSlotType                 slot_type,
@@ -224,7 +220,7 @@ mixer_selections_action_clone (const MixerSelectionsAction * src);
 
 bool
 mixer_selections_action_perform (
-  MixerSelections *              ms,
+  const MixerSelections *        ms,
   const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType      type,
   PluginSlotType                 slot_type,

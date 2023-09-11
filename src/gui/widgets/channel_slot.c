@@ -217,84 +217,9 @@ on_dnd_drop (
       pl = (Plugin *) wrapped_obj->obj;
     }
 
-  bool plugin_invalid = false;
-  if (pl)
-    {
-      /* if plugin not at original position */
-      Track * orig_track = plugin_get_track (pl);
-      if (
-        self->track != orig_track || self->slot_index != pl->id.slot
-        || self->type != pl->id.slot_type)
-        {
-          if (plugin_descriptor_is_valid_for_slot_type (
-                pl->setting->descr, self->type, self->track->type))
-            {
-              bool     ret;
-              GError * err = NULL;
-              if (action == GDK_ACTION_COPY)
-                {
-                  ret = mixer_selections_action_perform_copy (
-                    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, self->type,
-                    track_get_name_hash (self->track), self->slot_index, &err);
-                }
-              else if (action == GDK_ACTION_MOVE)
-                {
-                  ret = mixer_selections_action_perform_move (
-                    MIXER_SELECTIONS, PORT_CONNECTIONS_MGR, self->type,
-                    track_get_name_hash (self->track), self->slot_index, &err);
-                }
-              else
-                g_return_val_if_reached (false);
-
-              if (!ret)
-                {
-                  HANDLE_ERROR (
-                    err, "%s",
-                    _ ("Failed to move or copy "
-                       "plugins"));
-                }
-            }
-          else
-            {
-              plugin_invalid = true;
-              descr = pl->setting->descr;
-            }
-        }
-    }
-  else if (descr)
-    {
-      /* validate */
-      if (plugin_descriptor_is_valid_for_slot_type (
-            descr, self->type, self->track->type))
-        {
-          PluginSetting * setting = plugin_setting_new_default (descr);
-          GError *        err = NULL;
-          bool            ret = mixer_selections_action_perform_create (
-            self->type, track_get_name_hash (self->track), self->slot_index,
-            setting, 1, &err);
-          if (ret)
-            {
-              plugin_setting_increment_num_instantiations (setting);
-            }
-          else
-            {
-              HANDLE_ERROR (
-                err, _ ("Failed to create plugin %s"), setting->descr->name);
-            }
-          plugin_setting_free (setting);
-        }
-      else
-        {
-          plugin_invalid = true;
-        }
-    }
-
-  if (plugin_invalid)
-    {
-      char msg[400];
-      sprintf (msg, _ ("Plugin %s cannot be added to this slot"), descr->name);
-      ui_show_error_message (false, msg);
-    }
+  channel_handle_plugin_import (
+    self->track->channel, pl, MIXER_SELECTIONS, descr, self->slot_index,
+    self->type, action == GDK_ACTION_COPY, true);
 
   gtk_widget_queue_draw (GTK_WIDGET (self));
 

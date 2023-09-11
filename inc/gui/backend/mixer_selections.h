@@ -94,7 +94,7 @@ mixer_selections_init (MixerSelections * self);
  *   project selections.
  */
 MixerSelections *
-mixer_selections_clone (MixerSelections * src, bool src_is_project);
+mixer_selections_clone (const MixerSelections * src, bool src_is_project);
 
 /**
  * Returns if there are any selections.
@@ -213,8 +213,9 @@ NONNULL Plugin *
 mixer_selections_get_first_plugin (MixerSelections * self);
 
 /**
- * Fills in the array with the plugins in the
- * selections.
+ * Fills in the array with the plugins in the selections.
+ *
+ * @memberof MixerSelections
  */
 int
 mixer_selections_get_plugins (

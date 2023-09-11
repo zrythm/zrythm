@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include <stdlib.h>
@@ -60,6 +60,118 @@ modulator_track_default (int track_pos)
   return self;
 }
 
+typedef struct ModulatorImportData
+{
+  Track *  track;
+  int      slot;
+  Plugin * modulator;
+  bool     replace_mode;
+  bool     confirm;
+  bool     gen_automatables;
+  bool     recalc_graph;
+  bool     pub_events;
+} ModulatorImportData;
+
+static void
+modulator_import_data_free (void * _data)
+{
+  ModulatorImportData * self = (ModulatorImportData *) _data;
+  object_zero_and_free (self);
+}
+
+static void
+do_insert (ModulatorImportData * data)
+{
+  Track * self = data->track;
+  if (data->replace_mode)
+    {
+      Plugin * existing_pl =
+        data->slot < self->num_modulators ? self->modulators[data->slot] : NULL;
+      if (existing_pl)
+        {
+          /* free current plugin */
+          if (existing_pl)
+            {
+              modulator_track_remove_modulator (
+                self, data->slot, F_REPLACING, F_DELETING_PLUGIN,
+                F_NOT_DELETING_TRACK, F_NO_RECALC_GRAPH);
+            }
+        }
+
+      g_message (
+        "Inserting modulator %s at %s:%d",
+        data->modulator->setting->descr->name, self->name, data->slot);
+      if (data->slot == self->num_modulators)
+        {
+          array_double_size_if_full (
+            self->modulators, self->num_modulators, self->modulators_size,
+            Modulator *);
+          self->num_modulators++;
+        }
+    }
+  else
+    {
+      array_double_size_if_full (
+        self->modulators, self->num_modulators, self->modulators_size,
+        Modulator *);
+
+      /* push other modulators forward (make
+       * space for new modulator) */
+      self->num_modulators++;
+      for (int i = self->num_modulators - 1; i > data->slot; i--)
+        {
+          self->modulators[i] = self->modulators[i - 1];
+          g_message (
+            "setting modulator %s from slot %d "
+            "to slot %d",
+            self->modulators[i]->setting->descr->name, i - 1, i);
+          plugin_set_track_and_slot (
+            self->modulators[i], track_get_name_hash (self),
+            PLUGIN_SLOT_MODULATOR, i);
+        }
+    }
+
+  /* add the modulator */
+  self->modulators[data->slot] = data->modulator;
+  g_message (
+    "setting modulator %s to slot %d", data->modulator->setting->descr->name,
+    data->slot);
+
+  plugin_set_track_and_slot (
+    data->modulator, track_get_name_hash (self), PLUGIN_SLOT_MODULATOR,
+    data->slot);
+
+  if (data->gen_automatables)
+    {
+      plugin_generate_automation_tracks (data->modulator, self);
+    }
+
+  if (data->pub_events)
+    {
+      EVENTS_PUSH (ET_MODULATOR_ADDED, data->modulator);
+    }
+
+  if (data->recalc_graph)
+    {
+      router_recalc_graph (ROUTER, F_NOT_SOFT);
+    }
+}
+
+static void
+overwrite_plugin_response_cb (
+  AdwMessageDialog * dialog,
+  char *             response,
+  gpointer           user_data)
+{
+  ModulatorImportData * data = (ModulatorImportData *) user_data;
+  if (!string_is_equal (response, "overwrite"))
+    {
+      return;
+    }
+
+  do_insert (data);
+}
+
 /**
  * Inserts and connects a Modulator to the Track.
  *
@@ -83,90 +195,34 @@ modulator_track_insert_modulator (
   g_return_if_fail (
     IS_TRACK (self) && IS_PLUGIN (modulator) && slot <= self->num_modulators);
 
+  ModulatorImportData * data = object_new (ModulatorImportData);
+  data->track = self;
+  data->slot = slot;
+  data->modulator = modulator;
+  data->replace_mode = replace_mode;
+  data->confirm = confirm;
+  data->gen_automatables = gen_automatables;
+  data->recalc_graph = recalc_graph;
+  data->pub_events = pub_events;
+
   if (replace_mode)
     {
       Plugin * existing_pl =
         slot < self->num_modulators ? self->modulators[slot] : NULL;
-      if (existing_pl)
+      if (existing_pl && confirm)
         {
-          /* confirm if another plugin exists */
-          if (confirm)
-            {
-              GtkDialog * dialog =
-                dialogs_get_overwrite_plugin_dialog (GTK_WINDOW (MAIN_WINDOW));
-              int result = z_gtk_dialog_run (dialog, true);
-
-              /* do nothing if not accepted */
-              if (result != GTK_RESPONSE_ACCEPT)
-                {
-                  return;
-                }
-            }
-
-          /* free current plugin */
-          if (existing_pl)
-            {
-              modulator_track_remove_modulator (
-                self, slot, F_REPLACING, F_DELETING_PLUGIN,
-                F_NOT_DELETING_TRACK, F_NO_RECALC_GRAPH);
-            }
-        }
-
-      g_message (
-        "Inserting modulator %s at %s:%d", modulator->setting->descr->name,
-        self->name, slot);
-      if (slot == self->num_modulators)
-        {
-          array_double_size_if_full (
-            self->modulators, self->num_modulators, self->modulators_size,
-            Modulator *);
-          self->num_modulators++;
-        }
-    }
-  else
-    {
-      array_double_size_if_full (
-        self->modulators, self->num_modulators, self->modulators_size,
-        Modulator *);
-
-      /* push other modulators forward (make
-       * space for new modulator) */
-      self->num_modulators++;
-      for (int i = self->num_modulators - 1; i > slot; i--)
-        {
-          self->modulators[i] = self->modulators[i - 1];
-          g_message (
-            "setting modulator %s from slot %d "
-            "to slot %d",
-            self->modulators[i]->setting->descr->name, i - 1, i);
-          plugin_set_track_and_slot (
-            self->modulators[i], track_get_name_hash (self),
-            PLUGIN_SLOT_MODULATOR, i);
+          AdwMessageDialog * dialog =
+            dialogs_get_overwrite_plugin_dialog (GTK_WINDOW (MAIN_WINDOW));
+          gtk_window_present (GTK_WINDOW (dialog));
+          g_signal_connect_data (
+            dialog, "response", G_CALLBACK (overwrite_plugin_response_cb), data,
+            (GClosureNotify) modulator_import_data_free, G_CONNECT_DEFAULT);
+          return;
         }
     }
 
-  /* add the modulator */
-  self->modulators[slot] = modulator;
-  g_message (
-    "setting modulator %s to slot %d", modulator->setting->descr->name, slot);
-
-  plugin_set_track_and_slot (
-    modulator, track_get_name_hash (self), PLUGIN_SLOT_MODULATOR, slot);
-
-  if (gen_automatables)
-    {
-      plugin_generate_automation_tracks (modulator, self);
-    }
-
-  if (pub_events)
-    {
-      EVENTS_PUSH (ET_MODULATOR_ADDED, modulator);
-    }
-
-  if (recalc_graph)
-    {
-      router_recalc_graph (ROUTER, F_NOT_SOFT);
-    }
+  do_insert (data);
+  modulator_import_data_free (data);
 }
 
 /**

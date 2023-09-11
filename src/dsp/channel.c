@@ -54,6 +54,18 @@
 
 #include <unistd.h>
 
+typedef enum
+{
+  Z_DSP_CHANNEL_ERROR_FAILED,
+} ZDspChannelError;
+
+#define Z_DSP_CHANNEL_ERROR z_dsp_channel_error_quark ()
+GQuark
+z_dsp_channel_error_quark (void);
+G_DEFINE_QUARK (
+  z - dsp - channel - error - quark,
+  z_dsp_channel_error)
+
 /**
  * Connect ports in the case of !prev && !next.
  */
@@ -1511,23 +1523,6 @@ channel_add_plugin (
     {
       g_message ("existing plugin exists at %s:%d", track->name, slot);
     }
-    /* TODO move confirmation to widget */
-#if 0
-  /* confirm if another plugin exists */
-  if (confirm && existing_pl && ZRYTHM_HAVE_UI)
-    {
-      GtkDialog * dialog =
-        dialogs_get_overwrite_plugin_dialog (
-          GTK_WINDOW (MAIN_WINDOW));
-      int result =
-        gtk_dialog_run (dialog);
-      gtk_widget_destroy (GTK_WIDGET (dialog));
-
-      /* do nothing if not accepted */
-      if (result != GTK_RESPONSE_ACCEPT)
-        return 0;
-    }
-#endif
 
   /* free current plugin */
   if (existing_pl)
@@ -1728,6 +1723,199 @@ channel_get_automation_track (Channel * channel, PortFlags port_flags)
         return at;
     }
   return NULL;
+}
+
+Plugin *
+channel_get_plugin_at (const Channel * self, int slot, PluginSlotType slot_type)
+{
+  switch (slot_type)
+    {
+    case PLUGIN_SLOT_INSERT:
+      return self->inserts[slot];
+    case PLUGIN_SLOT_MIDI_FX:
+      return self->midi_fx[slot];
+    case PLUGIN_SLOT_INSTRUMENT:
+      return self->instrument;
+    case PLUGIN_SLOT_MODULATOR:
+    default:
+      g_return_val_if_reached (NULL);
+    }
+}
+
+typedef struct PluginImportData
+{
+  Channel *                ch;
+  const Plugin *           pl;
+  const MixerSelections *  sel;
+  const PluginDescriptor * descr;
+  int                      slot;
+  PluginSlotType           slot_type;
+  bool                     copy;
+  bool                     ask_if_overwrite;
+} PluginImportData;
+
+static void
+plugin_import_data_free (void * _data)
+{
+  PluginImportData * self = (PluginImportData *) _data;
+  object_zero_and_free (self);
+}
+
+static void
+do_import (PluginImportData * data)
+{
+  bool plugin_valid = true;
+  if (data->pl)
+    {
+      Track * orig_track = plugin_get_track (data->pl);
+
+      /* if plugin at original position do nothing */
+      if (
+        data->ch->track == orig_track && data->slot == data->pl->id.slot
+        && data->slot_type == data->pl->id.slot_type)
+        return;
+
+      if (plugin_descriptor_is_valid_for_slot_type (
+            data->pl->setting->descr, data->slot_type, data->ch->track->type))
+        {
+          bool     ret;
+          GError * err = NULL;
+          if (data->copy)
+            {
+              ret = mixer_selections_action_perform_copy (
+                data->sel, PORT_CONNECTIONS_MGR, data->slot_type,
+                track_get_name_hash (data->ch->track), data->slot, &err);
+            }
+          else
+            {
+              ret = mixer_selections_action_perform_move (
+                data->sel, PORT_CONNECTIONS_MGR, data->slot_type,
+                track_get_name_hash (data->ch->track), data->slot, &err);
+            }
+
+          if (!ret)
+            {
+              HANDLE_ERROR_LITERAL (err, _ ("Failed to move or copy plugins"));
+              return;
+            }
+        }
+      else
+        {
+          plugin_valid = false;
+        }
+    }
+  else if (data->descr)
+    {
+      /* validate */
+      if (plugin_descriptor_is_valid_for_slot_type (
+            data->descr, data->slot_type, data->ch->track->type))
+        {
+          PluginSetting * setting = plugin_setting_new_default (data->descr);
+          GError *        err = NULL;
+          bool            ret = mixer_selections_action_perform_create (
+            data->slot_type, track_get_name_hash (data->ch->track), data->slot,
+            setting, 1, &err);
+          if (ret)
+            {
+              plugin_setting_increment_num_instantiations (setting);
+            }
+          else
+            {
+              HANDLE_ERROR (
+                err, _ ("Failed to create plugin %s"), setting->descr->name);
+              plugin_setting_free (setting);
+              return;
+            }
+          plugin_setting_free (setting);
+        }
+      else
+        {
+          plugin_valid = false;
+        }
+    }
+
+  if (!plugin_valid)
+    {
+      const PluginDescriptor * pl_descr =
+        data->descr ? data->descr : data->pl->setting->descr;
+      GError * err = NULL;
+      g_set_error (
+        &err, Z_DSP_CHANNEL_ERROR, Z_DSP_CHANNEL_ERROR_FAILED,
+        _ ("Plugin %s cannot be added to this slot"), pl_descr->name);
+      HANDLE_ERROR_LITERAL (err, _ ("Failed to add plugin"));
+    }
+}
+
+static void
+overwrite_plugin_response_cb (
+  AdwMessageDialog * dialog,
+  char *             response,
+  gpointer           user_data)
+{
+  PluginImportData * data = (PluginImportData *) user_data;
+  if (!string_is_equal (response, "overwrite"))
+    {
+      return;
+    }
+
+  do_import (data);
+}
+
+void
+channel_handle_plugin_import (
+  Channel *                self,
+  const Plugin *           pl,
+  const MixerSelections *  sel,
+  const PluginDescriptor * descr,
+  int                      slot,
+  PluginSlotType           slot_type,
+  bool                     copy,
+  bool                     ask_if_overwrite)
+{
+  PluginImportData * data = object_new (PluginImportData);
+  data->ch = self;
+  data->sel = sel;
+  data->descr = descr;
+  data->slot = slot;
+  data->slot_type = slot_type;
+  data->copy = copy;
+
+  if (ask_if_overwrite)
+    {
+      bool show_dialog = false;
+      if (pl)
+        {
+          for (int i = 0; i < sel->num_slots; i++)
+            {
+              if (channel_get_plugin_at (self, slot + i, slot_type))
+                {
+                  show_dialog = true;
+                  break;
+                }
+            }
+        }
+      else
+        {
+          if (channel_get_plugin_at (self, slot, slot_type))
+            {
+              show_dialog = true;
+            }
+        }
+
+      if (show_dialog)
+        {
+          AdwMessageDialog * dialog =
+            dialogs_get_overwrite_plugin_dialog (GTK_WINDOW (MAIN_WINDOW));
+          gtk_window_present (GTK_WINDOW (dialog));
+          g_signal_connect_data (
+            dialog, "response", G_CALLBACK (overwrite_plugin_response_cb), data,
+            (GClosureNotify) plugin_import_data_free, G_CONNECT_DEFAULT);
+          return;
+        }
+    }
+
+  do_import (data);
+  plugin_import_data_free (data);
 }
 
 /**

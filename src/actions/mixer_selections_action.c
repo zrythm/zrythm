@@ -106,23 +106,9 @@ clone_ats (
     count, track->name, regions_count);
 }
 
-/**
- * Create a new action.
- *
- * @param ms The mixer selections before the action
- *   is performed.
- * @param slot_type Target slot type.
- * @param to_track_name_hash Target track name hash,
- *   or 0 for new channel.
- * @param to_slot Target slot.
- * @param setting The plugin setting, if creating
- *   plugins.
- * @param num_plugins The number of plugins to create,
- *   if creating plugins.
- */
 UndoableAction *
 mixer_selections_action_new (
-  MixerSelections *              ms,
+  const MixerSelections *        ms,
   const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType      type,
   PluginSlotType                 slot_type,
@@ -217,7 +203,7 @@ mixer_selections_action_clone (const MixerSelectionsAction * src)
 
 bool
 mixer_selections_action_perform (
-  MixerSelections *              ms,
+  const MixerSelections *        ms,
   const PortConnectionsManager * connections_mgr,
   MixerSelectionsActionType      type,
   PluginSlotType                 slot_type,
@@ -883,7 +869,7 @@ do_or_undo_move_or_copy (
               || from_slot != to_slot)
               {
                 plugin_move (
-                  pl, to_tr, to_slot_type, to_slot, F_NO_PUBLISH_EVENTS);
+                  pl, to_tr, to_slot_type, to_slot, false, F_NO_PUBLISH_EVENTS);
               }
           }
         else if (copy)
@@ -1004,7 +990,8 @@ do_or_undo_move_or_copy (
                     from_tr, from_slot_type, from_slot);
                   g_warn_if_fail (!existing_pl);
                   plugin_move (
-                    pl, from_tr, from_slot_type, from_slot, F_NO_PUBLISH_EVENTS);
+                    pl, from_tr, from_slot_type, from_slot, false,
+                    F_NO_PUBLISH_EVENTS);
                 }
             }
           else if (copy)

@@ -513,7 +513,7 @@ mixer_selections_clear (MixerSelections * self, const int pub_events)
  *   project selections.
  */
 MixerSelections *
-mixer_selections_clone (MixerSelections * src, bool src_is_project)
+mixer_selections_clone (const MixerSelections * src, bool src_is_project)
 {
   MixerSelections * ms = mixer_selections_new ();
 

@@ -427,11 +427,12 @@ NONNULL int
 plugin_activate (Plugin * pl, bool activate);
 
 /**
- * Moves the plugin to the given slot in
- * the given channel.
+ * Moves the plugin to the given slot in the given channel.
  *
- * If a plugin already exists, it deletes it and
- * replaces it.
+ * If a plugin already exists, it deletes it and replaces it.
+ *
+ * @param confirm_overwrite Whether to show a dialog to confirm the
+ * overwrite when a plugin already exists.
  */
 NONNULL void
 plugin_move (
@@ -439,6 +440,7 @@ plugin_move (
   Track *        track,
   PluginSlotType slot_type,
   int            slot,
+  bool           confirm_overwrite,
   bool           fire_events);
 
 /**
@@ -540,11 +542,17 @@ plugin_ensure_state_dir (Plugin * self, bool is_backup, GError ** error);
 NONNULL void
 plugin_get_all (Project * prj, GPtrArray * arr, bool check_undo_manager);
 
+/**
+ * @memberof Plugin
+ */
 NONNULL Channel *
 plugin_get_channel (Plugin * self);
 
+/**
+ * @memberof Plugin
+ */
 NONNULL Track *
-plugin_get_track (Plugin * self);
+plugin_get_track (const Plugin * self);
 
 NONNULL Plugin *
 plugin_find (const PluginIdentifier * id);
