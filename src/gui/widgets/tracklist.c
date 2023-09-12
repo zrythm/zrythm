@@ -250,27 +250,17 @@ on_dnd_motion (
 
 static void
 on_drop_instrument_onto_midi_track (
-  GtkDialog * dialog,
-  gint        response_id,
-  gpointer    user_data)
+  AdwMessageDialog * dialog,
+  char *             response,
+  gpointer           user_data)
 {
   const PluginDescriptor * descr = (PluginDescriptor *) user_data;
 
-  switch (response_id)
+  if (string_is_equal (response, "create"))
     {
-    case GTK_RESPONSE_YES:
-      {
-        PluginSetting * setting = plugin_setting_new_default (descr);
-        plugin_setting_activate (setting);
-        plugin_setting_free (setting);
-      }
-    default:
-      break;
-    }
-
-  if (dialog)
-    {
-      gtk_window_destroy (GTK_WINDOW (dialog));
+      PluginSetting * setting = plugin_setting_new_default (descr);
+      plugin_setting_activate (setting);
+      plugin_setting_free (setting);
     }
 }
 
@@ -334,13 +324,21 @@ on_dnd_drop (
               && this_track->type == TRACK_TYPE_MIDI)
               {
                 /* TODO convert track to instrument */
-                GtkWidget * dialog = gtk_message_dialog_new (
-                  GTK_WINDOW (MAIN_WINDOW),
-                  GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,
-                  GTK_MESSAGE_WARNING, GTK_BUTTONS_YES_NO, "%s",
-                  _ ("Attempted to drop an instrument onto a "
-                     "MIDI track, which is not supported. "
-                     "Create a new instrument track instead?"));
+                AdwMessageDialog * dialog =
+                  ADW_MESSAGE_DIALOG (adw_message_dialog_new (
+                    GTK_WINDOW (MAIN_WINDOW), _ ("Create New Instrument Track?"),
+                    _ ("Attempted to drop an instrument onto a "
+                       "MIDI track, which is not supported. "
+                       "Create a new instrument track instead?")));
+                adw_message_dialog_add_responses (
+                  ADW_MESSAGE_DIALOG (dialog), "cancel", _ ("_Cancel"),
+                  "create", _ ("Create _Instrument Track"), NULL);
+                adw_message_dialog_set_response_appearance (
+                  ADW_MESSAGE_DIALOG (dialog), "create", ADW_RESPONSE_SUGGESTED);
+                adw_message_dialog_set_default_response (
+                  ADW_MESSAGE_DIALOG (dialog), "create");
+                adw_message_dialog_set_close_response (
+                  ADW_MESSAGE_DIALOG (dialog), "cancel");
 
                 PluginDescriptor * descr_clone = plugin_descriptor_clone (descr);
                 g_signal_connect_data (
