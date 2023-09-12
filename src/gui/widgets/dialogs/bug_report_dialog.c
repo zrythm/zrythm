@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "zrythm-config.h"
@@ -40,7 +40,9 @@ validate_input (BugReportDialogWidget * self)
   if (string_is_empty (steps_to_reproduce))
     {
       g_free_and_null (steps_to_reproduce);
-      ui_show_error_message (false, _ ("Please enter more details"));
+      GtkAlertDialog * dialog = GTK_ALERT_DIALOG (
+        gtk_alert_dialog_new ("%s", _ ("Please enter more details")));
+      gtk_alert_dialog_show (dialog, GTK_WINDOW (self));
       return false;
     }
 
@@ -378,42 +380,42 @@ on_gitlab_response (BugReportDialogWidget * self)
     return;
 
   /* create new dialog */
-  GtkDialogFlags flags = GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT;
-  GtkWidget *    dialog = gtk_message_dialog_new_with_markup (
-    GTK_WINDOW (self), flags, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, NULL);
+  AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (
+    adw_message_dialog_new (GTK_WINDOW (self), _ ("Send via GitLab"), NULL));
 
-  gtk_window_set_title (GTK_WINDOW (dialog), _ ("Send via GitLab"));
+  adw_message_dialog_add_responses (
+    ADW_MESSAGE_DIALOG (dialog), "ok", _ ("_OK"), NULL);
+  adw_message_dialog_set_response_appearance (
+    ADW_MESSAGE_DIALOG (dialog), "ok", ADW_RESPONSE_SUGGESTED);
+  adw_message_dialog_set_default_response (ADW_MESSAGE_DIALOG (dialog), "ok");
+  adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "ok");
 
   /* set top text */
-  char * atag = g_strdup_printf ("<a href=\"%s\">", NEW_ISSUE_URL);
-  char * markup = g_strdup_printf (
-    _ ("Please copy the template below in a "
-       "%snew issue%s."),
-    atag, "</a>");
-  gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), markup);
-  g_free (atag);
-  g_free (markup);
+  adw_message_dialog_format_body_markup (
+    ADW_MESSAGE_DIALOG (dialog),
+    _ ("Please copy the template below in a <a href=\"%s\">new issue</a>."),
+    NEW_ISSUE_URL);
 
-  /* set bottom text - template */
-  char * report_template = get_report_template (self, false);
-  gtk_message_dialog_format_secondary_markup (
-    GTK_MESSAGE_DIALOG (dialog), "%s", report_template);
+  /* create new label for template */
+  char *     report_template = get_report_template (self, false);
+  GtkLabel * label = GTK_LABEL (gtk_label_new (NULL));
+  gtk_label_set_markup (label, report_template);
   g_free (report_template);
-
-  /* make label selectable */
-  GtkLabel * label =
-    z_gtk_message_dialog_get_label (GTK_MESSAGE_DIALOG (dialog), 1);
   gtk_label_set_selectable (label, true);
 
-  /* wrap bottom text in a scrolled window */
-  z_gtk_message_dialog_wrap_message_area_in_scroll (
-    GTK_MESSAGE_DIALOG (dialog), 580, 320);
+  /* wrap template in a scrolled window */
+  GtkWidget * scrolled_window = gtk_scrolled_window_new ();
+  gtk_scrolled_window_set_min_content_width (
+    GTK_SCROLLED_WINDOW (scrolled_window), 580);
+  gtk_scrolled_window_set_min_content_height (
+    GTK_SCROLLED_WINDOW (scrolled_window), 320);
+  gtk_scrolled_window_set_child (
+    GTK_SCROLLED_WINDOW (scrolled_window), GTK_WIDGET (label));
+
+  adw_message_dialog_set_extra_child (dialog, scrolled_window);
 
   /* run the dialog */
   gtk_window_present (GTK_WINDOW (dialog));
-
-  g_signal_connect (
-    G_OBJECT (dialog), "response", G_CALLBACK (gtk_window_destroy), NULL);
 }
 
 static void

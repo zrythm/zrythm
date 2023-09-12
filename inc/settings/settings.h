@@ -131,16 +131,11 @@ settings_new (void);
 /**
  * Resets settings to defaults.
  *
- * @param window Window to set transient to if
- *   confirming, otherwise console confirmation will
- *   be used.
- * @param exit_on_finish Exit with a code on
- *   finish.
- *
- * @return Whether successfully reset.
+ * @param confirm Show command line confirmation option.
+ * @param exit_on_finish Exit with a code on finish.
  */
-bool
-settings_reset_to_factory (bool confirm, GtkWindow * window, bool exit_on_finish);
+void
+settings_reset_to_factory (bool confirm, bool exit_on_finish);
 
 /**
  * Prints the current settings.

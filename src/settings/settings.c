@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -233,66 +233,29 @@ print_or_reset (int print_only, int pretty_print, int exit_on_finish)
   return 0;
 }
 
-/**
- * Resets settings to defaults.
- *
- * @param window Window to set transient to if
- *   confirming, otherwise console confirmation will
- *   be used.
- * @param exit_on_finish Exit with a code on
- *   finish.
- *
- * @return Whether successfully reset.
- */
-bool
-settings_reset_to_factory (bool confirm, GtkWindow * window, bool exit_on_finish)
+void
+settings_reset_to_factory (bool confirm, bool exit_on_finish)
 {
   if (confirm)
     {
-      if (window)
+      printf (
+        "%s ",
+        _ ("This will reset Zrythm to factory settings. You will lose all "
+           "your preferences. Type 'y' to continue:"));
+      char c = getchar ();
+      if (c != 'y')
         {
-          GtkDialog * dialog = GTK_DIALOG (gtk_message_dialog_new_with_markup (
-            window, GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,
-            GTK_MESSAGE_WARNING, GTK_BUTTONS_OK_CANCEL, NULL));
-          gtk_message_dialog_set_markup (
-            GTK_MESSAGE_DIALOG (dialog),
-            _ ("This will reset Zrythm to "
-               "factory settings. <b>You will lose "
-               "all your preferences</b>. "
-               "Continue?"));
-          gtk_window_set_title (
-            GTK_WINDOW (dialog), _ ("Reset to Factory Settings"));
+          printf (_ ("Aborting...\n"));
+          if (exit_on_finish)
+            exit (0);
 
-          int response = z_gtk_dialog_run (dialog, true);
-
-          if (response != GTK_RESPONSE_OK)
-            return false;
-        }
-      else
-        {
-          printf (
-            "%s ",
-            _ ("This will reset Zrythm to factory "
-               "settings. You will lose all your "
-               "preferences. "
-               "Type 'y' to continue:"));
-          char c = getchar ();
-          if (c != 'y')
-            {
-              printf (_ ("Aborting...\n"));
-              if (exit_on_finish)
-                exit (0);
-
-              return false;
-            }
+          return;
         }
     }
 
   print_or_reset (0, 0, exit_on_finish);
 
   printf (_ ("Reset to factory settings successful\n"));
-
-  return true;
 }
 
 /**

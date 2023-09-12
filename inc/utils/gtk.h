@@ -178,15 +178,6 @@ void
 z_gtk_overlay_add_if_not_exists (GtkOverlay * overlay, GtkWidget * widget);
 
 /**
- * Returns the primary or secondary label of the
- * given GtkMessageDialog.
- *
- * @param secondary 0 for primary, 1 for secondary.
- */
-GtkLabel *
-z_gtk_message_dialog_get_label (GtkMessageDialog * self, const int secondary);
-
-/**
  * Configures a simple value-text combo box using
  * the given model.
  */
@@ -510,15 +501,6 @@ void
 z_gtk_notebook_make_detachable (
   GtkNotebook * notebook,
   GtkWindow *   parent_window);
-
-/**
- * Wraps the message area in a scrolled window.
- */
-void
-z_gtk_message_dialog_wrap_message_area_in_scroll (
-  GtkMessageDialog * dialog,
-  int                min_width,
-  int                min_height);
 
 /**
  * Returns the full text contained in the text

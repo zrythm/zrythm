@@ -142,20 +142,48 @@ font_scale_adjustment_changed (GtkAdjustment * adjustment, void * data)
 }
 
 static void
+reset_to_factory_response_cb (
+  AdwMessageDialog * dialog,
+  char *             response,
+  GtkWindow *        preferences_window)
+{
+  if (string_is_equal (response, "reset"))
+    {
+      settings_reset_to_factory (false, false);
+      gtk_window_destroy (preferences_window);
+
+      ui_show_notification_idle (_ (
+        "All preferences have been successfully reset to initial "
+        "values"));
+    }
+}
+
+static void
 on_reset_to_factory_clicked (GtkButton * btn, gpointer user_data)
 {
   CallbackData * data = (CallbackData *) user_data;
-  bool           successful_reset = settings_reset_to_factory (
-    true, GTK_WINDOW (data->preferences_widget), false);
 
-  if (successful_reset)
-    {
-      gtk_window_destroy (GTK_WINDOW (data->preferences_widget));
+  AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (adw_message_dialog_new (
+    GTK_WINDOW (data->preferences_widget), _ ("Reset Settings?"), NULL));
+  adw_message_dialog_format_body_markup (
+    dialog,
+    _ ("This will reset Zrythm to factory settings. <b>You will lose "
+       "all your preferences</b>."));
+  adw_message_dialog_add_responses (
+    ADW_MESSAGE_DIALOG (dialog), "cancel", _ ("_Cancel"), "reset", _ ("_Reset"),
+    NULL);
 
-      ui_show_notification_idle (_ (
-        "All preferences have been successfully "
-        "reset to initial values"));
-    }
+  adw_message_dialog_set_response_appearance (
+    ADW_MESSAGE_DIALOG (dialog), "reset", ADW_RESPONSE_DESTRUCTIVE);
+  adw_message_dialog_set_default_response (
+    ADW_MESSAGE_DIALOG (dialog), "cancel");
+  adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "cancel");
+
+  g_signal_connect (
+    dialog, "response", G_CALLBACK (reset_to_factory_response_cb),
+    data->preferences_widget);
+
+  gtk_window_present (GTK_WINDOW (dialog));
 }
 
 static void

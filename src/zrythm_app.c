@@ -1408,7 +1408,7 @@ gen_project (ZrythmApp * self, const char * filepath)
 static bool
 reset_to_factory (void)
 {
-  settings_reset_to_factory (true, NULL, true);
+  settings_reset_to_factory (true, true);
 
   exit (EXIT_SUCCESS);
 }

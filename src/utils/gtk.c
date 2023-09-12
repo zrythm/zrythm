@@ -232,38 +232,6 @@ z_gtk_widget_remove_all_children (GtkWidget * widget)
   z_gtk_widget_remove_children_of_type (widget, GTK_TYPE_WIDGET);
 }
 
-/**
- * Returns the primary or secondary label of the
- * given GtkMessageDialog.
- *
- * @param 0 for primary, 1 for secondary.
- */
-GtkLabel *
-z_gtk_message_dialog_get_label (GtkMessageDialog * self, const int secondary)
-{
-  GtkWidget * box = gtk_message_dialog_get_message_area (self);
-
-  GtkLabel * label = NULL;
-  for (
-    GtkWidget * child = gtk_widget_get_first_child (box); child != NULL;
-    child = gtk_widget_get_next_sibling (child))
-    {
-      label = GTK_LABEL (child);
-      const char * name =
-        gtk_widget_class_get_css_name (GTK_WIDGET_GET_CLASS (label));
-      if (string_is_equal (name, "label") && !secondary)
-        {
-          break;
-        }
-      else if (string_is_equal (name, "secondary_label") && secondary)
-        {
-          break;
-        }
-    }
-
-  return label;
-}
-
 void
 z_gtk_overlay_add_if_not_exists (GtkOverlay * overlay, GtkWidget * widget)
 {
@@ -1338,29 +1306,6 @@ z_gtk_notebook_make_detachable (GtkNotebook * notebook, GtkWindow * parent_windo
     G_CALLBACK (on_detachable_notebook_destroyed), data);
 
   detach_pages_programmatically (notebook, data);
-}
-
-/**
- * Wraps the message area in a scrolled window.
- */
-void
-z_gtk_message_dialog_wrap_message_area_in_scroll (
-  GtkMessageDialog * dialog,
-  int                min_width,
-  int                min_height)
-{
-  GtkBox * box =
-    GTK_BOX (gtk_message_dialog_get_message_area (GTK_MESSAGE_DIALOG (dialog)));
-  GtkWidget * secondary_area = z_gtk_widget_get_nth_child (GTK_WIDGET (box), 1);
-  gtk_box_remove (GTK_BOX (box), secondary_area);
-  GtkWidget * scrolled_window = gtk_scrolled_window_new ();
-  gtk_scrolled_window_set_min_content_width (
-    GTK_SCROLLED_WINDOW (scrolled_window), min_width);
-  gtk_scrolled_window_set_min_content_height (
-    GTK_SCROLLED_WINDOW (scrolled_window), min_height);
-  gtk_scrolled_window_set_child (
-    GTK_SCROLLED_WINDOW (scrolled_window), secondary_area);
-  gtk_box_append (GTK_BOX (box), scrolled_window);
 }
 
 /**
