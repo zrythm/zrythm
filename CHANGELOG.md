@@ -6,6 +6,10 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.13.6] - 2023-09-12
+### Changed
+- Port some more deprecated GTK widgets to new ones
+
 ## [1.0.0-beta.4.13.1] - 2023-09-10
 ### Added
 - Add focus ring on all focusable widgets
