@@ -1009,16 +1009,15 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
 }
 
 /**
- * @param filename The filename to open. This will
- *   be the template in the case of template, or
- *   the actual project otherwise.
- * @param is_template Load the project as a
- *   template and create a new project from it.
+ * @param filename The filename to open. This will be the template in the case
+ * of template, or the actual project otherwise.
+ * @param is_template Load the project as a template and create a new project
+ * from it.
  *
  * @return Whether successful.
  */
 static bool
-load (const char * filename, const int is_template, GError ** error)
+load_from_file (const char * filename, const int is_template, GError ** error)
 {
   g_return_val_if_fail (filename, -1);
   char * dir = io_get_dir (filename);
@@ -1431,7 +1430,7 @@ project_load (const char * filename, const bool is_template, GError ** error)
   if (filename)
     {
       GError * err = NULL;
-      bool     success = load (filename, is_template, &err);
+      bool     success = load_from_file (filename, is_template, &err);
       if (!success)
         {
           ui_show_message_literal (

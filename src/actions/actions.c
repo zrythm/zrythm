@@ -336,16 +336,17 @@ activate_scripting_interface (
   gtk_window_set_transient_for (GTK_WINDOW (widget), GTK_WINDOW (MAIN_WINDOW));
   gtk_window_present (GTK_WINDOW (widget));
 #else
-  GtkWidget * dialog = gtk_message_dialog_new_with_markup (
-    GTK_WINDOW (MAIN_WINDOW), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-    GTK_MESSAGE_INFO, GTK_BUTTONS_OK,
+  AdwMessageDialog * dialog =
+    dialogs_get_basic_ok_message_dialog (GTK_WINDOW (MAIN_WINDOW));
+  adw_message_dialog_format_heading (dialog, "%s", _ ("Guile Disabled"));
+  adw_message_dialog_format_body_markup (
+    dialog,
     _ ("Scripting extensibility with "
        "<a href=\"%s\">GNU Guile</a> "
        "is not enabled in your %s "
        "installation."),
     "https://www.gnu.org/software/guile", PROGRAM_NAME);
-  gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (MAIN_WINDOW));
-  z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+  gtk_window_present (GTK_WINDOW (dialog));
 #endif
 }
 
@@ -1717,35 +1718,24 @@ DEFINE_SIMPLE (activate_record_play)
 
 static void
 on_delete_tracks_response (
-  GtkDialog * dialog,
-  gint        response_id,
-  gpointer    user_data)
+  AdwMessageDialog * dialog,
+  char *             response,
+  gpointer           user_data)
 {
-  switch (response_id)
+  if (string_is_equal (response, "delete"))
     {
-    case GTK_RESPONSE_YES:
-      {
-        GError * err = NULL;
-        bool     ret = tracklist_selections_action_perform_delete (
-          TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, &err);
-        if (ret)
-          {
-            undo_manager_clear_stacks (UNDO_MANAGER, F_FREE);
-            EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE, NULL);
-          }
-        else
-          {
-            HANDLE_ERROR (err, "%s", _ ("Failed to delete tracks"));
-          }
-      }
-      break;
-    default:
-      break;
-    }
-
-  if (dialog)
-    {
-      gtk_window_destroy (GTK_WINDOW (dialog));
+      GError * err = NULL;
+      bool     ret = tracklist_selections_action_perform_delete (
+        TRACKLIST_SELECTIONS, PORT_CONNECTIONS_MGR, &err);
+      if (ret)
+        {
+          undo_manager_clear_stacks (UNDO_MANAGER, F_FREE);
+          EVENTS_PUSH (ET_UNDO_REDO_ACTION_DONE, NULL);
+        }
+      else
+        {
+          HANDLE_ERROR (err, "%s", _ ("Failed to delete tracks"));
+        }
     }
 }
 
@@ -1761,19 +1751,22 @@ activate_delete_selected_tracks (
 
   if (tracklist_selections_contains_uninstantiated_plugin (TRACKLIST_SELECTIONS))
     {
-      GtkWidget * dialog = gtk_message_dialog_new (
-        GTK_WINDOW (MAIN_WINDOW),
-        GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING,
-        GTK_BUTTONS_YES_NO, "%s",
-        _ ("The selected tracks contain "
-           "uninstantiated plugins. Deleting them "
-           "will not be undoable and the undo "
-           "history will be cleared. Continue "
-           "with deletion?"));
-
+      GtkWidget * dialog = adw_message_dialog_new (
+        GTK_WINDOW (MAIN_WINDOW), _ ("Delete Tracks?"),
+        _ ("The selected tracks contain uninstantiated plugins. Deleting them "
+           "will not be undoable and the undo history will be cleared. "
+           "Continue with deletion?"));
+      adw_message_dialog_add_responses (
+        ADW_MESSAGE_DIALOG (dialog), "cancel", _ ("_Cancel"), "delete",
+        _ ("_Delete"), NULL);
+      adw_message_dialog_set_response_appearance (
+        ADW_MESSAGE_DIALOG (dialog), "delete", ADW_RESPONSE_DESTRUCTIVE);
+      adw_message_dialog_set_default_response (
+        ADW_MESSAGE_DIALOG (dialog), "cancel");
+      adw_message_dialog_set_close_response (
+        ADW_MESSAGE_DIALOG (dialog), "cancel");
       g_signal_connect (
         dialog, "response", G_CALLBACK (on_delete_tracks_response), NULL);
-
       gtk_window_present (GTK_WINDOW (dialog));
       return;
     }
@@ -3269,6 +3262,19 @@ DEFINE_SIMPLE (activate_add_chord_preset_pack)
   gtk_window_present (GTK_WINDOW (dialog));
 }
 
+static void
+on_delete_preset_chord_pack_response (
+  AdwMessageDialog * dialog,
+  char *             response,
+  ChordPresetPack *  pack)
+{
+  if (string_is_equal (response, "delete"))
+    {
+      chord_preset_pack_manager_delete_pack (
+        CHORD_PRESET_PACK_MANAGER, pack, true);
+    }
+}
+
 DEFINE_SIMPLE (activate_delete_chord_preset_pack)
 {
   gsize             size;
@@ -3277,17 +3283,20 @@ DEFINE_SIMPLE (activate_delete_chord_preset_pack)
   sscanf (str, "%p", &pack);
   g_return_if_fail (pack);
 
-  GtkWidget * dialog = gtk_message_dialog_new (
-    GTK_WINDOW (MAIN_WINDOW), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-    GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
-    _ ("Are you sure you want to remove this "
-       "chord preset pack?"));
-  int result = z_gtk_dialog_run (GTK_DIALOG (dialog), true);
-  if (result == GTK_RESPONSE_YES)
-    {
-      chord_preset_pack_manager_delete_pack (
-        CHORD_PRESET_PACK_MANAGER, pack, true);
-    }
+  GtkWidget * dialog = adw_message_dialog_new (
+    GTK_WINDOW (MAIN_WINDOW), _ ("Delete?"),
+    _ ("Are you sure you want to delete this chord preset pack?"));
+  adw_message_dialog_add_responses (
+    ADW_MESSAGE_DIALOG (dialog), "cancel", _ ("_Cancel"), "delete",
+    _ ("_Delete"), NULL);
+  adw_message_dialog_set_response_appearance (
+    ADW_MESSAGE_DIALOG (dialog), "delete", ADW_RESPONSE_DESTRUCTIVE);
+  adw_message_dialog_set_default_response (
+    ADW_MESSAGE_DIALOG (dialog), "cancel");
+  adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "cancel");
+  g_signal_connect (
+    dialog, "response", G_CALLBACK (on_delete_preset_chord_pack_response), pack);
+  gtk_window_present (GTK_WINDOW (dialog));
 }
 
 DEFINE_SIMPLE (activate_rename_chord_preset_pack)
@@ -3305,6 +3314,19 @@ DEFINE_SIMPLE (activate_rename_chord_preset_pack)
   gtk_window_present (GTK_WINDOW (dialog));
 }
 
+static void
+on_delete_chord_preset_response (
+  AdwMessageDialog * dialog,
+  char *             response,
+  ChordPreset *      pset)
+{
+  if (string_is_equal (response, "delete"))
+    {
+      chord_preset_pack_manager_delete_preset (
+        CHORD_PRESET_PACK_MANAGER, pset, true);
+    }
+}
+
 DEFINE_SIMPLE (activate_delete_chord_preset)
 {
   gsize         size;
@@ -3313,17 +3335,20 @@ DEFINE_SIMPLE (activate_delete_chord_preset)
   sscanf (str, "%p", &pset);
   g_return_if_fail (pset);
 
-  GtkWidget * dialog = gtk_message_dialog_new (
-    GTK_WINDOW (MAIN_WINDOW), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-    GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
-    _ ("Are you sure you want to remove this "
-       "chord preset pack?"));
-  int result = z_gtk_dialog_run (GTK_DIALOG (dialog), true);
-  if (result == GTK_RESPONSE_YES)
-    {
-      chord_preset_pack_manager_delete_preset (
-        CHORD_PRESET_PACK_MANAGER, pset, true);
-    }
+  GtkWidget * dialog = adw_message_dialog_new (
+    GTK_WINDOW (MAIN_WINDOW), _ ("Delete?"),
+    _ ("Are you sure you want to delete this chord preset?"));
+  adw_message_dialog_add_responses (
+    ADW_MESSAGE_DIALOG (dialog), "cancel", _ ("_Cancel"), "delete",
+    _ ("_Delete"), NULL);
+  adw_message_dialog_set_response_appearance (
+    ADW_MESSAGE_DIALOG (dialog), "delete", ADW_RESPONSE_DESTRUCTIVE);
+  adw_message_dialog_set_default_response (
+    ADW_MESSAGE_DIALOG (dialog), "cancel");
+  adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "cancel");
+  g_signal_connect (
+    dialog, "response", G_CALLBACK (on_delete_chord_preset_response), pset);
+  gtk_window_present (GTK_WINDOW (dialog));
 }
 
 DEFINE_SIMPLE (activate_rename_chord_preset)
@@ -3395,24 +3420,13 @@ delete_plugins (bool clear_stacks)
 
 static void
 on_delete_plugins_response (
-  GtkDialog * dialog,
-  gint        response_id,
-  gpointer    user_data)
+  AdwMessageDialog * dialog,
+  char *             response,
+  gpointer           user_data)
 {
-  switch (response_id)
+  if (string_is_equal (response, "delete"))
     {
-    case GTK_RESPONSE_YES:
-      {
-        delete_plugins (true);
-      }
-      break;
-    default:
-      break;
-    }
-
-  if (dialog)
-    {
-      gtk_window_destroy (GTK_WINDOW (dialog));
+      delete_plugins (true);
     }
 }
 
@@ -3421,19 +3435,21 @@ DEFINE_SIMPLE (activate_mixer_selections_delete)
 
   if (mixer_selections_contains_uninstantiated_plugin (MIXER_SELECTIONS))
     {
-      GtkWidget * dialog = gtk_message_dialog_new (
-        GTK_WINDOW (MAIN_WINDOW),
-        GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL, GTK_MESSAGE_WARNING,
-        GTK_BUTTONS_YES_NO, "%s",
-        _ ("The selection contains "
-           "uninstantiated plugins. Deleting them "
-           "will not be undoable and the undo "
-           "history will be cleared. Continue "
-           "with deletion?"));
-
+      GtkWidget * dialog = adw_message_dialog_new (
+        GTK_WINDOW (MAIN_WINDOW), _ ("Delete Plugins?"),
+        _ ("The selection contains uninstantiated plugins. Deleting them "
+           "will not be undoable and the undo history will be cleared."));
+      adw_message_dialog_add_responses (
+        ADW_MESSAGE_DIALOG (dialog), "cancel", _ ("_Cancel"), "delete",
+        _ ("_Delete"), NULL);
+      adw_message_dialog_set_response_appearance (
+        ADW_MESSAGE_DIALOG (dialog), "delete", ADW_RESPONSE_DESTRUCTIVE);
+      adw_message_dialog_set_default_response (
+        ADW_MESSAGE_DIALOG (dialog), "cancel");
+      adw_message_dialog_set_close_response (
+        ADW_MESSAGE_DIALOG (dialog), "cancel");
       g_signal_connect (
         dialog, "response", G_CALLBACK (on_delete_plugins_response), NULL);
-
       gtk_window_present (GTK_WINDOW (dialog));
       return;
     }
@@ -3516,6 +3532,20 @@ DEFINE_SIMPLE (activate_panel_file_browser_add_bookmark)
   EVENTS_PUSH (ET_FILE_BROWSER_BOOKMARK_ADDED, NULL);
 }
 
+static void
+on_bookmark_delete_response (
+  AdwMessageDialog * dialog,
+  char *             response,
+  const char *       path)
+{
+  if (string_is_equal (response, "delete"))
+    {
+      file_manager_remove_location_and_save (FILE_MANAGER, path, true);
+
+      EVENTS_PUSH (ET_FILE_BROWSER_BOOKMARK_DELETED, NULL);
+    }
+}
+
 DEFINE_SIMPLE (activate_panel_file_browser_delete_bookmark)
 {
   g_return_if_fail (MW_PANEL_FILE_BROWSER->cur_loc);
@@ -3526,20 +3556,21 @@ DEFINE_SIMPLE (activate_panel_file_browser_delete_bookmark)
       return;
     }
 
-  GtkWidget * dialog = gtk_message_dialog_new (
-    GTK_WINDOW (MAIN_WINDOW), GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-    GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s",
-    _ ("Are you sure you want to remove this "
-       "bookmark?"));
-  int result = z_gtk_dialog_run (GTK_DIALOG (dialog), true);
-
-  if (result == GTK_RESPONSE_YES)
-    {
-      file_manager_remove_location_and_save (
-        FILE_MANAGER, MW_PANEL_FILE_BROWSER->cur_loc->path, true);
-
-      EVENTS_PUSH (ET_FILE_BROWSER_BOOKMARK_DELETED, NULL);
-    }
+  GtkWidget * dialog = adw_message_dialog_new (
+    GTK_WINDOW (MAIN_WINDOW), _ ("Delete?"),
+    _ ("Are you sure you want to delete this bookmark?"));
+  adw_message_dialog_add_responses (
+    ADW_MESSAGE_DIALOG (dialog), "cancel", _ ("_Cancel"), "delete",
+    _ ("_Delete"), NULL);
+  adw_message_dialog_set_response_appearance (
+    ADW_MESSAGE_DIALOG (dialog), "delete", ADW_RESPONSE_DESTRUCTIVE);
+  adw_message_dialog_set_default_response (
+    ADW_MESSAGE_DIALOG (dialog), "cancel");
+  adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "cancel");
+  g_signal_connect (
+    dialog, "response", G_CALLBACK (on_bookmark_delete_response),
+    MW_PANEL_FILE_BROWSER->cur_loc->path);
+  gtk_window_present (GTK_WINDOW (dialog));
 }
 
 /**
@@ -3761,6 +3792,21 @@ DEFINE_SIMPLE (activate_plugin_collection_rename)
   gtk_window_present (GTK_WINDOW (dialog));
 }
 
+static void
+on_delete_plugin_collection_response (
+  AdwMessageDialog * dialog,
+  char *             response,
+  PluginCollection * collection)
+{
+  if (string_is_equal (response, "delete"))
+    {
+      plugin_collections_remove (
+        PLUGIN_MANAGER->collections, collection, F_SERIALIZE);
+
+      EVENTS_PUSH (ET_PLUGIN_COLLECTIONS_CHANGED, NULL);
+    }
+}
+
 DEFINE_SIMPLE (activate_plugin_collection_remove)
 {
   if (MW_PLUGIN_BROWSER->selected_collections->len == 0)
@@ -3774,14 +3820,27 @@ DEFINE_SIMPLE (activate_plugin_collection_remove)
   int result = GTK_RESPONSE_YES;
   if (collection->num_descriptors > 0)
     {
-      GtkWidget * dialog = gtk_message_dialog_new (
-        GTK_WINDOW (MAIN_WINDOW),
-        GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION,
-        GTK_BUTTONS_YES_NO,
+      GtkWidget * dialog =
+        adw_message_dialog_new (GTK_WINDOW (MAIN_WINDOW), _ ("Delete?"), NULL);
+      adw_message_dialog_format_body_markup (
+        ADW_MESSAGE_DIALOG (dialog),
         _ ("The collection '%s' contains %d plugins. "
            "Are you sure you want to remove it?"),
         collection->name, collection->num_descriptors);
-      result = z_gtk_dialog_run (GTK_DIALOG (dialog), true);
+      adw_message_dialog_add_responses (
+        ADW_MESSAGE_DIALOG (dialog), "cancel", _ ("_Cancel"), "delete",
+        _ ("_Delete"), NULL);
+      adw_message_dialog_set_response_appearance (
+        ADW_MESSAGE_DIALOG (dialog), "delete", ADW_RESPONSE_DESTRUCTIVE);
+      adw_message_dialog_set_default_response (
+        ADW_MESSAGE_DIALOG (dialog), "cancel");
+      adw_message_dialog_set_close_response (
+        ADW_MESSAGE_DIALOG (dialog), "cancel");
+      g_signal_connect (
+        dialog, "response", G_CALLBACK (on_delete_plugin_collection_response),
+        collection);
+      gtk_window_present (GTK_WINDOW (dialog));
+      return;
     }
 
   if (result == GTK_RESPONSE_YES)
