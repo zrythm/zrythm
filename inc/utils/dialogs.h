@@ -12,4 +12,7 @@
 AdwMessageDialog *
 dialogs_get_overwrite_plugin_dialog (GtkWindow * parent);
 
+AdwMessageDialog *
+dialogs_get_basic_ok_message_dialog (GtkWindow * parent);
+
 #endif

@@ -29,3 +29,20 @@ dialogs_get_overwrite_plugin_dialog (GtkWindow * parent)
   adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "cancel");
   return dialog;
 }
+
+AdwMessageDialog *
+dialogs_get_basic_ok_message_dialog (GtkWindow * parent_window)
+{
+  GtkWidget * dialog = adw_message_dialog_new (parent_window, NULL, NULL);
+  adw_message_dialog_add_responses (
+    ADW_MESSAGE_DIALOG (dialog), "ok", _ ("_OK"), NULL);
+  adw_message_dialog_set_default_response (ADW_MESSAGE_DIALOG (dialog), "ok");
+  adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "ok");
+  gtk_window_set_icon_name (GTK_WINDOW (dialog), "zrythm");
+  if (parent_window)
+    {
+      gtk_window_set_transient_for (GTK_WINDOW (dialog), parent_window);
+      gtk_window_set_modal (GTK_WINDOW (dialog), true);
+    }
+  return ADW_MESSAGE_DIALOG (dialog);
+}

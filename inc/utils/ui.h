@@ -456,8 +456,10 @@ ui_on_motion_set_status_bar_text_cb (
   char *      text);
 
 /**
- * Shows a popup message of the given type with the
- * given message.
+ * Shows a popup message of the given type with the given message.
+ *
+ * @note Only works for non-markup. use AdwMessageDialog directly to show
+ * Pango markup.
  */
 void
 ui_show_message_full (

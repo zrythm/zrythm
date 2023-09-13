@@ -174,8 +174,6 @@ ui_show_message_full (
           gtk_window_set_modal (GTK_WINDOW (dialog), true);
         }
       gtk_window_present (GTK_WINDOW (dialog));
-      g_signal_connect (
-        dialog, "response", G_CALLBACK (gtk_window_destroy), NULL);
     }
 
   free (buf);

@@ -68,6 +68,7 @@
 #include "utils/arrays.h"
 #include "utils/backtrace.h"
 #include "utils/cairo.h"
+#include "utils/dialogs.h"
 #include "utils/env.h"
 #include "utils/error.h"
 #include "utils/flags.h"
@@ -217,9 +218,12 @@ check_for_updates_latest_release_ver_ready (
     is_latest_release
     && !settings_strv_contains_str (S_GENERAL, "run-versions", PACKAGE_VERSION))
     {
-      ui_show_message_printf (
-        _ ("Changelog"), _ ("Running %s version <b>%s</b>%s%s"), PROGRAM_NAME,
+      AdwMessageDialog * dialog = dialogs_get_basic_ok_message_dialog (NULL);
+      adw_message_dialog_format_heading (dialog, "%s", _ ("Changelog"));
+      adw_message_dialog_format_body_markup (
+        dialog, _ ("Running %s version <b>%s</b>%s%s"), PROGRAM_NAME,
         PACKAGE_VERSION, "\n\n", CHANGELOG_TXT);
+      gtk_window_present (GTK_WINDOW (dialog));
       settings_append_to_strv (S_GENERAL, "run-versions", PACKAGE_VERSION, true);
     }
 #endif /* HAVE_CHANGELOG */
