@@ -21,6 +21,8 @@
 
 #include <glib/gi18n.h>
 
+#include "project/project_init_flow_manager.h"
+
 #define FILE_NOT_FOUND_STR _ ("<File not found>")
 
 G_DEFINE_TYPE (ProjectAssistantWidget, project_assistant_widget, ADW_TYPE_WINDOW)
@@ -203,6 +205,17 @@ refresh_templates (ProjectAssistantWidget * self)
 }
 
 static void
+project_ready_while_zrythm_running_cb (bool success, GError * error, gpointer data)
+{
+  if (!success)
+    {
+      /* just show the error and let the program continue - this was called
+       * while another project is already running */
+      HANDLE_ERROR_LITERAL (error, _ ("Project loading failed"));
+    }
+}
+
+static void
 post_finish (ProjectAssistantWidget * self, bool zrythm_already_running, bool quit)
 {
   if (self)
@@ -219,13 +232,9 @@ post_finish (ProjectAssistantWidget * self, bool zrythm_already_running, bool qu
     {
       if (zrythm_already_running)
         {
-          GError * err = NULL;
-          bool     success = project_load (
-            ZRYTHM->open_filename, ZRYTHM->opening_template, &err);
-          if (!success)
-            {
-              HANDLE_ERROR (err, "%s", _ ("Failed to load project"));
-            }
+          project_init_flow_manager_load_or_create_default_project (
+            ZRYTHM->open_filename, ZRYTHM->opening_template,
+            project_ready_while_zrythm_running_cb, NULL);
         }
       else
         {

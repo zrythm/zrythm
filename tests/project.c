@@ -69,8 +69,7 @@ test_save_load_with_data (void)
   track_clear (P_MASTER_TRACK);
 
   /* reload the project */
-  success = project_load (prj_file, 0, NULL);
-  g_assert_true (success);
+  test_project_reload (prj_file);
 
   /* stop the engine */
   engine_resume (PROJECT->audio_engine, &state);
@@ -154,8 +153,8 @@ test_new_from_template (void)
   g_free_and_null (ZRYTHM->create_project_path);
   ZRYTHM->create_project_path =
     g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
-  success = project_load (filepath, true, NULL);
-  g_assert_true (success);
+  project_init_flow_manager_load_or_create_default_project (
+    filepath, true, _test_helper_project_init_done_cb, NULL);
   io_rmdir (orig_dir, true);
   g_free_and_null (orig_dir);
   g_free_and_null (filepath);
@@ -198,8 +197,7 @@ test_save_as_load_w_pool (void)
 
   /* load the new one */
   char * filepath = g_build_filename (new_dir, "project.zpj", NULL);
-  success = project_load (filepath, 0, NULL);
-  g_assert_true (success);
+  test_project_reload (filepath);
 
   io_rmdir (orig_dir, true);
 
@@ -236,8 +234,7 @@ test_save_backup_w_pool_and_plugins (void)
 
   /* load the backup directly */
   char * filepath = g_build_filename (backup_dir, PROJECT_FILE, NULL);
-  success = project_load (filepath, false, NULL);
-  g_assert_true (success);
+  test_project_reload (filepath);
   g_free (filepath);
 
   /* undo history not saved with backups anymore */
@@ -254,8 +251,7 @@ test_save_backup_w_pool_and_plugins (void)
    * behavior from UI) */
   ZRYTHM->open_newer_backup = true;
   filepath = g_build_filename (dir, "project.zpj", NULL);
-  success = project_load (filepath, false, NULL);
-  g_assert_true (success);
+  test_project_reload (filepath);
 
   g_free (filepath);
   g_free (backup_dir);
@@ -310,16 +306,14 @@ test_load_with_plugin_after_backup (void)
   /* attempt to open the normal project (not backup) */
   ZRYTHM->open_newer_backup = false;
   char * filepath = g_build_filename (dir, "project.zpj", NULL);
-  success = project_load (filepath, false, NULL);
-  g_assert_true (success);
+  test_project_reload (filepath);
 
   /* free the project */
   object_free_w_func_and_null (project_free, PROJECT);
 
   /* load the backup directly */
   filepath = g_build_filename (backup_dir, PROJECT_FILE, NULL);
-  success = project_load (filepath, false, NULL);
-  g_assert_true (success);
+  test_project_reload (filepath);
   g_free (filepath);
 
   g_free (backup_dir);

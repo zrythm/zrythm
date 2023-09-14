@@ -91,6 +91,7 @@
 
 #include "Wrapper.h"
 #include "ext/whereami/whereami.h"
+#include "project/project_init_flow_manager.h"
 #include <fftw3.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gtksourceview/gtksource.h>
@@ -358,6 +359,40 @@ on_setup_main_window (GSimpleAction * action, GVariant * parameter, gpointer dat
   g_message ("done");
 }
 
+static void
+no_project_selected_exit_response_cb (
+  AdwMessageDialog * dialog,
+  char *             response,
+  gpointer           data)
+{
+  exit (EXIT_SUCCESS);
+}
+
+static void
+project_load_or_create_ready_cb (bool success, GError * error, void * user_data)
+{
+  if (!success)
+    {
+      /* FIXME never called */
+      g_message ("no project selected. exiting...");
+      AdwMessageDialog * dialog = dialogs_get_basic_ok_message_dialog (NULL);
+      adw_message_dialog_format_heading (
+        dialog, "%s", _ ("No Project Selected"));
+      adw_message_dialog_format_body_markup (
+        dialog,
+        _ ("No project has been selected or project failed to load. "
+           "%s will now close."),
+        PROGRAM_NAME);
+      g_signal_connect (
+        G_OBJECT (dialog), "response",
+        G_CALLBACK (no_project_selected_exit_response_cb), NULL);
+      return;
+    }
+
+  g_action_group_activate_action (
+    G_ACTION_GROUP (zrythm_app), "setup_main_window", NULL);
+}
+
 /**
  * Called after the main window has been
  * initialized.
@@ -375,22 +410,9 @@ on_load_project (GSimpleAction * action, GVariant * parameter, gpointer user_dat
     "on_load_project called | open filename '%s' "
     "| opening template %d",
     ZRYTHM->open_filename, ZRYTHM->opening_template);
-  GError * err = NULL;
-  bool     success =
-    project_load (ZRYTHM->open_filename, ZRYTHM->opening_template, &err);
-
-  if (!success)
-    {
-      ui_show_error_message_printf (
-        NULL,
-        _ ("No project has been selected or project failed "
-           "to load. %s will now close."),
-        PROGRAM_NAME);
-      exit (EXIT_SUCCESS);
-    }
-
-  g_action_group_activate_action (
-    G_ACTION_GROUP (zrythm_app), "setup_main_window", NULL);
+  project_init_flow_manager_load_or_create_default_project (
+    ZRYTHM->open_filename, ZRYTHM->opening_template,
+    project_load_or_create_ready_cb, NULL);
 }
 
 static void *

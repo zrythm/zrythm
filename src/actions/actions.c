@@ -84,6 +84,8 @@
 #include "gui/widgets/preferences.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
+
+#include "project/project_init_flow_manager.h"
 #ifdef HAVE_GUILE
 #  include "gui/widgets/dialogs/scripting_dialog.h"
 #endif
@@ -679,23 +681,63 @@ DEFINE_SIMPLE (activate_loop_selection)
     }
 }
 
+static void
+proceed_to_new_response_cb (
+  AdwMessageDialog * dialog,
+  char *             response,
+  gpointer           data)
+{
+  if (string_is_equal (response, "discard"))
+    {
+      project_assistant_widget_present (GTK_WINDOW (MAIN_WINDOW), true, NULL);
+    }
+  else if (string_is_equal (response, "save"))
+    {
+      g_message ("saving project...");
+      GError * err = NULL;
+      bool     successful = project_save (
+        PROJECT, PROJECT->dir, F_NOT_BACKUP, ZRYTHM_F_NO_NOTIFY, F_NO_ASYNC,
+        &err);
+      if (!successful)
+        {
+          HANDLE_ERROR (err, "%s", _ ("Failed to save project"));
+          return;
+        }
+      project_assistant_widget_present (GTK_WINDOW (MAIN_WINDOW), true, NULL);
+    }
+  else
+    {
+      /* do nothing */
+    }
+}
+
 void
 activate_new (GSimpleAction * action, GVariant * variant, gpointer user_data)
 {
-  GtkWidget * dialog = gtk_dialog_new_with_buttons (
-    _ ("Create new project"), GTK_WINDOW (MAIN_WINDOW),
-    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, _ ("Yes"),
-    GTK_RESPONSE_ACCEPT, _ ("No"), GTK_RESPONSE_REJECT, NULL);
-  GtkWidget * label = gtk_label_new (_ (
-    "Any unsaved changes to the current "
-    "project will be lost. Continue?"));
-  gtk_widget_set_visible (label, true);
-  GtkWidget * content = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-  gtk_box_append (GTK_BOX (content), label);
-  int res = z_gtk_dialog_run (GTK_DIALOG (dialog), true);
-  if (res == GTK_RESPONSE_ACCEPT)
+  AdwMessageDialog * dialog = ADW_MESSAGE_DIALOG (adw_message_dialog_new (
+    GTK_WINDOW (MAIN_WINDOW), _ ("Discard Changes?"),
+    _ ("Any unsaved changes to the current "
+       "project will be lost. Continue?")));
+  adw_message_dialog_add_responses (
+    dialog, "cancel", _ ("_Cancel"), "discard", _ ("_Discard"), "save",
+    _ ("_Save"), NULL);
+  adw_message_dialog_set_close_response (dialog, "cancel");
+  adw_message_dialog_set_response_appearance (
+    dialog, "discard", ADW_RESPONSE_DESTRUCTIVE);
+  adw_message_dialog_set_response_appearance (
+    dialog, "save", ADW_RESPONSE_SUGGESTED);
+  adw_message_dialog_set_default_response (dialog, "save");
+  g_signal_connect (
+    dialog, "response", G_CALLBACK (proceed_to_new_response_cb), NULL);
+  gtk_window_present (GTK_WINDOW (dialog));
+}
+
+static void
+on_project_load_done (bool success, GError * error, void * user_data)
+{
+  if (!success)
     {
-      project_assistant_widget_present (GTK_WINDOW (MAIN_WINDOW), true, NULL);
+      HANDLE_ERROR_LITERAL (error, _ ("Failed to load project"));
     }
 }
 
@@ -709,12 +751,8 @@ open_project_ready_cb (GObject * source_object, GAsyncResult * res, gpointer dat
       char * filepath = g_file_get_path (selected_file);
       g_object_unref (selected_file);
       g_message ("opening project at: %s", filepath);
-      GError * err = NULL;
-      bool     success = project_load (filepath, Z_F_NOT_TEMPLATE, &err);
-      if (!success)
-        {
-          HANDLE_ERROR_LITERAL (err, _ ("Failed to load project"));
-        }
+      project_init_flow_manager_load_or_create_default_project (
+        filepath, Z_F_NOT_TEMPLATE, on_project_load_done, NULL);
       g_free (filepath);
     }
 }

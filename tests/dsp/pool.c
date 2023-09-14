@@ -75,8 +75,7 @@ test_remove_unused (void)
           /* load the original project */
           char * prj_filepath = g_build_filename (dir, PROJECT_FILE, NULL);
           g_free (dir);
-          success = project_load (prj_filepath, false, &err);
-          g_assert_true (success);
+          test_project_reload (prj_filepath);
           g_free (prj_filepath);
 
           test_helper_zrythm_cleanup ();

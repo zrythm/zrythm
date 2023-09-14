@@ -24,6 +24,7 @@ guile_project_generator_generate_project_from_string (
   const char * script,
   const char * prj_path)
 {
+#if 0
   g_return_val_if_fail (ZRYTHM && prj_path && script, -1);
 
   bool use_tmp_project = false;
@@ -93,6 +94,10 @@ guile_project_generator_generate_project_from_string (
   g_free (tmp_path);
 
   return 0;
+#endif
+
+  g_critical ("unimplemented");
+  return -1;
 }
 
 /**

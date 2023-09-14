@@ -525,8 +525,7 @@ test_move_audio_region_and_lower_samplerate (void)
       object_free_w_func_and_null (project_free, PROJECT);
 
       /* reload */
-      success = project_load (prj_file, 0, &err);
-      g_assert_true (success);
+      test_project_reload (prj_file);
     }
 
   test_helper_zrythm_cleanup ();

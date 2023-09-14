@@ -418,42 +418,11 @@ project_fix_audio_regions (Project * self);
 ArrangerSelections *
 project_get_arranger_selections_for_last_selection (Project * self);
 
-/**
- * Creates a default project.
- *
- * This is only used internally or for generating projects
- * from scripts.
- *
- * @param prj_dir The directory of the project to create,
- *   including its title.
- * @param headless Create the project assuming we are running
- *   without a UI.
- * @param start_engine Whether to also start the engine after
- *   creating the project.
- */
-COLD WARN_UNUSED_RESULT Project *
-project_create_default (
-  Project *    self,
-  const char * prj_dir,
-  bool         headless,
-  bool         with_engine,
-  GError **    error);
+void
+project_init_common (Project * self);
 
 /**
- * If project has a filename set, it loads that.
- * Otherwise it loads the default project.
- *
- * @param is_template Load the project as a
- *   template and create a new project from it.
- *
- * @return Whether successful.
- */
-WARN_UNUSED_RESULT COLD bool
-project_load (const char * filename, const bool is_template, GError ** error);
-
-/**
- * Saves the project to a project file in the
- * given dir.
+ * Saves the project to a project file in the given dir.
  *
  * @param is_backup 1 if this is a backup. Backups
  *   will be saved as <original filename>.bak<num>.
@@ -483,6 +452,9 @@ project_save (
  */
 int
 project_autosave_cb (void * data);
+
+bool
+project_make_project_dirs (Project * self, bool is_backup, GError ** error);
 
 /**
  * Returns the requested project path as a newly

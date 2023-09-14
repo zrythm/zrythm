@@ -102,8 +102,7 @@ test_change_samplerate (void)
   object_free_w_func_and_null (project_free, PROJECT);
 
   /* reload */
-  success = project_load (prj_file, 0, NULL);
-  g_assert_true (success);
+  test_project_reload (prj_file);
 
   /* stop engine to process manually */
   test_project_stop_dummy_engine ();

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -37,6 +37,8 @@
 #include <glib/gi18n.h>
 
 #include "tests/helpers/zrythm.h"
+
+#include "project/project_init_flow_manager.h"
 
 /**
  * @addtogroup tests
@@ -123,9 +125,8 @@ test_project_save (void)
 void
 test_project_reload (const char * prj_file)
 {
-  GError * err = NULL;
-  bool     success = project_load (prj_file, 0, &err);
-  g_assert_true (success);
+  project_init_flow_manager_load_or_create_default_project (
+    prj_file, false, _test_helper_project_init_done_cb, NULL);
 }
 
 void

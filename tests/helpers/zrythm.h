@@ -61,6 +61,8 @@
 
 #include <glib.h>
 #include <glib/gi18n.h>
+
+#include "project/project_init_flow_manager.h"
 #ifdef G_OS_UNIX
 #  include <glib-unix.h>
 #endif
@@ -453,6 +455,12 @@ stop_daemon (Zrythm * self)
 }
 
 static void
+_test_helper_project_init_done_cb (bool success, GError * error, void * user_data)
+{
+  g_assert_true (success);
+}
+
+static void
 _test_helper_zrythm_init (
   bool optimized,
   int  samplerate,
@@ -511,8 +519,8 @@ _test_helper_zrythm_init (
 
   ZRYTHM->create_project_path =
     g_dir_make_tmp ("zrythm_test_project_XXXXXX", NULL);
-  success = project_load (NULL, false, &err);
-  g_assert_true (success);
+  project_init_flow_manager_load_or_create_default_project (
+    NULL, false, _test_helper_project_init_done_cb, NULL);
 
   /* adaptive snap only supported with UI */
   SNAP_GRID_TIMELINE->snap_adaptive = false;
