@@ -37,9 +37,9 @@
 
 #include <stddef.h>
 
-#define MPMC_USE_STD_ATOMIC 1
+#define MPMC_USE_STD_ATOMIC 0
 
-#ifdef MPMC_USE_STD_ATOMIC
+#if MPMC_USE_STD_ATOMIC
 #  include <stdatomic.h>
 #  define MPMC_QUEUE_TYPE atomic_uint
 #else

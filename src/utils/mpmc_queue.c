@@ -83,13 +83,13 @@ mpmc_queue_clear (MPMCQueue * self)
 {
   for (size_t i = 0; i <= self->buffer_mask; ++i)
     {
-#ifdef MPMC_USE_STD_ATOMIC
+#if MPMC_USE_STD_ATOMIC
       atomic_store_explicit (&self->buffer[i].sequence, i, memory_order_relaxed);
 #else
       g_atomic_int_set (&self->buffer[i].sequence, (guint) i);
 #endif
     }
-#ifdef MPMC_USE_STD_ATOMIC
+#if MPMC_USE_STD_ATOMIC
   atomic_store_explicit (&self->enqueue_pos, 0, memory_order_relaxed);
   atomic_store_explicit (&self->dequeue_pos, 0, memory_order_relaxed);
 #else
@@ -102,7 +102,7 @@ int
 mpmc_queue_push_back (MPMCQueue * self, void * const data)
 {
   cell_t * cell;
-#ifdef MPMC_USE_STD_ATOMIC
+#if MPMC_USE_STD_ATOMIC
   unsigned int pos =
     atomic_load_explicit (&self->enqueue_pos, memory_order_relaxed);
 #else
@@ -111,7 +111,7 @@ mpmc_queue_push_back (MPMCQueue * self, void * const data)
   for (;;)
     {
       cell = &self->buffer[(size_t) pos & self->buffer_mask];
-#ifdef MPMC_USE_STD_ATOMIC
+#if MPMC_USE_STD_ATOMIC
       unsigned int seq =
         (guint) atomic_load_explicit (&cell->sequence, memory_order_acquire);
 #else
@@ -120,7 +120,7 @@ mpmc_queue_push_back (MPMCQueue * self, void * const data)
       intptr_t dif = (intptr_t) seq - (intptr_t) pos;
       if (dif == 0)
         {
-#ifdef MPMC_USE_STD_ATOMIC
+#if MPMC_USE_STD_ATOMIC
           if (
             atomic_compare_exchange_weak_explicit (
               &self->enqueue_pos, &pos, pos + 1, memory_order_acquire,
@@ -139,7 +139,7 @@ mpmc_queue_push_back (MPMCQueue * self, void * const data)
         }
       else
         {
-#ifdef MPMC_USE_STD_ATOMIC
+#if MPMC_USE_STD_ATOMIC
           pos = atomic_load_explicit (&self->enqueue_pos, memory_order_relaxed);
 #else
           pos = g_atomic_int_get (&self->enqueue_pos);
@@ -147,7 +147,7 @@ mpmc_queue_push_back (MPMCQueue * self, void * const data)
         }
     }
   cell->data = data;
-#ifdef MPMC_USE_STD_ATOMIC
+#if MPMC_USE_STD_ATOMIC
   atomic_store_explicit (&cell->sequence, pos + 1, memory_order_release);
 #else
   g_atomic_int_set (&cell->sequence, pos + 1);
@@ -160,7 +160,7 @@ int
 mpmc_queue_dequeue (MPMCQueue * self, void ** data)
 {
   cell_t * cell;
-#ifdef MPMC_USE_STD_ATOMIC
+#if MPMC_USE_STD_ATOMIC
   unsigned int pos =
     atomic_load_explicit (&self->dequeue_pos, memory_order_relaxed);
 #else
@@ -169,7 +169,7 @@ mpmc_queue_dequeue (MPMCQueue * self, void ** data)
   for (;;)
     {
       cell = &self->buffer[(size_t) pos & self->buffer_mask];
-#ifdef MPMC_USE_STD_ATOMIC
+#if MPMC_USE_STD_ATOMIC
       unsigned int seq =
         (guint) atomic_load_explicit (&cell->sequence, memory_order_acquire);
 #else
@@ -178,7 +178,7 @@ mpmc_queue_dequeue (MPMCQueue * self, void ** data)
       intptr_t dif = (intptr_t) seq - (intptr_t) (pos + 1);
       if (dif == 0)
         {
-#ifdef MPMC_USE_STD_ATOMIC
+#if MPMC_USE_STD_ATOMIC
           if (
             atomic_compare_exchange_weak_explicit (
               &self->dequeue_pos, &pos, (pos + 1), memory_order_relaxed,
@@ -195,7 +195,7 @@ mpmc_queue_dequeue (MPMCQueue * self, void ** data)
         }
       else
         {
-#ifdef MPMC_USE_STD_ATOMIC
+#if MPMC_USE_STD_ATOMIC
           pos = atomic_load_explicit (&self->dequeue_pos, memory_order_relaxed);
 #else
           pos = g_atomic_int_get (&self->dequeue_pos);
@@ -203,7 +203,7 @@ mpmc_queue_dequeue (MPMCQueue * self, void ** data)
         }
     }
   *data = cell->data;
-#ifdef MPMC_USE_STD_ATOMIC
+#if MPMC_USE_STD_ATOMIC
   atomic_store_explicit (
     &cell->sequence, pos + self->buffer_mask + 1, memory_order_release);
 #else
