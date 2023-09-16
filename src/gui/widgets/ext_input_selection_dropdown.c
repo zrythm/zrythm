@@ -159,6 +159,19 @@ on_header_bind (
     }
 }
 
+static void
+on_bind (
+  GtkSignalListItemFactory * factory,
+  GObject *                  list_item,
+  gpointer                   user_data)
+{
+  GtkListItem * self = GTK_LIST_ITEM (list_item);
+  GtkWidget *   child = gtk_list_item_get_child (self);
+  GObject *     item = gtk_list_item_get_item (self);
+
+  gtk_label_set_markup (GTK_LABEL (child), get_str (item));
+}
+
 void
 ext_input_selection_dropdown_widget_refresh (
   GtkDropDown * dropdown,
@@ -236,6 +249,25 @@ ext_input_selection_dropdown_widget_refresh (
   g_signal_connect (header_factory, "bind", G_CALLBACK (on_header_bind), NULL);
   gtk_drop_down_set_header_factory (dropdown, header_factory);
   g_object_unref (header_factory);
+
+  /* --- set normal factory --- */
+
+  GtkListItemFactory * factory = gtk_signal_list_item_factory_new ();
+  g_signal_connect (
+    factory, "setup",
+    G_CALLBACK (z_gtk_drop_down_factory_setup_common_ellipsized), NULL);
+  g_signal_connect (factory, "bind", G_CALLBACK (on_bind), NULL);
+  gtk_drop_down_set_factory (dropdown, factory);
+  g_object_unref (factory);
+
+  /* --- set list factory --- */
+
+  factory = gtk_signal_list_item_factory_new ();
+  g_signal_connect (
+    factory, "setup", G_CALLBACK (z_gtk_drop_down_factory_setup_common), NULL);
+  g_signal_connect (factory, "bind", G_CALLBACK (on_bind), NULL);
+  gtk_drop_down_set_list_factory (dropdown, factory);
+  g_object_unref (factory);
 
   /* --- preselect the current value --- */
 

@@ -636,80 +636,6 @@ z_gtk_create_menu_item_full (
 }
 
 /**
- * Returns a pointer stored at the given selection.
- */
-void *
-z_gtk_get_single_selection_pointer (GtkTreeView * tv, int column)
-{
-  g_return_val_if_fail (GTK_IS_TREE_VIEW (tv), NULL);
-  GtkTreeSelection * ts = gtk_tree_view_get_selection (tv);
-  g_return_val_if_fail (GTK_IS_TREE_SELECTION (ts), NULL);
-  GtkTreeModel * model = gtk_tree_view_get_model (tv);
-  g_return_val_if_fail (GTK_IS_TREE_MODEL (model), NULL);
-  GList *       selected_rows = gtk_tree_selection_get_selected_rows (ts, NULL);
-  GtkTreePath * tp = (GtkTreePath *) g_list_first (selected_rows)->data;
-  g_return_val_if_fail (tp, NULL);
-  GtkTreeIter iter;
-  gtk_tree_model_get_iter (model, &iter, tp);
-  GValue value = G_VALUE_INIT;
-  gtk_tree_model_get_value (model, &iter, column, &value);
-  return g_value_get_pointer (&value);
-}
-
-#if 0
-/**
- * Returns the label from a given GtkMenuItem.
- *
- * The menu item must have a box with an optional
- * icon and a label inside.
- */
-GtkLabel *
-z_gtk_get_label_from_menu_item (
-  GtkMenuItem * mi)
-{
-  GList *children, *iter;
-
-  /* get box */
-  GtkWidget * box = NULL;
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (mi));
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
-    {
-      if (GTK_IS_BOX (iter->data))
-        {
-          box = iter->data;
-          g_list_free (children);
-          break;
-        }
-    }
-  g_warn_if_fail (box);
-
-  children =
-    gtk_container_get_children (
-      GTK_CONTAINER (box));
-  for (iter = children;
-       iter != NULL;
-       iter = g_list_next (iter))
-    {
-      if (GTK_IS_LABEL (iter->data))
-        {
-          GtkLabel * label = GTK_LABEL (iter->data);
-          g_list_free (children);
-          return label;
-        }
-    }
-
-  g_warn_if_reached ();
-  g_list_free (children);
-
-  return NULL;
-}
-#endif
-
-/**
  * Gets the tooltip for the given action on the
  * given widget.
  *
@@ -816,27 +742,6 @@ z_gtk_tool_button_set_icon_size (
   g_free (icon_name);
 }
 #endif
-
-/**
- * Sets the ellipsize mode of each text cell
- * renderer in the combo box.
- */
-void
-z_gtk_combo_box_set_ellipsize_mode (
-  GtkComboBox *      self,
-  PangoEllipsizeMode ellipsize)
-{
-  GList *children, *iter;
-  children = gtk_cell_layout_get_cells (GTK_CELL_LAYOUT (self));
-  for (iter = children; iter != NULL; iter = g_list_next (iter))
-    {
-      if (!GTK_IS_CELL_RENDERER_TEXT (iter->data))
-        continue;
-
-      g_object_set (iter->data, "ellipsize", ellipsize, NULL);
-    }
-  g_list_free (children);
-}
 
 /**
  * Returns the nth child of a container.
@@ -1416,26 +1321,6 @@ z_gtk_actionable_set_action_from_setting (
   gtk_actionable_set_action_name (actionable, action_name);
   g_free (group_prefix);
   g_free (action_name);
-}
-
-/**
- * Returns column number or -1 if not found or on
- * error.
- */
-int
-z_gtk_tree_view_column_get_column_id (GtkTreeViewColumn * col)
-{
-  GtkTreeView * tree_view =
-    GTK_TREE_VIEW (gtk_tree_view_column_get_tree_view (col));
-  g_return_val_if_fail (tree_view != NULL, -1);
-
-  GList * cols = gtk_tree_view_get_columns (tree_view);
-
-  int num = g_list_index (cols, (gpointer) col);
-
-  g_list_free (cols);
-
-  return num;
 }
 
 bool
@@ -2097,4 +1982,30 @@ z_gtk_drop_down_list_item_header_setup_common (
   gtk_widget_set_margin_start (child, 4);
 
   gtk_list_header_set_child (header, child);
+}
+
+void
+z_gtk_drop_down_factory_setup_common (
+  GtkSignalListItemFactory * factory,
+  GObject *                  list_item,
+  gpointer                   user_data)
+{
+  GtkListItem * item = GTK_LIST_ITEM (list_item);
+  GtkWidget *   child = gtk_label_new ("");
+  gtk_label_set_xalign (GTK_LABEL (child), 0);
+  gtk_label_set_use_markup (GTK_LABEL (child), TRUE);
+
+  gtk_list_item_set_child (item, child);
+}
+
+void
+z_gtk_drop_down_factory_setup_common_ellipsized (
+  GtkSignalListItemFactory * factory,
+  GObject *                  list_item,
+  gpointer                   user_data)
+{
+  z_gtk_drop_down_factory_setup_common (factory, list_item, user_data);
+  GtkListItem * item = GTK_LIST_ITEM (list_item);
+  GtkLabel *    label = GTK_LABEL (gtk_list_item_get_child (item));
+  gtk_label_set_ellipsize (label, PANGO_ELLIPSIZE_END);
 }

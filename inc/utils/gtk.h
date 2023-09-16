@@ -251,24 +251,6 @@ z_gtk_create_menu_item_full (
   const char *  detailed_action);
 
 /**
- * Returns a pointer stored at the given selection.
- */
-void *
-z_gtk_get_single_selection_pointer (GtkTreeView * tv, int column);
-
-#if 0
-/**
- * Returns the label from a given GtkMenuItem.
- *
- * The menu item must have a box with an optional
- * icon and a label inside.
- */
-GtkLabel *
-z_gtk_get_label_from_menu_item (
-  GtkMenuItem * mi);
-#endif
-
-/**
  * Gets the tooltip for the given action on the
  * given widget.
  *
@@ -451,15 +433,6 @@ GtkWidget *
 z_gtk_widget_get_nth_child (GtkWidget * widget, int index);
 
 /**
- * Sets the ellipsize mode of each text cell
- * renderer in the combo box.
- */
-void
-z_gtk_combo_box_set_ellipsize_mode (
-  GtkComboBox *      self,
-  PangoEllipsizeMode ellipsize);
-
-/**
  * Sets the given emblem to the button, or unsets
  * the emblem if \ref emblem_icon is NULL.
  */
@@ -546,13 +519,6 @@ z_gtk_actionable_set_action_from_setting (
   GtkActionable * actionable,
   GSettings *     settings,
   const char *    key);
-
-/**
- * Returns column number or -1 if not found or on
- * error.
- */
-int
-z_gtk_tree_view_column_get_column_id (GtkTreeViewColumn * col);
 
 bool
 z_gtk_is_event_button (GdkEvent * ev);
@@ -716,6 +682,18 @@ z_gtk_window_make_escapable (GtkWindow * self);
  */
 void
 z_gtk_drop_down_list_item_header_setup_common (
+  GtkSignalListItemFactory * factory,
+  GObject *                  list_item,
+  gpointer                   user_data);
+
+void
+z_gtk_drop_down_factory_setup_common (
+  GtkSignalListItemFactory * factory,
+  GObject *                  list_item,
+  gpointer                   user_data);
+
+void
+z_gtk_drop_down_factory_setup_common_ellipsized (
   GtkSignalListItemFactory * factory,
   GObject *                  list_item,
   gpointer                   user_data);
