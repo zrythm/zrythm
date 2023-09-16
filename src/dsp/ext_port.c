@@ -75,6 +75,22 @@ ext_port_get_id (ExtPort * self)
     "%s/%s", ext_port_type_strings[self->type].str, self->full_name);
 }
 
+char *
+ext_port_get_friendly_name (ExtPort * self)
+{
+  char * label;
+  if (self->num_aliases == 2)
+    label = self->alias2;
+  else if (self->num_aliases == 1)
+    label = self->alias1;
+  else if (self->short_name)
+    label = self->short_name;
+  else
+    label = self->full_name;
+
+  return g_strdup (label);
+}
+
 /**
  * Clears the buffer of the external port.
  */
@@ -838,7 +854,6 @@ ext_ports_free (ExtPort ** ext_ports, int size)
 {
   for (int i = 0; i < size; i++)
     {
-      g_warn_if_fail (!ext_ports[i]);
       object_free_w_func_and_null (ext_port_free, ext_ports[i]);
     }
 }

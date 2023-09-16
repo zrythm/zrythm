@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/region.h"
@@ -393,16 +393,6 @@ selection_func (
 #endif
 
 static char *
-get_obj_name (void * data)
-{
-  WrappedObjectWithChangeSignal * wrapped_obj =
-    Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (data);
-  ArrangerObject * obj = (ArrangerObject *) wrapped_obj->obj;
-
-  return arranger_object_gen_human_readable_name (obj);
-}
-
-static char *
 get_obj_type (void * data)
 {
   WrappedObjectWithChangeSignal * wrapped_obj =
@@ -503,7 +493,8 @@ add_timeline_columns (EventViewerWidget * self)
 
   /* column for name */
   expression = gtk_cclosure_expression_new (
-    G_TYPE_STRING, NULL, 0, NULL, G_CALLBACK (get_obj_name), NULL, NULL);
+    G_TYPE_STRING, NULL, 0, NULL,
+    G_CALLBACK (wrapped_object_with_change_signal_get_display_name), NULL, NULL);
   sorter = GTK_SORTER (gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories, ITEM_FACTORY_TEXT, Z_F_EDITABLE,
@@ -589,7 +580,8 @@ append_midi_columns (EventViewerWidget * self)
 
   /* column for note name */
   expression = gtk_cclosure_expression_new (
-    G_TYPE_STRING, NULL, 0, NULL, G_CALLBACK (get_obj_name), NULL, NULL);
+    G_TYPE_STRING, NULL, 0, NULL,
+    G_CALLBACK (wrapped_object_with_change_signal_get_display_name), NULL, NULL);
   sorter = GTK_SORTER (gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories, ITEM_FACTORY_TEXT,
@@ -638,7 +630,8 @@ append_chord_columns (EventViewerWidget * self)
 
   /* column for name */
   expression = gtk_cclosure_expression_new (
-    G_TYPE_STRING, NULL, 0, NULL, G_CALLBACK (get_obj_name), NULL, NULL);
+    G_TYPE_STRING, NULL, 0, NULL,
+    G_CALLBACK (wrapped_object_with_change_signal_get_display_name), NULL, NULL);
   sorter = GTK_SORTER (gtk_string_sorter_new (expression));
   item_factory_generate_and_append_column (
     self->column_view, self->item_factories, ITEM_FACTORY_TEXT,

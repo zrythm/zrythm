@@ -415,7 +415,7 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
     }
 }
 
-static bool
+static void
 project_activate (void)
 {
   g_return_if_fail (PROJECT);
@@ -455,7 +455,7 @@ project_activate (void)
 
   g_message ("Project %s (%p) activated", PROJECT->title, PROJECT);
 
-  return true;
+  return;
 }
 
 /**

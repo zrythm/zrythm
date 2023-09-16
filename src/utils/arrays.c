@@ -187,7 +187,7 @@ _array_double_size_if_full (
     }
   if (*max_sz == 0)
     {
-      g_message ("FIXME: current size of array given is 0.");
+      /*g_message ("FIXME: current size of array given is 0.");*/
       *arr_ptr = g_realloc_n (*arr_ptr, new_sz, el_size);
     }
   else

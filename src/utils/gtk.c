@@ -2083,3 +2083,18 @@ z_gtk_window_make_escapable (GtkWindow * self)
   gtk_widget_class_add_binding_action (
     wklass, GDK_KEY_w, GDK_CONTROL_MASK, "window.close", NULL);
 }
+
+void
+z_gtk_drop_down_list_item_header_setup_common (
+  GtkSignalListItemFactory * factory,
+  GObject *                  list_item,
+  gpointer                   user_data)
+{
+  GtkListHeader * header = GTK_LIST_HEADER (list_item);
+  GtkWidget *     child = gtk_label_new ("");
+  gtk_label_set_xalign (GTK_LABEL (child), 0);
+  gtk_label_set_use_markup (GTK_LABEL (child), TRUE);
+  gtk_widget_set_margin_start (child, 4);
+
+  gtk_list_header_set_child (header, child);
+}

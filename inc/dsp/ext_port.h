@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __AUDIO_EXT_PORT_H__
@@ -209,12 +209,21 @@ bool
 ext_port_matches_backend (ExtPort * self);
 
 /**
- * Returns a unique identifier (full name prefixed
- * with backend type).
+ * Returns a unique identifier (full name prefixed with backend type).
+ *
+ * @memberof ExtPort
  */
 MALLOC
 NONNULL char *
 ext_port_get_id (ExtPort * ext_port);
+
+/**
+ * Returns a user-friendly display name (eg, to be used in dropdowns).
+ *
+ * @memberof ExtPort
+ */
+NONNULL char *
+ext_port_get_friendly_name (ExtPort * self);
 
 /**
  * Returns the buffer of the external port.

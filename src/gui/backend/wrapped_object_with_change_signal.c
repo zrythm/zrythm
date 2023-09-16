@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/channel_send.h"
+#include "dsp/ext_port.h"
+#include "gui/backend/arranger_object.h"
 #include "gui/backend/wrapped_object_with_change_signal.h"
 #include "plugins/plugin_descriptor.h"
 #include "settings/chord_preset_pack.h"
@@ -70,6 +72,18 @@ wrapped_object_with_change_signal_get_display_name (void * data)
       {
         ChannelSendTarget * target = (ChannelSendTarget *) wrapped_obj->obj;
         return channel_send_target_describe (target);
+      }
+      break;
+    case WRAPPED_OBJECT_TYPE_EXT_PORT:
+      {
+        ExtPort * port = (ExtPort *) wrapped_obj->obj;
+        return ext_port_get_friendly_name (port);
+      }
+      break;
+    case WRAPPED_OBJECT_TYPE_ARRANGER_OBJECT:
+      {
+        ArrangerObject * obj = (ArrangerObject *) wrapped_obj->obj;
+        return arranger_object_gen_human_readable_name (obj);
       }
       break;
     default:

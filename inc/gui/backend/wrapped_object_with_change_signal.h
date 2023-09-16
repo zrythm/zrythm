@@ -44,6 +44,7 @@ typedef enum WrappedObjectType
   WRAPPED_OBJECT_TYPE_PORT,
   WRAPPED_OBJECT_TYPE_CHANNEL_SEND_TARGET,
   WRAPPED_OBJECT_TYPE_PLUGIN_COLLECTION,
+  WRAPPED_OBJECT_TYPE_EXT_PORT,
 } WrappedObjectType;
 
 /**
@@ -72,14 +73,15 @@ typedef struct _WrappedObjectWithChangeSignal
 
 /**
  * Fires the signal.
+ *
+ * @memberof WrappedObjectWithChangeSignal
  */
 void
 wrapped_object_with_change_signal_fire (WrappedObjectWithChangeSignal * self);
 
 /**
- * Returns a display name for the given object,
- * intended to be used where the object should be
- * displayed (eg, a dropdown).
+ * Returns a display name for the given object, intended to be used where the
+ * object should be displayed (eg, a dropdown).
  *
  * This can be used with GtkCclosureExpression.
  */
@@ -93,8 +95,7 @@ WrappedObjectWithChangeSignal *
 wrapped_object_with_change_signal_new (void * obj, WrappedObjectType type);
 
 /**
- * If this function is not used, the internal object will
- * not be free'd.
+ * If this function is not used, the internal object will not be free'd.
  */
 WrappedObjectWithChangeSignal *
 wrapped_object_with_change_signal_new_with_free_func (

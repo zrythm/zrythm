@@ -712,6 +712,15 @@ void
 z_gtk_window_make_escapable (GtkWindow * self);
 
 /**
+ * A common "setup" signal handler for GtkDropDown header factories.
+ */
+void
+z_gtk_drop_down_list_item_header_setup_common (
+  GtkSignalListItemFactory * factory,
+  GObject *                  list_item,
+  gpointer                   user_data);
+
+/**
  * @}
  */
 #endif
