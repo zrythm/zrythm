@@ -451,7 +451,8 @@ setup_channel_icon (ChannelWidget * self)
 static void
 refresh_output (ChannelWidget * self)
 {
-  route_target_selector_widget_refresh (self->output, self->channel);
+  route_target_selector_widget_refresh (
+    self->output, channel_get_track (self->channel));
 }
 
 static void
@@ -831,7 +832,7 @@ channel_widget_new (Channel * channel)
   editable_label_widget_setup (
     self->name, track, (GenericStringGetter) track_get_name,
     (GenericStringSetter) track_set_name_with_action);
-  route_target_selector_widget_setup (self->output, self->channel);
+  route_target_selector_widget_refresh (self->output, track);
   color_area_widget_setup_track (self->color, track);
 
 #if 0
@@ -958,7 +959,6 @@ channel_widget_init (ChannelWidget * self)
 
   /* set font sizes */
   gtk_label_set_max_width_chars (self->name->label, 10);
-  gtk_label_set_max_width_chars (self->output->label, 9);
 
   self->mp = GTK_GESTURE_CLICK (gtk_gesture_click_new ());
   gtk_widget_add_controller (GTK_WIDGET (self), GTK_EVENT_CONTROLLER (self->mp));

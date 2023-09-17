@@ -1,11 +1,16 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include "actions/tracklist_selections.h"
 #include "dsp/channel.h"
+#include "dsp/master_track.h"
 #include "dsp/track.h"
+#include "dsp/tracklist.h"
+#include "gui/backend/wrapped_object_with_change_signal.h"
 #include "gui/widgets/channel.h"
-#include "gui/widgets/popovers/route_target_selector_popover.h"
 #include "gui/widgets/route_target_selector.h"
+#include "project.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/gtk.h"
 #include "utils/resources.h"
@@ -17,104 +22,321 @@
 G_DEFINE_TYPE (
   RouteTargetSelectorWidget,
   route_target_selector_widget,
-  GTK_TYPE_BOX)
-
-#define MAX_CHARS 8
+  ADW_TYPE_BIN)
 
 static void
-set_label (RouteTargetSelectorWidget * self)
+on_route_target_changed (
+  GtkDropDown *               dropdown,
+  GParamSpec *                pspec,
+  RouteTargetSelectorWidget * self)
 {
-  if (self->channel && self->channel->has_output)
-    {
-      Track * track = channel_get_output_track (self->channel);
-      g_return_if_fail (track->name);
+  if (!self->track)
+    return;
 
-      gtk_label_set_text (self->label, track->name);
+  Track * old_direct_out = channel_get_output_track (self->track->channel);
+  Track * new_direct_out = old_direct_out;
+  if (gtk_drop_down_get_selected (dropdown) == 0)
+    {
+      new_direct_out = NULL;
     }
   else
     {
-      char str[100];
-      sprintf (str, "<tt><i>%s</i></tt>", _ ("None"));
-      gtk_label_set_markup (self->label, str);
+      WrappedObjectWithChangeSignal * wobj = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (
+        gtk_drop_down_get_selected_item (dropdown));
+      new_direct_out = (Track *) wobj->obj;
     }
+
+  if (new_direct_out != old_direct_out)
+    {
+      Track *               own_track_clone = track_clone (self->track, NULL);
+      TracklistSelections * sel = tracklist_selections_new (false);
+      tracklist_selections_add_track (sel, own_track_clone, F_NO_PUBLISH_EVENTS);
+      GError * err = NULL;
+      bool     success = tracklist_selections_action_perform_set_direct_out (
+        sel, PORT_CONNECTIONS_MGR, new_direct_out, &err);
+      if (!success)
+        {
+          HANDLE_ERROR (
+            err, _ ("Failed to change direct out to %s"),
+            new_direct_out ? new_direct_out->name : _ ("None"));
+        }
+    }
+}
+
+static void
+on_header_bind (
+  GtkSignalListItemFactory * factory,
+  GtkListHeader *            header,
+  gpointer                   user_data)
+{
+  GtkLabel * label = GTK_LABEL (gtk_list_header_get_child (header));
+  GObject *  item = gtk_list_header_get_item (header);
+
+  if (GTK_IS_STRING_OBJECT (item))
+    {
+      gtk_label_set_markup (label, _ ("None"));
+    }
+  else
+    {
+      WrappedObjectWithChangeSignal * wobj =
+        Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
+      Track * track = (Track *) wobj->obj;
+      switch (track->type)
+        {
+        case TRACK_TYPE_MASTER:
+          gtk_label_set_markup (label, _ ("Master"));
+          break;
+        case TRACK_TYPE_AUDIO_GROUP:
+        case TRACK_TYPE_MIDI_GROUP:
+          gtk_label_set_markup (label, _ ("Groups"));
+          break;
+        case TRACK_TYPE_INSTRUMENT:
+          gtk_label_set_markup (label, _ ("Instruments"));
+          break;
+        default:
+          g_return_if_reached ();
+        }
+    }
+}
+
+static char *
+get_str (void * item, gpointer user_data)
+{
+  RouteTargetSelectorWidget * self = Z_ROUTE_TARGET_SELECTOR_WIDGET (user_data);
+  if (self->track && self->track->type == TRACK_TYPE_MASTER)
+    {
+      return g_strdup_printf ("<tt><i>%s</i></tt>", _ ("Engine"));
+    }
+  else if (GTK_IS_STRING_OBJECT (item))
+    {
+      return g_strdup_printf ("<tt><i>%s</i></tt>", _ ("None"));
+    }
+  else
+    {
+      WrappedObjectWithChangeSignal * wobj =
+        Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (item);
+      Track * track = (Track *) wobj->obj;
+      return g_strdup (track->name);
+    }
+}
+
+static void
+on_bind (
+  GtkSignalListItemFactory *  factory,
+  GtkListItem *               list_item,
+  RouteTargetSelectorWidget * self)
+{
+  GtkLabel * label = GTK_LABEL (gtk_list_item_get_child (list_item));
+  GObject *  item = gtk_list_item_get_item (list_item);
+
+  char * str = get_str (item, self);
+  gtk_label_set_markup (label, str);
+  g_free (str);
+}
+
+static gboolean
+underlying_track_is_equal (gpointer a, gpointer b)
+{
+  WrappedObjectWithChangeSignal * aobj = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (a);
+  WrappedObjectWithChangeSignal * bobj = Z_WRAPPED_OBJECT_WITH_CHANGE_SIGNAL (b);
+  return (aobj->obj == bobj->obj);
 }
 
 void
 route_target_selector_widget_refresh (
   RouteTargetSelectorWidget * self,
-  Channel *                   channel)
+  Track *                     track)
 {
-  self->channel = channel;
+  GtkDropDown * dropdown = self->dropdown;
 
-  set_label (self);
+  /* --- disconnect existing signals --- */
 
-  /*if (self->popover && GTK_IS_WIDGET (self->popover))*/
-  /*g_object_unref (self->popover);*/
-  gtk_menu_button_set_popover (GTK_MENU_BUTTON (self->menu_button), NULL);
-  self->popover = NULL;
+  g_signal_handlers_disconnect_by_data (dropdown, self);
 
-  Track * track = NULL;
-  if (self->channel)
+  /* --- set header factory --- */
+
+  GtkListItemFactory * header_factory = gtk_signal_list_item_factory_new ();
+  g_signal_connect (
+    header_factory, "setup",
+    G_CALLBACK (z_gtk_drop_down_list_item_header_setup_common), NULL);
+  g_signal_connect (header_factory, "bind", G_CALLBACK (on_header_bind), self);
+  gtk_drop_down_set_header_factory (dropdown, header_factory);
+  g_object_unref (header_factory);
+
+  /* --- set normal factory --- */
+
+  GtkListItemFactory * factory = gtk_signal_list_item_factory_new ();
+  g_signal_connect (
+    factory, "setup",
+    G_CALLBACK (z_gtk_drop_down_factory_setup_common_ellipsized), NULL);
+  g_signal_connect (factory, "bind", G_CALLBACK (on_bind), self);
+  gtk_drop_down_set_factory (dropdown, factory);
+  g_object_unref (factory);
+
+  /* --- set list factory --- */
+
+  factory = gtk_signal_list_item_factory_new ();
+  g_signal_connect (
+    factory, "setup", G_CALLBACK (z_gtk_drop_down_factory_setup_common), NULL);
+  g_signal_connect (factory, "bind", G_CALLBACK (on_bind), self);
+  gtk_drop_down_set_list_factory (dropdown, factory);
+  g_object_unref (factory);
+
+  /* --- set closure for search FIXME makes the dropdown not use factories --- */
+
+#if 0
+  GtkExpression * expression = gtk_cclosure_expression_new (
+    G_TYPE_STRING, NULL, 0, NULL, G_CALLBACK (get_str), self, NULL);
+  gtk_drop_down_set_expression (dropdown, expression);
+  gtk_expression_unref (expression);
+
+  gtk_drop_down_set_enable_search (dropdown, true);
+#endif
+
+  /* --- create models --- */
+
+  /* none */
+  GtkStringList * none_sl = gtk_string_list_new (NULL);
+  gtk_string_list_append (none_sl, _ ("None"));
+
+  /* master */
+  GListStore * master_ls =
+    g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  WrappedObjectWithChangeSignal * wobj = wrapped_object_with_change_signal_new (
+    P_MASTER_TRACK, WRAPPED_OBJECT_TYPE_TRACK);
+  g_list_store_append (master_ls, wobj);
+
+  /* groups */
+  GListStore * groups_ls =
+    g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  if (track)
     {
-      track = channel_get_track (self->channel);
+      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+        {
+          Track * cur_track = TRACKLIST->tracks[i];
+          if (
+            cur_track != track
+            && cur_track->in_signal_type == track->out_signal_type
+            && (cur_track->type == TRACK_TYPE_AUDIO_GROUP || cur_track->type == TRACK_TYPE_MIDI_GROUP))
+            {
+              wobj = wrapped_object_with_change_signal_new (
+                cur_track, WRAPPED_OBJECT_TYPE_TRACK);
+              g_list_store_append (groups_ls, wobj);
+            }
+        }
     }
-  g_return_if_fail (!self->channel || track);
 
+  /* instrument */
+  GListStore * instruments_ls =
+    g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
+  if (track && track->out_signal_type == TYPE_EVENT)
+    {
+      for (int i = 0; i < TRACKLIST->num_tracks; i++)
+        {
+          Track * cur_track = TRACKLIST->tracks[i];
+          if (cur_track->type == TRACK_TYPE_INSTRUMENT)
+            {
+              wobj = wrapped_object_with_change_signal_new (
+                cur_track, WRAPPED_OBJECT_TYPE_TRACK);
+              g_list_store_append (instruments_ls, wobj);
+            }
+        }
+    }
+
+  GListStore * composite_ls = g_list_store_new (G_TYPE_LIST_MODEL);
+  g_list_store_append (composite_ls, none_sl);
+  g_list_store_append (composite_ls, master_ls);
+  g_list_store_append (composite_ls, groups_ls);
+  g_list_store_append (composite_ls, instruments_ls);
+
+  GtkFlattenListModel * flatten_model =
+    gtk_flatten_list_model_new (G_LIST_MODEL (composite_ls));
+
+  gtk_drop_down_set_model (dropdown, G_LIST_MODEL (flatten_model));
+
+  /* --- preselect the current value --- */
+
+  if (!track)
+    {
+      gtk_drop_down_set_selected (dropdown, 0);
+    }
+  else if (track && track->type == TRACK_TYPE_MASTER)
+    {
+      gtk_drop_down_set_selected (dropdown, 0);
+    }
+  else
+    {
+      Track * direct_out = channel_get_output_track (track->channel);
+      if (direct_out)
+        {
+          WrappedObjectWithChangeSignal * direct_out_wobj =
+            wrapped_object_with_change_signal_new (
+              direct_out, WRAPPED_OBJECT_TYPE_TRACK);
+          guint pos;
+          bool  found = g_list_store_find_with_equal_func (
+            master_ls, direct_out_wobj, (GEqualFunc) underlying_track_is_equal,
+            &pos);
+          pos += 1;
+          if (!found)
+            {
+              found = g_list_store_find_with_equal_func (
+                groups_ls, direct_out_wobj,
+                (GEqualFunc) underlying_track_is_equal, &pos);
+              pos += 2;
+              if (!found)
+                {
+                  found = g_list_store_find_with_equal_func (
+                    instruments_ls, direct_out_wobj,
+                    (GEqualFunc) underlying_track_is_equal, &pos);
+                  pos += 2 + g_list_model_get_n_items (G_LIST_MODEL (groups_ls));
+                  g_return_if_fail (found);
+                }
+            }
+          gtk_drop_down_set_selected (dropdown, pos);
+        }
+      else
+        {
+          gtk_drop_down_set_selected (dropdown, 0);
+        }
+    }
+
+  /* --- add signal --- */
+
+  g_signal_connect (
+    dropdown, "notify::selected-item", G_CALLBACK (on_route_target_changed),
+    self);
+
+  /* --- set tooltips & sensitivity --- */
+
+  gtk_widget_set_sensitive (GTK_WIDGET (dropdown), true);
   /* if unroutable */
-  if (!self->channel)
+  if (!track)
     {
       gtk_widget_set_tooltip_text (
-        GTK_WIDGET (self->box), _ ("Cannot be routed"));
+        GTK_WIDGET (dropdown), _ ("Cannot be routed"));
     }
   /* if routed by default and cannot be changed */
   else if (track && track->type == TRACK_TYPE_MASTER)
     {
+      gtk_widget_set_sensitive (GTK_WIDGET (dropdown), false);
       gtk_widget_set_tooltip_text (
-        GTK_WIDGET (self->box), _ ("Routed to engine"));
+        GTK_WIDGET (dropdown), _ ("Routed to engine"));
     }
   /* if routable */
   else
     {
       gtk_widget_set_tooltip_text (
-        GTK_WIDGET (self->box), _ ("Select channel to route signal to"));
-      self->popover = route_target_selector_popover_widget_new (self);
-      gtk_menu_button_set_popover (
-        GTK_MENU_BUTTON (self->menu_button), GTK_WIDGET (self->popover));
+        GTK_WIDGET (dropdown), _ ("Select channel to route signal to"));
     }
 
-  /* this is a box created by menubutton
-   * internally */
-  GtkWidget * parent_box = gtk_widget_get_parent (GTK_WIDGET (self->box));
-  gtk_widget_set_halign (parent_box, GTK_ALIGN_FILL);
-}
+  /* --- remember track --- */
 
-void
-route_target_selector_widget_setup (
-  RouteTargetSelectorWidget * self,
-  Channel *                   channel)
-{
-  self->channel = channel;
-
-  set_label (self);
-}
-
-RouteTargetSelectorWidget *
-route_target_selector_widget_new (Channel * channel)
-{
-  RouteTargetSelectorWidget * self =
-    g_object_new (ROUTE_TARGET_SELECTOR_WIDGET_TYPE, NULL);
-
-  route_target_selector_widget_setup (self, channel);
-
-  return self;
+  self->track = track;
 }
 
 static void
 finalize (RouteTargetSelectorWidget * self)
 {
-  /*if (self->popover && G_IS_OBJECT (self->popover))*/
-  /*g_object_unref (self->popover);*/
-
   G_OBJECT_CLASS (route_target_selector_widget_parent_class)
     ->finalize (G_OBJECT (self));
 }
@@ -130,24 +352,9 @@ route_target_selector_widget_class_init (RouteTargetSelectorWidgetClass * _klass
 static void
 route_target_selector_widget_init (RouteTargetSelectorWidget * self)
 {
-  self->menu_button = GTK_MENU_BUTTON (gtk_menu_button_new ());
-  gtk_box_append (GTK_BOX (self), GTK_WIDGET (self->menu_button));
-  gtk_widget_set_hexpand (GTK_WIDGET (self->menu_button), true);
+  self->dropdown = GTK_DROP_DOWN (gtk_drop_down_new (NULL, NULL));
+  adw_bin_set_child (ADW_BIN (self), GTK_WIDGET (self->dropdown));
 
   /* add class */
-  gtk_widget_add_css_class (GTK_WIDGET (self), "route_target_selector");
-
-  self->box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
-  gtk_widget_set_name (
-    GTK_WIDGET (self->box), "route-target-selector-menubutton-box");
-  self->img = GTK_IMAGE (gtk_image_new_from_icon_name (
-    "gnome-builder-debug-step-out-symbolic-light"));
-
-  self->label = GTK_LABEL (gtk_label_new (_ ("Stereo Out")));
-  gtk_widget_add_css_class (GTK_WIDGET (self->label), "channel_label_smaller");
-  gtk_label_set_ellipsize (self->label, PANGO_ELLIPSIZE_END);
-
-  gtk_box_append (self->box, GTK_WIDGET (self->img));
-  gtk_box_append (self->box, GTK_WIDGET (self->label));
-  gtk_menu_button_set_child (self->menu_button, GTK_WIDGET (self->box));
+  gtk_widget_add_css_class (GTK_WIDGET (self), "route-target-selector");
 }

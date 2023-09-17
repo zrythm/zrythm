@@ -55,7 +55,6 @@ resource_files += files ([
   'quantize_dialog.ui',
   'range_action_buttons.ui',
   'right_dock_edge.ui',
-  'route_target_selector.ui',
   'scale_selector_window.ui',
   'snap_box.ui',
   'snap_grid_popover.ui',

@@ -220,12 +220,6 @@ track_input_expander_widget_init (TrackInputExpanderWidget * self)
   expander_box_widget_set_orientation (
     Z_EXPANDER_BOX_WIDGET (self), GTK_ORIENTATION_VERTICAL);
 
-  /* TODO see https://gitlab.gnome.org/GNOME/gtk/-/issues/6099 */
-  /*z_gtk_combo_box_set_ellipsize_mode (self->midi_input, PANGO_ELLIPSIZE_END);*/
-  /*z_gtk_combo_box_set_ellipsize_mode (self->stereo_l_input, PANGO_ELLIPSIZE_END);*/
-  /*z_gtk_combo_box_set_ellipsize_mode (self->stereo_r_input, PANGO_ELLIPSIZE_END);*/
-  /*z_gtk_combo_box_set_ellipsize_mode (self->midi_channels, PANGO_ELLIPSIZE_END);*/
-
   /* add css classes */
   gtk_widget_add_css_class (GTK_WIDGET (self), "track-input-expander");
 }

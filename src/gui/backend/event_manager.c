@@ -181,7 +181,8 @@ on_channel_output_changed (Channel * ch)
 {
   if (ch->widget)
     {
-      route_target_selector_widget_refresh (ch->widget->output, ch);
+      route_target_selector_widget_refresh (
+        ch->widget->output, channel_get_track (ch));
     }
 }
 

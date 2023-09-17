@@ -1,21 +1,5 @@
-/*
- * Copyright (C) 2019-2022 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with Zrythm.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/engine.h"
 #include "dsp/track.h"
@@ -50,8 +34,7 @@ track_properties_expander_widget_refresh (
     {
       g_return_if_fail (self->direct_out);
       route_target_selector_widget_refresh (
-        self->direct_out,
-        track_type_has_channel (track->type) ? track->channel : NULL);
+        self->direct_out, track_type_has_channel (track->type) ? track : NULL);
 
       editable_label_widget_setup (
         self->name, track, (GenericStringGetter) track_get_name,
@@ -99,7 +82,7 @@ track_properties_expander_widget_setup (
   gtk_widget_set_hexpand (GTK_WIDGET (self->name->label), true);
 
   /* add direct out */
-  self->direct_out = route_target_selector_widget_new (track->channel);
+  self->direct_out = g_object_new (ROUTE_TARGET_SELECTOR_WIDGET_TYPE, NULL);
   CREATE_LABEL (_ ("Direct Out"));
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), lbl);
