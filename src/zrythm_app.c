@@ -347,7 +347,8 @@ on_setup_main_window (GSimpleAction * action, GVariant * parameter, gpointer dat
   if (autosave_interval > 0)
     {
       PROJECT->last_successful_autosave_time = g_get_monotonic_time ();
-      g_timeout_add_seconds (3, project_autosave_cb, NULL);
+      self->project_autosave_source_id =
+        g_timeout_add_seconds (3, project_autosave_cb, NULL);
     }
 
   if (self->splash)
@@ -1302,6 +1303,12 @@ static void
 zrythm_app_on_shutdown (GApplication * application, ZrythmApp * self)
 {
   g_message ("Shutting down...");
+
+  if (self->project_autosave_source_id != 0)
+    {
+      g_source_remove (self->project_autosave_source_id);
+      self->project_autosave_source_id = 0;
+    }
 
   if (ZRYTHM)
     {

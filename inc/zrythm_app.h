@@ -153,6 +153,8 @@ struct _ZrythmApp
 
   /** Currently opened bug report dialog. */
   BugReportDialogWidget * bug_report_dialog;
+
+  guint project_autosave_source_id;
 };
 
 /**
