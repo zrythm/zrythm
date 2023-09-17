@@ -1993,7 +1993,7 @@ z_gtk_drop_down_factory_setup_common (
   GtkListItem * item = GTK_LIST_ITEM (list_item);
   GtkWidget *   child = gtk_label_new ("");
   gtk_label_set_xalign (GTK_LABEL (child), 0);
-  gtk_label_set_use_markup (GTK_LABEL (child), TRUE);
+  gtk_label_set_use_markup (GTK_LABEL (child), true);
 
   gtk_list_item_set_child (item, child);
 }

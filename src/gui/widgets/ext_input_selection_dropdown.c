@@ -223,14 +223,11 @@ ext_input_selection_dropdown_widget_refresh (
 
   /* --- set closure for search FIXME makes the dropdown not use factories --- */
 
-#if 0
+  gtk_drop_down_set_enable_search (dropdown, true);
   GtkExpression * expression = gtk_cclosure_expression_new (
     G_TYPE_STRING, NULL, 0, NULL, G_CALLBACK (get_str), NULL, NULL);
   gtk_drop_down_set_expression (dropdown, expression);
   gtk_expression_unref (expression);
-
-  gtk_drop_down_set_enable_search (dropdown, true);
-#endif
 
   /* --- create models --- */
 
