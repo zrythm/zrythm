@@ -122,12 +122,12 @@ save_on_quit_response_cb (
         {
           HANDLE_ERROR (err, "%s", _ ("Failed to save project"));
         }
-      gtk_window_destroy (GTK_WINDOW (self));
+      g_idle_add_once ((GSourceOnceFunc) gtk_window_destroy, self);
     }
   else if (string_is_equal (response, "quit-no-save"))
     {
       g_message ("quitting without saving...");
-      gtk_window_destroy (GTK_WINDOW (self));
+      g_idle_add_once ((GSourceOnceFunc) gtk_window_destroy, self);
     }
   else if (string_is_equal (response, "cancel"))
     {
