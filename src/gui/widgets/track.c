@@ -537,6 +537,8 @@ on_motion (
 
   self->bg_hovered = true;
 
+  self->last_hovered_btn =
+    track_widget_get_hovered_button (self, (int) x, (int) y);
   self->last_x = x;
   self->last_y = y;
 }

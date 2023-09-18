@@ -200,10 +200,12 @@ typedef struct _TrackWidget
   double start_y;
   double last_offset_y;
 
-  /** Used during hovering to remember the last
-   * known cursor position. */
+  /** Used during hovering to remember the last known cursor position. */
   double last_x;
   double last_y;
+
+  /** Last hovered button. */
+  CustomButtonWidget * last_hovered_btn;
 
   /** Used when mouse button is held down to
    * mark buttons as clicked. */

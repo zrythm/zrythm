@@ -158,9 +158,10 @@ automation_region_get_next_ap (
       ArrangerObject *  obj = (ArrangerObject *) ap;
       AutomationPoint * next_ap = NULL;
       ArrangerObject *  next_obj = NULL;
+      const int         loop_times = check_transients ? 2 : 1;
       for (int i = 0; i < self->num_aps; i++)
         {
-          for (int j = 0; j < (check_transients ? 2 : 1); j++)
+          for (int j = 0; j < loop_times; j++)
             {
               AutomationPoint * cur_ap = self->aps[i];
               ArrangerObject *  cur_obj = (ArrangerObject *) cur_ap;

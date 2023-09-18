@@ -197,8 +197,7 @@ draw_buttons (TrackCanvasWidget * self, GtkSnapshot * snapshot, int top, int wid
 {
   TrackWidget * tw = self->parent;
 
-  CustomButtonWidget * hovered_cb =
-    track_widget_get_hovered_button (tw, (int) tw->last_x, (int) tw->last_y);
+  CustomButtonWidget * hovered_cb = tw->last_hovered_btn;
   int num_buttons = top ? tw->num_top_buttons : tw->num_bot_buttons;
   CustomButtonWidget ** buttons = top ? tw->top_buttons : tw->bot_buttons;
   Track *               track = tw->track;
@@ -489,8 +488,7 @@ draw_automation (TrackCanvasWidget * self, GtkSnapshot * snapshot, int width)
         }
 
       /* draw top left buttons */
-      CustomButtonWidget * hovered_cb = track_widget_get_hovered_button (
-        tw, (int) tw->last_x, (int) tw->last_y);
+      CustomButtonWidget *   hovered_cb = tw->last_hovered_btn;
       AutomationModeWidget * hovered_am = track_widget_get_hovered_am_widget (
         tw, (int) tw->last_x, (int) tw->last_y);
       for (int j = 0; j < at->num_top_left_buttons; j++)

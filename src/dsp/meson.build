@@ -23,7 +23,6 @@ audio_srcs = files([
   'clip.c',
   'control_port.c',
   'control_room.c',
-  'curve.c',
   'ditherer.c',
   'engine.c',
   'engine_alsa.c',
@@ -105,6 +104,7 @@ subdir ('vamp-ports')
 optimized_audio_lib = static_library (
   'zrythm-optimized-audio-lib',
   sources: [
+    'curve.c',
     'kmeter_dsp.c',
     'peak_dsp.c',
     ],
