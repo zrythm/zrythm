@@ -153,6 +153,10 @@ route_target_selector_widget_refresh (
 
   g_signal_handlers_disconnect_by_data (dropdown, self);
 
+  /* --- remember track --- */
+
+  self->track = track;
+
   /* --- set header factory --- */
 
   GtkListItemFactory * header_factory = gtk_signal_list_item_factory_new ();
@@ -202,9 +206,13 @@ route_target_selector_widget_refresh (
   /* master */
   GListStore * master_ls =
     g_list_store_new (WRAPPED_OBJECT_WITH_CHANGE_SIGNAL_TYPE);
-  WrappedObjectWithChangeSignal * wobj = wrapped_object_with_change_signal_new (
-    P_MASTER_TRACK, WRAPPED_OBJECT_TYPE_TRACK);
-  g_list_store_append (master_ls, wobj);
+  if (track && track->out_signal_type == TYPE_AUDIO)
+    {
+      WrappedObjectWithChangeSignal * wobj =
+        wrapped_object_with_change_signal_new (
+          P_MASTER_TRACK, WRAPPED_OBJECT_TYPE_TRACK);
+      g_list_store_append (master_ls, wobj);
+    }
 
   /* groups */
   GListStore * groups_ls =
@@ -219,8 +227,9 @@ route_target_selector_widget_refresh (
             && cur_track->in_signal_type == track->out_signal_type
             && (cur_track->type == TRACK_TYPE_AUDIO_GROUP || cur_track->type == TRACK_TYPE_MIDI_GROUP))
             {
-              wobj = wrapped_object_with_change_signal_new (
-                cur_track, WRAPPED_OBJECT_TYPE_TRACK);
+              WrappedObjectWithChangeSignal * wobj =
+                wrapped_object_with_change_signal_new (
+                  cur_track, WRAPPED_OBJECT_TYPE_TRACK);
               g_list_store_append (groups_ls, wobj);
             }
         }
@@ -236,8 +245,9 @@ route_target_selector_widget_refresh (
           Track * cur_track = TRACKLIST->tracks[i];
           if (cur_track->type == TRACK_TYPE_INSTRUMENT)
             {
-              wobj = wrapped_object_with_change_signal_new (
-                cur_track, WRAPPED_OBJECT_TYPE_TRACK);
+              WrappedObjectWithChangeSignal * wobj =
+                wrapped_object_with_change_signal_new (
+                  cur_track, WRAPPED_OBJECT_TYPE_TRACK);
               g_list_store_append (instruments_ls, wobj);
             }
         }
@@ -337,10 +347,6 @@ route_target_selector_widget_refresh (
           gtk_widget_set_tooltip_text (GTK_WIDGET (dropdown), _ ("Unrouted"));
         }
     }
-
-  /* --- remember track --- */
-
-  self->track = track;
 }
 
 static void

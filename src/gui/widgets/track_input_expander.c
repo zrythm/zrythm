@@ -177,10 +177,12 @@ static void
 track_input_expander_widget_init (TrackInputExpanderWidget * self)
 {
   self->midi_input = GTK_DROP_DOWN (gtk_drop_down_new (NULL, NULL));
+  gtk_widget_set_hexpand (GTK_WIDGET (self->midi_input), true);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (self->midi_input));
 
   self->midi_channels = GTK_DROP_DOWN (gtk_drop_down_new (NULL, NULL));
+  gtk_widget_set_hexpand (GTK_WIDGET (self->midi_channels), true);
   two_col_expander_box_widget_add_single (
     Z_TWO_COL_EXPANDER_BOX_WIDGET (self), GTK_WIDGET (self->midi_channels));
 
@@ -188,6 +190,7 @@ track_input_expander_widget_init (TrackInputExpanderWidget * self)
 
   /* setup audio inputs */
   self->stereo_l_input = GTK_DROP_DOWN (gtk_drop_down_new (NULL, NULL));
+  gtk_widget_set_hexpand (GTK_WIDGET (self->stereo_l_input), true);
   gtk_size_group_add_widget (
     self->audio_input_size_group, GTK_WIDGET (self->stereo_l_input));
   self->mono = z_gtk_toggle_button_new_with_icon ("mono");
@@ -205,6 +208,7 @@ track_input_expander_widget_init (TrackInputExpanderWidget * self)
   gtk_widget_set_tooltip_text (GTK_WIDGET (self->mono), _ ("Mono"));
 
   self->stereo_r_input = GTK_DROP_DOWN (gtk_drop_down_new (NULL, NULL));
+  gtk_widget_set_hexpand (GTK_WIDGET (self->stereo_r_input), true);
   gtk_size_group_add_widget (
     self->audio_input_size_group, GTK_WIDGET (self->stereo_r_input));
   self->gain_box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
