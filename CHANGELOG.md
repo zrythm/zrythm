@@ -6,6 +6,20 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.4.13.31] - 2023-09-18
+### Changed
+- Port some more deprecated GTK widgets to new ones
+- Make the dialog flow for creating/loading projects async
+- Don't use C atomics in graph threads (synchronization bug)
+- Change channel output selector widget to a dropdown
+- Make some widgets in mixer channels smaller
+- Various optimizations
+- Rename track *Comments* section to *Notes*
+
+### Fixed
+- Fix occasional segfault when project autosave callback gets called after Zrythm shuts down
+- Fix track inspector not being updated when adding a new track
+
 ## [1.0.0-beta.4.13.6] - 2023-09-12
 ### Changed
 - Port some more deprecated GTK widgets to new ones
