@@ -20,13 +20,14 @@
 # Adolfo Jayme Barrientos <fitojb@ubuntu.com>, 2022.
 # Juan <benitesjn@gmail.com>, 2023.
 # Daniel “Gula” GoodAir <danielcebeats97@gmail.com>, 2023.
+# Guss Gaviria <gustarom@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-08-15 16:37+0900\n"
-"PO-Revision-Date: 2023-07-04 02:51+0000\n"
-"Last-Translator: Daniel “Gula” GoodAir <danielcebeats97@gmail.com>\n"
+"PO-Revision-Date: 2023-09-03 20:45+0000\n"
+"Last-Translator: Guss Gaviria <gustarom@gmail.com>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -34,7 +35,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: inc/dsp/exporter.h:125
 msgid "Before inserts"
@@ -206,9 +207,8 @@ msgid "Normalize LUFS"
 msgstr "Normalizar LUFS"
 
 #: inc/dsp/audio_function.h:57
-#, fuzzy
 msgid "Linear fade in"
-msgstr "Lineal"
+msgstr "Desvanecimiento de entrada lineal"
 
 #: inc/dsp/audio_function.h:58
 #, fuzzy
@@ -230,9 +230,8 @@ msgid "Reverse"
 msgstr "Reversa"
 
 #: inc/dsp/audio_function.h:62
-#, fuzzy
 msgid "Pitch shift"
-msgstr "Rueda de paso"
+msgstr "Cambio de tono"
 
 #: inc/dsp/audio_function.h:63
 msgid "External program"
@@ -394,17 +393,16 @@ msgid "Acoustic"
 msgstr "Acústica"
 
 #: inc/dsp/scale.h:145 inc/schemas/audio/scale.h:113
-#, fuzzy
 msgid "Harmonic Major"
-msgstr "Menor armónica"
+msgstr "Mayor Armónica"
 
 #: inc/dsp/scale.h:146 inc/schemas/audio/scale.h:114
 msgid "Phrygian Dominant"
-msgstr ""
+msgstr "Dominante Frigia"
 
 #: inc/dsp/scale.h:147 inc/schemas/audio/scale.h:115
 msgid "Major Locrian"
-msgstr ""
+msgstr "Locria Mayor"
 
 #: inc/dsp/scale.h:148 inc/schemas/audio/scale.h:116
 msgid "Algerian"
@@ -412,11 +410,11 @@ msgstr ""
 
 #: inc/dsp/scale.h:149 inc/schemas/audio/scale.h:117
 msgid "Augmented"
-msgstr ""
+msgstr "Aumentada"
 
 #: inc/dsp/scale.h:150 inc/schemas/audio/scale.h:118
 msgid "Double Harmonic"
-msgstr ""
+msgstr "Harmónica Doble"
 
 #: inc/dsp/scale.h:151 inc/schemas/audio/scale.h:119
 #, fuzzy
@@ -425,15 +423,15 @@ msgstr "Chino [zh]"
 
 #: inc/dsp/scale.h:152 inc/schemas/audio/scale.h:120
 msgid "Diminished"
-msgstr ""
+msgstr "Disminuida"
 
 #: inc/dsp/scale.h:153 inc/schemas/audio/scale.h:121
 msgid "Dominant Diminished"
-msgstr ""
+msgstr "Dominante Disminuida"
 
 #: inc/dsp/scale.h:154 inc/schemas/audio/scale.h:122
 msgid "Egyptian"
-msgstr ""
+msgstr "Egipcia"
 
 #: inc/dsp/scale.h:155 inc/schemas/audio/scale.h:123
 msgid "Eight Tone Spanish"
@@ -475,9 +473,8 @@ msgid "Neapolitan Minor"
 msgstr "Eólica (menor natural)"
 
 #: inc/dsp/scale.h:164 inc/schemas/audio/scale.h:132
-#, fuzzy
 msgid "Oriental"
-msgstr "Horizontal"
+msgstr "Oriental"
 
 #: inc/dsp/scale.h:165 inc/schemas/audio/scale.h:133
 #, fuzzy
@@ -502,7 +499,7 @@ msgstr ""
 
 #: inc/dsp/scale.h:170 inc/schemas/audio/scale.h:138
 msgid "Bebop Dominant"
-msgstr ""
+msgstr "Bebop Dominante"
 
 #: inc/dsp/scale.h:171 inc/schemas/audio/scale.h:139
 msgid "Bebop Major"
@@ -3147,9 +3144,8 @@ msgid "Scripting interface"
 msgstr "Interfaz de programación"
 
 #: src/gui/widgets/right_dock_edge.c:117
-#, fuzzy
 msgid "Monitor Section"
-msgstr "Monitorizar entrada fader"
+msgstr "Sección de Monitor"
 
 #: src/gui/widgets/header.c:98
 #, c-format

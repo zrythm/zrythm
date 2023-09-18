@@ -37,15 +37,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-08-15 16:28+0900\n"
-"PO-Revision-Date: 2021-03-08 01:16+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
-"Language: en_GB\n"
+"PO-Revision-Date: 2023-09-03 20:45+0000\n"
+"Last-Translator: Kieran W <alarmcuddly@outlook.com>\n"
 "Language-Team: English (United Kingdom) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/en_GB/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -1054,7 +1055,7 @@ msgstr ""
 
 #: ../../contributing/intro.rst:76
 msgid "User Manual"
-msgstr ""
+msgstr "User Manual"
 
 #: ../../contributing/intro.rst:77
 msgid ""
@@ -1177,7 +1178,7 @@ msgstr ""
 #: ../../editing/clip-editors/audio-editor.rst:9
 #: ../../editing/clip-editors/toolbar.rst:54
 msgid "Audio Editor"
-msgstr ""
+msgstr "Audio Editor"
 
 #: ../../editing/clip-editors/audio-editor.rst:10
 msgid "The audio editor is displayed when an audio region is selected."
@@ -1572,7 +1573,7 @@ msgstr ""
 #: ../../editing/clip-editors/piano-roll.rst:9
 #: ../../editing/clip-editors/toolbar.rst:30
 msgid "Piano Roll"
-msgstr ""
+msgstr "Piano Roll"
 
 #: ../../editing/clip-editors/piano-roll.rst:11
 msgid ""
@@ -1599,7 +1600,7 @@ msgstr "Controls"
 
 #: ../../editing/clip-editors/piano-roll.rst:39
 msgid "Drum View"
-msgstr ""
+msgstr "Drum View"
 
 #: ../../editing/clip-editors/piano-roll.rst:31
 msgid ""
@@ -1678,7 +1679,7 @@ msgstr ""
 
 #: ../../editing/clip-editors/piano-roll.rst:89
 msgid "Velocity Editor"
-msgstr ""
+msgstr "Velocity Editor"
 
 #: ../../editing/clip-editors/piano-roll.rst:90
 msgid ""
@@ -2216,7 +2217,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:21
 msgid "Select/Stretch Tool"
-msgstr ""
+msgstr "Select/Stretch Tool"
 
 #: ../../editing/edit-tools.rst:22
 msgid "This can be toggled to switch between Select and Stretch."
@@ -2331,7 +2332,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:107
 msgid "Edit Tool"
-msgstr ""
+msgstr "Edit Tool"
 
 #: ../../editing/edit-tools.rst:108
 msgid ""
@@ -2350,7 +2351,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:120
 msgid "Cut Tool"
-msgstr ""
+msgstr "Cut Tool"
 
 #: ../../editing/edit-tools.rst:121
 msgid ""
@@ -2371,7 +2372,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:134
 msgid "Ramp Tool"
-msgstr ""
+msgstr "Ramp Tool"
 
 #: ../../editing/edit-tools.rst:135
 msgid ""
@@ -2438,7 +2439,7 @@ msgstr ""
 
 #: ../../editing/event-viewers.rst:28 ../../editing/intro.rst:9
 msgid "Editing"
-msgstr ""
+msgstr "Editing"
 
 #: ../../editing/event-viewers.rst:30
 msgid ""
@@ -2887,7 +2888,7 @@ msgstr ""
 
 #: ../../editing/timeline/arranger.rst:170
 msgid "Looping"
-msgstr ""
+msgstr "Looping"
 
 #: ../../editing/timeline/arranger.rst:171
 msgid ""
@@ -3493,7 +3494,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:12
 #: ../../plugins-files/plugins/intro.rst:7
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: ../../getting-started/getting-plugins.rst:14
 msgid ""
@@ -3633,7 +3634,7 @@ msgstr ""
 
 #: ../../getting-started/installation.rst:14
 msgid "Installers"
-msgstr ""
+msgstr "Installers"
 
 #: ../../getting-started/installation.rst:15
 msgid ""
@@ -4142,7 +4143,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:122
 msgid "Project"
-msgstr ""
+msgstr "Project"
 
 #: ../../glossary/intro.rst:124
 msgid ""
@@ -4414,7 +4415,7 @@ msgstr ""
 
 #: ../../mixing/routing.rst:7 ../../routing/intro.rst:7
 msgid "Routing"
-msgstr ""
+msgstr "Routing"
 
 #: ../../mixing/routing.rst:10
 msgid "Groups"
@@ -6250,7 +6251,7 @@ msgstr ""
 
 #: ../../routing/monitor-section.rst:7
 msgid "Monitor Section"
-msgstr ""
+msgstr "Monitor Section"
 
 #: ../../routing/monitor-section.rst:8
 msgid ""
@@ -6679,7 +6680,7 @@ msgstr ""
 
 #: ../../scripting/intro.rst:9
 msgid "Scripting"
-msgstr ""
+msgstr "Scripting"
 
 #: ../../scripting/overview.rst:9
 msgid ""
@@ -7167,7 +7168,7 @@ msgstr ""
 
 #: ../../tracks/inspector-page.rst:106
 msgid "Aux Sends"
-msgstr ""
+msgstr "Aux Sends"
 
 #: ../../tracks/inspector-page.rst:108
 msgid ""
@@ -7473,7 +7474,7 @@ msgstr ""
 
 #: ../../tracks/track-lanes.rst:7
 msgid "Track Lanes"
-msgstr ""
+msgstr "Track Lanes"
 
 #: ../../tracks/track-lanes.rst:9
 msgid ""
@@ -7629,7 +7630,7 @@ msgstr ""
 
 #: ../../tracks/track-types.rst:41
 msgid "Folder"
-msgstr ""
+msgstr "Folder"
 
 #: ../../tracks/track-types.rst:50 ../../tracks/track-types.rst:70
 msgid "MIDI regions"
@@ -8226,7 +8227,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:86
 msgid "Chat"
-msgstr ""
+msgstr "Chat"
 
 #: ../../zrythm-interface/main-toolbar.rst:87
 msgid "Join the Zrythm chatroom on Matrix."
@@ -8258,7 +8259,7 @@ msgstr ""
 
 #: ../../zrythm-interface/main-toolbar.rst:94
 msgid "Donate"
-msgstr ""
+msgstr "Donate"
 
 #: ../../zrythm-interface/main-toolbar.rst:95
 msgid "Donate to Zrythm through LiberaPay."

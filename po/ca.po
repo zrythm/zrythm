@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-08-15 16:37+0900\n"
-"PO-Revision-Date: 2023-08-10 20:45+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2023-09-11 20:45+0000\n"
+"Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
 "Language: ca\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: inc/dsp/exporter.h:125
 msgid "Before inserts"
@@ -1469,9 +1469,9 @@ msgid "Failed getting contents for %s"
 msgstr "Error en obtenir el contingut de %s"
 
 #: src/actions/tracklist_selections.c:311 src/dsp/track.c:2062
-#, fuzzy, c-format
+#, c-format
 msgid "Failed creating audio clip from file at %s"
-msgstr "Error en escriure el clip d'àudio al fitxer: %s"
+msgstr "Error en crear el clip d'àudio des del fitxer: %s"
 
 #: src/actions/tracklist_selections.c:340
 msgid "No tracks selected"
@@ -2290,7 +2290,7 @@ msgstr "No es pot configurar la pista habilitada"
 
 #: src/dsp/automation_track.c:163
 msgid "Rec"
-msgstr "Gravar"
+msgstr "Grv"
 
 #: src/dsp/automation_track.c:184
 msgid "Touch"
@@ -2422,14 +2422,13 @@ msgid "Chords"
 msgstr "Acords"
 
 #: src/dsp/clip.c:160
-#, fuzzy
 msgid "Failed to initialize audio file"
-msgstr "Error en escriure el fitxer d'àudio"
+msgstr "Error en inicialitzar el fitxer d'àudio"
 
 #: src/dsp/clip.c:186
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to initialize audio file at %s"
-msgstr "Error en escriure el fitxer d'àudio"
+msgstr "Error en inicialitzar el fitxer d'àudio a %s"
 
 #: src/dsp/clip.c:453
 #, c-format
@@ -2441,9 +2440,8 @@ msgid "Failed to write audio file"
 msgstr "Error en escriure el fitxer d'àudio"
 
 #: src/dsp/clip.c:544
-#, fuzzy
 msgid "Failed to create audio clip from file"
-msgstr "Error en escriure el clip d'àudio al fitxer: %s"
+msgstr "Error en crear el clip d'àudio des del fitxer"
 
 #: src/dsp/clip.c:696
 msgid "Edit in external app"
@@ -2468,9 +2466,9 @@ msgid "Launch"
 msgstr "Llançar"
 
 #: src/dsp/clip.c:753 src/dsp/audio_region.c:90
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create audio clip from file at %s"
-msgstr "Error en escriure el clip d'àudio al fitxer: %s"
+msgstr "Error en crear el clip d'àudio des del fitxer a %s"
 
 #: src/dsp/tempo_track.c:38
 msgid "BPM"
@@ -3385,19 +3383,16 @@ msgid "Edit"
 msgstr "Editar"
 
 #: src/gui/widgets/track.c:790
-#, fuzzy
 msgid "Append Track Objects to Selection"
-msgstr "Afegir notes en to a la selecció"
+msgstr "Afegir objectes de pista a la selecció"
 
 #: src/gui/widgets/track.c:802
-#, fuzzy
 msgid "Append Lane Objects to Selection"
-msgstr "Afegir notes en to a la selecció"
+msgstr "Afegir objectes de carril a la selecció"
 
 #: src/gui/widgets/track.c:813
-#, fuzzy
 msgid "Append Lane Automation Regions to Selection"
-msgstr "Afegir notes en to a la selecció"
+msgstr "Afegir regions d'automatització de carril a la selecció"
 
 #: src/gui/widgets/track.c:820 src/gui/widgets/piano_roll_keys.c:574
 #: src/gui/widgets/midi_arranger.c:492 resources/ui/export_dialog.ui:103
@@ -4336,9 +4331,8 @@ msgid "Rename"
 msgstr "Canviar el nom"
 
 #: src/gui/widgets/timeline_arranger.c:1030
-#, fuzzy
 msgid "Loop Selection"
-msgstr "Repetir la selecció"
+msgstr "Selecció de bucle"
 
 #: src/gui/widgets/timeline_arranger.c:1058
 msgid "Change Color..."
@@ -4616,42 +4610,35 @@ msgid "Welcome"
 msgstr "Benvingut"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:101
-#, fuzzy
 msgid "Start Velocity"
-msgstr "Velocitat per defecte"
+msgstr "Velocitat inicial"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:120
-#, fuzzy
 msgid "End Velocity"
-msgstr "Velocitat"
+msgstr "Velocitat final"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:138
 #: src/gui/widgets/dialogs/midi_function_dialog.c:245
-#, fuzzy
 msgid "Curve"
-msgstr "Curvatura"
+msgstr "Corba"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:166
 #: src/gui/widgets/dialogs/midi_function_dialog.c:273
-#, fuzzy
 msgid "Curviness %"
-msgstr "Curvatura"
+msgstr "Curvatura %"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:186
-#, fuzzy
 msgid "Note: Flam is currently unimplemented"
-msgstr "Operació sense implementar"
+msgstr "Nota: El Flam no està implementat"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:229
 #: build/data/org.zrythm.Zrythm.gschema.xml:600
-#, fuzzy
 msgid "Ascending"
-msgstr "Enviant"
+msgstr "Ascendent"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:403
-#, fuzzy
 msgid "_Apply"
-msgstr "Aplicar %s"
+msgstr "_Aplicar"
 
 #: src/gui/widgets/dialogs/port_selector_dialog.c:43
 msgid "No port selected"
@@ -4689,9 +4676,8 @@ msgid "Group"
 msgstr "Agrupar"
 
 #: src/gui/widgets/dialogs/port_info.c:57
-#, fuzzy
 msgid "Designation"
-msgstr "Destinació"
+msgstr "Designació"
 
 #: src/gui/widgets/dialogs/port_info.c:66
 msgid "Range"
@@ -4703,12 +4689,10 @@ msgid "%.1f to %.1f"
 msgstr "%.1f a %.1f"
 
 #: src/gui/widgets/dialogs/port_info.c:73
-#, fuzzy
 msgid "Default Value"
-msgstr "Valor predeterminat"
+msgstr "Valor per defecte"
 
 #: src/gui/widgets/dialogs/port_info.c:78
-#, fuzzy
 msgid "Current Value"
 msgstr "Valor actual"
 
@@ -5103,7 +5087,7 @@ msgstr "No és un esdeveniment de canvi de control"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:30
 msgid "Basic Info"
-msgstr ""
+msgstr "Informació bàsica"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:56
 msgid "Owner"
@@ -5311,13 +5295,12 @@ msgid "Behavior"
 msgstr "Comportament"
 
 #: src/gui/widgets/popovers/tracklist_preferences_popover.c:73
-#, fuzzy
 msgid "Auto-arm for Recording"
-msgstr "Armar per a gravar"
+msgstr "Auto-armar per a gravar"
 
 #: src/gui/widgets/popovers/tracklist_preferences_popover.c:76
 msgid "Arm tracks for recording when clicked/selected."
-msgstr ""
+msgstr "Arma les pistes per a gravar en fer clic/seleccionar."
 
 #: src/gui/widgets/popovers/track_filter_popover.c:280
 msgid "Filter"
@@ -5328,9 +5311,8 @@ msgid "Track types"
 msgstr "Tipus de pista"
 
 #: src/gui/widgets/popovers/track_filter_popover.c:323
-#, fuzzy
 msgid "Disabled Tracks"
-msgstr "Inhabilitar %d pistes"
+msgstr "Inhabilitar pistes"
 
 #: src/guile/guile.c:25
 msgid "Script execution successful"
@@ -5350,7 +5332,7 @@ msgstr "Error en crear l'enviament d'àudio"
 
 #: src/plugins/plugin_manager.c:394
 msgid "Error loading LV2 bundle dir: "
-msgstr "Error en carregar el directori del paquet LV2: "
+msgstr "Error en carregar el directori agregat LV2: "
 
 #: src/plugins/plugin_manager.c:1307
 #, c-format
@@ -6511,9 +6493,8 @@ msgid "Track filters & visibility"
 msgstr "Filtres de pista i visibilitat"
 
 #: resources/ui/tracklist_header.ui:52
-#, fuzzy
 msgid "Tracklist Settings"
-msgstr "Selecció de pista"
+msgstr "Configuració de llista de pistes"
 
 #: resources/gtk/help-overlay.ui:30
 msgid "Global Shortcuts"
@@ -7187,83 +7168,70 @@ msgid "Track types to filter tracks with."
 msgstr "Tipus de pistes amb les quals filtrar pistes."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:548
-#, fuzzy
 msgid "Show disabled tracks"
-msgstr "Error en inhabilitar pistes"
+msgstr "Veure pistes inhabilitades"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:549
-#, fuzzy
 msgid "Whether to show disabled tracks when filtering."
-msgstr "Si s'han de mostrar els fitxers ocults al navegador de fitxers."
+msgstr "Ja sigui per a mostrar pistes inhabilitades quan es filtra."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:553
-#, fuzzy
 msgid "Auto-arm tracks"
-msgstr "Afegir pista d'automatització"
+msgstr "Arma automàticament les pistes"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:554
-#, fuzzy
 msgid "Whether to automatically arm tracks for recording."
-msgstr "Si el punch in/out està habilitat per a la gravació."
+msgstr "Si s'han d'armar automàticament les pistes per a la gravació."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:562
-#, fuzzy
 msgid "Start velocity"
-msgstr "Velocitat predeterminada"
+msgstr "Velocitat d'arrencada"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:563
-#, fuzzy
 msgid "Start velocity."
-msgstr "Velocitat predeterminada"
+msgstr "Velocitat d'arrencada."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:567
-#, fuzzy
 msgid "End velocity"
-msgstr "Velocitat no vàlida"
+msgstr "Velocitat final"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:568
-#, fuzzy
 msgid "End velocity."
-msgstr "Velocitat no vàlida"
+msgstr "Velocitat final."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:573
 #: build/data/org.zrythm.Zrythm.gschema.xml:606
-#, fuzzy
 msgid "Curve algorithm."
-msgstr "Algorisme de corba"
+msgstr "Algorisme de corba."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:578
 #: build/data/org.zrythm.Zrythm.gschema.xml:611
-#, fuzzy
 msgid "Curviness percentage."
-msgstr "Curvatura"
+msgstr "Percentatge de curvatura."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:587
-#, fuzzy
 msgid "Time (ms)."
-msgstr "ind. compàs"
+msgstr "Temps (ms)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:591
-#, fuzzy
 msgid "velocity"
-msgstr "Velocitat"
+msgstr "velocitat"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:592
-#, fuzzy
 msgid "Velocity of the added note."
-msgstr "Velocitat utilitzada en notes de nova creació"
+msgstr "Velocitat de la nota afegida."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:601
 msgid "Whether to strum in ascending order."
-msgstr ""
+msgstr "Si s'ha de fer strum en ordre ascendent."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:615
 msgid "Total time"
-msgstr ""
+msgstr "Temps total"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:616
 msgid "Total time per chord in ms."
-msgstr ""
+msgstr "Temps total per acord en ms."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:624
 msgid "Plugin browser tab"
@@ -8163,36 +8131,47 @@ msgstr "Afegit:"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 msgid "Add toggle to hide deactivated tracks in track filter menu"
 msgstr ""
+"S'ha afegit una opció per amagar les pistes desactivades al menú del filtre "
+"de pistes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
-#, fuzzy
 msgid "Add right-click option to loop selection in timeline"
 msgstr ""
-"Afegir l'opció de clic dret per a crear un objecte a tots els arranjadors"
+"Afegir una opció de clic amb el botó dret per a fer un bucle de la selecció "
+"a la línia de temps"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
 msgid "Add option to append all track/lane objects to the current selection"
 msgstr ""
+"Afegeix una opció per a afegir tots els objectes de pista/carril a la "
+"selecció actual"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 msgid "Add tracklist preferences button with option to disable auto-arm"
 msgstr ""
+"Afegeix un botó per a les preferències de la llista de pistes amb la "
+"possibilitat d'inhabilitar l'armament automàtic"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:61
 msgid ""
 "Add Crescendo, Flam, Flip H/V, Portato, Staccato, Legato, Strum MIDI "
 "functions"
 msgstr ""
+"Afegir les funcions MIDI Crescendo, Flam, Capgirar H/V, Portato, Staccato, "
+"Legato, Strum"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
 msgid "Implement MIDI clock (output) for syncing to Zrythm"
 msgstr ""
+"Implementació del rellotge MIDI (sortida) per a sincronitzar amb Zrhythm"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
 msgid ""
 "Build: add requirements.txt for managing Python dependencies (for building "
 "docs, etc.)"
 msgstr ""
+"Construcció: afegeix requirements.txt per a la gestió de dependències de "
+"Python (per a la documentació de construcció, etc.)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:94
@@ -8206,46 +8185,53 @@ msgid ""
 "Link scroll events on digital meter widgets (changes are only applied at the "
 "end of scrolls)"
 msgstr ""
+"Enllaça esdeveniments de desplaçament als ginys de vúmetre numèrics (els "
+"canvis només s'apliquen al final dels desplaçaments)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:68
 msgid "Build: re-enable some GCC analyzer checks and add new checks"
 msgstr ""
+"Construcció: s'han tornat a habilitar algunes comprovacions de l'analitzador "
+"GCC i s'han afegit noves comprovacions"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:69
-#, fuzzy
 msgid "Change order in track context menu"
-msgstr "Reorganitza el submenú Sortida directa al menú contextual de la pista"
+msgstr "Canvia l'ordre al menú contextual de la pista"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:70
 msgid "Subprojects: bump GTK and RtAudio versions"
-msgstr ""
+msgstr "Subprojectes: canviar les versions de GTK i RtAudio"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:71
 msgid "Cache previous and current transport info during processing"
 msgstr ""
+"Emmagatzema a la memòria cau la informació de transport anterior i actual "
+"durant el processament"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:72
 msgid "Various internal refactorings"
-msgstr ""
+msgstr "Diverses refactorisations internes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:73
-#, fuzzy
 msgid ""
 "Update Catalan, French, Japanese, Chinese (Simplified), Russian, Dutch, "
 "Hungarian, Italian, Indonesian, Spanish, Portuguese, Swedish translations"
 msgstr ""
-"Actualitza les traduccions al castellà, francès, català i xinès (tradicional)"
+"Actualitza les traduccions al català, francès, japonès, xinès (simplificat), "
+"rus, holandès, hongarès, italià, indonesi, espanyol, portuguès i suec"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:74
 msgid ""
 "Log: print `(?:?)` instead of `((null):(null))` when function and line "
 "number are unknown"
 msgstr ""
+"Registre: imprimeix`(?:?)` en lloc de `((null):(null))` quan la funció i el "
+"número de línia són desconeguts"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
-#, fuzzy
 msgid "Add more error checking and print more debug info in the log"
-msgstr "Afegir més comprovació d'errors en escriure àudio a fitxer"
+msgstr ""
+"Afegir més comprovació d'errors i més informació de depuració al registre"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:103
@@ -8256,158 +8242,185 @@ msgstr "Solucionat:"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:79
 msgid "Build: fix bundled plugin build with GCC 13"
-msgstr ""
+msgstr "Construcció: soluciona la construcció del complement agregat amb GCC 13"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:80
 msgid "Fix app icon not showing on Wayland (StartupWMClass)"
 msgstr ""
+"Soluciona la icona de l'aplicació que no es mostrava a Wayland "
+"(StartupWMClass)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:89
 msgid "Home/End key shortcut for moving to the start/end of the project"
-msgstr ""
+msgstr "Drecera de teclat Inici/Final per passar a l'inici/final del projecte"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
-#, fuzzy
 msgid "Option to select note notation in the piano roll"
-msgstr "Si mostrar notes d'altres regions al rotlle de pianola."
+msgstr "Opció per a seleccionar la notació de les notes al rotlle de pianola"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:91
-#, fuzzy
 msgid "Ability to select notes in a given pitch in the piano roll"
-msgstr "Si escoltar notes MIDI mentre s'arrosseguen al rotlle de pianola."
+msgstr "Capacitat de seleccionar notes en un to donat al rotlle de pianola"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:92
 msgid "Ctrl+0 shortcut for zooming to default level"
-msgstr ""
+msgstr "Drecera Ctrl+0 per a fer zoom al nivell predeterminat"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:96
 msgid "Show message that BPM/time signature automation is experimental"
 msgstr ""
+"Mostra un missatge explicant que l'automatització del BPM/indicació de "
+"compàs és experimental"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:97
 msgid "Show channel slot context menu on mouse release instead of mouse press"
 msgstr ""
+"Mostra el menú contextual de la ranura del canal quan es deixa anar el "
+"ratolí en lloc de prémer-ho"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:98
 msgid "Skip autosave if any toplevel window is on top"
 msgstr ""
+"Ometre el desat automàtic si hi ha una finestra de nivell superior a sobre"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:99
-#, fuzzy
 msgid ""
 "Update Catalan, French, Japanese, Chinese (Simplified), Czech, Portuguese "
 "(Brazil) translations"
 msgstr ""
-"Actualitza les traduccions al castellà, francès, català i xinès (tradicional)"
+"Actualitza les traduccions al català, francès, japonès, xinès (simplificat), "
+"txec, portuguès (Brasil)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:100
-#, fuzzy
 msgid "Redesign port/arranger object info dialogs"
-msgstr "Redissenyar el diàleg d'exportació"
+msgstr ""
+"S'han redissenyat els diàlegs d'informació d'objectes de port/arranjador"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:101
 msgid "Disable Guile scripting interface on MacOS"
-msgstr ""
+msgstr "Inhabilitació de la interfície de guile Scripting a MacOS"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid "Fix wrong tooltip message on automatable selector in track lanes"
 msgstr ""
+"Soluciona el missatge d'informació eines incorrecta al selector automàtic "
+"als carrils de pista"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid ""
 "Fix track lane names getting ellipsized despite there being enough space"
 msgstr ""
+"Soluciona els noms dels carrils de pista eren el·líptics tot i que hi ha "
+"prou espai"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:107
-#, fuzzy
 msgid "Fix crash when splitting large audio clips"
-msgstr "Soluciona un error en afegir una inserció a una pista d'àudio"
+msgstr "Soluciona un error en dividir clips d'àudio grans"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:108
 msgid ""
 "Fix \"Move Tracks Under Group\" option not working when setting the direct "
 "output of selected tracks to a new group"
 msgstr ""
+"Soluciona l'opció «Mou pistes al grup» que no funcionava quan la sortida "
+"directa de les pistes seleccionades es col·locava en un grup nou"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:109
 msgid "Fix given time range not being taken into account when exporting MIDI"
 msgstr ""
+"Soluciona un interval de temps determinat que no es tenia en compte durant "
+"l'exportació MIDI"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:118
 msgid "Audition notes when moved with arrow keys"
-msgstr ""
+msgstr "Notes de l'audició quan es mouen amb les tecles de fletxa"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:119
 msgid "Show value when hovering faders and balance controls"
 msgstr ""
+"Mostra el valor en passar el cursor per sobre dels atenuadors i els controls "
+"de balanç"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:120
 msgid "Double click on faders and balance controls to set precise values"
 msgstr ""
+"Fer doble clic als carretons i als atenuadors d'escala per a establir valors "
+"precisos"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:121
 msgid "Control-click on balance controls to reset their value"
-msgstr ""
+msgstr "Premer Control-clic als controls del balanç per a restablir-ne el valor"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:125
 msgid "Audition notes on draw and on click instead of on move"
-msgstr ""
+msgstr "Notes d'audició sobre dibuix i en fer clic en lloc de moure-les"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 msgid ""
 "Show track inspector when double clicking on a track in places other than "
 "the track name"
 msgstr ""
+"Mostra l'inspector de pistes quan es fa doble clic en una pista en "
+"ubicacions diferents del nom de la pista"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:127
 msgid "Don't start DnD on tracks until minimum movement threshold is reached"
 msgstr ""
+"No executeu DnD a les pistes fins que s'arribi al llindar de moviment mínim"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:128
 msgid ""
 "Minimize waiting time when creating tracks and connections for multi-out "
 "plugins"
 msgstr ""
+"Minimiza el temps d'espera en crear pistes i connexions per a complements de "
+"múltiples sortides"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:129
-#, fuzzy
 msgid "Scroll to middle of piano roll when first shown"
-msgstr ""
-"Desplaçar-se fins a la nota del mig quan es mostri per primera vegada el "
-"rotlle de pianola"
+msgstr "Desplaçament pel mig del rotlle de pianola a la pantalla inicial"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:133
 msgid "Fix incorrectly allowing bypassing snapping in autofill mode"
 msgstr ""
+"Soluciona un error que permetia evitar l'ajust en mode d'emplenament "
+"automàtic"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:134
-#, fuzzy
 msgid "Fix editor region being unset when moving tracks"
-msgstr "Soluciona l'historial de desfer que s'esborra en suprimir pistes"
+msgstr "Soluciona la regió de l'editor que no es definia en moure pistes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:135
 msgid "Fix not propagating errors when performing some actions"
-msgstr ""
+msgstr "Soluciona errors que no es propagaven durant determinades accions"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:136
 msgid ""
 "Fix incorrectly allowing auto-save to continue while pre-rolling or counting "
 "in"
 msgstr ""
+"Soluciona un error que permetia que l'emmagatzematge automàtic continués "
+"durant un pre-roll o pre-compte"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:137
 msgid "Fix resetting faders and balance controls not being undoable"
 msgstr ""
+"Soluciona que el restabliment dels atenuadors i els controls de l'escala no "
+"es podien desfer"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:138
 msgid "Fix not being able to cut regions near the edges with alt-click"
 msgstr ""
+"Soluciona la impossibilitat de tallar regions properes a les vores amb alt-"
+"clic"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid ""
 "Fix not being able to change parameter values for VST plugins in generic UI "
 "text fields"
 msgstr ""
+"Soluciona la impossibilitat d'editar els valors dels paràmetres del "
+"connector VST als camps de text genèrics de la interfície d'usuari"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:148
 msgid "Add monitor output meters in the header"
@@ -8415,7 +8428,7 @@ msgstr "Afegir comptadors de sortida del monitor a la capçalera"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:149
 msgid "Add Macedonian translations"
-msgstr "Actualitza les traduccions al macedoni"
+msgstr "Afegides les traduccions al macedoni"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:150
 msgid "Add pitch shift audio function"

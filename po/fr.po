@@ -18,16 +18,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-08-15 16:37+0900\n"
-"PO-Revision-Date: 2023-05-13 04:48+0000\n"
+"PO-Revision-Date: 2023-08-27 20:45+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -1494,9 +1494,9 @@ msgid "Failed getting contents for %s"
 msgstr "Échec de la récupération du contenu de %s"
 
 #: src/actions/tracklist_selections.c:311 src/dsp/track.c:2062
-#, fuzzy, c-format
+#, c-format
 msgid "Failed creating audio clip from file at %s"
-msgstr "Échec de l'écriture du clip audio dans le fichier : %s"
+msgstr "Échec de la création d'un clip audio à partir du fichier %s"
 
 #: src/actions/tracklist_selections.c:340
 msgid "No tracks selected"
@@ -2454,14 +2454,13 @@ msgid "Chords"
 msgstr "Accords"
 
 #: src/dsp/clip.c:160
-#, fuzzy
 msgid "Failed to initialize audio file"
-msgstr "Échec de l'écriture du fichier audio"
+msgstr "Échec de l'initialisation du fichier audio"
 
 #: src/dsp/clip.c:186
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to initialize audio file at %s"
-msgstr "Échec de l'écriture du fichier audio"
+msgstr "Échec de l'initialisation du fichier audio à %s"
 
 #: src/dsp/clip.c:453
 #, c-format
@@ -2473,9 +2472,8 @@ msgid "Failed to write audio file"
 msgstr "Échec de l'écriture du fichier audio"
 
 #: src/dsp/clip.c:544
-#, fuzzy
 msgid "Failed to create audio clip from file"
-msgstr "Échec de l'écriture du clip audio dans le fichier : %s"
+msgstr "Échec de la création d'un clip audio à partir d'un fichier"
 
 #: src/dsp/clip.c:696
 msgid "Edit in external app"
@@ -2500,9 +2498,9 @@ msgid "Launch"
 msgstr "Lancer"
 
 #: src/dsp/clip.c:753 src/dsp/audio_region.c:90
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create audio clip from file at %s"
-msgstr "Échec de l'écriture du clip audio dans le fichier : %s"
+msgstr "Échec de la création d'un clip audio à partir du fichier %s"
 
 #: src/dsp/tempo_track.c:38
 msgid "BPM"
@@ -3332,9 +3330,8 @@ msgid "Show lanes"
 msgstr "Afficher les lignes"
 
 #: src/gui/widgets/track.c:400
-#, fuzzy
 msgid "Change automatable"
-msgstr "Modifier le nom"
+msgstr "Changement automatisable"
 
 #: src/gui/widgets/track.c:406
 msgid "Hide automation"
@@ -3425,19 +3422,16 @@ msgid "Edit"
 msgstr "Éditer"
 
 #: src/gui/widgets/track.c:790
-#, fuzzy
 msgid "Append Track Objects to Selection"
-msgstr "Ajouter des notes dans la hauteur à la sélection"
+msgstr "Ajouter des objets de piste à la sélection"
 
 #: src/gui/widgets/track.c:802
-#, fuzzy
 msgid "Append Lane Objects to Selection"
-msgstr "Ajouter des notes dans la hauteur à la sélection"
+msgstr "Ajouter des objets de ligne à la sélection"
 
 #: src/gui/widgets/track.c:813
-#, fuzzy
 msgid "Append Lane Automation Regions to Selection"
-msgstr "Ajouter des notes dans la hauteur à la sélection"
+msgstr "Ajouter les régions d'automatisation des lignes à la sélection"
 
 #: src/gui/widgets/track.c:820 src/gui/widgets/piano_roll_keys.c:574
 #: src/gui/widgets/midi_arranger.c:492 resources/ui/export_dialog.ui:103
@@ -4227,9 +4221,8 @@ msgid "Apply function"
 msgstr "Appliquer la fonction"
 
 #: src/gui/widgets/editor_toolbar.c:128
-#, fuzzy
 msgid "Plugin Effect"
-msgstr "Visualiseur de greffon"
+msgstr "Greffon d'effet"
 
 #: src/gui/widgets/editor_toolbar.c:183 src/gui/widgets/editor_toolbar.c:213
 #: src/gui/widgets/editor_toolbar.c:234
@@ -4659,42 +4652,35 @@ msgid "Welcome"
 msgstr "Bienvenue"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:101
-#, fuzzy
 msgid "Start Velocity"
-msgstr "Script par défaut"
+msgstr "Vitesse de démarrage"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:120
-#, fuzzy
 msgid "End Velocity"
-msgstr "Vélocité"
+msgstr "Vélocité de fin"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:138
 #: src/gui/widgets/dialogs/midi_function_dialog.c:245
-#, fuzzy
 msgid "Curve"
-msgstr "Courbure"
+msgstr "Courbe"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:166
 #: src/gui/widgets/dialogs/midi_function_dialog.c:273
-#, fuzzy
 msgid "Curviness %"
-msgstr "Courbure"
+msgstr "% de courbure"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:186
-#, fuzzy
 msgid "Note: Flam is currently unimplemented"
-msgstr "Opération non-implémentée"
+msgstr "Note : Flam n'est pas encore implémenté"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:229
 #: build/data/org.zrythm.Zrythm.gschema.xml:600
-#, fuzzy
 msgid "Ascending"
-msgstr "Envoi"
+msgstr "Ascendante"
 
 #: src/gui/widgets/dialogs/midi_function_dialog.c:403
-#, fuzzy
 msgid "_Apply"
-msgstr "Appliquer %s"
+msgstr "_Appliquer"
 
 #: src/gui/widgets/dialogs/port_selector_dialog.c:43
 msgid "No port selected"
@@ -4732,9 +4718,8 @@ msgid "Group"
 msgstr "Groupe"
 
 #: src/gui/widgets/dialogs/port_info.c:57
-#, fuzzy
 msgid "Designation"
-msgstr "Destination"
+msgstr "Désignation"
 
 #: src/gui/widgets/dialogs/port_info.c:66
 msgid "Range"
@@ -4746,12 +4731,10 @@ msgid "%.1f to %.1f"
 msgstr "%.1f pour %.1f"
 
 #: src/gui/widgets/dialogs/port_info.c:73
-#, fuzzy
 msgid "Default Value"
 msgstr "Valeur par défaut"
 
 #: src/gui/widgets/dialogs/port_info.c:78
-#, fuzzy
 msgid "Current Value"
 msgstr "Valeur actuelle"
 
@@ -5150,7 +5133,7 @@ msgstr "Pas un événement de changement de contrôle"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:30
 msgid "Basic Info"
-msgstr ""
+msgstr "Infos basiques"
 
 #: src/gui/widgets/dialogs/arranger_object_info.c:56
 msgid "Owner"
@@ -5356,16 +5339,17 @@ msgstr "Échec de la suppression de la sortie directe"
 
 #: src/gui/widgets/popovers/tracklist_preferences_popover.c:65
 msgid "Behavior"
-msgstr ""
+msgstr "Comportement"
 
 #: src/gui/widgets/popovers/tracklist_preferences_popover.c:73
-#, fuzzy
 msgid "Auto-arm for Recording"
 msgstr "Armer pour enregistrement"
 
 #: src/gui/widgets/popovers/tracklist_preferences_popover.c:76
 msgid "Arm tracks for recording when clicked/selected."
 msgstr ""
+"Armer les pistes pour l'enregistrement lorsqu'elles sont cliquées/"
+"sélectionnées."
 
 #: src/gui/widgets/popovers/track_filter_popover.c:280
 msgid "Filter"
@@ -5376,9 +5360,8 @@ msgid "Track types"
 msgstr "Types de piste"
 
 #: src/gui/widgets/popovers/track_filter_popover.c:323
-#, fuzzy
 msgid "Disabled Tracks"
-msgstr "Désactiver %d pistes"
+msgstr "Pistes désactivées"
 
 #: src/guile/guile.c:25
 msgid "Script execution successful"
@@ -5489,9 +5472,9 @@ msgid "Failed to create or init ports and parameters"
 msgstr "Échec de la création ou de l'initialisation des ports et paramètres"
 
 #: src/plugins/lv2_plugin.c:2504
-#, fuzzy, c-format
+#, c-format
 msgid "Required feature %s is not supported"
-msgstr "Le format %s n'est pas encore supporté"
+msgstr "La fonctionnalité requise %s n'est pas supportée"
 
 #: src/plugins/lv2_plugin.c:2581
 msgid "Failed checking whether lv2 plugin UI is external"
@@ -5717,9 +5700,8 @@ msgid "Failed to move track"
 msgstr "Échec de l'ouverture du fichier : %s"
 
 #: src/settings/plugin_settings.c:384 src/settings/plugin_settings.c:489
-#, fuzzy
 msgid "Failed to set direct out"
-msgstr "Impossible de réinitialiser le schéma %s"
+msgstr "Échec de la mise en place de la sortie directe"
 
 #: src/settings/plugin_settings.c:391
 #, c-format
@@ -5770,14 +5752,12 @@ msgid "Canon in D"
 msgstr "Canon en ré"
 
 #: src/settings/chord_preset_pack_manager.c:109
-#, fuzzy
 msgid "Love Progression"
-msgstr "Avancement du projet"
+msgstr "Progression de l'amour"
 
 #: src/settings/chord_preset_pack_manager.c:116
-#, fuzzy
 msgid "Pop Chords 1"
-msgstr "Accords"
+msgstr "Accords pop 1"
 
 #: src/settings/chord_preset_pack_manager.c:127
 msgid "Most Often Used Chords"
@@ -6194,9 +6174,8 @@ msgid "Peak Meter"
 msgstr "Indicateur de crête"
 
 #: resources/ui/editor_toolbar.ui:128
-#, fuzzy
 msgid "Toggle ghost note visibility"
-msgstr "Basculer le panneau de droite"
+msgstr "Basculer la visibilité des notes fantômes"
 
 #: resources/ui/editor_toolbar.ui:143 resources/ui/timeline_toolbar.ui:104
 msgid "Toggle event viewer"
@@ -6567,9 +6546,8 @@ msgid "Track filters & visibility"
 msgstr "Visibilité et filtre de la piste"
 
 #: resources/ui/tracklist_header.ui:52
-#, fuzzy
 msgid "Tracklist Settings"
-msgstr "Sélection de piste"
+msgstr "Paramètres de la liste des pistes"
 
 #: resources/gtk/help-overlay.ui:30
 msgid "Global Shortcuts"
@@ -7121,9 +7099,8 @@ msgid "Playhead display type"
 msgstr "Type d'affichage de la tête de lecture"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:478
-#, fuzzy
 msgid "Selected playhead display type (BBT/time)."
-msgstr "Type d'affichage de la règle sélectionnée (BBT/temps)."
+msgstr "Type d'affichage de la tête de lecture sélectionné (BBT/temps)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:482
 msgid "JACK transport type"
@@ -7186,9 +7163,8 @@ msgstr ""
 "l'action de la fonction audio)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:513
-#, fuzzy
 msgid "Last used pitch shift ratio"
-msgstr "Dernière fonction audio utilisée"
+msgstr "Dernier ratio de décalage de hauteur utilisé"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:514
 msgid "Last used pitch shift ratio."
@@ -7240,101 +7216,86 @@ msgstr ""
 "zone visible reste centrée sur la tête de lecture (éditeur)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:538
-#, fuzzy
 msgid "Track filter name"
-msgstr "Nom de piste"
+msgstr "Nom de filtre de piste"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:539
 msgid "Name to filter tracks with."
 msgstr "Nom pour filtrer les pistes."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:543
-#, fuzzy
 msgid "Track filter type"
-msgstr "Pistes de chariot étendues"
+msgstr "Type de filtre de piste"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:544
 msgid "Track types to filter tracks with."
 msgstr "Types de pistes pour filtrer les pistes."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:548
-#, fuzzy
 msgid "Show disabled tracks"
-msgstr "Échec de la désactivation des pistes"
+msgstr "Afficher les pistes désactivées"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:549
-#, fuzzy
 msgid "Whether to show disabled tracks when filtering."
-msgstr "S'il faut afficher les fichiers cachés dans le navigateur de fichiers."
+msgstr "S'il faut afficher les pistes désactivées lors du filtrage."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:553
-#, fuzzy
 msgid "Auto-arm tracks"
-msgstr "Ajouter une piste d'automatisation"
+msgstr "Armer automatiquement les pistes"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:554
-#, fuzzy
 msgid "Whether to automatically arm tracks for recording."
-msgstr "Si le punch in/out est activé pour l'enregistrement."
+msgstr "S'il faut armer automatiquement les pistes pour l'enregistrement."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:562
-#, fuzzy
 msgid "Start velocity"
-msgstr "Vélocité par défaut"
+msgstr "Vélocité par départ"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:563
-#, fuzzy
 msgid "Start velocity."
-msgstr "Vélocité par défaut"
+msgstr "Vélocité de départ."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:567
-#, fuzzy
 msgid "End velocity"
-msgstr "Vélocité invalide"
+msgstr "Vélocité de fin"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:568
-#, fuzzy
 msgid "End velocity."
-msgstr "Vélocité invalide"
+msgstr "Vélocité de fin."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:573
 #: build/data/org.zrythm.Zrythm.gschema.xml:606
-#, fuzzy
 msgid "Curve algorithm."
-msgstr "Algorithme de panoramique"
+msgstr "Algorithme de courbe."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:578
 #: build/data/org.zrythm.Zrythm.gschema.xml:611
-#, fuzzy
 msgid "Curviness percentage."
-msgstr "Courbure"
+msgstr "Pourcentage de courbure."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:587
-#, fuzzy
 msgid "Time (ms)."
-msgstr "sig. temporelle"
+msgstr "Temps (ms)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:591
-#, fuzzy
 msgid "velocity"
-msgstr "Vélocité"
+msgstr "vélocité"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:592
-#, fuzzy
 msgid "Velocity of the added note."
-msgstr "Vélocité utilisée sur les notes nouvellement créées"
+msgstr "Vélocité de la note ajoutée."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:601
 msgid "Whether to strum in ascending order."
-msgstr ""
+msgstr "S'il faut jouer dans l'ordre ascendant."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:615
 msgid "Total time"
-msgstr ""
+msgstr "Temps total"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:616
 msgid "Total time per chord in ms."
-msgstr ""
+msgstr "Temps total par accord en ms."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:624
 msgid "Plugin browser tab"
@@ -7353,14 +7314,12 @@ msgid "Selected plugin browser filter"
 msgstr "Filtre du navigateur de greffon sélectionné"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:634
-#, fuzzy
 msgid "Plugin browser sort style"
-msgstr "Taille du navigateur de greffon"
+msgstr "Style de tri navigateur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:635
-#, fuzzy
 msgid "Selected plugin browser sort style"
-msgstr "Filtre du navigateur de greffon sélectionné"
+msgstr "Style de tri du navigateur de greffon sélectionné"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:639
 msgid "Plugin browser collections"
@@ -7412,14 +7371,12 @@ msgid "File browser selected bookmark"
 msgstr "Signet sélectionné dans le navigateur de fichiers"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:669
-#, fuzzy
 msgid "Selected bookmark in file browser."
-msgstr "Onglet du navigateur du greffon sélectionné."
+msgstr "Signet sélectionné dans le navigateur de fichiers."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:674
-#, fuzzy
 msgid "Whether to autoplay the selected file."
-msgstr "Si le métronome est activé."
+msgstr "Si le fichier sélectionné doit être lu automatiquement."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:679
 msgid "Whether to show unsupported files in the file browser."
@@ -7451,29 +7408,24 @@ msgid "Instrument plugin to use for MIDI auditioning."
 msgstr "Greffon d'instrument à utiliser pour l'audition MIDI."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:707
-#, fuzzy
 msgid "Inserts expanded"
-msgstr "Pistes d'inserts étendues"
+msgstr "Inserts étendus"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:708
-#, fuzzy
 msgid "Whether inserts are expanded."
-msgstr "Si les pistes d'insert sont étendues."
+msgstr "Si les inserts sont étendus."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:712
-#, fuzzy
 msgid "MIDI FX expanded"
-msgstr "Apprentissage MIDI"
+msgstr "Effet MIDI étendu"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:713
-#, fuzzy
 msgid "Whether MIDI FX are expanded."
-msgstr "Si les pistes de chariot sont étendues."
+msgstr "Si les effets MIDI sont étendus."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:717
-#, fuzzy
 msgid "Sends expanded"
-msgstr "Pistes d'envois étendues"
+msgstr "Envois étendus"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:718
 msgid "Whether sends are expanded."
@@ -7926,9 +7878,8 @@ msgid "Recording mode."
 msgstr "Mode enregistrement."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1059
-#, fuzzy
 msgid "Recording Pre-Roll"
-msgstr "Mode enregistrement"
+msgstr "Décompte d'enregistrement"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1060
 msgid "Number of bars to pre-roll when recording."
@@ -8258,36 +8209,46 @@ msgstr "Ajouté :"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 msgid "Add toggle to hide deactivated tracks in track filter menu"
 msgstr ""
+"Ajout d'une option pour masquer les pistes désactivées dans le menu du "
+"filtre des pistes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
-#, fuzzy
 msgid "Add right-click option to loop selection in timeline"
 msgstr ""
-"Ajout d'une option de clic-droit pour créer un objet sur tous les arrangeurs"
+"Ajout d'une option de clic droit pour boucler la sélection dans la ligne "
+"temporelle"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
 msgid "Add option to append all track/lane objects to the current selection"
 msgstr ""
+"Ajout d'une option permettant d'ajouter tous les objets de piste/ligne à la "
+"sélection actuelle"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 msgid "Add tracklist preferences button with option to disable auto-arm"
 msgstr ""
+"Ajout d'un bouton pour les préférences de la liste des pistes avec la "
+"possibilité de désactiver l'armement automatique"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:61
 msgid ""
 "Add Crescendo, Flam, Flip H/V, Portato, Staccato, Legato, Strum MIDI "
 "functions"
 msgstr ""
+"Ajouter les fonctions MIDI Crescendo, Flam, Flip H/V, Portato, Staccato, "
+"Legato, Strum"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
 msgid "Implement MIDI clock (output) for syncing to Zrythm"
-msgstr ""
+msgstr "Implémentation de l'horloge MIDI (sortie) pour synchroniser à Zrythm"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
 msgid ""
 "Build: add requirements.txt for managing Python dependencies (for building "
 "docs, etc.)"
 msgstr ""
+"Construction : ajout de requirements.txt pour la gestion des dépendances "
+"Python (pour la construction de la documentation, etc.)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:94
@@ -8301,49 +8262,55 @@ msgid ""
 "Link scroll events on digital meter widgets (changes are only applied at the "
 "end of scrolls)"
 msgstr ""
+"Lier les événements de défilement sur les widgets des indicateurs numériques "
+"(les changements ne sont appliqués qu'à la fin des défilements)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:68
 msgid "Build: re-enable some GCC analyzer checks and add new checks"
 msgstr ""
+"Construction : réactivation de certaines vérifications de l'analyseur GCC et "
+"ajout de nouvelles vérifications"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:69
-#, fuzzy
 msgid "Change order in track context menu"
-msgstr ""
-"Réorganise le sous-menu Sortie Directe dans le menu contextuel de la piste"
+msgstr "Modifier l'ordre dans le menu contextuel de la piste"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:70
 msgid "Subprojects: bump GTK and RtAudio versions"
-msgstr ""
+msgstr "Sous-projets : modifier les versions de GTK et de RtAudio"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:71
 msgid "Cache previous and current transport info during processing"
 msgstr ""
+"Mise en cache des informations de transport précédentes et actuelles pendant "
+"le traitement"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:72
 msgid "Various internal refactorings"
-msgstr ""
+msgstr "Diverses refactorisations internes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:73
-#, fuzzy
 msgid ""
 "Update Catalan, French, Japanese, Chinese (Simplified), Russian, Dutch, "
 "Hungarian, Italian, Indonesian, Spanish, Portuguese, Swedish translations"
 msgstr ""
-"Mise à jour des traductions en allemand, français, japonais, chinois "
-"(simplifié) et turc"
+"Mise à jour des traductions en catalan, français, japonais, chinois "
+"(simplifié), russe, néerlandais, hongrois, italien, indonésien, espagnol, "
+"portugais, suédois"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:74
 msgid ""
 "Log: print `(?:?)` instead of `((null):(null))` when function and line "
 "number are unknown"
 msgstr ""
+"Journal : imprime `(?: ?)` au lieu de `((null):(null))` lorsque la fonction "
+"et le numéro de ligne sont inconnus"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:75
-#, fuzzy
 msgid "Add more error checking and print more debug info in the log"
 msgstr ""
-"Toujours afficher l'interface du greffon lors de l'instanciation d'un greffon"
+"Ajout de plus de contrôle d'erreurs et inscription de plus d'informations de "
+"débogage dans le journal"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:103
@@ -8355,159 +8322,193 @@ msgstr "Corrigé :"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:79
 msgid "Build: fix bundled plugin build with GCC 13"
 msgstr ""
+"Construction : correction de la construction du greffon embarqué avec GCC 13"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:80
 msgid "Fix app icon not showing on Wayland (StartupWMClass)"
 msgstr ""
+"Correction de l'icône de l'application qui ne s'affichait pas sur Wayland "
+"(StartupWMClass)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:89
 msgid "Home/End key shortcut for moving to the start/end of the project"
 msgstr ""
+"Raccourci clavier Début/Fin pour se déplacer au début/à la fin du projet"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:90
-#, fuzzy
 msgid "Option to select note notation in the piano roll"
-msgstr "S'il faut montrer les notes des autres région dans le piano-roll."
+msgstr "Option pour sélectionner la notation des notes dans le rouleau de piano"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:91
-#, fuzzy
 msgid "Ability to select notes in a given pitch in the piano roll"
-msgstr "Entendre les notes MIDI pendant qu'on les place dans le piano-roll."
+msgstr ""
+"Possibilité de sélectionner des notes dans une hauteur donnée dans le "
+"rouleau de piano"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:92
 msgid "Ctrl+0 shortcut for zooming to default level"
-msgstr ""
+msgstr "Raccourci Ctrl+0 pour zoomer au niveau par défaut"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:96
 msgid "Show message that BPM/time signature automation is experimental"
 msgstr ""
+"Afficher un message expliquant que l'automatisation du BPM et de la "
+"signature temporelle est expérimentale"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:97
 msgid "Show channel slot context menu on mouse release instead of mouse press"
 msgstr ""
+"Afficher le menu contextuel de l'emplacement du canal lorsque la souris est "
+"relâchée au lieu d'être pressée"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:98
 msgid "Skip autosave if any toplevel window is on top"
 msgstr ""
+"Sauter la sauvegarde automatique si une fenêtre de haut niveau est au dessus"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:99
-#, fuzzy
 msgid ""
 "Update Catalan, French, Japanese, Chinese (Simplified), Czech, Portuguese "
 "(Brazil) translations"
 msgstr ""
-"Mise à jour des traductions en allemand, français, japonais, chinois "
-"(simplifié) et turc"
+"Mise à jour des traductions en catalan, français, japonais, chinois "
+"(simplifié), tchèque, portugais (Brésil)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:100
-#, fuzzy
 msgid "Redesign port/arranger object info dialogs"
-msgstr "Refonte du dialogue d'export"
+msgstr ""
+"Refonte des boîtes de dialogue d'information sur les objets port/arrangeur"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:101
-#, fuzzy
 msgid "Disable Guile scripting interface on MacOS"
-msgstr "Interface de scriptage"
+msgstr "Désactivation de l'interface de script Guile sur MacOS"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:105
 msgid "Fix wrong tooltip message on automatable selector in track lanes"
 msgstr ""
+"Correction d'un message d'infobulle erroné sur le sélecteur automatique dans "
+"les lignes de piste"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:106
 msgid ""
 "Fix track lane names getting ellipsized despite there being enough space"
 msgstr ""
+"Correction des noms des lignes de piste qui étaient elliptiques alors qu'il "
+"y a suffisamment d'espace"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:107
-#, fuzzy
 msgid "Fix crash when splitting large audio clips"
-msgstr "Correction d'une erreur lors d'un clic-droit dans l'éditeur audio"
+msgstr "Correction d'un plantage lors de la division de grands clips audio"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:108
 msgid ""
 "Fix \"Move Tracks Under Group\" option not working when setting the direct "
 "output of selected tracks to a new group"
 msgstr ""
+"Correction de l'option \"Déplacer les pistes sous le groupe\" qui ne "
+"fonctionnait pas lorsque la sortie directe des pistes sélectionnées était "
+"placée dans un nouveau groupe"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:109
 msgid "Fix given time range not being taken into account when exporting MIDI"
 msgstr ""
+"Correction d'une période temporelle donnée qui n'était pas prise en compte "
+"lors de l'exportation MIDI"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:118
 msgid "Audition notes when moved with arrow keys"
-msgstr ""
+msgstr "Notes d'audition lorsqu'elles sont déplacées avec les touches fléchées"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:119
 msgid "Show value when hovering faders and balance controls"
 msgstr ""
+"Affiche la valeur lors du survol des chariots et des contrôles de balance"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:120
 msgid "Double click on faders and balance controls to set precise values"
 msgstr ""
+"Double-cliquez sur les chariots et les contrôles de balance pour définir des "
+"valeurs précises"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:121
 msgid "Control-click on balance controls to reset their value"
 msgstr ""
+"Contrôle-clic sur les contrôles de la balance pour réinitialiser leur valeur"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:125
 msgid "Audition notes on draw and on click instead of on move"
 msgstr ""
+"Notes d'audition sur le dessin et sur le clic au lieu de sur le mouvement"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:126
 msgid ""
 "Show track inspector when double clicking on a track in places other than "
 "the track name"
 msgstr ""
+"Affiche l'inspecteur de piste lors d'un double-clic sur une piste à des "
+"endroits autres que le nom de la piste"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:127
 msgid "Don't start DnD on tracks until minimum movement threshold is reached"
 msgstr ""
+"Ne pas lancer le DnD sur les pistes tant que le seuil minimum de mouvement "
+"n'est pas atteint"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:128
 msgid ""
 "Minimize waiting time when creating tracks and connections for multi-out "
 "plugins"
 msgstr ""
+"Minimise le temps d'attente lors de la création de pistes et de connexions "
+"pour les greffons multi-sorties"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:129
-#, fuzzy
 msgid "Scroll to middle of piano roll when first shown"
-msgstr "Entendre les notes MIDI pendant qu'on les place dans le piano-roll."
+msgstr "Défilement au milieu du rouleau de piano lors de l'affichage initial"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:133
 msgid "Fix incorrectly allowing bypassing snapping in autofill mode"
 msgstr ""
+"Correction d'une erreur permettant de contourner l'accrochage en mode "
+"remplissage automatique"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:134
-#, fuzzy
 msgid "Fix editor region being unset when moving tracks"
 msgstr ""
-"Correction de l'historique d'annulation qui s’effaçait lors de la "
-"suppression de pistes"
+"Correction de la région de l'éditeur qui n'était pas définie lors du "
+"déplacement des pistes"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:135
 msgid "Fix not propagating errors when performing some actions"
-msgstr ""
+msgstr "Correction de la non propagation des erreurs lors de certaines actions"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:136
 msgid ""
 "Fix incorrectly allowing auto-save to continue while pre-rolling or counting "
 "in"
 msgstr ""
+"Correction d'une erreur permettant à l'enregistrement automatique de se "
+"poursuivre lors d'un pré-roulement ou d'un pré-comptage"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:137
 msgid "Fix resetting faders and balance controls not being undoable"
 msgstr ""
+"Correction du fait que la réinitialisation des chariots et des contrôles de "
+"balance n'étaient pas annulable"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:138
 msgid "Fix not being able to cut regions near the edges with alt-click"
 msgstr ""
+"Correction de l'impossibilité de couper les régions proches des bords avec "
+"alt-clic"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:139
 msgid ""
 "Fix not being able to change parameter values for VST plugins in generic UI "
 "text fields"
 msgstr ""
+"Correction de l'impossibilité de modifier les valeurs des paramètres des "
+"greffons VST dans les champs de texte de l'interface utilisateur générique"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:148
 msgid "Add monitor output meters in the header"
@@ -8598,9 +8599,9 @@ msgstr ""
 "de la version précédente)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:169
-#, fuzzy
 msgid "Fix right-clicking on inserts not working on Windows"
-msgstr "Correction de l'impossibilité de retirer les inserts"
+msgstr ""
+"Correction du clic-droit sur les inserts qui ne fonctionnait pas sous Windows"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:170
 msgid "Fix error when attempting to paste an empty selection"

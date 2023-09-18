@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the zrythm package.
 # Alexandros Theodotou <alextee@posteo.net>, 2020.
 # Alexandros Theodotou <alex@zrythm.org>, 2021.
+# Kieran W <alarmcuddly@outlook.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-08-15 16:37+0900\n"
-"PO-Revision-Date: 2021-03-08 01:16+0000\n"
-"Last-Translator: Alexandros Theodotou <alex@zrythm.org>\n"
+"PO-Revision-Date: 2023-09-03 20:45+0000\n"
+"Last-Translator: Kieran W <alarmcuddly@outlook.com>\n"
 "Language-Team: English (United Kingdom) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/en_GB/>\n"
 "Language: en_GB\n"
@@ -17,20 +18,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.5.1\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: inc/dsp/exporter.h:125
 msgid "Before inserts"
-msgstr ""
+msgstr "Before inserts"
 
 #: inc/dsp/exporter.h:126
-#, fuzzy
 msgid "Pre-fader"
-msgstr "Monitor out"
+msgstr "Pre-fader"
 
 #: inc/dsp/exporter.h:127
 msgid "Post fader"
-msgstr ""
+msgstr "Post fader"
 
 #: inc/dsp/track.h:166 src/gui/widgets/track_properties_expander.c:124
 #: src/gui/widgets/popovers/route_target_selector_popover.c:160
@@ -90,15 +90,15 @@ msgstr "MIDI Group"
 
 #: inc/dsp/track.h:178
 msgid "Folder"
-msgstr ""
+msgstr "Folder"
 
 #: inc/dsp/snap_grid.h:51
 msgid "bar"
-msgstr ""
+msgstr "bar"
 
 #: inc/dsp/snap_grid.h:52
 msgid "beat"
-msgstr ""
+msgstr "beat"
 
 #: inc/dsp/snap_grid.h:72 src/gui/widgets/digital_meter.c:506
 msgid "normal"
@@ -175,37 +175,32 @@ msgid "Invert"
 msgstr "Invert"
 
 #: inc/dsp/audio_function.h:54
-#, fuzzy
 msgid "Normalize peak"
-msgstr "Normal"
+msgstr "Normalize peak"
 
 #: inc/dsp/audio_function.h:55
-#, fuzzy
 msgid "Normalize RMS"
-msgstr "Normal"
+msgstr "Normalize RMS"
 
 #: inc/dsp/audio_function.h:56
-#, fuzzy
 msgid "Normalize LUFS"
-msgstr "Normal"
+msgstr "Normalize LUFS"
 
 #: inc/dsp/audio_function.h:57
-#, fuzzy
 msgid "Linear fade in"
-msgstr "Linear"
+msgstr "Linear fade in"
 
 #: inc/dsp/audio_function.h:58
-#, fuzzy
 msgid "Linear fade out"
-msgstr "Monitor out"
+msgstr "Linear fade out"
 
 #: inc/dsp/audio_function.h:59 src/gui/widgets/home_toolbar.c:142
 msgid "Nudge left"
-msgstr ""
+msgstr "Nudge left"
 
 #: inc/dsp/audio_function.h:60 src/gui/widgets/home_toolbar.c:143
 msgid "Nudge right"
-msgstr ""
+msgstr "Nudge right"
 
 #: inc/dsp/audio_function.h:61
 msgid "Reverse"
@@ -213,20 +208,19 @@ msgstr "Reverse"
 
 #: inc/dsp/audio_function.h:62
 msgid "Pitch shift"
-msgstr ""
+msgstr "Pitch shift"
 
 #: inc/dsp/audio_function.h:63
 msgid "External program"
-msgstr ""
+msgstr "External program"
 
 #: inc/dsp/audio_function.h:64
-#, fuzzy
 msgid "Guile script"
-msgstr "Default bank"
+msgstr "Guile script"
 
 #: inc/dsp/audio_function.h:65
 msgid "Custom plugin"
-msgstr ""
+msgstr "Custom plugin"
 
 #: inc/dsp/audio_function.h:66
 msgid "Invalid"
@@ -276,15 +270,15 @@ msgstr "None"
 
 #: inc/dsp/transport.h:54
 msgid "1 bar"
-msgstr ""
+msgstr "1 bar"
 
 #: inc/dsp/transport.h:55
 msgid "2 bars"
-msgstr ""
+msgstr "2 bars"
 
 #: inc/dsp/transport.h:56
 msgid "4 bars"
-msgstr ""
+msgstr "4 bars"
 
 #: inc/dsp/region.h:65 src/gui/widgets/track.c:1016
 msgid "Inherit"
@@ -304,168 +298,167 @@ msgstr "On"
 
 #: inc/dsp/scale.h:127 inc/schemas/audio/scale.h:93
 msgid "Chromatic"
-msgstr ""
+msgstr "Chromatic"
 
 #: inc/dsp/scale.h:128 inc/schemas/audio/scale.h:94
 msgid "Major"
-msgstr ""
+msgstr "Major"
 
 #: inc/dsp/scale.h:129 inc/schemas/audio/scale.h:95
 msgid "Minor"
-msgstr ""
+msgstr "Minor"
 
 #: inc/dsp/scale.h:130 inc/schemas/audio/scale.h:96
 msgid "Ionian"
-msgstr ""
+msgstr "Ionian"
 
 #: inc/dsp/scale.h:131 inc/schemas/audio/scale.h:97
 msgid "Dorian"
-msgstr ""
+msgstr "Dorian"
 
 #: inc/dsp/scale.h:132 inc/schemas/audio/scale.h:98
 msgid "Phrygian"
-msgstr ""
+msgstr "Phrygian"
 
 #: inc/dsp/scale.h:133 inc/schemas/audio/scale.h:99
 msgid "Lydian"
-msgstr ""
+msgstr "Lydian"
 
 #: inc/dsp/scale.h:134 inc/schemas/audio/scale.h:100
 msgid "Mixolydian"
-msgstr ""
+msgstr "Mixolydian"
 
 #: inc/dsp/scale.h:135 inc/schemas/audio/scale.h:101
 msgid "Aeolian"
-msgstr ""
+msgstr "Aeolian"
 
 #: inc/dsp/scale.h:136 inc/schemas/audio/scale.h:102
 msgid "Locrian"
-msgstr ""
+msgstr "Locrian"
 
 #: inc/dsp/scale.h:137 inc/schemas/audio/scale.h:103
 msgid "Melodic Minor"
-msgstr ""
+msgstr "Melodic Minor"
 
 #: inc/dsp/scale.h:138 inc/schemas/audio/scale.h:104
 msgid "Harmonic Minor"
-msgstr ""
+msgstr "Harmonic Minor"
 
 #: inc/dsp/scale.h:139 inc/schemas/audio/scale.h:105
 msgid "Whole Tone"
-msgstr ""
+msgstr "Whole Tone"
 
 #: inc/dsp/scale.h:140 inc/schemas/audio/scale.h:106
 msgid "Major Pentatonic"
-msgstr ""
+msgstr "Major Pentatonic"
 
 #: inc/dsp/scale.h:141 inc/schemas/audio/scale.h:107
 msgid "Minor Pentatonic"
-msgstr ""
+msgstr "Minor Pentatonic"
 
 #: inc/dsp/scale.h:142 inc/schemas/audio/scale.h:108
 msgid "Octatonic Half Whole"
-msgstr ""
+msgstr "Octatonic Half Whole"
 
 #: inc/dsp/scale.h:143 inc/schemas/audio/scale.h:110
 msgid "Octatonic Whole Half"
-msgstr ""
+msgstr "Octatonic Whole Half"
 
 #: inc/dsp/scale.h:144 inc/schemas/audio/scale.h:112
 msgid "Acoustic"
-msgstr ""
+msgstr "Acoustic"
 
 #: inc/dsp/scale.h:145 inc/schemas/audio/scale.h:113
 msgid "Harmonic Major"
-msgstr ""
+msgstr "Harmonic Major"
 
 #: inc/dsp/scale.h:146 inc/schemas/audio/scale.h:114
 msgid "Phrygian Dominant"
-msgstr ""
+msgstr "Phrygian Dominant"
 
 #: inc/dsp/scale.h:147 inc/schemas/audio/scale.h:115
 msgid "Major Locrian"
-msgstr ""
+msgstr "Major Locrian"
 
 #: inc/dsp/scale.h:148 inc/schemas/audio/scale.h:116
 msgid "Algerian"
-msgstr ""
+msgstr "Algerian"
 
 #: inc/dsp/scale.h:149 inc/schemas/audio/scale.h:117
 msgid "Augmented"
-msgstr ""
+msgstr "Augmented"
 
 #: inc/dsp/scale.h:150 inc/schemas/audio/scale.h:118
 msgid "Double Harmonic"
-msgstr ""
+msgstr "Double Harmonic"
 
 #: inc/dsp/scale.h:151 inc/schemas/audio/scale.h:119
 msgid "Chinese"
-msgstr ""
+msgstr "Chinese"
 
 #: inc/dsp/scale.h:152 inc/schemas/audio/scale.h:120
 msgid "Diminished"
-msgstr ""
+msgstr "Diminished"
 
 #: inc/dsp/scale.h:153 inc/schemas/audio/scale.h:121
 msgid "Dominant Diminished"
-msgstr ""
+msgstr "Dominant Diminished"
 
 #: inc/dsp/scale.h:154 inc/schemas/audio/scale.h:122
 msgid "Egyptian"
-msgstr ""
+msgstr "Egyptian"
 
 #: inc/dsp/scale.h:155 inc/schemas/audio/scale.h:123
 msgid "Eight Tone Spanish"
-msgstr ""
+msgstr "Eight Tone Spanish"
 
 #: inc/dsp/scale.h:156 inc/schemas/audio/scale.h:124
 msgid "Enigmatic"
-msgstr ""
+msgstr "Enigmatic"
 
 #: inc/dsp/scale.h:157 inc/schemas/audio/scale.h:125
 msgid "Geez"
-msgstr ""
+msgstr "Geez"
 
 #: inc/dsp/scale.h:158 inc/schemas/audio/scale.h:126
 msgid "Hindu"
-msgstr ""
+msgstr "Hindu"
 
 #: inc/dsp/scale.h:159 inc/schemas/audio/scale.h:127
 msgid "Hirajoshi"
-msgstr ""
+msgstr "Hirajoshi"
 
 #: inc/dsp/scale.h:160 inc/schemas/audio/scale.h:128
 msgid "Hungarian Gypsy"
-msgstr ""
+msgstr "Hungarian Gypsy"
 
 #: inc/dsp/scale.h:161 inc/schemas/audio/scale.h:129
-#, fuzzy
 msgid "Insen"
-msgstr "Inserts"
+msgstr "Insen"
 
 #: inc/dsp/scale.h:162 inc/schemas/audio/scale.h:130
 msgid "Neapolitan Major"
-msgstr ""
+msgstr "Neapolitan Major"
 
 #: inc/dsp/scale.h:163 inc/schemas/audio/scale.h:131
 msgid "Neapolitan Minor"
-msgstr ""
+msgstr "Neapolitan Minor"
 
 #: inc/dsp/scale.h:164 inc/schemas/audio/scale.h:132
 msgid "Oriental"
-msgstr ""
+msgstr "Oriental"
 
 #: inc/dsp/scale.h:165 inc/schemas/audio/scale.h:133
 msgid "Romanian Minor"
-msgstr ""
+msgstr "Romanian Minor"
 
 #: inc/dsp/scale.h:166 inc/schemas/audio/scale.h:134
 msgid "Altered"
-msgstr ""
+msgstr "Altered"
 
 #: inc/dsp/scale.h:167 inc/schemas/audio/scale.h:135
 msgid "Maqam"
-msgstr ""
+msgstr "Maqam"
 
 #: inc/dsp/scale.h:168 inc/schemas/audio/scale.h:136
 msgid "Yo"
@@ -481,11 +474,11 @@ msgstr ""
 
 #: inc/dsp/scale.h:171 inc/schemas/audio/scale.h:139
 msgid "Bebop Major"
-msgstr ""
+msgstr "Bebop Major"
 
 #: inc/dsp/scale.h:172 inc/schemas/audio/scale.h:140
 msgid "Super Locrian"
-msgstr ""
+msgstr "Super Locrian"
 
 #: inc/dsp/scale.h:173 inc/schemas/audio/scale.h:141
 msgid "Enigmatic Minor"
@@ -493,7 +486,7 @@ msgstr ""
 
 #: inc/dsp/scale.h:174 inc/schemas/audio/scale.h:142
 msgid "Composite"
-msgstr ""
+msgstr "Composite"
 
 #: inc/dsp/scale.h:175 inc/schemas/audio/scale.h:143
 msgid "Bhairav"
@@ -3136,9 +3129,8 @@ msgid "Scripting interface"
 msgstr ""
 
 #: src/gui/widgets/right_dock_edge.c:117
-#, fuzzy
 msgid "Monitor Section"
-msgstr "Monitor out"
+msgstr "Monitor Section"
 
 #: src/gui/widgets/header.c:98
 #, fuzzy, c-format
@@ -3612,7 +3604,7 @@ msgstr "Channel %s"
 
 #: src/gui/widgets/track.c:1036
 msgid "Piano Roll"
-msgstr ""
+msgstr "Piano Roll"
 
 #: src/gui/widgets/track.c:1048
 #, fuzzy
@@ -6379,7 +6371,7 @@ msgstr ""
 
 #: resources/ui/header.ui:23 resources/gtk/help-overlay.ui:98
 msgid "Project"
-msgstr ""
+msgstr "Project"
 
 #: resources/ui/header.ui:34
 msgid "View"
@@ -6931,7 +6923,7 @@ msgstr ""
 
 #: resources/gtk/help-overlay.ui:301
 msgid "Looping"
-msgstr ""
+msgstr "Looping"
 
 #: data/zrythm.desktop.in:6
 msgid "@DESKTOP_ENTRY_NAME@"
@@ -6939,7 +6931,7 @@ msgstr ""
 
 #: data/zrythm.desktop.in:7
 msgid "Digital Audio Workstation"
-msgstr ""
+msgstr "Digital Audio Workstation"
 
 #: data/zrythm.desktop.in:9
 msgid "highly automated and intuitive digital audio workstation"
@@ -8224,7 +8216,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:1154
 #: build/data/org.zrythm.Zrythm.gschema.xml:1185
 msgid "Plugins"
-msgstr ""
+msgstr "Plugins"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1155
 msgid "UIs"
@@ -8305,7 +8297,7 @@ msgstr ""
 #: build/data/org.zrythm.Zrythm.gschema.xml:1232
 #: build/data/org.zrythm.Zrythm.gschema.xml:1246
 msgid "Editing"
-msgstr ""
+msgstr "Editing"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1223
 msgid "Fade algorithm"
@@ -8398,7 +8390,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1330
 msgid "Scripting"
-msgstr ""
+msgstr "Scripting"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1335
 #, fuzzy

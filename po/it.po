@@ -11,13 +11,14 @@
 # Giovanni Mauri <info@thejoe.it>, 2022.
 # G R <gradaellig@gmail.com>, 2022.
 # Luigi <work@luigibarbato.digital>, 2023.
+# "Giovanni Solimeno (Crax97)" <gsolimeno97@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-08-15 16:37+0900\n"
-"PO-Revision-Date: 2023-06-10 04:47+0000\n"
-"Last-Translator: Luigi <work@luigibarbato.digital>\n"
+"PO-Revision-Date: 2023-09-01 20:45+0000\n"
+"Last-Translator: \"Giovanni Solimeno (Crax97)\" <gsolimeno97@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
 "Language: it\n"
@@ -25,7 +26,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.0.1-dev\n"
 
 #: inc/dsp/exporter.h:125
 msgid "Before inserts"
@@ -114,11 +115,11 @@ msgstr "normale"
 
 #: inc/dsp/snap_grid.h:73 src/gui/widgets/digital_meter.c:509
 msgid "dotted"
-msgstr ""
+msgstr "punteggiato"
 
 #: inc/dsp/snap_grid.h:74 src/gui/widgets/digital_meter.c:512
 msgid "triplet"
-msgstr ""
+msgstr "tripletta"
 
 #: inc/dsp/engine.h:181
 msgid "1,024"
