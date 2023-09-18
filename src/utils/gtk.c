@@ -2008,4 +2008,5 @@ z_gtk_drop_down_factory_setup_common_ellipsized (
   GtkListItem * item = GTK_LIST_ITEM (list_item);
   GtkLabel *    label = GTK_LABEL (gtk_list_item_get_child (item));
   gtk_label_set_ellipsize (label, PANGO_ELLIPSIZE_END);
+  gtk_label_set_max_width_chars (label, 0);
 }

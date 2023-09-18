@@ -344,8 +344,10 @@ finalize (RouteTargetSelectorWidget * self)
 static void
 route_target_selector_widget_class_init (RouteTargetSelectorWidgetClass * _klass)
 {
-  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
+  GtkWidgetClass * wklass = GTK_WIDGET_CLASS (_klass);
+  gtk_widget_class_set_css_name (wklass, "route-target-selector");
 
+  GObjectClass * oklass = G_OBJECT_CLASS (_klass);
   oklass->finalize = (GObjectFinalizeFunc) finalize;
 }
 
@@ -354,7 +356,4 @@ route_target_selector_widget_init (RouteTargetSelectorWidget * self)
 {
   self->dropdown = GTK_DROP_DOWN (gtk_drop_down_new (NULL, NULL));
   adw_bin_set_child (ADW_BIN (self), GTK_WIDGET (self->dropdown));
-
-  /* add class */
-  gtk_widget_add_css_class (GTK_WIDGET (self), "route-target-selector");
 }

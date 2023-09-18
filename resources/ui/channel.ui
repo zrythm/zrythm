@@ -105,10 +105,6 @@
             </child>
             <child>
               <object class="RouteTargetSelectorWidget" id="output">
-                <property name="visible">True</property>
-                <property name="margin-start">4</property>
-                <property name="margin-end">4</property>
-                <property name="margin-top">2</property>
                 <layout>
                   <property name="column">1</property>
                   <property name="row">7</property>

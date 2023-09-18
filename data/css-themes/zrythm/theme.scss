@@ -269,26 +269,24 @@ modulator-view two-col-expander-box
   border-top-right-radius: 6px;
 }
 
-channel expander-box>button
-{
-  /*border-top-left-radius: 6px;*/
-  /*border-top-right-radius: 6px;*/
-}
+channel {
+  button.flat {
+    padding-left: 3px;
+    padding-right: 3px;
+  }
 
-channel expander-box
-{
-  /*margin: 5px;*/
-  border-style: none;
-  border-width: 2px;
-  border-radius: 8px;
-  /* FIXME use predefined colors */
-  border-color: #BBBBBB;
-}
+  expander-box {
+    /*margin: 5px;*/
+    border-style: none;
+    border-width: 2px;
+    border-radius: 8px;
+    /* FIXME use predefined colors */
+    border-color: #BBBBBB;
 
-channel button.flat
-{
-  padding-left: 3px;
-  padding-right: 3px;
+    >button {
+      padding: 4px 6px 4px 6px;
+    }
+  }
 }
 
 .piano_roll_key_box,
@@ -549,4 +547,12 @@ fader-buttons button {
   border-style: solid;
   border-radius: 4px;
   border-width: 1px;
+}
+
+route-target-selector button.toggle {
+  padding: 2px 3px 2px 6px;
+
+  label {
+    font-size: 11px;
+  }
 }
