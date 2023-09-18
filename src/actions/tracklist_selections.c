@@ -1021,6 +1021,7 @@ do_or_undo_create_or_delete (
         } /* if delete undo */
 
       EVENTS_PUSH (ET_TRACKS_ADDED, NULL);
+      EVENTS_PUSH (ET_TRACKLIST_SELECTIONS_CHANGED, NULL);
     }
   /* else if deleting tracks (delete do or create
    * undo) */
