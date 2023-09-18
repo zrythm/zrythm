@@ -35,7 +35,13 @@
 
 #include "zrythm-config.h"
 
+#ifdef HAVE_C11_THREADS
+#  include <threads.h>
+#endif
+
 #include "dsp/engine.h"
+#include "dsp/graph.h"
+#include "dsp/graph_thread.h"
 #include "utils/types.h"
 
 #include <gtk/gtk.h>
@@ -122,19 +128,66 @@ nframes_t
 router_get_max_route_playback_latency (Router * router);
 
 /**
- * Returns if the current thread is a
- * processing thread.
- */
-WARN_UNUSED_RESULT HOT NONNULL ACCESS_READ_ONLY (
-  1) bool router_is_processing_thread (const Router * const router);
-
-/**
- * Returns whether this is the thread that kicks
- * off processing (thread that calls
+ * Returns whether this is the thread that kicks off processing (thread that calls
  * router_start_cycle()).
  */
+WARN_UNUSED_RESULT HOT NONNULL
+  ACCESS_READ_ONLY (1) static inline bool router_is_processing_kickoff_thread (
+    const Router * const self)
+{
+  return g_thread_self () == self->process_kickoff_thread;
+}
+
+/**
+ * Returns if the current thread is a processing thread.
+ */
 WARN_UNUSED_RESULT HOT NONNULL ACCESS_READ_ONLY (
-  1) bool router_is_processing_kickoff_thread (const Router * const self);
+  1) static inline bool router_is_processing_thread (const Router * const self)
+{
+#ifdef HAVE_C11_THREADS
+  /* this is called too often so use this optimization */
+  static thread_local bool have_result = false;
+  static thread_local bool is_processing_thread = false;
+#else
+  bool have_result = false;
+  bool is_processing_thread = false;
+#endif
+
+  if (G_LIKELY (have_result))
+    {
+      return is_processing_thread;
+    }
+
+  if (G_UNLIKELY (!self->graph))
+    {
+      have_result = false;
+      is_processing_thread = false;
+      return false;
+    }
+
+  for (int j = 0; j < self->graph->num_threads; j++)
+    {
+      if (pthread_equal (pthread_self (), self->graph->threads[j]->pthread))
+        {
+          is_processing_thread = true;
+          have_result = true;
+          return true;
+        }
+    }
+
+  if (
+    self->graph->main_thread
+    && pthread_equal (pthread_self (), self->graph->main_thread->pthread))
+    {
+      is_processing_thread = true;
+      have_result = true;
+      return true;
+    }
+
+  have_result = true;
+  is_processing_thread = false;
+  return false;
+}
 
 /**
  * Queues a control port change to be applied

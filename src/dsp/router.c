@@ -237,69 +237,6 @@ router_new (void)
   return self;
 }
 
-/**
- * Returns whether this is the thread that kicks
- * off processing (thread that calls
- * router_start_cycle()).
- */
-bool
-router_is_processing_kickoff_thread (const Router * const self)
-{
-  return g_thread_self () == self->process_kickoff_thread;
-}
-
-/**
- * Returns if the current thread is a
- * processing thread.
- */
-bool
-router_is_processing_thread (const Router * const self)
-{
-#ifdef HAVE_C11_THREADS
-  /* this is called too often so use this optimization */
-  static thread_local bool have_result = false;
-  static thread_local bool is_processing_thread = false;
-#else
-  bool have_result = false;
-  bool is_processing_thread = false;
-#endif
-
-  if (G_LIKELY (have_result))
-    {
-      return is_processing_thread;
-    }
-
-  if (G_UNLIKELY (!self->graph))
-    {
-      have_result = false;
-      is_processing_thread = false;
-      return false;
-    }
-
-  for (int j = 0; j < self->graph->num_threads; j++)
-    {
-      if (pthread_equal (pthread_self (), self->graph->threads[j]->pthread))
-        {
-          is_processing_thread = true;
-          have_result = true;
-          return true;
-        }
-    }
-
-  if (
-    self->graph->main_thread
-    && pthread_equal (pthread_self (), self->graph->main_thread->pthread))
-    {
-      is_processing_thread = true;
-      have_result = true;
-      return true;
-    }
-
-  have_result = true;
-  is_processing_thread = false;
-  return false;
-}
-
 void
 router_free (Router * self)
 {
