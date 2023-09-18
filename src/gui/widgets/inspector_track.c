@@ -118,7 +118,7 @@ inspector_track_widget_show_tracks (
       text_expander_widget_setup (
         self->comment, true, track_get_comment, track_comment_setter, track);
       expander_box_widget_set_label (
-        Z_EXPANDER_BOX_WIDGET (self->comment), _ ("Comment"));
+        Z_EXPANDER_BOX_WIDGET (self->comment), _ ("Notes"));
 
       if (track_type_has_channel (track->type))
         {

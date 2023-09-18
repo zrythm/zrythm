@@ -313,20 +313,29 @@ route_target_selector_widget_refresh (
   if (!track)
     {
       gtk_widget_set_tooltip_text (
-        GTK_WIDGET (dropdown), _ ("Cannot be routed"));
+        GTK_WIDGET (dropdown), _ ("No Routing Available"));
     }
   /* if routed by default and cannot be changed */
   else if (track && track->type == TRACK_TYPE_MASTER)
     {
       gtk_widget_set_sensitive (GTK_WIDGET (dropdown), false);
       gtk_widget_set_tooltip_text (
-        GTK_WIDGET (dropdown), _ ("Routed to engine"));
+        GTK_WIDGET (dropdown), _ ("Routed to Engine"));
     }
   /* if routable */
   else
     {
-      gtk_widget_set_tooltip_text (
-        GTK_WIDGET (dropdown), _ ("Select channel to route signal to"));
+      Track * direct_out = channel_get_output_track (track->channel);
+      if (direct_out)
+        {
+          char * str = g_strdup_printf (_ ("Routed to %s"), direct_out->name);
+          gtk_widget_set_tooltip_text (GTK_WIDGET (dropdown), str);
+          g_free (str);
+        }
+      else
+        {
+          gtk_widget_set_tooltip_text (GTK_WIDGET (dropdown), _ ("Unrouted"));
+        }
     }
 
   /* --- remember track --- */
