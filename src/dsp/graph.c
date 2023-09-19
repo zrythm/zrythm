@@ -382,14 +382,6 @@ add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
     && port->id.flags & PORT_FLAG_AUTOMATABLE)
     {
       AutomationTrack * found_at = port->at;
-      if (!found_at)
-        {
-#if 0
-              found_at =
-                automation_track_find_from_port (
-                  port, port->track, true);
-#endif
-        }
       g_return_val_if_fail (found_at, NULL);
       if (found_at->num_regions == 0 && port->num_srcs == 0)
         {
@@ -412,8 +404,7 @@ add_port (Graph * self, Port * port, const bool drop_if_unnecessary)
     }
   else
     {
-      /* allocate buffers to be used during
-       * DSP */
+      /* allocate buffers to be used during DSP */
       port_allocate_bufs (port);
       return graph_create_node (self, ROUTE_NODE_TYPE_PORT, port);
     }

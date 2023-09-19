@@ -533,8 +533,7 @@ typedef struct Port
   /** Pointer to ExtPort, if hw. */
   ExtPort * ext_port;
 
-  /** Magic number to identify that this is a
-   * Port. */
+  /** Magic number to identify that this is a Port. */
   int magic;
 
   /** Last allocated buffer size (used for audio

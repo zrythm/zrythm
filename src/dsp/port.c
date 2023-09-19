@@ -724,9 +724,11 @@ port_receive_midi_events_from_jack (
             && !track->channel->midi_channels[channel])
             {
               /* different channel */
+              /*g_debug ("received event on different channel");*/
             }
           else if (jack_ev.size == 3)
             {
+              /*g_debug ("received event at %u", jack_ev.time);*/
               midi_events_add_event_from_buf (
                 self->midi_events, jack_ev.time, jack_ev.buffer,
                 (int) jack_ev.size, F_NOT_QUEUED);
@@ -2085,8 +2087,7 @@ port_set_control_value (
       /* if bpm, update engine */
       if (id->flags & PORT_FLAG_BPM)
         {
-          /* this must only be called during
-           * processing kickoff or while the
+          /* this must only be called during processing kickoff or while the
            * engine is stopped */
           g_return_if_fail (
             !engine_get_run (AUDIO_ENGINE)
@@ -2123,8 +2124,7 @@ port_set_control_value (
           EVENTS_PUSH (ET_TIME_SIGNATURE_CHANGED, NULL);
         }
 
-      /* if plugin enabled port, also set
-       * plugin's own enabled port value and
+      /* if plugin enabled port, also set plugin's own enabled port value and
        * vice versa */
       if (
         port_is_in_active_project (self)
