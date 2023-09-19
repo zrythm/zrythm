@@ -170,6 +170,7 @@ on_close_request (GtkWindow * window, MainWindowWidget * self)
 
     } /* endif project has unsaved changes */
 
+  gtk_window_destroy (GTK_WINDOW (self));
   return false;
 }
 
@@ -368,6 +369,16 @@ main_window_widget_tear_down (MainWindowWidget * self)
 }
 
 static void
+main_window_dispose (MainWindowWidget * self)
+{
+  g_message ("disposing main_window...");
+
+  G_OBJECT_CLASS (main_window_widget_parent_class)->dispose (G_OBJECT (self));
+
+  g_message ("done");
+}
+
+static void
 main_window_finalize (MainWindowWidget * self)
 {
   g_message ("finalizing main_window...");
@@ -408,6 +419,7 @@ main_window_widget_class_init (MainWindowWidgetClass * klass)
 #undef BIND_CHILD
 
   GObjectClass * oklass = G_OBJECT_CLASS (klass);
+  oklass->dispose = (GObjectFinalizeFunc) main_window_dispose;
   oklass->finalize = (GObjectFinalizeFunc) main_window_finalize;
 }
 
