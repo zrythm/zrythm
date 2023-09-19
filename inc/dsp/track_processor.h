@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -20,6 +20,7 @@ typedef struct Port                  Port;
 typedef struct Track                 Track;
 typedef struct MidiMappings          MidiMappings;
 typedef struct EngineProcessTimeInfo EngineProcessTimeInfo;
+TYPEDEF_STRUCT (MPMCQueue);
 
 /**
  * @addtogroup dsp
@@ -157,6 +158,14 @@ typedef struct TrackProcessor
    * Only applies to tracks that receive MIDI input.
    */
   bool pending_midi_panic;
+
+  /**
+   * A queue of MIDI CC ports whose values have been recently updated.
+   *
+   * This is used during processing to avoid checking every single MIDI CC
+   * port for changes.
+   */
+  MPMCQueue * updated_midi_automatable_ports;
 
   int magic;
 } TrackProcessor;

@@ -495,11 +495,9 @@ typedef struct Port
   bool received_ui_event;
 
   /**
-   * The last known control value sent to the UI
-   * (if control).
+   * The last known control value sent to the UI (if control).
    *
-   * Also used by track processor for MIDI
-   * controls.
+   * @note Only used in the original LV2 implementation.
    *
    * @see lv2_ui_send_control_val_event_from_plugin_to_ui().
    */
@@ -519,6 +517,18 @@ typedef struct Port
    * To be set at runtime only (not serialized).
    */
   AutomationTrack * at;
+
+  /*
+   * Next 2 objects are MIDI CC info, if MIDI CC in track processor.
+   *
+   * Used as a cache.
+   */
+
+  /** MIDI channel, starting from 1. */
+  midi_byte_t midi_channel;
+
+  /** MIDI CC number, if not pitchbend/poly key/channel pressure. */
+  midi_byte_t midi_cc_no;
 
   /** Pointer to ExtPort, if hw. */
   ExtPort * ext_port;

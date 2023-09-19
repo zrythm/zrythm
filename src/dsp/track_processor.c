@@ -23,6 +23,7 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/mem.h"
+#include "utils/mpmc_queue.h"
 #include "utils/objects.h"
 #include "zrythm.h"
 
@@ -42,6 +43,10 @@ init_common (TrackProcessor * self)
               Port * cc_port = self->midi_cc[i * 128 + j];
               g_return_if_fail (cc_port);
 
+              /* set caches */
+              cc_port->midi_channel = i + 1;
+              cc_port->midi_cc_no = j;
+
               /* set model bytes for CC:
                * [0] = ctrl change + channel
                * [1] = controller
@@ -57,6 +62,9 @@ init_common (TrackProcessor * self)
             }
         }
     }
+
+  self->updated_midi_automatable_ports = mpmc_queue_new ();
+  mpmc_queue_reserve (self->updated_midi_automatable_ports, 128 * 16);
 }
 
 /**
@@ -75,9 +83,9 @@ track_processor_init_loaded (TrackProcessor * self, Track * track)
       Port * port = g_ptr_array_index (ports, i);
       port_init_loaded (port, self);
     }
-  object_free_w_func_and_null (g_ptr_array_unref, ports)
+  object_free_w_func_and_null (g_ptr_array_unref, ports);
 
-    init_common (self);
+  init_common (self);
 }
 
 /**
@@ -684,53 +692,31 @@ add_events_from_midi_cc_control_ports (
   const TrackProcessor * self,
   const nframes_t        local_offset)
 {
-  /* FIXME optimize (use caches) */
-  for (int i = 0; i < 16; i++)
+  Port * cc;
+  while (mpmc_queue_dequeue (self->updated_midi_automatable_ports, (void *) &cc))
     {
-      /* starting from 1 */
-      int    channel = i + 1;
-      Port * cc = NULL;
-      int    offset = i * 128;
-      for (int j = 0; j < 128; j++)
-        {
-          cc = self->midi_cc[offset + j];
-          if (G_LIKELY (math_floats_equal (cc->last_sent_control, cc->control)))
-            continue;
-
-          midi_events_add_control_change (
-            self->midi_out->midi_events, channel, (midi_byte_t) j,
-            (midi_byte_t) math_round_float_to_signed_32 (cc->control * 127.f),
-            local_offset, false);
-          cc->last_sent_control = cc->control;
-        }
-
-      cc = self->pitch_bend[i];
-      if (!math_floats_equal (cc->last_sent_control, cc->control))
+      /*port_identifier_print (&cc->id);*/
+      if (cc->id.flags2 & PORT_FLAG2_MIDI_PITCH_BEND)
         {
           midi_events_add_pitchbend (
-            self->midi_out->midi_events, channel,
+            self->midi_out->midi_events, cc->midi_channel,
             math_round_float_to_signed_32 (cc->control), local_offset, false);
-          cc->last_sent_control = cc->control;
         }
-
-        /* TODO */
-#if 0
-      cc = self->poly_key_pressure[i];
-      midi_events_add_pitchbend (
-        self->midi_out->midi_events,
-        channel,
-        math_round_float_to_int (cc->control),
-        local_offset, false);
-      cc->last_sent_control = cc->control;
-
-      cc = self->channel_pressure[i];
-      midi_events_add_pitchbend (
-        self->midi_out->midi_events,
-        channel,
-        math_round_float_to_int (cc->control),
-        local_offset, false);
-      cc->last_sent_control = cc->control;
-#endif
+      else if (cc->id.flags2 & PORT_FLAG2_MIDI_POLY_KEY_PRESSURE)
+        {
+          /* TODO */
+        }
+      else if (cc->id.flags2 & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
+        {
+          /* TODO */
+        }
+      else
+        {
+          midi_events_add_control_change (
+            self->midi_out->midi_events, cc->midi_channel, cc->midi_cc_no,
+            (midi_byte_t) math_round_float_to_signed_32 (cc->control * 127.f),
+            local_offset, false);
+        }
     }
 }
 
@@ -763,8 +749,7 @@ track_processor_process (
 #define local_offset (time_nfo->local_offset)
 #define nframes (time_nfo->nframes)
 
-  Track * tr = track_processor_get_track (self);
-  g_return_if_fail (tr);
+  Track * tr = self->track;
 
   /* if frozen or disabled, skip */
   if (tr->frozen || !track_is_enabled (tr))
@@ -1258,6 +1243,9 @@ track_processor_free (TrackProcessor * self)
       port_disconnect_all (self->midi_out);
       object_free_w_func_and_null (port_free, self->midi_out);
     }
+
+  object_free_w_func_and_null (
+    mpmc_queue_free, self->updated_midi_automatable_ports);
 
   object_zero_and_free (self);
 }

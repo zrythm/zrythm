@@ -37,6 +37,7 @@
 #include "utils/hash.h"
 #include "utils/math.h"
 #include "utils/mem.h"
+#include "utils/mpmc_queue.h"
 #include "utils/objects.h"
 #include "utils/string.h"
 #include "zrythm_app.h"
@@ -2157,8 +2158,17 @@ port_set_control_value (
               port_set_control_value (
                 pl->enabled, self->control, false, F_PUBLISH_EVENTS);
             }
+        } /* endif plugin-enabled port */
+
+      if (self->id.flags & PORT_FLAG_MIDI_AUTOMATABLE)
+        {
+          Track * track = port_get_track (self, true);
+          g_return_if_fail (track);
+          mpmc_queue_push_back (
+            track->processor->updated_midi_automatable_ports, self);
         }
-    }
+
+    } /* endif port value changed */
 
   if (forward_event)
     {
