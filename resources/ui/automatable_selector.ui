@@ -1,53 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
+  <requires lib="Adw" version="1.0"/>
   <requires lib="gtk" version="4.0"/>
   <template class="AutomatableSelectorPopoverWidget" parent="GtkPopover">
     <signal name="closed" handler="on_closed" swapped="no"/>
     <property name="child">
       <object class="GtkBox">
-        <property name="orientation">vertical</property>
+        <property name="homogeneous">true</property>
         <child>
-          <object class="GtkBox">
+          <object class="AdwPreferencesPage">
             <child>
-              <object class="GtkBox" id="type_treeview_box">
-                <property name="focusable">1</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkSeparator"/>
-            </child>
-            <child>
-              <object class="GtkSeparator"/>
-            </child>
-            <child>
-              <object class="GtkScrolledWindow">
-                <property name="focusable">1</property>
-                <property name="hexpand">1</property>
-                <property name="hscrollbar_policy">never</property>
-                <property name="max_content_height">420</property>
-                <property name="propagate_natural_height">1</property>
-                <property name="child">
-                  <object class="GtkViewport">
-                    <property name="child">
-                      <object class="GtkBox" id="port_treeview_box">
-                        <property name="focusable">1</property>
-                      </object>
-                    </property>
+              <object class="AdwPreferencesGroup">
+                <property name="title" translatable="yes">Type</property>
+                <child>
+                  <object class="GtkBox" id="type_treeview_box">
+                    <property name="focusable">1</property>
                   </object>
-                </property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkLabel" id="info">
-                <property name="margin-start">3</property>
-                <property name="margin-end">3</property>
-                <property name="label" translatable="yes">label</property>
+                </child>
               </object>
             </child>
           </object>
         </child>
         <child>
-          <placeholder/>
+          <object class="AdwPreferencesPage">
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="title" translatable="yes">Port</property>
+                <child>
+                  <object class="GtkScrolledWindow">
+                    <property name="focusable">1</property>
+                    <property name="hexpand">1</property>
+                    <property name="hscrollbar_policy">never</property>
+                    <property name="max_content_height">420</property>
+                    <property name="propagate_natural_height">1</property>
+                    <property name="child">
+                      <object class="GtkViewport">
+                        <property name="child">
+                          <object class="GtkBox" id="port_treeview_box">
+                            <property name="focusable">1</property>
+                          </object>
+                        </property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="AdwPreferencesPage">
+            <child>
+              <object class="AdwPreferencesGroup">
+                <property name="title" translatable="yes">Info</property>
+                <child>
+                  <object class="GtkLabel" id="info">
+                    <property name="margin-start">3</property>
+                    <property name="margin-end">3</property>
+                    <property name="label" translatable="yes">label</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
         </child>
       </object>
     </property>
