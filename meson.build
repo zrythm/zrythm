@@ -674,6 +674,7 @@ test_strict_cflags += [
 
   #'-Werror=redundant-decls',
   '-Werror=shadow',
+  '-Werror=address',
   '-Werror=undef',
   '-Werror=unused',
   # TODO enable following 2 lines to catch VLAs

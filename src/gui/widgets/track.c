@@ -1258,9 +1258,6 @@ click_released (
             {
               AutomatableSelectorPopoverWidget * popover =
                 automatable_selector_popover_widget_new (at);
-              /*gtk_popover_set_relative_to (*/
-              /*GTK_POPOVER (popover),*/
-              /*GTK_WIDGET (self));*/
               GdkRectangle rect = {
                 .x = (int) cb->x + (int) cb->width / 2,
                 .y = (int) cb->y,
@@ -1269,12 +1266,8 @@ click_released (
               };
               gtk_widget_set_parent (GTK_WIDGET (popover), GTK_WIDGET (self));
               gtk_popover_set_pointing_to (GTK_POPOVER (popover), &rect);
-              /*gtk_popover_set_modal (*/
-              /*GTK_POPOVER (popover), 1);*/
               gtk_popover_popup (GTK_POPOVER (popover));
-              g_debug (
-                "popping up automatable selector "
-                "popover");
+              g_debug ("popping up automatable selector popover");
             }
         }
     }

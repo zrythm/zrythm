@@ -413,14 +413,20 @@ item_factory_setup_cb (
             GtkWidget * inner_label =
               z_gtk_widget_find_child_of_type (label, GTK_TYPE_LABEL);
             g_return_if_fail (inner_label);
-            gtk_label_set_ellipsize (
-              GTK_LABEL (inner_label), PANGO_ELLIPSIZE_END);
+            if (self->ellipsize_label)
+              {
+                gtk_label_set_ellipsize (
+                  GTK_LABEL (inner_label), PANGO_ELLIPSIZE_END);
+              }
             gtk_label_set_max_width_chars (GTK_LABEL (inner_label), max_chars);
           }
         else
           {
             label = gtk_label_new ("");
-            gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
+            if (self->ellipsize_label)
+              {
+                gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
+              }
             gtk_widget_set_halign (GTK_WIDGET (label), GTK_ALIGN_START);
             gtk_label_set_max_width_chars (GTK_LABEL (label), max_chars);
           }
@@ -794,6 +800,12 @@ item_factory_bind_cb (
                 }
             }
             break;
+          case WRAPPED_OBJECT_TYPE_PORT:
+            {
+              Port * port = (Port *) obj->obj;
+              port_get_full_designation (port, str);
+            }
+            break;
           case WRAPPED_OBJECT_TYPE_PLUGIN_COLLECTION:
             {
               PluginCollection * coll = (PluginCollection *) obj->obj;
@@ -1067,6 +1079,8 @@ item_factory_new (ItemFactoryType type, bool editable, const char * column_name)
   ItemFactory * self = object_new (ItemFactory);
 
   self->type = type;
+
+  self->ellipsize_label = true;
 
   self->editable = editable;
   if (column_name)

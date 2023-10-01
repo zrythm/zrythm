@@ -1,26 +1,10 @@
-/*
- * Copyright (C) 2019 Alexandros Theodotou <alex at zrythm dot org>
- *
- * This file is part of Zrythm
- *
- * Zrythm is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Zrythm is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
+// SPDX-FileCopyrightText: © 2019, 2023 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __GUI_WIDGETS_AUTOMATABLE_SELECTOR_POPOVER_H__
 #define __GUI_WIDGETS_AUTOMATABLE_SELECTOR_POPOVER_H__
 
-/* FIXME should be merged with port selector popover */
+#include "utils/types.h"
 
 #include <gtk/gtk.h>
 
@@ -31,9 +15,9 @@ G_DECLARE_FINAL_TYPE (
   automatable_selector_popover_widget,
   Z,
   AUTOMATABLE_SELECTOR_POPOVER_WIDGET,
-  GtkPopover)
+  GtkPopover);
 
-typedef struct _AutomatableSelectorButtonWidget AutomatableSelectorButtonWidget;
+TYPEDEF_STRUCT (ItemFactory);
 
 /**
  * @addtogroup widgets
@@ -99,28 +83,19 @@ typedef struct _AutomatableSelectorPopoverWidget
   /** The owner button. */
   AutomationTrack * owner;
 
-  GtkBox *       type_treeview_box;
-  GtkTreeView *  type_treeview;
-  GtkTreeModel * type_model;
-  GtkBox *       port_treeview_box;
-  GtkTreeView *  port_treeview;
-  GtkTreeModel * port_model;
+  GtkListView * type_listview;
+  GtkListView * port_listview;
+
+  ItemFactory * port_factory;
 
   GtkLabel * info;
 
-  /** Flag to set to ignore the selection change
-   * callbacks when setting a selection manually */
-  int selecting_manually;
-
-  AutomatableSelectorType selected_type;
-  int                     selected_slot;
+  GtkSearchEntry * port_search_entry;
 
   /**
-   * The selected Port will be stored here
-   * and passed to the button when closing so that
-   * it can hide the current AutomationTrack and
-   * create/show the one corresponding to this
-   * Automatable.
+   * The selected Port will be stored here and passed to the button when
+   * closing so that it can hide the current AutomationTrack and create/show
+   * the one corresponding to this Automatable.
    */
   Port * selected_port;
 } AutomatableSelectorPopoverWidget;

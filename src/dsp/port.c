@@ -3367,6 +3367,13 @@ port_get_plugin (Port * const self, const bool warn_if_fail)
       return self->plugin;
     }
 
+  if (self->id.owner_type != PORT_OWNER_TYPE_PLUGIN)
+    {
+      if (warn_if_fail)
+        g_warning ("port not owned by plugin");
+      return NULL;
+    }
+
   Track * track = port_get_track (self, 0);
   if (!track && self->tmp_plugin)
     {
@@ -3414,8 +3421,8 @@ port_get_plugin (Port * const self, const bool warn_if_fail)
       return NULL;
     }
 
-  /* unset \ref Port.tmp_plugin if a Plugin was
-   * found */
+  /* unset \ref Port.tmp_plugin if a Plugin was found */
+  /* FIXME self should be const - this should not be done here */
   self->tmp_plugin = NULL;
 
   return pl;

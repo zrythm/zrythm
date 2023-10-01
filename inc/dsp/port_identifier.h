@@ -549,6 +549,28 @@ int
 port_identifier_port_group_cmp (const void * p1, const void * p2);
 
 /**
+ * Returns the MIDI channel for a MIDI CC port, or -1 if not a MIDI CC port.
+ *
+ * @note MIDI channels start from 1 (not 0).
+ */
+static inline int
+port_identifier_get_midi_channel (const PortIdentifier * self)
+{
+  if (
+    self->flags2 & PORT_FLAG2_MIDI_PITCH_BEND
+    || self->flags2 & PORT_FLAG2_MIDI_POLY_KEY_PRESSURE
+    || self->flags2 & PORT_FLAG2_MIDI_CHANNEL_PRESSURE)
+    {
+      return self->port_index + 1;
+    }
+  else if (self->flags & PORT_FLAG_MIDI_AUTOMATABLE)
+    {
+      return self->port_index / 128 + 1;
+    }
+  return -1;
+}
+
+/**
  * Copy the identifier content from \ref src to
  * \ref dest.
  *

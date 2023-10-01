@@ -60,6 +60,8 @@ typedef struct ItemFactory
 
   bool editable;
 
+  bool ellipsize_label;
+
   /** Column name, or NULL if used for list
    * views. */
   char * column_name;
