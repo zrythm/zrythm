@@ -14,15 +14,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-08-15 16:28+0900\n"
-"PO-Revision-Date: 2022-11-26 23:56+0000\n"
-"Last-Translator: SunRuikang <srk888666@qq.com>\n"
-"Language: zh_CN\n"
+"PO-Revision-Date: 2023-09-20 20:45+0000\n"
+"Last-Translator: 金东杰 <ar0m@tutanota.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/user-manual/zh_Hans/>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Weblate 5.1-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -37,38 +38,41 @@ msgid ""
 "program:`zrythm` or :program:`zrythm_launch`, like: ``LV2_PATH=/my/custom/"
 "path zrythm_launch``"
 msgstr ""
+"Zrythm理解以下环境变量。它们可以在 :file:`.bashrc`或类似的shell配置文件中进行"
+"配置，也可以在操作系统的设置中配置，或者在运行:program:`zrythm`或:program:`zr"
+"ythm_launch`时直接传递，例如：``LV2_PATH=/my/custom/path zrythm_launch``"
 
 #: ../../appendix/environment.rst:23
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
-msgstr ""
+msgstr "将此设置为要扫描的 :term:`LV2`插件的位置。"
 
 #: ../../appendix/environment.rst:26
 msgid "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
-msgstr ""
+msgstr "示例： ``LV2_PATH=$HOME/custom-lv2-dir``"
 
 #: ../../appendix/environment.rst:31
 msgid "Set to 1 to disable plugin scanning."
-msgstr ""
+msgstr "将其设置为1以禁用插件扫描。"
 
 #: ../../appendix/environment.rst:33
 msgid "Example: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
-msgstr ""
+msgstr "示例: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
 
 #: ../../appendix/environment.rst:38
 msgid "Set this to the locations to scan for :term:`VST2` plugins."
-msgstr ""
+msgstr "将此设置为要扫描 :term:`VST2`插件的位置。"
 
 #: ../../appendix/environment.rst:43
 msgid "Set this to the locations to scan for :term:`VST3` plugins."
-msgstr ""
+msgstr "将其设置为要扫描的:term:`VST3`插件的位置。"
 
 #: ../../appendix/environment.rst:48
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
-msgstr ""
+msgstr "DSP线程的使用数量。默认为CPU核心数 - 1。"
 
 #: ../../appendix/environment.rst:53
 msgid "Set to 1 to show extra information useful for developers."
-msgstr ""
+msgstr "将其设置为1以显示对开发人员有用的额外信息。"
 
 #: ../../appendix/files-and-directories.rst:7
 msgid "Files and Directories"
@@ -83,7 +87,8 @@ msgid ""
 "When Zrythm is launched for the first time, it will also ask you to select a "
 "directory for saving your user data. See :term:`Zrythm user path` for "
 "details."
-msgstr ""
+msgstr "当首次启动Zrythm时，它还会要求您选择一个目录来保存您的用户数据。有关详细信息"
+"，请参阅 :term:` Zrythm用户路径` 。"
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
@@ -105,6 +110,10 @@ msgid ""
 "menus, etc. This is normally installed at :file:`/usr/share/applications/"
 "zrythm.desktop`."
 msgstr ""
+"一个`符合freedesktop规范的配置文件<https://specifications.freedesktop.org/"
+"desktop-entry-spec/desktop-entry-spec-latest.html>`_ "
+"，描述了如何启动特定程序以及它在菜单中的显示方式等。通常安装在:file:`/usr/"
+"share/applications/zrythm.desktop`。"
 
 #: ../../appendix/files-and-directories.rst:29
 msgid "GLib Schema"
@@ -116,6 +125,8 @@ msgid ""
 "installed at :file:`/usr/share/glib-2.0/schemas/org.zrythm.Zrythm.gschema."
 "xml`."
 msgstr ""
+"该文件包含用户配置的模式。通常安装在:file:`/usr/share/glib-2.0/schemas/org."
+"zrythm.Zrythm.gschema.xml`。"
 
 #: ../../appendix/files-and-directories.rst:35
 msgid "Desktop Icon"
@@ -126,58 +137,67 @@ msgid ""
 "This is used by the desktop environment. Normally installed at :file:`/usr/"
 "share/icons/hicolor/scalable/apps/zrythm.svg`."
 msgstr ""
+"这是由桌面环境使用的图标文件。通常安装在:file:`/usr/share/icons/hicolor/"
+"scalable/apps/zrythm.svg`。"
 
 #: ../../appendix/files-and-directories.rst:41
 msgid "Localization Files"
-msgstr ""
+msgstr "本地化文件"
 
 #: ../../appendix/files-and-directories.rst:42
 msgid ""
 "Localization files are installed under :file:`/usr/share/locale`. For "
 "example, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` for Korean."
 msgstr ""
+"本地化文件安装在:file:`/usr/share/"
+"locale`目录下。例如，韩文的本地化文件路径是:file:`/usr/share/locale/ko/"
+"LC_MESSAGES/zrythm.mo`。"
 
 #: ../../appendix/files-and-directories.rst:48
 #: ../../getting-started/getting-plugins.rst:101
 msgid "Samples"
-msgstr ""
+msgstr "采样"
 
 #: ../../appendix/files-and-directories.rst:49
 msgid ""
 "Default audio samples used by Zrythm (such as the metronome). Normally "
 "installed under :file:`/usr/share/zrythm/samples`."
-msgstr ""
+msgstr "Zrythm使用的默认音频样本（例如节拍器）通常安装在:file:`/usr/share/zrythm/"
+"samples`目录下。"
 
 #: ../../appendix/files-and-directories.rst:54
 msgid "Fonts"
-msgstr ""
+msgstr "字体"
 
 #: ../../appendix/files-and-directories.rst:55
 msgid ""
 "Unless your distribution provides packages for the required fonts, fonts "
 "required by Zrythm will normally be installed under :file:`/usr/share/fonts/"
 "zrythm`."
-msgstr ""
+msgstr "除非您的发行版提供所需字体的软件包，否则Zrythm所需的字体通常安装在:file:`/"
+"usr/share/fonts/zrythm`目录下。"
 
 #: ../../appendix/files-and-directories.rst:61
 msgid "GtkSourceView Stylesheets"
-msgstr ""
+msgstr "GtkSourceView 样式表"
 
 #: ../../appendix/files-and-directories.rst:62
 msgid ""
 "Zrythm will install CSS stylesheets to be used by some text input widgets "
 "under :file:`/usr/share/zrythm/sourceview-styles`."
 msgstr ""
+"Zrythm将安装CSS样式表，供某些文本输入小部件使用，路径为:file:`/usr/share/"
+"zrythm/sourceview-styles`。"
 
 #: ../../appendix/files-and-directories.rst:67
 msgid "Themes"
-msgstr ""
+msgstr "主题"
 
 #: ../../appendix/files-and-directories.rst:68
 msgid ""
 "Default themes (including icon themes) will normally be installed under :"
 "file:`/usr/share/zrythm/themes`."
-msgstr ""
+msgstr "默认主题（包括图标主题）通常会安装在:file:`/usr/share/zrythm/themes`目录下。"
 
 #: ../../appendix/files-and-directories.rst:72
 msgid ""
@@ -185,34 +205,40 @@ msgid ""
 "files in the :term:`Zrythm user path`. See :doc:`../theming/intro` for "
 "details."
 msgstr ""
+"Zrythm提供了一种覆盖某些文件的方式，用户可以使用:term:`Zrythm用户路径`中指定"
+"的文件来进行自定义。有关详细信息，请参阅文档中的:doc:`../theming/intro`。"
 
 #: ../../appendix/files-and-directories.rst:78
 msgid "User Files"
-msgstr ""
+msgstr "用户文件"
 
 #: ../../appendix/files-and-directories.rst:80
 msgid "Cached Plugin Descriptors"
-msgstr ""
+msgstr "缓存插件描述符"
 
 #: ../../appendix/files-and-directories.rst:81
 msgid ""
 "Plugin descriptor cache for faster scanning. This is found at :file:"
 "`cached_plugin_descriptors.yaml` under the :term:`Zrythm user path`."
 msgstr ""
+"插件描述符缓存用于加快扫描速度。它位于:term:`Zrythm用户路径`下的:file:`cached"
+"_plugin_descriptors.yaml`文件中。"
 
 #: ../../appendix/files-and-directories.rst:87
 msgid "Plugin Collections"
-msgstr ""
+msgstr "插件集合"
 
 #: ../../appendix/files-and-directories.rst:88
 msgid ""
 "This file contains your plugin collections. It is found at :file:"
 "`plugin_collections.yaml` under the :term:`Zrythm user path`."
 msgstr ""
+"这个文件包括了你的插件集合。在:term:`Zrythm "
+"用户路径`下的文件:file:`plugin_collections.yaml`包含。"
 
 #: ../../appendix/files-and-directories.rst:94
 msgid "Log File"
-msgstr ""
+msgstr "日志文件"
 
 #: ../../appendix/files-and-directories.rst:95
 msgid ""
@@ -220,14 +246,17 @@ msgid ""
 "subdirectory under the :term:`Zrythm user path`. The filename will contain "
 "the current date and time, for example :file:`log_2020-06-26_15-34-19.log`."
 msgstr ""
+"Zrythm在每次运行时会将日志写入到:term:`Zrythm用户路径`下的:file:`log`子目录中"
+"。日志文件的文件名将包含当前的日期和时间，例如:file:`log_2020-06-26_15-34-19."
+"log`。"
 
 #: ../../appendix/files-and-directories.rst:101
 msgid "This log file is useful for debugging crashes and other problems."
-msgstr ""
+msgstr "z这个日志文件对于调试崩溃和其他问题非常有用。"
 
 #: ../../appendix/gnu-free-documentation-license.rst:7
 msgid "GNU Free Documentation License"
-msgstr ""
+msgstr "GNU自由文档许可证"
 
 #: ../../appendix/intro.rst:7
 msgid "Appendix"
@@ -239,7 +268,7 @@ msgstr "菜单选项"
 
 #: ../../appendix/troubleshooting.rst:9
 msgid "Troubleshooting"
-msgstr ""
+msgstr "故障排除"
 
 #: ../../appendix/troubleshooting.rst:11 ../../configuration/shortcuts.rst:47
 #: ../../editing/clip-editors/automation-editor.rst:56
@@ -249,15 +278,15 @@ msgstr ""
 #: ../../tracks/inspector-page.rst:158 ../../tracks/overview.rst:71
 #: ../../zrythm-interface/right-panel.rst:24
 msgid "Todo"
-msgstr ""
+msgstr "待办事项"
 
 #: ../../appendix/troubleshooting.rst:11
 msgid "Write this page."
-msgstr ""
+msgstr "撰写这个页面。"
 
 #: ../../chords-and-scales/chord-pad.rst:7
 msgid "Chord Pad"
-msgstr "和弦垫"
+msgstr "和弦打击垫"
 
 #: ../../chords-and-scales/chord-pad.rst:10
 #: ../../editing/clip-editors/overview.rst:7 ../../editing/overview.rst:7
@@ -273,13 +302,16 @@ msgstr "概述"
 msgid ""
 "The chord pad contains 12 pads (1 for each key on a piano keyboard) that can "
 "be used to trigger chords. The chord pad can be found in the bottom panel."
-msgstr ""
+msgstr "和弦打击垫包含12个键（对应钢琴键盘上的每个音符），用于触发和弦。和弦打击垫通"
+"常位于底部面板上。"
 
 #: ../../chords-and-scales/chord-pad.rst:19
 msgid ""
 "These 12 chords are linked to the chords in the :ref:`Chord Editor <editing/"
 "clip-editors/chord-editor:Chord Editor>`."
 msgstr ""
+"这12个和弦与:ref:`和弦编辑器 <editing/clip-editors/chord-editor:Chord "
+"Editor>`中的和弦相连。"
 
 #: ../../chords-and-scales/chord-pad.rst:23
 #: ../../getting-started/getting-plugins.rst:86
@@ -291,7 +323,8 @@ msgstr "预设"
 msgid ""
 "Zrythm comes with pre-installed chord presets, and it also allows you to "
 "generate chord presets from scales, or even save your own."
-msgstr ""
+msgstr "Zrythm预装了一些和弦预设，并且还允许您从音阶中生成和弦预设，甚至保存自己的和"
+"弦预设。"
 
 #: ../../chords-and-scales/chord-pad.rst:30
 msgid "Preset Packs"
@@ -302,6 +335,8 @@ msgid ""
 "A list of preset packs and presets is found in the :ref:`Right Panel <zrythm-"
 "interface/right-panel:Right Panel>` under :guilabel:`Chord Preset Browser`."
 msgstr ""
+"在:ref:`右侧面板 <zrythm-interface/right-"
+"panel:右侧面板>`的:guilabel:`和弦预设浏览器`下可以找到预设包和预设的列表。"
 
 #: ../../chords-and-scales/chord-pad.rst:39
 msgid "Chord preset browser"
@@ -310,13 +345,13 @@ msgstr "和弦预设浏览器"
 #: ../../chords-and-scales/chord-pad.rst:42
 #: ../../plugins-files/audio-midi-files/file-browser.rst:48
 msgid "Filtering"
-msgstr ""
+msgstr "筛选"
 
 #: ../../chords-and-scales/chord-pad.rst:44
 msgid ""
 "Clicking a preset pack in the top will filter the list of presets to presets "
 "in the selected pack."
-msgstr ""
+msgstr "在顶部点击预设包将会根据所选的预设包筛选预设列表，只显示该预设包中的预设。"
 
 #: ../../chords-and-scales/chord-pad.rst:48
 #: ../../plugins-files/audio-midi-files/file-browser.rst:87
@@ -1567,7 +1602,7 @@ msgstr "钢琴卷帘控件"
 
 #: ../../editing/clip-editors/piano-roll.rst:39
 msgid "Drum View"
-msgstr "鼓视图"
+msgstr "鼓组视图"
 
 #: ../../editing/clip-editors/piano-roll.rst:31
 msgid ""
@@ -2336,7 +2371,7 @@ msgstr ""
 
 #: ../../editing/edit-tools.rst:134
 msgid "Ramp Tool"
-msgstr ""
+msgstr "斜率工具"
 
 #: ../../editing/edit-tools.rst:135
 msgid ""
@@ -7420,7 +7455,7 @@ msgstr ""
 
 #: ../../tracks/track-lanes.rst:7
 msgid "Track Lanes"
-msgstr "音轨 Lanes"
+msgstr "链路"
 
 #: ../../tracks/track-lanes.rst:9
 msgid ""

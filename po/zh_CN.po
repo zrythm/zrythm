@@ -20,13 +20,14 @@
 # Martin LYU <my2605070493@gmail.com>, 2023.
 # TheInterestingSoul <wangpy01@outlook.com>, 2023.
 # Frank <1425943868ho@gmail.com>, 2023.
+# 金东杰 <ar0m@tutanota.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.4.088\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-08-15 16:37+0900\n"
-"PO-Revision-Date: 2023-08-12 20:45+0000\n"
-"Last-Translator: Frank <1425943868ho@gmail.com>\n"
+"PO-Revision-Date: 2023-09-20 20:45+0000\n"
+"Last-Translator: 金东杰 <ar0m@tutanota.com>\n"
 "Language-Team: Chinese (Simplified) <https://hosted.weblate.org/projects/"
 "zrythm/zrythm/zh_Hans/>\n"
 "Language: zh_CN\n"
@@ -34,11 +35,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.1-dev\n"
 
 #: inc/dsp/exporter.h:125
 msgid "Before inserts"
-msgstr ""
+msgstr "插入前"
 
 #: inc/dsp/exporter.h:126
 msgid "Pre-fader"
@@ -175,7 +176,6 @@ msgid "Dummy"
 msgstr "虚拟的"
 
 #: inc/dsp/engine.h:253
-#, fuzzy
 msgid "Dummy (libsoundio)"
 msgstr "Dummy (libsoundio)"
 
@@ -1831,9 +1831,9 @@ msgid "Merge arranger selections"
 msgstr "合并编曲者选集"
 
 #: src/actions/arranger_selections.c:3238
-#, fuzzy, c-format
+#, c-format
 msgid "Resize arranger selections - %s"
-msgstr "调整编曲者选集尺寸"
+msgstr "调整编曲者选集尺寸-%s"
 
 #: src/actions/arranger_selections.c:3241
 msgid "Quantize arranger selections"
@@ -2698,14 +2698,14 @@ msgid "32 bit"
 msgstr ""
 
 #: src/utils/audio.c:179
-#, fuzzy, c-format
+#, c-format
 msgid "Error opening sndfile: %s"
-msgstr "加载 LV2 包目录时出错: "
+msgstr "加载 LV2 包目录时出错:%s"
 
 #: src/utils/audio.c:205
-#, fuzzy, c-format
+#, c-format
 msgid "Seek error %d: %s"
-msgstr "错误：%s"
+msgstr "错误%d：%s"
 
 #: src/utils/gtk.c:1213
 msgid "Mixer"
@@ -2713,7 +2713,7 @@ msgstr "混音器"
 
 #: src/utils/gtk.c:1218
 msgid "Chord Pad"
-msgstr "和弦垫"
+msgstr "和弦打击垫"
 
 #: src/utils/gtk.c:1221
 msgid "Editor"

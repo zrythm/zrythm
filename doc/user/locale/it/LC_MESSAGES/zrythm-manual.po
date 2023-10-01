@@ -37,15 +37,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-08-15 16:28+0900\n"
-"PO-Revision-Date: 2023-06-10 04:47+0000\n"
-"Last-Translator: Luigi <work@luigibarbato.digital>\n"
+"PO-Revision-Date: 2023-09-18 20:45+0000\n"
+"Last-Translator: olly1240 <olly1240@gmail.com>\n"
+"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/it/>\n"
 "Language: it\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/it/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.0.2\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -69,42 +70,50 @@ msgstr ""
 #: ../../appendix/environment.rst:23
 msgid "Set this to the locations to scan for :term:`LV2` plugins."
 msgstr ""
+"Imposta questo campo alla posizione da scansionare per i plugins :term:`LV2`."
 
 #: ../../appendix/environment.rst:26
 msgid "Example: ``LV2_PATH=$HOME/custom-lv2-dir``"
-msgstr ""
+msgstr "Esempio: ``LV2_PATH=$HOME/custom-lv2-dir``"
 
 #: ../../appendix/environment.rst:31
 msgid "Set to 1 to disable plugin scanning."
-msgstr ""
+msgstr "Imposta ad 1 per disabilitare la scansione dei plugin."
 
 #: ../../appendix/environment.rst:33
 msgid "Example: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
-msgstr ""
+msgstr "Per esempio: ``ZRYTHM_SKIP_PLUGIN_SCAN=1``"
 
 #: ../../appendix/environment.rst:38
 msgid "Set this to the locations to scan for :term:`VST2` plugins."
 msgstr ""
+"Imposta questo campo alla posizione da scansionare per i plugins :term: "
+"`VST2`."
 
 #: ../../appendix/environment.rst:43
 msgid "Set this to the locations to scan for :term:`VST3` plugins."
 msgstr ""
+"Imposta questo campo alla posizione da scansionare per i plugins "
+":term:`VST3`."
 
 #: ../../appendix/environment.rst:48
 msgid "Number of DSP threads to use. Defaults to number of CPU cores - 1."
 msgstr ""
+"Numero di thread DSP da usare. L'impostazione predefinita è il numero di "
+"core della CPU -1."
 
 #: ../../appendix/environment.rst:53
 msgid "Set to 1 to show extra information useful for developers."
 msgstr ""
+"Imposta ad 1 per mostrare informazioni aggiuntive utili per gli sviluppatori."
 
 #: ../../appendix/files-and-directories.rst:7
 msgid "Files and Directories"
-msgstr ""
+msgstr "File e Cartelle"
 
 #: ../../appendix/files-and-directories.rst:10
 msgid "User path"
-msgstr ""
+msgstr "Percorso utente"
 
 #: ../../appendix/files-and-directories.rst:11
 msgid ""
@@ -112,18 +121,24 @@ msgid ""
 "directory for saving your user data. See :term:`Zrythm user path` for "
 "details."
 msgstr ""
+"Quando Zrythm viene avviato per la prima volta, ti chiederà di selezionare "
+"una cartella dove salvare i dati utente. Vedi :term: `Zrythm user path` per "
+"i dettagli."
 
 #: ../../appendix/files-and-directories.rst:16
 msgid "Installed Files"
-msgstr ""
+msgstr "File installati"
 
 #: ../../appendix/files-and-directories.rst:17
 msgid "When Zrythm is installed, it installs the following files by default."
 msgstr ""
+"Quando Zrythm viene installato, installa i seguenti file in maniera "
+"predefinita."
 
 #: ../../appendix/files-and-directories.rst:21
+#, fuzzy
 msgid "Desktop Entry"
-msgstr ""
+msgstr "Voce Desktop"
 
 #: ../../appendix/files-and-directories.rst:22
 msgid ""
@@ -133,6 +148,12 @@ msgid ""
 "menus, etc. This is normally installed at :file:`/usr/share/applications/"
 "zrythm.desktop`."
 msgstr ""
+"Un `freedesktop-compliant configuration file <https://specifications."
+"freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html>`_ (File "
+"di configurazione conforme alle specifiche freedesktop) che descrive come un "
+"programma specifico debba essere lanciato, come appare nei menu, etc. Questo "
+"viene normalmente installato in :file:`/usr/share/applications/zrythm."
+"desktop`."
 
 #: ../../appendix/files-and-directories.rst:29
 msgid "GLib Schema"
@@ -147,23 +168,27 @@ msgstr ""
 
 #: ../../appendix/files-and-directories.rst:35
 msgid "Desktop Icon"
-msgstr ""
+msgstr "Icona Desktop"
 
 #: ../../appendix/files-and-directories.rst:36
 msgid ""
 "This is used by the desktop environment. Normally installed at :file:`/usr/"
 "share/icons/hicolor/scalable/apps/zrythm.svg`."
 msgstr ""
+"Questo viene usato dall'ambiente desktop (DE). Normalmente installato in "
+":file:`/usr/share/icons/hicolor/scalable/apps/zrythm.svg`."
 
 #: ../../appendix/files-and-directories.rst:41
 msgid "Localization Files"
-msgstr ""
+msgstr "File di Traduzione"
 
 #: ../../appendix/files-and-directories.rst:42
 msgid ""
 "Localization files are installed under :file:`/usr/share/locale`. For "
 "example, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo` for Korean."
 msgstr ""
+"I file di traduzione sono installati dentro :file:`/usr/share/locale`. Ad "
+"esempio, :file:`/usr/share/locale/ko/LC_MESSAGES/zrythm.mo`per il coreano."
 
 #: ../../appendix/files-and-directories.rst:48
 #: ../../getting-started/getting-plugins.rst:101
@@ -175,14 +200,12 @@ msgid ""
 "Default audio samples used by Zrythm (such as the metronome). Normally "
 "installed under :file:`/usr/share/zrythm/samples`."
 msgstr ""
+"Campioni audio predefiniti utilizzati da Zrythm (ad esempio il metronomo). "
+"Normalmente installati in :file:`/usr/share/zrythm/samples`."
 
 #: ../../appendix/files-and-directories.rst:54
-#, fuzzy
 msgid "Fonts"
-msgstr ""
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Commenti"
+msgstr "Font"
 
 #: ../../appendix/files-and-directories.rst:55
 msgid ""
@@ -190,26 +213,33 @@ msgid ""
 "required by Zrythm will normally be installed under :file:`/usr/share/fonts/"
 "zrythm`."
 msgstr ""
+"A meno che la tua distribuzione provveda i pacchetti per i font richiesti, i "
+"font richiesti da Zrythm saranno normalmente installati dentro :file:`/usr/"
+"share/fonts/zrythm`."
 
 #: ../../appendix/files-and-directories.rst:61
 msgid "GtkSourceView Stylesheets"
-msgstr ""
+msgstr "GtkSourceView Stylesheets"
 
 #: ../../appendix/files-and-directories.rst:62
 msgid ""
 "Zrythm will install CSS stylesheets to be used by some text input widgets "
 "under :file:`/usr/share/zrythm/sourceview-styles`."
 msgstr ""
+"Zrythm installerà i fogli di stile CSS usati per alcuni widget per l'input "
+"di testo dentro :file:`/usr/share/zrythm/sourceview-styles`."
 
 #: ../../appendix/files-and-directories.rst:67
 msgid "Themes"
-msgstr ""
+msgstr "Temi"
 
 #: ../../appendix/files-and-directories.rst:68
 msgid ""
 "Default themes (including icon themes) will normally be installed under :"
 "file:`/usr/share/zrythm/themes`."
 msgstr ""
+"Temi predefiniti (inclusi i temi delle icone) saranno normalmente installati "
+"dentro :file:`/usr/share/zrythm/themes`."
 
 #: ../../appendix/files-and-directories.rst:72
 msgid ""
@@ -217,10 +247,13 @@ msgid ""
 "files in the :term:`Zrythm user path`. See :doc:`../theming/intro` for "
 "details."
 msgstr ""
+"Zrythm fornisce dei modi per ignorare la configurazione alcuni di questi "
+"file utilizzando invece quella contenuta nei file definiti dall'utente in "
+":term:`Zrythm user path`. Vedi :doc:`../theming/intro` per i dettagli."
 
 #: ../../appendix/files-and-directories.rst:78
 msgid "User Files"
-msgstr ""
+msgstr "File Utente"
 
 #: ../../appendix/files-and-directories.rst:80
 msgid "Cached Plugin Descriptors"

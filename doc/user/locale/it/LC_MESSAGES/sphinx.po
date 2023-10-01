@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.14\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-03-16 08:25+0000\n"
-"PO-Revision-Date: 2023-06-10 04:47+0000\n"
-"Last-Translator: Luigi <work@luigibarbato.digital>\n"
+"PO-Revision-Date: 2023-09-18 20:45+0000\n"
+"Last-Translator: olly1240 <olly1240@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/"
 "user-manual-sphinx/it/>\n"
 "Language: it\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.18-dev\n"
+"X-Generator: Weblate 5.0.2\n"
 "Generated-By: Babel 2.9.0\n"
 
 #: ../../_templates/page.html:61
@@ -45,7 +45,7 @@ msgstr ""
 #: ../../_templates/page.html:99
 #, python-format
 msgid "Last updated on %(last_updated)s."
-msgstr ""
+msgstr "Ultimo aggiornamento il %(last_updated)s."
 
 #: ../../_templates/page.html:105
 msgid ""

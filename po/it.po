@@ -12,13 +12,14 @@
 # G R <gradaellig@gmail.com>, 2022.
 # Luigi <work@luigibarbato.digital>, 2023.
 # "Giovanni Solimeno (Crax97)" <gsolimeno97@gmail.com>, 2023.
+# olly1240 <olly1240@gmail.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: https://todo.sr.ht/~alextee/zrythm-bug\n"
 "POT-Creation-Date: 2023-08-15 16:37+0900\n"
-"PO-Revision-Date: 2023-09-01 20:45+0000\n"
-"Last-Translator: \"Giovanni Solimeno (Crax97)\" <gsolimeno97@gmail.com>\n"
+"PO-Revision-Date: 2023-09-18 20:45+0000\n"
+"Last-Translator: olly1240 <olly1240@gmail.com>\n"
 "Language-Team: Italian <https://hosted.weblate.org/projects/zrythm/zrythm/it/"
 ">\n"
 "Language: it\n"
@@ -26,7 +27,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.0.2\n"
 
 #: inc/dsp/exporter.h:125
 msgid "Before inserts"
@@ -5090,9 +5091,8 @@ msgid "Preferred language"
 msgstr "Lingua dell'interfaccia utente"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:235
-#, fuzzy
 msgid "User path"
-msgstr "Seleziona un modello"
+msgstr "Percorso utente"
 
 #: src/gui/widgets/dialogs/first_run_dialog.c:237
 msgid "Location to save user files"
