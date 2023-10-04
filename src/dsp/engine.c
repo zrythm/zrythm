@@ -1888,27 +1888,29 @@ engine_audio_backend_from_string (const char * str)
 {
   for (int i = 0; i < NUM_AUDIO_BACKENDS; i++)
     {
-      if (string_is_equal (audio_backend_str[i], str))
+      if (string_is_equal_ignore_case (audio_backend_str[i], str))
         {
           return (AudioBackend) i;
         }
     }
 
-  if (string_is_equal (str, "none"))
+  if (string_is_equal_ignore_case (str, "none"))
     {
       return AUDIO_BACKEND_DUMMY;
     }
 
-  g_message (
-    "Audio backend '%s' not found. The available "
-    "choices are:",
-    str);
+  GString * choices = g_string_new (NULL);
   for (int i = 0; i < NUM_AUDIO_BACKENDS; i++)
     {
-      g_message ("%s", audio_backend_str[i]);
+      g_string_append_printf (choices, "'%s' ", audio_backend_str[i]);
     }
+  char * choices_str = g_string_free (choices, false);
+  g_warning (
+    "Audio backend '%s' not found. The available choices are: %s", str,
+    choices_str);
+  g_free (choices_str);
 
-  g_return_val_if_reached (AUDIO_BACKEND_DUMMY);
+  return AUDIO_BACKEND_DUMMY;
 }
 
 MidiBackend
@@ -1916,31 +1918,33 @@ engine_midi_backend_from_string (const char * str)
 {
   for (int i = 0; i < NUM_MIDI_BACKENDS; i++)
     {
-      if (string_is_equal (midi_backend_str[i], str))
+      if (string_is_equal_ignore_case (midi_backend_str[i], str))
         {
           return (MidiBackend) i;
         }
     }
 
-  if (string_is_equal (str, "none"))
+  if (string_is_equal_ignore_case (str, "none"))
     {
       return MIDI_BACKEND_DUMMY;
     }
-  else if (string_is_equal (str, "jack"))
+  else if (string_is_equal_ignore_case (str, "jack"))
     {
       return MIDI_BACKEND_JACK;
     }
 
-  g_message (
-    "MIDI backend '%s' not found. The available "
-    "choices are:",
-    str);
+  GString * choices = g_string_new (NULL);
   for (int i = 0; i < NUM_MIDI_BACKENDS; i++)
     {
-      g_message ("%s", midi_backend_str[i]);
+      g_string_append_printf (choices, "'%s' ", midi_backend_str[i]);
     }
+  char * choices_str = g_string_free (choices, false);
+  g_warning (
+    "MIDI backend '%s' not found. The available choices are: %s", str,
+    choices_str);
+  g_free (choices_str);
 
-  g_return_val_if_reached (MIDI_BACKEND_DUMMY);
+  return MIDI_BACKEND_DUMMY;
 }
 
 /**
