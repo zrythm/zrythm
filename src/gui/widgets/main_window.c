@@ -26,7 +26,6 @@
 #include "gui/widgets/clip_editor_inner.h"
 #include "gui/widgets/editor_toolbar.h"
 #include "gui/widgets/event_viewer.h"
-#include "gui/widgets/file_browser.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/inspector_track.h"
 #include "gui/widgets/left_dock_edge.h"
@@ -603,9 +602,6 @@ main_window_widget_init (MainWindowWidget * self)
 
  /* control room */
     { "toggle-dim-output", NULL, NULL, "true", change_state_dim_output },
-
- /* file browser */
-    { "show-file-browser", activate_show_file_browser },
 
  /* show/hide event viewers */
     { "toggle-timeline-event-viewer", activate_toggle_timeline_event_viewer },

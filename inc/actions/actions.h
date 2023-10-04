@@ -362,7 +362,6 @@ activate_delete_cc_binding (
   GVariant *      _variant,
   gpointer        user_data);
 
-COLD DECLARE_SIMPLE (activate_show_file_browser);
 DECLARE_SIMPLE (activate_toggle_timeline_event_viewer);
 DECLARE_SIMPLE (activate_toggle_editor_event_viewer);
 DECLARE_SIMPLE (activate_insert_silence);

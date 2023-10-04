@@ -22,7 +22,6 @@
 #include "gui/widgets/center_dock.h"
 #include "gui/widgets/channel.h"
 #include "gui/widgets/drag_dest_box.h"
-#include "gui/widgets/file_browser.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/track.h"

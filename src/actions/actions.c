@@ -65,7 +65,6 @@
 #include "gui/widgets/dialogs/string_entry_dialog.h"
 #include "gui/widgets/editor_ruler.h"
 #include "gui/widgets/event_viewer.h"
-#include "gui/widgets/file_browser_window.h"
 #include "gui/widgets/foldable_notebook.h"
 #include "gui/widgets/header.h"
 #include "gui/widgets/left_dock_edge.h"
@@ -122,8 +121,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-
-static GtkWindow * file_browser_window = NULL;
 
 #define DEFINE_SIMPLE(x) \
   void x (GSimpleAction * action, GVariant * variant, gpointer user_data)
@@ -2211,27 +2208,6 @@ activate_unlink_jack_transport (
   gpointer        user_data)
 {
   g_message ("unlink jack transport");
-}
-
-void
-activate_show_file_browser (
-  GSimpleAction * action,
-  GVariant *      variant,
-  gpointer        user_data)
-{
-  if (file_browser_window)
-    {
-      gtk_window_close (file_browser_window);
-      file_browser_window = FALSE;
-    }
-  else
-    {
-      file_browser_window = GTK_WINDOW (file_browser_window_widget_new ());
-      g_return_if_fail (file_browser_window);
-      gtk_window_set_transient_for (
-        file_browser_window, (GtkWindow *) MAIN_WINDOW);
-      gtk_window_present (GTK_WINDOW (file_browser_window));
-    }
 }
 
 void
