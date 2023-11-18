@@ -14,13 +14,14 @@
 # sub26nico10b0a294e11e4b4b <faurenicolas5595@neuf.fr>, 2021.
 # Maxime Leroy <lisacintosh@gmail.com>, 2021, 2022.
 # Nifou <nifou@mailfence.com>, 2023.
+# Ivar <ivar@ivarbjerling.com>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-10-01 21:55+0900\n"
-"PO-Revision-Date: 2023-10-31 20:45+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"PO-Revision-Date: 2023-11-17 13:43+0000\n"
+"Last-Translator: Ivar <ivar@ivarbjerling.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -28,7 +29,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.2-dev\n"
+"X-Generator: Weblate 5.2\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -1068,9 +1069,8 @@ msgid "Set control value"
 msgstr "Fixe la valeur du contrôle"
 
 #: src/actions/actions.c:343
-#, fuzzy
 msgid "Guile Disabled"
-msgstr "Désactiver"
+msgstr "Guile Désactivé"
 
 #: src/actions/actions.c:346
 #, c-format
@@ -1118,7 +1118,7 @@ msgstr "_Annuler"
 #: src/actions/actions.c:722 src/actions/actions.c:811
 #: src/gui/widgets/main_window.c:156
 msgid "_Discard"
-msgstr ""
+msgstr "_Rejeter"
 
 #: src/actions/actions.c:723 src/actions/actions.c:812
 #: src/gui/widgets/main_window.c:157
@@ -1376,9 +1376,8 @@ msgid "Unimplemented"
 msgstr "Non-implémenté"
 
 #: src/actions/actions.c:2869
-#, fuzzy
 msgid "Tap BPM not implemented yet"
-msgstr "Opération non-implémentée"
+msgstr "Tap BPM non-implémentée encore"
 
 #: src/actions/actions.c:2924
 msgid "Failed to move selections"
@@ -1411,9 +1410,8 @@ msgstr ""
 "d'accords."
 
 #: src/actions/actions.c:3282
-#, fuzzy
 msgid "Failed to create pack"
-msgstr "Échec de la création d'une piste"
+msgstr "Échec de la création de pack"
 
 #: src/actions/actions.c:3294 src/actions/actions.c:3349
 msgid "Preset Pack Name"
@@ -2350,9 +2348,8 @@ msgid "Automation"
 msgstr "Automatisation"
 
 #: src/dsp/engine.c:484 src/dsp/engine.c:558
-#, fuzzy
 msgid "Backend Initialization Failed"
-msgstr "Échec de l'initialisation du fichier audio"
+msgstr "Échec de l'initialisation du Backend"
 
 #: src/dsp/engine.c:485
 #, c-format
@@ -2365,9 +2362,8 @@ msgstr ""
 "Préférences."
 
 #: src/dsp/engine.c:524
-#, fuzzy
 msgid "Backend Error"
-msgstr "Erreur du dorsal"
+msgstr "Erreur du Backend"
 
 #: src/dsp/engine.c:525
 #, c-format
@@ -2390,9 +2386,8 @@ msgstr ""
 "Préférences."
 
 #: src/dsp/engine.c:599
-#, fuzzy
 msgid "Invalid Backend Combination"
-msgstr "Position invalide"
+msgstr "Combinaison non valide de Backend"
 
 #: src/dsp/engine.c:600
 msgid ""
@@ -2404,9 +2399,8 @@ msgstr ""
 "MIDI."
 
 #: src/dsp/engine.c:790
-#, fuzzy
 msgid "Selected Backend Not Found"
-msgstr "Les arrière-plans sélectionnés sont opérationnels"
+msgstr "Backend Sélectionné Non Trouvée"
 
 #: src/dsp/engine.c:791
 #, c-format
@@ -2481,9 +2475,8 @@ msgid "PulseAudio Error: Failed to connect"
 msgstr "Erreur PulseAudio : échec de connexion"
 
 #: src/dsp/engine_pulse.c:414
-#, fuzzy
 msgid "Pulseaudio Backend Test Failed"
-msgstr "Le serveur audio auquel se connecter."
+msgstr "Échec du test de Backend de Pulseaudio"
 
 #: src/dsp/chord_track.c:40 src/settings/chord_preset.c:47
 #: resources/ui/inspector_chord.ui:7
@@ -2669,9 +2662,9 @@ msgid "Failed to add region %d to track"
 msgstr "Échec de l'ajout de la région %d à la piste"
 
 #: src/dsp/tracklist.c:1240
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create region %d inside track %s"
-msgstr "Échec de l'écriture du fichier : %s"
+msgstr "Échec de la création de région %d dans piste %s"
 
 #: src/dsp/tracklist.c:1329
 msgid "No file was found"
@@ -2765,9 +2758,9 @@ msgid "Failed to add plugin"
 msgstr "Échec de l'ajout du greffon"
 
 #: src/io/file_import.c:111
-#, fuzzy, c-format
+#, c-format
 msgid "The MIDI file at %s contains no data"
-msgstr "Ce fichier MIDI ne contient aucune donnée"
+msgstr "Le fichier MIDI à %s ne contient aucune donnée"
 
 #: src/io/file_import.c:129
 #, c-format
@@ -2779,54 +2772,52 @@ msgstr ""
 "piste existante"
 
 #: src/io/file_import.c:143
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get track from hash %u"
-msgstr "Échec de la création de la piste à %d"
+msgstr "Échec de l'obtention de la piste du hachage %u"
 
 #: src/io/file_import.c:182
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create a MIDI region for file %s"
-msgstr "Échec de la création de la piste pour le fichier : '%s'"
+msgstr "Échec de la création d'une région MIDI pour le fichier %s"
 
 #: src/io/audio_file.c:135
 #, c-format
 msgid "sf_format_check failed for '%s': %s (error code %i)"
-msgstr ""
+msgstr "sf_format_check a échoué pour '%s': %s (code erreur %i)"
 
 #: src/io/audio_file.c:147
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open audio file at '%s': %s (error code %i)"
-msgstr "Échec de l'initialisation du fichier audio à %s"
+msgstr "Échec de l'ouverture du fichier audio à '%s': %s (code erreur %i)"
 
 #: src/io/audio_file.c:172 src/io/audio_file.c:235
-#, fuzzy
 msgid "Failed to open audio file"
-msgstr "Échec de l'écriture du fichier audio"
+msgstr "Échec de l'ouverture du fichier audio"
 
 #: src/io/audio_file.c:198
-#, fuzzy
 msgid "Failed to close audio file after reading info"
-msgstr "Échec de l'initialisation du fichier audio à %s"
+msgstr "Échec de la fermeture du fichier audio après avoir lu l'info"
 
 #: src/io/audio_file.c:247
 #, c-format
 msgid "Tried to seek %zu frames but actually seeked %zd frames"
-msgstr ""
+msgstr "A essayé de rechercher %zu cadres mais en fait a recherché %zd cadres"
 
 #: src/io/audio_file.c:258
 #, c-format
 msgid "Expected to read %zu frames but actually read %zd frames"
-msgstr ""
+msgstr "S'attendu lire %zu cadres, mais en fait a lu %zd cadres"
 
 #: src/io/audio_file.c:274
 #, c-format
 msgid "Expected to read %<PRId64> frames but actually read %zd frames"
-msgstr ""
+msgstr "S'attendu lire %<PRId64> cadres mais en fait a lu %zd cadres"
 
 #: src/io/audio_file.c:300
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to close audio file at '%s': %s (error code %i)"
-msgstr "Échec de l'initialisation du fichier audio à %s"
+msgstr "Échec de la fermeture du fichier audio à '%s': %s (code erreur %i)"
 
 #: src/utils/resampler.c:112
 #, c-format
@@ -2834,14 +2825,14 @@ msgid "Failed to create soxr instance: %s"
 msgstr "Échec de la création de l'instance soxr %s"
 
 #: src/utils/resampler.c:121
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set soxr input function: %s"
-msgstr "Échec de l'action d'envoi du canal : %s"
+msgstr "Échec de la mise en place de la fonction d'entrée soxr: %s"
 
 #: src/utils/resampler.c:162
 #, c-format
 msgid "soxr_process() error: %s"
-msgstr ""
+msgstr "soxr_process() erreur: %s"
 
 #: src/utils/ui.c:589
 msgid "Sine (Equal Power)"
@@ -2876,7 +2867,7 @@ msgstr ""
 
 #: src/utils/ui.c:902
 msgid "Experimental Feature"
-msgstr ""
+msgstr "Caractéristique Expérimentale"
 
 #: src/utils/ui.c:903
 msgid ""
@@ -2986,9 +2977,8 @@ msgid "A plugin already exists at the selected slot. Overwrite it?"
 msgstr "Un greffon existe déjà à l'emplacement sélectionné. Le remplacer ?"
 
 #: src/utils/dialogs.c:24
-#, fuzzy
 msgid "_Overwrite"
-msgstr "Écraser les événements"
+msgstr "_Écraser"
 
 #: src/utils/log.c:792
 #, c-format
@@ -3105,9 +3095,8 @@ msgid "Expose port to JACK"
 msgstr "Exposer le port à JACK"
 
 #: src/gui/widgets/inspector_track.c:121
-#, fuzzy
 msgid "Notes"
-msgstr "Note"
+msgstr "Notes"
 
 #: src/gui/widgets/velocity_settings.c:67
 msgid "Last Note"
@@ -3139,19 +3128,17 @@ msgid "Macros"
 msgstr "Macros"
 
 #: src/gui/widgets/midi_channel_selection_dropdown.c:76
-#, fuzzy
 msgid "Channels"
-msgstr "Canal"
+msgstr "Canaux"
 
 #: src/gui/widgets/midi_channel_selection_dropdown.c:99
-#, fuzzy
 msgid "No Channels"
-msgstr "Pas de canal"
+msgstr "Pas de canaux"
 
 #: src/gui/widgets/midi_channel_selection_dropdown.c:106
-#, fuzzy, c-format
+#, c-format
 msgid "Channel %d"
-msgstr "Canal %s"
+msgstr "Canal %d"
 
 #: src/gui/widgets/bounce_step_selector.c:127
 msgid "Bounce step selector"
@@ -3192,19 +3179,16 @@ msgid "Fader"
 msgstr "Chariot"
 
 #: src/gui/widgets/main_window.c:152
-#, fuzzy
 msgid ""
 "The project contains unsaved changes. If you quit without saving, unsaved "
 "changes will be lost."
 msgstr ""
-"Le projet contient des modifications non sauvegardées. \n"
-"Si vous quittez sans sauvegarder, les modifications non sauvegardées seront "
-"perdues."
+"Le projet contient des modifications non sauvegardées. Si vous quittez sans "
+"sauvegarder, les modifications non sauvegardées seront perdues."
 
 #: src/gui/widgets/main_window.c:251
-#, fuzzy
 msgid "Startup Error"
-msgstr "Erreur fatale"
+msgstr "Erreur de Démarrage"
 
 #: src/gui/widgets/main_window.c:740 src/gui/widgets/preferences.c:898
 #: resources/ui/file_auditioner_controls.ui:34 resources/gtk/menus.ui:40
@@ -3236,18 +3220,16 @@ msgstr ""
 "succès"
 
 #: src/gui/widgets/preferences.c:167
-#, fuzzy
 msgid "Reset Settings?"
-msgstr "Réinitialisation aux paramètres d'usine"
+msgstr "Réinitialiser les paramètres?"
 
 #: src/gui/widgets/preferences.c:170
-#, fuzzy
 msgid ""
 "This will reset Zrythm to factory settings. <b>You will lose all your "
 "preferences</b>."
 msgstr ""
-"Cela réinitialisera Zrythm aux réglages d'usine. <b>Vous perdrez toutes vos "
-"préférences</b>. Continuer ?"
+"Ceci réinitialisera Zrythm aux réglages d'usine. <b>Vous perdrez toutes vos "
+"préférences</b>."
 
 #: src/gui/widgets/preferences.c:173 resources/ui/first_run_window.ui:32
 msgid "_Reset"
