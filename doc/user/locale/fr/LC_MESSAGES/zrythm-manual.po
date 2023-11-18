@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-08-15 16:28+0900\n"
-"PO-Revision-Date: 2023-10-29 05:18+0000\n"
-"Last-Translator: Nifou <nifou@mailfence.com>\n"
+"PO-Revision-Date: 2023-10-31 20:45+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/fr/>\n"
 "Language: fr\n"
@@ -4408,7 +4408,7 @@ msgstr ""
 #: ../../getting-started/getting-plugins.rst:12
 #: ../../plugins-files/plugins/intro.rst:7
 msgid "Plugins"
-msgstr "Extensions"
+msgstr "Greffons"
 
 #: ../../getting-started/getting-plugins.rst:14
 #, fuzzy
@@ -5188,7 +5188,7 @@ msgstr ""
 
 #: ../../glossary/intro.rst:116
 msgid "Plugin"
-msgstr "Extension"
+msgstr "Greffon"
 
 #: ../../glossary/intro.rst:118
 msgid ""
@@ -6756,7 +6756,7 @@ msgstr ""
 
 #: ../../plugins-files/plugins/plugin-browser.rst:9
 msgid "Plugin Browser"
-msgstr "Navigateur d'extensions"
+msgstr "Navigateur de greffon"
 
 #: ../../plugins-files/plugins/plugin-browser.rst:11
 #, fuzzy

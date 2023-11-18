@@ -19,8 +19,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-10-01 21:55+0900\n"
-"PO-Revision-Date: 2023-10-29 05:18+0000\n"
-"Last-Translator: Nifou <nifou@mailfence.com>\n"
+"PO-Revision-Date: 2023-10-31 20:45+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -235,7 +235,7 @@ msgstr "Script Guile"
 
 #: inc/dsp/audio_function.h:67
 msgid "Custom plugin"
-msgstr "Extension personnalisée"
+msgstr "Greffon personnalisé"
 
 #: inc/dsp/audio_function.h:68 src/dsp/channel_send.c:73
 #: src/dsp/channel_send.c:95
@@ -737,7 +737,7 @@ msgstr "Échec de la sauvegarde du projet"
 
 #: src/project.c:791
 msgid "Failed to serialize project"
-msgstr "Échec de la sérialisation du projet en YAML"
+msgstr "Échec de la sérialisation du projet"
 
 #: src/project.c:804
 msgid "Failed to compress project file"
@@ -845,7 +845,7 @@ msgstr "Initialisation du gestionnaire de fichiers"
 
 #: src/zrythm_app.c:472
 msgid "Scanning plugins"
-msgstr "Scan des extensions"
+msgstr "Scan des greffons"
 
 #: src/zrythm_app.c:554
 msgid "Waiting for project"
@@ -1083,7 +1083,7 @@ msgstr ""
 
 #: src/actions/actions.c:718
 msgid "Discard Changes?"
-msgstr "Ne pas sauvegarder les modifications ?"
+msgstr "Abandonner les modifications ?"
 
 #: src/actions/actions.c:719
 msgid "Any unsaved changes to the current project will be lost. Continue?"
@@ -1147,8 +1147,7 @@ msgid ""
 "will be lost."
 msgstr ""
 "Le projet contient des modifications non sauvegardées.\n"
-"Si vous quittez sans sauvegarder, les modifications non sauvegardées seront "
-"perdues."
+"Si vous procédez, les modifications non sauvegardées seront perdues."
 
 #: src/actions/actions.c:882
 msgid "Save Project"
@@ -1230,7 +1229,7 @@ msgstr "Échec de la suppression des pistes"
 
 #: src/actions/actions.c:1793
 msgid "Delete Tracks?"
-msgstr "Supprimer les pistes ?"
+msgstr "Supprimer les pistes ?"
 
 #: src/actions/actions.c:1794
 msgid ""
@@ -1423,15 +1422,15 @@ msgstr "Nom du pack de préréglages"
 #: src/actions/actions.c:3325 src/actions/actions.c:3377
 #: src/actions/actions.c:3598 src/actions/actions.c:3862
 msgid "Delete?"
-msgstr "Supprimer ?"
+msgstr "Supprimer ?"
 
 #: src/actions/actions.c:3326
 msgid "Are you sure you want to delete this chord preset pack?"
-msgstr "Êtes-vous sûr de vouloir supprimer ce pack de présélections d'accords ?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce pack de présélections d'accords ?"
 
 #: src/actions/actions.c:3378
 msgid "Are you sure you want to delete this chord preset?"
-msgstr "Êtes-vous sûr de vouloir supprimer ce pack de présélections d'accords ?"
+msgstr "Êtes-vous sûr de vouloir supprimer cette présélection d'accord ?"
 
 #: src/actions/actions.c:3401
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:138
@@ -1445,20 +1444,19 @@ msgstr "Échec de la modification de la balance"
 
 #: src/actions/actions.c:3455 src/gui/widgets/modulator_inner.c:71
 msgid "Failed to delete plugins"
-msgstr "Échec de la suppression des extensions"
+msgstr "Échec de la suppression des greffons"
 
 #: src/actions/actions.c:3477
 msgid "Delete Plugins?"
-msgstr "Supprimer les extensions ?"
+msgstr "Supprimer les greffons ?"
 
 #: src/actions/actions.c:3478
 msgid ""
 "The selection contains uninstantiated plugins. Deleting them will not be "
 "undoable and the undo history will be cleared."
 msgstr ""
-"La sélection contient des extensions non-instanciées. Leurs suppressions ne "
-"seront pas annulable et l'historique des annulations sera effacé. Poursuivre "
-"la suppression ?"
+"La sélection contient des greffons non-instanciés. Leurs suppressions ne "
+"seront pas annulable et l'historique des annulations sera effacé."
 
 #: src/actions/actions.c:3529
 #, c-format
@@ -1487,8 +1485,8 @@ msgstr "nom de la collection"
 msgid ""
 "The collection '%s' contains %d plugins. Are you sure you want to remove it?"
 msgstr ""
-"La collection '%s' contient %d extensions. Êtes-vous sûr de vouloir la "
-"retirer ?"
+"La collection '%s' contient %d greffons. Êtes-vous sûr de vouloir la retirer "
+"?"
 
 #: src/actions/actions.c:4041
 msgid "Failed to change direct output"
@@ -1954,7 +1952,7 @@ msgstr "Échec d’instanciation du greffon"
 #: src/actions/mixer_selections_action.c:658
 #: src/actions/mixer_selections_action.c:1014
 msgid "Failed to revert deleted plugin"
-msgstr "Échec du rétablissement de l'extension supprimée"
+msgstr "Échec du rétablissement du greffon supprimé"
 
 #: src/actions/mixer_selections_action.c:1103
 #, c-format
@@ -1968,12 +1966,12 @@ msgstr "Créer %d %s"
 
 #: src/actions/mixer_selections_action.c:1113
 msgid "Delete Plugin"
-msgstr "Supprimer l'extension"
+msgstr "Supprimer le greffon"
 
 #: src/actions/mixer_selections_action.c:1118
 #, c-format
 msgid "Delete %d Plugins"
-msgstr "Effacer %d extensions"
+msgstr "Effacer %d greffons"
 
 #: src/actions/mixer_selections_action.c:1124
 #, c-format
@@ -1983,7 +1981,7 @@ msgstr "Déplacer %s"
 #: src/actions/mixer_selections_action.c:1129
 #, c-format
 msgid "Move %d Plugins"
-msgstr "Déplacer %d extensions"
+msgstr "Déplacer %d greffons"
 
 #: src/actions/mixer_selections_action.c:1135
 #, c-format
@@ -1993,7 +1991,7 @@ msgstr "Copier %s"
 #: src/actions/mixer_selections_action.c:1140
 #, c-format
 msgid "Copy %d Plugins"
-msgstr "Copier %d extensions"
+msgstr "Copier %d greffons"
 
 #: src/actions/mixer_selections_action.c:1146
 #, c-format
@@ -2003,7 +2001,7 @@ msgstr "Coller%s"
 #: src/actions/mixer_selections_action.c:1151
 #, c-format
 msgid "Paste %d Plugins"
-msgstr "Coller %d extensions"
+msgstr "Coller %d greffons"
 
 #: src/dsp/modulator_track.c:58 src/utils/gtk.c:1023
 #: src/gui/widgets/bot_dock_edge.c:216
@@ -2014,7 +2012,7 @@ msgstr "Modulateurs"
 #: src/dsp/supported_file.c:274
 #, c-format
 msgid "Failed reading metadata for %s"
-msgstr "Échec de la récupération des métadonnées de %s"
+msgstr "Échec de la lecture des métadonnées de %s"
 
 #: src/dsp/supported_file.c:278
 #, c-format
@@ -2760,11 +2758,11 @@ msgstr "Échec du déplacement ou de la copie des greffons"
 #: src/dsp/channel.c:1844
 #, c-format
 msgid "Plugin %s cannot be added to this slot"
-msgstr "L'extension %s ne peut pas être ajouté à cet emplacement"
+msgstr "Le greffon %s ne peut pas être ajouté à cet emplacement"
 
 #: src/dsp/channel.c:1845
 msgid "Failed to add plugin"
-msgstr "Échec de l'ajout de l'extension"
+msgstr "Échec de l'ajout du greffon"
 
 #: src/io/file_import.c:111
 #, fuzzy, c-format
@@ -2942,11 +2940,11 @@ msgstr "Inspecteur de piste"
 
 #: src/utils/gtk.c:1031 src/gui/widgets/left_dock_edge.c:186
 msgid "Plugin Inspector"
-msgstr "Inspecteur d'extension"
+msgstr "Inspecteur de greffon"
 
 #: src/utils/gtk.c:1034 src/gui/widgets/right_dock_edge.c:91
 msgid "Plugin Browser"
-msgstr "Navigateur d'extensions"
+msgstr "Navigateur de greffon"
 
 #: src/utils/gtk.c:1037 src/gui/widgets/right_dock_edge.c:98
 #: src/gui/widgets/right_dock_edge.c:123
@@ -2981,11 +2979,11 @@ msgstr "Scènes"
 
 #: src/utils/dialogs.c:20
 msgid "Overwrite Plugin?"
-msgstr "Écraser l'extension ?"
+msgstr "Écraser le greffon ?"
 
 #: src/utils/dialogs.c:21
 msgid "A plugin already exists at the selected slot. Overwrite it?"
-msgstr "Une extension existe déjà à l'emplacement sélectionné. Le remplacer ?"
+msgstr "Un greffon existe déjà à l'emplacement sélectionné. Le remplacer ?"
 
 #: src/utils/dialogs.c:24
 #, fuzzy
@@ -3022,16 +3020,16 @@ msgstr "Échec du collage des pistes"
 
 #: src/gui/backend/event_manager.c:266
 msgid "Plugin Crashed"
-msgstr "L'extension a planté"
+msgstr "Le greffon a planté"
 
 #: src/gui/backend/event_manager.c:267
 #, c-format
 msgid "Plugin '%s' has crashed and has been disabled."
-msgstr "L'extension '%s' a planté et a été désactivée."
+msgstr "Le greffon '%s' a planté et a été désactivé."
 
 #: src/gui/backend/event_manager.c:1089
 msgid "Plugin collections updated."
-msgstr "Collections d'extensions mises à jour."
+msgstr "Collections de greffon mises à jour."
 
 #: src/gui/backend/event_manager.c:1132
 msgid "Plugin preset saved."
@@ -3982,7 +3980,7 @@ msgstr "Inspecter"
 
 #: src/gui/widgets/channel_slot.c:569 resources/ui/port_selector_dialog.ui:60
 msgid "Plugin"
-msgstr "Extension"
+msgstr "Greffon"
 
 #: src/gui/widgets/channel_slot.c:602
 msgid "Select"
@@ -5639,7 +5637,7 @@ msgstr "Échec de la quantification des sélections de la ligne temporelle"
 
 #: src/plugins/cached_plugin_descriptors.c:32
 msgid "Failed to serialize cached plugin descriptors"
-msgstr "Impossible de trouver l'extension avec l'URI : %s"
+msgstr "Échec de la sérialisation des descripteurs de greffon mis en cache"
 
 #: src/plugins/plugin_manager.c:376
 msgid "Error loading LV2 bundle dir: "
@@ -5648,7 +5646,7 @@ msgstr "Erreur lors du chargement du répertoire bundle LV2 : "
 #: src/plugins/plugin_manager.c:1235
 #, c-format
 msgid "Scanned %s plugin: %s"
-msgstr "Extension %s scannée : %s"
+msgstr "Greffon %s scanné : %s"
 
 #. TRANSLATORS: first argument
 #. * is plugin protocol, 2nd
@@ -5656,25 +5654,25 @@ msgstr "Extension %s scannée : %s"
 #: src/plugins/plugin_manager.c:1248
 #, c-format
 msgid "Skipped %1$s plugin at %2$s"
-msgstr "Extension %1$s ignorée pour %2$s"
+msgstr "Greffon %1$s ignoré pour %2$s"
 
 #: src/plugins/plugin_manager.c:1358
 msgid "Scanned LV2 plugin"
-msgstr "Extension LV2 scannée"
+msgstr "Greffon LV2 scanné"
 
 #: src/plugins/plugin_manager.c:1364
 #, c-format
 msgid "Skipped LV2 plugin at %s"
-msgstr "Extension LV2 ignorée pour %s"
+msgstr "Greffon LV2 ignoré pour %s"
 
 #: src/plugins/plugin_manager.c:1450
 msgid "Scanned AU plugin"
-msgstr "Extension AU scannée"
+msgstr "Greffon AU scanné"
 
 #: src/plugins/plugin_manager.c:1455
 #, c-format
 msgid "Skipped AU plugin at %u"
-msgstr "Extension AU ignorée pour %u"
+msgstr "Greffon AU ignoré pour %u"
 
 #: src/plugins/lv2_plugin.c:1574
 #, c-format
@@ -5703,7 +5701,7 @@ msgstr "Échec du chargement de l'état depuis %s"
 #: src/plugins/lv2_plugin.c:2186
 #, c-format
 msgid "Failed to find plugin with URI <%s>"
-msgstr "Impossible de trouver l'extension avec l'URI <%s>"
+msgstr "Impossible de trouver le greffon avec l'URI <%s>"
 
 #: src/plugins/lv2_plugin.c:2207
 #, c-format
@@ -5724,9 +5722,9 @@ msgid ""
 "%s <%s>"
 msgstr ""
 "%s<%s> contient une référence à %s, ce qui pourrait causer des problèmes.\n"
-"Si l'extension ne se charge pas, veuillez essayer d'instancier l'extension "
-"en mode passerelle complète, et reportez ce problème au distributeur/auteur "
-"de cette extension :\n"
+"Si le greffon ne se charge pas, veuillez essayer d'instancier le greffon en "
+"mode ponté complet, et reportez ce problème au distributeur/auteur de ce "
+"greffon :\n"
 "%s<%s>"
 
 #: src/plugins/lv2_plugin.c:2261
@@ -5741,7 +5739,7 @@ msgstr "La fonctionnalité requise %s n'est pas supportée"
 #: src/plugins/lv2_plugin.c:2353
 msgid "Failed checking whether lv2 plugin UI is external"
 msgstr ""
-"Échec de la vérification pour savoir si l'interface utilisateur d'extension "
+"Échec de la vérification pour savoir si l'interface utilisateur du greffon "
 "lv2 est externe"
 
 #: src/plugins/lv2_plugin.c:2471
@@ -5768,7 +5766,7 @@ msgstr "Banque sans nom"
 #: src/plugins/plugin.c:229
 #, c-format
 msgid "Instantiation failed for plugin '%s'. Disabling..."
-msgstr "Instanciation échouée pour l'extension`%s`. Désactivation..."
+msgstr "Instanciation échouée pour le greffon`%s`. Désactivation..."
 
 #. add enabled port
 #: src/plugins/plugin.c:268
@@ -5777,19 +5775,19 @@ msgstr "Activé"
 
 #: src/plugins/plugin.c:270
 msgid "Enables or disables the plugin"
-msgstr "Active ou désactive l'extension"
+msgstr "Active ou désactive le greffon"
 
 #: src/plugins/plugin.c:289
 msgid "Plugin gain"
-msgstr "Gain de l'extension"
+msgstr "Gain du greffon"
 
 #: src/plugins/plugin.c:516
 msgid "Failed to get Carla plugin"
-msgstr "Impossible d'obtenir l'extension Carla"
+msgstr "Impossible d'obtenir le greffon Carla"
 
 #: src/plugins/plugin.c:530
 msgid "Failed to get LV2 plugin"
-msgstr "Échec de la récupération de l'extension LV2"
+msgstr "Échec de la récupération du greffon LV2"
 
 #: src/plugins/plugin.c:1004
 #, c-format
@@ -5802,7 +5800,7 @@ msgstr "Instrument"
 
 #: src/plugins/plugin.c:1488
 msgid "Carla plugin instantiation failed"
-msgstr "Échec de l'instanciation de l'extension Carla"
+msgstr "Échec de l'instanciation du greffon Carla"
 
 #: src/plugins/plugin.c:1498 src/plugins/plugin.c:2068
 msgid "Failed saving Carla plugin state"
@@ -5810,7 +5808,7 @@ msgstr "Impossible de sauvegarder l'état du greffon Carla"
 
 #: src/plugins/plugin.c:1519
 msgid "LV2 plugin instantiation failed"
-msgstr "Échec lors de l'instanciation de l'extension LV2"
+msgstr "Échec lors de l'instanciation du greffon LV2"
 
 #: src/plugins/plugin.c:1773
 #, c-format
@@ -5824,8 +5822,7 @@ msgstr ""
 "%s <%s> a un type d'interface graphique utilisateur obsolète :\n"
 " %s\n"
 "Si l'interface graphique utilisateur ne se charge pas, veuillez essayer "
-"d'instancier l'extension en mode passerelle complète, et signalez-le à "
-"l'auteur :\n"
+"d'instancier le greffon en mode ponté complet, et signalez-le à l'auteur :\n"
 "  %s <%s>"
 
 #: src/plugins/plugin.c:1781
@@ -5847,7 +5844,7 @@ msgstr "Sauvegarder le pré-réglage"
 
 #: src/plugins/plugin_gtk.c:327
 msgid "_Prefix plugin name"
-msgstr "_Préfixe du nom de l'extension"
+msgstr "_Préfixe du nom de greffon"
 
 #: src/plugins/plugin_gtk.c:335
 msgid "URI (Optional):"
@@ -5925,7 +5922,7 @@ msgstr "sortie CV"
 #: src/plugins/carla_native_plugin.c:1670
 #, c-format
 msgid "Error adding carla plugin: %s"
-msgstr "Erreur lors de l'ajout de l'extension Carla : %s"
+msgstr "Erreur lors de l'ajout du greffon Carla : %s"
 
 #: src/plugins/carla_native_plugin.c:1840
 msgid "Failed to load Carla state"
@@ -5936,8 +5933,8 @@ msgid ""
 "Failed to instantiate Carla plugin: handle/descriptor not initialized "
 "properly"
 msgstr ""
-"Échec de l'instanciation de l'extension Carla : handle/descriptor n'a pas "
-"été initialisé correctement"
+"Échec de l'instanciation du greffon Carla : handle/descriptor n'a pas été "
+"initialisé correctement"
 
 #: src/plugins/carla_native_plugin.c:2227
 msgid "Plugin doesn't have a state directory"
@@ -6013,7 +6010,7 @@ msgstr ""
 
 #: src/settings/plugin_settings.c:637
 msgid "Failed to serialize plugin settings"
-msgstr "Échec de la sérialisation des paramètres de l'extension"
+msgstr "Échec de la sérialisation des paramètres du greffon"
 
 #: src/settings/plugin_settings.c:647
 #, fuzzy
@@ -7464,7 +7461,7 @@ msgstr "Position du séparateur de navigateur"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:433
 msgid "Height of the top part of the plugin/file browser."
-msgstr "Hauteur de la partie haute du navigateur d'extensions/de fichiers."
+msgstr "Hauteur de la partie haute du navigateur de greffon/fichier."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:437
 msgid "Left panel divider position"
@@ -7735,23 +7732,23 @@ msgstr "Temps total par accord en ms."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:624
 msgid "Plugin browser tab"
-msgstr "Onglet du navigateur d'extensions"
+msgstr "Onglet du navigateur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:625
 msgid "Selected plugin browser tab."
-msgstr "Onglet du navigateur d'extensions sélectionné."
+msgstr "Onglet du navigateur du greffon sélectionné."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:629
 msgid "Plugin browser filter"
-msgstr "Filtre du navigateur d'extensions"
+msgstr "Filtre du navigateur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:630
 msgid "Selected plugin browser filter"
-msgstr "Filtre du navigateur d'extensions sélectionné"
+msgstr "Filtre du navigateur de greffon sélectionné"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:634
 msgid "Plugin browser sort style"
-msgstr "Style de tri navigateur de greffon"
+msgstr "Style de tri du navigateur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:635
 msgid "Selected plugin browser sort style"
@@ -7759,7 +7756,7 @@ msgstr "Style de tri du navigateur de greffon sélectionné"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:639
 msgid "Plugin browser collections"
-msgstr "Collections du navigateur d'extensions"
+msgstr "Collections du navigateur de greffons"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:640
 msgid "Tree paths of the selected collections in the plugin browser."
@@ -7774,27 +7771,26 @@ msgstr "Auteurs du navigateur de greffon"
 #: build/data/org.zrythm.Zrythm.gschema.xml:645
 msgid "Tree paths of the selected authors in the plugin browser."
 msgstr ""
-"Chemins de l'arbre des auteurs sélectionnés dans le navigateur d'extensions."
+"Chemins de l'arbre des auteurs sélectionnés dans le navigateur de greffon."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:649
 msgid "Plugin browser categories"
-msgstr "Catégories du navigateur d'extensions"
+msgstr "Catégories du navigateur de greffons"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:650
 msgid "Tree paths of the selected categories in the plugin browser."
 msgstr ""
-"Chemins de l'arbre des catégories sélectionnées dans le navigateur "
-"d'extensions."
+"Chemins de l'arbre des catégories sélectionnées dans le navigateur de "
+"greffon."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:654
 msgid "Plugin browser protocols"
-msgstr "Protocoles du navigateur d'extensions"
+msgstr "Protocoles du navigateur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:655
 msgid "Tree paths of the selected protocols in the plugin browser."
 msgstr ""
-"Chemins de l'arbre des protocoles sélectionnés dans le navigateur "
-"d'extensions."
+"Chemins de l'arbre des protocoles sélectionnés dans le navigateur de greffon."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:663
 msgid "File browser bookmarks"
@@ -7844,7 +7840,7 @@ msgstr "Dernier emplacement visité."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:699
 msgid "Instrument plugin to use for MIDI auditioning."
-msgstr "Extension d'instrument à utiliser pour l'audition MIDI."
+msgstr "Greffon d'instrument à utiliser pour l'audition MIDI."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:707
 msgid "Inserts expanded"
@@ -7976,7 +7972,7 @@ msgstr "Taille du panneau de l'inspecteur de piste lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:795
 msgid "Plugin inspector detached"
-msgstr "Inspecteur d'extension détaché"
+msgstr "Inspecteur de greffon détaché"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:796
 msgid "Whether the plugin inspector panel is detached."
@@ -8004,7 +8000,7 @@ msgstr "Taille du navigateur de greffon"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:811
 msgid "Plugin browser panel size when detached."
-msgstr "Taille du panneau du navigateur d'extensions lorsqu'il est détaché."
+msgstr "Taille du panneau du navigateur de greffon lorsqu'il est détaché."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:815
 msgid "File browser detached"
@@ -8400,7 +8396,7 @@ msgstr "S'il faut vérifier les mises à jour au démarrage."
 #: build/data/org.zrythm.Zrythm.gschema.xml:1154
 #: build/data/org.zrythm.Zrythm.gschema.xml:1185
 msgid "Plugins"
-msgstr "Extensions"
+msgstr "Greffons"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1155
 msgid "UIs"
@@ -8417,7 +8413,7 @@ msgstr ""
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1164
 msgid "Keep window on top"
-msgstr "Garder les interfaces graphiques des extensions au dessus"
+msgstr "Garder les interfaces graphiques des greffons au dessus"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:1165
 msgid "Show plugin UIs on top of the main window (if possible)."
