@@ -3,22 +3,23 @@
 # This file is distributed under the same license as the zrythm package.
 # gnu-ewm <gnu.ewm@protonmail.com>, 2021, 2022, 2023.
 # kakiremora <piotrek.pastuszak2003@gmail.com>, 2021.
+# marcin mikołajczak <me@mkljczk.pl>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-10-01 21:55+0900\n"
-"PO-Revision-Date: 2023-02-04 05:21+0000\n"
-"Last-Translator: gnu-ewm <gnu.ewm@protonmail.com>\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/zrythm/pl/"
-">\n"
+"PO-Revision-Date: 2023-11-04 20:45+0000\n"
+"Last-Translator: marcin mikołajczak <me@mkljczk.pl>\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/zrythm/pl/>"
+"\n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.16-dev\n"
+"X-Generator: Weblate 5.2-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -841,9 +842,8 @@ msgid "Scanning plugins"
 msgstr ""
 
 #: src/zrythm_app.c:554
-#, fuzzy
 msgid "Waiting for project"
-msgstr "Wczytywanie projektu"
+msgstr "Oczekiwanie na projekt"
 
 #: src/zrythm_app.c:767
 msgid "Icon Theme Not Found"
@@ -1302,12 +1302,11 @@ msgstr ""
 #: src/actions/actions.c:2679
 #: src/gui/widgets/popovers/track_filter_popover.c:261
 msgid "Track name"
-msgstr ""
+msgstr "Nazwa ścieżki"
 
 #: src/actions/actions.c:2698
-#, fuzzy
 msgid "Object name"
-msgstr "_Prefix nazwa wtyczki"
+msgstr "Nazwa obiektu"
 
 #: src/actions/actions.c:2729
 msgid "An object cannot be created at the selected location."
@@ -1377,7 +1376,7 @@ msgstr "Wczytywanie projektu"
 
 #: src/actions/actions.c:3294 src/actions/actions.c:3349
 msgid "Preset Pack Name"
-msgstr ""
+msgstr "Nazwa pakietu presetów"
 
 #: src/actions/actions.c:3325 src/actions/actions.c:3377
 #: src/actions/actions.c:3598 src/actions/actions.c:3862
@@ -1396,7 +1395,7 @@ msgstr ""
 #: src/actions/actions.c:3401
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:138
 msgid "Preset Name"
-msgstr ""
+msgstr "Nazwa presetu"
 
 #: src/actions/actions.c:3421 src/gui/widgets/balance_control.c:238
 #: src/gui/widgets/balance_control.c:303 src/gui/widgets/balance_control.c:345
@@ -1437,9 +1436,8 @@ msgid "Are you sure you want to delete this bookmark?"
 msgstr ""
 
 #: src/actions/actions.c:3793 src/actions/actions.c:3824
-#, fuzzy
 msgid "Collection name"
-msgstr "_Prefix nazwa wtyczki"
+msgstr "Nazwa kolekcji"
 
 #: src/actions/actions.c:3865
 #, c-format
@@ -1624,7 +1622,7 @@ msgstr ""
 
 #: src/actions/tracklist_selections.c:1917
 msgid "Rename track"
-msgstr ""
+msgstr "Zmień nazwę ścieżki"
 
 #: src/actions/tracklist_selections.c:1919
 #, fuzzy
@@ -3271,7 +3269,7 @@ msgstr ""
 #: src/gui/widgets/popovers/track_filter_popover.c:180
 #: resources/ui/create_project_dialog.ui:31
 msgid "Name"
-msgstr ""
+msgstr "Nazwa"
 
 #: src/gui/widgets/event_viewer.c:509
 #: src/gui/widgets/plugin_properties_expander.c:202
@@ -3536,9 +3534,8 @@ msgid "Change color..."
 msgstr ""
 
 #: src/gui/widgets/track.c:747
-#, fuzzy
 msgid "Rename..."
-msgstr "_Prefix nazwa wtyczki"
+msgstr "Zmień nazwę…"
 
 #: src/gui/widgets/track.c:751 src/gui/widgets/automation_arranger.c:201
 #: src/gui/widgets/channel_slot.c:591 src/gui/widgets/timeline_arranger.c:983
@@ -3858,7 +3855,7 @@ msgstr "Wczytywanie projektu"
 #: src/gui/widgets/arranger.c:4323
 #, c-format
 msgid "%s name"
-msgstr ""
+msgstr "Nazwa %s"
 
 #: src/gui/widgets/plugin_strip_expander.c:115
 #: src/gui/widgets/popovers/automatable_selector_popover.c:320
@@ -4442,11 +4439,11 @@ msgstr "_Prefix nazwa wtyczki"
 
 #: src/gui/widgets/item_factory.c:245
 msgid "Invalid Name"
-msgstr ""
+msgstr "Nieprawidłowa nazwa"
 
 #: src/gui/widgets/item_factory.c:245
 msgid "Invalid name"
-msgstr ""
+msgstr "Nieprawidłowa nazwa"
 
 #: src/gui/widgets/item_factory.c:254
 #, fuzzy
@@ -4479,17 +4476,17 @@ msgstr ""
 #: src/gui/widgets/item_factory.c:779
 #: src/gui/widgets/dialogs/project_assistant.c:570
 msgid "Template Name"
-msgstr ""
+msgstr "NAzwa szablonu"
 
 #: src/gui/widgets/item_factory.c:783
 #: src/gui/widgets/dialogs/project_assistant.c:578
 msgid "Path"
-msgstr ""
+msgstr "Ścieżka"
 
 #: src/gui/widgets/item_factory.c:787
 #: src/gui/widgets/dialogs/project_assistant.c:586
 msgid "Last Modified"
-msgstr ""
+msgstr "Ostatnia modyfikacja"
 
 #: src/gui/widgets/channel_send_selector.c:95
 msgid "Failed to disconnect send"
@@ -4524,9 +4521,8 @@ msgid "Musical Mode"
 msgstr ""
 
 #: src/gui/widgets/timeline_arranger.c:970 src/plugins/collection.c:166
-#, fuzzy
 msgid "Rename"
-msgstr "_Prefix nazwa wtyczki"
+msgstr "Zmień nazwę"
 
 #: src/gui/widgets/timeline_arranger.c:975
 #, fuzzy
@@ -4726,7 +4722,7 @@ msgstr ""
 
 #: src/gui/widgets/tracklist.c:329
 msgid "Create New Instrument Track?"
-msgstr ""
+msgstr "Utworzyć nową ścieżkę instrumentu?"
 
 #: src/gui/widgets/tracklist.c:330
 msgid ""
@@ -5167,7 +5163,7 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/create_project_dialog.c:72
 msgid "Create New Project"
-msgstr ""
+msgstr "Utwórz nowy projekt"
 
 #. get next available "Untitled Project"
 #: src/gui/widgets/dialogs/create_project_dialog.c:81
@@ -5318,9 +5314,8 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/project_assistant.c:120
 #: resources/ui/project_assistant.ui:101
-#, fuzzy
 msgid "_Open Selected"
-msgstr "Wybierz..."
+msgstr "_Otwórz zaznaczony"
 
 #: src/gui/widgets/dialogs/project_assistant.c:125
 msgid "_Create"
@@ -6152,7 +6147,7 @@ msgstr ""
 
 #: src/project/project_init_flow_manager.c:1088
 msgid "Open Backup?"
-msgstr ""
+msgstr "Otworzyć kopię zapasową?"
 
 #: src/project/project_init_flow_manager.c:1090
 #, c-format
@@ -6161,14 +6156,17 @@ msgid ""
 "  %s.\n"
 "Use the newer backup?"
 msgstr ""
+"Odnaleziono nowszą kopię zapasową:\n"
+"  %s.\n"
+"Czy chcesz skorzystać z nowszej kopii?"
 
 #: src/project/project_init_flow_manager.c:1093
 msgid "Open Backup"
-msgstr ""
+msgstr "Otwórz kopię zapasową"
 
 #: src/project/project_init_flow_manager.c:1094
 msgid "Ignore"
-msgstr ""
+msgstr "Ignoruj"
 
 #: src/project/project_init_flow_manager.c:1151
 #, fuzzy
@@ -6588,11 +6586,11 @@ msgstr "_Prefix nazwa wtyczki"
 
 #: resources/ui/project_assistant.ui:60
 msgid "Create New"
-msgstr ""
+msgstr "Utwórz nowy"
 
 #: resources/ui/project_assistant.ui:107
 msgid "Open from _Path"
-msgstr ""
+msgstr "Ot_wórz ze ścieżki"
 
 #: resources/ui/modulator_inner.ui:14
 msgid "Show/hide UI"
@@ -7051,7 +7049,7 @@ msgstr ""
 
 #: data/zrythm.desktop.in:7
 msgid "Digital Audio Workstation"
-msgstr ""
+msgstr "Cyfrowa stacja robocza"
 
 #: data/zrythm.desktop.in:9
 msgid "highly automated and intuitive digital audio workstation"
