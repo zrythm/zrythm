@@ -20,8 +20,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-10-01 21:55+0900\n"
-"PO-Revision-Date: 2023-11-17 13:43+0000\n"
-"Last-Translator: Ivar <ivar@ivarbjerling.com>\n"
+"PO-Revision-Date: 2023-11-20 14:02+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -1070,7 +1070,7 @@ msgstr "Fixe la valeur du contrôle"
 
 #: src/actions/actions.c:343
 msgid "Guile Disabled"
-msgstr "Guile Désactivé"
+msgstr "Guile désactivé"
 
 #: src/actions/actions.c:346
 #, c-format
@@ -1377,7 +1377,7 @@ msgstr "Non-implémenté"
 
 #: src/actions/actions.c:2869
 msgid "Tap BPM not implemented yet"
-msgstr "Tap BPM non-implémentée encore"
+msgstr "Tap BPM pas encore implémenté"
 
 #: src/actions/actions.c:2924
 msgid "Failed to move selections"
@@ -1411,7 +1411,7 @@ msgstr ""
 
 #: src/actions/actions.c:3282
 msgid "Failed to create pack"
-msgstr "Échec de la création de pack"
+msgstr "Échec de la création de paquet"
 
 #: src/actions/actions.c:3294 src/actions/actions.c:3349
 msgid "Preset Pack Name"
@@ -2349,7 +2349,7 @@ msgstr "Automatisation"
 
 #: src/dsp/engine.c:484 src/dsp/engine.c:558
 msgid "Backend Initialization Failed"
-msgstr "Échec de l'initialisation du Backend"
+msgstr "Échec de l'initialisation du dorsal"
 
 #: src/dsp/engine.c:485
 #, c-format
@@ -2363,7 +2363,7 @@ msgstr ""
 
 #: src/dsp/engine.c:524
 msgid "Backend Error"
-msgstr "Erreur du Backend"
+msgstr "Erreur du dorsal"
 
 #: src/dsp/engine.c:525
 #, c-format
@@ -2387,7 +2387,7 @@ msgstr ""
 
 #: src/dsp/engine.c:599
 msgid "Invalid Backend Combination"
-msgstr "Combinaison non valide de Backend"
+msgstr "Combinaison non valide de dorsal"
 
 #: src/dsp/engine.c:600
 msgid ""
@@ -2400,7 +2400,7 @@ msgstr ""
 
 #: src/dsp/engine.c:790
 msgid "Selected Backend Not Found"
-msgstr "Backend Sélectionné Non Trouvée"
+msgstr "Dorsal sélectionné non trouvé"
 
 #: src/dsp/engine.c:791
 #, c-format
@@ -2476,7 +2476,7 @@ msgstr "Erreur PulseAudio : échec de connexion"
 
 #: src/dsp/engine_pulse.c:414
 msgid "Pulseaudio Backend Test Failed"
-msgstr "Échec du test de Backend de Pulseaudio"
+msgstr "Échec du test du dorsal Pulseaudio"
 
 #: src/dsp/chord_track.c:40 src/settings/chord_preset.c:47
 #: resources/ui/inspector_chord.ui:7
@@ -2664,7 +2664,7 @@ msgstr "Échec de l'ajout de la région %d à la piste"
 #: src/dsp/tracklist.c:1240
 #, c-format
 msgid "Failed to create region %d inside track %s"
-msgstr "Échec de la création de région %d dans piste %s"
+msgstr "Échec de la création de région %d dans la piste %s"
 
 #: src/dsp/tracklist.c:1329
 msgid "No file was found"
@@ -2784,12 +2784,12 @@ msgstr "Échec de la création d'une région MIDI pour le fichier %s"
 #: src/io/audio_file.c:135
 #, c-format
 msgid "sf_format_check failed for '%s': %s (error code %i)"
-msgstr "sf_format_check a échoué pour '%s': %s (code erreur %i)"
+msgstr "sf_format_check a échoué pour '%s' : %s (code erreur %i)"
 
 #: src/io/audio_file.c:147
 #, c-format
 msgid "Failed to open audio file at '%s': %s (error code %i)"
-msgstr "Échec de l'ouverture du fichier audio à '%s': %s (code erreur %i)"
+msgstr "Échec de l'ouverture du fichier audio à '%s' : %s (code erreur %i)"
 
 #: src/io/audio_file.c:172 src/io/audio_file.c:235
 msgid "Failed to open audio file"
@@ -2802,22 +2802,22 @@ msgstr "Échec de la fermeture du fichier audio après avoir lu l'info"
 #: src/io/audio_file.c:247
 #, c-format
 msgid "Tried to seek %zu frames but actually seeked %zd frames"
-msgstr "A essayé de rechercher %zu cadres mais en fait a recherché %zd cadres"
+msgstr "A essayé de rechercher %zu trames mais en fait a recherché %zd trames"
 
 #: src/io/audio_file.c:258
 #, c-format
 msgid "Expected to read %zu frames but actually read %zd frames"
-msgstr "S'attendu lire %zu cadres, mais en fait a lu %zd cadres"
+msgstr "Lecture attendue %zu trames mais en fait %zd trames lues"
 
 #: src/io/audio_file.c:274
 #, c-format
 msgid "Expected to read %<PRId64> frames but actually read %zd frames"
-msgstr "S'attendu lire %<PRId64> cadres mais en fait a lu %zd cadres"
+msgstr "Lecture attendue %<PRId64> trames mais en fait %zd trames lues"
 
 #: src/io/audio_file.c:300
 #, c-format
 msgid "Failed to close audio file at '%s': %s (error code %i)"
-msgstr "Échec de la fermeture du fichier audio à '%s': %s (code erreur %i)"
+msgstr "Échec de la fermeture du fichier audio à '%s' : %s (code erreur %i)"
 
 #: src/utils/resampler.c:112
 #, c-format
@@ -2827,12 +2827,12 @@ msgstr "Échec de la création de l'instance soxr %s"
 #: src/utils/resampler.c:121
 #, c-format
 msgid "Failed to set soxr input function: %s"
-msgstr "Échec de la mise en place de la fonction d'entrée soxr: %s"
+msgstr "Échec de la mise en place de la fonction d'entrée soxr : %s"
 
 #: src/utils/resampler.c:162
 #, c-format
 msgid "soxr_process() error: %s"
-msgstr "soxr_process() erreur: %s"
+msgstr "erreur soxr_process() : %s"
 
 #: src/utils/ui.c:589
 msgid "Sine (Equal Power)"
@@ -2867,7 +2867,7 @@ msgstr ""
 
 #: src/utils/ui.c:902
 msgid "Experimental Feature"
-msgstr "Caractéristique Expérimentale"
+msgstr "Caractéristique expérimentale"
 
 #: src/utils/ui.c:903
 msgid ""
@@ -3188,7 +3188,7 @@ msgstr ""
 
 #: src/gui/widgets/main_window.c:251
 msgid "Startup Error"
-msgstr "Erreur de Démarrage"
+msgstr "Erreur de démarrage"
 
 #: src/gui/widgets/main_window.c:740 src/gui/widgets/preferences.c:898
 #: resources/ui/file_auditioner_controls.ui:34 resources/gtk/menus.ui:40
