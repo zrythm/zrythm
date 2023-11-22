@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-10-01 21:55+0900\n"
-"PO-Revision-Date: 2023-11-18 20:45+0000\n"
+"PO-Revision-Date: 2023-11-22 20:45+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/zrythm/ca/"
 ">\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.2\n"
+"X-Generator: Weblate 5.2.1-rc\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -1052,9 +1052,8 @@ msgid "Set control value"
 msgstr "Establir el valor de control"
 
 #: src/actions/actions.c:343
-#, fuzzy
 msgid "Guile Disabled"
-msgstr "Guile Desactivat"
+msgstr "Guile desactivat"
 
 #: src/actions/actions.c:346
 #, c-format
@@ -1357,9 +1356,8 @@ msgid "Unimplemented"
 msgstr "No implementat"
 
 #: src/actions/actions.c:2869
-#, fuzzy
 msgid "Tap BPM not implemented yet"
-msgstr "Operació no implementada"
+msgstr "Toc BPM encara no implementat"
 
 #: src/actions/actions.c:2924
 msgid "Failed to move selections"
@@ -1391,9 +1389,8 @@ msgstr ""
 "predefinit des del navegador predefinit d'acords."
 
 #: src/actions/actions.c:3282
-#, fuzzy
 msgid "Failed to create pack"
-msgstr "Error en crear pista"
+msgstr "Error en crear el paquet"
 
 #: src/actions/actions.c:3294 src/actions/actions.c:3349
 msgid "Preset Pack Name"
@@ -1405,14 +1402,12 @@ msgid "Delete?"
 msgstr "Suprimir?"
 
 #: src/actions/actions.c:3326
-#, fuzzy
 msgid "Are you sure you want to delete this chord preset pack?"
-msgstr "Segur que vols suprimir aquest paquet d'acords predefinit?"
+msgstr "N'estàs segur que vols suprimir aquest paquet d'acords predefinit?"
 
 #: src/actions/actions.c:3378
-#, fuzzy
 msgid "Are you sure you want to delete this chord preset?"
-msgstr "Segur que vols suprimir aquest paquet d'acords predefinit?"
+msgstr "N'estàs segur que vols suprimir aquest acord predefinit?"
 
 #: src/actions/actions.c:3401
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:138
