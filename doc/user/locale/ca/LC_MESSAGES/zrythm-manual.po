@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Zrythm 1.0.0-alpha.28\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-08-15 16:28+0900\n"
-"PO-Revision-Date: 2023-09-11 20:45+0000\n"
+"PO-Revision-Date: 2023-11-23 20:45+0000\n"
 "Last-Translator: Maite Guix <maite.guix@gmail.com>\n"
 "Language-Team: Catalan <https://hosted.weblate.org/projects/zrythm/"
 "user-manual/ca/>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.2.1-rc\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -4883,7 +4883,7 @@ msgstr "PENDENT"
 
 #: ../../glossary/intro.rst:108
 msgid "Panning"
-msgstr "Panoràmica"
+msgstr "Panoràmització"
 
 #: ../../glossary/intro.rst:110
 msgid ""
