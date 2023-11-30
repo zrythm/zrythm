@@ -71,6 +71,7 @@ conf_py = configure_file (
     'COPYRIGHT_YEARS': copyright_years,
     'MESON_DOC_USER_SRC_DIR': meson.current_source_dir (),
     'MESON_DOC_USER_BUILD_DIR': meson.current_build_dir (),
+    'ISSUE_TRACKER_URL': issue_tracker_url,
     })
 
 generated_rst_files = [

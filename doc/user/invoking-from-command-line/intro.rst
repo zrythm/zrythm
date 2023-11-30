@@ -19,42 +19,44 @@ Zrythm executable.
 
 .. program:: zrythm
 
-.. option:: -h, --help
+.. cmdoption:: -h, --help
 
   Print a list of available options.
 
-.. option:: --pretty
+.. cmdoption:: --pretty
 
   Pretty-print the output (where applicable).
 
-.. option:: -p, --print-settings
+.. cmdoption:: -p, --print-settings
 
   Print all the user settings. Can be combined with
-  :option:`--pretty` to get pretty-printed output,
+  :option:`zrythm --pretty` to get pretty-printed output,
   like below.
 
   .. image:: /_static/img/print-settings.png
      :align: center
 
-.. option:: --reset-to-factory
+.. cmdoption:: --reset-to-factory
 
   Reset user settings to their default values.
 
   .. note:: Only affects the
-    settings printed with :option:`-p`. This will
+    settings printed with :option:`zrythm -p`. This will
     *not* affect any files in the
     :term:`Zrythm user path`.
 
   .. warning:: This will clear ALL your user
     settings.
 
-.. option:: -v, --version
+.. cmdoption:: -v, --version
 
-.. option:: --zpj-to-yaml
+  Print version information.
+
+.. cmdoption:: --zpj-to-yaml
 
   Convert a .zpj project file to YAML.
 
-.. option:: --yaml-to-zpj
+.. cmdoption:: --yaml-to-zpj
 
   Convert a YAML file to the .zpj format.
 

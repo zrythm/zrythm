@@ -106,6 +106,7 @@ prog_name = get_option ('program_name')
 prog_name_lowercase = prog_name.to_lower()
 copyright_name = 'The ' + prog_name + ' contributors'
 copyright_years = '2018-2023'
+issue_tracker_url = 'https://gitlab.zrythm.org/zrythm/zrythm/-/issues'
 
 prefix = get_option ('prefix')
 bindir = prefix / get_option ('bindir')
@@ -362,11 +363,9 @@ cdata.set (
   'MESON_BUILD_ROOT', meson_build_root)
 cdata.set_quoted('OPEN_DIR_CMD', open_dir_cmd)
 cdata.set_quoted (
-  'ISSUE_TRACKER_URL',
-  'https://gitlab.zrythm.org/zrythm/zrythm/-/issues')
+  'ISSUE_TRACKER_URL', issue_tracker_url)
 cdata.set_quoted (
-  'NEW_ISSUE_URL',
-  'https://gitlab.zrythm.org/zrythm/zrythm/-/issues/new')
+  'NEW_ISSUE_URL', issue_tracker_url + '/new')
 cdata.set_quoted (
   'PRIVACY_POLICY_URL',
   'https://www.zrythm.org/en/privacy.html')

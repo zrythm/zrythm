@@ -15,8 +15,85 @@ There are three types of bugs:
 Incorrect Behavior
 ------------------
 
-In this case, please report the issue on our bug tracker with
-enough details to reproduce the problem.
+In this case, please report the issue on our
+`issue tracker <issue_tracker_>`_ with enough details to
+help us reproduce the problem.
+
+You should include the following details:
+
+* a screenshot/screencast showing the problem
+* a description of the problem
+* steps to reproduce the problem
+* OS and Zrythm version information
+* last 100 lines of the log file
+
+The following subsections explain how to provide this
+information.
+
+Obtaining a Screenshot/Screencast
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can press the :kbd:`PrintScreen` on your keyboard to
+obtain a screenshot.
+
+To obtain a screencast you can use a screen recording software
+such as OBS, or :kbd:`Control-Shift-Alt-R` on GNOME.
+
+Problem Description
+~~~~~~~~~~~~~~~~~~~
+
+You should include as many details as possible to help us
+understand and reproduce the problem, otherwise we can't
+do anything about it.
+`Here is an example <https://gitlab.zrythm.org/zrythm/zrythm/-/issues/4202>`_
+of a good bug description:
+
+  Pixelated and misaligned timebase master and transport client icons
+
+  As can be seen in the following screenshot, the two icons are seemingly misaligned, moved into each other and also very pixelated.
+
+Steps to Reproduce
+~~~~~~~~~~~~~~~~~~
+
+Please give the exact steps to reproduce the issue, starting
+from a blank project (if possible). We will follow these
+exact steps to reproduce the error so that we can fix it. If
+we can't reproduce the issue, it is very difficult to find or
+fix the issue.
+
+Here is an example of helpful steps to reproduce:
+
+1. Create an empty project
+2. Add a MIDI track
+3. Create a region starting at bar 1 and ending at bar 5
+4. Add a note inside the region starting at bar 2 and ending at bar 4
+5. Split the note at bar 3
+6. Delete the 2nd note
+7. Zrythm freezes
+
+OS and Zrythm Version Information
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can copy the Zrythm version from the About dialog or
+(preferred) use the :option:`--version option <zrythm --version>` when launching Zrythm in a terminal.
+
+.. image:: /_static/img/terminal-version-info.png
+   :align: center
+
+You can obtain OS information from the About dialog (click
+:guilabel:`Troubleshooting` then
+:guilabel:`Debugging Information`)
+
+.. image:: /_static/img/debugging-info.png
+   :align: center
+
+Log
+~~~
+
+The log file can be found in
+:ref:`the location specified here <appendix/files-and-directories:Log File>`.
+Please provide at least the last 100 lines. You may be asked
+to provide the full log file (please compress it first).
 
 Soft Errors
 -----------
