@@ -15,13 +15,15 @@
 # Maxime Leroy <lisacintosh@gmail.com>, 2021, 2022.
 # Nifou <nifou@mailfence.com>, 2023.
 # Ivar <ivar@ivarbjerling.com>, 2023.
+# Weblate Translation Memory <noreply-mt-weblate-translation-memory@weblate.org>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-12-02 16:01+0900\n"
 "PO-Revision-Date: 2023-12-02 11:54+0000\n"
-"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
+"Last-Translator: Weblate Translation Memory <noreply-mt-weblate-translation-"
+"memory@weblate.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -5024,7 +5026,7 @@ msgstr "Voulez-vous que %s vérifie les mises à jour au démarrage ?"
 #: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:38
 #: src/settings/plugin_settings.c:537
 msgid "_Yes"
-msgstr ""
+msgstr "_Oui"
 
 #: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:38
 #: src/settings/plugin_settings.c:537
@@ -5169,7 +5171,7 @@ msgstr "Couleur"
 
 #: src/gui/widgets/dialogs/export_dialog.c:971
 msgid "Icon"
-msgstr ""
+msgstr "Icône"
 
 #: src/gui/widgets/dialogs/export_dialog.c:989
 msgid "<name>.<format>"
@@ -6221,7 +6223,7 @@ msgstr ""
 
 #: src/project/project_init_flow_manager.c:1094
 msgid "Ignore"
-msgstr ""
+msgstr "Ignorer"
 
 #: src/project/project_init_flow_manager.c:1151
 #, fuzzy
