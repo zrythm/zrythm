@@ -6,7 +6,7 @@ Thanks:
  Yustin
    * Help with GSource-related fixes
    * Help with optimization
- Adam Kosmin
+ mtf8
    * UI/feature ideas
    * Financial contribution
    * Bug reports
@@ -81,5 +81,5 @@ Thanks:
 
 ----
 
-SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou
+SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou
 SPDX-License-Identifier: FSFAP
