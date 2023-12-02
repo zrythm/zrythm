@@ -163,28 +163,6 @@ test_mono_plugin (void)
 #endif
 }
 
-#if 0
-static void
-test_has_custom_ui (void)
-{
-  test_helper_zrythm_init ();
-
-#  ifdef HAVE_CARLA
-#    ifdef HAVE_HELM
-  PluginSetting * setting =
-    test_plugin_manager_get_plugin_setting (
-      HELM_BUNDLE, HELM_URI, false);
-  g_assert_nonnull (setting);
-  g_assert_true (
-    carla_native_plugin_has_custom_ui (
-      setting->descr));
-#    endif
-#  endif
-
-  test_helper_zrythm_cleanup ();
-}
-#endif
-
 static void
 test_crash_handling (void)
 {
@@ -273,11 +251,6 @@ main (int argc, char * argv[])
     (GTestFunc) test_vst_instrument_makes_sound);
   g_test_add_func (TEST_PREFIX "test mono plugin", (GTestFunc) test_mono_plugin);
   g_test_add_func (TEST_PREFIX "test process", (GTestFunc) test_process);
-#if 0
-  g_test_add_func (
-    TEST_PREFIX "test has custom UI",
-    (GTestFunc) test_has_custom_ui);
-#endif
   g_test_add_func (
     TEST_PREFIX "test crash handling", (GTestFunc) test_crash_handling);
 

@@ -33,7 +33,7 @@
 #include "dsp/track.h"
 #include "gui/backend/event.h"
 #include "gui/backend/event_manager.h"
-#include "gui/widgets/file_chooser_button.h"
+#include "gui/widgets/file_chooser_entry.h"
 #include "gui/widgets/main_window.h"
 #include "plugins/carla_native_plugin.h"
 #include "plugins/lv2/lv2_gtk.h"
@@ -490,75 +490,6 @@ plugin_gtk_add_control_row (
     3 - control_left_attach, 1);
 }
 
-#if 0
-void
-plugin_gtk_build_menu (
-  Plugin* plugin,
-  GtkWidget* window,
-  GtkWidget* vbox)
-{
-  GtkWidget* menu_bar  = gtk_menu_bar_new();
-  GtkWidget* file      = gtk_menu_item_new_with_mnemonic("_File");
-  GtkWidget* file_menu = gtk_menu_new();
-
-  GtkAccelGroup* ag = gtk_accel_group_new();
-  gtk_window_add_accel_group(GTK_WINDOW(window), ag);
-
-  GtkWidget* save =
-    gtk_menu_item_new_with_mnemonic ("_Save");
-  GtkWidget* quit =
-    gtk_menu_item_new_with_mnemonic ("_Quit");
-
-  gtk_menu_item_set_submenu(GTK_MENU_ITEM(file), file_menu);
-  gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), save);
-  gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), quit);
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file);
-
-  GtkWidget* pset_item   = gtk_menu_item_new_with_mnemonic("_Presets");
-  GtkWidget* pset_menu   = gtk_menu_new();
-  GtkWidget* save_preset = gtk_menu_item_new_with_mnemonic(
-          "_Save Preset...");
-  GtkWidget* delete_preset = gtk_menu_item_new_with_mnemonic(
-          "_Delete Current Preset...");
-  gtk_menu_item_set_submenu(GTK_MENU_ITEM(pset_item), pset_menu);
-  gtk_menu_shell_append(GTK_MENU_SHELL(pset_menu), save_preset);
-  gtk_menu_shell_append(GTK_MENU_SHELL(pset_menu), delete_preset);
-  gtk_menu_shell_append(GTK_MENU_SHELL(pset_menu),
-                        gtk_separator_menu_item_new());
-  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), pset_item);
-
-  PluginGtkPresetMenu menu = {
-    NULL, NULL, GTK_MENU (pset_menu),
-    g_sequence_new (
-      (GDestroyNotify) preset_menu_free)
-  };
-  if (plugin->lv2)
-    {
-      lv2_state_load_presets (
-        plugin->lv2, lv2_gtk_add_preset_to_menu,
-        &menu);
-    }
-  finish_menu (&menu);
-
-  /* connect signals */
-  g_signal_connect (
-    G_OBJECT(quit), "activate",
-    G_CALLBACK(on_quit_activate), window);
-  g_signal_connect (
-    G_OBJECT(save), "activate",
-    G_CALLBACK(on_save_activate), plugin);
-  g_signal_connect (
-    G_OBJECT(save_preset), "activate",
-    G_CALLBACK(plugin_gtk_on_save_preset_activate), plugin);
-  g_signal_connect (
-    G_OBJECT(delete_preset), "activate",
-    G_CALLBACK(on_delete_preset_activate), plugin);
-
-  gtk_box_pack_start (
-    GTK_BOX (vbox), menu_bar, FALSE, FALSE, 0);
-}
-#endif
-
 /**
  * Called when the plugin window is destroyed.
  */
@@ -892,8 +823,9 @@ string_changed (GtkEntry * widget, Port * port)
 
 typedef struct FileChangedData
 {
-  Port *                    port;
-  FileChooserButtonWidget * fc_btn;
+  Port *                port;
+  Plugin *              plugin;
+  IdeFileChooserEntry * fc_btn;
 } FileChangedData;
 
 static void
@@ -903,28 +835,43 @@ file_changed_data_closure_notify (gpointer data, GClosure * closure)
 }
 
 static void
-file_changed (GtkNativeDialog * dialog, gint response_id, FileChangedData * data)
+on_fc_file_set (GObject * gobject, GParamSpec * pspec, gpointer user_data)
 {
-  Port *                 port = data->port;
-  GtkFileChooserNative * file_chooser_native = GTK_FILE_CHOOSER_NATIVE (dialog);
-  GtkFileChooser *       file_chooser = GTK_FILE_CHOOSER (file_chooser_native);
-  GFile *                file = gtk_file_chooser_get_file (file_chooser);
-  char *                 filename = g_file_get_path (file);
+  FileChangedData * data = (FileChangedData *) user_data;
+
+  IdeFileChooserEntry * fc_entry = IDE_FILE_CHOOSER_ENTRY (gobject);
+
+  GFile * file = ide_file_chooser_entry_get_file (fc_entry);
+  char *  filename = g_file_get_path (file);
   g_object_unref (file);
 
-  g_return_if_fail (IS_PORT_AND_NONNULL (port));
-  PluginGtkController * controller = port->widget;
-  Plugin *              pl = controller->plugin;
-  g_return_if_fail (IS_PLUGIN_AND_NONNULL (pl));
-
-  if (pl->lv2)
+  /*PluginGtkController * controller = NULL;*/
+  Plugin * plugin = data->plugin;
+  if (data->port)
     {
-      set_lv2_control (
-        pl->lv2, port, strlen (filename), pl->lv2->main_forge.Path, filename);
-    }
-  g_free (filename);
+      g_return_if_fail (IS_PORT_AND_NONNULL (data->port));
+      /*controller = data->port->widget;*/
 
-  file_chooser_button_widget_std_response (data->fc_btn, dialog, response_id);
+      if (plugin->lv2)
+        {
+          set_lv2_control (
+            plugin->lv2, data->port, strlen (filename),
+            plugin->lv2->main_forge.Path, filename);
+        }
+    }
+  else if (plugin->carla)
+    {
+      g_return_if_fail (IS_PLUGIN_AND_NONNULL (plugin));
+      /*controller = plugin->file_open_controller;*/
+      carla_set_custom_data (
+        plugin->carla->host_handle, 0, CUSTOM_DATA_TYPE_PATH, "file", filename);
+    }
+  else
+    {
+      g_return_if_reached ();
+    }
+
+  g_free (filename);
 }
 
 static PluginGtkController *
@@ -1110,25 +1057,35 @@ make_entry (Port * port)
 }
 
 static PluginGtkController *
-make_file_chooser (Port * port)
+make_file_chooser (Plugin * pl, Port * port)
 {
-  GtkWidget * button = GTK_WIDGET (file_chooser_button_widget_new (
-    GTK_WINDOW (MAIN_WINDOW), _ ("Open File"), GTK_FILE_CHOOSER_ACTION_OPEN));
+  GtkWidget * fc =
+    ide_file_chooser_entry_new (_ ("Open File"), GTK_FILE_CHOOSER_ACTION_OPEN);
 
-  bool is_input = port->id.flow == FLOW_INPUT;
-  gtk_widget_set_sensitive (button, is_input);
+  bool is_input = port ? port->id.flow == FLOW_INPUT : true;
+  gtk_widget_set_sensitive (fc, is_input);
 
   if (is_input)
     {
       FileChangedData * data = object_new (FileChangedData);
       data->port = port;
-      data->fc_btn = Z_FILE_CHOOSER_BUTTON_WIDGET (button);
-      file_chooser_button_widget_set_response_callback (
-        Z_FILE_CHOOSER_BUTTON_WIDGET (button), G_CALLBACK (file_changed), data,
-        file_changed_data_closure_notify);
+      data->plugin = pl;
+      data->fc_btn = IDE_FILE_CHOOSER_ENTRY (fc);
+      if (pl->carla)
+        {
+          const char * cpath = carla_get_custom_data_value (
+            pl->carla->host_handle, 0, CUSTOM_DATA_TYPE_PATH, "file");
+          g_debug ("setting path to '%s'", cpath);
+          GFile * file = g_file_new_for_path (cpath);
+          ide_file_chooser_entry_set_file (IDE_FILE_CHOOSER_ENTRY (fc), file);
+          g_object_unref (file);
+        }
+      g_signal_connect_data (
+        fc, "notify::file", G_CALLBACK (on_fc_file_set), data,
+        file_changed_data_closure_notify, G_CONNECT_AFTER);
     }
 
-  return new_controller (NULL, button);
+  return new_controller (NULL, fc);
 }
 
 static PluginGtkController *
@@ -1211,7 +1168,7 @@ build_control_widget (Plugin * pl, GtkWindow * window)
             }
           else if (port->value_type == forge->Path)
             {
-              controller = make_file_chooser (port);
+              controller = make_file_chooser (pl, port);
             }
           else
             {
@@ -1243,6 +1200,17 @@ build_control_widget (Plugin * pl, GtkWindow * window)
                 controller->control, port->id.comment);
             }
         }
+    }
+
+  /* add file control */
+  if (pl->setting->descr->hints & PLUGIN_HAS_CUSTOM_UI_USING_FILE_OPEN)
+    {
+      PluginGtkController * controller = make_file_chooser (pl, NULL);
+      controller->port = NULL;
+      controller->plugin = pl;
+
+      /* Add row to table for this controller */
+      plugin_gtk_add_control_row (port_table, n_rows++, _ ("File"), controller);
     }
 
   if (n_rows > 0)
@@ -1373,10 +1341,10 @@ plugin_gtk_generic_set_widget_value (
     {
       gtk_editable_set_text (GTK_EDITABLE (widget), (const char *) body);
     }
-  else if (GTK_IS_FILE_CHOOSER (widget) && type == PM_URIDS.atom_Path)
+  else if (IDE_IS_FILE_CHOOSER_ENTRY (widget) && type == PM_URIDS.atom_Path)
     {
       GFile * file = g_file_new_for_path ((const char *) body);
-      gtk_file_chooser_set_file (GTK_FILE_CHOOSER (widget), file, NULL);
+      ide_file_chooser_entry_set_file (IDE_FILE_CHOOSER_ENTRY (widget), file);
       g_object_unref (file);
     }
   else

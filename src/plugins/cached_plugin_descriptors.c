@@ -96,18 +96,14 @@ return_new_instance:
   g_file_get_contents (path, &yaml, NULL, &err);
   if (err != NULL)
     {
-      g_critical (
-        "Failed to create CachedPluginDescriptors "
-        "from %s",
-        path);
+      g_critical ("Failed to create CachedPluginDescriptors from %s", path);
       g_free (err);
       g_free (yaml);
       g_free (path);
       return NULL;
     }
 
-  /* if not same version, purge file and return
-   * a new instance */
+  /* if not same version, purge file and return a new instance */
   if (!is_yaml_our_version (yaml))
     {
       g_message (
@@ -124,14 +120,31 @@ return_new_instance:
     yaml_deserialize (yaml, &cached_plugin_descriptors_schema, &err);
   if (!self)
     {
-      g_critical (
-        "Failed to deserialize "
-        "CachedPluginDescriptors from %s:\n%s",
-        path, err->message);
+      g_warning (
+        "Failed to deserialize CachedPluginDescriptors from %s:\n%s", path,
+        err->message);
       g_error_free (err);
       g_free (yaml);
-      g_free (path);
-      return NULL;
+
+      /* move to backup file */
+      GFile * src = g_file_new_for_path (path);
+      char *  bak_path = g_strdup_printf ("%s.bak", path);
+      GFile * dest = g_file_new_for_path (bak_path);
+      err = NULL;
+      bool success =
+        g_file_move (src, dest, G_FILE_COPY_OVERWRITE, NULL, NULL, NULL, &err);
+      g_object_unref (src);
+      g_object_unref (dest);
+      g_free (bak_path);
+      if (!success)
+        {
+          g_free (path);
+          g_critical ("Failed to create backup file:\n%s", err->message);
+          return NULL;
+        }
+
+      /* create new */
+      goto return_new_instance;
     }
   g_free (yaml);
   g_free (path);

@@ -1333,7 +1333,8 @@ plugin_manager_scan_plugins (
                 || found_descr->num_midi_ins != descriptor->num_midi_ins
                 || found_descr->num_midi_outs != descriptor->num_midi_outs
                 || found_descr->num_cv_ins != descriptor->num_cv_ins
-                || found_descr->num_cv_outs != descriptor->num_cv_outs)
+                || found_descr->num_cv_outs != descriptor->num_cv_outs
+                || found_descr->hints != descriptor->hints)
                 cached_plugin_descriptors_replace (
                   self->cached_plugin_descriptors, descriptor, F_SERIALIZE);
             }

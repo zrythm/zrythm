@@ -19,7 +19,7 @@
  * @{
  */
 
-#define PLUGIN_COLLECTION_SCHEMA_VERSION 1
+#define PLUGIN_COLLECTION_SCHEMA_VERSION 2
 
 /**
  * Plugin collection used in the plugin browser.

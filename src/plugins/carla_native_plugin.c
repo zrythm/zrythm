@@ -627,44 +627,6 @@ carla_native_plugin_populate_banks (CarlaNativePlugin * self)
   g_free (str);
 }
 
-bool
-carla_native_plugin_has_custom_ui (const PluginDescriptor * descr)
-{
-#  if 0
-  CarlaNativePlugin * native_pl = _create (NULL);
-
-  /* instantiate the plugin to get its info */
-  native_pl->native_plugin_descriptor =
-    carla_get_native_rack_plugin ();
-  native_pl->native_plugin_handle =
-    native_pl->native_plugin_descriptor->instantiate (
-      &native_pl->native_host_descriptor);
-  native_pl->host_handle =
-    carla_create_native_plugin_host_handle (
-      native_pl->native_plugin_descriptor,
-      native_pl->native_plugin_handle);
-  PluginType type =
-    get_plugin_type_from_protocol (descr->protocol);
-  carla_add_plugin (
-    native_pl->host_handle,
-    descr->arch == ARCH_64 ?
-      BINARY_NATIVE : BINARY_WIN32,
-    type, descr->path, descr->name,
-    descr->uri, descr->unique_id, NULL, 0);
-  const CarlaPluginInfo * info =
-    carla_get_plugin_info (
-      native_pl->host_handle, 0);
-  g_return_val_if_fail (info, false);
-  bool has_custom_ui =
-    info->hints & PLUGIN_HAS_CUSTOM_UI;
-
-  carla_native_plugin_free (native_pl);
-
-  return has_custom_ui;
-#  endif
-  g_return_val_if_reached (false);
-}
-
 /**
  * Processes the plugin for this cycle.
  */
@@ -950,7 +912,7 @@ carla_native_plugin_get_descriptor_from_cached (
   descr->category = carla_category_to_zrythm_category (info->category);
   descr->category_str = carla_category_to_zrythm_category_str (info->category);
   descr->min_bridge_mode = plugin_descriptor_get_min_bridge_mode (descr);
-  descr->has_custom_ui = info->hints & PLUGIN_HAS_CUSTOM_UI;
+  descr->hints = info->hints;
 
   return descr;
 }
@@ -1239,6 +1201,9 @@ create_ports (CarlaNativePlugin * self, bool loading)
           port->deff = ranges->def;
           port->minf = ranges->min;
           port->maxf = ranges->max;
+          g_warn_if_fail (!isnan (port->deff));
+          g_warn_if_fail (!isnan (port->minf));
+          g_warn_if_fail (!isnan (port->maxf));
 #  if 0
           g_debug (
             "ranges: min %f max %f default %f",

@@ -24,3 +24,22 @@ tracklist_upgrade_from_v1 (Tracklist_v1 * old)
 
   return self;
 }
+
+Tracklist *
+tracklist_upgrade_from_v2 (Tracklist_v2 * old)
+{
+  if (!old)
+    return NULL;
+
+  Tracklist * self = object_new (Tracklist);
+
+  self->schema_version = TRACKLIST_SCHEMA_VERSION;
+  self->num_tracks = old->num_tracks;
+  for (int i = 0; i < self->num_tracks; i++)
+    {
+      self->tracks[i] = track_upgrade_from_v2 (old->tracks[i]);
+    }
+  self->pinned_tracks_cutoff = old->pinned_tracks_cutoff;
+
+  return self;
+}

@@ -82,7 +82,7 @@ plugin_descriptor_copy (PluginDescriptor * dest, const PluginDescriptor * src)
   dest->path = g_strdup (src->path);
   dest->uri = g_strdup (src->uri);
   dest->min_bridge_mode = src->min_bridge_mode;
-  dest->has_custom_ui = src->has_custom_ui;
+  dest->hints = src->hints;
   dest->ghash = src->ghash;
 }
 
@@ -378,38 +378,10 @@ plugin_descriptor_is_same_plugin (
          && string_is_equal (a->path, b->path) && string_is_equal (a->uri, b->uri);
 }
 
-/**
- * Returns if the Plugin has a supported custom
- * UI.
- */
 bool
 plugin_descriptor_has_custom_ui (const PluginDescriptor * self)
 {
-  switch (self->protocol)
-    {
-    case Z_PLUGIN_PROTOCOL_LV2:
-      {
-        return lv2_plugin_pick_most_preferable_ui (
-          self->uri, NULL, NULL, true, false);
-      }
-      break;
-    case Z_PLUGIN_PROTOCOL_VST:
-    case Z_PLUGIN_PROTOCOL_VST3:
-    case Z_PLUGIN_PROTOCOL_AU:
-    case Z_PLUGIN_PROTOCOL_CLAP:
-    case Z_PLUGIN_PROTOCOL_JSFX:
-#ifdef HAVE_CARLA
-      return carla_native_plugin_has_custom_ui (self);
-#else
-      return false;
-#endif
-      break;
-    default:
-      return false;
-      break;
-    }
-
-  g_return_val_if_reached (false);
+  return self->hints & PLUGIN_HAS_CUSTOM_UI;
 }
 
 /**
@@ -619,7 +591,8 @@ plugin_descriptor_generate_context_menu (const PluginDescriptor * self)
 
   PluginSetting * new_setting = plugin_setting_new_default (self);
   if (
-    self->has_custom_ui && self->min_bridge_mode == CARLA_BRIDGE_NONE
+    self->hints & PLUGIN_HAS_CUSTOM_UI
+    && self->min_bridge_mode == CARLA_BRIDGE_NONE
     && !new_setting->force_generic_ui)
     {
       sprintf (

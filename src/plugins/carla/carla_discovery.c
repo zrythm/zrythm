@@ -181,8 +181,7 @@ z_carla_discovery_parse_plugin_info (const char * plugin_path, char * results)
       descr->uri = string_get_regex_group (
         plugin_info, "carla-discovery::label::(.*)" LINE_SEP, 1);
 
-      /* get has custom UI */
-      descr->has_custom_ui = string_get_regex_group_as_int (
+      descr->hints = (unsigned int) string_get_regex_group_as_int (
         plugin_info, "carla-discovery::hints::(.*)" LINE_SEP, 1, 0);
 
       /* get category */
@@ -197,9 +196,7 @@ z_carla_discovery_parse_plugin_info (const char * plugin_path, char * results)
         }
       else
         {
-          int hints = string_get_regex_group_as_int (
-            plugin_info, "carla-discovery::hints::(.*)" LINE_SEP, 1, 0);
-          if ((unsigned int) hints & PLUGIN_IS_SYNTH)
+          if (descr->hints & PLUGIN_IS_SYNTH)
             {
               descr->category = PC_INSTRUMENT;
               descr->category_str =
@@ -393,7 +390,7 @@ z_carla_discovery_create_au_descriptor_from_info (
   descr->arch = ARCH_64;
   descr->path = NULL;
   descr->min_bridge_mode = plugin_descriptor_get_min_bridge_mode (descr);
-  descr->has_custom_ui = info->hints & PLUGIN_HAS_CUSTOM_UI;
+  descr->hints = info->hints;
 
   return descr;
 }

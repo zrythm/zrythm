@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #ifndef __SCHEMAS_AUDIO_CHANNEL_SEND_H__
@@ -50,6 +50,6 @@ static const cyaml_schema_value_t channel_send_schema_v1 = {
 };
 
 ChannelSend *
-channel_send_upgrade_from_v1 (ChannelSend_v1 * old);
+channel_send_create_from_v1 (ChannelSend_v1 * old);
 
 #endif

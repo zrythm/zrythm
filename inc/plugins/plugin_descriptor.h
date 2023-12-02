@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2021 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -26,7 +26,7 @@ typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
  * @{
  */
 
-#define PLUGIN_DESCRIPTOR_SCHEMA_VERSION 1
+#define PLUGIN_DESCRIPTOR_SCHEMA_VERSION 3
 
 /**
  * Plugin category.
@@ -228,7 +228,15 @@ typedef struct PluginDescriptor
   /** Minimum required bridge mode. */
   CarlaBridgeMode min_bridge_mode;
 
+  /** Unused since schema ver 3. */
   bool has_custom_ui;
+
+  /**
+   * Carla plugin hints.
+   *
+   * @seealso CarlaBackend.h
+   */
+  unsigned int hints;
 
   /** Hash of the plugin's bundle (.so/.ddl for VST)
    * used when caching PluginDescriptor's, obtained
@@ -261,6 +269,7 @@ static const cyaml_schema_field_t plugin_descriptor_fields_schema[] = {
   YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor, uri),
   YAML_FIELD_ENUM (PluginDescriptor, min_bridge_mode, carla_bridge_mode_strings),
   YAML_FIELD_INT (PluginDescriptor, has_custom_ui),
+  YAML_FIELD_UINT (PluginDescriptor, hints),
   YAML_FIELD_UINT (PluginDescriptor, ghash),
 
   CYAML_FIELD_END
@@ -385,15 +394,17 @@ plugin_descriptor_is_same_plugin (
   const PluginDescriptor * b);
 
 /**
- * Returns if the Plugin has a supported custom
- * UI.
+ * Returns whether the plugin has its own custom UI.
+ *
+ * @memberof PluginDescriptor
  */
 NONNULL bool
 plugin_descriptor_has_custom_ui (const PluginDescriptor * self);
 
 /**
- * Returns the minimum bridge mode required for this
- * plugin.
+ * Returns the minimum bridge mode required for this plugin.
+ *
+ * @memberof PluginDescriptor
  */
 NONNULL CarlaBridgeMode
 plugin_descriptor_get_min_bridge_mode (const PluginDescriptor * self);

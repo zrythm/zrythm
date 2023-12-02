@@ -37,7 +37,7 @@ typedef struct _WrappedObjectWithChangeSignal WrappedObjectWithChangeSignal;
  * @{
  */
 
-#define PLUGIN_SCHEMA_VERSION 1
+#define PLUGIN_SCHEMA_VERSION 2
 
 #define PLUGIN_MAGIC 43198683
 #define IS_PLUGIN(x) (((Plugin *) x)->magic == PLUGIN_MAGIC)

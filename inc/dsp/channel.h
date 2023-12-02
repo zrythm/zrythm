@@ -38,7 +38,7 @@ typedef struct ExtPort         ExtPort;
  * @{
  */
 
-#define CHANNEL_SCHEMA_VERSION 2
+#define CHANNEL_SCHEMA_VERSION 3
 
 /** Magic number to identify channels. */
 #define CHANNEL_MAGIC 8431676

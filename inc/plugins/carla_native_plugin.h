@@ -261,9 +261,6 @@ carla_native_plugin_activate (CarlaNativePlugin * self, bool activate);
 NONNULL void
 carla_native_plugin_close (CarlaNativePlugin * self);
 
-bool
-carla_native_plugin_has_custom_ui (const PluginDescriptor * descr);
-
 /**
  * Returns the latency in samples.
  */

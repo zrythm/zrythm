@@ -23,8 +23,8 @@
  * @{
  */
 
-#define PLUGIN_SETTING_SCHEMA_VERSION 2
-#define PLUGIN_SETTINGS_SCHEMA_VERSION 5
+#define PLUGIN_SETTING_SCHEMA_VERSION 3
+#define PLUGIN_SETTINGS_SCHEMA_VERSION 6
 
 /**
  * A setting for a specific plugin descriptor.
@@ -33,8 +33,7 @@ typedef struct PluginSetting
 {
   int schema_version;
 
-  /** The descriptor of the plugin this setting is
-   * for. */
+  /** The descriptor of the plugin this setting is for. */
   PluginDescriptor * descr;
 
   /** Whether to instantiate this plugin with carla. */

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -70,9 +70,9 @@ static const cyaml_schema_value_t stereo_ports_schema_v1 = {
 };
 
 Port *
-port_upgrade_from_v1 (Port_v1 * old);
+port_create_from_v1 (Port_v1 * old);
 
 StereoPorts *
-stereo_ports_upgrade_from_v1 (StereoPorts_v1 * old);
+stereo_ports_create_from_v1 (StereoPorts_v1 * old);
 
 #endif

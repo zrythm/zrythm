@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -177,5 +177,125 @@ static const cyaml_schema_value_t track_schema_v1 = {
 
 Track *
 track_upgrade_from_v1 (Track_v1 * old);
+
+typedef struct Track_v2
+{
+  int                          schema_version;
+  int                          pos;
+  TrackType                 type;
+  char *                       name;
+  unsigned int                 name_hash;
+  char *                       icon_name;
+  bool                         automation_visible;
+  bool                         lanes_visible;
+  bool                         visible;
+  double                       main_height;
+  Port *                    recording;
+  bool                         record_set_automatically;
+  bool                         enabled;
+  GdkRGBA                      color;
+  TrackLane **              lanes;
+  int                          num_lanes;
+  uint8_t                      midi_ch;
+  bool                         drum_mode;
+  int                          passthrough_midi_input;
+  ZRegion *                 recording_region;
+  bool                         recording_start_sent;
+  bool                         recording_stop_sent;
+  bool                         recording_paused;
+  int                          last_lane_idx;
+  ZRegion **                chord_regions;
+  int                          num_chord_regions;
+  ScaleObject **            scales;
+  int                          num_scales;
+  Marker **                 markers;
+  int                          num_markers;
+  Port *                    bpm_port;
+  Port *                    beats_per_bar_port;
+  Port *                    beat_unit_port;
+  int                          size;
+  bool                         folded;
+  Plugin_v2 **                 modulators;
+  int                          num_modulators;
+  ModulatorMacroProcessor * modulator_macros[128];
+  int                          num_modulator_macros;
+  int                          num_visible_modulator_macros;
+  Channel_v2 *                 channel;
+  TrackProcessor *          processor;
+  AutomationTracklist       automation_tracklist;
+  bool                         trigger_midi_activity;
+  PortType                  in_signal_type;
+  PortType                  out_signal_type;
+  char *                       comment;
+  bool                         bounce;
+  bool                         bounce_to_master;
+  unsigned int *               children;
+  int                          num_children;
+  bool                         frozen;
+  int                          pool_id;
+  int                          magic;
+  bool                         disconnecting;
+} Track_v2;
+
+static const cyaml_schema_field_t track_fields_schema_v2[] = {
+  YAML_FIELD_INT (Track_v2, schema_version),
+  YAML_FIELD_STRING_PTR (Track_v2, name),
+  YAML_FIELD_STRING_PTR (Track_v2, icon_name),
+  YAML_FIELD_ENUM (Track_v2, type, track_type_strings),
+  YAML_FIELD_INT (Track_v2, pos),
+  YAML_FIELD_INT (Track_v2, lanes_visible),
+  YAML_FIELD_INT (Track_v2, automation_visible),
+  YAML_FIELD_INT (Track_v2, visible),
+  YAML_FIELD_FLOAT (Track_v2, main_height),
+  YAML_FIELD_INT (Track_v2, passthrough_midi_input),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Track_v2, recording, port_fields_schema),
+  YAML_FIELD_INT (Track_v2, enabled),
+  YAML_FIELD_MAPPING_EMBEDDED (Track_v2, color, gdk_rgba_fields_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (Track_v2, lanes, track_lane_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Track_v2, chord_regions, region_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Track_v2, scales, scale_object_schema),
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Track_v2, markers, marker_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Track_v2, channel, channel_fields_schema_v2),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Track_v2, bpm_port, port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (
+    Track_v2,
+    beats_per_bar_port,
+    port_fields_schema),
+  YAML_FIELD_MAPPING_PTR_OPTIONAL (Track_v2, beat_unit_port, port_fields_schema),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT (Track_v2, modulators, plugin_schema_v2),
+  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+    Track_v2,
+    modulator_macros,
+    modulator_macro_processor_schema),
+  YAML_FIELD_INT (Track_v2, num_visible_modulator_macros),
+  YAML_FIELD_MAPPING_PTR (Track_v2, processor, track_processor_fields_schema),
+  YAML_FIELD_MAPPING_EMBEDDED (
+    Track_v2,
+    automation_tracklist,
+    automation_tracklist_fields_schema),
+  YAML_FIELD_ENUM (Track_v2, in_signal_type, port_type_strings),
+  YAML_FIELD_ENUM (Track_v2, out_signal_type, port_type_strings),
+  YAML_FIELD_UINT (Track_v2, midi_ch),
+  YAML_FIELD_STRING_PTR (Track_v2, comment),
+  YAML_FIELD_DYN_ARRAY_VAR_COUNT_PRIMITIVES (
+    Track_v2,
+    children,
+    unsigned_int_schema),
+  YAML_FIELD_INT (Track_v2, frozen),
+  YAML_FIELD_INT (Track_v2, pool_id),
+  YAML_FIELD_INT (Track_v2, size),
+  YAML_FIELD_INT (Track_v2, folded),
+  YAML_FIELD_INT (Track_v2, record_set_automatically),
+  YAML_FIELD_INT (Track_v2, drum_mode),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t track_schema_v2 = {
+  YAML_VALUE_PTR (Track_v2, track_fields_schema_v2),
+};
+
+Track *
+track_upgrade_from_v2 (Track_v2 * old);
 
 #endif

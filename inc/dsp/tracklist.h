@@ -27,7 +27,7 @@ TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
  * @{
  */
 
-#define TRACKLIST_SCHEMA_VERSION 2
+#define TRACKLIST_SCHEMA_VERSION 3
 
 #define TRACKLIST (PROJECT->tracklist)
 #define MAX_TRACKS 3000

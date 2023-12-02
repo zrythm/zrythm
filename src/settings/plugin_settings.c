@@ -121,6 +121,7 @@ void
 plugin_setting_validate (PluginSetting * self, bool print_result)
 {
   const PluginDescriptor * descr = self->descr;
+  self->force_generic_ui = true;
 
   /* force carla */
   self->open_with_carla = true;
@@ -156,9 +157,8 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
     }
 
 #if defined(_WOE32) && defined(HAVE_CARLA)
-  /* open all LV2 plugins with custom UIs using
-   * carla */
-  if (descr->has_custom_ui && !self->force_generic_ui)
+  /* open all LV2 plugins with custom UIs using carla */
+  if (plugin_descriptor_has_custom_ui (descr) && !self->force_generic_ui)
     {
       self->open_with_carla = true;
     }
@@ -167,7 +167,7 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
 #ifdef HAVE_CARLA
   /* in wayland open all LV2 plugins with custom UIs
    * using carla */
-  if (z_gtk_is_wayland () && descr->has_custom_ui)
+  if (z_gtk_is_wayland () && plugin_descriptor_has_custom_ui (descr))
     {
       self->open_with_carla = true;
     }
@@ -220,7 +220,7 @@ plugin_setting_validate (PluginSetting * self, bool print_result)
 
   /* if no custom UI, force generic */
   /*g_debug ("checking if plugin has custom UI...");*/
-  if (!descr->has_custom_ui)
+  if (!plugin_descriptor_has_custom_ui (descr))
     {
       /*g_debug ("plugin %s has no custom UI", descr->name);*/
       self->force_generic_ui = true;

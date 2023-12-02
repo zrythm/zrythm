@@ -55,24 +55,18 @@ typedef struct Project_v1
   char *            datetime_str;
   char *            version;
   Tracklist_v1 *    tracklist;
-  ClipEditor *      clip_editor;
-  Timeline *        timeline;
-  SnapGrid *        snap_grid_timeline;
-  QuantizeOptions * quantize_opts_timeline;
-  SnapGrid *        snap_grid_editor;
-  QuantizeOptions * quantize_opts_editor;
-  //AutomationSelections *   automation_selections;
-  //AudioSelections *        audio_selections;
-  //ChordSelections *        chord_selections;
-  //TimelineSelections_v1 *  timeline_selections;
-  //MidiArrangerSelections * midi_arranger_selections;
+  ClipEditor_v1 *      clip_editor;
+  Timeline_v1 *        timeline;
+  SnapGrid_v1 *        snap_grid_timeline;
+  QuantizeOptions_v1 * quantize_opts_timeline;
+  SnapGrid_v1 *        snap_grid_editor;
+  QuantizeOptions_v1 * quantize_opts_editor;
   TracklistSelections_v1 * tracklist_selections;
-  //MixerSelections *        mixer_selections;
-  RegionLinkGroupManager * region_link_group_manager;
-  PortConnectionsManager * port_connections_manager;
+  RegionLinkGroupManager_v1 * region_link_group_manager;
+  PortConnectionsManager_v1 * port_connections_manager;
   AudioEngine_v1 *         audio_engine;
-  MidiMappings *           midi_mappings;
-  SelectionType            last_selection;
+  MidiMappings_v1 *           midi_mappings;
+  SelectionType_v1            last_selection;
 } Project_v1;
 
 static const cyaml_schema_field_t project_fields_schema_v1[] = {
@@ -124,10 +118,97 @@ static const cyaml_schema_value_t project_schema_v1 = {
   YAML_VALUE_PTR (Project_v1, project_fields_schema_v1),
 };
 
-Project *
-schemas_project_upgrade_from_v1 (Project_v1 * v1);
+/**
+ * @note used for v2/3/4/5 projects.
+ */
+typedef struct Project_v5
+{
+  int               schema_version;
+  char *            title;
+  char *            datetime_str;
+  char *            version;
+  Tracklist_v2 *    tracklist;
+  ClipEditor_v1 *      clip_editor;
+  Timeline_v1 *        timeline;
+  SnapGrid_v1 *        snap_grid_timeline;
+  QuantizeOptions_v1 * quantize_opts_timeline;
+  SnapGrid_v1 *        snap_grid_editor;
+  QuantizeOptions_v1 * quantize_opts_editor;
+  TracklistSelections_v1 * tracklist_selections;
+  RegionLinkGroupManager_v1 * region_link_group_manager;
+  PortConnectionsManager_v1 * port_connections_manager;
+  AudioEngine_v2 *         audio_engine;
+  MidiMappings_v1 *           midi_mappings;
+  SelectionType_v1            last_selection;
+} Project_v1;
+
+typedef struct Project_v5 Project_v2;
+typedef struct Project_v5 Project_v3;
+typedef struct Project_v5 Project_v4;
+
+static const cyaml_schema_field_t project_fields_schema_v5[] = {
+  YAML_FIELD_INT (Project_v5, schema_version),
+  YAML_FIELD_STRING_PTR (Project_v5, title),
+  YAML_FIELD_STRING_PTR (Project_v5, datetime_str),
+  YAML_FIELD_STRING_PTR (Project_v5, version),
+  YAML_FIELD_MAPPING_PTR (Project_v5, tracklist, tracklist_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Project_v5, clip_editor, clip_editor_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Project_v5, timeline, timeline_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Project_v5, snap_grid_timeline, snap_grid_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Project_v5, snap_grid_editor, snap_grid_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (
+    Project_v5,
+    quantize_opts_timeline,
+    quantize_options_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (
+    Project_v5,
+    quantize_opts_editor,
+    quantize_options_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Project_v5, audio_engine, engine_fields_schema_v1),
+  YAML_FIELD_IGNORE_OPT ("mixer_selections"),
+  YAML_FIELD_IGNORE_OPT ("timeline_selections"),
+  YAML_FIELD_IGNORE_OPT ("midi_arranger_selections"),
+  YAML_FIELD_IGNORE_OPT ("automation_selections"),
+  YAML_FIELD_IGNORE_OPT ("chord_selections"),
+  YAML_FIELD_IGNORE_OPT ("audio_selections"),
+  YAML_FIELD_MAPPING_PTR (
+    Project_v5,
+    tracklist_selections,
+    tracklist_selections_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (
+    Project_v5,
+    region_link_group_manager,
+    region_link_group_manager_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (
+    Project_v5,
+    port_connections_manager,
+    port_connections_manager_fields_schema_v1),
+  YAML_FIELD_MAPPING_PTR (Project_v1, midi_mappings, midi_mappings_fields_schema_v1),
+  /* ignore undo history */
+  YAML_FIELD_IGNORE_OPT ("undo_manager"),
+  YAML_FIELD_ENUM (Project_v5, last_selection, selection_type_strings_v1),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t project_schema_v5 = {
+  YAML_VALUE_PTR (Project_v5, project_fields_schema_v5),
+};
+
+/**
+ * @note v2 and v3 have the same schema as v1.
+ *
+ * @warning Some memory is copied from \p old so take care when freeing
+ * either of the projects. This will leak memory but saves developer time
+ * (otherwise would have to implement clip_editor_clone_v1() etc.)
+ */
+Project_v4 *
+project_upgrade_from_v2_or_v3 (Project_v1 * old);
+
+Project_v5 *
+project_upgrade_from_v4 (Project_v4 * old);
 
 Project *
-schemas_project_deserialize (const char * yaml);
+project_upgrade_from_v5 (Project_v5 * old);
 
 #endif

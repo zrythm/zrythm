@@ -154,10 +154,6 @@ static const cyaml_strval_t carla_bridge_mode_strings_v1[] = {
   { "Full", CARLA_BRIDGE_FULL_v1},
 };
 
-/***
- * A descriptor to be implemented by all plugins
- * This will be used throughout the UI
- */
 typedef struct PluginDescriptor_v1
 {
   int                   schema_version;
@@ -223,5 +219,71 @@ static const cyaml_schema_value_t plugin_descriptor_schema_v1 = {
 
 PluginDescriptor *
 plugin_descriptor_upgrade_from_v1 (PluginDescriptor_v1 * old);
+
+typedef struct PluginDescriptor_v2
+{
+  int                   schema_version;
+  char *                author;
+  char *                name;
+  char *                website;
+  ZPluginCategory_v1    category;
+  char *                category_str;
+  int                   num_audio_ins;
+  int                   num_midi_ins;
+  int                   num_audio_outs;
+  int                   num_midi_outs;
+  int                   num_ctrl_ins;
+  int                   num_ctrl_outs;
+  int                   num_cv_ins;
+  int                   num_cv_outs;
+  PluginArchitecture_v1 arch;
+  PluginProtocol_v1     protocol;
+  char *                path;
+  char *                uri;
+  int64_t               unique_id;
+  CarlaBridgeMode_v1    min_bridge_mode;
+  bool                  has_custom_ui;
+  unsigned int          ghash;
+} PluginDescriptor_v2;
+
+static const cyaml_schema_field_t plugin_descriptor_fields_schema_v2[] = {
+  YAML_FIELD_INT (PluginDescriptor_v2, schema_version),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor_v2, author),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor_v2, name),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor_v2, website),
+  YAML_FIELD_ENUM (
+    PluginDescriptor_v2,
+    category,
+    plugin_descriptor_category_strings_v1),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor_v2, category_str),
+  YAML_FIELD_INT (PluginDescriptor_v2, num_audio_ins),
+  YAML_FIELD_INT (PluginDescriptor_v2, num_audio_outs),
+  YAML_FIELD_INT (PluginDescriptor_v2, num_midi_ins),
+  YAML_FIELD_INT (PluginDescriptor_v2, num_midi_outs),
+  YAML_FIELD_INT (PluginDescriptor_v2, num_ctrl_ins),
+  YAML_FIELD_INT (PluginDescriptor_v2, num_ctrl_outs),
+  YAML_FIELD_INT (PluginDescriptor_v2, num_cv_ins),
+  YAML_FIELD_INT (PluginDescriptor_v2, num_cv_outs),
+  YAML_FIELD_UINT (PluginDescriptor_v2, unique_id),
+  YAML_FIELD_ENUM (PluginDescriptor_v2, arch, plugin_architecture_strings_v1),
+  YAML_FIELD_ENUM (PluginDescriptor_v2, protocol, plugin_protocol_strings_v1),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor_v2, path),
+  YAML_FIELD_STRING_PTR_OPTIONAL (PluginDescriptor_v2, uri),
+  YAML_FIELD_ENUM (
+    PluginDescriptor_v2,
+    min_bridge_mode,
+    carla_bridge_mode_strings_v1),
+  YAML_FIELD_INT (PluginDescriptor_v2, has_custom_ui),
+  YAML_FIELD_UINT (PluginDescriptor_v2, ghash),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t plugin_descriptor_schema_v2 = {
+  YAML_VALUE_PTR (PluginDescriptor_v2, plugin_descriptor_fields_schema_v2),
+};
+
+PluginDescriptor *
+plugin_descriptor_upgrade_from_v2 (PluginDescriptor_v2 * old);
 
 #endif

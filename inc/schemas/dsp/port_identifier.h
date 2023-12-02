@@ -295,6 +295,6 @@ static const cyaml_schema_value_t port_identifier_schema_default_v1 = {
 };
 
 PortIdentifier *
-port_identifier_upgrade_from_v1 (PortIdentifier_v1 * old);
+port_identifier_create_from_v1 (PortIdentifier_v1 * old);
 
 #endif

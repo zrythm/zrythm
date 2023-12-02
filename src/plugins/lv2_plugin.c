@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
  * This file incorporates work covered by the following copyright and
@@ -100,6 +100,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include <CarlaHost.h>
 #include <lilv/lilv.h>
 #include <lv2/buf-size/buf-size.h>
 #include <lv2/event/event.h>
@@ -213,7 +214,6 @@ get_port_group_label (const LilvNode * group)
 
 static bool
 param_has_range (
-  Lv2Plugin *      plugin,
   const LilvNode * subject,
   const char *     range_uri)
 {
@@ -943,7 +943,7 @@ lv2_plugin_get_parameters (Lv2Plugin * self, GArray * params_array)
 
           for (const char * const * t = types; *t; t++)
             {
-              if (param_has_range (self, property, *t))
+              if (param_has_range (property, *t))
                 {
                   param.value_type_urid = lv2_urid_map_uri (NULL, *t);
                   break;
@@ -1540,7 +1540,43 @@ lv2_plugin_create_descriptor_from_lilv (const LilvPlugin * lp)
 
   pd->uri = g_strdup (uri_str);
   pd->min_bridge_mode = plugin_descriptor_get_min_bridge_mode (pd);
-  pd->has_custom_ui = plugin_descriptor_has_custom_ui (pd);
+  bool has_custom_ui =
+    lv2_plugin_pick_most_preferable_ui (pd->uri, NULL, NULL, true, false);
+  if (has_custom_ui)
+    {
+      pd->hints |= PLUGIN_HAS_CUSTOM_UI;
+    }
+
+  int num_input_paths = 0;
+  const LilvNode * patch_writable = PM_GET_NODE (LV2_PATCH__writable);
+  LilvNodes * properties = lilv_world_find_nodes (
+    LILV_WORLD, lilv_plugin_get_uri (lp),
+    patch_writable, NULL);
+  LILV_FOREACH (nodes, p, properties)
+    {
+      const LilvNode * property = lilv_nodes_get (properties, p);
+      const char * const types[] = {
+        LV2_ATOM__Path,   NULL
+      };
+
+      for (const char * const * t = types; *t; t++)
+        {
+          if (param_has_range (property, *t))
+            {
+              num_input_paths++;
+              break;
+            }
+        }
+    }
+  if (num_input_paths > 0 && has_custom_ui)
+    {
+      pd->hints |= PLUGIN_HAS_CUSTOM_UI_USING_FILE_OPEN;
+
+      if (num_input_paths > 1)
+        {
+          g_warning ("LV2 plugin %s has %d file path parameters but only the first one will be supported in generic UIs (due to Carla API only supporting a single file)", pd->name, num_input_paths);
+        }
+    }
 
   return pd;
 }

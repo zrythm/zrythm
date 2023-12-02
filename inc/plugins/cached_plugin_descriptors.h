@@ -19,7 +19,7 @@
  * @{
  */
 
-#define CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION 3
+#define CACHED_PLUGIN_DESCRIPTORS_SCHEMA_VERSION 4
 
 /**
  * Descriptors to be cached.

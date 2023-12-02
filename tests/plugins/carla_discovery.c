@@ -160,11 +160,11 @@ carla-discovery::end::------------";
   PluginDescriptor * descr = NULL;
   descr = z_carla_discovery_create_au_descriptor_from_string (str, 0);
   g_assert_cmpstr (descr->name, ==, "SurgeEffectsBank");
-  g_assert_true (descr->has_custom_ui);
+  g_assert_true (descr->hints & PLUGIN_HAS_CUSTOM_UI);
   plugin_descriptor_free (descr);
   descr = z_carla_discovery_create_au_descriptor_from_string (str, 1);
   g_assert_cmpstr (descr->name, ==, "AUBandpass");
-  g_assert_true (descr->has_custom_ui);
+  g_assert_true (descr->hints & PLUGIN_HAS_CUSTOM_UI);
   plugin_descriptor_free (descr);
 #endif
 
