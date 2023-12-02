@@ -799,6 +799,7 @@ INPUT                  = \
   @MESON_SOURCE_ROOT@/doc/dev/gtk_tips.md \
   @MESON_SOURCE_ROOT@/doc/dev/mainpage.h \
   @MESON_SOURCE_ROOT@/doc/dev/processing_cycle.h \
+  @MESON_SOURCE_ROOT@/doc/dev/repo-management.md \
   @MESON_SOURCE_ROOT@/doc/dev/release_checklist.h \
   @MESON_SOURCE_ROOT@/doc/dev/weblate.h \
   @MESON_SOURCE_ROOT@/doc/dev/windows-build.md \
