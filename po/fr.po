@@ -20,16 +20,16 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-12-02 16:01+0900\n"
-"PO-Revision-Date: 2023-11-20 14:02+0000\n"
+"PO-Revision-Date: 2023-12-02 11:54+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
-"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/"
-">\n"
+"Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
+"\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.2\n"
+"X-Generator: Weblate 5.3-dev\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -5028,9 +5028,8 @@ msgstr ""
 
 #: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:38
 #: src/settings/plugin_settings.c:537
-#, fuzzy
 msgid "_No"
-msgstr "Non"
+msgstr "_Non"
 
 #: src/gui/widgets/dialogs/export_midi_file_dialog.c:71
 msgid "MIDI region exported."
