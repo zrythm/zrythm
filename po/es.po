@@ -21,13 +21,14 @@
 # Juan <benitesjn@gmail.com>, 2023.
 # Daniel “Gula” GoodAir <danielcebeats97@gmail.com>, 2023.
 # Guss Gaviria <gustarom@gmail.com>, 2023.
+# gallegonovato <fran-carro@hotmail.es>, 2023.
 msgid ""
 msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-12-02 16:01+0900\n"
-"PO-Revision-Date: 2023-09-03 20:45+0000\n"
-"Last-Translator: Guss Gaviria <gustarom@gmail.com>\n"
+"PO-Revision-Date: 2023-12-02 20:45+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
 "Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/zrythm/es/"
 ">\n"
 "Language: es\n"
@@ -35,21 +36,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0.1-dev\n"
+"X-Generator: Weblate 5.3-dev\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
 msgstr "Antes de los insertos"
 
 #: inc/dsp/exporter.h:128
-#, fuzzy
 msgid "Pre-fader"
-msgstr "Envío de pre-fader"
+msgstr "Pre-fader"
 
 #: inc/dsp/exporter.h:129
-#, fuzzy
 msgid "Post fader"
-msgstr "Envío de post-fader"
+msgstr "Post-fader"
 
 #: inc/dsp/track.h:165 src/gui/widgets/track_properties_expander.c:94
 #: src/gui/widgets/popovers/automatable_selector_popover.c:326
@@ -115,13 +114,12 @@ msgid "Folder"
 msgstr "Carpeta"
 
 #: inc/dsp/snap_grid.h:52
-#, fuzzy
 msgid "bar"
-msgstr "1 compás"
+msgstr "bar"
 
 #: inc/dsp/snap_grid.h:53
 msgid "beat"
-msgstr ""
+msgstr "beat"
 
 #: inc/dsp/snap_grid.h:73 src/gui/widgets/digital_meter.c:434
 msgid "normal"
@@ -214,19 +212,16 @@ msgid "Linear fade in"
 msgstr "Desvanecimiento de entrada lineal"
 
 #: inc/dsp/audio_function.h:60
-#, fuzzy
 msgid "Linear fade out"
-msgstr "Monitorizar salida fader"
+msgstr "Desvanecimiento lineal"
 
 #: inc/dsp/audio_function.h:61 src/gui/widgets/home_toolbar.c:125
-#, fuzzy
 msgid "Nudge left"
-msgstr "Empujar a la izquierda"
+msgstr "Desplazamiento a la izquierda"
 
 #: inc/dsp/audio_function.h:62 src/gui/widgets/home_toolbar.c:126
-#, fuzzy
 msgid "Nudge right"
-msgstr "Empujar a la derecha"
+msgstr "Desplazamiento a la derecha"
 
 #: inc/dsp/audio_function.h:63
 msgid "Reverse"
@@ -241,9 +236,8 @@ msgid "External program"
 msgstr "Programa externo"
 
 #: inc/dsp/audio_function.h:66
-#, fuzzy
 msgid "Guile script"
-msgstr "Banco predeterminado"
+msgstr "Script de Guile"
 
 #: inc/dsp/audio_function.h:67
 msgid "Custom plugin"
@@ -411,7 +405,7 @@ msgstr "Locria Mayor"
 
 #: inc/dsp/scale.h:150 inc/schemas/dsp/scale.h:114
 msgid "Algerian"
-msgstr ""
+msgstr "Argelia"
 
 #: inc/dsp/scale.h:151 inc/schemas/dsp/scale.h:115
 msgid "Augmented"
@@ -422,9 +416,8 @@ msgid "Double Harmonic"
 msgstr "Harmónica Doble"
 
 #: inc/dsp/scale.h:153 inc/schemas/dsp/scale.h:117
-#, fuzzy
 msgid "Chinese"
-msgstr "Chino [zh]"
+msgstr "Chino"
 
 #: inc/dsp/scale.h:154 inc/schemas/dsp/scale.h:118
 msgid "Diminished"
@@ -440,11 +433,11 @@ msgstr "Egipcia"
 
 #: inc/dsp/scale.h:157 inc/schemas/dsp/scale.h:121
 msgid "Eight Tone Spanish"
-msgstr ""
+msgstr "Español en ocho tonos"
 
 #: inc/dsp/scale.h:158 inc/schemas/dsp/scale.h:122
 msgid "Enigmatic"
-msgstr ""
+msgstr "Enigmático"
 
 #: inc/dsp/scale.h:159 inc/schemas/dsp/scale.h:123
 msgid "Geez"
@@ -1140,7 +1133,7 @@ msgstr "_Cancelar"
 #: src/actions/actions.c:719 src/actions/actions.c:808
 #: src/gui/widgets/main_window.c:155
 msgid "_Discard"
-msgstr ""
+msgstr "_Descartar"
 
 #: src/actions/actions.c:720 src/actions/actions.c:809
 #: src/gui/widgets/main_window.c:156
@@ -6441,12 +6434,11 @@ msgstr ""
 
 #: src/project/project_init_flow_manager.c:1094
 msgid "Ignore"
-msgstr ""
+msgstr "Ignorar"
 
 #: src/project/project_init_flow_manager.c:1151
-#, fuzzy
 msgid "Project Load Failed"
-msgstr "Se guardó el proyecto."
+msgstr "Carga de proyecto fallida"
 
 #: src/project/project_init_flow_manager.c:1152
 msgid "Failed to load project. Will create a new one instead."

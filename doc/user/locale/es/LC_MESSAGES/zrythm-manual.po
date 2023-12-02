@@ -17,15 +17,16 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2023-11-30 20:42+0900\n"
-"PO-Revision-Date: 2023-09-03 20:45+0000\n"
-"Last-Translator: Guss Gaviria <gustarom@gmail.com>\n"
+"PO-Revision-Date: 2023-12-02 11:54+0000\n"
+"Last-Translator: gallegonovato <fran-carro@hotmail.es>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/"
+"user-manual/es/>\n"
 "Language: es\n"
-"Language-Team: Spanish <https://hosted.weblate.org/projects/zrythm/user-"
-"manual/es/>\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.3-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -223,6 +224,9 @@ msgid ""
 "files in the :term:`Zrythm user path`. See :ref:`theming/intro:Theming` for "
 "details."
 msgstr ""
+"Zrythm proporciona formas de sustituir algunos de estos archivos con "
+"archivos especificados por el usuario en la ruta de usuario :term:`Zrythm`. "
+"Ver :ref:`theming/intro:Tematización` para más detalles."
 
 #: ../../appendix/files-and-directories.rst:78
 msgid "User Files"
@@ -233,15 +237,13 @@ msgid "Cached Plugin Descriptors"
 msgstr "Descriptores de plugins en caché"
 
 #: ../../appendix/files-and-directories.rst:81
-#, fuzzy
 msgid ""
 "Plugin descriptor cache for faster scanning. This is found at :file:"
 "`cached_plugin_descriptors.yaml` under the :term:`Zrythm user path`."
 msgstr ""
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"Zrythm recuerda los plugins VST escaneados y guarda esta información en :"
-"file:`cached_plugin_descriptors.yaml` en la :term:`Zrythm user path`."
+"Caché de descriptores de plugins para un escaneo más rápido. Esto se "
+"encuentra en :file:`cached_plugin_descriptors.yaml` bajo el :term:`Zrythm "
+"user path`."
 
 #: ../../appendix/files-and-directories.rst:87
 msgid "Plugin Collections"
@@ -252,6 +254,8 @@ msgid ""
 "This file contains your plugin collections. It is found at :file:"
 "`plugin_collections.yaml` under the :term:`Zrythm user path`."
 msgstr ""
+"Este archivo contiene las colecciones de plugins. Se encuentra en "
+":file:`plugin_collections.yaml` bajo el :term:`Zrythm user path`."
 
 #: ../../appendix/files-and-directories.rst:94
 msgid "Log File"
@@ -263,6 +267,10 @@ msgid ""
 "subdirectory under the :term:`Zrythm user path`. The filename will contain "
 "the current date and time, for example :file:`log_2020-06-26_15-34-19.log`."
 msgstr ""
+"Zrythm escribirá en un archivo de registro en cada ejecución dentro del "
+"subdirectorio :file:`log` bajo la ruta de usuario :term:`Zrythm`. El nombre "
+"del fichero contendrá la fecha y hora actuales, por ejemplo "
+":file:`log_2020-06-26_15-34-19.log`."
 
 #: ../../appendix/files-and-directories.rst:101
 msgid "This log file is useful for debugging crashes and other problems."
@@ -354,6 +362,9 @@ msgid ""
 "A list of preset packs and presets is found in the :ref:`Right Panel <zrythm-"
 "interface/right-panel:Right Panel>` under :guilabel:`Chord Preset Browser`."
 msgstr ""
+"Se encuentra una lista de paquetes preestablecidos y ajustes preestablecidos "
+"en el :ref:`Panel derecho <zrythm-interface/right-panel:Panel derecho>` en "
+":guilabel:`Chord Preset Browser`."
 
 #: ../../chords-and-scales/chord-pad.rst:39
 msgid "Chord preset browser"
@@ -369,6 +380,8 @@ msgid ""
 "Clicking a preset pack in the top will filter the list of presets to presets "
 "in the selected pack."
 msgstr ""
+"Al hacer clic en un paquete de preajustes en la parte superior, la lista de "
+"preajustes se filtrará a los preajustes del paquete seleccionado."
 
 #: ../../chords-and-scales/chord-pad.rst:48
 #: ../../plugins-files/audio-midi-files/file-browser.rst:87
@@ -382,6 +395,10 @@ msgid ""
 "`auditioning in the File Browser <plugins-files/audio-midi-files/file-"
 "browser:Auditioning>`."
 msgstr ""
+"Puede auditar presets de acordes seleccionando un plugin de instrumento de "
+"la lista y utilizando los controles de reproducción disponibles. Esto "
+"funciona de forma similar a :ref:`audición en el Navegador de archivos "
+"<plugins-files/audio-midi-files/file-browser:Auditioning>`."
 
 #: ../../chords-and-scales/chord-pad.rst:56
 msgid "Standard Packs"
@@ -407,6 +424,8 @@ msgid ""
 "You can create your own pack by clicking the :guilabel:`Add` button below "
 "the list of chord preset packs."
 msgstr ""
+"Puede crear su propio paquete haciendo clic en el botón :guilabel:`Añadir` "
+"situado debajo de la lista de los paquetes de los preajustes de acordes."
 
 #: ../../chords-and-scales/chord-pad.rst:74
 msgid "Creating a chord preset pack"
@@ -1369,23 +1388,12 @@ msgid "Here is an example of helpful steps to reproduce:"
 msgstr ""
 
 #: ../../contributing/reporting-bugs.rst:66
-#, fuzzy
 msgid "Create an empty project"
-msgstr "Crea un proyecto nuevo."
+msgstr "Crear un proyecto vacío"
 
 #: ../../contributing/reporting-bugs.rst:67
-#, fuzzy
 msgid "Add a MIDI track"
-msgstr ""
-"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
-"El nombre de la pista de acordes.\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (PROJECT VERSION)  #-#-#-#-#\n"
-"#-#-#-#-#  tracks.po (Zrythm 0.5)  #-#-#-#-#\n"
-"El nombre de la pista de acordes.\n"
-"#-#-#-#-#  zrythm-interface.po (Zrythm 0.4)  #-#-#-#-#\n"
-"#-#-#-#-#  zrythm-manual.po (Zrythm 1.0.0-alpha.7)  #-#-#-#-#\n"
+msgstr "Añadir una pista MIDI"
 
 #: ../../contributing/reporting-bugs.rst:68
 msgid "Create a region starting at bar 1 and ending at bar 5"
@@ -4669,23 +4677,21 @@ msgid "Building from Source"
 msgstr "Compilar a partir del código fuente"
 
 #: ../../getting-started/installation.rst:47
-#, fuzzy
 msgid ""
 "You can build Zrythm from source, either using a `source distribution "
 "tarball <https://www.zrythm.org/releases/>`_ or `git <https://gitlab.zrythm."
 "org/zrythm/zrythm/>`_."
 msgstr ""
-"Si eres un usuario avanzado, también puedes compilar Zrythm desde la fuente, "
-"ya sea usando un `tarball de distribución de fuente <https://www.zrythm.org/"
-"releases/>`_ o `git <https://git.zrythm.org/cgit/zrythm/>`_."
+"Puedes compilar Zrythm desde el código fuente, bien usando un `source "
+"distribution tarball <https://www.zrythm.org/releases/>`_ o `git "
+"<https://gitlab.zrythm.org/zrythm/zrythm/>`_."
 
 #: ../../getting-started/installation.rst:51
-#, fuzzy
 msgid ""
 "See ``INSTALL.rst`` in the source distribution for installation instructions."
 msgstr ""
-"Consulta :download: `INSTALL.md <../../../INSTALL.md>` en la distribución de "
-"origen para obtener instrucciones de instalación."
+"Consulte ``INSTALL.rst`` en la distribución fuente para obtener "
+"instrucciones de instalación."
 
 #: ../../getting-started/intro.rst:9
 msgid "Getting Started"
@@ -5350,25 +5356,28 @@ msgid ""
 "Print all the user settings. Can be combined with :option:`zrythm --pretty` "
 "to get pretty-printed output, like below."
 msgstr ""
+"Imprime todos los ajustes del usuario. Puede combinarse con :option:`zrythm "
+"--pretty` para obtener una impresión bonita, como la siguiente."
 
 #: ../../invoking-from-command-line/intro.rst:41
 msgid "Reset user settings to their default values."
-msgstr ""
+msgstr "Restablecer los valores por defecto de los ajustes de usuario."
 
 #: ../../invoking-from-command-line/intro.rst:43
 msgid ""
 "Only affects the settings printed with :option:`zrythm -p`. This will *not* "
 "affect any files in the :term:`Zrythm user path`."
 msgstr ""
+"Sólo afecta a la configuración impresa con :option:`zrythm -p`. Esto *no* "
+"afectará a ningún fichero de la ruta de usuario :term:`Zrythm`."
 
 #: ../../invoking-from-command-line/intro.rst:48
 msgid "This will clear ALL your user settings."
-msgstr ""
+msgstr "Esto borrará TODOS los ajustes de usuario."
 
 #: ../../invoking-from-command-line/intro.rst:53
-#, fuzzy
 msgid "Print version information."
-msgstr "Información de motor"
+msgstr "Imprimir información de la versión."
 
 #: ../../invoking-from-command-line/intro.rst:57
 msgid "Convert a .zpj project file to YAML."
