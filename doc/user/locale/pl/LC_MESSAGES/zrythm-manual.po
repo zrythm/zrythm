@@ -32,18 +32,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2023-08-15 16:28+0900\n"
+"POT-Creation-Date: 2023-11-30 20:42+0900\n"
 "PO-Revision-Date: 2023-11-04 20:45+0000\n"
 "Last-Translator: marcin mikołajczak <me@mkljczk.pl>\n"
-"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/"
-"user-manual/pl/>\n"
 "Language: pl\n"
+"Language-Team: Polish <https://hosted.weblate.org/projects/zrythm/user-"
+"manual/pl/>\n"
+"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 5.2-dev\n"
 "Generated-By: Babel 2.12.1\n"
 
 #: ../../appendix/environment.rst:11
@@ -209,7 +208,7 @@ msgstr ""
 #: ../../appendix/files-and-directories.rst:72
 msgid ""
 "Zrythm provides ways to override some of these files with user-specified "
-"files in the :term:`Zrythm user path`. See :doc:`../theming/intro` for "
+"files in the :term:`Zrythm user path`. See :ref:`theming/intro:Theming` for "
 "details."
 msgstr ""
 
@@ -945,41 +944,41 @@ msgid ""
 "sessions."
 msgstr ""
 
-#: ../../contributing/intro.rst:7
+#: ../../contributing/intro.rst:7 ../../contributing/overview.rst:7
 msgid "Contributing"
 msgstr ""
 
-#: ../../contributing/intro.rst:8
+#: ../../contributing/overview.rst:8
 msgid ""
 "We appreciate contributions of any type and size. Tell us how you would like "
 "to help, and we will do our best to guide you."
 msgstr ""
 
-#: ../../contributing/intro.rst:13
+#: ../../contributing/overview.rst:13
 msgid "Coding"
 msgstr ""
 
-#: ../../contributing/intro.rst:14
+#: ../../contributing/overview.rst:14
 msgid ""
 "Please see the :download:`HACKING <../../../HACKING.md>` file in the source "
 "distribution."
 msgstr ""
 
-#: ../../contributing/intro.rst:19
+#: ../../contributing/overview.rst:19
 msgid "Web Design"
 msgstr ""
 
-#: ../../contributing/intro.rst:20
+#: ../../contributing/overview.rst:20
 msgid ""
 "You are welcome to help us improve the looks and usability of the Zrythm "
 "website. Please get in touch with us to discuss."
 msgstr ""
 
-#: ../../contributing/intro.rst:25
+#: ../../contributing/overview.rst:25
 msgid "Artwork and Themes"
 msgstr ""
 
-#: ../../contributing/intro.rst:26
+#: ../../contributing/overview.rst:26
 msgid ""
 "Zrythm is CSS themable and also makes use of many icons, some customized and "
 "some borrowed from other themes. If you would like to contribute artwork "
@@ -987,54 +986,59 @@ msgid ""
 "discussed in :ref:`icon-themes` and :ref:`css`."
 msgstr ""
 
-#: ../../contributing/intro.rst:34
+#: ../../contributing/overview.rst:34
 msgid "Testing"
 msgstr ""
 
-#: ../../contributing/intro.rst:35
+#: ../../contributing/overview.rst:35
 msgid ""
 "You are welcome to join us in testing the latest features in Zrythm and "
-"reporting bugs and feedback on `Sourcehut <https://todo.sr.ht/~alextee>`_."
+"reporting bugs and feedback on `GitLab <https://gitlab.zrythm.org/zrythm/"
+"zrythm/-/issues>`_."
 msgstr ""
 
-#: ../../contributing/intro.rst:40
+#: ../../contributing/overview.rst:39
 msgid ""
 "The latest development branch for new features is ``development`` in our "
-"`git repository <https://git.zrythm.org/zrythm/zrythm>`_."
+"`git repository <https://gitlab.zrythm.org/zrythm/zrythm>`_."
 msgstr ""
 
-#: ../../contributing/intro.rst:45
+#: ../../contributing/overview.rst:43
+msgid ":ref:`contributing/reporting-bugs:Reporting Bugs`"
+msgstr ""
+
+#: ../../contributing/overview.rst:46
 msgid "Editing this Manual"
 msgstr ""
 
-#: ../../contributing/intro.rst:46
+#: ../../contributing/overview.rst:47
 msgid ""
 "Edit the RST files under :file:`doc/user` and submit a patch when finished."
 msgstr ""
 
-#: ../../contributing/intro.rst:49
+#: ../../contributing/overview.rst:50
 msgid ""
 "You will need to have `Sphinx <https://www.sphinx-doc.org/en/master/>`_ "
 "installed to compile this manual."
 msgstr ""
 
-#: ../../contributing/intro.rst:54
+#: ../../contributing/overview.rst:55
 msgid "Translation"
 msgstr ""
 
-#: ../../contributing/intro.rst:55
+#: ../../contributing/overview.rst:56
 msgid ""
 "Zrythm is available for translation at `Weblate <https://hosted.weblate.org/"
 "engage/zrythm/?utm_source=widget>`_."
 msgstr ""
 
-#: ../../contributing/intro.rst:58
+#: ../../contributing/overview.rst:59
 msgid ""
 "The Zrythm translation project contains the translations for the Zrythm "
 "program, the website, the accounts site, and sections of this manual."
 msgstr ""
 
-#: ../../contributing/intro.rst:62
+#: ../../contributing/overview.rst:63
 msgid ""
 "Click on the project you wish to work on, and then select a language in the "
 "screen that follows. For more information on using Weblate, please see the "
@@ -1042,7 +1046,7 @@ msgid ""
 "html>`_."
 msgstr ""
 
-#: ../../contributing/intro.rst:69
+#: ../../contributing/overview.rst:70
 msgid ""
 "Zrythm contains terminology similar to existing audio software. You may find "
 "it useful to borrow terms from them. See the `Cubase Pro Artist manual "
@@ -1050,89 +1054,391 @@ msgid ""
 "`fr` in the URL with your language code)."
 msgstr ""
 
-#: ../../contributing/intro.rst:76
+#: ../../contributing/overview.rst:77
 msgid "User Manual"
 msgstr ""
 
-#: ../../contributing/intro.rst:77
+#: ../../contributing/overview.rst:78
 msgid ""
 "When translating the user manual, please make sure you follow the following "
 "Sphinx/RST syntax, to avoid errors when applying your translations."
 msgstr ""
 
-#: ../../contributing/intro.rst:82
+#: ../../contributing/overview.rst:83
 msgid "General Syntax"
 msgstr ""
 
-#: ../../contributing/intro.rst:83
+#: ../../contributing/overview.rst:84
 msgid ""
 "When you see something inside ``:``, such as ``:term:``, it should be left "
 "untranslated. The part following should be left untranslated as well. For "
 "example:"
 msgstr ""
 
-#: ../../contributing/intro.rst:92 ../../contributing/intro.rst:107
+#: ../../contributing/overview.rst:93 ../../contributing/overview.rst:108
 msgid "should be translated in French as"
 msgstr ""
 
-#: ../../contributing/intro.rst:98
+#: ../../contributing/overview.rst:99
 msgid ""
 "This is because this value will replaced automatically by Sphinx with the "
 "translation for ``Parameter``. The only exception to this rule is when you "
 "see the ``<>`` characters. For example:"
 msgstr ""
 
-#: ../../contributing/intro.rst:114
+#: ../../contributing/overview.rst:115
 msgid ""
 "Please make sure you do not insert or remove spaces. The following examples "
 "will cause errors."
 msgstr ""
 
-#: ../../contributing/intro.rst:126
+#: ../../contributing/overview.rst:127
 msgid ""
 "Also, there should be space, comma or period after such syntax, like below."
 msgstr ""
 
-#: ../../contributing/intro.rst:135
+#: ../../contributing/overview.rst:136
 msgid "The following examples will cause errors."
 msgstr ""
 
-#: ../../contributing/intro.rst:142
+#: ../../contributing/overview.rst:143
 msgid ""
 "The following syntax usually refers to a path, so please keep it unchanged, "
 "otherwise the file it refers to will not be found."
 msgstr ""
 
-#: ../../contributing/intro.rst:151
+#: ../../contributing/overview.rst:152
 msgid "Donations"
 msgstr ""
 
-#: ../../contributing/intro.rst:152
+#: ../../contributing/overview.rst:153
 msgid ""
 "We use the following services for receiving donations. Any amount, small or "
 "large is appreciated and helps sustain continuous development:"
 msgstr ""
 
-#: ../../contributing/intro.rst:156
+#: ../../contributing/overview.rst:157
 msgid "`LiberaPay <https://liberapay.com/Zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:157
+#: ../../contributing/overview.rst:158
 msgid "`PayPal <https://paypal.me/zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:158
+#: ../../contributing/overview.rst:159
 msgid "`Open Collective <https://opencollective.com/zrythm>`_"
 msgstr ""
 
-#: ../../contributing/intro.rst:160
+#: ../../contributing/overview.rst:161
 msgid "We also accept cryptocurrency donations at the following addresses:"
 msgstr ""
 
-#: ../../contributing/intro.rst:169
+#: ../../contributing/overview.rst:170
 msgid ""
 "Alternatively, you can `purchase a Zrythm installer <https://www.zrythm.org/"
 "en/download.html>`_."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:7
+msgid "Reporting Bugs"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:9
+msgid "There are three types of bugs:"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:11
+msgid "wrong or unexpected behavior that don't cause errors"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:12
+msgid "soft errors"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:13
+msgid "hard errors (crashes)"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:16
+msgid "Incorrect Behavior"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:18
+msgid ""
+"In this case, please report the issue on our `issue tracker "
+"<issue_tracker_>`_ with enough details to help us reproduce the problem."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:22
+msgid "You should include the following details:"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:24
+msgid "a screenshot/screencast showing the problem"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:25
+msgid "a description of the problem"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:26
+msgid "steps to reproduce the problem"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:27
+msgid "OS and Zrythm version information"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:28
+msgid "last 100 lines of the log file"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:30
+msgid "The following subsections explain how to provide this information."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:34
+msgid "Obtaining a Screenshot/Screencast"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:36
+msgid ""
+"You can press the :kbd:`PrintScreen` on your keyboard to obtain a screenshot."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:39
+msgid ""
+"To obtain a screencast you can use a screen recording software such as OBS, "
+"or :kbd:`Control-Shift-Alt-R` on GNOME."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:43
+msgid "Problem Description"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:45
+msgid ""
+"You should include as many details as possible to help us understand and "
+"reproduce the problem, otherwise we can't do anything about it. `Here is an "
+"example <https://gitlab.zrythm.org/zrythm/zrythm/-/issues/4202>`_ of a good "
+"bug description:"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:51
+msgid "Pixelated and misaligned timebase master and transport client icons"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:53
+msgid ""
+"As can be seen in the following screenshot, the two icons are seemingly "
+"misaligned, moved into each other and also very pixelated."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:56
+msgid "Steps to Reproduce"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:58
+msgid ""
+"Please give the exact steps to reproduce the issue, starting from a blank "
+"project (if possible). We will follow these exact steps to reproduce the "
+"error so that we can fix it. If we can't reproduce the issue, it is very "
+"difficult to find or fix the issue."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:64
+msgid "Here is an example of helpful steps to reproduce:"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:66
+msgid "Create an empty project"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:67
+msgid "Add a MIDI track"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:68
+msgid "Create a region starting at bar 1 and ending at bar 5"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:69
+msgid "Add a note inside the region starting at bar 2 and ending at bar 4"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:70
+msgid "Split the note at bar 3"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:71
+msgid "Delete the 2nd note"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:72
+msgid "Zrythm freezes"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:75
+msgid "OS and Zrythm Version Information"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:77
+msgid ""
+"You can copy the Zrythm version from the About dialog or (preferred) use "
+"the :option:`--version option <zrythm --version>` when launching Zrythm in a "
+"terminal."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:83
+msgid ""
+"You can obtain OS information from the About dialog (click :guilabel:"
+"`Troubleshooting` then :guilabel:`Debugging Information`)"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:91
+msgid "Log"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:93
+msgid ""
+"The log file can be found in :ref:`the location specified here <appendix/"
+"files-and-directories:Log File>`. Please provide at least the last 100 "
+"lines. You may be asked to provide the full log file (please compress it "
+"first)."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:99
+msgid "Soft Errors"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:101
+msgid ""
+"In this case Zrythm will display a bug report dialog. Please follow the "
+"instructions in this dialog to report the issue."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:105
+msgid "Crashes"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:107
+msgid ""
+"If Zrythm crashed, then a bug report dialog may not be shown or the log file "
+"may not contain enough information to help us fix the issue. In this case, "
+"please follow the steps below to generate a core dump or a backtrace."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:113
+msgid "Generating Core Dumps on GNU/Linux"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:115
+msgid ""
+"You will need to type some commands into a terminal. Also, please make sure "
+"you have ``systemd-coredump`` or the equivalent package installed on your "
+"distro."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:119
+msgid ""
+"The following steps apply to systemd users (the vast majority of GNU/Linux "
+"users). For non-systemd users, you can usually obtain the core file in the "
+"current directory after running the first 2 commands below and running "
+"Zrythm until it crashes."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:125
+msgid "First, enable core dumps:"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:131
+msgid "Tell Linux to add the PID (Process ID) to the core dump:"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:137
+msgid ""
+"Run Zrythm and make it crash. An intermediate core dump file should now be "
+"generated in :file:`/var/lib/systemd/coredump`. Use ``coredumpctl`` to "
+"verify:"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:145
+msgid "You should see something like the following:"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:152
+msgid "Note that under `COREFILE` it says `present`, so a core file exists."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:155
+msgid ""
+"Now we can finally export the core dump file to a location of our choice (in "
+"this case in my :file:`Downloads` directory)  by passing the PID to "
+"``coredumpctl``:"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:163
+msgid "Change the file path given to ``--output`` to your desired location."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:166
+msgid ""
+"Please send us the core dump file (in the example above it can be found at :"
+"file:`/home/alex/Downloads/core.23179`)."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:170
+msgid ""
+"`c - Find which assembly instruction caused an Illegal Instruction error "
+"without debugging - Stack Overflow <https://stackoverflow.com/"
+"questions/10354147/find-which-assembly-instruction-caused-an-illegal-"
+"instruction-error-without-debu/40223712#40223712>`_"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:171
+msgid ""
+"`linux - How do I analyze a program's core dump file with GDB when it has "
+"command-line parameters? - Stack Overflow <https://stackoverflow.com/"
+"questions/8305866/how-do-i-analyze-a-programs-core-dump-file-with-gdb-when-"
+"it-has-command-line-pa>`_"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:174
+msgid "Getting a Backtrace on Windows"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:176
+msgid ""
+"Open the Command Prompt app as an administrator by searching for `cmd` in "
+"the start menu, then right clicking on the app and selecting `Run as "
+"Administrator`. Then, type the following and press enter/return:"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:188
+msgid ""
+"This will install DrMingw as the default debugger (you can uninstall it "
+"afterwards)."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:194
+msgid ""
+"Then, run Zrythm and make it crash. When Zrythm crashes, you will see a Dr. "
+"Mingw window appear on the screen with error details."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:201
+msgid ""
+"Click File -> Save As... and save the error file somewhere. Please send us "
+"this error file."
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:207
+msgid ""
+"When you are done, you may uninstall Dr. Mingw with the following command:"
+msgstr ""
+
+#: ../../contributing/reporting-bugs.rst:217
+msgid "A confirmation dialog will appear:"
 msgstr ""
 
 #: ../../credits/intro.rst:5
@@ -1366,7 +1672,7 @@ msgid ""
 "will fail."
 msgstr ""
 
-#: ../../editing/clip-editors/audio-editor.rst:113
+#: ../../editing/clip-editors/audio-editor.rst:115
 msgid "Guile Script"
 msgstr ""
 
@@ -1473,7 +1779,7 @@ msgid ""
 "automation points/curves."
 msgstr ""
 
-#: ../../editing/clip-editors/automation-editor.rst:67
+#: ../../editing/clip-editors/automation-editor.rst:69
 #: ../../editing/clip-editors/piano-roll.rst:134
 msgid "Flip"
 msgstr ""
@@ -2186,7 +2492,7 @@ msgid ""
 "Automatically  scroll the visible area when the playhead moves outside it"
 msgstr ""
 
-#: ../../editing/common-operations.rst:144
+#: ../../editing/common-operations.rst:146
 msgid "Follow Playhead"
 msgstr ""
 
@@ -2665,7 +2971,7 @@ msgstr ""
 msgid "Use the same options as Snap"
 msgstr ""
 
-#: ../../editing/snapping-grid-options.rst:69
+#: ../../editing/snapping-grid-options.rst:71
 msgid "Last Object"
 msgstr ""
 
@@ -3207,7 +3513,7 @@ msgstr ""
 msgid "Object Merging"
 msgstr ""
 
-#: ../../editing/timeline/toolbar.rst:56
+#: ../../editing/timeline/toolbar.rst:58
 msgid "Merge Selections"
 msgstr ""
 
@@ -3401,46 +3707,41 @@ msgid "When will v1 be released?"
 msgstr ""
 
 #: ../../getting-started/faq.rst:82
-msgid "When all bugs and features marked as `v1rc` are completed:"
+msgid ""
+"When all bugfixes and feature implementations under the `Version 1 release "
+"candidate milestone <https://gitlab.zrythm.org/zrythm/zrythm/-/issues?"
+"milestone_title=v1.rc>`_ are completed."
 msgstr ""
 
-#: ../../getting-started/faq.rst:84
-msgid "https://todo.sr.ht/~alextee/zrythm-feature"
-msgstr ""
-
-#: ../../getting-started/faq.rst:85
-msgid "https://todo.sr.ht/~alextee/zrythm-bug"
-msgstr ""
-
-#: ../../getting-started/faq.rst:88
+#: ../../getting-started/faq.rst:86
 msgid "Usage"
 msgstr ""
 
-#: ../../getting-started/faq.rst:91
+#: ../../getting-started/faq.rst:89
 msgid "Can I use ASIO?"
 msgstr ""
 
-#: ../../getting-started/faq.rst:93
+#: ../../getting-started/faq.rst:91
 msgid ""
 "*Short answer: Yes, but you have to do it yourself and you may not "
 "distribute the build to anyone else.*"
 msgstr ""
 
-#: ../../getting-started/faq.rst:96
+#: ../../getting-started/faq.rst:94
 msgid ""
 "The ASIO technology was developed by German company Steinberg and is "
 "protected by a licensing agreement which prevents redistribution of its "
 "source code."
 msgstr ""
 
-#: ../../getting-started/faq.rst:100
+#: ../../getting-started/faq.rst:98
 msgid ""
 "Zrythm contains code under AGPL/GPL which requires all source code "
 "(including source code of used libraries) to be disclosed, and therefore it "
 "is illegal to provide builds with ASIO support."
 msgstr ""
 
-#: ../../getting-started/faq.rst:105
+#: ../../getting-started/faq.rst:103
 msgid ""
 "However, Zrythm supports the JACK and RtAudio backends, which optionally "
 "support ASIO. As we cannot distribute these libraries with ASIO support "
@@ -3448,7 +3749,7 @@ msgid ""
 "them from source with ASIO support) and make Zrythm use those."
 msgstr ""
 
-#: ../../getting-started/faq.rst:111
+#: ../../getting-started/faq.rst:109
 msgid ""
 "Zrythm with ASIO support is NON-DISTRIBUTABLE. You may NOT copy or "
 "distribute builds including ASIO support to anyone else. The build is "
@@ -3457,21 +3758,21 @@ msgid ""
 "support."
 msgstr ""
 
-#: ../../getting-started/faq.rst:119
+#: ../../getting-started/faq.rst:117
 msgid "How do I add external plugins?"
 msgstr ""
 
-#: ../../getting-started/faq.rst:121
+#: ../../getting-started/faq.rst:119
 msgid ""
 "See :ref:`plugins-files/plugins/scanning:Scanning for Plugins` and :ref:"
 "`plugins-files/plugins/plugin-browser:Instantiating Plugins`."
 msgstr ""
 
-#: ../../getting-started/faq.rst:125
+#: ../../getting-started/faq.rst:123
 msgid "How do I import an audio/MIDI file?"
 msgstr ""
 
-#: ../../getting-started/faq.rst:127
+#: ../../getting-started/faq.rst:125
 msgid "See :ref:`plugins-files/audio-midi-files/file-browser:Importing Files`."
 msgstr ""
 
@@ -3678,8 +3979,8 @@ msgstr ""
 #: ../../getting-started/installation.rst:47
 msgid ""
 "You can build Zrythm from source, either using a `source distribution "
-"tarball <https://www.zrythm.org/releases/>`_ or `git <https://git.zrythm.org/"
-"zrythm/zrythm/>`_."
+"tarball <https://www.zrythm.org/releases/>`_ or `git <https://gitlab.zrythm."
+"org/zrythm/zrythm/>`_."
 msgstr ""
 
 #: ../../getting-started/installation.rst:51
@@ -4224,7 +4525,7 @@ msgid ""
 msgstr ""
 
 #: ../../glossary/intro.rst:188
-msgid "the directory for local application data on Windows"
+msgid "``%LOCALAPPDATA%`` on Windows"
 msgstr ""
 
 #: ../../index.rst:9
@@ -4269,8 +4570,8 @@ msgstr ""
 
 #: ../../invoking-from-command-line/intro.rst:32
 msgid ""
-"Print all the user settings. Can be combined with :option:`--pretty` to get "
-"pretty-printed output, like below."
+"Print all the user settings. Can be combined with :option:`zrythm --pretty` "
+"to get pretty-printed output, like below."
 msgstr ""
 
 #: ../../invoking-from-command-line/intro.rst:41
@@ -4279,31 +4580,35 @@ msgstr ""
 
 #: ../../invoking-from-command-line/intro.rst:43
 msgid ""
-"Only affects the settings printed with :option:`-p`. This will *not* affect "
-"any files in the :term:`Zrythm user path`."
+"Only affects the settings printed with :option:`zrythm -p`. This will *not* "
+"affect any files in the :term:`Zrythm user path`."
 msgstr ""
 
 #: ../../invoking-from-command-line/intro.rst:48
 msgid "This will clear ALL your user settings."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:55
+#: ../../invoking-from-command-line/intro.rst:53
+msgid "Print version information."
+msgstr ""
+
+#: ../../invoking-from-command-line/intro.rst:57
 msgid "Convert a .zpj project file to YAML."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:59
+#: ../../invoking-from-command-line/intro.rst:61
 msgid "Convert a YAML file to the .zpj format."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:61
+#: ../../invoking-from-command-line/intro.rst:63
 msgid "Prints the Zrythm version."
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:64
+#: ../../invoking-from-command-line/intro.rst:66
 msgid "zrythm_launch"
 msgstr ""
 
-#: ../../invoking-from-command-line/intro.rst:65
+#: ../../invoking-from-command-line/intro.rst:67
 msgid ""
 "Wrapper over :program:`zrythm` that sets the correct paths before launching "
 "Zrythm. All of the options for :program:`zrythm` can also be passed to :"
@@ -7432,7 +7737,7 @@ msgstr ""
 msgid "Not implemented yet."
 msgstr ""
 
-#: ../../tracks/track-controls.rst:66
+#: ../../tracks/track-controls.rst:68
 msgid "Freeze"
 msgstr ""
 
@@ -8282,7 +8587,7 @@ msgstr ""
 msgid "Shows the :term:`MIDI` activity of auto-connected MIDI devices."
 msgstr ""
 
-#: ../../zrythm-interface/main-toolbar.rst:122
+#: ../../zrythm-interface/main-toolbar.rst:124
 msgid "Oscilloscope"
 msgstr ""
 

@@ -283,7 +283,6 @@ inc/gui/widgets/button_with_menu.h
 inc/gui/widgets/inspector_region_info.h
 inc/gui/widgets/timeline_arranger.h
 inc/gui/widgets/snap_grid.h
-inc/gui/widgets/file_browser.h
 inc/gui/widgets/inspector_plugin.h
 inc/gui/widgets/ruler.h
 inc/gui/widgets/audio_arranger.h
@@ -340,7 +339,6 @@ inc/gui/widgets/mixer.h
 inc/gui/widgets/plugin_strip_expander.h
 inc/gui/widgets/active_hardware_mb.h
 inc/gui/widgets/top_bar.h
-inc/gui/widgets/file_browser_window.h
 inc/gui/widgets/fader.h
 inc/gui/widgets/modulator_macro.h
 inc/gui/widgets/midi_arranger.h
@@ -772,7 +770,6 @@ src/gui/widgets/chord_selector_window.c
 src/gui/widgets/cpu.c
 src/gui/widgets/timeline_panel.c
 src/gui/widgets/view_toolbar.c
-src/gui/widgets/file_browser_window.c
 src/gui/widgets/project_toolbar.c
 src/gui/widgets/channel_slot.c
 src/gui/widgets/expander_box.c
@@ -823,7 +820,6 @@ src/gui/widgets/file_chooser_entry.c
 src/gui/widgets/two_col_expander_box.c
 src/gui/widgets/balance_control.c
 src/gui/widgets/playhead_scroll_buttons.c
-src/gui/widgets/file_browser.c
 src/gui/widgets/scale_selector_window.c
 src/gui/widgets/editor_toolbar.c
 src/gui/widgets/chord_object.c
@@ -964,7 +960,6 @@ resources/ui/project_toolbar.ui
 resources/ui/create_project_dialog.ui
 resources/ui/fishbowl_window.ui
 resources/ui/quantize_dialog.ui
-resources/ui/file_browser.ui
 resources/ui/inspector_plugin.ui
 resources/ui/scale_selector_window.ui
 resources/ui/bot_bar.ui
