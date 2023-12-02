@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: zrythm\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-10-01 21:55+0900\n"
-"PO-Revision-Date: 2023-08-10 20:45+0000\n"
-"Last-Translator: Anonymous <noreply@weblate.org>\n"
+"PO-Revision-Date: 2023-11-17 13:43+0000\n"
+"Last-Translator: Ivar <ivar@ivarbjerling.com>\n"
 "Language-Team: Swedish <https://hosted.weblate.org/projects/zrythm/zrythm/sv/"
 ">\n"
 "Language: sv\n"
@@ -21,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"X-Generator: Weblate 5.2\n"
 
 #: inc/dsp/exporter.h:127
 msgid "Before inserts"
@@ -7397,7 +7397,7 @@ msgstr "Kvantisera"
 
 #: resources/gtk/help-overlay.ui:301
 msgid "Looping"
-msgstr "Loopar"
+msgstr "Loopning"
 
 #: data/zrythm.desktop.in:6
 msgid "@DESKTOP_ENTRY_NAME@"
