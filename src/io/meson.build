@@ -7,4 +7,6 @@ io_srcs = files([
   'midi_file.c',
   ])
 
+subdir('serialization')
+
 zrythm_srcs += io_srcs

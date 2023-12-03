@@ -45,6 +45,7 @@
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
+#include "io/serialization/project.h"
 #include "plugins/carla_native_plugin.h"
 #include "plugins/lv2/lv2_state.h"
 #include "plugins/lv2_plugin.h"
@@ -782,7 +783,7 @@ serialize_project_thread (ProjectSaveData * data)
   g_message ("serializing project to yaml...");
   GError * err = NULL;
   gint64   time_before = g_get_monotonic_time ();
-  char *   yaml = yaml_serialize (data->project, &project_schema, &err);
+  char *   yaml = project_serialize_to_json_str (data->project, &err);
   gint64   time_after = g_get_monotonic_time ();
   g_message (
     "time to serialize: %ldms", (long) (time_after - time_before) / 1000);

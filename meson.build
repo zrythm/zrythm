@@ -1273,6 +1273,13 @@ zix_dep = dependency (
     'docs=disabled', 'tests_cpp=disabled',
     ])
 
+yyjson_dep = dependency (
+  'yyjson',
+  fallback: ['yyjson', 'yyjson_dep'],
+  default_options: [
+    'default_library=static',
+    ])
+
 # TODO add Cantarell font as dependency
 
 zrythm_deps = [
@@ -1319,6 +1326,7 @@ zrythm_deps = [
   json_glib_dep,
   zix_dep,
   dbus_dep,
+  yyjson_dep,
 
   libm,
 ]
