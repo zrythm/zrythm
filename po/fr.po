@@ -21,9 +21,8 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-12-02 16:01+0900\n"
-"PO-Revision-Date: 2023-12-02 11:54+0000\n"
-"Last-Translator: Weblate Translation Memory <noreply-mt-weblate-translation-"
-"memory@weblate.org>\n"
+"PO-Revision-Date: 2023-12-09 20:45+0000\n"
+"Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
 "Language: fr\n"
@@ -1279,9 +1278,8 @@ msgid "Failed to disable tracks"
 msgstr "Échec de la désactivation des pistes"
 
 #: src/actions/actions.c:2076
-#, fuzzy
 msgid "Invalid Selection For Quantize"
-msgstr "Plage de temps non valide"
+msgstr "Sélection invalide pour la quantification"
 
 #: src/actions/actions.c:2077
 #, c-format
@@ -3289,14 +3287,13 @@ msgid "Failed to move or copy track(s)"
 msgstr "Échec du déplacement ou de la copie de piste(s)"
 
 #: src/gui/widgets/route_target_selector.c:60
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to change direct out to %s"
-msgstr "Échec de la modification de la sortie directe"
+msgstr "Échec de la modification de la sortie directe pour %s"
 
 #: src/gui/widgets/route_target_selector.c:91
-#, fuzzy
 msgid "Groups"
-msgstr "Groupe"
+msgstr "Groupes"
 
 #: src/gui/widgets/route_target_selector.c:94
 msgid "Instruments"
@@ -3309,22 +3306,20 @@ msgstr "Moteur"
 
 #: src/gui/widgets/route_target_selector.c:326
 msgid "No Routing Available"
-msgstr ""
+msgstr "Pas de routage disponible"
 
 #: src/gui/widgets/route_target_selector.c:333
-#, fuzzy
 msgid "Routed to Engine"
 msgstr "Routé vers le moteur"
 
 #: src/gui/widgets/route_target_selector.c:341
-#, fuzzy, c-format
+#, c-format
 msgid "Routed to %s"
 msgstr "Routage vers %s"
 
 #: src/gui/widgets/route_target_selector.c:347
-#, fuzzy
 msgid "Unrouted"
-msgstr "Muet"
+msgstr "Non-routé"
 
 #: src/gui/widgets/event_viewer.c:501 src/gui/widgets/event_viewer.c:638
 #: src/gui/widgets/plugin_properties_expander.c:191
@@ -3793,9 +3788,8 @@ msgid "Automation value"
 msgstr "Valeur d'automatisation"
 
 #: src/gui/widgets/arranger.c:2308 src/gui/widgets/arranger.c:2329
-#, fuzzy
 msgid "Cannot Resize"
-msgstr "Ne peut pas être routé"
+msgstr "Ne peut pas redimensionner"
 
 #: src/gui/widgets/arranger.c:2309
 msgid "Cannot resize because the selection contains objects without length"
@@ -4100,16 +4094,14 @@ msgid "Scales"
 msgstr "Gammes"
 
 #: src/gui/widgets/ext_input_selection_dropdown.c:158
-#, fuzzy
 msgid "Device Inputs"
-msgstr "Périphérique"
+msgstr "Entrées de périphérique"
 
 #: src/gui/widgets/ext_input_selection_dropdown.c:240
 msgid "All MIDI Inputs"
 msgstr "Toutes les entrées MIDI"
 
 #: src/gui/widgets/ext_input_selection_dropdown.c:241
-#, fuzzy
 msgid "No Inputs"
 msgstr "Pas d'entrée"
 
@@ -4382,10 +4374,8 @@ msgid "Balance"
 msgstr "Balance"
 
 #: src/gui/widgets/balance_control.c:310
-#, fuzzy
 msgid "Invalid value given to balance control"
-msgstr ""
-"Affiche la valeur lors du survol des chariots et des contrôles de balance"
+msgstr "Valeur invalide donnée au contrôle de la balance"
 
 #: src/gui/widgets/balance_control.c:352
 msgid "Balance Value"
@@ -4462,9 +4452,8 @@ msgid "Visibility"
 msgstr "Visibilité"
 
 #: src/gui/widgets/item_factory.c:175 src/gui/widgets/item_factory.c:181
-#, fuzzy
 msgid "Invalid Position"
-msgstr "Position invalide"
+msgstr "Position non-valide"
 
 #: src/gui/widgets/item_factory.c:175
 msgid "Invalid position"
@@ -4475,27 +4464,24 @@ msgid "Failed to parse position"
 msgstr "Échec de l'analyse de la position"
 
 #: src/gui/widgets/item_factory.c:245
-#, fuzzy
 msgid "Invalid Name"
-msgstr "Nom invalide"
+msgstr "Nom non-valide"
 
 #: src/gui/widgets/item_factory.c:245
 msgid "Invalid name"
 msgstr "Nom invalide"
 
 #: src/gui/widgets/item_factory.c:254
-#, fuzzy
 msgid "Invalid Velocity"
-msgstr "Vélocité invalide"
+msgstr "Vélocité non-valide"
 
 #: src/gui/widgets/item_factory.c:254
 msgid "Invalid velocity"
 msgstr "Vélocité invalide"
 
 #: src/gui/widgets/item_factory.c:273
-#, fuzzy
 msgid "Invalid Pitch"
-msgstr "Hauteur invalide"
+msgstr "Hauteur non-valide"
 
 #: src/gui/widgets/item_factory.c:273
 msgid "Invalid pitch"
@@ -4664,9 +4650,8 @@ msgid "JACK Timebase master"
 msgstr "maître JACK Timebase"
 
 #: src/gui/widgets/bot_bar.c:301
-#, fuzzy
 msgid "Failed reading buffer size value"
-msgstr "Échec de lecteur de la valeur"
+msgstr "Échec de la lecture de la valeur de la taille du tampon"
 
 #: src/gui/widgets/bot_bar.c:345
 msgid "Buffer Size"
@@ -4674,7 +4659,7 @@ msgstr "Taille de tampon"
 
 #: src/gui/widgets/bot_bar.c:355
 msgid "Feature Not Available"
-msgstr ""
+msgstr "Fonctionnalité non-disponible"
 
 #: src/gui/widgets/bot_bar.c:356
 msgid "This feature is not available at the moment"
@@ -4753,9 +4738,8 @@ msgid "Operation unimplemented"
 msgstr "Opération non-implémentée"
 
 #: src/gui/widgets/tracklist.c:329
-#, fuzzy
 msgid "Create New Instrument Track?"
-msgstr "Ajouter une piste d'_instrument"
+msgstr "Créer une nouvelle piste d'instrument ?"
 
 #: src/gui/widgets/tracklist.c:330
 msgid ""
@@ -4766,14 +4750,12 @@ msgstr ""
 "pas pris en charge. Créez plutôt une nouvelle piste d'instrument ?"
 
 #: src/gui/widgets/tracklist.c:335
-#, fuzzy
 msgid "Create _Instrument Track"
-msgstr "Ajouter une piste d'_instrument"
+msgstr "Créer une piste d'_instrument"
 
 #: src/gui/widgets/tracklist.c:368
-#, fuzzy
 msgid "Unsupported"
-msgstr "Exporter"
+msgstr "Non pris en charge"
 
 #: src/gui/widgets/tracklist.c:368 src/gui/widgets/tracklist.c:383
 msgid "Dragged item is not supported"
@@ -4986,37 +4968,34 @@ msgid "Flags"
 msgstr "Fanions"
 
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:30
-#, fuzzy, c-format
+#, c-format
 msgid "Imported %d of %d files..."
-msgstr ""
-"\n"
-"%d fichiers supplémentaires..."
+msgstr "Importation de %d de %d fichiers..."
 
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:36
 #, c-format
 msgid ""
 "Adding %d files to project... This may take a few seconds - please wait."
 msgstr ""
+"Ajout de %d fichiers au projet... Cela peut prendre quelques secondes - "
+"veuillez patienter."
 
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:80
-#, fuzzy, c-format
+#, c-format
 msgid "Imported %d files"
-msgstr "Afficher les fichiers non pris en charge"
+msgstr "%d fichiers importés"
 
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:84
-#, fuzzy
 msgid "Failed to import regions"
-msgstr "Échec de l'importation des fichiers"
+msgstr "Échec de l'importation des régions"
 
 #: src/gui/widgets/dialogs/file_import_progress_dialog.c:229
-#, fuzzy
 msgid "File Import"
-msgstr "Navigateur de fichiers"
+msgstr "Importation de fichiers"
 
 #: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:34
-#, fuzzy
 msgid "Check for Updates?"
-msgstr "Rechercher les mises à jour"
+msgstr "Vérifier les mises à jour ?"
 
 #: src/gui/widgets/dialogs/ask_to_check_for_updates_dialog.c:36
 #, c-format
@@ -5135,13 +5114,13 @@ msgstr ""
 "1 fichier supplémentaire..."
 
 #: src/gui/widgets/dialogs/export_dialog.c:280
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "\n"
 "%zu more files..."
 msgstr ""
 "\n"
-"%d fichiers supplémentaires..."
+"%zu fichiers supplémentaires..."
 
 #: src/gui/widgets/dialogs/export_dialog.c:373
 msgid "The following files will be created:"
@@ -5294,14 +5273,15 @@ msgid "Sending data..."
 msgstr "Envoi de données..."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:384
-#, fuzzy
 msgid "Send via GitLab"
-msgstr "Envoyer via Sourcehut"
+msgstr "Envoyer via GitLab"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:396
-#, fuzzy, c-format
+#, c-format
 msgid "Please copy the template below in a <a href=\"%s\">new issue</a>."
-msgstr "Veuillez copier le modèle ci-dessous dans un %snouveau problème%s."
+msgstr ""
+"Veuillez copier le modèle ci-dessous dans une <a href=\"%s\">nouvelle "
+"question</a>."
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:479
 msgid "Fatal Error"
@@ -5345,9 +5325,8 @@ msgid "_Close"
 msgstr "_Fermer"
 
 #: src/gui/widgets/dialogs/bug_report_dialog.c:607
-#, fuzzy
 msgid "Submit on _GitLab"
-msgstr "Soumettre sur _SourceHut"
+msgstr "Soumettre sur _GitLab"
 
 #. _ ("Send via _email (publicly visible)"), EMAIL_RESPONSE,
 #: src/gui/widgets/dialogs/bug_report_dialog.c:609
@@ -5376,9 +5355,8 @@ msgstr "_Créer"
 #. just show the error and let the program continue - this was called
 #. * while another project is already running
 #: src/gui/widgets/dialogs/project_assistant.c:214
-#, fuzzy
 msgid "Project loading failed"
-msgstr "Projet sauvegardé."
+msgstr "Le chargement du projet a échoué"
 
 #: src/gui/widgets/dialogs/project_assistant.c:421
 #: src/project/project_init_flow_manager.c:1140
@@ -5386,7 +5364,6 @@ msgid "No project selected"
 msgstr "Aucun projet sélectionné"
 
 #: src/gui/widgets/dialogs/project_assistant.c:473
-#, fuzzy
 msgid "Select Project"
 msgstr "Sélectionner un projet"
 
@@ -5458,7 +5435,7 @@ msgstr "Veuillez saisir un nom valide."
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:51
 msgid "Name Unavailable"
-msgstr ""
+msgstr "Nom indisponible"
 
 #: src/gui/widgets/dialogs/save_chord_preset_dialog.c:52
 #, c-format
@@ -5525,9 +5502,8 @@ msgid "Default Object Length"
 msgstr "Longueur d'objet par défaut"
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:292
-#, fuzzy
 msgid "Link to snap"
-msgstr "Paramètre de longueur de note à accrocher"
+msgstr "Lien vers l'instantané"
 
 #: src/gui/widgets/popovers/snap_grid_popover.c:293
 #: resources/ui/snap_grid_popover.ui:212
@@ -5609,9 +5585,8 @@ msgid "Failed to create audio send"
 msgstr "Échec de la création d'un envoi audio"
 
 #: src/plugins/collections.c:30
-#, fuzzy
 msgid "Failed to serialize plugin collections"
-msgstr "Échec de la quantification des sélections de la ligne temporelle"
+msgstr "Échec de la sérialisation des collections de greffons"
 
 #: src/plugins/cached_plugin_descriptors.c:32
 msgid "Failed to serialize cached plugin descriptors"
@@ -5805,7 +5780,7 @@ msgstr ""
 
 #: src/plugins/plugin.c:1781
 msgid "Deprecated UI Type"
-msgstr ""
+msgstr "Type d'interface utilisateur obsolète"
 
 #: src/plugins/plugin.c:2094
 #, c-format
@@ -5928,9 +5903,8 @@ msgid "Delete Preset?"
 msgstr "Supprimer le préréglage ?"
 
 #: src/plugins/lv2/lv2_gtk.c:499
-#, fuzzy
 msgid "Failed to Open UI"
-msgstr "Échec de l'ouverture de l'interface graphique LV2 pour %s"
+msgstr "Échec de l'ouverture de l'interface utilisateur"
 
 #: src/plugins/lv2/lv2_gtk.c:499
 #, c-format
@@ -5970,9 +5944,8 @@ msgid "Failed to connect R port"
 msgstr "Échec de la connexion au port D"
 
 #: src/settings/plugin_settings.c:534
-#, fuzzy
 msgid "Stereo?"
-msgstr "Entrée stéréo"
+msgstr "Stéréo ?"
 
 #: src/settings/plugin_settings.c:534
 msgid "Are the outputs stereo?"
@@ -5991,9 +5964,8 @@ msgid "Failed to serialize plugin settings"
 msgstr "Échec de la sérialisation des paramètres du greffon"
 
 #: src/settings/plugin_settings.c:647
-#, fuzzy
 msgid "Failed to write plugin settings file"
-msgstr "Échec de l'écriture du fichier audio"
+msgstr "Échec de l'écriture du fichier de configuration du greffon"
 
 #: src/settings/chord_preset.c:102 src/settings/chord_preset_pack.c:129
 msgid "_Rename"
@@ -6061,9 +6033,8 @@ msgid "Rock"
 msgstr "Rock"
 
 #: src/settings/chord_preset_pack_manager.c:686
-#, fuzzy
 msgid "Failed to serialize chord preset packs"
-msgstr "Échec de la désérialisation du projet YAML"
+msgstr "Échec de la sérialisation des préréglages d'accords"
 
 #: src/settings/settings.c:122
 #, c-format
@@ -6123,28 +6094,24 @@ msgid "Failed to deserialize v1 project file"
 msgstr "Échec de la désérialisation du fichier de projet v1"
 
 #: src/project/project_init_flow_manager.c:272
-#, fuzzy
 msgid "Failed to serialize v1 project file"
-msgstr "Échec de la désérialisation du fichier de projet v1"
+msgstr "Échec de la sérialisation du fichier de projet v1"
 
 #: src/project/project_init_flow_manager.c:303
 msgid "Failed to deserialize v2/3 project file"
 msgstr "Échec de la désérialisation du fichier de projet v2/3"
 
 #: src/project/project_init_flow_manager.c:340
-#, fuzzy
 msgid "Failed to serialize v3 project file"
-msgstr "Échec de la désérialisation du fichier de projet v2/3"
+msgstr "Échec de la sérialisation du fichier de projet v3"
 
 #: src/project/project_init_flow_manager.c:372
-#, fuzzy
 msgid "Failed to deserialize v4 project file"
-msgstr "Échec de la désérialisation du fichier de projet v1"
+msgstr "Échec de la sérialisation du fichier de projet v4"
 
 #: src/project/project_init_flow_manager.c:397
-#, fuzzy
 msgid "Failed to serialize v4 project file"
-msgstr "Échec de la désérialisation du fichier de projet v1"
+msgstr "Échec de la sérialisation du fichier de projet v4"
 
 #: src/project/project_init_flow_manager.c:700
 msgid "Failed to get existing yaml"
@@ -6155,18 +6122,16 @@ msgid "Invalid project: missing version"
 msgstr "Projet invalide : version manquante"
 
 #: src/project/project_init_flow_manager.c:731
-#, fuzzy
 msgid "Failed to upgrade project schema"
-msgstr "Échec de la sauvegarde du projet"
+msgstr "Échec de la mise à jour du schéma de projet"
 
 #: src/project/project_init_flow_manager.c:746
 msgid "Failed to deserialize project YAML"
 msgstr "Échec de la désérialisation du projet YAML"
 
 #: src/project/project_init_flow_manager.c:760
-#, fuzzy
 msgid "Unsupported Version"
-msgstr "Type de fichier non-supporté %s"
+msgstr "Version non-supportée"
 
 #: src/project/project_init_flow_manager.c:761
 #, c-format
@@ -6187,9 +6152,8 @@ msgstr ""
 "manquant à '%s')."
 
 #: src/project/project_init_flow_manager.c:1013
-#, fuzzy
 msgid "Project Upgraded"
-msgstr "Projet sauvegardé."
+msgstr "Projet mis à jour"
 
 #: src/project/project_init_flow_manager.c:1014
 #, c-format
@@ -6204,7 +6168,7 @@ msgstr ""
 
 #: src/project/project_init_flow_manager.c:1088
 msgid "Open Backup?"
-msgstr ""
+msgstr "Ouvrir la sauvegarde ?"
 
 #: src/project/project_init_flow_manager.c:1090
 #, c-format
@@ -6219,16 +6183,15 @@ msgstr ""
 
 #: src/project/project_init_flow_manager.c:1093
 msgid "Open Backup"
-msgstr ""
+msgstr "Sauvegarde ouverte"
 
 #: src/project/project_init_flow_manager.c:1094
 msgid "Ignore"
 msgstr "Ignorer"
 
 #: src/project/project_init_flow_manager.c:1151
-#, fuzzy
 msgid "Project Load Failed"
-msgstr "Projet sauvegardé."
+msgstr "Échec du chargement du projet"
 
 #: src/project/project_init_flow_manager.c:1152
 msgid "Failed to load project. Will create a new one instead."
@@ -6466,7 +6429,6 @@ msgid "Bookmarks"
 msgstr "Signets"
 
 #: resources/ui/first_run_window.ui:6
-#, fuzzy
 msgid "Set Up Zrythm"
 msgstr "Configurer Zrythm"
 
@@ -6499,19 +6461,16 @@ msgid "Collection"
 msgstr "Collection"
 
 #: resources/ui/plugin_browser.ui:53
-#, fuzzy
 msgid "Add Collection"
-msgstr "Ajouter à la collection"
+msgstr "Ajouter une collection"
 
 #: resources/ui/plugin_browser.ui:60
-#, fuzzy
 msgid "Rename Collection"
-msgstr "Collection"
+msgstr "Renommer la collection"
 
 #: resources/ui/plugin_browser.ui:67
-#, fuzzy
 msgid "Delete Collection"
-msgstr "Effacer la connexion"
+msgstr "Effacer la collection"
 
 #: resources/ui/plugin_browser.ui:87
 msgid "Author"
@@ -6805,14 +6764,12 @@ msgid "Toggle Top Panel"
 msgstr "Basculer le panneau supérieur"
 
 #: resources/ui/automatable_selector.ui:13
-#, fuzzy
 msgid "Filters"
-msgstr "Filtre"
+msgstr "Filtres"
 
 #: resources/ui/automatable_selector.ui:63
-#, fuzzy
 msgid "Info"
-msgstr "Information sur le port"
+msgstr "Infos"
 
 #: resources/ui/automatable_selector.ui:68
 msgid "label"
@@ -7210,9 +7167,8 @@ msgid "The monitor listen volume in amplitude (0 to 2)."
 msgstr "Le volume du moniteur d'écoute en amplitude (de 0 à 2)."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:301
-#, fuzzy
 msgid "Dim volume"
-msgstr "Volume"
+msgstr "Diminuer le volume"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:302
 #, fuzzy
