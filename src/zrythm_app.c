@@ -1665,6 +1665,15 @@ zrythm_app_check_and_show_trial_limit_error (ZrythmApp * self)
   return false;
 }
 
+void
+zrythm_exit_response_callback (
+  AdwMessageDialog * self,
+  gchar *            response,
+  gpointer           user_data)
+{
+  exit (EXIT_SUCCESS);
+}
+
 /**
  * Creates the Zrythm GApplication.
  *

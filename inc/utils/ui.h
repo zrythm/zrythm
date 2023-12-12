@@ -460,8 +460,10 @@ ui_on_motion_set_status_bar_text_cb (
  *
  * @note Only works for non-markup. use AdwMessageDialog directly to show
  * Pango markup.
+ *
+ * @return The message window.
  */
-void
+GtkWindow *
 ui_show_message_full (
   GtkWindow *  parent_window,
   const char * title,

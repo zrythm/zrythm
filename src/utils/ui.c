@@ -129,11 +129,7 @@ ui_set_pointer_cursor (GtkWidget * widget)
   ui_set_cursor_from_icon_name (GTK_WIDGET (widget), "edit-select", 3, 1);
 }
 
-/**
- * Shows a popup message of the given type with the
- * given message.
- */
-void
+GtkWindow *
 ui_show_message_full (
   GtkWindow *  parent_window,
   const char * title,
@@ -150,15 +146,16 @@ ui_show_message_full (
     {
       g_warning ("vsnprintf failed");
       free (buf);
-      return;
+      return NULL;
     }
-  g_return_if_fail (printed < UI_MESSAGE_BUF_SZ);
+  g_return_val_if_fail (printed < UI_MESSAGE_BUF_SZ, NULL);
   buf = g_realloc_n (buf, (size_t) (printed + 1), sizeof (char));
 
   /* log the message anyway */
   g_message ("%s: %s", title, buf);
 
   /* if have UI, also show a message dialog */
+  GtkWindow * win = NULL;
   if (ZRYTHM_HAVE_UI)
     {
       GtkWidget * dialog = adw_message_dialog_new (parent_window, title, buf);
@@ -167,17 +164,20 @@ ui_show_message_full (
       adw_message_dialog_set_default_response (
         ADW_MESSAGE_DIALOG (dialog), "ok");
       adw_message_dialog_set_close_response (ADW_MESSAGE_DIALOG (dialog), "ok");
-      gtk_window_set_icon_name (GTK_WINDOW (dialog), "zrythm");
+      win = GTK_WINDOW (dialog);
+      gtk_window_set_icon_name (win, "zrythm");
       if (parent_window)
         {
-          gtk_window_set_transient_for (GTK_WINDOW (dialog), parent_window);
-          gtk_window_set_modal (GTK_WINDOW (dialog), true);
+          gtk_window_set_transient_for (win, parent_window);
+          gtk_window_set_modal (win, true);
         }
-      gtk_window_present (GTK_WINDOW (dialog));
+      gtk_window_present (win);
     }
 
   free (buf);
   va_end (args);
+
+  return win;
 }
 
 /**

@@ -9,14 +9,13 @@
 #ifndef __SCHEMAS_AUDIO_REGION_H__
 #define __SCHEMAS_AUDIO_REGION_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/dsp/automation_point.h"
 #include "schemas/dsp/chord_object.h"
 #include "schemas/dsp/midi_note.h"
 #include "schemas/dsp/position.h"
 #include "schemas/dsp/region_identifier.h"
 #include "schemas/gui/backend/arranger_object.h"
+#include "utils/yaml.h"
 
 typedef enum RegionMusicalMode_v1
 {
@@ -82,6 +81,8 @@ static const cyaml_schema_field_t region_fields_schema_v1[] = {
     &chord_object_schema_v1,
     0,
     CYAML_UNLIMITED),
+  YAML_FIELD_IGNORE_OPT ("color"),
+  YAML_FIELD_IGNORE_OPT ("use_color"),
   YAML_FIELD_ENUM (ZRegion_v1, musical_mode, region_musical_mode_strings_v1),
 
   CYAML_FIELD_END
@@ -90,8 +91,5 @@ static const cyaml_schema_field_t region_fields_schema_v1[] = {
 static const cyaml_schema_value_t region_schema_v1 = {
   YAML_VALUE_PTR_NULLABLE (ZRegion_v1, region_fields_schema_v1),
 };
-
-ZRegion *
-region_upgrade_from_v1 (ZRegion_v1 * old);
 
 #endif

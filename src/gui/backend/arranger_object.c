@@ -2523,9 +2523,9 @@ arranger_object_clone (const ArrangerObject * self)
   g_return_val_if_fail (new_obj, NULL);
 
   /* set positions */
-  g_warn_if_fail (
-    self->schema_version == ARRANGER_OBJECT_SCHEMA_VERSION
-    && self->pos.schema_version == POSITION_SCHEMA_VERSION);
+  /*g_warn_if_fail (*/
+  /*self->schema_version == ARRANGER_OBJECT_SCHEMA_VERSION*/
+  /*&& self->pos.schema_version == POSITION_SCHEMA_VERSION);*/
   new_obj->pos = self->pos;
   if (arranger_object_type_has_length (self->type))
     {

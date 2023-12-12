@@ -574,7 +574,7 @@ _port_new (const char * label)
 {
   Port * self = object_new (Port);
 
-  self->schema_version = PORT_SCHEMA_VERSION;
+  /*self->schema_version = PORT_SCHEMA_VERSION;*/
   port_identifier_init (&self->id);
   self->magic = PORT_MAGIC;
 
@@ -653,7 +653,7 @@ StereoPorts *
 stereo_ports_new_from_existing (Port * l, Port * r)
 {
   StereoPorts * sp = object_new (StereoPorts);
-  sp->schema_version = STEREO_PORTS_SCHEMA_VERSION;
+  /*sp->schema_version = STEREO_PORTS_SCHEMA_VERSION;*/
   sp->l = l;
   l->id.flags |= PORT_FLAG_STEREO_L;
   r->id.flags |= PORT_FLAG_STEREO_R;
@@ -673,7 +673,7 @@ StereoPorts *
 stereo_ports_clone (const StereoPorts * src)
 {
   StereoPorts * sp = object_new (StereoPorts);
-  sp->schema_version = STEREO_PORTS_SCHEMA_VERSION;
+  /*sp->schema_version = STEREO_PORTS_SCHEMA_VERSION;*/
 
   sp->l = port_clone (src->l);
   sp->r = port_clone (src->r);
@@ -3518,7 +3518,7 @@ port_clone (const Port * src)
   g_return_val_if_fail (IS_PORT (src), NULL);
 
   Port * self = object_new (Port);
-  self->schema_version = PORT_SCHEMA_VERSION;
+  /*self->schema_version = PORT_SCHEMA_VERSION;*/
   self->magic = PORT_MAGIC;
 
   port_identifier_copy (&self->id, &src->id);

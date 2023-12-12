@@ -44,7 +44,4 @@ static const cyaml_schema_value_t automation_point_schema_v1 = {
   YAML_VALUE_PTR (AutomationPoint_v1, automation_point_fields_schema_v1),
 };
 
-AutomationPoint *
-automation_point_upgrade_from_v1 (AutomationPoint_v1 * old);
-
 #endif

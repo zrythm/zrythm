@@ -10,12 +10,11 @@
 #ifndef __SCHEMAS_GUI_BACKEND_TL_SELECTIONS_H__
 #define __SCHEMAS_GUI_BACKEND_TL_SELECTIONS_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/dsp/marker.h"
 #include "schemas/dsp/region.h"
 #include "schemas/dsp/scale_object.h"
 #include "schemas/gui/backend/arranger_selections.h"
+#include "utils/yaml.h"
 
 typedef struct TimelineSelections_v1
 {
@@ -54,8 +53,5 @@ static const cyaml_schema_field_t timeline_selections_fields_schema_v1[] = {
 static const cyaml_schema_value_t timeline_selections_schema_v1 = {
   YAML_VALUE_PTR (TimelineSelections_v1, timeline_selections_fields_schema_v1),
 };
-
-TimelineSelections *
-timeline_selections_upgrade_from_v1 (TimelineSelections_v1 * old);
 
 #endif

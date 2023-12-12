@@ -10,9 +10,8 @@
 #ifndef __SCHEMAS_AUDIO_AUDIO_CLIP_EDITOR_H__
 #define __SCHEMAS_AUDIO_AUDIO_CLIP_EDITOR_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/gui/backend/editor_settings.h"
+#include "utils/yaml.h"
 
 typedef struct AudioClipEditor_v1
 {

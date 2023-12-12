@@ -10,10 +10,9 @@
 #ifndef __SCHEMAS_AUDIO_TRACK_PROCESSOR_H__
 #define __SCHEMAS_AUDIO_TRACK_PROCESSOR_H__
 
+#include "schemas/dsp/port.h"
 #include "utils/types.h"
 #include "utils/yaml.h"
-
-#include "schemas/dsp/port.h"
 
 typedef enum TrackProcessorMidiAutomatable_v1
 {
@@ -102,8 +101,5 @@ static const cyaml_schema_field_t track_processor_fields_schema_v1[] = {
 static const cyaml_schema_value_t track_processor_schema_v1 = {
   YAML_VALUE_PTR (TrackProcessor_v1, track_processor_fields_schema_v1),
 };
-
-TrackProcessor *
-track_processor_upgrade_from_v1 (TrackProcessor_v1 * old);
 
 #endif

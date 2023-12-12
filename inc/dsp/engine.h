@@ -836,8 +836,10 @@ static const cyaml_schema_value_t engine_schema = {
 void
 engine_realloc_port_buffers (AudioEngine * self, nframes_t buf_size);
 
-COLD NONNULL_ARGS (
-  1) void engine_init_loaded (AudioEngine * self, Project * project);
+COLD NONNULL_ARGS (1) bool engine_init_loaded (
+  AudioEngine * self,
+  Project *     project,
+  GError **     error);
 
 /**
  * Create a new audio engine.

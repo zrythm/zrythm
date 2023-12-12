@@ -8,15 +8,13 @@
 
 #include <glib/gi18n.h>
 
-/**
- * Only to be called by HANDLE_ERROR macro.
- */
-void
+GtkWindow *
 error_handle_prv (GError * err, const char * format, ...)
 {
   va_list args;
   va_start (args, format);
 
+  GtkWindow * win = NULL;
   if (err)
     {
       char * tmp = g_strdup_vprintf (format, args);
@@ -25,7 +23,7 @@ error_handle_prv (GError * err, const char * format, ...)
       g_free (tmp);
       if (ZRYTHM_HAVE_UI)
         {
-          ui_show_message_literal (_ ("Error"), str);
+          win = ui_show_message_literal (_ ("Error"), str);
         }
       else
         {
@@ -40,6 +38,8 @@ error_handle_prv (GError * err, const char * format, ...)
     }
 
   va_end (args);
+
+  return win;
 }
 
 void

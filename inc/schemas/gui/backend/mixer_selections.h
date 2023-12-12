@@ -10,16 +10,15 @@
 #ifndef __SCHEMAS_GUI_BACKEND_MIXER_SELECTIONS_H__
 #define __SCHEMAS_GUI_BACKEND_MIXER_SELECTIONS_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/plugins/plugin.h"
+#include "utils/yaml.h"
 
 typedef struct MixerSelections_v1
 {
   int               schema_version;
   PluginSlotType_v1 type;
-  int               slots[MIXER_SELECTIONS_MAX_SLOTS];
-  Plugin_v1 *       plugins[MIXER_SELECTIONS_MAX_SLOTS];
+  int               slots[60];
+  Plugin_v1 *       plugins[60];
   int               num_slots;
   unsigned int      track_name_hash;
   int               has_any;

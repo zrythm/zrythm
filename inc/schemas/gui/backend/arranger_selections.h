@@ -50,7 +50,4 @@ static const cyaml_schema_value_t arranger_selections_schema_v1 = {
   YAML_VALUE_PTR (ArrangerSelections_v1, arranger_selections_fields_schema_v1),
 };
 
-ArrangerSelections *
-arranger_selections_upgrade_from_v1 (ArrangerSelections_v1 * old);
-
 #endif

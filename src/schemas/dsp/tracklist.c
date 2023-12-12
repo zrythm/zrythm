@@ -1,20 +1,18 @@
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
-#include "dsp/tracklist.h"
+#include "schemas/dsp/tracklist.h"
 #include "utils/objects.h"
 
-#include "schemas/dsp/tracklist.h"
-
-Tracklist *
+Tracklist_v2 *
 tracklist_upgrade_from_v1 (Tracklist_v1 * old)
 {
   if (!old)
     return NULL;
 
-  Tracklist * self = object_new (Tracklist);
+  Tracklist_v2 * self = object_new (Tracklist_v2);
 
-  self->schema_version = TRACKLIST_SCHEMA_VERSION;
+  self->schema_version = 2;
   self->num_tracks = old->num_tracks;
   for (int i = 0; i < self->num_tracks; i++)
     {

@@ -73,4 +73,53 @@ plugin_serialize_to_json (
   const Plugin *   plugin,
   GError **        error);
 
+bool
+plugin_identifier_deserialize_from_json (
+  yyjson_doc *       doc,
+  yyjson_val *       pid_obj,
+  PluginIdentifier * pid,
+  GError **          error);
+
+bool
+plugin_descriptor_deserialize_from_json (
+  yyjson_doc *       doc,
+  yyjson_val *       pd_obj,
+  PluginDescriptor * pd,
+  GError **          error);
+
+bool
+plugin_setting_deserialize_from_json (
+  yyjson_doc *    doc,
+  yyjson_val *    ps_obj,
+  PluginSetting * ps,
+  GError **       error);
+
+bool
+plugin_preset_identifier_deserialize_from_json (
+  yyjson_doc *             doc,
+  yyjson_val *             pid_obj,
+  PluginPresetIdentifier * pid,
+  GError **                error);
+
+bool
+plugin_preset_deserialize_from_json (
+  yyjson_doc *   doc,
+  yyjson_val *   pset_obj,
+  PluginPreset * pset,
+  GError **      error);
+
+bool
+plugin_bank_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * bank_obj,
+  PluginBank * bank,
+  GError **    error);
+
+bool
+plugin_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * plugin_obj,
+  Plugin *     plugin,
+  GError **    error);
+
 #endif // __IO_SERIALIZATION_PLUGIN_H__

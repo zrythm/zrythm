@@ -2,19 +2,18 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/sample_processor.h"
+#include "schemas/dsp/sample_processor.h"
 #include "utils/objects.h"
 
-#include "schemas/dsp/sample_processor.h"
-
-SampleProcessor *
+SampleProcessor_v2 *
 sample_processor_upgrade_from_v1 (SampleProcessor_v1 * old)
 {
   if (!old)
     return NULL;
 
-  SampleProcessor * self = object_new (SampleProcessor);
+  SampleProcessor_v2 * self = object_new (SampleProcessor_v2);
 
-  self->schema_version = SAMPLE_PROCESSOR_SCHEMA_VERSION;
+  self->schema_version = 2;
   self->fader = fader_upgrade_from_v1 (old->fader);
 
   return self;

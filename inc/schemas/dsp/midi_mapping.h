@@ -10,10 +10,9 @@
 #ifndef __SCHEMAS_AUDIO_MIDI_MAPPING_H__
 #define __SCHEMAS_AUDIO_MIDI_MAPPING_H__
 
-#include "utils/midi.h"
-
 #include "schemas/dsp/ext_port.h"
 #include "schemas/dsp/port_identifier.h"
+#include "utils/midi.h"
 
 typedef struct MidiMapping_v1
 {
@@ -26,8 +25,8 @@ typedef struct MidiMapping_v1
 
 typedef struct MidiMappings_v1
 {
-  MidiMapping_v1 mappings[2046];
-  int            num_mappings;
+  MidiMapping_v1 ** mappings;
+  int               num_mappings;
 } MidiMappings_v1;
 
 static const cyaml_schema_field_t midi_mapping_fields_schema_v1[] = {
@@ -51,10 +50,11 @@ static const cyaml_schema_value_t midi_mapping_schema_v1 = {
 };
 
 static const cyaml_schema_field_t midi_mappings_fields_schema_v1[] = {
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
+  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
     MidiMappings_v1,
     mappings,
     midi_mapping_schema_v1),
+  YAML_FIELD_IGNORE_OPT ("schema_version"),
 
   CYAML_FIELD_END
 };

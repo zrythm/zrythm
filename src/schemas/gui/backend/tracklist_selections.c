@@ -2,19 +2,18 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "gui/backend/tracklist_selections.h"
+#include "schemas/gui/backend/tracklist_selections.h"
 #include "utils/objects.h"
 
-#include "schemas/gui/backend/tracklist_selections.h"
-
-TracklistSelections *
+TracklistSelections_v2 *
 tracklist_selections_upgrade_from_v1 (TracklistSelections_v1 * old)
 {
   if (!old)
     return NULL;
 
-  TracklistSelections * self = object_new (TracklistSelections);
+  TracklistSelections_v2 * self = object_new (TracklistSelections_v2);
 
-  self->schema_version = TRACKLIST_SELECTIONS_SCHEMA_VERSION;
+  self->schema_version = 2;
   self->num_tracks = old->num_tracks;
   for (int i = 0; i < self->num_tracks; i++)
     {

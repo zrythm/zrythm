@@ -10,9 +10,8 @@
 #ifndef __SCHEMAS_AUDIO_POOL_H__
 #define __SCHEMAS_AUDIO_POOL_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/dsp/clip.h"
+#include "utils/yaml.h"
 
 typedef struct AudioPool_v1
 {
@@ -31,8 +30,5 @@ static const cyaml_schema_field_t audio_pool_fields_schema_v1[] = {
 static const cyaml_schema_value_t audio_pool_schema_v1 = {
   YAML_VALUE_PTR (AudioPool_v1, audio_pool_fields_schema_v1),
 };
-
-AudioPool *
-audio_pool_upgrade_from_v1 (AudioPool_v1 * old);
 
 #endif

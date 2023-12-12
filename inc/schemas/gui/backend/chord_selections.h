@@ -26,10 +26,9 @@
 #ifndef __SCHEMAS_GUI_BACKEND_CHORD_SELECTIONS_H__
 #define __SCHEMAS_GUI_BACKEND_CHORD_SELECTIONS_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/dsp/chord_object.h"
 #include "schemas/gui/backend/arranger_selections.h"
+#include "utils/yaml.h"
 
 typedef struct ChordSelections_v1
 {

@@ -105,4 +105,81 @@ chord_action_serialize_to_json (
   const ChordAction * action,
   GError **           error);
 
+bool
+undoable_action_deserialize_from_json (
+  yyjson_doc *     doc,
+  yyjson_val *     action_obj,
+  UndoableAction * action,
+  GError **        error);
+
+bool
+arranger_selections_action_deserialize_from_json (
+  yyjson_doc *               doc,
+  yyjson_val *               action_obj,
+  ArrangerSelectionsAction * action,
+  GError **                  error);
+
+bool
+mixer_selections_action_deserialize_from_json (
+  yyjson_doc *            doc,
+  yyjson_val *            action_obj,
+  MixerSelectionsAction * action,
+  GError **               error);
+
+bool
+tracklist_selections_action_deserialize_from_json (
+  yyjson_doc *                doc,
+  yyjson_val *                action_obj,
+  TracklistSelectionsAction * action,
+  GError **                   error);
+
+bool
+channel_send_action_deserialize_from_json (
+  yyjson_doc *        doc,
+  yyjson_val *        action_obj,
+  ChannelSendAction * action,
+  GError **           error);
+
+bool
+port_connection_action_deserialize_from_json (
+  yyjson_doc *           doc,
+  yyjson_val *           action_obj,
+  PortConnectionAction * action,
+  GError **              error);
+
+bool
+port_action_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * action_obj,
+  PortAction * action,
+  GError **    error);
+
+bool
+midi_mapping_action_deserialize_from_json (
+  yyjson_doc *        doc,
+  yyjson_val *        action_obj,
+  MidiMappingAction * action,
+  GError **           error);
+
+bool
+range_action_deserialize_from_json (
+  yyjson_doc *  doc,
+  yyjson_val *  action_obj,
+  RangeAction * action,
+  GError **     error);
+
+bool
+transport_action_deserialize_from_json (
+  yyjson_doc *      doc,
+  yyjson_val *      action_obj,
+  TransportAction * action,
+  GError **         error);
+
+bool
+chord_action_deserialize_from_json (
+  yyjson_doc *  doc,
+  yyjson_val *  action_obj,
+  ChordAction * action,
+  GError **     error);
+
 #endif // __IO_ACTIONS_H__

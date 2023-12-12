@@ -2,22 +2,18 @@
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 #include "dsp/control_room.h"
+#include "schemas/dsp/control_room.h"
 #include "utils/objects.h"
 
-#include "schemas/dsp/control_room.h"
-
-ControlRoom *
+ControlRoom_v2 *
 control_room_upgrade_from_v1 (ControlRoom_v1 * old)
 {
   if (!old)
     return NULL;
 
-  ControlRoom * self = object_new (ControlRoom);
+  ControlRoom_v2 * self = object_new (ControlRoom_v2);
 
-  self->schema_version = CONTROL_ROOM_SCHEMA_VERSION;
-
-#define UPDATE(name) self->name = old->name
-
+  self->schema_version = 2;
   self->monitor_fader = fader_upgrade_from_v1 (old->monitor_fader);
 
   return self;

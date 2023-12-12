@@ -74,7 +74,4 @@ static const cyaml_schema_value_t ext_port_schema_v1 = {
   YAML_VALUE_PTR (ExtPort_v1, ext_port_fields_schema_v1),
 };
 
-ExtPort *
-ext_port_upgrade_from_v1 (ExtPort_v1 * old);
-
 #endif

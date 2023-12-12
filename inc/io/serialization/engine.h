@@ -33,4 +33,18 @@ audio_engine_serialize_to_json (
   const AudioEngine * engine,
   GError **           error);
 
+bool
+transport_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * transport_obj,
+  Transport *  transport,
+  GError **    error);
+
+bool
+audio_engine_deserialize_from_json (
+  yyjson_doc *  doc,
+  yyjson_val *  engine_obj,
+  AudioEngine * engine,
+  GError **     error);
+
 #endif // __IO_ENGINE_H__

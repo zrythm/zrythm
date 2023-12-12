@@ -1584,12 +1584,6 @@ typedef struct PresetInfo
   GtkComboBoxText * cb;
 } PresetInfo;
 
-/**
- * Sets up the combo box with all the banks the
- * plugin has.
- *
- * @return Whether any banks were added.
- */
 bool
 plugin_gtk_setup_plugin_banks_combo_box (GtkComboBoxText * cb, Plugin * plugin)
 {
@@ -1604,6 +1598,12 @@ plugin_gtk_setup_plugin_banks_combo_box (GtkComboBoxText * cb, Plugin * plugin)
   for (int i = 0; i < plugin->num_banks; i++)
     {
       PluginBank * bank = plugin->banks[i];
+      if (!bank->name)
+        {
+          g_warning ("plugin bank at index %d has no name, skipping...", i);
+          continue;
+        }
+
       gtk_combo_box_text_append (cb, bank->uri, bank->name);
       ret = true;
     }

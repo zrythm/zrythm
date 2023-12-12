@@ -41,4 +41,25 @@ channel_serialize_to_json (
   const Channel *  ch,
   GError **        error);
 
+bool
+channel_send_deserialize_from_json (
+  yyjson_doc *  doc,
+  yyjson_val *  cs_obj,
+  ChannelSend * cs,
+  GError **     error);
+
+bool
+fader_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * f_obj,
+  Fader *      f,
+  GError **    error);
+
+bool
+channel_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * ch_obj,
+  Channel *    ch,
+  GError **    error);
+
 #endif // __IO_SERIALIZATION_CHANNEL_H__

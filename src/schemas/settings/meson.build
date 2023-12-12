@@ -2,5 +2,4 @@
 # SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 zrythm_srcs += files ([
-  'plugin_settings.c',
   ])

@@ -10,9 +10,8 @@
 #ifndef __SCHEMAS_AUDIO_MODULATOR_MACRO_PROCESSOR_H__
 #define __SCHEMAS_AUDIO_MODULATOR_MACRO_PROCESSOR_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/dsp/port.h"
+#include "utils/yaml.h"
 
 typedef struct ModulatorMacroProcessor_v1
 {
@@ -38,8 +37,5 @@ static const cyaml_schema_value_t modulator_macro_processor_schema_v1 = {
     ModulatorMacroProcessor_v1,
     modulator_macro_processor_fields_schema_v1),
 };
-
-ModulatorMacroProcessor *
-modulator_macro_processor_upgrade_from_v1 (ModulatorMacroProcessor_v1 * old);
 
 #endif

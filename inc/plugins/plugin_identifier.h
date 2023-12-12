@@ -117,6 +117,9 @@ plugin_identifier_validate_slot_type_slot_combo (
 void
 plugin_identifier_print (const PluginIdentifier * self, char * str);
 
+uint32_t
+plugin_identifier_get_hash (const void * id);
+
 /**
  * @}
  */

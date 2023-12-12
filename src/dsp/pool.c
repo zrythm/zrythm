@@ -24,8 +24,8 @@
 /**
  * Inits after loading a project.
  */
-void
-audio_pool_init_loaded (AudioPool * self)
+bool
+audio_pool_init_loaded (AudioPool * self, GError ** error)
 {
   self->clips_size = (size_t) self->num_clips;
 
@@ -33,8 +33,18 @@ audio_pool_init_loaded (AudioPool * self)
     {
       AudioClip * clip = self->clips[i];
       if (clip)
-        audio_clip_init_loaded (clip);
+        {
+          GError * err = NULL;
+          bool     success = audio_clip_init_loaded (clip, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err, "Failed to initialize audio clip '%s'", clip->name);
+              return false;
+            }
+        }
     }
+  return true;
 }
 
 /**
@@ -365,8 +375,8 @@ audio_pool_remove_unused (AudioPool * self, bool backup)
  * This should be called whenever there is a relevant
  * change in the project (eg, object added/removed).
  */
-void
-audio_pool_reload_clip_frame_bufs (AudioPool * self)
+bool
+audio_pool_reload_clip_frame_bufs (AudioPool * self, GError ** error)
 {
   for (int i = 0; i < self->num_clips; i++)
     {
@@ -379,7 +389,15 @@ audio_pool_reload_clip_frame_bufs (AudioPool * self)
       if (in_use && clip->num_frames == 0)
         {
           /* load from the file */
-          audio_clip_init_loaded (clip);
+          GError * err = NULL;
+          bool     success = audio_clip_init_loaded (clip, &err);
+          if (!success)
+            {
+              PROPAGATE_PREFIXED_ERROR (
+                error, err, _ ("Failed to initialize audio clip '%s'"),
+                clip->name);
+              return false;
+            }
         }
       else if (!in_use && clip->num_frames > 0)
         {
@@ -389,6 +407,7 @@ audio_pool_reload_clip_frame_bufs (AudioPool * self)
           clip->frames = NULL;
         }
     }
+  return true;
 }
 
 typedef struct WriteClipData

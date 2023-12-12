@@ -26,9 +26,8 @@
 #ifndef __SCHEMAS_PLUGINS_PLUGIN_COLLECTION_H__
 #define __SCHEMAS_PLUGINS_PLUGIN_COLLECTION_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/plugins/plugin_descriptor.h"
+#include "utils/yaml.h"
 
 typedef struct PluginCollection_v1
 {

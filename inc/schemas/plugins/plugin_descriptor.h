@@ -221,7 +221,4 @@ static const cyaml_schema_value_t plugin_descriptor_schema_v1 = {
   YAML_VALUE_PTR (PluginDescriptor_v1, plugin_descriptor_fields_schema_v1),
 };
 
-PluginDescriptor *
-plugin_descriptor_upgrade_from_v1 (PluginDescriptor_v1 * old);
-
 #endif

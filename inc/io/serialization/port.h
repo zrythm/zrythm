@@ -65,4 +65,46 @@ port_connections_manager_serialize_to_json (
   const PortConnectionsManager * mgr,
   GError **                      error);
 
+bool
+port_identifier_deserialize_from_json (
+  yyjson_doc *     doc,
+  yyjson_val *     pi_obj,
+  PortIdentifier * pi,
+  GError **        error);
+
+bool
+port_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * port_obj,
+  Port *       port,
+  GError **    error);
+
+bool
+stereo_ports_deserialize_from_json (
+  yyjson_doc *  doc,
+  yyjson_val *  sp_obj,
+  StereoPorts * sp,
+  GError **     error);
+
+bool
+ext_port_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * ep_obj,
+  ExtPort *    ep,
+  GError **    error);
+
+bool
+port_connection_deserialize_from_json (
+  yyjson_doc *     doc,
+  yyjson_val *     conn_obj,
+  PortConnection * conn,
+  GError **        error);
+
+bool
+port_connections_manager_deserialize_from_json (
+  yyjson_doc *             doc,
+  yyjson_val *             mgr_obj,
+  PortConnectionsManager * mgr,
+  GError **                error);
+
 #endif // __IO_PORT_H__

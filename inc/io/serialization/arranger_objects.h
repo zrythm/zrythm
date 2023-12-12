@@ -81,4 +81,60 @@ marker_serialize_to_json (
   const Marker *   m,
   GError **        error);
 
+bool
+arranger_object_deserialize_from_json (
+  yyjson_doc *     doc,
+  yyjson_val *     ao_obj,
+  ArrangerObject * ao,
+  GError **        error);
+
+bool
+region_identifier_deserialize_from_json (
+  yyjson_doc *       doc,
+  yyjson_val *       id_obj,
+  RegionIdentifier * id,
+  GError **          error);
+
+bool
+midi_note_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * mn_obj,
+  MidiNote *   mn,
+  GError **    error);
+
+bool
+automation_point_deserialize_from_json (
+  yyjson_doc *      doc,
+  yyjson_val *      ap_obj,
+  AutomationPoint * ap,
+  GError **         error);
+
+bool
+chord_object_deserialize_from_json (
+  yyjson_doc *  doc,
+  yyjson_val *  co_obj,
+  ChordObject * co,
+  GError **     error);
+
+bool
+region_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * r_obj,
+  ZRegion *    r,
+  GError **    error);
+
+bool
+scale_object_deserialize_from_json (
+  yyjson_doc *  doc,
+  yyjson_val *  so_obj,
+  ScaleObject * so,
+  GError **     error);
+
+bool
+marker_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * m_obj,
+  Marker *     m,
+  GError **    error);
+
 #endif // __IO_SERIALIZATION_ARRANGER_OBJECTS_H__

@@ -56,7 +56,4 @@ static const cyaml_schema_value_t hardware_processor_schema_v1 = {
   YAML_VALUE_PTR (HardwareProcessor_v1, hardware_processor_fields_schema_v1),
 };
 
-HardwareProcessor *
-hardware_processor_upgrade_from_v1 (HardwareProcessor_v1 * old);
-
 #endif

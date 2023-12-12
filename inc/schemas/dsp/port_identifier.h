@@ -10,9 +10,8 @@
 #ifndef __SCHEMAS_AUDIO_PORT_IDENTIFIER_H__
 #define __SCHEMAS_AUDIO_PORT_IDENTIFIER_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/plugins/plugin_identifier.h"
+#include "utils/yaml.h"
 
 typedef struct PortIdentifier PortIdentifier;
 
@@ -234,6 +233,7 @@ static const cyaml_bitdef_t port_flags2_bitvals_v1[] = {
   YAML_BITVAL ("sample_processor_fader", 27),
   YAML_BITVAL ("sample_processor_track", 28),
   YAML_BITVAL ("fader_swap_phase", 29),
+  YAML_BITVAL ("midi_clock", 30),
 };
 
 typedef struct PortIdentifier_v1
@@ -293,8 +293,5 @@ static const cyaml_schema_value_t port_identifier_schema_default_v1 = {
     PortIdentifier_v1,
     port_identifier_fields_schema_v1),
 };
-
-PortIdentifier *
-port_identifier_upgrade_from_v1 (PortIdentifier_v1 * old);
 
 #endif

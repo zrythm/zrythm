@@ -4,9 +4,8 @@
 #ifndef __SCHEMAS_AUDIO_TRACK_LANE_H__
 #define __SCHEMAS_AUDIO_TRACK_LANE_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/dsp/region.h"
+#include "utils/yaml.h"
 
 typedef struct TrackLane_v1
 {
@@ -40,8 +39,5 @@ static const cyaml_schema_value_t track_lane_schema_v1 = {
     TrackLane_v1,
     track_lane_fields_schema_v1),
 };
-
-TrackLane *
-track_lane_upgrade_from_v1 (TrackLane_v1 * old);
 
 #endif

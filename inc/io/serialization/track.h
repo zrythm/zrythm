@@ -49,4 +49,32 @@ track_serialize_to_json (
   const Track *    track,
   GError **        error);
 
+bool
+modulator_macro_processor_deserialize_from_json (
+  yyjson_doc *              doc,
+  yyjson_val *              mmp_obj,
+  ModulatorMacroProcessor * mmp,
+  GError **                 error);
+
+bool
+track_processor_deserialize_from_json (
+  yyjson_doc *     doc,
+  yyjson_val *     tp_obj,
+  TrackProcessor * tp,
+  GError **        error);
+
+bool
+automation_track_deserialize_from_json (
+  yyjson_doc *      doc,
+  yyjson_val *      at_obj,
+  AutomationTrack * at,
+  GError **         error);
+
+bool
+track_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * track_obj,
+  Track *      track,
+  GError **    error);
+
 #endif // __IO_TRACK_H__

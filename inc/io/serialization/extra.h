@@ -57,4 +57,39 @@ stack_serialize_to_json (
   const Stack *    stack,
   GError **        error);
 
+bool
+gdk_rgba_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * rgba_obj,
+  GdkRGBA *    rgba,
+  GError **    error);
+
+bool
+position_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * pos_obj,
+  Position *   pos,
+  GError **    error);
+
+bool
+curve_options_deserialize_from_json (
+  yyjson_doc *   doc,
+  yyjson_val *   opts_obj,
+  CurveOptions * opts,
+  GError **      error);
+
+bool
+chord_descriptor_deserialize_from_json (
+  yyjson_doc *      doc,
+  yyjson_val *      descr_obj,
+  ChordDescriptor * descr,
+  GError **         error);
+
+bool
+stack_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * stack_obj,
+  Stack *      stack,
+  GError **    error);
+
 #endif // __IO_SERIALIZATION_EXTRA_H__

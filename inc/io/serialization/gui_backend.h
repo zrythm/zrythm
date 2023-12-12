@@ -49,4 +49,32 @@ quantize_options_serialize_to_json (
   const QuantizeOptions * qo,
   GError **               error);
 
+bool
+clip_editor_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * ce_obj,
+  ClipEditor * ce,
+  GError **    error);
+
+bool
+timeline_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * t_obj,
+  Timeline *   t,
+  GError **    error);
+
+bool
+snap_grid_deserialize_from_json (
+  yyjson_doc * doc,
+  yyjson_val * sg_obj,
+  SnapGrid *   sg,
+  GError **    error);
+
+bool
+quantize_options_deserialize_from_json (
+  yyjson_doc *      doc,
+  yyjson_val *      qo_obj,
+  QuantizeOptions * qo,
+  GError **         error);
+
 #endif // __IO_GUI_BACKEND_H__

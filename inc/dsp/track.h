@@ -488,8 +488,8 @@ typedef struct Track
   bool bounce_to_master;
 
   /**
-   * Name hashes of tracks that are routed to this
-   * track, if group track.
+   * Name hashes of tracks that are routed to this track, if
+   * group track.
    *
    * This is used when undoing track deletion.
    */

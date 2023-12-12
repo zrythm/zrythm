@@ -28,7 +28,24 @@ static const cyaml_schema_value_t control_room_schema_v1 = {
   YAML_VALUE_PTR (ControlRoom_v1, control_room_fields_schema_v1),
 };
 
-ControlRoom *
+typedef struct ControlRoom_v2
+{
+  int        schema_version;
+  Fader_v2 * monitor_fader;
+} ControlRoom_v2;
+
+static const cyaml_schema_field_t control_room_fields_schema_v2[] = {
+  YAML_FIELD_INT (ControlRoom_v2, schema_version),
+  YAML_FIELD_MAPPING_PTR (ControlRoom_v2, monitor_fader, fader_fields_schema_v2),
+
+  CYAML_FIELD_END
+};
+
+static const cyaml_schema_value_t control_room_schema_v2 = {
+  YAML_VALUE_PTR (ControlRoom_v2, control_room_fields_schema_v2),
+};
+
+ControlRoom_v2 *
 control_room_upgrade_from_v1 (ControlRoom_v1 * old);
 
 #endif

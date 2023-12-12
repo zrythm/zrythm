@@ -32,7 +32,4 @@ static const cyaml_schema_value_t position_schema_v1 = {
   YAML_VALUE_PTR (Position_v1, position_fields_schema_v1),
 };
 
-Position *
-position_upgrade_from_v1 (Position_v1 * old);
-
 #endif
