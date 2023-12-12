@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
+#include <inttypes.h>
 #include <sys/stat.h>
 
 #include "dsp/chord_track.h"
