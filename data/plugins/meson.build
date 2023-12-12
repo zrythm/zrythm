@@ -157,6 +157,7 @@ foreach pl : plugins
     build_pl_target = custom_target (
       pl_underscored_name + '-tgt-for-tests',
       output: pl_underscored_name + '.lv2',
+      build_by_default: true,
       command: [
         gen_lv2_bundle_for_test, '@OUTPUT@',
         '@INPUT0@', '@INPUT1@', '@INPUT2@',

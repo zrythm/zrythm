@@ -102,13 +102,7 @@ if get_option ('tests')
     name = pl['name']
     uri = pl['uri']
     target = pl['target']
-    plugin_bundle_uri = run_command (
-      get_lv2_bundle_uri_bin, lv2info_bin.full_path (),
-      uri, check: true,
-      env: {
-        'LV2_PATH': meson_build_root / 'data/plugins',
-        },
-      ).stdout ().strip ()
+    plugin_bundle_uri = 'file://' + target.full_path() + '/'
     # C
     test_config.set (
       'HAVE_' + name.to_upper(), 1)
