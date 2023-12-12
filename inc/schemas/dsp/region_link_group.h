@@ -12,9 +12,8 @@
 
 #include <stdbool.h>
 
-#include "utils/yaml.h"
-
 #include "schemas/dsp/region_identifier.h"
+#include "utils/yaml.h"
 
 typedef struct RegionLinkGroup_v1
 {

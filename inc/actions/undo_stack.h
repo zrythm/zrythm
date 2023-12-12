@@ -45,8 +45,7 @@ typedef struct UndoStack
   /** Actual stack used at runtime. */
   Stack * stack;
 
-  /* the following are for serialization
-   * purposes only */
+  /* the following are for serialization purposes only */
 
   ArrangerSelectionsAction ** as_actions;
   size_t                      num_as_actions;

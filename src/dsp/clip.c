@@ -178,8 +178,8 @@ audio_clip_init_from_file (
 /**
  * Inits after loading a Project.
  */
-void
-audio_clip_init_loaded (AudioClip * self)
+bool
+audio_clip_init_loaded (AudioClip * self, GError ** error)
 {
   g_debug ("%s: %p", __func__, self);
 
@@ -191,11 +191,15 @@ audio_clip_init_loaded (AudioClip * self)
   bool     success = audio_clip_init_from_file (self, filepath, &err);
   if (!success)
     {
-      HANDLE_ERROR_LITERAL (err, _ ("Failed to initialize audio file"));
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, _ ("Failed to initialize audio file"));
+      return false;
     }
   self->bpm = bpm;
 
   g_free (filepath);
+
+  return true;
 }
 
 /**

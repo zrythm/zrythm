@@ -5,3 +5,7 @@ subdir ('dsp')
 subdir ('gui')
 subdir ('plugins')
 subdir ('settings')
+
+zrythm_srcs += files ([
+  'project.c',
+  ])

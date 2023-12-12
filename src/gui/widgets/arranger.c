@@ -6032,6 +6032,10 @@ arranger_tick_cb (
   GdkFrameClock * frame_clock,
   gpointer        user_data)
 {
+  if (!gtk_widget_is_visible (widget))
+    {
+      return true;
+    }
   ArrangerWidget * self = Z_ARRANGER_WIDGET (widget);
   self->queued_playhead_px = arranger_widget_get_playhead_px (self);
 

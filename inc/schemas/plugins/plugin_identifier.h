@@ -52,7 +52,4 @@ static const cyaml_schema_value_t plugin_identifier_schema_v1 = {
   YAML_VALUE_PTR (PluginIdentifier_v1, plugin_identifier_fields_schema_v1),
 };
 
-PluginIdentifier *
-plugin_identifier_upgrade_from_v1 (PluginIdentifier_v1 * old);
-
 #endif

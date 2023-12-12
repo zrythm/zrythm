@@ -29,7 +29,4 @@ static const cyaml_schema_value_t velocity_schema_v1 = {
   YAML_VALUE_PTR (Velocity_v1, velocity_fields_schema_v1),
 };
 
-Velocity *
-velocity_upgrade_from_v1 (Velocity_v1 * old);
-
 #endif

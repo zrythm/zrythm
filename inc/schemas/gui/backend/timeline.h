@@ -4,9 +4,8 @@
 #ifndef __SCHEMAS_GUI_BACKEND_TIMELINE_H__
 #define __SCHEMAS_GUI_BACKEND_TIMELINE_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/gui/backend/editor_settings.h"
+#include "utils/yaml.h"
 
 typedef struct Timeline_v1
 {

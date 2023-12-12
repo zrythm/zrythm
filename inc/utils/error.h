@@ -10,12 +10,14 @@
 #ifndef __UTILS_ERROR_H__
 #define __UTILS_ERROR_H__
 
-#include <glib.h>
+#include <gtk/gtk.h>
 
 /**
  * Only to be called by HANDLE_ERROR macro.
+ *
+ * @return The error window, if any.
  */
-void
+GtkWindow *
 error_handle_prv (GError * err, const char * format, ...) G_GNUC_PRINTF (2, 3);
 
 /**

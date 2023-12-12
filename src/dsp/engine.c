@@ -74,6 +74,7 @@
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/dsp.h"
+#include "utils/error.h"
 #include "utils/flags.h"
 #include "utils/mpmc_queue.h"
 #include "utils/object_pool.h"
@@ -830,24 +831,31 @@ init_common (AudioEngine * self)
   self->midi_clock_out->id.flags2 |= PORT_FLAG2_MIDI_CLOCK;
 }
 
-void
-engine_init_loaded (AudioEngine * self, Project * project)
+bool
+engine_init_loaded (AudioEngine * self, Project * project, GError ** error)
 {
   g_message ("Initializing...");
 
   self->project = project;
 
-  audio_pool_init_loaded (self->pool);
+  GError * err = NULL;
+  bool     success = audio_pool_init_loaded (self->pool, &err);
+  if (!success)
+    {
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, "Failed to initialize audio pool");
+      return false;
+    }
 
   Track * tempo_track = NULL;
   if (project)
     {
-      g_return_if_fail (project->tracklist);
+      g_return_val_if_fail (project->tracklist, false);
       tempo_track = project->tracklist->tempo_track;
       if (!tempo_track)
         tempo_track =
           tracklist_get_track_by_type (project->tracklist, TRACK_TYPE_TEMPO);
-      g_return_if_fail (tempo_track);
+      g_return_val_if_fail (tempo_track, false);
     }
   transport_init_loaded (self->transport, self, tempo_track);
 
@@ -882,7 +890,9 @@ engine_init_loaded (AudioEngine * self, Project * project)
         }
     }
 
-  g_message ("done");
+  g_message ("done initializing loaded engine");
+
+  return true;
 }
 
 /**

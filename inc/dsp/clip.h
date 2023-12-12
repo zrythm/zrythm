@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -127,8 +127,8 @@ audio_clip_use_flac (BitDepth bd)
 /**
  * Inits after loading a Project.
  */
-COLD NONNULL void
-audio_clip_init_loaded (AudioClip * self);
+COLD NONNULL bool
+audio_clip_init_loaded (AudioClip * self, GError ** error);
 
 /**
  * Creates an audio clip from a file.

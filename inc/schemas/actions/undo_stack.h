@@ -26,8 +26,6 @@
 #ifndef __SCHEMAS_UNDO_UNDO_STACK_H__
 #define __SCHEMAS_UNDO_UNDO_STACK_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/actions/arranger_selections.h"
 #include "schemas/actions/channel_send_action.h"
 #include "schemas/actions/midi_mapping_action.h"
@@ -38,6 +36,7 @@
 #include "schemas/actions/tracklist_selections.h"
 #include "schemas/actions/transport_action.h"
 #include "schemas/utils/stack.h"
+#include "utils/yaml.h"
 
 typedef struct UndoStack_v1
 {

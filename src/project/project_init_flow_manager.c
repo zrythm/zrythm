@@ -17,7 +17,9 @@
 #include "gui/widgets/main_notebook.h"
 #include "gui/widgets/main_window.h"
 #include "gui/widgets/timeline_panel.h"
+#include "io/serialization/project.h"
 #include "project.h"
+#include "schemas/project.h"
 #include "utils/datetime.h"
 #include "utils/debug.h"
 #include "utils/dialogs.h"
@@ -31,8 +33,8 @@
 #include <adwaita.h>
 
 #include "project/project_init_flow_manager.h"
-#include "schemas/project.h"
 #include <time.h>
+#include <yyjson.h>
 
 typedef enum
 {
@@ -305,10 +307,10 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
           }
 
         /* create the new project and serialize it */
-        Project   _new_prj;
-        Project * new_prj = &_new_prj;
-        memset (new_prj, 0, sizeof (Project));
-        new_prj->schema_version = PROJECT_SCHEMA_VERSION;
+        Project_v5   _new_prj;
+        Project_v5 * new_prj = &_new_prj;
+        memset (new_prj, 0, sizeof (Project_v5));
+        new_prj->schema_version = 4;
         new_prj->title = old_prj->title;
         new_prj->datetime_str = datetime_get_current_as_string ();
         new_prj->version = zrythm_get_version (false);
@@ -333,7 +335,7 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
         /* re-serialize */
         g_free (*yaml);
         err = NULL;
-        *yaml = yaml_serialize (new_prj, &project_schema, &err);
+        *yaml = yaml_serialize (new_prj, &project_schema_v5, &err);
         if (!*yaml)
           {
             PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -363,9 +365,9 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
        * and the selections. */
       {
         /* deserialize into the current version of the struct */
-        GError *  err = NULL;
-        Project * old_prj =
-          (Project *) yaml_deserialize (*yaml, &project_schema, &err);
+        GError *     err = NULL;
+        Project_v5 * old_prj =
+          (Project_v5 *) yaml_deserialize (*yaml, &project_schema_v5, &err);
         if (!old_prj)
           {
             PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -374,23 +376,19 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
           }
 
         /* create the new project and serialize it */
-        Project   _new_prj;
-        Project * new_prj = &_new_prj;
-        memset (new_prj, 0, sizeof (Project));
+        Project_v5   _new_prj;
+        Project_v5 * new_prj = &_new_prj;
+        memset (new_prj, 0, sizeof (Project_v5));
         *new_prj = *old_prj;
-        new_prj->schema_version = PROJECT_SCHEMA_VERSION;
+        new_prj->schema_version = 5;
         new_prj->title = old_prj->title;
         new_prj->datetime_str = datetime_get_current_as_string ();
         new_prj->version = zrythm_get_version (false);
 
-        /* drop arranger selections and undo history */
-        new_prj->automation_selections = NULL;
-        new_prj->undo_manager = NULL;
-
         /* re-serialize */
         g_free (*yaml);
         err = NULL;
-        *yaml = yaml_serialize (new_prj, &project_schema, &err);
+        *yaml = yaml_serialize (new_prj, &project_schema_v5, &err);
         if (!*yaml)
           {
             PROPAGATE_PREFIXED_ERROR_LITERAL (
@@ -401,7 +399,7 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
         yaml_get_cyaml_config (&cyaml_config);
 
         /* free memory allocated by libcyaml */
-        cyaml_free (&cyaml_config, &project_schema, old_prj, 0);
+        cyaml_free (&cyaml_config, &project_schema_v5, old_prj, 0);
 
         /* free memory allocated now */
         g_free_and_null (new_prj->datetime_str);
@@ -413,6 +411,29 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
     default:
       return true;
     }
+}
+
+static bool
+upgrade_to_json (char ** txt, GError ** error)
+{
+  GError *     err = NULL;
+  Project_v5 * old_prj =
+    (Project_v5 *) yaml_deserialize (*txt, &project_schema_v5, &err);
+  if (!old_prj)
+    {
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, _ ("Failed to deserialize v5 project file"));
+      return false;
+    }
+
+  *txt = project_v5_serialize_to_json_str (old_prj, &err);
+  if (*txt == NULL)
+    {
+      PROPAGATE_PREFIXED_ERROR_LITERAL (
+        error, err, _ ("Failed to convert v5 YAML project file to JSON"));
+      return false;
+    }
+  return true;
 }
 
 static void
@@ -685,6 +706,24 @@ save_and_activate_after_successful_load_or_create (
 }
 
 static void
+replace_main_window (MainWindowWidget * mww)
+{
+  if (ZRYTHM_HAVE_UI)
+    {
+      g_message ("recreating main window...");
+      recreate_main_window ();
+
+      if (mww)
+        {
+          g_message ("destroying prev window...");
+          destroy_prev_main_window (mww);
+        }
+
+      g_return_if_fail (GTK_IS_WINDOW (MAIN_WINDOW));
+    }
+}
+
+static void
 continue_load_from_file_after_open_backup_response (
   ProjectInitFlowManager * flow_mgr)
 {
@@ -692,50 +731,93 @@ continue_load_from_file_after_open_backup_response (
   PROJECT->loading_from_backup = use_backup;
 
   GError * err = NULL;
-  char *   yaml = project_get_existing_yaml (PROJECT, use_backup, &err);
-  if (!yaml)
+  char *   text =
+    project_get_existing_uncompressed_text (PROJECT, use_backup, &err);
+  if (!text)
     {
       GError * error = NULL;
       PROPAGATE_PREFIXED_ERROR_LITERAL (
-        &error, err, _ ("Failed to get existing yaml"));
+        &error, err, _ ("Failed to get existing text"));
       project_init_flow_manager_call_last_callback_fail (flow_mgr, error);
       return;
     }
 
-  char * prj_ver_str = string_get_regex_group (yaml, "\nversion: (.*)\n", 1);
-  if (!prj_ver_str)
-    {
-      GError * error = NULL;
-      PROPAGATE_PREFIXED_ERROR_LITERAL (
-        &error, err, _ ("Invalid project: missing version"));
-      project_init_flow_manager_call_last_callback_fail (flow_mgr, error);
-      return;
-    }
-  g_message ("project from yaml (version %s)...", prj_ver_str);
-  g_free (prj_ver_str);
-
-  gint64 time_before = g_get_monotonic_time ();
-
-  int schema_ver =
-    string_get_regex_group_as_int (yaml, "---\nschema_version: (.*)\n", 1, -1);
-  g_message ("detected schema version %d", schema_ver);
+  struct yyjson_read_err json_read_err;
+  yyjson_doc *           doc = yyjson_read_opts (
+    text, strlen (text), YYJSON_READ_NOFLAG, NULL, &json_read_err);
   bool upgraded = false;
-  if (schema_ver != PROJECT_SCHEMA_VERSION)
+  int  yaml_schema_ver = -1;
+  if (!doc)
     {
-      /* upgrade project */
-      upgraded = upgrade_schema (&yaml, schema_ver, &err);
-      if (!upgraded)
+      /* failed to read JSON - check if YAML */
+      int schema_ver = string_get_regex_group_as_int (
+        text, "---\nschema_version: (.*)\n", 1, -1);
+      if (schema_ver > 0)
+        {
+          yaml_schema_ver = schema_ver;
+          /* upgrade YAML and set doc */
+          char * prj_ver_str =
+            string_get_regex_group (text, "\nversion: (.*)\n", 1);
+          if (!prj_ver_str)
+            {
+              GError * error = NULL;
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                &error, err, _ ("Invalid project: missing version"));
+              project_init_flow_manager_call_last_callback_fail (
+                flow_mgr, error);
+              return;
+            }
+          g_message ("project from text (version %s)...", prj_ver_str);
+          g_free (prj_ver_str);
+
+          schema_ver = string_get_regex_group_as_int (
+            text, "---\nschema_version: (.*)\n", 1, -1);
+          g_message ("detected schema version %d", schema_ver);
+          if (schema_ver != 5)
+            {
+              /* upgrade project */
+              upgraded = upgrade_schema (&text, schema_ver, &err);
+              if (!upgraded)
+                {
+                  GError * error = NULL;
+                  PROPAGATE_PREFIXED_ERROR_LITERAL (
+                    &error, err, _ ("Failed to upgrade YAML project schema"));
+                  free (text);
+                  project_init_flow_manager_call_last_callback_fail (
+                    flow_mgr, error);
+                  return;
+                }
+            }
+
+          /* upgrade latest yaml to json */
+          upgraded = upgrade_to_json (&text, &err);
+          if (!upgraded)
+            {
+              GError * error = NULL;
+              PROPAGATE_PREFIXED_ERROR_LITERAL (
+                &error, err, _ ("Failed to upgrade project schema to JSON"));
+              free (text);
+              project_init_flow_manager_call_last_callback_fail (
+                flow_mgr, error);
+              return;
+            }
+        }
+      else
         {
           GError * error = NULL;
-          PROPAGATE_PREFIXED_ERROR_LITERAL (
-            &error, err, _ ("Failed to upgrade project schema"));
-          free (yaml);
+          g_set_error (
+            &error, Z_PROJECT_INIT_FLOW_MANAGER_ERROR,
+            Z_PROJECT_INIT_FLOW_MANAGER_ERROR_FAILED,
+            _ ("Failed to read JSON: [code: %" PRIu32 ", pos: %zu] %s"),
+            json_read_err.code, json_read_err.pos, json_read_err.msg);
+          free (text);
           project_init_flow_manager_call_last_callback_fail (flow_mgr, error);
           return;
         }
     }
 
-  Project * self = (Project *) yaml_deserialize (yaml, &project_schema, &err);
+  gint64    time_before = g_get_monotonic_time ();
+  Project * self = project_deserialize_from_json_str (text, &err);
   gint64    time_after = g_get_monotonic_time ();
   g_message (
     "time to deserialize: %ldms", (long) (time_after - time_before) / 1000);
@@ -744,28 +826,15 @@ continue_load_from_file_after_open_backup_response (
       GError * error = NULL;
       PROPAGATE_PREFIXED_ERROR_LITERAL (
         &error, err, _ ("Failed to deserialize project YAML"));
-      free (yaml);
+      free (text);
       project_init_flow_manager_call_last_callback_fail (flow_mgr, error);
       return;
     }
-  free (yaml);
+  free (text);
   self->backup_dir = g_strdup (PROJECT->backup_dir);
 
-  /* return if old, incompatible version */
-  if (
-    string_contains_substr (self->version, "alpha")
-    && string_contains_substr (self->version, "1.0.0"))
-    {
-      ui_show_message_printf (
-        _ ("Unsupported Version"),
-        _ ("This project was created with an "
-           "unsupported version of %s (%s). "
-           "It may not work correctly."),
-        PROGRAM_NAME, self->version);
-    }
-
   /* check for FINISHED file */
-  if (schema_ver > 3)
+  if (yaml_schema_ver > 3)
     {
       char * finished_file_path =
         project_get_path (PROJECT, PROJECT_PATH_FINISHED_FILE, use_backup);
@@ -783,12 +852,6 @@ continue_load_from_file_after_open_backup_response (
           return;
         }
       g_free (finished_file_path);
-    }
-  else
-    {
-      g_message (
-        "skipping check for %s file (schema ver %d)", PROJECT_FINISHED_FILE,
-        schema_ver);
     }
 
   g_message ("Project successfully deserialized.");
@@ -896,12 +959,28 @@ continue_load_from_file_after_open_backup_response (
 
   project_init_common (self);
 
-  engine_init_loaded (self->audio_engine, self);
+  err = NULL;
+  bool success = engine_init_loaded (self->audio_engine, self, &err);
+  if (!success)
+    {
+on_failed_to_init_pool:
+  {
+    GtkWindow * err_win = error_handle_prv (
+      err, "%s", _ ("Failed to initialize the audio file pool"));
+    g_signal_connect (
+      err_win, "response", G_CALLBACK (zrythm_exit_response_callback), NULL);
+    return;
+  }
+    }
   engine_pre_setup (self->audio_engine);
 
-  /* re-load clips because sample rate can change
-   * during engine pre setup */
-  audio_pool_init_loaded (self->audio_engine->pool);
+  /* re-load clips because sample rate can change during engine pre setup */
+  err = NULL;
+  success = audio_pool_init_loaded (self->audio_engine->pool, &err);
+  if (!success)
+    {
+      goto on_failed_to_init_pool;
+    }
 
   clip_editor_init_loaded (self->clip_editor);
   timeline_init_loaded (self->timeline);
@@ -961,19 +1040,7 @@ continue_load_from_file_after_open_backup_response (
   region_link_group_manager_init_loaded (self->region_link_group_manager);
   port_connections_manager_init_loaded (self->port_connections_manager);
 
-  if (ZRYTHM_HAVE_UI)
-    {
-      g_message ("recreating main window...");
-      recreate_main_window ();
-
-      if (mww)
-        {
-          g_message ("destroying prev window...");
-          destroy_prev_main_window (mww);
-        }
-
-      g_return_if_fail (GTK_IS_WINDOW (MAIN_WINDOW));
-    }
+  replace_main_window (mww);
 
   /* sanity check */
   project_validate (self);
@@ -1007,15 +1074,16 @@ continue_load_from_file_after_open_backup_response (
 
   engine_set_run (self->audio_engine, true);
 
-  if (schema_ver != PROJECT_SCHEMA_VERSION)
+  int format_minor = 6;
+  if (format_minor != PROJECT_FORMAT_MINOR || yaml_schema_ver > 0)
     {
       ui_show_message_printf (
         _ ("Project Upgraded"),
-        _ ("This project has been automatically upgraded from "
-           "v%d to v%d. Saving this project will overwrite the "
+        _ ("This project has been automatically upgraded "
+           "to v1.%d. Saving this project will overwrite the "
            "old one. If you would like to keep both, please "
            "use 'Save As...'."),
-        schema_ver, PROJECT_SCHEMA_VERSION);
+        PROJECT_FORMAT_MINOR);
     }
 
   project_init_flow_manager_call_last_callback_success (flow_mgr);
@@ -1147,8 +1215,8 @@ load_from_file_ready_cb (bool success, GError * error, void * user_data)
   ProjectInitFlowManager * flow_mgr = (ProjectInitFlowManager *) user_data;
   if (!success)
     {
-      ui_show_message_literal (
-        _ ("Project Load Failed"),
+      HANDLE_ERROR_LITERAL (
+        error,
         _ ("Failed to load project. Will create "
            "a new one instead."));
 

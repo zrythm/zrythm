@@ -10,9 +10,8 @@
 #ifndef __SCHEMAS_AUDIO_AUTOMATION_TRACKLIST_H__
 #define __SCHEMAS_AUDIO_AUTOMATION_TRACKLIST_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/dsp/automation_track.h"
+#include "utils/yaml.h"
 
 typedef struct AutomationTracklist_v1
 {
@@ -34,8 +33,5 @@ static const cyaml_schema_field_t automation_tracklist_fields_schema_v1[] = {
 static const cyaml_schema_value_t automation_tracklist_schema_v1 = {
   YAML_VALUE_PTR (AutomationTracklist_v1, automation_tracklist_fields_schema_v1),
 };
-
-AutomationTracklist *
-automation_tracklist_upgrade_from_v1 (AutomationTracklist_v1 * old);
 
 #endif

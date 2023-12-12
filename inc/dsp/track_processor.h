@@ -71,12 +71,10 @@ typedef struct TrackProcessor
   /**
    * MIDI in Port.
    *
-   * This port is for receiving MIDI signals from
-   * an external MIDI source.
+   * This port is for receiving MIDI signals from an external MIDI source.
    *
-   * This is also where piano roll, midi in and midi
-   * manual press will be routed to and this will
-   * be the port used to pass midi to the plugins.
+   * This is also where piano roll, midi in and midi manual press will be
+   * routed to and this will be the port used to pass midi to the plugins.
    */
   Port * midi_in;
 
@@ -86,26 +84,22 @@ typedef struct TrackProcessor
   Port * midi_out;
 
   /**
-   * MIDI input for receiving MIDI signals from
-   * the piano roll (i.e., MIDI notes inside
-   * regions) or other sources.
+   * MIDI input for receiving MIDI signals from the piano roll (i.e., MIDI
+   * notes inside regions) or other sources.
    *
-   * This will not be a separately exposed port
-   * during processing. It will be processed by
-   * the TrackProcessor internally.
+   * This will not be a separately exposed port during processing. It will
+   * be processed by the TrackProcessor internally.
    */
   Port * piano_roll;
 
   /**
    * Whether to monitor the audio output.
    *
-   * This is only used on audio tracks. During
-   * recording, if on, the recorded audio will be
-   * passed to the output. If off, the recorded
-   * audio will not be passed to the output.
+   * This is only used on audio tracks. During recording, if on, the recorded
+   * audio will be passed to the output. If off, the recorded audio will not
+   * be passed to the output.
    *
-   * When not recording, this will only take effect
-   * when paused.
+   * When not recording, this will only take effect when paused.
    */
   Port * monitor_audio;
 

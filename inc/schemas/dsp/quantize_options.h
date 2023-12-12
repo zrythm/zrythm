@@ -29,8 +29,8 @@ typedef struct QuantizeOptions_v1
 
 static const cyaml_schema_field_t quantize_options_fields_schema_v1[] = {
   YAML_FIELD_INT (QuantizeOptions_v1, schema_version),
-  YAML_FIELD_ENUM (QuantizeOptions_v1, note_length, note_length_strings),
-  YAML_FIELD_ENUM (QuantizeOptions_v1, note_type, note_type_strings),
+  YAML_FIELD_ENUM (QuantizeOptions_v1, note_length, note_length_strings_v1),
+  YAML_FIELD_ENUM (QuantizeOptions_v1, note_type, note_type_strings_v1),
   YAML_FIELD_FLOAT (QuantizeOptions_v1, amount),
   YAML_FIELD_INT (QuantizeOptions_v1, adj_start),
   YAML_FIELD_INT (QuantizeOptions_v1, adj_end),

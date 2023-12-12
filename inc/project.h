@@ -50,7 +50,8 @@ typedef struct TracklistSelections TracklistSelections;
  * @{
  */
 
-#define PROJECT_SCHEMA_VERSION 5
+#define PROJECT_FORMAT_MAJOR 1
+#define PROJECT_FORMAT_MINOR 6
 
 #define PROJECT ZRYTHM->project
 #define DEFAULT_PROJECT_NAME "Untitled Project"
@@ -510,16 +511,17 @@ _project_compress (
   _project_compress (false, a, b, c, d, e, f, error)
 
 /**
- * Returns the YAML representation of the saved
- * project file.
+ * Returns the uncompressed text representation of the saved project file.
  *
  * To be free'd with free().
  *
- * @param backup Whether to use the project file
- *   from the most recent backup.
+ * @param backup Whether to use the project file from the most recent backup.
  */
 char *
-project_get_existing_yaml (Project * self, bool backup, GError ** error);
+project_get_existing_uncompressed_text (
+  Project * self,
+  bool      backup,
+  GError ** error);
 
 /**
  * @memberof Project

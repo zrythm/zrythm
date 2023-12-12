@@ -12,9 +12,8 @@
 
 #include <stdbool.h>
 
-#include "utils/yaml.h"
-
 #include "schemas/gui/backend/editor_settings.h"
+#include "utils/yaml.h"
 
 typedef enum MidiModifier_v1
 {

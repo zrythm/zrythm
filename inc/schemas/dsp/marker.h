@@ -12,9 +12,8 @@
 
 #include <stdint.h>
 
-#include "utils/yaml.h"
-
 #include "schemas/gui/backend/arranger_object.h"
+#include "utils/yaml.h"
 
 typedef enum MarkerType_v1
 {
@@ -44,6 +43,7 @@ static const cyaml_schema_field_t marker_fields_schema_v1[] = {
   YAML_FIELD_UINT (Marker_v1, track_name_hash),
   YAML_FIELD_INT (Marker_v1, index),
   YAML_FIELD_ENUM (Marker_v1, type, marker_type_strings_v1),
+  YAML_FIELD_IGNORE_OPT ("schema_version"),
 
   CYAML_FIELD_END
 };
@@ -51,8 +51,5 @@ static const cyaml_schema_field_t marker_fields_schema_v1[] = {
 static const cyaml_schema_value_t marker_schema_v1 = {
   YAML_VALUE_PTR (Marker_v1, marker_fields_schema_v1),
 };
-
-Marker *
-marker_upgrade_from_v1 (Marker_v1 * old);
 
 #endif

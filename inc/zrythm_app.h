@@ -10,6 +10,7 @@
 #ifndef __ZRYTHM_APP_H__
 #define __ZRYTHM_APP_H__
 
+#include <adwaita.h>
 #include <gtk/gtk.h>
 
 #include <zix/sem.h>
@@ -236,6 +237,15 @@ char *
 zrythm_app_get_primary_accel_for_action (
   ZrythmApp *  self,
   const char * action_name);
+
+/**
+ * To be used to exit Zrythm using the "response" signal on a message dialog.
+ */
+void
+zrythm_exit_response_callback (
+  AdwMessageDialog * self,
+  gchar *            response,
+  gpointer           user_data);
 
 /**
  * @}

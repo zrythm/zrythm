@@ -12,11 +12,10 @@
 
 #include <stdbool.h>
 
-#include "utils/yaml.h"
-
 #include "schemas/dsp/curve.h"
 #include "schemas/dsp/position.h"
 #include "schemas/dsp/region_identifier.h"
+#include "utils/yaml.h"
 
 typedef enum ArrangerObjectType_v1
 {
@@ -32,15 +31,15 @@ typedef enum ArrangerObjectType_v1
 } ArrangerObjectType_v1;
 
 static const cyaml_strval_t arranger_object_type_strings_v1[] = {
-  {N_ ("None"),              ARRANGER_OBJECT_TYPE_NONE_v1            },
-  { N_ ("All"),              ARRANGER_OBJECT_TYPE_ALL_v1             },
-  { N_ ("Region"),           ARRANGER_OBJECT_TYPE_REGION_v1          },
-  { N_ ("Midi Note"),        ARRANGER_OBJECT_TYPE_MIDI_NOTE_v1       },
-  { N_ ("Chord Object"),     ARRANGER_OBJECT_TYPE_CHORD_OBJECT_v1    },
-  { N_ ("Scale Object"),     ARRANGER_OBJECT_TYPE_SCALE_OBJECT_v1    },
-  { N_ ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER_v1          },
-  { N_ ("Automation Point"), ARRANGER_OBJECT_TYPE_AUTOMATION_POINT_v1},
-  { N_ ("Velocity"),         ARRANGER_OBJECT_TYPE_VELOCITY_v1        },
+  {("None"),              ARRANGER_OBJECT_TYPE_NONE_v1            },
+  { ("All"),              ARRANGER_OBJECT_TYPE_ALL_v1             },
+  { ("Region"),           ARRANGER_OBJECT_TYPE_REGION_v1          },
+  { ("Midi Note"),        ARRANGER_OBJECT_TYPE_MIDI_NOTE_v1       },
+  { ("Chord Object"),     ARRANGER_OBJECT_TYPE_CHORD_OBJECT_v1    },
+  { ("Scale Object"),     ARRANGER_OBJECT_TYPE_SCALE_OBJECT_v1    },
+  { ("Marker"),           ARRANGER_OBJECT_TYPE_MARKER_v1          },
+  { ("Automation Point"), ARRANGER_OBJECT_TYPE_AUTOMATION_POINT_v1},
+  { ("Velocity"),         ARRANGER_OBJECT_TYPE_VELOCITY_v1        },
 };
 
 typedef enum ArrangerObjectFlags_v1
@@ -125,8 +124,5 @@ static const cyaml_schema_field_t arranger_object_fields_schema_v1[] = {
 static const cyaml_schema_value_t arranger_object_schema_v1 = {
   YAML_VALUE_PTR (ArrangerObject_v1, arranger_object_fields_schema_v1),
 };
-
-ArrangerObject *
-arranger_object_upgrade_from_v1 (ArrangerObject_v1 * old);
 
 #endif

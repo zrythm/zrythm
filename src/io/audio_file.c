@@ -179,6 +179,13 @@ audio_file_read_metadata (AudioFile * self, GError ** error)
   AudioFileMetadata * metadata = &self->metadata;
   metadata->channels = sfinfo->channels;
   metadata->num_frames = sfinfo->frames;
+  if (metadata->num_frames > 18446744073709550)
+    {
+      g_set_error (
+        error, Z_AUDIO_FILE_ERROR, Z_AUDIO_FILE_ERROR_FAILED,
+        "Too many frames returned: %" PRIi64, metadata->num_frames);
+      return false;
+    }
   metadata->samplerate = sfinfo->samplerate;
   metadata->length =
     sfinfo->samplerate ? (sfinfo->frames * 1000) / sfinfo->samplerate : 0;

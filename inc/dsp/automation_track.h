@@ -74,12 +74,10 @@ typedef struct AutomationTrack
   /** Index in parent AutomationTracklist. */
   int index;
 
-  /** Identifier of the Port this AutomationTrack
-   * is for. */
+  /** Identifier of the Port this AutomationTrack is for. */
   PortIdentifier port_id;
 
-  /** Whether it has been created by the user
-   * yet or not. */
+  /** Whether it has been created by the user yet or not. */
   bool created;
 
   /** The automation Region's. */

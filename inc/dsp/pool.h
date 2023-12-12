@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2019-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2019-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -42,17 +42,16 @@ typedef struct AudioPool
   /**
    * Audio clips.
    *
-   * May contain NULLs.
+   * @warning May contain NULLs.
    */
   AudioClip ** clips;
 
   /**
    * Clip counter.
    *
-   * This is not the actual number of clips in the
-   * pool - it may contain NULL clips. This is to
-   * make identifying and managing clips easier
-   * by their IDs.
+   * This is not the actual number of clips in the pool - it may contain
+   * NULL clips. This is to make identifying and managing clips easier by
+   * their IDs.
    */
   int num_clips;
 
@@ -74,8 +73,8 @@ static const cyaml_schema_value_t audio_pool_schema = {
 /**
  * Inits after loading a project.
  */
-void
-audio_pool_init_loaded (AudioPool * self);
+bool
+audio_pool_init_loaded (AudioPool * self, GError ** error);
 
 /**
  * Creates a new audio pool.
@@ -165,8 +164,8 @@ audio_pool_gen_name_for_recording_clip (AudioPool * pool, Track * track, int lan
  * This should be called whenever there is a relevant
  * change in the project (eg, object added/removed).
  */
-void
-audio_pool_reload_clip_frame_bufs (AudioPool * self);
+bool
+audio_pool_reload_clip_frame_bufs (AudioPool * self, GError ** error);
 
 /**
  * Writes all the clips to disk.

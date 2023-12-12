@@ -100,44 +100,40 @@ typedef struct ChannelSend
   /**
    * Stereo input if audio send.
    *
-   * Prefader or fader stereo out should connect
-   * here.
+   * Prefader or fader stereo out should connect here.
    */
   StereoPorts * stereo_in;
 
   /**
    * MIDI input if MIDI send.
    *
-   * Prefader or fader MIDI out should connect
-   * here.
+   * Prefader or fader MIDI out should connect here.
    */
   Port * midi_in;
 
   /**
    * Stereo output if audio send.
    *
-   * This should connect to the send destination,
-   * if any.
+   * This should connect to the send destination, if any.
    */
   StereoPorts * stereo_out;
 
   /**
    * MIDI output if MIDI send.
    *
-   * This should connect to the send destination,
-   * if any.
+   * This should connect to the send destination, if any.
    */
   Port * midi_out;
 
-  /** Send amount (amplitude), 0 to 2 for audio,
-   * velocity multiplier for MIDI. */
+  /** Send amount (amplitude), 0 to 2 for audio, velocity multiplier for
+   * MIDI. */
   Port * amount;
 
   /**
    * Whether the send is currently enabled.
    *
-   * If enabled, corresponding connection(s) will
-   * exist in PortConnectionsManager.
+   * If enabled, corresponding connection(s) will exist in
+   * PortConnectionsManager.
    */
   Port * enabled;
 

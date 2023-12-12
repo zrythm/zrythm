@@ -45,10 +45,12 @@
 #include "gui/widgets/timeline_panel.h"
 #include "gui/widgets/timeline_ruler.h"
 #include "gui/widgets/track.h"
+#include "io/serialization/project.h"
 #include "plugins/carla_native_plugin.h"
 #include "plugins/lv2/lv2_state.h"
 #include "plugins/lv2_plugin.h"
 #include "project.h"
+#include "schemas/project.h"
 #include "settings/settings.h"
 #include "utils/arrays.h"
 #include "utils/datetime.h"
@@ -69,7 +71,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "schemas/project.h"
 #include <time.h>
 #include <zstd.h>
 
@@ -467,24 +468,18 @@ project_init_selections (Project * self)
   mixer_selections_init (self->mixer_selections);
 }
 
-/**
- * Returns the YAML representation of the saved
- * project file.
- *
- * To be free'd with free().
- *
- * @param backup Whether to use the project file
- *   from the most recent backup.
- */
 char *
-project_get_existing_yaml (Project * self, bool backup, GError ** error)
+project_get_existing_uncompressed_text (
+  Project * self,
+  bool      backup,
+  GError ** error)
 {
   /* get file contents */
   char * project_file_path =
     project_get_path (self, PROJECT_PATH_PROJECT_FILE, backup);
   g_return_val_if_fail (project_file_path, NULL);
   g_message (
-    "%s: getting YAML for project file %s", __func__, project_file_path);
+    "%s: getting text for project file %s", __func__, project_file_path);
 
   char *   compressed_pj;
   gsize    compressed_pj_size;
@@ -500,11 +495,11 @@ project_get_existing_yaml (Project * self, bool backup, GError ** error)
 
   /* decompress */
   g_message ("%s: decompressing project...", __func__);
-  char * yaml = NULL;
-  size_t yaml_size;
+  char * text = NULL;
+  size_t text_size;
   err = NULL;
   bool ret = project_decompress (
-    &yaml, &yaml_size, PROJECT_DECOMPRESS_DATA, compressed_pj,
+    &text, &text_size, PROJECT_DECOMPRESS_DATA, compressed_pj,
     compressed_pj_size, PROJECT_DECOMPRESS_DATA, &err);
   g_free (compressed_pj);
   if (!ret)
@@ -516,10 +511,10 @@ project_get_existing_yaml (Project * self, bool backup, GError ** error)
     }
 
   /* make string null-terminated */
-  yaml = g_realloc (yaml, yaml_size + sizeof (char));
-  yaml[yaml_size] = '\0';
+  text = g_realloc (text, text_size + sizeof (char));
+  text[text_size] = '\0';
 
-  return yaml;
+  return text;
 }
 
 /**
@@ -723,7 +718,7 @@ project_new (Zrythm * _zrythm)
   g_message ("%s: Creating...", __func__);
 
   Project * self = object_new (Project);
-  self->schema_version = PROJECT_SCHEMA_VERSION;
+  /*self->schema_version = PROJECT_SCHEMA_VERSION;*/
 
   if (_zrythm)
     {
@@ -774,19 +769,19 @@ project_save_data_free (ProjectSaveData * self)
 static void *
 serialize_project_thread (ProjectSaveData * data)
 {
-  char * compressed_yaml;
+  char * compressed_json;
   size_t compressed_size;
   bool   ret;
 
-  /* generate yaml */
-  g_message ("serializing project to yaml...");
+  /* generate json */
+  g_message ("serializing project to json...");
   GError * err = NULL;
   gint64   time_before = g_get_monotonic_time ();
-  char *   yaml = yaml_serialize (data->project, &project_schema, &err);
+  char *   json = project_serialize_to_json_str (data->project, &err);
   gint64   time_after = g_get_monotonic_time ();
   g_message (
     "time to serialize: %ldms", (long) (time_after - time_before) / 1000);
-  if (!yaml)
+  if (!json)
     {
       HANDLE_ERROR_LITERAL (err, _ ("Failed to serialize project"));
       data->has_error = true;
@@ -796,9 +791,9 @@ serialize_project_thread (ProjectSaveData * data)
   /* compress */
   err = NULL;
   ret = project_compress (
-    &compressed_yaml, &compressed_size, PROJECT_COMPRESS_DATA, yaml,
-    strlen (yaml) * sizeof (char), PROJECT_COMPRESS_DATA, &err);
-  g_free (yaml);
+    &compressed_json, &compressed_size, PROJECT_COMPRESS_DATA, json,
+    strlen (json) * sizeof (char), PROJECT_COMPRESS_DATA, &err);
+  g_free (json);
   if (!ret)
     {
       HANDLE_ERROR (err, "%s", _ ("Failed to compress project file"));
@@ -810,8 +805,8 @@ serialize_project_thread (ProjectSaveData * data)
   g_message (
     "%s: saving project file at %s...", __func__, data->project_file_path);
   g_file_set_contents (
-    data->project_file_path, compressed_yaml, (gssize) compressed_size, &err);
-  free (compressed_yaml);
+    data->project_file_path, compressed_json, (gssize) compressed_size, &err);
+  free (compressed_json);
   if (err != NULL)
     {
       g_critical (
@@ -1237,7 +1232,7 @@ project_clone (const Project * src, bool for_backup, GError ** error)
   g_message ("cloning project...");
 
   Project * self = object_new (Project);
-  self->schema_version = PROJECT_SCHEMA_VERSION;
+  /*self->schema_version = PROJECT_SCHEMA_VERSION;*/
 
   self->title = g_strdup (src->title);
   self->datetime_str = g_strdup (src->datetime_str);

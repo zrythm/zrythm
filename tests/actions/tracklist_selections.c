@@ -2615,6 +2615,9 @@ main (int argc, char * argv[])
 #define TEST_PREFIX "/actions/tracklist_selections/"
 
   g_test_add_func (
+    TEST_PREFIX "test duplicate w output and send",
+    (GTestFunc) test_duplicate_w_output_and_send);
+  g_test_add_func (
     TEST_PREFIX "test delete track w midi file",
     (GTestFunc) test_delete_track_w_midi_file);
   g_test_add_func (
@@ -2657,9 +2660,6 @@ main (int argc, char * argv[])
     (GTestFunc) test_port_and_plugin_track_pos_after_duplication_with_carla);
 #endif
   g_test_add_func (TEST_PREFIX "test_move_tracks", (GTestFunc) test_move_tracks);
-  g_test_add_func (
-    TEST_PREFIX "test duplicate w output and send",
-    (GTestFunc) test_duplicate_w_output_and_send);
   g_test_add_func (
     TEST_PREFIX "test source track deletion with sends",
     (GTestFunc) test_source_track_deletion_with_sends);

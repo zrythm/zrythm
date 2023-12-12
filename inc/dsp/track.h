@@ -67,6 +67,8 @@ TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
 #define IS_TRACK(x) (((Track *) x)->magic == TRACK_MAGIC)
 #define IS_TRACK_AND_NONNULL(x) (x && IS_TRACK (x))
 
+#define TRACK_MAX_MODULATOR_MACROS 128
+
 #define TRACK_DND_PREFIX Z_DND_STRING_PREFIX "Track::"
 
 #define track_is_in_active_project(self) \
@@ -178,13 +180,11 @@ static const cyaml_strval_t track_type_strings[] = {
 };
 
 /**
- * Track to be inserted into the Project's
- * Tracklist.
+ * Track to be inserted into the Project's Tracklist.
  *
  * Each Track contains a Channel with Plugins.
  *
- * Tracks shall be identified by their position
- * (index) in the Tracklist.
+ * Tracks shall be identified by their position (index) in the Tracklist.
  */
 typedef struct Track
 {
@@ -193,9 +193,8 @@ typedef struct Track
   /**
    * Position in the Tracklist.
    *
-   * This is also used in the Mixer for the Channels.
-   * If a track doesn't have a Channel, the Mixer
-   * can just skip.
+   * This is also used in the Mixer for the Channels. If a track doesn't have
+   * a Channel, the Mixer can just skip.
    */
   int pos;
 
@@ -426,7 +425,7 @@ typedef struct Track
   size_t    modulators_size;
 
   /** Modulator macros. */
-  ModulatorMacroProcessor * modulator_macros[128];
+  ModulatorMacroProcessor * modulator_macros[TRACK_MAX_MODULATOR_MACROS];
   int                       num_modulator_macros;
   int                       num_visible_modulator_macros;
 
@@ -489,8 +488,8 @@ typedef struct Track
   bool bounce_to_master;
 
   /**
-   * Name hashes of tracks that are routed to this
-   * track, if group track.
+   * Name hashes of tracks that are routed to this track, if
+   * group track.
    *
    * This is used when undoing track deletion.
    */

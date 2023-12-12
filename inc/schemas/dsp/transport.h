@@ -12,10 +12,10 @@
 
 #include <stdint.h>
 
-#include "utils/types.h"
-
 #include "schemas/dsp/port.h"
 #include "schemas/dsp/position.h"
+#include "utils/types.h"
+
 #include "zix/sem.h"
 
 typedef struct Transport_v1
@@ -81,8 +81,5 @@ static const cyaml_schema_field_t transport_fields_schema_v1[] = {
 static const cyaml_schema_value_t transport_schema_v1 = {
   YAML_VALUE_PTR (Transport_v1, transport_fields_schema_v1),
 };
-
-Transport *
-transport_upgrade_from_v1 (Transport_v1 * old);
 
 #endif

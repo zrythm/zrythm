@@ -12,13 +12,12 @@
 
 #include "zrythm-config.h"
 
-#include "utils/types.h"
-
 #include "schemas/dsp/port.h"
 #include "schemas/plugins/plugin_descriptor.h"
 #include "schemas/plugins/plugin_identifier.h"
 #include "schemas/plugins/plugin_preset.h"
 #include "schemas/settings/plugin_settings.h"
+#include "utils/types.h"
 
 typedef struct Plugin_v1
 {
@@ -64,8 +63,5 @@ static const cyaml_schema_value_t plugin_schema_v1 = {
     Plugin_v1,
     plugin_fields_schema_v1),
 };
-
-Plugin *
-plugin_upgrade_from_v1 (Plugin_v1 * old);
 
 #endif

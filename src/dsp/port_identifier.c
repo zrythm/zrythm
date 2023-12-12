@@ -175,9 +175,8 @@ bool
 port_identifier_validate (PortIdentifier * self)
 {
   g_return_val_if_fail (
-    self->schema_version == PORT_IDENTIFIER_SCHEMA_VERSION
-      && plugin_identifier_validate (&self->plugin_id),
-    false);
+    /*self->schema_version == PORT_IDENTIFIER_SCHEMA_VERSION*/
+    plugin_identifier_validate (&self->plugin_id), false);
   return true;
 }
 
@@ -185,7 +184,6 @@ OPTIMIZE_O3
 uint32_t
 port_identifier_get_hash (const void * self)
 {
-  void *                 state = hash_create_state ();
   const PortIdentifier * id = (const PortIdentifier *) self;
   uint32_t               hash = 0;
   if (id->sym)
@@ -207,16 +205,13 @@ port_identifier_get_hash (const void * self)
   hash = hash ^ g_int_hash (&id->flags);
   hash = hash ^ g_int_hash (&id->flags2);
   hash = hash ^ g_int_hash (&id->unit);
-  hash =
-    hash
-    ^ hash_get_for_struct_full (state, &id->plugin_id, sizeof (PluginIdentifier));
+  hash = hash ^ plugin_identifier_get_hash (&id->plugin_id);
   if (id->port_group)
     hash = hash ^ g_str_hash (id->port_group);
   if (id->ext_port_id)
     hash = hash ^ g_str_hash (id->ext_port_id);
   hash = hash ^ id->track_name_hash;
   hash = hash ^ g_int_hash (&id->port_index);
-  hash_free_state (state);
   return hash;
 }
 

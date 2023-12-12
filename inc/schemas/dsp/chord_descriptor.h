@@ -106,7 +106,7 @@ typedef struct ChordDescriptor_v2
   MusicalNote_v1 bass_note;
   ChordType_v1   type;
   ChordAccent_v1 accent;
-  int            notes[CHORD_DESCRIPTOR_MAX_NOTES];
+  int            notes[48];
   int            inversion;
 } ChordDescriptor_v2;
 

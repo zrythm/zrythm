@@ -26,10 +26,9 @@
 #ifndef __SCHEMAS_GUI_BACKEND_MA_SELECTIONS_H__
 #define __SCHEMAS_GUI_BACKEND_MA_SELECTIONS_H__
 
-#include "utils/yaml.h"
-
 #include "schemas/dsp/midi_note.h"
 #include "schemas/gui/backend/arranger_selections.h"
+#include "utils/yaml.h"
 
 typedef struct MidiArrangerSelections_v1
 {

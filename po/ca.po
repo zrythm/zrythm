@@ -5115,7 +5115,7 @@ msgid ""
 "%zu more files..."
 msgstr ""
 "\n"
-"%z fitxers més..."
+"%zu fitxers més..."
 
 #: src/gui/widgets/dialogs/export_dialog.c:373
 msgid "The following files will be created:"
