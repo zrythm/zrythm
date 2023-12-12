@@ -159,8 +159,11 @@ foreach pl : plugins
       output: pl_underscored_name + '.lv2',
       build_by_default: true,
       command: [
-        gen_lv2_bundle_for_test, '@OUTPUT@',
-        '@INPUT0@', '@INPUT1@', '@INPUT2@',
+        bash, '-c',
+        # TODO use gen_lv2_bundle_for_test.full_path() from meson 1.4.0
+        meson.current_build_dir() / 'gen-lv2-bundle-for-test.sh' + ' "$1" "$2" "$3" "$4"',
+        '_ignored',
+        '@OUTPUT@', '@INPUT0@', '@INPUT1@', '@INPUT2@',
         ],
       input: [
         pl_ttl,
