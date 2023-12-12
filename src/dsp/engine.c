@@ -850,12 +850,12 @@ engine_init_loaded (AudioEngine * self, Project * project, GError ** error)
   Track * tempo_track = NULL;
   if (project)
     {
-      g_return_if_fail (project->tracklist);
+      g_return_val_if_fail (project->tracklist, false);
       tempo_track = project->tracklist->tempo_track;
       if (!tempo_track)
         tempo_track =
           tracklist_get_track_by_type (project->tracklist, TRACK_TYPE_TEMPO);
-      g_return_if_fail (tempo_track);
+      g_return_val_if_fail (tempo_track, false);
     }
   transport_init_loaded (self->transport, self, tempo_track);
 

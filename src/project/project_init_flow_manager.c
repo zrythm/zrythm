@@ -964,11 +964,13 @@ continue_load_from_file_after_open_backup_response (
   if (!success)
     {
 on_failed_to_init_pool:
-      GtkWindow * err_win = error_handle_prv (
-        err, "%s", _ ("Failed to initialize the audio file pool"));
-      g_signal_connect (
-        err_win, "response", G_CALLBACK (zrythm_exit_response_callback), NULL);
-      return;
+  {
+    GtkWindow * err_win = error_handle_prv (
+      err, "%s", _ ("Failed to initialize the audio file pool"));
+    g_signal_connect (
+      err_win, "response", G_CALLBACK (zrythm_exit_response_callback), NULL);
+    return;
+  }
     }
   engine_pre_setup (self->audio_engine);
 
