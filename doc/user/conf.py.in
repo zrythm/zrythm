@@ -49,6 +49,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx_copybutton',
     'sphinxcontrib.rsvgconverter',
+    'sphinx-prompt',
     # 'sphinxcontrib.programoutput',
     # 'sphinxcontrib.devhelp',
     # 'recommonmark',

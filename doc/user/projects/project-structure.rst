@@ -106,16 +106,17 @@ Project Directory
 
 Project File Format
 -------------------
-Zrythm uses a custom
-`MIME <https://en.wikipedia.org/wiki/MIME>`_ type
-``x-zrythm-project`` (which is an alias of
-``application/zstd``) for its project files
-(``project.zpj``).
-This is a
+Zrythm project files (``project.zpj``) are
 `zstd <https://facebook.github.io/zstd/>`_-compressed
-`YAML <http://yaml.org/>`_ file that can be
-decompressed (converted to YAML) for inspection using
-:option:`zrythm --zpj-to-yaml`.
+`JSON <https://www.json.org/>`_ files (the project file
+`MIME type <https://en.wikipedia.org/wiki/MIME>`_
+``x-zrythm-project`` is an alias of ``application/zstd``).
+
+Project files can be converted to JSON using:
+
+.. prompt:: bash
+
+   zstd -d project.zpj -o project.json
 
 Audio Pool
 ----------
