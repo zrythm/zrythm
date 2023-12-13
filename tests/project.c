@@ -323,10 +323,7 @@ test_load_with_plugin_after_backup (void)
 }
 
 static void
-init_cb (
-  bool success,
-  GError * error,
-  void * user_data)
+init_cb (bool success, GError * error, void * user_data)
 {
 }
 
@@ -340,8 +337,9 @@ test_load_v1_0_0_beta_2_1_1 (void)
 
   /*yaml_set_log_level (CYAML_LOG_DEBUG);*/
   (void) init_cb;
-  /*project_init_flow_manager_load_or_create_default_project ("/home/alex/.var/app/org.zrythm.Zrythm/data/zrythm/projects/プロジェクト名未設定*/
-   /** (3)/project.zpj", false, init_cb, NULL);*/
+  /*project_init_flow_manager_load_or_create_default_project
+   * ("/home/alex/.var/app/org.zrythm.Zrythm/data/zrythm/projects/プロジェクト名未設定*/
+  /** (3)/project.zpj", false, init_cb, NULL);*/
   /*project_load
    * ("/home/alex/.var/app/org.zrythm.Zrythm/data/zrythm/projects/プロジェクト名未設定
    * (3)/project.zpj", false);*/

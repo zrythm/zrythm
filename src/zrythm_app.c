@@ -1325,23 +1325,6 @@ zrythm_app_on_shutdown (GApplication * application, ZrythmApp * self)
 }
 
 /**
- * Checks that the file exists and exits if it
- * doesn't.
- */
-static void
-verify_file_exists (const char * file)
-{
-  if (!file || !g_file_test (file, G_FILE_TEST_EXISTS))
-    {
-      char str[600];
-      sprintf (str, _ ("File %s not found."), file);
-      strcat (str, "\n");
-      fprintf (stderr, "%s", str);
-      exit (-1);
-    }
-}
-
-/**
  * Checks that the output is not NULL and exits if it
  * is.
  */
@@ -1367,60 +1350,6 @@ print_settings (ZrythmApp * self)
   settings_print (self->pretty_print);
 
   exit (EXIT_SUCCESS);
-}
-
-static void
-convert_project (ZrythmApp * self, bool compress, const char * file_to_convert)
-{
-  verify_file_exists (file_to_convert);
-
-  char *   output;
-  size_t   output_size;
-  GError * err = NULL;
-  bool     ret;
-  if (compress)
-    {
-      verify_output_exists (self);
-
-      ret = project_compress (
-        &self->output_file, NULL, PROJECT_COMPRESS_FILE, file_to_convert, 0,
-        PROJECT_COMPRESS_FILE, &err);
-    }
-  else
-    {
-      if (self->output_file)
-        {
-          ret = project_decompress (
-            &self->output_file, NULL, PROJECT_DECOMPRESS_FILE, file_to_convert,
-            0, PROJECT_DECOMPRESS_FILE, &err);
-        }
-      else
-        {
-          ret = project_decompress (
-            &output, &output_size, PROJECT_DECOMPRESS_DATA, file_to_convert, 0,
-            PROJECT_DECOMPRESS_FILE, &err);
-        }
-    }
-
-  if (!ret)
-    {
-      fprintf (stderr, _ ("Project failed to decompress: %s\n"), err->message);
-      g_error_free (err);
-      exit (EXIT_FAILURE);
-    }
-  else
-    {
-      if (!compress && !self->output_file)
-        {
-          output = g_realloc (output, output_size + sizeof (char));
-          output[output_size] = '\0';
-          fprintf (stdout, "%s\n", output);
-        }
-      exit (EXIT_SUCCESS);
-    }
-
-  fprintf (stdout, "%s\n", _ ("Unknown operation"));
-  exit (EXIT_FAILURE);
 }
 
 static bool
@@ -1465,18 +1394,6 @@ on_handle_local_options (GApplication * app, GVariantDict * opts, ZrythmApp * se
   if (g_variant_dict_contains (opts, "print-settings"))
     {
       print_settings (self);
-    }
-  else if (g_variant_dict_contains (opts, "yaml-to-zpj"))
-    {
-      char * filepath = NULL;
-      g_variant_dict_lookup (opts, "yaml-to-zpj", "^ay", &filepath);
-      convert_project (self, true, filepath);
-    }
-  else if (g_variant_dict_contains (opts, "zpj-to-yaml"))
-    {
-      char * filepath = NULL;
-      g_variant_dict_lookup (opts, "zpj-to-yaml", "^ay", &filepath);
-      convert_project (self, false, filepath);
     }
   else if (g_variant_dict_contains (opts, "gen-project"))
     {
@@ -1573,10 +1490,6 @@ add_option_entries (ZrythmApp * self)
   GOptionEntry entries[] = {
     { "version", 'v', G_OPTION_FLAG_NO_ARG, G_OPTION_ARG_CALLBACK,
      print_version, _ ("Print version information"), NULL },
-    { "zpj-to-yaml", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_FILENAME, NULL,
-     _ ("Convert ZPJ-FILE to YAML"), "ZPJ-FILE" },
-    { "yaml-to-zpj", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_FILENAME, NULL,
-     _ ("Convert YAML-PROJECT-FILE to the .zpj format"), "YAML-PROJECT-FILE" },
     { "gen-project", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_FILENAME, NULL,
      _ ("Generate a project from SCRIPT-FILE"), "SCRIPT-FILE" },
     { "pretty", 0, G_OPTION_FLAG_NONE, G_OPTION_ARG_NONE, &self->pretty_print,
@@ -1617,12 +1530,10 @@ add_option_entries (ZrythmApp * self)
   char examples[8000];
   sprintf (
     examples,
-    _ (
-      "Examples:\n"
-      "  --zpj-to-yaml a.zpj > b.yaml        Convert a a.zpj to YAML and save to b.yaml\n"
-      "  --gen-project a.scm -o myproject    Generate myproject from a.scm\n"
-      "  -p --pretty                         Pretty-print current settings\n\n"
-      "Please report issues to %s\n"),
+    _ ("Examples:\n"
+       "  --gen-project a.scm -o myproject    Generate myproject from a.scm\n"
+       "  -p --pretty                         Pretty-print current settings\n\n"
+       "Please report issues to %s\n"),
     ISSUE_TRACKER_URL);
   g_application_set_option_context_description (G_APPLICATION (self), examples);
 
