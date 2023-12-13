@@ -6,6 +6,31 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.5.0.1] - 2023-12-13
+### Added
+- Optimize track processing: only check MIDI control ports that had changes
+- Add search functionality to automatable control selector popover
+- User manual: add more info about how to report bugs
+- Dev docs: add repository management page
+- Add more error checking when loading projects
+
+### Changed
+- Update Italian, Chinese (Simplified), Korean, French, Polish, Catalan, Swedish translations
+- Use libadwaita widgets and port deprecated widgets to new gtk4 widgets in automatable control selector popover
+- CLI: ignore case when parsing audio/MIDI backend names
+- Project format has changed from zstd-compressed YAML to zstd-compressed JSON (#4763)
+- Tests: calculate plugin bundle URI without running a script
+- Code formatting: reflow comments
+- Rename VERSION to VERSION.txt
+- User manual: update section on project file format
+
+### Fixed
+- Fix main window not being destroyed when pressing close
+- Fix C-format error in localization file
+
+### Removed
+- Remove YAML-related CLI options
+
 ## [1.0.0-beta.4.13.31] - 2023-09-18
 ### Changed
 - Port some more deprecated GTK widgets to new ones
