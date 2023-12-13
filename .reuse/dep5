@@ -767,7 +767,7 @@ Files:
   po/zrythm.pot
   tools/stoat_*.txt
   tools/vg.sup
-  VERSION
+  VERSION.txt
 Copyright: Alexandros Theodotou <alex@zrythm.org>
 License: LicenseRef-ZrythmLicense
 Comment:

@@ -3,7 +3,7 @@
 
 project (
   'zrythm', ['c', 'cpp'],
-  version: files ('VERSION'),
+  version: files ('VERSION.txt'),
   license: 'AGPL-3-or-later',
   meson_version: '>= 0.57.0',
   default_options: [
