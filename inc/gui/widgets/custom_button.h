@@ -45,10 +45,10 @@ typedef struct CustomButtonWidget
 {
   /** Function to call on press (after click and
    * release). */
-  //void (*press_cb) (void *);
+  // void (*press_cb) (void *);
 
   /** Whether the button is a toggle. */
-  //int          is_toggle;
+  // int          is_toggle;
 
   /** Default color. */
   GdkRGBA def_color;
@@ -75,10 +75,10 @@ typedef struct CustomButtonWidget
   int width;
 
   /** Whether currently hovered. */
-  //int         hovered;
+  // int         hovered;
 
   /** Whether currently held down. */
-  //int         pressed;
+  // int         pressed;
 
   /** Aspect ratio for the rounded rectangle. */
   double aspect;
@@ -88,7 +88,7 @@ typedef struct CustomButtonWidget
   double corner_radius;
 
   /** Object to pass to the callback. */
-  //void *       obj;
+  // void *       obj;
 
   /** The icon surface. */
   GdkTexture * icon_texture;

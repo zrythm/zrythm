@@ -70,7 +70,8 @@ getPowerSpectrumdB (
     }
   else
     {
-      //powerSpectrumdB = wolf::lerp(-90.0f, 0.0f, 1.0f - (powerSpectrumdB + threshold) / -90.0f);
+      // powerSpectrumdB = wolf::lerp(-90.0f, 0.0f, 1.0f - (powerSpectrumdB +
+      // threshold) / -90.0f);
     }
 
   // Normalize values

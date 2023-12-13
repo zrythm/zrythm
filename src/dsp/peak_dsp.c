@@ -139,7 +139,8 @@ peak_dsp_init (PeakDsp * self, float samplerate)
   const float hold = 1.5f;
   self->fsamp = samplerate;
 
-  self->hold = (int) (hold * samplerate + 0.5f); // number of samples to hold peak
+  self->hold =
+    (int) (hold * samplerate + 0.5f); // number of samples to hold peak
 }
 
 PeakDsp *

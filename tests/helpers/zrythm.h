@@ -22,7 +22,8 @@
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General
- * Public License along with this library; if not, see <http://www.gnu.org/licenses/>.
+ * Public License along with this library; if not, see
+ * <http://www.gnu.org/licenses/>.
  *
  * Authors: David Zeuthen <davidz@redhat.com>
  *          Xavier Claessens <xavier.claessens@collabora.co.uk>o
@@ -430,7 +431,7 @@ start_daemon (Zrythm * self)
     /* We Need this to get the pid returned on win32 */
     G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH |
       /* dbus-daemon will not abuse our descriptors, and
-                                     * passing this means we can use posix_spawn() for speed */
+       * passing this means we can use posix_spawn() for speed */
       G_SPAWN_LEAVE_DESCRIPTORS_OPEN,
     NULL, NULL, -1, -1, -1, &pipe_fds[1], &pipe_fds[1], 1, &self->pipewire_pid,
     NULL, NULL, NULL, &error);

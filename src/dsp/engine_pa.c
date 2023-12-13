@@ -26,7 +26,7 @@
  * It may called at interrupt level on some
  * machines so don't do anything that could mess up
  * the system like calling malloc() or free().
-*/
+ */
 static int
 pa_stream_cb (
   const void *                     in,

@@ -1,5 +1,7 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2018-2019, 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 #ifndef __AUDIO_ENGINE_JACK_H__
 #define __AUDIO_ENGINE_JACK_H__

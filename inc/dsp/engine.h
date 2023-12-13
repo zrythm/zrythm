@@ -528,7 +528,7 @@ typedef struct AudioEngine
   /** Send note off MIDI everywhere. */
   volatile gint panic;
 
-  //ZixSem             alsa_callback_start;
+  // ZixSem             alsa_callback_start;
 
   /* ----------- ALSA --------------- */
 #ifdef HAVE_ALSA
@@ -546,11 +546,11 @@ typedef struct AudioEngine
    * Needs to be protected by some kind of
    * mutex.
    */
-  //MidiEvents         alsa_midi_events;
+  // MidiEvents         alsa_midi_events;
 
   /** Semaphore for exclusively writing/reading
    * ALSA MIDI events from above. */
-  //ZixSem             alsa_midi_events_sem;
+  // ZixSem             alsa_midi_events_sem;
 #else
   void *   playback_handle;
   void *   seq_handle;
@@ -691,7 +691,8 @@ typedef struct AudioEngine
    * This should be swapped often to avoid DC offset
    * prevention algorithms removing it.
    *
-   * See https://www.earlevel.com/main/2019/04/19/floating-point-denormals/ for details.
+   * See https://www.earlevel.com/main/2019/04/19/floating-point-denormals/ for
+   * details.
    */
   bool  denormal_prevention_val_positive;
   float denormal_prevention_val;

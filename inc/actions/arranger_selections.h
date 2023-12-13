@@ -134,7 +134,7 @@ typedef enum ArrangerSelectionsActionEditType
   /** For ramping MidiNote velocities or
    * AutomationPoint values.
    * (this is handled by EDIT_PRIMITIVE) */
-  //ARRANGER_SELECTIONS_ACTION_EDIT_RAMP,
+  // ARRANGER_SELECTIONS_ACTION_EDIT_RAMP,
 
   /** MIDI function. */
   ARRANGER_SELECTIONS_ACTION_EDIT_EDITOR_FUNCTION,

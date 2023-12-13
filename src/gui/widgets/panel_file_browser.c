@@ -378,7 +378,8 @@ on_file_search_changed (
     GTK_FILTER (self->files_filter), GTK_FILTER_CHANGE_DIFFERENT);
 }
 
-/* FIXME duplicated code with file_browser's on_file_chooser_file_activated - move to a single place */
+/* FIXME duplicated code with file_browser's on_file_chooser_file_activated -
+ * move to a single place */
 static void
 on_file_row_activated (GtkListView * list_view, guint position, gpointer user_data)
 {

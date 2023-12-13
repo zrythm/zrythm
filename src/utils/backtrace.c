@@ -98,13 +98,13 @@ addr2line (
 
   while (fgets (outLine1, sizeof (outLine1) - 1, fp) != NULL)
     {
-      //if we have a pair of lines
+      // if we have a pair of lines
       if (fgets (outLine2, sizeof (outLine2) - 1, fp) != NULL)
         {
-          //if symbols are readable
+          // if symbols are readable
           if (outLine2[0] != '?')
             {
-              //only let func name in outLine1
+              // only let func name in outLine1
               int i;
               for (i = 0; i < 1035; ++i)
                 {
@@ -115,7 +115,7 @@ addr2line (
                     }
                 }
 
-              //don't display the whole path
+              // don't display the whole path
               int lastSlashPos = 0;
 
               for (i = 0; i < 1035; ++i)
@@ -156,7 +156,8 @@ static struct backtrace_state * state = NULL;
  * Note: to get the line number for external libs
  * use `addr2line -e /lib64/libc.so.6 0x27a50`.
  *
- * __libc_start_main in ../csu/libc-start.c:332 from /lib64/libc.so.6(+0x27a50)[0x7feffe060000].
+ * __libc_start_main in ../csu/libc-start.c:332 from
+ * /lib64/libc.so.6(+0x27a50)[0x7feffe060000].
  */
 static void
 syminfo_cb (

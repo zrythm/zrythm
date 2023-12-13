@@ -50,7 +50,7 @@ typedef struct TrackLane
   char * name;
 
   /** TrackLaneWidget for this lane. */
-  //TrackLaneWidget *   widget;
+  // TrackLaneWidget *   widget;
 
   /** Y local to track. */
   int y;

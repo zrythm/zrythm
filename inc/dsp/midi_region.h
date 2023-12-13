@@ -204,18 +204,6 @@ void
 midi_region_remove_all_midi_notes (ZRegion * region);
 
 /**
- * Returns the midi note at given position with the given
- * pitch.
- *
- * Used when recording.
- */
-//MidiNote *
-//midi_region_get_midi_note_at (
-//ZRegion * self,
-//Position *   pos,
-//int          pitch);
-
-/**
  * Exports the ZRegion to an existing MIDI file
  * instance.
  *

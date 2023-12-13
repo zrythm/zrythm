@@ -36,10 +36,10 @@ typedef struct _InspectorChordWidget
 {
   GtkGrid    parent_instance;
   GtkLabel * header;
-  //GtkBox *            position_box;
-  //GtkBox *            length_box;
-  //GtkColorButton *    color;
-  //GtkToggleButton *   mute_toggle;
+  // GtkBox *            position_box;
+  // GtkBox *            length_box;
+  // GtkColorButton *    color;
+  // GtkToggleButton *   mute_toggle;
 } InspectorChordWidget;
 
 void

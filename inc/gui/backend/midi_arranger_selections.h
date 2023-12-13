@@ -1,5 +1,7 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * @file
@@ -98,7 +100,7 @@ NONNULL void
 midi_arranger_selections_sort_by_pitch (MidiArrangerSelections * self, bool desc);
 
 /**
-* @}
-*/
+ * @}
+ */
 
 #endif

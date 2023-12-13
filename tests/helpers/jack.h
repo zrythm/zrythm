@@ -22,7 +22,7 @@ test_jack_port_exists (const char * port_name)
       int i = 0;
       while (ports[i] != NULL)
         {
-          //jack_free (ports[i]);
+          // jack_free (ports[i]);
           i++;
         }
     }

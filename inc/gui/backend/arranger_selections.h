@@ -411,7 +411,7 @@ NONNULL ArrangerSelections *
 arranger_selections_get_for_type (ArrangerSelectionsType type);
 
 /**
-* @}
-*/
+ * @}
+ */
 
 #endif

@@ -148,7 +148,7 @@ hardware_processor_rescan_ext_ports (HardwareProcessor * self)
   /* get correct flow */
   PortFlow flow =
     /* these are reversed:
-   * input here -> port that outputs in backend */
+     * input here -> port that outputs in backend */
     self->is_input ? FLOW_OUTPUT : FLOW_INPUT;
 
   /* collect audio ports */

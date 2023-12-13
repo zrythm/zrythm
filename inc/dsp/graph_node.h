@@ -215,16 +215,6 @@ graph_node_set_route_playback_latency (GraphNode * node, nframes_t dest_latency)
 HOT void
 graph_node_trigger (GraphNode * self);
 
-//void
-//graph_node_add_feeds (
-//GraphNode * self,
-//GraphNode * dest);
-
-//void
-//graph_node_add_depends (
-//GraphNode * self,
-//GraphNode * src);
-
 void
 graph_node_connect (GraphNode * from, GraphNode * to);
 

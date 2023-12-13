@@ -54,7 +54,8 @@ typedef enum CurveAlgorithm
    *   full tilt and 1 is straight line (when starting
    *   at lower point).
    *
-   * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
+   * See
+   * https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
    */
   CURVE_ALGORITHM_SUPERELLIPSE,
 

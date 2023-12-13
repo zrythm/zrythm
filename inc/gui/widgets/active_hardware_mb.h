@@ -43,13 +43,13 @@ typedef struct _ActiveHardwareMbWidget
   /** The actual menu button. */
   GtkMenuButton * mbutton;
 
-  //GtkBox *          box;
+  // GtkBox *          box;
 
   /** Image to show next to the label. */
-  //GtkImage *        img;
+  // GtkImage *        img;
 
   /** Label to show. */
-  //GtkLabel *        label;
+  // GtkLabel *        label;
 
   /** The popover. */
   ActiveHardwarePopoverWidget * popover;

@@ -575,7 +575,7 @@ on_prompt_for_project (GSimpleAction * action, GVariant * parameter, gpointer da
 
 #ifdef __APPLE__
       /* possibly not necessary / working, forces app
-   * window on top */
+       * window on top */
       show_on_top ();
 #endif
     }
@@ -867,7 +867,8 @@ raise_open_file_limit (void)
    * If we want more, we'll have to replaces the POSIX I/O interfaces with
    * Win32 API calls (CreateFile, WriteFile, etc) which allows for 16K.
    *
-   * see http://stackoverflow.com/questions/870173/is-there-a-limit-on-number-of-open-files-in-windows
+   * see
+   * http://stackoverflow.com/questions/870173/is-there-a-limit-on-number-of-open-files-in-windows
    * and http://bugs.mysql.com/bug.php?id=24509
    */
   int newmax = _setmaxstdio (2048);

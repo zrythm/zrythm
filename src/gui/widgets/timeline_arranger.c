@@ -206,7 +206,7 @@ timeline_arranger_widget_create_region (
       region = midi_region_new (
         pos, &end_pos, track_get_name_hash (track),
         /* create on lane 0 if creating in main
-           * track */
+         * track */
         lane ? lane->pos : 0,
         lane ? lane->num_regions : track->lanes[0]->num_regions);
       break;

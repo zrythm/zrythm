@@ -198,7 +198,7 @@ escape_string (GString * string)
           pos = p - string->str;
 
           /* Emit invalid UTF-8 as hex escapes
-                 */
+           */
           tmp = g_strdup_printf ("\\x%02x", (guint) (guchar) *p);
           g_string_erase (string, pos, 1);
           g_string_insert (string, pos, tmp);
@@ -249,7 +249,8 @@ format_unsigned (gchar * buf, gulong num, guint radix)
   gchar  c;
   gint   i, n;
 
-  /* we may not call _any_ GLib functions here (or macros like g_return_if_fail()) */
+  /* we may not call _any_ GLib functions here (or macros like
+   * g_return_if_fail()) */
 
   if (radix != 8 && radix != 10 && radix != 16)
     {
@@ -457,7 +458,7 @@ strdup_convert (const gchar * string, const gchar * charset)
       else
         {
           /* Not thread-safe, but doesn't matter if we print the warning twice
-	   */
+           */
           static gboolean warned = FALSE;
           if (!warned)
             {

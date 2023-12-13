@@ -116,7 +116,7 @@ bool
 audio_selections_can_be_pasted (AudioSelections * ts, Position * pos, ZRegion * r);
 
 /**
-* @}
-*/
+ * @}
+ */
 
 #endif

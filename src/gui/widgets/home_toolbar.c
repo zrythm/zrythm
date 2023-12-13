@@ -88,7 +88,7 @@ refresh_undo_or_redo_button (HomeToolbarWidget * self, bool redo)
 }
 
 /* TODO rename to refresh buttons and refresh
-* everything */
+ * everything */
 void
 home_toolbar_widget_refresh_undo_redo_buttons (HomeToolbarWidget * self)
 {

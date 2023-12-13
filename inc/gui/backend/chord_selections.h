@@ -76,7 +76,7 @@ chord_selections_can_be_pasted (
   ZRegion *         region);
 
 /**
-* @}
-*/
+ * @}
+ */
 
 #endif

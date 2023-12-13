@@ -240,7 +240,8 @@ automation_point_set_fvalue_with_action (
 /**
  * The function to return a point on the curve.
  *
- * See https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
+ * See
+ * https://stackoverflow.com/questions/17623152/how-map-tween-a-number-based-on-a-dynamic-curve
  *
  * @param ap The start point (0, 0).
  * @param region region The automation region (if known),

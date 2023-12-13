@@ -288,7 +288,7 @@ typedef struct Zrythm
   bool generating_project;
 
   /** Log settings. */
-  //Log *               log;
+  // Log *               log;
 
   /**
    * Progress done (0.0 ~ 1.0).

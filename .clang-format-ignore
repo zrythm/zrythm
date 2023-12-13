@@ -4,3 +4,7 @@ data/plugins/generated/**/*
 doc/dev/m.css/**/*
 ext/**/*
 inc/plugins/lv2/suil/*
+src/dsp/vamp-ports/*.cpp
+src/dsp/vamp-ports/*.h*
+src/gui/widgets/gtk_flipper.c
+tests/lv2plugins/**/*c

@@ -109,7 +109,7 @@ range_action_perform (
     && position_is_after_or_equal (&TRANSPORT->x, &self->start_pos) \
     && position_is_before_or_equal (&TRANSPORT->x, &self->end_pos)) \
     { \
-      /* move position to range start or back to
+      /* move position to range start or back to \
        * original pos */ \
       position_set_to_pos ( \
         &TRANSPORT->x, _do ? &self->start_pos : &self->transport->x); \

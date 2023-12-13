@@ -331,7 +331,9 @@ test_load_v1_0_0_beta_2_1_1 (void)
    * has undo history */
 
   /*yaml_set_log_level (CYAML_LOG_DEBUG);*/
-  /*project_load ("/home/alex/.var/app/org.zrythm.Zrythm/data/zrythm/projects/プロジェクト名未設定 (3)/project.zpj", false);*/
+  /*project_load
+   * ("/home/alex/.var/app/org.zrythm.Zrythm/data/zrythm/projects/プロジェクト名未設定
+   * (3)/project.zpj", false);*/
 
   test_helper_zrythm_cleanup ();
 }

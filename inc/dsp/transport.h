@@ -229,7 +229,7 @@ typedef struct Transport
   /** Whether range should be displayed or not. */
   int has_range;
 
-  //TimeSignature time_sig;
+  // TimeSignature time_sig;
 
   /* ---------- CACHE -------------- */
   int ticks_per_beat;
@@ -274,7 +274,7 @@ typedef struct Transport
    * It should be set to off after the first cycle it is
    * processed in the audio engine post process.
    */
-  //int               starting_recording;
+  // int               starting_recording;
 
   /** Paused signal from process thread. */
   ZixSem paused;

@@ -1,3 +1,4 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2018-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
@@ -15,6 +16,7 @@
   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
   OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
+// clang-format on
 
 #include "plugins/lv2/lv2_gtk.h"
 #include "plugins/lv2/lv2_ui.h"
@@ -283,7 +285,9 @@ lv2_ui_send_event_from_ui_to_plugin (
       return;
     }
 
-  /* also see https://git.open-music-kontrollers.ch/lv2/sherlock.lv2/tree/atom_inspector_nk.c#n39 */
+  /* also see
+   * https://git.open-music-kontrollers.ch/lv2/sherlock.lv2/tree/atom_inspector_nk.c#n39
+   */
   if (debug && protocol == PM_URIDS.atom_eventTransfer)
     {
       const LV2_Atom * atom = (const LV2_Atom *) buffer;

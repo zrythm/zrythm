@@ -216,7 +216,8 @@ midi_modifier_arranger_widget_resize_velocities (
   double start_y = self->start_y;
   /*self->start_y - VELOCITY_WIDTH / 2;*/
   /*offset_y -= VELOCITY_WIDTH / 2;*/
-  /*g_message ("start y %f offset y %f res %f height %f", start_y, offset_y, start_y + offset_y,*/
+  /*g_message ("start y %f offset y %f res %f height %f", start_y, offset_y,
+   * start_y + offset_y,*/
   /*(double) height);*/
 
   double start_ratio = CLAMP (1.0 - start_y / (double) height, 0.0, 1.0);

@@ -1440,12 +1440,12 @@ channel_remove_plugin (
     track_is_in_active_project (track)
     && !track->disconnecting
     /* only verify if we are deleting the plugin.
-       * if the plugin is moved to another slot
-       * this check fails because the port
-       * identifiers in the automation tracks are
-       * already updated to point to the next
-       * slot and the plugin is not found there
-       * yet */
+     * if the plugin is moved to another slot
+     * this check fails because the port
+     * identifiers in the automation tracks are
+     * already updated to point to the next
+     * slot and the plugin is not found there
+     * yet */
     && deleting_plugin && !moving_plugin)
     {
       track_validate (channel->track);

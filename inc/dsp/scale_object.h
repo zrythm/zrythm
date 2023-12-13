@@ -28,7 +28,7 @@ typedef struct MusicalScale MusicalScale;
 
 /* FIXME upgrade to v2 and upgrade project (see schema below) */
 #define SCALE_OBJECT_SCHEMA_VERSION 1
-//#define SCALE_OBJECT_SCHEMA_VERSION 2
+// #define SCALE_OBJECT_SCHEMA_VERSION 2
 
 #define scale_object_is_selected(r) \
   arranger_object_is_selected ((ArrangerObject *) r)

@@ -40,7 +40,7 @@ typedef struct _ClipEditorWidget
   GtkStack * stack;
 
   GtkBox * main_box;
-  //EditorSelectionInfoWidget * editor_selections;
+  // EditorSelectionInfoWidget * editor_selections;
   EditorToolbarWidget *   editor_toolbar;
   ClipEditorInnerWidget * clip_editor_inner;
 

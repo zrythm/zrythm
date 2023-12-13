@@ -1,3 +1,4 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2018-2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
@@ -19,6 +20,7 @@
  *
  * ---
  */
+// clang-format on
 
 #include <inttypes.h>
 #include <math.h>
@@ -34,7 +36,8 @@
 #include "utils/midi.h"
 #include "utils/objects.h"
 
-/* https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2 */
+/* https://www.midi.org/specifications-old/item/table-3-control-change-messages-data-bytes-2
+ */
 static const char * midi_cc_names[128] = {
   "Bank Select",
   "Modulation Wheel (MSB)",
@@ -270,7 +273,8 @@ midi_get_bytes_from_combined (
   midi_byte_t *  lsb,
   midi_byte_t *  msb)
 {
-  /* https://arduino.stackexchange.com/questions/18955/how-to-send-a-pitch-bend-midi-message-using-arcore */
+  /* https://arduino.stackexchange.com/questions/18955/how-to-send-a-pitch-bend-midi-message-using-arcore
+   */
   *lsb = val & 0x7F;
   *msb = (midi_byte_t) (val >> 7);
 }

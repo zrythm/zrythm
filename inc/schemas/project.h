@@ -1,5 +1,7 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * \file
@@ -203,4 +205,4 @@ static const cyaml_schema_value_t project_schema_v5 = {
 char *
 project_v5_serialize_to_json_str (const Project_v5 * prj, GError ** error);
 
-#endif
+#endif /* __SCHEMAS_PROJECT_H__ */

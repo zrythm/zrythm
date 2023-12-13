@@ -545,7 +545,7 @@ project_autosave_cb (void * data)
   gint64        microsec_to_autosave =
     (gint64) autosave_interval_mins * 60 * 1000000 -
     /* subtract 4 seconds because the time
-       * this gets called is not exact */
+     * this gets called is not exact */
     4 * 1000000;
 
   /* skip if semaphore busy */
@@ -875,20 +875,20 @@ cleanup_plugin_state_dirs (ProjectSaveData * data)
     "cleaning plugin state dirs%s...", data->is_backup ? " for backup" : "");
 
   /* if saving backup, the temporary state dirs
-     * created during clone() are not needed by
-     * the main project so we just check what is
-     * needed from the main project and delete the
-     * rest.
-     * if saving the main project, the newly copied
-     * state dirs are used instead of the old ones,
-     * so we check the cloned project and delete
-     * the rest
-     *
-     * that said, there is still an issue
-     * (see https://todo.sr.ht/~alextee/zrythm-bug/1047)
-     * so just don't delete any plugins in either the clone
-     * or the current/main project
-     * */
+   * created during clone() are not needed by
+   * the main project so we just check what is
+   * needed from the main project and delete the
+   * rest.
+   * if saving the main project, the newly copied
+   * state dirs are used instead of the old ones,
+   * so we check the cloned project and delete
+   * the rest
+   *
+   * that said, there is still an issue
+   * (see https://todo.sr.ht/~alextee/zrythm-bug/1047)
+   * so just don't delete any plugins in either the clone
+   * or the current/main project
+   * */
   GPtrArray * arr = g_ptr_array_new ();
   plugin_get_all (PROJECT, arr, true);
   plugin_get_all (data->project, arr, true);

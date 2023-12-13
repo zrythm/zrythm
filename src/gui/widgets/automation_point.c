@@ -135,13 +135,13 @@ automation_point_draw (
       double this_y = 0;
       double draw_until =
         /* FIXME this will draw all the way
-        * until the end of the automation point,
-        * even if it is off-screen by many
-        * pixels
-        * TODO only draw up to where needed
-        *
-        * it is possible that cairo is smart about
-        * it and doesn't exceed the surface size */
+         * until the end of the automation point,
+         * even if it is off-screen by many
+         * pixels
+         * TODO only draw up to where needed
+         *
+         * it is possible that cairo is smart about
+         * it and doesn't exceed the surface size */
         width_for_curve - step / 2.0;
       bool has_drawing = false;
       for (double l = draw_offset; l <= draw_until; l += step)

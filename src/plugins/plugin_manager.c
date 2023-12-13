@@ -251,7 +251,7 @@ create_and_load_lilv_word (PluginManager * self)
             "%s/.lv2:/usr/local/" LIBDIR_NAME "/lv2:/usr/" LIBDIR_NAME
             "/lv2:"
             /* some distros report the wrong
-               * LIBDIR_NAME so hardcode these */
+             * LIBDIR_NAME so hardcode these */
             "/usr/local/lib/lv2:/usr/lib/lv2:%s",
             g_get_home_dir (), extra_zrythm_plugin_paths);
         }

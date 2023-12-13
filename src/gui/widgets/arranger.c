@@ -3735,7 +3735,7 @@ on_drag_end_midi (ArrangerWidget * self)
     case UI_OVERLAY_ACTION_STARTING_MOVING:
       {
         /* if something was clicked with ctrl without
-       * moving*/
+         * moving*/
         if (self->ctrl_held)
           {
             if (self->start_object && self->start_object_was_selected)
@@ -5549,7 +5549,7 @@ get_timeline_cursor (ArrangerWidget * self, Tool tool)
                           track->widget, self->hover_y))
                       {
                         /* set cursor to range
-                       * selection */
+                         * selection */
                         return ARRANGER_CURSOR_RANGE;
                       }
                     else

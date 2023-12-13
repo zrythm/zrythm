@@ -1055,7 +1055,7 @@ fader_process (Fader * self, const EngineProcessTimeInfo * const time_nfo)
                 }
 
               /* if still fading out and have no more fade
-                   * out samples, silence */
+               * out samples, silence */
               if (fade_out_samples == 0)
                 {
                   size_t remaining_frames =

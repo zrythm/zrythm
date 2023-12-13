@@ -1,3 +1,4 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
@@ -16,6 +17,7 @@
  *
  * Except as contained in this notice, the name of a copyright holder shall not be used in advertising or otherwise to promote the sale, use or other dealings in this Software without prior written authorization of the copyright holder.
  */
+// clang-format on
 
 #include "zrythm-config.h"
 

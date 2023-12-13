@@ -30,7 +30,7 @@ typedef struct ProgressInfo
 
   /** String to show in the label when the action is complete
    * (progress == 1.0). */
-  //char * label_done_str;
+  // char * label_done_str;
 
   /** Mutex to prevent concurrent access/edits. */
   GMutex mutex;

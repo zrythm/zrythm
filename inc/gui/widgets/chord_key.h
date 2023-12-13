@@ -38,9 +38,9 @@ typedef struct _PianoKeyboardWidget PianoKeyboardWidget;
  */
 
 /**
-* Piano roll note widget to be shown on the left
-* side of the piano roll (128 of these).
-*/
+ * Piano roll note widget to be shown on the left
+ * side of the piano roll (128 of these).
+ */
 typedef struct _ChordKeyWidget
 {
   GtkGrid parent_instance;

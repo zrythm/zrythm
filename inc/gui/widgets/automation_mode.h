@@ -1,5 +1,7 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2019-2020, 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * \file
@@ -41,7 +43,7 @@ typedef struct AutomationModeWidget
   int height;
 
   /** Width of each button, including padding. */
-  //int                widths[NUM_AUTOMATION_MODES];
+  // int                widths[NUM_AUTOMATION_MODES];
 
   int text_widths[NUM_AUTOMATION_MODES];
   int text_heights[NUM_AUTOMATION_MODES];

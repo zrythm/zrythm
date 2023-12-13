@@ -1,3 +1,4 @@
+// clang-format off
 /*
   LV2 External UI extension
   This work is in public domain.
@@ -110,3 +111,4 @@ typedef struct _LV2_External_UI_Host
 #endif
 
 #endif /* LV2_EXTERNAL_UI_H */
+// clang-format on

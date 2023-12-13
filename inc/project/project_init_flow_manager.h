@@ -32,7 +32,8 @@ typedef void (
  *
  * @param filename The filename to open. This will be the template in the case
  * of template, or the actual project otherwise.
- * @param is_template Load the project as a template and create a new project from it.
+ * @param is_template Load the project as a template and create a new project
+ * from it.
  * @param cb Callback to call when finished.
  * @param user_data User data to pass to @p cb.
  */

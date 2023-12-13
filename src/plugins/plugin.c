@@ -1612,7 +1612,7 @@ plugin_process (Plugin * plugin, const EngineProcessTimeInfo * const time_nfo)
        * region TODO */
 
       /* if there is a midi note in this buffer
-         * range TODO */
+       * range TODO */
       /* add midi events to input port */
     }
 

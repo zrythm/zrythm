@@ -225,9 +225,9 @@ typedef struct _TrackWidget
    * This is more convenient instead of having them
    * in each widget.
    */
-  //gulong              record_toggle_handler_id;
-  //gulong              solo_toggled_handler_id;
-  //gulong              mute_toggled_handler_id;
+  // gulong              record_toggle_handler_id;
+  // gulong              solo_toggled_handler_id;
+  // gulong              mute_toggled_handler_id;
 
   /** Buttons to be drawin in order. */
   CustomButtonWidget * top_buttons[8];

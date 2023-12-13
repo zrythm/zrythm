@@ -158,10 +158,10 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       cairo_arc (cr, 0, 0, progress_radius, start_angle, end_angle);
       cairo_stroke (cr);
 
-      //look up the surrounding arc colors from the config
-      // TODO
+      // look up the surrounding arc colors from the config
+      //  TODO
 
-      //vary the arc color over the travel of the knob
+      // vary the arc color over the travel of the knob
       double intensity =
         fabs ((double) value - (double) self->zero)
         / MAX ((double) self->zero, (double) (1.f - self->zero));
@@ -175,7 +175,7 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         intensity_inv * self->end_color.blue
         + intensity * self->start_color.blue;
 
-      //draw the arc
+      // draw the arc
       cairo_set_source_rgb (cr, r, g, b);
       cairo_set_line_width (cr, progress_width);
       if (zero_angle > value_angle)
@@ -188,7 +188,7 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
         }
       cairo_stroke (cr);
 
-      //shade the arc
+      // shade the arc
       if (!self->flat)
         {
           /* note we have to offset the pattern from
@@ -204,7 +204,7 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
           cairo_pattern_destroy (shade_pattern);
         }
 
-#if 0 //black border
+#if 0 // black border
       const float start_angle_x = cos (start_angle);
       const float start_angle_y = sin (start_angle);
       const float end_angle_x = cos (end_angle);
@@ -225,7 +225,7 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
 
   if (!self->flat)
     {
-      //knob shadow
+      // knob shadow
       cairo_save (cr);
       cairo_translate (cr, pointer_thickness + 1, pointer_thickness + 1);
       cairo_set_source_rgba (cr, 0, 0, 0, 0.1);
@@ -233,19 +233,19 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       cairo_fill (cr);
       cairo_restore (cr);
 
-      //inner circle
+      // inner circle
 #define KNOB_COLOR 0, 90, 0, 0
       cairo_set_source_rgba (cr, KNOB_COLOR); /* knob color */
       cairo_arc (cr, 0, 0, center_radius, 0, 2.0 * G_PI);
       cairo_fill (cr);
 
-      //gradient
+      // gradient
       if (self->bevel)
         {
-          //knob gradient
+          // knob gradient
           shade_pattern = cairo_pattern_create_linear (
             0.0, -yc, 0.0,
-            yc); //note we have to offset the gradient from our centerpoint
+            yc); // note we have to offset the gradient from our centerpoint
           cairo_pattern_add_color_stop_rgba (shade_pattern, 0.0, 1, 1, 1, 0.2);
           cairo_pattern_add_color_stop_rgba (shade_pattern, 0.2, 1, 1, 1, 0.2);
           cairo_pattern_add_color_stop_rgba (shade_pattern, 0.8, 0, 0, 0, 0.2);
@@ -255,7 +255,7 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
           cairo_fill (cr);
           cairo_pattern_destroy (shade_pattern);
 
-          //flat top over beveled edge
+          // flat top over beveled edge
           cairo_set_source_rgba (cr, 90, 0, 0, 0.5);
           cairo_arc (cr, 0, 0, center_radius - pointer_thickness, 0, 2.0 * G_PI);
           cairo_fill (cr);
@@ -284,13 +284,13 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       cairo_fill (cr);
     }
 
-  //black knob border
+  // black knob border
   cairo_set_line_width (cr, border_width);
   cairo_set_source_rgba (cr, 0, 0, 0, 1);
   cairo_arc (cr, 0, 0, center_radius, 0, 2.0 * G_PI);
   cairo_stroke (cr);
 
-  //line shadow
+  // line shadow
   if (!self->flat)
     {
       cairo_save (cr);
@@ -306,7 +306,7 @@ knob_snapshot (GtkWidget * widget, GtkSnapshot * snapshot)
       cairo_restore (cr);
     }
 
-  //line
+  // line
   cairo_set_source_rgba (cr, 1, 1, 1, 1);
   cairo_set_line_cap (cr, CAIRO_LINE_CAP_ROUND);
   cairo_set_line_width (cr, pointer_thickness);

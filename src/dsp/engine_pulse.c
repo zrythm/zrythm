@@ -377,7 +377,8 @@ engine_pulse_activate (AudioEngine * self, gboolean activate)
        * because otherwise it will be called on
        * stream connect before any of the buffers
        * are set up.
-       * https://lists.freedesktop.org/archives/pulseaudio-discuss/2016-July/026552.html */
+       * https://lists.freedesktop.org/archives/pulseaudio-discuss/2016-July/026552.html
+       */
       pa_stream_set_write_callback (
         self->pulse_stream, engine_pulse_stream_write_callback, self);
 

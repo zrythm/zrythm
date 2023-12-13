@@ -575,8 +575,9 @@ handle_loop (
   /* if should be clipped */
   double global_end_ticks_after_loops =
     ap_end_ticks + loop_ticks * (double) cur_loop;
-  double
-    global_end_ticks_after_loops_with_clipoff; /* same as above but the part outside the loop/region is clipped off */
+  double global_end_ticks_after_loops_with_clipoff; /* same as above but the part
+                                                       outside the loop/region
+                                                       is clipped off */
   if (
     next_ap
     && position_is_after_or_equal (&next_ap_obj->pos, &obj->loop_end_pos))
@@ -712,12 +713,14 @@ handle_loop (
               ? 0.5
               :
               /* in pixels, higher values
-                 * are lower */
+               * are lower */
               1.0
                 - automation_point_get_normalized_value_in_curve (
                   ap, self,
                   CLAMP ((k - x_start_in_region) / curve_width, 0.0, 1.0));
-          /*g_debug ("start from %f k %f x start in region %f ratio %f, ac width %f, ap y %f", start_from, k, x_start_in_region, CLAMP ((k - x_start_in_region) / curve_width, 0.0, 1.0), curve_width, ap_y);*/
+          /*g_debug ("start from %f k %f x start in region %f ratio %f, ac width
+           * %f, ap y %f", start_from, k, x_start_in_region, CLAMP ((k -
+           * x_start_in_region) / curve_width, 0.0, 1.0), curve_width, ap_y);*/
           ap_y *= ac_height;
 
           double new_x = k;

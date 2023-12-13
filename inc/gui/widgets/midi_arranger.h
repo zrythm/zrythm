@@ -27,8 +27,8 @@ typedef struct Channel         Channel;
 /**
  * Returns the note value (0-127) at y.
  */
-//int
-//midi_arranger_widget_get_note_at_y (double y);
+// int
+// midi_arranger_widget_get_note_at_y (double y);
 
 /**
  * Called on drag begin in parent when background is double

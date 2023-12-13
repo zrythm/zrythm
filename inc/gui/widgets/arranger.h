@@ -206,7 +206,7 @@ typedef struct _ArrangerWidget
 
   /** Start Position of the earliest object
    * currently. */
-  //Position             earliest_obj_pos;
+  // Position             earliest_obj_pos;
 
   /** The absolute (not snapped) Position at the
    * start of a drag, translated from start_x. */
@@ -363,9 +363,9 @@ typedef struct _ArrangerWidget
   /** Set to 1 to redraw. */
   bool redraw;
 
-  //cairo_t *      cached_cr;
+  // cairo_t *      cached_cr;
 
-  //cairo_surface_t * cached_surface;
+  // cairo_surface_t * cached_surface;
 
   /** Rectangle in the last call. */
   graphene_rect_t last_rect;
@@ -383,7 +383,7 @@ typedef struct _ArrangerWidget
 
   /** The rectangle to highlight. */
   GdkRectangle highlight_rect;
-  //GdkRectangle   prev_highlight_rect;
+  // GdkRectangle   prev_highlight_rect;
   //
 
   /** Last selection rectangle, used to redraw the

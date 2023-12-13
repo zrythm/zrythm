@@ -33,19 +33,19 @@
 typedef struct Symap
 {
   /**
-	   Unsorted array of strings, such that the symbol for ID i is found
-	   at symbols[i - 1].
-	*/
+     Unsorted array of strings, such that the symbol for ID i is found
+     at symbols[i - 1].
+  */
   char ** symbols;
 
   /**
-	   Array of IDs, sorted by corresponding string in `symbols`.
-	*/
+     Array of IDs, sorted by corresponding string in `symbols`.
+  */
   uint32_t * index;
 
   /**
-	   Number of symbols (number of items in `symbols` and `index`).
-	*/
+     Number of symbols (number of items in `symbols` and `index`).
+  */
   uint32_t size;
 } Symap;
 

@@ -107,7 +107,7 @@ typedef struct RecordingEvent
   int automation_track_idx;
 
   /** Automation value, if automation. */
-  //float             control_val;
+  // float             control_val;
 
   /** Number of frames processed in this event. */
   nframes_t nframes;

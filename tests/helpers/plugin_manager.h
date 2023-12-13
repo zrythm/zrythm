@@ -110,8 +110,8 @@ test_plugin_manager_get_plugin_setting (
           g_assert_true (g_file_copy (
             pl_bundle_file, pl_bundle_file_in_tmp, G_FILE_COPY_NONE, NULL, NULL,
             NULL, NULL));
-          //g_object_unref (pl_bundle_file);
-          //g_object_unref (pl_bundle_file_in_tmp);
+          // g_object_unref (pl_bundle_file);
+          // g_object_unref (pl_bundle_file_in_tmp);
         }
       g_setenv ("VST3_PATH", tmpdir, true);
       g_setenv ("VST_PATH", tmpdir, true);

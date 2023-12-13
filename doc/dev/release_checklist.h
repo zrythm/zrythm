@@ -38,8 +38,10 @@
  *
  * 1. Create a Savannah news post
  * 2. Scp the tarball and sig to Savannah downloads
- * 3. Rebuild the website to apply the new version and news, create a tag with the same version as zrythm
- * 4. Rebuild the manual to apply the new version, create a tag with the same version as zrythm
+ * 3. Rebuild the website to apply the new version and news, create a tag with
+ * the same version as zrythm
+ * 4. Rebuild the manual to apply the new version, create a tag with the same
+ * version as zrythm
  * 5. git archive the manual and scp to Savannah downloads
  * 6. Announce to social media (Mastodon)
  * 7. If major version, announce to linux-audio-announce@lists.linuxaudio.org

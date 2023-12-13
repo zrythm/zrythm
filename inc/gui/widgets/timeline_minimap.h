@@ -41,7 +41,7 @@ typedef enum TimelineMinimapAction
   TIMELINE_MINIMAP_ACTION_RESIZING_R,
   TIMELINE_MINIMAP_ACTION_STARTING_MOVING, ///< in drag_start
   TIMELINE_MINIMAP_ACTION_MOVING,          ///< in drag start,
-    ///< also for dragging up/down bitwig style
+                                  ///< also for dragging up/down bitwig style
 } TimelineMinimapAction;
 
 typedef struct _TimelineMinimapWidget
@@ -53,9 +53,9 @@ typedef struct _TimelineMinimapWidget
   TimelineMinimapBgWidget *        bg;
   TimelineMinimapSelectionWidget * selection;
   TimelineMinimapAction            action;
-  //GtkGestureDrag *    drag;
-  //GtkGestureClick *   multipress;
-  //GtkGestureClick *   right_mouse_mp;
+  // GtkGestureDrag *    drag;
+  // GtkGestureClick *   multipress;
+  // GtkGestureClick *   right_mouse_mp;
 
   /** Last drag offsets during a drag. */
   double last_offset_x;

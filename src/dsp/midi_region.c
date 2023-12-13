@@ -1,3 +1,4 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2018-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2022 Robert Panovics <robert.panovics at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
@@ -26,6 +27,8 @@
  *
  *  ---
  */
+// clang-format on
+
 #include "dsp/channel.h"
 #include "dsp/exporter.h"
 #include "dsp/midi_event.h"
@@ -537,7 +540,7 @@ handle_note_off:
                   if (position_is_equal (&pos, start_pos))
                     {
                       /* this is an empty track,
-                        * so return NULL
+                       * so return NULL
                        * instead */
                       return NULL;
                     }
@@ -569,7 +572,8 @@ handle_note_off:
                   break;
                 case metaSequencerSpecific:
                   g_message ("Sequencer specific = ");
-                  /*HexList(msg.MsgData.MetaEvent.Data.Sequencer.pData, msg.MsgData.MetaEvent.Data.Sequencer.iSize);*/
+                  /*HexList(msg.MsgData.MetaEvent.Data.Sequencer.pData,
+                   * msg.MsgData.MetaEvent.Data.Sequencer.iSize);*/
                   break;
                 }
               break;
@@ -1047,7 +1051,7 @@ midi_region_fill_midi_events (
         self, midi_events,
         (midi_time_t)
         /* -1 to send event 1 sample
-           * before the end point */
+         * before the end point */
         ((time_nfo->local_offset + time_nfo->nframes) - 1));
     }
 

@@ -1,5 +1,7 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2019-2020, 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * \file
@@ -50,8 +52,8 @@ typedef struct _AutomationEditorSpaceWidget
 
   /** The arranger. */
   ArrangerWidget * arranger;
-  //GtkScrolledWindow * arranger_scroll;
-  //GtkViewport *       arranger_viewport;
+  // GtkScrolledWindow * arranger_scroll;
+  // GtkViewport *       arranger_viewport;
 
   /* The legend on the left side. */
   AutomationEditorLegendWidget * legend;

@@ -77,7 +77,7 @@ audio_cb (
   if (status != 0)
     {
       /* xrun */
-      //g_warning ("XRUN in RtAudio");
+      // g_warning ("XRUN in RtAudio");
     }
 
   if (!engine_get_run (self))

@@ -1,6 +1,8 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2022 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-FileCopyrightText: © 2022 Robert Panovics <robert dot panovics at gmail dot com>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 #include "gui/widgets/add_track_menu_button.h"
 #include "gui/widgets/tracklist.h"

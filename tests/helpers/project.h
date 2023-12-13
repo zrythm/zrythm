@@ -273,7 +273,7 @@ test_project_rebootstrap_timeline (Position * p1, Position * p2)
   chord_track_clear (P_CHORD_TRACK);
   marker_track_clear (P_MARKER_TRACK);
   tempo_track_clear (P_TEMPO_TRACK);
-  //modulator_track_clear (P_MODULATOR_TRACK);
+  // modulator_track_clear (P_MODULATOR_TRACK);
   for (int i = TRACKLIST->num_tracks - 1; i > P_MASTER_TRACK->pos; i--)
     {
       Track * track = TRACKLIST->tracks[i];

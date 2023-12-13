@@ -265,7 +265,7 @@ upgrade_schema (char ** yaml, int src_ver, GError ** error)
           }
 
         /* only dropping undo history, so just re-serialize
-       * into YAML */
+         * into YAML */
         g_free (*yaml);
         err = NULL;
         *yaml = yaml_serialize (self, &project_schema_v1, &err);

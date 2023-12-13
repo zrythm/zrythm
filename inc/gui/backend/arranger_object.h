@@ -196,7 +196,7 @@ typedef struct ArrangerObject
   /** The rectangle this object was last drawn in
    * (ie, after any necessary clipping),
    * in absolute coordinates. */
-  //GdkRectangle       draw_rect;
+  // GdkRectangle       draw_rect;
 
   /** Cache text H extents and W extents for
    * the text, if the object has any. */

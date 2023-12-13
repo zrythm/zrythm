@@ -443,7 +443,7 @@ ui_is_child_hit (
     &GRAPHENE_POINT_INIT ((float) x, (float) y), &wpt);
   g_return_val_if_fail (success, -1);
 
-  //g_message ("wpt.x wpt.y %d %d", wpt.x, wpt.y);
+  // g_message ("wpt.x wpt.y %d %d", wpt.x, wpt.y);
 
   /* if hit */
   int width = gtk_widget_get_width (GTK_WIDGET (child));

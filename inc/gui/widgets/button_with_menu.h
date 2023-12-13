@@ -60,7 +60,7 @@ typedef struct _ButtonWithMenuWidget
   GtkMenuButton * menu_btn;
 
   /** The menu to show when arrow is clicked. */
-  //GtkMenu *        menu;
+  // GtkMenu *        menu;
 } ButtonWithMenuWidget;
 
 void

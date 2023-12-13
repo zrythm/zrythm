@@ -65,7 +65,7 @@ typedef struct _PortConnectionsPopoverWidget
   /** Button to add connection. */
   GtkButton * add;
 
-  //PortSelectorPopoverWidget * port_selector_popover;
+  // PortSelectorPopoverWidget * port_selector_popover;
 } PortConnectionsPopoverWidget;
 
 /**

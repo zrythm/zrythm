@@ -15,8 +15,8 @@
  *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
- * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details.
+ * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public
+ * License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this library. If not, see <http://www.gnu.org/licenses/>.
@@ -534,7 +534,8 @@ string_is_empty (const char * str)
  * @return < 0 if @param s1 compares before @param s2, 0 if they compare equal,
  *          > 0 if @param s1 compares after @param s2
  *
- * @note Taken from src/libedataserver/e-data-server-util.c in evolution-data-center (e_util_utf8_strcasecmp).
+ * @note Taken from src/libedataserver/e-data-server-util.c in
+ *evolution-data-center (e_util_utf8_strcasecmp).
  **/
 int
 string_utf8_strcasecmp (const char * s1, const char * s2)

@@ -1,5 +1,7 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2018-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * \file
@@ -146,7 +148,7 @@ typedef struct Position
    * @note Does not seem needed, keep comment around for
    * reference in the future.
    */
-  //double precise_frames;
+  // double precise_frames;
 } Position;
 
 static const cyaml_schema_field_t position_fields_schema[] = {

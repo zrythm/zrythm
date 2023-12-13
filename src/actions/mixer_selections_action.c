@@ -891,7 +891,7 @@ do_or_undo_move_or_copy (
           }
 
         /* copy automation regions from original
-           * plugin */
+         * plugin */
         if (copy)
           {
             GError * err = NULL;
@@ -913,7 +913,7 @@ do_or_undo_move_or_copy (
           F_PUBLISH_EVENTS);
 
         /* if new plugin (copy), instantiate it,
-           * activate it and set visibility */
+         * activate it and set visibility */
         if (copy)
           {
             g_return_val_if_fail (plugin_activate (pl, F_ACTIVATE) == 0, -1);

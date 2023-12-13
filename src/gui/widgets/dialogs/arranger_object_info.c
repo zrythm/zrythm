@@ -1,5 +1,7 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2020-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 #include "gui/backend/arranger_object.h"
 #include "gui/widgets/dialogs/arranger_object_info.h"

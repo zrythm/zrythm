@@ -520,8 +520,9 @@ carla_engine_callback (
       break;
     /*!
      * Idle frontend.
-     * This is used by the engine during long operations that might block the frontend,
-     * giving it the possibility to idle while the operation is still in place.
+     * This is used by the engine during long operations that might block the
+     * frontend, giving it the possibility to idle while the operation is still
+     * in place.
      */
     case ENGINE_CALLBACK_IDLE:
       /* TODO */

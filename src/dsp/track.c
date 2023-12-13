@@ -1600,7 +1600,7 @@ track_generate_automation_tracks (Track * track)
     {
     case TRACK_TYPE_TEMPO:
       /* create special BPM and time sig automation
-     * tracks for tempo track */
+       * tracks for tempo track */
       at = automation_track_new (track->bpm_port);
       at->created = true;
       g_return_if_fail (atl);

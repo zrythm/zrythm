@@ -1,7 +1,7 @@
+// clang-format off
+// SPDX-FileCopyrightText: © 2021 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 /*
- * Copyright (C) 2021 Alexandros Theodotou <alex at zrythm dot org>
- *
  * This file incorporates work covered by the following copyright and
  * permission notice:
  *
@@ -13,6 +13,7 @@
  *
  * Tracktion Engine is published under a dual [GPL3 (or later)](https://www.gnu.org/licenses/gpl-3.0.en.html)/[Commercial license](https://www.tracktion.com/develop/tracktion-engine).
  */
+// clang-format on
 
 #include <math.h>
 #include <stdlib.h>

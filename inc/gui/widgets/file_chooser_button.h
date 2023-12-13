@@ -39,7 +39,7 @@ typedef struct _FileChooserButtonWidget
   gpointer       user_data;
   GClosureNotify destroy_notify;
 
-  //GtkFileChooserNative * file_chooser_native;
+  // GtkFileChooserNative * file_chooser_native;
 } FileChooserButtonWidget;
 
 void

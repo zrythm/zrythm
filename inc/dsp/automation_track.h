@@ -313,9 +313,9 @@ automation_track_insert_region (AutomationTrack * self, ZRegion * region, int id
  * Returns the visible y offset from the top of
  * the track widget.
  */
-//int
-//automation_track_get_visible_y_offset (
-//AutomationTrack * self);
+// int
+// automation_track_get_visible_y_offset (
+// AutomationTrack * self);
 
 /**
  * Updates each position in each child of the

@@ -117,7 +117,7 @@ PenaltyIndentedWhitespace: 100
 PenaltyReturnTypeOnItsOwnLine: 1
 PointerAlignment: Middle
 ReferenceAlignment: Right
-ReflowComments: false
+ReflowComments: true
 SpaceAfterCStyleCast: true
 SpaceAfterLogicalNot: false
 SpaceAroundPointerQualifiers: Both

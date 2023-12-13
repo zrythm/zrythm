@@ -112,7 +112,8 @@ midi_function_apply (
             ArrangerObject * mn_obj = (ArrangerObject *) mn;
             double           len = arranger_object_get_length_in_ticks (mn_obj);
             MidiNote *       new_mn = (MidiNote *) arranger_object_clone (
-              mn_obj); // midi_note_new (&mn_obj->region_id, &mn->base.pos, &mn->base.end_pos, mn->val, mn->vel->vel);
+              mn_obj); // midi_note_new (&mn_obj->region_id, &mn->base.pos,
+                             // &mn->base.end_pos, mn->val, mn->vel->vel);
             ArrangerObject * new_mn_obj = (ArrangerObject *) new_mn;
             new_midi_notes[i] = new_mn;
             double opt_ticks = position_ms_to_ticks ((signed_ms_t) opts.time);

@@ -146,7 +146,7 @@ G_DEFINE_QUARK (
  * the UI will get around to actually processing
  * the traffic.  Lower values are flakier but save
  * memory.
-*/
+ */
 #define N_BUFFER_CYCLES 4
 
 /* pulled by X11 */
@@ -239,7 +239,7 @@ param_has_range (
  *   loading)
  *
  * @return Non-zero if fail.
-*/
+ */
 static Port *
 create_port (
   Lv2Plugin *    self,
@@ -2378,7 +2378,7 @@ lv2_plugin_instantiate (
    * and tests show this works
    * for me, but this value might need
    * increasing to avoid overflows.
-  */
+   */
   self->comm_buffer_size =
     (uint32_t) (AUDIO_ENGINE->midi_buf_size * N_BUFFER_CYCLES);
 
@@ -2630,7 +2630,7 @@ lv2_plugin_can_cleanup (const char * uri)
   if (
     string_is_equal (uri, "http://tytel.org/helm") ||
     /* swh-plugins crashes on free
-       * https://github.com/swh/lv2/issues/13 */
+     * https://github.com/swh/lv2/issues/13 */
     g_str_has_prefix (uri, "http://plugin.org.uk/swh-plugins"))
     return false;
 

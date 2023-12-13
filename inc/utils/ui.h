@@ -149,7 +149,7 @@ typedef struct UiCursor
 typedef struct UiCaches
 {
   UiColors colors;
-  //UiTextures    textures;
+  // UiTextures    textures;
   UiCursor cursors[UI_MAX_CURSORS];
   int      num_cursors;
 

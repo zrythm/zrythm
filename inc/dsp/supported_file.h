@@ -1,5 +1,7 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2019-2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 /**
  * \file
@@ -70,10 +72,10 @@ typedef struct SupportedFile
   int hidden;
 
   /** MIDI file, if midi. */
-  //MidiFile *     midi_file;
+  // MidiFile *     midi_file;
 
   /** Audio file, if audio. */
-  //AudioFile *    midi_file;
+  // AudioFile *    midi_file;
 
   /** Used in Gtk. */
   WrappedObjectWithChangeSignal * gobj;

@@ -16,7 +16,8 @@
  * From https://docs.weblate.org/en/latest/faq.html:
  * - ``git remote add weblate https://hosted.weblate.org/git/project/component/``
  * - ``git fetch weblate``
- * - ``git checkout translate && git rebase weblate/translate`` to rebase the remote branch to the local one
+ * - ``git checkout translate && git rebase weblate/translate`` to rebase the
+ * remote branch to the local one
  *
  * Then merge that in master, fix conflicts, rebase master
  * back to local translate to get new strings and

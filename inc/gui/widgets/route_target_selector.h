@@ -1,5 +1,7 @@
+// clang-format off
 // SPDX-FileCopyrightText: © 2019, 2021, 2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
+// clang-format on
 
 #ifndef __GUI_WIDGETS_ROUTE_TARGET_SELECTOR_H__
 #define __GUI_WIDGETS_ROUTE_TARGET_SELECTOR_H__

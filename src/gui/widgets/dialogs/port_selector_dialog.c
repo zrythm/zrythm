@@ -98,7 +98,7 @@ create_model_for_ports (
   PortFlow flow = self->port->id.flow;
 
 /* Add a new row to the model if not already
-* in the destinations */
+ * in the destinations */
 #define ADD_ROW \
   if ( \
     (flow == FLOW_INPUT && !ports_connected (port, self->port)) \

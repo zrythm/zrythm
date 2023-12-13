@@ -75,8 +75,10 @@
  *
  * Vamp plugin utils.
  *
- * See https://code.soundsoftware.ac.uk/projects/vamp-plugin-sdk/repository/entry/vamp/vamp.h
- * and https://code.soundsoftware.ac.uk/projects/vamp-plugin-sdk/repository/entry/vamp-hostsdk/host-c.h
+ * See
+ * https://code.soundsoftware.ac.uk/projects/vamp-plugin-sdk/repository/entry/vamp/vamp.h
+ * and
+ * https://code.soundsoftware.ac.uk/projects/vamp-plugin-sdk/repository/entry/vamp-hostsdk/host-c.h
  * for API.
  */
 

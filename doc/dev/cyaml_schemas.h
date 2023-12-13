@@ -7,10 +7,9 @@
  *
  * \section introduction_cyaml Introduction
  *
- * Zrythm uses <a href="https://github.com/tlsa/libcyaml">libcyaml</a> to save projects into YAML.
- * Cyaml can serialize C structs, given that you
- * provide it with the schemas of each struct. This
- * page has some tips on writing schemas.
+ * Zrythm uses <a href="https://github.com/tlsa/libcyaml">libcyaml</a> to save
+ * projects into YAML. Cyaml can serialize C structs, given that you provide it
+ * with the schemas of each struct. This page has some tips on writing schemas.
  *
  * @note Some examples are no longer in the
  * code base and are used only for demonstration
@@ -71,7 +70,8 @@
  *  	0, CYAML_UNLIMITED),
  * @endcode
  *
- * \subsection struct_in_struct_mapping Direct struct (not pointer) inside another struct
+ * \subsection struct_in_struct_mapping Direct struct (not pointer) inside
+ * another struct
  *
  * Use @code CYAML_FIELD_MAPPING @endcode with the
  * @code CYAML_FLAG_DEFAULT @endcode flag.
@@ -109,7 +109,8 @@
  *   &int_schema, 16),
  * @endcode
  *
- * \subsection array_of_pointers_variable_field Arrays of Pointers (variable count)
+ * \subsection array_of_pointers_variable_field Arrays of Pointers (variable
+ * count)
  *
  * There are two cases. Fixed-width arrays,
  * like below. In this case,
@@ -170,8 +171,9 @@
  *   Channel, plugins,
  *   &plugin_schema, STRIP_SIZE),
  * @endcode
-*
- * \subsection array_of_structs_variable_field Arrays of Structs (variable count)
+ *
+ * \subsection array_of_structs_variable_field Arrays of Structs (variable
+ * count)
  *
  * @code
  * MyStruct my_structs[MAX_MY_STRUCTS];

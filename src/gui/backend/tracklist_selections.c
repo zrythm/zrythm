@@ -324,8 +324,8 @@ tracklist_selections_remove_track (
     }
 
   /* if record mode was set automatically
-     * when the track was selected, turn record
-     * off - unless currently recording */
+   * when the track was selected, turn record
+   * off - unless currently recording */
   if (
     track->channel && track->record_set_automatically
     && !(TRANSPORT_IS_RECORDING && TRANSPORT_IS_ROLLING))
