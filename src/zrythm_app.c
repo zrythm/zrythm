@@ -1657,10 +1657,14 @@ static void
 zrythm_app_init (ZrythmApp * self)
 {
   gdk_set_allowed_backends (
-    /* TODO set x11 at the end after this is fixed:
+    /* 1. prefer native backends on windows/mac (avoid x11)
+     * 2. Some plugins crash on wayland:
      * https://github.com/falkTX/Carla/issues/1527
+     * so there used to be "x11,wayland" here but GTK
+     * misbehaving on X11 caused more issues so the current
+     * solution is to bridge all plugins by default
      */
-    "quartz,win32,x11,wayland,*");
+    "quartz,win32,*");
 
   const GActionEntry entries[] = {
     {"prompt_for_project",   on_prompt_for_project       },
