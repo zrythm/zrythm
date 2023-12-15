@@ -575,12 +575,28 @@ create_automation_point (
   Position         adj_pos;
   position_set_to_pos (&adj_pos, pos);
   position_add_ticks (&adj_pos, -r_obj->pos.ticks);
-  AutomationPoint * ap =
-    automation_point_new_float (val, normalized_val, &adj_pos);
-  automation_region_add_ap (region, ap, true);
-  region->last_recorded_ap = ap;
+  if (
+    region->last_recorded_ap
+    && math_floats_equal (
+      region->last_recorded_ap->normalized_val, normalized_val)
+    && position_is_equal (&region->last_recorded_ap->base.pos, &adj_pos))
+    {
+      /* this block is used to avoid duplicate automation points */
+      /* TODO this shouldn't happen and needs investigation */
+      return NULL;
+    }
+  else
+    {
+      AutomationPoint * ap =
+        automation_point_new_float (val, normalized_val, &adj_pos);
+      ap->curve_opts.curviness = 1.0;
+      ap->curve_opts.algo = CURVE_ALGORITHM_PULSE;
+      automation_region_add_ap (region, ap, true);
+      region->last_recorded_ap = ap;
+      return ap;
+    }
 
-  return ap;
+  return NULL;
 }
 
 /**
