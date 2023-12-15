@@ -205,6 +205,12 @@
   </menu>
   <menu id="automation_functions_menu">
     <section>
+      <item>
+        <attribute name="label" translatable="yes">Flatten</attribute>
+        <attribute name="action">editor-toolbar.editor-function</attribute>
+        <attribute name="target">flatten</attribute>
+        <attribute name="icon">iconpark-figma-flatten-selection</attribute>
+      </item>
       <submenu>
         <attribute name="label" translatable="yes">Flip</attribute>
         <item>

@@ -2531,6 +2531,10 @@ DEFINE_SIMPLE (activate_editor_function)
           {
             do_automation_func (AUTOMATION_FUNCTION_FLIP_VERTICAL);
           }
+        else if (string_is_equal (str, "flatten"))
+          {
+            do_automation_func (AUTOMATION_FUNCTION_FLATTEN);
+          }
         else
           {
             g_return_if_reached ();

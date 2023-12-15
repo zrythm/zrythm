@@ -1,7 +1,5 @@
+// SPDX-FileCopyrightText: © 2020 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
-/*
- * Copyright (C) 2020 Alexandros Theodotou <alex at zrythm dot org>
- */
 
 #include "dsp/automation_function.h"
 #include "dsp/engine.h"
@@ -33,6 +31,18 @@ flip (AutomationSelections * sel, bool vertical)
     }
 }
 
+static void
+flatten (AutomationSelections * sel)
+{
+  for (int i = 0; i < sel->num_automation_points; i++)
+    {
+      AutomationPoint * ap = sel->automation_points[i];
+
+      ap->curve_opts.curviness = 1.0;
+      ap->curve_opts.algo = CURVE_ALGORITHM_PULSE;
+    }
+}
+
 /**
  * Applies the given action to the given selections.
  *
@@ -54,6 +64,9 @@ automation_function_apply (
       break;
     case AUTOMATION_FUNCTION_FLIP_VERTICAL:
       flip ((AutomationSelections *) sel, true);
+      break;
+    case AUTOMATION_FUNCTION_FLATTEN:
+      flatten ((AutomationSelections *) sel);
       break;
     }
 

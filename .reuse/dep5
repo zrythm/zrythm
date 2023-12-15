@@ -209,6 +209,14 @@ Comment:
   The files have been slightly modified.
   From https://github.com/microsoft/fluentui-system-icons.
 
+Files:
+  resources/icons/iconpark/*.svg
+Copyright: IconPark contributors <https://github.com/bytedance/IconPark>
+License: Apache-2.0
+Comment:
+  The files have been slightly modified.
+  From https://iconpark.oceanengine.com/official.
+
 Files: resources/icons/font-awesome/*.svg
 Copyright: Font Awesome project
 License: CC-BY-4.0
