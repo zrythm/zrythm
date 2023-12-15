@@ -16,6 +16,7 @@
 #include "utils/flags.h"
 #include "utils/math.h"
 #include "utils/objects.h"
+#include "utils/ui.h"
 #include "zrythm_app.h"
 
 #include <glib/gi18n.h>
@@ -185,7 +186,11 @@ tempo_track_set_bpm_from_str (void * _self, const char * str)
 
   bpm_t bpm = (float) atof (str);
   if (math_floats_equal (bpm, 0))
-    g_warning ("invalid BPM %s", str);
+    {
+      ui_show_error_message (
+        _ ("Invalid BPM Value"), _ ("Please enter a positive decimal number"));
+      return;
+    }
 
   tempo_track_set_bpm (
     self, bpm, tempo_track_get_current_bpm (self), Z_F_NOT_TEMPORARY,

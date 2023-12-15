@@ -224,17 +224,16 @@ automation_point_set_fvalue_with_action (
   int   res = sscanf (fval_str, "%f", &val);
   if (res != 1 || res == EOF || val < port->minf || val > port->maxf)
     {
-      ui_show_error_message (_ ("Invalid Value"), _ ("Invalid value"));
+      ui_show_error_message_printf (
+        _ ("Invalid Value"), _ ("Please enter a number between %f and %f"),
+        port->minf, port->maxf);
+      return;
     }
-  else
-    {
-      ArrangerObject * obj = (ArrangerObject *) self;
-      arranger_object_edit_begin (obj);
-      automation_point_set_fvalue (
-        self, val, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
-      arranger_object_edit_finish (
-        obj, ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
-    }
+
+  ArrangerObject * obj = (ArrangerObject *) self;
+  arranger_object_edit_begin (obj);
+  automation_point_set_fvalue (self, val, F_NOT_NORMALIZED, F_NO_PUBLISH_EVENTS);
+  arranger_object_edit_finish (obj, ARRANGER_SELECTIONS_ACTION_EDIT_PRIMITIVE);
 }
 
 /**

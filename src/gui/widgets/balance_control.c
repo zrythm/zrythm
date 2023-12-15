@@ -278,36 +278,38 @@ static void
 set_val_with_action (void * object, const char * str)
 {
   BalanceControlWidget * self = (BalanceControlWidget *) object;
-  bool                   is_valid = false;
   float                  val;
+  const char *           err_value_msg =
+    _ ("Please enter a decimal number between -100 and 100");
   if (math_is_string_valid_float (str, &val))
     {
       if (val <= 100.f && val >= -100.f)
         {
-          is_valid = true;
         }
+      else
+        {
+          ui_show_error_message (_ ("Invalid Value"), err_value_msg);
+          return;
+        }
+    }
+  else
+    {
+      ui_show_error_message (_ ("Invalid Value"), err_value_msg);
+      return;
     }
 
   val = (val + 100.f) / 200.f;
 
-  if (is_valid)
+  if (!math_floats_equal_epsilon (val, GET_VAL, 0.0001f))
     {
-      if (!math_floats_equal_epsilon (val, GET_VAL, 0.0001f))
+      Track *  track = channel_get_track ((Channel *) self->object);
+      GError * err = NULL;
+      bool     ret = tracklist_selections_action_perform_edit_single_float (
+        EDIT_TRACK_ACTION_TYPE_PAN, track, GET_VAL, val, false, &err);
+      if (!ret)
         {
-          Track *  track = channel_get_track ((Channel *) self->object);
-          GError * err = NULL;
-          bool     ret = tracklist_selections_action_perform_edit_single_float (
-            EDIT_TRACK_ACTION_TYPE_PAN, track, GET_VAL, val, false, &err);
-          if (!ret)
-            {
-              HANDLE_ERROR_LITERAL (err, _ ("Failed to change balance"));
-            }
+          HANDLE_ERROR_LITERAL (err, _ ("Failed to change balance"));
         }
-    }
-  else /* else if not valid */
-    {
-      ui_show_error_message (
-        _ ("Invalid Value"), _ ("Invalid value given to balance control"));
     }
 }
 

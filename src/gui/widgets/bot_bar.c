@@ -298,7 +298,8 @@ set_buffer_size (void * object, const char * str)
       unsigned long long int buf_sz = strtoull (str, NULL, 10);
       if (buf_sz == 0ULL || (buf_sz == ULLONG_MAX && errno == ERANGE))
         {
-          ui_show_error_message (NULL, _ ("Failed reading buffer size value"));
+          ui_show_error_message (
+            _ ("Invalid Value"), _ ("Please enter a valid number"));
           return;
         }
       else

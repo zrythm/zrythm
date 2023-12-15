@@ -2437,7 +2437,8 @@ set_pitch_ratio (void * object, const char * ratio_str)
   double ratio = strtod (ratio_str, NULL);
   if (ratio < 0.0001 || ratio > 100.0)
     {
-      ui_show_error_message (false, _ ("Please enter a valid ratio."));
+      ui_show_error_message (
+        false, _ ("Please enter a ratio between 0.0001 and 100."));
       return;
     }
 
