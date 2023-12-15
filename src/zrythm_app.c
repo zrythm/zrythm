@@ -1282,8 +1282,8 @@ zrythm_app_startup (GApplication * app)
   INSTALL_ACCEL ("Home", "app.goto-start-marker");
   INSTALL_ACCEL ("End", "app.goto-end-marker");
   INSTALL_ACCEL_WITH_SECONDARY (
-    "<Control>KP_4", "<Control>BackSpace", "app.goto-prev-marker");
-  INSTALL_ACCEL ("<Control>KP_6", "app.goto-next-marker");
+    "Page_Up", "<Control>BackSpace", "app.goto-prev-marker");
+  INSTALL_ACCEL ("Page_Down", "app.goto-next-marker");
   INSTALL_ACCEL ("<Control>space", "app.play-pause");
   INSTALL_ACCEL ("<Alt>Q", "app.quantize-options::global");
   INSTALL_ACCEL ("<Control>J", "app.merge-selection");

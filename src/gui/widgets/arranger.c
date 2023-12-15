@@ -6262,12 +6262,6 @@ arranger_widget_class_init (ArrangerWidgetClass * _klass)
     wklass, GDK_KEY_Q, 0, z_gtk_simple_action_shortcut_func, "s",
     "quick-quantize::global", NULL);
   gtk_widget_class_add_binding (
-    wklass, GDK_KEY_KP_4, 0, z_gtk_simple_action_shortcut_func, "s",
-    "goto-prev-marker", NULL);
-  gtk_widget_class_add_binding (
-    wklass, GDK_KEY_KP_6, 0, z_gtk_simple_action_shortcut_func, "s",
-    "goto-next-marker", NULL);
-  gtk_widget_class_add_binding (
     wklass, GDK_KEY_F2, 0, z_gtk_simple_action_shortcut_func, "s",
     "rename-arranger-object", NULL);
 }
