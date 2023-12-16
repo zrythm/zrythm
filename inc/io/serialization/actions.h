@@ -4,11 +4,11 @@
 /**
  * \file
  *
- * Port serialization.
+ * Action serialization.
  */
 
-#ifndef __IO_ACTIONS_H__
-#define __IO_ACTIONS_H__
+#ifndef __IO_SERIALIZATION_ACTIONS_H__
+#define __IO_SERIALIZATION_ACTIONS_H__
 
 #include "utils/types.h"
 
@@ -182,4 +182,4 @@ chord_action_deserialize_from_json (
   ChordAction * action,
   GError **     error);
 
-#endif // __IO_ACTIONS_H__
+#endif // __IO_SERIALIZATION_ACTIONS_H__

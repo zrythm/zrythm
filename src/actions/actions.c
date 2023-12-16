@@ -83,6 +83,7 @@
 #include "gui/widgets/preferences.h"
 #include "gui/widgets/right_dock_edge.h"
 #include "gui/widgets/ruler.h"
+#include "io/serialization/clipboard.h"
 
 #include "project/project_init_flow_manager.h"
 #ifdef HAVE_GUILE
@@ -1135,7 +1136,7 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
             }
           GError * err = NULL;
           char *   serialized =
-            yaml_serialize (clipboard, &clipboard_schema, &err);
+            clipboard_serialize_to_json_str (clipboard, false, &err);
           g_return_if_fail (serialized);
           gdk_clipboard_set_text (DEFAULT_CLIPBOARD, serialized);
           clipboard_free (clipboard);
@@ -1154,7 +1155,7 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
             clipboard_new_for_mixer_selections (MIXER_SELECTIONS, F_CLONE);
           GError * err = NULL;
           char *   serialized =
-            yaml_serialize (clipboard, &clipboard_schema, &err);
+            clipboard_serialize_to_json_str (clipboard, false, &err);
           g_return_if_fail (serialized);
           gdk_clipboard_set_text (DEFAULT_CLIPBOARD, serialized);
           clipboard_free (clipboard);
@@ -1163,14 +1164,14 @@ activate_copy (GSimpleAction * action, GVariant * variant, gpointer user_data)
       break;
     case SELECTION_TYPE_TRACKLIST:
       {
-        /* TODO doesn't work - GDK freezes on large
-         * YAML text */
+        /* TODO doesn't work - GDK freezes on large text */
         break;
 
         Clipboard * clipboard = clipboard_new_for_tracklist_selections (
           TRACKLIST_SELECTIONS, F_CLONE);
         GError * err = NULL;
-        char * serialized = yaml_serialize (clipboard, &clipboard_schema, &err);
+        char *   serialized =
+          clipboard_serialize_to_json_str (clipboard, false, &err);
         g_return_if_fail (serialized);
         gdk_clipboard_set_text (DEFAULT_CLIPBOARD, serialized);
         clipboard_free (clipboard);
@@ -1194,7 +1195,7 @@ activate_paste (GSimpleAction * action, GVariant * variant, gpointer user_data)
 
   GError *    err = NULL;
   Clipboard * clipboard =
-    (Clipboard *) yaml_deserialize (text, &clipboard_schema, &err);
+    clipboard_deserialize_from_json_str (text, false, &err);
   if (!clipboard)
     {
       g_message ("invalid clipboard data received:\n%s\n%s", err->message, text);

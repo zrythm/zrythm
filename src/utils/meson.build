@@ -9,6 +9,7 @@ util_srcs = [
   'cairo.c',
   'chromaprint.c',
   'color.c',
+  'compression.c',
   'cpu_windows.cpp',
   'curl.c',
   'datetime.c',

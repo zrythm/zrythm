@@ -4,6 +4,7 @@
 io_serialization_srcs = files([
   'actions.c',
   'arranger_objects.c',
+  'clipboard.c',
   'selections.c',
   'channel.c',
   'gui_backend.c',
