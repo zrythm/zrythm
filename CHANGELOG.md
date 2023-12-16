@@ -6,6 +6,20 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.5.1.1] - 2023-12-17
+### Added
+- Add automation flatten function (#4756)
+
+### Changed
+- Show more helpful error messages when wrong values are given (#4843)
+- Change prev/next marker shortcuts to PageUp/PageDown (#4814)
+- Recorded automation points will now be automatically flattened (#4755)
+- Don't force X11 mode on Wayland (Zrythm will now be a native Wayland app on Wayland by default)
+
+### Fixed
+- Fix duplicated automation points being created when recording automation (#4755)
+- Fix copy-paste (regression from YAML -> JSON switch) (#4964)
+
 ## [1.0.0-beta.5.0.1] - 2023-12-13
 ### Added
 - Optimize track processing: only check MIDI control ports that had changes
