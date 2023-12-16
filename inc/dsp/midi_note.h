@@ -50,8 +50,6 @@ typedef struct MidiNote
   /** Base struct. */
   ArrangerObject base;
 
-  int schema_version;
-
   /** Velocity. */
   Velocity * vel;
 
@@ -80,22 +78,6 @@ typedef struct MidiNote
   /** Cache layout for drawing the name. */
   PangoLayout * layout;
 } MidiNote;
-
-static const cyaml_schema_field_t midi_note_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (MidiNote, base, arranger_object_fields_schema),
-  YAML_FIELD_INT (MidiNote, schema_version),
-  YAML_FIELD_MAPPING_PTR (MidiNote, vel, velocity_fields_schema),
-  YAML_FIELD_UINT (MidiNote, val),
-  YAML_FIELD_INT (MidiNote, muted),
-  YAML_FIELD_INT (MidiNote, pos),
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t midi_note_schema = {
-  /* allow nullable for mn_r1 in
-   * ArrangerSelectionsAction */
-  YAML_VALUE_PTR_NULLABLE (MidiNote, midi_note_fields_schema),
-};
 
 /**
  * Gets the global Position of the MidiNote's

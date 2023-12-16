@@ -204,11 +204,9 @@ void
 midi_region_remove_all_midi_notes (ZRegion * region);
 
 /**
- * Exports the ZRegion to an existing MIDI file
- * instance.
+ * Exports the ZRegion to an existing MIDI file instance.
  *
- * This must only be called when exporting single
- * regions.
+ * This must only be called when exporting single regions.
  *
  * @param add_region_start Add the region start
  *   offset to the positions.

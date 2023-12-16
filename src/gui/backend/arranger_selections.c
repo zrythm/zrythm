@@ -152,7 +152,6 @@ arranger_selections_init (ArrangerSelections * self, ArrangerSelectionsType type
 {
   self->type = type;
   self->magic = ARRANGER_SELECTIONS_MAGIC;
-  self->schema_version = ARRANGER_SELECTIONS_SCHEMA_VERSION;
 
   TimelineSelections *     ts;
   ChordSelections *        cs;
@@ -167,30 +166,25 @@ arranger_selections_init (ArrangerSelections * self, ArrangerSelectionsType type
     {
     case TYPE (TIMELINE):
       ts = (TimelineSelections *) self;
-      ts->schema_version = TL_SELECTIONS_SCHEMA_VERSION;
       SET_OBJ (ts, ZRegion, region);
       SET_OBJ (ts, ScaleObject, scale_object);
       SET_OBJ (ts, Marker, marker);
       break;
     case TYPE (MIDI):
       mas = (MidiArrangerSelections *) self;
-      mas->schema_version = MA_SELECTIONS_SCHEMA_VERSION;
       SET_OBJ (mas, MidiNote, midi_note);
       break;
     case TYPE (AUTOMATION):
       as = (AutomationSelections *) self;
-      as->schema_version = AUTOMATION_SELECTIONS_SCHEMA_VERSION;
       SET_OBJ (as, AutomationPoint, automation_point);
       break;
     case TYPE (CHORD):
       cs = (ChordSelections *) self;
-      cs->schema_version = CHORD_SELECTIONS_SCHEMA_VERSION;
       SET_OBJ (cs, ChordObject, chord_object);
       break;
     case TYPE (AUDIO):
       {
         AudioSelections * sel = (AudioSelections *) self;
-        sel->schema_version = AUDIO_SELECTIONS_SCHEMA_VERSION;
         position_init (&sel->sel_start);
         position_init (&sel->sel_end);
         region_identifier_init (&sel->region_id);
@@ -2521,7 +2515,7 @@ return_can_split:
       position_to_string (pos, pos_str);
       g_message (
         "cannot split %s selections at %s",
-        arranger_selections_type_strings[self->type].str, pos_str);
+        arranger_selections_type_strings[self->type], pos_str);
     }
 
   return can_split;

@@ -13,7 +13,6 @@
 #include "dsp/position.h"
 #include "dsp/region_identifier.h"
 #include "gui/backend/arranger_selections.h"
-#include "utils/yaml.h"
 
 typedef struct ZRegion ZRegion;
 
@@ -22,8 +21,6 @@ typedef struct ZRegion ZRegion;
  *
  * @{
  */
-
-#define AUDIO_SELECTIONS_SCHEMA_VERSION 1
 
 #define AUDIO_SELECTIONS (PROJECT->audio_selections)
 
@@ -36,8 +33,6 @@ typedef struct ZRegion ZRegion;
 typedef struct AudioSelections
 {
   ArrangerSelections base;
-
-  int schema_version;
 
   /** Whether or not a selection exists. */
   bool has_selection;
@@ -74,28 +69,6 @@ typedef struct AudioSelections
   RegionIdentifier region_id;
 
 } AudioSelections;
-
-static const cyaml_schema_field_t audio_selections_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AudioSelections,
-    base,
-    arranger_selections_fields_schema),
-  YAML_FIELD_INT (AudioSelections, schema_version),
-  YAML_FIELD_INT (AudioSelections, has_selection),
-  YAML_FIELD_MAPPING_EMBEDDED (AudioSelections, sel_start, position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (AudioSelections, sel_end, position_fields_schema),
-  YAML_FIELD_INT (AudioSelections, pool_id),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AudioSelections,
-    region_id,
-    region_identifier_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t audio_selections_schema = {
-  YAML_VALUE_PTR (AudioSelections, audio_selections_fields_schema),
-};
 
 /**
  * Sets whether a range selection exists and sends

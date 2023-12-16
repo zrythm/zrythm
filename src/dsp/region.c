@@ -59,13 +59,10 @@ region_init (
   int              lane_pos_or_at_idx,
   int              idx_inside_lane_or_at)
 {
-  self->schema_version = REGION_SCHEMA_VERSION;
-
   ArrangerObject * obj = (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_REGION;
   arranger_object_init (obj);
 
-  self->id.schema_version = REGION_IDENTIFIER_SCHEMA_VERSION;
   self->id.track_name_hash = track_name_hash;
   self->id.lane_pos = lane_pos_or_at_idx;
   self->id.at_idx = lane_pos_or_at_idx;

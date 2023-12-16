@@ -33,8 +33,6 @@ typedef struct ChordSelections
   /** Base struct. */
   ArrangerSelections base;
 
-  int schema_version;
-
   /** Selected ChordObject's.
    *
    * These are used for
@@ -44,24 +42,6 @@ typedef struct ChordSelections
   size_t         chord_objects_size;
 
 } ChordSelections;
-
-static const cyaml_schema_field_t chord_selections_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ChordSelections,
-    base,
-    arranger_selections_fields_schema),
-  YAML_FIELD_INT (ChordSelections, schema_version),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    ChordSelections,
-    chord_objects,
-    chord_object_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t chord_selections_schema = {
-  YAML_VALUE_PTR (ChordSelections, chord_selections_fields_schema),
-};
 
 /**
  * Returns if the selections can be pasted.

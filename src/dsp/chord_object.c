@@ -22,8 +22,6 @@ chord_object_new (RegionIdentifier * region_id, int chord_index, int index)
 {
   ChordObject * self = object_new (ChordObject);
 
-  self->schema_version = CHORD_OBJECT_SCHEMA_VERSION;
-
   ArrangerObject * obj = (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_CHORD_OBJECT;
 

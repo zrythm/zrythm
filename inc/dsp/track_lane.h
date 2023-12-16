@@ -24,8 +24,6 @@ typedef void                      MIDI_FILE;
  * @{
  */
 
-#define TRACK_LANE_SCHEMA_VERSION 1
-
 #define track_lane_is_auditioner(self) \
   (self->track && track_is_auditioner (self->track))
 
@@ -33,16 +31,14 @@ typedef void                      MIDI_FILE;
   (self->track && track_is_in_active_project (self->track))
 
 /**
- * A TrackLane belongs to a Track (can have many
- * TrackLanes in a Track) and contains Regions.
+ * A TrackLane belongs to a Track (can have many TrackLanes in a Track) and
+ * contains Regions.
  *
- * Only Tracks that have Regions can have TrackLanes,
- * such as InstrumentTrack and AudioTrack.
+ * Only Tracks that have Regions can have TrackLanes, such as InstrumentTrack
+ * and AudioTrack.
  */
 typedef struct TrackLane
 {
-  int schema_version;
-
   /** Position in the Track. */
   int pos;
 
@@ -87,23 +83,6 @@ typedef struct TrackLane
   Track * track;
 
 } TrackLane;
-
-static const cyaml_schema_field_t track_lane_fields_schema[] = {
-  YAML_FIELD_INT (TrackLane, schema_version),
-  YAML_FIELD_INT (TrackLane, pos),
-  YAML_FIELD_STRING_PTR (TrackLane, name),
-  YAML_FIELD_FLOAT (TrackLane, height),
-  YAML_FIELD_INT (TrackLane, mute),
-  YAML_FIELD_INT (TrackLane, solo),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (TrackLane, regions, region_schema),
-  YAML_FIELD_UINT (TrackLane, midi_ch),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t track_lane_schema = {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, TrackLane, track_lane_fields_schema),
-};
 
 void
 track_lane_init_loaded (TrackLane * self, Track * track);

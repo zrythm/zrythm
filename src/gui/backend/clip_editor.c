@@ -221,7 +221,6 @@ ClipEditor *
 clip_editor_new (void)
 {
   ClipEditor * self = object_new (ClipEditor);
-  self->schema_version = CLIP_EDITOR_SCHEMA_VERSION;
 
   self->piano_roll = piano_roll_new ();
   self->audio_clip_editor = audio_clip_editor_new ();
@@ -237,8 +236,6 @@ clip_editor_new (void)
 void
 clip_editor_init (ClipEditor * self)
 {
-  self->schema_version = CLIP_EDITOR_SCHEMA_VERSION;
-
   piano_roll_init (self->piano_roll);
   audio_clip_editor_init (self->audio_clip_editor);
   chord_editor_init (self->chord_editor);

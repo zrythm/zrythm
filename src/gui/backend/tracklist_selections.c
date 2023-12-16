@@ -97,8 +97,6 @@ tracklist_selections_new (bool is_project)
 {
   TracklistSelections * self = object_new (TracklistSelections);
 
-  self->schema_version = TRACKLIST_SELECTIONS_SCHEMA_VERSION;
-
   self->is_project = is_project;
 
   return self;

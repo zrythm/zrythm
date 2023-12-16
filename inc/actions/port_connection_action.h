@@ -46,25 +46,6 @@ typedef struct PortConnectionAction
   float val;
 } PortConnectionAction;
 
-static const cyaml_schema_field_t port_connection_action_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    PortConnectionAction,
-    parent_instance,
-    undoable_action_fields_schema),
-  YAML_FIELD_ENUM (PortConnectionAction, type, port_connection_action_type_strings),
-  YAML_FIELD_MAPPING_PTR (
-    PortConnectionAction,
-    connection,
-    port_connection_fields_schema),
-  YAML_FIELD_FLOAT (PortConnectionAction, val),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t port_connection_action_schema = {
-  YAML_VALUE_PTR (PortConnectionAction, port_connection_action_fields_schema),
-};
-
 void
 port_connection_action_init_loaded (PortConnectionAction * self);
 

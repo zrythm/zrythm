@@ -35,8 +35,6 @@ _at_create (void)
 
   port_identifier_init (&self->port_id);
 
-  self->schema_version = AUTOMATION_TRACK_SCHEMA_VERSION;
-
   return self;
 }
 
@@ -89,9 +87,7 @@ automation_track_new (Port * port)
 NONNULL bool
 automation_track_validate (AutomationTrack * self)
 {
-  g_return_val_if_fail (
-    /*self->schema_version == AUTOMATION_TRACK_SCHEMA_VERSION*/
-    port_identifier_validate (&self->port_id), false);
+  g_return_val_if_fail (port_identifier_validate (&self->port_id), false);
 
   unsigned int track_name_hash = self->port_id.track_name_hash;
   if (self->port_id.owner_type == PORT_OWNER_TYPE_PLUGIN)

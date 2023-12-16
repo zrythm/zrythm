@@ -17,8 +17,6 @@ marker_new (const char * name)
 {
   Marker * self = object_new (Marker);
 
-  self->schema_version = MARKER_SCHEMA_VERSION;
-
   ArrangerObject * obj = (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_MARKER;
 

@@ -13,7 +13,6 @@
 #include <stdbool.h>
 
 #include "dsp/region_identifier.h"
-#include "utils/yaml.h"
 
 typedef struct ZRegion ZRegion;
 
@@ -22,8 +21,6 @@ typedef struct ZRegion ZRegion;
  *
  * @{
  */
-
-#define REGION_LINK_GROUP_SCHEMA_VERSION 1
 
 #define REGION_LINK_GROUP_MAGIC 1222013
 #define IS_REGION_LINK_GROUP(x) \
@@ -34,8 +31,6 @@ typedef struct ZRegion ZRegion;
  */
 typedef struct RegionLinkGroup
 {
-  int schema_version;
-
   /** Identifiers for regions in this link group. */
   RegionIdentifier * ids;
   int                num_ids;
@@ -46,25 +41,6 @@ typedef struct RegionLinkGroup
   /** Group index. */
   int group_idx;
 } RegionLinkGroup;
-
-static const cyaml_schema_field_t region_link_group_fields_schema[] = {
-  YAML_FIELD_INT (RegionLinkGroup, schema_version),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    RegionLinkGroup,
-    ids,
-    region_identifier_schema_default),
-  YAML_FIELD_INT (RegionLinkGroup, group_idx),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t region_link_group_schema = {
-  YAML_VALUE_PTR (RegionLinkGroup, region_link_group_fields_schema),
-};
-
-static const cyaml_schema_value_t region_link_group_schema_default = {
-  YAML_VALUE_DEFAULT (RegionLinkGroup, region_link_group_fields_schema),
-};
 
 NONNULL void
 region_link_group_init_loaded (RegionLinkGroup * self);

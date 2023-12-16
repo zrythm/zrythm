@@ -40,22 +40,6 @@ typedef struct PortAction
   float val;
 } PortAction;
 
-static const cyaml_schema_field_t port_action_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    PortAction,
-    parent_instance,
-    undoable_action_fields_schema),
-  YAML_FIELD_ENUM (PortAction, type, port_action_type_strings),
-  YAML_FIELD_MAPPING_EMBEDDED (PortAction, port_id, port_identifier_fields_schema),
-  YAML_FIELD_FLOAT (PortAction, val),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t port_action_schema = {
-  YAML_VALUE_PTR (PortAction, port_action_fields_schema),
-};
-
 void
 port_action_init_loaded (PortAction * self);
 

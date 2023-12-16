@@ -32,8 +32,6 @@ typedef enum ArrangerSelectionsActionEditType ArrangerSelectionsActionEditType;
  * @{
  */
 
-#define ARRANGER_OBJECT_SCHEMA_VERSION 1
-
 #define ARRANGER_OBJECT_MAGIC 347616554
 #define IS_ARRANGER_OBJECT(tr) \
   (((ArrangerObject *) tr)->magic == ARRANGER_OBJECT_MAGIC \
@@ -122,8 +120,6 @@ typedef enum ArrangerObjectPositionType
  */
 typedef struct ArrangerObject
 {
-  int schema_version;
-
   ArrangerObjectType type;
 
   /** Flags. */
@@ -295,50 +291,6 @@ typedef struct ArrangerObject
    * Whether part of an auditioner track. */
   bool is_auditioner;
 } ArrangerObject;
-
-static const cyaml_schema_field_t arranger_object_fields_schema[] = {
-  YAML_FIELD_INT (ArrangerObject, schema_version),
-  YAML_FIELD_ENUM (ArrangerObject, type, arranger_object_type_strings),
-  CYAML_FIELD_BITFIELD (
-    "flags",
-    CYAML_FLAG_DEFAULT,
-    ArrangerObject,
-    flags,
-    arranger_object_flags_bitvals,
-    CYAML_ARRAY_LEN (arranger_object_flags_bitvals)),
-  YAML_FIELD_INT (ArrangerObject, muted),
-  YAML_FIELD_MAPPING_EMBEDDED (ArrangerObject, pos, position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (ArrangerObject, end_pos, position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ArrangerObject,
-    clip_start_pos,
-    position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ArrangerObject,
-    loop_start_pos,
-    position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (ArrangerObject, loop_end_pos, position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (ArrangerObject, fade_in_pos, position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (ArrangerObject, fade_out_pos, position_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ArrangerObject,
-    fade_in_opts,
-    curve_options_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ArrangerObject,
-    fade_out_opts,
-    curve_options_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ArrangerObject,
-    region_id,
-    region_identifier_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t arranger_object_schema = {
-  YAML_VALUE_PTR (ArrangerObject, arranger_object_fields_schema),
-};
 
 /**
  * Returns if the object type has a length.

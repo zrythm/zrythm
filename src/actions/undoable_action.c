@@ -55,7 +55,6 @@ undoable_action_init_loaded (UndoableAction * self)
 void
 undoable_action_init (UndoableAction * self, UndoableActionType type)
 {
-  self->schema_version = UNDOABLE_ACTION_SCHEMA_VERSION;
   self->type = type;
   self->num_actions = 1;
 

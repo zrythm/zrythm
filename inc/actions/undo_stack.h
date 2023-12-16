@@ -31,8 +31,6 @@ typedef struct AudioClip AudioClip;
  * @{
  */
 
-#define UNDO_STACK_SCHEMA_VERSION 2
-
 /**
  * Serializable stack for undoable actions.
  *
@@ -40,8 +38,6 @@ typedef struct AudioClip AudioClip;
  */
 typedef struct UndoStack
 {
-  int schema_version;
-
   /** Actual stack used at runtime. */
   Stack * stack;
 
@@ -88,57 +84,6 @@ typedef struct UndoStack
   size_t         chord_actions_size;
 
 } UndoStack;
-
-static const cyaml_schema_field_t undo_stack_fields_schema[] = {
-  YAML_FIELD_INT (UndoStack, schema_version),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack,
-    as_actions,
-    arranger_selections_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack,
-    mixer_selections_actions,
-    mixer_selections_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack,
-    tracklist_selections_actions,
-    tracklist_selections_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack,
-    channel_send_actions,
-    channel_send_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack,
-    port_connection_actions,
-    port_connection_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack,
-    port_actions,
-    port_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack,
-    midi_mapping_actions,
-    midi_mapping_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack,
-    range_actions,
-    range_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack,
-    transport_actions,
-    transport_action_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (
-    UndoStack,
-    chord_actions,
-    chord_action_schema),
-  YAML_FIELD_MAPPING_PTR (UndoStack, stack, stack_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t undo_stack_schema = {
-  YAML_VALUE_PTR (UndoStack, undo_stack_fields_schema),
-};
 
 void
 undo_stack_init_loaded (UndoStack * self);

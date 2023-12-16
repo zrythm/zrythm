@@ -54,39 +54,6 @@ typedef struct ChordAction
 
 } ChordAction;
 
-static const cyaml_schema_field_t chord_action_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ChordAction,
-    parent_instance,
-    undoable_action_fields_schema),
-  YAML_FIELD_ENUM (ChordAction, type, chord_action_type_strings),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChordAction,
-    chord_before,
-    chord_descriptor_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChordAction,
-    chord_after,
-    chord_descriptor_fields_schema),
-  YAML_FIELD_INT (ChordAction, chord_idx),
-  YAML_FIELD_DYN_FIXED_SIZE_PTR_ARRAY_OPT (
-    ChordAction,
-    chords_before,
-    chord_descriptor_schema,
-    CHORD_EDITOR_NUM_CHORDS),
-  YAML_FIELD_DYN_FIXED_SIZE_PTR_ARRAY_OPT (
-    ChordAction,
-    chords_after,
-    chord_descriptor_schema,
-    CHORD_EDITOR_NUM_CHORDS),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t chord_action_schema = {
-  CYAML_VALUE_MAPPING (CYAML_FLAG_POINTER, ChordAction, chord_action_fields_schema),
-};
-
 void
 chord_action_init_loaded (ChordAction * self);
 

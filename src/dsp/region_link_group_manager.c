@@ -93,14 +93,13 @@ region_link_group_manager_remove_group (
 void
 region_link_group_manager_print (RegionLinkGroupManager * self)
 {
-  yaml_print (self, &region_link_group_manager_schema);
+  /* TODO */
 }
 
 RegionLinkGroupManager *
 region_link_group_manager_new (void)
 {
   RegionLinkGroupManager * self = object_new (RegionLinkGroupManager);
-  self->schema_version = REGION_LINK_GROUP_MANAGER_SCHEMA_VERSION;
 
   return self;
 }
@@ -109,7 +108,6 @@ RegionLinkGroupManager *
 region_link_group_manager_clone (RegionLinkGroupManager * src)
 {
   RegionLinkGroupManager * self = object_new (RegionLinkGroupManager);
-  self->schema_version = REGION_LINK_GROUP_MANAGER_SCHEMA_VERSION;
 
   self->groups = object_new_n ((size_t) src->num_groups, RegionIdentifier);
   for (int i = 0; i < src->num_groups; i++)

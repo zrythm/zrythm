@@ -156,8 +156,6 @@ typedef enum ProjectCompressionFlag
  */
 typedef struct Project
 {
-  int schema_version;
-
   /** Project title. */
   char * title;
 
@@ -304,75 +302,6 @@ typedef struct Project
    */
   UndoableAction * last_action_in_last_successful_autosave;
 } Project;
-
-static const cyaml_schema_field_t project_fields_schema[] = {
-  YAML_FIELD_INT (Project, schema_version),
-  YAML_FIELD_STRING_PTR (Project, title),
-  YAML_FIELD_STRING_PTR (Project, datetime_str),
-  YAML_FIELD_STRING_PTR (Project, version),
-  YAML_FIELD_MAPPING_PTR (Project, tracklist, tracklist_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Project, clip_editor, clip_editor_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Project, timeline, timeline_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Project, snap_grid_timeline, snap_grid_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Project, snap_grid_editor, snap_grid_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project,
-    quantize_opts_timeline,
-    quantize_options_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project,
-    quantize_opts_editor,
-    quantize_options_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Project, audio_engine, engine_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Project,
-    mixer_selections,
-    mixer_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Project,
-    timeline_selections,
-    timeline_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Project,
-    midi_arranger_selections,
-    midi_arranger_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Project,
-    chord_selections,
-    chord_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Project,
-    automation_selections,
-    automation_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Project,
-    audio_selections,
-    audio_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project,
-    tracklist_selections,
-    tracklist_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project,
-    region_link_group_manager,
-    region_link_group_manager_fields_schema),
-  YAML_FIELD_MAPPING_PTR (
-    Project,
-    port_connections_manager,
-    port_connections_manager_fields_schema),
-  YAML_FIELD_MAPPING_PTR (Project, midi_mappings, midi_mappings_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Project,
-    undo_manager,
-    undo_manager_fields_schema),
-  YAML_FIELD_ENUM (Project, last_selection, selection_type_strings),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t project_schema = {
-  YAML_VALUE_PTR (Project, project_fields_schema),
-};
 
 /**
  * Project save data.

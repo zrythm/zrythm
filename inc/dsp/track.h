@@ -25,8 +25,6 @@
 
 #include <glib/gi18n.h>
 
-#define MAX_REGIONS 300
-
 typedef struct AutomationTracklist            AutomationTracklist;
 typedef struct ZRegion                        ZRegion;
 typedef struct Position                       Position;
@@ -57,8 +55,6 @@ TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
  *
  * @{
  */
-
-#define TRACK_SCHEMA_VERSION 2
 
 #define TRACK_MIN_HEIGHT 24
 #define TRACK_DEF_HEIGHT 48
@@ -188,8 +184,6 @@ static const cyaml_strval_t track_type_strings[] = {
  */
 typedef struct Track
 {
-  int schema_version;
-
   /**
    * Position in the Tracklist.
    *
@@ -533,58 +527,6 @@ typedef struct Track
   /** Used in Gtk. */
   WrappedObjectWithChangeSignal * gobj;
 } Track;
-
-static const cyaml_schema_field_t track_fields_schema[] = {
-  YAML_FIELD_INT (Track, schema_version),
-  YAML_FIELD_STRING_PTR (Track, name),
-  YAML_FIELD_STRING_PTR (Track, icon_name),
-  YAML_FIELD_ENUM (Track, type, track_type_strings),
-  YAML_FIELD_INT (Track, pos),
-  YAML_FIELD_INT (Track, lanes_visible),
-  YAML_FIELD_INT (Track, automation_visible),
-  YAML_FIELD_INT (Track, visible),
-  YAML_FIELD_FLOAT (Track, main_height),
-  YAML_FIELD_INT (Track, passthrough_midi_input),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Track, recording, port_fields_schema),
-  YAML_FIELD_INT (Track, enabled),
-  YAML_FIELD_MAPPING_EMBEDDED (Track, color, gdk_rgba_fields_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT (Track, lanes, track_lane_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Track, chord_regions, region_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Track, scales, scale_object_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (Track, markers, marker_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Track, channel, channel_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Track, bpm_port, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Track, beats_per_bar_port, port_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (Track, beat_unit_port, port_fields_schema),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (Track, modulators, plugin_schema),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    Track,
-    modulator_macros,
-    modulator_macro_processor_schema),
-  YAML_FIELD_INT (Track, num_visible_modulator_macros),
-  YAML_FIELD_MAPPING_PTR (Track, processor, track_processor_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    Track,
-    automation_tracklist,
-    automation_tracklist_fields_schema),
-  YAML_FIELD_ENUM (Track, in_signal_type, port_type_strings),
-  YAML_FIELD_ENUM (Track, out_signal_type, port_type_strings),
-  YAML_FIELD_UINT (Track, midi_ch),
-  YAML_FIELD_STRING_PTR (Track, comment),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT_PRIMITIVES (Track, children, unsigned_int_schema),
-  YAML_FIELD_INT (Track, frozen),
-  YAML_FIELD_INT (Track, pool_id),
-  YAML_FIELD_INT (Track, size),
-  YAML_FIELD_INT (Track, folded),
-  YAML_FIELD_INT (Track, record_set_automatically),
-  YAML_FIELD_INT (Track, drum_mode),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t track_schema = {
-  YAML_VALUE_PTR (Track, track_fields_schema),
-};
 
 COLD NONNULL_ARGS (1) void track_init_loaded (
   Track *               self,

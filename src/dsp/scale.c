@@ -27,7 +27,6 @@ musical_scale_new (MusicalScaleType type, MusicalNote root)
 {
   MusicalScale * self = object_new (MusicalScale);
 
-  self->schema_version = SCALE_SCHEMA_VERSION;
   self->type = type;
   self->root_key = root;
 

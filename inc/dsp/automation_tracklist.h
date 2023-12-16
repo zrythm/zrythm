@@ -25,8 +25,6 @@ typedef struct AutomationLane  AutomationLane;
  * @{
  */
 
-#define AUTOMATION_TRACKLIST_SCHEMA_VERSION 1
-
 /**
  * Each track has an automation tracklist with automation
  * tracks to be generated at runtime, and filled in with
@@ -34,8 +32,6 @@ typedef struct AutomationLane  AutomationLane;
  */
 typedef struct AutomationTracklist
 {
-  int schema_version;
-
   /**
    * Automation tracks in this automation tracklist.
    *
@@ -82,17 +78,6 @@ typedef struct AutomationTracklist
    */
   Track * track;
 } AutomationTracklist;
-
-static const cyaml_schema_field_t automation_tracklist_fields_schema[] = {
-  YAML_FIELD_INT (AutomationTracklist, schema_version),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (AutomationTracklist, ats, automation_track_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t automation_tracklist_schema = {
-  YAML_VALUE_PTR (AutomationTracklist, automation_tracklist_fields_schema),
-};
 
 void
 automation_tracklist_init (AutomationTracklist * self, Track * track);

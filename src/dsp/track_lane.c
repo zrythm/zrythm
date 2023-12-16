@@ -57,7 +57,6 @@ TrackLane *
 track_lane_new (Track * track, int pos)
 {
   TrackLane * self = object_new (TrackLane);
-  self->schema_version = TRACK_LANE_SCHEMA_VERSION;
   self->pos = pos;
   self->track = track;
 
@@ -308,7 +307,6 @@ TrackLane *
 track_lane_clone (const TrackLane * src, Track * track)
 {
   TrackLane * self = object_new (TrackLane);
-  self->schema_version = TRACK_LANE_SCHEMA_VERSION;
   self->track = track;
 
   self->name = g_strdup (src->name);

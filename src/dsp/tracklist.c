@@ -1775,7 +1775,6 @@ Tracklist *
 tracklist_clone (Tracklist * src)
 {
   Tracklist * self = object_new (Tracklist);
-  self->schema_version = TRACKLIST_SCHEMA_VERSION;
 
   self->pinned_tracks_cutoff = src->pinned_tracks_cutoff;
 
@@ -1795,7 +1794,6 @@ Tracklist *
 tracklist_new (Project * project, SampleProcessor * sample_processor)
 {
   Tracklist * self = object_new (Tracklist);
-  self->schema_version = TRACKLIST_SCHEMA_VERSION;
   self->project = project;
   self->sample_processor = sample_processor;
 

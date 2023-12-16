@@ -52,32 +52,6 @@ typedef struct MidiMappingAction
 
 } MidiMappingAction;
 
-static const cyaml_schema_field_t midi_mapping_action_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    MidiMappingAction,
-    parent_instance,
-    undoable_action_fields_schema),
-  YAML_FIELD_INT (MidiMappingAction, idx),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    MidiMappingAction,
-    dest_port_id,
-    port_identifier_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    MidiMappingAction,
-    dev_port,
-    ext_port_fields_schema),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY (MidiMappingAction, buf, uint8_t_schema, 3),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t midi_mapping_action_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    MidiMappingAction,
-    midi_mapping_action_fields_schema),
-};
-
 void
 midi_mapping_action_init_loaded (MidiMappingAction * self);
 

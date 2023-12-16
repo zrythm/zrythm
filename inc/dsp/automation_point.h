@@ -26,8 +26,6 @@ typedef struct _AutomationPointWidget AutomationPointWidget;
  * @{
  */
 
-#define AUTOMATION_POINT_SCHEMA_VERSION 1
-
 #define AP_WIDGET_POINT_SIZE 6
 
 #define automation_point_is_selected(r) \
@@ -52,8 +50,6 @@ typedef struct AutomationPoint
 {
   /** Base struct. */
   ArrangerObject base;
-
-  int schema_version;
 
   /** Float value (real). */
   float fvalue;
@@ -83,24 +79,6 @@ typedef struct AutomationPoint
   /** Temporary string used with StringEntryDialogWidget. */
   char * tmp_str;
 } AutomationPoint;
-
-static const cyaml_schema_field_t automation_point_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (AutomationPoint, base, arranger_object_fields_schema),
-  YAML_FIELD_INT (AutomationPoint, schema_version),
-  YAML_FIELD_FLOAT (AutomationPoint, fvalue),
-  YAML_FIELD_FLOAT (AutomationPoint, normalized_val),
-  YAML_FIELD_INT (AutomationPoint, index),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AutomationPoint,
-    curve_opts,
-    curve_options_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t automation_point_schema = {
-  YAML_VALUE_PTR (AutomationPoint, automation_point_fields_schema),
-};
 
 /**
  * Creates an AutomationPoint in the given

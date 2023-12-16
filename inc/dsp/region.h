@@ -80,8 +80,6 @@ typedef struct ZRegion
    */
   ArrangerObject base;
 
-  int schema_version;
-
   /** Unique ID. */
   RegionIdentifier id;
 
@@ -283,51 +281,6 @@ typedef struct ZRegion
 
   int magic;
 } ZRegion;
-
-static const cyaml_schema_field_t region_fields_schema[] = {
-  YAML_FIELD_INT (ZRegion, schema_version),
-  YAML_FIELD_MAPPING_EMBEDDED (ZRegion, base, arranger_object_fields_schema),
-  YAML_FIELD_MAPPING_EMBEDDED (ZRegion, id, region_identifier_fields_schema),
-  YAML_FIELD_STRING_PTR (ZRegion, name),
-  YAML_FIELD_INT (ZRegion, pool_id),
-  YAML_FIELD_FLOAT (ZRegion, gain),
-  YAML_FIELD_MAPPING_EMBEDDED (ZRegion, color, gdk_rgba_fields_schema),
-  YAML_FIELD_INT (ZRegion, use_color),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "midi_notes",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ZRegion,
-    midi_notes,
-    num_midi_notes,
-    &midi_note_schema,
-    0,
-    CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "aps",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ZRegion,
-    aps,
-    num_aps,
-    &automation_point_schema,
-    0,
-    CYAML_UNLIMITED),
-  CYAML_FIELD_SEQUENCE_COUNT (
-    "chord_objects",
-    CYAML_FLAG_POINTER | CYAML_FLAG_OPTIONAL,
-    ZRegion,
-    chord_objects,
-    num_chord_objects,
-    &chord_object_schema,
-    0,
-    CYAML_UNLIMITED),
-  YAML_FIELD_ENUM (ZRegion, musical_mode, region_musical_mode_strings),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t region_schema = {
-  YAML_VALUE_PTR_NULLABLE (ZRegion, region_fields_schema),
-};
 
 /**
  * Returns if the given ZRegion type can have fades.

@@ -68,7 +68,6 @@
 void
 arranger_object_init (ArrangerObject * self)
 {
-  self->schema_version = ARRANGER_OBJECT_SCHEMA_VERSION;
   self->magic = ARRANGER_OBJECT_MAGIC;
 
   position_init (&self->pos);
@@ -81,8 +80,6 @@ arranger_object_init (ArrangerObject * self)
 
   curve_opts_init (&self->fade_in_opts);
   curve_opts_init (&self->fade_out_opts);
-
-  self->region_id.schema_version = REGION_IDENTIFIER_SCHEMA_VERSION;
 }
 
 /**
@@ -2278,8 +2275,7 @@ clone_region (const ZRegion * region)
       break;
     }
 
-  g_return_val_if_fail (
-    new_region && new_region->schema_version == REGION_SCHEMA_VERSION, NULL);
+  g_return_val_if_fail (new_region, NULL);
 
   /* clone name */
   new_region->name = g_strdup (region->name);

@@ -22,8 +22,6 @@ typedef enum EditTracksActionType          EditTracksActionType;
  * @{
  */
 
-#define TRACKLIST_SELECTIONS_SCHEMA_VERSION 2
-
 #define TRACKLIST_SELECTIONS (PROJECT->tracklist_selections)
 
 /**
@@ -36,8 +34,6 @@ typedef enum EditTracksActionType          EditTracksActionType;
  */
 typedef struct TracklistSelections
 {
-  int schema_version;
-
   /** Selected Tracks. */
   Track * tracks[600];
   int     num_tracks;
@@ -52,21 +48,6 @@ typedef struct TracklistSelections
    */
   bool free_tracks;
 } TracklistSelections;
-
-static const cyaml_schema_field_t tracklist_selections_fields_schema[] = {
-  YAML_FIELD_INT (TracklistSelections, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (
-    TracklistSelections,
-    tracks,
-    track_schema),
-  YAML_FIELD_INT (TracklistSelections, is_project),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t tracklist_selections_schema = {
-  YAML_VALUE_PTR (TracklistSelections, tracklist_selections_fields_schema),
-};
 
 void
 tracklist_selections_init_loaded (TracklistSelections * ts);

@@ -38,7 +38,6 @@ midi_note_new (
 
   MidiNote * self = object_new (MidiNote);
 
-  self->schema_version = MIDI_NOTE_SCHEMA_VERSION;
   self->magic = MIDI_NOTE_MAGIC;
 
   ArrangerObject * obj = (ArrangerObject *) self;

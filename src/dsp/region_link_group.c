@@ -22,7 +22,6 @@ RegionLinkGroup *
 region_link_group_new (int idx)
 {
   RegionLinkGroup * self = object_new (RegionLinkGroup);
-  self->schema_version = REGION_LINK_GROUP_SCHEMA_VERSION;
 
   self->num_ids = 0;
   self->ids_size = 0;
@@ -165,7 +164,7 @@ region_link_group_validate (RegionLinkGroup * self)
 void
 region_link_group_print (RegionLinkGroup * self)
 {
-  yaml_print (self, &region_link_group_schema);
+  /* TODO */
 }
 
 #if 0
@@ -196,7 +195,6 @@ RegionLinkGroup *
 region_link_group_clone (const RegionLinkGroup * src)
 {
   RegionLinkGroup * self = object_new (RegionLinkGroup);
-  self->schema_version = REGION_LINK_GROUP_SCHEMA_VERSION;
   self->magic = REGION_LINK_GROUP_MAGIC;
 
   self->group_idx = src->group_idx;

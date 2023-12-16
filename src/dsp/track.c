@@ -192,7 +192,6 @@ track_add_lane (Track * self, int fire_events)
 void
 track_init (Track * self, const int add_lane)
 {
-  self->schema_version = TRACK_SCHEMA_VERSION;
   self->visible = true;
   self->main_height = TRACK_DEF_HEIGHT;
   self->midi_ch = 1;

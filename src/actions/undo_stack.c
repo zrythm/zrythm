@@ -93,7 +93,6 @@ undo_stack_new (void)
     (ZRYTHM && ZRYTHM->testing) || G_IS_SETTINGS (S_P_EDITING_UNDO), NULL);
 
   UndoStack * self = object_new (UndoStack);
-  self->schema_version = UNDO_STACK_SCHEMA_VERSION;
 
   int undo_stack_length =
     ZRYTHM_TESTING
@@ -109,7 +108,6 @@ UndoStack *
 undo_stack_clone (const UndoStack * src)
 {
   UndoStack * self = object_new (UndoStack);
-  self->schema_version = UNDO_STACK_SCHEMA_VERSION;
 
   int top_before = src->stack->top;
 

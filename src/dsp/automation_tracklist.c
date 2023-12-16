@@ -114,7 +114,6 @@ automation_tracklist_init (AutomationTracklist * self, Track * track)
   self->track = track;
 
   g_message ("initing automation tracklist...");
-  self->schema_version = AUTOMATION_TRACKLIST_SCHEMA_VERSION;
 
   self->visible_ats = g_ptr_array_new ();
   /*self->ats_size = 1;*/
@@ -692,8 +691,6 @@ automation_tracklist_get_num_visible (AutomationTracklist * self)
 bool
 automation_tracklist_validate (AutomationTracklist * self)
 {
-  /*g_return_val_if_fail (*/
-  /*self->schema_version == AUTOMATION_TRACKLIST_SCHEMA_VERSION, false);*/
   g_return_val_if_fail (IS_TRACK_AND_NONNULL (self->track), false);
 
   unsigned int track_name_hash = track_get_name_hash (self->track);

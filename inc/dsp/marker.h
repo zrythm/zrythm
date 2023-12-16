@@ -29,8 +29,6 @@
 #define marker_is_deletable(m) \
   ((m)->type != MARKER_TYPE_START && (m)->type != MARKER_TYPE_END)
 
-#define MARKER_SCHEMA_VERSION 2
-
 /**
  * Marker type.
  */
@@ -58,8 +56,6 @@ typedef struct Marker
   /** Base struct. */
   ArrangerObject base;
 
-  int schema_version;
-
   /** Marker type. */
   MarkerType type;
 
@@ -79,21 +75,6 @@ typedef struct Marker
   /** Cache layout for drawing the name. */
   PangoLayout * layout;
 } Marker;
-
-static const cyaml_schema_field_t marker_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (Marker, base, arranger_object_fields_schema),
-  YAML_FIELD_INT (Marker, schema_version),
-  YAML_FIELD_STRING_PTR (Marker, name),
-  YAML_FIELD_UINT (Marker, track_name_hash),
-  YAML_FIELD_INT (Marker, index),
-  YAML_FIELD_ENUM (Marker, type, marker_type_strings),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t marker_schema = {
-  YAML_VALUE_PTR (Marker, marker_fields_schema),
-};
 
 /**
  * Creates a Marker.

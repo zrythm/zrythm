@@ -23,7 +23,6 @@ scale_object_new (MusicalScale * descr)
   ScaleObject * self = object_new (ScaleObject);
 
   self->magic = SCALE_OBJECT_MAGIC;
-  self->schema_version = SCALE_OBJECT_SCHEMA_VERSION;
 
   ArrangerObject * obj = (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_SCALE_OBJECT;

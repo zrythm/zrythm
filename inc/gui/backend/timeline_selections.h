@@ -15,15 +15,12 @@
 #include "dsp/region.h"
 #include "dsp/scale_object.h"
 #include "gui/backend/arranger_selections.h"
-#include "utils/yaml.h"
 
 /**
  * @addtogroup gui_backend
  *
  * @{
  */
-
-#define TL_SELECTIONS_SCHEMA_VERSION 1
 
 #define TL_SELECTIONS (PROJECT->timeline_selections)
 
@@ -37,8 +34,6 @@ typedef struct TimelineSelections
 {
   /** Base struct. */
   ArrangerSelections base;
-
-  int schema_version;
 
   /** Selected TrackLane Region's. */
   ZRegion ** regions;
@@ -62,29 +57,6 @@ typedef struct TimelineSelections
   /** Visible track index, used during copying. */
   int marker_track_vis_index;
 } TimelineSelections;
-
-static const cyaml_schema_field_t timeline_selections_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    TimelineSelections,
-    base,
-    arranger_selections_fields_schema),
-  YAML_FIELD_INT (TimelineSelections, schema_version),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (TimelineSelections, regions, region_schema),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (
-    TimelineSelections,
-    scale_objects,
-    scale_object_schema),
-  YAML_FIELD_DYN_ARRAY_VAR_COUNT (TimelineSelections, markers, marker_schema),
-  YAML_FIELD_INT (TimelineSelections, region_track_vis_index),
-  YAML_FIELD_INT (TimelineSelections, chord_track_vis_index),
-  YAML_FIELD_INT (TimelineSelections, marker_track_vis_index),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t timeline_selections_schema = {
-  YAML_VALUE_PTR (TimelineSelections, timeline_selections_fields_schema),
-};
 
 /**
  * Creates a new TimelineSelections instance for

@@ -60,25 +60,6 @@ typedef struct TransportAction
   bool musical_mode;
 } TransportAction;
 
-static const cyaml_schema_field_t transport_action_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    TransportAction,
-    parent_instance,
-    undoable_action_fields_schema),
-  YAML_FIELD_ENUM (TransportAction, type, transport_action_type_strings),
-  YAML_FIELD_FLOAT (TransportAction, bpm_before),
-  YAML_FIELD_FLOAT (TransportAction, bpm_after),
-  YAML_FIELD_INT (TransportAction, int_before),
-  YAML_FIELD_INT (TransportAction, int_after),
-  YAML_FIELD_INT (TransportAction, musical_mode),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t transport_action_schema = {
-  YAML_VALUE_PTR (TransportAction, transport_action_fields_schema),
-};
-
 void
 transport_action_init_loaded (TransportAction * self);
 

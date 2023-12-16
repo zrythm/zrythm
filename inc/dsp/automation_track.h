@@ -69,8 +69,6 @@ static const cyaml_strval_t automation_record_mode_strings[] = {
 
 typedef struct AutomationTrack
 {
-  int schema_version;
-
   /** Index in parent AutomationTracklist. */
   int index;
 
@@ -167,27 +165,6 @@ typedef struct AutomationTrack
   /** Cache used during DSP. */
   Port * port;
 } AutomationTrack;
-
-static const cyaml_schema_field_t automation_track_fields_schema[] = {
-  YAML_FIELD_INT (AutomationTrack, schema_version),
-  YAML_FIELD_INT (AutomationTrack, index),
-  YAML_FIELD_MAPPING_EMBEDDED (
-    AutomationTrack,
-    port_id,
-    port_identifier_fields_schema),
-  YAML_FIELD_DYN_PTR_ARRAY_VAR_COUNT_OPT (AutomationTrack, regions, region_schema),
-  YAML_FIELD_INT (AutomationTrack, created),
-  YAML_FIELD_ENUM (AutomationTrack, automation_mode, automation_mode_strings),
-  YAML_FIELD_ENUM (AutomationTrack, record_mode, automation_record_mode_strings),
-  YAML_FIELD_INT (AutomationTrack, visible),
-  YAML_FIELD_FLOAT (AutomationTrack, height),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t automation_track_schema = {
-  YAML_VALUE_PTR (AutomationTrack, automation_track_fields_schema),
-};
 
 COLD NONNULL_ARGS (1) void automation_track_init_loaded (
   AutomationTrack *     self,

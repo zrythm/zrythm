@@ -13,8 +13,6 @@
 
 #include <stdbool.h>
 
-#include "utils/yaml.h"
-
 typedef struct ArrangerObject                 ArrangerObject;
 typedef struct Position                       Position;
 typedef struct AudioClip                      AudioClip;
@@ -27,8 +25,6 @@ typedef struct ZRegion                        ZRegion;
  *
  * @{
  */
-
-#define ARRANGER_SELECTIONS_SCHEMA_VERSION 1
 
 #define ARRANGER_SELECTIONS_MAGIC 35867752
 #define IS_ARRANGER_SELECTIONS(x) \
@@ -48,35 +44,17 @@ typedef enum ArrangerSelectionsType
   ARRANGER_SELECTIONS_TYPE_AUDIO,
 } ArrangerSelectionsType;
 
-static const cyaml_strval_t arranger_selections_type_strings[] = {
-  {"None",        ARRANGER_SELECTIONS_TYPE_NONE      },
-  { "Chord",      ARRANGER_SELECTIONS_TYPE_CHORD     },
-  { "Timeline",   ARRANGER_SELECTIONS_TYPE_TIMELINE  },
-  { "MIDI",       ARRANGER_SELECTIONS_TYPE_MIDI      },
-  { "Automation", ARRANGER_SELECTIONS_TYPE_AUTOMATION},
-  { "Audio",      ARRANGER_SELECTIONS_TYPE_AUDIO     },
+static const char * arranger_selections_type_strings[] = {
+  "None", "Chord", "Timeline", "MIDI", "Automation", "Audio",
 };
 
 typedef struct ArrangerSelections
 {
-  int schema_version;
-
   /** Type of selections. */
   ArrangerSelectionsType type;
 
   int magic;
 } ArrangerSelections;
-
-static const cyaml_schema_field_t arranger_selections_fields_schema[] = {
-  YAML_FIELD_INT (ArrangerSelections, schema_version),
-  YAML_FIELD_ENUM (ArrangerSelections, type, arranger_selections_type_strings),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t arranger_selections_schema = {
-  YAML_VALUE_PTR (ArrangerSelections, arranger_selections_fields_schema),
-};
 
 typedef enum ArrangerSelectionsProperty
 {
@@ -85,6 +63,12 @@ typedef enum ArrangerSelectionsProperty
   ARRANGER_SELECTIONS_PROPERTY_HAS_LOOPED,
   ARRANGER_SELECTIONS_PROPERTY_CAN_FADE,
 } ArrangerSelectionsProperty;
+
+static inline const char *
+arranger_selections_type_to_str (const ArrangerSelections * self)
+{
+  return arranger_selections_type_strings[self->type];
+}
 
 static inline ArrangerSelections *
 arranger_selections_cast (void * sel)

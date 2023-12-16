@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: © 2020-2022 Alexandros Theodotou <alex@zrythm.org>
+// SPDX-FileCopyrightText: © 2020-2023 Alexandros Theodotou <alex@zrythm.org>
 // SPDX-License-Identifier: LicenseRef-ZrythmLicense
 
 /**
@@ -39,15 +39,17 @@ typedef enum ClipboardType
   CLIPBOARD_TYPE_TRACKLIST_SELECTIONS,
 } ClipboardType;
 
-static const cyaml_strval_t clipboard_type_strings[] = {
-  {"Timeline selections",    CLIPBOARD_TYPE_TIMELINE_SELECTIONS  },
-  { "MIDI selections",       CLIPBOARD_TYPE_MIDI_SELECTIONS      },
-  { "Automation selections", CLIPBOARD_TYPE_AUTOMATION_SELECTIONS},
-  { "Chord selections",      CLIPBOARD_TYPE_CHORD_SELECTIONS     },
-  { "Audio selections",      CLIPBOARD_TYPE_AUDIO_SELECTIONS     },
-  { "Mixer selections",      CLIPBOARD_TYPE_MIXER_SELECTIONS     },
-  { "Tracklist selections",  CLIPBOARD_TYPE_TRACKLIST_SELECTIONS },
+#if 0
+static const char * clipboard_type_strings[] = {
+  "Timeline selections",
+   "MIDI selections",
+   "Automation selections",
+   "Chord selections",
+   "Audio selections",
+   "Mixer selections",
+   "Tracklist selections",
 };
+#endif
 
 /**
  * Clipboard struct.
@@ -63,44 +65,6 @@ typedef struct Clipboard
   MixerSelections *        mixer_sel;
   TracklistSelections *    tracklist_sel;
 } Clipboard;
-
-static const cyaml_schema_field_t clipboard_fields_schema[] = {
-  YAML_FIELD_ENUM (Clipboard, type, clipboard_type_strings),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Clipboard,
-    timeline_sel,
-    timeline_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Clipboard,
-    ma_sel,
-    midi_arranger_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Clipboard,
-    chord_sel,
-    chord_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Clipboard,
-    automation_sel,
-    automation_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Clipboard,
-    audio_sel,
-    audio_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Clipboard,
-    mixer_sel,
-    mixer_selections_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    Clipboard,
-    tracklist_sel,
-    tracklist_selections_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t clipboard_schema = {
-  YAML_VALUE_PTR (Clipboard, clipboard_fields_schema),
-};
 
 /**
  * Creates a new Clipboard instance for the given

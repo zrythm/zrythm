@@ -62,35 +62,6 @@ typedef struct ChannelSendAction
 
 } ChannelSendAction;
 
-static const cyaml_schema_field_t channel_send_action_fields_schema[] = {
-  YAML_FIELD_MAPPING_EMBEDDED (
-    ChannelSendAction,
-    parent_instance,
-    undoable_action_fields_schema),
-  YAML_FIELD_ENUM (ChannelSendAction, type, channel_send_action_type_strings),
-  YAML_FIELD_MAPPING_PTR (
-    ChannelSendAction,
-    send_before,
-    channel_send_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChannelSendAction,
-    connections_mgr_before,
-    port_connections_manager_fields_schema),
-  YAML_FIELD_MAPPING_PTR_OPTIONAL (
-    ChannelSendAction,
-    connections_mgr_after,
-    port_connections_manager_fields_schema),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t channel_send_action_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    ChannelSendAction,
-    channel_send_action_fields_schema),
-};
-
 void
 channel_send_action_init_loaded (ChannelSendAction * self);
 

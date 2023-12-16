@@ -23,7 +23,6 @@
 void
 region_identifier_init (RegionIdentifier * self)
 {
-  self->schema_version = REGION_IDENTIFIER_SCHEMA_VERSION;
 }
 
 bool

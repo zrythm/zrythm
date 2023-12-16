@@ -37,7 +37,6 @@ velocity_new (MidiNote * midi_note, const uint8_t vel)
 {
   Velocity * self = object_new (Velocity);
 
-  self->schema_version = VELOCITY_SCHEMA_VERSION;
   ArrangerObject * obj = (ArrangerObject *) self;
   obj->type = ARRANGER_OBJECT_TYPE_VELOCITY;
 

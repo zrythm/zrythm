@@ -170,8 +170,6 @@ chord_descriptor_new (
 {
   ChordDescriptor * self = object_new (ChordDescriptor);
 
-  self->schema_version = CHORD_DESCRIPTOR_SCHEMA_VERSION;
-
   self->root_note = root;
   self->has_bass = has_bass;
   if (has_bass)

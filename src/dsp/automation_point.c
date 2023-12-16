@@ -38,8 +38,6 @@ _create_new (const Position * pos)
 {
   AutomationPoint * self = object_new (AutomationPoint);
 
-  self->schema_version = AUTOMATION_POINT_SCHEMA_VERSION;
-
   ArrangerObject * obj = (ArrangerObject *) self;
   arranger_object_init (obj);
   obj->pos = *pos;

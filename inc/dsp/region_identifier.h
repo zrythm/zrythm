@@ -56,8 +56,6 @@ static const cyaml_bitdef_t region_type_bitvals[] = {
  */
 typedef struct RegionIdentifier
 {
-  int schema_version;
-
   RegionType type;
 
   /** Link group index, if any, or -1. */
@@ -73,26 +71,6 @@ typedef struct RegionIdentifier
   /** Index inside lane or automation track. */
   int idx;
 } RegionIdentifier;
-
-static const cyaml_schema_field_t region_identifier_fields_schema[] = {
-  YAML_FIELD_INT (RegionIdentifier, schema_version),
-  YAML_FIELD_BITFIELD (RegionIdentifier, type, region_type_bitvals),
-  YAML_FIELD_INT (RegionIdentifier, link_group),
-  YAML_FIELD_UINT (RegionIdentifier, track_name_hash),
-  YAML_FIELD_INT (RegionIdentifier, lane_pos),
-  YAML_FIELD_INT (RegionIdentifier, at_idx),
-  YAML_FIELD_INT (RegionIdentifier, idx),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t region_identifier_schema = {
-  YAML_VALUE_PTR (RegionIdentifier, region_identifier_fields_schema),
-};
-
-static const cyaml_schema_value_t region_identifier_schema_default = {
-  YAML_VALUE_DEFAULT (RegionIdentifier, region_identifier_fields_schema),
-};
 
 void
 region_identifier_init (RegionIdentifier * self);
@@ -110,7 +88,6 @@ region_identifier_is_equal (
 NONNULL static inline void
 region_identifier_copy (RegionIdentifier * dest, const RegionIdentifier * src)
 {
-  dest->schema_version = src->schema_version;
   dest->idx = src->idx;
   dest->track_name_hash = src->track_name_hash;
   dest->lane_pos = src->lane_pos;

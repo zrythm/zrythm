@@ -24,8 +24,6 @@ typedef struct PortConnectionsManager PortConnectionsManager;
  * @{
  */
 
-#define UNDOABLE_ACTION_SCHEMA_VERSION 2
-
 /**
  * Type of UndoableAction.
  */
@@ -80,8 +78,6 @@ static const cyaml_strval_t undoable_action_type_strings[] = {
  */
 typedef struct UndoableAction
 {
-  int schema_version;
-
   /** Undoable action type. */
   UndoableActionType type;
 
@@ -115,24 +111,6 @@ typedef struct UndoableAction
    */
   int num_actions;
 } UndoableAction;
-
-static const cyaml_schema_field_t undoable_action_fields_schema[] = {
-  YAML_FIELD_INT (UndoableAction, schema_version),
-  YAML_FIELD_ENUM (UndoableAction, type, undoable_action_type_strings),
-  YAML_FIELD_FLOAT (UndoableAction, frames_per_tick),
-  YAML_FIELD_INT (UndoableAction, sample_rate),
-  YAML_FIELD_INT (UndoableAction, stack_idx),
-  YAML_FIELD_INT (UndoableAction, num_actions),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t undoable_action_schema = {
-  CYAML_VALUE_MAPPING (
-    CYAML_FLAG_POINTER,
-    UndoableAction,
-    undoable_action_fields_schema),
-};
 
 NONNULL void
 undoable_action_init_loaded (UndoableAction * self);

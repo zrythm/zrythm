@@ -27,8 +27,6 @@ TYPEDEF_STRUCT_UNDERSCORED (FileImportInfo);
  * @{
  */
 
-#define TRACKLIST_SCHEMA_VERSION 2
-
 #define TRACKLIST (PROJECT->tracklist)
 #define MAX_TRACKS 3000
 
@@ -61,8 +59,6 @@ typedef enum TracklistPinOption
  */
 typedef struct Tracklist
 {
-  int schema_version;
-
   /**
    * All tracks that exist.
    *
@@ -123,18 +119,6 @@ typedef struct Tracklist
   /** Pointer to owner project, if any. */
   Project * project;
 } Tracklist;
-
-static const cyaml_schema_field_t tracklist_fields_schema[] = {
-  YAML_FIELD_INT (Tracklist, schema_version),
-  YAML_FIELD_FIXED_SIZE_PTR_ARRAY_VAR_COUNT (Tracklist, tracks, track_schema),
-  YAML_FIELD_INT (Tracklist, pinned_tracks_cutoff),
-
-  CYAML_FIELD_END
-};
-
-static const cyaml_schema_value_t tracklist_schema = {
-  YAML_VALUE_PTR (Tracklist, tracklist_fields_schema),
-};
 
 /**
  * Initializes the tracklist when loading a project.
