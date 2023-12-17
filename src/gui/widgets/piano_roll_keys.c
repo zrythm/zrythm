@@ -295,8 +295,10 @@ piano_roll_keys_widget_get_font_size (PianoRollKeysWidget * self)
 }
 
 static void
-send_note_event (PianoRollKeysWidget * self, int note, int on)
+send_note_event (PianoRollKeysWidget * self, int note, bool on)
 {
+  g_debug ("sending note event %d, on: %d", note, on);
+  g_return_if_fail (note >= 0 && note < 128);
   ZRegion * region = clip_editor_get_region (CLIP_EDITOR);
   if (on)
     {
@@ -329,22 +331,20 @@ on_motion (
 {
   int key = piano_roll_keys_widget_get_key_from_y (self, y);
 
-  if (self->note_pressed && !self->note_released)
+  if (key >= 0 && key < 128)
     {
-      if (self->last_key != key)
+      if (self->note_pressed && !self->note_released)
         {
-          send_note_event (self, self->last_key, 0);
-          send_note_event (self, key, 1);
+          if (self->last_key != key)
+            {
+              send_note_event (self, self->last_key, false);
+              send_note_event (self, key, true);
+            }
+          self->last_key = key;
         }
-      self->last_key = key;
-    }
 
-  self->last_hovered_key = key;
-  /*const MidiNoteDescriptor * descr =*/
-  /*piano_roll_find_midi_note_descriptor_by_val (*/
-  /*PIANO_ROLL, key);*/
-  /*g_message ("hovered %s",*/
-  /*descr->note_name);*/
+      self->last_hovered_key = key;
+    }
 }
 
 static void
@@ -361,7 +361,7 @@ on_pressed (
   int key = piano_roll_keys_widget_get_key_from_y (self, y);
   self->last_key = key;
   self->start_key = key;
-  send_note_event (self, key, 1);
+  send_note_event (self, key, true);
 }
 
 static void
@@ -374,8 +374,8 @@ on_released (
 {
   self->note_pressed = 0;
   self->note_released = 1;
-  if (self->last_key)
-    send_note_event (self, self->last_key, 0);
+  if (self->last_key != -1)
+    send_note_event (self, self->last_key, false);
   self->last_key = -1;
 }
 
