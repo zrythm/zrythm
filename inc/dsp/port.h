@@ -360,30 +360,26 @@ typedef struct Port
   int initialized;
 
   /**
-   * For control ports, when a modulator is
-   * attached to the port the previous value will
-   * be saved here.
+   * For control ports, when a modulator is attached to the port the previous
+   * value will be saved here.
    *
-   * Automation in AutomationTrack's will overwrite
-   * this value.
+   * Automation in AutomationTrack's will overwrite this value.
    */
   float base_value;
 
   /**
    * Capture latency.
    *
-   * See page 116 of "The Ardour DAW - Latency
-   * Compensation and Anywhere-to-Anywhere Signal
-   * Routing Systems".
+   * See page 116 of "The Ardour DAW - Latency Compensation and
+   * Anywhere-to-Anywhere Signal Routing Systems".
    */
   long capture_latency;
 
   /**
    * Playback latency.
    *
-   * See page 116 of "The Ardour DAW - Latency
-   * Compensation and Anywhere-to-Anywhere Signal
-   * Routing Systems".
+   * See page 116 of "The Ardour DAW - Latency Compensation and
+   * Anywhere-to-Anywhere Signal Routing Systems".
    */
   long playback_latency;
 

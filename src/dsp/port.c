@@ -2987,8 +2987,7 @@ port_process (Port * port, const EngineProcessTimeInfo time_nfo, const bool noro
           }
 
         float maxf, minf, depth_range, val_to_use;
-        /* whether this is the first CV processed
-         * on this control port */
+        /* whether this is the first CV processed on this control port */
         bool first_cv = true;
         for (int k = 0; k < port->num_srcs; k++)
           {

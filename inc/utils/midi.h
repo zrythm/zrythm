@@ -166,8 +166,7 @@ midi_get_velocity (const midi_byte_t short_msg[3])
 }
 
 /**
- * Returns the note name (eg, "C") for a value
- * between 0 and 127.
+ * Returns the note name (eg, "C") for a value between 0 and 127.
  */
 CONST
 const char *
