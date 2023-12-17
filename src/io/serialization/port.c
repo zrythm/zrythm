@@ -85,6 +85,7 @@ port_serialize_to_json (
   yyjson_mut_obj_add_real (doc, port_obj, "deff", port->deff);
   yyjson_mut_obj_add_int (
     doc, port_obj, "carlaParameterId", port->carla_param_id);
+  yyjson_mut_obj_add_real (doc, port_obj, "baseValue", port->base_value);
   return true;
 }
 
@@ -248,6 +249,11 @@ port_deserialize_from_json (
   port->deff = (float) yyjson_get_real (yyjson_obj_iter_get (&it, "deff"));
   port->carla_param_id =
     yyjson_get_int (yyjson_obj_iter_get (&it, "carlaParameterId"));
+  yyjson_val * base_val_obj = yyjson_obj_iter_get (&it, "baseValue");
+  if (base_val_obj) /* added in 1.7 */
+    {
+      port->base_value = (float) yyjson_get_real (base_val_obj);
+    }
   return true;
 }
 

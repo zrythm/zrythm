@@ -1075,8 +1075,7 @@ on_failed_to_init_pool:
 
   engine_set_run (self->audio_engine, true);
 
-  int format_minor = 6;
-  if (format_minor != PROJECT_FORMAT_MINOR || yaml_schema_ver > 0)
+  if (self->format_minor != PROJECT_FORMAT_MINOR || yaml_schema_ver > 0)
     {
       ui_show_message_printf (
         _ ("Project Upgraded"),

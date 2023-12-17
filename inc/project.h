@@ -51,7 +51,7 @@ typedef struct TracklistSelections TracklistSelections;
  */
 
 #define PROJECT_FORMAT_MAJOR 1
-#define PROJECT_FORMAT_MINOR 6
+#define PROJECT_FORMAT_MINOR 7
 
 #define PROJECT ZRYTHM->project
 #define DEFAULT_PROJECT_NAME "Untitled Project"
@@ -301,6 +301,10 @@ typedef struct Project
    * This is used to avoid saving unnecessary backups.
    */
   UndoableAction * last_action_in_last_successful_autosave;
+
+  /** Used when deserializing projects. */
+  int format_major;
+  int format_minor;
 } Project;
 
 /**

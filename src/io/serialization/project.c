@@ -776,10 +776,8 @@ project_deserialize_from_json_str (const char * json, GError ** error)
 
   Project * self = object_new (Project);
 
-  int format_major = yyjson_get_int (yyjson_obj_iter_get (&it, "formatMajor"));
-  int format_minor = yyjson_get_int (yyjson_obj_iter_get (&it, "formatMinor"));
-  (void) format_major;
-  (void) format_minor;
+  self->format_major = yyjson_get_int (yyjson_obj_iter_get (&it, "formatMajor"));
+  self->format_minor = yyjson_get_int (yyjson_obj_iter_get (&it, "formatMinor"));
   self->title = g_strdup (yyjson_get_str (yyjson_obj_iter_get (&it, "title")));
   self->datetime_str =
     g_strdup (yyjson_get_str (yyjson_obj_iter_get (&it, "datetime")));
