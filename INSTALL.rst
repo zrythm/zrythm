@@ -51,9 +51,6 @@ Required
 `gtksourceview (LGPLv2.1+) <https://wiki.gnome.org/Projects/GtkSourceView>`_
   Source code editor widget
 
-`json-glib (LGPLv2.1+) <https://wiki.gnome.org/Projects/JsonGlib>`_
-  JSON manipulation
-
 `libadwaita (LGPLv2.1+) <https://gitlab.gnome.org/GNOME/libadwaita>`_
   Additional widgets
 
@@ -94,6 +91,9 @@ Note: if you want detach support use `our fork <https://gitlab.zrythm.org/zrythm
 
 `xxhash (2-Clause BSD) <https://cyan4973.github.io/xxHash/>`_
   Hashing
+
+`yyjson (MIT) <https://github.com/ibireme/yyjson>`_
+  JSON manipulation
 
 `zix (ISC) <https://github.com/drobilla/zix>`_
   Portability wrappers and data structures

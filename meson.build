@@ -974,15 +974,6 @@ lilv_dep = dependency (
     'default_library=static',
     ])
 
-json_glib_dep = dependency (
-  'json-glib-1.0',
-  fallback: ['json-glib', 'json_glib_dep'],
-  default_options: [
-    'introspection=disabled', 'gtk_doc=disabled',
-    'tests=false',
-    'default_library=static',
-    ])
-
 # fftw - this is a mess because every distro handles fftw3
 # in various different ways
 fftw3_deps = [
@@ -1323,7 +1314,6 @@ zrythm_deps = [
   xxhash_dep,
   vamp_deps,
   dependency ('libcurl'),
-  json_glib_dep,
   zix_dep,
   dbus_dep,
   yyjson_dep,

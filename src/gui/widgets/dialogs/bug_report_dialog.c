@@ -24,7 +24,7 @@
 
 #include <glib/gi18n.h>
 
-#include <json-glib/json-glib.h>
+#include <yyjson.h>
 
 G_DEFINE_TYPE (BugReportDialogWidget, bug_report_dialog_widget, GTK_TYPE_DIALOG)
 
@@ -87,50 +87,32 @@ get_json_string (BugReportDialogWidget * self)
 {
   g_debug ("%s: generating json...", __func__);
 
-  JsonBuilder * builder = json_builder_new ();
-
-  json_builder_begin_object (builder);
+  yyjson_mut_doc * doc = yyjson_mut_doc_new (NULL);
+  yyjson_mut_val * root = yyjson_mut_obj (doc);
+  g_return_val_if_fail (root, NULL);
+  yyjson_mut_doc_set_root (doc, root);
 
   char * steps_to_reproduce = z_gtk_text_buffer_get_full_text (
     gtk_text_view_get_buffer (self->user_input_text_view));
-  json_builder_set_member_name (builder, "steps_to_reproduce");
-  json_builder_add_string_value (builder, steps_to_reproduce);
+  yyjson_mut_obj_add_strcpy (
+    doc, root, "steps_to_reproduce", steps_to_reproduce);
   g_free (steps_to_reproduce);
 
-  json_builder_set_member_name (builder, "extra_info");
-  json_builder_add_string_value (builder, self->system_nfo);
+  yyjson_mut_obj_add_strcpy (doc, root, "extra_info", self->system_nfo);
 
-  json_builder_set_member_name (builder, "action_stack");
-  json_builder_add_string_value (builder, self->undo_stack_long);
+  yyjson_mut_obj_add_strcpy (doc, root, "action_stack", self->undo_stack_long);
 
-  json_builder_set_member_name (builder, "backtrace");
-  json_builder_add_string_value (builder, self->backtrace);
+  yyjson_mut_obj_add_strcpy (doc, root, "backtrace", self->backtrace);
 
-#if 0
-  json_builder_set_member_name (
-    builder, "log");
-  json_builder_add_string_value (
-    builder, self->log_long);
-#endif
-
-  json_builder_set_member_name (builder, "fatal");
-  json_builder_add_int_value (builder, self->fatal);
+  yyjson_mut_obj_add_int (doc, root, "fatal", self->fatal);
 
   char ver_with_caps[2000];
   zrythm_get_version_with_capabilities (ver_with_caps, false);
-  json_builder_set_member_name (builder, "version");
-  json_builder_add_string_value (builder, ver_with_caps);
+  yyjson_mut_obj_add_strcpy (doc, root, "version", ver_with_caps);
 
-  json_builder_end_object (builder);
+  char * str = yyjson_mut_write (doc, YYJSON_WRITE_NOFLAG, NULL);
 
-  JsonGenerator * gen = json_generator_new ();
-  JsonNode *      root = json_builder_get_root (builder);
-  json_generator_set_root (gen, root);
-  gchar * str = json_generator_to_data (gen, NULL);
-
-  json_node_free (root);
-  g_object_unref (gen);
-  g_object_unref (builder);
+  yyjson_mut_doc_free (doc);
 
   return str;
 }
