@@ -21,7 +21,7 @@ msgstr ""
 "Project-Id-Version: zrythm 0.2.003\n"
 "Report-Msgid-Bugs-To: \"https://gitlab.zrythm.org/zrythm/zrythm/-/issues\"\n"
 "POT-Creation-Date: 2023-12-02 16:01+0900\n"
-"PO-Revision-Date: 2023-12-09 20:45+0000\n"
+"PO-Revision-Date: 2023-12-17 20:45+0000\n"
 "Last-Translator: Olivier Humbert <trebmuh@tuxfamily.org>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/zrythm/zrythm/fr/>"
 "\n"
@@ -30,7 +30,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 5.3-dev\n"
+"X-Generator: Weblate 5.3\n"
 "Last-Translators: alex <alex at zrythm dot org> Nicolas Faure "
 "<sub26nico@laposte.net>\n"
 
@@ -7189,9 +7189,8 @@ msgid "Dim output"
 msgstr "Sortie"
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:312
-#, fuzzy
 msgid "Whether to dim the the monitor signal."
-msgstr "Que ce soit le premier lancement ou pas."
+msgstr "Permet d'atténuer ou non le signal du moniteur."
 
 #: build/data/org.zrythm.Zrythm.gschema.xml:317
 msgid "Whether to mute the monitor signal."
@@ -8574,33 +8573,36 @@ msgstr "Modifié :"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:57
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:77
 msgid "Port some more deprecated GTK widgets to new ones"
-msgstr ""
+msgstr "Portage de quelques widgets GTK obsolètes vers de nouveaux widgets"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:58
 msgid "Make the dialog flow for creating/loading projects async"
 msgstr ""
+"Rendre le flux de dialogue pour la création/le chargement de projets "
+"asynchrone"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:59
 msgid "Don't use C atomics in graph threads (synchronization bug)"
 msgstr ""
+"Ne pas utiliser les atomiques C dans les threads de graphes (bogue de "
+"synchronisation)"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:60
 msgid "Change channel output selector widget to a dropdown"
-msgstr ""
+msgstr "Changer le widget de sélection de sortie de canal en un menu déroulant"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:61
 msgid "Make some widgets in mixer channels smaller"
-msgstr ""
+msgstr "Réduire la taille de certains widgets dans les canaux du mixeur"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:62
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:135
-#, fuzzy
 msgid "Various optimizations"
-msgstr "Optimisations mineures"
+msgstr "Optimisations diverses"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:63
 msgid "Rename track *Comments* section to *Notes*"
-msgstr ""
+msgstr "Renommage de la section *Commentaires* de la piste en *Notes*"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:65
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:107
@@ -8613,13 +8615,14 @@ msgid ""
 "Fix occasional segfault when project autosave callback gets called after "
 "Zrythm shuts down"
 msgstr ""
+"Correction d'une erreur de segmentation occasionnelle lorsque le callback de "
+"sauvegarde automatique d'un projet est appelé après l'arrêt de Zrythm"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:68
-#, fuzzy
 msgid "Fix track inspector not being updated when adding a new track"
 msgstr ""
-"Correction de la région de l'éditeur qui n'était pas définie lors du "
-"déplacement des pistes"
+"Correction de l'inspecteur de piste qui n'est pas mis à jour lors de l'ajout "
+"d'une nouvelle piste"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:84
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:124
@@ -8629,10 +8632,11 @@ msgstr "Ajouté :"
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:86
 msgid "Add focus ring on all focusable widgets"
 msgstr ""
+"Ajout d'un anneau de focus sur tous les widgets pouvant être mis en focus"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:87
 msgid "Make plugin slot widgets themable"
-msgstr ""
+msgstr "Rendre les widgets des emplacements de greffons thématiques"
 
 #: build/data/org.zrythm.Zrythm.appdata.xml.in:88
 msgid ""
