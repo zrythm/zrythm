@@ -6,6 +6,23 @@ SPDX-License-Identifier: FSFAP
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.5.2.1] - 2023-12-19
+### Added
+- Allow copy-pasting objects from other Zrythm instances
+- Add vertical scrollbars to the timeline and piano roll (#4139)
+
+### Changed
+- Show a notification when something is copied to the clipboard
+- Move the timeline minimap inside the timeline
+
+### Fixed
+- Fix invalid note events being sent when clicking piano roll keys (#4140)
+- Fix modulation not performed as initially set when loading projects (#4123)
+- Fix transport backward button not working (#4963)
+
+### Removed
+- Drop json-glib dependency
+
 ## [1.0.0-beta.5.1.1] - 2023-12-17
 ### Added
 - Add automation flatten function (#4756)
